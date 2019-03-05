@@ -8,9 +8,6 @@ local Module = K:GetModule("Unitframes")
 local _G = _G
 
 local CreateFrame = _G.CreateFrame
-local UnitIsFriend = _G.UnitIsFriend
-
--- GLOBALS: DebuffTypeColor
 
 local function FilterSharedBuffs(_, _, _, name)
 	if (Module.UnImportantBuffs[name]) then
@@ -29,10 +26,14 @@ function Module:CreateAuras(unit)
 	local Auras = CreateFrame("Frame", self:GetName() .. "Auras", self)
 
 	if (unit == "player") then
-		if (K.Class == "DEATHKNIGHT" and C["Unitframe"].ClassResource == true)
-		or ((K.Class == "DRUID" or K.Class == "ROGUE") and C["Unitframe"].ClassResource == true)
-		or (K.Class == "SHAMAN" and C["Unitframe"].ClassResource == true)
-		or (K.Class == "WARLOCK" and C["Unitframe"].ClassResource == true) then
+		if K.Class == "ROGUE"
+		or K.Class == "DRUID"
+		or K.Class == "MAGE"
+		or K.Class == "MONK"
+		or K.Class == "DEATHKNIGHT"
+		or K.Class == "SHAMAN"
+		or K.Class == "PALADIN"
+		or K.Class == "WARLOCK" then
 			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -26)
 		else
 			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)

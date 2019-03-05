@@ -43,16 +43,16 @@ function Module:COMBAT_LOG_EVENT_UNFILTERED()
 	end
 
 	if C["Announcements"].Dispel.Value == "PARTY" then
-		SendChatMessage(string_format(DispelMessage, destName, spellID, spellName), inPartyLFG and "INSTANCE_CHAT" or "PARTY")
+		SendChatMessage(string_format(DispelMessage, destName, spellID, spellName), inPartyLFG and K.IsFirestorm and "PARTY" or "INSTANCE_CHAT" or "PARTY")
 	elseif C["Announcements"].Dispel.Value == "RAID" then
 		if inRaid then
-			SendChatMessage(string_format(DispelMessage, destName, spellID, spellName), inPartyLFG and "INSTANCE_CHAT" or "RAID")
+			SendChatMessage(string_format(DispelMessage, destName, spellID, spellName), inPartyLFG and K.IsFirestorm and "RAID" or "INSTANCE_CHAT" or "RAID")
 		else
-			SendChatMessage(string_format(DispelMessage, destName, spellID, spellName), inPartyLFG and "INSTANCE_CHAT" or "PARTY")
+			SendChatMessage(string_format(DispelMessage, destName, spellID, spellName), inPartyLFG and K.IsFirestorm and "PARTY" or "INSTANCE_CHAT" or "PARTY")
 		end
 	elseif C["Announcements"].Dispel.Value == "RAID_ONLY" then
 		if inRaid then
-			SendChatMessage(string_format(DispelMessage, destName, spellID, spellName), inPartyLFG and "INSTANCE_CHAT" or "RAID")
+			SendChatMessage(string_format(DispelMessage, destName, spellID, spellName), inPartyLFG and K.IsFirestorm and "RAID" or "INSTANCE_CHAT" or "RAID")
 		end
 	elseif C["Announcements"].Dispel.Value == "SAY" then
 		SendChatMessage(string_format(DispelMessage, destName, spellID, spellName), "SAY")

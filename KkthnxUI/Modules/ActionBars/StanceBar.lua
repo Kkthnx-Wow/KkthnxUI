@@ -3,19 +3,13 @@ if C["ActionBar"].Enable ~= true then
 	return
 end
 
--- Lua API
 local _G = _G
 
--- Wow API
 local GetShapeshiftFormInfo = _G.GetShapeshiftFormInfo
 local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
 local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
 local RegisterStateDriver = _G.RegisterStateDriver
-
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: StanceButton1, RightBarMouseOver, HoverBind, StanceBarMouseOver, UIParent
--- GLOBALS: CreateFrame
 
 local Movers = K.Movers
 
@@ -60,19 +54,16 @@ local States = {
 StanceBar:RegisterEvent("PLAYER_LOGIN")
 StanceBar:RegisterEvent("PLAYER_ENTERING_WORLD")
 StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_FORMS")
-StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN")
 StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_USABLE")
+StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN")
 StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 StanceBar:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
-StanceBar:RegisterEvent("PLAYER_TALENT_UPDATE")
-StanceBar:RegisterEvent("SPELLS_CHANGED")
 StanceBar:SetScript("OnEvent", function(self, event)
 	if event == "PLAYER_LOGIN" then
 		for i = 1, NUM_STANCE_SLOTS do
 			local button = _G["StanceButton"..i]
 			button:ClearAllPoints()
 			button:SetParent(self)
-			button:SetNormalTexture("")
 
 			if i == 1 then
 				if C["ActionBar"].StanceBarHorizontal == true then

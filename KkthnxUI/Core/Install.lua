@@ -120,8 +120,6 @@ function Install:Step1()
 	SetCVar("gameTip", 0)
 	SetCVar("lockActionBars", 1)
 	SetCVar("lootUnderMouse", 1)
-	SetCVar("nameplateOtherAtBase", GetCVarDefault("nameplateOtherAtBase"))
-	SetCVar("nameplateShowSelf", 0)
 	SetCVar("removeChatDelay", 1)
 	SetCVar("RotateMinimap", 0)
 	SetCVar("screenshotQuality", 10)
@@ -139,7 +137,7 @@ function Install:Step1()
 	SetCVar("violenceLevel", 5)
 	SetCVar("WhisperMode", "inline")
 	SetCVar("WholeChatWindowClickable", 0)
-	SetCVar("worldPreloadNonCritical", GetCVarDefault("worldPreloadNonCritical"))
+	SetCVar("worldPreloadNonCritical", 0)
 
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
@@ -165,15 +163,6 @@ function Install:Step2()
 	Chat:Install()
 	Chat:SetDefaultChatFramesPositions()
 end
-
---[[function Install:Step3() -- Work in info a player can read with details on main features of KkthnxUI
-	InstallStepComplete.message = L["Install"].Info_Read
-	InstallComplete:Show()
-
-	if K.CodeDebug then
-		K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 169 - KkthnxUI|Core|Install -|r |cFFFFFF00" .. BLAH .. " Clicked|r")
-	end
-end--]]
 
 function Install:PrintStep(PageNum)
 	self.CurrentStep = PageNum
@@ -415,8 +404,13 @@ Install:SetScript("OnEvent", function(self)
 		print(K.Welcome)
 	end
 
+	if C["General"].Welcome then
+		print(L["Install"].Welcome_1)
+		print(L["Install"].Welcome_2)
+		print(L["Install"].Welcome_3)
+	end
+
 	self:UnregisterEvent("ADDON_LOADED")
-	collectgarbage("collect")
 end)
 
 _G.SLASH_INSTALLUI1 = "/install"

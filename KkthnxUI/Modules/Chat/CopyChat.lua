@@ -24,122 +24,170 @@ local ScrollFrameTemplate_OnMouseWheel = _G.ScrollFrameTemplate_OnMouseWheel
 local STATUS = _G.STATUS
 local ToggleFrame = _G.ToggleFrame
 
+local removeIconFromLine
+local copyLines = {}
+local CopyFrame
+
+local menuFrame = CreateFrame("Frame", "QuickClickMenu", UIParent, "UIDropDownMenuTemplate")
 local middleButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:118:218|t "
 local leftButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "
 local rightButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "
 
-local Lines = {}
-local CopyFrame
-local menuFrame = L_Create_UIDropDownMenu("QuickClickMenu", UIParent)
+local canChangeMessage = function(arg1, id)
+	if id and arg1 == "" then
+		return id
+	end
+end
+
+function CopyChat:MessageIsProtected(message)
+	return message and (message ~= string_gsub(message, "(:?|?)|K(.-)|k", canChangeMessage))
+end
+
 local menuList = {
 	{text = _G.OPTIONS_MENU, isTitle = true, notCheckable = true},
 	{text = "", notClickable = true, notCheckable = true},
 	{text = STATUS, notCheckable = true, func = function()
 			K.ShowStatusReport()
 	end},
-	{text = "Install", notCheckable = true, func = function()
+
+	{text = L["ConfigButton"].Install, notCheckable = true, func = function()
 			K.Install:Launch()
 	end},
-	{text = "Move UI", notCheckable = true, func = function()
+
+	{text = L["ConfigButton"].MoveUI, notCheckable = true, func = function()
 			K.MoveUI()
 	end},
-	{text = "Actionbar Lock", notCheckable = true, func = function()
+
+	{text = L["ConfigButton"].ActionbarLock, notCheckable = true, func = function()
 			if InCombatLockdown() then
 				return
 			end
 
 			if KkthnxUIData[K.Realm][K.Name].BarsLocked == true then
 				KkthnxUIData[K.Realm][K.Name].BarsLocked = false
-				K.Print("Actionbars are now "..L["Actionbars"].Unlocked)
+				K.Print(L["Actionbars"].Unlocked)
 			elseif KkthnxUIData[K.Realm][K.Name].BarsLocked == false then
 				KkthnxUIData[K.Realm][K.Name].BarsLocked = true
-				K.Print("Actionbars are now "..L["Actionbars"].Locked)
+				K.Print(L["Actionbars"].Locked)
 			end
 	end},
-	{text = "Toggle Config", notCheckable = true, func = function()
+
+	{text = L["ConfigButton"].ToggleConfig, notCheckable = true, func = function()
 			K.ConfigUI()
 	end},
-	{text = "Profile List", notCheckable = true, func = function()
+
+	{text = L["ConfigButton"].ProfileList, notCheckable = true, func = function()
 			K.UIProfiles("list")
 	end},
-	{text = "UI Help", notCheckable = true, func = function()
+
+	{text = L["ConfigButton"].UIHelp, notCheckable = true, func = function()
 			K.UICommandsHelp()
 	end},
+
+	{text = L["ConfigButton"].Changelog, notCheckable = true, func = function()
+			K:GetModule("Changelog"):ToggleChangeLog()
+	end},
+
 	{text = RELOADUI, notCheckable = true, func = function()
 			ReloadUI()
 	end},
+
 	{text = "|cff7289daDiscord|r", notCheckable = true, func = function()
 			K.StaticPopup_Show("DISCORD_EDITBOX", nil, nil, "https://discord.gg/YUmxqQm")
 	end},
-	{text = "Damage Meters", hasArrow = true, notCheckable=true,
+
+	{text = "Damage Meters", hasArrow = true, notCheckable = true,
 		menuList = {
-			{text = "Skada", notCheckable = true, func = function() if IsAddOnLoaded("Skada") then Skada:ToggleWindow() end end},
-			{text = "Recount", notCheckable = true, func = function() if IsAddOnLoaded("Recount") then if Recount_MainWindow:IsShown() then Recount_MainWindow:Hide() else Recount_MainWindow:Show() end end end},
-			{text = "Details", notCheckable = true, func = function() if IsAddOnLoaded("Details") then _detalhes:ToggleWindows() end end},
+			{text = "Skada", notCheckable = true, func = function()
+					if IsAddOnLoaded("Skada") then
+						Skada:ToggleWindow()
+					end
+			end},
+
+			{text = "Details", notCheckable = true, func = function()
+					if IsAddOnLoaded("Details") then
+						_detalhes:ToggleWindows()
+					end
+			end},
 		},
 	},
+
+	{text = "", notClickable = true, notCheckable = true},
+	{text = CLOSE, notCheckable = true, func = function() end},
 }
 
-local function RemoveIconFromLine(text)
-	for i = 1, 8 do
-		text = gsub(text, "|TInterface\\TargetingFrame\\UI%-RaidTargetingIcon_"..i..":0|t", "{"..string_lower(_G["RAID_TARGET_"..i]).."}")
+do
+	local raidIconFunc = function(x)
+		x = x ~= "" and _G["RAID_TARGET_"..x]
+		return x and ("{"..string_lower(x).."}") or ""
 	end
-	text = gsub(text, "|TInterface(.-)|t", "")
-	return text
+
+	local stripTextureFunc = function(w, x, y)
+		if x == "" then
+			return (w ~= "" and w) or (y ~= "" and y) or ""
+		end
+	end
+
+	local hyperLinkFunc = function(w, _, y)
+		if w ~= "" then
+			return
+		end
+	end
+
+	removeIconFromLine = function(text)
+		text = string_gsub(text, "|TInterface\\TargetingFrame\\UI%-RaidTargetingIcon_(%d+):0|t", raidIconFunc) -- converts raid icons into {star} etc, if possible.
+		text = string_gsub(text, "(%s?)(|?)|T.-|t(%s?)", stripTextureFunc) -- strip any other texture out but keep a single space from the side(s).
+		text = string_gsub(text, "(|?)|H(.-)|h(.-)|h", hyperLinkFunc) -- strip hyperlink data only keeping the actual text.
+		return text
+	end
 end
 
-local function ColorizeLine(text, r, g, b)
-	local HexCode = K.RGBToHex(r, g, b)
-	local HexReplacement = string_format("|r%s", HexCode)
+local function colorizeLine(text, r, g, b)
+	local hexCode = K.RGBToHex(r, g, b)
+	local hexReplacement = string_format("|r%s", hexCode)
 
-	text = string_gsub(text, "|r", HexReplacement) -- If the message contains color strings then we need to add message color hex code after every "|r"
-	text = string_format("%s%s|r", HexCode, text) -- Add message color
+	text = string_gsub(text, "|r", hexReplacement) -- If the message contains color strings then we need to add message color hex code after every "|r"
+	text = string_format("%s%s|r", hexCode, text) -- Add message color
 
 	return text
 end
 
 function CopyChat:GetLines(frame)
-	local Index = 1
-
+	local index = 1
 	for i = 1, frame:GetNumMessages() do
-		local Message, R, G, B = frame:GetMessageInfo(i)
+		local message, r, g, b = frame:GetMessageInfo(i)
+		if message and not CopyChat:MessageIsProtected(message) then
+			-- Set fallback color values
+			r, g, b = r or 1, g or 1, b or 1
 
-		--Set fallback color values
-		R = R or 1
-		G = G or 1
-		B = B or 1
+			-- Remove icons
+			message = removeIconFromLine(message)
 
-		--Remove icons
-		Message = RemoveIconFromLine(Message)
+			-- Add text color
+			message = colorizeLine(message, r, g, b)
 
-		--Add text color
-		Message = ColorizeLine(Message, R, G, B)
-
-		Lines[Index] = Message
-		Index = Index + 1
+			copyLines[index] = message
+			index = index + 1
+		end
 	end
 
-	return Index - 1
+	return index - 1
 end
 
 function CopyChat:CopyText(frame)
 	if not CopyChatFrame:IsShown() then
-		local _, Size = FCF_GetChatWindowInfo(frame:GetID())
-
-		if Size < 10 then
-			Size = 12
+		local _, fontSize = FCF_GetChatWindowInfo(frame:GetID());
+		if fontSize < 12 then
+			fontSize = 12
 		end
 
 		FCF_SetChatWindowFontSize(frame, frame, 0.01)
-
 		CopyChatFrame:Show()
 
-		local LineCount = self:GetLines(frame)
-		local Text = table_concat(Lines, "\n", 1, LineCount)
-
-		FCF_SetChatWindowFontSize(frame, frame, Size)
-
-		CopyChatFrameEditBox:SetText(Text)
+		local lineCt = self:GetLines(frame)
+		local text = table_concat(copyLines, " \n", 1, lineCt)
+		FCF_SetChatWindowFontSize(frame, frame, fontSize)
+		CopyChatFrameEditBox:SetText(text)
 	else
 		CopyChatFrame:Hide()
 	end
@@ -214,8 +262,11 @@ function CopyChat:OnEnable()
 		CopyFrame:Hide()
 	end)
 	ScrollArea:SetScrollChild(EditBox)
-	CopyChatFrameEditBox:SetScript("OnTextChanged", function(self, userInput)
-		if userInput then return end
+	CopyChatFrameEditBox:SetScript("OnTextChanged", function(_, userInput)
+		if userInput then
+			return
+		end
+
 		local _, max = CopyChatScrollFrameScrollBar:GetMinMaxValues()
 		for i = 1, max do
 			ScrollFrameTemplate_OnMouseWheel(CopyChatScrollFrame, -1)
@@ -261,8 +312,8 @@ function CopyChat:OnEnable()
 			GameTooltip:ClearLines()
 			GameTooltip:AddLine(L["ConfigButton"].Functions)
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Copy chat", 1, 1, 1)
-			GameTooltip:AddDoubleLine(rightButtonString..L["ConfigButton"].Right_Click, "Emotions", 1, 1, 1)
+			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, L["ConfigButton"].CopyChat, 1, 1, 1)
+			GameTooltip:AddDoubleLine(rightButtonString..L["ConfigButton"].Right_Click, L["ConfigButton"].Emotions, 1, 1, 1)
 			GameTooltip:AddDoubleLine(middleButtonString..L["ConfigButton"].MiddleClick, L["ConfigButton"].Roll, 1, 1, 1)
 			GameTooltip:Show()
 		end)
@@ -284,9 +335,9 @@ function CopyChat:OnEnable()
 		ConfigButton:SetAlpha(0.25)
 		ConfigButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
-		ConfigButton:SetScript("OnMouseUp", function(self, btn)
+		ConfigButton:SetScript("OnMouseUp", function(_, btn)
 			if btn == "LeftButton" or btn == "RightButton" then
-				L_EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 2)
+				EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 2)
 			end
 		end)
 

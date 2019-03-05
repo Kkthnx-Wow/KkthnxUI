@@ -2,14 +2,14 @@ local K, C = unpack(select(2, ...))
 
 -- Big thanks to Goldpaw for failproofing this badass script some more.
 
--- Lua API
 local _G = _G
 local math_max = math.max
 local math_min = math.min
 local string_format = string.format
 local string_match = string.match
+local string_sub = string.sub
+local tonumber = tonumber
 
--- Wow API
 local CanCancelScene = _G.CanCancelScene
 local CanExitVehicle = _G.CanExitVehicle
 local CinematicFrame = _G.CinematicFrame
@@ -19,22 +19,24 @@ local InCinematic = _G.InCinematic
 local InCombatLockdown = _G.InCombatLockdown
 local SetCVar = _G.SetCVar
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: ForceQuit, WorldMapFrame, UIParent
-
 local IsLocked = false
 
+K.Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C["General"].UIScale
+K.NoScaleMult = K.Mult * C["General"].UIScale
+
 -- Optimize graphic after we enter world
-local PixelPerfect = CreateFrame("Frame")
-PixelPerfect:RegisterEvent("PLAYER_LOGIN")
-PixelPerfect:RegisterEvent("CINEMATIC_STOP")
-PixelPerfect:RegisterEvent("UI_SCALE_CHANGED")
-PixelPerfect:RegisterEvent("DISPLAY_SIZE_CHANGED")
-PixelPerfect:SetScript("OnEvent", function(self, event)
+local CreatePixelPerfect = CreateFrame("Frame")
+CreatePixelPerfect:RegisterEvent("PLAYER_ENTERING_WORLD")
+CreatePixelPerfect:RegisterEvent("CINEMATIC_STOP")
+CreatePixelPerfect:RegisterEvent("LOADING_SCREEN_DISABLED")
+CreatePixelPerfect:RegisterEvent("UI_SCALE_CHANGED")
+CreatePixelPerfect:RegisterEvent("DISPLAY_SIZE_CHANGED")
+CreatePixelPerfect:SetScript("OnEvent", function(self, event)
 	-- Prevent a C stack overflow
 	if IsLocked then
 		return
 	end
+
 	IsLocked = true
 
 	if InCombatLockdown() then
@@ -58,8 +60,7 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 
 	-- Automatically change the scale if auto scaling is activated
 	if C["General"].AutoScale then
-		C["General"].UIScale = math_min(2, math_max(0.64, 768 / string_match(K.Resolution, "%d+x(%d+)")))
-		C["General"].UIScale = tonumber(string.sub(C["General"].UIScale, 0, 5)) -- 8.1 Fix scale bug
+		C["General"].UIScale = math_min(2, math_max(0.01, 768 / string_match(K.Resolution, "%d+x(%d+)")))
 	end
 
 	if (string_format("%.2f", GetCVar("uiScale")) ~= string_format("%.2f", C["General"].UIScale)) then
@@ -74,6 +75,10 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 
 	if event == "PLAYER_REGEN_ENABLED" then
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	end
+
+	if event == "PLAYER_ENTERING_WORLD" then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	end
 
 	IsLocked = false

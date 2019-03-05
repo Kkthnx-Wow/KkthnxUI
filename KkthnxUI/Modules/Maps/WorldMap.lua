@@ -1,8 +1,6 @@
 local K, C = unpack(select(2, ...))
 local Module = K:NewModule("WorldMap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
-K.WorldMap = Module
-
 local _G = _G
 local pairs = pairs
 local find = string.find
@@ -105,7 +103,7 @@ function Module:UpdateCoords(OnShow)
 		local centerX, centerY = WorldMapFrame.ScrollContainer:GetCenter()
 		local x, y = GetCursorPosition()
 
-		local adjustedX = x and ((x / scale - (centerX - (width/2))) / width)
+		local adjustedX = x and ((x / scale - (centerX - (width / 2))) / width)
 		local adjustedY = y and ((centerY + (height/2) - y / scale) / height)
 
 		if adjustedX and adjustedY and (adjustedX >= 0 and adjustedY >= 0 and adjustedX <= 1 and adjustedY <= 1) then
@@ -152,7 +150,7 @@ end
 function Module:OnInitialize()
 	if C["WorldMap"].Coordinates then
 		local CoordsHolder = CreateFrame("Frame", "CoordsHolder", WorldMapFrame)
-		CoordsHolder:SetFrameLevel(WorldMapFrame.BorderFrame:GetFrameLevel() + 1)
+		CoordsHolder:SetFrameLevel(WorldMapFrame.BorderFrame:GetFrameLevel() + 2)
 		CoordsHolder:SetFrameStrata(WorldMapFrame.BorderFrame:GetFrameStrata())
 		CoordsHolder.playerCoords = CoordsHolder:CreateFontString(nil, "OVERLAY")
 		CoordsHolder.mouseCoords = CoordsHolder:CreateFontString(nil, "OVERLAY")
@@ -185,7 +183,7 @@ function Module:OnInitialize()
 	if (C["WorldMap"].SmallWorldMap) then
 		smallerMapScale = C["WorldMap"].SmallWorldMapScale or 0.9
 
-		WorldMapFrame.BlackoutFrame.Blackout:SetTexture(nil)
+		WorldMapFrame.BlackoutFrame.Blackout:SetTexture()
 		WorldMapFrame.BlackoutFrame:EnableMouse(false)
 
 		self:SecureHook(WorldMapFrame, "Maximize", "SetLargeWorldMap")

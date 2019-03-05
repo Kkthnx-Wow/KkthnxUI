@@ -7,8 +7,7 @@ local _G = _G
 local math_floor = math.floor
 local select = select
 
-local _, PlayerClass = UnitClass("player")
-local PlayerColorStr = RAID_CLASS_COLORS[PlayerClass].colorStr
+local PlayerColorStr = _G.RAID_CLASS_COLORS[K.Class].colorStr
 
 local FPS_ABBR = "|c" .. PlayerColorStr .. _G.FPS_ABBR .. "|r"
 local MILLISECONDS_ABBR = "|c" .. PlayerColorStr .. _G.MILLISECONDS_ABBR .. "|r"

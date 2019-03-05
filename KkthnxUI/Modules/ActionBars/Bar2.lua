@@ -8,6 +8,7 @@ local _G = _G
 local ActionBar2 = CreateFrame("Frame", "Bar2Holder", ActionBarAnchor)
 ActionBar2:SetAllPoints(ActionBarAnchor)
 MultiBarBottomLeft:SetParent(ActionBar2)
+MultiBarBottomLeft:EnableMouse(false)
 
 for i = 1, _G.NUM_ACTIONBAR_BUTTONS do
 	local b = _G["MultiBarBottomLeftButton" .. i]

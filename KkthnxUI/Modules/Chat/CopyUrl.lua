@@ -36,16 +36,12 @@ local FindURL_Events = {
 	"CHAT_MSG_SAY",
 	"CHAT_MSG_YELL",
 	"CHAT_MSG_EMOTE",
+	"CHAT_MSG_AFK",
+	"CHAT_MSG_DND",
 }
 
 function Module:PrintURL(url)
-	if C["Chat"].LinkBrackets then
-		url = K.RGBToHex(unpack(C["Chat"].LinkColor or {0.08, 1, 0.36})).."|Hurl:"..url.."|h["..url.."]|h|r "
-	else
-		url = K.RGBToHex(unpack(C["Chat"].LinkColor or {0.08, 1, 0.36})).."|Hurl:"..url.."|h"..url.."|h|r "
-	end
-
-	return url
+	return "|cFFFFFFFF[|Hurl:"..url.."|h"..url.."|h]|r "
 end
 
 function Module:FindURL(event, msg, ...)

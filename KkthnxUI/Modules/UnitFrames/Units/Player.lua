@@ -45,6 +45,7 @@ function Module:CreatePlayer()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
+	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.Smooth = C["Unitframe"].Smooth
 	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Health.colorTapping = true
@@ -53,7 +54,6 @@ function Module:CreatePlayer()
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
-	self.Health.Cutaway = C["Unitframe"].CutAwayHealth
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetFontObject(UnitframeFont)
@@ -81,6 +81,7 @@ function Module:CreatePlayer()
 		self.Portrait = CreateFrame("PlayerModel", nil, self)
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
+		self.Portrait:SetAlpha(0.9)
 
 		self.Portrait.Borders = CreateFrame("Frame", nil, self)
 		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
@@ -114,13 +115,14 @@ function Module:CreatePlayer()
 		if C["Raid"].RaidLayout.Value == "Healer" then
 			self.Castbar:SetPoint("BOTTOM", "ActionBarAnchor", "TOP", 0, 230)
 		else
-			self.Castbar:SetPoint("BOTTOM", "ActionBarAnchor", "TOP", 0, 203)
+			self.Castbar:SetPoint("BOTTOM", "ActionBarAnchor", "TOP", 0, 200)
 		end
 
 		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
 		self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
 		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
+		-- self.Castbar.Spark:SetPoint("CENTER", self.Castbar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 		if C["Unitframe"].CastbarLatency then
 			self.Castbar.SafeZone = self.Castbar:CreateTexture(nil, "ARTWORK")
@@ -130,20 +132,22 @@ function Module:CreatePlayer()
 			self.Castbar.SafeZone:SetPoint("BOTTOM")
 			self.Castbar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
 			self.Castbar.SafeZone:SetWidth(0.0001)
+
+			self.Castbar.Latency = self.Castbar:CreateFontString(nil, "OVERLAY")
+			self.Castbar.Latency:SetPoint("TOPRIGHT", self.Castbar, "BOTTOMRIGHT", -3.5, -3)
+			self.Castbar.Latency:SetFontObject(UnitframeFont)
+			self.Castbar.Latency:SetFont(select(1, self.Castbar.Latency:GetFont()), 11, select(3, self.Castbar.Latency:GetFont()))
+			self.Castbar.Latency:SetTextColor(0.84, 0.75, 0.65)
+			self.Castbar.Latency:SetJustifyH("RIGHT")
 		end
 
 		self.Castbar.timeToHold = 0.4
 		self.Castbar.CustomDelayText = Module.CustomCastDelayText
 		self.Castbar.CustomTimeText = Module.CustomTimeText
 		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostChannelStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostChannelStop = Module.PostCastStop
-		self.Castbar.PostChannelUpdate = Module.PostChannelUpdate
 		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
-		self.Castbar.PostCastNotInterruptible = Module.PostCastNotInterruptible
-		self.Castbar.PostCastFailed = Module.PostCastFailedOrInterrupted
-		self.Castbar.PostCastInterrupted = Module.PostCastFailedOrInterrupted
+		self.Castbar.PostCastFail = Module.PostCastFailedOrInterrupted
 
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
@@ -200,6 +204,14 @@ function Module:CreatePlayer()
 	self.AdditionalPower.Smooth = C["Unitframe"].Smooth
 	self.AdditionalPower.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.AdditionalPower.frequentUpdates = true
+
+	self.LeaderIndicatorOverlay = CreateFrame("Frame", nil, self.Portrait.Borders)
+	self.LeaderIndicatorOverlay:SetAllPoints()
+	self.LeaderIndicatorOverlay:SetFrameLevel(4) -- self.Portrait.Borders = 3 so we put it 1 higher. Watch this.
+
+	self.LeaderIndicator = self.LeaderIndicatorOverlay:CreateTexture(nil, "OVERLAY")
+	self.LeaderIndicator:SetSize(14, 14)
+	self.LeaderIndicator:SetPoint("TOPLEFT", 2, 9)
 
 	-- Class Power (Combo Points, etc...)
 	if C["Unitframe"].ClassResource then

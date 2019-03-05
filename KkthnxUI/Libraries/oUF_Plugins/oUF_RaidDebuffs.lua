@@ -2,18 +2,14 @@
 .icon [texture]
 .count [fontstring]
 .cd [cooldown]
-
 .ShowBossDebuff [boolean]
 .BossDebuffPriority [number]
-
 .ShowDispelableDebuff [boolean]
 .DispelPriority [table] { [type] = prio }
 .DispelFilter [table] { [type] = true }
 .DebuffTypeColor [table] { [type] = { r, g, b } }
-
 .Debuffs [table] { [name(string)|id(number)] = prio(number) }
 .MatchBySpellName [boolean]
-
 .SetDebuffTypeColor [function] function(r, g, b) end
 --]=]
 
@@ -324,7 +320,6 @@ local function Enable(self)
 		return true
 	end
 	--Need to run these always
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", CheckSpec, true)
 	self:RegisterEvent("PLAYER_TALENT_UPDATE", CheckSpec, true)
 	self:RegisterEvent("CHARACTER_POINTS_CHANGED", CheckSpec, true)
 end
@@ -335,7 +330,6 @@ local function Disable(self)
 		self.RaidDebuffs:Hide()
 	end
 	--Need to run these always
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD", CheckSpec)
 	self:UnregisterEvent("PLAYER_TALENT_UPDATE", CheckSpec)
 	self:UnregisterEvent("CHARACTER_POINTS_CHANGED", CheckSpec)
 end

@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local B = K:NewModule("InventorySort", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
 local _G = _G
@@ -774,14 +774,11 @@ function B:StartStacking()
 end
 
 local function RegisterUpdateDelayed()
-	local shouldUpdateFade
-
 	for _, bagFrame in pairs(BAG_FRAMES) do
 		if bagFrame.registerUpdate then
 			bagFrame:UpdateAllSlots()
 
 			bagFrame.registerUpdate = nil -- call update and re-register events, keep this after UpdateAllSlots
-			shouldUpdateFade = true -- we should refresh the bag search after sorting
 
 			bagFrame:RegisterEvent("BAG_UPDATE")
 			bagFrame:RegisterEvent("BAG_UPDATE_COOLDOWN")

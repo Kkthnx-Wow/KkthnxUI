@@ -4,8 +4,9 @@ local _G = _G
 
 local DAMAGE = _G.DAMAGE
 local DEFAULT = _G.DEFAULT
-local GetCurrentRegion = _G.GetCurrentRegion
+local DISABLE = _G.DISABLE
 local GUILD = _G.GUILD
+local GetCurrentRegion = _G.GetCurrentRegion
 local HEALER = _G.HEALER
 local HIDE = _G.HIDE
 local ITEM_QUALITY2_DESC = _G.ITEM_QUALITY2_DESC
@@ -21,6 +22,7 @@ C["ActionBar"] = {
 	["AddNewSpells"] = true,
 	["BottomBars"] = 2,
 	["ButtonSize"] = 34,
+	["RightButtonSize"] = 30,
 	["ButtonSpace"] = 6,
 	["Cooldowns"] = true,
 	["DisableStancePages"] = K.Class == "DRUID", -- don't need a stealth bar for druids
@@ -98,9 +100,9 @@ C["Announcements"] = {
 C["Automation"] = {
 	["AutoCollapse"] = false,
 	["AutoInvite"] = false,
+	["AutoQuest"] = true,
 	["AutoRelease"] = false,
 	["AutoResurrect"] = false,
-	["AutoQuest"] = false,
 	["AutoResurrectThank"] = false,
 	["AutoReward"] = false,
 	["BlockMovies"] = false,
@@ -197,7 +199,7 @@ C["Inventory"] = {
 	["BagBarMouseover"] = false,
 	["BagColumns"] = 10,
 	["BankColumns"] = 17,
-	["BindText"] = false,
+	["BindText"] = true,
 	["ButtonSize"] = 32,
 	["ButtonSpace"] = 6,
 	["DetailedReport"] = false,
@@ -208,7 +210,6 @@ C["Inventory"] = {
 	["JunkIcon"] = true,
 	["PulseNewItem"] = false,
 	["ReverseLoot"] = false,
-	["ScrapIcon"] = false,
 	["SortInverted"] = false,
 	["AutoRepair"] = {
 		["Options"] = {
@@ -267,18 +268,17 @@ C["Chat"] = {
 	["BackgroundAlpha"] = 0.25,
 	["Enable"] = true,
 	["Fading"] = true,
+	["VoiceOverlay"] = true,
 	["FadingTimeFading"] = 3,
 	["FadingTimeVisible"] = 20,
+	["Filter"] = false,
 	["Font"] = "KkthnxUI",
 	["Height"] = 149,
-	["LinkBrackets"] = true,
-	["LinkColor"] = {0.08, 1, 0.36},
 	["QuickJoin"] = false,
 	["RemoveRealmNames"] = true,
 	["ScrollByX"] = 3,
 	["ShortenChannelNames"] = true,
 	["TabsMouseover"] = true,
-	["VoiceOverlay"] = true,
 	["WhisperSound"] = true,
 	["Width"] = 410
 }
@@ -312,6 +312,8 @@ C["Filger"] = {
 	["BuffSize"] = 36,
 	["CooldownSize"] = 30,
 	["DisableCD"] = false,
+	["DisablePvP"] = false,
+	["Expiration"] = false,
 	["Enable"] = false,
 	["Font"] = "KkthnxUI",
 	["MaxTestIcon"] = 5,
@@ -335,7 +337,8 @@ C["General"] = {
 	["TaintLog"] = false,
 	["Texture"] = "KkthnxUI",
 	["TexturesColor"] = {0.9, 0.9, 0.9},
-	["UIScale"] = 0.7111111111
+	["UIScale"] = 0.7111111111,
+	["Welcome"] = true,
 }
 
 C["HealthPrediction"] = {
@@ -383,12 +386,14 @@ C["Minimap"] = {
 C["Misc"] = {
 	["AFKCamera"] = false,
 	["BattlegroundSpam"] = false,
+	["CharacterInfo"] = false,
 	["ColorPicker"] = false,
 	["EnhancedFriends"] = false,
 	["ImprovedStats"] = false,
-	["ItemLevel"] = false,
+	["InspectInfo"]	= false,
 	["KillingBlow"] = false,
 	["NoTalkingHead"] = false,
+	["ProfessionTabs"] = false,
 	["PvPEmote"] = false,
 	["SlotDurability"] = false,
 }
@@ -402,7 +407,6 @@ C["Nameplates"] = {
 	["ClassIcons"] = true,
 	["ClassResource"] = true,
 	["Combat"] = false,
-	["CutAwayHealth"] = false,
 	["Distance"] = 40,
 	["EliteIcon"] = true,
 	["Enable"] = true,
@@ -413,13 +417,15 @@ C["Nameplates"] = {
 	["Height"] = 16,
 	["MarkHealers"] = false,
 	["NonTargetAlpha"] = 0.35,
-	["OverlapV"] = 1.2,
 	["OverlapH"] = 1.2,
+	["OverlapV"] = 1.2,
+	["QuestIcon"] = true,
+	["QuestIconSize"] = 16,
 	["SelectedScale"] = 1,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
-	["TankedByTank"] = false,
 	["TankedByTankColor"] = {0.8, 0.1, 1},
+	["TappedColor"] = {0.6, 0.6, 0.6},
 	["TargetArrow"] = true,
 	["Texture"] = "KkthnxUI",
 	["Threat"] = false,
@@ -433,6 +439,24 @@ C["Nameplates"] = {
 			["Current / Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
 		},
 		["Value"] = "[KkthnxUI:HealthPercent]"
+	},
+	["ShowEnemyCombat"] = {
+		["Options"] = {
+			[DISABLE] = "DISABLED",
+			["Toggle On In Combat"] = "TOGGLE_ON",
+			["Toggle Off In Combat"] = "TOGGLE_OFF",
+
+		},
+		["Value"] = "DISABLED"
+	},
+	["ShowFriendlyCombat"] = {
+		["Options"] = {
+			[DISABLE] = "DISABLED",
+			["Toggle On In Combat"] = "TOGGLE_ON",
+			["Toggle Off In Combat"] = "TOGGLE_OFF",
+
+		},
+		["Value"] = "DISABLED"
 	}
 }
 
@@ -443,13 +467,13 @@ C["Skins"] = {
 	["BlizzardBags"] = false,
 	["ChatBubbles"] = true,
 	["DBM"] = false,
-	["Details"] = false,
+	["Details"] =  false,
 	["Font"] = "KkthnxUI",
 	["Hekili"] = false,
-	["Recount"] = false,
 	["ResetDetails"] = false,
 	["Skada"] = false,
 	["Spy"] = false,
+	["TalkingHeadBackdrop"] = true,
 	["Texture"] = "KkthnxUI",
 	["WeakAuras"] = false,
 }
@@ -464,14 +488,17 @@ C["Tooltip"] = {
 	["FontOutline"] = false,
 	["FontSize"] = 12,
 	["GuildRanks"] = false,
-	["HealthbarHeight"] = 9,
 	["HealthBarText"] = true,
+	["HealthbarHeight"] = 9,
 	["Icons"] = false,
 	["InspectInfo"] = true,
 	["ItemQualityBorder"] = true,
+	["NpcID"] = false,
+	["PlayerRoles"] = false,
 	["PlayerTitles"] = false,
-	["Role"] = false,
+	["ShowMount"] = false,
 	["SpellID"] = true,
+	["TargetInfo"] = false,
 	["Texture"] = "KkthnxUI"
 }
 
@@ -482,14 +509,12 @@ C["Unitframe"] = {
 	["CastbarLatency"] = true,
 	["Castbars"] = true,
 	["CastbarTicks"] = false,
-	["CastbarTicksColor"] = {0, 0, 0, 0.8},
 	["CastbarTicksWidth"] = 2,
 	["CastbarWidth"] = 226,
 	["CastClassColor"] = true,
 	["CastReactionColor"] = true,
 	["ClassResource"] = true,
 	["CombatFade"] = false,
-	["CutAwayHealth"] = false,
 	["DebuffsOnTop"] = true,
 	["DecimalLength"] = 1,
 	["Enable"] = true,
@@ -668,3 +693,10 @@ C["WorldMap"] = {
 	["SmallWorldMap"] = true,
 	["WorldMapPlus"] = false,
 }
+
+-- Add in a module for WoWFreakz since we filter some of their chat system stuff.
+if K.IsFirestorm then
+	C["Firestorm"] = {
+		["ChatFilter"] = false,
+	}
+end

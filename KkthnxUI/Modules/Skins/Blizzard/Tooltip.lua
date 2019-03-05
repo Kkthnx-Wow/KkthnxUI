@@ -9,12 +9,25 @@ local table_insert = table.insert
 
 local hooksecurefunc = hooksecurefunc
 
+local function IslandTooltipStyle(self)
+	if not self.IsSkinned then
+		self:SetBackdrop(nil)
+		self:CreateBorder()
+		self.IsSkinned = true
+	end
+end
+
 local function SkinTooltip()
 	if C["Tooltip"].Enable ~= true then
 		return
 	end
 
 	local GameTooltipStatusBarTexture = K.GetTexture(C["Tooltip"].Texture)
+	local GameTooltip = _G["GameTooltip"]
+	local GameTooltipStatusBar = _G["GameTooltipStatusBar"]
+	local WarCampaignTooltip = QuestScrollFrame.WarCampaignTooltip
+	local StoryTooltip = QuestScrollFrame.StoryTooltip
+	StoryTooltip:SetFrameLevel(4)
 
 	ItemRefCloseButton:SkinCloseButton()
 
@@ -35,33 +48,26 @@ local function SkinTooltip()
 		self:GetParent().Backdrop:SetBackdropBorderColor()
 	end)
 
-	local GameTooltip = _G["GameTooltip"]
-	local GameTooltipStatusBar = _G["GameTooltipStatusBar"]
-
-	local StoryTooltip = QuestScrollFrame.StoryTooltip
-	StoryTooltip:SetFrameLevel(4)
-
-	local WarCampaignTooltip = QuestScrollFrame.WarCampaignTooltip
-
 	local tooltips = {
-		AutoCompleteBox,
-		EmbeddedItemTooltip,
-		FriendsTooltip,
-		GameTooltip,
+		ItemRefTooltip,
 		ItemRefShoppingTooltip1,
 		ItemRefShoppingTooltip2,
 		ItemRefShoppingTooltip3,
-		ItemRefTooltip,
-		ReputationParagonTooltip,
+		AutoCompleteBox,
+		FriendsTooltip,
 		ShoppingTooltip1,
 		ShoppingTooltip2,
 		ShoppingTooltip3,
-		StoryTooltip,
-		WarCampaignTooltip,
 		WorldMapCompareTooltip1,
 		WorldMapCompareTooltip2,
 		WorldMapCompareTooltip3,
+		ReputationParagonTooltip,
+		EmbeddedItemTooltip,
+		-- already have locals
+		GameTooltip,
+		StoryTooltip,
 		WorldMapTooltip,
+		WarCampaignTooltip,
 	}
 
 	local qualityTooltips = {
@@ -96,20 +102,10 @@ local function SkinTooltip()
 	Module:SecureHook("GameTooltip_UpdateStyle", "SetStyle")
 	Module:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor") -- There has to be a more elegant way of doing this.
 
-	-- Used for Island Skin
-	local function style(self)
-		if not self.IsSkinned then
-			self:SetBackdrop(nil)
-			self:CreateBorder()
-
-			self.IsSkinned = true
-		end
-	end
-
 	Module:RegisterEvent("ADDON_LOADED", function(_, addon)
 		if addon == "Blizzard_IslandsQueueUI" then
 			local IslandTooltip = _G["IslandsQueueFrameTooltip"]
-			IslandTooltip:GetParent():GetParent():HookScript("OnShow", style)
+			IslandTooltip:GetParent():GetParent():HookScript("OnShow", IslandTooltipStyle)
 			IslandTooltip:GetParent().IconBorder:SetAlpha(0)
 			IslandTooltip:GetParent().Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		end

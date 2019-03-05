@@ -46,8 +46,6 @@ C["FilgerSpells"] = {
 			{spellID = 48707, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Dancing Rune Weapon
 			{spellID = 81256, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Lichborne
-			{spellID = 287081, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Rune Tap
 			{spellID = 194679, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Pillar of Frost
@@ -187,8 +185,6 @@ C["FilgerSpells"] = {
 			{spellID = 115989, filter = "CD"},
 			-- Breath of Sindragosa
 			{spellID = 152279, filter = "CD"},
-			-- Lichborne
-			{spellID = 287081, filter = "CD"},
 			-- Desecrated Ground
 			{spellID = 108201, filter = "CD"},
 			-- Death Pact
@@ -781,6 +777,7 @@ C["FilgerSpells"] = {
 			-- Trinkets
 
 			-- Enchants
+
 		},
 		{
 			Name = "T_DEBUFF_ICON",
@@ -3143,8 +3140,6 @@ C["FilgerSpells"] = {
 			{spellID = 48707, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Desecrated Ground
 			{spellID = 115018, unitID = "target", caster = "all", filter = "BUFF"},
-			-- Lichborne
-			{spellID = 287081, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Icebound Fortitude
 			{spellID = 48792, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Pillar of Frost

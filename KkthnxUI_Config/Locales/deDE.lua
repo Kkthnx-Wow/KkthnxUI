@@ -1,24 +1,72 @@
-local Locale = GetLocale()
-
--- Localization for deDE clients
-if (Locale ~= "deDE") then
+if (GetLocale() ~= "deDE") then
 	return
 end
 
 local MissingDesc = "The description for this module/setting is missing. Someone should really remind Kkthnx to do his job!"
-local ModuleFont = "Pick a font from the provided fonts for this module."
-local ModuleFontOutline = "Apply a font outline for this module"
-local ModuleHeight = "Pick the perfect Height for this module"
-local ModuleNewFeature = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:0:0:0:0|t]]
-local ModuleTexture = "Pick a texture from the provided textures for this module."
-local ModuleToggle = "Enable or disable this module based on your preference."
-local ModuleToggleSkin = "Enable/Disable this skin."
-local ModuleWidth = "Pick the perfect Width for this module"
+local ModuleNewFeature = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:0:0:0:0|t]] -- Used for newly implemented features.
 local PerformanceIncrease = "|n|nDisabling this may slightly increase performance|r" -- For semi-high CPU options
 local RestoreDefault = "|n|nRight-click to restore to default" -- For color pickers
-local SupportedFrames = "|n|nSuported frames for quest/arena URLs are|cff02FF02|n|nAchievements|nWorldMap|nEncounterJournal|r" -- For WorldMapPlus
+
+local _G = _G
+
+local ARENA = _G.ARENA
+local AURAS = _G.AURAS
+local BATTLEGROUNDS = _G.BATTLEGROUNDS
+local BINDING_HEADER_ACTIONBAR = _G.BINDING_HEADER_ACTIONBAR
+local BINDING_NAME_TOGGLEGARRISONLANDINGPAGE = _G.BINDING_NAME_TOGGLEGARRISONLANDINGPAGE
+local BOSS = _G.BOSS
+local CHAT = _G.CHAT
+local COMBAT = _G.COMBAT
+local DUNGEONS = _G.DUNGEONS
+local GARRISON_LANDING_PAGE_TITLE = _G.GARRISON_LANDING_PAGE_TITLE
+local GARRISON_LOCATION_TOOLTIP = _G.GARRISON_LOCATION_TOOLTIP
+local GENERAL = _G.GENERAL
+local INVENTORY_TOOLTIP = _G.INVENTORY_TOOLTIP
+local LOOT = _G.LOOT
+local MINIMAP_LABEL = _G.MINIMAP_LABEL
+local MISCELLANEOUS = _G.MISCELLANEOUS
+local PARTY = _G.PARTY
+local RAID = _G.RAID
+local RAIDS = _G.RAIDS
+local RAID_CONTROL = _G.RAID_CONTROL
+local REVERSE_NEW_LOOT_TEXT = _G.REVERSE_NEW_LOOT_TEXT
+local ROLE = _G.ROLE
+local SCENARIOS = _G.SCENARIOS
+local UNITFRAME_LABEL = _G.UNITFRAME_LABEL
+local UNIT_NAMEPLATES = _G.UNIT_NAMEPLATES
+local WORLDMAP_BUTTON = _G.WORLDMAP_BUTTON
 
 KkthnxUIConfig["deDE"] = {
+	-- Menu Groups Display Names
+	["GroupNames"] = {
+		-- Let's keep this in alphabetical order, shall we?
+		["ActionBar"] = BINDING_HEADER_ACTIONBAR,
+		["Announcements"] = "Announcements",
+		["Arena"] = ARENA,
+		["Auras"] = AURAS,
+		["Automation"] = "Automation",
+		["Boss"] = BOSS,
+		["Chat"] = CHAT,
+		["DataBars"] = "Data Bars",
+		["DataText"] = "Data Text",
+		["Filger"] = "Filger",
+		["Firestorm"] = "Firestorm", -- this is a realm name and shouldn't be translated.
+		["General"] = GENERAL,
+		["HealthPrediction"] = "Health Prediction",
+		["Inventory"] = INVENTORY_TOOLTIP,
+		["Loot"] = LOOT,
+		["Minimap"] = MINIMAP_LABEL,
+		["MinimapButtons"] = "Minimap Buttons",
+		["Misc"] = MISCELLANEOUS,
+		["Nameplates"] = UNIT_NAMEPLATES,
+		["Party"] = PARTY,
+		["Raid"] = RAID,
+		["Skins"] = "Skins",
+		["Tooltip"] = "Tooltip",
+		["Unitframe"] = UNITFRAME_LABEL,
+		["WorldMap"] = WORLDMAP_BUTTON
+	},
+
 	-- General Local
 	["General"] = {
 		["AutoScale"] = {
@@ -36,29 +84,32 @@ KkthnxUIConfig["deDE"] = {
 			["Desc"] = "Disables the tutorial buttons found on some frames.",
 		},
 
+		["Welcome"] = {
+			["Name"] = "Welcome Message",
+			["Desc"] = "Enable the `Welcome to KkthnxUI` in chat",
+		},
+
 		["FixGarbageCollect"] = {
 			["Name"] = "Fix Garabage Collection",
 			["Desc"] = "Garbage collection is being overused and misused and it's causing lag and performance drops.|n|nMemory usage is unrelated to performance, and tracking memory usage does not track 'bad' addons.|n|nDevelopers can disable this setting to enable the functionality when looking for memory leaks, but for the average end-user this is a completely pointless thing to track.",
 		},
 
 		["ColorTextures"] = {
-			["Name"] = "Toggle Border Color",
+			["Name"] = "Enable BorderColor",
 			["Desc"] = "Change the color of the main border of the UI",
 		},
 
 		["TexturesColor"] = {
 			["Name"] = "Border Color",
-			["Desc"] = "Main border color of the UI. |n|n|cffFF0000'Toggle Border Color' has to be enabled for this to work|r"..RestoreDefault,
+			["Desc"] = "Main border color of the UI. |n|n|cffFF0000'Enable Border Color' has to be enabled for this to work|r"..RestoreDefault,
 		},
 
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
-			["Desc"] = ModuleTexture,
 		},
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = ModuleFont
 		},
 
 		["FontSize"] = {
@@ -73,7 +124,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["MoveBlizzardFrames"] = {
 			["Name"] = "Move Blizzard Frames",
-			["Desc"] = "Allow Blizzard frames to be moved",
 		},
 
 		["TaintLog"] = {
@@ -87,16 +137,42 @@ KkthnxUIConfig["deDE"] = {
 		},
 	},
 
+	-- Health Prediction Local
+	["HealthPrediction"] = {
+		["Absorbs"] = {
+			["Name"] = "Absorbs",
+			["Desc"] = MissingDesc,
+		},
+
+		["HealAbsorbs"] = {
+			["Name"] = "HealAbsorbs",
+			["Desc"] = MissingDesc,
+		},
+
+		["Others"] = {
+			["Name"] = "Others",
+			["Desc"] = MissingDesc,
+		},
+
+		["Personal"] = {
+			["Name"] = "Personal",
+			["Desc"] = MissingDesc,
+		},
+
+		["Texture"] = {
+			["Name"] = "Statusbar Texture",
+		},
+	},
+
 	-- Loot Local
 	["Loot"] = {
 		["Enable"] = {
 			["Name"] = "Enable Loot",
-			["Desc"] = ModuleToggle,
 		},
 
 		["GroupLoot"] = {
 			["Name"] = "GroupLoot",
-			["Desc"] = "Toggle the loot roll frame.",
+			["Desc"] = "Enable/Disable the loot roll frame.",
 		},
 
 		["AutoQuality"] = {
@@ -104,9 +180,12 @@ KkthnxUIConfig["deDE"] = {
 			["Desc"] = "Sets the auto greed/disenchant quality\n\nUncommon: Rolls on Uncommon only\nRare: Rolls on Rares & Uncommon",
 		},
 
+		["Font"] = {
+			["Name"] = "Font",
+		},
+
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
-			["Desc"] = ModuleTexture,
 		},
 
 		["AutoConfirm"] = {
@@ -154,12 +233,10 @@ KkthnxUIConfig["deDE"] = {
 
 		["ButtonSize"] = {
 			["Name"] = "Button Size",
-			["Desc"] = "Buttons size",
 		},
 
 		["ButtonSpace"] = {
 			["Name"] = "Button Space",
-			["Desc"] = "Buttons space",
 		},
 
 		["DetailedReport"] = {
@@ -169,7 +246,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["Enable"] = {
 			["Name"] = "Enable Inventory",
-			["Desc"] = ModuleToggle,
 		},
 
 		["BagBar"] = {
@@ -184,7 +260,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = ModuleFont,
 		},
 
 		["ItemLevel"] = {
@@ -208,17 +283,22 @@ KkthnxUIConfig["deDE"] = {
 		},
 
 		["ScrapIcon"] = {
-			["Name"] = "Scrap Icon"..ModuleNewFeature,
+			["Name"] = "Scrap Icon",
 			["Desc"] = "Display the scrap icon on all items that you can scrap.",
 		},
 
 		["ReverseLoot"] = {
-			["Name"] = REVERSE_NEW_LOOT_TEXT..ModuleNewFeature,
+			["Name"] = REVERSE_NEW_LOOT_TEXT,
 			["Desc"] = REVERSE_NEW_LOOT_TEXT,
 		},
 
+		["BindText"] = {
+			["Name"] = "Bind Text",
+			["Desc"] = "Show Bind on Equip/Use Text",
+		},
+
 		["SortInverted"] = {
-			["Name"] = "Sort Inverted"..ModuleNewFeature,
+			["Name"] = "Sort Inverted",
 			["Desc"] = "Direction the bag sorting will use to allocate the items.",
 		},
 
@@ -299,7 +379,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["Enable"] = {
 			["Name"] = "Enable Actionbars",
-			["Desc"] = ModuleToggle
 		},
 
 		["ShowGrid"] = {
@@ -313,8 +392,7 @@ KkthnxUIConfig["deDE"] = {
 		},
 
 		["RightMouseover"] = {
-			["Name"] = "Right Mouseover",
-			["Desc"] = "Rightbar mouseover",
+			["Name"] = "Right Bars Mouseover",
 		},
 
 		["PetMouseover"] = {
@@ -358,32 +436,32 @@ KkthnxUIConfig["deDE"] = {
 		},
 
 		["PetBarHide"] = {
-			["Name"] = "Petbar Hide",
+			["Name"] = "Pet Bar Hide",
 			["Desc"] = "Hide pet bar",
 		},
 
 		["PetBarHorizontal"] = {
-			["Name"] = "Petbar Horizontal",
+			["Name"] = "Pet Bar Horizontal",
 			["Desc"] = "Enable horizontal pet bar",
 		},
 
 		["RightBars"] = {
-			["Name"] = "Rightbars",
+			["Name"] = "Right Bars",
 			["Desc"] = "Number of action bars on right (0, 1, 2 or 3)",
 		},
 
 		["SplitBars"] = {
-			["Name"] = "Splitbars",
+			["Name"] = "Split Bars",
 			["Desc"] = "Split the fifth bar on two bars on 6 buttons",
 		},
 
 		["StanceBarHide"] = {
-			["Name"] = "Stancebar Hide",
+			["Name"] = "Stance Bar Hide",
 			["Desc"] = "Hide stance bar",
 		},
 
 		["StanceBarHorizontal"] = {
-			["Name"] = "Stancebar Horizontal",
+			["Name"] = "Stance Bar Horizontal",
 			["Desc"] = "Enable horizontal stance bar",
 		},
 
@@ -399,20 +477,19 @@ KkthnxUIConfig["deDE"] = {
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = ModuleFont,
 		},
 	},
 
 	-- Nameplates Local
 	["Nameplates"] = {
 		["ClassResource"] = {
-			["Name"] = "Class Resource"..ModuleNewFeature,
+			["Name"] = "Class Resource",
 			["Desc"] = "Display class resources on the nameplates (Combo, Runes...)|n|nDo not forget to enable this in the blizzard options too (Esc > Interface > Names and check Unit Nameplates options)",
 		},
 
-		["TankedByTank"] = {
-			["Name"] = "Color Tanked",
-			["Desc"] = "Use Tanked Color when a nameplate is being effectively tanked by another tank.",
+		["QuestIcon"] = {
+			["Name"] = "Quest Icon",
+			["Desc"] = "Show a progress quest icon next to the nameplates.",
 		},
 
 		["NonTargetAlpha"] = {
@@ -426,7 +503,7 @@ KkthnxUIConfig["deDE"] = {
 		},
 
 		["TrackAuras"] = {
-			["Name"] = "Track Auras"..ModuleNewFeature,
+			["Name"] = "Track Auras",
 			["Desc"] = "Show auras on nameplates",
 		},
 
@@ -442,12 +519,12 @@ KkthnxUIConfig["deDE"] = {
 
 		["BadTransition"] = {
 			["Name"] = "Bad Transition",
-			["Desc"] = "Bad Transition Color",
+			["Desc"] = "Bad Transition Color"..RestoreDefault,
 		},
 
 		["GoodTransition"] = {
 			["Name"] = "Good Transition",
-			["Desc"] = "Good Transition Color",
+			["Desc"] = "Good Transition Color"..RestoreDefault,
 		},
 
 		["AurasSize"] = {
@@ -458,6 +535,31 @@ KkthnxUIConfig["deDE"] = {
 		["DecimalLength"] = {
 			["Name"] = "Decimal Length",
 			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
+		},
+
+		["ShowEnemyCombat"] = {
+			["Name"] = "Enemy Combat Toggle",
+			["Desc"] = "Control enemy nameplates toggling on or off when in combat.",
+		},
+
+		["ShowFriendlyCombat"] = {
+			["Name"] = "Friendly Combat Toggle",
+			["Desc"] = "Control friendly nameplates toggling on or off when in combat.",
+		},
+
+		["QuestIconSize"] = {
+			["Name"] = "Quest Icon Size",
+			["Desc"] = "Size of the questicon on nameplates.",
+		},
+
+		["OverlapH"] = {
+			["Name"] = "Overlap Horizontal",
+			["Desc"] = "How much nameplates will be spaced from one another left/right.",
+		},
+
+		["OverlapV"] = {
+			["Name"] = "Overlap Vertical",
+			["Desc"] = "How much nameplates will be spaced from one another up/down.",
 		},
 
 		["BadColor"] = {
@@ -486,18 +588,17 @@ KkthnxUIConfig["deDE"] = {
 		},
 
 		["TargetArrow"] = {
-			["Name"] = "Target Arrow"..ModuleNewFeature,
+			["Name"] = "Target Arrow",
 			["Desc"] = "Display an arrow at the top of the NamePlates to help determine who or what you are targeting",
 		},
 
 		["EliteIcon"] = {
-			["Name"] = "Elite Icon"..ModuleNewFeature,
+			["Name"] = "Elite Icon",
 			["Desc"] = "Display an Elite Icon on the right side of the NamePlates.",
 		},
 
 		["Enable"] = {
 			["Name"] = "Enable Nameplates",
-			["Desc"] = ModuleToggle..PerformanceIncrease,
 		},
 
 		["Threat"] = {
@@ -522,7 +623,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["Height"] = {
 			["Name"] = "Height",
-			["Desc"] = ModuleHeight,
 		},
 
 		["NearColor"] = {
@@ -552,12 +652,10 @@ KkthnxUIConfig["deDE"] = {
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = ModuleFont
 		},
 
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
-			["Desc"] = ModuleTexture,
 		},
 
 		["HealthFormat"] = {
@@ -567,7 +665,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["Width"] = {
 			["Name"] = "Width",
-			["Desc"] = ModuleWidth,
 		},
 	},
 
@@ -589,12 +686,12 @@ KkthnxUIConfig["deDE"] = {
 		},
 
 		["Dispel"] = {
-			["Name"] = "Dispel"..ModuleNewFeature,
+			["Name"] = "Dispel",
 			["Desc"] = "Announce in desired channel when you dispel",
 		},
 
 		["Steal"] = {
-			["Name"] = "Steal"..ModuleNewFeature,
+			["Name"] = "Steal",
 			["Desc"] = "Announce in desired channel when you steal",
 		},
 	},
@@ -616,14 +713,14 @@ KkthnxUIConfig["deDE"] = {
 			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
 		},
 
-		["AutoQuest"] = {
-			["Name"] = "Auto Quest",
-			["Desc"] = "Automatically allows the player to quickly accept and deliver quests, among other features, to speed up the questing experience.|n|n|cffFF0000Hold the " .. SHIFT_KEY .. " to temporarily disable automation|r",
-		},
-
 		["AutoInvite"] = {
 			["Name"] = "Auto Invite",
 			["Desc"] = "Automatically accept invites from guild/friends.",
+		},
+
+		["AutoQuest"] = {
+			["Name"] = "Auto Quest",
+			["Desc"] = "Automatically allows the player to quickly accept and deliver quests, among other features, to speed up the questing experience.",
 		},
 
 		["InviteKeyword"] = {
@@ -707,12 +804,10 @@ KkthnxUIConfig["deDE"] = {
 	["Auras"] = {
 		["Enable"] = {
 			["Name"] = "Enable Auras",
-			["Desc"] = ModuleToggle,
 		},
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = ModuleFont,
 		},
 
 		["HorizontalSpacing"] = {
@@ -732,12 +827,10 @@ KkthnxUIConfig["deDE"] = {
 
 		["Size"] = {
 			["Name"] = "Aura Size",
-			["Desc"] = "Aura Size",
 		},
 
 		["VerticalSpacing"] = {
 			["Name"] = "Vertical Spacing",
-			["Desc"] = "Vertical spacing of auras",
 		},
 
 		["WrapAfter"] = {
@@ -747,12 +840,11 @@ KkthnxUIConfig["deDE"] = {
 
 		["FadeThreshold"] = {
 			["Name"] = "Fade Threshold",
-			["Desc"] = "Fade Threshold",
 		},
 
 		["GrowthDirection"] = {
 			["Name"] = "Growth Direction",
-			["Desc"] = "Description Needed",
+			["Desc"] = MissingDesc,
 		},
 
 		["SortDir"] = {
@@ -780,17 +872,21 @@ KkthnxUIConfig["deDE"] = {
 
 		["Enable"] = {
 			["Name"] = "Enable Chat",
-			["Desc"] = ModuleToggle,
 		},
 
 		["Fading"] = {
 			["Name"] = "Fading",
-			["Desc"] = "Fade Chat",
+			["Desc"] = "Chat fading",
 		},
 
 		["WhisperSound"] = {
 			["Name"] = "Whisper Sound",
 			["Desc"] = "Play a whisper sound",
+		},
+
+		["VoiceOverlay"] = {
+			["Name"] = "Voice Chat Overlay",
+			["Desc"] = "Replace Blizzard's Voice Overlay.",
 		},
 
 		["FadingTimeFading"] = {
@@ -805,17 +901,14 @@ KkthnxUIConfig["deDE"] = {
 
 		["ShortenChannelNames"] = {
 			["Name"] = "Shorten Channel Names",
-			["Desc"] = "Shorten Channel Names",
 		},
 
 		["RemoveRealmNames"] = {
 			["Name"] = "Remove Realm Names",
-			["Desc"] = "Remove Realm Names",
 		},
 
 		["Height"] = {
 			["Name"] = "Height",
-			["Desc"] = ModuleHeight,
 		},
 
 		["LinkBrackets"] = {
@@ -830,12 +923,16 @@ KkthnxUIConfig["deDE"] = {
 
 		["QuickJoin"] = {
 			["Name"] = "Quick Join",
-			["Desc"] = "Toggle QuickJoin messages in chat.",
+			["Desc"] = "Show clickable Quick Join messages inside of the chat.",
+		},
+
+		["Filter"] = {
+			["Name"] = "Spam Filter",
+			["Desc"] = "Block annoying spam in chat.",
 		},
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = ModuleFont
 		},
 
 		["ScrollByX"] = {
@@ -850,7 +947,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["Width"] = {
 			["Name"] = "Width",
-			["Desc"] = ModuleWidth,
 		},
 	},
 
@@ -858,7 +954,6 @@ KkthnxUIConfig["deDE"] = {
 	["DataBars"] = {
 		["Enable"] = {
 			["Name"] = "Enable Databars",
-			["Desc"] = ModuleToggle,
 		},
 
 		["Text"] = {
@@ -878,7 +973,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["Width"] = {
 			["Name"] = "Width",
-			["Desc"] = ModuleWidth,
 		},
 
 		["ExperienceColor"] = {
@@ -893,16 +987,14 @@ KkthnxUIConfig["deDE"] = {
 
 		["Height"] = {
 			["Name"] = "Height",
-			["Desc"] = ModuleHeight,
 		},
 
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
-			["Desc"] = ModuleTexture,
 		},
 
 		["TrackHonor"] = {
-			["Name"] = "Track Honor"..ModuleNewFeature,
+			["Name"] = "Track Honor",
 			["Desc"] = "Track your honor experience as a databar",
 		},
 	},
@@ -921,7 +1013,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["Outline"] = {
 			["Name"] = "Outline",
-			["Desc"] = ModuleFontOutline,
 		},
 
 		["System"] = {
@@ -944,52 +1035,42 @@ KkthnxUIConfig["deDE"] = {
 	["Skins"] = {
 		["BlizzardBags"] = {
 			["Name"] = "Blizzard Bags",
-			["Desc"] = ModuleToggleSkin,
 		},
 
 		["Bagnon"] = {
 			["Name"] = "Bagnon",
-			["Desc"] = ModuleToggleSkin,
 		},
 
 		["BigWigs"] = {
 			["Name"] = "BigWigs",
-			["Desc"] = ModuleToggleSkin,
 		},
 
 		["ChatBubbles"] = {
 			["Name"] = "Chat Bubbles",
-			["Desc"] = ModuleToggleSkin,
 		},
 
 		["DBM"] = {
 			["Name"] = "Deadly Boss Mods",
-			["Desc"] = ModuleToggleSkin,
 		},
 
 		["Recount"] = {
 			["Name"] = "Recount",
-			["Desc"] = ModuleToggleSkin,
 		},
 
 		["Skada"] = {
 			["Name"] = "Skada",
-			["Desc"] = ModuleToggleSkin,
 		},
 
 		["Spy"] = {
 			["Name"] = "Spy",
-			["Desc"] = ModuleToggleSkin,
 		},
 
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
-			["Desc"] = ModuleTexture,
 		},
 
 		["WeakAuras"] = {
 			["Name"] = "WeakAuras",
-			["Desc"] = ModuleToggleSkin,
 		},
 	},
 
@@ -1007,22 +1088,24 @@ KkthnxUIConfig["deDE"] = {
 
 		["Enable"] = {
 			["Name"] = "Enable Minimap",
-			["Desc"] = ModuleToggle,
+		},
+
+		["VignetteAlert"] = {
+			["Name"] = "Vignette Alert",
+			["Desc"] = "Displays alerts for Treasures and Rares that are on your Minimap so you don't miss them.",
 		},
 
 		["ResetZoom"] = {
 			["Name"] = "Reset Zoom",
-			["Desc"] = "Reset Zoom",
 		},
 
 		["ResetZoomTime"] = {
 			["Name"] = "Reset Zoom Time",
-			["Desc"] = "Reset zoom at said amount of seconds",
+			["Desc"] = "Reset minimap zoom at the set amount of seconds",
 		},
 
 		["Size"] = {
 			["Name"] = "Size",
-			["Desc"] = "Size of minimap",
 		},
 	},
 
@@ -1036,6 +1119,16 @@ KkthnxUIConfig["deDE"] = {
 		["BattlegroundSpam"] = {
 			["Name"] = "Battleground Spam",
 			["Desc"] = "Remove Boss Emote spam during BG",
+		},
+
+		["NoTalkingHead"] = {
+			["Name"] = "Hide TalkingHead",
+			["Desc"] = "Removes the message dialog that appears for quests/dungeons",
+		},
+
+		["InspectInfo"] = {
+			["Name"] = "Display Inspect Info",
+			["Desc"] = "Shows item level of each item, enchants, and gems when inspecting another player.",
 		},
 
 		["ColorPicker"] = {
@@ -1054,7 +1147,7 @@ KkthnxUIConfig["deDE"] = {
 		},
 
 		["ImprovedStats"] = {
-			["Name"] = "Improved Stats"..ModuleNewFeature,
+			["Name"] = "Improved Stats",
 			["Desc"] = "Provides an updated and logical display of the character stats",
 		},
 
@@ -1068,9 +1161,19 @@ KkthnxUIConfig["deDE"] = {
 			["Desc"] = "Make a silly emote at the player you just killed (Kkthnx spits on you!)",
 		},
 
+		["ProfessionTabs"] = {
+			["Name"] = "Enhanced Profession Tabs",
+			["Desc"] = "Makes it easier to get to your professions and keep them orderly",
+		},
+
 		["SlotDurability"] = {
 			["Name"] = "Slot Durability",
 			["Desc"] = "Durability percentage on character slot buttons",
+		},
+
+		["CharacterInfo"] = {
+			["Name"] = "Display Character Info",
+			["Desc"] = "Shows item level of each item, enchants, and gems on the character page.",
 		},
 	},
 
@@ -1078,12 +1181,11 @@ KkthnxUIConfig["deDE"] = {
 	["Filger"] = {
 		["Enable"] = {
 			["Name"] = "Enable Filger",
-			["Desc"] = ModuleToggle..PerformanceIncrease,
+			["Desc"] = PerformanceIncrease,
 		},
 
 		["TestMode"] = {
 			["Name"] = "Test Mode",
-			["Desc"] = "Test icon mode",
 		},
 
 		["MaxTestIcon"] = {
@@ -1093,32 +1195,34 @@ KkthnxUIConfig["deDE"] = {
 
 		["ShowTooltip"] = {
 			["Name"] = "Show Tooltip",
-			["Desc"] = "Show tooltip",
 		},
 
 		["DisableCD"] = {
-			["Name"] = "Disable CD",
-			["Desc"] = "Disable cooldowns",
+			["Name"] = "Disable Cooldowns",
 		},
 
 		["BuffSize"] = {
 			["Name"] = "Buff Size",
-			["Desc"] = "Buffs size",
 		},
 
 		["CooldownSize"] = {
 			["Name"] = "Cooldown Size",
-			["Desc"] = "Cooldowns size",
 		},
 
 		["PvPSize"] = {
 			["Name"] = "PVP Size",
-			["Desc"] = "PVP debuffs size",
 		},
 
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
-			["Desc"] = ModuleTexture,
+		},
+	},
+
+	-- Filger Local
+	["Firestorm"] = {
+		["ChatFilter"] = {
+			["Name"] = "Firestorm Chat Filter",
+			["Desc"] = "This will filter all the 'AutoBroadcast' and more to make chat more retail like",
 		},
 	},
 
@@ -1131,7 +1235,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["CastbarLatency"] = {
 			["Name"] = "Castbar Latency",
-			["Desc"] = "Castbar Latency",
 		},
 
 		["MouseoverHighlight"] = {
@@ -1141,7 +1244,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["CastbarHeight"] = {
 			["Name"] = "Castbar Height",
-			["Desc"] = ModuleHeight,
 		},
 
 		["DecimalLength"] = {
@@ -1165,12 +1267,12 @@ KkthnxUIConfig["deDE"] = {
 		},
 
 		["PlayerBuffs"] = {
-			["Name"] = "Player Buffs"..ModuleNewFeature,
+			["Name"] = "Player Buffs",
 			["Desc"] = "Display your buffs under the player frame",
 		},
 
 		["PortraitTimers"] = {
-			["Name"] = "Portrait Timers"..ModuleNewFeature,
+			["Name"] = "Portrait Timers",
 			["Desc"] = "Displays important PvP buffs/debuffs with timers on your Portraits",
 		},
 
@@ -1186,16 +1288,19 @@ KkthnxUIConfig["deDE"] = {
 
 		["CastbarWidth"] = {
 			["Name"] = "Castbar Width",
-			["Desc"] = ModuleWidth,
+		},
+
+		["CastbarTicksWidth"] = {
+			["Name"] = "Castbar Ticks Width",
 		},
 
 		["CastClassColor"] = {
-			["Name"] = "Class Castbars"..ModuleNewFeature,
+			["Name"] = "Class Castbars",
 			["Desc"] = "Color castbars by the class of player units.",
 		},
 
 		["CastReactionColor"] = {
-			["Name"] = "Reaction Castbars"..ModuleNewFeature,
+			["Name"] = "Reaction Castbars",
 			["Desc"] = "Color castbars by the reaction type of non-player units.",
 		},
 
@@ -1206,12 +1311,10 @@ KkthnxUIConfig["deDE"] = {
 
 		["Enable"] = {
 			["Name"] = "Enable Unitframes",
-			["Desc"] = ModuleToggle,
 		},
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = ModuleFont
 		},
 
 		["GlobalCooldown"] = {
@@ -1241,7 +1344,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
-			["Desc"] = ModuleTexture,
 		},
 
 		["ThreatPercent"] = {
@@ -1263,8 +1365,7 @@ KkthnxUIConfig["deDE"] = {
 	-- Arena Local
 	["Arena"] = {
 		["Castbars"] = {
-			["Name"] = "Toggle Castbars",
-			["Desc"] = "Enable cast bar for unit frames",
+			["Name"] = "Enable Castbars",
 		},
 
 		["CastbarIcon"] = {
@@ -1278,13 +1379,11 @@ KkthnxUIConfig["deDE"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Toggle Arena Frames",
-			["Desc"] = ModuleToggle,
+			["Name"] = "Enable Arena Frames",
 		},
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = ModuleFont
 		},
 
 		["Smooth"] = {
@@ -1299,7 +1398,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
-			["Desc"] = ModuleTexture,
 		},
 
 		["NumberPrefixStyle"] = {
@@ -1311,8 +1409,7 @@ KkthnxUIConfig["deDE"] = {
 	-- Arena Local
 	["Boss"] = {
 		["Castbars"] = {
-			["Name"] = "Toggle Castbars",
-			["Desc"] = "Enable cast bar for unit frames",
+			["Name"] = "Enable Castbars",
 		},
 
 		["CastbarIcon"] = {
@@ -1322,12 +1419,10 @@ KkthnxUIConfig["deDE"] = {
 
 		["CastbarHeight"] = {
 			["Name"] = "Castbar Height",
-			["Desc"] = ModuleHeight,
 		},
 
 		["CastbarWidth"] = {
 			["Name"] = "Castbar Width",
-			["Desc"] = ModuleWidth,
 		},
 
 		["DecimalLength"] = {
@@ -1336,13 +1431,11 @@ KkthnxUIConfig["deDE"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Toggle Boss Frames",
-			["Desc"] = ModuleToggle,
+			["Name"] = "Enable Boss Frames",
 		},
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = ModuleFont
 		},
 
 		["Smooth"] = {
@@ -1357,11 +1450,10 @@ KkthnxUIConfig["deDE"] = {
 
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
-			["Desc"] = ModuleTexture,
 		},
 
 		["ThreatPercent"] = {
-			["Name"] = "Threat Percent"..ModuleNewFeature,
+			["Name"] = "Threat Percent",
 			["Desc"] = "Enable threat percent on the boss frame",
 		},
 
@@ -1379,18 +1471,16 @@ KkthnxUIConfig["deDE"] = {
 	-- Party Local
 	["Party"] = {
 		["Castbars"] = {
-			["Name"] = "Toggle Castbars"..ModuleNewFeature,
-			["Desc"] = "Enable cast bar for unit frames",
+			["Name"] = "Enable Castbars",
 		},
 
 		["CastbarIcon"] = {
-			["Name"] = "Castbar Icon"..ModuleNewFeature,
+			["Name"] = "Castbar Icon",
 			["Desc"] = "Create an icon beside the cast bar",
 		},
 
 		["Enable"] = {
-			["Name"] = "Toggle Party Frames",
-			["Desc"] = ModuleToggle,
+			["Name"] = "Enable Party Frames",
 		},
 
 		["MouseoverHighlight"] = {
@@ -1409,7 +1499,7 @@ KkthnxUIConfig["deDE"] = {
 		},
 
 		["PortraitTimers"] = {
-			["Name"] = "Portrait Timers"..ModuleNewFeature,
+			["Name"] = "Portrait Timers",
 			["Desc"] = "Displays important PvP buffs/debuffs with timers on your Portraits",
 		},
 
@@ -1425,7 +1515,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = ModuleFont
 		},
 
 		["Smooth"] = {
@@ -1445,7 +1534,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
-			["Desc"] = ModuleTexture,
 		},
 
 		["PortraitStyle"] = {
@@ -1468,11 +1556,10 @@ KkthnxUIConfig["deDE"] = {
 
 		["AuraWatchIconSize"] = {
 			["Name"] = "Aura Watch Icon Size",
-			["Desc"] = "Pick your size",
 		},
 
 		["AuraWatchTexture"] = {
-			["Name"] = "Aura Watch Texture"..ModuleNewFeature,
+			["Name"] = "Aura Watch Texture",
 			["Desc"] = "Display a colored texture over your aura watch corner icons. Disable this if you want to see the spell icon instead",
 		},
 
@@ -1493,7 +1580,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["AuraDebuffIconSize"] = {
 			["Name"] = "Aura Debuff Icon Size",
-			["Desc"] = "Pick your poison",
 		},
 
 		["DeficitThreshold"] = {
@@ -1507,13 +1593,11 @@ KkthnxUIConfig["deDE"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Toggle Raid Frames",
-			["Desc"] = ModuleToggle,
+			["Name"] = "Enable Raid Frames",
 		},
 
 		["Height"] = {
 			["Name"] = "Raid Height",
-			["Desc"] = ModuleHeight,
 		},
 
 		["RaidGroups"] = {
@@ -1523,7 +1607,6 @@ KkthnxUIConfig["deDE"] = {
 
 		["Width"] = {
 			["Name"] = "Raid Width",
-			["Desc"] = ModuleWidth,
 		},
 
 		["MainTankFrames"] = {
@@ -1573,12 +1656,10 @@ KkthnxUIConfig["deDE"] = {
 
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
-			["Desc"] = ModuleTexture,
 		},
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = ModuleFont
 		},
 
 		["GroupBy"] = {
@@ -1611,30 +1692,45 @@ KkthnxUIConfig["deDE"] = {
 
 		["WorldMapPlus"] = {
 			["Name"] = "WorldMap Plus",
-			["Desc"] = "If checked, a checkbox/quest URLs will be shown at the top of the map which will allow you to toggle unexplored areas and obtain quest/arena link info directly."..SupportedFrames,
+			["Desc"] = "If checked, a checkbox/quest URLs will be shown at the top of the map which will allow you to toggle unexplored areas and obtain quest/arena link info directly.",
 		},
 	},
 
 	-- Tooltip Local
 	["Tooltip"] = {
+		["PlayerRoles"] = {
+			["Name"] = ROLE,
+			["Desc"] = "Display the unit role in the tooltip.",
+		},
+
 		["CursorAnchor"] = {
 			["Name"] = "Cursor Anchor",
-			["Desc"] = "Anchor the tooltip to the cursor.",
+			["Desc"] = "Anchor the tooltip to the mouse cursor.",
 		},
 
 		["Enable"] = {
 			["Name"] = "Enable Tooltip",
-			["Desc"] = ModuleToggle,
+		},
+
+		["ShowMount"] = {
+			["Name"] = "Current Mount",
+			["Desc"] = "Display info about the current mount the unit is riding.",
 		},
 
 		["FontOutline"] = {
 			["Name"] = "Font Outline",
-			["Desc"] = ModuleFontOutline,
 		},
 
 		["FontSize"] = {
 			["Name"] = "Font Size",
-			["Desc"] = "Determine your font size",
+		},
+
+		["CursorAnchorX"] = {
+			["Name"] = "Cursor Anchor Offset X",
+		},
+
+		["CursorAnchorY"] = {
+			["Name"] = "Cursor Anchor Offset Y",
 		},
 
 		["GuildRanks"] = {
@@ -1644,12 +1740,16 @@ KkthnxUIConfig["deDE"] = {
 
 		["HealthbarHeight"] = {
 			["Name"] = "Healthbar Height",
-			["Desc"] = ModuleHeight,
 		},
 
 		["HealthBarText"] = {
 			["Name"] = "Healthbar Text",
 			["Desc"] = "Show health bar text",
+		},
+
+		["TargetInfo"] = {
+			["Name"] = "Target Info",
+			["Desc"] = "When in a raid group display if anyone in your raid is targeting the current tooltip unit.",
 		},
 
 		["Icons"] = {
@@ -1660,6 +1760,11 @@ KkthnxUIConfig["deDE"] = {
 		["InspectInfo"] = {
 			["Name"] = "Inspect Info",
 			["Desc"] = "Display a players item level and spec (you need to be holding the shift key down too)",
+		},
+
+		["NpcID"] = {
+			["Name"] = "NPC IDs",
+			["Desc"] = "Display the npc ID when mousing over a npc tooltip.",
 		},
 
 		["ItemQualityBorder"] = {
@@ -1673,13 +1778,12 @@ KkthnxUIConfig["deDE"] = {
 		},
 
 		["SpellID"] = {
-			["Name"] = "SpellID",
-			["Desc"] = "Display spell id",
+			["Name"] = "Spell/Item IDs",
+			["Desc"] = "Display the spell or item ID when mousing over a spell or item tooltip.",
 		},
 
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
-			["Desc"] = ModuleTexture,
 		},
 	},
 }

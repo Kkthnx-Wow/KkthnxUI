@@ -44,13 +44,13 @@ local function AttemptAutoRepair(playerOverride)
 					if autoRepairStatus == "GUILD_REPAIR_FAILED" then
 						AttemptAutoRepair(true) -- Try using player money instead
 					else
-						K.Print("Your items have been repaired using guild bank funds for: " .. K.FormatMoney(cost))
+						K.Print(L["Inventory"].GuildRepair .. K.FormatMoney(cost))
 					end
 				elseif autoRepair == "PLAYER" then
 					if autoRepairStatus == "PLAYER_REPAIR_FAILED" then
-						K.Print("You don't have enough money to repair.")
+						K.Print(L["Inventory"].NotEnoughMoney)
 					else
-						K.Print("Your items have been repaired for: " .. K.FormatMoney(cost))
+						K.Print(L["Inventory"].RepairCost .. K.FormatMoney(cost))
 					end
 				end
 			end)
@@ -58,8 +58,13 @@ local function AttemptAutoRepair(playerOverride)
 	end
 end
 
-local function VendorGrays()
+function Module:VendorGrays(delete)
 	if Module.SellFrame:IsShown() then
+		return
+	end
+
+	if (not MerchantFrame or not MerchantFrame:IsShown()) and not delete then
+		K.Print(L["Inventory"].NotatVendor)
 		return
 	end
 
@@ -86,6 +91,7 @@ local function VendorGrays()
 	end
 
 	-- Resetting stuff
+	Module.SellFrame.Info.delete = delete or false
 	Module.SellFrame.Info.ProgressTimer = 0
 	Module.SellFrame.Info.SellInterval = 0.2
 	Module.SellFrame.Info.ProgressMax = table_maxn(Module.SellFrame.Info.itemList)
@@ -98,7 +104,6 @@ local function VendorGrays()
 
 	--Time to sell
 	Module.SellFrame:Show()
-
 end
 
 function Module:UI_ERROR_MESSAGE(_, messageType)
@@ -117,6 +122,7 @@ function Module:MERCHANT_CLOSED()
 	Module.SellFrame:Hide()
 
 	table.wipe(Module.SellFrame.Info.itemList)
+	Module.SellFrame.Info.delete = false
 	Module.SellFrame.Info.ProgressTimer = 0
 	Module.SellFrame.Info.SellInterval = 0.2
 	Module.SellFrame.Info.ProgressMax = 0
@@ -132,9 +138,10 @@ function Module:ProgressQuickVendor()
 		return nil, true
 	end
 
-	local bag, slot,itemPrice, link = unpack(item)
-	local goldGained, stackPrice, _ = 0
+	local bag, slot, itemPrice, link = unpack(item)
+	local stackPrice = 0
 	local stackCount = select(2, GetContainerItemInfo(bag, slot)) or 1
+
 	if Module.SellFrame.Info.delete then
 		PickupContainerItem(bag, slot)
 		DeleteCursorItem()
@@ -168,7 +175,7 @@ function Module:VendorGreys_OnUpdate(elapsed)
 	elseif lastItem then
 		Module.SellFrame:Hide()
 		if Module.SellFrame.Info.goldGained > 0 then
-			K.Print(("Vendored gray items for: %s"):format(K.FormatMoney(Module.SellFrame.Info.goldGained)))
+			K.Print((L["Inventory"].SoldTrash.." %s"):format(K.FormatMoney(Module.SellFrame.Info.goldGained)))
 		end
 	end
 end
@@ -184,7 +191,7 @@ function Module:CreateSellFrame()
 	Module.SellFrame.title = Module.SellFrame:CreateFontString(nil, "OVERLAY")
 	Module.SellFrame.title:FontTemplate(nil, 12, "")
 	Module.SellFrame.title:SetPoint("TOP", Module.SellFrame, "TOP", 0, -2)
-	Module.SellFrame.title:SetText("Vendoring Grays")
+	Module.SellFrame.title:SetText(L["Inventory"].VendorGrays)
 
 	Module.SellFrame.statusbar = CreateFrame("StatusBar", "VendorGraysFrameStatusbar", Module.SellFrame)
 	Module.SellFrame.statusbar:SetSize(180, 16)
@@ -202,7 +209,6 @@ function Module:CreateSellFrame()
 	Module.SellFrame.statusbar.anim.progress = Module.SellFrame.statusbar.anim:CreateAnimation("Progress")
 	Module.SellFrame.statusbar.anim.progress:SetSmoothing("Out")
 	Module.SellFrame.statusbar.anim.progress:SetDuration(.3)
-
 
 	Module.SellFrame.statusbar.ValueText = Module.SellFrame.statusbar:CreateFontString(nil, "OVERLAY")
 	Module.SellFrame.statusbar.ValueText:FontTemplate(nil, 12, "")
@@ -226,7 +232,7 @@ end
 
 function Module:MERCHANT_SHOW()
 	if C["Inventory"].AutoSell then
-		C_Timer_After(0.5, VendorGrays)
+		C_Timer_After(0.5, Module.VendorGrays)
 	end
 
 	local autoRepair = C["Inventory"].AutoRepair.Value

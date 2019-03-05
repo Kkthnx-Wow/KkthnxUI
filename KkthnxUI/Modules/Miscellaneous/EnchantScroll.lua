@@ -6,7 +6,6 @@ end
 local Module = K:NewModule("EnchantScroll", "AceEvent-3.0", "AceHook-3.0")
 
 local _G = _G
-local setmetatable = setmetatable
 
 local CraftRecipe = _G.C_TradeSkillUI.CraftRecipe
 local GetItemCount = _G.GetItemCount
@@ -14,11 +13,13 @@ local GetLocale = _G.GetLocale
 local GetRecipeInfo = _G.C_TradeSkillUI.GetRecipeInfo
 local GetSpellInfo = _G.GetSpellInfo
 local GetTradeSkillLine = _G.C_TradeSkillUI.GetTradeSkillLine
-local hooksecurefunc = _G.hooksecurefunc
+local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsNPCCrafting = _G.C_TradeSkillUI.IsNPCCrafting
+local IsShiftKeyDown = _G.IsShiftKeyDown
 local IsTradeSkillGuild = _G.C_TradeSkillUI.IsTradeSkillGuild
 local IsTradeSkillLinked = _G.C_TradeSkillUI.IsTradeSkillLinked
 local UseItemByName = _G.UseItemByName
+local hooksecurefunc = _G.hooksecurefunc
 
 -- ItemID of enchanter vellums
 local enchantingTradeSkillNames = {

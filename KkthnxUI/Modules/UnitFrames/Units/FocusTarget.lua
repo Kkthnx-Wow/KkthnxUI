@@ -74,6 +74,7 @@ function Module:CreateFocusTarget()
 		self.Portrait = CreateFrame("PlayerModel", nil, self)
 		self.Portrait:SetSize(26, 26)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
+		self.Portrait:SetAlpha(0.9)
 
 		self.Portrait.Borders = CreateFrame("Frame", nil, self)
 		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
@@ -115,5 +116,5 @@ function Module:CreateFocusTarget()
 		Override = Module.CreateThreatIndicator,
 	}
 
-	self.Range = Module.CreateRange(self)
+	self.Range = Module.CreateRangeIndicator(self)
 end

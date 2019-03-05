@@ -1,5 +1,4 @@
 local K = unpack(select(2, ...))
-
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
@@ -18,7 +17,7 @@ end
 local function SpellName(id)
 	local name = GetSpellInfo(id)
 	if not name then
-		print("|cff3c9bedKkthnxUI:|r SpellID is not valid: "..id..". Please check for an updated version, if none exists report to KkthnxUI in Discord.")
+		print("|cff3c9bedKkthnxUI:|r SpellID is not valid: " .. id .. ". Please check for an updated version, if none exists report to KkthnxUI in Discord.")
 		return "Impale"
 	else
 		return name
@@ -28,17 +27,16 @@ end
 Module.DebuffsTracking["RaidDebuffs"] = {
 	["type"] = "Whitelist",
 	["spells"] = {
-		-- Battle for Azeroth
 		-- Mythic+ Dungeons
-		[196376] = Defaults(), -- Grievous Tear
 		[209858] = Defaults(), -- Necrotic
 		[226512] = Defaults(), -- Sanguine
-		[240443] = Defaults(), -- Bursting
 		[240559] = Defaults(), -- Grievous
-		[277242] = Defaults(), -- Symbiote of G'huun (Infested)
-
-		-- Dungeons
-		-- Freehold
+		[240443] = Defaults(), -- Bursting
+		[196376] = Defaults(), -- Grievous Tear
+		[288388] = Defaults(), -- Reap Soul
+		[288694] = Defaults(), -- Shadow Smash
+		--BFA Dungeons
+		--Freehold
 		[258323] = Defaults(), -- Infected Wound
 		[257775] = Defaults(), -- Plague Step
 		[257908] = Defaults(), -- Oiled Blade
@@ -47,8 +45,7 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[274555] = Defaults(), -- Scabrous Bites
 		[258875] = Defaults(), -- Blackout Barrel
 		[256363] = Defaults(), -- Ripper Punch
-
-		-- Shrine of the Storm
+		--Shrine of the Storm
 		[264560] = Defaults(), -- Choking Brine
 		[268233] = Defaults(), -- Electrifying Shock
 		[268322] = Defaults(), -- Touch of the Drowned
@@ -65,8 +62,7 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[268317] = Defaults(), -- Rip Mind
 		[268391] = Defaults(), -- Mental Assault
 		[274720] = Defaults(), -- Abyssal Strike
-
-		-- Siege of Boralus
+		--Siege of Boralus
 		[257168] = Defaults(), -- Cursed Slash
 		[272588] = Defaults(), -- Rotting Wounds
 		[272571] = Defaults(), -- Choking Waters
@@ -74,14 +70,13 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[275835] = Defaults(), -- Stinging Venom Coating
 		[273930] = Defaults(), -- Hindering Cut
 		[257292] = Defaults(), -- Heavy Slash
-		[261428] = Defaults(), -- Hangman"s Noose
+		[261428] = Defaults(), -- Hangman's Noose
 		[256897] = Defaults(), -- Clamping Jaws
 		[272874] = Defaults(), -- Trample
 		[273470] = Defaults(), -- Gut Shot
 		[272834] = Defaults(), -- Viscous Slobber
 		[257169] = Defaults(), -- Terrifying Roar
 		[272713] = Defaults(), -- Crushing Slam
-
 		-- Tol Dagor
 		[258128] = Defaults(), -- Debilitating Shout
 		[265889] = Defaults(), -- Torch Strike
@@ -98,11 +93,11 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[258313] = Defaults(), -- Handcuff
 		[259711] = Defaults(), -- Lockdown
 		[256198] = Defaults(), -- Azerite Rounds: Incendiary
-		[256101] = Defaults(), -- Explosive Burst
+		[256101] = Defaults(), -- Explosive Burst (mythic)
+		[256105] = Defaults(), -- Explosive Burst (mythic+)
 		[256044] = Defaults(), -- Deadeye
 		[256474] = Defaults(), -- Heartstopper Venom
-
-		-- Waycrest Manor
+		--Waycrest Manor
 		[260703] = Defaults(), -- Unstable Runic Mark
 		[263905] = Defaults(), -- Marking Cleave
 		[265880] = Defaults(), -- Dread Mark
@@ -124,8 +119,7 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[261438] = Defaults(), -- Wasting Strike
 		[268202] = Defaults(), -- Death Lens
 		[278456] = Defaults(), -- Infest
-
-		-- Atal"Dazar
+		-- Atal'Dazar
 		[252781] = Defaults(), -- Unstable Hex
 		[250096] = Defaults(), -- Wracking Pain
 		[250371] = Defaults(), -- Lingering Nausea
@@ -139,8 +133,7 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[255421] = Defaults(), -- Devour
 		[255434] = Defaults(), -- Serrated Teeth
 		[256577] = Defaults(), -- Soulfeast
-
-		-- King's Rest
+		--King's Rest
 		[270492] = Defaults(), -- Hex
 		[267763] = Defaults(), -- Wretched Discharge
 		[276031] = Defaults(), -- Pit of Despair
@@ -161,8 +154,7 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[272388] = Defaults(), -- Shadow Barrage
 		[271640] = Defaults(), -- Dark Revelation
 		[268796] = Defaults(), -- Impaling Spear
-
-		-- Motherlode
+		--Motherlode
 		[263074] = Defaults(), -- Festering Bite
 		[280605] = Defaults(), -- Brain Freeze
 		[257337] = Defaults(), -- Shocking Claw
@@ -179,8 +171,7 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[260829] = Defaults(), -- Homing Missle (travelling)
 		[260838] = Defaults(), -- Homing Missle (exploded)
 		[263637] = Defaults(), -- Clothesline
-
-		-- Temple of Sethraliss
+		--Temple of Sethraliss
 		[269686] = Defaults(), -- Plague
 		[268013] = Defaults(), -- Flame Shock
 		[268008] = Defaults(), -- Snake Charm
@@ -194,8 +185,7 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[263958] = Defaults(), -- A Knot of Snakes
 		[266923] = Defaults(), -- Galvanize
 		[268007] = Defaults(), -- Heart Attack
-
-		-- Underrot
+		--Underrot
 		[265468] = Defaults(), -- Withering Curse
 		[278961] = Defaults(), -- Decaying Mind
 		[259714] = Defaults(), -- Decaying Spores
@@ -206,11 +196,9 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[265019] = Defaults(), -- Savage Cleave
 		[265377] = Defaults(), -- Hooked Snare
 		[265625] = Defaults(), -- Dark Omen
-		[260685] = Defaults(), -- Taint of G"huun
+		[260685] = Defaults(), -- Taint of G'huun
 		[266107] = Defaults(), -- Thirst for Blood
 		[260455] = Defaults(), -- Serrated Fangs
-
-		-- Raids
 		-- Uldir
 		-- MOTHER
 		[268277] = Defaults(), -- Purifying Flame
@@ -219,7 +207,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[267787] = Defaults(), -- Sundering Scalpel
 		[268198] = Defaults(), -- Clinging Corruption
 		[267821] = Defaults(), -- Defense Grid
-
 		-- Vectis
 		[265127] = Defaults(), -- Lingering Infection
 		[265178] = Defaults(), -- Mutagenic Pathogen
@@ -231,37 +218,32 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[267162] = Defaults(), -- Omega Vector
 		[267163] = Defaults(), -- Omega Vector
 		[267164] = Defaults(), -- Omega Vector
-
 		-- Mythrax
 		--[272146] = Defaults(), -- Annihilation
 		[272536] = Defaults(), -- Imminent Ruin
 		[274693] = Defaults(), -- Essence Shear
 		[272407] = Defaults(), -- Oblivion Sphere
-
 		-- Fetid Devourer
 		[262313] = Defaults(), -- Malodorous Miasma
 		[262292] = Defaults(), -- Rotting Regurgitation
 		[262314] = Defaults(), -- Deadly Disease
-
 		-- Taloc
 		[270290] = Defaults(), -- Blood Storm
 		[275270] = Defaults(), -- Fixate
 		[271224] = Defaults(), -- Plasma Discharge
 		[271225] = Defaults(), -- Plasma Discharge
-
 		-- Zul
 		[273365] = Defaults(), -- Dark Revelation
 		[273434] = Defaults(), -- Pit of Despair
-		[274195] = Defaults(), -- Corrupted Blood
+		--[274195] = Defaults(), -- Corrupted Blood
 		[272018] = Defaults(), -- Absorbed in Darkness
-
+		[274358] = Defaults(), -- Rupturing Blood
 		-- Zek'voz, Herald of N'zoth
 		[265237] = Defaults(), -- Shatter
 		[265264] = Defaults(), -- Void Lash
 		[265360] = Defaults(), -- Roiling Deceit
 		[265662] = Defaults(), -- Corruptor's Pact
 		[265646] = Defaults(), -- Will of the Corruptor
-
 		-- G'huun
 		[263436] = Defaults(), -- Imperfect Physiology
 		[263227] = Defaults(), -- Putrid Blood
@@ -271,7 +253,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[267430] = Defaults(), -- Torment
 		[263235] = Defaults(), -- Blood Feast
 		[270287] = Defaults(), -- Blighted Ground
-
 		-- Siege of Zuldazar
 		-- Ra'wani Kanae/Frida Ironbellows
 		[283573] = Defaults(), -- Sacred Blade
@@ -279,7 +260,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[283651] = Defaults(), -- Blinding Faith
 		[284595] = Defaults(), -- Penance
 		[283582] = Defaults(), -- Consecration
-
 		-- Grong
 		[285998] = Defaults(), -- Ferocious Roar
 		[283069] = Defaults(), -- Megatomic Fire
@@ -297,14 +277,12 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[287490] = Defaults(), -- Frozen Solid
 		[287199] = Defaults(), -- Ring of Ice
 		[288392] = Defaults(), -- Vengeful Seas
-
 		-- Stormwall Blockade
 		[284369] = Defaults(), -- Sea Storm
 		[284410] = Defaults(), -- Tempting Song
 		[284405] = Defaults(), -- Tempting Song
 		[284121] = Defaults(), -- Thunderous Boom
 		[286680] = Defaults(), -- Roiling Tides
-
 		-- Opulence
 		[286501] = Defaults(), -- Creeping Blaze
 		[283610] = Defaults(), -- Crush
@@ -312,7 +290,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[285479] = Defaults(), -- Flame Jet
 		[283063] = Defaults(), -- Flames of Punishment
 		[283507] = Defaults(), -- Volatile Charge
-
 		-- King Rastakhan
 		[284995] = Defaults(), -- Zombie Dust
 		[285349] = Defaults(), -- Plague of Fire
@@ -323,7 +300,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[284676] = Defaults(), -- Seal of Purification
 		[285178] = Defaults(), -- Serpent's Breath
 		[285010] = Defaults(), -- Poison Toad Slime
-
 		-- Jadefire Masters
 		[282037] = Defaults(), -- Rising Flames
 		[284374] = Defaults(), -- Magma Trap
@@ -331,7 +307,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[288151] = Defaults(), -- Tested
 		[284089] = Defaults(), -- Successful Defense
 		[286988] = Defaults(), -- Searing Embers
-
 		-- Mekkatorque
 		[288806] = Defaults(), -- Gigavolt Blast
 		[289023] = Defaults(), -- Enormous
@@ -341,7 +316,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[286516] = Defaults(), -- Anti-Tampering Shock
 		[286480] = Defaults(), -- Anti-Tampering Shock
 		[284214] = Defaults(), -- Trample
-
 		-- Conclave of the Chosen
 		[284663] = Defaults(), -- Bwonsamdi's Wrath
 		[282444] = Defaults(), -- Lacerating Claws
@@ -353,15 +327,15 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[282447] = Defaults(), -- Kimbul's Wrath
 		[282834] = Defaults(), -- Kimbul's Wrath
 		[286811] = Defaults(), -- Akunda's Wrath
-		[286838] = Defaults(), -- Static Orb
-	},
+		[286838] = Defaults() -- Static Orb
+	}
 }
 
 -- CC DEBUFFS (TRACKING LIST)
 Module.DebuffsTracking["CCDebuffs"] = {
 	["type"] = "Whitelist",
 	["spells"] = {
-		-- Death Knight
+		--Death Knight
 		[47476] = Defaults(2), -- Strangulate
 		[108194] = Defaults(4), -- Asphyxiate UH
 		[221562] = Defaults(4), -- Asphyxiate Blood
@@ -376,21 +350,20 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[212337] = Defaults(4), -- Powerful Smash (Pet)
 		[91800] = Defaults(4), -- Gnaw (Pet)
 		[91797] = Defaults(4), -- Monstrous Blow (Pet)
+		--	[?????] = Defaults(), -- Reanimation (missing data)
 		[210141] = Defaults(3), -- Zombie Explosion
-
-		-- Demon Hunter
+		--Demon Hunter
 		[207685] = Defaults(4), -- Sigil of Misery
 		[217832] = Defaults(3), -- Imprison
 		[221527] = Defaults(5), -- Imprison (Banished version)
 		[204490] = Defaults(2), -- Sigil of Silence
 		[179057] = Defaults(3), -- Chaos Nova
 		[211881] = Defaults(4), -- Fel Eruption
-		[205630] = Defaults(3), -- Illidan"s Grasp
-		[208618] = Defaults(3), -- Illidan"s Grasp (Afterward)
-		[213491] = Defaults(4), -- Demonic Trample (it"s this one or the other)
+		[205630] = Defaults(3), -- Illidan's Grasp
+		[208618] = Defaults(3), -- Illidan's Grasp (Afterward)
+		[213491] = Defaults(4), -- Demonic Trample (it's this one or the other)
 		[208645] = Defaults(4), -- Demonic Trample
-
-		-- Druid
+		--Druid
 		[81261] = Defaults(2), -- Solar Beam
 		[5211] = Defaults(4), -- Mighty Bash
 		[163505] = Defaults(4), -- Rake
@@ -403,9 +376,8 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[102359] = Defaults(1), -- Mass Entanglement
 		[339] = Defaults(1), -- Entangling Roots
 		[2637] = Defaults(1), -- Hibernate
-
-		-- Hunter
-		[202933] = Defaults(2), -- Spider Sting (it"s this one or the other)
+		--Hunter
+		[202933] = Defaults(2), -- Spider Sting (it's this one or the other)
 		[233022] = Defaults(2), -- Spider Sting
 		[213691] = Defaults(4), -- Scatter Shot
 		[19386] = Defaults(3), -- Wyvern Sting
@@ -417,10 +389,9 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[190927] = Defaults(1), -- Harpoon
 		[201158] = Defaults(1), -- Super Sticky Tar
 		[162480] = Defaults(1), -- Steel Trap
-		[212638] = Defaults(1), -- Tracker"s Net
-		[200108] = Defaults(1), -- Ranger"s Net
-
-		-- Mage
+		[212638] = Defaults(1), -- Tracker's Net
+		[200108] = Defaults(1), -- Ranger's Net
+		--Mage
 		[61721] = Defaults(3), -- Rabbit (Poly)
 		[61305] = Defaults(3), -- Black Cat (Poly)
 		[28272] = Defaults(3), -- Pig (Poly)
@@ -435,14 +406,13 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[277792] = Defaults(3), -- Bumblebee (Poly)
 		[118] = Defaults(3), -- Polymorph
 		[82691] = Defaults(3), -- Ring of Frost
-		[31661] = Defaults(3), -- Dragon"s Breath
+		[31661] = Defaults(3), -- Dragon's Breath
 		[122] = Defaults(1), -- Frost Nova
 		[33395] = Defaults(1), -- Freeze
 		[157997] = Defaults(1), -- Ice Nova
 		[228600] = Defaults(1), -- Glacial Spike
 		[198121] = Defaults(1), -- Forstbite
-
-		-- Monk
+		--Monk
 		[119381] = Defaults(4), -- Leg Sweep
 		[202346] = Defaults(4), -- Double Barrel
 		[115078] = Defaults(4), -- Paralysis
@@ -451,17 +421,15 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[233759] = Defaults(2), -- Grapple Weapon
 		[123407] = Defaults(1), -- Spinning Fire Blossom
 		[116706] = Defaults(1), -- Disable
-		[232055] = Defaults(4), -- Fists of Fury (it"s this one or the other)
-
-		-- Paladin
+		[232055] = Defaults(4), -- Fists of Fury (it's this one or the other)
+		--Paladin
 		[853] = Defaults(3), -- Hammer of Justice
 		[20066] = Defaults(3), -- Repentance
 		[105421] = Defaults(3), -- Blinding Light
-		[31935] = Defaults(2), -- Avenger"s Shield
+		[31935] = Defaults(2), -- Avenger's Shield
 		[217824] = Defaults(2), -- Shield of Virtue
 		[205290] = Defaults(3), -- Wake of Ashes
-
-		-- Priest
+		--Priest
 		[9484] = Defaults(3), -- Shackle Undead
 		[200196] = Defaults(4), -- Holy Word: Chastise
 		[200200] = Defaults(4), -- Holy Word: Chastise
@@ -470,8 +438,7 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[8122] = Defaults(3), -- Psychic Scream
 		[15487] = Defaults(2), -- Silence
 		[64044] = Defaults(1), -- Psychic Horror
-
-		-- Rogue
+		--Rogue
 		[2094] = Defaults(4), -- Blind
 		[6770] = Defaults(4), -- Sap
 		[1776] = Defaults(4), -- Gouge
@@ -482,8 +449,7 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[1833] = Defaults(4), -- Cheap Shot
 		[207736] = Defaults(5), -- Shadowy Duel (Smoke effect)
 		[212182] = Defaults(5), -- Smoke Bomb
-
-		-- Shaman
+		--Shaman
 		[51514] = Defaults(3), -- Hex
 		[211015] = Defaults(3), -- Hex (Cockroach)
 		[211010] = Defaults(3), -- Hex (Snake)
@@ -500,8 +466,7 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[204437] = Defaults(3), -- Lightning Lasso
 		[157375] = Defaults(4), -- Gale Force
 		[64695] = Defaults(1), -- Earthgrab
-
-		-- Warlock
+		--Warlock
 		[710] = Defaults(5), -- Banish
 		[6789] = Defaults(3), -- Mortal Coil
 		[118699] = Defaults(3), -- Fear
@@ -511,8 +476,7 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[30283] = Defaults(3), -- Shadowfury
 		[89766] = Defaults(4), -- Axe Toss
 		[233582] = Defaults(1), -- Entrenched in Flame
-
-		-- Warrior
+		--Warrior
 		[5246] = Defaults(4), -- Intimidating Shout
 		[7922] = Defaults(4), -- Warbringer
 		[132169] = Defaults(4), -- Storm Bolt
@@ -521,25 +485,21 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[105771] = Defaults(1), -- Charge
 		[199042] = Defaults(1), -- Thunderstruck
 		[236077] = Defaults(2), -- Disarm
-
-		-- Racials
+		--Racial
 		[20549] = Defaults(4), -- War Stomp
-		[107079] = Defaults(4), -- Quaking Palm
-	},
+		[107079] = Defaults(4) -- Quaking Palm
+	}
 }
 
 -- RAID BUFFS (SQUARED AURA TRACKING LIST)
 Module.RaidBuffsTracking = {
 	PRIEST = {
-		{194384, "TOPRIGHT", {1, 1, 0.66}}, -- Atonement
-		{214206, "TOPRIGHT", {1, 1, 0.66}}, -- Atonement (PvP)
+		{194384, "TOPRIGHT", {1, 0, 0.75}}, -- Atonement
 		{41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}}, -- Prayer of Mending
-		{193065, "BOTTOMRIGHT", {0.54, 0.21, 0.78}}, -- Masochism
-		{139, 	"BOTTOMLEFT", {0.4, 0.7, 0.2}}, -- Renew
-		{6788, 	"BOTTOMLEFT", {0.89, 0.1, 0.1}}, -- Weakend Soul
-		{17, 	"TOPLEFT", {0.7, 0.7, 0.7}, true}, -- Power Word: Shield
-		{47788, "LEFT", {0.86, 0.45, 0}, true}, -- Guardian Spirit
-		{33206, "LEFT", {0.47, 0.35, 0.74}, true}, -- Pain Suppression
+		{139, "BOTTOMLEFT", {0.4, 0.7, 0.2}}, -- Renew
+		{17, "TOPLEFT", {0.81, 0.85, 0.1}, true}, -- Power Word: Shield
+		{47788, "LEFT", {221 / 255, 117 / 255, 0}, true}, -- Guardian Spirit
+		{33206, "LEFT", {227 / 255, 23 / 255, 13 / 255}, true} -- Pain Suppression
 	},
 
 	DRUID = {
@@ -547,62 +507,59 @@ Module.RaidBuffsTracking = {
 		{155777, "RIGHT", {0.8, 0.4, 0.8}}, -- Germination
 		{8936, "BOTTOMLEFT", {0.2, 0.8, 0.2}}, -- Regrowth
 		{33763, "TOPLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom
-		{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}},-- Wild Growth
+		{188550, "TOPLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom T18 4pc
+		{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}}, -- Wild Growth
 		{207386, "TOP", {0.4, 0.2, 0.8}}, -- Spring Blossoms
 		{102351, "LEFT", {0.2, 0.8, 0.8}}, -- Cenarion Ward (Initial Buff)
 		{102352, "LEFT", {0.2, 0.8, 0.8}}, -- Cenarion Ward (HoT)
-		{200389, "BOTTOM", {1, 1, 0.4}}, -- Cultivation
+		{200389, "BOTTOM", {1, 1, 0.4}} -- Cultivation
 	},
 
 	PALADIN = {
 		{53563, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Beacon of Light
 		{156910, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Beacon of Faith
-		{200025, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Beacon of Virtue
 		{1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true}, -- Hand of Protection
 		{1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true}, -- Hand of Freedom
 		{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true}, -- Hand of Sacrifice
-		{223306, 'BOTTOMLEFT', {0.7, 0.7, 0.3}}, -- Bestow Faith
+		{114163, "BOTTOMLEFT", {0.87, 0.7, 0.03}} -- Eternal Flame
 	},
 
 	SHAMAN = {
-		{61295, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Riptide
-		{974, "BOTTOMRIGHT", {0.2, 0.2, 1}}, -- Earth Shield
+		{61295, "TOPRIGHT", {0.7, 0.3, 0.7}} -- Riptide
 	},
 
 	MONK = {
-		{119611, "TOPLEFT", {0.3, 0.8, 0.6}}, -- Renewing Mist
-		{116849, "TOPRIGHT", {0.2, 0.8, 0.2}, true}, -- Life Cocoon
-		{124682, "BOTTOMLEFT", {0.8, 0.8, 0.25}}, -- Enveloping Mist
-		{191840, "BOTTOMRIGHT", {0.27, 0.62, 0.7}}, -- Essence Font
+		{119611, "TOPLEFT", {0.8, 0.4, 0.8}}, --Renewing Mist
+		{116849, "TOPRIGHT", {0.2, 0.8, 0.2}}, -- Life Cocoon
+		{124682, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Enveloping Mist
+		{124081, "BOTTOMRIGHT", {0.7, 0.4, 0}} -- Zen Sphere
 	},
 
 	ROGUE = {
-		{57934, "TOPRIGHT", {0.89, 0.09, 0.05}}, -- Tricks of the Trade
+		{57934, "TOPRIGHT", {227 / 255, 23 / 255, 13 / 255}} -- Tricks of the Trade
 	},
 
 	WARRIOR = {
 		{114030, "TOPLEFT", {0.2, 0.2, 1}}, -- Vigilance
-		{122506, "TOPRIGHT", {0.89, 0.09, 0.05}}, -- Intervene
+		{147833, "TOPRIGHT", {227 / 255, 23 / 255, 13 / 255}} -- Intervene
 	},
 
 	PET = {
-		-- Warlock Pets
-		{193396, 'TOPRIGHT', {0.6, 0.2, 0.8}, true}, -- Demonic Empowerment
-		-- Hunter Pets
-		{19615, 'TOPLEFT', {0.89, 0.09, 0.05}, true}, -- Frenzy
-		{136, 'TOPRIGHT', {0.2, 0.8, 0.2}, true} -- Mend Pet
+		{19615, "TOPLEFT", {227 / 255, 23 / 255, 13 / 255}, true}, -- Frenzy
+		{136, "TOPRIGHT", {0.2, 0.8, 0.2}, true} --Mend Pet
 	},
-
-	ALL = {
-		{14253, "RIGHT", {0, 1, 0}}, -- Abolish Poison
-	},
+	HUNTER = {}, --Keep even if it's an empty table, so a reference to G.unitframe.buffwatch[E.myclass][SomeValue] doesn't trigger error
+	DEMONHUNTER = {},
+	WARLOCK = {},
+	MAGE = {},
+	DEATHKNIGHT = {}
 }
 
 -- Stuff we need to see.
 Module.ImportantDebuffs = {
 	[SpellName(212570)] = true, -- Surrendered Soul
 	[SpellName(25771)] = K.Class == "PALADIN", -- Forbearance
-	[SpellName(6788)] = K.Class == "PRIEST", -- Weakened Soul
+	[SpellName(6788)] = K.Class == "PRIEST" -- Weakened Soul
 }
 
 -- Filter this. Pointless to see.
@@ -707,20 +664,21 @@ Module.UnImportantBuffs = {
 -- List of spells to display ticks
 Module.ChannelTicks = {
 	-- Warlock
-	[SpellName(198590)] = 6, -- Drain Soul
-	[SpellName(755)] = 6, -- Health Funnel
+	[198590] = 6, -- Drain Soul
+	[755] = 6, -- Health Funnel
 	-- Priest
-	[SpellName(64843)] = 4, -- Divine Hymn
-	[SpellName(15407)] = 4, -- Mind Flay
+	[64843] = 4, -- Divine Hymn
+	[15407] = 4, -- Mind Flay
+	[48045] = 5, -- Mind Flay
 	-- Mage
-	[SpellName(5143)] = 5, -- Arcane Missiles
-	[SpellName(12051)] = 3, -- Evocation
-	[SpellName(205021)] = 10, -- Ray of Frost
+	[5143] = 5, -- Arcane Missiles
+	[12051] = 3, -- Evocation
+	[205021] = 10, -- Ray of Frost
 	--Druid
-	[SpellName(740)] = 4, -- Tranquility
+	[740] = 4 -- Tranquility
 }
 
-local CastTickCheck = CreateFrame("Frame")
+local CastTickCheck = _G.CreateFrame("Frame")
 CastTickCheck:RegisterEvent("PLAYER_ENTERING_WORLD")
 CastTickCheck:RegisterEvent("PLAYER_TALENT_UPDATE")
 CastTickCheck:SetScript("OnEvent", function()
@@ -730,15 +688,15 @@ CastTickCheck:SetScript("OnEvent", function()
 	end
 
 	local penanceTicks = IsPlayerSpell(193134) and 4 or 3
-	Module.ChannelTicks[SpellName(47540)] = penanceTicks -- Penance
+	Module.ChannelTicks[47540] = penanceTicks -- Penance
 end)
 
 Module.ChannelTicksSize = {
 	-- Warlock
-	[SpellName(198590)] = 1, -- Drain Soul
+	[198590] = 1 -- Drain Soul
 }
 
 -- Spells Effected By Haste
 Module.HastedChannelTicks = {
-	[SpellName(205021)] = true, -- Ray of Frost
+	[205021] = true -- Ray of Frost
 }

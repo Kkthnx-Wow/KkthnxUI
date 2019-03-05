@@ -12,12 +12,6 @@ ActionBar4:SetAllPoints(RightActionBarAnchor)
 MultiBarRight:SetParent(ActionBar4)
 MultiBarRight:EnableMouse(false)
 
-hooksecurefunc(MultiBarRight, "SetScale", function(self, scale)
-	if scale ~= 1 then
-		self:SetScale(1)
-	end
-end)
-
 for i = 1, NUM_ACTIONBAR_BUTTONS do
 	local b = _G["MultiBarRightButton" .. i]
 	local b2 = _G["MultiBarRightButton" .. i - 1]

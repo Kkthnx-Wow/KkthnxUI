@@ -17,4 +17,5 @@
     <Script file="ExtraActionButton.lua"/>
     <Script file="Range.lua"/>
     <Script file="Cooldowns.lua"/>
+    <Script file="ExtraQuestButton.lua"/>
 </Ui>

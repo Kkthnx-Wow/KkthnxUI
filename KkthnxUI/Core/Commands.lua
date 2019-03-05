@@ -90,6 +90,14 @@ end
 K:RegisterChatCommand("cfg", K.ConfigUI)
 K:RegisterChatCommand("configui", K.ConfigUI)
 
+function K.ResetNameplatesVars()
+	K:GetModule("Unitframes"):NameplatesVarsReset()
+end
+K:RegisterChatCommand("fixplates", K.ResetNameplatesVars)
+K:RegisterChatCommand("resetnameplates", K.ResetNameplatesVars)
+K:RegisterChatCommand("resetplates", K.ResetNameplatesVars)
+K:RegisterChatCommand("rnp", K.ResetNameplatesVars)
+
 -- Profiles data/listings
 function K.UIProfiles(msg)
 	if not KkthnxUIData then
@@ -102,10 +110,7 @@ function K.UIProfiles(msg)
 	end
 
 	if not msg or msg == "" then
-		K.Print("/profile list")
-		K.Print("/profile #")
-		K.Print("/profile delete #")
-		print("")
+		print(L["Commands"].ProfileInfo)
 	else
 		local IsConfigLoaded = IsAddOnLoaded("KkthnxUI_Config")
 		-- Split the msg into multiple arguments.
@@ -122,30 +127,32 @@ function K.UIProfiles(msg)
 					return
 				end
 
-				for Character, Table in pairs(KkthnxUIData[Server]) do
-					table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
+				if type(KkthnxUIData[Server]) == "table" then
+					for Character, Table in pairs(KkthnxUIData[Server]) do
+						table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
 
-					if IsConfigLoaded then
-						if KkthnxUIConfigShared and KkthnxUIConfigShared[Server] and KkthnxUIConfigShared[Server][Character] then
-							table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
-						else
-							if not KkthnxUIConfigShared then
-								KkthnxUIConfigShared = {}
+						if IsConfigLoaded then
+							if KkthnxUIConfigShared and KkthnxUIConfigShared[Server] and KkthnxUIConfigShared[Server][Character] then
+								table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
+							else
+								if not KkthnxUIConfigShared then
+									KkthnxUIConfigShared = {}
+								end
+
+								if not KkthnxUIConfigShared[Server] then
+									KkthnxUIConfigShared[Server] = {}
+								end
+
+								if not KkthnxUIConfigShared[Server][Character] then
+									KkthnxUIConfigShared[Server][Character] = {}
+								end
+
+								table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
 							end
-
-							if not KkthnxUIConfigShared[Server] then
-								KkthnxUIConfigShared[Server] = {}
-							end
-
-							if not KkthnxUIConfigShared[Server][Character] then
-								KkthnxUIConfigShared[Server][Character] = {}
-							end
-
-							table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
 						end
-					end
 
-					K.Print("Profile "..#KkthnxUI.Profiles.Data..": ["..Server.."]-["..Character.."]")
+						K.Print(L["Commands"].Profile .. #KkthnxUI.Profiles.Data..": ["..Server.."] - ["..Character.."]")
+					end
 				end
 			end
 		elseif command == "delete" or command == "del" then
@@ -178,19 +185,21 @@ function K.UIProfiles(msg)
 
 					-- Search through the stored data for the matching table
 					for Server, Table in pairs(KkthnxUIData) do
-						for Character, Table in pairs(KkthnxUIData[Server]) do
-							if Table == Data then
-								CharacterName = Character
-								ServerName = Server
-								KkthnxUIData[Server][Character] = nil
-								KkthnxUIConfigShared[Server][Character] = nil
-								found = true
+						if type(KkthnxUIData[Server]) == "table" then
+							for Character, Table in pairs(KkthnxUIData[Server]) do
+								if Table == Data then
+									CharacterName = Character
+									ServerName = Server
+									KkthnxUIData[Server][Character] = nil
+									KkthnxUIConfigShared[Server][Character] = nil
+									found = true
+									break
+								end
+							end
+
+							if found then
 								break
 							end
-						end
-
-						if found then
-							break
 						end
 					end
 
@@ -199,7 +208,7 @@ function K.UIProfiles(msg)
 					table_remove(KkthnxUI.Profiles.Options, Profile)
 
 					-- Tell the user about the deletion
-					K.Print("Profile "..#KkthnxUI.Profiles.Data.." Deleted: ["..ServerName.."] - ["..CharacterName.."]")
+					K.Print(L["Commands"].Profile .. #KkthnxUI.Profiles.Data .. L["Commands"].ProfileDel .. "["..ServerName.."] - ["..CharacterName.."]")
 
 					-- Do a new listing to show the users the order now,
 					-- in case they wish to delete more profiles.
@@ -217,7 +226,7 @@ function K.UIProfiles(msg)
 								-- We found the matching table so we break and exit this loop,
 								-- to allow the outer iteration loop to continue faster.
 								if Table == Data then
-									K.Print("Profile "..Profile..": ["..Server.."] - ["..Character.."]")
+									K.Print(L["Commands"].Profile ..Profile..": ["..Server.."] - ["..Character.."]")
 									found = true
 									break
 								end
@@ -274,14 +283,7 @@ K:RegisterChatCommand("repop", K.FixRelease)
 -- Fixes the issue when players get stuck in party on felsong.
 function K.FixParty()
 	LeaveParty()
-	print(" ")
-	print("|cff4488ff".."If you are still stuck in party, try the following".."|r")
-	print(" ")
-	print("|cff00ff001.|r Invite someone to a group and have them accept.")
-	print("|cff00ff002.|r Convert your group to a raid.")
-	print("|cff00ff003.|r Use the previous leave party command again.")
-	print("|cff00ff004.|r Invite your friend back to a group.")
-	print(" ")
+	print(L["Commands"].FixParty)
 end
 K:RegisterChatCommand("killparty", K.FixParty)
 K:RegisterChatCommand("leaveparty", K.FixParty)
@@ -305,19 +307,23 @@ local QuestCheckComplete = [[|TInterface\RaidFrame\ReadyCheck-Ready:14:14:-1:-1|
 local QuestCheckIncomplete = [[|TInterface\RaidFrame\ReadyCheck-NotReady:14:14:-1:-1|t]]
 function K.CheckQuestStatus(questid)
 	questid = tonumber(questid)
+
 	if not questid then
-		print("Enter questID found in Wowhead URL")
-		print("http://wowhead.com/quest=ID")
-		print("Example: /checkquest 1234")
+		print(L["Commands"].CheckQuestInfo)
+		--print("Enter questID found in Wowhead URL")
+		--print("http://wowhead.com/quest=ID")
+		--print("Example: /checkquest 12045")
+
+		K.StaticPopup_Show("QUEST_CHECK_ID")
 		return
 	end
 
 	if (IsQuestFlaggedCompleted(questid) == true) then
-		UIErrorsFrame:AddMessage(QuestCheckComplete.."Quest ".. "|CFFFFFF00[" .. questid .. "]|r" .." has been completed!")
+		UIErrorsFrame:AddMessage(QuestCheckComplete.."Quest ".. "|CFFFFFF00[" .. questid .. "]|r" .. L["Commands"].CheckQuestComplete)
 		PlaySoundFile("sound\\interface\\iquestcomplete.ogg")
 		K.Print(WoWHeadLoc .. questid)
 	else
-		UIErrorsFrame:AddMessage(QuestCheckIncomplete.."Quest ".. "|CFFFFFF00[" .. questid .. "]|r" .." has not been completed!")
+		UIErrorsFrame:AddMessage(QuestCheckIncomplete.."Quest ".. "|CFFFFFF00[" .. questid .. "]|r" .. L["Commands"].CheckQuestNotComplete)
 		PlaySoundFile("sound\\interface\\igquestfailed.ogg")
 		K.Print(WoWHeadLoc .. questid)
 	end
@@ -332,6 +338,41 @@ function K.GMTicket()
 	ToggleHelpFrame()
 end
 K:RegisterChatCommand("gm", K.GMTicket)
+
+function K.DeleteQuestItems()
+	for bag = 0, 4 do
+		for slot = 1, _G.GetContainerNumSlots(bag) do
+			local itemLink = _G.GetContainerItemLink(bag, slot)
+			if itemLink and _G.select(12, _G.GetItemInfo(itemLink)) == _G.LE_ITEM_CLASS_QUESTITEM then
+				_G.print(itemLink)
+				PickupContainerItem(bag, slot) DeleteCursorItem()
+			end
+		end
+	end
+end
+K:RegisterChatCommand("deletequestitems", K.DeleteQuestItems)
+
+function K.DeleteHeirlooms()
+	for bag = 0, 4 do
+		for slot = 1, GetContainerNumSlots(bag) do
+			local name = GetContainerItemLink(bag,slot)
+			if name and string.find(name,"00ccff") then
+				print(name)
+				PickupContainerItem(bag,slot)
+				DeleteCursorItem()
+			end
+		end
+	end
+end
+K:RegisterChatCommand("deleteheirlooms", K.DeleteHeirlooms)
+K:RegisterChatCommand("deletelooms", K.DeleteHeirlooms)
+
+function K.ResetInstances()
+	ResetInstances()
+end
+K:RegisterChatCommand("ri", K.ResetInstances)
+K:RegisterChatCommand("instancereset", K.ResetInstances)
+K:RegisterChatCommand("resetinstance", K.ResetInstances)
 
 -- Toggle the binding frame incase we unbind esc.
 function K.KeyBindFrame()
@@ -362,13 +403,19 @@ function K.AbandonQuests()
 	local numEntries, numQuests = GetNumQuestLogEntries()
 	for questLogIndex = 1, numEntries do
 		local questTitle, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID = GetQuestLogTitle(questLogIndex)
+
+		if isComplete then
+			return
+		end
+
 		if (not isHeader) then
 			SelectQuestLogEntry(questLogIndex)
 			SetAbandonQuest()
 			AbandonQuest()
 		end
 	end
-	print("All quests have been abandoned!")
+
+	print(L["Commands"].AbandonQuests)
 end
 if not K.CheckAddOnState("Felsong_Companion") then
 	K:RegisterChatCommand("killquests", K.AbandonQuests)
@@ -377,27 +424,20 @@ K:RegisterChatCommand("clearquests", K.AbandonQuests)
 
 -- KkthnxUI help commands
 function K.UICommandsHelp()
-	print(" ")
-	print("|cff4488ff"..L["Commands"].Title.."|r")
-	print(L["Commands"].Install)
-	print(L["Commands"].Config)
-	print(L["Commands"].Move)
-	print(L["Commands"].Test)
-	print(L["Commands"].Profile)
-	print(" ")
+	print(L["Commands"].UIHelp)
 end
 K:RegisterChatCommand("helpui", K.UICommandsHelp)
 
 function K.SetUIScale()
 	if InCombatLockdown() or C["General"].AutoScale then
-		print("KkthnxUI is already controlling the Auto UI Scale feature!")
+		print(L["Commands"].SetUIScale)
 		return
 	end
 
 	local SetUIScale = GetCVarBool("uiScale")
 	if not SetUIScale then
 		SetCVar("uiScale", 768 / string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
-		print("Successfully set UI scale to "..768 / string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
+		print(L["Commands"].SetUIScaleSucc ..768 / string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
 		K.StaticPopup_Show("CHANGES_RL")
 	end
 end
@@ -447,9 +487,9 @@ function SlashCmdList.LUAERROR(msg)
 		ReloadUI()
 	elseif (msg == "off") then
 		SetCVar("scriptErrors", 0)
-		K.Print("|cffff0000Lua errors off.|r")
+		K.Print(L["Commands"].LuaErrorOff)
 	else
-		K.Print("|cffff0000/luaerror on - /luaerror off|r")
+		K.Print(L["Commands"].LuaErrorInfo)
 	end
 end
 _G.SLASH_LUAERROR1 = "/luaerror"
@@ -601,7 +641,7 @@ function K.EnableBlizzardAddOns()
 		local reason = select(5, GetAddOnInfo(addon))
 		if reason == "DISABLED" then
 			EnableAddOn(addon)
-			K.Print("The following addon was re-enabled:", addon)
+			K.Print(L["Commands"].BlizzardAddOnsOn, addon)
 		end
 	end
 end

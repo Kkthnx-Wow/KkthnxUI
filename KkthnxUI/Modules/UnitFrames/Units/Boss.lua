@@ -63,6 +63,7 @@ function Module:CreateBoss()
 		self.Portrait = CreateFrame("PlayerModel", nil, self)
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
+		self.Portrait:SetAlpha(0.9)
 
 		self.Portrait.Borders = CreateFrame("Frame", nil, self)
 		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
@@ -91,7 +92,7 @@ function Module:CreateBoss()
 	self.Name:SetJustifyV("TOP")
 	self.Name:SetJustifyH("CENTER")
 	self.Name:SetFontObject(UnitframeFont)
-	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
+	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameAbbrev]")
 
 	if (C["Boss"].ThreatPercent == true) then
 		Module.CreateThreatPercent(self, "LEFT", "RIGHT", 4, 0)
@@ -114,6 +115,7 @@ function Module:CreateBoss()
 		self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
 		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
+		-- self.Castbar.Spark:SetPoint("CENTER", self.Castbar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
@@ -124,14 +126,9 @@ function Module:CreateBoss()
 		self.Castbar.CustomDelayText = Module.CustomCastDelayText
 		self.Castbar.CustomTimeText = Module.CustomTimeText
 		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostChannelStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostChannelStop = Module.PostCastStop
-		self.Castbar.PostChannelUpdate = Module.PostChannelUpdate
 		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
-		self.Castbar.PostCastNotInterruptible = Module.PostCastNotInterruptible
-		self.Castbar.PostCastFailed = Module.PostCastFailedOrInterrupted
-		self.Castbar.PostCastInterrupted = Module.PostCastFailedOrInterrupted
+		self.Castbar.PostCastFail = Module.PostCastFailedOrInterrupted
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
@@ -158,6 +155,5 @@ function Module:CreateBoss()
 
 	Module.CreateAuras(self, "boss")
 	Module.CreateDebuffHighlight(self)
-
-	self.Range = Module.CreateRange(self)
+	self.Range = Module.CreateRangeIndicator(self)
 end

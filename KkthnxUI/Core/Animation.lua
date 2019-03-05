@@ -94,6 +94,7 @@ function K.SlideIn(object, customName)
 	if not customName then
 		customName = "anim"
 	end
+
 	if not object[customName] then
 		return
 	end
@@ -107,6 +108,7 @@ function K.SlideOut(object, customName)
 	if not customName then
 		customName = "anim"
 	end
+
 	if not object[customName] then
 		return
 	end
@@ -184,6 +186,7 @@ function K.UIFrameFade(frame, fadeInfo)
 			fadeInfo.endAlpha = 0
 		end
 	end
+
 	frame:SetAlpha(fadeInfo.startAlpha)
 
 	frame.fadeInfo = fadeInfo

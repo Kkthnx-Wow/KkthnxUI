@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("Miscellaneous", "AceEvent-3.0")
+local Module = K:NewModule("Miscellaneous", "AceEvent-3.0", "AceHook-3.0")
 
 local _G = _G
 local select = select
@@ -18,8 +18,6 @@ local hooksecurefunc = _G.hooksecurefunc
 local PlaySound = _G.PlaySound
 local PlaySoundFile = _G.PlaySoundFile
 local SOUNDKIT = _G.SOUNDKIT
-local StaticPopup_Hide = _G.StaticPopup_Hide
-local StaticPopupDialogs = _G.StaticPopupDialogs
 
 local RESURRECTION_REQUEST_SOUND = "Sound\\Spells\\Resurrection.ogg"
 local LatencyInterval
@@ -190,11 +188,11 @@ ForceWarning:SetScript("OnEvent", function(_, event)
 			end
 		end
 	elseif event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" then
-		PlaySound(SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE, "Master")
+		PlaySound(SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE)
 	elseif event == "LFG_PROPOSAL_SHOW" then
 		PlaySound(SOUNDKIT.READY_CHECK, "Master")
 	elseif event == "RESURRECT_REQUEST" then
-		PlaySoundFile(RESURRECTION_REQUEST_SOUND, "Master")
+		PlaySound(37, "Master")
 	end
 end)
 
@@ -231,9 +229,10 @@ function Module:OnEnable()
 		self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ToggleBossEmotes")
 	end
 
-	if not SetView == 3 then
-		SetView(3)
-		ResetView(3)
+	if _G.SetView and not _G.SetView == 3 then
+		_G.SetView(3)
+		_G.ResetView(3)
+
 		if K.CodeDebug then
 			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 187 - KkthnxUI|Modules|Miscellaneous|Core -|r |cFFFFFF00SetView was not 3|r")
 		end

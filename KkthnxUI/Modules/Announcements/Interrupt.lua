@@ -43,16 +43,16 @@ function AnnounceInterrupt:COMBAT_LOG_EVENT_UNFILTERED()
 	end
 
 	if C["Announcements"].Interrupt.Value == "PARTY" then
-		SendChatMessage(string_format(InterruptMessage, destName, spellID, spellName), inPartyLFG and "INSTANCE_CHAT" or "PARTY")
+		SendChatMessage(string_format(InterruptMessage, destName, spellID, spellName), inPartyLFG and K.IsFirestorm and "PARTY" or "INSTANCE_CHAT" or "PARTY")
 	elseif C["Announcements"].Interrupt.Value == "RAID" then
 		if inRaid then
-			SendChatMessage(string_format(InterruptMessage, destName, spellID, spellName), inPartyLFG and "INSTANCE_CHAT" or "RAID")
+			SendChatMessage(string_format(InterruptMessage, destName, spellID, spellName), inPartyLFG and K.IsFirestorm and "RAID" or "INSTANCE_CHAT" or "RAID")
 		else
-			SendChatMessage(string_format(InterruptMessage, destName, spellID, spellName), inPartyLFG and "INSTANCE_CHAT" or "PARTY")
+			SendChatMessage(string_format(InterruptMessage, destName, spellID, spellName), inPartyLFG and K.IsFirestorm and "PARTY" or "INSTANCE_CHAT" or "PARTY")
 		end
 	elseif C["Announcements"].Interrupt.Value == "RAID_ONLY" then
 		if inRaid then
-			SendChatMessage(string_format(InterruptMessage, destName, spellID, spellName), inPartyLFG and "INSTANCE_CHAT" or "RAID")
+			SendChatMessage(string_format(InterruptMessage, destName, spellID, spellName), inPartyLFG and K.IsFirestorm and "RAID" or "INSTANCE_CHAT" or "RAID")
 		end
 	elseif C["Announcements"].Interrupt.Value == "SAY" then
 		SendChatMessage(string_format(InterruptMessage, destName, spellID, spellName), "SAY")

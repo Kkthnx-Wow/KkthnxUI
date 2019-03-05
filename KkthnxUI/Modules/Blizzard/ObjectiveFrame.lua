@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("ObjectiveFrame", "AceEvent-3.0", "AceHook-3.0")
 
 local _G = _G
@@ -43,9 +43,12 @@ function Module:MoveObjectiveFrame()
 	Module:SetObjectiveFrameHeight()
 	ObjectiveTrackerFrame:SetClampedToScreen(false)
 
-	function ObjectiveTrackerFrame.IsUserPlaced()
-		return true
-	end
+	-- prevent error from occuring if another addon decides it wants to disable these functions
+	ObjectiveTrackerFrame.SetMovable = nil
+	ObjectiveTrackerFrame.SetUserPlaced = nil
+
+	ObjectiveTrackerFrame:SetMovable(true)
+	ObjectiveTrackerFrame:SetUserPlaced(true) -- UIParent.lua line 3090 stops it from being moved <3
 
 	K.Movers:RegisterFrame(ObjectiveFrameHolder)
 	K.Movers:SaveDefaults(self, Anchor1, Parent, Anchor2, X, Y)

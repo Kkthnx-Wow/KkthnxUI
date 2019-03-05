@@ -59,82 +59,73 @@ function K.AddOnSettings(msg)
 		if K.CheckAddOnState("Skada") then
 			K.LoadSkadaProfile(true)
 			K.StaticPopup_Show("CHANGES_RL")
-			print("|cffffff00".."Skada profile loaded".."|r")
+			print(L["AddOnData"].SkadaText)
 		else
-			print("|CFFFF0000AddOn Skada is not loaded!|r")
+			print(L["AddOnData"].SkadaNotText)
 		end
 	elseif msg == "dbm" then
 		if K.CheckAddOnState("DBM-Core") then
 			K.LoadDBMProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print("|cffffff00".."DBM profile loaded".."|r")
+			print(L["AddOnData"].DBMText)
 		else
-			print("|CFFFF0000AddOn DeadlyBossMods is not loaded!|r")
+			print(L["AddOnData"].DBMNotText)
 		end
 	elseif msg == "bigwigs" then
 		if K.CheckAddOnState("BigWigs") then
 			K.LoadBigWigsProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print("|cffffff00".."BigWigs profile loaded".."|r")
+			print(L["AddOnData"].BigWigsText)
 		else
-			print("|CFFFF0000AddOn BigWigs is not loaded!|r")
+			print(L["AddOnData"].BigWigsNotText)
 		end
 	elseif msg == "pawn" then
 		if K.CheckAddOnState("Pawn") then
 			K.LoadPawnProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print("|cffffff00".."Pawn profile loaded".."|r")
+			print(L["AddOnData"].PawnText)
 		else
-			print("|CFFFF0000AddOn Pawn is not loaded!|r")
+			print(L["AddOnData"].PawnNotText)
 		end
 	elseif msg == "msbt" then
 		if K.CheckAddOnState("MikScrollingBattleText") then
 			K.LoadMSBTProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print("|cffffff00".."MikScrollingBattleText profile loaded".."|r")
+			print(L["AddOnData"].MSBTText)
 		else
-			print("|CFFFF0000AddOn MikScrollingBattleText is not loaded!|r")
+			print(L["AddOnData"].MSBTNotText)
 		end
 	elseif msg == "bugsack" then
 		if K.CheckAddOnState("BugSack") then
 			K.LoadBugSackProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print("|cffffff00".."BugSack profile loaded".."|r")
+			print(L["AddOnData"].BugSackText)
 		else
-			print("|CFFFF0000AddOn BugSack is not loaded!|r")
+			print(L["AddOnData"].BugSackNotText)
 		end
 	elseif msg == "buggrabber" then
 		if K.CheckAddOnState("!BugGrabber") then
 			K.LoadBugGrabberProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print("|cffffff00".."BugSack profile loaded".."|r")
+			print(L["AddOnData"].BugGrabberText)
 		else
-			print("|CFFFF0000AddOn !BugGrabber is not loaded!|r")
+			print(L["AddOnData"].BugGrabberNotText)
 		end
 	elseif msg == "bt4" or msg == "bartender" then
 		if K.CheckAddOnState("Bartender4") then
 			K.LoadBartenderProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print("|cffffff00".."Bartender4 profile loaded".."|r")
+			print(L["AddOnData"].BartenderText)
 		else
-			print("|CFFFF0000AddOn Bartender4 is not loaded!|r")
+			print(L["AddOnData"].BartenderNotText)
 		end
 	elseif msg == "all" or msg == "addons" then
 		SetupAddons()
-		K.Print("All supported AddOn profiles loaded, if the AddOn is loaded!")
+		K.StaticPopup_Show("CHANGES_RL")
+		K.Print(L["AddOnData"].AllAddOnsText)
 	else
-		print("|cffffff00The following commands are supported for AddOn profiles.|r")
-		print(" ")
-		print("|cff00ff00/settings dbm|r, to apply the settings |cff00ff00DeadlyBossMods.|cff00ff00")
-		print("|cff00ff00/settings msbt|r, to apply the settings |cff00ff00MikScrollingBattleText.|cff00ff00")
-		print("|cff00ff00/settings skada|r, to apply the settings |cff00ff00Skada.|cff00ff00")
-		print("|cff00ff00/settings bt4 or bartender|r, to apply the settings |cff00ff00Bartender4.|cff00ff00")
-		print("|cff00ff00/settings buggrabber|r, to apply the settings |cff00ff00!BugGrabber.|cff00ff00")
-		print("|cff00ff00/settings bugsack|r, to apply the settings |cff00ff00BugSack.|cff00ff00")
-		print("|cff00ff00/settings pawn|r, to apply the settings |cff00ff00Pawn.|cff00ff00")
-		print("|cff00ff00/settings bigwigs|r, to apply the settings |cff00ff00BigWigs.|cff00ff00")
-		print("|cff00ff00/settings all|r, to apply settings for all supported AddOns, if that AddOn is loaded!")
-		print(" ")
+		print(L["AddOnData"].InfoText)
 	end
 end
+
 K:RegisterChatCommand("settings", K.AddOnSettings)

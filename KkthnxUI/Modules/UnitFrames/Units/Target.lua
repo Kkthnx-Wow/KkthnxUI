@@ -26,7 +26,7 @@ function Module:CreateTarget()
 	self:SetScript("OnEnter", function(self)
 		UnitFrame_OnEnter(self)
 
-		if (self.Highlight and not self.Highlight:IsShown()) then
+		if (self.Highlight) then
 			self.Highlight:Show()
 		end
 	end)
@@ -34,7 +34,7 @@ function Module:CreateTarget()
 	self:SetScript("OnLeave", function(self)
 		UnitFrame_OnLeave(self)
 
-		if (self.Highlight and self.Highlight:IsShown()) then
+		if (self.Highlight) then
 			self.Highlight:Hide()
 		end
 	end)
@@ -45,6 +45,7 @@ function Module:CreateTarget()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
+	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.Smooth = C["Unitframe"].Smooth
 	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Health.colorTapping = true
@@ -53,7 +54,6 @@ function Module:CreateTarget()
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
-	self.Health.Cutaway = C["Unitframe"].CutAwayHealth
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
@@ -81,6 +81,7 @@ function Module:CreateTarget()
 		self.Portrait = CreateFrame("PlayerModel", nil, self)
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("RIGHT", self, -4, 0)
+		self.Portrait:SetAlpha(0.9)
 
 		self.Portrait.Borders = CreateFrame("Frame", nil, self)
 		self.Portrait.Borders:SetPoint("RIGHT", self, -4, 0)
@@ -136,6 +137,7 @@ function Module:CreateTarget()
 		self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
 		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
+		-- self.Castbar.Spark:SetPoint("CENTER", self.Castbar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 		self.Castbar.Shield = self.Castbar:CreateTexture(nil, "ARTWORK")
 		self.Castbar.Shield:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CastBorderShield")
@@ -150,14 +152,9 @@ function Module:CreateTarget()
 		self.Castbar.CustomDelayText = Module.CustomCastDelayText
 		self.Castbar.CustomTimeText = Module.CustomTimeText
 		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostChannelStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostChannelStop = Module.PostCastStop
-		self.Castbar.PostChannelUpdate = Module.PostChannelUpdate
 		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
-		self.Castbar.PostCastNotInterruptible = Module.PostCastNotInterruptible
-		self.Castbar.PostCastFailed = Module.PostCastFailedOrInterrupted
-		self.Castbar.PostCastInterrupted = Module.PostCastFailedOrInterrupted
+		self.Castbar.PostCastFail = Module.PostCastFailedOrInterrupted
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
@@ -182,16 +179,16 @@ function Module:CreateTarget()
 		K.Movers:RegisterFrame(self.Castbar)
 	end
 
-	self.Range = Module.CreateRange(self)
 	self.HealthPrediction = Module.CreateHealthPrediction(self, 140)
 
 	if C["Unitframe"].PortraitTimers then
 		Module.CreatePortraitTimers(self)
 	end
 
-	Module.CreateRaidTargetIndicator(self)
+	-- Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
 	Module.CreateResurrectIndicator(self)
+	Module.CreateOfflineIndicator(self, 70)
 	Module.CreateThreatIndicator(self)
 	Module.CreatePvPIndicator(self, "target")
 	Module.CreateDebuffHighlight(self)
@@ -201,4 +198,6 @@ function Module:CreateTarget()
 		IsObjectType = K.Noop,
 		Override = Module.CreateThreatIndicator,
 	}
+
+	self.Range = Module.CreateRangeIndicator(self)
 end

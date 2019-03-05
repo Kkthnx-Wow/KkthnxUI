@@ -5,10 +5,8 @@ local K, C = unpack(select(2, ...))
 local _G = _G
 local assert = _G.assert
 local getmetatable = _G.getmetatable
-local math_floor = _G.math.floor
 local pairs = _G.pairs
 local select = _G.select
-local string_match = _G.string.match
 local type = _G.type
 
 local CreateFrame = _G.CreateFrame
@@ -23,14 +21,7 @@ local CustomClass = select(2, UnitClass("player"))
 local CustomClassColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[CustomClass] or RAID_CLASS_COLORS[CustomClass])
 local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
 
--- Preload
-K.Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
-K.NoScaleMult = K.Mult * C.General.UIScale
 BINDING_HEADER_KKTHNXUI = GetAddOnMetadata(..., "Title")
-
-function K.Scale(x)
-	return K.Mult * math_floor(x / K.Mult + .5)
-end
 
 K.UIFrameHider = CreateFrame("Frame", "UIFrameHider", UIParent)
 K.UIFrameHider:Hide()
@@ -42,6 +33,17 @@ K.PetBattleHider = CreateFrame("Frame", "PetBattleHider", UIParent, "SecureHandl
 K.PetBattleHider:SetAllPoints()
 K.PetBattleHider:SetFrameStrata("LOW")
 RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
+
+function K.HideObject(self)
+	if self.UnregisterAllEvents then
+		self:UnregisterAllEvents()
+		self:SetParent(K.UIFrameHider)
+	else
+		self.Show = self.Hide
+	end
+
+	self:Hide()
+end
 
 local function SetOutside(obj, anchor, xOffset, yOffset)
 	xOffset = xOffset or 0
@@ -98,8 +100,8 @@ local function CreateBorder(f, bLayer, bOffset, bPoints, strip)
 end
 
 local function CreateBackdrop(f, t)
-	if not t then 
-		t = "Default" 
+	if not t then
+		t = "Default"
 	end
 
 	if f.Backdrop then
@@ -143,13 +145,13 @@ local function CreateShadow(f, bd)
 		shadow:SetBackdrop({
 			bgFile = C["Media"].Blank,
 			edgeFile = C.Media.Glow,
-			edgeSize = K.Scale(4),
+			edgeSize = 4,
 			insets = {left = 3, right = 3, top = 3, bottom = 3}
 		})
 	else
 		shadow:SetBackdrop({
 			edgeFile = C.Media.Glow,
-			edgeSize = K.Scale(4)
+			edgeSize = 4
 		})
 	end
 
@@ -204,28 +206,51 @@ local StripTexturesBlizzFrames = {
 	"FilligreeOverlay",
 }
 
-local function StripTextures(object, kill)
-	local objectName = object.GetName and object:GetName()
-	for _, Blizzard in pairs(StripTexturesBlizzFrames) do
-		local BlizzFrame = object[Blizzard] or (objectName and _G[objectName..Blizzard])
-		if BlizzFrame then
-			BlizzFrame:StripTextures()
-		end
+local STRIP_TEX = "Texture"
+local STRIP_FONT = "FontString"
+local function StripRegion(which, object, kill, alpha)
+	if kill then
+		object:Kill()
+	elseif alpha then
+		object:SetAlpha(0)
+	elseif which == STRIP_TEX then
+		object:SetTexture()
+	elseif which == STRIP_FONT then
+		object:SetText()
 	end
+end
 
-	if object.GetNumRegions then
-		local region
-		for i = 1, object:GetNumRegions() do
-			region = select(i, object:GetRegions())
-			if region and region.IsObjectType and region:IsObjectType("Texture") then
-				if kill and type(kill) == "boolean" then
-					region:Kill()
-				else
-					region:SetTexture(nil)
+local function StripType(which, object, kill, alpha)
+	if object:IsObjectType(which) then
+		StripRegion(which, object, kill, alpha)
+	else
+		if which == STRIP_TEX then
+			local FrameName = object.GetName and object:GetName()
+			for _, Blizzard in pairs(StripTexturesBlizzFrames) do
+				local BlizzFrame = object[Blizzard] or (FrameName and _G[FrameName..Blizzard])
+				if BlizzFrame then
+					BlizzFrame:StripTextures(kill, alpha)
+				end
+			end
+		end
+
+		if object.GetNumRegions then
+			for i = 1, object:GetNumRegions() do
+				local region = select(i, object:GetRegions())
+				if region and region.IsObjectType and region:IsObjectType(which) then
+					StripRegion(which, region, kill, alpha)
 				end
 			end
 		end
 	end
+end
+
+local function StripTextures(object, kill, alpha)
+	StripType(STRIP_TEX, object, kill, alpha)
+end
+
+local function StripTexts(object, kill, alpha)
+	StripType(STRIP_FONT, object, kill, alpha)
 end
 
 local function FontTemplate(fs, font, fontSize, fontStyle)
@@ -242,7 +267,7 @@ local function FontTemplate(fs, font, fontSize, fontStyle)
 	else
 		fs:SetShadowColor(0, 0, 0, 1)
 	end
-	fs:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
+	fs:SetShadowOffset(1, -1)
 end
 
 local function FontString(parent, name, fontName, fontHeight, fontStyle)
@@ -250,7 +275,7 @@ local function FontString(parent, name, fontName, fontHeight, fontStyle)
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetJustifyH("LEFT")
 	fs:SetShadowColor(0, 0, 0)
-	fs:SetShadowOffset(K.Mult, -K.Mult)
+	fs:SetShadowOffset(1, -1)
 
 	if not name then
 		parent.Text = fs

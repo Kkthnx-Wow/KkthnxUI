@@ -9,7 +9,6 @@
    <Include file="Addons\Details.lua" />
    <Include file="Addons\ExtraQuestButton.lua" />
    <Include file="Addons\Hekili.lua" />
-   <Include file="Addons\Recount.lua" />
    <Include file="Addons\Skada.lua" />
    <Include file="Addons\Spy.lua" />
    <Include file="Addons\WeakAuras.lua" />
@@ -27,6 +26,7 @@
    <Include file="Blizzard\PetBattle.lua" />
    <Include file="Blizzard\PvP.lua" />
    <Include file="Blizzard\Reputation.lua" />
+   <Include file="Blizzard\ScrappingMachine.lua" />
    <Include file="Blizzard\ScriptErrors.lua" />
    <Include file="Blizzard\SpellBook.lua" />
    <Include file="Blizzard\Stopwatch.lua" />
@@ -41,7 +41,7 @@
                 <FontString name="$parentString" font="GameFontNormalLarge" text="Quests: X/25" parent="QuestCounterFrame">
                     <Color r="1" g=".8046" b="0" a="1"/>
                     <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="QuestScrollFrame" relativePoint="TOPLEFT" x="2" y="21">
+                        <Anchor point="TOPLEFT" relativeTo="QuestScrollFrame" relativePoint="TOPLEFT" x="2" y="22">
                         </Anchor>
                     </Anchors>
                 </FontString>

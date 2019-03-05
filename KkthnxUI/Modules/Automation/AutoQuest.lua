@@ -1,8 +1,4 @@
 local K, C = unpack(select(2, ...))
-if K.CheckAddOnState("QuickQuest") or K.CheckAddOnState("AutoTurnIn") then
-	return
-end
-
 if C["Automation"].AutoQuest ~= true then
 	return
 end
@@ -110,7 +106,7 @@ function AutoQuest:Register(event, method, override)
 end
 
 local function GetNPCID()
-	return tonumber(string_match(UnitGUID("npc") or "", "Creature%-.-%-.-%-.-%-.-%-(.-)%-"))
+	return tonumber(string_match(UnitGUID("npc") or "", "%w+%-.-%-.-%-.-%-.-%-(.-)%-"))
 end
 
 local function IsTrackingHidden()

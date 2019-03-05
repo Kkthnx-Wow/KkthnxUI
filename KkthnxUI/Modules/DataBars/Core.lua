@@ -224,7 +224,7 @@ function Module:UpdateReputation()
 			if isCapped then
 				text = string_format("%s: [%s]", name, isFriend and friendText or standingLabel)
 			else
-				text = string_format("%s: %d%% [%s]", name, ((value - min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel)
+				text = string_format("%s: %s - %d%% [%s]", name, K.ShortValue(value - min), ((value - min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel)
 			end
 
 			self.Bars.Reputation.Text:SetText(text)
@@ -254,14 +254,14 @@ function Module:UpdateExperience()
 			self.Bars.Experience.RestBar:SetValue(min(cur + rested, max))
 
 			if self.Database.Text then
-				self.Bars.Experience.Text:SetText(string_format("%d%% R:%d%%", cur / max * 100, rested / max * 100))
+				self.Bars.Experience.Text:SetText(string_format("%s - %d%% R:%s [%d%%]", K.ShortValue(cur), cur / max * 100, K.ShortValue(rested), rested / max * 100))
 			end
 		else
 			self.Bars.Experience.RestBar:SetMinMaxValues(0, 1)
 			self.Bars.Experience.RestBar:SetValue(0)
 
 			if self.Database.Text then
-				self.Bars.Experience.Text:SetText(string_format("%d%%", cur / max * 100))
+				self.Bars.Experience.Text:SetText(string_format("%s - %d%%", K.ShortValue(cur), cur / max * 100))
 			end
 		end
 
@@ -345,7 +345,7 @@ function Module:OnEnter()
 		if rested then
 			GameTooltip:AddDoubleLine(L["Databars"].Rested, string_format("+%s (%s%%)", K.ShortValue(rested), math_floor(rested / max * 100)), 1, 1, 1)
 		end
-		GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:118:218|t "..L["ConfigButton"].MiddleClick, "Share Your Experience", 1, 1, 1)
+		GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:118:218|t "..L["ConfigButton"].MiddleClick, L["Databars"].Share, 1, 1, 1)
 	end
 
 	if GetWatchedFactionInfo() then
@@ -377,7 +377,7 @@ function Module:OnEnter()
 			if reaction ~= MAX_REPUTATION_REACTION or C_Reputation_IsFactionParagon(factionID) then
 				GameTooltip:AddDoubleLine(REPUTATION..":", string_format("%d / %d (%d%%)", value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
 			end
-			GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "..L["ConfigButton"].LeftClick, "Toggle Reputation UI", 1, 1, 1)
+			GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "..L["ConfigButton"].LeftClick, L["Databars"].Toggle_Reputation, 1, 1, 1)
 		end
 	end
 
@@ -412,7 +412,7 @@ function Module:OnEnter()
 			GameTooltip:AddDoubleLine(HONOR.." "..LEVEL, level)
 			GameTooltip:AddDoubleLine(L["Databars"].Honor_XP, string_format(" %d / %d (%d%%)", current, max, current/max * 100), 1, 1, 1)
 			GameTooltip:AddDoubleLine(L["Databars"].Honor_Remaining, string_format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
-			GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "..L["ConfigButton"].Right_Click, "Toggle PvP UI", 1, 1, 1)
+			GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "..L["ConfigButton"].Right_Click, L["Databars"].Toggle_PvP, 1, 1, 1)
 		end
 	end
 

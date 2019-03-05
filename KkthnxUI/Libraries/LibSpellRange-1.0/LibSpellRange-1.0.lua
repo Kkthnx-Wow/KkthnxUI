@@ -10,7 +10,7 @@
 -- @name LibSpellRange-1.0.lua
 
 local major = "SpellRange-1.0"
-local minor = 13
+local minor = 11
 
 assert(LibStub, format("%s requires LibStub.", major))
 
@@ -93,38 +93,25 @@ local function UpdateBook(bookType)
 	for spellBookID = 1, max do
 		local type, baseSpellID = GetSpellBookItemInfo(spellBookID, bookType)
 
-		if type == "SPELL" or type == "PETACTION" then
+		if type == "SPELL" then
 			local currentSpellName = GetSpellBookItemName(spellBookID, bookType)
 			local link = GetSpellLink(currentSpellName)
 			local currentSpellID = tonumber(link and link:gsub("|", "||"):match("spell:(%d+)"))
 
-			-- For each entry we add to a table,
-			-- only add it if there isn't anything there already.
-			-- This prevents weird passives from overwriting real, legit spells.
-			-- For example, in WoW 7.3.5 the ret paladin mastery
-			-- was coming back with a base spell named "Judgement",
-			-- which was overwriting the real "Judgement".
-			-- Passives usually come last in the spellbook,
-			-- so this should work just fine as a workaround.
-			-- This issue with "Judgement" is gone in BFA because the mastery changed.
+			local baseSpellName = GetSpellInfo(baseSpellID)
 
-			if currentSpellName and not spellsByName[strlower(currentSpellName)] then
+			if currentSpellName then
 				spellsByName[strlower(currentSpellName)] = spellBookID
 			end
-			if currentSpellID and not spellsByID[currentSpellID] then
-				spellsByID[currentSpellID] = spellBookID
+			if baseSpellName then
+				spellsByName[strlower(baseSpellName)] = spellBookID
 			end
 
-			if type == "SPELL" then
-				-- PETACTION (pet abilities) don't return a spellID for baseSpellID,
-				-- so base spells only work for proper player spells.
-				local baseSpellName = GetSpellInfo(baseSpellID)
-				if baseSpellName and not spellsByName[strlower(baseSpellName)] then
-					spellsByName[strlower(baseSpellName)] = spellBookID
-				end
-				if baseSpellID and not spellsByID[baseSpellID] then
-					spellsByID[baseSpellID] = spellBookID
-				end
+			if currentSpellID then
+				spellsByID[currentSpellID] = spellBookID
+			end
+			if baseSpellID then
+				spellsByID[baseSpellID] = spellBookID
 			end
 		end
 	end

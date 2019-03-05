@@ -1,9 +1,4 @@
-local K, C = unpack(select(2, ...))
--- if C["Unitframe"].Enable ~= true and C["Raid"].Enable ~= true and C["Nameplates"].Enable ~= true then
--- 	return
--- end
-
-local Module = K:GetModule("Unitframes")
+local K = unpack(select(2, ...))
 local oUF = oUF or K.oUF
 
 if not oUF then
@@ -11,27 +6,33 @@ if not oUF then
 	return
 end
 
--- Lua API
 local _G = _G
 local math_floor = math.floor
+local string_find = string.find
 local string_format = string.format
+local string_lower = string.lower
+local string_match = string.match
+local string_sub = string.sub
+local string_gmatch = string.gmatch
 
--- Wow API
 local C_PetJournal_GetPetTeamAverageLevel = C_PetJournal.GetPetTeamAverageLevel
 local DEAD = _G.DEAD
+local GHOST = _G.GetLocale() == "deDE" and "Geist" or _G.GetSpellInfo(8326)
 local GetComboPoints = _G.GetComboPoints
-local GetLocale = _G.GetLocale
 local GetQuestGreenRange = _G.GetQuestGreenRange
 local GetRelativeDifficultyColor = _G.GetRelativeDifficultyColor
 local GetSpecialization = _G.GetSpecialization
-local GetSpellInfo = _G.GetSpellInfo
 local GetThreatStatusColor = _G.GetThreatStatusColor
-local GHOST = GetLocale() == "deDE" and "Geist" or GetSpellInfo(8326)
 local HEALER = _G.HEALER
 local IsInGroup = _G.IsInGroup
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local QuestDifficultyColors = _G.QuestDifficultyColors
+local SPEC_MAGE_ARCANE = _G.SPEC_MAGE_ARCANE
+local SPEC_MONK_WINDWALKER = _G.SPEC_MONK_WINDWALKER
+local SPEC_PALADIN_RETRIBUTION = _G.SPEC_PALADIN_RETRIBUTION
 local TANK = _G.TANK
+local UNITNAME_SUMMON_TITLE17 = _G.UNITNAME_SUMMON_TITLE17
+local UNKNOWN = _G.UNKNOWN
 local UnitBattlePetLevel = _G.UnitBattlePetLevel
 local UnitClass = _G.UnitClass
 local UnitClassification = _G.UnitClassification
@@ -55,20 +56,37 @@ local UnitIsRaidOfficer = _G.UnitIsRaidOfficer
 local UnitIsUnit = _G.UnitIsUnit
 local UnitIsWildBattlePet = _G.UnitIsWildBattlePet
 local UnitLevel = _G.UnitLevel
-local UNITNAME_SUMMON_TITLE17 = _G.UNITNAME_SUMMON_TITLE17
 local UnitPower = _G.UnitPower
 local UnitPowerMax = _G.UnitPowerMax
 local UnitPowerType = _G.UnitPowerType
 local UnitReaction = _G.UnitReaction
-local UNKNOWN = _G.UNKNOWN
 
 local function UnitName(unit)
 	local name, realm = _G.UnitName(unit)
-	if name == UNKNOWN and K.Class == "MONK" and UnitIsUnit(unit, "pet") then
-		name = UNITNAME_SUMMON_TITLE17:format(UnitName("player"))
-	else
-		return name, realm
+
+	if (name == UNKNOWN and K.Class == "MONK") and UnitIsUnit(unit, "pet") then
+		name = string_format(UNITNAME_SUMMON_TITLE17, _G.UnitName("player"))
 	end
+
+	if realm and realm ~= "" then
+		return name, realm
+	else
+		return name
+	end
+end
+
+local function UnitNameAbbrev(name)
+	local letters, lastWord = "", string_match(name, ".+%s(.+)$")
+	if lastWord then
+		for word in string_gmatch(name, ".-%s") do
+			local firstLetter = string_sub(gsub(word, "^[%s%p]*", ""), 1, 1)
+			if firstLetter ~= string_lower(firstLetter) then
+				letters = string_format("%s%s. ", letters, firstLetter)
+			end
+		end
+		name = string_format("%s%s", letters, lastWord)
+	end
+	return name
 end
 
 -- KkthnxUI Unitframe Tags
@@ -90,7 +108,7 @@ oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:AltPowerCurrent"] = "UNIT_POWER_UPDATE UNIT_MAXPOWER"
+oUF.Tags.Events["KkthnxUI:AltPowerCurrent"] = "UNIT_POWER UNIT_MAXPOWER"
 oUF.Tags.Methods["KkthnxUI:AltPowerCurrent"] = function(unit)
 	local cur = UnitPower(unit, 0)
 	local max = UnitPowerMax(unit, 0)
@@ -166,8 +184,7 @@ oUF.Tags.Methods["KkthnxUI:HealthPercent"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:HealthCurrent-Percent"] =
-"UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Events["KkthnxUI:HealthCurrent-Percent"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["KkthnxUI:HealthCurrent-Percent"] = function(unit)
 	local status =
 	UnitIsDead(unit) and "|cffFFFFFF" .. DEAD .. "|r" or UnitIsGhost(unit) and "|cffFFFFFF" .. GHOST .. "|r" or
@@ -237,6 +254,17 @@ oUF.Tags.Methods["KkthnxUI:SmartLevel"] = function(unit)
 	else
 		return "??"
 	end
+end
+
+oUF.Tags.Events["KkthnxUI:NameAbbrev"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Methods["KkthnxUI:NameAbbrev"] = function(unit)
+	local NameAbbrev = UnitName(unit) or UNKNOWN
+
+	if NameAbbrev and string_find(NameAbbrev, "%s") then
+		NameAbbrev = UnitNameAbbrev(NameAbbrev)
+	end
+
+	return NameAbbrev ~= nil and K.ShortenString(NameAbbrev, 20, true) or "" -- The value 20 controls how many characters are allowed in the name before it gets truncated. Change it to fit your needs.
 end
 
 oUF.Tags.Events["KkthnxUI:NameVeryShort"] = "UNIT_NAME_UPDATE"
@@ -344,7 +372,7 @@ oUF.Tags.Methods["KkthnxUI:RaidStatus"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:ClassPower"] = "UNIT_POWER_FREQUENT PLAYER_TARGET_CHANGED UNIT_POWER_UPDATE SPELLS_CHANGED RUNE_POWER_UPDATE"
+oUF.Tags.Events["KkthnxUI:ClassPower"] = "UNIT_POWER_FREQUENT PLAYER_TARGET_CHANGED UNIT_POWER SPELLS_CHANGED RUNE_POWER_UPDATE"
 oUF.Tags.Methods["KkthnxUI:ClassPower"] = function()
 	local PlayerClass = K.Class
 	local num, max, color

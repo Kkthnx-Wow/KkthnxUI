@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Filters -->
-    <Script file="AutoQuest.lua"/>
+    <Script file="ChatSpam.lua"/>
+    <Script file="ExtraQuestButton.lua"/>
     <Script file="FilgerSpells.lua"/>
+    <Script file="QuickQuest.lua"/>
+    <Script file="RangeSpells.lua"/>
+    <Script file="WorldMapPlusData.lua"/>
 </Ui>

@@ -3,8 +3,8 @@ local Module = K:NewModule("UIWidgets", "AceEvent-3.0", "AceHook-3.0")
 
 local _G = _G
 
-local CreateFrame = CreateFrame
-local hooksecurefunc = hooksecurefunc
+local CreateFrame = _G.CreateFrame
+local hooksecurefunc = _G.hooksecurefunc
 local UIParent = _G.UIParent
 
 local function PositionUIWidgets()

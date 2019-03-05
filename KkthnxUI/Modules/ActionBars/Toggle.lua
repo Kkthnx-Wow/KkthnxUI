@@ -64,12 +64,14 @@ local function MainBars()
 
 			for i = 1, 3 do
 				local b = _G["MultiBarBottomRightButton" .. i]
-				b:Hide()
+				b:SetAlpha(0)
+				b:SetScale(0.000001)
 			end
 
 			for i = 7, 9 do
 				local b = _G["MultiBarBottomRightButton" .. i]
-				b:Hide()
+				b:SetAlpha(0)
+				b:SetScale(0.000001)
 			end
 		elseif KkthnxUIData[K.Realm][K.Name].BottomBars == 2 then
 			ActionBarAnchor:SetHeight(ToggleButtonSize * 2 + ToggleButtonSpace)
@@ -80,12 +82,14 @@ local function MainBars()
 
 			for i = 1, 3 do
 				local b = _G["MultiBarBottomRightButton" .. i]
-				b:Show()
+				b:SetAlpha(1)
+				b:SetScale(1)
 			end
 
 			for i = 7, 9 do
 				local b = _G["MultiBarBottomRightButton" .. i]
-				b:Show()
+				b:SetAlpha(1)
+				b:SetScale(1)
 			end
 		end
 	end

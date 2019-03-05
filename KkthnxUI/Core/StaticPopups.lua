@@ -46,6 +46,96 @@ local Realm = GetRealmName()
 K.PopupDialogs = {}
 K.StaticPopup_DisplayedFrames = {}
 
+K.PopupDialogs["LINK_COPY_DIALOG"] = {
+	text = "Armory",
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = true,
+	hasEditBox = true,
+	editBoxWidth = 350,
+	OnShow = function(self, ...)
+		self.editBox:SetFocus()
+	end,
+	EditBoxOnEnterPressed = function(self)
+		self:GetParent():Hide()
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide()
+	end,
+	preferredIndex = 3,
+}
+
+K.PopupDialogs["QUEST_CHECK_ID"] = {
+	text = "Check Quest ID",
+	button1 = "Scan",
+
+	OnAccept = function(self)
+		if not tonumber(self.editBox:GetText()) then
+			return
+		end
+
+		K.CheckQuestStatus(self.editBox:GetText())
+	end,
+
+	OnShow = function(self, ...)
+		self.editBox:SetFocus()
+	end,
+
+	EditBoxOnEnterPressed = function(self)
+		self:GetParent():Hide()
+	end,
+
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide()
+	end,
+
+	timeout = 0,
+	whileDead = true,
+	hasEditBox = true,
+	editBoxWidth = 200,
+	hideOnEscape = false,
+	preferredIndex = 3,
+}
+
+K.PopupDialogs["GITHUB_EDITBOX"] = {
+	text = format("|cff4488ff%s |r", "KkthnxUI GitHub"),
+	button1 = OKAY,
+	hasEditBox = 1,
+	OnShow = function(self, data)
+		self.editBox:SetAutoFocus(false)
+		self.editBox.width = self.editBox:GetWidth()
+		self.editBox:SetWidth(280)
+		self.editBox:AddHistoryLine("text")
+		self.editBox.temptxt = data
+		self.editBox:SetText(data)
+		self.editBox:HighlightText()
+		self.editBox:SetJustifyH("CENTER")
+	end,
+	OnHide = function(self)
+		self.editBox:SetWidth(self.editBox.width or 50)
+		self.editBox.width = nil
+		self.temptxt = nil
+	end,
+	EditBoxOnEnterPressed = function(self)
+		self:GetParent():Hide()
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide()
+	end,
+	EditBoxOnTextChanged = function(self)
+		if(self:GetText() ~= self.temptxt) then
+			self:SetText(self.temptxt)
+		end
+		self:HighlightText()
+		self:ClearFocus()
+	end,
+	OnAccept = K.Noop,
+	timeout = 0,
+	whileDead = 1,
+	preferredIndex = 3,
+	hideOnEscape = 1,
+}
+
 K.PopupDialogs["DISCORD_EDITBOX"] = {
 	text = format("|cff4488ff%s |r", "KkthnxUI Discord"),
 	button1 = OKAY,
@@ -98,6 +188,22 @@ K.PopupDialogs["CONFIG_RL"] = {
 	preferredIndex = 3
 }
 
+K.PopupDialogs["DELETE_GRAYS"] = {
+	text = string.format("|cffff0000%s|r", L["StaticPopups"].Delete_Grays),
+	button1 = _G.YES,
+	button2 = _G.NO,
+	OnAccept = function()
+		K:GetModule("Vendor"):VendorGrays(true)
+	end,
+	OnShow = function(self)
+		MoneyFrame_Update(self.moneyFrame, K.PopupDialogs["DELETE_GRAYS"].Money)
+	end,
+	timeout = 4,
+	whileDead = 1,
+	hideOnEscape = false,
+	hasMoneyFrame = 1,
+}
+
 K.PopupDialogs["CHANGES_RL"] = {
 	text = L["StaticPopups"].Changes_Reload,
 	button1 = ACCEPT,
@@ -116,7 +222,7 @@ K.PopupDialogs["RESTART_GFX"] = {
 		RestartGx()
 	end,
 	OnCancel = function()
-		print("You have canceled this dialog.")
+		print(L["StaticPopups"].Cancel)
 	end,
 	hideOnEscape = true,
 	whileDead = 1,
@@ -130,7 +236,7 @@ K.PopupDialogs["SET_UISCALE"] = {
 		K.SetUIScale()
 	end,
 	OnCancel = function()
-		print("You have canceled this dialog.")
+		print(L["StaticPopups"].Cancel)
 	end,
 	hideOnEscape = true,
 	whileDead = 1,
@@ -144,7 +250,7 @@ K.PopupDialogs["DISBAND_RAID"] = {
 		K.DisbandRaidGroup()
 	end,
 	OnCancel = function()
-		print("You have canceled this dialog.")
+		print(L["StaticPopups"].Cancel)
 	end,
 	hideOnEscape = true,
 	whileDead = 1,
@@ -171,14 +277,14 @@ K.PopupDialogs["BUY_BANK_SLOT"] = {
 }
 
 K.PopupDialogs["BOOST_UI"] = {
-	text = "Accepting this will adjust your GFX(Graphics) settings to 'try' to improve your FPS.",
+	text = L["StaticPopups"].BoostUI,
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
 		K.BoostUI()
 	end,
 	OnCancel = function()
-		print("You have canceled this dialog.")
+		print(L["StaticPopups"].Cancel)
 	end,
 	hideOnEscape = true,
 	whileDead = 1,
@@ -252,7 +358,7 @@ K.PopupDialogs["WARNING_BLIZZARD_ADDONS"] = {
 
 local MAX_STATIC_POPUPS = 4
 function K.StaticPopup_OnShow(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
+	PlaySound(PlaySoundKitID and "igmainmenuopen" or SOUNDKIT.IG_MAINMENU_OPEN)
 
 	local dialog = K.PopupDialogs[self.which]
 	local OnShow = dialog.OnShow
@@ -371,7 +477,7 @@ function K.StaticPopup_OnKeyDown(self, key)
 end
 
 function K.StaticPopup_OnHide(self)
-	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
+	PlaySound(PlaySoundKitID and "igmainmenuclose" or SOUNDKIT.IG_MAINMENU_CLOSE)
 
 	K.StaticPopup_CollapseTable()
 

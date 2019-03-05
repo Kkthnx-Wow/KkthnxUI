@@ -87,11 +87,7 @@ KkthnxUIConfig.ColorDefaults = {
 	},
 	-- General
 	["General"] = {
-		["TexturesColor"] = {0.31, 0.31, 0.31}
-	},
-	-- Chat
-	["Chat"] = {
-		["LinkColor"] = {0.08, 1, 0.36}
+		["TexturesColor"] = {0.9, 0.9, 0.9}
 	},
 	-- DataBars
 	["DataBars"] = {
@@ -107,26 +103,31 @@ KkthnxUIConfig.ColorDefaults = {
 		["GoodTransition"] = {218/255, 197/255, 92/255},
 		["TankedByTankColor"] = {0.8, 0.1, 1}
 	},
-	-- Unitframe
-	["Unitframe"] = {
-		["CastbarTicksColor"] = {0, 0, 0, 0.8}
+	-- HealthPrediction
+	["HealthPrediction"] = {
+		["Absorbs"] = {1, 1, 0, 0.25},
+		["HealAbsorbs"] = {1, 0, 0, 0.25},
+		["Others"] = {0, 1, 0, 0.25},
+		["Personal"] = {0, 1, 0.5, 0.25},
 	},
 }
 
 function KkthnxUIConfig:UpdateColorDefaults()
 	self.ColorDefaults.ActionBar.OutOfMana = {0.5, 0.5, 1.0}
 	self.ColorDefaults.ActionBar.OutOfRange = {0.8, 0.1, 0.1}
-	self.ColorDefaults.Chat.LinkColor = {0.08, 1, 0.36}
 	self.ColorDefaults.DataBars.AzeriteColor = {0.901, 0.8, 0.601}
 	self.ColorDefaults.DataBars.ExperienceColor = {0.6, 0.3, 0.8}
 	self.ColorDefaults.DataBars.RestedColor = {0.3, 0.6, 0.8}
-	self.ColorDefaults.General.TexturesColor = {0.31, 0.31, 0.31}
+	self.ColorDefaults.General.TexturesColor = {0.9, 0.9, 0.9}
 	self.ColorDefaults.Nameplates.BadColor = {0.78, 0.25, 0.25}
 	self.ColorDefaults.Nameplates.GoodColor = {75/255, 175/255, 76/255}
 	self.ColorDefaults.Nameplates.BadTransition = {235/255, 163/255, 40/255}
 	self.ColorDefaults.Nameplates.GoodTransition = {218/255, 197/255, 92/255}
 	self.ColorDefaults.Nameplates.TankedByTankColor = {0.8, 0.1, 1}
-	self.ColorDefaults.Unitframe.CastbarTicksColor = {0, 0, 0, 0.8}
+	self.ColorDefaults.HealthPrediction.Absorbs = {1, 1, 0, 0.25}
+	self.ColorDefaults.HealthPrediction.HealAbsorbs = {1, 0, 0, 0.25}
+	self.ColorDefaults.HealthPrediction.Others = {0, 1, 0, 0.25}
+	self.ColorDefaults.HealthPrediction.Personal = {0, 1, 0.5, 0.25}
 end
 
 -- Filter unwanted groups
@@ -925,7 +926,7 @@ local function ShowGroup(group)
 	end
 
 	GroupPages[group]:Show()
-	KkthnxUIConfigFrameTitle.Text:SetText(group)
+	KkthnxUIConfigFrameTitle.Text:SetText(KkthnxUIConfig[Locale]["GroupNames"][group] or group)
 	KkthnxUIConfigFrameTitle.Text:SetTextColor(68 / 255, 136 / 255, 255 / 255)
 
 	if GroupPages[group].Slider then
@@ -1063,7 +1064,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	ResetCVarsButton.Text:SetFont(C["Media"].Font, 12)
 	ResetCVarsButton.Text:SetShadowOffset(1.25, -1.25)
 	ResetCVarsButton.Text:SetPoint("CENTER", ResetCVarsButton)
-	ResetCVarsButton.Text:SetText("|cffffd100" .. "Reset CVars" .. "|r")
+	ResetCVarsButton.Text:SetText("|cffffd100" .. L["Config"].ResetCVars .. "|r")
 
 	local ResetChatButton = CreateFrame("Button", nil, InfoFrame)
 	ResetChatButton:SkinButton()
@@ -1076,7 +1077,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	ResetChatButton.Text:SetFont(C["Media"].Font, 12)
 	ResetChatButton.Text:SetShadowOffset(1.25, -1.25)
 	ResetChatButton.Text:SetPoint("CENTER", ResetChatButton)
-	ResetChatButton.Text:SetText("|cffffd100" .. "Reset Chat" .. "|r")
+	ResetChatButton.Text:SetText("|cffffd100" .. L["Config"].ResetChat .. "|r")
 
 	local ResetButton = CreateFrame("Button", nil, InfoFrame)
 	ResetButton:SkinButton()
@@ -1179,7 +1180,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 			Button.Text:SetFont(C["Media"].Font, 12)
 			Button.Text:SetShadowOffset(1.25, -1.25)
 			Button.Text:SetPoint("CENTER", Button)
-			Button.Text:SetText(Group)
+			Button.Text:SetText(KkthnxUIConfig[Locale]["GroupNames"][Group] or Group)
 
 			Button.Active = Button:CreateTexture(nil, "ARTWORK")
 			Button.Active:SetAlpha(0.3)

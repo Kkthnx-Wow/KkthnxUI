@@ -161,9 +161,9 @@ function Module:CreateRaid()
 	self.ResurrectIndicator:SetSize(30, 30)
 	self.ResurrectIndicator:SetPoint("CENTER", 0, -3)
 
-	self.SummonIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
- 	self.SummonIndicator:SetSize(30, 30)
- 	self.SummonIndicator:SetPoint("CENTER", 0, -3)
+	--self.SummonIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+ --	self.SummonIndicator:SetSize(30, 30)
+ --	self.SummonIndicator:SetPoint("CENTER", 0, -3)
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.LeaderIndicator:SetSize(12, 12)
@@ -273,7 +273,8 @@ function Module:CreateRaid()
 		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidTargetGlow, true)
 	end
 
-	Module.CreateDebuffHighlight(self)
-	self.Range = Module.CreateRange(self)
 	self.HealthPrediction = Module.CreateHealthPrediction(self, C["Raid"].RaidLayout.Value == "Damage" and C["Raid"].Width or C["Raid"].Width - 12)
+
+	Module.CreateDebuffHighlight(self)
+	self.Range = Module.CreateRangeIndicator(self)
 end

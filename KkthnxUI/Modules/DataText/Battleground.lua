@@ -13,10 +13,25 @@ local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
 local IsInInstance = _G.IsInInstance
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local RequestBattlefieldScoreData = _G.RequestBattlefieldScoreData
+local SetMapToCurrentZone = _G.SetMapToCurrentZone
 local UnitClass = _G.UnitClass
 
 local NameColor = K.RGBToHex(K.Color.r, K.Color.g, K.Color.b)
 local ValueColor = K.RGBToHex(1, 1, 1)
+
+-- Map IDs
+local WSG = 443
+local TP = 626
+local AV = 401
+local SOTA = 512
+local IOC = 540
+local EOTS = 482
+local TBFG = 736
+local AB = 461
+local TOK = 856
+local SSM = 860
+local DG = 935
+local ASH = 978
 
 local DataTextBG = CreateFrame("Frame", nil, UIParent)
 DataTextBG:SetSize(300, 13)
@@ -27,43 +42,64 @@ DataTextBG:EnableMouse(true)
 
 local function OnEnter(self)
 	local NumScores = GetNumBattlefieldScores()
-	local NumExtraStats = GetNumBattlefieldStats()
 
 	for i = 1, NumScores do
 		local Name, KillingBlows, HonorableKills, Deaths, HonorGained, _, _, _, _, DamageDone, HealingDone = GetBattlefieldScore(i)
 
 		if (Name and Name == K.Name) then
-			local CurrentMapID = C_Map.GetBestMapForUnit("player")
-			local Color = RAID_CLASS_COLORS[select(2, UnitClass("player"))]
-			local ClassColor = format("|cff%.2x%.2x%.2x", Color.r * 255, Color.g * 255, Color.b * 255)
+			local CurMapID = GetCurrentMapAreaID()
+			local Color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class]
+			local ClassColor = string_format("|cff%.2x%.2x%.2x", Color.r * 255, Color.g * 255, Color.b * 255)
+			SetMapToCurrentZone()
+			GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
+			GameTooltip:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -10, 0)
+			GameTooltip:ClearLines()
 
-			GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 0, K.Scale(-4))
-			GameTooltip:ClearLines()
-			GameTooltip:SetPoint("TOP", self, "BOTTOM", 0, -1)
-			GameTooltip:ClearLines()
 			GameTooltip:AddDoubleLine(L["DataText"].StatsFor, ClassColor..Name.."|r")
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddDoubleLine(KILLING_BLOWS, KillingBlows, 1, 1, 1)
-			GameTooltip:AddDoubleLine(HONORABLE_KILLS, HonorableKills, 1, 1, 1)
-			GameTooltip:AddDoubleLine(DEATHS, Deaths, 1, 1, 1)
-			GameTooltip:AddDoubleLine(HONOR, format("%d", HonorGained), 1, 1, 1)
-			GameTooltip:AddDoubleLine(DAMAGE, DamageDone, 1, 1, 1)
-			GameTooltip:AddDoubleLine(HEALS, HealingDone, 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["DataText"].KillingBlow, KillingBlows, 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["DataText"].HonorableKill, HonorableKills, 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["DataText"].Death, Deaths, 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["DataText"].Honor, string_format("%d", HonorGained), 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["DataText"].Damage, K.ShortValue(DamageDone), 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["DataText"].Healing, K.ShortValue(HealingDone), 1, 1, 1)
 
-			for j = 1, NumExtraStats do
-				GameTooltip:AddDoubleLine(GetBattlefieldStatInfo(j), GetBattlefieldStatData(i, j), 1,1,1)
+			-- Add extra statistics based on what BG you're in.
+			if (CurMapID == WSG or CurMapID == TP) then
+				GameTooltip:AddDoubleLine(L["DataText"].FlagCapture, GetBattlefieldStatData(i, 1), 1, 1, 1)
+				GameTooltip:AddDoubleLine(L["DataText"].FlagReturn, GetBattlefieldStatData(i, 2), 1, 1, 1)
+			elseif (CurMapID == EOTS) then
+				GameTooltip:AddDoubleLine(L["DataText"].FlagCapture, GetBattlefieldStatData(i, 1), 1, 1, 1)
+			elseif (CurMapID == AV) then
+				GameTooltip:AddDoubleLine(L["DataText"].GraveyardAssault, GetBattlefieldStatData(i, 1), 1, 1, 1)
+				GameTooltip:AddDoubleLine(L["DataText"].GraveyardDefend, GetBattlefieldStatData(i, 2), 1, 1, 1)
+				GameTooltip:AddDoubleLine(L["DataText"].TowerAssault, GetBattlefieldStatData(i, 3), 1, 1, 1)
+				GameTooltip:AddDoubleLine(L["DataText"].TowerDefend, GetBattlefieldStatData(i, 4), 1, 1, 1)
+			elseif (CurMapID == SOTA) then
+				GameTooltip:AddDoubleLine(L["DataText"].DemolisherDestroy, GetBattlefieldStatData(i, 1), 1, 1, 1)
+				GameTooltip:AddDoubleLine(L["DataText"].GateDestroy, GetBattlefieldStatData(i, 2), 1, 1, 1)
+			elseif (CurMapID == IOC or CurMapID == TBFG or CurMapID == AB or CurMapID == ASH) then
+				GameTooltip:AddDoubleLine(L["DataText"].BaseAssault, GetBattlefieldStatData(i, 1), 1, 1, 1)
+				GameTooltip:AddDoubleLine(L["DataText"].BaseDefend, GetBattlefieldStatData(i, 2), 1, 1, 1)
+			elseif (CurrentMapID == TOK) then
+				GameTooltip:AddDoubleLine(L["DataText"].OrbPossession, GetBattlefieldStatData(i, 1), 1, 1, 1)
+				GameTooltip:AddDoubleLine(L["DataText"].VictoryPts, GetBattlefieldStatData(i, 2), 1, 1, 1)
+			elseif (CurrentMapID == SSM) then
+				GameTooltip:AddDoubleLine(L["DataText"].CartControl, GetBattlefieldStatData(i, 1), 1, 1, 1)
+			elseif (CurrentMapID == DG) then
+				GameTooltip:AddDoubleLine(L["DataText"].CartControl, GetBattlefieldStatData(i, 1), 1, 1, 1)
+				GameTooltip:AddDoubleLine(L["DataText"].BaseAssault, GetBattlefieldStatData(i, 1), 1, 1, 1)
+				GameTooltip:AddDoubleLine(L["DataText"].BaseDefend, GetBattlefieldStatData(i, 2), 1, 1, 1)
 			end
-			
 			break
 		end
 	end
-	
 	GameTooltip:Show()
 end
 
 local function OnLeave()
 	if not GameTooltip:IsForbidden() then
-		GameTooltip:Hide()
+		GameTooltip:Hide() -- WHY??? BECAUSE FUCK GAMETOOLTIP, THATS WHY!!
 	end
 end
 
@@ -73,9 +109,8 @@ local function OnUpdate(_, t)
 
 	if (int < 0) then
 		local Amount
-		local NumScores = GetNumBattlefieldScores()
-
 		RequestBattlefieldScoreData()
+		local NumScores = GetNumBattlefieldScores()
 
 		for i = 1, NumScores do
 			local Name, KillingBlows, _, _, HonorGained, _, _, _, _, DamageDone, HealingDone = GetBattlefieldScore(i)

@@ -4,6 +4,7 @@ local _G = _G
 
 local CreateFrame = _G.CreateFrame
 local UIParent = _G.UIParent
+local GetNumShapeshiftForms = _G.GetNumShapeshiftForms
 
 local Movers = K.Movers
 

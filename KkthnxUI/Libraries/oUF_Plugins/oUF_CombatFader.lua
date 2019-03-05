@@ -100,7 +100,7 @@ local function Enable(self, unit)
 			showStatus = false
 		end
 
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", Update)
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", Update, true)
 		self:RegisterEvent("PLAYER_REGEN_ENABLED", Update, true)
 		self:RegisterEvent("PLAYER_REGEN_DISABLED", Update, true)
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", Update, true)

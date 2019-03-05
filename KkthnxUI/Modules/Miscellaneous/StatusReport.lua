@@ -119,6 +119,18 @@ local function GetResolution()
 	return (({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution"))
 end
 
+local function PixelBestSize()
+	return max(0.4, min(1.15, 768 / K.ScreenHeight))
+end
+
+local function PixelClip(num)
+	local str = num and tostring(num)
+	if str and strlen(str) > 4 then
+		return tonumber(strsub(str, 0, 4))
+	end
+	return num
+end
+
 function K.CreateStatusFrame()
 	local function CreateSection(width, height, parent, anchor1, anchorTo, anchor2, yOffset)
 		local section = CreateFrame("Frame", nil, parent)
@@ -156,12 +168,12 @@ function K.CreateStatusFrame()
 
 	local function CreateContentLines(num, parent, anchorTo)
 		local content = CreateFrame("Frame", nil, parent)
-		content:SetSize(240, (num * 16) + ((num - 1) * 5)) -- 20 height and 5 spacing
+		content:SetSize(260, (num * 20) + ((num - 1) * 5)) -- 20 height and 5 spacing
 		content:SetPoint("TOP", anchorTo, "BOTTOM", 0, -5)
 
 		for i = 1, num do
 			local line = CreateFrame("Frame", nil, content)
-			line:SetSize(240, 20)
+			line:SetSize(260, 20)
 			line.Text = line:CreateFontString(nil, "ARTWORK", "SystemFont_Outline")
 			line.Text:SetAllPoints()
 			line.Text:SetJustifyH("LEFT")
@@ -180,16 +192,10 @@ function K.CreateStatusFrame()
 
 	--Main frame
 	local StatusFrame = CreateFrame("Frame", "KkthnxUIStatusReport", UIParent)
-	StatusFrame:SetSize(300, 600)
-	StatusFrame:SetPoint("CENTER", 0, 200)
+	StatusFrame:SetSize(320, 555)
+	StatusFrame:SetPoint("CENTER", UIParent, "CENTER")
 	StatusFrame:SetFrameStrata("HIGH")
-
-	StatusFrame.Background = StatusFrame:CreateTexture(nil, "BACKGROUND", -1)
-	StatusFrame.Background:SetAllPoints()
-	StatusFrame.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(StatusFrame)
-
+	StatusFrame:CreateBorder()
 	StatusFrame:SetShown(false)
 	StatusFrame:SetMovable(true)
 
@@ -202,7 +208,7 @@ function K.CreateStatusFrame()
 		self:GetParent():Hide()
 	end)
 
-	--Title logo (drag to move frame)
+	-- Title logo (drag to move frame)
 	StatusFrame.TitleLogoFrame = CreateFrame("Frame", nil, StatusFrame, "TitleDragAreaTemplate")
 	StatusFrame.TitleLogoFrame:SetSize(128, 64)
 	StatusFrame.TitleLogoFrame:SetPoint("CENTER", StatusFrame, "TOP", 0, 0)
@@ -216,22 +222,9 @@ function K.CreateStatusFrame()
 	StatusFrame.TitleLogoFrame.Shade:SetPoint("BOTTOMRIGHT", StatusFrame.TitleLogoFrame.Texture, "BOTTOMRIGHT", 6, -6)
 	StatusFrame.TitleLogoFrame.Shade:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4] )
 
-	-- Player Model
-	StatusFrame.ModelHolder = CreateFrame("Frame", nil, StatusFrame)
-	StatusFrame.ModelHolder:SetSize(150, 150)
-	StatusFrame.ModelHolder:SetPoint("RIGHT", StatusFrame, "LEFT", -90, 0)
-
-	StatusFrame.Model = CreateFrame("PlayerModel", "StatusFrameModel", StatusFrame.ModelHolder)
-	StatusFrame.Model:SetUnit("player")
-	StatusFrame.Model:SetPoint("CENTER", StatusFrame.ModelHolder, "CENTER")
-	StatusFrame.Model:SetSize(GetScreenWidth() * 2, GetScreenHeight() * 2)
-	StatusFrame.Model:SetCamDistanceScale(6)
-	StatusFrame.Model:SetFacing(6.9)
-	StatusFrame.Model:Show()
-
 	--Sections
-	StatusFrame.Section1 = CreateSection(300, 150, StatusFrame, "TOP", StatusFrame, "TOP", -30)
-	StatusFrame.Section2 = CreateSection(300, 175, StatusFrame, "TOP", StatusFrame.Section1, "BOTTOM", 0)
+	StatusFrame.Section1 = CreateSection(300, 125, StatusFrame, "TOP", StatusFrame, "TOP", -30)
+	StatusFrame.Section2 = CreateSection(300, 150, StatusFrame, "TOP", StatusFrame.Section1, "BOTTOM", 0)
 	StatusFrame.Section3 = CreateSection(300, 185, StatusFrame, "TOP", StatusFrame.Section2, "BOTTOM", 0)
 	StatusFrame.Section4 = CreateSection(300, 60, StatusFrame, "TOP", StatusFrame.Section3, "BOTTOM", 0)
 
@@ -239,7 +232,7 @@ function K.CreateStatusFrame()
 	StatusFrame.Section1.Header.Text:SetText("|cff4488ffAddOn Info|r")
 	StatusFrame.Section2.Header.Text:SetText("|cff4488ffWoW Info|r")
 	StatusFrame.Section3.Header.Text:SetText("|cff4488ffCharacter Info|r")
-	StatusFrame.Section4.Header.Text:SetText("|cff4488ffExport To|r")
+	StatusFrame.Section4.Header.Text:SetText("|cff4488ffReport To|r")
 
 	--Section content
 	StatusFrame.Section1.Content = CreateContentLines(4, StatusFrame.Section1, StatusFrame.Section1.Header)
@@ -253,7 +246,9 @@ function K.CreateStatusFrame()
 	StatusFrame.Section1.Content.Line1.Text:SetFormattedText("Version of KkthnxUI: |cff4beb2c%s|r", K.Version)
 	StatusFrame.Section1.Content.Line2.Text:SetFormattedText("Other AddOns Enabled: |cff4beb2c%s|r", AreOtherAddOnsEnabled() )
 	StatusFrame.Section1.Content.Line3.Text:SetFormattedText("Auto Scale Enabled: |cff4beb2c%s|r", (C["General"].AutoScale == true and "Yes" or "No"))
-	StatusFrame.Section1.Content.Line4.Text:SetFormattedText("UI Scale Is: |cff4beb2c%.4f|r", GetUiScale())
+	StatusFrame.Section1.Content.Line3.Text:SetFormattedText("Recommended Scale: |cff4beb2c%s|r", PixelClip(PixelBestSize()))
+	StatusFrame.Section1.Content.Line4.Text:SetFormattedText("UI Scale Is: |cff4beb2c%s|r", GetUiScale())
+
 	StatusFrame.Section2.Content.Line1.Text:SetFormattedText("Version of WoW: |cff4beb2c%s (build %s)|r", K.WowPatch, K.WowBuild)
 	StatusFrame.Section2.Content.Line2.Text:SetFormattedText("Client Language: |cff4beb2c%s|r", GetLocale())
 	StatusFrame.Section2.Content.Line3.Text:SetFormattedText("Display Mode: |cff4beb2c%s|r", GetDisplayMode())
@@ -272,11 +267,18 @@ function K.CreateStatusFrame()
 	StatusFrame.Section4.Content.Button1:SetPoint("LEFT", StatusFrame.Section4.Content, "LEFT")
 	StatusFrame.Section4.Content.Button1:SetText("|cff7289DADiscord")
 	StatusFrame.Section4.Content.Button1:SkinButton()
+	StatusFrame.Section4.Content.Button1:SetScript("OnClick", function()
+		K.StaticPopup_Show("DISCORD_EDITBOX", nil, nil, "https://discord.gg/YUmxqQm")
+	end)
+
 	StatusFrame.Section4.Content.Button2 = CreateFrame("Button", nil, StatusFrame.Section4.Content, "UIPanelButtonTemplate")
 	StatusFrame.Section4.Content.Button2:SetSize(100, 23)
 	StatusFrame.Section4.Content.Button2:SetPoint("RIGHT", StatusFrame.Section4.Content, "RIGHT")
 	StatusFrame.Section4.Content.Button2:SetText("|cff6e5494Github")
 	StatusFrame.Section4.Content.Button2:SkinButton()
+	StatusFrame.Section4.Content.Button2:SetScript("OnClick", function()
+		K.StaticPopup_Show("GITHUB_EDITBOX", nil, nil, "https://github.com/Kkthnx/KkthnxUI/issues")
+	end)
 
 	K.StatusFrame = StatusFrame
 end

@@ -123,31 +123,6 @@ local function UpdateBlizzardFonts()
 	SetFont(Tooltip_Small, NORMAL_FONT, C["General"].FontSize)
 	SetFont(ZoneTextString, NORMAL_FONT, 32, "OUTLINE")
 
-	-- Character Info Sheet
-	hooksecurefunc("PaperDollFrame_SetArmor", function(_, unit)
-		if unit ~= "player" then
-			return
-		end
-
-		local msg
-		PaperDollFrame_SetItemLevel(CharacterStatsPane.ItemLevelFrame, unit)
-		CharacterStatsPane.ItemLevelCategory:Show()
-		CharacterStatsPane.ItemLevelFrame:Show()
-		CharacterStatsPane.AttributesCategory:SetPoint("TOP", CharacterStatsPane.ItemLevelFrame, "BOTTOM", 0, -10)
-		msg = CharacterStatsPane.ItemLevelFrame.Value
-
-		local total, equip = GetAverageItemLevel()
-		if total > 0 then
-			if equip == total then
-				msg:SetFormattedText("%s%.2f|r / %s%.2f|r", K.RGBToHex(K.ColorGradient((equip / total), 1, 0, 0, 1, 1, 0, 0, 1, 0)), equip, K.RGBToHex(0, 1, 59), total)
-			else
-				msg:SetFormattedText("%.2f / %.2f", equip, total)
-			end
-		else
-			msg:SetFormattedText("%s", _G.NONE)
-		end
-	end)
-
 	-- Titles
 	PaperDollTitlesPane:HookScript("OnShow", function()
 		for _, object in pairs(PaperDollTitlesPane.buttons) do

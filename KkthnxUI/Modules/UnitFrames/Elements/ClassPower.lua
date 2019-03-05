@@ -7,10 +7,12 @@ local Module = K:GetModule("Unitframes")
 
 local _G = _G
 
+local MAX_TOTEMS = _G.MAX_TOTEMS
 local ClassPowerTexture = K.GetTexture(C["Unitframe"].Texture)
 local ComboColor = K.Colors.power["COMBO_POINTS"]
 local CreateFrame = _G.CreateFrame
 local UnitHasVehicleUI = _G.UnitHasVehicleUI
+local GetRuneCooldown = _G.GetRuneCooldown
 
 -- Post Update Runes
 local function PostUpdateRune(self, runemap)
@@ -33,9 +35,8 @@ local function PostUpdateTotem(element)
 	for index = 1, MAX_TOTEMS do
 		local Totem = element[index]
 		if (Totem:IsShown()) then
-			local prevShown = shown[#shown]
-
 			Totem:ClearAllPoints()
+
 			if (index == 1) then
 				Totem:SetPoint("TOPLEFT", element.__owner, "BOTTOMLEFT", 56, -3)
 			else
@@ -48,7 +49,7 @@ local function PostUpdateTotem(element)
 end
 
 -- Post Update ClassPower
-local function PostUpdateClassPower(element, cur, max, diff, powerType)
+local function PostUpdateClassPower(element, _, max, diff)
 	-- Update layout on change in total visible
 	if (diff) then
 		local maxWidth = 140
@@ -67,7 +68,6 @@ local function PostUpdateClassPower(element, cur, max, diff, powerType)
 	-- Update color if this is combopoints
 	if (max) then
 		if (not UnitHasVehicleUI("player")) and (K.Class == "ROGUE" or K.Class == "DRUID") then
-			local numElements = #element
 			local numColors = #ComboColor
 			for index = 1, max do
 				local Bar = element[index]
@@ -85,40 +85,39 @@ local function PostUpdateClassPower(element, cur, max, diff, powerType)
 end
 
 -- Post Update Nameplate ClassPower
-local function PostUpdateNameplateClassPower(element, cur, max, diff, powerType)
-    -- Update layout on change in total visible
-    if (diff) then
-        local maxWidth = C["Nameplates"].Width
-        local gap = 4
+local function PostUpdateNameplateClassPower(element, _, max, diff)
+	-- Update layout on change in total visible
+	if (diff) then
+		local maxWidth = C["Nameplates"].Width
+		local gap = 4
 
-        for index = 1, max do
-            local Bar = element[index]
-            Bar:SetWidth(((maxWidth / max) - (((max - 1) * gap) / max)))
+		for index = 1, max do
+			local Bar = element[index]
+			Bar:SetWidth(((maxWidth / max) - (((max - 1) * gap) / max)))
 
-            if (index > 1) then
-                Bar:ClearAllPoints()
-                Bar:SetPoint("LEFT", element[index - 1], "RIGHT", gap, 0)
-            end
-        end
-    end
-    -- Update color if this is combopoints
-    if (max) then
-        if (not UnitHasVehicleUI("player")) and (K.Class == "ROGUE" or K.Class == "DRUID") then
-            local numElements = #element
-            local numColors = #ComboColor
-            for index = 1, max do
-                local Bar = element[index]
-                local colorIndex
-                if (max > numColors) then
-                    local exactIndex = index/max * numColors
-                    colorIndex = math.ceil(exactIndex)
-                else
-                    colorIndex = index
-                end
-                Bar:SetStatusBarColor(ComboColor[colorIndex][1], ComboColor[colorIndex][2], ComboColor[colorIndex][3], ComboColor[colorIndex][4])
-            end
-        end
-    end
+			if (index > 1) then
+				Bar:ClearAllPoints()
+				Bar:SetPoint("LEFT", element[index - 1], "RIGHT", gap, 0)
+			end
+		end
+	end
+	-- Update color if this is combopoints
+	if (max) then
+		if (not UnitHasVehicleUI("player")) and (K.Class == "ROGUE" or K.Class == "DRUID") then
+			local numColors = #ComboColor
+			for index = 1, max do
+				local Bar = element[index]
+				local colorIndex
+				if (max > numColors) then
+					local exactIndex = index/max * numColors
+					colorIndex = math.ceil(exactIndex)
+				else
+					colorIndex = index
+				end
+				Bar:SetStatusBarColor(ComboColor[colorIndex][1], ComboColor[colorIndex][2], ComboColor[colorIndex][3], ComboColor[colorIndex][4])
+			end
+		end
+	end
 end
 
 -- Post Update ClassPower Texture

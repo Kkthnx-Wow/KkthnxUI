@@ -28,9 +28,9 @@ local ChatFrame_SystemEventHandler = _G.ChatFrame_SystemEventHandler
 local ChatTypeGroup = _G.ChatTypeGroup
 local ChatTypeInfo = _G.ChatTypeInfo
 local CreateFrame = _G.CreateFrame
-local C_VoiceChat_SetPortraitTexture = C_VoiceChat.SetPortraitTexture
-local C_VoiceChat_GetMemberName = C_VoiceChat.GetMemberName
-local Voice_GetVoiceChannelNotificationColor = Voice_GetVoiceChannelNotificationColor
+local C_VoiceChat_SetPortraitTexture = _G.C_VoiceChat.SetPortraitTexture
+local C_VoiceChat_GetMemberName = _G.C_VoiceChat.GetMemberName
+local Voice_GetVoiceChannelNotificationColor = _G.Voice_GetVoiceChannelNotificationColor
 local FCF_Close = _G.FCF_Close
 local FCF_DockFrame = _G.FCF_DockFrame
 local FCF_GetCurrentChatFrame = _G.FCF_GetCurrentChatFrame
@@ -641,12 +641,12 @@ function Module:ConfigureHead(memberID, channelID)
 	frame.memberID = memberID
 	frame.channelID = channelID
 
-	C_VoiceChat_SetPortraitTexture(frame.Portrait.texture, memberID, channelID);
+	C_VoiceChat_SetPortraitTexture(frame.Portrait.texture, memberID, channelID)
 
-	local memberName = C_VoiceChat_GetMemberName(memberID, channelID);
-	local r, g, b = Voice_GetVoiceChannelNotificationColor(channelID);
+	local memberName = C_VoiceChat_GetMemberName(memberID, channelID)
+	local r, g, b = Voice_GetVoiceChannelNotificationColor(channelID)
 	frame.Name:SetText(memberName or "")
-	frame.Name:SetVertexColor(r, g, b, 1);
+	frame.Name:SetVertexColor(r, g, b, 1)
 	frame:Show()
 end
 
@@ -719,14 +719,14 @@ function Module:OnEnable()
 	self:SecureHook("FCF_RestorePositionAndDimensions", Module.SetChatFramePosition)
 	self:SecureHook("FCF_SavePositionAndDimensions", Module.SaveChatFramePositionAndDimensions)
 	self:SecureHook("FCFTab_UpdateAlpha", Module.NoMouseAlpha)
-	
+
 	-- Chat Heads Frame: Sourced ElvUI
 	self.ChatHeadFrame = CreateFrame("Frame", "KkthnxUIChatHeadFrame", UIParent)
 	self.ChatHeadFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -80)
 	self.ChatHeadFrame:SetHeight(20)
 	self.ChatHeadFrame:SetWidth(200)
 	Movers:RegisterFrame(self.ChatHeadFrame)
-	
+
 	self.maxHeads = 5
 	self.volumeBarHeight = 3
 
@@ -768,16 +768,16 @@ function Module:OnEnable()
 	self:SetChatHeadOrientation("TOP")
 
 	if C["Chat"].VoiceOverlay then
-		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED", "VoiceOverlay");
-		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED", "VoiceOverlay");
-		self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED", "VoiceOverlay");
-		self:RegisterEvent("VOICE_CHAT_COMMUNICATION_MODE_CHANGED", "VoiceOverlay");
-		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_REMOVED", "VoiceOverlay");
-		self:RegisterEvent("VOICE_CHAT_CHANNEL_REMOVED", "VoiceOverlay");
-		self:RegisterEvent("VOICE_CHAT_CHANNEL_DEACTIVATED", "VoiceOverlay");
-		_G.VoiceActivityManager:UnregisterAllEvents();
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED", "VoiceOverlay")
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED", "VoiceOverlay")
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED", "VoiceOverlay")
+		self:RegisterEvent("VOICE_CHAT_COMMUNICATION_MODE_CHANGED", "VoiceOverlay")
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_REMOVED", "VoiceOverlay")
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_REMOVED", "VoiceOverlay")
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_DEACTIVATED", "VoiceOverlay")
+		_G.VoiceActivityManager:UnregisterAllEvents()
 	end
-	
+
 	for i = 1, 10 do
 		local ChatFrame = _G["ChatFrame" .. i]
 

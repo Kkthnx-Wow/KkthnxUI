@@ -1,50 +1,46 @@
-local K, C, L = unpack(select(2, ...))
-local GroupLoot = K:NewModule("GroupLoot", "AceEvent-3.0", "AceTimer-3.0")
-K.GroupLoot = GroupLoot
+local K, C = unpack(select(2, ...))
+local Module = K:NewModule("GroupLoot", "AceEvent-3.0", "AceTimer-3.0")
+K.GroupLoot = Module
 
---Lua functions
-local pairs, unpack, ipairs, next, tonumber = pairs, unpack, ipairs, next, tonumber
+local _G = _G
+local ipairs = ipairs
+local next = next
+local pairs = pairs
+local tonumber = tonumber
 
---WoW API / Variables
-local C_LootHistoryGetItem = C_LootHistory.GetItem
-local C_LootHistoryGetPlayerInfo = C_LootHistory.GetPlayerInfo
-local ChatEdit_InsertLink = ChatEdit_InsertLink
-local CreateFrame = CreateFrame
-local CursorOnUpdate = CursorOnUpdate
-local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
-local DressUpItemLink = DressUpItemLink
-local GameTooltip_ShowCompareItem = GameTooltip_ShowCompareItem
-local GetLootRollItemInfo = GetLootRollItemInfo
-local GetLootRollItemLink = GetLootRollItemLink
-local GetLootRollTimeLeft = GetLootRollTimeLeft
-local GREED = GREED
-local IsControlKeyDown = IsControlKeyDown
-local IsModifiedClick = IsModifiedClick
-local IsShiftKeyDown = IsShiftKeyDown
-local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
-local NEED = NEED
-local PASS = PASS
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS
-local ResetCursor = ResetCursor
-local ROLL_DISENCHANT = ROLL_DISENCHANT
-local RollOnLoot = RollOnLoot
-local SetDesaturation = SetDesaturation
-local ShowInspectCursor = ShowInspectCursor
-
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: GameTooltip, AlertFrameHolder, WorldFrame
--- GLOBALS: MAX_PLAYER_LEVEL, UIParent, AlertFrame
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local C_LootHistoryGetItem = _G.C_LootHistory.GetItem
+local C_LootHistoryGetPlayerInfo = _G.C_LootHistory.GetPlayerInfo
+local ChatEdit_InsertLink = _G.ChatEdit_InsertLink
+local CreateFrame = _G.CreateFrame
+local CursorOnUpdate = _G.CursorOnUpdate
+local DressUpItemLink = _G.DressUpItemLink
+local GREED = _G.GREED
+local GameTooltip_ShowCompareItem = _G.GameTooltip_ShowCompareItem
+local GetLootRollItemInfo = _G.GetLootRollItemInfo
+local GetLootRollItemLink = _G.GetLootRollItemLink
+local GetLootRollTimeLeft = _G.GetLootRollTimeLeft
+local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
+local IsControlKeyDown = _G.IsControlKeyDown
+local IsModifiedClick = _G.IsModifiedClick
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local NEED = _G.NEED
+local PASS = _G.PASS
+local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local ROLL_DISENCHANT = _G.ROLL_DISENCHANT
+local ResetCursor = _G.ResetCursor
+local RollOnLoot = _G.RollOnLoot
+local SetDesaturation = _G.SetDesaturation
+local ShowInspectCursor = _G.ShowInspectCursor
 
 local pos = "TOP"
 local cancelled_rolls = {}
 local cachedRolls = {}
 local completedRolls = {}
 local FRAME_WIDTH, FRAME_HEIGHT = 328, 26
-
-local GroupLootFont = K.GetFont(C["Loot"].Font)
 local GroupLootTexture = K.GetTexture(C["Loot"].Texture)
 
-GroupLoot.RollBars = {}
+Module.RollBars = {}
 
 local function ClickRoll(frame)
 	RollOnLoot(frame.parent.rollID, frame.rolltype)
@@ -53,6 +49,7 @@ end
 local function HideTip()
 	GameTooltip:Hide()
 end
+
 local function HideTip2()
 	GameTooltip:Hide()
 	ResetCursor()
@@ -62,15 +59,18 @@ local rolltypes = {[1] = "need", [2] = "greed", [3] = "disenchant", [0] = "pass"
 local function SetTip(frame)
 	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT")
 	GameTooltip:SetText(frame.tiptext)
+
 	if frame:IsEnabled() == 0 then
 		GameTooltip:AddLine("|cffff3333" .. "Can't Roll")
 	end
+
 	for name, tbl in pairs(frame.parent.rolls) do
 		if rolltypes[tbl[1]] == rolltypes[frame.rolltype] then
 			local classColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[tbl[2]] or RAID_CLASS_COLORS[tbl[2]]
 			GameTooltip:AddLine(name, classColor.r, classColor.g, classColor.b)
 		end
 	end
+
 	GameTooltip:Show()
 end
 
@@ -78,11 +78,14 @@ local function SetItemTip(frame)
 	if not frame.link then
 		return
 	end
+
 	GameTooltip:SetOwner(frame, "ANCHOR_TOPLEFT")
 	GameTooltip:SetHyperlink(frame.link)
+
 	if IsShiftKeyDown() then
 		GameTooltip_ShowCompareItem()
 	end
+
 	if IsModifiedClick("DRESSUP") then
 		ShowInspectCursor()
 	else
@@ -94,6 +97,7 @@ local function ItemOnUpdate(self)
 	if IsShiftKeyDown() then
 		GameTooltip_ShowCompareItem()
 	end
+
 	CursorOnUpdate(self)
 end
 
@@ -107,6 +111,7 @@ end
 
 local function OnEvent(frame, _, rollID)
 	cancelled_rolls[rollID] = true
+
 	if frame.rollID ~= rollID then
 		return
 	end
@@ -120,6 +125,7 @@ local function StatusUpdate(frame)
 	if not frame.parent.rollID then
 		return
 	end
+
 	local t = GetLootRollTimeLeft(frame.parent.rollID)
 	local perc = t / frame.parent.time
 	frame.spark:SetPoint("CENTER", frame, "LEFT", perc * frame:GetWidth(), 0)
@@ -135,9 +141,11 @@ local function CreateRollButton(parent, ntex, ptex, htex, rolltype, tiptext, ...
 	f:SetPoint(...)
 	f:SetSize(FRAME_HEIGHT - 4, FRAME_HEIGHT - 4)
 	f:SetNormalTexture(ntex)
+
 	if ptex then
 		f:SetPushedTexture(ptex)
 	end
+
 	f:SetHighlightTexture(htex)
 	f.rolltype = rolltype
 	f.parent = parent
@@ -146,23 +154,18 @@ local function CreateRollButton(parent, ntex, ptex, htex, rolltype, tiptext, ...
 	f:SetScript("OnLeave", HideTip)
 	f:SetScript("OnClick", ClickRoll)
 	f:SetMotionScriptsWhileDisabled(true)
+
 	local txt = f:CreateFontString(nil, nil)
 	txt:FontTemplate(nil, nil, "OUTLINE")
 	txt:SetPoint("CENTER", 0, rolltype == 2 and 1 or rolltype == 0 and -1.2 or 0)
+
 	return f, txt
 end
 
-function GroupLoot:CreateRollFrame()
+function Module:CreateRollFrame()
 	local frame = CreateFrame("Frame", nil, UIParent)
 	frame:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
-
-	frame.Backgrounds = frame:CreateTexture(nil, "BACKGROUND", -2)
-	frame.Backgrounds:SetAllPoints()
-	frame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(frame)
-
-	frame:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4] )
+	frame:CreateBorder()
 	frame:SetScript("OnEvent", OnEvent)
 	frame:SetFrameStrata("MEDIUM")
 	frame:SetFrameLevel(10)
@@ -172,14 +175,7 @@ function GroupLoot:CreateRollFrame()
 	local button = CreateFrame("Button", nil, frame)
 	button:SetPoint("RIGHT", frame, "LEFT", -(2 * 3), 0)
 	button:SetSize(FRAME_HEIGHT + 2, FRAME_HEIGHT)
-
-	button.Backgrounds = button:CreateTexture(nil, "BACKGROUND", -2)
-	button.Backgrounds:SetAllPoints()
-	button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(button)
-
-	button:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4] )
+	button:CreateBorder()
 	button:SetScript("OnEnter", SetItemTip)
 	button:SetScript("OnEnter", SetItemTip)
 	button:SetScript("OnLeave", HideTip2)
@@ -218,63 +214,11 @@ function GroupLoot:CreateRollFrame()
 	spark:SetBlendMode("ADD")
 	status.spark = spark
 
-	local need, needtext =
-		CreateRollButton(
-		frame,
-		"Interface\\Buttons\\UI-GroupLoot-Dice-Up",
-		"Interface\\Buttons\\UI-GroupLoot-Dice-Highlight",
-		"Interface\\Buttons\\UI-GroupLoot-Dice-Down",
-		1,
-		NEED,
-		"LEFT",
-		frame.button,
-		"RIGHT",
-		5,
-		-1
-	)
-	local greed, greedtext =
-		CreateRollButton(
-		frame,
-		"Interface\\Buttons\\UI-GroupLoot-Coin-Up",
-		"Interface\\Buttons\\UI-GroupLoot-Coin-Highlight",
-		"Interface\\Buttons\\UI-GroupLoot-Coin-Down",
-		2,
-		GREED,
-		"LEFT",
-		need,
-		"RIGHT",
-		0,
-		-1
-	)
+	local need, needtext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-Dice-Up", "Interface\\Buttons\\UI-GroupLoot-Dice-Highlight", "Interface\\Buttons\\UI-GroupLoot-Dice-Down", 1, NEED, "LEFT", frame.button, "RIGHT", 5, -1)
+	local greed, greedtext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-Coin-Up", "Interface\\Buttons\\UI-GroupLoot-Coin-Highlight", "Interface\\Buttons\\UI-GroupLoot-Coin-Down", 2, GREED, "LEFT", need, "RIGHT", 0, -1)
 	local de, detext
-	de, detext =
-		CreateRollButton(
-		frame,
-		"Interface\\Buttons\\UI-GroupLoot-DE-Up",
-		"Interface\\Buttons\\UI-GroupLoot-DE-Highlight",
-		"Interface\\Buttons\\UI-GroupLoot-DE-Down",
-		3,
-		ROLL_DISENCHANT,
-		"LEFT",
-		greed,
-		"RIGHT",
-		0,
-		-1
-	)
-	local pass, passtext =
-		CreateRollButton(
-		frame,
-		"Interface\\Buttons\\UI-GroupLoot-Pass-Up",
-		nil,
-		"Interface\\Buttons\\UI-GroupLoot-Pass-Down",
-		0,
-		PASS,
-		"LEFT",
-		de or greed,
-		"RIGHT",
-		0,
-		2
-	)
+	de, detext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-DE-Up", "Interface\\Buttons\\UI-GroupLoot-DE-Highlight", "Interface\\Buttons\\UI-GroupLoot-DE-Down", 3, ROLL_DISENCHANT, "LEFT", greed, "RIGHT", 0, -1)
+	local pass, passtext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-Pass-Up", nil, "Interface\\Buttons\\UI-GroupLoot-Pass-Down", 0, PASS, "LEFT", de or greed, "RIGHT", 0, 2)
 	frame.needbutt, frame.greedbutt, frame.disenchantbutt = need, greed, de
 	frame.need, frame.greed, frame.pass, frame.disenchant = needtext, greedtext, passtext, detext
 
@@ -297,52 +241,43 @@ function GroupLoot:CreateRollFrame()
 end
 
 local function GetFrame()
-	for _, f in ipairs(GroupLoot.RollBars) do
+	for _, f in ipairs(Module.RollBars) do
 		if not f.rollID then
 			return f
 		end
 	end
 
-	local f = GroupLoot:CreateRollFrame()
+	local f = Module:CreateRollFrame()
 	if pos == "TOP" then
-		f:SetPoint(
-			"TOP",
-			next(GroupLoot.RollBars) and GroupLoot.RollBars[#GroupLoot.RollBars] or AlertFrameHolder,
-			"BOTTOM",
-			0,
-			-4
-		)
+		f:SetPoint("TOP", next(Module.RollBars) and Module.RollBars[#Module.RollBars] or AlertFrameHolder, "BOTTOM", 0, -4)
 	else
-		f:SetPoint(
-			"BOTTOM",
-			next(GroupLoot.RollBars) and GroupLoot.RollBars[#GroupLoot.RollBars] or AlertFrameHolder,
-			"TOP",
-			0,
-			4
-		)
+		f:SetPoint("BOTTOM", next(Module.RollBars) and Module.RollBars[#Module.RollBars] or AlertFrameHolder, "TOP", 0, 4)
 	end
-	table.insert(GroupLoot.RollBars, f)
+
+	table.insert(Module.RollBars, f)
+
 	return f
 end
 
-function GroupLoot:START_LOOT_ROLL(_, rollID, time)
+function Module:START_LOOT_ROLL(_, rollID, time)
 	if cancelled_rolls[rollID] then
 		return
 	end
+
 	local f = GetFrame()
 	f.rollID = rollID
 	f.time = time
+
 	for i in pairs(f.rolls) do
 		f.rolls[i] = nil
 	end
+
 	f.need:SetText(0)
 	f.greed:SetText(0)
 	f.pass:SetText(0)
 	f.disenchant:SetText(0)
 
 	local texture, name, _, quality, bop, canNeed, canGreed, canDisenchant = GetLootRollItemInfo(rollID)
-	local link = GetLootRollItemLink(rollID)
-	local itemID = tonumber(string.match(link, "item:(%d+)"))
 
 	f.button.icon:SetTexture(texture)
 	f.button.link = GetLootRollItemLink(rollID)
@@ -352,29 +287,35 @@ function GroupLoot:START_LOOT_ROLL(_, rollID, time)
 	else
 		f.needbutt:Disable()
 	end
+
 	if canGreed then
 		f.greedbutt:Enable()
 	else
 		f.greedbutt:Disable()
 	end
+
 	if canDisenchant then
 		f.disenchantbutt:Enable()
 	else
 		f.disenchantbutt:Disable()
 	end
+
 	SetDesaturation(f.needbutt:GetNormalTexture(), not canNeed)
 	SetDesaturation(f.greedbutt:GetNormalTexture(), not canGreed)
 	SetDesaturation(f.disenchantbutt:GetNormalTexture(), not canDisenchant)
+
 	if canNeed then
 		f.needbutt:SetAlpha(1)
 	else
 		f.needbutt:SetAlpha(0.2)
 	end
+
 	if canGreed then
 		f.greedbutt:SetAlpha(1)
 	else
 		f.greedbutt:SetAlpha(0.2)
 	end
+
 	if canDisenchant then
 		f.disenchantbutt:SetAlpha(1)
 	else
@@ -387,12 +328,7 @@ function GroupLoot:START_LOOT_ROLL(_, rollID, time)
 	local color = ITEM_QUALITY_COLORS[quality]
 	f.fsloot:SetText(name)
 	f.status:SetStatusBarColor(color.r, color.g, color.b, .7)
-	f.status.bg:SetColorTexture(
-		C["Media"].BackdropColor[1],
-		C["Media"].BackdropColor[2],
-		C["Media"].BackdropColor[3],
-		C["Media"].BackdropColor[4]
-	)
+	f.status.bg:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	f.status:SetMinMaxValues(0, time)
 	f.status:SetValue(time)
@@ -403,34 +339,26 @@ function GroupLoot:START_LOOT_ROLL(_, rollID, time)
 	AlertFrame:UpdateAnchors()
 
 	-- Add cached roll info, if any
-	for rollID, rollTable in pairs(cachedRolls) do
-		if f.rollID == rollID then -- rollID matches cached rollID
+	for rollid, rollTable in pairs(cachedRolls) do
+		if f.rollID == rollid then --rollid matches cached rollid
 			for rollerName, rollerInfo in pairs(rollTable) do
 				local rollType, class = rollerInfo[1], rollerInfo[2]
 				f.rolls[rollerName] = {rollType, class}
 				f[rolltypes[rollType]]:SetText(tonumber(f[rolltypes[rollType]]:GetText()) + 1)
 			end
-			completedRolls[rollID] = true
+			completedRolls[rollid] = true
 			break
 		end
 	end
-
-	-- if C["Loot"].AutoRoll and UnitLevel("player") == MAX_PLAYER_LEVEL and quality == 2 and not bop then
-	-- 	if canDisenchant then
-	-- 		RollOnLoot(rollID, 3)
-	-- 	else
-	-- 		RollOnLoot(rollID, 2)
-	-- 	end
-	-- end
 end
 
-function GroupLoot:LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
+function Module:LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
 	local rollID = C_LootHistoryGetItem(itemIdx)
 	local name, class, rollType = C_LootHistoryGetPlayerInfo(itemIdx, playerIdx)
 
 	local rollIsHidden = true
 	if name and rollType then
-		for _, f in ipairs(GroupLoot.RollBars) do
+		for _, f in ipairs(Module.RollBars) do
 			if f.rollID == rollID then
 				f.rolls[name] = {rollType, class}
 				f[rolltypes[rollType]]:SetText(tonumber(f[rolltypes[rollType]]:GetText()) + 1)
@@ -449,16 +377,16 @@ function GroupLoot:LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
 	end
 end
 
-function GroupLoot:LOOT_HISTORY_ROLL_COMPLETE()
+function Module:LOOT_HISTORY_ROLL_COMPLETE()
 	-- Remove completed rolls from cache
 	for rollID in pairs(completedRolls) do
 		cachedRolls[rollID] = nil
 		completedRolls[rollID] = nil
 	end
 end
-GroupLoot.LOOT_ROLLS_COMPLETE = GroupLoot.LOOT_HISTORY_ROLL_COMPLETE
+Module.LOOT_ROLLS_COMPLETE = Module.LOOT_HISTORY_ROLL_COMPLETE
 
-function GroupLoot:OnEnable()
+function Module:OnEnable()
 	if not C["Loot"].GroupLoot then
 		return
 	end
@@ -472,9 +400,10 @@ function GroupLoot:OnEnable()
 	UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
 end
 
-SlashCmdList.TESTROLL = function()
+function K.TestRoll()
 	local f = GetFrame()
 	local items = {32837, 34196, 33820, 84004}
+
 	if f:IsShown() then
 		f:Hide()
 	else
@@ -491,7 +420,6 @@ SlashCmdList.TESTROLL = function()
 		f.status:SetMinMaxValues(0, 100)
 		f.status:SetValue(math.random(50, 90))
 		f.status:SetStatusBarColor(r, g, b, 0.7)
-		f.status.bg:SetColorTexture(r, g, b)
 
 		f:SetBackdropBorderColor(r, g, b, 0.7)
 		f.button:SetBackdropBorderColor(r, g, b, 0.7)
@@ -505,5 +433,4 @@ SlashCmdList.TESTROLL = function()
 		f:Show()
 	end
 end
-SLASH_TESTROLL1 = "/testroll"
-SLASH_TESTROLL2 = "/еуыекщдд"
+K:RegisterChatCommand("testroll", K.TestRoll)

@@ -9,8 +9,8 @@ local ReloadUI = _G.ReloadUI
 local IsAddOnLoaded = _G.IsAddOnLoaded
 
 -- Force user to disable KkthnxUI if another AddOn is enabled with it!
-if IsAddOnLoaded("KkthnxUI") and IsAddOnLoaded("Tukui") or IsAddOnLoaded("ElvUI") or IsAddOnLoaded("DiabolicUI") or IsAddOnLoaded("ShestakUI") then
-	K.PopupDialogs["KKTHNXUI_INCOMPATIBLE"] = {
+if IsAddOnLoaded("KkthnxUI") and IsAddOnLoaded("Tukui") or IsAddOnLoaded("ElvUI") or IsAddOnLoaded("DiabolicUI") or IsAddOnLoaded("DuffedUI") or IsAddOnLoaded("ShestakUI") then
+	StaticPopupDialogs.KKTHNXUI_INCOMPATIBLE = {
 		text = "Oh no, you have |cff4488ffKkthnxUI|r and another UserInterface enabled at the same time. Disable KkthnxUI!",
 		button1 = "Disable KkthnxUI",
 		OnAccept = function()
@@ -22,18 +22,16 @@ if IsAddOnLoaded("KkthnxUI") and IsAddOnLoaded("Tukui") or IsAddOnLoaded("ElvUI"
 			ReloadUI()
 		end,
 		timeout = 0,
-		hasEditBox = 1,
 		whileDead = 1,
-		hideOnEscape = 1,
+		hideOnEscape = 0,
 		showAlert = 1,
-		maxLetters = 38,
 		EditBoxOnEscapePressed = function()
 			DisableAddOn("KkthnxUI")
 			ReloadUI()
 		end,
 	}
 
-	K.StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
+	StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
 	return
 end
 
@@ -67,11 +65,6 @@ end
 -- Auto-overwrite script config is X addon is found. Here we use our own functions to check for addons.
 if C["DataBars"].Enable == false then
 	C["DataBars"].TrackHonor = false
-end
-
-if K.CheckAddOnState("QuickQuest")
-or K.CheckAddOnState("AutoTurnIn") then
-	C["Automation"].AutoQuest = false
 end
 
 if K.CheckAddOnState("flyPlateBuffs") then

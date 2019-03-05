@@ -10,7 +10,7 @@ local function SkinWorldMapStuff()
 	-- QuestMapFrame.QuestsFrame.StoryTooltip:CreateBorder()
 	-- QuestScrollFrame.WarCampaignTooltip:CreateBorder()
 
-	WorldMapFrameHomeButton.text:FontTemplate()
+	--WorldMapFrameHomeButton.text:FontTemplate()
 end
 
 table_insert(Module.SkinFuncs["KkthnxUI"], SkinWorldMapStuff)

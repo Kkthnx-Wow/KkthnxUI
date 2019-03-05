@@ -84,7 +84,7 @@ local function StyleNormalButton(self)
 		Button:CreateBorder()
 
 		Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		Icon:SetDrawLayer('BACKGROUND', 7)
+		Icon:SetDrawLayer("BACKGROUND", 7)
 
 		if (Normal) then
 			Normal:ClearAllPoints()
@@ -137,12 +137,12 @@ local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
 	end
 
 	local PetSize = C["ActionBar"].ButtonSize
-	local HotKey = _G[Button:GetName() .. "HotKey"]
-	local Flash = _G[Name .. "Flash"]
+	local HotKey = _G[Button:GetName().."HotKey"]
+	local Flash = _G[Name.."Flash"]
 	local Font = K.GetFont(C["ActionBar"].Font)
 
+	Button:SetNormalTexture("")
 	Button:SetSize(PetSize, PetSize)
-
 	Button:CreateBorder()
 
 	if (C["ActionBar"].Hotkey) then
@@ -156,15 +156,15 @@ local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
 
 	Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	Icon:SetAllPoints()
-	Icon:SetDrawLayer('BACKGROUND', 7)
+	Icon:SetDrawLayer("BACKGROUND", 7)
 
 	if (Pet) then
 		if (PetSize < 30) then
-			local AutoCast = _G[Name .. "AutoCastable"]
+			local AutoCast = _G[Name.."AutoCastable"]
 			AutoCast:SetAlpha(0)
 		end
 
-		local Shine = _G[Name .. "Shine"]
+		local Shine = _G[Name.."Shine"]
 		Shine:SetSize(PetSize, PetSize)
 		Shine:ClearAllPoints()
 		Shine:SetPoint("CENTER", Button, 0, 0)
@@ -207,7 +207,7 @@ function K.StylePet()
 end
 
 function K.UpdateHotkey(self)
-	local HotKey = _G[self:GetName() .. "HotKey"]
+	local HotKey = _G[self:GetName().."HotKey"]
 	local Text = HotKey:GetText()
 	local Indicator = _G["RANGE_INDICATOR"]
 
@@ -255,7 +255,7 @@ end
 
 local function SetupFlyoutButton()
 	for i = 1, FlyoutButtons do
-		local Button = _G["SpellFlyoutButton" .. i]
+		local Button = _G["SpellFlyoutButton"..i]
 
 		if Button and not Button.IsSkinned then
 			StyleNormalButton(Button)

@@ -18,6 +18,7 @@ else
 	ActionBar5:SetAllPoints(RightActionBarAnchor)
 end
 MultiBarBottomRight:SetParent(ActionBar5)
+MultiBarBottomRight:EnableMouse(false)
 ActionBar5:SetFrameStrata("LOW")
 
 for i = 1, NUM_ACTIONBAR_BUTTONS do

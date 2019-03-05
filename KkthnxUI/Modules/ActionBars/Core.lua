@@ -132,8 +132,6 @@ function K.ShiftBarUpdate()
 		button = _G["StanceButton"..i]
 		icon = _G["StanceButton"..i.."Icon"]
 
-		button:SetNormalTexture("")
-
 		if i <= numForms then
 			texture, isActive, isCastable = GetShapeshiftFormInfo(i)
 			icon:SetTexture(texture)
@@ -175,8 +173,6 @@ function K.PetBarUpdate()
 		petAutoCastShine = _G[buttonName.."Shine"]
 
 		local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled = GetPetActionInfo(i)
-		petActionButton:SetNormalTexture("")
-
 		if not isToken then
 			petActionIcon:SetTexture(texture)
 			petActionButton.tooltipName = name

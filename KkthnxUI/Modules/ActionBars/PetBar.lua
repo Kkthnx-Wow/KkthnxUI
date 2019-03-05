@@ -1,18 +1,13 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 if C["ActionBar"].Enable ~= true then
 	return
 end
 
--- Lua API
 local _G = _G
 
--- Wow API
 local hooksecurefunc = _G.hooksecurefunc
 local PetActionBar_UpdateCooldowns = _G.PetActionBar_UpdateCooldowns
 local RegisterStateDriver = _G.RegisterStateDriver
-
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: PetActionBarFrame, PetHolder, HoverBind
 
 if C["ActionBar"].PetBarHide then
 	PetActionBarAnchor:Hide()
@@ -24,20 +19,16 @@ local PetBar = CreateFrame("Frame", "PetHolder", UIParent, "SecureHandlerStateTe
 PetBar:SetAllPoints(PetActionBarAnchor)
 
 PetBar:RegisterEvent("PLAYER_LOGIN")
-PetBar:RegisterEvent("SPELLS_CHANGED")
-PetBar:RegisterEvent("PLAYER_CONTROL_GAINED")
-PetBar:RegisterEvent("PLAYER_ENTERING_WORLD")
 PetBar:RegisterEvent("PLAYER_CONTROL_LOST")
+PetBar:RegisterEvent("PLAYER_CONTROL_GAINED")
+PetBar:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED")
 PetBar:RegisterEvent("PET_BAR_UPDATE")
+PetBar:RegisterEvent("PET_BAR_UPDATE_USABLE")
+PetBar:RegisterEvent("PET_BAR_UPDATE_COOLDOWN")
 PetBar:RegisterEvent("UNIT_PET")
 PetBar:RegisterEvent("UNIT_FLAGS")
 PetBar:RegisterEvent("UNIT_AURA")
-PetBar:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED")
 PetBar:SetScript("OnEvent", function(self, event, unit)
-	if (event == "UNIT_AURA" and unit ~= "pet") then
-		return
-	end
-
 	if event == "PLAYER_LOGIN" then
 		K.StylePet()
 		PetActionBar_ShowGrid = K.Noop
@@ -49,8 +40,6 @@ PetBar:SetScript("OnEvent", function(self, event, unit)
 			button:ClearAllPoints()
 			button:SetParent(PetHolder)
 			button:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
-			button:SetNormalTexture("")
-			button:Show()
 
 			if i == 1 then
 				if C["ActionBar"].PetBarHorizontal == true then
@@ -65,7 +54,7 @@ PetBar:SetScript("OnEvent", function(self, event, unit)
 					button:SetPoint("TOP", _G["PetActionButton"..i - 1], "BOTTOM", 0, -C["ActionBar"].ButtonSpace)
 				end
 			end
-
+			button:Show()
 			self:SetAttribute("addchild", button)
 		end
 		RegisterStateDriver(self, "visibility", "[pet,novehicleui,nopossessbar,nopetbattle] show; hide")

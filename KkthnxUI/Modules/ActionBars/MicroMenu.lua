@@ -99,8 +99,8 @@ function Module:UpdateMicroPositionDimensions()
 
 	local numRows = 1
 	local prevButton = KkthnxUI_MicroBar
-	local offset = K.Scale(4)
-	local spacing = K.Scale(offset + 2)
+	local offset = 4
+	local spacing = offset + 2
 
 	for i = 1, #MICRO_BUTTONS-1 do
 		local button = _G[__buttonIndex[i]] or _G[MICRO_BUTTONS[i]]

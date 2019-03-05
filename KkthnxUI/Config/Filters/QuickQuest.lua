@@ -1,8 +1,4 @@
 local K, C = unpack(select(2, ...))
-if K.CheckAddOnState("QuickQuest") or K.CheckAddOnState("AutoTurnIn") then
-	return
-end
-
 if C["Automation"].AutoQuest ~= true then
 	return
 end
@@ -101,6 +97,7 @@ K.IgnoreGossipNPC = {
 
 	-- Misc NPCs
 	[117871] = true, -- War Councilor Victoria (Class Challenges @ Broken Shore)
+	[143925] = true, -- Dark Iron Mole Machine (Dark Iron Dwarf racial)
 }
 
 K.RogueClassHallInsignia = {

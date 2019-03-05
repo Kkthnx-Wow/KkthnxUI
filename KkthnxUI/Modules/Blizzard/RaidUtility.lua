@@ -221,13 +221,10 @@ function Module:OnInitialize()
 	RaidUtility_ShowButton:SetAttribute("_onclick", ([=[
 	local raidUtil = self:GetFrameRef("RaidUtilityPanel")
 	local closeButton = raidUtil:GetFrameRef("RaidUtility_CloseButton")
-
 	self:Hide()
 	raidUtil:Show()
-
 	local point = self:GetPoint()
 	local raidUtilPoint, closeButtonPoint, yOffset
-
 	if string.find(point, "BOTTOM") then
 		raidUtilPoint = "BOTTOM"
 		closeButtonPoint = "TOP"
@@ -237,9 +234,7 @@ function Module:OnInitialize()
 		closeButtonPoint = "BOTTOM"
 		yOffset = -1
 	end
-
 	yOffset = yOffset * (tonumber(%d))
-
 	raidUtil:ClearAllPoints()
 	closeButton:ClearAllPoints()
 	raidUtil:SetPoint(raidUtilPoint, self, raidUtilPoint)

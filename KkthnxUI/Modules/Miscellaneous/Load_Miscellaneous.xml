@@ -13,6 +13,7 @@
     <Script file="FriendsListPlus.lua"/>
     <Script file="ImprovedStats.lua"/>
     <Script file="KillingBlow.lua"/>
+    <Script file="MerchantItemlevel.lua"/>
     <Script file="MovableFrames.lua"/>
     <Script file="NoTalkingHead.lua"/>
     <Script file="ProfessionTabs.lua"/>
@@ -21,6 +22,7 @@
     <Script file="RaidMarker.lua"/>
     <Script file="SlotDurability.lua"/>
     <Script file="SlotItemLevel.lua"/>
+    <Script file="TrainAll.lua"/>
 
     <Script file="StatusReport.lua"/>
 </Ui>

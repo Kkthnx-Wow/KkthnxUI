@@ -52,7 +52,7 @@ do
 				-- Using false as third arg to avoid the "only one of each sound at a time" throttle.
 				-- Only play via the "Master" channel if we have sounds turned on
 				if self.isSoundOn ~= false then
-					local _, id = PlaySound(8960, "Master", false) -- SOUNDKIT.READY_CHECK
+					local _, id = PlaySound(PlaySoundKitID and "ui_petbattles_pvp_throughqueue", "Master", false)
 					if id then
 						StopSound(id - 1) -- Should work most of the time to stop the blizz sound
 					end

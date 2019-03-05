@@ -89,7 +89,7 @@ local function SkinObjectiveTracker()
 			item.Cooldown:SetInside()
 			item.Count:ClearAllPoints()
 			item.Count:SetPoint("TOPLEFT", 1, -1)
-			item.Count:SetFont(C.Media.Font, 14, "OUTLINE")
+			item.Count:FontTemplate()
 			item.Count:SetShadowOffset(5, -5)
 			item.skinned = true
 		end
@@ -135,9 +135,9 @@ local function SkinObjectiveTracker()
 		end
 	end
 
-	hooksecurefunc("BonusObjectiveTrackerProgressBar_SetValue", ColorProgressBars)				--[Color]: Bonus Objective Progress Bar
-	hooksecurefunc("ObjectiveTrackerProgressBar_SetValue", ColorProgressBars)					--[Color]: Quest Progress Bar
-	hooksecurefunc("ScenarioTrackerProgressBar_SetValue", ColorProgressBars)					--[Color]: Scenario Progress Bar
+	--hooksecurefunc("BonusObjectiveTrackerProgressBar_SetValue", ColorProgressBars)				--[Color]: Bonus Objective Progress Bar
+	--hooksecurefunc("ObjectiveTrackerProgressBar_SetValue", ColorProgressBars)					--[Color]: Quest Progress Bar
+	--hooksecurefunc("ScenarioTrackerProgressBar_SetValue", ColorProgressBars)					--[Color]: Scenario Progress Bar
 	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", PositionFindGroupButton)	--[Move]: The eye & quest item to the left of the eye
 	hooksecurefunc("ObjectiveTracker_Update", SkinOjectiveTrackerHeaders)						--[Skin]: Module Headers
 	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", SkinFindGroupButton)				--[Skin]: The eye

@@ -1,71 +1,119 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Tooltip", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
-local LibInspect = LibStub("LibInspect")
-local LibItemLevel = LibStub("LibItemLevel-KkthnxUI")
+local ModuleSkins -- used to hold the skin module when we need it
 
 local _G = _G
-local find = string.find
-local format = string.format
+local ipairs = ipairs
 local math_floor = math.floor
-local next = next
 local select = select
-local sub = string.sub
+local string_find = string.find
+local string_format = string.format
+local string_gmatch = string.gmatch
+local string_match = string.match
+local string_sub = string.sub
+local table_insert = table.insert
 local table_wipe = table.wipe
 local tonumber = tonumber
+local unpack = unpack
 
+local BOSS = _G.BOSS
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local C_MountJournal_GetMountIDs = _G.C_MountJournal.GetMountIDs
+local C_MountJournal_GetMountInfoByID = _G.C_MountJournal.GetMountInfoByID
+local C_MountJournal_GetMountInfoExtraByID = _G.C_MountJournal.GetMountInfoExtraByID
 local C_PetBattles_IsInBattle = _G.C_PetBattles.IsInBattle
 local C_PetJournal_FindPetIDByName = _G.C_PetJournal.FindPetIDByName
 local C_PetJournal_GetPetStats = _G.C_PetJournal.GetPetStats
-local C_PetJournalGetPetTeamAverageLevel = _G.C_PetJournal.GetPetTeamAverageLevel
+local C_PetJournal_GetPetTeamAverageLevel = _G.C_PetJournal.GetPetTeamAverageLevel
+local CanInspect = _G.CanInspect
 local CreateFrame = _G.CreateFrame
-local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local DEAD = _G.DEAD
 local FACTION_ALLIANCE = _G.FACTION_ALLIANCE
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local FACTION_HORDE = _G.FACTION_HORDE
 local FOREIGN_SERVER_LABEL = _G.FOREIGN_SERVER_LABEL
+local FROM = _G.FROM
+local GameTooltipHeaderText = _G.GameTooltipHeaderText
+local GameTooltipText = _G.GameTooltipText
+local GameTooltipTextSmall = _G.GameTooltipTextSmall
 local GameTooltip_ClearMoney = _G.GameTooltip_ClearMoney
 local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
 local GetGuildInfo = _G.GetGuildInfo
+local GetInspectSpecialization = _G.GetInspectSpecialization
 local GetItemCount = _G.GetItemCount
 local GetItemInfo = _G.GetItemInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local GetMouseFocus = _G.GetMouseFocus
+local GetNumGroupMembers = _G.GetNumGroupMembers
 local GetRelativeDifficultyColor = _G.GetRelativeDifficultyColor
+local GetSpecialization = _G.GetSpecialization
+local GetSpecializationInfo = _G.GetSpecializationInfo
+local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local GetTime = _G.GetTime
+local HEALER = _G.HEALER
 local ID = _G.ID
 local INTERACTIVE_SERVER_LABEL = _G.INTERACTIVE_SERVER_LABEL
+local ITEM_QUALITY3_DESC = _G.ITEM_QUALITY3_DESC
+local IsControlKeyDown = _G.IsControlKeyDown
 local IsInGroup = _G.IsInGroup
+local IsInRaid = _G.IsInRaid
 local IsShiftKeyDown = _G.IsShiftKeyDown
+local ItemRefTooltip = _G.ItemRefTooltip
 local LE_REALM_RELATION_COALESCED = _G.LE_REALM_RELATION_COALESCED
 local LE_REALM_RELATION_VIRTUAL = _G.LE_REALM_RELATION_VIRTUAL
+local MOUNT = _G.MOUNT
+local NotifyInspect = _G.NotifyInspect
 local PVP = _G.PVP
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
-local SetTooltipMoney = _G.SetTooltipMoney
+local ROLE = _G.ROLE
 local SPECIALIZATION = _G.SPECIALIZATION
 local STAT_AVERAGE_ITEM_LEVEL = _G.STAT_AVERAGE_ITEM_LEVEL
+local STAT_DPS_SHORT = _G.STAT_DPS_SHORT
+local SetTooltipMoney = _G.SetTooltipMoney
+local ShoppingTooltip1TextLeft1 = _G.ShoppingTooltip1TextLeft1
+local ShoppingTooltip1TextLeft2 = _G.ShoppingTooltip1TextLeft2
+local ShoppingTooltip1TextLeft3 = _G.ShoppingTooltip1TextLeft3
+local ShoppingTooltip1TextLeft4 = _G.ShoppingTooltip1TextLeft4
+local ShoppingTooltip1TextRight1 = _G.ShoppingTooltip1TextRight1
+local ShoppingTooltip1TextRight2 = _G.ShoppingTooltip1TextRight2
+local ShoppingTooltip1TextRight3 = _G.ShoppingTooltip1TextRight3
+local ShoppingTooltip1TextRight4 = _G.ShoppingTooltip1TextRight4
+local ShoppingTooltip2TextLeft1 = _G.ShoppingTooltip2TextLeft1
+local ShoppingTooltip2TextLeft2 = _G.ShoppingTooltip2TextLeft2
+local ShoppingTooltip2TextLeft3 = _G.ShoppingTooltip2TextLeft3
+local ShoppingTooltip2TextLeft4 = _G.ShoppingTooltip2TextLeft4
+local ShoppingTooltip2TextRight1 = _G.ShoppingTooltip2TextRight1
+local ShoppingTooltip2TextRight2 = _G.ShoppingTooltip2TextRight2
+local ShoppingTooltip2TextRight3 = _G.ShoppingTooltip2TextRight3
+local ShoppingTooltip2TextRight4 = _G.ShoppingTooltip2TextRight4
+local TANK = _G.TANK
 local TARGET = _G.TARGET
+local TOOLTIP_UNIT_LEVEL = _G.TOOLTIP_UNIT_LEVEL
+local TOOLTIP_UNIT_LEVEL_CLASS = _G.TOOLTIP_UNIT_LEVEL_CLASS
+local TUTORIAL_TITLE19 = _G.TUTORIAL_TITLE19
 local UIParent = _G.UIParent
 local UnitAura = _G.UnitAura
 local UnitBattlePetLevel = _G.UnitBattlePetLevel
 local UnitBattlePetType = _G.UnitBattlePetType
+local UnitBuff = _G.UnitBuff
 local UnitClass = _G.UnitClass
 local UnitClassification = _G.UnitClassification
 local UnitCreatureType = _G.UnitCreatureType
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
-local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitGUID = _G.UnitGUID
+local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitHasVehicleUI = _G.UnitHasVehicleUI
 local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
 local UnitIsAFK = _G.UnitIsAFK
 local UnitIsBattlePetCompanion = _G.UnitIsBattlePetCompanion
-local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsDND = _G.UnitIsDND
-local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsPVP = _G.UnitIsPVP
+local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsTapDenied = _G.UnitIsTapDenied
+local UnitIsUnit = _G.UnitIsUnit
 local UnitIsWildBattlePet = _G.UnitIsWildBattlePet
 local UnitLevel = _G.UnitLevel
 local UnitName = _G.UnitName
@@ -75,28 +123,15 @@ local UnitReaction = _G.UnitReaction
 local UnitRealmRelationship = _G.UnitRealmRelationship
 
 local GameTooltip, GameTooltipStatusBar = _G["GameTooltip"], _G["GameTooltipStatusBar"]
-local inspectCache, inspectAge = {}, 900
+local targetList = {}
 local TAPPED_COLOR = {r = .6, g = .6, b = .6}
 local AFK_LABEL = " |cffFFFFFF[|r|cffFF0000" .. "AFK" .. "|r|cffFFFFFF]|r"
 local DND_LABEL = " |cffFFFFFF[|r|cffFFFF00" .. "DND" .. "|r|cffFFFFFF]|r"
-local TOOLTOP_BUG = nil
+local TOOLTOP_BUG = false
 
-local LOCALE = {
-	PVP = PVP,
-	FACTION_HORDE = FACTION_HORDE,
-	FOREIGN_SERVER_LABEL = FOREIGN_SERVER_LABEL,
-	ID = ID,
-	INTERACTIVE_SERVER_LABEL = INTERACTIVE_SERVER_LABEL,
-	TARGET = TARGET,
-	DEAD = DEAD,
-	FACTION_ALLIANCE = FACTION_ALLIANCE,
-	NONE = _G.NONE,
-	ROLE = _G.ROLE,
-
-	-- Custom to find LEVEL string on tooltip
-	LEVEL1 = _G.TOOLTIP_UNIT_LEVEL:gsub("%s?%%s%s?%-?", ""),
-	LEVEL2 = _G.TOOLTIP_UNIT_LEVEL_CLASS:gsub("^%%2$s%s?(.-)%s?%%1$s", "%1"):gsub("^%-?г?о?%s?", ""):gsub("%s?%%s%s?%-?", "")
-}
+-- Custom to find LEVEL string on tooltip
+local LEVEL1 = TOOLTIP_UNIT_LEVEL:gsub("%s?%%s%s?%-?", "")
+local LEVEL2 = TOOLTIP_UNIT_LEVEL_CLASS:gsub("^%%2$s%s?(.-)%s?%%1$s", "%1"):gsub("^%-?г?о?%s?", ""):gsub("%s?%%s%s?%-?", "")
 
 local ignoreSubType = {
 	L["Tooltip"].Other == true,
@@ -104,17 +139,10 @@ local ignoreSubType = {
 }
 
 local classification = {
-	worldboss = format("|cffAF5050 %s|r", _G.BOSS),
-	rareelite = format("|cffAF5050+ %s|r", _G.ITEM_QUALITY3_DESC),
+	worldboss = string_format("|cffAF5050 %s|r", BOSS),
+	rareelite = string_format("|cffAF5050+ %s|r", ITEM_QUALITY3_DESC),
 	elite = "|cffAF5050+|r",
-	rare = format("|cffAF5050 %s|r", _G.ITEM_QUALITY3_DESC)
-}
-
-local SlotName = {
-	INVSLOT_HEAD, INVSLOT_NECK, INVSLOT_SHOULDER, INVSLOT_BACK, INVSLOT_CHEST,
-	INVSLOT_WRIST, INVSLOT_HAND, INVSLOT_WAIST, INVSLOT_LEGS, INVSLOT_FEET,
-	INVSLOT_FINGER1, INVSLOT_FINGER2, INVSLOT_TRINKET1, INVSLOT_TRINKET2,
-	INVSLOT_MAINHAND, INVSLOT_OFFHAND
+	rare = string_format("|cffAF5050 %s|r", ITEM_QUALITY3_DESC)
 }
 
 function Module:GameTooltip_SetDefaultAnchor(tt, parent)
@@ -146,7 +174,7 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 	tt:SetPoint("BOTTOMRIGHT", GameTooltipAnchor, "BOTTOMRIGHT", 2, -2)
 end
 
-function Module:CleanUpTrashLines(tt)
+function Module:RemoveTrashLines(tt)
 	if tt:IsForbidden() then
 		return
 	end
@@ -155,7 +183,7 @@ function Module:CleanUpTrashLines(tt)
 		local tiptext = _G["GameTooltipTextLeft" .. i]
 		local linetext = tiptext:GetText()
 
-		if (linetext == LOCALE.PVP or linetext == LOCALE.FACTION_ALLIANCE or linetext == LOCALE.FACTION_HORDE) then
+		if (linetext == PVP or linetext == FACTION_ALLIANCE or linetext == FACTION_HORDE) then
 			tiptext:SetText(nil)
 			tiptext:Hide()
 		end
@@ -170,176 +198,66 @@ function Module:GetLevelLine(tt, offset)
 	for i = offset, tt:NumLines() do
 		local tipLine = _G["GameTooltipTextLeft" .. i]
 		local tipText = tipLine and tipLine.GetText and tipLine:GetText()
-		if tipText and (tipText:find(LOCALE.LEVEL1) or tipText:find(LOCALE.LEVEL2)) then
+		if tipText and (tipText:find(LEVEL1) or tipText:find(LEVEL2)) then
 			return tipLine
 		end
 	end
 end
 
-function Module:GetItemLvL(items, talents)
-	if not items or not talents then
-		return "?"
-	end
-
-	local total = 0
-	local artifactEquipped = false
-	for i = 1, #SlotName do
-		local currentSlot = SlotName[i]
-		local itemLink = items[currentSlot]
-		if (itemLink) then
-			local _, _, rarity, itemLevelOriginal, _, _, _, _, equipSlot = GetItemInfo(itemLink)
-
-			-- Check if we have an artifact equipped in main hand
-			if (currentSlot == INVSLOT_MAINHAND and rarity and rarity == 6) then
-				artifactEquipped = true
-			end
-
-			-- If we have artifact equipped in main hand, then we should not count the offhand as it displays an incorrect item level
-			if (not artifactEquipped or (artifactEquipped and currentSlot ~= INVSLOT_OFFHAND)) then
-				local _, itemLevelLib = LibItemLevel:GetItemInfo(itemLink)
-				local itemLevelFinal = 0
-
-				if (itemLevelOriginal and itemLevelLib) then
-					if itemLevelFinal == 0 then
-						itemLevelFinal = itemLevelOriginal
-					end
-
-					itemLevelFinal = (itemLevelOriginal ~= itemLevelLib) and itemLevelLib or itemLevelOriginal
-				else
-					itemLevelFinal = itemLevelLib or itemLevelOriginal
-				end
-
-				if (itemLevelFinal > 0) then
-					if ((currentSlot == INVSLOT_MAINHAND and artifactEquipped)
-					or ((equipSlot == "INVTYPE_2HWEAPON"
-					or equipSlot == "INVTYPE_RANGEDRIGHT"
-					or equipSlot == "INVTYPE_RANGED") and talents.id ~= 72)) and (not items[INVSLOT_OFFHAND]
-					or artifactEquipped) then
-						itemLevelFinal = itemLevelFinal * 2
-					end
-
-					total = total + itemLevelFinal
-				end
-			end
-		end
-	end
-
-	if (total > 0) then
-		return math_floor(total / #SlotName)
-	else
-		return "?"
-	end
-end
-
-function Module:GetTalentSpec(talents)
-	return (talents and talents.icon and talents.name) and ("|T"..talents.icon..":12:12:0:0:64:64:5:59:5:59|t "..talents.name) or "?"
-end
-
-function Module:InspectReady(guid, data)
-	if (not (guid and data and data.items and data.talents)) then
-		return
-	end
-
-	if (not inspectCache[guid]) then
-		inspectCache[guid] = {}
-	end
-
-	inspectCache[guid].age = GetTime()
-	inspectCache[guid].itemLevel = self:GetItemLvL(data.items, data.talents)
-	inspectCache[guid].talent = self:GetTalentSpec(data.talents)
-
-	if not GameTooltip:IsForbidden() then
-		GameTooltip:SetUnit("mouseover")
-	end
-end
-
-function Module:ShowInspectInfo(tt, unit, r, g, b)
-	if tt:IsForbidden() then
-		return
-	end
-
-	local unitGUID = UnitGUID(unit)
-
-	if (inspectCache[unitGUID] and inspectCache[unitGUID].age and (GetTime() - inspectCache[unitGUID].age) < inspectAge) then
-		tt:AddDoubleLine(SPECIALIZATION, inspectCache[unitGUID].talent, nil, nil, nil, r, g, b)
-		tt:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL, inspectCache[unitGUID].itemLevel, nil, nil, nil, 1, 1, 1)
-	elseif (not InspectFrame or (InspectFrame and not InspectFrame:IsShown())) then
-		LibInspect:RequestItems(unit, true)
-	end
-end
-
-function Module:GameTooltip_OnTooltipSetUnit(tt)
-	if tt:IsForbidden() then
-		return
-	end
-
-	local unit = select(2, tt:GetUnit())
-
-	if (not unit) then
-		local GMF = GetMouseFocus()
-		if (GMF and GMF.GetAttribute and GMF:GetAttribute("unit")) then
-			unit = GMF:GetAttribute("unit")
-		end
-
-		if (not unit or not UnitExists(unit)) then
-			return
-		end
-	end
-
-	self:CleanUpTrashLines(tt) -- keep an eye on this may be buggy
-	local level = UnitLevel(unit)
-	local isShiftKeyDown = IsShiftKeyDown()
-
+function Module:SetUnitText(tt, unit, level, isShiftKeyDown)
 	local color
-	if (UnitIsPlayer(unit)) then
+	if UnitIsPlayer(unit) then
 		local localeClass, class = UnitClass(unit)
 		local name, realm = UnitName(unit)
 		local guildName, guildRankName, _, guildRealm = GetGuildInfo(unit)
 		local pvpName = UnitPVPName(unit)
 		local relationship = UnitRealmRelationship(unit)
+
 		if not localeClass or not class then
 			return
 		end
+
 		color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
 
-		if (C["Tooltip"].PlayerTitles and pvpName) then
+		if C["Tooltip"].PlayerTitles and pvpName then
 			name = pvpName
 		end
 
-		if (realm and realm ~= "") then
-			if (isShiftKeyDown) then
+		if realm and realm ~= "" then
+			if (isShiftKeyDown)then
 				name = name .. "-" .. realm
-			elseif (relationship == LE_REALM_RELATION_COALESCED) then
-				name = name .. LOCALE.FOREIGN_SERVER_LABEL
-			elseif (relationship == LE_REALM_RELATION_VIRTUAL) then
-				name = name .. LOCALE.INTERACTIVE_SERVER_LABEL
+			elseif(relationship == LE_REALM_RELATION_COALESCED) then
+				name = name .. FOREIGN_SERVER_LABEL
+			elseif(relationship == LE_REALM_RELATION_VIRTUAL) then
+				name = name .. INTERACTIVE_SERVER_LABEL
 			end
 		end
 
-		if (UnitIsAFK(unit)) then
+		if UnitIsAFK(unit) then
 			name = name .. AFK_LABEL
-		elseif (UnitIsDND(unit)) then
+		elseif UnitIsDND(unit) then
 			name = name .. DND_LABEL
 		end
 
-		_G["GameTooltipTextLeft1"]:SetFormattedText("|c%s%s|r", color.colorStr, name)
+		GameTooltipTextLeft1:SetFormattedText("|c%s%s|r", color.colorStr, name)
 
 		local lineOffset = 2
-		if (guildName) then
-			if (guildRealm and isShiftKeyDown) then
+		if guildName then
+			if guildRealm and isShiftKeyDown then
 				guildName = guildName .. "-" .. guildRealm
 			end
 
-			if (C["Tooltip"].GuildRanks) and IsShiftKeyDown() then
+			if C["Tooltip"].GuildRanks then
 				GameTooltipTextLeft2:SetText(("<|cff00ff10%s|r> [|cff00ff10%s|r]"):format(guildName, guildRankName))
 			else
 				GameTooltipTextLeft2:SetText(("<|cff00ff10%s|r>"):format(guildName))
 			end
+
 			lineOffset = 3
 		end
 
 		local levelLine = self:GetLevelLine(tt, lineOffset)
-		if (levelLine) then
+		if levelLine then
 			local diffColor = GetCreatureDifficultyColor(level)
 			local race, englishRace = UnitRace(unit)
 			local _, factionGroup = UnitFactionGroup(unit)
@@ -351,24 +269,19 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 			levelLine:SetFormattedText("|cff%02x%02x%02x%s|r %s |c%s%s|r", diffColor.r * 255, diffColor.g * 255, diffColor.b * 255, level > 0 and level or "??", race or "", color.colorStr, localeClass)
 		end
 
-		if C["Tooltip"].Role then
+		if C["Tooltip"].PlayerRoles then
 			local r, g, b, role = 1, 1, 1, UnitGroupRolesAssigned(unit)
 			if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE") then
 				if role == "HEALER" then
-					role, r, g, b = "Healer", 0, 1, .59
+					role, r, g, b = HEALER, 0.0, 1.0, 0.59
 				elseif role == "TANK" then
-					role, r, g, b = "Tank", .16, .31, .61
+					role, r, g, b = TANK, 0.16, 0.31, 0.61
 				elseif role == "DAMAGER" then
-					role, r, g, b = "DPS", .77, .12, .24
+					role, r, g, b = STAT_DPS_SHORT, 0.77, 0.12, 0.24
 				end
 
-				GameTooltip:AddDoubleLine(LOCALE.ROLE, role, nil, nil, nil, r, g, b)
+				GameTooltip:AddDoubleLine(string_format("%s:", ROLE), role, nil, nil, nil, r, g, b)
 			end
-		end
-
-		-- High CPU usage, restricting it to shift key down only.
-		if (C["Tooltip"].InspectInfo and isShiftKeyDown) then
-			self:ShowInspectInfo(tt, unit, color.r, color.g, color.b)
 		end
 	else
 		if UnitIsTapDenied(unit) then
@@ -376,13 +289,13 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 		else
 			local unitReaction = UnitReaction(unit, "player")
 			if unitReaction then
-				unitReaction = format("%s", unitReaction) -- Cast to string because our table is indexed by string keys
+				unitReaction = string_format("%s", unitReaction) -- Cast to string because our table is indexed by string keys
 				color = K.Colors.factioncolors[unitReaction]
 			end
 		end
 
 		local levelLine = self:GetLevelLine(tt, 2)
-		if (levelLine) then
+		if levelLine then
 			local isPetWild, isPetCompanion = UnitIsWildBattlePet(unit), UnitIsBattlePetCompanion(unit)
 			local creatureClassification = UnitClassification(unit)
 			local creatureType = UnitCreatureType(unit)
@@ -391,14 +304,14 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 			if (isPetWild or isPetCompanion) then
 				level = UnitBattlePetLevel(unit)
 
-				local petType = _G["BATTLE_PET_NAME_" .. UnitBattlePetType(unit)]
+				local petType = _G["BATTLE_PET_NAME_"..UnitBattlePetType(unit)]
 				if creatureType then
-					creatureType = format("%s %s", creatureType, petType)
+					creatureType = string_format("%s %s", creatureType, petType)
 				else
 					creatureType = petType
 				end
 
-				local teamLevel = C_PetJournalGetPetTeamAverageLevel()
+				local teamLevel = C_PetJournal_GetPetTeamAverageLevel()
 				if (teamLevel) then
 					diffColor = GetRelativeDifficultyColor(teamLevel, level)
 				else
@@ -409,42 +322,220 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 			end
 
 			if (UnitIsPVP(unit)) then
-				pvpFlag = format(" (%s)", LOCALE.PVP)
+				pvpFlag = string_format(" (%s)", PVP)
 			end
 
 			levelLine:SetFormattedText("|cff%02x%02x%02x%s|r%s %s%s", diffColor.r * 255, diffColor.g * 255, diffColor.b * 255, level > 0 and level or "??", classification[creatureClassification] or "", creatureType or "", pvpFlag)
 		end
 	end
 
-	local unitTarget = unit .. "target"
-	if (unit ~= "player" and UnitExists(unitTarget)) then
-		local targetColor
-		if (UnitIsPlayer(unitTarget) and not UnitHasVehicleUI(unitTarget)) then
-			local _, class = UnitClass(unitTarget)
-			targetColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
+	return color or RAID_CLASS_COLORS.PRIEST
+end
+
+local inspectGUIDCache = {}
+local inspectColorFallback = {1, 1, 1}
+function Module:PopulateInspectGUIDCache(unitGUID, itemLevel)
+	local specName = self:GetSpecializationInfo('mouseover')
+	if specName and itemLevel then
+		local unitColor = inspectGUIDCache[unitGUID].unitColor
+
+		inspectGUIDCache[unitGUID].time = GetTime()
+		inspectGUIDCache[unitGUID].itemLevel = itemLevel
+		inspectGUIDCache[unitGUID].specName = specName
+
+		GameTooltip:AddDoubleLine(SPECIALIZATION..":", specName, nil, nil, nil, unpack(unitColor or inspectColorFallback))
+		GameTooltip:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", itemLevel, nil, nil, nil, 1, 1, 1)
+		GameTooltip:Show()
+	end
+end
+
+function Module:INSPECT_READY(event, unitGUID)
+	if UnitExists("mouseover") and UnitGUID("mouseover") == unitGUID then
+		local itemLevel, retryUnit, retryTable, iLevelDB = K.GetUnitItemLevel("mouseover")
+		if itemLevel == 'tooSoon' then
+			K.Delay(0.05, function()
+				local canUpdate = true
+				for _, x in ipairs(retryTable) do
+					local iLvl = K.GetGearSlotInfo(retryUnit, x)
+					if iLvl == 'tooSoon' then
+						canUpdate = false
+					else
+						iLevelDB[x] = iLvl
+					end
+				end
+
+				if canUpdate then
+					local calculateItemLevel = K.CalculateAverageItemLevel(iLevelDB, retryUnit)
+					Module:PopulateInspectGUIDCache(unitGUID, calculateItemLevel)
+				end
+			end)
 		else
-			targetColor =
-			K.Colors.factioncolors["" .. UnitReaction(unitTarget, "player")] or
-			FACTION_BAR_COLORS[UnitReaction(unitTarget, "player")]
+			Module:PopulateInspectGUIDCache(unitGUID, itemLevel)
+		end
+	end
+
+	if event then
+		self:UnregisterEvent(event)
+	end
+end
+
+function Module:GetSpecializationInfo(unit, isPlayer)
+	local spec = (isPlayer and GetSpecialization()) or (unit and GetInspectSpecialization(unit))
+	if spec and spec > 0 then
+		if isPlayer then
+			return select(2, GetSpecializationInfo(spec))
+		else
+			return select(2, GetSpecializationInfoByID(spec))
+		end
+	end
+end
+
+local lastGUID
+function Module:AddInspectInfo(tooltip, unit, numTries, r, g, b)
+	if (not unit) or (numTries > 3) or not CanInspect(unit) then
+		return
+	end
+
+	local unitGUID = UnitGUID(unit)
+	if not unitGUID then
+		return
+	end
+
+	if unitGUID == K.GUID then
+		tooltip:AddDoubleLine(SPECIALIZATION..":", self:GetSpecializationInfo(unit, true), nil, nil, nil, r, g, b)
+		tooltip:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", K.GetUnitItemLevel(unit), nil, nil, nil, 1, 1, 1)
+	elseif inspectGUIDCache[unitGUID] and inspectGUIDCache[unitGUID].time then
+		local specName = inspectGUIDCache[unitGUID].specName
+		local itemLevel = inspectGUIDCache[unitGUID].itemLevel
+		if not (specName and itemLevel) or (GetTime() - inspectGUIDCache[unitGUID].time > 120) then
+			inspectGUIDCache[unitGUID].time = nil
+			inspectGUIDCache[unitGUID].specName = nil
+			inspectGUIDCache[unitGUID].itemLevel = nil
+			return K.Delay(0.33, function()
+				self:AddInspectInfo(tooltip, unit, numTries + 1, r, g, b)
+			end)
 		end
 
-		GameTooltip:AddDoubleLine(format("%s:", LOCALE.TARGET), format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget, true)))
+		tooltip:AddDoubleLine(SPECIALIZATION..":", specName, nil, nil, nil, r, g, b)
+		tooltip:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL..":", itemLevel, nil, nil, nil, 1, 1, 1)
+	elseif unitGUID then
+		if not inspectGUIDCache[unitGUID] then
+			inspectGUIDCache[unitGUID] = {unitColor = {r, g, b}}
+		end
+
+		if lastGUID ~= unitGUID then
+			lastGUID = unitGUID
+			NotifyInspect(unit)
+			self:RegisterEvent("INSPECT_READY")
+		else
+			self:INSPECT_READY(nil, unitGUID)
+		end
+	end
+end
+
+function Module:GameTooltip_OnTooltipSetUnit(tt)
+	if tt:IsForbidden() then
+		return
+	end
+
+	local unit = select(2, tt:GetUnit())
+	local isShiftKeyDown = IsShiftKeyDown()
+	local isControlKeyDown = IsControlKeyDown()
+	local isPlayerUnit = UnitIsPlayer(unit)
+
+	if not unit then
+		local GMF = GetMouseFocus()
+		if GMF and GMF.GetAttribute and GMF:GetAttribute("unit") then
+			unit = GMF:GetAttribute("unit")
+		end
+		if not unit or not UnitExists(unit) then
+			return
+		end
+	end
+
+	self:RemoveTrashLines(tt) -- keep an eye on this may be buggy
+
+	local color = self:SetUnitText(tt, unit, UnitLevel(unit), isShiftKeyDown)
+
+	if C["Tooltip"].ShowMount and not isShiftKeyDown and unit ~= "player" and isPlayerUnit then
+		for i = 1, 40 do
+			local name, _, _, _, _, _, _, _, _, id = UnitBuff(unit, i)
+			if not name then break end
+
+			if self.MountIDs[id] then
+				local _, _, sourceText = C_MountJournal_GetMountInfoExtraByID(self.MountIDs[id])
+				tt:AddDoubleLine(string_format("%s:", MOUNT), name, nil, nil, nil, 1, 1, 1)
+
+				if sourceText and isControlKeyDown then
+					local sourceModified = sourceText:gsub("|n", "\10")
+					for x in string_gmatch(sourceModified, "[^\10]+\10?") do
+						local left, right = string_match(x, "(.-|r)%s?([^\10]+)\10?")
+						if left and right then
+							tt:AddDoubleLine(left, right, nil, nil, nil, 1, 1, 1)
+						else
+							tt:AddDoubleLine(FROM, sourceText:gsub("|c%x%x%x%x%x%x%x%x",""), nil, nil, nil, 1, 1, 1)
+						end
+					end
+				end
+
+				break
+			end
+		end
+	end
+
+	if not isShiftKeyDown and not isControlKeyDown then
+		local unitTarget = unit.."target"
+		if C["Tooltip"].TargetInfo and unit ~= "player" and UnitExists(unitTarget) then
+			local targetColor
+			if (UnitIsPlayer(unitTarget) and not UnitHasVehicleUI(unitTarget)) then
+				local _, class = UnitClass(unitTarget)
+				targetColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
+			else
+				targetColor = K.Colors.factioncolors[""..UnitReaction(unitTarget, "player")] or FACTION_BAR_COLORS[UnitReaction(unitTarget, "player")]
+			end
+
+			tt:AddDoubleLine(string_format("%s:", TARGET), string_format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget)))
+		end
+
+		if C["Tooltip"].TargetInfo and IsInGroup() then
+			for i = 1, GetNumGroupMembers() do
+				local groupUnit = (IsInRaid() and "raid"..i or "party"..i)
+				if (UnitIsUnit(groupUnit.."target", unit)) and (not UnitIsUnit(groupUnit, "player")) then
+					local _, class = UnitClass(groupUnit)
+					local classColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
+					if not classColor then
+						classColor = RAID_CLASS_COLORS.PRIEST
+					end
+					table_insert(targetList, string_format("|c%s%s|r", classColor.colorStr, UnitName(groupUnit)))
+				end
+			end
+
+			local numList = #targetList
+			if (numList > 0) then
+				tt:AddLine(string_format("%s (|cffffffff%d|r): %s", TUTORIAL_TITLE19, numList, table.concat(targetList, ", ")), nil, nil, nil, true)
+				table_wipe(targetList)
+			end
+		end
+	end
+
+	if isShiftKeyDown and isPlayerUnit then
+		self:AddInspectInfo(tt, unit, 0, color.r, color.g, color.b)
 	end
 
 	-- NPC ID's
-	if unit and C["Tooltip"].SpellID then
+	if unit and C["Tooltip"].NpcID and not isPlayerUnit then
 		if C_PetBattles_IsInBattle() then
 			return
 		end
 
 		local guid = UnitGUID(unit) or ""
 		local id = tonumber(guid:match("%-(%d-)%-%x-$"), 10)
-		if id and guid:match("%a+") ~= "Player" then
-			GameTooltip:AddLine(("|cFFCA3C3C%s|r %d"):format(LOCALE.ID, id))
+		if id then
+			tt:AddLine(("|cFFCA3C3C%s|r %d"):format(ID, id))
 		end
 	end
 
-	if (color) then
+	if color then
 		GameTooltipStatusBar:SetStatusBarColor(color.r, color.g, color.b)
 	else
 		GameTooltipStatusBar:SetStatusBarColor(0.6, 0.6, 0.6)
@@ -478,13 +569,13 @@ function Module:GameTooltipStatusBar_OnValueChanged(tt, value)
 		tt.text:SetFormattedText("%d%%", math_floor(value * 100))
 		tt:SetStatusBarColor(TAPPED_COLOR.r, TAPPED_COLOR.g, TAPPED_COLOR.b) -- most effeciant?
 	elseif (value == 0 or (unit and UnitIsDeadOrGhost(unit))) then
-		tt.text:SetText(LOCALE.DEAD)
+		tt.text:SetText(DEAD)
 	else
 		tt.text:SetText(K.ShortValue(value) .. " / " .. K.ShortValue(max))
 	end
 end
 
-function Module:FixTooltipBug()
+function Module:GameTooltip_OnTooltipBug()
 	if GameTooltip:IsShown() then
 		TOOLTOP_BUG = true
 	end
@@ -503,11 +594,11 @@ function Module:GameTooltip_OnTooltipCleared(tt)
 		return
 	end
 
-	tt.itemCleared = nil
+	tt.itemCleared = false
 
 	if TOOLTOP_BUG and tt:NumLines() == 0 then
 		tt:Hide()
-		TOOLTOP_BUG = nil
+		TOOLTOP_BUG = false
 	end
 end
 
@@ -525,7 +616,7 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 		local bankCount = " "
 
 		if link ~= nil and C["Tooltip"].SpellID and IsShiftKeyDown() then
-			left = (("|cFFCA3C3C%s|r %s"):format(LOCALE.ID, link)):match(":(%w+)")
+			left = (("|cFFCA3C3C%s|r %s"):format(ID, link)):match(":(%w+)")
 		end
 
 		right = ("|cFFCA3C3C%s|r %d"):format(L["Tooltip"].Count, num)
@@ -535,6 +626,7 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 			tt:AddLine(" ")
 			tt:AddDoubleLine(left, right)
 		end
+
 		if bankCount ~= " " and IsShiftKeyDown() then
 			tt:AddDoubleLine(" ", bankCount)
 		end
@@ -548,7 +640,7 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 		if link ~= nil then
 			tt.currentItem = link
 
-			local name, _, quality, _, _, type, subType, _, _, _, _ = GetItemInfo(link)
+			local name, _, quality, _, _, type, subType = GetItemInfo(link)
 
 			if not quality then
 				quality = 0
@@ -606,38 +698,35 @@ function Module:GameTooltip_AddQuestRewardsToTooltip(tt, questID)
 end
 
 function Module:GameTooltip_ShowProgressBar(tt)
-	if not tt or tt:IsForbidden() then
+	if not tt or tt:IsForbidden() or not tt.progressBarPool then
 		return
 	end
 
-	if not tt.progressBarPool then
+	local sb = tt.progressBarPool:GetNextActive()
+	if (not sb or not sb.Bar) then
 		return
 	end
 
-	local sb = tt.progressBarPool:Acquire()
-	if not sb or not sb.Bar then
-		return
-	end
-
-	sb.Bar:SetStatusBarTexture(K.GetTexture(C["Tooltip"].Texture))
+	sb.Bar:SetStatusBarTexture(K.GetTexture(C["Tooltip"].Texture) or C["Media"].Texture)
 
 	tt.pbBar = sb.Bar
 end
 
 function Module:GameTooltip_ShowStatusBar(tt)
-	if not tt or tt:IsForbidden() then
+	if not tt or tt:IsForbidden() or not tt.statusBarPool then
 		return
 	end
 
-	local statusBar = _G[tt:GetName() .. "StatusBar"]
-	if statusBar and not statusBar.skinned then
-		statusBar:SetStatusBarTexture(K.GetTexture(C["Tooltip"].Texture))
-		statusBar.skinned = true
+	local sb = tt.statusBarPool:GetNextActive()
+	if (not sb or not sb.Text) then
+		return
 	end
+
+	sb:SetStatusBarTexture(K.GetTexture(C["Tooltip"].Texture) or C["Media"].Texture)
 end
 
 function Module:CheckBackdropColor(tt)
-	if not tt or tt:IsForbidden() then
+	if (not tt) or tt:IsForbidden() then
 		return
 	end
 
@@ -660,7 +749,10 @@ function Module:SetStyle(tt)
 	tt:SetBackdrop({
 		bgFile = C["Media"].Blank,
 		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-		tile = false, tileSize = 0, edgeSize = 12,
+		tile = false,
+		tileEdge = false,
+		tileSize = 12,
+		edgeSize = 12,
 		insets = {left = 3, right = 3, top = 3, bottom = 3}
 	})
 
@@ -675,14 +767,8 @@ function Module:SetStyle(tt)
 	tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])
 end
 
-function Module:PLAYER_ENTERING_WORLD()
-	if next(inspectCache) then
-		table_wipe(inspectCache)
-	end
-end
-
 function Module:MODIFIER_STATE_CHANGED(_, key)
-	if ((key == "LSHIFT" or key == "RSHIFT") and UnitExists("mouseover")) then
+	if((key == "LSHIFT" or key == "RSHIFT" or key == "LCTRL" or key == "RCTRL") and UnitExists("mouseover")) then
 		GameTooltip:SetUnit("mouseover")
 	end
 end
@@ -693,17 +779,25 @@ function Module:SetUnitAura(tt, unit, index, filter)
 	end
 
 	local _, _, _, _, _, _, caster, _, _, id = UnitAura(unit, index, filter)
-	if id and C["Tooltip"].SpellID then
-		if caster then
-			local name = UnitName(caster)
-			local _, class = UnitClass(caster)
-			local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
-			if not color then
-				color = RAID_CLASS_COLORS["PRIEST"]
+
+	if id then
+		if self.MountIDs[id] then
+			local _, _, sourceText = C_MountJournal_GetMountInfoExtraByID(self.MountIDs[id])
+			tt:AddLine(" ")
+			tt:AddLine(sourceText, 1, 1, 1)
+			tt:AddLine(" ")
+		end
+
+		if C["Tooltip"].SpellID then
+			if caster then
+				local name = UnitName(caster)
+				local _, class = UnitClass(caster)
+				local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
+				if not color then color = RAID_CLASS_COLORS.PRIEST end
+				tt:AddDoubleLine(("|cFFCA3C3C%s|r %d"):format(ID, id), string_format("|c%s%s|r", color.colorStr, name))
+			else
+				tt:AddLine(("|cFFCA3C3C%s|r %d"):format(ID, id))
 			end
-			tt:AddDoubleLine(("|cFFCA3C3C%s|r %d"):format(LOCALE.ID, id), format("|c%s%s|r", color.colorStr, name))
-		else
-			tt:AddLine(("|cFFCA3C3C%s|r %d"):format(LOCALE.ID, id))
 		end
 
 		tt:Show()
@@ -720,7 +814,7 @@ function Module:GameTooltip_OnTooltipSetSpell(tt)
 		return
 	end
 
-	local displayString = ("|cFFCA3C3C%s|r %d"):format(LOCALE.ID, id)
+	local displayString = ("|cFFCA3C3C%s|r %d"):format(ID, id)
 	local lines = tt:NumLines()
 	local isFound
 	for i = 1, lines do
@@ -738,8 +832,8 @@ function Module:GameTooltip_OnTooltipSetSpell(tt)
 end
 
 function Module:SetItemRef(link)
-	if find(link, "^spell:") and C["Tooltip"].SpellID then
-		local id = sub(link, 7)
+	if string_find(link, "^spell:") and C["Tooltip"].SpellID then
+		local id = string_sub(link, 7)
 		ItemRefTooltip:AddLine(("|cFFCA3C3C%s|r %d"):format(ID, id))
 		ItemRefTooltip:Show()
 	end
@@ -799,6 +893,12 @@ function Module:OnEnable()
 
 	local TooltipFont = K.GetFont(C["Tooltip"].Font)
 
+	self.MountIDs = {}
+	local mountIDs = C_MountJournal_GetMountIDs()
+	for _, mountID in ipairs(mountIDs) do
+		self.MountIDs[select(2, C_MountJournal_GetMountInfoByID(mountID))] = mountID
+	end
+
 	local BNETMover = CreateFrame("Frame", "BNETMover", UIParent)
 	BNETMover:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, 204)
 	BNETMover:SetSize(250, 64)
@@ -812,11 +912,6 @@ function Module:OnEnable()
 	BNToastFrame.CloseButton:SetSize(32, 32)
 	BNToastFrame.CloseButton:SetPoint("TOPRIGHT", 4, 4)
 	BNToastFrame.CloseButton:SkinCloseButton()
-
-	K.ScanTooltip = CreateFrame("GameTooltip", "KkthnxUI_ScanTooltip", UIParent, "GameTooltipTemplate")
-	K.ScanTooltip:SetPoint("CENTER")
-	K.ScanTooltip:SetSize(200, 200)
-	GameTooltip_SetDefaultAnchor(K.ScanTooltip, UIParent)
 
 	if GameTooltipStatusBar then
 		GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
@@ -841,23 +936,18 @@ function Module:OnEnable()
 
 	K.Movers:RegisterFrame(GameTooltipAnchor)
 
-	self:SecureHook("GameTooltip_SetDefaultAnchor")
 	self:SecureHook("SetItemRef")
+	self:SecureHook("GameTooltip_SetDefaultAnchor")
 	self:SecureHook(GameTooltip, "SetUnitAura")
 	self:SecureHook(GameTooltip, "SetUnitBuff", "SetUnitAura")
 	self:SecureHook(GameTooltip, "SetUnitDebuff", "SetUnitAura")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetSpell", "GameTooltip_OnTooltipSetSpell")
-	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "FixTooltipBug")
-	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED", "FixTooltipBug")
-	self:RegisterEvent("BAG_UPDATE_DELAYED")
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "GameTooltip_OnTooltipCleared")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")
 	self:SecureHookScript(GameTooltipStatusBar, "OnValueChanged", "GameTooltipStatusBar_OnValueChanged")
 	self:RegisterEvent("MODIFIER_STATE_CHANGED")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 
-	LibInspect:AddHook("KkthnxUI", "items", function(guid, data, _)
-		self:InspectReady(guid, data)
-	end)
-	LibInspect:SetMaxAge(inspectAge)
+	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "GameTooltip_OnTooltipBug")
+	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED", "GameTooltip_OnTooltipBug")
+	self:RegisterEvent("BAG_UPDATE_DELAYED")
 end

@@ -4,16 +4,16 @@ local _G = _G
 local select = select
 local pairs = pairs
 
-local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
-local C_Map_GetMapInfo = _G.C_Map.GetMapInfo
-local C_Map_GetWorldPosFromMapPos = _G.C_Map.GetWorldPosFromMapPos
-local CreateFrame = _G.CreateFrame
-local CreateVector2D = _G.CreateVector2D
 local Enum = _G.Enum
-local GetUnitSpeed = _G.GetUnitSpeed
 local IsFalling = _G.IsFalling
-local MapUtil = _G.MapUtil
+local CreateFrame = _G.CreateFrame
 local UnitPosition = _G.UnitPosition
+local GetUnitSpeed = _G.GetUnitSpeed
+local CreateVector2D = _G.CreateVector2D
+local C_Map_GetMapInfo = _G.C_Map.GetMapInfo
+local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
+local C_Map_GetWorldPosFromMapPos = _G.C_Map.GetWorldPosFromMapPos
+local MapUtil = _G.MapUtil
 
 K.MapInfo = {}
 function K:MapInfo_Update()
@@ -56,14 +56,13 @@ end
 
 function K:MapInfo_CoordsStop(event)
 	if event == "CRITERIA_UPDATE" then
-		if not K.MapInfo.coordsFalling then -- stop if we weren't falling
+		if not K.MapInfo.coordsFalling then -- stop if we weren"t falling
 			return
 		end
 
-		if (GetUnitSpeed('player') or 0) > 0 then -- we are still moving!
+		if (GetUnitSpeed("player") or 0) > 0 then -- we are still moving!
 			return
 		end
-
 		K.MapInfo.coordsFalling = nil -- we were falling!
 	elseif (event == "PLAYER_STOPPED_MOVING" or event == "PLAYER_CONTROL_GAINED") and IsFalling() then
 		K.MapInfo.coordsFalling = true
@@ -99,8 +98,7 @@ function K:MapInfo_OnUpdate(elapsed)
 end
 
 -- This code fixes C_Map.GetPlayerMapPosition memory leak.
--- Fix sourced from NDui (and modified by Simpy)
--- Credit: siweia.
+-- Fix stolen from NDui (and modified by Simpy). Credit: siweia.
 local mapRects, tempVec2D = {}, CreateVector2D(0, 0)
 function K:GetPlayerMapPos(mapID)
 	tempVec2D.x, tempVec2D.y = UnitPosition("player")
@@ -110,15 +108,13 @@ function K:GetPlayerMapPos(mapID)
 
 	local mapRect = mapRects[mapID]
 	if not mapRect then
-		mapRect = {
-			select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(0, 0))),
-		select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(1, 1)))}
+		mapRect = {select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(0, 0))), select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(1, 1)))}
 		mapRect[2]:Subtract(mapRect[1])
 		mapRects[mapID] = mapRect
 	end
 	tempVec2D:Subtract(mapRect[1])
 
-	return (tempVec2D.y/mapRect[2].y), (tempVec2D.x/mapRect[2].x)
+	return (tempVec2D.y / mapRect[2].y), (tempVec2D.x / mapRect[2].x)
 end
 
 -- Code taken from LibTourist-3.0 and rewritten to fit our purpose
@@ -146,9 +142,9 @@ local function LocalizeZoneNames()
 end
 LocalizeZoneNames()
 
---Add " (Outland)" to the end of zone name for Nagrand and Shadowmoon Valley, if mapID matches Outland continent.
---We can then use this function when we need to compare the players own zone against return values from stuff like GetFriendInfo and GetGuildRosterInfo,
---which adds the " (Outland)" part unlike the GetRealZoneText() API.
+-- Add " (Outland)" to the end of zone name for Nagrand and Shadowmoon Valley, if mapID matches Outland continent.
+-- We can then use this function when we need to compare the players own zone against return values from stuff like GetFriendInfo and GetGuildRosterInfo,
+-- which adds the " (Outland)" part unlike the GetRealZoneText() API.
 function K:GetZoneText(mapID)
 	if not (mapID and K.MapInfo.name) then
 		return
@@ -156,10 +152,10 @@ function K:GetZoneText(mapID)
 
 	local continent, zoneName = ZoneIDToContinentName[mapID]
 	if continent and continent == "Outland" then
-		if K.MapInfo.name == localizedMapNames["Nagrand"] or K.MapInfo.name == "Nagrand" then
-			zoneName = localizedMapNames["Nagrand"].." ("..localizedMapNames["Outland"]..")"
-		elseif K.MapInfo.name == localizedMapNames["Shadowmoon Valley"] or K.MapInfo.name == "Shadowmoon Valley" then
-			zoneName = localizedMapNames["Shadowmoon Valley"].." ("..localizedMapNames["Outland"]..")"
+		if K.MapInfo.name == localizedMapNames.Nagrand or K.MapInfo.name == "Nagrand"  then
+			zoneName = localizedMapNames.Nagrand.." ("..localizedMapNames.Outland..")"
+		elseif K.MapInfo.name == localizedMapNames["Shadowmoon Valley"] or K.MapInfo.name == "Shadowmoon Valley"  then
+			zoneName = localizedMapNames["Shadowmoon Valley"].." ("..localizedMapNames.Outland..")"
 		end
 	end
 

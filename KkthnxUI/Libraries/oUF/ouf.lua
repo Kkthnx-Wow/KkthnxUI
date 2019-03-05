@@ -61,7 +61,7 @@ local function updateActiveUnit(self, event, unit)
 	if(not UnitExists(modUnit)) then return end
 
 	-- Change the active unit and run a full update.
-	if Private.UpdateUnits(self, modUnit, realUnit) then
+	if(Private.UpdateUnits(self, modUnit, realUnit)) then
 		self:UpdateAllElements('RefreshUnit')
 
 		return true
@@ -248,6 +248,15 @@ local function updatePet(self, event, unit)
 	end
 end
 
+local function updateRaid(self, event)
+	local unitGUID = UnitGUID(self.unit)
+	if unitGUID and unitGUID ~= self.unitGUID then
+		self.unitGUID = unitGUID
+
+		self:UpdateAllElements(event)
+	end
+end
+
 local function initObject(unit, style, styleFunc, header, ...)
 	local num = select('#', ...)
 	for i = 1, num do
@@ -274,7 +283,6 @@ local function initObject(unit, style, styleFunc, header, ...)
 		if(not (suffix == 'target' or objectUnit and objectUnit:match('target'))) then
 			object:RegisterEvent('UNIT_ENTERED_VEHICLE', updateActiveUnit)
 			object:RegisterEvent('UNIT_EXITED_VEHICLE', updateActiveUnit)
-			object:RegisterEvent('UNIT_EXITING_VEHICLE', updateActiveUnit)
 
 			-- We don't need to register UNIT_PET for the player unit. We register it
 			-- mainly because UNIT_EXITED_VEHICLE and UNIT_ENTERED_VEHICLE doesn't always
@@ -301,8 +309,9 @@ local function initObject(unit, style, styleFunc, header, ...)
 				oUF:HandleUnit(object)
 			end
 		else
-			-- Used to update frames when they change position in a group.
-			object:RegisterEvent('GROUP_ROSTER_UPDATE', object.UpdateAllElements, true)
+			-- update the frame when its prev unit is replaced with a new one
+			-- updateRaid relies on UnitGUID to detect the unit change
+			object:RegisterEvent('GROUP_ROSTER_UPDATE', updateRaid, true)
 
 			if(num > 1) then
 				if(object:GetParent() == header) then
@@ -375,11 +384,11 @@ Used to make a (table of) function(s) available to all unit frames.
 * name - unique name of the function (string)
 * func - function or a table of functions (function or table)
 --]]
-function oUF:RegisterMetaFunction(name, func)
+function oUF:RegisterMetaFunction(name, func, override) -- ElvUI Changed added override
 	argcheck(name, 2, 'string')
 	argcheck(func, 3, 'function', 'table')
 
-	if(frame_metatable.__index[name]) then
+	if not override and (frame_metatable.__index[name]) then
 		return
 	end
 
@@ -796,13 +805,16 @@ Used to register an element with oUF.
 * enable  - used to enable the element for a given unit frame and unit (function?)
 * disable - used to disable the element for a given unit frame (function?)
 --]]
-function oUF:AddElement(name, update, enable, disable)
+function oUF:AddElement(name, update, enable, disable, override)  -- ElvUI Changed added override
 	argcheck(name, 2, 'string')
 	argcheck(update, 3, 'function', 'nil')
 	argcheck(enable, 4, 'function', 'nil')
 	argcheck(disable, 5, 'function', 'nil')
 
-	if(elements[name]) then return error('Element [%s] is already registered.', name) end
+	if not override then
+		if(elements[name]) then return error('Element [%s] is already registered.', name) end
+	end
+
 	elements[name] = {
 		update = update;
 		enable = enable;

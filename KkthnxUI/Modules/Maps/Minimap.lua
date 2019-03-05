@@ -1,3 +1,4 @@
+local ADDON = ...
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Minimap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
@@ -39,13 +40,6 @@ function Module:GetLocTextColor()
 	end
 end
 
-function Module:ADDON_LOADED(_, addon)
-	if addon == "Blizzard_TimeManager" then
-		TimeManagerClockButton:SetParent(K.UIFrameHider)
-		TimeManagerClockButton:UnregisterAllEvents()
-	end
-end
-
 function Module:Minimap_OnMouseWheel(d)
 	if d > 0 then
 		_G.MinimapZoomIn:Click()
@@ -62,11 +56,6 @@ function Module:ZoneTextUpdate()
 	Minimap.location:SetText(string_sub(GetMinimapZoneText(), 1, 46))
 	Minimap.location:SetTextColor(Module:GetLocTextColor())
 	Minimap.location:FontTemplate(nil, 13)
-end
-
-function Module:PLAYER_REGEN_ENABLED()
-	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	self:UpdateSettings()
 end
 
 local function PositionTicketButtons()
@@ -94,8 +83,9 @@ hooksecurefunc(Minimap, "SetZoom", SetupZoomReset)
 
 function Module:UpdateSettings()
 	if InCombatLockdown() then
-		self:RegisterEvent("PLAYER_REGEN_ENABLED")
+		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	end
+
 	K.MinimapSize = C["Minimap"].Enable and C["Minimap"].Size or 170
 	K.MinimapWidth = K.MinimapSize
 	K.MinimapHeight = K.MinimapSize
@@ -182,8 +172,59 @@ function Module:UpdateSettings()
 		MiniMapChallengeMode:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 8, -8)
 	end
 
+	if StreamingIcon then
+		StreamingIcon:ClearAllPoints()
+		StreamingIcon:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -10)
+		StreamingIcon:SetScale(0.8)
+		StreamingIcon:SetFrameStrata("BACKGROUND")
+	end
+
 	if HelpOpenTicketButton and HelpOpenWebTicketButton then
 		PositionTicketButtons()
+	end
+end
+
+function Module:UpdateCluster()
+	-- Set the size and position 
+	-- Can't change this in combat, will cause taint!
+	if InCombatLockdown() then 
+		self.clusterNeedsUpdate = true
+		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	end
+
+	MinimapCluster:SetMovable(true)
+	MinimapCluster:SetUserPlaced(true)
+	MinimapCluster:ClearAllPoints()
+	MinimapCluster:SetAllPoints(Minimap)
+	MinimapCluster:EnableMouse(false)
+
+	self.clusterNeedsUpdate = nil
+end 
+
+--[[function Module:ADDON_LOADED(_, addon)
+	if addon == "Blizzard_TimeManager" then
+		TimeManagerClockButton:SetParent(K.UIFrameHider)
+		TimeManagerClockButton:UnregisterAllEvents()
+	end
+end--]]
+
+function Module:ADDON_LOADED(event, addon)
+	if addon == "Blizzard_TimeManager" then
+		TimeManagerClockButton:Kill()
+	elseif addon == "Blizzard_FeedbackUI" then
+		FeedbackUIButton:Kill()
+	end
+end
+
+function Module:OnEvent(event, ...)
+	if event == "PLAYER_ENTERING_WORLD" then 
+		self:ZoneTextUpdate()
+		self:UpdateCluster()
+	elseif event == "PLAYER_REGEN_ENABLED" then 
+		if self.clusterNeedsUpdate then 
+			self:UpdateCluster()
+		end
+		self:UpdateSettings()
 	end
 end
 
@@ -273,8 +314,11 @@ function Module:OnInitialize()
 	MiniMapChallengeMode:SetParent(Minimap)
 
 	if TimeManagerClockButton then
-		TimeManagerClockButton:SetParent(K.UIFrameHider)
-		TimeManagerClockButton:UnregisterAllEvents()
+		TimeManagerClockButton:Kill()
+	end
+
+	if FeedbackUIButton then
+		FeedbackUIButton:Kill()
 	end
 
 	K.Movers:RegisterFrame(MMHolder)
@@ -285,20 +329,16 @@ function Module:OnInitialize()
 	MinimapBackdrop:ClearAllPoints()
 	MinimapBackdrop:SetPoint("CENTER")
 
-	MinimapCluster:SetMovable(true)
-	MinimapCluster:SetUserPlaced(true)
-	MinimapCluster:ClearAllPoints()
-	MinimapCluster:SetAllPoints(Minimap)
-	MinimapCluster:EnableMouse(false)
-
 	Minimap:EnableMouseWheel(true)
 	Minimap:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ZoneTextUpdate")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ZoneTextUpdate")
 	self:RegisterEvent("ZONE_CHANGED", "ZoneTextUpdate")
 	self:RegisterEvent("ZONE_CHANGED_INDOORS", "ZoneTextUpdate")
 	self:RegisterEvent("ADDON_LOADED")
+	self:RegisterEvent("VARIABLES_LOADED", "UpdateCluster")
 
 	self:UpdateSettings()
+	self:UpdateCluster()
 end

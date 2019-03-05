@@ -5,36 +5,60 @@ end
 
 local _G = _G
 
-local ACHIEVEMENT_BUTTON = _G.ACHIEVEMENT_BUTTON
 local ACHIEVEMENTS_GUILD_TAB = _G.ACHIEVEMENTS_GUILD_TAB
+local ACHIEVEMENT_BUTTON = _G.ACHIEVEMENT_BUTTON
 local BLIZZARD_STORE = _G.BLIZZARD_STORE
+local CALENDAR_VIEW_EVENT = _G.CALENDAR_VIEW_EVENT
 local CHARACTER_BUTTON = _G.CHARACTER_BUTTON
-local CloseAllWindows = _G.CloseAllWindows
-local CloseMenus = _G.CloseMenus
+local CHAT_CHANNELS = _G.CHAT_CHANNELS
+local COMMUNITIES = _G.COMMUNITIES
+local COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATEPVE = _G.COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATEPVE
+local COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATEPVP = _G.COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATEPVP
+local C_Social_IsSocialEnabled = _G.C_Social_IsSocialEnabled
 local CreateFrame = _G.CreateFrame
+local ENCOUNTER_JOURNAL = _G.ENCOUNTER_JOURNAL
+local EasyMenu = _G.EasyMenu
 local GARRISON_TYPE_8_0_LANDING_PAGE_TITLE = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE
-local GarrisonLandingPageMinimapButton_OnClick = _G.GarrisonLandingPageMinimapButton_OnClick
+local GameMenuFrame = _G.GameMenuFrame
+local HEIRLOOMS = _G.HEIRLOOMS
 local HELP_BUTTON = _G.HELP_BUTTON
 local HideUIPanel = _G.HideUIPanel
 local IsAddOnLoaded = _G.IsAddOnLoaded
+local IsInGuild = _G.IsInGuild
 local IsShiftKeyDown = _G.IsShiftKeyDown
+local LFG_TITLE = _G.LFG_TITLE
+local LoadAddOn = _G.LoadAddOn
 local MAINMENU_BUTTON = _G.MAINMENU_BUTTON
-local MainMenuMicroButton_SetNormal = _G.MainMenuMicroButton_SetNormal
+local MOUNTS = _G.MOUNTS
+local MiniMapTrackingDropDown_Initialize = _G.MiniMapTrackingDropDown_Initialize
+local PETS = _G.PETS
 local PlaySound = _G.PlaySound
-local ShowUIPanel = _G.ShowUIPanel
+local QUESTLOG_BUTTON = _G.QUESTLOG_BUTTON
+local RAID = _G.RAID
 local SOCIAL_BUTTON = _G.SOCIAL_BUTTON
+local SOCIAL_TWITTER_COMPOSE_NEW_TWEET = _G.SOCIAL_TWITTER_COMPOSE_NEW_TWEET
+local SOCIAL_TWITTER_TWEET_NOT_LINKED = _G.SOCIAL_TWITTER_TWEET_NOT_LINKED
 local SPELLBOOK_ABILITIES_BUTTON = _G.SPELLBOOK_ABILITIES_BUTTON
+local ShowUIPanel = _G.ShowUIPanel
+local TALENTS_BUTTON = _G.TALENTS_BUTTON
+local TOY_BOX = _G.TOY_BOX
+local UIDropDownMenu_Initialize = _G.UIDropDownMenu_Initialize
 local UIParent = _G.UIParent
+local WORLD_MAP = _G.WORLD_MAP
 
-local UIMiniMapTrackingMenu = L_Create_UIDropDownMenu("UIMiniMapTrackingMenu", UIParent)
-UIMiniMapTrackingMenu:SetID(1)
-UIMiniMapTrackingMenu:SetClampedToScreen(true)
-UIMiniMapTrackingMenu:Hide()
-L_UIDropDownMenu_Initialize(UIMiniMapTrackingMenu, MiniMapTrackingDropDown_Initialize, "MENU")
-UIMiniMapTrackingMenu.noResize = true
+-- Create the new minimap tracking dropdown frame and initialize it
+local KkthnxUIMiniMapTrackingDropDown = CreateFrame("Frame", "KkthnxUIMiniMapTrackingDropDown", UIParent, "UIDropDownMenuTemplate")
+KkthnxUIMiniMapTrackingDropDown:SetID(1)
+KkthnxUIMiniMapTrackingDropDown:SetClampedToScreen(true)
+KkthnxUIMiniMapTrackingDropDown:Hide()
+UIDropDownMenu_Initialize(KkthnxUIMiniMapTrackingDropDown, MiniMapTrackingDropDown_Initialize, "MENU")
+KkthnxUIMiniMapTrackingDropDown.noResize = true
 
+-- Create the minimap micro menu
 local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent)
 local menuList = {
+	{text = _G.MAINMENU_BUTTON, isTitle = true, notCheckable = true},
+	{text = "", notClickable = true, notCheckable = true},
 	{text = CHARACTER_BUTTON,
 		icon = "Interface\\PaperDollInfoFrame\\UI-EquipmentManager-Toggle",
 		func = function()
@@ -101,7 +125,9 @@ local menuList = {
 
 	{text = TOY_BOX,
 		icon = "Interface\\MINIMAP\\TRACKING\\Reagents",
-		func = function() ToggleCollectionsJournal(3) end,
+		func = function()
+			ToggleCollectionsJournal(3)
+		end,
 	notCheckable = true},
 
 	{text = HEIRLOOMS,
@@ -125,27 +151,27 @@ local menuList = {
 	notCheckable = true},
 
 	{text = ACHIEVEMENTS_GUILD_TAB,
-	func = function()
-		if IsInGuild() then
-			if (not GuildFrame) then
-				GuildFrame_LoadUI()
-			end
+		func = function()
+			if IsInGuild() then
+				if (not GuildFrame) then
+					GuildFrame_LoadUI()
+				end
 
-			GuildFrame_Toggle()
-		else
-			if (not LookingForGuildFrame) then
-				LookingForGuildFrame_LoadUI()
-			end
+				GuildFrame_Toggle()
+			else
+				if (not LookingForGuildFrame) then
+					LookingForGuildFrame_LoadUI()
+				end
 
-			LookingForGuildFrame_Toggle()
-		end
-	end,
+				LookingForGuildFrame_Toggle()
+			end
+		end,
 	notCheckable = true},
 
 	{text = COMMUNITIES,
-	func = function()
-		ToggleCommunitiesFrame()
-	end,
+		func = function()
+			ToggleCommunitiesFrame()
+		end,
 	notCheckable = true},
 
 	{text = LFG_TITLE,
@@ -184,6 +210,7 @@ local menuList = {
 			if not IsAddOnLoaded("Blizzard_EncounterJournal") then
 				EncounterJournal_LoadUI()
 			end
+
 			ToggleFrame(EncounterJournal)
 		end,
 	notCheckable = true},
@@ -200,8 +227,7 @@ local menuList = {
 				LoadAddOn("Blizzard_SocialUI")
 			end
 
-			local IsTwitterEnabled = C_Social.IsSocialEnabled()
-
+			local IsTwitterEnabled = C_Social_IsSocialEnabled()
 			if IsTwitterEnabled then
 				Social_SetShown(true)
 			else
@@ -237,19 +263,29 @@ local menuList = {
 			StoreMicroButton:Click()
 		end,
 	notCheckable = true},
+
+	{text = "", notClickable = true, notCheckable = true},
+
+	{text = CLOSE,
+		func = function()
+
+		end,
+	notCheckable = true},
 }
 
-Minimap:SetScript("OnMouseUp", function(self, button)
-	local position = self:GetPoint()
+Minimap:SetScript("OnMouseUp", function(self, btn)
+	HideDropDownMenu(1, nil, KkthnxUIMiniMapTrackingDropDown)
+	menuFrame:Hide()
 
-	if (button == "MiddleButton") or (button == "RightButton" and IsShiftKeyDown()) then
-		if (position:match("LEFT")) then
-			L_EasyMenu(menuList, menuFrame, "cursor")
+	local position = self:GetPoint()
+	if btn == "MiddleButton" or (btn == "RightButton" and IsShiftKeyDown()) then
+		if position:match("LEFT") then
+			EasyMenu(menuList, menuFrame, "cursor")
 		else
-			L_EasyMenu(menuList, menuFrame, "cursor", -160, 0)
+			EasyMenu(menuList, menuFrame, "cursor", -160, 0)
 		end
-	elseif (button == "RightButton") then
-		ToggleDropDownMenu(1, nil, UIMiniMapTrackingMenu, "cursor")
+	elseif btn == "RightButton" then
+		ToggleDropDownMenu(1, nil, KkthnxUIMiniMapTrackingDropDown, "cursor")
 	else
 		Minimap_OnClick(self)
 	end

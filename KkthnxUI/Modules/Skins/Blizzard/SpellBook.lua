@@ -12,28 +12,43 @@ local SPELLS_PER_PAGE = _G.SPELLS_PER_PAGE
 local function LoadSpellBookSkin()
 	local professionTexture = K.GetTexture(C["Skins"].Texture)
 
-	-- Skin SpellButtons
-	local function SpellButtons(self, first)
-		for i = 1, SPELLS_PER_PAGE do
-			local button = _G["SpellButton" .. i]
-			local slot = _G["SpellButton" .. i .. "SlotFrame"]
-			local icon = _G["SpellButton" .. i .. "IconTexture"]
+	for i = 1, _G.SPELLS_PER_PAGE do
+		local button = _G["SpellButton" .. i]
+		local icon = _G["SpellButton" .. i .. "IconTexture"]
+		local slot = _G["SpellButton" .. i .. "SlotFrame"]
+		local highlight =_G["SpellButton" .. i .. "Highlight"]
 
-			if not InCombatLockdown() then
-				button:SetFrameLevel(SpellBookFrame:GetFrameLevel() + 5)
-			end
+		highlight:SetColorTexture(1, 1, 1, 0.3)
+		highlight:SetAllPoints(icon)
 
-			if first then
-				button:CreateBorder()
-				button.EmptySlot:SetTexture("")
-				button.UnlearnedFrame:SetTexture("")
-				slot:SetTexture("") -- swirly thing
-				icon:SetTexCoord(unpack(K.TexCoords))
-			end
+		button.EmptySlot:SetTexture("")
+		button.UnlearnedFrame:SetTexture("")
+		slot:SetTexture("")
+		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		icon:SetAllPoints()
+		button:CreateBorder()
+
+		if button.SpellHighlightTexture then
+			K.UIFrameFlash(button.SpellHighlightTexture, 1, true)
+		end
+
+		if button.shine then
+			button.shine:ClearAllPoints()
+			button.shine:SetPoint("TOPLEFT", button, "TOPLEFT", -3, 3)
+			button.shine:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 3, -3)
 		end
 	end
-	SpellButtons(nil, true)
-	hooksecurefunc("SpellButton_UpdateButton", SpellButtons)
+
+	hooksecurefunc("SpellButton_UpdateButton", function()
+		for i = 1, _G.SPELLS_PER_PAGE do
+			local button = _G["SpellButton" .. i]
+			local icon = _G["SpellButton" .. i .. "IconTexture"]
+
+			if button.SpellHighlightTexture then
+				K.UIFrameFlash(button.SpellHighlightTexture, 1, true)
+			end
+		end
+	end)
 
 	-- Profession Tab
 	local professionbuttons = {
@@ -46,7 +61,7 @@ local function LoadSpellBookSkin()
 		"SecondaryProfession2SpellButtonLeft",
 		"SecondaryProfession2SpellButtonRight",
 		"SecondaryProfession3SpellButtonLeft",
-		"SecondaryProfession3SpellButtonRight"
+		"SecondaryProfession3SpellButtonRight",
 	}
 
 	local professionheaders = {
@@ -54,7 +69,7 @@ local function LoadSpellBookSkin()
 		"PrimaryProfession2",
 		"SecondaryProfession1",
 		"SecondaryProfession2",
-		"SecondaryProfession3"
+		"SecondaryProfession3",
 	}
 
 	for _, header in pairs(professionheaders) do
@@ -108,7 +123,7 @@ local function LoadSpellBookSkin()
 		"PrimaryProfession2StatusBar",
 		"SecondaryProfession1StatusBar",
 		"SecondaryProfession2StatusBar",
-		"SecondaryProfession3StatusBar"
+		"SecondaryProfession3StatusBar",
 	}
 
 	for _, statusbar in pairs(professionstatusbars) do

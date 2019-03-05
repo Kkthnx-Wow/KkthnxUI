@@ -51,13 +51,14 @@ function Module:CreateParty()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
+	self.Health.PostUpdate = C["Party"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.Smooth = C["Party"].Smooth
 	self.Health.SmoothSpeed = C["Party"].SmoothSpeed * 10
 	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
-	self.Health.frequentUpdates = true
+	self.Health.SetFrequentUpdates = true
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
@@ -74,12 +75,13 @@ function Module:CreateParty()
 	self.Power.Smooth = C["Party"].Smooth
 	self.Power.SmoothSpeed = C["Party"].SmoothSpeed * 10
 	self.Power.colorPower = true
-	self.Power.frequentUpdates = true
+	self.Power.SetFrequentUpdates = true
 
 	if (C["Party"].PortraitStyle.Value == "ThreeDPortraits") then
 		self.Portrait = CreateFrame("PlayerModel", nil, self)
 		self.Portrait:SetSize(32, 32)
 		self.Portrait:SetPoint("LEFT", self, 3, 0)
+		self.Portrait:SetAlpha(0.9)
 
 		self.Portrait.Borders = CreateFrame("Frame", nil, self)
 		self.Portrait.Borders:SetPoint("LEFT", self, 3, 0)
@@ -237,7 +239,7 @@ function Module:CreateParty()
 		end
 
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdatePartyTargetGlow, true)
-		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyTargetGlow, true) -- Watch this.
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyTargetGlow, true)  -- Watch this.
 	end
 
 	Module.CreateAuras(self, "party")
@@ -248,7 +250,10 @@ function Module:CreateParty()
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
 	Module.CreateResurrectIndicator(self)
-	Module.CreateSummonIndicator(self)
+	if K.IsRetail then
+		Module.CreateSummonIndicator(self)
+	end
+	Module.CreateOfflineIndicator(self, 50)
 	Module.CreateThreatIndicator(self)
 	Module.CreateDebuffHighlight(self)
 
@@ -260,5 +265,5 @@ function Module:CreateParty()
 		Override = Module.CreateThreatIndicator
 	}
 
-	self.Range = Module.CreateRange(self)
+	self.Range = Module.CreateRangeIndicator(self)
 end

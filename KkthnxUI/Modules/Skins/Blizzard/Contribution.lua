@@ -12,7 +12,6 @@ local function SkinContribution()
 		ContributionBuffTooltip.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		ContributionBuffTooltip.Backdrop:SetOutside(ContributionBuffTooltip.Icon)
 		ContributionBuffTooltip.Backdrop:SetFrameLevel(ContributionBuffTooltip:GetFrameLevel())
-
 	end
 end
 

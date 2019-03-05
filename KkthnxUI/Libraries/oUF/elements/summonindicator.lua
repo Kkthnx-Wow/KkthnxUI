@@ -22,6 +22,11 @@ This element updates by changing the texture.
     self.SummonIndicator = SummonIndicator
 --]]
 
+local IsRetail = GetBuildInfo and select(4, GetBuildInfo()) >= 80100
+if not IsRetail then
+	return
+end
+
 local _, ns = ...
 local oUF = ns.oUF
 

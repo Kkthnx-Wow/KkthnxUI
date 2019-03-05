@@ -1,5 +1,10 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("SlotDurability", "AceEvent-3.0", "AceHook-3.0")
+
+local _G = _G
+
+local GetInventorySlotInfo = _G.GetInventorySlotInfo
+local GetInventoryItemDurability = _G.GetInventoryItemDurability
 
 local SlotDurStrs = {}
 local Slots = {
@@ -18,10 +23,19 @@ local Slots = {
 local function GetDurStrings(name)
 	if (not SlotDurStrs[name]) then
 		local slot = _G["Character"..name.."Slot"]
-		SlotDurStrs[name] = slot:CreateFontString("ARTWORK")
-		SlotDurStrs[name]:SetFontObject(KkthnxUIFontOutline)
-		SlotDurStrs[name]:SetPoint("BOTTOMRIGHT", slot, "BOTTOMRIGHT", 2, 2)
+		SlotDurStrs[name] = slot:CreateFontString("OVERLAY")
+		SlotDurStrs[name]:FontTemplate(nil, 13)
+		SlotDurStrs[name]:SetShadowOffset(1.3, -1.3)
+		SlotDurStrs[name]:SetPoint("CENTER")
+
+		SlotDurStrs[name].Shade = slot:CreateTexture()
+		SlotDurStrs[name].Shade:SetDrawLayer("ARTWORK")
+		SlotDurStrs[name].Shade:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\Shader.tga]])
+		SlotDurStrs[name].Shade:SetPoint("TOPLEFT", SlotDurStrs[name], "TOPLEFT", -6, 6)
+		SlotDurStrs[name].Shade:SetPoint("BOTTOMRIGHT", SlotDurStrs[name], "BOTTOMRIGHT", 6, -6)
+		SlotDurStrs[name].Shade:SetAlpha(1)
 	end
+
 	return SlotDurStrs[name]
 end
 
@@ -48,12 +62,16 @@ function Module:UpdateDurability()
 		if ((v2 ~= 0) and (percent ~= 1)) then
 
 			SlotDurStr:SetText("")
+			SlotDurStr.Shade:Hide()
 			if (math.ceil(percent * 100) < 100)then
 				SlotDurStr:SetTextColor(GetThresholdColour(percent))
+				SlotDurStr.Shade:SetVertexColor(GetThresholdColour(percent))
+				SlotDurStr.Shade:Show()
 				SlotDurStr:SetText(math.ceil(percent * 100).."%")
 			end
 		else
 			SlotDurStr:SetText("")
+			SlotDurStr.Shade:Hide()
 		end
 	end
 end

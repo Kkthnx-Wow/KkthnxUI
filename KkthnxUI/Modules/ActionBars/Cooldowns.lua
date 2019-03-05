@@ -5,13 +5,10 @@ end
 
 local _G = _G
 local floor = math.floor
-local pairs = pairs
 local select = select
 local tonumber = tonumber
 
 local CreateFrame = _G.CreateFrame
-local GetActionCharges = _G.GetActionCharges
-local GetActionCooldown = _G.GetActionCooldown
 local GetTime = _G.GetTime
 local hooksecurefunc = _G.hooksecurefunc
 
@@ -24,7 +21,7 @@ local HALFDAYISH, HALFHOURISH, HALFMINUTEISH = DAY / 2 + 0.5, HOUR / 2 + 0.5, MI
 local CooldownFont = K.GetFont(C["ActionBar"].Font)
 local CooldownFontSize = 20
 local CooldownMinScale = 0.5
-local CooldownMinDuration = 2
+local CooldownMinDuration = 1.5
 
 local EXPIRING_DURATION = 8
 local EXPIRING_FORMAT = K.RGBToHex(1, 0, 0) .. "%.1f|r"
@@ -119,24 +116,23 @@ local function Timer_OnUpdate(self, elapsed)
 		return
 	end
 
-	if self.text:IsShown() then
-		if self.nextUpdate > 0 then
-			self.nextUpdate = self.nextUpdate - elapsed
+	if self.nextUpdate > 0 then
+		self.nextUpdate = self.nextUpdate - elapsed
+		return
+	end
+
+	local remain = self.duration - (GetTime() - self.start)
+	if remain > 0.05 then
+		if self.fontScale and ((self.fontScale * self:GetEffectiveScale() / UIParent:GetScale()) < CooldownMinScale) then
+			self.text:SetText("")
+			self.nextUpdate = 500
 		else
-			if self.fontScale and ((self.fontScale * self:GetEffectiveScale() / UIParent:GetScale()) < CooldownMinScale) then
-				self.text:SetText("")
-				self.nextUpdate = 500
-			else
-				local remain = self.duration - (GetTime() - self.start)
-				if remain > 0.05 then
-					local formatString, time, nextUpdate = GetFormattedTime(remain)
-					self.text:SetFormattedText(formatString, time)
-					self.nextUpdate = nextUpdate
-				else
-					Timer_Stop(self)
-				end
-			end
+			local formatString, time, nextUpdate = GetFormattedTime(remain)
+			self.text:SetFormattedText(formatString, time)
+			self.nextUpdate = nextUpdate
 		end
+	else
+		Timer_Stop(self)
 	end
 end
 
@@ -172,89 +168,49 @@ local function Timer_Create(self)
 	return timer
 end
 
-function K.Timer_Start(self, start, duration, charges)
-	if self:IsForbidden() then
-		if K.CodeDebug then
-			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 175 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. self .. " is forbidden|r")
-		end
+local Cooldown_MT = getmetatable(_G.ActionButton1Cooldown).__index
+local hideNumbers = {}
+
+local function deactivateDisplay(cooldown)
+	local timer = cooldown.timer
+	if timer then
+		Timer_Stop(timer)
+	end
+end
+
+local function setHideCooldownNumbers(cooldown, hide)
+	if hide then
+		hideNumbers[cooldown] = true
+		deactivateDisplay(cooldown)
+	else
+		hideNumbers[cooldown] = nil
+	end
+end
+
+hooksecurefunc(Cooldown_MT, "SetCooldown", function(cooldown, start, duration, modRate)
+	if cooldown.noCooldownCount or cooldown:IsForbidden() or hideNumbers[cooldown] then
 		return
 	end
 
-	local remainingCharges = charges or 0
+	local show = (start and start > 0) and (duration and duration > CooldownMinDuration) and (modRate == nil or modRate > 0)
 
-	if self:GetName() and string.find(self:GetName(), "ChargeCooldown") then
-		return
-	end
-
-	if start > 0 and duration > CooldownMinDuration and remainingCharges < CooldownMinDuration and (not self.noOCC) then
-		local timer = self.timer or Timer_Create(self)
+	if show then
+		local timer = cooldown.timer or Timer_Create(cooldown)
 		timer.start = start
 		timer.duration = duration
 		timer.enabled = true
 		timer.nextUpdate = 0
 
 		if timer.fontScale and (timer.fontScale >= CooldownMinScale) then
-
 			timer:Show()
 		end
-	elseif self.timer then
-		Timer_Stop(self.timer)
-	end
-end
-
-hooksecurefunc(getmetatable(_G["ActionButton1Cooldown"]).__index, "SetCooldown", K.Timer_Start)
-
-if not _G["ActionBarButtonEventsFrame"] then
-	return
-end
-
-local active = {}
-local hooked = {}
-
-local function cooldown_OnShow(self)
-	active[self] = true
-end
-
-local function cooldown_OnHide(self)
-	active[self] = nil
-end
-
-local function cooldown_ShouldUpdateTimer(self, start, duration, charges, maxCharges)
-	local timer = self.timer
-	return not (timer and timer.start == start and timer.duration == duration and timer.charges == charges and timer.maxCharges == maxCharges)
-end
-
-local function cooldown_Update(self)
-	local button = self:GetParent()
-	local action = button.action
-	local start, duration = GetActionCooldown(action)
-	local charges, maxCharges = GetActionCharges(action)
-
-	if cooldown_ShouldUpdateTimer(self, start, duration, charges, maxCharges) then
-		K.Timer_Start(self, start, duration, charges, maxCharges)
-	end
-end
-
-local EventWatcher = CreateFrame("Frame")
-EventWatcher:Hide()
-EventWatcher:SetScript("OnEvent", function()
-	for cooldown in pairs(active) do
-		cooldown_Update(cooldown)
+	elseif cooldown.timer then
+		deactivateDisplay(cooldown)
 	end
 end)
-EventWatcher:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
 
-local function actionButton_Register(frame)
-	local cooldown = frame.cooldown
-	if not hooked[cooldown] then
-		cooldown:HookScript("OnShow", cooldown_OnShow)
-		cooldown:HookScript("OnHide", cooldown_OnHide)
-		hooked[cooldown] = true
-	end
-end
-
-if _G["ActionBarButtonEventsFrame"].frames then
-	for _, frame in pairs(_G["ActionBarButtonEventsFrame"].frames) do
-		actionButton_Register(frame)
-	end
-end
+hooksecurefunc(Cooldown_MT, "Clear", deactivateDisplay)
+hooksecurefunc(Cooldown_MT, "SetHideCountdownNumbers", setHideCooldownNumbers)
+hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", function(cooldown)
+	setHideCooldownNumbers(cooldown, true)
+end)

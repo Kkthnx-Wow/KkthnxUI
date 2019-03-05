@@ -1,6 +1,7 @@
 local K, C, L = unpack(select(2, ...))
 local Unfit = LibStub("Unfit-1.0")
-local Module = K:GetModule("InventorySort")
+local ModuleSort = K:GetModule("InventorySort")
+local ModuleVendor = K:GetModule("Vendor")
 
 if C["Inventory"].Enable ~= true
 or K.CheckAddOnState("AdiBags")
@@ -23,6 +24,7 @@ local math_floor = math.floor
 local pairs = pairs
 local select = select
 local string_find = string.find
+local string_gsub = string.gsub
 local string_lower = string.lower
 local string_match = string.match
 local table_insert = table.insert
@@ -32,8 +34,6 @@ local tonumber = tonumber
 local BANK = _G.BANK
 local BankFrameItemButton_Update = _G.BankFrameItemButton_Update
 local BankFrameItemButton_UpdateLocked = _G.BankFrameItemButton_UpdateLocked
-local C_Item_CanScrapItem = C_Item.CanScrapItem
-local C_Item_DoesItemExist = C_Item.DoesItemExist
 local C_NewItems_IsNewItem = _G.C_NewItems.IsNewItem
 local CloseBankFrame = _G.CloseBankFrame
 local CooldownFrame_Set = _G.CooldownFrame_Set
@@ -41,6 +41,7 @@ local CreateFrame = _G.CreateFrame
 local GameTooltip = _G.GameTooltip
 local GetContainerItemCooldown = _G.GetContainerItemCooldown
 local GetContainerItemEquipmentSetInfo = _G.GetContainerItemEquipmentSetInfo
+local GetContainerItemID = _G.GetContainerItemID
 local GetContainerItemInfo = _G.GetContainerItemInfo
 local GetContainerItemLink = _G.GetContainerItemLink
 local GetContainerItemQuestInfo = _G.GetContainerItemQuestInfo
@@ -51,7 +52,6 @@ local GetItemQualityColor = _G.GetItemQualityColor
 local GetMoney = _G.GetMoney
 local GetNumBankSlots = _G.GetNumBankSlots
 local GetReagentBankCost = _G.GetReagentBankCost
-local hooksecurefunc = _G.hooksecurefunc
 local IsBattlePayItem = _G.IsBattlePayItem
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
@@ -59,13 +59,14 @@ local MoneyFrame_Update = _G.MoneyFrame_Update
 local NEW_ITEM_ATLAS_BY_QUALITY = _G.NEW_ITEM_ATLAS_BY_QUALITY
 local PlaySound = _G.PlaySound
 local SEARCH = _G.SEARCH
+local SOUNDKIT = _G.SOUNDKIT
 local SetItemButtonCount = _G.SetItemButtonCount
 local SetItemButtonDesaturated = _G.SetItemButtonDesaturated
 local SetItemButtonTexture = _G.SetItemButtonTexture
 local SortReagentBankBags = _G.SortReagentBankBags
-local SOUNDKIT = _G.SOUNDKIT
 local Token1, Token2, Token3 = _G.BackpackTokenFrameToken1, _G.BackpackTokenFrameToken2, _G.BackpackTokenFrameToken3
 local UIParent = _G.UIParent
+local hooksecurefunc = _G.hooksecurefunc
 
 local BAGS_FONT = K.GetFont(C["Inventory"].Font)
 local BAGS_BACKPACK = {0, 1, 2, 3, 4}
@@ -74,6 +75,41 @@ local ST_NORMAL = 1
 local ST_FISHBAG = 2
 local ST_SPECIAL = 3
 local bag_bars = 0
+
+local function GetGraysValue()
+	local value = 0
+
+	for bag = 0, 4 do
+		for slot = 1, GetContainerNumSlots(bag) do
+			local itemID = GetContainerItemID(bag, slot)
+			if itemID then
+				local _, _, rarity, _, _, itype, _, _, _, _, itemPrice = GetItemInfo(itemID)
+				if itemPrice then
+					local stackCount = select(2, GetContainerItemInfo(bag, slot)) or 1
+					local stackPrice = itemPrice * stackCount
+					if (rarity and rarity == 0) and (itype and itype ~= "Quest") and (stackPrice > 0) then
+						value = value + stackPrice
+					end
+				end
+			end
+		end
+	end
+
+	return value
+end
+
+local function VendorGrayCheck()
+	local value = GetGraysValue()
+
+	if value == 0 then
+		K.Print("No gray items to delete.")
+	elseif not MerchantFrame or not MerchantFrame:IsShown() then
+		K.PopupDialogs["DELETE_GRAYS"].Money = value
+		K.StaticPopup_Show('DELETE_GRAYS')
+	else
+		ModuleVendor:VendorGrays()
+	end
+end
 
 local Stuffing = CreateFrame("Frame", nil, UIParent)
 Stuffing:RegisterEvent("ADDON_LOADED")
@@ -145,7 +181,7 @@ local trashButton = {}
 local trashBag = {}
 
 -- Tooltip and scanning by Phanx @ http://www.wowinterface.com/forums/showthread.php?p=271406
-local S_ITEM_LEVEL = "^" .. gsub(_G.ITEM_LEVEL, "%%d", "(%%d+)")
+local S_ITEM_LEVEL = "^" .. string_gsub(_G.ITEM_LEVEL, "%%d", "(%%d+)")
 
 local ItemDB = {}
 local function IsRealItemLevel(link, owner, bag, slot)
@@ -156,7 +192,7 @@ local function IsRealItemLevel(link, owner, bag, slot)
 	local realItemLevel
 
 	K.ScanTooltip.owner = owner
-	K.ScanTooltip:SetOwner(owner, "ANCHOR_NONE")
+	K.ScanTooltip:SetOwner(_G.UIParent, "ANCHOR_NONE")
 	K.ScanTooltip:SetBagItem(bag, slot)
 
 	local line = _G[K.ScanTooltip:GetName() .. "TextLeft2"]
@@ -208,6 +244,10 @@ function Stuffing:SlotUpdate(b)
 		b.frame.Azerite:Hide()
 	end
 
+	if C["Inventory"].BindText == true then
+		b.frame.bindType:SetText("")
+	end
+
 	if (b.frame.JunkIcon) then
 		if (quality) and (quality == LE_ITEM_QUALITY_POOR and not noValue) and C["Inventory"].JunkIcon then
 			b.frame.JunkIcon:Show()
@@ -216,14 +256,14 @@ function Stuffing:SlotUpdate(b)
 		end
 	end
 
-	if (b.frame.ScrapIcon) and C["Inventory"].ScrapIcon then
+	if (b.frame.ScrapIcon) and C["Inventory"].ScrapIcon and K.IsRetail then
 		local itemLocation = ItemLocation:CreateFromBagAndSlot(b.frame:GetParent():GetID(), b.frame:GetID())
 		if not itemLocation then
 			return
 		end
 
 		if itemLocation and itemLocation ~= "" then
-			if (C_Item_DoesItemExist(itemLocation) and C_Item_CanScrapItem(itemLocation)) then
+			if (C_Item.DoesItemExist(itemLocation) and C_Item.CanScrapItem(itemLocation)) then
 				b.frame.ScrapIcon:SetShown(itemLocation)
 			else
 				b.frame.ScrapIcon:SetShown(false)
@@ -330,7 +370,7 @@ function Stuffing:SlotUpdate(b)
 	if clink then
 		b.name, _, _, b.itemlevel, b.level, _, _, _, _, _, _, b.itemClassID, b.itemSubClassID = GetItemInfo(clink)
 
-		if not b.name then -- Keystone bug
+		if not b.name then	-- Keystone bug
 			b.name = clink:match("%[(.-)%]") or ""
 		end
 
@@ -363,7 +403,6 @@ function Stuffing:SlotUpdate(b)
 			b.frame:SetBackdropBorderColor()
 			b.name, b.level = nil, nil
 		end
-
 
 		-- Color slot according to item quality
 		if not b.frame.lock and quality and quality > 1 and not (isQuestItem or questId) then
@@ -453,7 +492,7 @@ local function Stuffing_CreateReagentContainer()
 	SwitchBankButton:SetPushedTexture("Interface\\ICONS\\achievement_guildperk_mobilebanking")
 	SwitchBankButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	SwitchBankButton:GetPushedTexture():SetAllPoints()
-	SwitchBankButton.ttText = BANK
+	SwitchBankButton.ttText = L["Inventory"].Bank
 	SwitchBankButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	SwitchBankButton:SetScript("OnLeave", Stuffing_TooltipHide)
 	SwitchBankButton:SetScript("OnClick", function()
@@ -461,7 +500,7 @@ local function Stuffing_CreateReagentContainer()
 		_G["StuffingFrameBank"]:Show()
 		_G["StuffingFrameBank"]:SetAlpha(1)
 		BankFrame_ShowPanel(BANK_PANELS[1].name)
-		PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
+		PlaySound(PlaySoundKitID and "igbackpackopen" or SOUNDKIT.IG_BACKPACK_OPEN)
 	end)
 
 	local SortReagentButton = CreateFrame("Button", nil, Reagent)
@@ -501,7 +540,7 @@ local function Stuffing_CreateReagentContainer()
 	Deposit:SetScript("OnEnter", Stuffing_TooltipShow)
 	Deposit:SetScript("OnLeave", Stuffing_TooltipHide)
 	Deposit:SetScript("OnClick", function()
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+		PlaySound(PlaySoundKitID and "igmainmenuoption" or SOUNDKIT.IG_MAINMENU_OPTION)
 		DepositReagentBank()
 	end)
 
@@ -609,6 +648,12 @@ function Stuffing:BagFrameSlotNew(p, slot)
 		if not ret.frame.tooltipText then
 			ret.frame.tooltipText = ""
 		end
+
+		if slot > GetNumBankSlots() then
+			SetItemButtonTextureVertexColor(ret.frame, 1.0, 0.1, 0.1)
+		else
+			SetItemButtonTextureVertexColor(ret.frame, 1.0, 1.0, 1.0)
+		end
 	else
 		ret.frame = CreateFrame("CheckButton", "StuffingFBag" .. slot .. "Slot", p, "BagSlotButtonTemplate")
 
@@ -703,7 +748,7 @@ function Stuffing:SlotNew(bag, slot)
 
 		if C["Inventory"].BindText == true then
 			ret.frame.bindType = ret.frame:CreateFontString(nil, 'OVERLAY')
-			ret.frame.bindType:SetPoint("BOTTOM", 2, 0)
+			ret.frame.bindType:SetPoint("BOTTOM", 2, 2)
 			ret.frame.bindType:FontTemplate(nil, 10, "OUTLINE")
 		end
 
@@ -716,7 +761,7 @@ function Stuffing:SlotNew(bag, slot)
 		end
 
 		-- ScrapIcon thx to Mera
-		if not ret.frame.ScrapIcon then
+		if not ret.frame.ScrapIcon and K.IsRetail then
 			ret.frame.ScrapIcon = ret.frame:CreateTexture(nil, "OVERLAY")
 			ret.frame.ScrapIcon:SetAtlas("bags-icon-scrappable")
 			ret.frame.ScrapIcon:SetSize(12, 10)
@@ -810,14 +855,18 @@ function Stuffing:SearchUpdate(str)
 		end
 		if b.name then
 			local _, setName = GetContainerItemEquipmentSetInfo(b.bag, b.slot)
+
 			setName = setName or ""
+
 			local ilink = GetContainerItemLink(b.bag, b.slot)
 			local class, subclass, _, equipSlot = select(6, GetItemInfo(ilink))
 			local minLevel = select(5, GetItemInfo(ilink))
+
 			class = _G[class] or ""
 			subclass = _G[subclass] or ""
 			equipSlot = _G[equipSlot] or ""
 			minLevel = minLevel or 1
+
 			if not string_find(string_lower(b.name), str) and not string_find(string_lower(setName), str) and not string_find(string_lower(class), str) and not string_find(string_lower(subclass), str) and not string_find(string_lower(equipSlot), str) then
 				if Unfit:IsItemUnusable(b.name) or minLevel > K.Level then
 					_G[b.frame:GetName() .. "IconTexture"]:SetVertexColor(0.5, 0.5, 0.5)
@@ -917,12 +966,12 @@ function Stuffing:CreateBagFrame(w)
 		f.reagentToggle:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		f.reagentToggle:GetPushedTexture():SetAllPoints()
 		f.reagentToggle:StyleButton(nil, true)
-		f.reagentToggle.ttText = "Show/Hide Reagents"
+		f.reagentToggle.ttText = L["Inventory"].Reagents
 		f.reagentToggle:SetScript("OnEnter", Stuffing_TooltipShow)
 		f.reagentToggle:SetScript("OnLeave", Stuffing_TooltipHide)
 		f.reagentToggle:SetScript("OnClick", function()
 			BankFrame_ShowPanel(BANK_PANELS[2].name)
-			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
+			PlaySound(PlaySoundKitID and "igcharacterinfotab" or SOUNDKIT.IG_CHARACTER_INFO_TAB)
 			if not ReagentBankFrame.isMade then
 				Stuffing_CreateReagentContainer()
 				ReagentBankFrame.isMade = true
@@ -948,7 +997,7 @@ function Stuffing:CreateBagFrame(w)
 		f.bagsButton:SetScript("OnEnter", Stuffing_TooltipShow)
 		f.bagsButton:SetScript("OnLeave", Stuffing_TooltipHide)
 		f.bagsButton:SetScript("OnClick", function()
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+			PlaySound(PlaySoundKitID and "igmainmenuoption" or SOUNDKIT.IG_MAINMENU_OPTION)
 			if bag_bars == 1 then
 				bag_bars = 0
 			else
@@ -983,7 +1032,7 @@ function Stuffing:CreateBagFrame(w)
 			if Stuffing.frame:IsShown() then
 				f:UnregisterAllEvents() -- Unregister to prevent unnecessary updates
 				f.registerUpdate = true -- Set variable that indicates this bag should be updated when sorting is done
-				Module:CommandDecorator(Module.SortBags, "bank")()
+				ModuleSort:CommandDecorator(ModuleSort.SortBags, "bank")()
 			end
 		end)
 
@@ -1002,11 +1051,24 @@ function Stuffing:CreateBagFrame(w)
 		f.purchaseBagButton:SetScript("OnEnter", Stuffing_TooltipShow)
 		f.purchaseBagButton:SetScript("OnLeave", Stuffing_TooltipHide)
 		f.purchaseBagButton:SetScript("OnClick", function()
-			local _, full = GetNumBankSlots()
+			local numSlots, full = GetNumBankSlots()
+
 			if (full) then
 				K.StaticPopup_Show("CANNOT_BUY_BANK_SLOT")
 			else
 				K.StaticPopup_Show("BUY_BANK_SLOT")
+			end
+
+			local button
+			for i = 1, NUM_BANKBAGSLOTS, 1 do
+				button = _G["StuffingBBag"..i.."Slot"]
+				if button then
+					if i <= numSlots then
+						SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0)
+					else
+						SetItemButtonTextureVertexColor(button, 1.0, 0.1, 0.1)
+					end
+				end
 			end
 		end)
 	end
@@ -1090,24 +1152,22 @@ function Stuffing:InitBags()
 	local gold = f:CreateFontString(nil, "OVERLAY")
 	gold:FontTemplate(nil, nil, "OUTLINE")
 	gold:SetJustifyH("RIGHT")
-	gold:SetPoint("TOPRIGHT", f, -80, -9)
 
-	f:SetScript("OnEvent", function (self, e)
-		self.gold:SetText (K.FormatMoney(GetMoney(), 12))
-	end)
-
+	f:RegisterEvent("PLAYER_ENTERING_WORLD")
 	f:RegisterEvent("PLAYER_MONEY")
-	f:RegisterEvent("PLAYER_LOGIN")
 	f:RegisterEvent("PLAYER_TRADE_MONEY")
 	f:RegisterEvent("TRADE_MONEY_CHANGED")
+	f:SetScript("OnEvent", function (self)
+		self.gold:SetText(K.FormatMoney(GetMoney(), 12))
+	end)
 
 	do
 		Token3:ClearAllPoints()
-		Token3:SetPoint("TOP", f, "BOTTOM", -70, -8)
+		Token3:SetPoint("TOP", f, "BOTTOM", -70, -10)
 		Token2:ClearAllPoints()
-		Token2:SetPoint("LEFT", Token3, "RIGHT", 10, 0)
+		Token2:SetPoint("LEFT", Token3, "RIGHT", 14, 0)
 		Token1:ClearAllPoints()
-		Token1:SetPoint("LEFT", Token2, "RIGHT", 10, 0)
+		Token1:SetPoint("LEFT", Token2, "RIGHT", 14, 0)
 	end
 
 	for i = 1, 3 do
@@ -1171,7 +1231,7 @@ function Stuffing:InitBags()
 	f.bagsButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	f.bagsButton:SetScript("OnLeave", Stuffing_TooltipHide)
 	f.bagsButton:SetScript("OnClick", function()
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+		PlaySound(PlaySoundKitID and "igmainmenuoption" or SOUNDKIT.IG_MAINMENU_OPTION)
 		if bag_bars == 1 then
 			bag_bars = 0
 		else
@@ -1204,8 +1264,27 @@ function Stuffing:InitBags()
 	f.sortButton:SetScript("OnMouseUp", function()
 		f:UnregisterAllEvents() -- Unregister to prevent unnecessary updates
 		f.registerUpdate = true -- Set variable that indicates this bag should be updated when sorting is done
-		Module:CommandDecorator(Module.SortBags, "bags")()
+		ModuleSort:CommandDecorator(ModuleSort.SortBags, "bags")()
 	end)
+
+	--Vendor Grays
+	f.vendorGraysButton = CreateFrame('Button', nil, f)
+	f.vendorGraysButton:SetSize(16, 16)
+	f.vendorGraysButton:CreateBorder()
+	f.vendorGraysButton:SetPoint("RIGHT", f.sortButton, "LEFT", -5, 0)
+	f.vendorGraysButton:SetNormalTexture("Interface\\ICONS\\INV_Misc_Coin_01")
+	f.vendorGraysButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	f.vendorGraysButton:GetNormalTexture():SetAllPoints()
+	f.vendorGraysButton:SetPushedTexture("Interface\\ICONS\\INV_Misc_Coin_01")
+	f.vendorGraysButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	f.vendorGraysButton:GetPushedTexture():SetAllPoints()
+	f.vendorGraysButton:StyleButton(nil, true)
+	f.vendorGraysButton.ttText = "Vendor / Delete Grays"
+	f.vendorGraysButton:SetScript("OnEnter", Stuffing_TooltipShow)
+	f.vendorGraysButton:SetScript("OnLeave", Stuffing_TooltipHide)
+	f.vendorGraysButton:SetScript("OnClick", VendorGrayCheck)
+
+	gold:SetPoint("RIGHT", f.vendorGraysButton, "LEFT", -6, 0)
 
 	f.editbox = editbox
 	f.detail = detail
@@ -1409,7 +1488,9 @@ function Stuffing:ADDON_LOADED(addon)
 	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
 	self:RegisterEvent("BAG_CLOSED")
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN")
-	self:RegisterEvent("SCRAPPING_MACHINE_SHOW")
+	if K.IsRetail then
+		self:RegisterEvent("SCRAPPING_MACHINE_SHOW")
+	end
 
 	self:InitBags()
 
