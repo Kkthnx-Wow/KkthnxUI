@@ -329,7 +329,7 @@ L["Tooltip"] = {
 
 -- UnitFrames Localization
 L["Unitframes"] = {
-	Dead = "Tod",
+	Dead = "Tot",
 	Ghost = "Geist",
 }
 
