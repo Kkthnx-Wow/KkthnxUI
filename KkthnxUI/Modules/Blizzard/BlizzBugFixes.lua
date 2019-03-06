@@ -2,20 +2,9 @@ local K, C = unpack(select(2, ...))
 local Module = K:NewModule("BlizzBugFixes", "AceEvent-3.0", "AceHook-3.0")
 
 local _G = _G
-local string_match = string.match
-local string_gsub = string.gsub
 
 local blizzardCollectgarbage = _G.collectgarbage
-local GetBattlefieldInstanceExpiration = _G.GetBattlefieldInstanceExpiration
-local GetBattlefieldStatus = _G.GetBattlefieldStatus
-local GetMaxBattlefieldID = _G.GetMaxBattlefieldID
-local hooksecurefunc = _G.hooksecurefunc
-local IsInGroup = _G.IsInGroup
-local IsInInstance = _G.IsInInstance
-local IsInRaid = _G.IsInRaid
 local PVPReadyDialog = _G.PVPReadyDialog
-local PVPTimerFrame = _G.PVPTimerFrame
-local SendChatMessage = _G.SendChatMessage
 local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
 local StaticPopupDialogs = _G.StaticPopupDialogs
 

@@ -4,5 +4,4 @@
     <Script file="Vendor.lua"/>
     <Script file="Sort.lua"/>
     <Script file="Inventory.lua"/>
-    <Script file="BagBar.lua"/>
 </Ui>

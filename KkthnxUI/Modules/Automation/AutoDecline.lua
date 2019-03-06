@@ -20,8 +20,9 @@ function Module:DeclineDuels(event, name)
 		StaticPopup_Hide("PET_BATTLE_PVP_DUEL_REQUESTED")
 		cancelled = "Pet"
 	end
+
 	if cancelled then
-		K.Print(string_format(L["Automation"]["DuelCanceled_"..cancelled], name))
+		K.Print(string_format(L["Automation"]["DuelCanceled_"..cancelled], "|cff4488ff"..name.."|r"))
 	end
 end
 

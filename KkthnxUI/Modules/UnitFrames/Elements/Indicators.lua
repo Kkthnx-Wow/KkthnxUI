@@ -166,6 +166,7 @@ function Module:CreatePlateThreatIndicator()
 	self.ThreatIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.ThreatIndicator:SetSize(16, 16)
 	self.ThreatIndicator:SetPoint("CENTER", self.Health, "TOPRIGHT")
+	self.ThreatIndicator:SetColorTexture(0, 0, 0, 0)
 
 	function self.ThreatIndicator:PreUpdate(unit)
 		Module:PreUpdateThreat(self, unit)

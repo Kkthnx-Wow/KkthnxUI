@@ -2,8 +2,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Announcements -->
     <Script file="Countdown.lua"/>
-    <Script file="Dispel.lua"/>
     <Script file="Interrupt.lua"/>
     <Script file="Sapped.lua"/>
-    <Script file="Steal.lua"/>
 </Ui>

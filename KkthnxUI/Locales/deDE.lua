@@ -25,7 +25,7 @@ L["Install"] = {
 	Welcome_1 = "Willkommen beim |cff4488ffKkthnxUI|r v"..K.Version.." "..K.Client..", "..string.format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name),
 	Welcome_2 = "Tippe |cffffbb44/cfg|r in den Chat um das Konfigurationsmenü aufzurufen.",
 	Welcome_3 = "Für Hilfe mit dem Interface besuche uns im Discord |cffffbb44YUmxqQm|r",
-	
+
 	StepTitle_0 = "WELCOME",
 	StepTitle_1 = "CVARS",
 	StepTitle_2 = "CHAT",
@@ -116,12 +116,10 @@ L["AddOnData"] = {
 
 -- Announcements Localization
 L["Announcements"] = {
-	Dispelled = "Gereinigt",
 	Pull_Aborted = "Pull ABGEBROCHEN!",
 	Pulling = "Pulle %s in %s..",
 	Sapped = "Kopfnuß!",
 	Sapped_By = "Kopfnuß von: ",
-	Stole = "Gestohlen",
 }
 
 -- Auras Localization
@@ -139,10 +137,8 @@ L["Automation"] = {
 -- Blizzard Localization
 L["Blizzard"] = {
 	Disband_Group = "Gruppe auflösen",
-	Lua_Error_Recieved = "|cFFE30000Lua Fehler aufgetreten. Du kannst dir die Fehlermeldung nach dem Kampf ansehen.",
 	No_Errors = "Bis jetzt keine Fehler gefunden. Yeah!",
 	Raid_Menu = "Raidmenü",
-	Taint_Error = "%s: %s hat versucht die geschützte Funktion '%s' aufzurufen.",
 }
 
 -- Chat Localization

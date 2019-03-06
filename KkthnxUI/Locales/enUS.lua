@@ -112,12 +112,10 @@ L["AddOnData"] = {
 
 -- Announcements Localization
 L["Announcements"] = {
-	Dispelled = "Dispelled",
 	Pull_Aborted = "Pull ABORTED!",
 	Pulling = "Pulling %s in %s..",
 	Sapped = "Sapped!",
 	Sapped_By = "Sapped by: ",
-	Stole = "Stole",
 }
 
 -- Auras Localization
@@ -135,10 +133,8 @@ L["Automation"] = {
 -- Blizzard Localization
 L["Blizzard"] = {
 	Disband_Group = "Disband Group",
-	Lua_Error_Recieved = "|cFFE30000Lua error recieved. You can view the error message when you exit combat.",
 	No_Errors = "No error yet.",
 	Raid_Menu = "Raid Menu",
-	Taint_Error = "%s: %s tried to call the protected function '%s'.",
 }
 
 -- Chat Localization
@@ -244,7 +240,6 @@ L["Inventory"] = {
 	Artifact_Count = "Count: ",
 	Artifact_Use = "|cff02FF02|nRight click to use|r",
 	Bank = "Switch to Bank",
-	--Buttons_Artifact = "|cff02FF02|nRight click to use Artifact Power item in bag|r",
 	Buttons_Sort = "Left Click: Sort |nRight Click: Blizzard Sort",
 	Buttons_Stack = "Stack Items",
 	Cant_Buy_Slot = "Can't buy anymore slots!",

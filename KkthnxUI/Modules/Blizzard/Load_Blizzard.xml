@@ -6,7 +6,6 @@
     <Script file="BlizzBugFixes.lua"/>
     <Script file="ColorPicker.lua"/>
     <Script file="CommandBar.lua"/>
-    <Script file="DebugTools.lua"/>
     <Script file="ErrorFilter.lua"/>
     <Script file="Fonts.lua"/>
     <Script file="MirrorBars.lua"/>

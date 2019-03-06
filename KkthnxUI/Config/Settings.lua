@@ -72,28 +72,6 @@ C["Announcements"] = {
 		},
 		["Value"] = "PARTY"
 	},
-	["Steal"] = {
-		["Options"] = {
-			["Disabled"] = "NONE",
-			["Emote Chat"] = "EMOTE",
-			["Party Chat"] = "PARTY",
-			["Raid Chat Only"] = "RAID_ONLY",
-			["Raid Chat"] = "RAID",
-			["Say Chat"] = "SAY"
-		},
-		["Value"] = "NONE"
-	},
-	["Dispel"] = {
-		["Options"] = {
-			["Disabled"] = "NONE",
-			["Emote Chat"] = "EMOTE",
-			["Party Chat"] = "PARTY",
-			["Raid Chat Only"] = "RAID_ONLY",
-			["Raid Chat"] = "RAID",
-			["Say Chat"] = "SAY"
-		},
-		["Value"] = "NONE"
-	}
 }
 
 -- Automation
@@ -195,8 +173,6 @@ C["Automation"] = {
 
 C["Inventory"] = {
 	["AutoSell"] = true,
-	["BagBar"] = false,
-	["BagBarMouseover"] = false,
 	["BagColumns"] = 10,
 	["BankColumns"] = 17,
 	["BindText"] = true,
@@ -334,7 +310,6 @@ C["General"] = {
 	["LagTolerance"] = false,
 	["MoveBlizzardFrames"] = false,
 	["ReplaceBlizzardFonts"] = true,
-	["TaintLog"] = false,
 	["Texture"] = "KkthnxUI",
 	["TexturesColor"] = {0.9, 0.9, 0.9},
 	["UIScale"] = 0.7111111111,

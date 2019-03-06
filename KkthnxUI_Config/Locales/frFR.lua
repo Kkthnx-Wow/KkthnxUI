@@ -127,11 +127,6 @@ KkthnxUIConfig["frFR"] = {
 			["Name"] = "Move Blizzard Frames",
 		},
 
-		["TaintLog"] = {
-			["Name"] = "Log Taints",
-			["Desc"] = "Send ADDON_ACTION_BLOCKED errors to the Lua Error frame. These errors are less important in most cases and will not effect your game performance. Also, a lot of these errors cannot be fixed. Please only report these errors if you notice a Defect in gameplay.",
-		},
-
 		["ReplaceBlizzardFonts"] = {
 			["Name"] = "Replace Blizzard Fonts",
 			["Desc"] = "Change some of the default Blizzard fonts to match the UI",
@@ -247,16 +242,6 @@ KkthnxUIConfig["frFR"] = {
 
 		["Enable"] = {
 			["Name"] = "Enable Inventory",
-		},
-
-		["BagBar"] = {
-			["Name"] = "Bag Bar",
-			["Desc"] = "Enable/Disable the Bag-Bar.",
-		},
-
-		["BagBarMouseover"] = {
-			["Name"] = "Bag Bar Mouseover",
-			["Desc"] = "The Bag Bar is not shown unless you mouse over the Bag Bar.",
 		},
 
 		["Font"] = {
@@ -684,16 +669,6 @@ KkthnxUIConfig["frFR"] = {
 		["Interrupt"] = {
 			["Name"] = "Interrupt",
 			["Desc"] = "Announce in desired channel when you interrupt",
-		},
-
-		["Dispel"] = {
-			["Name"] = "Dispel",
-			["Desc"] = "Announce in desired channel when you dispel",
-		},
-
-		["Steal"] = {
-			["Name"] = "Steal",
-			["Desc"] = "Announce in desired channel when you steal",
 		},
 	},
 

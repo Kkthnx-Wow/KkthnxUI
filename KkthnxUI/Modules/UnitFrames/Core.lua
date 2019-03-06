@@ -228,19 +228,19 @@ function Module:PostUpdateThreat(threat, _, status)
 	if C["Nameplates"].Threat then
 		local r, g, b
 		if status then
-			if (status == 3) then --Securely Tanking
+			if (status == 3) then -- Securely Tanking
 				if threat.isTank then
 					r, g, b = C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3]
 				else
 					r, g, b = C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3]
 				end
-			elseif (status == 2) then --insecurely tanking
+			elseif (status == 2) then -- insecurely tanking
 				if threat.isTank then
 					r, g, b = C["Nameplates"].BadTransition[1], C["Nameplates"].BadTransition[2], C["Nameplates"].BadTransition[3]
 				else
 					r, g, b = C["Nameplates"].GoodTransition[1], C["Nameplates"].GoodTransition[2], C["Nameplates"].GoodTransition[3]
 				end
-			elseif (status == 1) then --not tanking but threat higher than tank
+			elseif (status == 1) then -- not tanking but threat higher than tank
 				if threat.isTank then
 					r, g, b = C["Nameplates"].GoodTransition[1], C["Nameplates"].GoodTransition[2], C["Nameplates"].GoodTransition[3]
 				else
@@ -248,7 +248,7 @@ function Module:PostUpdateThreat(threat, _, status)
 				end
 			else -- not tanking at all
 				if threat.isTank then
-					--Check if it is being tanked by an offtank.
+					-- Check if it is being tanked by an offtank.
 					if threat.offtank then
 						r, g, b = C["Nameplates"].TankedByTankColor[1], C["Nameplates"].TankedByTankColor[2], C["Nameplates"].TankedByTankColor[3]
 					else

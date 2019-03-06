@@ -7,7 +7,6 @@ local table_insert = table.insert
 
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
-local UIDROPDOWNMENU_MAXLEVELS = _G.UIDROPDOWNMENU_MAXLEVELS
 local UIParent = _G.UIParent
 
 local function SkinMiscStuff()
@@ -86,4 +85,12 @@ local function SkinMiscStuff()
 	end)
 end
 
+-- We will just lay this out in here for addons that need to be loaded before the code can run.
+local function KillTalentTutorials()
+	_G.PlayerTalentFrameSpecializationTutorialButton:Kill()
+	_G.PlayerTalentFrameTalentsTutorialButton:Kill()
+	_G.PlayerTalentFramePetSpecializationTutorialButton:Kill()
+end
+
 table_insert(Module.SkinFuncs["KkthnxUI"], SkinMiscStuff)
+Module.SkinFuncs["Blizzard_TalentUI"] = KillTalentTutorials

@@ -9,7 +9,7 @@ KkthnxUIFont:SetShadowColor(0, 0, 0, 1)
 KkthnxUIFont:SetShadowOffset(1.25, -1.25)
 
 local KkthnxUIFontOutline = CreateFont("KkthnxUIFontOutline")
-KkthnxUIFontOutline:SetFont(C["Media"].Font, 12, "OUTLINE")
+KkthnxUIFontOutline:SetFont(C["Media"].Font, 12, "THINOUTLINE")
 KkthnxUIFontOutline:SetShadowColor(0, 0, 0, 0)
 KkthnxUIFontOutline:SetShadowOffset(0, -0)
 
