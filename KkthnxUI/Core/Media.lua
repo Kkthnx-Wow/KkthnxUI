@@ -1,5 +1,10 @@
 local K, C = unpack(select(2, ...))
 
+local _G = _G
+
+local CreateFont = _G.CreateFont
+local CreateFrame = _G.CreateFrame
+
 local KkthnxUIMedia = CreateFrame("Frame", "KkthnxUIFonts")
 
 -- Create our own fonts
@@ -9,7 +14,7 @@ KkthnxUIFont:SetShadowColor(0, 0, 0, 1)
 KkthnxUIFont:SetShadowOffset(1.25, -1.25)
 
 local KkthnxUIFontOutline = CreateFont("KkthnxUIFontOutline")
-KkthnxUIFontOutline:SetFont(C["Media"].Font, 12, "THINOUTLINE")
+KkthnxUIFontOutline:SetFont(C["Media"].Font, 12, "OUTLINE")
 KkthnxUIFontOutline:SetShadowColor(0, 0, 0, 0)
 KkthnxUIFontOutline:SetShadowOffset(0, -0)
 

@@ -386,11 +386,6 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Stancebar mouseover (Only for horizontal stancebar)",
 		},
 
-		["HideHighlight"] = {
-			["Name"] = "Proc Highlight",
-			["Desc"] = "Hide proc highlight",
-		},
-
 		["Hotkey"] = {
 			["Name"] = "Hotkey",
 			["Desc"] = "Show hotkey on buttons",
