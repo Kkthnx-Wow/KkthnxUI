@@ -495,8 +495,11 @@ Module.DebuffsTracking["CCDebuffs"] = {
 Module.RaidBuffsTracking = {
 	PRIEST = {
 		{194384, "TOPRIGHT", {1, 0, 0.75}}, -- Atonement
+		{214206, "TOPRIGHT", {1, 0, 0.75}}, -- Atonement PvP
 		{41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}}, -- Prayer of Mending
+		{193065, "BOTTOMRIGHT", {0.54, 0.21, 0.78}}, -- Masochism
 		{139, "BOTTOMLEFT", {0.4, 0.7, 0.2}}, -- Renew
+		{6788, "BOTTOMLEFT", {0.89, 0.1, 0.1}}, -- Weakened Soul
 		{17, "TOPLEFT", {0.81, 0.85, 0.1}, true}, -- Power Word: Shield
 		{47788, "LEFT", {221 / 255, 117 / 255, 0}, true}, -- Guardian Spirit
 		{33206, "LEFT", {227 / 255, 23 / 255, 13 / 255}, true} -- Pain Suppression
@@ -507,7 +510,6 @@ Module.RaidBuffsTracking = {
 		{155777, "RIGHT", {0.8, 0.4, 0.8}}, -- Germination
 		{8936, "BOTTOMLEFT", {0.2, 0.8, 0.2}}, -- Regrowth
 		{33763, "TOPLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom
-		{188550, "TOPLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom T18 4pc
 		{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}}, -- Wild Growth
 		{207386, "TOP", {0.4, 0.2, 0.8}}, -- Spring Blossoms
 		{102351, "LEFT", {0.2, 0.8, 0.8}}, -- Cenarion Ward (Initial Buff)
@@ -518,14 +520,16 @@ Module.RaidBuffsTracking = {
 	PALADIN = {
 		{53563, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Beacon of Light
 		{156910, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Beacon of Faith
+		{200025, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Beacon of Virtue
 		{1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true}, -- Hand of Protection
 		{1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true}, -- Hand of Freedom
 		{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true}, -- Hand of Sacrifice
-		{114163, "BOTTOMLEFT", {0.87, 0.7, 0.03}} -- Eternal Flame
+		{223306, "BOTTOMLEFT", {0.7, 0.7, 0.3}, true} -- Bestow Faith
 	},
 
 	SHAMAN = {
-		{61295, "TOPRIGHT", {0.7, 0.3, 0.7}} -- Riptide
+		{61295, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Riptide
+		{974, "BOTTOMRIGHT", {0.2, 0.2, 1}} -- Earth Shield
 	},
 
 	MONK = {
@@ -545,8 +549,11 @@ Module.RaidBuffsTracking = {
 	},
 
 	PET = {
+		-- Warlock Pets
+		{193396, "TOPRIGHT", {0.6, 0.2, 0.8}, true}, -- Demonic Empowerment
+		-- Hunter Pets
 		{19615, "TOPLEFT", {227 / 255, 23 / 255, 13 / 255}, true}, -- Frenzy
-		{136, "TOPRIGHT", {0.2, 0.8, 0.2}, true} --Mend Pet
+		{136, "TOPRIGHT", {0.2, 0.8, 0.2}, true} -- Mend Pet
 	},
 	HUNTER = {}, --Keep even if it's an empty table, so a reference to G.unitframe.buffwatch[E.myclass][SomeValue] doesn't trigger error
 	DEMONHUNTER = {},
