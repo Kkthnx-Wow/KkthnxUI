@@ -63,6 +63,7 @@ function K:MapInfo_CoordsStop(event)
 		if (GetUnitSpeed("player") or 0) > 0 then -- we are still moving!
 			return
 		end
+
 		K.MapInfo.coordsFalling = nil -- we were falling!
 	elseif (event == "PLAYER_STOPPED_MOVING" or event == "PLAYER_CONTROL_GAINED") and IsFalling() then
 		K.MapInfo.coordsFalling = true

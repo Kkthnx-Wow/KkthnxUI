@@ -37,36 +37,6 @@ local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
-K.DispelClasses = {
-	["PRIEST"] = {
-		["Magic"] = true,
-		["Disease"] = true
-	},
-	["SHAMAN"] = {
-		["Magic"] = false,
-		["Curse"] = true
-	},
-	["PALADIN"] = {
-		["Poison"] = true,
-		["Magic"] = false,
-		["Disease"] = true
-	},
-	["DRUID"] = {
-		["Magic"] = false,
-		["Curse"] = true,
-		["Poison"] = true,
-		["Disease"] = false,
-	},
-	["MONK"] = {
-		["Magic"] = false,
-		["Disease"] = true,
-		["Poison"] = true,
-	},
-	["MAGE"] = {
-		["Curse"] = true
-	}
-}
-
 function K.Print(...)
 	print("|cff3c9bed"..K.Title.."|r:", ...)
 end
@@ -180,16 +150,6 @@ function K.GetPlayerRole()
 	end
 
 	return assignedRole
-end
-
-function K.IsDispellableByMe(debuffType)
-	if not K.DispelClasses[K.Class] then
-		return
-	end
-
-	if K.DispelClasses[K.Class][debuffType] then
-		return true
-	end
 end
 
 -- Chat channel check
@@ -378,7 +338,7 @@ function K.ColorGradient(perc, ...)
 	end
 
 	local num = select("#", ...) / 3
-	local segment, relperc = math.modf(perc*(num - 1))
+	local segment, relperc = math.modf(perc * (num - 1))
 	local r1, g1, b1, r2, g2, b2 = select((segment * 3) + 1, ...)
 
 	return r1 + (r2-r1) * relperc, g1 + (g2 - g1) * relperc, b1 + (b2 - b1) * relperc
@@ -391,12 +351,15 @@ function K.KillMenuOption(option_shrink, option_name)
 		return
 	end
 	option:SetParent(K.UIFrameHider)
+
 	if option.UnregisterAllEvents then
 		option:UnregisterAllEvents()
 	end
+
 	if option_shrink then
 		option:SetHeight(0.00001)
 	end
+
 	option.cvar = ""
 	option.uvar = ""
 	option.value = nil
@@ -423,6 +386,7 @@ function K.KillMenuPanel(panel_id, panel_name)
 			category:SetAlpha(0)
 		end
 	end
+
 	if panel_name then
 		local panel = _G[panel_name]
 		if panel then

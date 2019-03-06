@@ -4,12 +4,11 @@ local _G = _G
 
 local SetCVar = _G.SetCVar
 local SetInsertItemsLeftToRight = _G.SetInsertItemsLeftToRight
-local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
 
 local UnloadBlizzardFrames = CreateFrame("Frame")
 UnloadBlizzardFrames:RegisterEvent("PLAYER_LOGIN")
 UnloadBlizzardFrames:RegisterEvent("ADDON_LOADED")
-UnloadBlizzardFrames:SetScript("OnEvent", function(_, event)
+UnloadBlizzardFrames:SetScript("OnEvent", function()
 	if InCombatLockdown() then
 		return
 	end
@@ -17,7 +16,7 @@ UnloadBlizzardFrames:SetScript("OnEvent", function(_, event)
 	local UIHider = K.UIFrameHider
 
 	if C["Raid"].Enable then
-	-- Hide Default RaidFrame
+		-- Hide Default RaidFrame
 		local function HideRaid()
 			if InCombatLockdown() then
 				return
@@ -74,7 +73,6 @@ UnloadBlizzardFrames:SetScript("OnEvent", function(_, event)
 		InterfaceOptionsActionBarsPanelBottomRight:Kill()
 		InterfaceOptionsActionBarsPanelRight:Kill()
 		InterfaceOptionsActionBarsPanelRightTwo:Kill()
-		--InterfaceOptionsActionBarsPanelStackRightBars:Kill()
 	end
 
 	if (C["Nameplates"].Enable) then

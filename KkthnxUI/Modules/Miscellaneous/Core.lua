@@ -16,10 +16,8 @@ local GetNumRandomDungeons = _G.GetNumRandomDungeons
 local GetZoneText = _G.GetZoneText
 local hooksecurefunc = _G.hooksecurefunc
 local PlaySound = _G.PlaySound
-local PlaySoundFile = _G.PlaySoundFile
 local SOUNDKIT = _G.SOUNDKIT
 
-local RESURRECTION_REQUEST_SOUND = "Sound\\Spells\\Resurrection.ogg"
 local LatencyInterval
 local MinLatency, MaxLatency
 local OldLatency = -9999
@@ -95,7 +93,7 @@ LagToleranceEvents:SetScript("OnEvent", function(self)
     LagToleranceTimer:Show()
 end)
 
-LagToleranceTimer:SetScript("OnUpdate", function(self, elapsed)
+LagToleranceTimer:SetScript("OnUpdate", function(_, elapsed)
 	if C["General"].LagTolerance ~= true then
 		return
 	end

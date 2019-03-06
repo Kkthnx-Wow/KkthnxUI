@@ -1,14 +1,14 @@
-local K, C = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 local Module = K:NewModule("Changelog", "AceEvent-3.0", "AceTimer-3.0")
 
+local _G = _G
 local format, gmatch, gsub, find, sub = string.format, string.gmatch, string.gsub, string.find, string.sub
-local tinsert = table.insert
 local pairs, tostring = pairs, tostring
 
-local CreateFrame = CreateFrame
-local SOUNDKIT = SOUNDKIT
-local PlaySound = PlaySound
-local CLOSE = CLOSE
+local CreateFrame = _G.CreateFrame
+local SOUNDKIT = _G.SOUNDKIT
+local PlaySound = _G.PlaySound
+local CLOSE = _G.CLOSE
 
 local ChangeLogData = {
 	"Changes:",

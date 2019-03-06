@@ -7,8 +7,6 @@ local math_max = math.max
 local math_min = math.min
 local string_format = string.format
 local string_match = string.match
-local string_sub = string.sub
-local tonumber = tonumber
 
 local CanCancelScene = _G.CanCancelScene
 local CanExitVehicle = _G.CanExitVehicle

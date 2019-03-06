@@ -1,6 +1,5 @@
 local K, _, L = unpack(select(2, ...))
 
--- Lua functions
 local _G = _G
 local assert = assert
 local pairs = pairs
@@ -12,7 +11,6 @@ local table_wipe = table.wipe
 local type = type
 local unpack = unpack
 
--- WoW API / Variables
 local ACCEPT = _G.ACCEPT
 local AutoCompleteEditBox_OnEnterPressed = _G.AutoCompleteEditBox_OnEnterPressed
 local AutoCompleteEditBox_OnTextChanged = _G.AutoCompleteEditBox_OnTextChanged
@@ -37,8 +35,6 @@ local STATICPOPUP_TEXTURE_ALERTGEAR = _G.STATICPOPUP_TEXTURE_ALERTGEAR
 local UIParent = _G.UIParent
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitName = _G.UnitName
-
--- GLOBALS: UIConfig, UIConfigMain, KkthnxUIData
 
 local Name = UnitName("player")
 local Realm = GetRealmName()

@@ -13,11 +13,10 @@ local table_wipe = table.wipe
 
 local BossBanner_BeginAnims = _G.BossBanner_BeginAnims
 local COMBATLOG_OBJECT_TYPE_PLAYER = _G.COMBATLOG_OBJECT_TYPE_PLAYER
-local FactionToken = _G.UnitFactionGroup("player")
-local hooksecurefunc = _G.hooksecurefunc
 local PlaySound = _G.PlaySound
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local SOUNDKIT = _G.SOUNDKIT
+local hooksecurefunc = _G.hooksecurefunc
 
 local BG_Opponents = {}
 
@@ -25,7 +24,7 @@ function Module:UPDATE_BATTLEFIELD_SCORE()
 	table_wipe(BG_Opponents)
 	for index = 1, _G.GetNumBattlefieldScores() do
 		local name, _, _, _, _, faction, _, _, classToken = _G.GetBattlefieldScore(index)
-		if (FactionToken == "Horde" and faction == 1) or (FactionToken == "Alliance" and faction == 0) then
+		if (K.Faction == "Horde" and faction == 1) or (K.Faction == "Alliance" and faction == 0) then
 			BG_Opponents[name] = classToken
 		end
 	end

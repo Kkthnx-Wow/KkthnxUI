@@ -1,15 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 
--- Info needs to be added about the actionbar toggle feature.
--- A lot of people are having issues with understanding how to work the feature.
--- Ideas to improve this is to add in a highlight feature to work with it on first install
--- Maybe we can lock it by default and write it off to save vars and let the player know.
-
--- Lua API
 local _G = _G
 local print = print
 
--- Wow API
 local APPLY = _G.APPLY
 local CLOSE = _G.CLOSE
 local COMPLETE = _G.COMPLETE

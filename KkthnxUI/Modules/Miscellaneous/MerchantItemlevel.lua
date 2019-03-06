@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
@@ -10,6 +10,7 @@ local hooksecurefunc = _G.hooksecurefunc
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
 local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
 local MERCHANT_ITEMS_PER_PAGE = _G.MERCHANT_ITEMS_PER_PAGE
+local GetItemQualityColor = _G.GetItemQualityColor
 
 function Module:MerchantItemlevel()
 	local numItems = GetMerchantNumItems()

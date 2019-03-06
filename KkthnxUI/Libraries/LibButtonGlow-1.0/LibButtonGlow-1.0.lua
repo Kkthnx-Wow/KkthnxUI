@@ -3,17 +3,17 @@ Copyright (c) 2015-2017, Hendrik "nevcairiel" Leppkes <h.leppkes@gmail.com>
 
 All rights reserved.
 
-Redistribution and use in source and binary forms, with or without 
+Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, 
-      this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, 
-      this list of conditions and the following disclaimer in the documentation 
-      and/or other materials provided with the distribution.
-    * Neither the name of the developer nor the names of its contributors 
-      may be used to endorse or promote products derived from this software without 
-      specific prior written permission.
+* Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.
+* Neither the name of the developer nor the names of its contributors
+may be used to endorse or promote products derived from this software without
+specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -162,26 +162,26 @@ local function CreateOverlayGlow()
 
 	-- setup antimations
 	overlay.animIn = overlay:CreateAnimationGroup()
-	CreateScaleAnim(overlay.animIn, overlay.spark,          1, 0.2, 1.5, 1.5)
-	CreateAlphaAnim(overlay.animIn, overlay.spark,          1, 0.2, 0, 1)
-	CreateScaleAnim(overlay.animIn, overlay.innerGlow,      1, 0.3, 2, 2)
-	CreateScaleAnim(overlay.animIn, overlay.innerGlowOver,  1, 0.3, 2, 2)
-	CreateAlphaAnim(overlay.animIn, overlay.innerGlowOver,  1, 0.3, 1, 0)
-	CreateScaleAnim(overlay.animIn, overlay.outerGlow,      1, 0.3, 0.5, 0.5)
-	CreateScaleAnim(overlay.animIn, overlay.outerGlowOver,  1, 0.3, 0.5, 0.5)
-	CreateAlphaAnim(overlay.animIn, overlay.outerGlowOver,  1, 0.3, 1, 0)
-	CreateScaleAnim(overlay.animIn, overlay.spark,          1, 0.2, 2/3, 2/3, 0.2)
-	CreateAlphaAnim(overlay.animIn, overlay.spark,          1, 0.2, 1, 0, 0.2)
-	CreateAlphaAnim(overlay.animIn, overlay.innerGlow,      1, 0.2, 1, 0, 0.3)
-	CreateAlphaAnim(overlay.animIn, overlay.ants,           1, 0.2, 0, 1, 0.3)
+	CreateScaleAnim(overlay.animIn, overlay.spark, 1, 0.2, 1.5, 1.5)
+	CreateAlphaAnim(overlay.animIn, overlay.spark, 1, 0.2, 0, 1)
+	CreateScaleAnim(overlay.animIn, overlay.innerGlow, 1, 0.3, 2, 2)
+	CreateScaleAnim(overlay.animIn, overlay.innerGlowOver, 1, 0.3, 2, 2)
+	CreateAlphaAnim(overlay.animIn, overlay.innerGlowOver, 1, 0.3, 1, 0)
+	CreateScaleAnim(overlay.animIn, overlay.outerGlow, 1, 0.3, 0.5, 0.5)
+	CreateScaleAnim(overlay.animIn, overlay.outerGlowOver, 1, 0.3, 0.5, 0.5)
+	CreateAlphaAnim(overlay.animIn, overlay.outerGlowOver, 1, 0.3, 1, 0)
+	CreateScaleAnim(overlay.animIn, overlay.spark, 1, 0.2, 2/3, 2/3, 0.2)
+	CreateAlphaAnim(overlay.animIn, overlay.spark, 1, 0.2, 1, 0, 0.2)
+	CreateAlphaAnim(overlay.animIn, overlay.innerGlow, 1, 0.2, 1, 0, 0.3)
+	CreateAlphaAnim(overlay.animIn, overlay.ants, 1, 0.2, 0, 1, 0.3)
 	overlay.animIn:SetScript("OnPlay", AnimIn_OnPlay)
 	overlay.animIn:SetScript("OnFinished", AnimIn_OnFinished)
 
 	overlay.animOut = overlay:CreateAnimationGroup()
 	CreateAlphaAnim(overlay.animOut, overlay.outerGlowOver, 1, 0.2, 0, 1)
-	CreateAlphaAnim(overlay.animOut, overlay.ants,          1, 0.2, 1, 0)
+	CreateAlphaAnim(overlay.animOut, overlay.ants, 1, 0.2, 1, 0)
 	CreateAlphaAnim(overlay.animOut, overlay.outerGlowOver, 2, 0.2, 1, 0)
-	CreateAlphaAnim(overlay.animOut, overlay.outerGlow,     2, 0.2, 1, 0)
+	CreateAlphaAnim(overlay.animOut, overlay.outerGlow, 2, 0.2, 1, 0)
 	overlay.animOut:SetScript("OnFinished", OverlayGlowAnimOutFinished)
 
 	-- scripts

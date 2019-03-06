@@ -7,7 +7,6 @@ local assert = _G.assert
 local getmetatable = _G.getmetatable
 local pairs = _G.pairs
 local select = _G.select
-local type = _G.type
 
 local CreateFrame = _G.CreateFrame
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
