@@ -58,7 +58,8 @@ end
 
 function Module:CreateChangelog()
 	local frame = CreateFrame("Frame", "KkthnxUIChangeLog", UIParent)
-	frame:SetPoint("CENTER")
+	-- frame:SetPoint("CENTER")
+	frame:SetPoint("TOP", UIParent, "TOP", 0, -45)
 	frame:SetSize(444, 300)
 	frame:CreateBorder()
 	frame:SetMovable(true)
