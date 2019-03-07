@@ -963,6 +963,14 @@ function KkthnxUIConfig:CreateConfigWindow()
 	ConfigFrame:SetPoint("CENTER")
 	ConfigFrame:SetFrameStrata("HIGH")
 
+	ConfigFrame:EnableMouse(true)
+	ConfigFrame:SetClampedToScreen(true)
+	ConfigFrame:SetMovable(true)
+	ConfigFrame:EnableMouse(true)
+	ConfigFrame:RegisterForDrag("LeftButton")
+	ConfigFrame:SetScript("OnDragStart", ConfigFrame.StartMoving)
+	ConfigFrame:SetScript("OnDragStop", ConfigFrame.StopMovingOrSizing)
+
 	local LeftWindow = CreateFrame("Frame", "KkthnxUIConfigFrameLeft", ConfigFrame)
 	LeftWindow:CreateBorder()
 

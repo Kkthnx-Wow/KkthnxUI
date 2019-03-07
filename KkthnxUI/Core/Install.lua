@@ -231,6 +231,13 @@ function Install:Launch()
 	self.Description:SetPoint("CENTER", self, "CENTER")
 	self.Description:CreateBorder()
 
+	self.Description:SetClampedToScreen(true)
+	self.Description:SetMovable(true)
+	self.Description:EnableMouse(true)
+	self.Description:RegisterForDrag("LeftButton")
+	self.Description:SetScript("OnDragStart", self.Description.StartMoving)
+	self.Description:SetScript("OnDragStop", self.Description.StopMovingOrSizing)
+
 	self.Description:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self.Description:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self.Description:SetScript("OnEvent", function(_, event)
