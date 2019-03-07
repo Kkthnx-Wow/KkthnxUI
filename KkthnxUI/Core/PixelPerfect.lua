@@ -7,7 +7,9 @@ local math_max = math.max
 local math_min = math.min
 local string_format = string.format
 local string_match = string.match
+local string_sub = string.sub
 
+local CreateFrame = _G.CreateFrame
 local CanCancelScene = _G.CanCancelScene
 local CanExitVehicle = _G.CanExitVehicle
 local CinematicFrame = _G.CinematicFrame
@@ -59,6 +61,7 @@ CreatePixelPerfect:SetScript("OnEvent", function(self, event)
 	-- Automatically change the scale if auto scaling is activated
 	if C["General"].AutoScale then
 		C["General"].UIScale = math_min(2, math_max(0.01, 768 / string_match(K.Resolution, "%d+x(%d+)")))
+		C["General"].UIScale = tonumber(string_sub(C["General"].UIScale, 0, 5)) -- 8.1 Fix scale bug
 	end
 
 	if (string_format("%.2f", GetCVar("uiScale")) ~= string_format("%.2f", C["General"].UIScale)) then

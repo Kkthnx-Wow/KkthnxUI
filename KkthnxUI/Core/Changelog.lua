@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K = unpack(select(2,...))
 local Module = K:NewModule("Changelog", "AceEvent-3.0", "AceTimer-3.0")
 
 local _G = _G
@@ -13,16 +13,20 @@ local CLOSE = _G.CLOSE
 local ChangeLogData = {
 	"Changes:",
 	"• Bring in changes from @Rav99 and Updates to code and formatting.",
+	"• Cleanup 3 Files in Modules.",
 	"• Cleanup AFKCam.",
-	"• Merge pull request #3 from Rav99/master.",
-	"• Its 2019 i think and little pimp for AfkCam.",
-	"• This one is for you @Rav99.",
+	"• Cleanup old leftover setting for actionbars",
 	"• Fix Minimap always pining without it being left mouse button.",
-    "• Cleanup 3 Files in Modules.",
+	"• It is 2019 I think and little pimp for AfkCam.",
+	"• Merge pull request #3 from Rav99/master.",
+	"• Removed modules that I do not care to maintain anymore",
+	"• This one is for you @Rav99.",
+	"• Cleanup RaidBuffs",
+	"• Merge translation fixes from @RoseFarts",
     -- Important Notes We Want The User To Know!
 	" ",
 	"Notes:",
-        "• None.",
+	"• We changed our main font to support more font characters!",
 }
 
 local function ModifiedString(string)
@@ -35,14 +39,14 @@ local function ModifiedString(string)
 		local subHeader = find(string, "•")
 
 		if subHeader then
-			newString = tostring("|cFFFFFF00".. prefix .. "|r" .. suffix)
+			newString = tostring("|cFFFFFF00"..prefix.."|r"..suffix)
 		else
-			newString = tostring("|cffff7d0a" .. prefix .. "|r" .. suffix)
+			newString = tostring("|cff4488ff"..prefix.."|r"..suffix)
 		end
 	end
 
 	for pattern in gmatch(string, "('.*')") do
-		newString = newString:gsub(pattern, "|cFFFF8800" .. pattern:gsub("'", "") .. "|r")
+		newString = newString:gsub(pattern, "|cFFFF8800"..pattern:gsub("'", "").."|r")
 	end
 
 	return newString
@@ -81,10 +85,10 @@ function Module:CreateChangelog()
 	title:SetSize(444, 20)
 	title:CreateBorder()
 
-	title.text = title:CreateFontString(nil, 'OVERLAY')
+	title.text = title:CreateFontString(nil, "OVERLAY")
 	title.text:FontTemplate(nil, 15, "")
 	title.text:SetPoint("CENTER", title, 0, -1)
-	title.text:SetText(K.Title.. " - ChangeLog " .. format("|cff00c0fa%s|r", K.Version))
+	title.text:SetText(K.Title.." ChangeLog v"..format("|cff4488ff%s|r", K.Version))
 
 	local close = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 	close:SetPoint("BOTTOM", frame, "BOTTOM", 0, 10)
@@ -98,7 +102,7 @@ function Module:CreateChangelog()
 	close:Disable()
 	frame.close = close
 
-	local countdown = close:CreateFontString(nil, 'OVERLAY')
+	local countdown = close:CreateFontString(nil, "OVERLAY")
 	countdown:FontTemplate(nil, 12, "")
 	countdown:SetPoint("LEFT", close.Text, "RIGHT", 3, 0)
 	countdown:SetTextColor(DISABLED_FONT_COLOR:GetRGB())
@@ -113,10 +117,12 @@ function Module:CreateChangelog()
 		if i <= #ChangeLogData then
 			local string = ModifiedString(GetChangeLogInfo(i))
 
-			button.Text = button:CreateFontString(nil, 'OVERLAY')
+			button.Text = button:CreateFontString(nil, "OVERLAY")
 			button.Text:FontTemplate(nil, 12, "")
+			button.Text:SetPoint("CENTER")
 			button.Text:SetPoint("LEFT", 0, 0)
 			button.Text:SetText(string)
+			button.Text:SetWordWrap(true)
 		end
 
 		offset = offset + 16
