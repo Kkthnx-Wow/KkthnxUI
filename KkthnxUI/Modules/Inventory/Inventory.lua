@@ -31,7 +31,6 @@ local table_insert = table.insert
 local table_remove = table.remove
 local tonumber = tonumber
 
-local BANK = _G.BANK
 local BankFrameItemButton_Update = _G.BankFrameItemButton_Update
 local BankFrameItemButton_UpdateLocked = _G.BankFrameItemButton_UpdateLocked
 local C_NewItems_IsNewItem = _G.C_NewItems.IsNewItem
@@ -129,7 +128,7 @@ local function Stuffing_OnShow()
 	Stuffing:SearchReset()
 	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
 
-	collectgarbage("collect")
+	-- collectgarbage("collect")
 end
 
 local function StuffingBank_OnHide()

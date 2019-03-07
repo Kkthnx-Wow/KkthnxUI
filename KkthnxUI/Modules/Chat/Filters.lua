@@ -6,6 +6,7 @@ local string_match = string.match
 
 local ChatFrame1 = _G.ChatFrame1
 local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
+local GetTime = _G.GetTime
 local UnitIsInMyGuild = _G.UnitIsInMyGuild
 
 local function CreateGeneralFilterList()
@@ -83,39 +84,39 @@ if K.IsFirestorm and C["Firestorm"].ChatFilter then
 end
 
 if C["Chat"].Filter then
-	local lastMessage
+	-- RepeatFilter Credits: Goldpaw
 	local function CreateRepeatFilter(self, _, text, sender)
-		if sender == K.Name or UnitIsInMyGuild(sender) then
+		if not text or sender == K.Name or UnitIsInMyGuild(sender) then
 			return
 		end
 
 		-- Initialize the repeat cache
-		if not self.repeatMessages then
-			self.repeatMessages = {msg = {}, count = {}}
+		if not self.repeatThrottle then
+			self.repeatThrottle = {}
 		end
 
-		-- Initialize the counter for the current sender
-		if not self.repeatMessages.count[sender] then
-			self.repeatMessages.count[sender] = 0
-		end
+		-- We use this in all conditionals, let's avoid double function calls!
+		local now = GetTime()
 
-		-- Compare the previous message from the sender (if any) to the current text
-		lastMessage = self.repeatMessages.msg[sender]
-		if lastMessage and lastMessage == text then
-
-			-- We have a match, so increase the count from this sender
-			self.repeatMessages.count[sender] = self.repeatMessages.count[sender] + 1
-
-			-- We're above the limit, so we filter it out
-			if self.repeatMessages.count[sender] > 100 then
-				return true
+		-- Prune away messages that has timed out without repetitions.
+		-- This iteration shouldn't cost much when called on every new message,
+		-- the database simply won't have time to accumulate very many entries.
+		for msg,when in pairs(self.repeatThrottle) do
+			if when > now and msg ~= text then
+				self.repeatThrottle[msg] = nil
 			end
-		else
-			-- Store the message in the cache for the next time,
-			-- but only do this if the above was false.
-			-- No need storing the same text twice,
-			-- nor any need for the extra table lookup overhead.
-			self.repeatMessages.msg[sender] = text
+		end
+
+		-- If the timer for this message hasn't been set, or if 10 seconds have passed,
+		-- we set the timer to 10 new seconds, show the message once, and return.
+		if not self.repeatThrottle[text] or self.repeatThrottle[text] > now then
+			self.repeatThrottle[text] = now + 10
+			return
+		end
+
+		-- If we got here the timer has been set, but it's still too early.
+		if self.repeatThrottle[text] < now then
+			return true
 		end
 	end
 
@@ -128,24 +129,17 @@ if C["Chat"].Filter then
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", CreateRepeatFilter)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", CreateRepeatFilter)
 
-	local TalentFilterMatches = {
-		"^"..ERR_LEARN_ABILITY_S:gsub("%%s","(.*)"),
-		"^"..ERR_LEARN_SPELL_S:gsub("%%s","(.*)"),
-		"^"..ERR_SPELL_UNLEARNED_S:gsub("%%s","(.*)"),
-		"^"..ERR_LEARN_PASSIVE_S:gsub("%%s","(.*)"),
-		"^"..ERR_PET_SPELL_UNLEARNED_S:gsub("%%s","(.*)"),
-		"^"..ERR_PET_LEARN_ABILITY_S:gsub("%%s","(.*)"),
-		"^"..ERR_PET_LEARN_SPELL_S:gsub("%%s","(.*)"),
-	}
-
 	local function CreateTalentFilter(_, _, msg, ...)
-		for _, m in ipairs(TalentFilterMatches) do
-			if msg:find(m) then
-				return true
+		if msg then
+			for _, filter in ipairs(K.TalentChatSpam) do
+				if string_match(msg, filter) then
+					return true
+				end
 			end
 		end
 
 		return false, msg, ...
 	end
+
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", CreateTalentFilter)
 end

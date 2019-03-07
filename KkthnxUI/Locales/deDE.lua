@@ -94,8 +94,8 @@ L["AFKCam"] = {
 
 -- AddOnsData Localization
 L["AddOnData"] = {
-	AllAddOnsText = "All supported AddOn profiles loaded, if the AddOn is loaded!",
-	InfoText = "|cffffff00The following commands are supported for AddOn profiles.|r\n\n|cff00ff00/settings dbm|r, to apply the settings |cff00ff00DeadlyBossMods.|r\n|cff00ff00/settings msbt|r, to apply the settings |cff00ff00MikScrollingBattleText.|r\n|cff00ff00/settings skada|r, to apply the settings |cff00ff00Skada.|r\n|cff00ff00/settings bt4 or bartender|r, to apply the settings |cff00ff00Bartender4.|r\n|cff00ff00/settings buggrabber|r, to apply the settings |cff00ff00!BugGrabber.|r\n|cff00ff00/settings bugsack|r, to apply the settings |cff00ff00BugSack.|r\n|cff00ff00/settings bugsack|r, to apply the settings |cff00ff00BugSack.|r\n|cff00ff00/settings pawn|r, to apply the settings |cff00ff00Pawn.|r\n|cff00ff00/settings bigwigs|r, to apply the settings |cff00ff00BigWigs.|r\n|cff00ff00/settings all|r, to apply settings for all supported AddOns, if that AddOn is loaded!\n\n",
+	AllAddOnsText = "Alle unterstützten Addon Profile wurden geladen, wenn das zugehörige Addon geladen wurde!",
+	InfoText = "|cffffff00Die folgenden Befehle werden für Addon Profile unterstützt.|r\n\n|cff00ff00/settings dbm|r, um die Einstellungen anzuwenden |cff00ff00DeadlyBossMods.|r\n|cff00ff00/settings msbt|r, um die Einstellungen anzuwenden |cff00ff00MikScrollingBattleText.|r\n|cff00ff00/settings skada|r, um die Einstellungen anzuwenden |cff00ff00Skada.|r\n|cff00ff00/settings bt4 or bartender|r, um die Einstellungen anzuwenden |cff00ff00Bartender4.|r\n|cff00ff00/settings buggrabber|r, um die Einstellungen anzuwenden |cff00ff00!BugGrabber.|r\n|cff00ff00/settings bugsack|r, um die Einstellungen anzuwenden |cff00ff00BugSack.|r\n|cff00ff00/settings bugsack|r, um die Einstellungen anzuwenden |cff00ff00BugSack.|r\n|cff00ff00/settings pawn|r, um die Einstellungen anzuwenden |cff00ff00Pawn.|r\n|cff00ff00/settings bigwigs|r, um die Einstellungen anzuwenden |cff00ff00BigWigs.|r\n|cff00ff00/settings all|r, um die Einstellungen für alle unterstützten Addons anzuwenden, wenn diese geladen sind!\n\n",
 	BigWigsText = "|cffffff00".."BigWigs Profil wurde geladen".."|r",
 	BigWigsNotText = "|CFFFF0000Das AddOn BigWigs wurde nicht geladen!|r",
 	BartenderText = "|cffffff00".."Bartender4 Profil wurde geladen".."|r",
@@ -293,7 +293,7 @@ L["Miscellaneous"] = {
 	Mail_Unique = "Angehalten. Ein doppelter, einzigartiger Gegenstand wurde in deinen Taschen, oder in der Bank gefunden.",
 	Repair = "Warnung! Deine Ausrüstung muss so schnell wie möglich repariert werden!",
 	Silver_Short = "|cffc7c7cfs|r",
-	UIOutdated = "Your version of KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!",
+	UIOutdated = "Du benutzt eine veraltete Version von KkthnxUI. Du kannst die neueste Version von Curse.com herunterladen. Hole dir die Curse app und KkthnxUI updatet sich automatisch!",
 }
 
 -- Nameplates Localization

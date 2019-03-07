@@ -555,7 +555,8 @@ Module.RaidBuffsTracking = {
 		{19615, "TOPLEFT", {227 / 255, 23 / 255, 13 / 255}, true}, -- Frenzy
 		{136, "TOPRIGHT", {0.2, 0.8, 0.2}, true} -- Mend Pet
 	},
-	HUNTER = {}, --Keep even if it's an empty table, so a reference to G.unitframe.buffwatch[E.myclass][SomeValue] doesn't trigger error
+
+	HUNTER = {}, -- Keep even if it's an empty table, so a reference to G.unitframe.buffwatch[E.myclass][SomeValue] doesn't trigger error
 	DEMONHUNTER = {},
 	WARLOCK = {},
 	MAGE = {},
