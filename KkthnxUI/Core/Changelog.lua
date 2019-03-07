@@ -58,10 +58,17 @@ end
 
 function Module:CreateChangelog()
 	local frame = CreateFrame("Frame", "KkthnxUIChangeLog", UIParent)
-	-- frame:SetPoint("CENTER")
-	frame:SetPoint("TOP", UIParent, "TOP", 0, -45)
+	frame:ClearAllPoints() -- Do we need this?
+	if KkthnxUIData and KkthnxUIData[_G.GetRealmName()][_G.UnitName("player")].InstallComplete then
+		frame:SetPoint("CENTER", UIParent, "CENTER")
+	elseif K.Install and K.Install.Description then
+		frame:SetPoint("BOTTOM", K.Install.Description , "TOP", 0, 32)
+	else
+		frame:SetPoint("TOP", UIParent, "TOP", 0, -108)
+	end
 	frame:SetSize(444, 300)
 	frame:CreateBorder()
+
 	frame:SetMovable(true)
 	frame:EnableMouse(true)
 	frame:RegisterForDrag("LeftButton")

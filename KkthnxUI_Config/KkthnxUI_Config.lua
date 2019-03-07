@@ -963,7 +963,6 @@ function KkthnxUIConfig:CreateConfigWindow()
 	ConfigFrame:SetPoint("CENTER")
 	ConfigFrame:SetFrameStrata("HIGH")
 
-	ConfigFrame:EnableMouse(true)
 	ConfigFrame:SetClampedToScreen(true)
 	ConfigFrame:SetMovable(true)
 	ConfigFrame:EnableMouse(true)
@@ -973,21 +972,18 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	local LeftWindow = CreateFrame("Frame", "KkthnxUIConfigFrameLeft", ConfigFrame)
 	LeftWindow:CreateBorder()
-
 	LeftWindow:SetSize(139, Height)
 	LeftWindow:SetPoint("LEFT", ConfigFrame, 4, 0)
 	LeftWindow:EnableMouse(true)
 
 	local RightWindow = CreateFrame("Frame", "KkthnxUIConfigFrameRight", ConfigFrame)
 	RightWindow:CreateBorder()
-
 	RightWindow:SetSize(300, Height)
 	RightWindow:SetPoint("RIGHT", ConfigFrame, 0, 0)
 	RightWindow:EnableMouse(true)
 
 	local TitleFrame = CreateFrame("Frame", "KkthnxUIConfigFrameTitle", ConfigFrame)
 	TitleFrame:CreateBorder()
-
 	TitleFrame:SetSize(444, 24)
 	TitleFrame:SetPoint("BOTTOM", ConfigFrame, "TOP", 2, 5)
 
