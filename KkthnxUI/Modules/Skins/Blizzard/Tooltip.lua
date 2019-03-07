@@ -31,20 +31,27 @@ local function SkinTooltip()
 
 	ItemRefCloseButton:SkinCloseButton()
 
-	-- World Quest Reward Icon
-	WorldMapTooltip.ItemTooltip:CreateBackdrop()
-	WorldMapTooltip.ItemTooltip.Backdrop:SetOutside(WorldMapTooltip.ItemTooltip.Icon)
-	WorldMapTooltip.ItemTooltip.Backdrop:SetFrameLevel(WorldMapTooltip.ItemTooltip:GetFrameLevel())
-	WorldMapTooltip.ItemTooltip.Count:ClearAllPoints()
-	WorldMapTooltip.ItemTooltip.Count:SetPoint("BOTTOMRIGHT", WorldMapTooltip.ItemTooltip.Icon, "BOTTOMRIGHT", 1, 0)
-	WorldMapTooltip.ItemTooltip.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	local WhatTooltipName
+	if K.IsPTR then
+		WhatTooltipName = GameTooltip
+	else
+		WhatTooltipName = WorldMapTooltip
+	end
 
-	hooksecurefunc(WorldMapTooltip.ItemTooltip.IconBorder, "SetVertexColor", function(self, r, g, b)
+	-- World Quest Reward Icon
+	WhatTooltipName.ItemTooltip:CreateBackdrop()
+	WhatTooltipName.ItemTooltip.Backdrop:SetOutside(WhatTooltipName.ItemTooltip.Icon)
+	WhatTooltipName.ItemTooltip.Backdrop:SetFrameLevel(WhatTooltipName.ItemTooltip:GetFrameLevel())
+	WhatTooltipName.ItemTooltip.Count:ClearAllPoints()
+	WhatTooltipName.ItemTooltip.Count:SetPoint("BOTTOMRIGHT", WhatTooltipName.ItemTooltip.Icon, "BOTTOMRIGHT", 1, 0)
+	WhatTooltipName.ItemTooltip.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+
+	hooksecurefunc(WhatTooltipName.ItemTooltip.IconBorder, "SetVertexColor", function(self, r, g, b)
 		self:GetParent().Backdrop:SetBackdropBorderColor(r, g, b)
 		self:SetTexture("")
 	end)
 
-	hooksecurefunc(WorldMapTooltip.ItemTooltip.IconBorder, "Hide", function(self)
+	hooksecurefunc(WhatTooltipName.ItemTooltip.IconBorder, "Hide", function(self)
 		self:GetParent().Backdrop:SetBackdropBorderColor()
 	end)
 
@@ -66,7 +73,7 @@ local function SkinTooltip()
 		-- already have locals
 		GameTooltip,
 		StoryTooltip,
-		WorldMapTooltip,
+		WhatTooltipName,
 		WarCampaignTooltip,
 	}
 
@@ -77,7 +84,7 @@ local function SkinTooltip()
 		ItemRefTooltip,
 		ShoppingTooltip1,
 		ShoppingTooltip2,
-		WorldMapTooltip,
+		WhatTooltipName,
 	}
 
 	for _, tt in pairs(tooltips) do

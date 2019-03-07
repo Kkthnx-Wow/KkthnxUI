@@ -1,5 +1,5 @@
-local K, C = unpack(select(2, ...))
-local Module = K:NewModule("UIWidgets", "AceEvent-3.0", "AceHook-3.0")
+local K = unpack(select(2, ...))
+local Module = K:NewModule("UIWidgets")
 
 local _G = _G
 
@@ -7,44 +7,49 @@ local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
 local UIParent = _G.UIParent
 
-local function PositionUIWidgets()
-	local topCenterContainer = _G["UIWidgetTopCenterContainerFrame"]
-	local belowMiniMapcontainer = _G["UIWidgetBelowMinimapContainerFrame"]
+local function topCenterPosition(self, _, b)
+	local holder = _G.TopCenterContainerHolder
+	if b and (b ~= holder) then
+		self:ClearAllPoints()
+		self:SetPoint("CENTER", holder)
+		self:SetParent(holder)
+	end
+end
+
+local function belowMinimapPosition(self, _, b)
+	local holder = _G.BelowMinimapContainerHolder
+	if b and (b ~= holder) then
+		self:ClearAllPoints()
+		self:SetPoint("CENTER", holder, "CENTER")
+		self:SetParent(holder)
+	end
+end
+
+local function UIWidgets()
+	local topCenterContainer = _G.UIWidgetTopCenterContainerFrame
+	local belowMiniMapcontainer = _G.UIWidgetBelowMinimapContainerFrame
 
 	local topCenterHolder = CreateFrame("Frame", "TopCenterContainerHolder", UIParent)
-	topCenterHolder:SetPoint("TOP", UIParent, "TOP", 0, -44)
-	topCenterHolder:SetSize(180, 20)
+	topCenterHolder:SetPoint("TOP", UIParent, "TOP", 0, -30)
+	topCenterHolder:SetSize(10, 58)
 
 	local belowMiniMapHolder = CreateFrame("Frame", "BelowMinimapContainerHolder", UIParent)
-	belowMiniMapHolder:SetPoint("TOPRIGHT", _G["Minimap"], "BOTTOMRIGHT", 0, -54)
-	belowMiniMapHolder:SetSize(170, 20)
-
-	topCenterContainer:ClearAllPoints()
-	topCenterContainer:SetPoint("CENTER", topCenterHolder, "CENTER")
-
-	belowMiniMapcontainer:ClearAllPoints()
-	belowMiniMapcontainer:SetPoint("CENTER", belowMiniMapHolder, "CENTER")
-	belowMiniMapcontainer:SetParent(belowMiniMapHolder)
-	belowMiniMapcontainer.ignoreFramePositionManager = true
-
-	-- Reposition capture bar on layout update
-	hooksecurefunc(_G["UIWidgetManager"].registeredWidgetSetContainers[2], "layoutFunc", function(widgetContainer, sortedWidgets, ...)
-		widgetContainer:ClearAllPoints()
-
-		if widgetContainer:GetWidth() ~= belowMiniMapHolder:GetWidth() then
-			belowMiniMapHolder:SetWidth(widgetContainer:GetWidth())
-		end
-	end)
-
-	-- And this one cause UIParentManageFramePositions() repositions the widget constantly
-	hooksecurefunc(belowMiniMapcontainer, "ClearAllPoints", function(self)
-		self:SetPoint("CENTER", belowMiniMapHolder, "CENTER")
-	end)
+	belowMiniMapHolder:SetPoint("TOPRIGHT", _G["Minimap"], "BOTTOMRIGHT", 0, -16)
+	belowMiniMapHolder:SetSize(128, 40)
 
 	K.Movers:RegisterFrame(topCenterHolder)
 	K.Movers:RegisterFrame(belowMiniMapHolder)
+
+	topCenterContainer:ClearAllPoints()
+	topCenterContainer:SetPoint("CENTER", topCenterHolder)
+
+	belowMiniMapcontainer:ClearAllPoints()
+	belowMiniMapcontainer:SetPoint("CENTER", belowMiniMapHolder, "CENTER")
+
+	hooksecurefunc(topCenterContainer, "SetPoint", topCenterPosition)
+	hooksecurefunc(belowMiniMapcontainer, "SetPoint", belowMinimapPosition)
 end
 
 function Module:OnEnable()
-	PositionUIWidgets()
+	UIWidgets()
 end

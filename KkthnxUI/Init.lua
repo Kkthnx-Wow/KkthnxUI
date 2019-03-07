@@ -103,6 +103,7 @@ AddOn.ScanTooltip = CreateFrame("GameTooltip", "KkthnxUI_ScanTooltip", _G.UIPare
 AddOn.WowPatch, AddOn.WowBuild, AddOn.WowRelease, AddOn.TocVersion = GetBuildInfo()
 AddOn.WowBuild = tonumber(AddOn.WowBuild)
 AddOn.IsRetail = GetBuildInfo and select(4, GetBuildInfo()) >= 80100
+AddOn.IsPTR = GetBuildInfo and AddOn.WowBuild >= 29634
 AddOn.IsFirestorm = AddOn.Realm == "Battle for Azeroth - PTR" and GetBuildInfo and select(4, GetBuildInfo()) == 80000
 AddOn.CodeDebug = false -- Don't touch this, unless you know what you are doing?
 

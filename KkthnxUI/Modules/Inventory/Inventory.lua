@@ -623,7 +623,11 @@ function Stuffing:BagFrameSlotNew(p, slot)
 	if slot > 3 then
 		ret.slot = slot
 		slot = slot - 4
-		ret.frame = CreateFrame("CheckButton", "StuffingBBag" .. slot .. "Slot", p, "BankItemButtonBagTemplate")
+		if K.IsPTR then
+			ret.frame = CreateFrame("ItemButton", "StuffingBBag" .. slot .. "Slot", p, "BankItemButtonBagTemplate")
+		else
+			ret.frame = CreateFrame("CheckButton", "StuffingBBag" .. slot .. "Slot", p, "BankItemButtonBagTemplate")
+		end
 		ret.frame:StripTextures()
 		ret.frame:SetID(slot)
 
@@ -654,7 +658,11 @@ function Stuffing:BagFrameSlotNew(p, slot)
 			SetItemButtonTextureVertexColor(ret.frame, 1.0, 1.0, 1.0)
 		end
 	else
-		ret.frame = CreateFrame("CheckButton", "StuffingFBag" .. slot .. "Slot", p, "BagSlotButtonTemplate")
+		if K.IsPTR then
+			ret.frame = CreateFrame("ItemButton", "StuffingFBag" .. slot .. "Slot", p, "BagSlotButtonTemplate")
+		else
+			ret.frame = CreateFrame("CheckButton", "StuffingFBag" .. slot .. "Slot", p, "BagSlotButtonTemplate")
+		end
 
 		hooksecurefunc(ret.frame.IconBorder, "SetVertexColor", function(self, r, g, b)
 			if r ~= 0.65882 and g ~= 0.65882 and b ~= 0.65882 then
@@ -675,7 +683,9 @@ function Stuffing:BagFrameSlotNew(p, slot)
 	ret.frame:CreateBorder()
 	ret.frame:StyleButton()
 	ret.frame:SetNormalTexture("")
-	ret.frame:SetCheckedTexture("")
+	if not K.IsPTR then
+		ret.frame:SetCheckedTexture("")
+	end
 
 	ret.icon = _G[ret.frame:GetName() .. "IconTexture"]
 	ret.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
