@@ -7,12 +7,14 @@ local ReskinDetails = CreateFrame("Frame")
 ReskinDetails:RegisterEvent("ADDON_LOADED")
 ReskinDetails:RegisterEvent("PLAYER_ENTERING_WORLD")
 ReskinDetails:SetScript("OnEvent", function()
-	local DetailsFont = K.GetFont(C["Skins"].Font)
-	local DetailsTexture = K.GetTexture(C["Skins"].Texture)
-
 	local function setupInstance(instance)
-		if instance.styled then return end
-		if not instance.baseframe then return end
+		if instance.styled then
+			return
+		end
+
+		if not instance.baseframe then
+			return
+		end
 
 		instance:ChangeSkin("Minimalistic")
 		instance:InstanceWallpaper(false)
@@ -21,9 +23,9 @@ ReskinDetails:SetScript("OnEvent", function()
 		instance:SetBackdropTexture("None")
 		instance:MenuAnchor(16, 3)
 		instance:ToolbarMenuButtonsSize(1)
-		instance:AttributeMenu(true, 0, 3, DetailsFont, 13, {1, 1, 1}, 1, true)
-		instance:SetBarSettings(18, C["Skins"].ResetDetails and DetailsTexture or "KkthnxUI_StatusBar" or nil)
-		instance:SetBarTextSettings(13, DetailsFont, nil, nil, nil, true, true, nil, nil, nil, nil, nil, nil, false, nil, false, nil)
+		instance:AttributeMenu(true, 0, 3, "KkthnxUI_Normal", 13, {1, 1, 1}, 1, true)
+		instance:SetBarSettings(18, "KkthnxUI_StatusBar")
+		instance:SetBarTextSettings(13, "KkthnxUI_Normal", nil, nil, nil, true, true, nil, nil, nil, nil, nil, nil, false, nil, false, nil)
 
 		instance.baseframe:CreateBackdrop()
 		instance.baseframe.Backdrop:SetPoint("TOPLEFT", -1, 18)
