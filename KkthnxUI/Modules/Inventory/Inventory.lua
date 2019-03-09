@@ -734,7 +734,11 @@ function Stuffing:SlotNew(bag, slot)
 	end
 
 	if not ret.frame then
-		ret.frame = CreateFrame("Button", "StuffingBag" .. bag .. "_" .. slot, self.bags[bag], tpl)
+		if K.IsPTR then
+			ret.frame = CreateFrame("ItemButton", "StuffingBag" .. bag .. "_" .. slot, self.bags[bag], tpl)
+		else
+			ret.frame = CreateFrame("Button", "StuffingBag" .. bag .. "_" .. slot, self.bags[bag], tpl)
+		end
 
 		ret.frame:CreateBorder()
 		ret.frame:StyleButton()

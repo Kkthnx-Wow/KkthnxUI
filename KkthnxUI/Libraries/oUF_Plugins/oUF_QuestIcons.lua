@@ -1,5 +1,5 @@
-local K = unpack(select(2, ...))
-local oUF = oUF or K.oUF
+local _, ns = ...
+local oUF = ns.oUF or oUF
 
 local _G = _G
 local pairs = pairs
@@ -12,6 +12,8 @@ local GetQuestLogIndexByID = _G.GetQuestLogIndexByID
 local GetQuestLogSpecialItemInfo = _G.GetQuestLogSpecialItemInfo
 local UnitName = _G.UnitName
 local C_TaskQuest_GetQuestProgressBarInfo = _G.C_TaskQuest.GetQuestProgressBarInfo
+
+local QuestIconScanTip = CreateFrame("GameTooltip", "QuestIconScanTip", nil, "GameTooltipTemplate")
 
 local ActiveQuests = {
 	-- [questName] = questID ?
@@ -80,7 +82,7 @@ local QuestTypesLocalized = {
 
 local QuestTypes = QuestTypesLocalized[UsedLocale] or QuestTypesLocalized["enUS"]
 
-local function QUEST_ACCEPTED(self, event, questLogIndex, questID)
+local function QUEST_ACCEPTED(_, _, questLogIndex, questID)
 	if questLogIndex and questLogIndex > 0 then
 		local questName = GetQuestLogTitle(questLogIndex)
 
@@ -90,7 +92,7 @@ local function QUEST_ACCEPTED(self, event, questLogIndex, questID)
 	end
 end
 
-local function QUEST_REMOVED(self, event, questID)
+local function QUEST_REMOVED(_, _, questID)
 	if not questID then return end
 	for questName, __questID in pairs(ActiveQuests) do
 		if __questID == questID then
@@ -106,12 +108,12 @@ local function GetQuests(unitID)
 		return
 	end
 
-	K.ScanTooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
-	K.ScanTooltip:SetUnit(unitID)
+	QuestIconScanTip:SetOwner(WorldFrame, "ANCHOR_NONE")
+	QuestIconScanTip:SetUnit(unitID)
 
 	local QuestList, questID = {}
-	for i = 3, K.ScanTooltip:NumLines() do
-		local str = _G[K.ScanTooltip:GetName() .. "TextLeft" .. i]
+	for i = 3, QuestIconScanTip:NumLines() do
+		local str = _G[QuestIconScanTip:GetName() .. "TextLeft" .. i]
 		local text = str and str:GetText()
 		if not text then return end
 		if not questID then
@@ -166,7 +168,7 @@ local function GetQuests(unitID)
 	return QuestList
 end
 
-local function Update(self, event, unit)
+local function Update(self, _, unit)
 	if (unit ~= self.unit) then return end
 
 	local element = self.QuestIcons
@@ -236,7 +238,7 @@ local function Enable(self)
 		element.ForceUpdate = ForceUpdate
 
 		if (element.Loot) then
-			if(element.Loot:IsObjectType("Texture") and not element.Loot:GetAtlas()) then
+			if (element.Loot:IsObjectType("Texture") and not element.Loot:GetAtlas()) then
 				element.Loot:SetAtlas("Banker")
 			end
 		end
@@ -247,8 +249,8 @@ local function Enable(self)
 			end
 		end
 
-		if(element.Chat) then
-			if(element.Chat:IsObjectType("StatusBar") and not element.Chat:GetTexture()) then
+		if (element.Chat) then
+			if (element.Chat:IsObjectType("StatusBar") and not element.Chat:GetTexture()) then
 				element.Chat:SetTexture([[Interface\WorldMap\ChatBubble_64.PNG]])
 			end
 		end

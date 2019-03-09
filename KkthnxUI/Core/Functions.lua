@@ -6,6 +6,8 @@ local hooksecurefunc = hooksecurefunc
 local math_abs = math.abs
 local math_ceil = math.ceil
 local math_floor = math.floor
+local math_max = math.max
+local math_min = math.min
 local mod = mod
 local next = next
 local pairs = pairs
@@ -13,6 +15,7 @@ local print = print
 local select = select
 local string_format = string.format
 local string_lower = string.lower
+local string_match = string.match
 local table_insert = table.insert
 local table_remove = table.remove
 local type = type
@@ -36,6 +39,9 @@ local UIParent = _G.UIParent
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
+
+K.Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / K.UIScale
+K.NoScaleMult = K.Mult * K.UIScale
 
 function K.Print(...)
 	print("|cff3c9bed"..K.Title.."|r:", ...)

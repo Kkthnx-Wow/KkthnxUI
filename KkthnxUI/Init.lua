@@ -31,6 +31,8 @@ local K, C, L = unpack(KkthnxUI)
 ]]
 
 local _G = _G
+local math_max = math.max
+local math_min = math.min
 local select = select
 local string_format = string.format
 local string_lower = string.lower
@@ -95,6 +97,7 @@ AddOn.LSM = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
 AddOn.Resolution = ({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution")
 AddOn.ScreenHeight = tonumber(string_match(AddOn.Resolution, "%d+x(%d+)"))
 AddOn.ScreenWidth = tonumber(string_match(AddOn.Resolution, "(%d+)x+%d"))
+AddOn.UIScale = math_min(2, math_max(0.01, 768 / string_match(AddOn.Resolution, "%d+x(%d+)")))
 AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}

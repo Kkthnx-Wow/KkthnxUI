@@ -1,9 +1,12 @@
-local K = unpack(select(2, ...))
-local oUF = oUF or K.oUF
+local _, ns = ...
+local oUF = ns.oUF or oUF
+
+local _G = _G
 
 local gsub = gsub
 local format = format
-local UnitName = UnitName
+
+local UnitName = _G.UnitName
 local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
 local GetBattlefieldScore = _G.GetBattlefieldScore
 local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
@@ -13,12 +16,12 @@ local IsInInstance = _G.IsInInstance
 local UNKNOWN = _G.UNKNOWN
 
 local healerSpecIDs = {
-	65,		--Paladin Holy
-	105,	--Druid Restoration
-	256,	--Priest Discipline
-	257,	--Priest Holy
-	264,	--Shaman Restoration
-	270,	--Monk Mistweaver
+	65,		-- Paladin Holy
+	105,	-- Druid Restoration
+	256,	-- Priest Discipline
+	257,	-- Priest Holy
+	264,	-- Shaman Restoration
+	270,	-- Monk Mistweaver
 }
 
 local Healers, HealerSpecs = {}, {}
@@ -36,13 +39,13 @@ local function Event(self)
 		if instanceType == "pvp" then
 			local name, _, talentSpec
 			for i = 1, GetNumBattlefieldScores() do
-				name, _, _, _, _, _, _, _, _, _, _, _, _, _, _, talentSpec = GetBattlefieldScore(i);
+				name, _, _, _, _, _, _, _, _, _, _, _, _, _, _, talentSpec = GetBattlefieldScore(i)
 				if name then
-					name = gsub(name,"%-"..gsub(E.myrealm,"[%s%-]",""),"") --[[ name = match(name,"([^%-]+).*") ]]
+					name = gsub(name,"%-"..gsub(E.myrealm,"[%s%-]",""),"") -- name = match(name,"([^%-]+).*")
 					if name and self.HealerSpecs[talentSpec] then
 						Healers[name] = talentSpec
 					elseif name and self.Healers[name] then
-						Healers[name] = nil;
+						Healers[name] = nil
 					end
 				end
 			end

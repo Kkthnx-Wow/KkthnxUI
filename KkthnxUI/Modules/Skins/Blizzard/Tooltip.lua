@@ -29,6 +29,7 @@ local function SkinTooltip()
 	local StoryTooltip = QuestScrollFrame.StoryTooltip
 	StoryTooltip:SetFrameLevel(4)
 
+
 	ItemRefCloseButton:SkinCloseButton()
 
 	local WhatTooltipName
@@ -55,6 +56,27 @@ local function SkinTooltip()
 		self:GetParent().Backdrop:SetBackdropBorderColor()
 	end)
 
+	local tooltips_PTR = {
+		ItemRefTooltip,
+		ItemRefShoppingTooltip1,
+		ItemRefShoppingTooltip2,
+		ItemRefShoppingTooltip3,
+		AutoCompleteBox,
+		FriendsTooltip,
+		ShoppingTooltip1,
+		ShoppingTooltip2,
+		ShoppingTooltip3,
+		WorldMapCompareTooltip1,
+		WorldMapCompareTooltip2,
+		WorldMapCompareTooltip3,
+		ReputationParagonTooltip,
+		EmbeddedItemTooltip,
+		-- already have locals
+		GameTooltip,
+		StoryTooltip,
+		WarCampaignTooltip,
+	}
+
 	local tooltips = {
 		ItemRefTooltip,
 		ItemRefShoppingTooltip1,
@@ -73,7 +95,7 @@ local function SkinTooltip()
 		-- already have locals
 		GameTooltip,
 		StoryTooltip,
-		WhatTooltipName,
+		WorldMapTooltip,
 		WarCampaignTooltip,
 	}
 
@@ -84,10 +106,16 @@ local function SkinTooltip()
 		ItemRefTooltip,
 		ShoppingTooltip1,
 		ShoppingTooltip2,
-		WhatTooltipName,
 	}
 
-	for _, tt in pairs(tooltips) do
+	local WhatTooltips
+	if K.IsPTR then
+		WhatTooltips = tooltips_PTR
+	else
+		WhatTooltips = tooltips
+	end
+
+	for _, tt in pairs(WhatTooltips) do
 		Module:SecureHookScript(tt, "OnShow", "SetStyle")
 	end
 

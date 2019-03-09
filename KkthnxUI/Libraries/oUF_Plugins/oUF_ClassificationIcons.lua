@@ -1,5 +1,5 @@
-local K = unpack(select(2, ...))
-local oUF = oUF or K.oUF
+local _, ns = ...
+local oUF = ns.oUF or oUF
 
 local UnitClassification = UnitClassification
 

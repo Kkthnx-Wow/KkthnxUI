@@ -3,14 +3,14 @@
     <!-- Load_Core -->
     <Script file="Media.lua"/>
     <Script file="API.lua"/>
+    <Script file="Border.lua"/>
     <Script file="StaticPopups.lua"/>
-    <Script file="PixelPerfect.lua"/>
     <Script file="Functions.lua"/>
+    <Script file="PixelPerfect.lua"/>
     <Script file="Commands.lua"/>
     <Script file="Animation.lua"/>
     <Script file="Colors.lua"/>
     <Script file="Install.lua"/>
-    <Script file="Border.lua"/>
     <Script file="Kill.lua"/>
     <Script file="Conflicts.lua"/>
     <Script file="CheckVersion.lua"/>

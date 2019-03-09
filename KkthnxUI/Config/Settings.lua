@@ -299,7 +299,7 @@ C["Filger"] = {
 
 -- General
 C["General"] = {
-	["AutoScale"] = true,
+	--["AutoScale"] = true,
 	["ColorTextures"] = false,
 	["DisableTutorialButtons"] = false,
 	["FixGarbageCollect"] = true,
@@ -310,8 +310,22 @@ C["General"] = {
 	["ReplaceBlizzardFonts"] = true,
 	["Texture"] = "KkthnxUI",
 	["TexturesColor"] = {0.9, 0.9, 0.9},
-	["UIScale"] = 0.7111111111,
+	--["UIScale"] = 0.7111111111,
 	["Welcome"] = true,
+
+	["Scaling"] = {
+		["Options"] = {
+			["Pixel Perfection"] = "Pixel Perfection",
+			["Smallest"] = "Smallest",
+			["Small"] = "Small",
+			["Medium"] = "Medium",
+			["Large"] = "Large",
+			["Oversize"] = "Oversize",
+		},
+
+		["Value"] = "Pixel Perfection",
+	},
+
 }
 
 C["HealthPrediction"] = {

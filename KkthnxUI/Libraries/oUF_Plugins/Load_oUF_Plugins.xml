@@ -2,12 +2,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Unitframe oUF Plugins -->
    <Script file="oUF_AuraWatch.lua"/>
+   <Script file="oUF_ClassificationIcons.lua"/>
    <Script file="oUF_CombatFader.lua"/>
    <Script file="oUF_DebuffHighlight.lua"/>
    <Script file="oUF_GlobalCooldown.lua"/>
+   <Script file="oUF_HealerIcons.lua"/>
    <Script file="oUF_Offline.lua"/>
-   <Script file="oUF_PortraitTimers.lua"/>
    <Script file="oUF_PVPSpecIcons.lua"/>
+   <Script file="oUF_PortraitTimers.lua"/>
+   <Script file="oUF_QuestIcons.lua"/>
    <Script file="oUF_RaidDebuffs.lua"/>
    <Script file="oUF_Smooth.lua"/>
    <Script file="oUF_Trinkets.lua"/>
