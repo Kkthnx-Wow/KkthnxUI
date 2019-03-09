@@ -959,7 +959,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	local Height = (12 + (NumGroups * 20) + ((NumGroups - 1) * 4)) -- Padding + (NumButtons * ButtonSize) + ((NumButtons - 1) * ButtonSpacing)
 
 	local ConfigFrame = CreateFrame("Frame", "KkthnxUIConfigFrame", UIParent)
-	ConfigFrame:SetSize(448, Height)
+	ConfigFrame:SetSize(510, Height)
 	ConfigFrame:SetPoint("CENTER")
 	ConfigFrame:SetFrameStrata("HIGH")
 
@@ -972,20 +972,20 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	local LeftWindow = CreateFrame("Frame", "KkthnxUIConfigFrameLeft", ConfigFrame)
 	LeftWindow:CreateBorder()
-	LeftWindow:SetSize(139, Height)
+	LeftWindow:SetSize(169, Height)
 	LeftWindow:SetPoint("LEFT", ConfigFrame, 4, 0)
 	LeftWindow:EnableMouse(true)
 
 	local RightWindow = CreateFrame("Frame", "KkthnxUIConfigFrameRight", ConfigFrame)
 	RightWindow:CreateBorder()
-	RightWindow:SetSize(300, Height)
+	RightWindow:SetSize(330, Height)
 	RightWindow:SetPoint("RIGHT", ConfigFrame, 0, 0)
 	RightWindow:EnableMouse(true)
 
 	local TitleFrame = CreateFrame("Frame", "KkthnxUIConfigFrameTitle", ConfigFrame)
 	TitleFrame:CreateBorder()
-	TitleFrame:SetSize(444, 24)
-	TitleFrame:SetPoint("BOTTOM", ConfigFrame, "TOP", 2, 5)
+	TitleFrame:SetSize(506, 24)
+	TitleFrame:SetPoint("BOTTOM", ConfigFrame, "TOP", 2, 6)
 
 	TitleFrame.Text = TitleFrame:CreateFontString(nil, "OVERLAY")
 	TitleFrame.Text:SetFont(C["Media"].Font, 16)
@@ -995,8 +995,8 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	local InfoFrame = CreateFrame("Frame", "KkthnxUIConfigFrameCredit", ConfigFrame)
 	InfoFrame:CreateBorder()
-	InfoFrame:SetSize(444, 24)
-	InfoFrame:SetPoint("TOP", ConfigFrame, "BOTTOM", 2, -5)
+	InfoFrame:SetSize(506, 24)
+	InfoFrame:SetPoint("TOP", ConfigFrame, "BOTTOM", 2, -6)
 
 	InfoFrame.Text = InfoFrame:CreateFontString(nil, "OVERLAY")
 	InfoFrame.Text:SetFont(C["Media"].Font, 14)
@@ -1006,12 +1006,12 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	local CloseButton = CreateFrame("Button", nil, InfoFrame)
 	CloseButton:SkinButton()
-	CloseButton:SetSize(138, 22)
+	CloseButton:SetSize(160, 22)
 	CloseButton:SetScript("OnClick", function()
 		ConfigFrame:Hide()
 	end)
 	CloseButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
-	CloseButton:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 0, -27)
+	CloseButton:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 0, -28)
 
 	CloseButton.Text = CloseButton:CreateFontString(nil, "OVERLAY")
 	CloseButton.Text:SetFont(C["Media"].Font, 12)
@@ -1022,12 +1022,12 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	local ReloadButton = CreateFrame("Button", nil, InfoFrame)
 	ReloadButton:SkinButton()
-	ReloadButton:SetSize(148, 22)
+	ReloadButton:SetSize(174, 22)
 	ReloadButton:SetScript("OnClick", function()
 		ReloadUI()
 	end)
 	ReloadButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
-	ReloadButton:SetPoint("LEFT", CloseButton, "RIGHT", 5, 0)
+	ReloadButton:SetPoint("LEFT", CloseButton, "RIGHT", 6, 0)
 
 	ReloadButton.Text = ReloadButton:CreateFontString(nil, "OVERLAY")
 	ReloadButton.Text:SetFont(C["Media"].Font, 12)
@@ -1037,7 +1037,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	local GlobalButton = CreateFrame("Button", nil, InfoFrame)
 	GlobalButton:SkinButton()
-	GlobalButton:SetSize(148, 22)
+	GlobalButton:SetSize(160, 22)
 	GlobalButton:SetScript("OnClick", function()
 		if not KkthnxUIConfigPerAccount then
 			KkthnxUIConfigPerAccount = true
@@ -1049,7 +1049,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	end)
 
 	GlobalButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
-	GlobalButton:SetPoint("LEFT", ReloadButton, "RIGHT", 5, 0)
+	GlobalButton:SetPoint("LEFT", ReloadButton, "RIGHT", 6, 0)
 
 	GlobalButton.Text = GlobalButton:CreateFontString(nil, "OVERLAY")
 	GlobalButton.Text:SetFont(C["Media"].Font, 12)
@@ -1059,10 +1059,10 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	local ResetCVarsButton = CreateFrame("Button", nil, InfoFrame)
 	ResetCVarsButton:SkinButton()
-	ResetCVarsButton:SetSize(138, 22)
+	ResetCVarsButton:SetSize(160, 22)
 	ResetCVarsButton:SetScript("OnClick", K["Install"].Step1)
 	ResetCVarsButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
-	ResetCVarsButton:SetPoint("TOP", CloseButton, "BOTTOM", 0, -5)
+	ResetCVarsButton:SetPoint("TOP", CloseButton, "BOTTOM", 0, -6)
 
 	ResetCVarsButton.Text = ResetCVarsButton:CreateFontString(nil, "OVERLAY")
 	ResetCVarsButton.Text:SetFont(C["Media"].Font, 12)
@@ -1072,10 +1072,10 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	local ResetChatButton = CreateFrame("Button", nil, InfoFrame)
 	ResetChatButton:SkinButton()
-	ResetChatButton:SetSize(148, 22)
+	ResetChatButton:SetSize(174, 22)
 	ResetChatButton:SetScript("OnClick", K["Install"].Step2)
 	ResetChatButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
-	ResetChatButton:SetPoint("TOP", ReloadButton, "BOTTOM", 0, -5)
+	ResetChatButton:SetPoint("TOP", ReloadButton, "BOTTOM", 0, -6)
 
 	ResetChatButton.Text = ResetChatButton:CreateFontString(nil, "OVERLAY")
 	ResetChatButton.Text:SetFont(C["Media"].Font, 12)
@@ -1085,10 +1085,10 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	local ResetButton = CreateFrame("Button", nil, InfoFrame)
 	ResetButton:SkinButton()
-	ResetButton:SetSize(148, 22)
+	ResetButton:SetSize(160, 22)
 	ResetButton:SetScript("OnClick", K["Install"].ResetData)
 	ResetButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
-	ResetButton:SetPoint("LEFT", ResetChatButton, "RIGHT", 5, 0)
+	ResetButton:SetPoint("LEFT", ResetChatButton, "RIGHT", 6, 0)
 
 	ResetButton.Text = ResetButton:CreateFontString(nil, "OVERLAY")
 	ResetButton.Text:SetFont(C["Media"].Font, 12)
@@ -1120,15 +1120,15 @@ function KkthnxUIConfig:CreateConfigWindow()
 			local GroupHeight = 8 + (NumOptions * 25)
 
 			local GroupPage = CreateFrame("Frame", nil, ConfigFrame)
-			GroupPage:SetSize(300, Height)
+			GroupPage:SetSize(330, Height)
 			GroupPage:SetPoint("TOPRIGHT", ConfigFrame)
 			GroupPage.Controls = {}
 
 			if (GroupHeight > Height) then
-				GroupPage:SetSize(300, GroupHeight)
+				GroupPage:SetSize(330, GroupHeight)
 
 				local ScrollFrame = CreateFrame("ScrollFrame", nil, RightWindow)
-				ScrollFrame:SetSize(300, Height)
+				ScrollFrame:SetSize(330, Height)
 				ScrollFrame:SetAllPoints(RightWindow, 0, 4)
 				ScrollFrame:SetScrollChild(GroupPage)
 				ScrollFrame:SetClipsChildren(true) -- https://www.wowinterface.com/forums/showthread.php?t=55664
@@ -1167,7 +1167,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 			local Button = CreateFrame("Button", nil, ConfigFrame)
 			Button.Group = Group
 
-			Button:SetSize(132, 20)
+			Button:SetSize(167, 20)
 			Button:SetScript("OnClick", GroupButtonOnClick)
 			Button:SetFrameLevel(LeftWindow:GetFrameLevel() + 1)
 
