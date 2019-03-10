@@ -1,4 +1,4 @@
-local _, _, L = unpack(select(2, ...))
+local K, _, L = unpack(select(2, ...))
 -- Localization for itIT
 
 if (GetLocale() ~= "itIT") then
