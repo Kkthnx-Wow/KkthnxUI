@@ -1,11 +1,11 @@
-if (GetLocale() ~= "ruRU") then
+f (GetLocale() ~= "ruRU") then
 	return
 end
 
 local MissingDesc = "The description for this module/setting is missing. Someone should really remind Kkthnx to do his job!"
 local ModuleNewFeature = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:0:0:0:0|t]] -- Used for newly implemented features.
-local PerformanceIncrease = "|n|nDisabling this may slightly increase performance|r" -- For semi-high CPU options
-local RestoreDefault = "|n|nRight-click to restore to default" -- For color pickers
+local PerformanceIncrease = "|n|nОтключение этой функции может немного повысить производительность|r" -- For semi-high CPU options
+local RestoreDefault = "|n|nЩелкните правой кнопкой чтобы вернуть настройку по-умолчанию" -- For color pickers
 
 local _G = _G
 
@@ -40,175 +40,174 @@ KkthnxUIConfig["ruRU"] = {
 	-- Menu Groups Display Names
 	["GroupNames"] = {
 		-- Let's keep this in alphabetical order, shall we?
-		-- GroupNames Translation: Ellesar
 		["ActionBar"] = BINDING_HEADER_ACTIONBAR,
-		["Announcements"] = "Объявления",
+		["Announcements"] = "Оповещения",
 		["Arena"] = ARENA,
 		["Auras"] = AURAS,
-		["Automation"] = "Автоматика",
-		["Boss"] = BOSS,
-		["Chat"] = CHAT,
-		["DataBars"] = "Инфо Панель",
-		["DataText"] = "Информация",
-		["Filger"] = "Таймеры восстановления",
+		["Automation"] = "Автодействия",
+		["Boss"] = "Боссы", -- BOSS, works not correct on ruRU
+		["Chat"] = "Чат", -- CHAT, works not correct on ruRU
+		["DataBars"] = "Инфо-полосы",
+		["DataText"] = "Инфо-текст",
+		["Filger"] = "Откаты способностей",
 		["Firestorm"] = "Firestorm", -- this is a realm name and shouldn't be translated.
 		["General"] = GENERAL,
-		["HealthPrediction"] = "Уровень здоровья",
-		["Inventory"] = INVENTORY_TOOLTIP,
+		["HealthPrediction"] = "Прогноз ХП",
+		["Inventory"] = "Сумки", -- INVENTORY_TOOLTIP, works not correct on ruRU
 		["Loot"] = LOOT,
 		["Minimap"] = MINIMAP_LABEL,
-		["MinimapButtons"] = "КНОПКИ НА КАРТЕ",
+		["MinimapButtons"] = "Кнопки миникарты",
 		["Misc"] = MISCELLANEOUS,
 		["Nameplates"] = UNIT_NAMEPLATES,
 		["Party"] = PARTY,
 		["Raid"] = RAID,
-		["Skins"] = "Обшивка",
-		["Tooltip"] = "Подсказка",
+		["Skins"] = "Шкурки",
+		["Tooltip"] = "Подсказки",
 		["Unitframe"] = UNITFRAME_LABEL,
-		["WorldMap"] = WORLDMAP_BUTTON,
+		["WorldMap"] = WORLDMAP_BUTTON
 	},
 
 	-- General Local
 	["General"] = {
 		["AutoScale"] = {
-			["Name"] = "Auto Scale",
-			["Desc"] = "Automatically scale the User Interface based on your screen resolution",
+			["Name"] = "Автоматический масштаб",
+			["Desc"] = "Автоматически масштабировать интерфейс в зависимости от вашего разрешения экрана",
 		},
 
 		["UIScale"] = {
-			["Name"] = "UI Scale",
-			["Desc"] = "Set a custom UI scale |n|n|cffFF0000'Auto Scale' has to be disabled for this to work|r",
+			["Name"] = "Масштаб интерфейса",
+			["Desc"] = "Установить масштаб вручную |n|n|cffFF0000'Автоматический масштаб' необходимо отключить|r",
 		},
 
 		["DisableTutorialButtons"] = {
-			["Name"] = "Disable Tutorial Buttons",
-			["Desc"] = "Disables the tutorial buttons found on some frames.",
+			["Name"] = "Отключить кнопки обучения",
+			["Desc"] = "Отключить кнопки обучения на некоторых окнах",
 		},
 
 		["Welcome"] = {
-			["Name"] = "Welcome Message",
-			["Desc"] = "Enable the `Welcome to KkthnxUI` in chat",
+			["Name"] = "Приветственное сообщение",
+			["Desc"] = "Включить `Добро пожаловать в KkthnxUI` в чате",
 		},
-
+		-- РУС Перевести
 		["FixGarbageCollect"] = {
-			["Name"] = "Fix Garabage Collection",
+			["Name"] = "Fix Garbage Collection",
 			["Desc"] = "Garbage collection is being overused and misused and it's causing lag and performance drops.|n|nMemory usage is unrelated to performance, and tracking memory usage does not track 'bad' addons.|n|nDevelopers can disable this setting to enable the functionality when looking for memory leaks, but for the average end-user this is a completely pointless thing to track.",
 		},
 
 		["ColorTextures"] = {
-			["Name"] = "Enable BorderColor",
-			["Desc"] = "Change the color of the main border of the UI",
+			["Name"] = "Включить Цвет границ",
+			["Desc"] = "Изменить цвет границ окон интерфейса",
 		},
 
 		["TexturesColor"] = {
-			["Name"] = "Border Color",
-			["Desc"] = "Main border color of the UI. |n|n|cffFF0000'Enable Border Color' has to be enabled for this to work|r"..RestoreDefault,
+			["Name"] = "Цвет границ",
+			["Desc"] = "Цвет границ окон интерфейса. |n|n|cffFF0000'Включить Цвет границ' должен быть включен|r"..RestoreDefault,
 		},
 
 		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+			["Name"] = "Текстура панелей",
 		},
 
 		["Font"] = {
-			["Name"] = "Font",
+			["Name"] = "Шрифт",
 		},
 
 		["FontSize"] = {
-			["Name"] = "Font Size",
-			["Desc"] = "Set the font size for most things in the UI. Note: This doesn't effect somethings that have their own seperate options (UnitFrame Font, Datatext Font, etc.)",
+			["Name"] = "Размер шрифта",
+			["Desc"] = "Установить размер шрифта для большинства элементов интерфейса. Не подействует на те элементы, у которых есть собственная настройка шрифтов (шрифт рамок, инфо-текстов и т.д.)",
 		},
-
+		-- РУС Перевести
 		["LagTolerance"] = {
 			["Name"] = "Lag Tolerance",
 			["Desc"] = "Automatically update the Blizzard Custom Lag Tolerance option to your latency",
 		},
 
 		["MoveBlizzardFrames"] = {
-			["Name"] = "Move Blizzard Frames",
+			["Name"] = "Двигать окна Blizzard",
 		},
 
 		["ReplaceBlizzardFonts"] = {
-			["Name"] = "Replace Blizzard Fonts",
-			["Desc"] = "Change some of the default Blizzard fonts to match the UI",
+			["Name"] = "Заменить стандартные шрифты",
+			["Desc"] = "Заменить некоторые шрифты Blizzard на шрифт KkthnxUI",
 		},
 	},
 
 	-- Health Prediction Local
 	["HealthPrediction"] = {
 		["Absorbs"] = {
-			["Name"] = "Absorbs",
+			["Name"] = "Поглощения",
 			["Desc"] = MissingDesc,
 		},
 
 		["HealAbsorbs"] = {
-			["Name"] = "HealAbsorbs",
+			["Name"] = "Поглощения ХП",
 			["Desc"] = MissingDesc,
 		},
 
 		["Others"] = {
-			["Name"] = "Others",
+			["Name"] = "Другие",
 			["Desc"] = MissingDesc,
 		},
 
 		["Personal"] = {
-			["Name"] = "Personal",
+			["Name"] = "Личные",
 			["Desc"] = MissingDesc,
 		},
 
 		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+			["Name"] = "Текстура панелей",
 		},
 	},
 
 	-- Loot Local
 	["Loot"] = {
 		["Enable"] = {
-			["Name"] = "Enable Loot",
+			["Name"] = "Включить интерфейс добычи",
 		},
 
 		["GroupLoot"] = {
-			["Name"] = "GroupLoot",
-			["Desc"] = "Enable/Disable the loot roll frame.",
+			["Name"] = "Добыча в группе",
+			["Desc"] = "Включить окно с броском кубика для групповой добычи",
 		},
 
 		["AutoQuality"] = {
-			["Name"] = "Loot Quality",
-			["Desc"] = "Sets the auto greed/disenchant quality\n\nUncommon: Rolls on Uncommon only\nRare: Rolls on Rares & Uncommon",
+			["Name"] = "Качество добычи",
+			["Desc"] = "Настройка Нужно/Распылить\n\nЗеленое: Бросать кубик только на зеленые вещи\nСинее: Бросать кубик на синие и зеленые",
 		},
 
 		["Font"] = {
-			["Name"] = "Font",
+			["Name"] = "Шрифт",
 		},
 
 		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+			["Name"] = "Текстура панелей",
 		},
 
 		["AutoConfirm"] = {
-			["Name"] = "Auto Confirm",
-			["Desc"] = "Automatically click OK on BOP items",
+			["Name"] = "Автоматически подтверждать",
+			["Desc"] = "Автоматически нажимать ОК на вещах со свойством 'Персональные при поднятии'",
 		},
 
 		["AutoGreed"] = {
-			["Name"] = "Auto Greed",
-			["Desc"] = "Automatically greed uncommon (green) quality items at max level",
+			["Name"] = "Автоматически Нужно",
+			["Desc"] = "Автоматически выбирать 'Нужно' на розыгрыше зеленых вещей при достижении максимального уровня",
 		},
 
 		["AutoDisenchant"] = {
-			["Name"] = "Auto Disenchant",
-			["Desc"] = "Automatically disenchant uncommon (green) quality items at max level",
+			["Name"] = "Автоматически распылять",
+			["Desc"] = "Автоматически распылять зеленые вещи при достижении максимального уровня",
 		},
-
+		-- РУС Перевести
 		["Level"] = {
 			["Name"] = "Level",
 			["Desc"] = "Level to start auto-rolling from",
 		},
-
+		-- РУС Перевести
 		["ByLevel"] = {
 			["Name"] = "Roll Based On Level",
 			["Desc"] = "This will auto-roll if you are above the given level if: You cannot equip the item being rolled on, or the iLevel of your equipped item is higher than the item being rolled on or you have an heirloom equipped in that slot",
 		},
-
+		-- РУС Перевести
 		["FastLoot"] = {
 			["Name"] = "Fast Loot",
 			["Desc"] = "The amount of time it takes to auto loot creatures will be significantly reduced.|n|n|cffFF0000Requires AutoLoot to be enabled!",
@@ -218,456 +217,454 @@ KkthnxUIConfig["ruRU"] = {
 	-- Bags Local
 	["Inventory"] = {
 		["BagColumns"] = {
-			["Name"] = "BagColumns",
-			["Desc"] = "Number of columns in the main bags",
+			["Name"] = "Колонки в сумке",
+			["Desc"] = "Количество колонок в сумке",
 		},
 
 		["BankColumns"] = {
-			["Name"] = "Bank Columns",
-			["Desc"] = "Number of columns in the bank",
+			["Name"] = "Колонки в банке",
+			["Desc"] = "Количество колонок в банке",
 		},
 
 		["ButtonSize"] = {
-			["Name"] = "Button Size",
+			["Name"] = "Размер кнопок",
 		},
 
 		["ButtonSpace"] = {
-			["Name"] = "Button Space",
+			["Name"] = "Промежуток между кнопками",
 		},
 
 		["DetailedReport"] = {
-			["Name"] = "Detailed Report",
-			["Desc"] = "Displays a detailed report of every item sold when enabled. Disabled to just show the profit or expenses as a total.",
+			["Name"] = "Детальный отчет при продаже",
+			["Desc"] = "Показывает детальный отчет по каждой проданной вещи. Если отключить, покажет только сумму проданных вещей и затраты",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Inventory",
+			["Name"] = "Включить сумки",
 		},
 
 		["Font"] = {
-			["Name"] = "Font",
+			["Name"] = "Шрифт",
 		},
 
 		["ItemLevel"] = {
-			["Name"] = "Item Level",
-			["Desc"] = "Displays item level on equippable items.",
+			["Name"] = "Уровень вещей",
+			["Desc"] = "Показывать уровень на вещах, которые можно надеть",
 		},
-
+		-- РУС Перевести
 		["ItemLevelThreshold"] = {
 			["Name"] = "Item Level Threshold",
 			["Desc"] = "The minimum item level required for it to be shown.",
 		},
 
 		["PulseNewItem"] = {
-			["Name"] = "Pulse New Items",
-			["Desc"] = "Flash new items in the bags",
+			["Name"] = "Границы новых вещей",
+			["Desc"] = "Пульсация границы ячейки нового предмета в сумке",
 		},
 
 		["JunkIcon"] = {
-			["Name"] = "Junk Icon",
-			["Desc"] = "Display the junk icon on all grey items that can be vendored.",
+			["Name"] = "Показывать хлам",
+			["Desc"] = "Показывать иконку хлама на серых предметах экипировки, которые можно продать торговцу",
 		},
 
 		["ScrapIcon"] = {
-			["Name"] = "Scrap Icon",
-			["Desc"] = "Display the scrap icon on all items that you can scrap.",
+			["Name"] = "Показывать мусор",
+			["Desc"] = "Показывать иконку мусора на всех предметах, которые можно продать торговцу",
 		},
 
 		["ReverseLoot"] = {
 			["Name"] = REVERSE_NEW_LOOT_TEXT,
 			["Desc"] = REVERSE_NEW_LOOT_TEXT,
 		},
-
+		-- РУС Перевести
 		["BindText"] = {
 			["Name"] = "Bind Text",
 			["Desc"] = "Show Bind on Equip/Use Text",
 		},
 
 		["SortInverted"] = {
-			["Name"] = "Sort Inverted",
-			["Desc"] = "Direction the bag sorting will use to allocate the items.",
+			["Name"] = "Инвертировать сортировку",
+			["Desc"] = "Направление сортировки в сумке для распределения предметов",
 		},
 
 		["AutoRepair"] = {
-			["Name"] = "Auto Repair",
-			["Desc"] = "When visiting a repair merchant, automatically repair our gear",
+			["Name"] = "Автоматический ремонт",
+			["Desc"] = "При посещении торговца автоматически ремонтировать вещи",
 		},
 
 		["AutoSell"] = {
-			["Name"] = "Auto Sell Grays",
-			["Desc"] = "When visiting a vendor, automatically sell gray quality items",
+			["Name"] = "Автоматическая продажа",
+			["Desc"] = "При посещении торговца автоматически продавать все серые вещи",
 		},
 
 		["UseGuildRepairFunds"] = {
-			["Name"] = "Use Guild Repair",
-			["Desc"] = "When using 'Auto Repair', use funds from the Guild Bank",
+			["Name"] = "Использовать починку гильдии",
+			["Desc"] = "При использовании 'Автоматический ремонт', ремонтировать вещи за счет гильдии",
 		},
 	},
 
 	["MinimapButtons"] = {
 		["EnableBar"] = {
-			["Name"] = "Enable Bar",
-			["Desc"] = "Enable minimap buttons collected in a bar instead of around the minimap",
+			["Name"] = "Включить панель",
+			["Desc"] = "Включить панель у миникарты, куда будут собираться иконки",
 		},
 
 		["BarMouseOver"] = {
-			["Name"] = "Bar Mouseover",
-			["Desc"] = "Make the bar mouseover",
+			["Name"] = "Наведение мышки",
+			["Desc"] = "Панель будет появляться при наведении мышки",
 		},
 
 		["ButtonSpacing"] = {
-			["Name"] = "Button Spacing",
-			["Desc"] = "How much space between each icon (this only applies to the bar being enabled)",
+			["Name"] = "Промежуток иконок",
+			["Desc"] = "Промежуток в пикселях между иконками (работает только если включена панель)",
 		},
 
 		["ButtonsPerRow"] = {
-			["Name"] = "Buttons Per Row",
-			["Desc"] = "How many buttons per row (this only applies to the bar being enabled)",
+			["Name"] = "Кнопок на строку",
+			["Desc"] = "Количество кнопок на одну строку (работает только если включена панель)",
 		},
 
 		["IconSize"] = {
-			["Name"] = "Icon Size",
-			["Desc"] = "Size of the minimap icons",
+			["Name"] = "Размер иконок",
+			["Desc"] = "Размер иконок на панели у миникарты",
 		},
 	},
 
 	-- Actionbar Local
 	["ActionBar"] = {
 		["MicroBar"] = {
-			["Name"] = "Micro Bar",
-			["Desc"] = "Enable",
+			["Name"] = "Панель Blizzard",
+			["Desc"] = "Включает стандартную панель с кнопками Blizzard (Магазин, Помощь и т.д.)",
 		},
 
 		["MicroBarMouseover"] = {
-			["Name"] = "Micro Bar Mouseover",
-			["Desc"] = "The MicroBar is not shown unless you mouse over the MicroBar",
+			["Name"] = "Панель Blizzard при наведении",
+			["Desc"] = "Панель не будет отображаться, пока не наведете на нее мышку",
 		},
 
 		["BottomBars"] = {
-			["Name"] = "Bottom Bars",
-			["Desc"] = "The amount of bars to display on the bottom. Note: Value can only be 1-3",
+			["Name"] = "Количество нижних панелей",
+			["Desc"] = "Количество нижних панелей. От 1 до 3",
 		},
 
 		["ButtonSize"] = {
-			["Name"] = "Button Size",
-			["Desc"] = "The size of the action buttons.",
+			["Name"] = "Размер кнопок",
+			["Desc"] = "Размер кнопок на панелях",
 		},
 
 		["ButtonSpace"] = {
-			["Name"] = "Button Space",
-			["Desc"] = "The spacing between buttons.",
+			["Name"] = "Промежуток кнопок",
+			["Desc"] = "Промежуток между кнопок на панелях",
 		},
 
 		["Cooldowns"] = {
-			["Name"] = "Cooldowns",
-			["Desc"] = "Actionbar cooldowns",
+			["Name"] = "Откаты заклинаний",
+			["Desc"] = "Показывать таймер откатов на кнопках",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Actionbars",
+			["Name"] = "Включить панели",
 		},
 
 		["ShowGrid"] = {
-			["Name"] = "Actionbar Grid",
-			["Desc"] = "Show empty action bar buttons",
+			["Name"] = "Сетка панелей",
+			["Desc"] = "Показывать пустые кнопки на панелях",
 		},
 
 		["EquipBorder"] = {
-			["Name"] = "Equipped Item Border",
-			["Desc"] = "Display Green Border on Equipped Items",
+			["Name"] = "Границы на экипированных вещах",
+			["Desc"] = "Показывать зеленую границу на экипированных вещах",
 		},
 
 		["RightMouseover"] = {
-			["Name"] = "Right Bars Mouseover",
+			["Name"] = "Скрывать правую панель",
 		},
 
 		["PetMouseover"] = {
-			["Name"] = "Pet Mouseover",
-			["Desc"] = "Petbar mouseover (Only for horizontal petbar)",
+			["Name"] = "Скрывать панель питомца",
+			["Desc"] = "Показывать панель питомца при наведении мышки. Работает только при горизонтальной панели питомца",
 		},
 
 		["StanceMouseover"] = {
-			["Name"] = "Stance Mouseover",
-			["Desc"] = "Stancebar mouseover (Only for horizontal stancebar)",
+			["Name"] = "Скрывать панель стоек",
+			["Desc"] = "Показывать панель стоек при наведении мышки. Работает только при горизонтальной панели стоек",
 		},
 
 		["Hotkey"] = {
-			["Name"] = "Hotkey",
-			["Desc"] = "Show hotkey on buttons",
+			["Name"] = "Горячие клавиши",
+			["Desc"] = "Показывать горячие клавиши на кнопках",
 		},
 
 		["Macro"] = {
-			["Name"] = "Macro",
-			["Desc"] = "Show macro name on buttons",
+			["Name"] = "Макросы",
+			["Desc"] = "Показывать имена макросов на кнопках",
 		},
 
 		["OutOfMana"] = {
-			["Name"] = "Out Of Mana",
-			["Desc"] = "Out of Mana color"..RestoreDefault,
+			["Name"] = "Недостаточно ресурсов",
+			["Desc"] = "Окрашивать кнопку если недостаточно ресурсов на заклинание"..RestoreDefault,
 		},
 
 		["OutOfRange"] = {
-			["Name"] = "Out Of Range",
-			["Desc"] = "Out of Range color"..RestoreDefault,
+			["Name"] = "Цель вне радиуса",
+			["Desc"] = "Окрашивать иконку если цель за пределами досягаемости способности"..RestoreDefault,
 		},
 
 		["DisableStancePages"] = {
-			["Name"] = "Disable Stealth Paging",
-			["Desc"] = "Disables automatic page-switching when stealthed. |n|nOnly affects |cffFFF569Rogues|r and |cffFF7D0ADruids|r, has no effect on other classes",
+			["Name"] = "Переключение при скрытности",
+			["Desc"] = "Отключает автоматическую смену основной панели в режиме скрытности. |n|nРаботает только у |cffFFF569Разбойников|r и |cffFF7D0AДруидов|r, у других классов эффекта не будет",
 		},
 
 		["PetBarHide"] = {
-			["Name"] = "Pet Bar Hide",
-			["Desc"] = "Hide pet bar",
+			["Name"] = "Скрыть панель питомца",
+			["Desc"] = "Скрыть панель питомца",
 		},
 
 		["PetBarHorizontal"] = {
-			["Name"] = "Pet Bar Horizontal",
-			["Desc"] = "Enable horizontal pet bar",
+			["Name"] = "Горизонтальная панель питомца",
+			["Desc"] = "Включить горизонтальную панель питомца",
 		},
 
 		["RightBars"] = {
-			["Name"] = "Right Bars",
-			["Desc"] = "Number of action bars on right (0, 1, 2 or 3)",
+			["Name"] = "Правые панели",
+			["Desc"] = "Количество панелей на правой части экрана (0, 1, 2 или 3)",
 		},
 
 		["SplitBars"] = {
-			["Name"] = "Split Bars",
-			["Desc"] = "Split the fifth bar on two bars on 6 buttons",
+			["Name"] = "Разделить панель",
+			["Desc"] = "Разделить 4-ую панель на две панели по 6 кнопок",
 		},
 
 		["StanceBarHide"] = {
-			["Name"] = "Stance Bar Hide",
-			["Desc"] = "Hide stance bar",
+			["Name"] = "Скрыть панель стоек",
+			["Desc"] = "Скрыть панель стоек",
 		},
 
 		["StanceBarHorizontal"] = {
-			["Name"] = "Stance Bar Horizontal",
-			["Desc"] = "Enable horizontal stance bar",
+			["Name"] = "Горизонтальная панель стоек",
+			["Desc"] = "Включить горизонтальную панель стоек",
 		},
 
 		["ToggleMode"] = {
-			["Name"] = "Toggle Mode",
-			["Desc"] = "Lock / Unlock the toggle mode on our Actionbars (This will always be above the top bar!)",
+			["Name"] = "Переключатель панелей",
+			["Desc"] = "Включает переключатель панелей (Всегда будет отображаться над верхней панелью!)",
 		},
 
 		["AddNewSpells"] = {
-			["Name"] = "Auto Add New Spells",
-			["Desc"] = "Auto add new learned spells to the actionbar. (This is needed for some quests)",
+			["Name"] = "Добавлять заклинания",
+			["Desc"] = "Автоматически добавлять на панель новые заклинания. (Нужно для некоторых квестов)",
 		},
 
 		["Font"] = {
-			["Name"] = "Font",
+			["Name"] = "Шрифт",
 		},
 	},
 
 	-- Nameplates Local
 	["Nameplates"] = {
 		["ClassResource"] = {
-			["Name"] = "Class Resource",
-			["Desc"] = "Display class resources on the nameplates (Combo, Runes...)|n|nDo not forget to enable this in the blizzard options too (Esc > Interface > Names and check Unit Nameplates options)",
+			["Name"] = "Ресурс классов",
+			["Desc"] = "Показывать ресурс классов на индикаторах (Комбо-очки, Руны...)|n|nНе забудьте включить так же в настройках самой игры (Esc > Интерфейс > Имена > поставить галку на 'Индикатор личного ресурса')",
 		},
 
 		["QuestIcon"] = {
-			["Name"] = "Quest Icon",
-			["Desc"] = "Show a progress quest icon next to the nameplates.",
+			["Name"] = "Иконка задания",
+			["Desc"] = "Показывать иконку на квестовых монстрах",
 		},
 
 		["NonTargetAlpha"] = {
-			["Name"] = "Non Target Alpha",
-			["Desc"] = "Change the alpha level of the non targeted Nameplates.",
+			["Name"] = "Прозрачность НЕ Цели",
+			["Desc"] = "При выборе цели, остальные индикаторы могут быть полупрозрачными.",
 		},
 
 		["Totems"] = {
-			["Name"] = "Totems Icons",
-			["Desc"] = "Show icon above enemy totems nameplate",
+			["Name"] = "Иконки тотемов",
+			["Desc"] = "Показывать иконки над тотемами других игроков",
 		},
 
 		["TrackAuras"] = {
-			["Name"] = "Track Auras",
-			["Desc"] = "Show auras on nameplates",
+			["Name"] = "Показывать ауры",
+			["Desc"] = "Показывать баффы и дебаффы на индикаторах",
 		},
 
 		["ClassIcons"] = {
-			["Name"] = "Class Icons",
-			["Desc"] = "Icons by class in PvP",
+			["Name"] = "Иконка классов",
+			["Desc"] = "Показывать иконку классов в PvP",
 		},
 
-		["TankedByTankColor"] = {
-			["Name"] = "Tanked Color",
-			["Desc"] = "Use Tanked Color when a nameplate is being effectively tanked by another tank.",
-		},
-
+		-- РУС Перевести
 		["BadTransition"] = {
 			["Name"] = "Bad Transition",
 			["Desc"] = "Bad Transition Color"..RestoreDefault,
 		},
 
+		-- РУС Перевести
 		["GoodTransition"] = {
 			["Name"] = "Good Transition",
 			["Desc"] = "Good Transition Color"..RestoreDefault,
 		},
 
 		["AurasSize"] = {
-			["Name"] = "Auras Size",
-			["Desc"] = "Size of the auras",
+			["Name"] = "Размер иконок аур",
+			["Desc"] = "Размер иконок баффов и дебаффов на индикаторах",
 		},
-
+		-- РУС Перевести
 		["DecimalLength"] = {
 			["Name"] = "Decimal Length",
 			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
 		},
-
+		-- РУС Перевести
 		["ShowEnemyCombat"] = {
 			["Name"] = "Enemy Combat Toggle",
 			["Desc"] = "Control enemy nameplates toggling on or off when in combat.",
 		},
-
+		-- РУС Перевести
 		["ShowFriendlyCombat"] = {
 			["Name"] = "Friendly Combat Toggle",
 			["Desc"] = "Control friendly nameplates toggling on or off when in combat.",
 		},
 
 		["QuestIconSize"] = {
-			["Name"] = "Quest Icon Size",
-			["Desc"] = "Size of the questicon on nameplates.",
+			["Name"] = "Размер иконки задания",
+			["Desc"] = "Размер иконок на индикаторах у квестовых монстров",
 		},
-
+		-- РУС Перевести
 		["OverlapH"] = {
 			["Name"] = "Overlap Horizontal",
 			["Desc"] = "How much nameplates will be spaced from one another left/right.",
 		},
-
+		-- РУС Перевести
 		["OverlapV"] = {
 			["Name"] = "Overlap Vertical",
 			["Desc"] = "How much nameplates will be spaced from one another up/down.",
 		},
-
+		-- РУС Перевести
 		["BadColor"] = {
 			["Name"] = "Bad Color",
 			["Desc"] = "Bad threat color, varies depending if your a tank or dps/heal"..RestoreDefault,
 		},
 
 		["CastHeight"] = {
-			["Name"] = "Cast Height",
-			["Desc"] = "Height of castbar",
+			["Name"] = "Высота полосы заклинаний",
+			["Desc"] = "Высота полосы заклинаний у индикатора",
 		},
 
 		["Combat"] = {
-			["Name"] = "Combat",
-			["Desc"] = "Show nameplates in combat only",
+			["Name"] = "Только в бою",
+			["Desc"] = "Показывать индикаторы только во время боя",
 		},
 
 		["Clamp"] = {
-			["Name"] = "Clamp",
-			["Desc"] = "Clamp nameplates to the top of the screen when outside of view",
+			["Name"] = "Прилепить",
+			["Desc"] = "Если враги за пределами экрана, оставлять их индикаторы сверху экрана",
 		},
 
 		["Distance"] = {
-			["Name"] = "Distance",
-			["Desc"] = "Show nameplates for units within this range",
+			["Name"] = "Расстояние",
+			["Desc"] = "Показывать индикаторы в пределах этого радиуса",
 		},
 
 		["TargetArrow"] = {
-			["Name"] = "Target Arrow",
-			["Desc"] = "Display an arrow at the top of the NamePlates to help determine who or what you are targeting",
+			["Name"] = "Стрелка над целью",
+			["Desc"] = "Показывать стрелку над тем индикатором, который является вашей целью",
 		},
 
 		["EliteIcon"] = {
-			["Name"] = "Elite Icon",
-			["Desc"] = "Display an Elite Icon on the right side of the NamePlates.",
+			["Name"] = "Иконка у Элитных",
+			["Desc"] = "Показывать иконку дракона у элитных монстров на индикаторах",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Nameplates",
+			["Name"] = "Включить индикаторы",
 		},
 
 		["Threat"] = {
-			["Name"] = "Threat",
-			["Desc"] = "Enable threat feature, automatically changes by your role",
+			["Name"] = "Угроза",
+			["Desc"] = "Включает отображение цвета угрозы, зависит от вашей роли",
 		},
-
+		-- РУС Перевести
 		["GoodColor"] = {
 			["Name"] = "Good Color",
 			["Desc"] = "Good threat color, varies depending if your a tank or dps/heal"..RestoreDefault,
 		},
-
+		-- РУС Перевести
 		["MarkHealers"] = {
-			["Name"] = "Mark Healers",
+			["Name"] = "Отметить лекарей",
 			["Desc"] = "Show healer icon beside enemy healers nameplate in battlegrounds",
 		},
 
 		["HealthValue"] = {
-			["Name"] = "Health Value",
-			["Desc"] = "Numeral health value",
+			["Name"] = "Значение ХП",
+			["Desc"] = "Показывать на индикаторах значение ХП",
 		},
 
 		["Height"] = {
-			["Name"] = "Height",
+			["Name"] = "Высота",
 		},
-
+		-- РУС Перевести
 		["NearColor"] = {
 			["Name"] = "Near Color",
 			["Desc"] = "Losing/Gaining threat color"..RestoreDefault,
 		},
-
+		-- РУС Перевести
 		["OffTankColor"] = {
 			["Name"] = "Off Tank Color",
 			["Desc"] = "Offtank threat color"..RestoreDefault,
 		},
-
+		-- РУС Перевести
 		["Smooth"] = {
 			["Name"] = "Smooth",
 			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
 		},
-
+		-- РУС Перевести
 		["SmoothSpeed"] = {
 			["Name"] = "Smooth Speed",
 			["Desc"] = "How fast the bars will transition smoothly.",
 		},
 
 		["SelectedScale"] = {
-			["Name"] = "Selected Scale",
-			["Desc"] = "Scale size of the nameplate selected",
+			["Name"] = "Масштаб цели",
+			["Desc"] = "Масштаб индикатора выбранной цели",
 		},
 
 		["Font"] = {
-			["Name"] = "Font",
+			["Name"] = "Шрифт",
 		},
 
 		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+			["Name"] = "Текстура панелей",
 		},
 
 		["HealthFormat"] = {
-			["Name"] = "Health Format",
-			["Desc"] = "Health numbers formatting style",
+			["Name"] = "Формат ХП",
+			["Desc"] = "Стиль отображения ХП",
 		},
 
 		["Width"] = {
-			["Name"] = "Width",
+			["Name"] = "Ширина",
 		},
 	},
 
 	-- Announcements Local
 	["Announcements"] = {
 		["PullCountdown"] = {
-			["Name"] = "Pull Countdown",
-			["Desc"] = "Pull countdown announce (/pc #)",
+			["Name"] = "Начать отсчёт",
+			["Desc"] = "Оповестить о начале отсчёта (/pc #)",
 		},
 
 		["SaySapped"] = {
-			["Name"] = "Say Sapped",
-			["Desc"] = "Say sapped announcements in /say",
+			["Name"] = "Сказать об ошеломлении",
+			["Desc"] = "Оповестить в канале '/сказать' о том что вас ошеломили",
 		},
 
 		["Interrupt"] = {
-			["Name"] = "Interrupt",
-			["Desc"] = "Announce in desired channel when you interrupt",
+			["Name"] = "Сбитие каста",
+			["Desc"] = "Написать в выбранный канал о сбитии каста",
 		},
 	},
 
 	-- Automation Local
+	-- РУС Перевести
 	["Automation"] = {
 		["BlockMovies"] = {
 			["Name"] = "Block Movies",
@@ -675,73 +672,73 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["AutoCollapse"] = {
-			["Name"] = "Auto Collapse",
-			["Desc"] = "Auto collapse the objective tracker based on the settings below.",
+			["Name"] = "Сворачивать задания",
+			["Desc"] = "Автоматически сворачивать список заданий, настройки располагаются ниже",
 		},
 
 		["AutoReward"] = {
-			["Name"] = "Auto Reward",
-			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
+			["Name"] = "Награда за задания",
+			["Desc"] = "При завершении задания, автоматически выделяет награду с наибольшей ценой. Подтвердить задание нужно всё равно вручную",
 		},
 
 		["AutoInvite"] = {
-			["Name"] = "Auto Invite",
-			["Desc"] = "Automatically accept invites from guild/friends.",
+			["Name"] = "Принимать приглашения",
+			["Desc"] = "Автоматически принимать приглашения от друзей и членов гильдии",
 		},
 
 		["AutoQuest"] = {
-			["Name"] = "Auto Quest",
-			["Desc"] = "Automatically allows the player to quickly accept and deliver quests, among other features, to speed up the questing experience.",
+			["Name"] = "Автозадания",
+			["Desc"] = "Автоматически принимает новые и сдаёт выполненные задания, ускоряя процесс набора опыта..",
 		},
-
+		-- РУС Перевести
 		["InviteKeyword"] = {
 			["Name"] = "Invite Keyword",
 			["Desc"] = "Automatically accept invites from from anyone who whispers you the invite keyword",
 		},
 
 		["AutoRelease"] = {
-			["Name"] = "Auto Release",
-			["Desc"] = "Automatically releases your spirit when you die XD.",
+			["Name"] = "Выход из тела",
+			["Desc"] = "Автоматически выходить из тела, когда вы погибаете",
 		},
 
 		["AutoResurrect"] = {
-			["Name"] = "Auto Resurrect",
-			["Desc"] = "Automatically accepts your resurrection request",
+			["Name"] = "Воскрешения",
+			["Desc"] = "Автоматически принимать предложения воскресить вас",
 		},
-
+		-- РУС Перевести
 		["AutoResurrectCombat"] = {
 			["Name"] = "Auto Resurrect Combat",
 			["Desc"] = "Automatically accepts your resurrection request in combat",
 		},
 
 		["AutoResurrectThank"] = {
-			["Name"] = "Auto Resurrect Thanks",
-			["Desc"] = "Automatically say thank you for your resurrection",
+			["Name"] = "Благодарить за воскрешение",
+			["Desc"] = "Автоматически говорить 'thank you' за воскрешение",
 		},
 
 		["DeclinePetDuel"] = {
-			["Name"] = "Decline Pet Duels",
-			["Desc"] = "Automatically decline pet duels",
+			["Name"] = "Отклонять дуэли питомцев",
+			["Desc"] = "Автоматически отклонять приглашения на дуэль питомцев",
 		},
 
 		["DeclinePvPDuel"] = {
-			["Name"] = "Decline PvP Duels",
-			["Desc"] = "Automatically decline PvP duels",
+			["Name"] = "Отклонять PvP дуэли",
+			["Desc"] = "Автоматически отклонять приглашения на дуэль в PvP",
 		},
 
 		["ScreenShot"] = {
-			["Name"] = "Screen Shot",
-			["Desc"] = "Automatically and takes a screenshot every time you get an achivement!",
+			["Name"] = "Скриншоты",
+			["Desc"] = "Автоматически делать скриншот при получении достижения!",
 		},
 
 		["Rested"] = {
-			["Name"] = "Rested",
+			["Name"] = "На отдыхе",
 		},
 
 		["Garrison"] = {
 			["Name"] = GARRISON_LOCATION_TOOLTIP,
 		},
-
+		-- РУС Перевести
 		["Orderhall"] = {
 			["Name"] = "Class Hall",
 		},
@@ -774,238 +771,238 @@ KkthnxUIConfig["ruRU"] = {
 	-- Auras Local
 	["Auras"] = {
 		["Enable"] = {
-			["Name"] = "Enable Auras",
+			["Name"] = "Включить ауры",
 		},
 
 		["Font"] = {
-			["Name"] = "Font",
+			["Name"] = "Шрифт",
 		},
 
 		["HorizontalSpacing"] = {
-			["Name"] = "Horizontal Spacing",
-			["Desc"] = "Horizontal spacing of auras",
+			["Name"] = "Горизонтальные промежутки",
+			["Desc"] = "Промежутки по горизонтали между аурами",
 		},
 
 		["MaxWraps"] = {
-			["Name"] = "Max Wraps",
-			["Desc"] = "Maximum number of times the auras will wrap",
+			["Name"] = "Количество строк",
+			["Desc"] = "Максимальное количество строк для аур",
 		},
-
+		-- РУС Перевести
 		["SeperateOwn"] = {
 			["Name"] = "Seperate Own",
 			["Desc"] = "Indicate whether buffs you cast yourself should be separated before or after.",
 		},
 
 		["Size"] = {
-			["Name"] = "Aura Size",
+			["Name"] = "Размер иконки аур",
 		},
 
 		["VerticalSpacing"] = {
-			["Name"] = "Vertical Spacing",
+			["Name"] = "Вертикальные промежутки",
 		},
 
 		["WrapAfter"] = {
-			["Name"] = "Wrap After",
-			["Desc"] = "Begin a new row or column after this many auras.",
+			["Name"] = "Аур на строку",
+			["Desc"] = "Количество аур на одну строку",
 		},
-
+		-- РУС Перевести
 		["FadeThreshold"] = {
 			["Name"] = "Fade Threshold",
 		},
 
 		["GrowthDirection"] = {
-			["Name"] = "Growth Direction",
+			["Name"] = "Направление роста иконок",
 			["Desc"] = MissingDesc,
 		},
 
 		["SortDir"] = {
-			["Name"] = "Sort Direction",
-			["Desc"] = "Defines the sort order of the selected sort method.",
+			["Name"] = "Направление сортировки",
+			["Desc"] = "Определяет порядок сортировки при выбранном способе сортировки",
 		},
 
 		["SortMethod"] = {
-			["Name"] = "Sort Method",
-			["Desc"] = "Defines how the group is sorted",
+			["Name"] = "Способ сортировки",
+			["Desc"] = "Определяет как будут сортироваться группы аур",
 		},
 	},
 
 	-- Chat Local
 	["Chat"] = {
 		["Background"] = {
-			["Name"] = "Chat Background",
-			["Desc"] = "Add a chat background",
+			["Name"] = "Фон чата",
+			["Desc"] = "Добавить фон у чата",
 		},
 
 		["BackgroundAlpha"] = {
-			["Name"] = "Chat Background Alpha",
-			["Desc"] = "Control the alpha of the chat background (0 - 100)",
+			["Name"] = "Прозрачность фона",
+			["Desc"] = "Настройка прозрачности фона (0 - 100)",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Chat",
+			["Name"] = "Включить чат",
 		},
 
 		["Fading"] = {
-			["Name"] = "Fading",
-			["Desc"] = "Chat fading",
+			["Name"] = "Затухание",
+			["Desc"] = "Затухание чата",
 		},
 
 		["WhisperSound"] = {
-			["Name"] = "Whisper Sound",
-			["Desc"] = "Play a whisper sound",
+			["Name"] = "Звук привата",
+			["Desc"] = "Проигрывать звук, когда вам пишут в приват",
 		},
-
+		-- РУС Перевести
 		["VoiceOverlay"] = {
 			["Name"] = "Voice Chat Overlay",
 			["Desc"] = "Replace Blizzard's Voice Overlay.",
 		},
 
 		["FadingTimeFading"] = {
-			["Name"] = "Fading Time Fading",
-			["Desc"] = "How fast text will fade",
+			["Name"] = "Скорость затухания",
+			["Desc"] = "Настройка скорости затухания чата",
 		},
-
+		-- РУС Перевести
 		["FadingTimeVisible"] = {
-			["Name"] = "Fading Time Visible",
+			["Name"] = "Видимость перед затуханием",
 			["Desc"] = "Chat Visible Before Fade",
 		},
 
 		["ShortenChannelNames"] = {
-			["Name"] = "Shorten Channel Names",
+			["Name"] = "Короткие имена каналов",
 		},
 
 		["RemoveRealmNames"] = {
-			["Name"] = "Remove Realm Names",
+			["Name"] = "Убрать название серверов",
 		},
 
 		["Height"] = {
-			["Name"] = "Height",
+			["Name"] = "Высота",
 		},
 
 		["LinkBrackets"] = {
-			["Name"] = "Link Brackets",
-			["Desc"] = "Wrap links in brackets",
+			["Name"] = "Скобки на ссылки",
+			["Desc"] = "Оформлять ссылки в квадратные скобки",
 		},
 
 		["LinkColor"] = {
-			["Name"] = "Link Color",
-			["Desc"] = "Color links in chat"..RestoreDefault,
+			["Name"] = "Цвет ссылок",
+			["Desc"] = "Определить цвет ссылок в чате"..RestoreDefault,
 		},
-
+		-- РУС Перевести
 		["QuickJoin"] = {
 			["Name"] = "Quick Join",
 			["Desc"] = "Show clickable Quick Join messages inside of the chat.",
 		},
 
 		["Filter"] = {
-			["Name"] = "Spam Filter",
-			["Desc"] = "Block annoying spam in chat.",
+			["Name"] = "Спам фильтр",
+			["Desc"] = "Блокировать раздражающий спам в чате",
 		},
 
 		["Font"] = {
-			["Name"] = "Font",
+			["Name"] = "Шрифт",
 		},
 
 		["ScrollByX"] = {
-			["Name"] = "Scroll By X",
-			["Desc"] = "Scroll Chat Lines By #",
+			["Name"] = "Пролистывать X строк",
+			["Desc"] = "Пролистывать чат на # строк",
 		},
 
 		["TabsMouseover"] = {
-			["Name"] = "Tabs Mouseover",
-			["Desc"] = "Mouseover chat tabs",
+			["Name"] = "Вкладки при наведении мышки",
+			["Desc"] = "Показывать вкладки при наведении мышки",
 		},
 
 		["Width"] = {
-			["Name"] = "Width",
+			["Name"] = "Ширина",
 		},
 	},
 
 	-- Databars Local
 	["DataBars"] = {
 		["Enable"] = {
-			["Name"] = "Enable Databars",
+			["Name"] = "Включить инфо-полосы",
 		},
 
 		["Text"] = {
-			["Name"] = "Text",
-			["Desc"] = "Display text on the databars",
+			["Name"] = "Показывать текст",
+			["Desc"] = "Показывать текст на полосах",
 		},
 
 		["AzeriteColor"] = {
-			["Name"] = "Azerite Color",
-			["Desc"] = "Color of the Azerite"..RestoreDefault,
+			["Name"] = "Цвет Азерита",
+			["Desc"] = "Цвет полосы Азерита"..RestoreDefault,
 		},
 
 		["MouseOver"] = {
-			["Name"] = "Mouseover",
-			["Desc"] = "The bars are not shown unless you mouse over them."
+			["Name"] = "При наведении мышки",
+			["Desc"] = "Панели не будут отображаться, пока вы не наведете на них мышкой"
 		},
 
 		["Width"] = {
-			["Name"] = "Width",
+			["Name"] = "Ширина",
 		},
 
 		["ExperienceColor"] = {
-			["Name"] = "Experience Color",
-			["Desc"] = "Color of the Experience"..RestoreDefault,
+			["Name"] = "Цвет Опыта",
+			["Desc"] = "Цвет полосы опыта"..RestoreDefault,
 		},
 
 		["ExperienceRestedColor"] = {
-			["Name"] = "Experience Rested Color",
-			["Desc"] = "Color of the Rested Experience"..RestoreDefault,
+			["Name"] = "Цвет Отдыха",
+			["Desc"] = "Цвет опыта при отдыхе"..RestoreDefault,
 		},
 
 		["Height"] = {
-			["Name"] = "Height",
+			["Name"] = "Высота",
 		},
 
 		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+			["Name"] = "Текстура панелей",
 		},
 
 		["TrackHonor"] = {
-			["Name"] = "Track Honor",
-			["Desc"] = "Track your honor experience as a databar",
+			["Name"] = "Показывать Честь",
+			["Desc"] = "Показывать панель Чести",
 		},
 	},
 
 	-- DataText Local
 	["DataText"] = {
 		["Battleground"] = {
-			["Name"] = "Battleground",
-			["Desc"] = "Battleground datatext (Only shows in BGs)",
+			["Name"] = "Поля боя",
+			["Desc"] = "Инфо-текст для Полей боя (отображается только на BG)",
 		},
 
 		["LocalTime"] = {
-			["Name"] = "Local Time",
-			["Desc"] = "Display local time instead of server / realm time format",
+			["Name"] = "Местное время",
+			["Desc"] = "Показывать местное время вместо серверного",
 		},
 
 		["Outline"] = {
-			["Name"] = "Outline",
+			["Name"] = "Обводка",
 		},
 
 		["System"] = {
-			["Name"] = "System",
-			["Desc"] = "Display FPS-MS at the bottom right corner of the screen",
+			["Name"] = "Производительность",
+			["Desc"] = "Показывать FPS-MS в правой верхней части экрана",
 		},
 
 		["Time"] = {
-			["Name"] = "Time",
-			["Desc"] = "Display a clock on the bottom of the minimap",
+			["Name"] = "Время",
+			["Desc"] = "Показывать часы в нижней части миникарты",
 		},
 
 		["Time24Hr"] = {
-			["Name"] = "24 Hour Time",
-			["Desc"] = "Display 24 time format",
+			["Name"] = "24 часовой формат",
+			["Desc"] = "Показывать время по-людски",
 		},
 	},
 
 	-- Skins Local
 	["Skins"] = {
 		["BlizzardBags"] = {
-			["Name"] = "Blizzard Bags",
+			["Name"] = "Стандартные сумки",
 		},
 
 		["Bagnon"] = {
@@ -1017,7 +1014,7 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["ChatBubbles"] = {
-			["Name"] = "Chat Bubbles",
+			["Name"] = "Облачка сообщений",
 		},
 
 		["DBM"] = {
@@ -1037,7 +1034,7 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+			["Name"] = "Текстура панелей",
 		},
 
 		["WeakAuras"] = {
@@ -1048,8 +1045,8 @@ KkthnxUIConfig["ruRU"] = {
 	-- Minimap Local
 	["Minimap"] = {
 		["Calendar"] = {
-			["Name"] = "Calendar",
-			["Desc"] = "Display a small calendar",
+			["Name"] = "Календарь",
+			["Desc"] = "Показывать маленький календарь",
 		},
 
 		["GarrisonLandingPage"] = {
@@ -1058,134 +1055,134 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Minimap",
+			["Name"] = "Включить миникарту",
 		},
-
+		-- РУС Перевести
 		["VignetteAlert"] = {
-			["Name"] = "Vignette Alert",
+			["Name"] = "Редкие существа",
 			["Desc"] = "Displays alerts for Treasures and Rares that are on your Minimap so you don't miss them.",
 		},
 
 		["ResetZoom"] = {
-			["Name"] = "Reset Zoom",
+			["Name"] = "Сброс увеличения",
 		},
 
 		["ResetZoomTime"] = {
-			["Name"] = "Reset Zoom Time",
-			["Desc"] = "Reset minimap zoom at the set amount of seconds",
+			["Name"] = "Таймер сброса увеличение",
+			["Desc"] = "Сбрасывать увеличение на миникарте через указанный промежуток в секундах",
 		},
 
 		["Size"] = {
-			["Name"] = "Size",
+			["Name"] = "Размер",
 		},
 	},
 
 	-- Miscellaneous Local
 	["Misc"] = {
 		["AFKCamera"] = {
-			["Name"] = "AFK Camera",
-			["Desc"] = "Watch yourself dance. (Shame on you!)",
+			["Name"] = "Камера AFK",
+			["Desc"] = "Посмотри как ты танцуешь. (Позорище!)",
 		},
 
 		["BattlegroundSpam"] = {
-			["Name"] = "Battleground Spam",
-			["Desc"] = "Remove Boss Emote spam during BG",
+			["Name"] = "Спам на Полях боя",
+			["Desc"] = "Во время BG убирает разговорный спам от Боссов",
 		},
 
 		["NoTalkingHead"] = {
-			["Name"] = "Hide TalkingHead",
-			["Desc"] = "Removes the message dialog that appears for quests/dungeons",
+			["Name"] = "Скрыть Говорящую Голову",
+			["Desc"] = "Скрывает диалоговое окно которое появляется во время задания и в подземельях",
 		},
-
+		-- РУС Перевести
 		["InspectInfo"] = {
 			["Name"] = "Display Inspect Info",
 			["Desc"] = "Shows item level of each item, enchants, and gems when inspecting another player.",
 		},
 
 		["ColorPicker"] = {
-			["Name"] = "Improved Color Picker",
-			["Desc"] = "Improved ColorPicker",
+			["Name"] = "Улучшенная Палитра цветов",
+			["Desc"] = "Улучшенная Палитра цветов",
 		},
 
 		["ItemLevel"] = {
-			["Name"] = "Item Level",
-			["Desc"] = "Item level on character slot buttons",
+			["Name"] = "Уровень снаряжения",
+			["Desc"] = "Показывать уровень снаряжения в окне персонажа",
 		},
 
 		["EnhancedFriends"] = {
-			["Name"] = "Enhanced Friends List",
-			["Desc"] = "Enhances the friends list to look better",
+			["Name"] = "Улучшенный список друзей",
+			["Desc"] = "Улучшает окно списка друзей",
 		},
-
+		-- РУС Перевести
 		["ImprovedStats"] = {
 			["Name"] = "Improved Stats",
 			["Desc"] = "Provides an updated and logical display of the character stats",
 		},
 
 		["KillingBlow"] = {
-			["Name"] = "Killing Blow",
-			["Desc"] = "Display a message about your killing blow",
+			["Name"] = "Смертельный удар",
+			["Desc"] = "Показывает сообщение, когда вы нанесли последний смертельный удар",
 		},
-
+		-- РУС Перевести
 		["PvPEmote"] = {
 			["Name"] = "PVP Emote",
 			["Desc"] = "Make a silly emote at the player you just killed (Kkthnx spits on you!)",
 		},
-
+		-- РУС Перевести
 		["ProfessionTabs"] = {
 			["Name"] = "Enhanced Profession Tabs",
 			["Desc"] = "Makes it easier to get to your professions and keep them orderly",
 		},
 
 		["SlotDurability"] = {
-			["Name"] = "Slot Durability",
-			["Desc"] = "Durability percentage on character slot buttons",
+			["Name"] = "Прочность вещей",
+			["Desc"] = "Показывать прочность вещей в окне персонажа",
 		},
 
 		["CharacterInfo"] = {
-			["Name"] = "Display Character Info",
-			["Desc"] = "Shows item level of each item, enchants, and gems on the character page.",
+			["Name"] = "Окно персонажа",
+			["Desc"] = "Показывает уровень предметов, наложенные улучшения и камни в окне персонажа",
 		},
 	},
 
 	-- Filger Local
 	["Filger"] = {
 		["Enable"] = {
-			["Name"] = "Enable Filger",
+			["Name"] = "Включить откаты",
 			["Desc"] = PerformanceIncrease,
 		},
 
 		["TestMode"] = {
-			["Name"] = "Test Mode",
+			["Name"] = "Тестовый режим",
 		},
 
 		["MaxTestIcon"] = {
-			["Name"] = "Max Test Icon",
-			["Desc"] = "The number of icons to the test",
+			["Name"] = "Максимум иконок для теста",
+			["Desc"] = "Количество иконок для теста",
 		},
 
 		["ShowTooltip"] = {
-			["Name"] = "Show Tooltip",
+			["Name"] = "Показывать подсказку",
 		},
 
 		["DisableCD"] = {
-			["Name"] = "Disable Cooldowns",
+			["Name"] = "Отключить время восстановления",
 		},
 
 		["BuffSize"] = {
-			["Name"] = "Buff Size",
+			["Name"] = "Размер баффов",
 		},
-
+		-- РУС перевести
 		["CooldownSize"] = {
 			["Name"] = "Cooldown Size",
 		},
 
 		["PvPSize"] = {
-			["Name"] = "PVP Size",
+			["Name"] = "Размер PVP иконок",
 		},
 
 		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+			["Name"] = "Текстура панелей",
 		},
 	},
 
@@ -1200,133 +1197,133 @@ KkthnxUIConfig["ruRU"] = {
 	-- Unitframe Local
 	["Unitframe"] = {
 		["ClassResource"] = {
-			["Name"] = "Class Resource",
-			["Desc"] = "Display class resources on the player frame (Combo, Runes...)",
+			["Name"] = "Ресурсы класса",
+			["Desc"] = "Показывать ресурсы класса на рамке игрока (Комбо-очки, Руны...)",
 		},
 
 		["CastbarLatency"] = {
-			["Name"] = "Castbar Latency",
+			["Name"] = "Задержка полосы заклинаний",
 		},
 
 		["MouseoverHighlight"] = {
-			["Name"] = "Mouseover Highlight",
-			["Desc"] = "Highlight a units Health Bar when you are moused over them. (Only works for Target and Party right now!)",
+			["Name"] = "Подсветка мышкой",
+			["Desc"] = "Подсвечивает полосу ХП при наведении мыши (Работает только на Цели и Группе на данный момент!)",
 		},
 
 		["CastbarHeight"] = {
-			["Name"] = "Castbar Height",
+			["Name"] = "Высота полосы заклинаний",
 		},
-
+		-- РУС перевести
 		["DecimalLength"] = {
 			["Name"] = "Decimal Length",
 			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
 		},
 
 		["CastbarIcon"] = {
-			["Name"] = "Castbar Icon",
-			["Desc"] = "Create an icon beside the cast bar",
+			["Name"] = "Иконка заклинаний",
+			["Desc"] = "показывает иконку рядом с полосой заклинаний",
 		},
 
 		["CombatFade"] = {
-			["Name"] = "Combat Fade",
-			["Desc"] = "Fade the unitframe when out of combat, not casting or no target exists. (This affects your Player and Pet frame)",
+			["Name"] = "Скрывать вне боя",
+			["Desc"] = "Скрывает рамку когда вы не в бою, не произносите заклинаний или не выбрана цель (Работает на рамку игрока и питомца)",
 		},
 
 		["OnlyShowPlayerDebuff"] = {
-			["Name"] = "Only Show Player Debuffs",
-			["Desc"] = "Only show your debuffs on frames (This affects your Target and Boss frames)",
+			["Name"] = "Только ваши дебаффы",
+			["Desc"] = "Показывает на рамке Цели только ваши дебаффы",
 		},
 
 		["PlayerBuffs"] = {
-			["Name"] = "Player Buffs",
-			["Desc"] = "Display your buffs under the player frame",
+			["Name"] = "Бафы игрока",
+			["Desc"] = "Показывает ваши баффы под рамкой",
 		},
 
 		["PortraitTimers"] = {
-			["Name"] = "Portrait Timers",
-			["Desc"] = "Displays important PvP buffs/debuffs with timers on your Portraits",
+			["Name"] = "Таймеры на портрете",
+			["Desc"] = "Показывает важные PvP баффы/дебаффы с таймерами на ваших портретах",
 		},
 
 		["Castbars"] = {
-			["Name"] = "Enable Castbars",
-			["Desc"] = "Enable cast bar for unit frames",
+			["Name"] = "Включить полосы заклинаний",
+			["Desc"] = "Показывает полосу заклинаний у рамок",
 		},
-
+		-- РУС перевести
 		["CastbarTicks"] = {
 			["Name"] = "Show Castbar Ticks",
 			["Desc"] = "Display tick marks on the castbar for channelled spells. This will adjust automatically for spells like Drain Soul and add additional ticks based on haste.",
 		},
 
 		["CastbarWidth"] = {
-			["Name"] = "Castbar Width",
+			["Name"] = "Ширина полосы заклинаний",
 		},
-
+		-- РУС перевести
 		["CastbarTicksWidth"] = {
 			["Name"] = "Castbar Ticks Width",
 		},
-
+		-- РУС перевести
 		["CastClassColor"] = {
 			["Name"] = "Class Castbars",
 			["Desc"] = "Color castbars by the class of player units.",
 		},
-
+		-- РУС перевести
 		["CastReactionColor"] = {
 			["Name"] = "Reaction Castbars",
 			["Desc"] = "Color castbars by the reaction type of non-player units.",
 		},
 
 		["DebuffsOnTop"] = {
-			["Name"] = "Debuffs On Top",
-			["Desc"] = "Display debuffs ontop and buffs on the bottom (affects only Target Frame)",
+			["Name"] = "Дебаффы сверху",
+			["Desc"] = "Показывать дебаффы сверху, а баффы снизу (работает только с рамкой Цели)",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Unitframes",
+			["Name"] = "Включить рамки персонажей",
 		},
 
 		["Font"] = {
-			["Name"] = "Font",
+			["Name"] = "Шрифт",
 		},
 
 		["GlobalCooldown"] = {
-			["Name"] = "Global Cooldown",
-			["Desc"] = "Display a global CD on the unit frames healthbar (only shows for player frame)",
+			["Name"] = "Глобальный кулдаун",
+			["Desc"] = "Показывать глобальный кулдаун на панели ХП игрока",
 		},
 
 		["TargetHighlight"] = {
-			["Name"] = "Target Highlight",
-			["Desc"] = "Highlight your current selected party target",
+			["Name"] = "Подсвечивать цель",
+			["Desc"] = "Подсвечивает выделенную цель в группе",
 		},
-
+		-- РУС Перевести
 		["PowerPredictionBar"] = {
 			["Name"] = "Power Prediction Bar",
 			["Desc"] = "Display a bar at which determines how much a spell will cost of power?",
 		},
-
+		-- РУС Перевести
 		["Smooth"] = {
 			["Name"] = "Smooth Bars",
 			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
 		},
-
+		-- РУС Перевести
 		["SmoothSpeed"] = {
 			["Name"] = "Smooth Speed",
 			["Desc"] = "How fast the bars will transition smoothly.",
 		},
 
 		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+			["Name"] = "Текстура панелей",
 		},
 
 		["ThreatPercent"] = {
-			["Name"] = "Threat Percent",
-			["Desc"] = "Enable threat percent on the target/focus frames",
+			["Name"] = "Процент угрозы",
+			["Desc"] = "Включает отображение процента угрозы на рамках Цели/Фокуса",
 		},
 
 		["PortraitStyle"] = {
-			["Name"] = "Portrait Style",
-			["Desc"] = "2D, Class Icons, Blizzlike and more |n|n3D Portraits could degrade performance",
+			["Name"] = "Стиль портретов",
+			["Desc"] = "2D, Иконки класса, как у Blizzard и т.д. |n|n3D портреты могу снизить производительность",
 		},
-
+		-- РУС Перевести
 		["NumberPrefixStyle"] = {
 			["Name"] = "Unit Prefix Style",
 			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
@@ -1336,41 +1333,41 @@ KkthnxUIConfig["ruRU"] = {
 	-- Arena Local
 	["Arena"] = {
 		["Castbars"] = {
-			["Name"] = "Enable Castbars",
+			["Name"] = "Включить полосы заклинаний",
 		},
 
 		["CastbarIcon"] = {
-			["Name"] = "Castbar Icon",
-			["Desc"] = "Create an icon beside the cast bar",
+			["Name"] = "Иконка заклинаний",
+			["Desc"] = "Показывает иконку заклинания рядом с полосой",
 		},
-
+		-- РУС Перевести
 		["DecimalLength"] = {
 			["Name"] = "Decimal Length",
 			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Arena Frames",
+			["Name"] = "Включить панели арены",
 		},
 
 		["Font"] = {
-			["Name"] = "Font",
+			["Name"] = "Шрифт",
 		},
-
+		-- РУС Перевести
 		["Smooth"] = {
 			["Name"] = "Smooth Bars",
 			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
 		},
-
+		-- РУС Перевести
 		["SmoothSpeed"] = {
 			["Name"] = "Smooth Speed",
 			["Desc"] = "How fast the bars will transition smoothly.",
 		},
 
 		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+			["Name"] = "Текстура панелей",
 		},
-
+		-- РУС Перевести
 		["NumberPrefixStyle"] = {
 			["Name"] = "Unit Prefix Style",
 			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
@@ -1380,138 +1377,138 @@ KkthnxUIConfig["ruRU"] = {
 	-- Arena Local
 	["Boss"] = {
 		["Castbars"] = {
-			["Name"] = "Enable Castbars",
+			["Name"] = "Включить полосу заклинаний",
 		},
 
 		["CastbarIcon"] = {
-			["Name"] = "Castbar Icon",
-			["Desc"] = "Create an icon beside the cast bar",
+			["Name"] = "Иконки заклинаний",
+			["Desc"] = "Показывать иконки на полосе заклинаний",
 		},
 
 		["CastbarHeight"] = {
-			["Name"] = "Castbar Height",
+			["Name"] = "Высота полосы",
 		},
 
 		["CastbarWidth"] = {
-			["Name"] = "Castbar Width",
+			["Name"] = "Ширина полосы",
 		},
-
+		-- РУС Перевести
 		["DecimalLength"] = {
 			["Name"] = "Decimal Length",
 			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Boss Frames",
+			["Name"] = "Включить рамки Боссов",
 		},
 
 		["Font"] = {
-			["Name"] = "Font",
+			["Name"] = "Шрифт",
 		},
-
+		-- РУС Перевести
 		["Smooth"] = {
 			["Name"] = "Smooth Bars",
 			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
 		},
-
+		-- РУС Перевести
 		["SmoothSpeed"] = {
 			["Name"] = "Smooth Speed",
 			["Desc"] = "How fast the bars will transition smoothly.",
 		},
 
 		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+			["Name"] = "Текстура панелей",
 		},
 
 		["ThreatPercent"] = {
-			["Name"] = "Threat Percent",
-			["Desc"] = "Enable threat percent on the boss frame",
+			["Name"] = "Процент угрозы",
+			["Desc"] = "Включает отображение процента угрозы на рамке Боссов",
 		},
-
+		-- РУС Перевести
 		["NumberPrefixStyle"] = {
 			["Name"] = "Unit Prefix Style",
 			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
 		},
 
 		["PortraitStyle"] = {
-			["Name"] = "Portrait Style",
-			["Desc"] = "2D, Class Icons, Blizzlike and more |n|n3D Portraits could degrade performance",
+			["Name"] = "Стиль портретов",
+			["Desc"] = "2D, Иконки класса, как у Blizzard и т.д. |n|n3D портреты могу снизить производительность",
 		},
 	},
 
 	-- Party Local
 	["Party"] = {
 		["Castbars"] = {
-			["Name"] = "Enable Castbars",
+			["Name"] = "Включить полосы заклинаний",
 		},
 
 		["CastbarIcon"] = {
-			["Name"] = "Castbar Icon",
-			["Desc"] = "Create an icon beside the cast bar",
+			["Name"] = "Иконка заклинаний",
+			["Desc"] = "Показывает иконки на полосе заклинаний",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Party Frames",
+			["Name"] = "Включить окно группы",
 		},
 
 		["MouseoverHighlight"] = {
-			["Name"] = "Mouseover Highlight",
-			["Desc"] = "Highlight a units Health Bar when you are moused over them. (Only works for Target and Party right now!)",
+			["Name"] = "Подсветка мышкой",
+			["Desc"] = "Подсвечивает полосу ХП при наведении мыши (Работает только на Цели и Группе на данный момент!)",
 		},
-
+		-- РУС перевести
 		["DecimalLength"] = {
 			["Name"] = "Decimal Length",
 			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
 		},
 
 		["PartyAsRaid"] = {
-			["Name"] = "Party as Raid Frames",
-			["Desc"] = "Check this if you want to use the Raidframes instead of the Partyframes.",
+			["Name"] = "Рамки рейда вместо группы",
+			["Desc"] = "Включайте, если хотите использовать рамки рейда вместо рамок группы",
 		},
 
 		["PortraitTimers"] = {
-			["Name"] = "Portrait Timers",
-			["Desc"] = "Displays important PvP buffs/debuffs with timers on your Portraits",
+			["Name"] = "Таймеры на портрете",
+			["Desc"] = "Показывает важные PvP баффы/дебаффы с таймерами на ваших портретах",
 		},
 
 		["ShowBuffs"] = {
-			["Name"] = "Show Buffs",
-			["Desc"] = "Toggle the display of buffs on the party frames.",
+			["Name"] = "Показывать баффы",
+			["Desc"] = "Отображать баффы на окнах группы",
 		},
 
 		["ShowPlayer"] = {
-			["Name"] = "Show Player In Party",
-			["Desc"] = "Display your self in the party frames or not. Hell I don't care",
+			["Name"] = "Показывать вас в группе",
+			["Desc"] = "Показывать вас в группе или нет",
 		},
 
 		["Font"] = {
-			["Name"] = "Font",
+			["Name"] = "Шрифт",
 		},
-
+		-- РУС перевести
 		["Smooth"] = {
 			["Name"] = "Smooth Bars",
 			["Desc"] = "Bars will transition smoothly." .. PerformanceIncrease,
 		},
-
+		-- РУС перевести
 		["SmoothSpeed"] = {
 			["Name"] = "Smooth Speed",
 			["Desc"] = "How fast the bars will transition smoothly.",
 		},
 
 		["TargetHighlight"] = {
-			["Name"] = "Target Highlight",
-			["Desc"] = "Highlight your current selected party target",
+			["Name"] = "Подсвечивать цель",
+			["Desc"] = "Подсвечивает выделенную цель в группе",
 		},
 
 		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+			["Name"] = "Текстура панелей",
 		},
 
 		["PortraitStyle"] = {
-			["Name"] = "Portrait Style",
-			["Desc"] = "2D, Class Icons, Blizzlike and more |n|n3D Portraits could degrade performance",
+			["Name"] = "Стиль портретов",
+			["Desc"] = "2D, Иконки класса, как у Blizzard и т.д. |n|n3D портреты могу снизить производительность",
 		},
-
+		-- РУС Перевести
 		["NumberPrefixStyle"] = {
 			["Name"] = "Unit Prefix Style",
 			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
@@ -1519,148 +1516,149 @@ KkthnxUIConfig["ruRU"] = {
 	},
 
 	-- Raidframe Local
+	-- РУС Перевести
 	["Raid"] = {
 		["AuraWatch"] = {
 			["Name"] = "Aura Watch Timers",
 			["Desc"] = "Display a timer on debuff icons created by Debuff Watch",
 		},
-
+		-- РУС Перевести
 		["AuraWatchIconSize"] = {
 			["Name"] = "Aura Watch Icon Size",
 		},
-
+		-- РУС Перевести
 		["AuraWatchTexture"] = {
 			["Name"] = "Aura Watch Texture",
 			["Desc"] = "Display a colored texture over your aura watch corner icons. Disable this if you want to see the spell icon instead",
 		},
-
+		-- РУС Перевести
 		["RaidTools"] = {
 			["Name"] = "Raid Utility",
 			["Desc"] = "Enables the 'Raid Control' utility panel",
 		},
-
+		-- РУС Перевести
 		["RaidLayout"] = {
 			["Name"] = "Raid Layout",
 			["Desc"] = "Choose between a Healer or Damage raidframe layout"
 		},
 
 		["TargetHighlight"] = {
-			["Name"] = "Target Highlight",
-			["Desc"] = "Highlight your current selected raid target"
+			["Name"] = "Подсвечивать цель",
+			["Desc"] = "Подсвечивает выделенную цель в рейде",
 		},
 
 		["AuraDebuffIconSize"] = {
-			["Name"] = "Aura Debuff Icon Size",
+			["Name"] = "Размер иконки дебаффов",
 		},
-
+		-- РУС Перевести
 		["DeficitThreshold"] = {
 			["Name"] = "Deficit Threshold",
 			["Desc"] = "Show health deficit when it's more than displayed value",
 		},
-
+		-- РУС Перевести
 		["ColorHealthByValue"] = {
 			["Name"] = "Health By Value",
 			["Desc"] = "Color health by amount remaining.",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Raid Frames",
+			["Name"] = "Включить рамки рейда",
 		},
 
 		["Height"] = {
-			["Name"] = "Raid Height",
+			["Name"] = "Высота рейда",
 		},
 
 		["RaidGroups"] = {
-			["Name"] = "Raid Groups",
-			["Desc"] = "Number of groups in the raid",
+			["Name"] = "Групп в рейде",
+			["Desc"] = "Количество групп в рейде",
 		},
 
 		["Width"] = {
-			["Name"] = "Raid Width",
+			["Name"] = "Ширина рейда",
 		},
-
+		-- РУС Перевести
 		["MainTankFrames"] = {
 			["Name"] = "Main Tank Frames",
 			["Desc"] = "You know the people who take all the damage?",
 		},
-
+		-- РУС Перевести
 		["ManabarShow"] = {
-			["Name"] = "Manabar Display",
+			["Name"] = "Полосы ресурсов",
 			["Desc"] = "Off or on. Its a 50% chance here",
 		},
-
+		-- РУС Перевести
 		["MaxUnitPerColumn"] = {
 			["Name"] = "Max Unit Per Column",
 			["Desc"] = "How many frame will display per row/column",
 		},
-
+		-- РУС Перевести
 		["RaidUtility"] = {
 			["Name"] = RAID_CONTROL,
 			["Desc"] = "Enables the custom Raid Control panel.",
 		},
-
+		-- РУС Перевести
 		["ShowMouseoverHighlight"] = {
 			["Name"] = "Show Mouseover Highlight",
 			["Desc"] = "We can see better!",
 		},
-
+		-- РУС Перевести
 		["ShowNotHereTimer"] = {
-			["Name"] = "Not Here Timer (AFK)",
+			["Name"] = "Отошёл (AFK)",
 			["Desc"] = "Display when someone is AFK in your raid",
 		},
 
 		["ShowRolePrefix"] = {
-			["Name"] = "Show Role Prefix",
-			["Desc"] = "Display an H for the healer or T for the tank",
+			["Name"] = "Показывать роль",
+			["Desc"] = "Показывать 'H' для лекарей и 'T' для танков",
 		},
-
+		-- РУС Перевести
 		["Smooth"] = {
 			["Name"] = "Smooth",
 			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
 		},
-
+		-- РУС Перевести
 		["SmoothSpeed"] = {
 			["Name"] = "Smooth Speed",
 			["Desc"] = "How fast the bars will transition smoothly.",
 		},
 
 		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+			["Name"] = "Текстура панелей",
 		},
 
 		["Font"] = {
-			["Name"] = "Font",
+			["Name"] = "Шрифт",
 		},
 
 		["GroupBy"] = {
-			["Name"] = "Group By",
-			["Desc"] = "Set the order that the group will sort.",
+			["Name"] = "Группировать по..",
+			["Desc"] = "Порядок сортировки для групп в рейде",
 		},
 	},
 
 	-- Worldmap Local
 	["WorldMap"] = {
 		["AlphaWhenMoving"] = {
-			["Name"] = "Alpha When Moving",
+			["Name"] = "Прозрачность при движении",
 			["Desc"] = "Alpha value at which the map will fade",
 		},
 
 		["Coordinates"] = {
-			["Name"] = "Coordinates",
-			["Desc"] = "Puts coordinates on the world map.",
+			["Name"] = "Координаты",
+			["Desc"] = "Размещает координаты на карте мира",
 		},
-
+		-- РУС перевести
 		["FadeWhenMoving"] = {
 			["Name"] = "Fade When Moving",
 			["Desc"] = "Map Opacity When Moving",
 		},
 
 		["SmallWorldMap"] = {
-			["Name"] = "Small WorldMap",
-			["Desc"] = "Make the world map smaller.",
+			["Name"] = "Маленькая карта мира",
+			["Desc"] = "Уменьшает развер карты мира",
 		},
-
+		-- РУС перевести
 		["WorldMapPlus"] = {
 			["Name"] = "WorldMap Plus",
 			["Desc"] = "If checked, a checkbox/quest URLs will be shown at the top of the map which will allow you to toggle unexplored areas and obtain quest/arena link info directly.",
@@ -1671,63 +1669,63 @@ KkthnxUIConfig["ruRU"] = {
 	["Tooltip"] = {
 		["PlayerRoles"] = {
 			["Name"] = ROLE,
-			["Desc"] = "Display the unit role in the tooltip.",
+			["Desc"] = "Показывать роль игрока в подсказке",
 		},
 
 		["CursorAnchor"] = {
-			["Name"] = "Cursor Anchor",
-			["Desc"] = "Anchor the tooltip to the mouse cursor.",
+			["Name"] = "Возле курсора",
+			["Desc"] = "Показывать подсказку рядом с курсором мышки",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Tooltip",
+			["Name"] = "Включить подсказки",
 		},
 
 		["ShowMount"] = {
-			["Name"] = "Current Mount",
-			["Desc"] = "Display info about the current mount the unit is riding.",
+			["Name"] = "Средство передвижения",
+			["Desc"] = "Показывать информацию о средстве передвижения на котором сидит игрок",
 		},
 
 		["FontOutline"] = {
-			["Name"] = "Font Outline",
+			["Name"] = "Обводка шрифта",
 		},
 
 		["FontSize"] = {
-			["Name"] = "Font Size",
+			["Name"] = "Размер шрифта",
 		},
 
 		["CursorAnchorX"] = {
-			["Name"] = "Cursor Anchor Offset X",
+			["Name"] = "Возле курсора, отступ на X",
 		},
 
 		["CursorAnchorY"] = {
-			["Name"] = "Cursor Anchor Offset Y",
+			["Name"] = "Возле курсора, отступ на Y",
 		},
-
+		-- РУС Перевести
 		["GuildRanks"] = {
 			["Name"] = "Guild Ranks",
 			["Desc"] = "Display players guild ranks",
 		},
 
 		["HealthbarHeight"] = {
-			["Name"] = "Healthbar Height",
+			["Name"] = "Высота полосы ХП",
 		},
 
 		["HealthBarText"] = {
-			["Name"] = "Healthbar Text",
-			["Desc"] = "Show health bar text",
+			["Name"] = "Текст на полосе ХП",
+			["Desc"] = "Показывает текст на полоске ХП в подсказке",
 		},
-
+		-- РУС Перевести
 		["TargetInfo"] = {
 			["Name"] = "Target Info",
 			["Desc"] = "When in a raid group display if anyone in your raid is targeting the current tooltip unit.",
 		},
 
 		["Icons"] = {
-			["Name"] = "Icons",
-			["Desc"] = "Display tooltip icons",
+			["Name"] = "Иконки",
+			["Desc"] = "Показывает иконки в подсказках",
 		},
-
+		-- РУС Перевести
 		["InspectInfo"] = {
 			["Name"] = "Inspect Info",
 			["Desc"] = "Display a players item level and spec (you need to be holding the shift key down too)",
@@ -1735,26 +1733,26 @@ KkthnxUIConfig["ruRU"] = {
 
 		["NpcID"] = {
 			["Name"] = "NPC IDs",
-			["Desc"] = "Display the npc ID when mousing over a npc tooltip.",
+			["Desc"] = "Показывать ID у NPC при наведении мышкой на них",
 		},
-
+		-- РУС Перевести
 		["ItemQualityBorder"] = {
 			["Name"] = "ItemQuality Border",
 			["Desc"] = "Display item quality colors on the border",
 		},
 
 		["PlayerTitles"] = {
-			["Name"] = "Player Titles",
-			["Desc"] = "Display players titles",
+			["Name"] = "Звания игроков",
+			["Desc"] = "Показывает звания у игроко",
 		},
-
+		-- РУС Перевести
 		["SpellID"] = {
 			["Name"] = "Spell/Item IDs",
 			["Desc"] = "Display the spell or item ID when mousing over a spell or item tooltip.",
 		},
 
 		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+			["Name"] = "Текстура панелей",
 		},
 	},
 }
