@@ -21,34 +21,33 @@ A default texture will be applied if the sub-widgets are StatusBars and don't ha
 If the sub-widgets are StatusBars, their minimum and maximum values will be set to 0 and 1 respectively.
 
 Supported class powers:
-- All - Combo Points
-- Mage - Arcane Charges
-- Monk - Chi Orbs
-- Paladin - Holy Power
-- Warlock - Soul Shards
+  - All     - Combo Points
+  - Mage    - Arcane Charges
+  - Monk    - Chi Orbs
+  - Paladin - Holy Power
+  - Warlock - Soul Shards
 
 ## Examples
 
-local ClassPower = {}
-for index = 1, 10 do
-	local Bar = CreateFrame('StatusBar', nil, self)
+    local ClassPower = {}
+    for index = 1, 10 do
+        local Bar = CreateFrame('StatusBar', nil, self)
 
-	-- Position and size.
-	Bar:SetSize(16, 16)
-	Bar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', (index - 1) * Bar:GetWidth(), 0)
+        -- Position and size.
+        Bar:SetSize(16, 16)
+        Bar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', (index - 1) * Bar:GetWidth(), 0)
 
-	ClassPower[index] = Bar
-end
+        ClassPower[index] = Bar
+    end
 
--- Register with oUF
-self.ClassPower = ClassPower
+    -- Register with oUF
+    self.ClassPower = ClassPower
 --]]
 
 local _, ns = ...
 local oUF = ns.oUF
 
 local _, PlayerClass = UnitClass('player')
-local IsRetail = GetBuildInfo and select(4, GetBuildInfo()) >= 80100
 
 -- sourced from FrameXML/Constants.lua
 local SPEC_MAGE_ARCANE = SPEC_MAGE_ARCANE or 1
@@ -84,7 +83,7 @@ end
 
 local function Update(self, event, unit, powerType)
 	if(not (unit and (UnitIsUnit(unit, 'player') and powerType == ClassPowerType
-	or unit == 'vehicle' and powerType == 'COMBO_POINTS'))) then
+		or unit == 'vehicle' and powerType == 'COMBO_POINTS'))) then
 		return
 	end
 
@@ -93,7 +92,7 @@ local function Update(self, event, unit, powerType)
 	--[[ Callback: ClassPower:PreUpdate(event)
 	Called before the element has been updated.
 
-	* self - the ClassPower element
+	* self  - the ClassPower element
 	]]
 	if(element.PreUpdate) then
 		element:PreUpdate()
@@ -101,23 +100,10 @@ local function Update(self, event, unit, powerType)
 
 	local cur, max, mod, oldMax
 	if(event ~= 'ClassPowerDisable') then
-		if IsRetail then
-			local powerID = unit == 'vehicle' and SPELL_POWER_COMBO_POINTS or ClassPowerID
-			cur = UnitPower(unit, powerID, true)
-			max = UnitPowerMax(unit, powerID)
-			mod = UnitPowerDisplayMod(powerID)
-		else
-			if(unit == 'vehicle') then
-				-- BUG: UnitPower always returns 0 combo points for vehicles
-				cur = GetComboPoints(unit)
-				max = MAX_COMBO_POINTS
-				mod = 1
-			else
-				cur = UnitPower('player', ClassPowerID, true)
-				max = UnitPowerMax('player', ClassPowerID)
-				mod = UnitPowerDisplayMod(ClassPowerID)
-			end
-		end
+		local powerID = unit == 'vehicle' and SPELL_POWER_COMBO_POINTS or ClassPowerID
+		cur = UnitPower(unit, powerID, true)
+		max = UnitPowerMax(unit, powerID)
+		mod = UnitPowerDisplayMod(powerID)
 
 		-- mod should never be 0, but according to Blizz code it can actually happen
 		cur = mod == 0 and 0 or cur / mod
@@ -153,11 +139,11 @@ local function Update(self, event, unit, powerType)
 	--[[ Callback: ClassPower:PostUpdate(cur, max, hasMaxChanged, powerType)
 	Called after the element has been updated.
 
-	* self - the ClassPower element
-	* cur - the current amount of power (number)
-	* max - the maximum amount of power (number)
+	* self          - the ClassPower element
+	* cur           - the current amount of power (number)
+	* max           - the maximum amount of power (number)
 	* hasMaxChanged - indicates whether the maximum amount has changed since the last update (boolean)
-	* powerType - the active power type (string)
+	* powerType     - the active power type (string)
 	--]]
 	if(element.PostUpdate) then
 		return element:PostUpdate(cur, max, oldMax ~= max, powerType)
@@ -168,11 +154,11 @@ local function Path(self, ...)
 	--[[ Override: ClassPower.Override(self, event, unit, ...)
 	Used to completely override the internal update function.
 
-		* self - the parent object
-		* event - the event triggering the update (string)
-		* unit - the unit accompanying the event (string)
-		* ... - the arguments accompanying the event
-		--]]
+	* self  - the parent object
+	* event - the event triggering the update (string)
+	* unit  - the unit accompanying the event (string)
+	* ...   - the arguments accompanying the event
+	--]]
 	return (self.ClassPower.Override or Update) (self, ...)
 end
 
@@ -181,7 +167,7 @@ local function Visibility(self, event, unit)
 	local shouldEnable
 
 	if(UnitHasVehicleUI('player')) then
-		shouldEnable = IsRetail and PlayerVehicleHasComboPoints() or true
+		shouldEnable = PlayerVehicleHasComboPoints()
 		unit = 'vehicle'
 	elseif(ClassPowerID) then
 		if(not RequireSpec or RequireSpec == GetSpecialization()) then
@@ -205,9 +191,9 @@ local function Visibility(self, event, unit)
 		--[[ Override: ClassPower:UpdateColor(powerType)
 		Used to completely override the internal function for updating the widgets' colors.
 
-			* self - the ClassPower element
-			* powerType - the active power type (string)
-			--]]
+		* self      - the ClassPower element
+		* powerType - the active power type (string)
+		--]]
 		(element.UpdateColor or UpdateColor) (element, powerType)
 	end
 
@@ -224,10 +210,10 @@ local function VisibilityPath(self, ...)
 	--[[ Override: ClassPower.OverrideVisibility(self, event, unit)
 	Used to completely override the internal visibility function.
 
-		* self - the parent object
-		* event - the event triggering the update (string)
-		* unit - the unit accompanying the event (string)
-		--]]
+	* self  - the parent object
+	* event - the event triggering the update (string)
+	* unit  - the unit accompanying the event (string)
+	--]]
 	return (self.ClassPower.OverrideVisibility or Visibility) (self, ...)
 end
 

@@ -250,9 +250,7 @@ function Module:CreateParty()
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
 	Module.CreateResurrectIndicator(self)
-	if K.IsRetail then
-		Module.CreateSummonIndicator(self)
-	end
+	Module.CreateSummonIndicator(self)
 	Module.CreateOfflineIndicator(self, 50)
 	Module.CreateThreatIndicator(self)
 	Module.CreateDebuffHighlight(self)

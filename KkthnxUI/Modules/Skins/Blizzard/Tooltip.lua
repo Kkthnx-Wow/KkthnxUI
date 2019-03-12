@@ -29,53 +29,24 @@ local function SkinTooltip()
 	local StoryTooltip = QuestScrollFrame.StoryTooltip
 	StoryTooltip:SetFrameLevel(4)
 
-
 	ItemRefCloseButton:SkinCloseButton()
 
-	local WhatTooltipName
-	if K.IsPTR then
-		WhatTooltipName = GameTooltip
-	else
-		WhatTooltipName = WorldMapTooltip
-	end
-
 	-- World Quest Reward Icon
-	WhatTooltipName.ItemTooltip:CreateBackdrop()
-	WhatTooltipName.ItemTooltip.Backdrop:SetOutside(WhatTooltipName.ItemTooltip.Icon)
-	WhatTooltipName.ItemTooltip.Backdrop:SetFrameLevel(WhatTooltipName.ItemTooltip:GetFrameLevel())
-	WhatTooltipName.ItemTooltip.Count:ClearAllPoints()
-	WhatTooltipName.ItemTooltip.Count:SetPoint("BOTTOMRIGHT", WhatTooltipName.ItemTooltip.Icon, "BOTTOMRIGHT", 1, 0)
-	WhatTooltipName.ItemTooltip.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	GameTooltip.ItemTooltip:CreateBackdrop()
+	GameTooltip.ItemTooltip.Backdrop:SetOutside(GameTooltip.ItemTooltip.Icon)
+	GameTooltip.ItemTooltip.Backdrop:SetFrameLevel(GameTooltip.ItemTooltip:GetFrameLevel())
+	GameTooltip.ItemTooltip.Count:ClearAllPoints()
+	GameTooltip.ItemTooltip.Count:SetPoint("BOTTOMRIGHT", GameTooltip.ItemTooltip.Icon, "BOTTOMRIGHT", 1, 0)
+	GameTooltip.ItemTooltip.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-	hooksecurefunc(WhatTooltipName.ItemTooltip.IconBorder, "SetVertexColor", function(self, r, g, b)
+	hooksecurefunc(GameTooltip.ItemTooltip.IconBorder, "SetVertexColor", function(self, r, g, b)
 		self:GetParent().Backdrop:SetBackdropBorderColor(r, g, b)
 		self:SetTexture("")
 	end)
 
-	hooksecurefunc(WhatTooltipName.ItemTooltip.IconBorder, "Hide", function(self)
+	hooksecurefunc(GameTooltip.ItemTooltip.IconBorder, "Hide", function(self)
 		self:GetParent().Backdrop:SetBackdropBorderColor()
 	end)
-
-	local tooltips_PTR = {
-		ItemRefTooltip,
-		ItemRefShoppingTooltip1,
-		ItemRefShoppingTooltip2,
-		ItemRefShoppingTooltip3,
-		AutoCompleteBox,
-		FriendsTooltip,
-		ShoppingTooltip1,
-		ShoppingTooltip2,
-		ShoppingTooltip3,
-		WorldMapCompareTooltip1,
-		WorldMapCompareTooltip2,
-		WorldMapCompareTooltip3,
-		ReputationParagonTooltip,
-		EmbeddedItemTooltip,
-		-- already have locals
-		GameTooltip,
-		StoryTooltip,
-		WarCampaignTooltip,
-	}
 
 	local tooltips = {
 		ItemRefTooltip,
@@ -95,7 +66,6 @@ local function SkinTooltip()
 		-- already have locals
 		GameTooltip,
 		StoryTooltip,
-		WorldMapTooltip,
 		WarCampaignTooltip,
 	}
 
@@ -108,14 +78,7 @@ local function SkinTooltip()
 		ShoppingTooltip2,
 	}
 
-	local WhatTooltips
-	if K.IsPTR then
-		WhatTooltips = tooltips_PTR
-	else
-		WhatTooltips = tooltips
-	end
-
-	for _, tt in pairs(WhatTooltips) do
+	for _, tt in pairs(tooltips) do
 		Module:SecureHookScript(tt, "OnShow", "SetStyle")
 	end
 

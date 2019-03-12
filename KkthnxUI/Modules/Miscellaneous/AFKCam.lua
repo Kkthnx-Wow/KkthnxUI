@@ -341,26 +341,18 @@ function Module:OnInitialize()
 	self.AFKMode.bottom:SetWidth(GetScreenWidth() + (2 * 2)) -- Might be 2
 	self.AFKMode.bottom:SetHeight(GetScreenHeight() * (1 / 10))
 
-	if K.IsFirestorm then
-		-- Firestorm Logo
-		self.AFKMode.top.firestorm = self.AFKMode:CreateTexture(nil, "OVERLAY")
-		self.AFKMode.top.firestorm:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Firestorm.blp")
-		self.AFKMode.top.firestorm:SetPoint("CENTER", self.AFKMode.top, "CENTER", 0, -38)
-		self.AFKMode.top.firestorm:SetSize(512, 256)
-	else
-		-- WoW Logo
-		self.AFKMode.top.wowlogo = CreateFrame("Frame", nil, self.AFKMode) -- need this to upper the logo layer
-		self.AFKMode.top.wowlogo:SetPoint("TOP", self.AFKMode.top, "TOP", 0, -5)
-		self.AFKMode.top.wowlogo:SetFrameStrata("MEDIUM")
-		self.AFKMode.top.wowlogo:SetSize(300, 150)
-		self.AFKMode.top.wowlogo.tex = self.AFKMode.top.wowlogo:CreateTexture(nil, "OVERLAY")
-		local currentExpansionLevel = _G.GetClampedCurrentExpansionLevel()
-		local expansionDisplayInfo = _G.GetExpansionDisplayInfo(currentExpansionLevel)
-		if expansionDisplayInfo then
-			self.AFKMode.top.wowlogo.tex:SetTexture(expansionDisplayInfo.logo)
-		end
-		self.AFKMode.top.wowlogo.tex:SetInside()
+	-- WoW Logo
+	self.AFKMode.top.wowlogo = CreateFrame("Frame", nil, self.AFKMode) -- need this to upper the logo layer
+	self.AFKMode.top.wowlogo:SetPoint("TOP", self.AFKMode.top, "TOP", 0, -5)
+	self.AFKMode.top.wowlogo:SetFrameStrata("MEDIUM")
+	self.AFKMode.top.wowlogo:SetSize(300, 150)
+	self.AFKMode.top.wowlogo.tex = self.AFKMode.top.wowlogo:CreateTexture(nil, "OVERLAY")
+	local currentExpansionLevel = _G.GetClampedCurrentExpansionLevel()
+	local expansionDisplayInfo = _G.GetExpansionDisplayInfo(currentExpansionLevel)
+	if expansionDisplayInfo then
+		self.AFKMode.top.wowlogo.tex:SetTexture(expansionDisplayInfo.logo)
 	end
+	self.AFKMode.top.wowlogo.tex:SetInside()
 
 	self.AFKMode.top.vWoW = self.AFKMode.top:CreateFontString(nil, "OVERLAY")
 	self.AFKMode.top.vWoW:FontTemplate(nil, 20)
