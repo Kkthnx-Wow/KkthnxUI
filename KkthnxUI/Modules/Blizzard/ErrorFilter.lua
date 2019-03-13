@@ -31,9 +31,6 @@ Module.Filter = {
 	[SPELL_FAILED_NO_COMBO_POINTS] = true,
 	[SPELL_FAILED_SPELL_IN_PROGRESS] = true,
 	[SPELL_FAILED_TARGET_AURASTATE] = true,
-	-- Firestorm Spam Fixes
-	[SPELL_FAILED_CASTER_DEAD] = true,
-	[SPELL_FAILED_CASTER_DEAD_FEMALE] = true,
 }
 
 function Module:OnEvent(_, _, msg)

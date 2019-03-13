@@ -680,10 +680,3 @@ C["WorldMap"] = {
 	["SmallWorldMap"] = true,
 	["WorldMapPlus"] = false,
 }
-
--- Add in a module for WoWFreakz since we filter some of their chat system stuff.
-if K.IsFirestorm then
-	C["Firestorm"] = {
-		["ChatFilter"] = false,
-	}
-end
