@@ -114,7 +114,7 @@ local function StyleNormalButton(self)
 		end
 	end
 
-	if (Btname and Normal and C["ActionBar"].Macro) then
+	if (Action and Btname and Normal and C["ActionBar"].Macro) then
 		local String = GetActionText(Action)
 
 		if String then
