@@ -22,11 +22,12 @@ local ignoreButtons = {
 	"TimeManagerClockButton",
 	"BattlefieldMinimap",
 	"ButtonCollectFrame",
-	"GameTimeFrame",
 	"QueueStatusMinimapButton",
 	"GarrisonLandingPageMinimapButton",
 	"MiniMapMailFrame",
 	"MiniMapTracking",
+	"MinimapZoomIn",
+	"MinimapZoomOut",
 }
 
 local GenericIgnores = {
@@ -52,11 +53,6 @@ local PartialIgnores = {
 	"Note",
 	"Pin",
 	"POI"
-}
-
-local AcceptedFrames = {
-	"BagSync_MinimapButton",
-	"VendomaticButtonFrame",
 }
 
 local ButtonFunctions = {
@@ -113,7 +109,7 @@ function Module:SkinMinimapButton(Button)
 	for i = 1, Button:GetNumRegions() do
 		local Region = select(i, Button:GetRegions())
 		if Region.IsObjectType and Region:IsObjectType("Texture") then
-			local Texture = strlower(Region:GetTexture())
+			local Texture = strlower(tostring(Region:GetTexture()))
 
 			if (strfind(Texture, "interface\\characterframe") or (strfind(Texture, "interface\\minimap") and not strfind(Texture, "interface\minimap\tracking\\")) or strfind(Texture, "border") or strfind(Texture, "background") or strfind(Texture, "alphamask") or strfind(Texture, "highlight")) then
 				Region:SetTexture(nil)
@@ -181,7 +177,7 @@ function Module:GrabMinimapButtons()
 			if object then
 				local name = object:GetName()
 				local width = object:GetWidth()
-				if name and width > 15 and width < 40 and (object:IsObjectType("Button") or object:IsObjectType("Frame") and tContains(AcceptedFrames, name)) then
+				if name and width > 15 and width < 40 and (object:IsObjectType("Button") or object:IsObjectType("Frame")) then
 					self:SkinMinimapButton(object)
 				end
 			end
