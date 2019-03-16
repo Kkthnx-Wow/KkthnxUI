@@ -28,56 +28,6 @@ Install.CurrentStep = 0
 Install.Width = 500
 Install.Height = 200
 
-do
-	if (not InstallStepComplete) then
-		local imsg = CreateFrame("Frame", "InstallStepComplete", UIParent)
-		imsg:SetSize(418, 72)
-		imsg:SetPoint("TOP", 0, -190)
-		imsg:Hide()
-		imsg:SetScript("OnShow", function(self)
-			if self.message then
-				PlaySoundFile([[Sound\Interface\LevelUp.wav]])
-				self.text:SetText(self.message)
-				UIFrameFadeOut(self, 3.5, 1, 0)
-				K.Delay(4, function()
-					self:Hide()
-				end)
-				self.message = nil
-			else
-				self:Hide()
-			end
-		end)
-
-		imsg.firstShow = false
-
-		imsg.bg = imsg:CreateTexture(nil, "BACKGROUND")
-		imsg.bg:SetTexture([[Interface\LevelUp\LevelUpTex]])
-		imsg.bg:SetPoint("BOTTOM")
-		imsg.bg:SetSize(326, 103)
-		imsg.bg:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
-		imsg.bg:SetVertexColor(1, 1, 1, 0.6)
-
-		imsg.lineTop = imsg:CreateTexture(nil, "BACKGROUND")
-		imsg.lineTop:SetDrawLayer("BACKGROUND", 2)
-		imsg.lineTop:SetTexture([[Interface\LevelUp\LevelUpTex]])
-		imsg.lineTop:SetPoint("TOP")
-		imsg.lineTop:SetSize(418, 7)
-		imsg.lineTop:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
-
-		imsg.lineBottom = imsg:CreateTexture(nil, "BACKGROUND")
-		imsg.lineBottom:SetDrawLayer("BACKGROUND", 2)
-		imsg.lineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
-		imsg.lineBottom:SetPoint("BOTTOM")
-		imsg.lineBottom:SetSize(418, 7)
-		imsg.lineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
-
-		imsg.text = imsg:CreateFontString(nil, "ARTWORK", "GameFont_Gigantic")
-		imsg.text:SetPoint("BOTTOM", 0, 12)
-		imsg.text:SetTextColor(1, 0.82, 0)
-		imsg.text:SetJustifyH("CENTER")
-	end
-end
-
 function Install:ResetData()
 	KkthnxUIData[GetRealmName()][UnitName("player")] = {}
 	KkthnxUIData[GetRealmName()][UnitName("player")].AutoInvite = false
@@ -100,37 +50,34 @@ end
 function Install:Step1()
 	local ActionBars = C["ActionBar"].Enable
 
+	SetCVar("ShowClassColorInNameplate", 1)
+	SetCVar("SpamFilter", 0)
+	SetCVar("UberTooltips", 1)
+	SetCVar("WholeChatWindowClickable", 0)
 	SetCVar("alwaysShowActionBars", 1)
-	SetCVar("autoLootDefault", 0)
 	SetCVar("autoOpenLootHistory", 0)
 	SetCVar("autoQuestProgress", 1)
 	SetCVar("autoQuestWatch", 1)
+	SetCVar("buffDurations", 1)
 	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
 	SetCVar("chatMouseScroll", 1)
 	SetCVar("chatStyle", "classic")
-	SetCVar("colorblindMode", 0)
 	SetCVar("countdownForCooldowns", 0)
-	SetCVar("gameTip", 0)
 	SetCVar("lockActionBars", 1)
-	SetCVar("lootUnderMouse", 1)
+	SetCVar("lossOfControl", 1)
+	SetCVar("nameplateMotion", 0)
+	SetCVar("nameplateShowFriendlyNPCs", 1)
+	SetCVar("nameplateShowSelf", 0)
 	SetCVar("removeChatDelay", 1)
-	SetCVar("RotateMinimap", 0)
 	SetCVar("screenshotQuality", 10)
-	SetCVar("scriptProfile", 0)
 	SetCVar("showArenaEnemyFrames", 0)
-	SetCVar("ShowClassColorInNameplate", 1)
 	SetCVar("showQuestTrackingTooltips", 1)
-	SetCVar("showTimestamps", "none")
 	SetCVar("showTutorials", 0)
 	SetCVar("showVKeyCastbar", 1)
-	SetCVar("SpamFilter", 0)
+	SetCVar("spamFilter", 0)
 	SetCVar("statusTextDisplay", "BOTH")
 	SetCVar("threatWarning", 3)
-	SetCVar("UberTooltips", 1)
 	SetCVar("violenceLevel", 5)
-	SetCVar("WhisperMode", "inline")
-	SetCVar("WholeChatWindowClickable", 0)
-	SetCVar("worldPreloadNonCritical", 0)
 
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
@@ -139,8 +86,7 @@ function Install:Step1()
 		SetActionBarToggles(1, 1, 1, 1)
 	end
 
-	InstallStepComplete.message = L["Install"].CVars_Set
-	InstallStepComplete:Show()
+	_G.RaidNotice_AddMessage(_G.RaidWarningFrame, L["Install"].CVars_Set, _G.ChatTypeInfo["RAID_WARNING"])
 end
 
 function Install:Step2()
@@ -150,8 +96,7 @@ function Install:Step2()
 		return
 	end
 
-	InstallStepComplete.message = L["Install"].Chat_Set
-	InstallStepComplete:Show()
+	_G.RaidNotice_AddMessage(_G.RaidWarningFrame, L["Install"].Chat_Set, _G.ChatTypeInfo["RAID_WARNING"])
 
 	Chat:Install()
 	Chat:SetDefaultChatFramesPositions()
@@ -188,10 +133,14 @@ function Install:PrintStep(PageNum)
 			self.MiddleButton:Hide()
 		end
 	else
-		self.LeftButton:SetScript("OnClick", function() self.PrintStep(self, self.CurrentStep - 1) end)
+		self.LeftButton:SetScript("OnClick", function()
+			self.PrintStep(self, self.CurrentStep - 1)
+		end)
 		self.LeftButton.Text:SetText(PREVIOUS)
 		self.MiddleButton.Text:SetText(APPLY)
-		self.RightButton:SetScript("OnClick", function() self.PrintStep(self, self.CurrentStep + 1) end)
+		self.RightButton:SetScript("OnClick", function()
+			self.PrintStep(self, self.CurrentStep + 1)
+		end)
 		if (PageNum == Install.MaxStepNumber) then
 			self.RightButton.Text:SetText(COMPLETE)
 			self.CloseButton:Hide()

@@ -83,26 +83,23 @@ function Module:SkinMinimapButton(Button)
 	end
 
 	local Name = Button:GetName()
-
 	if not Name then
 		return
 	end
 
-	if Button:IsObjectType("Button") then
-		if tContains(ignoreButtons, Name) then
+	if tContains(ignoreButtons, Name) then
+		return
+	end
+
+	for i = 1, #GenericIgnores do
+		if strsub(Name, 1, strlen(GenericIgnores[i])) == GenericIgnores[i] then
 			return
 		end
+	end
 
-		for i = 1, #GenericIgnores do
-			if strsub(Name, 1, strlen(GenericIgnores[i])) == GenericIgnores[i] then
-				return
-			end
-		end
-
-		for i = 1, #PartialIgnores do
-			if strfind(Name, PartialIgnores[i]) ~= nil then
-				return
-			end
+	for i = 1, #PartialIgnores do
+		if strfind(Name, PartialIgnores[i]) ~= nil then
+			return
 		end
 	end
 
@@ -132,9 +129,13 @@ function Module:SkinMinimapButton(Button)
 				Region:ClearAllPoints()
 				Region:SetAllPoints()
 				Region:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-				Button:HookScript("OnLeave", function() Region:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4]) end)
+				Button:HookScript("OnLeave", function()
+					Region:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+				end)
 				Region:SetDrawLayer("ARTWORK")
-				Region.SetPoint = function() return end
+				Region.SetPoint = function()
+					return
+				end
 			end
 		end
 	end
@@ -193,22 +194,17 @@ function Module:Update()
 		return
 	end
 
-	local AnchorX, AnchorY, MaxX = 0, 1, C["MinimapButtons"].ButtonsPerRow
-	local ButtonsPerRow = C["MinimapButtons"].ButtonsPerRow
-	local NumColumns = ceil(#Module.Buttons / ButtonsPerRow)
-	local Spacing, Mult = C["MinimapButtons"].ButtonSpacing, 1
-	local Size = C["MinimapButtons"].IconSize
+	local AnchorX, AnchorY = 0, 1
+	local ButtonsPerRow = C["MinimapButtons"].ButtonsPerRow or 1
+	local Spacing, Mult = C["MinimapButtons"].ButtonSpacing or 6, K.Mult or 1
+	local Size = C["MinimapButtons"].IconSize or 18
 	local ActualButtons, Maxed = 0
-
-	if NumColumns == 1 and ButtonsPerRow > #Module.Buttons then
-		ButtonsPerRow = #Module.Buttons
-	end
 
 	for _, Button in pairs(Module.Buttons) do
 		if Button:IsVisible() then
 			AnchorX = AnchorX + 1
 			ActualButtons = ActualButtons + 1
-			if AnchorX > MaxX then
+			if (AnchorX % (ButtonsPerRow + 1)) == 0 then
 				AnchorY = AnchorY + 1
 				AnchorX = 1
 				Maxed = true
