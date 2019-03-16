@@ -221,7 +221,6 @@ function Module:CreatePlayer()
 		elseif (K.Class == "DEATHKNIGHT") then
 			Module.CreateRuneBar(self)
 		end
-		Module.CreateTotems(self)
 	end
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self, 140)

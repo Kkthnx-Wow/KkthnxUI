@@ -30,24 +30,6 @@ local function PostUpdateRune(self, runemap)
 	end
 end
 
-local function PostUpdateTotem(element)
-	local shown = {}
-	for index = 1, MAX_TOTEMS do
-		local Totem = element[index]
-		if (Totem:IsShown()) then
-			Totem:ClearAllPoints()
-
-			if (index == 1) then
-				Totem:SetPoint("TOPLEFT", element.__owner, "BOTTOMLEFT", 56, -3)
-			else
-				Totem:SetPoint("LEFT", shown[#shown], "RIGHT", 6, 0)
-			end
-
-			table.insert(shown, Totem)
-		end
-	end
-end
-
 -- Post Update ClassPower
 local function PostUpdateClassPower(element, _, max, diff)
 	-- Update layout on change in total visible
@@ -209,33 +191,6 @@ function Module:CreateStaggerBar()
 	stagger:CreateBorder()
 
 	self.Stagger = stagger
-end
-
-function Module:CreateTotems()
-	local Totems = {}
-	Totems.PostUpdate = PostUpdateTotem
-
-	for index = 1, MAX_TOTEMS do
-		local Totem = CreateFrame("Button", nil, self.Power)
-		Totem:SetSize(28, 28)
-
-		local Icon = Totem:CreateTexture(nil, "OVERLAY")
-		Icon:SetAllPoints()
-		Icon:SetTexCoord(unpack(K.TexCoords))
-		Totem.Icon = Icon
-
-		local Cooldown = CreateFrame("Cooldown", nil, Totem, "CooldownFrameTemplate")
-		Cooldown:SetPoint("TOPLEFT", 1, -1)
-		Cooldown:SetPoint("BOTTOMRIGHT", -1, 1)
-		Cooldown:SetReverse(true)
-		Totem.Cooldown = Cooldown
-
-		Totem:CreateBorder()
-
-		Totems[index] = Totem
-	end
-
-	self.Totems = Totems
 end
 
 -- Create Class Power Bars for NamePlates (Combo Points...)

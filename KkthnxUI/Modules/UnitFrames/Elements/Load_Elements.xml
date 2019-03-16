@@ -2,6 +2,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="Auras.lua" />
 	<Script file="ClassPower.lua" />
+	<Script file="TotemBar.lua" />
 	<Script file="HealthPrediction.lua" />
 	<Script file="Indicators.lua" />
 	<Script file="PowerPrediction.lua" />

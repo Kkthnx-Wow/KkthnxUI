@@ -937,14 +937,6 @@ function Module:NameplatesCallback(event, unit)
 	-- Position of the resources
 	local Point, Relpoint, xOffset, yOffset = "TOP", "BOTTOM", 0, -8
 
-	Module.UpdateQuestUnit(Nameplate, unit)
-	Module.UpdateClassificationIcons(Nameplate)
-	Module.HighlightPlate(Nameplate)
-	Module.UpdateNameplateTarget(Nameplate)
-	Module.NameplateClassIcons(Nameplate)
-	Module.UpdatePlateTotems(Nameplate)
-	Module.UpdateHealerIcons(Nameplate)
-
 	if event == "NAME_PLATE_UNIT_ADDED" then
 		if UnitIsUnit(unit, "player") then
 			Nameplate:DisableElement("Castbar")
@@ -972,6 +964,14 @@ function Module:NameplatesCallback(event, unit)
 			Nameplate:EnableElement("RaidTargetIndicator")
 			Nameplate:EnableElement("PvPIndicator")
 			Nameplate.Name:Show()
+
+			Module.UpdateQuestUnit(Nameplate, unit)
+			Module.UpdateClassificationIcons(Nameplate)
+			Module.HighlightPlate(Nameplate)
+			Module.UpdateNameplateTarget(Nameplate)
+			Module.NameplateClassIcons(Nameplate)
+			Module.UpdatePlateTotems(Nameplate)
+			Module.UpdateHealerIcons(Nameplate)
 
 			if Nameplate.ClassPowerText then
 				Nameplate.ClassPowerText:Hide()

@@ -491,15 +491,15 @@ C["Tooltip"] = {
 
 -- Unitframe
 C["Unitframe"] = {
+	["CastClassColor"] = true,
+	["CastReactionColor"] = true,
 	["CastbarHeight"] = 20,
 	["CastbarIcon"] = true,
 	["CastbarLatency"] = true,
-	["Castbars"] = true,
 	["CastbarTicks"] = false,
 	["CastbarTicksWidth"] = 2,
 	["CastbarWidth"] = 226,
-	["CastClassColor"] = true,
-	["CastReactionColor"] = true,
+	["Castbars"] = true,
 	["ClassResource"] = true,
 	["CombatFade"] = false,
 	["DebuffsOnTop"] = true,
@@ -516,6 +516,7 @@ C["Unitframe"] = {
 	["SmoothSpeed"] = 3,
 	["Texture"] = "KkthnxUI",
 	["ThreatPercent"] = false,
+	["TotemBar"] = true,
 	["PortraitStyle"] = {
 		["Options"] = {
 			["3D Portraits"] = "ThreeDPortraits",
