@@ -1,5 +1,4 @@
-local ADDON = ...
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Minimap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
 local _G = _G
@@ -21,7 +20,7 @@ local MiniMapMailFrame = _G.MiniMapMailFrame
 local QueueStatusMinimapButton = _G.QueueStatusMinimapButton
 local UIParent = _G.UIParent
 
-function Module:GetLocTextColor()
+function Module:GetLocationTextColors()
 	local pvpType = GetZonePVPInfo()
 	if pvpType == "arena" then
 		return 0.84, 0.03, 0.03
@@ -40,7 +39,7 @@ function Module:GetLocTextColor()
 	end
 end
 
-function Module:Minimap_OnMouseWheel(d)
+function Module:OnMouseWheelScroll(d)
 	if d > 0 then
 		_G.MinimapZoomIn:Click()
 	elseif d < 0 then
@@ -53,9 +52,9 @@ function Module:ZoneTextUpdate()
 		return
 	end
 
-	Minimap.location:SetText(string_sub(GetMinimapZoneText(), 1, 46))
-	Minimap.location:SetTextColor(Module:GetLocTextColor())
-	Minimap.location:FontTemplate(nil, 13)
+	Minimap.Location:SetText(string_sub(GetMinimapZoneText(), 1, 46))
+	Minimap.Location:SetTextColor(Module:GetLocationTextColors())
+	Minimap.Location:FontTemplate(nil, 13)
 end
 
 local function PositionTicketButtons()
@@ -86,21 +85,20 @@ function Module:UpdateSettings()
 		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	end
 
-	K.MinimapSize = C["Minimap"].Enable and C["Minimap"].Size or 170
-	K.MinimapWidth = K.MinimapSize
-	K.MinimapHeight = K.MinimapSize
+	local SetMinimapSize = C["Minimap"].Enable and C["Minimap"].Size or 170
 
 	if C["Minimap"].Enable then
-		Minimap:SetSize(K.MinimapSize, K.MinimapSize)
+		Minimap:SetSize(SetMinimapSize, SetMinimapSize)
 	end
 
-	if MMHolder then
-		MMHolder:SetWidth(Minimap:GetWidth())
+	local MinimapFrameHolder = _G.MinimapFrameHolder
+	if MinimapFrameHolder then
+		MinimapFrameHolder:SetWidth(Minimap:GetWidth())
 	end
 
-	if Minimap.location then
-		Minimap.location:SetWidth(K.MinimapSize)
-		Minimap.location:Hide()
+	if Minimap.Location then
+		Minimap.Location:SetWidth(SetMinimapSize)
+		Minimap.Location:Hide()
 	end
 
 	-- Stop here if KkthnxUI Minimap is disabled.
@@ -185,9 +183,9 @@ function Module:UpdateSettings()
 end
 
 function Module:UpdateCluster()
-	-- Set the size and position 
+	-- Set the size and position
 	-- Can't change this in combat, will cause taint!
-	if InCombatLockdown() then 
+	if InCombatLockdown() then
 		self.clusterNeedsUpdate = true
 		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	end
@@ -199,14 +197,7 @@ function Module:UpdateCluster()
 	MinimapCluster:EnableMouse(false)
 
 	self.clusterNeedsUpdate = nil
-end 
-
---[[function Module:ADDON_LOADED(_, addon)
-	if addon == "Blizzard_TimeManager" then
-		TimeManagerClockButton:SetParent(K.UIFrameHider)
-		TimeManagerClockButton:UnregisterAllEvents()
-	end
-end--]]
+end
 
 function Module:ADDON_LOADED(event, addon)
 	if addon == "Blizzard_TimeManager" then
@@ -217,18 +208,18 @@ function Module:ADDON_LOADED(event, addon)
 end
 
 function Module:OnEvent(event, ...)
-	if event == "PLAYER_ENTERING_WORLD" then 
+	if event == "PLAYER_ENTERING_WORLD" then
 		self:ZoneTextUpdate()
 		self:UpdateCluster()
-	elseif event == "PLAYER_REGEN_ENABLED" then 
-		if self.clusterNeedsUpdate then 
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		if self.clusterNeedsUpdate then
 			self:UpdateCluster()
 		end
 		self:UpdateSettings()
 	end
 end
 
-function Module:OnInitialize()
+function Module:OnEnable()
 	self:UpdateSettings()
 
 	if not C["Minimap"].Enable then
@@ -243,13 +234,13 @@ function Module:OnInitialize()
 		return "SQUARE"
 	end
 
-	local MMHolder = CreateFrame("Frame", "MMHolder", Minimap)
-	MMHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -4, -4)
-	MMHolder:SetWidth(Minimap:GetWidth())
-	MMHolder:SetHeight(Minimap:GetHeight())
+	local MinimapFrameHolder = CreateFrame("Frame", "MinimapFrameHolder", Minimap)
+	MinimapFrameHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -4, -4)
+	MinimapFrameHolder:SetWidth(Minimap:GetWidth())
+	MinimapFrameHolder:SetHeight(Minimap:GetHeight())
 
 	Minimap:ClearAllPoints()
-	Minimap:SetPoint("CENTER", MMHolder, "CENTER", 0, 0)
+	Minimap:SetPoint("CENTER", MinimapFrameHolder, "CENTER", 0, 0)
 	Minimap:SetMaskTexture(C["Media"].Blank)
 	Minimap:SetQuestBlobRingAlpha(0)
 	Minimap:SetArchBlobRingAlpha(0)
@@ -261,7 +252,7 @@ function Module:OnInitialize()
 			K.PerformanceFrame:Hide()
 		end
 
-		self.location:Show()
+		self.Location:Show()
 	end)
 
 	Minimap:HookScript("OnLeave", function(self)
@@ -269,16 +260,16 @@ function Module:OnInitialize()
 			K.PerformanceFrame:Show()
 		end
 
-		self.location:Hide()
+		self.Location:Hide()
 	end)
 
-	Minimap.location = Minimap:CreateFontString(nil, "OVERLAY")
-	Minimap.location:SetWidth(C["Minimap"].Size)
-	Minimap.location:FontTemplate(nil, 13)
-	Minimap.location:SetPoint("TOP", 0, -4)
-	Minimap.location:SetJustifyH("CENTER")
-	Minimap.location:SetJustifyV("MIDDLE")
-	Minimap.location:Hide()
+	Minimap.Location = Minimap:CreateFontString(nil, "OVERLAY")
+	Minimap.Location:SetWidth(C["Minimap"].Size)
+	Minimap.Location:FontTemplate(nil, 13)
+	Minimap.Location:SetPoint("TOP", 0, -4)
+	Minimap.Location:SetJustifyH("CENTER")
+	Minimap.Location:SetJustifyV("MIDDLE")
+	Minimap.Location:Hide()
 
 	-- New dungeon finder eye in MoP
 	QueueStatusMinimapButton:SetHighlightTexture("")
@@ -296,7 +287,7 @@ function Module:OnInitialize()
 	_G.MinimapZoneTextButton:SetParent(UIHider)
 	_G.MinimapZoomIn:SetParent(UIHider)
 	_G.MinimapZoomOut:SetParent(UIHider)
-	MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
+	_G.MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
 
 	-- Hide the BlopRing on Minimap
 	Minimap:SetArchBlobRingScalar(0)
@@ -321,7 +312,7 @@ function Module:OnInitialize()
 		FeedbackUIButton:Kill()
 	end
 
-	K.Movers:RegisterFrame(MMHolder)
+	K.Movers:RegisterFrame(MinimapFrameHolder)
 
 	MinimapBackdrop:SetMovable(true)
 	MinimapBackdrop:SetUserPlaced(true)
@@ -330,7 +321,7 @@ function Module:OnInitialize()
 	MinimapBackdrop:SetPoint("CENTER")
 
 	Minimap:EnableMouseWheel(true)
-	Minimap:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)
+	Minimap:SetScript("OnMouseWheel", Module.OnMouseWheelScroll)
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ZoneTextUpdate")
