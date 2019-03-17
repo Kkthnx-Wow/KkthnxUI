@@ -112,25 +112,6 @@ if (About) then
 	AddOn.optionsFrame = About.new(nil, AddOnName)
 end
 
-function AddOn:ScanTooltipTextures(clean, grabTextures)
-	local textures
-	for i = 1, 10 do
-		local tex = _G["KkthnxUI_ScanTooltipTexture"..i]
-		local hasTexture = tex and tex:GetTexture()
-		if hasTexture then
-			if grabTextures then
-				if not textures then textures = {} end
-				textures[i] = hasTexture
-			end
-			if clean then
-				tex:SetTexture()
-			end
-		end
-	end
-
-	return textures
-end
-
 function AddOn:OnInitialize()
 	self.GUID = UnitGUID("player")
 	self.CreateStaticPopups()
@@ -169,6 +150,25 @@ function AddOn:PositionGameMenuButton()
 		GameMenuButtonLogout:ClearAllPoints()
 		GameMenuButtonLogout:SetPoint("TOPLEFT", GameMenuFrame[AddOnName], "BOTTOMLEFT", 0, offY)
 	end
+end
+
+function AddOn.ScanTooltipTextures(clean, grabTextures)
+	local textures
+	for i = 1, 10 do
+		local tex = _G["KkthnxUI_ScanTooltipTexture"..i]
+		local hasTexture = tex and tex:GetTexture()
+		if hasTexture then
+			if grabTextures then
+				if not textures then textures = {} end
+				textures[i] = hasTexture
+			end
+			if clean then
+				tex:SetTexture()
+			end
+		end
+	end
+
+	return textures
 end
 
 AddOn.AddOns = {}
