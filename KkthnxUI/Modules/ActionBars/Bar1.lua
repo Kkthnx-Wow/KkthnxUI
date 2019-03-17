@@ -32,7 +32,7 @@ for i = 1, NUM_ACTIONBAR_BUTTONS do
 end
 
 local function GetPageDriver()
-	local driver = "[vehicleui]vehicle; [overridebar]override; [possessbar]possess; [shapeshift]shapeshift; [bar:2]2; [bar:3]3; [bar:4]4; [bar:5]5; [bar:6]6"
+	local driver = "[overridebar]override; [possessbar]possess; [shapeshift]shapeshift; [vehicleui]vehicle; [bar:2]2; [bar:3]3; [bar:4]4; [bar:5]5; [bar:6]6"
 
 	if (K.Class == "DRUID") then
 		if (C["ActionBar"].DisableStancePages) then
