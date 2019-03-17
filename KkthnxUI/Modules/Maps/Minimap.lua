@@ -11,14 +11,14 @@ local GarrisonLandingPageMinimapButton = _G.GarrisonLandingPageMinimapButton
 local GetMinimapZoneText = _G.GetMinimapZoneText
 local GetZonePVPInfo = _G.GetZonePVPInfo
 local GuildInstanceDifficulty = _G.GuildInstanceDifficulty
-local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
-local Minimap = _G.Minimap
 local MiniMapChallengeMode = _G.MiniMapChallengeMode
 local MiniMapInstanceDifficulty = _G.MiniMapInstanceDifficulty
 local MiniMapMailFrame = _G.MiniMapMailFrame
+local Minimap = _G.Minimap
 local QueueStatusMinimapButton = _G.QueueStatusMinimapButton
 local UIParent = _G.UIParent
+local hooksecurefunc = _G.hooksecurefunc
 
 function Module:GetLocationTextColors()
 	local pvpType = GetZonePVPInfo()
