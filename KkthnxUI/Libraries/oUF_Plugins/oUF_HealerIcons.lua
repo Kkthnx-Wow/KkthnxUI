@@ -2,18 +2,19 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 
 local _G = _G
-
-local gsub = gsub
 local format = format
+local gsub = gsub
+local wipe = wipe
 
-local UnitName = _G.UnitName
-local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
+local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
 local GetBattlefieldScore = _G.GetBattlefieldScore
 local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
-local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
+local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
+local GetRealmName = _G.GetRealmName
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local IsInInstance = _G.IsInInstance
 local UNKNOWN = _G.UNKNOWN
+local UnitName = _G.UnitName
 
 local healerSpecIDs = {
 	65,		-- Paladin Holy
@@ -31,6 +32,10 @@ for _, specID in pairs(healerSpecIDs) do
 	if name and not HealerSpecs[name] then
 		HealerSpecs[name] = true
 	end
+end
+
+local function WipeTable()
+	wipe(Healers)
 end
 
 local function Event()
@@ -55,12 +60,10 @@ local function Event()
 			for i = 1, numOpps do
 				local name, realm = UnitName(format("arena%d", i))
 				if name and name ~= UNKNOWN then
-					realm = (realm and realm ~= "") and gsub(realm,"[%s%-]", "")
+					realm = (realm and realm ~= "") and gsub(realm,"[%s%-]","")
 					if realm then name = name.."-"..realm end
-
 					local s = GetArenaOpponentSpec(i)
 					local _, talentSpec = nil, UNKNOWN
-
 					if s and s > 0 then
 						_, talentSpec = GetSpecializationInfoByID(s)
 					end
@@ -123,6 +126,7 @@ local function Enable(self)
 		self:RegisterEvent("UNIT_NAME_UPDATE", Path)
 		self:RegisterEvent("ARENA_OPPONENT_UPDATE", Event, true)
 		self:RegisterEvent("UPDATE_BATTLEFIELD_SCORE", Event, true)
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", WipeTable, true)
 
 		return true
 	end
@@ -134,8 +138,11 @@ local function Disable(self)
 		element:Hide()
 
 		self:UnregisterEvent("UNIT_NAME_UPDATE", Path)
-		self:UnregisterEvent("ARENA_OPPONENT_UPDATE", Path)
-		self:UnregisterEvent("UPDATE_BATTLEFIELD_SCORE", Path)
+		self:UnregisterEvent("ARENA_OPPONENT_UPDATE", Event)
+		self:UnregisterEvent("UPDATE_BATTLEFIELD_SCORE", Event)
+		self:UnregisterEvent("UNIT_TARGET", Path)
+		self:UnregisterEvent("PLAYER_TARGET_CHANGED", Path)
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD", WipeTable)
 	end
 end
 
