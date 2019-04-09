@@ -185,7 +185,9 @@ function Module:CreateTarget()
 		Module.CreatePortraitTimers(self)
 	end
 
-	-- Module.CreateRaidTargetIndicator(self)
+	-- Module.CreateRaidTargetIndicator(self) has an issue where it is falling behind the border we use.
+	-- This is created in `KkthnxUI\KkthnxUI\Modules\UnitFrames\Elements\Indicators.lua - Line 128`
+	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
 	Module.CreateResurrectIndicator(self)
 	Module.CreateThreatIndicator(self)
