@@ -57,7 +57,7 @@ UnloadBlizzardFrames:SetScript("OnEvent", function()
 		end
 	end
 
-	if C["General"]["Scaling"].Value then
+	if C["General"].AutoScale then
 		Advanced_UseUIScale:Kill()
 		Advanced_UIScaleSlider:Kill()
 	end
