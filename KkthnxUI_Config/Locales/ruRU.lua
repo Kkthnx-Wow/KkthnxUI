@@ -1274,6 +1274,11 @@ KkthnxUIConfig["ruRU"] = {
 			["Desc"] = "Показывать дебаффы сверху, а баффы снизу (работает только с рамкой Цели)",
 		},
 
+		["DebuffHighlight"] = {
+			["Name"] = "Debuff Highlight",
+			["Desc"] = "Highlight debuffs you can dispel",
+		},
+
 		["Enable"] = {
 			["Name"] = "Включить рамки персонажей",
 		},

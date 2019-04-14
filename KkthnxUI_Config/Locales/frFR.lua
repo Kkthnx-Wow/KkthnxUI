@@ -1280,6 +1280,11 @@ KkthnxUIConfig["frFR"] = {
 			["Desc"] = "Display debuffs ontop and buffs on the bottom (affects only Target Frame)",
 		},
 
+		["DebuffHighlight"] = {
+			["Name"] = "Debuff Highlight",
+			["Desc"] = "Highlight debuffs you can dispel",
+		},
+
 		["Enable"] = {
 			["Name"] = "Enable Unitframes",
 		},

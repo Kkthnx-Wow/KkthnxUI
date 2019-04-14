@@ -275,6 +275,9 @@ function Module:CreateRaid()
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self, C["Raid"].RaidLayout.Value == "Damage" and C["Raid"].Width or C["Raid"].Width - 12)
 
-	Module.CreateDebuffHighlight(self)
+	if C["Unitframe"].DebuffHighlight then
+		Module.CreateDebuffHighlight(self)
+	end
+
 	self.Range = Module.CreateRangeIndicator(self)
 end
