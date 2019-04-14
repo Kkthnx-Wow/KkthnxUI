@@ -488,6 +488,7 @@ C["Unitframe"] = {
 	["Castbars"] = true,
 	["ClassResource"] = true,
 	["CombatFade"] = false,
+	["DebuffHighlight"] = true,
 	["DebuffsOnTop"] = true,
 	["DecimalLength"] = 1,
 	["Enable"] = true,

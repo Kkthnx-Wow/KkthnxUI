@@ -240,7 +240,10 @@ function Module:CreatePlayer()
 	Module.CreateRestingIndicator(self)
 	Module.CreateThreatIndicator(self)
 	Module.CreatePvPIndicator(self, "player")
-	Module.CreateDebuffHighlight(self)
+
+	if C["Unitframe"].DebuffHighlight then
+		Module.CreateDebuffHighlight(self)
+	end
 
 	if C["Unitframe"].PortraitTimers then
 		Module.CreatePortraitTimers(self)
