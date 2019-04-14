@@ -88,6 +88,10 @@ local menuList = {
 			K:GetModule("Changelog"):ToggleChangeLog()
 	end},
 
+	{text = KEY_BINDINGS, notCheckable = true, func = function()
+			K.BindingUI()
+	end},
+
 	{text = RELOADUI, notCheckable = true, func = function()
 			ReloadUI()
 	end},
