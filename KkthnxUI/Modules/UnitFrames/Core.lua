@@ -1153,31 +1153,31 @@ function Module:GetDamageRaidFramesAttributes()
 end
 
 function Module:GetHealerRaidFramesAttributes()
-	local HealerRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [@raid6,exists] show;hide"
+    local HealerRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [@raid6,exists] show;hide"
 
-	return "HealerRaid", nil, HealerRaidProperties,
-	"oUF-initialConfigFunction", [[
-	local header = self:GetParent()
-	self:SetWidth(header:GetAttribute("initial-width"))
-	self:SetHeight(header:GetAttribute("initial-height"))
-	]],
+    return "HealerRaid", nil, HealerRaidProperties,
+    "oUF-initialConfigFunction", [[
+    local header = self:GetParent()
+    self:SetWidth(header:GetAttribute("initial-width"))
+    self:SetHeight(header:GetAttribute("initial-height"))
+    ]],
 
-	"initial-width", C["Raid"].Width - 12,
-	"initial-height", C["Raid"].Height - 6,
-	"showParty", true,
-	"showRaid", true,
-	"showPlayer", true,
-	"showSolo", false,
-	"xoffset", 6,
-	"yOffset", -6,
-	"point", "TOP",
-	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupBy", C["Raid"].GroupBy.Value,
-	"maxColumns", 8,
-	"unitsPerColumn", 5,
-	"columnSpacing", 6,
-	"columnAnchorPoint", "LEFT"
+    "initial-width", C["Raid"].Width,
+    "initial-height", C["Raid"].Height,
+    "showParty", true,
+    "showRaid", true,
+    "showPlayer", true,
+    "showSolo", false,
+    "xoffset", 6,
+    "yOffset", -6,
+    "point", "LEFT",
+    "groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
+    "groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
+    "groupBy", C["Raid"].GroupBy.Value,
+    "maxColumns", math.ceil(40 / 5),
+    "unitsPerColumn", C["Raid"].MaxUnitPerColumn,
+    "columnSpacing", 6,
+    "columnAnchorPoint", "BOTTOM"
 end
 
 function Module:GetMainTankAttributes()
