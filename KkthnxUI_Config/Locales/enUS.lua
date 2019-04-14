@@ -1615,6 +1615,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Display an H for the healer or T for the tank",
 		},
 
+		["ShowGroupText"] = {
+			["Name"] = "Show Group Number",
+			["Desc"] = "Display your groupnumber over your unitframe (In raid only)",
+		},
+
 		["Smooth"] = {
 			["Name"] = "Smooth",
 			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
