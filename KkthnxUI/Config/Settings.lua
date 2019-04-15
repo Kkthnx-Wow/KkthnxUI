@@ -628,6 +628,7 @@ C["Raid"] = {
 	["ManabarShow"] = false,
 	["MaxUnitPerColumn"] = 10,
 	["RaidUtility"] = true,
+	["ShowGroupText"] = true,
 	["ShowMouseoverHighlight"] = true,
 	["ShowNotHereTimer"] = true,
 	["ShowRolePrefix"] = false,

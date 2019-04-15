@@ -108,6 +108,17 @@ oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
 	end
 end
 
+oUF.Tags.Events["KkthnxUI:GroupNumber"] = "GROUP_ROSTER_UPDATE PLAYER_ROLES_ASSIGNED ROLE_CHANGED_INFORM PARTY_LEADER_CHANGED"
+oUF.Tags.Methods["KkthnxUI:GroupNumber"] = function(unit)
+if not UnitInRaid("player") then return end
+	for i = 1, GetNumGroupMembers() do
+		local name, _, subgroup = GetRaidRosterInfo(i)
+			if (name == K.Name) then
+				return "Group " .. subgroup
+			end
+	end
+end
+
 oUF.Tags.Events["KkthnxUI:AltPowerCurrent"] = "UNIT_POWER UNIT_MAXPOWER"
 oUF.Tags.Methods["KkthnxUI:AltPowerCurrent"] = function(unit)
 	local cur = UnitPower(unit, 0)

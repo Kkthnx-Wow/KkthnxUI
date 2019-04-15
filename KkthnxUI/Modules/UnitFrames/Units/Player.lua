@@ -104,6 +104,14 @@ function Module:CreatePlayer()
 		end
 	end
 
+	if C["Raid"].ShowGroupText then
+		self.GroupNumber = self:CreateFontString(nil, "OVERLAY")
+		self.GroupNumber:SetPoint("TOP", self.Health, 0, 16)
+		self.GroupNumber:SetWidth(self.Health:GetWidth())
+		self.GroupNumber:SetFontObject(UnitframeFont)
+		self:Tag(self.GroupNumber, "[KkthnxUI:GetNameColor][KkthnxUI:GroupNumber]")
+	end
+
 	if (C["Unitframe"].Castbars) then
 		self.Castbar = CreateFrame("StatusBar", "PlayerCastbar", self)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
