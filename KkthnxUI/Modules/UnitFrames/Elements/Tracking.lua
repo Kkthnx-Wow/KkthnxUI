@@ -346,7 +346,8 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[284733] = Defaults(), -- Embrace of the Void
 		[284722] = Defaults(), -- Umbral Shell
 		[285345] = Defaults(), -- Maddening Eyes of N'Zoth
-		[285477] = Defaults()  -- Obscurity
+		[285477] = Defaults(), -- Obscurity
+		[285652] = Defaults()  -- Insatiable Torment
 	}
 }
 
