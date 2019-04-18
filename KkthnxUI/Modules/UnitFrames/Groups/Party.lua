@@ -253,7 +253,10 @@ function Module:CreateParty()
 	Module.CreateSummonIndicator(self)
 	Module.CreateOfflineIndicator(self, 50)
 	Module.CreateThreatIndicator(self)
-	Module.CreateDebuffHighlight(self)
+
+	if C["Unitframe"].DebuffHighlight then
+		Module.CreateDebuffHighlight(self)
+	end
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self, 114)
 

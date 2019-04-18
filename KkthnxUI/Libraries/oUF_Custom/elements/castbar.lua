@@ -22,17 +22,17 @@ A default texture will be applied to the StatusBar and Texture widgets if they d
 
 ## Options
 
-.timeToHold      - Indicates for how many seconds the castbar should be visible after a _FAILED or _INTERRUPTED
+.timeToHold      - indicates for how many seconds the castbar should be visible after a _FAILED or _INTERRUPTED
                    event. Defaults to 0 (number)
-.hideTradeSkills - Makes the element ignore casts related to crafting professions (boolean)
+.hideTradeSkills - makes the element ignore casts related to crafting professions (boolean)
 
 ## Attributes
 
-.castID           - A globally unique identifier of the currently cast spell (string?)
-.casting          - Indicates whether the current spell is an ordinary cast (boolean)
-.channeling       - Indicates whether the current spell is a channeled cast (boolean)
-.notInterruptible - Indicates whether the current spell is interruptible (boolean)
-.spellID          - The spell identifier of the currently cast/channeled spell (number)
+.castID           - a globally unique identifier of the currently cast spell (string?)
+.casting          - indicates whether the current spell is an ordinary cast (boolean)
+.channeling       - indicates whether the current spell is a channeled cast (boolean)
+.notInterruptible - indicates whether the current spell is interruptible (boolean)
+.spellID          - the spell identifier of the currently cast/channeled spell (number)
 
 ## Examples
 
@@ -89,6 +89,12 @@ A default texture will be applied to the StatusBar and Texture widgets if they d
 local _, ns = ...
 local oUF = ns.oUF
 
+local GetNetStats = GetNetStats
+local GetTime = GetTime
+local UnitCastingInfo = UnitCastingInfo
+local UnitChannelInfo = UnitChannelInfo
+local tradeskillCurrent, tradeskillTotal, mergeTradeskill = 0, 0, false -- ElvUI
+
 local DEFAULT_ICON = [[Interface\ICONS\INV_Misc_QuestionMark]]
 
 local function resetAttributes(self)
@@ -98,6 +104,17 @@ local function resetAttributes(self)
 	self.notInterruptible = nil
 	self.spellID = nil
 end
+
+-- ElvUI block
+local UNIT_SPELLCAST_SENT = function (self, event, unit, target, castID, spellID)
+	local castbar = self.Castbar
+	castbar.curTarget = (target and target ~= "") and target or nil
+
+	if castbar.isTradeSkill then
+		castbar.tradeSkillCastId = castID
+	end
+end
+-- end block
 
 local function CastStart(self, event, unit)
 	if(self.unit ~= unit) then return end
@@ -131,10 +148,24 @@ local function CastStart(self, event, unit)
 	element.castID = castID
 	element.spellID = spellID
 
+	-- ElvUI block
+	element.extraTickRatio = 0
+	-- end block
+
 	if(element.casting) then
 		element.duration = GetTime() - startTime
 	else
 		element.duration = endTime - GetTime()
+	end
+
+	if(mergeTradeskill and isTradeSkill and UnitIsUnit(unit, "player")) then
+		element.duration = element.duration + (element.max * tradeskillCurrent);
+		element.max = element.max * tradeskillTotal;
+		element.holdTime = 1
+
+		if(unit == "player") then
+			tradeskillCurrent = tradeskillCurrent + 1;
+		end
 	end
 
 	element:SetMinMaxValues(0, element.max)
@@ -242,6 +273,14 @@ local function CastStop(self, event, unit, castID, spellID)
 		return
 	end
 
+	-- ElvUI block
+	if(mergeTradeskill and UnitIsUnit(unit, "player")) then
+		if(tradeskillCurrent == tradeskillTotal) then
+			mergeTradeskill = false;
+		end
+	end
+	-- end block
+
 	resetAttributes(element)
 
 	--[[ Callback: Castbar:PostCastStop(unit, spellID)
@@ -271,6 +310,13 @@ local function CastFail(self, event, unit, castID, spellID)
 	if(element.Spark) then element.Spark:Hide() end
 
 	element.holdTime = element.timeToHold or 0
+
+	-- ElvUI block
+	if(mergeTradeskill and UnitIsUnit(unit, "player")) then
+		mergeTradeskill = false;
+		element.tradeSkillCastId = nil
+	end
+	-- end block
 
 	resetAttributes(element)
 	element:SetValue(element.max)
@@ -358,7 +404,7 @@ local function onUpdate(self, elapsed)
 		end
 
 		self:SetValue(self.duration)
-	elseif(self.holdTime > 0) then
+	elseif (self.holdTime > 0) then
 		self.holdTime = self.holdTime - elapsed
 	else
 		resetAttributes(self)
@@ -391,6 +437,10 @@ local function Enable(self, unit)
 		self:RegisterEvent('UNIT_SPELLCAST_INTERRUPTIBLE', CastInterruptible)
 		self:RegisterEvent('UNIT_SPELLCAST_NOT_INTERRUPTIBLE', CastInterruptible)
 
+		-- ElvUI block
+		self:RegisterEvent('UNIT_SPELLCAST_SENT', UNIT_SPELLCAST_SENT, true)
+		-- end block
+
 		element.holdTime = 0
 
 		element:SetScript('OnUpdate', element.OnUpdate or onUpdate)
@@ -418,6 +468,8 @@ local function Enable(self, unit)
 		if(safeZone and safeZone:IsObjectType('Texture') and not safeZone:GetTexture()) then
 			safeZone:SetColorTexture(1, 0, 0)
 		end
+
+		element:Hide()
 
 		return true
 	end
@@ -448,4 +500,12 @@ local function Disable(self)
 	end
 end
 
-oUF:AddElement('Castbar', Update, Enable, Disable)
+-- ElvUI block
+hooksecurefunc(C_TradeSkillUI, "CraftRecipe", function(_, num)
+	tradeskillCurrent = 0
+	tradeskillTotal = num or 1
+	mergeTradeskill = true
+end)
+-- end block
+
+oUF:AddElement('Castbar', Update, Enable, Disable, true)

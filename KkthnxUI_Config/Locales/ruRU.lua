@@ -1274,6 +1274,11 @@ KkthnxUIConfig["ruRU"] = {
 			["Desc"] = "Показывать дебаффы сверху, а баффы снизу (работает только с рамкой Цели)",
 		},
 
+		["DebuffHighlight"] = {
+			["Name"] = "Debuff Highlight",
+			["Desc"] = "Highlight debuffs you can dispel",
+		},
+
 		["Enable"] = {
 			["Name"] = "Включить рамки персонажей",
 		},
@@ -1609,6 +1614,12 @@ KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Показывать роль",
 			["Desc"] = "Показывать 'H' для лекарей и 'T' для танков",
 		},
+
+		["ShowGroupText"] = {
+			["Name"] = "Show Group Number",
+			["Desc"] = "Display your groupnumber over your unitframe (In raid only)",
+		},
+
 		-- РУС Перевести
 		["Smooth"] = {
 			["Name"] = "Smooth",

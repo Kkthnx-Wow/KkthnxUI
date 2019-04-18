@@ -1275,6 +1275,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Display debuffs ontop and buffs on the bottom (affects only Target Frame)",
 		},
 
+		["DebuffHighlight"] = {
+			["Name"] = "Debuff Highlight",
+			["Desc"] = "Highlight debuffs you can dispel",
+		},
+
 		["Enable"] = {
 			["Name"] = "Enable Unitframes",
 		},
@@ -1608,6 +1613,11 @@ KkthnxUIConfig["enUS"] = {
 		["ShowRolePrefix"] = {
 			["Name"] = "Show Role Prefix",
 			["Desc"] = "Display an H for the healer or T for the tank",
+		},
+
+		["ShowGroupText"] = {
+			["Name"] = "Show Group Number",
+			["Desc"] = "Display your groupnumber over your unitframe (In raid only)",
 		},
 
 		["Smooth"] = {

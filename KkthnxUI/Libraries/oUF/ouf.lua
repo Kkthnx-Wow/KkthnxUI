@@ -11,7 +11,7 @@ local Private = oUF.Private
 local argcheck = Private.argcheck
 local error = Private.error
 local print = Private.print
-local unitExists = Private.unitExists
+local UnitExists = Private.UnitExists
 
 local styles, style = {}
 local callback, objects, headers = {}, {}, {}
@@ -58,7 +58,7 @@ local function updateActiveUnit(self, event, unit)
 		modUnit = 'vehicle'
 	end
 
-	if(not unitExists(modUnit)) then return end
+	if(not UnitExists(modUnit)) then return end
 
 	-- Change the active unit and run a full update.
 	if(Private.UpdateUnits(self, modUnit, realUnit)) then
@@ -193,7 +193,7 @@ for k, v in next, {
 	--]]
 	UpdateAllElements = function(self, event)
 		local unit = self.unit
-		if(not unitExists(unit)) then return end
+		if(not UnitExists(unit)) then return end
 
 		assert(type(event) == 'string', "Invalid argument 'event' in UpdateAllElements.")
 
@@ -326,6 +326,8 @@ local function initObject(unit, style, styleFunc, header, ...)
 			end
 		end
 
+		activeElements[object] = {} -- styleFunc on headers break before this is set when they try to enable elements before it's set.
+
 		Private.UpdateUnits(object, objectUnit)
 
 		styleFunc(object, objectUnit, not header)
@@ -338,7 +340,6 @@ local function initObject(unit, style, styleFunc, header, ...)
 			object:SetScript('OnShow', onShow)
 		end
 
-		activeElements[object] = {}
 		for element in next, elements do
 			object:EnableElement(element, objectUnit)
 		end
@@ -389,11 +390,11 @@ Used to make a (table of) function(s) available to all unit frames.
 * name - unique name of the function (string)
 * func - function or a table of functions (function or table)
 --]]
-function oUF:RegisterMetaFunction(name, func)
+function oUF:RegisterMetaFunction(name, func, override) -- ElvUI Changed added override
 	argcheck(name, 2, 'string')
 	argcheck(func, 3, 'function', 'table')
 
-	if(frame_metatable.__index[name]) then
+	if not override and (frame_metatable.__index[name]) then
 		return
 	end
 
@@ -789,7 +790,7 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 			if(nameplateCallback) then
 				nameplateCallback(nameplate and nameplate.unitFrame, event, 'target')
 			end
-
+			
 			-- UAE is called after the callback to reduce the number of
 			-- ForceUpdate calls layout devs have to do themselves
 			if(nameplate) then
@@ -818,7 +819,7 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 			if(nameplateCallback) then
 				nameplateCallback(nameplate.unitFrame, event, unit)
 			end
-
+			
 			-- UAE is called after the callback to reduce the number of
 			-- ForceUpdate calls layout devs have to do themselves
 			nameplate.unitFrame:UpdateAllElements(event)
@@ -844,13 +845,16 @@ Used to register an element with oUF.
 * enable  - used to enable the element for a given unit frame and unit (function?)
 * disable - used to disable the element for a given unit frame (function?)
 --]]
-function oUF:AddElement(name, update, enable, disable)
+function oUF:AddElement(name, update, enable, disable, override)  -- ElvUI Changed added override
 	argcheck(name, 2, 'string')
 	argcheck(update, 3, 'function', 'nil')
 	argcheck(enable, 4, 'function', 'nil')
 	argcheck(disable, 5, 'function', 'nil')
 
-	if(elements[name]) then return error('Element [%s] is already registered.', name) end
+	if not override then
+		if(elements[name]) then return error('Element [%s] is already registered.', name) end
+	end
+
 	elements[name] = {
 		update = update;
 		enable = enable;

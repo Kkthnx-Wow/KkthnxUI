@@ -38,7 +38,8 @@ local SetBinding = _G.SetBinding
 local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
 
 local bind, oneBind, localmacros = CreateFrame("Frame", "HoverBind", UIParent), true, 0
-SlashCmdList.MOUSEOVERBIND = function()
+
+function K.BindingUI()
 	if InCombatLockdown() then
 		print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
 		return
@@ -171,7 +172,6 @@ SlashCmdList.MOUSEOVERBIND = function()
 				end
 				GameTooltip:Show()
 			elseif spellmacro == "STANCE" or spellmacro == "PET" then
-				self.button.id = tonumber(b:GetID())
 				self.button.name = b:GetName()
 
 				if not self.button.name then
@@ -181,6 +181,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 				if not self.button.id or self.button.id < 1 or self.button.id > (spellmacro == "STANCE" and 10 or 12) then
 					self.button.bindstring = "CLICK "..self.button.name..":LeftButton"
 				else
+					self.button.id = tonumber(b:GetID())
 					self.button.bindstring = (spellmacro == "STANCE" and "STANCEBUTTON" or "BONUSACTIONBUTTON")..self.button.id
 				end
 
@@ -204,13 +205,14 @@ SlashCmdList.MOUSEOVERBIND = function()
 					self:SetScript("OnHide", nil)
 				end)
 			else
-				self.button.action = tonumber(b.action)
 				self.button.name = b:GetName()
 
 				if not self.button.name then
 					return
 				end
 
+				self.button.action = tonumber(b.action)
+				
 				if (not self.button.action or self.button.action < 1 or self.button.action > 132) and not (self.button.keyBoundTarget) then
 					self.button.bindstring = "CLICK "..self.button.name..":LeftButton"
 				elseif self.button.keyBoundTarget then
@@ -475,15 +477,14 @@ SlashCmdList.MOUSEOVERBIND = function()
 		K.StaticPopup_Show("KEYBIND_MODE")
 	end
 end
-
-_G.SLASH_MOUSEOVERBIND1 = "/bindkey"
-_G.SLASH_MOUSEOVERBIND2 = "/hoverbind"
-_G.SLASH_MOUSEOVERBIND3 = "/bk"
+K:RegisterChatCommand("bindkey", K.BindingUI)
+K:RegisterChatCommand("hoverbind", K.BindingUI)
+K:RegisterChatCommand("bk", K.BindingUI)
 
 if not K.CheckAddOnState("Bartender4") and not K.CheckAddOnState("Dominos") then
-	_G.SLASH_MOUSEOVERBIND4 = "/kb"
+	K:RegisterChatCommand("kb", K.BindingUI)
 end
 
 if not K.CheckAddOnState("HealBot") then
-	_G.SLASH_MOUSEOVERBIND5 = "/hb"
+	K:RegisterChatCommand("hb", K.BindingUI)
 end
