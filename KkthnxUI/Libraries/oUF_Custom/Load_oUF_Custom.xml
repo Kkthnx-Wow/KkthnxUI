@@ -1,5 +1,0 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<Script file="elements\castbar.lua"/>
-	<Script file="elements\stagger.lua"/>
-	<Script file="elements\tags.lua"/>
-</Ui>
