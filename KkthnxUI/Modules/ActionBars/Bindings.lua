@@ -182,7 +182,7 @@ function K.BindingUI()
 					self.button.bindstring = "CLICK "..self.button.name..":LeftButton"
 				else
 					self.button.id = tonumber(b:GetID())
-					self.button.bindstring = (spellmacro == "STANCE" and "SHAPESHIFTBUTTON" or "BONUSACTIONBUTTON")..self.button.id
+					self.button.bindstring = (spellmacro == "STANCE" and "STANCEBUTTON" or "BONUSACTIONBUTTON")..self.button.id
 				end
 
 				GameTooltip:Show()
