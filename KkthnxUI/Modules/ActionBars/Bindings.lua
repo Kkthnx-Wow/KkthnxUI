@@ -212,7 +212,7 @@ function K.BindingUI()
 				end
 
 				self.button.action = tonumber(b.action)
-				
+
 				if (not self.button.action or self.button.action < 1 or self.button.action > 132) and not (self.button.keyBoundTarget) then
 					self.button.bindstring = "CLICK "..self.button.name..":LeftButton"
 				elseif self.button.keyBoundTarget then
