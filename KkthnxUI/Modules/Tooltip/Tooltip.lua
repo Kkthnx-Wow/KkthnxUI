@@ -438,6 +438,10 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 		return
 	end
 
+	if  InCombatLockdown() and C["Tooltip"].HideInCombat then
+		tt:Hide()
+	end
+
 	local unit = select(2, tt:GetUnit())
 	local isShiftKeyDown = IsShiftKeyDown()
 	local isControlKeyDown = IsControlKeyDown()
@@ -807,6 +811,10 @@ end
 function Module:GameTooltip_OnTooltipSetSpell(tt)
 	if tt:IsForbidden() then
 		return
+	end
+
+	if  InCombatLockdown() and C["Tooltip"].HideInCombat then
+		tt:Hide()
 	end
 
 	local id = select(2, tt:GetSpell())

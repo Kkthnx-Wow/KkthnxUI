@@ -463,6 +463,7 @@ C["Tooltip"] = {
 	["GuildRanks"] = false,
 	["HealthBarText"] = true,
 	["HealthbarHeight"] = 9,
+	["HideInCombat"] = false,
 	["Icons"] = false,
 	["InspectInfo"] = true,
 	["ItemQualityBorder"] = true,

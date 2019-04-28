@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 if C["Minimap"].Enable ~= true then
 	return
 end
@@ -257,6 +257,20 @@ local menuList = {
 			end
 		end,
 	notCheckable = true},
+
+	{text = L["Inventory"].Show_Bags, notCheckable = true, func = function()
+		if BankFrame:IsShown() then
+			CloseBankBagFrames()
+			CloseBankFrame()
+			CloseAllBags()
+		else
+			if ContainerFrame1:IsShown() then
+				CloseAllBags()
+			else
+				ToggleAllBags()
+			end
+		end
+	end},
 
 	{text = BLIZZARD_STORE,
 		func = function()
