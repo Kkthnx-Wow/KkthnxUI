@@ -72,6 +72,20 @@ local menuList = {
 			end
 	end},
 
+	{text = L["Inventory"].Show_Bags, notCheckable = true, func = function()
+		if BankFrame:IsShown() then
+			CloseBankBagFrames()
+			CloseBankFrame()
+			CloseAllBags()
+		else
+			if ContainerFrame1:IsShown() then
+				CloseAllBags()
+			else
+				ToggleAllBags()
+			end
+		end
+	end},
+
 	{text = L["ConfigButton"].ToggleConfig, notCheckable = true, func = function()
 			K.ConfigUI()
 	end},
