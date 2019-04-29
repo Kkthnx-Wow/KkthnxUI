@@ -325,7 +325,6 @@ end
 function Module.CreateCombatFeedback(self)
 	local cf = CreateFrame("Frame", nil, self)
 	cf:SetSize(32, 32)
-	cf:SetPoint("CENTER")
 	cf:SetPoint("CENTER", self.Portrait, "CENTER", 0, -1)
 	cf:SetFrameStrata("TOOLTIP")
 
