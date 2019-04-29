@@ -19,6 +19,7 @@
     <Script file="ProfessionTabs.lua"/>
     <Script file="PvPEmote.lua"/>
     <Script file="QueueTimer.lua"/>
+	<Script file="RaidCooldowns.lua"/>
     <Script file="RaidMarker.lua"/>
     <Script file="SlotDurability.lua"/>
     <Script file="SlotItemLevel.lua"/>

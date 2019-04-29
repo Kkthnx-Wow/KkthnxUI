@@ -163,6 +163,10 @@ function Module:CreateNameplates()
 	Module.CreatePlateTotemIcons(self)
 	Module.CreatePlateTargetArrow(self)
 
+	if C["FloatingCombatFeedback"].Enable and C["FloatingCombatFeedback"].Style.Value == "Nameplates" then
+		Module.CreateNameplateCombatFeedback(self)
+	end	
+
 	self.HealthPrediction = Module.CreateHealthPrediction(self, C["Nameplates"].Width)
 	Module.CreateDebuffHighlight(self)
 	Module.CreatePvPIndicator(self, "nameplate", self, self:GetHeight() + 2, self:GetHeight() + 5)

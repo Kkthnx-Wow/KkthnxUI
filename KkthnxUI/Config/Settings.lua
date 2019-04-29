@@ -236,6 +236,21 @@ C["Auras"] = {
 	}
 }
 
+--Combattext
+C["FloatingCombatFeedback"] = {
+	["Enable"] = false,
+	["FontSize"] = 15,
+	["AbbreviateNumbers"] = true, -- Only on nameplates
+	["ScrollTime"] = 1.2, -- Only on nameplates
+	["Style"] = {
+		["Options"] = {
+			["Nameplates"] = "Nameplates",
+			["Portraits"] = "Portraits",
+		},
+		["Value"] = "Nameplates"
+	}
+}
+
 -- Chat
 C["Chat"] = {
 	["Background"] = false,
@@ -431,6 +446,20 @@ C["Nameplates"] = {
 		},
 		["Value"] = "DISABLED"
 	}
+}
+
+-- RaidCooldowns
+C["RaidCooldown"] = {
+	["Enable"] = false,
+	["Height"] = 15,
+	["Width"] = 186,
+	["Upwards"] = false,
+	["Expiration"] = false, -- Sort by expiration time
+	["Show_Self"] = true,
+	["Show_Icon"] = true,
+	["Show_InRaid"] = true,
+	["Show_InParty"] = true,
+	["Show_InArena"] = true,
 }
 
 -- Skins

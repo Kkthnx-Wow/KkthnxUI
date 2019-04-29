@@ -4,6 +4,7 @@
    <Script file="oUF_AuraWatch.lua"/>
    <Script file="oUF_ClassificationIcons.lua"/>
    <Script file="oUF_CombatFader.lua"/>
+   <Script file="oUF_CombatFeedback.lua"/>
    <Script file="oUF_FloatingCombatFeedback.lua"/>
    <Script file="oUF_DebuffHighlight.lua"/>
    <Script file="oUF_GlobalCooldown.lua"/>
