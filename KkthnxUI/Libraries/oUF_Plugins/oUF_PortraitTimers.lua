@@ -3,8 +3,7 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 
 ns.PortraitTimerDB = {
- 	-- Interrupts
-
+	-- Interrupts
 	--[1766] = { type = "interrupts", duration = 5 }, -- Kick (Rogue)
 	--[2139] = { type = "interrupts", duration = 6 }, -- Counterspell (Mage)
 	--[6552] = { type = "interrupts", duration = 4 }, -- Pummel (Warrior)
@@ -25,7 +24,6 @@ ns.PortraitTimerDB = {
 	--[231665] = { type = "interrupts", duration = 3 }, -- Avengers Shield (Paladin)
 
 	-- Death Knight
-
 	[47476] = true, -- Strangulate
 	[48707] = true, -- Anti-Magic Shell
 	[48265] = true, -- Death's Advance
@@ -56,7 +54,6 @@ ns.PortraitTimerDB = {
 	[223929] = true, -- Necrotic Wound
 
 	-- Demon Hunter
-
 	[179057] =  true, -- Chaos Nova
 	[187827] =  true, -- Metamorphosis
 	[188499] =  true, -- Blade Dance
@@ -76,7 +73,6 @@ ns.PortraitTimerDB = {
 	[227225] =  true, -- Soul Barrier
 
 	-- Druid
-
 	[99] =  true, -- Incapacitating Roar
 	[339] =  true, -- Entangling Roots
 	[740] =  true, -- Tranquility
@@ -113,11 +109,10 @@ ns.PortraitTimerDB = {
 	[33786] = true, -- Cyclone
 	[22570] =  true, -- Maim
 	[203123] = true, -- Maim
-    [236025] = true, -- Enraged Maim (Feral Honor Talent)
+	[236025] = true, -- Enraged Maim (Feral Honor Talent)
 	[236696] =  true, -- Thorns (PvP Talent)
 
 	-- Hunter
-
 	[136] =  true, -- Mend Pet
 	[3355] =  true, -- Freezing Trap
 	[203340] =  true, -- Diamond Ice (Survival Honor Talent)
@@ -137,8 +132,8 @@ ns.PortraitTimerDB = {
 	[193526] =  true, -- Trueshot
 	[193530] =  true, -- Aspect of the Wild
 	[199483] =  true, -- Camouflage
-	[202914] =  true, -- Spider Sting (Armed)		
-    [202933] =  true, -- Spider Sting (Silenced)
+	[202914] =  true, -- Spider Sting (Armed)
+	[202933] =  true, -- Spider Sting (Silenced)
 	[233022] =  true, -- Spider Sting (Silenced)
 	[209790] =  true, -- Freezing Arrow
 	[209997] =  true, -- Play Dead
@@ -146,13 +141,12 @@ ns.PortraitTimerDB = {
 	[272682] =  true, -- Master's Call
 
 	-- Mage
-
 	[66] =  true, -- Invisibility
 	[110959] = true, -- Greater Invisibility
 	[118] =  true, -- Polymorph
 	[28271] =  true, -- Polymorph Turtle
 	[28272] =  true, -- Polymorph Pig
-    [61025] =  true, -- Polymorph Serpent
+	[61025] =  true, -- Polymorph Serpent
 	[61305] =  true, -- Polymorph Black Cat
 	[61721] =  true, -- Polymorph Rabbit
 	[61780] =  true, -- Polymorph Turkey
@@ -186,7 +180,6 @@ ns.PortraitTimerDB = {
 	[228600] =  true, -- Glacial Spike Root
 
 	-- Monk
-
 	[115078] =  true, -- Paralysis
 	[115080] =  true, -- Touch of Death
 	[115203] =  true, -- Fortifying Brew (Brewmaster)
@@ -210,7 +203,6 @@ ns.PortraitTimerDB = {
 	[233759] =  true, -- Grapple Weapon
 
 	-- Paladin
-
 	[498] =  true, -- Divine Protection
 	[642] =  true, -- Divine Shield
 	[853] =  true, -- Hammer of Justice
@@ -241,9 +233,7 @@ ns.PortraitTimerDB = {
 	[210294] =  true, -- Divine Favor
 	[215652] =  true, -- Shield of Virtue
 
-
 	-- Priest
-
 	[586] =  true, -- Fade
 	[213602] =  true, -- Greater Fade
 	[605] = true, -- Mind Control
@@ -277,7 +267,6 @@ ns.PortraitTimerDB = {
 	[221660] =  true, -- Holy Concentration
 
 	-- Rogue
-
 	[408] =  true, -- Kidney Shot
 	[1330] =  true, -- Garrote - Silence
 	[1776] =  true, -- Gouge
@@ -298,7 +287,6 @@ ns.PortraitTimerDB = {
 	[212183] =  true, -- Smoke Bomb
 
 	-- Shaman
-
 	[2825] =  true, -- Bloodlust
 	[32182] = true, -- Heroism
 	[51514] =  true, -- Hex
@@ -334,7 +322,6 @@ ns.PortraitTimerDB = {
 	[34079] =  true, -- Grounding
 
 	-- Warlock
-
 	[710] =  true, -- Banish
 	[5484] =  true, -- Howl of Terror
 	[6358] =  true, -- Seduction
@@ -358,9 +345,7 @@ ns.PortraitTimerDB = {
 	[212284] =  true, -- Firestone
 	[212295] =  true, -- Nether Ward
 
-
 	-- Warrior
-
 	[871] =  true, -- Shield Wall
 	[1719] =  true, -- Recklessness
 	[5246] =  true, -- Intimidating Shout
@@ -386,7 +371,6 @@ ns.PortraitTimerDB = {
 	[236236] = true, -- Disarm
 
 	-- Other
-
 	[20549] =  true, -- War Stomp
 	[107079] =  true, -- Quaking Palm
 	[129597] =  true, -- Arcane Torrent
@@ -405,102 +389,102 @@ ns.PortraitTimerDB = {
 	[255654] =  true, --Bull Rush
 	[294127] =  true, -- Gladiator's Maledict
 
-    -- [278736] = true, -- Debug DO NOT UNCOMMENT THIS
+	-- [278736] = true, -- Debug DO NOT UNCOMMENT THIS
 }
 
 local Update = function(self, event, unit)
-    if self.unit ~= unit or self.IsTargetFrame then
-        return
-    end
+	if self.unit ~= unit or self.IsTargetFrame then
+		return
+	end
 
-    local element = self.PortraitTimer
-    local name, texture, _, _, duration, expirationTime, _, _, _, spellId
-    local results
+	local element = self.PortraitTimer
+	local name, texture, _, _, duration, expirationTime, _, _, _, spellId
+	local results
 
-    for i = 1, 40 do
-        name, texture, _, _, duration, expirationTime, _, _, _, spellId = UnitBuff(unit, i)
+	for i = 1, 40 do
+		name, texture, _, _, duration, expirationTime, _, _, _, spellId = UnitBuff(unit, i)
 
-        if name then
-            results = ns.PortraitTimerDB[spellId]
+		if name then
+			results = ns.PortraitTimerDB[spellId]
 
-            if results then
-                element.Icon:SetTexture(texture)
-                CooldownFrame_Set(element.cooldownFrame, expirationTime - duration, duration, duration > 0)
-                element:Show()
+			if results then
+				element.Icon:SetTexture(texture)
+				CooldownFrame_Set(element.cooldownFrame, expirationTime - duration, duration, duration > 0)
+				element:Show()
 
-                if self.CombatFeedbackText then
-                    self.CombatFeedbackText.maxAlpha = 0
-                end
-                return
-            end
-        end
-    end
+				if self.CombatFeedbackText then
+					self.CombatFeedbackText.maxAlpha = 0
+				end
+				return
+			end
+		end
+	end
 
-    for i = 1, 40 do
-        name, texture, _, _, duration, expirationTime, _, _, _, spellId = UnitDebuff(unit, i)
+	for i = 1, 40 do
+		name, texture, _, _, duration, expirationTime, _, _, _, spellId = UnitDebuff(unit, i)
 
-        if name then
-            results = ns.PortraitTimerDB[spellId]
+		if name then
+			results = ns.PortraitTimerDB[spellId]
 
-            if results then
-                element.Icon:SetTexture(texture)
-                CooldownFrame_Set(element.cooldownFrame, expirationTime - duration, duration, duration > 0)
-                element:Show()
+			if results then
+				element.Icon:SetTexture(texture)
+				CooldownFrame_Set(element.cooldownFrame, expirationTime - duration, duration, duration > 0)
+				element:Show()
 
-                if self.CombatFeedbackText then
-                    self.CombatFeedbackText.maxAlpha = 0
-                end
-                return
-            end
-        end
-    end
+				if self.CombatFeedbackText then
+					self.CombatFeedbackText.maxAlpha = 0
+				end
+				return
+			end
+		end
+	end
 
-    element:Hide()
-    if self.CombatFeedbackText then
-        self.CombatFeedbackText.maxAlpha = 1
-    end
+	element:Hide()
+	if self.CombatFeedbackText then
+		self.CombatFeedbackText.maxAlpha = 1
+	end
 
-    if event == "PLAYER_ENTERING_WORLD" then
-        CooldownFrame_Set(element.cooldownFrame, 1, 1, 1)
-    end
+	if event == "PLAYER_ENTERING_WORLD" then
+		CooldownFrame_Set(element.cooldownFrame, 1, 1, 1)
+	end
 end
 
 local Enable = function(self)
-    local element = self.PortraitTimer
+	local element = self.PortraitTimer
 
-    if element then
-        self:RegisterEvent("UNIT_AURA", Update, false)
-        self:RegisterEvent("PLAYER_ENTERING_WORLD", Update, true)
+	if element then
+		self:RegisterEvent("UNIT_AURA", Update, false)
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", Update, true)
 
-        if not element.Icon then
-            local mask = element:CreateMaskTexture()
-            mask:SetTexture("Interface\\CHARACTERFRAME\\TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
-            mask:SetAllPoints(element)
+		if not element.Icon then
+			local mask = element:CreateMaskTexture()
+			mask:SetTexture("Interface\\CHARACTERFRAME\\TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+			mask:SetAllPoints(element)
 
-            element.Icon = element:CreateTexture(nil, "BACKGROUND")
-            element.Icon:SetAllPoints(element)
-            element.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-            --element.Icon:AddMaskTexture(mask)
-        end
+			element.Icon = element:CreateTexture(nil, "BACKGROUND")
+			element.Icon:SetAllPoints(element)
+			element.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+			--element.Icon:AddMaskTexture(mask)
+		end
 
-        if not element.cooldownFrame then
-            element.cooldownFrame = CreateFrame("Cooldown", nil, element, "CooldownFrameTemplate")
-            element.cooldownFrame:SetAllPoints(element)
-            element.cooldownFrame:SetHideCountdownNumbers(false)
-            element.cooldownFrame:SetDrawSwipe(false)
-        end
+		if not element.cooldownFrame then
+			element.cooldownFrame = CreateFrame("Cooldown", nil, element, "CooldownFrameTemplate")
+			element.cooldownFrame:SetAllPoints(element)
+			element.cooldownFrame:SetHideCountdownNumbers(false)
+			element.cooldownFrame:SetDrawSwipe(false)
+		end
 
-        element:Hide()
+		element:Hide()
 
-        return true
-    end
+		return true
+	end
 end
 
 local Disable = function(self)
-    local element = self.PortraitTimer
-    if element then
-        self:UnregisterEvent("UNIT_AURA", Update)
-    end
+	local element = self.PortraitTimer
+	if element then
+		self:UnregisterEvent("UNIT_AURA", Update)
+	end
 end
 
 oUF:AddElement("PortraitTimer", Update, Enable, Disable)
