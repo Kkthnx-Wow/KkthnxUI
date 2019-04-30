@@ -1766,4 +1766,77 @@ KkthnxUIConfig["koKR"] = {
 			["Name"] = "Statusbar Texture",
 		},
 	},
+	
+	-- Combattext
+	["FloatingCombatFeedback"] = {
+		["Enable"] = {
+			["Name"] = "Enable Combattext",
+		},
+
+		["AbbreviateNumbers"] = {
+			["Name"] = "Abbreviate Numbers",
+			["Desc"] = "Shows 5k instead 5000. Works only for 'Nameplates'.",
+		},
+
+		["FontSize"] = {
+			["Name"] = "Font Size",
+		},
+		
+		["Style"] = {
+			["Name"] = "Style",
+		},
+		
+		["ScrollTime"] = {
+			["Name"] = "Scroll Time",
+		},
+	},
+	
+	-- RaidCD's
+	["RaidCooldown"] = {
+		["Enable"] = {
+			["Name"] = "Enable Raid CD's",
+		},
+
+		["FontSize"] = {
+			["Name"] = "Font Size",
+		},
+
+		["Height"] = {
+			["Name"] = "Height",
+		},
+
+		["Width"] = {
+			["Name"] = "Width",
+		},
+
+		["Upwards"] = {
+			["Name"] = "Upwards",
+			["Desc"] = "Sort from bottom to top.",
+		},
+
+		["Expiration"] = {
+			["Name"] = "Expiration",
+			["Desc"] = "Sort to expiration.",
+		},
+
+		["Show_Self"] = {
+			["Name"] = "Show self",
+		},
+
+		["Show_Icon"] = {
+			["Name"] = "Show Icon",
+		},
+
+		["Show_InRaid"] = {
+			["Name"] = "Show in Raid",
+		},
+
+		["Show_InParty"] = {
+			["Name"] = "Show in Party",
+		},
+
+		["Show_InArena"] = {
+			["Name"] = "Show in Arena",
+		},
+	},
 }

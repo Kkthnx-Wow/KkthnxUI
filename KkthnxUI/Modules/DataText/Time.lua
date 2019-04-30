@@ -18,6 +18,7 @@ local table_sort, table_insert = table.sort, table.insert
 local unpack = _G.unpack
 
 -- WoW API
+local C_Calendar = _G.C_Calendar
 local DUNGEON_FLOOR_TEMPESTKEEP1 = _G.DUNGEON_FLOOR_TEMPESTKEEP1
 local EJ_GetCurrentTier = _G.EJ_GetCurrentTier
 local EJ_GetInstanceByIndex = _G.EJ_GetInstanceByIndex
@@ -30,9 +31,11 @@ local GetGameTime = _G.GetGameTime
 local GetNumSavedInstances = _G.GetNumSavedInstances
 local GetNumSavedWorldBosses = _G.GetNumSavedWorldBosses
 local GetNumWorldPVPAreas = _G.GetNumWorldPVPAreas
+local GetQuestObjectiveInfo = _G.GetQuestObjectiveInfo
 local GetSavedInstanceInfo = _G.GetSavedInstanceInfo
 local GetSavedWorldBossInfo = _G.GetSavedWorldBossInfo
 local GetWorldPVPAreaInfo = _G.GetWorldPVPAreaInfo
+local IsQuestFlaggedCompleted = _G.IsQuestFlaggedCompleted
 local QUEUE_TIME_UNAVAILABLE = _G.QUEUE_TIME_UNAVAILABLE
 local RequestRaidInfo = _G.RequestRaidInfo
 local SecondsToTime = _G.SecondsToTime
@@ -125,30 +128,71 @@ local nhm = { -- Raid Finder, Normal, Heroic, Mythic
 	(krcntw and PLAYER_DIFFICULTY3) or string_utf8sub(PLAYER_DIFFICULTY3, 1, 1), -- R
 	(krcntw and PLAYER_DIFFICULTY1) or string_utf8sub(PLAYER_DIFFICULTY1, 1, 1), -- N
 	(krcntw and PLAYER_DIFFICULTY2) or string_utf8sub(PLAYER_DIFFICULTY2, 1, 1), -- H
-	(krcntw and PLAYER_DIFFICULTY6) or string_utf8sub(PLAYER_DIFFICULTY6, 1, 1) -- M
+	(krcntw and PLAYER_DIFFICULTY6) or string_utf8sub(PLAYER_DIFFICULTY6, 1, 1)  -- M
 }
 
 -- Check Invasion Status
-local zonePOIIds = {5175, 5210, 5177, 5178}
-local zoneNames = {630, 641, 650, 634}
-local timeTable = {4, 3, 2, 1, 4, 2, 3, 1, 2, 4, 1, 3}
-local baseTime = 1517274000 -- 1/30 9:00 [1]
+local invIndex = {
+	[1] = {title = "Legion Invasion", duration = 66600, maps = {630, 641, 650, 634}, timeTable = {4, 3, 2, 1, 4, 2, 3, 1, 2, 4, 1, 3}, baseTime = 1546844400}, -- 1/30 9:00 [1]
+	[2] = {title = "Battle for Azeroth Assault", duration = 68400, maps = {862, 863, 864, 896, 942, 895}, timeTable = {4, 1, 6, 2, 5, 3}, baseTime = 1546743600}, -- 12/13 17:00 [1]
+}
 
-local function onInvasion()
-	for i = 1, #zonePOIIds do
-		local timeLeftMinutes = C_AreaPoiInfo.GetAreaPOITimeLeft(zonePOIIds[i])
-		if timeLeftMinutes and timeLeftMinutes > 0 and timeLeftMinutes < 361 then
-			local mapInfo = C_Map.GetMapInfo(zoneNames[i])
-			return timeLeftMinutes, mapInfo.name
+local mapAreaPoiIDs = {
+	[630] = 5175,
+	[641] = 5210,
+	[650] = 5177,
+	[634] = 5178,
+	[862] = 5973,
+	[863] = 5969,
+	[864] = 5970,
+	[896] = 5964,
+	[942] = 5966,
+	[895] = 5896,
+}
+
+local function GetInvasionTimeInfo(mapID)
+	local areaPoiID = mapAreaPoiIDs[mapID]
+	local seconds = C_AreaPoiInfo.GetAreaPOISecondsLeft(areaPoiID)
+	local mapInfo = C_Map.GetMapInfo(mapID)
+	return seconds, mapInfo.name
+end
+
+local function CheckInvasion(index)
+	for _, mapID in pairs(invIndex[index].maps) do
+		local timeLeft, name = GetInvasionTimeInfo(mapID)
+		if timeLeft and timeLeft > 0 then
+			return timeLeft, name
 		end
 	end
 end
 
-local function whereToGo(nextTime)
-	local elapsed = nextTime - baseTime
-	local round = mod(floor(elapsed / 66600) + 1, 12)
-	if round == 0 then round = 12 end
-	return C_Map.GetMapInfo(zoneNames[timeTable[round]]).name
+local function GetNextTime(baseTime, index)
+	local currentTime = time()
+	local duration = invIndex[index].duration
+	local elapsed = mod(currentTime - baseTime, duration)
+	return duration - elapsed + currentTime
+end
+
+local function GetNextLocation(nextTime, index)
+	local inv = invIndex[index]
+	local count = #inv.timeTable
+	local elapsed = nextTime - inv.baseTime
+	local round = mod(math_floor(elapsed / inv.duration) + 1, count)
+
+	if round == 0 then
+		round = count
+	end
+
+	return C_Map.GetMapInfo(inv.maps[inv.timeTable[round]]).name
+end
+
+local title
+local function addTitle(text)
+	if not title then
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(text..":")
+		title = true
+	end
 end
 
 local collectedInstanceImages = false
@@ -307,22 +351,26 @@ local function OnEnter(self)
 		string_format(ukDisplayFormat_nocolor, Hr, Min, APM[AmPm]), 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
 	end
 
-	-- Legion Invasion
-	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine("Legion Invasion"..":")
-
-	local elapsed = mod(time() - baseTime, 66600)
-	local nextTime = 66600 - elapsed + time()
-	if onInvasion() then
-		local timeLeft, zoneName = onInvasion()
-		if timeLeft < 60 then r,g,b = 1,0,0 else r,g,b = 0,1,0 end
-		GameTooltip:AddDoubleLine("Current Invasion "..zoneName, format("%.2d:%.2d", timeLeft/60, timeLeft%60), 1,1,1, r, g, b)
-	end
-
-	if C["DataText"].Time24Hr == true then
-		GameTooltip:AddDoubleLine("Next Invasion "..whereToGo(nextTime), date("%m/%d %H:%M", nextTime), 1,1,1, 1,1,1)
-	elseif C["DataText"].LocalTime == true then
-		GameTooltip:AddDoubleLine("Next Invasion "..whereToGo(nextTime), date("%m/%d %I:%M", nextTime), 1,1,1, 1,1,1)
+	-- Invasions
+	for index, value in ipairs(invIndex) do
+		title = false
+		addTitle(value.title)
+		local timeLeft, zoneName = CheckInvasion(index)
+		local nextTime = GetNextTime(value.baseTime, index)
+		if timeLeft then
+			timeLeft = timeLeft / 60
+			if timeLeft < 60 then
+				r, g, b = 1, 0, 0
+			else
+				r, g, b = 0, 1, 0
+			end
+			GameTooltip:AddDoubleLine("|CFFFFFFFFCurrent|r ".. zoneName, string_format("%.2d:%.2d", timeLeft / 60, timeLeft % 60), lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b, 1, 1, 1, r, g, b)
+		end
+		if C["DataText"].Time24Hr == true then
+			GameTooltip:AddDoubleLine("|CFFFFFFFFNext|r ".. GetNextLocation(nextTime, index), date("%m/%d %H:%M", nextTime), lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b, 1, 1, 1, 1, 1, 1)
+		elseif C["DataText"].LocalTime == true then
+			GameTooltip:AddDoubleLine("|CFFFFFFFFNext|r ".. GetNextLocation(nextTime, index), date("%m/%d %I:%M", nextTime), lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b, 1, 1, 1, 1, 1, 1)
+		end
 	end
 
 	GameTooltip:Show()

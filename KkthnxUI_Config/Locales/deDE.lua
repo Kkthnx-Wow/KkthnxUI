@@ -41,16 +41,16 @@ KkthnxUIConfig["deDE"] = {
 	["GroupNames"] = {
 		-- Let's keep this in alphabetical order, shall we?
 		["ActionBar"] = BINDING_HEADER_ACTIONBAR,
-		["Announcements"] = "Announcements",
+		["Announcements"] = "Ankündigungen",
 		["Arena"] = ARENA,
 		["Auras"] = AURAS,
-		["Automation"] = "Automation",
+		["Automation"] = "Automatisierung",
 		["Boss"] = BOSS,
 		["Chat"] = CHAT,
 		["DataBars"] = "Data Bars",
 		["DataText"] = "Data Text",
 		["Filger"] = "Filger",
-		["Firestorm"] = "Firestorm", -- this is a realm name and shouldn't be translated.
+		["FloatingCombatFeedback"] = "Kampftext",
 		["General"] = GENERAL,
 		["HealthPrediction"] = "Health Prediction",
 		["Inventory"] = INVENTORY_TOOLTIP,
@@ -61,6 +61,7 @@ KkthnxUIConfig["deDE"] = {
 		["Nameplates"] = "Namensplaketten", -- UNIT_NAMEPLATES is to long for menu
 		["Party"] = PARTY,
 		["Raid"] = RAID,
+		["RaidCooldown"] = "RaidCD's",
 		["Skins"] = "Skins",
 		["Tooltip"] = "Tooltip",
 		["Unitframe"] = UNITFRAME_LABEL,
@@ -1764,6 +1765,81 @@ KkthnxUIConfig["deDE"] = {
 
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
+		},
+	},
+
+	-- Combattext
+	["FloatingCombatFeedback"] = {
+		["Enable"] = {
+			["Name"] = "Aktiviere den Kampftext",
+		},
+
+		["AbbreviateNumbers"] = {
+			["Name"] = "Schadenzahlen umbrechen",
+			["Desc"] = "Zeigt die Schadenzahlen als 5k, anstatt 5000 an.",
+		},
+
+		["FontSize"] = {
+			["Name"] = "Schriftgröße",
+		},
+		
+		["Style"] = {
+			["Name"] = "Kampftext Stil",
+			["Desc"] = "Wähle zwischen 'an den Namensplaketten', oder 'Portrait' ->Auf dem Portrait.",
+		},
+		
+		["ScrollTime"] = {
+			["Name"] = "Zeit des Scrollens",
+			["Desc"] = "Die Zeit, bis der Kampftext zum Wegscrollen braucht.",
+		},
+	},
+	
+	-- RaidCD's
+	["RaidCooldown"] = {
+		["Enable"] = {
+			["Name"] = "Aktiviere die RaidCD's",
+		},
+
+		["FontSize"] = {
+			["Name"] = "Schriftgröße",
+		},
+
+		["Height"] = {
+			["Name"] = "Höhe",
+		},
+
+		["Width"] = {
+			["Name"] = "Breite",
+		},
+
+		["Upwards"] = {
+			["Name"] = "Nach oben",
+			["Desc"] = "Sortiert die Abklingzeiten von unten nach oben.",
+		},
+
+		["Expiration"] = {
+			["Name"] = "Ablauf",
+			["Desc"] = "Sortiert die Abklingzeiten nach deren Ablaufzeiten.",
+		},
+
+		["Show_Self"] = {
+			["Name"] = "Zeige deine Abklingzeiten",
+		},
+
+		["Show_Icon"] = {
+			["Name"] = "Zeige Symbole",
+		},
+
+		["Show_InRaid"] = {
+			["Name"] = "Zeige im Schlachzug",
+		},
+
+		["Show_InParty"] = {
+			["Name"] = "Zeige in der Gruppe",
+		},
+
+		["Show_InArena"] = {
+			["Name"] = "Zeige in der Arena",
 		},
 	},
 }
