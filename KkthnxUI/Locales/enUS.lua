@@ -306,6 +306,14 @@ L["Quests"] = {
 
 }
 
+-- RaidCooldown
+L["RaidCooldown"] = {
+	Cooldown = "CD: ",
+	Combatress = "BattleRes",
+	Combatress_Remainder = "Battle Resurrection: ",
+	Nexttime = "Next time: ",
+}
+
 -- Skins Localization
 L["Skins"] = {
 	Skada_Reset = "Do you want to reset Skada?",

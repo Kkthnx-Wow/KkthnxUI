@@ -321,3 +321,49 @@ function Module:CreatePvPIndicator(unit, parent, width, height)
 
 	self.PvPIndicator.PostUpdate = PostUpdatePvPIndicator
 end
+
+function Module.CreateCombatFeedback(self)
+	local cf = CreateFrame("Frame", nil, self)
+	cf:SetSize(32, 32)
+	cf:SetPoint("CENTER", self.Portrait, "CENTER", 0, -1)
+	cf:SetFrameStrata("TOOLTIP")
+
+	self.CombatText = cf:CreateFontString(nil, "OVERLAY")
+	self.CombatText:SetFont(C["Media"].Font, C["FloatingCombatFeedback"].FontSize, "")
+	self.CombatText:SetShadowOffset(1.25, -1.25)
+	self.CombatText:SetPoint("CENTER", cf, "CENTER", 0, -1)
+end
+
+function Module.CreateNameplateCombatFeedback(self)
+	local fcf = CreateFrame("Frame", nil, self)
+	fcf:SetSize(32, 32)
+	fcf:SetPoint("CENTER")
+	fcf:SetFrameStrata("TOOLTIP")
+
+	for i = 1, 12 do
+		fcf[i] = fcf:CreateFontString("$parentFCFText" .. i, "OVERLAY")
+		fcf[i]:SetShadowOffset(1.25, -1.25)
+	end
+		
+	fcf.font = C["Media"].Font
+	fcf.fontHeight = C["FloatingCombatFeedback"].FontSize
+	fcf.fontFlags = "NONE"
+	fcf.useCLEU = true
+	fcf.abbreviateNumbers = C["FloatingCombatFeedback"].AbbreviateNumbers
+	fcf.scrollTime = C["FloatingCombatFeedback"].ScrollTime
+	fcf.format = "%1$s |T%2$s:0:0:0:0:64:64:4:60:4:60|t"
+	self.FloatingCombatFeedback = fcf
+
+	-- Hide blizzard combat text
+	SetCVar("floatingCombatTextCombatHealing", 0)
+	SetCVar("floatingCombatTextCombatDamage", 0)
+		
+	local frame = CreateFrame("Frame")
+	frame:RegisterEvent("PLAYER_LOGOUT")
+	frame:SetScript("OnEvent", function(self, event)
+		if event == "PLAYER_LOGOUT" then
+			SetCVar("floatingCombatTextCombatHealing", 1)
+			SetCVar("floatingCombatTextCombatDamage", 1)
+		end
+	end)
+end

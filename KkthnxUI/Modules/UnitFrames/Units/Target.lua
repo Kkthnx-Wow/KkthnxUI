@@ -194,6 +194,10 @@ function Module:CreateTarget()
 	Module.CreatePvPIndicator(self, "target")
 	Module.CreateDebuffHighlight(self)
 
+	if C["FloatingCombatFeedback"].Enable and C["FloatingCombatFeedback"].Style.Value == "Portraits" then
+		Module.CreateCombatFeedback(self)
+	end
+
 	self.Threat = {
 		Hide = K.Noop,
 		IsObjectType = K.Noop,
