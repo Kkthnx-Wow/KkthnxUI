@@ -513,6 +513,7 @@ C["Unitframe"] = {
 	["CastbarIcon"] = true,
 	["CastbarLatency"] = true,
 	["CastbarTicks"] = false,
+	["CastbarTicksColor"] = {0, 0, 0, 0.8},
 	["CastbarTicksWidth"] = 2,
 	["CastbarWidth"] = 226,
 	["Castbars"] = true,

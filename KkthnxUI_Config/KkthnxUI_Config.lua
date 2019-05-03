@@ -110,6 +110,10 @@ KkthnxUIConfig.ColorDefaults = {
 		["Others"] = {0, 1, 0, 0.25},
 		["Personal"] = {0, 1, 0.5, 0.25},
 	},
+	-- Unitframe
+	["Unitframe"] = {
+		["CastbarTicksColor"] = {0, 0, 0, 0.8}
+	},
 }
 
 function KkthnxUIConfig:UpdateColorDefaults()
@@ -128,6 +132,7 @@ function KkthnxUIConfig:UpdateColorDefaults()
 	self.ColorDefaults.HealthPrediction.HealAbsorbs = {1, 0, 0, 0.25}
 	self.ColorDefaults.HealthPrediction.Others = {0, 1, 0, 0.25}
 	self.ColorDefaults.HealthPrediction.Personal = {0, 1, 0.5, 0.25}
+	self.ColorDefaults.Unitframe.CastbarTicksColor = {0, 0, 0, 0.8}
 end
 
 -- Filter unwanted groups

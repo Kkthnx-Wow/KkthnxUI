@@ -466,11 +466,11 @@ function Module:SetCastTicks(castbar, numTicks, extraTickRatio)
 		if not Module.ticks[i] then
 			Module.ticks[i] = castbar:CreateTexture(nil, "OVERLAY")
 			Module.ticks[i]:SetTexture(CastTicksTexture)
-			Module.ticks[i]:SetVertexColor(0, 0, 0, 0.8)
+			Module.ticks[i]:SetVertexColor(castbar.tickColor[1], castbar.tickColor[2], castbar.tickColor[3], castbar.tickColor[4])
 			Module.ticks[i]:SetWidth(castbar.tickWidth)
 		end
 
-		Module.ticks[i]:SetHeight(castbar.tickHeight or castbar:GetHeight())
+		Module.ticks[i]:SetHeight(castbar.tickHeight)
 		Module.ticks[i]:ClearAllPoints()
 		Module.ticks[i]:SetPoint("RIGHT", castbar, "LEFT", d * i, 0)
 		Module.ticks[i]:Show()
@@ -480,7 +480,7 @@ end
 function Module:PostCastStart(unit, name)
 	if unit == "vehicle" then
 		unit = "player"
-	end,
+	end
 
 	if self.Text and name then -- ??
 		self.Text:SetText(name)
