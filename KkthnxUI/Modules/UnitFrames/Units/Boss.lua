@@ -128,7 +128,7 @@ function Module:CreateBoss()
 		self.Castbar.PostCastStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
 		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
-		self.Castbar.PostCastFail = Module.PostCastFailedOrInterrupted
+		self.Castbar.PostCastFailed = Module.PostCastFailedOrInterrupted
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
