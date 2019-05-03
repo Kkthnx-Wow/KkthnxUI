@@ -477,13 +477,13 @@ function Module:SetCastTicks(castbar, numTicks, extraTickRatio)
 	end
 end
 
-function Module:PostCastStart(unit)
+function Module:PostCastStart(unit, name)
 	if unit == "vehicle" then
 		unit = "player"
-	end
+	end,
 
-	if self.Text and self.spellID then -- ??
-		self.Text:SetText(GetSpellInfo(self.spellID))
+	if self.Text and name then -- ??
+		self.Text:SetText(name)
 	end
 
 	-- Get length of Time, then calculate available length for Text
@@ -514,17 +514,17 @@ function Module:PostCastStart(unit)
 	end
 
 	if C["Unitframe"].CastbarTicks and unit == "player" then
-		local baseTicks = Module.ChannelTicks[self.spellID]
+		local baseTicks = Module.ChannelTicks[name]
 
 		-- Detect channeling spell and if it"s the same as the previously channeled one
-		if baseTicks and self.spellID == self.prevSpellCast then
+		if baseTicks and name == self.prevSpellCast then
 			self.chainChannel = true
 		elseif baseTicks then
 			self.chainChannel = nil
-			self.prevSpellCast = self.spellID
+			self.prevSpellCast = name
 		end
 
-		if baseTicks and Module.ChannelTicksSize[self.spellID] and Module.HastedChannelTicks[self.spellID] then
+		if baseTicks and Module.ChannelTicksSize[name] and Module.HastedChannelTicks[name] then
 			local tickIncRate = 1 / baseTicks
 			local curHaste = UnitSpellHaste("player") * 0.01
 			local firstTickInc = tickIncRate / 2
@@ -541,15 +541,15 @@ function Module:PostCastStart(unit)
 				end
 			end
 
-			local baseTickSize = Module.ChannelTicksSize[self.spellID]
+			local baseTickSize = Module.ChannelTicksSize[name]
 			local hastedTickSize = baseTickSize / (1 + curHaste)
 			local extraTick = self.max - hastedTickSize * (baseTicks + bonusTicks)
 			local extraTickRatio = extraTick / hastedTickSize
 
 			Module:SetCastTicks(self, baseTicks + bonusTicks, extraTickRatio)
-		elseif baseTicks and Module.ChannelTicksSize[self.spellID] then
+		elseif baseTicks and Module.ChannelTicksSize[name] then
 			local curHaste = UnitSpellHaste("player") * 0.01
-			local baseTickSize = Module.ChannelTicksSize[self.spellID]
+			local baseTickSize = Module.ChannelTicksSize[name]
 			local hastedTickSize = baseTickSize / (1 + curHaste)
 			local extraTick = self.max - hastedTickSize * (baseTicks)
 			local extraTickRatio = extraTick / hastedTickSize
@@ -591,15 +591,15 @@ function Module:PostCastStop()
 	self.prevSpellCast = nil
 end
 
-function Module:PostChannelUpdate(unit)
+function Module:PostChannelUpdate(unit, name)
 	if not (unit == "player" or unit == "vehicle") then
 		return
 	end
 
 	if C["Unitframe"].CastbarTicks then
-		local baseTicks = Module.ChannelTicks[self.spellID]
+		local baseTicks = Module.ChannelTicks[name]
 
-		if baseTicks and Module.ChannelTicksSize[self.spellID] and Module.HastedChannelTicks[self.spellID] then
+		if baseTicks and Module.ChannelTicksSize[name] and Module.HastedChannelTicks[name] then
 			local tickIncRate = 1 / baseTicks
 			local curHaste = UnitSpellHaste("player") * 0.01
 			local firstTickInc = tickIncRate / 2
@@ -616,7 +616,7 @@ function Module:PostChannelUpdate(unit)
 				end
 			end
 
-			local baseTickSize = Module.ChannelTicksSize[self.spellID]
+			local baseTickSize = Module.ChannelTicksSize[name]
 			local hastedTickSize = baseTickSize / (1 + curHaste)
 			local extraTick = self.max - hastedTickSize * (baseTicks + bonusTicks)
 
@@ -626,9 +626,9 @@ function Module:PostChannelUpdate(unit)
 			end
 
 			Module:SetCastTicks(self, baseTicks + bonusTicks, self.extraTickRatio)
-		elseif baseTicks and Module.ChannelTicksSize[self.spellID] then
+		elseif baseTicks and Module.ChannelTicksSize[name] then
 			local curHaste = UnitSpellHaste("player") * 0.01
-			local baseTickSize = Module.ChannelTicksSize[self.spellID]
+			local baseTickSize = Module.ChannelTicksSize[name]
 			local hastedTickSize = baseTickSize / (1 + curHaste)
 			local extraTick = self.max - hastedTickSize * (baseTicks)
 			if self.chainChannel then
