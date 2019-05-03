@@ -109,7 +109,7 @@ function Module:CreateNameplates()
 	self.Castbar.PostCastStart = Module.PostCastStart
 	self.Castbar.PostCastStop = Module.PostCastStop
 	self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
-	self.Castbar.PostCastFail = Module.PostCastFailedOrInterrupted
+	self.Castbar.PostCastFailed = Module.PostCastFailedOrInterrupted
 
 	self.Castbar.Time = self.Castbar:CreateFontString(nil, "ARTWORK")
 	self.Castbar.Time:SetPoint("TOPRIGHT", self.Castbar, "BOTTOMRIGHT", 0, -2)

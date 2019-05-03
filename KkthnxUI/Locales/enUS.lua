@@ -108,6 +108,8 @@ L["AddOnData"] = {
 	PawnNotText ="|CFFFF0000AddOn Pawn is not loaded!|r",
 	SkadaText = "|cffffff00".."Skada profile loaded".."|r",
 	SkadaNotText = "|CFFFF0000AddOn Skada is not loaded!|r",
+	SkinnerText = "|cffffff00".."Skinner profile loaded".."|r",
+	SkinnerNotText = "|CFFFF0000AddOn Skinner is not loaded!|r",
 }
 
 -- Announcements Localization

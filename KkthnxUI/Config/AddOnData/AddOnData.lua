@@ -52,6 +52,11 @@ local function SetupAddons()
 	if K.CheckAddOnState("BigWigs") then
 		K.LoadBigWigsProfile()
 	end
+	
+	-- Skinner
+	if K.CheckAddOnState("Skinner") then
+		K.LoadSkinnerProfile()
+	end
 end
 
 function K.AddOnSettings(msg)
@@ -118,6 +123,14 @@ function K.AddOnSettings(msg)
 			print(L["AddOnData"].BartenderText)
 		else
 			print(L["AddOnData"].BartenderNotText)
+		end
+	elseif msg == "skinner" then
+		if K.CheckAddOnState("Skinner") then
+			K.LoadBartenderProfile()
+			K.StaticPopup_Show("CHANGES_RL")
+			print(L["AddOnData"].SkinnerText)
+		else
+			print(L["AddOnData"].SkinnerNotText)
 		end
 	elseif msg == "all" or msg == "addons" then
 		SetupAddons()
