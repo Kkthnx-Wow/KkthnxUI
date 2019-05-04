@@ -525,6 +525,7 @@ C["Unitframe"] = {
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
 	["GlobalCooldown"] = false,
+	["HideTargetofTarget"] = false,
 	["MouseoverHighlight"] = true,
 	["OnlyShowPlayerDebuff"] = false,
 	["PlayerBuffs"] = false,
