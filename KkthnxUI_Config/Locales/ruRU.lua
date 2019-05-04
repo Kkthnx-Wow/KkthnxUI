@@ -1330,6 +1330,11 @@ KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Unit Prefix Style",
 			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
 		},
+		
+		["HideTargetofTarget"] = {
+			["Name"] = "Hide TargetofTarget",
+			["Desc"] = "Hides the TargetofTarget frames on Target and Focus.",
+		},
 	},
 
 	-- Arena Local
