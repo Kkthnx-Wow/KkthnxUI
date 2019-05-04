@@ -1241,9 +1241,12 @@ function Module:CreateUnits()
 		Target:SetPoint("BOTTOMLEFT", "ActionBarAnchor", "TOPRIGHT", -44, 200)
 		Target:SetSize(200, 52)
 
-		local TargetOfTarget = oUF:Spawn("targettarget")
-		TargetOfTarget:SetPoint("TOPLEFT", Target, "BOTTOMRIGHT", -56, 2)
-		TargetOfTarget:SetSize(116, 36)
+		if not C["Unitframe"].HideTargetofTarget then
+			local TargetOfTarget = oUF:Spawn("targettarget")
+			TargetOfTarget:SetPoint("TOPLEFT", Target, "BOTTOMRIGHT", -56, 2)
+			TargetOfTarget:SetSize(116, 36)
+			Movers:RegisterFrame(TargetOfTarget)
+		end
 
 		local Pet = oUF:Spawn("pet")
 		if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
@@ -1256,9 +1259,12 @@ function Module:CreateUnits()
 		Focus:SetPoint("BOTTOMRIGHT", Player, "TOPLEFT", -60, 30)
 		Focus:SetSize(190, 52)
 
-		local FocusTarget = oUF:Spawn("focustarget")
-		FocusTarget:SetPoint("TOPRIGHT", Focus, "BOTTOMLEFT", 56, 2)
-		FocusTarget:SetSize(116, 36)
+		if not C["Unitframe"].HideTargetofTarget then
+			local FocusTarget = oUF:Spawn("focustarget")
+			FocusTarget:SetPoint("TOPRIGHT", Focus, "BOTTOMLEFT", 56, 2)
+			FocusTarget:SetSize(116, 36)
+			Movers:RegisterFrame(FocusTarget)
+		end
 
 		Module.Player = Player
 		Module.Target = Target
@@ -1332,10 +1338,8 @@ function Module:CreateUnits()
 
 		Movers:RegisterFrame(Player)
 		Movers:RegisterFrame(Target)
-		Movers:RegisterFrame(TargetOfTarget)
 		Movers:RegisterFrame(Pet)
 		Movers:RegisterFrame(Focus)
-		Movers:RegisterFrame(FocusTarget)
 	end
 
 	if C["Nameplates"].Enable then
