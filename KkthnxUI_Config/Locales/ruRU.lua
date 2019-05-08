@@ -1193,6 +1193,10 @@ KkthnxUIConfig["ruRU"] = {
 
 	-- Unitframe Local
 	["Unitframe"] = {
+		["AdditionalPower"] = {
+			["Name"] = "Show AdditionalPowerbar",
+		},
+
 		["ClassResource"] = {
 			["Name"] = "Ресурсы класса",
 			["Desc"] = "Показывать ресурсы класса на рамке игрока (Комбо-очки, Руны...)",

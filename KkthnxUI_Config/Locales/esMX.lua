@@ -1198,6 +1198,10 @@ KkthnxUIConfig["esMX"] = {
 
 	-- Unitframe Local
 	["Unitframe"] = {
+		["AdditionalPower"] = {
+			["Name"] = "Show AdditionalPowerbar",
+		},
+
 		["ClassResource"] = {
 			["Name"] = "Class Resource",
 			["Desc"] = "Display class resources on the player frame (Combo, Runes...)",
