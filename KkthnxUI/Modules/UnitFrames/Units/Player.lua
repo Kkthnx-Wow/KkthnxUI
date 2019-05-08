@@ -204,23 +204,25 @@ function Module:CreatePlayer()
 		K.Movers:RegisterFrame(self.Castbar)
 	end
 
-	self.AdditionalPower = CreateFrame("StatusBar", "AdditionalPower", self.Health)
-	self.AdditionalPower:SetFrameStrata(self:GetFrameStrata())
-	self.AdditionalPower:SetHeight(12)
-	self.AdditionalPower:SetWidth(self.Portrait:GetWidth() + self.Health:GetWidth() + 6)
-	self.AdditionalPower:SetPoint("LEFT", self.Portrait)
-	self.AdditionalPower:SetPoint("RIGHT")
-	self.AdditionalPower:SetStatusBarTexture(UnitframeTexture)
-	self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power["MANA"]))
-	self.AdditionalPower:ClearAllPoints()
-	self.AdditionalPower:SetPoint("BOTTOM", self, "TOP", 0, 3)
-	self.AdditionalPower:CreateBorder()
+	if C["Unitframe"].AdditionalPower then
+		self.AdditionalPower = CreateFrame("StatusBar", "AdditionalPower", self.Health)
+		self.AdditionalPower:SetFrameStrata(self:GetFrameStrata())
+		self.AdditionalPower:SetHeight(12)
+		self.AdditionalPower:SetWidth(self.Portrait:GetWidth() + self.Health:GetWidth() + 6)
+		self.AdditionalPower:SetPoint("LEFT", self.Portrait)
+		self.AdditionalPower:SetPoint("RIGHT")
+		self.AdditionalPower:SetStatusBarTexture(UnitframeTexture)
+		self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power["MANA"]))
+		self.AdditionalPower:ClearAllPoints()
+		self.AdditionalPower:SetPoint("BOTTOM", self, "TOP", 0, 3)
+		self.AdditionalPower:CreateBorder()
 
-	K.Movers:RegisterFrame(self.AdditionalPower)
+		K.Movers:RegisterFrame(self.AdditionalPower)
 
-	self.AdditionalPower.Smooth = C["Unitframe"].Smooth
-	self.AdditionalPower.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
-	self.AdditionalPower.frequentUpdates = true
+		self.AdditionalPower.Smooth = C["Unitframe"].Smooth
+		self.AdditionalPower.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
+		self.AdditionalPower.frequentUpdates = true
+	end
 
 	self.LeaderIndicatorOverlay = CreateFrame("Frame", nil, self.Portrait.Borders)
 	self.LeaderIndicatorOverlay:SetAllPoints()

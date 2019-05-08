@@ -507,6 +507,7 @@ C["Tooltip"] = {
 
 -- Unitframe
 C["Unitframe"] = {
+	["AdditionalPower"] = true,
 	["CastClassColor"] = true,
 	["CastReactionColor"] = true,
 	["CastbarHeight"] = 20,
