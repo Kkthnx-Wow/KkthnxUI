@@ -149,6 +149,8 @@ function Module:UpdateClassPortraits(unit)
 	end
 end
 
+-- TODO: UpdatePortraitColor nil error
+-- This is returning a nil error at a very rare rate. @Rav99
 function Module:UpdatePortraitColor(unit, min, max)
     if not UnitIsConnected(unit) then
         self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
