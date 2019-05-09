@@ -176,8 +176,6 @@ function Module:UpdateHealth(unit, cur, max)
     Module.UpdatePortraitColor(parent, unit, cur, max)
 end
 
--- TODO: Module:UpdateColor(unit, cur, max) Needs rewrite
--- BODY: We need to rewrite this @Rav99
 function Module:UpdateColor(unit, cur, max)
 	local parent = self.__owner
 
@@ -211,6 +209,8 @@ function Module:UpdateColor(unit, cur, max)
 	end
 end
 
+-- TODO: PreUpdateThreat is just fucked
+-- BODY: We need a life.
 function Module:PreUpdateThreat(threat, unit)
 	local ROLE = IsInGroup() or IsInRaid() and UnitExists(unit.."target") and UnitGroupRolesAssigned(unit.."target") or "NONE"
 
