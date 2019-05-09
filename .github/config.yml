@@ -1,2 +1,4 @@
 todo:
   keyword: "-- TODO:"
+body:
+  keyword: "-- BODY:"
