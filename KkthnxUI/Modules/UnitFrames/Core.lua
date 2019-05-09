@@ -149,8 +149,6 @@ function Module:UpdateClassPortraits(unit)
 	end
 end
 
--- TODO: UpdatePortraitColor nil error
--- This is returning a nil error at a very rare rate. @Rav99
 function Module:UpdatePortraitColor(unit, min, max)
     if not UnitIsConnected(unit) then
         self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
@@ -178,7 +176,8 @@ function Module:UpdateHealth(unit, cur, max)
     Module.UpdatePortraitColor(parent, unit, cur, max)
 end
 
--- overrides oUF"s color function
+-- TODO: Module:UpdateColor(unit, cur, max) Needs rewrite
+-- BODY: We need to rewrite this @Rav99
 function Module:UpdateColor(unit, cur, max)
 	local parent = self.__owner
 
