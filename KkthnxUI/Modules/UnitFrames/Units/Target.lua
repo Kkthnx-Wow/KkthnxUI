@@ -151,10 +151,11 @@ function Module:CreateTarget()
 		self.Castbar.timeToHold = 0.4
 		self.Castbar.CustomDelayText = Module.CustomCastDelayText
 		self.Castbar.CustomTimeText = Module.CustomTimeText
+		self.Castbar.PostCastFailed = Module.PostCastFailedOrInterrupted
+		self.Castbar.PostCastInterrupted = Module.PostCastFailedOrInterrupted
 		self.Castbar.PostCastStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
 		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
-		self.Castbar.PostCastFailed = Module.PostCastFailedOrInterrupted
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)

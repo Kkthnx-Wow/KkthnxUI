@@ -547,6 +547,7 @@ function Module:PostCastStart(unit, name)
 			local extraTickRatio = extraTick / hastedTickSize
 
 			Module:SetCastTicks(self, baseTicks + bonusTicks, extraTickRatio)
+			self.hadTicks = true
 		elseif baseTicks and Module.ChannelTicksSize[name] then
 			local curHaste = UnitSpellHaste("player") * 0.01
 			local baseTickSize = Module.ChannelTicksSize[name]
@@ -555,8 +556,10 @@ function Module:PostCastStart(unit, name)
 			local extraTickRatio = extraTick / hastedTickSize
 
 			Module:SetCastTicks(self, baseTicks, extraTickRatio)
+			self.hadTicks = true
 		elseif baseTicks then
 			Module:SetCastTicks(self, baseTicks)
+			self.hadTicks = true
 		else
 			Module:HideTicks()
 		end
@@ -586,67 +589,24 @@ function Module:PostCastStart(unit, name)
 	self:SetStatusBarColor(r, g, b)
 end
 
-function Module:PostCastStop()
-	self.chainChannel = nil
-	self.prevSpellCast = nil
-end
+function Module:PostCastFailedOrInterrupted()
+	self:SetMinMaxValues(0, 1)
+	self:SetValue(self.max)
+	self:SetStatusBarColor(1.0, 0.0, 0.0)
 
-function Module:PostChannelUpdate(unit, name)
-	if not (unit == "player" or unit == "vehicle") then
-		return
+	if self.Time then
+		self.Time:SetText("")
 	end
 
-	if C["Unitframe"].CastbarTicks then
-		local baseTicks = Module.ChannelTicks[name]
+	if self.Spark then
+		self.Spark:SetPoint("CENTER", self, "RIGHT")
+	end
+end
 
-		if baseTicks and Module.ChannelTicksSize[name] and Module.HastedChannelTicks[name] then
-			local tickIncRate = 1 / baseTicks
-			local curHaste = UnitSpellHaste("player") * 0.01
-			local firstTickInc = tickIncRate / 2
-			local bonusTicks = 0
-			if curHaste >= firstTickInc then
-				bonusTicks = bonusTicks + 1
-			end
-
-			local x = tonumber(K.Round(firstTickInc + tickIncRate, 2))
-			while curHaste >= x do
-				x = tonumber(K.Round(firstTickInc + (tickIncRate * bonusTicks), 2))
-				if curHaste >= x then
-					bonusTicks = bonusTicks + 1
-				end
-			end
-
-			local baseTickSize = Module.ChannelTicksSize[name]
-			local hastedTickSize = baseTickSize / (1 + curHaste)
-			local extraTick = self.max - hastedTickSize * (baseTicks + bonusTicks)
-
-			if self.chainChannel then
-				self.extraTickRatio = extraTick / hastedTickSize
-				self.chainChannel = nil
-			end
-
-			Module:SetCastTicks(self, baseTicks + bonusTicks, self.extraTickRatio)
-		elseif baseTicks and Module.ChannelTicksSize[name] then
-			local curHaste = UnitSpellHaste("player") * 0.01
-			local baseTickSize = Module.ChannelTicksSize[name]
-			local hastedTickSize = baseTickSize / (1 + curHaste)
-			local extraTick = self.max - hastedTickSize * (baseTicks)
-			if self.chainChannel then
-				self.extraTickRatio = extraTick / hastedTickSize
-				self.chainChannel = nil
-			end
-
-			Module:SetCastTicks(self, baseTicks, self.extraTickRatio)
-		elseif baseTicks then
-			if self.chainChannel then
-				baseTicks = baseTicks + 1
-			end
-			Module:SetCastTicks(self, baseTicks)
-		else
-			Module:HideTicks()
-		end
-	else
+function Module:PostCastStop(unit)
+	if self.hadTicks and unit == 'player' then
 		Module:HideTicks()
+		self.hadTicks = false
 	end
 end
 
@@ -677,12 +637,16 @@ function Module:PostCastInterruptible(unit)
 	self:SetStatusBarColor(r, g, b)
 end
 
-function Module:PostCastFailedOrInterrupted()
+function Module:PostCastFail()
 	self:SetStatusBarColor(1.0, 0.0, 0.0)
 	self:SetValue(self.max)
 
 	if (self.Time) then
 		self.Time:SetText("")
+	end
+
+	if (self.Spark) then
+		self.Spark:SetPoint("CENTER", self, "RIGHT")
 	end
 end
 
