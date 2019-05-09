@@ -106,8 +106,8 @@ function Module:CreateNameplates()
 	self.Castbar.timeToHold = 0.4
 	self.Castbar.CustomDelayText = Module.CustomCastDelayText
 	self.Castbar.CustomTimeText = Module.CustomTimeText
-	self.Castbar.PostCastFailed = Module.PostCastFailedOrInterrupted
-	self.Castbar.PostCastInterrupted = Module.PostCastFailedOrInterrupted
+	self.Castbar.PostCastFailed = Module.PostCastFailed
+	self.Castbar.PostCastInterrupted = Module.PostCastFailed
 	self.Castbar.PostCastStart = Module.PostCastStart
 	self.Castbar.PostCastStop = Module.PostCastStop
 	self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
