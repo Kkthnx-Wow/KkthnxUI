@@ -106,10 +106,11 @@ function Module:CreateNameplates()
 	self.Castbar.timeToHold = 0.4
 	self.Castbar.CustomDelayText = Module.CustomCastDelayText
 	self.Castbar.CustomTimeText = Module.CustomTimeText
+	self.Castbar.PostCastFailed = Module.PostCastFailed
+	self.Castbar.PostCastInterrupted = Module.PostCastFailed
 	self.Castbar.PostCastStart = Module.PostCastStart
 	self.Castbar.PostCastStop = Module.PostCastStop
 	self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
-	self.Castbar.PostCastFailed = Module.PostCastFailedOrInterrupted
 
 	self.Castbar.Time = self.Castbar:CreateFontString(nil, "ARTWORK")
 	self.Castbar.Time:SetPoint("TOPRIGHT", self.Castbar, "BOTTOMRIGHT", 0, -2)
@@ -165,7 +166,7 @@ function Module:CreateNameplates()
 
 	if C["FloatingCombatFeedback"].Enable and C["FloatingCombatFeedback"].Style.Value == "Nameplates" then
 		Module.CreateNameplateCombatFeedback(self)
-	end	
+	end
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self, C["Nameplates"].Width)
 	Module.CreateDebuffHighlight(self)

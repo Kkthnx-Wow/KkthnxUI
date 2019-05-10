@@ -30,6 +30,8 @@ This is how another addon imports the KkthnxUI engine:
 local K, C, L = unpack(KkthnxUI)
 ]]
 
+-- ISSUE Review the engine and clean it up. Performance!
+
 local _G = _G
 local math_max = math.max
 local math_min = math.min

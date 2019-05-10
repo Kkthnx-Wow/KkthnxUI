@@ -152,15 +152,11 @@ function Module:CreatePlayer()
 		self.Castbar.timeToHold = 0.4
 		self.Castbar.CustomDelayText = Module.CustomCastDelayText
 		self.Castbar.CustomTimeText = Module.CustomTimeText
+		self.Castbar.PostCastFailed = Module.PostCastFailed
+		self.Castbar.PostCastInterrupted = Module.PostCastFailed
 		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostChannelStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostChannelStop = Module.PostCastStop
-		self.Castbar.PostChannelUpdate = Module.PostChannelUpdate
 		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
-		self.Castbar.PostCastNotInterruptible = Module.PostCastNotInterruptible
-		self.Castbar.PostCastFailed = Module.PostCastFailedOrInterrupted
-		self.Castbar.PostCastInterrupted = Module.PostCastFailedOrInterrupted
 
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
