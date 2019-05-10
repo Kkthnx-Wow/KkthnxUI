@@ -692,19 +692,19 @@ Module.UnImportantBuffs = {
 
 -- List of spells to display ticks
 Module.ChannelTicks = {
-	-- Warlock
-	[SpellName(198590)] = 6, -- Drain Soul
-	[SpellName(755)] = 6, -- Health Funnel
-	-- Priest
-	[SpellName(64843)] = 4, -- Divine Hymn
-	[SpellName(15407)] = 4, -- Mind Flay
-	[SpellName(48045)] = 5, -- Mind Flay
-	-- Mage
-	[SpellName(5143)] = 5, -- Arcane Missiles
-	[SpellName(12051)] = 3, -- Evocation
-	[SpellName(205021)] = 10, -- Ray of Frost
-	--Druid
-	[SpellName(740)] = 4, -- Tranquility
+    -- Warlock
+    [198590] = 6, -- Drain Soul
+    [755] = 6, -- Health Funnel
+    -- Priest
+    [64843] = 4, -- Divine Hymn
+    [15407] = 4, -- Mind Flay
+    [48045] = 5, -- Mind Flay
+    -- Mage
+    [5143] = 5, -- Arcane Missiles
+    [12051] = 3, -- Evocation
+    [205021] = 10, -- Ray of Frost
+    --Druid
+    [740] = 4, -- Tranquility
 }
 
 local CastTickCheck = _G.CreateFrame("Frame")

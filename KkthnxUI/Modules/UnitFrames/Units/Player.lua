@@ -155,6 +155,7 @@ function Module:CreatePlayer()
 		self.Castbar.PostCastFailed = Module.PostCastFailed
 		self.Castbar.PostCastInterrupted = Module.PostCastFailed
 		self.Castbar.PostCastStart = Module.PostCastStart
+		self.Castbar.PostChannelStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
 		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
 
