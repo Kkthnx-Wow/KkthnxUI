@@ -17,16 +17,29 @@ local function UpdateThreat(self, _, unit)
 		return
 	end
 
-	if (self.Portrait.Borders) then
-		local Status = UnitThreatSituation(unit)
+	if C["Unitframe"].ShowPortrait then
+		if (self.Portrait.Borders) then
+			local Status = UnitThreatSituation(unit)
 
-		if (Status and Status > 0) then
-			local r, g, b = GetThreatStatusColor(Status)
-			self.Portrait.Borders:SetBackdropBorderColor(r, g, b)
-		else
-			self.Portrait.Borders:SetBackdropBorderColor()
+			if (Status and Status > 0) then
+				local r, g, b = GetThreatStatusColor(Status)
+				self.Portrait.Borders:SetBackdropBorderColor(r, g, b)
+			else
+				self.Portrait.Borders:SetBackdropBorderColor()
+			end
 		end
-	end
+	else
+		if (self.Health) then
+			local Status = UnitThreatSituation(unit)
+
+			if (Status and Status > 0) then
+				local r, g, b = GetThreatStatusColor(Status)
+				self.Health:SetBackdropBorderColor(r, g, b)
+			else
+				self.Health:SetBackdropBorderColor()
+			end
+		end
+	end	
 end
 
 function Module:CreateThreatIndicator()
@@ -51,6 +64,8 @@ function Module:CreateThreatPercent(tPoint, tRelativePoint, tOfsx, tOfsy, tSize)
 end
 
 function Module:CreatePortraitTimers()
+	if not C["Unitframe"].ShowPortrait then return end
+
 	self.PortraitTimer = CreateFrame("Frame", nil, self.Health)
 	self.PortraitTimer:SetInside(self.Portrait, 1, 1)
 	self.PortraitTimer:CreateInnerShadow()
@@ -71,28 +86,47 @@ function Module:CreateTrinkets()
 end
 
 function Module:CreateResurrectIndicator(size)
-	size = size or self.Portrait:GetSize()
-
-	self.ResurrectIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
-	self.ResurrectIndicator:SetSize(size, size)
-	self.ResurrectIndicator:SetPoint("CENTER", self.Portrait.Borders)
+	if C["Unitframe"].ShowPortrait then
+		size = size or self.Portrait:GetSize()
+		self.ResurrectIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
+		self.ResurrectIndicator:SetSize(size, size)
+		self.ResurrectIndicator:SetPoint("CENTER", self.Portrait.Borders)
+	else
+		size = size or 18
+		self.ResurrectIndicator = self.Health:CreateTexture(nil, "OVERLAY", 7)
+		self.ResurrectIndicator:SetSize(size, size)
+		self.ResurrectIndicator:SetPoint("CENTER", self.Health)
+	end
 end
 
 function Module:CreateOfflineIndicator(size, position)
-	size = size or self.Portrait:GetSize()
-	position = position or "CENTER"
-
-	self.OfflineIcon = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
-	self.OfflineIcon:SetSize(size, size)
-	self.OfflineIcon:SetPoint(position, self.Portrait.Borders)
+	if C["Unitframe"].ShowPortrait then
+		size = size or self.Portrait:GetSize()
+		position = position or "CENTER"
+		self.OfflineIcon = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
+		self.OfflineIcon:SetSize(size, size)
+		self.OfflineIcon:SetPoint("CENTER", self.Portrait.Borders)
+	else
+		size = size or 18
+		position = position or "CENTER"
+		self.OfflineIcon = self.Health:CreateTexture(nil, "OVERLAY", 7)
+		self.OfflineIcon:SetSize(size, size)
+		self.OfflineIcon:SetPoint("CENTER", self.Health)
+	end
 end
 
 function Module:CreateSummonIndicator(size)
-	size = size or self.Portrait:GetSize()
-
-	self.SummonIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
-	self.SummonIndicator:SetSize(size, size)
-	self.SummonIndicator:SetPoint("CENTER", self.Portrait.Borders)
+	if C["Unitframe"].ShowPortrait then
+		size = size or self.Portrait:GetSize()
+		self.SummonIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
+		self.SummonIndicator:SetSize(size, size)
+		self.SummonIndicator:SetPoint("CENTER", self.Portrait.Borders)
+	else
+		size = size or 18
+		self.SummonIndicator = self.Health:CreateTexture(nil, "OVERLAY", 7)
+		self.SummonIndicator:SetSize(size, size)
+		self.SummonIndicator:SetPoint("CENTER", self.Health)
+	end
 end
 
 function Module:CreateDebuffHighlight()
@@ -119,8 +153,13 @@ end
 
 function Module:CreateReadyCheckIndicator()
 	self.ReadyCheckIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait.Borders)
-	self.ReadyCheckIndicator:SetSize(self.Portrait.Borders:GetWidth() - 4, self.Portrait.Borders:GetHeight() - 4)
+	if C["Unitframe"].ShowPortrait then
+		self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait.Borders)
+		self.ReadyCheckIndicator:SetSize(self.Portrait.Borders:GetWidth() - 4, self.Portrait.Borders:GetHeight() - 4)
+	else
+		self.ReadyCheckIndicator:SetPoint("CENTER", self.Health)
+		self.ReadyCheckIndicator:SetSize(self.Health:GetWidth() - 4, self.Health:GetHeight() - 4)
+	end
 	self.ReadyCheckIndicator.finishedTime = 5
 	self.ReadyCheckIndicator.fadeTime = 3
 end
@@ -128,9 +167,15 @@ end
 function Module:CreateRaidTargetIndicator(size)
 	size = size or 16
 
-	self.RaidTargetOverlay = CreateFrame("Frame", nil, self.Portrait.Borders)
-	self.RaidTargetOverlay:SetAllPoints()
-	self.RaidTargetOverlay:SetFrameLevel(self.Portrait.Borders:GetFrameLevel() + 4)
+	if C["Unitframe"].ShowPortrait then
+		self.RaidTargetOverlay = CreateFrame("Frame", nil, self.Portrait.Borders)
+		self.RaidTargetOverlay:SetAllPoints()
+		self.RaidTargetOverlay:SetFrameLevel(self.Portrait.Borders:GetFrameLevel() + 4)
+	else
+		self.RaidTargetOverlay = CreateFrame("Frame", nil, self.Health)
+		self.RaidTargetOverlay:SetAllPoints()
+		self.RaidTargetOverlay:SetFrameLevel(self.Health:GetFrameLevel() + 4)
+	end
 
 	self.RaidTargetIndicator = self.RaidTargetOverlay:CreateTexture(nil, "OVERLAY", 7)
 	self.RaidTargetIndicator:SetPoint("TOP", self.RaidTargetOverlay, 0, 10)
@@ -305,7 +350,11 @@ local function PostUpdatePvPIndicator(self, unit, status)
 end
 
 function Module:CreatePvPIndicator(unit, parent, width, height)
-	parent = parent or self.Portrait.Borders
+	if C["Unitframe"].ShowPortrait then
+		parent = parent or self.Portrait.Borders
+	else
+		parent = parent or self.Health
+	end
 	width = width or 30
 	height = height or 33
 
@@ -325,7 +374,11 @@ end
 function Module.CreateCombatFeedback(self)
 	local cf = CreateFrame("Frame", nil, self)
 	cf:SetSize(32, 32)
-	cf:SetPoint("CENTER", self.Portrait, "CENTER", 0, -1)
+	if C["Unitframe"].ShowPortrait then
+		cf:SetPoint("CENTER", self.Portrait, "CENTER", 0, -1)
+	else
+		cf:SetPoint("CENTER", self.Health, "CENTER", 0, -1)
+	end
 	cf:SetFrameStrata("TOOLTIP")
 
 	self.CombatText = cf:CreateFontString(nil, "OVERLAY")

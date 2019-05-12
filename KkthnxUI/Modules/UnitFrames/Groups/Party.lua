@@ -77,30 +77,32 @@ function Module:CreateParty()
 	self.Power.colorPower = true
 	self.Power.SetFrequentUpdates = true
 
-	if (C["Party"].PortraitStyle.Value == "ThreeDPortraits") then
-		self.Portrait = CreateFrame("PlayerModel", nil, self)
-		self.Portrait:SetSize(32, 32)
-		self.Portrait:SetPoint("LEFT", self, 3, 0)
-		self.Portrait:SetAlpha(0.9)
+	if C["Unitframe"].ShowPortrait then
+		if (C["Party"].PortraitStyle.Value == "ThreeDPortraits") then
+			self.Portrait = CreateFrame("PlayerModel", nil, self)
+			self.Portrait:SetSize(32, 32)
+			self.Portrait:SetPoint("LEFT", self, 3, 0)
+			self.Portrait:SetAlpha(0.9)
 
-		self.Portrait.Borders = CreateFrame("Frame", nil, self)
-		self.Portrait.Borders:SetPoint("LEFT", self, 3, 0)
-		self.Portrait.Borders:SetSize(32, 32)
-		self.Portrait.Borders:CreateBorder()
-		self.Portrait.Borders:CreateInnerShadow()
-	elseif (C["Party"].PortraitStyle.Value ~= "ThreeDPortraits") then
-		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
-		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-		self.Portrait:SetSize(32, 32)
-		self.Portrait:SetPoint("LEFT", self, 3, 0)
+			self.Portrait.Borders = CreateFrame("Frame", nil, self)
+			self.Portrait.Borders:SetPoint("LEFT", self, 3, 0)
+			self.Portrait.Borders:SetSize(32, 32)
+			self.Portrait.Borders:CreateBorder()
+			self.Portrait.Borders:CreateInnerShadow()
+		elseif (C["Party"].PortraitStyle.Value ~= "ThreeDPortraits") then
+			self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
+			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+			self.Portrait:SetSize(32, 32)
+			self.Portrait:SetPoint("LEFT", self, 3, 0)
 
-		self.Portrait.Borders = CreateFrame("Frame", nil, self)
-		self.Portrait.Borders:SetPoint("LEFT", self, 3, 0)
-		self.Portrait.Borders:SetSize(32, 32)
-		self.Portrait.Borders:CreateBorder()
+			self.Portrait.Borders = CreateFrame("Frame", nil, self)
+			self.Portrait.Borders:SetPoint("LEFT", self, 3, 0)
+			self.Portrait.Borders:SetSize(32, 32)
+			self.Portrait.Borders:CreateBorder()
 
-		if (C["Party"].PortraitStyle.Value == "ClassPortraits" or C["Party"].PortraitStyle.Value == "NewClassPortraits") then
-			self.Portrait.PostUpdate = Module.UpdateClassPortraits
+			if (C["Party"].PortraitStyle.Value == "ClassPortraits" or C["Party"].PortraitStyle.Value == "NewClassPortraits") then
+				self.Portrait.PostUpdate = Module.UpdateClassPortraits
+			end
 		end
 	end
 

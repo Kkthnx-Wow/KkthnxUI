@@ -77,32 +77,34 @@ function Module:CreatePlayer()
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
 	self:Tag(self.Power.Value, "[KkthnxUI:PowerCurrent]")
 
-	if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
-		self.Portrait = CreateFrame("PlayerModel", nil, self)
-		self.Portrait:SetSize(46, 46)
-		self.Portrait:SetPoint("LEFT", self, 4, 0)
-		self.Portrait:SetAlpha(0.9)
+	if C["Unitframe"].ShowPortrait then
+		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
+			self.Portrait = CreateFrame("PlayerModel", nil, self)
+			self.Portrait:SetSize(46, 46)
+			self.Portrait:SetPoint("LEFT", self, 4, 0)
+			self.Portrait:SetAlpha(0.9)
 
-		self.Portrait.Borders = CreateFrame("Frame", nil, self)
-		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
-		self.Portrait.Borders:SetSize(46, 46)
-		self.Portrait.Borders:CreateBorder()
-		self.Portrait.Borders:CreateInnerShadow()
-	elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
-		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
-		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-		self.Portrait:SetSize(46, 46)
-		self.Portrait:SetPoint("LEFT", self, 4, 0)
+			self.Portrait.Borders = CreateFrame("Frame", nil, self)
+			self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
+			self.Portrait.Borders:SetSize(46, 46)
+			self.Portrait.Borders:CreateBorder()
+			self.Portrait.Borders:CreateInnerShadow()
+		elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
+			self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
+			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+			self.Portrait:SetSize(46, 46)
+			self.Portrait:SetPoint("LEFT", self, 4, 0)
 
-		self.Portrait.Borders = CreateFrame("Frame", nil, self)
-		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
-		self.Portrait.Borders:SetSize(46, 46)
-		self.Portrait.Borders:CreateBorder()
+			self.Portrait.Borders = CreateFrame("Frame", nil, self)
+			self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
+			self.Portrait.Borders:SetSize(46, 46)
+			self.Portrait.Borders:CreateBorder()
 
-		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
-			self.Portrait.PostUpdate = Module.UpdateClassPortraits
+			if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
+				self.Portrait.PostUpdate = Module.UpdateClassPortraits
+			end
 		end
-	end
+	end	
 
 	if C["Raid"].ShowGroupText then
 		self.GroupNumber = self:CreateFontString(nil, "OVERLAY")
@@ -205,13 +207,19 @@ function Module:CreatePlayer()
 		self.AdditionalPower = CreateFrame("StatusBar", "AdditionalPower", self.Health)
 		self.AdditionalPower:SetFrameStrata(self:GetFrameStrata())
 		self.AdditionalPower:SetHeight(12)
-		self.AdditionalPower:SetWidth(self.Portrait:GetWidth() + self.Health:GetWidth() + 6)
-		self.AdditionalPower:SetPoint("LEFT", self.Portrait)
-		self.AdditionalPower:SetPoint("RIGHT")
+		if C["Unitframe"].ShowPortrait then
+			self.AdditionalPower:SetWidth(self.Portrait:GetWidth() + self.Health:GetWidth() + 6)
+			self.AdditionalPower:SetPoint("LEFT", self.Portrait)
+			self.AdditionalPower:SetPoint("RIGHT")
+			self.AdditionalPower:ClearAllPoints()
+			self.AdditionalPower:SetPoint("BOTTOM", self, "TOP", 0, 3)
+		else
+			self.AdditionalPower:SetWidth(self.Health:GetWidth())
+			self.AdditionalPower:ClearAllPoints()
+			self.AdditionalPower:SetPoint("BOTTOM", self, "TOP", 25, 3)
+		end
 		self.AdditionalPower:SetStatusBarTexture(UnitframeTexture)
 		self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power["MANA"]))
-		self.AdditionalPower:ClearAllPoints()
-		self.AdditionalPower:SetPoint("BOTTOM", self, "TOP", 0, 3)
 		self.AdditionalPower:CreateBorder()
 
 		K.Movers:RegisterFrame(self.AdditionalPower)
@@ -221,7 +229,11 @@ function Module:CreatePlayer()
 		self.AdditionalPower.frequentUpdates = true
 	end
 
-	self.LeaderIndicatorOverlay = CreateFrame("Frame", nil, self.Portrait.Borders)
+	if C["Unitframe"].ShowPortrait then
+		self.LeaderIndicatorOverlay = CreateFrame("Frame", nil, self.Portrait.Borders)
+	else
+		self.LeaderIndicatorOverlay = CreateFrame("Frame", nil, self.Health)
+	end
 	self.LeaderIndicatorOverlay:SetAllPoints()
 	self.LeaderIndicatorOverlay:SetFrameLevel(4) -- self.Portrait.Borders = 3 so we put it 1 higher. Watch this.
 

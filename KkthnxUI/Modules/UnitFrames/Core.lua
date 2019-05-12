@@ -150,6 +150,8 @@ function Module:UpdateClassPortraits(unit)
 end
 
 function Module:UpdatePortraitColor(unit, min, max)
+if not C["Unitframe"].ShowPortrait then return end
+
     if not UnitIsConnected(unit) then
         self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
     elseif UnitIsDead(unit) then
