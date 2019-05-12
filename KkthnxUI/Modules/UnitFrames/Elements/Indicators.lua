@@ -374,7 +374,11 @@ end
 function Module.CreateCombatFeedback(self)
 	local cf = CreateFrame("Frame", nil, self)
 	cf:SetSize(32, 32)
-	cf:SetPoint("CENTER", self.Portrait, "CENTER", 0, -1)
+	if C["Unitframe"].ShowPortrait then
+		cf:SetPoint("CENTER", self.Portrait, "CENTER", 0, -1)
+	else
+		cf:SetPoint("CENTER", self.Health, "CENTER", 0, -1)
+	end
 	cf:SetFrameStrata("TOOLTIP")
 
 	self.CombatText = cf:CreateFontString(nil, "OVERLAY")
