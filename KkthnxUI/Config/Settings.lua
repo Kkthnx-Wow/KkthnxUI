@@ -532,6 +532,7 @@ C["Unitframe"] = {
 	["PlayerBuffs"] = false,
 	["PortraitTimers"] = false,
 	["PowerPredictionBar"] = true,
+	["ShowPortrait"] = true,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
 	["Texture"] = "KkthnxUI",

@@ -70,29 +70,31 @@ function Module:CreateTargetOfTarget()
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
 
-	if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
-		self.Portrait = CreateFrame("PlayerModel", nil, self)
-		self.Portrait:SetSize(26, 26)
-		self.Portrait:SetPoint("RIGHT", self, -4, 0)
-		self.Portrait:SetAlpha(0.9)
+	if C["Unitframe"].ShowPortrait then
+		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
+			self.Portrait = CreateFrame("PlayerModel", nil, self)
+			self.Portrait:SetSize(26, 26)
+			self.Portrait:SetPoint("RIGHT", self, -4, 0)
+			self.Portrait:SetAlpha(0.9)
 
-		self.Portrait.Borders = CreateFrame("Frame", nil, self)
-		self.Portrait.Borders:SetPoint("RIGHT", self, -4, 0)
-		self.Portrait.Borders:SetSize(26, 26)
-		self.Portrait.Borders:CreateBorder()
-		self.Portrait.Borders:CreateInnerShadow()
-	elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
-		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
-		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-		self.Portrait:SetSize(26, 26)
-		self.Portrait:SetPoint("RIGHT", self, -4, 0)
+			self.Portrait.Borders = CreateFrame("Frame", nil, self)
+			self.Portrait.Borders:SetPoint("RIGHT", self, -4, 0)
+			self.Portrait.Borders:SetSize(26, 26)
+			self.Portrait.Borders:CreateBorder()
+			self.Portrait.Borders:CreateInnerShadow()
+		elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
+			self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
+			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+			self.Portrait:SetSize(26, 26)
+			self.Portrait:SetPoint("RIGHT", self, -4, 0)
 
-		self.Portrait.Borders = CreateFrame("Frame", nil, self)
-		self.Portrait.Borders:SetPoint("RIGHT", self, -4, 0)
-		self.Portrait.Borders:SetSize(26, 26)
-		self.Portrait.Borders:CreateBorder()
-		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
-			self.Portrait.PostUpdate = Module.UpdateClassPortraits
+			self.Portrait.Borders = CreateFrame("Frame", nil, self)
+			self.Portrait.Borders:SetPoint("RIGHT", self, -4, 0)
+			self.Portrait.Borders:SetSize(26, 26)
+			self.Portrait.Borders:CreateBorder()
+			if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
+				self.Portrait.PostUpdate = Module.UpdateClassPortraits
+			end
 		end
 	end
 
