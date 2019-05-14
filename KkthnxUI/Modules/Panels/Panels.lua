@@ -46,6 +46,18 @@ else
 end
 Movers:RegisterFrame(RightBarAnchor)
 
+-- BottomBar4 anchor
+if C["ActionBar"].BottomFour == true and not C["ActionBar"].ToggleMode == true and C["ActionBar"].RightBars == 2 and C["ActionBar"].BottomBars == 3 then
+	local BottomBar4Anchor = CreateFrame("Frame", "BottomBar4Anchor", K.PetBattleHider)
+	BottomBar4Anchor:SetSize(1, 1)
+	BottomBar4Anchor:SetPoint("BOTTOM", BottomBarAnchor, "TOP", 0, 6)
+	BottomBar4Anchor:SetFrameLevel(10)
+	BottomBar4Anchor:SetFrameStrata("LOW")
+	BottomBar4Anchor:SetWidth((C["ActionBar"].ButtonSize * 12) + (C["ActionBar"].ButtonSpace * 11))
+	BottomBar4Anchor:SetHeight((C["ActionBar"].ButtonSize) + (C["ActionBar"].ButtonSpace))
+	Movers:RegisterFrame(BottomBar4Anchor)
+end
+
 -- Split bar anchor
 if C["ActionBar"].SplitBars then
 	local SplitBarLeft = CreateFrame("Frame", "SplitBarLeft", K.PetBattleHider)
