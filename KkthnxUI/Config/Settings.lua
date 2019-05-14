@@ -21,6 +21,7 @@ local PLAYER = _G.PLAYER
 C["ActionBar"] = {
 	["AddNewSpells"] = true,
 	["BottomBars"] = 2,
+	["BottomFour"] = true,
 	["ButtonSize"] = 34,
 	["ButtonSpace"] = 6,
 	["Cooldowns"] = true,

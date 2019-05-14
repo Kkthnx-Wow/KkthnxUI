@@ -25,7 +25,7 @@ for i = 1, NUM_ACTIONBAR_BUTTONS do
 	local b2 = _G["MultiBarLeftButton"..i - 1]
 
 	b:ClearAllPoints()
-		
+
 	if C["ActionBar"].BottomFour == true and not C["ActionBar"].ToggleMode == true and C["ActionBar"].RightBars == 2 and C["ActionBar"].BottomBars == 3 then
 		if i == 1 then
 			b:SetPoint("BOTTOMLEFT", BottomBar4Anchor, 0, 0)
