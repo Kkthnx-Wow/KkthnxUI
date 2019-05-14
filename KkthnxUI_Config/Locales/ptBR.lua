@@ -332,6 +332,11 @@ KkthnxUIConfig["ptBR"] = {
 
 	-- Actionbar Local
 	["ActionBar"] = {
+		["BottomFour"] = {
+			["Name"] = "Show 4 Bottombars",
+			["Desc"] = "Display four bars on the bottom.|n|cffFF0000This only works if 'ToggleMode is off'|n'Bottombars are set to 3'|nand 'Rightbars are set zo 2'|r",
+		},
+
 		["MicroBar"] = {
 			["Name"] = "Micro Bar",
 			["Desc"] = "Enable",
@@ -1198,6 +1203,11 @@ KkthnxUIConfig["ptBR"] = {
 
 	-- Unitframe Local
 	["Unitframe"] = {
+		["ShowPortrait"] = {
+			["Name"] = "Show Portraits",
+			["Desc"] = "Display portraits on unitframes (Like on player frame, target frame, party frames...)",
+		},
+
 		["AdditionalPower"] = {
 			["Name"] = "Show AdditionalPowerbar",
 		},
