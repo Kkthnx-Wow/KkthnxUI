@@ -74,17 +74,17 @@ local menuList = {
 	end},
 
 	{text = L["Inventory"].Show_Bags, notCheckable = true, func = function()
-		if BankFrame:IsShown() then
-			CloseBankBagFrames()
-			CloseBankFrame()
-			CloseAllBags()
-		else
-			if ContainerFrame1:IsShown() then
+			if BankFrame:IsShown() then
+				CloseBankBagFrames()
+				CloseBankFrame()
 				CloseAllBags()
 			else
-				ToggleAllBags()
+				if ContainerFrame1:IsShown() then
+					CloseAllBags()
+				else
+					ToggleAllBags()
+				end
 			end
-		end
 	end},
 
 	{text = L["ConfigButton"].ToggleConfig, notCheckable = true, func = function()
@@ -311,9 +311,9 @@ function CopyChat:OnEnable()
 		CopyButton:SetHitRectInsets(5, 5, 4, 4)
 		CopyButton:SetPoint("TOPRIGHT", 26, 7)
 		CopyButton.Texture = CopyButton:CreateTexture(nil, "BACKGROUND")
-        CopyButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Chat")
-        CopyButton.Texture:SetAllPoints(true)
-        CopyButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+		CopyButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Chat")
+		CopyButton.Texture:SetAllPoints(true)
+		CopyButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
 		CopyButton:SetAlpha(0.25)
 		CopyButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
@@ -361,9 +361,9 @@ function CopyChat:OnEnable()
 		ConfigButton:SetHitRectInsets(5, 5, 4, 4)
 		ConfigButton:SetPoint("TOP", CopyButton, "BOTTOM", 0, 6)
 		ConfigButton.Texture = ConfigButton:CreateTexture(nil, "BACKGROUND")
-        ConfigButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Menu")
-        ConfigButton.Texture:SetAllPoints(true)
-        ConfigButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+		ConfigButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Menu")
+		ConfigButton.Texture:SetAllPoints(true)
+		ConfigButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
 		ConfigButton:SetAlpha(0.25)
 		ConfigButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
@@ -402,9 +402,9 @@ function CopyChat:OnEnable()
 		ActionbarButton:SetHitRectInsets(5, 5, 4, 4)
 		ActionbarButton:SetPoint("TOP", ConfigButton, "BOTTOM", 0, 0)
 		ActionbarButton.Texture = ActionbarButton:CreateTexture(nil, "BACKGROUND")
-        ActionbarButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Actionbars")
-        ActionbarButton.Texture:SetAllPoints(true)
-        ActionbarButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+		ActionbarButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Actionbars")
+		ActionbarButton.Texture:SetAllPoints(true)
+		ActionbarButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
 		ActionbarButton:SetAlpha(0.25)
 		ActionbarButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
@@ -452,9 +452,9 @@ function CopyChat:OnEnable()
 		BagsButton:SetHitRectInsets(5, 5, 4, 4)
 		BagsButton:SetPoint("TOP", ActionbarButton, "BOTTOM", 0, -2)
 		BagsButton.Texture = BagsButton:CreateTexture(nil, "BACKGROUND")
-        BagsButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Bags")
-        BagsButton.Texture:SetAllPoints(true)
-        BagsButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+		BagsButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Bags")
+		BagsButton.Texture:SetAllPoints(true)
+		BagsButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
 		BagsButton:SetAlpha(0.25)
 		BagsButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
@@ -473,7 +473,7 @@ function CopyChat:OnEnable()
 					end
 				end
 			end
-			end)
+		end)
 
 		BagsButton:SetScript("OnEnter", function(self)
 			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
@@ -495,8 +495,8 @@ function CopyChat:OnEnable()
 			end
 		end)
 
-		BagsButton.ChatFrame = frame
 		ActionbarButton.ChatFrame = frame
+		BagsButton.ChatFrame = frame
 		ConfigButton.ChatFrame = frame
 		CopyButton.ChatFrame = frame
 	end
