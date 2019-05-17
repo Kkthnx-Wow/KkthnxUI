@@ -25,10 +25,6 @@ function Module:CreateAuras(unit)
 	local Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	local Auras = CreateFrame("Frame", self:GetName() .. "Auras", self)
 
-	K.Movers:RegisterFrame(Buffs)
-	K.Movers:RegisterFrame(Debuffs)
-	K.Movers:RegisterFrame(Auras)
-
 	if (unit == "player") then
 		if K.Class == "ROGUE"
 		or K.Class == "DRUID"
