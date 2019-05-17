@@ -32,6 +32,7 @@ local menuFrame = CreateFrame("Frame", "QuickClickMenu", UIParent, "UIDropDownMe
 local middleButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:118:218|t "
 local leftButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "
 local rightButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "
+local classColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
 
 local canChangeMessage = function(arg1, id)
 	if id and arg1 == "" then
@@ -299,26 +300,32 @@ function CopyChat:OnEnable()
 		CopyFrame:Hide()
 	end)
 
-	-- Create copy/config button
+	-- Create copy button
 	for i = 1, NUM_CHAT_WINDOWS do
 		local frame = _G["ChatFrame"..i]
 		local id = frame:GetID()
 
 		local CopyButton = CreateFrame("Button", string_format("CopyChatButton%d", id), frame)
 		CopyButton:EnableMouse(true)
-		CopyButton:SetSize(22, 24)
+		CopyButton:SetSize(26, 26)
 		CopyButton:SetHitRectInsets(5, 5, 4, 4)
 		CopyButton:SetPoint("TOPRIGHT", 23, 0)
-		CopyButton:SetNormalTexture(C["Media"].Copy)
+		CopyButton.Texture = CopyButton:CreateTexture(nil, "BACKGROUND")
+        CopyButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Chat")
+        CopyButton.Texture:SetAllPoints(true)
+        CopyButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
 		CopyButton:SetAlpha(0.25)
 		CopyButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
 		CopyButton:SetScript("OnMouseUp", function(self, button)
 			if button == "RightButton" and id == 1 and not InCombatLockdown() then
+				PlaySound(111)
 				ToggleFrame(ChatMenu)
 			elseif button == "MiddleButton" then
+				PlaySound(36626)
 				RandomRoll(1, 100)
 			else
+				PlaySound(21968)
 				CopyChat:CopyText(self.ChatFrame)
 			end
 		end)
@@ -347,27 +354,171 @@ function CopyChat:OnEnable()
 		local ConfigButton = CreateFrame("Button", string_format("ConfigChatButton%d", id), frame)
 		ConfigButton:EnableMouse(true)
 		ConfigButton:SetSize(26, 26)
-		ConfigButton:SetHitRectInsets(6, 6, 7, 7)
+		ConfigButton:SetHitRectInsets(5, 5, 4, 4)
 		ConfigButton:SetPoint("TOP", CopyButton, "BOTTOM", 0, 6)
-		ConfigButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Config")
+		ConfigButton.Texture = ConfigButton:CreateTexture(nil, "BACKGROUND")
+        ConfigButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Menu")
+        ConfigButton.Texture:SetAllPoints(true)
+        ConfigButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
 		ConfigButton:SetAlpha(0.25)
 		ConfigButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
 		ConfigButton:SetScript("OnMouseUp", function(_, btn)
 			if btn == "LeftButton" or btn == "RightButton" then
+				PlaySound(111)
 				EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 2)
 			end
 		end)
 
 		ConfigButton:SetScript("OnEnter", function(self)
 			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
+			GameTooltip:SetOwner(self, anchor, xoff, yoff)
+			GameTooltip:ClearLines()
+			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Open Configmenu", 1, 1, 1)
+			GameTooltip:Show()
 		end)
 
 		ConfigButton:SetScript("OnLeave", function(self)
 			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+			if not GameTooltip:IsForbidden() then
+				GameTooltip:Hide()
+			end
 		end)
 
 		ConfigButton.ChatFrame = frame
 		CopyButton.ChatFrame = frame
+		
+		-- Create Charbutton
+		local CharButton = CreateFrame("Button", string_format("CharChatButton%d", id), frame)
+		CharButton:EnableMouse(true)
+		CharButton:SetSize(26, 26)
+		CharButton:SetHitRectInsets(5, 5, 4, 4)
+		CharButton:SetPoint("TOP", ConfigButton, "BOTTOM", 0, 6)
+		CharButton.Texture = CharButton:CreateTexture(nil, "BACKGROUND")
+        CharButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Char")
+        CharButton.Texture:SetAllPoints(true)
+        CharButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+		CharButton:SetAlpha(0.25)
+		CharButton:SetFrameLevel(frame:GetFrameLevel() + 5)
+
+		CharButton:SetScript("OnMouseUp", function(_, btn)
+			if btn == "LeftButton" or btn == "RightButton" then
+				PlaySound(111)
+				ToggleCharacter("PaperDollFrame")
+			end
+		end)
+
+		CharButton:SetScript("OnEnter", function(self)
+			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
+			GameTooltip:SetOwner(self, anchor, xoff, yoff)
+			GameTooltip:ClearLines()
+			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Open Paperdollframe", 1, 1, 1)
+			GameTooltip:Show()
+		end)
+
+		CharButton:SetScript("OnLeave", function(self)
+			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+			if not GameTooltip:IsForbidden() then
+				GameTooltip:Hide()
+			end
+		end)
+
+		CharButton.ChatFrame = frame
+		CharButton.ChatFrame = frame
+		
+		-- Create Actionbarbutton
+		local ActionbarButton = CreateFrame("Button", string_format("ActionbarChatButton%d", id), frame)
+		ActionbarButton:EnableMouse(true)
+		ActionbarButton:SetSize(16, 16)
+		ActionbarButton:SetHitRectInsets(5, 5, 4, 4)
+		ActionbarButton:SetPoint("TOP", CharButton, "BOTTOM", 0, 0)
+		ActionbarButton.Texture = ActionbarButton:CreateTexture(nil, "BACKGROUND")
+        ActionbarButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Actionbars")
+        ActionbarButton.Texture:SetAllPoints(true)
+        ActionbarButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+		ActionbarButton:SetAlpha(0.25)
+		ActionbarButton:SetFrameLevel(frame:GetFrameLevel() + 5)
+
+		ActionbarButton:SetScript("OnMouseUp", function(_, btn)
+			if btn == "LeftButton" or btn == "RightButton" then
+				if KkthnxUIData[K.Realm][K.Name].BarsLocked == true then
+					KkthnxUIData[K.Realm][K.Name].BarsLocked = false
+					K.Print(L["Actionbars"].Unlocked)
+				elseif KkthnxUIData[K.Realm][K.Name].BarsLocked == false then
+					KkthnxUIData[K.Realm][K.Name].BarsLocked = true
+					K.Print(L["Actionbars"].Locked)
+				end
+			end
+		end)
+
+		ActionbarButton:SetScript("OnEnter", function(self)
+			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
+			GameTooltip:SetOwner(self, anchor, xoff, yoff)
+			GameTooltip:ClearLines()
+			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Toggle Actionbars", 1, 1, 1)
+			GameTooltip:Show()
+		end)
+
+		ActionbarButton:SetScript("OnLeave", function(self)
+			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+			if not GameTooltip:IsForbidden() then
+				GameTooltip:Hide()
+			end
+		end)
+
+		ActionbarButton.ChatFrame = frame
+		ActionbarButton.ChatFrame = frame
+		
+		-- Create Bagsbarbutton
+		local BagsButton = CreateFrame("Button", string_format("BagsChatButton%d", id), frame)
+		BagsButton:EnableMouse(true)
+		BagsButton:SetSize(16, 16)
+		BagsButton:SetHitRectInsets(5, 5, 4, 4)
+		BagsButton:SetPoint("TOP", ActionbarButton, "BOTTOM", 0, -2)
+		BagsButton.Texture = BagsButton:CreateTexture(nil, "BACKGROUND")
+        BagsButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Bags")
+        BagsButton.Texture:SetAllPoints(true)
+        BagsButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+		BagsButton:SetAlpha(0.25)
+		BagsButton:SetFrameLevel(frame:GetFrameLevel() + 5)
+
+		BagsButton:SetScript("OnMouseUp", function(_, btn)
+			if btn == "LeftButton" or btn == "RightButton" then
+				PlaySound(21968)
+				if BankFrame:IsShown() then
+					CloseBankBagFrames()
+					CloseBankFrame()
+					CloseAllBags()
+				else
+					if ContainerFrame1:IsShown() then
+						CloseAllBags()
+					else
+						ToggleAllBags()
+					end
+				end
+			end	
+			end)
+
+		BagsButton:SetScript("OnEnter", function(self)
+			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
+			GameTooltip:SetOwner(self, anchor, xoff, yoff)
+			GameTooltip:ClearLines()
+			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Toggle Bags", 1, 1, 1)
+			GameTooltip:Show()
+		end)
+
+		BagsButton:SetScript("OnLeave", function(self)
+			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+			if not GameTooltip:IsForbidden() then
+				GameTooltip:Hide()
+			end
+		end)
+
+		BagsButton.ChatFrame = frame
+		BagsButton.ChatFrame = frame
 	end
 end
