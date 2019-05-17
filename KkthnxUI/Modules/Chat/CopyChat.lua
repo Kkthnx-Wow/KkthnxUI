@@ -309,7 +309,7 @@ function CopyChat:OnEnable()
 		CopyButton:EnableMouse(true)
 		CopyButton:SetSize(26, 26)
 		CopyButton:SetHitRectInsets(5, 5, 4, 4)
-		CopyButton:SetPoint("TOPRIGHT", 23, 0)
+		CopyButton:SetPoint("TOPRIGHT", 26, 7)
 		CopyButton.Texture = CopyButton:CreateTexture(nil, "BACKGROUND")
         CopyButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Chat")
         CopyButton.Texture:SetAllPoints(true)
@@ -332,6 +332,8 @@ function CopyChat:OnEnable()
 
 		CopyButton:SetScript("OnEnter", function(self)
 			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+			self.Texture:SetVertexColor(68/255, 136/255, 255/255)
+
 			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
 			GameTooltip:ClearLines()
@@ -345,6 +347,8 @@ function CopyChat:OnEnable()
 
 		CopyButton:SetScript("OnLeave", function(self)
 			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+			self.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+
 			if not GameTooltip:IsForbidden() then
 				GameTooltip:Hide()
 			end
@@ -372,6 +376,8 @@ function CopyChat:OnEnable()
 
 		ConfigButton:SetScript("OnEnter", function(self)
 			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+			self.Texture:SetVertexColor(68/255, 136/255, 255/255)
+
 			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
 			GameTooltip:ClearLines()
@@ -381,59 +387,20 @@ function CopyChat:OnEnable()
 
 		ConfigButton:SetScript("OnLeave", function(self)
 			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+			self.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+
 			if not GameTooltip:IsForbidden() then
 				GameTooltip:Hide()
 			end
 		end)
 
-		ConfigButton.ChatFrame = frame
-		CopyButton.ChatFrame = frame
-		
-		-- Create Charbutton
-		local CharButton = CreateFrame("Button", string_format("CharChatButton%d", id), frame)
-		CharButton:EnableMouse(true)
-		CharButton:SetSize(26, 26)
-		CharButton:SetHitRectInsets(5, 5, 4, 4)
-		CharButton:SetPoint("TOP", ConfigButton, "BOTTOM", 0, 6)
-		CharButton.Texture = CharButton:CreateTexture(nil, "BACKGROUND")
-        CharButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Char")
-        CharButton.Texture:SetAllPoints(true)
-        CharButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
-		CharButton:SetAlpha(0.25)
-		CharButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
-		CharButton:SetScript("OnMouseUp", function(_, btn)
-			if btn == "LeftButton" or btn == "RightButton" then
-				PlaySound(111)
-				ToggleCharacter("PaperDollFrame")
-			end
-		end)
-
-		CharButton:SetScript("OnEnter", function(self)
-			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
-			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
-			GameTooltip:SetOwner(self, anchor, xoff, yoff)
-			GameTooltip:ClearLines()
-			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Open Paperdollframe", 1, 1, 1)
-			GameTooltip:Show()
-		end)
-
-		CharButton:SetScript("OnLeave", function(self)
-			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
-			if not GameTooltip:IsForbidden() then
-				GameTooltip:Hide()
-			end
-		end)
-
-		CharButton.ChatFrame = frame
-		CharButton.ChatFrame = frame
-		
 		-- Create Actionbarbutton
 		local ActionbarButton = CreateFrame("Button", string_format("ActionbarChatButton%d", id), frame)
 		ActionbarButton:EnableMouse(true)
 		ActionbarButton:SetSize(16, 16)
 		ActionbarButton:SetHitRectInsets(5, 5, 4, 4)
-		ActionbarButton:SetPoint("TOP", CharButton, "BOTTOM", 0, 0)
+		ActionbarButton:SetPoint("TOP", ConfigButton, "BOTTOM", 0, 0)
 		ActionbarButton.Texture = ActionbarButton:CreateTexture(nil, "BACKGROUND")
         ActionbarButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Actionbars")
         ActionbarButton.Texture:SetAllPoints(true)
@@ -442,6 +409,11 @@ function CopyChat:OnEnable()
 		ActionbarButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
 		ActionbarButton:SetScript("OnMouseUp", function(_, btn)
+			if InCombatLockdown() then
+				print("You can not toggle the Actionbars while in combat!")
+				return
+			end
+
 			if btn == "LeftButton" or btn == "RightButton" then
 				if KkthnxUIData[K.Realm][K.Name].BarsLocked == true then
 					KkthnxUIData[K.Realm][K.Name].BarsLocked = false
@@ -455,6 +427,8 @@ function CopyChat:OnEnable()
 
 		ActionbarButton:SetScript("OnEnter", function(self)
 			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+			self.Texture:SetVertexColor(68/255, 136/255, 255/255)
+
 			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
 			GameTooltip:ClearLines()
@@ -464,18 +438,17 @@ function CopyChat:OnEnable()
 
 		ActionbarButton:SetScript("OnLeave", function(self)
 			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+			self.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+
 			if not GameTooltip:IsForbidden() then
 				GameTooltip:Hide()
 			end
 		end)
 
-		ActionbarButton.ChatFrame = frame
-		ActionbarButton.ChatFrame = frame
-		
 		-- Create Bagsbarbutton
 		local BagsButton = CreateFrame("Button", string_format("BagsChatButton%d", id), frame)
 		BagsButton:EnableMouse(true)
-		BagsButton:SetSize(16, 16)
+		BagsButton:SetSize(17, 17)
 		BagsButton:SetHitRectInsets(5, 5, 4, 4)
 		BagsButton:SetPoint("TOP", ActionbarButton, "BOTTOM", 0, -2)
 		BagsButton.Texture = BagsButton:CreateTexture(nil, "BACKGROUND")
@@ -499,11 +472,13 @@ function CopyChat:OnEnable()
 						ToggleAllBags()
 					end
 				end
-			end	
+			end
 			end)
 
 		BagsButton:SetScript("OnEnter", function(self)
 			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+			self.Texture:SetVertexColor(68/255, 136/255, 255/255)
+
 			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
 			GameTooltip:ClearLines()
@@ -513,12 +488,16 @@ function CopyChat:OnEnable()
 
 		BagsButton:SetScript("OnLeave", function(self)
 			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+			self.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+
 			if not GameTooltip:IsForbidden() then
 				GameTooltip:Hide()
 			end
 		end)
 
 		BagsButton.ChatFrame = frame
-		BagsButton.ChatFrame = frame
+		ActionbarButton.ChatFrame = frame
+		ConfigButton.ChatFrame = frame
+		CopyButton.ChatFrame = frame
 	end
 end
