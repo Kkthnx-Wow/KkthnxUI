@@ -16,6 +16,7 @@ local FCF_SetChatWindowFontSize = _G.FCF_SetChatWindowFontSize
 local GameTooltip = _G.GameTooltip
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
+local IsShiftKeyDown = _G.IsShiftKeyDown
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local RandomRoll = _G.RandomRoll
 local ReloadUI = _G.ReloadUI
@@ -59,34 +60,6 @@ local menuList = {
 			K.MoveUI()
 	end},
 
-	{text = L["ConfigButton"].ActionbarLock, notCheckable = true, func = function()
-			if InCombatLockdown() then
-				return
-			end
-
-			if KkthnxUIData[K.Realm][K.Name].BarsLocked == true then
-				KkthnxUIData[K.Realm][K.Name].BarsLocked = false
-				K.Print(L["Actionbars"].Unlocked)
-			elseif KkthnxUIData[K.Realm][K.Name].BarsLocked == false then
-				KkthnxUIData[K.Realm][K.Name].BarsLocked = true
-				K.Print(L["Actionbars"].Locked)
-			end
-	end},
-
-	{text = L["Inventory"].Show_Bags, notCheckable = true, func = function()
-			if BankFrame:IsShown() then
-				CloseBankBagFrames()
-				CloseBankFrame()
-				CloseAllBags()
-			else
-				if ContainerFrame1:IsShown() then
-					CloseAllBags()
-				else
-					ToggleAllBags()
-				end
-			end
-	end},
-
 	{text = L["ConfigButton"].ToggleConfig, notCheckable = true, func = function()
 			K.ConfigUI()
 	end},
@@ -103,10 +76,6 @@ local menuList = {
 			K:GetModule("Changelog"):ToggleChangeLog()
 	end},
 
-	{text = KEY_BINDINGS, notCheckable = true, func = function()
-			K.BindingUI()
-	end},
-
 	{text = RELOADUI, notCheckable = true, func = function()
 			ReloadUI()
 	end},
@@ -114,22 +83,6 @@ local menuList = {
 	{text = "|cff7289daDiscord|r", notCheckable = true, func = function()
 			K.StaticPopup_Show("DISCORD_EDITBOX", nil, nil, "https://discord.gg/YUmxqQm")
 	end},
-
-	{text = "Damage Meters", hasArrow = true, notCheckable = true,
-		menuList = {
-			{text = "Skada", notCheckable = true, func = function()
-					if IsAddOnLoaded("Skada") then
-						Skada:ToggleWindow()
-					end
-			end},
-
-			{text = "Details", notCheckable = true, func = function()
-					if IsAddOnLoaded("Details") then
-						_detalhes:ToggleWindows()
-					end
-			end},
-		},
-	},
 
 	{text = "", notClickable = true, notCheckable = true},
 	{text = CLOSE, notCheckable = true, func = function() end},
@@ -323,6 +276,9 @@ function CopyChat:OnEnable()
 			elseif button == "MiddleButton" then
 				PlaySound(36626)
 				RandomRoll(1, 100)
+			elseif IsShiftKeyDown() and button == "LeftButton" then
+				PlaySound(111)
+				ToggleChannelFrame()
 			else
 				PlaySound(21968)
 				CopyChat:CopyText(self.ChatFrame)
@@ -341,6 +297,7 @@ function CopyChat:OnEnable()
 			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, L["ConfigButton"].CopyChat, 1, 1, 1)
 			GameTooltip:AddDoubleLine(rightButtonString..L["ConfigButton"].Right_Click, L["ConfigButton"].Emotions, 1, 1, 1)
 			GameTooltip:AddDoubleLine(middleButtonString..L["ConfigButton"].MiddleClick, L["ConfigButton"].Roll, 1, 1, 1)
+			GameTooltip:AddDoubleLine(leftButtonString.. "Shift + LeftClick", "Open Chatchannels", 1, 1, 1)
 			GameTooltip:Show()
 		end)
 
@@ -411,7 +368,7 @@ function CopyChat:OnEnable()
 				return
 			end
 
-			if btn == "LeftButton" or btn == "RightButton" then
+			if btn == "LeftButton" then
 				if KkthnxUIData[K.Realm][K.Name].BarsLocked == true then
 					KkthnxUIData[K.Realm][K.Name].BarsLocked = false
 					K.Print(L["Actionbars"].Unlocked)
@@ -419,6 +376,8 @@ function CopyChat:OnEnable()
 					KkthnxUIData[K.Realm][K.Name].BarsLocked = true
 					K.Print(L["Actionbars"].Locked)
 				end
+			elseif btn == "RightButton" then	
+				K.BindingUI()
 			end
 		end)
 
@@ -430,6 +389,7 @@ function CopyChat:OnEnable()
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
 			GameTooltip:ClearLines()
 			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Toggle Actionbars", 1, 1, 1)
+			GameTooltip:AddDoubleLine(rightButtonString..L["ConfigButton"].Right_Click, KEY_BINDINGS, 1, 1, 1)
 			GameTooltip:Show()
 		end)
 
@@ -472,12 +432,24 @@ function CopyChat:OnEnable()
 		end)
 
 		BagsButton:SetScript("OnEnter", function(self)
+			local Free, Total, Used = 0, 0, 0
+
+			for i = 0, NUM_BAG_SLOTS do
+				Free, Total = Free + GetContainerNumFreeSlots(i), Total + GetContainerNumSlots(i)
+			end
+
+			Used = Total - Free
+
 			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
 			self.Texture:SetVertexColor(68/255, 136/255, 255/255)
 
 			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
 			GameTooltip:ClearLines()
+			GameTooltip:AddLine("Bags")
+			GameTooltip:AddDoubleLine("Slots total:" , Total, 1, 1, 1, 1, 1, 1)
+			GameTooltip:AddDoubleLine("Slots free:" , Free, 1, 1, 1, 1, 1, 1)
+			GameTooltip:AddLine(" ")
 			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Toggle Bags", 1, 1, 1)
 			GameTooltip:Show()
 		end)
@@ -490,6 +462,60 @@ function CopyChat:OnEnable()
 				GameTooltip:Hide()
 			end
 		end)
+
+		-- Create Detailsbutton
+		if K.CheckAddOnState("Details") or K.CheckAddOnState("Skada") then
+			local DetailsButton = CreateFrame("Button", string_format("DetailsChatButton%d", id), frame)
+			DetailsButton:EnableMouse(true)
+			DetailsButton:SetSize(17, 17)
+			DetailsButton:SetPoint("TOP", BagsButton, "BOTTOM", 0, -2)
+			DetailsButton.Texture = DetailsButton:CreateTexture(nil, "BACKGROUND")
+			DetailsButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\PVP")
+			DetailsButton.Texture:SetAllPoints(true)
+			DetailsButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+			DetailsButton:SetAlpha(0.25)
+			DetailsButton:SetFrameLevel(frame:GetFrameLevel() + 5)
+
+			DetailsButton:SetScript("OnMouseUp", function(_, btn)
+				if btn == "LeftButton" or btn == "RightButton" then
+					if IsAddOnLoaded("Details") then
+						PlaySound(21968)
+						_detalhes:ToggleWindows()
+					end
+					if IsAddOnLoaded("Skada") then
+						PlaySound(21968)
+						Skada:ToggleWindow()
+					end
+				end
+			end)
+
+			DetailsButton:SetScript("OnEnter", function(self)
+				K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+				self.Texture:SetVertexColor(68/255, 136/255, 255/255)
+
+				local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
+				GameTooltip:SetOwner(self, anchor, xoff, yoff)
+				GameTooltip:ClearLines()
+				if IsAddOnLoaded("Details") then
+					GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Show/Hide Details", 1, 1, 1)
+				end
+				if IsAddOnLoaded("Skada") then
+					GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Show/Hide Skada", 1, 1, 1)
+				end
+				GameTooltip:Show()
+			end)
+
+			DetailsButton:SetScript("OnLeave", function(self)
+				K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+				self.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+
+				if not GameTooltip:IsForbidden() then
+					GameTooltip:Hide()
+				end
+			end)
+			
+		DetailsButton.ChatFrame = frame
+		end
 
 		ActionbarButton.ChatFrame = frame
 		BagsButton.ChatFrame = frame
