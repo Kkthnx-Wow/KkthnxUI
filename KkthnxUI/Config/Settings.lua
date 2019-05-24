@@ -425,6 +425,7 @@ C["Nameplates"] = {
 		["Options"] = {
 			["Current"] = "[KkthnxUI:HealthCurrent]",
 			["Percent"] = "[KkthnxUI:HealthPercent]",
+			["PercentCut"] = "[KkthnxUI:PercentCut]",
 			["Current / Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
 		},
 		["Value"] = "[KkthnxUI:HealthPercent]"
@@ -557,6 +558,24 @@ C["Unitframe"] = {
 			["Default"] = "DEFAULT"
 		},
 		["Value"] = "DEFAULT"
+	},
+	["HealthFormatPlayer"] = {
+		["Options"] = {
+			["Current"] = "[KkthnxUI:HealthCurrent]",
+			["Percent"] = "[KkthnxUI:HealthPercent]",
+			["PercentCut"] = "[KkthnxUI:PercentCut]",
+			["Current / Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
+		},
+		["Value"] = "[KkthnxUI:HealthCurrent]"
+	},
+	["HealthFormatTarget"] = {
+		["Options"] = {
+			["Current"] = "[KkthnxUI:HealthCurrent]",
+			["Percent"] = "[KkthnxUI:HealthPercent]",
+			["PercentCut"] = "[KkthnxUI:PercentCut]",
+			["Current / Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
+		},
+		["Value"] = "[KkthnxUI:HealthCurrent-Percent]"
 	}
 }
 
