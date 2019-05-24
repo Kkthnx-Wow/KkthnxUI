@@ -58,7 +58,7 @@ function Module:CreatePlayer()
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetFontObject(UnitframeFont)
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
-	self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent]")
+	self:Tag(self.Health.Value, C["Unitframe"].HealthFormatPlayer.Value)
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetSize(140, 14)

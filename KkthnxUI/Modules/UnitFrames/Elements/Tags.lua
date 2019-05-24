@@ -195,6 +195,21 @@ oUF.Tags.Methods["KkthnxUI:HealthPercent"] = function(unit)
 	end
 end
 
+oUF.Tags.Events["KkthnxUI:PercentCut"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Methods["KkthnxUI:PercentCut"] = function(unit)	
+	local m = UnitHealthMax(unit)
+	local status =
+		UnitIsDead(unit) and "|cffFFFFFF" .. DEAD .. "|r" or UnitIsGhost(unit) and "|cffFFFFFF" .. GHOST .. "|r" or
+		not UnitIsConnected(unit) and "|cffFFFFFF" .. PLAYER_OFFLINE .. "|r"
+	if (status) then
+		return status
+	elseif (m == 0) then
+		return 0
+	else
+		return math.floor(UnitHealth(unit) / m * 100 + 0.5).."%"
+	end
+end
+
 oUF.Tags.Events["KkthnxUI:HealthCurrent-Percent"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["KkthnxUI:HealthCurrent-Percent"] = function(unit)
 	local status =

@@ -58,7 +58,7 @@ function Module:CreateTarget()
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	self.Health.Value:SetFontObject(UnitframeFont)
-	self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
+	self:Tag(self.Health.Value, C["Unitframe"].HealthFormatTarget.Value)
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetSize(140, 14)
