@@ -83,8 +83,7 @@ local colors = {
 	["EVADE"    ] = rgb(255, 255, 255),
 	["HEAL"     ] = rgb(26, 204, 26),
 	["IMMUNE"   ] = rgb(255, 255, 255),
-	-- ["INTERRUPT"] = rgb(255, 255, 255),
-	["INTERRUPT"] = rgb(255, 165, 0),
+	["INTERRUPT"] = rgb(255, 255, 255),
 	["MISS"     ] = rgb(255, 255, 255),
 	["PARRY"    ] = rgb(255, 255, 255),
 	["REFLECT"  ] = rgb(255, 255, 255),
@@ -110,6 +109,23 @@ local schoolColors = {
 	[SCHOOL_MASK_RADIANT    ] = rgb(255, 178, 64),
 	[SCHOOL_MASK_SHADOWFLAME] = rgb(192, 128, 128),
 	[SCHOOL_MASK_SHADOWFROST] = rgb(128, 192, 255),
+}
+
+local tryToColorBySchool = {
+	["ABSORB"   ] = false,
+	["BLOCK"    ] = false,
+	["DEFLECT"  ] = false,
+	["DODGE"    ] = false,
+	["ENERGIZE" ] = false,
+	["EVADE"    ] = false,
+	["HEAL"     ] = false,
+	["IMMUNE"   ] = false,
+	["INTERRUPT"] = true,
+	["MISS"     ] = false,
+	["PARRY"    ] = false,
+	["REFLECT"  ] = false,
+	["RESIST"   ] = false,
+	["WOUND"    ] = true,
 }
 
 local animations = {
@@ -257,23 +273,21 @@ local function Update(self, _, unit, event, flag, amount, school, texture)
 
 	animation = element.animationsByFlag[flag] or animation
 
-	local text, color
+	local color = element.tryToColorBySchool[event] and element.schoolColors[school] or element.colors[event]
+
+	local text
 	if event == "WOUND" then
 		if amount ~= 0	then
 			text = element.abbreviateNumbers and AbbreviateNumbers(amount) or BreakUpLargeNumbers(amount)
 		elseif flag ~= "" and flag ~= "CRITICAL" and flag ~= "CRUSHING" and flag ~= "GLANCING" then
 			text = _G[flag]
 		end
-
-		color = element.schoolColors[school] or element.colors[event]
 	else
 		if amount ~= 0 then
 			text = element.abbreviateNumbers and AbbreviateNumbers(amount) or BreakUpLargeNumbers(amount)
 		else
 			text = _G[event]
 		end
-
-		color = element.colors[event]
 	end
 
 	if text then
@@ -326,7 +340,7 @@ local iconOverrides = {
 local iconCache = {}
 
 local function getTexture(spellID)
-	if not iconCache[spellID] then
+	if spellID and not iconCache[spellID] then
 		local texture = GetSpellTexture(spellID)
 		iconCache[spellID] = iconOverrides[texture] or texture
 	end
@@ -373,7 +387,9 @@ local function prep(event, ...)
 		flag = ...
 		event = flag
 	elseif event == "SPELL_INTERRUPT" then
-		flag = getEventFlag(select(15, ...))
+		_, _, _, _, _, school = ...
+		flag = ""
+		texture = getTexture(select(4, ...))
 		event = "INTERRUPT"
 	end
 
@@ -404,7 +420,8 @@ local CLEUEvents = {
 	-- swing
 	["SWING_DAMAGE"         ] = true, -- amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = ...
 	["SWING_MISSED"         ] = true, -- missType, isOffHand, amountMissed = ...
-	["SPELL_INTERRUPT"		] = true,
+	-- interrupt
+	["SPELL_INTERRUPT"      ] = true, -- spellId, spellName, spellSchool, extraSpellId, extraSpellName, extraSpellSchool = ...
 }
 
 local function hasFlag(flags, flag)
@@ -537,6 +554,7 @@ local function Enable(self)
 
 		element.colors = copyTable(colors, element.colors)
 		element.schoolColors = copyTable(schoolColors, element.schoolColors)
+		element.tryToColorBySchool = copyTable(tryToColorBySchool, element.tryToColorBySchool)
 		element.animations = copyTable(animations, element.animations)
 		element.animationsByEvent = copyTable(animationsByEvent, element.animationsByEvent)
 		element.animationsByFlag = copyTable(animationsByFlag, element.animationsByFlag)
