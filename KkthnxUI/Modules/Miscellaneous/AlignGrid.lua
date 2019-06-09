@@ -76,8 +76,11 @@ function Module:Create()
 end
 
 SLASH_TOGGLEGRID1 = "/showgrid"
+SLASH_TOGGLEGRID2 = "/ng"
+SLASH_TOGGLEGRID3 = "/align"
+SLASH_TOGGLEGRID4 = "/grid"
 SlashCmdList["TOGGLEGRID"] = function(arg)
-	if Module.Enable then
+	if Module.Enable or arg == "1" then
 		Module:Hide()
 		Module.Enable = false
 	else

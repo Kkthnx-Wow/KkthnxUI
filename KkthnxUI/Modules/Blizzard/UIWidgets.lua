@@ -37,8 +37,8 @@ local function UIWidgets()
 	belowMiniMapHolder:SetPoint("TOPRIGHT", _G["Minimap"], "BOTTOMRIGHT", 0, -16)
 	belowMiniMapHolder:SetSize(128, 40)
 
-	K.Movers:RegisterFrame(topCenterHolder)
-	K.Movers:RegisterFrame(belowMiniMapHolder)
+	K.Mover(topCenterHolder, "TopCenterContainer", "TopCenterContainer", {"TOP", UIParent, "TOP", 0, -30})
+	K.Mover(belowMiniMapHolder, "BelowMinimapContainer", "BelowMinimapContainer", {"TOPRIGHT", _G["Minimap"], "BOTTOMRIGHT", 0, -16})
 
 	topCenterContainer:ClearAllPoints()
 	topCenterContainer:SetPoint("CENTER", topCenterHolder)

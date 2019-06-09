@@ -20,14 +20,14 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
-* Redistributions of source code must retain the above copyright notice,
-this list of conditions and the following disclaimer.
-* Redistributions in binary form must reproduce the above copyright
-notice, this list of conditions and the following disclaimer in the
-documentation and/or other materials provided with the distribution.
-* Neither the name of the author nor the names of its contributors may be
-used to endorse or promote products derived from this software without
-specific prior written permission.
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the author nor the names of its contributors may be
+      used to endorse or promote products derived from this software without
+      specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -44,14 +44,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -- ABNF from RFC 3629
 --
 -- UTF8-octets = *( UTF8-char )
--- UTF8-char = UTF8-1 / UTF8-2 / UTF8-3 / UTF8-4
--- UTF8-1 = %x00-7F
--- UTF8-2 = %xC2-DF UTF8-tail
--- UTF8-3 = %xE0 %xA0-BF UTF8-tail / %xE1-EC 2( UTF8-tail ) /
--- %xED %x80-9F UTF8-tail / %xEE-EF 2( UTF8-tail )
--- UTF8-4 = %xF0 %x90-BF 2( UTF8-tail ) / %xF1-F3 3( UTF8-tail ) /
--- %xF4 %x80-8F 2( UTF8-tail )
--- UTF8-tail = %x80-BF
+-- UTF8-char   = UTF8-1 / UTF8-2 / UTF8-3 / UTF8-4
+-- UTF8-1      = %x00-7F
+-- UTF8-2      = %xC2-DF UTF8-tail
+-- UTF8-3      = %xE0 %xA0-BF UTF8-tail / %xE1-EC 2( UTF8-tail ) /
+--               %xED %x80-9F UTF8-tail / %xEE-EF 2( UTF8-tail )
+-- UTF8-4      = %xF0 %x90-BF 2( UTF8-tail ) / %xF1-F3 3( UTF8-tail ) /
+--               %xF4 %x80-8F 2( UTF8-tail )
+-- UTF8-tail   = %x80-BF
 --
 
 local strbyte, strlen, strsub, type = string.byte, string.len, string.sub, type
@@ -202,7 +202,7 @@ local function utf8sub(s, i, j)
 	-- only set l if i or j is negative
 	local l = (i >= 0 and j >= 0) or utf8len(s)
 	local startChar = (i >= 0) and i or l + i + 1
-	local endChar = (j >= 0) and j or l + j + 1
+	local endChar   = (j >= 0) and j or l + j + 1
 
 	-- can't have start before end!
 	if startChar > endChar then

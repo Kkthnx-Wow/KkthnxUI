@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 local Module = K:NewModule("ObjectiveFrame", "AceEvent-3.0", "AceHook-3.0")
 
 local _G = _G
@@ -50,8 +50,7 @@ function Module:MoveObjectiveFrame()
 	ObjectiveTrackerFrame:SetMovable(true)
 	ObjectiveTrackerFrame:SetUserPlaced(true) -- UIParent.lua line 3090 stops it from being moved <3
 
-	K.Movers:RegisterFrame(ObjectiveFrameHolder)
-	K.Movers:SaveDefaults(self, Anchor1, Parent, Anchor2, X, Y)
+	K.Mover(ObjectiveFrameHolder, "ObjectiveFrame", "ObjectiveFrame", {Anchor1, Parent, Anchor2, X, Y})
 
 	if Data and Data.Movers and Data.Movers.TrackerFrameHolder then
 		ObjectiveFrameHolder:ClearAllPoints()

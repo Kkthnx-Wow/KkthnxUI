@@ -7,4 +7,33 @@
 	<Script file="VignetteAlert.lua"/>
     <Script file="WorldMap.lua"/>
     <Script file="WorldMapPlus.lua"/>
+
+    <Frame name="KkthnxUIMapsGlobalPinTemplate" inherits="BaseHighlightableMapPoiPinTemplate" enableMouseClicks="true" enableMouseMotion="true" mixin="KkthnxUIMapsGlobalPinMixin" virtual="true" />
+
+    <!-- Load Quest Counter -->
+   <Frame name="QuestCounterFrame" movable="false" parent="QuestScrollFrame">
+        <Size><AbsDimension x="75" y="25" /></Size>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="$parentString" font="GameFontNormal" text="Quests: X/25" parent="QuestCounterFrame">
+                    <Color r="1" g=".8046" b="0" a="1"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="QuestScrollFrame" relativePoint="TOPLEFT" x="2" y="19">
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad>
+                QuestCounterFrame:RegisterEvent("QUEST_LOG_UPDATE")
+                local _, k = GetNumQuestLogEntries()
+                QuestCounterFrameString:SetText(QUESTS_COLON.." "..k.."/25")
+            </OnLoad>
+            <OnEvent>
+                local _, k = GetNumQuestLogEntries()
+                QuestCounterFrameString:SetText(QUESTS_COLON.." "..k.."/25")
+            </OnEvent>
+        </Scripts>
+    </Frame>
 </Ui>

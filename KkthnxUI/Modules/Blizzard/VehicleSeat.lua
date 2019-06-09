@@ -1,15 +1,11 @@
 local K, C = unpack(select(2, ...))
 local Module = K:NewModule("VehicleSeat", "AceEvent-3.0")
-if C["ActionBar"].Enable ~= true then
-	return
-end
 
 -- Wow Lua
 local _G = _G
 
 -- Wow API
 local UIParent = _G.UIParent
-local hooksecurefunc = _G.hooksecurefunc
 
 function Module:PositionVehicleFrame()
 	local VehicleSeatMover = CreateFrame("Frame", "VehicleSeatMover", UIParent)
@@ -26,7 +22,7 @@ function Module:PositionVehicleFrame()
 		return false
 	end
 
-	K.Movers:RegisterFrame(VehicleSeatMover)
+	K.Mover(VehicleSeatMover, "VehicleSeat", "VehicleSeat", {"TOPLEFT", UIParent, "TOPLEFT", 4, -4})
 end
 
 function Module:OnInitialize()

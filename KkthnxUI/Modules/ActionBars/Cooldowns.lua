@@ -1,216 +1,239 @@
-local K, C = unpack(select(2, ...))
-if K.CheckAddOnState("OmniCC") or K.CheckAddOnState("ncCooldown") or K.CheckAddOnState("CooldownCount") or C["ActionBar"].Cooldowns ~= true then
-	return
-end
+local K, C, L = unpack(select(2, ...))
+local module = K:NewModule("Cooldowns")
 
 local _G = _G
-local floor = math.floor
+local math_floor = math.floor
+local pairs = pairs
 local select = select
-local tonumber = tonumber
+local string_find = string.find
+local string_format = string.format
 
 local CreateFrame = _G.CreateFrame
+local GetActionCooldown = _G.GetActionCooldown
+local getmetatable = _G.getmetatable
 local GetTime = _G.GetTime
 local hooksecurefunc = _G.hooksecurefunc
+local InCombatLockdown = _G.InCombatLockdown
+local SetCVar = _G.SetCVar
 
-OmniCC = true
-local ICON_SIZE = 36
-local DAY, HOUR, MINUTE = 86400, 3600, 60
-local DAYISH, HOURISH, MINUTEISH = 3600 * 23.5, 60 * 59.5, 59.5
-local HALFDAYISH, HALFHOURISH, HALFMINUTEISH = DAY / 2 + 0.5, HOUR / 2 + 0.5, MINUTE / 2 + 0.5
-
-local CooldownFont = K.GetFont(C["ActionBar"].Font)
-local CooldownFontSize = 20
-local CooldownMinScale = 0.5
-local CooldownMinDuration = 1.5
-
-local EXPIRING_DURATION = 8
-local EXPIRING_FORMAT = K.RGBToHex(1, 0, 0) .. "%.1f|r"
-local SECONDS_FORMAT = K.RGBToHex(1, 1, 0) .. "%d|r"
-local MINUTES_FORMAT = K.RGBToHex(1, 1, 1) .. "%dm|r"
-local HOURS_FORMAT = K.RGBToHex(0.4, 1, 1) .. "%dh|r"
-local DAYS_FORMAT = K.RGBToHex(0.4, 0.4, 1) .. "%dh|r"
-
-local function GetFormattedTime(s)
-	if not s then
-		if K.CodeDebug then
-			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 36 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. s .. " doesn't exsit|r")
-		end
-		return
-	end
-
-	if s < MINUTEISH then
-		local seconds = tonumber(K.Round(s))
-		if seconds > EXPIRING_DURATION then
-			return SECONDS_FORMAT, seconds, s - (seconds - .51)
-		else
-			return EXPIRING_FORMAT, s, .051
-		end
-	elseif s < HOURISH then
-		local minutes = tonumber(K.Round(s / MINUTE))
-		return MINUTES_FORMAT, minutes, minutes > 1 and (s - (minutes*MINUTE - HALFMINUTEISH)) or (s - MINUTEISH)
-	elseif s < DAYISH then
-		local hours = tonumber(K.Round(s / HOUR))
-		return HOURS_FORMAT, hours, hours > 1 and (s - (hours * HOUR - HALFHOURISH)) or (s - HOURISH)
+local day, hour, minute = 86400, 3600, 60
+local function TimerFormat(s)
+	if s >= day then
+		return string_format("%d"..K.ClassColor.."d", s / day), s % day
+	elseif s >= hour then
+		return string_format("%d"..K.ClassColor.."h", s / hour), s % hour
+	elseif s >= minute then
+		return string_format("%d"..K.ClassColor.."m", s / minute), s % minute
+	elseif s > 10 then
+		return string_format("|cffcccc33%d|r", s), s - math_floor(s)
+	elseif s > 3 then
+		return string_format("|cffffff00%d|r", s), s - math_floor(s)
 	else
-		local days = tonumber(K.Round(s / DAY))
-		return DAYS_FORMAT, days, days > 1 and (s - (days * DAY - HALFDAYISH)) or (s - DAYISH)
+		if C["ActionBar"].DecimalCD then
+			return string_format("|cffff0000%.1f|r", s), s - string_format("%.1f", s)
+		else
+			return string_format("|cffff0000%d|r", s + .5), s - math_floor(s)
+		end
 	end
 end
 
-local function Timer_Stop(self)
-	if self:IsForbidden() then
-		if K.CodeDebug then
-			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 63 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. self .. " is forbidden|r")
-		end
+function module:OnEnable()
+	if K.CheckAddOnState("OmniCC") or K.CheckAddOnState("ncCooldown") or K.CheckAddOnState("CooldownCount") or C["ActionBar"].Cooldowns ~= true then
 		return
 	end
 
-	self.enabled = nil
-	self:Hide()
-end
+	OmniCC = true
+	local FONT_SIZE = 19
+	local MIN_DURATION = 2.5 -- The Minimum Duration To Show Cooldown Text For
+	local MIN_SCALE = 0.5 -- The Minimum Scale We Want To Show Cooldown Counts At, Anything Below This Will Be Hidden
+	local ICON_SIZE = 36
+	local hideNumbers = {}
 
-local function Timer_ForceUpdate(self)
-	if self:IsForbidden() then
-		if K.CodeDebug then
-			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 75 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. self .. " is forbidden|r")
-		end
-		return
-	end
-
-	self.nextUpdate = 0
-	self:Show()
-end
-
-local function Timer_OnSizeChanged(self, width)
-	if self:IsForbidden() then
-		if K.CodeDebug then
-			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 87 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. self .. " is forbidden|r")
-		end
-		return
-	end
-
-	local fontScale = width and (floor(width + .5) / ICON_SIZE)
-
-	if fontScale and (fontScale == self.fontScale) then
-		return
-	end
-
-	self.fontScale = fontScale
-
-	if fontScale and (fontScale < CooldownMinScale) then
+	-- Stops The Timer
+	local function Timer_Stop(self)
+		self.enabled = nil
 		self:Hide()
-	else
-		self.text:SetFontObject(CooldownFont)
-		self.text:SetFont(select(1, self.text:GetFont()), fontScale * CooldownFontSize, select(3, self.text:GetFont()))
-		if self.enabled then
-			Timer_ForceUpdate(self)
+	end
+
+	-- Forces The Given Timer To Update On The Next Frame
+	local function Timer_ForceUpdate(self)
+		self.nextUpdate = 0
+		self:Show()
+	end
+
+	-- Adjust Font Size Whenever The Timer's Parent Size Changes, Hide If It Gets Too Tiny
+	local function Timer_OnSizeChanged(self, width)
+		local cooldownFont = K.GetFont(C["ActionBar"].Font)
+		local fontScale = math_floor(width + 0.5) / ICON_SIZE
+		if fontScale == self.fontScale then
+			return
 		end
-	end
-end
+		self.fontScale = fontScale
 
-local function Timer_OnUpdate(self, elapsed)
-	if self:IsForbidden() then
-		if K.CodeDebug then
-			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 114 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. self .. " is forbidden|r")
-		end
-		return
-	end
-
-	if self.nextUpdate > 0 then
-		self.nextUpdate = self.nextUpdate - elapsed
-		return
-	end
-
-	local remain = self.duration - (GetTime() - self.start)
-	if remain > 0.05 then
-		if self.fontScale and ((self.fontScale * self:GetEffectiveScale() / UIParent:GetScale()) < CooldownMinScale) then
-			self.text:SetText("")
-			self.nextUpdate = 500
+		if fontScale < MIN_SCALE then
+			self:Hide()
 		else
-			local formatString, time, nextUpdate = GetFormattedTime(remain)
-			self.text:SetFormattedText(formatString, time)
-			self.nextUpdate = nextUpdate
-		end
-	else
-		Timer_Stop(self)
-	end
-end
+			self.text:SetFontObject(cooldownFont)
+			self.text:SetFont(select(1, self.text:GetFont()), fontScale * FONT_SIZE, select(3, self.text:GetFont()))
+			self.text:SetShadowColor(0, 0, 0, 0)
 
-local function Timer_Create(self)
-	if self:IsForbidden() then
-		if K.CodeDebug then
-			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 143 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. self .. " is forbidden|r")
+			if self.enabled then
+				Timer_ForceUpdate(self)
+			end
 		end
-		return
 	end
 
-	local scaler = CreateFrame("Frame", nil, self)
-	scaler:SetAllPoints()
+	-- Update Timer Text, If It Needs To Be, Hide The Timer If Done
+	local function Timer_OnUpdate(self, elapsed)
+		if self.nextUpdate > 0 then
+			self.nextUpdate = self.nextUpdate - elapsed
+		else
+			local remain = self.duration - (GetTime() - self.start)
+			if remain > 0 then
+				local getTime, nextUpdate = TimerFormat(remain)
+				self.text:SetText(getTime)
+				self.nextUpdate = nextUpdate
+			else
+				Timer_Stop(self)
+			end
+		end
+	end
 
-	local timer = CreateFrame("Frame", nil, scaler)
-	timer:Hide()
-	timer:SetAllPoints()
+	-- Returns A New Timer Object
+	local function Timer_Create(self)
+		local scaler = CreateFrame("Frame", nil, self)
+		scaler:SetAllPoints(self)
 
-	local text = timer:CreateFontString(nil, "OVERLAY")
-	text:SetPoint("CENTER", 1, 0)
-	text:SetJustifyH("CENTER")
-	timer.text = text
+		local timer = CreateFrame("Frame", nil, scaler)
+		timer:Hide()
+		timer:SetAllPoints(scaler)
+		timer:SetScript("OnUpdate", Timer_OnUpdate)
 
-	Timer_OnSizeChanged(timer, scaler:GetSize())
-	scaler:SetScript("OnSizeChanged", function(_, ...)
-		Timer_OnSizeChanged(timer, ...)
+		local text = timer:CreateFontString(nil, "BACKGROUND")
+		text:SetPoint("CENTER", 2, 0)
+		text:SetJustifyH("CENTER")
+		timer.text = text
+
+		Timer_OnSizeChanged(timer, scaler:GetSize())
+		scaler:SetScript("OnSizeChanged", function(_, ...)
+			Timer_OnSizeChanged(timer, ...)
+		end)
+
+		self.timer = timer
+		return timer
+	end
+
+	local function Timer_Start(self, start, duration)
+		if self:IsForbidden() or self.noOCC or self.noCooldownCount or hideNumbers[self] then
+			return
+		end
+
+		if C["ActionBar"].OverrideWA and self:GetName() and string_find(self:GetName(), "WeakAuras") then
+			self.noOCC = true
+			return
+		end
+
+		if start > 0 and duration > MIN_DURATION then
+			local timer = self.timer or Timer_Create(self)
+			timer.start = start
+			timer.duration = duration
+			timer.enabled = true
+			timer.nextUpdate = 0
+
+			-- Wait For Blizz To Fix Itself
+			local parent = self:GetParent()
+			local charge = parent and parent.chargeCooldown
+			local chargeTimer = charge and charge.timer
+			if chargeTimer and chargeTimer ~= timer then
+				Timer_Stop(chargeTimer)
+			end
+
+			if timer.fontScale >= MIN_SCALE then
+				timer:Show()
+			end
+		elseif self.timer then
+			Timer_Stop(self.timer)
+		end
+
+		-- hide cooldown flash if barFader enabled
+		if self:GetParent().__faderParent then
+			if self:GetEffectiveAlpha() > 0 then
+				self:Show()
+			else
+				self:Hide()
+			end
+		end
+	end
+
+	local function hideCooldownNumbers(self, hide)
+		if hide then
+			hideNumbers[self] = true
+			if self.timer then Timer_Stop(self.timer) end
+		else
+			hideNumbers[self] = nil
+		end
+	end
+
+	local cooldownIndex = getmetatable(ActionButton1Cooldown).__index
+	hooksecurefunc(cooldownIndex, "SetCooldown", Timer_Start)
+	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", function(self)
+		hideCooldownNumbers(self, true)
 	end)
 
-	-- keep this after Timer_OnSizeChanged
-	timer:SetScript("OnUpdate", Timer_OnUpdate)
+	-- Action Buttons Hook
+	local active, hooked = {}, {}
 
-	self.timer = timer
-	return timer
-end
-
-local Cooldown_MT = getmetatable(_G.ActionButton1Cooldown).__index
-local hideNumbers = {}
-
-local function deactivateDisplay(cooldown)
-	local timer = cooldown.timer
-	if timer then
-		Timer_Stop(timer)
-	end
-end
-
-local function setHideCooldownNumbers(cooldown, hide)
-	if hide then
-		hideNumbers[cooldown] = true
-		deactivateDisplay(cooldown)
-	else
-		hideNumbers[cooldown] = nil
-	end
-end
-
-hooksecurefunc(Cooldown_MT, "SetCooldown", function(cooldown, start, duration, modRate)
-	if cooldown.noCooldownCount or cooldown:IsForbidden() or hideNumbers[cooldown] then
-		return
+	local function Cooldown_OnShow(self)
+		active[self] = true
 	end
 
-	local show = (start and start > 0) and (duration and duration > CooldownMinDuration) and (modRate == nil or modRate > 0)
+	local function Cooldown_OnHide(self)
+		active[self] = nil
+	end
 
-	if show then
-		local timer = cooldown.timer or Timer_Create(cooldown)
-		timer.start = start
-		timer.duration = duration
-		timer.enabled = true
-		timer.nextUpdate = 0
-
-		if timer.fontScale and (timer.fontScale >= CooldownMinScale) then
-			timer:Show()
+	local function Cooldown_ShouldUpdateTimer(self, start)
+		local timer = self.timer
+		if not timer then
+			return true
 		end
-	elseif cooldown.timer then
-		deactivateDisplay(cooldown)
-	end
-end)
 
-hooksecurefunc(Cooldown_MT, "Clear", deactivateDisplay)
-hooksecurefunc(Cooldown_MT, "SetHideCountdownNumbers", setHideCooldownNumbers)
-hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", function(cooldown)
-	setHideCooldownNumbers(cooldown, true)
-end)
+		return timer.start ~= start
+	end
+
+	local function Cooldown_Update(self)
+		local button = self:GetParent()
+		local start, duration = GetActionCooldown(button.action)
+
+		if Cooldown_ShouldUpdateTimer(self, start) then
+			Timer_Start(self, start, duration)
+		end
+	end
+
+	K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", function()
+		for cooldown in pairs(active) do
+			Cooldown_Update(cooldown)
+		end
+	end)
+
+	local function ActionButton_Register(frame)
+		local cooldown = frame.cooldown
+		if not hooked[cooldown] then
+			cooldown:HookScript("OnShow", Cooldown_OnShow)
+			cooldown:HookScript("OnHide", Cooldown_OnHide)
+			hooked[cooldown] = true
+		end
+	end
+
+	if _G["ActionBarButtonEventsFrame"].frames then
+		for _, frame in pairs(_G["ActionBarButtonEventsFrame"].frames) do
+			ActionButton_Register(frame)
+		end
+	end
+	hooksecurefunc("ActionBarButtonEventsFrame_RegisterFrame", ActionButton_Register)
+
+	-- Hide Default Cooldown
+	if not InCombatLockdown() then
+		SetCVar("countdownForCooldowns", 0)
+	end
+	K.HideInterfaceOption(InterfaceOptionsActionBarsPanelCountdownCooldowns)
+end

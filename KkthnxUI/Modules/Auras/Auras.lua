@@ -76,9 +76,9 @@ function Module:UpdateTime(elapsed)
     self.time:SetFormattedText(("%s%s|r"):format(K.TimeColors[formatID], K.TimeFormats[formatID][1]), timerValue)
 
     if self.timeLeft > C["Auras"].FadeThreshold then
-        K.UIFrameStopFlash(self)
+        K.StopFlash(self)
     else
-        K.UIFrameFlash(self, 1)
+        K.Flash(self, 1)
     end
 end
 
@@ -95,7 +95,7 @@ function Module:CreateIcon(button)
     button.time:SetPoint("TOP", button, "BOTTOM", 1, -4)
     button.time:SetFontObject(AurasFont)
 
-    K.SetAnimationGroup(button)
+    K.SetUpAnimGroup(button)
 
     button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
 
@@ -276,28 +276,12 @@ function Module:CreateAuraHeader(filter)
 end
 
 function Module:OnInitialize()
-    if (not C["Auras"].Enable) then
+    if not C["Auras"].Enable then
         return
     end
 
-    local UIHider = K.UIFrameHider
-    local BuffFrame = _G.BuffFrame
-	local TemporaryEnchantFrame = _G.TemporaryEnchantFrame
-
-	BuffFrame:SetScript("OnLoad", nil)
-	BuffFrame:SetScript("OnUpdate", nil)
-	BuffFrame:SetScript("OnEvent", nil)
-	BuffFrame:SetParent(UIHider)
-	BuffFrame:UnregisterAllEvents()
-
-	TemporaryEnchantFrame:SetScript("OnUpdate", nil)
-	TemporaryEnchantFrame:SetParent(UIHider)
-
-	PlayerBuffTimerManager:SetParent(UIHider)
-	PlayerBuffTimerManager:SetScript("OnEvent", nil)
-	PlayerBuffTimerManager:UnregisterAllEvents()
-
-    K.KillMenuPanel(12, "InterfaceOptionsFrameCategoriesButton")
+	BuffFrame:Kill()
+    TemporaryEnchantFrame:Kill()
 
     local AurasHolder = CreateFrame("Frame", "AurasHolder", UIParent)
     AurasHolder:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 4, 8)
@@ -306,9 +290,9 @@ function Module:OnInitialize()
 
     self.BuffFrame = self:CreateAuraHeader("HELPFUL")
     self.BuffFrame:SetPoint("TOPRIGHT", AurasHolder, "TOPLEFT", -(6 + 4), -4 - 4)
-    K["Movers"]:RegisterFrame(self.BuffFrame)
+    K.Mover(self.BuffFrame, "Buffs", "Buffs", {"TOPRIGHT", AurasHolder, "TOPLEFT", -(6 + 4), -4 - 4})
 
     self.DebuffFrame = self:CreateAuraHeader("HARMFUL")
     self.DebuffFrame:SetPoint("BOTTOMRIGHT", AurasHolder, "BOTTOMLEFT", -(6 + 4), -4 - 93)
-    K["Movers"]:RegisterFrame(self.DebuffFrame)
+    K.Mover(self.DebuffFrame, "Debuffs", "Debuffs", {"BOTTOMRIGHT", AurasHolder, "BOTTOMLEFT", -(6 + 4), -4 - 93})
 end

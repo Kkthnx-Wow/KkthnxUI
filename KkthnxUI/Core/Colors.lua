@@ -7,11 +7,20 @@ if (not oUF) then
 end
 
 oUF.colors.status = {
+	-- Castbars
 	castColor = {1.0, 0.7, 0.0},
 	castNoInterrupt = {0.7, 0.7, 0.7},
+	-- Nameplate Threat
+	health = {r = .31, g = .31, b = .31},
+	tapped = {r = 0.6, g = 0.6, b = 0.6},
+	reactions = {
+		good = {r = .29,  g = .68, b = .30},
+		neutral = {r = .85, g = .77, b = .36},
+		bad = {r = 0.78, g = 0.25, b = 0.25},
+	},
 }
 
--- aura coloring
+-- Aura Coloring
 oUF.colors.debuff = {
 	none = {204/255, 0/255, 0/255},
 	Magic = {51/255, 153/255, 255/255},
@@ -30,6 +39,17 @@ oUF.colors.reaction = {
 	[6] = {0.29, 0.67, 0.30}, -- Honored
 	[7] = {0.29, 0.67, 0.30}, -- Revered
 	[8] = {0.29, 0.67, 0.30}, -- Exalted
+}
+
+oUF.colors.factioncolorsTEST = {
+	[1] = {r = 0.87, g = 0.37, b = 0.37}, -- Hated
+	[2] = {r = 0.87, g = 0.37, b = 0.37}, -- Hostile
+	[3] = {r = 0.87, g = 0.37, b = 0.37}, -- Unfriendly
+	[4] = {r = 0.85, g = 0.77, b = 0.36}, -- Neutral
+	[5] = {r = 0.29, g = 0.67, b = 0.30}, -- Friendly
+	[6] = {r = 0.29, g = 0.67, b = 0.30}, -- Honored
+	[7] = {r = 0.29, g = 0.67, b = 0.30}, -- Revered
+	[8] = {r = 0.29, g = 0.67, b = 0.30}, -- Exalted
 }
 
 oUF.colors.factioncolors = {

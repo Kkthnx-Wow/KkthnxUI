@@ -19,13 +19,15 @@ local PLAYER = _G.PLAYER
 
 -- Actionbar
 C["ActionBar"] = {
-	["AddNewSpells"] = true,
-	["BottomBars"] = 2,
-	["BottomFour"] = true,
+	["Bar2Fade"] = false,
+	["Bar3Fade"] = false,
+	["Bar4Fade"] = true,
+	["Bar5Fade"] = true,
 	["ButtonSize"] = 34,
-	["ButtonSpace"] = 6,
 	["Cooldowns"] = true,
-	["DisableStancePages"] = K.Class == "DRUID", -- don't need a stealth bar for druids
+	["Count"] = true,
+	["DecimalCD"] = false,
+	["DisableStancePages"] = K.Class == "DRUID",
 	["Enable"] = true,
 	["EquipBorder"] = true,
 	["Font"] = "KkthnxUI Outline",
@@ -35,17 +37,19 @@ C["ActionBar"] = {
 	["MicroBarMouseover"] = false,
 	["OutOfMana"] = {0.5, 0.5, 1.0},
 	["OutOfRange"] = {0.8, 0.1, 0.1},
-	["PetBarHide"] = false,
-	["PetBarHorizontal"] = false,
-	["PetMouseover"] = false,
-	["RightBars"] = 1,
-	["RightMouseover"] = false,
-	["ShowGrid"] = true,
-	["SplitBars"] = false,
-	["StanceBarHide"] = false,
-	["StanceBarHorizontal"] = true,
-	["StanceMouseover"] = false,
-	["ToggleMode"] = true,
+	["OverrideWA"] = false,
+	["PetFade"] = true,
+	["StanceFade"] = true,
+	["Style"] = {
+		["Options"] = {
+			["Default Style"] = 1,
+			["RightBar1 on Side"] = 2,
+			["RightBar1 3x4"] = 3,
+			["Mainbar 3x12"] = 4,
+			["Combine MainSidebars"] = 5
+		},
+		Value = 4
+	},
 }
 
 C["MinimapButtons"] = {
@@ -76,12 +80,14 @@ C["Announcements"] = {
 -- Automation
 C["Automation"] = {
 	["AutoCollapse"] = false,
+	["AutoDisenchant"] = false,
 	["AutoInvite"] = false,
 	["AutoQuest"] = false,
 	["AutoRelease"] = false,
 	["AutoResurrect"] = false,
 	["AutoResurrectThank"] = false,
 	["AutoReward"] = false,
+	["AutoTabBinder"] = false,
 	["BlockMovies"] = false,
 	["DeclinePetDuel"] = false,
 	["DeclinePvPDuel"] = false,
@@ -237,25 +243,11 @@ C["Auras"] = {
 	}
 }
 
---Combattext
-C["FloatingCombatFeedback"] = {
-	["Enable"] = false,
-	["FontSize"] = 15,
-	["AbbreviateNumbers"] = true, -- Only on nameplates
-	["ScrollTime"] = 1.2, -- Only on nameplates
-	["Style"] = {
-		["Options"] = {
-			["Nameplates"] = "Nameplates",
-			["Portraits"] = "Portraits",
-		},
-		["Value"] = "Nameplates"
-	}
-}
-
 -- Chat
 C["Chat"] = {
 	["Background"] = false,
 	["BackgroundAlpha"] = 0.25,
+	["DelayGMOTD"] = true,
 	["Enable"] = true,
 	["Fading"] = true,
 	["VoiceOverlay"] = true,
@@ -279,10 +271,10 @@ C["DataBars"] = {
 	["Enable"] = true,
 	["ExperienceColor"] = {0.6, 0.3, 0.8},
 	["Font"] = "KkthnxUI",
-	["Height"] = 10,
+	["Height"] = 12,
 	["MouseOver"] = false,
 	["RestedColor"] = {0.0, 0.4, 1.0, 0.8},
-	["Text"] = false,
+	["Text"] = true,
 	["Texture"] = "KkthnxUI",
 	["TrackHonor"] = false,
 	["Width"] = 180,
@@ -387,25 +379,25 @@ C["Misc"] = {
 	["SlotDurability"] = false,
 }
 
--- Nameplates
 C["Nameplates"] = {
-	["BadColor"] = {0.78, 0.25, 0.25},
-	["BadTransition"] = {235/255, 163/255, 40/255},
+	["BadColor"] = {254/255, 045/255, 045/255},
+	["BadTransition"] ={255/255, 129/255, 050/255},
 	["CastHeight"] = 2,
 	["Clamp"] = false,
-	["ClassIcons"] = true,
 	["ClassResource"] = true,
 	["Combat"] = false,
 	["Distance"] = 40,
-	["EliteIcon"] = true,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
-	["GoodColor"] = {75/255, 175/255, 76/255},
-	["GoodTransition"] = {218/255, 197/255, 92/255},
+	["GoodColor"] = {050/255, 180/255, 000/255},
+	["GoodTransition"] = {255/255, 217/255, 050/255},
 	["HealthValue"] = true,
-	["Height"] = 16,
+	["Height"] = 14,
 	["MarkHealers"] = false,
 	["NonTargetAlpha"] = 0.35,
+	["OffTankColor"] = {187/255, 050/255, 255/255},
+	["OffTankColorBadTransition"] = {0.71, 0.43, 0.27},
+	["OffTankColorGoodTransition"] = {.31, .45, .63},
 	["OverlapH"] = 1.2,
 	["OverlapV"] = 1.2,
 	["QuestIcon"] = true,
@@ -413,19 +405,16 @@ C["Nameplates"] = {
 	["SelectedScale"] = 1,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
-	["TankedByTankColor"] = {0.8, 0.1, 1},
-	["TappedColor"] = {0.6, 0.6, 0.6},
 	["TargetArrow"] = true,
 	["Texture"] = "KkthnxUI",
 	["Threat"] = false,
 	["Totems"] = false,
 	["TrackAuras"] = true,
-	["Width"] = 136,
+	["Width"] = 150,
 	["HealthFormat"] = {
 		["Options"] = {
 			["Current"] = "[KkthnxUI:HealthCurrent]",
 			["Percent"] = "[KkthnxUI:HealthPercent]",
-			["PercentCut"] = "[KkthnxUI:PercentCut]",
 			["Current / Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
 		},
 		["Value"] = "[KkthnxUI:HealthPercent]"
@@ -448,20 +437,6 @@ C["Nameplates"] = {
 		},
 		["Value"] = "DISABLED"
 	}
-}
-
--- RaidCooldowns
-C["RaidCooldown"] = {
-	["Enable"] = false,
-	["Height"] = 15,
-	["Width"] = 186,
-	["Upwards"] = false,
-	["Expiration"] = false, -- Sort by expiration time
-	["Show_Self"] = true,
-	["Show_Icon"] = true,
-	["Show_InRaid"] = true,
-	["Show_InParty"] = true,
-	["Show_InArena"] = true,
 }
 
 -- Skins
@@ -558,24 +533,6 @@ C["Unitframe"] = {
 			["Default"] = "DEFAULT"
 		},
 		["Value"] = "DEFAULT"
-	},
-	["HealthFormatPlayer"] = {
-		["Options"] = {
-			["Current"] = "[KkthnxUI:HealthCurrent]",
-			["Percent"] = "[KkthnxUI:HealthPercent]",
-			["PercentCut"] = "[KkthnxUI:PercentCut]",
-			["Current / Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
-		},
-		["Value"] = "[KkthnxUI:HealthCurrent]"
-	},
-	["HealthFormatTarget"] = {
-		["Options"] = {
-			["Current"] = "[KkthnxUI:HealthCurrent]",
-			["Percent"] = "[KkthnxUI:HealthPercent]",
-			["PercentCut"] = "[KkthnxUI:PercentCut]",
-			["Current / Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
-		},
-		["Value"] = "[KkthnxUI:HealthCurrent-Percent]"
 	}
 }
 
@@ -585,7 +542,7 @@ C["Party"] = {
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
 	["MouseoverHighlight"] = true,
-	["PartyAsRaid"] = false,
+	-- ["PartyAsRaid"] = false, -- I Do Not Know If We Will Bring This Back.
 	["PortraitTimers"] = false,
 	["ShowBuffs"] = true,
 	["ShowPlayer"] = true,
@@ -714,6 +671,14 @@ C["Raid"] = {
 		["Value"] = "[KkthnxUI:HealthDeficit]"
 	}
 }
+
+if not IsAddOnLoaded("QuestNotifier") then
+	C["QuestNotifier"] = {
+		["Enable"] = IsAddOnLoaded("QuestNotifier") and false,
+		["OnlyCompleteRing"] = false,
+		["QuestProgress"] = false,
+	}
+end
 
 -- Worldmap
 C["WorldMap"] = {

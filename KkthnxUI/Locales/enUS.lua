@@ -1,6 +1,10 @@
 local K, _, L = unpack(select(2, ...))
 -- Localization for enUS & enGB
 
+if not L then
+	return
+end
+
 local _G = _G
 
 local GetItemClassInfo = _G.GetItemClassInfo
@@ -130,6 +134,9 @@ L["Automation"] = {
 	DuelCanceled_Pet = "Pet duel request from %s rejected.",
 	DuelCanceled_Regular = "Duel request from %s rejected.",
 	MovieBlocked = "You've seen this movie before, skipping it.",
+	Subzone_Eastern_Transept = "Eastern Transept",
+	Subzone_Grand_Bazaar = "Grand Bazaar",
+	Subzone_Port_of_Zandalar = "Port of Zandalar",
 }
 
 -- Blizzard Localization
@@ -290,7 +297,7 @@ L["Miscellaneous"] = {
 	Mail_Unique = "Stopped. Found a duplicate unique item in bag or in bank.",
 	Repair = "Warning! You need to do a repair of your equipment as soon as possible!",
 	Silver_Short = "|cffc7c7cfs|r",
-	UIOutdated = "Your version of KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!",
+	UIOutdated = "Your version of KkthnxUI v"..K.Version.." is out of date.",
 }
 
 -- Nameplates Localization

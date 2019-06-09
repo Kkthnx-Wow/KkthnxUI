@@ -17,8 +17,7 @@ local string_utf8sub = string.utf8sub
 local table_sort, table_insert = table.sort, table.insert
 local unpack = _G.unpack
 
--- WoW API
-local C_Calendar = _G.C_Calendar
+-- WoW APIr
 local DUNGEON_FLOOR_TEMPESTKEEP1 = _G.DUNGEON_FLOOR_TEMPESTKEEP1
 local EJ_GetCurrentTier = _G.EJ_GetCurrentTier
 local EJ_GetInstanceByIndex = _G.EJ_GetInstanceByIndex
@@ -31,11 +30,9 @@ local GetGameTime = _G.GetGameTime
 local GetNumSavedInstances = _G.GetNumSavedInstances
 local GetNumSavedWorldBosses = _G.GetNumSavedWorldBosses
 local GetNumWorldPVPAreas = _G.GetNumWorldPVPAreas
-local GetQuestObjectiveInfo = _G.GetQuestObjectiveInfo
 local GetSavedInstanceInfo = _G.GetSavedInstanceInfo
 local GetSavedWorldBossInfo = _G.GetSavedWorldBossInfo
 local GetWorldPVPAreaInfo = _G.GetWorldPVPAreaInfo
-local IsQuestFlaggedCompleted = _G.IsQuestFlaggedCompleted
 local QUEUE_TIME_UNAVAILABLE = _G.QUEUE_TIME_UNAVAILABLE
 local RequestRaidInfo = _G.RequestRaidInfo
 local SecondsToTime = _G.SecondsToTime
@@ -59,8 +56,8 @@ DataTextTime.Text:SetFont(select(1, DataTextTime.Text:GetFont()), 13, select(3, 
 DataTextTime.Text:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 2)
 DataTextTime:SetAllPoints(DataTextTime.Text)
 
-local WORLD_BOSSES_TEXT = RAID_INFO_WORLD_BOSS.."(s)"
-local APM = {TIMEMANAGER_PM, TIMEMANAGER_AM}
+local WORLD_BOSSES_TEXT = _G.RAID_INFO_WORLD_BOSS.."(s)"
+local APM = {_G.TIMEMANAGER_PM, _G.TIMEMANAGER_AM}
 local europeDisplayFormat = "%s%02d|r:%s%02d|r"
 local ukDisplayFormat = "%s%d|r:%s%02d|r %s%s|r"
 local europeDisplayFormat_nocolor = string_join("", "%02d", ":|r%02d")
@@ -128,13 +125,13 @@ local nhm = { -- Raid Finder, Normal, Heroic, Mythic
 	(krcntw and PLAYER_DIFFICULTY3) or string_utf8sub(PLAYER_DIFFICULTY3, 1, 1), -- R
 	(krcntw and PLAYER_DIFFICULTY1) or string_utf8sub(PLAYER_DIFFICULTY1, 1, 1), -- N
 	(krcntw and PLAYER_DIFFICULTY2) or string_utf8sub(PLAYER_DIFFICULTY2, 1, 1), -- H
-	(krcntw and PLAYER_DIFFICULTY6) or string_utf8sub(PLAYER_DIFFICULTY6, 1, 1)  -- M
+	(krcntw and PLAYER_DIFFICULTY6) or string_utf8sub(PLAYER_DIFFICULTY6, 1, 1) -- M
 }
 
 -- Check Invasion Status
 local invIndex = {
 	[1] = {title = "Legion Invasion", duration = 66600, maps = {630, 641, 650, 634}, timeTable = {4, 3, 2, 1, 4, 2, 3, 1, 2, 4, 1, 3}, baseTime = 1546844400}, -- 1/30 9:00 [1]
-	[2] = {title = "Battle for Azeroth Assault", duration = 68400, maps = {862, 863, 864, 896, 942, 895}, timeTable = {4, 1, 6, 2, 5, 3}, baseTime = 1546743600}, -- 12/13 17:00 [1]
+	-- [2] = {title = "Battle for Azeroth Assault", duration = 68400, maps = {862, 863, 864, 896, 942, 895}, timeTable = {4, 1, 6, 2, 5, 3}, baseTime = 1546743600}, -- 12/13 17:00 [1]
 }
 
 local mapAreaPoiIDs = {
@@ -152,7 +149,7 @@ local mapAreaPoiIDs = {
 
 local function GetInvasionTimeInfo(mapID)
 	local areaPoiID = mapAreaPoiIDs[mapID]
-	local seconds = C_AreaPoiInfo.GetAreaPOISecondsLeft(areaPoiID)
+	local seconds = C_AreaPoiInfo.GetAreaPOITimeLeft(areaPoiID)
 	local mapInfo = C_Map.GetMapInfo(mapID)
 	return seconds, mapInfo.name
 end
@@ -200,8 +197,6 @@ local function OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_NONE")
 	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
-
-	local r, g, b = 1, 1, 1
 
 	if (not enteredFrame) then
 		enteredFrame = true
@@ -358,6 +353,7 @@ local function OnEnter(self)
 		local timeLeft, zoneName = CheckInvasion(index)
 		local nextTime = GetNextTime(value.baseTime, index)
 		if timeLeft then
+			local r, g, b
 			timeLeft = timeLeft / 60
 			if timeLeft < 60 then
 				r, g, b = 1, 0, 0
@@ -391,9 +387,9 @@ function Update(self, t)
 	end
 
 	if GameTimeFrame.flashInvite then
-		K.UIFrameFlash(self, 0.53, true)
+		K.Flash(self, 0.53, true)
 	else
-		K.UIFrameStopFlash(self)
+		K.StopFlash(self)
 	end
 
 	if enteredFrame then
@@ -428,9 +424,8 @@ local function DelayDataTextTime()
 	DataTextTime:SetScript("OnUpdate", Update)
 	DataTextTime:SetScript("OnEnter", OnEnter)
 	DataTextTime:SetScript("OnLeave", OnLeave)
-	Update(DataTextTime, 1)
 end
 
-C_Timer.After(0.1, function()
+C_Timer.After(0.6, function()
 	DelayDataTextTime()
 end)

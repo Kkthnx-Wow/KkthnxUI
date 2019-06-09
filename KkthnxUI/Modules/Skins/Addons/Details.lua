@@ -23,9 +23,9 @@ ReskinDetails:SetScript("OnEvent", function()
 		instance:SetBackdropTexture("None")
 		instance:MenuAnchor(16, 3)
 		instance:ToolbarMenuButtonsSize(1)
-		instance:AttributeMenu(true, 0, 3, "KkthnxUI_Normal", 13, {1, 1, 1}, 1, true)
-		instance:SetBarSettings(18, "KkthnxUI_StatusBar")
-		instance:SetBarTextSettings(13, "KkthnxUI_Normal", nil, nil, nil, true, true, nil, nil, nil, nil, nil, nil, false, nil, false, nil)
+		instance:AttributeMenu(true, 0, 3, "KkthnxUI_Normal", 12, {1, 1, 1}, 1, false)
+		instance:SetBarSettings(20, C["Skins"].ResetDetails and "KkthnxUI_Statusbar")
+		instance:SetBarTextSettings(12, "KkthnxUI_Normal", nil, nil, nil, true, true, nil, nil, nil, nil, nil, nil, false, nil, false, nil)
 
 		instance.baseframe:CreateBackdrop()
 		instance.baseframe.Backdrop:SetPoint("TOPLEFT", -1, 18)
@@ -57,13 +57,13 @@ ReskinDetails:SetScript("OnEvent", function()
 	end
 
 	if C["Skins"].ResetDetails then
-		local height = 160
+		local height = 105
 		if instance1 then
 			if instance2 then
 				height = 96
-				EmbedWindow(instance2, -3, 140, 320, height)
+				EmbedWindow(instance2, -3, 140, 250, height)
 			end
-			EmbedWindow(instance1, -300, 6, 320, height)
+			EmbedWindow(instance1, -350, 4, 250, height)
 		end
 	end
 
@@ -74,11 +74,11 @@ ReskinDetails:SetScript("OnEvent", function()
 			setupInstance(instance)
 
 			if instance:GetId() == 2 then
-				instance1:SetSize(320, 95)
-				EmbedWindow(instance, -3, 140, 320, 95)
+				instance1:SetSize(250, 95)
+				EmbedWindow(instance, -3, 140, 250, 95)
 			end
 		end
 	end
 
-	C["Skins"].ResetDetails = false
+	KkthnxUIConfigShared[GetRealmName()][UnitName("player")].Skins.ResetDetails = false
 end)

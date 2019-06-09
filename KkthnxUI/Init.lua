@@ -35,7 +35,6 @@ local K, C, L = unpack(KkthnxUI)
 local _G = _G
 local math_max = math.max
 local math_min = math.min
-local select = select
 local string_format = string.format
 local string_lower = string.lower
 local string_match = string.match
@@ -86,9 +85,9 @@ AddOn.Noop = function()
 end
 
 AddOn.Name = UnitName("player")
-AddOn.Class = select(2, UnitClass("player"))
-AddOn.Race = select(2, UnitRace("player"))
-AddOn.Faction = UnitFactionGroup("player")
+AddOn.LocalizedClass, AddOn.Class, AddOn.ClassID = UnitClass("player")
+AddOn.LocalizedRace, AddOn.Race = UnitRace("player")
+AddOn.Faction, AddOn.LocalizedFaction = UnitFactionGroup("player")
 AddOn.Spec = GetSpecialization() or 0
 AddOn.Level = UnitLevel("player")
 AddOn.Client = GetLocale()
@@ -102,8 +101,9 @@ AddOn.ScreenWidth = tonumber(string_match(AddOn.Resolution, "(%d+)x+%d"))
 AddOn.UIScale = math_min(2, math_max(0.01, 768 / string_match(AddOn.Resolution, "%d+x(%d+)")))
 AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
+AddOn.ClassColor = string_format("|cff%02x%02x%02x", AddOn.Color.r * 255, AddOn.Color.g * 255, AddOn.Color.b * 255)
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
-AddOn.Welcome = "|cff4488ffKkthnxUI " .. AddOn.Version .. " " .. AddOn.Client .. "|r - /helpui"
+AddOn.Welcome = "|cff4488ffKkthnxUI "..AddOn.Version.." "..AddOn.Client.."|r - /helpui"
 AddOn.ScanTooltip = CreateFrame("GameTooltip", "KkthnxUI_ScanTooltip", _G.UIParent, "GameTooltipTemplate")
 AddOn.WowPatch, AddOn.WowBuild, AddOn.WowRelease, AddOn.TocVersion = GetBuildInfo()
 AddOn.WowBuild = tonumber(AddOn.WowBuild)
@@ -181,72 +181,53 @@ for i = 1, GetNumAddOns() do
 	AddOn.AddOnVersion[string_lower(Name)] = GetAddOnMetadata(Name, "Version")
 end
 
--- HonorFrameLoadTaint workaround
--- credit: https://www.townlong-yak.com/bugs/afKy4k-HonorFrameLoadTaint
-if (_G.UIDROPDOWNMENU_VALUE_PATCH_VERSION or 0) < 2 then
-	_G.UIDROPDOWNMENU_VALUE_PATCH_VERSION = 2
-	hooksecurefunc("UIDropDownMenu_InitializeHelper", function()
-		if _G.UIDROPDOWNMENU_VALUE_PATCH_VERSION ~= 2 then
-			return
-		end
-		for i=1, _G.UIDROPDOWNMENU_MAXLEVELS do
-			for j=1, _G.UIDROPDOWNMENU_MAXBUTTONS do
-				local b = _G["DropDownList" .. i .. "Button" .. j]
-				if not (issecurevariable(b, "value") or b:IsShown()) then
-					b.value = nil
-					repeat
-						j, b["fx" .. j] = j+1
-					until issecurevariable(b, "value")
-				end
+do
+	InterfaceOptionsFrameCancel:SetScript("OnClick", function()
+		InterfaceOptionsFrameOkay:Click()
+	end)
+
+	-- https://www.townlong-yak.com/bugs/Kjq4hm-DisplayModeCommunitiesTaint
+	if (UIDROPDOWNMENU_OPEN_PATCH_VERSION or 0) < 1 then
+		UIDROPDOWNMENU_OPEN_PATCH_VERSION = 1
+		hooksecurefunc("UIDropDownMenu_InitializeHelper", function(frame)
+			if UIDROPDOWNMENU_OPEN_PATCH_VERSION ~= 1 then
+				return
 			end
-		end
-	end)
-end
 
--- CommunitiesUI taint workaround
--- credit https://www.townlong-yak.com/bugs/Kjq4hm-DisplayModeTaint
-if (_G.UIDROPDOWNMENU_OPEN_PATCH_VERSION or 0) < 1 then
-	_G.UIDROPDOWNMENU_OPEN_PATCH_VERSION = 1
-	hooksecurefunc("UIDropDownMenu_InitializeHelper", function(frame)
-		if _G.UIDROPDOWNMENU_OPEN_PATCH_VERSION ~= 1 then
-			return
-		end
-		if _G.UIDROPDOWNMENU_OPEN_MENU and _G.UIDROPDOWNMENU_OPEN_MENU ~= frame
-		and not issecurevariable(_G.UIDROPDOWNMENU_OPEN_MENU, "displayMode") then
-			_G.UIDROPDOWNMENU_OPEN_MENU = nil
-			local t, f, prefix, i = _G, issecurevariable, " \0", 1
-			repeat
-				i, t[prefix .. i] = i + 1
-			until f("UIDROPDOWNMENU_OPEN_MENU")
-		end
-	end)
-end
-
--- CommunitiesUI taint workaround #2
--- credit: https://www.townlong-yak.com/bugs/YhgQma-SetValueRefreshTaint
-if (_G.COMMUNITY_UIDD_REFRESH_PATCH_VERSION or 0) < 1 then
-	_G.COMMUNITY_UIDD_REFRESH_PATCH_VERSION = 1
-	local function CleanDropdowns()
-		if _G.COMMUNITY_UIDD_REFRESH_PATCH_VERSION ~= 1 then
-			return
-		end
-		local f, f2 = _G.FriendsFrame, _G.FriendsTabHeader
-		local s = f:IsShown()
-		f:Hide()
-		f:Show()
-		if not f2:IsShown() then
-			f2:Show()
-			f2:Hide()
-		end
-		if not s then
-			f:Hide()
-		end
+			if UIDROPDOWNMENU_OPEN_MENU and UIDROPDOWNMENU_OPEN_MENU ~= frame and not issecurevariable(UIDROPDOWNMENU_OPEN_MENU, "displayMode") then
+				UIDROPDOWNMENU_OPEN_MENU = nil
+				local t, f, prefix, i = _G, issecurevariable, " \0", 1
+				repeat
+					i, t[prefix .. i] = i+1
+				until f("UIDROPDOWNMENU_OPEN_MENU")
+			end
+		end)
 	end
 
-	hooksecurefunc("Communities_LoadUI", CleanDropdowns)
-	hooksecurefunc("SetCVar", function(n)
-		if n == "lastSelectedClubId" then
-			CleanDropdowns()
+	-- https://www.townlong-yak.com/bugs/YhgQma-SetValueRefreshTaint
+	if (COMMUNITY_UIDD_REFRESH_PATCH_VERSION or 0) < 1 then
+		COMMUNITY_UIDD_REFRESH_PATCH_VERSION = 1
+		local function CleanDropdowns()
+			if COMMUNITY_UIDD_REFRESH_PATCH_VERSION ~= 1 then
+				return
+			end
+			local f, f2 = FriendsFrame, FriendsTabHeader
+			local s = f:IsShown()
+			f:Hide()
+			f:Show()
+			if not f2:IsShown() then
+				f2:Show()
+				f2:Hide()
+			end
+			if not s then
+				f:Hide()
+			end
 		end
-	end)
+		hooksecurefunc("Communities_LoadUI", CleanDropdowns)
+		hooksecurefunc("SetCVar", function(n)
+			if n == "lastSelectedClubId" then
+				CleanDropdowns()
+			end
+		end)
+	end
 end

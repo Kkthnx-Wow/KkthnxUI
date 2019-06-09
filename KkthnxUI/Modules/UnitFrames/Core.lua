@@ -6,73 +6,63 @@ assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 local _G = _G
 local math_ceil = math.ceil
+local math_min = math.min
 local pairs = pairs
 local select = select
 local string_find = string.find
+local string_match = string.match
 local table_insert = table.insert
 local tonumber = tonumber
 local unpack = unpack
-local math_abs = math.abs
-local math_min = math.min
-local string_match = string.match
 
+local C_NamePlate_GetNamePlateForUnit = _G.C_NamePlate.GetNamePlateForUnit
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local COOLDOWN_Anchor = _G.COOLDOWN_Anchor
-local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
-local C_NamePlate_GetNamePlateForUnit = _G.C_NamePlate.GetNamePlateForUnit
 local CreateFrame = _G.CreateFrame
 local DebuffTypeColor = _G.DebuffTypeColor
-local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
 local GetCVarDefault = _G.GetCVarDefault
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local GetSpellInfo = _G.GetSpellInfo
 local GetTime = _G.GetTime
+local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
-local IsInGroup = _G.IsInGroup
 local IsInInstance = _G.IsInInstance
-local IsInRaid = _G.IsInRaid
 local MAX_ARENA_ENEMIES = _G.MAX_ARENA_ENEMIES or 5
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES or 5
-local PVE_PVP_CC_Anchor = _G.PVE_PVP_CC_Anchor
-local PVE_PVP_DEBUFF_Anchor = _G.PVE_PVP_DEBUFF_Anchor
+local oUF_RaidDebuffs = _G.oUF_RaidDebuffs
 local P_BUFF_ICON_Anchor = _G.P_BUFF_ICON_Anchor
 local P_PROC_ICON_Anchor = _G.P_PROC_ICON_Anchor
 local PlaySound = _G.PlaySound
-local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local PVE_PVP_CC_Anchor = _G.PVE_PVP_CC_Anchor
+local PVE_PVP_DEBUFF_Anchor = _G.PVE_PVP_DEBUFF_Anchor
+local SetCVar = _G.SetCVar
 local SOUNDKIT = _G.SOUNDKIT
 local SPECIAL_P_BUFF_ICON_Anchor = _G.SPECIAL_P_BUFF_ICON_Anchor
-local SetCVar = _G.SetCVar
 local T_BUFF_Anchor = _G.T_BUFF_Anchor
-local T_DEBUFF_ICON_Anchor = _G.T_DEBUFF_ICON_Anchor
 local T_DE_BUFF_BAR_Anchor = _G.T_DE_BUFF_BAR_Anchor
+local T_DEBUFF_ICON_Anchor = _G.T_DEBUFF_ICON_Anchor
 local UIParent = _G.UIParent
 local UnitAura = _G.UnitAura
 local UnitCanAttack = _G.UnitCanAttack
 local UnitClass = _G.UnitClass
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
-local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDead = _G.UnitIsDead
 local UnitIsEnemy = _G.UnitIsEnemy
 local UnitIsFriend = _G.UnitIsFriend
 local UnitIsGhost = _G.UnitIsGhost
+local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsTapDenied = _G.UnitIsTapDenied
 local UnitIsUnit = _G.UnitIsUnit
 local UnitName = _G.UnitName
-local UnitPlayerControlled = _G.UnitPlayerControlled
 local UnitPower = _G.UnitPower
 local UnitPowerMax = _G.UnitPowerMax
 local UnitReaction = _G.UnitReaction
 local UnitSpellHaste = _G.UnitSpellHaste
-local hooksecurefunc = _G.hooksecurefunc
-local oUF_RaidDebuffs = _G.oUF_RaidDebuffs
 
-local Movers = K["Movers"]
 Module.ticks = {}
 
 Module.RaidBuffsTrackingPosition = {
@@ -121,6 +111,61 @@ Module.PlateTotemData = {
 	[GetSpellInfo(210660)] = "Interface\\Icons\\spell_nature_invisibilitytotem", -- Tailwind Totem
 }
 
+function Module:ThreatIndicatorPreUpdate(unit)
+	local ROLE = Module.IsInGroup and (UnitExists(unit.."target") and not UnitIsUnit(unit.."target", "player")) and Module.GroupRoles[UnitName(unit.."target")] or "NONE"
+
+	if ROLE == "TANK" then
+		self.feedbackUnit = unit.."target"
+		self.offTank = K.Role == "TANK"
+		self.isTank = true
+	else
+		self.feedbackUnit = "player"
+		self.offTank = false
+		self.isTank = K.Role == "TANK"
+	end
+
+	self.__owner.ThreatStatus = nil
+	self.__owner.ThreatOffTank = self.offTank
+	self.__owner.ThreatIsTank = self.isTank
+end
+
+function Module:ThreatIndicatorPostUpdate(unit, status)
+	if C["Nameplates"].Threat and not UnitIsTapDenied(unit) and status then
+		self.__owner.Health.colorTapping = false
+		self.__owner.Health.colorDisconnected = false
+		self.__owner.Health.colorClass = false
+		self.__owner.Health.colorClassNPC = false
+		self.__owner.Health.colorClassPet = false
+		self.__owner.Health.colorSelection = false
+		self.__owner.Health.colorThreat = false
+		self.__owner.Health.colorReaction = false
+		self.__owner.Health.colorSmooth = false
+		self.__owner.Health.colorHealth = false
+
+		self.__owner.ThreatStatus = status
+
+		local Color
+		if (status == 3) then -- securely tanking
+			Color = self.offTank and C["Nameplates"].OffTankColor or self.isTank and C["Nameplates"].GoodColor or C["Nameplates"].BadColor
+		elseif (status == 2) then -- insecurely tanking
+			Color = self.offTank and C["Nameplates"].OffTankColorColorBadTransition or self.isTank and C["Nameplates"].BadTransition or C["Nameplates"].GoodTransition
+		elseif (status == 1) then -- not tanking but threat higher than tank
+			Color = self.offTank and C["Nameplates"].OffTankColorColorGoodTransition or self.isTank and C["Nameplates"].GoodTransition or C["Nameplates"].BadTransition
+		else -- not tanking at all
+			Color = self.isTank and C["Nameplates"].BadColor or C["Nameplates"].GoodColor
+		end
+
+		local r, g, b
+        r, g, b = Color[1], Color[2], Color[3]
+
+        if self.__owner.HealthColorChanged then
+            self.r, self.g, self.b = r, g, b
+        else
+            self.__owner.Health:SetStatusBarColor(r, g, b)
+        end
+	end
+end
+
 function Module:UpdateClassPortraits(unit)
 	if not unit then
 		return
@@ -150,23 +195,25 @@ function Module:UpdateClassPortraits(unit)
 end
 
 function Module:UpdatePortraitColor(unit, min, max)
-if not C["Unitframe"].ShowPortrait then return end
+	if not C["Unitframe"].ShowPortrait then
+		return
+	end
 
-    if not UnitIsConnected(unit) then
-        self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
-    elseif UnitIsDead(unit) then
-        self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
-    elseif UnitIsGhost(unit) then
-        self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
-    elseif max == 0 or min/max * 100 < 25 then
-        if UnitIsPlayer(unit) then
-            if unit ~= "player" then
-                self.Portrait:SetVertexColor(1, 0, 0, 0.7)
-            end
-        end
-    else
-        self.Portrait:SetVertexColor(1, 1, 1, 1)
-    end
+	if not UnitIsConnected(unit) then
+		self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
+	elseif UnitIsDead(unit) then
+		self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
+	elseif UnitIsGhost(unit) then
+		self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
+	elseif max == 0 or min/max * 100 < 25 then
+		if UnitIsPlayer(unit) then
+			if unit ~= "player" then
+				self.Portrait:SetVertexColor(1, 0, 0, 0.7)
+			end
+		end
+	else
+		self.Portrait:SetVertexColor(1, 1, 1, 1)
+	end
 end
 
 function Module:UpdateHealth(unit, cur, max)
@@ -174,120 +221,8 @@ function Module:UpdateHealth(unit, cur, max)
 		return
 	end
 
-    local parent = self.__owner
-    Module.UpdatePortraitColor(parent, unit, cur, max)
-end
-
-function Module:UpdateColor(unit, cur, max)
 	local parent = self.__owner
-
-	local r, g, b, t
-
-	if (self.colorTapping and not UnitPlayerControlled(unit) and UnitIsTapDenied(unit)) then
-		t = parent.colors.tapped
-	elseif self.ColorOverride and not UnitIsPlayer(unit) then
-		t = self.ColorOverride
-	elseif (self.colorDisconnected and self.disconnected) then
-		t = parent.colors.disconnected
-	elseif (self.colorClass and UnitIsPlayer(unit)) or
-		(self.colorClassNPC and not UnitIsPlayer(unit)) or
-		(self.colorClassPet and UnitPlayerControlled(unit) and not UnitIsPlayer(unit)) then
-		local _, class = UnitClass(unit)
-		t = parent.colors.class[class]
-	elseif (self.colorReaction and UnitReaction(unit, "player")) then
-		t = parent.colors.reaction[UnitReaction(unit, "player")]
-	elseif (self.colorSmooth) then
-		r, g, b = parent:ColorGradient(cur, max, unpack(self.smoothGradient or parent.colors.smooth))
-	elseif (self.colorHealth) then
-		t = parent.colors.health
-	end
-
-	if (t) then
-		r, g, b = t[1], t[2], t[3]
-	end
-
-	if (r or g or b) then
-		self:SetStatusBarColor(r, g, b)
-	end
-end
-
--- TODO: PreUpdateThreat is just fucked
--- BODY: We need a life.
-function Module:PreUpdateThreat(threat, unit)
-	local ROLE = IsInGroup() or IsInRaid() and UnitExists(unit.."target") and UnitGroupRolesAssigned(unit.."target") or "NONE"
-
-	if ROLE == "TANK" then
-		threat.feedbackUnit = unit.."target"
-		threat.offtank = not UnitIsUnit(unit.."target", "player")
-		threat.isTank = true
-	else
-		threat.feedbackUnit = "player"
-		threat.offtank = false
-		threat.isTank = K.GetPlayerRole() == "TANK" and true or false
-	end
-end
-
-function Module:PostUpdateThreat(threat, _, status)
-	if C["Nameplates"].Threat then
-		local r, g, b
-		if status then
-			if (status == 3) then -- Securely Tanking
-				if threat.isTank then
-					r, g, b = C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3]
-				else
-					r, g, b = C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3]
-				end
-			elseif (status == 2) then -- insecurely tanking
-				if threat.isTank then
-					r, g, b = C["Nameplates"].BadTransition[1], C["Nameplates"].BadTransition[2], C["Nameplates"].BadTransition[3]
-				else
-					r, g, b = C["Nameplates"].GoodTransition[1], C["Nameplates"].GoodTransition[2], C["Nameplates"].GoodTransition[3]
-				end
-			elseif (status == 1) then -- not tanking but threat higher than tank
-				if threat.isTank then
-					r, g, b = C["Nameplates"].GoodTransition[1], C["Nameplates"].GoodTransition[2], C["Nameplates"].GoodTransition[3]
-				else
-					r, g, b = C["Nameplates"].BadTransition[1], C["Nameplates"].BadTransition[2], C["Nameplates"].BadTransition[3]
-				end
-			else -- not tanking at all
-				if threat.isTank then
-					-- Check if it is being tanked by an offtank.
-					if threat.offtank then
-						r, g, b = C["Nameplates"].TankedByTankColor[1], C["Nameplates"].TankedByTankColor[2], C["Nameplates"].TankedByTankColor[3]
-					else
-						r, g, b = C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3]
-					end
-				else
-					if threat.offtank then
-						r, g, b = C["Nameplates"].TankedByTankColor[1], C["Nameplates"].TankedByTankColor[2], C["Nameplates"].TankedByTankColor[3]
-					else
-						r, g, b = C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3]
-					end
-				end
-			end
-		end
-
-		local shouldUpdate
-		if threat.__owner.Health.ColorOverride and (not r or not g or not b) then
-			threat.__owner.Health.ColorOverride = nil
-			shouldUpdate = true
-		elseif threat.__owner.Health.ColorOverride and (threat.__owner.Health.ColorOverride[1] ~= r or threat.__owner.Health.ColorOverride[2] ~= g or threat.__owner.Health.ColorOverride ~= b) then
-			threat.__owner.Health.ColorOverride = {r, g, b}
-			shouldUpdate = true
-		elseif not threat.__owner.Health.ColorOverride and (r and g and b) then
-			threat.__owner.Health.ColorOverride = {r, g, b}
-			shouldUpdate = true
-		end
-
-		if shouldUpdate then
-			threat.__owner.Health:ForceUpdate()
-		end
-	else
-		if threat.__owner.Health.ColorOverride then
-			threat.__owner.Health.ColorOverride = nil
-			threat.__owner.Health:ForceUpdate()
-		end
-	end
+	Module.UpdatePortraitColor(parent, unit, cur, max)
 end
 
 function Module:UpdateQuestUnit(unit)
@@ -297,7 +232,7 @@ function Module:UpdateQuestUnit(unit)
 
 	local updateSize = C["Nameplates"].QuestIconSize
 
-	if C["Nameplates"].QuestIcon then
+	if (self.frameType == "FRIENDLY_NPC" or self.frameType == "ENEMY_NPC") and C["Nameplates"].QuestIcon then
 		if not self:IsElementEnabled("QuestIcons") then
 			self:EnableElement("QuestIcons")
 		end
@@ -318,7 +253,7 @@ function Module:UpdateQuestUnit(unit)
 end
 
 function Module:UpdateHealerIcons()
-	if C["Nameplates"].MarkHealers then
+	if (self.frameType == "FRIENDLY_PLAYER" or self.frameType == "ENEMY_PLAYER") and C["Nameplates"].MarkHealers then
 		if not self:IsElementEnabled("HealerSpecs") then
 			self:EnableElement("HealerSpecs")
 		end
@@ -331,68 +266,65 @@ function Module:UpdateHealerIcons()
 	end
 end
 
-function Module:UpdateClassificationIcons()
-	if C["Nameplates"].EliteIcon then
-		if not self:IsElementEnabled("ClassificationIndicator") then
-			self:EnableElement("ClassificationIndicator")
+function Module:UpdateThreatIndicator()
+	if (Module.InstanceType ~= "arena" and Module.InstanceType ~= "pvp") and self.frameType == "ENEMY_NPC" and C["Nameplates"].Threat then
+		if not self:IsElementEnabled("ThreatIndicator") then
+			self:EnableElement("ThreatIndicator")
 		end
 
-		self.ClassificationIndicator:ClearAllPoints()
-		self.ClassificationIndicator:SetSize(self.Health:GetHeight() + 2, self.Health:GetHeight() + 2)
-		self.ClassificationIndicator:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
+		self.ThreatIndicator:SetAlpha(0)
 	else
-		if self:IsElementEnabled("ClassificationIndicator") then
-			self:DisableElement("ClassificationIndicator")
+		if self:IsElementEnabled("ThreatIndicator") then
+			self:DisableElement("ThreatIndicator")
 		end
 	end
 end
 
 function Module:HighlightPlate()
 	local unit = self.unit
+	local plateArrowLeft = C["Nameplates"].TargetArrow and self.leftArrow
+	local plateArrowRight = C["Nameplates"].TargetArrow and self.rightArrow
+	local plateShadow = self.Health.Shadow
 
-	local health = self.Health
-	local shadowH = health.Shadow
-	local arrowT = C["Nameplates"].TargetArrow and self.TopArrow
+	if plateArrowLeft then
+		plateArrowLeft:SetVertexColor(255/255, 247/255, 173/255)
+		plateArrowLeft:Hide()
+	end
 
-	local isPlayer = unit and UnitIsPlayer(unit)
-	local reaction = unit and UnitReaction(unit, "player")
+	if plateArrowRight then
+		plateArrowRight:SetVertexColor(255/255, 247/255, 173/255)
+		plateArrowRight:Hide()
+	end
 
-	if UnitIsUnit(unit, "target") and not UnitIsUnit(unit, "player") then
-		if isPlayer then
-			local _, class = UnitClass(unit)
-			if class then
-				local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
-				if color then
-					if arrowT then
-						arrowT:Show()
-						arrowT:SetVertexColor(color.r, color.g, color.b)
-					end
+	if plateShadow then
+		plateShadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+	end
 
-					if shadowH then
-						shadowH:SetBackdropBorderColor(color.r, color.g, color.b)
-					end
-				end
-			end
-		elseif reaction then
-			local color = FACTION_BAR_COLORS[reaction]
-			if color then
-				if arrowT then
-					arrowT:Show()
-					arrowT:SetVertexColor(color.r, color.g, color.b)
-				end
-
-				if shadowH then
-					shadowH:SetBackdropBorderColor(color.r, color.g, color.b)
-				end
-			end
+	if UnitIsUnit(unit, "target") then
+		if plateArrowLeft and plateArrowRight then
+			plateArrowLeft:Show()
+			plateArrowRight:Show()
 		end
+	end
+
+	local r, g, b
+	local showIndicator
+	if UnitIsUnit(unit, "target") then
+		showIndicator = true
+		r, g, b = 255/255, 247/255, 173/255
 	else
-		if arrowT then
-			arrowT:Hide()
+		showIndicator = false
+		r, g, b = 0, 0, 0, 0.8
+	end
+
+	if showIndicator then
+		if (plateArrowLeft and plateArrowRight) then
+			plateArrowLeft:SetVertexColor(r, g, b)
+			plateArrowRight:SetVertexColor(r, g, b)
 		end
 
-		if shadowH then
-			shadowH:SetBackdropBorderColor(0, 0, 0, 0.8)
+		if plateShadow then
+			plateShadow:SetBackdropBorderColor(r, g, b)
 		end
 	end
 end
@@ -432,17 +364,17 @@ end
 
 function Module:CustomCastTimeText(duration)
 	if self.channeling then
-		self.Time:SetText(("%.1f"):format(math_abs(duration - self.max)))
+		self.Time:SetFormattedText("%.1f", abs(duration - self.max))
 	else
-		self.Time:SetText(("%.1f"):format(duration))
+		self.Time:SetFormattedText("%.1f", duration)
 	end
 end
 
 function Module:CustomCastDelayText(duration)
 	if self.channeling then
-		self.Time:SetText(("%.1f |cffaf5050%.1f|r"):format(math_abs(duration - self.max), self.delay))
+		self.Time:SetFormattedText("%.1f |cffaf5050%.1f|r", abs(duration - self.max), self.delay)
 	else
-		self.Time:SetText(("%.1f |cffaf5050%s %.1f|r"):format(duration, "+", self.delay))
+		self.Time:SetFormattedText("%.1f |cffaf5050%s %.1f|r", duration, "+", self.delay)
 	end
 end
 
@@ -452,9 +384,8 @@ function Module:HideTicks()
 	end
 end
 
+local CastTicksTexture = K.GetTexture(C["Unitframe"].Texture)
 function Module:SetCastTicks(castbar, numTicks, extraTickRatio)
-	local CastTicksTexture = K.GetTexture(C["Unitframe"].Texture)
-
 	extraTickRatio = extraTickRatio or 0
 	Module:HideTicks()
 
@@ -485,10 +416,6 @@ function Module:PostCastStart(unit)
 		unit = "player"
 	end
 
-	--if self.Text and self.spellID then -- ??
-	--	self.Text:SetText(self.spellID)
-	--end
-
 	-- Get length of Time, then calculate available length for Text
 	local timeWidth = self.Time:GetStringWidth()
 	local textWidth = self:GetWidth() - timeWidth - 10
@@ -498,7 +425,9 @@ function Module:PostCastStart(unit)
 		K.Delay(0.05, function() -- Delay may need tweaking
 			textWidth = self:GetWidth() - self.Time:GetStringWidth() - 10
 			textStringWidth = self.Text:GetStringWidth()
-			if textWidth > 0 then self.Text:SetWidth(math_min(textWidth, textStringWidth)) end
+			if textWidth > 0 then
+				self.Text:SetWidth(math_min(textWidth, textStringWidth))
+			end
 		end)
 	else
 		self.Text:SetWidth(math_min(textWidth, textStringWidth))
@@ -518,14 +447,6 @@ function Module:PostCastStart(unit)
 
 	if self.channeling and C["Unitframe"].CastbarTicks and unit == "player" then
 		local baseTicks = Module.ChannelTicks[self.spellID]
-
-		---- Detect channeling spell and if it"s the same as the previously channeled one
-		--if baseTicks and self.spellID == self.prevSpellCast then
-		--	self.chainChannel = true
-		--elseif baseTicks then
-		--	self.chainChannel = nil
-		--	self.prevSpellCast = self.spellID
-		--end
 
 		if baseTicks and Module.ChannelTicksSize[self.spellID] and Module.HastedChannelTicks[self.spellID] then
 			local tickIncRate = 1 / baseTicks
@@ -579,7 +500,7 @@ function Module:PostCastStart(unit)
 		t = K.Colors.reaction[UnitReaction(unit, "player")]
 	end
 
-	if (t) then
+	if t then
 		r, g, b = t[1], t[2], t[3]
 	end
 
@@ -624,9 +545,9 @@ function Module:PostCastInterruptible(unit)
 	self:SetStatusBarColor(r, g, b)
 end
 
-function Module:PostCastFailed()
+function Module:PostCastFail()
 	self:SetMinMaxValues(0, 1)
-	self:SetValue(self.max)
+	self:SetValue(1)
 	self:SetStatusBarColor(1.0, 0.0, 0.0)
 
 	if self.Time then
@@ -763,10 +684,10 @@ function Module:PostUpdateAura(unit, button, index)
 		else
 			if IsStealable and not isFriend then
 				button:SetBackdropBorderColor(255/255, 255/255, 0/255)
-				K.UIFrameFlash(button, 0.80, true)
+				K.Flash(button, 0.80, true)
 			else
 				button:SetBackdropBorderColor()
-				K.UIFrameStopFlash(button)
+				K.StopFlash(button)
 			end
 		end
 
@@ -862,10 +783,6 @@ end
 function Module:UpdateNameplateTarget()
 	local Nameplate = self
 
-	if C["Nameplates"].TargetArrow ~= true then
-		return
-	end
-
 	if not Nameplate then
 		return
 	end
@@ -890,15 +807,26 @@ function Module:NameplatesCallback(event, unit)
 	local Point, Relpoint, xOffset, yOffset = "TOP", "BOTTOM", 0, -8
 
 	if event == "NAME_PLATE_UNIT_ADDED" then
+		Nameplate.reaction = UnitReaction("player", unit)
+		Nameplate.isPlayer = UnitIsPlayer(unit)
+
+		if UnitIsUnit(unit, "player") then
+			Nameplate.frameType = "PLAYER"
+		elseif UnitIsPVPSanctuary(unit) or (Nameplate.isPlayer and UnitIsFriend("player", unit) and Nameplate.reaction and Nameplate.reaction >= 5) then
+			Nameplate.frameType = "FRIENDLY_PLAYER"
+		elseif not Nameplate.isPlayer and (Nameplate.reaction and Nameplate.reaction >= 5) or UnitFactionGroup(unit) == "Neutral" then
+			Nameplate.frameType = "FRIENDLY_NPC"
+		elseif not Nameplate.isPlayer and (Nameplate.reaction and Nameplate.reaction <= 4) then
+			Nameplate.frameType = "ENEMY_NPC"
+		else
+			Nameplate.frameType = "ENEMY_PLAYER"
+		end
+
 		if UnitIsUnit(unit, "player") then
 			Nameplate:DisableElement("Castbar")
 			Nameplate:DisableElement("RaidTargetIndicator")
 			Nameplate:DisableElement("PvPIndicator")
 			Nameplate.Name:Hide()
-
-			if Nameplate.ClassPowerText then
-				Nameplate.ClassPowerText:Show()
-			end
 
 			if Nameplate.ClassPower then
 				Nameplate.ClassPower:Show()
@@ -911,6 +839,15 @@ function Module:NameplatesCallback(event, unit)
 					Nameplate.Runes:ForceUpdate()
 				end
 			end
+
+			if C["Nameplates"].TargetArrow and Nameplate.leftArrow then
+				Nameplate.leftArrow:Hide()
+			end
+
+			if C["Nameplates"].TargetArrow and self.rightArrow then
+				Nameplate.rightArrow:Hide()
+			end
+
 		else
 			Nameplate:EnableElement("Castbar")
 			Nameplate:EnableElement("RaidTargetIndicator")
@@ -918,16 +855,11 @@ function Module:NameplatesCallback(event, unit)
 			Nameplate.Name:Show()
 
 			Module.UpdateQuestUnit(Nameplate, unit)
-			Module.UpdateClassificationIcons(Nameplate)
 			Module.HighlightPlate(Nameplate)
 			Module.UpdateNameplateTarget(Nameplate)
-			Module.NameplateClassIcons(Nameplate)
 			Module.UpdatePlateTotems(Nameplate)
 			Module.UpdateHealerIcons(Nameplate)
-
-			if Nameplate.ClassPowerText then
-				Nameplate.ClassPowerText:Hide()
-			end
+			Module.UpdateThreatIndicator(Nameplate)
 
 			if Nameplate.ClassPower then
 				Nameplate.ClassPower:Hide()
@@ -947,13 +879,6 @@ function Module:NameplatesCallback(event, unit)
 		Nameplate:EnableElement("RaidTargetIndicator")
 		Nameplate:EnableElement("PvPIndicator")
 		Nameplate.Name:Show()
-
-		if Nameplate.ClassPowerText then
-			Nameplate.ClassPowerText:Hide()
-			Nameplate.ClassPowerText:ClearAllPoints()
-			Nameplate.ClassPowerText:SetPoint(Point, Nameplate.Health, Relpoint, xOffset, yOffset)
-			Nameplate.ClassPowerText:SetParent(Nameplate)
-		end
 
 		if Nameplate.ClassPower then
 			Nameplate.ClassPower:Hide()
@@ -977,11 +902,6 @@ function Module:NameplatesCallback(event, unit)
 		end
 		if Player then
 			local Anchor = Target and Target.unitFrame or Player.unitFrame
-			if Player.unitFrame.ClassPowerText then
-				Player.unitFrame.ClassPowerText:ClearAllPoints()
-				Player.unitFrame.ClassPowerText:SetParent(Anchor)
-				Player.unitFrame.ClassPowerText:SetPoint(Point, Anchor.Health, Relpoint, xOffset, yOffset)
-			end
 			if Player.unitFrame.ClassPower then
 				Player.unitFrame.ClassPower:ClearAllPoints()
 				Player.unitFrame.ClassPower:SetParent(Anchor)
@@ -1038,24 +958,8 @@ function Module:NameplatePowerAndCastBar(unit, cur, _, max)
 	end
 end
 
-function Module:NameplateClassIcons()
-	local Nameplate = self
-	local reaction = UnitReaction(Nameplate.unit, "player")
-
-	if UnitIsPlayer(Nameplate.unit) and (reaction and reaction <= 4) then
-		local _, class = UnitClass(Nameplate.unit)
-		local texcoord = CLASS_ICON_TCOORDS[class]
-
-		Nameplate.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
-		Nameplate.Class:Show()
-	else
-		Nameplate.Class.Icon:SetTexCoord(0, 0, 0, 0)
-		Nameplate.Class:Hide()
-	end
-end
-
 function Module:GetPartyFramesAttributes()
-	local PartyProperties = C["Party"].PartyAsRaid and "custom [group:party] hide" or "custom [@raid6,exists] hide;show"
+	local PartyProperties = "custom [@raid6,exists] hide;show"
 
 	return "oUF_Party", nil, PartyProperties,
 	"oUF-initialConfigFunction", [[
@@ -1077,9 +981,9 @@ function Module:GetPartyFramesAttributes()
 end
 
 function Module:GetDamageRaidFramesAttributes()
-	local DamageRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [@raid6,exists] show;hide"
+	local DamageRaidProperties = C["Party"].Enable and "custom [@raid6,exists] show;hide" or "solo,party,raid"
 
-	return "DamageRaid", nil, DamageRaidProperties,
+	return "oUF_Raid_Damage", nil, DamageRaidProperties,
 	"oUF-initialConfigFunction", [[
 	local header = self:GetParent()
 	self:SetWidth(header:GetAttribute("initial-width"))
@@ -1090,7 +994,7 @@ function Module:GetDamageRaidFramesAttributes()
 	"initial-height", C["Raid"].Height,
 	"showParty", true,
 	"showRaid", true,
-	"showPlayer", C["Party"].ShowPlayer,
+	"showPlayer", true,
 	"showSolo", false,
 	"xoffset", 6,
 	"yOffset", -6,
@@ -1105,31 +1009,31 @@ function Module:GetDamageRaidFramesAttributes()
 end
 
 function Module:GetHealerRaidFramesAttributes()
-    local HealerRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [@raid6,exists] show;hide"
+	local HealerRaidProperties = C["Party"].Enable and "custom [@raid6,exists] show;hide" or "solo,party,raid"
 
-    return "HealerRaid", nil, HealerRaidProperties,
-    "oUF-initialConfigFunction", [[
-    local header = self:GetParent()
-    self:SetWidth(header:GetAttribute("initial-width"))
-    self:SetHeight(header:GetAttribute("initial-height"))
-    ]],
+	return "oUF_Raid_Healer", nil, HealerRaidProperties,
+	"oUF-initialConfigFunction", [[
+	local header = self:GetParent()
+	self:SetWidth(header:GetAttribute("initial-width"))
+	self:SetHeight(header:GetAttribute("initial-height"))
+	]],
 
-    "initial-width", C["Raid"].Width,
-    "initial-height", C["Raid"].Height,
-    "showParty", true,
-    "showRaid", true,
-    "showPlayer", C["Party"].ShowPlayer,
-    "showSolo", false,
-    "xoffset", 6,
-    "yOffset", -6,
-    "point", "LEFT",
-    "groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
-    "groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
-    "groupBy", C["Raid"].GroupBy.Value,
-    "maxColumns", math.ceil(40 / 5),
-    "unitsPerColumn", C["Raid"].MaxUnitPerColumn,
-    "columnSpacing", 6,
-    "columnAnchorPoint", "BOTTOM"
+	"initial-width", C["Raid"].Width,
+	"initial-height", C["Raid"].Height,
+	"showParty", true,
+	"showRaid", true,
+	"showPlayer", true,
+	"showSolo", false,
+	"xoffset", 6,
+	"yOffset", -6,
+	"point", "LEFT",
+	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
+	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
+	"groupBy", C["Raid"].GroupBy.Value,
+	"maxColumns", math.ceil(40 / 5),
+	"unitsPerColumn", C["Raid"].MaxUnitPerColumn,
+	"columnSpacing", 6,
+	"columnAnchorPoint", "BOTTOM"
 end
 
 function Module:GetMainTankAttributes()
@@ -1170,7 +1074,7 @@ function Module:CreateStyle(unit)
 		Module.CreateArena(self)
 	elseif string_find(unit, "boss%d") then
 		Module.CreateBoss(self)
-	elseif (string_find(unit, "party") or string_find(unit, "raid") or string_find(unit, "maintank")) then
+	elseif (string_find(unit, "raid") or string_find(unit, "maintank")) then
 		if string_match(Parent, "Party") then
 			Module.CreateParty(self)
 		else
@@ -1186,18 +1090,20 @@ end
 function Module:CreateUnits()
 	if (C["Unitframe"].Enable) then
 		local Player = oUF:Spawn("player")
-		Player:SetPoint("BOTTOMRIGHT", "ActionBarAnchor", "TOPLEFT", 44, 200)
+		Player:SetPoint("BOTTOM", UIParent, "BOTTOM", -290, 320)
 		Player:SetSize(200, 52)
 
 		local Target = oUF:Spawn("target")
-		Target:SetPoint("BOTTOMLEFT", "ActionBarAnchor", "TOPRIGHT", -44, 200)
+		Target:SetPoint("BOTTOM", UIParent, "BOTTOM", 290, 320)
 		Target:SetSize(200, 52)
 
 		if not C["Unitframe"].HideTargetofTarget then
 			local TargetOfTarget = oUF:Spawn("targettarget")
 			TargetOfTarget:SetPoint("TOPLEFT", Target, "BOTTOMRIGHT", -56, 2)
 			TargetOfTarget:SetSize(116, 36)
-			Movers:RegisterFrame(TargetOfTarget)
+			K.Mover(TargetOfTarget, "TargetOfTarget", "TargetOfTarget", {"TOPLEFT", Target, "BOTTOMRIGHT", -56, 2}, 116, 36)
+
+			Module.TargetOfTarget = TargetOfTarget
 		end
 
 		local Pet = oUF:Spawn("pet")
@@ -1215,44 +1121,48 @@ function Module:CreateUnits()
 			local FocusTarget = oUF:Spawn("focustarget")
 			FocusTarget:SetPoint("TOPRIGHT", Focus, "BOTTOMLEFT", 56, 2)
 			FocusTarget:SetSize(116, 36)
-			Movers:RegisterFrame(FocusTarget)
+
+			Module.FocusTarget = FocusTarget
 		end
 
 		Module.Player = Player
 		Module.Target = Target
-		Module.TargetOfTarget = TargetOfTarget
 		Module.Pet = Pet
 		Module.Focus = Focus
-		Module.FocusTarget = FocusTarget
 
 		if (C["Arena"].Enable) then
 			local Arena = {}
 			for i = 1, MAX_ARENA_ENEMIES or 5 do
 				Arena[i] = oUF:Spawn("arena" .. i, nil)
 				Arena[i]:SetSize(190, 52)
+
 				if (i == 1) then
-					Arena[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
+					Arena.Position = {"BOTTOMRIGHT", UIParent, "RIGHT", -140, 140}
 				else
-					Arena[i]:SetPoint("TOPLEFT", Arena[i - 1], "BOTTOMLEFT", 0, -48)
+					Arena.Position = {"TOPLEFT", Arena[i - 1], "BOTTOMLEFT", 0, -48}
 				end
-				Movers:RegisterFrame(Arena[i])
+				Arena[i]:SetPoint(Arena.Position[1], Arena.Position[2], Arena.Position[3], Arena.Position[4], Arena.Position[5])
+
+				K.Mover(Arena[i], "Arena"..i, "Arena"..i, Arena.Position)
 			end
 
 			Module.Arena = Arena
 		end
 
-		if (C["Boss"].Enable) then
+		if C["Boss"].Enable then
 			local Boss = {}
 			for i = 1, MAX_BOSS_FRAMES do
 				Boss[i] = oUF:Spawn("boss" .. i)
-				if (i == 1) then
-					Boss[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
-				else
-					Boss[i]:SetPoint("TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -28)
-				end
-
 				Boss[i]:SetSize(190, 52)
-				Movers:RegisterFrame(Boss[i])
+
+				if (i == 1) then
+					Boss.Position = {"BOTTOMRIGHT", UIParent, "RIGHT", -140, 140}
+				else
+					Boss.Position = {"TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -28}
+				end
+				Boss[i]:SetPoint(Boss.Position[1], Boss.Position[2], Boss.Position[3], Boss.Position[4], Boss.Position[5])
+
+				K.Mover(Boss[i], "Boss"..i, "Boss"..i, Boss.Position)
 			end
 
 			Module.Boss = Boss
@@ -1261,7 +1171,7 @@ function Module:CreateUnits()
 		if C["Party"].Enable then
 			local Party = oUF:SpawnHeader(Module:GetPartyFramesAttributes())
 			Party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -180)
-			Movers:RegisterFrame(Party)
+			K.Mover(Party, "Party", "Party", {"TOPLEFT", UIParent, "TOPLEFT", 4, -180}, 158, 390)
 		end
 
 		if C["Raid"].Enable then
@@ -1271,27 +1181,22 @@ function Module:CreateUnits()
 
 			if C["Raid"].RaidLayout.Value == "Healer" then
 				HealerRaid:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMRIGHT", 10, 14)
-				Movers:RegisterFrame(HealerRaid)
+				K.Mover(HealerRaid, "HealerRaid", "HealerRaid", {"TOPLEFT", "oUF_Player", "BOTTOMRIGHT", 10, 14}, C["Raid"].Width, C["Raid"].Height)
 			elseif C["Raid"].RaidLayout.Value == "Damage" then
 				DamageRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
-				Movers:RegisterFrame(DamageRaid)
+				K.Mover(DamageRaid, "DamageRaid", "DamageRaid", {"TOPLEFT", UIParent, "TOPLEFT", 4, -30}, 158, 390)
 			end
 
 			if C["Raid"].MainTankFrames then
-				if C["Raid"].RaidLayout.Value == "Healer" then
-					MainTankRaid:SetPoint("BOTTOMLEFT", "ActionBarAnchor", "BOTTOMRIGHT", 6, 2)
-				elseif C["Raid"].RaidLayout.Value == "Damage" then
-					MainTankRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
-				end
-
-				Movers:RegisterFrame(MainTankRaid)
+				MainTankRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
+				K.Mover(MainTankRaid, "MainTank", "MainTank", {"TOPLEFT", UIParent, "TOPLEFT", 6, -6}, 76, 40)
 			end
 		end
 
-		Movers:RegisterFrame(Player)
-		Movers:RegisterFrame(Target)
-		Movers:RegisterFrame(Pet)
-		Movers:RegisterFrame(Focus)
+		K.Mover(Player, "Player", "Player", {"BOTTOM", UIParent, "BOTTOM", -290, 320}, 200, 52)
+		K.Mover(Target, "Target", "Target", {"BOTTOM", UIParent, "BOTTOM", 290, 320}, 200, 52)
+		K.Mover(Pet, "Pet", "Pet", {"TOPRIGHT", Player, "BOTTOMLEFT", 56, 2}, 116, 36)
+		K.Mover(Focus, "Focus", "Focus", {"BOTTOMRIGHT", Player, "TOPLEFT", -60, 30}, 190, 52)
 	end
 
 	if C["Nameplates"].Enable then
@@ -1449,15 +1354,15 @@ function Module:CreateFilgerAnchors()
 		T_DE_BUFF_BAR_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "BOTTOMRIGHT", 2, 3)
 		T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
 
-		Movers:RegisterFrame(P_BUFF_ICON_Anchor)
-		Movers:RegisterFrame(P_PROC_ICON_Anchor)
-		Movers:RegisterFrame(SPECIAL_P_BUFF_ICON_Anchor)
-		Movers:RegisterFrame(T_DEBUFF_ICON_Anchor)
-		Movers:RegisterFrame(T_BUFF_Anchor)
-		Movers:RegisterFrame(PVE_PVP_DEBUFF_Anchor)
-		Movers:RegisterFrame(PVE_PVP_CC_Anchor)
-		Movers:RegisterFrame(COOLDOWN_Anchor)
-		Movers:RegisterFrame(T_DE_BUFF_BAR_Anchor)
+		K.Mover(P_BUFF_ICON_Anchor, "P_BUFF_ICON", "P_BUFF_ICON", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 169})
+		K.Mover(P_PROC_ICON_Anchor, "P_PROC_ICON", "P_PROC_ICON", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 169})
+		K.Mover(SPECIAL_P_BUFF_ICON_Anchor, "SPECIAL_P_BUFF_ICON", "SPECIAL_P_BUFF_ICON", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 211})
+		K.Mover(T_DEBUFF_ICON_Anchor, "T_DEBUFF_ICON", "T_DEBUFF_ICON", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 211})
+		K.Mover(T_BUFF_Anchor, "T_BUFF", "T_BUFF", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 253})
+		K.Mover(PVE_PVP_DEBUFF_Anchor, "PVE_PVP_DEBUFF", "PVE_PVP_DEBUFF", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 253})
+		K.Mover(PVE_PVP_CC_Anchor, "PVE_PVP_CC", "PVE_PVP_CC", {"TOPLEFT", "oUF_Player", "BOTTOMLEFT", -2, -44})
+		K.Mover(COOLDOWN_Anchor, "COOLDOWN", "COOLDOWN", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 63, 17})
+		K.Mover(T_DE_BUFF_BAR_Anchor, "T_DE_BUFF_BAR", "T_DE_BUFF_BAR", {"BOTTOMLEFT", "oUF_Target", "BOTTOMRIGHT", 2, 3})
 	end
 end
 
@@ -1541,8 +1446,60 @@ function Module:UNIT_FACTION(_, unit)
 	end
 end
 
+local function HideRaid()
+	if InCombatLockdown() then
+		return
+	end
+
+	_G.CompactRaidFrameManager:Kill()
+	local compact_raid = CompactRaidFrameManager_GetSetting("IsShown")
+	if compact_raid and compact_raid ~= "0" then
+		CompactRaidFrameManager_SetSetting("IsShown", "0")
+	end
+end
+
+function Module:DisableBlizzardCompactRaid()
+	if not CompactRaidFrameManager_UpdateShown then
+		K.StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
+	else
+		if not _G.CompactRaidFrameManager.hookedHide then
+			hooksecurefunc("CompactRaidFrameManager_UpdateShown", HideRaid)
+			_G.CompactRaidFrameManager:HookScript("OnShow", HideRaid)
+			_G.CompactRaidFrameManager.hookedHide = true
+		end
+		CompactRaidFrameContainer:UnregisterAllEvents()
+
+		HideRaid()
+	end
+end
+
+function Module:GROUP_ROSTER_UPDATE()
+	local isInRaid = IsInRaid()
+	Module.IsInGroup = isInRaid or IsInGroup()
+
+	wipe(Module.GroupRoles)
+
+	if Module.IsInGroup then
+		local NumPlayers, Unit = (isInRaid and GetNumGroupMembers()) or GetNumSubgroupMembers(), (isInRaid and "raid") or "party"
+		for i = 1, NumPlayers do
+			if UnitExists(Unit..i) then
+				Module.GroupRoles[UnitName(Unit..i)] = UnitGroupRolesAssigned(Unit..i)
+			end
+		end
+	end
+end
+
+function Module:GROUP_LEFT()
+	Module.IsInGroup = IsInRaid() or IsInGroup()
+	wipe(Module.GroupRoles)
+end
+
+function Module:PLAYER_ENTERING_WORLD()
+	Module.InstanceType = select(2, GetInstanceInfo())
+end
+
 function Module:OnEnable()
-	self.Backdrop = {
+	Module.Backdrop = {
 		bgFile = C["Media"].Blank,
 		insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult}
 	}
@@ -1550,8 +1507,19 @@ function Module:OnEnable()
 	oUF:RegisterStyle(" ", Module.CreateStyle)
 	oUF:SetActiveStyle(" ")
 
-	self:CreateUnits()
-	self:CreateFilgerAnchors()
+	Module:CreateUnits()
+	Module:CreateFilgerAnchors()
+
+	if not Module.GroupRoles then Module.GroupRoles = {} end
+
+	if C["Party"].Enable or C["Raid"].Enable then
+		self:DisableBlizzardCompactRaid()
+
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", "DisableBlizzardCompactRaid")
+		UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE") --This may fuck shit up.. we'll see...
+	else
+		CompactUnitFrameProfiles:RegisterEvent("VARIABLES_LOADED")
+	end
 
 	if C["Raid"].AuraWatch then
 		local RaidDebuffs = CreateFrame("Frame")
@@ -1567,9 +1535,14 @@ function Module:OnEnable()
 	end
 
 	if C["Nameplates"].Enable then
-		self:RegisterEvent("PLAYER_REGEN_ENABLED")
-		self:RegisterEvent("PLAYER_REGEN_DISABLED")
-		self:PLAYER_REGEN_ENABLED()
+		K.HideInterfaceOption(InterfaceOptionsNamesPanelUnitNameplatesMakeLarger)
+		K.HideInterfaceOption(InterfaceOptionsNamesPanelUnitNameplatesAggroFlash)
+
+		Module:RegisterEvent("PLAYER_REGEN_ENABLED")
+		Module:RegisterEvent("PLAYER_REGEN_DISABLED")
+		Module:RegisterEvent("PLAYER_ENTERING_WORLD")
+		Module:RegisterEvent("GROUP_ROSTER_UPDATE")
+		Module:RegisterEvent("GROUP_LEFT")
 
 		local BlizzPlateManaBar = _G.NamePlateDriverFrame.classNamePlatePowerBar
 		if BlizzPlateManaBar then
@@ -1578,6 +1551,10 @@ function Module:OnEnable()
 		end
 
 		hooksecurefunc(_G.NamePlateDriverFrame, "SetupClassNameplateBars", function(frame)
+			if not frame or frame:IsForbidden() then
+				return
+			end
+
 			if frame.classNamePlateMechanicFrame then
 				frame.classNamePlateMechanicFrame:Hide()
 			end
@@ -1586,13 +1563,18 @@ function Module:OnEnable()
 				frame.classNamePlatePowerBar:UnregisterAllEvents()
 			end
 		end)
+
+		Module:PLAYER_REGEN_ENABLED()
+		Module:GROUP_ROSTER_UPDATE()
 	end
 
 	if C["Unitframe"].Enable then
-		self:RegisterEvent("PLAYER_TARGET_CHANGED")
-		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
-		self:RegisterEvent("UNIT_FACTION")
+		K.HideInterfaceOption(InterfaceOptionsCombatPanelTargetOfTarget)
 
-		self:UpdateRangeCheckSpells()
+		Module:RegisterEvent("PLAYER_TARGET_CHANGED")
+		Module:RegisterEvent("PLAYER_FOCUS_CHANGED")
+		Module:RegisterEvent("UNIT_FACTION")
+
+		Module:UpdateRangeCheckSpells()
 	end
 end

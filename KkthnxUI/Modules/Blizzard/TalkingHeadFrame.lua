@@ -58,7 +58,7 @@ function Module:OnInitialize()
 	self.frame:SetPoint("TOP", UIParent, "TOP", 0, -18)
 	self.frame:SetSize(570, 155)
 
-	K.Movers:RegisterFrame(self.frame)
+	K.Mover(self.frame, "TalkingHeadFrame", "TalkingHeadFrame", {"TOP", UIParent, "TOP", 0, -18}, 570, 155)
 end
 
 function Module:OnEnable()

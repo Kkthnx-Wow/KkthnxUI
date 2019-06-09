@@ -71,26 +71,8 @@ local function SkinMiscStuff()
 		local listFrame = _G["DropDownList"..level]
 		local listFrameName = listFrame:GetName()
 
-		-- Skin the backdrop
-		for i = 1, _G.UIDROPDOWNMENU_MAXLEVELS do
-			local menu = _G["DropDownList"..i.."MenuBackdrop"]
-			local backdrop = _G["DropDownList"..i.."Backdrop"]
-			if not backdrop.IsSkinned then
-				backdrop:CreateBorder(nil, nil, nil, true)
-				menu:CreateBorder(nil, nil, nil, true)
-
-				backdrop.IsSkinned = true
-			end
-		end
+		_G[listFrameName.."MenuBackdrop"]:CreateBorder(nil, nil, nil, true)
 	end)
-
-	-- What's New
-	local SplashFrame = _G.SplashFrame
-	SplashFrame:CreateBorder()
-	SplashFrame.Header:FontTemplate(nil, 22)
-	SplashFrame.RightTitle:FontTemplate(nil, 30)
-	SplashFrame.BottomCloseButton:SkinButton()
-	SplashFrame.TopCloseButton:SkinCloseButton()
 end
 
 -- We will just lay this out in here for addons that need to be loaded before the code can run.

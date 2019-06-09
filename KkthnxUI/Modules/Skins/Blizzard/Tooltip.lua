@@ -58,9 +58,6 @@ local function SkinTooltip()
 		ShoppingTooltip1,
 		ShoppingTooltip2,
 		ShoppingTooltip3,
-		-- WorldMapCompareTooltip1, -- is gone i think
-		-- WorldMapCompareTooltip2, -- is gone i think
-		-- WorldMapCompareTooltip3, -- is gone i think
 		ReputationParagonTooltip,
 		EmbeddedItemTooltip,
 		-- already have locals

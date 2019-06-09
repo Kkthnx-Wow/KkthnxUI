@@ -1,10 +1,6 @@
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 
--- Lua API
-local _G = _G
 local table_wipe = table.wipe
-
--- GLOBALS: PawnCommon
 
 function K.LoadPawnProfile()
 	if PawnCommon then

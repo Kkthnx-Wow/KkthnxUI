@@ -58,7 +58,7 @@ function Module:CreateTarget()
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	self.Health.Value:SetFontObject(UnitframeFont)
-	self:Tag(self.Health.Value, C["Unitframe"].HealthFormatTarget.Value)
+	self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetSize(140, 14)
@@ -153,8 +153,7 @@ function Module:CreateTarget()
 		self.Castbar.timeToHold = 0.4
 		self.Castbar.CustomDelayText = Module.CustomCastDelayText
 		self.Castbar.CustomTimeText = Module.CustomTimeText
-		self.Castbar.PostCastFailed = Module.PostCastFailed
-		self.Castbar.PostCastInterrupted = Module.PostCastFailed
+		self.Castbar.PostCastFail = Module.PostCastFail
 		self.Castbar.PostCastStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
 		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
@@ -179,7 +178,7 @@ function Module:CreateTarget()
 			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
 		end
 
-		K.Movers:RegisterFrame(self.Castbar)
+		K.Mover(self.Castbar, "TargetCastBar", "TargetCastBar", {"BOTTOM", "PlayerCastbar", "TOP", 0, 6})
 	end
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self, 140)
@@ -196,10 +195,6 @@ function Module:CreateTarget()
 	Module.CreateThreatIndicator(self)
 	Module.CreatePvPIndicator(self, "target")
 	Module.CreateDebuffHighlight(self)
-
-	if C["FloatingCombatFeedback"].Enable and C["FloatingCombatFeedback"].Style.Value == "Portraits" then
-		Module.CreateCombatFeedback(self)
-	end
 
 	self.Threat = {
 		Hide = K.Noop,

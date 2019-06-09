@@ -40,7 +40,6 @@ local FCF_SetLocked = _G.FCF_SetLocked
 local FCF_SetWindowName = _G.FCF_SetWindowName
 local GENERAL = _G.GENERAL
 local GetChannelName = _G.GetChannelName
-local GetGuildRosterMOTD = _G.GetGuildRosterMOTD
 local GetRealmName = _G.GetRealmName
 local hooksecurefunc = _G.hooksecurefunc
 local IsAltKeyDown = _G.IsAltKeyDown
@@ -52,7 +51,6 @@ local LE_REALM_RELATION_SAME = _G.LE_REALM_RELATION_SAME
 local LOOT = _G.LOOT
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlaySoundFile = _G.PlaySoundFile
-local SetCVar = _G.SetCVar
 local ToggleChatColorNamesByClassGroup = _G.ToggleChatColorNamesByClassGroup
 local ToggleFrame = _G.ToggleFrame
 local TRADE = _G.TRADE
@@ -60,8 +58,6 @@ local UIParent = _G.UIParent
 local UnitAffectingCombat = _G.UnitAffectingCombat
 local UnitName = _G.UnitName
 local UnitRealmRelationship = _G.UnitRealmRelationship
-
-local Movers = K.Movers
 
 local function GetGroupDistribution()
 	local inInstance, kind = IsInInstance()
@@ -416,31 +412,31 @@ function Module:Install()
 	FCF_OpenNewWindow(LOOT)
 	FCF_DockFrame(ChatFrame3)
 	FCF_SetLocked(ChatFrame3, 1)
-	ChatFrame3:Show()
 
 	-- keys taken from `ChatTypeGroup` but doesnt add: "OPENING", "TRADESKILLS", "PET_INFO", "COMBAT_MISC_INFO", "COMMUNITIES_CHANNEL", "PET_BATTLE_COMBAT_LOG", "PET_BATTLE_INFO", "TARGETICONS"
-	local chatGroup = { "SYSTEM", "CHANNEL", "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "MONSTER_SAY", "MONSTER_YELL", "MONSTER_EMOTE", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "ERRORS", "AFK", "DND", "IGNORED", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "BN_WHISPER", "BN_INLINE_TOAST_ALERT" }
-	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
+	local chatGroup = {"SYSTEM", "CHANNEL", "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "MONSTER_SAY", "MONSTER_YELL", "MONSTER_EMOTE", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "ERRORS", "AFK", "DND", "IGNORED", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "BN_WHISPER", "BN_INLINE_TOAST_ALERT"}
+	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame1)
 	for _, v in ipairs(chatGroup) do
-		ChatFrame_AddMessageGroup(ChatFrame1, v)
+		ChatFrame_AddMessageGroup(_G.ChatFrame1, v)
 	end
 
 	-- keys taken from `ChatTypeGroup` which weren't added above to ChatFrame1
-	chatGroup = { "COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "SKILL", "LOOT", "CURRENCY", "MONEY" }
-	ChatFrame_RemoveAllMessageGroups(ChatFrame3)
+	chatGroup = {"COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "SKILL", "LOOT", "CURRENCY", "MONEY"}
+	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame3)
 	for _, v in ipairs(chatGroup) do
-		ChatFrame_AddMessageGroup(ChatFrame3, v)
+		ChatFrame_AddMessageGroup(_G.ChatFrame3, v)
 	end
 
-	ChatFrame_AddChannel(ChatFrame1, GENERAL)
-	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
-	ChatFrame_AddChannel(ChatFrame3, TRADE)
+	ChatFrame_AddChannel(_G.ChatFrame1, GENERAL)
+	ChatFrame_RemoveChannel(_G.ChatFrame1, TRADE)
+	ChatFrame_AddChannel(_G.ChatFrame3, TRADE)
 
 	-- set the chat groups names in class color to enabled for all chat groups which players names appear
-	chatGroup = { "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL" }
-	for i = 1, MAX_WOW_CHAT_CHANNELS do
+	chatGroup = {"SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL"}
+	for i = 1, _G.MAX_WOW_CHAT_CHANNELS do
 		table_insert(chatGroup, "CHANNEL"..i)
 	end
+
 	for _, v in ipairs(chatGroup) do
 		ToggleChatColorNamesByClassGroup(true, v)
 	end
@@ -450,11 +446,12 @@ function Module:Install()
 	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255) -- Trade
 	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- Local Defense
 
-	if K.Name == "Kkthnx" and K.Realm == "Bleeding Hollow" then
-		K.LockCVar("scriptErrors", 1)
+	if K.Name == "Upright" and K.Realm == "Sethraliss" and not InCombatLockdown() then
+		SetCVar("scriptErrors", 1)
 	end
 
 	DEFAULT_CHAT_FRAME:SetUserPlaced(true)
+
 	self:SetDefaultChatFramesPositions()
 end
 
@@ -584,38 +581,6 @@ function Module:SetupFrame()
 	end
 end
 
--- Sourced: ElvUI (Simpy)
-table_remove(ChatTypeGroup["GUILD"], 2)
-function Module:DelayGuildMOTD()
-	local delay, checks, delayFrame, chat = 0, 0, CreateFrame("Frame")
-	table_insert(ChatTypeGroup["GUILD"], 2, "GUILD_MOTD")
-
-	delayFrame:SetScript("OnUpdate", function(df, elapsed)
-		delay = delay + elapsed
-		if delay < 5 then
-			return
-		end
-
-		local msg = GetGuildRosterMOTD()
-		if msg and string_len(msg) > 0 then
-			for _, frame in pairs(_G.CHAT_FRAMES) do
-				chat = _G[frame]
-				if chat and chat:IsEventRegistered("CHAT_MSG_GUILD") then
-					ChatFrame_SystemEventHandler(chat, "GUILD_MOTD", msg)
-					chat:RegisterEvent("GUILD_MOTD")
-				end
-			end
-
-			df:SetScript("OnUpdate", nil)
-		else -- 5 seconds can be too fast for the API response. let's try once every 5 seconds (max 5 checks).
-			delay, checks = 0, checks + 1
-			if checks >= 5 then
-				df:SetScript("OnUpdate", nil)
-			end
-		end
-	end)
-end
-
 -- IngameChat - Sourced: ElvUI
 Module.TalkingList = {}
 function Module:GetAvailableHead()
@@ -706,8 +671,6 @@ function Module:SetChatHeadOrientation(position)
 end
 
 function Module:OnEnable()
-	self:DelayGuildMOTD() -- Keep this before `C["Chat"].Enable` check
-
 	if (not C["Chat"].Enable) then
 		return
 	end
@@ -725,7 +688,7 @@ function Module:OnEnable()
 	self.ChatHeadFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -80)
 	self.ChatHeadFrame:SetHeight(20)
 	self.ChatHeadFrame:SetWidth(200)
-	Movers:RegisterFrame(self.ChatHeadFrame)
+	K.Mover(self.ChatHeadFrame, "ChatHeads", "ChatHeads", {"TOPLEFT", UIParent, "TOPLEFT", 4, -80})
 
 	self.maxHeads = 5
 	self.volumeBarHeight = 3
@@ -765,8 +728,6 @@ function Module:OnEnable()
 		self.ChatHeadFrame[i]:Hide()
 	end
 
-	self:SetChatHeadOrientation("TOP")
-
 	if C["Chat"].VoiceOverlay then
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED", "VoiceOverlay")
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED", "VoiceOverlay")
@@ -776,6 +737,33 @@ function Module:OnEnable()
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_REMOVED", "VoiceOverlay")
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_DEACTIVATED", "VoiceOverlay")
 		_G.VoiceActivityManager:UnregisterAllEvents()
+	end
+	self:SetChatHeadOrientation("TOP")
+
+	-- Combat Log Skinning (credit: Aftermathh)
+	local CombatLogButton = _G.CombatLogQuickButtonFrame_Custom
+	if CombatLogButton then
+		local CombatLogFontContainer = _G.ChatFrame2 and _G.ChatFrame2.FontStringContainer
+		CombatLogButton:StripTextures()
+		CombatLogButton:CreateShadow()
+		if CombatLogFontContainer then
+			CombatLogButton:ClearAllPoints()
+			CombatLogButton:SetPoint("BOTTOMLEFT", CombatLogFontContainer, "TOPLEFT", -1, 1)
+			CombatLogButton:SetPoint("BOTTOMRIGHT", CombatLogFontContainer, "TOPRIGHT", 0, 1)
+		end
+		for i = 1, 2 do
+			local CombatLogQuickButton = _G["CombatLogQuickButtonFrameButton"..i]
+			if CombatLogQuickButton then
+				local CombatLogText = CombatLogQuickButton:GetFontString()
+				CombatLogText:FontTemplate(nil, nil, 'OUTLINE')
+			end
+		end
+		local CombatLogProgressBar = _G.CombatLogQuickButtonFrame_CustomProgressBar
+		CombatLogProgressBar:SetStatusBarTexture(C.Media.Texture)
+		CombatLogProgressBar:SetInside(CombatLogButton)
+		_G.CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SetSize(20, 22)
+		_G.CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SetPoint("TOPRIGHT", CombatLogButton, "TOPRIGHT", 0, -1)
+		_G.CombatLogQuickButtonFrame_CustomTexture:Hide()
 	end
 
 	for i = 1, 10 do
@@ -795,4 +783,21 @@ function Module:OnEnable()
 	Whisper:SetScript("OnEvent", function()
 		Module:PlayWhisperSound()
 	end)
+
+	if C["Chat"].Background then
+		local chatBackdrop = CreateFrame("Frame", "KkthnxUI_ChatBackdrop", UIParent)
+		chatBackdrop:SetBackdrop({
+			bgFile = C["Media"].Blank,
+			edgeFile = C["Media"].Glow,
+			edgeSize = 3,
+			insets = {left = 3, right = 3, top = 3, bottom = 3}}
+		)
+		chatBackdrop:SetFrameLevel(1)
+		chatBackdrop:SetFrameStrata("BACKGROUND")
+		chatBackdrop:SetSize(C["Chat"].Width + 29, C["Chat"].Height + 12)
+		chatBackdrop:ClearAllPoints()
+		chatBackdrop:SetPoint("TOPLEFT", ChatFrame1, "TOPLEFT", -4, 5)
+		chatBackdrop:SetBackdropBorderColor(0, 0, 0, C["Chat"].BackgroundAlpha or 0.25)
+		chatBackdrop:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Chat"].BackgroundAlpha or 0.25)
+	end
 end

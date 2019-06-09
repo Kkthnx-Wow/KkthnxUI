@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 local Module = K:NewModule("ChatLinkHover", "AceHook-3.0")
 
 local string_match = string.match
@@ -25,7 +25,7 @@ function Module:OnEnable()
 		self:HookScript(frame, "OnHyperlinkLeave", OnHyperlinkLeave)
 	end
 
-	for index, name in ipairs(self.TempChatFrames) do
+	for _, name in ipairs(self.TempChatFrames) do
 		local cf = _G[name]
 		if cf then
 			self:HookScript(cf, "OnHyperlinkEnter", OnHyperlinkEnter)
@@ -41,7 +41,7 @@ function Module:OnDisable()
 		self:Unhook(frame, "OnHyperlinkLeave")
 	end
 
-	for index,name in ipairs(self.TempChatFrames) do
+	for _, name in ipairs(self.TempChatFrames) do
 		local cf = _G[name]
 		if cf then
 			self:Unhook(cf, "OnHyperlinkEnter")
@@ -51,7 +51,7 @@ function Module:OnDisable()
 end
 
 local showingTooltip = false
-function Module:OnHyperlinkEnter(f, link)
+function Module:OnHyperlinkEnter(_, link)
 	local t = string_match(link, "^(.-):")
 	if linkTypes[t] then
 		showingTooltip = true
@@ -62,7 +62,7 @@ function Module:OnHyperlinkEnter(f, link)
 	end
 end
 
-function Module:OnHyperlinkLeave(f, link)
+function Module:OnHyperlinkLeave()
 	if showingTooltip then
 		showingTooltip = false
 		HideUIPanel(GameTooltip)

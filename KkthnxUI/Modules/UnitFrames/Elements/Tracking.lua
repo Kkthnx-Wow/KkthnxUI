@@ -3,6 +3,8 @@ local Module = K:GetModule("Unitframes")
 
 local _G = _G
 local string_lower = string.lower
+local select = _G.select
+local print = _G.print
 
 local GetSpellInfo = _G.GetSpellInfo
 local IsPlayerSpell = _G.IsPlayerSpell
@@ -17,7 +19,7 @@ end
 local function SpellName(id)
 	local name = GetSpellInfo(id)
 	if not name then
-		print("|cff3c9bedKkthnxUI:|r SpellID is not valid: " .. id .. ". Please check for an updated version, if none exists report to KkthnxUI in Discord.")
+		print("|cff3c9bedKkthnxUI:|r SpellID is not valid: " .. id .. ". Please check for an updated version, if none exists report to Kkthnx in Discord.")
 		return "Impale"
 	else
 		return name
@@ -705,6 +707,8 @@ Module.ChannelTicks = {
     [205021] = 10, -- Ray of Frost
     --Druid
     [740] = 4, -- Tranquility
+
+    -- [115175] = 8 -- FOR TESTING
 }
 
 local CastTickCheck = _G.CreateFrame("Frame")

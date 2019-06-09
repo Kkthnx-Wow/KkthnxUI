@@ -276,12 +276,14 @@ end
 local function ButtonOnClick(self)
 	if self.Toggled then
 		self.Tex:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
-		self.Tex:SetAlpha(0.25)
+		self.Tex:SetAlpha(0)
 		self.Toggled = false
+		PlaySound(857)
 	else
 		self.Tex:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check")
 		self.Tex:SetAlpha(1)
 		self.Toggled = true
+		PlaySound(856)
 	end
 
 	KkthnxUIConfig:SetOption(self.Group, self.Option, self.Toggled)
@@ -296,7 +298,7 @@ end
 local function ButtonUncheck(self)
 	self.Toggled = false
 	self.Tex:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
-	self.Tex:SetAlpha(0.25)
+	self.Tex:SetAlpha(0)
 end
 
 local function ResetColor(self)
@@ -485,9 +487,11 @@ local function DropDownButtonOnClick(self)
 		if List:IsVisible() then
 			DropDown.List:Hide()
 			SetIconUp(Texture)
+			PlaySound(857)
 		else
 			DropDown.List:Show()
 			SetIconDown(Texture)
+			PlaySound(856)
 		end
 	end
 end

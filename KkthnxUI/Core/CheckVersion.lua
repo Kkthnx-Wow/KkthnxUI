@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, _, L = unpack(select(2, ...))
 local Module = K:NewModule("VersionCheck", "AceEvent-3.0")
 
 local _G = _G
@@ -24,7 +24,8 @@ function Module:CheckIt(event, prefix, message, _, sender)
 			return
 		end
 
-		if (tonumber(message) > Version) then -- We recieved a higher version, we're outdated. :(
+		if (tonumber(message) > Version) then -- We recieved a higher version, we"re outdated. :(
+			StaticPopup_Show("KKTHNXUI_OUTDATED")
 			K.Print(L["Miscellaneous"].UIOutdated)
 			self:UnregisterEvent("CHAT_MSG_ADDON")
 		end
@@ -53,3 +54,17 @@ function Module:OnInitialize()
 
 	C_ChatInfo_RegisterAddonMessagePrefix("KkthnxUIVersion")
 end
+
+-- Whisper UI version --
+local whisperKkthnxUIVersion = CreateFrame("Frame")
+whisperKkthnxUIVersion:RegisterEvent("CHAT_MSG_WHISPER")
+whisperKkthnxUIVersion:RegisterEvent("CHAT_MSG_BN_WHISPER")
+whisperKkthnxUIVersion:SetScript("OnEvent", function(_, event, text, name, ...)
+	if text:lower():match("ui_version") then
+		if event == "CHAT_MSG_WHISPER" then
+			SendChatMessage("KkthnxUI" .. K.Version, "WHISPER", nil, name)
+		elseif event == "CHAT_MSG_BN_WHISPER" then
+			BNSendWhisper(select(11, ...), "KkthnxUI" .. K.Version)
+		end
+	end
+end)

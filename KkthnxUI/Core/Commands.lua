@@ -19,7 +19,6 @@ local ConvertToRaid = _G.ConvertToRaid
 local DisableAllAddOns = _G.DisableAllAddOns
 local DoReadyCheck = _G.DoReadyCheck
 local EnableAddOn = _G.EnableAddOn
-local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local ERR_NOT_IN_GROUP = _G.ERR_NOT_IN_GROUP
 local FEATURE_BECOMES_AVAILABLE_AT_LEVEL = _G.FEATURE_BECOMES_AVAILABLE_AT_LEVEL
 local GetCurrentResolution = _G.GetCurrentResolution
@@ -127,31 +126,33 @@ function K.UIProfiles(msg)
 					return
 				end
 
-				if type(KkthnxUIData[Server]) == "table" then
-					for Character, Table in pairs(KkthnxUIData[Server]) do
-						table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
+				if Server ~= "Gold" or Server ~= "gold" or Server ~= "Class" or Server ~= "class" then
+					if type(KkthnxUIData[Server]) == "table" then
+						for Character, Table in pairs(KkthnxUIData[Server]) do
+							table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
 
-						if IsConfigLoaded then
-							if KkthnxUIConfigShared and KkthnxUIConfigShared[Server] and KkthnxUIConfigShared[Server][Character] then
-								table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
-							else
-								if not KkthnxUIConfigShared then
-									KkthnxUIConfigShared = {}
+							if IsConfigLoaded then
+								if KkthnxUIConfigShared and KkthnxUIConfigShared[Server] and KkthnxUIConfigShared[Server][Character] then
+									table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
+								else
+									if not KkthnxUIConfigShared then
+										KkthnxUIConfigShared = {}
+									end
+
+									if not KkthnxUIConfigShared[Server] then
+										KkthnxUIConfigShared[Server] = {}
+									end
+
+									if not KkthnxUIConfigShared[Server][Character] then
+										KkthnxUIConfigShared[Server][Character] = {}
+									end
+
+									table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
 								end
-
-								if not KkthnxUIConfigShared[Server] then
-									KkthnxUIConfigShared[Server] = {}
-								end
-
-								if not KkthnxUIConfigShared[Server][Character] then
-									KkthnxUIConfigShared[Server][Character] = {}
-								end
-
-								table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
 							end
-						end
 
-						K.Print(L["Commands"].Profile .. #KkthnxUI.Profiles.Data..": ["..Server.."] - ["..Character.."]")
+							K.Print(L["Commands"].Profile .. #KkthnxUI.Profiles.Data..": ["..Server.."] - ["..Character.."]")
+						end
 					end
 				end
 			end
@@ -185,20 +186,22 @@ function K.UIProfiles(msg)
 
 					-- Search through the stored data for the matching table
 					for Server, Table in pairs(KkthnxUIData) do
-						if type(KkthnxUIData[Server]) == "table" then
-							for Character, Table in pairs(KkthnxUIData[Server]) do
-								if Table == Data then
-									CharacterName = Character
-									ServerName = Server
-									KkthnxUIData[Server][Character] = nil
-									KkthnxUIConfigShared[Server][Character] = nil
-									found = true
+						if Server ~= "Gold" or Server ~= "gold" or Server ~= "Class" or Server ~= "class" then
+							if type(KkthnxUIData[Server]) == "table" then
+								for Character, Table in pairs(KkthnxUIData[Server]) do
+									if Table == Data then
+										CharacterName = Character
+										ServerName = Server
+										KkthnxUIData[Server][Character] = nil
+										KkthnxUIConfigShared[Server][Character] = nil
+										found = true
+										break
+									end
+								end
+
+								if found then
 									break
 								end
-							end
-
-							if found then
-								break
 							end
 						end
 					end
@@ -221,19 +224,21 @@ function K.UIProfiles(msg)
 						-- so we can get the character and server names.
 						local found
 						for Server, Table in pairs(KkthnxUIData) do
-							for Character, Table in pairs(KkthnxUIData[Server]) do
+							if Server ~= "Gold" or Server ~= "gold" or Server ~= "Class" or Server ~= "class" then
+								for Character, Table in pairs(KkthnxUIData[Server]) do
 
-								-- We found the matching table so we break and exit this loop,
-								-- to allow the outer iteration loop to continue faster.
-								if Table == Data then
-									K.Print(L["Commands"].Profile ..Profile..": ["..Server.."] - ["..Character.."]")
-									found = true
+									-- We found the matching table so we break and exit this loop,
+									-- to allow the outer iteration loop to continue faster.
+									if Table == Data then
+										K.Print(L["Commands"].Profile ..Profile..": ["..Server.."] - ["..Character.."]")
+										found = true
+										break
+									end
+								end
+
+								if found then
 									break
 								end
-							end
-
-							if found then
-								break
 							end
 						end
 					end
@@ -261,16 +266,16 @@ end
 K:RegisterChatCommand("profile", K.UIProfiles)
 K:RegisterChatCommand("profiles", K.UIProfiles)
 
-function K.MoveUI()
-	if InCombatLockdown() then
-		print(ERR_NOT_IN_COMBAT)
-		return
-	end
+--[[function K.MoveUI()
+if InCombatLockdown() then
+	print(ERR_NOT_IN_COMBAT)
+	return
+end
 
-	K["Movers"]:StartOrStopMoving()
+K["Movers"]:StartOrStopMoving()
 end
 K:RegisterChatCommand("moveui", K.MoveUI)
-K:RegisterChatCommand("movers", K.MoveUI)
+K:RegisterChatCommand("movers", K.MoveUI)--]]
 
 -- Fixes the issue when the dialog to release spirit does not come up.
 function K.FixRelease()
@@ -404,10 +409,6 @@ function K.AbandonQuests()
 	for questLogIndex = 1, numEntries do
 		local questTitle, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID = GetQuestLogTitle(questLogIndex)
 
-		if isComplete then
-			return
-		end
-
 		if (not isHeader) then
 			SelectQuestLogEntry(questLogIndex)
 			SetAbandonQuest()
@@ -415,7 +416,7 @@ function K.AbandonQuests()
 		end
 	end
 
-	print(L["Commands"].AbandonQuests)
+	--print(L["Commands"].AbandonQuests)
 end
 if not K.CheckAddOnState("Felsong_Companion") then
 	K:RegisterChatCommand("killquests", K.AbandonQuests)

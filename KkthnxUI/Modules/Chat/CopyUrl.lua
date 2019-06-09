@@ -11,7 +11,6 @@ local string_gsub = string.gsub
 local string_lower = string.lower
 local string_match = string.match
 local string_sub = string.sub
-local unpack = unpack
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ChatEdit_ChooseBoxForSend, ChatEdit_ActivateChat
@@ -139,7 +138,7 @@ function Module:OnInitialize()
 			ChatEdit_FocusActiveWindow()
 			self:GetParent():Hide()
 		end,
-		EditBoxOnTextChanged = function(self, data)
+		EditBoxOnTextChanged = function(self)
 			if (self:GetText() ~= self:GetParent().data.url) then
 				self:SetText(self:GetParent().data.url)
 			end

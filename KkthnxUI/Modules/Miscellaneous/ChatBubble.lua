@@ -22,7 +22,6 @@ local bubbles = {} -- local bubble registry
 local numChildren, numBubbles = -1, 0 -- bubble counters
 
 local fontsize = 12 -- bubble font size
-local offsetX, offsetY = 0, 0 -- bubble offset from its original position, if you want suich changes.
 
 -- Textures
 local BUBBLE_TEXTURE = [[Interface\Tooltips\ChatBubble-Background]]

@@ -198,9 +198,7 @@ function Module:UpdatePageInfo(frame, which, guid, event)
 	end
 
 	if waitForItems then
-		K.Delay(0.10, function()
-			Module:UpdateAverageString(frame, which, iLevelDB)
-		end)
+		K.Delay(0.10, Module.UpdateAverageString, Module, frame, which, iLevelDB)
 	else
 		Module:UpdateAverageString(frame, which, iLevelDB)
 	end
@@ -213,12 +211,13 @@ function Module:CreateSlotStrings(frame, which)
 
 	if which == "Inspect" then
 		frame.ItemLevelText = _G.InspectModelFrame:CreateFontString(nil, "ARTWORK")
-		frame.ItemLevelText:SetPoint("TOP", 0, -4)
+		frame.ItemLevelText:SetPoint("TOP", 0, -17)
 	else
 		frame.ItemLevelText = _G.CharacterStatsPane.ItemLevelFrame:CreateFontString(nil, "ARTWORK")
 		frame.ItemLevelText:SetPoint("BOTTOM", _G.CharacterStatsPane.ItemLevelFrame.Value, "BOTTOM", 0, -1)
 	end
 	frame.ItemLevelText:FontTemplate(nil, which == "Inspect" and 12 or 20)
+	frame.ItemLevelText:SetShadowOffset(1.25, -1.25)
 
 	for i, s in pairs(InspectItems) do
 		if i ~= 4 then
@@ -226,10 +225,12 @@ function Module:CreateSlotStrings(frame, which)
 			local x, y, z, justify = Module:GetInspectPoints(i)
 			slot.iLvlText = slot:CreateFontString(nil, "OVERLAY")
 			slot.iLvlText:FontTemplate(nil, 12)
+			slot.iLvlText:SetShadowOffset(1.25, -1.25)
 			slot.iLvlText:SetPoint("BOTTOM", slot, x, y)
 
 			slot.enchantText = slot:CreateFontString(nil, "OVERLAY")
 			slot.enchantText:FontTemplate(nil, 11)
+			slot.enchantText:SetShadowOffset(1.25, -1.25)
 
 			if i == 16 or i == 17 then
 				slot.enchantText:SetPoint(i == 16 and "BOTTOMRIGHT" or "BOTTOMLEFT", slot, i==16 and -40 or 40, 3)

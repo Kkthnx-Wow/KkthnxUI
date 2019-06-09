@@ -24,9 +24,8 @@ local function GetDurStrings(name)
 	if (not SlotDurStrs[name]) then
 		local slot = _G["Character"..name.."Slot"]
 		SlotDurStrs[name] = slot:CreateFontString("OVERLAY")
-		SlotDurStrs[name]:FontTemplate(nil, 13)
-		SlotDurStrs[name]:SetShadowOffset(1.3, -1.3)
-		SlotDurStrs[name]:SetPoint("CENTER")
+		SlotDurStrs[name]:FontTemplate(nil, 13, "OUTLINE")
+		SlotDurStrs[name]:SetPoint("CENTER", 1, 0)
 
 		SlotDurStrs[name].Shade = slot:CreateTexture()
 		SlotDurStrs[name].Shade:SetDrawLayer("ARTWORK")

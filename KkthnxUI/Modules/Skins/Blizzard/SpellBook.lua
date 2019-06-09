@@ -6,8 +6,6 @@ local pairs = pairs
 local table_insert = table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
-local InCombatLockdown = _G.InCombatLockdown
-local SPELLS_PER_PAGE = _G.SPELLS_PER_PAGE
 
 local function LoadSpellBookSkin()
 	local professionTexture = K.GetTexture(C["Skins"].Texture)
@@ -29,7 +27,7 @@ local function LoadSpellBookSkin()
 		button:CreateBorder()
 
 		if button.SpellHighlightTexture then
-			K.UIFrameFlash(button.SpellHighlightTexture, 1, true)
+			K.Flash(button.SpellHighlightTexture, 1, true)
 		end
 
 		if button.shine then
@@ -42,10 +40,9 @@ local function LoadSpellBookSkin()
 	hooksecurefunc("SpellButton_UpdateButton", function()
 		for i = 1, _G.SPELLS_PER_PAGE do
 			local button = _G["SpellButton" .. i]
-			local icon = _G["SpellButton" .. i .. "IconTexture"]
 
 			if button.SpellHighlightTexture then
-				K.UIFrameFlash(button.SpellHighlightTexture, 1, true)
+				K.Flash(button.SpellHighlightTexture, 1, true)
 			end
 		end
 	end)

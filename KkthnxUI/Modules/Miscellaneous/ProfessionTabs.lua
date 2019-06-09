@@ -1,11 +1,10 @@
-local K, C = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 if K.CheckAddOnState("TradeSkillMaster") then
 	return
 end
 
-local Module = CreateFrame("Frame")
-
 local _G = _G
+local pairs = pairs
 local table_insert = table.insert
 
 local BOOKTYPE_PROFESSION = _G.BOOKTYPE_PROFESSION
@@ -24,39 +23,9 @@ local IsCurrentSpell = _G.IsCurrentSpell
 local IsPassiveSpell = _G.IsPassiveSpell
 local PlayerHasToy = _G.PlayerHasToy
 
-local whitelist = {
-	[129] = true, -- First Aid
-	[164] = true, -- Blacksmithing
-	[165] = true, -- Leatherworking
-	[171] = true, -- Alchemy
-	[182] = true, -- Herbalism
-	[185] = true, -- Cooking
-	[186] = true, -- Mining
-	[197] = true, -- Tailoring
-	[202] = true, -- Engineering
-	[333] = true, -- Enchanting
-	[356] = true, -- Fishing
-	[393] = true, -- Skinning
-	[755] = true, -- Jewelcrafting
-	[773] = true, -- Inscription
-}
+local TradeTabs = CreateFrame("Frame")
 
-local onlyPrimary = {
-	[171] = true, -- Alchemy
-	[182] = true, -- Herbalism
-	[202] = true, -- Engineering
-	[356] = true, -- Fishing
-	[393] = true, -- Skinning
-}
-
-local RUNEFORGING = 53428 -- Runeforging spellid
-local CHEF_HAT = 134020
-
-function Module:OnEvent(event, addon)
-	if not C["Misc"].ProfessionTabs then
-		return
-	end
-
+function TradeTabs:OnEvent(event, addon)
 	if event == "ADDON_LOADED" and addon == "Blizzard_TradeSkillUI" then
 		self:UnregisterEvent(event)
 		if InCombatLockdown() then
@@ -78,8 +47,8 @@ local function buildSpellList()
 
 	for _, prof in pairs(profs) do
 		local _, _, _, _, abilities, offset, skillLine = GetProfessionInfo(prof)
-		if whitelist[skillLine] then
-			if onlyPrimary[skillLine] then
+		if K.ProfessionTabs_Whitelist[skillLine] then
+			if K.ProfessionTabs_OnlyPrimary[skillLine] then
 				abilities = 1
 			end
 
@@ -99,9 +68,8 @@ local function buildSpellList()
 	return tradeSpells
 end
 
-function Module:Initialize()
-	-- Shouldn't need this, but I'm paranoid
-	if self.initialized or not IsAddOnLoaded("Blizzard_TradeSkillUI") then
+function TradeTabs:Initialize()
+	if self.initialized or not IsAddOnLoaded("Blizzard_TradeSkillUI") then -- Shouldn't Need This, But I'm Paranoid
 		return
 	end
 
@@ -110,9 +78,9 @@ function Module:Initialize()
 	local i = 1
 	local prev, foundCooking
 
-	-- if player is a DK, insert runeforging at the top
+	-- If Player Is A DK, Insert Runeforging At The Top
 	if K.Class == "DEATHKNIGHT" then
-		prev = self:CreateTab(i, parent, RUNEFORGING)
+		prev = self:CreateTab(i, parent, K.ProfessionTabs_RUNEFORGING)
 		prev:SetPoint("TOPLEFT", parent, "TOPRIGHT", 2, -44)
 		i = i + 1
 	end
@@ -120,20 +88,22 @@ function Module:Initialize()
 	for i, slot in ipairs(tradeSpells) do
 		local _, spellID = GetSpellBookItemInfo(slot, BOOKTYPE_PROFESSION)
 		local tab = self:CreateTab(i, parent, spellID)
-		if spellID == 818 then foundCooking = true end
+		if spellID == 818 then
+			foundCooking = true
+		end
 		i = i + 1
 
-		local point, relPoint, x, y = "TOPLEFT", "BOTTOMLEFT", 0, -6
+		local point, relPoint, x, y = "TOPLEFT", "BOTTOMLEFT", 0, -10
 		if not prev then
-			prev, relPoint, x, y = parent, "TOPRIGHT", 2, -22
+			prev, relPoint, x, y = parent, "TOPRIGHT", 2, -40
 		end
 		tab:SetPoint(point, prev, relPoint, x, y)
 
 		prev = tab
 	end
 
-	if foundCooking and PlayerHasToy(CHEF_HAT) and C_ToyBox_IsToyUsable(CHEF_HAT) then
-		local tab = self:CreateTab(i, parent, CHEF_HAT, true)
+	if foundCooking and PlayerHasToy(K.ProfessionTabs_CHEF_HAT) and C_ToyBox_IsToyUsable(K.ProfessionTabs_CHEF_HAT) then
+		local tab = self:CreateTab(i, parent, K.ProfessionTabs_CHEF_HAT, true)
 		tab:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, -10)
 	end
 
@@ -166,7 +136,6 @@ local function updateSelection(self)
 	else
 		start, duration = GetSpellCooldown(self.spellID)
 	end
-
 	if start and duration and duration > 1.5 then
 		self.CD:SetCooldown(start, duration)
 	end
@@ -183,14 +152,8 @@ local function createClickStopper(button)
 	f:Hide()
 end
 
-local function reskinTabs(button)
-	button:GetRegions():Hide()
-	button:CreateBorder()
-	button:StyleButton()
-	button:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-end
 
-function Module:CreateTab(_, parent, spellID, isToy)
+function TradeTabs:CreateTab(_, parent, spellID, isToy)
 	local name, texture, _
 	if isToy then
 		_, name, texture = C_ToyBox_GetToyInfo(spellID)
@@ -209,7 +172,6 @@ function Module:CreateTab(_, parent, spellID, isToy)
 
 	button:SetNormalTexture(texture)
 	button:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
-	reskinTabs(button)
 	button.CD = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
 	button.CD:SetAllPoints()
 
@@ -223,5 +185,5 @@ function Module:CreateTab(_, parent, spellID, isToy)
 	return button
 end
 
-Module:RegisterEvent("ADDON_LOADED")
-Module:SetScript("OnEvent", Module.OnEvent)
+TradeTabs:RegisterEvent("ADDON_LOADED")
+TradeTabs:SetScript("OnEvent", TradeTabs.OnEvent)

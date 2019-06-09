@@ -1,10 +1,6 @@
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 
--- Lua API
-local _G = _G
 local table_wipe = table.wipe
-
--- GLOBALS: SkadaDB, Skada
 
 function K.LoadSkadaProfile()
 	if SkadaDB then
@@ -81,5 +77,6 @@ function K.LoadSkadaProfile()
 			},
 		},
 	}
+
 	Skada.db:SetProfile("Default") -- Automatically set the profile
 end

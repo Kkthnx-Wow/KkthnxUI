@@ -21,6 +21,7 @@ K.GeneralChatSpam = {
 
 K.PrivateChatEventSpam = {
 	"%-(.*)%|T(.*)|t(.*)|c(.*)%|r",
+	"%[(.*)Announce by(.*)%]",
 	"%[(.*)ARENA ANNOUNCER(.*)%]",
 	"%[(.*)Autobroadcast(.*)%]",
 	"%[(.*)BG Queue Announcer(.*)%]",

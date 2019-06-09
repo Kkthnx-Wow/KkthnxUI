@@ -54,7 +54,7 @@ function Module:PositionAltPowerBar()
 	end
 	hooksecurefunc(PlayerPowerBarAlt, "ClearAllPoints", Position)
 
-	K.Movers:RegisterFrame(holder)
+	K.Mover(holder, "PlayerPowerBarAlt", "PlayerPowerBarAlt", {"TOP", UIParent, "TOP", 0, -18})
 end
 
 function Module:UpdateAltPowerBarColors()

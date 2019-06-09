@@ -35,33 +35,6 @@ if IsAddOnLoaded("KkthnxUI") and IsAddOnLoaded("Tukui") or IsAddOnLoaded("ElvUI"
 	return
 end
 
--- Actionbar Conflicts
-if C["ActionBar"].RightBars > 3 then
-	C["ActionBar"].RightBars = 3
-end
-
-if C["ActionBar"].BottomBars > 3 then
-	C["ActionBar"].BottomBars = 3
-end
-
-if C["ActionBar"].BottomBars == 3 and C["ActionBar"].RightBars == 3 then
-	C["ActionBar"].BottomBars = 3
-	C["ActionBar"].RightBars = 2
-end
-
-if C["ActionBar"].SplitBars == true then
-	C["ActionBar"].BottomBars = 3
-	C["ActionBar"].RightBars = 2
-end
-
-if C["ActionBar"].BottomBars < 1 then
-	C["ActionBar"].BottomBars = 1
-end
-
-if C["ActionBar"].PetBarHorizontal == true then
-	C["ActionBar"].StanceBarHorizontal = false
-end
-
 -- Auto-overwrite script config is X addon is found. Here we use our own functions to check for addons.
 if C["DataBars"].Enable == false then
 	C["DataBars"].TrackHonor = false

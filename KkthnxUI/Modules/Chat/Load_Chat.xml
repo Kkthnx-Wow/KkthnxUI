@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-    <!-- Load_Chat -->
-    <Script file="ChatFrames.lua"/>
-    <Script file="CopyChat.lua"/>
-    <Script file="CopyUrl.lua"/>
-    <Script file="Filters.lua"/>
-    <Script file="LinkHover.lua"/>
-    <Script file="QuickJoin.lua"/>
+   <!-- Load_Chat -->
+   <Script file="ChatFrames.lua" />
+   <Script file="CopyChat.lua" />
+   <Script file="CopyUrl.lua" />
+   <Script file="DelayGMOTD.lua" />
+   <Script file="Filters.lua" />
+   <Script file="LinkHover.lua" />
+   <Script file="QuickJoin.lua" />
 </Ui>

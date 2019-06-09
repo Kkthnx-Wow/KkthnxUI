@@ -13,16 +13,10 @@ end
 
 local _G = _G
 
-local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local CreateFrame = _G.CreateFrame
-local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
-local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
-local UnitClass = _G.UnitClass
 local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
-local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsUnit = _G.UnitIsUnit
-local UnitReaction = _G.UnitReaction
 
 function Module:CreateParty()
 	local UnitframeFont = K.GetFont(C["Party"].Font)
@@ -58,7 +52,7 @@ function Module:CreateParty()
 	self.Health.colorSmooth = false
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
-	self.Health.SetFrequentUpdates = true
+	self.Health.frequentUpdates = true
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
@@ -118,6 +112,13 @@ function Module:CreateParty()
 	self.Level:SetFontObject(UnitframeFont)
 	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
 
+	self.AFKDNDIndicator = self:CreateFontString(nil, "OVERLAY")
+	self.AFKDNDIndicator:SetPoint("CENTER", self.Health, "BOTTOM", 0, 3)
+	self.AFKDNDIndicator:SetFontObject(UnitframeFont)
+	self.AFKDNDIndicator:SetFont(select(1, self.AFKDNDIndicator:GetFont()), 10, select(3, self.AFKDNDIndicator:GetFont()))
+	self.AFKDNDIndicator:SetTextColor(1, 0, 0)
+	self:Tag(self.AFKDNDIndicator, "[KkthnxUI:AFKDND]")
+
 	if (C["Party"].Castbars) then
 		self.Castbar = CreateFrame("StatusBar", "FocusCastbar", self)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
@@ -152,8 +153,7 @@ function Module:CreateParty()
 		self.Castbar.timeToHold = 0.4
 		self.Castbar.CustomDelayText = Module.CustomCastDelayText
 		self.Castbar.CustomTimeText = Module.CustomTimeText
-		self.Castbar.PostCastFailed = Module.PostCastFailed
-		self.Castbar.PostCastInterrupted = Module.PostCastFailed
+		self.Castbar.PostCastFail = Module.PostCastFail
 		self.Castbar.PostCastStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
 		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
@@ -193,10 +193,16 @@ function Module:CreateParty()
 	end
 
 	if (C["Party"].TargetHighlight) then
-		self.TargetHighlight = self:CreateTexture("$parentHighlight", "ARTWORK", nil, 1)
-		self.TargetHighlight:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\Shader.tga]])
-		self.TargetHighlight:SetPoint("TOPLEFT", self.Name, -8, 8)
-		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Name, 8, -8)
+		self.OverlayFrame = CreateFrame("Frame", nil, self)
+		self.OverlayFrame:SetPoint("TOPLEFT", self.Portrait.Borders, -2, 2)
+		self.OverlayFrame:SetPoint("BOTTOMRIGHT", self.Portrait.Borders, 2, -2)
+		self.OverlayFrame:SetFrameLevel(self.Portrait.Borders:GetFrameLevel() + 2)
+
+		self.TargetHighlight = self.OverlayFrame:CreateTexture(nil, "OVERLAY")
+		self.TargetHighlight:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+		self.TargetHighlight:SetBlendMode("ADD")
+		self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait.Borders, -2, 2)
+		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait.Borders, 2, -2)
 		self.TargetHighlight:Hide()
 
 		local function UpdatePartyTargetGlow()
@@ -205,40 +211,23 @@ function Module:CreateParty()
 			end
 
 			local unit = self.unit
-			local isPlayer = unit and UnitIsPlayer(unit)
-			local reaction = unit and UnitReaction(unit, "player")
 
-			if UnitIsUnit(unit, "target") then
-				if isPlayer then
-					local _, class = UnitClass(unit)
-					if class then
-						local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
-						if color then
-							if self.TargetHighlight then
-								self.TargetHighlight:Show()
-								self.TargetHighlight:SetVertexColor(color.r, color.g, color.b, 1)
-							end
-						end
-					end
-				elseif reaction then
-					local color = FACTION_BAR_COLORS[reaction]
-					if color then
-						if self.TargetHighlight then
-							self.TargetHighlight:Show()
-							self.TargetHighlight:SetVertexColor(color.r, color.g, color.b, 1)
-						end
-					end
-				end
+			if unit and UnitIsUnit(unit, "target") then
+				self.TargetHighlight:Show()
 			else
-				if self.TargetHighlight then
-					self.TargetHighlight:Hide()
-				end
+				self.TargetHighlight:Hide()
 			end
 		end
 
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdatePartyTargetGlow, true)
-		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyTargetGlow, true)  -- Watch this.
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyTargetGlow, true)
 	end
+
+	self.ReadyCheckIndicator = self.Health:CreateTexture(nil, "OVERLAY")
+	self.ReadyCheckIndicator:SetSize(20, 20)
+	self.ReadyCheckIndicator:SetPoint("LEFT", 0, 0)
+	self.ReadyCheckIndicator.finishedTime = 5
+	self.ReadyCheckIndicator.fadeTime = 3
 
 	Module.CreateAuras(self, "party")
 	if C["Party"].PortraitTimers then
@@ -246,9 +235,8 @@ function Module:CreateParty()
 	end
 	Module.CreatePhaseIndicator(self)
 	Module.CreateRaidTargetIndicator(self)
-	Module.CreateReadyCheckIndicator(self)
 	Module.CreateResurrectIndicator(self)
-	Module.CreateSummonIndicator(self)
+	-- Module.CreateSummonIndicator(self)
 	Module.CreateOfflineIndicator(self, 50)
 	Module.CreateThreatIndicator(self)
 

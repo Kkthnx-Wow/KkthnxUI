@@ -8,9 +8,68 @@ if not oUF then
 end
 
 local _G = _G
+local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
 local UIParent = _G.UIParent
+local UnitClass = _G.UnitClass
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsTapDenied = _G.UnitIsTapDenied
+local UnitPlayerControlled = _G.UnitPlayerControlled
+local UnitReaction = _G.UnitReaction
+local unitSelectionType = oUF.Private.unitSelectionType
+local UnitThreatSituation = _G.UnitThreatSituation
+
+function Module:HealthPlateUpdateColor(_, unit)
+	if (not unit or self.unit ~= unit) then
+		return
+	end
+
+	local element = self.Health
+	local colors = K.Colors
+
+	local r, g, b, t
+	if (element.colorDead and element.dead) then
+		t = self.colors.dead
+	elseif (element.colorDisconnected and element.disconnected) then
+		t = self.colors.disconnected
+	elseif (element.colorTapping and not UnitPlayerControlled(unit) and UnitIsTapDenied(unit)) then
+		t = colors.status.tapped
+	elseif (element.colorThreat and not UnitPlayerControlled(unit) and UnitThreatSituation("player", unit)) then
+		t =  self.colors.threat[UnitThreatSituation("player", unit)]
+	elseif (element.colorClass and UnitIsPlayer(unit)) or (element.colorClassNPC and not UnitIsPlayer(unit)) or (element.colorClassPet and UnitPlayerControlled(unit) and not UnitIsPlayer(unit)) then
+		local _, class = UnitClass(unit)
+		t = self.colors.class[class]
+	elseif(element.colorSelection and unitSelectionType(unit, element.considerSelectionInCombatHostile)) then
+		local Selection = unitSelectionType(unit, element.considerSelectionInCombatHostile)
+		if Selection == 3 then Selection = UnitPlayerControlled(unit) and 5 or 3 end
+		t = NP.db.colors.selection[Selection]
+	elseif (element.colorReaction and UnitReaction(unit, "player")) then
+		local reaction = UnitReaction(unit, "player")
+		if reaction <= 3 then
+			reaction = "bad"
+		elseif reaction == 4 then
+			reaction = "neutral" else reaction = "good"
+		end
+		t = colors.status.reactions[reaction]
+	elseif (element.colorSmooth) then
+		r, g, b = self:ColorGradient(element.cur or 1, element.max or 1, unpack(element.smoothGradient or self.colors.smooth))
+	elseif (element.colorHealth) then
+		t = colors.status.health
+	end
+
+	if (t) then
+		r, g, b = t[1] or t.r, t[2] or t.g, t[3] or t.b
+	end
+
+	if b then
+		element:SetStatusBarColor(r, g, b)
+	end
+
+    if (element.PostUpdateColor) then
+        element:PostUpdateColor(unit, r, g, b)
+    end
+end
 
 function Module:CreateNameplates()
 	local NameplateTexture = K.GetTexture(C["Nameplates"].Texture)
@@ -28,12 +87,13 @@ function Module:CreateNameplates()
 	self.Health:SetStatusBarTexture(NameplateTexture)
 	self.Health:CreateShadow(true)
 
-	self.Health.UpdateColor = Module.UpdateColor
-	self.Health.frequentUpdates = true
 	self.Health.colorTapping = true
-	self.Health.colorReaction = true
 	self.Health.colorDisconnected = true
+	self.Health.colorSmooth = false
 	self.Health.colorClass = true
+	self.Health.colorReaction = true
+	self.Health.frequentUpdates = true
+	self.Health.UpdateColor = Module.HealthPlateUpdateColor
 	self.Health.Smooth = C["Nameplates"].Smooth
 	self.Health.SmoothSpeed = C["Nameplates"].SmoothSpeed * 10
 
@@ -106,8 +166,7 @@ function Module:CreateNameplates()
 	self.Castbar.timeToHold = 0.4
 	self.Castbar.CustomDelayText = Module.CustomCastDelayText
 	self.Castbar.CustomTimeText = Module.CustomTimeText
-	self.Castbar.PostCastFailed = Module.PostCastFailed
-	self.Castbar.PostCastInterrupted = Module.PostCastFailed
+	self.Castbar.PostCastFail = Module.PostCastFail
 	self.Castbar.PostCastStart = Module.PostCastStart
 	self.Castbar.PostCastStop = Module.PostCastStop
 	self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
@@ -152,31 +211,20 @@ function Module:CreateNameplates()
 		if (K.Class == "DEATHKNIGHT") then
 			Module.CreateNamePlateRuneBar(self)
 		end
-	else
-		Module.CreatePlateClassPowerText(self)
 	end
 
 	Module.CreatePlateQuestIcons(self)
 	Module.CreatePlateHealerIcons(self)
-	Module.CreatePlateClassificationIcons(self)
 	Module.CreatePlateThreatIndicator(self)
-	Module.CreatePlateClassIcons(self)
 	Module.CreatePlateTotemIcons(self)
 	Module.CreatePlateTargetArrow(self)
-
-	if C["FloatingCombatFeedback"].Enable and C["FloatingCombatFeedback"].Style.Value == "Nameplates" then
-		Module.CreateNameplateCombatFeedback(self)
-	end
+	Module.CreateDebuffHighlight(self)
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self, C["Nameplates"].Width)
-	Module.CreateDebuffHighlight(self)
-	Module.CreatePvPIndicator(self, "nameplate", self, self:GetHeight() + 2, self:GetHeight() + 5)
 
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate, true)
 	self:RegisterEvent("UNIT_HEALTH", Module.HighlightPlate, true)
-
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateNameplateTarget, true)
-
 	if C["Nameplates"].Totems then
 		self:RegisterEvent("UNIT_NAME_UPDATE", Module.UpdatePlateTotems, true)
 	end

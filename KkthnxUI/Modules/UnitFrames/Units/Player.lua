@@ -58,7 +58,7 @@ function Module:CreatePlayer()
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetFontObject(UnitframeFont)
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
-	self:Tag(self.Health.Value, C["Unitframe"].HealthFormatPlayer.Value)
+	self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetSize(140, 14)
@@ -104,7 +104,7 @@ function Module:CreatePlayer()
 				self.Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
-	end	
+	end
 
 	if C["Raid"].ShowGroupText then
 		self.GroupNumber = self:CreateFontString(nil, "OVERLAY")
@@ -123,16 +123,16 @@ function Module:CreatePlayer()
 		self.Castbar:ClearAllPoints()
 
 		if C["Raid"].RaidLayout.Value == "Healer" then
-			self.Castbar:SetPoint("BOTTOM", "ActionBarAnchor", "TOP", 0, 230)
+			self.Position = {"BOTTOM", UIParent, "BOTTOM", 0, 400}
 		else
-			self.Castbar:SetPoint("BOTTOM", "ActionBarAnchor", "TOP", 0, 200)
+			self.Position = {"BOTTOM", UIParent, "BOTTOM", 0, 320}
 		end
+		self.Castbar:SetPoint(self.Position[1], self.Position[2], self.Position[3], self.Position[4], self.Position[5])
 
 		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
 		self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
 		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
-		-- self.Castbar.Spark:SetPoint("CENTER", self.Castbar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 		if C["Unitframe"].CastbarLatency then
 			self.Castbar.SafeZone = self.Castbar:CreateTexture(nil, "ARTWORK")
@@ -154,10 +154,8 @@ function Module:CreatePlayer()
 		self.Castbar.timeToHold = 0.4
 		self.Castbar.CustomDelayText = Module.CustomCastDelayText
 		self.Castbar.CustomTimeText = Module.CustomTimeText
-		self.Castbar.PostCastFailed = Module.PostCastFailed
-		self.Castbar.PostCastInterrupted = Module.PostCastFailed
+		self.Castbar.PostCastFail = Module.PostCastFail
 		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostChannelStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
 		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
 
@@ -200,7 +198,7 @@ function Module:CreatePlayer()
 			end
 		end
 
-		K.Movers:RegisterFrame(self.Castbar)
+		K.Mover(self.Castbar, "PlayerCastBar", "PlayerCastBar", self.Position)
 	end
 
 	if C["Unitframe"].AdditionalPower then
@@ -221,9 +219,6 @@ function Module:CreatePlayer()
 		self.AdditionalPower:SetStatusBarTexture(UnitframeTexture)
 		self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power["MANA"]))
 		self.AdditionalPower:CreateBorder()
-
-		K.Movers:RegisterFrame(self.AdditionalPower)
-
 		self.AdditionalPower.Smooth = C["Unitframe"].Smooth
 		self.AdditionalPower.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 		self.AdditionalPower.frequentUpdates = true
@@ -283,10 +278,6 @@ function Module:CreatePlayer()
 
 	if (C["Unitframe"].GlobalCooldown) then
 		Module.CreateGlobalCooldown(self)
-	end
-
-	if C["FloatingCombatFeedback"].Enable and C["FloatingCombatFeedback"].Style.Value == "Portraits" then
-		Module.CreateCombatFeedback(self)
 	end
 
 	self.Threat = {

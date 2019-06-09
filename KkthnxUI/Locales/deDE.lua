@@ -5,6 +5,10 @@ if (GetLocale() ~= "deDE") then
 	return
 end
 
+if not L then
+	return
+end
+
 local _G = _G
 
 local GetItemClassInfo = _G.GetItemClassInfo
@@ -134,6 +138,9 @@ L["Automation"] = {
 	DuelCanceled_Pet = "Begleiterduellanfrage von %s wurde abgelehnt.",
 	DuelCanceled_Regular = "Duellanfrage von %s wurde abgelehnt.",
 	MovieBlocked = "Du hast diese Zwischensequenz bereits gesehen, Film abgebrochen.",
+	Subzone_Eastern_Transept = "Östliches Transept",
+	Subzone_Grand_Bazaar = "Der Große Basar",
+	Subzone_Port_of_Zandalar = "Der Hafen von Zandalar",
 }
 
 -- Blizzard Localization
@@ -295,7 +302,7 @@ L["Miscellaneous"] = {
 	Mail_Unique = "Angehalten. Ein doppelter, einzigartiger Gegenstand wurde in deinen Taschen, oder in der Bank gefunden.",
 	Repair = "Warnung! Deine Ausrüstung muss so schnell wie möglich repariert werden!",
 	Silver_Short = "|cffc7c7cfs|r",
-	UIOutdated = "Du benutzt eine veraltete Version von KkthnxUI. Du kannst die neueste Version von Curse.com herunterladen. Hole dir die Curse app und KkthnxUI updatet sich automatisch!",
+	UIOutdated = "Your version of KkthnxUI v"..K.Version.." is out of date.",
 }
 
 -- Nameplates Localization

@@ -46,7 +46,6 @@ KkthnxUIConfig["enUS"] = {
 		["DataBars"] = "Data Bars",
 		["DataText"] = "Data Text",
 		["Filger"] = "Filger",
-		["Firestorm"] = "Firestorm", -- this is a realm name and shouldn't be translated.
 		["General"] = GENERAL,
 		["HealthPrediction"] = "Health Prediction",
 		["Inventory"] = INVENTORY_TOOLTIP,
@@ -56,6 +55,7 @@ KkthnxUIConfig["enUS"] = {
 		["Misc"] = MISCELLANEOUS,
 		["Nameplates"] = UNIT_NAMEPLATES,
 		["Party"] = PARTY,
+		["QuestNotifier"] = "Quest Notifier",
 		["Raid"] = RAID,
 		["Skins"] = "Skins",
 		["Tooltip"] = "Tooltip",
@@ -328,9 +328,29 @@ KkthnxUIConfig["enUS"] = {
 
 	-- Actionbar Local
 	["ActionBar"] = {
-		["BottomFour"] = {
-			["Name"] = "Show 4 Bottombars",
-			["Desc"] = "Display four bars on the bottom.|n|cffFF0000This only works if 'ToggleMode is off'|n'Bottombars are set to 3'|nand 'Rightbars are set zo 2'|r",
+
+		["Bar2Fade"] = {
+			["Name"] = "Bar2 Mouseover",
+		},
+
+		["Bar3Fade"] = {
+			["Name"] = "Bar3 Mouseover",
+		},
+
+		["Bar4Fade"] = {
+			["Name"] = "Bar4 Mouseover",
+		},
+
+		["Bar5Fade"] = {
+			["Name"] = "Bar5 Mouseover",
+		},
+
+		["PetFade"] = {
+			["Name"] = "PetBar Mouseover",
+		},
+
+		["StanceFade"] = {
+			["Name"] = "StanceBar Mouseover",
 		},
 
 		["MicroBar"] = {
@@ -339,18 +359,12 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["MicroBarMouseover"] = {
-			["Name"] = "Micro Bar Mouseover",
-			["Desc"] = "The MicroBar is not shown unless you mouse over the MicroBar",
-		},
-
-		["BottomBars"] = {
-			["Name"] = "Bottom Bars",
-			["Desc"] = "The amount of bars to display on the bottom. Note: Value can only be 1-3",
+			["Name"] = "MicroBar Mouseover",
 		},
 
 		["ButtonSize"] = {
 			["Name"] = "Button Size",
-			["Desc"] = "The size of the action buttons.",
+			["Desc"] = "The size of the ActionBar buttons.",
 		},
 
 		["ButtonSpace"] = {
@@ -367,28 +381,9 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Enable Actionbars",
 		},
 
-		["ShowGrid"] = {
-			["Name"] = "Actionbar Grid",
-			["Desc"] = "Show empty action bar buttons",
-		},
-
 		["EquipBorder"] = {
 			["Name"] = "Equipped Item Border",
 			["Desc"] = "Display Green Border on Equipped Items",
-		},
-
-		["RightMouseover"] = {
-			["Name"] = "Right Bars Mouseover",
-		},
-
-		["PetMouseover"] = {
-			["Name"] = "Pet Mouseover",
-			["Desc"] = "Petbar mouseover (Only for horizontal petbar)",
-		},
-
-		["StanceMouseover"] = {
-			["Name"] = "Stance Mouseover",
-			["Desc"] = "Stancebar mouseover (Only for horizontal stancebar)",
 		},
 
 		["Hotkey"] = {
@@ -414,46 +409,6 @@ KkthnxUIConfig["enUS"] = {
 		["DisableStancePages"] = {
 			["Name"] = "Disable Stealth Paging",
 			["Desc"] = "Disables automatic page-switching when stealthed. |n|nOnly affects |cffFFF569Rogues|r and |cffFF7D0ADruids|r, has no effect on other classes",
-		},
-
-		["PetBarHide"] = {
-			["Name"] = "Pet Bar Hide",
-			["Desc"] = "Hide pet bar",
-		},
-
-		["PetBarHorizontal"] = {
-			["Name"] = "Pet Bar Horizontal",
-			["Desc"] = "Enable horizontal pet bar",
-		},
-
-		["RightBars"] = {
-			["Name"] = "Right Bars",
-			["Desc"] = "Number of action bars on right (0, 1, 2 or 3)",
-		},
-
-		["SplitBars"] = {
-			["Name"] = "Split Bars",
-			["Desc"] = "Split the fifth bar on two bars on 6 buttons",
-		},
-
-		["StanceBarHide"] = {
-			["Name"] = "Stance Bar Hide",
-			["Desc"] = "Hide stance bar",
-		},
-
-		["StanceBarHorizontal"] = {
-			["Name"] = "Stance Bar Horizontal",
-			["Desc"] = "Enable horizontal stance bar",
-		},
-
-		["ToggleMode"] = {
-			["Name"] = "Toggle Mode",
-			["Desc"] = "Lock / Unlock the toggle mode on our Actionbars (This will always be above the top bar!)",
-		},
-
-		["AddNewSpells"] = {
-			["Name"] = "Auto Add New Spells",
-			["Desc"] = "Auto add new learned spells to the actionbar. (This is needed for some quests)",
 		},
 
 		["Font"] = {
@@ -679,9 +634,19 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Auto collapse the objective tracker based on the settings below.",
 		},
 
+		["AutoDisenchant"] = {
+			["Name"] = "Auto Disenchant",
+			["Desc"] = "One-click Milling, Prospecting, Disenchanting and Lockpicking with ALT key!. |n|nThe following spells/processes are supported:|n|n|cff4488ffMilling & Draenic Mortar|nProspecting|nDisenchanting|nLockpicking|nSkeleton keys|nJeweled keys|r",
+		},
+
 		["AutoReward"] = {
 			["Name"] = "Auto Reward",
 			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
+		},
+
+		["AutoTabBinder"] = {
+			["Name"] = "Auto Tab Target PvP",
+			["Desc"] = "'Tab' key target only enemy players when in PvP zones, ignores pets and mobs",
 		},
 
 		["AutoInvite"] = {
@@ -1189,14 +1154,6 @@ KkthnxUIConfig["enUS"] = {
 		},
 	},
 
-	-- Filger Local
-	["Firestorm"] = {
-		["ChatFilter"] = {
-			["Name"] = "Firestorm Chat Filter",
-			["Desc"] = "This will filter all the 'AutoBroadcast' and more to make chat more retail like",
-		},
-	},
-
 	-- Unitframe Local
 	["Unitframe"] = {
 		["ShowPortrait"] = {
@@ -1345,7 +1302,7 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Unit Prefix Style",
 			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
 		},
-		
+
 		["HideTargetofTarget"] = {
 			["Name"] = "Hide TargetofTarget",
 			["Desc"] = "Hides the TargetofTarget frames on Target and Focus.",
@@ -1534,6 +1491,23 @@ KkthnxUIConfig["enUS"] = {
 		["NumberPrefixStyle"] = {
 			["Name"] = "Unit Prefix Style",
 			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
+		},
+	},
+
+	-- QuestNotifier Local
+	["QuestNotifier"] = {
+		["Enable"] = {
+			["Name"] = "Enable QuestNotifier",
+		},
+
+		["QuestProgress"] = {
+			["Name"] = "Quest Progress",
+			["Desc"] = "Alert on QuestProgress in chat. This can get spammy so do not piss off your groups!",
+		},
+
+		["OnlyCompleteRing"] = {
+			["Name"] = "Only Complete Sound",
+			["Desc"] = "Only play the complete sound at the end of completing the quest"
 		},
 	},
 
@@ -1779,79 +1753,6 @@ KkthnxUIConfig["enUS"] = {
 
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
-		},
-	},
-
-	-- Combattext
-	["FloatingCombatFeedback"] = {
-		["Enable"] = {
-			["Name"] = "Enable Combattext",
-		},
-
-		["AbbreviateNumbers"] = {
-			["Name"] = "Abbreviate Numbers",
-			["Desc"] = "Shows 5k instead 5000. Works only for 'Nameplates'.",
-		},
-
-		["FontSize"] = {
-			["Name"] = "Font Size",
-		},
-		
-		["Style"] = {
-			["Name"] = "Style",
-		},
-		
-		["ScrollTime"] = {
-			["Name"] = "Scroll Time",
-		},
-	},
-	
-	-- RaidCD's
-	["RaidCooldown"] = {
-		["Enable"] = {
-			["Name"] = "Enable Raid CD's",
-		},
-
-		["FontSize"] = {
-			["Name"] = "Font Size",
-		},
-
-		["Height"] = {
-			["Name"] = "Height",
-		},
-
-		["Width"] = {
-			["Name"] = "Width",
-		},
-
-		["Upwards"] = {
-			["Name"] = "Upwards",
-			["Desc"] = "Sort from bottom to top.",
-		},
-
-		["Expiration"] = {
-			["Name"] = "Expiration",
-			["Desc"] = "Sort to expiration.",
-		},
-
-		["Show_Self"] = {
-			["Name"] = "Show self",
-		},
-
-		["Show_Icon"] = {
-			["Name"] = "Show Icon",
-		},
-
-		["Show_InRaid"] = {
-			["Name"] = "Show in Raid",
-		},
-
-		["Show_InParty"] = {
-			["Name"] = "Show in Party",
-		},
-
-		["Show_InArena"] = {
-			["Name"] = "Show in Arena",
 		},
 	},
 }

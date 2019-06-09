@@ -22,8 +22,6 @@ local C_MountJournal_GetMountIDs = _G.C_MountJournal.GetMountIDs
 local C_MountJournal_GetMountInfoByID = _G.C_MountJournal.GetMountInfoByID
 local C_MountJournal_GetMountInfoExtraByID = _G.C_MountJournal.GetMountInfoExtraByID
 local C_PetBattles_IsInBattle = _G.C_PetBattles.IsInBattle
-local C_PetJournal_FindPetIDByName = _G.C_PetJournal.FindPetIDByName
-local C_PetJournal_GetPetStats = _G.C_PetJournal.GetPetStats
 local C_PetJournal_GetPetTeamAverageLevel = _G.C_PetJournal.GetPetTeamAverageLevel
 local CanInspect = _G.CanInspect
 local CreateFrame = _G.CreateFrame
@@ -41,8 +39,6 @@ local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
 local GetGuildInfo = _G.GetGuildInfo
 local GetInspectSpecialization = _G.GetInspectSpecialization
 local GetItemCount = _G.GetItemCount
-local GetItemInfo = _G.GetItemInfo
-local GetItemQualityColor = _G.GetItemQualityColor
 local GetMouseFocus = _G.GetMouseFocus
 local GetNumGroupMembers = _G.GetNumGroupMembers
 local GetRelativeDifficultyColor = _G.GetRelativeDifficultyColor
@@ -132,11 +128,6 @@ local TOOLTOP_BUG = false
 -- Custom to find LEVEL string on tooltip
 local LEVEL1 = TOOLTIP_UNIT_LEVEL:gsub("%s?%%s%s?%-?", "")
 local LEVEL2 = TOOLTIP_UNIT_LEVEL_CLASS:gsub("^%%2$s%s?(.-)%s?%%1$s", "%1"):gsub("^%-?г?о?%s?", ""):gsub("%s?%%s%s?%-?", "")
-
-local ignoreSubType = {
-	L["Tooltip"].Other == true,
-	L["Tooltip"].Item_Enhancement == true
-}
 
 local classification = {
 	worldboss = string_format("|cffAF5050 %s|r", BOSS),
@@ -637,48 +628,6 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 
 		tt.itemCleared = true
 	end
-
-	if C["Tooltip"].ItemQualityBorder then
-		local _, link = tt:GetItem()
-
-		if link ~= nil then
-			tt.currentItem = link
-
-			local name, _, quality, _, _, type, subType = GetItemInfo(link)
-
-			if not quality then
-				quality = 0
-			end
-
-			local r, g, b
-			if type == L["Tooltip"].Quest then
-				r, g, b = 1, 1, 0
-			elseif type == L["Tooltip"].Tradeskill and not ignoreSubType[subType] and quality < 2 then
-				r, g, b = 0.4, 0.73, 1
-			elseif subType == L["Tooltip"].Companion_Pets then
-				local _, id = C_PetJournal_FindPetIDByName(name)
-				if id then
-					local _, _, _, _, petQuality = C_PetJournal_GetPetStats(id)
-					if petQuality then
-						quality = petQuality - 1
-					end
-				end
-			end
-
-			if quality > 1 and not r then
-				r, g, b = GetItemQualityColor(quality)
-				tt:SetBackdropBorderColor(r, g, b)
-			end
-
-			if r then
-				tt:SetBackdropBorderColor(r, g, b)
-			end
-		else
-			if tt == ItemRefTooltip then
-				tt:SetBackdropBorderColor(0.7, 0.7, 0.7)
-			end
-		end
-	end
 end
 
 function Module:GameTooltip_AddQuestRewardsToTooltip(tt, questID)
@@ -912,8 +861,8 @@ function Module:OnEnable()
 	BNETMover:SetSize(250, 64)
 
 	BNToastFrame:SetPoint("TOPRIGHT", BNETMover, "BOTTOMRIGHT", 0, -10)
-	K.Movers:RegisterFrame(BNETMover)
 	self:SecureHook(BNToastFrame, "SetPoint", "RepositionBNET")
+	K.Mover(BNETMover, "ToastFrame", "ToastFrame", {"BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, 204})
 
 	BNToastFrame:SetBackdrop(nil)
 	BNToastFrame:CreateBorder()
@@ -941,8 +890,7 @@ function Module:OnEnable()
 	GameTooltipAnchor:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4)
 	GameTooltipAnchor:SetSize(130, 20)
 	GameTooltipAnchor:SetFrameLevel(GameTooltipAnchor:GetFrameLevel() + 400)
-
-	K.Movers:RegisterFrame(GameTooltipAnchor)
+	K.Mover(GameTooltipAnchor, "GameTooltip", "GameTooltip", {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4})
 
 	self:SecureHook("SetItemRef")
 	self:SecureHook("GameTooltip_SetDefaultAnchor")

@@ -11,7 +11,6 @@ local table_insert = _G.table.insert
 local table_maxn = _G.table.maxn
 local unpack = _G.unpack
 
-local C_Timer_After = _G.C_Timer.After
 local CanGuildBankRepair = _G.CanGuildBankRepair
 local CanMerchantRepair = _G.CanMerchantRepair
 local GetContainerItemID = _G.GetContainerItemID
@@ -24,36 +23,45 @@ local IsShiftKeyDown = _G.IsShiftKeyDown
 local RepairAllItems = _G.RepairAllItems
 local UnitFactionGroup = _G.UnitFactionGroup
 
-local autoRepairStatus
-local function AttemptAutoRepair(playerOverride)
-	autoRepairStatus = ""
-	local autoRepair = C["Inventory"].AutoRepair.Value
-	local cost, possible = GetRepairAllCost()
-	local withdrawLimit = GetGuildBankWithdrawMoney()
-	-- This check evaluates to true even if the guild bank has 0 gold, so we add an override
-	if autoRepair == "GUILD" and ((not CanGuildBankRepair() or cost > withdrawLimit) or playerOverride) then
-		autoRepair = "PLAYER"
+do -- Auto Repair Functions
+	local STATUS, TYPE, COST, POSS
+	function Module:AttemptAutoRepair(playerOverride)
+		STATUS, TYPE, COST, POSS = "", C["Inventory"].AutoRepair.Value, GetRepairAllCost()
+
+		if POSS and COST > 0 then
+			-- This check evaluates to true even if the guild bank has 0 gold, so we add an override
+			if TYPE == "GUILD" and (playerOverride or (not CanGuildBankRepair() or COST > GetGuildBankWithdrawMoney())) then
+				TYPE = "PLAYER"
+			end
+
+			RepairAllItems(TYPE == "GUILD")
+
+			-- Delay this a bit so we have time to catch the outcome of first repair attempt
+			K.Delay(0.5, Module.AutoRepairOutput)
+		end
 	end
 
-	if cost > 0 then
-		if possible then
-			RepairAllItems(autoRepair == "GUILD")
-			-- Delay this a bit so we have time to catch the outcome of first repair attempt
-			C_Timer_After(0.5, function()
-				if autoRepair == "GUILD" then
-					if autoRepairStatus == "GUILD_REPAIR_FAILED" then
-						AttemptAutoRepair(true) -- Try using player money instead
-					else
-						K.Print(L["Inventory"].GuildRepair .. K.FormatMoney(cost))
-					end
-				elseif autoRepair == "PLAYER" then
-					if autoRepairStatus == "PLAYER_REPAIR_FAILED" then
-						K.Print(L["Inventory"].NotEnoughMoney)
-					else
-						K.Print(L["Inventory"].RepairCost .. K.FormatMoney(cost))
-					end
-				end
-			end)
+	function Module:AutoRepairOutput()
+		if TYPE == "GUILD" then
+			if STATUS == "GUILD_REPAIR_FAILED" then
+				Module:AttemptAutoRepair(true) -- Try using player money instead
+			else
+				K.Print(L["Inventory"].GuildRepair..K.FormatMoney(COST))
+			end
+		elseif TYPE == "PLAYER" then
+			if STATUS == "PLAYER_REPAIR_FAILED" then
+				K.Print(L["Inventory"].NotEnoughMoney)
+			else
+				K.Print(L["Inventory"].RepairCost..K.FormatMoney(COST))
+			end
+		end
+	end
+
+	function Module:UI_ERROR_MESSAGE(_, messageType)
+		if messageType == LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY then
+			STATUS = "GUILD_REPAIR_FAILED"
+		elseif messageType == LE_GAME_ERR_NOT_ENOUGH_MONEY then
+			STATUS = "PLAYER_REPAIR_FAILED"
 		end
 	end
 end
@@ -68,15 +76,14 @@ function Module:VendorGrays(delete)
 		return
 	end
 
-	local link, rarity, itype, itemPrice, itemID, _
 	for bag = 0, 4, 1 do
 		for slot = 1, GetContainerNumSlots(bag), 1 do
-			itemID = GetContainerItemID(bag, slot)
+			local itemID = GetContainerItemID(bag, slot)
 			if itemID then
-				_, link, rarity, _, _, itype, _, _, _, _, itemPrice = GetItemInfo(itemID)
+				local _, link, rarity, _, _, itype, _, _, _, _, itemPrice = GetItemInfo(itemID)
 
 				if (rarity and rarity == 0) and (itype and itype ~= "Quest") and (itemPrice and itemPrice > 0) then
-					table_insert(Module.SellFrame.Info.itemList, {bag, slot, itemPrice, link})
+					table_insert(Module.SellFrame.Info.itemList, {bag,slot,itemPrice,link})
 				end
 			end
 		end
@@ -102,7 +109,7 @@ function Module:VendorGrays(delete)
 	Module.SellFrame.statusbar:SetMinMaxValues(0, Module.SellFrame.Info.ProgressMax)
 	Module.SellFrame.statusbar.ValueText:SetText("0 / "..Module.SellFrame.Info.ProgressMax)
 
-	--Time to sell
+	-- Time to sell
 	Module.SellFrame:Show()
 end
 
@@ -175,7 +182,7 @@ function Module:VendorGreys_OnUpdate(elapsed)
 	elseif lastItem then
 		Module.SellFrame:Hide()
 		if Module.SellFrame.Info.goldGained > 0 then
-			K.Print((L["Inventory"].SoldTrash.." %s"):format(K.FormatMoney(Module.SellFrame.Info.goldGained)))
+			K.Print((L["Inventory"].SoldTrash.."%s"):format(K.FormatMoney(Module.SellFrame.Info.goldGained)))
 		end
 	end
 end
@@ -229,14 +236,12 @@ function Module:CreateSellFrame()
 	Module.SellFrame:Hide()
 end
 
-
 function Module:MERCHANT_SHOW()
 	if C["Inventory"].AutoSell then
-		C_Timer_After(0.5, Module.VendorGrays)
+		K.Delay(0.5, Module.VendorGrays, Module)
 	end
 
-	local autoRepair = C["Inventory"].AutoRepair.Value
-	if IsShiftKeyDown() or autoRepair == "NONE" or not CanMerchantRepair() then
+	if C["Inventory"].AutoRepair.Value == "NONE" or IsShiftKeyDown() or not CanMerchantRepair() then
 		return
 	end
 
@@ -245,14 +250,11 @@ function Module:MERCHANT_SHOW()
 	-- Use this to unregister events afterwards
 	self:RegisterEvent("MERCHANT_CLOSED")
 
-	AttemptAutoRepair()
+	Module:AttemptAutoRepair()
 end
 
 function Module:OnEnable()
 	self:RegisterEvent("MERCHANT_SHOW")
-
-	-- Creating vendor grays frame
-	Module:CreateSellFrame()
-
+	self:CreateSellFrame()
 	self:RegisterEvent("MERCHANT_CLOSED")
 end

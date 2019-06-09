@@ -24,11 +24,11 @@ local OldLatency = -9999
 local UpdatedCount = 0
 
 local LagToleranceDefaults = {
-    Offset = 0,
-    Interval = 30,
-    Threshold = 5,
-    Min = nil,
-    Max = nil,
+	Offset = 0,
+	Interval = 30,
+	Threshold = 5,
+	Min = nil,
+	Max = nil,
 }
 
 local BATTLEGROUNDS = {
@@ -84,13 +84,13 @@ LagToleranceEvents:SetScript("OnEvent", function(self)
 		return
 	end
 
-    -- Get Min/Max latency values
-    MinLatency = 0
-    MaxLatency = 400
+	-- Get Min/Max latency values
+	MinLatency = 0
+	MaxLatency = 400
 
-    -- Start timer
-    LatencyInterval = 1
-    LagToleranceTimer:Show()
+	-- Start timer
+	LatencyInterval = 1
+	LagToleranceTimer:Show()
 end)
 
 LagToleranceTimer:SetScript("OnUpdate", function(_, elapsed)
@@ -98,58 +98,58 @@ LagToleranceTimer:SetScript("OnUpdate", function(_, elapsed)
 		return
 	end
 
-    LatencyInterval = LatencyInterval - elapsed
-    if LatencyInterval <= 0 then
-        -- Get Latency
-        local _, _, _, Latency = GetNetStats()
-        if Latency ~= OldLatency then
+	LatencyInterval = LatencyInterval - elapsed
+	if LatencyInterval <= 0 then
+		-- Get Latency
+		local _, _, _, Latency = GetNetStats()
+		if Latency ~= OldLatency then
 
-            if not Latency then Latency = 0 end
-            Latency = Latency + LagToleranceDefaults.Offset
+			if not Latency then Latency = 0 end
+			Latency = Latency + LagToleranceDefaults.Offset
 
-            -- Set Latency to be within Min/Max boundaries
-            if LagToleranceDefaults.Min then
-            	Latency = max(Latency, LagToleranceDefaults.Min)
-            end
+			-- Set Latency to be within Min/Max boundaries
+			if LagToleranceDefaults.Min then
+				Latency = max(Latency, LagToleranceDefaults.Min)
+			end
 
-            if LagToleranceDefaults.Max then
-            	Latency = min(Latency, LagToleranceDefaults.Max)
-            end
+			if LagToleranceDefaults.Max then
+				Latency = min(Latency, LagToleranceDefaults.Max)
+			end
 
-            if Latency < MinLatency then
-            	Latency = MinLatency
-            end
+			if Latency < MinLatency then
+				Latency = MinLatency
+			end
 
-            if Latency > MaxLatency then
-            	Latency = MaxLatency
-            end
+			if Latency > MaxLatency then
+				Latency = MaxLatency
+			end
 
-            -- If Latency changed and greater than the change threshold, then update
-            if ((Latency < OldLatency) and ((Latency + LagToleranceDefaults.Threshold) <= OldLatency)) or ((Latency > OldLatency) and ((Latency - LagToleranceDefaults.Threshold) >= OldLatency)) then
-                K.LockCVar("SpellQueueWindow", Latency)
+			-- If Latency changed and greater than the change threshold, then update
+			if ((Latency < OldLatency) and ((Latency + LagToleranceDefaults.Threshold) <= OldLatency)) or ((Latency > OldLatency) and ((Latency - LagToleranceDefaults.Threshold) >= OldLatency)) then
+				SetCVar("SpellQueueWindow", Latency)
 
-                OldLatency = Latency
-            end
+				OldLatency = Latency
+			end
 
-            -- Search for first real Latency update, so we can find the beginning of GetNetStats()'s 30sec update cycle
-            if UpdatedCount < 2 then
-                UpdatedCount = UpdatedCount + 1
-            end
-        end
+			-- Search for first real Latency update, so we can find the beginning of GetNetStats()'s 30sec update cycle
+			if UpdatedCount < 2 then
+				UpdatedCount = UpdatedCount + 1
+			end
+		end
 
-        -- Reset timer
-        if UpdatedCount < 2 then
-            -- Still looking for first real Latency update
-            LatencyInterval = 1
-        elseif UpdatedCount < 5 then
-            -- Run 3 more passes at 1sec each, so we can get 3sec ahead of the GetNetStats() update cycle
-            LatencyInterval = 1
-            UpdatedCount = UpdatedCount + 1
-        else
-            -- Update cycle determined, set to normal updates from now on
-            LatencyInterval = LagToleranceDefaults.Interval
-        end
-    end
+		-- Reset timer
+		if UpdatedCount < 2 then
+			-- Still looking for first real Latency update
+			LatencyInterval = 1
+		elseif UpdatedCount < 5 then
+			-- Run 3 more passes at 1sec each, so we can get 3sec ahead of the GetNetStats() update cycle
+			LatencyInterval = 1
+			UpdatedCount = UpdatedCount + 1
+		else
+			-- Update cycle determined, set to normal updates from now on
+			LatencyInterval = LagToleranceDefaults.Interval
+		end
+	end
 end)
 
 -- Force readycheck warning
@@ -225,18 +225,5 @@ function Module:OnEnable()
 	if C["Misc"].BattlegroundSpam == true then
 		self:RegisterEvent("PLAYER_ENTERING_WORLD", "ToggleBossEmotes")
 		self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ToggleBossEmotes")
-	end
-
-	if _G.SetView and not _G.SetView == 3 then
-		_G.SetView(3)
-		_G.ResetView(3)
-
-		if K.CodeDebug then
-			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 187 - KkthnxUI|Modules|Miscellaneous|Core -|r |cFFFFFF00SetView was not 3|r")
-		end
-	else
-		if K.CodeDebug then
-			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 187 - KkthnxUI|Modules|Miscellaneous|Core -|r |cFFFFFF00SetView is 3|r")
-		end
 	end
 end

@@ -175,5 +175,5 @@ function Module:OnEnable()
 		MainMenuBarPerformanceBar:Hide()
 	end
 
-	K.Movers:RegisterFrame(microBar)
+	K.Mover(microBar, "MicroBar", "MicroBar", {"TOP", UIParent, "TOP", 0, 0}, (((_G["CharacterMicroButton"]:GetWidth() + 6) * 11) - 6) + (4 * 2), (((_G["CharacterMicroButton"]:GetHeight() + 6) * 1) - 6) + (4 * 2))
 end

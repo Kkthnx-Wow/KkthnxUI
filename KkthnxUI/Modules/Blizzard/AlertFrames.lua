@@ -147,7 +147,7 @@ function Module:OnEnable()
 
 	GroupLootContainer:EnableMouse(false)
 	_G.UIPARENT_MANAGED_FRAME_POSITIONS["GroupLootContainer"] = nil
-	K.Movers:RegisterFrame(AlertFrameHolder)
+	K.Mover(AlertFrameHolder, "AlertFrame", "AlertFrame", {"TOP", UIParent, "TOP", 0, -18})
 
 	-- Replace AdjustAnchors functions to allow alerts to grow down if needed.
 	-- We will need to keep an eye on this in case it taints. It shouldn't, but you never know.

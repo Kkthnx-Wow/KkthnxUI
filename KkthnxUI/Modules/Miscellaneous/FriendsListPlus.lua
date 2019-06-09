@@ -161,6 +161,10 @@ function Module:UpdateFriends(button)
 		button.name:SetFont(C["Media"].Font, C["Media"].FontSize, "")
 		button.info:SetFont(C["Media"].Font, 11, "")
 	end
+
+	if FriendsFrameBattlenetFrame.UnavailableInfoButton then
+		FriendsFrameBattlenetFrame.UnavailableInfoButton:Kill()
+	end
 end
 
 function Module:OnInitialize()

@@ -1,4 +1,11 @@
-local K = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
+if C["WorldMap"].WorldMapPlus ~= true then
+	return
+end
+
+local dnTex, rdTex = "Dungeon", "Raid"
+local chTex = "ChallengeMode-icon-chest"
+local pATex, pHTex, pNTex = "TaxiNode_Continent_Alliance", "TaxiNode_Continent_Horde", "TaxiNode_Continent_Neutral"
 
 K.WorldMapPlusData = {
 	-- Eastern Kingdoms
@@ -320,4 +327,199 @@ K.WorldMapPlusData = {
 		["1243:1287:1046:1273"] = "2034370,2034381,2034392,2034394,2034395,2034396,2034397,2034398,2034399,2034371,2034372,2034373,2034374,2034375,2034376,2034377,2034378,2034379,2034380,2034382,2034383,2034384,2034385,2034386,2034387,2034388,2034389,2034390,2034391,2034393",
 		["1650:1565:321:378"] = "2034162,2034173,2034184,2034195,2034206,2034207,2034208,2034209,2034210,2034163,2034164,2034165,2034166,2034167,2034168,2034169,2034170,2034171,2034172,2034174,2034175,2034176,2034177,2034178,2034179,2034180,2034181,2034182,2034183,2034185,2034186,2034187,2034188,2034189,2034190,2034191,2034192,2034193,2034194,2034196,2034197,2034198,2034199,2034200,2034201,2034202,2034203,2034204,2034205",
 	},
+}
+
+K.WorldMapPlusPinData = {
+	-- Eastern Kingdoms
+	-- Dun Morogh
+	[27] = {{31.1, 37.9, "Gnomeregan", "Dungeon", dnTex},},
+	-- Badlands
+	[15] = {{41.7, 11.6, "Uldaman", "Dungeon", dnTex},},
+	-- Uldaman
+	[16] = {{36.7, 29.4, "Uldaman", "Dungeon", dnTex},},
+	-- Tirisfal Glades
+	[18] = {{82.5, 33.3, "Scarlet Halls" .. ", " .. "Scarlet Monastery", "Dungeon", dnTex},},
+	-- Scarlet Monastery Entrance
+	[19] = {{69.2, 24.4, "Scarlet Monastery", "Dungeon", dnTex}, {78.6, 58.9, "Scarlet Halls", "Dungeon", dnTex},},
+	-- Silverpine Forest
+	[21] = {{44.8, 67.8, "Shadowfang Keep", "Dungeon", dnTex},},
+	-- Western Plaguelands
+	[22] = {{69.6, 73.2, "Scholomance", "Dungeon", dnTex},},
+	-- Eastern Plaguelands
+	[23] = {{27.7, 11.6, "Stratholme: Crusader's Square", "Dungeon", dnTex}, {43.5, 19.4, "Stratholme: The Gauntlet", "Dungeon", dnTex},},
+	-- New Tinkertown
+	[30] = {{30.2, 74.7, "Gnomeregan", "Dungeon", dnTex},},
+	-- Searing Gorge
+	[32] = {{34.9, 83.9, "Blackrock Mountain", "Blackrock Caverns" .. "," .. "Blackrock Depths" .. "|n" .. "Blackrock Spire" .. "," .. "Blackwing Lair" .. "," .. "Molten Core", dnTex},},
+	-- Blackrock Mountain
+	[33] = {{66.5, 60.7, "Blackrock Caverns", "Dungeon", dnTex}, {64.3, 70.9, "Blackwing Lair", "Raid", rdTex}, {65.9, 41.9, "Blackrock Spire", "Dungeon", dnTex}, {80.3, 40.7, "Lower Blackrock Spire", "Dungeon", dnTex}, {79.0, 33.7, "Upper Blackrock Spire", "Dungeon", dnTex},},
+	-- Blackrock Mountain
+	[34] = {{71.9, 53.5, "Blackrock Caverns", "Dungeon", dnTex},},
+	-- Blackrock Mountain
+	[35] = {{54.3, 83.4, "Molten Core", "Raid", rdTex}, {39.0, 18.3, "Blackrock Depths", "Dungeon", dnTex},},
+	-- Burning Steppes
+	[36] = {{21.0, 37.9, "Blackrock Mountain", "Blackrock Caverns" .. "," .. "Blackrock Depths" .. "|n" .. "Blackrock Spire" .. "," .. "Blackwing Lair" .. "," .. "Molten Core", dnTex}, {23.0, 26.3, "Blackwing Descent", "Raid", rdTex},},
+	-- Elwynn Forest
+	[37] = {{19.1, 36.9, "The Stockade", "Dungeon", dnTex},},
+	-- Deadwind Pass
+	[42] = {{46.9, 74.7, "Karazhan", "Raid", rdTex}, {46.7, 70.2, "Return to Karazhan", "Dungeon", dnTex},},
+	-- Northern Stranglethorn
+	[50] = {{72.1, 32.9, "Zul'Gurub", "Dungeon", dnTex},},
+	-- Swamp of Sorrows
+	[51] = {{69.7, 53.5, "Temple of Atal'Hakkar", "Dungeon", dnTex},},
+	-- Westfall
+	[52] = {{42.6, 71.8, "The Deadmines", "Dungeon", dnTex},},
+	-- The Deadmines
+	[55] = {{25.5, 51.1, "The Deadmines", "Dungeon", dnTex},},
+	-- Stormwind City
+	[84] = {{49.5, 69.5, "The Stockade", "Dungeon", dnTex},},
+	-- Ghostlands
+	[95] = {{82.1, 64.3, "Zul'Aman", "Dungeon", dnTex},},
+	-- The Exodar
+	[103] = {{48.3, 62.9, "Stormwind", "Portal", pATex},},
+	-- Isle of Quel'Danas
+	[122] = {{61.2, 30.9, "Magisters' Terrace", "Dungeon", dnTex}, {44.3, 45.6, "Sunwell Plateau", "Raid", rdTex},},
+	-- Vashj'ir
+	[203] = {{49.1, 42.4, "Throne of the Tides", "Dungeon", dnTex},},
+	-- Abyssal Depths
+	[204] = {{70.8, 29.0, "Throne of the Tides", "Dungeon", dnTex},},
+	-- Stranglethorn Vale
+	[224] = {{63.5, 21.6, "Zul'Gurub", "Dungeon", dnTex},},
+	-- Twilight Highlands
+	[241] = {{34.0, 78.0, "The Bastion of Twilight", "Raid", rdTex}, {19.2, 54.0, "Grim Batol", "Dungeon", dnTex},},
+	-- Blackrock Depths
+	[243] = {{68.4, 38.3, "Molten Core", "Raid", rdTex},},
+	-- Tol Barad
+	[244] = {{46.3, 47.9, "Baradin Hold", "Raid", rdTex},},
+	-- New Tinkertown
+	[469] = {{32.6, 37.0, "Gnomeregan", "Dungeon", dnTex},},
+
+	-- Kalimdor
+	-- Northern Barrens
+	[10] = {{38.9, 69.1, "Wailing Caverns", "Dungeon", dnTex},},
+	-- Wailing Caverns
+	[11] = {{55.1, 65.9, "Wailing Caverns", "Dungeon", dnTex},},
+	-- Ashenvale
+	[63] = {{14.2, 13.9, "Blackfathom Deeps", "Dungeon", dnTex},},
+	-- Thousand Needles
+	[64] = {{41.5, 29.4, "Razorfen Downs", "Dungeon", dnTex},},
+	-- Desolace
+	[66] = {{29.1, 62.6, "Maraudon", "Dungeon", dnTex},},
+	-- Maraudon
+	[67] = {{78.2, 56.0, "Maraudon: Foulspore Cavern", "Dungeon", dnTex},},
+	-- Maraudon
+	[68] = {{44.4, 76.8, "Maraudon: Earth Song Falls", "Dungeon", dnTex}, {52.0, 24.5, "Maraudon: The Wicked Grotto", "Dungeon", dnTex},},
+	-- Feralas
+	[69] = {{60.3, 31.3, "Dire Maul: Capital Gardens", "Dungeon", dnTex}, {64.8, 30.2, "Dire Maul: Warpwood Quarter", "Dungeon", dnTex}, {62.5, 24.9, "Dire Maul: Gordok Commons", "Dungeon", dnTex},},
+	-- Dustwallow Marsh
+	[70] = {{52.2, 75.7, "Onyxia's Lair", "Raid", rdTex},},
+	-- Tanaris
+	[71] = {{39.2, 21.3, "Zul'Farrak", "Dungeon", dnTex}, {64.8, 50.0, "Caverns of Time", "Black Morass" .. ", " .. "Culling of Stratholme" .. ",|n" .. "Dragon Soul" .. ", " .. "End Time" .. ", " .. "Hour of Twilight" .. ",|n" .. "Hyjal Summit" .. ", " .. "Old Hillsbrad Foothills" .. ",|n" .. "Well of Eternity", dnTex},},
+	-- Caverns of Time
+	[75] = {{57.5, 82.6, "The Culling of Stratholme", "Dungeon", dnTex}, {36.7, 83.0, "The Black Morass", "Dungeon", dnTex}, {22.5, 64.4, "Well of Eternity", "Dungeon", dnTex}, {26.9, 35.8, "Old Hillsbrad Foothills", "Dungeon", dnTex}, {35.5, 15.6, "Hyjal Summit", "Raid", rdTex}, {57.3, 29.6, "End Time", "Dungeon", dnTex}, {61.6, 26.6, "Dragon Soul", "Raid", rdTex}, {66.9, 29.4, "Hour of Twilight", "Dungeon", dnTex},},
+	-- Orgrimmar
+	[85] = {{55.2, 51.2, "Ragefire Chasm", "Dungeon", dnTex},},
+	-- Orgrimmar
+	[86] = {{70.0, 49.2, "Ragefire Chasm", "Dungeon", dnTex},},
+	-- Silvermoon City
+	[110] = {{58.5, 18.7, "Orgrimmar", "Portal", pHTex},},
+	-- Mount Hyjal
+	[198] = {{47.3, 78.0, "Firelands", "Raid", rdTex},},
+	-- Southern Barrens
+	[199] = {{41.0, 94.6, "Razorfen Kraul", "Dungeon", dnTex},},
+	-- Uldum
+	[249] = {{71.6, 52.2, "Halls of Origination", "Dungeon", dnTex}, {60.5, 64.2, "Lost City of the Tol'vir", "Dungeon", dnTex}, {76.7, 84.4, "The Vortex Pinnacle", "Dungeon", dnTex}, {38.4, 80.6, "Throne of the Four Winds", "Raid", rdTex},},
+	-- Ahn'Qiraj: The Fallen Kingdom
+	[327] = {{46.8, 7.5, "Temple of Ahn'Qiraj", "Raid", rdTex}, {58.9, 14.3, "Ruins of Ahn'Qiraj", "Raid", rdTex},},
+
+	-- Kalimdor (Dungeons)
+	-- Ruins of Ahn'Qiraj
+	[247] = {{59.3, 28.7, "Scarab Coffer", "Chest", chTex}, {60.8, 51.0, "Scarab Coffer", "Chest", chTex}, {73.0, 66.4, "Scarab Coffer", "Chest", chTex}, {57.4, 78.3, "Scarab Coffer", "Chest", chTex}, {54.8, 87.5, "Scarab Coffer", "Chest", chTex}, {41.0, 76.9, "Scarab Coffer", "Chest", chTex}, {34.0, 53.0, "Scarab Coffer", "Chest", chTex}, {41.1, 32.2, "Scarab Coffer", "Chest", chTex}, {41.6, 46.3, "Scarab Coffer", "Chest", chTex}, {46.7, 42.0, "Scarab Coffer", "Chest", chTex},},
+	-- Temple of Ahn'Qiraj
+	[319] = {{33.1, 48.4, "Large Scarab Coffer", "Chest", chTex}, {64.5, 25.5, "Large Scarab Coffer", "Chest", chTex}, {58.4, 49.9, "Large Scarab Coffer", "Chest", chTex}, {47.5, 54.7, "Large Scarab Coffer", "Chest", chTex}, {56.2, 66.0, "Large Scarab Coffer", "Chest", chTex}, {50.7, 78.1, "Large Scarab Coffer", "Chest", chTex}, {51.4, 83.2, "Large Scarab Coffer", "Chest", chTex}, {48.4, 85.4, "Large Scarab Coffer", "Chest", chTex}, {48.0, 81.1, "Large Scarab Coffer", "Chest", chTex}, {34.2, 83.5, "Large Scarab Coffer", "Chest", chTex}, {39.2, 68.4, "Large Scarab Coffer", "Chest", chTex},},
+
+	-- Outland
+	-- Hellfire Peninsula
+	[100] = {{46.6, 52.8, "Magtheridon's Lair", "Raid", rdTex}, {47.7, 53.6, "Hellfire Ramparts", "Dungeon", dnTex}, {47.7, 52.0, "The Shattered Halls", "Dungeon", dnTex}, {46.0, 51.8, "The Blood Furnace", "Dungeon", dnTex},},
+	-- Zangarmarsh
+	[102] = {{50.4, 40.9, "Coilfang Reservoir", "Serpentshrine Cavern" .. ", " .. "Slave Pens" .. ",|n" .. "Steamvault" .. ", " .. "Underbog", dnTex},},
+	-- Shadowmoon Valley
+	[104] = {{71.0, 46.4, "Black Temple", "Raid", rdTex},},
+	-- Blade's Edge Mountains
+	[105] = {{68.7, 24.3, "Gruul's Lair", "Raid", rdTex},},
+	-- Terokkar Forest
+	[108] = {{43.2, 65.6, "Sethekk Halls", "Dungeon", dnTex}, {36.1, 65.6, "Auchenai Crypts", "Dungeon", dnTex}, {39.6, 71.0, "Shadow Labyrinth", "Dungeon", dnTex}, {39.7, 60.2, "Mana-Tombs", "Dungeon", dnTex},},
+	-- Netherstorm
+	[109] = {{70.6, 69.7, "The Mechanar", "Dungeon", dnTex}, {73.7, 63.7, "The Eye", "Raid", rdTex}, {71.7, 55.0, "The Botanica", "Dungeon", dnTex}, {74.4, 57.7, "The Arcatraz", "Dungeon", dnTex},},
+
+	-- Northrend
+	-- Borean Tundra
+	[114] = {{27.6, 26.6, "The Nexus", "The Nexus" .. ", " .. "The Oculus" .. ",|n" .. "The Eye of Eternity", dnTex},},
+	-- Dragonblight
+	[115] = {{59.6, 51.1, "Wyrmrest Temple", "The Ruby Sanctum" .. ", " .. "The Obsidian Sanctum", dnTex}, {87.4, 51.1, "Naxxramas", "Raid", rdTex}, {26.2, 49.6, "Azjol-Nerub", "Azjol-Nerub" .. ", " .. "The Old Kingdom", dnTex},},
+	-- Grizzly Hills
+	[116] = {{17.5, 27.0, "Drak'Tharon Keep", "Dungeon", dnTex},},
+	-- Howling Fjord
+	[117] = {{57.3, 46.8, "Utgarde Keep", "Utgarde Keep" .. ", " .. "Utgarde Pinnacle", dnTex},},
+	-- Icecrown
+	[118] = {{53.3, 85.5, "Icecrown Citadel", "Raid", rdTex}, {52.6, 89.4, "The Frozen Halls", "The Forge of Souls" .. ", " .. "The Pit of Saron" .. ",|n" .. "The Halls of Reflection", dnTex}, {74.2, 20.5, "Trial of the Champion", "Dungeon", dnTex}, {75.1, 21.8, "Trial of the Crusader", "Raid", rdTex},},
+	-- The Storm Peaks
+	[120] = {{39.6, 26.9, "Halls of Stone", "Dungeon", dnTex}, {45.4, 21.4, "Halls of Lightning", "Dungeon", dnTex}, {41.6, 17.8, "Ulduar", "Raid", rdTex},},
+	-- Zul'Drak
+	[121] = {{29.0, 83.9, "Drak'Tharon Keep", "Dungeon", dnTex}, {76.2, 21.1, "Gundrak", "Dungeon", dnTex}, {81.2, 28.9, "Gundrak (rear entrance)", "Dungeon", dnTex},},
+	-- Wintergrasp
+	[123] = {{50.5, 16.4, "Vault of Archavon", "Raid", rdTex},},
+	-- Dalaran
+	[125] = {{66.8, 68.2, "The Violet Hold", "Dungeon", dnTex},},
+
+	-- Cataclysm
+	-- Deepholm
+	[207] = {{47.6, 52.0, "The Stonecore", "Dungeon", dnTex},},
+
+	-- Pandaria
+	-- The Jade Forest
+	[371] = {{56.2, 57.9, "Temple of the Jade Serpent", "Dungeon", dnTex},},
+	-- Valley of the Four Winds
+	[376] = {{36.1, 69.2, "Stormstout Brewery", "Dungeon", dnTex},},
+	-- Kun-Lai Summit
+	[379] = {{59.6, 39.2, "Mogu'shan Vaults", "Raid", rdTex}, {36.7, 47.4, "Shado-Pan Monastery", "Dungeon", dnTex},},
+	-- Townlong Steppes
+	[388] = {{34.7, 81.5, "Siege of Niuzao Temple", "Dungeon", dnTex}, {49.7, 68.7, "Throne of Thunder", "Raid", rdTex},},
+	-- Vale of Eternal Blossoms
+	[390] = {{80.9, 32.7, "Mogu'shan Palace", "Dungeon", dnTex}, {72.4, 44.2, "Siege of Orgrimmar", "Raid", rdTex}, {15.8, 74.3, "Gate of the Setting Sun", "Dungeon", dnTex},},
+	-- Dread Wastes
+	[422] = {{38.8, 35.0, "Heart of Fear", "Raid", rdTex},},
+	-- The Veiled Stair
+	[433] = {{48.4, 61.4, "Terrace of Endless Spring", "Raid", rdTex},},
+	-- Isle of Thunder
+	[504] = {{63.6, 32.3, "Throne of Thunder", "Raid", rdTex},},
+
+	-- Draenor
+	-- Frostfire Ridge
+	[525] = {{49.8, 24.7, "Bloodmaul Slag Mines", "Dungeon", dnTex},},
+	-- Tanaan Jungle
+	[534] = {{45.7, 53.5, "Hellfire Citadel", "Raid", rdTex},},
+	-- Talador
+	[535] = {{46.3, 73.9, "Auchindoun", "Dungeon", dnTex},},
+	-- Shadowmoon Valley
+	[539] = {{31.9, 42.5, "Shadowmoon Burial Grounds", "Dungeon", dnTex},},
+	-- Spires of Arak
+	[542] = {{35.6, 33.6, "Skyreach", "Dungeon", dnTex},},
+	-- Gorgrond
+	[543] = {{51.3, 28.6, "Blackrock Foundry", "Raid", rdTex}, {55.2, 31.9, "Grimrail Depot", "Dungeon", dnTex}, {59.6, 45.5, "The Everbloom", "Dungeon", dnTex}, {45.4, 13.5, "Iron Docks", "Dungeon", dnTex},},
+	-- Nagrand
+	[550] = {{32.9, 38.4, "Highmaul", "Raid", rdTex},},
+	-- Stormshield
+	[622] = {{60.8, 38.0, "Stormwind", "Portal", pATex}, {36.4, 41.1, "Lion's Watch", "Portal", pATex, 38445},},
+	-- Warspear
+	[624] = {{60.6, 51.6, "Orgrimmar", "Portal", pHTex}, {53.0, 43.9, "Vol'mar", "Portal", pHTex, 37935},},
+
+	-- Broken Isles
+	-- Felsoul Hold
+	[682] = {{53.6, 36.8, "Shal'Aran", "Portal", pNTex, 41575,},},
+	-- Shattered Locus
+	[684] = {{40.9, 13.7, "Shal'Aran", "Portal", pNTex, 42230,},},
+	-- Suramar
+	[680] = {{21.6, 28.5, "Falanaar", "Portal", pNTex, 42230,}, {39.7, 76.2, "Felsoul Hold", "Portal", pNTex, 41575,}, {30.8, 11.0, "Moon Guard Stronghold", "Portal", pNTex, 43808,}, {43.7, 79.2, "Lunastre Estate", "Portal", pNTex, 43811,}, {36.1, 47.2, "Ruins of Elune'eth", "Portal", pNTex, 40956,}, {52.0, 78.8, "Evermoon Terrace", "Portal", pNTex, 42889,}, {43.4, 60.6, "Sanctum of Order", "Portal", pNTex, 43813,}, {42.0, 35.2, "Tel'anor", "Portal", pNTex, 43809,}, {64.0, 60.4, "Twilight Vineyards", "Portal", pNTex, 44084,}, {54.5, 69.4, "Astravar Harbor", "Portal", pNTex, 44740,}, {47.7, 81.4, "The Waning Crescent", "Portal", pNTex, 42487, 38649,},},
+
 }

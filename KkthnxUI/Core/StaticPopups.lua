@@ -210,6 +210,19 @@ K.PopupDialogs["CHANGES_RL"] = {
 	preferredIndex = 3
 }
 
+K.PopupDialogs["OLD_MOVERS_DATABASE_RL"] = {
+	text = "We have rewrote the 'Moving Elements System' We detected you have an old Database still from this! We have wiped this for you. Please accept this dialog!",
+	button1 = ACCEPT,
+	OnAccept = function()
+		table.wipe(KkthnxUIData[GetRealmName()][UnitName("player")].Movers)
+		KkthnxUIData[GetRealmName()][UnitName("player")].Movers = nil
+		ReloadUI()
+	end,
+	hideOnEscape = false,
+	whileDead = 1,
+	preferredIndex = 3
+}
+
 K.PopupDialogs["RESTART_GFX"] = {
 	text = L["StaticPopups"].Restart_GFX,
 	button1 = ACCEPT,
@@ -351,6 +364,27 @@ K.PopupDialogs["WARNING_BLIZZARD_ADDONS"] = {
 	hideOnEscape = false,
 	preferredIndex = 3
 }
+
+K.PopupDialogs["KKTHNXUI_OUTDATED"] = {
+	text = L["Miscellaneous"].UIOutdated,
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = true,
+	hasEditBox = true,
+	editBoxWidth = 325,
+	OnShow = function(self)
+		self.editBox:SetFocus()
+		self.editBox:SetText("https://github.com/kkthnx-wow/KkthnxUI")
+		self.editBox:HighlightText()
+	end,
+	EditBoxOnEnterPressed = function(self)
+		self:GetParent():Hide()
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide()
+	end,
+}
+
 
 local MAX_STATIC_POPUPS = 4
 function K.StaticPopup_OnShow(self)

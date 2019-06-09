@@ -6,10 +6,7 @@ local hooksecurefunc = hooksecurefunc
 local math_abs = math.abs
 local math_ceil = math.ceil
 local math_floor = math.floor
-local math_max = math.max
-local math_min = math.min
 local mod = mod
-local next = next
 local pairs = pairs
 local print = print
 local select = select
@@ -40,32 +37,18 @@ local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
-K.Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / K.UIScale
-K.NoScaleMult = K.Mult * K.UIScale
+K.Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C["General"].UIScale
+K.NoScaleMult = K.Mult * C["General"].UIScale
 
 function K.Print(...)
 	print("|cff3c9bed"..K.Title.."|r:", ...)
-end
-
-function K.SetFontString(parent, fontName, fontSize, fontStyle, justify)
-	if not fontSize then
-		fontSize = 12
-	end
-
-	local fontString = parent:CreateFontString(nil, "OVERLAY")
-	fontString:SetFont(fontName, fontSize, fontStyle)
-	fontString:SetJustifyH(justify or "CENTER")
-	fontString:SetWordWrap(false)
-	fontString:SetShadowOffset(K.Mult or 1, -K.Mult or - 1)
-	fontString.baseSize = fontSize
-
-	return fontString
 end
 
 local shortValueDec, value
 function K.ShortValue(v)
 	shortValueDec = string_format("%%.%df", C["Unitframe"].DecimalLength or 1)
 	value = math_abs(v)
+
 	if C["Unitframe"].NumberPrefixStyle.Value == "METRIC" then
 		if value >= 1e12 then
 			return string_format(shortValueDec.."T", v / 1e12)
@@ -129,6 +112,7 @@ function K.Round(num, idp)
 		local mult = 10 ^ idp
 		return math_floor(num * mult + 0.5) / mult
 	end
+
 	return math_floor(num + 0.5)
 end
 
@@ -137,6 +121,7 @@ function K.RGBToHex(r, g, b)
 	r = r <= 1 and r >= 0 and r or 0
 	g = g <= 1 and g >= 0 and g or 0
 	b = b <= 1 and b >= 0 and b or 0
+
 	return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 end
 
@@ -157,6 +142,42 @@ function K.GetPlayerRole()
 
 	return assignedRole
 end
+
+local isCaster = {
+	DEATHKNIGHT = {nil, nil, nil},
+	DEMONHUNTER = {nil, nil},
+	DRUID = {true},					-- Balance
+	HUNTER = {nil, nil, nil},
+	MAGE = {true, true, true},
+	MONK = {nil, nil, nil},
+	PALADIN = {nil, nil, nil},
+	PRIEST = {nil, nil, true},		-- Shadow
+	ROGUE = {nil, nil, nil},
+	SHAMAN = {true},				-- Elemental
+	WARLOCK = {true, true, true},
+	WARRIOR = {nil, nil, nil}
+}
+
+local function CheckRole()
+	local spec = GetSpecialization()
+	local role = spec and GetSpecializationRole(spec)
+
+	if role == "TANK" then
+		K.Role = "Tank"
+	elseif role == "HEALER" then
+		K.Role = "Healer"
+	elseif role == "DAMAGER" then
+		if isCaster[K.Class][spec] then
+			K.Role = "Caster"
+		else
+			K.Role = "Melee"
+		end
+	end
+end
+local RoleUpdater = CreateFrame("Frame")
+RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
+RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
+RoleUpdater:SetScript("OnEvent", CheckRole)
 
 -- Chat channel check
 function K.CheckChat(warning)
@@ -217,46 +238,6 @@ end
 
 function K:PLAYER_ENTERING_WORLD()
 	self:MapInfo_Update()
-end
-
-K.LockedCVars = {}
-K.IgnoredCVars = {}
-
-function K:PLAYER_REGEN_ENABLED(_)
-	if (self.CVarUpdate) then
-		for cvarName, value in pairs(K.LockedCVars) do
-			if (not K.IgnoredCVars[cvarName] and (GetCVar(cvarName) ~= value)) then
-				SetCVar(cvarName, value)
-			end
-		end
-
-		self.CVarUpdate = nil
-	end
-end
-
-local function CVAR_UPDATE(cvarName, value)
-	if (not K.IgnoredCVars[cvarName] and K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
-		if(InCombatLockdown()) then
-			K.CVarUpdate = true
-			return
-		end
-
-		SetCVar(cvarName, K.LockedCVars[cvarName])
-	end
-end
-
-hooksecurefunc("SetCVar", CVAR_UPDATE)
-function K.LockCVar(cvarName, value)
-	if (GetCVar(cvarName) ~= value) then
-		SetCVar(cvarName, value)
-	end
-
-	K.LockedCVars[cvarName] = value
-end
-
-function K.IgnoreCVar(cvarName, ignore)
-	ignore = not not ignore -- Cast to bool, just in case
-	K.IgnoredCVars[cvarName] = ignore
 end
 
 local styles = {
@@ -350,61 +331,9 @@ function K.ColorGradient(perc, ...)
 	return r1 + (r2-r1) * relperc, g1 + (g2 - g1) * relperc, b1 + (b2 - b1) * relperc
 end
 
--- Example: killMenuOption(true, "InterfaceOptionsCombatPanelEnemyCastBarsOnPortrait")
-function K.KillMenuOption(option_shrink, option_name)
-	local option = _G[option_name]
-	if not(option) or not(option.IsObjectType) or not(option:IsObjectType("Frame")) then
-		return
-	end
-	option:SetParent(K.UIFrameHider)
-
-	if option.UnregisterAllEvents then
-		option:UnregisterAllEvents()
-	end
-
-	if option_shrink then
-		option:SetHeight(0.00001)
-	end
-
-	option.cvar = ""
-	option.uvar = ""
-	option.value = nil
-	option.oldValue = nil
-	option.defaultValue = nil
-	option.setFunc = function() end
-end
-
--- Example (killing the status text panel in WotLK, Cata and MoP):
--- K.KillMenuPanel(9, "InterfaceOptionsStatusTextPanel")
-
--- "panel_id" is basically the number of the submenu, when all menus are still there.
--- Note that the this sometimes change between expansions, so you really need to check
--- to make sure you are removing the right one.
-function K.KillMenuPanel(panel_id, panel_name)
-	-- remove an entire blizzard options panel,
-	-- and disable its automatic cancel/okay functionality
-	-- this is needed, or the option will be reset when the menu closes
-	-- it is also a major source of taint related to the Compact group frames!
-	if panel_id then
-		local category = _G["InterfaceOptionsFrameCategoriesButton" .. panel_id]
-		if category then
-			category:SetScale(0.00001)
-			category:SetAlpha(0)
-		end
-	end
-
-	if panel_name then
-		local panel = _G[panel_name]
-		if panel then
-			panel:SetParent(K.UIFrameHider)
-			if panel.UnregisterAllEvents then
-				panel:UnregisterAllEvents()
-			end
-			panel.cancel = function() end
-			panel.okay = function() end
-			panel.refresh = function() end
-		end
-	end
+function K.HideInterfaceOption(self)
+	self:SetAlpha(0)
+	self:SetScale(.0001)
 end
 
 -- Format seconds to min/hour/day
@@ -487,38 +416,44 @@ function K.GetTimeInfo(s, threshhold)
 end
 
 -- Add time before calling a function
-local waitTable = {}
-local waitFrame
+function K.WaitFunc(_, elapse)
+	local i = 1
+	while i <= #K.WaitTable do
+		local data = K.WaitTable[i]
+		if data[1] > elapse then
+			data[1], i = data[1] - elapse, i + 1
+		else
+			table_remove(K.WaitTable, i)
+			data[2](unpack(data[3]))
+
+			if #K.WaitTable == 0 then
+				K.WaitFrame:Hide()
+			end
+		end
+	end
+end
+
+K.WaitTable = {}
+K.WaitFrame = CreateFrame("Frame", "KkthnxUI_WaitFrame", _G.UIParent)
+K.WaitFrame:SetScript("OnUpdate", K.WaitFunc)
+
+-- Add time before calling a function
 function K.Delay(delay, func, ...)
-	if (type(delay) ~= "number") or (type(func) ~= "function") then
+	if type(delay) ~= "number" or type(func) ~= "function" then
 		return false
 	end
-	local extend = {...}
-	if not next(extend) then
-		C_Timer_After(delay, func)
-		return true
-	else
-		if waitFrame == nil then
-			waitFrame = CreateFrame("Frame", "WaitFrame", UIParent)
-			waitFrame:SetScript("onUpdate",function (_, elapse)
-				local waitRecord, waitDelay, waitFunc, waitParams
-				local i, count = 1, #waitTable
-				while i <= count do
-					waitRecord = table_remove(waitTable, i)
-					waitDelay = table_remove(waitRecord, 1)
-					waitFunc = table_remove(waitRecord, 1)
-					waitParams = table_remove(waitRecord, 1)
-					if waitDelay > elapse then
-						table_insert(waitTable, i, {waitDelay - elapse, waitFunc, waitParams})
-						i = i + 1
-					else
-						count = count - 1
-						waitFunc(unpack(waitParams))
-					end
-				end
-			end)
-		end
-		table_insert(waitTable, {delay, func, extend})
-		return true
+
+	-- Restrict to the lowest time that the C_Timer API allows us
+	if delay < 0.01 then
+		delay = 0.01
 	end
+
+	if select("#", ...) <= 0 then
+		C_Timer_After(delay, func)
+	else
+		table_insert(K.WaitTable, {delay, func, {...}})
+		K.WaitFrame:Show()
+	end
+
+	return true
 end

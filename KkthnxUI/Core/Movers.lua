@@ -1,27 +1,48 @@
 local K, C = unpack(select(2, ...))
 
--- Lua API
 local _G = _G
-local table_insert = table.insert
-local unpack = unpack
 local pairs = pairs
+local table_insert = table.insert
+local type = type
+local unpack = unpack
 
--- Wow API
+local CANCEL = _G.CANCEL
 local CreateFrame = _G.CreateFrame
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
-local GetScreenHeight = _G.GetScreenHeight
-local GetScreenWidth = _G.GetScreenWidth
+local GetRealmName = _G.GetRealmName
 local InCombatLockdown = _G.InCombatLockdown
-local Name = _G.UnitName("player")
-local Realm = _G.GetRealmName()
+local LOCK = _G.LOCK
+local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local RESET = _G.RESET
 local UIParent = _G.UIParent
+local UnitName = _G.UnitName
 
-local Movers = CreateFrame("Frame")
-Movers:RegisterEvent("PLAYER_ENTERING_WORLD")
-Movers:RegisterEvent("PLAYER_REGEN_DISABLED")
-Movers.Defaults = {}
-Movers.Frames = {}
-Movers.SizeReferenceFrames = {}
+function K.CopyTable(source, target)
+	for key, value in pairs(source) do
+		if type(value) == "table" then
+			if not target[key] then
+				target[key] = {}
+			end
+
+			for k in pairs(value) do
+				target[key][k] = value[k]
+			end
+		else
+			target[key] = value
+		end
+	end
+end
+
+function K.GetCoords(object)
+    local p, anch, rP, x, y = object:GetPoint()
+
+    if not x then
+        return p, anch, rP, x, y
+    else
+        return p, anch and anch:GetName() or "UIParent", rP, K.Round(x), K.Round(y)
+    end
+end
 
 local classColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
 
@@ -33,281 +54,201 @@ local function SetOriginalBackdrop(self)
 	self.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 end
 
--- Generate a human readable name without prefixes
-local function GenerateName(name)
-	return name and name:gsub("^oUF_", ""):gsub("^KkthnxUI_", ""):gsub("^KkthnxUI", ""):gsub("^Kkthnx_", ""):gsub("^Kkthnx", "") or UNKNOWNOBJECT
-end
+-- Frame Mover
+local MoverList, BackupTable, f = {}, {}
 
--- Generate a proper on-screen point depending on which part of the screen it is in,
--- also taking the frame size into consideration.
-local function GeneratePoints(frame)
-	local width, height = GetScreenWidth(), GetScreenHeight() -- screen size
+function K:Mover(text, value, anchor, width, height)
+	local key = "Mover"
 
-	-- Center point relative to the bottom left corner of the screen
-	-- By using this as a reference, frame size (or the lack of) won't affect positioning!
-	local centerX, centerY = frame:GetCenter()
-
-	-- Split the screen into 3x3 areas,
-	-- and create different points based on that.
-	local point, x, y
-
-	-- left side of the screen
-	if centerX < width / 3 then
-		-- right side of the screen
-		if centerY > height * 2 / 3 then
-			point = "TOPLEFT"
-			x = centerX
-			y = centerY - height
-		elseif centerY < height / 3 then
-			point = "BOTTOMLEFT"
-			x = centerX
-			y = centerY
-		else
-			point = "LEFT"
-			x = centerX
-			y = centerY - height / 2
-		end
-	elseif centerX > width * 2 / 3 then
-		-- center of the screen
-		if centerY > height * 2 / 3 then
-			point = "TOPRIGHT"
-			x = centerX - width
-			y = centerY - height
-		elseif centerY < height / 3 then
-			point = "BOTTOMRIGHT"
-			x = centerX - width
-			y = centerY
-		else
-			point = "RIGHT"
-			x = centerX - width
-			y = centerY - height / 2
-		end
-	else
-		if centerY > height * 2 / 3 then
-			point = "TOP"
-			x = centerX - width / 2
-			y = centerY - height
-		elseif centerY < height / 3 then
-			point = "BOTTOM"
-			x = centerX - width / 2
-			y = centerY
-		else
-			point = "CENTER"
-			x = centerX - width / 2
-			y = centerY - height / 2
-		end
+	if not KkthnxUIData[GetRealmName()][UnitName("player")][key] then
+		KkthnxUIData[GetRealmName()][UnitName("player")][key] = {}
 	end
 
-	return "CENTER", UIParent, point, x, y
+	local mover = CreateFrame("Frame", nil, UIParent)
+	mover:SetWidth(width or self:GetWidth())
+	mover:SetHeight(height or self:GetHeight())
+	mover:CreateBorder()
+
+	mover.text = mover:CreateFontString(nil, "OVERLAY")
+	mover.text:SetPoint("CENTER")
+	mover.text:FontTemplate()
+	mover.text:SetText(text)
+	mover.text:SetWordWrap(false)
+
+	table_insert(MoverList, mover)
+
+	if not KkthnxUIData[GetRealmName()][UnitName("player")][key][value] then
+		mover:SetPoint(unpack(anchor))
+	else
+		mover:SetPoint(unpack(KkthnxUIData[GetRealmName()][UnitName("player")][key][value]))
+	end
+
+	mover:EnableMouse(true)
+	mover:SetMovable(true)
+	mover:SetClampedToScreen(true)
+	mover:SetFrameStrata("HIGH")
+	mover:RegisterForDrag("LeftButton")
+
+	mover:SetScript("OnEnter", function(self)
+		local p, anch, rP, x, y = K.GetCoords(self)
+        SetModifiedBackdrop(self)
+        GameTooltip:SetOwner(self, "ANCHOR_NONE")
+        GameTooltip:SetPoint(K.GetAnchors(self))
+        GameTooltip:ClearLines()
+
+        GameTooltip:AddLine("|cffffd100Mover:|r "..text, 1, 1, 1)
+        GameTooltip:AddLine("|cffffd100Point:|r "..p, 1, 1, 1)
+        GameTooltip:AddLine("|cffffd100Attached to:|r "..rP.." |cffffd100of|r "..anch, 1, 1, 1)
+        GameTooltip:AddLine("|cffffd100X:|r "..x..", |cffffd100Y:|r "..y, 1, 1, 1)
+        GameTooltip:AddLine(" ")
+		GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "..KEY_BUTTON1, "Move", 1, 1, 1)
+		GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "..KEY_BUTTON2, RESET, 1, 1, 1)
+		GameTooltip:Show()
+	end)
+
+	mover:SetScript("OnLeave", function(self)
+		SetOriginalBackdrop(self)
+		GameTooltip:Hide()
+	end)
+
+	mover:SetScript("OnDragStart", function()
+		mover:StartMoving()
+	end)
+
+	mover:SetScript("OnDragStop", function()
+		mover:StopMovingOrSizing()
+		local orig, _, tar, x, y = mover:GetPoint()
+		KkthnxUIData[GetRealmName()][UnitName("player")][key][value] = {orig, "UIParent", tar, x, y}
+	end)
+
+	mover:SetScript("OnMouseUp", function(_, button)
+		if button == "RightButton" and key and value then
+			mover:ClearAllPoints()
+			mover:SetPoint(unpack(anchor))
+
+			KkthnxUIData[GetRealmName()][UnitName("player")][key][value] = nil
+		end
+	end)
+
+	mover:Hide()
+	self:ClearAllPoints()
+	self:SetPoint("TOPLEFT", mover)
+
+	return mover
 end
 
-function Movers:SaveDefaults(frame, a1, p, a2, x, y)
-	if not a1 then
+local function UnlockElements()
+	for i = 1, #MoverList do
+		local mover = MoverList[i]
+		if not mover:IsShown() then
+			mover:Show()
+		end
+	end
+	K.CopyTable(KkthnxUIData[GetRealmName()][UnitName("player")]["Mover"], BackupTable)
+	f:Show()
+end
+
+local function LockElements()
+	for i = 1, #MoverList do
+		local mover = MoverList[i]
+		mover:Hide()
+	end
+	f:Hide()
+	SlashCmdList["TOGGLEGRID"]("1")
+end
+
+StaticPopupDialogs["RESET_MOVER"] = {
+	text = "Reset Mover Confirm",
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function()
+		wipe(KkthnxUIData[GetRealmName()][UnitName("player")]["Mover"])
+		ReloadUI()
+	end,
+}
+
+StaticPopupDialogs["CANCEL_MOVER"] = {
+	text = "Cancel Mover Confirm",
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function()
+		K.CopyTable(BackupTable, KkthnxUIData[GetRealmName()][UnitName("player")]["Mover"])
+		ReloadUI()
+	end,
+}
+
+-- Mover Console
+local function CreateConsole()
+	if f then
 		return
 	end
 
-	if not p then
-		p = UIParent
-	end
+	f = CreateFrame("Frame", nil, UIParent)
+	f:SetPoint("CENTER", 0, 151)
+	f:SetSize(308, 65)
+	f:CreateBorder()
 
-	local Data = Movers.Defaults
-	local Frame = frame:GetName()
+	f.text = f:CreateFontString(nil, "OVERLAY")
+	f.text:SetPoint("TOP", 0, -10)
+	f.text:FontTemplate()
+	f.text:SetText(K.Title.." Movers Config")
+	f.text:SetWordWrap(false)
 
-	Data[Frame] = {a1, p:GetName(), a2, x, y}
-end
+	local bu, text = {}, {LOCK, CANCEL, "Grids", RESET}
+	for i = 1, 4 do
+		bu[i] = CreateFrame("Button", nil, f)
+		bu[i]:SetSize(70, 26)
+		bu[i]:SkinButton()
 
-function Movers:RestoreDefaults(button)
-	local FrameName = self.Parent:GetName()
-	local Data = Movers.Defaults[FrameName]
-	local SavedVariables = KkthnxUIData[Realm][Name].Movers
+		bu[i].text = bu[i]:CreateFontString(nil, "OVERLAY")
+		bu[i].text:SetPoint("CENTER")
+		bu[i].text:FontTemplate()
+		bu[i].text:SetText(text[i])
+		bu[i].text:SetWordWrap(false)
 
-	if (button == "RightButton") and (Data) then
-		local Anchor1, ParentName, Anchor2, X, Y = unpack(Data)
-		local Frame = _G[FrameName]
-		local Parent = _G[ParentName]
-
-		Frame:ClearAllPoints()
-		Frame:SetPoint(Anchor1, Parent, Anchor2, X, Y)
-
-		if Movers.SizeReferenceFrames[Frame] and (Frame:GetWidth() < 1 or Frame:GetHeight() < 1) then
-			Frame.DragInfo:SetSize(Movers.SizeReferenceFrames[Frame]:GetSize())
-			Frame.DragInfo:ClearAllPoints()
-			Frame.DragInfo:SetPoint(Anchor1, Frame, Anchor1, 0, 0)
+		if i == 1 then
+			bu[i]:SetPoint("BOTTOMLEFT", 5, 5)
 		else
-			Frame.DragInfo:ClearAllPoints()
-			Frame.DragInfo:SetAllPoints(Frame)
+			bu[i]:SetPoint("LEFT", bu[i-1], "RIGHT", 6, 0)
 		end
-
-		-- Delete Saved Variable
-		SavedVariables[FrameName] = nil
-	end
-end
-
-function Movers:RegisterFrame(frame, referenceFrame)
-	local Anchor1, Parent, Anchor2, X, Y = frame:GetPoint()
-
-	-- If this is a frame that sometimes has a zero width or height,
-	-- and thus require another frame to reference its mover size by.
-	if referenceFrame then
-		Movers.SizeReferenceFrames[frame] = referenceFrame
 	end
 
-	table_insert(self.Frames, frame)
+	bu[1]:SetScript("OnClick", LockElements)
 
-	self:SaveDefaults(frame, Anchor1, Parent, Anchor2, X, Y)
+	bu[2]:SetScript("OnClick", function()
+		StaticPopup_Show("CANCEL_MOVER")
+	end)
+
+	bu[3]:SetScript("OnClick", function()
+		SlashCmdList["TOGGLEGRID"]("64")
+	end)
+
+	bu[4]:SetScript("OnClick", function()
+		StaticPopup_Show("RESET_MOVER")
+	end)
+
+	local function showLater(event)
+		if event == "PLAYER_REGEN_DISABLED" then
+			if f:IsShown() then
+				LockElements()
+				K:RegisterEvent("PLAYER_REGEN_ENABLED", showLater)
+			end
+		else
+			UnlockElements()
+			K:UnregisterEvent(event, showLater)
+		end
+	end
+	K:RegisterEvent("PLAYER_REGEN_DISABLED", showLater)
 end
 
-function Movers:OnDragStart()
-	self:StartMoving()
-end
-
-function Movers:OnDragStop()
-	self:StopMovingOrSizing()
-
-	local Data = KkthnxUIData[Realm][Name].Movers
-	local Anchor1, Parent, Anchor2, X, Y = GeneratePoints(self)
-	local FrameName = self.Parent:GetName()
-	local Frame = self.Parent
-
-	Frame:ClearAllPoints()
-	Frame:SetPoint(Anchor1, Parent, Anchor2, X, Y)
-
-	Data[FrameName] = {Anchor1, Parent:GetName(), Anchor2, X, Y}
-end
-
-function Movers:CreateDragInfo()
-	self.DragInfo = CreateFrame("Button", nil, self)
-	self.DragInfo:SetAllPoints()
-	self.DragInfo:CreateBorder()
-	self.DragInfo:SetBackdropBorderColor()
-	self.DragInfo:FontString("Text", C["Media"].Font, 12)
-	self.DragInfo.Text:SetText(GenerateName(self:GetName()))
-	self.DragInfo.Text:SetPoint("CENTER")
-	self.DragInfo.Text:SetTextColor(1, 1, 1, 1)
-	self.DragInfo:SetFrameLevel(100)
-	self.DragInfo:SetFrameStrata("HIGH")
-	self.DragInfo:SetMovable(true)
-	self.DragInfo:RegisterForDrag("LeftButton")
-	self.DragInfo:Hide()
-	self.DragInfo:SetScript("OnMouseUp", Movers.RestoreDefaults)
-	self.DragInfo:HookScript("OnEnter", SetModifiedBackdrop)
-	self.DragInfo:HookScript("OnLeave", SetOriginalBackdrop)
-	self.DragInfo.Parent = self.DragInfo:GetParent()
-end
-
-function Movers:StartOrStopMoving()
+SlashCmdList["KKTHNXUI_MOVER"] = function()
 	if InCombatLockdown() then
-		return K.Print(ERR_NOT_IN_COMBAT)
+		UIErrorsFrame:AddMessage(ERR_NOT_IN_COMBAT)
+		return
 	end
-
-	if not self.IsEnabled then
-		self.IsEnabled = true
-	else
-		self.IsEnabled = false
-	end
-
-	for i = 1, #self.Frames do
-		local Frame = Movers.Frames[i]
-
-		if self.IsEnabled then
-			if not Frame.DragInfo then
-				self.CreateDragInfo(Frame)
-			end
-
-			if Frame.unit then
-				Frame.oldunit = Frame.unit
-				Frame.unit = "player"
-				Frame:SetAttribute("unit", "player")
-			end
-
-			Frame.DragInfo:SetScript("OnDragStart", self.OnDragStart)
-			Frame.DragInfo:SetScript("OnDragStop", self.OnDragStop)
-			Frame.DragInfo:SetParent(UIParent)
-			Frame.DragInfo:Show()
-
-			if Frame.DragInfo:GetFrameLevel() ~= 100 then
-				Frame.DragInfo:SetFrameLevel(100)
-			end
-
-			if Frame.DragInfo:GetFrameStrata() ~= "HIGH" then
-				Frame.DragInfo:SetFrameStrata("HIGH")
-			end
-
-			if Movers.SizeReferenceFrames[Frame] and (Frame:GetWidth() < 1 or Frame:GetHeight() < 1) then
-				local Data = KkthnxUIData[Realm][Name].Movers
-				local Position = Data and Data[Frame:GetName()]
-				if (not Position) then
-					Data = Movers.Defaults
-					Position = Data and Data[Frame:GetName()]
-				end
-				if Position then
-					local Anchor1, Parent, Anchor2, X, Y = unpack(Position)
-					Frame.DragInfo:ClearAllPoints()
-					Frame.DragInfo:SetPoint(Anchor1, _G[Parent], Anchor2, X, Y)
-					Frame.DragInfo:SetSize(Movers.SizeReferenceFrames[Frame]:GetSize())
-				end
-			end
-		else
-			if Frame.unit then
-				Frame.unit = Frame.oldunit
-				Frame:SetAttribute("unit", Frame.unit)
-			end
-
-			if Frame.DragInfo then
-				Frame.DragInfo:SetParent(Frame.DragInfo.Parent)
-				Frame.DragInfo:Hide()
-				Frame.DragInfo:SetScript("OnDragStart", nil)
-				Frame.DragInfo:SetScript("OnDragStop", nil)
-
-				if Frame.DragInfo.CurrentHeight then
-					Frame.DragInfo:ClearAllPoints()
-					Frame.DragInfo:SetAllPoints(Frame)
-				end
-			end
-		end
-	end
+	CreateConsole()
+	UnlockElements()
 end
-
-function Movers:IsRegisteredFrame(frame)
-	local Match = false
-
-	for i = 1, #self.Frames do
-		if self.Frames[i] == frame then
-			Match = true
-		end
-	end
-
-	return Match
-end
-
-Movers:SetScript("OnEvent", function(self, event)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		if not KkthnxUIData[Realm][Name].Movers then
-			KkthnxUIData[Realm][Name].Movers = {}
-		end
-
-		local Data = KkthnxUIData[Realm][Name].Movers
-
-		for Frame, Position in pairs(Data) do
-			local Frame = _G[Frame]
-			local IsRegistered = self:IsRegisteredFrame(Frame)
-
-			if Frame and IsRegistered then
-				local Anchor1, Parent, Anchor2, X, Y = Frame:GetPoint()
-
-				self:SaveDefaults(Frame, Anchor1, Parent, Anchor2, X, Y)
-
-				Anchor1, Parent, Anchor2, X, Y = unpack(Position)
-
-				Frame:ClearAllPoints()
-				Frame:SetPoint(Anchor1, _G[Parent], Anchor2, X, Y)
-			end
-		end
-	elseif (event == "PLAYER_REGEN_DISABLED") then
-		if self.IsEnabled then
-			self:StartOrStopMoving()
-		end
-	end
-end)
-
-K["Movers"] = Movers
+SLASH_KKTHNXUI_MOVER1 = "/moveui"
+SLASH_KKTHNXUI_MOVER2 = "/mui"
+SLASH_KKTHNXUI_MOVER3 = "/mm"

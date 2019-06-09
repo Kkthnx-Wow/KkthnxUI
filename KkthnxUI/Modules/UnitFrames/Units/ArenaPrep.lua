@@ -43,6 +43,8 @@ function Module:CreateArenaPreparation()
 		ArenaPreparation[i].SpecClass:SetPoint("CENTER")
 
 		ArenaPreparation[i]:Hide()
+		ArenaPreparation[i].Name:Hide()
+		ArenaPreparation[i].Health.Value:Hide()
 
 		ArenaPreparation[i]:RegisterEvent("PLAYER_ENTERING_WORLD")
 		ArenaPreparation[i]:RegisterEvent("ARENA_OPPONENT_UPDATE")

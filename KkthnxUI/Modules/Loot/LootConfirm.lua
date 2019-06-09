@@ -19,7 +19,6 @@ local GetNumLootItems = _G.GetNumLootItems
 local hooksecurefunc = _G.hooksecurefunc
 local IsEquippableItem = _G.IsEquippableItem
 local IsXPUserDisabled = _G.IsXPUserDisabled
-local LOOT_ROLL_TYPE_DISENCHANT = _G.LOOT_ROLL_TYPE_DISENCHANT
 local LOOT_ROLL_TYPE_GREED = _G.LOOT_ROLL_TYPE_GREED
 local RollOnLoot = _G.RollOnLoot
 local UnitLevel = _G.UnitLevel

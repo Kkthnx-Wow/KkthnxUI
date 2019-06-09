@@ -16,17 +16,11 @@ local table_insert = table.insert
 local select = select
 
 local CreateFrame = _G.CreateFrame
-local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
-local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GetThreatStatusColor = _G.GetThreatStatusColor
-local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
-local UnitClass = _G.UnitClass
 local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
-local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsUnit = _G.UnitIsUnit
 local UnitPowerType = _G.UnitPowerType
-local UnitReaction = _G.UnitReaction
 local UnitThreatSituation = _G.UnitThreatSituation
 
 local function UpdateThreat(self, _, unit)
@@ -161,9 +155,9 @@ function Module:CreateRaid()
 	self.ResurrectIndicator:SetSize(30, 30)
 	self.ResurrectIndicator:SetPoint("CENTER", 0, -3)
 
-	--self.SummonIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
- --	self.SummonIndicator:SetSize(30, 30)
- --	self.SummonIndicator:SetPoint("CENTER", 0, -3)
+	-- self.SummonIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+ 	-- self.SummonIndicator:SetSize(30, 30)
+ 	-- self.SummonIndicator:SetPoint("CENTER", 0, -3)
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.LeaderIndicator:SetSize(12, 12)
@@ -175,7 +169,7 @@ function Module:CreateRaid()
 		self.AFKIndicator:SetFontObject(RaidframeFont)
 		self.AFKIndicator:SetFont(select(1, self.AFKIndicator:GetFont()), 10, select(3, self.AFKIndicator:GetFont()))
 		self.AFKIndicator:SetTextColor(1, 0, 0)
-		self:Tag(self.AFKIndicator, "[KkthnxUI:AFK]")
+		self:Tag(self.AFKIndicator, "[KkthnxUI:AFKDND]")
 	end
 
 	if C["Raid"].AuraWatch then
@@ -224,12 +218,13 @@ function Module:CreateRaid()
 	end
 
 	if C["Raid"].TargetHighlight then
-		self.TargetHighlight = CreateFrame("Frame", nil, self)
-		self.TargetHighlight:SetBackdrop({edgeFile = [[Interface\AddOns\KkthnxUI\Media\Border\BorderTickGlow.tga]], edgeSize = 10})
-		self.TargetHighlight:SetPoint("TOPLEFT", -7, 7)
-		self.TargetHighlight:SetPoint("BOTTOMRIGHT", 7, -7)
-		self.TargetHighlight:SetFrameStrata("BACKGROUND")
-		self.TargetHighlight:SetFrameLevel(0)
+		self.OverlayFrame = CreateFrame("Frame", nil, self)
+		self.OverlayFrame:SetAllPoints()
+
+		self.TargetHighlight = self.OverlayFrame:CreateTexture(nil, "OVERLAY")
+		self.TargetHighlight:SetTexture([[Interface\RAIDFRAME\Raid-FrameHighlights]])
+		self.TargetHighlight:SetTexCoord(0.00781250, 0.55468750, 0.28906250, 0.55468750)
+		self.TargetHighlight:SetAllPoints()
 		self.TargetHighlight:Hide()
 
 		local function UpdateRaidTargetGlow()
@@ -238,34 +233,11 @@ function Module:CreateRaid()
 			end
 
 			local unit = self.unit
-			local isPlayer = unit and UnitIsPlayer(unit)
-			local reaction = unit and UnitReaction(unit, "player")
 
-			if UnitIsUnit(unit, "target") then
-				if isPlayer then
-					local _, class = UnitClass(unit)
-					if class then
-						local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
-						if color then
-							if self.TargetHighlight then
-								self.TargetHighlight:Show()
-								self.TargetHighlight:SetBackdropBorderColor(color.r, color.g, color.b, 1)
-							end
-						end
-					end
-				elseif reaction then
-					local color = FACTION_BAR_COLORS[reaction]
-					if color then
-						if self.TargetHighlight then
-							self.TargetHighlight:Show()
-							self.TargetHighlight:SetBackdropBorderColor(color.r, color.g, color.b, 1)
-						end
-					end
-				end
+			if unit and UnitIsUnit(unit, "target") then
+				self.TargetHighlight:Show()
 			else
-				if self.TargetHighlight then
-					self.TargetHighlight:Hide()
-				end
+				self.TargetHighlight:Hide()
 			end
 		end
 

@@ -9,6 +9,7 @@
    <Include file="Addons\Details.lua" />
    <Include file="Addons\ExtraQuestButton.lua" />
    <Include file="Addons\Hekili.lua" />
+   <Include file="Addons\Simulationcraft.lua" />
    <Include file="Addons\Skada.lua" />
    <Include file="Addons\Spy.lua" />
    <Include file="Addons\WeakAuras.lua" />
@@ -21,6 +22,7 @@
    <Include file="Blizzard\Contribution.lua" />
    <Include file="Blizzard\DeathRecap.lua" />
    <Include file="Blizzard\LossControl.lua" />
+   <Include file="Blizzard\Mail.lua" />
    <Include file="Blizzard\Miscellaneous.lua" />
    <Include file="Blizzard\ObjectiveTracker.lua" />
    <Include file="Blizzard\PetBattle.lua" />
@@ -33,30 +35,4 @@
    <Include file="Blizzard\TalkingHead.lua" />
    <Include file="Blizzard\Tooltip.lua" />
    <Include file="Blizzard\Worldmap.lua" />
-   <!-- Load Quest Counter -->
-   <Frame name="QuestCounterFrame" movable="false" parent="QuestScrollFrame">
-        <Size><AbsDimension x="75" y="25" /></Size>
-        <Layers>
-            <Layer level="OVERLAY">
-                <FontString name="$parentString" font="GameFontNormalLarge" text="Quests: X/25" parent="QuestCounterFrame">
-                    <Color r="1" g=".8046" b="0" a="1"/>
-                    <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="QuestScrollFrame" relativePoint="TOPLEFT" x="2" y="22">
-                        </Anchor>
-                    </Anchors>
-                </FontString>
-            </Layer>
-        </Layers>
-        <Scripts>
-            <OnLoad>
-                QuestCounterFrame:RegisterEvent("QUEST_LOG_UPDATE")
-                local _, k = GetNumQuestLogEntries()
-                QuestCounterFrameString:SetText(QUESTS_COLON.." "..k.."/25")
-            </OnLoad>
-            <OnEvent>
-                local _, k = GetNumQuestLogEntries()
-                QuestCounterFrameString:SetText(QUESTS_COLON.." "..k.."/25")
-            </OnEvent>
-        </Scripts>
-    </Frame>
 </Ui>

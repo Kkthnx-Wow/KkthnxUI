@@ -101,8 +101,7 @@ function Module:CreateArena()
 		self.Castbar.timeToHold = 0.4
 		self.Castbar.CustomDelayText = Module.CustomCastDelayText
 		self.Castbar.CustomTimeText = Module.CustomTimeText
-		self.Castbar.PostCastFailed = Module.PostCastFailed
-		self.Castbar.PostCastInterrupted = Module.PostCastFailed
+		self.Castbar.PostCastFail = Module.PostCastFail
 		self.Castbar.PostCastStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
 		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
@@ -134,8 +133,6 @@ function Module:CreateArena()
 
 			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
 		end
-
-		K.Movers:RegisterFrame(self.Castbar)
 	end
 
 	Module.CreateAuras(self, "arena")

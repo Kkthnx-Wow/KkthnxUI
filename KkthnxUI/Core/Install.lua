@@ -31,11 +31,7 @@ Install.Height = 200
 function Install:ResetData()
 	KkthnxUIData[GetRealmName()][UnitName("player")] = {}
 	KkthnxUIData[GetRealmName()][UnitName("player")].AutoInvite = false
-	KkthnxUIData[GetRealmName()][UnitName("player")].BarsLocked = false
-	KkthnxUIData[GetRealmName()][UnitName("player")].BottomBars = C["ActionBar"].BottomBars
 	KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap = false
-	KkthnxUIData[GetRealmName()][UnitName("player")].RightBars = C["ActionBar"].RightBars
-	KkthnxUIData[GetRealmName()][UnitName("player")].SplitBars = true
 	KkthnxUIData[GetRealmName()][UnitName("player")].WatchedMovies = {}
 
 	if (KkthnxUIConfigPerAccount) then
@@ -48,12 +44,6 @@ function Install:ResetData()
 end
 
 function Install:Step1()
-	local ActionBars = C["ActionBar"].Enable
-
-	SetCVar("ShowClassColorInNameplate", 1)
-	SetCVar("SpamFilter", 0)
-	SetCVar("UberTooltips", 1)
-	SetCVar("WholeChatWindowClickable", 0)
 	SetCVar("alwaysShowActionBars", 1)
 	SetCVar("autoOpenLootHistory", 0)
 	SetCVar("autoQuestProgress", 1)
@@ -63,6 +53,8 @@ function Install:Step1()
 	SetCVar("chatMouseScroll", 1)
 	SetCVar("chatStyle", "classic")
 	SetCVar("countdownForCooldowns", 0)
+	SetCVar("ffxDeath", 0)
+	SetCVar("ffxGlow", 0)
 	SetCVar("lockActionBars", 1)
 	SetCVar("lossOfControl", 1)
 	SetCVar("nameplateMotion", 0)
@@ -71,20 +63,20 @@ function Install:Step1()
 	SetCVar("removeChatDelay", 1)
 	SetCVar("screenshotQuality", 10)
 	SetCVar("showArenaEnemyFrames", 0)
+	SetCVar("ShowClassColorInNameplate", 1)
 	SetCVar("showQuestTrackingTooltips", 1)
 	SetCVar("showTutorials", 0)
 	SetCVar("showVKeyCastbar", 1)
+	SetCVar("SpamFilter", 0)
 	SetCVar("spamFilter", 0)
 	SetCVar("statusTextDisplay", "BOTH")
 	SetCVar("threatWarning", 3)
+	SetCVar("UberTooltips", 1)
 	SetCVar("violenceLevel", 5)
+	SetCVar("WholeChatWindowClickable", 0)
 
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
-
-	if (ActionBars) then
-		SetActionBarToggles(1, 1, 1, 1)
-	end
 
 	_G.RaidNotice_AddMessage(_G.RaidWarningFrame, L["Install"].CVars_Set, _G.ChatTypeInfo["RAID_WARNING"])
 end
@@ -127,6 +119,7 @@ function Install:PrintStep(PageNum)
 		self.MiddleButton.Text:SetText("|cffFF0000"..RESET_TO_DEFAULT.."|r")
 		self.MiddleButton:SetScript("OnClick", self.ResetData)
 		self.CloseButton:Show()
+		self.SkipButton:Show()
 		if (KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete) then
 			self.MiddleButton:Show()
 		else
@@ -146,11 +139,13 @@ function Install:PrintStep(PageNum)
 			self.CloseButton:Hide()
 			self.MiddleButton:Hide()
 			self.DiscordButton:Show()
+			self.SkipButton:Hide()
 		else
 			self.RightButton.Text:SetText(NEXT)
 			self.CloseButton:Show()
 			self.MiddleButton:Show()
 			self.DiscordButton:Hide()
+			self.SkipButton:Hide()
 		end
 		if (ExecuteScript) then
 			self.MiddleButton:SetScript("OnClick", ExecuteScript)
@@ -272,6 +267,24 @@ function Install:Launch()
 		self.MiddleButton:Hide()
 	end
 
+	self.SkipButton = CreateFrame("Button", nil, self)
+	self.SkipButton:SetPoint("TOPLEFT", self.LeftButton, "TOPRIGHT", 6, 0)
+	self.SkipButton:SetPoint("BOTTOMRIGHT", self.RightButton, "BOTTOMLEFT", -6, 0)
+	self.SkipButton:SkinButton()
+	self.SkipButton:FontString("Text", C["Media"].Font, 12)
+	self.SkipButton.Text:SetPoint("CENTER")
+	self.SkipButton.Text:SetText(string.format(K.ClassColor, "SKIP INSTALL BUTTON TEST"))
+	self.SkipButton:SetScript("OnClick", function()
+		KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete = true
+		PlaySoundFile("Sound\\Creature\\Illidan\\BLACK_Illidan_04.ogg") -- People will be like wtf?
+		ReloadUI()
+	end)
+	if (not KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete) then
+		self.SkipButton:Show()
+	else
+		self.SkipButton:Hide()
+	end
+
 	self.CloseButton = CreateFrame("Button", nil, self, "UIPanelCloseButton")
 	self.CloseButton:SetPoint("TOPRIGHT", self.Description, "TOPRIGHT")
 	self.CloseButton:SetScript("OnClick", function() self:Hide() end)
@@ -314,18 +327,6 @@ Install:SetScript("OnEvent", function(self)
 		KkthnxUIDataPerChar = nil
 	end
 
-	if (not KkthnxUIData[playerRealm][playerName].BarsLocked) then
-		KkthnxUIData[playerRealm][playerName].BarsLocked = false
-	end
-
-	if (not KkthnxUIData[playerRealm][playerName].BottomBars) then
-		KkthnxUIData[playerRealm][playerName].BottomBars = C["ActionBar"].BottomBars
-	end
-
-	if (not KkthnxUIData[playerRealm][playerName].RightBars) then
-		KkthnxUIData[playerRealm][playerName].RightBars = C["ActionBar"].RightBars
-	end
-
 	if (not KkthnxUIData[playerRealm][playerName].RevealWorldMap) then
 		KkthnxUIData[playerRealm][playerName].RevealWorldMap = false
 	end
@@ -338,8 +339,9 @@ Install:SetScript("OnEvent", function(self)
 		KkthnxUIData[playerRealm][playerName].WatchedMovies = KkthnxUIData[playerRealm][playerName].WatchedMovies or {}
 	end
 
-	if (not KkthnxUIData[playerRealm][playerName].SplitBars) then
-		KkthnxUIData[playerRealm][playerName].SplitBars = true
+	-- Wipe Old Settings With No Conflict.
+	if KkthnxUIData[GetRealmName()][UnitName("player")].Movers then
+		K.StaticPopup_Show("OLD_MOVERS_DATABASE_RL")
 	end
 
 	-- Install default if we never ran KkthnxUI on this character.

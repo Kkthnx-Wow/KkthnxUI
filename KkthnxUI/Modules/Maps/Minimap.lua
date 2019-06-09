@@ -312,7 +312,7 @@ function Module:OnEnable()
 		FeedbackUIButton:Kill()
 	end
 
-	K.Movers:RegisterFrame(MinimapFrameHolder)
+	K.Mover(MinimapFrameHolder, "Minimap", "Minimap", {"TOPRIGHT", UIParent, "TOPRIGHT", -4, -4}, Minimap:GetWidth(), Minimap:GetHeight())
 
 	MinimapBackdrop:SetMovable(true)
 	MinimapBackdrop:SetUserPlaced(true)

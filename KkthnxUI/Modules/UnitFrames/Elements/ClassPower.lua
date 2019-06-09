@@ -6,8 +6,9 @@ end
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
+local next = next
+local select = select
 
-local MAX_TOTEMS = _G.MAX_TOTEMS
 local ClassPowerTexture = K.GetTexture(C["Unitframe"].Texture)
 local ComboColor = K.Colors.power["COMBO_POINTS"]
 local CreateFrame = _G.CreateFrame
@@ -32,7 +33,7 @@ end
 
 -- Post Update ClassPower
 local function PostUpdateClassPower(element, _, max, diff)
-	-- Update layout on change in total visible
+	-- Update Layout On Change In Total Visible
 	if (diff) then
 		local maxWidth = 140
 		local gap = 6
@@ -47,7 +48,7 @@ local function PostUpdateClassPower(element, _, max, diff)
 			end
 		end
 	end
-	-- Update color if this is combopoints
+	-- Update Color If This Is Combo Points
 	if (max) then
 		if (not UnitHasVehicleUI("player")) and (K.Class == "ROGUE" or K.Class == "DRUID") then
 			local numColors = #ComboColor
@@ -66,9 +67,9 @@ local function PostUpdateClassPower(element, _, max, diff)
 	end
 end
 
--- Post Update Nameplate ClassPower
+-- Post Update Nameplate Classpower
 local function PostUpdateNameplateClassPower(element, _, max, diff)
-	-- Update layout on change in total visible
+	-- Update Layout On Change In Total Visible
 	if (diff) then
 		local maxWidth = C["Nameplates"].Width
 		local gap = 4
@@ -83,7 +84,7 @@ local function PostUpdateNameplateClassPower(element, _, max, diff)
 			end
 		end
 	end
-	-- Update color if this is combopoints
+	-- Update Color If This Is Combo Points
 	if (max) then
 		if (not UnitHasVehicleUI("player")) and (K.Class == "ROGUE" or K.Class == "DRUID") then
 			local numColors = #ComboColor
@@ -102,9 +103,9 @@ local function PostUpdateNameplateClassPower(element, _, max, diff)
 	end
 end
 
--- Post Update ClassPower Texture
+-- Post Update Classpower Texture
 local function UpdateClassPowerColor(element)
-	-- Fallback for the rare cases where an unknown type is requested.
+	-- Fallback For The Rare Cases Where An Unknown Type Is Requested.
 	local r, g, b = 195/255, 202/255, 217/255
 
 	if (not UnitHasVehicleUI("player")) then
@@ -174,7 +175,7 @@ function Module:CreateRuneBar()
 		Runes[index] = Rune
 	end
 
-	Runes.colorSpec = true -- color runes by spec
+	Runes.colorSpec = true
 	Runes.sortOrder = "asc"
 	Runes.PostUpdate = PostUpdateRune
 
@@ -193,7 +194,7 @@ function Module:CreateStaggerBar()
 	self.Stagger = stagger
 end
 
--- Create Class Power Bars for NamePlates (Combo Points...)
+-- Create Class Power Bars For Nameplates (Combo Points...)
 function Module:CreateNamePlateClassPower()
 	local ClassPower = CreateFrame("Frame", nil, self)
 	ClassPower:SetPoint("TOP", self, "BOTTOM", 0, -4)
@@ -224,7 +225,7 @@ function Module:CreateNamePlateClassPower()
 	self.ClassPower = ClassPower
 end
 
--- Death Knight Runebar for NamePlates
+-- Death Knight Runebar For Nameplates
 function Module:CreateNamePlateRuneBar()
 	local Runes = CreateFrame("Frame", nil, self)
 	Runes:SetPoint("TOP", self, "BOTTOM", 0, -4)
@@ -247,7 +248,7 @@ function Module:CreateNamePlateRuneBar()
 		Runes[index] = Rune
 	end
 
-	Runes.colorSpec = true -- color runes by spec
+	Runes.colorSpec = true -- Color Runes By Spec
 	Runes.sortOrder = "asc"
 	Runes.PostUpdate = PostUpdateRune
 

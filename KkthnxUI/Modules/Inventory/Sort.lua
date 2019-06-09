@@ -2,7 +2,7 @@ local K, C = unpack(select(2, ...))
 local B = K:NewModule("InventorySort", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
 local _G = _G
-local ipairs, pairs, select, unpack, pcall = ipairs, pairs, select, unpack, pcall
+local ipairs, pairs, select, unpack = ipairs, pairs, select, unpack
 local tinsert, tremove, sort, wipe = table.insert, table.remove, sort, wipe
 local tonumber, floor, band = tonumber, floor, bit.band
 local strmatch, gmatch, strfind = strmatch, gmatch, strfind

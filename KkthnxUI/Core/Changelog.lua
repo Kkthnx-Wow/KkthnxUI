@@ -2,7 +2,7 @@ local K = unpack(select(2,...))
 local Module = K:NewModule("Changelog", "AceEvent-3.0", "AceTimer-3.0")
 
 local _G = _G
-local format, gmatch, gsub, find, sub = string.format, string.gmatch, string.gsub, string.find, string.sub
+local format, gmatch, find, sub = string.format, string.gmatch, string.find, string.sub
 local pairs, tostring = pairs, tostring
 
 local CreateFrame = _G.CreateFrame
@@ -12,21 +12,18 @@ local CLOSE = _G.CLOSE
 
 local ChangeLogData = {
 	"Changes:",
-	"• Bring in changes from @Rav99 and Updates to code and formatting.",
-	"• Cleanup 3 Files in Modules.",
-	"• Cleanup AFKCam.",
-	"• Cleanup old leftover setting for actionbars",
-	"• Fix Minimap always pining without it being left mouse button.",
-	"• It is 2019 I think and little pimp for AfkCam.",
-	"• Merge pull request #3 from Rav99/master.",
-	"• Removed modules that I do not care to maintain anymore",
-	"• This one is for you @Rav99.",
-	"• Cleanup RaidBuffs",
-	"• Merge translation fixes from @RoseFarts",
+	"• Released v8.49.",
+	"• Reverted actionbar fader code to older code.",
+	"• Auto disenchant feature added for professions.",
+	"• Auto tab binder feature added for pvp only.",
+	"• Quest notifier feature added for progress on quests.",
+	"• Removed module oUF_FloatingCombatFeedback.",
+	"• Removed module oUF_CombatFeedback.",
     -- Important Notes We Want The User To Know!
 	" ",
 	"Notes:",
-	"• We changed our main font to support more font characters!",
+	"• If you are enjoying the UI do not forget to drop by our DISCORD!!!",
+	"• Suggestions can be sent directly to me on Discord. |cff4488ffKkthnx#5151|r"
 }
 
 local function ModifiedString(string)

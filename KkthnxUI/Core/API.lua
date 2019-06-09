@@ -461,6 +461,33 @@ local function SkinCloseButton(f, point, texture)
 	end
 end
 
+local function SkinCheckBox(f)
+	f:CreateBorder(nil, nil, nil, true)
+
+	if f.SetCheckedTexture then
+		f:SetCheckedTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check")
+	end
+
+	if f.SetDisabledCheckedTexture then
+		f:SetDisabledCheckedTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
+	end
+
+	-- Why Is The Disabled Texture Always Displayed As Checked?
+	f:HookScript("OnDisable", function(self)
+		if not self.SetDisabledTexture then return end
+
+		if self:GetChecked() then
+			self:SetDisabledTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
+		else
+			self:SetDisabledTexture("")
+		end
+	end)
+
+	f.SetNormalTexture = K.Noop
+	f.SetPushedTexture = K.Noop
+	f.SetHighlightTexture = K.Noop
+end
+
 local function SetFadeIn(frame)
 	K.UIFrameFadeIn(frame, 0.4, frame:GetAlpha(), 1)
 end
@@ -530,6 +557,10 @@ local function AddCustomAPI(object)
 
 	if not object.SkinCloseButton then
 		MetaTable.SkinCloseButton = SkinCloseButton
+	end
+
+	if not object.SkinCheckBox then
+		MetaTable.SkinCheckBox = SkinCheckBox
 	end
 end
 

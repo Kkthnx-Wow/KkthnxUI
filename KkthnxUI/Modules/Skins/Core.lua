@@ -78,11 +78,11 @@ function Module:SkinLibDropDownMenu(prefix)
 			local ddmbd = lvls and _G[prefix.."_DropDownList" .. lvls .. "MenuBackdrop"]
 
 			if ddbd and not ddbd.border then
-				ddbd:CreateBorder()
+				ddbd:CreateBorder(nil, nil, nil, true)
 			end
 
 			if ddmbd and not ddmbd.border then
-				ddmbd:CreateBorder()
+				ddmbd:CreateBorder(nil, nil, nil, true)
 			end
 		end)
 	end
@@ -122,3 +122,28 @@ function Module:ADDON_LOADED(event, addon)
 end
 
 Module:RegisterEvent("ADDON_LOADED")
+
+
+local ModuleSkinsTest = K:NewModule("SkinsTest")
+
+function ModuleSkinsTest:LoadWithAddOn(addonName, value, func)
+	local function loadFunc(event, addon)
+		--if not C["Skins"][value] then
+		--	return
+		--end
+
+		if event == "PLAYER_ENTERING_WORLD" then
+			K:UnregisterEvent(event, loadFunc)
+			if IsAddOnLoaded(addonName) then
+				func()
+				K:UnregisterEvent("ADDON_LOADED", loadFunc)
+			end
+		elseif event == "ADDON_LOADED" and addon == addonName then
+			func()
+			K:UnregisterEvent(event, loadFunc)
+		end
+	end
+
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", loadFunc)
+	K:RegisterEvent("ADDON_LOADED", loadFunc)
+end

@@ -1,243 +1,266 @@
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 
 -- Sourced: ElvUI (Elvz)
 -- Edited: KkthnxUI (Kkthnx)
 
--- Lua API
-local _G = _G
-local table_remove = table.remove
+function K.FlashLoopFinished(self, requested)
+	if not requested then
+		self:Play()
+	end
+end
 
--- Wow API
-local CreateFrame = _G.CreateFrame
-
-function K.SetAnimationGroup(object, type, ...)
-	if not type then
-		type = "Flash"
+function K.SetUpAnimGroup(obj, Type, ...)
+	if not Type then
+		Type = "Flash"
 	end
 
-	if type == "Flash" then
-		object.anim = object:CreateAnimationGroup("Flash")
-		object.anim.fadein = object.anim:CreateAnimation("ALPHA", "FadeIn")
-		object.anim.fadein:SetFromAlpha(0)
-		object.anim.fadein:SetToAlpha(1)
-		object.anim.fadein:SetOrder(2)
+	if string.sub(Type, 1, 5) == "Flash" then
+		obj.anim = obj:CreateAnimationGroup("Flash")
+		obj.anim.fadein = obj.anim:CreateAnimation("ALPHA", "FadeIn")
+		obj.anim.fadein:SetFromAlpha(0)
+		obj.anim.fadein:SetToAlpha(1)
+		obj.anim.fadein:SetOrder(2)
 
-		object.anim.fadeout = object.anim:CreateAnimation("ALPHA", "FadeOut")
-		object.anim.fadeout:SetFromAlpha(1)
-		object.anim.fadeout:SetToAlpha(0)
-		object.anim.fadeout:SetOrder(1)
-	elseif type == "FlashLoop" then
-		object.anim = object:CreateAnimationGroup("Flash")
-		object.anim.fadein = object.anim:CreateAnimation("ALPHA", "FadeIn")
-		object.anim.fadein:SetFromAlpha(0)
-		object.anim.fadein:SetToAlpha(1)
-		object.anim.fadein:SetOrder(2)
+		obj.anim.fadeout = obj.anim:CreateAnimation("ALPHA", "FadeOut")
+		obj.anim.fadeout:SetFromAlpha(1)
+		obj.anim.fadeout:SetToAlpha(0)
+		obj.anim.fadeout:SetOrder(1)
 
-		object.anim.fadeout = object.anim:CreateAnimation("ALPHA", "FadeOut")
-		object.anim.fadeout:SetFromAlpha(1)
-		object.anim.fadeout:SetToAlpha(0)
-		object.anim.fadeout:SetOrder(1)
-
-		object.anim:SetScript("OnFinished", function(_, requested)
-			if (not requested) then
-				object.anim:Play()
-			end
-		end)
+		if Type == "FlashLoop" then
+			obj.anim:SetScript("OnFinished", K.FlashLoopFinished)
+		end
 	else
 		local x, y, duration, customName = ...
 		if not customName then
 			customName = "anim"
 		end
-		object[customName] = object:CreateAnimationGroup("Move_In")
-		object[customName].in1 = object[customName]:CreateAnimation("Translation")
-		object[customName].in1:SetDuration(0)
-		object[customName].in1:SetOrder(1)
-		object[customName].in2 = object[customName]:CreateAnimation("Translation")
-		object[customName].in2:SetDuration(duration)
-		object[customName].in2:SetOrder(2)
-		object[customName].in2:SetSmoothing("OUT")
-		object[customName].out1 = object:CreateAnimationGroup("Move_Out")
-		object[customName].out2 = object[customName].out1:CreateAnimation("Translation")
-		object[customName].out2:SetDuration(duration)
-		object[customName].out2:SetOrder(1)
-		object[customName].out2:SetSmoothing("IN")
-		object[customName].in1:SetOffset(K.Scale(x), K.Scale(y))
-		object[customName].in2:SetOffset(K.Scale(-x), K.Scale(-y))
-		object[customName].out2:SetOffset(K.Scale(x), K.Scale(y))
-		object[customName].out1:SetScript("OnFinished", function()
-			object:Hide()
+
+		local anim = obj:CreateAnimationGroup("Move_In")
+		obj[customName] = anim
+
+		anim.in1 = anim:CreateAnimation("Translation")
+		anim.in1:SetDuration(0)
+		anim.in1:SetOrder(1)
+		anim.in1:SetOffset(K.Scale(x), K.Scale(y))
+
+		anim.in2 = anim:CreateAnimation("Translation")
+		anim.in2:SetDuration(duration)
+		anim.in2:SetOrder(2)
+		anim.in2:SetSmoothing("OUT")
+		anim.in2:SetOffset(K.Scale(-x), K.Scale(-y))
+
+		anim.out1 = obj:CreateAnimationGroup("Move_Out")
+		anim.out1:SetScript("OnFinished", function()
+			obj:Hide()
 		end)
+
+		anim.out2 = anim.out1:CreateAnimation("Translation")
+		anim.out2:SetDuration(duration)
+		anim.out2:SetOrder(1)
+		anim.out2:SetSmoothing("IN")
+		anim.out2:SetOffset(K.Scale(x), K.Scale(y))
 	end
 end
 
-function K.UIFrameFlash(object, duration, loop)
-	if not object.anim then
-		K.SetAnimationGroup(object, loop and "FlashLoop" or "Flash")
+function K.Flash(obj, duration, loop)
+	if not obj.anim then
+		K.SetUpAnimGroup(obj, loop and "FlashLoop" or "Flash")
 	end
 
-	if not object.anim.playing then
-		object.anim.fadein:SetDuration(duration)
-		object.anim.fadeout:SetDuration(duration)
-		object.anim:Play()
-		object.anim.playing = true
-	end
-end
-
-function K.UIFrameStopFlash(object)
-	if object.anim and object.anim.playing then
-		object.anim:Stop()
-		object.anim.playing = nil
+	if not obj.anim:IsPlaying() then
+		obj.anim.fadein:SetDuration(duration)
+		obj.anim.fadeout:SetDuration(duration)
+		obj.anim:Play()
 	end
 end
 
-function K.SlideIn(object, customName)
+function K.StopFlash(obj)
+	if obj.anim and obj.anim:IsPlaying() then
+		obj.anim:Stop()
+	end
+end
+
+function K.SlideIn(obj, customName)
 	if not customName then
 		customName = "anim"
 	end
 
-	if not object[customName] then
+	if not obj[customName] then
 		return
 	end
 
-	object[customName].out1:Stop()
-	object:Show()
-	object[customName]:Play()
+	obj[customName].out1:Stop()
+	obj[customName]:Play()
+	obj:Show()
 end
 
-function K.SlideOut(object, customName)
+function K.SlideOut(obj, customName)
 	if not customName then
 		customName = "anim"
 	end
 
-	if not object[customName] then
+	if not obj[customName] then
 		return
 	end
 
-	object[customName]:Finish()
-	object[customName]:Stop()
-	object[customName].out1:Play()
+	obj[customName]:Finish()
+	obj[customName]:Stop()
+	obj[customName].out1:Play()
 end
 
-local frameFadeManager = CreateFrame("FRAME")
-local FADEFRAMES = {}
+local FADEFRAMES, FADEMANAGER = {}, CreateFrame("FRAME")
+FADEMANAGER.delay = 0.05
 
 function K.UIFrameFade_OnUpdate(_, elapsed)
-	local index = 1
-	local frame, fadeInfo
-	while FADEFRAMES[index] do
-		frame = FADEFRAMES[index]
-		fadeInfo = FADEFRAMES[index].fadeInfo
-		-- Reset the timer if there isn"t one, this is just an internal counter
-		fadeInfo.fadeTimer = (fadeInfo.fadeTimer or 0) + elapsed
-		fadeInfo.fadeTimer = fadeInfo.fadeTimer + elapsed
+	FADEMANAGER.timer = (FADEMANAGER.timer or 0) + elapsed
 
-		-- If the fadeTimer is less then the desired fade time then set the alpha otherwise hold the fade state, call the finished function, or just finish the fade
-		if (fadeInfo.fadeTimer < fadeInfo.timeToFade) then
-			if (fadeInfo.mode == "IN") then
-				frame:SetAlpha((fadeInfo.fadeTimer / fadeInfo.timeToFade) * (fadeInfo.endAlpha - fadeInfo.startAlpha) + fadeInfo.startAlpha)
-			elseif (fadeInfo.mode == "OUT") then
-				frame:SetAlpha(((fadeInfo.timeToFade - fadeInfo.fadeTimer) / fadeInfo.timeToFade) * (fadeInfo.startAlpha - fadeInfo.endAlpha) + fadeInfo.endAlpha)
-			end
-		else
-			frame:SetAlpha(fadeInfo.endAlpha)
-			-- If there is a fadeHoldTime then wait until its passed to continue on
-			if (fadeInfo.fadeHoldTime and fadeInfo.fadeHoldTime > 0 ) then
-				fadeInfo.fadeHoldTime = fadeInfo.fadeHoldTime - elapsed
+	if FADEMANAGER.timer > FADEMANAGER.delay then
+		FADEMANAGER.timer = 0
+
+		for frame, info in next, FADEFRAMES do
+			-- Reset the timer if there isn"t one, this is just an internal counter
+			if frame:IsVisible() then
+				info.fadeTimer = (info.fadeTimer or 0) + (elapsed + FADEMANAGER.delay)
 			else
-				-- Complete the fade and call the finished function if there is one
-				K.UIFrameFadeRemoveFrame()
-				if (fadeInfo.finishedFunc) then
-					fadeInfo.finishedFunc(fadeInfo.finishedArg1, fadeInfo.finishedArg2, fadeInfo.finishedArg3, fadeInfo.finishedArg4)
-					fadeInfo.finishedFunc = nil
+				info.fadeTimer = info.timeToFade + 1
+			end
+
+			-- If the fadeTimer is less then the desired fade time then set the alpha otherwise hold the fade state, call the finished function, or just finish the fade
+			if info.fadeTimer < info.timeToFade then
+				if info.mode == "IN" then
+					frame:SetAlpha((info.fadeTimer / info.timeToFade) * info.diffAlpha + info.startAlpha)
+				else
+					frame:SetAlpha(((info.timeToFade - info.fadeTimer) / info.timeToFade) * info.diffAlpha + info.endAlpha)
+				end
+			else
+				frame:SetAlpha(info.endAlpha)
+
+				-- If there is a fadeHoldTime then wait until its passed to continue on
+				if info.fadeHoldTime and info.fadeHoldTime > 0 then
+					info.fadeHoldTime = info.fadeHoldTime - elapsed
+				else
+					-- Complete the fade and call the finished function if there is one
+					K.UIFrameFadeRemoveFrame(frame)
+
+					if info.finishedFunc then
+						if info.finishedArgs then
+							info.finishedFunc(unpack(info.finishedArgs))
+						else -- optional method
+							info.finishedFunc(info.finishedArg1, info.finishedArg2, info.finishedArg3, info.finishedArg4, info.finishedArg5)
+						end
+
+						if not info.finishedFuncKeep then
+							info.finishedFunc = nil
+						end
+					end
 				end
 			end
 		end
 
-		index = index + 1
-	end
-
-	if (#FADEFRAMES == 0) then
-		frameFadeManager:SetScript("OnUpdate", nil)
+		if not next(FADEFRAMES) then
+			FADEMANAGER:SetScript("OnUpdate", nil)
+		end
 	end
 end
 
--- Generic fade function
-function K.UIFrameFade(frame, fadeInfo)
-	if (not frame) then
-		return
+-- Generic Fade Function
+function K.UIFrameFade(frame, info)
+	if not frame or frame:IsForbidden() then return end
+
+	frame.fadeInfo = info
+
+	if not info.mode then
+		info.mode = "IN"
 	end
 
-	if (not fadeInfo.mode) then
-		fadeInfo.mode = "IN"
+	if info.mode == "IN" then
+		if not info.startAlpha then
+			info.startAlpha = 0
+		end
+
+		if not info.endAlpha then
+			info.endAlpha = 1
+		end
+
+		if not info.diffAlpha then
+			info.diffAlpha = info.endAlpha - info.startAlpha
+		end
+	else
+		if not info.startAlpha then
+			info.startAlpha = 1
+		end
+
+		if not info.endAlpha then
+			info.endAlpha = 0
+		end
+
+		if not info.diffAlpha then
+			info.diffAlpha = info.startAlpha - info.endAlpha
+		end
 	end
 
-	if (fadeInfo.mode == "IN") then
-		if (not fadeInfo.startAlpha) then
-			fadeInfo.startAlpha = 0
-		end
-		if (not fadeInfo.endAlpha) then
-			fadeInfo.endAlpha = 1.0
-		end
-	elseif (fadeInfo.mode == "OUT") then
-		if (not fadeInfo.startAlpha) then
-			fadeInfo.startAlpha = 1.0
-		end
-		if (not fadeInfo.endAlpha) then
-			fadeInfo.endAlpha = 0
-		end
-	end
+	frame:SetAlpha(info.startAlpha)
 
-	frame:SetAlpha(fadeInfo.startAlpha)
-
-	frame.fadeInfo = fadeInfo
 	if not frame:IsProtected() then
 		frame:Show()
 	end
 
-	local index = 1
-	while FADEFRAMES[index] do
-		-- If frame is already set to fade then return
-		if (FADEFRAMES[index] == frame) then
-			return
-		end
-		index = index + 1
+	if not FADEFRAMES[frame] then
+		FADEFRAMES[frame] = info -- Read Below Comment
+		FADEMANAGER:SetScript("OnUpdate", K.UIFrameFade_OnUpdate)
+	else
+		FADEFRAMES[frame] = info -- Keep These Both, We Need This Updated In The Event Its Changed To Another Ref From A Plugin Or Sth, Don"t Move It Up!
 	end
-	FADEFRAMES[#FADEFRAMES + 1] = frame
-	frameFadeManager:SetScript("OnUpdate", K.UIFrameFade_OnUpdate)
 end
 
--- Convenience function to do a simple fade in
+-- Convenience Function To Do A Simple Fade In
 function K.UIFrameFadeIn(frame, timeToFade, startAlpha, endAlpha)
-	local fadeInfo = {}
-	fadeInfo.mode = "IN"
-	fadeInfo.timeToFade = timeToFade
-	fadeInfo.startAlpha = startAlpha
-	fadeInfo.endAlpha = endAlpha
-	K.UIFrameFade(frame, fadeInfo)
-end
-
--- Convenience function to do a simple fade out
-function K.UIFrameFadeOut(frame, timeToFade, startAlpha, endAlpha)
-	local fadeInfo = {}
-	fadeInfo.mode = "OUT"
-	fadeInfo.timeToFade = timeToFade
-	fadeInfo.startAlpha = startAlpha
-	fadeInfo.endAlpha = endAlpha
-	K.UIFrameFade(frame, fadeInfo)
-end
-
-function K.tDeleteItem(table, item)
-	local index = 1
-	while table[index] do
-		if (item == table[index]) then
-			table_remove(table, index)
-			break
-		else
-			index = index + 1
-		end
+	if not frame or frame:IsForbidden() then
+		return
 	end
+
+	if frame.FadeObject then
+		frame.FadeObject.fadeTimer = nil
+	else
+		frame.FadeObject = {}
+	end
+
+	frame.FadeObject.mode = "IN"
+	frame.FadeObject.timeToFade = timeToFade
+	frame.FadeObject.startAlpha = startAlpha
+	frame.FadeObject.endAlpha = endAlpha
+	frame.FadeObject.diffAlpha = endAlpha - startAlpha
+
+	K.UIFrameFade(frame, frame.FadeObject)
+end
+
+-- Convenience Function To Do A Simple Fade Out
+function K.UIFrameFadeOut(frame, timeToFade, startAlpha, endAlpha)
+	if not frame or frame:IsForbidden() then
+		return
+	end
+
+	if frame.FadeObject then
+		frame.FadeObject.fadeTimer = nil
+	else
+		frame.FadeObject = {}
+	end
+
+	frame.FadeObject.mode = "OUT"
+	frame.FadeObject.timeToFade = timeToFade
+	frame.FadeObject.startAlpha = startAlpha
+	frame.FadeObject.endAlpha = endAlpha
+	frame.FadeObject.diffAlpha = startAlpha - endAlpha
+
+	K.UIFrameFade(frame, frame.FadeObject)
 end
 
 function K.UIFrameFadeRemoveFrame(frame)
-	K.tDeleteItem(FADEFRAMES, frame)
+	if frame and FADEFRAMES[frame] then
+		if frame.FadeObject then
+			frame.FadeObject.fadeTimer = nil
+		end
+
+		FADEFRAMES[frame] = nil
+	end
 end

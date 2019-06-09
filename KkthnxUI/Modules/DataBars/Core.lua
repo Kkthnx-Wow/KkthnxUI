@@ -283,10 +283,18 @@ function Module:UpdateAzerite(event, unit)
 		local currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
 
 		self.Bars.Azerite:SetMinMaxValues(0, totalLevelXP)
-		self.Bars.Azerite:SetValue(xp)
+		if currentLevel == 50 then
+			self.Bars.Azerite:SetValue(totalLevelXP)
+		else
+			self.Bars.Azerite:SetValue(xp)
+		end
 
 		if self.Database.Text then
-			self.Bars.Azerite.Text:SetText(string_format("%s - %s%% [%s]", K.ShortValue(xp), math_floor(xp / totalLevelXP * 100), currentLevel))
+			if currentLevel == 50 then
+				self.Bars.Azerite.Text:SetText(_G.CAPPED)
+			else
+				self.Bars.Azerite.Text:SetText(string_format("%s - %s%% [%s]", K.ShortValue(xp), math_floor(xp / totalLevelXP * 100), currentLevel))
+			end
 		end
 
 		self.Bars.Azerite:Show()
@@ -523,7 +531,7 @@ function Module:OnEnable()
 	self:RegisterEvent("HONOR_XP_UPDATE", "Update")
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "Update")
 
-	K.Movers:RegisterFrame(container)
+	K.Mover(container, "DataBars", "DataBars", {"TOP", "Minimap", "BOTTOM", 0, -6})
 end
 
 function Module:OnDisable()

@@ -5,13 +5,8 @@ end
 
 local _G = _G
 local ipairs = _G.ipairs
-local math_min = _G.math.min
 local pairs = _G.pairs
 local select = _G.select
-local string_format = _G.string.format
-local table_insert = _G.table.insert
-local table_remove = _G.table.remove
-local table_sort = _G.table.sort
 local unpack = _G.unpack
 
 local CooldownFrame_Set = _G.CooldownFrame_Set
@@ -26,7 +21,6 @@ local GetSpellInfo = _G.GetSpellInfo
 local GetTalentInfoByID = _G.GetTalentInfoByID
 local GetTime = _G.GetTime
 local UnitAura = _G.UnitAura
-local UnitGUID = _G.UnitGUID
 
 SpellActivationOverlayFrame:SetFrameStrata("BACKGROUND")
 

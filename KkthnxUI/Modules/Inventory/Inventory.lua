@@ -37,6 +37,7 @@ local C_NewItems_IsNewItem = _G.C_NewItems.IsNewItem
 local CloseBankFrame = _G.CloseBankFrame
 local CooldownFrame_Set = _G.CooldownFrame_Set
 local CreateFrame = _G.CreateFrame
+local CURRENCY = _G.CURRENCY
 local GameTooltip = _G.GameTooltip
 local GetContainerItemCooldown = _G.GetContainerItemCooldown
 local GetContainerItemEquipmentSetInfo = _G.GetContainerItemEquipmentSetInfo
@@ -51,21 +52,22 @@ local GetItemQualityColor = _G.GetItemQualityColor
 local GetMoney = _G.GetMoney
 local GetNumBankSlots = _G.GetNumBankSlots
 local GetReagentBankCost = _G.GetReagentBankCost
+local hooksecurefunc = _G.hooksecurefunc
 local IsBattlePayItem = _G.IsBattlePayItem
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
+local MAX_WATCHED_TOKENS = _G.MAX_WATCHED_TOKENS
 local MoneyFrame_Update = _G.MoneyFrame_Update
 local NEW_ITEM_ATLAS_BY_QUALITY = _G.NEW_ITEM_ATLAS_BY_QUALITY
 local PlaySound = _G.PlaySound
 local SEARCH = _G.SEARCH
-local SOUNDKIT = _G.SOUNDKIT
 local SetItemButtonCount = _G.SetItemButtonCount
 local SetItemButtonDesaturated = _G.SetItemButtonDesaturated
 local SetItemButtonTexture = _G.SetItemButtonTexture
 local SortReagentBankBags = _G.SortReagentBankBags
+local SOUNDKIT = _G.SOUNDKIT
 local Token1, Token2, Token3 = _G.BackpackTokenFrameToken1, _G.BackpackTokenFrameToken2, _G.BackpackTokenFrameToken3
 local UIParent = _G.UIParent
-local hooksecurefunc = _G.hooksecurefunc
 
 local BAGS_FONT = K.GetFont(C["Inventory"].Font)
 local BAGS_BACKPACK = {0, 1, 2, 3, 4}
@@ -74,6 +76,11 @@ local ST_NORMAL = 1
 local ST_FISHBAG = 2
 local ST_SPECIAL = 3
 local bag_bars = 0
+local Ticker
+local Profit = 0
+local Spent = 0
+local resetCountersFormatter = strjoin("", "|cffaaaaaa", "Reset Counters: Hold Shift + Left Click", "|r")
+local resetInfoFormatter = strjoin("", "|cffaaaaaa", "Reset Data: Hold Shift + Right Click", "|r")
 
 local function GetGraysValue()
 	local value = 0
@@ -128,7 +135,7 @@ local function Stuffing_OnShow()
 	Stuffing:SearchReset()
 	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
 
-	-- collectgarbage("collect")
+	collectgarbage("collect")
 end
 
 local function StuffingBank_OnHide()
@@ -248,28 +255,11 @@ function Stuffing:SlotUpdate(b)
 	end
 
 	if (b.frame.JunkIcon) then
-		if (quality) and (quality == LE_ITEM_QUALITY_POOR and not noValue) and C["Inventory"].JunkIcon then
+		if (quality and quality == LE_ITEM_QUALITY_POOR) and not noValue and C["Inventory"].JunkIcon then
 			b.frame.JunkIcon:Show()
 		else
 			b.frame.JunkIcon:Hide()
 		end
-	end
-
-	if (b.frame.ScrapIcon) and C["Inventory"].ScrapIcon then
-		local itemLocation = ItemLocation:CreateFromBagAndSlot(b.frame:GetParent():GetID(), b.frame:GetID())
-		if not itemLocation then
-			return
-		end
-
-		if itemLocation and itemLocation ~= "" then
-			if (C_Item.DoesItemExist(itemLocation) and C_Item.CanScrapItem(itemLocation)) then
-				b.frame.ScrapIcon:SetShown(itemLocation)
-			else
-				b.frame.ScrapIcon:SetShown(false)
-			end
-		end
-
-		b.frame:UpdateItemContextMatching() -- Blizzards way to highlight scrapable items if the Scrapping Machine Frame is open.
 	end
 
 	if b.frame.UpgradeIcon then
@@ -623,7 +613,7 @@ function Stuffing:BagFrameSlotNew(p, slot)
 	if slot > 3 then
 		ret.slot = slot
 		slot = slot - 4
-		ret.frame = CreateFrame("ItemButton", "StuffingBBag" .. slot .. "Slot", p, "BankItemButtonBagTemplate")
+		ret.frame = CreateFrame("CheckButton", "StuffingBBag" .. slot .. "Slot", p, "BankItemButtonBagTemplate")
 		ret.frame:StripTextures()
 		ret.frame:SetID(slot)
 
@@ -756,15 +746,6 @@ function Stuffing:SlotNew(bag, slot)
 			ret.frame.JunkIcon:SetAtlas("bags-junkcoin")
 			ret.frame.JunkIcon:SetPoint("TOPLEFT", 1, 0)
 			ret.frame.JunkIcon:Hide()
-		end
-
-		-- ScrapIcon thx to Mera
-		if not ret.frame.ScrapIcon then
-			ret.frame.ScrapIcon = ret.frame:CreateTexture(nil, "OVERLAY")
-			ret.frame.ScrapIcon:SetAtlas("bags-icon-scrappable")
-			ret.frame.ScrapIcon:SetSize(12, 10)
-			ret.frame.ScrapIcon:SetPoint("BOTTOMLEFT", 2, 2)
-			ret.frame.ScrapIcon:Hide()
 		end
 
 		if not ret.frame.Azerite then
@@ -1072,7 +1053,7 @@ function Stuffing:CreateBagFrame(w)
 	end
 
 	f.b_close = CreateFrame("Button", "StuffingCloseButton" .. w, f, "UIPanelCloseButton")
-	f.b_close:SetPoint("TOPRIGHT", 0, 1)
+	f.b_close:SetPoint("TOPRIGHT", -2, 1)
 	f.b_close:SkinCloseButton()
 	f.b_close:RegisterForClicks("AnyUp")
 	f.b_close:SetScript("OnClick", function(self)
@@ -1113,14 +1094,10 @@ function Stuffing:InitBags()
 	local editbox = CreateFrame("EditBox", nil, f)
 	editbox:Hide()
 	editbox:SetAutoFocus(true)
-	editbox:SetHeight(32)
 	editbox:CreateBackdrop()
-	editbox.Backdrop:SetPoint("TOPLEFT", -2, 2)
-	editbox.Backdrop:SetPoint("BOTTOMRIGHT", 2, -2)
 
 	local function resetAndClear(self)
 		self:GetParent().detail:Show()
-		self:GetParent().gold:Show()
 		self:ClearFocus()
 		Stuffing:SearchReset()
 	end
@@ -1141,23 +1118,145 @@ function Stuffing:InitBags()
 	local detail = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
 	detail:SetPoint("TOPLEFT", f, 11, -10)
 	detail:SetPoint("RIGHT", f, -140, -10)
-	detail:SetHeight(14)
 	detail:SetShadowColor(0, 0, 0, 0)
 	detail:SetJustifyH("LEFT")
-	detail:SetText(SEARCH)
+	detail:SetText(K.ClassColor .. SEARCH)
 	editbox:SetAllPoints(detail)
 
-	local gold = f:CreateFontString(nil, "OVERLAY")
-	gold:FontTemplate(nil, nil, "OUTLINE")
-	gold:SetJustifyH("RIGHT")
+	local gold = CreateFrame("Button", nil, f)
+	gold:SetFrameLevel(f:GetFrameLevel() + 2)
+	gold:RegisterForClicks("AnyUp")
 
-	f:RegisterEvent("PLAYER_ENTERING_WORLD")
-	f:RegisterEvent("PLAYER_MONEY")
-	f:RegisterEvent("PLAYER_TRADE_MONEY")
-	f:RegisterEvent("TRADE_MONEY_CHANGED")
-	f:SetScript("OnEvent", function (self)
-		self.gold:SetText(K.FormatMoney(GetMoney(), 12))
-	end)
+	gold.text = f:CreateFontString(nil, "OVERLAY")
+	gold.text:SetFontObject(BAGS_FONT)
+	gold.text:SetFont(select(1, gold.text:GetFont()), 12, select(3, gold.text:GetFont()))
+
+	gold:SetAllPoints(gold.text)
+
+	local function OnGoldEvent(self)
+		if not _G.IsLoggedIn() then
+			return
+		end
+
+		if not Ticker then
+			C_WowTokenPublic.UpdateMarketPrice()
+			Ticker = _G.C_Timer.NewTicker(60, C_WowTokenPublic.UpdateMarketPrice)
+		end
+
+		local NewMoney = GetMoney()
+		KkthnxUIData = KkthnxUIData or {}
+		KkthnxUIData["Gold"] = KkthnxUIData["Gold"] or {}
+		KkthnxUIData["Gold"][K.Realm] = KkthnxUIData["Gold"][K.Realm] or {}
+		KkthnxUIData["Gold"][K.Realm][K.Name] = KkthnxUIData["Gold"][K.Realm][K.Name] or NewMoney
+
+		KkthnxUIData["Class"] = KkthnxUIData["Class"] or {}
+		KkthnxUIData["Class"][K.Realm] = KkthnxUIData["Class"][K.Realm] or {}
+		KkthnxUIData["Class"][K.Realm][K.Name] = K.Class
+
+		local OldMoney = KkthnxUIData["Gold"][K.Realm][K.Name] or NewMoney
+
+		local Change = NewMoney - OldMoney -- Positive If We Gain Money
+		if OldMoney > NewMoney then -- Lost Money
+			Spent = Spent - Change
+		else -- Gained Moeny
+			Profit = Profit + Change
+		end
+
+		self.text:SetText(K.FormatMoney(NewMoney))
+
+		KkthnxUIData["Gold"][K.Realm][K.Name] = NewMoney
+	end
+
+	local function OnGoldClick(self, btn)
+		if btn == "RightButton" then
+			if IsShiftKeyDown() then
+				KkthnxUIData.Gold = nil
+				OnGoldEvent(self)
+				GameTooltip:Hide()
+			elseif _G.IsControlKeyDown() then
+				Profit = 0
+				Spent = 0
+				GameTooltip:Hide()
+			end
+		end
+	end
+
+	local myGold = {}
+	local function OnGoldEnter(self)
+		GameTooltip:SetOwner(self, "ANCHOR_NONE")
+		GameTooltip:SetPoint(K.GetAnchors(self))
+		GameTooltip:ClearLines()
+
+		GameTooltip:AddLine("Session:")
+		GameTooltip:AddDoubleLine("Earned:", K.FormatMoney(Profit), 1, 1, 1, 1, 1, 1)
+		GameTooltip:AddDoubleLine("Spent:", K.FormatMoney(Spent), 1, 1, 1, 1, 1, 1)
+		if Profit < Spent then
+			GameTooltip:AddDoubleLine("Deficit:", K.FormatMoney(Profit - Spent), 1, 0, 0, 1, 1, 1)
+		elseif (Profit-Spent)>0 then
+			GameTooltip:AddDoubleLine("Profit:", K.FormatMoney(Profit - Spent), 0, 1, 0, 1, 1, 1)
+		end
+		GameTooltip:AddLine(" ")
+
+		local totalGold = 0
+		GameTooltip:AddLine("Character: ")
+
+		table.wipe(myGold)
+		for k, _ in pairs(KkthnxUIData["Gold"][K.Realm]) do
+			if KkthnxUIData["Gold"][K.Realm][k] then
+				local class = KkthnxUIData["Class"][K.Realm][k] or "PRIEST"
+				local color = class and (_G.CUSTOM_CLASS_COLORS and _G.CUSTOM_CLASS_COLORS[class] or _G.RAID_CLASS_COLORS[class])
+				table_insert(myGold,
+					{
+						name = k,
+						amount = KkthnxUIData["Gold"][K.Realm][k],
+						amountText = K.FormatMoney(KkthnxUIData["Gold"][K.Realm][k]),
+						r = color.r, g = color.g, b = color.b,
+					}
+				)
+			end
+			totalGold = totalGold + KkthnxUIData["Gold"][K.Realm][k]
+		end
+
+		for _, g in ipairs(myGold) do
+			GameTooltip:AddDoubleLine(g.name == K.Name and g.name.." |TInterface\\COMMON\\Indicator-Green:14|t" or g.name, g.amountText, g.r, g.g, g.b, 1, 1, 1)
+		end
+
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine("Server: ")
+		GameTooltip:AddDoubleLine("Total: ", K.FormatMoney(totalGold), 1, 1, 1, 1, 1, 1)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddDoubleLine("WoW Token:", K.FormatMoney(_G.C_WowTokenPublic.GetCurrentMarketPrice() or 0), 1, 1, 1, 1, 1, 1)
+
+		for i = 1, MAX_WATCHED_TOKENS do
+			local name, count = _G.GetBackpackCurrencyInfo(i)
+			if name and i == 1 then
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine(CURRENCY)
+			end
+			if name and count then GameTooltip:AddDoubleLine(name, count, 1, 1, 1) end
+		end
+
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(resetCountersFormatter)
+		GameTooltip:AddLine(resetInfoFormatter)
+
+		GameTooltip:Show()
+	end
+
+	local function OnGoldLeave()
+		GameTooltip:Hide()
+	end
+
+	gold:RegisterEvent("PLAYER_ENTERING_WORLD")
+	gold:RegisterEvent("PLAYER_MONEY")
+	gold:RegisterEvent("SEND_MAIL_MONEY_CHANGED")
+	gold:RegisterEvent("SEND_MAIL_COD_CHANGED")
+	gold:RegisterEvent("PLAYER_TRADE_MONEY")
+	gold:RegisterEvent("TRADE_MONEY_CHANGED")
+	gold:SetScript("OnEvent", OnGoldEvent)
+	gold:SetScript("OnMouseUp", OnGoldClick)
+	gold:SetScript("OnEnter", OnGoldEnter)
+	gold:SetScript("OnLeave", OnGoldLeave)
 
 	do
 		Token3:ClearAllPoints()
@@ -1197,7 +1296,6 @@ function Stuffing:InitBags()
 	button:SetScript("OnClick", function(self, btn)
 		if btn == "RightButton" then
 			self:GetParent().detail:Hide()
-			self:GetParent().gold:Hide()
 			self:GetParent().editbox:Show()
 			self:GetParent().editbox:HighlightText()
 		else
@@ -1205,7 +1303,6 @@ function Stuffing:InitBags()
 				self:GetParent().editbox:Hide()
 				self:GetParent().editbox:ClearFocus()
 				self:GetParent().detail:Show()
-				self:GetParent().gold:Show()
 				Stuffing:SearchReset()
 			end
 		end
@@ -1260,8 +1357,8 @@ function Stuffing:InitBags()
 	f.sortButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	f.sortButton:SetScript("OnLeave", Stuffing_TooltipHide)
 	f.sortButton:SetScript("OnMouseUp", function()
-		f:UnregisterAllEvents() -- Unregister to prevent unnecessary updates
-		f.registerUpdate = true -- Set variable that indicates this bag should be updated when sorting is done
+		f:UnregisterAllEvents() -- Unregister To Prevent Unnecessary Updates
+		f.registerUpdate = true -- Set Variable That Indicates This Bag Should Be Updated When Sorting Is Done
 		ModuleSort:CommandDecorator(ModuleSort.SortBags, "bags")()
 	end)
 
@@ -1277,17 +1374,19 @@ function Stuffing:InitBags()
 	f.vendorGraysButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	f.vendorGraysButton:GetPushedTexture():SetAllPoints()
 	f.vendorGraysButton:StyleButton(nil, true)
-	f.vendorGraysButton.ttText = "Vendor / Delete Grays"
+	f.vendorGraysButton.ttText = "Vendor / Delete Grays|n|nMust be at vendor to recieve money for grays"
 	f.vendorGraysButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	f.vendorGraysButton:SetScript("OnLeave", Stuffing_TooltipHide)
 	f.vendorGraysButton:SetScript("OnClick", VendorGrayCheck)
 
-	gold:SetPoint("RIGHT", f.vendorGraysButton, "LEFT", -6, 0)
+	-- Editbox And Gold
+	editbox.Backdrop:SetPoint("TOPLEFT", -2, 1)
+	editbox.Backdrop:SetPoint("BOTTOMRIGHT", gold.text, "LEFT", -5, -8)
+	gold.text:SetPoint("RIGHT", f.vendorGraysButton, "LEFT", -6, 0)
 
 	f.editbox = editbox
 	f.detail = detail
 	f.button = button
-	f.gold = gold
 
 	self.frame = f
 
@@ -1311,12 +1410,7 @@ function Stuffing:Layout(isBank)
 		f = self.frame
 
 		f.editbox:SetFontObject(BAGS_FONT)
-
 		f.detail:SetFontObject(BAGS_FONT)
-
-		f.gold:SetText(K.FormatMoney(GetMoney(), 12))
-		f.gold:SetFontObject(BAGS_FONT)
-
 		f.detail:ClearAllPoints()
 		f.detail:SetPoint("TOPLEFT", f, 12, -8)
 		f.detail:SetPoint("RIGHT", f, -140, 0)
@@ -1486,7 +1580,6 @@ function Stuffing:ADDON_LOADED(addon)
 	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
 	self:RegisterEvent("BAG_CLOSED")
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN")
-	self:RegisterEvent("SCRAPPING_MACHINE_SHOW")
 
 	self:InitBags()
 
@@ -1618,6 +1711,16 @@ end
 
 function Stuffing:GUILDBANKFRAME_OPENED()
 	Stuffing_Open()
+
+	if K.Name == "Upright" and K.Realm == "Sethraliss" then
+		local guildSortbutton = CreateFrame("Button", "GuildSortButton", GuildBankFrame, "UIPanelButtonTemplate")
+		guildSortbutton:SetSize(110, 20)
+		guildSortbutton:SetPoint("RIGHT", GuildItemSearchBox, "LEFT", -5, 0)
+		guildSortbutton:SetText("Sort Tab")
+		guildSortbutton:SetScript("OnClick", function()
+			ModuleSort:CommandDecorator(ModuleSort.SortBags, "guild")()
+		end)
+	end
 end
 
 function Stuffing:GUILDBANKFRAME_CLOSED()
@@ -1668,7 +1771,7 @@ function Stuffing:SCRAPPING_MACHINE_SHOW()
 	end
 end
 
--- Kill Blizzard functions
+-- Kill Blizzard Functions
 LootWonAlertFrame_OnClick = K.Noop
 LootUpgradeFrame_OnClick = K.Noop
 StorePurchaseAlertFrame_OnClick = K.Noop

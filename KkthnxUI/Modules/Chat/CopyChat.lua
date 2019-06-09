@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, _, L = unpack(select(2, ...))
 local CopyChat = K:NewModule("CopyChat", "AceHook-3.0")
 
 -- Sourced: ElvUI (Elvz)
@@ -33,7 +33,6 @@ local menuFrame = CreateFrame("Frame", "QuickClickMenu", UIParent, "UIDropDownMe
 local middleButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:118:218|t "
 local leftButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "
 local rightButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "
-local classColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
 
 local canChangeMessage = function(arg1, id)
 	if id and arg1 == "" then
@@ -60,11 +59,7 @@ local menuList = {
 			K.MoveUI()
 	end},
 
-	{text = L["ConfigButton"].ToggleConfig, notCheckable = true, func = function()
-			K.ConfigUI()
-	end},
-
-	{text = L["ConfigButton"].ProfileList, notCheckable = true, func = function()
+	{text = "Profiles", notCheckable = true, func = function()
 			K.UIProfiles("list")
 	end},
 
@@ -77,6 +72,10 @@ local menuList = {
 	end},
 
 	{text = RELOADUI, notCheckable = true, func = function()
+			if InCombatLockdown() then
+				print("You can't reload while in Combat!")
+				return
+			end
 			ReloadUI()
 	end},
 
@@ -259,15 +258,14 @@ function CopyChat:OnEnable()
 		local id = frame:GetID()
 
 		local CopyButton = CreateFrame("Button", string_format("CopyChatButton%d", id), frame)
-		CopyButton:EnableMouse(true)
-		CopyButton:SetSize(26, 26)
-		CopyButton:SetPoint("TOPRIGHT", 26, 7)
+		CopyButton:SetSize(16, 16)
+		CopyButton:SetPoint("TOPRIGHT", 18, -2)
 		CopyButton.Texture = CopyButton:CreateTexture(nil, "BACKGROUND")
-		CopyButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Chat")
-		CopyButton.Texture:SetAllPoints(true)
-		CopyButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+		CopyButton.Texture:SetTexture("Interface\\ICONS\\INV_Misc_Note_04")
+		CopyButton.Texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		CopyButton.Texture:SetAllPoints()
+		CopyButton:StyleButton(nil, true)
 		CopyButton:SetAlpha(0.25)
-		CopyButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
 		CopyButton:SetScript("OnMouseUp", function(self, button)
 			if button == "RightButton" and id == 1 and not InCombatLockdown() then
@@ -287,7 +285,6 @@ function CopyChat:OnEnable()
 
 		CopyButton:SetScript("OnEnter", function(self)
 			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
-			self.Texture:SetVertexColor(68/255, 136/255, 255/255)
 
 			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
@@ -303,8 +300,6 @@ function CopyChat:OnEnable()
 
 		CopyButton:SetScript("OnLeave", function(self)
 			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
-			self.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
-
 			if not GameTooltip:IsForbidden() then
 				GameTooltip:Hide()
 			end
@@ -312,176 +307,65 @@ function CopyChat:OnEnable()
 
 		-- Create Configbutton
 		local ConfigButton = CreateFrame("Button", string_format("ConfigChatButton%d", id), frame)
-		ConfigButton:EnableMouse(true)
-		ConfigButton:SetSize(26, 26)
-		ConfigButton:SetPoint("TOP", CopyButton, "BOTTOM", 0, 6)
+		ConfigButton:SetSize(16, 16)
+		ConfigButton:SetPoint("TOP", CopyButton, "BOTTOM", 0, -5)
 		ConfigButton.Texture = ConfigButton:CreateTexture(nil, "BACKGROUND")
-		ConfigButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Menu")
-		ConfigButton.Texture:SetAllPoints(true)
-		ConfigButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
+		ConfigButton.Texture:SetTexture("Interface\\ICONS\\INV_Eng_GearspringParts")
+		ConfigButton.Texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		ConfigButton.Texture:SetAllPoints()
+		ConfigButton:StyleButton(nil, true)
 		ConfigButton:SetAlpha(0.25)
 		ConfigButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
 		ConfigButton:SetScript("OnMouseUp", function(_, btn)
-			if btn == "LeftButton" or btn == "RightButton" then
+			if btn == "LeftButton" then
 				PlaySound(111)
 				EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 2)
+			elseif btn == "RightButton" then
+				K.ConfigUI()
 			end
 		end)
 
 		ConfigButton:SetScript("OnEnter", function(self)
 			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
-			self.Texture:SetVertexColor(68/255, 136/255, 255/255)
 
 			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
 			GameTooltip:ClearLines()
-			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Open Configmenu", 1, 1, 1)
+			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Open QuickMenu", 1, 1, 1)
+			GameTooltip:AddDoubleLine(rightButtonString..L["ConfigButton"].Right_Click, L["ConfigButton"].ToggleConfig, 1, 1, 1)
 			GameTooltip:Show()
 		end)
 
 		ConfigButton:SetScript("OnLeave", function(self)
 			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
-			self.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
 
 			if not GameTooltip:IsForbidden() then
 				GameTooltip:Hide()
 			end
 		end)
 
-
-		-- Create Actionbarbutton
-		local ActionbarButton = CreateFrame("Button", string_format("ActionbarChatButton%d", id), frame)
-		ActionbarButton:EnableMouse(true)
-		ActionbarButton:SetSize(16, 16)
-		ActionbarButton:SetPoint("TOP", ConfigButton, "BOTTOM", 0, 0)
-		ActionbarButton.Texture = ActionbarButton:CreateTexture(nil, "BACKGROUND")
-		ActionbarButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Actionbars")
-		ActionbarButton.Texture:SetAllPoints(true)
-		ActionbarButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
-		ActionbarButton:SetAlpha(0.25)
-		ActionbarButton:SetFrameLevel(frame:GetFrameLevel() + 5)
-
-		ActionbarButton:SetScript("OnMouseUp", function(_, btn)
-			if InCombatLockdown() then
-				print("You can not toggle the Actionbars while in combat!")
-				return
-			end
-
-			if btn == "LeftButton" then
-				if KkthnxUIData[K.Realm][K.Name].BarsLocked == true then
-					KkthnxUIData[K.Realm][K.Name].BarsLocked = false
-					K.Print(L["Actionbars"].Unlocked)
-				elseif KkthnxUIData[K.Realm][K.Name].BarsLocked == false then
-					KkthnxUIData[K.Realm][K.Name].BarsLocked = true
-					K.Print(L["Actionbars"].Locked)
-				end
-			elseif btn == "RightButton" then	
-				K.BindingUI()
-			end
-		end)
-
-		ActionbarButton:SetScript("OnEnter", function(self)
-			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
-			self.Texture:SetVertexColor(68/255, 136/255, 255/255)
-
-			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
-			GameTooltip:SetOwner(self, anchor, xoff, yoff)
-			GameTooltip:ClearLines()
-			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Toggle Actionbars", 1, 1, 1)
-			GameTooltip:AddDoubleLine(rightButtonString..L["ConfigButton"].Right_Click, KEY_BINDINGS, 1, 1, 1)
-			GameTooltip:Show()
-		end)
-
-		ActionbarButton:SetScript("OnLeave", function(self)
-			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
-			self.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
-
-			if not GameTooltip:IsForbidden() then
-				GameTooltip:Hide()
-			end
-		end)
-
-		-- Create Bagsbarbutton
-		local BagsButton = CreateFrame("Button", string_format("BagsChatButton%d", id), frame)
-		BagsButton:EnableMouse(true)
-		BagsButton:SetSize(17, 17)
-		BagsButton:SetPoint("TOP", ActionbarButton, "BOTTOM", 0, -2)
-		BagsButton.Texture = BagsButton:CreateTexture(nil, "BACKGROUND")
-		BagsButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Bags")
-		BagsButton.Texture:SetAllPoints(true)
-		BagsButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
-		BagsButton:SetAlpha(0.25)
-		BagsButton:SetFrameLevel(frame:GetFrameLevel() + 5)
-
-		BagsButton:SetScript("OnMouseUp", function(_, btn)
-			if btn == "LeftButton" or btn == "RightButton" then
-				PlaySound(21968)
-				if BankFrame:IsShown() then
-					CloseBankBagFrames()
-					CloseBankFrame()
-					CloseAllBags()
-				else
-					if ContainerFrame1:IsShown() then
-						CloseAllBags()
-					else
-						ToggleAllBags()
-					end
-				end
-			end
-		end)
-
-		BagsButton:SetScript("OnEnter", function(self)
-			local Free, Total, Used = 0, 0, 0
-
-			for i = 0, NUM_BAG_SLOTS do
-				Free, Total = Free + GetContainerNumFreeSlots(i), Total + GetContainerNumSlots(i)
-			end
-
-			Used = Total - Free
-
-			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
-			self.Texture:SetVertexColor(68/255, 136/255, 255/255)
-
-			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
-			GameTooltip:SetOwner(self, anchor, xoff, yoff)
-			GameTooltip:ClearLines()
-			GameTooltip:AddLine("Bags")
-			GameTooltip:AddDoubleLine("Slots total:" , Total, 1, 1, 1, 1, 1, 1)
-			GameTooltip:AddDoubleLine("Slots free:" , Free, 1, 1, 1, 1, 1, 1)
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Toggle Bags", 1, 1, 1)
-			GameTooltip:Show()
-		end)
-
-		BagsButton:SetScript("OnLeave", function(self)
-			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
-			self.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
-
-			if not GameTooltip:IsForbidden() then
-				GameTooltip:Hide()
-			end
-		end)
-
-		-- Create Detailsbutton
+		-- Create Damagemeter Toggle
 		if K.CheckAddOnState("Details") or K.CheckAddOnState("Skada") then
-			local DetailsButton = CreateFrame("Button", string_format("DetailsChatButton%d", id), frame)
-			DetailsButton:EnableMouse(true)
-			DetailsButton:SetSize(17, 17)
-			DetailsButton:SetPoint("TOP", BagsButton, "BOTTOM", 0, -2)
-			DetailsButton.Texture = DetailsButton:CreateTexture(nil, "BACKGROUND")
-			DetailsButton.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\PVP")
-			DetailsButton.Texture:SetAllPoints(true)
-			DetailsButton.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
-			DetailsButton:SetAlpha(0.25)
-			DetailsButton:SetFrameLevel(frame:GetFrameLevel() + 5)
+			local DamageMeterButton = CreateFrame("Button", string_format("DamageMeterChatButton%d", id), frame)
+			DamageMeterButton:EnableMouse(true)
+			DamageMeterButton:SetSize(16, 16)
+			DamageMeterButton:SetPoint("TOP", ConfigButton, "BOTTOM", 0, -5)
+			DamageMeterButton.Texture = DamageMeterButton:CreateTexture(nil, "BACKGROUND")
+			DamageMeterButton.Texture:SetTexture("Interface\\Icons\\Spell_Lightning_LightningBolt01")
+			DamageMeterButton.Texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+			DamageMeterButton.Texture:SetAllPoints()
+			DamageMeterButton:StyleButton(nil, true)
+			DamageMeterButton:SetAlpha(0.25)
+			DamageMeterButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
-			DetailsButton:SetScript("OnMouseUp", function(_, btn)
+			DamageMeterButton:SetScript("OnMouseUp", function(_, btn)
 				if btn == "LeftButton" or btn == "RightButton" then
 					if IsAddOnLoaded("Details") then
 						PlaySound(21968)
 						_detalhes:ToggleWindows()
 					end
+
 					if IsAddOnLoaded("Skada") then
 						PlaySound(21968)
 						Skada:ToggleWindow()
@@ -489,9 +373,8 @@ function CopyChat:OnEnable()
 				end
 			end)
 
-			DetailsButton:SetScript("OnEnter", function(self)
+			DamageMeterButton:SetScript("OnEnter", function(self)
 				K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
-				self.Texture:SetVertexColor(68/255, 136/255, 255/255)
 
 				local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
 				GameTooltip:SetOwner(self, anchor, xoff, yoff)
@@ -499,26 +382,24 @@ function CopyChat:OnEnable()
 				if IsAddOnLoaded("Details") then
 					GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Show/Hide Details", 1, 1, 1)
 				end
+
 				if IsAddOnLoaded("Skada") then
 					GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Show/Hide Skada", 1, 1, 1)
 				end
 				GameTooltip:Show()
 			end)
 
-			DetailsButton:SetScript("OnLeave", function(self)
+			DamageMeterButton:SetScript("OnLeave", function(self)
 				K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
-				self.Texture:SetVertexColor(classColor.r, classColor.g, classColor.b)
 
 				if not GameTooltip:IsForbidden() then
 					GameTooltip:Hide()
 				end
 			end)
-			
-		DetailsButton.ChatFrame = frame
+
+		DamageMeterButton.ChatFrame = frame
 		end
 
-		ActionbarButton.ChatFrame = frame
-		BagsButton.ChatFrame = frame
 		ConfigButton.ChatFrame = frame
 		CopyButton.ChatFrame = frame
 	end

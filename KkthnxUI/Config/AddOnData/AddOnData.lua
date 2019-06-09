@@ -1,9 +1,7 @@
-local K, C, L = unpack(select(2, ...))
+local K, _, L = unpack(select(2, ...))
 
 local _G = _G
 local print = print
-
-local ReloadUI = _G.ReloadUI
 
 -- GLOBALS: InstallStepComplete
 
@@ -52,7 +50,7 @@ local function SetupAddons()
 	if K.CheckAddOnState("BigWigs") then
 		K.LoadBigWigsProfile()
 	end
-	
+
 	-- Skinner
 	if K.CheckAddOnState("Skinner") then
 		K.LoadSkinnerProfile()

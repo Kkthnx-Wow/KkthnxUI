@@ -18,12 +18,10 @@
 	<Include file="Config\AddOnData\Load_AddOnData.xml" />
 	<!-- Developer -->
 	<Include file="Developer\Load_Developer.xml" />
-	<!-- Panels -->
-	<Script file="Modules\Panels\Panels.lua" />
 	<!-- DataText -->
 	<Include file="Modules\Datatext\Load_Datatext.xml" />
 	<!-- ActionBars -->
-	<Include file="Modules\Actionbars\Load_Actionbars.xml" />
+	<Include file="Modules\ActionBars\ActionBar.xml" />
 	<!-- Unitframes -->
 	<Include file="Modules\Unitframes\Load_Unitframes.xml" />
 	<!-- Announcements -->

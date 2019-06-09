@@ -1,5 +1,5 @@
 local K = unpack(select(2, ...))
-local Module = K:GetModule("Miscellaneous")
+local Module = K:NewModule("MerchantItemlevel")
 
 local _G = _G
 

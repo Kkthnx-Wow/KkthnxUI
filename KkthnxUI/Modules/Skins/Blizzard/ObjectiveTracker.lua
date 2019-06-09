@@ -4,15 +4,7 @@ local Module = K:GetModule("Skins")
 local _G = _G
 local table_insert = table.insert
 
-local GetNumQuestWatches = _G.GetNumQuestWatches
-local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
-local GetQuestIndexForWatch = _G.GetQuestIndexForWatch
-local GetQuestLogTitle = _G.GetQuestLogTitle
-local GetQuestWatchInfo = _G.GetQuestWatchInfo
 local hooksecurefunc = _G.hooksecurefunc
-local LE_QUEST_FREQUENCY_DAILY = _G.LE_QUEST_FREQUENCY_DAILY
-local LE_QUEST_FREQUENCY_WEEKLY = _G.LE_QUEST_FREQUENCY_WEEKLY
-local OBJECTIVE_TRACKER_COLOR = _G.OBJECTIVE_TRACKER_COLOR
 local QUEST_TRACKER_MODULE = _G.QUEST_TRACKER_MODULE
 
 local function SkinObjectiveTracker()
@@ -31,10 +23,11 @@ local function SkinObjectiveTracker()
 					background:SetAtlas(nil)
 
 					local text = modules.Header.Text
-					text:FontTemplate(nil, 14)
+					text:FontTemplate(nil, 13)
 					text:SetParent(header)
+					text:SetTextColor(K.Color.r, K.Color.g, K.Color.b, 1)
 
-					if not (modules.IsSkinned) then
+					if not modules.IsSkinned then
 						local headerPanel = _G.CreateFrame("Frame", nil, header)
 						headerPanel:SetFrameLevel(header:GetFrameLevel() - 1)
 						headerPanel:SetFrameStrata("BACKGROUND")
@@ -135,9 +128,9 @@ local function SkinObjectiveTracker()
 		end
 	end
 
-	--hooksecurefunc("BonusObjectiveTrackerProgressBar_SetValue", ColorProgressBars)				--[Color]: Bonus Objective Progress Bar
-	--hooksecurefunc("ObjectiveTrackerProgressBar_SetValue", ColorProgressBars)					--[Color]: Quest Progress Bar
-	--hooksecurefunc("ScenarioTrackerProgressBar_SetValue", ColorProgressBars)					--[Color]: Scenario Progress Bar
+	hooksecurefunc("BonusObjectiveTrackerProgressBar_SetValue", ColorProgressBars)				--[Color]: Bonus Objective Progress Bar
+	hooksecurefunc("ObjectiveTrackerProgressBar_SetValue", ColorProgressBars)					--[Color]: Quest Progress Bar
+	hooksecurefunc("ScenarioTrackerProgressBar_SetValue", ColorProgressBars)					--[Color]: Scenario Progress Bar
 	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", PositionFindGroupButton)	--[Move]: The eye & quest item to the left of the eye
 	hooksecurefunc("ObjectiveTracker_Update", SkinOjectiveTrackerHeaders)						--[Skin]: Module Headers
 	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", SkinFindGroupButton)				--[Skin]: The eye

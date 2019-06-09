@@ -6,7 +6,8 @@ if C["Chat"].Enable ~= true or C["Chat"].QuickJoin ~= true then return end
 
 local _G = _G
 local difftime = difftime
-local find = string.find
+local string_find = string.find
+local string_format = string.format
 
 local BNGetFriendGameAccountInfo = _G.BNGetFriendGameAccountInfo
 local BNGetFriendInfo = _G.BNGetFriendInfo
@@ -20,7 +21,6 @@ local LFG_LIST_AND_MORE = _G.LFG_LIST_AND_MORE
 local SOCIAL_QUEUE_QUEUED_FOR = _G.SOCIAL_QUEUE_QUEUED_FOR:gsub(":%s?$","") -- some language have `:` on end
 local SocialQueueUtil_GetRelationshipInfo = _G.SocialQueueUtil_GetRelationshipInfo
 local SocialQueueUtil_GetQueueName = _G.SocialQueueUtil_GetQueueName
-local SocialQueueUtil_SortGroupMembers = _G.SocialQueueUtil_SortGroupMembers
 local UNKNOWN = _G.UNKNOWN
 
 function Module:SocialQueueIsLeader(playerName, leaderName)
@@ -39,7 +39,7 @@ function Module:SocialQueueIsLeader(playerName, leaderName)
 					if (gameClient == BNET_CLIENT_WOW) and (accountName == playerName) then
 						playerName = gameCharacterName
 						if realmName ~= K.Realm then
-							playerName = format("%s-%s", playerName, gsub(realmName,"[%s%-]",""))
+							playerName = string_formatformat("%s-%s", playerName, gsub(realmName,"[%s%-]",""))
 						end
 						if leaderName == playerName then
 							return true
@@ -81,7 +81,7 @@ function Module:SocialQueueMessage(guid, message)
 	--UI_71_SOCIAL_QUEUEING_TOAST = 79739; appears to have no sound?
 	PlaySound(7355) --TUTORIAL_POPUP
 
-	K.Print(format("|Hsqu:%s|h%s|h", guid, strtrim(message)))
+	K.Print(string_format("|Hsqu:%s|h%s|h", guid, strtrim(message)))
 end
 
 function Module:SocialQueueEvent(event, guid, numAddedItems)
@@ -93,49 +93,46 @@ function Module:SocialQueueEvent(event, guid, numAddedItems)
 		return
 	end
 
-	local coloredName, players = UNKNOWN, C_SocialQueue_GetGroupMembers(guid)
-	local members = players and SocialQueueUtil_SortGroupMembers(players)
-	local playerName, nameColor
+	local players = C_SocialQueue_GetGroupMembers(guid)
+	if not players then return end
 
-	if members then
-		local firstMember, numMembers, extraCount = members[1], #members, ""
-		playerName, nameColor = SocialQueueUtil_GetRelationshipInfo(firstMember.guid, nil, firstMember.clubId)
-		if numMembers > 1 then
-			extraCount = format(" +%s", numMembers - 1)
-		end
-		if playerName then
-			coloredName = format("%s%s|r%s", nameColor, playerName, extraCount)
-		else
-			coloredName = format("{%s%s}", UNKNOWN, extraCount)
-		end
+	local firstMember, numMembers, extraCount, coloredName = players[1], #players, ""
+	local playerName, nameColor = SocialQueueUtil_GetRelationshipInfo(firstMember.guid, nil, firstMember.clubId)
+	if numMembers > 1 then
+		extraCount = string_format(" +%s", numMembers - 1)
+	end
+	if playerName then
+		coloredName = string_format("%s%s|r%s", nameColor, playerName, extraCount)
+	else
+		coloredName = string_format("{%s%s}", UNKNOWN, extraCount)
 	end
 
-	local isLFGList, firstQueue
 	local queues = C_SocialQueue_GetGroupQueues(guid)
-	firstQueue = queues and queues[1]
-	isLFGList = firstQueue and firstQueue.queueData and firstQueue.queueData.queueType == "lfglist"
+	local firstQueue = queues and queues[1]
+	local isLFGList = firstQueue and firstQueue.queueData and firstQueue.queueData.queueType == "lfglist"
 
 	if isLFGList and firstQueue and firstQueue.eligible then
-		local activityID, name, comment, leaderName, fullName, isLeader, _
+		local searchResultInfo, activityID, name, comment, leaderName, fullName, isLeader
 
 		if firstQueue.queueData.lfgListID then
-			_, activityID, name, comment, _, _, _, _, _, _, _, _, leaderName = C_LFGList_GetSearchResultInfo(firstQueue.queueData.lfgListID)
-			isLeader = self:SocialQueueIsLeader(playerName, leaderName)
+			searchResultInfo = C_LFGList_GetSearchResultInfo(firstQueue.queueData.lfgListID)
+			if searchResultInfo then
+				activityID, name, comment, leaderName = searchResultInfo.activityID, searchResultInfo.name, searchResultInfo.comment, searchResultInfo.leaderName
+				isLeader = self:SocialQueueIsLeader(playerName, leaderName)
+			end
 		end
 
 		-- ignore groups created by the addon World Quest Group Finder/World Quest Tracker/World Quest Assistant/HandyNotes_Argus to reduce spam
-		if comment and (find(comment, "World Quest Group Finder") or find(comment, "World Quest Tracker") or find(comment, "World Quest Assistant") or find(comment, "HandyNotes_Argus")) then
-			return
-		end
+		if comment and (string_find(comment, "World Quest Group Finder") or string_find(comment, "World Quest Tracker") or string_find(comment, "World Quest Assistant") or strfind(comment, "HandyNotes_Argus")) then return end
 
 		if activityID or firstQueue.queueData.activityID then
 			fullName = C_LFGList_GetActivityInfo(activityID or firstQueue.queueData.activityID)
 		end
 
 		if name then
-			self:SocialQueueMessage(guid, format("%s %s: [%s] |cff00CCFF%s|r", coloredName, (isLeader and "is looking for members") or "joined a group", fullName or UNKNOWN, name))
+			self:SocialQueueMessage(guid, string_format("%s %s: [%s] |cff00CCFF%s|r", coloredName, (isLeader and "is looking for members") or "joined a group", fullName or UNKNOWN, name))
 		else
-			self:SocialQueueMessage(guid, format("%s %s: |cff00CCFF%s|r", coloredName, (isLeader and "is looking for members") or "joined a group", fullName or UNKNOWN))
+			self:SocialQueueMessage(guid, string_format("%s %s: |cff00CCFF%s|r", coloredName, (isLeader and "is looking for members") or "joined a group", fullName or UNKNOWN))
 		end
 	elseif firstQueue then
 		local output, outputCount, queueCount, queueName = "", "", 0
@@ -144,19 +141,19 @@ function Module:SocialQueueEvent(event, guid, numAddedItems)
 				queueName = (queue.queueData and SocialQueueUtil_GetQueueName(queue.queueData)) or ""
 				if queueName ~= "" then
 					if output == "" then
-						output = queueName:gsub("\n.+","") -- grab only the first queue name
-						queueCount = queueCount + select(2, queueName:gsub("\n","")) -- collect additional on single queue
+						output = gsub(queueName, "\n.+", "") -- grab only the first queue name
+						queueCount = queueCount + select(2, gsub(queueName, "\n","")) -- collect additional on single queue
 					else
-						queueCount = queueCount + 1 + select(2, queueName:gsub("\n","")) -- collect additional on additional queues
+						queueCount = queueCount + 1 + select(2, gsub(queueName, "\n","")) -- collect additional on additional queues
 					end
 				end
 			end
 		end
 		if output ~= "" then
 			if queueCount > 0 then
-				outputCount = format(LFG_LIST_AND_MORE, queueCount)
+				outputCount = string_format(LFG_LIST_AND_MORE, queueCount)
 			end
-			self:SocialQueueMessage(guid, format("%s %s: |cff00CCFF%s|r %s", coloredName, SOCIAL_QUEUE_QUEUED_FOR, output, outputCount))
+			self:SocialQueueMessage(guid, string_format("%s %s: |cff00CCFF%s|r %s", coloredName, SOCIAL_QUEUE_QUEUED_FOR, output, outputCount))
 		end
 	end
 end

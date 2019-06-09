@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G

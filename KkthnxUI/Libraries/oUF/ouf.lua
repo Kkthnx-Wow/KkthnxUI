@@ -326,6 +326,8 @@ local function initObject(unit, style, styleFunc, header, ...)
 			end
 		end
 
+		activeElements[object] = {} --ElvUI: styleFunc on headers break before this is set when they try to enable elements before it's set.
+
 		Private.UpdateUnits(object, objectUnit)
 
 		styleFunc(object, objectUnit, not header)
@@ -338,7 +340,6 @@ local function initObject(unit, style, styleFunc, header, ...)
 			object:SetScript('OnShow', onShow)
 		end
 
-		activeElements[object] = {}
 		for element in next, elements do
 			object:EnableElement(element, objectUnit)
 		end
@@ -389,11 +390,11 @@ Used to make a (table of) function(s) available to all unit frames.
 * name - unique name of the function (string)
 * func - function or a table of functions (function or table)
 --]]
-function oUF:RegisterMetaFunction(name, func)
+function oUF:RegisterMetaFunction(name, func, override) -- ElvUI Changed added override
 	argcheck(name, 2, 'string')
 	argcheck(func, 3, 'function', 'table')
 
-	if(frame_metatable.__index[name]) then
+	if not override and (frame_metatable.__index[name]) then
 		return
 	end
 
@@ -714,14 +715,14 @@ oUF implements some of its own attributes. These can be supplied by the layout, 
 
 * oUF-enableArenaPrep - can be used to toggle arena prep support. Defaults to true (boolean)
 --]]
-function oUF:Spawn(unit, overrideName)
+function oUF:Spawn(unit, overrideName, overrideTemplate)
 	argcheck(unit, 2, 'string')
 	if(not style) then return error('Unable to create frame. No styles have been registered.') end
 
 	unit = unit:lower()
 
 	local name = overrideName or generateName(unit)
-	local object = CreateFrame('Button', name, PetBattleFrameHider, 'SecureUnitButtonTemplate')
+	local object = CreateFrame('Button', name, PetBattleFrameHider, overrideTemplate or 'SecureUnitButtonTemplate')
 	Private.UpdateUnits(object, unit)
 
 	self:DisableBlizzard(unit)
@@ -844,13 +845,16 @@ Used to register an element with oUF.
 * enable  - used to enable the element for a given unit frame and unit (function?)
 * disable - used to disable the element for a given unit frame (function?)
 --]]
-function oUF:AddElement(name, update, enable, disable)
+function oUF:AddElement(name, update, enable, disable, override)  -- ElvUI Changed added override
 	argcheck(name, 2, 'string')
 	argcheck(update, 3, 'function', 'nil')
 	argcheck(enable, 4, 'function', 'nil')
 	argcheck(disable, 5, 'function', 'nil')
 
-	if(elements[name]) then return error('Element [%s] is already registered.', name) end
+	if not override then
+		if(elements[name]) then return error('Element [%s] is already registered.', name) end
+	end
+
 	elements[name] = {
 		update = update;
 		enable = enable;

@@ -47,7 +47,7 @@ function Module:ToggleEnable()
 end
 
 function Module:PositionAndSize()
-	local buttonSpacing = C["ActionBar"].ButtonSpace
+	local buttonSpacing = 6
 	local buttonSize = C["ActionBar"].ButtonSize
 
 	for i = 1, MAX_TOTEMS do
@@ -98,7 +98,7 @@ function Module:OnEnable()
 
 	self:PositionAndSize()
 
-	K.Movers:RegisterFrame(bar)
+	K.Mover(bar, "TotemBar", "TotemBar", {"BOTTOMLEFT", "oUF_Player", "TOPLEFT", 0, 24})
 
 	self:ToggleEnable()
 end

@@ -3,7 +3,7 @@
 ## Title: |cff4488ffKkthnxUI Config|r
 ## Notes: Options for KkthnxUI
 ## Author: Kkthnx
-## Version: 8.40
+## Version: 8.49
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIConfigShared, KkthnxUIConfigPerAccount
 ## SavedVariablesPerCharacter: KkthnxUIConfigNotShared
@@ -16,7 +16,6 @@ KkthnxUI_Config.lua
 Locales\enUS.lua
 Locales\deDE.lua
 Locales\esES.lua
-Locales\esMX.lua
 Locales\frFR.lua
 Locales\itIT.lua
 Locales\koKR.lua

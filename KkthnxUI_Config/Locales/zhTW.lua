@@ -50,7 +50,6 @@ KkthnxUIConfig["zhTW"] = {
 		["DataBars"] = "Data Bars",
 		["DataText"] = "Data Text",
 		["Filger"] = "Filger",
-		["Firestorm"] = "Firestorm", -- this is a realm name and shouldn't be translated.
 		["General"] = GENERAL,
 		["HealthPrediction"] = "Health Prediction",
 		["Inventory"] = INVENTORY_TOOLTIP,
@@ -60,6 +59,7 @@ KkthnxUIConfig["zhTW"] = {
 		["Misc"] = MISCELLANEOUS,
 		["Nameplates"] = UNIT_NAMEPLATES,
 		["Party"] = PARTY,
+		["QuestNotifier"] = "Quest Notifier",
 		["Raid"] = RAID,
 		["Skins"] = "Skins",
 		["Tooltip"] = "Tooltip",
@@ -332,6 +332,30 @@ KkthnxUIConfig["zhTW"] = {
 
 	-- Actionbar Local
 	["ActionBar"] = {
+		["Bar2Fade"] = {
+			["Name"] = "Bar2 Mouseover",
+		},
+
+		["Bar3Fade"] = {
+			["Name"] = "Bar3 Mouseover",
+		},
+
+		["Bar4Fade"] = {
+			["Name"] = "Bar4 Mouseover",
+		},
+
+		["Bar5Fade"] = {
+			["Name"] = "Bar5 Mouseover",
+		},
+
+		["PetFade"] = {
+			["Name"] = "PetBar Mouseover",
+		},
+
+		["StanceFade"] = {
+			["Name"] = "StanceBar Mouseover",
+		},
+
 		["BottomFour"] = {
 			["Name"] = "Show 4 Bottombars",
 			["Desc"] = "Display four bars on the bottom.|n|cffFF0000This only works if 'ToggleMode is off'|n'Bottombars are set to 3'|nand 'Rightbars are set zo 2'|r",
@@ -683,9 +707,19 @@ KkthnxUIConfig["zhTW"] = {
 			["Desc"] = "Auto collapse the objective tracker based on the settings below.",
 		},
 
+		["AutoDisenchant"] = {
+			["Name"] = "Auto Disenchant",
+			["Desc"] = "One-click Milling, Prospecting, Disenchanting and Lockpicking with ALT key!. |n|nThe following spells/processes are supported:|n|n|cff4488ffMilling & Draenic Mortar|nProspecting|nDisenchanting|nLockpicking|nSkeleton keys|nJeweled keys|r",
+		},
+
 		["AutoReward"] = {
 			["Name"] = "Auto Reward",
 			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
+		},
+
+		["AutoTabBinder"] = {
+			["Name"] = "Auto Tab Target PvP",
+			["Desc"] = "'Tab' key target only enemy players when in PvP zones, ignores pets and mobs",
 		},
 
 		["AutoInvite"] = {
@@ -1349,7 +1383,7 @@ KkthnxUIConfig["zhTW"] = {
 			["Name"] = "Unit Prefix Style",
 			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
 		},
-		
+
 		["HideTargetofTarget"] = {
 			["Name"] = "Hide TargetofTarget",
 			["Desc"] = "Hides the TargetofTarget frames on Target and Focus.",
@@ -1538,6 +1572,23 @@ KkthnxUIConfig["zhTW"] = {
 		["NumberPrefixStyle"] = {
 			["Name"] = "Unit Prefix Style",
 			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
+		},
+	},
+
+	-- QuestNotifier Local
+	["QuestNotifier"] = {
+		["Enable"] = {
+			["Name"] = "Enable QuestNotifier",
+		},
+
+		["QuestProgress"] = {
+			["Name"] = "Quest Progress",
+			["Desc"] = "Alert on QuestProgress in chat. This can get spammy so do not piss off your groups!",
+		},
+
+		["OnlyCompleteRing"] = {
+			["Name"] = "Only Complete Sound",
+			["Desc"] = "Only play the complete sound at the end of completing the quest"
 		},
 	},
 
@@ -1785,7 +1836,7 @@ KkthnxUIConfig["zhTW"] = {
 			["Name"] = "Statusbar Texture",
 		},
 	},
-	
+
 	-- Combattext
 	["FloatingCombatFeedback"] = {
 		["Enable"] = {
@@ -1800,16 +1851,16 @@ KkthnxUIConfig["zhTW"] = {
 		["FontSize"] = {
 			["Name"] = "Font Size",
 		},
-		
+
 		["Style"] = {
 			["Name"] = "Style",
 		},
-		
+
 		["ScrollTime"] = {
 			["Name"] = "Scroll Time",
 		},
 	},
-	
+
 	-- RaidCD's
 	["RaidCooldown"] = {
 		["Enable"] = {
