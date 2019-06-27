@@ -18,6 +18,37 @@ local PVPReadyDialog = _G.PVPReadyDialog
 local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
 local StaticPopupDialogs = _G.StaticPopupDialogs
 
+-- Fix Blank Tooltip
+local bug = nil
+local FixTooltip = CreateFrame("Frame")
+FixTooltip:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
+FixTooltip:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
+FixTooltip:SetScript("OnEvent", function()
+	if GameTooltip:IsShown() then
+		bug = true
+	end
+end)
+
+local FixTooltipBags = CreateFrame("Frame")
+FixTooltipBags:RegisterEvent("BAG_UPDATE_DELAYED")
+FixTooltipBags:SetScript("OnEvent", function()
+	if StuffingFrameBags and StuffingFrameBags:IsShown() then
+		if GameTooltip:IsShown() then
+			bug = true
+		end
+	end
+end)
+
+GameTooltip:HookScript("OnTooltipCleared", function(self)
+	if self:IsForbidden() then
+		return
+	end
+	if bug and self:NumLines() == 0 then
+		self:Hide()
+		bug = false
+	end
+end)
+
 -- Garbage collection is being overused and misused,
 -- and it's causing lag and performance drops.
 if C["General"].FixGarbageCollect then
@@ -80,6 +111,43 @@ function Module:OnEnable()
 
 	hooksecurefunc(StaticPopupDialogs["DELETE_GOOD_ITEM"], "OnShow", function(self)
 		self.editBox:SetText(DELETE_ITEM_CONFIRM_STRING)
+	end)
+
+	_G.FriendsFrameBattlenetFrame:SetScript("OnShow", function(self)
+		local GameLocale = GetLocale()
+		local uLText
+
+		if GameLocale == "zhCN" then
+			uLText = "永不分享您的密码"
+		elseif GameLocale == "zhTW" then
+			uLText = "永不分享您的密碼"
+		elseif GameLocale == "ruRU" then
+			uLText = "Никогда не сообщайте свой пароль"
+		elseif GameLocale == "koKR" then
+			uLText = "암호 공유 안 함"
+		elseif GameLocale == "esMX" then
+			uLText = "Dela aldrig ditt lösenord"
+		elseif GameLocale == "ptBR" then
+			uLText = "Nunca compartilhe sua senha"
+		elseif GameLocale == "deDE" then
+			uLText = "Teilen Sie niemals Ihr Passwort"
+		elseif GameLocale == "esES" then
+			uLText = "Nunca comparta su contraseña"
+		elseif GameLocale == "frFR" then
+			uLText = "Ne partagez jamais votre mot de passe"
+		elseif GameLocale == "itIT" then
+			uLText = "Mai condividere la tua password"
+		else
+			uLText = "Never share your password"
+		end
+
+		self.UnavailableLabel:SetText(uLText)
+		-- print(self:GetWidth()) -- Not rounded
+		-- print(K.Round(self:GetWidth())) -- Rounded
+		if self.UnavailableLabel:GetWidth() <= self:GetWidth() or 190 then -- 190 is rounded from self.
+			return
+		end
+		self:SetWidth(self.UnavailableLabel:GetWidth() + 5)
 	end)
 
 	CreateFrame("Frame"):SetScript("OnUpdate", function()

@@ -58,7 +58,7 @@ function Module:CreateThreatPercent(tPoint, tRelativePoint, tOfsx, tOfsy, tSize)
 
 	self.ThreatPercent = self:CreateFontString(nil, "OVERLAY")
 	self.ThreatPercent:SetPoint(tPoint, self.Health, tRelativePoint, tOfsx, tOfsy)
-	self.ThreatPercent:SetFontObject(K.GetFont(C["Unitframe"].Font))
+	self.ThreatPercent:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
 	self.ThreatPercent:SetFont(select(1, self.ThreatPercent:GetFont()), tSize, select(3, self.ThreatPercent:GetFont()))
 	self:Tag(self.ThreatPercent, "[KkthnxUI:ThreatColor][KkthnxUI:ThreatPercent]")
 end
@@ -241,6 +241,39 @@ function Module:CreatePvPIndicator(unit, parent, width, height)
 	self.PvPIndicator.PostUpdate = PostUpdatePvPIndicator
 end
 
+function Module.PostUpdateAddPower(element, _, cur, max)
+	if element.Text and max > 0 then
+		local perc = cur / max * 100
+		if perc == 100 then
+			perc = ""
+			element:SetAlpha(0)
+		else
+			perc = format("%d%%", perc)
+			element:SetAlpha(1)
+		end
+		element.Text:SetText(perc)
+	end
+end
+
+function Module:CreateAddPower()
+	self.AdditionalPower = CreateFrame("StatusBar", nil, self)
+	self.AdditionalPower:SetHeight(12)
+	self.AdditionalPower:SetWidth(self.Portrait:GetWidth() + self.Health:GetWidth() + 6)
+	self.AdditionalPower:SetPoint("BOTTOM", self, "TOP", 0, 3)
+	self.AdditionalPower:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
+	self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power["MANA"]))
+	self.AdditionalPower:CreateBorder()
+	self.AdditionalPower.frequentUpdates = true
+
+	K:SetSmoothing(self.AdditionalPower, C["Unitframe"].Smooth)
+
+	self.AdditionalPower.Text = self.AdditionalPower:CreateFontString(nil, "OVERLAY")
+	self.AdditionalPower.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+	self.AdditionalPower.Text:SetPoint("CENTER", self.AdditionalPower, "CENTER", 0, 0)
+
+	self.AdditionalPower.PostUpdate = Module.PostUpdateAddPower
+end
+
 -- Nameplate Indicators
 function Module:CreatePlateQuestIcons()
 	if C["Nameplates"].QuestIcon ~= true then
@@ -285,16 +318,6 @@ function Module:CreatePlateHealerIcons()
 	self.HealerSpecs:Hide()
 end
 
-function Module:CreatePlateThreatIndicator()
-	self.ThreatIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.ThreatIndicator:SetSize(16, 16)
-	self.ThreatIndicator:Hide()
-	self.ThreatIndicator:SetPoint("CENTER", self.Health, "TOPRIGHT")
-
-	self.ThreatIndicator.PreUpdate = Module.ThreatIndicatorPreUpdate
-	self.ThreatIndicator.PostUpdate = Module.ThreatIndicatorPostUpdate
-end
-
 function Module:CreatePlateTotemIcons()
 	if C["Nameplates"].Totems ~= true then
 		return
@@ -308,25 +331,4 @@ function Module:CreatePlateTotemIcons()
 
 	self.Totem.Icon = self.Totem:CreateTexture(nil, "ARTWORK")
 	self.Totem.Icon:SetAllPoints()
-end
-
-function Module:CreatePlateTargetArrow()
-	if C["Nameplates"].TargetArrow ~= true then
-		return
-	end
-
-	self.leftArrow = self:CreateTexture(nil, "ARTWORK", nil, 4)
-	self.leftArrow:SetPoint("RIGHT", self.Health, "LEFT", -4, 0)
-    self.leftArrow:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Arrow.tga]])
-    self.leftArrow:SetSize(28, 28)
-    self.leftArrow:SetBlendMode("ADD")
-    self.leftArrow:Hide()
-
-   	self.rightArrow = self:CreateTexture(nil, "ARTWORK", nil, 4)
-   	self.rightArrow:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
-   	self.rightArrow:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Arrow.tga]])
-   	self.rightArrow:SetSize(28, 28)
-   	self.rightArrow:SetBlendMode("ADD")
-   	self.rightArrow:SetTexCoord(1, 0, 0, 1)
-   	self.rightArrow:Hide()
 end

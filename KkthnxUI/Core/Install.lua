@@ -14,14 +14,13 @@ local PlaySoundFile = _G.PlaySoundFile
 local PREVIOUS = _G.PREVIOUS
 local ReloadUI = _G.ReloadUI
 local RESET_TO_DEFAULT = _G.RESET_TO_DEFAULT
-local SetActionBarToggles = _G.SetActionBarToggles
 local SetCVar = _G.SetCVar
 local UIParent = _G.UIParent
 local UnitName = _G.UnitName
 
 local Install = CreateFrame("Frame", "KkthnxUIInstaller", UIParent)
-local InstallFont = K.GetFont(C["General"].Font)
-local InstallTexture = K.GetTexture(C["General"].Texture)
+local InstallFont = K.GetFont(C["UIFonts"].GeneralFonts)
+local InstallTexture = K.GetTexture(C["UITextures"].GeneralTextures)
 
 Install.MaxStepNumber = 3
 Install.CurrentStep = 0
@@ -44,6 +43,8 @@ function Install:ResetData()
 end
 
 function Install:Step1()
+	SetActionBarToggles(1, 1, 1, 1)
+	SetCVar("ActionButtonUseKeyDown", 1)
 	SetCVar("alwaysShowActionBars", 1)
 	SetCVar("autoOpenLootHistory", 0)
 	SetCVar("autoQuestProgress", 1)
@@ -53,11 +54,9 @@ function Install:Step1()
 	SetCVar("chatMouseScroll", 1)
 	SetCVar("chatStyle", "classic")
 	SetCVar("countdownForCooldowns", 0)
-	SetCVar("ffxDeath", 0)
-	SetCVar("ffxGlow", 0)
 	SetCVar("lockActionBars", 1)
 	SetCVar("lossOfControl", 1)
-	SetCVar("nameplateMotion", 0)
+	SetCVar("nameplateMotion", 1)
 	SetCVar("nameplateShowFriendlyNPCs", 1)
 	SetCVar("nameplateShowSelf", 0)
 	SetCVar("removeChatDelay", 1)
@@ -67,18 +66,17 @@ function Install:Step1()
 	SetCVar("showQuestTrackingTooltips", 1)
 	SetCVar("showTutorials", 0)
 	SetCVar("showVKeyCastbar", 1)
-	SetCVar("SpamFilter", 0)
 	SetCVar("spamFilter", 0)
-	SetCVar("statusTextDisplay", "BOTH")
 	SetCVar("threatWarning", 3)
 	SetCVar("UberTooltips", 1)
+	SetCVar("useUiScale", 0)
 	SetCVar("violenceLevel", 5)
-	SetCVar("WholeChatWindowClickable", 0)
+	SetCVar("wholeChatWindowClickable", 0)
 
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
 
-	_G.RaidNotice_AddMessage(_G.RaidWarningFrame, L["Install"].CVars_Set, _G.ChatTypeInfo["RAID_WARNING"])
+	UIErrorsFrame:AddMessage(L["Install"].CVars_Set, K.Color.r, K.Color.g, K.Color.b, 53, 2)
 end
 
 function Install:Step2()
@@ -88,10 +86,10 @@ function Install:Step2()
 		return
 	end
 
-	_G.RaidNotice_AddMessage(_G.RaidWarningFrame, L["Install"].Chat_Set, _G.ChatTypeInfo["RAID_WARNING"])
-
 	Chat:Install()
 	Chat:SetDefaultChatFramesPositions()
+
+	UIErrorsFrame:AddMessage(L["Install"].Chat_Set, K.Color.r, K.Color.g, K.Color.b, 53, 2)
 end
 
 function Install:PrintStep(PageNum)
@@ -105,16 +103,16 @@ function Install:PrintStep(PageNum)
 		self:Hide()
 		if (PageNum > self.MaxStepNumber) then
 			KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete = true
-			PlaySoundFile("Sound\\Creature\\Illidan\\BLACK_Illidan_04.ogg") -- People will be like wtf?
+			PlaySound(11466) -- A_BLCKTMPLE_Illidan_04
 			ReloadUI()
 		end
 		return
 	end
 
 	if (PageNum == 0) then
-		self.LeftButton.Text:SetText(CLOSE)
+		self.LeftButton.Text:SetText("|cffff2020"..CLOSE.."|r")
 		self.LeftButton:SetScript("OnClick", function() self:Hide() end)
-		self.RightButton.Text:SetText(NEXT)
+		self.RightButton.Text:SetText("|cffffd200"..NEXT.."|r")
 		self.RightButton:SetScript("OnClick", function() self.PrintStep(self, self.CurrentStep + 1) end)
 		self.MiddleButton.Text:SetText("|cffFF0000"..RESET_TO_DEFAULT.."|r")
 		self.MiddleButton:SetScript("OnClick", self.ResetData)
@@ -129,19 +127,19 @@ function Install:PrintStep(PageNum)
 		self.LeftButton:SetScript("OnClick", function()
 			self.PrintStep(self, self.CurrentStep - 1)
 		end)
-		self.LeftButton.Text:SetText(PREVIOUS)
-		self.MiddleButton.Text:SetText(APPLY)
+		self.LeftButton.Text:SetText("|cffffd200"..PREVIOUS.."|r")
+		self.MiddleButton.Text:SetText("|cff20ff20"..APPLY.."|r")
 		self.RightButton:SetScript("OnClick", function()
 			self.PrintStep(self, self.CurrentStep + 1)
 		end)
 		if (PageNum == Install.MaxStepNumber) then
-			self.RightButton.Text:SetText(COMPLETE)
+			self.RightButton.Text:SetText("|cff20ff20"..COMPLETE.."|r")
 			self.CloseButton:Hide()
 			self.MiddleButton:Hide()
 			self.DiscordButton:Show()
 			self.SkipButton:Hide()
 		else
-			self.RightButton.Text:SetText(NEXT)
+			self.RightButton.Text:SetText("|cffffd200"..NEXT.."|r")
 			self.CloseButton:Show()
 			self.MiddleButton:Show()
 			self.DiscordButton:Hide()
@@ -221,7 +219,7 @@ function Install:Launch()
 	self.Logo = self.StatusBar:CreateTexture(nil, "OVERLAY")
 	self.Logo:SetSize(512, 256)
 	self.Logo:SetBlendMode("ADD")
-	self.Logo:SetAlpha(0.10)
+	self.Logo:SetAlpha(0.07)
 	self.Logo:SetTexture(C["Media"].Logo)
 	self.Logo:SetPoint("CENTER", self.Description, "CENTER", 0, 0)
 
@@ -231,7 +229,7 @@ function Install:Launch()
 	self.LeftButton:SkinButton()
 	self.LeftButton:FontString("Text", C["Media"].Font, 12)
 	self.LeftButton.Text:SetPoint("CENTER")
-	self.LeftButton.Text:SetText(CLOSE)
+	self.LeftButton.Text:SetText("|cffff2020"..CLOSE.."|r")
 	self.LeftButton:SetScript("OnClick", function() self:Hide() end)
 
 	self.RightButton = CreateFrame("Button", nil, self)
@@ -240,7 +238,7 @@ function Install:Launch()
 	self.RightButton:SkinButton()
 	self.RightButton:FontString("Text", C["Media"].Font, 12)
 	self.RightButton.Text:SetPoint("CENTER")
-	self.RightButton.Text:SetText(NEXT)
+	self.RightButton.Text:SetText("|cffffd200"..NEXT.."|r")
 	self.RightButton:SetScript("OnClick", function() self.PrintStep(self, self.CurrentStep + 1) end)
 
 	self.DiscordButton = CreateFrame("Button", nil, self)
@@ -250,7 +248,9 @@ function Install:Launch()
 	self.DiscordButton:FontString("Text", C["Media"].Font, 12)
 	self.DiscordButton.Text:SetPoint("CENTER")
 	self.DiscordButton.Text:SetText("|cff7289daDiscord|r")
-	self.DiscordButton:SetScript("OnClick", function() K.StaticPopup_Show("DISCORD_EDITBOX", nil, nil, "https://discord.gg/YUmxqQm") end)
+	self.DiscordButton:SetScript("OnClick", function()
+		K.StaticPopup_Show("DISCORD_EDITBOX", nil, nil, "https://discord.gg/YUmxqQm")
+	end)
 	self.DiscordButton:Hide()
 
 	self.MiddleButton = CreateFrame("Button", nil, self)
@@ -273,12 +273,13 @@ function Install:Launch()
 	self.SkipButton:SkinButton()
 	self.SkipButton:FontString("Text", C["Media"].Font, 12)
 	self.SkipButton.Text:SetPoint("CENTER")
-	self.SkipButton.Text:SetText(string.format(K.ClassColor, "SKIP INSTALL BUTTON TEST"))
+	self.SkipButton.Text:SetText(string.format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, "Skip Install Process"))
 	self.SkipButton:SetScript("OnClick", function()
 		KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete = true
-		PlaySoundFile("Sound\\Creature\\Illidan\\BLACK_Illidan_04.ogg") -- People will be like wtf?
+		PlaySound(19092) -- VO_PCGoblinMale_Cry
 		ReloadUI()
 	end)
+
 	if (not KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete) then
 		self.SkipButton:Show()
 	else
@@ -288,7 +289,7 @@ function Install:Launch()
 	self.CloseButton = CreateFrame("Button", nil, self, "UIPanelCloseButton")
 	self.CloseButton:SetPoint("TOPRIGHT", self.Description, "TOPRIGHT")
 	self.CloseButton:SetScript("OnClick", function() self:Hide() end)
-	self.CloseButton:SetFrameLevel(self:GetFrameLevel() + 2) -- Fix the close button falling behind install frame
+	self.CloseButton:SetFrameLevel(self:GetFrameLevel() + 2) -- Fix The Close Button Falling Behind Install Frame
 	self.CloseButton:SkinCloseButton()
 
 	self.Text = self.Description:CreateFontString(nil, "OVERLAY")
@@ -297,9 +298,13 @@ function Install:Launch()
 	self.Text:SetJustifyV("TOP")
 	self.Text:SetFontObject(InstallFont)
 	self.Text:SetPoint("TOPLEFT", 20, -40)
-	self.Text:SetText(L.Install.Step_0)
+	self.Text:SetText(L["Install"].Step_0)
 
 	self:SetAllPoints(UIParent)
+end
+
+function Install:WelcomeMessageDelay()
+	UIErrorsFrame:AddMessage(K.Welcome)
 end
 
 -- On login function
@@ -340,8 +345,9 @@ Install:SetScript("OnEvent", function(self)
 	end
 
 	-- Wipe Old Settings With No Conflict.
-	if KkthnxUIData[GetRealmName()][UnitName("player")].Movers then
-		K.StaticPopup_Show("OLD_MOVERS_DATABASE_RL")
+	if KkthnxUIData[playerRealm][playerName].Movers then
+		table.wipe(KkthnxUIData[playerRealm][playerName].Movers)
+		KkthnxUIData[playerRealm][playerName].Movers = nil
 	end
 
 	-- Install default if we never ran KkthnxUI on this character.
@@ -352,13 +358,7 @@ Install:SetScript("OnEvent", function(self)
 
 	-- Welcome message
 	if (not KkthnxUIData[playerRealm][playerName].InstallComplete) then
-		print(K.Welcome)
-	end
-
-	if C["General"].Welcome then
-		print(L["Install"].Welcome_1)
-		print(L["Install"].Welcome_2)
-		print(L["Install"].Welcome_3)
+		K.Delay(8, Install.WelcomeMessageDelay)
 	end
 
 	self:UnregisterEvent("ADDON_LOADED")

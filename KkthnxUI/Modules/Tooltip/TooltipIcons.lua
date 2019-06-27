@@ -1,73 +1,91 @@
 local K, C = unpack(select(2, ...))
-if C["Tooltip"].Enable ~= true or C["Tooltip"].Icons ~= true then
+local Module = K:NewModule("TooltipIcons")
+
+if not Module then
 	return
 end
 
 local _G = _G
+local gsub = gsub
+local string_match = string.match
+
 local GetItemIcon = _G.GetItemIcon
 local GetSpellTexture = _G.GetSpellTexture
-local hooksecurefunc = _G.hooksecurefunc
+
 local newString = "0:0:64:64:5:59:5:59"
-local pairs = _G.pairs
 
-local function setTooltipIcon(self, icon)
-	local title = icon and _G[self:GetName() .. "TextLeft1"]
-
+function Module:SetupTooltipIcon(icon)
+	local title = icon and _G[self:GetName().."TextLeft1"]
 	if title then
-		title:SetFormattedText("|T%s:20:20:" .. newString .. ":%d|t %s", icon, 20, title:GetText())
+		title:SetFormattedText("|T%s:20:20:"..newString..":%d|t %s", icon, 20, title:GetText())
+	end
+
+	for i = 2, self:NumLines() do
+		local line = _G[self:GetName().."TextLeft"..i]
+		if not line then break end
+		local text = line:GetText() or ""
+		if string_match(text, "|T.-:[%d+:]+|t") then
+			line:SetText(gsub(text, "|T(.-):[%d+:]+|t", "|T%1:20:20:"..newString.."|t"))
+		end
 	end
 end
 
-local function newTooltipHooker(method, func)
-	return function(tooltip)
-		local modified = false
+function Module:HookTooltipCleared()
+	self.tipModified = false
+end
 
-		tooltip:HookScript("OnTooltipCleared", function()
-			modified = false
-		end)
+function Module:HookTooltipSetItem()
+	if not self.tipModified then
+		local _, link = self:GetItem()
+		if link then
+			Module.SetupTooltipIcon(self, GetItemIcon(link))
+		end
 
-		tooltip:HookScript(method, function(self, ...)
-			if not modified  then
-				modified = true
-				func(self, ...)
-			end
-		end)
+		self.tipModified = true
 	end
 end
 
-local hookItem = newTooltipHooker("OnTooltipSetItem", function(self)
-	local _, link = self:GetItem()
+function Module:HookTooltipSetSpell()
+	if not self.tipModified then
+		local _, id = self:GetSpell()
+		if id then
+			Module.SetupTooltipIcon(self, GetSpellTexture(id))
+		end
 
-	if link then
-		setTooltipIcon(self, GetItemIcon(link))
+		self.tipModified = true
 	end
-end)
-
-local hookSpell = newTooltipHooker("OnTooltipSetSpell", function(self)
-	local _, _, id = self:GetSpell()
-
-	if id then
-		setTooltipIcon(self, GetSpellTexture(id))
-	end
-end)
-
-for _, tooltip in pairs{GameTooltip, ItemRefTooltip} do
-	hookItem(tooltip)
-	hookSpell(tooltip)
 end
 
--- Tooltip rewards icon
-_G.BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT = "|T%1$s:16:16:" .. newString .. "|t |cffffffff%2$s|r %3$s"
-_G.BONUS_OBJECTIVE_REWARD_FORMAT = "|T%1$s:16:16:" .. newString .. "|t %2$s"
+function Module:HookTooltipMethod()
+	self:HookScript("OnTooltipSetItem", Module.HookTooltipSetItem)
+	self:HookScript("OnTooltipSetSpell", Module.HookTooltipSetSpell)
+	self:HookScript("OnTooltipCleared", Module.HookTooltipCleared)
+end
 
-local function ReskinRewardIcon(self)
+function Module:ReskinRewardIcon()
 	if self and self.Icon then
-		self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		self.IconBorder:Hide()
+		self.Icon:SetTexCoord(unpack(K.TexCoords))
+		self.IconBorder:SetAlpha(0)
 	end
 end
 
-hooksecurefunc("EmbeddedItemTooltip_SetItemByID", ReskinRewardIcon)
-hooksecurefunc("QuestUtils_AddQuestCurrencyRewardsToTooltip", function(_, _, self)
-	ReskinRewardIcon(self)
-end)
+function Module:ReskinTooltipIcons()
+	Module.HookTooltipMethod(GameTooltip)
+	Module.HookTooltipMethod(ItemRefTooltip)
+
+	-- Tooltip Rewards Icon
+	_G.BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT = "|T%1$s:16:16:"..newString.."|t |cffffffff%2$s|r %3$s"
+	_G.BONUS_OBJECTIVE_REWARD_FORMAT = "|T%1$s:16:16:"..newString.."|t %2$s"
+
+	hooksecurefunc("EmbeddedItemTooltip_SetItemByQuestReward", Module.ReskinRewardIcon)
+	hooksecurefunc("EmbeddedItemTooltip_SetItemByID", Module.ReskinRewardIcon)
+	hooksecurefunc("EmbeddedItemTooltip_SetCurrencyByID", Module.ReskinRewardIcon)
+end
+
+function Module:OnEnable()
+	if C["Tooltip"].Icons ~= true then
+		return
+	end
+
+	self:ReskinTooltipIcons()
+end

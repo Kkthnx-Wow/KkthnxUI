@@ -7,7 +7,7 @@ local function SkinFactionbarTextures()
 	local function UpdateFactionbarTextures()
 		for i = 1, GetNumFactions() do
 			local statusbar = _G["ReputationBar"..i.."ReputationBar"]
-			local factionTexture = K.GetTexture(C["Skins"].Texture)
+			local factionTexture = K.GetTexture(C["UITextures"].SkinTextures)
 
 			if statusbar then
 				statusbar:SetStatusBarTexture(factionTexture)

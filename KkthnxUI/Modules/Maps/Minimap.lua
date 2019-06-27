@@ -11,14 +11,14 @@ local GarrisonLandingPageMinimapButton = _G.GarrisonLandingPageMinimapButton
 local GetMinimapZoneText = _G.GetMinimapZoneText
 local GetZonePVPInfo = _G.GetZonePVPInfo
 local GuildInstanceDifficulty = _G.GuildInstanceDifficulty
+local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
+local Minimap = _G.Minimap
 local MiniMapChallengeMode = _G.MiniMapChallengeMode
 local MiniMapInstanceDifficulty = _G.MiniMapInstanceDifficulty
 local MiniMapMailFrame = _G.MiniMapMailFrame
-local Minimap = _G.Minimap
 local QueueStatusMinimapButton = _G.QueueStatusMinimapButton
 local UIParent = _G.UIParent
-local hooksecurefunc = _G.hooksecurefunc
 
 function Module:GetLocationTextColors()
 	local pvpType = GetZonePVPInfo()
@@ -161,8 +161,10 @@ function Module:UpdateSettings()
 	if MiniMapInstanceDifficulty and GuildInstanceDifficulty then
 		MiniMapInstanceDifficulty:ClearAllPoints()
 		MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+		MiniMapInstanceDifficulty:SetScale(0.8)
 		GuildInstanceDifficulty:ClearAllPoints()
 		GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+		GuildInstanceDifficulty:SetScale(0.8)
 	end
 
 	if MiniMapChallengeMode then
@@ -182,24 +184,7 @@ function Module:UpdateSettings()
 	end
 end
 
-function Module:UpdateCluster()
-	-- Set the size and position
-	-- Can't change this in combat, will cause taint!
-	if InCombatLockdown() then
-		self.clusterNeedsUpdate = true
-		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-	end
-
-	MinimapCluster:SetMovable(true)
-	MinimapCluster:SetUserPlaced(true)
-	MinimapCluster:ClearAllPoints()
-	MinimapCluster:SetAllPoints(Minimap)
-	MinimapCluster:EnableMouse(false)
-
-	self.clusterNeedsUpdate = nil
-end
-
-function Module:ADDON_LOADED(event, addon)
+function Module:ADDON_LOADED(_, addon)
 	if addon == "Blizzard_TimeManager" then
 		TimeManagerClockButton:Kill()
 	elseif addon == "Blizzard_FeedbackUI" then
@@ -207,14 +192,10 @@ function Module:ADDON_LOADED(event, addon)
 	end
 end
 
-function Module:OnEvent(event, ...)
+function Module:OnEvent(event)
 	if event == "PLAYER_ENTERING_WORLD" then
 		self:ZoneTextUpdate()
-		self:UpdateCluster()
 	elseif event == "PLAYER_REGEN_ENABLED" then
-		if self.clusterNeedsUpdate then
-			self:UpdateCluster()
-		end
 		self:UpdateSettings()
 	end
 end
@@ -246,6 +227,7 @@ function Module:OnEnable()
 	Minimap:SetArchBlobRingAlpha(0)
 	Minimap:CreateBorder()
 	Minimap:CreateInnerShadow(nil, 0.4)
+	Minimap:SetScale(1.0)
 
 	Minimap:HookScript("OnEnter", function(self)
 		if K.PerformanceFrame then
@@ -290,6 +272,7 @@ function Module:OnEnable()
 	_G.MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
 
 	-- Hide the BlopRing on Minimap
+	MinimapCluster:EnableMouse(false)
 	Minimap:SetArchBlobRingScalar(0)
 	Minimap:SetQuestBlobRingScalar(0)
 
@@ -314,12 +297,6 @@ function Module:OnEnable()
 
 	K.Mover(MinimapFrameHolder, "Minimap", "Minimap", {"TOPRIGHT", UIParent, "TOPRIGHT", -4, -4}, Minimap:GetWidth(), Minimap:GetHeight())
 
-	MinimapBackdrop:SetMovable(true)
-	MinimapBackdrop:SetUserPlaced(true)
-	MinimapBackdrop:SetParent(Minimap)
-	MinimapBackdrop:ClearAllPoints()
-	MinimapBackdrop:SetPoint("CENTER")
-
 	Minimap:EnableMouseWheel(true)
 	Minimap:SetScript("OnMouseWheel", Module.OnMouseWheelScroll)
 
@@ -328,8 +305,6 @@ function Module:OnEnable()
 	self:RegisterEvent("ZONE_CHANGED", "ZoneTextUpdate")
 	self:RegisterEvent("ZONE_CHANGED_INDOORS", "ZoneTextUpdate")
 	self:RegisterEvent("ADDON_LOADED")
-	self:RegisterEvent("VARIABLES_LOADED", "UpdateCluster")
 
 	self:UpdateSettings()
-	self:UpdateCluster()
 end

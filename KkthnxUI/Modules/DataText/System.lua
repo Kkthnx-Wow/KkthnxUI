@@ -11,7 +11,7 @@ local PlayerColorStr = _G.RAID_CLASS_COLORS[K.Class].colorStr
 
 local FPS_ABBR = "|c" .. PlayerColorStr .. _G.FPS_ABBR .. "|r"
 local MILLISECONDS_ABBR = "|c" .. PlayerColorStr .. _G.MILLISECONDS_ABBR .. "|r"
-local performance_font = K.GetFont(C["DataText"].Font)
+local performance_font = K.GetFont(C["UIFonts"].DataTextFonts)
 local performance_hz = 1
 local performance_string = "%d%s - %d%s"
 

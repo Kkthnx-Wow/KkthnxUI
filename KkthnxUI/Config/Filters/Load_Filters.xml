@@ -7,5 +7,6 @@
    <Script file="ProfessionTabs.lua" />
    <Script file="QuickQuest.lua" />
    <Script file="RangeSpells.lua" />
+   <Script file="Reminder.lua" />
    <Script file="WorldMapPlusData.lua" />
 </Ui>

@@ -69,7 +69,7 @@ local SOUNDKIT = _G.SOUNDKIT
 local Token1, Token2, Token3 = _G.BackpackTokenFrameToken1, _G.BackpackTokenFrameToken2, _G.BackpackTokenFrameToken3
 local UIParent = _G.UIParent
 
-local BAGS_FONT = K.GetFont(C["Inventory"].Font)
+local BAGS_FONT = K.GetFont(C["UIFonts"].InventoryFonts)
 local BAGS_BACKPACK = {0, 1, 2, 3, 4}
 local BAGS_BANK = {-1, 5, 6, 7, 8, 9, 10, 11}
 local ST_NORMAL = 1
@@ -613,7 +613,7 @@ function Stuffing:BagFrameSlotNew(p, slot)
 	if slot > 3 then
 		ret.slot = slot
 		slot = slot - 4
-		ret.frame = CreateFrame("CheckButton", "StuffingBBag" .. slot .. "Slot", p, "BankItemButtonBagTemplate")
+		ret.frame = CreateFrame("ItemButton", "StuffingBBag" .. slot .. "Slot", p, "BankItemButtonBagTemplate")
 		ret.frame:StripTextures()
 		ret.frame:SetID(slot)
 
@@ -664,7 +664,7 @@ function Stuffing:BagFrameSlotNew(p, slot)
 
 	ret.frame:CreateBorder()
 	ret.frame:StyleButton()
-	ret.frame:SetNormalTexture("")
+	ret.frame:SetNormalTexture(nil)
 
 	ret.icon = _G[ret.frame:GetName() .. "IconTexture"]
 	ret.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
@@ -897,6 +897,7 @@ function Stuffing:CreateBagFrame(w)
 	f:SetFrameStrata("MEDIUM")
 	f:SetFrameLevel(5)
 	f:RegisterForDrag("LeftButton", "RightButton")
+
 	f:SetScript("OnDragStart", function(self)
 		if IsShiftKeyDown() then
 			self:StartMoving()
@@ -928,9 +929,9 @@ function Stuffing:CreateBagFrame(w)
 	end)
 
 	if w == "Bank" then
-		f:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 4, 204)
+		f:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 86, 142)
 	else
-		f:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -4, 204)
+		f:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -86, 142)
 	end
 
 	if w == "Bank" then

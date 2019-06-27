@@ -109,7 +109,7 @@ function Module:OnEnable()
 		return
 	end
 
-	local DataText_Font = K.GetFont(C["DataText"].Font)
+	local DataText_Font = K.GetFont(C["UIFonts"].DataTextFonts)
 
 	Module:SetSize(300, 13)
 	Module:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, -4)

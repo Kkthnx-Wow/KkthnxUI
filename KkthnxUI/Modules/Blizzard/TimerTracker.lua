@@ -6,7 +6,7 @@ end
 
 -- Timer tracker
 local function SkinIt(bar)
-	local BlizzTimerTexture = K.GetTexture(C["Unitframe"].Texture)
+	local BlizzTimerTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
 	for i = 1, bar:GetNumRegions() do
 		local region = select(i, bar:GetRegions())

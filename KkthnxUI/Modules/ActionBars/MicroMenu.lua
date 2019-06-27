@@ -144,19 +144,23 @@ function Module:UpdateMicroButtons()
 end
 
 function Module:OnEnable()
+	if not C["ActionBar"].Enable then
+		return
+	end
+
 	if C["ActionBar"].MicroBar ~= true then
 		return
 	end
 
 	local microBar = CreateFrame("Frame", "KkthnxUI_MicroBar", UIParent)
-	microBar:SetPoint("TOP", UIParent, "TOP", 0, 0)
+	microBar:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0)
 	microBar:EnableMouse(false)
 
 	for i = 1, #MICRO_BUTTONS do
 		self:HandleMicroButton(_G[MICRO_BUTTONS[i]])
 	end
 
-	MicroButtonPortrait:SetInside(CharacterMicroButton.backdrop)
+	MicroButtonPortrait:SetAllPoints(CharacterMicroButton.backdrop)
 
 	self:SecureHook("MainMenuMicroButton_SetPushed")
 	self:SecureHook("MainMenuMicroButton_SetNormal")
@@ -175,5 +179,5 @@ function Module:OnEnable()
 		MainMenuBarPerformanceBar:Hide()
 	end
 
-	K.Mover(microBar, "MicroBar", "MicroBar", {"TOP", UIParent, "TOP", 0, 0}, (((_G["CharacterMicroButton"]:GetWidth() + 6) * 11) - 6) + (4 * 2), (((_G["CharacterMicroButton"]:GetHeight() + 6) * 1) - 6) + (4 * 2))
+	K.Mover(microBar, "MicroBar", "MicroBar", {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0}, (((_G["CharacterMicroButton"]:GetWidth() + 6) * 11) - 6) + (4 * 2), (((_G["CharacterMicroButton"]:GetHeight() + 6) * 1) - 6) + (4 * 2))
 end

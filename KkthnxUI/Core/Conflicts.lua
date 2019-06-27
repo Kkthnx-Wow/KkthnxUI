@@ -70,8 +70,7 @@ or (K.CheckAddOnState("ConsolePortBar") and K.CheckAddOnState("ConsolePort")) th
 	C["ActionBar"].Enable = false
 end
 
-if K.CheckAddOnState("WorldQuestTracker")
-or K.CheckAddOnState("Mapster")
+if K.CheckAddOnState("Mapster")
 or K.CheckAddOnState("WorldQuestsList") then
 	C["WorldMap"].SmallWorldMap = false
 end

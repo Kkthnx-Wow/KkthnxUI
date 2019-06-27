@@ -78,7 +78,7 @@ function Filger:DisplayActives()
 	local id = self.Id
 	local index = 1
 	local previous = nil
-	local FilgerTexture = K.GetTexture(C["Filger"].Texture)
+	local FilgerTexture = K.GetTexture(C["UITextures"].FilgerTextures)
 
 	for _, _ in pairs(self.actives) do
 		local bar = self.bars[index]

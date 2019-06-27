@@ -123,7 +123,6 @@ local targetList = {}
 local TAPPED_COLOR = {r = .6, g = .6, b = .6}
 local AFK_LABEL = " |cffFFFFFF[|r|cffFF0000" .. "AFK" .. "|r|cffFFFFFF]|r"
 local DND_LABEL = " |cffFFFFFF[|r|cffFFFF00" .. "DND" .. "|r|cffFFFFFF]|r"
-local TOOLTOP_BUG = false
 
 -- Custom to find LEVEL string on tooltip
 local LEVEL1 = TOOLTIP_UNIT_LEVEL:gsub("%s?%%s%s?%-?", "")
@@ -165,18 +164,20 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 	tt:SetPoint("BOTTOMRIGHT", GameTooltipAnchor, "BOTTOMRIGHT", 2, -2)
 end
 
+local FactionIconTEST = false
 function Module:RemoveTrashLines(tt)
-	if tt:IsForbidden() then
-		return
-	end
-
 	for i = 3, tt:NumLines() do
-		local tiptext = _G["GameTooltipTextLeft" .. i]
+		local tiptext = _G["GameTooltipTextLeft"..i]
 		local linetext = tiptext:GetText()
-
-		if (linetext == PVP or linetext == FACTION_ALLIANCE or linetext == FACTION_HORDE) then
-			tiptext:SetText(nil)
-			tiptext:Hide()
+		if linetext then
+			if linetext == PVP then
+				tiptext:SetText(nil)
+				tiptext:Hide()
+			elseif linetext == FACTION_HORDE then
+				tiptext:SetText("|cffE50D12"..linetext.."|r")
+			elseif linetext == FACTION_ALLIANCE then
+				tiptext:SetText("|cff4A54E8"..linetext.."|r")
+			end
 		end
 	end
 end
@@ -429,7 +430,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 		return
 	end
 
-	if  InCombatLockdown() and C["Tooltip"].HideInCombat then
+	if InCombatLockdown() and C["Tooltip"].HideInCombat then
 		tt:Hide()
 	end
 
@@ -489,7 +490,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 				targetColor = K.Colors.factioncolors[""..UnitReaction(unitTarget, "player")] or FACTION_BAR_COLORS[UnitReaction(unitTarget, "player")]
 			end
 
-			tt:AddDoubleLine(string_format("%s:", TARGET), string_format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget)))
+			tt:AddDoubleLine(string_format("%s:", BINDING_HEADER_TARGETING), string_format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget)))
 		end
 
 		if C["Tooltip"].TargetInfo and IsInGroup() then
@@ -570,31 +571,12 @@ function Module:GameTooltipStatusBar_OnValueChanged(tt, value)
 	end
 end
 
-function Module:GameTooltip_OnTooltipBug()
-	if GameTooltip:IsShown() then
-		TOOLTOP_BUG = true
-	end
-end
-
-function Module:BAG_UPDATE_DELAYED()
-	if StuffingFrameBags and StuffingFrameBags:IsShown() then
-		if GameTooltip:IsShown() then
-			TOOLTOP_BUG = true
-		end
-	end
-end
-
 function Module:GameTooltip_OnTooltipCleared(tt)
 	if tt:IsForbidden() then
 		return
 	end
 
 	tt.itemCleared = false
-
-	if TOOLTOP_BUG and tt:NumLines() == 0 then
-		tt:Hide()
-		TOOLTOP_BUG = false
-	end
 end
 
 function Module:GameTooltip_OnTooltipSetItem(tt)
@@ -660,7 +642,7 @@ function Module:GameTooltip_ShowProgressBar(tt)
 		return
 	end
 
-	sb.Bar:SetStatusBarTexture(K.GetTexture(C["Tooltip"].Texture) or C["Media"].Texture)
+	sb.Bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].TooltipTextures) or C["Media"].Texture)
 
 	tt.pbBar = sb.Bar
 end
@@ -675,7 +657,7 @@ function Module:GameTooltip_ShowStatusBar(tt)
 		return
 	end
 
-	sb:SetStatusBarTexture(K.GetTexture(C["Tooltip"].Texture) or C["Media"].Texture)
+	sb:SetStatusBarTexture(K.GetTexture(C["UITextures"].TooltipTextures) or C["Media"].Texture)
 end
 
 function Module:CheckBackdropColor(tt)
@@ -762,7 +744,7 @@ function Module:GameTooltip_OnTooltipSetSpell(tt)
 		return
 	end
 
-	if  InCombatLockdown() and C["Tooltip"].HideInCombat then
+	if InCombatLockdown() and C["Tooltip"].HideInCombat then
 		tt:Hide()
 	end
 
@@ -848,7 +830,7 @@ function Module:OnEnable()
 		return
 	end
 
-	local TooltipFont = K.GetFont(C["Tooltip"].Font)
+	local TooltipFont = K.GetFont(C["UIFonts"].TooltipFonts)
 
 	self.MountIDs = {}
 	local mountIDs = C_MountJournal_GetMountIDs()
@@ -902,8 +884,4 @@ function Module:OnEnable()
 	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")
 	self:SecureHookScript(GameTooltipStatusBar, "OnValueChanged", "GameTooltipStatusBar_OnValueChanged")
 	self:RegisterEvent("MODIFIER_STATE_CHANGED")
-
-	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "GameTooltip_OnTooltipBug")
-	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED", "GameTooltip_OnTooltipBug")
-	self:RegisterEvent("BAG_UPDATE_DELAYED")
 end

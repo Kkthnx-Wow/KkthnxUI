@@ -6,29 +6,30 @@ if not oUF then
 end
 
 local _G = _G
+local gmatch = gmatch
+local gsub = gsub
 local math_floor = math.floor
 local string_find = string.find
 local string_format = string.format
 local string_match = string.match
+local string_utf8lower = string.utf8lower
+local string_utf8sub = string.utf8sub
 
+local AFK = _G.AFK
 local C_PetJournal_GetPetTeamAverageLevel = C_PetJournal.GetPetTeamAverageLevel
 local DEAD = _G.DEAD
-local GHOST = _G.GetLocale() == "deDE" and "Geist" or _G.GetSpellInfo(8326)
-local GetComboPoints = _G.GetComboPoints
+local DND = _G.DND
+local GetNumGroupMembers = _G.GetNumGroupMembers
 local GetQuestGreenRange = _G.GetQuestGreenRange
+local GetRaidRosterInfo = _G.GetRaidRosterInfo
 local GetRelativeDifficultyColor = _G.GetRelativeDifficultyColor
-local GetSpecialization = _G.GetSpecialization
 local GetThreatStatusColor = _G.GetThreatStatusColor
+local GHOST = _G.GetLocale() == "deDE" and "Geist" or _G.GetSpellInfo(8326)
 local HEALER = _G.HEALER
 local IsInGroup = _G.IsInGroup
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local QuestDifficultyColors = _G.QuestDifficultyColors
-local SPEC_MAGE_ARCANE = _G.SPEC_MAGE_ARCANE
-local SPEC_MONK_WINDWALKER = _G.SPEC_MONK_WINDWALKER
-local SPEC_PALADIN_RETRIBUTION = _G.SPEC_PALADIN_RETRIBUTION
 local TANK = _G.TANK
-local UNITNAME_SUMMON_TITLE17 = _G.UNITNAME_SUMMON_TITLE17
-local UNKNOWN = _G.UNKNOWN
 local UnitBattlePetLevel = _G.UnitBattlePetLevel
 local UnitClass = _G.UnitClass
 local UnitClassification = _G.UnitClassification
@@ -36,13 +37,13 @@ local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
 local UnitEffectiveLevel = _G.UnitEffectiveLevel
 local UnitExists = _G.UnitExists
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
-local UnitHasVehicleUI = _G.UnitHasVehicleUI
 local UnitHealth = _G.UnitHealth
 local UnitHealthMax = _G.UnitHealthMax
 local UnitIsAFK = _G.UnitIsAFK
 local UnitIsBattlePetCompanion = _G.UnitIsBattlePetCompanion
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDead = _G.UnitIsDead
+local UnitIsDND = _G.UnitIsDND
 local UnitIsFriend = _G.UnitIsFriend
 local UnitIsGhost = _G.UnitIsGhost
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
@@ -52,10 +53,12 @@ local UnitIsRaidOfficer = _G.UnitIsRaidOfficer
 local UnitIsUnit = _G.UnitIsUnit
 local UnitIsWildBattlePet = _G.UnitIsWildBattlePet
 local UnitLevel = _G.UnitLevel
+local UNITNAME_SUMMON_TITLE17 = _G.UNITNAME_SUMMON_TITLE17
 local UnitPower = _G.UnitPower
 local UnitPowerMax = _G.UnitPowerMax
 local UnitPowerType = _G.UnitPowerType
 local UnitReaction = _G.UnitReaction
+local UNKNOWN = _G.UNKNOWN
 
 local function UnitName(unit)
 	local name, realm = _G.UnitName(unit)
@@ -75,8 +78,8 @@ local function abbrev(name)
 	local letters, lastWord = "", string_match(name, ".+%s(.+)$")
 	if lastWord then
 		for word in gmatch(name, ".-%s") do
-			local firstLetter = string.utf8sub(gsub(word, "^[%s%p]*", ""), 1, 1)
-			if firstLetter ~= string.utf8lower(firstLetter) then
+			local firstLetter = string_utf8sub(gsub(word, "^[%s%p]*", ""), 1, 1)
+			if firstLetter ~= string_utf8lower(firstLetter) then
 				letters = string_format("%s%s. ", letters, firstLetter)
 			end
 		end
@@ -106,13 +109,45 @@ oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
 end
 
 oUF.Tags.Events["KkthnxUI:GroupNumber"] = "GROUP_ROSTER_UPDATE"
-oUF.Tags.Methods["KkthnxUI:GroupNumber"] = function(unit)
-	if not UnitInRaid("player") then return end
-	for i = 1, GetNumGroupMembers() do
-		local name, _, subgroup = GetRaidRosterInfo(i)
-		if (name == K.Name) then
-			return "Group " .. subgroup
-		end
+oUF.Tags.Methods["KkthnxUI:GroupNumber"] = function()
+	if not IsInRaid() then
+        return
+    end
+
+    local numGroupMembers = GetNumGroupMembers()
+    for i = 1, MAX_RAID_MEMBERS do
+        if i <= numGroupMembers then
+            local unitName, _, groupNumber = GetRaidRosterInfo(i)
+            if unitName == UnitName("player") then
+                return GROUP.." "..groupNumber
+            end
+        end
+    end
+end
+
+oUF.Tags.Events["KkthnxUI:MonkStagger"] = "PLAYER_TALENT_UPDATE UNIT_POWER_UPDATE UNIT_POWER_FREQUENT UNIT_DISPLAYPOWER UNIT_AURA"
+oUF.Tags.Methods["KkthnxUI:MonkStagger"] = function(unit)
+	if unit ~= "player" then
+		return
+	end
+
+	local cur = UnitStagger(unit) or 0
+	local perc = cur / UnitHealthMax(unit)
+
+	if cur == 0 then
+		return
+	end
+
+	return K.ShortValue(cur).." | "..K.ClassColor..math.floor(perc*100 + .5).."%"
+end
+
+oUF.Tags.Events["KkthnxUI:AdditionalPower"] = "UNIT_POWER_UPDATE"
+oUF.Tags.Methods["KkthnxUI:AdditionalPower"] = function(unit)
+	local cur = UnitPower(unit, ALTERNATE_POWER_INDEX)
+	local max = UnitPowerMax(unit, ALTERNATE_POWER_INDEX)
+
+	if max > 0 and not UnitIsDeadOrGhost(unit) then
+		return format("%s%%", floor(cur/max * 100 + .5))
 	end
 end
 
@@ -292,8 +327,8 @@ oUF.Tags.Methods["KkthnxUI:NameLong"] = function(unit)
 	return NameLong ~= nil and K.ShortenString(NameLong, 20, true) or ""
 end
 
-oUF.Tags.Events["KkthnxUI:AFKDND"] = "PLAYER_FLAGS_CHANGED"
-oUF.Tags.Methods["KkthnxUI:AFKDND"] = function(unit)
+oUF.Tags.Events["KkthnxUI:Status"] = "PLAYER_FLAGS_CHANGED"
+oUF.Tags.Methods["KkthnxUI:Status"] = function(unit)
 	local isAFK, isDND = UnitIsAFK(unit), UnitIsDND(unit)
 	if isAFK then
 		return "|cffCFCFCF "..AFK.."|r"
@@ -324,7 +359,7 @@ oUF.Tags.Methods["KkthnxUI:ThreatColor"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:Leader"] = "UNIT_NAME_UPDATE PARTY_LEADER_CHANGED GROUP_ROSTER_UPDATE"
+oUF.Tags.Events["KkthnxUI:Leader"] = "PARTY_LEADER_CHANGED GROUP_ROSTER_UPDATE"
 oUF.Tags.Methods["KkthnxUI:Leader"] = function(unit)
 	local IsLeader = UnitIsGroupLeader(unit)
 	local IsAssistant = UnitIsGroupAssistant(unit) or UnitIsRaidOfficer(unit)
@@ -333,7 +368,7 @@ oUF.Tags.Methods["KkthnxUI:Leader"] = function(unit)
 	return (Lead .. Assist)
 end
 
-oUF.Tags.Events["KkthnxUI:Role"] = "GROUP_ROSTER_UPDATE PLAYER_ROLES_ASSIGNED ROLE_CHANGED_INFORM"
+oUF.Tags.Events["KkthnxUI:Role"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"
 oUF.Tags.Methods["KkthnxUI:Role"] = function(unit)
 	local role = UnitGroupRolesAssigned(unit)
 	local roleString = ""
@@ -372,67 +407,5 @@ oUF.Tags.Methods["KkthnxUI:RaidStatus"] = function(unit)
 		return "-" .. K.ShortValue(MaxHealth - CurrentHealth)
 	else
 		return string_format("%.1f", CurrentHealth / MaxHealth * 100) .. "%"
-	end
-end
-
-oUF.Tags.Events["KkthnxUI:ClassPower"] = "UNIT_POWER_FREQUENT PLAYER_TARGET_CHANGED UNIT_POWER SPELLS_CHANGED RUNE_POWER_UPDATE"
-oUF.Tags.Methods["KkthnxUI:ClassPower"] = function()
-	local PlayerClass = K.Class
-	local num, max, color
-
-	if (PlayerClass == "MONK") then
-		if (GetSpecialization() == SPEC_MONK_WINDWALKER or 3) then
-			num = UnitPower("player", Enum.PowerType.Chi)
-			max = UnitPowerMax("player", Enum.PowerType.Chi)
-			color = "00CC99"
-
-			if (num == max) then
-				color = "008FF7"
-			end
-		end
-	elseif (PlayerClass == "WARLOCK") then
-		num = UnitPower("player", Enum.PowerType.SoulShards)
-		max = UnitPowerMax("player", Enum.PowerType.SoulShards)
-		color = "A15CFF"
-
-		if (num == max) then
-			color = "FF1A30"
-		end
-	elseif (PlayerClass == "PALADIN") then
-		if (GetSpecialization() == SPEC_PALADIN_RETRIBUTION or 3) then
-			num = UnitPower("player", Enum.PowerType.HolyPower)
-			max = UnitPowerMax("player", Enum.PowerType.HolyPower)
-			color = "FFFF7D"
-
-			if (num == max) then
-				color = "FF1A30"
-			end
-		end
-	elseif (PlayerClass == "MAGE") then
-		if (GetSpecialization() == SPEC_MAGE_ARCANE or 1) then
-			num = UnitPower("player", Enum.PowerType.ArcaneCharges)
-			max = UnitPowerMax("player", Enum.PowerType.ArcaneCharges)
-			color = "A950CA"
-
-			if (num == max) then
-				color = "EE3053"
-			end
-		end
-	else -- Combo Points
-		if (UnitHasVehicleUI("player")) then
-			num = GetComboPoints("vehicle", "target")
-		else
-			num = GetComboPoints("player", "target")
-			max = UnitPowerMax("player", Enum.PowerType.ComboPoints)
-			color = "FFFF66"
-
-			if (num == max) then
-				color = "FF1A30"
-			end
-		end
-	end
-
-	if (num and num > 0) then
-		return string_format("|cff%s%d|r", color, num)
 	end
 end

@@ -5,94 +5,82 @@ local _G = _G
 
 local CreateFrame = _G.CreateFrame
 
-function Module:CreateHealthPrediction(CustomWidth)
-	if not self:IsElementEnabled("HealthPrediction") then
-		self:EnableElement("HealthPrediction")
-	end
+local setWidth = {
+	arena = 140,
+	nameplate = C["Nameplates"].Width,
+	party = 114,
+	player = 140,
+	raid = C["Raid"].Width,
+	target = 140,
+}
 
-	local Health = self.Health
+function Module:CreateHealthPrediction(unit)
+	local health = self.Health
+	local level = 11
+	local width = setWidth[unit] or self.Health:GetWidth()
+	local texture = C["Media"].Blank
 
-	local Width = Health:GetWidth()
-	Width = Width > 0 and Width or CustomWidth
-
-	local Database = C["HealthPrediction"]
-	local Texture = K.GetTexture(Database.Texture) or C["Media"].Texture
-	local PointL = "LEFT"
-	local PointR = "RIGHT"
-	local PointB = "BOTTOM"
-	local PointT = "TOP"
-
-	local myBar = CreateFrame("StatusBar", nil, Health)
-	myBar:SetFrameLevel(11)
-	myBar:SetParent(Health)
-	myBar:SetStatusBarTexture(Texture)
-	myBar:SetStatusBarColor(Database.Personal[1], Database.Personal[2], Database.Personal[3], Database.Personal[4])
-	myBar:ClearAllPoints()
-	myBar:SetPoint(PointT, Health, PointT)
-	myBar:SetPoint(PointB, Health, PointB)
-	myBar:SetPoint(PointL, Health:GetStatusBarTexture(), PointR)
-	myBar:SetSize(Width, 0)
-	myBar.Smooth = true
-	myBar.SmoothSpeed = 3 * 10
-	myBar:Hide()
-
-	local otherBar = CreateFrame("StatusBar", nil, Health)
-	otherBar:SetFrameLevel(11)
-	otherBar:SetParent(Health)
-	otherBar:SetStatusBarTexture(Texture)
-	otherBar:SetStatusBarColor(Database.Others[1], Database.Others[2], Database.Others[3], Database.Others[4])
-	otherBar:ClearAllPoints()
-	otherBar:SetPoint(PointT, Health, PointT)
-	otherBar:SetPoint(PointB, Health, PointB)
-	otherBar:SetPoint(PointL, myBar:GetStatusBarTexture(), PointR)
-	otherBar:SetSize(Width, 0)
-	otherBar.Smooth = true
-	otherBar.SmoothSpeed = 3 * 10
-	otherBar:Hide()
-
-	local absorbBar = CreateFrame("StatusBar", nil, Health)
-	absorbBar:SetFrameLevel(11)
-	absorbBar:SetParent(Health)
-	absorbBar:SetStatusBarTexture(Texture)
-	absorbBar:SetStatusBarColor(Database.Absorbs[1], Database.Absorbs[2], Database.Absorbs[3], Database.Absorbs[4])
-	absorbBar:ClearAllPoints()
-	absorbBar:SetPoint(PointT, Health, PointT)
-	absorbBar:SetPoint(PointB, Health, PointB)
-	absorbBar:SetPoint(PointR, Health, PointR)
-	absorbBar:SetSize(Width, 0)
-	absorbBar:SetReverseFill(true)
-	absorbBar.Smooth = true
-	absorbBar.SmoothSpeed = 3 * 10
-	absorbBar:Hide()
-
-	absorbBar.Overlay = absorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
-	absorbBar.Overlay:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb", "REPEAT", "REPEAT")
-	absorbBar.Overlay:SetVertexColor(Database.Absorbs[1], Database.Absorbs[2], Database.Absorbs[3], Database.Absorbs[4])
-	absorbBar.Overlay:SetHorizTile(true)
-	absorbBar.Overlay:SetVertTile(true)
-	absorbBar.Overlay:SetAllPoints(absorbBar:GetStatusBarTexture())
-
-	local healAbsorbBar = CreateFrame("StatusBar", nil, Health)
-	healAbsorbBar:SetFrameLevel(11)
-	healAbsorbBar:SetParent(Health)
-	healAbsorbBar:SetStatusBarTexture(Texture)
-	healAbsorbBar:SetStatusBarColor(Database.HealAbsorbs[1], Database.HealAbsorbs[2], Database.HealAbsorbs[3], Database.HealAbsorbs[4])
-	healAbsorbBar:ClearAllPoints()
-	healAbsorbBar:SetPoint(PointT, Health, PointT)
-	healAbsorbBar:SetPoint(PointB, Health, PointB)
-	healAbsorbBar:SetPoint(PointR, Health:GetStatusBarTexture(), PointR)
-	healAbsorbBar:SetSize(Width, 0)
+	local healAbsorbBar = CreateFrame("StatusBar", nil, health)
+	healAbsorbBar:SetFrameLevel(level + 1)
+	healAbsorbBar:SetPoint("TOPRIGHT", health:GetStatusBarTexture())
+	healAbsorbBar:SetPoint("BOTTOMRIGHT", health:GetStatusBarTexture())
+	healAbsorbBar:SetWidth(width)
 	healAbsorbBar:SetReverseFill(true)
-	healAbsorbBar.Smooth = true
-	healAbsorbBar.SmoothSpeed = 3 * 10
-	healAbsorbBar:Hide()
+	healAbsorbBar:SetStatusBarTexture(texture)
+	healAbsorbBar:SetStatusBarColor(1, 0, 0, 0.25)
+	K:SetSmoothing(healAbsorbBar, true)
 
-	return {
+	local overHealAbsorb = health:CreateTexture(nil, "ARTWORK")
+	overHealAbsorb:SetWidth(5)
+	overHealAbsorb:SetPoint("TOPRIGHT", health, "TOPLEFT")
+	overHealAbsorb:SetPoint("BOTTOMRIGHT", health, "BOTTOMLEFT")
+
+	local myBar = CreateFrame("StatusBar", nil, health)
+	myBar:SetFrameLevel(level)
+	myBar:SetPoint("TOPLEFT", health:GetStatusBarTexture(), "TOPRIGHT")
+	myBar:SetPoint("BOTTOMLEFT", health:GetStatusBarTexture(), "BOTTOMRIGHT")
+	myBar:SetWidth(width)
+	myBar:SetStatusBarTexture(texture)
+	myBar:SetStatusBarColor(0, 1, 0.5, 0.25)
+	K:SetSmoothing(myBar, true)
+
+	local otherBar = CreateFrame("StatusBar", nil, health)
+	otherBar:SetFrameLevel(level)
+	otherBar:SetPoint("TOPLEFT", myBar:GetStatusBarTexture(), "TOPRIGHT")
+	otherBar:SetPoint("BOTTOMLEFT", myBar:GetStatusBarTexture(), "BOTTOMRIGHT")
+	otherBar:SetWidth(width)
+	otherBar:SetStatusBarTexture(texture)
+	otherBar:SetStatusBarColor(0, 1, 0, 0.25)
+	K:SetSmoothing(otherBar, true)
+
+	local absorbBar = CreateFrame("StatusBar", nil, health)
+	absorbBar:SetFrameLevel(level + 1)
+	absorbBar:SetPoint("TOPLEFT", otherBar:GetStatusBarTexture(), "TOPRIGHT")
+	absorbBar:SetPoint("BOTTOMLEFT", otherBar:GetStatusBarTexture(), "BOTTOMRIGHT")
+	absorbBar:SetWidth(width)
+	absorbBar:SetStatusBarTexture(texture)
+	absorbBar:SetStatusBarColor(1, 1, 0, 0.25)
+	K:SetSmoothing(absorbBar, true)
+
+	local overlay = absorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
+	overlay:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb", "REPEAT", "REPEAT")
+	overlay:SetHorizTile(true)
+	overlay:SetVertTile(true)
+	overlay:SetAllPoints(absorbBar:GetStatusBarTexture())
+	overlay:SetAlpha(0.25)
+
+	local overAbsorb = health:CreateTexture(nil, "ARTWORK")
+	overAbsorb:SetWidth(5)
+	overAbsorb:SetPoint("TOPLEFT", health, "TOPRIGHT", -3, 0)
+	overAbsorb:SetPoint("BOTTOMLEFT", health, "BOTTOMRIGHT", -3, 0)
+
+	self.HealthPrediction = {
+		healAbsorbBar = healAbsorbBar,
 		myBar = myBar,
 		otherBar = otherBar,
 		absorbBar = absorbBar,
-		healAbsorbBar = healAbsorbBar,
+		overAbsorb = overAbsorb,
+		overHealAbsorb = overHealAbsorb,
 		maxOverflow = 1,
-		parent = self,
 	}
 end

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-    <!-- Load_Tooltip -->
-    <Script file="Tooltip.lua"/>
-    <Script file="TooltipQuality.lua"/>
-    <Script file="TooltipIcons.lua"/>
+   <!-- Load_Tooltip -->
+   <Script file="Tooltip.lua" />
+   <Script file="TooltipAzerite.lua" />
+   <Script file="TooltipIcons.lua" />
+   <Script file="TooltipPetInfo.lua" />
+   <Script file="TooltipQuality.lua" />
 </Ui>

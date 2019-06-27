@@ -60,8 +60,8 @@ local function UpdateRaidPower(self, _, unit)
 end
 
 function Module:CreateRaid()
-	local RaidframeFont = K.GetFont(C["Raid"].Font)
-	local RaidframeTexture = K.GetTexture(C["Raid"].Texture)
+	local RaidframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
+	local RaidframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
 	self:RegisterForClicks("AnyUp")
 	self:SetScript("OnEnter", function(self)
@@ -94,13 +94,13 @@ function Module:CreateRaid()
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 11, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, C["Raid"].HealthFormat.Value)
 
-	self.Health.Smooth = C["Raid"].Smooth
-	self.Health.SmoothSpeed = C["Raid"].SmoothSpeed * 10
 	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
+
+	K:SetSmoothing(self.Health, C["Raid"].Smooth)
 
 	if C["Raid"].ManabarShow then
 		self.Power = CreateFrame("StatusBar", nil, self)
@@ -111,10 +111,10 @@ function Module:CreateRaid()
 		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
 		self.Power:SetStatusBarTexture(RaidframeTexture)
 
-		self.Power.Smooth = C["Raid"].Smooth
-		self.Power.SmoothSpeed = C["Raid"].SmoothSpeed * 10
 		self.Power.colorPower = true
 		self.Power.frequentUpdates = true
+
+		K:SetSmoothing(self.Power, C["Raid"].Smooth)
 
 		self.Power.Background = self.Power:CreateTexture(nil, "BORDER")
 		self.Power.Background:SetAllPoints(self.Power)
@@ -164,12 +164,12 @@ function Module:CreateRaid()
 	self.LeaderIndicator:SetPoint("TOPLEFT", -2, 7)
 
 	if C["Raid"].ShowNotHereTimer then
-		self.AFKIndicator = self:CreateFontString(nil, "OVERLAY")
-		self.AFKIndicator:SetPoint("CENTER", self.Overlay, "BOTTOM", 0, 6)
-		self.AFKIndicator:SetFontObject(RaidframeFont)
-		self.AFKIndicator:SetFont(select(1, self.AFKIndicator:GetFont()), 10, select(3, self.AFKIndicator:GetFont()))
-		self.AFKIndicator:SetTextColor(1, 0, 0)
-		self:Tag(self.AFKIndicator, "[KkthnxUI:AFKDND]")
+		self.StatusIndicator = self:CreateFontString(nil, "OVERLAY")
+		self.StatusIndicator:SetPoint("CENTER", self.Overlay, "BOTTOM", 0, 6)
+		self.StatusIndicator:SetFontObject(RaidframeFont)
+		self.StatusIndicator:SetFont(select(1, self.StatusIndicator:GetFont()), 10, select(3, self.StatusIndicator:GetFont()))
+		self.StatusIndicator:SetTextColor(1, 0, 0)
+		self:Tag(self.StatusIndicator, "[KkthnxUI:Status]")
 	end
 
 	if C["Raid"].AuraWatch then
@@ -219,11 +219,13 @@ function Module:CreateRaid()
 
 	if C["Raid"].TargetHighlight then
 		self.OverlayFrame = CreateFrame("Frame", nil, self)
+		self.OverlayFrame:SetFrameLevel(self:GetFrameLevel() + 2)
 		self.OverlayFrame:SetAllPoints()
 
 		self.TargetHighlight = self.OverlayFrame:CreateTexture(nil, "OVERLAY")
 		self.TargetHighlight:SetTexture([[Interface\RAIDFRAME\Raid-FrameHighlights]])
 		self.TargetHighlight:SetTexCoord(0.00781250, 0.55468750, 0.28906250, 0.55468750)
+		self.TargetHighlight:SetVertexColor(0.84, 0.75, 0.65)
 		self.TargetHighlight:SetAllPoints()
 		self.TargetHighlight:Hide()
 
@@ -245,7 +247,7 @@ function Module:CreateRaid()
 		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidTargetGlow, true)
 	end
 
-	self.HealthPrediction = Module.CreateHealthPrediction(self, C["Raid"].RaidLayout.Value == "Damage" and C["Raid"].Width or C["Raid"].Width - 12)
+	Module.CreateHealthPrediction(self, "raid")
 
 	if C["Unitframe"].DebuffHighlight then
 		Module.CreateDebuffHighlight(self)

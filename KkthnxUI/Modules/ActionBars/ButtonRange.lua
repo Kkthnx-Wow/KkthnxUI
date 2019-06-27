@@ -1,65 +1,104 @@
-local _, C = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
+local Module = K:GetModule("ActionBar")
 
--- Lua API
 local _G = _G
-local unpack = unpack
 
--- Wow API
-local ActionHasRange = _G.ActionHasRange
-local hooksecurefunc = _G.hooksecurefunc
-local IsActionInRange = _G.IsActionInRange
 local IsUsableAction = _G.IsUsableAction
-local TOOLTIP_UPDATE_TIME = _G.TOOLTIP_UPDATE_TIME
+local IsActionInRange = _G.IsActionInRange
 
-local function RangeUpdate(self)
-	if C["ActionBar"].Enable then
-		if self.__faderParent and self:GetEffectiveAlpha() < 1 then
-			return
+local UPDATE_DELAY = .2
+local buttonColors, buttonsToUpdate = {}, {}
+local updater = CreateFrame("Frame")
+
+local colors = {
+	["normal"] = {1.0, 1.0, 1.0},
+	["oor"] = {0.8, 0.1, 0.1},
+	["oom"] = {0.5, 0.5, 1.0},
+	["unusable"] = {0.4, 0.4, 0.4}
+}
+
+function Module:OnUpdateRange(elapsed)
+	self.elapsed = (self.elapsed or UPDATE_DELAY) - elapsed
+	if self.elapsed <= 0 then
+		self.elapsed = UPDATE_DELAY
+
+		if not Module:UpdateButtons() then
+			self:Hide()
 		end
 	end
+end
+updater:SetScript("OnUpdate", Module.OnUpdateRange)
 
-	local Icon = self.icon
-	local ID = self.action
-
-	if not ID then
-		return
+function Module:UpdateButtons()
+	if next(buttonsToUpdate) then
+		for button in pairs(buttonsToUpdate) do
+			self.UpdateButtonUsable(button)
+		end
+		return true
 	end
 
-	local IsUsable, NotEnoughMana = IsUsableAction(ID)
-	local HasRange = ActionHasRange(ID)
-	local InRange = IsActionInRange(ID)
+	return false
+end
 
-	if self.outOfRange then
-		Icon:SetVertexColor(unpack(C["ActionBar"].OutOfRange))
+function Module:UpdateButtonStatus()
+	local action = self.action
+
+	if action and self:IsVisible() and HasAction(action) then
+		buttonsToUpdate[self] = true
 	else
-		if IsUsable then -- Usable
-			if (HasRange and InRange == false) then -- Out Of Range
-				Icon:SetVertexColor(unpack(C["ActionBar"].OutOfRange))
-			else -- In range
-				Icon:SetVertexColor(1.0, 1.0, 1.0)
-			end
-		elseif NotEnoughMana then -- Not Enough Power
-			Icon:SetVertexColor(unpack(C["ActionBar"].OutOfMana))
-		else -- Not usable
-			Icon:SetVertexColor(0.4, 0.4, 0.4)
-		end
+		buttonsToUpdate[self] = nil
+	end
+
+	if next(buttonsToUpdate) then
+		updater:Show()
 	end
 end
 
-local function RangeOnUpdate(self)
-	if (not self.rangeTimer) then
+function Module:UpdateButtonUsable(force)
+	if force then
+		buttonColors[self] = nil
+	end
+
+	local action = self.action
+	local isUsable, notEnoughMana = IsUsableAction(action)
+
+	if isUsable then
+		local inRange = IsActionInRange(action)
+		if inRange == false then
+			Module.SetButtonColor(self, "oor")
+		else
+			Module.SetButtonColor(self, "normal")
+		end
+	elseif notEnoughMana then
+		Module.SetButtonColor(self, "oom")
+	else
+		Module.SetButtonColor(self, "unusable")
+	end
+end
+
+function Module:SetButtonColor(colorIndex)
+	if buttonColors[self] == colorIndex then
 		return
 	end
+	buttonColors[self] = colorIndex
 
-	if (self.rangeTimer == TOOLTIP_UPDATE_TIME or .2) then
-		RangeUpdate(self)
-	end
+	local r, g, b = unpack(colors[colorIndex])
+	self.icon:SetVertexColor(r, g, b)
 end
 
-if C["ActionBar"].Enable ~= true then
-	return
+function Module:Register()
+	self:HookScript("OnShow", Module.UpdateButtonStatus)
+	self:HookScript("OnHide", Module.UpdateButtonStatus)
+	self:SetScript("OnUpdate", nil)
+	Module.UpdateButtonStatus(self)
 end
 
-hooksecurefunc("ActionButton_OnUpdate", RangeOnUpdate)
-hooksecurefunc("ActionButton_Update", RangeUpdate)
-hooksecurefunc("ActionButton_UpdateUsable", RangeUpdate)
+local function button_UpdateUsable(button)
+	Module.UpdateButtonUsable(button, true)
+end
+
+function Module:HookActionEvents()
+	hooksecurefunc("ActionButton_OnUpdate", self.Register)
+	hooksecurefunc("ActionButton_Update", self.UpdateButtonStatus)
+	hooksecurefunc("ActionButton_UpdateUsable", button_UpdateUsable)
+end

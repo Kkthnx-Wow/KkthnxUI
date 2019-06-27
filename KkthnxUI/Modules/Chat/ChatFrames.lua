@@ -3,14 +3,12 @@ local Module = K:NewModule("Chat", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0"
 
 local _G = _G
 local ipairs = ipairs
-local pairs = pairs
 local select = select
 local string_format = string.format
 local string_gsub = string.gsub
 local string_len = string.len
 local string_sub = string.sub
 local table_insert = table.insert
-local table_remove = table.remove
 local unpack = unpack
 
 local ChangeChatColor = _G.ChangeChatColor
@@ -24,8 +22,6 @@ local ChatFrame_AddMessageGroup = _G.ChatFrame_AddMessageGroup
 local ChatFrame_RemoveAllMessageGroups = _G.ChatFrame_RemoveAllMessageGroups
 local ChatFrame_RemoveChannel = _G.ChatFrame_RemoveChannel
 local ChatFrame_SendTell = _G.ChatFrame_SendTell
-local ChatFrame_SystemEventHandler = _G.ChatFrame_SystemEventHandler
-local ChatTypeGroup = _G.ChatTypeGroup
 local ChatTypeInfo = _G.ChatTypeInfo
 local CreateFrame = _G.CreateFrame
 local C_VoiceChat_SetPortraitTexture = _G.C_VoiceChat.SetPortraitTexture
@@ -169,7 +165,7 @@ function Module:NoMouseAlpha()
 end
 
 function Module:SetChatFont()
-	local Font = K.GetFont(C["Chat"].Font)
+	local Font = K.GetFont(C["UIFonts"].ChatFonts)
 	local Path, _, Flag = _G[Font]:GetFont()
 	local CurrentFont, CurrentSize, CurrentFlag = self:GetFont()
 
@@ -431,6 +427,11 @@ function Module:Install()
 	ChatFrame_RemoveChannel(_G.ChatFrame1, TRADE)
 	ChatFrame_AddChannel(_G.ChatFrame3, TRADE)
 
+	if _G.GetBuildInfo and K.WowBuild == 28153 and K.Realm == "Sethraliss" and _G.GetLocale() == "enUS" or _G.GetLocale() == "enGB" then
+		ChatFrame_RemoveChannel(_G.ChatFrame1, "world_en")
+		ChatFrame_AddChannel(_G.ChatFrame3, "world_en")
+	end
+
 	-- set the chat groups names in class color to enabled for all chat groups which players names appear
 	chatGroup = {"SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL"}
 	for i = 1, _G.MAX_WOW_CHAT_CHANNELS do
@@ -446,7 +447,7 @@ function Module:Install()
 	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255) -- Trade
 	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- Local Defense
 
-	if K.Name == "Upright" and K.Realm == "Sethraliss" and not InCombatLockdown() then
+	if K.Name == "Kkthnx" and K.Realm == "Sethraliss" and not InCombatLockdown() then
 		SetCVar("scriptErrors", 1)
 	end
 
@@ -542,6 +543,10 @@ function Module:SetupFrame()
 	VoiceChatPromptActivateChannel.SetPoint = K.Noop
 
 	if C["Chat"].ShortenChannelNames then
+		-- Online/Offline Info
+		_G.ERR_FRIEND_ONLINE_SS = string_gsub(_G.ERR_FRIEND_ONLINE_SS, "%]%|h", "]|h|cff00c957")
+		_G.ERR_FRIEND_OFFLINE_S = string_gsub(_G.ERR_FRIEND_OFFLINE_S, "%%s", "%%s|cffff7f50")
+
 		-- Guild
 		_G.CHAT_GUILD_GET = "|Hchannel:GUILD|hG|h %s "
 		_G.CHAT_OFFICER_GET = "|Hchannel:OFFICER|hO|h %s "
@@ -570,7 +575,7 @@ function Module:SetupFrame()
 		_G.CHAT_BN_WHISPER_INFORM_GET = "to %s "
 		_G.CHAT_BN_WHISPER_GET = "from %s "
 
-		-- Say / Yell
+		-- Say/Yell
 		_G.CHAT_SAY_GET = "%s "
 		_G.CHAT_YELL_GET = "%s "
 

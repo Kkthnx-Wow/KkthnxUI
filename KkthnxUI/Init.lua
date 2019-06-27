@@ -177,7 +177,7 @@ AddOn.AddOns = {}
 AddOn.AddOnVersion = {}
 for i = 1, GetNumAddOns() do
 	local Name = GetAddOnInfo(i)
-	AddOn.AddOns[string_lower(Name)] = GetAddOnEnableState(AddOn.Name, Name) == 2 or false
+	AddOn.AddOns[string_lower(Name)] = GetAddOnEnableState(AddOn.Name, Name) == 2
 	AddOn.AddOnVersion[string_lower(Name)] = GetAddOnMetadata(Name, "Version")
 end
 

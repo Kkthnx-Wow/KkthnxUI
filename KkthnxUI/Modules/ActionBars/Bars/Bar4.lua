@@ -37,11 +37,6 @@ function Module:CreateBar4()
 	-- Move The Buttons Into Position And Reparent Them
 	MultiBarRight:SetParent(frame)
 	MultiBarRight:EnableMouse(false)
-	hooksecurefunc(MultiBarRight, "SetScale", function(self, scale)
-		if scale < 1 then
-			self:SetScale(1)
-		end
-	end)
 
 	for i = 1, num do
 		local button = _G["MultiBarRightButton"..i]
@@ -93,8 +88,8 @@ function Module:CreateBar4()
 	frame:SetPoint(frame.Pos[1], frame.Pos[2], frame.Pos[3], frame.Pos[4], frame.Pos[5])
 	K.Mover(frame, "Bar4", "Bar4", frame.Pos)
 
-	if C["ActionBar"].Bar4Fade == true and K.BarFaderConfig then
-		K.CreateButtonFrameFader(frame, buttonList)
+	if C["ActionBar"].Bar4Fade == true then
+		K.CreateButtonFrameFader(frame, buttonList, K.fader)
 	end
 
 	-- Fix Annoying Visibility

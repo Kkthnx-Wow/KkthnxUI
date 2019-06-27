@@ -19,8 +19,8 @@ local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
 
 function Module:CreatePlayer()
-	local UnitframeFont = K.GetFont(C["Unitframe"].Font)
-	local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
+	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
+	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
 	self:RegisterForClicks("AnyUp")
 	self:SetScript("OnEnter", function(self)
@@ -46,8 +46,6 @@ function Module:CreatePlayer()
 	self.Health:CreateBorder()
 
 	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
-	self.Health.Smooth = C["Unitframe"].Smooth
-	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
@@ -55,21 +53,22 @@ function Module:CreatePlayer()
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
 
+	K:SetSmoothing(self.Health, C["Unitframe"].Smooth)
+
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetFontObject(UnitframeFont)
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
-	self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent]")
+	self:Tag(self.Health.Value, C["Unitframe"].PlayerHealthFormat.Value)
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetSize(140, 14)
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
 	self.Power:CreateBorder()
-
-	self.Power.Smooth = C["Unitframe"].Smooth
-	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = true
+
+	K:SetSmoothing(self.Power, C["Unitframe"].Smooth)
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
 	self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
@@ -123,7 +122,7 @@ function Module:CreatePlayer()
 		self.Castbar:ClearAllPoints()
 
 		if C["Raid"].RaidLayout.Value == "Healer" then
-			self.Position = {"BOTTOM", UIParent, "BOTTOM", 0, 400}
+			self.Position = {"BOTTOM", UIParent, "BOTTOM", 0, 350}
 		else
 			self.Position = {"BOTTOM", UIParent, "BOTTOM", 0, 320}
 		end
@@ -202,26 +201,13 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].AdditionalPower then
-		self.AdditionalPower = CreateFrame("StatusBar", "AdditionalPower", self.Health)
-		self.AdditionalPower:SetFrameStrata(self:GetFrameStrata())
-		self.AdditionalPower:SetHeight(12)
-		if C["Unitframe"].ShowPortrait then
-			self.AdditionalPower:SetWidth(self.Portrait:GetWidth() + self.Health:GetWidth() + 6)
-			self.AdditionalPower:SetPoint("LEFT", self.Portrait)
-			self.AdditionalPower:SetPoint("RIGHT")
-			self.AdditionalPower:ClearAllPoints()
-			self.AdditionalPower:SetPoint("BOTTOM", self, "TOP", 0, 3)
-		else
-			self.AdditionalPower:SetWidth(self.Health:GetWidth())
-			self.AdditionalPower:ClearAllPoints()
-			self.AdditionalPower:SetPoint("BOTTOM", self, "TOP", 25, 3)
+		if K.Class == "DRUID" then
+			Module.CreateAddPower(self)
+		elseif K.Class == 'PRIEST' then
+			Module.CreateAddPower(self)
+		elseif K.Class == 'SHAMAN' then
+			Module.CreateAddPower(self)
 		end
-		self.AdditionalPower:SetStatusBarTexture(UnitframeTexture)
-		self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power["MANA"]))
-		self.AdditionalPower:CreateBorder()
-		self.AdditionalPower.Smooth = C["Unitframe"].Smooth
-		self.AdditionalPower.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
-		self.AdditionalPower.frequentUpdates = true
 	end
 
 	if C["Unitframe"].ShowPortrait then
@@ -246,7 +232,7 @@ function Module:CreatePlayer()
 		end
 	end
 
-	self.HealthPrediction = Module.CreateHealthPrediction(self, 140)
+	Module.CreateHealthPrediction(self, "player")
 
 	if (C["Unitframe"].PowerPredictionBar) then
 		self.PowerPrediction = Module.CreatePowerPrediction(self)

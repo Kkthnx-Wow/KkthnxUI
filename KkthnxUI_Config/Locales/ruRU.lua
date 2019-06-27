@@ -24,16 +24,17 @@ local MINIMAP_LABEL = _G.MINIMAP_LABEL
 local MISCELLANEOUS = _G.MISCELLANEOUS
 local PARTY = _G.PARTY
 local RAID = _G.RAID
-local RAIDS = _G.RAIDS
 local RAID_CONTROL = _G.RAID_CONTROL
+local RAIDS = _G.RAIDS
 local REVERSE_NEW_LOOT_TEXT = _G.REVERSE_NEW_LOOT_TEXT
 local ROLE = _G.ROLE
 local SCENARIOS = _G.SCENARIOS
-local UNITFRAME_LABEL = _G.UNITFRAME_LABEL
+local TEXTURES_SUBHEADER = _G.TEXTURES_SUBHEADER
 local UNIT_NAMEPLATES = _G.UNIT_NAMEPLATES
+local UNITFRAME_LABEL = _G.UNITFRAME_LABEL
 local WORLDMAP_BUTTON = _G.WORLDMAP_BUTTON
 
-KkthnxUIConfig["ruRU"] = {
+_G.KkthnxUIConfig["ruRU"] = {
 	-- Menu Groups Display Names
 	["GroupNames"] = {
 		-- Let's keep this in alphabetical order, shall we?
@@ -60,6 +61,8 @@ KkthnxUIConfig["ruRU"] = {
 		["Raid"] = RAID,
 		["Skins"] = "Шкурки",
 		["Tooltip"] = "Подсказки",
+		["UIFonts"] = ModuleNewFeature.."Fonts",
+		["UITextures"] = ModuleNewFeature..TEXTURES_SUBHEADER,
 		["Unitframe"] = UNITFRAME_LABEL,
 		["WorldMap"] = WORLDMAP_BUTTON
 	},
@@ -1833,4 +1836,98 @@ KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Текстура панелей",
 		},
 	},
+
+	-- Fonts Local
+	["UIFonts"] = {
+		["ActionBarsFonts"] = {
+			["Name"] = "ActionBar",
+		},
+
+		["AuraFonts"] = {
+			["Name"] = "Auras",
+		},
+
+		["ChatFonts"] = {
+			["Name"] = "Chat",
+		},
+
+		["DataBarsFonts"] = {
+			["Name"] = "DataBars",
+		},
+
+		["DataTextFonts"] = {
+			["Name"] = "DataTexts",
+		},
+
+		["GeneralFonts"] = {
+			["Name"] = "General",
+		},
+
+		["InventoryFonts"] = {
+			["Name"] = "Inventory",
+		},
+
+		["MinimapFonts"] = {
+			["Name"] = "Minimap",
+		},
+
+		["NameplateFonts"] = {
+			["Name"] = "Nameplate",
+		},
+
+		["QuestTrackerFonts"] = {
+			["Name"] = "Quest Tracker",
+		},
+
+		["SkinFonts"] = {
+			["Name"] = "Skins",
+		},
+
+		["TooltipFonts"] = {
+			["Name"] = "Tooltip",
+		},
+
+		["UnitframeFonts"] = {
+			["Name"] = "Unitframes",
+		},
+	},
+
+	-- Textures Local
+	["UITextures"] = {
+		["DataBarsTexture"] = {
+			["Name"] = "DataBars",
+		},
+
+		["FilgerTextures"] = {
+			["Name"] = "Filger",
+		},
+
+		["GeneralTextures"] = {
+			["Name"] = "General",
+		},
+
+		["LootTextures"] = {
+			["Name"] = "Loot",
+		},
+
+		["NameplateTextures"] = {
+			["Name"] = "Nameplate",
+		},
+
+		["QuestTrackerTexture"] = {
+			["Name"] = "Quest Tracker",
+		},
+
+		["SkinTextures"] = {
+			["Name"] = "Skins",
+		},
+
+		["TooltipTextures"] = {
+			["Name"] = "Tooltip",
+		},
+
+		["UnitframeTextures"] = {
+			["Name"] = "Unitframes",
+		},
+	}
 }

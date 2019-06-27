@@ -51,7 +51,7 @@ function Module:CreateBar2()
 	frame:SetPoint(frame.Pos[1], frame.Pos[2], frame.Pos[3], frame.Pos[4], frame.Pos[5])
 	K.Mover(frame, "Bar2", "Bar2", frame.Pos)
 
-	if C["ActionBar"].Bar2Fade == true and K.BarFaderConfig then
-		K.CreateButtonFrameFader(frame, buttonList)
+	if C["ActionBar"].Bar2Fade == true then
+		K.CreateButtonFrameFader(frame, buttonList, K.fader)
 	end
 end

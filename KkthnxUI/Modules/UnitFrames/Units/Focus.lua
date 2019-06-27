@@ -14,8 +14,8 @@ local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
 
 function Module:CreateFocus()
-	local UnitframeFont = K.GetFont(C["Unitframe"].Font)
-	local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
+	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
+	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
 	self:RegisterForClicks("AnyUp")
 	self:SetScript("OnEnter", function(self)
@@ -40,14 +40,14 @@ function Module:CreateFocus()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.Smooth = C["Unitframe"].Smooth
-	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
+
+	K:SetSmoothing(self.Health, C["Unitframe"].Smooth)
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetFontObject(UnitframeFont)
@@ -60,10 +60,10 @@ function Module:CreateFocus()
 	self.Power:SetStatusBarTexture(UnitframeTexture)
 	self.Power:CreateBorder()
 
-	self.Power.Smooth = C["Unitframe"].Smooth
-	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = true
+
+	K:SetSmoothing(self.Power, C["Unitframe"].Smooth)
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
 	self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)

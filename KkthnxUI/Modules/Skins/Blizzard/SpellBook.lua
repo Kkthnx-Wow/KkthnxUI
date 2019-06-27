@@ -8,7 +8,7 @@ local table_insert = table.insert
 local hooksecurefunc = _G.hooksecurefunc
 
 local function LoadSpellBookSkin()
-	local professionTexture = K.GetTexture(C["Skins"].Texture)
+	local professionTexture = K.GetTexture(C["UITextures"].SkinTextures)
 
 	for i = 1, _G.SPELLS_PER_PAGE do
 		local button = _G["SpellButton" .. i]

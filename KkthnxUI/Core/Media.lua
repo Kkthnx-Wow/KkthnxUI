@@ -38,6 +38,16 @@ ExpresswayFontOutline:SetFont([[Interface\AddOns\KkthnxUI\Media\Fonts\Expressway
 ExpresswayFontOutline:SetShadowColor(0, 0, 0, 0)
 ExpresswayFontOutline:SetShadowOffset(0, -0)
 
+local BlizzardFont = CreateFont("BlizzardFont")
+BlizzardFont:SetFont(_G.STANDARD_TEXT_FONT, 12)
+BlizzardFont:SetShadowColor(0, 0, 0, 1)
+BlizzardFont:SetShadowOffset(1.25, -1.25)
+
+local BlizzardFontOutline = CreateFont("BlizzardFontOutline")
+BlizzardFontOutline:SetFont(_G.STANDARD_TEXT_FONT, 12, "OUTLINE")
+BlizzardFontOutline:SetShadowColor(0, 0, 0, 0)
+BlizzardFontOutline:SetShadowOffset(0, -0)
+
 local TextureTable = {
 	["AltzUI"] = C["Media"].AltzUI,
 	["AsphyxiaUI"] = C["Media"].AsphyxiaUI,
@@ -52,16 +62,14 @@ local TextureTable = {
 }
 
 local FontTable = {
-	-- Blizzard Fonts
-	["Blizzard"] = "GameFontWhite",
-	-- KkthnxUI Fonts
+	["Blizzard Outline"] = "BlizzardFontOutline",
+	["Blizzard"] = "BlizzardFont",
+	["Expressway Outline"] = "ExpresswayFontOutline",
+	["Expressway"] = "ExpresswayFont",
 	["KkthnxUI Outline"] = "KkthnxUIFontOutline",
 	["KkthnxUI"] = "KkthnxUIFont",
-	-- Extra Fonts
-	["SansNarrow"] = "SansNarrowFont",
 	["SansNarrow Outline"] = "SansNarrowFontOutline",
-	["Expressway"] = "ExpresswayFont",
-	["Expressway Outline"] = "ExpresswayFontOutline"
+	["SansNarrow"] = "SansNarrowFont",
 }
 
 function K.GetFont(font)

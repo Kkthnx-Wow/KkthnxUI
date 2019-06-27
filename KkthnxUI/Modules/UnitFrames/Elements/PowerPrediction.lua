@@ -15,7 +15,7 @@ function Module:CreatePowerPrediction()
 
 	local width = power:GetWidth()
 	local pointR = "RIGHT"
-	local texture = K.GetTexture(C["Unitframe"].Texture)
+	local texture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
 	local mainBar = CreateFrame("StatusBar", nil, power)
 	mainBar:SetReverseFill(true)

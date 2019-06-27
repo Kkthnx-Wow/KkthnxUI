@@ -48,7 +48,7 @@ local DataTextTime = CreateFrame("Frame")
 
 local NameColor = K.RGBToHex(K.Color.r, K.Color.g, K.Color.b)
 local ValueColor = K.RGBToHex(1, 1, 1)
-local DataTextTimeFont = K.GetFont(C["DataText"].Font)
+local DataTextTimeFont = K.GetFont(C["UIFonts"].DataTextFonts)
 
 DataTextTime.Text = Minimap:CreateFontString(nil, "OVERLAY")
 DataTextTime.Text:SetFontObject(DataTextTimeFont)

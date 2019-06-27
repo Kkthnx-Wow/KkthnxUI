@@ -2,12 +2,10 @@ local K, C = unpack(select(2, ...))
 
 local _G = _G
 local assert = assert
-local hooksecurefunc = hooksecurefunc
 local math_abs = math.abs
 local math_ceil = math.ceil
 local math_floor = math.floor
 local mod = mod
-local pairs = pairs
 local print = print
 local select = select
 local string_format = string.format
@@ -20,28 +18,68 @@ local unpack = unpack
 
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
-local GetCVar = _G.GetCVar
 local GetScreenHeight = _G.GetScreenHeight
 local GetScreenWidth = _G.GetScreenWidth
 local GetSpecialization = _G.GetSpecialization
 local GetSpecializationRole = _G.GetSpecializationRole
-local InCombatLockdown = _G.InCombatLockdown
 local IsEveryoneAssistant = _G.IsEveryoneAssistant
 local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
 local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME
 local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
-local SetCVar = _G.SetCVar
 local UIParent = _G.UIParent
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
-K.Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C["General"].UIScale
-K.NoScaleMult = K.Mult * C["General"].UIScale
+K.UIScale = GetCVar("uiScale") or 0.71
+K.Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / K.UIScale
+K.NoScaleMult = K.Mult * K.UIScale
 
 function K.Print(...)
 	print("|cff3c9bed"..K.Title.."|r:", ...)
+end
+
+function K.CreateMoverFrame(self, parent, saved)
+	local frame = parent or self
+	frame:SetMovable(true)
+	frame:SetUserPlaced(true)
+	frame:SetClampedToScreen(true)
+
+	self:EnableMouse(true)
+	self:RegisterForDrag("LeftButton")
+
+	self:SetScript("OnDragStart", function()
+		frame:StartMoving()
+	end)
+
+	self:SetScript("OnDragStop", function()
+		frame:StopMovingOrSizing()
+
+		if not saved then
+			return
+		end
+
+		if not KkthnxUIData[GetRealmName()][UnitName("player")]["TempAnchor"] then
+			KkthnxUIData[GetRealmName()][UnitName("player")]["TempAnchor"] = {}
+		end
+
+		local orig, _, tar, x, y = frame:GetPoint()
+		KkthnxUIData[GetRealmName()][UnitName("player")]["TempAnchor"][frame:GetName()] = {orig, "UIParent", tar, x, y}
+	end)
+end
+
+function K.CreateGearIcon(self, name)
+	local gearButton = CreateFrame("Button", name, self)
+	gearButton:SetSize(22, 22)
+	gearButton.Icon = gearButton:CreateTexture(nil, "ARTWORK")
+	gearButton.Icon:SetAllPoints()
+	gearButton.Icon:SetTexture("Interface\\WorldMap\\Gear_64")
+	gearButton.Icon:SetTexCoord(0, .5, 0, .5)
+	gearButton:SetHighlightTexture("Interface\\WorldMap\\Gear_64")
+	gearButton:GetHighlightTexture():SetTexCoord(0, .5, 0, .5)
+
+	return gearButton
 end
 
 local shortValueDec, value
@@ -207,6 +245,41 @@ function K.GetAnchors(frame)
 	return vhalf..hhalf, frame, (vhalf == "TOP" and "BOTTOM" or "TOP")..hhalf
 end
 
+function K.HideTooltip()
+	if GameTooltip:IsForbidden() then
+		return
+	end
+
+	GameTooltip:Hide()
+end
+
+local function tooltipOnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_NONE")
+	GameTooltip:SetPoint(K.GetAnchors(self))
+	GameTooltip:ClearLines()
+	if tonumber(self.text) then
+		GameTooltip:SetSpellByID(self.text)
+	else
+		local r, g, b = 1, 1, 1
+		if self.color == "class" then
+			r, g, b = K.Color.r, K.Color.g, K.Color.b
+		elseif self.color == "system" then
+			r, g, b = 1, .8, 0
+		end
+		GameTooltip:AddLine(self.text, r, g, b, 1)
+	end
+	GameTooltip:Show()
+end
+
+function K.AddTooltip(self, anchor, text, color)
+	self.anchor = anchor
+	self.text = text
+	self.color = color
+
+	self:SetScript("OnEnter", tooltipOnEnter)
+	self:SetScript("OnLeave", K.HideTooltip)
+end
+
 function K.ShortenString(string, numChars, dots)
 	local bytes = string:len()
 	if (bytes <= numChars) then
@@ -338,18 +411,20 @@ end
 
 -- Format seconds to min/hour/day
 local Day, Hour, Minute = 86400, 3600, 60
-function K.FormatTime(time)
-	if (time >= Day) then
-		return string_format("%dd", math_ceil(time / Day))
-	elseif (time >= Hour) then
-		return string_format("%dh", math_ceil(time / Hour))
-	elseif (time >= Minute) then
-		return string_format("%dm", math_ceil(time / Minute))
-	elseif (time >= Minute / 12) then
-		return math_floor(time)
+function K.FormatTime(s)
+	if s >= Day then
+		return string_format("%d"..K.ClassColor.."d", s / Day), s % Day
+	elseif s >= Hour then
+		return string_format("%d"..K.ClassColor.."h", s / Hour), s % Hour
+	elseif s >= Minute then
+		return string_format("%d"..K.ClassColor.."m", s / Minute), s % Minute
+	elseif s > 10 then
+		return string_format("|cffcccc33%d|r", s), s - math_floor(s)
+	elseif s > 3 then
+		return string_format("|cffffff00%d|r", s), s - math_floor(s)
+	else
+		return string_format("|cffff0000%.1f|r", s), s - string_format("%.1f", s)
 	end
-
-	return string_format("%.1f", time)
 end
 
 function K.FormatMoney(amount)
@@ -365,9 +440,11 @@ function K.FormatMoney(amount)
 	if gold > 0 then
 		str = string_format("%d%s%s", gold, goldname, (silver > 0 or copper > 0) and " " or "")
 	end
+
 	if silver > 0 then
 		str = string_format("%s%d%s%s", str, silver, silvername, copper > 0 and " " or "")
 	end
+
 	if copper > 0 or value == 0 then
 		str = string_format("%s%d%s", str, copper, coppername)
 	end

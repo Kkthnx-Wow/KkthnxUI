@@ -52,7 +52,7 @@ function Module:CreatePetbar()
 	frame:SetPoint(frame.Pos[1], frame.Pos[2], frame.Pos[3], frame.Pos[4], frame.Pos[5])
 	K.Mover(frame, "PetBar", "PetBar", frame.Pos)
 
-	if C["ActionBar"].PetFade == true and K.BarFaderConfig then
-		K.CreateButtonFrameFader(frame, buttonList)
+	if C["ActionBar"].PetFade == true then
+		K.CreateButtonFrameFader(frame, buttonList, K.fader)
 	end
 end

@@ -9,7 +9,7 @@ local _G = _G
 local next = next
 local select = select
 
-local ClassPowerTexture = K.GetTexture(C["Unitframe"].Texture)
+local ClassPowerTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 local ComboColor = K.Colors.power["COMBO_POINTS"]
 local CreateFrame = _G.CreateFrame
 local UnitHasVehicleUI = _G.UnitHasVehicleUI
@@ -134,7 +134,7 @@ function Module:CreateClassPower()
 
 	for index = 1, 11 do
 		local Bar = CreateFrame("StatusBar", "oUF_KkthnxClassPower", self)
-		Bar:SetSize(self.Health and self.Health:GetWidth() or 140, 16)
+		Bar:SetSize(self.Health and self.Health:GetWidth() or 140, 14)
 		Bar:SetStatusBarTexture(ClassPowerTexture)
 		Bar:CreateBorder()
 
@@ -162,7 +162,7 @@ function Module:CreateRuneBar()
 		local numRunes, maxWidth, gap = 6, 140, 6
 		local width = ((maxWidth / numRunes) - (((numRunes-1) * gap) / numRunes))
 
-		Rune:SetSize(width, 16)
+		Rune:SetSize(width, 14)
 		Rune:SetStatusBarTexture(ClassPowerTexture)
 		Rune:CreateBorder()
 
@@ -187,9 +187,14 @@ function Module:CreateStaggerBar()
 	stagger:SetPoint("LEFT", 4, 0)
 	stagger:SetPoint("RIGHT", -4, 0)
 	stagger:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
-	stagger:SetHeight(16)
+	stagger:SetHeight(14)
 	stagger:SetStatusBarTexture(ClassPowerTexture)
 	stagger:CreateBorder()
+
+	stagger.Value = stagger:CreateFontString(nil, "OVERLAY")
+	stagger.Value:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+	stagger.Value:SetPoint("CENTER", stagger, "CENTER", 0, 0)
+	self:Tag(stagger.Value, "[KkthnxUI:MonkStagger]")
 
 	self.Stagger = stagger
 end
@@ -197,15 +202,13 @@ end
 -- Create Class Power Bars For Nameplates (Combo Points...)
 function Module:CreateNamePlateClassPower()
 	local ClassPower = CreateFrame("Frame", nil, self)
-	ClassPower:SetPoint("TOP", self, "BOTTOM", 0, -4)
-	ClassPower:SetSize(C["Nameplates"].Width, C["Nameplates"].Height)
+	ClassPower:SetSize(C["Nameplates"].Width, C["Nameplates"].Height - 2)
 	ClassPower.UpdateColor = UpdateClassPowerColor
 	ClassPower.PostUpdate = PostUpdateNameplateClassPower
 
 	for index = 1, 11 do
 		local Bar = CreateFrame("StatusBar", nil, ClassPower)
-		Bar:SetWidth(C["Nameplates"].Width)
-		Bar:SetHeight(14)
+		Bar:SetSize(C["Nameplates"].Width, C["Nameplates"].Height - 2)
 		Bar:SetStatusBarTexture(ClassPowerTexture)
 		Bar:CreateShadow(true)
 
@@ -228,14 +231,13 @@ end
 -- Death Knight Runebar For Nameplates
 function Module:CreateNamePlateRuneBar()
 	local Runes = CreateFrame("Frame", nil, self)
-	Runes:SetPoint("TOP", self, "BOTTOM", 0, -4)
-	Runes:SetSize(C["Nameplates"].Width, C["Nameplates"].Height)
+	Runes:SetSize(C["Nameplates"].Width, C["Nameplates"].Height - 2)
 	for index = 1, 6 do
 		local Rune = CreateFrame("StatusBar", nil, Runes)
 		local numRunes, maxWidth, gap = 6, C["Nameplates"].Width, 4
 		local width = ((maxWidth / numRunes) - (((numRunes-1) * gap) / numRunes))
 
-		Rune:SetSize(width, 14)
+		Rune:SetSize(width, C["Nameplates"].Height - 2)
 		Rune:SetStatusBarTexture(ClassPowerTexture)
 		Rune:CreateShadow(true)
 
@@ -253,4 +255,20 @@ function Module:CreateNamePlateRuneBar()
 	Runes.PostUpdate = PostUpdateRune
 
 	self.Runes = Runes
+end
+
+function Module:CreateNamePlateStaggerBar()
+	local stagger = CreateFrame("StatusBar", nil, self)
+	stagger:SetWidth(C["Nameplates"].Width)
+	stagger:SetHeight(C["Nameplates"].Height - 2)
+	stagger:SetStatusBarTexture(ClassPowerTexture)
+	stagger:CreateShadow(true)
+
+	-- This is fucked atm.
+	--[[stagger.Value = stagger:CreateFontString(nil, "OVERLAY")
+	stagger.Value:SetFontObject(K.GetFont(C["Nameplates"].Font))
+	stagger.Value:SetPoint("CENTER", stagger, "CENTER", 0, 0)
+	self:Tag(stagger.Value, "[KkthnxUI:MonkStagger]")--]]
+
+	self.Stagger = stagger
 end

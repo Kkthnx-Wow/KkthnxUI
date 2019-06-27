@@ -19,8 +19,8 @@ local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
 
 function Module:CreateTarget()
-	local UnitframeFont = K.GetFont(C["Unitframe"].Font)
-	local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
+	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
+	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
 	self:RegisterForClicks("AnyUp")
 	self:SetScript("OnEnter", function(self)
@@ -46,8 +46,6 @@ function Module:CreateTarget()
 	self.Health:CreateBorder()
 
 	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
-	self.Health.Smooth = C["Unitframe"].Smooth
-	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
@@ -55,10 +53,12 @@ function Module:CreateTarget()
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
 
+	K:SetSmoothing(self.Health, C["Unitframe"].Smooth)
+
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	self.Health.Value:SetFontObject(UnitframeFont)
-	self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
+	self:Tag(self.Health.Value, C["Unitframe"].TargetHealthFormat.Value)
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetSize(140, 14)
@@ -66,10 +66,10 @@ function Module:CreateTarget()
 	self.Power:SetStatusBarTexture(UnitframeTexture)
 	self.Power:CreateBorder()
 
-	self.Power.Smooth = C["Unitframe"].Smooth
-	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = true
+
+	K:SetSmoothing(self.Power, C["Unitframe"].Smooth)
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
 	self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
@@ -181,7 +181,7 @@ function Module:CreateTarget()
 		K.Mover(self.Castbar, "TargetCastBar", "TargetCastBar", {"BOTTOM", "PlayerCastbar", "TOP", 0, 6})
 	end
 
-	self.HealthPrediction = Module.CreateHealthPrediction(self, 140)
+	Module.CreateHealthPrediction(self, "target")
 
 	if C["Unitframe"].PortraitTimers then
 		Module.CreatePortraitTimers(self)

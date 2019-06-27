@@ -385,7 +385,6 @@ K.PopupDialogs["KKTHNXUI_OUTDATED"] = {
 	end,
 }
 
-
 local MAX_STATIC_POPUPS = 4
 function K.StaticPopup_OnShow(self)
 	PlaySound(PlaySoundKitID and "igmainmenuopen" or SOUNDKIT.IG_MAINMENU_OPEN)

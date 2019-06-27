@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("ObjectiveFrame", "AceEvent-3.0", "AceHook-3.0")
 
 local _G = _G
@@ -30,35 +30,42 @@ local function IsFramePositionedLeft(frame)
 	return positionedLeft
 end
 
+function Module:SetObjectiveFrameAutoHide()
+	if not _G.ObjectiveTrackerFrame.AutoHider then -- Kaliel's Tracker prevents Module:MoveObjectiveFrame() from executing
+		return
+	end
+
+	if C["Automation"].AutoCollapse then
+		RegisterStateDriver(_G.ObjectiveTrackerFrame.AutoHider, "objectiveHider", "[@arena1,exists][@arena2,exists][@arena3,exists][@arena4,exists][@arena5,exists][@boss1,exists][@boss2,exists][@boss3,exists][@boss4,exists] 1;0")
+	else
+		RegisterStateDriver(_G.ObjectiveTrackerFrame.AutoHider, "objectiveHider", "0")
+	end
+end
+
 function Module:MoveObjectiveFrame()
-	local Anchor1, Parent, Anchor2, X, Y = "TOPRIGHT", UIParent, "TOPRIGHT", -200, -270
-	local Data = KkthnxUIData[K.Realm][K.Name]
-
-	local ObjectiveFrameHolder = CreateFrame("Frame", "TrackerFrameHolder", UIParent)
+	local ObjectiveFrameHolder = CreateFrame("Frame", "ObjectiveFrameHolder", UIParent)
 	ObjectiveFrameHolder:SetSize(130, 22)
-	ObjectiveFrameHolder:SetPoint(Anchor1, Parent, Anchor2, X, Y)
+	ObjectiveFrameHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -200, -300)
 
+	K.Mover(ObjectiveFrameHolder, "ObjectiveFrameMover", "Objective Frame", {"TOPRIGHT", UIParent, "TOPRIGHT", -200, -300}, 130, 22)
+
+	local ObjectiveTrackerFrame = _G.ObjectiveTrackerFrame
 	ObjectiveTrackerFrame:ClearAllPoints()
 	ObjectiveTrackerFrame:SetPoint("TOP", ObjectiveFrameHolder, "TOP")
 	Module:SetObjectiveFrameHeight()
 	ObjectiveTrackerFrame:SetClampedToScreen(false)
 
-	-- prevent error from occuring if another addon decides it wants to disable these functions
-	ObjectiveTrackerFrame.SetMovable = nil
-	ObjectiveTrackerFrame.SetUserPlaced = nil
-
 	ObjectiveTrackerFrame:SetMovable(true)
-	ObjectiveTrackerFrame:SetUserPlaced(true) -- UIParent.lua line 3090 stops it from being moved <3
 
-	K.Mover(ObjectiveFrameHolder, "ObjectiveFrame", "ObjectiveFrame", {Anchor1, Parent, Anchor2, X, Y})
-
-	if Data and Data.Movers and Data.Movers.TrackerFrameHolder then
-		ObjectiveFrameHolder:ClearAllPoints()
-		ObjectiveFrameHolder:SetPoint(Data.Movers.TrackerFrameHolder[1], Data.Movers.TrackerFrameHolder[2], Data.Movers.TrackerFrameHolder[3], Data.Movers.TrackerFrameHolder[4], Data.Movers.TrackerFrameHolder[5])
+	if ObjectiveTrackerFrame:IsMovable() then
+		ObjectiveTrackerFrame:SetUserPlaced(true) -- UIParent.lua line 3090 stops it from being moved <3
 	end
 
+	ObjectiveTrackerFrame:ClearAllPoints()
+	ObjectiveTrackerFrame:SetPoint("TOP", ObjectiveFrameHolder, "TOP")
+
 	local function RewardsFrame_SetPosition(block)
-		local rewardsFrame = ObjectiveTrackerBonusRewardsFrame
+		local rewardsFrame = _G.ObjectiveTrackerBonusRewardsFrame;
 		rewardsFrame:ClearAllPoints()
 		if IsFramePositionedLeft(ObjectiveTrackerFrame) then
 			rewardsFrame:SetPoint("TOPLEFT", block, "TOPRIGHT", -10, -4)
@@ -66,8 +73,27 @@ function Module:MoveObjectiveFrame()
 			rewardsFrame:SetPoint("TOPRIGHT", block, "TOPLEFT", 10, -4)
 		end
 	end
-
 	hooksecurefunc("BonusObjectiveTracker_AnimateReward", RewardsFrame_SetPosition)
+
+	ObjectiveTrackerFrame.AutoHider = CreateFrame("Frame", nil, _G.ObjectiveTrackerFrame, "SecureHandlerStateTemplate")
+	ObjectiveTrackerFrame.AutoHider:SetAttribute("_onstate-objectiveHider", [[
+	if newstate == 1 then
+		self:Hide()
+	else
+		self:Show()
+	end
+	]])
+
+	ObjectiveTrackerFrame.AutoHider:SetScript("OnHide", function()
+		local _, _, difficulty = GetInstanceInfo()
+		if difficulty ~= 8 then
+			_G.ObjectiveTracker_Collapse()
+		end
+	end)
+
+	ObjectiveTrackerFrame.AutoHider:SetScript("OnShow", _G.ObjectiveTracker_Expand)
+
+	self:SetObjectiveFrameAutoHide()
 end
 
 function Module:OnEnable()

@@ -33,10 +33,11 @@ local REVERSE_NEW_LOOT_TEXT = _G.REVERSE_NEW_LOOT_TEXT
 local ROLE = _G.ROLE
 local SCENARIOS = _G.SCENARIOS
 local UNITFRAME_LABEL = _G.UNITFRAME_LABEL
-local UNIT_NAMEPLATES = _G.UNIT_NAMEPLATES
+-- local UNIT_NAMEPLATES = _G.UNIT_NAMEPLATES -- Keep this for later.
 local WORLDMAP_BUTTON = _G.WORLDMAP_BUTTON
+local TEXTURES_SUBHEADER = _G.TEXTURES_SUBHEADER
 
-KkthnxUIConfig["deDE"] = {
+_G.KkthnxUIConfig["deDE"] = {
 	-- Menu Groups Display Names
 	["GroupNames"] = {
 		-- Let's keep this in alphabetical order, shall we?
@@ -58,13 +59,15 @@ KkthnxUIConfig["deDE"] = {
 		["Minimap"] = MINIMAP_LABEL,
 		["MinimapButtons"] = "Minimap Buttons",
 		["Misc"] = MISCELLANEOUS,
-		["Nameplates"] = "Namensplaketten", -- UNIT_NAMEPLATES is to long for menu
+		["Nameplates"] = "Namensplaketten", -- UNIT_NAMEPLATES is to long for menu, I want to do a dymanic sizing for the config one day.
 		["Party"] = PARTY,
 		["QuestNotifier"] = "Quest Notifier",
 		["Raid"] = RAID,
 		["RaidCooldown"] = "RaidCD's",
 		["Skins"] = "Skins",
 		["Tooltip"] = "Tooltip",
+		["UIFonts"] = ModuleNewFeature.."Fonts",
+		["UITextures"] = ModuleNewFeature..TEXTURES_SUBHEADER,
 		["Unitframe"] = UNITFRAME_LABEL,
 		["WorldMap"] = WORLDMAP_BUTTON
 	},
@@ -1913,4 +1916,98 @@ KkthnxUIConfig["deDE"] = {
 			["Name"] = "Zeige in der Arena",
 		},
 	},
+
+	-- Fonts Local
+	["UIFonts"] = {
+		["ActionBarsFonts"] = {
+			["Name"] = "ActionBar",
+		},
+
+		["AuraFonts"] = {
+			["Name"] = "Auras",
+		},
+
+		["ChatFonts"] = {
+			["Name"] = "Chat",
+		},
+
+		["DataBarsFonts"] = {
+			["Name"] = "DataBars",
+		},
+
+		["DataTextFonts"] = {
+			["Name"] = "DataTexts",
+		},
+
+		["GeneralFonts"] = {
+			["Name"] = "General",
+		},
+
+		["InventoryFonts"] = {
+			["Name"] = "Inventory",
+		},
+
+		["MinimapFonts"] = {
+			["Name"] = "Minimap",
+		},
+
+		["NameplateFonts"] = {
+			["Name"] = "Nameplate",
+		},
+
+		["QuestTrackerFonts"] = {
+			["Name"] = "Quest Tracker",
+		},
+
+		["SkinFonts"] = {
+			["Name"] = "Skins",
+		},
+
+		["TooltipFonts"] = {
+			["Name"] = "Tooltip",
+		},
+
+		["UnitframeFonts"] = {
+			["Name"] = "Unitframes",
+		},
+	},
+
+	-- Textures Local
+	["UITextures"] = {
+		["DataBarsTexture"] = {
+			["Name"] = "DataBars",
+		},
+
+		["FilgerTextures"] = {
+			["Name"] = "Filger",
+		},
+
+		["GeneralTextures"] = {
+			["Name"] = "General",
+		},
+
+		["LootTextures"] = {
+			["Name"] = "Loot",
+		},
+
+		["NameplateTextures"] = {
+			["Name"] = "Nameplate",
+		},
+
+		["QuestTrackerTexture"] = {
+			["Name"] = "Quest Tracker",
+		},
+
+		["SkinTextures"] = {
+			["Name"] = "Skins",
+		},
+
+		["TooltipTextures"] = {
+			["Name"] = "Tooltip",
+		},
+
+		["UnitframeTextures"] = {
+			["Name"] = "Unitframes",
+		},
+	}
 }

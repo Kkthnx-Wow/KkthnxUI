@@ -1,78 +1,49 @@
-local K = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
+local Module = K:NewModule("AutoWhisperInvite", "AceEvent-3.0")
 
-if not K.Name == "Upright" or K.Name == "Kkthnxtv" or K.Name == "Deadarroww" and not K.Realm == "Sethraliss" then -- Only For People Who Will Test These Lame Ass New Features.
-	return
-end
-
-local _G = _G
-
-local ShortStringThing = _G.CreateFrame("Frame")
-ShortStringThing:RegisterEvent("PLAYER_LOGIN")
-ShortStringThing:RegisterEvent("MAIL_SHOW")
-ShortStringThing:RegisterEvent("MAIL_CLOSED")
-
-local function ShortStringThing_EventHandler(_, event)
-	if event == "MAIL_SHOW" then
-		_G.COPPER_AMOUNT = "%d Copper"
-		_G.SILVER_AMOUNT = "%d Silver"
-		_G.GOLD_AMOUNT = "%d Gold"
-	else
-		_G.COPPER_AMOUNT = "%d|cFF954F28".._G.COPPER_AMOUNT_SYMBOL.."|r"
-		_G.SILVER_AMOUNT = "%d|cFFC0C0C0".._G.SILVER_AMOUNT_SYMBOL.."|r"
-		_G.GOLD_AMOUNT = "%d|cFFF0D440".._G.GOLD_AMOUNT_SYMBOL.."|r"
+function Module:GetQueueStatus()
+	-- Battlegrounds / PvP
+	local WaitTime = GetBattlefieldEstimatedWaitTime(1)
+	if WaitTime ~= 0 then
+		return true
 	end
 
-	_G.BATTLE_PET_LOOT_RECEIVED = "+ "
-	_G.CURRENCY_GAINED = "+ %s +"
-	_G.CURRENCY_GAINED_MULTIPLE = "+ %s x%d +"
-	_G.CURRENCY_GAINED_MULTIPLE_BONUS = "+ %s x%d (Bonus Objective) +"
-	_G.CURRENCY_LOST_FROM_DEATH = "Lost - %s x%d -"
-	_G.LOOT_CURRENCY_REFUND = "Refunded - %s x%d -"
-	_G.LOOT_DISENCHANT_CREDIT = "%s Disenchanted - %s -"
-	_G.LOOT_ITEM = "%s + %s +"
-	_G.LOOT_ITEM_BONUS_ROLL = "%s + %s Bonus +"
-	_G.LOOT_ITEM_BONUS_ROLL_MULTIPLE = "%s + %sx%d Bonus +"
-	_G.LOOT_ITEM_BONUS_ROLL_SELF = "+ %s Bonus +"
-	_G.LOOT_ITEM_BONUS_ROLL_SELF_MULTIPLE = "+ %sx%d Bonus +"
-	_G.LOOT_ITEM_CREATED_SELF = "+ %s +"
-	_G.LOOT_ITEM_CREATED_SELF_MULTIPLE = "+ %sx%d +"
-	_G.LOOT_ITEM_MULTIPLE = "%s + %sx%d +"
-	_G.LOOT_ITEM_PUSHED = "%s + %s +"
-	_G.LOOT_ITEM_PUSHED_MULTIPLE = "%s + %sx%d +"
-	_G.LOOT_ITEM_PUSHED_SELF = "+ %s +"
-	_G.LOOT_ITEM_PUSHED_SELF = "+ %s +"
-	_G.LOOT_ITEM_PUSHED_SELF_MULTIPLE = "+ %sx%d +"
-	_G.LOOT_ITEM_PUSHED_SELF_MULTIPLE = "+ %sx%d +"
-	_G.LOOT_ITEM_REFUND = "Refunded - %s -"
-	_G.LOOT_ITEM_REFUND_MULTIPLE = "Refunded - %sx%d -"
-	_G.LOOT_ITEM_SELF = "+ %s +"
-	_G.LOOT_ITEM_SELF_MULTIPLE = "+ %sx%d +"
-	_G.LOOT_MONEY_SPLIT = "+ %s"
-	_G.YOU_LOOT_MONEY = "+ %s"
-end
-
-ShortStringThing:SetScript("OnEvent", ShortStringThing_EventHandler)
-
---------------------------------------------------------------------
-
-local errorMessages = {
-	[ERR_ATTACK_MOUNTED]			= true,
-	[ERR_MOUNT_ALREADYMOUNTED]		= true,
-	[ERR_NOT_WHILE_MOUNTED]			= true,
-	[ERR_TAXIPLAYERALREADYMOUNTED]	= true,
-	[SPELL_FAILED_NOT_MOUNTED]		= true,
-}
-
-local AutoDismount = CreateFrame("Frame")
-AutoDismount:RegisterEvent("UI_ERROR_MESSAGE")
-
-local function CheckDismount(self, event, ...)
-	if not IsMounted() or not errorMessages[select(2, ...)] then
-		return
+	-- LFG / LFR
+	for _, instance in pairs({LE_LFG_CATEGORY_LFD, LE_LFG_CATEGORY_LFR, LE_LFG_CATEGORY_RF, LE_LFG_CATEGORY_SCENARIO, LE_LFG_CATEGORY_FLEXRAID}) do
+		local Queued = GetLFGMode(instance)
+		if Queued ~= nil then
+			return true
+		end
 	end
 
-	Dismount()
-	UIErrorsFrame:Clear()
+	return false
 end
 
-AutoDismount:SetScript("OnEvent", CheckDismount)
+function Module:CreateWhisperInvite(event, ...)
+	local message, sender = ...
+	if (not UnitExists("party1") or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and strmatch(strlower(message), "^"..C["Automation"].WhisperInvite) then
+		if event == "CHAT_MSG_WHISPER" then
+			if Module:GetQueueStatus() then
+				SendChatMessage("I'm currently in Queue!", "WHISPER", nil, sender)
+			else
+				InviteUnit(sender)
+			end
+		else
+			local presenceID = select(13, ...)
+			if Module:GetQueueStatus() then
+				BNSendWhisper(presenceID, "I'm currently in Queue!")
+			else
+				BNInviteFriend(presenceID)
+			end
+		end
+	end
+end
+
+function Module:OnEnable()
+	self:RegisterEvent("CHAT_MSG_WHISPER", "CreateWhisperInvite")
+	self:RegisterEvent("CHAT_MSG_BN_WHISPER", "CreateWhisperInvite")
+end
+
+function Module:OnDisable()
+	self:UnregisterAllEvents()
+end

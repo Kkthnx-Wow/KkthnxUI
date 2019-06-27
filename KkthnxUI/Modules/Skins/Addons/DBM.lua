@@ -3,8 +3,8 @@ if not (C["Skins"].DBM and K.CheckAddOnState("DBM-Core") and K.CheckAddOnState("
 	return
 end
 
---local DBMFont = K.GetFont(C["Skins"].Font)
---local DBMTexture = K.GetTexture(C["Skins"].Texture)
+--local DBMFont = K.GetFont(C["UIFonts"].SkinFonts)
+--local DBMTexture = K.GetTexture(C["UITextures"].SkinTextures)
 
 local _G = _G
 

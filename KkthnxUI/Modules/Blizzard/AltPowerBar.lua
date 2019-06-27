@@ -1,25 +1,38 @@
 local K, C = unpack(select(2, ...))
 local Module = K:NewModule("AltPowerBar", "AceEvent-3.0", "AceHook-3.0")
 
-local _G = _G
+if not Module then
+	return
+end
 
+local _G = _G
 local floor = math.floor
 local format = string.format
+
+local CreateFrame = _G.CreateFrame
+local hooksecurefunc = _G.hooksecurefunc
 local UnitAlternatePowerInfo = _G.UnitAlternatePowerInfo
 local UnitPowerMax = _G.UnitPowerMax
 local UnitPower = _G.UnitPower
 
-local statusBarColorGradient = true
+local statusBarColorGradient = false
+local statusBarColor = {r = 0.2, g = 0.4, b = 0.8}
+local textFormat = "NAMECURMAX"
+local enable = true
+local width = 250
+local height = 20
+local statusBar = K.GetTexture(C["UITextures"].GeneralTextures)
+local font = K.GetFont(C["UIFonts"].GeneralFonts)
 
 local function updateTooltip(self)
-	if GameTooltip:IsForbidden() then
+	if _G.GameTooltip:IsForbidden() then
 		return
 	end
 
 	if self.powerName and self.powerTooltip then
-		GameTooltip:SetText(self.powerName, 1, 1, 1)
-		GameTooltip:AddLine(self.powerTooltip, nil, nil, nil, 1)
-		GameTooltip:Show()
+		_G.GameTooltip:SetText(self.powerName, 1, 1, 1)
+		_G.GameTooltip:AddLine(self.powerTooltip, nil, nil, nil, 1)
+		_G.GameTooltip:Show()
 	end
 end
 
@@ -28,12 +41,34 @@ local function onEnter(self)
 		return
 	end
 
-	GameTooltip_SetDefaultAnchor(GameTooltip, self)
+	_G.GameTooltip_SetDefaultAnchor(_G.GameTooltip, self)
 	updateTooltip(self)
 end
 
 local function onLeave()
-	GameTooltip:Hide()
+	_G.GameTooltip:Hide()
+end
+
+function Module:SetAltPowerBarText(name, value, max, percent)
+	local textFormat = textFormat
+
+	if textFormat == "NONE" or not textFormat then
+		return ""
+	elseif textFormat == "NAME" then
+		return format("%s", name)
+	elseif textFormat == "NAMEPERC" then
+		return format("%s: %s%%", name, percent)
+	elseif textFormat == "NAMECURMAX" then
+		return format("%s: %s / %s", name, value, max)
+	elseif textFormat == "NAMECURMAXPERC" then
+		return format("%s: %s / %s - %s%%", name, value, max, percent)
+	elseif textFormat == "PERCENT" then
+		return format("%s%%", percent)
+	elseif textFormat == "CURMAX" then
+		return format("%s / %s", value, max)
+	elseif textFormat == "CURMAXPERC" then
+		return format("%s / %s - %s%%", value, max, percent)
+	end
 end
 
 function Module:PositionAltPowerBar()
@@ -41,24 +76,22 @@ function Module:PositionAltPowerBar()
 	holder:SetPoint("TOP", UIParent, "TOP", 0, -18)
 	holder:SetSize(128, 50)
 
-	PlayerPowerBarAlt:ClearAllPoints()
-	PlayerPowerBarAlt:SetPoint("CENTER", holder, "CENTER")
-	PlayerPowerBarAlt:SetParent(holder)
-	PlayerPowerBarAlt.ignoreFramePositionManager = true
+	_G.PlayerPowerBarAlt:ClearAllPoints()
+	_G.PlayerPowerBarAlt:SetPoint("CENTER", holder, "CENTER")
+	_G.PlayerPowerBarAlt:SetParent(holder)
+	_G.PlayerPowerBarAlt.ignoreFramePositionManager = true
 
-	-- The Blizzard function FramePositionDelegate:UIParentManageFramePositions()
-	-- calls :ClearAllPoints on PlayerPowerBarAlt under certain conditions.
-	-- Doing ".ClearAllPoints = E.noop" causes error when you enter combat.
-	local function Position(bar)
-		bar:SetPoint("CENTER", AltPowerBarHolder, "CENTER")
-	end
-	hooksecurefunc(PlayerPowerBarAlt, "ClearAllPoints", Position)
+	--[[ The Blizzard function FramePositionDelegate:UIParentManageFramePositions()
+	calls :ClearAllPoints on PlayerPowerBarAlt under certain conditions.
+	Doing ".ClearAllPoints = K.Noop" causes error when you enter combat. --]]
+	local function Position(bar) bar:SetPoint("CENTER", AltPowerBarHolder, "CENTER") end
+	hooksecurefunc(_G.PlayerPowerBarAlt, "ClearAllPoints", Position)
 
-	K.Mover(holder, "PlayerPowerBarAlt", "PlayerPowerBarAlt", {"TOP", UIParent, "TOP", 0, -18})
+	K.Mover(holder, "PlayerPowerBarAlt", "Alternative Power", {"TOP", UIParent, "TOP", 0, -18}, 128, 50)
 end
 
 function Module:UpdateAltPowerBarColors()
-	local bar = KkthnxUI_AltPowerBar
+	local bar = _G.KkthnxUI_AltPowerBar
 
 	if statusBarColorGradient then
 		if bar.colorGradientR and bar.colorGradientG and bar.colorGradientB then
@@ -68,7 +101,7 @@ function Module:UpdateAltPowerBarColors()
 			local value = (maxPower > 0 and power / maxPower) or 0
 			bar.colorGradientValue = value
 
-			local r, g, b = K.ColorGradient(value, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
+			local r, g, b = K.ColorGradient(value, 0.8,0,0, 0.8,0.8,0, 0,0.8,0)
 			bar.colorGradientR, bar.colorGradientG, bar.colorGradientB = r, g, b
 
 			bar:SetStatusBarColor(r, g, b)
@@ -76,24 +109,29 @@ function Module:UpdateAltPowerBarColors()
 			bar:SetStatusBarColor(0.6, 0.6, 0.6) -- uh, fallback!
 		end
 	else
-		bar:SetStatusBarColor(0.2, 0.4, 0.8)
+		local color = statusBarColor
+		bar:SetStatusBarColor(color.r, color.g, color.b)
 	end
 end
 
 function Module:UpdateAltPowerBarSettings()
-	local bar = KkthnxUI_AltPowerBar
-	local width = 250
-	local height = 20
-	local statusBar = K.GetTexture(C["General"].Texture)
-	local font = K.GetFont(C["General"].Font)
+	local bar = _G.KkthnxUI_AltPowerBar
 
-	bar:SetSize(width, height)
+	bar:SetSize(width or 250, height or 20)
 	bar:SetStatusBarTexture(statusBar)
 	bar.text:SetFontObject(font)
 	AltPowerBarHolder:SetSize(bar.Backdrop:GetSize())
 
-	local _, _, perc = bar.powerValue or 0, bar.powerMaxValue or 0, bar.powerPercent or 0
-	bar.text:SetText(format("%s%%", perc))
+	K:SetSmoothing(bar, true)
+
+	local textFormat = textFormat
+	if textFormat == "NONE" or not textFormat then
+		bar.text:SetText("")
+	else
+		local power, maxPower, perc = bar.powerValue or 0, bar.powerMaxValue or 0, bar.powerPercent or 0
+		local text = Module:SetAltPowerBarText(bar.powerName or "", power, maxPower, perc)
+		bar.text:SetText(text)
+	end
 end
 
 function Module:SkinAltPowerBar()
@@ -120,8 +158,8 @@ function Module:SkinAltPowerBar()
 	powerbar:RegisterEvent("UNIT_POWER_BAR_HIDE")
 	powerbar:RegisterEvent("PLAYER_ENTERING_WORLD")
 	powerbar:SetScript("OnEvent", function(bar)
-		PlayerPowerBarAlt:UnregisterAllEvents()
-		PlayerPowerBarAlt:Hide()
+		_G.PlayerPowerBarAlt:UnregisterAllEvents()
+		_G.PlayerPowerBarAlt:Hide()
 
 		local barType, min, _, _, _, _, _, _, _, _, powerName, powerTooltip = UnitAlternatePowerInfo("player")
 		if not barType then
@@ -132,8 +170,8 @@ function Module:SkinAltPowerBar()
 		bar.powerTooltip = powerTooltip
 
 		if barType then
-			local power = UnitPower("player", ALTERNATE_POWER_INDEX)
-			local maxPower = UnitPowerMax("player", ALTERNATE_POWER_INDEX) or 0
+			local power = UnitPower("player", _G.ALTERNATE_POWER_INDEX)
+			local maxPower = UnitPowerMax("player", _G.ALTERNATE_POWER_INDEX) or 0
 			local perc = (maxPower > 0 and floor(power / maxPower * 100)) or 0
 
 			bar.powerValue = power
@@ -148,13 +186,14 @@ function Module:SkinAltPowerBar()
 				local value = (maxPower > 0 and power / maxPower) or 0
 				bar.colorGradientValue = value
 
-				local r, g, b = K.ColorGradient(value, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
+				local r, g, b = K.ColorGradient(value, 0.8,0,0, 0.8,0.8,0, 0,0.8,0)
 				bar.colorGradientR, bar.colorGradientG, bar.colorGradientB = r, g, b
 
 				bar:SetStatusBarColor(r, g, b)
 			end
 
-			bar.text:SetText(format("%s%%", perc))
+			local text = Module:SetAltPowerBarText(powerName or "", power, maxPower, perc)
+			bar.text:SetText(text)
 		else
 			bar:Hide()
 		end

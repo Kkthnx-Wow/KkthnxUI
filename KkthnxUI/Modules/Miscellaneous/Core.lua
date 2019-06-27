@@ -6,7 +6,6 @@ local select = select
 
 local CreateFrame = _G.CreateFrame
 local GetBattlefieldStatus = _G.GetBattlefieldStatus
-local GetCVarBool = _G.GetCVarBool
 local GetLFGDungeonInfo = _G.GetLFGDungeonInfo
 local GetLFGDungeonRewards = _G.GetLFGDungeonRewards
 local GetLFGRandomDungeonInfo = _G.GetLFGRandomDungeonInfo
@@ -17,19 +16,6 @@ local GetZoneText = _G.GetZoneText
 local hooksecurefunc = _G.hooksecurefunc
 local PlaySound = _G.PlaySound
 local SOUNDKIT = _G.SOUNDKIT
-
-local LatencyInterval
-local MinLatency, MaxLatency
-local OldLatency = -9999
-local UpdatedCount = 0
-
-local LagToleranceDefaults = {
-	Offset = 0,
-	Interval = 30,
-	Threshold = 5,
-	Min = nil,
-	Max = nil,
-}
 
 local BATTLEGROUNDS = {
 	["Wintergrasp"] = true,
@@ -48,11 +34,34 @@ local BATTLEGROUNDS = {
 	["Temple of Kotmogu"] = true
 }
 
-local LagToleranceTimer = CreateFrame("Frame")
-LagToleranceTimer:Hide()
+local ERRORMESSAGES = {
+	[ERR_ATTACK_MOUNTED]			= true,
+	[ERR_MOUNT_ALREADYMOUNTED]		= true,
+	[ERR_NOT_WHILE_MOUNTED]			= true,
+	[ERR_TAXIPLAYERALREADYMOUNTED]	= true,
+	[SPELL_FAILED_NOT_MOUNTED]		= true,
+}
 
-local LagToleranceEvents = CreateFrame("Frame")
-LagToleranceEvents:RegisterEvent("VARIABLES_LOADED")
+if C["General"].LagTolerance then
+	local customlag = CreateFrame("Frame")
+	local int = 5
+	local _, _, _, lag = GetNetStats()
+
+	local LatencyUpdate = function(_, elapsed)
+		int = int - elapsed
+		if int < 0 then
+			if lag ~= 0 and lag <= 400 then
+				if not InCombatLockdown() then
+					SetCVar("SpellQueueWindow", tostring(lag))
+				end
+			end
+			int = 5
+		end
+	end
+
+	customlag:SetScript("OnUpdate", LatencyUpdate)
+	LatencyUpdate(customlag, 10)
+end
 
 if C["General"].AutoScale then
 	local scaleBtn = CreateFrame("Button", "KkthnxUIScaleBtn", Advanced_, "UIPanelButtonTemplate")
@@ -79,79 +88,6 @@ if C["General"].AutoScale then
 	end)
 end
 
-LagToleranceEvents:SetScript("OnEvent", function(self)
-	if C["General"].LagTolerance ~= true then
-		return
-	end
-
-	-- Get Min/Max latency values
-	MinLatency = 0
-	MaxLatency = 400
-
-	-- Start timer
-	LatencyInterval = 1
-	LagToleranceTimer:Show()
-end)
-
-LagToleranceTimer:SetScript("OnUpdate", function(_, elapsed)
-	if C["General"].LagTolerance ~= true then
-		return
-	end
-
-	LatencyInterval = LatencyInterval - elapsed
-	if LatencyInterval <= 0 then
-		-- Get Latency
-		local _, _, _, Latency = GetNetStats()
-		if Latency ~= OldLatency then
-
-			if not Latency then Latency = 0 end
-			Latency = Latency + LagToleranceDefaults.Offset
-
-			-- Set Latency to be within Min/Max boundaries
-			if LagToleranceDefaults.Min then
-				Latency = max(Latency, LagToleranceDefaults.Min)
-			end
-
-			if LagToleranceDefaults.Max then
-				Latency = min(Latency, LagToleranceDefaults.Max)
-			end
-
-			if Latency < MinLatency then
-				Latency = MinLatency
-			end
-
-			if Latency > MaxLatency then
-				Latency = MaxLatency
-			end
-
-			-- If Latency changed and greater than the change threshold, then update
-			if ((Latency < OldLatency) and ((Latency + LagToleranceDefaults.Threshold) <= OldLatency)) or ((Latency > OldLatency) and ((Latency - LagToleranceDefaults.Threshold) >= OldLatency)) then
-				SetCVar("SpellQueueWindow", Latency)
-
-				OldLatency = Latency
-			end
-
-			-- Search for first real Latency update, so we can find the beginning of GetNetStats()'s 30sec update cycle
-			if UpdatedCount < 2 then
-				UpdatedCount = UpdatedCount + 1
-			end
-		end
-
-		-- Reset timer
-		if UpdatedCount < 2 then
-			-- Still looking for first real Latency update
-			LatencyInterval = 1
-		elseif UpdatedCount < 5 then
-			-- Run 3 more passes at 1sec each, so we can get 3sec ahead of the GetNetStats() update cycle
-			LatencyInterval = 1
-			UpdatedCount = UpdatedCount + 1
-		else
-			-- Update cycle determined, set to normal updates from now on
-			LatencyInterval = LagToleranceDefaults.Interval
-		end
-	end
-end)
-
 -- Force readycheck warning
 local function ShowReadyCheckHook(_, initiator)
 	if initiator ~= "player" then
@@ -160,23 +96,8 @@ local function ShowReadyCheckHook(_, initiator)
 end
 hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
 
--- Force lockActionBars CVar
-local ForceActionBarCVar = CreateFrame("Frame")
-ForceActionBarCVar:RegisterEvent("PLAYER_ENTERING_WORLD")
-ForceActionBarCVar:RegisterEvent("CVAR_UPDATE")
-ForceActionBarCVar:SetScript("OnEvent", function()
-	if not GetCVarBool("lockActionBars") and C["ActionBar"].Enable then
-		K.LockCVar("lockActionBars", 1)
-	end
-end)
-
 -- Force other warnings
-local ForceWarning = CreateFrame("Frame")
-ForceWarning:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
-ForceWarning:RegisterEvent("PET_BATTLE_QUEUE_PROPOSE_MATCH")
-ForceWarning:RegisterEvent("LFG_PROPOSAL_SHOW")
-ForceWarning:RegisterEvent("RESURRECT_REQUEST")
-ForceWarning:SetScript("OnEvent", function(_, event)
+function Module:ForceOtherWarnings(event)
 	if event == "UPDATE_BATTLEFIELD_STATUS" then
 		for i = 1, GetMaxBattlefieldID() do
 			local status = GetBattlefieldStatus(i)
@@ -192,7 +113,7 @@ ForceWarning:SetScript("OnEvent", function(_, event)
 	elseif event == "RESURRECT_REQUEST" then
 		PlaySound(37, "Master")
 	end
-end)
+end
 
 -- Auto select current event boss from LFD tool(EventBossAutoSelect by Nathanyel)
 local firstLFD
@@ -209,6 +130,20 @@ LFDParentFrame:HookScript("OnShow", function()
 	end
 end)
 
+-- Repoint Vehicle
+function Module:VehicleSeatMover()
+	local frame = CreateFrame("Frame", "KkthnxUIVehicleSeatMover", UIParent)
+	frame:SetSize(125, 125)
+	K.Mover(frame, "VehicleSeat", "VehicleSeat", {"BOTTOM", UIParent, -304, 4})
+
+	hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(self, _, parent)
+		if parent == "MinimapCluster" or parent == MinimapCluster then
+			self:ClearAllPoints()
+			self:SetPoint("TOPLEFT", frame)
+		end
+	end)
+end
+
 -- Remove boss emote spam during battlegrounds (ArathiBasin SpamFix by Partha)
 local RaidBossEmoteFrame, spamDisabled = RaidBossEmoteFrame
 function Module:ToggleBossEmotes()
@@ -221,9 +156,35 @@ function Module:ToggleBossEmotes()
 	end
 end
 
+function Module:UI_ERROR_MESSAGE(_, ...)
+	if not IsMounted() or not ERRORMESSAGES[select(2, ...)] then
+		return
+	end
+
+	Dismount()
+	UIErrorsFrame:Clear()
+end
+
 function Module:OnEnable()
-	if C["Misc"].BattlegroundSpam == true then
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", "ToggleBossEmotes")
-		self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ToggleBossEmotes")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ToggleBossEmotes")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ToggleBossEmotes")
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS", "ForceOtherWarnings")
+	self:RegisterEvent("PET_BATTLE_QUEUE_PROPOSE_MATCH", "ForceOtherWarnings")
+	self:RegisterEvent("LFG_PROPOSAL_SHOW", "ForceOtherWarnings")
+	self:RegisterEvent("RESURRECT_REQUEST", "ForceOtherWarnings")
+	self:RegisterEvent("UI_ERROR_MESSAGE")
+
+	self:VehicleSeatMover()
+
+	-- Personal Shit.
+	if K.Name == "Kkthnx" and K.Realm == "Sethraliss" then
+		if FriendsTabHeaderTab2 then
+			FriendsTabHeaderTab2:Hide()
+		end
+
+		if FriendsTabHeaderTab3 then
+			FriendsTabHeaderTab3:ClearAllPoints()
+			FriendsTabHeaderTab3:SetPoint("LEFT", FriendsTabHeaderTab1, "RIGHT", 0, 0)
+		end
 	end
 end

@@ -142,6 +142,7 @@ function Module:OnEnable()
 	self:CreatePetbar()
 	self:CreateStancebar()
 	self:HideBlizz()
+	self:HookActionEvents()
 
 	-- Vehicle Fix
 	local function vehicleFix()

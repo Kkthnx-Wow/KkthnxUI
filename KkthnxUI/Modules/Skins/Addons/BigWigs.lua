@@ -9,8 +9,8 @@ local UIParent = _G.UIParent
 
 -- GLOBALS: BigWigs, BigWigsLoader
 
-local BigWigsFont = K.GetFont(C["Skins"].Font)
-local BigWigsTexture = K.GetTexture(C["Skins"].Texture)
+local BigWigsFont = K.GetFont(C["UIFonts"].SkinFonts)
+local BigWigsTexture = K.GetTexture(C["UITextures"].SkinTextures)
 
 -- Textures
 local BLANK_TEXTURE = [[Interface\ChatFrame\ChatFrameBackground]]

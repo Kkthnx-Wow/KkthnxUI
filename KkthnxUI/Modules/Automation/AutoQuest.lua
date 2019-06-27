@@ -54,11 +54,6 @@ local StaticPopup_Hide = _G.StaticPopup_Hide
 local UnitGUID = _G.UnitGUID
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 
-function K.GetNPCID(guid)
-	local id = tonumber(string_match((guid or ""), "%-(%d-)%-%x-$"))
-	return id
-end
-
 local quests, choiceQueue = {}
 local QuickQuest = CreateFrame("Frame")
 QuickQuest:SetScript("OnEvent", function(self, event, ...)
@@ -75,7 +70,7 @@ function QuickQuest:Register(event, func)
 end
 
 local function GetNPCID()
-	return K.GetNPCID(UnitGUID("npc"))
+	return tonumber(string_match(UnitGUID("npc") or "", "%w+%-.-%-.-%-.-%-.-%-(.-)%-"))
 end
 
 local function IsTrackingHidden()

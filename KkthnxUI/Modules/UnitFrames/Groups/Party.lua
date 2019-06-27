@@ -19,8 +19,8 @@ local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
 local UnitIsUnit = _G.UnitIsUnit
 
 function Module:CreateParty()
-	local UnitframeFont = K.GetFont(C["Party"].Font)
-	local UnitframeTexture = K.GetTexture(C["Party"].Texture)
+	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
+	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
 	self:RegisterForClicks("AnyUp")
 	self:SetScript("OnEnter", function(self)
@@ -46,13 +46,13 @@ function Module:CreateParty()
 	self.Health:CreateBorder()
 
 	self.Health.PostUpdate = C["Party"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
-	self.Health.Smooth = C["Party"].Smooth
-	self.Health.SmoothSpeed = C["Party"].SmoothSpeed * 10
 	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
+
+	K:SetSmoothing(self.Health, C["Party"].Smooth)
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
@@ -66,10 +66,10 @@ function Module:CreateParty()
 	self.Power:SetStatusBarTexture(UnitframeTexture)
 	self.Power:CreateBorder()
 
-	self.Power.Smooth = C["Party"].Smooth
-	self.Power.SmoothSpeed = C["Party"].SmoothSpeed * 10
 	self.Power.colorPower = true
 	self.Power.SetFrequentUpdates = true
+
+	K:SetSmoothing(self.Power, C["Party"].Smooth)
 
 	if C["Unitframe"].ShowPortrait then
 		if (C["Party"].PortraitStyle.Value == "ThreeDPortraits") then
@@ -112,12 +112,11 @@ function Module:CreateParty()
 	self.Level:SetFontObject(UnitframeFont)
 	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
 
-	self.AFKDNDIndicator = self:CreateFontString(nil, "OVERLAY")
-	self.AFKDNDIndicator:SetPoint("CENTER", self.Health, "BOTTOM", 0, 3)
-	self.AFKDNDIndicator:SetFontObject(UnitframeFont)
-	self.AFKDNDIndicator:SetFont(select(1, self.AFKDNDIndicator:GetFont()), 10, select(3, self.AFKDNDIndicator:GetFont()))
-	self.AFKDNDIndicator:SetTextColor(1, 0, 0)
-	self:Tag(self.AFKDNDIndicator, "[KkthnxUI:AFKDND]")
+	self.StatusIndicator = self.Power:CreateFontString(nil, "OVERLAY")
+	self.StatusIndicator:SetPoint("CENTER", 0, 0.5)
+	self.StatusIndicator:SetFontObject(UnitframeFont)
+	self.StatusIndicator:SetFont(select(1, self.StatusIndicator:GetFont()), 10, select(3, self.StatusIndicator:GetFont()))
+	self:Tag(self.StatusIndicator, "[KkthnxUI:Status]")
 
 	if (C["Party"].Castbars) then
 		self.Castbar = CreateFrame("StatusBar", "FocusCastbar", self)
@@ -201,6 +200,7 @@ function Module:CreateParty()
 		self.TargetHighlight = self.OverlayFrame:CreateTexture(nil, "OVERLAY")
 		self.TargetHighlight:SetTexture("Interface\\Buttons\\CheckButtonHilight")
 		self.TargetHighlight:SetBlendMode("ADD")
+		self.TargetHighlight:SetVertexColor(0.84, 0.75, 0.65)
 		self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait.Borders, -2, 2)
 		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait.Borders, 2, -2)
 		self.TargetHighlight:Hide()
@@ -244,7 +244,7 @@ function Module:CreateParty()
 		Module.CreateDebuffHighlight(self)
 	end
 
-	self.HealthPrediction = Module.CreateHealthPrediction(self, 114)
+	Module.CreateHealthPrediction(self, "party")
 
 	self.Threat = {
 		Hide = K.Noop,

@@ -21,25 +21,22 @@ local PLAYER = _G.PLAYER
 C["ActionBar"] = {
 	["Bar2Fade"] = false,
 	["Bar3Fade"] = false,
-	["Bar4Fade"] = true,
-	["Bar5Fade"] = true,
+	["Bar4Fade"] = false,
+	["Bar5Fade"] = false,
 	["ButtonSize"] = 34,
 	["Cooldowns"] = true,
 	["Count"] = true,
-	["DecimalCD"] = false,
+	["DecimalCD"] = true,
 	["DisableStancePages"] = K.Class == "DRUID",
 	["Enable"] = true,
 	["EquipBorder"] = true,
-	["Font"] = "KkthnxUI Outline",
 	["Hotkey"] = true,
 	["Macro"] = true,
-	["MicroBar"] = false,
+	["MicroBar"] = true,
 	["MicroBarMouseover"] = false,
-	["OutOfMana"] = {0.5, 0.5, 1.0},
-	["OutOfRange"] = {0.8, 0.1, 0.1},
 	["OverrideWA"] = false,
-	["PetFade"] = true,
-	["StanceFade"] = true,
+	["PetFade"] = false,
+	["StanceFade"] = false,
 	["Style"] = {
 		["Options"] = {
 			["Default Style"] = 1,
@@ -92,92 +89,13 @@ C["Automation"] = {
 	["DeclinePetDuel"] = false,
 	["DeclinePvPDuel"] = false,
 	["ScreenShot"] = false,
-	-- AutoCollapse Features
-	["Rested"] = {
-		["Options"] = {
-			[DEFAULT] = "FULL",
-			[MINIMIZE] = "COLLAPSED",
-			[HIDE] = "HIDE",
-		},
-		["Value"] = "FULL"
-	},
-
-	["Garrison"] = {
-		["Options"] = {
-			[DEFAULT] = "FULL",
-			[MINIMIZE] = "COLLAPSED",
-			[HIDE] = "HIDE",
-		},
-		["Value"] = "FULL"
-	},
-
-	["Orderhall"] = {
-		["Options"] = {
-			[DEFAULT] = "FULL",
-			[MINIMIZE] = "COLLAPSED",
-			[HIDE] = "HIDE",
-		},
-		["Value"] = "FULL"
-	},
-
-	["Battleground"] = {
-		["Options"] = {
-			[DEFAULT] = "FULL",
-			[MINIMIZE] = "COLLAPSED",
-			[HIDE] = "HIDE",
-		},
-		["Value"] = "COLLAPSED"
-	},
-
-	["Arena"] = {
-		["Options"] = {
-			[DEFAULT] = "FULL",
-			[MINIMIZE] = "COLLAPSED",
-			[HIDE] = "HIDE",
-		},
-		["Value"] = "COLLAPSED"
-	},
-
-	["Dungeon"] = {
-		["Options"] = {
-			[DEFAULT] = "FULL",
-			[MINIMIZE] = "COLLAPSED",
-			[HIDE] = "HIDE",
-		},
-		["Value"] = "FULL"
-	},
-
-	["Scenario"] = {
-		["Options"] = {
-			[DEFAULT] = "FULL",
-			[MINIMIZE] = "COLLAPSED",
-			[HIDE] = "HIDE",
-		},
-		["Value"] = "FULL"
-	},
-
-	["Raid"] = {
-		["Options"] = {
-			[DEFAULT] = "FULL",
-			[MINIMIZE] = "COLLAPSED",
-			[HIDE] = "HIDE",
-		},
-		["Value"] = "COLLAPSED"
-	},
-
-	["Combat"] = {
-		["Options"] = {
-			[DEFAULT] = "FULL",
-			[MINIMIZE] = "COLLAPSED",
-			[HIDE] = "HIDE",
-			[NONE] = "NONE",
-		},
-		["Value"] = "NONE"
-	}
+	["WhisperInvite"] = "inv",
 }
 
 C["Inventory"] = {
 	["AutoSell"] = true,
+	["BagBar"] = true,
+	["BagBarMouseover"] = false,
 	["BagColumns"] = 10,
 	["BankColumns"] = 17,
 	["BindText"] = true,
@@ -185,7 +103,6 @@ C["Inventory"] = {
 	["ButtonSpace"] = 6,
 	["DetailedReport"] = false,
 	["Enable"] = true,
-	["Font"] = "KkthnxUI Outline",
 	["ItemLevel"] = false,
 	["ItemLevelThreshold"] = 10,
 	["JunkIcon"] = true,
@@ -204,63 +121,31 @@ C["Inventory"] = {
 
 -- Buffs & Debuffs
 C["Auras"] = {
-	["Enable"] = true,
-	["FadeThreshold"] = 5,
-	["Font"] = "KkthnxUI Outline",
-	["HorizontalSpacing"] = 6,
-	["MaxWraps"] = 3,
-	["SeperateOwn"] = 1,
-	["Size"] = 32,
-	["VerticalSpacing"] = 20,
-	["WrapAfter"] = 12,
-	["GrowthDirection"] = {
-		["Options"] = {
-			["Down Left"] = "DOWN_LEFT",
-			["Down Right"] = "DOWN_RIGHT",
-			["Left Down"] = "LEFT_DOWN",
-			["Left Up"] = "LEFT_UP",
-			["Right Down"] = "RIGHT_DOWN",
-			["Right Up"] = "RIGHT_UP",
-			["Up Left"] = "UP_LEFT",
-			["Up Right"] = "UP_RIGHT"
-		},
-		["Value"] = "LEFT_DOWN"
-	},
-	["SortDir"] = {
-		["Options"] = {
-			["Ascending"] = "+",
-			["Descending"] = "-"
-		},
-		["Value"] = "-"
-	},
-	["SortMethod"] = {
-		["Options"] = {
-			["Index"] = "INDEX",
-			["Name"] = "NAME",
-			["Time"] = "TIME"
-		},
-		["Value"] = "TIME"
-	}
+	["BuffSize"] = 30,
+	["BuffsPerRow"] = 16,
+	["DebuffSize"] = 34,
+	["DebuffsPerRow"] = 16,
+	["Reminder"] = false,
+	["ReverseBuffs"] = false,
+	["ReverseDebuffs"] = false,
 }
 
 -- Chat
 C["Chat"] = {
 	["Background"] = false,
 	["BackgroundAlpha"] = 0.25,
-	["DelayGMOTD"] = true,
 	["Enable"] = true,
 	["Fading"] = true,
-	["VoiceOverlay"] = true,
 	["FadingTimeFading"] = 3,
 	["FadingTimeVisible"] = 20,
-	["Filter"] = false,
-	["Font"] = "KkthnxUI",
+	["Filter"] = true,
 	["Height"] = 149,
 	["QuickJoin"] = false,
 	["RemoveRealmNames"] = true,
 	["ScrollByX"] = 3,
 	["ShortenChannelNames"] = true,
 	["TabsMouseover"] = true,
+	["VoiceOverlay"] = true,
 	["WhisperSound"] = true,
 	["Width"] = 410
 }
@@ -270,12 +155,10 @@ C["DataBars"] = {
 	["AzeriteColor"] = {0.901, 0.8, 0.601},
 	["Enable"] = true,
 	["ExperienceColor"] = {0.6, 0.3, 0.8},
-	["Font"] = "KkthnxUI",
 	["Height"] = 12,
 	["MouseOver"] = false,
 	["RestedColor"] = {0.0, 0.4, 1.0, 0.8},
 	["Text"] = true,
-	["Texture"] = "KkthnxUI",
 	["TrackHonor"] = false,
 	["Width"] = 180,
 }
@@ -283,7 +166,6 @@ C["DataBars"] = {
 -- Datatext
 C["DataText"] = {
 	["Battleground"] = true,
-	["Font"] = "KkthnxUI",
 	["LocalTime"] = true,
 	["System"] = true,
 	["Time"] = true,
@@ -297,37 +179,23 @@ C["Filger"] = {
 	["DisablePvP"] = false,
 	["Expiration"] = false,
 	["Enable"] = false,
-	["Font"] = "KkthnxUI",
 	["MaxTestIcon"] = 5,
 	["PvPSize"] = 60,
 	["ShowTooltip"] = false,
 	["TestMode"] = false,
-	["Texture"] = "KkthnxUI"
 }
 
 -- General
 C["General"] = {
-	["AutoScale"] = true,
 	["ColorTextures"] = false,
 	["DisableTutorialButtons"] = false,
 	["FixGarbageCollect"] = true,
-	["Font"] = "KkthnxUI",
 	["FontSize"] = 12,
 	["LagTolerance"] = false,
 	["MoveBlizzardFrames"] = false,
 	["ReplaceBlizzardFonts"] = true,
-	["Texture"] = "KkthnxUI",
 	["TexturesColor"] = {0.9, 0.9, 0.9},
-	["UIScale"] = 0.7111111111,
 	["Welcome"] = true,
-}
-
-C["HealthPrediction"] = {
-	["Absorbs"] = {1, 1, 0, 0.25},
-	["HealAbsorbs"] = {1, 0, 0, 0.25},
-	["Others"] = {0, 1, 0, 0.25},
-	["Personal"] = {0, 1, 0.5, 0.25},
-	["Texture"] = "Blank",
 }
 
 -- Loot
@@ -339,14 +207,12 @@ C["Loot"] = {
 	["Enable"] = true,
 	["FastLoot"] = false,
 	["GroupLoot"] = true,
-	["Font"] = "KkthnxUI",
 	["Level"] = MAX_PLAYER_LEVEL,
-	["Texture"] = "KkthnxUI",
 	["AutoQuality"] = {
 		["Options"] = {
-			["|cffA335EE" .. ITEM_QUALITY4_DESC .. "|r"] = 4,
-			["|cff0070DD" .. ITEM_QUALITY3_DESC .. "|r"] = 3,
-			["|cff1EFF00" .. ITEM_QUALITY2_DESC .. "|r"] = 2
+			["|cffA335EE"..ITEM_QUALITY4_DESC.."|r"] = 4,
+			["|cff0070DD"..ITEM_QUALITY3_DESC.."|r"] = 3,
+			["|cff1EFF00"..ITEM_QUALITY2_DESC.."|r"] = 2
 		},
 		["Value"] = 2
 	}
@@ -366,7 +232,6 @@ C["Minimap"] = {
 -- Miscellaneous
 C["Misc"] = {
 	["AFKCamera"] = false,
-	["BattlegroundSpam"] = false,
 	["CharacterInfo"] = false,
 	["ColorPicker"] = false,
 	["EnhancedFriends"] = false,
@@ -380,34 +245,24 @@ C["Misc"] = {
 }
 
 C["Nameplates"] = {
-	["BadColor"] = {254/255, 045/255, 045/255},
-	["BadTransition"] ={255/255, 129/255, 050/255},
+	["Threat"] = false,
 	["CastHeight"] = 2,
 	["Clamp"] = false,
 	["ClassResource"] = true,
 	["Combat"] = false,
 	["Distance"] = 40,
 	["Enable"] = true,
-	["Font"] = "KkthnxUI",
-	["GoodColor"] = {050/255, 180/255, 000/255},
-	["GoodTransition"] = {255/255, 217/255, 050/255},
 	["HealthValue"] = true,
 	["Height"] = 14,
 	["MarkHealers"] = false,
 	["NonTargetAlpha"] = 0.35,
-	["OffTankColor"] = {187/255, 050/255, 255/255},
-	["OffTankColorBadTransition"] = {0.71, 0.43, 0.27},
-	["OffTankColorGoodTransition"] = {.31, .45, .63},
 	["OverlapH"] = 1.2,
 	["OverlapV"] = 1.2,
 	["QuestIcon"] = true,
 	["QuestIconSize"] = 16,
 	["SelectedScale"] = 1,
 	["Smooth"] = false,
-	["SmoothSpeed"] = 3,
-	["TargetArrow"] = true,
-	["Texture"] = "KkthnxUI",
-	["Threat"] = false,
+	["ThreatPercent"] = false,
 	["Totems"] = false,
 	["TrackAuras"] = true,
 	["Width"] = 150,
@@ -446,29 +301,27 @@ C["Skins"] = {
 	["BlizzardBags"] = false,
 	["ChatBubbles"] = true,
 	["DBM"] = false,
-	["Details"] =  false,
-	["Font"] = "KkthnxUI",
+	["Details"] = false,
 	["Hekili"] = false,
 	["ResetDetails"] = false,
 	["Skada"] = false,
 	["Spy"] = false,
 	["TalkingHeadBackdrop"] = true,
-	["Texture"] = "KkthnxUI",
 	["WeakAuras"] = false,
 }
 
 -- Tooltip
 C["Tooltip"] = {
+	["AzeriteArmor"] = false,
 	["CursorAnchor"] = false,
 	["CursorAnchorX"] = 0,
 	["CursorAnchorY"] = 0,
 	["Enable"] = true,
-	["Font"] = "KkthnxUI",
 	["FontOutline"] = false,
 	["FontSize"] = 12,
 	["GuildRanks"] = false,
-	["HealthBarText"] = true,
 	["HealthbarHeight"] = 9,
+	["HealthBarText"] = true,
 	["HideInCombat"] = false,
 	["Icons"] = false,
 	["InspectInfo"] = true,
@@ -479,7 +332,36 @@ C["Tooltip"] = {
 	["ShowMount"] = false,
 	["SpellID"] = true,
 	["TargetInfo"] = false,
-	["Texture"] = "KkthnxUI"
+}
+
+-- Fonts
+C["UIFonts"] = {
+	["ActionBarsFonts"] = "KkthnxUI Outline",
+	["AuraFonts"] = "KkthnxUI Outline",
+	["ChatFonts"] = "KkthnxUI",
+	["DataBarsFonts"] = "KkthnxUI",
+	["DataTextFonts"] = "KkthnxUI",
+	["GeneralFonts"] = "KkthnxUI",
+	["InventoryFonts"] = "KkthnxUI Outline",
+	["MinimapFonts"] = "KkthnxUI",
+	["NameplateFonts"] = "KkthnxUI",
+	["QuestTrackerFonts"] = "KkthnxUI",
+	["SkinFonts"] = "KkthnxUI",
+	["TooltipFonts"] = "KkthnxUI",
+	["UnitframeFonts"] = "KkthnxUI",
+}
+
+-- Textures
+C["UITextures"] = {
+	["DataBarsTexture"] = "KkthnxUI",
+	["FilgerTextures"] = "KkthnxUI",
+	["GeneralTextures"] = "KkthnxUI",
+	["LootTextures"] = "KkthnxUI",
+	["NameplateTextures"] = "KkthnxUI",
+	["QuestTrackerTexture"] = "KkthnxUI",
+	["SkinTextures"] = "KkthnxUI",
+	["TooltipTextures"] = "KkthnxUI",
+	["UnitframeTextures"] = "KkthnxUI",
 }
 
 -- Unitframe
@@ -501,7 +383,6 @@ C["Unitframe"] = {
 	["DebuffsOnTop"] = true,
 	["DecimalLength"] = 1,
 	["Enable"] = true,
-	["Font"] = "KkthnxUI",
 	["GlobalCooldown"] = false,
 	["HideTargetofTarget"] = false,
 	["MouseoverHighlight"] = true,
@@ -511,8 +392,6 @@ C["Unitframe"] = {
 	["PowerPredictionBar"] = true,
 	["ShowPortrait"] = true,
 	["Smooth"] = false,
-	["SmoothSpeed"] = 3,
-	["Texture"] = "KkthnxUI",
 	["ThreatPercent"] = false,
 	["TotemBar"] = true,
 	["PortraitStyle"] = {
@@ -533,6 +412,22 @@ C["Unitframe"] = {
 			["Default"] = "DEFAULT"
 		},
 		["Value"] = "DEFAULT"
+	},
+	["PlayerHealthFormat"] = {
+		["Options"] = {
+			["Current"] = "[KkthnxUI:HealthCurrent]",
+			["Percent"] = "[KkthnxUI:HealthPercent]",
+			["Current / Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
+		},
+		["Value"] = "[KkthnxUI:HealthCurrent]"
+	},
+	["TargetHealthFormat"] = {
+		["Options"] = {
+			["Current"] = "[KkthnxUI:HealthCurrent]",
+			["Percent"] = "[KkthnxUI:HealthPercent]",
+			["Current / Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
+		},
+		["Value"] = "[KkthnxUI:HealthCurrent-Percent]"
 	}
 }
 
@@ -540,16 +435,12 @@ C["Party"] = {
 	["CastbarIcon"] = true,
 	["Castbars"] = false,
 	["Enable"] = true,
-	["Font"] = "KkthnxUI",
 	["MouseoverHighlight"] = true,
-	-- ["PartyAsRaid"] = false, -- I Do Not Know If We Will Bring This Back.
 	["PortraitTimers"] = false,
 	["ShowBuffs"] = true,
 	["ShowPlayer"] = true,
 	["Smooth"] = false,
-	["SmoothSpeed"] = 3,
 	["TargetHighlight"] = false,
-	["Texture"] = "KkthnxUI",
 	["PortraitStyle"] = {
 		["Options"] = {
 			["3D Portraits"] = "ThreeDPortraits",
@@ -576,10 +467,7 @@ C["Arena"] = {
 	["Castbars"] = true,
 	["DecimalLength"] = 1,
 	["Enable"] = true,
-	["Font"] = "KkthnxUI",
 	["Smooth"] = false,
-	["SmoothSpeed"] = 3,
-	["Texture"] = "KkthnxUI",
 	["NumberPrefixStyle"] = {
 		["Options"] = {
 			["Metric"] = "METRIC",
@@ -599,10 +487,7 @@ C["Boss"] = {
 	["CastbarWidth"] = 214,
 	["DecimalLength"] = 1,
 	["Enable"] = true,
-	["Font"] = "KkthnxUI",
 	["Smooth"] = false,
-	["SmoothSpeed"] = 3,
-	["Texture"] = "KkthnxUI",
 	["ThreatPercent"] = false,
 	["PortraitStyle"] = {
 		["Options"] = {
@@ -633,7 +518,6 @@ C["Raid"] = {
 	["AuraWatchTexture"] = true,
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
-	["Font"] = "KkthnxUI",
 	["Height"] = 40,
 	["MainTankFrames"] = true,
 	["ManabarShow"] = false,
@@ -644,9 +528,7 @@ C["Raid"] = {
 	["ShowNotHereTimer"] = true,
 	["ShowRolePrefix"] = false,
 	["Smooth"] = false,
-	["SmoothSpeed"] = 3,
 	["TargetHighlight"] = false,
-	["Texture"] = "KkthnxUI",
 	["Width"] = 66,
 	["RaidLayout"] = {
 		["Options"] = {

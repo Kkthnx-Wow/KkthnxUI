@@ -15,8 +15,8 @@ local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
 
 function Module:CreateBoss()
-	local UnitframeFont = K.GetFont(C["Boss"].Font)
-	local UnitframeTexture = K.GetTexture(C["Boss"].Texture)
+	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
+	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
 	self:RegisterForClicks("AnyUp")
 	self:HookScript("OnEnter", UnitFrame_OnEnter)
@@ -28,14 +28,14 @@ function Module:CreateBoss()
 	self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
 	self.Health:CreateBorder()
 
-	self.Health.Smooth = C["Boss"].Smooth
-	self.Health.SmoothSpeed = C["Boss"].SmoothSpeed * 10
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = false
+
+	K:SetSmoothing(self.Health, C["Boss"].Smooth)
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetFontObject(UnitframeFont)
@@ -48,10 +48,10 @@ function Module:CreateBoss()
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	self.Power:CreateBorder()
 
-	self.Power.Smooth = C["Boss"].Smooth
-	self.Power.SmoothSpeed = C["Boss"].SmoothSpeed * 10
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
+
+	K:SetSmoothing(self.Power, C["Boss"].Smooth)
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
 	self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)

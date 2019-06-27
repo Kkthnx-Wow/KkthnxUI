@@ -21,11 +21,6 @@ local function SetupAddons()
 		K.LoadBugSackProfile()
 	end
 
-	-- Details
-	if K.CheckAddOnState("Details") then
-		K.LoadDetailsProfile()
-	end
-
 	-- MikScrollingBattleText
 	if K.CheckAddOnState("MikScrollingBattleText") then
 		K.LoadMSBTProfile()

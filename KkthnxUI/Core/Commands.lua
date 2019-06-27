@@ -126,7 +126,7 @@ function K.UIProfiles(msg)
 					return
 				end
 
-				if Server ~= "Gold" or Server ~= "gold" or Server ~= "Class" or Server ~= "class" then
+				if Server ~= "Gold" and Server ~= "Class" then
 					if type(KkthnxUIData[Server]) == "table" then
 						for Character, Table in pairs(KkthnxUIData[Server]) do
 							table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
@@ -186,7 +186,7 @@ function K.UIProfiles(msg)
 
 					-- Search through the stored data for the matching table
 					for Server, Table in pairs(KkthnxUIData) do
-						if Server ~= "Gold" or Server ~= "gold" or Server ~= "Class" or Server ~= "class" then
+						if Server ~= "Gold" and Server ~= "Class" then
 							if type(KkthnxUIData[Server]) == "table" then
 								for Character, Table in pairs(KkthnxUIData[Server]) do
 									if Table == Data then
@@ -276,6 +276,49 @@ K["Movers"]:StartOrStopMoving()
 end
 K:RegisterChatCommand("moveui", K.MoveUI)
 K:RegisterChatCommand("movers", K.MoveUI)--]]
+
+-- make this a locale later?
+local MassKickMessage = "Guild Cleanup Results: Removed all guild members below rank %s, that have a minimal level of %s, and have not been online for at least: %s days."
+function K.MassGuildKick(msg)
+	local minLevel, minDays, minRankIndex = strsplit(",", msg)
+	minRankIndex = tonumber(minRankIndex)
+	minLevel = tonumber(minLevel)
+	minDays = tonumber(minDays)
+
+	if not minLevel or not minDays then
+		K.Print("Usage: /cleanguild <minLevel>, <minDays>, [<minRankIndex>]")
+		return
+	end
+
+	if minDays > 31 then
+		K.Print("Maximum days value must be below 32.")
+		return
+	end
+
+	if not minRankIndex then
+		minRankIndex = GuildControlGetNumRanks() - 1
+	end
+
+	for i = 1, GetNumGuildMembers() do
+		local name, _, rankIndex, level, _, _, note, officerNote, connected, _, classFileName = GetGuildRosterInfo(i)
+		local minLevelx = minLevel
+
+		if classFileName == "DEATHKNIGHT" then
+			minLevelx = minLevelx + 55
+		end
+
+		if not connected then
+			local years, months, days = GetGuildRosterLastOnline(i)
+			if days ~= nil and ((years > 0 or months > 0 or days >= minDays) and rankIndex >= minRankIndex)
+			and note ~= nil and officerNote ~= nil and (level <= minLevelx) then
+				GuildUninvite(name)
+			end
+		end
+	end
+
+	SendChatMessage(string_format(MassKickMessage, GuildControlGetRankName(minRankIndex), minLevel, minDays), "GUILD")
+end
+K:RegisterChatCommand("cleanguild", K.MassGuildKick)
 
 -- Fixes the issue when the dialog to release spirit does not come up.
 function K.FixRelease()
@@ -395,6 +438,37 @@ function K.ClearCombatLog()
 end
 K:RegisterChatCommand("clearcombat", K.ClearCombatLog)
 K:RegisterChatCommand("clfix", K.ClearCombatLog)
+
+function K.ToggleFloatingCombatText(msg)
+	if not msg then
+		print("Please enter a value of 1 or 2.")
+		return
+	end
+
+	if msg == 1 or msg == "1" then
+		if InCombatLockdown() then
+			print("Can't toggle this in combat")
+			return
+		end
+
+		SetCVar("floatingCombatTextCombatHealing", 1)
+		SetCVar("floatingCombatTextCombatDamage", 1)
+		print("FCT CombatDamage/Healing Turned on")
+	elseif msg == 0 or msg == "0" then
+		if InCombatLockdown() then
+			print("Can't toggle this in combat")
+			return
+		end
+
+		SetCVar("floatingCombatTextCombatHealing", 0)
+		SetCVar("floatingCombatTextCombatDamage", 0)
+		print("FCT CombatDamage/Healing Turned off")
+	else
+		print("Please enter a value of 1 or 2.")
+	end
+end
+K:RegisterChatCommand("togglefct", K.ToggleFloatingCombatText)
+K:RegisterChatCommand("tfct", K.ToggleFloatingCombatText)
 
 -- Here we can restart wow's engine. could be use for sound issues and more.
 function K.FixGFXEngine()
@@ -707,8 +781,8 @@ function K.BoostUI()
 	K.StaticPopup_Show("CHANGES_RL")
 end
 
-_G.SLASH_BOOSTUI1 = "/boostfps"
-_G.SLASH_BOOSTUI2 = "/boostui"
+--_G.SLASH_BOOSTUI1 = "/boostfps"
+--_G.SLASH_BOOSTUI2 = "/boostui"
 SlashCmdList.BOOSTUI = function()
 	K.StaticPopup_Show("BOOST_UI")
 end

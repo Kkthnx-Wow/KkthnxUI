@@ -11,14 +11,14 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
 function Module:CreateStancebar()
-	local padding, margin, size = 2, 6, 28
+	local padding, margin, size = 0, 6, 28
 	local num = NUM_STANCE_SLOTS
 	local buttonList = {}
 
 	-- Make A Frame That Fits The Size Of All Microbuttons
 	local frame = CreateFrame("Frame", "KkthnxUI_StanceBar", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(num * size + (num - 1) * margin + 2 * padding)
-	frame:SetHeight(size + 2 * padding)
+	frame:SetHeight(size + 2 * padding + 6)
 	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -70, 124}
 	frame:SetScale(1)
 
@@ -73,7 +73,7 @@ function Module:CreateStancebar()
 	frame:SetPoint(frame.Pos[1], frame.Pos[2], frame.Pos[3], frame.Pos[4], frame.Pos[5])
 	K.Mover(frame, "StanceBar", "StanceBar", frame.Pos)
 
-	if C["ActionBar"].StanceFade == true and K.BarFaderConfig then
-		K.CreateButtonFrameFader(frame, buttonList)
+	if C["ActionBar"].StanceFade == true then
+		K.CreateButtonFrameFader(frame, buttonList, K.fader)
 	end
 end

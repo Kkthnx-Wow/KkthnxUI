@@ -28,7 +28,6 @@ C["Media"] = {
 	Spark_16 = [[Interface\AddOns\KkthnxUI\Media\Textures\Spark_16]],
 	Texture = [[Interface\TargetingFrame\UI-StatusBar]],
 	Tukui = [[Interface\AddOns\KkthnxUI\Media\Textures\ElvTukUI.tga]],
-	ValueColor = {68/255, 136/255, 255/255},
 	WarningSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Warning.ogg]],
 	WhisperSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Whisper.ogg]],
 	ZorkUI = [[Interface\AddOns\KkthnxUI\Media\Textures\ZorkUI.tga]],

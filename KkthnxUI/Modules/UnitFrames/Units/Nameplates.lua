@@ -8,72 +8,122 @@ if not oUF then
 end
 
 local _G = _G
-local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
 local UIParent = _G.UIParent
-local UnitClass = _G.UnitClass
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsTapDenied = _G.UnitIsTapDenied
-local UnitPlayerControlled = _G.UnitPlayerControlled
-local UnitReaction = _G.UnitReaction
-local unitSelectionType = oUF.Private.unitSelectionType
-local UnitThreatSituation = _G.UnitThreatSituation
 
-function Module:HealthPlateUpdateColor(_, unit)
-	if (not unit or self.unit ~= unit) then
+function Module:IsMouseoverUnit()
+	if not self or not self.unit then return end
+
+	if self:IsVisible() and UnitExists("mouseover") and not UnitIsUnit("target", self.unit) then
+		return UnitIsUnit("mouseover", self.unit)
+	end
+	return false
+end
+
+function Module:UpdateMouseoverShown()
+	if not self or not self.unit then return end
+
+	if self:IsShown() and UnitIsUnit("mouseover", self.unit) and not UnitIsUnit("target", self.unit) then
+		self.glow:Show()
+		self.HighlightIndicator:Show()
+	else
+		self.HighlightIndicator:Hide()
+	end
+end
+
+local function AddMouseoverIndicator(self)
+	local glow = self.Health:CreateTexture(nil, "OVERLAY")
+	glow:SetAllPoints()
+	glow:SetTexture(C["Media"].Mouseover)
+	glow:SetVertexColor(1, 1, 1, .36)
+	glow:SetBlendMode("ADD")
+	glow:Hide()
+
+	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT", Module.UpdateMouseoverShown, true)
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateMouseoverShown, true)
+
+	local f = CreateFrame("Frame", nil, self)
+	f:SetScript("OnUpdate", function(_, elapsed)
+		f.elapsed = (f.elapsed or 0) + elapsed
+		if f.elapsed > .1 then
+			if not Module.IsMouseoverUnit(self) then
+				f:Hide()
+			end
+			f.elapsed = 0
+		end
+	end)
+
+	f:HookScript("OnHide", function()
+		glow:Hide()
+	end)
+
+	self.glow = glow
+	self.HighlightIndicator = f
+end
+
+local function GetNPCID()
+	return tonumber(string.match(UnitGUID('npc') or '', '%w+%-.-%-.-%-.-%-.-%-(.-)%-'))
+end
+
+local explosiveCount, hasExplosives = 0
+local id = 120651
+function Module:ScalePlates()
+	for _, nameplate in next, C_NamePlate.GetNamePlates() do
+		local unitFrame = nameplate.unitFrame
+		local npcID = GetNPCID(unitFrame.unit)
+		if explosiveCount > 0 and npcID == id or explosiveCount == 0 then
+			unitFrame:SetWidth(C["Nameplate"]["Width"] * 1.4)
+		else
+			unitFrame:SetWidth(C["Nameplate"]["Width"] * .9)
+		end
+	end
+end
+
+function Module:UpdateExplosives(event, unit)
+	if not hasExplosives or unit ~= self.unit then
 		return
 	end
 
-	local element = self.Health
-	local colors = K.Colors
+	-- local npcID = B.GetNPCID(UnitGUID(unit))
+	local npcID = GetNPCID(unit)
+	if event == "NAME_PLATE_UNIT_ADDED" and npcID == id then
+		explosiveCount = explosiveCount + 1
+	elseif event == "NAME_PLATE_UNIT_REMOVED" and npcID == id then
+		explosiveCount = explosiveCount - 1
+	end
+	Module:ScalePlates()
+end
 
-	local r, g, b, t
-	if (element.colorDead and element.dead) then
-		t = self.colors.dead
-	elseif (element.colorDisconnected and element.disconnected) then
-		t = self.colors.disconnected
-	elseif (element.colorTapping and not UnitPlayerControlled(unit) and UnitIsTapDenied(unit)) then
-		t = colors.status.tapped
-	elseif (element.colorThreat and not UnitPlayerControlled(unit) and UnitThreatSituation("player", unit)) then
-		t =  self.colors.threat[UnitThreatSituation("player", unit)]
-	elseif (element.colorClass and UnitIsPlayer(unit)) or (element.colorClassNPC and not UnitIsPlayer(unit)) or (element.colorClassPet and UnitPlayerControlled(unit) and not UnitIsPlayer(unit)) then
-		local _, class = UnitClass(unit)
-		t = self.colors.class[class]
-	elseif(element.colorSelection and unitSelectionType(unit, element.considerSelectionInCombatHostile)) then
-		local Selection = unitSelectionType(unit, element.considerSelectionInCombatHostile)
-		if Selection == 3 then Selection = UnitPlayerControlled(unit) and 5 or 3 end
-		t = NP.db.colors.selection[Selection]
-	elseif (element.colorReaction and UnitReaction(unit, "player")) then
-		local reaction = UnitReaction(unit, "player")
-		if reaction <= 3 then
-			reaction = "bad"
-		elseif reaction == 4 then
-			reaction = "neutral" else reaction = "good"
+local function checkInstance()
+	local name, _, instID = GetInstanceInfo()
+	if name and instID == 8 then
+		hasExplosives = true
+	else
+		hasExplosives = false
+		explosiveCount = 0
+	end
+end
+
+function Module:CheckExplosives()
+	if not C["Nameplate"]["ExplosivesScale"] then return end
+
+	local function checkAffixes(event)
+		local affixes = C_MythicPlus.GetCurrentAffixes()
+		if not affixes then return end
+		if affixes[3] and affixes[3].id == 13 then
+			checkInstance()
+			K:RegisterEvent(event, checkInstance)
+			K:RegisterEvent("CHALLENGE_MODE_START", checkInstance)
 		end
-		t = colors.status.reactions[reaction]
-	elseif (element.colorSmooth) then
-		r, g, b = self:ColorGradient(element.cur or 1, element.max or 1, unpack(element.smoothGradient or self.colors.smooth))
-	elseif (element.colorHealth) then
-		t = colors.status.health
+		K:UnregisterEvent(event, checkAffixes)
 	end
-
-	if (t) then
-		r, g, b = t[1] or t.r, t[2] or t.g, t[3] or t.b
-	end
-
-	if b then
-		element:SetStatusBarColor(r, g, b)
-	end
-
-    if (element.PostUpdateColor) then
-        element:PostUpdateColor(unit, r, g, b)
-    end
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", checkAffixes)
 end
 
 function Module:CreateNameplates()
-	local NameplateTexture = K.GetTexture(C["Nameplates"].Texture)
-	local Font = K.GetFont(C["Nameplates"].Font)
+	local NameplateTexture = K.GetTexture(C["UITextures"].NameplateTextures)
+	local Font = K.GetFont(C["UIFonts"].NameplateFonts)
 
 	self:SetScale(UIParent:GetEffectiveScale())
 	self:SetSize(C["Nameplates"].Width, C["Nameplates"].Height)
@@ -88,14 +138,14 @@ function Module:CreateNameplates()
 	self.Health:CreateShadow(true)
 
 	self.Health.colorTapping = true
-	self.Health.colorDisconnected = true
-	self.Health.colorSmooth = false
-	self.Health.colorClass = true
 	self.Health.colorReaction = true
+	self.Health.colorClass = true
+	self.Health.colorHealth = true
+	self.Health.colorThreat = C["Nameplates"].Threat
 	self.Health.frequentUpdates = true
-	self.Health.UpdateColor = Module.HealthPlateUpdateColor
-	self.Health.Smooth = C["Nameplates"].Smooth
-	self.Health.SmoothSpeed = C["Nameplates"].SmoothSpeed * 10
+	self.Health.UpdateColor = Module.UpdateColor
+
+	K:SetSmoothing(self.Health, C["Nameplates"].Smooth)
 
 	if C["Nameplates"].HealthValue == true then
 		self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
@@ -128,9 +178,9 @@ function Module:CreateNameplates()
 	self.Power.IsHidden = false
 	self.Power.frequentUpdates = true
 	self.Power.colorPower = true
-	self.Power.Smooth = C["Nameplates"].Smooth
-	self.Power.SmoothSpeed = C["Nameplates"].SmoothSpeed * 10
 	self.Power.PostUpdate = Module.NameplatePowerAndCastBar
+
+	K:SetSmoothing(self.Power, C["Nameplates"].Smooth)
 
 	if C["Nameplates"].TrackAuras == true then
 		self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
@@ -206,21 +256,28 @@ function Module:CreateNameplates()
 	self.RaidTargetIndicator:SetSize(32, 32)
 	self.RaidTargetIndicator:SetPoint("BOTTOM", self.Debuffs or self, "TOP", 0, 10)
 
+	if C["Nameplates"].ThreatPercent == true then
+		self.ThreatPercent = self:CreateFontString(nil, "OVERLAY")
+		self.ThreatPercent:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
+		self.ThreatPercent:SetFontObject(Font)
+		self:Tag(self.ThreatPercent, "[KkthnxUI:ThreatColor][KkthnxUI:ThreatPercent]")
+	end
+
 	if C["Nameplates"].ClassResource then
 		Module.CreateNamePlateClassPower(self)
 		if (K.Class == "DEATHKNIGHT") then
 			Module.CreateNamePlateRuneBar(self)
+		elseif (K.Class == "MONK") then
+			Module.CreateNamePlateStaggerBar(self)
 		end
 	end
 
 	Module.CreatePlateQuestIcons(self)
 	Module.CreatePlateHealerIcons(self)
-	Module.CreatePlateThreatIndicator(self)
 	Module.CreatePlateTotemIcons(self)
-	Module.CreatePlateTargetArrow(self)
 	Module.CreateDebuffHighlight(self)
-
-	self.HealthPrediction = Module.CreateHealthPrediction(self, C["Nameplates"].Width)
+	Module.CreateHealthPrediction(self, "nameplate")
+	--Module.UpdateExplosives(self, event, "nameplate")
 
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate, true)
 	self:RegisterEvent("UNIT_HEALTH", Module.HighlightPlate, true)
@@ -228,4 +285,6 @@ function Module:CreateNameplates()
 	if C["Nameplates"].Totems then
 		self:RegisterEvent("UNIT_NAME_UPDATE", Module.UpdatePlateTotems, true)
 	end
+
+	AddMouseoverIndicator(self)
 end

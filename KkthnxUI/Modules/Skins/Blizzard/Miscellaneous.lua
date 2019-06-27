@@ -67,6 +67,38 @@ local function SkinMiscStuff()
 		b:CreateBorder()
 	end
 
+	local TalentMicroButtonAlert = _G.TalentMicroButtonAlert
+	if TalentMicroButtonAlert then -- why do we need to check this?
+		TalentMicroButtonAlert:ClearAllPoints()
+		TalentMicroButtonAlert:SetPoint("CENTER", UIParent, "TOP", 0, -75)
+		TalentMicroButtonAlert.Arrow:Hide()
+		TalentMicroButtonAlert.Text:FontTemplate()
+		TalentMicroButtonAlert:CreateBorder(nil, nil, nil, true)
+		TalentMicroButtonAlert:SetBackdropBorderColor(255/255, 255/255, 0/255)
+		TalentMicroButtonAlert.CloseButton:SetPoint("TOPRIGHT", 4, 4)
+		TalentMicroButtonAlert.CloseButton:SkinCloseButton()
+
+		TalentMicroButtonAlert.tex = TalentMicroButtonAlert:CreateTexture(nil, "OVERLAY", 7)
+		TalentMicroButtonAlert.tex:SetPoint("TOP", 0, -2)
+		TalentMicroButtonAlert.tex:SetTexture("Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew")
+		TalentMicroButtonAlert.tex:SetSize(22, 22)
+	end
+
+	local CharacterMicroButtonAlert = _G.CharacterMicroButtonAlert
+	if CharacterMicroButtonAlert then -- why do we need to check this?
+		CharacterMicroButtonAlert.Arrow:Hide()
+		CharacterMicroButtonAlert.Text:FontTemplate()
+		CharacterMicroButtonAlert:CreateBorder(nil, nil, nil, true)
+		CharacterMicroButtonAlert:SetBackdropBorderColor(255/255, 255/255, 0/255)
+		CharacterMicroButtonAlert.CloseButton:SetPoint("TOPRIGHT", 4, 4)
+		CharacterMicroButtonAlert.CloseButton:SkinCloseButton()
+
+		CharacterMicroButtonAlert.tex = CharacterMicroButtonAlert:CreateTexture(nil, "OVERLAY", 7)
+		CharacterMicroButtonAlert.tex:SetPoint("TOP", 0, -2)
+		CharacterMicroButtonAlert.tex:SetTexture("Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew")
+		CharacterMicroButtonAlert.tex:SetSize(22, 22)
+	end
+
 	hooksecurefunc("UIDropDownMenu_CreateFrames", function(level, index)
 		local listFrame = _G["DropDownList"..level]
 		local listFrameName = listFrame:GetName()

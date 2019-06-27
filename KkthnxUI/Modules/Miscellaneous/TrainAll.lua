@@ -1,5 +1,5 @@
-local K, C, L = unpack(select(2, ...))
-local Module = K:GetModule("Miscellaneous")
+local K = unpack(select(2, ...))
+local Module = K:NewModule("TrainAll", "AceEvent-3.0")
 
 local _G = _G
 local select = select

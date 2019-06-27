@@ -63,6 +63,9 @@ local UnitPowerMax = _G.UnitPowerMax
 local UnitReaction = _G.UnitReaction
 local UnitSpellHaste = _G.UnitSpellHaste
 
+
+Module.Units = {}
+Module.Headers = {}
 Module.ticks = {}
 
 Module.RaidBuffsTrackingPosition = {
@@ -110,61 +113,6 @@ Module.PlateTotemData = {
 	[GetSpellInfo(210657)] = "Interface\\Icons\\spell_fire_searingtotem", -- Ember Totem
 	[GetSpellInfo(210660)] = "Interface\\Icons\\spell_nature_invisibilitytotem", -- Tailwind Totem
 }
-
-function Module:ThreatIndicatorPreUpdate(unit)
-	local ROLE = Module.IsInGroup and (UnitExists(unit.."target") and not UnitIsUnit(unit.."target", "player")) and Module.GroupRoles[UnitName(unit.."target")] or "NONE"
-
-	if ROLE == "TANK" then
-		self.feedbackUnit = unit.."target"
-		self.offTank = K.Role == "TANK"
-		self.isTank = true
-	else
-		self.feedbackUnit = "player"
-		self.offTank = false
-		self.isTank = K.Role == "TANK"
-	end
-
-	self.__owner.ThreatStatus = nil
-	self.__owner.ThreatOffTank = self.offTank
-	self.__owner.ThreatIsTank = self.isTank
-end
-
-function Module:ThreatIndicatorPostUpdate(unit, status)
-	if C["Nameplates"].Threat and not UnitIsTapDenied(unit) and status then
-		self.__owner.Health.colorTapping = false
-		self.__owner.Health.colorDisconnected = false
-		self.__owner.Health.colorClass = false
-		self.__owner.Health.colorClassNPC = false
-		self.__owner.Health.colorClassPet = false
-		self.__owner.Health.colorSelection = false
-		self.__owner.Health.colorThreat = false
-		self.__owner.Health.colorReaction = false
-		self.__owner.Health.colorSmooth = false
-		self.__owner.Health.colorHealth = false
-
-		self.__owner.ThreatStatus = status
-
-		local Color
-		if (status == 3) then -- securely tanking
-			Color = self.offTank and C["Nameplates"].OffTankColor or self.isTank and C["Nameplates"].GoodColor or C["Nameplates"].BadColor
-		elseif (status == 2) then -- insecurely tanking
-			Color = self.offTank and C["Nameplates"].OffTankColorColorBadTransition or self.isTank and C["Nameplates"].BadTransition or C["Nameplates"].GoodTransition
-		elseif (status == 1) then -- not tanking but threat higher than tank
-			Color = self.offTank and C["Nameplates"].OffTankColorColorGoodTransition or self.isTank and C["Nameplates"].GoodTransition or C["Nameplates"].BadTransition
-		else -- not tanking at all
-			Color = self.isTank and C["Nameplates"].BadColor or C["Nameplates"].GoodColor
-		end
-
-		local r, g, b
-        r, g, b = Color[1], Color[2], Color[3]
-
-        if self.__owner.HealthColorChanged then
-            self.r, self.g, self.b = r, g, b
-        else
-            self.__owner.Health:SetStatusBarColor(r, g, b)
-        end
-	end
-end
 
 function Module:UpdateClassPortraits(unit)
 	if not unit then
@@ -266,63 +214,22 @@ function Module:UpdateHealerIcons()
 	end
 end
 
-function Module:UpdateThreatIndicator()
-	if (Module.InstanceType ~= "arena" and Module.InstanceType ~= "pvp") and self.frameType == "ENEMY_NPC" and C["Nameplates"].Threat then
-		if not self:IsElementEnabled("ThreatIndicator") then
-			self:EnableElement("ThreatIndicator")
-		end
-
-		self.ThreatIndicator:SetAlpha(0)
-	else
-		if self:IsElementEnabled("ThreatIndicator") then
-			self:DisableElement("ThreatIndicator")
-		end
-	end
-end
-
 function Module:HighlightPlate()
 	local unit = self.unit
-	local plateArrowLeft = C["Nameplates"].TargetArrow and self.leftArrow
-	local plateArrowRight = C["Nameplates"].TargetArrow and self.rightArrow
 	local plateShadow = self.Health.Shadow
-
-	if plateArrowLeft then
-		plateArrowLeft:SetVertexColor(255/255, 247/255, 173/255)
-		plateArrowLeft:Hide()
-	end
-
-	if plateArrowRight then
-		plateArrowRight:SetVertexColor(255/255, 247/255, 173/255)
-		plateArrowRight:Hide()
-	end
 
 	if plateShadow then
 		plateShadow:SetBackdropBorderColor(0, 0, 0, 0.8)
-	end
-
-	if UnitIsUnit(unit, "target") then
-		if plateArrowLeft and plateArrowRight then
-			plateArrowLeft:Show()
-			plateArrowRight:Show()
-		end
 	end
 
 	local r, g, b
 	local showIndicator
 	if UnitIsUnit(unit, "target") then
 		showIndicator = true
-		r, g, b = 255/255, 247/255, 173/255
-	else
-		showIndicator = false
-		r, g, b = 0, 0, 0, 0.8
+		r, g, b = 0.84, 0.75, 0.65
 	end
 
 	if showIndicator then
-		if (plateArrowLeft and plateArrowRight) then
-			plateArrowLeft:SetVertexColor(r, g, b)
-			plateArrowRight:SetVertexColor(r, g, b)
-		end
-
 		if plateShadow then
 			plateShadow:SetBackdropBorderColor(r, g, b)
 		end
@@ -384,7 +291,7 @@ function Module:HideTicks()
 	end
 end
 
-local CastTicksTexture = K.GetTexture(C["Unitframe"].Texture)
+local CastTicksTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 function Module:SetCastTicks(castbar, numTicks, extraTickRatio)
 	extraTickRatio = extraTickRatio or 0
 	Module:HideTicks()
@@ -641,6 +548,9 @@ function Module:PostCreateAura(button)
 		button.count:SetJustifyH("RIGHT")
 		button.count:SetFont(buttonFont, buttonFontSize, "THINOUTLINE")
 		button.count:SetTextColor(0.84, 0.75, 0.65)
+
+		button.overlay:SetTexture(nil)
+		button.stealable:SetAtlas("bags-newitem")
 	end
 end
 
@@ -804,7 +714,7 @@ function Module:NameplatesCallback(event, unit)
 	end
 
 	-- Position of the resources
-	local Point, Relpoint, xOffset, yOffset = "TOP", "BOTTOM", 0, -8
+	local Point, Relpoint, xOffset, yOffset = "TOP", "BOTTOM", 0, -10
 
 	if event == "NAME_PLATE_UNIT_ADDED" then
 		Nameplate.reaction = UnitReaction("player", unit)
@@ -838,16 +748,13 @@ function Module:NameplatesCallback(event, unit)
 					Nameplate:EnableElement("Runes")
 					Nameplate.Runes:ForceUpdate()
 				end
-			end
 
-			if C["Nameplates"].TargetArrow and Nameplate.leftArrow then
-				Nameplate.leftArrow:Hide()
+				if (K.Class == "MONK") then
+					Nameplate.Stagger:Show()
+					Nameplate:EnableElement("Stagger")
+					Nameplate.Stagger:ForceUpdate()
+				end
 			end
-
-			if C["Nameplates"].TargetArrow and self.rightArrow then
-				Nameplate.rightArrow:Hide()
-			end
-
 		else
 			Nameplate:EnableElement("Castbar")
 			Nameplate:EnableElement("RaidTargetIndicator")
@@ -859,7 +766,7 @@ function Module:NameplatesCallback(event, unit)
 			Module.UpdateNameplateTarget(Nameplate)
 			Module.UpdatePlateTotems(Nameplate)
 			Module.UpdateHealerIcons(Nameplate)
-			Module.UpdateThreatIndicator(Nameplate)
+			Module.UpdateExplosives(Nameplate, event, unit)
 
 			if Nameplate.ClassPower then
 				Nameplate.ClassPower:Hide()
@@ -869,11 +776,17 @@ function Module:NameplatesCallback(event, unit)
 					Nameplate.Runes:Hide()
 					Nameplate:DisableElement("Runes")
 				end
+
+				if (K.Class == "MONK") then
+					Nameplate.Stagger:Hide()
+					Nameplate:DisableElement("Stagger")
+				end
 			end
 		end
 	elseif event == "NAME_PLATE_UNIT_REMOVED" then
 		Nameplate:DisableElement("ClassPower")
 		Nameplate:DisableElement("Runes")
+		Nameplate:DisableElement("Stagger")
 
 		Nameplate:EnableElement("Castbar")
 		Nameplate:EnableElement("RaidTargetIndicator")
@@ -893,6 +806,13 @@ function Module:NameplatesCallback(event, unit)
 			Nameplate.Runes:SetParent(Nameplate)
 			Nameplate.Runes:SetPoint(Point, Nameplate.Health, Relpoint, xOffset, yOffset)
 		end
+
+		if Nameplate.Stagger then
+			Nameplate.Stagger:Hide()
+			Nameplate.Stagger:ClearAllPoints()
+			Nameplate.Stagger:SetParent(Nameplate)
+			Nameplate.Stagger:SetPoint(Point, Nameplate.Health, Relpoint, xOffset, yOffset)
+		end
 	end
 
 	if _G.GetCVarBool("nameplateResourceOnTarget") then
@@ -911,6 +831,11 @@ function Module:NameplatesCallback(event, unit)
 				Player.unitFrame.Runes:ClearAllPoints()
 				Player.unitFrame.Runes:SetParent(Anchor)
 				Player.unitFrame.Runes:SetPoint(Point, Anchor.Health, Relpoint, xOffset, yOffset)
+			end
+			if Player.unitFrame.Stagger then
+				Player.unitFrame.Stagger:ClearAllPoints()
+				Player.unitFrame.Stagger:SetParent(Anchor)
+				Player.unitFrame.Stagger:SetPoint(Point, Anchor.Health, Relpoint, xOffset, yOffset)
 			end
 		end
 	end
@@ -959,7 +884,7 @@ function Module:NameplatePowerAndCastBar(unit, cur, _, max)
 end
 
 function Module:GetPartyFramesAttributes()
-	local PartyProperties = "custom [@raid6,exists] hide;show"
+	local PartyProperties = "custom [group:party,nogroup:raid] show; hide"
 
 	return "oUF_Party", nil, PartyProperties,
 	"oUF-initialConfigFunction", [[
@@ -981,7 +906,7 @@ function Module:GetPartyFramesAttributes()
 end
 
 function Module:GetDamageRaidFramesAttributes()
-	local DamageRaidProperties = C["Party"].Enable and "custom [@raid6,exists] show;hide" or "solo,party,raid"
+	local DamageRaidProperties = "custom [group:raid] show; hide"
 
 	return "oUF_Raid_Damage", nil, DamageRaidProperties,
 	"oUF-initialConfigFunction", [[
@@ -1009,7 +934,7 @@ function Module:GetDamageRaidFramesAttributes()
 end
 
 function Module:GetHealerRaidFramesAttributes()
-	local HealerRaidProperties = C["Party"].Enable and "custom [@raid6,exists] show;hide" or "solo,party,raid"
+	local HealerRaidProperties = "custom [group:raid] show; hide"
 
 	return "oUF_Raid_Healer", nil, HealerRaidProperties,
 	"oUF-initialConfigFunction", [[
@@ -1088,7 +1013,7 @@ function Module:CreateStyle(unit)
 end
 
 function Module:CreateUnits()
-	if (C["Unitframe"].Enable) then
+	if C["Unitframe"].Enable then
 		local Player = oUF:Spawn("player")
 		Player:SetPoint("BOTTOM", UIParent, "BOTTOM", -290, 320)
 		Player:SetSize(200, 52)
@@ -1103,7 +1028,7 @@ function Module:CreateUnits()
 			TargetOfTarget:SetSize(116, 36)
 			K.Mover(TargetOfTarget, "TargetOfTarget", "TargetOfTarget", {"TOPLEFT", Target, "BOTTOMRIGHT", -56, 2}, 116, 36)
 
-			Module.TargetOfTarget = TargetOfTarget
+			self.Units.TargetOfTarget = TargetOfTarget
 		end
 
 		local Pet = oUF:Spawn("pet")
@@ -1122,13 +1047,13 @@ function Module:CreateUnits()
 			FocusTarget:SetPoint("TOPRIGHT", Focus, "BOTTOMLEFT", 56, 2)
 			FocusTarget:SetSize(116, 36)
 
-			Module.FocusTarget = FocusTarget
+			self.Units.FocusTarget = FocusTarget
 		end
 
-		Module.Player = Player
-		Module.Target = Target
-		Module.Pet = Pet
-		Module.Focus = Focus
+		self.Units.Player = Player
+		self.Units.Target = Target
+		self.Units.Pet = Pet
+		self.Units.Focus = Focus
 
 		if (C["Arena"].Enable) then
 			local Arena = {}
@@ -1146,7 +1071,7 @@ function Module:CreateUnits()
 				K.Mover(Arena[i], "Arena"..i, "Arena"..i, Arena.Position)
 			end
 
-			Module.Arena = Arena
+			self.Units.Arena = Arena
 		end
 
 		if C["Boss"].Enable then
@@ -1165,12 +1090,15 @@ function Module:CreateUnits()
 				K.Mover(Boss[i], "Boss"..i, "Boss"..i, Boss.Position)
 			end
 
-			Module.Boss = Boss
+			self.Units.Boss = Boss
 		end
 
 		if C["Party"].Enable then
 			local Party = oUF:SpawnHeader(Module:GetPartyFramesAttributes())
 			Party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -180)
+
+			Module.Headers.Party = Party
+
 			K.Mover(Party, "Party", "Party", {"TOPLEFT", UIParent, "TOPLEFT", 4, -180}, 158, 390)
 		end
 
@@ -1180,10 +1108,16 @@ function Module:CreateUnits()
 			local MainTankRaid = oUF:SpawnHeader(Module:GetMainTankAttributes())
 
 			if C["Raid"].RaidLayout.Value == "Healer" then
-				HealerRaid:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMRIGHT", 10, 14)
-				K.Mover(HealerRaid, "HealerRaid", "HealerRaid", {"TOPLEFT", "oUF_Player", "BOTTOMRIGHT", 10, 14}, C["Raid"].Width, C["Raid"].Height)
+				HealerRaid:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMRIGHT", 12, 14)
+
+				Module.Headers.Raid = HealerRaid
+
+				K.Mover(HealerRaid, "HealerRaid", "HealerRaid", {"TOPLEFT", "oUF_Player", "BOTTOMRIGHT", 12, 14}, C["Raid"].Width, C["Raid"].Height)
 			elseif C["Raid"].RaidLayout.Value == "Damage" then
 				DamageRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
+
+				Module.Headers.Raid = DamageRaid
+
 				K.Mover(DamageRaid, "DamageRaid", "DamageRaid", {"TOPLEFT", UIParent, "TOPLEFT", 4, -30}, 158, 390)
 			end
 
@@ -1395,15 +1329,21 @@ function Module:PLAYER_REGEN_ENABLED()
 end
 
 function Module:UpdateRaidDebuffIndicator()
-	local ORD = oUF_RaidDebuffs or K.oUF_RaidDebuffs
+	local ORD = K.oUF_RaidDebuffs or oUF_RaidDebuffs
 
 	if (ORD) then
-		ORD:ResetDebuffData()
 		local _, InstanceType = IsInInstance()
-		if (InstanceType == "party" or InstanceType == "raid") then
+
+		if (ORD.RegisteredList ~= "RD") and (InstanceType == "party" or InstanceType == "raid") then
+			ORD:ResetDebuffData()
 			ORD:RegisterDebuffs(Module.DebuffsTracking.RaidDebuffs.spells)
+			ORD.RegisteredList = "RD"
 		else
-			ORD:RegisterDebuffs(Module.DebuffsTracking.CCDebuffs.spells)
+			if ORD.RegisteredList ~= "CC" then
+				ORD:ResetDebuffData()
+				ORD:RegisterDebuffs(Module.DebuffsTracking.CCDebuffs.spells)
+				ORD.RegisteredList = "CC"
+			end
 		end
 	end
 end
@@ -1473,31 +1413,6 @@ function Module:DisableBlizzardCompactRaid()
 	end
 end
 
-function Module:GROUP_ROSTER_UPDATE()
-	local isInRaid = IsInRaid()
-	Module.IsInGroup = isInRaid or IsInGroup()
-
-	wipe(Module.GroupRoles)
-
-	if Module.IsInGroup then
-		local NumPlayers, Unit = (isInRaid and GetNumGroupMembers()) or GetNumSubgroupMembers(), (isInRaid and "raid") or "party"
-		for i = 1, NumPlayers do
-			if UnitExists(Unit..i) then
-				Module.GroupRoles[UnitName(Unit..i)] = UnitGroupRolesAssigned(Unit..i)
-			end
-		end
-	end
-end
-
-function Module:GROUP_LEFT()
-	Module.IsInGroup = IsInRaid() or IsInGroup()
-	wipe(Module.GroupRoles)
-end
-
-function Module:PLAYER_ENTERING_WORLD()
-	Module.InstanceType = select(2, GetInstanceInfo())
-end
-
 function Module:OnEnable()
 	Module.Backdrop = {
 		bgFile = C["Media"].Blank,
@@ -1509,8 +1424,6 @@ function Module:OnEnable()
 
 	Module:CreateUnits()
 	Module:CreateFilgerAnchors()
-
-	if not Module.GroupRoles then Module.GroupRoles = {} end
 
 	if C["Party"].Enable or C["Raid"].Enable then
 		self:DisableBlizzardCompactRaid()
@@ -1540,9 +1453,6 @@ function Module:OnEnable()
 
 		Module:RegisterEvent("PLAYER_REGEN_ENABLED")
 		Module:RegisterEvent("PLAYER_REGEN_DISABLED")
-		Module:RegisterEvent("PLAYER_ENTERING_WORLD")
-		Module:RegisterEvent("GROUP_ROSTER_UPDATE")
-		Module:RegisterEvent("GROUP_LEFT")
 
 		local BlizzPlateManaBar = _G.NamePlateDriverFrame.classNamePlatePowerBar
 		if BlizzPlateManaBar then
@@ -1565,7 +1475,6 @@ function Module:OnEnable()
 		end)
 
 		Module:PLAYER_REGEN_ENABLED()
-		Module:GROUP_ROSTER_UPDATE()
 	end
 
 	if C["Unitframe"].Enable then

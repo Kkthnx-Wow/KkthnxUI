@@ -70,7 +70,7 @@ function Module:CreateBar3()
 	frame:SetPoint(frame.Pos[1], frame.Pos[2], frame.Pos[3], frame.Pos[4], frame.Pos[5])
 	K.Mover(frame, "Bar3", "Bar3", frame.Pos)
 
-	if C["ActionBar"].Bar3Fade == true and K.BarFaderConfig then
-		K.CreateButtonFrameFader(frame, buttonList)
+	if C["ActionBar"].Bar3Fade == true then
+		K.CreateButtonFrameFader(frame, buttonList, K.fader)
 	end
 end

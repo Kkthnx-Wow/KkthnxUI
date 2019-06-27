@@ -1,63 +1,54 @@
 local K, C = unpack(select(2, ...))
-if (not C["Auras"].Enable) then
-    return
-end
-
 local Module = K:NewModule("Auras", "AceEvent-3.0", "AceHook-3.0")
 
--- Sourced: ElvUI (Elvz)
+-- Sourced: KkthnxUI (Siweia)
 
 local _G = _G
-local select = _G.select
+local format, floor, strmatch, select, unpack = format, floor, strmatch, select, unpack
+local DebuffTypeColor = _G.DebuffTypeColor
+local UnitAura, GetTime = _G.UnitAura, _G.GetTime
+local GetInventoryItemQuality, GetInventoryItemTexture, GetItemQualityColor, GetWeaponEnchantInfo = _G.GetInventoryItemQuality, _G.GetInventoryItemTexture, _G.GetItemQualityColor, _G.GetWeaponEnchantInfo
+local margin, offset, settings = 6, 12
 
-local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
+function Module:OnEnable()
+    -- Config
+    settings = {
+        Buffs = {
+            size = C["Auras"].BuffSize,
+            wrapAfter = C["Auras"].BuffsPerRow,
+            maxWraps = 3,
+            reverseGrow = C["Auras"].ReverseBuffs,
+        },
+        Debuffs = {
+            size = C["Auras"].DebuffSize,
+            wrapAfter = C["Auras"].DebuffsPerRow,
+            maxWraps = 1,
+            reverseGrow = C["Auras"].ReverseDebuffs,
+        },
+    }
 
-local AurasFont = K.GetFont(C["Auras"].Font)
+    -- HideBlizz
+    K.HideInterfaceOption(_G.BuffFrame)
+    K.HideInterfaceOption(_G.TemporaryEnchantFrame)
 
-local DIRECTION_TO_POINT = {
-    DOWN_RIGHT = "TOPLEFT",
-    DOWN_LEFT = "TOPRIGHT",
-    UP_RIGHT = "BOTTOMLEFT",
-    UP_LEFT = "BOTTOMRIGHT",
-    RIGHT_DOWN = "TOPLEFT",
-    RIGHT_UP = "BOTTOMLEFT",
-    LEFT_DOWN = "TOPRIGHT",
-    LEFT_UP = "BOTTOMRIGHT"
-}
+    -- Movers
+    self.BuffFrame = self:CreateAuraHeader("HELPFUL")
+    local buffAnchor = K.Mover(self.BuffFrame, "Buffs", "BuffAnchor", {"TOPRIGHT", Minimap, "TOPLEFT", -6, 0})
+    self.BuffFrame:ClearAllPoints()
+    self.BuffFrame:SetPoint("TOPRIGHT", buffAnchor)
 
-local DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER = {
-    DOWN_RIGHT = 1,
-    DOWN_LEFT = -1,
-    UP_RIGHT = 1,
-    UP_LEFT = -1,
-    RIGHT_DOWN = 1,
-    RIGHT_UP = 1,
-    LEFT_DOWN = -1,
-    LEFT_UP = -1
-}
+    self.DebuffFrame = self:CreateAuraHeader("HARMFUL")
+    local debuffAnchor = K.Mover(self.DebuffFrame, "Debuffs", "DebuffAnchor", {"TOPRIGHT", buffAnchor, "BOTTOMRIGHT", 0, -12})
+    self.DebuffFrame:ClearAllPoints()
+    self.DebuffFrame:SetPoint("TOPRIGHT", debuffAnchor)
 
-local DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER = {
-    DOWN_RIGHT = -1,
-    DOWN_LEFT = -1,
-    UP_RIGHT = 1,
-    UP_LEFT = 1,
-    RIGHT_DOWN = -1,
-    RIGHT_UP = 1,
-    LEFT_DOWN = -1,
-    LEFT_UP = 1
-}
+    self:CreateReminder()
+end
 
-local IS_HORIZONTAL_GROWTH = {
-    RIGHT_DOWN = true,
-    RIGHT_UP = true,
-    LEFT_DOWN = true,
-    LEFT_UP = true
-}
-
-function Module:UpdateTime(elapsed)
-    if (self.offset) then
+function Module:UpdateTimer(elapsed)
+    if self.offset then
         local expiration = select(self.offset, GetWeaponEnchantInfo())
-        if (expiration) then
+        if expiration then
             self.timeLeft = expiration / 1e3
         else
             self.timeLeft = 0
@@ -66,183 +57,127 @@ function Module:UpdateTime(elapsed)
         self.timeLeft = self.timeLeft - elapsed
     end
 
-    if (self.nextUpdate > 0) then
+    if self.nextUpdate > 0 then
         self.nextUpdate = self.nextUpdate - elapsed
         return
     end
 
-    local timerValue, formatID
-    timerValue, formatID, self.nextUpdate = K.GetTimeInfo(self.timeLeft, C["Auras"].FadeThreshold)
-    self.time:SetFormattedText(("%s%s|r"):format(K.TimeColors[formatID], K.TimeFormats[formatID][1]), timerValue)
-
-    if self.timeLeft > C["Auras"].FadeThreshold then
-        K.StopFlash(self)
-    else
-        K.Flash(self, 1)
-    end
+    if self.timeLeft >= 0 then
+		local timer, nextUpdate = K.FormatTime(self.timeLeft)
+		self.nextUpdate = nextUpdate
+		self.timer:SetText(timer)
+	end
 end
 
-function Module:CreateIcon(button)
-    button.texture = button:CreateTexture(nil, "BORDER")
-    button.texture:SetAllPoints()
-    button.texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-    button.count = button:CreateFontString(nil, "ARTWORK")
-    button.count:SetPoint("BOTTOMRIGHT", -1, 1)
-    button.count:SetFontObject(AurasFont)
-
-    button.time = button:CreateFontString(nil, "ARTWORK")
-    button.time:SetPoint("TOP", button, "BOTTOM", 1, -4)
-    button.time:SetFontObject(AurasFont)
-
-    K.SetUpAnimGroup(button)
-
-    button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
-
-    local header = button:GetParent()
-    local auraType = header:GetAttribute("filter")
-
-    if auraType == "HELPFUL" then
-        button:CreateBorder()
-        button:StyleButton()
-    elseif auraType == "HARMFUL" then
-        button:CreateBorder()
-        button:StyleButton()
-    end
-end
-
-function Module:UpdateAura(button, index)
+function Module:UpdateAuras(button, index)
     local filter = button:GetParent():GetAttribute("filter")
     local unit = button:GetParent():GetAttribute("unit")
-    local name, texture, count, dtype, duration, expirationTime = _G.UnitAura(unit, index, filter)
+    local name, texture, count, debuffType, duration, expirationTime = UnitAura(unit, index, filter)
 
-    if (name) then
-        if (duration > 0 and expirationTime) then
-            local timeLeft = expirationTime - _G.GetTime()
-            if (not button.timeLeft) then
+    if name then
+        if duration > 0 and expirationTime then
+            local timeLeft = expirationTime - GetTime()
+            if not button.timeLeft then
+				button.nextUpdate = -1
                 button.timeLeft = timeLeft
-                button:SetScript("OnUpdate", Module.UpdateTime)
+                button:SetScript("OnUpdate", Module.UpdateTimer)
             else
                 button.timeLeft = timeLeft
             end
-
-            button.nextUpdate = -1
-            Module.UpdateTime(button, 0)
+            -- Need Reviewed
+			button.nextUpdate = -1
+			Module.UpdateTimer(button, 0)
         else
             button.timeLeft = nil
-            button.time:SetText("")
+            button.timer:SetText("")
             button:SetScript("OnUpdate", nil)
         end
 
-        if (count > 1) then
+        if count and count > 1 then
             button.count:SetText(count)
         else
             button.count:SetText("")
         end
 
         if filter == "HARMFUL" then
-            local color = _G.DebuffTypeColor[dtype or ""]
+            local color = DebuffTypeColor[debuffType or "none"]
             button:SetBackdropBorderColor(color.r, color.g, color.b)
         else
             button:SetBackdropBorderColor()
         end
 
-        button.texture:SetTexture(texture)
+        button.icon:SetTexture(texture)
         button.offset = nil
     end
 end
 
 function Module:UpdateTempEnchant(button, index)
-    local quality = _G.GetInventoryItemQuality("player", index)
-    button.texture:SetTexture(_G.GetInventoryItemTexture("player", index))
+    local quality = GetInventoryItemQuality("player", index)
+    button.icon:SetTexture(GetInventoryItemTexture("player", index))
 
-    -- time left
     local offset = 2
     local weapon = button:GetName():sub(-1)
-    if weapon:match("2") then
+    if strmatch(weapon, "2") then
         offset = 6
     end
 
-    if (quality) then
-        button:SetBackdropBorderColor(_G.GetItemQualityColor(quality))
+    if quality then
+        button:SetBackdropBorderColor(GetItemQualityColor(quality))
     end
 
     local expirationTime = select(offset, GetWeaponEnchantInfo())
-    if (expirationTime) then
+    if expirationTime then
         button.offset = offset
-        button:SetScript("OnUpdate", Module.UpdateTime)
+        button:SetScript("OnUpdate", Module.UpdateTimer)
         button.nextUpdate = -1
-        Module.UpdateTime(button, 0)
+        Module.UpdateTimer(button, 0)
     else
-        button.timeLeft = nil
         button.offset = nil
+        button.timeLeft = nil
         button:SetScript("OnUpdate", nil)
-        button.time:SetText("")
+        button.timer:SetText("")
     end
 end
 
 function Module:OnAttributeChanged(attribute, value)
-    if (attribute == "index") then
-        Module:UpdateAura(self, value)
-    elseif (attribute == "target-slot") then
+    if attribute == "index" then
+        Module:UpdateAuras(self, value)
+    elseif attribute == "target-slot" then
         Module:UpdateTempEnchant(self, value)
     end
 end
 
 function Module:UpdateHeader(header)
-    if (not C["Auras"].Enable) then
-        return
-    end
-
+    local cfg = settings.Debuffs
     if header:GetAttribute("filter") == "HELPFUL" then
+        cfg = settings.Buffs
         header:SetAttribute("consolidateTo", 0)
-        header:SetAttribute("weaponTemplate", ("AuraTemplate%d"):format(C["Auras"].Size))
+		header:SetAttribute("weaponTemplate", format("KkthnxUIAuraTemplate%d", cfg.size))
     end
 
-    header:SetAttribute("separateOwn", C["Auras"].SeperateOwn)
-    header:SetAttribute("sortMethod", C["Auras"].SortMethod.Value)
-    header:SetAttribute("sortDirection", C["Auras"].SortDir.Value)
-    header:SetAttribute("maxWraps", C["Auras"].MaxWraps)
-    header:SetAttribute("wrapAfter", C["Auras"].WrapAfter)
+    header:SetAttribute("separateOwn", 1)
+    header:SetAttribute("sortMethod", "INDEX")
+    header:SetAttribute("sortDirection", "+")
+    header:SetAttribute("wrapAfter", cfg.wrapAfter)
+    header:SetAttribute("maxWraps", cfg.maxWraps)
+    header:SetAttribute("point", cfg.reverseGrow and "TOPLEFT" or "TOPRIGHT")
+    header:SetAttribute("minWidth", (cfg.size + margin) * cfg.wrapAfter)
+    header:SetAttribute("minHeight", (cfg.size + offset) * cfg.maxWraps)
+    header:SetAttribute("xOffset", (cfg.reverseGrow and 1 or -1) * (cfg.size + margin))
+    header:SetAttribute("yOffset", 0)
+    header:SetAttribute("wrapXOffset", 0)
+    header:SetAttribute("wrapYOffset", -(cfg.size + offset))
+    header:SetAttribute("template", format("KkthnxUIAuraTemplate%d", cfg.size))
 
-    header:SetAttribute("point", DIRECTION_TO_POINT[C["Auras"].GrowthDirection.Value])
-
-    if (IS_HORIZONTAL_GROWTH[C["Auras"].GrowthDirection.Value]) then
-        header:SetAttribute("minWidth", ((C["Auras"].WrapAfter == 1 and 0 or C["Auras"].HorizontalSpacing) + C["Auras"].Size) * C["Auras"].WrapAfter)
-        header:SetAttribute("minHeight", (C["Auras"].VerticalSpacing + C["Auras"].Size) * C["Auras"].MaxWraps)
-        header:SetAttribute("xOffset", DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] * (C["Auras"].HorizontalSpacing + C["Auras"].Size))
-        header:SetAttribute("yOffset", 0)
-        header:SetAttribute("wrapXOffset", 0)
-        header:SetAttribute("wrapYOffset", DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] * (C["Auras"].VerticalSpacing + C["Auras"].Size))
-    else
-        header:SetAttribute("minWidth", (C["Auras"].HorizontalSpacing + C["Auras"].Size) * C["Auras"].MaxWraps)
-        header:SetAttribute("minHeight", ((C["Auras"].WrapAfter == 1 and 0 or C["Auras"].VerticalSpacing) + C["Auras"].Size) * C["Auras"].WrapAfter)
-        header:SetAttribute("xOffset", 0)
-        header:SetAttribute("yOffset", DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] * (C["Auras"].VerticalSpacing + C["Auras"].Size))
-        header:SetAttribute("wrapXOffset", DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] * (C["Auras"].HorizontalSpacing + C["Auras"].Size))
-        header:SetAttribute("wrapYOffset", 0)
-    end
-
-    header:SetAttribute("template", ("AuraTemplate%d"):format(C["Auras"].Size))
     local index = 1
     local child = select(index, header:GetChildren())
-    while (child) do
-        if ((math.floor(child:GetWidth() * 100 + 0.5) / 100) ~= C["Auras"].Size) then
-            child:SetSize(C["Auras"].Size, C["Auras"].Size)
-        end
-
-        if (child.time) then
-            child.time:ClearAllPoints()
-            child.time:SetPoint("TOP", child, "BOTTOM", 1, -3)
-            child.time:SetFontObject(AurasFont)
-
-            child.count:ClearAllPoints()
-            child.count:SetPoint("BOTTOMRIGHT", -1, 1)
-            child.count:SetFontObject(AurasFont)
+    while child do
+        if (floor(child:GetWidth() * 100 + .5) / 100) ~= cfg.size then
+            child:SetSize(cfg.size, cfg.size)
         end
 
         -- Blizzard bug fix, icons arent being hidden when you reduce the amount of maximum buttons
-        if (index > (C["Auras"].MaxWraps * C["Auras"].WrapAfter) and child:IsShown()) then
+        if index > (cfg.maxWraps * cfg.wrapAfter) and child:IsShown() then
             child:Hide()
         end
 
@@ -252,17 +187,17 @@ function Module:UpdateHeader(header)
 end
 
 function Module:CreateAuraHeader(filter)
-    local name = "PlayerDebuffs"
+    local name = "KkthnxUIPlayerDebuffs"
     if filter == "HELPFUL" then
-        name = "PlayerBuffs"
+        name = "KkthnxUIPlayerBuffs"
     end
 
     local header = CreateFrame("Frame", name, UIParent, "SecureAuraHeaderTemplate")
     header:SetClampedToScreen(true)
     header:SetAttribute("unit", "player")
     header:SetAttribute("filter", filter)
-    _G.RegisterStateDriver(header, "visibility", "[petbattle] hide; show")
-    _G.RegisterAttributeDriver(header, "unit", "[vehicleui] vehicle; player")
+    RegisterStateDriver(header, "visibility", "[petbattle] hide; show")
+    RegisterAttributeDriver(header, "unit", "[vehicleui] vehicle; player")
 
     if filter == "HELPFUL" then
         header:SetAttribute("consolidateDuration", -1)
@@ -275,24 +210,29 @@ function Module:CreateAuraHeader(filter)
     return header
 end
 
-function Module:OnInitialize()
-    if not C["Auras"].Enable then
-        return
+function Module:CreateAuraIcon(button)
+    local header = button:GetParent()
+    local cfg = settings.Debuffs
+    if header:GetAttribute("filter") == "HELPFUL" then
+        cfg = settings.Buffs
     end
+    local fontSize = floor(cfg.size / 30 * 12 + .5)
 
-	BuffFrame:Kill()
-    TemporaryEnchantFrame:Kill()
+    button.icon = button:CreateTexture(nil, "BORDER")
+    button.icon:SetAllPoints()
+    button.icon:SetTexCoord(unpack(K.TexCoords))
 
-    local AurasHolder = CreateFrame("Frame", "AurasHolder", UIParent)
-    AurasHolder:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 4, 8)
-    AurasHolder:SetWidth((Minimap:GetWidth() + 29))
-    AurasHolder:SetHeight(Minimap:GetHeight() + 53)
+    button.count = button:CreateFontString(nil, "OVERLAY")
+    button.count:SetPoint("TOPRIGHT", -1, -3)
+    button.count:SetFontObject(K.GetFont(C["UIFonts"].AuraFonts))
+    button.count:SetFont(select(1, button.count:GetFont()), fontSize, select(3, button.count:GetFont()))
 
-    self.BuffFrame = self:CreateAuraHeader("HELPFUL")
-    self.BuffFrame:SetPoint("TOPRIGHT", AurasHolder, "TOPLEFT", -(6 + 4), -4 - 4)
-    K.Mover(self.BuffFrame, "Buffs", "Buffs", {"TOPRIGHT", AurasHolder, "TOPLEFT", -(6 + 4), -4 - 4})
+    button.timer = button:CreateFontString(nil, "OVERLAY")
+    button.timer:SetPoint("TOP", button, "BOTTOM", 1, 4)
+    button.timer:SetFontObject(K.GetFont(C["UIFonts"].AuraFonts))
+    button.timer:SetFont(select(1, button.timer:GetFont()), fontSize, select(3, button.timer:GetFont()))
 
-    self.DebuffFrame = self:CreateAuraHeader("HARMFUL")
-    self.DebuffFrame:SetPoint("BOTTOMRIGHT", AurasHolder, "BOTTOMLEFT", -(6 + 4), -4 - 93)
-    K.Mover(self.DebuffFrame, "Debuffs", "Debuffs", {"BOTTOMRIGHT", AurasHolder, "BOTTOMLEFT", -(6 + 4), -4 - 93})
+    button:CreateBorder()
+
+    button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
 end

@@ -599,7 +599,7 @@ local function CreateConfigColorPicker(parent, group, option, value)
 	local K = KkthnxUI[1]
 	local C = KkthnxUI[2]
 
-	local ConfigTexture = K.GetTexture(C["General"].Texture)
+	local ConfigTexture = K.GetTexture(C["UITextures"].GeneralTextures)
 
 	local Button = CreateFrame("Button", nil, parent)
 	Button:CreateBorder()

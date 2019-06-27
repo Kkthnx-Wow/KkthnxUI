@@ -70,7 +70,7 @@ local function SkinObjectiveTracker()
 		Module:StatusBarColorGradient(self.Bar, value, 100)
 	end
 
-	local function SkinItemButton(self, block)
+	local function SkinItemButton(_, block)
 		local item = block.itemButton
 		if item and not item.skinned then
 			item:SetSize(24, 24)
@@ -127,6 +127,8 @@ local function SkinObjectiveTracker()
 			end
 		end
 	end
+
+	_G.BonusObjectiveTrackerProgressBar_PlayFlareAnim = K.Noop
 
 	hooksecurefunc("BonusObjectiveTrackerProgressBar_SetValue", ColorProgressBars)				--[Color]: Bonus Objective Progress Bar
 	hooksecurefunc("ObjectiveTrackerProgressBar_SetValue", ColorProgressBars)					--[Color]: Quest Progress Bar

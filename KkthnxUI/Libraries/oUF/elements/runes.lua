@@ -80,44 +80,25 @@ local function descSort(runeAID, runeBID)
 	end
 end
 
-local function UpdateColor(self, event)
-	local element = self.Runes
-
+local function UpdateColor(element, runeID)
 	local spec = GetSpecialization() or 0
 
 	local color
 	if(spec ~= 0 and element.colorSpec) then
-		color = self.colors.runes[spec]
+		color = element.__owner.colors.runes[spec]
 	else
-		color = self.colors.power.RUNES
+		color = element.__owner.colors.power.RUNES
 	end
 
 	local r, g, b = color[1], color[2], color[3]
 
-	for index = 1, #element do
-		element[index]:SetStatusBarColor(r, g, b)
+	element[runeID]:SetStatusBarColor(r, g, b)
 
-		local bg = element[index].bg
-		if(bg) then
-			local mu = bg.multiplier or 1
-			bg:SetVertexColor(r * mu, g * mu, b * mu)
-		end
+	local bg = element[runeID].bg
+	if(bg) then
+		local mu = bg.multiplier or 1
+		bg:SetVertexColor(r * mu, g * mu, b * mu)
 	end
-
-	if(element.PostUpdateColor) then
-		element:PostUpdateColor(r, g, b)
-	end
-end
-
-local function ColorPath(self, ...)
-	--[[ Override: Runes.UpdateColor(self, event, ...)
-	Used to completely override the internal function for updating the widgets' colors.
-
-	* self  - the parent object
-	* event - the event triggering the update (string)
-	* ...   - the arguments accompanying the event
-	--]]
-	(self.Runes.UpdateColor or UpdateColor) (self, ...)
 end
 
 local function Update(self, event)
@@ -169,7 +150,21 @@ local function Update(self, event)
 	end
 end
 
-local function Path(self, ...)
+local function Path(self, event, ...)
+	local element = self.Runes
+	if(event ~= 'RUNE_POWER_UPDATE') then
+		--[[ Override: Runes:UpdateColor(runeID)
+		Used to completely override the internal function for updating the widgets' colors.
+
+		* self   - the Runes element
+		* runeID - the index of the updated rune (number)
+		--]]
+		local UpdateColorMethod = element.UpdateColor or UpdateColor
+		for index = 1, #element do
+			UpdateColorMethod(element, index)
+		end
+	end
+
 	--[[ Override: Runes.Override(self, event, ...)
 	Used to completely override the internal update function.
 
@@ -177,12 +172,11 @@ local function Path(self, ...)
 	* event - the event triggering the update (string)
 	* ...   - the arguments accompanying the event
 	--]]
-	(self.Runes.Override or Update) (self, ...)
+	return (element.Override or Update) (self, event, ...)
 end
 
 local function ForceUpdate(element)
-	Path(element.__owner, 'ForceUpdate')
-	ColorPath(element.__owner, 'ForceUpdate')
+	return Path(element.__owner, 'ForceUpdate')
 end
 
 local function Enable(self, unit)
@@ -198,7 +192,7 @@ local function Enable(self, unit)
 			end
 		end
 
-		self:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED', ColorPath)
+		self:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED', Path)
 		self:RegisterEvent('RUNE_POWER_UPDATE', Path, true)
 
 		return true
@@ -212,7 +206,7 @@ local function Disable(self)
 			element[i]:Hide()
 		end
 
-		self:UnregisterEvent('PLAYER_SPECIALIZATION_CHANGED', ColorPath)
+		self:UnregisterEvent('PLAYER_SPECIALIZATION_CHANGED', Path)
 		self:UnregisterEvent('RUNE_POWER_UPDATE', Path)
 	end
 end

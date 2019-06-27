@@ -1,4 +1,5 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
+
 local Module = K:GetModule("ActionBar")
 
 local _G = _G
@@ -50,6 +51,10 @@ local function DisableAllScripts(frame)
 end
 
 function Module:HideBlizz()
+	if not C["ActionBar"].Enable then
+		return
+	end
+
 	MainMenuBar:SetMovable(true)
 	MainMenuBar:SetUserPlaced(true)
 	MainMenuBar.ignoreFramePositionManager = true

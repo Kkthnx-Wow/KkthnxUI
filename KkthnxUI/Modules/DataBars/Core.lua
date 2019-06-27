@@ -495,8 +495,8 @@ end
 
 function Module:OnEnable()
 	self.Database = C["DataBars"]
-	self.DatabaseTexture = K.GetTexture(self.Database.Texture)
-	self.DatabaseFont = K.GetFont(self.Database.Font)
+	self.DatabaseTexture = K.GetTexture(C["UITextures"].DataBarsTexture)
+	self.DatabaseFont = K.GetFont(C["UIFonts"].DataBarsFonts)
 
 	if self.Database.Enable ~= true then
 		return

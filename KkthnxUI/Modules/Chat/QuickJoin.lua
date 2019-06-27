@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("SocialQueue", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
 if C["Chat"].Enable ~= true or C["Chat"].QuickJoin ~= true then return end
 
@@ -6,7 +6,6 @@ if C["Chat"].Enable ~= true or C["Chat"].QuickJoin ~= true then return end
 
 local _G = _G
 local difftime = difftime
-local string_find = string.find
 local string_format = string.format
 
 local BNGetFriendGameAccountInfo = _G.BNGetFriendGameAccountInfo
@@ -121,9 +120,6 @@ function Module:SocialQueueEvent(event, guid, numAddedItems)
 				isLeader = self:SocialQueueIsLeader(playerName, leaderName)
 			end
 		end
-
-		-- ignore groups created by the addon World Quest Group Finder/World Quest Tracker/World Quest Assistant/HandyNotes_Argus to reduce spam
-		if comment and (string_find(comment, "World Quest Group Finder") or string_find(comment, "World Quest Tracker") or string_find(comment, "World Quest Assistant") or strfind(comment, "HandyNotes_Argus")) then return end
 
 		if activityID or firstQueue.queueData.activityID then
 			fullName = C_LFGList_GetActivityInfo(activityID or firstQueue.queueData.activityID)

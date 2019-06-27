@@ -82,6 +82,35 @@ local menuList = {
 	{text = "|cff7289daDiscord|r", notCheckable = true, func = function()
 			K.StaticPopup_Show("DISCORD_EDITBOX", nil, nil, "https://discord.gg/YUmxqQm")
 	end},
+	{text = "", notClickable = true, notCheckable = true},
+
+	{text = TASKS_COLON, hasArrow = true, notCheckable = true,
+		menuList = {
+			{text = "Delete "..QUESTS_LABEL.." From Tracker", notCheckable = true, func = function()
+					if InCombatLockdown() then
+						print(ERR_NOT_IN_COMBAT)
+						return
+					end
+					K.AbandonQuests()
+			end},
+
+			{text = "Delete |ccf00ccff"..HEIRLOOMS.."|r From Bags", notCheckable = true, func = function()
+				if InCombatLockdown() then
+					print(ERR_NOT_IN_COMBAT)
+					return
+				end
+				K.DeleteHeirlooms()
+			end},
+
+			{text = "Delete |cffffd200"..AUCTION_CATEGORY_QUEST_ITEMS.."|r From Bags", notCheckable = true, func = function()
+				if InCombatLockdown() then
+					print(ERR_NOT_IN_COMBAT)
+					return
+				end
+				K.DeleteQuestItems()
+			end},
+		},
+	},
 
 	{text = "", notClickable = true, notCheckable = true},
 	{text = CLOSE, notCheckable = true, func = function() end},
@@ -239,7 +268,7 @@ function CopyChat:OnEnable()
 		end
 
 		local _, max = CopyChatScrollFrameScrollBar:GetMinMaxValues()
-		for i = 1, max do
+		for _ = 1, max do
 			ScrollFrameTemplate_OnMouseWheel(CopyChatScrollFrame, -1)
 		end
 	end)
@@ -345,12 +374,79 @@ function CopyChat:OnEnable()
 			end
 		end)
 
+		-- Create Bagsbutton
+		local BagsButton = CreateFrame("Button", string_format("BagsChatButton%d", id), frame)
+		BagsButton:SetSize(16, 16)
+		BagsButton:SetPoint("TOP", ConfigButton, "BOTTOM", 0, -5)
+		BagsButton.Texture = BagsButton:CreateTexture(nil, "BACKGROUND")
+		BagsButton.Texture:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
+		BagsButton.Texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		BagsButton.Texture:SetAllPoints()
+		BagsButton:StyleButton(nil, true)
+		BagsButton:SetAlpha(0.25)
+		BagsButton:SetFrameLevel(frame:GetFrameLevel() + 5)
+
+		BagsButton:SetScript("OnMouseUp", function(self)
+			local Bank = BankFrame
+
+			if Bank:IsShown() then
+				CloseBankFrame()
+			else
+				ToggleAllBags()
+			end
+		end)
+
+		BagsButton:SetScript("OnEnter", function(self)
+			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+
+			local free, total = 0, 0
+			for i = 0, NUM_BAG_SLOTS do
+				free, total = free + GetContainerNumFreeSlots(i), total + GetContainerNumSlots(i)
+			end
+
+			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
+			GameTooltip:SetOwner(self, anchor, xoff, yoff)
+			GameTooltip:ClearLines()
+			GameTooltip:AddLine(INVENTORY_TOOLTIP)
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddDoubleLine("Used" , total - free, 1, 1, 1)
+			GameTooltip:AddDoubleLine(TOTAL , total, 1, 1, 1)
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, BINDING_NAME_OPENALLBAGS, 1, 1, 1)
+
+			for i = 1, MAX_WATCHED_TOKENS do
+				local name, count = GetBackpackCurrencyInfo(i)
+				if name and i == 1 then
+					GameTooltip:AddLine(" ")
+					GameTooltip:AddLine(CURRENCY)
+					GameTooltip:AddLine(" ")
+				end
+
+				if name and count then
+					GameTooltip:AddDoubleLine(name, count, 1, 1, 1)
+				end
+			end
+
+			GameTooltip:Show()
+		end)
+
+		BagsButton:SetScript("OnLeave", function(self)
+			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+
+			if not GameTooltip:IsForbidden() then
+				GameTooltip:Hide()
+			end
+		end)
+
+		BagsButton:RegisterEvent("BAG_UPDATE")
+		BagsButton:RegisterEvent("PLAYER_ENTERING_WORLD")
+
 		-- Create Damagemeter Toggle
 		if K.CheckAddOnState("Details") or K.CheckAddOnState("Skada") then
 			local DamageMeterButton = CreateFrame("Button", string_format("DamageMeterChatButton%d", id), frame)
 			DamageMeterButton:EnableMouse(true)
 			DamageMeterButton:SetSize(16, 16)
-			DamageMeterButton:SetPoint("TOP", ConfigButton, "BOTTOM", 0, -5)
+			DamageMeterButton:SetPoint("TOP", BagsButton, "BOTTOM", 0, -5)
 			DamageMeterButton.Texture = DamageMeterButton:CreateTexture(nil, "BACKGROUND")
 			DamageMeterButton.Texture:SetTexture("Interface\\Icons\\Spell_Lightning_LightningBolt01")
 			DamageMeterButton.Texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -397,7 +493,7 @@ function CopyChat:OnEnable()
 				end
 			end)
 
-		DamageMeterButton.ChatFrame = frame
+			DamageMeterButton.ChatFrame = frame
 		end
 
 		ConfigButton.ChatFrame = frame

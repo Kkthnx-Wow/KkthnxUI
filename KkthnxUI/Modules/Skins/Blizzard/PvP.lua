@@ -6,7 +6,7 @@ local _G = _G
 local function SkinPvP()
 	local HonorFrame = _G["HonorFrame"]
 	local ConquestFrame = _G["ConquestFrame"]
-	local pvpTexture = K.GetTexture(C["Skins"].Texture)
+	local pvpTexture = K.GetTexture(C["UITextures"].SkinTextures)
   	local isAlliance = _G.UnitFactionGroup("player") == "Alliance"
 
 	-- Conquest Tooltip

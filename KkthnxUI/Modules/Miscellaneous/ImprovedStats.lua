@@ -10,12 +10,10 @@ local C_PaperDollInfo_GetMinItemLevel = _G.C_PaperDollInfo.GetMinItemLevel
 local CreateFrame = _G.CreateFrame
 local GetAverageItemLevel = _G.GetAverageItemLevel
 local GetMeleeHaste = _G.GetMeleeHaste
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local LE_UNIT_STAT_AGILITY = _G.LE_UNIT_STAT_AGILITY
-local LE_UNIT_STAT_INTELLECT = _G.LE_UNIT_STAT_INTELLECT
-local LE_UNIT_STAT_STRENGTH = _G.LE_UNIT_STAT_STRENGTH
-local UnitAttackSpeed = _G.UnitAttackSpeed
 local hooksecurefunc = _G.hooksecurefunc
+local IsAddOnLoaded = _G.IsAddOnLoaded
+local PaperDollFrame_SetLabelAndText = _G.PaperDollFrame_SetLabelAndText
+local UnitAttackSpeed = _G.UnitAttackSpeed
 
 -- Add extra data to the role stats panel while enabling scrolling to prevent stats overflow.
 function Module:CreateMissingStats()
@@ -75,6 +73,7 @@ function Module:CreateMissingStats()
 				[18] = {stat = "MOVESPEED"},
 			},
 		},
+
 		[2] = {
 			categoryFrame = "EnhancementsCategory",
 			stats = {
@@ -111,9 +110,11 @@ function Module:CreateMissingStats()
 		local meleeHaste = GetMeleeHaste()
 		local speed, offhandSpeed = UnitAttackSpeed(unit)
 		local displaySpeed = string_format("%.2f", speed)
+
 		if offhandSpeed then
 			offhandSpeed = string_format("%.2f", offhandSpeed)
 		end
+
 		if offhandSpeed then
 			displaySpeed = K.ShortValue(displaySpeed).." / "..offhandSpeed
 		else
@@ -121,9 +122,13 @@ function Module:CreateMissingStats()
 		end
 		PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, displaySpeed, false, speed)
 
-		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ATTACK_SPEED).." "..displaySpeed..FONT_COLOR_CODE_CLOSE
+		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..string_format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ATTACK_SPEED).." "..displaySpeed..FONT_COLOR_CODE_CLOSE
 		statFrame.tooltip2 = string_format(STAT_ATTACK_SPEED_BASE_TOOLTIP, K.ShortValue(meleeHaste))
 		statFrame:Show()
+	end
+
+	if C["Misc"].CharacterInfo == true then
+		return
 	end
 
 	hooksecurefunc("PaperDollFrame_SetItemLevel", function(statFrame, unit)

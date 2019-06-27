@@ -170,7 +170,7 @@ end
 function Updater:InitBubble(bubble)
 	numBubbles = numBubbles + 1
 
-	local ChatFont = K.GetFont(C["Chat"].Font)
+	local ChatFont = K.GetFont(C["UIFonts"].ChatFonts)
 	local space = getPadding()
 	bubbles[bubble] = CreateFrame("Frame", nil, self.BubbleBox)
 	bubbles[bubble]:Hide()

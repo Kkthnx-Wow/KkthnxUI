@@ -9,7 +9,7 @@ local function SkinAchievement()
 	end
 
 	local function SkinStatusBar(bar)
-		local barTexture = K.GetTexture(C["Skins"].Texture)
+		local barTexture = K.GetTexture(C["UITextures"].SkinTextures)
 		bar:StripTextures()
 		bar:SetStatusBarTexture(barTexture)
 		bar:SetStatusBarColor(4/255, 179/255, 30/255)

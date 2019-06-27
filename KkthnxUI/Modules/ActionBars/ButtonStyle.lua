@@ -27,7 +27,7 @@ local function StyleNormalButton(self)
 	local Btname = _G[Name.."Name"]
 	local Normal = _G[Name.."NormalTexture"]
 	local BtnBG = _G[Name.."FloatingBG"]
-	local Font = K.GetFont(C["ActionBar"].Font)
+	local Font = K.GetFont(C["UIFonts"].ActionBarsFonts)
 
 	if not Button.IsSkinned then
 		Flash:SetTexture("")
@@ -69,7 +69,7 @@ local function StyleNormalButton(self)
 			Button.Pushed = true
 		end
 
-		if not InCombatLockdown() then
+		if not InCombatLockdown() and C["ActionBar"].Enable then
 			if not self.SetButtonSize then
 				if self:GetHeight() ~= C["ActionBar"].ButtonSize and not Name:match("Extra") then
 					self:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
@@ -136,7 +136,7 @@ local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
 	local PetSize = C["ActionBar"].ButtonSize
 	local HotKey = _G[Button:GetName().."HotKey"]
 	local Flash = _G[Name.."Flash"]
-	local Font = K.GetFont(C["ActionBar"].Font)
+	local Font = K.GetFont(C["UIFonts"].ActionBarsFonts)
 
 	Button:SetNormalTexture("")
 	hooksecurefunc(Button, "SetNormalTexture", function(self, texture)
@@ -287,24 +287,6 @@ local function SetupFlyoutButton()
 				Button:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
 			end
 
-			if C["ActionBar"].RightMouseover == true then
-				SpellFlyout:HookScript("OnEnter", function(self)
-					RightBarMouseOver(1)
-				end)
-
-				SpellFlyout:HookScript("OnLeave", function(self)
-					RightBarMouseOver(0)
-				end)
-
-				Button:HookScript("OnEnter", function(self)
-					RightBarMouseOver(1)
-				end)
-
-				Button:HookScript("OnLeave", function(self)
-					RightBarMouseOver(0)
-				end)
-			end
-
 			Button.IsSkinned = true
 		end
 	end
@@ -339,13 +321,6 @@ local function StyleFlyoutButton(self)
 	SetupFlyoutButton()
 end
 
-local function HideHighlightButton(self)
-	if self.overlay then
-		self.overlay:Hide()
-		ActionButton_HideOverlayGlow(self)
-	end
-end
-
 local function StyleSmallActionButtons()
 	for i = 1, NUM_PET_ACTION_SLOTS do
 		K.StylePet(_G["PetActionButton"..i])
@@ -362,4 +337,3 @@ hooksecurefunc("SpellButton_OnClick", StyleFlyoutButton)
 K:RegisterEvent("PLAYER_LOGIN", StyleSmallActionButtons)
 hooksecurefunc("ActionButton_UpdateHotkeys", K.UpdateHotkey)
 hooksecurefunc("PetActionButton_SetHotkeys", K.UpdateHotkey)
-hooksecurefunc("ActionButton_ShowOverlayGlow", HideHighlightButton)

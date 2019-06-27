@@ -12,13 +12,15 @@ local CLOSE = _G.CLOSE
 
 local ChangeLogData = {
 	"Changes:",
-	"• Released v8.49.",
-	"• Reverted actionbar fader code to older code.",
-	"• Auto disenchant feature added for professions.",
-	"• Auto tab binder feature added for pvp only.",
-	"• Quest notifier feature added for progress on quests.",
-	"• Removed module oUF_FloatingCombatFeedback.",
-	"• Removed module oUF_CombatFeedback.",
+	"• Released v8.51.",
+	"• Removed threat on Nameplates. Sick of dealing with it.",
+	"• Add bagbar for people who have B or SHIFT+B bound.",
+	"• Added a Mass Guild Kick command. SCARY!",
+	"• Added a reminder to not share your password.",
+	"• Updated fader for Actionbars.",
+	"• Update cooldowns to be accessed outside the file.",
+	"• Updated Actionbars range code.",
+	"• |cff00FF96Deadarroww|r and |cffC79C6EDeepstep|r are getting married. Tell them congrats!",
     -- Important Notes We Want The User To Know!
 	" ",
 	"Notes:",

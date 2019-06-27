@@ -22,7 +22,7 @@ local function SkinTooltip()
 		return
 	end
 
-	local GameTooltipStatusBarTexture = K.GetTexture(C["Tooltip"].Texture)
+	local GameTooltipStatusBarTexture = K.GetTexture(C["UITextures"].TooltipTextures)
 	local GameTooltip = _G["GameTooltip"]
 	local GameTooltipStatusBar = _G["GameTooltipStatusBar"]
 	local WarCampaignTooltip = QuestScrollFrame.WarCampaignTooltip
@@ -49,17 +49,17 @@ local function SkinTooltip()
 	end)
 
 	local tooltips = {
-		ItemRefTooltip,
-		ItemRefShoppingTooltip1,
-		ItemRefShoppingTooltip2,
-		ItemRefShoppingTooltip3,
-		AutoCompleteBox,
-		FriendsTooltip,
-		ShoppingTooltip1,
-		ShoppingTooltip2,
-		ShoppingTooltip3,
-		ReputationParagonTooltip,
-		EmbeddedItemTooltip,
+		_G.ItemRefTooltip,
+		_G.ItemRefShoppingTooltip1,
+		_G.ItemRefShoppingTooltip2,
+		_G.ItemRefShoppingTooltip3,
+		_G.AutoCompleteBox,
+		_G.FriendsTooltip,
+		_G.ShoppingTooltip1,
+		_G.ShoppingTooltip2,
+		_G.ShoppingTooltip3,
+		_G.ReputationParagonTooltip,
+		_G.EmbeddedItemTooltip,
 		-- already have locals
 		GameTooltip,
 		StoryTooltip,
