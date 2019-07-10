@@ -108,7 +108,7 @@ function Module:CreateTargetAuras()
 		Buffs["growth-x"] = "RIGHT"
 		Buffs.PostCreateIcon = Module.PostCreateAura
 		Buffs.PostUpdateIcon = Module.PostUpdateAura
-		Buffs.CustomFilter = CustomBuffFilter.target
+		--0Buffs.CustomFilter = CustomBuffFilter.target
 
 		Debuffs:SetWidth(140)
 		Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, -70)
@@ -122,7 +122,7 @@ function Module:CreateTargetAuras()
 		Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 		Debuffs.PostCreateIcon = Module.PostCreateAura
 		Debuffs.PostUpdateIcon = Module.PostUpdateAura
-		Debuffs.CustomFilter = CustomDebuffFilter.target
+		--0Debuffs.CustomFilter = CustomDebuffFilter.target
 
 		self.Buffs = Buffs
 		self.Debuffs = Debuffs

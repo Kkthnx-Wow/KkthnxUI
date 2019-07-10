@@ -178,17 +178,6 @@ function Module:UpdateUnitClassify(unit)
 	end
 end
 
-function Module:AddFollowerXP()
-	self.NazjatarFollowerXP = CreateFrame("StatusBar", nil, self)
-	self.NazjatarFollowerXP:SetSize(C["Nameplates"].Width, C["Nameplates"].Height)
-	self.NazjatarFollowerXP:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -5)
-	self.NazjatarFollowerXP:CreateShadow(true)
-
-	self.NazjatarFollowerXP.progressText = self.NazjatarFollowerXP:CreateFontString(nil, "OVERLAY")
-	self.NazjatarFollowerXP.progressText:SetFontObject(K.GetFont(C["UIFonts"].NameplateFonts))
-	self.NazjatarFollowerXP.progressText:SetPoint("CENTER", self.NazjatarFollowerXP, "CENTER", 0, 0)
-end
-
 local unitTip = CreateFrame("GameTooltip", "KkthnxUIQuestUnitTip", nil, "GameTooltipTemplate")
 function Module:UpdateQuestUnit(_, unit)
 	if IsInInstance() then

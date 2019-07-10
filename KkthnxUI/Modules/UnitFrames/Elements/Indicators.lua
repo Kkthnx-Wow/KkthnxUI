@@ -273,3 +273,25 @@ function Module:CreateAddPower()
 
 	self.AdditionalPower.PostUpdate = Module.PostUpdateAddPower
 end
+
+function Module:AddFollowerXP()
+	self.NazjatarFollowerXP = CreateFrame("StatusBar", nil, self)
+	self.NazjatarFollowerXP:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
+	self.NazjatarFollowerXP:SetStatusBarColor(0.3, 0.7, 1)
+	self.NazjatarFollowerXP:SetHeight(9)
+	self.NazjatarFollowerXP:SetPoint("TOPLEFT", self.Castbar, "BOTTOMLEFT", 0, -4)
+	self.NazjatarFollowerXP:SetPoint("TOPRIGHT", self.Castbar, "BOTTOMRIGHT", 0, -4)
+	self.NazjatarFollowerXP:CreateShadow(true)
+
+	self.NazjatarFollowerXP.spark = self.NazjatarFollowerXP:CreateTexture(nil, "OVERLAY")
+	self.NazjatarFollowerXP.spark:SetTexture(C["Media"].Spark_16)
+	self.NazjatarFollowerXP.spark:SetHeight(9)
+	self.NazjatarFollowerXP.spark:SetBlendMode("ADD")
+	self.NazjatarFollowerXP.spark:SetAlpha(0.2)
+	self.NazjatarFollowerXP.spark:SetPoint("CENTER", self.NazjatarFollowerXP:GetStatusBarTexture(), "RIGHT", 0, 0)
+
+	self.NazjatarFollowerXP.progressText = self.NazjatarFollowerXP:CreateFontString(nil, "OVERLAY")
+	self.NazjatarFollowerXP.progressText:SetFontObject(K.GetFont(C["UIFonts"].NameplateFonts))
+	self.NazjatarFollowerXP.progressText:SetFont(select(1, self.NazjatarFollowerXP.progressText:GetFont()), 9, select(3, self.NazjatarFollowerXP.progressText:GetFont()))
+	self.NazjatarFollowerXP.progressText:SetPoint("CENTER", self.NazjatarFollowerXP, "CENTER", 0, -0.5)
+end
