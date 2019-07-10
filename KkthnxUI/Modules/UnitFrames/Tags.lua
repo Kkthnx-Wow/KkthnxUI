@@ -138,7 +138,7 @@ oUF.Tags.Methods["KkthnxUI:MonkStagger"] = function(unit)
 		return
 	end
 
-	return K.ShortValue(cur).." | "..K.ClassColor..math.floor(perc*100 + .5).."%"
+	return K.ShortValue(cur).." | "..K.MyClassColor..math.floor(perc*100 + .5).."%"
 end
 
 oUF.Tags.Events["KkthnxUI:AdditionalPower"] = "UNIT_POWER_UPDATE"

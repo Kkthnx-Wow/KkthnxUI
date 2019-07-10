@@ -12,15 +12,17 @@ local CLOSE = _G.CLOSE
 
 local ChangeLogData = {
 	"Changes:",
-	"• Released v8.51.",
-	"• Removed threat on Nameplates. Sick of dealing with it.",
-	"• Add bagbar for people who have B or SHIFT+B bound.",
-	"• Added a Mass Guild Kick command. SCARY!",
-	"• Added a reminder to not share your password.",
-	"• Updated fader for Actionbars.",
-	"• Update cooldowns to be accessed outside the file.",
-	"• Updated Actionbars range code.",
-	"• |cff00FF96Deadarroww|r and |cffC79C6EDeepstep|r are getting married. Tell them congrats!",
+	"• Released v9.00.",
+	"• 'GameTooltipAnchor' will properly anchor on bagsbar or micromenu.",
+	"• Added a feature to show who pings the minimap.",
+	"• Added a new classcolor function for future use.",
+	"• Added a new spell reminder feature for a couple classes. WIP.",
+	"• Cleaned old API and functions.",
+	"• Fixed keybinds not letting middle mouse button be bound.",
+	"• Move unitframes spells and ticks to their own file.",
+	"• oUF was updated to the latest changes to fix a nameplates issue for 8.2.",
+	"• Rewrote castbars and fixed ticks for the 10th time.",
+	"• |cffC79C6EKesun|r did not recieve any loot in raid. Tell him this is so sad!",
     -- Important Notes We Want The User To Know!
 	" ",
 	"Notes:",
@@ -45,7 +47,7 @@ local function ModifiedString(string)
 	end
 
 	for pattern in gmatch(string, "('.*')") do
-		newString = newString:gsub(pattern, "|cFFFF8800"..pattern:gsub("'", "").."|r")
+		newString = newString:gsub(pattern, "|cff4488ff"..pattern:gsub("'", "").."|r")
 	end
 
 	return newString

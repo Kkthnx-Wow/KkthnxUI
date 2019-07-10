@@ -105,7 +105,7 @@ function Module:CreateTargetOfTarget()
 		Module.MouseoverHealth(self, "targettarget")
 	end
 
-	Module.CreateAuras(self, "targettarget")
+	Module.CreateTargetTargetAuras(self)
 	Module.CreateRaidTargetIndicator(self, 12)
 	Module.CreateThreatIndicator(self)
 

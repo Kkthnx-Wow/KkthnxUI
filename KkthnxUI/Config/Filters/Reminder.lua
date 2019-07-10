@@ -3,71 +3,63 @@ local K = unpack(select(2, ...))
 -- Reminder Buffs Checklist
 K.ReminderBuffs = {
 	MAGE = {
-		{
-			spells = { -- Arcane Fantasy
+			{	spells = {	-- Arcane Familiar
 				[210126] = true,
 			},
-			Depend = 205022,
-			Spec = 1,
-			Combat = true,
-			Instance = true,
-			Pvp = true,
+			depend = 205022,
+			spec = 1,
+			combat = true,
+			instance = true,
+			pvp = true,
 		},
-		{
-			spells = { -- Arcane Wisdom
+			{	spells = {	-- Arcane Intellect
 				[1459] = true,
 			},
-			Depend = 1459,
-			Instance = true,
+			depend = 1459,
+			instance = true,
 		},
 	},
 	PRIEST = {
-		{
-			spells = { -- Power Word: Fortitude
+			{	spells = {	-- Power Word: Fortitude
 				[21562] = true,
 			},
-			Depend = 21562,
-			Instance = true,
-			level = 22,
+			depend = 21562,
+			instance = true,
 		},
 	},
 	WARRIOR = {
-		{
-			spells = { -- Fighting roar
+			{	spells = {	-- Battle Shout
 				[6673] = true,
 			},
-			Depend = 6673,
-			Instance = true,
+			depend = 6673,
+			instance = true,
 		},
 	},
 	SHAMAN = {
-		{
-			spells = { -- Lightning Shield
+			{	spells = {	-- Lightning Shield
 				[192106] = true,
 			},
-			Depend = 192106,
-			Combat = true,
-			Instance = true,
-			Pvp = true,
+			depend = 192106,
+			combat = true,
+			instance = true,
+			pvp = true,
 		},
 	},
 	ROGUE = {
-		{
-			spells = { -- damage poison
-				[2823] = true, -- fatal ointment
-				[8679] = true, -- wounding ointment
+			{	spells = {
+				[2823] = true, -- Deadly Poison
+				[8679] = true, -- Wound Poison
 			},
-			Spec = 1,
-			Combat = true,
-			Instance = true,
-			Pvp = true,
+			spec = 1,
+			combat = true,
+			instance = true,
+			pvp = true,
 		},
-		{
-			spells = { -- effect poison
-				[3408] = true, -- slowing cream
+			{	spells = {
+				[3408] = true, -- Crippling Poison
 			},
-			Spec = 1,
-			Pvp = true,
+			spec = 1,
+			pvp = true,
 		},
 	},
 }

@@ -288,6 +288,11 @@ local menuList = {
 }
 
 Minimap:SetScript("OnMouseUp", function(self, btn)
+	if InCombatLockdown() then
+		_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+		return
+	end
+
 	HideDropDownMenu(1, nil, KkthnxUIMiniMapTrackingDropDown)
 	menuFrame:Hide()
 

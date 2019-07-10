@@ -18,9 +18,11 @@
    <Include file="Blizzard\Archaeology.lua" />
    <Include file="Blizzard\Bags.lua" />
    <Include file="Blizzard\BattlegroundMap.lua" />
+   <Include file="Blizzard\Character.lua" />
    <Include file="Blizzard\Collectables.lua" />
    <Include file="Blizzard\Contribution.lua" />
    <Include file="Blizzard\DeathRecap.lua" />
+   <Include file="Blizzard\Inspect.lua" />
    <Include file="Blizzard\LossControl.lua" />
    <Include file="Blizzard\Mail.lua" />
    <Include file="Blizzard\Miscellaneous.lua" />

@@ -28,13 +28,6 @@ local INVERTED_POINTS = {
 	["BOTTOM"] = "TOP",
 }
 
-local tooltips = {
-	WorldMapTooltip,
-	WorldMapCompareTooltip1,
-	WorldMapCompareTooltip2,
-	WorldMapCompareTooltip3
-}
-
 local smallerMapScale = 0.8
 function Module:SetLargeWorldMap()
 	WorldMapFrame:SetParent(UIParent)
@@ -42,7 +35,7 @@ function Module:SetLargeWorldMap()
 	WorldMapFrame.ScrollContainer.Child:SetScale(smallerMapScale)
 
 	if WorldMapFrame:GetAttribute("UIPanelLayout-area") ~= "center" then
-		SetUIPanelAttribute(WorldMapFrame, "area", "center");
+		SetUIPanelAttribute(WorldMapFrame, "area", "center")
 	end
 
 	if WorldMapFrame:GetAttribute("UIPanelLayout-allowOtherPanels") ~= true then
@@ -52,10 +45,6 @@ function Module:SetLargeWorldMap()
 	WorldMapFrame:OnFrameSizeChanged()
 	if WorldMapFrame:GetMapID() then
 		WorldMapFrame.NavBar:Refresh()
-	end
-
-	for _, tt in pairs(tooltips) do
-		if _G[tt] then _G[tt]:SetFrameStrata("TOOLTIP") end
 	end
 end
 
@@ -97,19 +86,9 @@ function Module:UpdateCoords(OnShow)
 	end
 
 	if WorldMapFrame.ScrollContainer:IsMouseOver() then
-		local scale = WorldMapFrame.ScrollContainer:GetEffectiveScale()
-		local width = WorldMapFrame.ScrollContainer:GetWidth()
-		local height = WorldMapFrame.ScrollContainer:GetHeight()
-		local centerX, centerY = WorldMapFrame.ScrollContainer:GetCenter()
-		local x, y = GetCursorPosition()
-
-		local adjustedX = x and ((x / scale - (centerX - (width / 2))) / width)
-		local adjustedY = y and ((centerY + (height/2) - y / scale) / height)
-
-		if adjustedX and adjustedY and (adjustedX >= 0 and adjustedY >= 0 and adjustedX <= 1 and adjustedY <= 1) then
-			adjustedX = K.Round(100 * adjustedX, 2)
-			adjustedY = K.Round(100 * adjustedY, 2)
-			CoordsHolder.mouseCoords:SetFormattedText("%s: %.2f, %.2f", MOUSE_LABEL, adjustedX, adjustedY)
+		local x, y = WorldMapFrame.ScrollContainer:GetNormalizedCursorPosition()
+		if x and y and x >= 0 and y >= 0 then
+			CoordsHolder.mouseCoords:SetFormattedText("%s:   %.2f, %.2f", MOUSE_LABEL, x * 100, y * 100)
 		else
 			CoordsHolder.mouseCoords:SetText("")
 		end
@@ -119,7 +98,7 @@ function Module:UpdateCoords(OnShow)
 
 	if not inRestrictedArea and (OnShow or K.MapInfo.coordsWatching) then
 		if K.MapInfo.x and K.MapInfo.y then
-			CoordsHolder.playerCoords:SetFormattedText("%s: %.2f, %.2f", PLAYER, (K.MapInfo.xText or 0), (K.MapInfo.yText or 0))
+			CoordsHolder.playerCoords:SetFormattedText("%s:   %.2f, %.2f", PLAYER, (K.MapInfo.xText or 0), (K.MapInfo.yText or 0))
 		else
 			CoordsHolder.playerCoords:SetFormattedText("%s:   %s", PLAYER, "N/A")
 		end

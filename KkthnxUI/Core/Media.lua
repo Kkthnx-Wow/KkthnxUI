@@ -7,11 +7,13 @@ local CreateFrame = _G.CreateFrame
 
 local KkthnxUIMedia = CreateFrame("Frame", "KkthnxUIFonts")
 
+local s = K.Mult or 1
+
 -- Create our own fonts
 local KkthnxUIFont = CreateFont("KkthnxUIFont")
 KkthnxUIFont:SetFont(C["Media"].Font, 12)
+KkthnxUIFont:SetShadowOffset(s, -s / 2)
 KkthnxUIFont:SetShadowColor(0, 0, 0, 1)
-KkthnxUIFont:SetShadowOffset(1.25, -1.25)
 
 local KkthnxUIFontOutline = CreateFont("KkthnxUIFontOutline")
 KkthnxUIFontOutline:SetFont(C["Media"].Font, 12, "OUTLINE")
@@ -20,8 +22,8 @@ KkthnxUIFontOutline:SetShadowOffset(0, -0)
 
 local PTSansNarrowFont = CreateFont("SansNarrowFont")
 PTSansNarrowFont:SetFont([[Interface\AddOns\KkthnxUI\Media\Fonts\PT_Sans_Narrow.ttf]], 12)
+PTSansNarrowFont:SetShadowOffset(s, -s / 2)
 PTSansNarrowFont:SetShadowColor(0, 0, 0, 1)
-PTSansNarrowFont:SetShadowOffset(1.25, -1.25)
 
 local PTSansNarrowFontOutline = CreateFont("SansNarrowFontOutline")
 PTSansNarrowFontOutline:SetFont([[Interface\AddOns\KkthnxUI\Media\Fonts\PT_Sans_Narrow.ttf]], 12, "OUTLINE")
@@ -30,8 +32,8 @@ PTSansNarrowFontOutline:SetShadowOffset(0, -0)
 
 local ExpresswayFont = CreateFont("ExpresswayFont")
 ExpresswayFont:SetFont([[Interface\AddOns\KkthnxUI\Media\Fonts\Expressway.ttf]], 12)
+ExpresswayFont:SetShadowOffset(s, -s / 2)
 ExpresswayFont:SetShadowColor(0, 0, 0, 1)
-ExpresswayFont:SetShadowOffset(1.25, -1.25)
 
 local ExpresswayFontOutline = CreateFont("ExpresswayFontOutline")
 ExpresswayFontOutline:SetFont([[Interface\AddOns\KkthnxUI\Media\Fonts\Expressway.ttf]], 12, "OUTLINE")
@@ -40,8 +42,8 @@ ExpresswayFontOutline:SetShadowOffset(0, -0)
 
 local BlizzardFont = CreateFont("BlizzardFont")
 BlizzardFont:SetFont(_G.STANDARD_TEXT_FONT, 12)
+BlizzardFont:SetShadowOffset(s, -s / 2)
 BlizzardFont:SetShadowColor(0, 0, 0, 1)
-BlizzardFont:SetShadowOffset(1.25, -1.25)
 
 local BlizzardFontOutline = CreateFont("BlizzardFontOutline")
 BlizzardFontOutline:SetFont(_G.STANDARD_TEXT_FONT, 12, "OUTLINE")

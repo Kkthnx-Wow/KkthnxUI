@@ -17,10 +17,9 @@ local UnitPower = _G.UnitPower
 
 local statusBarColorGradient = false
 local statusBarColor = {r = 0.2, g = 0.4, b = 0.8}
-local textFormat = "NAMECURMAX"
-local enable = true
-local width = 250
-local height = 20
+local statusTextFormat = "NAMECURMAX"
+local statusWidth = 250
+local statusHeight = 20
 local statusBar = K.GetTexture(C["UITextures"].GeneralTextures)
 local font = K.GetFont(C["UIFonts"].GeneralFonts)
 
@@ -50,7 +49,7 @@ local function onLeave()
 end
 
 function Module:SetAltPowerBarText(name, value, max, percent)
-	local textFormat = textFormat
+	local textFormat = statusTextFormat
 
 	if textFormat == "NONE" or not textFormat then
 		return ""
@@ -87,7 +86,7 @@ function Module:PositionAltPowerBar()
 	local function Position(bar) bar:SetPoint("CENTER", AltPowerBarHolder, "CENTER") end
 	hooksecurefunc(_G.PlayerPowerBarAlt, "ClearAllPoints", Position)
 
-	K.Mover(holder, "PlayerPowerBarAlt", "Alternative Power", {"TOP", UIParent, "TOP", 0, -18}, 128, 50)
+	K.Mover(holder, "PlayerPowerBarAlt", "Alternative Power", {"TOP", UIParent, "TOP", 0, -18}, statusWidth or 250, statusHeight or 20)
 end
 
 function Module:UpdateAltPowerBarColors()
@@ -117,14 +116,14 @@ end
 function Module:UpdateAltPowerBarSettings()
 	local bar = _G.KkthnxUI_AltPowerBar
 
-	bar:SetSize(width or 250, height or 20)
+	bar:SetSize(statusWidth or 250, statusHeight or 20)
 	bar:SetStatusBarTexture(statusBar)
 	bar.text:SetFontObject(font)
 	AltPowerBarHolder:SetSize(bar.Backdrop:GetSize())
 
 	K:SetSmoothing(bar, true)
 
-	local textFormat = textFormat
+	local textFormat = statusTextFormat
 	if textFormat == "NONE" or not textFormat then
 		bar.text:SetText("")
 	else

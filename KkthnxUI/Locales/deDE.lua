@@ -11,13 +11,6 @@ end
 
 local _G = _G
 
-local GetItemClassInfo = _G.GetItemClassInfo
-local GetItemSubClassInfo = _G.GetItemSubClassInfo
-local LE_ITEM_CLASS_ITEM_ENHANCEMENT = _G.LE_ITEM_CLASS_ITEM_ENHANCEMENT
-local LE_ITEM_CLASS_MISCELLANEOUS = _G.LE_ITEM_CLASS_MISCELLANEOUS
-local LE_ITEM_CLASS_QUESTITEM = _G.LE_ITEM_CLASS_QUESTITEM
-local LE_ITEM_CLASS_TRADEGOODS = _G.LE_ITEM_CLASS_TRADEGOODS
-
 -- Install Localization
 L["Install"] = {
 	Chat_Set = "Chat eingerichtet",
@@ -152,42 +145,19 @@ L["Blizzard"] = {
 
 -- Chat Localization
 L["Chat"] = {
-	AFK = "",
-	DND = "",
+	AFK = "AFK",
+	DND = "DND",
 	Invaild_Target = "Ungültiges Ziel",
 	-- Channel Names
-	Conversation = "Konversation",
 	General = "Allgemein",
 	LocalDefense = "LokaleVerteidigung",
 	LookingForGroup = "SucheNachGruppe",
 	Trade = "Handel",
 	WorldDefense = "WeltVerteidigung",
-	-- Short Channel Names
-	S_Conversation = "C",
-	S_General = "G",
-	S_Guild = "g",
-	S_InstanceChat = "i",
-	S_InstanceChatLeader = "I",
-	S_LocalDefense = "LD",
-	S_LookingForGroup = "LFG",
-	S_Officer = "o",
-	S_Party = "p",
-	S_PartyGuide = "PG",
-	S_PartyLeader = "PL",
-	S_Raid = "r",
-	S_RaidLeader = "R",
-	S_RaidWarning = "W",
-	S_Say = "s",
-	S_Trade = "T",
-	S_WhisperIncoming = "w",
-	S_WhisperOutgoing = "@",
-	S_WorldDefense = "WD",
-	S_Yell = "y",
 }
 
 -- Configbutton Localization
 L["ConfigButton"] = {
-	ActionbarLock = "Aktionsleisten sperren/entsperren",
 	Changelog = "UI Änderungen",
 	CopyChat = "Chat kopieren",
 	Emotions = "Emotionsmenü",
@@ -267,7 +237,6 @@ L["Inventory"] = {
 	Shift_Move = "Shift Taste halten + Ziehen",
 	Show_Bags = "Taschen anzeigen/verstecken",
 	SoldTrash = "Graue Gegenstände verkauft für: ",
-	TrashList = "|n|nMüll Liste:|n",
 	VendorGrays = "Händler - Graue Items",
 }
 
@@ -285,7 +254,7 @@ L["Maps"] = {
 	PressToCopy = "|nDrücke <STRG/C> zum Kopieren.",
 	Reveal = "Aufdecken",
 	RevealHidden = "Deckt versteckte Gebiete auf",
-	Spotted = "entdeckt! ",
+	RareFound = "Rare nearby! ",
 	TomTom = "Aktiviere das AddOn TomTom um die Funktion nutzen zu können. Du kannst TomTom bei Curse runterladen.",
 }
 
@@ -295,11 +264,6 @@ L["Miscellaneous"] = {
 	Copper_Short = "|cffeda55fc|r",
 	Gold_Short = "|cffffd700g|r",
 	KkthnxUI_Scale_Button = "KkthnxUI Skalierungskonfiguration",
-	Mail_Complete = "Erledigt.",
-	Mail_Messages = "Nachrichten",
-	Mail_Need = "Braucht einen Postkasten.",
-	Mail_Stopped = "Angehalten, Inventar ist voll.",
-	Mail_Unique = "Angehalten. Ein doppelter, einzigartiger Gegenstand wurde in deinen Taschen, oder in der Bank gefunden.",
 	Repair = "Warnung! Deine Ausrüstung muss so schnell wie möglich repariert werden!",
 	Silver_Short = "|cffc7c7cfs|r",
 	UIOutdated = "Your version of KkthnxUI v"..K.Version.." is out of date.",
@@ -336,12 +300,8 @@ L["Skins"] = {
 -- Tooltip Localization
 L["Tooltip"] = {
 	Bank = "Bank",
-	Companion_Pets = GetItemSubClassInfo(LE_ITEM_CLASS_MISCELLANEOUS, 2),
 	Count = "Anzahl",
-	Item_Enhancement = GetItemClassInfo(LE_ITEM_CLASS_ITEM_ENHANCEMENT),
-	Other = GetItemSubClassInfo(LE_ITEM_CLASS_MISCELLANEOUS, 4),
-	Quest = GetItemClassInfo(LE_ITEM_CLASS_QUESTITEM),
-	Tradeskill = GetItemClassInfo(LE_ITEM_CLASS_TRADEGOODS),
+	TargetedBy = "Targeted By:",
 }
 
 -- UnitFrames Localization

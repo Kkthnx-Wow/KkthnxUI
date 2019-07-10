@@ -97,7 +97,7 @@ function Module:CreatePet()
 		Module.MouseoverHealth(self, "pet")
 	end
 
-	Module.CreateAuras(self, "pet")
+	Module.CreatePetAuras(self)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateThreatIndicator(self)
 	Module.CreateDebuffHighlight(self)

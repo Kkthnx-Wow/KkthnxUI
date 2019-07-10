@@ -810,58 +810,36 @@ _G.KkthnxUIConfig["ruRU"] = {
 	-- Auras Local
 	["Auras"] = {
 		["Enable"] = {
-			["Name"] = "Включить ауры",
+			["Name"] = "Enable Auras",
 		},
 
-		["Font"] = {
-			["Name"] = "Шрифт",
+		["BuffSize"] = {
+			["Name"] = "Buff Size",
 		},
 
-		["HorizontalSpacing"] = {
-			["Name"] = "Горизонтальные промежутки",
-			["Desc"] = "Промежутки по горизонтали между аурами",
+		["BuffsPerRow"] = {
+			["Name"] = "Buffs PerRow",
 		},
 
-		["MaxWraps"] = {
-			["Name"] = "Количество строк",
-			["Desc"] = "Максимальное количество строк для аур",
-		},
-		-- РУС Перевести
-		["SeperateOwn"] = {
-			["Name"] = "Seperate Own",
-			["Desc"] = "Indicate whether buffs you cast yourself should be separated before or after.",
+		["DebuffSize"] = {
+			["Name"] = "Debuff Size",
 		},
 
-		["Size"] = {
-			["Name"] = "Размер иконки аур",
+		["DebuffsPerRow"] = {
+			["Name"] = "Debuffs PerRow",
 		},
 
-		["VerticalSpacing"] = {
-			["Name"] = "Вертикальные промежутки",
+		["Reminder"] = {
+			["Name"] = "Reminder",
+			["Desc"] = "This will display an annoying reminder to use class buffs, armor spells, shouts, aspects, blessings, and ect.",
 		},
 
-		["WrapAfter"] = {
-			["Name"] = "Аур на строку",
-			["Desc"] = "Количество аур на одну строку",
-		},
-		-- РУС Перевести
-		["FadeThreshold"] = {
-			["Name"] = "Fade Threshold",
+		["ReverseBuffs"] = {
+			["Name"] = "Reverse Buffs",
 		},
 
-		["GrowthDirection"] = {
-			["Name"] = "Направление роста иконок",
-			["Desc"] = MissingDesc,
-		},
-
-		["SortDir"] = {
-			["Name"] = "Направление сортировки",
-			["Desc"] = "Определяет порядок сортировки при выбранном способе сортировки",
-		},
-
-		["SortMethod"] = {
-			["Name"] = "Способ сортировки",
-			["Desc"] = "Определяет как будут сортироваться группы аур",
+		["ReverseDebuffs"] = {
+			["Name"] = "Reverse Debuffs",
 		},
 	},
 

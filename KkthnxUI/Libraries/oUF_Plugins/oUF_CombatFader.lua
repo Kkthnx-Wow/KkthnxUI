@@ -5,7 +5,6 @@ local _, ns = ...
 local _G = _G
 local pairs = pairs
 local type = type
-local unpack = unpack
 
 local UnitAffectingCombat = _G.UnitAffectingCombat
 local UnitCastingInfo = _G.UnitCastingInfo
@@ -30,16 +29,19 @@ local function CheckForReset()
 end
 
 local function FadeFramesInOut(fade, unit)
-	local K = unpack(KkthnxUI)
+	local K = KkthnxUI[1]
+
 	for frame, unit in pairs(frames) do
-		if not UnitExists(unit) then return end
+		if not UnitExists(unit) then
+			return
+		end
 		if fade then
 			if frame:GetAlpha() ~= 1 or (frame.fadeInfo and frame.fadeInfo.endAlpha == 0) then
-				K.UIFrameFadeIn(frame, 0.15)
+				K.UIFrameFadeIn(frame, 0.15, frame:GetAlpha(), 1)
 			end
 		else
 			if frame:GetAlpha() ~= 0 then
-				K.UIFrameFadeOut(frame, 0.15)
+				K.UIFrameFadeOut(frame, 0.15, frame:GetAlpha(), 0)
 				frame.fadeInfo.finishedFunc = CheckForReset
 			else
 				showStatus = false
@@ -61,10 +63,10 @@ local function Update(self, arg1, arg2)
 		return
 	end
 
-	local K = unpack(KkthnxUI)
+	local K = KkthnxUI[1]
 
 	if not frames[self] then
-		K.UIFrameFadeIn(self, 0.15)
+		K.UIFrameFadeIn(self, 0.15, self:GetAlpha(), 1)
 		self.fadeInfo.reset = true
 		return
 	end

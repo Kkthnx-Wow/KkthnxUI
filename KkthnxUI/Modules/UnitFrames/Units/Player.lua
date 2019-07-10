@@ -113,99 +113,14 @@ function Module:CreatePlayer()
 		self:Tag(self.GroupNumber, "[KkthnxUI:GetNameColor][KkthnxUI:GroupNumber]")
 	end
 
-	if (C["Unitframe"].Castbars) then
-		self.Castbar = CreateFrame("StatusBar", "PlayerCastbar", self)
-		self.Castbar:SetStatusBarTexture(UnitframeTexture)
-		self.Castbar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)
-		self.Castbar:SetClampedToScreen(true)
-		self.Castbar:CreateBorder()
-		self.Castbar:ClearAllPoints()
-
-		if C["Raid"].RaidLayout.Value == "Healer" then
-			self.Position = {"BOTTOM", UIParent, "BOTTOM", 0, 350}
-		else
-			self.Position = {"BOTTOM", UIParent, "BOTTOM", 0, 320}
-		end
-		self.Castbar:SetPoint(self.Position[1], self.Position[2], self.Position[3], self.Position[4], self.Position[5])
-
-		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-		self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
-		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
-		self.Castbar.Spark:SetBlendMode("ADD")
-
-		if C["Unitframe"].CastbarLatency then
-			self.Castbar.SafeZone = self.Castbar:CreateTexture(nil, "ARTWORK")
-			self.Castbar.SafeZone:SetTexture(UnitframeTexture)
-			self.Castbar.SafeZone:SetPoint("RIGHT")
-			self.Castbar.SafeZone:SetPoint("TOP")
-			self.Castbar.SafeZone:SetPoint("BOTTOM")
-			self.Castbar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
-			self.Castbar.SafeZone:SetWidth(0.0001)
-
-			self.Castbar.Latency = self.Castbar:CreateFontString(nil, "OVERLAY")
-			self.Castbar.Latency:SetPoint("TOPRIGHT", self.Castbar, "BOTTOMRIGHT", -3.5, -3)
-			self.Castbar.Latency:SetFontObject(UnitframeFont)
-			self.Castbar.Latency:SetFont(select(1, self.Castbar.Latency:GetFont()), 11, select(3, self.Castbar.Latency:GetFont()))
-			self.Castbar.Latency:SetTextColor(0.84, 0.75, 0.65)
-			self.Castbar.Latency:SetJustifyH("RIGHT")
-		end
-
-		self.Castbar.timeToHold = 0.4
-		self.Castbar.CustomDelayText = Module.CustomCastDelayText
-		self.Castbar.CustomTimeText = Module.CustomTimeText
-		self.Castbar.PostCastFail = Module.PostCastFail
-		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
-
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
-		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
-		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
-		self.Castbar.Time:SetJustifyH("RIGHT")
-
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
-		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
-		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)
-		self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
-		self.Castbar.Text:SetJustifyH("LEFT")
-		self.Castbar.Text:SetWordWrap(false)
-
-		if (C["Unitframe"].CastbarIcon) then
-			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
-			self.Castbar.Button:SetSize(20, 20)
-			self.Castbar.Button:CreateBorder()
-
-			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
-			self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
-			self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-			self.Castbar.Icon:SetPoint("RIGHT", self.Castbar, "LEFT", -6, 0)
-
-			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
-		end
-
-		-- Adjust tick heights
-		self.Castbar.tickHeight = self.Castbar:GetHeight()
-
-		if C["Unitframe"].CastbarTicks then -- Only player unitframe has this
-			-- Set tick width and color
-			self.Castbar.tickWidth = C["Unitframe"].CastbarTicksWidth
-			self.Castbar.tickColor = C["Unitframe"].CastbarTicksColor
-
-			for i = 1, #Module.ticks do
-				Module.ticks[i]:SetVertexColor(self.Castbar.tickColor[1], self.Castbar.tickColor[2], self.Castbar.tickColor[3], self.Castbar.tickColor[4])
-				Module.ticks[i]:SetWidth(self.Castbar.tickWidth)
-			end
-		end
-
-		K.Mover(self.Castbar, "PlayerCastBar", "PlayerCastBar", self.Position)
-	end
+	Module.CreatePlayerCastbar(self)
 
 	if C["Unitframe"].AdditionalPower then
 		if K.Class == "DRUID" then
 			Module.CreateAddPower(self)
-		elseif K.Class == 'PRIEST' then
+		elseif K.Class == "PRIEST" then
 			Module.CreateAddPower(self)
-		elseif K.Class == 'SHAMAN' then
+		elseif K.Class == "SHAMAN" then
 			Module.CreateAddPower(self)
 		end
 	end
@@ -239,7 +154,7 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].PlayerBuffs then
-		Module.CreateAuras(self, "player")
+		Module.CreatePlayerAuras(self)
 	end
 
 	Module.CreateCombatIndicator(self)

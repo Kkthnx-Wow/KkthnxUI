@@ -1,37 +1,60 @@
 local K, C = unpack(select(2, ...))
+local Module = K:NewModule("MirrorBars")
 
--- Sourced: Tukui
+-- Sourced: NDui
 
-local function MirrorTimers_Update()
-	for i = 1, MIRRORTIMER_NUMTIMERS, 1 do
-		local Bar = _G["MirrorTimer"..i]
-		if not Bar.isSkinned then
-			local Status = _G[Bar:GetName().."StatusBar"]
-			local Border = _G[Bar:GetName().."Border"]
-			local Text = _G[Bar:GetName().."Text"]
+local function reskinTimerBar(bar)
+	bar:SetSize(202, 22)
 
-			Bar:StripTextures()
-			Bar:CreateBorder()
+	local statusbar = _G[bar:GetName().."StatusBar"]
+	statusbar.Text = _G[bar:GetName().."Text"]
+	statusbar.barTexture = K.GetTexture(C["UITextures"].GeneralTextures)
+	statusbar.barFont = K.GetFont(C["UIFonts"].GeneralFonts)
+	if statusbar then
+		statusbar:SetAllPoints()
+		statusbar:SetStatusBarTexture(statusbar.barTexture)
 
-			Status:ClearAllPoints()
-			Status:SetAllPoints(Bar)
-			Status:SetStatusBarTexture(C["Media"].Texture)
+		statusbar.Text:ClearAllPoints()
+		statusbar.Text:SetPoint("CENTER", statusbar)
+		statusbar.Text:SetFontObject(statusbar.barFont)
 
-			Text:ClearAllPoints()
-			Text:SetPoint("CENTER", Bar)
+		statusbar.Spark = statusbar:CreateTexture(nil, "OVERLAY")
+		statusbar.Spark:SetWidth(128)
+		statusbar.Spark:SetHeight(statusbar:GetHeight())
+		statusbar.Spark:SetTexture(C["Media"].Spark_128)
+		statusbar.Spark:SetBlendMode("ADD")
+		statusbar.Spark:SetPoint("CENTER", statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
+	else
+		bar:SetStatusBarTexture(statusbar.barTexture)
 
-			Status.Spark = Status:CreateTexture(nil, "OVERLAY")
-			Status.Spark:SetWidth(128)
-			Status.Spark:SetHeight(Status:GetHeight())
-			Status.Spark:SetTexture(C["Media"].Spark_128)
-			Status.Spark:SetBlendMode("ADD")
-			Status.Spark:SetPoint("CENTER", Status:GetStatusBarTexture(), "RIGHT", 0, 0)
+		bar.Text:ClearAllPoints()
+		bar.Text:SetPoint("CENTER", bar)
+		bar.Text:SetFontObject(statusbar.barFont)
 
-			Border:SetTexture(nil)
+		bar.Spark = bar:CreateTexture(nil, "OVERLAY")
+		bar.Spark:SetWidth(128)
+		bar.Spark:SetHeight(bar:GetHeight())
+		bar.Spark:SetTexture(C["Media"].Spark_128)
+		bar.Spark:SetBlendMode("ADD")
+		bar.Spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
+	end
 
-			Bar.isSkinned = true
+	bar:CreateBorder(nil, nil, nil, true)
+end
+
+function Module:ReskinMirrorBars()
+	local previous
+	for i = 1, MIRRORTIMER_NUMTIMERS do
+		local bar = _G["MirrorTimer"..i]
+		reskinTimerBar(bar)
+
+		if previous then
+			bar:SetPoint("TOP", previous, "BOTTOM", 0, -6)
 		end
+		previous = bar
 	end
 end
 
-hooksecurefunc("MirrorTimer_Show", MirrorTimers_Update)
+function Module:OnInitialize()
+	self:ReskinMirrorBars()
+end

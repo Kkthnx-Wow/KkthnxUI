@@ -316,7 +316,7 @@ function K.MassGuildKick(msg)
 		end
 	end
 
-	SendChatMessage(string_format(MassKickMessage, GuildControlGetRankName(minRankIndex), minLevel, minDays), "GUILD")
+	--SendChatMessage(string_format(MassKickMessage, GuildControlGetRankName(minRankIndex), minLevel, minDays), "GUILD")
 end
 K:RegisterChatCommand("cleanguild", K.MassGuildKick)
 

@@ -87,8 +87,13 @@ function Module:OnEnable()
 		return
 	end
 
+	local setPosition
 	local KkthnxUIBags = CreateFrame("Frame", "KkthnxUIBags", UIParent)
-	KkthnxUIBags:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 38)
+	if C["ActionBar"].MicroBar then
+		setPosition = {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 38}
+	else
+		setPosition = {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4}
+	end
 	KkthnxUIBags.buttons = {}
 	KkthnxUIBags:EnableMouse(true)
 	KkthnxUIBags:SetScript("OnEnter", OnEnter)
@@ -122,5 +127,5 @@ function Module:OnEnable()
 	KkthnxUIBags:Show()
 
 	self:SizeAndPositionBagBar()
-	K.Mover(KkthnxUIBags, "BagBar", "BagBar", {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 38})
+	K.Mover(KkthnxUIBags, "BagBar", "BagBar", setPosition)
 end

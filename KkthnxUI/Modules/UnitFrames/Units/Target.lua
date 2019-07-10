@@ -124,71 +124,12 @@ function Module:CreateTarget()
 		Module.MouseoverHealth(self, "target")
 	end
 
-	Module.CreateAuras(self, "target")
-
-	if (C["Unitframe"].Castbars) then
-		self.Castbar = CreateFrame("StatusBar", "TargetCastbar", self)
-		self.Castbar:SetStatusBarTexture(UnitframeTexture)
-		self.Castbar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight + 6)
-		self.Castbar:SetClampedToScreen(true)
-		self.Castbar:CreateBorder()
-		self.Castbar:ClearAllPoints()
-		self.Castbar:SetPoint("BOTTOM", "PlayerCastbar", "TOP", 0, 6)
-
-		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-		self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
-		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
-		self.Castbar.Spark:SetBlendMode("ADD")
-		-- self.Castbar.Spark:SetPoint("CENTER", self.Castbar:GetStatusBarTexture(), "RIGHT", 0, 0)
-
-		self.Castbar.Shield = self.Castbar:CreateTexture(nil, "ARTWORK")
-		self.Castbar.Shield:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CastBorderShield")
-		self.Castbar.Shield:SetPoint("RIGHT", self.Castbar, "LEFT", 34, 12)
-
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
-		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
-		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
-		self.Castbar.Time:SetJustifyH("RIGHT")
-
-		self.Castbar.timeToHold = 0.4
-		self.Castbar.CustomDelayText = Module.CustomCastDelayText
-		self.Castbar.CustomTimeText = Module.CustomTimeText
-		self.Castbar.PostCastFail = Module.PostCastFail
-		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
-
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
-		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
-		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)
-		self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
-		self.Castbar.Text:SetJustifyH("LEFT")
-		self.Castbar.Text:SetWordWrap(false)
-
-		if (C["Unitframe"].CastbarIcon) then
-			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
-			self.Castbar.Button:SetSize(20, 20)
-			self.Castbar.Button:CreateBorder()
-
-			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
-			self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
-			self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-			self.Castbar.Icon:SetPoint("LEFT", self.Castbar, "RIGHT", 6, 0)
-
-			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
-		end
-
-		K.Mover(self.Castbar, "TargetCastBar", "TargetCastBar", {"BOTTOM", "PlayerCastbar", "TOP", 0, 6})
-	end
-
+	Module.CreateTargetAuras(self)
+	Module.CreateTargetCastbar(self)
 	Module.CreateHealthPrediction(self, "target")
-
 	if C["Unitframe"].PortraitTimers then
 		Module.CreatePortraitTimers(self)
 	end
-
-	-- Module.CreateRaidTargetIndicator(self) has an issue where it is falling behind the border we use.
-	-- This is created in `KkthnxUI\KkthnxUI\Modules\UnitFrames\Elements\Indicators.lua - Line 128`
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
 	Module.CreateResurrectIndicator(self)

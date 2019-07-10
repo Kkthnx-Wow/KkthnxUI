@@ -6,7 +6,6 @@ assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 local _G = _G
 local math_ceil = math.ceil
-local math_min = math.min
 local pairs = pairs
 local select = select
 local string_find = string.find
@@ -23,7 +22,6 @@ local DebuffTypeColor = _G.DebuffTypeColor
 local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
 local GetCVarDefault = _G.GetCVarDefault
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
-local GetSpellInfo = _G.GetSpellInfo
 local GetTime = _G.GetTime
 local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
@@ -57,61 +55,17 @@ local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
 local UnitIsUnit = _G.UnitIsUnit
-local UnitName = _G.UnitName
-local UnitPower = _G.UnitPower
-local UnitPowerMax = _G.UnitPowerMax
 local UnitReaction = _G.UnitReaction
-local UnitSpellHaste = _G.UnitSpellHaste
-
 
 Module.Units = {}
 Module.Headers = {}
 Module.ticks = {}
 
-Module.RaidBuffsTrackingPosition = {
-	TOPLEFT = {6, 1},
-	TOPRIGHT = {-6, 1},
-	BOTTOMLEFT = {6, 1},
-	BOTTOMRIGHT = {-6, 1},
-	LEFT = {6, 1},
-	RIGHT = {-6, 1},
-	TOP = {0, 0},
-	BOTTOM = {0, 0}
-}
-
-Module.DebuffHighlightColors = {
-	[25771] = {
-		enable = false,
-		style = "FILL",
-		color = {r = 0.85, g = 0, b = 0, a = 0.85}
-	},
-}
-
-Module.PlateTotemData = {
-	[GetSpellInfo(192058)] = "Interface\\Icons\\spell_nature_brilliance", -- Lightning Surge Totem
-	[GetSpellInfo(192077)] = "Interface\\Icons\\ability_shaman_windwalktotem", -- Wind Rush Totem
-	[GetSpellInfo(204331)] = "Interface\\Icons\\spell_nature_wrathofair_totem", -- Counterstrike Totem
-	[GetSpellInfo(204332)] = "Interface\\Icons\\spell_nature_windfury", -- Windfury Totem
-	[GetSpellInfo(204336)] = "Interface\\Icons\\spell_nature_groundingtotem", -- Grounding Totem
-	[GetSpellInfo(98008)] = "Interface\\Icons\\spell_shaman_spiritlink", -- Spirit Link Totem
-	-- Water
-	[GetSpellInfo(108280)] = "Interface\\Icons\\ability_shaman_healingtide", -- Healing Tide Totem
-	[GetSpellInfo(157153)] = "Interface\\Icons\\ability_shaman_condensationtotem", -- Cloudburst Totem
-	[GetSpellInfo(5394)] = "Interface\\Icons\\INV_Spear_04", -- Healing Stream Totem
-	-- Earth
-	[GetSpellInfo(196932)] = "Interface\\Icons\\spell_totem_wardofdraining", -- Voodoo Totem
-	[GetSpellInfo(198838)] = "Interface\\Icons\\spell_nature_stoneskintotem", -- Earthen Shield Totem
-	[GetSpellInfo(207399)] = "Interface\\Icons\\spell_nature_reincarnation", -- Ancestral Protection Totem
-	[GetSpellInfo(51485)] = "Interface\\Icons\\spell_nature_stranglevines", -- Earthgrab Totem
-	[GetSpellInfo(61882)] = "Interface\\Icons\\spell_shaman_earthquake", -- Earthquake Totem
-	-- Fire
-	[GetSpellInfo(192222)] = "Interface\\Icons\\spell_shaman_spewlava", -- Liquid Magma Totem
-	[GetSpellInfo(204330)] = "Interface\\Icons\\spell_fire_totemofwrath", -- Skyfury Totem
-	-- Totem Mastery
-	[GetSpellInfo(202188)] = "Interface\\Icons\\spell_nature_stoneskintotem", -- Resonance Totem
-	[GetSpellInfo(210651)] = "Interface\\Icons\\spell_shaman_stormtotem", -- Storm Totem
-	[GetSpellInfo(210657)] = "Interface\\Icons\\spell_fire_searingtotem", -- Ember Totem
-	[GetSpellInfo(210660)] = "Interface\\Icons\\spell_nature_invisibilitytotem", -- Tailwind Totem
+local classify = {
+	rare = {1, 1, 1, true},
+	elite = {1, 1, 1},
+	rareelite = {1, .1, .1},
+	worldboss = {0, 1, 0},
 }
 
 function Module:UpdateClassPortraits(unit)
@@ -173,47 +127,6 @@ function Module:UpdateHealth(unit, cur, max)
 	Module.UpdatePortraitColor(parent, unit, cur, max)
 end
 
-function Module:UpdateQuestUnit(unit)
-	if unit == "player" then
-		return
-	end
-
-	local updateSize = C["Nameplates"].QuestIconSize
-
-	if (self.frameType == "FRIENDLY_NPC" or self.frameType == "ENEMY_NPC") and C["Nameplates"].QuestIcon then
-		if not self:IsElementEnabled("QuestIcons") then
-			self:EnableElement("QuestIcons")
-		end
-
-		self.QuestIcons:ClearAllPoints()
-		self.QuestIcons:SetPoint("RIGHT", self.Health, "LEFT", -4, 0)
-		self.QuestIcons:SetSize(updateSize + 4, updateSize + 4)
-
-		self.QuestIcons.Item:SetSize(updateSize, updateSize)
-		self.QuestIcons.Loot:SetSize(updateSize, updateSize)
-		self.QuestIcons.Skull:SetSize(updateSize + 4, updateSize + 4)
-		self.QuestIcons.Chat:SetSize(updateSize + 4, updateSize + 4)
-	else
-		if self:IsElementEnabled("QuestIcons") then
-			self:DisableElement("QuestIcons")
-		end
-	end
-end
-
-function Module:UpdateHealerIcons()
-	if (self.frameType == "FRIENDLY_PLAYER" or self.frameType == "ENEMY_PLAYER") and C["Nameplates"].MarkHealers then
-		if not self:IsElementEnabled("HealerSpecs") then
-			self:EnableElement("HealerSpecs")
-		end
-
-		self.HealerSpecs:SetPoint("BOTTOM", self.Health, "TOP", 0, 38)
-	else
-		if self:IsElementEnabled("HealerSpecs") then
-			self:DisableElement("HealerSpecs")
-		end
-	end
-end
-
 function Module:HighlightPlate()
 	local unit = self.unit
 	local plateShadow = self.Health.Shadow
@@ -222,33 +135,16 @@ function Module:HighlightPlate()
 		plateShadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 	end
 
-	local r, g, b
+	local r, g, b, a
 	local showIndicator
-	if UnitIsUnit(unit, "target") then
+	if UnitIsUnit(unit, "target") and not UnitIsUnit(unit, "player") then
 		showIndicator = true
-		r, g, b = 0.84, 0.75, 0.65
+		r, g, b, a = 1, 1, 1, 0.8
 	end
 
 	if showIndicator then
 		if plateShadow then
-			plateShadow:SetBackdropBorderColor(r, g, b)
-		end
-	end
-end
-
-function Module:UpdatePlateTotems()
-	if C["Nameplates"].Totems ~= true then
-		return
-	end
-
-	local name = UnitName(self.unit)
-	if name then
-		if Module.PlateTotemData[name] then
-			self.Totem.Icon:SetTexture(Module.PlateTotemData[name])
-			self.Totem.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-			self.Totem:Show()
-		else
-			self.Totem:Hide()
+			plateShadow:SetBackdropBorderColor(r, g, b, a)
 		end
 	end
 end
@@ -264,206 +160,274 @@ function Module:MouseoverHealth(unit)
 	self.Highlight = Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()
 	self.Highlight:SetTexture(Texture)
-	self.Highlight:SetVertexColor(1, 1, 1, .36)
-	self.Highlight:SetBlendMode("ADD")
+	self.Highlight:SetVertexColor(1, 1, 1, 0.50)
 	self.Highlight:Hide()
 end
 
-function Module:CustomCastTimeText(duration)
-	if self.channeling then
-		self.Time:SetFormattedText("%.1f", abs(duration - self.max))
-	else
-		self.Time:SetFormattedText("%.1f", duration)
+function Module:UpdateUnitClassify(unit)
+	local class = _G.UnitClassification(unit)
+	if self.creatureIcon then
+		if class and classify[class] then
+			local r, g, b, desature = unpack(classify[class])
+			self.creatureIcon:SetVertexColor(r, g, b)
+			self.creatureIcon:SetDesaturated(desature)
+			self.creatureIcon:SetAlpha(1)
+		else
+			self.creatureIcon:SetAlpha(0)
+		end
 	end
 end
 
-function Module:CustomCastDelayText(duration)
-	if self.channeling then
-		self.Time:SetFormattedText("%.1f |cffaf5050%.1f|r", abs(duration - self.max), self.delay)
-	else
-		self.Time:SetFormattedText("%.1f |cffaf5050%s %.1f|r", duration, "+", self.delay)
-	end
-end
-
-function Module:HideTicks()
-	for i = 1, #Module.ticks do
-		Module.ticks[i]:Hide()
-	end
-end
-
-local CastTicksTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
-function Module:SetCastTicks(castbar, numTicks, extraTickRatio)
-	extraTickRatio = extraTickRatio or 0
-	Module:HideTicks()
-
-	if numTicks and numTicks <= 0 then
+local unitTip = CreateFrame("GameTooltip", "KkthnxUIQuestUnitTip", nil, "GameTooltipTemplate")
+function Module:UpdateQuestUnit(_, unit)
+	if IsInInstance() then
+		self.questIcon:Hide()
+		self.questCount:SetText("")
 		return
 	end
 
-	local w = castbar:GetWidth()
-	local d = w / (numTicks + extraTickRatio)
+	unit = unit or self.unit
 
-	for i = 1, numTicks do
-		if not Module.ticks[i] then
-			Module.ticks[i] = castbar:CreateTexture(nil, "OVERLAY")
-			Module.ticks[i]:SetTexture(CastTicksTexture)
-			Module.ticks[i]:SetVertexColor(castbar.tickColor[1], castbar.tickColor[2], castbar.tickColor[3], castbar.tickColor[4])
-			Module.ticks[i]:SetWidth(castbar.tickWidth)
+	local isLootQuest, questProgress
+	unitTip:SetOwner(UIParent, "ANCHOR_NONE")
+	unitTip:SetUnit(unit)
+
+	for i = 2, unitTip:NumLines() do
+		local textLine = _G[unitTip:GetName().."TextLeft"..i]
+		local text = textLine:GetText()
+		if textLine and text then
+			local r, g, b = textLine:GetTextColor()
+			local unitName, progressText = strmatch(text, "^ ([^ ]-) ?%- (.+)$")
+			if r > .99 and g > .82 and b == 0 then
+				isLootQuest = true
+			elseif unitName and progressText then
+				isLootQuest = false
+				if unitName == "" or unitName == K.Name then
+					local current, goal = strmatch(progressText, "(%d+)/(%d+)")
+					local progress = strmatch(progressText, "([%d%.]+)%%")
+					if current and goal then
+						if tonumber(current) < tonumber(goal) then
+							questProgress = goal - current
+							break
+						end
+					elseif progress then
+						progress = tonumber(progress)
+						if progress and progress < 100 then
+							questProgress = progress.."%"
+							break
+						end
+					else
+						isLootQuest = true
+						break
+					end
+				end
+			end
+		end
+	end
+
+	if questProgress then
+		self.questCount:SetText(questProgress)
+		self.questIcon:SetAtlas("Warfronts-BaseMapIcons-Horde-Barracks-Minimap")
+		self.questIcon:Show()
+	else
+		self.questCount:SetText("")
+		if isLootQuest then
+			self.questIcon:SetAtlas("adventureguide-microbutton-alert")
+			self.questIcon:Show()
+		else
+			self.questIcon:Hide()
+		end
+	end
+end
+
+-- Castbar Functions
+local function updateCastBarTicks(bar, numTicks)
+	if numTicks and numTicks > 0 then
+		local delta = bar:GetWidth() / numTicks
+		for i = 1, numTicks do
+			if not Module.ticks[i] then
+				Module.ticks[i] = bar:CreateTexture(nil, "OVERLAY")
+				Module.ticks[i]:SetTexture(C["Media"].Blank)
+				Module.ticks[i]:SetVertexColor(0, 0, 0, 0.8)
+				Module.ticks[i]:SetWidth(2)
+				Module.ticks[i]:SetHeight(bar:GetHeight())
+			end
+			Module.ticks[i]:ClearAllPoints()
+			Module.ticks[i]:SetPoint("CENTER", bar, "LEFT", delta * i, 0 )
+			Module.ticks[i]:Show()
+		end
+	else
+		for _, tick in pairs(Module.ticks) do
+			tick:Hide()
+		end
+	end
+end
+
+function Module:OnCastbarUpdate(elapsed)
+	if self.casting or self.channeling then
+		local decimal = self.decimal
+
+		local duration = self.casting and self.duration + elapsed or self.duration - elapsed
+		if (self.casting and duration >= self.max) or (self.channeling and duration <= 0) then
+			self.casting = nil
+			self.channeling = nil
+			return
 		end
 
-		Module.ticks[i]:SetHeight(castbar.tickHeight)
-		Module.ticks[i]:ClearAllPoints()
-		Module.ticks[i]:SetPoint("RIGHT", castbar, "LEFT", d * i, 0)
-		Module.ticks[i]:Show()
+		if self.__owner.unit == "player" then
+			if self.delay ~= 0 then
+				self.Time:SetFormattedText(decimal.." | |cffff0000"..decimal, duration, self.casting and self.max + self.delay or self.max - self.delay)
+			else
+				self.Time:SetFormattedText(decimal.." | "..decimal, duration, self.max)
+				if self.Lag and self.SafeZone and self.SafeZone.timeDiff ~= 0 then
+					self.Lag:SetFormattedText("%d ms", self.SafeZone.timeDiff * 1000)
+				end
+			end
+		else
+			if duration > 1e4 then
+				self.Time:SetText("∞ | ∞")
+			else
+				self.Time:SetFormattedText(decimal.." | "..decimal, duration, self.casting and self.max + self.delay or self.max - self.delay)
+			end
+		end
+		self.duration = duration
+		self:SetValue(duration)
+		self.Spark:SetPoint("CENTER", self, "LEFT", (duration / self.max) * self:GetWidth(), 0)
+	else
+		self.Spark:Hide()
+		local alpha = self:GetAlpha() - .02
+		if alpha > 0 then
+			self:SetAlpha(alpha)
+		else
+			self.fadeOut = nil
+			self:Hide()
+		end
 	end
+end
+
+function Module:OnCastSent()
+	local element = self.Castbar
+	if not element.SafeZone then
+		return
+	end
+
+	element.SafeZone.sendTime = GetTime()
+	element.SafeZone.castSent = true
 end
 
 function Module:PostCastStart(unit)
-	if unit == "vehicle" then
+	--[[if unit == "vehicle" then
 		unit = "player"
+	end--]]
+
+	if unit == "vehicle" or UnitInVehicle("player") then
+		if self.SafeZone then
+			self.SafeZone:Hide()
+		end
+
+		if self.Lag then
+			self.Lag:Hide()
+		end
+	elseif unit == "player" then
+		local safeZone = self.SafeZone
+		if not safeZone then
+			return
+		end
+
+		safeZone.timeDiff = 0
+		if safeZone.castSent then
+			safeZone.timeDiff = GetTime() - safeZone.sendTime
+			safeZone.timeDiff = safeZone.timeDiff > self.max and self.max or safeZone.timeDiff
+			safeZone:SetWidth(self:GetWidth() * (safeZone.timeDiff + .001) / self.max)
+			safeZone:Show()
+			safeZone.castSent = false
+		end
+
+		local numTicks = 0
+		if self.channeling then
+			local spellID = UnitChannelInfo(unit)
+			numTicks = K.ChannelingTicks[spellID] or 0 -- Move this shit to filters
+		end
+		updateCastBarTicks(self, numTicks)
 	end
 
-	-- Get length of Time, then calculate available length for Text
-	local timeWidth = self.Time:GetStringWidth()
-	local textWidth = self:GetWidth() - timeWidth - 10
-	local textStringWidth = self.Text:GetStringWidth()
-
-	if timeWidth == 0 or textStringWidth == 0 then
-		K.Delay(0.05, function() -- Delay may need tweaking
-			textWidth = self:GetWidth() - self.Time:GetStringWidth() - 10
-			textStringWidth = self.Text:GetStringWidth()
-			if textWidth > 0 then
-				self.Text:SetWidth(math_min(textWidth, textStringWidth))
-			end
-		end)
-	else
-		self.Text:SetWidth(math_min(textWidth, textStringWidth))
+	-- Fix for empty icon
+	if self.Icon and not self.Icon:GetTexture() then
+		self.Icon:SetTexture(136243)
 	end
 
-	if self.Spark then
-		self.Spark:SetHeight(self:GetHeight())
-		self.Spark:SetPoint("CENTER", self:GetStatusBarTexture(), "RIGHT", 0, 0)
-	end
+	local r, g, b = self.casting and K.Colors.castbar.CastingColor[1], K.Colors.castbar.CastingColor[2], K.Colors.castbar.CastingColor[3] or K.Colors.castbar.ChannelingColor[1], K.Colors.castbar.ChannelingColor[2], K.Colors.castbar.ChannelingColor[3]
+	--local r, g, b = K.Colors.castbar.CastingColor[1], K.Colors.castbar.CastingColor[2], K.Colors.castbar.CastingColor[3]
 
-	self.unit = unit
-
-	if unit == "player" and self.Latency then
-		local _, _, _, ms = _G.GetNetStats()
-		self.Latency:SetText(("%dms"):format(ms))
-	end
-
-	if self.channeling and C["Unitframe"].CastbarTicks and unit == "player" then
-		local baseTicks = Module.ChannelTicks[self.spellID]
-
-		if baseTicks and Module.ChannelTicksSize[self.spellID] and Module.HastedChannelTicks[self.spellID] then
-			local tickIncRate = 1 / baseTicks
-			local curHaste = UnitSpellHaste("player") * 0.01
-			local firstTickInc = tickIncRate / 2
-			local bonusTicks = 0
-			if curHaste >= firstTickInc then
-				bonusTicks = bonusTicks + 1
-			end
-
-			local x = tonumber(K.Round(firstTickInc + tickIncRate, 2))
-			while curHaste >= x do
-				x = tonumber(K.Round(firstTickInc + (tickIncRate * bonusTicks), 2))
-				if curHaste >= x then
-					bonusTicks = bonusTicks + 1
-				end
-			end
-
-			local baseTickSize = Module.ChannelTicksSize[self.spellID]
-			local hastedTickSize = baseTickSize / (1 + curHaste)
-			local extraTick = self.max - hastedTickSize * (baseTicks + bonusTicks)
-			local extraTickRatio = extraTick / hastedTickSize
-
-			Module:SetCastTicks(self, baseTicks + bonusTicks, extraTickRatio)
-			self.hadTicks = true
-		elseif baseTicks and Module.ChannelTicksSize[self.spellID] then
-			local curHaste = UnitSpellHaste("player") * 0.01
-			local baseTickSize = Module.ChannelTicksSize[self.spellID]
-			local hastedTickSize = baseTickSize / (1 + curHaste)
-			local extraTick = self.max - hastedTickSize * (baseTicks)
-			local extraTickRatio = extraTick / hastedTickSize
-
-			Module:SetCastTicks(self, baseTicks, extraTickRatio)
-			self.hadTicks = true
-		elseif baseTicks then
-			Module:SetCastTicks(self, baseTicks)
-			self.hadTicks = true
-		else
-			Module:HideTicks()
+	if (self.notInterruptible and unit ~= "player") and UnitCanAttack("player", unit) then
+		r, g, b = K.Colors.castbar.notInterruptibleColor[1], K.Colors.castbar.notInterruptibleColor[2], K.Colors.castbar.notInterruptibleColor[3]
+	elseif C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
+		local _, Class = UnitClass(unit)
+		local t = Class and K.Colors.class[Class]
+		if t then
+			r, g, b = t[1], t[2], t[3]
+		end
+	elseif C["Unitframe"].CastReactionColor then
+		local Reaction = UnitReaction(unit, 'player')
+		local t = Reaction and K.Colors.reaction[Reaction]
+		if t then
+			r, g, b = t[1], t[2], t[3]
 		end
 	end
 
-	local colors = K.Colors
-	local r, g, b = colors.status.castColor[1], colors.status.castColor[2], colors.status.castColor[3]
-
-	local t
-	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
-		local _, class = UnitClass(unit)
-		t = K.Colors.class[class]
-	elseif C["Unitframe"].CastReactionColor and UnitReaction(unit, "player") then
-		t = K.Colors.reaction[UnitReaction(unit, "player")]
-	end
-
-	if t then
-		r, g, b = t[1], t[2], t[3]
-	end
-
-	if self.notInterruptible and unit ~= "player" and UnitCanAttack("player", unit) then
-		r, g, b = colors.status.castNoInterrupt[1], colors.status.castNoInterrupt[2], colors.status.castNoInterrupt[3]
-	end
-
+	self:SetAlpha(1)
+	self.Spark:Show()
 	self:SetStatusBarColor(r, g, b)
 end
 
-function Module:PostCastStop(unit)
-	if self.hadTicks and unit == 'player' then
-		Module:HideTicks()
-		self.hadTicks = false
-	end
-end
-
-function Module:PostCastInterruptible(unit)
+function Module:PostUpdateInterruptible(unit)
 	if unit == "vehicle" or unit == "player" then
 		return
 	end
 
-	local colors = K.Colors
-	local r, g, b = colors.status.castColor[1], colors.status.castColor[2], colors.status.castColor[3]
-
-	local t
-	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
-		local _, class = UnitClass(unit)
-		t = K.Colors.class[class]
-	elseif C["Unitframe"].CastReactionColor and UnitReaction(unit, "player") then
-		t = K.Colors.reaction[UnitReaction(unit, "player")]
-	end
-
-	if (t) then
-		r, g, b = t[1], t[2], t[3]
-	end
+	local r, g, b = self.casting and K.Colors.castbar.CastingColor[1], K.Colors.castbar.CastingColor[2], K.Colors.castbar.CastingColor[3] or K.Colors.castbar.ChannelingColor[1], K.Colors.castbar.ChannelingColor[2], K.Colors.castbar.ChannelingColor[3]
+	--local r, g, b = K.Colors.castbar.CastingColor[1], K.Colors.castbar.CastingColor[2], K.Colors.castbar.CastingColor[3]
 
 	if self.notInterruptible and UnitCanAttack("player", unit) then
-		r, g, b = colors.status.castNoInterrupt[1], colors.status.castNoInterrupt[2], colors.status.castNoInterrupt[3]
+		r, g, b = K.Colors.castbar.notInterruptibleColor[1], K.Colors.castbar.notInterruptibleColor[2], K.Colors.castbar.notInterruptibleColor[3]
+	elseif C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
+		local _, Class = UnitClass(unit)
+		local t = Class and K.Colors.class[Class]
+		if t then
+			r, g, b = t[1], t[2], t[3]
+		end
+	elseif C["Unitframe"].CastReactionColor then
+		local Reaction = UnitReaction(unit, "player")
+		local t = Reaction and K.Colors.reaction[Reaction]
+		if t then
+			r, g, b = t[1], t[2], t[3]
+		end
 	end
 
 	self:SetStatusBarColor(r, g, b)
 end
 
-function Module:PostCastFail()
-	self:SetMinMaxValues(0, 1)
-	self:SetValue(1)
-	self:SetStatusBarColor(1.0, 0.0, 0.0)
-
-	if self.Time then
-		self.Time:SetText("")
+function Module:PostCastStop()
+	if not self.fadeOut then
+		self:SetStatusBarColor(K.Colors.castbar.CompleteColor[1], K.Colors.castbar.CompleteColor[2], K.Colors.castbar.CompleteColor[3])
+		self.fadeOut = true
 	end
 
-	if self.Spark then
-		self.Spark:SetPoint("CENTER", self, "RIGHT")
-	end
+	self:SetValue(self.max)
+	self:Show()
+end
+
+function Module:PostChannelStop()
+	self.fadeOut = true
+	self:SetValue(0)
+	self:Show()
+end
+
+function Module:PostCastFailed()
+	self:SetStatusBarColor(K.Colors.castbar.FailColor[1], K.Colors.castbar.FailColor[2], K.Colors.castbar.FailColor[3])
+	self:SetValue(self.max)
+	self.fadeOut = true
+	self:Show()
 end
 
 function Module:CreateAuraTimer(elapsed)
@@ -499,7 +463,7 @@ end
 
 function Module:PostCreateAura(button)
 	local buttonFont = C["Media"].Font
-	local buttonFontSize = self.size * 0.46
+	local buttonFontSize = self.fontSize or self.size * 0.46
 
 	if string_match(button:GetName(), "NamePlate") then
 		if C["Nameplates"].Enable then
@@ -507,7 +471,7 @@ function Module:PostCreateAura(button)
 
 			button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
 			button.Remaining:SetFont(buttonFont, buttonFontSize, "THINOUTLINE")
-			button.Remaining:SetPoint("CENTER", 1, 0)
+			button.Remaining:SetPoint("TOPLEFT", 0, 0)
 
 			button.cd.noCooldownCount = true
 			button.cd:SetReverse(true)
@@ -520,8 +484,7 @@ function Module:PostCreateAura(button)
 			button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			button.icon:SetDrawLayer("ARTWORK")
 
-			button.count:SetPoint("BOTTOMRIGHT", 1, 1)
-			button.count:SetJustifyH("RIGHT")
+			button.count:SetPoint("BOTTOMRIGHT", 0, 0)
 			button.count:SetFont(buttonFont, buttonFontSize, "THINOUTLINE")
 			button.count:SetTextColor(0.84, 0.75, 0.65)
 		end
@@ -530,12 +493,11 @@ function Module:PostCreateAura(button)
 
 		button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
 		button.Remaining:SetFont(buttonFont, buttonFontSize, "THINOUTLINE")
-		button.Remaining:SetPoint("CENTER", 1, 0)
+		button.Remaining:SetPoint("TOPLEFT", 0, 0)
 
 		button.cd.noCooldownCount = true
 		button.cd:SetReverse(true)
 		button.cd:SetFrameLevel(button:GetFrameLevel() + 1)
-		button.cd:ClearAllPoints()
 		button.cd:SetPoint("TOPLEFT", 1, -1)
 		button.cd:SetPoint("BOTTOMRIGHT", -1, 1)
 		button.cd:SetHideCountdownNumbers(true)
@@ -544,8 +506,7 @@ function Module:PostCreateAura(button)
 		button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		button.icon:SetDrawLayer("ARTWORK")
 
-		button.count:SetPoint("BOTTOMRIGHT", 1, 1)
-		button.count:SetJustifyH("RIGHT")
+		button.count:SetPoint("BOTTOMRIGHT", 0, 0)
 		button.count:SetFont(buttonFont, buttonFontSize, "THINOUTLINE")
 		button.count:SetTextColor(0.84, 0.75, 0.65)
 
@@ -645,14 +606,14 @@ function Module:CreateAuraWatch(frame)
 	Auras.PostCreateIcon = Module.CreateAuraWatchIcon
 	Auras.strictMatching = true
 
-	if (Module.RaidBuffsTracking["ALL"]) then
-		for _, value in pairs(Module.RaidBuffsTracking["ALL"]) do
+	if (K.RaidBuffsTracking["ALL"]) then
+		for _, value in pairs(K.RaidBuffsTracking["ALL"]) do
 			table_insert(buffs, value)
 		end
 	end
 
-	if (Module.RaidBuffsTracking[Class]) then
-		for _, value in pairs(Module.RaidBuffsTracking[Class]) do
+	if (K.RaidBuffsTracking[Class]) then
+		for _, value in pairs(K.RaidBuffsTracking[Class]) do
 			table_insert(buffs, value)
 		end
 	end
@@ -680,7 +641,7 @@ function Module:CreateAuraWatch(frame)
 
 			local Count = Icon:CreateFontString(nil, "OVERLAY")
 			Count:SetFont(C["Media"].Font, 8, "THINOUTLINE")
-			Count:SetPoint("CENTER", unpack(Module.RaidBuffsTrackingPosition[spell[2]]))
+			Count:SetPoint("CENTER", unpack(K.RaidBuffsTrackingPosition[spell[2]]))
 			Icon.count = Count
 
 			Auras.icons[spell[1]] = Icon
@@ -714,7 +675,7 @@ function Module:NameplatesCallback(event, unit)
 	end
 
 	-- Position of the resources
-	local Point, Relpoint, xOffset, yOffset = "TOP", "BOTTOM", 0, -10
+	local Point, Relpoint, xOffset, yOffset = "TOP", "BOTTOM", 0, -4
 
 	if event == "NAME_PLATE_UNIT_ADDED" then
 		Nameplate.reaction = UnitReaction("player", unit)
@@ -737,6 +698,8 @@ function Module:NameplatesCallback(event, unit)
 			Nameplate:DisableElement("RaidTargetIndicator")
 			Nameplate:DisableElement("PvPIndicator")
 			Nameplate.Name:Hide()
+			Nameplate.questIcon:Hide()
+			Nameplate.questCount:Hide()
 
 			if Nameplate.ClassPower then
 				Nameplate.ClassPower:Show()
@@ -760,13 +723,13 @@ function Module:NameplatesCallback(event, unit)
 			Nameplate:EnableElement("RaidTargetIndicator")
 			Nameplate:EnableElement("PvPIndicator")
 			Nameplate.Name:Show()
+			Nameplate.questIcon:Show()
+			Nameplate.questCount:Show()
 
-			Module.UpdateQuestUnit(Nameplate, unit)
 			Module.HighlightPlate(Nameplate)
+			Module.UpdateQuestUnit(Nameplate, event, unit)
 			Module.UpdateNameplateTarget(Nameplate)
-			Module.UpdatePlateTotems(Nameplate)
-			Module.UpdateHealerIcons(Nameplate)
-			Module.UpdateExplosives(Nameplate, event, unit)
+			Module.UpdateUnitClassify(Nameplate, unit)
 
 			if Nameplate.ClassPower then
 				Nameplate.ClassPower:Hide()
@@ -797,21 +760,21 @@ function Module:NameplatesCallback(event, unit)
 			Nameplate.ClassPower:Hide()
 			Nameplate.ClassPower:ClearAllPoints()
 			Nameplate.ClassPower:SetParent(Nameplate)
-			Nameplate.ClassPower:SetPoint(Point, Nameplate.Health, Relpoint, xOffset, yOffset)
+			Nameplate.ClassPower:SetPoint(Point, Nameplate.Castbar, Relpoint, xOffset, yOffset)
 		end
 
 		if Nameplate.Runes then
 			Nameplate.Runes:Hide()
 			Nameplate.Runes:ClearAllPoints()
 			Nameplate.Runes:SetParent(Nameplate)
-			Nameplate.Runes:SetPoint(Point, Nameplate.Health, Relpoint, xOffset, yOffset)
+			Nameplate.Runes:SetPoint(Point, Nameplate.Castbar, Relpoint, xOffset, yOffset)
 		end
 
 		if Nameplate.Stagger then
 			Nameplate.Stagger:Hide()
 			Nameplate.Stagger:ClearAllPoints()
 			Nameplate.Stagger:SetParent(Nameplate)
-			Nameplate.Stagger:SetPoint(Point, Nameplate.Health, Relpoint, xOffset, yOffset)
+			Nameplate.Stagger:SetPoint(Point, Nameplate.Castbar, Relpoint, xOffset, yOffset)
 		end
 	end
 
@@ -825,60 +788,18 @@ function Module:NameplatesCallback(event, unit)
 			if Player.unitFrame.ClassPower then
 				Player.unitFrame.ClassPower:ClearAllPoints()
 				Player.unitFrame.ClassPower:SetParent(Anchor)
-				Player.unitFrame.ClassPower:SetPoint(Point, Anchor.Health, Relpoint, xOffset, yOffset)
+				Player.unitFrame.ClassPower:SetPoint(Point, Anchor.Castbar, Relpoint, xOffset, yOffset)
 			end
 			if Player.unitFrame.Runes then
 				Player.unitFrame.Runes:ClearAllPoints()
 				Player.unitFrame.Runes:SetParent(Anchor)
-				Player.unitFrame.Runes:SetPoint(Point, Anchor.Health, Relpoint, xOffset, yOffset)
+				Player.unitFrame.Runes:SetPoint(Point, Anchor.Castbar, Relpoint, xOffset, yOffset)
 			end
 			if Player.unitFrame.Stagger then
 				Player.unitFrame.Stagger:ClearAllPoints()
 				Player.unitFrame.Stagger:SetParent(Anchor)
-				Player.unitFrame.Stagger:SetPoint(Point, Anchor.Health, Relpoint, xOffset, yOffset)
+				Player.unitFrame.Stagger:SetPoint(Point, Anchor.Castbar, Relpoint, xOffset, yOffset)
 			end
-		end
-	end
-end
-
-function Module:NameplatePowerAndCastBar(unit, cur, _, max)
-	if not unit then
-		unit = self:GetParent().unit
-	end
-
-	if not unit then
-		return
-	end
-
-	if not cur then
-		cur, max = UnitPower(unit), UnitPowerMax(unit)
-	end
-
-	local CurrentPower = cur
-	local MaxPower = max
-	local Nameplate = self:GetParent()
-	local PowerBar = Nameplate.Power
-	local CastBar = Nameplate.Castbar
-	local Health = Nameplate.Health
-	local IsPowerHidden = PowerBar.IsHidden
-
-	if (not CastBar:IsShown()) and (CurrentPower and CurrentPower == 0) and (MaxPower and MaxPower == 0) then
-		if (not IsPowerHidden) then
-			Health:ClearAllPoints()
-			Health:SetAllPoints()
-
-			PowerBar:Hide()
-			PowerBar.IsHidden = true
-		end
-	else
-		if IsPowerHidden then
-			Health:ClearAllPoints()
-			Health:SetPoint("TOPLEFT")
-			Health:SetHeight(C["Nameplates"].Height - C["Nameplates"].CastHeight - 1)
-			Health:SetWidth(Nameplate:GetWidth())
-
-			PowerBar:Show()
-			PowerBar.IsHidden = false
 		end
 	end
 end
@@ -899,9 +820,9 @@ function Module:GetPartyFramesAttributes()
 	"showParty", true,
 	"showPlayer", C["Party"].ShowPlayer,
 	"showRaid", true,
-	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupBy", "GROUP",
+	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
+	"sortMethod", "NAME",
+	"groupBy", "ASSIGNEDROLE",
 	"yOffset", C["Party"].ShowBuffs and -44 or -18
 end
 
@@ -924,9 +845,9 @@ function Module:GetDamageRaidFramesAttributes()
 	"xoffset", 6,
 	"yOffset", -6,
 	"point", "TOP",
-	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupBy", C["Raid"].GroupBy.Value,
+	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
+	"sortMethod", "NAME",
+	"groupBy", "ASSIGNEDROLE",
 	"maxColumns", math_ceil(40 / 5),
 	"unitsPerColumn", C["Raid"].MaxUnitPerColumn,
 	"columnSpacing", 6,
@@ -952,9 +873,9 @@ function Module:GetHealerRaidFramesAttributes()
 	"xoffset", 6,
 	"yOffset", -6,
 	"point", "LEFT",
-	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupBy", C["Raid"].GroupBy.Value,
+	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
+	"sortMethod", "NAME",
+	"groupBy", "ASSIGNEDROLE",
 	"maxColumns", math.ceil(40 / 5),
 	"unitsPerColumn", C["Raid"].MaxUnitPerColumn,
 	"columnSpacing", 6,
@@ -1336,12 +1257,12 @@ function Module:UpdateRaidDebuffIndicator()
 
 		if (ORD.RegisteredList ~= "RD") and (InstanceType == "party" or InstanceType == "raid") then
 			ORD:ResetDebuffData()
-			ORD:RegisterDebuffs(Module.DebuffsTracking.RaidDebuffs.spells)
+			ORD:RegisterDebuffs(K.DebuffsTracking.RaidDebuffs.spells)
 			ORD.RegisteredList = "RD"
 		else
 			if ORD.RegisteredList ~= "CC" then
 				ORD:ResetDebuffData()
-				ORD:RegisterDebuffs(Module.DebuffsTracking.CCDebuffs.spells)
+				ORD:RegisterDebuffs(K.DebuffsTracking.CCDebuffs.spells)
 				ORD.RegisteredList = "CC"
 			end
 		end

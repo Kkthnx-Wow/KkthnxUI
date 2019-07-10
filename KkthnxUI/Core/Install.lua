@@ -32,6 +32,7 @@ function Install:ResetData()
 	KkthnxUIData[GetRealmName()][UnitName("player")].AutoInvite = false
 	KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap = false
 	KkthnxUIData[GetRealmName()][UnitName("player")].WatchedMovies = {}
+	KkthnxUIData[GetRealmName()][UnitName("player")].Mover = {}
 
 	if (KkthnxUIConfigPerAccount) then
 		KkthnxUIConfigShared.Account = {}
@@ -69,7 +70,6 @@ function Install:Step1()
 	SetCVar("spamFilter", 0)
 	SetCVar("threatWarning", 3)
 	SetCVar("UberTooltips", 1)
-	SetCVar("useUiScale", 0)
 	SetCVar("violenceLevel", 5)
 	SetCVar("wholeChatWindowClickable", 0)
 
@@ -77,6 +77,8 @@ function Install:Step1()
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
 
 	UIErrorsFrame:AddMessage(L["Install"].CVars_Set, K.Color.r, K.Color.g, K.Color.b, 53, 2)
+
+	self:Hide()
 end
 
 function Install:Step2()
@@ -90,6 +92,8 @@ function Install:Step2()
 	Chat:SetDefaultChatFramesPositions()
 
 	UIErrorsFrame:AddMessage(L["Install"].Chat_Set, K.Color.r, K.Color.g, K.Color.b, 53, 2)
+
+	self:Hide()
 end
 
 function Install:PrintStep(PageNum)
@@ -103,6 +107,9 @@ function Install:PrintStep(PageNum)
 		self:Hide()
 		if (PageNum > self.MaxStepNumber) then
 			KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete = true
+			local UIScale = min(2, max(0.64, 768 / string.match(K.Resolution, "%d+x(%d+)")))
+			SetCVar("useUiScale", 1)
+			SetCVar("uiScale", UIScale)
 			PlaySound(11466) -- A_BLCKTMPLE_Illidan_04
 			ReloadUI()
 		end
@@ -118,6 +125,7 @@ function Install:PrintStep(PageNum)
 		self.MiddleButton:SetScript("OnClick", self.ResetData)
 		self.CloseButton:Show()
 		self.SkipButton:Show()
+
 		if (KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete) then
 			self.MiddleButton:Show()
 		else
@@ -127,11 +135,13 @@ function Install:PrintStep(PageNum)
 		self.LeftButton:SetScript("OnClick", function()
 			self.PrintStep(self, self.CurrentStep - 1)
 		end)
+
 		self.LeftButton.Text:SetText("|cffffd200"..PREVIOUS.."|r")
 		self.MiddleButton.Text:SetText("|cff20ff20"..APPLY.."|r")
 		self.RightButton:SetScript("OnClick", function()
 			self.PrintStep(self, self.CurrentStep + 1)
 		end)
+
 		if (PageNum == Install.MaxStepNumber) then
 			self.RightButton.Text:SetText("|cff20ff20"..COMPLETE.."|r")
 			self.CloseButton:Hide()
@@ -145,6 +155,11 @@ function Install:PrintStep(PageNum)
 			self.DiscordButton:Hide()
 			self.SkipButton:Hide()
 		end
+
+		if (self.MiddleButton:IsVisible()) then
+			self.MiddleButton:Show()
+		end
+
 		if (ExecuteScript) then
 			self.MiddleButton:SetScript("OnClick", ExecuteScript)
 		end
@@ -227,7 +242,8 @@ function Install:Launch()
 	self.LeftButton:SetPoint("TOPLEFT", self.Description, "BOTTOMLEFT", 0, -6)
 	self.LeftButton:SetSize(128, 25)
 	self.LeftButton:SkinButton()
-	self.LeftButton:FontString("Text", C["Media"].Font, 12)
+	self.LeftButton.Text = self.LeftButton:CreateFontString(nil, "OVERLAY")
+	self.LeftButton.Text:SetFontObject(InstallFont)
 	self.LeftButton.Text:SetPoint("CENTER")
 	self.LeftButton.Text:SetText("|cffff2020"..CLOSE.."|r")
 	self.LeftButton:SetScript("OnClick", function() self:Hide() end)
@@ -236,7 +252,8 @@ function Install:Launch()
 	self.RightButton:SetPoint("TOPRIGHT", self.Description, "BOTTOMRIGHT", 0, -6)
 	self.RightButton:SetSize(128, 25)
 	self.RightButton:SkinButton()
-	self.RightButton:FontString("Text", C["Media"].Font, 12)
+	self.RightButton.Text = self.RightButton:CreateFontString(nil, "OVERLAY")
+	self.RightButton.Text:SetFontObject(InstallFont)
 	self.RightButton.Text:SetPoint("CENTER")
 	self.RightButton.Text:SetText("|cffffd200"..NEXT.."|r")
 	self.RightButton:SetScript("OnClick", function() self.PrintStep(self, self.CurrentStep + 1) end)
@@ -245,7 +262,8 @@ function Install:Launch()
 	self.DiscordButton:SetPoint("TOPLEFT", self.LeftButton, "TOPRIGHT", 6, 0)
 	self.DiscordButton:SetPoint("BOTTOMRIGHT", self.RightButton, "BOTTOMLEFT", -6, 0)
 	self.DiscordButton:SkinButton()
-	self.DiscordButton:FontString("Text", C["Media"].Font, 12)
+	self.DiscordButton.Text = self.DiscordButton:CreateFontString(nil, "OVERLAY")
+	self.DiscordButton.Text:SetFontObject(InstallFont)
 	self.DiscordButton.Text:SetPoint("CENTER")
 	self.DiscordButton.Text:SetText("|cff7289daDiscord|r")
 	self.DiscordButton:SetScript("OnClick", function()
@@ -257,7 +275,8 @@ function Install:Launch()
 	self.MiddleButton:SetPoint("TOPLEFT", self.LeftButton, "TOPRIGHT", 6, 0)
 	self.MiddleButton:SetPoint("BOTTOMRIGHT", self.RightButton, "BOTTOMLEFT", -6, 0)
 	self.MiddleButton:SkinButton()
-	self.MiddleButton:FontString("Text", C["Media"].Font, 12)
+	self.MiddleButton.Text = self.MiddleButton:CreateFontString(nil, "OVERLAY")
+	self.MiddleButton.Text:SetFontObject(InstallFont)
 	self.MiddleButton.Text:SetPoint("CENTER")
 	self.MiddleButton.Text:SetText("|cffFF0000"..RESET_TO_DEFAULT.."|r")
 	self.MiddleButton:SetScript("OnClick", self.ResetData)
@@ -271,7 +290,8 @@ function Install:Launch()
 	self.SkipButton:SetPoint("TOPLEFT", self.LeftButton, "TOPRIGHT", 6, 0)
 	self.SkipButton:SetPoint("BOTTOMRIGHT", self.RightButton, "BOTTOMLEFT", -6, 0)
 	self.SkipButton:SkinButton()
-	self.SkipButton:FontString("Text", C["Media"].Font, 12)
+	self.SkipButton.Text = self.SkipButton:CreateFontString(nil, "OVERLAY")
+	self.SkipButton.Text:SetFontObject(InstallFont)
 	self.SkipButton.Text:SetPoint("CENTER")
 	self.SkipButton.Text:SetText(string.format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, "Skip Install Process"))
 	self.SkipButton:SetScript("OnClick", function()
@@ -344,10 +364,8 @@ Install:SetScript("OnEvent", function(self)
 		KkthnxUIData[playerRealm][playerName].WatchedMovies = KkthnxUIData[playerRealm][playerName].WatchedMovies or {}
 	end
 
-	-- Wipe Old Settings With No Conflict.
-	if KkthnxUIData[playerRealm][playerName].Movers then
-		table.wipe(KkthnxUIData[playerRealm][playerName].Movers)
-		KkthnxUIData[playerRealm][playerName].Movers = nil
+	if (not KkthnxUIData[playerRealm][playerName].Mover) then
+		KkthnxUIData[playerRealm][playerName].Mover = KkthnxUIData[playerRealm][playerName].Mover or {}
 	end
 
 	-- Install default if we never ran KkthnxUI on this character.

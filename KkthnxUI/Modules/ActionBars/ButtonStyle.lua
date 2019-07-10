@@ -321,7 +321,9 @@ local function StyleFlyoutButton(self)
 	SetupFlyoutButton()
 end
 
-local function StyleSmallActionButtons()
+local applyPetStanceStyle = CreateFrame("Frame")
+applyPetStanceStyle:RegisterEvent("PLAYER_LOGIN")
+applyPetStanceStyle:SetScript("OnEvent", function()
 	for i = 1, NUM_PET_ACTION_SLOTS do
 		K.StylePet(_G["PetActionButton"..i])
 	end
@@ -329,11 +331,10 @@ local function StyleSmallActionButtons()
 	for i = 1, NUM_STANCE_SLOTS do
 		K.StyleShift(_G["StanceButton"..i])
 	end
-end
+end)
 
 hooksecurefunc("ActionButton_Update", StyleNormalButton)
 hooksecurefunc("ActionButton_UpdateFlyout", StyleFlyoutButton)
 hooksecurefunc("SpellButton_OnClick", StyleFlyoutButton)
-K:RegisterEvent("PLAYER_LOGIN", StyleSmallActionButtons)
 hooksecurefunc("ActionButton_UpdateHotkeys", K.UpdateHotkey)
 hooksecurefunc("PetActionButton_SetHotkeys", K.UpdateHotkey)

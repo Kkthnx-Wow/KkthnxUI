@@ -2,6 +2,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<!-- Load_Unitframes -->
 	<Script file="Core.lua" />
+	<Script file="Tags.lua" />
 
 	<Include file="Elements\Load_Elements.xml" />
 	<Include file="Units\Load_Units.xml" />

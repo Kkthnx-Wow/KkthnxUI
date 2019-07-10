@@ -215,7 +215,6 @@ K.PopupDialogs["OLD_MOVERS_DATABASE_RL"] = {
 	button1 = ACCEPT,
 	OnAccept = function()
 		table.wipe(KkthnxUIData[GetRealmName()][UnitName("player")].Movers)
-		KkthnxUIData[GetRealmName()][UnitName("player")].Movers = nil
 		ReloadUI()
 	end,
 	hideOnEscape = false,
@@ -384,6 +383,7 @@ K.PopupDialogs["KKTHNXUI_OUTDATED"] = {
 		self:GetParent():Hide()
 	end,
 }
+
 
 local MAX_STATIC_POPUPS = 4
 function K.StaticPopup_OnShow(self)

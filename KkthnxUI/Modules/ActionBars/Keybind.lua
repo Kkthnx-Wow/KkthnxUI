@@ -131,7 +131,7 @@ function K.BindingUI()
 				if not self.button.id or self.button.id < 1 or self.button.id > (spellmacro == "STANCE" and 10 or 12) then
 					self.button.bindstring = "CLICK "..self.button.name..":LeftButton"
 				else
-					self.button.bindstring = (spellmacro=="STANCE" and "SHAPESHIFTBUTTON" or "BONUSACTIONBUTTON")..self.button.id
+					self.button.bindstring = (spellmacro == "STANCE" and "SHAPESHIFTBUTTON" or "BONUSACTIONBUTTON")..self.button.id
 				end
 
 				GameTooltip:AddLine("Trigger")
@@ -218,17 +218,16 @@ function K.BindingUI()
 			or key == "LALT"
 			or key == "RALT"
 			or key == "UNKNOWN"
-			or key == "LeftButton"
-			or key == "MiddleButton" then
+			then
 				return
 			end
 
-			if key == "Button4" then
-				key = "BUTTON4"
+			if key == "MiddleButton" then
+				key = "BUTTON3"
 			end
 
-			if key == "Button5" then
-				key = "BUTTON5"
+			if key:find("Button%d") then
+				key = key:upper()
 			end
 
 			local alt = IsAltKeyDown() and "ALT-" or ""
@@ -303,7 +302,6 @@ function K.BindingUI()
 			frame.text = frame:CreateFontString(nil, "OVERLAY")
 			frame.text:SetFont(C["Media"].Font, 12)
 			frame.text:SetWidth(314)
-			-- frame.text:SetNonSpaceWrap(true)
 			frame.text:SetTextColor(1, .8, 0)
 			frame.text:SetShadowOffset(1.25, -1.25)
 			frame.text:SetPoint("TOP", 0, -15)

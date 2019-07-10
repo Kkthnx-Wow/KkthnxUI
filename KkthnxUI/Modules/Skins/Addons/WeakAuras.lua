@@ -13,7 +13,7 @@ WeakAura_Skin:RegisterEvent("PLAYER_LOGIN")
 WeakAura_Skin:SetScript("OnEvent", function(self, event)
 	local function Skin_WeakAuras(frame, ftype)
 		if not frame.Shadow then
-			frame:CreateShadow()
+			frame:CreateShadow(true)
 
 			if frame.icon then
 				frame.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])

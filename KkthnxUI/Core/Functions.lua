@@ -163,6 +163,15 @@ function K.RGBToHex(r, g, b)
 	return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 end
 
+function K.ColorClass(class)
+	local color = K.ClassColors[class]
+	if not color then
+		return 1, 1, 1
+	end
+
+	return color.r, color.g, color.b
+end
+
 function K.CheckAddOnState(addon)
 	return K.AddOns[string_lower(addon)] or false
 end
@@ -413,11 +422,11 @@ end
 local Day, Hour, Minute = 86400, 3600, 60
 function K.FormatTime(s)
 	if s >= Day then
-		return string_format("%d"..K.ClassColor.."d", s / Day), s % Day
+		return string_format("%d"..K.MyClassColor.."d", s / Day), s % Day
 	elseif s >= Hour then
-		return string_format("%d"..K.ClassColor.."h", s / Hour), s % Hour
+		return string_format("%d"..K.MyClassColor.."h", s / Hour), s % Hour
 	elseif s >= Minute then
-		return string_format("%d"..K.ClassColor.."m", s / Minute), s % Minute
+		return string_format("%d"..K.MyClassColor.."m", s / Minute), s % Minute
 	elseif s > 10 then
 		return string_format("|cffcccc33%d|r", s), s - math_floor(s)
 	elseif s > 3 then

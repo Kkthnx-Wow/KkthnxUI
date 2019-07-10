@@ -8,5 +8,6 @@
    <Script file="QuickQuest.lua" />
    <Script file="RangeSpells.lua" />
    <Script file="Reminder.lua" />
+   <Script file="Unitframes.lua" />
    <Script file="WorldMapPlusData.lua" />
 </Ui>

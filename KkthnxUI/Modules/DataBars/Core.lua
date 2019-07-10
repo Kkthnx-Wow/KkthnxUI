@@ -61,13 +61,13 @@ end
 function Module:SetupExperience()
 	local expbar = CreateFrame("StatusBar", "KkthnxUI_ExperienceBar", self.Container)
 	expbar:SetStatusBarTexture(self.DatabaseTexture)
-	expbar:SetStatusBarColor(self.Database.ExperienceColor[1], self.Database.ExperienceColor[2], self.Database.ExperienceColor[3])
+	expbar:SetStatusBarColor(self.Database.ExperienceColor[1], self.Database.ExperienceColor[2], self.Database.ExperienceColor[3], self.Database.ExperienceColor[4])
 	expbar:SetSize(self.Database.Width, self.Database.Height)
 	expbar:CreateBorder()
 
 	local restbar = CreateFrame("StatusBar", "KkthnxUI_RestBar", self.Container)
 	restbar:SetStatusBarTexture(self.DatabaseTexture)
-	restbar:SetStatusBarColor(self.Database.RestedColor[1], self.Database.RestedColor[2], self.Database.RestedColor[3])
+	restbar:SetStatusBarColor(self.Database.RestedColor[1], self.Database.RestedColor[2], self.Database.RestedColor[3], self.Database.RestedColor[4])
 	restbar:SetFrameLevel(3)
 	restbar:SetSize(self.Database.Width, self.Database.Height)
 	restbar:SetAlpha(0.5)
@@ -141,7 +141,7 @@ end
 function Module:SetupHonor()
 	local honor = CreateFrame("StatusBar", "KkthnxUI_HonorBar", self.Container)
 	honor:SetStatusBarTexture(self.DatabaseTexture)
-	honor:SetStatusBarColor(240/255, 114/255, 65/255)
+	honor:SetStatusBarColor(self.Database.HonorColor[1], self.Database.HonorColor[2], self.Database.HonorColor[3])
 	honor:SetSize(self.Database.Width, self.Database.Height)
 	honor:CreateBorder()
 
@@ -183,12 +183,15 @@ function Module:UpdateReputation()
 			min, max, value = 0, 1, 1
 			isCapped = true
 		end
-
 	end
 
 	local numFactions = GetNumFactions()
+	if not name then
+		self.Bars.Reputation:Hide()
+	elseif name then
+		self.Bars.Reputation:Show()
 
-	if name then
+		local text = ""
 		local color = FACTION_BAR_COLORS[reaction] or backupColor
 		self.Bars.Reputation:SetStatusBarColor(color.r, color.g, color.b)
 		self.Bars.Reputation:SetMinMaxValues(min, max)
@@ -218,8 +221,6 @@ function Module:UpdateReputation()
 			maxMinDiff = 1
 		end
 
-		local text = ""
-
 		if self.Database.Text then
 			if isCapped then
 				text = string_format("%s: [%s]", name, isFriend and friendText or standingLabel)
@@ -229,15 +230,17 @@ function Module:UpdateReputation()
 
 			self.Bars.Reputation.Text:SetText(text)
 		end
-
-		self.Bars.Reputation:Show()
-	else
-		self.Bars.Reputation:Hide()
 	end
 end
 
 function Module:UpdateExperience()
-	if (not IsPlayerMaxLevel() and not IsXPUserDisabled()) then
+	local hideXP = ((UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled())
+
+	if hideXP then
+		self.Bars.Experience:Hide()
+	elseif not hideXP then
+		self.Bars.Experience:Show()
+
 		local cur, max = GetUnitXP("player")
 		local rested = GetXPExhaustion()
 
@@ -264,10 +267,6 @@ function Module:UpdateExperience()
 				self.Bars.Experience.Text:SetText(string_format("%s - %d%%", K.ShortValue(cur), cur / max * 100))
 			end
 		end
-
-		self.Bars.Experience:Show()
-	else
-		self.Bars.Experience:Hide()
 	end
 end
 
@@ -277,29 +276,20 @@ function Module:UpdateAzerite(event, unit)
 	end
 
 	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
+	if not azeriteItemLocation or C_AzeriteItem_GetPowerLevel(azeriteItemLocation) == 50 then
+		self.Bars.Azerite:Hide()
+	elseif azeriteItemLocation then
+		self.Bars.Azerite:Show()
 
-	if azeriteItemLocation then
 		local xp, totalLevelXP = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
 		local currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
 
 		self.Bars.Azerite:SetMinMaxValues(0, totalLevelXP)
-		if currentLevel == 50 then
-			self.Bars.Azerite:SetValue(totalLevelXP)
-		else
-			self.Bars.Azerite:SetValue(xp)
-		end
+		self.Bars.Azerite:SetValue(xp)
 
 		if self.Database.Text then
-			if currentLevel == 50 then
-				self.Bars.Azerite.Text:SetText(_G.CAPPED)
-			else
-				self.Bars.Azerite.Text:SetText(string_format("%s - %s%% [%s]", K.ShortValue(xp), math_floor(xp / totalLevelXP * 100), currentLevel))
-			end
+			self.Bars.Azerite.Text:SetText(string_format("%s - %s%% [%s]", K.ShortValue(xp), math_floor(xp / totalLevelXP * 100), currentLevel))
 		end
-
-		self.Bars.Azerite:Show()
-	else
-		self.Bars.Azerite:Hide()
 	end
 end
 
@@ -313,7 +303,18 @@ function Module:UpdateHonor(event, unit)
 		return
 	end
 
-	if IsPlayerMaxLevel() and UnitIsPVP("player") then
+	local showHonor = true
+	if not UnitIsPVP("player") then
+		showHonor = false
+	elseif UnitLevel("player") < _G.MAX_PLAYER_LEVEL then
+		showHonor = false
+	end
+
+	if not showHonor then
+		self.Bars.Honor:Hide()
+	else
+		self.Bars.Honor:Show()
+
 		local current = UnitHonor("player")
 		local max = UnitHonorMax("player")
 
@@ -327,16 +328,12 @@ function Module:UpdateHonor(event, unit)
 		if self.Database.Text then
 			self.Bars.Honor.Text:SetText(string_format("%s - %d%%", K.ShortValue(current), current / max * 100))
 		end
-
-		self.Bars.Honor:Show()
-	else
-		self.Bars.Honor:Hide()
 	end
 end
 
 function Module:OnEnter()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self.Container)
-	-- GameTooltip:ClearLines()
+	GameTooltip:ClearLines()
 
 	if self.Database.MouseOver then
 		K.UIFrameFadeIn(self.Container, 0.25, self.Container:GetAlpha(), 1)
@@ -346,7 +343,7 @@ function Module:OnEnter()
 		local cur, max = GetUnitXP("player")
 		local rested = GetXPExhaustion()
 
-		GameTooltip:AddLine(L["Databars"].Experience)
+		GameTooltip:AddDoubleLine(L["Databars"].Experience, PLAYER.." "..LEVEL.." ("..K.Level..")", nil, nil, nil, 0.90, 0.80, 0.50)
 		GameTooltip:AddDoubleLine(L["Databars"].XP, string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math_floor(cur / max * 100)), 1, 1, 1)
 		GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format("%s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math_floor((max - cur) / max * 100), math_floor(20 * (max - cur) / max)), 1, 1, 1)
 
@@ -503,7 +500,7 @@ function Module:OnEnable()
 	end
 
 	local container = CreateFrame("button", "KkthnxUI_Databars", K.PetBattleHider)
-	container:SetWidth(Minimap:GetWidth() or self.Database.Width)
+	container:SetWidth(self.Database.Width)
 	container:SetPoint("TOP", "Minimap", "BOTTOM", 0, -6)
 	container:RegisterForClicks("RightButtonUp", "LeftButtonUp", "MiddleButtonUp")
 
@@ -531,19 +528,9 @@ function Module:OnEnable()
 	self:RegisterEvent("HONOR_XP_UPDATE", "Update")
 	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "Update")
 
-	K.Mover(container, "DataBars", "DataBars", {"TOP", "Minimap", "BOTTOM", 0, -6})
+	K.Mover(container, "DataBars", "DataBars", {"TOP", "Minimap", "BOTTOM", 0, -6}, self.Database.Width, self.Container:GetHeight())
 end
 
 function Module:OnDisable()
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	self:UnregisterEvent("PLAYER_LEVEL_UP")
-	self:UnregisterEvent("PLAYER_XP_UPDATE")
-	self:UnregisterEvent("UPDATE_EXHAUSTION")
-	self:UnregisterEvent("DISABLE_XP_GAIN")
-	self:UnregisterEvent("ENABLE_XP_GAIN")
-	self:UnregisterEvent("UPDATE_FACTION")
-	self:UnregisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED")
-	self:UnregisterEvent("UNIT_INVENTORY_CHANGED")
-	self:UnregisterEvent("HONOR_XP_UPDATE")
-	self:UnregisterEvent("PLAYER_FLAGS_CHANGED")
+	self:UnregisterAllEvents()
 end

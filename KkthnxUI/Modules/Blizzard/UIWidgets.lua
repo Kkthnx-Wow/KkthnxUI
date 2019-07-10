@@ -31,14 +31,14 @@ local function UIWidgets()
 
 	local topCenterHolder = CreateFrame("Frame", "TopCenterContainerHolder", UIParent)
 	topCenterHolder:SetPoint("TOP", UIParent, "TOP", 0, -30)
-	topCenterHolder:SetSize(10, 58)
+	topCenterHolder:SetSize(128, 30)
 
 	local belowMiniMapHolder = CreateFrame("Frame", "BelowMinimapContainerHolder", UIParent)
-	belowMiniMapHolder:SetPoint("TOPRIGHT", _G["Minimap"], "BOTTOMRIGHT", 0, -16)
-	belowMiniMapHolder:SetSize(128, 40)
+	belowMiniMapHolder:SetPoint("TOP", UIParent, "TOP", 0, -70)
+	belowMiniMapHolder:SetSize(128, 30)
 
-	K.Mover(topCenterHolder, "TopCenterContainer", "TopCenterContainer", {"TOP", UIParent, "TOP", 0, -30})
-	K.Mover(belowMiniMapHolder, "BelowMinimapContainer", "BelowMinimapContainer", {"TOPRIGHT", _G["Minimap"], "BOTTOMRIGHT", 0, -16})
+	K.Mover(topCenterHolder, "TopCenterContainer", "TopCenterContainer", {"TOP", UIParent, "TOP", 0, -30}, 128, 30)
+	K.Mover(belowMiniMapHolder, "BelowMinimapContainer", "BelowMinimapContainer", {"TOP", UIParent, "TOP", 0, -70}, 128, 30)
 
 	topCenterContainer:ClearAllPoints()
 	topCenterContainer:SetPoint("CENTER", topCenterHolder)

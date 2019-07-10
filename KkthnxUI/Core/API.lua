@@ -33,43 +33,38 @@ K.PetBattleHider:SetAllPoints()
 K.PetBattleHider:SetFrameStrata("LOW")
 RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
 
-function K.HideObject(self)
-	if self.UnregisterAllEvents then
-		self:UnregisterAllEvents()
-		self:SetParent(K.UIFrameHider)
-	else
-		self.Show = self.Hide
+function K.PointsRestricted(frame)
+	if frame and not pcall(frame.GetPoint, frame) then
+		return true
 	end
-
-	self:Hide()
 end
 
-local function SetOutside(obj, anchor, xOffset, yOffset)
+local function SetOutside(obj, anchor, xOffset, yOffset, anchor2)
 	xOffset = xOffset or 0
 	yOffset = yOffset or 0
 	anchor = anchor or obj:GetParent()
 
 	assert(anchor)
-	if obj:GetPoint() then
+	if K.PointsRestricted(obj) or obj:GetPoint() then
 		obj:ClearAllPoints()
 	end
 
 	obj:SetPoint("TOPLEFT", anchor, "TOPLEFT", -xOffset, yOffset)
-	obj:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", xOffset, -yOffset)
+	obj:SetPoint("BOTTOMRIGHT", anchor2 or anchor, "BOTTOMRIGHT", xOffset, -yOffset)
 end
 
-local function SetInside(obj, anchor, xOffset, yOffset)
+local function SetInside(obj, anchor, xOffset, yOffset, anchor2)
 	xOffset = xOffset or 0
 	yOffset = yOffset or 0
 	anchor = anchor or obj:GetParent()
 
 	assert(anchor)
-	if obj:GetPoint() then
+	if K.PointsRestricted(obj) or obj:GetPoint() then
 		obj:ClearAllPoints()
 	end
 
 	obj:SetPoint("TOPLEFT", anchor, "TOPLEFT", xOffset, -yOffset)
-	obj:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", -xOffset, yOffset)
+	obj:SetPoint("BOTTOMRIGHT", anchor2 or anchor, "BOTTOMRIGHT", -xOffset, yOffset)
 end
 
 local function CreateBorder(f, bLayer, bOffset, bPoints, strip)
@@ -128,14 +123,8 @@ local function CreateShadow(f, bd)
 		return
 	end
 
-	local shadowLevel = f:GetFrameLevel()
-
-	if shadowLevel < 0 then
-		shadowLevel = 0
-	end
-
 	local shadow = CreateFrame("Frame", nil, f)
-	shadow:SetFrameLevel(shadowLevel)
+	shadow:SetFrameLevel(1)
 	shadow:SetFrameStrata(f:GetFrameStrata())
 	shadow:SetPoint("TOPLEFT", -4, 4)
 	shadow:SetPoint("BOTTOMRIGHT", 4, -4)
@@ -197,12 +186,19 @@ local StripTexturesBlizzFrames = {
 	"LeftInset",
 	"RightInset",
 	"NineSlice",
+	"BG",
+	"border",
+	"Border",
 	"BorderFrame",
 	"bottomInset",
 	"BottomInset",
 	"bgLeft",
 	"bgRight",
 	"FilligreeOverlay",
+	"PortraitOverlay",
+	"ArtOverlayFrame",
+	"Portrait",
+	"portrait",
 }
 
 local STRIP_TEX = "Texture"
@@ -215,7 +211,7 @@ local function StripRegion(which, object, kill, alpha)
 	elseif which == STRIP_TEX then
 		object:SetTexture()
 	elseif which == STRIP_FONT then
-		object:SetText()
+		object:SetText("")
 	end
 end
 
@@ -257,32 +253,24 @@ local function FontTemplate(fs, font, fontSize, fontStyle)
 	fs.fontSize = fontSize
 	fs.fontStyle = fontStyle
 
-	font = font or C.Media.Font
+	font = font or C["Media"].Font
 	fontSize = fontSize or 12
+	fontStyle = fontStyle or "NONE"
+
+	if (fontSize > 12 and not fs.fontSize) then
+		fontSize, fontStyle = 12
+	end
 
 	fs:SetFont(font, fontSize, fontStyle)
-	if fontStyle and (fontStyle ~= "NONE") then
-		fs:SetShadowColor(0, 0, 0, 0.2)
-	else
+
+	if fontStyle == "NONE" then
+		local s = K.Mult or 1
+		fs:SetShadowOffset(s, -s / 2)
 		fs:SetShadowColor(0, 0, 0, 1)
-	end
-	fs:SetShadowOffset(1, -1)
-end
-
-local function FontString(parent, name, fontName, fontHeight, fontStyle)
-	local fs = parent:CreateFontString(nil, "OVERLAY")
-	fs:SetFont(fontName, fontHeight, fontStyle)
-	fs:SetJustifyH("LEFT")
-	fs:SetShadowColor(0, 0, 0)
-	fs:SetShadowOffset(1, -1)
-
-	if not name then
-		parent.Text = fs
 	else
-		parent[name] = fs
+		fs:SetShadowOffset(0, 0)
+		fs:SetShadowColor(0, 0, 0, 0)
 	end
-
-	return fs
 end
 
 local function StyleButton(button, noHover, noPushed, noChecked)
@@ -488,14 +476,6 @@ local function SkinCheckBox(f)
 	f.SetHighlightTexture = K.Noop
 end
 
-local function SetFadeIn(frame)
-	K.UIFrameFadeIn(frame, 0.4, frame:GetAlpha(), 1)
-end
-
-local function SetFadeOut(frame)
-	K.UIFrameFadeOut(frame, 0.2, frame:GetAlpha(), 0)
-end
-
 local function AddCustomAPI(object)
 	local MetaTable = getmetatable(object).__index
 
@@ -523,18 +503,6 @@ local function AddCustomAPI(object)
 		MetaTable.CreateInnerShadow = CreateInnerShadow
 	end
 
-	if not object.SetFadeIn then
-		MetaTable.SetFadeIn = SetFadeIn
-	end
-
-	if not object.SetFadeOut then
-		MetaTable.SetFadeOut = SetFadeOut
-	end
-
-	if not object.FontString then
-		MetaTable.FontString = FontString
-	end
-
 	if not object.FontTemplate then
 		MetaTable.FontTemplate = FontTemplate
 	end
@@ -549,6 +517,10 @@ local function AddCustomAPI(object)
 
 	if not object.StripTextures then
 		MetaTable.StripTextures = StripTextures
+	end
+
+	if not object.StripTexts then
+		MetaTable.StripTexts = StripTexts
 	end
 
 	if not object.StyleButton then

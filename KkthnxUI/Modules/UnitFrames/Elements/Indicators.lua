@@ -136,7 +136,7 @@ function Module:CreateDebuffHighlight()
 
 	self.DebuffHighlightAlpha = 0.45
 	self.DebuffHighlightFilter = true
-	self.DebuffHighlightFilterTable = Module.DebuffHighlightColors
+	self.DebuffHighlightFilterTable = K.DebuffHighlightColors
 end
 
 function Module:CreateGlobalCooldown()
@@ -272,63 +272,4 @@ function Module:CreateAddPower()
 	self.AdditionalPower.Text:SetPoint("CENTER", self.AdditionalPower, "CENTER", 0, 0)
 
 	self.AdditionalPower.PostUpdate = Module.PostUpdateAddPower
-end
-
--- Nameplate Indicators
-function Module:CreatePlateQuestIcons()
-	if C["Nameplates"].QuestIcon ~= true then
-		return
-	end
-
-	local size = C["Nameplates"].QuestIconSize
-
-	self.QuestIcons = CreateFrame("Frame", self:GetDebugName() .. "QuestIcons", self)
-	self.QuestIcons:Hide()
-	self.QuestIcons:SetSize(size + 4, size + 4)
-
-	for _, object in pairs({"Item", "Loot", "Skull", "Chat"}) do
-		self.QuestIcons[object] = self.QuestIcons:CreateTexture(nil, "BORDER", nil, 1)
-		self.QuestIcons[object]:SetPoint("CENTER")
-		self.QuestIcons[object]:SetSize(size, size)
-		self.QuestIcons[object]:Hide()
-	end
-
-	self.QuestIcons.Item:SetTexCoord(unpack(K.TexCoords))
-
-	self.QuestIcons.Skull:SetSize(size + 4, size + 4)
-
-	self.QuestIcons.Chat:SetSize(size + 4, size + 4)
-	self.QuestIcons.Chat:SetTexture([[Interface\WorldMap\ChatBubble_64.PNG]])
-	self.QuestIcons.Chat:SetTexCoord(0, 0.5, 0.5, 1)
-
-	self.QuestIcons.Text = self.QuestIcons:CreateFontString(nil, "OVERLAY")
-	self.QuestIcons.Text:SetPoint("BOTTOMLEFT", self.QuestIcons, "BOTTOMLEFT", -2, -0.8)
-	self.QuestIcons.Text:SetFont(C["Media"].Font, 11, "")
-	self.QuestIcons.Text:SetShadowOffset(1.2, -1.2)
-end
-
-function Module:CreatePlateHealerIcons()
-	if C["Nameplates"].MarkHealers ~= true then
-		return
-	end
-
-	self.HealerSpecs = self:CreateTexture(self:GetDebugName().."HealerSpecs", "OVERLAY")
-	self.HealerSpecs:SetSize(40, 40)
-	self.HealerSpecs:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Healer.tga]])
-	self.HealerSpecs:Hide()
-end
-
-function Module:CreatePlateTotemIcons()
-	if C["Nameplates"].Totems ~= true then
-		return
-	end
-
-	self.Totem = CreateFrame("Frame", nil, self)
-	self.Totem:SetSize((C["Nameplates"].Height * 2 * K.NoScaleMult) + 8, (C["Nameplates"].Height * 2 * K.NoScaleMult) + 8)
-	self.Totem:CreateShadow(true)
-	self.Totem:SetPoint("BOTTOM", self.Health, "TOP", 0, 38)
-	self.Totem:Hide()
-
-	self.Totem.Icon = self.Totem:CreateTexture(nil, "ARTWORK")
-	self.Totem.Icon:SetAllPoints()
 end

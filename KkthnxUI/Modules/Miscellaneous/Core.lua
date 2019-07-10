@@ -63,7 +63,7 @@ if C["General"].LagTolerance then
 	LatencyUpdate(customlag, 10)
 end
 
-if C["General"].AutoScale then
+--[[if C["General"].AutoScale then
 	local scaleBtn = CreateFrame("Button", "KkthnxUIScaleBtn", Advanced_, "UIPanelButtonTemplate")
 	scaleBtn:SetSize(200, 24)
 	scaleBtn:SetText(L["Miscellaneous"].KkthnxUI_Scale_Button)
@@ -86,7 +86,7 @@ if C["General"].AutoScale then
 			KkthnxUIConfigFrame:Show()
 		end
 	end)
-end
+end--]]
 
 -- Force readycheck warning
 local function ShowReadyCheckHook(_, initiator)
@@ -115,7 +115,7 @@ function Module:ForceOtherWarnings(event)
 	end
 end
 
--- Auto select current event boss from LFD tool(EventBossAutoSelect by Nathanyel)
+-- Auto select current event boss from LFD tool (EventBossAutoSelect by Nathanyel)
 local firstLFD
 LFDParentFrame:HookScript("OnShow", function()
 	if not firstLFD then
@@ -133,13 +133,14 @@ end)
 -- Repoint Vehicle
 function Module:VehicleSeatMover()
 	local frame = CreateFrame("Frame", "KkthnxUIVehicleSeatMover", UIParent)
-	frame:SetSize(125, 125)
-	K.Mover(frame, "VehicleSeat", "VehicleSeat", {"BOTTOM", UIParent, -304, 4})
+	frame:SetSize(120, 120)
+	K.Mover(frame, "VehicleSeat", "VehicleSeat", {"BOTTOM", UIParent, -364, 4})
 
 	hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(self, _, parent)
 		if parent == "MinimapCluster" or parent == MinimapCluster then
 			self:ClearAllPoints()
-			self:SetPoint("TOPLEFT", frame)
+			self:SetPoint("CENTER", frame)
+			self:SetScale(0.9)
 		end
 	end)
 end
@@ -175,16 +176,4 @@ function Module:OnEnable()
 	self:RegisterEvent("UI_ERROR_MESSAGE")
 
 	self:VehicleSeatMover()
-
-	-- Personal Shit.
-	if K.Name == "Kkthnx" and K.Realm == "Sethraliss" then
-		if FriendsTabHeaderTab2 then
-			FriendsTabHeaderTab2:Hide()
-		end
-
-		if FriendsTabHeaderTab3 then
-			FriendsTabHeaderTab3:ClearAllPoints()
-			FriendsTabHeaderTab3:SetPoint("LEFT", FriendsTabHeaderTab1, "RIGHT", 0, 0)
-		end
-	end
 end

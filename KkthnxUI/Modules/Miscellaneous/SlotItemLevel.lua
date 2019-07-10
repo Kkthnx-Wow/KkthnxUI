@@ -42,11 +42,11 @@ function Module:GetInspectPoints(id)
     end
 
 	if id <= 5 or (id == 9 or id == 15) then
-		return 40, 3, 18, "BOTTOMLEFT" -- Left side
+		return 34, 3, 18, "BOTTOMLEFT" -- Left side
 	elseif (id >= 6 and id <= 8) or (id >= 10 and id <= 14) then
-		return -40, 3, 18, "BOTTOMRIGHT" -- Right side
+		return -34, 3, 18, "BOTTOMRIGHT" -- Right side
 	else
-		return 0, 45, 60, "BOTTOM"
+		return 0, 40, 60, "BOTTOM"
 	end
 end
 
@@ -76,7 +76,7 @@ function Module:ClearPageInfo(frame, which)
 			inspectItem.enchantText:SetText()
             inspectItem.iLvlText:SetText()
 
-			for y=1, 10 do
+			for y = 1, 10 do
 				inspectItem["textureSlot"..y]:SetTexture()
 			end
 		end
@@ -210,14 +210,13 @@ function Module:CreateSlotStrings(frame, which)
     end
 
 	if which == "Inspect" then
-		frame.ItemLevelText = _G.InspectModelFrame:CreateFontString(nil, "ARTWORK")
-		frame.ItemLevelText:SetPoint("TOP", 0, -17)
+		frame.ItemLevelText = _G.InspectPaperDollItemsFrame:CreateFontString(nil, "ARTWORK")
+		frame.ItemLevelText:SetPoint("BOTTOMRIGHT", -11, 8)
 	else
 		frame.ItemLevelText = _G.CharacterStatsPane.ItemLevelFrame:CreateFontString(nil, "ARTWORK")
 		frame.ItemLevelText:SetPoint("BOTTOM", _G.CharacterStatsPane.ItemLevelFrame.Value, "BOTTOM", 0, -1)
 	end
 	frame.ItemLevelText:FontTemplate(nil, which == "Inspect" and 12 or 20)
-	frame.ItemLevelText:SetShadowOffset(1.25, -1.25)
 
 	for i, s in pairs(InspectItems) do
 		if i ~= 4 then
@@ -225,12 +224,10 @@ function Module:CreateSlotStrings(frame, which)
 			local x, y, z, justify = Module:GetInspectPoints(i)
 			slot.iLvlText = slot:CreateFontString(nil, "OVERLAY")
 			slot.iLvlText:FontTemplate(nil, 12)
-			slot.iLvlText:SetShadowOffset(1.25, -1.25)
 			slot.iLvlText:SetPoint("BOTTOM", slot, x, y)
 
 			slot.enchantText = slot:CreateFontString(nil, "OVERLAY")
 			slot.enchantText:FontTemplate(nil, 11)
-			slot.enchantText:SetShadowOffset(1.25, -1.25)
 
 			if i == 16 or i == 17 then
 				slot.enchantText:SetPoint(i == 16 and "BOTTOMRIGHT" or "BOTTOMLEFT", slot, i==16 and -40 or 40, 3)

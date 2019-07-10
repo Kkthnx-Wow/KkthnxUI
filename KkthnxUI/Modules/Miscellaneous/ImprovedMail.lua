@@ -257,22 +257,18 @@ function Module:InboxItem_OnEnter()
 end
 
 function Module:CreateMailBox()
-	--[[if not C["Misc"].ImprovedMail then
-	return
-end--]]
-
 	for i = 1, 7 do
 		local itemButton = _G["MailItem"..i.."Button"]
 		itemButton:SetScript("OnClick", Module.MailItem_OnClick)
 		Module.MailItem_AddDelete(itemButton, i)
 	end
 
-	button1 = Module:CreatButton(InboxFrame, "Collect All", 100, 22, "TOPLEFT", "InboxFrame", "TOPLEFT", 50, -35)
+	button1 = Module:CreatButton(InboxFrame, "Collect All", 100, 22, "TOPLEFT", "InboxFrame", "TOPLEFT", 82, -30)
 	button1:RegisterEvent("MAIL_CLOSED")
 	button1:SetScript("OnClick", Module.MailBox_OpenAll)
 	button1:SetScript("OnEvent", Module.MailBox_OnEvent)
 
-	button2 = Module:CreatButton(InboxFrame, "Collect Gold", 100, 22, "LEFT", button1, "RIGHT", 30, 0)
+	button2 = Module:CreatButton(InboxFrame, "Collect Gold", 100, 22, "TOPRIGHT", "InboxFrame", "TOPRIGHT", -82, -30)
 	button2:SetScript("OnClick", function()
 		takingOnlyCash = true
 		Module:MailBox_OpenAll()

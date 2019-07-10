@@ -5,6 +5,18 @@ local _G = _G
 local assert = assert
 
 local C_StorePublic_IsEnabled = _G.C_StorePublic.IsEnabled
+local CharacterMicroButton = _G.CharacterMicroButton
+local CreateFrame = _G.CreateFrame
+local GetCurrentRegionName = _G.GetCurrentRegionName
+local GuildMicroButton = _G.GuildMicroButton
+local GuildMicroButtonTabard = _G.GuildMicroButtonTabard
+local InCombatLockdown = _G.InCombatLockdown
+local MainMenuBarPerformanceBar = _G.MainMenuBarPerformanceBar
+local MainMenuMicroButton = _G.MainMenuMicroButton
+local MICRO_BUTTONS = _G.MICRO_BUTTONS
+local MicroButtonPortrait = _G.MicroButtonPortrait
+local RegisterStateDriver = _G.RegisterStateDriver
+local UIParent = _G.UIParent
 local UpdateMicroButtonsParent = _G.UpdateMicroButtonsParent
 
 local function onLeave()
@@ -36,6 +48,15 @@ local function onEnter()
 	end
 end
 
+function Module:PLAYER_REGEN_ENABLED()
+	if Module.NeedsUpdateMicroBarVisibility then
+		self:UpdateMicroBarVisibility()
+		Module.NeedsUpdateMicroBarVisibility = nil
+	end
+
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+end
+
 function Module:HandleMicroButton(button)
 	assert(button, "Invalid micro button name.")
 
@@ -45,7 +66,7 @@ function Module:HandleMicroButton(button)
 
 	local f = CreateFrame("Frame", nil, button)
 	K.CreateBorder(f)
-	f:SetOutside(button)
+	f:SetAllPoints(button)
 	button.backdrop = f
 
 	button:SetParent(KkthnxUI_MicroBar)
@@ -92,6 +113,21 @@ local __buttonIndex = {
 	[11] = "MainMenuMicroButton"
 }
 
+function Module:UpdateMicroBarVisibility()
+	if InCombatLockdown() then
+		Module.NeedsUpdateMicroBarVisibility = true
+		self:RegisterEvent("PLAYER_REGEN_ENABLED")
+		return
+	end
+
+	local visibility = "show"
+	if visibility and visibility:match("[\n\r]") then
+		visibility = visibility:gsub("[\n\r]","")
+	end
+
+	RegisterStateDriver(KkthnxUI_MicroBar.visibility, "visibility", (C["ActionBar"].MicroBar and visibility) or "hide")
+end
+
 function Module:UpdateMicroPositionDimensions()
 	if not KkthnxUI_MicroBar then
 		return
@@ -104,9 +140,6 @@ function Module:UpdateMicroPositionDimensions()
 
 	for i = 1, #MICRO_BUTTONS-1 do
 		local button = _G[__buttonIndex[i]] or _G[MICRO_BUTTONS[i]]
-		local lastColumnButton = i - 11
-		lastColumnButton = _G[__buttonIndex[lastColumnButton]] or _G[MICRO_BUTTONS[lastColumnButton]]
-
 		button:SetSize(20, 20 * 1.4)
 		button:ClearAllPoints()
 
@@ -128,6 +161,8 @@ function Module:UpdateMicroPositionDimensions()
 	Module.MicroWidth = (((_G["CharacterMicroButton"]:GetWidth() + spacing) * 11) - spacing) + (offset * 2)
 	Module.MicroHeight = (((_G["CharacterMicroButton"]:GetHeight() + spacing) * numRows) - spacing) + (offset * 2)
 	KkthnxUI_MicroBar:SetSize(Module.MicroWidth, Module.MicroHeight)
+
+	self:UpdateMicroBarVisibility()
 end
 
 function Module:UpdateMicroButtons()
@@ -155,6 +190,14 @@ function Module:OnEnable()
 	local microBar = CreateFrame("Frame", "KkthnxUI_MicroBar", UIParent)
 	microBar:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0)
 	microBar:EnableMouse(false)
+
+	microBar.visibility = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+	microBar.visibility:SetScript("OnShow", function()
+		microBar:Show()
+	end)
+	microBar.visibility:SetScript("OnHide", function()
+		microBar:Hide()
+	end)
 
 	for i = 1, #MICRO_BUTTONS do
 		self:HandleMicroButton(_G[MICRO_BUTTONS[i]])

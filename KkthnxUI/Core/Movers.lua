@@ -60,6 +60,11 @@ local MoverList, BackupTable, f = {}, {}
 function K:Mover(text, value, anchor, width, height)
 	local key = "Mover"
 
+	-- Wipe Old Settings With No Conflict.
+	if KkthnxUIData[GetRealmName()][UnitName("player")].Movers then
+		K.StaticPopup_Show("OLD_MOVERS_DATABASE_RL")
+	end
+
 	if not KkthnxUIData[GetRealmName()][UnitName("player")][key] then
 		KkthnxUIData[GetRealmName()][UnitName("player")][key] = {}
 	end

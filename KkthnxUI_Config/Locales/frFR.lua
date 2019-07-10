@@ -819,55 +819,33 @@ _G.KkthnxUIConfig["frFR"] = {
 			["Name"] = "Enable Auras",
 		},
 
-		["Font"] = {
-			["Name"] = "Font",
+		["BuffSize"] = {
+			["Name"] = "Buff Size",
 		},
 
-		["HorizontalSpacing"] = {
-			["Name"] = "Horizontal Spacing",
-			["Desc"] = "Horizontal spacing of auras",
+		["BuffsPerRow"] = {
+			["Name"] = "Buffs PerRow",
 		},
 
-		["MaxWraps"] = {
-			["Name"] = "Max Wraps",
-			["Desc"] = "Maximum number of times the auras will wrap",
+		["DebuffSize"] = {
+			["Name"] = "Debuff Size",
 		},
 
-		["SeperateOwn"] = {
-			["Name"] = "Seperate Own",
-			["Desc"] = "Indicate whether buffs you cast yourself should be separated before or after.",
+		["DebuffsPerRow"] = {
+			["Name"] = "Debuffs PerRow",
 		},
 
-		["Size"] = {
-			["Name"] = "Aura Size",
+		["Reminder"] = {
+			["Name"] = "Reminder",
+			["Desc"] = "This will display an annoying reminder to use class buffs, armor spells, shouts, aspects, blessings, and ect.",
 		},
 
-		["VerticalSpacing"] = {
-			["Name"] = "Vertical Spacing",
+		["ReverseBuffs"] = {
+			["Name"] = "Reverse Buffs",
 		},
 
-		["WrapAfter"] = {
-			["Name"] = "Wrap After",
-			["Desc"] = "Begin a new row or column after this many auras.",
-		},
-
-		["FadeThreshold"] = {
-			["Name"] = "Fade Threshold",
-		},
-
-		["GrowthDirection"] = {
-			["Name"] = "Growth Direction",
-			["Desc"] = MissingDesc,
-		},
-
-		["SortDir"] = {
-			["Name"] = "Sort Direction",
-			["Desc"] = "Defines the sort order of the selected sort method.",
-		},
-
-		["SortMethod"] = {
-			["Name"] = "Sort Method",
-			["Desc"] = "Defines how the group is sorted",
+		["ReverseDebuffs"] = {
+			["Name"] = "Reverse Debuffs",
 		},
 	},
 

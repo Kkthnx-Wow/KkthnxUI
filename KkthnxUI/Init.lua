@@ -101,14 +101,30 @@ AddOn.ScreenWidth = tonumber(string_match(AddOn.Resolution, "(%d+)x+%d"))
 AddOn.UIScale = math_min(2, math_max(0.01, 768 / string_match(AddOn.Resolution, "%d+x(%d+)")))
 AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
-AddOn.ClassColor = string_format("|cff%02x%02x%02x", AddOn.Color.r * 255, AddOn.Color.g * 255, AddOn.Color.b * 255)
+AddOn.MyClassColor = string_format("|cff%02x%02x%02x", AddOn.Color.r * 255, AddOn.Color.g * 255, AddOn.Color.b * 255)
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
 AddOn.Welcome = "|cff4488ffKkthnxUI "..AddOn.Version.." "..AddOn.Client.."|r - /helpui"
 AddOn.ScanTooltip = CreateFrame("GameTooltip", "KkthnxUI_ScanTooltip", _G.UIParent, "GameTooltipTemplate")
 AddOn.WowPatch, AddOn.WowBuild, AddOn.WowRelease, AddOn.TocVersion = GetBuildInfo()
 AddOn.WowBuild = tonumber(AddOn.WowBuild)
 AddOn.IsPTR = GetBuildInfo and AddOn.WowBuild >= 29634
+AddOn.InfoColor = "|cff4488ff"
 AddOn.CodeDebug = false -- Don't touch this, unless you know what you are doing?
+
+AddOn.ClassList = {}
+for k, v in pairs(LOCALIZED_CLASS_NAMES_MALE) do
+	AddOn.ClassList[v] = k
+end
+AddOn.ClassColors = {}
+local colors = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
+for class in pairs(colors) do
+	AddOn.ClassColors[class] = {}
+	AddOn.ClassColors[class].r = colors[class].r
+	AddOn.ClassColors[class].g = colors[class].g
+	AddOn.ClassColors[class].b = colors[class].b
+	AddOn.ClassColors[class].colorStr = colors[class].colorStr
+end
+AddOn.r, AddOn.g, AddOn.b = AddOn.ClassColors[AddOn.Class].r, AddOn.ClassColors[AddOn.Class].g, AddOn.ClassColors[AddOn.Class].b
 
 if (About) then
 	AddOn.optionsFrame = About.new(nil, AddOnName)

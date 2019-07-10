@@ -16,17 +16,37 @@ local UnitHasVehicleUI = _G.UnitHasVehicleUI
 local GetRuneCooldown = _G.GetRuneCooldown
 
 -- Post Update Runes
-local function PostUpdateRune(self, runemap)
-	local Bar = self
-	local RuneMap = runemap
+local function OnUpdateRunes(self, elapsed)
+	local duration = self.duration + elapsed
+	self.duration = duration
+	self:SetValue(duration)
 
-	for i, RuneID in next, RuneMap do
-		local IsReady = select(3, GetRuneCooldown(RuneID))
-
-		if IsReady then
-			Bar[i]:GetStatusBarTexture():SetAlpha(1.0)
+	if self.timer then
+		local remain = self.runeDuration - duration
+		if remain > 0 then
+			self.timer:SetText(K.FormatTime(remain))
 		else
-			Bar[i]:GetStatusBarTexture():SetAlpha(0.3)
+			self.timer:SetText(nil)
+		end
+	end
+end
+
+local function PostUpdateRunes(element, runemap)
+	for index, runeID in next, runemap do
+		local rune = element[index]
+		local start, duration, runeReady = GetRuneCooldown(runeID)
+		if rune:IsShown() then
+			if runeReady then
+				rune:SetAlpha(1)
+				rune:SetScript("OnUpdate", nil)
+				if rune.timer then
+					rune.timer:SetText(nil)
+				end
+			elseif start then
+				rune:SetAlpha(.6)
+				rune.runeDuration = duration
+				rune:SetScript("OnUpdate", OnUpdateRunes)
+			end
 		end
 	end
 end
@@ -105,18 +125,18 @@ end
 
 -- Post Update Classpower Texture
 local function UpdateClassPowerColor(element)
-	-- Fallback For The Rare Cases Where An Unknown Type Is Requested.
-	local r, g, b = 195/255, 202/255, 217/255
-
+	local r, g, b
 	if (not UnitHasVehicleUI("player")) then
 		if (K.Class == "MONK") then
 			r, g, b = 181/255 * 0.7, 255/255, 234/255 * 0.7
 		elseif (K.Class == "WARLOCK") then
 			r, g, b = 148/255, 130/255, 201/255
 		elseif (K.Class == "PALADIN") then
-			r, g, b = 245/255, 254/255, 145/255
+			r, g, b = 228/255, 225/255, 16/255
 		elseif (K.Class == "MAGE") then
-			r, g, b = 121/255, 152/255, 192/255
+			r, g, b = 0, 157/255, 1
+		else
+			r, g, b = 195/255, 202/255, 217/255
 		end
 	end
 
@@ -166,6 +186,10 @@ function Module:CreateRuneBar()
 		Rune:SetStatusBarTexture(ClassPowerTexture)
 		Rune:CreateBorder()
 
+		Rune.timer = Rune:CreateFontString(nil, "OVERLAY")
+		Rune.timer:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+		Rune.timer:SetPoint("CENTER", Rune, "CENTER", 0, 0)
+
 		if (index == 1) then
 			Rune:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -gap)
 		else
@@ -177,7 +201,7 @@ function Module:CreateRuneBar()
 
 	Runes.colorSpec = true
 	Runes.sortOrder = "asc"
-	Runes.PostUpdate = PostUpdateRune
+	Runes.PostUpdate = PostUpdateRunes
 
 	self.Runes = Runes
 end
@@ -208,7 +232,7 @@ function Module:CreateNamePlateClassPower()
 
 	for index = 1, 11 do
 		local Bar = CreateFrame("StatusBar", nil, ClassPower)
-		Bar:SetSize(C["Nameplates"].Width, C["Nameplates"].Height - 2)
+		Bar:SetSize(C["Nameplates"].Width, 10)
 		Bar:SetStatusBarTexture(ClassPowerTexture)
 		Bar:CreateShadow(true)
 
@@ -237,7 +261,7 @@ function Module:CreateNamePlateRuneBar()
 		local numRunes, maxWidth, gap = 6, C["Nameplates"].Width, 4
 		local width = ((maxWidth / numRunes) - (((numRunes-1) * gap) / numRunes))
 
-		Rune:SetSize(width, C["Nameplates"].Height - 2)
+		Rune:SetSize(width, 10)
 		Rune:SetStatusBarTexture(ClassPowerTexture)
 		Rune:CreateShadow(true)
 
@@ -250,9 +274,9 @@ function Module:CreateNamePlateRuneBar()
 		Runes[index] = Rune
 	end
 
-	Runes.colorSpec = true -- Color Runes By Spec
+	Runes.colorSpec = true
 	Runes.sortOrder = "asc"
-	Runes.PostUpdate = PostUpdateRune
+	Runes.PostUpdate = PostUpdateRunes
 
 	self.Runes = Runes
 end
@@ -260,15 +284,9 @@ end
 function Module:CreateNamePlateStaggerBar()
 	local stagger = CreateFrame("StatusBar", nil, self)
 	stagger:SetWidth(C["Nameplates"].Width)
-	stagger:SetHeight(C["Nameplates"].Height - 2)
+	stagger:SetHeight(10)
 	stagger:SetStatusBarTexture(ClassPowerTexture)
 	stagger:CreateShadow(true)
-
-	-- This is fucked atm.
-	--[[stagger.Value = stagger:CreateFontString(nil, "OVERLAY")
-	stagger.Value:SetFontObject(K.GetFont(C["Nameplates"].Font))
-	stagger.Value:SetPoint("CENTER", stagger, "CENTER", 0, 0)
-	self:Tag(stagger.Value, "[KkthnxUI:MonkStagger]")--]]
 
 	self.Stagger = stagger
 end

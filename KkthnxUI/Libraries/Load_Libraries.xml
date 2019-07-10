@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Load_Libraries -->
    <Script file="Ace3\LibStub\LibStub.lua" />
@@ -16,6 +15,6 @@
    <Include file="UTF8\UTF8.xml" />
    <Script file="Unfit-1.0\Unfit-1.0.lua" />
    <Script file="LibChatAnims\LibChatAnims.lua" />
-   <Script file="LibAnim-2.01\LibAnim-2.01.lua" />
+   <Script file="LibAnim\LibAnim.lua" />
    <Script file="LibAboutPanel\LibAboutPanel.lua" />
 </Ui>

@@ -161,10 +161,10 @@ function Module:UpdateSettings()
 	if MiniMapInstanceDifficulty and GuildInstanceDifficulty then
 		MiniMapInstanceDifficulty:ClearAllPoints()
 		MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
-		MiniMapInstanceDifficulty:SetScale(0.8)
+		MiniMapInstanceDifficulty:SetScale(0.9)
 		GuildInstanceDifficulty:ClearAllPoints()
 		GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
-		GuildInstanceDifficulty:SetScale(0.8)
+		GuildInstanceDifficulty:SetScale(0.9)
 	end
 
 	if MiniMapChallengeMode then
@@ -175,7 +175,7 @@ function Module:UpdateSettings()
 	if StreamingIcon then
 		StreamingIcon:ClearAllPoints()
 		StreamingIcon:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -10)
-		StreamingIcon:SetScale(0.8)
+		StreamingIcon:SetScale(0.9)
 		StreamingIcon:SetFrameStrata("BACKGROUND")
 	end
 
@@ -200,11 +200,42 @@ function Module:OnEvent(event)
 	end
 end
 
+function Module:WhoPingsMyMap()
+	local f = CreateFrame("Frame", nil, Minimap)
+	f:SetAllPoints()
+
+	f.text = f:CreateFontString(nil, "OVERLAY")
+	f.text:FontTemplate(nil, 13)
+	f.text:SetPoint("TOP", f, "TOP", 0, -20)
+
+	local anim = f:CreateAnimationGroup()
+	anim:SetScript("OnPlay", function() f:SetAlpha(1) end)
+	anim:SetScript("OnFinished", function() f:SetAlpha(0) end)
+	anim.fader = anim:CreateAnimation("Alpha")
+	anim.fader:SetFromAlpha(1)
+	anim.fader:SetToAlpha(0)
+	anim.fader:SetDuration(3)
+	anim.fader:SetSmoothing("OUT")
+	anim.fader:SetStartDelay(3)
+
+	K:RegisterEvent("MINIMAP_PING", function(_, unit)
+		local class = select(2, UnitClass(unit))
+		local r, g, b = K.ColorClass(class)
+		local name = GetUnitName(unit)
+
+		anim:Stop()
+		f.text:SetText(name)
+		f.text:SetTextColor(r, g, b)
+		anim:Play()
+	end)
+end
+
 function Module:OnEnable()
 	self:UpdateSettings()
 
 	if not C["Minimap"].Enable then
-		Minimap:SetMaskTexture("Textures\\MinimapMask")
+		Minimap:SetMaskTexture(186178)
+		Minimap:SetBlipTexture("Interface\\MiniMap\\ObjectIconsAtlas")
 		return
 	end
 
@@ -228,6 +259,7 @@ function Module:OnEnable()
 	Minimap:CreateBorder()
 	Minimap:CreateInnerShadow(nil, 0.4)
 	Minimap:SetScale(1.0)
+	Minimap:SetBlipTexture("Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\Blip-Nandini-New")
 
 	Minimap:HookScript("OnEnter", function(self)
 		if K.PerformanceFrame then
@@ -307,4 +339,5 @@ function Module:OnEnable()
 	self:RegisterEvent("ADDON_LOADED")
 
 	self:UpdateSettings()
+	self:WhoPingsMyMap()
 end

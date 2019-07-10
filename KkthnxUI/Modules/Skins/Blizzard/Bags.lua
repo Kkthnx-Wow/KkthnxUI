@@ -164,7 +164,7 @@ local function SkinBlizzardBags()
 		Token.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		Token:CreateBackdrop()
 		Token.Backdrop:SetFrameLevel(2)
-		Token.Backdrop:SetOutside(Token.icon)
+		Token.Backdrop:SetAllPoints(Token.icon)
 		Token.icon:SetPoint("LEFT", Token.count, "RIGHT", 3, 0)
 	end
 

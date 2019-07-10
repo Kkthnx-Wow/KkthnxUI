@@ -113,14 +113,6 @@ function Module:VendorGrays(delete)
 	Module.SellFrame:Show()
 end
 
-function Module:UI_ERROR_MESSAGE(_, messageType)
-	if messageType == LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY then
-		autoRepairStatus = "GUILD_REPAIR_FAILED"
-	elseif messageType == LE_GAME_ERR_NOT_ENOUGH_MONEY then
-		autoRepairStatus = "PLAYER_REPAIR_FAILED"
-	end
-end
-
 function Module:MERCHANT_CLOSED()
 	self:UnregisterEvent("UI_ERROR_MESSAGE")
 	self:UnregisterEvent("UPDATE_INVENTORY_DURABILITY")

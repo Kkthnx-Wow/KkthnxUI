@@ -2,13 +2,24 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Auras")
 
 local _G = _G
-local pairs, tinsert, next = pairs, table.insert, next
+local next = next
+local pairs = pairs
+local table_insert = table.insert
+local unpack = unpack
 
-local GetSpecialization, InCombatLockdown, GetZonePVPInfo, UnitInVehicle = _G.GetSpecialization, _G.InCombatLockdown, _G.GetZonePVPInfo, _G.UnitInVehicle
-local IsInInstance, IsPlayerSpell, UnitBuff, GetSpellTexture = _G.IsInInstance, _G.IsPlayerSpell, _G.UnitBuff, _G.GetSpellTexture
+local CreateFrame = _G.CreateFrame
+local GetSpecialization = _G.GetSpecialization
+local GetSpellTexture = _G.GetSpellTexture
+local GetZonePVPInfo = _G.GetZonePVPInfo
+local InCombatLockdown = _G.InCombatLockdown
+local IsInInstance = _G.IsInInstance
+local IsPlayerSpell = _G.IsPlayerSpell
+local UIParent = _G.UIParent
+local UnitBuff = _G.UnitBuff
+local UnitInVehicle = _G.UnitInVehicle
 
 local groups = K.ReminderBuffs[K.Class]
-local iconSize = 36
+local iconSize = C["Auras"].DebuffSize + 4
 local frames, parentFrame = {}
 function Module:Reminder_Update(cfg)
 	local frame = cfg.frame
@@ -16,9 +27,8 @@ function Module:Reminder_Update(cfg)
 	local spec = cfg.spec
 	local combat = cfg.combat
 	local instance = cfg.instance
-	local level = cfg.level
 	local pvp = cfg.pvp
-	local isPlayerSpell, isRightSpec, isRightLevel, isInCombat, isInInst, isInPVP = true, true, true
+	local isPlayerSpell, isRightSpec, isInCombat, isInInst, isInPVP = true, true
 	local inInst, instType = IsInInstance()
 
 	if depend and not IsPlayerSpell(depend) then
@@ -27,11 +37,6 @@ function Module:Reminder_Update(cfg)
 
 	if spec and spec ~= GetSpecialization() then
 		isRightSpec = false
-	end
-
-	if level and K.Level < level then
-		print("You are not the correct level to be notified about spell your spell")
-		isRightLevel = false
 	end
 
 	if combat and InCombatLockdown() then
@@ -51,7 +56,7 @@ function Module:Reminder_Update(cfg)
 	end
 
 	frame:Hide()
-	if isPlayerSpell and isRightSpec and isRightLevel and (isInCombat or isInInst or isInPVP) and not UnitInVehicle("player") then
+	if isPlayerSpell and isRightSpec and (isInCombat or isInInst or isInPVP) and not UnitInVehicle("player") then
 		for i = 1, 32 do
 			local name, _, _, _, _, _, _, _, _, spellID = UnitBuff("player", i)
 			if not name then
@@ -63,6 +68,7 @@ function Module:Reminder_Update(cfg)
 				return
 			end
 		end
+
 		frame:Show()
 	end
 end
@@ -74,7 +80,6 @@ function Module:Reminder_Create(cfg)
 	frame.Icon = frame:CreateTexture(nil, "ARTWORK")
 	frame.Icon:SetAllPoints()
 	frame.Icon:SetTexCoord(unpack(K.TexCoords))
-
 	frame:CreateBorder()
 
 	for spell in pairs(cfg.spells) do
@@ -83,25 +88,26 @@ function Module:Reminder_Create(cfg)
 	end
 
 	frame.text = frame:CreateFontString(nil, "OVERLAY")
-	frame.text:SetFont(C["Media"].Font, 12, "OUTLINE")
-	frame.text:SetText("??")
+	frame.text:SetFontObject(K.GetFont(C["UIFonts"].AuraFonts))
+	frame.text:SetText(_G.MISS)
 	frame.text:SetPoint("TOP", frame, "TOP", 1, 15)
 
 	frame:Hide()
 	cfg.frame = frame
 
-	tinsert(frames, frame)
+	table_insert(frames, frame)
 end
 
 function Module:Reminder_UpdateAnchor()
 	local index = 0
-	local offset = iconSize + 5
+	local offset = iconSize + 6
 	for _, frame in next, frames do
 		if frame:IsShown() then
 			frame:SetPoint("LEFT", offset * index, 0)
 			index = index + 1
 		end
 	end
+
 	parentFrame:SetWidth(offset * index)
 end
 
@@ -112,6 +118,7 @@ function Module:Reminder_OnEvent()
 		end
 		Module:Reminder_Update(cfg)
 	end
+
 	Module:Reminder_UpdateAnchor()
 end
 

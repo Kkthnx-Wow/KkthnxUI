@@ -3,21 +3,22 @@ if C["DataText"].Time ~= true then
 	return
 end
 
--- Lua API
 local _G = _G
 local date = _G.date
-local ipairs = ipairs
-local math_floor = math.floor
-local mod = mod
+local ipairs = _G.ipairs
+local math_floor = _G.math.floor
+local mod = _G.mod
 local next = _G.next
 local select = _G.select
-local string_format = string.format
-local string_join = string.join
-local string_utf8sub = string.utf8sub
-local table_sort, table_insert = table.sort, table.insert
+local string_format = _G.string.format
+local string_join = _G.string.join
+local string_utf8sub = _G.string.utf8sub
+local table_sort, table_insert = _G.table.sort, _G.table.insert
 local unpack = _G.unpack
+local pairs = _G.pairs
 
--- WoW APIr
+local C_AreaPoiInfo_GetAreaPOITimeLeft = _G.C_AreaPoiInfo.GetAreaPOITimeLeft
+local C_Map_GetMapInfo = _G.C_Map.GetMapInfo
 local DUNGEON_FLOOR_TEMPESTKEEP1 = _G.DUNGEON_FLOOR_TEMPESTKEEP1
 local EJ_GetCurrentTier = _G.EJ_GetCurrentTier
 local EJ_GetInstanceByIndex = _G.EJ_GetInstanceByIndex
@@ -44,12 +45,11 @@ local WINTERGRASP_IN_PROGRESS = _G.WINTERGRASP_IN_PROGRESS
 
 -- GLOBALS: GameTimeFrame
 
-local DataTextTime = CreateFrame("Frame")
-
 local NameColor = K.RGBToHex(K.Color.r, K.Color.g, K.Color.b)
 local ValueColor = K.RGBToHex(1, 1, 1)
 local DataTextTimeFont = K.GetFont(C["UIFonts"].DataTextFonts)
 
+local DataTextTime = CreateFrame("Frame")
 DataTextTime.Text = Minimap:CreateFontString(nil, "OVERLAY")
 DataTextTime.Text:SetFontObject(DataTextTimeFont)
 DataTextTime.Text:SetFont(select(1, DataTextTime.Text:GetFont()), 13, select(3, DataTextTime.Text:GetFont()))
@@ -68,7 +68,6 @@ local formatBattleGroundInfo = "%s: "
 local lockoutColorExtended, lockoutColorNormal = {r = 0.3, g = 1, b = 0.3}, {r = .8,g = .8,b = .8}
 local curHr, curMin, curAmPm
 local enteredFrame = false
-local Update
 local localizedName, isActive, startTime, canEnter, _
 
 local function ConvertTime(h, m)
@@ -129,9 +128,22 @@ local nhm = { -- Raid Finder, Normal, Heroic, Mythic
 }
 
 -- Check Invasion Status
+local region = _G.GetCVar("portal")
+local legionZoneTime = {
+	["CN"] = 1546844400, -- CN time 1/7/2019 15:00 [1]
+	["EU"] = 1546786800, -- CN-16
+	["US"] = 1546815600, -- CN-8
+}
+
+local bfaZoneTime = {
+	["CN"] = 1546743600, -- CN time 1/6/2019 11:00 [1]
+	["EU"] = 1546768800, -- CN+7
+	["US"] = 1546769340, -- CN+16
+}
+
 local invIndex = {
-	[1] = {title = "Legion Invasion", duration = 66600, maps = {630, 641, 650, 634}, timeTable = {4, 3, 2, 1, 4, 2, 3, 1, 2, 4, 1, 3}, baseTime = 1546844400}, -- 1/30 9:00 [1]
-	-- [2] = {title = "Battle for Azeroth Assault", duration = 68400, maps = {862, 863, 864, 896, 942, 895}, timeTable = {4, 1, 6, 2, 5, 3}, baseTime = 1546743600}, -- 12/13 17:00 [1]
+	[1] = {title = "Legion Invasion", duration = 66600, maps = {630, 641, 650, 634}, timeTable = {4, 3, 2, 1, 4, 2, 3, 1, 2, 4, 1, 3}, baseTime = legionZoneTime[region] or 1546844400}, -- 1/7/2019 15:00 [1]
+	[2] = {title = "BFA Invasion", duration = 68400, maps = {862, 863, 864, 896, 942, 895}, timeTable = {4, 1, 6, 2, 5, 3}, baseTime = bfaZoneTime[region] or 1546743600},
 }
 
 local mapAreaPoiIDs = {
@@ -147,16 +159,16 @@ local mapAreaPoiIDs = {
 	[895] = 5896,
 }
 
-local function GetInvasionTimeInfo(mapID)
+local function getInvasionInfo(mapID)
 	local areaPoiID = mapAreaPoiIDs[mapID]
-	local seconds = C_AreaPoiInfo.GetAreaPOITimeLeft(areaPoiID)
-	local mapInfo = C_Map.GetMapInfo(mapID)
+	local seconds = C_AreaPoiInfo_GetAreaPOITimeLeft(areaPoiID)
+	local mapInfo = C_Map_GetMapInfo(mapID)
 	return seconds, mapInfo.name
 end
 
 local function CheckInvasion(index)
 	for _, mapID in pairs(invIndex[index].maps) do
-		local timeLeft, name = GetInvasionTimeInfo(mapID)
+		local timeLeft, name = getInvasionInfo(mapID)
 		if timeLeft and timeLeft > 0 then
 			return timeLeft, name
 		end
@@ -164,7 +176,7 @@ local function CheckInvasion(index)
 end
 
 local function GetNextTime(baseTime, index)
-	local currentTime = time()
+	local currentTime = _G.time()
 	local duration = invIndex[index].duration
 	local elapsed = mod(currentTime - baseTime, duration)
 	return duration - elapsed + currentTime
@@ -175,21 +187,11 @@ local function GetNextLocation(nextTime, index)
 	local count = #inv.timeTable
 	local elapsed = nextTime - inv.baseTime
 	local round = mod(math_floor(elapsed / inv.duration) + 1, count)
-
 	if round == 0 then
 		round = count
 	end
 
-	return C_Map.GetMapInfo(inv.maps[inv.timeTable[round]]).name
-end
-
-local title
-local function addTitle(text)
-	if not title then
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(text..":")
-		title = true
-	end
+	return C_Map_GetMapInfo(inv.maps[inv.timeTable[round]]).name
 end
 
 local collectedInstanceImages = false
@@ -348,25 +350,21 @@ local function OnEnter(self)
 
 	-- Invasions
 	for index, value in ipairs(invIndex) do
-		title = false
-		addTitle(value.title)
+		local r, g, b
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(value.title..":")
 		local timeLeft, zoneName = CheckInvasion(index)
 		local nextTime = GetNextTime(value.baseTime, index)
 		if timeLeft then
-			local r, g, b
 			timeLeft = timeLeft / 60
 			if timeLeft < 60 then
 				r, g, b = 1, 0, 0
 			else
 				r, g, b = 0, 1, 0
 			end
-			GameTooltip:AddDoubleLine("|CFFFFFFFFCurrent|r ".. zoneName, string_format("%.2d:%.2d", timeLeft / 60, timeLeft % 60), lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b, 1, 1, 1, r, g, b)
+			GameTooltip:AddDoubleLine("Current "..zoneName, string_format("%.2d:%.2d", timeLeft / 60, timeLeft % 60), 1, 1, 1, r, g, b)
 		end
-		if C["DataText"].Time24Hr == true then
-			GameTooltip:AddDoubleLine("|CFFFFFFFFNext|r ".. GetNextLocation(nextTime, index), date("%m/%d %H:%M", nextTime), lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b, 1, 1, 1, 1, 1, 1)
-		elseif C["DataText"].LocalTime == true then
-			GameTooltip:AddDoubleLine("|CFFFFFFFFNext|r ".. GetNextLocation(nextTime, index), date("%m/%d %I:%M", nextTime), lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b, 1, 1, 1, 1, 1, 1)
-		end
+		GameTooltip:AddDoubleLine("Next "..GetNextLocation(nextTime, index), date("%m/%d %H:%M", nextTime), 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
 	end
 
 	GameTooltip:Show()

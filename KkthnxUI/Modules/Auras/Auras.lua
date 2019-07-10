@@ -8,8 +8,8 @@ local format, floor, strmatch, select, unpack = format, floor, strmatch, select,
 local DebuffTypeColor = _G.DebuffTypeColor
 local UnitAura, GetTime = _G.UnitAura, _G.GetTime
 local GetInventoryItemQuality, GetInventoryItemTexture, GetItemQualityColor, GetWeaponEnchantInfo = _G.GetInventoryItemQuality, _G.GetInventoryItemTexture, _G.GetItemQualityColor, _G.GetWeaponEnchantInfo
-local margin, offset, settings = 6, 12
 
+local margin, offset, settings = 6, 12
 function Module:OnEnable()
     -- Config
     settings = {

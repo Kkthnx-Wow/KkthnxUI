@@ -111,7 +111,7 @@ local function VendorGrayCheck()
 		K.Print("No gray items to delete.")
 	elseif not MerchantFrame or not MerchantFrame:IsShown() then
 		K.PopupDialogs["DELETE_GRAYS"].Money = value
-		K.StaticPopup_Show('DELETE_GRAYS')
+		K.StaticPopup_Show("DELETE_GRAYS")
 	else
 		ModuleVendor:VendorGrays()
 	end
@@ -134,8 +134,6 @@ local function Stuffing_OnShow()
 	Stuffing:Layout()
 	Stuffing:SearchReset()
 	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
-
-	collectgarbage("collect")
 end
 
 local function StuffingBank_OnHide()
@@ -613,7 +611,7 @@ function Stuffing:BagFrameSlotNew(p, slot)
 	if slot > 3 then
 		ret.slot = slot
 		slot = slot - 4
-		ret.frame = CreateFrame("ItemButton", "StuffingBBag" .. slot .. "Slot", p, "BankItemButtonBagTemplate")
+		ret.frame = CreateFrame("CheckButton", "StuffingBBag" .. slot .. "Slot", p, "BankItemButtonBagTemplate")
 		ret.frame:StripTextures()
 		ret.frame:SetID(slot)
 
@@ -1121,7 +1119,7 @@ function Stuffing:InitBags()
 	detail:SetPoint("RIGHT", f, -140, -10)
 	detail:SetShadowColor(0, 0, 0, 0)
 	detail:SetJustifyH("LEFT")
-	detail:SetText(K.ClassColor .. SEARCH)
+	detail:SetText(K.MyClassColor .. SEARCH)
 	editbox:SetAllPoints(detail)
 
 	local gold = CreateFrame("Button", nil, f)
@@ -1276,7 +1274,7 @@ function Stuffing:InitBags()
 		Token:SetParent(f)
 		Token:SetScale(1)
 		Token:CreateBackdrop()
-		Token.Backdrop:SetOutside(Icon)
+		Token.Backdrop:SetAllPoints(Icon)
 		Token.Backdrop:SetFrameLevel(6)
 		Token:SetFrameStrata("MEDIUM")
 		Token:SetFrameLevel(51)

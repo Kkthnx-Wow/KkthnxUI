@@ -1,50 +1,128 @@
 local K, C, L = unpack(select(2, ...))
-if C["WorldMap"].WorldMapPlus ~= true then
+local Module = K:NewModule("RevealMap")
+
+if not Module then
 	return
 end
 
 -- Sourced: Leatrix_Maps by Leatrix
 
-local _G = _G
-local ipairs = ipairs
-local math_ceil = math.ceil
-local mod = mod
-local pairs = pairs
-local string_split = string.split
-local table_insert = tinsert
-local tonumber = tonumber
-
-local C_Map_GetMapArtID = _G.C_Map.GetMapArtID
-local C_Map_GetMapArtLayers = _G.C_Map.GetMapArtLayers
-local C_MapExplorationInfo_GetExploredMapTextures = _G.C_MapExplorationInfo.GetExploredMapTextures
-local CreateFrame = _G.CreateFrame
-local GameLocale = _G.GetLocale()
-local GameTooltip = _G.GameTooltip
-local GetAchievementLink = _G.GetAchievementLink
-local GetQuestLink = _G.GetQuestLink
-local GetRealmName = _G.GetRealmName
-local GetSuperTrackedQuestID = _G.GetSuperTrackedQuestID
-local hooksecurefunc = _G.hooksecurefunc
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local UnitName = _G.UnitName
-
--- Create Table To Store Revealed Overlays And Info
-local overlayTextures = {}
+-- Function to refresh overlays (Blizzard_SharedMapDataProviders\MapExplorationDataProvider)
 local pATex, pHTex, pNTex = "TaxiNode_Continent_Alliance", "TaxiNode_Continent_Horde", "TaxiNode_Continent_Neutral"
+local overlayTextures, TileExists = {}, {}
+local strsplit, ceil, mod = string.split, math.ceil, mod
+local pairs, tonumber, tinsert = pairs, tonumber, table.insert
 
-do
-	-- Create Checkbox
-	local frame = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsCheckButtonTemplate")
-	frame:SetSize(24, 24)
-	frame:SetPoint("TOPRIGHT", -130, 0)
+local function MapExplorationPin_RefreshOverlays(pin, fullUpdate)
+	wipe(overlayTextures)
+	wipe(TileExists)
 
-	frame.f = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	frame.f:SetPoint("LEFT", 24, 0)
-	frame.f:SetText(L["Maps"].Reveal)
-	frame:SetHitRectInsets(0, 0 - frame.f:GetWidth(), 0, 0)
-	frame.f:Show()
+	local mapID = WorldMapFrame.mapID
+	if not mapID then
+		return
+	end
 
-	function frame.UpdateTooltip(self)
+	local artID = C_Map.GetMapArtID(mapID)
+	if not artID or not K.WorldMapPlusData[artID] then
+		return
+	end
+
+	local KkthnxUIMapsZone = K.WorldMapPlusData[artID]
+	local exploredMapTextures = C_MapExplorationInfo.GetExploredMapTextures(mapID)
+	if exploredMapTextures then
+		for _, exploredTextureInfo in ipairs(exploredMapTextures) do
+			local key = exploredTextureInfo.textureWidth..":"..exploredTextureInfo.textureHeight..":"..exploredTextureInfo.offsetX..":"..exploredTextureInfo.offsetY
+			TileExists[key] = true
+		end
+	end
+
+	pin.layerIndex = pin:GetMap():GetCanvasContainer():GetCurrentLayerIndex()
+	local layers = C_Map.GetMapArtLayers(mapID)
+	local layerInfo = layers and layers[pin.layerIndex]
+
+	if not layerInfo then
+		return
+	end
+
+	local TILE_SIZE_WIDTH = layerInfo.tileWidth
+	local TILE_SIZE_HEIGHT = layerInfo.tileHeight
+
+	-- Show textures if they are in database and have not been explored
+	for key, files in pairs(KkthnxUIMapsZone) do
+		if not TileExists[key] then
+			local width, height, offsetX, offsetY = strsplit(":", key)
+			local fileDataIDs = {strsplit(",", files)}
+			local numTexturesWide = ceil(width/TILE_SIZE_WIDTH)
+			local numTexturesTall = ceil(height/TILE_SIZE_HEIGHT)
+			local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight
+			for j = 1, numTexturesTall do
+				if (j < numTexturesTall) then
+					texturePixelHeight = TILE_SIZE_HEIGHT
+					textureFileHeight = TILE_SIZE_HEIGHT
+				else
+					texturePixelHeight = mod(height, TILE_SIZE_HEIGHT)
+					if (texturePixelHeight == 0) then
+						texturePixelHeight = TILE_SIZE_HEIGHT
+					end
+					textureFileHeight = 16
+					while(textureFileHeight < texturePixelHeight) do
+						textureFileHeight = textureFileHeight * 2
+					end
+				end
+				for k = 1, numTexturesWide do
+					local texture = pin.overlayTexturePool:Acquire()
+					if (k < numTexturesWide) then
+						texturePixelWidth = TILE_SIZE_WIDTH
+						textureFileWidth = TILE_SIZE_WIDTH
+					else
+						texturePixelWidth = mod(width, TILE_SIZE_WIDTH)
+						if (texturePixelWidth == 0) then
+							texturePixelWidth = TILE_SIZE_WIDTH
+						end
+						textureFileWidth = 16
+						while(textureFileWidth < texturePixelWidth) do
+							textureFileWidth = textureFileWidth * 2
+						end
+					end
+
+					texture:SetSize(texturePixelWidth, texturePixelHeight)
+					texture:SetTexCoord(0, texturePixelWidth/textureFileWidth, 0, texturePixelHeight/textureFileHeight)
+					texture:SetPoint("TOPLEFT", offsetX + (TILE_SIZE_WIDTH * (k-1)), -(offsetY + (TILE_SIZE_HEIGHT * (j - 1))))
+					texture:SetTexture(tonumber(fileDataIDs[((j - 1) * numTexturesWide) + k]), nil, nil, "TRILINEAR")
+					texture:SetDrawLayer("ARTWORK", -1)
+					if KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap then
+						texture:Show()
+						if fullUpdate then
+							pin.textureLoadGroup:AddTexture(texture)
+						end
+					else
+						texture:Hide()
+					end
+
+					tinsert(overlayTextures, texture)
+				end
+			end
+		end
+	end
+end
+
+function Module:CreateMapReveal()
+	local bu = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsCheckButtonTemplate")
+	bu:SetPoint("TOPRIGHT", -130, 0)
+	bu:SetSize(24, 24)
+	bu:SetChecked(KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap)
+
+	bu.text = bu:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	bu.text:SetPoint("LEFT", 24, 0)
+	bu.text:SetText(L["Maps"].Reveal)
+	bu:SetHitRectInsets(0, 0 - bu.text:GetWidth(), 0, 0)
+	bu.text:Show()
+
+	for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
+		hooksecurefunc(pin, "RefreshOverlays", MapExplorationPin_RefreshOverlays)
+	end
+
+	function bu.UpdateTooltip(self)
 		if (GameTooltip:IsForbidden()) then
 			return
 		end
@@ -66,7 +144,7 @@ do
 		GameTooltip:Show()
 	end
 
-	frame:HookScript("OnEnter", function(self)
+	bu:HookScript("OnEnter", function(self)
 		if (GameTooltip:IsForbidden()) then
 			return
 		end
@@ -74,7 +152,7 @@ do
 		self:UpdateTooltip()
 	end)
 
-	frame:HookScript("OnLeave", function()
+	bu:HookScript("OnLeave", function()
 		if (GameTooltip:IsForbidden()) then
 			return
 		end
@@ -82,166 +160,97 @@ do
 		GameTooltip:Hide()
 	end)
 
-	-- Handle Clicks
-	frame:SetScript("OnClick", function(self)
-		if frame:GetChecked() == true then
-			KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap = true
-			for i = 1, #overlayTextures do
-				overlayTextures[i]:Show()
-			end
-		else
-			KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap = false
-			for i = 1, #overlayTextures do
-				overlayTextures[i]:Hide()
-			end
-		end
+	bu:SetScript("OnClick", function(self)
+		KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap = self:GetChecked()
 
-		if (GameTooltip:IsForbidden()) then
-			return
-		end
-
-		if (GameTooltip:GetOwner() == self) then
-			self:UpdateTooltip()
+		for i = 1, #overlayTextures do
+			overlayTextures[i]:SetShown(KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap)
 		end
 	end)
+end
 
-	-- Set Checkbox State
-	frame:SetScript("OnShow", function()
-		if KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap == true then
-			frame:SetChecked(true)
-		else
-			frame:SetChecked(false)
-		end
-	end)
+function Module:CreateMapIcons()
+	-- Add Caverns of Time portal to Shattrath if reputation with Keepers of Time is revered or higher
+	local name, description, standingID = GetFactionInfoByID(989)
+	if standingID and standingID >= 7 then
+		-- Shattrath City]
+		K.WorldMapPlusPinData[111] = {{74.7, 31.4, "Caverns of Time", "Portal from Zephyr", pNTex},}
+	end
 
-	-- Function To Refresh Overlays (Blizzard_SharedMapDataProviders\MapExplorationDataProvider)
-	local function MapExplorationPin_RefreshOverlays(pin, fullUpdate)
-		overlayTextures = {}
-		local mapID = WorldMapFrame.mapID
+	local KkthnxUIMix = CreateFromMixins(MapCanvasDataProviderMixin)
 
-		if not mapID then
-			return
-		end
+	function KkthnxUIMix:RefreshAllData()
+		-- Remove all pins created by code
+		self:GetMap():RemoveAllPinsByTemplate("KkthnxUIMapsGlobalPinTemplate")
+		-- Make new pins
+		local pMapID = WorldMapFrame.mapID
+		if K.WorldMapPlusPinData[pMapID] then
+			local count = #K.WorldMapPlusPinData[pMapID]
+			for i = 1, count do
 
-		local artID = C_Map_GetMapArtID(mapID)
+				-- Do nothing if pinInfo has no entry for zone we are looking at
+				local pinInfo = K.WorldMapPlusPinData[pMapID][i]
+				if not pinInfo then return nil end
 
-		if not artID or not K.WorldMapPlusData[artID] then
-			return
-		end
-
-		-- Store Already Explored Tiles In A Table So They Can Be Ignored
-		local TileExists = {}
-		local exploredMapTextures = C_MapExplorationInfo_GetExploredMapTextures(mapID)
-
-		if exploredMapTextures then
-			for _, exploredTextureInfo in ipairs(exploredMapTextures) do
-				local key = exploredTextureInfo.textureWidth .. ":" .. exploredTextureInfo.textureHeight .. ":" .. exploredTextureInfo.offsetX .. ":" .. exploredTextureInfo.offsetY
-				TileExists[key] = true
-			end
-		end
-
-		-- Get The Sizes
-		pin.layerIndex = pin:GetMap():GetCanvasContainer():GetCurrentLayerIndex()
-		local layers = C_Map_GetMapArtLayers(mapID)
-		local layerInfo = layers and layers[pin.layerIndex]
-
-		if not layerInfo then
-			return
-		end
-
-		local TILE_SIZE_WIDTH = layerInfo.tileWidth
-		local TILE_SIZE_HEIGHT = layerInfo.tileHeight
-
-		-- Show Textures If They Are In Database And Have Not Been Explored
-		for key, files in pairs(K.WorldMapPlusData[artID]) do
-			if not TileExists[key] then
-				local width, height, offsetX, offsetY = string_split(":", key)
-				local fileDataIDs = {string_split(",", files)}
-				local numTexturesWide = math_ceil(width / TILE_SIZE_WIDTH)
-				local numTexturesTall = math_ceil(height / TILE_SIZE_HEIGHT)
-				local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight
-
-				for j = 1, numTexturesTall do
-					if (j < numTexturesTall) then
-						texturePixelHeight = TILE_SIZE_HEIGHT
-						textureFileHeight = TILE_SIZE_HEIGHT
-					else
-						texturePixelHeight = mod(height, TILE_SIZE_HEIGHT)
-						if (texturePixelHeight == 0) then
-							texturePixelHeight = TILE_SIZE_HEIGHT
-						end
-						textureFileHeight = 16
-						while (textureFileHeight < texturePixelHeight) do
-							textureFileHeight = textureFileHeight * 2
-						end
-					end
-
-					for k = 1, numTexturesWide do
-						local texture = pin.overlayTexturePool:Acquire()
-						if (k < numTexturesWide) then
-							texturePixelWidth = TILE_SIZE_WIDTH
-							textureFileWidth = TILE_SIZE_WIDTH
-						else
-							texturePixelWidth = mod(width, TILE_SIZE_WIDTH)
-							if (texturePixelWidth == 0) then
-								texturePixelWidth = TILE_SIZE_WIDTH
-							end
-							textureFileWidth = 16
-							while(textureFileWidth < texturePixelWidth) do
-								textureFileWidth = textureFileWidth * 2
-							end
-						end
-
-						texture:SetSize(texturePixelWidth, texturePixelHeight)
-						texture:SetTexCoord(0, texturePixelWidth / textureFileWidth, 0, texturePixelHeight / textureFileHeight)
-						texture:SetPoint("TOPLEFT", offsetX + (TILE_SIZE_WIDTH * (k - 1)), -(offsetY + (TILE_SIZE_HEIGHT * (j - 1))))
-						texture:SetTexture(tonumber(fileDataIDs[((j - 1) * numTexturesWide) + k]), nil, nil, "TRILINEAR")
-						texture:SetDrawLayer("ARTWORK", -1)
-
-						if KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap == true then
-							texture:Show()
-
-							if fullUpdate then
-								pin.textureLoadGroup:AddTexture(texture)
-							end
-						else
-							texture:Hide()
-						end
-
-						table_insert(overlayTextures, texture)
+				-- Get POI if any quest requirements have been met
+				if not pinInfo[6] or pinInfo[6] and not pinInfo[7] and IsQuestFlaggedCompleted(pinInfo[6]) or pinInfo[6] and pinInfo[7] and IsQuestFlaggedCompleted(pinInfo[6]) and not IsQuestFlaggedCompleted(pinInfo[7]) then
+					if K.Faction == "Alliance" and pinInfo[5] ~= pHTex or K.Faction == "Horde" and pinInfo[5] ~= pATex then
+						local myPOI = {}
+						myPOI["position"] = CreateVector2D(pinInfo[1] / 100, pinInfo[2] / 100)
+						myPOI["name"] = pinInfo[3]
+						myPOI["description"] = pinInfo[4]
+						myPOI["atlasName"] = pinInfo[5]
+						self:GetMap():AcquirePin("KkthnxUIMapsGlobalPinTemplate", myPOI)
 					end
 				end
 			end
 		end
 	end
 
-	-- Show Overlays On Startup
-	for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
-		hooksecurefunc(pin, "RefreshOverlays", MapExplorationPin_RefreshOverlays)
+	KkthnxUIMapsGlobalPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_DUNGEON_ENTRANCE")
+
+	function KkthnxUIMapsGlobalPinMixin:OnAcquired(myInfo)
+		BaseMapPoiPinMixin.OnAcquired(self, myInfo)
 	end
 
-	-- WorldMapPlus WowHeadLinks
-	-- Get Localised Wowhead URL
-	local wowheadLoc
+	WorldMapFrame:AddDataProvider(KkthnxUIMix)
+
+	-- Refresh it
+	KkthnxUIMix:RefreshAllData()
+end
+
+function Module:CreateMapLinks()
+	local urlQuestIcon = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:0:0:0:0|t]]
+	-- Get localised Wowhead URL
+	local wowheadLoc = " "
 	if GameLocale == "deDE" then
 		wowheadLoc = "de.wowhead.com"
-	elseif GameLocale == "esMX" then wowheadLoc = "es.wowhead.com"
-	elseif GameLocale == "esES" then wowheadLoc = "es.wowhead.com"
-	elseif GameLocale == "frFR" then wowheadLoc = "fr.wowhead.com"
-	elseif GameLocale == "itIT" then wowheadLoc = "it.wowhead.com"
-	elseif GameLocale == "ptBR" then wowheadLoc = "pt.wowhead.com"
-	elseif GameLocale == "ruRU" then wowheadLoc = "ru.wowhead.com"
-	elseif GameLocale == "koKR" then wowheadLoc = "ko.wowhead.com"
-	elseif GameLocale == "zhCN" then wowheadLoc = "cn.wowhead.com"
-	elseif GameLocale == "zhTW" then wowheadLoc = "cn.wowhead.com"
+	elseif GameLocale == "esMX" then
+		wowheadLoc = "es.wowhead.com"
+	elseif GameLocale == "esES" then
+		wowheadLoc = "es.wowhead.com"
+	elseif GameLocale == "frFR" then
+		wowheadLoc = "fr.wowhead.com"
+	elseif GameLocale == "itIT" then
+		wowheadLoc = "it.wowhead.com"
+	elseif GameLocale == "ptBR" then
+		wowheadLoc = "pt.wowhead.com"
+	elseif GameLocale == "ruRU" then
+		wowheadLoc = "ru.wowhead.com"
+	elseif GameLocale == "koKR" then
+		wowheadLoc = "ko.wowhead.com"
+	elseif GameLocale == "zhCN" then
+		wowheadLoc = "cn.wowhead.com"
+	elseif GameLocale == "zhTW" then
+		wowheadLoc = "cn.wowhead.com"
 	else
 		wowheadLoc = "wowhead.com"
 	end
 
-	-- Achievements Frame
-	-- Achievement Link Function
+	-- Achievements frame
+	-- Achievement link function
 	local function DoWowheadAchievementFunc()
-		-- Create Editbox
+		-- Create editbox
 		local aEB = CreateFrame("EditBox", nil, AchievementFrame)
 		aEB:ClearAllPoints()
 		aEB:SetPoint("BOTTOMRIGHT", -50, 1)
@@ -261,83 +270,69 @@ do
 			end
 		end)
 
-		-- Create Hidden Font String (used For Setting Width Of Editbox)
-		aEB.z = aEB:CreateFontString(nil, 'ARTWORK', 'GameFontNormalSmall')
+		-- Create hidden font string (used for setting width of editbox)
+		aEB.z = aEB:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
 		aEB.z:Hide()
 
-		-- Store Last Link In Case Editbox Is Cleared
+		-- Store last link in case editbox is cleared
 		local lastAchievementLink
-
-		-- Function To Set Editbox Value
+		-- Function to set editbox value
 		hooksecurefunc("AchievementFrameAchievements_SelectButton", function(self)
 			local achievementID = self.id or nil
 			if achievementID then
-				-- Set Editbox Text
-				aEB:SetText("https://" .. wowheadLoc .. "/achievement=" .. achievementID)
+				-- Set editbox text
+				aEB:SetText(urlQuestIcon.."https://" .. wowheadLoc .. "/achievement=" .. achievementID)
 				lastAchievementLink = aEB:GetText()
-				-- Set Hidden Fontstring Then Resize Editbox To Match
+				-- Set hidden fontstring then resize editbox to match
 				aEB.z:SetText(aEB:GetText())
 				aEB:SetWidth(aEB.z:GetStringWidth() + 90)
-				-- Get Achievement Title For Tooltip
+				-- Get achievement title for tooltip
 				local achievementLink = GetAchievementLink(self.id)
 				if achievementLink then
-					aEB.tiptext = achievementLink:match("%[(.-)%]")
+					aEB.tiptext = achievementLink:match("%[(.-)%]") .. "|n" .. L["Maps"].PressToCopy
 				end
-				-- Show The Editbox
+				-- Show the editbox
 				aEB:Show()
 			end
 		end)
 
-		local r, g, b = 0.2, 1.0, 0.2
-
-		-- Create Tooltip
+		-- Create tooltip
 		aEB:HookScript("OnEnter", function()
 			aEB:HighlightText()
 			aEB:SetFocus()
-
-			if GameTooltip:IsForbidden() then
-				return
-			end
-
 			GameTooltip:SetOwner(aEB, "ANCHOR_TOP", 0, 10)
-			GameTooltip:AddLine(aEB.tiptext)
-			GameTooltip:AddLine(L["Maps"].PressToCopy, r, g, b)
-
+			GameTooltip:SetText(aEB.tiptext, nil, nil, nil, nil, true)
 			GameTooltip:Show()
 		end)
 
 		aEB:HookScript("OnLeave", function()
-			-- Set Link Text Again If It's Changed Since It Was Set
+			-- Set link text again if it"s changed since it was set
 			if aEB:GetText() ~= lastAchievementLink then
 				aEB:SetText(lastAchievementLink)
 			end
 
 			aEB:HighlightText(0, 0)
 			aEB:ClearFocus()
-
-			if GameTooltip:IsForbidden() then
-				return
-			end
-
 			GameTooltip:Hide()
 		end)
 
-		-- Hide Editbox When Achievement Is Deselected
-		hooksecurefunc("AchievementFrameAchievements_ClearSelection", function()
+		-- Hide editbox when achievement is deselected
+		hooksecurefunc("AchievementFrameAchievements_ClearSelection", function(self)
 			aEB:Hide()
 		end)
-		hooksecurefunc("AchievementCategoryButton_OnClick", function()
+
+		hooksecurefunc("AchievementCategoryButton_OnClick", function(self)
 			aEB:Hide()
 		end)
 	end
 
-	-- Run Function When Achievement Ui Is Loaded
+	-- Run function when achievement UI is loaded
 	if IsAddOnLoaded("Blizzard_AchievementUI") then
 		DoWowheadAchievementFunc()
 	else
 		local waitAchievementsFrame = CreateFrame("FRAME")
 		waitAchievementsFrame:RegisterEvent("ADDON_LOADED")
-		waitAchievementsFrame:SetScript("OnEvent", function(_, _, arg1)
+		waitAchievementsFrame:SetScript("OnEvent", function(self, event, arg1)
 			if arg1 == "Blizzard_AchievementUI" then
 				DoWowheadAchievementFunc()
 				waitAchievementsFrame:UnregisterAllEvents()
@@ -345,11 +340,10 @@ do
 		end)
 	end
 
-	-- World Map Frame
-	-- Hide The Title Text
+	-- World map frame
+	-- Hide the title text
 	WorldMapFrameTitleText:Hide()
-
-	-- Create Editbox
+	-- Create editbox
 	local mEB = CreateFrame("EditBox", nil, WorldMapFrame.BorderFrame)
 	mEB:ClearAllPoints()
 	mEB:SetPoint("TOPLEFT", 100, -4)
@@ -368,126 +362,77 @@ do
 		end
 	end)
 
-	-- Create Hidden Font String (used For Setting Width Of Editbox)
-	mEB.z = mEB:CreateFontString(nil, 'ARTWORK', 'GameFontNormal')
+	-- Create hidden font string (used for setting width of editbox)
+	mEB.z = mEB:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 	mEB.z:Hide()
 
-	-- Function To Set Editbox Value
+	-- Function to set editbox value
 	local function SetQuestInBox()
 		local questID
 		if QuestMapFrame.DetailsFrame:IsShown() then
-			-- Get Quest Id From Currently Showing Quest In Details Panel
+			-- Get quest ID from currently showing quest in details panel
 			questID = QuestMapFrame_GetDetailQuestID()
 		else
-			-- Get Quest Id From Currently Selected Quest On World Map
+			-- Get quest ID from currently selected quest on world map
 			questID = GetSuperTrackedQuestID()
 		end
 		if questID then
-			-- Hide Editbox If Quest Id Is Invalid
-			if questID == 0 then mEB:Hide() else mEB:Show() end
+			-- Hide editbox if quest ID is invalid
+			if questID == 0 then
+				mEB:Hide()
+			else
+				mEB:Show()
+			end
 			-- Set editbox text
-			mEB:SetText("https://" .. wowheadLoc .. "/quest=" .. questID)
-			-- Set Hidden Fontstring Then Resize Editbox To Match
+			mEB:SetText(urlQuestIcon.."https://" .. wowheadLoc .. "/quest=" .. questID)
+			-- Set hidden fontstring then resize editbox to match
 			mEB.z:SetText(mEB:GetText())
 			mEB:SetWidth(mEB.z:GetStringWidth() + 90)
-			-- Get Quest Title For Tooltip
+			-- Get quest title for tooltip
 			local questLink = GetQuestLink(questID) or nil
 			if questLink then
-				mEB.tiptext = questLink:match("%[(.-)%]")
+				mEB.tiptext = questLink:match("%[(.-)%]") .. "|n" .. L["Maps"].PressToCopy
 			else
 				mEB.tiptext = ""
-				if mEB:IsMouseOver() and WorldMapTooltip:IsShown() then
-					WorldMapTooltip:Hide()
+				if mEB:IsMouseOver() and GameTooltip:IsShown() then
+					GameTooltip:Hide()
 				end
 			end
 		end
 	end
 
-	-- Set Url When Super Tracked Quest Changes And On Startup
+	-- Set URL when super tracked quest changes and on startup
 	mEB:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED")
 	mEB:SetScript("OnEvent", SetQuestInBox)
 	SetQuestInBox()
 
-	-- Set Url When Quest Details Frame Is Shown Or Hidden
+	-- Set URL when quest details frame is shown or hidden
 	hooksecurefunc("QuestMapFrame_ShowQuestDetails", SetQuestInBox)
 	hooksecurefunc("QuestMapFrame_CloseQuestDetails", SetQuestInBox)
 
-	local r, g, b = 0.2, 1.0, 0.2
-
-	-- Create Tooltip
+	-- Create tooltip
 	mEB:HookScript("OnEnter", function()
 		mEB:HighlightText()
 		mEB:SetFocus()
-		WorldMapTooltip:SetOwner(mEB, "ANCHOR_BOTTOM", 0, -10)
-		WorldMapTooltip:AddLine(mEB.tiptext)
-		WorldMapTooltip:AddLine(L["Maps"].PressToCopy, r, g, b)
-
-		if GameTooltip:IsForbidden() then
-			return
-		end
-
-		WorldMapTooltip:Show()
+		GameTooltip:SetOwner(mEB, "ANCHOR_BOTTOM", 0, -10)
+		GameTooltip:SetText(mEB.tiptext, nil, nil, nil, nil, true)
+		GameTooltip:Show()
 	end)
 
 	mEB:HookScript("OnLeave", function()
 		mEB:HighlightText(0, 0)
 		mEB:ClearFocus()
-
-		if not GameTooltip:IsForbidden() then
-			WorldMapTooltip:Hide()
-		end
-
+		GameTooltip:Hide()
 		SetQuestInBox()
 	end)
 end
 
-do
-	-- Show Old Dungeon And Raid Location Icons.
-	-- Add Caverns of Time portal to Shattrath if reputation with Keepers of Time is revered or higher
-	local _, _, standingID = GetFactionInfoByID(989)
-	if standingID and standingID >= 7 then
-		-- Shattrath City
-		K.WorldMapPlusPinData[111] = {{74.7, 31.4, "Caverns of Time", "Portal from Zephyr", pNTex},}
+function Module:OnEnable()
+	if C["WorldMap"].WorldMapPlus ~= true then
+		return
 	end
 
-	-- Get player faction (used to prevent opposite faction portals from showing)
-	local playerFaction = UnitFactionGroup("player")
-	local KkthnxUIMix = CreateFromMixins(MapCanvasDataProviderMixin)
-
-	function KkthnxUIMix:RefreshAllData()
-		-- Remove all pins created by KkthnxUItrix Maps
-		self:GetMap():RemoveAllPinsByTemplate("KkthnxUIMapsGlobalPinTemplate")
-
-		-- Make new pins
-		local pMapID = WorldMapFrame.mapID
-		if K.WorldMapPlusPinData[pMapID] then
-			local count = #K.WorldMapPlusPinData[pMapID]
-			for i = 1, count do
-
-				-- Do nothing if pinInfo has no entry for zone we are looking at
-				local pinInfo = K.WorldMapPlusPinData[pMapID][i]
-				if not pinInfo then return nil end
-
-				-- Get POI if any quest requirements have been met
-				if not pinInfo[6] or pinInfo[6] and not pinInfo[7] and IsQuestFlaggedCompleted(pinInfo[6]) or pinInfo[6] and pinInfo[7] and IsQuestFlaggedCompleted(pinInfo[6]) and not IsQuestFlaggedCompleted(pinInfo[7]) then
-					if playerFaction == "Alliance" and pinInfo[5] ~= pHTex or playerFaction == "Horde" and pinInfo[5] ~= pATex then
-						local myPOI = {}
-						myPOI["position"] = CreateVector2D(pinInfo[1] / 100, pinInfo[2] / 100)
-						myPOI["name"] = pinInfo[3]
-						myPOI["description"] = pinInfo[4]
-						myPOI["atlasName"] = pinInfo[5]
-						self:GetMap():AcquirePin("KkthnxUIMapsGlobalPinTemplate", myPOI)
-					end
-				end
-			end
-		end
-	end
-
-	KkthnxUIMapsGlobalPinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_DUNGEON_ENTRANCE")
-
-	function KkthnxUIMapsGlobalPinMixin:OnAcquired(myInfo)
-		BaseMapPoiPinMixin.OnAcquired(self, myInfo)
-	end
-
-	WorldMapFrame:AddDataProvider(CreateFromMixins(KkthnxUIMix))
+	self:CreateMapReveal()
+	self:CreateMapIcons()
+	self:CreateMapLinks()
 end

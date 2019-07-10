@@ -11,13 +11,6 @@ end
 
 local _G = _G
 
-local GetItemClassInfo = _G.GetItemClassInfo
-local GetItemSubClassInfo = _G.GetItemSubClassInfo
-local LE_ITEM_CLASS_ITEM_ENHANCEMENT = _G.LE_ITEM_CLASS_ITEM_ENHANCEMENT
-local LE_ITEM_CLASS_MISCELLANEOUS = _G.LE_ITEM_CLASS_MISCELLANEOUS
-local LE_ITEM_CLASS_QUESTITEM = _G.LE_ITEM_CLASS_QUESTITEM
-local LE_ITEM_CLASS_TRADEGOODS = _G.LE_ITEM_CLASS_TRADEGOODS
-
 -- Install Localization
 L["Install"] = {
 	Chat_Set = "Chat Set",
@@ -152,42 +145,19 @@ L["Blizzard"] = {
 
 -- Chat Localization
 L["Chat"] = {
-	AFK = "",
-	DND = "",
+	AFK = "AFK",
+	DND = "DND",
 	Invaild_Target = "Invaild Target",
 	-- Channel Names
-	Conversation = "Conversation",
 	General = "General",
 	LocalDefense = "LocalDefense",
 	LookingForGroup = "LookingForGroup",
 	Trade = "Trade",
 	WorldDefense = "WorldDefense",
-	-- Short Channel Names
-	S_Conversation = "C",
-	S_General = "G",
-	S_Guild = "g",
-	S_InstanceChat = "i",
-	S_InstanceChatLeader = "I",
-	S_LocalDefense = "LD",
-	S_LookingForGroup = "LFG",
-	S_Officer = "o",
-	S_Party = "p",
-	S_PartyGuide = "PG",
-	S_PartyLeader = "PL",
-	S_Raid = "r",
-	S_RaidLeader = "R",
-	S_RaidWarning = "W",
-	S_Say = "s",
-	S_Trade = "T",
-	S_WhisperIncoming = "w",
-	S_WhisperOutgoing = "@",
-	S_WorldDefense = "WD",
-	S_Yell = "y",
 }
 
 -- Configbutton Localization
 L["ConfigButton"] = {
-	ActionbarLock = "Actionbar Lock",
 	Changelog = "Changelog",
 	CopyChat = "Copy chat",
 	Emotions = "Emotions",
@@ -267,7 +237,6 @@ L["Inventory"] = {
 	Shift_Move = "Hold Shift + Drag",
 	Show_Bags = "Toggle Bags",
 	SoldTrash = "Vendored gray items for: ",
-	TrashList = "|n|nTrash List:|n",
 	VendorGrays = "Vendoring Grays",
 }
 
@@ -285,7 +254,7 @@ L["Maps"] = {
 	PressToCopy = "|nPress <CTRL/C> to copy.",
 	Reveal = "Reveal",
 	RevealHidden = "Reveal Hidden Areas",
-	Spotted = "spotted! ",
+	RareFound = "Rare nearby! ",
 	TomTom = "Enable AddOn TomTom for this feature. You can download it from Curse",
 }
 
@@ -295,11 +264,6 @@ L["Miscellaneous"] = {
 	Copper_Short = "|cffeda55fc|r",
 	Gold_Short = "|cffffd700g|r",
 	KkthnxUI_Scale_Button = "KkthnxUI Scale Config",
-	Mail_Complete = "All done.",
-	Mail_Messages = "messages",
-	Mail_Need = "Need a mailbox.",
-	Mail_Stopped = "Stopped, inventory is full.",
-	Mail_Unique = "Stopped. Found a duplicate unique item in bag or in bank.",
 	Repair = "Warning! You need to do a repair of your equipment as soon as possible!",
 	Silver_Short = "|cffc7c7cfs|r",
 	UIOutdated = "Your version of KkthnxUI v"..K.Version.." is out of date.",
@@ -336,12 +300,8 @@ L["Skins"] = {
 -- Tooltip Localization
 L["Tooltip"] = {
 	Bank = "Bank",
-	Companion_Pets = GetItemSubClassInfo(LE_ITEM_CLASS_MISCELLANEOUS, 2),
 	Count = "Count",
-	Item_Enhancement = GetItemClassInfo(LE_ITEM_CLASS_ITEM_ENHANCEMENT),
-	Other = GetItemSubClassInfo(LE_ITEM_CLASS_MISCELLANEOUS, 4),
-	Quest = GetItemClassInfo(LE_ITEM_CLASS_QUESTITEM),
-	Tradeskill = GetItemClassInfo(LE_ITEM_CLASS_TRADEGOODS),
+	TargetedBy = "Targeted By:",
 }
 
 -- UnitFrames Localization

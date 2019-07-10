@@ -127,8 +127,8 @@ function Module:CreateRaid()
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 3, -15)
-	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", -3, -15)
+	self.Name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 3, -15)
+	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, -15)
 	self.Name:SetFontObject(RaidframeFont)
 	self.Name:SetWordWrap(false)
 	if C["Raid"].ShowRolePrefix then
@@ -142,10 +142,8 @@ function Module:CreateRaid()
 	self.Overlay:SetFrameLevel(self:GetFrameLevel() + 4)
 
 	self.ReadyCheckIndicator = self.Overlay:CreateTexture(nil, "OVERLAY", 2)
-	self.ReadyCheckIndicator:SetSize(self:GetHeight() - 4, self:GetHeight() - 4)
+	self.ReadyCheckIndicator:SetSize(22, 22)
 	self.ReadyCheckIndicator:SetPoint("CENTER")
-	self.ReadyCheckIndicator.finishedTime = 5
-	self.ReadyCheckIndicator.fadeTime = 3
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetSize(16, 16)

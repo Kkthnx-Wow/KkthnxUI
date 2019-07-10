@@ -1,6 +1,10 @@
 local K, C = unpack(select(2, ...))
 local Module = K:NewModule("BlizzBugFixes", "AceEvent-3.0", "AceHook-3.0")
 
+if not Module then
+	return
+end
+
 local _G = _G
 local pairs = pairs
 local string_match = string.match
@@ -49,8 +53,8 @@ GameTooltip:HookScript("OnTooltipCleared", function(self)
 	end
 end)
 
--- Garbage collection is being overused and misused,
--- and it's causing lag and performance drops.
+-- Garbage Collection Is Being Overused And Misused,
+-- And It's Causing Lag And Performance Drops.
 if C["General"].FixGarbageCollect then
 	blizzardCollectgarbage("setpause", 110)
 	blizzardCollectgarbage("setstepmul", 200)
@@ -78,13 +82,13 @@ if C["General"].FixGarbageCollect then
 		end
 	end
 
-	-- Memory usage is unrelated to performance, and tracking memory usage does not track "bad" addons.
-	-- Developers can uncomment this line to enable the functionality when looking for memory leaks,
-	-- but for the average end-user this is a completely pointless thing to track.
+	-- Memory Usage Is Unrelated To Performance, And Tracking Memory Usage Does Not Track "BAD" Addons.
+	-- Developers Can Uncomment This Line To Enable The Functionality When Looking For Memory Leaks,
+	-- But For The Average End-user This Is A Completely Pointless Thing To Track.
 	_G.UpdateAddOnMemoryUsage = function() end
 end
 
--- Misclicks for some popups
+-- Misclicks For Some Popups
 function Module:MisclickPopups()
 	StaticPopupDialogs.RESURRECT.hideOnEscape = nil
 	StaticPopupDialogs.AREA_SPIRIT_HEAL.hideOnEscape = nil
@@ -102,53 +106,118 @@ function Module:MisclickPopups()
 	end
 end
 
-function Module:OnEnable()
-	self:MisclickPopups()
+-- ALT+RightClick to buy a stack
+function Module:BuyMaxStacks()
+	local old_MerchantItemButton_OnModifiedClick = MerchantItemButton_OnModifiedClick
+	local cache = {}
+	function MerchantItemButton_OnModifiedClick(self, ...)
+		if IsAltKeyDown() then
+			local id = self:GetID()
+			local itemLink = GetMerchantItemLink(id)
+			if not itemLink then return end
+			local name, _, quality, _, _, _, _, maxStack, _, texture = GetItemInfo(itemLink)
+			if maxStack and maxStack > 1 then
+				if not cache[itemLink] then
+					StaticPopupDialogs["BUY_STACK"] = {
+						text = "Stack Buying Check",
+						button1 = YES,
+						button2 = NO,
+						OnAccept = function()
+							BuyMerchantItem(id, GetMerchantItemMaxStack(id))
+							cache[itemLink] = true
+						end,
+						hideOnEscape = 1,
+						hasItemFrame = 1,
+					}
 
-	-- Fix spellbook taint
+					local r, g, b = GetItemQualityColor(quality or 1)
+					StaticPopup_Show("BUY_STACK", " ", " ", {["texture"] = texture, ["name"] = name, ["color"] = {r, g, b, 1}, ["link"] = itemLink, ["index"] = id, ["count"] = maxStack})
+				else
+					BuyMerchantItem(id, GetMerchantItemMaxStack(id))
+				end
+			end
+		end
+
+		old_MerchantItemButton_OnModifiedClick(self, ...)
+	end
+end
+
+--	FrameStackGlobalizer(by Gethe)
+function Module:FrameStackFix(self, event, addon)
+	if addon == "Blizzard_DebugTools" then
+		local EnumerateFrames = _G.EnumerateFrames
+		local tostring = _G.tostring
+
+		local ignore = {}
+		local frames = {}
+		local function FindFrame(hash)
+			if ignore[hash] then
+				return
+			end
+
+			if frames[hash] then
+				return frames[hash]
+			else
+				local frame = EnumerateFrames()
+				while frame do
+					local frameHash = tostring(frame)
+					if frameHash:find(hash) then
+						frames[hash] = frame
+						return frame
+					end
+					frame = EnumerateFrames(frame)
+				end
+			end
+
+			ignore[hash] = true
+		end
+
+		local matchPattern, subPattern = "%s%%.(%%x*)%%.?", "(%s%%.%%x*)"
+		local function TransformText(text)
+			local parent = text:match("%s+([%w_]+)%.")
+			if parent then
+				local hash = text:match(matchPattern:format(parent))
+				if hash and #hash > 5 then
+					local frame = FindFrame(hash:upper())
+					if frame and frame:GetName() then
+						text = text:gsub(subPattern:format(parent), frame:GetName())
+						return TransformText(text)
+					end
+				end
+			end
+
+			return text
+		end
+
+		_G.hooksecurefunc(_G.FrameStackTooltip, "SetFrameStack", function(self)
+			for i = 1, self:NumLines() do
+				local line = _G["FrameStackTooltipTextLeft"..i]
+				local text = line:GetText()
+				if text and text:find("<%d+>") then
+					line:SetText(TransformText(text))
+				end
+			end
+		end)
+	end
+end
+
+function Module:OnEnable()
+	-- Fix Spellbook Taint
 	ShowUIPanel(SpellBookFrame)
 	HideUIPanel(SpellBookFrame)
+
+	self:MisclickPopups()
+	self:BuyMaxStacks()
+	self:RegisterEvent("ADDON_LOADED", "FrameStackFix")
 
 	hooksecurefunc(StaticPopupDialogs["DELETE_GOOD_ITEM"], "OnShow", function(self)
 		self.editBox:SetText(DELETE_ITEM_CONFIRM_STRING)
 	end)
 
-	_G.FriendsFrameBattlenetFrame:SetScript("OnShow", function(self)
-		local GameLocale = GetLocale()
-		local uLText
-
-		if GameLocale == "zhCN" then
-			uLText = "永不分享您的密码"
-		elseif GameLocale == "zhTW" then
-			uLText = "永不分享您的密碼"
-		elseif GameLocale == "ruRU" then
-			uLText = "Никогда не сообщайте свой пароль"
-		elseif GameLocale == "koKR" then
-			uLText = "암호 공유 안 함"
-		elseif GameLocale == "esMX" then
-			uLText = "Dela aldrig ditt lösenord"
-		elseif GameLocale == "ptBR" then
-			uLText = "Nunca compartilhe sua senha"
-		elseif GameLocale == "deDE" then
-			uLText = "Teilen Sie niemals Ihr Passwort"
-		elseif GameLocale == "esES" then
-			uLText = "Nunca comparta su contraseña"
-		elseif GameLocale == "frFR" then
-			uLText = "Ne partagez jamais votre mot de passe"
-		elseif GameLocale == "itIT" then
-			uLText = "Mai condividere la tua password"
-		else
-			uLText = "Never share your password"
-		end
-
-		self.UnavailableLabel:SetText(uLText)
-		-- print(self:GetWidth()) -- Not rounded
-		-- print(K.Round(self:GetWidth())) -- Rounded
-		if self.UnavailableLabel:GetWidth() <= self:GetWidth() or 190 then -- 190 is rounded from self.
-			return
-		end
-		self:SetWidth(self.UnavailableLabel:GetWidth() + 5)
-	end)
+	for i = 0, 3 do
+		local bagSlot = _G["CharacterBag"..i.."Slot"]
+		bagSlot:UnregisterEvent("ITEM_PUSH") -- Gets Rid Of The Animation
+	end
 
 	CreateFrame("Frame"):SetScript("OnUpdate", function()
 		if LFRBrowseFrame.timeToClear then
@@ -157,8 +226,8 @@ function Module:OnEnable()
 	end)
 
 	-- FixTradeSkillSearch
-	hooksecurefunc("ChatEdit_InsertLink", function(text) -- shift-clicked
-		-- change from SearchBox:HasFocus to :IsShown again
+	hooksecurefunc("ChatEdit_InsertLink", function(text) -- Shift-Clicked
+		-- Change From SearchBox:HasFocus to :IsShown Again
 		if text and TradeSkillFrame and TradeSkillFrame:IsShown() then
 			local spellId = string_match(text, "enchant:(%d+)")
 			local spell = GetSpellInfo(spellId)
@@ -168,19 +237,19 @@ function Module:OnEnable()
 				return
 			end
 
-			-- search needs to be lowercase for .SetRecipeItemNameFilter
+			-- Search Needs To Be Lowercase For .SetRecipeItemNameFilter
 			TradeSkillFrame.SearchBox:SetText(search)
 
-			-- jump to the recipe
-			if spell then -- can only select recipes on the learned tab
+			-- Jump To The Recipe
+			if spell then -- Can Only Select Recipes On The Learned Tab
 				if PanelTemplates_GetSelectedTab(TradeSkillFrame.RecipeList) == 1 then
 					TradeSkillFrame:SelectRecipe(tonumber(spellId))
 				end
 			elseif item then
-				C_Timer_After(.2, function() -- wait a bit or we cant select the recipe yet
+				C_Timer_After(.2, function() -- Wait A Bit Or We Cant Select The Recipe Yet
 					for _, v in pairs(TradeSkillFrame.RecipeList.dataList) do
 						if v.name == item then
-							--TradeSkillFrame.RecipeList:RefreshDisplay() -- didnt seem to help
+							-- TradeSkillFrame.RecipeList:RefreshDisplay() -- Didnt Seem To Help
 							TradeSkillFrame:SelectRecipe(v.recipeID)
 							return
 						end
@@ -190,8 +259,8 @@ function Module:OnEnable()
 		end
 	end)
 
-	-- make it only split stacks with shift-rightclick if the TradeSkillFrame is open
-	-- shift-leftclick should be reserved for the search box
+	-- Make It Only Split Stacks With Shift-RightClick If The Tradeskillframe Is Open
+	-- Shift-LeftClick Should Be Reserved For The Search Box
 	local function hideSplitFrame(_, button)
 		if TradeSkillFrame and TradeSkillFrame:IsShown() then
 			if button == "LeftButton" then
@@ -199,6 +268,7 @@ function Module:OnEnable()
 			end
 		end
 	end
+
 	hooksecurefunc("ContainerFrameItemButton_OnModifiedClick", hideSplitFrame)
 	hooksecurefunc("MerchantItemButton_OnModifiedClick", hideSplitFrame)
 end

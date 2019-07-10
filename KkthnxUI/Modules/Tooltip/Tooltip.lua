@@ -83,7 +83,6 @@ local ShoppingTooltip2TextRight2 = _G.ShoppingTooltip2TextRight2
 local ShoppingTooltip2TextRight3 = _G.ShoppingTooltip2TextRight3
 local ShoppingTooltip2TextRight4 = _G.ShoppingTooltip2TextRight4
 local TANK = _G.TANK
-local TARGET = _G.TARGET
 local TOOLTIP_UNIT_LEVEL = _G.TOOLTIP_UNIT_LEVEL
 local TOOLTIP_UNIT_LEVEL_CLASS = _G.TOOLTIP_UNIT_LEVEL_CLASS
 local TUTORIAL_TITLE19 = _G.TUTORIAL_TITLE19
@@ -490,7 +489,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 				targetColor = K.Colors.factioncolors[""..UnitReaction(unitTarget, "player")] or FACTION_BAR_COLORS[UnitReaction(unitTarget, "player")]
 			end
 
-			tt:AddDoubleLine(string_format("%s:", BINDING_HEADER_TARGETING), string_format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget)))
+			tt:AddDoubleLine(string_format("%s:", _G.TARGET), string_format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget)))
 		end
 
 		if C["Tooltip"].TargetInfo and IsInGroup() then
@@ -508,7 +507,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 
 			local numList = #targetList
 			if (numList > 0) then
-				tt:AddLine(string_format("%s (|cffffffff%d|r): %s", TUTORIAL_TITLE19, numList, table.concat(targetList, ", ")), nil, nil, nil, true)
+				tt:AddLine(string_format("%s (|cffffffff%d|r): %s", L["Tooltip"].TargetedBy, numList, table.concat(targetList, ", ")), nil, nil, nil, true)
 				table_wipe(targetList)
 			end
 		end
@@ -868,11 +867,20 @@ function Module:OnEnable()
 	end
 	self:SetTooltipFonts()
 
+	local setPosition
 	local GameTooltipAnchor = CreateFrame("Frame", "GameTooltipAnchor", UIParent)
-	GameTooltipAnchor:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4)
+	if C["ActionBar"].MicroBar and not C["Inventory"].BagBar then
+		setPosition = {"BOTTOMLEFT", "KkthnxUI_MicroBar", "TOPRIGHT", -4, 4}
+	elseif C["Inventory"].BagBar and not C["ActionBar"].MicroBar then
+		setPosition = {"BOTTOMLEFT", "KkthnxUIBags", "TOPRIGHT", -4, 4}
+	elseif C["ActionBar"].MicroBar and C["Inventory"].BagBar then
+		setPosition = {"BOTTOMLEFT", "KkthnxUIBags", "TOPRIGHT", -4, 4}
+	else
+		setPosition = {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4}
+	end
 	GameTooltipAnchor:SetSize(130, 20)
 	GameTooltipAnchor:SetFrameLevel(GameTooltipAnchor:GetFrameLevel() + 400)
-	K.Mover(GameTooltipAnchor, "GameTooltip", "GameTooltip", {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4})
+	K.Mover(GameTooltipAnchor, "GameTooltip", "GameTooltip", setPosition, 130, 20)
 
 	self:SecureHook("SetItemRef")
 	self:SecureHook("GameTooltip_SetDefaultAnchor")

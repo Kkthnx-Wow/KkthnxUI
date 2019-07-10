@@ -6,6 +6,7 @@
    <Script file="AutoDecline.lua" />
    <Script file="AutoDisenchant.lua" />
    <Script file="AutoInvite.lua" />
+   <Script file="AutoWhisperInvite.lua" />
    <Script file="AutoQuest.lua" />
    <Script file="AutoRelease.lua" />
    <Script file="AutoResurrect.lua" />

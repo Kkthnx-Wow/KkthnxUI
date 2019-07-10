@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="Auras.lua" />
+	<Script file="Castbars.lua" />
 	<Script file="ClassPower.lua" />
-	<Script file="TotemBar.lua" />
 	<Script file="HealthPrediction.lua" />
 	<Script file="Indicators.lua" />
 	<Script file="PowerPrediction.lua" />
 	<Script file="Range.lua" />
-	<Script file="Tags.lua" />
-	<Script file="Tracking.lua" />
+	<Script file="TotemBar.lua" />
 </Ui>

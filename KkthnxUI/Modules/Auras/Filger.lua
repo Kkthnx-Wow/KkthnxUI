@@ -73,11 +73,19 @@ function Filger:UpdateCD()
 end
 
 function Filger:DisplayActives()
-	if not self.actives then return end
-	if not self.bars then self.bars = {} end
+	if not self.actives then
+		return
+	end
+
+	if not self.bars then
+		self.bars = {}
+	end
+
 	local id = self.Id
 	local index = 1
 	local previous = nil
+
+	local FilgerFont = K.GetFont(C["UIFonts"].FilgerFonts)
 	local FilgerTexture = K.GetTexture(C["UITextures"].FilgerTextures)
 
 	for _, _ in pairs(self.actives) do
@@ -123,7 +131,7 @@ function Filger:DisplayActives()
 					bar.count = _G[bar.count:GetName()]
 				else
 					bar.count = bar:CreateFontString("$parentCount", "OVERLAY")
-					bar.count:FontTemplate(C["Media"].Font, 13, "OUTLINE")
+					bar.count:FontTemplate(FilgerFonts)
 					bar.count:SetPoint("BOTTOMRIGHT", 1, -2)
 					bar.count:SetJustifyH("RIGHT")
 				end
