@@ -12,6 +12,7 @@ local _G = _G
 local CreateFrame = _G.CreateFrame
 local UIParent = _G.UIParent
 local UnitIsUnit = _G.UnitIsUnit
+local UnitExists = _G.UnitExists
 
 function Module:IsMouseoverUnit()
 	if not self or not self.unit then
@@ -179,6 +180,7 @@ function Module:CreateNameplates()
 	Module.CreateNameplateAuras(self)
 	Module.CreateDebuffHighlight(self)
 	Module.CreateHealthPrediction(self, "nameplate")
+	Module.AddFollowerXP(self)
 
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate, true)
 	self:RegisterEvent("UNIT_HEALTH", Module.HighlightPlate, true)
