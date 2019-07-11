@@ -1,9 +1,9 @@
-## Interface: 80000
+## Interface: 80200
 ## Name: KkthnxUI Config
 ## Title: |cff4488ffKkthnxUI Config|r
 ## Notes: Options for KkthnxUI
 ## Author: Kkthnx
-## Version: 9.00
+## Version: 9.01
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIConfigShared, KkthnxUIConfigPerAccount
 ## SavedVariablesPerCharacter: KkthnxUIConfigNotShared
