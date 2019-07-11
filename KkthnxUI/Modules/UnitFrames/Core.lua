@@ -180,6 +180,10 @@ end
 
 local unitTip = CreateFrame("GameTooltip", "KkthnxUIQuestUnitTip", nil, "GameTooltipTemplate")
 function Module:UpdateQuestUnit(_, unit)
+	if not C["Nameplates"].QuestIcon then
+		return
+	end
+
 	if IsInInstance() then
 		self.questIcon:Hide()
 		self.questCount:SetText("")
@@ -698,8 +702,6 @@ function Module:NameplatesCallback(event, unit)
 			Nameplate:DisableElement("RaidTargetIndicator")
 			Nameplate:DisableElement("PvPIndicator")
 			Nameplate.Name:Hide()
-			Nameplate.questIcon:Hide()
-			Nameplate.questCount:Hide()
 
 			if Nameplate.ClassPower then
 				Nameplate.ClassPower:Show()
@@ -723,10 +725,9 @@ function Module:NameplatesCallback(event, unit)
 			Nameplate:EnableElement("RaidTargetIndicator")
 			Nameplate:EnableElement("PvPIndicator")
 			Nameplate.Name:Show()
-			Nameplate.questIcon:Show()
-			Nameplate.questCount:Show()
 
 			Module.HighlightPlate(Nameplate)
+
 			Module.UpdateQuestUnit(Nameplate, event, unit)
 			Module.UpdateNameplateTarget(Nameplate)
 			Module.UpdateUnitClassify(Nameplate, unit)

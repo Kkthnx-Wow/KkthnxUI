@@ -84,6 +84,10 @@ function Module:CreateNameplates()
 	self:SetSize(C["Nameplates"].Width, C["Nameplates"].Height)
 	self:SetPoint("CENTER", 0, 0)
 
+	local elevatedFrame = CreateFrame("Frame", nil, self)
+	elevatedFrame:SetAllPoints()
+	elevatedFrame:SetFrameLevel(self:GetFrameLevel() + 2)
+
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetFrameStrata(self:GetFrameStrata())
 	self.Health:SetPoint("TOPLEFT")
@@ -139,23 +143,24 @@ function Module:CreateNameplates()
 	Module.CreateNameplateCastbar(self)
 
 	self.RaidTargetIndicator = self.Health:CreateTexture(nil, "OVERLAY")
-	self.RaidTargetIndicator:SetSize(20, 20)
-	self.RaidTargetIndicator:SetPoint("RIGHT", self, "LEFT", -3, 3)
+	self.RaidTargetIndicator:SetSize(18, 18)
+	self.RaidTargetIndicator:SetPoint("RIGHT", self, "LEFT", -10, 0)
 
-	self.questIcon = self:CreateTexture(nil, "OVERLAY", nil, 2)
-	self.questIcon:SetPoint("LEFT", self, "RIGHT", -1, 0)
-	self.questIcon:SetSize(20, 20)
-	self.questIcon:SetAtlas("adventureguide-microbutton-alert")
-	self.questIcon:Hide()
+	if C["Nameplates"].QuestIcon then
+		self.questIcon = self:CreateTexture(nil, "OVERLAY", nil, 2)
+		self.questIcon:SetPoint("LEFT", self, "RIGHT", -1, 0)
+		self.questIcon:SetSize(20, 20)
+		self.questIcon:SetAtlas("adventureguide-microbutton-alert")
+		self.questIcon:Hide()
 
-	self.questCount = self:CreateFontString(nil, "OVERLAY")
-	self.questCount:SetFontObject(Font)
-	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -4, 0)
+		self.questCount = self:CreateFontString(nil, "OVERLAY")
+		self.questCount:SetFontObject(Font)
+		self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -4, 0)
 
-	local iconFrame = CreateFrame("Frame", nil, self)
-	iconFrame:SetAllPoints()
-	iconFrame:SetFrameLevel(self:GetFrameLevel() + 2)
-	self.creatureIcon = iconFrame:CreateTexture(nil, "ARTWORK")
+		self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
+	end
+
+	self.creatureIcon = elevatedFrame:CreateTexture(nil, "ARTWORK")
 	self.creatureIcon:SetAtlas("VignetteKill")
 	self.creatureIcon:SetPoint("BOTTOMLEFT", self, "LEFT", 0, -4)
 	self.creatureIcon:SetSize(16, 16)
@@ -185,7 +190,6 @@ function Module:CreateNameplates()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate, true)
 	self:RegisterEvent("UNIT_HEALTH", Module.HighlightPlate, true)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateNameplateTarget, true)
-	self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
 
 	AddMouseoverIndicator(self)
 end

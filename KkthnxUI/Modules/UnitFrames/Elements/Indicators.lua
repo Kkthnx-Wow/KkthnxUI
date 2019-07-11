@@ -275,6 +275,10 @@ function Module:CreateAddPower()
 end
 
 function Module:AddFollowerXP()
+	if not C["Nameplates"].NazjatarFollowerXP then
+		return
+	end
+
 	self.NazjatarFollowerXP = CreateFrame("StatusBar", nil, self)
 	self.NazjatarFollowerXP:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 	self.NazjatarFollowerXP:SetStatusBarColor(0.3, 0.7, 1)

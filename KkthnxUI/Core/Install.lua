@@ -329,7 +329,7 @@ end
 
 -- On login function
 Install:RegisterEvent("ADDON_LOADED")
-Install:SetScript("OnEvent", function(self)
+Install:SetScript("OnEvent", function(self, event, name)
 	local playerName = UnitName("player")
 	local playerRealm = GetRealmName()
 
@@ -368,6 +368,12 @@ Install:SetScript("OnEvent", function(self)
 		KkthnxUIData[playerRealm][playerName].Mover = KkthnxUIData[playerRealm][playerName].Mover or {}
 	end
 
+	-- Convert Old Movers Database?
+	if (KkthnxUIData and KkthnxUIData[playerRealm] and KkthnxUIData[playerRealm][playerName] and KkthnxUIData[playerRealm][playerName].Movers) then
+		KkthnxUIData[playerRealm][playerName].Mover = KkthnxUIData[playerRealm][playerName].Movers
+		KkthnxUIData[playerRealm][playerName].Movers = nil
+	end
+
 	-- Install default if we never ran KkthnxUI on this character.
 	local IsInstalled = KkthnxUIData[playerRealm][playerName].InstallComplete
 	if (not IsInstalled) then
@@ -379,7 +385,7 @@ Install:SetScript("OnEvent", function(self)
 		K.Delay(8, Install.WelcomeMessageDelay)
 	end
 
-	self:UnregisterEvent("ADDON_LOADED")
+	self:UnregisterEvent(event)
 end)
 
 _G.SLASH_INSTALLUI1 = "/install"

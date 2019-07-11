@@ -48,7 +48,7 @@ end
 
 function Module:PositionAndSize()
 	local buttonSpacing = 6
-	local buttonSize = C["ActionBar"].ButtonSize
+	local buttonSize = C["ActionBar"].ButtonSize or 34
 
 	for i = 1, MAX_TOTEMS do
 		local button = self.bar[i]
@@ -71,7 +71,7 @@ end
 
 function Module:OnEnable()
 	local bar = CreateFrame("Frame", "KkthnxUI_TotemBar", _G.UIParent)
-	bar:SetPoint("BOTTOMLEFT", "oUF_Player", "TOPLEFT", 0, 24)
+	bar:SetPoint("CENTER", -287, -129)
 	self.bar = bar
 
 	for i = 1, MAX_TOTEMS do
@@ -98,7 +98,7 @@ function Module:OnEnable()
 
 	self:PositionAndSize()
 
-	K.Mover(bar, "TotemBar", "TotemBar", {"BOTTOMLEFT", "oUF_Player", "TOPLEFT", 0, 24})
+	K.Mover(bar, "TotemBar", "TotemBar", {"CENTER", -287, -129})
 
 	self:ToggleEnable()
 end

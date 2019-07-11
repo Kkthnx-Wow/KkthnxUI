@@ -1,17 +1,12 @@
 local K, C, L = unpack(select(2, ...))
-local Unfit = LibStub("Unfit-1.0")
 local ModuleSort = K:GetModule("InventorySort")
 local ModuleVendor = K:GetModule("Vendor")
 
-if C["Inventory"].Enable ~= true
-or K.CheckAddOnState("AdiBags")
-or K.CheckAddOnState("ArkInventory")
-or K.CheckAddOnState("cargBags_Nivaya")
-or K.CheckAddOnState("cargBags")
-or K.CheckAddOnState("Bagnon")
-or K.CheckAddOnState("Combuctor")
-or K.CheckAddOnState("TBag")
-or K.CheckAddOnState("BaudBag") then
+if not ModuleSort then
+	return
+end
+
+if not ModuleVendor then
 	return
 end
 
@@ -79,8 +74,68 @@ local bag_bars = 0
 local Ticker
 local Profit = 0
 local Spent = 0
+local unusable
 local resetCountersFormatter = strjoin("", "|cffaaaaaa", "Reset Counters: Hold Shift + Left Click", "|r")
 local resetInfoFormatter = strjoin("", "|cffaaaaaa", "Reset Data: Hold Shift + Right Click", "|r")
+
+if K.Class == "DEATHKNIGHT" then
+	unusable = {{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_SHIELD}} -- weapons, armor, dual wield
+elseif K.Class == "DEMONHUNTER" then
+	unusable = {{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
+elseif K.Class == "DRUID" then
+	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}, true}
+elseif K.Class == "HUNTER" then
+	unusable = {{LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
+elseif K.Class == "MAGE" then
+	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW}, {LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD,}, true}
+elseif K.Class == "MONK" then
+	unusable = {{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
+elseif K.Class == "PALADIN" then
+	unusable = {{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {}, true}
+elseif K.Class == "PRIEST" then
+	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW}, {LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}, true}
+elseif K.Class == "ROGUE" then
+	unusable = {{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
+elseif K.Class == "SHAMAN" then
+	unusable = {{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_PLATE}}
+elseif K.Class == "WARLOCK" then
+	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW}, {LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}, true}
+elseif K.Class == "WARRIOR" then
+	unusable = {{LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_WAND}, {}}
+else
+	unusable = {{}, {}}
+end
+
+local subs = {}
+for k = 0, 20 do
+	subs[k + 1] = GetItemSubClassInfo(LE_ITEM_CLASS_WEAPON, k)
+end
+
+for _, subclass in ipairs(unusable[1]) do
+	unusable[subs[subclass+1]] = true
+end
+
+subs = {}
+for k = 0, 11 do
+	subs[k + 1] = GetItemSubClassInfo(LE_ITEM_CLASS_ARMOR, k)
+end
+
+for _, subclass in ipairs(unusable[2]) do
+	unusable[subs[subclass + 1]] = true
+end
+
+local function IsClassUnusable(subclass, slot)
+	if subclass then
+		return slot ~= "" and unusable[subclass] or slot == "INVTYPE_WEAPONOFFHAND" and unusable[3]
+	end
+end
+
+local function IsItemUnusable(...)
+	if ... then
+		local subclass, _, slot = select(7, GetItemInfo(...))
+		return IsClassUnusable(subclass, slot)
+	end
+end
 
 local function GetGraysValue()
 	local value = 0
@@ -121,6 +176,21 @@ local Stuffing = CreateFrame("Frame", nil, UIParent)
 Stuffing:RegisterEvent("ADDON_LOADED")
 Stuffing:RegisterEvent("PLAYER_ENTERING_WORLD")
 Stuffing:SetScript("OnEvent", function(this, event, ...)
+	if C["Inventory"].Enable ~= true then
+		return
+	end
+
+	if IsAddOnLoaded("AdiBags")
+	or IsAddOnLoaded("ArkInventory")
+	or IsAddOnLoaded("cargBags_Nivaya")
+	or IsAddOnLoaded("cargBags")
+	or IsAddOnLoaded("Bagnon")
+	or IsAddOnLoaded("Combuctor")
+	or IsAddOnLoaded("TBag")
+	or IsAddOnLoaded("BaudBag") then
+		return
+	end
+
 	Stuffing[event](this, ...)
 end)
 
@@ -229,7 +299,7 @@ end
 function Stuffing:SlotUpdate(b)
 	local texture, count, locked, quality, _, _, _, _, noValue = GetContainerItemInfo(b.bag, b.slot)
 	local clink = GetContainerItemLink(b.bag, b.slot)
-	local isQuestItem, questId, isActiveQuest = GetContainerItemQuestInfo(b.bag, b.slot)
+	local isQuestItem, questId = GetContainerItemQuestInfo(b.bag, b.slot)
 
 	if not b.frame.lock then
 		b.frame:SetBackdropBorderColor()
@@ -244,16 +314,14 @@ function Stuffing:SlotUpdate(b)
 		b.frame.text:SetText("")
 	end
 
-	if (b.frame.Azerite) then
+	if b.frame.Azerite then
 		b.frame.Azerite:Hide()
 	end
+	-- b.frame:UpdateItemContextMatching() -- Update Scrap items
 
-	if C["Inventory"].BindText == true then
-		b.frame.bindType:SetText("")
-	end
-
-	if (b.frame.JunkIcon) then
-		if (quality and quality == LE_ITEM_QUALITY_POOR) and not noValue and C["Inventory"].JunkIcon then
+	b.frame.isJunk = (quality and quality== LE_ITEM_QUALITY_POOR) and not noValue
+	if b.frame.JunkIcon then
+		if b.frame.isJunk and C["Inventory"].JunkIcon then
 			b.frame.JunkIcon:Show()
 		else
 			b.frame.JunkIcon:Hide()
@@ -273,31 +341,6 @@ function Stuffing:SlotUpdate(b)
 		else
 			b.frame.UpgradeIcon:SetShown(itemIsUpgrade or true)
 		end
-	end
-
-	if C["Inventory"].BindText and quality and quality > LE_ITEM_QUALITY_COMMON then
-		K.ScanTooltip:SetOwner(self, "ANCHOR_NONE")
-		K.ScanTooltip:SetBagItem(b.frame:GetParent():GetID(), b.frame:GetID())
-		K.ScanTooltip:Show()
-
-		for i = 2, 6 do -- trying line 2 to 6 for the bind texts, don't think they are further down
-			local line = _G[K.ScanTooltip:GetName().."TextLeft"..i]:GetText()
-			if (not line) or (line == _G.ITEM_SOULBOUND or line == _G.ITEM_ACCOUNTBOUND or line == _G.ITEM_BNETACCOUNTBOUND) then
-				break
-			end
-			if line == _G.ITEM_BIND_ON_EQUIP then
-				b.frame.bindType:SetText('BoE')
-				b.frame.bindType:SetVertexColor(GetItemQualityColor(quality))
-				break
-			end
-			if line == _G.ITEM_BIND_ON_USE then
-				b.frame.bindType:SetText('BoU')
-				b.frame.bindType:SetVertexColor(GetItemQualityColor(quality))
-				break
-			end
-		end
-
-		K.ScanTooltip:Hide()
 	end
 
 	local newItemTexture = b.frame.NewItemTexture
@@ -357,7 +400,7 @@ function Stuffing:SlotUpdate(b)
 	if clink then
 		b.name, _, _, b.itemlevel, b.level, _, _, _, _, _, _, b.itemClassID, b.itemSubClassID = GetItemInfo(clink)
 
-		if not b.name then	-- Keystone bug
+		if not b.name then -- Keystone bug
 			b.name = clink:match("%[(.-)%]") or ""
 		end
 
@@ -367,36 +410,19 @@ function Stuffing:SlotUpdate(b)
 			b.frame.text:SetTextColor(GetItemQualityColor(quality))
 		end
 
-		if (Unfit:IsItemUnusable(clink) or b.level and b.level > K.Level) and not locked then
+		if b.frame.Azerite and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(clink) then
+			b.frame.Azerite:Show()
+		end
+
+		if (IsItemUnusable(clink) or b.level and b.level > K.Level) and not locked then
 			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 0.1, 0.1)
 		else
 			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 1, 1)
 		end
 
 		-- Color slot according to item quality
-		if not b.frame.lock and questId and not isActiveQuest then
-			b.frame:SetBackdropBorderColor(1.0, 0.3, 0.3)
-			if (b.frame.questIcon) then
-				b.frame.questIcon:Show()
-			end
-		elseif questId or isQuestItem then
-			b.frame:SetBackdropBorderColor(1.0, 0.3, 0.3)
-		elseif quality and quality > 1 then
+		if not b.frame.lock and quality and quality > LE_ITEM_QUALITY_COMMON and not (isQuestItem or questId) then
 			b.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
-			if b.frame.Azerite and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(clink) then
-				b.frame.Azerite:Show()
-			end
-		else
-			b.frame:SetBackdropBorderColor()
-			b.name, b.level = nil, nil
-		end
-
-		-- Color slot according to item quality
-		if not b.frame.lock and quality and quality > 1 and not (isQuestItem or questId) then
-			b.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
-			if b.frame.Azerite and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(clink) then
-				b.frame.Azerite:Show()
-			end
 		elseif isQuestItem or questId then
 			b.frame:SetBackdropBorderColor(1, 1, 0)
 		end
@@ -449,7 +475,6 @@ local function Stuffing_CreateReagentContainer()
 
 	local Reagent = CreateFrame("Frame", "StuffingFrameReagent", UIParent)
 	local SwitchBankButton = CreateFrame("Button", nil, Reagent)
-	local NumButtons = ReagentBankFrame.size
 	local NumRows, LastRowButton, NumButtons, LastButton = 0, ReagentBankFrameItem1, 1, ReagentBankFrameItem1
 	local Deposit = ReagentBankFrame.DespositButton
 
@@ -662,7 +687,7 @@ function Stuffing:BagFrameSlotNew(p, slot)
 
 	ret.frame:CreateBorder()
 	ret.frame:StyleButton()
-	ret.frame:SetNormalTexture(nil)
+	ret.frame:SetNormalTexture("")
 
 	ret.icon = _G[ret.frame:GetName() .. "IconTexture"]
 	ret.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
@@ -732,12 +757,6 @@ function Stuffing:SlotNew(bag, slot)
 			ret.frame.text:FontTemplate(nil, 11, "OUTLINE")
 		end
 
-		if C["Inventory"].BindText == true then
-			ret.frame.bindType = ret.frame:CreateFontString(nil, 'OVERLAY')
-			ret.frame.bindType:SetPoint("BOTTOM", 2, 2)
-			ret.frame.bindType:FontTemplate(nil, 10, "OUTLINE")
-		end
-
 		-- JunkIcon only exists for items created through ContainerFrameItemButtonTemplate
 		if not ret.frame.JunkIcon then
 			ret.frame.JunkIcon = ret.frame:CreateTexture(nil, "OVERLAY")
@@ -797,7 +816,6 @@ function Stuffing:BagNew(bag, f)
 	end
 
 	local ret
-
 	if #trashBag > 0 then
 		local f = -1
 		for i, v in pairs(trashBag) do
@@ -830,9 +848,9 @@ function Stuffing:SearchUpdate(str)
 		if b.frame and not b.name then
 			b.frame:SetAlpha(0.2)
 		end
+
 		if b.name then
 			local _, setName = GetContainerItemEquipmentSetInfo(b.bag, b.slot)
-
 			setName = setName or ""
 
 			local ilink = GetContainerItemLink(b.bag, b.slot)
@@ -845,14 +863,14 @@ function Stuffing:SearchUpdate(str)
 			minLevel = minLevel or 1
 
 			if not string_find(string_lower(b.name), str) and not string_find(string_lower(setName), str) and not string_find(string_lower(class), str) and not string_find(string_lower(subclass), str) and not string_find(string_lower(equipSlot), str) then
-				if Unfit:IsItemUnusable(b.name) or minLevel > K.Level then
+				if IsItemUnusable(b.name) or minLevel > K.Level then
 					_G[b.frame:GetName() .. "IconTexture"]:SetVertexColor(0.5, 0.5, 0.5)
 				end
 
 				SetItemButtonDesaturated(b.frame, true)
 				b.frame:SetAlpha(0.2)
 			else
-				if Unfit:IsItemUnusable(b.name) or minLevel > K.Level then
+				if IsItemUnusable(b.name) or minLevel > K.Level then
 					_G[b.frame:GetName() .. "IconTexture"]:SetVertexColor(1, 0.1, 0.1)
 				end
 
@@ -865,7 +883,7 @@ end
 
 function Stuffing:SearchReset()
 	for _, b in ipairs(self.buttons) do
-		if Unfit:IsItemUnusable(b.name) or (b.level and b.level > K.Level) then
+		if IsItemUnusable(b.name) or (b.level and b.level > K.Level) then
 			_G[b.frame:GetName() .. "IconTexture"]:SetVertexColor(1, 0.1, 0.1)
 		end
 
@@ -1568,17 +1586,17 @@ function Stuffing:ADDON_LOADED(addon)
 	end
 
 	self:RegisterEvent("BAG_UPDATE")
-	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
 	self:RegisterEvent("ITEM_LOCK_CHANGED")
-	self:RegisterEvent("ITEM_UNLOCKED")
 	self:RegisterEvent("BANKFRAME_OPENED")
 	self:RegisterEvent("BANKFRAME_CLOSED")
 	self:RegisterEvent("GUILDBANKFRAME_OPENED")
 	self:RegisterEvent("GUILDBANKFRAME_CLOSED")
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
+	self:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
 	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
 	self:RegisterEvent("BAG_CLOSED")
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN")
+	self:RegisterEvent("SCRAPPING_MACHINE_SHOW")
 
 	self:InitBags()
 
@@ -1594,15 +1612,9 @@ function Stuffing:ADDON_LOADED(addon)
 	CloseBackpack = Stuffing_Close
 
 	BankFrame:UnregisterAllEvents()
-	BankFrame:SetScale(0.0001)
+	BankFrame:SetScale(0.00001)
 	BankFrame:SetAlpha(0)
 	BankFrame:SetPoint("TOPLEFT")
-
-	function ManageBackpackTokenFrame() end
-
-	if ContainerFrame5 then
-		ContainerFrame5:EnableMouse(false)
-	end
 end
 
 function Stuffing:PLAYER_ENTERING_WORLD()
@@ -1650,28 +1662,11 @@ function Stuffing:PLAYERREAGENTBANKSLOTS_CHANGED()
 	end
 end
 
-function Stuffing:CURRENCY_DISPLAY_UPDATE()
-	BackpackTokenFrame_Update()
-end
-
 function Stuffing:BAG_UPDATE(id)
 	self:BagSlotUpdate(id)
 end
 
 function Stuffing:ITEM_LOCK_CHANGED(bag, slot)
-	if slot == nil then
-		return
-	end
-
-	for _, v in ipairs(self.buttons) do
-		if v.bag == bag and v.slot == slot then
-			self:SlotUpdate(v)
-			break
-		end
-	end
-end
-
-function Stuffing:ITEM_UNLOCKED(bag, slot)
 	if slot == nil then
 		return
 	end
@@ -1711,19 +1706,21 @@ end
 function Stuffing:GUILDBANKFRAME_OPENED()
 	Stuffing_Open()
 
-	if K.Name == "Upright" and K.Realm == "Sethraliss" then
-		local guildSortbutton = CreateFrame("Button", "GuildSortButton", GuildBankFrame, "UIPanelButtonTemplate")
-		guildSortbutton:SetSize(110, 20)
-		guildSortbutton:SetPoint("RIGHT", GuildItemSearchBox, "LEFT", -5, 0)
-		guildSortbutton:SetText("Sort Tab")
-		guildSortbutton:SetScript("OnClick", function()
-			ModuleSort:CommandDecorator(ModuleSort.SortBags, "guild")()
-		end)
-	end
+	Stuffing.guildSortbutton = CreateFrame("Button", "GuildSortButton", GuildBankFrame, "UIPanelButtonTemplate")
+	Stuffing.guildSortbutton:SetSize(110, 20)
+	Stuffing.guildSortbutton:SetPoint("RIGHT", GuildItemSearchBox, "LEFT", -5, 0)
+	Stuffing.guildSortbutton:SetText("Sort Tab")
+	Stuffing.guildSortbutton:Show()
+	Stuffing.guildSortbutton:SetScript("OnClick", function()
+		ModuleSort:CommandDecorator(ModuleSort.SortBags, "guild")()
+	end)
 end
 
 function Stuffing:GUILDBANKFRAME_CLOSED()
 	Stuffing_Close()
+	if Stuffing.guildSortbutton then
+		Stuffing.guildSortbutton:Hide()
+	end
 end
 
 function Stuffing:BAG_CLOSED(id)
@@ -1745,7 +1742,7 @@ function Stuffing:BAG_CLOSED(id)
 				table_insert(trashButton, #trashButton + 1, v.frame)
 				table_remove(self.buttons, i)
 
-				-- v = nil
+				v = nil
 				changed = true
 			end
 		end

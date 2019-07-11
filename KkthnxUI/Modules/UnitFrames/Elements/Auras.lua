@@ -10,57 +10,6 @@ local _G = _G
 local CreateFrame = _G.CreateFrame
 local UnitIsFriend = _G.UnitIsFriend
 
-local ImportantBuffs = {
-	[1022] = true, -- Hand of Protection
-	[2825] = true, -- Bloodlust
-	[20707] = true, -- Soulstone
-	[32182] = true, -- Heroism
-	[80353] = true, -- Time Warp
-	[90355] = true, -- Ancient Hysteria
-	[178207] = true, -- Drums of Fury
-	[230935] = true, -- Drums of the Mountain
-}
-
-local ImportantDebuffs = {
-	[6788] = K.Class == "PRIEST", -- Weakened Soul
-	[25771] = K.Class == "PALADIN", -- Forbearance
-	[212570] = true, -- Surrendered Soul
-}
-
-local CustomBuffFilter = {
-	player = function(_, _, aura, _, _, _, _, duration, _, caster, _, _, spellID, _, _, casterIsPlayer)
-		return not casterIsPlayer or
-		duration and duration > 0 and duration <= 300 and (aura.isPlayer or caster == "pet") or
-		ImportantBuffs[spellID]
-	end,
-
-	target = function(_, unit, aura, _, _, _, _, _, _, caster, _, _, _, _, _, casterIsPlayer)
-		if(UnitIsFriend(unit, "player")) then
-			return aura.isPlayer or caster == "pet" or not casterIsPlayer
-		else
-			return true
-		end
-	end,
-}
-
-local CustomDebuffFilter = {
-	target = function(_, unit, aura, _, _, _, _, _, _, caster, _, _, spellID, _, isBossDebuff, casterIsPlayer)
-		if (not UnitIsFriend(unit, "player")) then
-			return aura.isPlayer or caster == "pet" or not casterIsPlayer or isBossDebuff or ImportantDebuffs[spellID]
-		else
-			return true
-		end
-	end,
-
-	focus = function(_, unit, aura, _, _, _, _, _, _, caster, _, _, spellID, _, isBossDebuff, casterIsPlayer)
-		if (not UnitIsFriend(unit, "player")) then
-			return aura.isPlayer or caster == "pet" or not casterIsPlayer or isBossDebuff or ImportantDebuffs[spellID]
-		else
-			return true
-		end
-	end,
-}
-
 function Module:CreatePlayerAuras()
 	local Buffs = CreateFrame("Frame", self:GetName() .. "Buffs", self)
 
@@ -86,7 +35,7 @@ function Module:CreatePlayerAuras()
 	Buffs["growth-x"] = "RIGHT"
 	Buffs.PostCreateIcon = Module.PostCreateAura
 	Buffs.PostUpdateIcon = Module.PostUpdateAura
-	Buffs.CustomFilter = CustomBuffFilter.player
+	--Buffs.CustomFilter = CustomBuffFilter.player
 
 	self.Buffs = Buffs
 end
@@ -108,7 +57,7 @@ function Module:CreateTargetAuras()
 		Buffs["growth-x"] = "RIGHT"
 		Buffs.PostCreateIcon = Module.PostCreateAura
 		Buffs.PostUpdateIcon = Module.PostUpdateAura
-		--0Buffs.CustomFilter = CustomBuffFilter.target
+		--Buffs.CustomFilter = CustomBuffFilter.target
 
 		Debuffs:SetWidth(140)
 		Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, -70)
@@ -122,7 +71,7 @@ function Module:CreateTargetAuras()
 		Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 		Debuffs.PostCreateIcon = Module.PostCreateAura
 		Debuffs.PostUpdateIcon = Module.PostUpdateAura
-		--0Debuffs.CustomFilter = CustomDebuffFilter.target
+		--Debuffs.CustomFilter = CustomDebuffFilter.target
 
 		self.Buffs = Buffs
 		self.Debuffs = Debuffs
@@ -174,7 +123,7 @@ function Module:CreateFocusAuras()
 		Debuffs["growth-x"] = "RIGHT"
 		Debuffs.PostCreateIcon = Module.PostCreateAura
 		Debuffs.PostUpdateIcon = Module.PostUpdateAura
-		Debuffs.CustomFilter = CustomDebuffFilter.target
+		--Debuffs.CustomFilter = CustomDebuffFilter.target
 
 		self.Buffs = Buffs
 		self.Debuffs = Debuffs
