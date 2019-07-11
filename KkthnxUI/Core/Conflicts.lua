@@ -68,6 +68,16 @@ or K.CheckAddOnState("RazerNaga")
 or K.CheckAddOnState("daftMainBar")
 or (K.CheckAddOnState("ConsolePortBar") and K.CheckAddOnState("ConsolePort")) then -- We have to check for main ConsolePort addon too.
 	C["ActionBar"].Enable = false
+	C["ActionBar"].MicroBar = false
+	C["BagBar"].Enable = false
+end
+
+if K.CheckAddOnState("Dominos")
+or K.CheckAddOnState("Bartender4")
+or K.CheckAddOnState("daftMainBar") then -- We have to check for main ConsolePort addon too.
+	C["ActionBar"].Enable = false
+	C["ActionBar"].MicroBar = false
+	C["BagBar"].Enable = false
 end
 
 if K.CheckAddOnState("Mapster")
