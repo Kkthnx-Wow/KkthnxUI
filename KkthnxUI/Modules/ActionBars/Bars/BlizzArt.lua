@@ -95,10 +95,6 @@ function Module:HideBlizz()
 	end
 	hooksecurefunc("MultiActionBar_UpdateGridVisibility", ToggleButtonGrid)
 
-	-- Avoid Hiding Buttons on open/close spellbook
-	MultiActionBar_ShowAllGrids = K.Noop
-	MultiActionBar_HideAllGrids = K.Noop
-
 	-- Unregister Talent Event
 	if _G.PlayerTalentFrame then
 		_G.PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")

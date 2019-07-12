@@ -241,14 +241,14 @@ local function CreateConsole()
 	K:RegisterEvent("PLAYER_REGEN_DISABLED", showLater)
 end
 
-SlashCmdList["KKTHNXUI_MOVER"] = function()
-	if InCombatLockdown() then
+function K.MoveUI()
+if InCombatLockdown() then
 		UIErrorsFrame:AddMessage(ERR_NOT_IN_COMBAT)
 		return
 	end
 	CreateConsole()
 	UnlockElements()
 end
-SLASH_KKTHNXUI_MOVER1 = "/moveui"
-SLASH_KKTHNXUI_MOVER2 = "/mui"
-SLASH_KKTHNXUI_MOVER3 = "/mm"
+K:RegisterChatCommand("moveui", K.MoveUI)
+K:RegisterChatCommand("mui", K.MoveUI)
+K:RegisterChatCommand("mm", K.MoveUI)
