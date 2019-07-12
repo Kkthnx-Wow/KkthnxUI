@@ -869,11 +869,11 @@ function Module:OnEnable()
 
 	local setPosition
 	local GameTooltipAnchor = CreateFrame("Frame", "GameTooltipAnchor", UIParent)
-	if C["ActionBar"].MicroBar and not C["Inventory"].BagBar then
+	if C["ActionBar"].MicroBar and not C["Inventory"].BagBar and "KkthnxUI_MicroBar" then
 		setPosition = {"BOTTOMLEFT", "KkthnxUI_MicroBar", "TOPRIGHT", -4, 4}
-	elseif C["Inventory"].BagBar and not C["ActionBar"].MicroBar then
+	elseif C["Inventory"].BagBar and not C["ActionBar"].MicroBar and "KkthnxUIBags" then
 		setPosition = {"BOTTOMLEFT", "KkthnxUIBags", "TOPRIGHT", -4, 4}
-	elseif C["ActionBar"].MicroBar and C["Inventory"].BagBar then
+	elseif C["ActionBar"].MicroBar and C["Inventory"].BagBar and "KkthnxUIBags" then
 		setPosition = {"BOTTOMLEFT", "KkthnxUIBags", "TOPRIGHT", -4, 4}
 	else
 		setPosition = {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4}
