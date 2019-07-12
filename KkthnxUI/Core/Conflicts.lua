@@ -72,7 +72,7 @@ or (IsAddOnLoaded("ConsolePortBar") and IsAddOnLoaded("ConsolePort")) then -- We
 	C["DataBars"].Enable = false
 	C["ActionBar"].Enable = false
 	C["ActionBar"].MicroBar = false
-	C["BagBar"].Enable = false
+	C["Inventory"].BagBar = false
 end
 
 if IsAddOnLoaded("Mapster")
