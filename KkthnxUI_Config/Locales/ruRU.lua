@@ -10,61 +10,49 @@ local RestoreDefault = "|n|nЩелкните правой кнопкой что�
 local _G = _G
 
 local ARENA = _G.ARENA
-local AURAS = _G.AURAS
 local BATTLEGROUNDS = _G.BATTLEGROUNDS
-local BINDING_HEADER_ACTIONBAR = _G.BINDING_HEADER_ACTIONBAR
 local BINDING_NAME_TOGGLEGARRISONLANDINGPAGE = _G.BINDING_NAME_TOGGLEGARRISONLANDINGPAGE
 local COMBAT = _G.COMBAT
 local DUNGEONS = _G.DUNGEONS
 local GARRISON_LANDING_PAGE_TITLE = _G.GARRISON_LANDING_PAGE_TITLE
 local GARRISON_LOCATION_TOOLTIP = _G.GARRISON_LOCATION_TOOLTIP
-local GENERAL = _G.GENERAL
-local LOOT = _G.LOOT
-local MINIMAP_LABEL = _G.MINIMAP_LABEL
-local MISCELLANEOUS = _G.MISCELLANEOUS
-local PARTY = _G.PARTY
-local RAID = _G.RAID
 local RAID_CONTROL = _G.RAID_CONTROL
 local RAIDS = _G.RAIDS
 local REVERSE_NEW_LOOT_TEXT = _G.REVERSE_NEW_LOOT_TEXT
 local ROLE = _G.ROLE
 local SCENARIOS = _G.SCENARIOS
-local TEXTURES_SUBHEADER = _G.TEXTURES_SUBHEADER
-local UNIT_NAMEPLATES = _G.UNIT_NAMEPLATES
-local UNITFRAME_LABEL = _G.UNITFRAME_LABEL
-local WORLDMAP_BUTTON = _G.WORLDMAP_BUTTON
 
 _G.KkthnxUIConfig["ruRU"] = {
 	-- Menu Groups Display Names
 	["GroupNames"] = {
-		-- Let's keep this in alphabetical order, shall we?
-		["ActionBar"] = BINDING_HEADER_ACTIONBAR,
-		["Announcements"] = "Оповещения",
-		["Arena"] = ARENA,
-		["Auras"] = AURAS,
-		["Automation"] = "Автодействия",
-		["Boss"] = "Боссы", -- BOSS, works not correct on ruRU
-		["Chat"] = "Чат", -- CHAT, works not correct on ruRU
-		["DataBars"] = "Инфо-полосы",
-		["DataText"] = "Инфо-текст",
-		["Filger"] = "Откаты способностей",
-		["General"] = GENERAL,
-		["HealthPrediction"] = "Прогноз ХП",
-		["Inventory"] = "Сумки", -- INVENTORY_TOOLTIP, works not correct on ruRU
-		["Loot"] = LOOT,
-		["Minimap"] = MINIMAP_LABEL,
-		["MinimapButtons"] = "Кнопки миникарты",
-		["Misc"] = MISCELLANEOUS,
-		["Nameplates"] = UNIT_NAMEPLATES,
-		["Party"] = PARTY,
+		-- Let's Keep This In Alphabetical Order, Shall We?
+		["ActionBar"] = "Action Bar",
+		["Announcements"] = "Announcements",
+		["Arena"] = "Arena",
+		["Auras"] = "Auras",
+		["Automation"] = "Automation",
+		["Boss"] = "Boss",
+		["Chat"] = "Chat",
+		["DataBars"] = "Data Bars",
+		["DataText"] = "Data Text",
+		["Filger"] = "Filger",
+		["General"] = "General",
+		["HealthPrediction"] = "Health Prediction",
+		["Inventory"] = "Inventory",
+		["Loot"] = "Loot",
+		["Minimap"] = "Minimap",
+		["MinimapButtons"] = "Minimap Buttons",
+		["Misc"] = "Miscellaneous",
+		["Nameplates"] = "Nameplates",
+		["Party"] = "Party",
 		["QuestNotifier"] = "Quest Notifier",
-		["Raid"] = RAID,
-		["Skins"] = "Шкурки",
-		["Tooltip"] = "Подсказки",
+		["Raid"] = "Raid",
+		["Skins"] = "Skins",
+		["Tooltip"] = "Tooltip",
 		["UIFonts"] = ModuleNewFeature.."Fonts",
-		["UITextures"] = ModuleNewFeature..TEXTURES_SUBHEADER,
-		["Unitframe"] = UNITFRAME_LABEL,
-		["WorldMap"] = WORLDMAP_BUTTON
+		["UITextures"] = ModuleNewFeature.."Textures",
+		["Unitframe"] = "Unit Frames",
+		["WorldMap"] = "World Map",
 	},
 
 	-- General Local

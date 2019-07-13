@@ -1,7 +1,7 @@
 local K, _, L = unpack(select(2, ...))
--- Localization for esES
+-- Localization for esMX
 
-if (GetLocale() ~= "esES" or GetLocale() ~= "esMX") then
+if (GetLocale() ~= "esMX") then
 	return
 end
 

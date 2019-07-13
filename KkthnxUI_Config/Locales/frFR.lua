@@ -10,65 +10,49 @@ local RestoreDefault = "|n|nRight-click to restore to default" -- For color pick
 local _G = _G
 
 local ARENA = _G.ARENA
-local AURAS = _G.AURAS
 local BATTLEGROUNDS = _G.BATTLEGROUNDS
-local BINDING_HEADER_ACTIONBAR = _G.BINDING_HEADER_ACTIONBAR
 local BINDING_NAME_TOGGLEGARRISONLANDINGPAGE = _G.BINDING_NAME_TOGGLEGARRISONLANDINGPAGE
-local BOSS = _G.BOSS
-local CHAT = _G.CHAT
 local COMBAT = _G.COMBAT
 local DUNGEONS = _G.DUNGEONS
 local GARRISON_LANDING_PAGE_TITLE = _G.GARRISON_LANDING_PAGE_TITLE
 local GARRISON_LOCATION_TOOLTIP = _G.GARRISON_LOCATION_TOOLTIP
-local GENERAL = _G.GENERAL
-local INVENTORY_TOOLTIP = _G.INVENTORY_TOOLTIP
-local LOOT = _G.LOOT
-local MINIMAP_LABEL = _G.MINIMAP_LABEL
-local MISCELLANEOUS = _G.MISCELLANEOUS
-local PARTY = _G.PARTY
-local RAID = _G.RAID
 local RAID_CONTROL = _G.RAID_CONTROL
 local RAIDS = _G.RAIDS
 local REVERSE_NEW_LOOT_TEXT = _G.REVERSE_NEW_LOOT_TEXT
 local ROLE = _G.ROLE
 local SCENARIOS = _G.SCENARIOS
-local TEXTURES_SUBHEADER = _G.TEXTURES_SUBHEADER
-local UNIT_NAMEPLATES = _G.UNIT_NAMEPLATES
-local UNITFRAME_LABEL = _G.UNITFRAME_LABEL
-local WORLDMAP_BUTTON = _G.WORLDMAP_BUTTON
 
 _G.KkthnxUIConfig["frFR"] = {
 	-- Menu Groups Display Names
 	["GroupNames"] = {
-		-- Let's keep this in alphabetical order, shall we?
-		-- GroupNames Translation: QuN [Druid]
-		["ActionBar"] = BINDING_HEADER_ACTIONBAR,
-		["Announcements"] = "Annonces",
-		["Arena"] = ARENA,
-		["Auras"] = AURAS,
+		-- Let's Keep This In Alphabetical Order, Shall We?
+		["ActionBar"] = "Action Bar",
+		["Announcements"] = "Announcements",
+		["Arena"] = "Arena",
+		["Auras"] = "Auras",
 		["Automation"] = "Automation",
-		["Boss"] = BOSS,
-		["Chat"] = CHAT,
-		["DataBars"] = "Barresdedonnées",
-		["DataText"] = "Textededonnées",
+		["Boss"] = "Boss",
+		["Chat"] = "Chat",
+		["DataBars"] = "Data Bars",
+		["DataText"] = "Data Text",
 		["Filger"] = "Filger",
-		["General"] = GENERAL,
-		["HealthPrediction"] = "Prédictiondesanté",
-		["Inventory"] = INVENTORY_TOOLTIP,
-		["Loot"] = LOOT,
-		["Minimap"] = MINIMAP_LABEL,
-		["MinimapButtons"] = "BoutonsdeMinimap",
-		["Misc"] = MISCELLANEOUS,
-		["Nameplates"] = UNIT_NAMEPLATES,
-		["Party"] = PARTY,
+		["General"] = "General",
+		["HealthPrediction"] = "Health Prediction",
+		["Inventory"] = "Inventory",
+		["Loot"] = "Loot",
+		["Minimap"] = "Minimap",
+		["MinimapButtons"] = "Minimap Buttons",
+		["Misc"] = "Miscellaneous",
+		["Nameplates"] = "Nameplates",
+		["Party"] = "Party",
 		["QuestNotifier"] = "Quest Notifier",
-		["Raid"] = RAID,
+		["Raid"] = "Raid",
 		["Skins"] = "Skins",
-		["Tooltip"] = "Infobulle",
+		["Tooltip"] = "Tooltip",
 		["UIFonts"] = ModuleNewFeature.."Fonts",
-		["UITextures"] = ModuleNewFeature..TEXTURES_SUBHEADER,
-		["Unitframe"] = UNITFRAME_LABEL,
-		["WorldMap"] = WORLDMAP_BUTTON
+		["UITextures"] = ModuleNewFeature.."Textures",
+		["Unitframe"] = "Unit Frames",
+		["WorldMap"] = "World Map",
 	},
 
 	-- General Local
