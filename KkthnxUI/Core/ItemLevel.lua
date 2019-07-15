@@ -52,9 +52,9 @@ function K.GetGearSlotInfo(unit, slot, deepScan)
 	K.ScanTooltip:SetInventoryItem(unit, slot)
 	K.ScanTooltip:Show()
 
-	local iLvl, enchantText, enchantColors, itemLevelColors, gems
+	local iLvl, enchantText, enchantColors, itemLevelColors, gems, essences
 	if deepScan then
-		gems = K.ScanTooltipTextures(nil, true)
+		gems, essences = K.ScanTooltipTextures(nil, true)
 		for x = 1, K.ScanTooltip:NumLines() do
 			local line = _G["KkthnxUI_ScanTooltipTextLeft"..x]
 			if line then
@@ -86,7 +86,7 @@ function K.GetGearSlotInfo(unit, slot, deepScan)
 	end
 
 	K.ScanTooltip:Hide()
-	return iLvl, enchantText, deepScan and gems, enchantColors, itemLevelColors
+	return iLvl, enchantText, deepScan and gems, deepScan and essences, enchantColors, itemLevelColors
 end
 
 -- Credit ls & Acidweb

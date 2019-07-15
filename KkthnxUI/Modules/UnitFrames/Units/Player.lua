@@ -23,7 +23,7 @@ function Module:CreatePlayer()
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
 	self:RegisterForClicks("AnyUp")
-	self:SetScript("OnEnter", function(self)
+	self:SetScript("OnEnter", function()
 		UnitFrame_OnEnter(self)
 
 		if (self.Highlight and not self.Highlight:IsShown()) then
@@ -31,7 +31,7 @@ function Module:CreatePlayer()
 		end
 	end)
 
-	self:SetScript("OnLeave", function(self)
+	self:SetScript("OnLeave", function()
 		UnitFrame_OnLeave(self)
 
 		if (self.Highlight and self.Highlight:IsShown()) then
@@ -150,7 +150,7 @@ function Module:CreatePlayer()
 	Module.CreateHealthPrediction(self, "player")
 
 	if (C["Unitframe"].PowerPredictionBar) then
-		self.PowerPrediction = Module.CreatePowerPrediction(self)
+		--self.PowerPrediction = Module.CreatePowerPrediction(self)
 	end
 
 	if C["Unitframe"].PlayerBuffs then

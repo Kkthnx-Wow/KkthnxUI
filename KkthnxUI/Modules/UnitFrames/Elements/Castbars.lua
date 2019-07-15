@@ -414,7 +414,7 @@ function Module:CreateNameplateCastbar()
 	self.Castbar:SetHeight(C["Nameplates"].CastHeight)
 	self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -4)
 	self.Castbar:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -4)
-	self.Castbar:CreateShadow()
+	self.Castbar:CreateShadow(true)
 
 	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
 	self.Castbar.Spark:SetSize(32, self:GetHeight())

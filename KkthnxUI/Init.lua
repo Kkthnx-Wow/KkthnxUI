@@ -171,14 +171,25 @@ function AddOn:PositionGameMenuButton()
 end
 
 function AddOn.ScanTooltipTextures(clean, grabTextures)
-	local textures
+	local essenceTextureID, textures, essences = 2975691
 	for i = 1, 10 do
 		local tex = _G["KkthnxUI_ScanTooltipTexture"..i]
-		local hasTexture = tex and tex:GetTexture()
-		if hasTexture then
+		local texture = tex and tex:GetTexture()
+		if texture then
 			if grabTextures then
 				if not textures then textures = {} end
-				textures[i] = hasTexture
+				if texture == essenceTextureID then
+					if not essences then essences = {} end
+
+					local selected = (textures[i-1] ~= essenceTextureID and textures[i-1]) or nil
+					essences[i] = {selected, tex:GetAtlas(), texture}
+
+					if selected then
+						textures[i-1] = nil
+					end
+				else
+					textures[i] = texture
+				end
 			end
 			if clean then
 				tex:SetTexture()
@@ -186,7 +197,7 @@ function AddOn.ScanTooltipTextures(clean, grabTextures)
 		end
 	end
 
-	return textures
+	return textures, essences
 end
 
 AddOn.AddOns = {}

@@ -38,25 +38,48 @@ local function UpdateThreat(self, _, unit)
 end
 
 local function UpdateRaidPower(self, _, unit)
-	if self.unit ~= unit then
+	if unit ~= self.unit then
 		return
 	end
 
-	local _, powerToken = UnitPowerType(unit)
-	if powerToken == "MANA" then
-		if not self.Power:IsVisible() then
-			self.Health:ClearAllPoints()
-			self.Health:SetPoint("BOTTOMLEFT", self, 0, 7)
-			self.Health:SetPoint("TOPRIGHT", self)
-			self.Power:Show()
-		end
+	local health = self.Health
+	local power = self.Power
+
+	if (not power) then
+		return
+	end
+
+	local _, ptype = UnitPowerType(unit)
+	local min, max = UnitPower(unit), UnitPowerMax(unit)
+
+	local disconnected = not UnitIsConnected(unit)
+
+	if (disconnected) then
+		power:Hide()
 	else
-		if self.Power:IsVisible() then
-			self.Health:ClearAllPoints()
-			self.Health:SetAllPoints(self)
-			self.Power:Hide()
+		if (power.__disconnected ~= disconnected) then
+			power:Show()
+		end
+
+		if (power.__ptype ~= ptype) then
+			if (ptype ~= "MANA") then
+				health:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -1, 1)
+				power:Hide()
+			else
+				health:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -1, 5)
+				power:Show()
+			end
+
+			power.__ptype = ptype
 		end
 	end
+
+	if (ptype == "MANA") then
+		power:SetMinMaxValues(0, max)
+		power:SetValue(min)
+	end
+
+	power.__disconnected = disconnected
 end
 
 function Module:CreateRaid()
@@ -64,7 +87,7 @@ function Module:CreateRaid()
 	local RaidframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
 	self:RegisterForClicks("AnyUp")
-	self:SetScript("OnEnter", function(self)
+	self:SetScript("OnEnter", function()
 		UnitFrame_OnEnter(self)
 
 		if (self.Highlight) then
@@ -72,7 +95,7 @@ function Module:CreateRaid()
 		end
 	end)
 
-	self:SetScript("OnLeave", function(self)
+	self:SetScript("OnLeave", function()
 		UnitFrame_OnLeave(self)
 
 		if (self.Highlight) then
@@ -98,9 +121,9 @@ function Module:CreateRaid()
 	self.Health.colorSmooth = false
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
-	self.Health.frequentUpdates = true
+	self.Health.frequentUpdates = false -- Should Help With Fps In Bigger Groups.
 
-	K:SetSmoothing(self.Health, C["Raid"].Smooth)
+	--K:SetSmoothing(self.Health, C["Raid"].Smooth)
 
 	if C["Raid"].ManabarShow then
 		self.Power = CreateFrame("StatusBar", nil, self)
@@ -112,18 +135,17 @@ function Module:CreateRaid()
 		self.Power:SetStatusBarTexture(RaidframeTexture)
 
 		self.Power.colorPower = true
-		self.Power.frequentUpdates = true
+		self.Power.frequentUpdates = false -- Should Help With Fps In Bigger Groups.
 
-		K:SetSmoothing(self.Power, C["Raid"].Smooth)
+		--K:SetSmoothing(self.Power, C["Raid"].Smooth)
 
 		self.Power.Background = self.Power:CreateTexture(nil, "BORDER")
 		self.Power.Background:SetAllPoints(self.Power)
 		self.Power.Background:SetColorTexture(.2, .2, .2)
 		self.Power.Background.multiplier = 0.3
 
-		table_insert(self.__elements, UpdateRaidPower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
-		UpdateRaidPower(self, _, unit)
+		self.Power.Override = UpdateRaidPower
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
@@ -153,9 +175,9 @@ function Module:CreateRaid()
 	self.ResurrectIndicator:SetSize(30, 30)
 	self.ResurrectIndicator:SetPoint("CENTER", 0, -3)
 
-	-- self.SummonIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
- 	-- self.SummonIndicator:SetSize(30, 30)
- 	-- self.SummonIndicator:SetPoint("CENTER", 0, -3)
+	self.SummonIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.SummonIndicator:SetSize(30, 30)
+	self.SummonIndicator:SetPoint("CENTER", 0, -3)
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.LeaderIndicator:SetSize(12, 12)
@@ -228,13 +250,7 @@ function Module:CreateRaid()
 		self.TargetHighlight:Hide()
 
 		local function UpdateRaidTargetGlow()
-			if not self.unit then
-				return
-			end
-
-			local unit = self.unit
-
-			if unit and UnitIsUnit(unit, "target") then
+			if UnitIsUnit("target", self.unit) then
 				self.TargetHighlight:Show()
 			else
 				self.TargetHighlight:Hide()

@@ -276,7 +276,7 @@ function Module:UpdateAzerite(event, unit)
 	end
 
 	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
-	if not azeriteItemLocation or C_AzeriteItem_GetPowerLevel(azeriteItemLocation) == 50 then
+	if not azeriteItemLocation or C_AzeriteItem_GetPowerLevel(azeriteItemLocation) == 63 then
 		self.Bars.Azerite:Hide()
 	elseif azeriteItemLocation then
 		self.Bars.Azerite:Show()

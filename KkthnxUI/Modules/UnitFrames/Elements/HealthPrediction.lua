@@ -5,82 +5,62 @@ local _G = _G
 
 local CreateFrame = _G.CreateFrame
 
-local setWidth = {
-	arena = 140,
-	nameplate = C["Nameplates"].Width,
-	party = 114,
-	player = 140,
-	raid = C["Raid"].Width,
-	target = 140,
-}
-
-function Module:CreateHealthPrediction(unit)
-	local health = self.Health
-	local level = 11
-	local width = setWidth[unit] or self.Health:GetWidth()
+function Module:CreateHealthPrediction()
 	local texture = C["Media"].Blank
+	local health = self.Health
 
-	local healAbsorbBar = CreateFrame("StatusBar", nil, health)
-	healAbsorbBar:SetFrameLevel(level + 1)
-	healAbsorbBar:SetPoint("TOPRIGHT", health:GetStatusBarTexture())
-	healAbsorbBar:SetPoint("BOTTOMRIGHT", health:GetStatusBarTexture())
-	healAbsorbBar:SetWidth(width)
-	healAbsorbBar:SetReverseFill(true)
-	healAbsorbBar:SetStatusBarTexture(texture)
-	healAbsorbBar:SetStatusBarColor(1, 0, 0, 0.25)
-	K:SetSmoothing(healAbsorbBar, true)
+	local mhpb = health:CreateTexture(nil, "BORDER", nil, 5)
+	mhpb:SetWidth(1)
+	mhpb:SetTexture(texture)
+	mhpb:SetVertexColor(0, 1, .5, .5)
 
-	local overHealAbsorb = health:CreateTexture(nil, "ARTWORK")
-	overHealAbsorb:SetWidth(5)
-	overHealAbsorb:SetPoint("TOPRIGHT", health, "TOPLEFT")
-	overHealAbsorb:SetPoint("BOTTOMRIGHT", health, "BOTTOMLEFT")
+	local ohpb = health:CreateTexture(nil, "BORDER", nil, 5)
+	ohpb:SetWidth(1)
+	ohpb:SetTexture(texture)
+	ohpb:SetVertexColor(0, 1, 0, .5)
 
-	local myBar = CreateFrame("StatusBar", nil, health)
-	myBar:SetFrameLevel(level)
-	myBar:SetPoint("TOPLEFT", health:GetStatusBarTexture(), "TOPRIGHT")
-	myBar:SetPoint("BOTTOMLEFT", health:GetStatusBarTexture(), "BOTTOMRIGHT")
-	myBar:SetWidth(width)
-	myBar:SetStatusBarTexture(texture)
-	myBar:SetStatusBarColor(0, 1, 0.5, 0.25)
-	K:SetSmoothing(myBar, true)
+	local abb = health:CreateTexture(nil, "BORDER", nil, 5)
+	abb:SetWidth(1)
+	abb:SetTexture(texture)
+	abb:SetVertexColor(.66, 1, 1, .7)
 
-	local otherBar = CreateFrame("StatusBar", nil, health)
-	otherBar:SetFrameLevel(level)
-	otherBar:SetPoint("TOPLEFT", myBar:GetStatusBarTexture(), "TOPRIGHT")
-	otherBar:SetPoint("BOTTOMLEFT", myBar:GetStatusBarTexture(), "BOTTOMRIGHT")
-	otherBar:SetWidth(width)
-	otherBar:SetStatusBarTexture(texture)
-	otherBar:SetStatusBarColor(0, 1, 0, 0.25)
-	K:SetSmoothing(otherBar, true)
+	local abbo = health:CreateTexture(nil, "ARTWORK", nil, 1)
+	abbo:SetAllPoints(abb)
+	abbo:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+	abbo.tileSize = 32
 
-	local absorbBar = CreateFrame("StatusBar", nil, health)
-	absorbBar:SetFrameLevel(level + 1)
-	absorbBar:SetPoint("TOPLEFT", otherBar:GetStatusBarTexture(), "TOPRIGHT")
-	absorbBar:SetPoint("BOTTOMLEFT", otherBar:GetStatusBarTexture(), "BOTTOMRIGHT")
-	absorbBar:SetWidth(width)
-	absorbBar:SetStatusBarTexture(texture)
-	absorbBar:SetStatusBarColor(1, 1, 0, 0.25)
-	K:SetSmoothing(absorbBar, true)
+	local oag = health:CreateTexture(nil, "ARTWORK", nil, 1)
+	oag:SetWidth(15)
+	oag:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
+	oag:SetBlendMode("ADD")
+	oag:SetAlpha(.7)
+	oag:SetPoint("TOPLEFT", health, "TOPRIGHT", -5, 2)
+	oag:SetPoint("BOTTOMLEFT", health, "BOTTOMRIGHT", -5, -2)
 
-	local overlay = absorbBar:CreateTexture(nil, "ARTWORK", nil, 1)
-	overlay:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb", "REPEAT", "REPEAT")
-	overlay:SetHorizTile(true)
-	overlay:SetVertTile(true)
-	overlay:SetAllPoints(absorbBar:GetStatusBarTexture())
-	overlay:SetAlpha(0.25)
+	local hab = CreateFrame("StatusBar", nil, health)
+	hab:SetPoint("TOP")
+	hab:SetPoint("BOTTOM")
+	hab:SetPoint("RIGHT", health:GetStatusBarTexture())
+	hab:SetWidth(health:GetWidth())
+	hab:SetReverseFill(true)
+	hab:SetStatusBarTexture(texture)
+	hab:SetStatusBarColor(0, .5, .8, .5)
 
-	local overAbsorb = health:CreateTexture(nil, "ARTWORK")
-	overAbsorb:SetWidth(5)
-	overAbsorb:SetPoint("TOPLEFT", health, "TOPRIGHT", -3, 0)
-	overAbsorb:SetPoint("BOTTOMLEFT", health, "BOTTOMRIGHT", -3, 0)
+	local ohg = health:CreateTexture(nil, "ARTWORK", nil, 1)
+	ohg:SetWidth(15)
+	ohg:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb")
+	ohg:SetBlendMode("ADD")
+	ohg:SetPoint("TOPRIGHT", health, "TOPLEFT", 5, 2)
+	ohg:SetPoint("BOTTOMRIGHT", health, "BOTTOMLEFT", 5, -2)
 
-	self.HealthPrediction = {
-		healAbsorbBar = healAbsorbBar,
-		myBar = myBar,
-		otherBar = otherBar,
-		absorbBar = absorbBar,
-		overAbsorb = overAbsorb,
-		overHealAbsorb = overHealAbsorb,
+	self.HealPredictionAndAbsorb = {
+		myBar = mhpb,
+		otherBar = ohpb,
+		absorbBar = abb,
+		absorbBarOverlay = abbo,
+		overAbsorbGlow = oag,
+		healAbsorbBar = hab,
+		overHealAbsorbGlow = ohg,
 		maxOverflow = 1,
 	}
 end

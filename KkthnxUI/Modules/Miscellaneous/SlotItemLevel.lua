@@ -34,9 +34,10 @@ function Module:CreateInspectTexture(slot, x, y)
 	texture:SetTexCoord(unpack(K.TexCoords))
 	texture:SetSize(14, 14)
 
-	local backdrop = CreateFrame('Frame', nil, slot)
+	local backdrop = CreateFrame("Frame", nil, slot)
+	backdrop:SetFrameLevel(slot:GetFrameLevel())
 	backdrop:CreateBorder()
-	backdrop:SetOutside(texture)
+	backdrop:SetAllPoints(texture)
 	backdrop:Hide()
 
 	return texture, backdrop

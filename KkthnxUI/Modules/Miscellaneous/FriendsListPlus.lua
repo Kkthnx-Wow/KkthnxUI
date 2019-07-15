@@ -160,10 +160,11 @@ function Module:UpdateFriends(button)
 		button.info:SetTextColor(unpack(Cooperate and {1, .96, .45} or {.49, .52, .54}))
 		button.name:SetFont(C["Media"].Font, C["Media"].FontSize, "")
 		button.info:SetFont(C["Media"].Font, 11, "")
-	end
 
-	if FriendsFrameBattlenetFrame.UnavailableInfoButton then
-		FriendsFrameBattlenetFrame.UnavailableInfoButton:Kill()
+		if button.Favorite:IsShown() then
+			button.Favorite:ClearAllPoints()
+			button.Favorite:SetPoint("TOPLEFT", button.name, "TOPLEFT", button.name:GetStringWidth(), 0);
+		end
 	end
 end
 
