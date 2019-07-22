@@ -1373,30 +1373,45 @@ function Module:OnEnable()
 		K.HideInterfaceOption(InterfaceOptionsNamesPanelUnitNameplatesMakeLarger)
 		K.HideInterfaceOption(InterfaceOptionsNamesPanelUnitNameplatesAggroFlash)
 
-		Module:RegisterEvent("PLAYER_REGEN_ENABLED")
-		Module:RegisterEvent("PLAYER_REGEN_DISABLED")
+		self:RegisterEvent("PLAYER_REGEN_ENABLED")
+		self:RegisterEvent("PLAYER_REGEN_DISABLED")
+		self:PLAYER_REGEN_ENABLED()
 
-		local BlizzPlateManaBar = _G.NamePlateDriverFrame.classNamePlatePowerBar
-		if BlizzPlateManaBar then
-			BlizzPlateManaBar:Hide()
-			BlizzPlateManaBar:UnregisterAllEvents()
+		-- Disable The Default Class Resource Bars
+		for _,object in pairs({
+			ClassNameplateBarFrame,
+			ClassNameplateBarShardFrame,
+			ClassNameplateBarWarlockFrame,
+			ClassNameplateBarComboPointFrame,
+			ClassNameplateBarRogueDruidFrame,
+			ClassNameplateBarPaladinRuneFrame,
+			ClassNameplateBarPaladinFrame,
+			ClassNameplateBarWindwalkerMonkFrame,
+			ClassNameplateBrewmasterBarFrame,
+			ClassNameplateBarChiFrame,
+			ClassNameplateBarMageFrame,
+			ClassNameplateBarArcaneChargeFrame,
+			ClassNameplateBarDeathKnightRuneButton,
+			DeathKnightResourceOverlayFrame,
+
+			ClassNameplateManaBarFrame,
+			ClassNameplateManaBarFrame and ClassNameplateManaBarFrame.Border,
+			ClassNameplateManaBarFrame and ClassNameplateManaBarFrame.FeedbackFrame,
+			ClassNameplateManaBarFrame and ClassNameplateManaBarFrame.FullPowerFrame,
+			ClassNameplateManaBarFrame and ClassNameplateManaBarFrame.ManaCostPredictionBar,
+			ClassNameplateManaBarFrame and ClassNameplateManaBarFrame.background,
+			ClassNameplateManaBarFrame and ClassNameplateManaBarFrame.Texture
+		}) do
+			if object then
+				object:ClearAllPoints()
+				object:SetParent(K.UIFrameHider)
+				hooksecurefunc(object, "SetParent", function(self, parent)
+					if (parent ~= K.UIFrameHider) then
+						self:SetParent(K.UIFrameHider)
+					end
+				end)
+			end
 		end
-
-		hooksecurefunc(_G.NamePlateDriverFrame, "SetupClassNameplateBars", function(frame)
-			if not frame or frame:IsForbidden() then
-				return
-			end
-
-			if frame.classNamePlateMechanicFrame then
-				frame.classNamePlateMechanicFrame:Hide()
-			end
-			if frame.classNamePlatePowerBar then
-				frame.classNamePlatePowerBar:Hide()
-				frame.classNamePlatePowerBar:UnregisterAllEvents()
-			end
-		end)
-
-		Module:PLAYER_REGEN_ENABLED()
 	end
 
 	if C["Unitframe"].Enable then
