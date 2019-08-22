@@ -84,8 +84,8 @@ function Module:GetUnit()
 end
 
 function Module:HideLines()
-    for i = 3, self:NumLines() do
-        local tiptext = _G["GameTooltipTextLeft"..i]
+	for i = 3, self:NumLines() do
+		local tiptext = _G["GameTooltipTextLeft"..i]
 		local linetext = tiptext:GetText()
 		if linetext then
 			if linetext == PVP then
@@ -107,7 +107,7 @@ function Module:HideLines()
 				end
 			end
 		end
-    end
+	end
 end
 
 function Module:GetLevelLine()
@@ -502,43 +502,40 @@ K:RegisterEvent("ADDON_LOADED", addonStyled)
 
 Module:RegisterTooltips("KkthnxUI", function()
 	local tooltips = {
-		_G.AutoCompleteBox,
-		_G.BattlePetTooltip,
 		_G.ChatMenu,
-		_G.EmbeddedItemTooltip,
 		_G.EmoteMenu,
-		_G.FloatingBattlePetTooltip,
-		_G.FloatingGarrisonFollowerAbilityTooltip,
-		_G.FloatingGarrisonFollowerTooltip,
-		_G.FloatingGarrisonMissionTooltip,
-		_G.FloatingGarrisonShipyardFollowerTooltip,
-		_G.FloatingPetBattleAbilityTooltip,
-		_G.FriendsTooltip,
+		_G.LanguageMenu,
+		_G.VoiceMacroMenu,
 		_G.GameTooltip,
-		_G.GarrisonFollowerAbilityTooltip,
-		_G.GarrisonFollowerTooltip,
-		_G.GarrisonShipyardFollowerTooltip,
-		_G.GeneralDockManagerOverflowButtonList,
-		_G.IMECandidatesFrame,
+		_G.EmbeddedItemTooltip,
+		_G.ItemRefTooltip,
 		_G.ItemRefShoppingTooltip1,
 		_G.ItemRefShoppingTooltip2,
-		_G.ItemRefTooltip,
-		_G.LanguageMenu,
-		_G.NamePlateTooltip,
-		_G.PetBattlePrimaryAbilityTooltip,
-		_G.PetBattlePrimaryUnitTooltip,
-		_G.QuestScrollFrame.StoryTooltip,
-		_G.QuestScrollFrame.WarCampaignTooltip,
-		_G.QueueStatusFrame,
-		_G.ReputationParagonTooltip,
 		_G.ShoppingTooltip1,
 		_G.ShoppingTooltip2,
-		_G.VoiceMacroMenu,
-		_G.WorldMapCompareTooltip1,
-		_G.WorldMapCompareTooltip2,
-		_G.WorldMapCompareTooltip3,
-		_G.WorldMapTooltip,
+		_G.AutoCompleteBox,
+		_G.FriendsTooltip,
+		_G.QuestScrollFrame.StoryTooltip,
+		_G.GeneralDockManagerOverflowButtonList,
+		_G.ReputationParagonTooltip,
+		_G.QuestScrollFrame.WarCampaignTooltip,
+		_G.NamePlateTooltip,
+		_G.QueueStatusFrame,
+		_G.FloatingGarrisonFollowerTooltip,
+		_G.FloatingGarrisonFollowerAbilityTooltip,
+		_G.FloatingGarrisonMissionTooltip,
+		_G.GarrisonFollowerAbilityTooltip,
+		_G.GarrisonFollowerTooltip,
+		_G.FloatingGarrisonShipyardFollowerTooltip,
+		_G.GarrisonShipyardFollowerTooltip,
+		_G.BattlePetTooltip,
+		_G.PetBattlePrimaryAbilityTooltip,
+		_G.PetBattlePrimaryUnitTooltip,
+		_G.FloatingBattlePetTooltip,
+		_G.FloatingPetBattleAbilityTooltip,
+		_G.IMECandidatesFrame
 	}
+
 	for _, f in pairs(tooltips) do
 		f:HookScript("OnShow", Module.ReskinTooltip)
 	end
@@ -668,6 +665,7 @@ Module:RegisterTooltips("Blizzard_GarrisonUI", function()
 		GarrisonFollowerAbilityWithoutCountersTooltip,
 		GarrisonFollowerMissionAbilityWithoutCountersTooltip
 	}
+
 	for _, f in pairs(gt) do
 		f:HookScript("OnShow", Module.ReskinTooltip)
 	end
