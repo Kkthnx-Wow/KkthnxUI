@@ -17,7 +17,7 @@ local table_sort, table_insert = _G.table.sort, _G.table.insert
 local unpack = _G.unpack
 local pairs = _G.pairs
 
-local C_AreaPoiInfo_GetAreaPOITimeLeft = _G.C_AreaPoiInfo.GetAreaPOITimeLeft
+local C_AreaPoiInfo_GetAreaPOISecondsLeft = _G.C_AreaPoiInfo.GetAreaPOISecondsLeft
 local C_Map_GetMapInfo = _G.C_Map.GetMapInfo
 local DUNGEON_FLOOR_TEMPESTKEEP1 = _G.DUNGEON_FLOOR_TEMPESTKEEP1
 local EJ_GetCurrentTier = _G.EJ_GetCurrentTier
@@ -37,13 +37,11 @@ local GetWorldPVPAreaInfo = _G.GetWorldPVPAreaInfo
 local QUEUE_TIME_UNAVAILABLE = _G.QUEUE_TIME_UNAVAILABLE
 local RequestRaidInfo = _G.RequestRaidInfo
 local SecondsToTime = _G.SecondsToTime
-local TempestKeep = select(2, GetAchievementInfo(1088)):match("%((.-)%)$")
 local TIMEMANAGER_TOOLTIP_LOCALTIME = _G.TIMEMANAGER_TOOLTIP_LOCALTIME
 local TIMEMANAGER_TOOLTIP_REALMTIME = _G.TIMEMANAGER_TOOLTIP_REALMTIME
+local TempestKeep = select(2, GetAchievementInfo(1088)):match("%((.-)%)$")
 local VOICE_CHAT_BATTLEGROUND = _G.VOICE_CHAT_BATTLEGROUND
 local WINTERGRASP_IN_PROGRESS = _G.WINTERGRASP_IN_PROGRESS
-
--- GLOBALS: GameTimeFrame
 
 local NameColor = K.RGBToHex(K.Color.r, K.Color.g, K.Color.b)
 local ValueColor = K.RGBToHex(1, 1, 1)
@@ -128,22 +126,22 @@ local nhm = { -- Raid Finder, Normal, Heroic, Mythic
 }
 
 -- Check Invasion Status
-local region = _G.GetCVar("portal")
+local region = GetCVar("portal")
 local legionZoneTime = {
-	["CN"] = 1546844400, -- CN time 1/7/2019 15:00 [1]
-	["EU"] = 1546786800, -- CN-16
-	["US"] = 1546815600, -- CN-8
+	["EU"] = 1565168400, -- CN-16
+	["US"] = 1565197200, -- CN-8
+	["CN"] = 1565226000, -- CN time 8/8/2019 09:00 [1]
 }
 
---[[local bfaZoneTime = {
+local bfaZoneTime = {
 	["CN"] = 1546743600, -- CN time 1/6/2019 11:00 [1]
 	["EU"] = 1546768800, -- CN+7
 	["US"] = 1546769340, -- CN+16
 }
---]]
+
 local invIndex = {
-	[1] = {title = L["Legion Invasion"], duration = 66600, maps = {630, 641, 650, 634}, timeTable = {4, 3, 2, 1, 4, 2, 3, 1, 2, 4, 1, 3}, baseTime = legionZoneTime[region] or 1546844400}, -- 1/7/2019 15:00 [1]
-	--[2] = {title = L["BFA Invasion"], duration = 68400, maps = {862, 863, 864, 896, 942, 895}, timeTable = {4, 1, 6, 2, 5, 3}, baseTime = bfaZoneTime[region] or 1546743600},
+	[1] = {title = L["Legion Invasion"], duration = 66600, maps = {630, 641, 650, 634}, timeTable = {}, baseTime = legionZoneTime[region] or legionZoneTime["CN"]}, -- need reviewed
+	[2] = {title = L["BFA Invasion"], duration = 68400, maps = {862, 863, 864, 896, 942, 895}, timeTable = {4, 1, 6, 2, 5, 3}, baseTime = bfaZoneTime[region] or bfaZoneTime["CN"]},
 }
 
 local mapAreaPoiIDs = {
@@ -161,7 +159,7 @@ local mapAreaPoiIDs = {
 
 local function getInvasionInfo(mapID)
 	local areaPoiID = mapAreaPoiIDs[mapID]
-	local seconds = C_AreaPoiInfo_GetAreaPOITimeLeft(areaPoiID)
+	local seconds = C_AreaPoiInfo_GetAreaPOISecondsLeft(areaPoiID)
 	local mapInfo = C_Map_GetMapInfo(mapID)
 	return seconds, mapInfo.name
 end
@@ -176,15 +174,20 @@ local function CheckInvasion(index)
 end
 
 local function GetNextTime(baseTime, index)
-	local currentTime = _G.time()
+	local currentTime = time()
 	local duration = invIndex[index].duration
 	local elapsed = mod(currentTime - baseTime, duration)
+
 	return duration - elapsed + currentTime
 end
 
 local function GetNextLocation(nextTime, index)
 	local inv = invIndex[index]
 	local count = #inv.timeTable
+	if count == 0 then
+		return QUEUE_TIME_UNAVAILABLE
+	end
+
 	local elapsed = nextTime - inv.baseTime
 	local round = mod(math_floor(elapsed / inv.duration) + 1, count)
 	if round == 0 then
@@ -364,7 +367,9 @@ local function OnEnter(self)
 			end
 			GameTooltip:AddDoubleLine(L["Current Invasion"]..zoneName, string_format("%.2d:%.2d", timeLeft / 60, timeLeft % 60), 1, 1, 1, r, g, b)
 		end
-		GameTooltip:AddDoubleLine(L["Next Invasion"]..GetNextLocation(nextTime, index), date("%m/%d %H:%M", nextTime), 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
+
+		local nextLocation = GetNextLocation(nextTime, index)
+		GameTooltip:AddDoubleLine(L["Next Invasion"]..nextLocation, date("%m/%d %H:%M", nextTime), 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
 	end
 
 	GameTooltip:Show()
