@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Load_Libraries -->
-   <!-- <Script file="LibStub\LibStub.lua" />
-   <Script file="CallbackHandler-1.0\CallbackHandler-1.0.lua" /> -->
+   <Script file="LibStub\LibStub.lua" />
+   <Script file="CallbackHandler-1.0\CallbackHandler-1.0.lua" />
    <Script file="LibSpellRange-1.0\LibSpellRange-1.0.lua" />
    <Script file="LibSharedMedia-3.0\LibSharedMedia-3.0.lua" />
    <Include file="oUF\oUF.xml" />
