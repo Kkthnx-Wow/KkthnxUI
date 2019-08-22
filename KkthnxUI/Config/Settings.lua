@@ -457,13 +457,11 @@ C["Raid"] = {
 	}
 }
 
-if not IsAddOnLoaded("QuestNotifier") then
-	C["QuestNotifier"] = {
-		["Enable"] = IsAddOnLoaded("QuestNotifier") and false,
-		["OnlyCompleteRing"] = false,
-		["QuestProgress"] = false,
-	}
-end
+C["QuestNotifier"] = {
+	["Enable"] = IsAddOnLoaded("QuestNotifier") and false,
+	["OnlyCompleteRing"] = false,
+	["QuestProgress"] = false,
+}
 
 -- Worldmap
 C["WorldMap"] = {
