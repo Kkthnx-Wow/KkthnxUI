@@ -126,6 +126,11 @@ _G.KkthnxUIConfig["enUS"] = {
 
 	-- Automation Local
 	["Automation"] = {
+		["AutoBubbles"] = {
+			["Name"] = "Auto Toggle Chat Bubbles",
+			["Desc"] = "Toggle chat bubbles depending on your InstanceType. If you are in a Dungeon/Raid, It will be toggled off."
+		},
+
 		["AutoCollapse"] = {
 			["Name"] = "Auto Collapse Objective Tracker",
 		},

@@ -19,7 +19,7 @@ function Module:CreatePetbar()
 	local frame = CreateFrame("Frame", "KkthnxUI_PetActionBar", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding + 20)
 	frame:SetHeight(FilterConfig.size + 2 * padding + 2)
-	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 124}
+	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 80, 124}
 
 	-- Move The Buttons Into Position And Reparent Them
 	_G.PetActionBarFrame:SetParent(frame)

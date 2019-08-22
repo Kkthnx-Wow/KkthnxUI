@@ -199,8 +199,7 @@ function Module:Send(msg, throttle, unit)
 		SendChatMessage(msg, "PARTY")
 		-- Instance Chat
 	elseif dest == "instance" and (GetNumGroupMembers() > 0) then
-		--SendChatMessage(msg, "INSTANCE_CHAT")
-		SendChatMessage(msg, "PARTY")
+		SendChatMessage(msg, "INSTANCE_CHAT")
 		-- Raid Chat
 	elseif dest == "raid" and (GetNumGroupMembers() > 0) then
 		SendChatMessage(msg, "RAID")

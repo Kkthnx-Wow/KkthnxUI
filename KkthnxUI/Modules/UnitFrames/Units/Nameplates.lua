@@ -350,6 +350,10 @@ function Module:CreateNameplates(unit)
 	self.RaidTargetIndicator:SetSize(18, 18)
 	self.RaidTargetIndicator:SetPoint("RIGHT", self, "LEFT", -6, 0)
 
+	self.PvPClassificationIndicator = self.Health:CreateTexture(nil, "OVERLAY")
+    self.PvPClassificationIndicator:SetSize(30, 30)
+	self.PvPClassificationIndicator:SetPoint("LEFT", self, "RIGHT", 5, -2)
+
 	if C["Nameplates"].QuestInfo then
 		self.questIcon = self:CreateTexture(nil, "OVERLAY", nil, 2)
 		self.questIcon:SetPoint("LEFT", self, "RIGHT", -1, 0)

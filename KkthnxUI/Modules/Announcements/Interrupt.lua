@@ -39,11 +39,11 @@ function Module:SetupInterruptAnnounce()
 
 	local interruptAnnounce, msg = C["Announcements"].Interrupt.Value, string_format(InterruptMessage, destName, spellID, spellName)
 	if interruptAnnounce == "PARTY" then
-		SendChatMessage(msg, inPartyLFG and "PARTY" or "PARTY")
+		SendChatMessage(msg, inPartyLFG and "INSTANCE_CHAT" or "PARTY")
 	elseif interruptAnnounce == "RAID" then
-		SendChatMessage(msg, inPartyLFG and "PARTY" or (inRaid and "RAID" or "PARTY"))
+		SendChatMessage(msg, inPartyLFG and "INSTANCE_CHAT" or (inRaid and "RAID" or "PARTY"))
 	elseif interruptAnnounce == "RAID_ONLY" and inRaid then
-		SendChatMessage(msg, inPartyLFG and "RAID" or "RAID")
+		SendChatMessage(msg, inPartyLFG and "INSTANCE_CHAT" or "RAID")
 	elseif interruptAnnounce == "SAY" then
 		SendChatMessage(msg, "SAY")
 	elseif interruptAnnounce == "EMOTE" then
@@ -54,6 +54,5 @@ end
 function Module:CreateInterruptAnnounce()
 	if C["Announcements"].Interrupt.Value ~= "NONE" then
 		self:SetupInterruptAnnounce()
-		--self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "SetupInterruptAnnounce")
 	end
 end

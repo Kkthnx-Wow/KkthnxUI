@@ -51,6 +51,7 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
+	["AutoBubbles"] = true,
 	["AutoCollapse"] = false,
 	["AutoDisenchant"] = false,
 	["AutoInvite"] = false,

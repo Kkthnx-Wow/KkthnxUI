@@ -551,23 +551,18 @@ function Module:OnEnable()
     if C["Skins"].ChatBubbles then
         local function updateBubble()
             local name, instType = GetInstanceInfo()
-            if name and instType == "raid" then
-                SetCVar("chatBubbles", 1)
-            else
+            if name and instType == "raid" or instType == "party" then
                 SetCVar("chatBubbles", 0)
+            else
+                SetCVar("chatBubbles", 1)
             end
         end
+
+        if InCombatLockdown() or C["Automation"].AutoBubbles ~= true then
+            return
+        end
+
         K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
-    end
-
-    -- Personal Shit.
-    if _G.FriendsTabHeaderTab2 then
-        _G.FriendsTabHeaderTab2:Kill()
-    end
-
-    if _G.FriendsTabHeaderTab3 then
-        _G.FriendsTabHeaderTab3:ClearAllPoints()
-        _G.FriendsTabHeaderTab3:SetPoint("LEFT", _G.FriendsTabHeaderTab1, "RIGHT", 0, 0)
     end
 
     do
