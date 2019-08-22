@@ -1,14 +1,5 @@
 local K, C, L = unpack(select(2, ...))
 local ModuleSort = K:GetModule("Sort")
-local ModuleVendor = K:GetModule("Vendor")
-
-if not ModuleSort then
-	return
-end
-
-if not ModuleVendor then
-	return
-end
 
 -- Sourced (by Hungtar, editor Tukz then Kkthnx)
 
@@ -19,9 +10,7 @@ local math_floor = _G.math.floor
 local pairs = _G.pairs
 local select = _G.select
 local string_find = _G.string.find
-local string_gsub = _G.string.gsub
 local string_lower = _G.string.lower
-local string_match = _G.string.match
 local table_insert = _G.table.insert
 local table_remove = _G.table.remove
 local tonumber = _G.tonumber
@@ -168,41 +157,6 @@ local function IsItemUnusable(...)
 	end
 end
 
-local function GetGraysValue()
-	local value = 0
-
-	for bag = 0, 4 do
-		for slot = 1, GetContainerNumSlots(bag) do
-			local itemID = GetContainerItemID(bag, slot)
-			if itemID then
-				local _, _, rarity, _, _, itype, _, _, _, _, itemPrice = GetItemInfo(itemID)
-				if itemPrice then
-					local stackCount = select(2, GetContainerItemInfo(bag, slot)) or 1
-					local stackPrice = itemPrice * stackCount
-					if (rarity and rarity == 0) and (itype and itype ~= "Quest") and (stackPrice > 0) then
-						value = value + stackPrice
-					end
-				end
-			end
-		end
-	end
-
-	return value
-end
-
-local function VendorGrayCheck()
-	local value = GetGraysValue()
-
-	if value == 0 then
-		K.Print("No gray items to delete.")
-	elseif not MerchantFrame or not MerchantFrame:IsShown() then
-		K.PopupDialogs["DELETE_GRAYS"].Money = value
-		K.StaticPopup_Show("DELETE_GRAYS")
-	else
-		ModuleVendor:VendorGrays()
-	end
-end
-
 local Stuffing = CreateFrame("Frame", nil, UIParent)
 Stuffing:RegisterEvent("ADDON_LOADED")
 Stuffing:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -306,7 +260,7 @@ function Stuffing:SlotUpdate(b)
 	if b.frame.Azerite then
 		b.frame.Azerite:Hide()
 	end
-	-- b.frame:UpdateItemContextMatching() -- Update Scrap items
+	b.frame:UpdateItemContextMatching() -- Update Scrap items
 
 	b.frame.isJunk = (quality and quality== LE_ITEM_QUALITY_POOR) and not noValue
 	if b.frame.JunkIcon then
@@ -1389,28 +1343,10 @@ function Stuffing:InitBags()
 		ModuleSort:CommandDecorator(ModuleSort.SortBags, "bags")()
 	end)
 
-	--Vendor Grays
-	f.vendorGraysButton = CreateFrame('Button', nil, f)
-	f.vendorGraysButton:SetSize(16, 16)
-	f.vendorGraysButton:CreateBorder()
-	f.vendorGraysButton:CreateInnerShadow()
-	f.vendorGraysButton:SetPoint("RIGHT", f.sortButton, "LEFT", -5, 0)
-	f.vendorGraysButton:SetNormalTexture("Interface\\ICONS\\INV_Misc_Coin_01")
-	f.vendorGraysButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	f.vendorGraysButton:GetNormalTexture():SetAllPoints()
-	f.vendorGraysButton:SetPushedTexture("Interface\\ICONS\\INV_Misc_Coin_01")
-	f.vendorGraysButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	f.vendorGraysButton:GetPushedTexture():SetAllPoints()
-	f.vendorGraysButton:StyleButton(nil, true)
-	f.vendorGraysButton.ttText = "Vendor / Delete Grays|n|nMust be at vendor to recieve money for grays"
-	f.vendorGraysButton:SetScript("OnEnter", Stuffing_TooltipShow)
-	f.vendorGraysButton:SetScript("OnLeave", Stuffing_TooltipHide)
-	f.vendorGraysButton:SetScript("OnClick", VendorGrayCheck)
-
 	-- Editbox And Gold
 	editbox.Backdrop:SetPoint("TOPLEFT", -2, 1)
 	editbox.Backdrop:SetPoint("BOTTOMRIGHT", gold.text, "LEFT", -5, -8)
-	gold.text:SetPoint("RIGHT", f.vendorGraysButton, "LEFT", -6, 0)
+	gold.text:SetPoint("RIGHT", f.sortButton, "LEFT", -6, 0)
 
 	f.editbox = editbox
 	f.detail = detail
