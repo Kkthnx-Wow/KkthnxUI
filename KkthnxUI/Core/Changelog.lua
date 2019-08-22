@@ -3,20 +3,12 @@ local Module = K:NewModule("Changelog", "AceTimer-3.0")
 
 local ChangeLogData = {
 	"Changes:",
-	"• Released v9.03.",
-	"• Rewrote a lot of parts of the UI.",
-	"• Changed how Modules are loaded.",
-	"• Add chat tab color and fix movers with align/grid command.",
-	"• More style to key binds frame and add a check too it.",
-	"• I just like my code and files like this.",
-	"• Features and fixes and updates.",
-	"• Add in some checks for nameplate elements.",
-	"• Typo from `e2d8eab`",
-	"• You just can't make your mind up Mr. Kkthnx.",
-	"• Revert part of `1decf5e`",
-	"• I was forced to add these 3 random guys as a SPECIAL THANKS.",
-	"• This should fix shit falling behind our awesome borders.",
-	"• We will have justice!",
+	"• Released v9.04.",
+	"• Removed all Ace3 Libs",
+	"• Fix Worldmap Tooltips",
+	"• Fix Changelog Close Button",
+	"• oUF Updates",
+
     -- Important Notes We Want The User To Know!
 	" ",
 	"Notes:",
@@ -81,14 +73,7 @@ end
 
 function Module:CreateChangelog()
 	local frame = CreateFrame("Frame", "KkthnxUIChangeLog", UIParent)
-	frame:ClearAllPoints() -- Do we need this?
-	if KkthnxUIData and KkthnxUIData[_G.GetRealmName()][_G.UnitName("player")].InstallComplete then
-		frame:SetPoint("CENTER", UIParent, "CENTER")
-	elseif K.Install and K.Install.Description then
-		frame:SetPoint("BOTTOM", K.Install.Description , "TOP", 0, 32)
-	else
-		frame:SetPoint("TOP", UIParent, "TOP", 0, -108)
-	end
+	frame:SetPoint("TOP", UIParent, "TOP", 0, -108)
 	frame:SetSize(480, 420)
 	frame:CreateBorder()
 	frame:SetMovable(true)
@@ -117,12 +102,6 @@ function Module:CreateChangelog()
 	end)
 	frame.close:StripTextures()
 	frame.close:SkinButton()
-	frame.close:Disable()
-
-	frame.countdown = frame.close:CreateFontString(nil, "OVERLAY")
-	frame.countdown:FontTemplate(nil, 12, "")
-	frame.countdown:SetPoint("LEFT", frame.close.Text, "RIGHT", 3, 0)
-	frame.countdown:SetTextColor(DISABLED_FONT_COLOR:GetRGB())
 
 	local offset = 4
 	for i = 1, #ChangeLogData do
@@ -140,18 +119,8 @@ function Module:CreateChangelog()
 			button.Text:SetText(string)
 			button.Text:SetWordWrap(false)
 		end
-		offset = offset + 16
-	end
-end
 
-function Module:CountDown()
-	self.time = self.time - 1
-	if self.time == 0 then
-		KkthnxUIChangeLog.countdown:SetText("")
-		KkthnxUIChangeLog.close:Enable()
-		self:CancelAllTimers()
-	else
-		KkthnxUIChangeLog.countdown:SetText(format("(%s)", self.time))
+		offset = offset + 16
 	end
 end
 
@@ -167,11 +136,6 @@ function Module:ToggleChangeLog()
 	fadeInfo.startAlpha = 0
 	fadeInfo.endAlpha = 1
 	K.UIFrameFade(KkthnxUIChangeLog, fadeInfo)
-
-	self.time = 6
-	self:CancelAllTimers()
-	Module:CountDown()
-	self:ScheduleRepeatingTimer("CountDown", 1)
 end
 
 function Module:CheckVersion()
