@@ -131,7 +131,6 @@ function Module:UpdateMapID()
 	end
 end
 
-
 function Module:OnEnable()
 	if C["WorldMap"].Coordinates then
 		playerCoords = WorldMapFrame.BorderFrame:CreateFontString(nil, "OVERLAY")
@@ -157,21 +156,23 @@ function Module:OnEnable()
 		WorldMapFrame.BlackoutFrame.Blackout:SetTexture()
 		WorldMapFrame.BlackoutFrame:EnableMouse(false)
 
-		hooksecurefunc(WorldMapFrame, "Maximize", self.SetLargeWorldMap)
-		hooksecurefunc(WorldMapFrame, "Minimize", self.SetSmallWorldMap)
-		hooksecurefunc(WorldMapFrame, "SynchronizeDisplayState", self.SynchronizeDisplayState)
-		hooksecurefunc(WorldMapFrame, "UpdateMaximizedSize", self.UpdateMaximizedSize)
+		hooksecurefunc(WorldMapFrame, "Maximize", Module.SetLargeWorldMap)
+		hooksecurefunc(WorldMapFrame, "Minimize", Module.SetSmallWorldMap)
+		hooksecurefunc(WorldMapFrame, "SynchronizeDisplayState", Module.SynchronizeDisplayState)
+		hooksecurefunc(WorldMapFrame, "UpdateMaximizedSize", Module.UpdateMaximizedSize)
 
-		WorldMapFrame:HookScript("OnShow", function()
-			if WorldMapFrame:IsMaximized() then
-				WorldMapFrame:UpdateMaximizedSize()
-				self:SetLargeWorldMap()
-			else
-				self:SetSmallWorldMap()
-			end
+		if (not WorldMapFrame.isHooked) then
+			WorldMapFrame:HookScript("OnShow", function()
+				if WorldMapFrame:IsMaximized() then
+					WorldMapFrame:UpdateMaximizedSize()
+					Module:SetLargeWorldMap()
+				else
+					Module:SetSmallWorldMap()
+				end
+			end)
 
-			WorldMapFrame:SetScript('OnShow', nil)
-		end)
+			WorldMapFrame.isHooked = true
+		end
 	end
 
 	-- Set alpha used when moving
