@@ -24,7 +24,6 @@ local IsPassiveSpell = _G.IsPassiveSpell
 local PlayerHasToy = _G.PlayerHasToy
 
 local TradeTabs = CreateFrame("Frame")
-
 function TradeTabs:OnEvent(event, addon)
 	if event == "ADDON_LOADED" and addon == "Blizzard_TradeSkillUI" then
 		self:UnregisterEvent(event)

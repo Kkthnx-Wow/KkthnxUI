@@ -1,16 +1,12 @@
 local K, C, L = unpack(select(2, ...))
-if C["Automation"].AutoRelease ~= true then
-	return
-end
-
-local Module = K:NewModule("AutoRelease", "AceEvent-3.0")
+local Module = K:GetModule("Automation")
 
 local _G = _G
 
 local IsInInstance = _G.IsInInstance
 
 -- Auto release the spirit in battlegrounds
-function Module:PLAYER_DEAD()
+function Module.PLAYER_DEAD()
 	-- If player has ability to self-resurrect (soulstone, reincarnation, etc), do nothing and quit
 	if C_DeathInfo.GetSelfResurrectOptions() and #C_DeathInfo.GetSelfResurrectOptions() > 0 then
 		return
@@ -37,6 +33,10 @@ function Module:PLAYER_DEAD()
 	return
 end
 
-function Module:OnEnable()
-	self:RegisterEvent("PLAYER_DEAD")
+function Module:CreateAutoRelease()
+	if C["Automation"].AutoRelease ~= true then
+		return
+	end
+
+	K:RegisterEvent("PLAYER_DEAD", self.PLAYER_DEAD)
 end

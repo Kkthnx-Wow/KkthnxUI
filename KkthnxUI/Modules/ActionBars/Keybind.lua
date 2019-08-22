@@ -4,15 +4,14 @@ local K, C, L = unpack(select(2, ...))
 -- Updated: Kkthnx (KkthnxUI)
 
 local _G = _G
-local print = print
-local tonumber = tonumber
+local print = _G.print
+local tonumber = _G.tonumber
 
 local APPLY = _G.APPLY
 local CANCEL = _G.CANCEL
 local EnumerateFrames = _G.EnumerateFrames
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GetBindingKey = _G.GetBindingKey
-local GetCurrentBindingSet = _G.GetCurrentBindingSet
 local GetMacroInfo = _G.GetMacroInfo
 local GetSpellBookItemName = _G.GetSpellBookItemName
 local hooksecurefunc = _G.hooksecurefunc
@@ -260,13 +259,11 @@ function K.BindingUI()
 		end
 
 		function bind:Deactivate(save)
-			local which = GetCurrentBindingSet()
-
 			if save then
-				SaveBindings(which)
+				SaveBindings(KkthnxUIData[GetRealmName()][UnitName("player")].BindType)
 				print("|cffffff00"..KEY_BOUND.."|r")
 			else
-				LoadBindings(which)
+				LoadBindings(KkthnxUIData[GetRealmName()][UnitName("player")].BindType)
 				print("|cffffff00"..UNCHECK_ALL.."|r")
 			end
 
@@ -284,7 +281,7 @@ function K.BindingUI()
 
 			frame = CreateFrame("Frame", nil, UIParent)
 			frame:SetSize(320, 100)
-			frame:SetPoint("TOP", 0, -135)
+			frame:SetPoint("TOP", 0, -136)
 			frame:CreateBorder()
 
 			frame.top = CreateFrame("Frame", nil, frame)
@@ -299,13 +296,18 @@ function K.BindingUI()
 			frame.title:SetPoint("CENTER")
 			frame.title:SetText(K.Title.." "..KEY_BINDING)
 
+			frame.bottom = CreateFrame("Frame", nil, frame)
+			frame.bottom:SetSize(320, 20)
+			frame.bottom:SetPoint("BOTTOM", 0, -26)
+			frame.bottom:CreateBorder()
+
 			frame.text = frame:CreateFontString(nil, "OVERLAY")
 			frame.text:SetFont(C["Media"].Font, 12)
 			frame.text:SetWidth(314)
 			frame.text:SetTextColor(1, .8, 0)
 			frame.text:SetShadowOffset(1.25, -1.25)
 			frame.text:SetPoint("TOP", 0, -15)
-			frame.text:SetText(L["Actionbars"].Keybind_Mode)
+			frame.text:SetText(L["Keybind Mode"])
 
 			local button1 = CreateFrame("Button", nil, frame, "OptionsButtonTemplate")
 			button1:SetSize(118, 20)
@@ -336,6 +338,25 @@ function K.BindingUI()
 			button2.text:SetShadowOffset(1.25, -1.25)
 			button2.text:SetPoint("CENTER", button2)
 			button2.text:SetText(CANCEL)
+
+			local checkBox = CreateFrame("CheckButton", nil, frame, "OptionsCheckButtonTemplate")
+			checkBox:SetSize(14, 14)
+			checkBox:SkinCheckBox()
+			checkBox:SetChecked(KkthnxUIData[GetRealmName()][UnitName("player")].BindType == 2)
+			checkBox:SetPoint("CENTER", frame.bottom, -96, 0)
+			checkBox:SetScript("OnClick", function(self)
+				if self:GetChecked() == true then
+					KkthnxUIData[GetRealmName()][UnitName("player")].BindType = 2
+				else
+					KkthnxUIData[GetRealmName()][UnitName("player")].BindType = 1
+				end
+			end)
+
+			checkBox.text = frame.bottom:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+			checkBox.text:SetPoint("CENTER", 14, 1)
+			checkBox.text:SetText(CHARACTER_SPECIFIC_KEYBINDINGS)
+			checkBox:SetHitRectInsets(0, 0 - checkBox.text:GetWidth(), 0, 0)
+			checkBox.text:Show()
 		end
 
 		-- Registering
@@ -410,14 +431,14 @@ function K.BindingUI()
 	end
 end
 
-K:RegisterChatCommand("bindkey", K.BindingUI)
-K:RegisterChatCommand("hoverbind", K.BindingUI)
-K:RegisterChatCommand("bk", K.BindingUI)
+-- K:RegisterChatCommand("bindkey", K.BindingUI)
+-- K:RegisterChatCommand("hoverbind", K.BindingUI)
+-- K:RegisterChatCommand("bk", K.BindingUI)
 
-if not K.CheckAddOnState("Bartender4") and not K.CheckAddOnState("Dominos") then
-	K:RegisterChatCommand("kb", K.BindingUI)
-end
+-- if not K.CheckAddOnState("Bartender4") and not K.CheckAddOnState("Dominos") then
+-- 	K:RegisterChatCommand("kb", K.BindingUI)
+-- end
 
-if not K.CheckAddOnState("HealBot") then
-	K:RegisterChatCommand("hb", K.BindingUI)
-end
+-- if not K.CheckAddOnState("HealBot") then
+-- 	K:RegisterChatCommand("hb", K.BindingUI)
+-- end

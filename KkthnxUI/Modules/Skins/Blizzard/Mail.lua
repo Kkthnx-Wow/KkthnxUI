@@ -3,10 +3,11 @@ local Module = K:GetModule("Skins")
 
 local _G = _G
 local unpack = unpack
+local table_insert = _G.table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
 
-local function MailFrameSkin()
+local function ReskinMailFrame()
 	for i = 1, _G.ATTACHMENTS_MAX_SEND do
 		local btn = _G["SendMailAttachment"..i]
 		if not btn.skinned then
@@ -32,7 +33,7 @@ local function MailFrameSkin()
 	end
 end
 
-local function LoadMailSkin()
+local function SetupMailFrame()
 	for i = 1, _G.INBOXITEMS_TO_DISPLAY do
 		local btn = _G["MailItem"..i.."Button"]
 		btn:StyleButton()
@@ -53,7 +54,7 @@ local function LoadMailSkin()
 		end)
 	end
 
-	hooksecurefunc("SendMailFrame_Update", MailFrameSkin)
+	hooksecurefunc("SendMailFrame_Update", ReskinMailFrame)
 
 	for i = 1, _G.ATTACHMENTS_MAX_SEND do
 		local btn = _G["OpenMailAttachmentButton"..i]
@@ -77,4 +78,4 @@ local function LoadMailSkin()
 	end
 end
 
-table.insert(Module.SkinFuncs["KkthnxUI"], LoadMailSkin)
+table_insert(Module.NewSkin["KkthnxUI"], SetupMailFrame)

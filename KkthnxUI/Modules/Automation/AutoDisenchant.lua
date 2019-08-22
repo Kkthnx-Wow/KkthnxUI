@@ -4,11 +4,10 @@ if C["Automation"].AutoDisenchant ~= true or K.CheckAddOnState("Molinari") then
 end
 
 local _G = _G
+
 local pairs = _G.pairs
-local tonumber = _G.tonumber
-local unpack = _G.unpack
-local string_match = string.match
-local string_format = string.format
+local string_match = _G.string.match
+local string_format = _G.string.format
 
 local AuctionFrame = _G.AuctionFrame
 local AutoCastShine_AutoCastStart = _G.AutoCastShine_AutoCastStart
@@ -24,10 +23,10 @@ local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsSpellKnown = _G.IsSpellKnown
 local ITEM_MIN_SKILL = _G.ITEM_MIN_SKILL
-local ITEM_PROSPECTABLE = _G.ITEM_PROSPECTABLE
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
 local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
 local UIParent = _G.UIParent
+local GetItemInfoFromHyperlink = _G.GetItemInfoFromHyperlink
 
 local button = CreateFrame("Button", "OneClickMPD", UIParent, "SecureActionButtonTemplate, AutoCastShineTemplate")
 button:SetScript("OnEvent", function(self, event, ...)
@@ -35,25 +34,15 @@ button:SetScript("OnEvent", function(self, event, ...)
 end)
 button:RegisterEvent("PLAYER_LOGIN")
 
-local function ScanTooltip(self, spells)
-	for index = 1, self:NumLines() do
-		local info = spells[_G["GameTooltipTextLeft"..index]:GetText()]
-		if info then
-			return unpack(info)
-		end
-	end
-end
-
 function button:PLAYER_LOGIN()
-	local spells, disenchanter, rogue = {}
-	local milling
+	local milling, prospect, disenchanter, rogue
 
 	if IsSpellKnown(51005) then
 		milling = true
 	end
 
 	if IsSpellKnown(31252) then
-		spells[ITEM_PROSPECTABLE] = {GetSpellInfo(31252), 1, 0.33, 0.33}
+		prospect = true
 	end
 
 	if IsSpellKnown(13262) then
@@ -65,19 +54,21 @@ function button:PLAYER_LOGIN()
 	end
 
 	GameTooltip:HookScript("OnTooltipSetItem", function(self)
-		local item, link = self:GetItem()
-		if item and not InCombatLockdown() and IsAltKeyDown() and not (AuctionFrame and AuctionFrame:IsShown()) then
-			local spell, r, g, b = ScanTooltip(self, spells)
+		local _, link = self:GetItem()
 
-			if not spell and milling and (GetItemCount(tonumber(string_match(link, 'item:(%d+):'))) >= 5) then
+		if link and not InCombatLockdown() and IsAltKeyDown() and not (AuctionFrame and AuctionFrame:IsShown()) then
+			local itemID = GetItemInfoFromHyperlink(link)
+			if not itemID then return end
+			local spell, r, g, b
+			if milling and GetItemCount(itemID) >= 5 and K.AutoDisenchantHerbs[itemID] then
 				spell, r, g, b = GetSpellInfo(51005), 0.5, 1, 0.5
-			elseif not spell and disenchanter then
-				local _, _, itemRarity, _, _, _, _, _, _, _, _, class, subClass = GetItemInfo(item)
-				if not (class == LE_ITEM_CLASS_WEAPON or class == LE_ITEM_CLASS_ARMOR or (class == 3 and subClass == 11)) or not (itemRarity and (itemRarity > 1 and (itemRarity < 5 or itemRarity == 6))) then
-					return
-				end
+			elseif prospect and GetItemCount(itemID) >= 5 and K.AutoDisenchantOres[itemID] then
+				spell, r, g, b = GetSpellInfo(31252), 1, 0.33, 0.33
+			elseif disenchanter then
+				local _, _, itemRarity, _, _, _, _, _, _, _, _, class, subClass = GetItemInfo(link)
+				if not (class == LE_ITEM_CLASS_WEAPON or class == LE_ITEM_CLASS_ARMOR or (class == 3 and subClass == 11)) or not (itemRarity and (itemRarity > 1 and (itemRarity < 5 or itemRarity == 6))) then return end
 				spell, r, g, b = GetSpellInfo(13262), 0.5, 0.5, 1
-			elseif not spell and rogue then
+			elseif rogue then
 				for index = 1, self:NumLines() do
 					if string_match(_G["GameTooltipTextLeft"..index]:GetText() or "", rogue) then
 						spell, r, g, b = GetSpellInfo(1804), 0, 1, 1

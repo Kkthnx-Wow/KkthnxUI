@@ -1,40 +1,64 @@
 local K = unpack(select(2, ...))
 
--- Lua API
 local _G = _G
-local table_wipe = table.wipe
+local table_wipe = _G.table.wipe
 
--- Wow API
 local DBM_AllSavedOptions = _G.DBM_AllSavedOptions
 local DBT_AllPersistentOptions = _G.DBT_AllPersistentOptions
-
--- GLOBALS: DBM
+local IsAddOnLoaded = _G.IsAddOnLoaded
 
 function K.LoadDBMProfile()
-	if DBM_AllSavedOptions then
-		table_wipe(DBM_AllSavedOptions)
+	if not IsAddOnLoaded("DBM-Core") then
+		return
 	end
 
 	if DBT_AllPersistentOptions then
 		table_wipe(DBT_AllPersistentOptions)
 	end
 
-	DBM:CreateProfile("KkthnxUI")
+	DBT_AllPersistentOptions = {
+		["Default"] = {
+			["DBM"] = {
+				["Scale"] = 1,
+				["HugeScale"] = 1,
+				["ExpandUpwards"] = true,
+				["ExpandUpwardsLarge"] = true,
+				["BarXOffset"] = 0,
+				["BarYOffset"] = 15,
+				["TimerPoint"] = "LEFT",
+				["TimerX"] = 118,
+				["TimerY"] = -105,
+				["Width"] = 175,
+				["Heigh"] = 20,
+				["HugeWidth"] = 210,
+				["HugeBarXOffset"] = 0,
+				["HugeBarYOffset"] = 15,
+				["HugeTimerPoint"] = "CENTER",
+				["HugeTimerX"] = 330,
+				["HugeTimerY"] = -42,
+				["FontSize"] = 10,
+				["StartColorR"] = 1,
+				["StartColorG"] = .7,
+				["StartColorB"] = 0,
+				["EndColorR"] = 1,
+				["EndColorG"] = 0,
+				["EndColorB"] = 0,
+				["Texture"] = "Interface\\TargetingFrame\\UI-StatusBar",
+			},
+		},
+	}
 
-	-- Warnings
-	DBM_AllSavedOptions["KkthnxUI"]["WarningFont"] = "Interface\\AddOns\\KkthnxUI\\Media\\Fonts\\Normal.ttf"
-	DBM_AllSavedOptions["KkthnxUI"]["SpecialWarningFont"] = "Interface\\AddOns\\KkthnxUI\\Media\\Fonts\\Normal.ttf"
-	DBM_AllSavedOptions["KkthnxUI"]["SpecialWarningFontShadow"] = true
-	DBM_AllSavedOptions["KkthnxUI"]["SpecialWarningFontStyle"] = "NONE"
+	if not DBM_AllSavedOptions["Default"] then
+		DBM_AllSavedOptions["Default"] = {}
+	end
 
-	-- Bars
-	DBT_AllPersistentOptions["KkthnxUI"]["DBM"]["Texture"] = "Interface\\TargetingFrame\\UI-StatusBar"
-	DBT_AllPersistentOptions["KkthnxUI"]["DBM"]["Font"] = "Interface\\AddOns\\KkthnxUI\\Media\\Fonts\\Normal.ttf"
-	DBT_AllPersistentOptions["KkthnxUI"]["DBM"]["Scale"] = 1
-	DBT_AllPersistentOptions["KkthnxUI"]["DBM"]["FontSize"] = 12
-	DBT_AllPersistentOptions["KkthnxUI"]["DBM"]["HugeScale"] = 1
-	DBT_AllPersistentOptions["KkthnxUI"]["DBM"]["BarYOffset"] = 4
-	DBT_AllPersistentOptions["KkthnxUI"]["DBM"]["HugeBarYOffset"] = 4
-
-	DBM:ApplyProfile("KkthnxUI")
+	DBM_AllSavedOptions["Default"]["WarningY"] = -170
+	DBM_AllSavedOptions["Default"]["WarningX"] = 0
+	DBM_AllSavedOptions["Default"]["WarningFontStyle"] = "OUTLINE"
+	DBM_AllSavedOptions["Default"]["SpecialWarningX"] = 0
+	DBM_AllSavedOptions["Default"]["SpecialWarningY"] = -260
+	DBM_AllSavedOptions["Default"]["SpecialWarningFontStyle"] = "OUTLINE"
+	DBM_AllSavedOptions["Default"]["HideObjectivesFrame"] = false
+	DBM_AllSavedOptions["Default"]["WarningFontSize"] = 18
+	DBM_AllSavedOptions["Default"]["SpecialWarningFontSize2"] = 24
 end

@@ -1,9 +1,8 @@
-local K, C = unpack(select(2, ...))
-local Module = K:NewModule("AutoReward", "AceEvent-3.0")
+local _G = _G
+local K, C = _G.unpack(_G.select(2, ...))
+local Module = K:GetModule("Automation")
 
 -- Sourced: ElvUI Shadow & Light (Darth_Predator, Repooc)
-
-local _G = _G
 
 local settings = {
 	UiQuestRewards = true
@@ -167,7 +166,7 @@ function Module:SelectQuestReward(index)
 	end
 end
 
-function Module:QUEST_COMPLETE()
+function Module.QUEST_COMPLETE()
 	local choice, highest = 1, 0
 	local num = _G.GetNumQuestChoices()
 
@@ -189,12 +188,12 @@ function Module:QUEST_COMPLETE()
 	Module:SelectQuestReward(choice)
 end
 
-function Module:OnEnable()
+function Module:CreateAutoReward()
 	if not C["Automation"].AutoReward then
 		return
 	end
 
-	self:RegisterEvent("QUEST_COMPLETE")
+	K:RegisterEvent("QUEST_COMPLETE", self.QUEST_COMPLETE)
 
 	-- Hook The Function That Updates The Quest Info Item Buttons, If Required
 	if ((not isHooked) and (settings.UiQuestRewards)) then

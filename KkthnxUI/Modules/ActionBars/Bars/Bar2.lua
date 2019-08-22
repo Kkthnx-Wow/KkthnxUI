@@ -1,39 +1,35 @@
-local K, C = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
+local FilterConfig = K.ActionBars.actionBar2
 
 local _G = _G
-local table_insert = table.insert
+local table_insert = _G.table.insert
 
 local CreateFrame = _G.CreateFrame
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
+local SHOW_MULTIBAR1_TEXT = _G.SHOW_MULTIBAR1_TEXT
 local UIParent = _G.UIParent
 
 function Module:CreateBar2()
-	local padding, margin, size = 0, 6, 34
+	local padding, margin = 0, 6
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
-	local layout = C["ActionBar"].Style.Value
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KkthnxUI_ActionBar2", UIParent, "SecureHandlerStateTemplate")
-	frame:SetWidth(num * size + (num - 1) * margin + 2 * padding)
-	frame:SetHeight(size + 2*padding)
-	if layout == 5 then
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -120, 44}
-	else
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 44}
-	end
-	frame:SetScale(1)
+	frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
+	frame:SetHeight(FilterConfig.size + 2 * padding)
+	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 44}
 
 	-- Move The Buttons Into Position And Reparent Them
-	MultiBarBottomLeft:SetParent(frame)
-	MultiBarBottomLeft:EnableMouse(false)
+	_G.MultiBarBottomLeft:SetParent(frame)
+	_G.MultiBarBottomLeft:EnableMouse(false)
 
 	for i = 1, num do
 		local button = _G["MultiBarBottomLeftButton"..i]
 		table_insert(buttonList, button) -- Add The Button Object To The List
-		button:SetSize(size, size)
+		button:SetSize(FilterConfig.size, FilterConfig.size)
 		button:ClearAllPoints()
 		if i == 1 then
 			button:SetPoint("BOTTOMLEFT", frame, padding, padding)
@@ -48,10 +44,11 @@ function Module:CreateBar2()
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
 	-- Create Drag Frame And Drag Functionality
-	frame:SetPoint(frame.Pos[1], frame.Pos[2], frame.Pos[3], frame.Pos[4], frame.Pos[5])
-	K.Mover(frame, "Bar2", "Bar2", frame.Pos)
+	if K.ActionBars.userPlaced then
+		K.Mover(frame, SHOW_MULTIBAR1_TEXT, "Bar2", frame.Pos)
+	end
 
-	if C["ActionBar"].Bar2Fade == true then
-		K.CreateButtonFrameFader(frame, buttonList, K.fader)
+	if FilterConfig.fader then
+		Module.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
 	end
 end

@@ -1,38 +1,25 @@
-local K, C = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 
 local _G = _G
-local pairs = pairs
-local table_insert = table.insert
-local type = type
-local unpack = unpack
+local table_insert = _G.table.insert
+local unpack = _G.unpack
+local table_wipe = _G.table.wipe
 
 local CANCEL = _G.CANCEL
 local CreateFrame = _G.CreateFrame
-local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local GameTooltip = _G.GameTooltip
 local GetRealmName = _G.GetRealmName
 local InCombatLockdown = _G.InCombatLockdown
+local KEY_BUTTON1 = _G.KEY_BUTTON1
+local KEY_BUTTON2 = _G.KEY_BUTTON2
 local LOCK = _G.LOCK
-local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local RESET = _G.RESET
 local UIParent = _G.UIParent
 local UnitName = _G.UnitName
-
-function K.CopyTable(source, target)
-	for key, value in pairs(source) do
-		if type(value) == "table" then
-			if not target[key] then
-				target[key] = {}
-			end
-
-			for k in pairs(value) do
-				target[key][k] = value[k]
-			end
-		else
-			target[key] = value
-		end
-	end
-end
+local OKAY = _G.OKAY
+local StaticPopup_Show = _G.StaticPopup_Show
+local UIErrorsFrame = _G.UIErrorsFrame
 
 function K.GetCoords(object)
     local p, anch, rP, x, y = object:GetPoint()
@@ -44,36 +31,37 @@ function K.GetCoords(object)
     end
 end
 
-local classColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
-
-local function SetModifiedBackdrop(self)
-	self.Backgrounds:SetColorTexture(classColor.r * .15, classColor.g * .15, classColor.b * .15, C["Media"].BackdropColor[4])
-end
-
-local function SetOriginalBackdrop(self)
-	self.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-end
-
 -- Frame Mover
 local MoverList, BackupTable, f = {}, {}
-
 function K:Mover(text, value, anchor, width, height)
+	if not self then
+		return
+	end
+
+	local selfName = self:GetName()
+	assert(selfName, (string.format("Failed to create a mover, object '%s' has no name", self:GetDebugName())))
+
 	local key = "Mover"
 
-	if not KkthnxUIData[GetRealmName()][UnitName("player")][key] then
+	if KkthnxUIData[GetRealmName()][UnitName("player")] and not KkthnxUIData[GetRealmName()][UnitName("player")][key] then
 		KkthnxUIData[GetRealmName()][UnitName("player")][key] = {}
 	end
 
-	local mover = CreateFrame("Frame", nil, UIParent)
+	local mover = CreateFrame("Button", nil, UIParent)
+	mover:SetFrameLevel(self:GetFrameLevel() + 1)
 	mover:SetWidth(width or self:GetWidth())
 	mover:SetHeight(height or self:GetHeight())
-	mover:CreateBorder()
+	mover:SetHighlightTexture("Interface\\BUTTONS\\WHITE8X8")
+	mover:GetHighlightTexture():SetAlpha(0.3)
+	local bg = mover:CreateTexture(nil, "BACKGROUND", nil, 0)
+	bg:SetColorTexture(38/255, 125/255, 206/255, 90/255)
+	bg:SetAllPoints()
 
 	mover.text = mover:CreateFontString(nil, "OVERLAY")
 	mover.text:SetPoint("CENTER")
 	mover.text:FontTemplate()
 	mover.text:SetText(text)
-	mover.text:SetWordWrap(false)
+	mover.text:SetWidth(mover:GetWidth())
 
 	table_insert(MoverList, mover)
 
@@ -83,15 +71,14 @@ function K:Mover(text, value, anchor, width, height)
 		mover:SetPoint(unpack(KkthnxUIData[GetRealmName()][UnitName("player")][key][value]))
 	end
 
+	mover:SetToplevel(true)
 	mover:EnableMouse(true)
 	mover:SetMovable(true)
 	mover:SetClampedToScreen(true)
-	mover:SetFrameStrata("HIGH")
 	mover:RegisterForDrag("LeftButton")
 
 	mover:SetScript("OnEnter", function(self)
 		local p, anch, rP, x, y = K.GetCoords(self)
-        SetModifiedBackdrop(self)
         GameTooltip:SetOwner(self, "ANCHOR_NONE")
         GameTooltip:SetPoint(K.GetAnchors(self))
         GameTooltip:ClearLines()
@@ -106,8 +93,7 @@ function K:Mover(text, value, anchor, width, height)
 		GameTooltip:Show()
 	end)
 
-	mover:SetScript("OnLeave", function(self)
-		SetOriginalBackdrop(self)
+	mover:SetScript("OnLeave", function()
 		GameTooltip:Hide()
 	end)
 
@@ -154,26 +140,26 @@ local function LockElements()
 		mover:Hide()
 	end
 	f:Hide()
-	SlashCmdList["TOGGLEGRID"]("1")
+	K.ToggleGrid("1")
 end
 
-StaticPopupDialogs["RESET_MOVER"] = {
+_G.StaticPopupDialogs["RESET_MOVER"] = {
 	text = "Reset Mover Confirm",
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function()
-		wipe(KkthnxUIData[GetRealmName()][UnitName("player")]["Mover"])
-		ReloadUI()
+		table_wipe(KkthnxUIData[GetRealmName()][UnitName("player")]["Mover"])
+		_G.ReloadUI()
 	end,
 }
 
-StaticPopupDialogs["CANCEL_MOVER"] = {
+_G.StaticPopupDialogs["CANCEL_MOVER"] = {
 	text = "Cancel Mover Confirm",
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function()
 		K.CopyTable(BackupTable, KkthnxUIData[GetRealmName()][UnitName("player")]["Mover"])
-		ReloadUI()
+		_G.ReloadUI()
 	end,
 }
 
@@ -184,8 +170,8 @@ local function CreateConsole()
 	end
 
 	f = CreateFrame("Frame", nil, UIParent)
-	f:SetPoint("CENTER", 0, 151)
-	f:SetSize(308, 65)
+	f:SetPoint("CENTER", 0, 150)
+	f:SetSize(306, 62)
 	f:CreateBorder()
 
 	f.text = f:CreateFontString(nil, "OVERLAY")
@@ -207,7 +193,7 @@ local function CreateConsole()
 		bu[i].text:SetWordWrap(false)
 
 		if i == 1 then
-			bu[i]:SetPoint("BOTTOMLEFT", 5, 5)
+			bu[i]:SetPoint("BOTTOMLEFT", 4, 4)
 		else
 			bu[i]:SetPoint("LEFT", bu[i-1], "RIGHT", 6, 0)
 		end
@@ -220,7 +206,7 @@ local function CreateConsole()
 	end)
 
 	bu[3]:SetScript("OnClick", function()
-		SlashCmdList["TOGGLEGRID"]("64")
+		K.ToggleGrid("64")
 	end)
 
 	bu[4]:SetScript("OnClick", function()
@@ -241,14 +227,14 @@ local function CreateConsole()
 	K:RegisterEvent("PLAYER_REGEN_DISABLED", showLater)
 end
 
-function K.MoveUI()
-if InCombatLockdown() then
+_G.SlashCmdList["MOVEUI"] = function()
+	if InCombatLockdown() then
 		UIErrorsFrame:AddMessage(ERR_NOT_IN_COMBAT)
 		return
 	end
 	CreateConsole()
 	UnlockElements()
 end
-K:RegisterChatCommand("moveui", K.MoveUI)
-K:RegisterChatCommand("mui", K.MoveUI)
-K:RegisterChatCommand("mm", K.MoveUI)
+_G.SLASH_MOVEUI1 = "/moveui"
+_G.SLASH_MOVEUI2 = "/mui"
+_G.SLASH_MOVEUI3 = "/mm"

@@ -1,146 +1,98 @@
 local K, C = unpack(select(2, ...))
 
 local _G = _G
-local assert = assert
-local math_abs = math.abs
-local math_ceil = math.ceil
-local math_floor = math.floor
-local mod = mod
-local print = print
-local select = select
-local string_format = string.format
-local string_lower = string.lower
-local string_match = string.match
-local table_insert = table.insert
-local table_remove = table.remove
-local type = type
-local unpack = unpack
+local assert = _G.assert
+local math_abs = _G.math.abs
+local math_ceil = _G.math.ceil
+local math_floor = _G.math.floor
+local mod = _G.mod
+local select = _G.select
+local string_format = _G.string.format
+local string_gmatch = _G.string.gmatch
+local string_join = _G.string.join
+local string_lower = _G.string.lower
+local table_insert = _G.table.insert
+local table_remove = _G.table.remove
+local table_wipe = _G.table.wipe
+local type = _G.type
+local unpack = _G.unpack
 
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
 local GetScreenHeight = _G.GetScreenHeight
 local GetScreenWidth = _G.GetScreenWidth
 local GetSpecialization = _G.GetSpecialization
-local GetSpecializationRole = _G.GetSpecializationRole
 local IsEveryoneAssistant = _G.IsEveryoneAssistant
 local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
 local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME
 local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
 local UIParent = _G.UIParent
-local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
+local UnitClass = _G.UnitClass
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
-
-K.UIScale = GetCVar("uiScale") or 0.71
-K.Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / K.UIScale
-K.NoScaleMult = K.Mult * K.UIScale
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsTapDenied = _G.UnitIsTapDenied
+local UnitReaction = _G.UnitReaction
+local GameTooltip = _G.GameTooltip
 
 function K.Print(...)
-	print("|cff3c9bed"..K.Title.."|r:", ...)
+	(_G.DEFAULT_CHAT_FRAME):AddMessage(string_join("", "|cff3c9bed", "KkthnxUI:|r ", ...))
 end
 
-function K.CreateMoverFrame(self, parent, saved)
-	local frame = parent or self
-	frame:SetMovable(true)
-	frame:SetUserPlaced(true)
-	frame:SetClampedToScreen(true)
+-- Table
+function K.CopyTable(source, target)
+	for key, value in pairs(source) do
+		if type(value) == "table" then
+			if not target[key] then
+				target[key] = {}
+			end
 
-	self:EnableMouse(true)
-	self:RegisterForDrag("LeftButton")
-
-	self:SetScript("OnDragStart", function()
-		frame:StartMoving()
-	end)
-
-	self:SetScript("OnDragStop", function()
-		frame:StopMovingOrSizing()
-
-		if not saved then
-			return
+			for k in pairs(value) do
+				target[key][k] = value[k]
+			end
+		else
+			target[key] = value
 		end
-
-		if not KkthnxUIData[GetRealmName()][UnitName("player")]["TempAnchor"] then
-			KkthnxUIData[GetRealmName()][UnitName("player")]["TempAnchor"] = {}
-		end
-
-		local orig, _, tar, x, y = frame:GetPoint()
-		KkthnxUIData[GetRealmName()][UnitName("player")]["TempAnchor"][frame:GetName()] = {orig, "UIParent", tar, x, y}
-	end)
+	end
 end
 
-function K.CreateGearIcon(self, name)
-	local gearButton = CreateFrame("Button", name, self)
-	gearButton:SetSize(22, 22)
-	gearButton.Icon = gearButton:CreateTexture(nil, "ARTWORK")
-	gearButton.Icon:SetAllPoints()
-	gearButton.Icon:SetTexture("Interface\\WorldMap\\Gear_64")
-	gearButton.Icon:SetTexCoord(0, .5, 0, .5)
-	gearButton:SetHighlightTexture("Interface\\WorldMap\\Gear_64")
-	gearButton:GetHighlightTexture():SetTexCoord(0, .5, 0, .5)
+function K.SplitList(list, variable, cleanup)
+	if cleanup then
+		table_wipe(list)
+	end
 
-	return gearButton
+	for word in string_gmatch(variable, "%S+") do
+		list[word] = true
+	end
 end
 
-local shortValueDec, value
-function K.ShortValue(v)
-	shortValueDec = string_format("%%.%df", C["Unitframe"].DecimalLength or 1)
-	value = math_abs(v)
-
-	if C["Unitframe"].NumberPrefixStyle.Value == "METRIC" then
-		if value >= 1e12 then
-			return string_format(shortValueDec.."T", v / 1e12)
-		elseif value >= 1e9 then
-			return string_format(shortValueDec.."G", v / 1e9)
-		elseif value >= 1e6 then
-			return string_format(shortValueDec.."M", v / 1e6)
-		elseif value >= 1e3 then
-			return string_format(shortValueDec.."k", v / 1e3)
+-- Return short value of a number
+function K.ShortValue(n)
+	if C["General"].NumberPrefixStyle.Value == 1 then
+		if n >= 1e12 then
+			return string_format("%.2ft", n / 1e12)
+		elseif n >= 1e9 then
+			return string_format("%.2fb", n / 1e9)
+		elseif n >= 1e6 then
+			return string_format("%.2fm", n / 1e6)
+		elseif n >= 1e3 then
+			return string_format("%.1fk", n / 1e3)
 		else
-			return string_format("%.0f", v)
+			return string_format("%.0f", n)
 		end
-	elseif C["Unitframe"].NumberPrefixStyle.Value == "CHINESE" then
-		if value >= 1e8 then
-			return string_format(shortValueDec.."Y", v / 1e8)
-		elseif value >= 1e4 then
-			return string_format(shortValueDec.."W", v / 1e4)
+	elseif C["General"].NumberPrefixStyle.Value == 2 then
+		if n >= 1e12 then
+			return string_format("%.2f".."z", n / 1e12)
+		elseif n >= 1e8 then
+			return string_format("%.2f".."y", n / 1e8)
+		elseif n >= 1e4 then
+			return string_format("%.1f".."w", n / 1e4)
 		else
-			return string_format("%.0f", v)
-		end
-	elseif C["Unitframe"].NumberPrefixStyle.Value == "KOREAN" then
-		if value >= 1e8 then
-			return string_format(shortValueDec.."억", v / 1e8)
-		elseif value >= 1e4 then
-			return string_format(shortValueDec.."만", v / 1e4)
-		elseif value >= 1e3 then
-			return string_format(shortValueDec.."천", v / 1e3)
-		else
-			return string_format("%.0f", v)
-		end
-	elseif C["Unitframe"].NumberPrefixStyle.Value == "GERMAN" then
-		if value >= 1e12 then
-			return string_format(shortValueDec.."Bio", v / 1e12)
-		elseif value >= 1e9 then
-			return string_format(shortValueDec.."Mrd", v / 1e9)
-		elseif value >= 1e6 then
-			return string_format(shortValueDec.."Mio", v / 1e6)
-		elseif value >= 1e3 then
-			return string_format(shortValueDec.."Tsd", v / 1e3)
-		else
-			return string_format("%.0f", v)
+			return string_format("%.0f", n)
 		end
 	else
-		if value >= 1e12 then
-			return string_format(shortValueDec.."T", v / 1e12)
-		elseif value >= 1e9 then
-			return string_format(shortValueDec.."B", v / 1e9)
-		elseif value >= 1e6 then
-			return string_format(shortValueDec.."M", v / 1e6)
-		elseif value >= 1e3 then
-			return string_format(shortValueDec.."K", v / 1e3)
-		else
-			return string_format("%s", v)
-		end
+		return string_format("%.0f", n)
 	end
 end
 
@@ -154,13 +106,50 @@ function K.Round(num, idp)
 	return math_floor(num + 0.5)
 end
 
--- RGB to Hex
+-- RGBToHex
 function K.RGBToHex(r, g, b)
-	r = r <= 1 and r >= 0 and r or 0
-	g = g <= 1 and g >= 0 and g or 0
-	b = b <= 1 and b >= 0 and b or 0
+	if r then
+		if type(r) == "table" then
+			if r.r then
+				r, g, b = r.r, r.g, r.b
+			else
+				r, g, b = unpack(r)
+			end
+		end
+		return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
+	end
+end
 
-	return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
+-- Gradient Frame
+function K.CreateGF(self, w, h, o, r, g, b, a1, a2)
+	self:SetSize(w, h)
+	self:SetFrameStrata("BACKGROUND")
+
+	local gradientFrame = self:CreateTexture(nil, "BACKGROUND")
+	gradientFrame:SetAllPoints()
+	gradientFrame:SetTexture(C["Media"].Blank)
+	gradientFrame:SetGradientAlpha(o, r, g, b, a1, r, g, b, a2)
+end
+
+function K.CreateFontString(self, size, text, classcolor, anchor, x, y)
+	local fs = self:CreateFontString(nil, "OVERLAY")
+	fs:SetFont(C.Media.Font, size, "OUTLINE")
+	fs:SetText(text)
+	fs:SetWordWrap(false)
+
+	if classcolor and type(classcolor) == "boolean" then
+		fs:SetTextColor(1, 1, 1)
+	elseif classcolor == "system" then
+		fs:SetTextColor(1, .8, 0)
+	end
+
+	if anchor and x and y then
+		fs:SetPoint(anchor, x, y)
+	else
+		fs:SetPoint("CENTER", 1, 0)
+	end
+
+	return fs
 end
 
 function K.ColorClass(class)
@@ -172,6 +161,31 @@ function K.ColorClass(class)
 	return color.r, color.g, color.b
 end
 
+function K.UnitColor(unit)
+	local r, g, b = 1, 1, 1
+	if UnitIsPlayer(unit) then
+		local class = select(2, UnitClass(unit))
+		if class then
+			r, g, b = K.ColorClass(class)
+		end
+	elseif UnitIsTapDenied(unit) then
+		r, g, b = .6, .6, .6
+	else
+		local reaction = UnitReaction(unit, "player")
+		if reaction then
+			local color = K.Colors.reaction[reaction]
+			r, g, b = color[1], color[2], color[3]
+		end
+	end
+
+	return r, g, b
+end
+
+function K.GetNPCID(guid)
+	local id = tonumber(string.match((guid or ""), "%-(%d-)%-%x-$"))
+	return id
+end
+
 function K.CheckAddOnState(addon)
 	return K.AddOns[string_lower(addon)] or false
 end
@@ -180,51 +194,117 @@ function K.GetAddOnVersion(addon)
 	return K.AddOnVersion[string_lower(addon)] or nil
 end
 
-function K.GetPlayerRole()
-	local assignedRole = UnitGroupRolesAssigned("player")
-	if (assignedRole == "NONE") then
-		local spec = GetSpecialization()
-		return GetSpecializationRole(spec)
+-- Itemlevel
+local iLvlDB = {}
+local itemLevelString = gsub(ITEM_LEVEL, "%%d", "")
+local enchantString = gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
+local essenceTextureID = 2975691
+local texturesDB, essencesDB = {}, {}
+function K:InspectItemTextures(clean, grabTextures)
+	table_wipe(texturesDB)
+	table_wipe(essencesDB)
+
+	for i = 1, 5 do
+		local tex = _G[K.ScanTooltip:GetName().."Texture"..i]
+		local texture = tex and tex:GetTexture()
+		if texture then
+			if grabTextures then
+				if texture == essenceTextureID then
+					local selected = (texturesDB[i-1] ~= essenceTextureID and texturesDB[i-1]) or nil
+					essencesDB[i] = {selected, tex:GetAtlas(), texture}
+					if selected then texturesDB[i-1] = nil end
+				else
+					texturesDB[i] = texture
+				end
+			end
+
+			if clean then
+				tex:SetTexture()
+			end
+		end
 	end
 
-	return assignedRole
+	return texturesDB, essencesDB
 end
 
-local isCaster = {
-	DEATHKNIGHT = {nil, nil, nil},
-	DEMONHUNTER = {nil, nil},
-	DRUID = {true},					-- Balance
-	HUNTER = {nil, nil, nil},
-	MAGE = {true, true, true},
-	MONK = {nil, nil, nil},
-	PALADIN = {nil, nil, nil},
-	PRIEST = {nil, nil, true},		-- Shadow
-	ROGUE = {nil, nil, nil},
-	SHAMAN = {true},				-- Elemental
-	WARLOCK = {true, true, true},
-	WARRIOR = {nil, nil, nil}
-}
+function K:InspectItemInfo(text, iLvl, enchantText)
+	local itemLevel = strfind(text, itemLevelString) and strmatch(text, "(%d+)%)?$")
+	if itemLevel then
+		iLvl = tonumber(itemLevel)
+	end
+
+	local enchant = strmatch(text, enchantString)
+	if enchant then
+		enchantText = enchant
+	end
+
+	return iLvl, enchantText
+end
+
+function K.GetItemLevel(link, arg1, arg2, fullScan)
+	if fullScan then
+		K:InspectItemTextures(true)
+		K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+		K.ScanTooltip:SetInventoryItem(arg1, arg2)
+
+		local iLvl, enchantText, gems, essences
+		gems, essences = K:InspectItemTextures(nil, true)
+
+		for i = 1, K.ScanTooltip:NumLines() do
+			local text = _G[K.ScanTooltip:GetName().."TextLeft"..i]:GetText() or ""
+			iLvl, enchantText = K:InspectItemInfo(text, iLvl, enchantText)
+			if enchantText then
+				break
+			end
+		end
+
+		return iLvl, enchantText, gems, essences
+	else
+		if iLvlDB[link] then
+			return iLvlDB[link]
+		end
+
+		K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+		if arg1 and type(arg1) == "string" then
+			K.ScanTooltip:SetInventoryItem(arg1, arg2)
+		elseif arg1 and type(arg1) == "number" then
+			K.ScanTooltip:SetBagItem(arg1, arg2)
+		else
+			K.ScanTooltip:SetHyperlink(link)
+		end
+
+		for i = 2, 5 do
+			local text = _G[K.ScanTooltip:GetName().."TextLeft"..i]:GetText() or ""
+			local found = strfind(text, itemLevelString)
+			if found then
+				local level = strmatch(text, "(%d+)%)?$")
+				iLvlDB[link] = tonumber(level)
+				break
+			end
+		end
+
+		return iLvlDB[link]
+	end
+end
 
 local function CheckRole()
-	local spec = GetSpecialization()
-	local role = spec and GetSpecializationRole(spec)
-
+	local tree = GetSpecialization()
+	if not tree then return end
+	local _, _, _, _, role, stat = GetSpecializationInfo(tree)
 	if role == "TANK" then
 		K.Role = "Tank"
 	elseif role == "HEALER" then
 		K.Role = "Healer"
 	elseif role == "DAMAGER" then
-		if isCaster[K.Class][spec] then
+		if stat == 4 then
 			K.Role = "Caster"
 		else
 			K.Role = "Melee"
 		end
 	end
 end
-local RoleUpdater = CreateFrame("Frame")
-RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
-RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
-RoleUpdater:SetScript("OnEvent", CheckRole)
+K:RegisterEvent("PLAYER_LOGIN", CheckRole)
+K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
 
 -- Chat channel check
 function K.CheckChat(warning)
@@ -247,7 +327,10 @@ end
 function K.GetAnchors(frame)
 	local x, y = frame:GetCenter()
 
-	if not x or not y then return "CENTER" end
+	if not x or not y then
+		return "CENTER"
+	end
+
 	local hhalf = (x > UIParent:GetWidth() * 2 / 3) and "RIGHT" or (x < UIParent:GetWidth() / 3) and "LEFT" or ""
 	local vhalf = (y > UIParent:GetHeight() / 2) and "TOP" or "BOTTOM"
 
@@ -289,6 +372,36 @@ function K.AddTooltip(self, anchor, text, color)
 	self:SetScript("OnLeave", K.HideTooltip)
 end
 
+-- Movable Frame
+function K.CreateMoverFrame(self, parent, saved)
+	local frame = parent or self
+	frame:SetMovable(true)
+	frame:SetUserPlaced(true)
+	frame:SetClampedToScreen(true)
+
+	self:EnableMouse(true)
+	self:RegisterForDrag("LeftButton")
+	self:SetScript("OnDragStart", function()
+		frame:StartMoving()
+	end)
+	self:SetScript("OnDragStop", function()
+		frame:StopMovingOrSizing()
+		if not saved then
+			return
+		end
+		local orig, _, tar, x, y = frame:GetPoint()
+		KkthnxUIData[K.Realm][K.Name]["TempAnchor"][frame:GetName()] = {orig, "UIParent", tar, x, y}
+	end)
+end
+
+function K.RestoreMoverFrame(self)
+	local name = self:GetName()
+	if name and KkthnxUIData[K.Realm][K.Name]["TempAnchor"][name] then
+		self:ClearAllPoints()
+		self:SetPoint(unpack(KkthnxUIData[K.Realm][K.Name]["TempAnchor"][name]))
+	end
+end
+
 function K.ShortenString(string, numChars, dots)
 	local bytes = string:len()
 	if (bytes <= numChars) then
@@ -316,10 +429,6 @@ function K.ShortenString(string, numChars, dots)
 			return string
 		end
 	end
-end
-
-function K:PLAYER_ENTERING_WORLD()
-	self:MapInfo_Update()
 end
 
 local styles = {

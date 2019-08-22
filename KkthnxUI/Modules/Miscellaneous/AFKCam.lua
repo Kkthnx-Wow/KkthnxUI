@@ -1,256 +1,194 @@
-local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("AFKCam", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
+local K, C = unpack(select(2, ...))
+local Module = K:GetModule("Miscellaneous")
 
--- Sourced: ElvUI (Elvz)
+-- Sourced: Tukui (Tukz)
 
 local _G = _G
-local math_floor = math.floor
-local string_format = string.format
-local math_random = math.random
+local date = _G.date
+local math_floor = _G.math.floor
+local string_format = _G.string.format
+local unpack = _G.unpack
 
-local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
-local CinematicFrame = _G.CinematicFrame
-local CloseAllWindows = _G.CloseAllWindows
 local CreateFrame = _G.CreateFrame
 local GetBattlefieldStatus = _G.GetBattlefieldStatus
-local GetGuildInfo = _G.GetGuildInfo
-local GetScreenHeight = _G.GetScreenHeight
-local GetScreenWidth = _G.GetScreenWidth
-local GetTime = _G.GetTime
+local HideUIPanel = _G.HideUIPanel
 local InCombatLockdown = _G.InCombatLockdown
-local IsInGuild = _G.IsInGuild
-local IsMacClient = _G.IsMacClient
-local MoveViewLeftStop = _G.MoveViewLeftStop
-local MovieFrame = _G.MovieFrame
-local PVEFrame_ToggleFrame = _G.PVEFrame_ToggleFrame
-local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
-local Screenshot = _G.Screenshot
-local SetCVar = _G.SetCVar
+local SendChatMessage = _G.SendChatMessage
+local ShowUIPanel = _G.ShowUIPanel
+local UIFrameFadeIn = _G.UIFrameFadeIn
+local UIFrameFadeOut = _G.UIFrameFadeOut
 local UIParent = _G.UIParent
-local UnitCastingInfo = _G.UnitCastingInfo
+local UnitClass = _G.UnitClass
 local UnitIsAFK = _G.UnitIsAFK
 
-local CAMERA_SPEED = 0.035
-local ignoreKeys = {
-	LALT = true,
-	LSHIFT = true,
-	RSHIFT = true
-}
+function Module:UpdateTime(Value)
+	local Minutes = Module.Minutes
+	local Seconds = Module.Seconds
 
-local printKeys = {
-	["PRINTSCREEN"] = true
-}
+	if (Value >= 60) then
+		Minutes = math_floor(Value/60)
+		Seconds = Value - Minutes*60
+	else
+		Minutes = 0
+		Seconds = Value
+	end
 
-if IsMacClient() then
-	printKeys[_G.KEY_PRINTSCREEN_MAC] = true
+	self.Time:SetText("|cffffffff" .. string_format("%.2d", Minutes) .. ":" .. string_format("%.2d", Seconds) .. "|r")
+
+	Module.Minutes = Minutes
+	Module.Seconds = Seconds
 end
 
-function Module:UpdateTimer()
-	local time = GetTime() - self.startTime
-	self.AFKMode.bottom.time:SetFormattedText("%02d:%02d", math_floor(time/60), time % 60)
-end
+function Module:OnUpdate(Elapsed)
+	self.Update = (self.Update or 0) + Elapsed
 
-function Module:SetAFK(status)
-	if(status) then
-		MoveViewLeftStart(CAMERA_SPEED)
-		self.AFKMode:Show()
-		CloseAllWindows()
-		_G.UIParent:Hide()
+	if (self.Update > 1.0) then
+		self.Total = (self.Total or 0) + 1
 
-		if(IsInGuild()) then
-			local guildName, guildRankName = GetGuildInfo("player")
-			self.AFKMode.bottom.guild:SetFormattedText("%s-%s", guildName, guildRankName)
-		else
-			self.AFKMode.bottom.guild:SetText(L["No Guild"])
-		end
+		Module.LocalDate:SetFormattedText("%s", date( "%A |cffffffff%B %d|r"))
+		Module.LocalTime:SetFormattedText("%s", date( "|cffffffff%I:%M:%S|r %p"))
 
-		self.AFKMode.bottom.model.curAnimation = "wave"
-		self.AFKMode.bottom.model.startTime = GetTime()
-		self.AFKMode.bottom.model.duration = 2.3
-		self.AFKMode.bottom.model:SetUnit("player")
-		self.AFKMode.bottom.model.isIdle = nil
-		self.AFKMode.bottom.model:SetAnimation(67)
-		self.AFKMode.bottom.model.idleDuration = 40
-		self.startTime = GetTime()
-		self.timer = self:ScheduleRepeatingTimer('UpdateTimer', 1)
+		Module:UpdateTime(self.Total)
 
-		self.isAFK = true
-	elseif(self.isAFK) then
-		_G.UIParent:Show()
-		self.AFKMode:Hide()
-		MoveViewLeftStop();
-
-		self:CancelTimer(self.timer)
-		self:CancelTimer(self.animTimer)
-		self.AFKMode.bottom.time:SetText("00:00")
-
-		if(_G.PVEFrame:IsShown()) then --odd bug, frame is blank
-			PVEFrame_ToggleFrame()
-			PVEFrame_ToggleFrame()
-		end
-
-		self.isAFK = false
+		self.Update = 0
 	end
 end
 
+function Module:SetAFK(status)
+	if (status) then
+		ShowUIPanel(_G.WorldMapFrame) -- Avoid Lua errors on M keypress
+
+		UIParent:Hide()
+		UIFrameFadeIn(self.Frame, 1, self.Frame:GetAlpha(), 1)
+
+		self.Frame:SetScript("OnUpdate", Module.OnUpdate)
+
+		self.IsAFK = true
+	elseif (self.IsAFK) then
+		self.Total = 0
+
+		HideUIPanel(_G.WorldMapFrame) -- Avoid Lua errors on M keypress
+
+		UIFrameFadeOut(self.Frame, 0.5, self.Frame:GetAlpha(), 0)
+		UIParent:Show()
+
+		self.Frame:SetScript("OnUpdate", nil)
+
+		self.IsAFK = false
+	end
+end
 
 function Module:OnEvent(event, ...)
 	if (event == "PLAYER_REGEN_DISABLED" or event == "LFG_PROPOSAL_SHOW" or event == "UPDATE_BATTLEFIELD_STATUS") then
 		if (event == "UPDATE_BATTLEFIELD_STATUS") then
 			local status = GetBattlefieldStatus(...)
 			if (status == "confirm") then
-				self:SetAFK(false)
+				Module:SetAFK(false)
 			end
 		else
-			self:SetAFK(false)
+			Module:SetAFK(false)
 		end
 
 		if (event == "PLAYER_REGEN_DISABLED") then
-			self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+			K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.OnEvent)
 		end
+
 		return
 	end
 
 	if (event == "PLAYER_REGEN_ENABLED") then
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+		K:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	end
 
-	if (not C["Misc"].AFKCamera) then
-		return
-	end
-
-	if (InCombatLockdown() or CinematicFrame:IsShown() or MovieFrame:IsShown()) then
-		return
-	end
-
-	if (UnitCastingInfo("player") ~= nil) then
-		--Don't activate afk if player is crafting stuff, check back in 30 seconds
-		self:ScheduleTimer("OnEvent", 30)
-		return
-	end
+	if InCombatLockdown() or _G.CinematicFrame:IsShown() or _G.MovieFrame:IsShown() then return end
 
 	if (UnitIsAFK("player")) then
-		self:SetAFK(true)
-	else
-		self:SetAFK(false)
-	end
-end
-
-function Module:Toggle()
-	if (C["Misc"].AFKCamera) then
-		self:RegisterEvent("PLAYER_FLAGS_CHANGED", "OnEvent")
-		self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
-		self:RegisterEvent("LFG_PROPOSAL_SHOW", "OnEvent")
-		self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS", "OnEvent")
-		SetCVar("autoClearAFK", "1")
-	else
-		self:UnregisterEvent("PLAYER_FLAGS_CHANGED")
-		self:UnregisterEvent("PLAYER_REGEN_DISABLED")
-		self:UnregisterEvent("LFG_PROPOSAL_SHOW")
-		self:UnregisterEvent("UPDATE_BATTLEFIELD_STATUS")
-	end
-end
-
-local function OnKeyDown(_, key)
-	if (ignoreKeys[key]) then
-		return
-	end
-	if printKeys[key] then
-		Screenshot()
+		Module:SetAFK(true)
 	else
 		Module:SetAFK(false)
-		Module:ScheduleTimer("OnEvent", 60)
 	end
 end
 
-function Module:LoopAnimations()
-	local AFKPlayerModel = _G.AFKPlayerModel
-	if (AFKPlayerModel.curAnimation == "wave") then
-		AFKPlayerModel:SetAnimation(69)
-		AFKPlayerModel.curAnimation = "dance"
-		AFKPlayerModel.startTime = GetTime()
-		AFKPlayerModel.duration = 300
-		AFKPlayerModel.isIdle = false
-		AFKPlayerModel.idleDuration = 120
-	end
-end
+function Module:SetupAFKCam()
+	local Font = C["Media"].Font
 
-function Module:OnInitialize()
-	local classColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class]
+	local Frame = CreateFrame("Frame", nil)
+	Frame:SetFrameLevel(5)
+	Frame:SetScale(UIParent:GetScale())
+	Frame:SetAllPoints(UIParent)
+	Frame:SetAlpha(0)
 
-	self.AFKMode = CreateFrame("Frame", "AFKFrame")
-	self.AFKMode:SetFrameLevel(1)
-	self.AFKMode:SetScale(UIParent:GetScale())
-	self.AFKMode:SetAllPoints(UIParent)
-	self.AFKMode:Hide()
-	self.AFKMode:EnableKeyboard(true)
-	self.AFKMode:SetScript("OnKeyDown", OnKeyDown)
+	local TopPanel = CreateFrame("Frame", nil, Frame)
+	TopPanel:SetFrameLevel(Frame:GetFrameLevel() - 1)
+	TopPanel:SetSize(UIParent:GetWidth() + 8, 42)
+	TopPanel:SetPoint("TOP", Frame, 0, 2)
+	TopPanel:CreateBorder()
 
-	--self.AFKMode.top = CreateFrame("Frame", nil, self.AFKMode)
-	--self.AFKMode.top:SetFrameLevel(0)
-	--self.AFKMode.top:CreateBorder()
-	--self.AFKMode.top:SetPoint("TOP", self.AFKMode, "TOP", 0, 2)
-	--self.AFKMode.top:SetWidth(GetScreenWidth() + (2 * 2)) -- Might be 2
-	--self.AFKMode.top:SetHeight(GetScreenHeight() * (1 / 18))
+	local BottomPanel = CreateFrame("Frame", nil, Frame)
+	BottomPanel:SetFrameLevel(Frame:GetFrameLevel() - 1)
+	BottomPanel:SetSize(UIParent:GetWidth() + 12, 84)
+	BottomPanel:SetPoint("BOTTOM", Frame, 0, -4)
+	BottomPanel:CreateBorder()
 
-	self.AFKMode.bottom = CreateFrame("Frame", nil, self.AFKMode)
-	self.AFKMode.bottom:SetFrameLevel(0)
-	self.AFKMode.bottom:CreateBorder()
-	self.AFKMode.bottom:SetPoint("BOTTOM", self.AFKMode, "BOTTOM", 0, -2) -- Might be 2
-	self.AFKMode.bottom:SetWidth(GetScreenWidth() + (2 * 2)) -- Might be 2
-	self.AFKMode.bottom:SetHeight(GetScreenHeight() * (1 / 10))
+	local Class = select(2, UnitClass("player"))
+	local CustomClassColor = Class and K.Colors.class[Class]
 
-	self.AFKMode.bottom.logo = self.AFKMode:CreateTexture(nil, "OVERLAY")
-	self.AFKMode.bottom.logo:SetSize(320, 150)
-	self.AFKMode.bottom.logo:SetPoint("CENTER", self.AFKMode.bottom, "CENTER", 0, 54)
-	self.AFKMode.bottom.logo:SetTexture(C["Media"].Logo)
+	local LocalTime = Frame:CreateFontString(nil, "OVERLAY")
+	LocalTime:SetPoint("RIGHT", TopPanel, -28, -2)
+	LocalTime:FontTemplate(Font, 14)
+	LocalTime:SetTextColor(unpack(CustomClassColor))
 
-	local factionGroup, size, offsetX, offsetY, nameOffsetX, nameOffsetY = K.Faction, 140, -20, -16, -10, -28
-	if factionGroup == "Neutral" then
-		factionGroup, size, offsetX, offsetY, nameOffsetX, nameOffsetY = "Panda", 90, 15, 10, 20, -5
-	end
+	local LocalDate = Frame:CreateFontString(nil, "OVERLAY")
+	LocalDate:SetPoint("LEFT", TopPanel, 28, -2)
+	LocalDate:FontTemplate(Font, 14)
+	LocalDate:SetTextColor(unpack(CustomClassColor))
 
-	self.AFKMode.bottom.faction = self.AFKMode.bottom:CreateTexture(nil, "OVERLAY")
-	self.AFKMode.bottom.faction:SetPoint("BOTTOMLEFT", self.AFKMode.bottom, "BOTTOMLEFT", offsetX, offsetY)
-	self.AFKMode.bottom.faction:SetTexture("Interface\\Timer\\" .. factionGroup .. "-Logo")
-	self.AFKMode.bottom.faction:SetSize(size, size)
+	local Time = Frame:CreateFontString(nil, "OVERLAY")
+	Time:SetPoint("CENTER", TopPanel, 0, -2)
+	Time:FontTemplate(Font, 16)
+	Time:SetTextColor(unpack(CustomClassColor))
 
-	self.AFKMode.bottom.name = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.bottom.name:FontTemplate(nil, 20)
-	self.AFKMode.bottom.name:SetFormattedText("%s - %s", K.Name, K.Realm)
-	self.AFKMode.bottom.name:SetPoint("TOPLEFT", self.AFKMode.bottom.faction, "TOPRIGHT", nameOffsetX, nameOffsetY)
-	self.AFKMode.bottom.name:SetTextColor(classColor.r, classColor.g, classColor.b)
+	local Name = Frame:CreateTexture(nil, "OVERLAY")
+	Name:SetSize(256, 128)
+	Name:SetTexture(C["Media"].Logo)
+	Name:SetPoint("CENTER", BottomPanel, -8, 48)
 
-	self.AFKMode.bottom.guild = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.bottom.guild:FontTemplate(nil, 20)
-	self.AFKMode.bottom.guild:SetText(L["AFKCam"].NoGuild)
-	self.AFKMode.bottom.guild:SetPoint("TOPLEFT", self.AFKMode.bottom.name, "BOTTOMLEFT", 0, -10)
-	self.AFKMode.bottom.guild:SetTextColor(0.7, 0.7, 0.7)
+	local Version = Frame:CreateFontString(nil, "OVERLAY")
+	Version:SetPoint("CENTER", BottomPanel, 0, -18)
+	Version:FontTemplate(Font, 24)
+	Version:SetText("Version "..K.Version)
 
-	self.AFKMode.bottom.time = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.bottom.time:FontTemplate(nil, 20)
-	self.AFKMode.bottom.time:SetText("00:00")
-	self.AFKMode.bottom.time:SetPoint("TOPLEFT", self.AFKMode.bottom.guild, "BOTTOMLEFT", 0, -10)
-	self.AFKMode.bottom.time:SetTextColor(0.7, 0.7, 0.7)
+	K:RegisterEvent("PLAYER_FLAGS_CHANGED", Module.OnEvent)
+	K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.OnEvent)
+	K:RegisterEvent("PLAYER_REGEN_DISABLED", Module.OnEvent)
 
-	self.AFKMode.bottom.modelHolder = CreateFrame("Frame", nil, self.AFKMode.bottom)
-	self.AFKMode.bottom.modelHolder:SetSize(150, 150)
-	self.AFKMode.bottom.modelHolder:SetPoint("BOTTOMRIGHT", self.AFKMode.bottom, "BOTTOMRIGHT", -200, 220)
-
-	self.AFKMode.bottom.model = CreateFrame("PlayerModel", "AFKPlayerModel", self.AFKMode.bottom.modelHolder)
-	self.AFKMode.bottom.model:SetPoint("CENTER", self.AFKMode.bottom.modelHolder, "CENTER")
-	self.AFKMode.bottom.model:SetSize(GetScreenWidth() * 2, GetScreenHeight() * 2) -- YES, double screen size. This prevents clipping of models. Position is controlled with the helper frame.
-	self.AFKMode.bottom.model:SetCamDistanceScale(4.5) -- Since the model frame is huge, we need to zoom out quite a bit.
-	self.AFKMode.bottom.model:SetFacing(6)
-	self.AFKMode.bottom.model:SetScript("OnUpdate", function(self)
-		local timePassed = GetTime() - self.startTime
-		if (timePassed > self.duration) and self.isIdle ~= true then
-			self:SetAnimation(0)
-			self.isIdle = true
-			Module.animTimer = Module:ScheduleTimer("LoopAnimations", self.idleDuration)
+	UIParent:HookScript("OnShow", function()
+		if UnitIsAFK("player") then
+			SendChatMessage("", "AFK")
+			Module:SetAFK(false)
 		end
 	end)
 
-	self:Toggle()
-	self.isActive = false
+	self.Frame = Frame
+	self.PanelTop = TopPanel
+	self.BottomPanel = BottomPanel
+	self.LocalTime = LocalTime
+	self.LocalDate = LocalDate
+	self.Time = Time
+	self.Name = Name
+	self.Version = Version
+end
+
+function Module:CreateAFKCam()
+	if not C["Misc"].AFKCamera then
+		return
+	end
+
+	Module.Minutes = Module.Minutes or 0
+	Module.Seconds = Module.Seconds or 0
+
+	if not (self.IsCreated) then
+		self:SetupAFKCam()
+		self.IsCreated = true
+	end
 end

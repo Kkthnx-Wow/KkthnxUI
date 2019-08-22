@@ -20,4 +20,4 @@ local function SkinFactionbarTextures()
 	hooksecurefunc("CollapseFactionHeader", UpdateFactionbarTextures)
 end
 
-table_insert(Module.SkinFuncs["KkthnxUI"], SkinFactionbarTextures)
+table_insert(Module.NewSkin["KkthnxUI"], SkinFactionbarTextures)

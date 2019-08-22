@@ -1,5 +1,5 @@
 local K = unpack(select(2, ...))
-local Module = K:NewModule("RaidMarker", "AceEvent-3.0", "AceHook-3.0")
+local Module = K:GetModule("Miscellaneous")
 
 -- Soured: Baudzilla
 
@@ -59,12 +59,12 @@ function RaidMark_HotkeyPressed(keystate)
 	end
 end
 
-function Module:RaidMark_OnEvent()
-	if ButtonIsDown and self.RaidMarkFrame then
-		self:RaidMarkShowIcons()
+function Module.RaidMark_OnEvent()
+	if ButtonIsDown and Module.RaidMarkFrame then
+		Module:RaidMarkShowIcons()
 	end
 end
-Module:RegisterEvent("PLAYER_TARGET_CHANGED", "RaidMark_OnEvent")
+K:RegisterEvent("PLAYER_TARGET_CHANGED", Module.RaidMark_OnEvent)
 
 function Module:RaidMarkButton_OnEnter()
 	self.Texture:ClearAllPoints()
@@ -82,7 +82,7 @@ function Module:RaidMarkButton_OnClick(arg1)
 	self:GetParent():Hide()
 end
 
-function Module:OnEnable()
+function Module:CreateRaidMarker()
 	local marker = CreateFrame("Frame", nil, UIParent)
 	marker:EnableMouse(true)
 	marker:SetSize(100, 100)

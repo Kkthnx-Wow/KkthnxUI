@@ -94,6 +94,7 @@ function Filger:DisplayActives()
 			bar = CreateFrame("Frame", "FilgerAnchor"..id.."Frame"..index, self)
 			bar:SetScale(1)
 			bar:CreateBorder()
+			bar:CreateInnerShadow()
 
 			if index == 1 then
 				bar:SetPoint(unpack(self.Position))
@@ -131,8 +132,8 @@ function Filger:DisplayActives()
 					bar.count = _G[bar.count:GetName()]
 				else
 					bar.count = bar:CreateFontString("$parentCount", "OVERLAY")
-					bar.count:FontTemplate(FilgerFonts)
-					bar.count:SetPoint("BOTTOMRIGHT", 1, -2)
+					bar.count:SetFontObject(FilgerFont)
+					bar.count:SetPoint("BOTTOMRIGHT", -1, 1)
 					bar.count:SetJustifyH("RIGHT")
 				end
 			else
@@ -152,9 +153,9 @@ function Filger:DisplayActives()
 					bar.statusbar.spark:SetSize(16, bar.statusbar:GetHeight())
 
 					if self.IconSide == "LEFT" then
-						bar.statusbar:SetPoint("BOTTOMLEFT", bar, "BOTTOMRIGHT", 5, 2)
+						bar.statusbar:SetPoint("BOTTOMLEFT", bar, "BOTTOMRIGHT", 6, 0)
 					elseif self.IconSide == "RIGHT" then
-						bar.statusbar:SetPoint("BOTTOMRIGHT", bar, "BOTTOMLEFT", -5, 2)
+						bar.statusbar:SetPoint("BOTTOMRIGHT", bar, "BOTTOMLEFT", -6, 0)
 					end
 				end
 				bar.statusbar:SetMinMaxValues(0, 1)
@@ -234,7 +235,7 @@ function Filger:DisplayActives()
 	end
 
 	local activeCount = 1
-	local limit = (C["ActionBar"].ButtonSize * 12)/self.IconSize
+	local limit = (C["ActionBar"].DefaultButtonSize * 12)/self.IconSize
 	for n in pairs(self.actives) do
 		self.sortedIndex[activeCount] = n
 		activeCount = activeCount + 1

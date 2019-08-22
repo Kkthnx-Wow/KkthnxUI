@@ -1,9 +1,9 @@
 local K = unpack(select(2, ...))
-local Module = K:NewModule("DurabilityFrame")
+local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
 
-function Module:PositionDurabilityFrame()
+function Module:CreateDurabilityFrame()
 	DurabilityFrame:SetFrameStrata("HIGH")
 
 	local function SetPosition(_, _, parent)
@@ -15,8 +15,4 @@ function Module:PositionDurabilityFrame()
 	end
 
 	hooksecurefunc(DurabilityFrame, "SetPoint", SetPosition)
-end
-
-function Module:OnEnable()
-	self:PositionDurabilityFrame()
 end

@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("MicroBar", "AceHook-3.0", "AceEvent-3.0")
+local Module = K:GetModule("ActionBar")
 
 local _G = _G
 local assert = assert
@@ -11,13 +11,14 @@ local GetCurrentRegionName = _G.GetCurrentRegionName
 local GuildMicroButton = _G.GuildMicroButton
 local GuildMicroButtonTabard = _G.GuildMicroButtonTabard
 local InCombatLockdown = _G.InCombatLockdown
+local MICRO_BUTTONS = _G.MICRO_BUTTONS
 local MainMenuBarPerformanceBar = _G.MainMenuBarPerformanceBar
 local MainMenuMicroButton = _G.MainMenuMicroButton
-local MICRO_BUTTONS = _G.MICRO_BUTTONS
 local MicroButtonPortrait = _G.MicroButtonPortrait
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 local UpdateMicroButtonsParent = _G.UpdateMicroButtonsParent
+local hooksecurefunc = _G.hooksecurefunc
 
 local function onLeave()
 	if C["ActionBar"].MicroBarMouseover then
@@ -48,16 +49,16 @@ local function onEnter()
 	end
 end
 
-function Module:PLAYER_REGEN_ENABLED()
+function Module.PLAYER_REGEN_ENABLED()
 	if Module.NeedsUpdateMicroBarVisibility then
-		self:UpdateMicroBarVisibility()
+		Module:UpdateMicroBarVisibility()
 		Module.NeedsUpdateMicroBarVisibility = nil
 	end
 
-	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.PLAYER_REGEN_ENABLED)
 end
 
-function Module:HandleMicroButton(button)
+function Module.HandleMicroButton(button)
 	assert(button, "Invalid micro button name.")
 
 	local pushed = button:GetPushedTexture()
@@ -66,6 +67,7 @@ function Module:HandleMicroButton(button)
 
 	local f = CreateFrame("Frame", nil, button)
 	K.CreateBorder(f)
+	f:CreateInnerShadow()
 	f:SetAllPoints(button)
 	button.backdrop = f
 
@@ -91,15 +93,15 @@ function Module:HandleMicroButton(button)
 	end
 end
 
-function Module:MainMenuMicroButton_SetNormal()
+function Module.MainMenuMicroButton_SetNormal()
 	MainMenuBarPerformanceBar:SetPoint("TOPLEFT", MainMenuMicroButton, "TOPLEFT", 9, -36)
 end
 
-function Module:MainMenuMicroButton_SetPushed()
+function Module.MainMenuMicroButton_SetPushed()
 	MainMenuBarPerformanceBar:SetPoint("TOPLEFT", MainMenuMicroButton, "TOPLEFT", 8, -37)
 end
 
-function Module:UpdateMicroButtonsParent()
+function Module.UpdateMicroButtonsParent()
 	for i = 1, #MICRO_BUTTONS do
 		_G[MICRO_BUTTONS[i]]:SetParent(KkthnxUI_MicroBar)
 	end
@@ -113,10 +115,10 @@ local __buttonIndex = {
 	[11] = "MainMenuMicroButton"
 }
 
-function Module:UpdateMicroBarVisibility()
+function Module.UpdateMicroBarVisibility()
 	if InCombatLockdown() then
 		Module.NeedsUpdateMicroBarVisibility = true
-		self:RegisterEvent("PLAYER_REGEN_ENABLED")
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.PLAYER_REGEN_ENABLED)
 		return
 	end
 
@@ -128,7 +130,7 @@ function Module:UpdateMicroBarVisibility()
 	RegisterStateDriver(KkthnxUI_MicroBar.visibility, "visibility", (C["ActionBar"].MicroBar and visibility) or "hide")
 end
 
-function Module:UpdateMicroPositionDimensions()
+function Module.UpdateMicroPositionDimensions()
 	if not KkthnxUI_MicroBar then
 		return
 	end
@@ -162,10 +164,10 @@ function Module:UpdateMicroPositionDimensions()
 	Module.MicroHeight = (((_G["CharacterMicroButton"]:GetHeight() + spacing) * numRows) - spacing) + (offset * 2)
 	KkthnxUI_MicroBar:SetSize(Module.MicroWidth, Module.MicroHeight)
 
-	self:UpdateMicroBarVisibility()
+	Module.UpdateMicroBarVisibility()
 end
 
-function Module:UpdateMicroButtons()
+function Module.UpdateMicroButtons()
 	GuildMicroButtonTabard:SetInside(GuildMicroButton)
 
 	GuildMicroButtonTabard.background:SetInside(GuildMicroButton)
@@ -175,10 +177,10 @@ function Module:UpdateMicroButtons()
 	GuildMicroButtonTabard.emblem:SetPoint("TOPLEFT", GuildMicroButton, "TOPLEFT", 4, -4)
 	GuildMicroButtonTabard.emblem:SetPoint("BOTTOMRIGHT", GuildMicroButton, "BOTTOMRIGHT", -4, 8)
 
-	self:UpdateMicroPositionDimensions()
+	Module.UpdateMicroPositionDimensions()
 end
 
-function Module:OnEnable()
+function Module:CreateMicroMenu()
 	if not C["ActionBar"].Enable then
 		return
 	end
@@ -200,21 +202,21 @@ function Module:OnEnable()
 	end)
 
 	for i = 1, #MICRO_BUTTONS do
-		self:HandleMicroButton(_G[MICRO_BUTTONS[i]])
+		Module.HandleMicroButton(_G[MICRO_BUTTONS[i]])
 	end
 
 	MicroButtonPortrait:SetAllPoints(CharacterMicroButton.backdrop)
 
-	self:SecureHook("MainMenuMicroButton_SetPushed")
-	self:SecureHook("MainMenuMicroButton_SetNormal")
-	self:SecureHook("UpdateMicroButtonsParent")
-	self:SecureHook("MoveMicroButtons", "UpdateMicroPositionDimensions")
-	self:SecureHook("UpdateMicroButtons")
+	hooksecurefunc("MainMenuMicroButton_SetPushed", Module.MainMenuMicroButton_SetPushed)
+	hooksecurefunc("MainMenuMicroButton_SetNormal", Module.MainMenuMicroButton_SetNormal)
+	hooksecurefunc("UpdateMicroButtonsParent", Module.UpdateMicroButtonsParent)
+	hooksecurefunc("MoveMicroButtons", Module.UpdateMicroPositionDimensions)
+	hooksecurefunc("UpdateMicroButtons", Module.UpdateMicroButtons)
 
 	UpdateMicroButtonsParent(microBar)
 
-	self:MainMenuMicroButton_SetNormal()
-	self:UpdateMicroPositionDimensions()
+	Module.MainMenuMicroButton_SetNormal()
+	Module.UpdateMicroPositionDimensions()
 
 	if MainMenuBarPerformanceBar then
 		MainMenuBarPerformanceBar:SetTexture(nil)

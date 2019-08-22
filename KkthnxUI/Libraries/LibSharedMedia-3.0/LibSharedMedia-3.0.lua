@@ -1,6 +1,6 @@
 --[[
 Name: LibSharedMedia-3.0
-Revision: $Revision: 106 $
+Revision: $Revision: 112 $
 Author: Elkano (elkano@gmx.de)
 Inspired By: SurfaceLib by Haste/Otravi (troeks@gmail.com)
 Website: http://www.wowace.com/projects/libsharedmedia-3-0/
@@ -9,7 +9,7 @@ Dependencies: LibStub, CallbackHandler-1.0
 License: LGPL v2.1
 ]]
 
-local MAJOR, MINOR = "LibSharedMedia-3.0", 6010002 -- 6.1.0 v2 / increase manually on changes
+local MAJOR, MINOR = "LibSharedMedia-3.0", 8020001 -- 8.2.0 v1 / increase manually on changes
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not lib then return end
@@ -122,36 +122,36 @@ Due to this, we cannot use it as a replacement for FRIZQT__.TTF
 
 if locale == "koKR" then
 	LOCALE_MASK = lib.LOCALE_BIT_koKR
-	--
+--
 	SML_MT_font["굵은 글꼴"]		= [[Fonts\2002B.TTF]]
 	SML_MT_font["기본 글꼴"]		= [[Fonts\2002.TTF]]
 	SML_MT_font["데미지 글꼴"]		= [[Fonts\K_Damage.TTF]]
 	SML_MT_font["퀘스트 글꼴"]		= [[Fonts\K_Pagetext.TTF]]
-	--
+--
 	lib.DefaultMedia["font"] = "기본 글꼴" -- someone from koKR please adjust if needed
-	--
+--
 elseif locale == "zhCN" then
 	LOCALE_MASK = lib.LOCALE_BIT_zhCN
-	--
+--
 	SML_MT_font["伤害数字"]		= [[Fonts\ARKai_C.ttf]]
 	SML_MT_font["默认"]			= [[Fonts\ARKai_T.ttf]]
 	SML_MT_font["聊天"]			= [[Fonts\ARHei.ttf]]
-	--
+--
 	lib.DefaultMedia["font"] = "默认" -- someone from zhCN please adjust if needed
-	--
+--
 elseif locale == "zhTW" then
 	LOCALE_MASK = lib.LOCALE_BIT_zhTW
-	--
+--
 	SML_MT_font["提示訊息"]		= [[Fonts\bHEI00M.ttf]]
 	SML_MT_font["聊天"]			= [[Fonts\bHEI01B.ttf]]
 	SML_MT_font["傷害數字"]		= [[Fonts\bKAI00M.ttf]]
 	SML_MT_font["預設"]			= [[Fonts\bLEI00D.ttf]]
-	--
+--
 	lib.DefaultMedia["font"] = "預設" -- someone from zhTW please adjust if needed
 
 elseif locale == "ruRU" then
 	LOCALE_MASK = lib.LOCALE_BIT_ruRU
-	--
+--
 	SML_MT_font["2002"]								= [[Fonts\2002.TTF]]
 	SML_MT_font["2002 Bold"]						= [[Fonts\2002B.TTF]]
 	SML_MT_font["AR CrystalzcuheiGBK Demibold"]		= [[Fonts\ARHei.TTF]]
@@ -163,13 +163,13 @@ elseif locale == "ruRU" then
 	SML_MT_font["Morpheus"]							= [[Fonts\MORPHEUS_CYR.TTF]]
 	SML_MT_font["Nimrod MT"]						= [[Fonts\NIM_____.ttf]]
 	SML_MT_font["Skurri"]							= [[Fonts\SKURRI_CYR.TTF]]
-	--
+--
 	lib.DefaultMedia.font = "Friz Quadrata TT"
-	--
+--
 else
 	LOCALE_MASK = lib.LOCALE_BIT_western
 	locale_is_western = true
-	--
+--
 	SML_MT_font["2002"]								= [[Fonts\2002.TTF]]
 	SML_MT_font["2002 Bold"]						= [[Fonts\2002B.TTF]]
 	SML_MT_font["AR CrystalzcuheiGBK Demibold"]		= [[Fonts\ARHei.TTF]]
@@ -181,9 +181,9 @@ else
 	SML_MT_font["Morpheus"]							= [[Fonts\MORPHEUS_CYR.TTF]]
 	SML_MT_font["Nimrod MT"]						= [[Fonts\NIM_____.ttf]]
 	SML_MT_font["Skurri"]							= [[Fonts\SKURRI_CYR.TTF]]
-	--
+--
 	lib.DefaultMedia.font = "Friz Quadrata TT"
-	--
+--
 end
 
 -- STATUSBAR
@@ -191,11 +191,12 @@ if not lib.MediaTable.statusbar then lib.MediaTable.statusbar = {} end
 lib.MediaTable.statusbar["Blizzard"]						= [[Interface\TargetingFrame\UI-StatusBar]]
 lib.MediaTable.statusbar["Blizzard Character Skills Bar"]	= [[Interface\PaperDollInfoFrame\UI-Character-Skills-Bar]]
 lib.MediaTable.statusbar["Blizzard Raid Bar"]				= [[Interface\RaidFrame\Raid-Bar-Hp-Fill]]
+lib.MediaTable.statusbar["Solid"]							= [[Interface\Buttons\WHITE8X8]]
 lib.DefaultMedia.statusbar = "Blizzard"
 
 -- SOUND
 if not lib.MediaTable.sound then lib.MediaTable.sound = {} end
-lib.MediaTable.sound["None"]								= [[Interface\Quiet.ogg]]	-- Relies on the fact that PlaySound[File] doesn't error on non-existing input.
+lib.MediaTable.sound["None"]		= 1 -- Relies on the fact that PlaySound[File] doesn't error on existing invalid input files.
 lib.DefaultMedia.sound = "None"
 
 local function rebuildMediaList(mediatype)
@@ -220,11 +221,18 @@ function lib:Register(mediatype, key, data, langmask)
 		error(MAJOR..":Register(mediatype, key, data, langmask) - key must be string, got "..type(key))
 	end
 	mediatype = mediatype:lower()
-	if mediatype == lib.MediaType.FONT and ((langmask and band(langmask, LOCALE_MASK) == 0) or not (langmask or locale_is_western)) then return false end
-	if mediatype == lib.MediaType.SOUND and type(data) == "string" then
+	if mediatype == lib.MediaType.FONT and ((langmask and band(langmask, LOCALE_MASK) == 0) or not (langmask or locale_is_western)) then
+		-- ignore fonts that aren't flagged as supporting local glyphs on non-western clients
+		return false
+	end
+	if type(data) == "string" and (mediatype == lib.MediaType.BACKGROUND or mediatype == lib.MediaType.BORDER or mediatype == lib.MediaType.STATUSBAR or mediatype == lib.MediaType.SOUND) then
 		local path = data:lower()
-		-- Only ogg and mp3 are valid sounds.
-		if not path:find(".ogg", nil, true) and not path:find(".mp3", nil, true) then
+		if not path:find("^interface") then
+			-- files accessed via path only allowed from interface folder
+			return false
+		end
+		if mediatype == lib.MediaType.SOUND and not (path:find(".ogg", nil, true) or not path:find(".mp3", nil, true)) then
+			-- Only ogg and mp3 are valid sounds.
 			return false
 		end
 	end

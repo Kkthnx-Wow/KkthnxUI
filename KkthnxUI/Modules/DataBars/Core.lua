@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("DataBars", "AceHook-3.0", "AceEvent-3.0")
+local Module = K:NewModule("DataBars")
 
 local _G = _G
 local math_floor = math.floor
@@ -61,21 +61,21 @@ end
 function Module:SetupExperience()
 	local expbar = CreateFrame("StatusBar", "KkthnxUI_ExperienceBar", self.Container)
 	expbar:SetStatusBarTexture(self.DatabaseTexture)
-	expbar:SetStatusBarColor(self.Database.ExperienceColor[1], self.Database.ExperienceColor[2], self.Database.ExperienceColor[3], self.Database.ExperienceColor[4])
-	expbar:SetSize(self.Database.Width, self.Database.Height)
+	expbar:SetStatusBarColor(C["DataBars"].ExperienceColor[1], C["DataBars"].ExperienceColor[2], C["DataBars"].ExperienceColor[3], C["DataBars"].ExperienceColor[4])
+	expbar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
 	expbar:CreateBorder()
 
 	local restbar = CreateFrame("StatusBar", "KkthnxUI_RestBar", self.Container)
 	restbar:SetStatusBarTexture(self.DatabaseTexture)
-	restbar:SetStatusBarColor(self.Database.RestedColor[1], self.Database.RestedColor[2], self.Database.RestedColor[3], self.Database.RestedColor[4])
+	restbar:SetStatusBarColor(C["DataBars"].RestedColor[1], C["DataBars"].RestedColor[2], C["DataBars"].RestedColor[3], C["DataBars"].RestedColor[4])
 	restbar:SetFrameLevel(3)
-	restbar:SetSize(self.Database.Width, self.Database.Height)
+	restbar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
 	restbar:SetAlpha(0.5)
 	restbar:SetAllPoints(expbar)
 
 	local espark = expbar:CreateTexture(nil, "OVERLAY")
 	espark:SetTexture(C["Media"].Spark_16)
-	espark:SetHeight(self.Database.Height)
+	espark:SetHeight(C["DataBars"].Height)
 	espark:SetBlendMode("ADD")
 	espark:SetPoint("CENTER", expbar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
@@ -94,19 +94,19 @@ function Module:SetupReputation()
 	local reputation = CreateFrame("StatusBar", "KkthnxUI_ReputationBar", self.Container)
 	reputation:SetStatusBarTexture(self.DatabaseTexture)
 	reputation:SetStatusBarColor(1, 1, 1)
-	reputation:SetSize(self.Database.Width, self.Database.Height)
+	reputation:SetSize(C["DataBars"].Width, C["DataBars"].Height)
 	reputation:CreateBorder()
 
 	local rspark = reputation:CreateTexture(nil, "OVERLAY")
 	rspark:SetTexture(C["Media"].Spark_16)
-	rspark:SetHeight(self.Database.Height)
+	rspark:SetHeight(C["DataBars"].Height)
 	rspark:SetBlendMode("ADD")
 	rspark:SetPoint("CENTER", reputation:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	local rtext = reputation:CreateFontString(nil, "OVERLAY")
 	rtext:SetFontObject(self.DatabaseFont)
 	rtext:SetFont(select(1, rtext:GetFont()), 11, select(3, rtext:GetFont()))
-	rtext:SetWidth(self.Database.Width - 6)
+	rtext:SetWidth(C["DataBars"].Width - 6)
 	rtext:SetWordWrap(false)
 	rtext:SetPoint("CENTER")
 
@@ -118,13 +118,13 @@ end
 function Module:SetupAzerite()
 	local azerite = CreateFrame("Statusbar", "KkthnxUI_AzeriteBar", self.Container)
 	azerite:SetStatusBarTexture(self.DatabaseTexture)
-	azerite:SetStatusBarColor(self.Database.AzeriteColor[1], self.Database.AzeriteColor[2], self.Database.AzeriteColor[3])
-	azerite:SetSize(self.Database.Width, self.Database.Height)
+	azerite:SetStatusBarColor(C["DataBars"].AzeriteColor[1], C["DataBars"].AzeriteColor[2], C["DataBars"].AzeriteColor[3])
+	azerite:SetSize(C["DataBars"].Width, C["DataBars"].Height)
 	azerite:CreateBorder()
 
 	local aspark = azerite:CreateTexture(nil, "OVERLAY")
 	aspark:SetTexture(C["Media"].Spark_16)
-	aspark:SetHeight(self.Database.Height)
+	aspark:SetHeight(C["DataBars"].Height)
 	aspark:SetBlendMode("ADD")
 	aspark:SetPoint("CENTER", azerite:GetStatusBarTexture(), "RIGHT", 0, 0)
 
@@ -141,20 +141,20 @@ end
 function Module:SetupHonor()
 	local honor = CreateFrame("StatusBar", "KkthnxUI_HonorBar", self.Container)
 	honor:SetStatusBarTexture(self.DatabaseTexture)
-	honor:SetStatusBarColor(self.Database.HonorColor[1], self.Database.HonorColor[2], self.Database.HonorColor[3])
-	honor:SetSize(self.Database.Width, self.Database.Height)
+	honor:SetStatusBarColor(C["DataBars"].HonorColor[1], C["DataBars"].HonorColor[2], C["DataBars"].HonorColor[3])
+	honor:SetSize(C["DataBars"].Width, C["DataBars"].Height)
 	honor:CreateBorder()
 
 	local hspark = honor:CreateTexture(nil, "OVERLAY")
 	hspark:SetTexture(C["Media"].Spark_16)
-	hspark:SetHeight(self.Database.Height)
+	hspark:SetHeight(C["DataBars"].Height)
 	hspark:SetBlendMode("ADD")
 	hspark:SetPoint("CENTER", honor:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	local htext = honor:CreateFontString(nil, "OVERLAY")
 	htext:SetFontObject(self.DatabaseFont)
 	htext:SetFont(select(1, htext:GetFont()), 11, select(3, htext:GetFont()))
-	htext:SetWidth(self.Database.Width - 6)
+	htext:SetWidth(C["DataBars"].Width - 6)
 	htext:SetWordWrap(false)
 	htext:SetPoint("CENTER")
 
@@ -191,7 +191,7 @@ function Module:UpdateReputation()
 	elseif name then
 		self.Bars.Reputation:Show()
 
-		local text = ""
+		local text
 		local color = FACTION_BAR_COLORS[reaction] or backupColor
 		self.Bars.Reputation:SetStatusBarColor(color.r, color.g, color.b)
 		self.Bars.Reputation:SetMinMaxValues(min, max)
@@ -221,7 +221,7 @@ function Module:UpdateReputation()
 			maxMinDiff = 1
 		end
 
-		if self.Database.Text then
+		if C["DataBars"].Text then
 			if isCapped then
 				text = string_format("%s: [%s]", name, isFriend and friendText or standingLabel)
 			else
@@ -256,14 +256,14 @@ function Module:UpdateExperience()
 			self.Bars.Experience.RestBar:SetMinMaxValues(0, max)
 			self.Bars.Experience.RestBar:SetValue(min(cur + rested, max))
 
-			if self.Database.Text then
+			if C["DataBars"].Text then
 				self.Bars.Experience.Text:SetText(string_format("%s - %d%% R:%s [%d%%]", K.ShortValue(cur), cur / max * 100, K.ShortValue(rested), rested / max * 100))
 			end
 		else
 			self.Bars.Experience.RestBar:SetMinMaxValues(0, 1)
 			self.Bars.Experience.RestBar:SetValue(0)
 
-			if self.Database.Text then
+			if C["DataBars"].Text then
 				self.Bars.Experience.Text:SetText(string_format("%s - %d%%", K.ShortValue(cur), cur / max * 100))
 			end
 		end
@@ -276,7 +276,7 @@ function Module:UpdateAzerite(event, unit)
 	end
 
 	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
-	if not azeriteItemLocation or C_AzeriteItem_GetPowerLevel(azeriteItemLocation) == 63 then
+	if not azeriteItemLocation or C_AzeriteItem_GetPowerLevel(azeriteItemLocation) == 50 then
 		self.Bars.Azerite:Hide()
 	elseif azeriteItemLocation then
 		self.Bars.Azerite:Show()
@@ -287,14 +287,14 @@ function Module:UpdateAzerite(event, unit)
 		self.Bars.Azerite:SetMinMaxValues(0, totalLevelXP)
 		self.Bars.Azerite:SetValue(xp)
 
-		if self.Database.Text then
+		if C["DataBars"].Text then
 			self.Bars.Azerite.Text:SetText(string_format("%s - %s%% [%s]", K.ShortValue(xp), math_floor(xp / totalLevelXP * 100), currentLevel))
 		end
 	end
 end
 
 function Module:UpdateHonor(event, unit)
-	if not self.Database.TrackHonor then
+	if not C["DataBars"].TrackHonor then
 		self.Bars.Honor:Hide()
 		return
 	end
@@ -325,17 +325,17 @@ function Module:UpdateHonor(event, unit)
 		self.Bars.Honor:SetMinMaxValues(0, max)
 		self.Bars.Honor:SetValue(current)
 
-		if self.Database.Text then
+		if C["DataBars"].Text then
 			self.Bars.Honor.Text:SetText(string_format("%s - %d%%", K.ShortValue(current), current / max * 100))
 		end
 	end
 end
 
 function Module:OnEnter()
-	GameTooltip_SetDefaultAnchor(GameTooltip, self.Container)
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT")
 	GameTooltip:ClearLines()
 
-	if self.Database.MouseOver then
+	if C["DataBars"].MouseOver then
 		K.UIFrameFadeIn(self.Container, 0.25, self.Container:GetAlpha(), 1)
 	end
 
@@ -343,14 +343,14 @@ function Module:OnEnter()
 		local cur, max = GetUnitXP("player")
 		local rested = GetXPExhaustion()
 
-		GameTooltip:AddDoubleLine(L["Databars"].Experience, PLAYER.." "..LEVEL.." ("..K.Level..")", nil, nil, nil, 0.90, 0.80, 0.50)
-		GameTooltip:AddDoubleLine(L["Databars"].XP, string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math_floor(cur / max * 100)), 1, 1, 1)
-		GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format("%s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math_floor((max - cur) / max * 100), math_floor(20 * (max - cur) / max)), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Experience"], PLAYER.." "..LEVEL.." ("..K.Level..")", nil, nil, nil, 0.90, 0.80, 0.50)
+		GameTooltip:AddDoubleLine(L["XP"], string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math_floor(cur / max * 100)), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Remaining"], string_format("%s (%s%% - %s "..L["Bars"]..")", K.ShortValue(max - cur), math_floor((max - cur) / max * 100), math_floor(20 * (max - cur) / max)), 1, 1, 1)
 
 		if rested then
-			GameTooltip:AddDoubleLine(L["Databars"].Rested, string_format("+%s (%s%%)", K.ShortValue(rested), math_floor(rested / max * 100)), 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["Rested"], string_format("+%s (%s%%)", K.ShortValue(rested), math_floor(rested / max * 100)), 1, 1, 1)
 		end
-		GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:118:218|t "..L["ConfigButton"].MiddleClick, L["Databars"].Share, 1, 1, 1)
+		GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:118:218|t "..L["Middle Click"], L["Share Your Experience"], 1, 1, 1)
 	end
 
 	if GetWatchedFactionInfo() then
@@ -382,7 +382,7 @@ function Module:OnEnter()
 			if reaction ~= MAX_REPUTATION_REACTION or C_Reputation_IsFactionParagon(factionID) then
 				GameTooltip:AddDoubleLine(REPUTATION..":", string_format("%d / %d (%d%%)", value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
 			end
-			GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "..L["ConfigButton"].LeftClick, L["Databars"].Toggle_Reputation, 1, 1, 1)
+			GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "..L["Left Click"], L["Toggle Reputation"], 1, 1, 1)
 		end
 	end
 
@@ -401,12 +401,12 @@ function Module:OnEnter()
 			local azeriteItemName = azeriteItem:GetItemName()
 
 			GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItemName.." ("..currentLevel..")", nil, nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
-			GameTooltip:AddDoubleLine(L["Databars"].AP, string_format(" %d / %d (%d%%)", xp, totalLevelXP, xp / totalLevelXP * 100), 1, 1, 1)
-			GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format(" %d (%d%% - %d "..L["Databars"].Bars..")", xpToNextLevel, xpToNextLevel / totalLevelXP * 100, 10 * xpToNextLevel / totalLevelXP), 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["AP"], string_format(" %d / %d (%d%%)", xp, totalLevelXP, xp / totalLevelXP * 100), 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", xpToNextLevel, xpToNextLevel / totalLevelXP * 100, 10 * xpToNextLevel / totalLevelXP), 1, 1, 1)
 		end)
 	end
 
-	if self.Database.TrackHonor then
+	if C["DataBars"].TrackHonor then
 		if IsPlayerMaxLevel() and UnitIsPVP("player") then
 			GameTooltip:AddLine(" ")
 
@@ -415,9 +415,9 @@ function Module:OnEnter()
 			local level = UnitHonorLevel("player")
 
 			GameTooltip:AddDoubleLine(HONOR.." "..LEVEL, level)
-			GameTooltip:AddDoubleLine(L["Databars"].Honor_XP, string_format(" %d / %d (%d%%)", current, max, current/max * 100), 1, 1, 1)
-			GameTooltip:AddDoubleLine(L["Databars"].Honor_Remaining, string_format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
-			GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "..L["ConfigButton"].Right_Click, L["Databars"].Toggle_PvP, 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["Honor XP"], string_format(" %d / %d (%d%%)", current, max, current/max * 100), 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["Honor Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
+			GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "..L["Right Click"], L["Toggle PvP"], 1, 1, 1)
 		end
 	end
 
@@ -425,7 +425,7 @@ function Module:OnEnter()
 end
 
 function Module:OnLeave()
-	if self.Database.MouseOver then
+	if C["DataBars"].MouseOver then
 		K.UIFrameFadeOut(self.Container, 1, self.Container:GetAlpha(), 0.25)
 	end
 
@@ -442,7 +442,7 @@ function Module:OnClick(_, clicked)
 			ToggleCharacter("ReputationFrame")
 		end
 	elseif clicked == "RightButton" then
-		if self.Database.TrackHonor then
+		if C["DataBars"].TrackHonor then
 			if IsPlayerMaxLevel() and UnitIsPVP("player") then
 				TogglePVPUI()
 			end
@@ -452,28 +452,28 @@ function Module:OnClick(_, clicked)
 			local cur, max = GetUnitXP("player")
 
 			if IsInGroup(LE_PARTY_CATEGORY_HOME) then
-				SendChatMessage(L["Databars"].XP .." ".. string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math.floor(cur / max * 100)), "PARTY")
-				SendChatMessage(L["Databars"].Remaining .." ".. string_format("%s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math.floor((max - cur) / max * 100), math.floor(20 * (max - cur) / max)), "PARTY")
+				SendChatMessage(L["XP"] .." ".. string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math.floor(cur / max * 100)), "PARTY")
+				SendChatMessage(L["Remaining"] .." ".. string_format("%s (%s%% - %s "..L["Bars"]..")", K.ShortValue(max - cur), math.floor((max - cur) / max * 100), math.floor(20 * (max - cur) / max)), "PARTY")
 			end
 		end
 	end
 end
 
-function Module:Update()
-	self:UpdateExperience()
-	self:UpdateReputation()
-	self:UpdateAzerite()
-	self:UpdateHonor()
+function Module.OnUpdate()
+	Module:UpdateExperience()
+	Module:UpdateReputation()
+	Module:UpdateAzerite()
+	Module:UpdateHonor()
 
-	if self.Database.MouseOver then
-		self.Container:SetAlpha(0.25)
+	if C["DataBars"].MouseOver then
+		Module.Container:SetAlpha(0.25)
 	else
-		self.Container:SetAlpha(1)
+		Module.Container:SetAlpha(1)
 	end
 
 	local num_bars = 0
 	local prev
-	for _, bar in pairs(self.Bars) do
+	for _, bar in pairs(Module.Bars) do
 		if bar:IsShown() then
 			num_bars = num_bars + 1
 
@@ -481,56 +481,51 @@ function Module:Update()
 			if prev then
 				bar:SetPoint("TOP", prev, "BOTTOM", 0, -6)
 			else
-				bar:SetPoint("TOP", self.Container)
+				bar:SetPoint("TOP", Module.Container)
 			end
 			prev = bar
 		end
 	end
 
-	self.Container:SetHeight(num_bars * (self.Database.Height + 6) - 6)
+	Module.Container:SetHeight(num_bars * (C["DataBars"].Height + 6) - 6)
 end
 
 function Module:OnEnable()
-	self.Database = C["DataBars"]
 	self.DatabaseTexture = K.GetTexture(C["UITextures"].DataBarsTexture)
 	self.DatabaseFont = K.GetFont(C["UIFonts"].DataBarsFonts)
 
-	if self.Database.Enable ~= true then
+	if C["DataBars"].Enable ~= true then
 		return
-	end
+    end
 
-	local container = CreateFrame("button", "KkthnxUI_Databars", K.PetBattleHider)
-	container:SetWidth(self.Database.Width)
-	container:SetPoint("TOP", "Minimap", "BOTTOM", 0, -6)
-	container:RegisterForClicks("RightButtonUp", "LeftButtonUp", "MiddleButtonUp")
+    Module.Bars = {}
 
-	self:HookScript(container, "OnEnter")
-	self:HookScript(container, "OnLeave")
-	self:HookScript(container, "OnClick")
-	self.Container = container
+	self.Container = CreateFrame("button", "KkthnxUI_Databars", K.PetBattleHider)
+	self.Container:SetWidth(C["DataBars"].Width)
+	self.Container:SetPoint("TOP", "Minimap", "BOTTOM", 0, -6)
+	self.Container:RegisterForClicks("RightButtonUp", "LeftButtonUp", "MiddleButtonUp")
 
-	self.Bars = {}
+	self.Container:HookScript("OnEnter", self.OnEnter)
+	self.Container:HookScript("OnLeave", self.OnLeave)
+    self.Container:HookScript("OnClick", self.OnClick)
+
 	self:SetupExperience()
 	self:SetupReputation()
 	self:SetupAzerite()
 	self:SetupHonor()
-	self:Update()
+	self:OnUpdate()
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "Update")
-	self:RegisterEvent("PLAYER_LEVEL_UP", "Update")
-	self:RegisterEvent("PLAYER_XP_UPDATE", "Update")
-	self:RegisterEvent("UPDATE_EXHAUSTION", "Update")
-	self:RegisterEvent("DISABLE_XP_GAIN", "Update")
-	self:RegisterEvent("ENABLE_XP_GAIN", "Update")
-	self:RegisterEvent("UPDATE_FACTION", "Update")
-	self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "Update")
-	self:RegisterEvent("UNIT_INVENTORY_CHANGED", "Update")
-	self:RegisterEvent("HONOR_XP_UPDATE", "Update")
-	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "Update")
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", self.OnUpdate)
+	K:RegisterEvent("PLAYER_LEVEL_UP", self.OnUpdate)
+	K:RegisterEvent("PLAYER_XP_UPDATE", self.OnUpdate)
+	K:RegisterEvent("UPDATE_EXHAUSTION", self.OnUpdate)
+	K:RegisterEvent("DISABLE_XP_GAIN", self.OnUpdate)
+	K:RegisterEvent("ENABLE_XP_GAIN", self.OnUpdate)
+	K:RegisterEvent("UPDATE_FACTION", self.OnUpdate)
+	K:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", self.OnUpdate)
+	K:RegisterEvent("UNIT_INVENTORY_CHANGED", self.OnUpdate)
+	K:RegisterEvent("HONOR_XP_UPDATE", self.OnUpdate)
+	K:RegisterEvent("PLAYER_FLAGS_CHANGED", self.OnUpdate)
 
-	K.Mover(container, "DataBars", "DataBars", {"TOP", "Minimap", "BOTTOM", 0, -6}, self.Database.Width, self.Container:GetHeight())
-end
-
-function Module:OnDisable()
-	self:UnregisterAllEvents()
+	K.Mover(self.Container, "DataBars", "DataBars", {"TOP", "Minimap", "BOTTOM", 0, -6}, C["DataBars"].Width, self.Container:GetHeight())
 end

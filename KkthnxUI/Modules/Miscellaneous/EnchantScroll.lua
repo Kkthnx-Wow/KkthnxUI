@@ -1,9 +1,5 @@
 local K = unpack(select(2, ...))
-if K.CheckAddOnState("OneClickEnchantScroll") or (not C_TradeSkillUI) then
-	return
-end
-
-local Module = K:NewModule("EnchantScroll", "AceEvent-3.0", "AceHook-3.0")
+local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
 
@@ -629,20 +625,21 @@ function Module:EnableScrollButton()
 	end)
 end
 
-function Module:OnEvent(event, ...)
-	if (event == "ADDON_LOADED") then
-		local arg = ...
-		if (arg == "Blizzard_TradeSkillUI") then
-			self:EnableScrollButton()
-			self:UnregisterEvent("ADDON_LOADED", "OnEvent")
-		end
+function Module.LoadEnchantScroll(_, addon)
+	if addon == "Blizzard_TradeSkillUI" then
+		Module:EnableScrollButton()
+		K:UnregisterEvent("ADDON_LOADED", Module.LoadEnchantScroll)
 	end
 end
 
-function Module:OnInitialize()
+function Module:CreateEnchantScroll()
+	if K.CheckAddOnState("OneClickEnchantScroll") or (not C_TradeSkillUI) then
+		return
+	end
+
 	if IsAddOnLoaded("Blizzard_TradeSkillUI") then
 		self:EnableScrollButton()
 	else
-		self:RegisterEvent("ADDON_LOADED", "OnEvent")
+		K:RegisterEvent("ADDON_LOADED", self.LoadEnchantScroll)
 	end
 end

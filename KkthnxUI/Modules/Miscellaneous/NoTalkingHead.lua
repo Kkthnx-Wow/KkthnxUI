@@ -1,13 +1,13 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("NoTalkingHead", "AceEvent-3.0")
+local Module = K:GetModule("Miscellaneous")
 
-function Module:UpdateTalkingHead(event, ...)
+function Module.UpdateTalkingHead(event, ...)
 	if (event == "ADDON_LOADED") then
 		local addon = ...
 		if (addon ~= "Blizzard_TalkingHeadUI") then
 			return
 		end
-		self:UnregisterEvent("ADDON_LOADED", "UpdateTalkingHead")
+		K:UnregisterEvent("ADDON_LOADED", Module.UpdateTalkingHead)
 	end
 
 	local Database = C["Misc"]
@@ -27,11 +27,11 @@ function Module:UpdateTalkingHead(event, ...)
 
 			-- Since other addons might load it contrary to our settings, though,
 			-- we register our addon listener to take control of it when it's loaded.
-			return self:RegisterEvent("ADDON_LOADED", "UpdateTalkingHead")
+			return K:RegisterEvent("ADDON_LOADED", Module.UpdateTalkingHead)
 		end
 	end
 end
 
-function Module:OnEnable()
-	self:UpdateTalkingHead()
+function Module:CreateNoTalkingHead()
+	Module.UpdateTalkingHead()
 end

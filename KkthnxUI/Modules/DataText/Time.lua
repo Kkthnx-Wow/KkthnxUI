@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 if C["DataText"].Time ~= true then
 	return
 end
@@ -135,15 +135,15 @@ local legionZoneTime = {
 	["US"] = 1546815600, -- CN-8
 }
 
-local bfaZoneTime = {
+--[[local bfaZoneTime = {
 	["CN"] = 1546743600, -- CN time 1/6/2019 11:00 [1]
 	["EU"] = 1546768800, -- CN+7
 	["US"] = 1546769340, -- CN+16
 }
-
+--]]
 local invIndex = {
-	[1] = {title = "Legion Invasion", duration = 66600, maps = {630, 641, 650, 634}, timeTable = {4, 3, 2, 1, 4, 2, 3, 1, 2, 4, 1, 3}, baseTime = legionZoneTime[region] or 1546844400}, -- 1/7/2019 15:00 [1]
-	[2] = {title = "BFA Invasion", duration = 68400, maps = {862, 863, 864, 896, 942, 895}, timeTable = {4, 1, 6, 2, 5, 3}, baseTime = bfaZoneTime[region] or 1546743600},
+	[1] = {title = L["Legion Invasion"], duration = 66600, maps = {630, 641, 650, 634}, timeTable = {4, 3, 2, 1, 4, 2, 3, 1, 2, 4, 1, 3}, baseTime = legionZoneTime[region] or 1546844400}, -- 1/7/2019 15:00 [1]
+	--[2] = {title = L["BFA Invasion"], duration = 68400, maps = {862, 863, 864, 896, 942, 895}, timeTable = {4, 1, 6, 2, 5, 3}, baseTime = bfaZoneTime[region] or 1546743600},
 }
 
 local mapAreaPoiIDs = {
@@ -362,9 +362,9 @@ local function OnEnter(self)
 			else
 				r, g, b = 0, 1, 0
 			end
-			GameTooltip:AddDoubleLine("Current "..zoneName, string_format("%.2d:%.2d", timeLeft / 60, timeLeft % 60), 1, 1, 1, r, g, b)
+			GameTooltip:AddDoubleLine(L["Current Invasion"]..zoneName, string_format("%.2d:%.2d", timeLeft / 60, timeLeft % 60), 1, 1, 1, r, g, b)
 		end
-		GameTooltip:AddDoubleLine("Next "..GetNextLocation(nextTime, index), date("%m/%d %H:%M", nextTime), 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
+		GameTooltip:AddDoubleLine(L["Next Invasion"]..GetNextLocation(nextTime, index), date("%m/%d %H:%M", nextTime), 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
 	end
 
 	GameTooltip:Show()

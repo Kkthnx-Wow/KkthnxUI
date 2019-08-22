@@ -3,13 +3,14 @@ local Module = K:GetModule("Skins")
 
 -- Sourced: ElvUI (Elvz)
 -- Edited: KkthnxUI (Kkthnx)
+
 local _G = _G
 local table_insert = table.insert
 
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
 
-local function SkinLossOfControl()
+local function ReskinLossOfControlFrame()
 	local IconBackdrop = CreateFrame("Frame", nil, LossOfControlFrame)
 
 	IconBackdrop.Background = IconBackdrop:CreateTexture(nil, "BACKGROUND", -1)
@@ -53,4 +54,4 @@ local function SkinLossOfControl()
 	end)
 end
 
-table_insert(Module.SkinFuncs["KkthnxUI"], SkinLossOfControl)
+table_insert(Module.NewSkin["KkthnxUI"], ReskinLossOfControlFrame)

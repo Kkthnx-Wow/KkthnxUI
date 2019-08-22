@@ -1,22 +1,37 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("ImprovedStats")
+local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
 local math_floor = math.floor
 local math_max = math.max
 local string_format = string.format
 
+local ATTACK_SPEED = _G.ATTACK_SPEED
+local C_PaperDollInfo = _G.C_PaperDollInfo
 local C_PaperDollInfo_GetMinItemLevel = _G.C_PaperDollInfo.GetMinItemLevel
+local CharacterFrameInsetRight = _G.CharacterFrameInsetRight
+local CharacterStatsPane = _G.CharacterStatsPane
 local CreateFrame = _G.CreateFrame
+local FONT_COLOR_CODE_CLOSE = _G.FONT_COLOR_CODE_CLOSE
 local GetAverageItemLevel = _G.GetAverageItemLevel
 local GetMeleeHaste = _G.GetMeleeHaste
-local hooksecurefunc = _G.hooksecurefunc
+local HIGHLIGHT_FONT_COLOR_CODE = _G.HIGHLIGHT_FONT_COLOR_CODE
 local IsAddOnLoaded = _G.IsAddOnLoaded
+local LE_UNIT_STAT_AGILITY = _G.LE_UNIT_STAT_AGILITY
+local LE_UNIT_STAT_INTELLECT = _G.LE_UNIT_STAT_INTELLECT
+local LE_UNIT_STAT_STRENGTH = _G.LE_UNIT_STAT_STRENGTH
+local PAPERDOLLFRAME_TOOLTIP_FORMAT = _G.PAPERDOLLFRAME_TOOLTIP_FORMAT
+local PAPERDOLL_SIDEBARS = _G.PAPERDOLL_SIDEBARS
+local PAPERDOLL_STATINFO = _G.PAPERDOLL_STATINFO
 local PaperDollFrame_SetLabelAndText = _G.PaperDollFrame_SetLabelAndText
+local STAT_ATTACK_SPEED_BASE_TOOLTIP = _G.STAT_ATTACK_SPEED_BASE_TOOLTIP
+local STAT_AVERAGE_ITEM_LEVEL = _G.STAT_AVERAGE_ITEM_LEVEL
 local UnitAttackSpeed = _G.UnitAttackSpeed
+local WEAPON_SPEED = _G.WEAPON_SPEED
+local hooksecurefunc = _G.hooksecurefunc
 
 -- Add extra data to the role stats panel while enabling scrolling to prevent stats overflow.
-function Module:CreateMissingStats()
+function Module:CreateImprovedStats()
 	if C["Misc"].ImprovedStats ~= true then
 		return
 	end
@@ -49,7 +64,7 @@ function Module:CreateMissingStats()
 	end)
 
 	-- Change default data
-	PAPERDOLL_STATCATEGORIES = {
+	_G.PAPERDOLL_STATCATEGORIES = {
 		[1] = {
 			categoryFrame = "AttributesCategory",
 			stats = {
@@ -110,25 +125,19 @@ function Module:CreateMissingStats()
 		local meleeHaste = GetMeleeHaste()
 		local speed, offhandSpeed = UnitAttackSpeed(unit)
 		local displaySpeed = string_format("%.2f", speed)
-
 		if offhandSpeed then
 			offhandSpeed = string_format("%.2f", offhandSpeed)
 		end
-
 		if offhandSpeed then
-			displaySpeed = K.ShortValue(displaySpeed).." / "..offhandSpeed
+			displaySpeed = BreakUpLargeNumbers(displaySpeed).." / "..offhandSpeed
 		else
-			displaySpeed = K.ShortValue(displaySpeed)
+			displaySpeed = BreakUpLargeNumbers(displaySpeed)
 		end
 		PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, displaySpeed, false, speed)
 
 		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..string_format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ATTACK_SPEED).." "..displaySpeed..FONT_COLOR_CODE_CLOSE
-		statFrame.tooltip2 = string_format(STAT_ATTACK_SPEED_BASE_TOOLTIP, K.ShortValue(meleeHaste))
+		statFrame.tooltip2 = string_format(STAT_ATTACK_SPEED_BASE_TOOLTIP, BreakUpLargeNumbers(meleeHaste))
 		statFrame:Show()
-	end
-
-	if C["Misc"].CharacterInfo == true then
-		return
 	end
 
 	hooksecurefunc("PaperDollFrame_SetItemLevel", function(statFrame, unit)
@@ -139,15 +148,12 @@ function Module:CreateMissingStats()
 		local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel()
 		local minItemLevel = C_PaperDollInfo_GetMinItemLevel()
 		local displayItemLevel = math_max(minItemLevel or 0, avgItemLevelEquipped)
-		displayItemLevel = math_floor(displayItemLevel)
-		avgItemLevel = math_floor(avgItemLevel)
+		displayItemLevel = string_format("%.1f", displayItemLevel)
+		avgItemLevel = string_format("%.1f", avgItemLevel)
 
 		if displayItemLevel ~= avgItemLevel then
-			PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, displayItemLevel.." / "..avgItemLevel, false, displayItemLevel)
+			displayItemLevel = displayItemLevel.." / "..avgItemLevel
 		end
+		PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, displayItemLevel, false, displayItemLevel)
 	end)
-end
-
-function Module:OnEnable()
-	self:CreateMissingStats()
 end

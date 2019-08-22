@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("NoTutorials")
+local Module = K:GetModule("Blizzard")
 
 local _G = _G
 
@@ -12,7 +12,7 @@ function Module:KillTutorials()
 	_G.SpellBookFrameTutorialButton:Kill()
 end
 
-function Module:OnEnable()
+function Module:CreateNoTutorials()
 	if not C["General"].DisableTutorialButtons or K.CheckAddOnState("TutorialBuster") then
 		return
 	end

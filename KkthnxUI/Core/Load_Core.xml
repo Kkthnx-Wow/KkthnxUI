@@ -11,12 +11,11 @@
     <Script file="Smoothie.lua"/>
     <Script file="Colors.lua"/>
     <Script file="Install.lua"/>
-    <Script file="PixelPerfect.lua"/>
     <Script file="Conflicts.lua"/>
     <Script file="CheckVersion.lua"/>
     <Script file="Movers.lua"/>
     <Script file="CustomSettings.lua"/>
-    <Script file="ItemLevel.lua"/>
-    <Script file="MapInfo.lua"/>
     <Script file="Changelog.lua"/>
+    <Script file="UICommands.lua"/>
+    <Script file="UIQuestions.lua"/>
 </Ui>

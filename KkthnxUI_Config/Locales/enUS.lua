@@ -1,22 +1,11 @@
-local MissingDesc = "The description for this module/setting is missing. Someone should really remind Kkthnx to do his job!"
+-- local MissingDesc = "The description for this module/setting is missing. Someone should really remind Kkthnx to do his job!"
 local ModuleNewFeature = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:0:0:0:0|t]] -- Used for newly implemented features.
-local PerformanceIncrease = "|n|nDisabling this may slightly increase performance|r" -- For semi-high CPU options
-local RestoreDefault = "|n|nRight-click to restore to default" -- For color pickers
+-- local PerformanceIncrease = "|n|nDisabling this may slightly increase performance|r" -- For semi-high CPU options
+-- local RestoreDefault = "|n|nRight-click to restore to default" -- For color pickers
 
 local _G = _G
 
-local ARENA = _G.ARENA
-local BATTLEGROUNDS = _G.BATTLEGROUNDS
-local BINDING_NAME_TOGGLEGARRISONLANDINGPAGE = _G.BINDING_NAME_TOGGLEGARRISONLANDINGPAGE
-local COMBAT = _G.COMBAT
-local DUNGEONS = _G.DUNGEONS
-local GARRISON_LANDING_PAGE_TITLE = _G.GARRISON_LANDING_PAGE_TITLE
-local GARRISON_LOCATION_TOOLTIP = _G.GARRISON_LOCATION_TOOLTIP
-local RAID_CONTROL = _G.RAID_CONTROL
-local RAIDS = _G.RAIDS
 local REVERSE_NEW_LOOT_TEXT = _G.REVERSE_NEW_LOOT_TEXT
-local ROLE = _G.ROLE
-local SCENARIOS = _G.SCENARIOS
 
 _G.KkthnxUIConfig["enUS"] = {
 	-- Menu Groups Display Names
@@ -33,11 +22,9 @@ _G.KkthnxUIConfig["enUS"] = {
 		["DataText"] = "Data Text",
 		["Filger"] = "Filger",
 		["General"] = "General",
-		["HealthPrediction"] = "Health Prediction",
 		["Inventory"] = "Inventory",
 		["Loot"] = "Loot",
 		["Minimap"] = "Minimap",
-		["MinimapButtons"] = "Minimap Buttons",
 		["Misc"] = "Miscellaneous",
 		["Nameplates"] = "Nameplates",
 		["Party"] = "Party",
@@ -51,1058 +38,388 @@ _G.KkthnxUIConfig["enUS"] = {
 		["WorldMap"] = "World Map",
 	},
 
-	-- General Local
-	["General"] = {
-		["AutoScale"] = {
-			["Name"] = "Auto Scale",
-			["Desc"] = "Automatically scale the User Interface based on your screen resolution",
-		},
-
-		["UIScale"] = {
-			["Name"] = "UI Scale",
-			["Desc"] = "Set a custom UI scale |n|n|cffFF0000'Auto Scale' has to be disabled for this to work|r",
-		},
-
-		["DisableTutorialButtons"] = {
-			["Name"] = "Disable Tutorial Buttons",
-			["Desc"] = "Disables the tutorial buttons found on some frames.",
-		},
-
-		["Welcome"] = {
-			["Name"] = "Welcome Message",
-			["Desc"] = "Enable the `Welcome to KkthnxUI` in chat",
-		},
-
-		["FixGarbageCollect"] = {
-			["Name"] = "Fix Garabage Collection",
-			["Desc"] = "Garbage collection is being overused and misused and it's causing lag and performance drops.|n|nMemory usage is unrelated to performance, and tracking memory usage does not track 'bad' addons.|n|nDevelopers can disable this setting to enable the functionality when looking for memory leaks, but for the average end-user this is a completely pointless thing to track.",
-		},
-
-		["ColorTextures"] = {
-			["Name"] = "Enable BorderColor",
-			["Desc"] = "Change the color of the main border of the UI",
-		},
-
-		["TexturesColor"] = {
-			["Name"] = "Border Color",
-			["Desc"] = "Main border color of the UI. |n|n|cffFF0000'Enable Border Color' has to be enabled for this to work|r"..RestoreDefault,
-		},
-
-		["Texture"] = {
-			["Name"] = "Statusbar Texture",
-		},
-
-		["Font"] = {
-			["Name"] = "Font",
-		},
-
-		["FontSize"] = {
-			["Name"] = "Font Size",
-			["Desc"] = "Set the font size for most things in the UI. Note: This doesn't effect somethings that have their own seperate options (UnitFrame Font, Datatext Font, etc.)",
-		},
-
-		["LagTolerance"] = {
-			["Name"] = "Lag Tolerance",
-			["Desc"] = "Automatically update the Blizzard Custom Lag Tolerance option to your latency",
-		},
-
-		["MoveBlizzardFrames"] = {
-			["Name"] = "Move Blizzard Frames",
-		},
-
-		["ReplaceBlizzardFonts"] = {
-			["Name"] = "Replace Blizzard Fonts",
-			["Desc"] = "Change some of the default Blizzard fonts to match the UI",
-		},
-	},
-
-	-- Health Prediction Local
-	["HealthPrediction"] = {
-		["Absorbs"] = {
-			["Name"] = "Absorbs",
-			["Desc"] = MissingDesc,
-		},
-
-		["HealAbsorbs"] = {
-			["Name"] = "HealAbsorbs",
-			["Desc"] = MissingDesc,
-		},
-
-		["Others"] = {
-			["Name"] = "Others",
-			["Desc"] = MissingDesc,
-		},
-
-		["Personal"] = {
-			["Name"] = "Personal",
-			["Desc"] = MissingDesc,
-		},
-
-		["Texture"] = {
-			["Name"] = "Statusbar Texture",
-		},
-	},
-
-	-- Loot Local
-	["Loot"] = {
-		["Enable"] = {
-			["Name"] = "Enable Loot",
-		},
-
-		["GroupLoot"] = {
-			["Name"] = "GroupLoot",
-			["Desc"] = "Enable/Disable the loot roll frame.",
-		},
-
-		["AutoQuality"] = {
-			["Name"] = "Loot Quality",
-			["Desc"] = "Sets the auto greed/disenchant quality\n\nUncommon: Rolls on Uncommon only\nRare: Rolls on Rares & Uncommon",
-		},
-
-		["Font"] = {
-			["Name"] = "Font",
-		},
-
-		["Texture"] = {
-			["Name"] = "Statusbar Texture",
-		},
-
-		["AutoConfirm"] = {
-			["Name"] = "Auto Confirm",
-			["Desc"] = "Automatically click OK on BOP items",
-		},
-
-		["AutoGreed"] = {
-			["Name"] = "Auto Greed",
-			["Desc"] = "Automatically greed uncommon (green) quality items at max level",
-		},
-
-		["AutoDisenchant"] = {
-			["Name"] = "Auto Disenchant",
-			["Desc"] = "Automatically disenchant uncommon (green) quality items at max level",
-		},
-
-		["Level"] = {
-			["Name"] = "Level",
-			["Desc"] = "Level to start auto-rolling from",
-		},
-
-		["ByLevel"] = {
-			["Name"] = "Roll Based On Level",
-			["Desc"] = "This will auto-roll if you are above the given level if: You cannot equip the item being rolled on, or the iLevel of your equipped item is higher than the item being rolled on or you have an heirloom equipped in that slot",
-		},
-
-		["FastLoot"] = {
-			["Name"] = "Fast Loot",
-			["Desc"] = "The amount of time it takes to auto loot creatures will be significantly reduced.|n|n|cffFF0000Requires AutoLoot to be enabled!",
-		},
-	},
-
-	-- Bags Local
-	["Inventory"] = {
-		["BagColumns"] = {
-			["Name"] = "BagColumns",
-			["Desc"] = "Number of columns in the main bags",
-		},
-
-		["BankColumns"] = {
-			["Name"] = "Bank Columns",
-			["Desc"] = "Number of columns in the bank",
-		},
-
-		["ButtonSize"] = {
-			["Name"] = "Button Size",
-		},
-
-		["ButtonSpace"] = {
-			["Name"] = "Button Space",
-		},
-
-		["DetailedReport"] = {
-			["Name"] = "Detailed Report",
-			["Desc"] = "Displays a detailed report of every item sold when enabled. Disabled to just show the profit or expenses as a total.",
-		},
-
-		["Enable"] = {
-			["Name"] = "Enable Inventory",
-		},
-
-		["Font"] = {
-			["Name"] = "Font",
-		},
-
-		["ItemLevel"] = {
-			["Name"] = "Item Level",
-			["Desc"] = "Displays item level on equippable items.",
-		},
-
-		["ItemLevelThreshold"] = {
-			["Name"] = "Item Level Threshold",
-			["Desc"] = "The minimum item level required for it to be shown.",
-		},
-
-		["PulseNewItem"] = {
-			["Name"] = "Pulse New Items",
-			["Desc"] = "Flash new items in the bags",
-		},
-
-		["JunkIcon"] = {
-			["Name"] = "Junk Icon",
-			["Desc"] = "Display the junk icon on all grey items that can be vendored.",
-		},
-
-		["ScrapIcon"] = {
-			["Name"] = "Scrap Icon",
-			["Desc"] = "Display the scrap icon on all items that you can scrap.",
-		},
-
-		["ReverseLoot"] = {
-			["Name"] = REVERSE_NEW_LOOT_TEXT,
-			["Desc"] = REVERSE_NEW_LOOT_TEXT,
-		},
-
-		["BindText"] = {
-			["Name"] = "Bind Text",
-			["Desc"] = "Show Bind on Equip/Use Text",
-		},
-
-		["SortInverted"] = {
-			["Name"] = "Sort Inverted",
-			["Desc"] = "Direction the bag sorting will use to allocate the items.",
-		},
-
-		["AutoRepair"] = {
-			["Name"] = "Auto Repair",
-			["Desc"] = "When visiting a repair merchant, automatically repair our gear",
-		},
-
-		["AutoSell"] = {
-			["Name"] = "Auto Sell Grays",
-			["Desc"] = "When visiting a vendor, automatically sell gray quality items",
-		},
-
-		["UseGuildRepairFunds"] = {
-			["Name"] = "Use Guild Repair",
-			["Desc"] = "When using 'Auto Repair', use funds from the Guild Bank",
-		},
-	},
-
-	["MinimapButtons"] = {
-		["EnableBar"] = {
-			["Name"] = "Enable Bar",
-			["Desc"] = "Enable minimap buttons collected in a bar instead of around the minimap",
-		},
-
-		["BarMouseOver"] = {
-			["Name"] = "Bar Mouseover",
-			["Desc"] = "Make the bar mouseover",
-		},
-
-		["ButtonSpacing"] = {
-			["Name"] = "Button Spacing",
-			["Desc"] = "How much space between each icon (this only applies to the bar being enabled)",
-		},
-
-		["ButtonsPerRow"] = {
-			["Name"] = "Buttons Per Row",
-			["Desc"] = "How many buttons per row (this only applies to the bar being enabled)",
-		},
-
-		["IconSize"] = {
-			["Name"] = "Icon Size",
-			["Desc"] = "Size of the minimap icons",
-		},
-	},
-
 	-- Actionbar Local
 	["ActionBar"] = {
-
-		["Bar2Fade"] = {
-			["Name"] = "Bar2 Mouseover",
-		},
-
-		["Bar3Fade"] = {
-			["Name"] = "Bar3 Mouseover",
-		},
-
-		["Bar4Fade"] = {
-			["Name"] = "Bar4 Mouseover",
-		},
-
-		["Bar5Fade"] = {
-			["Name"] = "Bar5 Mouseover",
-		},
-
-		["PetFade"] = {
-			["Name"] = "PetBar Mouseover",
-		},
-
-		["StanceFade"] = {
-			["Name"] = "StanceBar Mouseover",
-		},
-
-		["MicroBar"] = {
-			["Name"] = "Micro Bar",
-			["Desc"] = "Enable",
-		},
-
-		["MicroBarMouseover"] = {
-			["Name"] = "MicroBar Mouseover",
-		},
-
-		["ButtonSize"] = {
-			["Name"] = "Button Size",
-			["Desc"] = "The size of the ActionBar buttons.",
-		},
-
-		["ButtonSpace"] = {
-			["Name"] = "Button Space",
-			["Desc"] = "The spacing between buttons.",
-		},
-
 		["Cooldowns"] = {
-			["Name"] = "Cooldowns",
-			["Desc"] = "Actionbar cooldowns",
+			["Name"] = "Show Cooldowns",
 		},
 
-		["Enable"] = {
-			["Name"] = "Enable Actionbars",
+		["Count"] = {
+			["Name"] = "Show Item Counts",
 		},
 
-		["EquipBorder"] = {
-			["Name"] = "Equipped Item Border",
-			["Desc"] = "Display Green Border on Equipped Items",
+		["DecimalCD"] = {
+			["Name"] = "Decimal for Cooldown in 3s",
 		},
 
-		["Hotkey"] = {
-			["Name"] = "Hotkey",
-			["Desc"] = "Show hotkey on buttons",
-		},
-
-		["Macro"] = {
-			["Name"] = "Macro",
-			["Desc"] = "Show macro name on buttons",
-		},
-
-		["OutOfMana"] = {
-			["Name"] = "Out Of Mana",
-			["Desc"] = "Out of Mana color"..RestoreDefault,
-		},
-
-		["OutOfRange"] = {
-			["Name"] = "Out Of Range",
-			["Desc"] = "Out of Range color"..RestoreDefault,
+		["DefaultButtonSize"] = {
+			["Name"] = "Main ActionBar Button Size",
 		},
 
 		["DisableStancePages"] = {
-			["Name"] = "Disable Stealth Paging",
-			["Desc"] = "Disables automatic page-switching when stealthed. |n|nOnly affects |cffFFF569Rogues|r and |cffFF7D0ADruids|r, has no effect on other classes",
-		},
-
-		["Font"] = {
-			["Name"] = "Font",
-		},
-	},
-
-	-- Nameplates Local
-	["Nameplates"] = {
-		["ClassResource"] = {
-			["Name"] = "Class Resource",
-			["Desc"] = "Display class resources on the nameplates (Combo, Runes...)|n|nDo not forget to enable this in the blizzard options too (Esc > Interface > Names and check Unit Nameplates options)",
-		},
-
-		["QuestIcon"] = {
-			["Name"] = "Quest Icon",
-			["Desc"] = "Show a progress quest icon next to the nameplates.",
-		},
-
-		["NonTargetAlpha"] = {
-			["Name"] = "Non Target Alpha",
-			["Desc"] = "Change the alpha level of the non targeted Nameplates.",
-		},
-
-		["Totems"] = {
-			["Name"] = "Totems Icons",
-			["Desc"] = "Show icon above enemy totems nameplate",
-		},
-
-		["TrackAuras"] = {
-			["Name"] = "Track Auras",
-			["Desc"] = "Show auras on nameplates",
-		},
-
-		["ClassIcons"] = {
-			["Name"] = "Class Icons",
-			["Desc"] = "Icons by class in PvP",
-		},
-
-		["TankedByTankColor"] = {
-			["Name"] = "Tanked Color",
-			["Desc"] = "Use Tanked Color when a nameplate is being effectively tanked by another tank.",
-		},
-
-		["BadTransition"] = {
-			["Name"] = "Bad Transition",
-			["Desc"] = "Bad Transition Color"..RestoreDefault,
-		},
-
-		["GoodTransition"] = {
-			["Name"] = "Good Transition",
-			["Desc"] = "Good Transition Color"..RestoreDefault,
-		},
-
-		["AurasSize"] = {
-			["Name"] = "Auras Size",
-			["Desc"] = "Size of the auras",
-		},
-
-		["DecimalLength"] = {
-			["Name"] = "Decimal Length",
-			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
-		},
-
-		["ShowEnemyCombat"] = {
-			["Name"] = "Enemy Combat Toggle",
-			["Desc"] = "Control enemy nameplates toggling on or off when in combat.",
-		},
-
-		["ShowFriendlyCombat"] = {
-			["Name"] = "Friendly Combat Toggle",
-			["Desc"] = "Control friendly nameplates toggling on or off when in combat.",
-		},
-
-		["QuestIconSize"] = {
-			["Name"] = "Quest Icon Size",
-			["Desc"] = "Size of the questicon on nameplates.",
-		},
-
-		["OverlapH"] = {
-			["Name"] = "Overlap Horizontal",
-			["Desc"] = "How much nameplates will be spaced from one another left/right.",
-		},
-
-		["OverlapV"] = {
-			["Name"] = "Overlap Vertical",
-			["Desc"] = "How much nameplates will be spaced from one another up/down.",
-		},
-
-		["BadColor"] = {
-			["Name"] = "Bad Color",
-			["Desc"] = "Bad threat color, varies depending if your a tank or dps/heal"..RestoreDefault,
-		},
-
-		["CastHeight"] = {
-			["Name"] = "Cast Height",
-			["Desc"] = "Height of castbar",
-		},
-
-		["Combat"] = {
-			["Name"] = "Combat",
-			["Desc"] = "Show nameplates in combat only",
-		},
-
-		["Clamp"] = {
-			["Name"] = "Clamp",
-			["Desc"] = "Clamp nameplates to the top of the screen when outside of view",
-		},
-
-		["Distance"] = {
-			["Name"] = "Distance",
-			["Desc"] = "Show nameplates for units within this range",
-		},
-
-		["TargetArrow"] = {
-			["Name"] = "Target Arrow",
-			["Desc"] = "Display an arrow at the top of the NamePlates to help determine who or what you are targeting",
-		},
-
-		["EliteIcon"] = {
-			["Name"] = "Elite Icon",
-			["Desc"] = "Display an Elite Icon on the right side of the NamePlates.",
+			["Name"] = "Disable Stance Pages (Druid & Rogues)",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Nameplates",
+			["Name"] = "Enable ActionBars",
 		},
 
-		["Threat"] = {
-			["Name"] = "Threat",
-			["Desc"] = "Enable threat feature, automatically changes by your role",
+		["EquipBorder"] = {
+			["Name"] = "Equiped Border Indicator",
 		},
 
-		["GoodColor"] = {
-			["Name"] = "Good Color",
-			["Desc"] = "Good threat color, varies depending if your a tank or dps/heal"..RestoreDefault,
+		["FadeRightBar"] = {
+			["Name"] = "Fade RightBar 1",
 		},
 
-		["MarkHealers"] = {
-			["Name"] = "Mark Healers",
-			["Desc"] = "Show healer icon beside enemy healers nameplate in battlegrounds",
+		["FadeRightBar2"] = {
+			["Name"] = "Fade RightBar 2",
 		},
 
-		["HealthValue"] = {
-			["Name"] = "Health Value",
-			["Desc"] = "Numeral health value",
+		["HideHighlight"] = {
+			["Name"] = "Hide Proc Highlight",
 		},
 
-		["Height"] = {
-			["Name"] = "Height",
+		["Hotkey"] = {
+			["Name"] = "Show Hotkey",
 		},
 
-		["NearColor"] = {
-			["Name"] = "Near Color",
-			["Desc"] = "Losing/Gaining threat color"..RestoreDefault,
+		["Macro"] = {
+			["Name"] = "Show Macro",
 		},
 
-		["OffTankColor"] = {
-			["Name"] = "Off Tank Color",
-			["Desc"] = "Offtank threat color"..RestoreDefault,
+		["MicroBar"] = {
+			["Name"] = "Show MicroBar",
 		},
 
-		["Smooth"] = {
-			["Name"] = "Smooth",
-			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
+		["MicroBarMouseover"] = {
+			["Name"] = "Fade MicroBar",
 		},
 
-		["SmoothSpeed"] = {
-			["Name"] = "Smooth Speed",
-			["Desc"] = "How fast the bars will transition smoothly.",
+		["OverrideWA"] = {
+			["Name"] = "Hide Cooldowns on WeakAuras",
 		},
 
-		["SelectedScale"] = {
-			["Name"] = "Selected Scale",
-			["Desc"] = "Scale size of the nameplate selected",
+		["RightButtonSize"] = {
+			["Name"] = "RightBars Button Size",
 		},
 
-		["Font"] = {
-			["Name"] = "Font",
-		},
-
-		["Texture"] = {
-			["Name"] = "Statusbar Texture",
-		},
-
-		["HealthFormat"] = {
-			["Name"] = "Health Format",
-			["Desc"] = "Health numbers formatting style",
-		},
-
-		["Width"] = {
-			["Name"] = "Width",
-		},
+		["StancePetSize"] = {
+			["Name"] = "Stance & Pet Button Size",
+		}
 	},
 
 	-- Announcements Local
 	["Announcements"] = {
 		["PullCountdown"] = {
-			["Name"] = "Pull Countdown",
-			["Desc"] = "Pull countdown announce (/pc #)",
+			["Name"] = "Announce Pull Countdown (/pc #)",
 		},
 
 		["SaySapped"] = {
-			["Name"] = "Say Sapped",
-			["Desc"] = "Say sapped announcements in /say",
+			["Name"] = "Announce When Sapped",
 		},
 
 		["Interrupt"] = {
-			["Name"] = "Interrupt",
-			["Desc"] = "Announce in desired channel when you interrupt",
-		},
+			["Name"] = "Announce Interrupts",
+		}
 	},
 
 	-- Automation Local
 	["Automation"] = {
-		["BlockMovies"] = {
-			["Name"] = "Block Movies",
-			["Desc"] = "Boss encounter movies will only be allowed to play once (so you can watch each one) and will then be blocked."
-		},
-
 		["AutoCollapse"] = {
-			["Name"] = "Auto Collapse",
-			["Desc"] = "Auto collapse the objective tracker based on the settings below.",
-		},
-
-		["AutoDisenchant"] = {
-			["Name"] = "Auto Disenchant",
-			["Desc"] = "One-click Milling, Prospecting, Disenchanting and Lockpicking with ALT key!. |n|nThe following spells/processes are supported:|n|n|cff4488ffMilling & Draenic Mortar|nProspecting|nDisenchanting|nLockpicking|nSkeleton keys|nJeweled keys|r",
-		},
-
-		["AutoReward"] = {
-			["Name"] = "Auto Reward",
-			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
-		},
-
-		["AutoTabBinder"] = {
-			["Name"] = "Auto Tab Target PvP",
-			["Desc"] = "'Tab' key target only enemy players when in PvP zones, ignores pets and mobs",
+			["Name"] = "Auto Collapse Objective Tracker",
 		},
 
 		["AutoInvite"] = {
-			["Name"] = "Auto Invite",
-			["Desc"] = "Automatically accept invites from guild/friends.",
+			["Name"] = "Accept Invites From Friends & Guild Members",
 		},
 
 		["AutoQuest"] = {
-			["Name"] = "Auto Quest",
-			["Desc"] = "Automatically allows the player to quickly accept and deliver quests, among other features, to speed up the questing experience.",
-		},
-
-		["InviteKeyword"] = {
-			["Name"] = "Invite Keyword",
-			["Desc"] = "Automatically accept invites from from anyone who whispers you the invite keyword",
+			["Name"] = "Auto Accept & Turnin Quests",
 		},
 
 		["AutoRelease"] = {
-			["Name"] = "Auto Release",
-			["Desc"] = "Automatically releases your spirit when you die XD.",
+			["Name"] = "Auto Release in Battlegrounds & Arenas",
 		},
 
 		["AutoResurrect"] = {
-			["Name"] = "Auto Resurrect",
-			["Desc"] = "Automatically accepts your resurrection request",
-		},
-
-		["AutoResurrectCombat"] = {
-			["Name"] = "Auto Resurrect Combat",
-			["Desc"] = "Automatically accepts your resurrection request in combat",
+			["Name"] = "Auto Accept Resurrect Requests",
 		},
 
 		["AutoResurrectThank"] = {
-			["Name"] = "Auto Resurrect Thanks",
-			["Desc"] = "Automatically say thank you for your resurrection",
+			["Name"] = "Say 'Thank You' When Resurrected",
+		},
+
+		["AutoReward"] = {
+			["Name"] = "Auto Select Quest Rewards",
+		},
+
+		["AutoTabBinder"] = {
+			["Name"] = "Only Tab Target Enemy Players",
+		},
+
+		["BlockMovies"] = {
+			["Name"] = "Block Movies You Already Seen",
 		},
 
 		["DeclinePetDuel"] = {
-			["Name"] = "Decline Pet Duels",
-			["Desc"] = "Automatically decline pet duels",
+			["Name"] = "Decline BattlePet Duels",
 		},
 
 		["DeclinePvPDuel"] = {
 			["Name"] = "Decline PvP Duels",
-			["Desc"] = "Automatically decline PvP duels",
 		},
 
 		["ScreenShot"] = {
-			["Name"] = "Screen Shot",
-			["Desc"] = "Automatically and takes a screenshot every time you get an achivement!",
+			["Name"] = "Auto Achievement Screenshots",
 		},
 
-		["Rested"] = {
-			["Name"] = "Rested",
+		["WhisperInvite"] = {
+			["Name"] = "Auto Invites Keyword",
+		},
+	},
+
+	-- Bags Local
+	["Inventory"] = {
+		["AutoSell"] = {
+			["Name"] = "Auto Vendor Grays",
+			["Desc"] = "Automatically vendor gray items when visiting a vendor.",
 		},
 
-		["Garrison"] = {
-			["Name"] = GARRISON_LOCATION_TOOLTIP,
+		["BagBar"] = {
+			["Name"] = "Show Bagbar",
 		},
 
-		["Orderhall"] = {
-			["Name"] = "Class Hall",
+		["BagBarMouseover"] = {
+			["Name"] = "Fade Bagbar",
 		},
 
-		["Battleground"] = {
-			["Name"] = BATTLEGROUNDS,
+		["BagColumns"] = {
+			["Name"] = "Number of Columns In Bags",
 		},
 
-		["Arena"] = {
-			["Name"] = ARENA,
+		["BankColumns"] = {
+			["Name"] = "Number of Columns In Bank",
 		},
 
-		["Dungeon"] = {
-			["Name"] = DUNGEONS,
+		["ButtonSize"] = {
+			["Name"] = "Bag Button Size",
 		},
 
-		["Scenario"] = {
-			["Name"] = SCENARIOS,
+		["ButtonSpace"] = {
+			["Name"] = "Bag Button Spacing",
 		},
 
-		["Raid"] = {
-			["Name"] = RAIDS,
+		["DetailedReport"] = {
+			["Name"] = "Vendor Gray Detailed Report",
+			["Desc"] = "Displays a detailed report of every item sold when enabled.",
 		},
 
-		["Combat"] = {
-			["Name"] = COMBAT,
+		["Enable"] = {
+			["Name"] = "Enable",
+			["Desc"] = "Enable/Disable the Inventory Module.",
+		},
+
+		["ItemLevel"] = {
+			["Name"] = "Display Item Level",
+			["Desc"] = "Displays item level on equippable items.",
+		},
+
+		["JunkIcon"] = {
+			["Name"] = "Show Junk Icon",
+			["Desc"] = "Display the junk icon on all grey items that can be vendored.",
+		},
+
+		["PulseNewItem"] = {
+			["Name"] = "Show New Item Glow",
+		},
+
+		["ReverseLoot"] = {
+			["Name"] = REVERSE_NEW_LOOT_TEXT,
+		},
+
+		["SortInverted"] = {
+			["Name"] = "Use Inverted Sorting",
+		},
+
+		["AutoRepair"] = {
+			["Name"] = "Auto Repair Gear",
 		},
 	},
 
 	-- Auras Local
 	["Auras"] = {
-		["Enable"] = {
-			["Name"] = "Enable Auras",
-		},
-
 		["BuffSize"] = {
-			["Name"] = "Buff Size",
+			["Name"] = "Buff Icon Size",
 		},
 
 		["BuffsPerRow"] = {
-			["Name"] = "Buffs PerRow",
+			["Name"] = "Buffs per Row",
 		},
 
 		["DebuffSize"] = {
-			["Name"] = "Debuff Size",
+			["Name"] = "DeBuff Icon Size",
 		},
 
 		["DebuffsPerRow"] = {
-			["Name"] = "Debuffs PerRow",
+			["Name"] = "DeBuffs per Row",
+		},
+
+		["Enable"] = {
+			["Name"] = "Enable",
 		},
 
 		["Reminder"] = {
-			["Name"] = "Reminder",
-			["Desc"] = "This will display an annoying reminder to use class buffs, armor spells, shouts, aspects, blessings, and ect.",
+			["Name"] = "Auras Reminder (Shout/Intellect/Poison)",
 		},
 
 		["ReverseBuffs"] = {
-			["Name"] = "Reverse Buffs",
+			["Name"] = "Buffs Grow Right",
 		},
 
 		["ReverseDebuffs"] = {
-			["Name"] = "Reverse Debuffs",
+			["Name"] = "DeBuffs Grow Right",
 		},
 	},
 
 	-- Chat Local
 	["Chat"] = {
 		["Background"] = {
-			["Name"] = "Chat Background",
-			["Desc"] = "Add a chat background",
+			["Name"] = "Show Chat Background",
 		},
 
 		["BackgroundAlpha"] = {
 			["Name"] = "Chat Background Alpha",
-			["Desc"] = "Control the alpha of the chat background (0 - 100)",
+		},
+
+		["BlockAddonAlert"] = {
+			["Name"] = "Block Addon Alerts",
+		},
+
+		["ChatItemLevel"] = {
+			["Name"] = "Show iLvl on ChatFrames",
 		},
 
 		["Enable"] = {
 			["Name"] = "Enable Chat",
 		},
 
+		["EnableFilter"] = {
+			["Name"] = "Enable Chat Filter",
+		},
+
 		["Fading"] = {
-			["Name"] = "Fading",
-			["Desc"] = "Chat fading",
-		},
-
-		["WhisperSound"] = {
-			["Name"] = "Whisper Sound",
-			["Desc"] = "Play a whisper sound",
-		},
-
-		["VoiceOverlay"] = {
-			["Name"] = "Voice Chat Overlay",
-			["Desc"] = "Replace Blizzard's Voice Overlay.",
+			["Name"] = "Fade Chat",
 		},
 
 		["FadingTimeFading"] = {
-			["Name"] = "Fading Time Fading",
-			["Desc"] = "How fast text will fade",
+			["Name"] = "Fade Chat Time",
 		},
 
 		["FadingTimeVisible"] = {
-			["Name"] = "Fading Time Visible",
-			["Desc"] = "Chat Visible Before Fade",
+			["Name"] = "Fading Chat Visible TIme",
+		},
+
+		["Height"] = {
+			["Name"] = "Chat Height",
+		},
+
+		["QuickJoin"] = {
+			["Name"] = "Quick Join Messages",
+			["Desc"] = "Show clickable Quick Join messages inside of the chat."
+		},
+
+		["ScrollByX"] = {
+			["Name"] = "Scroll by '#' Lines",
 		},
 
 		["ShortenChannelNames"] = {
 			["Name"] = "Shorten Channel Names",
 		},
 
-		["RemoveRealmNames"] = {
-			["Name"] = "Remove Realm Names",
-		},
-
-		["Height"] = {
-			["Name"] = "Height",
-		},
-
-		["LinkBrackets"] = {
-			["Name"] = "Link Brackets",
-			["Desc"] = "Wrap links in brackets",
-		},
-
-		["LinkColor"] = {
-			["Name"] = "Link Color",
-			["Desc"] = "Color links in chat"..RestoreDefault,
-		},
-
-		["QuickJoin"] = {
-			["Name"] = "Quick Join",
-			["Desc"] = "Show clickable Quick Join messages inside of the chat.",
-		},
-
-		["Filter"] = {
-			["Name"] = "Spam Filter",
-			["Desc"] = "Block annoying spam in chat.",
-		},
-
-		["Font"] = {
-			["Name"] = "Font",
-		},
-
-		["ScrollByX"] = {
-			["Name"] = "Scroll By X",
-			["Desc"] = "Scroll Chat Lines By #",
-		},
-
 		["TabsMouseover"] = {
-			["Name"] = "Tabs Mouseover",
-			["Desc"] = "Mouseover chat tabs",
+			["Name"] = "Fade Chat Tabs",
+		},
+
+		["WhisperSound"] = {
+			["Name"] = "Whisper Sound",
 		},
 
 		["Width"] = {
-			["Name"] = "Width",
+			["Name"] = "Chat Width",
 		},
+
 	},
 
 	-- Databars Local
 	["DataBars"] = {
-		["Enable"] = {
-			["Name"] = "Enable Databars",
-		},
-
-		["Text"] = {
-			["Name"] = "Text",
-			["Desc"] = "Display text on the databars",
-		},
-
 		["AzeriteColor"] = {
-			["Name"] = "Azerite Color",
-			["Desc"] = "Color of the Azerite"..RestoreDefault,
+			["Name"] = "Azerite Bar Color",
 		},
 
-		["MouseOver"] = {
-			["Name"] = "Mouseover",
-			["Desc"] = "The bars are not shown unless you mouse over them."
-		},
-
-		["Width"] = {
-			["Name"] = "Width",
+		["Enable"] = {
+			["Name"] = "Enable DataBars",
 		},
 
 		["ExperienceColor"] = {
-			["Name"] = "Experience Color",
-			["Desc"] = "Color of the Experience"..RestoreDefault,
-		},
-
-		["ExperienceRestedColor"] = {
-			["Name"] = "Experience Rested Color",
-			["Desc"] = "Color of the Rested Experience"..RestoreDefault,
+			["Name"] = "Experience Bar Color",
 		},
 
 		["Height"] = {
-			["Name"] = "Height",
+			["Name"] = "DataBars Height",
 		},
 
-		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+		["HonorColor"] = {
+			["Name"] = "Honor Bar Color",
+		},
+
+		["MouseOver"] = {
+			["Name"] = "Fade DataBars",
+		},
+
+		["RestedColor"] = {
+			["Name"] = "Rested Bar Color",
+		},
+
+		["Text"] = {
+			["Name"] = "Show Text",
 		},
 
 		["TrackHonor"] = {
 			["Name"] = "Track Honor",
-			["Desc"] = "Track your honor experience as a databar",
 		},
+
+		["Width"] = {
+			["Name"] = "DataBars Width",
+		},
+
 	},
 
 	-- DataText Local
 	["DataText"] = {
 		["Battleground"] = {
-			["Name"] = "Battleground",
-			["Desc"] = "Battleground datatext (Only shows in BGs)",
+			["Name"] = "Battleground Info",
 		},
 
 		["LocalTime"] = {
-			["Name"] = "Local Time",
-			["Desc"] = "Display local time instead of server / realm time format",
-		},
-
-		["Outline"] = {
-			["Name"] = "Outline",
+			["Name"] = "12 Hour Time",
 		},
 
 		["System"] = {
-			["Name"] = "System",
-			["Desc"] = "Display FPS-MS at the bottom right corner of the screen",
+			["Name"] = "Show FPS/MS on Minimap",
 		},
 
 		["Time"] = {
-			["Name"] = "Time",
-			["Desc"] = "Display a clock on the bottom of the minimap",
+			["Name"] = "Show Time on Minimap",
 		},
 
 		["Time24Hr"] = {
 			["Name"] = "24 Hour Time",
-			["Desc"] = "Display 24 time format",
-		},
-	},
-
-	-- Skins Local
-	["Skins"] = {
-		["BlizzardBags"] = {
-			["Name"] = "Blizzard Bags",
-		},
-
-		["Bagnon"] = {
-			["Name"] = "Bagnon",
-		},
-
-		["BigWigs"] = {
-			["Name"] = "BigWigs",
-		},
-
-		["ChatBubbles"] = {
-			["Name"] = "Chat Bubbles",
-		},
-
-		["DBM"] = {
-			["Name"] = "Deadly Boss Mods",
-		},
-
-		["Recount"] = {
-			["Name"] = "Recount",
-		},
-
-		["Skada"] = {
-			["Name"] = "Skada",
-		},
-
-		["Spy"] = {
-			["Name"] = "Spy",
-		},
-
-		["Texture"] = {
-			["Name"] = "Statusbar Texture",
-		},
-
-		["WeakAuras"] = {
-			["Name"] = "WeakAuras",
-		},
-	},
-
-	-- Minimap Local
-	["Minimap"] = {
-		["Calendar"] = {
-			["Name"] = "Calendar",
-			["Desc"] = "Display a small calendar",
-		},
-
-		["GarrisonLandingPage"] = {
-			["Name"] = GARRISON_LANDING_PAGE_TITLE,
-			["Desc"] = BINDING_NAME_TOGGLEGARRISONLANDINGPAGE,
-		},
-
-		["Enable"] = {
-			["Name"] = "Enable Minimap",
-		},
-
-		["VignetteAlert"] = {
-			["Name"] = "Vignette Alert",
-			["Desc"] = "Displays alerts for Treasures and Rares that are on your Minimap so you don't miss them.",
-		},
-
-		["ResetZoom"] = {
-			["Name"] = "Reset Zoom",
-		},
-
-		["ResetZoomTime"] = {
-			["Name"] = "Reset Zoom Time",
-			["Desc"] = "Reset minimap zoom at the set amount of seconds",
-		},
-
-		["Size"] = {
-			["Name"] = "Size",
-		},
-	},
-
-	-- Miscellaneous Local
-	["Misc"] = {
-		["AFKCamera"] = {
-			["Name"] = "AFK Camera",
-			["Desc"] = "Watch yourself dance. (Shame on you!)",
-		},
-
-		["BattlegroundSpam"] = {
-			["Name"] = "Battleground Spam",
-			["Desc"] = "Remove Boss Emote spam during BG",
-		},
-
-		["NoTalkingHead"] = {
-			["Name"] = "Hide TalkingHead",
-			["Desc"] = "Removes the message dialog that appears for quests/dungeons",
-		},
-
-		["InspectInfo"] = {
-			["Name"] = "Display Inspect Info",
-			["Desc"] = "Shows item level of each item, enchants, and gems when inspecting another player.",
-		},
-
-		["ColorPicker"] = {
-			["Name"] = "Improved Color Picker",
-			["Desc"] = "Improved ColorPicker",
-		},
-
-		["ItemLevel"] = {
-			["Name"] = "Item Level",
-			["Desc"] = "Item level on character slot buttons",
-		},
-
-		["EnhancedFriends"] = {
-			["Name"] = "Enhanced Friends List",
-			["Desc"] = "Enhances the friends list to look better",
-		},
-
-		["ImprovedStats"] = {
-			["Name"] = "Improved Stats",
-			["Desc"] = "Provides an updated and logical display of the character stats",
-		},
-
-		["KillingBlow"] = {
-			["Name"] = "Killing Blow",
-			["Desc"] = "Display a message about your killing blow",
-		},
-
-		["PvPEmote"] = {
-			["Name"] = "PVP Emote",
-			["Desc"] = "Make a silly emote at the player you just killed (Kkthnx spits on you!)",
-		},
-
-		["ProfessionTabs"] = {
-			["Name"] = "Enhanced Profession Tabs",
-			["Desc"] = "Makes it easier to get to your professions and keep them orderly",
-		},
-
-		["SlotDurability"] = {
-			["Name"] = "Slot Durability",
-			["Desc"] = "Durability percentage on character slot buttons",
-		},
-
-		["CharacterInfo"] = {
-			["Name"] = "Display Character Info",
-			["Desc"] = "Shows item level of each item, enchants, and gems on the character page.",
 		},
 	},
 
 	-- Filger Local
 	["Filger"] = {
-		["Enable"] = {
-			["Name"] = "Enable Filger",
-			["Desc"] = PerformanceIncrease,
-		},
-
-		["TestMode"] = {
-			["Name"] = "Test Mode",
-		},
-
-		["MaxTestIcon"] = {
-			["Name"] = "Max Test Icon",
-			["Desc"] = "The number of icons to the test",
-		},
-
-		["ShowTooltip"] = {
-			["Name"] = "Show Tooltip",
-		},
-
-		["DisableCD"] = {
-			["Name"] = "Disable Cooldowns",
-		},
-
 		["BuffSize"] = {
 			["Name"] = "Buff Size",
 		},
@@ -1111,352 +428,499 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Cooldown Size",
 		},
 
-		["PvPSize"] = {
-			["Name"] = "PVP Size",
+		["DisableCD"] = {
+			["Name"] = "Disable Cooldown Tracking",
 		},
 
-		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+		["DisablePvP"] = {
+			["Name"] = "Disable PvP Tracking",
+		},
+
+		["Expiration"] = {
+			["Name"] = "Sort by Expiration",
+		},
+
+		["Enable"] = {
+			["Name"] = "Enable Filger",
+		},
+
+		["MaxTestIcon"] = {
+			["Name"] = "Max Test Icons",
+		},
+
+		["PvPSize"] = {
+			["Name"] = "PvP Icon Size",
+		},
+
+		["ShowTooltip"] = {
+			["Name"] = "Show Tooltip On Hover",
+		},
+
+		["TestMode"] = {
+			["Name"] = "Test Mode",
+		},
+	},
+
+	-- General Local
+	["General"] = {
+		["ColorTextures"] = {
+			["Name"] = "Color 'Most' KkthnxUI Borders",
+		},
+
+		["DisableTutorialButtons"] = {
+			["Name"] = "Disable Tutorial Buttons",
+		},
+
+		["ShowTooltip"] = {
+			["Name"] = "Fix Garbage Collection",
+		},
+
+		["FontSize"] = {
+			["Name"] = "General Font Size",
+		},
+
+		["HideErrors"] = {
+			["Name"] = "Hide 'Some' UI Errors",
+		},
+
+		["LagTolerance"] = {
+			["Name"] = "Auto Lag Tolerance",
+		},
+
+		["MoveBlizzardFrames"] = {
+			["Name"] = "Move Blizzard Frames",
+		},
+
+		["ReplaceBlizzardFonts"] = {
+			["Name"] = "Replace 'Some' Blizzard Fonts",
+		},
+
+		["TexturesColor"] = {
+			["Name"] = "Textures Color",
+		},
+
+		["Welcome"] = {
+			["Name"] = "Show Welcome Message",
+		},
+
+		["NumberPrefixStyle"] = {
+			["Name"] = "Unitframe Number Prefix Style",
+		},
+
+		["PortraitStyle"] = {
+			["Name"] = "Unitframe Portrait Style",
+		},
+	},
+
+	-- Loot Local
+	["Loot"] = {
+		["AutoDisenchant"] = {
+			["Name"] = "Auto Disenchant With 'CTRL'",
+		},
+
+		["AutoGreed"] = {
+			["Name"] = "Auto Greed/Disenchant Green Items",
+		},
+
+		["Enable"] = {
+			["Name"] = "Enable Loot",
+		},
+
+		["FastLoot"] = {
+			["Name"] = "Faster Auto-Looting",
+		},
+
+		["GroupLoot"] = {
+			["Name"] = "Enable Group Loot",
+		},
+	},
+
+	-- Minimap Local
+	["Minimap"] = {
+		["Calendar"] = {
+			["Name"] = "Show Calendar",
+		},
+
+		["Enable"] = {
+			["Name"] = "Enable Minimap",
+		},
+
+		["GarrisonLandingPage"] = {
+			["Name"] = "Show Garrison icon",
+		},
+
+		["ResetZoom"] = {
+			["Name"] = "Reset Minimap Zoom",
+		},
+
+		["ResetZoomTime"] = {
+			["Name"] = "Reset Zoom Time",
+		},
+
+		["ShowRecycleBin"] = {
+			["Name"] = "Show Recycle Bin",
+		},
+
+		["Size"] = {
+			["Name"] = "Minimap Size",
+		},
+	},
+
+	-- Miscellaneous Local
+	["Misc"] = {
+		["AFKCamera"] = {
+			["Name"] = "AFK Camera",
+		},
+
+		["ColorPicker"] = {
+			["Name"] = "Enhanced Color Picker",
+		},
+
+		["EnhancedFriends"] = {
+			["Name"] = "Enhanced Friends List +",
+	},
+
+	["GemEnchantInfo"] = {
+		["Name"] = "Character/Inspect Gem/Enchant Info",
+	},
+
+	["ImprovedStats"] = {
+		["Name"] = "Improved Character Frame Stats",
+	},
+
+	["ItemLevel"] = {
+		["Name"] = "Show Character/Inspect ItemLevel Info",
+	},
+
+	["KillingBlow"] = {
+		["Name"] = "Show Your Killing Blow Info",
+	},
+
+	["NoTalkingHead"] = {
+		["Name"] = "Hide Talking Head Frame",
+	},
+
+	["ProfessionTabs"] = {
+		["Name"] = "Enhanced Profession Tabs",
+	},
+
+	["PvPEmote"] = {
+		["Name"] = "Auto Emote On Your Killing Blow",
+	},
+
+	["SlotDurability"] = {
+		["Name"] = "Show Slot Durability %",
+	},
+},
+
+	-- Nameplates Local
+	["Nameplates"] = {
+		["GoodColor"] = {
+			["Name"] = "Good Threat Color",
+		},
+
+		["NearColor"] = {
+			["Name"] = "Near Threat Color",
+		},
+
+		["BadColor"] = {
+			["Name"] = "Bad Threat Color",
+		},
+
+		["SlotDurability"] = {
+			["Name"] = "Off Tank Threat Color",
+		},
+
+		["Clamp"] = {
+			["Name"] = "Clamp Nameplates",
+			["Desc"] = "Clamp nameplates to the top of the screen when outside of view."
+		},
+
+		["ClassResource"] = {
+			["Name"] = "Show Class Resources",
+		},
+
+		["Combat"] = {
+			["Name"] = "Show Nameplates In Combat",
+		},
+
+		["Distance"] = {
+			["Name"] = "Nameplate Distance",
+		},
+
+		["Enable"] = {
+			["Name"] = "Enable Nameplates",
+		},
+
+		["HealthValue"] = {
+			["Name"] = "Show Health Value",
+		},
+
+		["Height"] = {
+			["Name"] = "Nameplate Height",
+		},
+
+		["NonTargetAlpha"] = {
+			["Name"] = "Non-Target Nameplate Alpha",
+		},
+
+		["OverlapH"] = {
+			["Name"] = "Overlap Horizontal",
+		},
+
+		["OverlapV"] = {
+			["Name"] = "Overlap Vertical",
+		},
+
+		["QuestInfo"] = {
+			["Name"] = "Show Quest Info Icon",
+		},
+
+		["SelectedScale"] = {
+			["Name"] = "Selected Nameplate Scale",
+		},
+
+		["Smooth"] = {
+			["Name"] = "Smooth Bars",
+		},
+
+		["TankMode"] = {
+			["Name"] = "Tank Mode",
+		},
+
+		["Threat"] = {
+			["Name"] = "Nameplate Threat",
+		},
+
+		["TrackAuras"] = {
+			["Name"] = "Track Buffs/DeBuffs",
+		},
+
+		["Width"] = {
+			["Name"] = "Nameplate Width",
+		},
+
+		["TargetArrowMark"] = {
+			["Name"] = "Show Target Arrows",
+		},
+
+		["HealthFormat"] = {
+			["Name"] = "Health Format Display",
+		},
+
+		["ShowEnemyCombat"] = {
+			["Name"] = "Show Enemy Combat",
+		},
+
+		["ShowFriendlyCombat"] = {
+			["Name"] = "Show Friendly Combat",
+		},
+	},
+
+	-- Skins Local
+	["Skins"] = {
+		["ChatBubbles"] = {
+			["Name"] = "Skin Chat Bubbles",
+		},
+
+		["DBM"] = {
+			["Name"] = "Skin DeadlyBossMods",
+		},
+
+		["Details"] = {
+			["Name"] = "Skin Details",
+		},
+
+		["Hekili"] = {
+			["Name"] = "Skin Hekili",
+		},
+
+		["Skada"] = {
+			["Name"] = "Skin Skada",
+		},
+
+		["TalkingHeadBackdrop"] = {
+			["Name"] = "Show TalkingHead Backdrop",
+		},
+
+		["WeakAuras"] = {
+			["Name"] = "Skin WeakAuras",
 		},
 	},
 
 	-- Unitframe Local
 	["Unitframe"] = {
-		["ShowPortrait"] = {
-			["Name"] = "Show Portraits",
-			["Desc"] = "Display portraits on unitframes (Like on player frame, target frame, party frames...)",
-		},
-
 		["AdditionalPower"] = {
-			["Name"] = "Show AdditionalPowerbar",
+			["Name"] = "Show Additional Power",
 		},
 
-		["ClassResource"] = {
-			["Name"] = "Class Resource",
-			["Desc"] = "Display class resources on the player frame (Combo, Runes...)",
+		["CastClassColor"] = {
+			["Name"] = "Class Color Castbars",
+		},
+
+		["CastReactionColor"] = {
+			["Name"] = "Reaction Color Castbars",
 		},
 
 		["CastbarLatency"] = {
-			["Name"] = "Castbar Latency",
-		},
-
-		["MouseoverHighlight"] = {
-			["Name"] = "Mouseover Highlight",
-			["Desc"] = "Highlight a units Health Bar when you are moused over them. (Only works for Target and Party right now!)",
-		},
-
-		["CastbarHeight"] = {
-			["Name"] = "Castbar Height",
-		},
-
-		["DecimalLength"] = {
-			["Name"] = "Decimal Length",
-			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
-		},
-
-		["CastbarIcon"] = {
-			["Name"] = "Castbar Icon",
-			["Desc"] = "Create an icon beside the cast bar",
-		},
-
-		["CombatFade"] = {
-			["Name"] = "Combat Fade",
-			["Desc"] = "Fade the unitframe when out of combat, not casting or no target exists. (This affects your Player and Pet frame)",
-		},
-
-		["OnlyShowPlayerDebuff"] = {
-			["Name"] = "Only Show Player Debuffs",
-			["Desc"] = "Only show your debuffs on frames (This affects your Target and Boss frames)",
-		},
-
-		["PlayerBuffs"] = {
-			["Name"] = "Player Buffs",
-			["Desc"] = "Display your buffs under the player frame",
-		},
-
-		["PortraitTimers"] = {
-			["Name"] = "Portrait Timers",
-			["Desc"] = "Displays important PvP buffs/debuffs with timers on your Portraits",
+			["Name"] = "Show Castbar Latency",
 		},
 
 		["Castbars"] = {
 			["Name"] = "Enable Castbars",
-			["Desc"] = "Enable cast bar for unit frames",
 		},
 
-		["CastbarTicks"] = {
-			["Name"] = "Show Castbar Ticks",
-			["Desc"] = "Display tick marks on the castbar for channelled spells. This will adjust automatically for spells like Drain Soul and add additional ticks based on haste.",
+		["ClassResource"] = {
+			["Name"] = "Show Class Resources",
 		},
 
-		["CastbarWidth"] = {
-			["Name"] = "Castbar Width",
+		["CombatFade"] = {
+			["Name"] = "Fade Unitframes",
 		},
 
-		["CastbarTicksWidth"] = {
-			["Name"] = "Castbar Ticks Width",
-		},
-
-		["CastClassColor"] = {
-			["Name"] = "Class Castbars",
-			["Desc"] = "Color castbars by the class of player units.",
-		},
-
-		["CastReactionColor"] = {
-			["Name"] = "Reaction Castbars",
-			["Desc"] = "Color castbars by the reaction type of non-player units.",
-		},
-
-		["DebuffsOnTop"] = {
-			["Name"] = "Debuffs On Top",
-			["Desc"] = "Display debuffs ontop and buffs on the bottom (affects only Target Frame)",
+		["CombatText"] = {
+			["Name"] = "Show CombatText Feedback",
 		},
 
 		["DebuffHighlight"] = {
-			["Name"] = "Debuff Highlight",
-			["Desc"] = "Highlight debuffs you can dispel",
+			["Name"] = "Show Health Debuff Highlight",
+		},
+
+		["DebuffsOnTop"] = {
+			["Name"] = "Show Target Debuffs On-top",
 		},
 
 		["Enable"] = {
 			["Name"] = "Enable Unitframes",
 		},
 
-		["Font"] = {
-			["Name"] = "Font",
-		},
-
 		["GlobalCooldown"] = {
-			["Name"] = "Global Cooldown",
-			["Desc"] = "Display a global CD on the unit frames healthbar (only shows for player frame)",
+			["Name"] = "Show Global Cooldown",
 		},
 
-		["TargetHighlight"] = {
-			["Name"] = "Target Highlight",
-			["Desc"] = "Highlight your current selected party target",
+		["HideTargetofTarget"] = {
+			["Name"] = "Hide TargetofTarget Frame",
 		},
 
-		["PowerPredictionBar"] = {
-			["Name"] = "Power Prediction Bar",
-			["Desc"] = "Display a bar at which determines how much a spell will cost of power?",
+		["OnlyShowPlayerDebuff"] = {
+			["Name"] = "Only Show Your Debuffs",
+		},
+
+		["PlayerBuffs"] = {
+			["Name"] = "Show Player Frame Buffs",
+		},
+
+		["PlayerCastbarHeight"] = {
+			["Name"] = "Player Castbar Height",
+		},
+
+		["PlayerCastbarWidth"] = {
+			["Name"] = "Player Castbar Width",
+		},
+
+		["PortraitTimers"] = {
+			["Name"] = "Portrait Spell Timers",
+		},
+
+		["ShowPlayerLevel"] = {
+			["Name"] = "Show Player Frame Level",
+		},
+
+		["ShowPlayerName"] = {
+			["Name"] = "Show Player Frame Name",
 		},
 
 		["Smooth"] = {
 			["Name"] = "Smooth Bars",
-			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
 		},
 
-		["SmoothSpeed"] = {
-			["Name"] = "Smooth Speed",
-			["Desc"] = "How fast the bars will transition smoothly.",
+		["Swingbar"] = {
+			["Name"] = "Unitframe Swingbar",
 		},
 
-		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+		["SwingbarTimer"] = {
+			["Name"] = "Unitframe Swingbar Timer",
 		},
 
-		["ThreatPercent"] = {
-			["Name"] = "Threat Percent",
-			["Desc"] = "Enable threat percent on the target/focus frames",
+		["TargetCastbarHeight"] = {
+			["Name"] = "Target Castbar Height",
 		},
 
-		["PortraitStyle"] = {
-			["Name"] = "Portrait Style",
-			["Desc"] = "2D, Class Icons, Blizzlike and more |n|n3D Portraits could degrade performance",
+		["TargetCastbarWidth"] = {
+			["Name"] = "Target Castbar Width",
 		},
 
-		["NumberPrefixStyle"] = {
-			["Name"] = "Unit Prefix Style",
-			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
+		["TotemBar"] = {
+			["Name"] = "Show Totembar",
 		},
 
-		["HideTargetofTarget"] = {
-			["Name"] = "Hide TargetofTarget",
-			["Desc"] = "Hides the TargetofTarget frames on Target and Focus.",
+		["PlayerHealthFormat"] = {
+			["Name"] = "Player Health Format",
+		},
+
+		["TargetHealthFormat"] = {
+			["Name"] = "Target Health Format",
 		},
 	},
 
 	-- Arena Local
 	["Arena"] = {
 		["Castbars"] = {
-			["Name"] = "Enable Castbars",
-		},
-
-		["CastbarIcon"] = {
-			["Name"] = "Castbar Icon",
-			["Desc"] = "Create an icon beside the cast bar",
-		},
-
-		["DecimalLength"] = {
-			["Name"] = "Decimal Length",
-			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
+			["Name"] = "Show Castbars",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Arena Frames",
-		},
-
-		["Font"] = {
-			["Name"] = "Font",
+			["Name"] = "Enable Arena",
 		},
 
 		["Smooth"] = {
 			["Name"] = "Smooth Bars",
-			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
-		},
-
-		["SmoothSpeed"] = {
-			["Name"] = "Smooth Speed",
-			["Desc"] = "How fast the bars will transition smoothly.",
-		},
-
-		["Texture"] = {
-			["Name"] = "Statusbar Texture",
-		},
-
-		["NumberPrefixStyle"] = {
-			["Name"] = "Unit Prefix Style",
-			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
 		},
 	},
 
-	-- Arena Local
+	-- Boss Local
 	["Boss"] = {
 		["Castbars"] = {
-			["Name"] = "Enable Castbars",
-		},
-
-		["CastbarIcon"] = {
-			["Name"] = "Castbar Icon",
-			["Desc"] = "Create an icon beside the cast bar",
-		},
-
-		["CastbarHeight"] = {
-			["Name"] = "Castbar Height",
-		},
-
-		["CastbarWidth"] = {
-			["Name"] = "Castbar Width",
-		},
-
-		["DecimalLength"] = {
-			["Name"] = "Decimal Length",
-			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
+			["Name"] = "Show Castbars",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Boss Frames",
-		},
-
-		["Font"] = {
-			["Name"] = "Font",
+			["Name"] = "Enable Boss",
 		},
 
 		["Smooth"] = {
 			["Name"] = "Smooth Bars",
-			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
-		},
-
-		["SmoothSpeed"] = {
-			["Name"] = "Smooth Speed",
-			["Desc"] = "How fast the bars will transition smoothly.",
-		},
-
-		["Texture"] = {
-			["Name"] = "Statusbar Texture",
-		},
-
-		["ThreatPercent"] = {
-			["Name"] = "Threat Percent",
-			["Desc"] = "Enable threat percent on the boss frame",
-		},
-
-		["NumberPrefixStyle"] = {
-			["Name"] = "Unit Prefix Style",
-			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
-		},
-
-		["PortraitStyle"] = {
-			["Name"] = "Portrait Style",
-			["Desc"] = "2D, Class Icons, Blizzlike and more |n|n3D Portraits could degrade performance",
 		},
 	},
 
 	-- Party Local
 	["Party"] = {
 		["Castbars"] = {
-			["Name"] = "Enable Castbars",
-		},
-
-		["CastbarIcon"] = {
-			["Name"] = "Castbar Icon",
-			["Desc"] = "Create an icon beside the cast bar",
+			["Name"] = "Show Castbars",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Party Frames",
-		},
-
-		["MouseoverHighlight"] = {
-			["Name"] = "Mouseover Highlight",
-			["Desc"] = "Highlight a units Health Bar when you are moused over them. (Only works for Target and Party right now!)",
-		},
-
-		["DecimalLength"] = {
-			["Name"] = "Decimal Length",
-			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
-		},
-
-		["PartyAsRaid"] = {
-			["Name"] = "Party as Raid Frames",
-			["Desc"] = "Check this if you want to use the Raidframes instead of the Partyframes.",
+			["Name"] = "Enable Party",
 		},
 
 		["PortraitTimers"] = {
-			["Name"] = "Portrait Timers",
-			["Desc"] = "Displays important PvP buffs/debuffs with timers on your Portraits",
+			["Name"] = "Portrait Spell Timers",
 		},
 
 		["ShowBuffs"] = {
-			["Name"] = "Show Buffs",
-			["Desc"] = "Toggle the display of buffs on the party frames.",
+			["Name"] = "Show Party Buffs",
 		},
 
 		["ShowPlayer"] = {
 			["Name"] = "Show Player In Party",
-			["Desc"] = "Display your self in the party frames or not. Hell I don't care",
-		},
-
-		["Font"] = {
-			["Name"] = "Font",
 		},
 
 		["Smooth"] = {
 			["Name"] = "Smooth Bars",
-			["Desc"] = "Bars will transition smoothly." .. PerformanceIncrease,
-		},
-
-		["SmoothSpeed"] = {
-			["Name"] = "Smooth Speed",
-			["Desc"] = "How fast the bars will transition smoothly.",
 		},
 
 		["TargetHighlight"] = {
-			["Name"] = "Target Highlight",
-			["Desc"] = "Highlight your current selected party target",
-		},
-
-		["Texture"] = {
-			["Name"] = "Statusbar Texture",
-		},
-
-		["PortraitStyle"] = {
-			["Name"] = "Portrait Style",
-			["Desc"] = "2D, Class Icons, Blizzlike and more |n|n3D Portraits could degrade performance",
-		},
-
-		["NumberPrefixStyle"] = {
-			["Name"] = "Unit Prefix Style",
-			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
+			["Name"] = "Show Highlighted Target",
 		},
 	},
 
@@ -1479,127 +943,80 @@ _G.KkthnxUIConfig["enUS"] = {
 
 	-- Raidframe Local
 	["Raid"] = {
-		["AuraWatch"] = {
-			["Name"] = "Aura Watch Timers",
-			["Desc"] = "Display a timer on debuff icons created by Debuff Watch",
-		},
-
-		["AuraWatchIconSize"] = {
-			["Name"] = "Aura Watch Icon Size",
-		},
-
-		["AuraWatchTexture"] = {
-			["Name"] = "Aura Watch Texture",
-			["Desc"] = "Display a colored texture over your aura watch corner icons. Disable this if you want to see the spell icon instead",
-		},
-
-		["RaidTools"] = {
-			["Name"] = "Raid Utility",
-			["Desc"] = "Enables the 'Raid Control' utility panel",
-		},
-
-		["RaidLayout"] = {
-			["Name"] = "Raid Layout",
-			["Desc"] = "Choose between a Healer or Damage raidframe layout"
-		},
-
-		["TargetHighlight"] = {
-			["Name"] = "Target Highlight",
-			["Desc"] = "Highlight your current selected raid target"
-		},
-
 		["AuraDebuffIconSize"] = {
 			["Name"] = "Aura Debuff Icon Size",
 		},
 
-		["DeficitThreshold"] = {
-			["Name"] = "Deficit Threshold",
-			["Desc"] = "Show health deficit when it's more than displayed value",
+		["AuraWatch"] = {
+			["Name"] = "Show AuraWatch Icons",
 		},
 
-		["ColorHealthByValue"] = {
-			["Name"] = "Health By Value",
-			["Desc"] = "Color health by amount remaining.",
+		["AuraWatchIconSize"] = {
+			["Name"] = "AuraWatch Icon Size",
+		},
+
+		["AuraWatchTexture"] = {
+			["Name"] = "Show Color AuraWatch Texture",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Raid Frames",
+			["Name"] = "Enable Raidframes",
 		},
 
 		["Height"] = {
-			["Name"] = "Raid Height",
-		},
-
-		["RaidGroups"] = {
-			["Name"] = "Raid Groups",
-			["Desc"] = "Number of groups in the raid",
-		},
-
-		["Width"] = {
-			["Name"] = "Raid Width",
+			["Name"] = "Raidframe Height",
 		},
 
 		["MainTankFrames"] = {
-			["Name"] = "Main Tank Frames",
-			["Desc"] = "You know the people who take all the damage?",
+			["Name"] = "Show MainTank Frames",
 		},
 
 		["ManabarShow"] = {
-			["Name"] = "Manabar Display",
-			["Desc"] = "Off or on. Its a 50% chance here",
+			["Name"] = "Show Manabars",
 		},
 
 		["MaxUnitPerColumn"] = {
-			["Name"] = "Max Unit Per Column",
-			["Desc"] = "How many frame will display per row/column",
+			["Name"] = "MaxUnit Per Column",
 		},
 
 		["RaidUtility"] = {
-			["Name"] = RAID_CONTROL,
-			["Desc"] = "Enables the custom Raid Control panel.",
-		},
-
-		["ShowMouseoverHighlight"] = {
-			["Name"] = "Show Mouseover Highlight",
-			["Desc"] = "We can see better!",
-		},
-
-		["ShowNotHereTimer"] = {
-			["Name"] = "Not Here Timer (AFK)",
-			["Desc"] = "Display when someone is AFK in your raid",
-		},
-
-		["ShowRolePrefix"] = {
-			["Name"] = "Show Role Prefix",
-			["Desc"] = "Display an H for the healer or T for the tank",
+			["Name"] = "Show Raid Utility Frame",
 		},
 
 		["ShowGroupText"] = {
-			["Name"] = "Show Group Number",
-			["Desc"] = "Display your groupnumber over your unitframe (In raid only)",
+			["Name"] = "Show Player Group #",
+		},
+
+		["ShowNotHereTimer"] = {
+			["Name"] = "Show Away/DND Status",
+		},
+
+		["ShowRolePrefix"] = {
+			["Name"] = "Show Healer/Tank Roles",
 		},
 
 		["Smooth"] = {
-			["Name"] = "Smooth",
-			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
+			["Name"] = "Smooth Bars",
 		},
 
-		["SmoothSpeed"] = {
-			["Name"] = "Smooth Speed",
-			["Desc"] = "How fast the bars will transition smoothly.",
+		["TargetHighlight"] = {
+			["Name"] = "Show Highlighted Target",
 		},
 
-		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+		["Width"] = {
+			["Name"] = "Raidframe Width",
 		},
 
-		["Font"] = {
-			["Name"] = "Font",
+		["RaidLayout"] = {
+			["Name"] = "Raid Layouts",
 		},
 
 		["GroupBy"] = {
-			["Name"] = "Group By",
-			["Desc"] = "Set the order that the group will sort.",
+			["Name"] = "Sort Raid Frames",
+		},
+
+		["HealthFormat"] = {
+			["Name"] = "Health Format Display",
 		},
 	},
 
@@ -1607,118 +1024,77 @@ _G.KkthnxUIConfig["enUS"] = {
 	["WorldMap"] = {
 		["AlphaWhenMoving"] = {
 			["Name"] = "Alpha When Moving",
-			["Desc"] = "Alpha value at which the map will fade",
 		},
 
 		["Coordinates"] = {
-			["Name"] = "Coordinates",
-			["Desc"] = "Puts coordinates on the world map.",
+			["Name"] = "Show Player/Mouse Coordinates",
 		},
 
 		["FadeWhenMoving"] = {
-			["Name"] = "Fade When Moving",
-			["Desc"] = "Map Opacity When Moving",
+			["Name"] = "Fade Worldmap When Moving",
 		},
 
 		["SmallWorldMap"] = {
-			["Name"] = "Small WorldMap",
-			["Desc"] = "Make the world map smaller.",
+			["Name"] = "Show Smaller Worldmap",
 		},
 
 		["WorldMapPlus"] = {
-			["Name"] = "WorldMap Plus",
-			["Desc"] = "If checked, a checkbox/quest URLs will be shown at the top of the map which will allow you to toggle unexplored areas and obtain quest/arena link info directly.",
+			["Name"] = "Show Enhanced World Map Features",
 		},
 	},
 
 	-- Tooltip Local
 	["Tooltip"] = {
-		["PlayerRoles"] = {
-			["Name"] = ROLE,
-			["Desc"] = "Display the unit role in the tooltip.",
+		["AzeriteArmor"] = {
+			["Name"] = "Show AzeriteArmor Info",
 		},
 
-		["CursorAnchor"] = {
-			["Name"] = "Cursor Anchor",
-			["Desc"] = "Anchor the tooltip to the mouse cursor.",
+		["ClassColor"] = {
+			["Name"] = "Quality Color Border",
 		},
 
-		["Enable"] = {
-			["Name"] = "Enable Tooltip",
+		["CombatHide"] = {
+			["Name"] = "Hide Tooltip in Combat",
 		},
 
-		["ShowMount"] = {
-			["Name"] = "Current Mount",
-			["Desc"] = "Display info about the current mount the unit is riding.",
+		["Cursor"] = {
+			["Name"] = "Follow Cursor",
 		},
 
-		["FontOutline"] = {
-			["Name"] = "Font Outline",
+		["FactionIcon"] = {
+			["Name"] = "Show Faction Icon",
 		},
 
-		["FontSize"] = {
-			["Name"] = "Font Size",
+		["HideJunkGuild"] = {
+			["Name"] = "Abbreviate Guild Names",
 		},
 
-		["CursorAnchorX"] = {
-			["Name"] = "Cursor Anchor Offset X",
+		["HideRank"] = {
+			["Name"] = "Hide Guild Rank",
 		},
 
-		["CursorAnchorY"] = {
-			["Name"] = "Cursor Anchor Offset Y",
+		["HideRealm"] = {
+			["Name"] = "Show realm name by SHIFT",
 		},
 
-		["GuildRanks"] = {
-			["Name"] = "Guild Ranks",
-			["Desc"] = "Display players guild ranks",
-		},
-
-		["HealthbarHeight"] = {
-			["Name"] = "Healthbar Height",
-		},
-
-		["HealthBarText"] = {
-			["Name"] = "Healthbar Text",
-			["Desc"] = "Show health bar text",
-		},
-
-		["TargetInfo"] = {
-			["Name"] = "Target Info",
-			["Desc"] = "When in a raid group display if anyone in your raid is targeting the current tooltip unit.",
+		["HideTitle"] = {
+			["Name"] = "Hide Unit Title",
 		},
 
 		["Icons"] = {
-			["Name"] = "Icons",
-			["Desc"] = "Display tooltip icons",
+			["Name"] = "Item Icons",
 		},
 
-		["InspectInfo"] = {
-			["Name"] = "Inspect Info",
-			["Desc"] = "Display a players item level and spec (you need to be holding the shift key down too)",
+		["LFDRole"] = {
+			["Name"] = "Show Roles Assigned Icon",
 		},
 
-		["NpcID"] = {
-			["Name"] = "NPC IDs",
-			["Desc"] = "Display the npc ID when mousing over a npc tooltip.",
+		["SpecLevelByShift"] = {
+			["Name"] = "Show Spec/iLvl by SHIFT",
 		},
 
-		["ItemQualityBorder"] = {
-			["Name"] = "ItemQuality Border",
-			["Desc"] = "Display item quality colors on the border",
-		},
-
-		["PlayerTitles"] = {
-			["Name"] = "Player Titles",
-			["Desc"] = "Display players titles",
-		},
-
-		["SpellID"] = {
-			["Name"] = "Spell/Item IDs",
-			["Desc"] = "Display the spell or item ID when mousing over a spell or item tooltip.",
-		},
-
-		["Texture"] = {
-			["Name"] = "Statusbar Texture",
+		["TargetBy"] = {
+			["Name"] = "Show Unit Targeted By",
 		},
 	},
 
@@ -1780,7 +1156,7 @@ _G.KkthnxUIConfig["enUS"] = {
 	-- Textures Local
 	["UITextures"] = {
 		["DataBarsTexture"] = {
-			["Name"] = "DataBars",
+			["Name"] = "Data Bars",
 		},
 
 		["FilgerTextures"] = {
@@ -1813,6 +1189,10 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["UnitframeTextures"] = {
 			["Name"] = "Unitframes",
+		},
+
+		["HealPredictionTextures"] = {
+			["Name"] = "Heal Prediction",
 		},
 	}
 }

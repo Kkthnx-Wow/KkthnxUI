@@ -1,17 +1,14 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
-local function SkinDeathRecap()
+local _G = _G
+
+local CreateFrame = _G.CreateFrame
+
+local function ReskinDeathRecapFrame()
     local DeathRecapFrame = _G["DeathRecapFrame"]
     DeathRecapFrame:StripTextures()
-    DeathRecapFrame.CloseXButton:SkinCloseButton()
-
-    DeathRecapFrame.Backgrounds = DeathRecapFrame:CreateTexture(nil, "BACKGROUND", -2)
-	DeathRecapFrame.Backgrounds:SetAllPoints()
-	DeathRecapFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(DeathRecapFrame)
-
+	DeathRecapFrame:CreateBorder()
     DeathRecapFrame.CloseButton:SkinButton()
 
     for i = 1, 5 do
@@ -37,4 +34,4 @@ local function SkinDeathRecap()
     end
 end
 
-Module.SkinFuncs["Blizzard_DeathRecap"] = SkinDeathRecap
+Module.NewSkin["Blizzard_DeathRecap"] = ReskinDeathRecapFrame

@@ -304,5 +304,4 @@ function K.ShowStatusReport()
 		K.StatusFrame:SetShown(false)
 	end
 end
-
-K:RegisterChatCommand("kstatus", "ShowStatusReport")
+-- K:RegisterChatCommand("kstatus", "ShowStatusReport")

@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("SlotDurability", "AceEvent-3.0", "AceHook-3.0")
+local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
 
@@ -24,15 +24,8 @@ local function GetDurStrings(name)
 	if (not SlotDurStrs[name]) then
 		local slot = _G["Character"..name.."Slot"]
 		SlotDurStrs[name] = slot:CreateFontString("OVERLAY")
-		SlotDurStrs[name]:FontTemplate(nil, 13, "OUTLINE")
-		SlotDurStrs[name]:SetPoint("CENTER", 1, 0)
-
-		SlotDurStrs[name].Shade = slot:CreateTexture()
-		SlotDurStrs[name].Shade:SetDrawLayer("ARTWORK")
-		SlotDurStrs[name].Shade:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\Shader.tga]])
-		SlotDurStrs[name].Shade:SetPoint("TOPLEFT", SlotDurStrs[name], "TOPLEFT", -6, 6)
-		SlotDurStrs[name].Shade:SetPoint("BOTTOMRIGHT", SlotDurStrs[name], "BOTTOMRIGHT", 6, -6)
-		SlotDurStrs[name].Shade:SetAlpha(1)
+		SlotDurStrs[name]:FontTemplate(nil, 11, "OUTLINE")
+		SlotDurStrs[name]:SetPoint("TOPRIGHT", 1, -1)
 	end
 
 	return SlotDurStrs[name]
@@ -50,7 +43,7 @@ local function GetThresholdColour(percent)
 	end
 end
 
-function Module:UpdateDurability()
+function Module.UpdateDurability()
 	for _, item in ipairs(Slots) do
 		local id, _ = GetInventorySlotInfo(item.."Slot")
 		local v1, v2 = GetInventoryItemDurability(id)
@@ -61,38 +54,34 @@ function Module:UpdateDurability()
 		if ((v2 ~= 0) and (percent ~= 1)) then
 
 			SlotDurStr:SetText("")
-			SlotDurStr.Shade:Hide()
 			if (math.ceil(percent * 100) < 100)then
 				SlotDurStr:SetTextColor(GetThresholdColour(percent))
-				SlotDurStr.Shade:SetVertexColor(GetThresholdColour(percent))
-				SlotDurStr.Shade:Show()
 				SlotDurStr:SetText(math.ceil(percent * 100).."%")
 			end
 		else
 			SlotDurStr:SetText("")
-			SlotDurStr.Shade:Hide()
 		end
 	end
 end
 
-function Module:OnEnable()
+function Module:CreateSlotDurability()
 	if not C["Misc"].SlotDurability then
 		return
 	end
 
-	self:SecureHookScript(CharacterFrame, "OnShow", "CharacterFrame_OnShow")
-	self:SecureHookScript(CharacterFrame, "OnHide", "CharacterFrame_OnHide")
+	CharacterFrame:HookScript("OnShow", Module.CharacterFrame_OnShow)
+	CharacterFrame:HookScript("OnHide", Module.CharacterFrame_OnHide)
 end
 
-function Module:CharacterFrame_OnShow()
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateDurability")
-	self:RegisterEvent("UNIT_INVENTORY_CHANGED", "UpdateDurability")
-	self:RegisterEvent("UPDATE_INVENTORY_DURABILITY", "UpdateDurability")
-	self:UpdateDurability()
+function Module.CharacterFrame_OnShow()
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.UpdateDurability)
+	K:RegisterEvent("UNIT_INVENTORY_CHANGED", Module.UpdateDurability)
+	K:RegisterEvent("UPDATE_INVENTORY_DURABILITY", Module.UpdateDurability)
+	Module.UpdateDurability()
 end
 
-function Module:CharacterFrame_OnHide()
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	self:UnregisterEvent("UNIT_INVENTORY_CHANGED")
-	self:UnregisterEvent("UPDATE_INVENTORY_DURABILITY")
+function Module.CharacterFrame_OnHide()
+	K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.UpdateDurability)
+	K:UnregisterEvent("UNIT_INVENTORY_CHANGED", Module.UpdateDurability)
+	K:UnregisterEvent("UPDATE_INVENTORY_DURABILITY", Module.UpdateDurability)
 end

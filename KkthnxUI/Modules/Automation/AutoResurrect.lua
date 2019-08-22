@@ -1,9 +1,5 @@
 local K, C = unpack(select(2, ...))
-if C["Automation"].AutoResurrect ~= true then
-	return
-end
-
-local Module = K:NewModule("AutoResurrect", "AceEvent-3.0")
+local Module = K:GetModule("Automation")
 
 local _G = _G
 
@@ -15,7 +11,7 @@ local DoEmote = _G.DoEmote
 
 local GameLocale = GetLocale()
 
-function Module:RESURRECT_REQUEST(_, arg1)
+function Module.SetupAutoResurrect(_, arg1)
 	-- Exclude pylon and brazier requests
 	local pylonLoc
 
@@ -64,7 +60,7 @@ function Module:RESURRECT_REQUEST(_, arg1)
 			return
 		end
 
-		C_Timer_After(1.2, function() -- Give this more time to say thanks.
+		C_Timer_After(1, function() -- Give this more time to say thanks.
 			if not UnitIsDeadOrGhost("player") then
 				DoEmote("thank", arg1)
 			end
@@ -73,10 +69,10 @@ function Module:RESURRECT_REQUEST(_, arg1)
 	return
 end
 
-function Module:OnEnable()
-	self:RegisterEvent("RESURRECT_REQUEST")
-end
+function Module:CreateAutoResurrect()
+	if C["Automation"].AutoResurrect ~= true then
+		return
+	end
 
-function Module:OnDisable()
-	self:UnregisterEvent("RESURRECT_REQUEST")
+	K:RegisterEvent("RESURRECT_REQUEST", self.SetupAutoResurrect)
 end

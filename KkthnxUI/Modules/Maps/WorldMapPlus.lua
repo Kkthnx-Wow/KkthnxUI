@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("RevealMap")
+local Module = K:GetModule("WorldMap")
 
 if not Module then
 	return
@@ -14,6 +14,8 @@ local strsplit, ceil, mod = string.split, math.ceil, mod
 local pairs, tonumber, tinsert = pairs, tonumber, table.insert
 
 local function MapExplorationPin_RefreshOverlays(pin, fullUpdate)
+	if InCombatLockdown() then return end -- need reviewed
+
 	wipe(overlayTextures)
 	wipe(TileExists)
 
@@ -108,13 +110,13 @@ end
 
 function Module:CreateMapReveal()
 	local bu = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsCheckButtonTemplate")
-	bu:SetPoint("TOPRIGHT", -130, 0)
+	bu:SetPoint("TOPRIGHT", -260, 0)
 	bu:SetSize(24, 24)
 	bu:SetChecked(KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap)
 
 	bu.text = bu:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	bu.text:SetPoint("LEFT", 24, 0)
-	bu.text:SetText(L["Maps"].Reveal)
+	bu.text:SetText("Map Reveal")
 	bu:SetHitRectInsets(0, 0 - bu.text:GetWidth(), 0, 0)
 	bu.text:Show()
 
@@ -132,13 +134,13 @@ function Module:CreateMapReveal()
 		local r, g, b = 0.2, 1.0, 0.2
 
 		if KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap == true then
-			GameTooltip:AddLine(L["Maps"].HideUnDiscovered)
+			GameTooltip:AddLine(L["Hide Undiscovered Areas"])
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(L["Maps"].DisableToHide, r, g, b)
+			GameTooltip:AddLine(L["Disable to hide areas."], r, g, b)
 		else
-			GameTooltip:AddLine(L["Maps"].RevealHidden)
+			GameTooltip:AddLine(L["Reveal Hidden Areas"])
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(L["Maps"].EnableToShow, r, g, b)
+			GameTooltip:AddLine(L["Enable to show hidden areas."], r, g, b)
 		end
 
 		GameTooltip:Show()
@@ -289,7 +291,7 @@ function Module:CreateMapLinks()
 				-- Get achievement title for tooltip
 				local achievementLink = GetAchievementLink(self.id)
 				if achievementLink then
-					aEB.tiptext = achievementLink:match("%[(.-)%]") .. "|n" .. L["Maps"].PressToCopy
+					aEB.tiptext = achievementLink:match("%[(.-)%]") .. "|n" .. L["Press To Copy"]
 				end
 				-- Show the editbox
 				aEB:Show()
@@ -317,11 +319,11 @@ function Module:CreateMapLinks()
 		end)
 
 		-- Hide editbox when achievement is deselected
-		hooksecurefunc("AchievementFrameAchievements_ClearSelection", function(self)
+		hooksecurefunc("AchievementFrameAchievements_ClearSelection", function()
 			aEB:Hide()
 		end)
 
-		hooksecurefunc("AchievementCategoryButton_OnClick", function(self)
+		hooksecurefunc("AchievementCategoryButton_OnClick", function()
 			aEB:Hide()
 		end)
 	end
@@ -332,7 +334,7 @@ function Module:CreateMapLinks()
 	else
 		local waitAchievementsFrame = CreateFrame("FRAME")
 		waitAchievementsFrame:RegisterEvent("ADDON_LOADED")
-		waitAchievementsFrame:SetScript("OnEvent", function(self, event, arg1)
+		waitAchievementsFrame:SetScript("OnEvent", function(_, _, arg1)
 			if arg1 == "Blizzard_AchievementUI" then
 				DoWowheadAchievementFunc()
 				waitAchievementsFrame:UnregisterAllEvents()
@@ -391,7 +393,7 @@ function Module:CreateMapLinks()
 			-- Get quest title for tooltip
 			local questLink = GetQuestLink(questID) or nil
 			if questLink then
-				mEB.tiptext = questLink:match("%[(.-)%]") .. "|n" .. L["Maps"].PressToCopy
+				mEB.tiptext = questLink:match("%[(.-)%]") .. "|n" .. L["Press To Copy"]
 			else
 				mEB.tiptext = ""
 				if mEB:IsMouseOver() and GameTooltip:IsShown() then
@@ -427,7 +429,7 @@ function Module:CreateMapLinks()
 	end)
 end
 
-function Module:OnEnable()
+function Module:CreateWorldMapPlus()
 	if C["WorldMap"].WorldMapPlus ~= true then
 		return
 	end

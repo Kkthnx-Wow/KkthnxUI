@@ -1,9 +1,5 @@
 local K, C = unpack(select(2, ...))
-if K.CheckAddOnState("DBM-Core") or K.CheckAddOnState("BigWigs") then
-	return
-end
-
-local Module = K:NewModule("QueueTimer", "AceEvent-3.0")
+local Module = K:GetModule("Miscellaneous")
 
 -- Sourced: LFG_ProposalTime (Freebaser)
 
@@ -16,7 +12,7 @@ local CreateFrame = _G.CreateFrame
 
 do
 	local prev
-	function Module:LFG_PROPOSAL_SHOW()
+	function Module.LFG_PROPOSAL_SHOW()
 		if not prev then
 			local timerBar = CreateFrame("StatusBar", nil, LFGDungeonReadyPopup)
 			timerBar:SetPoint("TOP", LFGDungeonReadyPopup, "BOTTOM", 0, -5)
@@ -46,19 +42,19 @@ do
 			timerBar.text = timerBar:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 			timerBar.text:SetPoint("CENTER", timerBar, "CENTER")
 
-			self.LFG_PROPOSAL_SHOW = function()
+			Module.LFG_PROPOSAL_SHOW = function()
 				prev = GetTime() + 40
 				-- Play in Master for those that have SFX off or very low.
 				-- Using false as third arg to avoid the "only one of each sound at a time" throttle.
 				-- Only play via the "Master" channel if we have sounds turned on
-				if self.isSoundOn ~= false then
+				if Module.isSoundOn ~= false then
 					local _, id = PlaySound(8960, "Master", false)
 					if id then
 						StopSound(id - 1) -- Should work most of the time to stop the blizz sound
 					end
 				end
 			end
-			self:LFG_PROPOSAL_SHOW()
+			Module:LFG_PROPOSAL_SHOW()
 
 			timerBar:SetScript("OnUpdate", function(f)
 				local timeLeft = prev - GetTime()
@@ -71,6 +67,10 @@ do
 	end
 end
 
-function Module:OnInitialize()
-	self:RegisterEvent("LFG_PROPOSAL_SHOW")
+function Module:CreateQueueTimer()
+	if K.CheckAddOnState("DBM-Core") or K.CheckAddOnState("BigWigs") then
+		return
+	end
+
+	K:RegisterEvent("LFG_PROPOSAL_SHOW", self.LFG_PROPOSAL_SHOW)
 end

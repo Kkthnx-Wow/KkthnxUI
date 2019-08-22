@@ -22,7 +22,8 @@
 	<Script file="elements\phaseindicator.lua"/>
 	<Script file="elements\portrait.lua"/>
 	<Script file="elements\power.lua"/>
-	<Script file="elements\pvpclassificationindicator.lua"/>
+	<!-- <Script file="elements\pvpclassificationindicator.lua"/> -->
+	<Script file="elements\pvpindicator.lua"/>
 	<Script file="elements\questindicator.lua"/>
 	<Script file="elements\raidroleindicator.lua"/>
 	<Script file="elements\raidtargetindicator.lua"/>
@@ -32,7 +33,7 @@
 	<Script file="elements\resurrectindicator.lua"/>
 	<Script file="elements\runes.lua"/>
 	<Script file="elements\stagger.lua"/>
-	<Script file="elements\summonindicator.lua"/>
+	<!-- <Script file="elements\summonindicator.lua"/> -->
 	<Script file="elements\tags.lua"/>
 	<Script file="elements\threatindicator.lua"/>
 

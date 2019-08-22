@@ -4,7 +4,6 @@
     <Script file="MiniMap.lua"/>
     <Script file="MicroMenu.lua"/>
     <Script file="MinimapButtons.lua"/>
-	<Script file="VignetteAlert.lua"/>
     <Script file="WorldMap.lua"/>
     <Script file="WorldMapPlus.lua"/>
 
@@ -12,13 +11,13 @@
 
     <!-- Load Quest Counter -->
    <Frame name="QuestCounterFrame" movable="false" parent="QuestScrollFrame">
-        <Size><AbsDimension x="75" y="25" /></Size>
+        <Size><AbsDimension x="75" y="24" /></Size>
         <Layers>
             <Layer level="OVERLAY">
                 <FontString name="$parentString" font="GameFontNormal" text="Quests: X/25" parent="QuestCounterFrame">
                     <Color r="1" g=".8046" b="0" a="1"/>
                     <Anchors>
-                        <Anchor point="TOPLEFT" relativeTo="QuestScrollFrame" relativePoint="TOPLEFT" x="2" y="19">
+                        <Anchor point="TOPLEFT" relativeTo="QuestScrollFrame" relativePoint="TOPLEFT" x="-100" y="19">
                         </Anchor>
                     </Anchors>
                 </FontString>

@@ -172,7 +172,7 @@ K.PopupDialogs["DISCORD_EDITBOX"] = {
 }
 
 K.PopupDialogs["CONFIG_RL"] = {
-	text = L["StaticPopups"].Config_Reload,
+	text = L["Changes Reload"],
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function()
@@ -185,7 +185,7 @@ K.PopupDialogs["CONFIG_RL"] = {
 }
 
 K.PopupDialogs["DELETE_GRAYS"] = {
-	text = string.format("|cffff0000%s|r", L["StaticPopups"].Delete_Grays),
+	text = string.format("|cffff0000%s|r", L["Delete Grays"]),
 	button1 = _G.YES,
 	button2 = _G.NO,
 	OnAccept = function()
@@ -201,7 +201,7 @@ K.PopupDialogs["DELETE_GRAYS"] = {
 }
 
 K.PopupDialogs["CHANGES_RL"] = {
-	text = L["StaticPopups"].Changes_Reload,
+	text = L["Changes Reload"],
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function() ReloadUI() end,
@@ -210,62 +210,36 @@ K.PopupDialogs["CHANGES_RL"] = {
 	preferredIndex = 3
 }
 
-K.PopupDialogs["OLD_MOVERS_DATABASE_RL"] = {
-	text = "We have rewrote the 'Moving Elements System' We detected you have an old Database still from this! We have wiped this for you. Please accept this dialog!",
-	button1 = ACCEPT,
-	OnAccept = function()
-		table.wipe(KkthnxUIData[GetRealmName()][UnitName("player")].Movers)
-		ReloadUI()
-	end,
-	hideOnEscape = false,
-	whileDead = 1,
-	preferredIndex = 3
-}
-
 K.PopupDialogs["RESTART_GFX"] = {
-	text = L["StaticPopups"].Restart_GFX,
+	text = L["Restart Graphics"],
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function()
 		RestartGx()
 	end,
 	OnCancel = function()
-		print(L["StaticPopups"].Cancel)
-	end,
-	hideOnEscape = true,
-	whileDead = 1,
-}
-
-K.PopupDialogs["SET_UISCALE"] = {
-	text = L["StaticPopups"].Set_UI_Scale,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function()
-		K.SetUIScale()
-	end,
-	OnCancel = function()
-		print(L["StaticPopups"].Cancel)
+		print(CANCEL)
 	end,
 	hideOnEscape = true,
 	whileDead = 1,
 }
 
 K.PopupDialogs["DISBAND_RAID"] = {
-	text = L["StaticPopups"].Disband_Group,
+	text = L["Disband Group"],
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function()
 		K.DisbandRaidGroup()
 	end,
 	OnCancel = function()
-		print(L["StaticPopups"].Cancel)
+		print(CANCEL)
 	end,
 	hideOnEscape = true,
 	whileDead = 1,
 }
 
 K.PopupDialogs["CANNOT_BUY_BANK_SLOT"] = {
-	text = L["Inventory"].Cant_Buy_Slot,
+	text = L["Can't Buy Slot"],
 	button1 = ACCEPT,
 	timeout = 0,
 	whileDead = 1,
@@ -282,20 +256,6 @@ K.PopupDialogs["BUY_BANK_SLOT"] = {
 	hasMoneyFrame = 1,
 	timeout = 0,
 	hideOnEscape = 1,
-}
-
-K.PopupDialogs["BOOST_UI"] = {
-	text = L["StaticPopups"].BoostUI,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function()
-		K.BoostUI()
-	end,
-	OnCancel = function()
-		print(L["StaticPopups"].Cancel)
-	end,
-	hideOnEscape = true,
-	whileDead = 1,
 }
 
 K.PopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
@@ -321,7 +281,7 @@ K.PopupDialogs["DISABLE_UI"] = {
 }
 
 K.PopupDialogs["RESET_UI"] = {
-	text = L["StaticPopups"].Reset_UI,
+	text = L["Reset KkthnxUI"],
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
@@ -338,25 +298,13 @@ K.PopupDialogs["RESET_UI"] = {
 	preferredIndex = 3
 }
 
-K.PopupDialogs["FIX_ACTIONBARS"] = {
-	text = L["StaticPopups"].Fix_Actionbars,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = ReloadUI,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = false,
-	preferredIndex = 3
-}
-
 K.PopupDialogs["WARNING_BLIZZARD_ADDONS"] = {
-	text = L["StaticPopups"].Warning_Blizzard_AddOns,
+	text = L["Warning Blizzard AddOns"],
 	button1 = OKAY,
 	OnAccept = function()
 		EnableAddOn("Blizzard_CompactRaidFrames")
 		ReloadUI()
 	end,
-	timeout = 0,
 	showAlert = true,
 	timeout = 0,
 	whileDead = 1,
@@ -365,7 +313,7 @@ K.PopupDialogs["WARNING_BLIZZARD_ADDONS"] = {
 }
 
 K.PopupDialogs["KKTHNXUI_OUTDATED"] = {
-	text = L["Miscellaneous"].UIOutdated,
+	text = L["KkthnxUI Outdated"],
 	button1 = OKAY,
 	timeout = 0,
 	whileDead = true,
@@ -373,7 +321,7 @@ K.PopupDialogs["KKTHNXUI_OUTDATED"] = {
 	editBoxWidth = 325,
 	OnShow = function(self)
 		self.editBox:SetFocus()
-		self.editBox:SetText("https://github.com/kkthnx-wow/KkthnxUI")
+		self.editBox:SetText("https://github.com/kkthnx-wow/KkthnxUI_8.0.1")
 		self.editBox:HighlightText()
 	end,
 	EditBoxOnEnterPressed = function(self)
@@ -999,6 +947,8 @@ function K.CreateStaticPopups()
 		_G["KkthnxUI_StaticPopup"..index.."EditBox"]:SetScript("OnTextChanged", K.StaticPopup_EditBoxOnTextChanged)
 	end
 
-	K:SecureHook("StaticPopup_SetUpPosition")
-	K:SecureHook("StaticPopup_CollapseTable")
+	hooksecurefunc("StaticPopup_SetUpPosition", function(self)
+		K.StaticPopup_SetUpPosition(_, self)
+	end)
+	hooksecurefunc("StaticPopup_CollapseTable", K.StaticPopup_CollapseTable)
 end

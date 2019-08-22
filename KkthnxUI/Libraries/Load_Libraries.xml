@@ -1,20 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Load_Libraries -->
-   <Script file="Ace3\LibStub\LibStub.lua" />
-   <Script file="Ace3\CallbackHandler-1.0\CallbackHandler-1.0.lua" />
-   <Script file="Ace3\AceAddon-3.0\AceAddon-3.0.lua" />
-   <Script file="Ace3\AceEvent-3.0\AceEvent-3.0.lua" />
-   <Script file="Ace3\AceConsole-3.0\AceConsole-3.0.lua" />
-   <Script file="Ace3\AceTimer-3.0\AceTimer-3.0.lua" />
-   <Script file="Ace3\AceHook-3.0\AceHook-3.0.lua" />
+   <!-- <Script file="LibStub\LibStub.lua" />
+   <Script file="CallbackHandler-1.0\CallbackHandler-1.0.lua" /> -->
    <Script file="LibSpellRange-1.0\LibSpellRange-1.0.lua" />
    <Script file="LibSharedMedia-3.0\LibSharedMedia-3.0.lua" />
    <Include file="oUF\oUF.xml" />
    <Include file="oUF_Plugins\Load_oUF_Plugins.xml" />
-   <Script file="LibButtonGlow-1.0\LibButtonGlow-1.0.lua"/>
+   <Script file="LibButtonGlow-1.0\LibButtonGlow-1.0.lua" />
    <Include file="UTF8\UTF8.xml" />
-   <Script file="Unfit-1.0\Unfit-1.0.lua" />
    <Script file="LibChatAnims\LibChatAnims.lua" />
    <Script file="LibAnim\LibAnim.lua" />
-   <Script file="LibAboutPanel\LibAboutPanel.lua" />
 </Ui>

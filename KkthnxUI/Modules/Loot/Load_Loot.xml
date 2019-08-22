@@ -2,7 +2,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Loot -->
     <Script file="Loot.lua"/>
+
     <Script file="GroupLoot.lua"/>
-    <Script file="LootConfirm.lua"/>
-    <Script file="FastLoot.lua"/>
+    <Script file="AutoConfirm.lua"/>
+    <Script file="AutoGreed.lua"/>
+    <Script file="FasterLoot.lua"/>
 </Ui>

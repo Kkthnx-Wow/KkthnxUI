@@ -1,21 +1,21 @@
-local K, C, L = unpack(select(2, ...))
-local AnnounceInterrupt = K:NewModule("Interrupt", "AceEvent-3.0")
+local K, C = unpack(select(2, ...))
+local Module = K:GetModule("Announcements")
 
 local _G = _G
 local string_format = string.format
 
+local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
+local InterruptMessage = _G.INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"
+local IsActiveBattlefieldArena = _G.IsActiveBattlefieldArena
+local IsArenaSkirmish = _G.IsArenaSkirmish
 local IsInGroup = _G.IsInGroup
+local IsInInstance = _G.IsInInstance
 local IsInRaid = _G.IsInRaid
 local IsPartyLFG = _G.IsPartyLFG
-local IsInInstance = _G.IsInInstance
-local IsArenaSkirmish = _G.IsArenaSkirmish
-local IsActiveBattlefieldArena = _G.IsActiveBattlefieldArena
-local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
-local UnitGUID = _G.UnitGUID
 local SendChatMessage = _G.SendChatMessage
+local UnitGUID = _G.UnitGUID
 
-local InterruptMessage = INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"
-function AnnounceInterrupt:COMBAT_LOG_EVENT_UNFILTERED()
+function Module:SetupInterruptAnnounce()
 	local inGroup, inRaid, inPartyLFG = IsInGroup(), IsInRaid(), IsPartyLFG()
 	if not inGroup then -- Not In Group, Exit.
 		return
@@ -51,12 +51,9 @@ function AnnounceInterrupt:COMBAT_LOG_EVENT_UNFILTERED()
 	end
 end
 
-function AnnounceInterrupt:OnEnable()
+function Module:CreateInterruptAnnounce()
 	if C["Announcements"].Interrupt.Value ~= "NONE" then
-		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		self:SetupInterruptAnnounce()
+		--self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "SetupInterruptAnnounce")
 	end
-end
-
-function AnnounceInterrupt:OnDisable()
-	self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 end

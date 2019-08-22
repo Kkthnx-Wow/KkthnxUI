@@ -258,7 +258,7 @@ local menuList = {
 		end,
 	notCheckable = true},
 
-	{text = L["Inventory"].Show_Bags, notCheckable = true, func = function()
+	{text = L["Toggle Bags"], notCheckable = true, func = function()
 		if BankFrame:IsShown() then
 			CloseBankBagFrames()
 			CloseBankFrame()
@@ -288,16 +288,16 @@ local menuList = {
 }
 
 Minimap:SetScript("OnMouseUp", function(self, btn)
-	if InCombatLockdown() then
-		_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
-		return
-	end
-
 	HideDropDownMenu(1, nil, KkthnxUIMiniMapTrackingDropDown)
 	menuFrame:Hide()
 
 	local position = self:GetPoint()
 	if btn == "MiddleButton" or (btn == "RightButton" and IsShiftKeyDown()) then
+		if InCombatLockdown() then
+			_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+			return
+		end
+
 		if position:match("LEFT") then
 			EasyMenu(menuList, menuFrame, "cursor")
 		else

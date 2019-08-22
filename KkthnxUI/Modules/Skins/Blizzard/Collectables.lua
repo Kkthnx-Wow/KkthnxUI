@@ -3,7 +3,7 @@ local Module = K:GetModule("Skins")
 
 local _G = _G
 
-local function SkinPetJournalTooltip()
+local function ReskinColections()
 	local tt = _G.PetJournalPrimaryAbilityTooltip
 	tt.Background:SetTexture(nil)
 
@@ -31,4 +31,4 @@ local function SkinPetJournalTooltip()
 	end
 end
 
-Module.SkinFuncs["Blizzard_Collections"] = SkinPetJournalTooltip
+Module.NewSkin["Blizzard_Collections"] = ReskinColections

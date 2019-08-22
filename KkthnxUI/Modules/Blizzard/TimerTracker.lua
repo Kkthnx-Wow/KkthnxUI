@@ -1,8 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("TimerTracker", "AceEvent-3.0")
-if C["Unitframe"].Enable ~= true then
-	return
-end
+local Module = K:GetModule("Blizzard")
 
 -- Timer tracker
 local function SkinIt(bar)
@@ -30,14 +27,14 @@ local function SkinIt(bar)
 	K.CreateBorder(bar)
 
 	bar.spark = bar:CreateTexture(nil, "OVERLAY")
-	bar.spark:SetWidth(128)
+	bar.spark:SetWidth(64)
 	bar.spark:SetHeight(bar:GetHeight())
 	bar.spark:SetTexture(C["Media"].Spark_128)
 	bar.spark:SetBlendMode("ADD")
 	bar.spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
 end
 
-function Module:START_TIMER()
+function Module.START_TIMER()
 	if C["Unitframe"].Enable ~= true then
 		return
 	end
@@ -50,7 +47,7 @@ function Module:START_TIMER()
 	end
 end
 
-function Module:OnEnable()
-	self:RegisterEvent('START_TIMER')
+function Module:CreateTimerTracker()
+	K:RegisterEvent("START_TIMER", self.START_TIMER)
 	self:START_TIMER()
 end

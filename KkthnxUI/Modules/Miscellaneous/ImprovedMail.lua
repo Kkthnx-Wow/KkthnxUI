@@ -1,28 +1,31 @@
-local K = unpack(select(2, ...))
-local Module = K:NewModule("ImprovedMail")
+local K, _, L = unpack(select(2, ...))
+local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
-local unpack = unpack
-local select = select
-local string_split = string.split
-local pairs = pairs
-local tonumber = tonumber
-local string_sub = string.sub
+local pairs = _G.pairs
+local select = _G.select
+local string_split = _G.string.split
+local string_sub = _G.string.sub
+local table_wipe = _G.table.wipe
+local tonumber = _G.tonumber
+local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
 local DELETE = _G.DELETE
 local ERR_INV_FULL = _G.ERR_INV_FULL
 local ERR_ITEM_MAX_COUNT = _G.ERR_ITEM_MAX_COUNT
 local ERR_MAIL_DELETE_ITEM_ERROR = _G.ERR_MAIL_DELETE_ITEM_ERROR
+local GameTooltip = _G.GameTooltip
 local GetInboxHeaderInfo = _G.GetInboxHeaderInfo
 local GetInboxItem = _G.GetInboxItem
 local GetInboxItemLink = _G.GetInboxItemLink
 local GetInboxNumItems = _G.GetInboxNumItems
 local GetItemInfo = _G.GetItemInfo
 local GetItemQualityColor = _G.GetItemQualityColor
-local hooksecurefunc = _G.hooksecurefunc
 local InboxTooMuchMail = _G.InboxTooMuchMail
 local IsModifiedClick = _G.IsModifiedClick
+local UIErrorsFrame = _G.UIErrorsFrame
+local hooksecurefunc = _G.hooksecurefunc
 
 local deletedelay = 0.5
 local mailItemIndex = 0
@@ -40,12 +43,12 @@ local needsToWait
 local skipMail
 
 function Module:MailItem_OnClick()
-	mailItemIndex = 7 * (InboxFrame.pageNum - 1) + tonumber(string_sub(self:GetName(), 9, 9))
+	mailItemIndex = 7 * (_G.InboxFrame.pageNum - 1) + tonumber(string_sub(self:GetName(), 9, 9))
 	local modifiedClick = IsModifiedClick("MAILAUTOLOOTTOGGLE")
 	if modifiedClick then
-		InboxFrame_OnModifiedClick(self, self.index)
+		_G.InboxFrame_OnModifiedClick(self, self.index)
 	else
-		InboxFrame_OnClick(self, self.index)
+		_G.InboxFrame_OnClick(self, self.index)
 	end
 end
 
@@ -57,8 +60,8 @@ function Module:MailBox_OpenAll()
 	button1:SetScript("OnClick", nil)
 	button2:SetScript("OnClick", nil)
 	button3:SetScript("OnClick", nil)
-	imOrig_InboxFrame_OnClick = InboxFrame_OnClick
-	InboxFrame_OnClick = K.Noop
+	imOrig_InboxFrame_OnClick = _G.InboxFrame_OnClick
+	_G.InboxFrame_OnClick = K.Noop
 
 	if onlyCurrentMail then
 		button3:RegisterEvent("UI_ERROR_MESSAGE")
@@ -88,7 +91,7 @@ function Module:MailBox_Update(elapsed)
 end
 
 function Module:MailBox_Open(index)
-	if not InboxFrame:IsVisible() or index == 0 then
+	if not _G.InboxFrame:IsVisible() or index == 0 then
 		Module:MailBox_Stop()
 		return
 	end
@@ -96,7 +99,7 @@ function Module:MailBox_Open(index)
 	local _, _, _, _, money, COD, _, numItems = GetInboxHeaderInfo(index)
 	if not takingOnlyCash then
 		if money > 0 or (numItems and numItems > 0) and COD <= 0 then
-			AutoLootMailItem(index)
+			_G.AutoLootMailItem(index)
 			needsToWait = true
 		end
 
@@ -105,7 +108,7 @@ function Module:MailBox_Open(index)
 			return
 		end
 	elseif money > 0 then
-		TakeInboxMoney(index)
+		_G.TakeInboxMoney(index)
 		needsToWait = true
 	end
 
@@ -137,7 +140,7 @@ function Module:MailBox_Stop()
 	end)
 
 	if imOrig_InboxFrame_OnClick then
-		InboxFrame_OnClick = imOrig_InboxFrame_OnClick
+		_G.InboxFrame_OnClick = imOrig_InboxFrame_OnClick
 	end
 
 	if onlyCurrentMail then
@@ -161,7 +164,7 @@ function Module:MailBox_OnEvent(event, _, msg)
 		end
 	elseif event == "MAIL_CLOSED" then
 		if not hasNewMail then
-			MiniMapMailFrame:Hide()
+			_G.MiniMapMailFrame:Hide()
 		end
 		Module:MailBox_Stop()
 	end
@@ -176,15 +179,15 @@ function Module:TotalCash_OnEnter()
 	end
 
 	if total_cash > 0 then
-		SetTooltipMoney(GameTooltip, total_cash)
+		_G.SetTooltipMoney(GameTooltip, total_cash)
 	end
 	GameTooltip:Show()
 end
 
 function Module:MailBox_DelectClick()
-	local selectedID = self.id + (InboxFrame.pageNum - 1) * 7
-	if InboxItemCanDelete(selectedID) then
-		DeleteInboxItem(selectedID)
+	local selectedID = self.id + (_G.InboxFrame.pageNum - 1) * 7
+	if _G.InboxItemCanDelete(selectedID) then
+		_G.DeleteInboxItem(selectedID)
 	else
 		UIErrorsFrame:AddMessage("|cff99ccff"..ERR_MAIL_DELETE_ITEM_ERROR)
 	end
@@ -229,7 +232,7 @@ function Module:InboxFrame_Hook()
 end
 
 function Module:InboxItem_OnEnter()
-	wipe(inboxItems)
+	table_wipe(inboxItems)
 
 	local itemAttached = select(8, GetInboxHeaderInfo(self.index))
 	if itemAttached then
@@ -243,7 +246,7 @@ function Module:InboxItem_OnEnter()
 		end
 
 		if itemAttached > 1 then
-			GameTooltip:AddLine("Attach List")
+			GameTooltip:AddLine(L["Attach List"])
 			for key, value in pairs(inboxItems) do
 				local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture = GetItemInfo(key)
 				if itemName then
@@ -263,12 +266,12 @@ function Module:CreateMailBox()
 		Module.MailItem_AddDelete(itemButton, i)
 	end
 
-	button1 = Module:CreatButton(InboxFrame, "Collect All", 100, 22, "TOPLEFT", "InboxFrame", "TOPLEFT", 82, -30)
+	button1 = Module:CreatButton(_G.InboxFrame, L["Collect All"], 100, 22, "TOPLEFT", "InboxFrame", "TOPLEFT", 82, -30)
 	button1:RegisterEvent("MAIL_CLOSED")
 	button1:SetScript("OnClick", Module.MailBox_OpenAll)
 	button1:SetScript("OnEvent", Module.MailBox_OnEvent)
 
-	button2 = Module:CreatButton(InboxFrame, "Collect Gold", 100, 22, "TOPRIGHT", "InboxFrame", "TOPRIGHT", -82, -30)
+	button2 = Module:CreatButton(_G.InboxFrame, L["Collect Gold"], 100, 22, "TOPRIGHT", "InboxFrame", "TOPRIGHT", -82, -30)
 	button2:SetScript("OnClick", function()
 		takingOnlyCash = true
 		Module:MailBox_OpenAll()
@@ -276,7 +279,7 @@ function Module:CreateMailBox()
 	button2:SetScript("OnEnter", Module.TotalCash_OnEnter)
 	button2:SetScript("OnLeave", K.HideTooltip)
 
-	button3 = Module:CreatButton(OpenMailFrame, "Collect Letters", 82, 22, "RIGHT", "OpenMailReplyButton", "LEFT", 0, 0)
+	button3 = Module:CreatButton(_G.OpenMailFrame, L["Collect Letters"], 82, 22, "RIGHT", "OpenMailReplyButton", "LEFT", 0, 0)
 	button3:SetScript("OnClick", function()
 		onlyCurrentMail = true
 		Module:MailBox_OpenAll()
@@ -289,14 +292,14 @@ function Module:CreateMailBox()
 	-- Replace the alert frame
 	if InboxTooMuchMail then
 		InboxTooMuchMail:ClearAllPoints()
-		InboxTooMuchMail:SetPoint("BOTTOM", MailFrame, "TOP", 0, 5)
+		InboxTooMuchMail:SetPoint("BOTTOM", _G.MailFrame, "TOP", 0, 5)
 	end
 
 	-- Hide Blizz
-	OpenAllMail:Kill()
+	_G.OpenAllMail:Kill()
 end
 
-function Module:OnEnable()
+function Module:CreateImprovedMail()
 	if K.CheckAddOnState("Postal") then
 		return
 	end

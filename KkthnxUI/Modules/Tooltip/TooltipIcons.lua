@@ -1,19 +1,21 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("TooltipIcons")
+local Module = K:GetModule("Tooltip")
 
 if not Module then
 	return
 end
 
 local _G = _G
-local gsub = gsub
-local string_match = string.match
+local gsub = _G.gsub
+local string_match = _G.string.match
 
+local CreateFrame = _G.CreateFrame
 local GetItemIcon = _G.GetItemIcon
 local GetSpellTexture = _G.GetSpellTexture
+local hooksecurefunc = _G.hooksecurefunc
+local unpack = _G.unpack
 
 local newString = "0:0:64:64:5:59:5:59"
-
 function Module:SetupTooltipIcon(icon)
 	local title = icon and _G[self:GetName().."TextLeft1"]
 	if title then
@@ -62,27 +64,44 @@ function Module:HookTooltipMethod()
 	self:HookScript("OnTooltipCleared", Module.HookTooltipCleared)
 end
 
+local function updateBackdropColor(self, r, g, b)
+	self:GetParent().bg:SetBackdropBorderColor(r, g, b)
+end
+
+local function resetBackdropColor(self)
+	self:GetParent().bg:SetBackdropBorderColor()
+end
+
 function Module:ReskinRewardIcon()
-	if self and self.Icon then
-		self.Icon:SetTexCoord(unpack(K.TexCoords))
-		self.IconBorder:SetAlpha(0)
-	end
+	self.Icon:SetTexCoord(unpack(K.TexCoords))
+
+	self.bg = CreateFrame("Frame", nil, self)
+	self.bg:SetPoint("TOPLEFT", self.Icon, 0, -0) -- Might need to be 0
+	self.bg:SetPoint("BOTTOMRIGHT", self.Icon, -0, 0) -- Might need to be 0
+	self.bg:SetFrameLevel(2)
+	self.bg:CreateBorder()
+
+	local iconBorder = self.IconBorder
+	iconBorder:SetAlpha(0)
+
+	hooksecurefunc(iconBorder, "SetVertexColor", updateBackdropColor)
+	hooksecurefunc(iconBorder, "Hide", resetBackdropColor)
 end
 
 function Module:ReskinTooltipIcons()
 	Module.HookTooltipMethod(GameTooltip)
 	Module.HookTooltipMethod(ItemRefTooltip)
 
-	-- Tooltip Rewards Icon
-	_G.BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT = "|T%1$s:16:16:"..newString.."|t |cffffffff%2$s|r %3$s"
-	_G.BONUS_OBJECTIVE_REWARD_FORMAT = "|T%1$s:16:16:"..newString.."|t %2$s"
+	hooksecurefunc(GameTooltip, "SetUnitAura", function(self)
+		Module.SetupTooltipIcon(self)
+	end)
 
-	hooksecurefunc("EmbeddedItemTooltip_SetItemByQuestReward", Module.ReskinRewardIcon)
-	hooksecurefunc("EmbeddedItemTooltip_SetItemByID", Module.ReskinRewardIcon)
-	hooksecurefunc("EmbeddedItemTooltip_SetCurrencyByID", Module.ReskinRewardIcon)
+	-- Tooltip rewards icon
+	Module.ReskinRewardIcon(WorldMapTooltip.ItemTooltip)
+	Module.ReskinRewardIcon(EmbeddedItemTooltip.ItemTooltip)
 end
 
-function Module:OnEnable()
+function Module:CreateTooltipIcons()
 	if C["Tooltip"].Icons ~= true then
 		return
 	end

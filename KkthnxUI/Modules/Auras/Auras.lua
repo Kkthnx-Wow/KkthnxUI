@@ -1,10 +1,10 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("Auras", "AceEvent-3.0", "AceHook-3.0")
+local Module = K:NewModule("Auras", "AceEvent-3.0")
 
 -- Sourced: KkthnxUI (Siweia)
 
 local _G = _G
-local format, floor, strmatch, select, unpack = format, floor, strmatch, select, unpack
+local format, floor, strmatch, select, unpack = _G.format, _G.floor, _G.strmatch, _G.select, _G.unpack
 local DebuffTypeColor = _G.DebuffTypeColor
 local UnitAura, GetTime = _G.UnitAura, _G.GetTime
 local GetInventoryItemQuality, GetInventoryItemTexture, GetItemQualityColor, GetWeaponEnchantInfo = _G.GetInventoryItemQuality, _G.GetInventoryItemTexture, _G.GetItemQualityColor, _G.GetWeaponEnchantInfo
@@ -228,11 +228,12 @@ function Module:CreateAuraIcon(button)
     button.count:SetFont(select(1, button.count:GetFont()), fontSize, select(3, button.count:GetFont()))
 
     button.timer = button:CreateFontString(nil, "OVERLAY")
-    button.timer:SetPoint("TOP", button, "BOTTOM", 1, 4)
+    button.timer:SetPoint("TOP", button, "BOTTOM", 1, -2)
     button.timer:SetFontObject(K.GetFont(C["UIFonts"].AuraFonts))
     button.timer:SetFont(select(1, button.timer:GetFont()), fontSize, select(3, button.timer:GetFont()))
 
     button:CreateBorder()
+    button:CreateInnerShadow()
 
     button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
 end

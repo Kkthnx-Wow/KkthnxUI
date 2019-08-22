@@ -1,5 +1,6 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
+local FilterConfig = K.ActionBars.petBar
 
 local _G = _G
 local table_insert = table.insert
@@ -10,27 +11,26 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
 function Module:CreatePetbar()
-	local padding, margin, size = 0, 6, 32
+	local padding, margin = 0, 6
 	local num = NUM_PET_ACTION_SLOTS
 	local buttonList = {}
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KkthnxUI_PetActionBar", UIParent, "SecureHandlerStateTemplate")
-	frame:SetWidth(num * size + (num - 1) * margin + 2 * padding + 20)
-	frame:SetHeight(size + 2 * padding + 2)
+	frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding + 20)
+	frame:SetHeight(FilterConfig.size + 2 * padding + 2)
 	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 124}
-	frame:SetScale(1)
 
 	-- Move The Buttons Into Position And Reparent Them
-	PetActionBarFrame:SetParent(frame)
-	PetActionBarFrame:EnableMouse(false)
-	SlidingActionBarTexture0:SetTexture(nil)
-	SlidingActionBarTexture1:SetTexture(nil)
+	_G.PetActionBarFrame:SetParent(frame)
+	_G.PetActionBarFrame:EnableMouse(false)
+	_G.SlidingActionBarTexture0:SetTexture(nil)
+	_G.SlidingActionBarTexture1:SetTexture(nil)
 
 	for i = 1, num do
 		local button = _G["PetActionButton"..i]
 		table_insert(buttonList, button) -- Add The Button Object To The List
-		button:SetSize(size, size)
+		button:SetSize(FilterConfig.size, FilterConfig.size)
 		button:ClearAllPoints()
 
 		if i == 1 then
@@ -48,11 +48,13 @@ function Module:CreatePetbar()
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; [pet] show; hide"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
-	-- Create Drag Frame And Drag Functionality
-	frame:SetPoint(frame.Pos[1], frame.Pos[2], frame.Pos[3], frame.Pos[4], frame.Pos[5])
-	K.Mover(frame, "PetBar", "PetBar", frame.Pos)
+	--create drag frame and drag functionality
+	if K.ActionBars.userPlaced then
+		K.Mover(frame, "Pet Actionbar", "PetBar", frame.Pos)
+	end
 
-	if C["ActionBar"].PetFade == true then
-		K.CreateButtonFrameFader(frame, buttonList, K.fader)
+	--create the mouseover functionality
+	if FilterConfig.fader then
+		K.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
 	end
 end

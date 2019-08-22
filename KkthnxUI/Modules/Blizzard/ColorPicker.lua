@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("EnchancedColorPicker")
+local Module = K:GetModule("Blizzard")
 
 local _G = _G
 local tonumber = tonumber
@@ -432,7 +432,7 @@ function Module:EnhanceColorPicker()
 	ColorPickerFrame:EnableKeyboard(false)
 end
 
-function Module:OnEnable()
+function Module:CreateColorPicker()
 	if C["Misc"].ColorPicker ~= true then
 		return
 	end

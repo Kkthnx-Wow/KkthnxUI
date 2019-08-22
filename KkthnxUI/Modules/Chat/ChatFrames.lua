@@ -2,14 +2,14 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Chat", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
 
 local _G = _G
-local ipairs = ipairs
-local select = select
-local string_format = string.format
-local string_gsub = string.gsub
-local string_len = string.len
-local string_sub = string.sub
-local table_insert = table.insert
-local unpack = unpack
+local ipairs = _G.ipairs
+local select = _G.select
+local string_format = _G.string.format
+local string_gsub = _G.string.gsub
+local string_len = _G.string.len
+local string_sub = _G.string.sub
+local table_insert = _G.table.insert
+local unpack = _G.unpack
 
 local ChangeChatColor = _G.ChangeChatColor
 local ChatEdit_ChooseBoxForSend = _G.ChatEdit_ChooseBoxForSend
@@ -24,9 +24,6 @@ local ChatFrame_RemoveChannel = _G.ChatFrame_RemoveChannel
 local ChatFrame_SendTell = _G.ChatFrame_SendTell
 local ChatTypeInfo = _G.ChatTypeInfo
 local CreateFrame = _G.CreateFrame
-local C_VoiceChat_SetPortraitTexture = _G.C_VoiceChat.SetPortraitTexture
-local C_VoiceChat_GetMemberName = _G.C_VoiceChat.GetMemberName
-local Voice_GetVoiceChannelNotificationColor = _G.Voice_GetVoiceChannelNotificationColor
 local FCF_Close = _G.FCF_Close
 local FCF_DockFrame = _G.FCF_DockFrame
 local FCF_GetCurrentChatFrame = _G.FCF_GetCurrentChatFrame
@@ -127,7 +124,6 @@ function Module:UpdateEditBoxColor()
 		return
 	end
 
-	local ChatTypeInfo = _G.ChatTypeInfo
 	local info = ChatTypeInfo[chatType]
 	local chanTarget = editbox:GetAttribute("channelTarget")
 	local chanName = chanTarget and GetChannelName(chanTarget)
@@ -149,7 +145,7 @@ function Module:UpdateEditBoxColor()
 end
 
 function Module:MoveAudioButtons()
-	ChatFrameChannelButton:Kill()
+	--ChatFrameChannelButton:Kill()
 	ChatFrameToggleVoiceDeafenButton:Kill()
 	ChatFrameToggleVoiceMuteButton:Kill()
 end
@@ -161,6 +157,14 @@ function Module:NoMouseAlpha()
 	if (Tab.noMouseAlpha == 0.4) or (Tab.noMouseAlpha == 0.2) then
 		Tab:SetAlpha(0.25)
 		Tab.noMouseAlpha = 0.25
+	end
+end
+
+function Module:UpdateTabColors(selected)
+	if selected then
+		self:GetFontString():SetTextColor(1, .8, 0)
+	else
+		self:GetFontString():SetTextColor(.5, .5, .5)
 	end
 end
 
@@ -586,95 +590,6 @@ function Module:SetupFrame()
 	end
 end
 
--- IngameChat - Sourced: ElvUI
-Module.TalkingList = {}
-function Module:GetAvailableHead()
-	for i = 1, self.maxHeads do
-		if not self.ChatHeadFrame[i]:IsShown() then
-			return self.ChatHeadFrame[i]
-		end
-	end
-end
-
-function Module:GetHeadByID(memberID)
-	for i = 1, self.maxHeads do
-		if self.ChatHeadFrame[i].memberID == memberID then
-			return self.ChatHeadFrame[i]
-		end
-	end
-end
-
-function Module:ConfigureHead(memberID, channelID)
-	local frame = self:GetAvailableHead()
-	if not frame then return end
-
-	frame.memberID = memberID
-	frame.channelID = channelID
-
-	C_VoiceChat_SetPortraitTexture(frame.Portrait.texture, memberID, channelID)
-
-	local memberName = C_VoiceChat_GetMemberName(memberID, channelID)
-	local r, g, b = Voice_GetVoiceChannelNotificationColor(channelID)
-	frame.Name:SetText(memberName or "")
-	frame.Name:SetVertexColor(r, g, b, 1)
-	frame:Show()
-end
-
-function Module:DeconfigureHead(memberID) -- memberID, channelID
-	local frame = self:GetHeadByID(memberID)
-	if not frame then return end
-
-	frame.memberID = nil
-	frame.channelID = nil
-	frame:Hide()
-end
-
-function Module:VoiceOverlay(event, ...)
-	if event == "VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED" then
-		local memberID, channelID, isTalking = ...
-
-		if isTalking then
-			Module.TalkingList[memberID] = channelID
-			self:ConfigureHead(memberID, channelID)
-		else
-			Module.TalkingList[memberID] = nil
-			self:DeconfigureHead(memberID, channelID)
-		end
-	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED" then
-		local memberID, channelID, volume = ...
-		local frame = Module:GetHeadByID(memberID)
-		if frame and channelID == frame.channelID then
-			frame.StatusBar.anim.progress:SetChange(volume)
-			frame.StatusBar.anim.progress:Play()
-
-			frame.StatusBar:SetStatusBarColor(K.ColorGradient(volume, 1, 0, 0, 1, 1, 0, 0, 1, 0))
-		end
-	end
-end
-
-function Module:SetChatHeadOrientation(position)
-
-	if position == "TOP" then
-		for i=1, self.maxHeads do
-			self.ChatHeadFrame[i]:ClearAllPoints()
-			if i == 1 then
-				self.ChatHeadFrame[i]:SetPoint("TOP", self.ChatHeadFrame, "BOTTOM", 0)
-			else
-				self.ChatHeadFrame[i]:SetPoint("TOP", self.ChatHeadFrame[i - 1], "BOTTOM", 0)
-			end
-		end
-	else
-		for i=1, self.maxHeads do
-			self.ChatHeadFrame[i]:ClearAllPoints()
-			if i == 1 then
-				self.ChatHeadFrame[i]:SetPoint("BOTTOM", self.ChatHeadFrame, "TOP", 0)
-			else
-				self.ChatHeadFrame[i]:SetPoint("BOTTOM", self.ChatHeadFrame[i - 1], "TOP", 0)
-			end
-		end
-	end
-end
-
 function Module:OnEnable()
 	if (not C["Chat"].Enable) then
 		return
@@ -682,68 +597,12 @@ function Module:OnEnable()
 
 	self:SetupFrame()
 	self:MoveAudioButtons()
-	self:SecureHook("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
-	self:SecureHook("FCF_OpenTemporaryWindow", Module.StyleTempFrame)
-	self:SecureHook("FCF_RestorePositionAndDimensions", Module.SetChatFramePosition)
-	self:SecureHook("FCF_SavePositionAndDimensions", Module.SaveChatFramePositionAndDimensions)
-	self:SecureHook("FCFTab_UpdateAlpha", Module.NoMouseAlpha)
-
-	-- Chat Heads Frame: Sourced ElvUI
-	self.ChatHeadFrame = CreateFrame("Frame", "KkthnxUIChatHeadFrame", UIParent)
-	self.ChatHeadFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -80)
-	self.ChatHeadFrame:SetHeight(20)
-	self.ChatHeadFrame:SetWidth(200)
-	K.Mover(self.ChatHeadFrame, "ChatHeads", "ChatHeads", {"TOPLEFT", UIParent, "TOPLEFT", 4, -80})
-
-	self.maxHeads = 5
-	self.volumeBarHeight = 3
-
-	local CHAT_HEAD_HEIGHT = 40
-	for i=1, self.maxHeads do
-		self.ChatHeadFrame[i] = CreateFrame("Frame", "KkthnxUIChatHeadFrame"..i, self.ChatHeadFrame)
-		self.ChatHeadFrame[i]:SetWidth(self.ChatHeadFrame:GetWidth())
-		self.ChatHeadFrame[i]:SetHeight(CHAT_HEAD_HEIGHT)
-
-		self.ChatHeadFrame[i].Portrait = CreateFrame("Frame", nil, self.ChatHeadFrame[i])
-		self.ChatHeadFrame[i].Portrait:SetWidth(CHAT_HEAD_HEIGHT - self.volumeBarHeight)
-		self.ChatHeadFrame[i].Portrait:SetHeight(CHAT_HEAD_HEIGHT - self.volumeBarHeight)
-		self.ChatHeadFrame[i].Portrait:SetPoint("TOPLEFT", self.ChatHeadFrame[i], "TOPLEFT")
-		self.ChatHeadFrame[i].Portrait:CreateBorder()
-		self.ChatHeadFrame[i].Portrait.texture = self.ChatHeadFrame[i].Portrait:CreateTexture(nil, "OVERLAY")
-		self.ChatHeadFrame[i].Portrait.texture:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-		self.ChatHeadFrame[i].Portrait.texture:SetInside(self.ChatHeadFrame[i].Portrait)
-
-		self.ChatHeadFrame[i].Name = self.ChatHeadFrame[i]:CreateFontString(nil, "OVERLAY")
-		self.ChatHeadFrame[i].Name:FontTemplate(nil, 20)
-		self.ChatHeadFrame[i].Name:SetPoint("LEFT", self.ChatHeadFrame[i].Portrait, "RIGHT", 2, 0)
-
-		self.ChatHeadFrame[i].StatusBar = CreateFrame("StatusBar", nil, self.ChatHeadFrame[i])
-		self.ChatHeadFrame[i].StatusBar:SetPoint("TOPLEFT", self.ChatHeadFrame[i].Portrait, "BOTTOMLEFT")
-		self.ChatHeadFrame[i].StatusBar:SetWidth(CHAT_HEAD_HEIGHT - self.volumeBarHeight)
-		self.ChatHeadFrame[i].StatusBar:SetHeight(self.volumeBarHeight)
-		self.ChatHeadFrame[i].StatusBar:CreateBackdrop()
-		self.ChatHeadFrame[i].StatusBar:SetStatusBarTexture(C["Media"].Texture)
-		self.ChatHeadFrame[i].StatusBar:SetMinMaxValues(0, 1)
-
-		self.ChatHeadFrame[i].StatusBar.anim = CreateAnimationGroup(self.ChatHeadFrame[i].StatusBar)
-		self.ChatHeadFrame[i].StatusBar.anim.progress = self.ChatHeadFrame[i].StatusBar.anim:CreateAnimation("Progress")
-		self.ChatHeadFrame[i].StatusBar.anim.progress:SetSmoothing("Out")
-		self.ChatHeadFrame[i].StatusBar.anim.progress:SetDuration(.3)
-
-		self.ChatHeadFrame[i]:Hide()
-	end
-
-	if C["Chat"].VoiceOverlay then
-		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED", "VoiceOverlay")
-		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED", "VoiceOverlay")
-		self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED", "VoiceOverlay")
-		self:RegisterEvent("VOICE_CHAT_COMMUNICATION_MODE_CHANGED", "VoiceOverlay")
-		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_REMOVED", "VoiceOverlay")
-		self:RegisterEvent("VOICE_CHAT_CHANNEL_REMOVED", "VoiceOverlay")
-		self:RegisterEvent("VOICE_CHAT_CHANNEL_DEACTIVATED", "VoiceOverlay")
-		_G.VoiceActivityManager:UnregisterAllEvents()
-	end
-	self:SetChatHeadOrientation("TOP")
+	hooksecurefunc("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
+	hooksecurefunc("FCF_OpenTemporaryWindow", Module.StyleTempFrame)
+	hooksecurefunc("FCF_RestorePositionAndDimensions", Module.SetChatFramePosition)
+	hooksecurefunc("FCF_SavePositionAndDimensions", Module.SaveChatFramePositionAndDimensions)
+	hooksecurefunc("FCFTab_UpdateAlpha", Module.NoMouseAlpha)
+	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
 
 	-- Combat Log Skinning (credit: Aftermathh)
 	local CombatLogButton = _G.CombatLogQuickButtonFrame_Custom
@@ -805,4 +664,9 @@ function Module:OnEnable()
 		chatBackdrop:SetBackdropBorderColor(0, 0, 0, C["Chat"].BackgroundAlpha or 0.25)
 		chatBackdrop:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Chat"].BackgroundAlpha or 0.25)
 	end
+
+	self:CreateChatFilter()
+	self:CreateCopyChat()
+	self:CreateCopyURL()
+	self:CreateQuickJoin()
 end

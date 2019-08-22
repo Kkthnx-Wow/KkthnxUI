@@ -22,16 +22,16 @@ local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseBu
 
 BINDING_HEADER_KKTHNXUI = GetAddOnMetadata(..., "Title")
 
-K.UIFrameHider = CreateFrame("Frame", "UIFrameHider", UIParent)
+K.UIFrameHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerAttributeTemplate")
 K.UIFrameHider:Hide()
-K.UIFrameHider:SetAllPoints()
-K.UIFrameHider.children = {}
-RegisterStateDriver(K.UIFrameHider, "visibility", "hide")
+K.UIFrameHider:SetPoint("TOPLEFT", 0, 0)
+K.UIFrameHider:SetPoint("BOTTOMRIGHT", 0, 0)
+RegisterAttributeDriver(K.UIFrameHider, "state-visibility", "hide")
 
-K.PetBattleHider = CreateFrame("Frame", "PetBattleHider", UIParent, "SecureHandlerStateTemplate")
+K.PetBattleHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
 K.PetBattleHider:SetAllPoints()
 K.PetBattleHider:SetFrameStrata("LOW")
-RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
+RegisterStateDriver(K.PetBattleHider, "state-visibility", "[petbattle] hide; show")
 
 function K.PointsRestricted(frame)
 	if frame and not pcall(frame.GetPoint, frame) then
@@ -93,24 +93,18 @@ local function CreateBorder(f, bLayer, bOffset, bPoints, strip)
 	f.Backgrounds = backgrounds
 end
 
-local function CreateBackdrop(f, t)
-	if not t then
-		t = "Default"
-	end
-
+local function CreateBackdrop(f)
 	if f.Backdrop then
 		return
 	end
 
-	local parent = f.IsObjectType and f:IsObjectType("Texture") and f:GetParent() or f
-	local b = CreateFrame("Frame", nil, parent)
-	b:SetOutside()
-	b:CreateBorder(t)
+	local b = CreateFrame("Frame", nil, f)
+	b:SetPoint("TOPLEFT", f, "TOPLEFT")
+	b:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT")
+	b:CreateBorder()
 
-	local frameLevel = parent.GetFrameLevel and parent:GetFrameLevel()
-	local frameLevelMinusOne = frameLevel and (frameLevel - 1)
-	if frameLevelMinusOne and (frameLevelMinusOne >= 0) then
-		b:SetFrameLevel(frameLevelMinusOne)
+	if f:GetFrameLevel() - 1 >= 0 then
+		b:SetFrameLevel(f:GetFrameLevel())
 	else
 		b:SetFrameLevel(0)
 	end
@@ -118,16 +112,18 @@ local function CreateBackdrop(f, t)
 	f.Backdrop = b
 end
 
-local function CreateShadow(f, bd)
+local function CreateShadow(f, bd, parent)
 	if f.Shadow then
 		return
 	end
 
+	parent = parent or f
+
 	local shadow = CreateFrame("Frame", nil, f)
 	shadow:SetFrameLevel(1)
 	shadow:SetFrameStrata(f:GetFrameStrata())
-	shadow:SetPoint("TOPLEFT", -4, 4)
-	shadow:SetPoint("BOTTOMRIGHT", 4, -4)
+	shadow:SetPoint("TOPLEFT", parent, -4, 4)
+	shadow:SetPoint("BOTTOMRIGHT", parent, 4, -4)
 
 	if bd then
 		shadow:SetBackdrop({
@@ -162,7 +158,7 @@ local function CreateInnerShadow(f, isLayer, isAlpha, isLPoints, isRPoints)
 	local innerShadow = f:CreateTexture(nil, "OVERLAY", nil, isLayer)
 	innerShadow:SetAtlas("Artifacts-BG-Shadow")
 	innerShadow:SetPoint("TOPLEFT", isLPoints, isRPoints)
-	innerShadow:SetPoint("BOTTOMRIGHT", isLPoints, isRPoints)
+	innerShadow:SetPoint("BOTTOMRIGHT", isLPoints, isRPoints - 1) -- Minus 1 here because it is off by default.
 	innerShadow:SetVertexColor(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], isAlpha)
 
 	f.InnerShadow = innerShadow
@@ -223,7 +219,7 @@ local function StripType(which, object, kill, alpha)
 			local FrameName = object.GetName and object:GetName()
 			for _, Blizzard in pairs(StripTexturesBlizzFrames) do
 				local BlizzFrame = object[Blizzard] or (FrameName and _G[FrameName..Blizzard])
-				if BlizzFrame then
+				if BlizzFrame and BlizzFrame.StripTextures then
 					BlizzFrame:StripTextures(kill, alpha)
 				end
 			end
@@ -255,21 +251,19 @@ local function FontTemplate(fs, font, fontSize, fontStyle)
 
 	font = font or C["Media"].Font
 	fontSize = fontSize or 12
-	fontStyle = fontStyle or "NONE"
 
-	if (fontSize > 12 and not fs.fontSize) then
-		fontSize, fontStyle = 12
+	if fontSize > 12 and not fs.fontSize then
+		fontSize = 12
 	end
 
 	fs:SetFont(font, fontSize, fontStyle)
-
-	if fontStyle == "NONE" then
+	if fontStyle and (fontStyle ~= "NONE") then
+		fs:SetShadowOffset(0, 0)
+		fs:SetShadowColor(0, 0, 0, 0)
+	else
 		local s = K.Mult or 1
 		fs:SetShadowOffset(s, -s / 2)
 		fs:SetShadowColor(0, 0, 0, 1)
-	else
-		fs:SetShadowOffset(0, 0)
-		fs:SetShadowColor(0, 0, 0, 0)
 	end
 end
 

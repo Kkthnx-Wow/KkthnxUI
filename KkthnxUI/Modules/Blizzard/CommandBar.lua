@@ -1,8 +1,7 @@
-local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("OrderHall", "AceEvent-3.0")
+local K = unpack(select(2, ...))
+local Module = K:GetModule("Blizzard")
 
--- Credits
--- Lars "Goldpaw" Norberg for the design.
+-- Sourced: Lars "Goldpaw" Norberg for the design.
 
 -- Lua API
 local _G = _G
@@ -14,8 +13,8 @@ local C_Timer_After = _G.C_Timer.After
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: OrderHallCommandBar
 
-function Module:UpdateOrderHallUI()
-	local frame = self.frame
+function Module.UpdateOrderHallUI()
+	local frame = Module.frame
 	local bar = OrderHallCommandBar
 
 	local index = 1
@@ -52,11 +51,11 @@ function Module:UpdateOrderHallUI()
 end
 
 function Module:SetUpOrderHallUI()
-	self:RegisterEvent("DISPLAY_SIZE_CHANGED", "UpdateOrderHallUI")
-	self:RegisterEvent("UI_SCALE_CHANGED", "UpdateOrderHallUI")
-	self:RegisterEvent("GARRISON_FOLLOWER_CATEGORIES_UPDATED", "UpdateOrderHallUI")
-	self:RegisterEvent("GARRISON_FOLLOWER_ADDED", "UpdateOrderHallUI")
-	self:RegisterEvent("GARRISON_FOLLOWER_REMOVED", "UpdateOrderHallUI")
+	K:RegisterEvent("DISPLAY_SIZE_CHANGED", self.UpdateOrderHallUI)
+	K:RegisterEvent("UI_SCALE_CHANGED", self.UpdateOrderHallUI)
+	K:RegisterEvent("GARRISON_FOLLOWER_CATEGORIES_UPDATED", self.UpdateOrderHallUI)
+	K:RegisterEvent("GARRISON_FOLLOWER_ADDED", self.UpdateOrderHallUI)
+	K:RegisterEvent("GARRISON_FOLLOWER_REMOVED", self.UpdateOrderHallUI)
 
 	self.styled = false
 
@@ -109,24 +108,22 @@ function Module:UpdatePosition()
 	self.frame:SetPoint("TOP", UIParent, "TOP", 0, -4)
 end
 
-function Module:ADDON_LOADED(_, addonName)
+function Module.ADDON_LOADED(_, addonName)
 	if addonName == "Blizzard_OrderHallUI" then
-		self:UnregisterEvent("ADDON_LOADED")
-		self:SetUpOrderHallUI()
+		K:UnregisterEvent("ADDON_LOADED", Module.ADDON_LOADED)
+		Module:SetUpOrderHallUI()
 	end
 end
 
-function Module:OnInitialize()
+function Module:CreateCommandBar()
 	self.frame = CreateFrame("Frame", nil, UIParent)
 	self.frame:SetSize(20, 20)
 
 	if IsAddOnLoaded("Blizzard_OrderHallUI") then
 		self:SetUpOrderHallUI()
 	else
-		self:RegisterEvent("ADDON_LOADED")
+		K:RegisterEvent("ADDON_LOADED", self.ADDON_LOADED)
 	end
-end
 
-function Module:OnEnable()
 	self:ApplySettings()
 end

@@ -1,1 +1,65 @@
-<?xml version="1.0" encoding="UTF-8"?><Ui xmlns="http://www.blizzard.com/wow/ui/">   <Script file="Bars\Fader.lua" />   <Script file="Bars\Bar1.lua" />   <Script file="Bars\Bar2.lua" />   <Script file="Bars\Bar3.lua" />   <Script file="Bars\Bar4.lua" />   <Script file="Bars\Bar5.lua" />   <Script file="Bars\Stancebar.lua" />   <Script file="Bars\Petbar.lua" />   <Script file="Bars\Extrabar.lua" />   <Script file="Bars\Vehicle.lua" />   <Script file="Bars\BlizzArt.lua" />   <Script file="ButtonRange.lua" />   <Script file="Keybind.lua" />   <Script file="ButtonStyle.lua" />   <Script file="Cooldowns.lua" />   <Script file="MicroMenu.lua" />   <Script file="Bars\ExtraQuestButton.lua" />   <Frame name="GuildMicroButtonOnlineCount" movable="false" parent="GuildMicroButton">      <Anchors>         <Anchor point="BOTTOM" x="1" y="1" />      </Anchors>      <Layers>         <Layer level="OVERLAY">            <FontString name="GuildMicroButtonOnlineCountNumber" inherits="SystemFont_Outline_Small">               <Anchors>                  <Anchor point="BOTTOM" x="1" y="1" />               </Anchors>            </FontString>         </Layer>      </Layers>      <Scripts>         <OnLoad>self:SetAllPoints(GuildMicroButton)      self:RegisterEvent("GUILD_ROSTER_UPDATE")      self:RegisterEvent("CHAT_MSG_SYSTEM")      self:RegisterEvent("PLAYER_ENTERING_WORLD")      self.friendon  = gsub(gsub(ERR_FRIEND_ONLINE_SS,"[%^%$%(%)%%%.%[%]%*%+%-%?]","%%%1"),"%%%%s",".+")      self.friendoff = gsub(gsub(ERR_FRIEND_OFFLINE_S,"[%^%$%(%)%%%.%[%]%*%+%-%?]","%%%1"),"%%%%s",".+")      self.mergebug  = gsub(gsub(ERR_CHAT_PLAYER_NOT_FOUND_S, "[%^%$%(%)%%%.%[%]%*%+%-%?]","%%%1"),"%%%%s",".+")</OnLoad>         <OnEvent>if (event == "CHAT_MSG_SYSTEM") then        local system_msg = ...        if ((strmatch(system_msg, self.friendon) ~= system_msg) and            (strmatch(system_msg, self.friendoff) ~= system_msg) and            (strmatch(system_msg, self.mergebug) ~= system_msg)) then          return        end        GuildRoster()        C_Timer.After(11, GuildRoster)      elseif (event == "PLAYER_ENTERING_WORLD") then        C_Timer.After(10.5,GuildRoster)      end      GuildMicroButtonOnlineCountNumber:SetText(tostring(select(3,GetNumGuildMembers())))</OnEvent>         <OnUpdate>if (false) then        self.updatedelay = self.updatedelay - elapsed;        if (0 &gt;= self.updatedelay) then          GuildRoster()          self.updatedelay = nil        end      end</OnUpdate>      </Scripts>   </Frame></Ui>
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+   <Script file="Bars\Bar1.lua" />
+   <Script file="Bars\Bar2.lua" />
+   <Script file="Bars\Bar3.lua" />
+   <Script file="Bars\Bar4.lua" />
+   <Script file="Bars\Bar5.lua" />
+   <Script file="Bars\Stancebar.lua" />
+   <Script file="Bars\Petbar.lua" />
+   <Script file="Bars\Extrabar.lua" />
+   <Script file="Bars\Vehicle.lua" />
+   <Script file="Bars\BlizzArt.lua" />
+   <Script file="Bars\Fader.lua" />
+
+   <Script file="ButtonRange.lua" />
+   <Script file="Keybind.lua" />
+   <Script file="ButtonStyle.lua" />
+   <Script file="Cooldowns.lua" />
+   <Script file="MicroMenu.lua" />
+   <Script file="Bars\ExtraQuestButton.lua" />
+
+   <Frame name="GuildMicroButtonOnlineCount" movable="false" parent="GuildMicroButton">
+      <Anchors>
+         <Anchor point="BOTTOM" x="1" y="1" />
+      </Anchors>
+      <Layers>
+         <Layer level="OVERLAY">
+            <FontString name="GuildMicroButtonOnlineCountNumber" inherits="SystemFont_Outline_Small">
+               <Anchors>
+                  <Anchor point="BOTTOM" x="1" y="1" />
+               </Anchors>
+            </FontString>
+         </Layer>
+      </Layers>
+      <Scripts>
+         <OnLoad>self:SetAllPoints(GuildMicroButton)
+      self:RegisterEvent("GUILD_ROSTER_UPDATE")
+      self:RegisterEvent("CHAT_MSG_SYSTEM")
+      self:RegisterEvent("PLAYER_ENTERING_WORLD")
+      self.friendon  = gsub(gsub(ERR_FRIEND_ONLINE_SS,"[%^%$%(%)%%%.%[%]%*%+%-%?]","%%%1"),"%%%%s",".+")
+      self.friendoff = gsub(gsub(ERR_FRIEND_OFFLINE_S,"[%^%$%(%)%%%.%[%]%*%+%-%?]","%%%1"),"%%%%s",".+")
+      self.mergebug  = gsub(gsub(ERR_CHAT_PLAYER_NOT_FOUND_S, "[%^%$%(%)%%%.%[%]%*%+%-%?]","%%%1"),"%%%%s",".+")</OnLoad>
+         <OnEvent>if (event == "CHAT_MSG_SYSTEM") then
+        local system_msg = ...
+        if ((strmatch(system_msg, self.friendon) ~= system_msg) and
+            (strmatch(system_msg, self.friendoff) ~= system_msg) and
+            (strmatch(system_msg, self.mergebug) ~= system_msg)) then
+          return
+        end
+        GuildRoster()
+        C_Timer.After(11, GuildRoster)
+      elseif (event == "PLAYER_ENTERING_WORLD") then
+        C_Timer.After(10.5,GuildRoster)
+      end
+      GuildMicroButtonOnlineCountNumber:SetText(tostring(select(3,GetNumGuildMembers())))</OnEvent>
+         <OnUpdate>if (false) then
+        self.updatedelay = self.updatedelay - elapsed;
+        if (0 &gt;= self.updatedelay) then
+          GuildRoster()
+          self.updatedelay = nil
+        end
+      end</OnUpdate>
+      </Scripts>
+   </Frame>
+</Ui>

@@ -3,9 +3,13 @@ local Module = K:GetModule("Skins")
 
 -- Lua
 local _G = _G
+
+local HideUIPanel = _G.HideUIPanel
+local PanelTemplates_GetSelectedTab = _G.PanelTemplates_GetSelectedTab
+local UnitClass = _G.UnitClass
 local hooksecurefunc = _G.hooksecurefunc
 
-local function SkinInspectFrame()
+local function ReskinInspectUI()
 	if InspectFrame:IsShown() then
 		HideUIPanel(InspectFrame)
 	end
@@ -25,9 +29,10 @@ local function SkinInspectFrame()
 	InspectModelFrameBorderBottom:Kill()
 	InspectModelFrameBorderBottom2:Kill()
 
-	for _, slot in pairs({_G.InspectPaperDollItemsFrame:GetChildren()}) do
+	for _, slot in pairs({InspectPaperDollItemsFrame:GetChildren()}) do
 		if slot:IsObjectType("Button") or slot:IsObjectType("ItemButton") then
 			slot:CreateBorder(nil, nil, nil, true)
+			slot:CreateInnerShadow()
 			slot:StyleButton()
 			slot.icon:SetTexCoord(unpack(K.TexCoords))
 			slot:SetSize(36, 36)
@@ -86,4 +91,4 @@ local function SkinInspectFrame()
 	OnInspectSwitchTabs(1)
 end
 
-Module.SkinFuncs["Blizzard_InspectUI"] = SkinInspectFrame
+Module.NewSkin["Blizzard_InspectUI"] = ReskinInspectUI

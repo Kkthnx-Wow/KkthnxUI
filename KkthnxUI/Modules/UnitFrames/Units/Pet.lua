@@ -14,34 +14,22 @@ end
 local _G = _G
 
 local CreateFrame = _G.CreateFrame
-local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
-local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
 
 function Module:CreatePet()
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
-	self:RegisterForClicks("AnyUp")
-	self:SetScript("OnEnter", function(self)
-		UnitFrame_OnEnter(self)
+	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	self.Overlay:SetAllPoints()
+	self.Overlay:SetFrameLevel(5)
 
-		if (self.Highlight and not self.Highlight:IsShown()) then
-			self.Highlight:Show()
-		end
-	end)
+	Module.CreateHeader(self)
 
-	self:SetScript("OnLeave", function(self)
-		UnitFrame_OnLeave(self)
-
-		if (self.Highlight and self.Highlight:IsShown()) then
-			self.Highlight:Hide()
-		end
-	end)
-
-	self.Health = CreateFrame("StatusBar", "$parent.Healthbar", self)
+	self.Health = CreateFrame("StatusBar", nil, self)
+	self.Health:SetHeight(14)
+	self.Health:SetPoint("TOPLEFT")
+	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
-	self.Health:SetSize(74, 12)
-	self.Health:SetPoint("CENTER", self, "CENTER", 15, 7)
 	self.Health:CreateBorder()
 
 	self.Health.colorTapping = true
@@ -58,54 +46,82 @@ function Module:CreatePet()
 	self:Tag(self.Health.Value, "[KkthnxUI:HealthPercent]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
+	self.Power:SetHeight(8)
+	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
+	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
-	self.Power:SetSize(74, 8)
-	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	self.Power:CreateBorder()
 
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
 
-	if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
-		self.Portrait = CreateFrame("PlayerModel", nil, self)
-		self.Portrait:SetSize(26, 26)
-		self.Portrait:SetPoint("LEFT", self, 4, 0)
-		self.Portrait:SetAlpha(0.9)
-
-		self.Portrait.Borders = CreateFrame("Frame", nil, self)
-		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
-		self.Portrait.Borders:SetSize(26, 26)
-		self.Portrait.Borders:CreateBorder()
-		self.Portrait.Borders:CreateInnerShadow()
-	elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
-		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
+	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
+		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
+		self.Portrait:SetFrameStrata(self:GetFrameStrata())
+		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+		self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
+		self.Portrait:CreateBorder()
+		self.Portrait:CreateInnerShadow()
+	elseif C["General"].PortraitStyle.Value ~= "ThreeDPortraits" then
+		self.Portrait = self.Health:CreateTexture("PlayerPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-		self.Portrait:SetSize(26, 26)
-		self.Portrait:SetPoint("LEFT", self, 4, 0)
+		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+		self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
 
-		self.Portrait.Borders = CreateFrame("Frame", nil, self)
-		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
-		self.Portrait.Borders:SetSize(26, 26)
-		self.Portrait.Borders:CreateBorder()
+		self.Portrait.Border = CreateFrame("Frame", nil, self)
+		self.Portrait.Border:SetAllPoints(self.Portrait)
+		self.Portrait.Border:CreateBorder()
+		self.Portrait.Border:CreateInnerShadow()
 
-		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
+		if (C["General"].PortraitStyle.Value == "ClassPortraits" or C["General"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end
 	end
 
-	if C["Unitframe"].MouseoverHighlight then
-		Module.MouseoverHealth(self, "pet")
+	self.Health:ClearAllPoints()
+	self.Health:SetPoint("TOPLEFT", self.Portrait:GetWidth() + 6, 0)
+	self.Health:SetPoint("TOPRIGHT")
+
+	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
+	self.Debuffs:SetWidth(82)
+	self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+	self.Debuffs.num = 4 * 4
+	self.Debuffs.spacing = 6
+	self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num / 4 - 1))) / self.Debuffs.num)) * 4)
+	self.Debuffs:SetHeight(self.Debuffs.size * 4)
+	self.Debuffs.initialAnchor = "TOPLEFT"
+	self.Debuffs["growth-y"] = "DOWN"
+	self.Debuffs["growth-x"] = "RIGHT"
+	self.Debuffs.PostCreateIcon = Module.PostCreateAura
+	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
+
+	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
+	self.RaidTargetIndicator:SetSize(12, 12)
+
+	if C["Unitframe"].DebuffHighlight then
+		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
+		self.DebuffHighlight:SetAllPoints(self.Health)
+		self.DebuffHighlight:SetTexture(C["Media"].Blank)
+		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
+		self.DebuffHighlight:SetBlendMode("ADD")
+
+		self.DebuffHighlightAlpha = 0.45
+		self.DebuffHighlightFilter = true
+		self.DebuffHighlightFilterTable = K.DebuffHighlightColors
 	end
 
-	Module.CreatePetAuras(self)
-	Module.CreateRaidTargetIndicator(self)
-	Module.CreateThreatIndicator(self)
-	Module.CreateDebuffHighlight(self)
+	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
+	self.Highlight:SetAllPoints()
+	self.Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
+	self.Highlight:SetTexCoord(0, 1, .5, 1)
+	self.Highlight:SetVertexColor(.6, .6, .6)
+	self.Highlight:SetBlendMode("ADD")
+	self.Highlight:Hide()
 
-	self.Threat = {
-		Hide = K.Noop,
-		IsObjectType = K.Noop,
-		Override = Module.CreateThreatIndicator,
+	self.ThreatIndicator = {
+		IsObjectType = function() end,
+		Override = Module.UpdateThreat,
 	}
 
 	self.Range = Module.CreateRangeIndicator(self)

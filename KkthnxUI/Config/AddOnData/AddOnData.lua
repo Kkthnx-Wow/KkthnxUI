@@ -52,86 +52,86 @@ local function SetupAddons()
 	end
 end
 
-function K.AddOnSettings(msg)
+SlashCmdList["KKUI_ADDONDATA"] = function(msg)
 	if msg == "skada" then
 		if K.CheckAddOnState("Skada") then
 			K.LoadSkadaProfile(true)
 			K.StaticPopup_Show("CHANGES_RL")
-			print(L["AddOnData"].SkadaText)
+			--print(L["AddOnData"].SkadaText)
 		else
-			print(L["AddOnData"].SkadaNotText)
+			--print(L["AddOnData"].SkadaNotText)
 		end
 	elseif msg == "dbm" then
 		if K.CheckAddOnState("DBM-Core") then
 			K.LoadDBMProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print(L["AddOnData"].DBMText)
+			--print(L["AddOnData"].DBMText)
 		else
-			print(L["AddOnData"].DBMNotText)
+			--print(L["AddOnData"].DBMNotText)
 		end
 	elseif msg == "bigwigs" then
 		if K.CheckAddOnState("BigWigs") then
 			K.LoadBigWigsProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print(L["AddOnData"].BigWigsText)
+			--print(L["AddOnData"].BigWigsText)
 		else
-			print(L["AddOnData"].BigWigsNotText)
+			--print(L["AddOnData"].BigWigsNotText)
 		end
 	elseif msg == "pawn" then
 		if K.CheckAddOnState("Pawn") then
 			K.LoadPawnProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print(L["AddOnData"].PawnText)
+			--print(L["AddOnData"].PawnText)
 		else
-			print(L["AddOnData"].PawnNotText)
+			--print(L["AddOnData"].PawnNotText)
 		end
 	elseif msg == "msbt" then
 		if K.CheckAddOnState("MikScrollingBattleText") then
 			K.LoadMSBTProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print(L["AddOnData"].MSBTText)
+			--print(L["AddOnData"].MSBTText)
 		else
-			print(L["AddOnData"].MSBTNotText)
+			--print(L["AddOnData"].MSBTNotText)
 		end
 	elseif msg == "bugsack" then
 		if K.CheckAddOnState("BugSack") then
 			K.LoadBugSackProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print(L["AddOnData"].BugSackText)
+			--print(L["AddOnData"].BugSackText)
 		else
-			print(L["AddOnData"].BugSackNotText)
+			--print(L["AddOnData"].BugSackNotText)
 		end
 	elseif msg == "buggrabber" then
 		if K.CheckAddOnState("!BugGrabber") then
 			K.LoadBugGrabberProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print(L["AddOnData"].BugGrabberText)
+			--print(L["AddOnData"].BugGrabberText)
 		else
-			print(L["AddOnData"].BugGrabberNotText)
+			--print(L["AddOnData"].BugGrabberNotText)
 		end
 	elseif msg == "bt4" or msg == "bartender" then
 		if K.CheckAddOnState("Bartender4") then
 			K.LoadBartenderProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print(L["AddOnData"].BartenderText)
+			--print(L["AddOnData"].BartenderText)
 		else
-			print(L["AddOnData"].BartenderNotText)
+			--print(L["AddOnData"].BartenderNotText)
 		end
 	elseif msg == "skinner" then
 		if K.CheckAddOnState("Skinner") then
 			K.LoadBartenderProfile()
 			K.StaticPopup_Show("CHANGES_RL")
-			print(L["AddOnData"].SkinnerText)
+			--print(L["AddOnData"].SkinnerText)
 		else
-			print(L["AddOnData"].SkinnerNotText)
+			--print(L["AddOnData"].SkinnerNotText)
 		end
 	elseif msg == "all" or msg == "addons" then
 		SetupAddons()
 		K.StaticPopup_Show("CHANGES_RL")
-		K.Print(L["AddOnData"].AllAddOnsText)
+		--K.Print(L["AddOn Profiles"])
 	else
-		print(L["AddOnData"].InfoText)
+		--print(L["AddOn Info Text"])
 	end
 end
-
-K:RegisterChatCommand("settings", K.AddOnSettings)
+SLASH_KKUI_ADDONDATA1 = "/setting"
+SLASH_KKUI_ADDONDATA2 = "/addondata"

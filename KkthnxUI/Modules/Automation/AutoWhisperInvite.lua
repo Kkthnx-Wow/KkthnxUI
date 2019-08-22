@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("AutoWhisperInvite", "AceEvent-3.0")
+local Module = K:GetModule("Automation")
 
 local _G = _G
 local pairs = pairs
@@ -40,7 +40,7 @@ function Module:GetQueueStatus()
 	return false
 end
 
-function Module:CreateWhisperInvite(event, ...)
+function Module.WhisperInvite(event, ...)
 	local message, sender = ...
 	if (not UnitExists("party1") or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and string_match(string_lower(message), "^"..C["Automation"].WhisperInvite) then
 		if event == "CHAT_MSG_WHISPER" then
@@ -60,11 +60,7 @@ function Module:CreateWhisperInvite(event, ...)
 	end
 end
 
-function Module:OnEnable()
-	self:RegisterEvent("CHAT_MSG_WHISPER", "CreateWhisperInvite")
-	self:RegisterEvent("CHAT_MSG_BN_WHISPER", "CreateWhisperInvite")
-end
-
-function Module:OnDisable()
-	self:UnregisterAllEvents()
+function Module:CreateAutoWhisperInvite()
+	K:RegisterEvent("CHAT_MSG_WHISPER", self.WhisperInvite)
+	K:RegisterEvent("CHAT_MSG_BN_WHISPER", self.WhisperInvite)
 end

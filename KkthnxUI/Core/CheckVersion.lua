@@ -1,36 +1,41 @@
 local K, _, L = unpack(select(2, ...))
-local Module = K:NewModule("VersionCheck", "AceEvent-3.0")
+local Module = K:NewModule("VersionCheck")
 
 local _G = _G
-local gsub = gsub
-local tonumber = tonumber
+local gsub = _G.gsub
+local tonumber = _G.tonumber
 
+local C_ChatInfo_RegisterAddonMessagePrefix = _G.C_ChatInfo.RegisterAddonMessagePrefix
+local C_ChatInfo_SendAddonMessage = _G.C_ChatInfo.SendAddonMessage
+local CreateFrame = _G.CreateFrame
 local GetAddOnMetadata = _G.GetAddOnMetadata
 local GetRealmName = _G.GetRealmName
 local IsInGroup = _G.IsInGroup
 local IsInGuild = _G.IsInGuild
 local IsInRaid = _G.IsInRaid
-local C_ChatInfo_SendAddonMessage = _G.C_ChatInfo.SendAddonMessage
+local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME
+local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
+local SendChatMessage = _G.SendChatMessage
+local StaticPopup_Show = _G.StaticPopup_Show
 local UnitName = _G.UnitName
-local C_ChatInfo_RegisterAddonMessagePrefix = _G.C_ChatInfo.RegisterAddonMessagePrefix
 
 local Version = tonumber(GetAddOnMetadata("KkthnxUI", "Version"))
 local MyName = UnitName("player") .. "-" .. GetRealmName()
 MyName = gsub(MyName, "%s+", "")
 
-function Module:CheckIt(event, prefix, message, _, sender)
+local function UIVersionCheck(event, prefix, message, _, sender)
 	if (event == "CHAT_MSG_ADDON") then
 		if (prefix ~= "KkthnxUIVersion") or (sender == MyName) then
 			return
 		end
 
-		if (tonumber(message) > Version) then -- We recieved a higher version, we"re outdated. :(
+		if (tonumber(message) > Version) then -- We Recieved A Higher Version, We"re Outdated. :(
 			StaticPopup_Show("KKTHNXUI_OUTDATED")
 			K.Print(L["Miscellaneous"].UIOutdated)
-			self:UnregisterEvent("CHAT_MSG_ADDON")
+			K:UnregisterEvent("CHAT_MSG_ADDON", UIVersionCheck)
 		end
 	else
-		-- Tell everyone what version we use.
+		-- Tell Everyone What Version We Use.
 		local Channel
 
 		if IsInRaid() then
@@ -47,15 +52,15 @@ function Module:CheckIt(event, prefix, message, _, sender)
 	end
 end
 
-function Module:OnInitialize()
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckIt")
-	self:RegisterEvent("GROUP_ROSTER_UPDATE", "CheckIt")
-	self:RegisterEvent("CHAT_MSG_ADDON", "CheckIt")
+function Module:OnEnable()
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", UIVersionCheck)
+	K:RegisterEvent("GROUP_ROSTER_UPDATE", UIVersionCheck)
+	K:RegisterEvent("CHAT_MSG_ADDON", UIVersionCheck)
 
 	C_ChatInfo_RegisterAddonMessagePrefix("KkthnxUIVersion")
 end
 
--- Whisper UI version --
+-- Whisper UI Version
 local whisperKkthnxUIVersion = CreateFrame("Frame")
 whisperKkthnxUIVersion:RegisterEvent("CHAT_MSG_WHISPER")
 whisperKkthnxUIVersion:RegisterEvent("CHAT_MSG_BN_WHISPER")

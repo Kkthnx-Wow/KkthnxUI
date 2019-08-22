@@ -1,13 +1,12 @@
 local K, C = unpack(select(2, ...))
+local Module = K:GetModule("Unitframes")
+
 if C["Unitframe"].Enable ~= true then
 	return
 end
 
-local Module = K:GetModule("Unitframes")
-
 local _G = _G
 local next = next
-local select = select
 
 local ClassPowerTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 local ComboColor = K.Colors.power["COMBO_POINTS"]
@@ -55,7 +54,7 @@ end
 local function PostUpdateClassPower(element, _, max, diff)
 	-- Update Layout On Change In Total Visible
 	if (diff) then
-		local maxWidth = 140
+		local maxWidth = 156
 		local gap = 6
 
 		for index = 1, max do
@@ -132,7 +131,7 @@ local function UpdateClassPowerColor(element)
 		elseif (K.Class == "WARLOCK") then
 			r, g, b = 148/255, 130/255, 201/255
 		elseif (K.Class == "PALADIN") then
-			r, g, b = 228/255, 225/255, 16/255
+			r, g, b = unpack(K.Colors.power.HOLY_POWER)
 		elseif (K.Class == "MAGE") then
 			r, g, b = 0, 157/255, 1
 		else
@@ -154,7 +153,7 @@ function Module:CreateClassPower()
 
 	for index = 1, 11 do
 		local Bar = CreateFrame("StatusBar", "oUF_KkthnxClassPower", self)
-		Bar:SetSize(self.Health and self.Health:GetWidth() or 140, 14)
+		Bar:SetSize(156, 14)
 		Bar:SetStatusBarTexture(ClassPowerTexture)
 		Bar:CreateBorder()
 
@@ -179,7 +178,7 @@ function Module:CreateRuneBar()
 	local Runes = {}
 	for index = 1, 6 do
 		local Rune = CreateFrame("StatusBar", nil, self)
-		local numRunes, maxWidth, gap = 6, 140, 6
+		local numRunes, maxWidth, gap = 6, 156, 6
 		local width = ((maxWidth / numRunes) - (((numRunes-1) * gap) / numRunes))
 
 		Rune:SetSize(width, 14)
@@ -208,8 +207,8 @@ end
 
 function Module:CreateStaggerBar()
 	local stagger = CreateFrame("StatusBar", nil, self)
-	stagger:SetPoint("LEFT", 4, 0)
-	stagger:SetPoint("RIGHT", -4, 0)
+	stagger:SetPoint("LEFT")
+	stagger:SetPoint("RIGHT")
 	stagger:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
 	stagger:SetHeight(14)
 	stagger:SetStatusBarTexture(ClassPowerTexture)

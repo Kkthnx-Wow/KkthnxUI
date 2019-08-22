@@ -1,43 +1,54 @@
 local K = unpack(select(2,...))
-local Module = K:NewModule("Changelog", "AceEvent-3.0", "AceTimer-3.0")
-
-local _G = _G
-local format, gmatch, find, sub = string.format, string.gmatch, string.find, string.sub
-local pairs, tostring = pairs, tostring
-
-local CreateFrame = _G.CreateFrame
-local SOUNDKIT = _G.SOUNDKIT
-local PlaySound = _G.PlaySound
-local CLOSE = _G.CLOSE
+local Module = K:NewModule("Changelog", "AceTimer-3.0")
 
 local ChangeLogData = {
 	"Changes:",
-	"• Released v9.00.",
-	"• 'GameTooltipAnchor' will properly anchor on bagsbar or micromenu.",
-	"• Added a feature to show who pings the minimap.",
-	"• Added a new classcolor function for future use.",
-	"• Added a new spell reminder feature for a couple classes. WIP.",
-	"• Cleaned old API and functions.",
-	"• Fixed keybinds not letting middle mouse button be bound.",
-	"• Move unitframes spells and ticks to their own file.",
-	"• oUF was updated to the latest changes to fix a nameplates issue for 8.2.",
-	"• Rewrote castbars and fixed ticks for the 10th time.",
-	"• |cffC79C6EKesun|r did not recieve any loot in raid. Tell him this is so sad!",
+	"• Released v9.03.",
+	"• Rewrote a lot of parts of the UI.",
+	"• Changed how Modules are loaded.",
+	"• Add chat tab color and fix movers with align/grid command.",
+	"• More style to key binds frame and add a check too it.",
+	"• I just like my code and files like this.",
+	"• Features and fixes and updates.",
+	"• Add in some checks for nameplate elements.",
+	"• Typo from `e2d8eab`",
+	"• You just can't make your mind up Mr. Kkthnx.",
+	"• Revert part of `1decf5e`",
+	"• I was forced to add these 3 random guys as a SPECIAL THANKS.",
+	"• This should fix shit falling behind our awesome borders.",
+	"• We will have justice!",
     -- Important Notes We Want The User To Know!
 	" ",
 	"Notes:",
-	"• If you are enjoying the UI do not forget to drop by our DISCORD!!!",
-	"• Suggestions can be sent directly to me on Discord. |cff4488ffKkthnx#5151|r"
+	"• If you are enjoying the UI do not forget to drop by our DISCORD!",
+	" ",
+	"Social URLs:",
+	"• |cff7289DADiscord:|r https://discordapp.com/invite/mKKySTY",
+	"• |cff3b5998Facebook:|r https://www.facebook.com/kkthnxui",
+	"• |cff1da1f2Twitter:|r https://twitter.com/kkthnxui",
 }
 
+local URL_PATTERNS = {
+	"^(%a[%w+.-]+://%S+)",
+	"%f[%S](%a[%w+.-]+://%S+)",
+	"^(www%.[-%w_%%]+%.(%a%a+))",
+	"%f[%S](www%.[-%w_%%]+%.(%a%a+))",
+	"(%S+@[%w_.-%%]+%.(%a%a+))",
+}
+
+local function formatURL(url)
+	url = "|cFFFFFFFF[|Hurl:"..url.."|h"..url.."|h]|r "
+	return url
+end
+
 local function ModifiedString(string)
-	local count = find(string, ":")
+	local count = string.find(string, ":")
 	local newString = string
 
 	if count then
-		local prefix = sub(string, 0, count)
-		local suffix = sub(string, count + 1)
-		local subHeader = find(string, "•")
+		local prefix = string.sub(string, 0, count)
+		local suffix = string.sub(string, count + 1)
+		local subHeader = string.find(string, "•")
 
 		if subHeader then
 			newString = tostring("|cFFFFFF00"..prefix.."|r"..suffix)
@@ -48,6 +59,13 @@ local function ModifiedString(string)
 
 	for pattern in gmatch(string, "('.*')") do
 		newString = newString:gsub(pattern, "|cff4488ff"..pattern:gsub("'", "").."|r")
+	end
+
+	-- Find URLs
+	for _, v in pairs(URL_PATTERNS) do
+		if string.find(string, v) then
+			newString = gsub(string, v, formatURL("%1"))
+		end
 	end
 
 	return newString
@@ -71,9 +89,8 @@ function Module:CreateChangelog()
 	else
 		frame:SetPoint("TOP", UIParent, "TOP", 0, -108)
 	end
-	frame:SetSize(444, 300)
+	frame:SetSize(480, 420)
 	frame:CreateBorder()
-
 	frame:SetMovable(true)
 	frame:EnableMouse(true)
 	frame:RegisterForDrag("LeftButton")
@@ -83,31 +100,29 @@ function Module:CreateChangelog()
 
 	local title = CreateFrame("Frame", nil, frame)
 	title:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 0, 6)
-	title:SetSize(444, 20)
+	title:SetSize(480, 30)
 	title:CreateBorder()
 
 	title.text = title:CreateFontString(nil, "OVERLAY")
-	title.text:FontTemplate(nil, 15, "")
-	title.text:SetPoint("CENTER", title, 0, -1)
-	title.text:SetText(K.Title.." ChangeLog v"..format("|cff4488ff%s|r", K.Version))
+	title.text:FontTemplate(nil, 20, "")
+	title.text:SetPoint("CENTER", title, 0, 0)
+	title.text:SetText(K.Title.." ChangeLog v"..string.format("|cff4488ff%s|r", K.Version))
 
-	local close = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-	close:SetPoint("BOTTOM", frame, "BOTTOM", 0, 10)
-	close:SetText(CLOSE)
-	close:SetSize(100, 22)
-	close:SetScript("OnClick", function()
+	frame.close = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+	frame.close:SetPoint("BOTTOM", frame, "BOTTOM", 0, 10)
+	frame.close:SetText(CLOSE)
+	frame.close:SetSize(100, 22)
+	frame.close:SetScript("OnClick", function()
 		frame:Hide()
 	end)
-	close:StripTextures()
-	close:SkinButton()
-	close:Disable()
-	frame.close = close
+	frame.close:StripTextures()
+	frame.close:SkinButton()
+	frame.close:Disable()
 
-	local countdown = close:CreateFontString(nil, "OVERLAY")
-	countdown:FontTemplate(nil, 12, "")
-	countdown:SetPoint("LEFT", close.Text, "RIGHT", 3, 0)
-	countdown:SetTextColor(DISABLED_FONT_COLOR:GetRGB())
-	frame.countdown = countdown
+	frame.countdown = frame.close:CreateFontString(nil, "OVERLAY")
+	frame.countdown:FontTemplate(nil, 12, "")
+	frame.countdown:SetPoint("LEFT", frame.close.Text, "RIGHT", 3, 0)
+	frame.countdown:SetTextColor(DISABLED_FONT_COLOR:GetRGB())
 
 	local offset = 4
 	for i = 1, #ChangeLogData do
@@ -116,23 +131,21 @@ function Module:CreateChangelog()
 		button:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -offset)
 
 		if i <= #ChangeLogData then
-			local string = ModifiedString(GetChangeLogInfo(i))
+			local string, isURL = ModifiedString(GetChangeLogInfo(i))
 
 			button.Text = button:CreateFontString(nil, "OVERLAY")
 			button.Text:FontTemplate(nil, 12, "")
 			button.Text:SetPoint("CENTER")
 			button.Text:SetPoint("LEFT", 0, 0)
 			button.Text:SetText(string)
-			button.Text:SetWordWrap(true)
+			button.Text:SetWordWrap(false)
 		end
-
 		offset = offset + 16
 	end
 end
 
 function Module:CountDown()
 	self.time = self.time - 1
-
 	if self.time == 0 then
 		KkthnxUIChangeLog.countdown:SetText("")
 		KkthnxUIChangeLog.close:Enable()
@@ -146,7 +159,6 @@ function Module:ToggleChangeLog()
 	if not KkthnxUIChangeLog then
 		self:CreateChangelog()
 	end
-
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF or 857)
 
 	local fadeInfo = {}
@@ -169,7 +181,7 @@ function Module:CheckVersion()
 	end
 end
 
-function Module:OnInitialize()
+function Module:OnEnable()
 	K.Delay(6, function()
 		Module:CheckVersion()
 	end)

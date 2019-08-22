@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("Vendor", "AceEvent-3.0", "AceTimer-3.0")
+local Module = K:NewModule("Vendor", "AceEvent-3.0")
 
 -- Sourced: ElvUI
 
@@ -46,13 +46,13 @@ do -- Auto Repair Functions
 			if STATUS == "GUILD_REPAIR_FAILED" then
 				Module:AttemptAutoRepair(true) -- Try using player money instead
 			else
-				K.Print(L["Inventory"].GuildRepair..K.FormatMoney(COST))
+				K.Print(L["Guild Repair"]..K.FormatMoney(COST))
 			end
 		elseif TYPE == "PLAYER" then
 			if STATUS == "PLAYER_REPAIR_FAILED" then
-				K.Print(L["Inventory"].NotEnoughMoney)
+				K.Print(L["Not Enough Money"])
 			else
-				K.Print(L["Inventory"].RepairCost..K.FormatMoney(COST))
+				K.Print(L["Repair Cost"]..K.FormatMoney(COST))
 			end
 		end
 	end
@@ -72,7 +72,7 @@ function Module:VendorGrays(delete)
 	end
 
 	if (not MerchantFrame or not MerchantFrame:IsShown()) and not delete then
-		K.Print(L["Inventory"].NotatVendor)
+		K.Print(L["No Vendor"])
 		return
 	end
 
@@ -113,10 +113,10 @@ function Module:VendorGrays(delete)
 	Module.SellFrame:Show()
 end
 
-function Module:MERCHANT_CLOSED()
-	self:UnregisterEvent("UI_ERROR_MESSAGE")
-	self:UnregisterEvent("UPDATE_INVENTORY_DURABILITY")
-	self:UnregisterEvent("MERCHANT_CLOSED")
+function Module.MERCHANT_CLOSED()
+	K:UnregisterEvent("UI_ERROR_MESSAGE", Module.UI_ERROR_MESSAGE)
+	K:UnregisterEvent("UPDATE_INVENTORY_DURABILITY")
+	K:UnregisterEvent("MERCHANT_CLOSED", Module.MERCHANT_CLOSED)
 
 	Module.SellFrame:Hide()
 
@@ -174,7 +174,7 @@ function Module:VendorGreys_OnUpdate(elapsed)
 	elseif lastItem then
 		Module.SellFrame:Hide()
 		if Module.SellFrame.Info.goldGained > 0 then
-			K.Print((L["Inventory"].SoldTrash.."%s"):format(K.FormatMoney(Module.SellFrame.Info.goldGained)))
+			K.Print((L["Sold Grays"]):format(K.FormatMoney(Module.SellFrame.Info.goldGained)))
 		end
 	end
 end
@@ -190,7 +190,7 @@ function Module:CreateSellFrame()
 	Module.SellFrame.title = Module.SellFrame:CreateFontString(nil, "OVERLAY")
 	Module.SellFrame.title:FontTemplate(nil, 12, "")
 	Module.SellFrame.title:SetPoint("TOP", Module.SellFrame, "TOP", 0, -2)
-	Module.SellFrame.title:SetText(L["Inventory"].VendorGrays)
+	Module.SellFrame.title:SetText(L["Vendor Grays"])
 
 	Module.SellFrame.statusbar = CreateFrame("StatusBar", "VendorGraysFrameStatusbar", Module.SellFrame)
 	Module.SellFrame.statusbar:SetSize(180, 16)
@@ -228,7 +228,7 @@ function Module:CreateSellFrame()
 	Module.SellFrame:Hide()
 end
 
-function Module:MERCHANT_SHOW()
+function Module.MERCHANT_SHOW()
 	if C["Inventory"].AutoSell then
 		K.Delay(0.5, Module.VendorGrays, Module)
 	end
@@ -238,15 +238,15 @@ function Module:MERCHANT_SHOW()
 	end
 
 	-- Prepare to catch "not enough money" messages
-	self:RegisterEvent("UI_ERROR_MESSAGE")
+	K:RegisterEvent("UI_ERROR_MESSAGE", Module.MERCHANT_SHOW)
 	-- Use this to unregister events afterwards
-	self:RegisterEvent("MERCHANT_CLOSED")
+	K:RegisterEvent("MERCHANT_CLOSED", Module.MERCHANT_CLOSED)
 
 	Module:AttemptAutoRepair()
 end
 
 function Module:OnEnable()
-	self:RegisterEvent("MERCHANT_SHOW")
+	K:RegisterEvent("MERCHANT_SHOW", Module.MERCHANT_SHOW)
 	self:CreateSellFrame()
-	self:RegisterEvent("MERCHANT_CLOSED")
+	K:RegisterEvent("MERCHANT_CLOSED", Module.MERCHANT_CLOSED)
 end

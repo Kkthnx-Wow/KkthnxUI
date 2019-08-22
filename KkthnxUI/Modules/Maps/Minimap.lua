@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("Minimap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
+local Module = K:NewModule("Minimap", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
 
 local _G = _G
 local string_sub = string.sub
@@ -47,21 +47,14 @@ function Module:OnMouseWheelScroll(d)
 	end
 end
 
-function Module:ZoneTextUpdate()
+function Module.ZoneTextUpdate()
 	if not C["Minimap"].Enable then
 		return
 	end
 
-	Minimap.Location:SetText(string_sub(GetMinimapZoneText(), 1, 46))
+	Minimap.Location:SetText(string.utf8sub(GetMinimapZoneText(), 1, 46))
 	Minimap.Location:SetTextColor(Module:GetLocationTextColors())
 	Minimap.Location:FontTemplate(nil, 13)
-end
-
-local function PositionTicketButtons()
-	HelpOpenTicketButton:ClearAllPoints()
-	HelpOpenTicketButton:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 0, 0)
-	HelpOpenWebTicketButton:ClearAllPoints()
-	HelpOpenWebTicketButton:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 0, 0)
 end
 
 local isResetting
@@ -85,10 +78,11 @@ function Module:UpdateSettings()
 		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	end
 
-	local SetMinimapSize = C["Minimap"].Enable and C["Minimap"].Size or 170
+	K.MinimapSize = C["Minimap"].Enable and C["Minimap"].Size or Minimap:GetWidth() + 10
+	K.MinimapWidth, K.MinimapHeight = K.MinimapSize, K.MinimapSize
 
 	if C["Minimap"].Enable then
-		Minimap:SetSize(SetMinimapSize, SetMinimapSize)
+		Minimap:SetSize(K.MinimapSize, K.MinimapSize)
 	end
 
 	local MinimapFrameHolder = _G.MinimapFrameHolder
@@ -97,7 +91,7 @@ function Module:UpdateSettings()
 	end
 
 	if Minimap.Location then
-		Minimap.Location:SetWidth(SetMinimapSize)
+		Minimap.Location:SetWidth(K.MinimapSize)
 		Minimap.Location:Hide()
 	end
 
@@ -158,6 +152,27 @@ function Module:UpdateSettings()
 		QueueStatusMinimapButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
 	end
 
+	-- QueueStatus Button
+	if QueueStatusMinimapButton then
+		QueueStatusMinimapButton:ClearAllPoints()
+		QueueStatusMinimapButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
+
+		local queueIcon = Minimap:CreateTexture(nil, "ARTWORK")
+		queueIcon:SetPoint("CENTER", QueueStatusMinimapButton)
+		queueIcon:SetSize(50, 50)
+		queueIcon:SetTexture("Interface\\Minimap\\Dungeon_Icon")
+		local anim = queueIcon:CreateAnimationGroup()
+		anim:SetLooping("REPEAT")
+		anim.rota = anim:CreateAnimation("Rotation")
+		anim.rota:SetDuration(2)
+		anim.rota:SetDegrees(360)
+		hooksecurefunc("QueueStatusFrame_Update", function()
+			queueIcon:SetShown(QueueStatusMinimapButton:IsShown())
+		end)
+		hooksecurefunc("EyeTemplate_StartAnimating", function() anim:Play() end)
+		hooksecurefunc("EyeTemplate_StopAnimating", function() anim:Stop() end)
+	end
+
 	if MiniMapInstanceDifficulty and GuildInstanceDifficulty then
 		MiniMapInstanceDifficulty:ClearAllPoints()
 		MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
@@ -174,17 +189,11 @@ function Module:UpdateSettings()
 
 	if StreamingIcon then
 		StreamingIcon:ClearAllPoints()
-		StreamingIcon:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -10)
-		StreamingIcon:SetScale(0.9)
-		StreamingIcon:SetFrameStrata("BACKGROUND")
-	end
-
-	if HelpOpenTicketButton and HelpOpenWebTicketButton then
-		PositionTicketButtons()
+		StreamingIcon:SetPoint("TOP", UIParent, "TOP", 0, -6)
 	end
 end
 
-function Module:ADDON_LOADED(_, addon)
+function Module.ADDON_LOADED(_, addon)
 	if addon == "Blizzard_TimeManager" then
 		TimeManagerClockButton:Kill()
 	elseif addon == "Blizzard_FeedbackUI" then
@@ -192,42 +201,57 @@ function Module:ADDON_LOADED(_, addon)
 	end
 end
 
-function Module:OnEvent(event)
+function Module.OnEvent(event)
 	if event == "PLAYER_ENTERING_WORLD" then
-		self:ZoneTextUpdate()
+		Module:ZoneTextUpdate()
 	elseif event == "PLAYER_REGEN_ENABLED" then
-		self:UpdateSettings()
+		Module:UpdateSettings()
 	end
 end
 
-function Module:WhoPingsMyMap()
-	local f = CreateFrame("Frame", nil, Minimap)
-	f:SetAllPoints()
+function Module:WhoPingedMyMap()
+	local MinimapPing = CreateFrame("Frame", nil, Minimap)
+	MinimapPing:SetAllPoints()
 
-	f.text = f:CreateFontString(nil, "OVERLAY")
-	f.text:FontTemplate(nil, 13)
-	f.text:SetPoint("TOP", f, "TOP", 0, -20)
+	MinimapPing.Text = MinimapPing:CreateFontString(nil, "OVERLAY")
+	MinimapPing.Text:FontTemplate(nil, 14)
+	MinimapPing.Text:SetPoint("TOP", MinimapPing, "TOP", 0, -20)
 
-	local anim = f:CreateAnimationGroup()
-	anim:SetScript("OnPlay", function() f:SetAlpha(1) end)
-	anim:SetScript("OnFinished", function() f:SetAlpha(0) end)
-	anim.fader = anim:CreateAnimation("Alpha")
-	anim.fader:SetFromAlpha(1)
-	anim.fader:SetToAlpha(0)
-	anim.fader:SetDuration(3)
-	anim.fader:SetSmoothing("OUT")
-	anim.fader:SetStartDelay(3)
+	local AnimationPing = MinimapPing:CreateAnimationGroup()
+	AnimationPing:SetScript("OnPlay", function()
+		MinimapPing:SetAlpha(1)
+	end)
 
-	K:RegisterEvent("MINIMAP_PING", function(_, unit)
+	AnimationPing:SetScript("OnFinished", function()
+		MinimapPing:SetAlpha(0)
+	end)
+
+	AnimationPing.Fader = AnimationPing:CreateAnimation("Alpha")
+	AnimationPing.Fader:SetFromAlpha(1)
+	AnimationPing.Fader:SetToAlpha(0)
+	AnimationPing.Fader:SetDuration(3)
+	AnimationPing.Fader:SetSmoothing("OUT")
+	AnimationPing.Fader:SetStartDelay(3)
+
+	function Module.MINIMAP_PING(_, unit)
 		local class = select(2, UnitClass(unit))
+		if not class then
+			return
+		end
+
 		local r, g, b = K.ColorClass(class)
 		local name = GetUnitName(unit)
+		if not name then
+			return
+		end
 
-		anim:Stop()
-		f.text:SetText(name)
-		f.text:SetTextColor(r, g, b)
-		anim:Play()
-	end)
+		AnimationPing:Stop()
+		MinimapPing.Text:SetText(name)
+		MinimapPing.Text:SetTextColor(r, g, b)
+		AnimationPing:Play()
+	end
+
+	K:RegisterEvent("MINIMAP_PING", self.MINIMAP_PING)
 end
 
 function Module:OnEnable()
@@ -261,26 +285,25 @@ function Module:OnEnable()
 	Minimap:SetScale(1.0)
 	Minimap:SetBlipTexture("Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\Blip-Nandini-New")
 
-	Minimap:HookScript("OnEnter", function(self)
-		if K.PerformanceFrame then
+	Minimap:HookScript("OnEnter", function()
+		if K.PerformanceFrame:IsShown() then
 			K.PerformanceFrame:Hide()
 		end
 
-		self.Location:Show()
+		Minimap.Location:Show()
 	end)
 
-	Minimap:HookScript("OnLeave", function(self)
-		if K.PerformanceFrame then
+	Minimap:HookScript("OnLeave", function()
+		if not K.PerformanceFrame:IsShown() then
 			K.PerformanceFrame:Show()
 		end
 
-		self.Location:Hide()
+		Minimap.Location:Hide()
 	end)
 
 	Minimap.Location = Minimap:CreateFontString(nil, "OVERLAY")
-	Minimap.Location:SetWidth(C["Minimap"].Size)
 	Minimap.Location:FontTemplate(nil, 13)
-	Minimap.Location:SetPoint("TOP", 0, -4)
+	Minimap.Location:SetPoint("TOP", Minimap, "TOP", 0, -4)
 	Minimap.Location:SetJustifyH("CENTER")
 	Minimap.Location:SetJustifyV("MIDDLE")
 	Minimap.Location:Hide()
@@ -309,8 +332,9 @@ function Module:OnEnable()
 	Minimap:SetQuestBlobRingScalar(0)
 
 	if QueueStatusMinimapButtonBorder then
-		QueueStatusMinimapButtonBorder:SetTexture(nil)
 		QueueStatusMinimapButtonBorder:SetAlpha(0)
+		QueueStatusMinimapButtonBorder:SetTexture(nil)
+		QueueStatusMinimapButtonIconTexture:SetTexture(nil)
 	end
 
 	_G.MiniMapWorldMapButton:SetParent(K.UIFrameHider)
@@ -332,12 +356,14 @@ function Module:OnEnable()
 	Minimap:EnableMouseWheel(true)
 	Minimap:SetScript("OnMouseWheel", Module.OnMouseWheelScroll)
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ZoneTextUpdate")
-	self:RegisterEvent("ZONE_CHANGED", "ZoneTextUpdate")
-	self:RegisterEvent("ZONE_CHANGED_INDOORS", "ZoneTextUpdate")
-	self:RegisterEvent("ADDON_LOADED")
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", self.OnEvent)
+	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", self.ZoneTextUpdate)
+	K:RegisterEvent("ZONE_CHANGED", self.ZoneTextUpdate)
+	K:RegisterEvent("ZONE_CHANGED_INDOORS", self.ZoneTextUpdate)
+	K:RegisterEvent("ADDON_LOADED", self.ADDON_LOADED)
 
 	self:UpdateSettings()
-	self:WhoPingsMyMap()
+
+	self:WhoPingedMyMap()
+	self:CreateRecycleBin()
 end

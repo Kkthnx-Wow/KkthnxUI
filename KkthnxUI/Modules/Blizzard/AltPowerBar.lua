@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("AltPowerBar", "AceEvent-3.0", "AceHook-3.0")
+local Module = K:GetModule("Blizzard")
 
 if not Module then
 	return
@@ -36,10 +36,11 @@ local function updateTooltip(self)
 end
 
 local function onEnter(self)
-	if not self:IsVisible() then
+	if (not self:IsVisible()) or _G.GameTooltip:IsForbidden() then
 		return
 	end
 
+	_G.GameTooltip:ClearAllPoints()
 	_G.GameTooltip_SetDefaultAnchor(_G.GameTooltip, self)
 	updateTooltip(self)
 end
@@ -121,7 +122,7 @@ function Module:UpdateAltPowerBarSettings()
 	bar.text:SetFontObject(font)
 	AltPowerBarHolder:SetSize(bar.Backdrop:GetSize())
 
-	K:SetSmoothing(bar, true)
+	K.SmoothBar(bar)
 
 	local textFormat = statusTextFormat
 	if textFormat == "NONE" or not textFormat then
@@ -199,7 +200,7 @@ function Module:SkinAltPowerBar()
 	end)
 end
 
-function Module:OnEnable()
+function Module:CreateAltPowerbar()
 	if not IsAddOnLoaded("SimplePowerBar") then
 		self:PositionAltPowerBar()
 		self:SkinAltPowerBar()

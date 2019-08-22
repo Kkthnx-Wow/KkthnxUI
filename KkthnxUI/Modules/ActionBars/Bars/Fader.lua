@@ -1,4 +1,5 @@
 local K = unpack(select(2, ...))
+local Module = K:GetModule("ActionBar")
 
 local _G = _G
 local next = next
@@ -6,27 +7,6 @@ local next = next
 local MouseIsOver = _G.MouseIsOver
 local SpellFlyout = _G.SpellFlyout
 local CreateFrame = _G.CreateFrame
-
-K.fader = {
-	fadeInAlpha = 1,
-	fadeInDuration = 0.2,
-	fadeInSmooth = "OUT",
-	fadeOutAlpha = 0.25,
-	fadeOutDuration = 0.2,
-	fadeOutSmooth = "OUT",
-	fadeOutDelay = 0,
-}
-
-K.faderOnShow = {
-	fadeInAlpha = 1,
-	fadeInDuration = 0.2,
-	fadeInSmooth = "OUT",
-	fadeOutAlpha = 0,
-	fadeOutDuration = 0.2,
-	fadeOutSmooth = "OUT",
-	fadeOutDelay = 0,
-	trigger = "OnShow",
-}
 
 local function FaderOnFinished(self)
 	self.__owner:SetAlpha(self.finAlpha)
@@ -40,6 +20,7 @@ local function CreateFaderAnimation(frame)
 	if frame.fader then
 		return
 	end
+
 	local animFrame = CreateFrame("Frame", nil, frame)
 	animFrame.__owner = frame
 	frame.fader = animFrame:CreateAnimationGroup()
@@ -88,23 +69,19 @@ end
 
 local function IsMouseOverFrame(frame)
 	if MouseIsOver(frame) then
-		return
-		true
+		return true
 	end
 
 	if not SpellFlyout:IsShown() then
-		return
-		false
+		return false
 	end
 
 	if not SpellFlyout.__faderParent then
-		return
-		false
+		return false
 	end
 
 	if SpellFlyout.__faderParent == frame and MouseIsOver(SpellFlyout) then
-		return
-		true
+		return true
 	end
 
 	return false
@@ -122,19 +99,8 @@ local function OffFrameHandler(self)
 	if not self.__faderParent then
 		return
 	end
+
 	FrameHandler(self.__faderParent)
-end
-
-local function OnShow(self)
-	if self.fader then
-		StartFadeIn(self)
-	end
-end
-
-local function OnHide(self)
-	if self.fader then
-		StartFadeOut(self)
-	end
 end
 
 local function SpellFlyoutOnShow(self)
@@ -155,7 +121,9 @@ local function SpellFlyoutOnShow(self)
 		if not button then
 			break
 		end
+
 		button.__faderParent = frame
+
 		if not button.__faderHook then
 			button:HookScript("OnEnter", OffFrameHandler)
 			button:HookScript("OnLeave", OffFrameHandler)
@@ -165,30 +133,21 @@ local function SpellFlyoutOnShow(self)
 end
 SpellFlyout:HookScript("OnShow", SpellFlyoutOnShow)
 
-function K:CreateFrameFader(frame, faderConfig)
+local function CreateFrameFader(frame, faderConfig)
 	if frame.faderConfig then
 		return
 	end
-	frame.faderConfig = faderConfig
-	CreateFaderAnimation(frame)
 
-	if faderConfig.trigger and faderConfig.trigger == "OnShow" then
-		frame:HookScript("OnShow", OnShow)
-		frame:HookScript("OnHide", OnHide)
-	else
-		frame:EnableMouse(true)
-		frame:HookScript("OnEnter", FrameHandler)
-		frame:HookScript("OnLeave", FrameHandler)
-		FrameHandler(frame)
-	end
+	frame.faderConfig = faderConfig
+	frame:EnableMouse(true)
+	CreateFaderAnimation(frame)
+	frame:HookScript("OnEnter", FrameHandler)
+	frame:HookScript("OnLeave", FrameHandler)
+	FrameHandler(frame)
 end
 
-function K:CreateButtonFrameFader(buttonList, faderConfig)
-	K:CreateFrameFader(self, faderConfig)
-	if faderConfig.trigger and faderConfig.trigger == "OnShow" then
-		return
-	end
-
+function Module:CreateButtonFrameFader(buttonList, faderConfig)
+	CreateFrameFader(self, faderConfig)
 	for _, button in next, buttonList do
 		if not button.__faderParent then
 			button.__faderParent = self

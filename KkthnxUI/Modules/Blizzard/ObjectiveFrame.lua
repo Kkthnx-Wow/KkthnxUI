@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("ObjectiveFrame", "AceEvent-3.0", "AceHook-3.0")
+local Module = K:GetModule("Blizzard")
 
 local _G = _G
 local math_min = math.min
@@ -96,7 +96,7 @@ function Module:MoveObjectiveFrame()
 	self:SetObjectiveFrameAutoHide()
 end
 
-function Module:OnEnable()
+function Module:CreateObjectiveFrame()
 	if not K.CheckAddOnState("DugisGuideViewerZ") then
 		self:MoveObjectiveFrame()
 	end

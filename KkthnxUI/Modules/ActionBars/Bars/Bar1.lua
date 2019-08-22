@@ -1,9 +1,10 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("ActionBar")
+local Module = K:NewModule("ActionBar", "AceEvent-3.0", "AceHook-3.0")
+local FilterConfig = K.ActionBars.actionBar1
 
 local _G = _G
-local next = next
-local table_insert = table.insert
+local next = _G.next
+local table_insert = _G.table.insert
 
 local CreateFrame = _G.CreateFrame
 local GetActionTexture = _G.GetActionTexture
@@ -43,28 +44,23 @@ function Module:OnEnable()
 		return
 	end
 
-	local padding, margin, size = 0, 6, 34
+	local padding, margin = 0, 6
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
-	local layout = C["ActionBar"].Style.Value
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KkthnxUI_ActionBar1", UIParent, "SecureHandlerStateTemplate")
-	frame:SetWidth(num * size + (num - 1) * margin + 2 * padding)
-	frame:SetHeight(size + 2 * padding)
-	if layout == 5 then
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -120, 4}
-	else
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 4}
-	end
-	frame:SetScale(1)
+	frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
+	frame:SetHeight(FilterConfig.size + 2 * padding)
+	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 4}
 
 	for i = 1, num do
 		local button = _G["ActionButton"..i]
 		table_insert(buttonList, button) -- Add The Button Object To The List
 		button:SetParent(frame)
-		button:SetSize(size, size)
+		button:SetSize(FilterConfig.size, FilterConfig.size)
 		button:ClearAllPoints()
+
 		if i == 1 then
 			button:SetPoint("BOTTOMLEFT", frame, padding, padding)
 		else
@@ -78,8 +74,13 @@ function Module:OnEnable()
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
 	-- Create Drag Frame And Drag Functionality
-	frame:SetPoint(frame.Pos[1], frame.Pos[2], frame.Pos[3], frame.Pos[4], frame.Pos[5])
-	K.Mover(frame, "Bar1", "Bar1", frame.Pos)
+	if K.ActionBars.userPlaced then
+		K.Mover(frame, "Main Actionbar", "Bar1", frame.Pos)
+	end
+
+	if FilterConfig.fader then
+		Module.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
+	end
 
 	for i, button in next, buttonList do
 		frame:SetFrameRef("ActionButton"..i, button)
@@ -143,27 +144,23 @@ function Module:OnEnable()
 	self:CreateStancebar()
 	self:HideBlizz()
 	self:HookActionEvents()
+	self:CreateMicroMenu()
 
 	-- Vehicle Fix
-	local function vehicleFix()
+	local function getActionTexture(button)
+		return GetActionTexture(button.action)
+	end
+
+	K:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", function()
 		for _, button in next, buttonList do
-			local action = button.action
 			local icon = button.icon
-
-			if action >= 120 then
-				local texture = GetActionTexture(action)
-
-				if (texture) then
-					icon:SetTexture(texture)
-					icon:Show()
-				else
-					if icon:IsShown() then
-						icon:Hide()
-					end
-				end
+			local texture = getActionTexture(button)
+			if texture then
+				icon:SetTexture(texture)
+				icon:Show()
+			else
+				icon:Hide()
 			end
 		end
-	end
-	K:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", vehicleFix)
-	K:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR", vehicleFix)
+	end)
 end

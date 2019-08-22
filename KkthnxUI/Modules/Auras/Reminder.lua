@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Auras")
 
 local _G = _G
@@ -81,6 +81,7 @@ function Module:Reminder_Create(cfg)
 	frame.Icon:SetAllPoints()
 	frame.Icon:SetTexCoord(unpack(K.TexCoords))
 	frame:CreateBorder()
+	frame:CreateInnerShadow()
 
 	for spell in pairs(cfg.spells) do
 		frame.Icon:SetTexture(GetSpellTexture(spell))
@@ -89,7 +90,7 @@ function Module:Reminder_Create(cfg)
 
 	frame.text = frame:CreateFontString(nil, "OVERLAY")
 	frame.text:SetFontObject(K.GetFont(C["UIFonts"].AuraFonts))
-	frame.text:SetText(_G.MISS)
+	frame.text:SetText(L["Lack"])
 	frame.text:SetPoint("TOP", frame, "TOP", 1, 15)
 
 	frame:Hide()
@@ -135,11 +136,11 @@ function Module:CreateReminder()
 	parentFrame:SetPoint("CENTER", -220, 130)
 	parentFrame:SetSize(iconSize, iconSize)
 
-	K:RegisterEvent("UNIT_AURA", Module.Reminder_OnEvent, "player")
-	K:RegisterEvent("UNIT_EXITED_VEHICLE", Module.Reminder_OnEvent)
-	K:RegisterEvent("UNIT_ENTERED_VEHICLE", Module.Reminder_OnEvent)
-	K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.Reminder_OnEvent)
-	K:RegisterEvent("PLAYER_REGEN_DISABLED", Module.Reminder_OnEvent)
-	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", Module.Reminder_OnEvent)
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.Reminder_OnEvent)
+	self:RegisterEvent("UNIT_AURA", "Reminder_OnEvent", "player")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE", "Reminder_OnEvent")
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE", "Reminder_OnEvent")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "Reminder_OnEvent")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "Reminder_OnEvent")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "Reminder_OnEvent")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "Reminder_OnEvent")
 end

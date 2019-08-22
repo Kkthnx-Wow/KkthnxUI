@@ -1,8 +1,9 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
+local FilterConfig = K.ActionBars.leaveVehicle
 
 local _G = _G
-local table_insert = table.insert
+local table_insert = _G.table.insert
 
 local CanExitVehicle = _G.CanExitVehicle
 local CreateFrame = _G.CreateFrame
@@ -15,26 +16,20 @@ local UnitOnTaxi = _G.UnitOnTaxi
 local VehicleExit = _G.VehicleExit
 
 function Module:CreateLeaveVehicle()
-	local padding, margin, size = 0, 5, 34
+	local padding, margin = 0, 5
 	local num = 1
 	local buttonList = {}
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KkthnxUI_LeaveVehicleBar", UIParent, "SecureHandlerStateTemplate")
-	frame:SetWidth(num * size + (num - 1) * margin + 2 * padding)
-	frame:SetHeight(size + 2 * padding)
-	if C["ActionBar"].Style.Value == 3 then
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 130}
-	else
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 320, 100}
-	end
-	frame:SetScale(1)
+	frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
+	frame:SetHeight(FilterConfig.size + 2 * padding)
+	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 260, 4}
 
 	-- The Button
 	local button = CreateFrame("CheckButton", "KkthnxUI_LeaveVehicleButton", frame, "ActionButtonTemplate, SecureHandlerClickTemplate")
 	table_insert(buttonList, button) -- Add The Button Object To The List
-	--button:SetFrameStrata("HIGH")
-	button:SetSize(size, size)
+	button:SetSize(FilterConfig.size, FilterConfig.size)
 	button:SetPoint("BOTTOMLEFT", frame, padding, padding)
 	button:StyleButton()
 	button:RegisterForClicks("AnyUp")
@@ -42,8 +37,8 @@ function Module:CreateLeaveVehicle()
 	button.icon:SetTexCoord(.216, .784, .216, .784)
 	button:SetNormalTexture(nil)
 	button:GetPushedTexture():SetTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
-	--button:CreateBorder()
 	K.CreateBorder(button)
+	button:CreateInnerShadow()
 
 	local function onClick(self)
 		if UnitOnTaxi("player") then
@@ -68,6 +63,12 @@ function Module:CreateLeaveVehicle()
 	end
 
 	-- Create Drag Frame And Drag Functionality
-	frame:SetPoint(frame.Pos[1], frame.Pos[2], frame.Pos[3], frame.Pos[4], frame.Pos[5])
-	K.Mover(frame, "Vehicle", "Vehicle", frame.Pos)
+	if K.ActionBars.userPlaced then
+		K.Mover(frame, "LeaveVehicle", "LeaveVehicle", frame.Pos)
+	end
+
+	-- create the mouseover functionality
+	if FilterConfig.fader then
+		K.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
+	end
 end

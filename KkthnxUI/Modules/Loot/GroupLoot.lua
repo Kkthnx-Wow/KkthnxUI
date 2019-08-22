@@ -1,12 +1,12 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("GroupLoot", "AceEvent-3.0", "AceTimer-3.0")
+local Module = K:GetModule("Loot")
 K.GroupLoot = Module
 
 local _G = _G
-local ipairs = ipairs
-local next = next
-local pairs = pairs
-local tonumber = tonumber
+local ipairs = _G.ipairs
+local next = _G.next
+local pairs = _G.pairs
+local tonumber = _G.tonumber
 
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local C_LootHistoryGetItem = _G.C_LootHistory.GetItem
@@ -259,7 +259,7 @@ local function GetFrame()
 	return f
 end
 
-function Module:START_LOOT_ROLL(_, rollID, time)
+function Module.START_LOOT_ROLL(_, rollID, time)
 	if cancelled_rolls[rollID] then
 		return
 	end
@@ -352,7 +352,7 @@ function Module:START_LOOT_ROLL(_, rollID, time)
 	end
 end
 
-function Module:LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
+function Module.LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
 	local rollID = C_LootHistoryGetItem(itemIdx)
 	local name, class, rollType = C_LootHistoryGetPlayerInfo(itemIdx, playerIdx)
 
@@ -377,7 +377,7 @@ function Module:LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
 	end
 end
 
-function Module:LOOT_HISTORY_ROLL_COMPLETE()
+function Module.LOOT_HISTORY_ROLL_COMPLETE()
 	-- Remove completed rolls from cache
 	for rollID in pairs(completedRolls) do
 		cachedRolls[rollID] = nil
@@ -386,51 +386,16 @@ function Module:LOOT_HISTORY_ROLL_COMPLETE()
 end
 Module.LOOT_ROLLS_COMPLETE = Module.LOOT_HISTORY_ROLL_COMPLETE
 
-function Module:OnEnable()
+function Module:CreateGroupLoot()
 	if not C["Loot"].GroupLoot then
 		return
 	end
 
-	self:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED")
-	self:RegisterEvent("LOOT_HISTORY_ROLL_COMPLETE")
-	self:RegisterEvent("START_LOOT_ROLL")
-	self:RegisterEvent("LOOT_ROLLS_COMPLETE")
+	K:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.LOOT_HISTORY_ROLL_CHANGED)
+	K:RegisterEvent("LOOT_HISTORY_ROLL_COMPLETE", self.LOOT_HISTORY_ROLL_COMPLETE)
+	K:RegisterEvent("START_LOOT_ROLL", self.START_LOOT_ROLL)
+	K:RegisterEvent("LOOT_ROLLS_COMPLETE", self.LOOT_ROLLS_COMPLETE)
 
 	UIParent:UnregisterEvent("START_LOOT_ROLL")
 	UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
 end
-
-function K.TestRoll()
-	local f = GetFrame()
-	local items = {32837, 34196, 33820, 84004}
-
-	if f:IsShown() then
-		f:Hide()
-	else
-		local item = items[math.random(1, #items)]
-		local _, _, quality, _, _, _, _, _, _, texture = GetItemInfo(item)
-		local r, g, b = GetItemQualityColor(quality or 1)
-
-		f.button.icon:SetTexture(texture)
-		f.button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-
-		f.fsloot:SetText(GetItemInfo(item))
-		f.fsloot:SetVertexColor(r, g, b)
-
-		f.status:SetMinMaxValues(0, 100)
-		f.status:SetValue(math.random(50, 90))
-		f.status:SetStatusBarColor(r, g, b, 0.7)
-
-		f:SetBackdropBorderColor(r, g, b, 0.7)
-		f.button:SetBackdropBorderColor(r, g, b, 0.7)
-
-		f.need:SetText(0)
-		f.greed:SetText(0)
-		f.pass:SetText(0)
-		f.disenchant:SetText(0)
-
-		f.button.link = "item:" .. item .. ":0:0:0:0:0:0:0"
-		f:Show()
-	end
-end
-K:RegisterChatCommand("testroll", K.TestRoll)

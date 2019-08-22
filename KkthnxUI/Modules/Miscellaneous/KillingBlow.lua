@@ -1,15 +1,11 @@
-local K, C, L = unpack(select(2, ...))
-if C["Misc"].KillingBlow ~= true then
-	return
-end
-
-local Module = K:NewModule("KillingBlow", "AceEvent-3.0")
+local K, C = unpack(select(2, ...))
+local Module = K:GetModule("Miscellaneous")
 
 -- Sourced: ElvUI Shadow & Light (Darth_Predator, Repooc)
 
 local _G = _G
-local bit_band = bit.band
-local table_wipe = table.wipe
+local bit_band = _G.bit.band
+local table_wipe = _G.table.wipe
 
 local BossBanner_BeginAnims = _G.BossBanner_BeginAnims
 local COMBATLOG_OBJECT_TYPE_PLAYER = _G.COMBATLOG_OBJECT_TYPE_PLAYER
@@ -19,8 +15,7 @@ local SOUNDKIT = _G.SOUNDKIT
 local hooksecurefunc = _G.hooksecurefunc
 
 local BG_Opponents = {}
-
-function Module:UPDATE_BATTLEFIELD_SCORE()
+function Module.UPDATE_BATTLEFIELD_SCORE()
 	table_wipe(BG_Opponents)
 	for index = 1, _G.GetNumBattlefieldScores() do
 		local name, _, _, _, _, faction, _, _, classToken = _G.GetBattlefieldScore(index)
@@ -30,7 +25,7 @@ function Module:UPDATE_BATTLEFIELD_SCORE()
 	end
 end
 
-function Module:COMBAT_LOG_EVENT_UNFILTERED()
+function Module.COMBAT_LOG_EVENT_UNFILTERED()
 	local _, subevent, _, _, Caster, _, _, _, TargetName, TargetFlags = CombatLogGetCurrentEventInfo()
 
 	if subevent == "PARTY_KILL" then
@@ -45,7 +40,11 @@ function Module:COMBAT_LOG_EVENT_UNFILTERED()
 	end
 end
 
-function Module:OnEnable()
+function Module:CreateKillingBlow()
+	if C["Misc"].KillingBlow ~= true then
+		return
+	end
+
 	hooksecurefunc(_G["BossBanner"], "PlayBanner", function(self, data)
 		if (data) then
 			if (data.mode == "PVPKILL") then
@@ -59,6 +58,6 @@ function Module:OnEnable()
 		end
 	end)
 
-	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	self:RegisterEvent("UPDATE_BATTLEFIELD_SCORE")
+	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self.COMBAT_LOG_EVENT_UNFILTERED)
+	K:RegisterEvent("UPDATE_BATTLEFIELD_SCORE", self.UPDATE_BATTLEFIELD_SCORE)
 end

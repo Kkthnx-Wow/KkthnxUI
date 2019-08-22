@@ -25,6 +25,7 @@ local function LoadSpellBookSkin()
 		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		icon:SetAllPoints()
 		button:CreateBorder()
+		button:CreateInnerShadow()
 
 		if button.SpellHighlightTexture then
 			K.Flash(button.SpellHighlightTexture, 1, true)
@@ -135,4 +136,4 @@ local function LoadSpellBookSkin()
 	end
 end
 
-table_insert(Module.SkinFuncs["KkthnxUI"], LoadSpellBookSkin)
+table_insert(Module.NewSkin["KkthnxUI"], LoadSpellBookSkin)

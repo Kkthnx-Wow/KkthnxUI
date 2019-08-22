@@ -1,18 +1,19 @@
 local K, C = unpack(select(2, ...))
 
 local _G = _G
-local string_gsub = string.gsub
-local string_sub = string.sub
-local string_byte = string.byte
+local string_byte = _G.string.byte
+local string_gsub = _G.string.gsub
+local string_sub = _G.string.sub
 
+local CreateFrame = _G.CreateFrame
+local GetActionText = _G.GetActionText
 local GetFlyoutID = _G.GetFlyoutID
 local GetFlyoutInfo = _G.GetFlyoutInfo
 local GetNumFlyouts = _G.GetNumFlyouts
-local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
 local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
 local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
-local GetActionText = _G.GetActionText
+local hooksecurefunc = _G.hooksecurefunc
 
 local FlyoutButtons = 0
 local function StyleNormalButton(self)
@@ -62,23 +63,15 @@ local function StyleNormalButton(self)
 			HotKey.SetPoint = K.Noop
 		else
 			HotKey:SetText("")
-			HotKey:SetAlpha(0)
+			HotKey:Kill()
 		end
 
 		if (Name:match("Extra")) then
 			Button.Pushed = true
 		end
 
-		if not InCombatLockdown() and C["ActionBar"].Enable then
-			if not self.SetButtonSize then
-				if self:GetHeight() ~= C["ActionBar"].ButtonSize and not Name:match("Extra") then
-					self:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
-					self.SetButtonSize = true
-				end
-			end
-		end
-
 		Button:CreateBorder()
+		Button:CreateInnerShadow()
 
 		Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		Icon:SetDrawLayer("BACKGROUND", 7)
@@ -128,12 +121,12 @@ local function StyleNormalButton(self)
 	end
 end
 
-local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
+local function SkinPetAndShiftButton(Normal, Button, Icon, Name, Pet)
 	if Button.IsSkinned then
 		return
 	end
 
-	local PetSize = C["ActionBar"].ButtonSize
+	local PetSize = C["ActionBar"].StancePetSize
 	local HotKey = _G[Button:GetName().."HotKey"]
 	local Flash = _G[Name.."Flash"]
 	local Font = K.GetFont(C["UIFonts"].ActionBarsFonts)
@@ -147,6 +140,7 @@ local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
 
 	Button:SetSize(PetSize, PetSize)
 	Button:CreateBorder()
+	Button:CreateInnerShadow()
 
 	if (C["ActionBar"].Hotkey) then
 		HotKey:SetFontObject(Font)
@@ -187,25 +181,25 @@ local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
 	Button.IsSkinned = true
 end
 
-function K.StyleShift()
+local function SkinStanceButtons()
 	for i = 1, NUM_STANCE_SLOTS do
 		local Name = "StanceButton"..i
 		local Button = _G[Name]
 		local Icon = _G[Name.."Icon"]
 		local Normal = _G[Name.."NormalTexture"]
 
-		StyleSmallButton(Normal, Button, Icon, Name, false)
+		SkinPetAndShiftButton(Normal, Button, Icon, Name, false)
 	end
 end
 
-function K.StylePet()
+local function SkinPetButtons()
 	for i = 1, NUM_PET_ACTION_SLOTS do
 		local Name = "PetActionButton"..i
 		local Button = _G[Name]
 		local Icon = _G[Name.."Icon"]
 		local Normal = _G[Name.."NormalTexture2"]
 
-		StyleSmallButton(Normal, Button, Icon, Name, true)
+		SkinPetAndShiftButton(Normal, Button, Icon, Name, true)
 	end
 end
 
@@ -283,8 +277,8 @@ local function SetupFlyoutButton()
 				Button:SetChecked(nil)
 			end
 
-			if Button:GetHeight() ~= C["ActionBar"].ButtonSize and not InCombatLockdown() then
-				Button:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
+			if Button:GetHeight() ~= C["ActionBar"].DefaultButtonSize and not InCombatLockdown() then
+				Button:SetSize(C["ActionBar"].DefaultButtonSize, C["ActionBar"].DefaultButtonSize)
 			end
 
 			Button.IsSkinned = true
@@ -321,20 +315,25 @@ local function StyleFlyoutButton(self)
 	SetupFlyoutButton()
 end
 
-local applyPetStanceStyle = CreateFrame("Frame")
-applyPetStanceStyle:RegisterEvent("PLAYER_LOGIN")
-applyPetStanceStyle:SetScript("OnEvent", function()
-	for i = 1, NUM_PET_ACTION_SLOTS do
-		K.StylePet(_G["PetActionButton"..i])
-	end
-
-	for i = 1, NUM_STANCE_SLOTS do
-		K.StyleShift(_G["StanceButton"..i])
-	end
+local CreatePetShiftSkin = CreateFrame("Frame")
+CreatePetShiftSkin:RegisterEvent("PLAYER_LOGIN")
+CreatePetShiftSkin:SetScript("OnEvent", function()
+	SkinStanceButtons()
+	SkinPetButtons()
 end)
+
+local function HideHighlightButton(self)
+	if self.overlay then
+		self.overlay:Hide()
+		ActionButton_HideOverlayGlow(self)
+	end
+end
 
 hooksecurefunc("ActionButton_Update", StyleNormalButton)
 hooksecurefunc("ActionButton_UpdateFlyout", StyleFlyoutButton)
 hooksecurefunc("SpellButton_OnClick", StyleFlyoutButton)
 hooksecurefunc("ActionButton_UpdateHotkeys", K.UpdateHotkey)
 hooksecurefunc("PetActionButton_SetHotkeys", K.UpdateHotkey)
+if C["ActionBar"].HideHighlight then
+	hooksecurefunc("ActionButton_ShowOverlayGlow", HideHighlightButton)
+end

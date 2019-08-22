@@ -6,7 +6,7 @@ local table_insert = table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
 
-local function SkinObjectiveTracker()
+local function ReskinObjectiveTracker()
 	local ObjectiveTrackerFrame = _G["ObjectiveTrackerFrame"]
 	local TrackerTexture = K.GetTexture(C["UITextures"].QuestTrackerTexture)
 	local TrackerFont = K.GetFont(C["UIFonts"].QuestTrackerFonts)
@@ -25,6 +25,7 @@ local function SkinObjectiveTracker()
 
 					local text = modules.Header.Text
 					text:SetFontObject(TrackerFont)
+					text:SetFont(select(1, text:GetFont()), 15, select(3, text:GetFont()))
 					text:SetParent(header)
 					text:SetTextColor(K.Color.r, K.Color.g, K.Color.b, 1)
 
@@ -63,14 +64,6 @@ local function SkinObjectiveTracker()
 		end
 	end)
 
-	local function ColorProgressBars(self, value)
-		if not (self.Bar and value) then
-			return
-		end
-
-		Module:StatusBarColorGradient(self.Bar, value, 100)
-	end
-
 	local function SkinItemButton(_, block)
 		local item = block.itemButton
 		if item and not item.skinned then
@@ -96,6 +89,7 @@ local function SkinObjectiveTracker()
 			return
 		end
 
+		local r, g, b = K.r, K.g, K.b
 		local icon = bar.Icon
 		local label = bar.Label
 		if not progressBar.isSkinned then
@@ -113,12 +107,14 @@ local function SkinObjectiveTracker()
 			bar:StripTextures()
 			bar:CreateShadow(true)
 			bar:SetStatusBarTexture(TrackerTexture)
+			bar:GetStatusBarTexture():SetGradient("VERTICAL", r * 0.9, g * 0.9, b * 0.9, r * 0.4, g * 0.4, b * 0.4)
 
 			bar.spark = bar:CreateTexture(nil, "OVERLAY")
 			bar.spark:SetTexture(C["Media"].Spark_16)
-			bar.spark:SetHeight(18)
+			bar.spark:SetHeight(bar:GetHeight() or 18)
 			bar.spark:SetBlendMode("ADD")
 			bar.spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
+			bar.spark:SetAlpha(0.5)
 
 			if label then
 				label:ClearAllPoints()
@@ -128,26 +124,21 @@ local function SkinObjectiveTracker()
 
 			if icon then
 				icon:ClearAllPoints()
+				icon:SetSize(18, 18)
 				icon:SetPoint("LEFT", bar, "RIGHT", 6, 0)
 				icon:SetMask("")
 				icon:SetTexCoord(unpack(K.TexCoords))
 
-				if not progressBar.backdrop then
-					--progressBar.backdrop = CreateFrame("Frame")
-					--progressBar.backdrop:SetFrameStrata("BACKGROUND")
-					--progressBar.backdrop:SetPoint("TOPLEFT", icon, "TOPLEFT")
-					--progressBar.backdrop:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT")
-					--progressBar.backdrop:CreateShadow(true)
-					--progressBar.backdrop:SetShown(icon:IsShown())
+				if not progressBar.Shadow then
+					progressBar:CreateShadow(true, icon)
+					progressBar.Shadow:SetShown(icon:IsShown())
 				end
 			end
 
 			_G.BonusObjectiveTrackerProgressBar_PlayFlareAnim = K.Noop
 			progressBar.isSkinned = true
-
-			ColorProgressBars(progressBar, bar:GetValue())
-		elseif icon and progressBar.backdrop then
-			--progressBar.backdrop:SetShown(icon:IsShown())
+		elseif icon and progressBar.Shadow then
+			progressBar.Shadow:SetShown(icon:IsShown())
 		end
 	end
 
@@ -205,21 +196,54 @@ local function SkinObjectiveTracker()
 		end
 	end
 
-	hooksecurefunc("BonusObjectiveTrackerProgressBar_SetValue", ColorProgressBars)				--[Color]: Bonus Objective Progress Bar
-	hooksecurefunc("ObjectiveTrackerProgressBar_SetValue", ColorProgressBars)					--[Color]: Quest Progress Bar
-	hooksecurefunc("ScenarioTrackerProgressBar_SetValue", ColorProgressBars)					--[Color]: Scenario Progress Bar
-	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", PositionFindGroupButton)	--[Move]: The eye & quest item to the left of the eye
-	hooksecurefunc("ObjectiveTracker_Update", SkinOjectiveTrackerHeaders)						--[Skin]: Module Headers
-	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", SkinFindGroupButton)				--[Skin]: The eye
-	hooksecurefunc(_G.BONUS_OBJECTIVE_TRACKER_MODULE,"AddProgressBar", SkinProgressBars)		--[Skin]: Bonus Objective Progress Bar
-	hooksecurefunc(_G.WORLD_QUEST_TRACKER_MODULE,"AddProgressBar", SkinProgressBars)			--[Skin]: World Quest Progress Bar
-	hooksecurefunc(_G.DEFAULT_OBJECTIVE_TRACKER_MODULE,"AddProgressBar", SkinProgressBars)	--[Skin]: Quest Progress Bar
-	hooksecurefunc(_G.SCENARIO_TRACKER_MODULE,"AddProgressBar",SkinProgressBars)			--[Skin]: Scenario Progress Bar
-	hooksecurefunc(_G.QUEST_TRACKER_MODULE,"AddTimerBar", SkinTimerBars)						--[Skin]: Quest Timer Bar
-	hooksecurefunc(_G.SCENARIO_TRACKER_MODULE,"AddTimerBar", SkinTimerBars)					--[Skin]: Scenario Timer Bar
-	hooksecurefunc(_G.ACHIEVEMENT_TRACKER_MODULE,"AddTimerBar", SkinTimerBars)				--[Skin]: Achievement Timer Bar
-	hooksecurefunc(_G.QUEST_TRACKER_MODULE, "SetBlockHeader", SkinItemButton)						--[Skin]: Quest Item Buttons
-	hooksecurefunc(_G.WORLD_QUEST_TRACKER_MODULE, "AddObjective", SkinItemButton)					--[Skin]: World Quest Item Buttons
+	local function QuestHook(id)
+		local questLogIndex = _G.GetQuestLogIndexByID(id)
+		if _G.IsControlKeyDown() and _G.CanAbandonQuest(id) then
+			_G.QuestMapQuestOptions_AbandonQuest(id)
+		elseif _G.IsAltKeyDown() and _G.GetQuestLogPushable(questLogIndex) then
+			_G.QuestMapQuestOptions_ShareQuest(id)
+		end
+	end
+
+	-- Show quest color and level
+	local function Showlevel(_, _, _, title, level, _, isHeader, _, isComplete, frequency, questID)
+		if _G.ENABLE_COLORBLIND_MODE == "1" then
+			return
+		end
+
+		for button in pairs(_G.QuestScrollFrame.titleFramePool.activeObjects) do
+			if title and not isHeader and button.questID == questID then
+				local title = "["..level.."] "..title
+				if isComplete then
+					title = "|cffff78ff"..title
+				elseif frequency == _G.LE_QUEST_FREQUENCY_DAILY then
+					title = "|cff3399ff"..title
+				end
+
+				button.Text:SetText(title)
+				button.Text:SetPoint("TOPLEFT", 24, -5)
+				button.Text:SetWidth(205)
+				button.Text:SetWordWrap(false)
+				button.Check:SetPoint("LEFT", button.Text, button.Text:GetWrappedWidth(), 0)
+			end
+		end
+	end
+
+	hooksecurefunc(_G.QUEST_TRACKER_MODULE, "OnBlockHeaderClick", function(_, block) QuestHook(block.id) end)
+	hooksecurefunc("QuestMapLogTitleButton_OnClick", function(self) QuestHook(self.questID) end)
+	hooksecurefunc("QuestLogQuests_AddQuestButton", Showlevel)
+	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", PositionFindGroupButton)
+	hooksecurefunc("ObjectiveTracker_Update", SkinOjectiveTrackerHeaders)
+	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", SkinFindGroupButton)
+	hooksecurefunc(_G.BONUS_OBJECTIVE_TRACKER_MODULE, "AddProgressBar", SkinProgressBars)
+	hooksecurefunc(_G.WORLD_QUEST_TRACKER_MODULE, "AddProgressBar", SkinProgressBars)
+	hooksecurefunc(_G.DEFAULT_OBJECTIVE_TRACKER_MODULE, "AddProgressBar", SkinProgressBars)
+	hooksecurefunc(_G.SCENARIO_TRACKER_MODULE, "AddProgressBar", SkinProgressBars)
+	hooksecurefunc(_G.QUEST_TRACKER_MODULE, "AddTimerBar", SkinTimerBars)
+	hooksecurefunc(_G.SCENARIO_TRACKER_MODULE, "AddTimerBar", SkinTimerBars)
+	hooksecurefunc(_G.ACHIEVEMENT_TRACKER_MODULE, "AddTimerBar", SkinTimerBars)
+	hooksecurefunc(_G.QUEST_TRACKER_MODULE, "SetBlockHeader", SkinItemButton)
+	hooksecurefunc(_G.WORLD_QUEST_TRACKER_MODULE, "AddObjective", SkinItemButton)
 end
 
-table_insert(Module.SkinFuncs["KkthnxUI"], SkinObjectiveTracker)
+table_insert(Module.NewSkin["KkthnxUI"], ReskinObjectiveTracker)

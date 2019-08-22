@@ -3,6 +3,7 @@
     <!-- Load_AddOnData -->
     <Script file="AddOnData.lua"/>
 
+    <Script file="CursorTrail.lua"/>
     <Script file="!BugGrabber.lua"/>
     <Script file="Bartender4.lua"/>
     <Script file="BigWigs.lua"/>
@@ -12,5 +13,6 @@
     <Script file="Pawn.lua"/>
     <Script file="Recount.lua"/>
     <Script file="Skada.lua"/>
-	<Script file="Skinner.lua"/>
+    <Script file="Skinner.lua"/>
+    <Script file="KkthnxUI.lua"/>
 </Ui>

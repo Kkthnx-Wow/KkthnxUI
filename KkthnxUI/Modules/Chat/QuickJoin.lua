@@ -1,6 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("SocialQueue", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
-if C["Chat"].Enable ~= true or C["Chat"].QuickJoin ~= true then return end
+local Module = K:GetModule("Chat")
 
 -- Sourced: ElvUI (Simpy and Merathilis)
 
@@ -38,7 +37,7 @@ function Module:SocialQueueIsLeader(playerName, leaderName)
 					if (gameClient == BNET_CLIENT_WOW) and (accountName == playerName) then
 						playerName = gameCharacterName
 						if realmName ~= K.Realm then
-							playerName = string_format("%s-%s", playerName, gsub(realmName,"[%s%-]",""))
+							playerName = string_formatformat("%s-%s", playerName, gsub(realmName,"[%s%-]",""))
 						end
 						if leaderName == playerName then
 							return true
@@ -83,7 +82,7 @@ function Module:SocialQueueMessage(guid, message)
 	K.Print(string_format("|Hsqu:%s|h%s|h", guid, strtrim(message)))
 end
 
-function Module:SocialQueueEvent(event, guid, numAddedItems)
+function Module.SocialQueueEvent(event, guid, numAddedItems)
 	if not C["Chat"].QuickJoin == true then
 		return
 	end
@@ -117,7 +116,7 @@ function Module:SocialQueueEvent(event, guid, numAddedItems)
 			searchResultInfo = C_LFGList_GetSearchResultInfo(firstQueue.queueData.lfgListID)
 			if searchResultInfo then
 				activityID, name, comment, leaderName = searchResultInfo.activityID, searchResultInfo.name, searchResultInfo.comment, searchResultInfo.leaderName
-				isLeader = self:SocialQueueIsLeader(playerName, leaderName)
+				isLeader = Module:SocialQueueIsLeader(playerName, leaderName)
 			end
 		end
 
@@ -126,9 +125,9 @@ function Module:SocialQueueEvent(event, guid, numAddedItems)
 		end
 
 		if name then
-			self:SocialQueueMessage(guid, string_format("%s %s: [%s] |cff00CCFF%s|r", coloredName, (isLeader and "is looking for members") or "joined a group", fullName or UNKNOWN, name))
+			Module:SocialQueueMessage(guid, string_format("%s %s: [%s] |cff00CCFF%s|r", coloredName, (isLeader and "is looking for members") or "joined a group", fullName or UNKNOWN, name))
 		else
-			self:SocialQueueMessage(guid, string_format("%s %s: |cff00CCFF%s|r", coloredName, (isLeader and "is looking for members") or "joined a group", fullName or UNKNOWN))
+			Module:SocialQueueMessage(guid, string_format("%s %s: |cff00CCFF%s|r", coloredName, (isLeader and "is looking for members") or "joined a group", fullName or UNKNOWN))
 		end
 	elseif firstQueue then
 		local output, outputCount, queueCount, queueName = "", "", 0
@@ -149,15 +148,15 @@ function Module:SocialQueueEvent(event, guid, numAddedItems)
 			if queueCount > 0 then
 				outputCount = string_format(LFG_LIST_AND_MORE, queueCount)
 			end
-			self:SocialQueueMessage(guid, string_format("%s %s: |cff00CCFF%s|r %s", coloredName, SOCIAL_QUEUE_QUEUED_FOR, output, outputCount))
+			Module:SocialQueueMessage(guid, string_format("%s %s: |cff00CCFF%s|r %s", coloredName, SOCIAL_QUEUE_QUEUED_FOR, output, outputCount))
 		end
 	end
 end
 
-function Module:OnEnable()
-	self:RegisterEvent("SOCIAL_QUEUE_UPDATE", "SocialQueueEvent")
-end
+function Module:CreateQuickJoin()
+	if C["Chat"].Enable ~= true or C["Chat"].QuickJoin ~= true then
+		return
+	end
 
-function Module:OnDisable()
-	self:UnregisterEvent("SOCIAL_QUEUE_UPDATE")
+	K:RegisterEvent("SOCIAL_QUEUE_UPDATE", self.SocialQueueEvent)
 end

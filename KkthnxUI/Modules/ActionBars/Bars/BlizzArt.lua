@@ -1,5 +1,4 @@
 local K, C = unpack(select(2, ...))
-
 local Module = K:GetModule("ActionBar")
 
 local _G = _G

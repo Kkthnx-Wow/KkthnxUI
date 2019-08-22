@@ -1,5 +1,5 @@
 local K = unpack(select(2, ...))
-local Module = K:NewModule("UIWidgets")
+local Module = K:GetModule("Blizzard")
 
 local _G = _G
 
@@ -25,7 +25,7 @@ local function belowMinimapPosition(self, _, b)
 	end
 end
 
-local function UIWidgets()
+function Module:CreateUIWidgets()
 	local topCenterContainer = _G.UIWidgetTopCenterContainerFrame
 	local belowMiniMapcontainer = _G.UIWidgetBelowMinimapContainerFrame
 
@@ -48,8 +48,4 @@ local function UIWidgets()
 
 	hooksecurefunc(topCenterContainer, "SetPoint", topCenterPosition)
 	hooksecurefunc(belowMiniMapcontainer, "SetPoint", belowMinimapPosition)
-end
-
-function Module:OnEnable()
-	UIWidgets()
 end

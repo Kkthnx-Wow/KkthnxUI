@@ -1,17 +1,23 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
-local function SkinArcheologyDigsite()
-	ArcheologyDigsiteProgressBar:StripTextures()
-	ArcheologyDigsiteProgressBar.FillBar:StripTextures()
-	ArcheologyDigsiteProgressBar.FillBar:SetStatusBarTexture(C["Media"].Texture)
-	ArcheologyDigsiteProgressBar.FillBar:SetStatusBarColor(0.7, 0.2, 0)
-    ArcheologyDigsiteProgressBar.FillBar:SetHeight(12)
+local _G = _G
 
-	ArcheologyDigsiteProgressBar.FillBar:CreateBorder()
+local function ReskinArchaeologyUI()
+	_G.ArcheologyDigsiteProgressBar:StripTextures()
 
-    ArcheologyDigsiteProgressBar.BarTitle:SetPoint("BOTTOM", ArcheologyDigsiteProgressBar, "TOP", 0, -2)
-	ArcheologyDigsiteProgressBar.BarTitle:FontTemplate(nil, nil, 'OUTLINE')
+	_G.ArcheologyDigsiteProgressBar.FillBar:SetFrameLevel(_G.ArcheologyDigsiteProgressBar:GetFrameLevel() + 1)
+	_G.ArcheologyDigsiteProgressBar.FillBar:StripTextures()
+	_G.ArcheologyDigsiteProgressBar.FillBar:CreateBorder()
+	_G.ArcheologyDigsiteProgressBar.FillBar:SetStatusBarTexture(C["Media"].Texture)
+	_G.ArcheologyDigsiteProgressBar.FillBar:SetStatusBarColor(0.7, 0.2, 0)
+
+	_G.ArcheologyDigsiteProgressBar.BarTitle:FontTemplate(nil, nil, "OUTLINE")
+	_G.ArcheologyDigsiteProgressBar:ClearAllPoints()
+	_G.ArcheologyDigsiteProgressBar:SetPoint("TOP", _G.UIParent, "TOP", 0, -400)
+
+	_G.UIPARENT_MANAGED_FRAME_POSITIONS.ArcheologyDigsiteProgressBar = nil
+	K.Mover(_G.ArcheologyDigsiteProgressBar, "DigSiteProgressBarMover", "DigSiteProgressBarMover", {"TOP", _G.UIParent, "TOP", 0, -400})
 end
 
-Module.SkinFuncs["Blizzard_ArchaeologyUI"] = SkinArcheologyDigsite
+Module.NewSkin["Blizzard_ArchaeologyUI"] = ReskinArchaeologyUI

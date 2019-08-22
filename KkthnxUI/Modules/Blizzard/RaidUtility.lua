@@ -1,10 +1,10 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("RaidUtility", "AceEvent-3.0")
+local Module = K:GetModule("Blizzard")
 
 local _G = _G
-local find = string.find
-local ipairs, pairs, next = ipairs, pairs, next
-local tinsert, twipe, tsort = table.insert, table.wipe, table.sort
+local find = _G.string.find
+local ipairs, pairs, next = _G.ipairs, _G.pairs, _G.next
+local tinsert, twipe, tsort = _G.table.insert, _G.table.wipe, _G.table.sort
 
 local CreateFrame = _G.CreateFrame
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
@@ -82,9 +82,9 @@ function Module:CreateUtilButton(name, parent, template, width, height, point, r
 	end
 end
 
-function Module:ToggleRaidUtil(event)
+function Module.ToggleRaidUtil(event)
 	if InCombatLockdown() then
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", "ToggleRaidUtil")
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.ToggleRaidUtil)
 		return
 	end
 
@@ -102,7 +102,7 @@ function Module:ToggleRaidUtil(event)
 	end
 
 	if event == "PLAYER_REGEN_ENABLED" then
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "ToggleRaidUtil")
+		K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.ToggleRaidUtil)
 	end
 end
 
@@ -199,7 +199,7 @@ local function UpdateIcons(self)
 	end
 end
 
-function Module:OnInitialize()
+function Module:CreateRaidUtility()
 	if C["Raid"].RaidUtility == false then
 		return
 	end
@@ -326,7 +326,7 @@ function Module:OnInitialize()
 	end
 
 	-- Disband Raid button
-	self:CreateUtilButton("DisbandRaidButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RaidUtilityPanel:GetWidth() * 0.8, 18, "TOP", RaidUtilityPanel, "TOP", 0, -5, L["Blizzard"].Disband_Group, nil )
+	self:CreateUtilButton("DisbandRaidButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RaidUtilityPanel:GetWidth() * 0.8, 18, "TOP", RaidUtilityPanel, "TOP", 0, -5, L["Disband Group"], nil )
 	DisbandRaidButton:SetScript("OnMouseUp", function()
 		if CheckRaidStatus() then
 			K.StaticPopup_Show("DISBAND_RAID")
@@ -350,7 +350,7 @@ function Module:OnInitialize()
 	end)
 
 	-- Raid Control Panel
-	self:CreateUtilButton("RaidControlButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RoleCheckButton:GetWidth(), 18, "TOPLEFT", ReadyCheckButton, "BOTTOMLEFT", 0, -6, L["Blizzard"].Raid_Menu, nil )
+	self:CreateUtilButton("RaidControlButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RoleCheckButton:GetWidth(), 18, "TOPLEFT", ReadyCheckButton, "BOTTOMLEFT", 0, -6, L["Raid Menu"], nil )
 	RaidControlButton:SetScript("OnMouseUp", function()
 		ToggleFriendsFrame(3)
 	end)
@@ -407,6 +407,6 @@ function Module:OnInitialize()
 	end
 
 	-- Automatically show/hide the frame if we have RaidLeader or RaidOfficer
-	self:RegisterEvent("GROUP_ROSTER_UPDATE", "ToggleRaidUtil")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ToggleRaidUtil")
+	K:RegisterEvent("GROUP_ROSTER_UPDATE", self.ToggleRaidUtil)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", self.ToggleRaidUtil)
 end

@@ -1,13 +1,38 @@
-local K = unpack(select(2, ...))
-local Module = K:NewModule("ErrorFilter", "AceEvent-3.0")
+local K, C = unpack(select(2, ...))
+local Module = K:GetModule("Blizzard")
 
--- Set Messages To Blacklist.
-Module.Filter = {
+local ERR_ABILITY_COOLDOWN = _G.ERR_ABILITY_COOLDOWN
+local ERR_ATTACK_MOUNTED = _G.ERR_ATTACK_MOUNTED
+local ERR_ITEM_COOLDOWN = _G.ERR_ITEM_COOLDOWN
+local ERR_NO_ATTACK_TARGET = _G.ERR_NO_ATTACK_TARGET
+local ERR_OUT_OF_ARCANE_CHARGES = _G.ERR_OUT_OF_ARCANE_CHARGES
+local ERR_OUT_OF_CHI = _G.ERR_OUT_OF_CHI
+local ERR_OUT_OF_COMBO_POINTS = _G.ERR_OUT_OF_COMBO_POINTS
+local ERR_OUT_OF_ENERGY = _G.ERR_OUT_OF_ENERGY
+local ERR_OUT_OF_FOCUS = _G.ERR_OUT_OF_FOCUS
+local ERR_OUT_OF_HEALTH = _G.ERR_OUT_OF_HEALTH
+local ERR_OUT_OF_HOLY_POWER = _G.ERR_OUT_OF_HOLY_POWER
+local ERR_OUT_OF_MANA = _G.ERR_OUT_OF_MANA
+local ERR_OUT_OF_POWER_DISPLAY = _G.ERR_OUT_OF_POWER_DISPLAY
+local ERR_OUT_OF_RAGE = _G.ERR_OUT_OF_RAGE
+local ERR_OUT_OF_RANGE = _G.ERR_OUT_OF_RANGE
+local ERR_OUT_OF_RUNES = _G.ERR_OUT_OF_RUNES
+local ERR_OUT_OF_RUNIC_POWER = _G.ERR_OUT_OF_RUNIC_POWER
+local ERR_OUT_OF_SOUL_SHARDS = _G.ERR_OUT_OF_SOUL_SHARDS
+local ERR_SPELL_COOLDOWN = _G.ERR_SPELL_COOLDOWN
+local InCombatLockdown = _G.InCombatLockdown
+local SPELL_FAILED_BAD_IMPLICIT_TARGETS = _G.SPELL_FAILED_BAD_IMPLICIT_TARGETS
+local SPELL_FAILED_BAD_TARGETS = _G.SPELL_FAILED_BAD_TARGETS
+local SPELL_FAILED_CASTER_AURASTATE = _G.SPELL_FAILED_CASTER_AURASTATE
+local SPELL_FAILED_NO_COMBO_POINTS = _G.SPELL_FAILED_NO_COMBO_POINTS
+local SPELL_FAILED_SPELL_IN_PROGRESS = _G.SPELL_FAILED_SPELL_IN_PROGRESS
+local SPELL_FAILED_TARGET_AURASTATE = _G.SPELL_FAILED_TARGET_AURASTATE
+local UIErrorsFrame = _G.UIErrorsFrame
+
+local UI_ERROR_LIST = { -- Lets hope 'UI_ERROR_LIST' is not going to be used one day. :o
 	[ERR_ABILITY_COOLDOWN] = true,
 	[ERR_ATTACK_MOUNTED] = true,
-	[ERR_ATTACK_PVP_TARGET_WHILE_UNFLAGGED] = true,
 	[ERR_ITEM_COOLDOWN] = true,
-	[ERR_LOOT_GONE] = true,
 	[ERR_NO_ATTACK_TARGET] = true,
 	[ERR_OUT_OF_ARCANE_CHARGES] = true,
 	[ERR_OUT_OF_CHI] = true,
@@ -24,7 +49,6 @@ Module.Filter = {
 	[ERR_OUT_OF_RUNIC_POWER] = true,
 	[ERR_OUT_OF_SOUL_SHARDS] = true,
 	[ERR_SPELL_COOLDOWN] = true,
-	[LOOT_GONE] = true,
 	[SPELL_FAILED_BAD_IMPLICIT_TARGETS] = true,
 	[SPELL_FAILED_BAD_TARGETS] = true,
 	[SPELL_FAILED_CASTER_AURASTATE] = true,
@@ -33,13 +57,27 @@ Module.Filter = {
 	[SPELL_FAILED_TARGET_AURASTATE] = true,
 }
 
-function Module:OnEvent(_, _, msg)
-	if not self.Filter[msg] then
-		UIErrorsFrame:AddMessage(msg, 1, 0, 0)
+local isRegistered = true
+function Module.ErrorBlocker_OnEvent(event, text)
+	if InCombatLockdown() and UI_ERROR_LIST[text] then
+		if isRegistered then
+			UIErrorsFrame:UnregisterEvent(event)
+			isRegistered = false
+		end
+	else
+		if not isRegistered then
+			UIErrorsFrame:RegisterEvent(event)
+			isRegistered = true
+		end
 	end
 end
 
-function Module:OnEnable()
-	UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE", "OnEvent")
-	self:RegisterEvent("UI_ERROR_MESSAGE", "OnEvent")
+function Module:CreateErrorFilter()
+	if C["General"].HideErrors then
+		K:RegisterEvent("UI_ERROR_MESSAGE", self.ErrorBlocker_OnEvent)
+	else
+		isRegistered = true
+		UIErrorsFrame:RegisterEvent("UI_ERROR_MESSAGE")
+		K:UnregisterEvent("UI_ERROR_MESSAGE", self.ErrorBlocker_OnEvent)
+	end
 end

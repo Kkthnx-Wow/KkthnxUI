@@ -94,5 +94,7 @@ K.ExtraQuestButton_ItemAreas = {
 	-- Suramar
 	[133882] = 680,
 	-- Tiragarde Sound
-	[154878] = 895
+	[154878] = 895,
+	-- Mechagon
+	[168813] = 1462
 }

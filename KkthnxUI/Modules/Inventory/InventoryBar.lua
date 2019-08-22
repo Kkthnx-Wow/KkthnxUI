@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("Bags")
+local Module = K:NewModule("InventoryBar")
 
 local _G = _G
 local unpack = unpack
@@ -29,6 +29,7 @@ function Module:SkinBag(bag)
 	bag.IconBorder:SetAlpha(0)
 
 	bag:CreateBorder(nil, nil, nil, true)
+	bag:CreateInnerShadow()
 	bag:StyleButton(true)
 	icon:SetTexture(bag.oldTex)
 	icon:SetInside()

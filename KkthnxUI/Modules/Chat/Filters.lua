@@ -1,45 +1,44 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("ChatFilters", "AceEvent-3.0")
+local Module = K:GetModule("Chat")
 
 local _G = _G
-local strfind, gsub = string.find, string.gsub
-local pairs, ipairs, tonumber = pairs, ipairs, tonumber
-local min, max, tremove = math.min, math.max, table.remove
+local math_max = _G.math.max
+local math_min = _G.math.min
+local string_find = _G.string.find
+local string_gsub = _G.string.gsub
+local table_remove = _G.table.remove
 
-local IsGuildMember, C_FriendList_IsFriend, IsGUIDInGroup, C_Timer_After = _G.IsGuildMember, _G.IsCharacterFriend, _G.IsGUIDInGroup, _G.C_Timer.After
-local Ambiguate, UnitIsUnit, BNGetGameAccountInfoByGUID, GetTime, SetCVar = _G.Ambiguate, _G.UnitIsUnit, _G.BNGetGameAccountInfoByGUID, _G.GetTime, _G.SetCVar
+local Ambiguate = _G.Ambiguate
+local BNGetGameAccountInfoByGUID = _G.BNGetGameAccountInfoByGUID
+local C_FriendList_IsFriend = _G.IsCharacterFriend
+local C_Timer_After = _G.C_Timer_After
 local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
+local GetCVarBool = _G.GetCVarBool
+local GetTime = _G.GetTime
+local IsGUIDInGroup = _G.IsGUIDInGroup
+local IsGuildMember = _G.IsGuildMember
+local IsInInstance = _G.IsInInstance
+local SetCVar = _G.SetCVar
+local UnitIsUnit = _G.UnitIsUnit
 
-function K.SplitList(list, variable, cleanup)
-	if cleanup then
-		wipe(list)
-	end
-
-	for word in gmatch(variable, "%S+") do
-		list[word] = true
-	end
-end
-
-local ChatFilterList = "%* %anal %nigger %[Autobroadcast] %[Autobroadcast]: %Autobroadcast"
-local ChatMatches = 1
-
--- Filter Chat symbols
-local msgSymbols = {
-	"`","～","＠","＃","^","＊","！","？",
-	"。","|"," ","—","——","￥","’","‘",
-	"“","”","【","】","『","』","《","》","〈",
-	"〉","（","）","〔","〕","、","，","：",",",
-	"_","/","~","%-","%.",
-}
-
+local last = {}
+local this = {}
+local BadBoysList = {}
 local FilterList = {}
+local chatLines = {}
+local prevLineID  = 0
+local filterResult = false
+
+local FilterMatches = 1
+local ChatFilterList = "%* %-(.*)%||T(.*)||t(.*)||c(.*)%||r %[(.*)Announce by(.*)%] %[(.*)ARENA ANNOUNCER(.*)%] %[(.*)Autobroadcast(.*)%] %[(.*)BG Queue Announcer(.*)%] ERR_NOT_IN_INSTANCE_GROUP ERR_NOT_IN_RAID ERR_QUEST_ALREADY_ON ERR_LEARN_ABILITY_S ERR_LEARN_SPELL_S ERR_SPELL_UNLEARNED_S ERR_LEARN_PASSIVE_S ERR_PET_SPELL_UNLEARNED_S ERR_PET_LEARN_ABILITY_S ERR_PET_LEARN_SPELL_S"
+local msgSymbols = {"`", "～", "＠", "＃", "^", "＊", "！", "？", "。", "|", " ", "—", "——", "￥", "’", "‘", "“", "”", "【", "】", "『", "』", "《", "》", "〈", "〉", "（", "）", "〔", "〕", "、", "，", "：", ",", "_", "/", "~", "%-", "%."}
+
 function Module:UpdateFilterList()
 	K.SplitList(FilterList, ChatFilterList, true)
 end
 
--- Ecf Strings Compare
-local last, this = {}, {}
-function Module:CompareStrDiff(sA, sB) -- Arrays Of Bytes
+-- ECF strings compare
+function Module:CompareStrDiff(sA, sB) -- arrays of bytes
 	local len_a, len_b = #sA, #sB
 	for j = 0, len_b do
 		last[j + 1] = j
@@ -48,7 +47,7 @@ function Module:CompareStrDiff(sA, sB) -- Arrays Of Bytes
 	for i = 1, len_a do
 		this[1] = i
 		for j = 1, len_b do
-			this[j + 1] = (sA[i] == sB[j]) and last[j] or (min(last[j + 1], this[j], last[j]) + 1)
+			this[j + 1] = (sA[i] == sB[j]) and last[j] or (math_min(last[j + 1], this[j], last[j]) + 1)
 		end
 
 		for j = 0, len_b do
@@ -56,11 +55,9 @@ function Module:CompareStrDiff(sA, sB) -- Arrays Of Bytes
 		end
 	end
 
-	return this[len_b+1] / max(len_a, len_b)
+	return this[len_b + 1] / math_max(len_a, len_b)
 end
 
-K.BadBoys = {} -- Debug
-local chatLines, prevLineID, filterResult = {}, 0, false
 function Module:GetFilterResult(event, msg, name, flag, guid)
 	if name == K.Name or (event == "CHAT_MSG_WHISPER" and flag == "GM") or flag == "DEV" then
 		return
@@ -68,30 +65,30 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 		return
 	end
 
-	if K.BadBoys[name] and K.BadBoys[name] >= 5 then
+	if BadBoysList[name] and BadBoysList[name] >= 5 then
 		return true
 	end
 
-	local filterMsg = gsub(msg, "|H.-|h(.-)|h", "%1")
-	filterMsg = gsub(filterMsg, "|c%x%x%x%x%x%x%x%x", "")
-	filterMsg = gsub(filterMsg, "|r", "")
+	local filterMsg = string_gsub(msg, "|H.-|h(.-)|h", "%1")
+	filterMsg = string_gsub(filterMsg, "|c%x%x%x%x%x%x%x%x", "")
+	filterMsg = string_gsub(filterMsg, "|r", "")
 
 	-- Trash Filter
 	for _, symbol in ipairs(msgSymbols) do
-		filterMsg = gsub(filterMsg, symbol, "")
+		filterMsg = string_gsub(filterMsg, symbol, "")
 	end
 
 	local matches = 0
 	for keyword in pairs(FilterList) do
 		if keyword ~= "" then
-			local _, count = gsub(filterMsg, keyword, "")
+			local _, count = string_gsub(filterMsg, keyword, "")
 			if count > 0 then
 				matches = matches + 1
 			end
 		end
 	end
 
-	if matches >= ChatMatches then
+	if matches >= FilterMatches then
 		return true
 	end
 
@@ -109,14 +106,14 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 	chatLines[chatLinesSize+1] = msgTable
 	for i = 1, chatLinesSize do
 		local line = chatLines[i]
-		if line[1] == msgTable[1] and ((msgTable[3] - line[3] < .6) or Module:CompareStrDiff(line[2], msgTable[2]) <= .1) then
-			tremove(chatLines, i)
+		if line[1] == msgTable[1] and ((msgTable[3] - line[3] < 0.6) or Module:CompareStrDiff(line[2], msgTable[2]) <= 0.1) then
+			table_remove(chatLines, i)
 			return true
 		end
 	end
 
 	if chatLinesSize >= 30 then
-		tremove(chatLines, 1)
+		table_remove(chatLines, 1)
 	end
 end
 
@@ -127,7 +124,7 @@ function Module:UpdateChatFilter(event, msg, author, _, _, _, flag, _, _, _, _, 
 		local name = Ambiguate(author, "none")
 		filterResult = Module:GetFilterResult(event, msg, name, flag, guid)
 		if filterResult then
-			K.BadBoys[name] = (K.BadBoys[name] or 0) + 1
+			BadBoysList[name] = (BadBoysList[name] or 0) + 1
 		end
 	end
 
@@ -143,28 +140,27 @@ local addonBlockList = {
 local cvar
 local function toggleCVar(value)
 	value = tonumber(value) or 1
-
-	if not _G.InCombatLockdown() then
-		SetCVar(cvar, value)
-	end
+	SetCVar(cvar, value)
 end
 
 function Module:ToggleChatBubble(party)
 	cvar = "chatBubbles"..(party and "Party" or "")
-	if not _G.GetCVarBool(cvar) then
+	if not GetCVarBool(cvar) then
 		return
 	end
 
 	toggleCVar(0)
-	C_Timer_After(.01, toggleCVar)
+	C_Timer_After(0.01, toggleCVar)
 end
 
 function Module:UpdateAddOnBlocker(event, msg, author)
 	local name = Ambiguate(author, "none")
-	if UnitIsUnit(name, "player") then return end
+	if UnitIsUnit(name, "player") then
+		return
+	end
 
 	for _, word in ipairs(addonBlockList) do
-		if strfind(msg, word) then
+		if string_find(msg, word) then
 			if event == "CHAT_MSG_SAY" or event == "CHAT_MSG_YELL" then
 				Module:ToggleChatBubble()
 			elseif event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER" then
@@ -175,29 +171,86 @@ function Module:UpdateAddOnBlocker(event, msg, author)
 	end
 end
 
-function Module:OnEnable()
-	if C["Chat"].Filter ~= true then
-		return
+-- Show itemlevel on chat hyperlinks
+local function isItemHasLevel(link)
+	local name, _, rarity, level, _, _, _, _, _, _, _, classID = GetItemInfo(link)
+	if name and level and rarity > 1 and (classID == LE_ITEM_CLASS_WEAPON or classID == LE_ITEM_CLASS_ARMOR) then
+		local itemLevel = K.GetItemLevel(link)
+		return name, itemLevel
+	end
+end
+
+local function isItemHasGem(link)
+	local stats = GetItemStats(link)
+	for index in pairs(stats) do
+		if string.find(index, "EMPTY_SOCKET_") then
+			return "|TInterface\\ItemSocketingFrame\\UI-EmptySocket-Prismatic:0|t"
+		end
+	end
+	return ""
+end
+
+local itemCache = {}
+local function convertItemLevel(link)
+	if itemCache[link] then return itemCache[link] end
+
+	local itemLink = string.match(link, "|Hitem:.-|h")
+	if itemLink then
+		local name, itemLevel = isItemHasLevel(itemLink)
+		if name and itemLevel then
+			link = gsub(link, "|h%[(.-)%]|h", "|h["..name.."("..itemLevel..isItemHasGem(itemLink)..")]|h")
+			itemCache[link] = link
+		end
+	end
+	return link
+end
+
+function Module:UpdateChatItemLevel(_, msg, ...)
+	msg = gsub(msg, "(|Hitem:%d+:.-|h.-|h)", convertItemLevel)
+	return false, msg, ...
+end
+
+function Module:CreateChatFilter()
+	if C["Chat"].EnableFilter then
+		self:UpdateFilterList()
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateChatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateChatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.UpdateChatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateChatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", self.UpdateChatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", self.UpdateChatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", self.UpdateChatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", self.UpdateChatFilter)
 	end
 
-	self:UpdateFilterList()
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateChatFilter)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateChatFilter)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.UpdateChatFilter)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateChatFilter)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", self.UpdateChatFilter)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", self.UpdateChatFilter)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", self.UpdateChatFilter)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", self.UpdateChatFilter)
+	if C["Chat"].BlockAddonAlert then
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateAddOnBlocker)
+	end
 
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateAddOnBlocker)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateAddOnBlocker)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", self.UpdateAddOnBlocker)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", self.UpdateAddOnBlocker)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", self.UpdateAddOnBlocker)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", self.UpdateAddOnBlocker)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", self.UpdateAddOnBlocker)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", self.UpdateAddOnBlocker)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", self.UpdateAddOnBlocker)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateAddOnBlocker)
+	if C["Chat"].ChatItemLevel then
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", self.UpdateChatItemLevel)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateChatItemLevel)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateChatItemLevel)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.UpdateChatItemLevel)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateChatItemLevel)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", self.UpdateChatItemLevel)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_WHISPER", self.UpdateChatItemLevel)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", self.UpdateChatItemLevel)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", self.UpdateChatItemLevel)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", self.UpdateChatItemLevel)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", self.UpdateChatItemLevel)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", self.UpdateChatItemLevel)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_BATTLEGROUND", self.UpdateChatItemLevel)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", self.UpdateChatItemLevel)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", self.UpdateChatItemLevel)
+	end
 end

@@ -167,7 +167,7 @@ local Enable = function(self)
             mask:SetTexture("Interface\\CHARACTERFRAME\\TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
             mask:SetAllPoints(element)
 
-            element.Icon = element:CreateTexture(nil, "BACKGROUND")
+            element.Icon = element:CreateTexture(nil, "ARTWORK")
             element.Icon:SetAllPoints(element)
             element.Icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
         end

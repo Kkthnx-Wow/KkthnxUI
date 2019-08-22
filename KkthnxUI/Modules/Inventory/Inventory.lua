@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local ModuleSort = K:GetModule("InventorySort")
+local ModuleSort = K:GetModule("Sort")
 local ModuleVendor = K:GetModule("Vendor")
 
 if not ModuleSort then
@@ -13,26 +13,26 @@ end
 -- Sourced (by Hungtar, editor Tukz then Kkthnx)
 
 local _G = _G
-local bit_band = bit.band
-local ipairs = ipairs
-local math_floor = math.floor
-local pairs = pairs
-local select = select
-local string_find = string.find
-local string_gsub = string.gsub
-local string_lower = string.lower
-local string_match = string.match
-local table_insert = table.insert
-local table_remove = table.remove
-local tonumber = tonumber
+local bit_band = _G.bit.band
+local ipairs = _G.ipairs
+local math_floor = _G.math.floor
+local pairs = _G.pairs
+local select = _G.select
+local string_find = _G.string.find
+local string_gsub = _G.string.gsub
+local string_lower = _G.string.lower
+local string_match = _G.string.match
+local table_insert = _G.table.insert
+local table_remove = _G.table.remove
+local tonumber = _G.tonumber
 
 local BankFrameItemButton_Update = _G.BankFrameItemButton_Update
 local BankFrameItemButton_UpdateLocked = _G.BankFrameItemButton_UpdateLocked
+local CURRENCY = _G.CURRENCY
 local C_NewItems_IsNewItem = _G.C_NewItems.IsNewItem
 local CloseBankFrame = _G.CloseBankFrame
 local CooldownFrame_Set = _G.CooldownFrame_Set
 local CreateFrame = _G.CreateFrame
-local CURRENCY = _G.CURRENCY
 local GameTooltip = _G.GameTooltip
 local GetContainerItemCooldown = _G.GetContainerItemCooldown
 local GetContainerItemEquipmentSetInfo = _G.GetContainerItemEquipmentSetInfo
@@ -47,7 +47,6 @@ local GetItemQualityColor = _G.GetItemQualityColor
 local GetMoney = _G.GetMoney
 local GetNumBankSlots = _G.GetNumBankSlots
 local GetReagentBankCost = _G.GetReagentBankCost
-local hooksecurefunc = _G.hooksecurefunc
 local IsBattlePayItem = _G.IsBattlePayItem
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
@@ -56,13 +55,14 @@ local MoneyFrame_Update = _G.MoneyFrame_Update
 local NEW_ITEM_ATLAS_BY_QUALITY = _G.NEW_ITEM_ATLAS_BY_QUALITY
 local PlaySound = _G.PlaySound
 local SEARCH = _G.SEARCH
+local SOUNDKIT = _G.SOUNDKIT
 local SetItemButtonCount = _G.SetItemButtonCount
 local SetItemButtonDesaturated = _G.SetItemButtonDesaturated
 local SetItemButtonTexture = _G.SetItemButtonTexture
 local SortReagentBankBags = _G.SortReagentBankBags
-local SOUNDKIT = _G.SOUNDKIT
 local Token1, Token2, Token3 = _G.BackpackTokenFrameToken1, _G.BackpackTokenFrameToken2, _G.BackpackTokenFrameToken3
 local UIParent = _G.UIParent
+local hooksecurefunc = _G.hooksecurefunc
 
 local BAGS_FONT = K.GetFont(C["UIFonts"].InventoryFonts)
 local BAGS_BACKPACK = {0, 1, 2, 3, 4}
@@ -79,61 +79,92 @@ local resetCountersFormatter = strjoin("", "|cffaaaaaa", "Reset Counters: Hold S
 local resetInfoFormatter = strjoin("", "|cffaaaaaa", "Reset Data: Hold Shift + Right Click", "|r")
 
 if K.Class == "DEATHKNIGHT" then
-	unusable = {{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_SHIELD}} -- weapons, armor, dual wield
+	unusable = { -- weapon, armor, dual-wield
+		{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF,LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND},
+		{LE_ITEM_ARMOR_SHIELD}
+	}
 elseif K.Class == "DEMONHUNTER" then
-	unusable = {{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
+	unusable = {
+		{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND},
+		{LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}
+	}
 elseif K.Class == "DRUID" then
-	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}, true}
+	unusable = {
+		{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND},
+		{LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD},
+		true
+	}
 elseif K.Class == "HUNTER" then
-	unusable = {{LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
+	unusable = {
+		{LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_WAND},
+		{LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}
+	}
 elseif K.Class == "MAGE" then
-	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW}, {LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD,}, true}
+	unusable = {
+		{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW},
+		{LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD},
+		true
+	}
 elseif K.Class == "MONK" then
-	unusable = {{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
+	unusable = {
+		{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND},
+		{LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}
+	}
 elseif K.Class == "PALADIN" then
-	unusable = {{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {}, true}
+	unusable = {
+		{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND},
+		{},
+		true
+	}
 elseif K.Class == "PRIEST" then
-	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW}, {LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}, true}
+	unusable = {
+		{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW},
+		{LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD},
+		true
+	}
 elseif K.Class == "ROGUE" then
-	unusable = {{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
+	unusable = {
+		{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_WAND},
+		{LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}
+	}
 elseif K.Class == "SHAMAN" then
-	unusable = {{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_PLATE}}
+	unusable = {
+		{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND},
+		{LE_ITEM_ARMOR_PLATE}
+	}
 elseif K.Class == "WARLOCK" then
-	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW}, {LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}, true}
+	unusable = {
+		{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW},
+		{LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD},
+		true
+	}
 elseif K.Class == "WARRIOR" then
 	unusable = {{LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_WAND}, {}}
 else
 	unusable = {{}, {}}
 end
 
-local subs = {}
-for k = 0, 20 do
-	subs[k + 1] = GetItemSubClassInfo(LE_ITEM_CLASS_WEAPON, k)
+local _unusable = {}
+
+for i, class in ipairs({LE_ITEM_CLASS_WEAPON, LE_ITEM_CLASS_ARMOR}) do
+	local list = {}
+	for _, subclass in ipairs(unusable[i]) do
+		list[subclass] = true
+	end
+
+	_unusable[class] = list
 end
 
-for _, subclass in ipairs(unusable[1]) do
-	unusable[subs[subclass+1]] = true
-end
-
-subs = {}
-for k = 0, 11 do
-	subs[k + 1] = GetItemSubClassInfo(LE_ITEM_CLASS_ARMOR, k)
-end
-
-for _, subclass in ipairs(unusable[2]) do
-	unusable[subs[subclass + 1]] = true
-end
-
-local function IsClassUnusable(subclass, slot)
-	if subclass then
-		return slot ~= "" and unusable[subclass] or slot == "INVTYPE_WEAPONOFFHAND" and unusable[3]
+local function IsClassUnusable(class, subclass, slot)
+	if class and subclass and _unusable[class] then
+		return slot ~= "" and _unusable[class][subclass] or slot == "INVTYPE_WEAPONOFFHAND" and unusable[3]
 	end
 end
 
 local function IsItemUnusable(...)
 	if ... then
-		local subclass, _, slot = select(7, GetItemInfo(...))
-		return IsClassUnusable(subclass, slot)
+		local slot, _,_, class, subclass = select(9, GetItemInfo(...))
+		return IsClassUnusable(class, subclass, slot)
 	end
 end
 
@@ -254,52 +285,10 @@ end
 local trashButton = {}
 local trashBag = {}
 
--- Tooltip and scanning by Phanx @ http://www.wowinterface.com/forums/showthread.php?p=271406
-local S_ITEM_LEVEL = "^" .. string_gsub(_G.ITEM_LEVEL, "%%d", "(%%d+)")
-
-local ItemDB = {}
-local function IsRealItemLevel(link, owner, bag, slot)
-	if ItemDB[link] then
-		return ItemDB[link]
-	end
-
-	local realItemLevel
-
-	K.ScanTooltip.owner = owner
-	K.ScanTooltip:SetOwner(_G.UIParent, "ANCHOR_NONE")
-	K.ScanTooltip:SetBagItem(bag, slot)
-
-	local line = _G[K.ScanTooltip:GetName() .. "TextLeft2"]
-	if line then
-		local msg = line:GetText()
-		if msg and string_find(msg, S_ITEM_LEVEL) then
-			local itemLevel = string_match(msg, S_ITEM_LEVEL)
-			if itemLevel and (tonumber(itemLevel) > 0) then
-				realItemLevel = itemLevel
-			end
-		else
-			-- Check line 3, some artifacts have the ilevel there
-			line = _G[K.ScanTooltip:GetName() .. "TextLeft3"]
-			if line then
-				local msg = line:GetText()
-				if msg and string_find(msg, S_ITEM_LEVEL) then
-					local itemLevel = string_match(msg, S_ITEM_LEVEL)
-					if itemLevel and (tonumber(itemLevel) > 0) then
-						realItemLevel = itemLevel
-					end
-				end
-			end
-		end
-	end
-
-	ItemDB[link] = tonumber(realItemLevel)
-	return realItemLevel
-end
-
 function Stuffing:SlotUpdate(b)
 	local texture, count, locked, quality, _, _, _, _, noValue = GetContainerItemInfo(b.bag, b.slot)
 	local clink = GetContainerItemLink(b.bag, b.slot)
-	local isQuestItem, questId = GetContainerItemQuestInfo(b.bag, b.slot)
+	local isQuestItem, questId, isActiveQuest = GetContainerItemQuestInfo(b.bag, b.slot)
 
 	if not b.frame.lock then
 		b.frame:SetBackdropBorderColor()
@@ -398,16 +387,21 @@ function Stuffing:SlotUpdate(b)
 	end
 
 	if clink then
-		b.name, _, _, b.itemlevel, b.level, _, _, _, _, _, _, b.itemClassID, b.itemSubClassID = GetItemInfo(clink)
+		b.name, b.link, b.rarity, b.itemlevel, b.level, _, b.subType, _, _, _, _, b.itemClassID, b.itemSubClassID = GetItemInfo(clink)
 
 		if not b.name then -- Keystone bug
 			b.name = clink:match("%[(.-)%]") or ""
 		end
 
-		if C["Inventory"].ItemLevel == true and b.itemlevel and quality > 1 and (b.itemClassID == 2 or b.itemClassID == 4 or (b.itemClassID == 3 and b.itemSubClassID == 11)) then
-			b.itemlevel = IsRealItemLevel(clink, self, b.bag, b.slot) or b.itemlevel
-			b.frame.text:SetText(b.itemlevel)
-			b.frame.text:SetTextColor(GetItemQualityColor(quality))
+		if C["Inventory"].ItemLevel then
+			if b.link and b.level and b.rarity > 1 and (b.subType == EJ_LOOT_SLOT_FILTER_ARTIFACT_RELIC or b.itemClassID  == LE_ITEM_CLASS_WEAPON or b.itemClassID == LE_ITEM_CLASS_ARMOR) then
+				local level = K.GetItemLevel(b.link, b.bagID, b.slotID) or b.level
+				local color = BAG_ITEM_QUALITY_COLORS[b.rarity]
+				b.frame.text:SetText(level)
+				b.frame.text:SetTextColor(color.r, color.g, color.b)
+			else
+				b.frame.text:SetText("")
+			end
 		end
 
 		if b.frame.Azerite and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(clink) then
@@ -421,9 +415,11 @@ function Stuffing:SlotUpdate(b)
 		end
 
 		-- Color slot according to item quality
-		if not b.frame.lock and quality and quality > LE_ITEM_QUALITY_COMMON and not (isQuestItem or questId) then
+		if not b.frame.lock and quality and quality > 1 and not (isQuestItem or questId) then
 			b.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
-		elseif isQuestItem or questId then
+		elseif questId and not isActiveQuest then
+			b.frame:SetBackdropBorderColor(1, 0.3, 0.3)
+		elseif questId or isQuestItem then
 			b.frame:SetBackdropBorderColor(1, 1, 0)
 		end
 	else
@@ -496,6 +492,7 @@ local function Stuffing_CreateReagentContainer()
 
 	SwitchBankButton:SetSize(16, 16)
 	SwitchBankButton:CreateBorder()
+	SwitchBankButton:CreateInnerShadow()
 	SwitchBankButton:StyleButton(true)
 	SwitchBankButton:SetPoint("TOPRIGHT", -54, -7)
 	SwitchBankButton:SetNormalTexture("Interface\\ICONS\\achievement_guildperk_mobilebanking")
@@ -504,13 +501,14 @@ local function Stuffing_CreateReagentContainer()
 	SwitchBankButton:SetPushedTexture("Interface\\ICONS\\achievement_guildperk_mobilebanking")
 	SwitchBankButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	SwitchBankButton:GetPushedTexture():SetAllPoints()
-	SwitchBankButton.ttText = L["Inventory"].Bank
+	SwitchBankButton.ttText = L["Switch to Bank"]
 	SwitchBankButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	SwitchBankButton:SetScript("OnLeave", Stuffing_TooltipHide)
 	SwitchBankButton:SetScript("OnClick", function()
 		Reagent:Hide()
 		_G["StuffingFrameBank"]:Show()
 		_G["StuffingFrameBank"]:SetAlpha(1)
+		_G["StuffingFrameBank"]:EnableMouse(true)
 		BankFrame_ShowPanel(BANK_PANELS[1].name)
 		PlaySound(PlaySoundKitID and "igbackpackopen" or SOUNDKIT.IG_BACKPACK_OPEN)
 	end)
@@ -518,6 +516,7 @@ local function Stuffing_CreateReagentContainer()
 	local SortReagentButton = CreateFrame("Button", nil, Reagent)
 	SortReagentButton:SetSize(16, 16)
 	SortReagentButton:CreateBorder()
+	SortReagentButton:CreateInnerShadow()
 	SortReagentButton:StyleButton(true)
 	SortReagentButton:SetPoint("TOPRIGHT", SwitchBankButton, -22, 0)
 	SortReagentButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
@@ -540,6 +539,7 @@ local function Stuffing_CreateReagentContainer()
 	Deposit:SetText("")
 	Deposit:SetSize(16, 16)
 	Deposit:CreateBorder()
+	Deposit:CreateInnerShadow()
 	Deposit:StyleButton(true)
 	Deposit:SetPoint("TOPLEFT", SwitchBankButton, "TOPRIGHT", 6, 0)
 	Deposit:SetNormalTexture("Interface\\ICONS\\misc_arrowdown")
@@ -573,6 +573,7 @@ local function Stuffing_CreateReagentContainer()
 		ReagentBankFrame:ClearAllPoints()
 		ReagentBankFrame:SetAllPoints()
 		button:CreateBorder()
+		button:CreateInnerShadow()
 		button:StyleButton()
 		button:SetNormalTexture(nil)
 		button.IconBorder:SetAlpha(0)
@@ -686,6 +687,7 @@ function Stuffing:BagFrameSlotNew(p, slot)
 	end
 
 	ret.frame:CreateBorder()
+	ret.frame:CreateInnerShadow()
 	ret.frame:StyleButton()
 	ret.frame:SetNormalTexture("")
 
@@ -739,6 +741,7 @@ function Stuffing:SlotNew(bag, slot)
 		ret.frame = CreateFrame("ItemButton", "StuffingBag" .. bag .. "_" .. slot, self.bags[bag], tpl)
 
 		ret.frame:CreateBorder()
+		ret.frame:CreateInnerShadow()
 		ret.frame:StyleButton()
 		ret.frame:SetNormalTexture(nil)
 
@@ -752,8 +755,8 @@ function Stuffing:SlotNew(bag, slot)
 		ret.count:SetPoint("BOTTOMRIGHT", 1, 1)
 
 		if C["Inventory"].ItemLevel == true then
-			ret.frame.text = ret.frame:CreateFontString(nil, 'OVERLAY')
-			ret.frame.text:SetPoint("TOPLEFT", 1, -1)
+			ret.frame.text = ret.frame:CreateFontString(nil, "OVERLAY")
+			ret.frame.text:SetPoint("BOTTOMLEFT", 1, 1)
 			ret.frame.text:FontTemplate(nil, 11, "OUTLINE")
 		end
 
@@ -933,7 +936,7 @@ function Stuffing:CreateBagFrame(w)
 
 		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 0, 4)
 		GameTooltip:ClearLines()
-		GameTooltip:AddDoubleLine(L["Inventory"].Shift_Move)
+		GameTooltip:AddDoubleLine(L["Hold Shift/Click"])
 
 		GameTooltip:Show()
 	end)
@@ -954,15 +957,16 @@ function Stuffing:CreateBagFrame(w)
 		f.reagentToggle = CreateFrame("Button", "StuffingReagentButton" .. w, f)
 		f.reagentToggle:SetSize(16, 16)
 		f.reagentToggle:CreateBorder()
+		f.reagentToggle:CreateInnerShadow()
 		f.reagentToggle:SetPoint("TOPRIGHT", f, -32, -7)
-		f.reagentToggle:SetNormalTexture("Interface\\ICONS\\INV_Enchant_DustArcane")
+		f.reagentToggle:SetNormalTexture("Interface\\Icons\\Achievement_GuildPerk_BountifulBags")
 		f.reagentToggle:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		f.reagentToggle:GetNormalTexture():SetAllPoints()
-		f.reagentToggle:SetPushedTexture("Interface\\ICONS\\INV_Enchant_DustArcane")
+		f.reagentToggle:SetPushedTexture("Interface\\Icons\\Achievement_GuildPerk_BountifulBags")
 		f.reagentToggle:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		f.reagentToggle:GetPushedTexture():SetAllPoints()
 		f.reagentToggle:StyleButton(nil, true)
-		f.reagentToggle.ttText = L["Inventory"].Reagents
+		f.reagentToggle.ttText = L["Reagents"]
 		f.reagentToggle:SetScript("OnEnter", Stuffing_TooltipShow)
 		f.reagentToggle:SetScript("OnLeave", Stuffing_TooltipHide)
 		f.reagentToggle:SetScript("OnClick", function()
@@ -976,11 +980,13 @@ function Stuffing:CreateBagFrame(w)
 			end
 
 			_G["StuffingFrameBank"]:SetAlpha(0)
+			_G["StuffingFrameBank"]:EnableMouse(false)
 		end)
 
 		f.bagsButton = CreateFrame("Button", nil, f)
 		f.bagsButton:SetSize(16, 16)
 		f.bagsButton:CreateBorder()
+		f.bagsButton:CreateInnerShadow()
 		f.bagsButton:SetPoint("RIGHT", f.reagentToggle, "LEFT", -5, 0)
 		f.bagsButton:SetNormalTexture("Interface\\Buttons\\Button-Backpack-Up")
 		f.bagsButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -989,7 +995,7 @@ function Stuffing:CreateBagFrame(w)
 		f.bagsButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		f.bagsButton:GetPushedTexture():SetAllPoints()
 		f.bagsButton:StyleButton(nil, true)
-		f.bagsButton.ttText = L["Inventory"].Show_Bags
+		f.bagsButton.ttText = L["Toggle Bags"]
 		f.bagsButton:SetScript("OnEnter", Stuffing_TooltipShow)
 		f.bagsButton:SetScript("OnLeave", Stuffing_TooltipHide)
 		f.bagsButton:SetScript("OnClick", function()
@@ -1008,6 +1014,7 @@ function Stuffing:CreateBagFrame(w)
 		f.sortButton = CreateFrame("Button", nil, f)
 		f.sortButton:SetSize(16, 16)
 		f.sortButton:CreateBorder()
+		f.sortButton:CreateInnerShadow()
 		f.sortButton:StyleButton(true)
 		f.sortButton:SetPoint("TOPRIGHT", f.bagsButton, -22, 0)
 		f.sortButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
@@ -1043,7 +1050,7 @@ function Stuffing:CreateBagFrame(w)
 		f.purchaseBagButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		f.purchaseBagButton:GetPushedTexture():SetAllPoints()
 		f.purchaseBagButton:StyleButton(nil, true)
-		f.purchaseBagButton.ttText = L["Inventory"].Purchase_Slot
+		f.purchaseBagButton.ttText = L["Purchase Slot"]
 		f.purchaseBagButton:SetScript("OnEnter", Stuffing_TooltipShow)
 		f.purchaseBagButton:SetScript("OnLeave", Stuffing_TooltipHide)
 		f.purchaseBagButton:SetScript("OnClick", function()
@@ -1103,6 +1110,7 @@ function Stuffing:InitBags()
 	self.buttons = {}
 	self.bags = {}
 	self.bagframe_buttons = {}
+	self.bags_num = {}
 
 	local f = self:CreateBagFrame("Bags")
 	f:SetScript("OnShow", Stuffing_OnShow)
@@ -1223,12 +1231,12 @@ function Stuffing:InitBags()
 				local class = KkthnxUIData["Class"][K.Realm][k] or "PRIEST"
 				local color = class and (_G.CUSTOM_CLASS_COLORS and _G.CUSTOM_CLASS_COLORS[class] or _G.RAID_CLASS_COLORS[class])
 				table_insert(myGold,
-					{
-						name = k,
-						amount = KkthnxUIData["Gold"][K.Realm][k],
-						amountText = K.FormatMoney(KkthnxUIData["Gold"][K.Realm][k]),
-						r = color.r, g = color.g, b = color.b,
-					}
+				{
+					name = k,
+					amount = KkthnxUIData["Gold"][K.Realm][k],
+					amountText = K.FormatMoney(KkthnxUIData["Gold"][K.Realm][k]),
+					r = color.r, g = color.g, b = color.b,
+				}
 				)
 			end
 			totalGold = totalGold + KkthnxUIData["Gold"][K.Realm][k]
@@ -1309,7 +1317,7 @@ function Stuffing:InitBags()
 	button:EnableMouse(true)
 	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	button:SetAllPoints(detail)
-	button.ttText = L["Inventory"].Right_Click_Search
+	button.ttText = L["Right Click To Search"]
 	button:SetScript("OnClick", function(self, btn)
 		if btn == "RightButton" then
 			self:GetParent().detail:Hide()
@@ -1331,6 +1339,7 @@ function Stuffing:InitBags()
 	f.bagsButton = CreateFrame("Button", nil, f)
 	f.bagsButton:SetSize(16, 16)
 	f.bagsButton:CreateBorder()
+	f.bagsButton:CreateInnerShadow()
 	f.bagsButton:SetPoint("TOPRIGHT", f, -32, -7)
 	f.bagsButton:SetNormalTexture("Interface\\Buttons\\Button-Backpack-Up")
 	f.bagsButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -1339,7 +1348,7 @@ function Stuffing:InitBags()
 	f.bagsButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	f.bagsButton:GetPushedTexture():SetAllPoints()
 	f.bagsButton:StyleButton(nil, true)
-	f.bagsButton.ttText = L["Inventory"].Show_Bags
+	f.bagsButton.ttText = L["Toggle Bags"]
 	f.bagsButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	f.bagsButton:SetScript("OnLeave", Stuffing_TooltipHide)
 	f.bagsButton:SetScript("OnClick", function()
@@ -1358,6 +1367,7 @@ function Stuffing:InitBags()
 	f.sortButton = CreateFrame("Button", nil, f)
 	f.sortButton:SetSize(16, 16)
 	f.sortButton:CreateBorder()
+	f.sortButton:CreateInnerShadow()
 	f.sortButton:StyleButton(nil, true)
 	f.sortButton:SetPoint("TOPRIGHT", f.bagsButton, -22, 0)
 	f.sortButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
@@ -1383,6 +1393,7 @@ function Stuffing:InitBags()
 	f.vendorGraysButton = CreateFrame('Button', nil, f)
 	f.vendorGraysButton:SetSize(16, 16)
 	f.vendorGraysButton:CreateBorder()
+	f.vendorGraysButton:CreateInnerShadow()
 	f.vendorGraysButton:SetPoint("RIGHT", f.sortButton, "LEFT", -5, 0)
 	f.vendorGraysButton:SetNormalTexture("Interface\\ICONS\\INV_Misc_Coin_01")
 	f.vendorGraysButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -1507,6 +1518,8 @@ function Stuffing:Layout(isBank)
 
 			slots = slots + GetContainerNumSlots(i)
 		end
+
+		self.bags_num[i] = x
 	end
 
 	rows = math_floor(slots / cols)
@@ -1592,11 +1605,12 @@ function Stuffing:ADDON_LOADED(addon)
 	self:RegisterEvent("GUILDBANKFRAME_OPENED")
 	self:RegisterEvent("GUILDBANKFRAME_CLOSED")
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
-	self:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
+	-- self:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
 	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
 	self:RegisterEvent("BAG_CLOSED")
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN")
 	self:RegisterEvent("SCRAPPING_MACHINE_SHOW")
+	self:RegisterEvent("BAG_UPDATE_DELAYED")
 
 	self:InitBags()
 
@@ -1666,6 +1680,16 @@ function Stuffing:BAG_UPDATE(id)
 	self:BagSlotUpdate(id)
 end
 
+function Stuffing:BAG_UPDATE_DELAYED(id)
+	for _, i in ipairs(BAGS_BACKPACK) do
+		local numSlots = GetContainerNumSlots(i)
+		if self.bags_num[i] and self.bags_num[i] ~= numSlots then
+			self:Layout()
+			return
+		end
+	end
+end
+
 function Stuffing:ITEM_LOCK_CHANGED(bag, slot)
 	if slot == nil then
 		return
@@ -1706,21 +1730,32 @@ end
 function Stuffing:GUILDBANKFRAME_OPENED()
 	Stuffing_Open()
 
-	Stuffing.guildSortbutton = CreateFrame("Button", "GuildSortButton", GuildBankFrame, "UIPanelButtonTemplate")
-	Stuffing.guildSortbutton:SetSize(110, 20)
-	Stuffing.guildSortbutton:SetPoint("RIGHT", GuildItemSearchBox, "LEFT", -5, 0)
-	Stuffing.guildSortbutton:SetText("Sort Tab")
-	Stuffing.guildSortbutton:Show()
-	Stuffing.guildSortbutton:SetScript("OnClick", function()
+	local guildSort = CreateFrame("Button", "GuildSortButton", GuildBankFrame)
+	guildSort:SetSize(16, 16)
+	guildSort:CreateBorder()
+	guildSort:CreateInnerShadow()
+	guildSort:StyleButton(true)
+	guildSort:SetPoint("RIGHT", GuildItemSearchBox, "LEFT", -8, 0)
+	guildSort:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
+	guildSort:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	guildSort:GetNormalTexture():SetAllPoints()
+	guildSort:SetPushedTexture("Interface\\ICONS\\INV_Pet_Broom")
+	guildSort:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	guildSort:GetPushedTexture():SetAllPoints()
+	guildSort:SetDisabledTexture("Interface\\ICONS\\INV_Pet_Broom")
+	guildSort:GetDisabledTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	guildSort:GetDisabledTexture():SetAllPoints()
+	guildSort:GetDisabledTexture():SetDesaturated(1)
+	guildSort.ttText = BAG_FILTER_CLEANUP
+	guildSort:SetScript("OnEnter", Stuffing_TooltipShow)
+	guildSort:SetScript("OnLeave", Stuffing_TooltipHide)
+	guildSort:SetScript("OnClick", function()
 		ModuleSort:CommandDecorator(ModuleSort.SortBags, "guild")()
 	end)
 end
 
 function Stuffing:GUILDBANKFRAME_CLOSED()
 	Stuffing_Close()
-	if Stuffing.guildSortbutton then
-		Stuffing.guildSortbutton:Hide()
-	end
 end
 
 function Stuffing:BAG_CLOSED(id)
@@ -1729,6 +1764,7 @@ function Stuffing:BAG_CLOSED(id)
 		table_remove(self.bags, id)
 		b:Hide()
 		table_insert(trashBag, #trashBag + 1, b)
+		self.bags_num[id] = -1
 	end
 
 	while true do
@@ -1752,7 +1788,9 @@ function Stuffing:BAG_CLOSED(id)
 		end
 	end
 
-	Stuffing_Close()
+	if id > 4 then
+		Stuffing_Close() -- prevent graphical bug with empty slots
+	end
 end
 
 function Stuffing:BAG_UPDATE_COOLDOWN()
@@ -1766,6 +1804,31 @@ function Stuffing:SCRAPPING_MACHINE_SHOW()
 		Stuffing:BAG_UPDATE(i)
 	end
 end
+
+-- function Stuffing:PLAYERBANKBAGSLOTS_CHANGED()
+-- 	if not StuffingPurchaseButtonBank then
+-- 		return
+-- 	end
+
+-- 	local numSlots, full = GetNumBankSlots()
+-- 	if full then
+-- 		StuffingPurchaseButtonBank:Hide()
+-- 	else
+-- 		StuffingPurchaseButtonBank:Show()
+-- 	end
+
+-- 	local button
+-- 	for i = 1, NUM_BANKBAGSLOTS, 1 do
+-- 		button = _G["StuffingBBag"..i.."Slot"]
+-- 		if button then
+-- 			if i <= numSlots then
+-- 				SetItemButtonTextureVertexColor(button, 1.0, 1.0, 1.0)
+-- 			else
+-- 				SetItemButtonTextureVertexColor(button, 1.0, 0.1, 0.1)
+-- 			end
+-- 		end
+-- 	end
+-- end
 
 -- Kill Blizzard Functions
 LootWonAlertFrame_OnClick = K.Noop

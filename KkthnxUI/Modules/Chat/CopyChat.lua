@@ -1,28 +1,34 @@
 local K, _, L = unpack(select(2, ...))
-local CopyChat = K:NewModule("CopyChat", "AceHook-3.0")
+local CopyChat = K:GetModule("Chat")
 
 -- Sourced: ElvUI (Elvz)
 
 local _G = _G
-local string_format = string.format
-local string_gsub = string.gsub
-local string_lower = string.lower
-local table_concat = table.concat
-local table_insert = table.insert
+local string_format = _G.string.format
+local string_gsub = _G.string.gsub
+local string_lower = _G.string.lower
+local table_concat = _G.table.concat
+local table_insert = _G.table.insert
 
+local AUCTION_CATEGORY_QUEST_ITEMS = _G.AUCTION_CATEGORY_QUEST_ITEMS
+local CLOSE = _G.CLOSE
 local CreateFrame, UIParent = _G.CreateFrame, _G.UIParent
 local FCF_GetChatWindowInfo = _G.FCF_GetChatWindowInfo
 local FCF_SetChatWindowFontSize = _G.FCF_SetChatWindowFontSize
 local GameTooltip = _G.GameTooltip
+local HEIRLOOMS = _G.HEIRLOOMS
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
+local PlaySound = _G.PlaySound
+local QUESTS_LABEL = _G.QUESTS_LABEL
+local RELOADUI = _G.RELOADUI
 local RandomRoll = _G.RandomRoll
 local ReloadUI = _G.ReloadUI
-local RELOADUI = _G.RELOADUI
-local ScrollFrameTemplate_OnMouseWheel = _G.ScrollFrameTemplate_OnMouseWheel
 local STATUS = _G.STATUS
+local ScrollFrameTemplate_OnMouseWheel = _G.ScrollFrameTemplate_OnMouseWheel
+local TASKS_COLON = _G.TASKS_COLON
 local ToggleFrame = _G.ToggleFrame
 
 local removeIconFromLine
@@ -51,36 +57,36 @@ local menuList = {
 			K.ShowStatusReport()
 	end},
 
-	{text = L["ConfigButton"].Install, notCheckable = true, func = function()
+	{text = L["Install"], notCheckable = true, func = function()
 			K.Install:Launch()
 	end},
 
-	{text = L["ConfigButton"].MoveUI, notCheckable = true, func = function()
+	{text = L["MoveUI"], notCheckable = true, func = function()
 			K.MoveUI()
 	end},
 
-	{text = "Profiles", notCheckable = true, func = function()
+	{text = L["Profiles"], notCheckable = true, func = function()
 			K.UIProfiles("list")
 	end},
 
-	{text = L["ConfigButton"].UIHelp, notCheckable = true, func = function()
+	{text = L["KkthnxUI Help"], notCheckable = true, func = function()
 			K.UICommandsHelp()
 	end},
 
-	{text = L["ConfigButton"].Changelog, notCheckable = true, func = function()
+	{text = L["Changelog"], notCheckable = true, func = function()
 			K:GetModule("Changelog"):ToggleChangeLog()
 	end},
 
 	{text = RELOADUI, notCheckable = true, func = function()
 			if InCombatLockdown() then
-				print("You can't reload while in Combat!")
+				_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
 				return
 			end
 			ReloadUI()
 	end},
 
-	{text = "|cff7289daDiscord|r", notCheckable = true, func = function()
-			K.StaticPopup_Show("DISCORD_EDITBOX", nil, nil, "https://discord.gg/YUmxqQm")
+	{text = L["Discord"], notCheckable = true, func = function()
+			K.StaticPopup_Show("DISCORD_EDITBOX", nil, nil, L["Discord URL"])
 	end},
 	{text = "", notClickable = true, notCheckable = true},
 
@@ -88,26 +94,26 @@ local menuList = {
 		menuList = {
 			{text = "Delete "..QUESTS_LABEL.." From Tracker", notCheckable = true, func = function()
 					if InCombatLockdown() then
-						print(ERR_NOT_IN_COMBAT)
+						_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
 						return
 					end
 					K.AbandonQuests()
 			end},
 
 			{text = "Delete |ccf00ccff"..HEIRLOOMS.."|r From Bags", notCheckable = true, func = function()
-				if InCombatLockdown() then
-					print(ERR_NOT_IN_COMBAT)
-					return
-				end
-				K.DeleteHeirlooms()
+					if InCombatLockdown() then
+						_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+						return
+					end
+					K.DeleteHeirlooms()
 			end},
 
 			{text = "Delete |cffffd200"..AUCTION_CATEGORY_QUEST_ITEMS.."|r From Bags", notCheckable = true, func = function()
-				if InCombatLockdown() then
-					print(ERR_NOT_IN_COMBAT)
-					return
-				end
-				K.DeleteQuestItems()
+					if InCombatLockdown() then
+						_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+						return
+					end
+					K.DeleteQuestItems()
 			end},
 		},
 	},
@@ -175,27 +181,27 @@ function CopyChat:GetLines(frame)
 end
 
 function CopyChat:CopyText(frame)
-	if not CopyChatFrame:IsShown() then
+	if not _G.CopyChatFrame:IsShown() then
 		local _, fontSize = FCF_GetChatWindowInfo(frame:GetID());
 		if fontSize < 12 then
 			fontSize = 12
 		end
 
 		FCF_SetChatWindowFontSize(frame, frame, 0.01)
-		CopyChatFrame:Show()
+		_G.CopyChatFrame:Show()
 
 		local lineCt = self:GetLines(frame)
 		local text = table_concat(copyLines, " \n", 1, lineCt)
 		FCF_SetChatWindowFontSize(frame, frame, fontSize)
-		CopyChatFrameEditBox:SetText(text)
+		_G.CopyChatFrameEditBox:SetText(text)
 	else
-		CopyChatFrame:Hide()
+		_G.CopyChatFrame:Hide()
 	end
 end
 
-function CopyChat:OnEnable()
+function CopyChat:CreateCopyChat()
 	CopyFrame = CreateFrame("Frame", "CopyChatFrame", UIParent)
-	table_insert(UISpecialFrames, "CopyChatFrame")
+	table_insert(_G.UISpecialFrames, "CopyChatFrame")
 
 	CopyFrame:CreateBorder()
 	CopyFrame:SetSize(700, 200)
@@ -239,15 +245,15 @@ function CopyChat:OnEnable()
 	local ScrollArea = CreateFrame("ScrollFrame", "CopyChatScrollFrame", CopyFrame, "UIPanelScrollFrameTemplate")
 	ScrollArea:SetPoint("TOPLEFT", CopyFrame, "TOPLEFT", 8, -30)
 	ScrollArea:SetPoint("BOTTOMRIGHT", CopyFrame, "BOTTOMRIGHT", -30, 8)
-	CopyChatScrollFrameScrollBar:SetAlpha(0) -- We dont skin these nor do we show their ugly asses either.
+	_G.CopyChatScrollFrameScrollBar:SetAlpha(0) -- We dont skin these nor do we show their ugly asses either.
 
 	ScrollArea:SetScript("OnSizeChanged", function(self)
-		CopyChatFrameEditBox:SetWidth(self:GetWidth())
-		CopyChatFrameEditBox:SetHeight(self:GetHeight())
+		_G.CopyChatFrameEditBox:SetWidth(self:GetWidth())
+		_G.CopyChatFrameEditBox:SetHeight(self:GetHeight())
 	end)
 
 	ScrollArea:HookScript("OnVerticalScroll", function(self, offset)
-		CopyChatFrameEditBox:SetHitRectInsets(0, 0, offset, (CopyChatFrameEditBox:GetHeight() - offset - self:GetHeight()))
+		_G.CopyChatFrameEditBox:SetHitRectInsets(0, 0, offset, (_G.CopyChatFrameEditBox:GetHeight() - offset - self:GetHeight()))
 	end)
 
 	local EditBox = CreateFrame("EditBox", "CopyChatFrameEditBox", CopyFrame)
@@ -255,21 +261,21 @@ function CopyChat:OnEnable()
 	EditBox:SetMaxLetters(99999)
 	EditBox:EnableMouse(true)
 	EditBox:SetAutoFocus(false)
-	EditBox:SetFontObject(ChatFontNormal)
+	EditBox:SetFontObject(_G.ChatFontNormal)
 	EditBox:SetWidth(ScrollArea:GetWidth())
 	EditBox:SetHeight(200)
 	EditBox:SetScript("OnEscapePressed", function()
 		CopyFrame:Hide()
 	end)
 	ScrollArea:SetScrollChild(EditBox)
-	CopyChatFrameEditBox:SetScript("OnTextChanged", function(_, userInput)
+	_G.CopyChatFrameEditBox:SetScript("OnTextChanged", function(_, userInput)
 		if userInput then
 			return
 		end
 
-		local _, max = CopyChatScrollFrameScrollBar:GetMinMaxValues()
+		local _, max = _G.CopyChatScrollFrameScrollBar:GetMinMaxValues()
 		for _ = 1, max do
-			ScrollFrameTemplate_OnMouseWheel(CopyChatScrollFrame, -1)
+			ScrollFrameTemplate_OnMouseWheel(_G.CopyChatScrollFrame, -1)
 		end
 	end)
 
@@ -286,9 +292,13 @@ function CopyChat:OnEnable()
 		local frame = _G["ChatFrame"..i]
 		local id = frame:GetID()
 
-		local CopyButton = CreateFrame("Button", string_format("CopyChatButton%d", id), frame)
+		local menu = CreateFrame("Frame", nil, frame)
+		menu:SetSize(25, 100)
+		menu:SetPoint("TOPRIGHT", _G.ChatFrame1, 22, 0)
+
+		local CopyButton = CreateFrame("Button", string_format("CopyChatButton%d", id), menu)
 		CopyButton:SetSize(16, 16)
-		CopyButton:SetPoint("TOPRIGHT", 18, -2)
+		CopyButton:SetPoint("TOP", 4, 0)
 		CopyButton.Texture = CopyButton:CreateTexture(nil, "BACKGROUND")
 		CopyButton.Texture:SetTexture("Interface\\ICONS\\INV_Misc_Note_04")
 		CopyButton.Texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -299,13 +309,13 @@ function CopyChat:OnEnable()
 		CopyButton:SetScript("OnMouseUp", function(self, button)
 			if button == "RightButton" and id == 1 and not InCombatLockdown() then
 				PlaySound(111)
-				ToggleFrame(ChatMenu)
+				ToggleFrame(_G.ChatMenu)
 			elseif button == "MiddleButton" then
 				PlaySound(36626)
 				RandomRoll(1, 100)
 			elseif IsShiftKeyDown() and button == "LeftButton" then
 				PlaySound(111)
-				ToggleChannelFrame()
+				_G.ToggleChannelFrame()
 			else
 				PlaySound(21968)
 				CopyChat:CopyText(self.ChatFrame)
@@ -318,12 +328,12 @@ function CopyChat:OnEnable()
 			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
 			GameTooltip:ClearLines()
-			GameTooltip:AddLine(L["ConfigButton"].Functions)
+			GameTooltip:AddLine(L["Functions"])
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, L["ConfigButton"].CopyChat, 1, 1, 1)
-			GameTooltip:AddDoubleLine(rightButtonString..L["ConfigButton"].Right_Click, L["ConfigButton"].Emotions, 1, 1, 1)
-			GameTooltip:AddDoubleLine(middleButtonString..L["ConfigButton"].MiddleClick, L["ConfigButton"].Roll, 1, 1, 1)
-			GameTooltip:AddDoubleLine(leftButtonString.. "Shift + LeftClick", "Open Chatchannels", 1, 1, 1)
+			GameTooltip:AddDoubleLine(leftButtonString..L["Left Click"], L["Copy Chat"], 1, 1, 1)
+			GameTooltip:AddDoubleLine(rightButtonString..L["Right Click"], L["Emotes"], 1, 1, 1)
+			GameTooltip:AddDoubleLine(middleButtonString..L["Middle Click"], L["Roll"], 1, 1, 1)
+			GameTooltip:AddDoubleLine(leftButtonString.. L["Shift Left Click"], L["Open Chat Channels"], 1, 1, 1)
 			GameTooltip:Show()
 		end)
 
@@ -349,9 +359,9 @@ function CopyChat:OnEnable()
 		ConfigButton:SetScript("OnMouseUp", function(_, btn)
 			if btn == "LeftButton" then
 				PlaySound(111)
-				EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 2)
+				_G.EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 2)
 			elseif btn == "RightButton" then
-				K.ConfigUI()
+				_G.SlashCmdList["KKUI_CONFIGUI"]()
 			end
 		end)
 
@@ -361,8 +371,8 @@ function CopyChat:OnEnable()
 			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
 			GameTooltip:ClearLines()
-			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Open QuickMenu", 1, 1, 1)
-			GameTooltip:AddDoubleLine(rightButtonString..L["ConfigButton"].Right_Click, L["ConfigButton"].ToggleConfig, 1, 1, 1)
+			GameTooltip:AddDoubleLine(leftButtonString..L["Left Click"], L["Toggle Quick Menu"], 1, 1, 1)
+			GameTooltip:AddDoubleLine(rightButtonString..L["Right Click"], L["Toggle KkthnxUI Config"], 1, 1, 1)
 			GameTooltip:Show()
 		end)
 
@@ -374,79 +384,12 @@ function CopyChat:OnEnable()
 			end
 		end)
 
-		-- Create Bagsbutton
-		local BagsButton = CreateFrame("Button", string_format("BagsChatButton%d", id), frame)
-		BagsButton:SetSize(16, 16)
-		BagsButton:SetPoint("TOP", ConfigButton, "BOTTOM", 0, -5)
-		BagsButton.Texture = BagsButton:CreateTexture(nil, "BACKGROUND")
-		BagsButton.Texture:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
-		BagsButton.Texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		BagsButton.Texture:SetAllPoints()
-		BagsButton:StyleButton(nil, true)
-		BagsButton:SetAlpha(0.25)
-		BagsButton:SetFrameLevel(frame:GetFrameLevel() + 5)
-
-		BagsButton:SetScript("OnMouseUp", function(self)
-			local Bank = BankFrame
-
-			if Bank:IsShown() then
-				CloseBankFrame()
-			else
-				ToggleAllBags()
-			end
-		end)
-
-		BagsButton:SetScript("OnEnter", function(self)
-			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
-
-			local free, total = 0, 0
-			for i = 0, NUM_BAG_SLOTS do
-				free, total = free + GetContainerNumFreeSlots(i), total + GetContainerNumSlots(i)
-			end
-
-			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
-			GameTooltip:SetOwner(self, anchor, xoff, yoff)
-			GameTooltip:ClearLines()
-			GameTooltip:AddLine(INVENTORY_TOOLTIP)
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddDoubleLine("Used" , total - free, 1, 1, 1)
-			GameTooltip:AddDoubleLine(TOTAL , total, 1, 1, 1)
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, BINDING_NAME_OPENALLBAGS, 1, 1, 1)
-
-			for i = 1, MAX_WATCHED_TOKENS do
-				local name, count = GetBackpackCurrencyInfo(i)
-				if name and i == 1 then
-					GameTooltip:AddLine(" ")
-					GameTooltip:AddLine(CURRENCY)
-					GameTooltip:AddLine(" ")
-				end
-
-				if name and count then
-					GameTooltip:AddDoubleLine(name, count, 1, 1, 1)
-				end
-			end
-
-			GameTooltip:Show()
-		end)
-
-		BagsButton:SetScript("OnLeave", function(self)
-			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
-
-			if not GameTooltip:IsForbidden() then
-				GameTooltip:Hide()
-			end
-		end)
-
-		BagsButton:RegisterEvent("BAG_UPDATE")
-		BagsButton:RegisterEvent("PLAYER_ENTERING_WORLD")
-
 		-- Create Damagemeter Toggle
 		if K.CheckAddOnState("Details") or K.CheckAddOnState("Skada") then
 			local DamageMeterButton = CreateFrame("Button", string_format("DamageMeterChatButton%d", id), frame)
 			DamageMeterButton:EnableMouse(true)
 			DamageMeterButton:SetSize(16, 16)
-			DamageMeterButton:SetPoint("TOP", BagsButton, "BOTTOM", 0, -5)
+			DamageMeterButton:SetPoint("TOP", ConfigButton, "BOTTOM", 0, -5)
 			DamageMeterButton.Texture = DamageMeterButton:CreateTexture(nil, "BACKGROUND")
 			DamageMeterButton.Texture:SetTexture("Interface\\Icons\\Spell_Lightning_LightningBolt01")
 			DamageMeterButton.Texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -456,15 +399,20 @@ function CopyChat:OnEnable()
 			DamageMeterButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
 			DamageMeterButton:SetScript("OnMouseUp", function(_, btn)
-				if btn == "LeftButton" or btn == "RightButton" then
+				if btn == "LeftButton" then
 					if IsAddOnLoaded("Details") then
 						PlaySound(21968)
-						_detalhes:ToggleWindows()
+						_G._detalhes:ToggleWindows()
 					end
 
 					if IsAddOnLoaded("Skada") then
 						PlaySound(21968)
-						Skada:ToggleWindow()
+						_G.Skada:ToggleWindow()
+					end
+				elseif btn == "RightButton" then
+					if IsAddOnLoaded("Details") then
+						_G.KkthnxUIData["ResetDetails"] = true
+						K.StaticPopup_Show("CHANGES_RL")
 					end
 				end
 			end)
@@ -476,11 +424,12 @@ function CopyChat:OnEnable()
 				GameTooltip:SetOwner(self, anchor, xoff, yoff)
 				GameTooltip:ClearLines()
 				if IsAddOnLoaded("Details") then
-					GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Show/Hide Details", 1, 1, 1)
+					GameTooltip:AddDoubleLine(leftButtonString..L["Left Click"], L["Show Hide Details"], 1, 1, 1)
+					GameTooltip:AddDoubleLine(rightButtonString..L["Right Click"], L["Reset Details"], 1, 1, 1)
 				end
 
 				if IsAddOnLoaded("Skada") then
-					GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Show/Hide Skada", 1, 1, 1)
+					GameTooltip:AddDoubleLine(leftButtonString..L["Left Click"], L["Show Hide Skada"], 1, 1, 1)
 				end
 				GameTooltip:Show()
 			end)

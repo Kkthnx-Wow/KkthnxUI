@@ -1,134 +1,242 @@
 local K, C = unpack(select(2, ...))
-if not (C["Skins"].DBM and K.CheckAddOnState("DBM-Core") and K.CheckAddOnState("DBM-StatusBarTimers") and K.CheckAddOnState("DBM-DefaultSkin")) then
-	return
-end
 
---local DBMFont = K.GetFont(C["UIFonts"].SkinFonts)
---local DBMTexture = K.GetTexture(C["UITextures"].SkinTextures)
+local DBMFont = K.GetFont(C["UIFonts"].SkinFonts)
+local DBMTexture = K.GetTexture(C["UITextures"].SkinTextures)
 
 local _G = _G
+local string_find = _G.string.find
+local string_gsub = _G.string.gsub
+local string_match = _G.string.match
+local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
+local IsAddOnLoaded = _G.IsAddOnLoaded
 local hooksecurefunc = _G.hooksecurefunc
 
-local DBM_Skin = CreateFrame("Frame")
-DBM_Skin:RegisterEvent("ADDON_LOADED")
-DBM_Skin:RegisterEvent("PLAYER_ENTERING_WORLD")
-DBM_Skin:SetScript("OnEvent", function(_, event)
-	if event == "PLAYER_ENTERING_WORLD" then
-		local function SkinBars(self)
-			for bar in self:GetBarIterator() do
-				if not bar.injected then
-					hooksecurefunc(bar, "Update", function()
-						local sparkEnabled = bar.owner.options.Style ~= "BigWigs" and bar.owner.options.Spark
-						if not sparkEnabled then return end
-						local spark = _G[bar.frame:GetName().."BarSpark"]
-						spark:SetSize(12, bar.owner.options.Height * 3/2 - 2)
-						local a, b, c, d = spark:GetPoint()
-						spark:SetPoint(a, b, c, d, 0)
-					end)
+local ReskinDeadlyBossMods = CreateFrame("Frame")
+ReskinDeadlyBossMods:RegisterEvent("PLAYER_LOGIN")
+--ReskinDeadlyBossMods:RegisterEvent("ADDON_LOADED")
+ReskinDeadlyBossMods:SetScript("OnEvent", function()
+    -- Default notice message
+    local RaidNotice_AddMessage_ = RaidNotice_AddMessage
+    RaidNotice_AddMessage = function(noticeFrame, textString, colorInfo)
+        if string_find(textString, "|T") then
+            if string_match(textString, ":(%d+):(%d+)") then
+                local size1, size2 = string_match(textString, ":(%d+):(%d+)")
+                size1, size2 = size1 + 3, size2 + 3
+                textString = string_gsub(textString,":(%d+):(%d+)",":"..size1..":"..size2..":0:0:64:64:5:59:5:59")
+            elseif string_match(textString, ":(%d+)|t") then
+                local size = string_match(textString, ":(%d+)|t")
+                size = size + 3
+                textString = string_gsub(textString,":(%d+)|t",":"..size..":"..size..":0:0:64:64:5:59:5:59|t")
+            end
+        end
 
-					hooksecurefunc(bar, "ApplyStyle", function()
-						local frame = bar.frame
-						local tbar = _G[frame:GetName().."Bar"]
-						local icon1 = _G[frame:GetName().."BarIcon1"]
-						local icon2 = _G[frame:GetName().."BarIcon2"]
-						local name = _G[frame:GetName().."BarName"]
-						local timer = _G[frame:GetName().."BarTimer"]
+        return RaidNotice_AddMessage_(noticeFrame, textString, colorInfo)
+    end
 
-						if not icon1.overlay then
-							icon1.overlay = CreateFrame("Frame", "$parentIcon1Overlay", tbar)
-							icon1.overlay:CreateShadow()
-							icon1.overlay:SetFrameLevel(0)
-							icon1.overlay:SetPoint("BOTTOMRIGHT", frame, "BOTTOMLEFT", -4, 0)
+    if not IsAddOnLoaded("DBM-Core") then
+        return
+    end
 
-							icon1.overlay.background = icon1.overlay:CreateTexture(nil, "BORDER")
-							icon1.overlay.background:SetAllPoints()
-							icon1.overlay.background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-						end
+    if not C["Skins"].DBM then
+        return
+    end
 
-						if not icon2.overlay then
-							icon2.overlay = CreateFrame("Frame", "$parentIcon2Overlay", tbar)
-							icon2.overlay:CreateShadow()
-							icon2.overlay:SetFrameLevel(0)
-							icon2.overlay:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", 4, 0)
+    local buttonsize = 24
+    local function SkinBars(self)
+        for bar in self:GetBarIterator() do
+            if not bar.injected then
+                local frame = bar.frame
+                local tbar = _G[frame:GetName().."Bar"]
+                local spark = _G[frame:GetName().."BarSpark"]
+                local texture = _G[frame:GetName().."BarTexture"]
+                local icon1 = _G[frame:GetName().."BarIcon1"]
+                local icon2 = _G[frame:GetName().."BarIcon2"]
+                local name = _G[frame:GetName().."BarName"]
+                local timer = _G[frame:GetName().."BarTimer"]
 
-							icon2.overlay.background = icon2.overlay:CreateTexture(nil, "BORDER")
-							icon2.overlay.background:SetAllPoints()
-							icon2.overlay.background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-						end
+                if not (icon1.overlay) then
+                    icon1.overlay = CreateFrame("Frame", "$parentIcon1Overlay", tbar)
+                    icon1.overlay:SetSize(buttonsize + 2, buttonsize + 2)
+                    icon1.overlay:SetFrameStrata("BACKGROUND")
+                    icon1.overlay:SetPoint("BOTTOMRIGHT", tbar, "BOTTOMLEFT", -buttonsize / 6, 0)
 
-						icon1:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-						icon1:ClearAllPoints()
-						icon1:SetAllPoints(icon1.overlay)
+                    local backdroptex = icon1.overlay:CreateTexture(nil, "BORDER")
+                    backdroptex:SetTexture([=[Interface\Icons\Spell_Nature_WispSplode]=])
+                    backdroptex:SetPoint("TOPLEFT", icon1.overlay, "TOPLEFT", 1, -1)
+                    backdroptex:SetPoint("BOTTOMRIGHT", icon1.overlay, "BOTTOMRIGHT", -1, 1)
+                    backdroptex:SetTexCoord(unpack(K.TexCoords))
+                    icon1.overlay:CreateShadow(true)
+                end
 
-						icon2:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-						icon2:ClearAllPoints()
-						icon2:SetAllPoints(icon2.overlay)
+                if not (icon2.overlay) then
+                    icon2.overlay = CreateFrame("Frame", "$parentIcon2Overlay", tbar)
+                    icon2.overlay:SetSize(buttonsize + 2, buttonsize + 2)
+                    icon2.overlay:SetPoint("BOTTOMLEFT", tbar, "BOTTOMRIGHT", buttonsize / 6, 0)
 
-						icon1.overlay:SetSize(bar.owner.options.Height, bar.owner.options.Height)
-						icon2.overlay:SetSize(bar.owner.options.Height, bar.owner.options.Height)
+                    local backdroptex = icon2.overlay:CreateTexture(nil, "BORDER")
+                    backdroptex:SetTexture([=[Interface\Icons\Spell_Nature_WispSplode]=])
+                    backdroptex:SetPoint("TOPLEFT", icon2.overlay, "TOPLEFT", 1, -1)
+                    backdroptex:SetPoint("BOTTOMRIGHT", icon2.overlay, "BOTTOMRIGHT", -1, 1)
+                    backdroptex:SetTexCoord(unpack(K.TexCoords))
+                    icon2.overlay:CreateShadow(true)
+                end
 
-						tbar:SetAllPoints(frame)
+                if bar.color then
+                    tbar:SetStatusBarColor(bar.color.r, bar.color.g, bar.color.b)
+                else
+                    tbar:SetStatusBarColor(bar.owner.options.StartColorR, bar.owner.options.StartColorG, bar.owner.options.StartColorB)
+                end
 
-						frame:CreateShadow(true)
+                if bar.enlarged then
+                    frame:SetWidth(bar.owner.options.HugeWidth)
+                else
+                    frame:SetWidth(bar.owner.options.Width)
+                end
 
-						name:ClearAllPoints()
-						name:SetWidth(165)
-						name:SetHeight(8)
-						name:SetJustifyH("LEFT")
-						name:SetShadowColor(0, 0, 0, 0)
+                if bar.enlarged then
+                    tbar:SetWidth(bar.owner.options.HugeWidth)
+                else
+                    tbar:SetWidth(bar.owner.options.Width)
+                end
 
-						timer:ClearAllPoints()
-						timer:SetJustifyH("RIGHT")
-						timer:SetShadowColor(0, 0, 0, 0)
+                if not frame.styled then
+                    frame:SetScale(1)
+                    frame.SetScale = K.Noop
+                    frame:SetHeight(buttonsize / 2)
+                    frame.SetHeight = K.Noop
+                    if not frame.bg then
+                        frame.bg = CreateFrame("Frame", nil, frame)
+                        frame.bg:SetAllPoints()
+                    end
+                    frame.bg:CreateShadow(true)
+                    frame.styled = true
+                end
 
-						frame:SetHeight(bar.owner.options.Height)
-						name:SetPoint("LEFT", frame, "LEFT", 4, 0)
-						timer:SetPoint("RIGHT", frame, "RIGHT", -4, 0)
+                if not spark.killed then
+                    spark:SetAlpha(0)
+                    spark:SetTexture(nil)
+                    spark.killed = true
+                end
 
-						timer:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
-						name:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
+                if not icon1.styled then
+                    icon1:SetTexCoord(unpack(K.TexCoords))
+                    icon1:ClearAllPoints()
+                    icon1:SetPoint("TOPLEFT", icon1.overlay)
+                    icon1:SetPoint("BOTTOMRIGHT", icon1.overlay)
+                    icon1.SetSize = K.Noop
+                    icon1.styled = true
+                end
 
-						if bar.owner.options.IconLeft then
-							icon1.overlay:Show()
-						else
-							icon1.overlay:Hide()
-						end
+                if not icon2.styled then
+                    icon2:SetTexCoord(unpack(K.TexCoords))
+                    icon2:ClearAllPoints()
+                    icon2:SetPoint("TOPLEFT", icon2.overlay)
+                    icon2:SetPoint("BOTTOMRIGHT", icon2.overlay)
+                    icon2.SetSize = K.Noop
+                    icon2.styled = true
+                end
 
-						if bar.owner.options.IconRight then
-							icon2.overlay:Show()
-						else
-							icon2.overlay:Hide()
-						end
+                if not texture.styled then
+                    texture:SetTexture(DBMTexture)
+                    texture.styled = true
+                end
 
-						bar.injected = true
-					end)
-					bar:ApplyStyle()
-				end
-			end
-		end
+                tbar:SetStatusBarTexture(DBMTexture)
+                if not tbar.styled then
+                    tbar:SetPoint("TOPLEFT", frame, "TOPLEFT")
+                    tbar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT")
+                    tbar.SetPoint = K.Noop
+                    tbar.styled = true
 
-		local function SkinRange(_, _, _, forceshow)
-			if DBM.Options.DontShowRangeFrame and not forceshow then return end
-			if DBMRangeCheck then
-				DBMRangeCheck:StripTextures()
-				DBMRangeCheck:CreateShadow(true)
-				DBMRangeCheckRadar:StripTextures()
-				DBMRangeCheckRadar:CreateShadow(true)
-			end
-		end
+                    tbar.Spark = tbar:CreateTexture(nil, "OVERLAY")
+                    tbar.Spark:SetTexture(C["Media"].Spark_16)
+                    tbar.Spark:SetBlendMode("ADD")
+                    tbar.Spark:SetAlpha(.8)
+                    tbar.Spark:SetPoint("TOPLEFT", tbar:GetStatusBarTexture(), "TOPRIGHT", -16, 0)
+                    tbar.Spark:SetPoint("BOTTOMRIGHT", tbar:GetStatusBarTexture(), "BOTTOMRIGHT", 16, -0)
+                end
 
-		local function SkinInfo()
-			if DBM.Options.DontShowInfoFrame and (event or 0) ~= "test" then return end
-			if DBMInfoFrame then
-				DBMInfoFrame:StripTextures()
-				DBMInfoFrame:CreateShadow(true)
-			end
-		end
+                if not name.styled then
+                    name:ClearAllPoints()
+                    name:SetPoint("LEFT", frame, "LEFT", 2, 8)
+                    name:SetPoint("RIGHT", frame, "LEFT", tbar:GetWidth() * 0.85, 8)
+                    name.SetPoint = K.Noop
+					name:SetFontObject(DBMFont)
+					name:SetFont(select(1, name:GetFont()), 12, "OUTLINE")
+                    name.SetFont = K.Noop
+                    name:SetJustifyH("LEFT")
+                    name:SetWordWrap(false)
+                    name:SetShadowColor(0, 0, 0, 0)
+                    name.styled = true
+                end
 
-		hooksecurefunc(DBT, "CreateBar", SkinBars)
-		hooksecurefunc(DBM.RangeCheck, "Show", SkinRange)
-		hooksecurefunc(DBM.InfoFrame, "Show", SkinInfo)
-	end
+                if not timer.styled then
+                    timer:ClearAllPoints()
+                    timer:SetPoint("RIGHT", frame, "RIGHT", -2, 8)
+                    timer.SetPoint = K.Noop
+					timer:SetFontObject(DBMFont)
+					timer:SetFont(select(1, timer:GetFont()), 12, "OUTLINE")
+                    timer.SetFont = K.Noop
+                    timer:SetJustifyH("RIGHT")
+                    timer:SetShadowColor(0, 0, 0, 0)
+                    timer.styled = true
+                end
+
+                if bar.owner.options.IconLeft then
+                    icon1:Show() icon1.overlay:Show()
+                else
+                    icon1:Hide() icon1.overlay:Hide()
+                end
+
+                if bar.owner.options.IconRight then
+                    icon2:Show() icon2.overlay:Show()
+                else
+                    icon2:Hide() icon2.overlay:Hide()
+                end
+
+                tbar:SetAlpha(1)
+                frame:SetAlpha(1)
+                texture:SetAlpha(1)
+                frame:Show()
+                bar:Update(0)
+                bar.injected = true
+            end
+        end
+    end
+    hooksecurefunc(DBT, "CreateBar", SkinBars)
+
+    local function SkinRange()
+        if DBMRangeCheckRadar and not DBMRangeCheckRadar.styled then
+            --TT.ReskinTooltip(DBMRangeCheckRadar)
+            --DBMRangeCheckRadar.styled = true
+        end
+
+        if DBMRangeCheck and not DBMRangeCheck.styled then
+            --TT.ReskinTooltip(DBMRangeCheck)
+            --DBMRangeCheck.styled = true
+        end
+    end
+    hooksecurefunc(DBM.RangeCheck, "Show", SkinRange)
+
+    if DBM.InfoFrame then
+        DBM.InfoFrame:Show(5, "test")
+        DBM.InfoFrame:Hide()
+        -- DBMInfoFrame:HookScript("OnShow", TT.ReskinTooltip)
+    end
+
+    -- Force Settings
+    if not DBM_AllSavedOptions["Default"] then
+        DBM_AllSavedOptions["Default"] = {}
+    end
+
+    DBM_AllSavedOptions["Default"]["BlockVersionUpdateNotice"] = true
+    DBM_AllSavedOptions["Default"]["EventSoundVictory"] = "None"
+    DBT_AllPersistentOptions["Default"]["DBM"].BarYOffset = 18
+    DBT_AllPersistentOptions["Default"]["DBM"].HugeBarYOffset = 18
+    if IsAddOnLoaded("DBM-VPYike") then
+        DBM_AllSavedOptions["Default"]["CountdownVoice"] = "VP:Yike"
+        DBM_AllSavedOptions["Default"]["ChosenVoicePack"] = "Yike"
+    end
 end)

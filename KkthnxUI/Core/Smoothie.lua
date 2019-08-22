@@ -1,136 +1,35 @@
 local K = unpack(select(2, ...))
 
--- Sourced: ls- (lightspark)
-local abs, next, Lerp = abs, next, Lerp
-local tonumber, assert = tonumber, assert
-
-local activeObjects = {}
-local handledObjects = {}
-local TARGET_FPS = 60
-local AMOUNT = 0.10
-
-local function clamp(v, min, max)
-	min = min or 0
-	max = max or 1
-
-	if v > max then
-		return max
-	elseif v < min then
-		return min
-	end
-
-	return v
-end
-
-local function isCloseEnough(new, target, range)
-	if range > 0 then
-		return abs((new - target) / range) <= 0.001
-	end
-
-	return true
-end
-
-local frame = CreateFrame("Frame")
-local function onUpdate(_, elapsed)
-	for object, target in next, activeObjects do
-		local new = Lerp(object._value, target, clamp(AMOUNT * elapsed * TARGET_FPS))
-		if isCloseEnough(new, target, object._max - object._min) then
-			new = target
-			activeObjects[object] = nil
+-- Smoothy
+local smoothing = {}
+local f = CreateFrame("Frame")
+f:SetScript("OnUpdate", function()
+	local limit = 30 / GetFramerate()
+	for bar, value in pairs(smoothing) do
+		local cur = bar:GetValue()
+		local new = cur + min((value-cur) / 8, max(value-cur, limit))
+		if new ~= new then
+			new = value
 		end
-
-		object:SetValue_(new)
-		object._value = new
-	end
-end
-
-local function bar_SetSmoothedValue(self, value)
-	value = tonumber(value)
-
-	assert(value, "bar_SetSmoothedValue requires (value) to be a number.")
-
-	self._value = self:GetValue()
-	activeObjects[self] = clamp(value, self._min, self._max)
-end
-
-local function bar_SetSmoothedMinMaxValues(self, min, max)
-	min, max = tonumber(min), tonumber(max)
-
-	assert(min and max, "bar_SetSmoothedMinMaxValues requires (min and max) to be a number.")
-
-	self:SetMinMaxValues_(min, max)
-
-	if self._max and self._max ~= max then
-		local ratio = 1
-		if max ~= 0 and self._max and self._max ~= 0 then
-			ratio = max / (self._max or max)
-		end
-
-		local target = activeObjects[self]
-		if target then
-			activeObjects[self] = target * ratio
-		end
-
-		local cur = self._value
-		if cur then
-			self:SetValue_(cur * ratio)
-			self._value = cur * ratio
+		bar:SetValue_(new)
+		if cur == value or abs(new - value) < 1 then
+			smoothing[bar] = nil
+			bar:SetValue_(value)
 		end
 	end
+end)
 
-	self._min = min
-	self._max = max
-end
-
-local function SmoothBar(bar)
-    bar._min, bar._max = bar:GetMinMaxValues()
-    bar._value = bar:GetValue()
-
-	if not bar.SetValue_ then
-		bar.SetValue_ = bar.SetValue
-		bar.SetValue = bar_SetSmoothedValue
-	end
-
-	if not bar.SetMinMaxValues_ then
-		bar.SetMinMaxValues_ = bar.SetMinMaxValues
-		bar.SetMinMaxValues = bar_SetSmoothedMinMaxValues
-	end
-
-	if not frame:GetScript("OnUpdate") then
-		frame:SetScript("OnUpdate", onUpdate)
-	end
-
-	handledObjects[bar] = true
-end
-
-local function DesmoothBar(bar)
-	if activeObjects[bar] then
-		bar:SetValue_(activeObjects[bar])
-		activeObjects[bar] = nil
-	end
-
-	if handledObjects[bar] then
-		handledObjects[bar] = nil
-	end
-
-	if bar.SetValue_ then
-		bar.SetValue = bar.SetValue_
-		bar.SetValue_ = nil
-	end
-	if bar.SetMinMaxValues_ then
-		bar.SetMinMaxValues = bar.SetMinMaxValues_
-		bar.SetMinMaxValues_ = nil
-	end
-
-	if not next(handledObjects) then
-		frame:SetScript("OnUpdate", nil)
-	end
-end
-
-function K:SetSmoothing(bar, enable)
-	if enable then
-		SmoothBar(bar)
+local function SetSmoothValue(self, value)
+	if value ~= self:GetValue() or value == 0 then
+		smoothing[self] = value
 	else
-		DesmoothBar(bar)
+		smoothing[self] = nil
+	end
+end
+
+function K:SmoothBar()
+	if not self.SetValue_ then
+		self.SetValue_ = self.SetValue
+		self.SetValue = SetSmoothValue
 	end
 end

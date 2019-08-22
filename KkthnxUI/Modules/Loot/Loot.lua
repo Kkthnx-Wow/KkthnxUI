@@ -1,24 +1,25 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("Loot", "AceEvent-3.0", "AceTimer-3.0")
+local Module = K:NewModule("Loot", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
 local LBG = LibStub("LibButtonGlow-1.0", true)
 
 local _G = _G
-local pairs = pairs
-local tinsert = table.insert
-local max = math.max
+local max = _G.math.max
+local pairs = _G.pairs
+local table_insert = _G.table.insert
 
 local CloseLoot = _G.CloseLoot
 local CreateFrame = _G.CreateFrame
 local CursorOnUpdate = _G.CursorOnUpdate
 local CursorUpdate = _G.CursorUpdate
-local GetCursorPosition = _G.GetCursorPosition
 local GetCVar = _G.GetCVar
+local GetCVarBool = _G.GetCVarBool
+local GetCursorPosition = _G.GetCursorPosition
 local GetLootSlotInfo = _G.GetLootSlotInfo
 local GetLootSlotLink = _G.GetLootSlotLink
 local GetNumLootItems = _G.GetNumLootItems
+local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
 local IsFishingLoot = _G.IsFishingLoot
 local IsModifiedClick = _G.IsModifiedClick
-local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
 local LOOT = _G.LOOT
 local LootSlotHasItem = _G.LootSlotHasItem
 local ResetCursor = _G.ResetCursor
@@ -159,10 +160,11 @@ local function createSlot(id)
 	frame.questTexture = questTexture
 
 	lootFrame.slots[id] = frame
+
 	return frame
 end
 
-function Module:LOOT_SLOT_CLEARED(_, slot)
+function Module.LOOT_SLOT_CLEARED(_, slot)
 	if not lootFrame:IsShown() then
 		return
 	end
@@ -171,7 +173,7 @@ function Module:LOOT_SLOT_CLEARED(_, slot)
 	anchorSlots(lootFrame)
 end
 
-function Module:LOOT_CLOSED()
+function Module.LOOT_CLOSED()
 	StaticPopup_Hide("LOOT_BIND")
 	lootFrame:Hide()
 
@@ -180,7 +182,7 @@ function Module:LOOT_CLOSED()
 	end
 end
 
-function Module:LOOT_OPENED(_, autoloot)
+function Module.LOOT_OPENED(_, autoloot)
 	lootFrame:Show()
 
 	if (not lootFrame:IsShown()) then
@@ -190,7 +192,7 @@ function Module:LOOT_OPENED(_, autoloot)
 	local items = GetNumLootItems()
 
 	if IsFishingLoot() then
-		lootFrame.title:SetText(L["Loot"].Fishy_Loot)
+		lootFrame.title:SetText(L["Fishy Loot"])
 	elseif not UnitIsFriend("player", "target") and UnitIsDead("target") then
 		lootFrame.title:SetText(UnitName("target"))
 	else
@@ -263,7 +265,7 @@ function Module:LOOT_OPENED(_, autoloot)
 			end
 
 			-- Check for FasterLooting scripts or w/e (if bag is full)
-			-- Simpy, Merathilis <3
+			-- Sourced: (Simpy, Merathilis)
 			if textureID then
 				slot:Enable()
 				slot:Show()
@@ -273,7 +275,7 @@ function Module:LOOT_OPENED(_, autoloot)
 		local slot = lootFrame.slots[1] or createSlot(1)
 		local color = ITEM_QUALITY_COLORS[0]
 
-		slot.name:SetText(L["Loot"].Empty_Slot)
+		slot.name:SetText(L["Empty Slot"])
 		if color then
 			slot.name:SetTextColor(color.r, color.g, color.b)
 		end
@@ -322,14 +324,19 @@ function Module:OnEnable()
 		CloseLoot()
 	end)
 
-	self:RegisterEvent("LOOT_OPENED")
-	self:RegisterEvent("LOOT_SLOT_CLEARED")
-	self:RegisterEvent("LOOT_CLOSED")
+	K:RegisterEvent("LOOT_OPENED", self.LOOT_OPENED)
+	K:RegisterEvent("LOOT_SLOT_CLEARED", self.LOOT_SLOT_CLEARED)
+	K:RegisterEvent("LOOT_CLOSED", self.LOOT_CLOSED)
 
 	if (GetCVar("lootUnderMouse") == "0") then
 		K.Mover(lootFrameHolder, "LootFrame", "LootFrame", {"TOPLEFT", 36, -195})
 	end
 
 	LootFrame:UnregisterAllEvents()
-	tinsert(UISpecialFrames, "KkthnxLootFrame")
+	table_insert(UISpecialFrames, "KkthnxLootFrame")
+
+	self:CreateGroupLoot()
+	self:CreateAutoConfirm()
+	self:CreateAutoGreed()
+	self:CreateFasterLoot()
 end

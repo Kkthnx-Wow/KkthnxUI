@@ -1,5 +1,5 @@
 local K = _G.unpack(_G.select(2, ...))
-local Module = K:NewModule("TooltipPetInfo")
+local Module = K:GetModule("Tooltip")
 
 local _G = _G
 

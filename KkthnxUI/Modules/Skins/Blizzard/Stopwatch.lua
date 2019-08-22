@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
 local SwPlay = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\SwPlay"
@@ -45,4 +45,4 @@ local function SkinStopwatch()
 	hooksecurefunc("Stopwatch_Clear", SetPlayTexture)
 end
 
-Module.SkinFuncs["Blizzard_TimeManager"] = SkinStopwatch
+Module.NewSkin["Blizzard_TimeManager"] = SkinStopwatch

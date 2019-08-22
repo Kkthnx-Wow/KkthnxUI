@@ -1,9 +1,10 @@
-local K = unpack(select(2, ...))
-local Module = K:GetModule("Unitframes")
-local SpellRange = LibStub("SpellRange-1.0")
-
 local _G = _G
-local pairs, ipairs = pairs, ipairs
+
+local K = _G.unpack(_G.select(2, ...))
+local Module = K:GetModule("Unitframes")
+local SpellRange = _G.LibStub("SpellRange-1.0")
+
+local pairs, ipairs = _G.pairs, _G.ipairs
 
 local CheckInteractDistance = _G.CheckInteractDistance
 local UnitCanAttack = _G.UnitCanAttack

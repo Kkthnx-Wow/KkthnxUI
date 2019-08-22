@@ -143,8 +143,8 @@ function ExtraQuestButton:PLAYER_LOGIN()
 	self.Count = Count
 
 	local Cooldown = CreateFrame("Cooldown", "$parentCooldown", self, "CooldownFrameTemplate")
-	Cooldown:SetPoint("TOPLEFT", -1, 1)
-	Cooldown:SetPoint("BOTTOMRIGHT", 1, -1)
+	Cooldown:SetPoint("TOPLEFT", 1, -1)
+	Cooldown:SetPoint("BOTTOMRIGHT", -1, 1)
 	Cooldown:SetReverse(false)
 	Cooldown:Hide()
 	self.Cooldown = Cooldown

@@ -1,10 +1,16 @@
-local K, C = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
 
 local _G = _G
+local next = _G.next
+local pairs = _G.pairs
+local unpack = _G.unpack
 
-local IsUsableAction = _G.IsUsableAction
+local CreateFrame = _G.CreateFrame
+local HasAction = _G.HasAction
+local hooksecurefunc = _G.hooksecurefunc
 local IsActionInRange = _G.IsActionInRange
+local IsUsableAction = _G.IsUsableAction
 
 local UPDATE_DELAY = .2
 local buttonColors, buttonsToUpdate = {}, {}

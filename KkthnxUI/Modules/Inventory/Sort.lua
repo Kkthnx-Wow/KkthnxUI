@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local B = K:NewModule("InventorySort", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
+local B = K:NewModule("Sort", "AceEvent-3.0")
 
 local _G = _G
 local ipairs, pairs, select, unpack = ipairs, pairs, select, unpack
@@ -1002,4 +1002,8 @@ function B:CommandDecorator(func, groupsDefaults)
 		wipe(bagGroups)
 		B:StartStacking()
 	end
+end
+
+function B:OnEnable()
+	return
 end

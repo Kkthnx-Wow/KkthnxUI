@@ -3,15 +3,12 @@
    <!-- Load_Skins -->
    <Include file="Core.lua" />
 
-   <Include file="Addons\Bagnon.lua" />
-   <Include file="Addons\BigWigs.lua" />
    <Include file="Addons\DBM.lua" />
    <Include file="Addons\Details.lua" />
    <Include file="Addons\ExtraQuestButton.lua" />
    <Include file="Addons\Hekili.lua" />
    <Include file="Addons\Simulationcraft.lua" />
    <Include file="Addons\Skada.lua" />
-   <Include file="Addons\Spy.lua" />
    <Include file="Addons\WeakAuras.lua" />
 
    <Include file="Blizzard\Achievement.lua" />
@@ -20,21 +17,17 @@
    <Include file="Blizzard\BattlegroundMap.lua" />
    <Include file="Blizzard\Character.lua" />
    <Include file="Blizzard\Collectables.lua" />
-   <Include file="Blizzard\Contribution.lua" />
    <Include file="Blizzard\DeathRecap.lua" />
    <Include file="Blizzard\Inspect.lua" />
    <Include file="Blizzard\LossControl.lua" />
    <Include file="Blizzard\Mail.lua" />
    <Include file="Blizzard\Miscellaneous.lua" />
    <Include file="Blizzard\ObjectiveTracker.lua" />
-   <Include file="Blizzard\PetBattle.lua" />
    <Include file="Blizzard\PvP.lua" />
    <Include file="Blizzard\Reputation.lua" />
    <Include file="Blizzard\ScrappingMachine.lua" />
-   <Include file="Blizzard\ScriptErrors.lua" />
    <Include file="Blizzard\SpellBook.lua" />
    <Include file="Blizzard\Stopwatch.lua" />
    <Include file="Blizzard\TalkingHead.lua" />
-   <Include file="Blizzard\Tooltip.lua" />
    <Include file="Blizzard\Worldmap.lua" />
 </Ui>

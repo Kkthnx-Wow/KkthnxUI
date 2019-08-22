@@ -1,27 +1,40 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("Skins", "AceEvent-3.0")
+local Module = K:NewModule("Skins")
 
 local _G = _G
 local pairs = pairs
 local type = type
 
-local hooksecurefunc = _G.hooksecurefunc
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local NO = _G.NO
 
-Module.SkinFuncs = {}
-Module.SkinFuncs["KkthnxUI"] = {}
-
-function Module:StatusBarColorGradient(bar, value, max)
-	local current = (not max and value) or (value and max and max ~= 0 and value / max)
-
-	if not (bar and current) then
+Module.NewSkin = {}
+Module.NewSkin["KkthnxUI"] = {}
+local function LoadWithSkin(_, addon)
+	if IsAddOnLoaded("Skinner") or IsAddOnLoaded("Aurora") then
+		Module:UnregisterEvent("ADDON_LOADED", LoadWithSkin)
 		return
 	end
 
-	local r, g, b = K.ColorGradient(current, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
-	bar:SetStatusBarColor(r, g, b)
+	for _addon, skinfunc in pairs(Module.NewSkin) do
+		if type(skinfunc) == "function" then
+			if _addon == addon then
+				if skinfunc then
+					skinfunc()
+				end
+			end
+		elseif type(skinfunc) == "table" then
+			if _addon == addon then
+				for _, skinfunc in pairs(Module.NewSkin[_addon]) do
+					if skinfunc then
+						skinfunc()
+					end
+				end
+			end
+		end
+	end
 end
+K:RegisterEvent("ADDON_LOADED", LoadWithSkin)
 
 function Module:AcceptFrame(MainText, Function)
 	if not AcceptFrame then
@@ -57,93 +70,6 @@ function Module:AcceptFrame(MainText, Function)
 	AcceptFrame:Show()
 end
 
--- DropDownMenu library support
-function Module:SkinLibDropDownMenu(prefix)
-	if _G[prefix .. "_UIDropDownMenu_CreateFrames"] and not Module[prefix .. "_UIDropDownMenuSkinned"] then
-		local bd = _G[prefix .. "_DropDownList1Backdrop"]
-		local mbd = _G[prefix .. "_DropDownList1MenuBackdrop"]
-
-		if bd and not bd.border then
-			bd:CreateBorder()
-		end
-
-		if mbd and not mbd.border then
-			mbd:CreateBorder()
-		end
-
-		Module[prefix .. "_UIDropDownMenuSkinned"] = true
-		hooksecurefunc(prefix .. "_UIDropDownMenu_CreateFrames", function()
-			local lvls = _G[(prefix == "Lib" and "LIB" or prefix) .. "_UIDROPDOWNMENU_MAXLEVELS"]
-			local ddbd = lvls and _G[prefix.."_DropDownList" .. lvls .. "Backdrop"]
-			local ddmbd = lvls and _G[prefix.."_DropDownList" .. lvls .. "MenuBackdrop"]
-
-			if ddbd and not ddbd.border then
-				ddbd:CreateBorder(nil, nil, nil, true)
-			end
-
-			if ddmbd and not ddmbd.border then
-				ddmbd:CreateBorder(nil, nil, nil, true)
-			end
-		end)
-	end
-end
-
-function Module:ADDON_LOADED(event, addon)
-	if IsAddOnLoaded("Skinner") or IsAddOnLoaded("Aurora") then
-		self:UnregisterEvent("ADDON_LOADED")
-		return
-	end
-
-	if not Module.L_UIDropDownMenuSkinned then -- LibUIDropDownMenu
-		Module:SkinLibDropDownMenu("L")
-	end
-
-	if not Module.Lib_UIDropDownMenuSkinned then -- NoTaint_UIDropDownMenu
-		Module:SkinLibDropDownMenu("Lib")
-	end
-
-	for _addon, skinfunc in pairs(Module.SkinFuncs) do
-		if type(skinfunc) == "function" then
-			if _addon == addon then
-				if skinfunc then
-					skinfunc()
-				end
-			end
-		elseif type(skinfunc) == "table" then
-			if _addon == addon then
-				for _, skinfunc in pairs(Module.SkinFuncs[_addon]) do
-					if skinfunc then
-						skinfunc()
-					end
-				end
-			end
-		end
-	end
-end
-
-Module:RegisterEvent("ADDON_LOADED")
-
-
-local ModuleSkinsTest = K:NewModule("SkinsTest")
-
-function ModuleSkinsTest:LoadWithAddOn(addonName, value, func)
-	local function loadFunc(event, addon)
-		--if not C["Skins"][value] then
-		--	return
-		--end
-
-		if event == "PLAYER_ENTERING_WORLD" then
-			K:UnregisterEvent(event, loadFunc)
-			if IsAddOnLoaded(addonName) then
-				func()
-				K:UnregisterEvent("ADDON_LOADED", loadFunc)
-			end
-		elseif event == "ADDON_LOADED" and addon == addonName then
-			func()
-			K:UnregisterEvent(event, loadFunc)
-		end
-	end
-
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", loadFunc)
-	K:RegisterEvent("ADDON_LOADED", loadFunc)
+function Module:OnEnable()
+	return
 end

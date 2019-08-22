@@ -6,17 +6,18 @@ if not oUF then
 end
 
 local _G = _G
-local gmatch = gmatch
-local gsub = gsub
-local math_floor = math.floor
-local string_find = string.find
-local string_format = string.format
-local string_match = string.match
-local string_utf8lower = string.utf8lower
-local string_utf8sub = string.utf8sub
+local gmatch = _G.gmatch
+local gsub = _G.gsub
+local math_floor = _G.math.floor
+local string_find = _G.string.find
+local string_format = _G.string.format
+local string_match = _G.string.match
+local string_utf8lower = _G.string.utf8lower
+local string_utf8sub = _G.string.utf8sub
 
 local AFK = _G.AFK
-local C_PetJournal_GetPetTeamAverageLevel = C_PetJournal.GetPetTeamAverageLevel
+local ALTERNATE_POWER_INDEX = _G.ALTERNATE_POWER_INDEX
+local C_PetJournal_GetPetTeamAverageLevel = _G.C_PetJournal.GetPetTeamAverageLevel
 local DEAD = _G.DEAD
 local DND = _G.DND
 local GetNumGroupMembers = _G.GetNumGroupMembers
@@ -25,8 +26,11 @@ local GetRaidRosterInfo = _G.GetRaidRosterInfo
 local GetRelativeDifficultyColor = _G.GetRelativeDifficultyColor
 local GetThreatStatusColor = _G.GetThreatStatusColor
 local GHOST = _G.GetLocale() == "deDE" and "Geist" or _G.GetSpellInfo(8326)
+local GROUP = _G.GROUP
 local HEALER = _G.HEALER
 local IsInGroup = _G.IsInGroup
+local IsInRaid = _G.IsInRaid
+local MAX_RAID_MEMBERS = _G.MAX_RAID_MEMBERS or 40
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local QuestDifficultyColors = _G.QuestDifficultyColors
 local TANK = _G.TANK
@@ -43,6 +47,7 @@ local UnitIsAFK = _G.UnitIsAFK
 local UnitIsBattlePetCompanion = _G.UnitIsBattlePetCompanion
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDead = _G.UnitIsDead
+local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsDND = _G.UnitIsDND
 local UnitIsFriend = _G.UnitIsFriend
 local UnitIsGhost = _G.UnitIsGhost
@@ -58,6 +63,7 @@ local UnitPower = _G.UnitPower
 local UnitPowerMax = _G.UnitPowerMax
 local UnitPowerType = _G.UnitPowerType
 local UnitReaction = _G.UnitReaction
+local UnitStagger = _G.UnitStagger
 local UNKNOWN = _G.UNKNOWN
 
 local function UnitName(unit)
@@ -111,18 +117,18 @@ end
 oUF.Tags.Events["KkthnxUI:GroupNumber"] = "GROUP_ROSTER_UPDATE"
 oUF.Tags.Methods["KkthnxUI:GroupNumber"] = function()
 	if not IsInRaid() then
-        return
-    end
+		return
+	end
 
-    local numGroupMembers = GetNumGroupMembers()
-    for i = 1, MAX_RAID_MEMBERS do
-        if i <= numGroupMembers then
-            local unitName, _, groupNumber = GetRaidRosterInfo(i)
-            if unitName == UnitName("player") then
-                return GROUP.." "..groupNumber
-            end
-        end
-    end
+	local numGroupMembers = GetNumGroupMembers()
+	for i = 1, MAX_RAID_MEMBERS do
+		if i <= numGroupMembers then
+			local unitName, _, groupNumber = GetRaidRosterInfo(i)
+			if unitName == UnitName("player") then
+				return GROUP.." "..groupNumber
+			end
+		end
+	end
 end
 
 oUF.Tags.Events["KkthnxUI:MonkStagger"] = "PLAYER_TALENT_UPDATE UNIT_POWER_UPDATE UNIT_POWER_FREQUENT UNIT_DISPLAYPOWER UNIT_AURA"
@@ -138,7 +144,7 @@ oUF.Tags.Methods["KkthnxUI:MonkStagger"] = function(unit)
 		return
 	end
 
-	return K.ShortValue(cur).." | "..K.MyClassColor..math.floor(perc*100 + .5).."%"
+	return K.ShortValue(cur).." | "..K.MyClassColor..math_floor(perc*100 + .5).."%"
 end
 
 oUF.Tags.Events["KkthnxUI:AdditionalPower"] = "UNIT_POWER_UPDATE"
@@ -147,7 +153,7 @@ oUF.Tags.Methods["KkthnxUI:AdditionalPower"] = function(unit)
 	local max = UnitPowerMax(unit, ALTERNATE_POWER_INDEX)
 
 	if max > 0 and not UnitIsDeadOrGhost(unit) then
-		return format("%s%%", floor(cur/max * 100 + .5))
+		return string_format("%s%%", math_floor(cur/max * 100 + .5))
 	end
 end
 

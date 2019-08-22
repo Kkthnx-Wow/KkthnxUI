@@ -1,82 +1,42 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
+local FilterConfig = K.ActionBars.actionBar4
 
 local _G = _G
-local table_insert = table.insert
+local table_insert = _G.table.insert
 
 local CreateFrame = _G.CreateFrame
-local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
 function Module:CreateBar4()
-	local padding, margin, size = 0, 6, 34
+	local padding, margin = 0, 6
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
-	local layout = C["ActionBar"].Style.Value
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KkthnxUI_ActionBar4", UIParent, "SecureHandlerStateTemplate")
-	if layout == 2 then
-		frame:SetWidth(25 * size + 20 * margin + 2 * padding)
-		frame:SetHeight(2 * size + margin + 2 * padding)
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 4}
-	elseif layout == 3 then
-		frame:SetWidth(4 * size + 3 * margin + 2 * padding)
-		frame:SetHeight(3 * size + 2 * margin + 2 * padding)
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 450, 4}
-	else
-		frame:SetWidth(size + 2 * padding)
-		frame:SetHeight(num * size + (num - 1) * margin + 2 * padding)
-		frame.Pos = {"RIGHT", UIParent, "RIGHT", -4, 0}
-	end
-	frame:SetScale(1)
+	frame:SetWidth(FilterConfig.size + 2 * padding)
+	frame:SetHeight(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
+	frame.Pos = {"RIGHT", UIParent, "RIGHT", -4, 0}
 
 	-- Move The Buttons Into Position And Reparent Them
-	MultiBarRight:SetParent(frame)
-	MultiBarRight:EnableMouse(false)
+	_G.MultiBarRight:SetParent(frame)
+	_G.MultiBarRight:EnableMouse(false)
 
 	for i = 1, num do
 		local button = _G["MultiBarRightButton"..i]
 		table_insert(buttonList, button) -- Add The Button Object To The List
-		button:SetSize(size, size)
+		button:SetSize(FilterConfig.size, FilterConfig.size)
 		button:ClearAllPoints()
 
-		if layout == 2 then
-			if i == 1 then
-				button:SetPoint("TOPLEFT", frame, padding, -padding)
-			elseif i == 4 then
-				local previous = _G["MultiBarRightButton1"]
-				button:SetPoint("TOP", previous, "BOTTOM", 0, -margin)
-			elseif i == 7 then
-				local previous = _G["MultiBarRightButton3"]
-				button:SetPoint("LEFT", previous, "RIGHT", 19 * size + 16 * margin, 0)
-			elseif i == 10 then
-				local previous = _G["MultiBarRightButton7"]
-				button:SetPoint("TOP", previous, "BOTTOM", 0, -margin)
-			else
-				local previous = _G["MultiBarRightButton"..i - 1]
-				button:SetPoint("LEFT", previous, "RIGHT", margin, 0)
-			end
-		elseif layout == 3 then
-			if i == 1 then
-				button:SetPoint("TOPLEFT", frame, padding, -padding)
-			elseif i == 5 or i == 9 then
-				local previous = _G["MultiBarRightButton"..i - 4]
-				button:SetPoint("TOP", previous, "BOTTOM", 0, -margin)
-			else
-				local previous = _G["MultiBarRightButton"..i - 1]
-				button:SetPoint("LEFT", previous, "RIGHT", margin, 0)
-			end
+		if i == 1 then
+			button:SetPoint("TOPRIGHT", frame, -padding, -padding)
 		else
-			if i == 1 then
-				button:SetPoint("TOPRIGHT", frame, -padding, -padding)
-			else
-				local previous = _G["MultiBarRightButton"..i - 1]
-				button:SetPoint("TOP", previous, "BOTTOM", 0, -margin)
-			end
+			local previous = _G["MultiBarRightButton"..i - 1]
+			button:SetPoint("TOP", previous, "BOTTOM", 0, -margin)
 		end
 	end
 
@@ -85,11 +45,12 @@ function Module:CreateBar4()
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
 	-- Create Drag Frame And Drag Functionality
-	frame:SetPoint(frame.Pos[1], frame.Pos[2], frame.Pos[3], frame.Pos[4], frame.Pos[5])
-	K.Mover(frame, "Bar4", "Bar4", frame.Pos)
+	if K.ActionBars.userPlaced then
+		K.Mover(frame, SHOW_MULTIBAR3_TEXT, "Bar4", frame.Pos)
+	end
 
-	if C["ActionBar"].Bar4Fade == true then
-		K.CreateButtonFrameFader(frame, buttonList, K.fader)
+	if C["ActionBar"].FadeRightBar and FilterConfig.fader then
+		Module.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
 	end
 
 	-- Fix Annoying Visibility

@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("MirrorBars")
+local Module = K:GetModule("Blizzard")
 
 -- Sourced: NDui
 
@@ -10,6 +10,7 @@ local function reskinTimerBar(bar)
 	statusbar.Text = _G[bar:GetName().."Text"]
 	statusbar.barTexture = K.GetTexture(C["UITextures"].GeneralTextures)
 	statusbar.barFont = K.GetFont(C["UIFonts"].GeneralFonts)
+
 	if statusbar then
 		statusbar:SetAllPoints()
 		statusbar:SetStatusBarTexture(statusbar.barTexture)
@@ -19,7 +20,7 @@ local function reskinTimerBar(bar)
 		statusbar.Text:SetFontObject(statusbar.barFont)
 
 		statusbar.Spark = statusbar:CreateTexture(nil, "OVERLAY")
-		statusbar.Spark:SetWidth(128)
+		statusbar.Spark:SetWidth(64)
 		statusbar.Spark:SetHeight(statusbar:GetHeight())
 		statusbar.Spark:SetTexture(C["Media"].Spark_128)
 		statusbar.Spark:SetBlendMode("ADD")
@@ -42,7 +43,7 @@ local function reskinTimerBar(bar)
 	bar:CreateBorder(nil, nil, nil, true)
 end
 
-function Module:ReskinMirrorBars()
+function Module:CreateMirrorBars()
 	local previous
 	for i = 1, MIRRORTIMER_NUMTIMERS do
 		local bar = _G["MirrorTimer"..i]
@@ -53,8 +54,4 @@ function Module:ReskinMirrorBars()
 		end
 		previous = bar
 	end
-end
-
-function Module:OnInitialize()
-	self:ReskinMirrorBars()
 end

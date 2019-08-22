@@ -1,9 +1,5 @@
 local K, C = unpack(select(2, ...))
-if K.CheckAddOnState("Immersion") or C["Misc"].NoTalkingHead then
-	return
-end
-
-local Module = K:NewModule("TalkingHead", "AceEvent-3.0")
+local Module = K:GetModule("Blizzard")
 
 -- Lua API
 local _G = _G
@@ -52,15 +48,15 @@ function Module:WaitForTalkingHead(_, ...)
 	self:UnregisterEvent("ADDON_LOADED", "WaitForTalkingHead")
 end
 
-function Module:OnInitialize()
+function Module:CreateTalkingHeadFrame()
+	if K.CheckAddOnState("Immersion") or C["Misc"].NoTalkingHead then
+		return
+	end
+
 	-- Create our container frame
 	self.frame = CreateFrame("Frame", "TalkingHeadFrameMover", UIParent)
 	self.frame:SetPoint("TOP", UIParent, "TOP", 0, -18)
 	self.frame:SetSize(570, 155)
 
 	K.Mover(self.frame, "TalkingHeadFrame", "TalkingHeadFrame", {"TOP", UIParent, "TOP", 0, -18}, 570, 155)
-end
-
-function Module:OnEnable()
-	self:InitializeTalkingHead()
 end

@@ -1,284 +1,172 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("MinimapButtons", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
+local Module = K:GetModule("Minimap")
 
--- Sourced: ProjectAzilroka (Azilroka)
+-- Sourced: NDui (Siweia)
 -- Edited: KkthnxUI (Kkthnx)
 
 local _G = _G
-local pairs = pairs
-local select = select
+local string_match = _G.string.match
 local string_find = string.find
-local string_len = string.len
-local string_lower = string.lower
-local string_sub = string.sub
-local table_contains = tContains
 local table_insert = table.insert
-local tostring = tostring
+local string_upper = _G.string.upper
 
-local C_PetBattles_IsInBattle = _G.C_PetBattles.IsInBattle
+local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
-local InCombatLockdown = _G.InCombatLockdown
 local UIParent = _G.UIParent
+local Minimap = _G.Minimap
 
-_G.KKUI_MinimapButtons = Module
 
-Module.Buttons = {}
-
-local ignoreButtons = {
-	"GameTimeFrame",
-	"HelpOpenWebTicketButton",
-	"MiniMapVoiceChatFrame",
-	"TimeManagerClockButton",
-	"BattlefieldMinimap",
-	"ButtonCollectFrame",
-	"QueueStatusMinimapButton",
-	"GarrisonLandingPageMinimapButton",
-	"MiniMapMailFrame",
-	"MiniMapTracking",
-	"MinimapZoomIn",
-	"MinimapZoomOut",
-}
-
-local GenericIgnores = {
-	"Archy",
-	"GatherMatePin",
-	"GatherNote",
-	"GuildInstance",
-	"HandyNotesPin",
-	"MiniMap",
-	"Spy_MapNoteList_mini",
-	"ZGVMarker",
-	"poiMinimap",
-	"GuildMap3Mini",
-	"LibRockConfig-1.0_MinimapButton",
-	"NauticusMiniIcon",
-	"WestPointer",
-	"Cork",
-	"DugisArrowMinimapPoint",
-}
-
-local PartialIgnores = {
-	"Node",
-	"Note",
-	"Pin",
-	"POI"
-}
-
-local ButtonFunctions = {
-	"SetParent",
-	"ClearAllPoints",
-	"SetPoint",
-	"SetSize",
-	"SetScale",
-	"SetFrameStrata",
-	"SetFrameLevel"
-}
-
-function Module:LockButton(Button)
-	for _, Function in pairs(ButtonFunctions) do
-		Button[Function] = K.Noop
-	end
-end
-
-function Module:UnlockButton(Button)
-	for _, Function in pairs(ButtonFunctions) do
-		Button[Function] = nil
-	end
-end
-
-function Module:SkinMinimapButton(Button)
-	if (not Button) or Button.isSkinned then
+function Module:CreateRecycleBin()
+	if not C["Minimap"]["ShowRecycleBin"] then
 		return
 	end
 
-	local Name = Button:GetName()
-	if not Name then
-		return
+	local r, g, b = K.r, K.g, K.b
+	local buttons = {}
+	local blackList = {
+		["BattlefieldMinimap"] = true,
+		["ButtonCollectFrame"] = true,
+		["FeedbackUIButton"] = true,
+		["GameTimeFrame"] = true,
+		["GarrisonLandingPageMinimapButton"] = true,
+		["HelpOpenTicketButton"] = true,
+		["HelpOpenWebTicketButton"] = true,
+		["MiniMapBattlefieldFrame"] = true,
+		["MiniMapLFGFrame"] = true,
+		["MiniMapMailFrame"] = true,
+		["MiniMapTracking"] = true,
+		["MiniMapVoiceChatFrame"] = true,
+		["MinimapBackdrop"] = true,
+		["MinimapZoneTextButton"] = true,
+		["MinimapZoomIn"] = true,
+		["MinimapZoomOut"] = true,
+		["QueueStatusMinimapButton"] = true,
+		["RecycleBinFrame"] = true,
+		["RecycleBinToggleButton"] = true,
+		["TimeManagerClockButton"] = true,
+	}
+
+	local bu = CreateFrame("Button", "RecycleBinToggleButton", Minimap)
+	bu:SetSize(24, 24)
+	bu:SetPoint("BOTTOMLEFT", -15, -15)
+	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
+	bu.Icon:SetAllPoints()
+	bu.Icon:SetTexture("Interface\\HelpFrame\\ReportLagIcon-Loot")
+	bu:SetHighlightTexture("Interface\\HelpFrame\\ReportLagIcon-Loot")
+	K.AddTooltip(bu, "ANCHOR_LEFT", "Minimap RecycleBin", "white")
+
+	local bin = CreateFrame("Frame", "RecycleBinFrame", UIParent)
+	bin:SetPoint("RIGHT", bu, "LEFT", -3, -6)
+	bin:Hide()
+	K.CreateGF(bin, 220, 30, "Horizontal", 0, 0, 0, 0, .7)
+	local topLine = CreateFrame("Frame", nil, bin)
+	topLine:SetPoint("BOTTOMRIGHT", bin, "TOPRIGHT", 1, 0)
+	K.CreateGF(topLine, 220, 1, "Horizontal", r, g, b, 0, .7)
+	local bottomLine = CreateFrame("Frame", nil, bin)
+	bottomLine:SetPoint("TOPRIGHT", bin, "BOTTOMRIGHT", 1, 0)
+	K.CreateGF(bottomLine, 220, 1, "Horizontal", r, g, b, 0, .7)
+	local rightLine = CreateFrame("Frame", nil, bin)
+	rightLine:SetPoint("LEFT", bin, "RIGHT", 0, 0)
+	K.CreateGF(rightLine, 1, 30, "Vertical", r, g, b, .7, .7)
+	bin:SetFrameStrata("LOW")
+
+	local function hideBinButton()
+		bin:Hide()
 	end
 
-	if table_contains(ignoreButtons, Name) then
-		return
+	local function clickFunc()
+		K.UIFrameFadeOut(bin, 0.5, 1, 0)
+		C_Timer_After(0.5, hideBinButton)
 	end
 
-	for i = 1, #GenericIgnores do
-		if string_sub(Name, 1, string_len(GenericIgnores[i])) == GenericIgnores[i] then
-			return
-		end
-	end
-
-	for i = 1, #PartialIgnores do
-		if string_find(Name, PartialIgnores[i]) ~= nil then
-			return
-		end
-	end
-
-	for i = 1, Button:GetNumRegions() do
-		local Region = select(i, Button:GetRegions())
-		if Region.IsObjectType and Region:IsObjectType("Texture") then
-			local Texture = string_lower(tostring(Region:GetTexture()))
-
-			if (string_find(Texture, "interface\\characterframe") or (string_find(Texture, "interface\\minimap") and not string_find(Texture, "interface\\minimap\\tracking\\")) or string_find(Texture, "border") or string_find(Texture, "background") or string_find(Texture, "alphamask") or string_find(Texture, "highlight")) then
-				Region:SetTexture()
-				Region:SetAlpha(0)
-			else
-				if Name == "BagSync_MinimapButton" then
-					Region:SetTexture("Interface\\AddOns\\BagSync\\media\\icon")
-				elseif Name == "DBMMinimapButton" then
-					Region:SetTexture("Interface\\Icons\\INV_Helmet_87")
-				elseif Name == "OutfitterMinimapButton" then
-					if Region:GetTexture() == "Interface\\Addons\\Outfitter\\Textures\\MinimapButton" then
-						Region:SetTexture()
+	local function CollectRubbish()
+		for _, child in ipairs({Minimap:GetChildren()}) do
+			local name = child:GetName()
+			if name and not blackList[name] and not string_match(string_upper(name), "HANDYNOTES") then
+				if child:GetObjectType() == "Button" or string_match(string_upper(name), "BUTTON") then
+					child:SetParent(bin)
+					child:SetSize(22, 22)
+					for j = 1, child:GetNumRegions() do
+						local region = select(j, child:GetRegions())
+						if region:GetObjectType() == "Texture" then
+							local texture = region:GetTexture() or ""
+							if string_find(texture, "Interface\\CharacterFrame") or string_find(texture, "Interface\\Minimap") then
+								region:SetTexture(nil)
+							elseif texture == 136430 or texture == 136467 then
+								region:SetTexture(nil)
+							end
+							region:ClearAllPoints()
+							region:SetAllPoints()
+							region:SetTexCoord(unpack(K.TexCoords))
+						end
 					end
-				elseif Name == "SmartBuff_MiniMapButton" then
-					Region:SetTexture("Interface\\Icons\\Spell_Nature_Purge")
-				elseif Name == "VendomaticButtonFrame" then
-					Region:SetTexture("Interface\\Icons\\INV_Misc_Rabbit_2")
-				end
 
-				Region:ClearAllPoints()
-				Region:SetAllPoints()
-				Region:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-				Button:HookScript("OnLeave", function()
-					Region:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-				end)
-				Region:SetDrawLayer("ARTWORK")
-				Region.SetPoint = function()
-					return
+					if child:HasScript("OnDragStart") then
+						child:SetScript("OnDragStart", nil)
+					end
+
+					if child:HasScript("OnDragStop") then
+						child:SetScript("OnDragStop", nil)
+					end
+
+					if child:HasScript("OnClick") then
+						child:HookScript("OnClick", clickFunc)
+					end
+
+					if child:GetObjectType() == "Button" then
+						child:SetHighlightTexture(C["Media"].Blank) -- prevent nil function
+						child:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
+					elseif child:GetObjectType() == "Frame" then
+						child.highlight = child:CreateTexture(nil, "HIGHLIGHT")
+						child.highlight:SetAllPoints()
+						child.highlight:SetColorTexture(1, 1, 1, .25)
+					end
+					child:CreateShadow(true)
+
+					-- Naughty Addons
+					if name == "DBMMinimapButton" then
+						child:SetScript("OnMouseDown", nil)
+						child:SetScript("OnMouseUp", nil)
+					elseif name == "BagSync_MinimapButton" then
+						child:HookScript("OnMouseUp", clickFunc)
+					end
+
+					table_insert(buttons, child)
 				end
 			end
 		end
 	end
 
-	Button:SetFrameLevel(Minimap:GetFrameLevel() + 5)
-	Button:SetSize(C["MinimapButtons"].IconSize, C["MinimapButtons"].IconSize)
-	Button:CreateBorder()
-	Button:HookScript("OnEnter", function(self)
-		self:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
-		if Module.Bar:IsShown() then
-			K.UIFrameFadeIn(Module.Bar, 0.2, Module.Bar:GetAlpha(), 1)
-		end
-	end)
-
-	Button:HookScript("OnLeave", function(self)
-		self:SetBackdropBorderColor()
-		self:CreateBorder()
-		if Module.Bar:IsShown() and C["MinimapButtons"].BarMouseOver then
-			K.UIFrameFadeOut(Module.Bar, 0.2, Module.Bar:GetAlpha(), 0.25)
-		end
-	end)
-
-	Button.isSkinned = true
-	table_insert(self.Buttons, Button)
-end
-
-function Module:GrabMinimapButtons()
-	if (InCombatLockdown() or C_PetBattles_IsInBattle()) then
-		return
-	end
-
-	for _, Frame in pairs({Minimap, MinimapBackdrop}) do
-		local NumChildren = Frame:GetNumChildren()
-		if NumChildren < (Frame.SMBNumChildren or 0) then
+	local function SortRubbish()
+		if #buttons == 0 then
 			return
 		end
 
-		for i = 1, NumChildren do
-			local object = select(i, Frame:GetChildren())
-			if object then
-				local name = object:GetName()
-				local width = object:GetWidth()
-				if name and width > 15 and width < 40 and (object:IsObjectType("Button") or object:IsObjectType("Frame")) then
-					self:SkinMinimapButton(object)
+		local lastbutton
+		for _, button in pairs(buttons) do
+			if button:IsShown() then
+				button:ClearAllPoints()
+				if not lastbutton then
+					button:SetPoint("RIGHT", bin, -3, 0)
+				else
+					button:SetPoint("RIGHT", lastbutton, "LEFT", -3, 0)
 				end
-			end
-		end
-		Frame.SMBNumChildren = NumChildren
-	end
-
-	self:Update()
-end
-
-function Module:Update()
-	if not C["MinimapButtons"].EnableBar then
-		return
-	end
-
-	local AnchorX, AnchorY = 0, 1
-	local ButtonsPerRow = C["MinimapButtons"].ButtonsPerRow or 1
-	local Spacing, Mult = C["MinimapButtons"].ButtonSpacing or 6, K.Mult or 1
-	local Size = C["MinimapButtons"].IconSize or 18
-	local ActualButtons, Maxed = 0
-
-	for _, Button in pairs(Module.Buttons) do
-		if Button:IsVisible() then
-			AnchorX = AnchorX + 1
-			ActualButtons = ActualButtons + 1
-			if (AnchorX % (ButtonsPerRow + 1)) == 0 then
-				AnchorY = AnchorY + 1
-				AnchorX = 1
-				Maxed = true
-			end
-
-			Module:UnlockButton(Button)
-
-			Button:CreateBorder()
-			Button:SetParent(self.Bar)
-			Button:ClearAllPoints()
-			Button:SetPoint("TOPLEFT", self.Bar, "TOPLEFT", (Spacing + ((Size + Spacing) * (AnchorX - 1))), (- Spacing - ((Size + Spacing) * (AnchorY - 1))))
-			Button:SetSize(C["MinimapButtons"].IconSize, C["MinimapButtons"].IconSize)
-			Button:SetScript("OnDragStart", nil)
-			Button:SetScript("OnDragStop", nil)
-
-			Module:LockButton(Button)
-
-			if Maxed then
-				ActualButtons = ButtonsPerRow
+				lastbutton = button
 			end
 		end
 	end
 
-	local BarWidth = (Spacing + ((Size * (ActualButtons * Mult)) + ((Spacing * (ActualButtons - 1)) * Mult) + (Spacing * Mult)))
-	local BarHeight = (Spacing + ((Size * (AnchorY * Mult)) + ((Spacing * (AnchorY - 1)) * Mult) + (Spacing * Mult)))
-	self.Bar:SetSize(BarWidth, BarHeight)
-
-	if ActualButtons == 0 then
-		self.Bar:Hide()
-	else
-		self.Bar:Show()
-	end
-
-	if C["MinimapButtons"].BarMouseOver then
-		K.UIFrameFadeOut(self.Bar, 0.2, self.Bar:GetAlpha(), 0.25)
-	else
-		K.UIFrameFadeIn(self.Bar, 0.2, self.Bar:GetAlpha(), 1)
-	end
-end
-
-function Module:OnEnable()
-	Module.Bar = CreateFrame("Frame", "MinimapButtonBar", UIParent)
-	Module.Bar:Hide()
-	Module.Bar:SetPoint("RIGHT", UIParent, "RIGHT", -94, 226)
-	Module.Bar:SetFrameStrata("LOW")
-	Module.Bar:SetClampedToScreen(true)
-	Module.Bar:SetMovable(true)
-	Module.Bar:EnableMouse(true)
-	Module.Bar:SetSize(C["MinimapButtons"].IconSize, C["MinimapButtons"].IconSize)
-
-	Module.Bar:CreateBorder()
-
-	Module.Bar:SetScript("OnEnter", function(self)
-		K.UIFrameFadeIn(self, 0.2, self:GetAlpha(), 1)
-	end)
-
-	Module.Bar:SetScript("OnLeave", function(self)
-		if C["MinimapButtons"].BarMouseOver then
-			K.UIFrameFadeOut(self, 0.2, self:GetAlpha(), 0.25)
+	bu:SetScript("OnClick", function()
+		SortRubbish()
+		if bin:IsShown() then
+			clickFunc()
+		else
+			K.UIFrameFadeIn(bin, 0.5, 0, 1)
 		end
 	end)
 
-	K.Mover(Module.Bar, "MBB", "MinimapButtonBar", {"RIGHT", UIParent, "RIGHT", -94, 226}, C["MinimapButtons"].IconSize + 4, C["MinimapButtons"].IconSize + 4)
-
-	Minimap:SetMaskTexture("Interface\\ChatFrame\\ChatFrameBackground")
-
-	Module:ScheduleRepeatingTimer("GrabMinimapButtons", 6)
+	C_Timer_After(0.3, function()
+		CollectRubbish()
+		SortRubbish()
+	end)
 end

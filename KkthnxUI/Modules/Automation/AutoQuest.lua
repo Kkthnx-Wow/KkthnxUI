@@ -4,11 +4,11 @@ if C["Automation"].AutoQuest ~= true then
 end
 
 local _G = _G
-local next = next
-local select = select
-local string_match = string.match
-local tonumber = tonumber
-local table_wipe = table.wipe
+local next = _G.next
+local select = _G.select
+local string_match = _G.string.match
+local table_wipe = _G.table.wipe
+local tonumber = _G.tonumber
 
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local AcceptQuest = _G.AcceptQuest
@@ -53,6 +53,69 @@ local ShowQuestOffer = _G.ShowQuestOffer
 local StaticPopup_Hide = _G.StaticPopup_Hide
 local UnitGUID = _G.UnitGUID
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
+local GetRealmName = _G.GetRealmName
+local UnitName = _G.UnitName
+
+local created
+local function setupCheckButton()
+	if created then return end
+	local mono = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsCheckButtonTemplate")
+	mono:SetPoint("TOPRIGHT", -140, 0)
+	mono:SetSize(24, 24)
+	mono.text = mono:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	mono.text:SetPoint("LEFT", 24, 0)
+	mono.text:SetText("Auto Quest")
+	mono:SetHitRectInsets(0, 0 - mono.text:GetWidth(), 0, 0)
+	mono:SetChecked(KkthnxUIData[GetRealmName()][UnitName("player")].AutoQuest)
+	mono:SetScript("OnClick", function(self)
+		KkthnxUIData[GetRealmName()][UnitName("player")].AutoQuest = self:GetChecked()
+	end)
+
+	created = true
+
+	function mono.UpdateTooltip(self)
+		if (GameTooltip:IsForbidden()) then
+			return
+		end
+
+		GameTooltip:SetOwner(self, "ANCHOR_TOP", 0, 10)
+
+		local r, g, b = 0.2, 1.0, 0.2
+
+		if KkthnxUIData[GetRealmName()][UnitName("player")].AutoQuest == true then
+			GameTooltip:AddLine("Disable Auto Accept")
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine("Disable to not auto accept.", r, g, b)
+		else
+			GameTooltip:AddLine("Enable Auto Accept")
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine("Enable to auto accept.", r, g, b)
+		end
+
+		GameTooltip:Show()
+	end
+
+	mono:HookScript("OnEnter", function(self)
+		if (GameTooltip:IsForbidden()) then
+			return
+		end
+
+		self:UpdateTooltip()
+	end)
+
+	mono:HookScript("OnLeave", function()
+		if (GameTooltip:IsForbidden()) then
+			return
+		end
+
+		GameTooltip:Hide()
+	end)
+
+	mono:SetScript("OnClick", function(self)
+		KkthnxUIData[GetRealmName()][UnitName("player")].AutoQuest = self:GetChecked()
+	end)
+end
+WorldMapFrame:HookScript("OnShow", setupCheckButton)
 
 local quests, choiceQueue = {}
 local QuickQuest = CreateFrame("Frame")
@@ -63,7 +126,7 @@ end)
 function QuickQuest:Register(event, func)
 	self:RegisterEvent(event)
 	self[event] = function(...)
-		if C["Automation"].AutoQuest and not IsShiftKeyDown() then
+		if KkthnxUIData[GetRealmName()][UnitName("player")].AutoQuest and not IsShiftKeyDown() then
 			func(...)
 		end
 	end

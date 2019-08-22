@@ -47,4 +47,4 @@ local function LoadSkin()
 	end)
 end
 
-Module.SkinFuncs["Blizzard_ScrappingMachineUI"] = LoadSkin
+Module.NewSkin["Blizzard_ScrappingMachineUI"] = LoadSkin

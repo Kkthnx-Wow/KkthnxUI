@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("QuestNotifier", "AceEvent-3.0")
+local Module = K:GetModule("Miscellaneous")
 
 local strmatch, strfind, gsub, format = string.match, string.find, string.gsub, string.format
 local mod, tonumber, pairs, floor = mod, tonumber, pairs, math.floor
@@ -123,7 +123,7 @@ local function FindWorldQuestComplete(_, questID)
 	end
 end
 
-function Module:OnEnable()
+function Module:CreateQuestNotifier()
 	if not C["QuestNotifier"].Enable then
 		return
 	end

@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("BlockMovies", "AceEvent-3.0", "AceTimer-3.0")
+local Module = K:GetModule("Automation")
 
 local _G = _G
 
@@ -31,7 +31,7 @@ do
 	function Module:PLAY_MOVIE(_, id)
 		if knownMovies[id] and C["Automation"].BlockMovies then
 			if KkthnxUIData[playerRealm][playerName].WatchedMovies[id] then
-				K.Print(L["Automation"].MovieBlocked)
+				K.Print(L["Move Blocked"])
 				MovieFrame:Hide()
 			else
 				KkthnxUIData[playerRealm][playerName].WatchedMovies[id] = true
@@ -57,7 +57,7 @@ do
 		[-575] = true, -- Shadowmoon Burial Grounds, final boss introduction
 		[-593] = { -- Auchindoun
 			"", -- "": Before the 1st boss, the tunnel doesn't have a sub zone
-			L["Automation"].Subzone_Eastern_Transept, -- Eastern Transept: After the 3rd boss, Teren'gor porting in
+			L["Subzone Eastern Transept"], -- Eastern Transept: After the 3rd boss, Teren'gor porting in
 		},
 		[-607] = true, -- Grimrail Depot, boarding the train
 		[-609] = true, -- Grimrail Depot, destroying the train
@@ -73,8 +73,8 @@ do
 		[-1153] = true, -- Uldir, raising stairs for Zul (Fetid Devourer)
 		[-1345] = true, -- Crucible of Storms, after killing first boss
 		[-1352] = { -- Battle of Dazar'alor
-			L["Automation"].Subzone_Grand_Bazaar, -- Grand Bazaar: After killing 2nd boss, Bwonsamdi (Alliance side only)
-			L["Automation"].Subzone_Port_of_Zandalar, -- Port of Zandalar: After killing blockade, boat arriving
+			L["Subzone Grand Bazaar"], -- Grand Bazaar: After killing 2nd boss, Bwonsamdi (Alliance side only)
+			L["Subzone Port of Zandalar"], -- Port of Zandalar: After killing blockade, boat arriving
 		},
 		[-1358] = true, -- Battle of Dazar'alor, after killing 1st boss, Bwonsamdi (Horde side only)
 		--[-1364] = true, -- Battle of Dazar'alor, Jaina stage 1 intermission (unskippable)
@@ -114,7 +114,7 @@ do
 				self.toysFrame = CreateFrame("Frame")
 				self.toysFrame:SetScript("OnEvent", function(_, _, _, _, spellId)
 					if tbl[spellId] then
-						Module:UnregisterEvent("CINEMATIC_START")
+						K:UnregisterEvent("CINEMATIC_START", self.CINEMATIC_START)
 						Module:ScheduleTimer("RegisterEvent", 5, "CINEMATIC_START")
 					end
 				end)
@@ -136,7 +136,7 @@ do
 						local subZone = cinematicZones[id][i]
 						if subZone == GetSubZoneText() then
 							if KkthnxUIData[playerRealm][playerName].WatchedMovies[id][i] then
-								K.Print(L["Automation"].MovieBlocked)
+								K.Print(L["Move Blocked"])
 								CinematicFrame_CancelCinematic()
 							else
 								KkthnxUIData[playerRealm][playerName].WatchedMovies[id][i] = true
@@ -146,7 +146,7 @@ do
 					end
 				else
 					if KkthnxUIData[playerRealm][playerName].WatchedMovies[id] then
-						K.Print(L["Automation"].MovieBlocked)
+						K.Print(L["Move Blocked"])
 						CinematicFrame_CancelCinematic()
 					else
 						KkthnxUIData[playerRealm][playerName].WatchedMovies[id] = true
@@ -157,26 +157,20 @@ do
 	end
 end
 
-function Module:OnEnable()
-	if C["Automation"].BlockMovies ~= true then
-		return
+function Module:CreateAutoBlockMovies()
+	if C["Automation"].BlockMovies == true then
+		K:RegisterEvent("CINEMATIC_START", self.CINEMATIC_START)
+	    K:RegisterEvent("PLAY_MOVIE", self.PLAY_MOVIE)
+	    self:SiegeOfOrgrimmarCinematics() -- Sexy hack until cinematics have an id system (never)
+	    self:ToyCheck() -- Sexy hack until cinematics have an id system (never)
+
+	    -- XXX temp 8.1.5
+	    for id in next, KkthnxUIData[K.Realm][K.Name].WatchedMovies do
+		    if type(id) == "string" then
+			    KkthnxUIData[K.Realm][K.Name].WatchedMovies[id] = nil
+		    end
+        end
+
+	    KkthnxUIData[K.Realm][K.Name].WatchedMovies[-593] = nil -- Auchindoun temp reset
 	end
-
-	self:RegisterEvent("CINEMATIC_START")
-	self:RegisterEvent("PLAY_MOVIE")
-	self:SiegeOfOrgrimmarCinematics() -- Sexy hack until cinematics have an id system (never)
-	self:ToyCheck() -- Sexy hack until cinematics have an id system (never)
-
-	-- XXX temp 8.1.5
-	for id in next, KkthnxUIData[playerRealm][playerName].WatchedMovies do
-		if type(id) == "string" then
-			KkthnxUIData[playerRealm][playerName].WatchedMovies[id] = nil
-		end
-	end
-	KkthnxUIData[playerRealm][playerName].WatchedMovies[-593] = nil -- Auchindoun temp reset
-end
-
-function Module:OnDisable()
-	self:UnregisterEvent("CINEMATIC_START")
-	self:UnregisterEvent("PLAY_MOVIE")
 end

@@ -1,9 +1,5 @@
 local K, C = unpack(select(2, ...))
-if C.Misc.PvPEmote ~= true then
-	return
-end
-
-local Module = K:NewModule("PvPEmote", "AceEvent-3.0")
+local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
 local bit_band = bit.band
@@ -25,7 +21,7 @@ local PVPEmotes = {
 	"TEASE", "THANK", "TICKLE", "VETO", "VIOLIN", "YAWN"
 }
 
-function Module:COMBAT_LOG_EVENT_UNFILTERED()
+function Module.COMBAT_LOG_EVENT_UNFILTERED()
 	local _, subEvent, _, sourceGUID, _, _, _, _, destName, destFlags = CombatLogGetCurrentEventInfo()
 
 	local alreadyHugged
@@ -44,6 +40,10 @@ function Module:COMBAT_LOG_EVENT_UNFILTERED()
 	end
 end
 
-function Module:OnEnable()
-	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+function Module:CreatePvPEmote()
+	if C.Misc.PvPEmote ~= true then
+		return
+	end
+
+	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self.COMBAT_LOG_EVENT_UNFILTERED)
 end

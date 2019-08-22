@@ -1,14 +1,14 @@
 local K = unpack(select(2, ...))
-local Module = K:NewModule("ArenaAnnounce", "AceEvent-3.0")
+local Module = K:GetModule("Announcements")
 
 if not Module then
 	return
 end
 
 local _G = _G
-local mathfloor = math.floor
-local strfind = string.find
-local string = string
+local mathfloor = _G.math.floor
+local strfind = _G.string.find
+local string = _G.string
 
 local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
 local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
@@ -21,13 +21,13 @@ local IsArenaSkirmish = _G.IsArenaSkirmish
 local IsInInstance = _G.IsInInstance
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local SendChatMessage = _G.SendChatMessage
+local UNKNOWN = _G.UNKNOWN
 local UnitClass = _G.UnitClass
 local UnitHealth = _G.UnitHealth
 local UnitHealthMax = _G.UnitHealthMax
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 local UnitName = _G.UnitName
-local UNKNOWN = _G.UNKNOWN
 
 local announcements = {
 	drinks = true,
@@ -39,25 +39,21 @@ local announcements = {
 	dest = "party"
 }
 
-function Module:OnEnable()
+function Module:CreateArenaAnnounce()
 	if K.CheckAddOnState("Gladius") or IsAddOnLoaded("Gladius") then
 		return
 	end
 
 	-- Register Events
-	self:RegisterEvent("UNIT_HEALTH")
-	self:RegisterEvent("UNIT_AURA")
-	self:RegisterEvent("UNIT_SPELLCAST_START")
-	self:RegisterEvent("UNIT_NAME_UPDATE")
-	self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS")
+	K:RegisterEvent("UNIT_HEALTH", self.UNIT_HEALTH)
+	K:RegisterEvent("UNIT_AURA", self.UNIT_AURA)
+	K:RegisterEvent("UNIT_SPELLCAST_START", self.UNIT_SPELLCAST_START)
+	K:RegisterEvent("UNIT_NAME_UPDATE", self.UNIT_NAME_UPDATE)
+	K:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS", self.ARENA_PREP_OPPONENT_SPECIALIZATIONS)
 	-- Table Holding Messages To Throttle
 	self.throttled = { }
 	-- Enemy Detected
 	self.enemy = { }
-end
-
-function Module:OnDisable()
-	self:UnregisterAllEvents()
 end
 
 -- Needed To Not Throw Lua Errors
@@ -73,10 +69,10 @@ end
 
 -- New Enemy Announcement
 function Module:Show(unit)
-	self:UNIT_NAME_UPDATE(nil, unit)
+	Module.UNIT_NAME_UPDATE(nil, unit)
 end
 
-function Module:UNIT_NAME_UPDATE(_, unit)
+function Module.UNIT_NAME_UPDATE(_, unit)
 	local _, instanceType = IsInInstance()
 	if instanceType ~= "arena" or not strfind(unit, "arena") or strfind(unit, "pet") then
 		return
@@ -91,13 +87,13 @@ function Module:UNIT_NAME_UPDATE(_, unit)
 		return
 	end
 
-	if not self.enemy[unit] then
-		self:Send(string.format("%s - %s", name, UnitClass(unit) or ""), 2, unit)
-		self.enemy[unit] = true
+	if not Module.enemy[unit] then
+		Module:Send(string.format("%s - %s", name, UnitClass(unit) or ""), 2, unit)
+		Module.enemy[unit] = true
 	end
 end
 
-function Module:UNIT_HEALTH(_, unit)
+function Module.UNIT_HEALTH(_, unit)
 	if not unit then
 		return
 	end
@@ -109,11 +105,11 @@ function Module:UNIT_HEALTH(_, unit)
 
 	local healthPercent = mathfloor((UnitHealth(unit) / UnitHealthMax(unit)) * 100)
 	if healthPercent < announcements.healthThreshold then
-		self:Send(string.format("LOW HEALTH: %s (%s)", UnitName(unit), UnitClass(unit)), 10, unit)
+		Module:Send(string.format("LOW HEALTH: %s (%s)", UnitName(unit), UnitClass(unit)), 10, unit)
 	end
 end
 
-function Module:UNIT_AURA(_, unit)
+function Module.UNIT_AURA(_, unit)
 	local _, instanceType = IsInInstance()
 	if instanceType ~= "arena" or not strfind(unit, "arena") or strfind(unit, "pet") or not announcements.drinks then
 		return
@@ -129,11 +125,11 @@ function Module:UNIT_AURA(_, unit)
 	end
 
 	if index then
-		self:Send(string.format("DRINKING: %s (%s)", UnitName(unit), UnitClass(unit)), 2, unit)
+		Module:Send(string.format("DRINKING: %s (%s)", UnitName(unit), UnitClass(unit)), 2, unit)
 	end
 end
 
-function Module:ARENA_PREP_OPPONENT_SPECIALIZATIONS()
+function Module.ARENA_PREP_OPPONENT_SPECIALIZATIONS()
 	if not announcements.spec then
 		return
 	end
@@ -142,7 +138,7 @@ function Module:ARENA_PREP_OPPONENT_SPECIALIZATIONS()
 		local specID = GetArenaOpponentSpec(i)
 		if specID > 0 then
 			local _, name, _, _, _, class = GetSpecializationInfoByID(specID)
-			self:Send("Enemy Spec: "..name.." "..class)
+			Module:Send("Enemy Spec: "..name.." "..class)
 		end
 	end
 end
@@ -155,14 +151,14 @@ local RES_SPELLS = {
 	[50662] = true -- Resuscitate
 }
 
-function Module:UNIT_SPELLCAST_START(_, unit, _, spellID)
+function Module.UNIT_SPELLCAST_START(_, unit, _, spellID)
 	local _, instanceType = IsInInstance()
 	if instanceType ~= "arena" or not strfind(unit, "arena") or strfind(unit, "pet") or not announcements.resurrect then
 		return
 	end
 
 	if RES_SPELLS[spellID] then
-		self:Send(string.format("RESURRECTING: %s (%s)", UnitName(unit), UnitClass(unit)), 2, unit)
+		Module:Send(string.format("RESURRECTING: %s (%s)", UnitName(unit), UnitClass(unit)), 2, unit)
 	end
 end
 
@@ -203,7 +199,8 @@ function Module:Send(msg, throttle, unit)
 		SendChatMessage(msg, "PARTY")
 		-- Instance Chat
 	elseif dest == "instance" and (GetNumGroupMembers() > 0) then
-		SendChatMessage(msg, "INSTANCE_CHAT")
+		--SendChatMessage(msg, "INSTANCE_CHAT")
+		SendChatMessage(msg, "PARTY")
 		-- Raid Chat
 	elseif dest == "raid" and (GetNumGroupMembers() > 0) then
 		SendChatMessage(msg, "RAID")

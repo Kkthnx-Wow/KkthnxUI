@@ -1,168 +1,187 @@
-local K, C, L = unpack(select(2, ...))
-if C["Chat"].Enable ~= true then
-	return
-end
-local Module = K:NewModule("ChatURLCopy", "AceHook-3.0")
+local K, C = unpack(select(2, ...))
+local Module = K:GetModule("Chat")
 
 local _G = _G
+local string_find = _G.string.find
+local string_gsub = _G.string.gsub
+local string_len = _G.string.len
+local string_match = _G.string.match
+local string_split = _G.string.split
+local string_sub = _G.string.sub
 
--- Lua API
-local string_gsub = string.gsub
-local string_lower = string.lower
-local string_match = string.match
-local string_sub = string.sub
+local BNGetFriendInfoByID = _G.BNGetFriendInfoByID
+local BNGetGameAccountInfo = _G.BNGetGameAccountInfo
+local BNInviteFriend = _G.BNInviteFriend
+local CanCooperateWithGameAccount = _G.CanCooperateWithGameAccount
+local ChatEdit_ClearChat = _G.ChatEdit_ClearChat
+local InviteToGroup = _G.InviteToGroup
+local IsAltKeyDown = _G.IsAltKeyDown
+local IsControlKeyDown = _G.IsControlKeyDown
+local IsModifiedClick = _G.IsModifiedClick
+local IsModifierKeyDown = _G.IsModifierKeyDown
+local LAST_ACTIVE_CHAT_EDIT_BOX = _G.LAST_ACTIVE_CHAT_EDIT_BOX
+local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS or 10
+local hooksecurefunc = _G.hooksecurefunc
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: ChatEdit_ChooseBoxForSend, ChatEdit_ActivateChat
-
-local FindURL_Events = {
-	"CHAT_MSG_WHISPER",
-	"CHAT_MSG_WHISPER_INFORM",
-	"CHAT_MSG_BN_WHISPER",
-	"CHAT_MSG_BN_WHISPER_INFORM",
-	"CHAT_MSG_BN_INLINE_TOAST_BROADCAST",
-	"CHAT_MSG_GUILD_ACHIEVEMENT",
-	"CHAT_MSG_GUILD",
-	"CHAT_MSG_OFFICER",
-	"CHAT_MSG_PARTY",
-	"CHAT_MSG_PARTY_LEADER",
-	"CHAT_MSG_RAID",
-	"CHAT_MSG_RAID_LEADER",
-	"CHAT_MSG_RAID_WARNING",
-	"CHAT_MSG_INSTANCE_CHAT",
-	"CHAT_MSG_INSTANCE_CHAT_LEADER",
-	"CHAT_MSG_CHANNEL",
-	"CHAT_MSG_SAY",
-	"CHAT_MSG_YELL",
-	"CHAT_MSG_EMOTE",
-	"CHAT_MSG_AFK",
-	"CHAT_MSG_DND",
-}
-
-function Module:PrintURL(url)
-	return "|cFFFFFFFF[|Hurl:"..url.."|h"..url.."|h]|r "
+local foundurl = false
+local function convertLink(text, value)
+	return "|Hurl:"..tostring(value).."|h"..K.InfoColor..text.."|r|h"
 end
 
-function Module:FindURL(event, msg, ...)
-	local text, tag = msg, string_match(msg, "{(.-)}")
-	if tag and _G.ICON_TAG_LIST[string_lower(tag)] then
-		text = string_gsub(string_gsub(text, "(%S)({.-})", '%1 %2'), "({.-})(%S)", "%1 %2")
-	end
-
-	text = string_gsub(string_gsub(text, "(%S)(|c.-|H.-|h.-|h|r)", '%1 %2'), "(|c.-|H.-|h.-|h|r)(%S)", "%1 %2")
-
-	local NewMsg, Found = string_gsub(text, "(%a+)://(%S+)%s?", Module:PrintURL("%1://%2"))
-	if (Found > 0) then
-		return false, NewMsg, ...
-	end
-
-	NewMsg, Found = string_gsub(text, "www%.([_A-Za-z0-9-]+)%.(%S+)%s?", Module:PrintURL("www.%1.%2"))
-	if (Found > 0) then
-		return false, NewMsg, ...
-	end
-
-	NewMsg, Found = string_gsub(text, "([_A-Za-z0-9-%.]+)@([_A-Za-z0-9-]+)(%.+)([_A-Za-z0-9-%.]+)%s?", Module:PrintURL("%1@%2%3%4"))
-	if (Found > 0) then
-		return false, NewMsg, ...
-	end
-
-	NewMsg, Found = string_gsub(text, "(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)(:%d+)%s?", Module:PrintURL("%1.%2.%3.%4%5"))
-	if (Found > 0) then
-		return false, NewMsg, ...
-	end
-
-	NewMsg, Found = string_gsub(text, "(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)%s?", Module:PrintURL("%1.%2.%3.%4"))
-	if (Found > 0) then
-		return false, NewMsg, ...
-	end
+local function highlightURL(_, url)
+	foundurl = true
+	return " "..convertLink("["..url.."]", url).." "
 end
 
-local function HyperLinkedSQU(data)
-	if string_sub(data, 1, 3) == "squ" then
-		if not QuickJoinFrame:IsShown() then
-			ToggleQuickJoinPanel()
-		end
-		local guid = string_sub(data, 5)
-		if guid and guid ~= "" then
-			QuickJoinFrame:SelectGroup(guid)
-			QuickJoinFrame:ScrollToGroup(guid)
-		end
-		return
+function Module:SearchForURL(text, ...)
+	foundurl = false
+
+	if string_find(text, "%pTInterface%p+") or string_find(text, "%pTINTERFACE%p+") then
+		foundurl = true
 	end
+
+	if not foundurl then
+		--192.168.1.1:1234
+		text = string_gsub(text, "(%s?)(%d%d?%d?%.%d%d?%d?%.%d%d?%d?%.%d%d?%d?:%d%d?%d?%d?%d?)(%s?)", highlightURL)
+	end
+	if not foundurl then
+		--192.168.1.1
+		text = string_gsub(text, "(%s?)(%d%d?%d?%.%d%d?%d?%.%d%d?%d?%.%d%d?%d?)(%s?)", highlightURL)
+	end
+	if not foundurl then
+		--www.teamspeak.com:3333
+		text = string_gsub(text, "(%s?)([%w_-]+%.?[%w_-]+%.[%w_-]+:%d%d%d?%d?%d?)(%s?)", highlightURL)
+	end
+	if not foundurl then
+		--http://www.google.com
+		text = string_gsub(text, "(%s?)(%a+://[%w_/%.%?%%=~&-'%-]+)(%s?)", highlightURL)
+	end
+	if not foundurl then
+		--www.google.com
+		text = string_gsub(text, "(%s?)(www%.[%w_/%.%?%%=~&-'%-]+)(%s?)", highlightURL)
+	end
+	if not foundurl then
+		--lol@lol.com
+		text = string_gsub(text, "(%s?)([_%w-%.~-]+@[_%w-]+%.[_%w-%.]+)(%s?)", highlightURL)
+	end
+
+	self.am(self, text, ...)
 end
 
-local function HyperLinkedURL(data)
-	if string_sub(data, 1, 3) == "url" then
-		local CurrentLink = string_sub(data, 5)
-		if CurrentLink and CurrentLink ~= "" then
-			K.StaticPopup_Show("URL_COPY", CurrentLink, nil, {url = CurrentLink})
-		end
-		return
-	end
-end
-
-local SetHyperlink = ItemRefTooltip.SetHyperlink
-function ItemRefTooltip:SetHyperlink(data, ...)
-	if string_sub(data, 1, 3) == "squ" then
-		HyperLinkedSQU(data)
-	elseif string_sub(data, 1, 3) == "url" then
-		HyperLinkedURL(data)
-	else
-		SetHyperlink(self, data, ...)
-	end
-end
-
-function Module:OnInitialize()
-	K.PopupDialogs["URL_COPY"] = { -- Still need to finish this.
-		text = "URL Copy",
-		hasEditBox = 1,
-		OnShow = function(self, data)
-			self.editBox:SetAutoFocus(false)
-			self.editBox.width = self.editBox:GetWidth()
-			self.editBox:SetWidth(220)
-			self.editBox:SetText(data.url)
-			self.editBox:HighlightText()
-			ChatEdit_FocusActiveWindow()
-		end,
-		OnHide = function(self)
-			self.editBox:SetWidth(self.editBox.width or 50)
-			self.editBox.width = nil
-		end,
-		hideOnEscape = 1,
-		button1 = CLOSE,
-		EditBoxOnEnterPressed = function(self)
-			ChatEdit_FocusActiveWindow()
-			self:GetParent():Hide()
-		end,
-		EditBoxOnEscapePressed = function(self)
-			ChatEdit_FocusActiveWindow()
-			self:GetParent():Hide()
-		end,
-		EditBoxOnTextChanged = function(self)
-			if (self:GetText() ~= self:GetParent().data.url) then
-				self:SetText(self:GetParent().data.url)
+function Module:HyperlinkShowHook(link, _, button)
+	local type, value = string_match(link, "(%a+):(.+)")
+	local hide
+	if button == "LeftButton" and IsModifierKeyDown() then
+		if type == "player" then
+			local unit = string_match(value, "([^:]+)")
+			if IsAltKeyDown() then
+				InviteToGroup(unit)
+				hide = true
+			elseif IsControlKeyDown() then
+				_G.GuildInvite(unit)
+				hide = true
 			end
-			self:HighlightText()
-			self:ClearFocus()
-			ChatEdit_FocusActiveWindow()
-		end,
-		OnEditFocusGained = function(self)
-			self:HighlightText()
-		end,
-		showAlert = 1,
-	}
+		elseif type == "BNplayer" then
+			local _, bnID = string_match(value, "([^:]*):([^:]*):")
+			if not bnID then
+				return
+			end
 
-	if WIM then
-		WIM.RegisterWidgetTrigger("chat_display", "whisper, chat, w2w, demo", "OnHyperlinkClick", function(self)
-			Module.clickedframe = self
-		end)
-		WIM.RegisterItemRefHandler("url", HyperLinkedURL)
-		WIM.RegisterItemRefHandler("squ", HyperLinkedSQU)
+			local _, _, _, _, _, gameID = BNGetFriendInfoByID(bnID)
+			if gameID and CanCooperateWithGameAccount(gameID) then
+				if IsAltKeyDown() then
+					BNInviteFriend(gameID)
+					hide = true
+				elseif IsControlKeyDown() then
+					local _, charName, _, realmName = BNGetGameAccountInfo(gameID)
+					_G.GuildInvite(charName.."-"..realmName)
+					hide = true
+				end
+			end
+		end
+	elseif type == "url" then
+		local eb = LAST_ACTIVE_CHAT_EDIT_BOX or _G[self:GetName().."EditBox"]
+		if eb then
+			eb:Show()
+			eb:SetText(value)
+			eb:SetFocus()
+			eb:HighlightText()
+		end
+	end
+
+	if hide then
+		ChatEdit_ClearChat(ChatFrame1.editBox)
 	end
 end
 
-function Module:OnEnable()
-	for _, event in pairs(FindURL_Events) do
-		ChatFrame_AddMessageEventFilter(event, Module[event] or Module.FindURL)
+function Module.SetItemRefHook(link, _, button)
+	if string_sub(link, 1, 6) == "player" and button == "LeftButton" and IsModifiedClick("CHATLINK") then
+		if not StaticPopup_Visible("ADD_IGNORE") and not StaticPopup_Visible("ADD_FRIEND") and not StaticPopup_Visible("ADD_GUILDMEMBER") and not StaticPopup_Visible("ADD_RAIDMEMBER") and not StaticPopup_Visible("CHANNEL_INVITE") and not ChatEdit_GetActiveWindow() then
+			local namelink, fullname
+			if string_sub(link, 7, 8) == "GM" then
+				namelink = string_sub(link, 10)
+			elseif string_sub(link, 7, 15) == "Community" then
+				namelink = string_sub(link, 17)
+			else
+				namelink = string_sub(link, 8)
+			end
+
+			if namelink then
+				fullname = string_split(":", namelink)
+			end
+
+			if fullname and string_len(fullname) > 0 then
+				local name, server = string_split("-", fullname)
+				if server and server ~= K.Realm then
+					name = fullname
+				end
+
+				if MailFrame and MailFrame:IsShown() then
+					MailFrameTab_OnClick(nil, 2)
+					SendMailNameEditBox:SetText(name)
+					SendMailNameEditBox:HighlightText()
+				else
+					local editBox = ChatEdit_ChooseBoxForSend()
+					local hasText = (editBox:GetText() ~= "")
+					ChatEdit_ActivateChat(editBox)
+
+					editBox:Insert(name)
+
+					if not hasText then
+						editBox:HighlightText()
+					end
+				end
+			end
+		end
 	end
 end
+
+function Module:CreateCopyURL()
+	for i = 1, NUM_CHAT_WINDOWS do
+		if i ~= 2 then
+			local chatFrame = _G["ChatFrame"..i]
+			chatFrame.am = chatFrame.AddMessage
+			chatFrame.AddMessage = self.SearchForURL
+		end
+	end
+
+	local orig = ItemRefTooltip.SetHyperlink
+	function ItemRefTooltip:SetHyperlink(link, ...)
+		if link and string_sub(link, 0, 3) == "url" then return end
+
+		return orig(self, link, ...)
+	end
+
+	hooksecurefunc("ChatFrame_OnHyperlinkShow", self.HyperlinkShowHook)
+	hooksecurefunc("SetItemRef", self.SetItemRefHook)
+end
+
+-- function Module:CreateCopyURL()
+-- 	if C["Chat"].Enable ~= true then
+-- 		return
+-- 	end
+
+-- 	for _, event in pairs(FindURL_Events) do
+-- 		ChatFrame_AddMessageEventFilter(event, Module[event] or Module.FindURL)
+-- 	end
+-- end

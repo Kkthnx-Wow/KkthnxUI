@@ -1,5 +1,5 @@
 local K = unpack(select(2, ...))
-local Module = K:NewModule("MerchantItemlevel")
+local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
 
@@ -43,4 +43,6 @@ function Module:MerchantItemlevel()
 	end
 end
 
-hooksecurefunc("MerchantFrame_UpdateMerchantInfo", Module.MerchantItemlevel)
+function Module:CreateMerchantItemLevel()
+	hooksecurefunc("MerchantFrame_UpdateMerchantInfo", Module.MerchantItemlevel)
+end
