@@ -431,11 +431,13 @@ function Module:CreatePlayer()
 	self.PortraitTimer:SetFrameLevel(5) -- Watch me
 	self.PortraitTimer:SetInside(self.Portrait, 1, 1)
 
-	self.GlobalCooldown = CreateFrame("Frame", nil, self.Health)
-	self.GlobalCooldown:SetWidth(156)
-	self.GlobalCooldown:SetHeight(28)
-	self.GlobalCooldown:SetFrameStrata("HIGH")
-	self.GlobalCooldown:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
+	if C["Unitframe"].GlobalCooldown then
+		self.GlobalCooldown = CreateFrame("Frame", nil, self.Health)
+		self.GlobalCooldown:SetWidth(156)
+		self.GlobalCooldown:SetHeight(28)
+		self.GlobalCooldown:SetFrameStrata("HIGH")
+		self.GlobalCooldown:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
+	end
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()
