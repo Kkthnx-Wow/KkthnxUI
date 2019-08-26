@@ -54,7 +54,7 @@ local menuList = {
 	{text = _G.OPTIONS_MENU, isTitle = true, notCheckable = true},
 	{text = "", notClickable = true, notCheckable = true},
 	{text = STATUS, notCheckable = true, func = function()
-			K.ShowStatusReport()
+			SlashCmdList["KKUI_STATUSREPORT"]()
 	end},
 
 	{text = L["Install"], notCheckable = true, func = function()
@@ -62,15 +62,15 @@ local menuList = {
 	end},
 
 	{text = L["MoveUI"], notCheckable = true, func = function()
-			K.MoveUI()
+			SlashCmdList["KKUI_MOVEUI"]()
 	end},
 
 	{text = L["Profiles"], notCheckable = true, func = function()
-			K.UIProfiles("list")
+			SlashCmdList["KKUI_UIPROFILES"]("list")
 	end},
 
 	{text = L["KkthnxUI Help"], notCheckable = true, func = function()
-			K.UICommandsHelp()
+			K.Print("This is not implemented yet!!!")
 	end},
 
 	{text = L["Changelog"], notCheckable = true, func = function()
@@ -97,7 +97,7 @@ local menuList = {
 						_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
 						return
 					end
-					K.AbandonQuests()
+					SlashCmdList["KKUI_ABANDONQUESTS"]()
 			end},
 
 			{text = "Delete |ccf00ccff"..HEIRLOOMS.."|r From Bags", notCheckable = true, func = function()
@@ -105,7 +105,7 @@ local menuList = {
 						_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
 						return
 					end
-					K.DeleteHeirlooms()
+					SlashCmdList["KKUI_DELETEHEIRLOOMS"]()
 			end},
 
 			{text = "Delete |cffffd200"..AUCTION_CATEGORY_QUEST_ITEMS.."|r From Bags", notCheckable = true, func = function()
@@ -113,7 +113,7 @@ local menuList = {
 						_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
 						return
 					end
-					K.DeleteQuestItems()
+					SlashCmdList["KKUI_DELETEQUESTITEMS"]()
 			end},
 		},
 	},

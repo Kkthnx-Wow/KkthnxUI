@@ -245,7 +245,7 @@ function K.CreateStatusFrame()
 	--Content lines
 	StatusFrame.Section1.Content.Line1.Text:SetFormattedText("Version of KkthnxUI: |cff4beb2c%s|r", K.Version)
 	StatusFrame.Section1.Content.Line2.Text:SetFormattedText("Other AddOns Enabled: |cff4beb2c%s|r", AreOtherAddOnsEnabled() )
-	StatusFrame.Section1.Content.Line3.Text:SetFormattedText("Scale: |cff4beb2c%s|r", (C["General"].UIScale))
+	StatusFrame.Section1.Content.Line3.Text:SetFormattedText("Scale: |cff4beb2c%s|r", "") -- Fix me later on
 	StatusFrame.Section1.Content.Line3.Text:SetFormattedText("Recommended Scale: |cff4beb2c%s|r", PixelClip(PixelBestSize()))
 	StatusFrame.Section1.Content.Line4.Text:SetFormattedText("UI Scale Is: |cff4beb2c%s|r", GetUiScale())
 
@@ -291,7 +291,7 @@ local function UpdateDynamicValues()
 	K.StatusFrame.Section3.Content.Line6.Text:SetFormattedText("Zone: |cff4beb2c%s|r", GetRealZoneText())
 end
 
-function K.ShowStatusReport()
+SlashCmdList["KKUI_STATUSREPORT"] = function()
 	if not K.StatusFrame then
 		K.CreateStatusFrame()
 	end
@@ -304,4 +304,4 @@ function K.ShowStatusReport()
 		K.StatusFrame:SetShown(false)
 	end
 end
--- K:RegisterChatCommand("kstatus", "ShowStatusReport")
+SLASH_KKUI_STATUSREPORT1 = "/kkstatus"

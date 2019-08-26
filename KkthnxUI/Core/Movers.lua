@@ -227,7 +227,7 @@ local function CreateConsole()
 	K:RegisterEvent("PLAYER_REGEN_DISABLED", showLater)
 end
 
-_G.SlashCmdList["MOVEUI"] = function()
+_G.SlashCmdList["KKUI_MOVEUI"] = function()
 	if InCombatLockdown() then
 		UIErrorsFrame:AddMessage(ERR_NOT_IN_COMBAT)
 		return
@@ -235,6 +235,6 @@ _G.SlashCmdList["MOVEUI"] = function()
 	CreateConsole()
 	UnlockElements()
 end
-_G.SLASH_MOVEUI1 = "/moveui"
-_G.SLASH_MOVEUI2 = "/mui"
-_G.SLASH_MOVEUI3 = "/mm"
+_G.SLASH_KKUI_MOVEUI1 = "/moveui"
+_G.SLASH_KKUI_MOVEUI2 = "/mui"
+_G.SLASH_KKUI_MOVEUI3 = "/mm"

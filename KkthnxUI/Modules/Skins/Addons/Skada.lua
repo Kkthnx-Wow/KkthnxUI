@@ -69,7 +69,7 @@ local function SkinSkada()
 end
 
 if IsAddOnLoaded("Skada") then
-	table_insert(ModuleSkins.SkinFuncs["KkthnxUI"], SkinSkada)
+	table_insert(ModuleSkins.NewSkin["KkthnxUI"], SkinSkada)
 else
-	ModuleSkins.SkinFuncs["Skada"] = SkinSkada
+	ModuleSkins.NewSkin["Skada"] = SkinSkada
 end
