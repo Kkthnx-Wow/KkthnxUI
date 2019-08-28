@@ -163,6 +163,7 @@ C["Filger"] = {
 
 -- General
 C["General"] = {
+	["AutoScale"] = true,
 	["ColorTextures"] = false,
 	["DisableTutorialButtons"] = false,
 	["FixGarbageCollect"] = true,
@@ -172,6 +173,7 @@ C["General"] = {
 	["MoveBlizzardFrames"] = false,
 	["ReplaceBlizzardFonts"] = true,
 	["TexturesColor"] = {0.9, 0.9, 0.9},
+	["UIScale"] = 0.71111,
 	["Welcome"] = true,
 	["NumberPrefixStyle"] = {
 		["Options"] = {

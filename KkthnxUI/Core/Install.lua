@@ -41,9 +41,19 @@ local function GetPerfectScale()
 	local scale = _G.KkthnxUIData[GetRealmName()][UnitName("player")].UIScale
 	local bestScale = max(0.4, min(1.15, 768 / K.ScreenHeight))
 	local pixelScale = 768 / K.ScreenHeight
-	if _G.KkthnxUIData[GetRealmName()][UnitName("player")].LockUIScale then
+
+	if C["General"].AutoScale then
 		scale = clipScale(bestScale)
+	else
+		scale = C["General"].UIScale
 	end
+
+	-- if not C["General"].UIScale == _G.KkthnxUIData[GetRealmName()][UnitName("player")].UIScale and not C["General"].AutoScale then
+	-- 	scale = C["General"].UIScale
+	-- else
+	-- 	scale = clipScale(bestScale)
+	-- end
+
 	K.Mult = (bestScale / scale) - ((bestScale - pixelScale) / scale)
 
 	return scale
