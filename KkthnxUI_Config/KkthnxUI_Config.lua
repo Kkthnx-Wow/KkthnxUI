@@ -1202,7 +1202,15 @@ function KkthnxUIConfig:CreateConfigWindow()
 			Button.Text:SetShadowColor(0, 0, 0, 1)
 			Button.Text:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
 			Button.Text:SetPoint("CENTER", Button)
-			Button.Text:SetText(KkthnxUIConfig[Locale]["GroupNames"][Group] or Group)
+			do
+				local msg = KkthnxUIConfig
+						and KkthnxUIConfig[Locale]
+						and KkthnxUIConfig[Locale]["GroupNames"]
+						and KkthnxUIConfig[Locale]["GroupNames"][Group]
+						or Group
+				Button.Text:SetText(msg)
+			end
+			-- Button.Text:SetText(KkthnxUIConfig[Locale]["GroupNames"][Group] or Group)
 
 			Button.Active = Button:CreateTexture(nil, "ARTWORK")
 			Button.Active:SetAlpha(0.3)
