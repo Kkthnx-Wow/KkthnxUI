@@ -3,7 +3,7 @@
 ## Title: |cff4488ffKkthnxUI|r
 ## Notes: |cff666666By Josh "Kkthnx" Russell|r |n|n|cffffffffA simple User Interface replacement |nAddOn for World of Warcraft.|r|r|n|n|cff4488ffThis addon supports:|r Battle for Azeroth |cff666666Patch: 8.0.1|r|n|n
 ## Author: Kkthnx
-## Version: 9.05
+## Version: 9.06
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIData
 ## SavedVariablesPerCharacter: KkthnxUIDataPerChar
@@ -11,7 +11,7 @@
 ## X-Category: Interface Enhancements
 ## X-Credits: Alza, Azilroka, Blazeflack, Caellian, Caith, Darth Predator, Elv, Firestorm Community, Goldpaw, Haleth, Haste, Hungtar, Hydra, Ishtara, KkthnxUI Community, LightSpark, Magicnachos, Merathilis, Nightcracker, P3lim, Rav99, Roth, Shestak, Simpy, Sticklord, Tekkub, Tohveli, Tukz, Tulla, Tuller, oUF Team
 ## X-Thanks: MaxtorCoder, Elliot, Jubaleth
-## X-Curse-Packaged-Version: 9.05
+## X-Curse-Packaged-Version: 9.06
 ## X-Curse-Project-ID: 95528
 ## X-Curse-Project-Name: KkthnxUI
 ## X-WoWI-ID: 24615

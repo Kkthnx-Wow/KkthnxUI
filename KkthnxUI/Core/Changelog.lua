@@ -3,11 +3,14 @@ local Module = K:NewModule("Changelog", "AceTimer-3.0")
 
 local ChangeLogData = {
 	"Changes:",
-	"• Released v9.04.",
-	"• Removed all Ace3 Libs",
-	"• Fix Worldmap Tooltips",
-	"• Fix Changelog Close Button",
-	"• oUF Updates",
+	"• Released v9.06",
+	"• Added AutoScale option. People were mad RAWR!",
+	"• Attempt fallback for non English clients for Config",
+	"• Config GUI should work on all Clients now. Fix Reminders as well",
+	"• Fix Alertframes/Grouploot... Grouploot should properly show now.",
+	"• Fix quick menu commands. Fix Skada skin.",
+	"• Remove this test, which was a fail. More problems than fixes :D",
+	"• Update how power is handled on raidframes",
 
     -- Important Notes We Want The User To Know!
 	" ",
