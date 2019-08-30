@@ -38,51 +38,30 @@ local function UpdateThreat(self, _, unit)
 end
 
 local function UpdateRaidPower(self, _, unit)
-	if unit ~= self.unit then
-		return
-	end
+    if self.unit ~= unit then
+        return
+    end
 
-	local health = self.Health
-	local power = self.Power
+    local _, powerToken = UnitPowerType(unit)
 
-	if (not power) then
-		return
-	end
+    if powerToken == "MANA" and C["Raid"].ManabarShow then
+        if not self.Power:IsVisible() then
+            self.Health:ClearAllPoints()
+            self.Health:SetPoint("BOTTOMLEFT", self, 0, 5)
+            self.Health:SetPoint("TOPRIGHT", self)
 
-	local _, ptype = UnitPowerType(unit)
-	local min, max = UnitPower(unit), UnitPowerMax(unit)
-
-	local disconnected = not UnitIsConnected(unit)
-
-	if (disconnected) then
-		power:Hide()
-	else
-		if (power.__disconnected ~= disconnected) then
-			power:Show()
-		end
-
-		if (power.__ptype ~= ptype) then
-			if (ptype ~= "MANA") then
-				health:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 0)
-				power:Hide()
-			else
-				health:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 6)
-				power:Show()
-			end
-
-			power.__ptype = ptype
-		end
-	end
-
-	if (ptype == "MANA") then
-		power:SetMinMaxValues(0, max)
-		power:SetValue(min)
-	end
-
-	power.__disconnected = disconnected
+            self.Power:Show()
+        end
+    else
+        if self.Power:IsVisible() then
+            self.Health:ClearAllPoints()
+            self.Health:SetAllPoints(self)
+            self.Power:Hide()
+        end
+    end
 end
 
-function Module:CreateRaid()
+function Module:CreateRaid(unit)
 	local RaidframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local RaidframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 	local HealPredictionTexture = K.GetTexture(C["UITextures"].HealPredictionTextures)
@@ -115,12 +94,13 @@ function Module:CreateRaid()
 		self.Power = CreateFrame("StatusBar", nil, self)
 		self.Power:SetFrameStrata("LOW")
 		self.Power:SetFrameLevel(self:GetFrameLevel())
-		self.Power:SetHeight(6)
 		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
-		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
+        self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
+        self.Power:SetHeight(4.5)
 		self.Power:SetStatusBarTexture(RaidframeTexture)
-		self.Power:SetStatusBarColor(unpack(K.Colors.power["MANA"]))
 
+		self.Power.colorPower = true
+        self.Power.Smooth = true
 		self.Power.frequentUpdates = false
 
 		K.SmoothBar(self.Power)
@@ -130,8 +110,9 @@ function Module:CreateRaid()
 		self.Power.Background:SetColorTexture(.2, .2, .2)
 		self.Power.Background.multiplier = 0.3
 
-		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
-		self.Power.Override = UpdateRaidPower
+		table.insert(self.__elements, UpdateRaidPower)
+        self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
+        UpdateRaidPower(self, _, unit)
 	end
 
 	-- HealPredictionAndAbsorb
