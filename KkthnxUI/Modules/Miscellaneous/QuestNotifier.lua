@@ -133,8 +133,8 @@ function Module:CreateQuestNotifier()
 	end
 
 	FindQuestComplete()
-	self:RegisterEvent("QUEST_ACCEPTED", FindQuestAccept)
-	self:RegisterEvent("QUEST_LOG_UPDATE", FindQuestComplete)
-	self:RegisterEvent("QUEST_TURNED_IN", FindWorldQuestComplete)
-	self:RegisterEvent("UI_INFO_MESSAGE", FindQuestProgress)
+	K:RegisterEvent("QUEST_ACCEPTED", FindQuestAccept)
+	K:RegisterEvent("QUEST_LOG_UPDATE", FindQuestComplete)
+	K:RegisterEvent("QUEST_TURNED_IN", FindWorldQuestComplete)
+	K:RegisterEvent("UI_INFO_MESSAGE", FindQuestProgress)
 end

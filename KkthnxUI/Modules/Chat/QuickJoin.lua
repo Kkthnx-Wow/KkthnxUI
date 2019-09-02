@@ -37,7 +37,7 @@ function Module:SocialQueueIsLeader(playerName, leaderName)
 					if (gameClient == BNET_CLIENT_WOW) and (accountName == playerName) then
 						playerName = gameCharacterName
 						if realmName ~= K.Realm then
-							playerName = string_formatformat("%s-%s", playerName, gsub(realmName,"[%s%-]",""))
+							playerName = string_format("%s-%s", playerName, gsub(realmName,"[%s%-]",""))
 						end
 						if leaderName == playerName then
 							return true
