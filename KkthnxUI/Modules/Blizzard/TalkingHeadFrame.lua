@@ -16,12 +16,12 @@ function Module:InitializeTalkingHead()
 	-- This means the addon hasn't been loaded,
 	-- so we register a listener and return.
 	if (not content) then
-		return self:RegisterEvent("ADDON_LOADED", "WaitForTalkingHead")
+		return K:RegisterEvent("ADDON_LOADED", Module.WaitForTalkingHead)
 	end
 
 	-- Put the actual talking head into our /moverui holder
 	content:ClearAllPoints()
-	content:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
+	content:SetPoint("BOTTOM", Module.HoldTalkingHead, "BOTTOM", 0, 0)
 	content.ignoreFramePositionManager = true
 
 	-- Kill off Blizzard's repositioning
@@ -45,7 +45,7 @@ function Module:WaitForTalkingHead(_, ...)
 	end
 
 	self:InitializeTalkingHead()
-	self:UnregisterEvent("ADDON_LOADED", "WaitForTalkingHead")
+	K:UnregisterEvent("ADDON_LOADED", self.WaitForTalkingHead)
 end
 
 function Module:CreateTalkingHeadFrame()
@@ -54,9 +54,9 @@ function Module:CreateTalkingHeadFrame()
 	end
 
 	-- Create our container frame
-	self.frame = CreateFrame("Frame", "TalkingHeadFrameMover", UIParent)
-	self.frame:SetPoint("TOP", UIParent, "TOP", 0, -18)
-	self.frame:SetSize(570, 155)
+	self.HoldTalkingHead = CreateFrame("Frame", "TalkingHeadFrameMover", UIParent)
+	self.HoldTalkingHead:SetPoint("TOP", UIParent, "TOP", 0, -18)
+	self.HoldTalkingHead:SetSize(570, 155)
 
-	K.Mover(self.frame, "TalkingHeadFrame", "TalkingHeadFrame", {"TOP", UIParent, "TOP", 0, -18}, 570, 155)
+	K.Mover(self.HoldTalkingHead, "TalkingHeadFrame", "TalkingHeadFrame", {"TOP", UIParent, "TOP", 0, -18}, 570, 155)
 end

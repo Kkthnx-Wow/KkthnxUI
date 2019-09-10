@@ -90,7 +90,7 @@ do -- AutoRepair
 		if isBankEmpty then
 			autoRepair(true)
 		else
-			print(string_format("%s:|r %s", L["Guild Repair"], K.FormatMoney(repairAllCost)))
+			K.Print(string_format("%s:|r %s", L["Guild Repair"], K.FormatMoney(repairAllCost)))
 		end
 	end
 

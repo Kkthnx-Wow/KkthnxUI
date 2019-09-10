@@ -31,7 +31,7 @@ RegisterAttributeDriver(K.UIFrameHider, "state-visibility", "hide")
 K.PetBattleHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
 K.PetBattleHider:SetAllPoints()
 K.PetBattleHider:SetFrameStrata("LOW")
-RegisterStateDriver(K.PetBattleHider, "state-visibility", "[petbattle] hide; show")
+RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
 
 function K.PointsRestricted(frame)
 	if frame and not pcall(frame.GetPoint, frame) then
