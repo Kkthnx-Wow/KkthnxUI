@@ -90,7 +90,7 @@ do -- AutoRepair
 		if isBankEmpty then
 			autoRepair(true)
 		else
-			print(string_format(L["Guild Repair"], K.FormatMoney(repairAllCost)))
+			print(string_format("%s:|r %s", L["Guild Repair"], K.FormatMoney(repairAllCost)))
 		end
 	end
 
@@ -111,7 +111,7 @@ do -- AutoRepair
 			else
 				if myMoney > repairAllCost then
 					_G.RepairAllItems()
-					K.Print(string_format(L["Repair Cost"], K.FormatMoney(repairAllCost)))
+					K.Print(string_format("%s %s", L["Repair Cost"], K.FormatMoney(repairAllCost)))
 					return
 				else
 					K.Print(L["Not Enough Money"])
