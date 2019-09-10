@@ -1,26 +1,51 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
-local strmatch, strfind, gsub, format = string.match, string.find, string.gsub, string.format
-local mod, tonumber, pairs, floor = mod, tonumber, pairs, math.floor
-local soundKitID = SOUNDKIT.ALARM_CLOCK_WARNING_3
-local QUEST_COMPLETE, LE_QUEST_TAG_TYPE_PROFESSION, LE_QUEST_FREQUENCY_DAILY = QUEST_COMPLETE, LE_QUEST_TAG_TYPE_PROFESSION, LE_QUEST_FREQUENCY_DAILY
-local ERR_QUEST_ADD_FOUND_SII, ERR_QUEST_ADD_ITEM_SII, ERR_QUEST_ADD_KILL_SII, ERR_QUEST_ADD_PLAYER_KILL_SII, ERR_QUEST_OBJECTIVE_COMPLETE_S, ERR_QUEST_COMPLETE_S, ERR_QUEST_FAILED_S =
-ERR_QUEST_ADD_FOUND_SII, ERR_QUEST_ADD_ITEM_SII, ERR_QUEST_ADD_KILL_SII, ERR_QUEST_ADD_PLAYER_KILL_SII, ERR_QUEST_OBJECTIVE_COMPLETE_S, ERR_QUEST_COMPLETE_S, ERR_QUEST_FAILED_S
+
+local _G = _G
+local math_floor = _G.math.floor
+local mod = _G.mod
+local string_find = _G.string.find
+local string_format = _G.string.format
+local string_gsub = _G.string.gsub
+local string_match = _G.string.match
+
+local ERR_QUEST_ADD_FOUND_SII = _G.ERR_QUEST_ADD_FOUND_SII
+local ERR_QUEST_ADD_ITEM_SII = _G.ERR_QUEST_ADD_ITEM_SII
+local ERR_QUEST_ADD_KILL_SII = _G.ERR_QUEST_ADD_KILL_SII
+local ERR_QUEST_ADD_PLAYER_KILL_SII = _G.ERR_QUEST_ADD_PLAYER_KILL_SII
+local ERR_QUEST_COMPLETE_S = _G.ERR_QUEST_COMPLETE_S
+local ERR_QUEST_FAILED_S = _G.ERR_QUEST_FAILED_S
+local ERR_QUEST_OBJECTIVE_COMPLETE_S = _G.ERR_QUEST_OBJECTIVE_COMPLETE_S
+local GetNumQuestLogEntries = _G.GetNumQuestLogEntries
+local GetQuestLink = _G.GetQuestLink
+local GetQuestLogTitle = _G.GetQuestLogTitle
+local GetQuestTagInfo = _G.GetQuestTagInfo
+local IsAddOnLoaded = _G.IsAddOnLoaded
+local IsInGroup = _G.IsInGroup
+local IsInRaid = _G.IsInRaid
+local IsPartyLFG = _G.IsPartyLFG
+local LE_QUEST_FREQUENCY_DAILY = _G.LE_QUEST_FREQUENCY_DAILY
+local LE_QUEST_TAG_TYPE_PROFESSION = _G.LE_QUEST_TAG_TYPE_PROFESSION
+local PlaySound = _G.PlaySound
+local QUEST_COMPLETE = _G.QUEST_COMPLETE
+local SendChatMessage = _G.SendChatMessage
+
+local soundKitID = _G.SOUNDKIT.ALARM_CLOCK_WARNING_3
 
 local completedQuest, initComplete = {}
 
 local function acceptText(link, daily)
 	if daily then
-		return format("%s [%s]%s", "AcceptQuest", DAILY, link)
+		return string_format("%s [%s]%s", "AcceptQuest", DAILY, link)
 	else
-		return format("%s %s", "AcceptQuest", link)
+		return string_format("%s %s", "AcceptQuest", link)
 	end
 end
 
 local function completeText(link)
 	PlaySound(soundKitID, "Master")
-	return format("%s %s", link, QUEST_COMPLETE)
+	return string_format("%s %s", link, QUEST_COMPLETE)
 end
 
 local function sendQuestMsg(msg)
@@ -40,10 +65,10 @@ local function sendQuestMsg(msg)
 end
 
 local function getPattern(pattern)
-	pattern = gsub(pattern, "%(", "%%%1")
-	pattern = gsub(pattern, "%)", "%%%1")
-	pattern = gsub(pattern, "%%%d?$?.", "(.+)")
-	return format("^%s$", pattern)
+	pattern = string_gsub(pattern, "%(", "%%%1")
+	pattern = string_gsub(pattern, "%)", "%%%1")
+	pattern = string_gsub(pattern, "%%%d?$?.", "(.+)")
+	return string_format("^%s$", pattern)
 end
 
 local questMatches = {
@@ -66,11 +91,11 @@ local function FindQuestProgress(_, _, msg)
 	end
 
 	for _, pattern in pairs(questMatches) do
-		if strmatch(msg, pattern) then
-			local _, _, _, cur, max = strfind(msg, "(.*)[:：]%s*([-%d]+)%s*/%s*([-%d]+)%s*$")
+		if string_match(msg, pattern) then
+			local _, _, _, cur, max = string_find(msg, "(.*)[:：]%s*([-%d]+)%s*/%s*([-%d]+)%s*$")
 			cur, max = tonumber(cur), tonumber(max)
 			if cur and max and max >= 10 then
-				if mod(cur, floor(max/5)) == 0 then
+				if mod(cur, math_floor(max/5)) == 0 then
 					sendQuestMsg(msg)
 				end
 			else
@@ -105,16 +130,15 @@ local function FindQuestComplete()
 		if link and isComplete and not completedQuest[questID] and not worldQuest then
 			if initComplete then
 				sendQuestMsg(completeText(link))
-			else
-				initComplete = true
 			end
 			completedQuest[questID] = true
 		end
 	end
+	initComplete = true
 end
 
 local function FindWorldQuestComplete(_, questID)
-	if QuestUtils_IsQuestWorldQuest(questID) then
+	if _G.QuestUtils_IsQuestWorldQuest(questID) then
 		local link = GetQuestLink(questID)
 		if link and not completedQuest[questID] then
 			sendQuestMsg(completeText(link))
