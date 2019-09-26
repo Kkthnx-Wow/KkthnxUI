@@ -538,7 +538,7 @@ function Module:OnEnable()
     self:CreateSlotDurability()
     self:CreateSlotItemLevel()
     self:ExtendInstance()
-    self:NakedIcon()
+    -- self:NakedIcon()
     self:TradeTargetInfo()
     self:VehicleSeatMover()
 

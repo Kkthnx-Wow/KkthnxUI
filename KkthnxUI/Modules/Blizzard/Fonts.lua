@@ -191,8 +191,6 @@ local function UpdateBlizzardFonts()
 	for frame, _ in pairs(rewardFrames) do
 		HandleReward(MapQuestInfoRewardsFrame[frame])
 	end
-
-	RecruitAFriendFrame.MoreDetails.Text:FontTemplate()
 end
 
 -- New Fonts Need to be set as soon as possible...
