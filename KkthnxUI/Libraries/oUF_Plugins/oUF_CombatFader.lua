@@ -13,7 +13,16 @@ local UnitExists = _G.UnitExists
 local UnitHealth = _G.UnitHealth
 local UnitHealthMax = _G.UnitHealthMax
 
--- GLOBALS: KkthnxUI
+local LibClassicCasterino = LibStub('LibClassicCasterino', true)
+if (LibClassicCasterino) then
+	UnitCastingInfo = function(unit)
+		return LibClassicCasterino:UnitCastingInfo(unit)
+	end
+
+	UnitChannelInfo = function(unit)
+		return LibClassicCasterino:UnitChannelInfo(unit)
+	end
+end
 
 local oUF = ns.oUF or oUF
 local frames, allFrames = {}, {}
@@ -106,7 +115,6 @@ local function Enable(self, unit)
 		self:RegisterEvent("PLAYER_REGEN_ENABLED", Update, true)
 		self:RegisterEvent("PLAYER_REGEN_DISABLED", Update, true)
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", Update, true)
-		self:RegisterEvent("PLAYER_FOCUS_CHANGED", Update, true)
 		self:RegisterEvent("UNIT_HEALTH", Update)
 		self:RegisterEvent("UNIT_SPELLCAST_START", Update)
 		self:RegisterEvent("UNIT_SPELLCAST_STOP", Update)

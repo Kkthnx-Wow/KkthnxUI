@@ -8,8 +8,8 @@
     <Script file="Functions.lua"/>
     <Script file="Commands.lua"/>
     <Script file="Animation.lua"/>
-    <Script file="Smoothie.lua"/>
     <Script file="Colors.lua"/>
+    <Script file="UIScale.lua"/>
     <Script file="Install.lua"/>
     <Script file="Conflicts.lua"/>
     <Script file="CheckVersion.lua"/>

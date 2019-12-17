@@ -14,12 +14,19 @@ function Module:CreatePetbar()
 	local padding, margin = 0, 6
 	local num = NUM_PET_ACTION_SLOTS
 	local buttonList = {}
+	local layout = C["ActionBar"].Layout.Value
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KkthnxUI_PetActionBar", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding + 20)
 	frame:SetHeight(FilterConfig.size + 2 * padding + 2)
-	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 80, 124}
+	if layout == "Four Stacked" then
+		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 80, 164}
+	elseif layout == "3x4 Boxed arrangement" then
+		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 80, 44}
+	else
+		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 80, 124}
+	end
 
 	-- Move The Buttons Into Position And Reparent Them
 	_G.PetActionBarFrame:SetParent(frame)

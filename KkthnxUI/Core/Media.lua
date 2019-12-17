@@ -7,6 +7,7 @@ local CreateFrame = _G.CreateFrame
 
 local KkthnxUIMedia = CreateFrame("Frame", "KkthnxUIFonts")
 
+-- fix the shadow font
 local s = K.Mult or 1
 
 -- Create our own fonts

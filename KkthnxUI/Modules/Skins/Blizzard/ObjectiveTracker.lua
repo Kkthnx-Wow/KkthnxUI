@@ -5,6 +5,7 @@ local _G = _G
 local table_insert = table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
+-- local C_QuestLog_IsQuestReplayable = _G.C_QuestLog.IsQuestReplayable -- PartySync
 
 local function ReskinObjectiveTracker()
 	local ObjectiveTrackerFrame = _G["ObjectiveTrackerFrame"]
@@ -27,7 +28,6 @@ local function ReskinObjectiveTracker()
 					text:SetFontObject(TrackerFont)
 					text:SetFont(select(1, text:GetFont()), 15, select(3, text:GetFont()))
 					text:SetParent(header)
-					text:SetTextColor(K.Color.r, K.Color.g, K.Color.b, 1)
 
 					if not modules.IsSkinned then
 						local headerPanel = _G.CreateFrame("Frame", nil, header)
@@ -69,11 +69,13 @@ local function ReskinObjectiveTracker()
 		if item and not item.skinned then
 			item:SetSize(24, 24)
 			item:CreateShadow()
-			item:StyleButton()
+			item.highlight = item:CreateTexture(nil, "HIGHLIGHT")
+			item.highlight:SetAllPoints()
+			item.highlight:SetColorTexture(1, 1, 1, .25)
 			item:SetNormalTexture(nil)
 			item.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			item.icon:SetInside()
-			item.Cooldown:SetInside()
+			item.icon:SetAllPoints()
+			item.Cooldown:SetAllPoints()
 			item.Count:ClearAllPoints()
 			item.Count:SetPoint("TOPLEFT", 1, -1)
 			item.Count:SetFontObject(TrackerFont)
@@ -93,15 +95,41 @@ local function ReskinObjectiveTracker()
 		local icon = bar.Icon
 		local label = bar.Label
 		if not progressBar.isSkinned then
-			if bar.BarFrame then bar.BarFrame:Hide() end
-			if bar.BarFrame2 then bar.BarFrame2:Hide() end
-			if bar.BarFrame3 then bar.BarFrame3:Hide() end
-			if bar.BarGlow then bar.BarGlow:Hide() end
-			if bar.Sheen then bar.Sheen:Hide() end
-			if bar.IconBG then bar.IconBG:SetAlpha(0) end
-			if bar.BorderLeft then bar.BorderLeft:SetAlpha(0) end
-			if bar.BorderRight then bar.BorderRight:SetAlpha(0) end
-			if bar.BorderMid then bar.BorderMid:SetAlpha(0) end
+			if bar.BarFrame then
+				bar.BarFrame:Hide()
+			end
+
+			if bar.BarFrame2 then
+				bar.BarFrame2:Hide()
+			end
+
+			if bar.BarFrame3 then
+				bar.BarFrame3:Hide()
+			end
+
+			if bar.BarGlow then
+				bar.BarGlow:Hide()
+			end
+
+			if bar.Sheen then
+				bar.Sheen:Hide()
+			end
+
+			if bar.IconBG then
+				bar.IconBG:SetAlpha(0)
+			end
+
+			if bar.BorderLeft then
+				bar.BorderLeft:SetAlpha(0)
+			end
+
+			if bar.BorderRight then
+				bar.BorderRight:SetAlpha(0)
+			end
+
+			if bar.BorderMid then
+				bar.BorderMid:SetAlpha(0)
+			end
 
 			bar:SetHeight(18)
 			bar:StripTextures()
@@ -131,14 +159,14 @@ local function ReskinObjectiveTracker()
 
 				if not progressBar.Shadow then
 					progressBar:CreateShadow(true, icon)
-					progressBar.Shadow:SetShown(icon:IsShown())
+					progressBar.Shadow:SetShown(icon:IsShown() and icon:GetTexture() ~= nil)
 				end
 			end
 
 			_G.BonusObjectiveTrackerProgressBar_PlayFlareAnim = K.Noop
 			progressBar.isSkinned = true
 		elseif icon and progressBar.Shadow then
-			progressBar.Shadow:SetShown(icon:IsShown())
+			progressBar.Shadow:SetShown(icon:IsShown() and icon:GetTexture() ~= nil)
 		end
 	end
 
@@ -207,19 +235,20 @@ local function ReskinObjectiveTracker()
 
 	-- Show quest color and level
 	local function Showlevel(_, _, _, title, level, _, isHeader, _, isComplete, frequency, questID)
-		if _G.ENABLE_COLORBLIND_MODE == "1" then
+		if ENABLE_COLORBLIND_MODE == "1" then
 			return
 		end
 
-		for button in pairs(_G.QuestScrollFrame.titleFramePool.activeObjects) do
+		for button in pairs(QuestScrollFrame.titleFramePool.activeObjects) do
 			if title and not isHeader and button.questID == questID then
 				local title = "["..level.."] "..title
 				if isComplete then
 					title = "|cffff78ff"..title
-				elseif frequency == _G.LE_QUEST_FREQUENCY_DAILY then
+				-- elseif C_QuestLog_IsQuestReplayable(questID) then -- PartySync
+				-- 	title = "|cff00ff00"..title
+				elseif frequency == LE_QUEST_FREQUENCY_DAILY then
 					title = "|cff3399ff"..title
 				end
-
 				button.Text:SetText(title)
 				button.Text:SetPoint("TOPLEFT", 24, -5)
 				button.Text:SetWidth(205)

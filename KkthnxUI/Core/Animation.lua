@@ -109,7 +109,7 @@ function K.SlideOut(obj, customName)
 end
 
 local FADEFRAMES, FADEMANAGER = {}, CreateFrame("FRAME")
-FADEMANAGER.delay = 0.05
+FADEMANAGER.delay = 0.025
 
 function K.UIFrameFade_OnUpdate(_, elapsed)
 	FADEMANAGER.timer = (FADEMANAGER.timer or 0) + elapsed

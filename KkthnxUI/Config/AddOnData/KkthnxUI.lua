@@ -183,14 +183,12 @@ function K.LoadKkthnxUIProfile()
 					["AutoResurrectThank"] = true,
 					["AutoReward"] = true,
 					["WhisperInvite"] = 1234,
-					["ScreenShot"] = true,
 					["AutoInvite"] = true,
 					["AutoDisenchant"] = true,
 					["DeclinePvPDuel"] = true,
 					["AutoCollapse"] = true,
 					["BlockMovies"] = true,
 					["AutoTabBinder"] = true,
-					["DeclinePetDuel"] = true,
 					["AutoRelease"] = true,
 				},
 				["Skins"] = {
@@ -209,7 +207,6 @@ function K.LoadKkthnxUIProfile()
 					["DisablePvP"] = true,
 				},
 				["Tooltip"] = {
-					["AzeriteArmor"] = true,
 					["ShowMount"] = true,
 					["PlayerRoles"] = true,
 					["TargetInfo"] = true,

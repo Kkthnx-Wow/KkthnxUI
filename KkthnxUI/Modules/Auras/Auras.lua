@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("Auras", "AceEvent-3.0")
+local Module = K:NewModule("Auras")
 
 -- Sourced: KkthnxUI (Siweia)
 
@@ -126,17 +126,17 @@ function Module:UpdateTempEnchant(button, index)
     end
 
     local expirationTime = select(offset, GetWeaponEnchantInfo())
-    if expirationTime then
-        button.offset = offset
-        button:SetScript("OnUpdate", Module.UpdateTimer)
-        button.nextUpdate = -1
-        Module.UpdateTimer(button, 0)
-    else
-        button.offset = nil
-        button.timeLeft = nil
-        button:SetScript("OnUpdate", nil)
-        button.timer:SetText("")
-    end
+	if expirationTime then
+		button.offset = offset
+		button:SetScript("OnUpdate", Module.UpdateTimer)
+		button.nextUpdate = -1
+		Module.UpdateTimer(button, 0)
+	else
+		button.offset = nil
+		button.timeLeft = nil
+		button:SetScript("OnUpdate", nil)
+		button.timer:SetText("")
+	end
 end
 
 function Module:OnAttributeChanged(attribute, value)
@@ -152,7 +152,7 @@ function Module:UpdateHeader(header)
     if header:GetAttribute("filter") == "HELPFUL" then
         cfg = settings.Buffs
         header:SetAttribute("consolidateTo", 0)
-		header:SetAttribute("weaponTemplate", format("KkthnxUIAuraTemplate%d", cfg.size))
+		header:SetAttribute("weaponTemplate", format("KKUI_AuraTemplate%d", cfg.size))
     end
 
     header:SetAttribute("separateOwn", 1)
@@ -167,7 +167,7 @@ function Module:UpdateHeader(header)
     header:SetAttribute("yOffset", 0)
     header:SetAttribute("wrapXOffset", 0)
     header:SetAttribute("wrapYOffset", -(cfg.size + offset))
-    header:SetAttribute("template", format("KkthnxUIAuraTemplate%d", cfg.size))
+    header:SetAttribute("template", format("KKUI_AuraTemplate%d", cfg.size))
 
     local index = 1
     local child = select(index, header:GetChildren())
@@ -187,9 +187,9 @@ function Module:UpdateHeader(header)
 end
 
 function Module:CreateAuraHeader(filter)
-    local name = "KkthnxUIPlayerDebuffs"
+    local name = "KKUI_PlayerDebuffs"
     if filter == "HELPFUL" then
-        name = "KkthnxUIPlayerBuffs"
+        name = "KKUI_PlayerBuffs"
     end
 
     local header = CreateFrame("Frame", name, UIParent, "SecureAuraHeaderTemplate")
@@ -228,10 +228,11 @@ function Module:CreateAuraIcon(button)
     button.count:SetFont(select(1, button.count:GetFont()), fontSize, select(3, button.count:GetFont()))
 
     button.timer = button:CreateFontString(nil, "OVERLAY")
-    button.timer:SetPoint("TOP", button, "BOTTOM", 1, -2)
+    button.timer:SetPoint("TOP", button, "BOTTOM", 1, -4)
     button.timer:SetFontObject(K.GetFont(C["UIFonts"].AuraFonts))
     button.timer:SetFont(select(1, button.timer:GetFont()), fontSize, select(3, button.timer:GetFont()))
 
+    button:StyleButton()
     button:CreateBorder()
     button:CreateInnerShadow()
 

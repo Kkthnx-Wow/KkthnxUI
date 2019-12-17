@@ -1,45 +1,24 @@
---[=[
-.icon [texture]
-.count [fontstring]
-.cd [cooldown]
-.ShowBossDebuff [boolean]
-.BossDebuffPriority [number]
-.ShowDispelableDebuff [boolean]
-.DispelPriority [table] { [type] = prio }
-.DispelFilter [table] { [type] = true }
-.DebuffTypeColor [table] { [type] = { r, g, b } }
-.Debuffs [table] { [name(string)|id(number)] = prio(number) }
-.MatchBySpellName [boolean]
-.SetDebuffTypeColor [function] function(r, g, b) end
---]=]
-
---local K, C, L = unpack(KkthnxUI)
-
--- Format seconds to min/hour/day
-local Day, Hour, Minute = 86400, 3600, 60
-local function SetFormatTime(time)
-	if (time >= Day) then
-		return string.format("%dd", math.ceil(time / Day))
-	elseif (time >= Hour) then
-		return string.format("%dh", math.ceil(time / Hour))
-	elseif (time >= Minute) then
-		return string.format("%dm", math.ceil(time / Minute))
-	elseif (time >= Minute / 12) then
-		return math.floor(time)
-	end
-
-	return string.format("%.1f", time)
-end
-
 local _, ns = ...
 local oUF = ns.oUF or oUF
 
+local _G = _G
 local addon = {}
 ns.oUF_RaidDebuffs = addon
-oUF_RaidDebuffs = ns.oUF_RaidDebuffs
+_G.oUF_RaidDebuffs = ns.oUF_RaidDebuffs
 if not _G.oUF_RaidDebuffs then
 	_G.oUF_RaidDebuffs = addon
 end
+
+local format, floor = format, floor
+local type, pairs, wipe = type, pairs, wipe
+
+local GetActiveSpecGroup = GetActiveSpecGroup
+local GetSpecialization = GetSpecialization
+local GetSpellInfo = GetSpellInfo
+local GetTime = GetTime
+local UnitAura = UnitAura
+local UnitCanAttack = UnitCanAttack
+local UnitIsCharmed = UnitIsCharmed
 
 local debuff_data = {}
 addon.DebuffData = debuff_data
@@ -65,11 +44,7 @@ function addon:RegisterDebuffs(t)
 	for spell, value in pairs(t) do
 		if type(t[spell]) == 'boolean' then
 			local oldValue = t[spell]
-			t[spell] = {
-				['enable'] = oldValue,
-				['priority'] = 0,
-				['stackThreshold'] = 0
-			}
+			t[spell] = { enable = oldValue, priority = 0, stackThreshold = 0 }
 		else
 			if t[spell].enable then
 				add(spell, t[spell].priority, t[spell].stackThreshold)
@@ -87,7 +62,7 @@ local DispellColor = {
 	['Curse']	= {.6, 0, 1},
 	['Disease']	= {.6, .4, 0},
 	['Poison']	= {0, .6, 0},
-	['none'] = {1, 0, 0},
+	['none'] = { .23, .23, .23},
 }
 
 local DispellPriority = {
@@ -169,20 +144,29 @@ local function CheckSpec(self, event, levels)
 	end
 end
 
+local function formatTime(s)
+	if s > 60 then
+		return format('%dm', s/60), s%60
+	elseif s < 1 then
+		return format("%.1f", s), s - floor(s)
+	else
+		return format('%d', s), s - floor(s)
+	end
+end
+
+local abs = math.abs
 local function OnUpdate(self, elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
-
-	if (self.elapsed >= 0.1) then
+	if self.elapsed >= 0.1 then
 		local timeLeft = self.endTime - GetTime()
-
-		if (timeLeft > 0) then
-			local text = SetFormatTime(timeLeft)
+		if self.reverse then timeLeft = abs((self.endTime - GetTime()) - self.duration) end
+		if timeLeft > 0 then
+			local text = formatTime(timeLeft)
 			self.time:SetText(text)
 		else
 			self:SetScript('OnUpdate', nil)
 			self.time:Hide()
 		end
-
 		self.elapsed = 0
 	end
 end
@@ -204,6 +188,12 @@ local function UpdateDebuff(self, name, icon, count, debuffType, duration, endTi
 				f.count:Hide()
 			end
 		end
+
+		-- if spellId and _G.KkthnxUI[1].ReverseTimer[spellId] then
+		-- 	f.reverse = true
+		-- else
+		-- 	f.reverse = nil
+		-- end
 
 		if f.time then
 			if duration and (duration > 0) then
@@ -244,7 +234,7 @@ local blackList = {
 
 local function Update(self, event, unit)
 	if unit ~= self.unit then return end
-	local _name, _icon, _count, _dtype, _duration, _endTime, _spellId
+	local _name, _icon, _count, _dtype, _duration, _endTime, _spellId, _
 	local _priority, priority = 0, 0
 	local _stackThreshold = 0
 
@@ -306,30 +296,30 @@ local function Update(self, event, unit)
 	UpdateDebuff(self, _name, _icon, _count, _dtype, _duration, _endTime, _spellId, _stackThreshold)
 
 	--Reset the DispellPriority
-	DispellPriority = {
-		['Magic']	= 4,
-		['Curse']	= 3,
-		['Disease']	= 2,
-		['Poison']	= 1,
-	}
+	DispellPriority['Magic'] = 4
+	DispellPriority['Curse'] = 3
+	DispellPriority['Disease'] = 2
+	DispellPriority['Poison'] = 1
 end
 
 local function Enable(self)
-	if self.RaidDebuffs then
-		self:RegisterEvent('UNIT_AURA', Update)
-		return true
-	end
-	--Need to run these always
 	self:RegisterEvent("PLAYER_TALENT_UPDATE", CheckSpec, true)
 	self:RegisterEvent("CHARACTER_POINTS_CHANGED", CheckSpec, true)
+
+	if self.RaidDebuffs then
+		self:RegisterEvent('UNIT_AURA', Update)
+
+		return true
+	end
 end
 
 local function Disable(self)
 	if self.RaidDebuffs then
 		self:UnregisterEvent('UNIT_AURA', Update)
+
 		self.RaidDebuffs:Hide()
 	end
-	--Need to run these always
+
 	self:UnregisterEvent("PLAYER_TALENT_UPDATE", CheckSpec)
 	self:UnregisterEvent("CHARACTER_POINTS_CHANGED", CheckSpec)
 end

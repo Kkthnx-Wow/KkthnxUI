@@ -4,15 +4,10 @@ local Module = K:GetModule("Tooltip")
 -- Sourced: Cloudy Unit Info (Cloudyfa)
 
 local _G = _G
-local math_max = _G.math.max
 local string_find = _G.string.find
 local string_format = _G.string.format
-local string_split = _G.string.split
 
-local CanInspect = _G.CanInspect
-local ClearInspectPlayer = _G.ClearInspectPlayer
 local CreateFrame = _G.CreateFrame
-local GameTooltip = _G.GameTooltip
 local GetAverageItemLevel = _G.GetAverageItemLevel
 local GetInspectSpecialization = _G.GetInspectSpecialization
 local GetInventoryItemLink = _G.GetInventoryItemLink
@@ -24,12 +19,10 @@ local GetSpecializationInfo = _G.GetSpecializationInfo
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local GetTime = _G.GetTime
 local HEIRLOOMS = _G.HEIRLOOMS
--- local InspectFrame = _G.InspectFrame
 local IsShiftKeyDown = _G.IsShiftKeyDown
-local LE_ITEM_QUALITY_ARTIFACT = _G.LE_ITEM_QUALITY_ARTIFACT or 6
-local LE_ITEM_QUALITY_HEIRLOOM = _G.LE_ITEM_QUALITY_HEIRLOOM or 7
+local LE_ITEM_QUALITY_ARTIFACT = _G.LE_ITEM_QUALITY_ARTIFACT
+local LE_ITEM_QUALITY_HEIRLOOM = _G.LE_ITEM_QUALITY_HEIRLOOM
 local LFG_LIST_LOADING = _G.LFG_LIST_LOADING
-local NotifyInspect = _G.NotifyInspect
 local SPECIALIZATION = _G.SPECIALIZATION
 local STAT_AVERAGE_ITEM_LEVEL = _G.STAT_AVERAGE_ITEM_LEVEL
 local UnitClass = _G.UnitClass
@@ -65,20 +58,20 @@ local updater = CreateFrame("Frame")
 updater:SetScript("OnUpdate", Module.InspectOnUpdate)
 updater:Hide()
 
-function Module.ResetUnit(_, btn)
+function Module:ResetUnit(btn)
 	if btn == "LSHIFT" and UnitExists("mouseover") then
 		GameTooltip:SetUnit("mouseover")
 	end
 end
 K:RegisterEvent("MODIFIER_STATE_CHANGED", Module.ResetUnit)
 
-function Module.GetInspectInfo(event, ...)
-	if event == "UNIT_INVENTORY_CHANGED" then
+function Module:GetInspectInfo(...)
+	if self == "UNIT_INVENTORY_CHANGED" then
 		local unit = ...
 		if UnitGUID(unit) == currentGUID then
 			Module:InspectUnit(unit, true)
 		end
-	elseif event == "INSPECT_READY" then
+	elseif self == "INSPECT_READY" then
 		local guid = ...
 		if guid == currentGUID then
 			local spec = Module:GetUnitSpec(currentUNIT)
@@ -93,7 +86,7 @@ function Module.GetInspectInfo(event, ...)
 				Module:InspectUnit(currentUNIT, true)
 			end
 		end
-		K:UnregisterEvent(event, Module.GetInspectInfo)
+		K:UnregisterEvent(self, Module.GetInspectInfo)
 	end
 end
 K:RegisterEvent("UNIT_INVENTORY_CHANGED", Module.GetInspectInfo)
@@ -163,7 +156,7 @@ function Module:GetUnitItemLevel(unit)
 							if i < 16 then
 								total = total + level
 							elseif i > 15 and quality == LE_ITEM_QUALITY_ARTIFACT then
-								local relics = {select(4, string_split(":", itemLink))}
+								local relics = {select(4, strsplit(":", itemLink))}
 								for i = 1, 3 do
 									local relicID = relics[i] ~= "" and relics[i]
 									local relicLink = select(2, GetItemGem(itemLink, i))
@@ -205,7 +198,7 @@ function Module:GetUnitItemLevel(unit)
 			ilvl = select(2, GetAverageItemLevel())
 		else
 			if hasArtifact or twohand == 2 then
-				local higher = math_max(weapon[1], weapon[2])
+				local higher = max(weapon[1], weapon[2])
 				total = total + higher*2
 			elseif twohand == 1 and haveWeapon == 1 then
 				total = total + weapon[1]*2 + weapon[2]*2
@@ -312,7 +305,9 @@ function Module:InspectUnitSpecAndLevel()
 	end
 
 	currentUNIT, currentGUID = unit, UnitGUID(unit)
-	if not cache[currentGUID] then cache[currentGUID] = {} end
+	if not cache[currentGUID] then
+		cache[currentGUID] = {}
+	end
 
 	Module:InspectUnit(unit)
 end

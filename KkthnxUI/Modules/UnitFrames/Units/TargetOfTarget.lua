@@ -32,18 +32,31 @@ function Module:CreateTargetOfTarget()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
+	self.Health.PostUpdate = C["General"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
-	self.Health.colorSmooth = false
-	self.Health.colorClass = true
-	self.Health.colorReaction = true
-	self.Health.frequentUpdates = false
+	self.Health.frequentUpdates = true
+
+	if C["Unitframe"].HealthbarColor.Value == "Value" then
+        self.Health.colorSmooth = true
+        self.Health.colorClass = false
+        self.Health.colorReaction = false
+    elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
+        self.Health.colorSmooth = false
+        self.Health.colorClass = false
+        self.Health.colorReaction = false
+        self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
+    else
+        self.Health.colorSmooth = false
+        self.Health.colorClass = true
+        self.Health.colorReaction = true
+    end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	self.Health.Value:SetFontObject(UnitframeFont)
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
-	self:Tag(self.Health.Value, "[KkthnxUI:HealthPercent]")
+	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetHeight(8)
@@ -56,11 +69,11 @@ function Module:CreateTargetOfTarget()
 	self.Power.frequentUpdates = false
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOM", self.Power, "BOTTOM", 0, -16)
-	self.Name:SetWidth(self.Power:GetWidth())
+	self.Name:SetPoint("BOTTOM", self.Power, 0, -18)
+	self.Name:SetWidth(81 * 0.96)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
-	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
+	self:Tag(self.Name, "[color][name]")
 
 	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
@@ -88,6 +101,11 @@ function Module:CreateTargetOfTarget()
 	self.Health:ClearAllPoints()
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT", -self.Portrait:GetWidth() - 6, 0)
+
+	self.Level = self:CreateFontString(nil, "OVERLAY")
+	self.Level:SetPoint("BOTTOM", self.Portrait, 0, -18)
+	self.Level:SetFontObject(UnitframeFont)
+	self:Tag(self.Level, "[fulllevel]")
 
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 	self.Debuffs:SetWidth(82)

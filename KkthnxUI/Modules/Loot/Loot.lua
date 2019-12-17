@@ -1,6 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("Loot", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
-local LBG = LibStub("LibButtonGlow-1.0", true)
+local Module = K:NewModule("Loot")
 
 local _G = _G
 local max = _G.math.max
@@ -169,7 +168,10 @@ function Module.LOOT_SLOT_CLEARED(_, slot)
 		return
 	end
 
-	lootFrame.slots[slot]:Hide()
+	if lootFrame.slots[slot] then
+		lootFrame.slots[slot]:Hide()
+	end
+
 	anchorSlots(lootFrame)
 end
 
@@ -188,8 +190,6 @@ function Module.LOOT_OPENED(_, autoloot)
 	if (not lootFrame:IsShown()) then
 		CloseLoot(not autoloot)
 	end
-
-	local items = GetNumLootItems()
 
 	if IsFishingLoot() then
 		lootFrame.title:SetText(L["Fishy Loot"])
@@ -215,6 +215,7 @@ function Module.LOOT_OPENED(_, autoloot)
 	end
 
 	local m, w, t = 0, 0, lootFrame.title:GetStringWidth()
+	local items = GetNumLootItems()
 	if items > 0 then
 		for i = 1, items do
 			local slot = lootFrame.slots[i] or createSlot(i)
@@ -255,13 +256,13 @@ function Module.LOOT_OPENED(_, autoloot)
 			local questTexture = slot.questTexture
 			if (questId and not isActive) then
 				questTexture:Show()
-				LBG.ShowOverlayGlow(slot.iconFrame)
+				K.libButtonGlow.ShowOverlayGlow(slot.iconFrame)
 			elseif (questId or isQuestItem) then
 				questTexture:Hide()
-				LBG.ShowOverlayGlow(slot.iconFrame)
+				K.libButtonGlow.ShowOverlayGlow(slot.iconFrame)
 			else
 				questTexture:Hide()
-				LBG.HideOverlayGlow(slot.iconFrame)
+				K.libButtonGlow.HideOverlayGlow(slot.iconFrame)
 			end
 
 			-- Check for FasterLooting scripts or w/e (if bag is full)

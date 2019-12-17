@@ -2,29 +2,22 @@ local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Minimap", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
 
 local _G = _G
-local string_sub = string.sub
 
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
-local GameTimeFrame = _G.GameTimeFrame
-local GarrisonLandingPageMinimapButton = _G.GarrisonLandingPageMinimapButton
 local GetMinimapZoneText = _G.GetMinimapZoneText
+local GetUnitName = _G.GetUnitName
 local GetZonePVPInfo = _G.GetZonePVPInfo
-local GuildInstanceDifficulty = _G.GuildInstanceDifficulty
-local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
-local Minimap = _G.Minimap
-local MiniMapChallengeMode = _G.MiniMapChallengeMode
-local MiniMapInstanceDifficulty = _G.MiniMapInstanceDifficulty
 local MiniMapMailFrame = _G.MiniMapMailFrame
-local QueueStatusMinimapButton = _G.QueueStatusMinimapButton
+local Minimap = _G.Minimap
 local UIParent = _G.UIParent
+local UnitClass = _G.UnitClass
+local hooksecurefunc = _G.hooksecurefunc
 
-function Module:GetLocationTextColors()
+function Module:GetLocTextColor()
 	local pvpType = GetZonePVPInfo()
-	if pvpType == "arena" then
-		return 0.84, 0.03, 0.03
-	elseif pvpType == "friendly" then
+	if pvpType == "friendly" then
 		return 0.05, 0.85, 0.03
 	elseif pvpType == "contested" then
 		return 0.9, 0.85, 0.05
@@ -47,16 +40,6 @@ function Module:OnMouseWheelScroll(d)
 	end
 end
 
-function Module.ZoneTextUpdate()
-	if not C["Minimap"].Enable then
-		return
-	end
-
-	Minimap.Location:SetText(string.utf8sub(GetMinimapZoneText(), 1, 46))
-	Minimap.Location:SetTextColor(Module:GetLocationTextColors())
-	Minimap.Location:FontTemplate(nil, 13)
-end
-
 local isResetting
 local function ResetZoom()
 	Minimap:SetZoom(0)
@@ -73,26 +56,31 @@ local function SetupZoomReset()
 end
 hooksecurefunc(Minimap, "SetZoom", SetupZoomReset)
 
+function Module:UpdateZoneText()
+	if C["Minimap"].LocationText.Value == "HIDE" or not C["Minimap"].Enable then
+		return
+	end
+
+	Minimap.Location:SetText(GetMinimapZoneText())
+	Minimap.Location:SetTextColor(Module:GetLocTextColor())
+	Minimap.Location:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	Minimap.Location:SetFont(select(1, Minimap.Location:GetFont()), 13, select(3, Minimap.Location:GetFont()))
+end
+
 function Module:UpdateSettings()
 	if InCombatLockdown() then
-		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", self.PLAYER_REGEN_ENABLED)
+		return
 	end
 
 	K.MinimapSize = C["Minimap"].Enable and C["Minimap"].Size or Minimap:GetWidth() + 10
 	K.MinimapWidth, K.MinimapHeight = K.MinimapSize, K.MinimapSize
 
-	if C["Minimap"].Enable then
-		Minimap:SetSize(K.MinimapSize, K.MinimapSize)
-	end
+	Minimap:SetSize(K.MinimapSize, K.MinimapSize)
 
 	local MinimapFrameHolder = _G.MinimapFrameHolder
 	if MinimapFrameHolder then
 		MinimapFrameHolder:SetWidth(Minimap:GetWidth())
-	end
-
-	if Minimap.Location then
-		Minimap.Location:SetWidth(K.MinimapSize)
-		Minimap.Location:Hide()
 	end
 
 	-- Stop here if KkthnxUI Minimap is disabled.
@@ -100,8 +88,16 @@ function Module:UpdateSettings()
 		return
 	end
 
+	Minimap.Location:SetWidth(K.MinimapSize)
+
+	if C["Minimap"].LocationText.Value ~= "SHOW" or not C["Minimap"].Enable then
+		Minimap.Location:Hide()
+	else
+		Minimap.Location:Show()
+	end
+
 	if GarrisonLandingPageMinimapButton then
-		if not C["Minimap"].GarrisonLandingPage then
+		if not C["Minimap"].ShowGarrison then
 			-- ugly hack to keep the keybind functioning
 			GarrisonLandingPageMinimapButton:SetParent(K.UIFrameHider)
 			GarrisonLandingPageMinimapButton:UnregisterAllEvents()
@@ -143,13 +139,13 @@ function Module:UpdateSettings()
 
 	if MiniMapMailFrame then
 		MiniMapMailFrame:ClearAllPoints()
-		MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
+		if C["DataText"].Time then
+			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
+		else
+			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -6)
+		end
 		MiniMapMailFrame:SetScale(1.2)
-	end
-
-	if QueueStatusMinimapButton then
-		QueueStatusMinimapButton:ClearAllPoints()
-		QueueStatusMinimapButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
+		MiniMapMailFrame:SetHitRectInsets(8, 8, 12, 11)
 	end
 
 	-- QueueStatus Button
@@ -160,15 +156,18 @@ function Module:UpdateSettings()
 		local queueIcon = Minimap:CreateTexture(nil, "ARTWORK")
 		queueIcon:SetPoint("CENTER", QueueStatusMinimapButton)
 		queueIcon:SetSize(50, 50)
-		queueIcon:SetTexture("Interface\\Minimap\\Dungeon_Icon")
+		queueIcon:SetTexture("Interface\\Minimap\\Raid_Icon")
+
 		local anim = queueIcon:CreateAnimationGroup()
 		anim:SetLooping("REPEAT")
 		anim.rota = anim:CreateAnimation("Rotation")
-		anim.rota:SetDuration(2)
+		anim.rota:SetDuration(3)
 		anim.rota:SetDegrees(360)
+
 		hooksecurefunc("QueueStatusFrame_Update", function()
 			queueIcon:SetShown(QueueStatusMinimapButton:IsShown())
 		end)
+
 		hooksecurefunc("EyeTemplate_StartAnimating", function() anim:Play() end)
 		hooksecurefunc("EyeTemplate_StopAnimating", function() anim:Stop() end)
 	end
@@ -201,12 +200,9 @@ function Module.ADDON_LOADED(_, addon)
 	end
 end
 
-function Module.OnEvent(event)
-	if event == "PLAYER_ENTERING_WORLD" then
-		Module:ZoneTextUpdate()
-	elseif event == "PLAYER_REGEN_ENABLED" then
-		Module:UpdateSettings()
-	end
+function Module.PLAYER_REGEN_ENABLED()
+	K:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	Module:UpdateSettings()
 end
 
 function Module:WhoPingedMyMap()
@@ -254,82 +250,77 @@ function Module:WhoPingedMyMap()
 	K:RegisterEvent("MINIMAP_PING", self.MINIMAP_PING)
 end
 
-function Module:OnEnable()
-	self:UpdateSettings()
+local function GetMinimapShape()
+	return "SQUARE"
+end
 
+function Module:SetGetMinimapShape()
+	-- This is just to support for other mods
+	_G.GetMinimapShape = GetMinimapShape
+	Minimap:SetSize(C["Minimap"].Size, C["Minimap"].Size)
+end
+
+function Module:OnEnable()
 	if not C["Minimap"].Enable then
-		Minimap:SetMaskTexture(186178)
+		Minimap:SetMaskTexture([[Interface\CharacterFrame\TempPortraitAlphaMask]])
 		Minimap:SetBlipTexture("Interface\\MiniMap\\ObjectIconsAtlas")
 		return
 	end
 
-	local UIHider = K.UIFrameHider
-
-	-- Support for other mods
-	function GetMinimapShape()
-		return "SQUARE"
-	end
-
+	local pos
 	local MinimapFrameHolder = CreateFrame("Frame", "MinimapFrameHolder", Minimap)
-	MinimapFrameHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -4, -4)
-	MinimapFrameHolder:SetWidth(Minimap:GetWidth())
-	MinimapFrameHolder:SetHeight(Minimap:GetHeight())
+	if K.CheckAddOnState("TitanClassic") then
+		pos = {"TOPRIGHT", UIParent, "TOPRIGHT", -4, -30}
+	else
+		MinimapFrameHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -4, -4)
+		pos = {"TOPRIGHT", UIParent, "TOPRIGHT", -4, -4}
+	end
+	MinimapFrameHolder:SetSize(C["Minimap"].Size, C["Minimap"].Size)
 
 	Minimap:ClearAllPoints()
 	Minimap:SetPoint("CENTER", MinimapFrameHolder, "CENTER", 0, 0)
 	Minimap:SetMaskTexture(C["Media"].Blank)
-	Minimap:SetQuestBlobRingAlpha(0)
-	Minimap:SetArchBlobRingAlpha(0)
 	Minimap:CreateBorder()
 	Minimap:CreateInnerShadow(nil, 0.4)
 	Minimap:SetScale(1.0)
-	Minimap:SetBlipTexture("Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\Blip-Nandini-New")
+	Minimap:SetBlipTexture(C["Minimap"].BlipTexture.Value)
 
-	Minimap:HookScript("OnEnter", function()
-		if K.PerformanceFrame:IsShown() then
-			K.PerformanceFrame:Hide()
+	Minimap:HookScript("OnEnter", function(mm)
+		if C["Minimap"].LocationText.Value ~= "MOUSEOVER" or not C["Minimap"].Enable then
+			return
 		end
 
-		Minimap.Location:Show()
+		mm.Location:Show()
 	end)
 
-	Minimap:HookScript("OnLeave", function()
-		if not K.PerformanceFrame:IsShown() then
-			K.PerformanceFrame:Show()
+	Minimap:HookScript("OnLeave", function(mm)
+		if C["Minimap"].LocationText.Value ~= "MOUSEOVER" or not C["Minimap"].Enable then
+			return
 		end
 
-		Minimap.Location:Hide()
+		mm.Location:Hide()
 	end)
 
 	Minimap.Location = Minimap:CreateFontString(nil, "OVERLAY")
-	Minimap.Location:FontTemplate(nil, 13)
+	Minimap.Location:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	Minimap.Location:SetFont(select(1, Minimap.Location:GetFont()), 13, select(3, Minimap.Location:GetFont()))
 	Minimap.Location:SetPoint("TOP", Minimap, "TOP", 0, -4)
 	Minimap.Location:SetJustifyH("CENTER")
 	Minimap.Location:SetJustifyV("MIDDLE")
-	Minimap.Location:Hide()
-
-	-- New dungeon finder eye in MoP
-	QueueStatusMinimapButton:SetHighlightTexture("")
-	if QueueStatusMinimapButton.Highlight then -- bugged out in MoP
-		QueueStatusMinimapButton.Highlight:SetTexture(nil)
-		QueueStatusMinimapButton.Highlight:SetAlpha(0)
+	if C["Minimap"].LocationText.Value ~= "SHOW" or not C["Minimap"].Enable then
+		Minimap.Location:Hide()
 	end
 
-	_G.MinimapBorder:SetParent(UIHider)
-	_G.MinimapBorderTop:SetParent(UIHider)
-	_G.MiniMapMailBorder:SetParent(UIHider)
-	_G.MinimapNorthTag:SetParent(UIHider)
-	_G.MiniMapTracking:SetParent(UIHider)
-	_G.MiniMapTrackingButton:SetParent(UIHider)
-	_G.MinimapZoneTextButton:SetParent(UIHider)
-	_G.MinimapZoomIn:SetParent(UIHider)
-	_G.MinimapZoomOut:SetParent(UIHider)
+	_G.GameTimeFrame:Hide()
+	_G.MiniMapMailBorder:Hide()
 	_G.MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
-
-	-- Hide the BlopRing on Minimap
-	MinimapCluster:EnableMouse(false)
-	Minimap:SetArchBlobRingScalar(0)
-	Minimap:SetQuestBlobRingScalar(0)
+	_G.MinimapBorder:Hide()
+	_G.MiniMapTracking:Kill()
+	_G.MinimapNorthTag:Kill()
+	_G.MinimapBorderTop:Hide()
+	_G.MinimapZoneTextButton:Hide()
+	_G.MinimapZoomIn:Hide()
+	_G.MinimapZoomOut:Hide()
 
 	if QueueStatusMinimapButtonBorder then
 		QueueStatusMinimapButtonBorder:SetAlpha(0)
@@ -337,33 +328,33 @@ function Module:OnEnable()
 		QueueStatusMinimapButtonIconTexture:SetTexture(nil)
 	end
 
-	_G.MiniMapWorldMapButton:SetParent(K.UIFrameHider)
+	_G.MiniMapWorldMapButton:Hide()
 
-	MiniMapInstanceDifficulty:SetParent(Minimap)
-	GuildInstanceDifficulty:SetParent(Minimap)
-	MiniMapChallengeMode:SetParent(Minimap)
-
-	if TimeManagerClockButton then
-		TimeManagerClockButton:Kill()
+	if _G.TimeManagerClockButton then
+		_G.TimeManagerClockButton:Kill()
 	end
 
-	if FeedbackUIButton then
-		FeedbackUIButton:Kill()
+	if _G.FeedbackUIButton then
+		_G.FeedbackUIButton:Kill()
 	end
 
-	K.Mover(MinimapFrameHolder, "Minimap", "Minimap", {"TOPRIGHT", UIParent, "TOPRIGHT", -4, -4}, Minimap:GetWidth(), Minimap:GetHeight())
+	_G.Minimap:SetArchBlobRingScalar(0)
+	_G.Minimap:SetQuestBlobRingScalar(0)
+	_G.MinimapCluster:EnableMouse(false)
+
+	K.Mover(MinimapFrameHolder, "Minimap", "Minimap", pos)
 
 	Minimap:EnableMouseWheel(true)
 	Minimap:SetScript("OnMouseWheel", Module.OnMouseWheelScroll)
 
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", self.OnEvent)
-	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", self.ZoneTextUpdate)
-	K:RegisterEvent("ZONE_CHANGED", self.ZoneTextUpdate)
-	K:RegisterEvent("ZONE_CHANGED_INDOORS", self.ZoneTextUpdate)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", self.UpdateZoneText)
+	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", self.UpdateZoneText)
+	K:RegisterEvent("ZONE_CHANGED", self.UpdateZoneText)
+	K:RegisterEvent("ZONE_CHANGED_INDOORS", self.UpdateZoneText)
 	K:RegisterEvent("ADDON_LOADED", self.ADDON_LOADED)
 
 	self:UpdateSettings()
-
+	self:SetGetMinimapShape()
 	self:WhoPingedMyMap()
 	self:CreateRecycleBin()
 end

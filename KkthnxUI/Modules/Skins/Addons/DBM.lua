@@ -1,4 +1,6 @@
 local K, C = unpack(select(2, ...))
+local Module = K:GetModule("Skins")
+local TT = K:GetModule("Tooltip")
 
 local DBMFont = K.GetFont(C["UIFonts"].SkinFonts)
 local DBMTexture = K.GetTexture(C["UITextures"].SkinTextures)
@@ -13,10 +15,7 @@ local CreateFrame = _G.CreateFrame
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local hooksecurefunc = _G.hooksecurefunc
 
-local ReskinDeadlyBossMods = CreateFrame("Frame")
-ReskinDeadlyBossMods:RegisterEvent("PLAYER_LOGIN")
---ReskinDeadlyBossMods:RegisterEvent("ADDON_LOADED")
-ReskinDeadlyBossMods:SetScript("OnEvent", function()
+function Module:ReskinDBM()
     -- Default notice message
     local RaidNotice_AddMessage_ = RaidNotice_AddMessage
     RaidNotice_AddMessage = function(noticeFrame, textString, colorInfo)
@@ -209,13 +208,13 @@ ReskinDeadlyBossMods:SetScript("OnEvent", function()
 
     local function SkinRange()
         if DBMRangeCheckRadar and not DBMRangeCheckRadar.styled then
-            --TT.ReskinTooltip(DBMRangeCheckRadar)
-            --DBMRangeCheckRadar.styled = true
+            TT.ReskinTooltip(DBMRangeCheckRadar)
+            DBMRangeCheckRadar.styled = true
         end
 
         if DBMRangeCheck and not DBMRangeCheck.styled then
-            --TT.ReskinTooltip(DBMRangeCheck)
-            --DBMRangeCheck.styled = true
+            TT.ReskinTooltip(DBMRangeCheck)
+            DBMRangeCheck.styled = true
         end
     end
     hooksecurefunc(DBM.RangeCheck, "Show", SkinRange)
@@ -223,7 +222,7 @@ ReskinDeadlyBossMods:SetScript("OnEvent", function()
     if DBM.InfoFrame then
         DBM.InfoFrame:Show(5, "test")
         DBM.InfoFrame:Hide()
-        -- DBMInfoFrame:HookScript("OnShow", TT.ReskinTooltip)
+        DBMInfoFrame:HookScript("OnShow", TT.ReskinTooltip)
     end
 
     -- Force Settings
@@ -239,4 +238,4 @@ ReskinDeadlyBossMods:SetScript("OnEvent", function()
         DBM_AllSavedOptions["Default"]["CountdownVoice"] = "VP:Yike"
         DBM_AllSavedOptions["Default"]["ChosenVoicePack"] = "Yike"
     end
-end)
+end

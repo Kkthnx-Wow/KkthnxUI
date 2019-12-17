@@ -5,17 +5,16 @@ local _G = _G
 local string_find = _G.string.find
 local string_format = _G.string.format
 local string_upper = _G.string.upper
-local unpack = _G.unpack
 local string_len = _G.string.len
 
 local AFK = _G.AFK
 local BAG_ITEM_QUALITY_COLORS = _G.BAG_ITEM_QUALITY_COLORS
 local BOSS = _G.BOSS
-local C_PetBattles_GetAuraInfo = _G.C_PetBattles.GetAuraInfo
-local C_PetBattles_GetNumAuras = _G.C_PetBattles.GetNumAuras
 local CreateFrame = _G.CreateFrame
+local DAMAGE = _G.DAMAGE
 local DEAD = _G.DEAD
 local DND = _G.DND
+local ELITE = _G.ELITE
 local FACTION_ALLIANCE = _G.FACTION_ALLIANCE
 local FACTION_HORDE = _G.FACTION_HORDE
 local FOREIGN_SERVER_LABEL = _G.FOREIGN_SERVER_LABEL or "(*)"
@@ -24,11 +23,11 @@ local GetGuildInfo = _G.GetGuildInfo
 local GetItemInfo = _G.GetItemInfo
 local GetMouseFocus = _G.GetMouseFocus
 local GetRaidTargetIndex = _G.GetRaidTargetIndex
+local HEALER = _G.HEALER
 local ICON_LIST = _G.ICON_LIST
 local INTERACTIVE_SERVER_LABEL = _G.INTERACTIVE_SERVER_LABEL or "(#)"
-local ITEM_QUALITY3_DESC = _G.ITEM_QUALITY3_DESC
 local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.IsAddOnLoaded
+local IsInGroup = _G.IsInGroup
 local IsInGuild = _G.IsInGuild
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local LEVEL = _G.LEVEL
@@ -36,6 +35,7 @@ local LE_REALM_RELATION_COALESCED = _G.LE_REALM_RELATION_COALESCED or 2
 local LE_REALM_RELATION_VIRTUAL = _G.LE_REALM_RELATION_VIRTUAL or 3
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local PVP = _G.PVP
+local TANK = _G.TANK
 local TARGET = _G.TARGET
 local UIDROPDOWNMENU_MAXLEVELS = _G.UIDROPDOWNMENU_MAXLEVELS or 2
 local UIParent = _G.UIParent
@@ -46,6 +46,8 @@ local UnitCreatureType = _G.UnitCreatureType
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
+local UnitInParty = _G.UnitInParty
+local UnitInRaid = _G.UnitInRaid
 local UnitIsAFK = _G.UnitIsAFK
 local UnitIsBattlePetCompanion = _G.UnitIsBattlePetCompanion
 local UnitIsConnected = _G.UnitIsConnected
@@ -67,10 +69,10 @@ local tooltipTexture = K.GetTexture(C["UITextures"].TooltipTextures)
 local tooltipFont = K.GetFont(C["UIFonts"].TooltipFonts)
 
 local classification = {
-	worldboss = string_format("|cffFF0000 %s|r", BOSS),
-	rareelite = string_format("|cffFF0000+ %s|r", ITEM_QUALITY3_DESC),
-	elite = "|cffFF8040+|r",
-	rare = string_format("|cffFF8040 %s|r", ITEM_QUALITY3_DESC)
+	worldboss = " |cffff0000"..BOSS.."|r",
+	rareelite = " |cffff99cc".."Rare".."|r ".."|cffcc8800"..ELITE.."|r",
+	elite = " |cffcc8800"..ELITE.."|r",
+	rare = " |cffff99cc".."Rare".."|r"
 }
 
 function Module:GetUnit()
@@ -131,44 +133,19 @@ end
 function Module:InsertFactionFrame(faction)
 	if not self.factionFrame then
 		local f = self:CreateTexture(nil, "OVERLAY")
-		f:SetPoint("TOPRIGHT", 0, -5)
+		f:SetPoint("TOPRIGHT", 0, -4)
 		f:SetBlendMode("ADD")
-		f:SetScale(.2)
+		f:SetSize(34, 34)
 		self.factionFrame = f
 	end
 
 	self.factionFrame:SetTexture("Interface\\Timer\\"..faction.."-Logo")
-	self.factionFrame:SetAlpha(0.5)
-end
-
-local roleTex = {
-	["HEALER"] = {.066, .222, .133, .445},
-	["TANK"] = {.375, .532, .133, .445},
-	["DAMAGER"] = {.66, .813, .133, .445},
-}
-
-function Module:InsertRoleFrame(role)
-	if not self.roleFrame then
-		local f = self:CreateTexture(nil, "OVERLAY")
-		f:SetPoint("TOPRIGHT", -4, -4)
-		f:SetBlendMode("ADD")
-		f:SetSize(18, 18)
-		f:SetTexture("Interface\\LFGFrame\\UI-LFG-ICONS-ROLEBACKGROUNDS")
-
-		self.roleFrame = f
-	end
-
-	self.roleFrame:SetTexCoord(unpack(roleTex[role]))
-	self.roleFrame:SetAlpha(0.5)
+	self.factionFrame:SetAlpha(0.3)
 end
 
 function Module:OnTooltipCleared()
 	if self.factionFrame and self.factionFrame:GetAlpha() ~= 0 then
 		self.factionFrame:SetAlpha(0)
-	end
-
-	if self.roleFrame and self.roleFrame:GetAlpha() ~= 0 then
-		self.roleFrame:SetAlpha(0)
 	end
 end
 
@@ -190,6 +167,7 @@ function Module:OnTooltipSetUnit()
 		local hexColor = K.RGBToHex(K.UnitColor(unit))
 		local ricon = GetRaidTargetIndex(unit)
 		local text = GameTooltipTextLeft1:GetText()
+
 		if ricon and ricon > 8 then
 			ricon = nil
 		end
@@ -203,9 +181,11 @@ function Module:OnTooltipSetUnit()
 			local name, realm = UnitName(unit)
 			local pvpName = UnitPVPName(unit)
 			local relationship = UnitRealmRelationship(unit)
+
 			if not C["Tooltip"].HideTitle and pvpName then
 				name = pvpName
 			end
+
 			if realm and realm ~= "" then
 				if isShiftKeyDown or not C["Tooltip"].HideRealm then
 					name = name.."-"..realm
@@ -230,9 +210,17 @@ function Module:OnTooltipSetUnit()
 			end
 
 			if C["Tooltip"].LFDRole then
-				local role = UnitGroupRolesAssigned(unit)
-				if role ~= "NONE" then
-					Module.InsertRoleFrame(self, role)
+				local role = UnitGroupRolesAssigned(unit) or K.Role(unit)
+				if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE") then
+					if role == "HEALER" then
+						role = "|CFF00FF96"..HEALER.."|r"
+					elseif role == "TANK" then
+						role = "|CFF294F9C"..TANK.."|r"
+					elseif role == "DAMAGER" then
+						role = "|CFFC41F3D"..DAMAGE.."|r"
+					end
+
+					GameTooltip:AddLine(string_format("%s: %s", _G.ROLE, role))
 				end
 			end
 
@@ -325,9 +313,7 @@ function Module:StatusBar_OnValueChanged(value)
 	end
 
 	if not self.text then
-		self.text = self:CreateFontString(nil, "OVERLAY")
-		self.text:SetFontObject(K.GetFont(C["UIFonts"].TooltipFonts))
-		self.text:SetPoint("CENTER", self)
+		self.text = K.CreateFontString(self, 11, nil, "")
 	end
 
 	if value > 0 and max == 1 then
@@ -350,9 +336,10 @@ function Module:GameTooltip_ShowStatusBar()
 	if self.statusBarPool then
 		local bar = self.statusBarPool:Acquire()
 		if bar and not bar.styled then
+			bar:StripTextures()
 			local tex = select(3, bar:GetRegions())
 			tex:SetTexture(tooltipTexture)
-			bar:CreateBorder(nil, nil, nil, true)
+			bar:CreateBorder()
 
 			bar.styled = true
 		end
@@ -363,8 +350,9 @@ function Module:GameTooltip_ShowProgressBar()
 	if self.progressBarPool then
 		local bar = self.progressBarPool:Acquire()
 		if bar and not bar.styled then
+			bar.Bar:StripTextures()
 			bar.Bar:SetStatusBarTexture(tooltipTexture)
-			bar.Bar:CreateBorder(nil, nil, nil, true)
+			bar.Bar:CreateBorder()
 
 			bar.styled = true
 		end
@@ -372,18 +360,18 @@ function Module:GameTooltip_ShowProgressBar()
 end
 
 -- Anchor and mover
-local mover
+local GameTooltip_Mover
 function Module:GameTooltip_SetDefaultAnchor(parent)
 	if C["Tooltip"].Cursor then
 		self:SetOwner(parent, "ANCHOR_CURSOR_RIGHT")
 	else
-		if not mover then
-			mover = K.Mover(self, "Tooltip", "GameTooltip", {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -182, 36}, 240, 120)
+		if not GameTooltip_Mover then
+			GameTooltip_Mover = K.Mover(self, "Tooltip", "GameTooltip", {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -182, 36}, 240, 120)
 		end
 
 		self:SetOwner(parent, "ANCHOR_NONE")
 		self:ClearAllPoints()
-		self:SetPoint("BOTTOMRIGHT", mover)
+		self:SetPoint("BOTTOMRIGHT", GameTooltip_Mover)
 	end
 end
 
@@ -418,11 +406,11 @@ function Module:ReskinTooltip()
 			self = self:GetParent()
 		end
 
-		local lvl = self:GetFrameLevel()
+		local bgLevel = (self:GetFrameLevel() - 1 >= 0 and self:GetFrameLevel() - 1) or (0)
 		local bg = CreateFrame("Frame", nil, self)
-		bg:SetPoint("TOPLEFT", self, 2, -2) -- Might need to be 0
-		bg:SetPoint("BOTTOMRIGHT", self, -2, 2) -- Might need to be 0
-		bg:SetFrameLevel(lvl == 0 and 0 or lvl - 1)
+		bg:SetPoint("TOPLEFT", self, 2, -2)
+		bg:SetPoint("BOTTOMRIGHT", self, -2, 2)
+		bg:SetFrameLevel(bgLevel)
 		bg:CreateBorder()
 		self.bg = bg
 
@@ -455,6 +443,7 @@ function Module:ReskinTooltip()
 				_G[self:GetName().."TextLeft"..index]:SetFontObject(tooltipFont)
 				_G[self:GetName().."TextLeft"..index]:SetFont(select(1, _G[self:GetName().."TextLeft"..index]:GetFont()), 12, select(3, _G[self:GetName().."TextLeft"..index]:GetFont()))
 			end
+
 			_G[self:GetName().."TextRight"..index]:SetFontObject(tooltipFont)
 			_G[self:GetName().."TextRight"..index]:SetFont(select(1, _G[self:GetName().."TextLeft"..index]:GetFont()), 12, select(3, _G[self:GetName().."TextLeft"..index]:GetFont()))
 		end
@@ -479,11 +468,18 @@ function Module:OnEnable()
 	hooksecurefunc("GameTooltip_SetDefaultAnchor", self.GameTooltip_SetDefaultAnchor)
 	hooksecurefunc("GameTooltip_SetBackdropStyle", self.GameTooltip_SetBackdropStyle)
 
+	-- Battlenet toast frame
+	BNToastFrame:SetClampedToScreen(true)
+	BNToastFrame:CreateBorder(nil, nil, nil, true)
+	BNToastFrame.CloseButton:SkinCloseButton()
+	BNToastFrame.CloseButton:SetSize(32, 32)
+	BNToastFrame.CloseButton:SetPoint("TOPRIGHT", 4, 4)
+
 	-- Elements
 	self:CreateTargetedInfo()
-	self:CreateTooltipAzerite()
 	self:CreateTooltipID()
 	self:CreateTooltipIcons()
+	self:CreateTooltipAzerite()
 end
 
 -- Tooltip Skin Registration
@@ -566,10 +562,7 @@ Module:RegisterTooltips("KkthnxUI", function()
 	PetBattlePrimaryUnitTooltip:HookScript("OnShow", function(self)
 		self.Border:SetAlpha(0)
 		if not self.iconStyled then
-			if self.glow then
-				self.glow:Hide()
-			end
-
+			if self.glow then self.glow:Hide() end
 			self.Icon:SetTexCoord(unpack(K.TexCoords))
 			self.iconStyled = true
 		end
@@ -577,8 +570,8 @@ Module:RegisterTooltips("KkthnxUI", function()
 
 	hooksecurefunc("PetBattleUnitTooltip_UpdateForUnit", function(self)
 		local nextBuff, nextDebuff = 1, 1
-		for i = 1, C_PetBattles_GetNumAuras(self.petOwner, self.petIndex) do
-			local _, _, _, isBuff = C_PetBattles_GetAuraInfo(self.petOwner, self.petIndex, i)
+		for i = 1, C_PetBattles.GetNumAuras(self.petOwner, self.petIndex) do
+			local _, _, _, isBuff = C_PetBattles.GetAuraInfo(self.petOwner, self.petIndex, i)
 			if isBuff and self.Buffs then
 				local frame = self.Buffs.frames[nextBuff]
 				if frame and frame.Icon then
@@ -597,15 +590,17 @@ Module:RegisterTooltips("KkthnxUI", function()
 	end)
 
 	-- Others
-	K.Delay(5, function()
+	C_Timer.After(5, function()
 		-- Lib minimap icon
 		if LibDBIconTooltip then
 			Module.ReskinTooltip(LibDBIconTooltip)
 		end
+
 		-- TomTom
 		if TomTomTooltip then
 			Module.ReskinTooltip(TomTomTooltip)
 		end
+
 		-- RareScanner
 		if RSMapItemToolTip then
 			Module.ReskinTooltip(RSMapItemToolTip)
@@ -665,7 +660,6 @@ Module:RegisterTooltips("Blizzard_GarrisonUI", function()
 		GarrisonFollowerAbilityWithoutCountersTooltip,
 		GarrisonFollowerMissionAbilityWithoutCountersTooltip
 	}
-
 	for _, f in pairs(gt) do
 		f:HookScript("OnShow", Module.ReskinTooltip)
 	end
@@ -692,11 +686,4 @@ end)
 Module:RegisterTooltips("Blizzard_Calendar", function()
 	CalendarContextMenu:HookScript("OnShow", Module.ReskinTooltip)
 	CalendarInviteStatusContextMenu:HookScript("OnShow", Module.ReskinTooltip)
-end)
-
-Module:RegisterTooltips("Blizzard_IslandsQueueUI", function()
-	local tooltip = IslandsQueueFrameTooltip:GetParent()
-	tooltip.IconBorder:SetAlpha(0)
-	tooltip.Icon:SetTexCoord(unpack(K.TexCoords))
-	tooltip:GetParent():HookScript("OnShow", Module.ReskinTooltip)
 end)

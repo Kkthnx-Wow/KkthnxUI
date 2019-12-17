@@ -7,7 +7,6 @@
    <Script file="TooltipHover.lua" />
    <Script file="TooltipID.lua" />
    <Script file="TooltipIcons.lua" />
-   <Script file="TooltipPetInfo.lua" />
    <Script file="TooltipSpecLevel.lua" />
    <Script file="TooltipTargeted.lua" />
 </Ui>

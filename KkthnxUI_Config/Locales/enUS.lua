@@ -13,10 +13,8 @@ _G.KkthnxUIConfig["enUS"] = {
 		-- Let's Keep This In Alphabetical Order, Shall We?
 		["ActionBar"] = "Action Bar",
 		["Announcements"] = "Announcements",
-		["Arena"] = "Arena",
 		["Auras"] = "Auras",
 		["Automation"] = "Automation",
-		["Boss"] = "Boss",
 		["Chat"] = "Chat",
 		["DataBars"] = "Data Bars",
 		["DataText"] = "Data Text",
@@ -42,10 +40,12 @@ _G.KkthnxUIConfig["enUS"] = {
 	["ActionBar"] = {
 		["Cooldowns"] = {
 			["Name"] = "Show Cooldowns",
+			["Desc"] = "Display cooldowns on the actionbars and other elements.",
 		},
 
 		["Count"] = {
 			["Name"] = "Show Item Counts",
+			["Desc"] = "Show how many of the item you have in your bags on the actionbars.",
 		},
 
 		["DecimalCD"] = {
@@ -56,16 +56,13 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Main ActionBar Button Size",
 		},
 
-		["DisableStancePages"] = {
-			["Name"] = "Disable Stance Pages (Druid & Rogues)",
-		},
-
 		["Enable"] = {
 			["Name"] = "Enable ActionBars",
 		},
 
 		["EquipBorder"] = {
 			["Name"] = "Equiped Border Indicator",
+			["Desc"] = "Display a green border for items you have equipped and put onto your actionbar. |n|nFor example, on use trinkets you put onto your bars will show a green border.",
 		},
 
 		["FadeRightBar"] = {
@@ -139,6 +136,10 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Accept Invites From Friends & Guild Members",
 		},
 
+		["AutoDisenchant"] = {
+			["Name"] = "Auto Disenchant With 'ALT'",
+		},
+
 		["AutoQuest"] = {
 			["Name"] = "Auto Accept & Turnin Quests",
 		},
@@ -163,20 +164,16 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Only Tab Target Enemy Players",
 		},
 
+		["BuffThanks"] = {
+			["Name"] = "Thank Players For Buffs (Open World Only)",
+		},
+
 		["BlockMovies"] = {
 			["Name"] = "Block Movies You Already Seen",
 		},
 
-		["DeclinePetDuel"] = {
-			["Name"] = "Decline BattlePet Duels",
-		},
-
 		["DeclinePvPDuel"] = {
 			["Name"] = "Decline PvP Duels",
-		},
-
-		["ScreenShot"] = {
-			["Name"] = "Auto Achievement Screenshots",
 		},
 
 		["WhisperInvite"] = {
@@ -199,52 +196,67 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Fade Bagbar",
 		},
 
-		["BagColumns"] = {
-			["Name"] = "Number of Columns In Bags",
-		},
-
-		["BankColumns"] = {
-			["Name"] = "Number of Columns In Bank",
-		},
-
-		["ButtonSize"] = {
-			["Name"] = "Bag Button Size",
-		},
-
-		["ButtonSpace"] = {
-			["Name"] = "Bag Button Spacing",
-		},
-
-		["DetailedReport"] = {
-			["Name"] = "Vendor Gray Detailed Report",
-			["Desc"] = "Displays a detailed report of every item sold when enabled.",
-		},
-
 		["Enable"] = {
 			["Name"] = "Enable",
 			["Desc"] = "Enable/Disable the Inventory Module.",
 		},
 
-		["ItemLevel"] = {
-			["Name"] = "Display Item Level",
-			["Desc"] = "Displays item level on equippable items.",
+		["ClassRelatedFilter"] = {
+			["Name"] = "Filter Class Items",
 		},
 
-		["JunkIcon"] = {
-			["Name"] = "Show Junk Icon",
-			["Desc"] = "Display the junk icon on all grey items that can be vendored.",
+		["QuestItemFilter"] = {
+			["Name"] = "Filter Quest Items",
 		},
 
-		["PulseNewItem"] = {
+		["TradeGoodsFilter"] = {
+			["Name"] = "Filter Trade/Goods Items",
+		},
+
+		["BagsWidth"] = {
+			["Name"] = "Bags Width",
+		},
+
+		["BankWidth"] = {
+			["Name"] = "Bank Width",
+		},
+
+		["DeleteButton"] = {
+			["Name"] = "Bags Delete Button",
+		},
+
+		["GatherEmpty"] = {
+			["Name"] = "Gather Empty Slots Into One Slot",
+		},
+
+		["IconSize"] = {
+			["Name"] = "Slot Icon Size",
+		},
+
+		["ItemFilter"] = {
+			["Name"] = "Item Filtering",
+		},
+
+		["ItemSetFilter"] = {
+			["Name"] = "Use ItemSet Filter",
+		},
+
+		["ReverseSort"] = {
+			["Name"] = "Bags Reverse Sorting",
+		},
+
+		["ShowNewItem"] = {
 			["Name"] = "Show New Item Glow",
 		},
 
-		["ReverseLoot"] = {
-			["Name"] = REVERSE_NEW_LOOT_TEXT,
+		["SpecialBagsColor"] = {
+			["Name"] = "Show Special Bags Color",
+			["Desc"] = "Show color for special bags:|n|n- |CFFABD473Hunter|r quiver or ammo pouch|n- |CFF8787EDWarlock|r soul pouch|n- Enchanted mageweave pouch|n- Herb pouch"
 		},
 
-		["SortInverted"] = {
-			["Name"] = "Use Inverted Sorting",
+		["BagsiLvl"] = {
+			["Name"] = "Display Item Level",
+			["Desc"] = "Displays item level on equippable items.",
 		},
 
 		["AutoRepair"] = {
@@ -358,10 +370,6 @@ _G.KkthnxUIConfig["enUS"] = {
 
 	-- Databars Local
 	["DataBars"] = {
-		["AzeriteColor"] = {
-			["Name"] = "Azerite Bar Color",
-		},
-
 		["Enable"] = {
 			["Name"] = "Enable DataBars",
 		},
@@ -468,6 +476,9 @@ _G.KkthnxUIConfig["enUS"] = {
 
 	-- General Local
 	["General"] = {
+		["AutoScale"] = {
+			["Name"] = "Auto Scale",
+		},
 		["ColorTextures"] = {
 			["Name"] = "Color 'Most' KkthnxUI Borders",
 		},
@@ -476,7 +487,7 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Disable Tutorial Buttons",
 		},
 
-		["ShowTooltip"] = {
+		["FixGarbageCollect"] = {
 			["Name"] = "Fix Garbage Collection",
 		},
 
@@ -519,12 +530,12 @@ _G.KkthnxUIConfig["enUS"] = {
 
 	-- Loot Local
 	["Loot"] = {
-		["AutoDisenchant"] = {
-			["Name"] = "Auto Disenchant With 'CTRL'",
+		["AutoConfirm"] = {
+			["Name"] = "Auto Confirm Loot Dialogs",
 		},
 
 		["AutoGreed"] = {
-			["Name"] = "Auto Greed/Disenchant Green Items",
+			["Name"] = "Auto Greed Green Items",
 		},
 
 		["Enable"] = {
@@ -550,10 +561,6 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Enable Minimap",
 		},
 
-		["GarrisonLandingPage"] = {
-			["Name"] = "Show Garrison icon",
-		},
-
 		["ResetZoom"] = {
 			["Name"] = "Reset Minimap Zoom",
 		},
@@ -569,6 +576,16 @@ _G.KkthnxUIConfig["enUS"] = {
 		["Size"] = {
 			["Name"] = "Minimap Size",
 		},
+
+		["BlipTexture"] = {
+			["Name"] = "Blip Icon Styles",
+			["Desc"] = "Change the minimap blip icons for nodes, party and so on.",
+		},
+
+		["LocationText"] = {
+			["Name"] = "Location Text Style",
+			["Desc"] = "Change settings for the display of the location text that is on the minimap.",
+		},
 	},
 
 	-- Miscellaneous Local
@@ -577,46 +594,70 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "AFK Camera",
 		},
 
+		["AutoDismountStand"] = {
+			["Name"] = "Auto Stand/Dismount",
+			["Desc"] = "Will make you stand/dismount when you want to cast or fight something",
+		},
+
 		["ColorPicker"] = {
 			["Name"] = "Enhanced Color Picker",
 		},
 
 		["EnhancedFriends"] = {
-			["Name"] = "Enhanced Friends List +",
-	},
+			["Name"] = "Enhanced Colors (Friends/Guild +)",
+		},
 
-	["GemEnchantInfo"] = {
-		["Name"] = "Character/Inspect Gem/Enchant Info",
-	},
+		["EnhancedMenu"] = {
+			["Name"] = "Add guild invite and more to dropdowns",
+			["Desc"] = "Add 'Guild Invite' and 'Add Friend' options in target right-click menu."
+		},
 
-	["ImprovedStats"] = {
-		["Name"] = "Improved Character Frame Stats",
-	},
+		["GemEnchantInfo"] = {
+			["Name"] = "Character/Inspect Gem/Enchant Info",
+		},
 
-	["ItemLevel"] = {
-		["Name"] = "Show Character/Inspect ItemLevel Info",
-	},
+		["ImprovedProfessionWindow"] = {
+			["Name"] = "Display A Better Profession Window Style",
+		},
 
-	["KillingBlow"] = {
-		["Name"] = "Show Your Killing Blow Info",
-	},
+		["ImprovedQuestLog"] = {
+			["Name"] = "Display A Better Questlog Style",
+			["Desc"] = "Expand default QuestLog.|n|nYou don't need addons like ClassicQuestLog any more."
+		},
 
-	["NoTalkingHead"] = {
-		["Name"] = "Hide Talking Head Frame",
-	},
+		["ImprovedTrainerWindow"] = {
+			["Name"] = "Display A Better Trainer Window Style",
+		},
 
-	["ProfessionTabs"] = {
-		["Name"] = "Enhanced Profession Tabs",
-	},
+		["ItemLevel"] = {
+			["Name"] = "Show Character/Inspect ItemLevel Info",
+		},
 
-	["PvPEmote"] = {
-		["Name"] = "Auto Emote On Your Killing Blow",
-	},
+		["KillingBlow"] = {
+			["Name"] = "Show Your Killing Blow Info",
+		},
 
-	["SlotDurability"] = {
-		["Name"] = "Show Slot Durability %",
+		["PvPEmote"] = {
+			["Name"] = "Auto Emote On Your Killing Blow",
+		},
+
+		["ShowHelmCloak"] = {
+			["Name"] = "Show Helm/Cloak Buttons On Character Frame",
+		},
+
+		["ShowWowHeadLinks"] = {
+			["Name"] = "Show Wowhead Links Above Questlog Frame",
+		},
+
+		["SlotDurability"] = {
+			["Name"] = "Show Slot Durability %",
+		},
+
+		["TradeTabs"] = {
+			["Name"] = "Show TradeTabs",
+			["Desc"] = "Add spellbook-like tabs to the TradeSkillFrame. It will add one for each of your professions and one for each of the profession 'suppliment' abilities (cooking, disenchant, etc)"
+		},
 	},
-},
 
 	-- Nameplates Local
 	["Nameplates"] = {
@@ -632,7 +673,7 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Bad Threat Color",
 		},
 
-		["SlotDurability"] = {
+		["OffTankColor"] = {
 			["Name"] = "Off Tank Threat Color",
 		},
 
@@ -641,16 +682,13 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Clamp nameplates to the top of the screen when outside of view."
 		},
 
-		["ClassResource"] = {
-			["Name"] = "Show Class Resources",
+		["ClassIcons"] = {
+			["Name"] = "Show Enemy Class Icons",
+			["Desc"] = "Show Enemy Class Icons to help better determine what class they are. |n|nThis is helpful for people who are colorblind!"
 		},
 
 		["Combat"] = {
 			["Name"] = "Show Nameplates In Combat",
-		},
-
-		["Distance"] = {
-			["Name"] = "Nameplate Distance",
 		},
 
 		["Enable"] = {
@@ -685,6 +723,10 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Selected Nameplate Scale",
 		},
 
+		["ShowFullHealth"] = {
+			["Name"] = "Show full Health",
+		},
+
 		["Smooth"] = {
 			["Name"] = "Smooth Bars",
 		},
@@ -703,6 +745,14 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["Width"] = {
 			["Name"] = "Nameplate Width",
+		},
+
+		["HealthbarColor"] = {
+			["Name"] = "Health Color Format",
+		},
+
+		["LevelFormat"] = {
+			["Name"] = "Level Format Display",
 		},
 
 		["TargetArrowMark"] = {
@@ -756,7 +806,7 @@ _G.KkthnxUIConfig["enUS"] = {
 	-- Unitframe Local
 	["Unitframe"] = {
 		["AdditionalPower"] = {
-			["Name"] = "Show Additional Power",
+			["Name"] = "Show Additional Mana Power (|CFFFF7D0ADruid|r, |CFFFFFFFFPriest|r, |CFF0070DEShaman|r)",
 		},
 
 		["CastClassColor"] = {
@@ -775,8 +825,12 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Enable Castbars",
 		},
 
-		["ClassResource"] = {
-			["Name"] = "Show Class Resources",
+		["ComboPoints"] = {
+			["Name"] = "Show Combo Points (|CFFFFF569Rogue|r/|CFFFF7D0ADruid|r)",
+		},
+
+		["Totems"] = {
+			["Name"] = "Show Totems (|CFF0070DEShaman|r)",
 		},
 
 		["CombatFade"] = {
@@ -799,6 +853,10 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Enable Unitframes",
 		},
 
+		["EnergyTick"] = {
+			["Name"] = "Show Energy/Mana Ticks",
+		},
+
 		["GlobalCooldown"] = {
 			["Name"] = "Show Global Cooldown",
 		},
@@ -809,6 +867,10 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["OnlyShowPlayerDebuff"] = {
 			["Name"] = "Only Show Your Debuffs",
+		},
+
+		["PlayerAuraBars"] = {
+			["Name"] = "Show Player Aura Bars Instead Of Aura Icons",
 		},
 
 		["PlayerBuffs"] = {
@@ -825,6 +887,18 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["PortraitTimers"] = {
 			["Name"] = "Portrait Spell Timers",
+		},
+
+		["PvPIndicator"] = {
+			["Name"] = "Show PvP Indicator on Player / Target",
+		},
+
+		["ShowHealPrediction"] = {
+			["Name"] = "Show HealPrediction Statusbars",
+		},
+
+		["ShowPetHappinessIcon"] = {
+			["Name"] = "Show Player Pet Happiness Icon"..CreateTextureMarkup([[Interface\PetPaperDollFrame\UI-PetHappiness]], 128, 64, 16, 14, 0, 0.1875, 0, 0.359375, 0, 0),
 		},
 
 		["ShowPlayerLevel"] = {
@@ -847,6 +921,10 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Unitframe Swingbar Timer",
 		},
 
+		["TargetAuraBars"] = {
+			["Name"] = "Show Target Aura Bars Instead Of Aura Icons",
+		},
+
 		["TargetCastbarHeight"] = {
 			["Name"] = "Target Castbar Height",
 		},
@@ -859,12 +937,28 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Show Totembar",
 		},
 
+		["HealthbarColor"] = {
+			["Name"] = "Health Color Format",
+		},
+
 		["PlayerHealthFormat"] = {
 			["Name"] = "Player Health Format",
 		},
 
+		["PlayerPowerFormat"] = {
+			["Name"] = "Player Power Format",
+		},
+
 		["TargetHealthFormat"] = {
 			["Name"] = "Target Health Format",
+		},
+
+		["TargetPowerFormat"] = {
+			["Name"] = "Target Power Format",
+		},
+
+		["TargetLevelFormat"] = {
+			["Name"] = "Target Level Format",
 		},
 	},
 
@@ -908,12 +1002,20 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Enable Party",
 		},
 
+		["HorizonParty"] = {
+			["Name"] = "Horizontal Party Frames",
+		},
+
 		["PortraitTimers"] = {
 			["Name"] = "Portrait Spell Timers",
 		},
 
 		["ShowBuffs"] = {
 			["Name"] = "Show Party Buffs",
+		},
+
+		["ShowHealPrediction"] = {
+			["Name"] = "Show HealPrediction Statusbars",
 		},
 
 		["ShowPlayer"] = {
@@ -926,6 +1028,18 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["TargetHighlight"] = {
 			["Name"] = "Show Highlighted Target",
+		},
+
+		["HealthbarColor"] = {
+			["Name"] = "Health Color Format",
+		},
+
+		["PartyHealthFormat"] = {
+			["Name"] = "Party Health Format",
+		},
+
+		["PartyPowerFormat"] = {
+			["Name"] = "Party Power Format",
 		},
 	},
 
@@ -948,6 +1062,26 @@ _G.KkthnxUIConfig["enUS"] = {
 
 	-- Raidframe Local
 	["Raid"] = {
+		["SpecRaidPos"] = {
+			["Name"] = "Save Raid Posions Based On Specs",
+		},
+
+		["ShowTeamIndex"] = {
+			["Name"] = "Show Group Number Team Index",
+		},
+
+		["ReverseRaid"] = {
+			["Name"] = "Reverse Raid Frame Growth",
+		},
+
+		["HorizonRaid"] = {
+			["Name"] = "Horizontal Raid Frames",
+		},
+
+		["NumGroups"] = {
+			["Name"] = "Number Of Groups to Show",
+		},
+
 		["AuraDebuffIconSize"] = {
 			["Name"] = "Aura Debuff Icon Size",
 		},
@@ -1012,6 +1146,10 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Raidframe Width",
 		},
 
+		["HealthbarColor"] = {
+			["Name"] = "Health Color Format",
+		},
+
 		["RaidLayout"] = {
 			["Name"] = "Raid Layouts",
 		},
@@ -1035,8 +1173,31 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Show Player/Mouse Coordinates",
 		},
 
-		["FadeWhenMoving"] = {
+		["MapFader"] = {
 			["Name"] = "Fade Worldmap When Moving",
+		},
+
+		["MapScale"] = {
+			["Name"] = "Worldmap Scale",
+		},
+
+		["MapReveal"] = {
+			["Name"] = "Map Reveal",
+			["Desc"] = "Show areas on the world map you have yet to discover",
+		},
+
+		["PartyIconSize"] = {
+			["Name"] = "Party Icon Size",
+			["Desc"] = "Adjust the size of player party icons on the world map",
+		},
+
+		["PlayerIconSize"] = {
+			["Name"] = "Player Icon Size",
+			["Desc"] = "Adjust the size of your player icon on the world map",
+		},
+
+		["WorldMapIcons"] = {
+			["Name"] = "Worldmap Scale",
 		},
 
 		["SmallWorldMap"] = {
@@ -1050,10 +1211,6 @@ _G.KkthnxUIConfig["enUS"] = {
 
 	-- Tooltip Local
 	["Tooltip"] = {
-		["AzeriteArmor"] = {
-			["Name"] = "Show AzeriteArmor Info",
-		},
-
 		["ClassColor"] = {
 			["Name"] = "Quality Color Border",
 		},
@@ -1090,6 +1247,10 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Item Icons",
 		},
 
+		["ShowIDs"] = {
+			["Name"] = "Show Tooltip IDs",
+		},
+
 		["LFDRole"] = {
 			["Name"] = "Show Roles Assigned Icon",
 		},
@@ -1123,6 +1284,10 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["DataTextFonts"] = {
 			["Name"] = "DataTexts",
+		},
+
+		["FilgerFonts"] = {
+			["Name"] = "Filger Fonts",
 		},
 
 		["GeneralFonts"] = {

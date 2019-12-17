@@ -1,20 +1,19 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("WorldMap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
+local Module = K:NewModule("WorldMap")
 
 local _G = _G
 
+local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
+local C_Map_GetWorldPosFromMapPos = _G.C_Map.GetWorldPosFromMapPos
 local CreateFrame = _G.CreateFrame
+local CreateVector2D = _G.CreateVector2D
+local IsPlayerMoving = _G.IsPlayerMoving
 local PLAYER = _G.PLAYER
-local SetCVar = _G.SetCVar
 local SetUIPanelAttribute = _G.SetUIPanelAttribute
 local UIParent = _G.UIParent
+local UnitPosition = _G.UnitPosition
 local WorldMapFrame = _G.WorldMapFrame
 local hooksecurefunc = _G.hooksecurefunc
-local InCombatLockdown = _G.InCombatLockdown
-local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
-local CreateVector2D = _G.CreateVector2D
-local UnitPosition = _G.UnitPosition
-local C_Map_GetWorldPosFromMapPos = _G.C_Map.GetWorldPosFromMapPos
 
 local mapRects = {}
 local tempVec2D = CreateVector2D(0, 0)
@@ -131,6 +130,78 @@ function Module:UpdateMapID()
 	end
 end
 
+function Module:MapShouldFade()
+	-- normally we would check GetCVarBool('mapFade') here instead of the setting
+	return C["WorldMap"].FadeWhenMoving and not _G.WorldMapFrame:IsMouseOver()
+end
+
+function Module:MapFadeOnUpdate(elapsed)
+	self.elapsed = (self.elapsed or 0) + elapsed
+	if self.elapsed > 0.1 then
+		self.elapsed = 0
+
+		local object = self.FadeObject
+		local settings = object and object.FadeSettings
+		if not settings then return end
+
+		local fadeOut = IsPlayerMoving() and (not settings.fadePredicate or settings.fadePredicate())
+		local endAlpha = (fadeOut and (settings.minAlpha or 0.5)) or settings.maxAlpha or 1
+		local startAlpha = _G.WorldMapFrame:GetAlpha()
+
+		object.timeToFade = settings.durationSec or 0.5
+		object.startAlpha = startAlpha
+		object.endAlpha = endAlpha
+		object.diffAlpha = endAlpha - startAlpha
+
+		if object.fadeTimer then
+			object.fadeTimer = nil
+		end
+
+		K.UIFrameFade(_G.WorldMapFrame, object)
+	end
+end
+
+local fadeFrame
+function Module:StopMapFromFading()
+	if fadeFrame then
+		fadeFrame:Hide()
+	end
+end
+
+function Module:EnableMapFading(frame)
+	if not fadeFrame then
+		fadeFrame = CreateFrame("FRAME")
+		fadeFrame:SetScript("OnUpdate", Module.MapFadeOnUpdate)
+		frame:HookScript("OnHide", Module.StopMapFromFading)
+	end
+
+	if not fadeFrame.FadeObject then fadeFrame.FadeObject = {} end
+	if not fadeFrame.FadeObject.FadeSettings then fadeFrame.FadeObject.FadeSettings = {} end
+
+	local settings = fadeFrame.FadeObject.FadeSettings
+	settings.fadePredicate = Module.MapShouldFade
+	settings.durationSec = 0.2
+	settings.minAlpha = C["WorldMap"].AlphaWhenMoving
+	settings.maxAlpha = 1
+
+	fadeFrame:Show()
+end
+
+function Module:UpdateMapFade(_, _, _, fadePredicate) -- self is frame
+	if self:IsShown() and (self == _G.WorldMapFrame and fadePredicate ~= Module.MapShouldFade) then
+		-- blizzard spams code in OnUpdate and doesnt finish their functions, so we shut their fader down :L
+		PlayerMovementFrameFader.RemoveFrame(self)
+
+		-- replacement function which is complete :3
+		if C["WorldMap"].FadeWhenMoving then
+			Module:EnableMapFading(self)
+		end
+
+		-- we can't use the blizzard function because `durationSec` was never finished being implimented?
+		-- PlayerMovementFrameFader.AddDeferredFrame(self, C["WorldMap"].AlphaWhenMoving, 1, E.global.general.fadeMapDuration, M.MapShouldFade)
+	end
+end
+
 function Module:OnEnable()
 	if C["WorldMap"].Coordinates then
 		playerCoords = WorldMapFrame.BorderFrame:CreateFontString(nil, "OVERLAY")
@@ -175,16 +246,13 @@ function Module:OnEnable()
 		end
 	end
 
-	-- Set alpha used when moving
-	_G.WORLD_MAP_MIN_ALPHA = C["WorldMap"].AlphaWhenMoving or 0.35
-	if not InCombatLockdown() then
-		SetCVar("mapAnimMinAlpha", C["WorldMap"].AlphaWhenMoving)
-		SetCVar("mapFade", (C["WorldMap"].FadeWhenMoving == true and 1 or 0))
-	end
+	-- This lets us control the maps fading function
+	hooksecurefunc(PlayerMovementFrameFader, "AddDeferredFrame", Module.UpdateMapFade)
 
-	if WorldMapFrame.UIElementsFrame and WorldMapFrame.UIElementsFrame.ActionButton.SpellButton.Cooldown then
-		WorldMapFrame.UIElementsFrame.ActionButton.SpellButton.Cooldown.CooldownFontSize = 20
-	end
+	-- Enable/Disable map fading when moving
+	-- currently we dont need to touch this cvar because we have our own control for this currently
+	-- see the comment in `M:UpdateMapFade` about `durationSec` for more information
+	-- SetCVar("mapFade", E.global.general.fadeMapWhenMoving and 1 or 0)
 
-	self:CreateWorldMapPlus()
+	self:CreateWorldMapReveal()
 end

@@ -28,7 +28,7 @@ function Module:CreateExtrabar()
 	local frame = CreateFrame("Frame", "KkthnxUI_ExtraActionBar", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(num * FilterConfig.size + (num-1) * margin + 2 * padding)
 	frame:SetHeight(FilterConfig.size + 2 * padding)
-	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 276, 44}
+	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 272, 34}
 
 	-- Move The Buttons Into Position And Reparent Them
 	_G.ExtraActionBarFrame:SetParent(frame)
@@ -60,7 +60,7 @@ function Module:CreateExtrabar()
 	_G.ZoneAbilityFrame:ClearAllPoints()
 	_G.ZoneAbilityFrame.ignoreFramePositionManager = true
 	_G.ZoneAbilityFrameNormalTexture:SetAlpha(0)
-	K.Mover(_G.ZoneAbilityFrame, "ZoneAbilityFrame", "ZoneAbilityFrame", {"BOTTOM", UIParent, "BOTTOM", 276, 44}, 64, 64)
+	K.Mover(_G.ZoneAbilityFrame, "ZoneAbilityFrame", "ZoneAbilityFrame", {"BOTTOM", UIParent, "BOTTOM", 272, 34}, 64, 64)
 
 	local spellButton = _G.ZoneAbilityFrame.SpellButton
 	spellButton.Style:SetAlpha(0)

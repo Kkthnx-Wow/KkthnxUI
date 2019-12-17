@@ -6,18 +6,10 @@ end
 local _G = _G
 
 local UnitName = _G.UnitName
-local IsInGroup = _G.IsInGroup
 local CreateFrame = _G.CreateFrame
-local IsInRaid = _G.IsInRaid
-local UnitIsGroupLeader = _G.UnitIsGroupLeader
 local SendChatMessage = _G.SendChatMessage
-local IsEveryoneAssistant = _G.IsEveryoneAssistant
-local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
-local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME
-local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
 
--- Sourced: Pull Countdown (Dridzt)
-do
+do -- Sourced: Pull Countdown (Dridzt)
 	local PullCountdown = CreateFrame("Frame", "PullCountdown")
 	local PullCountdownHandler = CreateFrame("Frame")
 	local firstdone, delay, target
@@ -30,22 +22,6 @@ do
 		lastupdate = 0
 	end
 
-	local function setmsg(warning)
-		if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
-			return "PARTY" -- "INSTANCE_CHAT"
-		elseif IsInRaid(LE_PARTY_CATEGORY_HOME) then
-			if warning and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or IsEveryoneAssistant()) then
-				return "RAID_WARNING"
-			else
-				return "RAID"
-			end
-		elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
-			return "PARTY"
-		end
-
-		return "SAY"
-	end
-
 	local function pull(_, elapsed)
 		local tname = UnitName("target")
 		if tname then
@@ -55,7 +31,7 @@ do
 		end
 
 		if not firstdone then
-			SendChatMessage((L["Pulling In"]):format(target, tostring(delay)), setmsg(true))
+			SendChatMessage((L["Pulling In"]):format(target, tostring(delay)), K.CheckChat(true))
 			firstdone = true
 			delay = delay - 1
 		end
@@ -64,10 +40,10 @@ do
 		if lastupdate >= interval then
 			lastupdate = 0
 			if delay > 0 then
-				SendChatMessage(tostring(delay).."..", setmsg(true))
+				SendChatMessage(tostring(delay).."..", K.CheckChat(true))
 				delay = delay - 1
 			else
-				SendChatMessage(L["Leeeeeroy!"], setmsg(true))
+				SendChatMessage(L["Leeeeeroy!"], K.CheckChat(true))
 				reset()
 			end
 		end
@@ -77,7 +53,7 @@ do
 		delay = timer or 3
 		if PullCountdownHandler:GetScript("OnUpdate") then
 			reset()
-			SendChatMessage(L["Pull ABORTED!"], setmsg(true))
+			SendChatMessage(L["Pull ABORTED!"], K.CheckChat(true))
 		else
 			PullCountdownHandler:SetScript("OnUpdate", pull)
 		end

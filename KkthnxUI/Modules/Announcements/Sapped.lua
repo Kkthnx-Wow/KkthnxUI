@@ -23,5 +23,5 @@ function Module:CreateSaySappedAnnounce()
 
 	self:SetupSaySapped()
 
-	--self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "SetupSaySapped")
+	-- self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "SetupSaySapped")
 end

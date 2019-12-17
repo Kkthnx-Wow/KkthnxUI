@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<Script file="ClassPower.lua" />
-	<Script file="Range.lua" />
-	<Script file="TotemBar.lua" />
-</Ui>

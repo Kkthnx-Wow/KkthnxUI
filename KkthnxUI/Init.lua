@@ -18,12 +18,10 @@ local GetAddOnInfo = _G.GetAddOnInfo
 local GetAddOnMetadata = _G.GetAddOnMetadata
 local GetBuildInfo = _G.GetBuildInfo
 local GetCVar = _G.GetCVar
-local GetCurrentResolution = _G.GetCurrentResolution
 local GetLocale = _G.GetLocale
 local GetNumAddOns = _G.GetNumAddOns
+local GetPhysicalScreenSize = _G.GetPhysicalScreenSize
 local GetRealmName = _G.GetRealmName
-local GetScreenResolutions = _G.GetScreenResolutions
-local GetSpecialization = _G.GetSpecialization
 local LOCALIZED_CLASS_NAMES_MALE = _G.LOCALIZED_CLASS_NAMES_MALE
 local LibStub = _G.LibStub
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
@@ -33,12 +31,20 @@ local UnitLevel = _G.UnitLevel
 local UnitName = _G.UnitName
 local UnitRace = _G.UnitRace
 
+local Resolution = select(1, GetPhysicalScreenSize()).."x"..select(2, GetPhysicalScreenSize())
+local Windowed = Display_DisplayModeDropDown:windowedmode()
+
 -- Engine
 Engine[1] = {} -- K, Main
 Engine[2] = {} -- C, Config
 Engine[3] = {} -- L, Locales
 
 local K = unpack(Engine)
+
+K.oUF = Engine.oUF
+K.cargBags = Engine.cargBags
+K.libButtonGlow = LibStub("LibButtonGlow-1.0", true)
+K.libCustomGlow = LibStub("LibCustomGlow-1.0", true)
 
 K.Title = GetAddOnMetadata(AddOnName, "Title")
 K.Version = GetAddOnMetadata(AddOnName, "Version")
@@ -49,46 +55,54 @@ K.Noop = function()
 end
 
 K.Name = UnitName("player")
-K.LocalizedClass, K.Class, K.ClassID = UnitClass("player")
-K.LocalizedRace, K.Race = UnitRace("player")
-K.Faction, K.LocalizedFaction = UnitFactionGroup("player")
-K.Spec = GetSpecialization() or 0
+K.Class = select(2, UnitClass("player"))
+K.Race = select(2, UnitRace("player"))
+K.Faction = select(2, UnitFactionGroup("player"))
 K.Level = UnitLevel("player")
 K.Client = GetLocale()
 K.Realm = GetRealmName()
-K.oUF = Engine.oUF
 K.Media = "Interface\\AddOns\\KkthnxUI\\Media\\"
 K.LSM = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
-K.Resolution = ({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution")
-K.ScreenHeight = tonumber(string_match(K.Resolution, "%d+x(%d+)"))
-K.ScreenWidth = tonumber(string_match(K.Resolution, "(%d+)x+%d"))
-K.UIScale = math_min(2, math_max(0.01, 768 / string_match(K.Resolution, "%d+x(%d+)")))
-K.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
-K.Color = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
-K.MyClassColor = string_format("|cff%02x%02x%02x", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255)
+K.Resolution = Resolution or (Windowed and GetCVar("gxWindowedResolution")) or GetCVar("gxFullscreenResolution")
+K.ScreenHeight = select(2, GetPhysicalScreenSize())
+K.ScreenWidth = select(1, GetPhysicalScreenSize())
+K.UIScale = math_min(1, math_max(0.64, 768 / string_match(Resolution, "%d+x(%d+)")))
+K.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "ffdbebfa"} -- Keep this until I convert the rest.
 K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 K.Welcome = "|cff4488ffKkthnxUI "..K.Version.." "..K.Client.."|r - /helpui"
 K.ScanTooltip = CreateFrame("GameTooltip", "KkthnxUI_ScanTooltip", _G.UIParent, "GameTooltipTemplate")
 K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
-K.IsPTR = GetBuildInfo and K.WowBuild >= 29634
+K.GreyColor = "|cff7b8489"
 K.InfoColor = "|cff4488ff"
+K.SystemColor = "|cffffcc00"
+
 K.CodeDebug = false -- Don't touch this, unless you know what you are doing?
+
+BAG_ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_POOR] = {r = 0.62, g = 0.62, b = 0.62}
+BAG_ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_COMMON] = {r = 1, g = 1, b = 1}
 
 K.ClassList = {}
 for k, v in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 	K.ClassList[v] = k
 end
 K.ClassColors = {}
+-- PRIEST ClassColor
+RAID_CLASS_COLORS["PRIEST"].r = 0.86
+RAID_CLASS_COLORS["PRIEST"].g = 0.92
+RAID_CLASS_COLORS["PRIEST"].b = 0.98
+RAID_CLASS_COLORS["PRIEST"].colorStr = "ffdbebfa"
+
 local colors = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
-for class in pairs(colors) do
+for class, value in pairs(colors) do
 	K.ClassColors[class] = {}
-	K.ClassColors[class].r = colors[class].r
-	K.ClassColors[class].g = colors[class].g
-	K.ClassColors[class].b = colors[class].b
-	K.ClassColors[class].colorStr = colors[class].colorStr
+	K.ClassColors[class].r = value.r
+	K.ClassColors[class].g = value.g
+	K.ClassColors[class].b = value.b
+	K.ClassColors[class].colorStr =  value.colorStr
 end
 K.r, K.g, K.b = K.ClassColors[K.Class].r, K.ClassColors[K.Class].g, K.ClassColors[K.Class].b
+K.MyClassColor = string_format("|cff%02x%02x%02x", K.r * 255, K.g * 255, K.b * 255)
 
 local events = {}
 local host = CreateFrame("Frame")
@@ -113,6 +127,7 @@ function K:RegisterEvent(event, func, unit1, unit2)
 			host:RegisterEvent(event)
 		end
 	end
+
 	events[event][func] = true
 end
 
@@ -175,10 +190,10 @@ local function PositionGameMenuButton()
 end
 
 -- Got to check for addon name, or this will fire for ALL addons, creating a ton of buttons!
-local function CreateGameMenuButton(event, addon)
-	if (addon ~= AddOnName) then 
-		return 
-	end 
+K:RegisterEvent("ADDON_LOADED", function(_, addon)
+	if (addon ~= AddOnName) then
+		return
+	end
 
 	K.GUID = UnitGUID("player")
 	K.CreateStaticPopups()
@@ -206,11 +221,9 @@ local function CreateGameMenuButton(event, addon)
 		GameMenuButton:SetPoint("TOPLEFT", GameMenuButtonAddons, "BOTTOMLEFT", 0, -1)
 		hooksecurefunc("GameMenuFrame_UpdateVisibleButtons", PositionGameMenuButton)
 	end
-	K:UnregisterEvent("ADDON_LOADED", CreateGameMenuButton)
-end
-K:RegisterEvent("ADDON_LOADED", CreateGameMenuButton)
+end)
 
--- Event return values were wrong: https://wow.gamepedia.com/PLAYER_LEVEL_UP 
+-- Event return values were wrong: https://wow.gamepedia.com/PLAYER_LEVEL_UP
 K:RegisterEvent("PLAYER_LEVEL_UP", function(_, level)
 	if not K.Level then
 		return
@@ -276,9 +289,19 @@ do
 		subLocalizations:SetJustifyH("LEFT")
 		subLocalizations:SetText(GetAddOnMetadata("KkthnxUI", "X-Localizations"))
 
+		local titleTranslators = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+		titleTranslators:SetPoint("TOPLEFT", subLocalizations, "BOTTOMLEFT", 0, -16)
+		titleTranslators:SetText("Translators:")
+
+		local subTranslators = self:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+		subTranslators:SetWidth(580)
+		subTranslators:SetPoint("TOPLEFT", titleTranslators, "BOTTOMLEFT", 0, -8)
+		subTranslators:SetJustifyH("LEFT")
+		subTranslators:SetText(GetAddOnMetadata("KkthnxUI", "X-Translation"))
+
 		-- Social Buttion, because why not?
 		local titleButtons = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-		titleButtons:SetPoint("TOPLEFT", subLocalizations, "BOTTOMLEFT", 0, -16)
+		titleButtons:SetPoint("TOPLEFT", subTranslators, "BOTTOMLEFT", 0, -16)
 		titleButtons:SetText("Keep Calm I'm Adding Buttons:")
 
 		local buttonGitHub = CreateFrame("Button", nil, self, "UIPanelButtonTemplate")
@@ -286,7 +309,7 @@ do
 		buttonGitHub:SetPoint("TOPLEFT", titleButtons, "BOTTOMLEFT", 0, -8)
 		buttonGitHub:SkinButton()
 		buttonGitHub:SetScript("OnClick", function()
-			K.StaticPopup_Show("GITHUB_EDITBOX", nil, nil, "https://github.com/kkthnx-wow/KkthnxUI_8.0.1")
+			K.StaticPopup_Show("GITHUB_EDITBOX", nil, nil, "https://github.com/kkthnx-wow/KkthnxUI_Classic")
 		end)
 		buttonGitHub.Text = buttonGitHub:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 		buttonGitHub.Text:SetPoint("CENTER", buttonGitHub)
@@ -297,7 +320,7 @@ do
 		buttonBugReport:SetPoint("LEFT", buttonGitHub, "RIGHT", 6, 0)
 		buttonBugReport:SkinButton()
 		buttonBugReport:SetScript("OnClick", function()
-			K.StaticPopup_Show("GITHUB_EDITBOX", nil, nil, "https://github.com/kkthnx-wow/KkthnxUI_8.0.1/issues/new")
+			K.StaticPopup_Show("GITHUB_EDITBOX", nil, nil, "https://github.com/kkthnx-wow/KkthnxUI_Classic/issues/new")
 		end)
 		buttonBugReport.Text = buttonBugReport:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 		buttonBugReport.Text:SetPoint("CENTER", buttonBugReport)
@@ -312,7 +335,7 @@ do
 		end)
 		buttonDiscord.Text = buttonDiscord:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 		buttonDiscord.Text:SetPoint("CENTER", buttonDiscord)
-		buttonDiscord.Text:SetText("|cffffd100".."Discord".."|r")
+		buttonDiscord.Text:SetText("|cff7289DA".."Discord".."|r")
 
 		local buttonFacebook = CreateFrame("Button", nil, self, "UIPanelButtonTemplate")
 		buttonFacebook:SetSize(100, 22)

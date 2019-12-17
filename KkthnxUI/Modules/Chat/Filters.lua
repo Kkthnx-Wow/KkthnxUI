@@ -2,172 +2,150 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Chat")
 
 local _G = _G
-local math_max = _G.math.max
-local math_min = _G.math.min
-local string_find = _G.string.find
-local string_gsub = _G.string.gsub
-local table_remove = _G.table.remove
+local ipairs = ipairs
+local string_match = string.match
 
-local Ambiguate = _G.Ambiguate
-local BNGetGameAccountInfoByGUID = _G.BNGetGameAccountInfoByGUID
-local C_FriendList_IsFriend = _G.IsCharacterFriend
-local C_Timer_After = _G.C_Timer_After
+local ChatFrame1 = _G.ChatFrame1
 local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
-local GetCVarBool = _G.GetCVarBool
 local GetTime = _G.GetTime
-local IsGUIDInGroup = _G.IsGUIDInGroup
-local IsGuildMember = _G.IsGuildMember
-local IsInInstance = _G.IsInInstance
-local SetCVar = _G.SetCVar
-local UnitIsUnit = _G.UnitIsUnit
+local UnitIsInMyGuild = _G.UnitIsInMyGuild
 
-local last = {}
-local this = {}
-local BadBoysList = {}
-local FilterList = {}
-local chatLines = {}
-local prevLineID  = 0
-local filterResult = false
+local ERR_LEARN_ABILITY_S = _G.ERR_LEARN_ABILITY_S
+local ERR_LEARN_PASSIVE_S = _G.ERR_LEARN_PASSIVE_S
+local ERR_LEARN_SPELL_S = _G.ERR_LEARN_SPELL_S
+local ERR_NOT_IN_INSTANCE_GROUP = _G.ERR_NOT_IN_INSTANCE_GROUP
+local ERR_NOT_IN_RAID = _G.ERR_NOT_IN_RAID
+local ERR_PET_LEARN_ABILITY_S = _G.ERR_PET_LEARN_ABILITY_S
+local ERR_PET_LEARN_SPELL_S = _G.ERR_PET_LEARN_SPELL_S
+local ERR_PET_SPELL_UNLEARNED_S = _G.ERR_PET_SPELL_UNLEARNED_S
+local ERR_QUEST_ALREADY_ON = _G.ERR_QUEST_ALREADY_ON
+local ERR_SPELL_UNLEARNED_S = _G.ERR_SPELL_UNLEARNED_S
 
-local FilterMatches = 1
-local ChatFilterList = "%* %-(.*)%||T(.*)||t(.*)||c(.*)%||r %[(.*)Announce by(.*)%] %[(.*)ARENA ANNOUNCER(.*)%] %[(.*)Autobroadcast(.*)%] %[(.*)BG Queue Announcer(.*)%] ERR_NOT_IN_INSTANCE_GROUP ERR_NOT_IN_RAID ERR_QUEST_ALREADY_ON ERR_LEARN_ABILITY_S ERR_LEARN_SPELL_S ERR_SPELL_UNLEARNED_S ERR_LEARN_PASSIVE_S ERR_PET_SPELL_UNLEARNED_S ERR_PET_LEARN_ABILITY_S ERR_PET_LEARN_SPELL_S"
-local msgSymbols = {"`", "～", "＠", "＃", "^", "＊", "！", "？", "。", "|", " ", "—", "——", "￥", "’", "‘", "“", "”", "【", "】", "『", "』", "《", "》", "〈", "〉", "（", "）", "〔", "〕", "、", "，", "：", ",", "_", "/", "~", "%-", "%."}
-
-function Module:UpdateFilterList()
-	K.SplitList(FilterList, ChatFilterList, true)
-end
-
--- ECF strings compare
-function Module:CompareStrDiff(sA, sB) -- arrays of bytes
-	local len_a, len_b = #sA, #sB
-	for j = 0, len_b do
-		last[j + 1] = j
-	end
-
-	for i = 1, len_a do
-		this[1] = i
-		for j = 1, len_b do
-			this[j + 1] = (sA[i] == sB[j]) and last[j] or (math_min(last[j + 1], this[j], last[j]) + 1)
-		end
-
-		for j = 0, len_b do
-			last[j + 1] = this[j + 1]
-		end
-	end
-
-	return this[len_b + 1] / math_max(len_a, len_b)
-end
-
-function Module:GetFilterResult(event, msg, name, flag, guid)
-	if name == K.Name or (event == "CHAT_MSG_WHISPER" and flag == "GM") or flag == "DEV" then
-		return
-	elseif guid and (IsGuildMember(guid) or BNGetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or (IsInInstance() and IsGUIDInGroup(guid))) then
-		return
-	end
-
-	if BadBoysList[name] and BadBoysList[name] >= 5 then
-		return true
-	end
-
-	local filterMsg = string_gsub(msg, "|H.-|h(.-)|h", "%1")
-	filterMsg = string_gsub(filterMsg, "|c%x%x%x%x%x%x%x%x", "")
-	filterMsg = string_gsub(filterMsg, "|r", "")
-
-	-- Trash Filter
-	for _, symbol in ipairs(msgSymbols) do
-		filterMsg = string_gsub(filterMsg, symbol, "")
-	end
-
-	local matches = 0
-	for keyword in pairs(FilterList) do
-		if keyword ~= "" then
-			local _, count = string_gsub(filterMsg, keyword, "")
-			if count > 0 then
-				matches = matches + 1
-			end
-		end
-	end
-
-	if matches >= FilterMatches then
-		return true
-	end
-
-	-- ECF Repeat Filter
-	local msgTable = {name, {}, GetTime()}
-	if filterMsg == "" then
-		filterMsg = msg
-	end
-
-	for i = 1, #filterMsg do
-		msgTable[2][i] = filterMsg:byte(i)
-	end
-
-	local chatLinesSize = #chatLines
-	chatLines[chatLinesSize+1] = msgTable
-	for i = 1, chatLinesSize do
-		local line = chatLines[i]
-		if line[1] == msgTable[1] and ((msgTable[3] - line[3] < 0.6) or Module:CompareStrDiff(line[2], msgTable[2]) <= 0.1) then
-			table_remove(chatLines, i)
-			return true
-		end
-	end
-
-	if chatLinesSize >= 30 then
-		table_remove(chatLines, 1)
-	end
-end
-
-function Module:UpdateChatFilter(event, msg, author, _, _, _, flag, _, _, _, _, lineID, guid)
-	if lineID == 0 or lineID ~= prevLineID then
-		prevLineID = lineID
-
-		local name = Ambiguate(author, "none")
-		filterResult = Module:GetFilterResult(event, msg, name, flag, guid)
-		if filterResult then
-			BadBoysList[name] = (BadBoysList[name] or 0) + 1
-		end
-	end
-
-	return filterResult
-end
-
--- Block addon msg
-local addonBlockList = {
-	"任务进度提示", "%[接受任务%]", "%(任务完成%)", "<大脚", "【爱不易】", "EUI[:_]", "打断:.+|Hspell", "PS 死亡: .+>", "%*%*.+%*%*", "<iLvl>", ("%-"):rep(20),
-	"<小队物品等级:.+>", "<LFG>", "进度:", "属性通报", "汐寒", "wow.+兑换码", "wow.+验证码", "【有爱插件】", "：.+>"
+K.GeneralChatSpam = {
+	"an[au][ls]e?r?%f[%L]",
+	"nigg[ae]r?",
+	"s%A*k%A*y%A*p%Ae",
 }
 
-local cvar
-local function toggleCVar(value)
-	value = tonumber(value) or 1
-	SetCVar(cvar, value)
-end
+K.PrivateChatEventSpam = {
+	"%-(.*)%|T(.*)|t(.*)|c(.*)%|r",
+	"%[(.*)ARENA ANNOUNCER(.*)%]",
+	"%[(.*)Autobroadcast(.*)%]",
+	"%[(.*)BG Queue Announcer(.*)%]",
+	"In your level range",
 
-function Module:ToggleChatBubble(party)
-	cvar = "chatBubbles"..(party and "Party" or "")
-	if not GetCVarBool(cvar) then
-		return
-	end
+	ERR_NOT_IN_INSTANCE_GROUP or "You aren't in an instance group.",
+	ERR_NOT_IN_RAID or "You are not in a raid group",
+	ERR_QUEST_ALREADY_ON or "You are already on that quest",
+}
 
-	toggleCVar(0)
-	C_Timer_After(0.01, toggleCVar)
-end
+K.PrivateChatNoEventSpam = {}
 
-function Module:UpdateAddOnBlocker(event, msg, author)
-	local name = Ambiguate(author, "none")
-	if UnitIsUnit(name, "player") then
-		return
-	end
+K.TalentChatSpam = {
+	"^"..ERR_LEARN_ABILITY_S:gsub("%%s","(.*)"),
+	"^"..ERR_LEARN_SPELL_S:gsub("%%s","(.*)"),
+	"^"..ERR_SPELL_UNLEARNED_S:gsub("%%s","(.*)"),
+	"^"..ERR_LEARN_PASSIVE_S:gsub("%%s","(.*)"),
+	"^"..ERR_PET_SPELL_UNLEARNED_S:gsub("%%s","(.*)"),
+	"^"..ERR_PET_LEARN_ABILITY_S:gsub("%%s","(.*)"),
+	"^"..ERR_PET_LEARN_SPELL_S:gsub("%%s","(.*)"),
+}
 
-	for _, word in ipairs(addonBlockList) do
-		if string_find(msg, word) then
-			if event == "CHAT_MSG_SAY" or event == "CHAT_MSG_YELL" then
-				Module:ToggleChatBubble()
-			elseif event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER" then
-				Module:ToggleChatBubble(true)
+function Module:CreateGeneralFilterList()
+	-- This is to clear away startup messages that has no events connected to them
+	local AddMessage = ChatFrame1.AddMessage
+	ChatFrame1.AddMessage = function(self, msg, ...)
+		if msg then
+			for _, filter in ipairs(K.GeneralChatSpam) do
+				if string_match(msg, filter) then
+					return
+				end
 			end
-			return true
 		end
+
+		return AddMessage(self, msg, ...)
+	end
+end
+
+-- RepeatFilter Credits: Goldpaw
+function Module:CreateRepeatFilter(_, text, sender)
+	if not text or sender == K.Name or UnitIsInMyGuild(sender) then
+		return
+	end
+
+	-- Initialize the repeat cache
+	if not self.repeatThrottle then
+		self.repeatThrottle = {}
+	end
+
+	-- We use this in all conditionals, let's avoid double function calls!
+	local now = GetTime()
+
+	-- Prune away messages that has timed out without repetitions.
+	-- This iteration shouldn't cost much when called on every new message,
+	-- the database simply won't have time to accumulate very many entries.
+	for msg,when in pairs(self.repeatThrottle) do
+		if when > now and msg ~= text then
+			self.repeatThrottle[msg] = nil
+		end
+	end
+
+	-- If the timer for this message hasn't been set, or if 10 seconds have passed,
+	-- we set the timer to 10 new seconds, show the message once, and return.
+	if not self.repeatThrottle[text] or self.repeatThrottle[text] > now then
+		self.repeatThrottle[text] = now + 10
+		return
+	end
+
+	-- If we got here the timer has been set, but it's still too early.
+	if self.repeatThrottle[text] < now then
+		return true
+	end
+end
+
+function Module:CreateTalentFilter(_, msg, ...)
+	if msg then
+		for _, filter in ipairs(K.TalentChatSpam) do
+			if string_match(msg, filter) then
+				return true
+			end
+		end
+	end
+
+	return false, msg, ...
+end
+
+function Module:FilterEventSpam(_, msg, ...)
+	if msg then
+		for _, filter in ipairs(K.PrivateChatEventSpam) do
+			if string_match(msg, filter) then
+				-- Debugging
+				-- print("blocked the message: ", msg)
+				-- print("using the filter:", filter)
+				return true
+			end
+		end
+		-- uncomment to break the chat
+		-- for development purposes only. weird stuff happens when used.
+		-- msg = string_gsub(msg, "|", "||")
+	end
+
+	return false, msg, ...
+end
+
+function Module:CreatePrivateFilterList()
+	-- This is to clear away startup messages that has no events connected to them
+	local AddMessage = ChatFrame1.AddMessage
+	ChatFrame1.AddMessage = function(self, msg, ...)
+		if msg then
+			for _, filter in ipairs(K.PrivateChatNoEventSpam) do
+				if string_match(msg, filter) then
+					return
+				end
+			end
+		end
+
+		return AddMessage(self, msg, ...)
 	end
 end
 
@@ -175,8 +153,7 @@ end
 local function isItemHasLevel(link)
 	local name, _, rarity, level, _, _, _, _, _, _, _, classID = GetItemInfo(link)
 	if name and level and rarity > 1 and (classID == LE_ITEM_CLASS_WEAPON or classID == LE_ITEM_CLASS_ARMOR) then
-		local itemLevel = K.GetItemLevel(link)
-		return name, itemLevel
+		return name, level
 	end
 end
 
@@ -194,7 +171,7 @@ local itemCache = {}
 local function convertItemLevel(link)
 	if itemCache[link] then return itemCache[link] end
 
-	local itemLink = string.match(link, "|Hitem:.-|h")
+	local itemLink = string_match(link, "|Hitem:.-|h")
 	if itemLink then
 		local name, itemLevel = isItemHasLevel(itemLink)
 		if name and itemLevel then
@@ -212,28 +189,35 @@ end
 
 function Module:CreateChatFilter()
 	if C["Chat"].EnableFilter then
-		self:UpdateFilterList()
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateChatFilter)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateChatFilter)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.UpdateChatFilter)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateChatFilter)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", self.UpdateChatFilter)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", self.UpdateChatFilter)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", self.UpdateChatFilter)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", self.UpdateChatFilter)
-	end
+		self:CreateGeneralFilterList()
+		self:CreatePrivateFilterList()
 
-	if C["Chat"].BlockAddonAlert then
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.CreateRepeatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", self.CreateRepeatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_EMOTE", self.CreateRepeatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_SAY", self.CreateRepeatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.CreateRepeatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", self.CreateRepeatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.CreateRepeatFilter)
+
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.CreateTalentFilter)
+
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.FilterEventSpam)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_BOSS_EMOTE", self.FilterEventSpam)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.FilterEventSpam)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.FilterEventSpam)
+
+		-- Filter out failed attempts at server commands,
+		-- typically coming from people who recently migrated from monster-wow.
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", function(_, _, msg, ...)
+			if msg then
+				if string_match(msg, "^%.(.*)") then
+					return true
+				end
+			end
+
+			return false, msg, ...
+		end)
 	end
 
 	if C["Chat"].ChatItemLevel then

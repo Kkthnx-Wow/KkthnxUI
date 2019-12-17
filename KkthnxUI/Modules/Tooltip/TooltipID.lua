@@ -10,6 +10,7 @@ local BAGSLOT = _G.BAGSLOT
 local BANK = _G.BANK
 local CURRENCY = _G.CURRENCY
 local C_TradeSkillUI_GetRecipeReagentItemLink = _G.C_TradeSkillUI.GetRecipeReagentItemLink
+local GetCurrencyListLink = _G.GetCurrencyListLink
 local GetItemCount = _G.GetItemCount
 local GetItemInfo = _G.GetItemInfo
 local GetUnitName = _G.GetUnitName
@@ -18,33 +19,34 @@ local QUESTS_LABEL = _G.QUESTS_LABEL
 local SPELLS = _G.SPELLS
 local TALENT = _G.TALENT
 local UnitAura = _G.UnitAura
+local hooksecurefunc = _G.hooksecurefunc
 
 local types = {
-	spell = SPELLS.."ID:",
+	achievement = ACHIEVEMENTS.."ID:",
+	azerite = L["Trait"].."ID:",
+	currency = CURRENCY.."ID:",
 	item = ITEMS.."ID:",
 	quest = QUESTS_LABEL.."ID:",
+	spell = SPELLS.."ID:",
 	talent = TALENT.."ID:",
-	achievement = ACHIEVEMENTS.."ID:",
-	currency = CURRENCY.."ID:",
-	azerite = L["Trait"].."ID:",
 }
 
 function Module:AddLineForID(id, linkType, noadd)
 	for i = 1, self:NumLines() do
 		local line = _G[self:GetName().."TextLeft"..i]
-        if not line then
-            break
-        end
+		if not line then
+			break
+		end
 
 		local text = line:GetText()
-        if text and text == linkType then
-            return
-        end
-    end
+		if text and text == linkType then
+			return
+		end
+	end
 
-    if not noadd then
-        self:AddLine(" ")
-    end
+	if not noadd then
+		self:AddLine(" ")
+	end
 
 	if linkType == types.item then
 		local bagCount = GetItemCount(id)
@@ -145,6 +147,7 @@ function Module:CreateTooltipID()
 	ShoppingTooltip2:HookScript("OnTooltipSetItem", Module.SetItemID)
 	ItemRefShoppingTooltip1:HookScript("OnTooltipSetItem", Module.SetItemID)
 	ItemRefShoppingTooltip2:HookScript("OnTooltipSetItem", Module.SetItemID)
+
 	hooksecurefunc(GameTooltip, "SetToyByItemID", function(self, id)
 		if id then
 			Module.AddLineForID(self, id, types.item)
@@ -168,9 +171,7 @@ function Module:CreateTooltipID()
 	end)
 
 	hooksecurefunc(GameTooltip, "SetCurrencyByID", function(self, id)
-		if id then
-			Module.AddLineForID(self, id, types.currency)
-		end
+		if id then Module.AddLineForID(self, id, types.currency) end
 	end)
 
 	hooksecurefunc(GameTooltip, "SetCurrencyTokenByID", function(self, id)

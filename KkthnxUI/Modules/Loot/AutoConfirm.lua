@@ -15,7 +15,7 @@ local function SetupAutoConfirm()
 end
 
 function Module:CreateAutoConfirm()
-	if C["Loot"].AutoDisenchant ~= true then
+	if C["Loot"].AutoConfirmLoot ~= true then
 		return
 	end
 

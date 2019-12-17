@@ -5,5 +5,4 @@
    <Script file="CopyChat.lua" />
    <Script file="CopyUrl.lua" />
    <Script file="Filters.lua" />
-   <Script file="QuickJoin.lua" />
 </Ui>

@@ -133,5 +133,5 @@ SlashCmdList["KKUI_ADDONDATA"] = function(msg)
 		--print(L["AddOn Info Text"])
 	end
 end
-SLASH_KKUI_ADDONDATA1 = "/setting"
-SLASH_KKUI_ADDONDATA2 = "/addondata"
+SLASH_KKUI_ADDONDATA1 = "/kksetting"
+SLASH_KKUI_ADDONDATA2 = "/kkaddondata"

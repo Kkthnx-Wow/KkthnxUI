@@ -92,6 +92,10 @@ function Module:ReskinTooltipIcons()
 	Module.HookTooltipMethod(GameTooltip)
 	Module.HookTooltipMethod(ItemRefTooltip)
 
+	hooksecurefunc(GameTooltip, "SetUnitAura", function(self)
+		Module.SetupTooltipIcon(self)
+	end)
+
 	hooksecurefunc(GameTooltip, "SetAzeriteEssence", function(self)
 		Module.SetupTooltipIcon(self)
 	end)

@@ -3,6 +3,18 @@ if C["Automation"].AutoTabBinder ~= true then
 	return
 end
 
+local _G = _G
+
+local CreateFrame = _G.CreateFrame
+local GetBindingAction = _G.GetBindingAction
+local GetBindingKey = _G.GetBindingKey
+local GetCurrentBindingSet = _G.GetCurrentBindingSet
+local GetZonePVPInfo = _G.GetZonePVPInfo
+local InCombatLockdown = _G.InCombatLockdown
+local IsInInstance = _G.IsInInstance
+local SaveBindings = _G.SaveBindings
+local SetBinding = _G.SetBinding
+
 -- Sourced:	RE/TabBinder by Veev/AcidWeb
 local TabBinder = CreateFrame("Frame")
 TabBinder:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -14,7 +26,7 @@ TabBinder:RegisterEvent("CHAT_MSG_SYSTEM")
 
 local RTB_Fail, RTB_DefaultKey, LastTargetKey, TargetKey, CurrentBind, Success = false, true
 
-TabBinder:SetScript("OnEvent", function(self, event, ...)
+TabBinder:SetScript("OnEvent", function(_, event, ...)
 	if event == "CHAT_MSG_SYSTEM" then
 		local RTBChatMessage = ...
 		if RTBChatMessage == ERR_DUEL_REQUESTED then
@@ -38,6 +50,7 @@ TabBinder:SetScript("OnEvent", function(self, event, ...)
 		if TargetKey == nil then
 			TargetKey = GetBindingKey("TARGETNEARESTENEMY")
 		end
+
 		if TargetKey == nil and RTB_DefaultKey then
 			TargetKey = "TAB"
 		end
@@ -46,6 +59,7 @@ TabBinder:SetScript("OnEvent", function(self, event, ...)
 		if LastTargetKey == nil then
 			LastTargetKey = GetBindingKey("TARGETPREVIOUSENEMY")
 		end
+
 		if LastTargetKey == nil and RTB_DefaultKey then
 			LastTargetKey = "SHIFT-TAB"
 		end
@@ -61,9 +75,11 @@ TabBinder:SetScript("OnEvent", function(self, event, ...)
 				else
 					Success = SetBinding(TargetKey, "TARGETNEARESTENEMYPLAYER")
 				end
+
 				if LastTargetKey then
 					SetBinding(LastTargetKey, "TARGETPREVIOUSENEMYPLAYER")
 				end
+
 				if Success then
 					SaveBindings(BindSet)
 					RTB_Fail = false
@@ -78,9 +94,11 @@ TabBinder:SetScript("OnEvent", function(self, event, ...)
 				else
 					Success = SetBinding(TargetKey, "TARGETNEARESTENEMY")
 				end
+
 				if LastTargetKey then
 					SetBinding(LastTargetKey, "TARGETPREVIOUSENEMY")
 				end
+
 				if Success then
 					SaveBindings(BindSet)
 					RTB_Fail = false

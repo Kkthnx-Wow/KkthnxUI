@@ -15,12 +15,19 @@ function Module:CreateBar3()
 	local padding, margin = 0, 6
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
+	local layout = C["ActionBar"].Layout.Value
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KkthnxUI_ActionBar3", UIParent, "SecureHandlerStateTemplate")
-	frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
-	frame:SetHeight(FilterConfig.size + 2 * padding)
-	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 84}
+	if layout == "3x4 Boxed arrangement" then
+		frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
+		frame:SetHeight(FilterConfig.size + 2 * padding)
+		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 4}
+	else
+		frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
+		frame:SetHeight(FilterConfig.size + 2 * padding)
+		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 84}
+	end
 
 	-- Move The Buttons Into Position And Reparent Them
 	_G.MultiBarBottomRight:SetParent(frame)

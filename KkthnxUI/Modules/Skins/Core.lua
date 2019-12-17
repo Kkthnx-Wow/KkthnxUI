@@ -71,5 +71,13 @@ function Module:AcceptFrame(MainText, Function)
 end
 
 function Module:OnEnable()
-	return
+	self:ReskinBigWigs()
+	self:ReskinDBM()
+	self:ReskinDetails()
+	self:ReskinSimulationcraft()
+	self:ReskinSkada()
+	self:ReskinSpy()
+	self:ReskinTitanPanel()
+	self:ReskinWeakAuras()
+	self:ReskinWorldQuestTab()
 end

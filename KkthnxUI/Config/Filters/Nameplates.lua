@@ -29,12 +29,15 @@ K.DebuffWhiteList = {
 	[SpellName(58180)] = true,	-- Infected Wounds
 	[SpellName(155722)] = true,	-- Rake
 	[SpellName(1079)] = true,	-- Rip
-	[SpellName(127797)] = true, -- Ursol's Vortex
 	-- Hunter
-	[SpellName(3355)] = true,	-- Freezing Trap
-	[SpellName(194279)] = true,	-- Caltrops
+	[SpellName(131894)] = true,	-- A Murder Of Crows
 	[SpellName(13812)] = true,	-- Explosive Trap
-	[SpellName(117405)] = true, -- Binding Shot
+	[SpellName(187650)] = true,	-- Freezing Trap
+	[SpellName(194279)] = true,	-- Caltrops
+	[SpellName(19577)] = true,	-- Concussive Shot
+	[SpellName(217200)] = true,	-- Barbed Shot
+	[SpellName(3355)] = true,	-- Freezing Trap
+	[SpellName(5116)] = true,	-- Concussive Shot
 	-- Mage
 	[SpellName(118)] = true,	-- Polymorph
 	[SpellName(31661)] = true,	-- Dragon's Breath
@@ -86,8 +89,6 @@ K.DebuffWhiteList = {
 	-- Racial
 	[SpellName(20549)] = true,	-- War Stomp (Tauren)
 	[SpellName(107079)] = true,	-- Quaking Palm (Pandaren)
-	-- Misc
-	[SpellName(272295)] = true, -- Bounty Hunted
 }
 
 K.DebuffBlackList = {
@@ -132,7 +133,6 @@ K.BuffWhiteList = {
 	[SpellName(198924)] = true,	-- Quickening
 	[SpellName(205766)] = true,	-- Bone Chilling
 	[SpellName(130)] = true,	-- Slow Fall
-	[SpellName(45438)] = true, -- Ice Block
 	-- Monk
 	[SpellName(116680)] = true,	-- Thunder Focus Tea
 	[SpellName(116847)] = true,	-- Rushing Jade Wind
@@ -156,7 +156,6 @@ K.BuffWhiteList = {
 	[SpellName(6940)] = true,	-- Blessing of Sacrifice
 	[SpellName(1044)] = true,	-- Blessing of Freedom
 	[SpellName(1022)] = true,	-- Blessing of Protection
-	[SpellName(642)] = true, -- Divine Shield
 	-- Priest
 	[SpellName(17)] = true,		-- Power Word: Shield
 	[SpellName(81782)] = true,	-- Power Word: Barrier
@@ -207,4 +206,8 @@ K.BuffWhiteList = {
 
 K.BuffBlackList = {
 	-- [SpellName(spellID)] = true,	-- Spell Name
+}
+
+K.PlateBlacklist = {
+	-- ["Spell Name"] = true,
 }

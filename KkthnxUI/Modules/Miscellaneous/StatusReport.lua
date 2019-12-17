@@ -58,8 +58,6 @@ local function GetDisplayMode()
 end
 
 local EnglishClassName = {
-	["DEATHKNIGHT"] = "Death Knight",
-	["DEMONHUNTER"] = "Demon Hunter",
 	["DRUID"] = "Druid",
 	["HUNTER"] = "Hunter",
 	["MAGE"] = "Mage",
@@ -69,51 +67,8 @@ local EnglishClassName = {
 	["ROGUE"] = "Rogue",
 	["SHAMAN"] = "Shaman",
 	["WARLOCK"] = "Warlock",
-	["WARRIOR"] = "Warrior"
+	["WARRIOR"] = "Warrior",
 }
-
-local EnglishSpecName = {
-	[102] = "Balance",
-	[103] = "Feral",
-	[104] = "Guardian",
-	[105] = "Restoration",
-	[250] = "Blood",
-	[251] = "Frost",
-	[252] = "Unholy",
-	[253] = "Beast Mastery",
-	[254] = "Marksmanship",
-	[255] = "Survival",
-	[256] = "Discipline",
-	[257] = "Holy",
-	[258] = "Shadow",
-	[259] = "Assasination",
-	[260] = "Combat",
-	[261] = "Sublety",
-	[262] = "Elemental",
-	[263] = "Enhancement",
-	[264] = "Restoration",
-	[265] = "Affliction",
-	[266] = "Demonoligy",
-	[267] = "Destruction",
-	[268] = "Brewmaster",
-	[269] = "Windwalker",
-	[270] = "Mistweaver",
-	[577] = "Havoc",
-	[581] = "Vengeance",
-	[62] = "Arcane",
-	[63] = "Fire",
-	[64] = "Frost",
-	[65] = "Holy",
-	[66] = "Protection",
-	[70] = "Retribution",
-	[71] = "Arms",
-	[72] = "Fury",
-	[73] = "Protection"
-}
-
-local function GetSpecName()
-	return EnglishSpecName[GetSpecializationInfo(GetSpecialization())]
-end
 
 local function GetResolution()
 	return (({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution"))
@@ -245,7 +200,7 @@ function K.CreateStatusFrame()
 	--Content lines
 	StatusFrame.Section1.Content.Line1.Text:SetFormattedText("Version of KkthnxUI: |cff4beb2c%s|r", K.Version)
 	StatusFrame.Section1.Content.Line2.Text:SetFormattedText("Other AddOns Enabled: |cff4beb2c%s|r", AreOtherAddOnsEnabled() )
-	StatusFrame.Section1.Content.Line3.Text:SetFormattedText("Scale: |cff4beb2c%s|r", "") -- Fix me later on
+	StatusFrame.Section1.Content.Line3.Text:SetFormattedText("Scale: |cff4beb2c%s|r", (C["General"].UIScale))
 	StatusFrame.Section1.Content.Line3.Text:SetFormattedText("Recommended Scale: |cff4beb2c%s|r", PixelClip(PixelBestSize()))
 	StatusFrame.Section1.Content.Line4.Text:SetFormattedText("UI Scale Is: |cff4beb2c%s|r", GetUiScale())
 
@@ -257,9 +212,8 @@ function K.CreateStatusFrame()
 	StatusFrame.Section3.Content.Line1.Text:SetFormattedText("Faction: |cff4beb2c%s|r", select(2, UnitFactionGroup("player")) )
 	StatusFrame.Section3.Content.Line2.Text:SetFormattedText("Race: |cff4beb2c%s|r", K.Race)
 	StatusFrame.Section3.Content.Line3.Text:SetFormattedText("Class: |cff4beb2c%s|r", EnglishClassName[K.Class])
-	StatusFrame.Section3.Content.Line4.Text:SetFormattedText("Specialization: |cff4beb2c%s|r", GetSpecName())
-	StatusFrame.Section3.Content.Line5.Text:SetFormattedText("Level: |cff4beb2c%s|r", UnitLevel("player"))
-	StatusFrame.Section3.Content.Line6.Text:SetFormattedText("Zone: |cff4beb2c%s|r", GetRealZoneText())
+	StatusFrame.Section3.Content.Line4.Text:SetFormattedText("Level: |cff4beb2c%s|r", UnitLevel("player"))
+	StatusFrame.Section3.Content.Line5.Text:SetFormattedText("Zone: |cff4beb2c%s|r", GetRealZoneText())
 
 	--Export buttons
 	StatusFrame.Section4.Content.Button1 = CreateFrame("Button", nil, StatusFrame.Section4.Content, "UIPanelButtonTemplate")
@@ -286,12 +240,11 @@ end
 local function UpdateDynamicValues()
 	K.StatusFrame.Section2.Content.Line3.Text:SetFormattedText("Display Mode: |cff4beb2c%s|r", GetDisplayMode())
 	K.StatusFrame.Section2.Content.Line4.Text:SetFormattedText("Resolution: |cff4beb2c%s|r", GetResolution())
-	K.StatusFrame.Section3.Content.Line4.Text:SetFormattedText("Specialization: |cff4beb2c%s|r", GetSpecName())
 	K.StatusFrame.Section3.Content.Line5.Text:SetFormattedText("Level: |cff4beb2c%s|r", UnitLevel("player"))
 	K.StatusFrame.Section3.Content.Line6.Text:SetFormattedText("Zone: |cff4beb2c%s|r", GetRealZoneText())
 end
 
-SlashCmdList["KKUI_STATUSREPORT"] = function()
+_G.SlashCmdList["KKUI_STATUSREPORT"] = function()
 	if not K.StatusFrame then
 		K.CreateStatusFrame()
 	end
@@ -304,4 +257,4 @@ SlashCmdList["KKUI_STATUSREPORT"] = function()
 		K.StatusFrame:SetShown(false)
 	end
 end
-SLASH_KKUI_STATUSREPORT1 = "/kkstatus"
+_G.SLASH_KKUI_STATUSREPORT1 = "/kstatus"

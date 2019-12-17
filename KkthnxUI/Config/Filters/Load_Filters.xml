@@ -6,7 +6,6 @@
    <Script file="ExtraQuestButton.lua" />
    <Script file="FilgerSpells.lua" />
    <Script file="Nameplates.lua" />
-   <Script file="ProfessionTabs.lua" />
    <Script file="QuickQuest.lua" />
    <Script file="RangeSpells.lua" />
    <Script file="Reminder.lua" />

@@ -1,17 +1,17 @@
-local K, C, L = unpack(select(2, ...))
+local K, _, L = unpack(select(2, ...))
 local Module = K:GetModule("Tooltip")
 
 local _G = _G
 local string_match = _G.string.match
 local string_split = _G.string.split
 
-local INSTANCE = _G.INSTANCE
-local EJ_GetInstanceInfo = _G.EJ_GetInstanceInfo
 local BOSS = _G.BOSS
 local C_EncounterJournal_GetSectionInfo = _G.C_EncounterJournal.GetSectionInfo
-local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS or 10
 local EJ_GetEncounterInfo = _G.EJ_GetEncounterInfo
+local EJ_GetInstanceInfo = _G.EJ_GetInstanceInfo
 local GetDifficultyInfo = _G.GetDifficultyInfo
+local INSTANCE = _G.INSTANCE
+local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS or 10
 
 local orig1, orig2, sectionInfo = {}, {}, {}
 local linkTypes = {
@@ -32,6 +32,7 @@ local linkTypes = {
 function Module:HyperLink_SetPet(link)
 	GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", -3, 5)
 	GameTooltip:Show()
+
 	local _, speciesID, level, breedQuality, maxHealth, power, speed = string_split(":", link)
 	BattlePetToolTip_Show(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed))
 end
@@ -42,6 +43,7 @@ function Module:HyperLink_GetSectionInfo(id)
 		info = C_EncounterJournal_GetSectionInfo(id)
 		sectionInfo[id] = info
 	end
+
 	return info
 end
 
@@ -60,11 +62,14 @@ function Module:HyperLink_SetJournal(link)
 		name = icon and "|T"..icon..":20:20:0:0:64:64:5:59:5:59:20|t "..name or name
 		idString = L["Section"].."ID:"
 	end
-	if not name then return end
+
+	if not name then
+		return
+	end
 
 	GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", -3, 5)
 	GameTooltip:AddDoubleLine(name, GetDifficultyInfo(diffID))
-	GameTooltip:AddLine(description, 1,1,1, 1)
+	GameTooltip:AddLine(description, 1, 1, 1, 1)
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(idString, K.InfoColor..id)
 	GameTooltip:Show()

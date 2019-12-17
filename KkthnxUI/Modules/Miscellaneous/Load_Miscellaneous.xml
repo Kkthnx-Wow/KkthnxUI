@@ -9,12 +9,12 @@
    <Script file="Durability.lua" />
    <Script file="EnchantScroll.lua" />
    <Script file="ImprovedMail.lua" />
-   <Script file="ImprovedStats.lua" />
    <Script file="KillingBlow.lua" />
    <Script file="MerchantItemlevel.lua" />
+   <Script file="MissingStats.lua" />
    <Script file="MovableFrames.lua" />
    <Script file="NoTalkingHead.lua" />
-   <Script file="ProfessionTabs.lua" />
+   <Script file="PulseCooldown.lua" />
    <Script file="PvPEmote.lua" />
    <Script file="QuestNotifier.lua" />
    <Script file="QueueTimer.lua" />
@@ -22,5 +22,6 @@
    <Script file="SlotDurability.lua" />
    <Script file="SlotItemLevel.lua" />
    <Script file="StatusReport.lua" />
+   <Script file="TradeTabs.lua" />
    <Script file="yClassColors.lua" />
 </Ui>

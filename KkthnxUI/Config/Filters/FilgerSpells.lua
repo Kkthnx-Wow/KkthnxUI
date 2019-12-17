@@ -46,6 +46,8 @@ C["FilgerSpells"] = {
 			{spellID = 48707, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Dancing Rune Weapon
 			{spellID = 81256, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Lichborne
+			{spellID = 287081, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Rune Tap
 			{spellID = 194679, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Pillar of Frost
@@ -185,6 +187,8 @@ C["FilgerSpells"] = {
 			{spellID = 115989, filter = "CD"},
 			-- Breath of Sindragosa
 			{spellID = 152279, filter = "CD"},
+			-- Lichborne
+			{spellID = 287081, filter = "CD"},
 			-- Desecrated Ground
 			{spellID = 108201, filter = "CD"},
 			-- Death Pact
@@ -494,8 +498,6 @@ C["FilgerSpells"] = {
 			{spellID = 170856, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Dash
 			{spellID = 1850, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Cenarion Ward
-			{spellID = 102351, unitID = "player", caster = "player", filter = "BUFF"},
 		},
 		{
 			Name = "P_PROC_ICON",
@@ -612,6 +614,8 @@ C["FilgerSpells"] = {
 			{spellID = 88423, filter = "CD"},
 			-- Remove Corruption
 			{spellID = 2782, filter = "CD"},
+			-- Soothe
+			{spellID = 2908, filter = "CD"},
 			-- Skull Bash
 			{spellID = 106839, filter = "CD"},
 			-- Mangle
@@ -632,6 +636,10 @@ C["FilgerSpells"] = {
 			{spellID = 205636, filter = "CD"},
 			-- Tiger's Fury
 			{spellID = 5217, filter = "CD"},
+			-- Cenarion Ward
+			{spellID = 102351, filter = "CD"},
+			-- Frenzied Regeneration
+			{spellID = 22842, filter = "CD"},
 			-- Incapacitating Roar
 			{spellID = 99, filter = "CD"},
 			-- Bristling Fur
@@ -652,6 +660,10 @@ C["FilgerSpells"] = {
 			{spellID = 102793, filter = "CD"},
 			-- Nature's Vigil
 			{spellID = 124974, filter = "CD"},
+			-- Flourish
+			{spellID = 197721, filter = "CD"},
+			-- Renewal
+			{spellID = 108238, filter = "CD"},
 			-- Berserk
 			{spellID = 106951, filter = "CD", absID = true},
 			-- Ashmane's Frenzy
@@ -1465,20 +1477,22 @@ C["FilgerSpells"] = {
 			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
-			-- Righteous Verdict
-			{spellID = 267611, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Infusion of Light
-			{spellID = 54149, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Selfless Healer
-			{spellID = 114250, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Divine Purpose
 			{spellID = 223819, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Righteous Verdict
+			{spellID = 267611, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Blade of Wrath
+			{spellID = 281178, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Infusion of Light
+			{spellID = 54149, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Grand Crusader
 			{spellID = 85416, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Final Verdict
-			{spellID = 157048, unitID = "player", caster = "player", filter = "BUFF"},
 			-- The Fires of Justice
 			{spellID = 209785, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Empyrean Power (Azerite Traits)
+			{spellID = 286393, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Selfless Healer
+			{spellID = 114250, unitID = "player", caster = "player", filter = "BUFF"},
 
 			-- Trinkets
 
@@ -1498,12 +1512,12 @@ C["FilgerSpells"] = {
 			{spellID = 267799, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Eye of Tyr
 			{spellID = 209202, unitID = "target", caster = "player", filter = "DEBUFF"},
-			-- Forbearance
-			{spellID = 25771, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Judgment
 			{spellID = 197277, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Hand of Hindrance
 			{spellID = 183218, unitID = "target", caster = "player", filter = "DEBUFF"},
+			-- Forbearance
+			{spellID = 25771, unitID = "player", caster = "all", filter = "DEBUFF"},
 
 			-- Trinket Effects
 
@@ -1522,14 +1536,22 @@ C["FilgerSpells"] = {
 			{spellID = 209202, filter = "CD"},
 			-- Cleanse
 			{spellID = 4987, filter = "CD"},
+			-- Hand of Reckoning
+			{spellID = 62124, filter = "CD"},
 			-- Rebuke
 			{spellID = 96231, filter = "CD"},
+			-- Hand of Hindrance
+			{spellID = 183218, filter = "CD"},
 			-- Repentance
 			{spellID = 20066, filter = "CD"},
 			-- Hammer of Justice
 			{spellID = 853, filter = "CD"},
 			-- Judgment
 			{spellID = 20271, filter = "CD"},
+			-- Blade of Justice
+			{spellID = 184575, filter = "CD"},
+			-- Holy Shock
+			{spellID = 20473, filter = "CD"},
 			-- Consecration
 			{spellID = 26573, filter = "CD"},
 			-- Avenger's Shield
@@ -1542,10 +1564,12 @@ C["FilgerSpells"] = {
 			{spellID = 114165, filter = "CD"},
 			-- Blessing of Freedom
 			{spellID = 1044, filter = "CD"},
-			-- Seraphim
-			{spellID = 152262, filter = "CD"},
 			-- Rule of Law
 			{spellID = 214202, filter = "CD"},
+			-- Seraphim
+			{spellID = 152262, filter = "CD"},
+			-- Wake of Ashes
+			{spellID = 255937, filter = "CD"},
 			-- Speed of Light
 			{spellID = 85499, filter = "CD"},
 			-- Divine Protection
@@ -1566,12 +1590,18 @@ C["FilgerSpells"] = {
 			{spellID = 6940, filter = "CD"},
 			-- Avenging Wrath
 			{spellID = 31884, filter = "CD"},
+			-- Shield of Vengeance
+			{spellID = 184662, filter = "CD"},
 			-- Ardent Defender
 			{spellID = 31850, filter = "CD", absID = true},
 			-- Guardian of Ancient Kings
 			{spellID = 86659, filter = "CD"},
 			-- Blessing of Protection
 			{spellID = 1022, filter = "CD"},
+			-- Light of the Protector
+			{spellID = 184092, filter = "CD"},
+			-- Divine Shield
+			{spellID = 642, filter = "CD"},
 
 			-- PvP
 			-- Honorable Medallion
@@ -1825,6 +1855,20 @@ C["FilgerSpells"] = {
 			{spellID = 208065, filter = "CD"},
 			-- Light's Wrath
 			{spellID = 207946, filter = "CD"},
+			-- Vampiric Embrace
+			{spellID = 15286, filter = "CD"},
+			-- Dark Ascension
+			{spellID = 280711, filter = "CD"},
+			-- Power Word: Solace
+			{spellID = 129250, filter = "CD"},
+			-- Power Word: Radiance
+			{spellID = 194509, filter = "CD"},
+			-- Schism
+			{spellID = 214621, filter = "CD"},
+			-- Rapture
+			{spellID = 47536, filter = "CD"},
+			-- Shadow Covenant
+			{spellID = 204065, filter = "CD"},
 
 			-- PvP
 			-- Honorable Medallion
@@ -2250,44 +2294,44 @@ C["FilgerSpells"] = {
 			{spellID = 51514, filter = "CD"},
 			-- Riptide
 			{spellID = 61295, filter = "CD"},
-			-- Lava Burst
-			{spellID = 51505, filter = "CD"},
 			-- Healing Rain
 			{spellID = 73920, filter = "CD"},
-			-- Elemental Blast
-			{spellID = 117014, filter = "CD"},
-			-- Stormstrike
-			{spellID = 17364, filter = "CD"},
-			-- Cloudburst Totem
-			{spellID = 157153, filter = "CD"},
-			-- Thunderstorm
-			{spellID = 51490, filter = "CD"},
-			-- Earthbind Totem
-			{spellID = 2484, filter = "CD"},
-			-- Stone Bulwark Totem
-			{spellID = 108270, filter = "CD"},
-			-- Astral Shift
-			{spellID = 108271, filter = "CD"},
-			-- Feral Spirit
-			{spellID = 51533, filter = "CD"},
-			-- Spiritwalker's Grace
-			{spellID = 79206, filter = "CD"},
-			-- Ancestral Guidance
-			{spellID = 108281, filter = "CD"},
-			-- Ascendance
-			{spellID = 114049, filter = "CD"},
-			-- Feral Lunge
-			{spellID = 196884, filter = "CD"},
-			-- Flametongue
-			{spellID = 193796, filter = "CD"},
-			-- Lightning Surge Totem
-			{spellID = 192058, filter = "CD"},
 			-- Crash Lightning
 			{spellID = 187874, filter = "CD"},
-			-- Doom Winds
-			{spellID = 204945, filter = "CD"},
+			-- Stormstrike
+			{spellID = 17364, filter = "CD"},
+			-- Lava Burst
+			{spellID = 51505, filter = "CD"},
+			-- Elemental Blast
+			{spellID = 117014, filter = "CD"},
+			-- Flametongue
+			{spellID = 193796, filter = "CD"},
+			-- Feral Lunge
+			{spellID = 196884, filter = "CD"},
+			-- Cloudburst Totem
+			{spellID = 157153, filter = "CD"},
+			-- Earthbind Totem
+			{spellID = 2484, filter = "CD"},
+			-- Thunderstorm
+			{spellID = 51490, filter = "CD"},
 			-- Windsong
 			{spellID = 201898, filter = "CD"},
+			-- Stone Bulwark Totem
+			{spellID = 108270, filter = "CD"},
+			-- Capacitor Totem
+			{spellID = 192058, filter = "CD"},
+			-- Doom Winds
+			{spellID = 204945, filter = "CD"},
+			-- Astral Shift
+			{spellID = 108271, filter = "CD"},
+			-- Ancestral Guidance
+			{spellID = 108281, filter = "CD"},
+			-- Spiritwalker's Grace
+			{spellID = 79206, filter = "CD"},
+			-- Feral Spirit
+			{spellID = 51533, filter = "CD"},
+			-- Ascendance
+			{spellID = 114049, filter = "CD"},
 
 			-- PvP
 			-- Honorable Medallion
@@ -2493,10 +2537,20 @@ C["FilgerSpells"] = {
 			{spellID = 205181, filter = "CD"},
 			-- Summon Darkglare
 			{spellID = 205180, filter = "CD"},
+			-- Deathbolt
+			{spellID = 264106, filter = "CD"},
+			-- Phantom Singularity
+			{spellID = 205179, filter = "CD"},
+			-- Unending Resolve
+			{spellID = 104773, filter = "CD"},
+			-- Dark Pact
+			{spellID = 108416, filter = "CD"},
 
 			-- PvP
 			-- Honorable Medallion
 			{spellID = 195710, filter = "CD"},
+			-- Nether Ward
+			{spellID = 212295, filter = "CD"},
 
 			-- Racial
 			-- Arcane Torrent (Blood Elf)
@@ -2577,8 +2631,6 @@ C["FilgerSpells"] = {
 			{spellID = 12292, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Recklesness
 			{spellID = 1719, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Victorious
-			{spellID = 32216, unitID = "player", caster = "player", filter = "BUFF"},
 		},
 		{
 			Name = "P_PROC_ICON",
@@ -2589,6 +2641,8 @@ C["FilgerSpells"] = {
 			IconSize = C["Filger"].BuffSize,
 			Position = {"TOP", P_PROC_ICON_Anchor},
 
+			-- Victorious
+			{spellID = 32216, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Overpower
 			{spellID = 7384, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Frothing Berserker
@@ -2686,6 +2740,14 @@ C["FilgerSpells"] = {
 			{spellID = 1719, filter = "CD"},
 			-- Avatar
 			{spellID = 107574, filter = "CD"},
+			-- Siegebreaker
+			{spellID = 280772, filter = "CD"},
+			-- Heroic Throw
+			{spellID = 57755, filter = "CD"},
+			-- Dragon Roar
+			{spellID = 118000, filter = "CD"},
+			-- Execute (Fury)
+			{spellID = 5308, filter = "CD"},
 
 			-- PvP
 			-- Honorable Medallion
@@ -2768,7 +2830,7 @@ C["FilgerSpells"] = {
 			-- Heroism
 			{spellID = 32182, unitID = "player", caster = "all", filter = "BUFF"},
 			-- Primal Rage [Hunter's pet]
-			{spellID = 264667, unitID = "player", caster = "all", filter = "BUFF"},
+			{spellID = 264667, unitID = "player", caster = "all", filter = "BUFF", absID = true},
 			-- Time Warp
 			{spellID = 80353, unitID = "player", caster = "all", filter = "BUFF"},
 			-- Drums of Fury
@@ -3140,6 +3202,8 @@ C["FilgerSpells"] = {
 			{spellID = 48707, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Desecrated Ground
 			{spellID = 115018, unitID = "target", caster = "all", filter = "BUFF"},
+			-- Lichborne
+			{spellID = 287081, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Icebound Fortitude
 			{spellID = 48792, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Pillar of Frost

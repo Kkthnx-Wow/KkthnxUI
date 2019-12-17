@@ -28,19 +28,34 @@ function Module:CreateFocus()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
+	self.Health.PostUpdate = C["General"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
-	self.Health.colorSmooth = false
-	self.Health.colorClass = true
-	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
 
-	K.SmoothBar(self.Health)
+	if C["Unitframe"].HealthbarColor.Value == "Value" then
+        self.Health.colorSmooth = true
+        self.Health.colorClass = false
+        self.Health.colorReaction = false
+    elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
+        self.Health.colorSmooth = false
+        self.Health.colorClass = false
+        self.Health.colorReaction = false
+        self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
+    else
+        self.Health.colorSmooth = false
+        self.Health.colorClass = true
+        self.Health.colorReaction = true
+    end
+
+	if C["Unitframe"].Smooth then
+		self.Health.Smooth = true
+	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetFontObject(UnitframeFont)
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
-	self:Tag(self.Health.Value, C["Unitframe"].PlayerHealthFormat.Value)
+	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetHeight(14)
@@ -52,19 +67,22 @@ function Module:CreateFocus()
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = true
 
-	K.SmoothBar(self.Power)
+	if C["Unitframe"].Smooth then
+		self.Power.Smooth = true
+	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
 	self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 	self.Power.Value:SetFontObject(UnitframeFont)
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
-	self:Tag(self.Power.Value, "[KkthnxUI:PowerCurrent]")
+	self:Tag(self.Power.Value, "[power]")
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("TOP", self.Health, 0, 16)
-	self.Name:SetWidth(self.Health:GetWidth())
+	self.Name:SetWidth(156 * 0.90)
 	self.Name:SetFontObject(UnitframeFont)
-	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameAbbrev]")
+	self.Name:SetWordWrap(false)
+	self:Tag(self.Name, "[color][name][afkdnd]")
 
 	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)

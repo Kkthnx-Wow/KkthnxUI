@@ -1,18 +1,19 @@
 -- Sourced: Tukui (Tukz)
 -- Edited: KkthnxUI (Kkthnx)
 
+-- Lua API
 local _G = _G
-local math_floor = _G.math.floor
-local select = _G.select
-local string_find = _G.string.find
-local string_format = _G.string.format
-local string_lower = _G.string.lower
-local table_insert = _G.table.insert
-local table_sort = _G.table.sort
-local tonumber = _G.tonumber
-local type = _G.type
-local unpack = _G.unpack
+local math_floor = math.floor
+local select = select
+local string_find = string.find
+local string_lower = string.lower
+local table_insert = table.insert
+local table_sort = table.sort
+local tonumber = tonumber
+local type = type
+local unpack = unpack
 
+-- Wow API
 local APPLY = _G.APPLY
 local CLOSE = _G.CLOSE
 local COLOR = _G.COLOR
@@ -26,9 +27,9 @@ local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local ReloadUI = _G.ReloadUI
 local ShowUIPanel = _G.ShowUIPanel
 local UIParent = _G.UIParent
-local UNKNOWN = _G.UNKNOWN
 local UnitClass = _G.UnitClass
 local UnitName = _G.UnitName
+local UNKNOWN = _G.UNKNOWN
 
 local KkthnxUIConfig = CreateFrame("Frame", "KkthnxUIConfig", UIParent)
 KkthnxUIConfig.Functions = {}
@@ -43,6 +44,7 @@ if (Locale == "enGB") then
 	Locale = "enUS"
 end
 
+local s = 1 or 1
 function KkthnxUIConfig:SetOption(group, option, value)
 	local C
 	local Realm = GetRealmName()
@@ -78,59 +80,38 @@ function KkthnxUIConfig:SetCallback(group, option, func)
 end
 
 KkthnxUIConfig.ColorDefaults = {
-	-- ActionBar
-	["ActionBar"] = {
-		["OutOfMana"] = {0.5, 0.5, 1.0},
-		["OutOfRange"] = {0.8, 0.1, 0.1}
-	},
 	-- General
 	["General"] = {
-		["TexturesColor"] = {0.9, 0.9, 0.9}
+		["TexturesColor"] = {0.9, 0.9, 0.9},
 	},
 	-- DataBars
 	["DataBars"] = {
-		["AzeriteColor"] = {0.901, 0.8, 0.601},
-		["ExperienceColor"] = {0.6, 0.3, 0.8},
-		["RestedColor"] = {0.3, 0.6, 0.8},
+		["AzeriteColor"] = {.901, .8, .601},
+		["ExperienceColor"] = {0, 0.4, 1, .8},
+		["HonorColor"] = {240/255, 114/255, 65/255},
 	},
 	-- Nameplates
 	["Nameplates"] = {
-		["BadColor"] = {0.78, 0.25, 0.25},
-		["BadTransition"] = {235/255, 163/255, 40/255},
-		["GoodColor"] = {75/255, 175/255, 76/255},
-		["GoodTransition"] = {218/255, 197/255, 92/255},
-		["TankedByTankColor"] = {0.8, 0.1, 1}
-	},
-	-- HealthPrediction
-	["HealthPrediction"] = {
-		["Absorbs"] = {1, 1, 0, 0.25},
-		["HealAbsorbs"] = {1, 0, 0, 0.25},
-		["Others"] = {0, 1, 0, 0.25},
-		["Personal"] = {0, 1, 0.5, 0.25},
-	},
-	-- Unitframe
-	["Unitframe"] = {
-		["CastbarTicksColor"] = {0, 0, 0, 0.8}
+		["BadColor"] = {1, 0, 0},
+		["GoodColor"] = {0.2, 0.8, 0.2},
+		["HighlightColor"] = {1, 1, 0},
+		["NearColor"] = {1, 1, 0},
+		["OffTankColor"] = {0, 0.5, 1},
 	},
 }
 
 function KkthnxUIConfig:UpdateColorDefaults()
-	self.ColorDefaults.ActionBar.OutOfMana = {0.5, 0.5, 1.0}
-	self.ColorDefaults.ActionBar.OutOfRange = {0.8, 0.1, 0.1}
-	self.ColorDefaults.DataBars.AzeriteColor = {0.901, 0.8, 0.601}
-	self.ColorDefaults.DataBars.ExperienceColor = {0.6, 0.3, 0.8}
-	self.ColorDefaults.DataBars.RestedColor = {0.3, 0.6, 0.8}
 	self.ColorDefaults.General.TexturesColor = {0.9, 0.9, 0.9}
-	self.ColorDefaults.Nameplates.BadColor = {0.78, 0.25, 0.25}
-	self.ColorDefaults.Nameplates.GoodColor = {75/255, 175/255, 76/255}
-	self.ColorDefaults.Nameplates.BadTransition = {235/255, 163/255, 40/255}
-	self.ColorDefaults.Nameplates.GoodTransition = {218/255, 197/255, 92/255}
-	self.ColorDefaults.Nameplates.TankedByTankColor = {0.8, 0.1, 1}
-	self.ColorDefaults.HealthPrediction.Absorbs = {1, 1, 0, 0.25}
-	self.ColorDefaults.HealthPrediction.HealAbsorbs = {1, 0, 0, 0.25}
-	self.ColorDefaults.HealthPrediction.Others = {0, 1, 0, 0.25}
-	self.ColorDefaults.HealthPrediction.Personal = {0, 1, 0.5, 0.25}
-	self.ColorDefaults.Unitframe.CastbarTicksColor = {0, 0, 0, 0.8}
+
+	self.ColorDefaults.DataBars.AzeriteColor = {.901, .8, .601}
+	self.ColorDefaults.DataBars.ExperienceColor = {0, 0.4, 1, .8}
+	self.ColorDefaults.DataBars.HonorColor = {240/255, 114/255, 65/255}
+
+	self.ColorDefaults.Nameplates.BadColor = {1, 0, 0}
+	self.ColorDefaults.Nameplates.GoodColor = {0.2, 0.8, 0.2}
+	self.ColorDefaults.Nameplates.HighlightColor = {1, 1, 0}
+	self.ColorDefaults.Nameplates.NearColor = {1, 1, 0}
+	self.ColorDefaults.Nameplates.OffTankColor = {0, 0.5, 1}
 end
 
 -- Filter unwanted groups
@@ -140,6 +121,12 @@ KkthnxUIConfig.Filter = {
 	["OrderedIndex"] = true,
 }
 
+local function TrimHex(s)
+	local Subbed = string.match(s, "|c%x%x%x%x%x%x%x%x(.-)|r")
+
+	return Subbed or s
+end
+
 local function GetOrderedIndex(t)
 	local OrderedIndex = {}
 
@@ -147,34 +134,32 @@ local function GetOrderedIndex(t)
 		table_insert(OrderedIndex, key)
 	end
 
-	table_sort(OrderedIndex)
+	table_sort(OrderedIndex, function(a, b)
+		return TrimHex(a) < TrimHex(b)
+	end)
 
 	return OrderedIndex
 end
 
 local function OrderedNext(t, state)
+	local OrderedIndex = GetOrderedIndex(t)
 	local Key
 
 	if (state == nil) then
-		t.OrderedIndex = GetOrderedIndex(t)
-		Key = t.OrderedIndex[1]
+		Key = OrderedIndex[1]
 
 		return Key, t[Key]
 	end
 
-	Key = nil
-
-	for i = 1, #t.OrderedIndex do
-		if (t.OrderedIndex[i] == state) then
-			Key = t.OrderedIndex[i + 1]
+	for i = 1, #OrderedIndex do
+		if (OrderedIndex[i] == state) then
+			Key = OrderedIndex[i + 1]
 		end
 	end
 
 	if Key then
 		return Key, t[Key]
 	end
-
-	t.OrderedIndex = nil
 
 	return
 end
@@ -398,11 +383,11 @@ local function AddListItems(self, info)
 		Text:SetPoint("LEFT", Button, 4, 0)
 
 		if (Type ~= "Font") then
-			local K, C = KkthnxUI[1], KkthnxUI[2]
+			local C = KkthnxUI[2]
 
 			Text:SetFont(C["Media"].Font, 12)
-			Text:SetShadowColor(0, 0, 0, 1)
-			Text:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+			Text:SetShadowColor(0, 0, 0)
+			Text:SetShadowOffset(s, -s/2)
 		else
 			Text:SetFontObject(Value)
 		end
@@ -516,7 +501,7 @@ local function SliderOnMouseWheel(self, delta)
 end
 
 local function CreateConfigButton(parent, group, option, value)
-	local K, C = KkthnxUI[1], KkthnxUI[2]
+	local C = KkthnxUI[2]
 
 	local Button = CreateFrame("Button", nil, parent)
 	Button:CreateBorder()
@@ -538,8 +523,8 @@ local function CreateConfigButton(parent, group, option, value)
 	Button.Label = Button:CreateFontString(nil, "OVERLAY")
 	Button.Label:SetFont(C["Media"].Font, 12)
 	Button.Label:SetPoint("LEFT", Button, "RIGHT", 5, 0)
-	Button.Label:SetShadowColor(0, 0, 0, 1)
-	Button.Label:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+	Button.Label:SetShadowColor(0, 0, 0)
+	Button.Label:SetShadowOffset(s, -s/2)
 
 	if value then
 		Button:Check()
@@ -551,7 +536,7 @@ local function CreateConfigButton(parent, group, option, value)
 end
 
 local function CreateConfigEditBox(parent, group, option, value, max)
-	local K, C = KkthnxUI[1], KkthnxUI[2]
+	local C = KkthnxUI[2]
 
 	local EditBox = CreateFrame("Frame", nil, parent)
 	EditBox:SetSize(50, 18)
@@ -561,8 +546,7 @@ local function CreateConfigEditBox(parent, group, option, value, max)
 
 	EditBox.Box = CreateFrame("EditBox", nil, EditBox)
 	EditBox.Box:SetFont(C["Media"].Font, 12)
-	EditBox.Box:SetShadowColor(0, 0, 0, 1)
-	EditBox.Box:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+	EditBox.Box:SetShadowOffset(s, -s/2)
 	EditBox.Box:SetPoint("TOPLEFT", EditBox, 4, -2)
 	EditBox.Box:SetPoint("BOTTOMRIGHT", EditBox, -4, 2)
 	EditBox.Box:SetMaxLetters(max or 4)
@@ -584,8 +568,8 @@ local function CreateConfigEditBox(parent, group, option, value, max)
 	EditBox.Label = EditBox:CreateFontString(nil, "OVERLAY")
 	EditBox.Label:SetFont(C["Media"].Font, 12)
 	EditBox.Label:SetPoint("LEFT", EditBox, "RIGHT", 5, 0)
-	EditBox.Label:SetShadowColor(0, 0, 0, 1)
-	EditBox.Label:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+	EditBox.Label:SetShadowColor(0, 0, 0)
+	EditBox.Label:SetShadowOffset(s, -s/2)
 
 	EditBox.Box.Group = group
 	EditBox.Box.Option = option
@@ -655,8 +639,8 @@ local function CreateConfigColorPicker(parent, group, option, value)
 	Button.Name = Button:CreateFontString(nil, "OVERLAY")
 	Button.Name:SetFont(C["Media"].Font, 12)
 	Button.Name:SetPoint("CENTER", Button)
-	Button.Name:SetShadowColor(0, 0, 0, 1)
-	Button.Name:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+	Button.Name:SetShadowColor(0, 0, 0)
+	Button.Name:SetShadowOffset(s, -s/2)
 	Button.Name:SetText(COLOR)
 
 	Button.Color = Button:CreateTexture(nil, "OVERLAY")
@@ -667,8 +651,8 @@ local function CreateConfigColorPicker(parent, group, option, value)
 	Button.Label = Button:CreateFontString(nil, "OVERLAY")
 	Button.Label:SetFont(C["Media"].Font, 12)
 	Button.Label:SetPoint("LEFT", Button, "RIGHT", 5, 0)
-	Button.Label:SetShadowColor(0, 0, 0, 1)
-	Button.Label:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+	Button.Label:SetShadowColor(0, 0, 0)
+	Button.Label:SetShadowOffset(s, -s/2)
 
 	return Button
 end
@@ -707,12 +691,12 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 		DropDown.CurrentTex = CurrentTex
 
 		Current:SetFont(C["Media"].Font, 12)
-		Current:SetShadowColor(0, 0, 0, 1)
-		Current:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+		Current:SetShadowColor(0, 0, 0)
+		Current:SetShadowOffset(s, -s/2)
 	elseif (type == "Custom") then
 		Current:SetFont(C["Media"].Font, 12)
 		Current:SetShadowColor(0, 0, 0)
-		Current:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+		Current:SetShadowOffset(s, -s/2)
 	end
 
 	local Button = CreateFrame("Button", nil, DropDown)
@@ -730,8 +714,8 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 
 	local Label = DropDown:CreateFontString(nil, "OVERLAY")
 	Label:SetFont(C["Media"].Font, 12)
-	Label:SetShadowColor(0, 0, 0, 1)
-	Label:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+	Label:SetShadowColor(0, 0, 0)
+	Label:SetShadowOffset(s, -s/2)
 	Label:SetPoint("LEFT", DropDown, "RIGHT", 5, 0)
 
 	local List = CreateFrame("Frame", nil, UIParent)
@@ -934,7 +918,6 @@ local function ShowGroup(group)
 	end
 
 	GroupPages[group]:Show()
-
 	do
 		local msg = KkthnxUIConfig
 		and KkthnxUIConfig[Locale]
@@ -943,7 +926,6 @@ local function ShowGroup(group)
 		or group
 		KkthnxUIConfigFrameTitle.Text:SetText(msg)
 	end
-
 	-- KkthnxUIConfigFrameTitle.Text:SetText(KkthnxUIConfig[Locale]["GroupNames"][group] or group)
 	KkthnxUIConfigFrameTitle.Text:SetTextColor(68 / 255, 136 / 255, 255 / 255)
 
@@ -977,7 +959,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	local Height = (12 + (NumGroups * 20) + ((NumGroups - 1) * 4)) -- Padding + (NumButtons * ButtonSize) + ((NumButtons - 1) * ButtonSpacing)
 
 	local ConfigFrame = CreateFrame("Frame", "KkthnxUIConfigFrame", UIParent)
-	ConfigFrame:SetSize(606, Height)
+	ConfigFrame:SetSize(636, Height)
 	ConfigFrame:SetPoint("CENTER")
 	ConfigFrame:SetFrameStrata("HIGH")
 
@@ -990,13 +972,13 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	local LeftWindow = CreateFrame("Frame", "KkthnxUIConfigFrameLeft", ConfigFrame)
 	LeftWindow:CreateBorder()
-	LeftWindow:SetSize(169, Height)
+	LeftWindow:SetSize(170, Height)
 	LeftWindow:SetPoint("LEFT", ConfigFrame, 0, 0)
 	LeftWindow:EnableMouse(true)
 
 	local RightWindow = CreateFrame("Frame", "KkthnxUIConfigFrameRight", ConfigFrame)
 	RightWindow:CreateBorder()
-	RightWindow:SetSize(430, Height)
+	RightWindow:SetSize(460, Height)
 	RightWindow:SetPoint("RIGHT", ConfigFrame, 0, 0)
 	RightWindow:EnableMouse(true)
 
@@ -1009,8 +991,8 @@ function KkthnxUIConfig:CreateConfigWindow()
 	TitleFrame.Text = TitleFrame:CreateFontString(nil, "OVERLAY")
 	TitleFrame.Text:SetFont(C["Media"].Font, 16)
 	TitleFrame.Text:SetPoint("CENTER", TitleFrame, 0, 0)
-	TitleFrame.Text:SetShadowColor(0, 0, 0, 1)
-	TitleFrame.Text:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+	TitleFrame.Text:SetShadowColor(0, 0, 0)
+	TitleFrame.Text:SetShadowOffset(s, -s/2)
 
 	local InfoFrame = CreateFrame("Frame", "KkthnxUIConfigFrameCredit", ConfigFrame)
 	InfoFrame:CreateBorder()
@@ -1020,14 +1002,13 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	InfoFrame.Text = InfoFrame:CreateFontString(nil, "OVERLAY")
 	InfoFrame.Text:SetFont(C["Media"].Font, 14)
-	InfoFrame.Text:SetShadowColor(0, 0, 0, 1)
-	InfoFrame.Text:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
-	InfoFrame.Text:SetText("Welcome to |cff4488ffKkthnxUI|r v" .. K.Version .. " " .. K.Client .. ", " .. string_format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name))
+	InfoFrame.Text:SetShadowOffset(s, -s/2)
+	InfoFrame.Text:SetText("Welcome to |cff4488ffKkthnxUI|r v"..K.Version.." "..K.Client..", "..K.MyClassColor..K.Name)
 	InfoFrame.Text:SetPoint("CENTER", InfoFrame, 0, 0)
 
 	local CloseButton = CreateFrame("Button", nil, InfoFrame)
 	CloseButton:SkinButton()
-	CloseButton:SetSize(186, 22)
+	CloseButton:SetSize(624/3, 22)
 	CloseButton:SetScript("OnClick", function()
 		ConfigFrame:Hide()
 	end)
@@ -1036,15 +1017,14 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	CloseButton.Text = CloseButton:CreateFontString(nil, "OVERLAY")
 	CloseButton.Text:SetFont(C["Media"].Font, 12)
-	CloseButton.Text:SetShadowColor(0, 0, 0, 1)
-	CloseButton.Text:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+	CloseButton.Text:SetShadowOffset(s, -s/2)
 	CloseButton.Text:SetPoint("CENTER", CloseButton)
 	CloseButton.Text:SetTextColor(1, 0, 0)
-	CloseButton.Text:SetText("|cffFF0000" .. CLOSE .. "|r")
+	CloseButton.Text:SetText("|cffFF0000"..CLOSE.."|r")
 
 	local ReloadButton = CreateFrame("Button", nil, InfoFrame)
 	ReloadButton:SkinButton()
-	ReloadButton:SetSize(222, 22)
+	ReloadButton:SetSize(624/3, 22)
 	ReloadButton:SetScript("OnClick", function()
 		ReloadUI()
 	end)
@@ -1053,14 +1033,13 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	ReloadButton.Text = ReloadButton:CreateFontString(nil, "OVERLAY")
 	ReloadButton.Text:SetFont(C["Media"].Font, 12)
-	ReloadButton.Text:SetShadowColor(0, 0, 0, 1)
-	ReloadButton.Text:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+	ReloadButton.Text:SetShadowOffset(s, -s/2)
 	ReloadButton.Text:SetPoint("CENTER", ReloadButton)
-	ReloadButton.Text:SetText("|cff00FF00" .. APPLY .. "|r")
+	ReloadButton.Text:SetText("|cff00FF00"..APPLY.."|r")
 
 	local GlobalButton = CreateFrame("Button", nil, InfoFrame)
 	GlobalButton:SkinButton()
-	GlobalButton:SetSize(186, 22)
+	GlobalButton:SetSize(624/3, 22)
 	GlobalButton:SetScript("OnClick", function()
 		if not KkthnxUIConfigPerAccount then
 			KkthnxUIConfigPerAccount = true
@@ -1076,50 +1055,46 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	GlobalButton.Text = GlobalButton:CreateFontString(nil, "OVERLAY")
 	GlobalButton.Text:SetFont(C["Media"].Font, 12)
-	GlobalButton.Text:SetShadowColor(0, 0, 0, 1)
-	GlobalButton.Text:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+	GlobalButton.Text:SetShadowOffset(s, -s/2)
 	GlobalButton.Text:SetPoint("CENTER", GlobalButton)
-	GlobalButton.Text:SetText("|cffffd100" .. SettingText .. "|r")
+	GlobalButton.Text:SetText("|cffffd100"..SettingText.."|r")
 
 	local ResetCVarsButton = CreateFrame("Button", nil, InfoFrame)
 	ResetCVarsButton:SkinButton()
-	ResetCVarsButton:SetSize(186, 22)
+	ResetCVarsButton:SetSize(624/3, 22)
 	ResetCVarsButton:SetScript("OnClick", K["Install"].Step1)
 	ResetCVarsButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	ResetCVarsButton:SetPoint("TOP", CloseButton, "BOTTOM", 0, -6)
 
 	ResetCVarsButton.Text = ResetCVarsButton:CreateFontString(nil, "OVERLAY")
 	ResetCVarsButton.Text:SetFont(C["Media"].Font, 12)
-	ResetCVarsButton.Text:SetShadowColor(0, 0, 0, 1)
-	ResetCVarsButton.Text:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+	ResetCVarsButton.Text:SetShadowOffset(s, -s/2)
 	ResetCVarsButton.Text:SetPoint("CENTER", ResetCVarsButton)
-	ResetCVarsButton.Text:SetText("|cffffd100" .. L["Reset CVars"] .. "|r")
+	ResetCVarsButton.Text:SetText("|cffffd100"..L["Reset CVars"].."|r")
 
 	local ResetChatButton = CreateFrame("Button", nil, InfoFrame)
 	ResetChatButton:SkinButton()
-	ResetChatButton:SetSize(222, 22)
+	ResetChatButton:SetSize(624/3, 22)
 	ResetChatButton:SetScript("OnClick", K["Install"].Step2)
 	ResetChatButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	ResetChatButton:SetPoint("TOP", ReloadButton, "BOTTOM", 0, -6)
 
 	ResetChatButton.Text = ResetChatButton:CreateFontString(nil, "OVERLAY")
 	ResetChatButton.Text:SetFont(C["Media"].Font, 12)
-	ResetChatButton.Text:SetShadowColor(0, 0, 0, 1)
-	ResetChatButton.Text:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+	ResetChatButton.Text:SetShadowOffset(s, -s/2)
 	ResetChatButton.Text:SetPoint("CENTER", ResetChatButton)
-	ResetChatButton.Text:SetText("|cffffd100" .. L["Reset Chat"] .. "|r")
+	ResetChatButton.Text:SetText("|cffffd100"..L["Reset Chat"].."|r")
 
 	local ResetButton = CreateFrame("Button", nil, InfoFrame)
 	ResetButton:SkinButton()
-	ResetButton:SetSize(186, 22)
+	ResetButton:SetSize(624/3, 22)
 	ResetButton:SetScript("OnClick", K["Install"].ResetData)
 	ResetButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	ResetButton:SetPoint("TOP", GlobalButton, "BOTTOM", 0, -6)
 
 	ResetButton.Text = ResetButton:CreateFontString(nil, "OVERLAY")
 	ResetButton.Text:SetFont(C["Media"].Font, 12)
-	ResetButton.Text:SetShadowColor(0, 0, 0, 1)
-	ResetButton.Text:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+	ResetButton.Text:SetShadowOffset(s, -s/2)
 	ResetButton.Text:SetPoint("CENTER", ResetButton)
 	ResetButton.Text:SetText("|cffFF0000"..RESET_TO_DEFAULT.."|r")
 
@@ -1147,15 +1122,15 @@ function KkthnxUIConfig:CreateConfigWindow()
 			local GroupHeight = 8 + (NumOptions * 25)
 
 			local GroupPage = CreateFrame("Frame", nil, ConfigFrame)
-			GroupPage:SetSize(430, Height)
+			GroupPage:SetSize(460, Height)
 			GroupPage:SetPoint("TOPRIGHT", ConfigFrame)
 			GroupPage.Controls = {}
 
 			if (GroupHeight > Height) then
-				GroupPage:SetSize(430, GroupHeight)
+				GroupPage:SetSize(460, GroupHeight)
 
 				local ScrollFrame = CreateFrame("ScrollFrame", nil, RightWindow)
-				ScrollFrame:SetSize(430, Height)
+				ScrollFrame:SetSize(460, Height)
 				ScrollFrame:SetAllPoints(RightWindow, 0, 4)
 				ScrollFrame:SetScrollChild(GroupPage)
 				ScrollFrame:SetClipsChildren(true) -- https://www.wowinterface.com/forums/showthread.php?t=55664
@@ -1209,8 +1184,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 			Button.Text = Button:CreateFontString(nil, "OVERLAY")
 			Button.Text:SetFont(C["Media"].Font, 12)
-			Button.Text:SetShadowColor(0, 0, 0, 1)
-			Button.Text:SetShadowOffset(K.Mult or 1, -K.Mult or -1 / 2)
+			Button.Text:SetShadowOffset(s, -s/2)
 			Button.Text:SetPoint("CENTER", Button)
 			do
 				local msg = KkthnxUIConfig

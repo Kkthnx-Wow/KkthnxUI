@@ -1,4 +1,3 @@
-local ADDON = ...
 local K, C = unpack(select(2, ...))
 
 -- Sourced: oUF_Phanx (Phanx)
@@ -15,7 +14,7 @@ local borderLayer = "OVERLAY"
 local borderLevel = 1
 local borderOffset = 4
 local borderSize = 16
-local borderPath = [[Interface\AddOns\]] .. ADDON .. [[\Media\Border\Border.tga]]
+local borderPath = C["Media"].Border
 
 -- Local cache of our borders
 -- *We don't expose these directly to the modules,

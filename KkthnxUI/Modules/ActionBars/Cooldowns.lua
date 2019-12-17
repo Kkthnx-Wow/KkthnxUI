@@ -15,7 +15,7 @@ local hooksecurefunc = _G.hooksecurefunc
 local SetCVar = _G.SetCVar
 
 local FONT_SIZE = 19
-local MIN_DURATION = 2.5 -- the minimum duration to show cooldown text for
+local MIN_DURATION = 2 -- the minimum duration to show cooldown text for
 local MIN_SCALE = 0.5 -- the minimum scale we want to show cooldown counts at, anything below this will be hidden
 local ICON_SIZE = 36
 

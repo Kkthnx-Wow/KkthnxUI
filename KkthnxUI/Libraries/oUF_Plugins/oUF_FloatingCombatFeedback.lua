@@ -1,28 +1,36 @@
--- oUF_FloatingCombatFeedback, by lightspark
--- KkthnxUI MOD
 local _, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, "oUF FloatingCombatFeedback was unable to locate oUF install")
 
-local _G = getfenv(0)
+local _G = _G
 local select, tremove, tinsert, wipe = _G.select, _G.table.remove, _G.table.insert, _G.table.wipe
-local m_cos, m_sin, m_pi, m_random = _G.math.cos, _G.math.sin, _G.math.pi, _G.math.random
+local m_cos, m_sin, m_pi, m_random, bit_bor = _G.math.cos, _G.math.sin, _G.math.pi, _G.math.random, _G.bit.bor
+local strupper = _G.strupper
 
-local UnitGUID = _G.UnitGUID
-local GetSpellTexture = _G.GetSpellTexture
+local ATTACK = _G.ATTACK
 local BreakUpLargeNumbers = _G.BreakUpLargeNumbers
+local COMBATLOG_OBJECT_AFFILIATION_MINE = _G.COMBATLOG_OBJECT_AFFILIATION_MINE
+local COMBATLOG_OBJECT_CONTROL_PLAYER = _G.COMBATLOG_OBJECT_CONTROL_PLAYER
+local COMBATLOG_OBJECT_REACTION_FRIENDLY = _G.COMBATLOG_OBJECT_REACTION_FRIENDLY
+local COMBATLOG_OBJECT_TYPE_GUARDIAN = _G.COMBATLOG_OBJECT_TYPE_GUARDIAN
+local COMBATLOG_OBJECT_TYPE_PET = _G.COMBATLOG_OBJECT_TYPE_PET
 local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
 local ENTERING_COMBAT = _G.ENTERING_COMBAT
+local GetSpellTexture = _G.GetSpellTexture
 local LEAVING_COMBAT = _G.LEAVING_COMBAT
 local PET_ATTACK_TEXTURE = _G.PET_ATTACK_TEXTURE
+local SCHOOL_MASK_ARCANE = _G.SCHOOL_MASK_ARCANE or 0x40
+local SCHOOL_MASK_FIRE = _G.SCHOOL_MASK_FIRE or 0x04
+local SCHOOL_MASK_FROST = _G.SCHOOL_MASK_FROST or 0x10
+local SCHOOL_MASK_HOLY = _G.SCHOOL_MASK_HOLY or 0x02
+local SCHOOL_MASK_NATURE = _G.SCHOOL_MASK_NATURE or 0x08
 local SCHOOL_MASK_NONE = _G.SCHOOL_MASK_NONE or 0x00
 local SCHOOL_MASK_PHYSICAL = _G.SCHOOL_MASK_PHYSICAL or 0x01
-local SCHOOL_MASK_HOLY = _G.SCHOOL_MASK_HOLY or 0x02
-local SCHOOL_MASK_FIRE = _G.SCHOOL_MASK_FIRE or 0x04
-local SCHOOL_MASK_NATURE = _G.SCHOOL_MASK_NATURE or 0x08
-local SCHOOL_MASK_FROST = _G.SCHOOL_MASK_FROST or 0x10
 local SCHOOL_MASK_SHADOW = _G.SCHOOL_MASK_SHADOW or 0x20
-local SCHOOL_MASK_ARCANE = _G.SCHOOL_MASK_ARCANE or 0x40
+local UnitGUID = _G.UnitGUID
+
+local MyPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_MINE, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
+local GuardianFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_MINE, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_GUARDIAN)
 
 local function clamp(v)
 	if v > 1 then
@@ -84,7 +92,7 @@ end
 local animations = {
 	["fountain"] = function(self)
 		return self.x + self.xDirection * self.radius * (1 - m_cos(m_pi / 2 * self.progress)),
-		self.y + self.yDirection * self.radius * m_sin(m_pi / 2 * self.progress)
+			self.y + self.yDirection * self.radius * m_sin(m_pi / 2 * self.progress)
 	end,
 	["vertical"] = function(self)
 		return self.x, self.y + self.yDirection * self.radius * self.progress
@@ -94,7 +102,7 @@ local animations = {
 	end,
 	["diagonal"] = function(self)
 		return self.x + self.xDirection * self.radius * self.progress,
-		self.y + self.yDirection * self.radius * self.progress
+			self.y + self.yDirection * self.radius * self.progress
 	end,
 	["static"] = function(self)
 		return self.x, self.y
@@ -109,21 +117,21 @@ local animations = {
 }
 
 local xOffsetsByAnimation = {
-	["diagonal" ] = 24,
-	["fountain" ] = 24,
+	["diagonal"  ] = 24,
+	["fountain"  ] = 24,
 	["horizontal"] = 8,
-	["random" ] = 0,
-	["static" ] = 0,
-	["vertical" ] = 50,
+	["random"    ] = 0,
+	["static"    ] = 0,
+	["vertical"  ] = 50,
 }
 
 local yOffsetsByAnimation = {
-	["diagonal" ] = 8,
-	["fountain" ] = 8,
+	["diagonal"  ] = 8,
+	["fountain"  ] = 8,
 	["horizontal"] = 8,
-	["random" ] = 0,
-	["static" ] = 0,
-	["vertical" ] = 8,
+	["random"    ] = 0,
+	["static"    ] = 0,
+	["vertical"  ] = 8,
 }
 
 local function onUpdate(self, elapsed)
@@ -221,10 +229,10 @@ end
 
 local function formatNumber(self, amount)
 	local element = self.FloatingCombatFeedback
-	local K = KkthnxUI[1]
+	local KKUI = KkthnxUI[1]
 
 	if element.abbreviateNumbers then
-		return K.ShortValue(amount)
+		return KKUI.ShortValue(amount)
 	else
 		return BreakUpLargeNumbers(amount)
 	end
@@ -249,8 +257,8 @@ local function onEvent(self, event, ...)
 		local isPlayer = playerGUID == sourceGUID
 		local atTarget = UnitGUID("target") == destGUID
 		local atPlayer = playerGUID == destGUID
-		local isVehicle = element.showPets and sourceFlags == bit.bor(COMBATLOG_OBJECT_AFFILIATION_MINE, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_GUARDIAN)
-		local isPet = element.showPets and sourceFlags == bit.bor(COMBATLOG_OBJECT_AFFILIATION_MINE, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
+		local isVehicle = element.showPets and sourceFlags == GuardianFlags
+		local isPet = element.showPets and sourceFlags == MyPetFlags
 
 		if (unit == "target" and (isPlayer or isPet or isVehicle) and atTarget) or (unit == "player" and atPlayer) then
 			local value = eventFilter[eventType]

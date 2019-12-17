@@ -2,11 +2,12 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Blizzard")
 
 local _G = _G
-local math_min = math.min
+local math_min = _G.math.min
 
-local hooksecurefunc = _G.hooksecurefunc
-local GetScreenWidth = _G.GetScreenWidth
 local GetScreenHeight = _G.GetScreenHeight
+local GetScreenWidth = _G.GetScreenWidth
+local RegisterStateDriver = _G.RegisterStateDriver
+local hooksecurefunc = _G.hooksecurefunc
 
 function Module:SetObjectiveFrameHeight()
 	local top = ObjectiveTrackerFrame:GetTop() or 0
@@ -85,8 +86,8 @@ function Module:MoveObjectiveFrame()
 	]])
 
 	ObjectiveTrackerFrame.AutoHider:SetScript("OnHide", function()
-		local _, _, difficulty = GetInstanceInfo()
-		if difficulty ~= 8 then
+		local _, _, difficultyID = GetInstanceInfo()
+		if difficultyID and difficultyID ~= 8 then
 			_G.ObjectiveTracker_Collapse()
 		end
 	end)

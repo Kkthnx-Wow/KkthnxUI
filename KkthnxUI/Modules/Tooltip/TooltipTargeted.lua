@@ -15,7 +15,6 @@ local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitName = _G.UnitName
 
 local targetTable = {}
-
 function Module:ScanTargets()
 	if not C["Tooltip"].TargetBy then
 		return

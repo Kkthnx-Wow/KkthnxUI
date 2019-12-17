@@ -1,4 +1,4 @@
-local _, C = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 
 -- Prevent Users Config Errors And Using Other UIs Over Mine.
 
@@ -6,12 +6,11 @@ local _G = _G
 
 local DisableAddOn = _G.DisableAddOn
 local ReloadUI = _G.ReloadUI
-local IsAddOnLoaded = _G.IsAddOnLoaded
 local StaticPopupDialogs = _G.StaticPopupDialogs
 local StaticPopup_Show = _G.StaticPopup_Show
 
 -- Force User To Disable Kkthnxui If Another Addon Is Enabled With It!
-if IsAddOnLoaded("KkthnxUI") and IsAddOnLoaded("Tukui") or IsAddOnLoaded("ElvUI") or IsAddOnLoaded("DiabolicUI") or IsAddOnLoaded("DuffedUI") or IsAddOnLoaded("ShestakUI") then
+if K.CheckAddOnState("KkthnxUI") and K.CheckAddOnState("Tukui") or K.CheckAddOnState("ElvUI") or K.CheckAddOnState("DiabolicUI") or K.CheckAddOnState("DuffedUI") or K.CheckAddOnState("ShestakUI") then
 	StaticPopupDialogs.KKTHNXUI_INCOMPATIBLE = {
 		text = "Oh no, you have |cff4488ffKkthnxUI|r and another UserInterface enabled at the same time. Disable KkthnxUI!",
 		button1 = "Disable KkthnxUI",
@@ -42,98 +41,93 @@ if C["DataBars"].Enable == false then
 	C["DataBars"].TrackHonor = false
 end
 
-if IsAddOnLoaded("flyPlateBuffs") then
+if K.CheckAddOnState("flyPlateBuffs") then
 	C["Nameplates"].TrackAuras = false
 end
 
-if IsAddOnLoaded("SexyMap")
-or IsAddOnLoaded("bdMinimap")
-or IsAddOnLoaded("BasicMinimap")
-or IsAddOnLoaded("RicoMiniMap")
-or IsAddOnLoaded("Chinchilla") then
+if K.CheckAddOnState("SexyMap")
+or K.CheckAddOnState("bdMinimap")
+or K.CheckAddOnState("BasicMinimap")
+or K.CheckAddOnState("RicoMiniMap")
+or K.CheckAddOnState("Chinchilla") then
 	C["Minimap"].Enable = false
 end
 
-if IsAddOnLoaded("XPerl")
-or IsAddOnLoaded("Stuf")
-or IsAddOnLoaded("PitBull4")
-or IsAddOnLoaded("ShadowedUnitFrames") then
+if K.CheckAddOnState("XPerl")
+or K.CheckAddOnState("Stuf")
+or K.CheckAddOnState("PitBull4")
+or K.CheckAddOnState("ShadowedUnitFrames") then
 	C["Unitframe"].Enable = false
 	C["Party"].Enable = false
 	C["Arena"].Enable = false
 	C["Boss"].Enable = false
 end
 
-if IsAddOnLoaded("Dominos")
-or IsAddOnLoaded("Bartender4")
-or IsAddOnLoaded("RazerNaga")
-or IsAddOnLoaded("daftMainBar")
-or (IsAddOnLoaded("ConsolePortBar") and IsAddOnLoaded("ConsolePort")) then -- We Have To Check For Main Consoleport Addon Too.
+if K.CheckAddOnState("Dominos")
+or K.CheckAddOnState("Bartender4")
+or K.CheckAddOnState("RazerNaga")
+or K.CheckAddOnState("daftMainBar")
+or (K.CheckAddOnState("ConsolePortBar") and K.CheckAddOnState("ConsolePort")) then -- We Have To Check For Main Consoleport Addon Too.
 	C["DataBars"].Enable = false
 	C["ActionBar"].Enable = false
 	C["ActionBar"].MicroBar = false
 	C["Inventory"].BagBar = false
 end
 
-if IsAddOnLoaded("Mapster")
-or IsAddOnLoaded("WorldQuestsList") then
+if K.CheckAddOnState("Mapster") then
 	C["WorldMap"].SmallWorldMap = false
 end
 
-if IsAddOnLoaded("AdiBags")
-or IsAddOnLoaded("ArkInventory")
-or IsAddOnLoaded("cargBags_Nivaya")
-or IsAddOnLoaded("cargBags")
-or IsAddOnLoaded("Bagnon")
-or IsAddOnLoaded("Combuctor")
-or IsAddOnLoaded("TBag")
-or IsAddOnLoaded("BaudBag") then
+if K.CheckAddOnState("AdiBags")
+or K.CheckAddOnState("ArkInventory")
+or K.CheckAddOnState("cargBags_Nivaya")
+or K.CheckAddOnState("cargBags")
+or K.CheckAddOnState("Bagnon")
+or K.CheckAddOnState("Combuctor")
+or K.CheckAddOnState("TBag")
+or K.CheckAddOnState("BaudBag") then
 	C["Inventory"].Enable = false
 end
 
-if IsAddOnLoaded("Prat-3.0")
-or IsAddOnLoaded("Chatter") then
+if K.CheckAddOnState("Prat-3.0")
+or K.CheckAddOnState("Chatter") then
 	C["Chat"].Enable = false
 end
 
-if IsAddOnLoaded("TidyPlates")
-or IsAddOnLoaded("Aloft")
-or IsAddOnLoaded("Kui_Nameplates")
-or IsAddOnLoaded("bdNameplates")
-or IsAddOnLoaded("Plater")
-or IsAddOnLoaded("NiceNameplates") then
+if K.CheckAddOnState("TidyPlates")
+or K.CheckAddOnState("Aloft")
+or K.CheckAddOnState("Kui_Nameplates")
+or K.CheckAddOnState("bdNameplates")
+or K.CheckAddOnState("Plater")
+or K.CheckAddOnState("NiceNameplates") then
 	C["Nameplates"].Enable = false
 end
 
-if IsAddOnLoaded("TipTop")
-or IsAddOnLoaded("TipTac")
-or IsAddOnLoaded("FreebTip")
-or IsAddOnLoaded("bTooltip")
-or IsAddOnLoaded("PhoenixTooltip")
-or IsAddOnLoaded("Icetip")
-or IsAddOnLoaded("rTooltip") then
+if K.CheckAddOnState("TipTop")
+or K.CheckAddOnState("TipTac")
+or K.CheckAddOnState("FreebTip")
+or K.CheckAddOnState("bTooltip")
+or K.CheckAddOnState("PhoenixTooltip")
+or K.CheckAddOnState("Icetip")
+or K.CheckAddOnState("rTooltip") then
 	C["Tooltip"].Enable = false
 end
 
-if IsAddOnLoaded("TipTacTalents") then
-	C["Tooltip"].Talents = false
-end
-
-if IsAddOnLoaded("NiceBubbles") then
+if K.CheckAddOnState("NiceBubbles") then
 	C["Skins"].ChatBubble = false
 end
 
-if IsAddOnLoaded("ChatSounds") then
+if K.CheckAddOnState("ChatSounds") then
 	C["Chat"].WhispSound = false
 end
 
-if IsAddOnLoaded("MBB")
-or IsAddOnLoaded("MinimapButtonFrame") then
-	C["Minimap"].CollectButtons = false
+if K.CheckAddOnState("MBB")
+or K.CheckAddOnState("MinimapButtonFrame") then
+	C["Minimap"].ShowRecycleBin = false
 end
 
-if IsAddOnLoaded("OmniCC")
-or IsAddOnLoaded("ncCooldown")
-or IsAddOnLoaded("CooldownCount") then
+if K.CheckAddOnState("OmniCC")
+or K.CheckAddOnState("ncCooldown")
+or K.CheckAddOnState("CooldownCount") then
 	C["ActionBar"].Cooldowns = false
 end

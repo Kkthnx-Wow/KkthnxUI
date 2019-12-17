@@ -26,7 +26,7 @@ local SetBinding = _G.SetBinding
 local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
 
 local bind, localmacros, frame = CreateFrame("Frame", "KkthnxUI_HoverBind", UIParent), 0
-function K.BindingUI()
+SlashCmdList["KKUI_KEYBINDS"] = function()
 	if InCombatLockdown() then
 		print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
 		return
@@ -260,7 +260,7 @@ function K.BindingUI()
 
 		function bind:Deactivate(save)
 			if save then
-				SaveBindings(KkthnxUIData[GetRealmName()][UnitName("player")].BindType)
+				AttemptToSaveBindings(KkthnxUIData[GetRealmName()][UnitName("player")].BindType)
 				print("|cffffff00"..KEY_BOUND.."|r")
 			else
 				LoadBindings(KkthnxUIData[GetRealmName()][UnitName("player")].BindType)
@@ -292,7 +292,7 @@ function K.BindingUI()
 			frame.title = frame.top:CreateFontString(nil, "OVERLAY")
 			frame.title:SetFont(C["Media"].Font, 14)
 			frame.title:SetTextColor(1, .8, 0)
-			frame.title:SetShadowOffset(1.25, -1.25)
+			frame.title:SetShadowOffset(1, -1)
 			frame.title:SetPoint("CENTER")
 			frame.title:SetText(K.Title.." "..KEY_BINDING)
 
@@ -305,7 +305,7 @@ function K.BindingUI()
 			frame.text:SetFont(C["Media"].Font, 12)
 			frame.text:SetWidth(314)
 			frame.text:SetTextColor(1, .8, 0)
-			frame.text:SetShadowOffset(1.25, -1.25)
+			frame.text:SetShadowOffset(1, -1)
 			frame.text:SetPoint("TOP", 0, -15)
 			frame.text:SetText(L["Keybind Mode"])
 
@@ -320,7 +320,7 @@ function K.BindingUI()
 
 			button1.text = button1:CreateFontString(nil, "OVERLAY")
 			button1.text:SetFont(C["Media"].Font, 12)
-			button1.text:SetShadowOffset(1.25, -1.25)
+			button1.text:SetShadowOffset(1, -1)
 			button1.text:SetPoint("CENTER", button1)
 			button1.text:SetText(APPLY)
 
@@ -335,7 +335,7 @@ function K.BindingUI()
 
 			button2.text = button2:CreateFontString(nil, "OVERLAY")
 			button2.text:SetFont(C["Media"].Font, 12)
-			button2.text:SetShadowOffset(1.25, -1.25)
+			button2.text:SetShadowOffset(1, -1)
 			button2.text:SetPoint("CENTER", button2)
 			button2.text:SetText(CANCEL)
 
@@ -353,7 +353,7 @@ function K.BindingUI()
 			end)
 
 			checkBox.text = frame.bottom:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-			checkBox.text:SetPoint("CENTER", 14, 1)
+			checkBox.text:SetPoint("CENTER", 14, -1)
 			checkBox.text:SetText(CHARACTER_SPECIFIC_KEYBINDINGS)
 			checkBox:SetHitRectInsets(0, 0 - checkBox.text:GetWidth(), 0, 0)
 			checkBox.text:Show()
@@ -431,14 +431,14 @@ function K.BindingUI()
 	end
 end
 
--- K:RegisterChatCommand("bindkey", K.BindingUI)
--- K:RegisterChatCommand("hoverbind", K.BindingUI)
--- K:RegisterChatCommand("bk", K.BindingUI)
+SLASH_KKUI_KEYBINDS1 = "/bindkey"
+SLASH_KKUI_KEYBINDS2 = "/hoverbind"
+SLASH_KKUI_KEYBINDS3 = "/bk"
 
--- if not K.CheckAddOnState("Bartender4") and not K.CheckAddOnState("Dominos") then
--- 	K:RegisterChatCommand("kb", K.BindingUI)
--- end
+if not K.CheckAddOnState("Bartender4") and not K.CheckAddOnState("Dominos") then
+	SLASH_KKUI_KEYBINDS4 = "/kb"
+end
 
--- if not K.CheckAddOnState("HealBot") then
--- 	K:RegisterChatCommand("hb", K.BindingUI)
--- end
+if not K.CheckAddOnState("HealBot") then
+	SLASH_KKUI_KEYBINDS5 = "/hb"
+end

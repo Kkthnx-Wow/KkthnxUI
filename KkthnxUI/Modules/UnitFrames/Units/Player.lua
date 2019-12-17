@@ -12,21 +12,6 @@ local select = select
 
 local CreateFrame = _G.CreateFrame
 
-local function PostUpdateAddPower(element, _, cur, max)
-	if element.Text and max > 0 then
-		local perc = cur / max * 100
-		if perc == 100 then
-			perc = ""
-			element:SetAlpha(0)
-		else
-			perc = string.format("%d%%", perc)
-			element:SetAlpha(1)
-		end
-
-		element.Text:SetText(perc)
-	end
-end
-
 function Module:CreatePlayer()
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
@@ -48,16 +33,28 @@ function Module:CreatePlayer()
 	self.Health.PostUpdate = C["General"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
-	self.Health.colorClass = true
-	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
+	self.Health.Smooth = C["Unitframe"].Smooth
 
-	K.SmoothBar(self.Health)
+	if C["Unitframe"].HealthbarColor.Value == "Value" then
+		self.Health.colorSmooth = true
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+	elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
+		self.Health.colorSmooth = false
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+		self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
+	else
+		self.Health.colorSmooth = false
+		self.Health.colorClass = true
+		self.Health.colorReaction = true
+	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetFontObject(UnitframeFont)
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
-	self:Tag(self.Health.Value, C["Unitframe"].PlayerHealthFormat.Value)
+	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetHeight(14)
@@ -69,13 +66,15 @@ function Module:CreatePlayer()
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = true
 
-	K.SmoothBar(self.Power)
+	if C["Unitframe"].Smooth then
+		self.Power.Smooth = true
+	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
 	self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 	self.Power.Value:SetFontObject(UnitframeFont)
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
-	self:Tag(self.Power.Value, "[KkthnxUI:PowerCurrent]")
+	self:Tag(self.Power.Value, "[power]")
 
 	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
@@ -104,21 +103,24 @@ function Module:CreatePlayer()
 	self.Health:SetPoint("TOPLEFT", self.Portrait:GetWidth() + 6, 0)
 	self.Health:SetPoint("TOPRIGHT")
 
-	if C["Unitframe"].PlayerBuffs then
+	if C["Unitframe"].PlayerAuraBars then
+		self.AuraBars = CreateFrame("Frame", self:GetName().."AuraBars", self)
+		self.AuraBars:SetHeight(18)
+		self.AuraBars:SetWidth(210)
+		self.AuraBars:SetPoint("TOPLEFT", 0, 38)
+		self.AuraBars.auraBarTexture = UnitframeTexture
+		self.AuraBars.PostCreateBar = Module.PostCreateAuraBar
+		self.AuraBars.CustomFilter = Module.CustomAuraFilter.Blacklist
+		self.AuraBars.spacing = 6
+		self.AuraBars.gap = 6
+		self.AuraBars.width = 186
+		self.AuraBars.height = 18
+
+		K.Mover(self.AuraBars, "PlayerAuraBars", "PlayerAuraBars", {"TOPLEFT", self, 0, 38})
+	elseif C["Unitframe"].PlayerBuffs then
 		self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
 
-		if K.Class == "ROGUE"
-		or K.Class == "DRUID"
-		or K.Class == "MAGE"
-		or K.Class == "MONK"
-		or K.Class == "DEATHKNIGHT"
-		or K.Class == "SHAMAN"
-		or K.Class == "PALADIN"
-		or K.Class == "WARLOCK" then
-			self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -26)
-		else
-			self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		end
+		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs:SetWidth(156)
 		self.Buffs.num = 6 * 4
 		self.Buffs.spacing = 6
@@ -129,12 +131,12 @@ function Module:CreatePlayer()
 		self.Buffs["growth-x"] = "RIGHT"
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
-		--self.Buffs.CustomFilter = Module.AurasFilter.BlackList
+		self.Buffs.CustomFilter = Module.CustomAuraFilter.Blacklist
 	end
 
 	if (C["Unitframe"].Castbars) then
 		self.Castbar = CreateFrame("StatusBar", "PlayerCastbar", self)
-		self.Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 266)
+		self.Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", 14, 200)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
 		self.Castbar:SetSize(C["Unitframe"].PlayerCastbarWidth, C["Unitframe"].PlayerCastbarHeight)
 		self.Castbar:SetClampedToScreen(true)
@@ -169,7 +171,7 @@ function Module:CreatePlayer()
 		self.Castbar.PostChannelStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
 		self.Castbar.PostChannelStop = Module.PostChannelStop
-		self.Castbar.PostCastFailed = Module.PostCastFailed
+		self.Castbar.PostCastFail = Module.PostCastFailed
 		self.Castbar.PostCastInterrupted = Module.PostCastFailed
 		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 		self.Castbar.PostCastNotInterruptible = Module.PostUpdateInterruptible
@@ -198,11 +200,10 @@ function Module:CreatePlayer()
 
 		self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
 
-		K.Mover(self.Castbar, "PlayerCastBar", "PlayerCastBar", {"BOTTOM", UIParent, "BOTTOM", 0, 266})
+		K.Mover(self.Castbar, "PlayerCastBar", "PlayerCastBar", {"BOTTOM", UIParent, "BOTTOM", 14, 200})
 	end
 
-	-- HealPredictionAndAbsorb
-	do
+	if C["Unitframe"].ShowHealPrediction then
 		local mhpb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
 		mhpb:SetWidth(1)
 		mhpb:SetTexture(HealPredictionTexture)
@@ -227,11 +228,11 @@ function Module:CreatePlayer()
 		oag:SetWidth(15)
 		oag:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
 		oag:SetBlendMode("ADD")
-		oag:SetAlpha(.7)
+		oag:SetAlpha(0.25)
 		oag:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 2)
 		oag:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -2)
 
-		local hab = CreateFrame("StatusBar", nil, self.Health)
+		local hab = CreateFrame("StatusBar", nil, self)
 		hab:SetPoint("TOP")
 		hab:SetPoint("BOTTOM")
 		hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
@@ -259,12 +260,27 @@ function Module:CreatePlayer()
 		}
 	end
 
+	if C["Unitframe"].PlayerPowerPrediction then
+		local mainBar = CreateFrame("StatusBar", self:GetName().."PowerPrediction", self.Power)
+		mainBar:SetReverseFill(true)
+		mainBar:SetPoint("TOP")
+		mainBar:SetPoint("BOTTOM")
+		mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT")
+		mainBar:SetStatusBarTexture(HealPredictionTexture)
+		mainBar:SetStatusBarColor(1, 1, 1, 0.2)
+		mainBar:SetWidth(156)
+
+		self.PowerPrediction = {
+			mainBar = mainBar
+		}
+	end
+
 	if C["Unitframe"].ShowPlayerName then
 		self.Name = self:CreateFontString(nil, "OVERLAY")
 		self.Name:SetPoint("TOP", self.Health, 0, 16)
-		self.Name:SetWidth(self.Health:GetWidth())
+		self.Name:SetWidth(156)
 		self.Name:SetFontObject(UnitframeFont)
-		self:Tag(self.Name, "[KkthnxUI:DifficultyColor][KkthnxUI:NameMedium]")
+		self:Tag(self.Name, "[color][name]")
 	end
 
 	-- Level
@@ -272,55 +288,97 @@ function Module:CreatePlayer()
 		self.Level = self:CreateFontString(nil, "OVERLAY")
 		self.Level:SetPoint("TOP", self.Portrait, 0, 15)
 		self.Level:SetFontObject(UnitframeFont)
-		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][level]")
-	end
-
-	if C["Raid"].ShowGroupText then
-		self.GroupNumber = self.Overlay:CreateFontString(nil, "OVERLAY")
-		self.GroupNumber:SetPoint("BOTTOM", self.Portrait, 0, 0)
-		self.GroupNumber:SetFontObject(UnitframeFont)
-		self.GroupNumber:SetFont(select(1, self.GroupNumber:GetFont()), 11, select(3, self.GroupNumber:GetFont()))
-		self:Tag(self.GroupNumber, "[KkthnxUI:GetNameColor][KkthnxUI:GroupNumber]")
-	end
-
-	if C["Unitframe"].AdditionalPower then
-		if K.Class == "DRUID" or K.Class == "PRIEST" or K.Class == "SHAMAN" then
-			self.AdditionalPower = CreateFrame("StatusBar", nil, self)
-			self.AdditionalPower:SetHeight(14)
-			self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
-			self.AdditionalPower:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
-			self.AdditionalPower:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
-			self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power["MANA"]))
-			self.AdditionalPower:CreateBorder()
-			self.AdditionalPower.frequentUpdates = true
-
-			K.SmoothBar(self.AdditionalPower)
-
-			self.AdditionalPower.Text = self.AdditionalPower:CreateFontString(nil, "OVERLAY")
-			self.AdditionalPower.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-			self.AdditionalPower.Text:SetPoint("CENTER", self.AdditionalPower, "CENTER", 0, 0)
-
-			self.AdditionalPower.PostUpdate = PostUpdateAddPower
-		end
+		self:Tag(self.Level, "[fulllevel]")
 	end
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.LeaderIndicator:SetSize(14, 14)
 	self.LeaderIndicator:SetPoint("TOPLEFT", self.Overlay, "TOPLEFT", 0, 8)
 
-	-- Class Power (Combo Points, etc...)
-	if C["Unitframe"].ClassResource then
-		Module.CreateClassPower(self)
-		if (K.Class == "MONK") then
-			Module.CreateStaggerBar(self)
-		elseif (K.Class == "DEATHKNIGHT") then
-			Module.CreateRuneBar(self)
+	if C["Unitframe"].ClassResources then
+		local bar = CreateFrame("Frame", "ClassPowerBar", self)
+		bar:SetSize(156, 14)
+
+		if C["Unitframe"].ShowPlayerName then
+			bar.Pos = {"TOPLEFT", self.Health, 0, 36}
+		else
+			bar.Pos = {"TOPLEFT", self.Health, 0, 20}
+		end
+
+		local bars = {}
+		for i = 1, 6 do
+			bars[i] = CreateFrame("StatusBar", nil, bar)
+			bars[i]:SetHeight(14)
+			bars[i]:SetWidth((156 - 5 * 6) / 6)
+			bars[i]:SetStatusBarTexture(UnitframeTexture)
+			bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
+			bars[i]:CreateBorder()
+
+			if i == 1 then
+				bars[i]:SetPoint("BOTTOMLEFT")
+			else
+				bars[i]:SetPoint("LEFT", bars[i-1], "RIGHT", 6, 0)
+			end
+
+			if K.Class == "DEATHKNIGHT" then
+				bars[i].timer = K.CreateFontString(bars[i], 13, "")
+			end
+		end
+
+		if K.Class == "DEATHKNIGHT" then
+			bars.colorSpec = true
+			bars.sortOrder = "asc"
+			bars.PostUpdate = Module.PostUpdateRunes
+			self.Runes = bars
+		else
+			bars.PostUpdate = Module.PostUpdateClassPower
+			self.ClassPower = bars
+		end
+
+		K.Mover(bar, "ClassPowerBar", "ClassPowerBar", bar.Pos, 156, 14)
+	end
+
+	if C["Unitframe"].Stagger then
+		if K.Class == "MONK" then
+			self.Stagger = CreateFrame("StatusBar", self:GetName().."Stagger", self)
+			self.Stagger:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
+			self.Stagger:SetSize(156, 14)
+			self.Stagger:SetStatusBarTexture(UnitframeTexture)
+			self.Stagger:CreateBorder()
+
+			self.Stagger.Value = self.Stagger:CreateFontString(nil, "OVERLAY")
+			self.Stagger.Value:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+			self.Stagger.Value:SetPoint("CENTER", self.Stagger, "CENTER", 0, 0)
+			self:Tag(self.Stagger.Value, "[monkstagger]")
+		end
+	end
+
+	if C["Unitframe"].AdditionalPower then
+		if K.Class == "DRUID" or K.Class == "PRIEST" or K.Class == "SHAMAN" then
+			self.AdditionalPower = CreateFrame("StatusBar", self:GetName().."AdditionalPower", self)
+			self.AdditionalPower:SetHeight(14)
+			self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
+			self.AdditionalPower:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
+			self.AdditionalPower:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
+			self.AdditionalPower.colorPower = true
+			self.AdditionalPower:CreateBorder()
+			self.AdditionalPower.frequentUpdates = true
+
+			if C["Unitframe"].Smooth then
+				self.AdditionalPower.Smooth = true
+			end
+
+			self.AdditionalPower.Text = self.AdditionalPower:CreateFontString(nil, "OVERLAY")
+			self.AdditionalPower.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+			self.AdditionalPower.Text:SetPoint("CENTER", self.AdditionalPower, "CENTER", 0, -1)
+
+			self.AdditionalPower.PostUpdate = Module.PostUpdateAddPower
 		end
 	end
 
 	if C["Unitframe"].CombatText then
 		local parentFrame = CreateFrame("Frame", nil, UIParent)
-		self.FloatingCombatFeedback = CreateFrame("Frame", "oUF_CombatTextFrame", parentFrame)
+		self.FloatingCombatFeedback = CreateFrame("Frame", "oUF_Player_CombatTextFrame", parentFrame)
 		self.FloatingCombatFeedback:SetSize(32, 32)
 		K.Mover(self.FloatingCombatFeedback, "CombatText", "PlayerCombatText", {"BOTTOM", self, "TOPLEFT", 0, 120})
 
@@ -335,62 +393,113 @@ function Module:CreatePlayer()
 		self.FloatingCombatFeedback.showAutoAttack = true
 		self.FloatingCombatFeedback.showOverHealing = false
 		self.FloatingCombatFeedback.abbreviateNumbers = true
-
-		-- Default CombatText
-		if not _G.InCombatLockdown() then _G.SetCVar("enableFloatingCombatText", 0) end
-		K.HideInterfaceOption(_G.InterfaceOptionsCombatPanelEnableFloatingCombatText)
+		self.FloatingCombatFeedback.colors = {
+			ABSORB = {0.84, 0.75, 0.65},
+			BLOCK = {0.84, 0.75, 0.65},
+			CRITENERGIZE = {0.31, 0.45, 0.63},
+			CRITHEAL = {0.33, 0.59, 0.33},
+			CRITICAL = {0.69, 0.31, 0.31},
+			CRUSHING = {0.69, 0.31, 0.31},
+			DAMAGE = {0.69, 0.31, 0.31},
+			ENERGIZE = {0.31, 0.45, 0.63},
+			GLANCING = {0.69, 0.31, 0.31},
+			HEAL = {0.33, 0.59, 0.33},
+			IMMUNE = {0.84, 0.75, 0.65},
+			MISS = {0.84, 0.75, 0.65},
+			RESIST = {0.84, 0.75, 0.65},
+			STANDARD = {0.84, 0.75, 0.65},
+		}
 	end
 
+	-- Swing timer
 	if C["Unitframe"].Swingbar then
-		self.Swing = CreateFrame("StatusBar", nil, self)
-		self.Swing:SetSize(250, 5)
-		self.Swing:SetPoint("TOP", self.Castbar, "BOTTOM", -16, -5)
+		self.Swing = CreateFrame("Frame", "KKUI_SwingBar", self)
+		self.Swing:SetSize(260, 14)
+		self.Swing:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 280)
 
-		self.Swing.Twohand = CreateFrame("StatusBar", nil, self.Swing)
+		self.Swing.Twohand = CreateFrame("Statusbar", nil, self.Swing)
+		self.Swing.Twohand:SetPoint("TOPLEFT")
+		self.Swing.Twohand:SetPoint("BOTTOMRIGHT")
 		self.Swing.Twohand:SetStatusBarTexture(UnitframeTexture)
-		self.Swing.Twohand:SetStatusBarColor(.8, .8, .8)
-		self.Swing.Twohand:CreateShadow(true)
+		self.Swing.Twohand:SetStatusBarColor(0.8, 0.3, 0.3)
+		self.Swing.Twohand:SetFrameLevel(20)
+		self.Swing.Twohand:SetFrameStrata("LOW")
 		self.Swing.Twohand:Hide()
-		self.Swing.Twohand:SetAllPoints()
-
-		self.Swing.Mainhand = CreateFrame("StatusBar", nil, self.Swing)
-		self.Swing.Mainhand:SetStatusBarTexture(UnitframeTexture)
-		self.Swing.Mainhand:SetStatusBarColor(.8, .8, .8)
-		self.Swing.Mainhand:CreateShadow(true)
-		self.Swing.Mainhand:Hide()
-		self.Swing.Mainhand:SetAllPoints()
-
-		self.Swing.Offhand = CreateFrame("StatusBar", nil, self.Swing)
-		self.Swing.Offhand:SetStatusBarTexture(UnitframeTexture)
-		self.Swing.Offhand:SetStatusBarColor(.8, .8, .8)
-		self.Swing.Offhand:CreateShadow(true)
-		self.Swing.Offhand:Hide()
-		self.Swing.Offhand:SetPoint("TOPLEFT", self.Swing, "BOTTOMLEFT", 0, -3)
-		self.Swing.Offhand:SetPoint("BOTTOMRIGHT", self.Swing, "BOTTOMRIGHT", 0, -6)
+		self.Swing.Twohand:CreateBorder()
 
 		if C["Unitframe"].SwingbarTimer then
-			self.Swing.Text = self.Swing:CreateFontString(nil, "OVERLAY")
-			self.Swing.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-			self.Swing.Text:SetPoint("CENTER", 1, 0)
-			self.Swing.Text:SetWordWrap(false)
-
-			self.Swing.TextMH = self.Swing.Mainhand:CreateFontString(nil, "OVERLAY")
-			self.Swing.TextMH:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-			self.Swing.TextMH:SetPoint("CENTER", 1, 0)
-			self.Swing.Text:SetWordWrap(false)
-
-			self.Swing.TextOH = self.Swing.Offhand:CreateFontString(nil, "OVERLAY")
-			self.Swing.TextOH:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-			self.Swing.TextOH:SetPoint("CENTER", 1, 0)
-			self.Swing.Text:SetWordWrap(false)
+			self.Swing.Twohand.Text = self.Swing.Twohand:CreateFontString(nil, "OVERLAY")
+			self.Swing.Twohand.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+			self.Swing.Twohand.Text:SetPoint("LEFT", self.Swing.Twohand, 3, 0)
+			self.Swing.Twohand.Text:SetSize(260 * 0.7, 14)
+			self.Swing.Twohand.Text:SetJustifyH("LEFT")
 		end
+
+		self.Swing.Twohand.Spark = self.Swing.Twohand:CreateTexture(nil, "OVERLAY")
+		self.Swing.Twohand.Spark:SetTexture(C["Media"].Spark_16)
+		self.Swing.Twohand.Spark:SetHeight(self.Swing:GetHeight())
+		self.Swing.Twohand.Spark:SetBlendMode("ADD")
+		self.Swing.Twohand.Spark:SetPoint("CENTER", self.Swing.Twohand:GetStatusBarTexture(), "RIGHT", 0, 0)
+
+		self.Swing.Mainhand = CreateFrame("Statusbar", nil, self.Swing)
+		self.Swing.Mainhand:SetPoint("BOTTOM", self.Castbar, 0, 0)
+		self.Swing.Mainhand:SetSize(260, 16)
+		self.Swing.Mainhand:SetStatusBarTexture(UnitframeTexture)
+		self.Swing.Mainhand:SetStatusBarColor(0.8, 0.3, 0.3)
+		self.Swing.Mainhand:SetFrameLevel(20)
+		self.Swing.Mainhand:SetFrameStrata("LOW")
+		self.Swing.Mainhand:Hide()
+		self.Swing.Mainhand:CreateBorder()
+
+		if C["Unitframe"].SwingbarTimer then
+			self.Swing.Mainhand.Text = self.Swing.Mainhand:CreateFontString(nil, "OVERLAY")
+			self.Swing.Mainhand.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+			self.Swing.Mainhand.Text:SetPoint("LEFT", self.Swing.Mainhand, 3, 0)
+			self.Swing.Mainhand.Text:SetSize(260 * 0.7, 12)
+			self.Swing.Mainhand.Text:SetJustifyH("LEFT")
+		end
+
+		self.Swing.Mainhand.Spark = self.Swing.Mainhand:CreateTexture(nil, "OVERLAY")
+		self.Swing.Mainhand.Spark:SetTexture(C["Media"].Spark_16)
+		self.Swing.Mainhand.Spark:SetHeight(self.Swing:GetHeight())
+		self.Swing.Mainhand.Spark:SetBlendMode("ADD")
+		self.Swing.Mainhand.Spark:SetPoint("CENTER", self.Swing.Mainhand:GetStatusBarTexture(), "RIGHT", 0, 0)
+
+		self.Swing.Offhand = CreateFrame("Statusbar", nil, self.Swing)
+		self.Swing.Offhand:SetPoint("BOTTOM", self.Swing.Mainhand, "TOP", 0, 2)
+		self.Swing.Offhand:SetSize(260, 16)
+		self.Swing.Offhand:SetStatusBarTexture(UnitframeTexture)
+		self.Swing.Offhand:SetStatusBarColor(0.8, 0.3, 0.3)
+		self.Swing.Offhand:SetFrameLevel(20)
+		self.Swing.Offhand:SetFrameStrata("LOW")
+		self.Swing.Offhand:Hide()
+		self.Swing.Offhand:CreateBorder()
+
+		if C["Unitframe"].SwingbarTimer then
+			self.Swing.Offhand.Text = self.Swing.Offhand:CreateFontString(nil, "OVERLAY")
+			self.Swing.Offhand.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+			self.Swing.Offhand.Text:SetPoint("LEFT", self.Swing.Offhand, 3, 0)
+			self.Swing.Offhand.Text:SetSize(260 * 0.7, 12)
+			self.Swing.Offhand.Text:SetJustifyH("LEFT")
+		end
+
+		self.Swing.Offhand.Spark = self.Swing.Offhand:CreateTexture(nil, "OVERLAY")
+		self.Swing.Offhand.Spark:SetTexture(C["Media"].Spark_16)
+		self.Swing.Offhand.Spark:SetHeight(self.Swing:GetHeight())
+		self.Swing.Offhand.Spark:SetBlendMode("ADD")
+		self.Swing.Offhand.Spark:SetPoint("CENTER", self.Swing.Offhand:GetStatusBarTexture(), "RIGHT", 0, 0)
+
 		self.Swing.hideOoc = true
+
+		K.Mover(self.Swing, "PlayerSwingBar", "PlayerSwingBar", {"TOP", self.Castbar, "BOTTOM", 0, -5})
 	end
 
-	self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.PvPIndicator:SetSize(30, 33)
-	self.PvPIndicator:SetPoint("RIGHT", self.Portrait, "LEFT", -2, 0)
-	self.PvPIndicator.PostUpdate = Module.PostUpdatePvPIndicator
+	if C["Unitframe"].PvPIndicator then
+		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
+		self.PvPIndicator:SetSize(30, 33)
+		self.PvPIndicator:SetPoint("RIGHT", self.Portrait, "LEFT", -2, 0)
+		self.PvPIndicator.PostUpdate = Module.PostUpdatePvPIndicator
+	end
 
 	self.CombatIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.CombatIndicator:SetSize(20, 20)
@@ -426,10 +535,13 @@ function Module:CreatePlayer()
 		self.DebuffHighlightFilterTable = K.DebuffHighlightColors
 	end
 
-	self.PortraitTimer = CreateFrame("Frame", "$parentPortraitTimer", self.Health)
-	self.PortraitTimer:CreateInnerShadow()
-	self.PortraitTimer:SetFrameLevel(5) -- Watch me
-	self.PortraitTimer:SetInside(self.Portrait, 1, 1)
+	if C["Unitframe"].PortraitTimers then
+		self.PortraitTimer = CreateFrame("Frame", "$parentPortraitTimer", self.Health)
+		self.PortraitTimer:CreateInnerShadow()
+		self.PortraitTimer:SetFrameLevel(5) -- Watch me
+		self.PortraitTimer:SetInside(self.Portrait, 1, 1)
+		self.PortraitTimer:Hide()
+	end
 
 	if C["Unitframe"].GlobalCooldown then
 		self.GlobalCooldown = CreateFrame("Frame", nil, self.Health)
@@ -446,15 +558,6 @@ function Module:CreatePlayer()
 	self.Highlight:SetVertexColor(.6, .6, .6)
 	self.Highlight:SetBlendMode("ADD")
 	self.Highlight:Hide()
-
-	self.LootSpecIndicator = self.Overlay:CreateTexture("$parentSpecIcon")
-	self.LootSpecIndicator:SetTexCoord(unpack(K.TexCoords))
-    self.LootSpecIndicator:SetSize(16, 16)
-    self.LootSpecIndicator:SetPoint("TOPRIGHT", self.Portrait, 10, 4)
-
-	self.LootSpecIndicator.Border = CreateFrame("Frame", nil, self.Overlay)
-	self.LootSpecIndicator.Border:SetAllPoints(self.LootSpecIndicator)
-	K.CreateBorder(self.LootSpecIndicator.Border)
 
 	self.ThreatIndicator = {
 		IsObjectType = function() end,

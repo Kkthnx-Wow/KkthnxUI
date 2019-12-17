@@ -1,8 +1,6 @@
 local _, ns = ...
 local oUF = oUF or ns.oUF
-if not oUF then
-	return
-end
+if not oUF then return end
 
 local playerClass = select(2,UnitClass("player"))
 local CanDispel = {
@@ -15,11 +13,11 @@ local CanDispel = {
 }
 
 local blackList = {
-	[GetSpellInfo(140546)] = true, -- Fully Mutated
-	[GetSpellInfo(136184)] = true, -- Thick Bones
-	[GetSpellInfo(136186)] = true, -- Clear mind
-	[GetSpellInfo(136182)] = true, -- Improved Synapses
-	[GetSpellInfo(136180)] = true, -- Keen Eyesight
+	[GetSpellInfo(140546)] = true, --Fully Mutated
+	[GetSpellInfo(136184)] = true, --Thick Bones
+	[GetSpellInfo(136186)] = true, --Clear mind
+	[GetSpellInfo(136182)] = true, --Improved Synapses
+	[GetSpellInfo(136180)] = true, --Keen Eyesight
 }
 
 local dispellist = CanDispel[playerClass] or {}
@@ -28,10 +26,7 @@ local origBorderColors = {}
 local origPostUpdateAura = {}
 
 local function GetDebuffType(unit, filter, filterTable)
-	if not unit or not UnitCanAssist("player", unit) then
-		return nil
-	end
-
+	if not unit or not UnitCanAssist("player", unit) then return nil end
 	local i = 1
 	while true do
 		local name, texture, _, debufftype, _,_,_,_,_, spellID = UnitAura(unit, i, "HARMFUL")
@@ -39,12 +34,11 @@ local function GetDebuffType(unit, filter, filterTable)
 
 		local filterSpell = filterTable[spellID] or filterTable[name]
 
-		if (filterTable and filterSpell and filterSpell.enable) then
+		if(filterTable and filterSpell and filterSpell.enable) then
 			return debufftype, texture, true, filterSpell.style, filterSpell.color
 		elseif debufftype and (not filter or (filter and dispellist[debufftype])) and not blackList[name] then
 			return debufftype, texture
 		end
-
 		i = i + 1
 	end
 end
@@ -57,12 +51,10 @@ local function CheckTalentTree(tree)
 	end
 end
 
-local function CheckSpec(_, event, levels)
-	if event == "CHARACTER_POINTS_CHANGED" and levels > 0 then
-		return
-	end
+local function CheckSpec(self, event, levels)
+	if event == "CHARACTER_POINTS_CHANGED" and levels > 0 then return end
 
-	-- Check for certain talents to see if we can dispel magic or not
+	--Check for certain talents to see if we can dispel magic or not
 	if playerClass == "PALADIN" then
 		if CheckTalentTree(1) then
 			dispellist.Magic = true
@@ -90,26 +82,33 @@ local function CheckSpec(_, event, levels)
 	end
 end
 
-local function Update(object, _, unit)
-	if unit ~= object.unit then
-		return
-	end
+local function Update(object, event, unit)
+	if unit ~= object.unit then return; end
 
 	local debuffType, texture, wasFiltered, style, color = GetDebuffType(unit, object.DebuffHighlightFilter, object.DebuffHighlightFilterTable)
-	if (wasFiltered) then
-		if object.DebuffHighlightBackdropBorder then
-			object:SetBackdropBorderColor(color.r, color.g, color.b, color.a or 1)
-		else
+	if(wasFiltered) then
+		if style == "GLOW" and object.DBHGlow then
+			object.DBHGlow:Show()
+			object.DBHGlow:SetBackdropBorderColor(color.r, color.g, color.b)
+		elseif object.DBHGlow then
+			object.DBHGlow:Hide()
 			object.DebuffHighlight:SetVertexColor(color.r, color.g, color.b, color.a or object.DebuffHighlightAlpha or .5)
 		end
 	elseif debuffType then
 		color = DebuffTypeColor[debuffType]
-		if object.DebuffHighlightUseTexture then
+		if object.DebuffHighlightBackdrop and object.DBHGlow then
+			object.DBHGlow:Show()
+			object.DBHGlow:SetBackdropBorderColor(color.r, color.g, color.b)
+		elseif object.DebuffHighlightUseTexture then
 			object.DebuffHighlight:SetTexture(texture)
 		else
 			object.DebuffHighlight:SetVertexColor(color.r, color.g, color.b, object.DebuffHighlightAlpha or .5)
 		end
 	else
+		if object.DBHGlow then
+			object.DBHGlow:Hide()
+		end
+
 		if object.DebuffHighlightUseTexture then
 			object.DebuffHighlight:SetTexture(nil)
 		else
@@ -124,10 +123,9 @@ end
 
 local function Enable(object)
 	-- if we're not highlighting this unit return
-	if not object.DebuffHighlightBackdropBorder and not object.DebuffHighlight then
+	if not object.DebuffHighlightBackdrop and not object.DebuffHighlight and not object.DBHGlow then
 		return
 	end
-
 	-- if we're filtering highlights and we're not of the dispelling type, return
 	if object.DebuffHighlightFilter and not CanDispel[playerClass] then
 		return
@@ -135,26 +133,17 @@ local function Enable(object)
 
 	object:RegisterEvent("UNIT_AURA", Update)
 
-	if object.DebuffHighlightBackdropBorder then
-		local r, g, b, a = object:GetBackdropBorderColor()
-		origBorderColors[object] = {r = r, g = g, b = b, a = a}
-	elseif not object.DebuffHighlightUseTexture then
-		local r, g, b, a = object.DebuffHighlight:GetVertexColor()
-		origColors[object] = {r = r, g = g, b = b, a = a}
-	end
-
 	return true
 end
 
 local function Disable(object)
 	object:UnregisterEvent("UNIT_AURA", Update)
 
-	if object.DebuffHighlightBackdropBorder then
-		local color = origColors[object]
-		if color then
-			object:SetBackdropBorderColor(color.r, color.g, color.b, color.a)
-		end
-	elseif not object.DebuffHighlightUseTexture then -- color debuffs
+	if object.DBHGlow then
+		object.DBHGlow:Hide()
+	end
+
+	if object.DebuffHighlight then
 		local color = origColors[object]
 		if color then
 			object.DebuffHighlight:SetVertexColor(color.r, color.g, color.b, color.a)
@@ -162,10 +151,10 @@ local function Disable(object)
 	end
 end
 
-local EventFrame = CreateFrame("Frame")
-EventFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
-EventFrame:RegisterEvent("CHARACTER_POINTS_CHANGED")
-EventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-EventFrame:SetScript("OnEvent", CheckSpec)
+local f = CreateFrame("Frame")
+f:RegisterEvent("PLAYER_TALENT_UPDATE")
+f:RegisterEvent("CHARACTER_POINTS_CHANGED")
+f:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+f:SetScript("OnEvent", CheckSpec)
 
 oUF:AddElement('DebuffHighlight', Update, Enable, Disable)

@@ -31,7 +31,7 @@ RegisterAttributeDriver(K.UIFrameHider, "state-visibility", "hide")
 K.PetBattleHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
 K.PetBattleHider:SetAllPoints()
 K.PetBattleHider:SetFrameStrata("LOW")
-RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
+RegisterStateDriver(K.PetBattleHider, "state-visibility", "[petbattle] hide; show")
 
 function K.PointsRestricted(frame)
 	if frame and not pcall(frame.GetPoint, frame) then
@@ -72,7 +72,7 @@ local function CreateBorder(f, bLayer, bOffset, bPoints, strip)
 		return
 	end
 
-	bLayer = bLayer or 0
+	bLayer = bLayer or -2
 	bOffset = bOffset or 4
 	bPoints = bPoints or 0
 
@@ -112,6 +112,15 @@ local function CreateBackdrop(f)
 	f.Backdrop = b
 end
 
+local function CreateBackground(f, a)
+	f:SetBackdrop({
+		bgFile = C["Media"].Blank, edgeFile = C["Media"].Blank, edgeSize = K.Mult,
+	})
+
+	f:SetBackdropColor(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], a or C.Media.BackdropColor[4])
+	f:SetBackdropBorderColor(0, 0, 0)
+end
+
 local function CreateShadow(f, bd, parent)
 	if f.Shadow then
 		return
@@ -119,22 +128,22 @@ local function CreateShadow(f, bd, parent)
 
 	parent = parent or f
 
+	local shadowLevel = (f:GetFrameLevel() - 1 >= 0 and f:GetFrameLevel() - 1) or (0)
 	local shadow = CreateFrame("Frame", nil, f)
-	shadow:SetFrameLevel(1)
-	shadow:SetFrameStrata(f:GetFrameStrata())
+	shadow:SetFrameLevel(shadowLevel)
 	shadow:SetPoint("TOPLEFT", parent, -4, 4)
 	shadow:SetPoint("BOTTOMRIGHT", parent, 4, -4)
 
 	if bd then
 		shadow:SetBackdrop({
 			bgFile = C["Media"].Blank,
-			edgeFile = C.Media.Glow,
+			edgeFile = C["Media"].Glow,
 			edgeSize = 4,
 			insets = {left = 3, right = 3, top = 3, bottom = 3}
 		})
 	else
 		shadow:SetBackdrop({
-			edgeFile = C.Media.Glow,
+			edgeFile = C["Media"].Glow,
 			edgeSize = 4
 		})
 	end
@@ -456,7 +465,9 @@ local function SkinCheckBox(f)
 
 	-- Why Is The Disabled Texture Always Displayed As Checked?
 	f:HookScript("OnDisable", function(self)
-		if not self.SetDisabledTexture then return end
+		if not self.SetDisabledTexture then
+			return
+		end
 
 		if self:GetChecked() then
 			self:SetDisabledTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
@@ -469,6 +480,92 @@ local function SkinCheckBox(f)
 	f.SetPushedTexture = K.Noop
 	f.SetHighlightTexture = K.Noop
 end
+
+local function scrollBarHook(f, delta)
+	f:SetValue(f:GetValue() - delta * 50)
+end
+
+local function SkinScrollBar(f, width)
+	local frame = f:GetName()
+
+	if not width then
+		width = 6
+	end
+
+	local up, down = f:GetChildren()
+	if up then
+		up:Kill()
+	end
+
+	if down then
+		down:Kill()
+	end
+
+	local bu = (f.ThumbTexture or f.thumbTexture) or frame and _G[frame.."ThumbTexture"]
+	if bu then
+		bu:SetColorTexture(0.3, 0.3, 0.3)
+		bu:SetSize(width, 10)
+		bu:SetPoint("LEFT", -5, 0)
+	end
+
+	f:SetScript("OnMouseWheel", scrollBarHook)
+end
+
+-- local function SkinScrollBarTest()
+-- 	local frame = self:GetName()
+-- 	self:GetParent():StipTextures()
+-- 	self:StripTextures()
+
+-- 	local bu = (self.ThumbTexture or self.thumbTexture) or frame and _G[frame.."ThumbTexture"]
+-- 	bu:SetAlpha(0)
+-- 	bu:SetWidth(17)
+
+-- 	bu.bg = F.CreateBDFrame(self, 0)
+-- 	bu.bg:SetPoint("TOPLEFT", bu, 0, -2)
+-- 	bu.bg:SetPoint("BOTTOMRIGHT", bu, 0, 4)
+
+-- 	local tex = F.CreateGradient(self)
+-- 	tex:SetPoint("TOPLEFT", bu.bg, 0, -0)
+-- 	tex:SetPoint("BOTTOMRIGHT", bu.bg, -0, 0)
+
+-- 	local up, down = self:GetChildren()
+-- 	up:SetWidth(17)
+-- 	down:SetWidth(17)
+
+-- 	up:SkinButton()
+-- 	down:SkinButton()
+
+-- 	up:SetDisabledTexture((C.Media.Blank)
+-- 	local dis1 = up:GetDisabledTexture()
+-- 	dis1:SetVertexColor(0, 0, 0, .4)
+-- 	dis1:SetDrawLayer("OVERLAY")
+
+-- 	down:SetDisabledTexture(C.Media.Blank)
+-- 	local dis2 = down:GetDisabledTexture()
+-- 	dis2:SetVertexColor(0, 0, 0, .4)
+-- 	dis2:SetDrawLayer("OVERLAY")
+
+-- 	local uptex = up:CreateTexture(nil, "ARTWORK")
+-- 	uptex:SetTexture("^")
+-- 	uptex:SetSize(8, 8)
+-- 	uptex:SetPoint("CENTER")
+-- 	uptex:SetVertexColor(1, 1, 1)
+-- 	up.bgTex = uptex
+
+-- 	local downtex = down:CreateTexture(nil, "ARTWORK")
+-- 	downtex:SetTexture("*")
+-- 	downtex:SetSize(8, 8)
+-- 	downtex:SetPoint("CENTER")
+-- 	downtex:SetVertexColor(1, 1, 1)
+-- 	down.bgTex = downtex
+
+-- 	--up:HookScript("OnEnter", textureOnEnter)
+-- 	--up:HookScript("OnLeave", textureOnLeave)
+-- 	--down:HookScript("OnEnter", textureOnEnter)
+-- 	--down:HookScript("OnLeave", textureOnLeave)
+-- 	self:HookScript("OnEnter", scrollOnEnter)
+-- 	self:HookScript("OnLeave", scrollOnLeave)
+-- end
 
 local function AddCustomAPI(object)
 	local MetaTable = getmetatable(object).__index
@@ -487,6 +584,10 @@ local function AddCustomAPI(object)
 
 	if not object.CreateBackdrop then
 		MetaTable.CreateBackdrop = CreateBackdrop
+	end
+
+	if not object.CreateBackground then
+		MetaTable.CreateBackground = CreateBackground
 	end
 
 	if not object.CreateShadow then
@@ -527,6 +628,10 @@ local function AddCustomAPI(object)
 
 	if not object.SkinCheckBox then
 		MetaTable.SkinCheckBox = SkinCheckBox
+	end
+
+	if not object.SkinScrollBar then
+		MetaTable.SkinScrollBar = SkinScrollBar
 	end
 end
 

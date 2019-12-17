@@ -8,7 +8,6 @@ local string_format = string.format
 local select = select
 
 local ARTIFACT_POWER = _G.ARTIFACT_POWER
-local backupColor = _G.FACTION_BAR_COLORS[1]
 local C_AzeriteItem_FindActiveAzeriteItem = _G.C_AzeriteItem.FindActiveAzeriteItem
 local C_AzeriteItem_GetAzeriteItemXPInfo = _G.C_AzeriteItem.GetAzeriteItemXPInfo
 local C_AzeriteItem_GetPowerLevel = _G.C_AzeriteItem.GetPowerLevel
@@ -23,7 +22,6 @@ local GetFactionInfo = _G.GetFactionInfo
 local GetFriendshipReputation = _G.GetFriendshipReputation
 local GetNumFactions = _G.GetNumFactions
 local GetPetExperience = _G.GetPetExperience
-local GetRestrictedAccountData = _G.GetRestrictedAccountData
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local GetXPExhaustion = _G.GetXPExhaustion
 local HONOR = _G.HONOR
@@ -40,6 +38,7 @@ local UnitIsPVP = _G.UnitIsPVP
 local UnitLevel = _G.UnitLevel
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
+local backupColor = _G.FACTION_BAR_COLORS[1]
 
 local function GetUnitXP(unit)
 	if (unit == "pet") then
@@ -47,15 +46,6 @@ local function GetUnitXP(unit)
 	else
 		return UnitXP(unit), UnitXPMax(unit)
 	end
-end
-
-local function IsPlayerMaxLevel()
-	local maxLevel = GetRestrictedAccountData()
-	if (maxLevel == 0) then
-		maxLevel = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
-	end
-
-	return maxLevel == UnitLevel("player")
 end
 
 function Module:SetupExperience()
@@ -164,42 +154,42 @@ function Module:SetupHonor()
 end
 
 function Module:UpdateReputation()
-	local ID, isFriend, friendText, standingLabel
-	local isCapped
 	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
-
-	if factionID and C_Reputation_IsFactionParagon(factionID) then
-		local currentValue, threshold, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(factionID)
-		if currentValue and threshold then
-			min, max = 0, threshold
-			value = currentValue % threshold
-			if hasRewardPending then
-				value = value + threshold
-			end
-		end
-	else
-		if reaction == MAX_REPUTATION_REACTION then
-			-- max rank, make it look like a full bar
-			min, max, value = 0, 1, 1
-			isCapped = true
-		end
-	end
 
 	local numFactions = GetNumFactions()
 	if not name then
 		self.Bars.Reputation:Hide()
-	elseif name then
+	else
 		self.Bars.Reputation:Show()
 
-		local text
-		local color = FACTION_BAR_COLORS[reaction] or backupColor
-		self.Bars.Reputation:SetStatusBarColor(color.r, color.g, color.b)
+		local ID, isFriend, friendText, standingLabel
+		local isCapped
+
+		if factionID and C_Reputation_IsFactionParagon(factionID) then
+			local currentValue, threshold, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(factionID)
+			if currentValue and threshold then
+				min, max = 0, threshold
+				value = currentValue % threshold
+				if hasRewardPending then
+					value = value + threshold
+				end
+			end
+		else
+			if reaction == _G.MAX_REPUTATION_REACTION then
+				-- max rank, make it look like a full bar
+				min, max, value = 0, 1, 1
+				isCapped = true
+			end
+		end
+
 		self.Bars.Reputation:SetMinMaxValues(min, max)
 		self.Bars.Reputation:SetValue(value)
+		local color = FACTION_BAR_COLORS[reaction] or backupColor
+		self.Bars.Reputation:SetStatusBarColor(color.r, color.g, color.b)
 
 		for i = 1, numFactions do
-			local factionName, _, standingID, _, _, _, _, _, _, _, _, _, _, factionID = GetFactionInfo(i)
-			local friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(factionID)
+			local factionName, _, standingID,_,_,_,_,_,_,_,_,_,_, FactionID = GetFactionInfo(i)
+			local friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(FactionID)
 			if factionName == name then
 				if friendID ~= nil then
 					isFriend = true
@@ -221,6 +211,7 @@ function Module:UpdateReputation()
 			maxMinDiff = 1
 		end
 
+		local text
 		if C["DataBars"].Text then
 			if isCapped then
 				text = string_format("%s: [%s]", name, isFriend and friendText or standingLabel)
@@ -234,23 +225,21 @@ function Module:UpdateReputation()
 end
 
 function Module:UpdateExperience()
-	local hideXP = ((UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled())
-
-	if hideXP then
+	if (K.Level == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled() then
 		self.Bars.Experience:Hide()
-	elseif not hideXP then
+	else
 		self.Bars.Experience:Show()
 
-		local cur, max = GetUnitXP("player")
-		local rested = GetXPExhaustion()
-
+		local cur, max = GetUnitXP('player')
 		if max <= 0 then
 			max = 1
 		end
 
 		self.Bars.Experience:SetMinMaxValues(0, max)
-		self.Bars.Experience:SetValue(cur - 1 >= 0 and cur - 1 or 0)
+		-- self.Bars.Experience:SetValue(cur - 1 >= 0 and cur - 1 or 0) -- this is set twice here for some reason
 		self.Bars.Experience:SetValue(cur)
+
+		local rested = GetXPExhaustion()
 
 		if rested and rested > 0 then
 			self.Bars.Experience.RestBar:SetMinMaxValues(0, max)
@@ -276,9 +265,9 @@ function Module:UpdateAzerite(event, unit)
 	end
 
 	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
-	if not azeriteItemLocation or C_AzeriteItem_GetPowerLevel(azeriteItemLocation) == 50 then
+	if not azeriteItemLocation or C_AzeriteItem.IsAzeriteItemAtMaxLevel() then
 		self.Bars.Azerite:Hide()
-	elseif azeriteItemLocation then
+	else
 		self.Bars.Azerite:Show()
 
 		local xp, totalLevelXP = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
@@ -339,7 +328,7 @@ function Module:OnEnter()
 		K.UIFrameFadeIn(self.Container, 0.25, self.Container:GetAlpha(), 1)
 	end
 
-	if (not IsPlayerMaxLevel() and not IsXPUserDisabled()) then
+	if MAX_PLAYER_LEVEL ~= K.Level then
 		local cur, max = GetUnitXP("player")
 		local rested = GetXPExhaustion()
 
@@ -350,11 +339,10 @@ function Module:OnEnter()
 		if rested then
 			GameTooltip:AddDoubleLine(L["Rested"], string_format("+%s (%s%%)", K.ShortValue(rested), math_floor(rested / max * 100)), 1, 1, 1)
 		end
-		GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:118:218|t "..L["Middle Click"], L["Share Your Experience"], 1, 1, 1)
 	end
 
 	if GetWatchedFactionInfo() then
-		if (not IsPlayerMaxLevel() and not IsXPUserDisabled()) then
+		if MAX_PLAYER_LEVEL ~= K.Level then
 			GameTooltip:AddLine(" ")
 		end
 
@@ -382,32 +370,32 @@ function Module:OnEnter()
 			if reaction ~= MAX_REPUTATION_REACTION or C_Reputation_IsFactionParagon(factionID) then
 				GameTooltip:AddDoubleLine(REPUTATION..":", string_format("%d / %d (%d%%)", value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
 			end
-			GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "..L["Left Click"], L["Toggle Reputation"], 1, 1, 1)
 		end
 	end
 
-	if C_AzeriteItem_FindActiveAzeriteItem() then
-		if (not IsPlayerMaxLevel() and not IsXPUserDisabled()) or GetWatchedFactionInfo() then
+	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
+	if azeriteItemLocation then
+		if MAX_PLAYER_LEVEL ~= K.Level or GetWatchedFactionInfo() then
 			GameTooltip:AddLine(" ")
 		end
 
-		local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
 		local azeriteItem = Item:CreateFromItemLocation(azeriteItemLocation)
-		local xp, totalLevelXP = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
+		local cur, max = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
 		local currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
-		local xpToNextLevel = totalLevelXP - xp
 
 		self.itemDataLoadedCancelFunc = azeriteItem:ContinueWithCancelOnItemLoad(function()
 			local azeriteItemName = azeriteItem:GetItemName()
 
-			GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItemName.." ("..currentLevel..")", nil, nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
-			GameTooltip:AddDoubleLine(L["AP"], string_format(" %d / %d (%d%%)", xp, totalLevelXP, xp / totalLevelXP * 100), 1, 1, 1)
-			GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", xpToNextLevel, xpToNextLevel / totalLevelXP * 100, 10 * xpToNextLevel / totalLevelXP), 1, 1, 1)
+			_G.GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItemName.." ("..currentLevel..")", nil, nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
+			_G.GameTooltip:AddDoubleLine(L["AP"], string_format(' %d / %d (%d%%)', cur, max, cur / max * 100), 1, 1, 1)
+			_G.GameTooltip:AddDoubleLine(L["Remaining"], string_format(' %d (%d%% - %d '..L["Bars"]..')', max - cur, (max - cur) / max * 100, 10 * (max - cur) / max), 1, 1, 1)
+
+			_G.GameTooltip:Show()
 		end)
 	end
 
 	if C["DataBars"].TrackHonor then
-		if IsPlayerMaxLevel() and UnitIsPVP("player") then
+		if K.Level == MAX_PLAYER_LEVEL and UnitIsPVP("player") then
 			GameTooltip:AddLine(" ")
 
 			local current = UnitHonor("player")
@@ -417,7 +405,6 @@ function Module:OnEnter()
 			GameTooltip:AddDoubleLine(HONOR.." "..LEVEL, level)
 			GameTooltip:AddDoubleLine(L["Honor XP"], string_format(" %d / %d (%d%%)", current, max, current/max * 100), 1, 1, 1)
 			GameTooltip:AddDoubleLine(L["Honor Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
-			GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "..L["Right Click"], L["Toggle PvP"], 1, 1, 1)
 		end
 	end
 
@@ -430,33 +417,6 @@ function Module:OnLeave()
 	end
 
 	GameTooltip:Hide()
-end
-
-function Module:OnClick(_, clicked)
-	if K.CodeDebug then
-		K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 430 - KkthnxUI|Modules|DataBars|Core -|r |cFFFFFF00" .. clicked .. " Clicked|r")
-	end
-
-	if clicked == "LeftButton" then
-		if GetWatchedFactionInfo() then
-			ToggleCharacter("ReputationFrame")
-		end
-	elseif clicked == "RightButton" then
-		if C["DataBars"].TrackHonor then
-			if IsPlayerMaxLevel() and UnitIsPVP("player") then
-				TogglePVPUI()
-			end
-		end
-	elseif clicked == "MiddleButton" then
-		if not IsPlayerMaxLevel() and not IsXPUserDisabled() then
-			local cur, max = GetUnitXP("player")
-
-			if IsInGroup(LE_PARTY_CATEGORY_HOME) then
-				SendChatMessage(L["XP"] .." ".. string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math.floor(cur / max * 100)), "PARTY")
-				SendChatMessage(L["Remaining"] .." ".. string_format("%s (%s%% - %s "..L["Bars"]..")", K.ShortValue(max - cur), math.floor((max - cur) / max * 100), math.floor(20 * (max - cur) / max)), "PARTY")
-			end
-		end
-	end
 end
 
 function Module.OnUpdate()
@@ -496,9 +456,9 @@ function Module:OnEnable()
 
 	if C["DataBars"].Enable ~= true then
 		return
-    end
+	end
 
-    Module.Bars = {}
+	Module.Bars = {}
 
 	self.Container = CreateFrame("button", "KkthnxUI_Databars", K.PetBattleHider)
 	self.Container:SetWidth(C["DataBars"].Width)
@@ -507,7 +467,6 @@ function Module:OnEnable()
 
 	self.Container:HookScript("OnEnter", self.OnEnter)
 	self.Container:HookScript("OnLeave", self.OnLeave)
-    self.Container:HookScript("OnClick", self.OnClick)
 
 	self:SetupExperience()
 	self:SetupReputation()

@@ -6,8 +6,8 @@ local _G = _G
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local Details = _G.Details
 
-local function ReskinDetails()
-	if not IsAddOnLoaded("Details") then
+function Module:ReskinDetails()
+	if not IsAddOnLoaded("Details") or not C["Skins"].Details then
 		return
 	end
 
@@ -97,5 +97,3 @@ local function ReskinDetails()
 
 	KkthnxUIData["ResetDetails"] = false
 end
-
-table.insert(Module.NewSkin["KkthnxUI"], ReskinDetails)

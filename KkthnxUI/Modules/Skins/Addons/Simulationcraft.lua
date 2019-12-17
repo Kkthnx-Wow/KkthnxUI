@@ -1,7 +1,7 @@
 local K = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
-local function ReskinSimulationcraft()
+function Module:ReskinSimulationcraft()
 	if not IsAddOnLoaded("Simulationcraft") then
 		return
 	end
@@ -14,5 +14,3 @@ local function ReskinSimulationcraft()
 	SimcCopyFrameButton:SkinButton()
 	SimcCopyFrameScrollScrollBar:SetAlpha(0)
 end
-
-Module.NewSkin["Simulationcraft"] = ReskinSimulationcraft

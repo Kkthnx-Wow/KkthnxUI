@@ -72,17 +72,17 @@ local function IsMouseOverFrame(frame)
 		return true
 	end
 
-	if not SpellFlyout:IsShown() then
-		return false
-	end
+	-- if not SpellFlyout:IsShown() then
+	-- 	return false
+	-- end
 
-	if not SpellFlyout.__faderParent then
-		return false
-	end
+	-- if not SpellFlyout.__faderParent then
+	-- 	return false
+	-- end
 
-	if SpellFlyout.__faderParent == frame and MouseIsOver(SpellFlyout) then
-		return true
-	end
+	-- if SpellFlyout.__faderParent == frame and MouseIsOver(SpellFlyout) then
+	-- 	return true
+	-- end
 
 	return false
 end
@@ -131,7 +131,7 @@ local function SpellFlyoutOnShow(self)
 		end
 	end
 end
-SpellFlyout:HookScript("OnShow", SpellFlyoutOnShow)
+-- SpellFlyout:HookScript("OnShow", SpellFlyoutOnShow)
 
 local function CreateFrameFader(frame, faderConfig)
 	if frame.faderConfig then

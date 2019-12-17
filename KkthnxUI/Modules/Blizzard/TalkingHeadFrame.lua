@@ -3,8 +3,8 @@ local Module = K:GetModule("Blizzard")
 
 -- Lua API
 local _G = _G
-local ipairs = ipairs
-local table_remove = table.remove
+local ipairs = _G.ipairs
+local table_remove = _G.table.remove
 
 -- WoW Objects
 local UIParent = _G.UIParent
@@ -21,7 +21,7 @@ function Module:InitializeTalkingHead()
 
 	-- Put the actual talking head into our /moverui holder
 	content:ClearAllPoints()
-	content:SetPoint("BOTTOM", Module.HoldTalkingHead, "BOTTOM", 0, 0)
+	content:SetPoint("BOTTOM", Module.frame, "BOTTOM", 0, 0)
 	content.ignoreFramePositionManager = true
 
 	-- Kill off Blizzard's repositioning
@@ -44,8 +44,8 @@ function Module:WaitForTalkingHead(_, ...)
 		return
 	end
 
-	self:InitializeTalkingHead()
-	K:UnregisterEvent("ADDON_LOADED", self.WaitForTalkingHead)
+	Module:InitializeTalkingHead()
+	K:UnregisterEvent("ADDON_LOADED", Module.WaitForTalkingHead)
 end
 
 function Module:CreateTalkingHeadFrame()
@@ -54,9 +54,9 @@ function Module:CreateTalkingHeadFrame()
 	end
 
 	-- Create our container frame
-	self.HoldTalkingHead = CreateFrame("Frame", "TalkingHeadFrameMover", UIParent)
-	self.HoldTalkingHead:SetPoint("TOP", UIParent, "TOP", 0, -18)
-	self.HoldTalkingHead:SetSize(570, 155)
+	Module.frame = CreateFrame("Frame", "KKUITalkingHeadMover", UIParent)
+	Module.frame:SetPoint("TOP", UIParent, "TOP", 0, -18)
+	Module.frame:SetSize(570, 155)
 
-	K.Mover(self.HoldTalkingHead, "TalkingHeadFrame", "TalkingHeadFrame", {"TOP", UIParent, "TOP", 0, -18}, 570, 155)
+	K.Mover(Module.frame, "TalkingHeadFrame", "TalkingHeadFrame", {"TOP", UIParent, "TOP", 0, -18}, 570, 155)
 end

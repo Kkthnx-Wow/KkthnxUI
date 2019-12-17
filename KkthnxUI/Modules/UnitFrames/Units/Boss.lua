@@ -16,6 +16,10 @@ function Module:CreateBoss()
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
+	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	self.Overlay:SetAllPoints()
+	self.Overlay:SetFrameLevel(5)
+
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
@@ -25,19 +29,34 @@ function Module:CreateBoss()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
+	self.Health.PostUpdate = C["General"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
-	self.Health.colorSmooth = false
-	self.Health.colorClass = true
-	self.Health.colorReaction = true
-	self.Health.frequentUpdates = false
+	self.Health.frequentUpdates = true
 
-	K.SmoothBar(self.Health)
+	if C["Boss"].HealthbarColor.Value == "Value" then
+        self.Health.colorSmooth = true
+        self.Health.colorClass = false
+        self.Health.colorReaction = false
+    elseif C["Boss"].HealthbarColor.Value == "Dark" then
+        self.Health.colorSmooth = false
+        self.Health.colorClass = false
+        self.Health.colorReaction = false
+        self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
+    else
+        self.Health.colorSmooth = false
+        self.Health.colorClass = true
+        self.Health.colorReaction = true
+    end
+
+	if C["Boss"].Smooth then
+		self.Health.Smooth = true
+	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetFontObject(UnitframeFont)
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
-	self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
+	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetHeight(12)
@@ -49,21 +68,22 @@ function Module:CreateBoss()
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
 
-	K.SmoothBar(self.Power)
+	if C["Boss"].Smooth then
+		self.Power.Smooth = true
+	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
 	self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 	self.Power.Value:SetFontObject(UnitframeFont)
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
-	self:Tag(self.Power.Value, "[KkthnxUI:PowerCurrent]")
+	self:Tag(self.Power.Value, "[power]")
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("TOP", self.Health, 0, 16)
-	self.Name:SetSize(130, 24)
-	self.Name:SetJustifyV("TOP")
-	self.Name:SetJustifyH("CENTER")
+	self.Name:SetWidth(156 * 0.90)
 	self.Name:SetFontObject(UnitframeFont)
-	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameAbbrev]")
+	self.Name:SetWordWrap(false)
+	self:Tag(self.Name, "[color][name]")
 
 	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
@@ -171,6 +191,10 @@ function Module:CreateBoss()
 
 		self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
 	end
+
+	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
+	self.RaidTargetIndicator:SetSize(16, 16)
 
 	self.Range = Module.CreateRangeIndicator(self)
 end

@@ -1,5 +1,5 @@
 local _G = _G
-local K, C = _G.unpack(_G.select(2, ...))
+local K = _G.unpack(_G.select(2, ...))
 local Module = K:GetModule("Automation")
 
 local AcceptGroup = _G.AcceptGroup
@@ -32,10 +32,6 @@ function Module.AutoInvite(event, _, _, _, _, _, _, inviterGUID)
 end
 
 function Module:CreateAutoInvite()
-	if C["Automation"].AutoInvite ~= true then
-		return
-	end
-
 	K:RegisterEvent("PARTY_INVITE_REQUEST", self.AutoInvite)
 	K:RegisterEvent("GROUP_ROSTER_UPDATE", self.AutoInvite)
 end

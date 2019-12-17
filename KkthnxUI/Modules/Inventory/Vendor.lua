@@ -1,13 +1,10 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 
--- Sourced: ElvUI
+-- Sourced: NDui
 
 local _G = _G
-local select = _G.select
 local string_format = _G.string.format
-local table_wipe = _G.table.wipe
 
-local C_Timer_After = _G.C_Timer.After
 local CanGuildBankRepair = _G.CanGuildBankRepair
 local CanMerchantRepair = _G.CanMerchantRepair
 local GetContainerItemInfo = _G.GetContainerItemInfo
@@ -18,132 +15,121 @@ local GetItemInfo = _G.GetItemInfo
 local GetMoney = _G.GetMoney
 local GetRepairAllCost = _G.GetRepairAllCost
 local IsInGuild = _G.IsInGuild
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY = _G.LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY or 140
+local RepairAllItems = _G.RepairAllItems
+local UseContainerItem = _G.UseContainerItem
 
-do -- Auto Sell Junk
-	local sellCount, stop, cache = 0, true, {}
-	local errorText = _G.ERR_VENDOR_DOESNT_BUY
-	local function stopSelling(tell)
-		stop = true
+local AutoVendor = K:NewModule("AutoVendor") -- Auto sell useless items
 
-		if sellCount > 0 and tell then
-			K.Print(string_format(L["Sold Grays"], K.FormatMoney(sellCount)))
-		end
+AutoVendor.Filter = {
+	[6196] = true,
+}
 
-		sellCount = 0
-	end
+function AutoVendor:GetTrashValue()
+	local Profit = 0
+	local TotalCount = 0
 
-	local function startSelling()
-		if stop then return end
-		for bag = 0, 4 do
-			for slot = 1, GetContainerNumSlots(bag) do
-				if stop then
-					return
+	for Bag = 0, 4 do
+		for Slot = 1, GetContainerNumSlots(Bag) do
+			local Link, ID = GetContainerItemLink(Bag, Slot), GetContainerItemID(Bag, Slot)
+
+			if (Link and ID and not AutoVendor.Filter[ID]) then
+				local TotalPrice = 0
+				local Quality = select(3, GetItemInfo(Link))
+				local SellPrice = select(11, GetItemInfo(Link))
+				local Count = select(2, GetContainerItemInfo(Bag, Slot))
+
+				if ((SellPrice and (SellPrice > 0)) and Count) then
+					TotalPrice = SellPrice * Count
 				end
 
-				local link = GetContainerItemLink(bag, slot)
-				if link then
-					local price = select(11, GetItemInfo(link))
-					local _, count, _, quality = GetContainerItemInfo(bag, slot)
-					if quality == 0 and price > 0 and not cache["b"..bag.."s"..slot] then
-						sellCount = sellCount + price * count
-						cache["b"..bag.."s"..slot] = true
-						_G.UseContainerItem(bag, slot)
-						C_Timer_After(0.2, startSelling)
-						return
-					end
+				if ((Quality and Quality <= 0) and TotalPrice > 0) then
+					Profit = Profit + TotalPrice
+					TotalCount = TotalCount + Count
 				end
 			end
 		end
 	end
 
-	local function updateSelling(event, ...)
-		if not C["Inventory"].AutoSell then
-			return
-		end
-
-		local _, arg = ...
-		if event == "MERCHANT_SHOW" then
-			if IsShiftKeyDown() then
-				return
-			end
-
-			stop = false
-			table_wipe(cache)
-			startSelling()
-			K:RegisterEvent("UI_ERROR_MESSAGE", updateSelling)
-		elseif event == "UI_ERROR_MESSAGE" and arg == errorText then
-			stopSelling(false)
-		elseif event == "MERCHANT_CLOSED" then
-			stopSelling(true)
-		end
-	end
-
-	K:RegisterEvent("MERCHANT_SHOW", updateSelling)
-	K:RegisterEvent("MERCHANT_CLOSED", updateSelling)
+	return TotalCount, Profit
 end
 
-do -- AutoRepair
-	local isShown, isBankEmpty, autoRepair, repairAllCost, canRepair
-	local function delayFunc()
-		if isBankEmpty then
-			autoRepair(true)
-		else
-			K.Print(string_format("%s:|r %s", L["Guild Repair"], K.FormatMoney(repairAllCost)))
-		end
-	end
+function AutoVendor:OnEvent()
+	local Profit = 0
+	local TotalCount = 0
 
-	function autoRepair(override)
-		if isShown and not override then
-			return
-		end
+	for Bag = 0, 4 do
+		for Slot = 1, GetContainerNumSlots(Bag) do
+			local Link, ID = GetContainerItemLink(Bag, Slot), GetContainerItemID(Bag, Slot)
 
-		isShown = true
-		isBankEmpty = false
+			if (Link and ID and not AutoVendor.Filter[ID]) then
+				local TotalPrice = 0
+				local Quality = select(3, GetItemInfo(Link))
+				local SellPrice = select(11, GetItemInfo(Link))
+				local Count = select(2, GetContainerItemInfo(Bag, Slot))
 
-		local myMoney = GetMoney()
-		repairAllCost, canRepair = GetRepairAllCost()
+				if ((SellPrice and (SellPrice > 0)) and Count) then
+					TotalPrice = SellPrice * Count
+				end
 
-		if canRepair and repairAllCost > 0 then
-			if (not override) and C["Inventory"].AutoRepair.Value == "GUILD" and IsInGuild() and CanGuildBankRepair() and GetGuildBankWithdrawMoney() >= repairAllCost then
-				_G.RepairAllItems(true)
-			else
-				if myMoney > repairAllCost then
-					_G.RepairAllItems()
-					K.Print(string_format("%s %s", L["Repair Cost"], K.FormatMoney(repairAllCost)))
-					return
-				else
-					K.Print(L["Not Enough Money"])
-					return
+				if ((Quality and Quality <= 0) and TotalPrice > 0) then
+					UseContainerItem(Bag, Slot)
+					PickupMerchantItem()
+					Profit = Profit + TotalPrice
+					TotalCount = TotalCount + Count
 				end
 			end
-
-			C_Timer_After(0.5, delayFunc)
 		end
 	end
 
-	local function checkBankFund(_, msgType)
-		if msgType == LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY then
-			isBankEmpty = true
+	if (Profit > 0) then
+		K.Print(string_format("You sold %d %s for a total of %s", TotalCount, TotalCount > 0 and "items" or "item", K.FormatMoney(Profit)))
+	end
+end
+
+function AutoVendor:OnEnable()
+	if C["Inventory"].AutoSell then
+		K:RegisterEvent("MERCHANT_SHOW", AutoVendor.OnEvent)
+	end
+end
+
+local AutoRepair = K:NewModule("AutoRepair") -- Check against the rep with the faction of the merchant, add option to repair if honored +
+
+function AutoRepair:OnEvent()
+	local Money = GetMoney()
+
+	if CanMerchantRepair() then
+		local Cost = GetRepairAllCost()
+		local CostString = K.FormatMoney(Cost)
+
+		if (Cost > 0) then
+			if (IsInGuild() and C["Inventory"].AutoRepair.Value == "GUILD") then
+				local CanGuildRepair = (CanGuildBankRepair() and (Cost <= GetGuildBankWithdrawMoney()))
+
+				if CanGuildRepair then
+					RepairAllItems(1)
+
+					K.Print(string_format("Your equipped items have been repaired using guild bank funds for %s", CostString))
+
+					return
+				end
+			else
+				if (Money > Cost) then
+					RepairAllItems()
+
+					K.Print(string_format("Your equipped items have been repaired for %s", CostString))
+				else
+					local Required = Cost - Money
+					local RequiredString = K.FormatMoney(Required)
+
+					K.Print(string_format("You require %s to repair all equipped items (costs %s total)", RequiredString, CostString))
+				end
+			end
 		end
 	end
+end
 
-	local function merchantClose()
-		isShown = false
-		K:UnregisterEvent("UI_ERROR_MESSAGE", checkBankFund)
-		K:UnregisterEvent("MERCHANT_CLOSED", merchantClose)
+function AutoRepair:OnEnable()
+	if C["Inventory"].AutoRepair.Value ~= "NONE" then
+		K:RegisterEvent("MERCHANT_SHOW", AutoRepair.OnEvent)
 	end
-
-	local function merchantShow()
-		if IsShiftKeyDown() or C["Inventory"].AutoRepair.Value == "NONE" or not CanMerchantRepair() then
-			return
-		end
-
-		autoRepair()
-		K:RegisterEvent("UI_ERROR_MESSAGE", checkBankFund)
-		K:RegisterEvent("MERCHANT_CLOSED", merchantClose)
-	end
-
-	K:RegisterEvent("MERCHANT_SHOW", merchantShow)
 end

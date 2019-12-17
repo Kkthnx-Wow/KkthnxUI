@@ -15,12 +15,19 @@ function Module:CreateBar5()
 	local padding, margin = 0, 6
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
+	local layout = C["ActionBar"].Layout.Value
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KkthnxUI_ActionBar5", UIParent, "SecureHandlerStateTemplate")
-	frame:SetWidth(FilterConfig.size + 2  *  padding)
-	frame:SetHeight(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
-	frame.Pos = {"RIGHT", UIParent, "RIGHT", -(frame:GetWidth() + 10), 0}
+	if layout == "Four Stacked" then
+		frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
+		frame:SetHeight(FilterConfig.size + 2 * padding)
+		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 124}
+	else
+		frame:SetWidth(FilterConfig.size + 2  *  padding)
+		frame:SetHeight(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
+		frame.Pos = {"RIGHT", UIParent, "RIGHT", -(frame:GetWidth() + 10), 0}
+	end
 
 	-- Move The Buttons Into Position And Reparent Them
 	_G.MultiBarLeft:SetParent(frame)
@@ -31,11 +38,20 @@ function Module:CreateBar5()
 		table_insert(buttonList, button) -- Add The Button Object To The List
 		button:SetSize(FilterConfig.size, FilterConfig.size)
 		button:ClearAllPoints()
-		if i == 1 then
-			button:SetPoint("TOPRIGHT", frame, -padding, -padding)
+		if layout == "Four Stacked" then
+			if i == 1 then
+				button:SetPoint("LEFT", frame, padding, 0)
+			else
+				local previous = _G["MultiBarLeftButton"..i - 1]
+				button:SetPoint("LEFT", previous, "RIGHT", margin, 0)
+			end
 		else
-			local previous = _G["MultiBarLeftButton"..i - 1]
-			button:SetPoint("TOP", previous, "BOTTOM", 0, -margin)
+			if i == 1 then
+				button:SetPoint("TOPRIGHT", frame, -padding, -padding)
+			else
+				local previous = _G["MultiBarLeftButton"..i - 1]
+				button:SetPoint("TOP", previous, "BOTTOM", 0, -margin)
+			end
 		end
 	end
 

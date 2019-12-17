@@ -1,24 +1,25 @@
 ## Interface: 80205
 ## Name: KkthnxUI
 ## Title: |cff4488ffKkthnxUI|r
-## Notes: |cff666666By Josh "Kkthnx" Russell|r |n|n|cffffffffA simple User Interface replacement |nAddOn for World of Warcraft.|r|r|n|n|cff4488ffThis addon supports:|r Battle for Azeroth |cff666666Patch: 8.0.1|r|n|n
+## Notes: |cff666666By Josh "Kkthnx" Russell|r |n|n|cffffffffA simple User Interface replacement |nAddOn for World of Warcraft.|r|r|n|n|cff4488ffThis addon supports:|r BFA |cff666666Patch: 8.2.5|r|n|n
 ## Author: Kkthnx
-## Version: 9.08
+## Version: 9.09
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIData
 ## SavedVariablesPerCharacter: KkthnxUIDataPerChar
-## OptionalDeps: KkthnxUI_Config, DBM, Recount, Skada, WeakAuras
+## OptionalDeps: KkthnxUI_Config, DBM, Recount, Skada, WeakAuras, RealMobHealth
 ## X-Category: Interface Enhancements
 ## X-Credits: Alza, Azilroka, Blazeflack, Caellian, Caith, Darth Predator, Elv, Firestorm Community, Goldpaw, Haleth, Haste, Hungtar, Hydra, Ishtara, KkthnxUI Community, LightSpark, Magicnachos, Merathilis, Nightcracker, P3lim, Rav99, Roth, Shestak, Simpy, Sticklord, Tekkub, Tohveli, Tukz, Tulla, Tuller, oUF Team
-## X-Thanks: MaxtorCoder, Elliot, Jubaleth
-## X-Curse-Packaged-Version: 9.08
-## X-Curse-Project-ID: 95528
+## X-Thanks: MaxtorCoder, Elliot, Jubaleth, Yoni @ twitch.tv/yoni
+## X-Curse-Packaged-Version: 9.09
+## X-Curse-Project-ID: 342348
 ## X-Curse-Project-Name: KkthnxUI
-## X-WoWI-ID: 24615
+## X-WoWI-ID: 25333
 ## X-Discord: https://discord.gg/YUmxqQm
 ## X-BugReport: https://github.com/kkthnx-wow/KkthnxUI/issues/new
 ## X-License: The MIT License (MIT)
-## X-Localizations: enUS
+## X-Localizations: enUS, deDE, ruRU, zhCN
+## X-Translation: deDE: |cff666666Baine|r, ruRU: |cff666666EnumaElis|r, zhCN: |cff666666yaoenqi|r
 ## X-oUF: oUFKkthnxUI
 ## X-Website: https://github.com/kkthnx-wow/KkthnxUI
 

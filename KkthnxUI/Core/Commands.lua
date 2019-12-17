@@ -1,6 +1,5 @@
 local K, C, L = unpack(select(2, ...))
 
--- Lua API
 local _G = _G
 local string_find = _G.string.find
 local string_gsub = _G.string.gsub
@@ -10,39 +9,25 @@ local string_trim = _G.string.trim
 local table_insert = _G.table.insert
 local table_remove = _G.table.remove
 
--- Wow API
 local AbandonQuest = _G.AbandonQuest
 local CombatLogClearEntries = _G.CombatLogClearEntries
 local ConvertToParty = _G.ConvertToParty
 local ConvertToRaid = _G.ConvertToRaid
-local DisableAllAddOns = _G.DisableAllAddOns
 local DoReadyCheck = _G.DoReadyCheck
-local EnableAddOn = _G.EnableAddOn
 local ERR_NOT_IN_GROUP = _G.ERR_NOT_IN_GROUP
--- local GetCurrentResolution = _G.GetCurrentResolution
--- local GetCVarBool = _G.GetCVarBool
+local EnableAddOn = _G.EnableAddOn
 local GetNumGroupMembers = _G.GetNumGroupMembers
 local GetNumQuestLogEntries = _G.GetNumQuestLogEntries
--- local GetRaidRosterInfo = _G.GetRaidRosterInfo
 local GetRealmName = _G.GetRealmName
--- local GetScreenResolutions = _G.GetScreenResolutions
--- local InCombatLockdown = _G.InCombatLockdown
-local IsInInstance = _G.IsInInstance
 local LeaveParty = _G.LeaveParty
-local LFGTeleport = _G.LFGTeleport
--- local MAX_PARTY_MEMBERS = _G.MAX_PARTY_MEMBERS
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
--- local PlaySound = _G.PlaySound
 local ReloadUI = _G.ReloadUI
 local RepopMe = _G.RepopMe
 local RetrieveCorpse = _G.RetrieveCorpse
 local SelectQuestLogEntry = _G.SelectQuestLogEntry
--- local SendChatMessage = _G.SendChatMessage
 local SetAbandonQuest = _G.SetAbandonQuest
 local SetCVar = _G.SetCVar
 local SlashCmdList = _G.SlashCmdList
--- local UninviteUnit = _G.UninviteUnit
--- local UnitExists = _G.UnitExists
 local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
@@ -100,12 +85,12 @@ SlashCmdList["KKUI_UIPROFILES"] = function(msg)
 	end
 
 	if KkthnxUIConfigPerAccount then
-		K.Print(L["Commands"].ConfigPerAccount)
+		K.Print(L["ConfigPerAccount"])
 		return
 	end
 
 	if not msg or msg == "" then
-		print(L["Commands"].ProfileInfo)
+		print(L["ProfileInfo"])
 	else
 		local IsConfigLoaded = IsAddOnLoaded("KkthnxUI_Config")
 		-- Split the msg into multiple arguments.
@@ -299,22 +284,22 @@ SlashCmdList["KKUI_CHECKQUESTSTATUS"] = function(questid)
 	questid = tonumber(questid)
 
 	if not questid then
-		print(L["Commands"].CheckQuestInfo)
-		--print("Enter questID found in Wowhead URL")
-		--print("http://wowhead.com/quest=ID")
-		--print("Example: /checkquest 12045")
+		print(L["CheckQuestInfo"])
+		-- print("Enter questID found in Wowhead URL")
+		-- print("http://wowhead.com/quest=ID")
+		-- print("Example: /checkquest 12045")
 
 		K.StaticPopup_Show("QUEST_CHECK_ID")
 		return
 	end
 
 	if (IsQuestFlaggedCompleted(questid) == true) then
-		UIErrorsFrame:AddMessage(QuestCheckComplete.."Quest ".. "|CFFFFFF00[" .. questid .. "]|r" .. L["Commands"].CheckQuestComplete)
-		PlaySoundFile("sound\\interface\\iquestcomplete.ogg")
+		UIErrorsFrame:AddMessage(QuestCheckComplete.."Quest ".. "|CFFFFFF00[" .. questid .. "]|r" .. L["CheckQuestComplete"])
+		PlaySound("878")
 		K.Print(WoWHeadLoc .. questid)
 	else
-		UIErrorsFrame:AddMessage(QuestCheckIncomplete.."Quest ".. "|CFFFFFF00[" .. questid .. "]|r" .. L["Commands"].CheckQuestNotComplete)
-		PlaySoundFile("sound\\interface\\igquestfailed.ogg")
+		UIErrorsFrame:AddMessage(QuestCheckIncomplete.."Quest ".. "|CFFFFFF00[" .. questid .. "]|r" .. L["CheckQuestNotComplete"])
+		PlaySound("847")
 		K.Print(WoWHeadLoc .. questid)
 	end
 end
@@ -381,7 +366,7 @@ end
 SLASH_KKUI_CLEARCOMBATLOG1 = "/clearcombat"
 SLASH_KKUI_CLEARCOMBATLOG2 = "/clfix"
 
--- Here we can restart wow's engine. could be use for sound issues and more.
+-- Here we can restart wow"s engine. could be use for sound issues and more.
 SlashCmdList["KKUI_FIXGFXENGINE"] = function()
 	K.StaticPopup_Show("RESTART_GFX")
 end
@@ -412,18 +397,32 @@ SLASH_KKUI_COMMANDSHELPS1 = "/helpui"
 
 -- Enable lua error by command
 function SlashCmdList.LUAERROR(msg)
-	msg = string_lower(msg)
-	if (msg == "on") then
-		DisableAllAddOns()
-		EnableAddOn("KkthnxUI")
-		EnableAddOn("KkthnxUI_Config")
+	local switch = strlower(msg)
+	if switch == "on" then
+		for i = 1, GetNumAddOns() do
+			local name = GetAddOnInfo(i)
+			if (name ~= "KkthnxUI" and name ~= "KkthnxUI_Config") and K.CheckAddOnState(name) then
+				DisableAddOn(name, K.Name)
+				_G.KkthnxUIData[GetRealmName()][UnitName("player")].LuaErrorDisabledAddOns[name] = i
+			end
+		end
+
 		SetCVar("scriptErrors", 1)
 		ReloadUI()
-	elseif (msg == "off") then
+	elseif switch == "off" then
+		if next(_G.KkthnxUIData[GetRealmName()][UnitName("player")].LuaErrorDisabledAddOns) then
+			for name in pairs(_G.KkthnxUIData[GetRealmName()][UnitName("player")].LuaErrorDisabledAddOns) do
+				EnableAddOn(name, K.Name)
+			end
+
+			wipe(_G.KkthnxUIData[GetRealmName()][UnitName("player")].LuaErrorDisabledAddOns)
+			ReloadUI()
+		end
+
 		SetCVar("scriptErrors", 0)
-		K.Print(L["Commands"].LuaErrorOff)
+		K.Print("Lua errors off.")
 	else
-		K.Print(L["Commands"].LuaErrorInfo)
+		K.Print("/luaerror on - /luaerror off")
 	end
 end
 _G.SLASH_LUAERROR1 = "/luaerror"
@@ -443,17 +442,6 @@ end
 _G.SLASH_PARTYTORAID1 = "/toraid"
 _G.SLASH_PARTYTORAID2 = "/toparty"
 _G.SLASH_PARTYTORAID3 = "/convert"
-
--- Instance teleport
-SlashCmdList["INSTTELEPORT"] = function()
-	local inInstance = IsInInstance()
-	if inInstance then
-		LFGTeleport(true)
-	else
-		LFGTeleport()
-	end
-end
-_G.SLASH_INSTTELEPORT1 = "/teleport"
 
 SlashCmdList["VOLUME"] = function(value)
 	local numValue = tonumber(value)
@@ -489,6 +477,5 @@ SlashCmdList["CLEARCHAT"] = function(cmd)
 		end
 	end
 end
-
 _G.SLASH_CLEARCHAT1 = "/clearchat"
 _G.SLASH_CLEARCHAT2 = "/chatclear"

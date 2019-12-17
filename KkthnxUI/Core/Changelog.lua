@@ -1,26 +1,35 @@
 local K = unpack(select(2,...))
-local Module = K:NewModule("Changelog", "AceTimer-3.0")
+local Module = K:NewModule("Changelog")
 
 local ChangeLogData = {
 	"Changes:",
-	"• Released v9.06",
-	"• Added AutoScale option. People were mad RAWR!",
-	"• Attempt fallback for non English clients for Config",
-	"• Config GUI should work on all Clients now. Fix Reminders as well",
-	"• Fix Alertframes/Grouploot... Grouploot should properly show now.",
-	"• Fix quick menu commands. Fix Skada skin.",
-	"• Remove this test, which was a fail. More problems than fixes :D",
-	"• Update how power is handled on raidframes",
+	"• Add Arena Frames",
+	"• Add Focus and FocusTarget frames. Update oUF",
+	"• Add Threat Back To Nameplates",
+	"• Add Threat Back to Player, Target, ToT, Pet, Party and Raid",
+	"• Cleanup and handle skins loading differently for addons",
+	"• Cleanup settings. Fix error when tracking honor",
+	"• Finish copychat rewrite, Add back minimap button",
+	"• Fix an error on new char load",
+	"• Overhaul Party / Raid Frames",
+	"• PowerPrediction and Classpower updates",
+	"• Refactor MicroMenu",
+	"• Toggle Inventory ItemGlow and Update Locales",
+	"• Update Bagbar code",
+	"• Update Taint Fixes",
+	"• Update and Fix QuestNotifier",
+	" ",
+	"• This update consists of 34 commits, 71,060 additions and 6,656 deletions",
 
     -- Important Notes We Want The User To Know!
-	" ",
-	"Notes:",
-	"• If you are enjoying the UI do not forget to drop by our DISCORD!",
-	" ",
-	"Social URLs:",
-	"• |cff7289DADiscord:|r https://discordapp.com/invite/mKKySTY",
-	"• |cff3b5998Facebook:|r https://www.facebook.com/kkthnxui",
-	"• |cff1da1f2Twitter:|r https://twitter.com/kkthnxui",
+    " ",
+    "Notes:",
+    "• If you are enjoying the UI do not forget to drop by our DISCORD!",
+    " ",
+    "Social URLs:",
+    "• |cff7289DADiscord:|r https://discord.gg/YUmxqQm",
+    "• |cff3b5998Facebook:|r https://www.facebook.com/kkthnxui",
+    "• |cff1da1f2Twitter:|r https://twitter.com/kkthnxui",
 }
 
 local URL_PATTERNS = {
@@ -86,25 +95,35 @@ function Module:CreateChangelog()
 	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 	frame:SetClampedToScreen(true)
 
-	local title = CreateFrame("Frame", nil, frame)
+	local title = CreateFrame("Button", nil, frame)
+	title:SkinButton()
 	title:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 0, 6)
-	title:SetSize(480, 30)
-	title:CreateBorder()
+	title:SetSize(480, 26)
+	title:SetScript("OnClick", function()
+		PlaySound(11803)
+	end)
+	title.title = "I dare you to click me!!!"
+	K.AddTooltip(title, "ANCHOR_TOP")
 
 	title.text = title:CreateFontString(nil, "OVERLAY")
 	title.text:FontTemplate(nil, 20, "")
 	title.text:SetPoint("CENTER", title, 0, 0)
 	title.text:SetText(K.Title.." ChangeLog v"..string.format("|cff4488ff%s|r", K.Version))
 
-	frame.close = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-	frame.close:SetPoint("BOTTOM", frame, "BOTTOM", 0, 10)
-	frame.close:SetText(CLOSE)
-	frame.close:SetSize(100, 22)
+	frame.close = CreateFrame("Button", nil, frame)
+	frame.close:SkinButton()
+	frame.close:SetSize(480, 24)
 	frame.close:SetScript("OnClick", function()
 		frame:Hide()
 	end)
-	frame.close:StripTextures()
-	frame.close:SkinButton()
+	frame.close:SetFrameLevel(frame:GetFrameLevel() + 1)
+	frame.close:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 0, -6)
+
+	frame.close.Text = frame.close:CreateFontString(nil, "OVERLAY")
+	frame.close.Text:FontTemplate(nil, 16, "")
+	frame.close.Text:SetPoint("CENTER", frame.close)
+	frame.close.Text:SetTextColor(1, 0, 0)
+	frame.close.Text:SetText("|cffFF0000"..CLOSE.."|r")
 
 	local offset = 4
 	for i = 1, #ChangeLogData do

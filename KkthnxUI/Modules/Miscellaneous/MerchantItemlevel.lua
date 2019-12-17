@@ -4,13 +4,13 @@ local Module = K:GetModule("Miscellaneous")
 local _G = _G
 
 local GetItemInfo = _G.GetItemInfo
+local GetItemQualityColor = _G.GetItemQualityColor
 local GetMerchantItemLink = _G.GetMerchantItemLink
 local GetMerchantNumItems = _G.GetMerchantNumItems
-local hooksecurefunc = _G.hooksecurefunc
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
 local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
 local MERCHANT_ITEMS_PER_PAGE = _G.MERCHANT_ITEMS_PER_PAGE
-local GetItemQualityColor = _G.GetItemQualityColor
+local hooksecurefunc = _G.hooksecurefunc
 
 function Module:MerchantItemlevel()
 	local numItems = GetMerchantNumItems()
@@ -22,7 +22,7 @@ function Module:MerchantItemlevel()
 			return
 		end
 
-		local button = _G["MerchantItem" .. i .. "ItemButton"]
+		local button = _G["MerchantItem"..i.."ItemButton"]
 		if button and button:IsShown() then
 			if not button.text then
 				button.text = button:CreateFontString(nil, "OVERLAY", "SystemFont_Outline_Small")

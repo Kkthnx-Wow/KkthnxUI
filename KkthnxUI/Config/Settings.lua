@@ -4,12 +4,8 @@ local _G = _G
 
 local DAMAGE = _G.DAMAGE
 local DISABLE = _G.DISABLE
-local GetCurrentRegion = _G.GetCurrentRegion
-local GUILD = _G.GUILD
 local HEALER = _G.HEALER
 local IsAddOnLoaded = _G.IsAddOnLoaded
-local NONE = _G.NONE
-local PLAYER = _G.PLAYER
 
 -- Actionbar
 C["ActionBar"] = {
@@ -17,12 +13,10 @@ C["ActionBar"] = {
 	["Count"] = true,
 	["DecimalCD"] = true,
 	["DefaultButtonSize"] = 34,
-	["DisableStancePages"] = K.Class == "DRUID",
 	["Enable"] = true,
 	["EquipBorder"] = true,
 	["FadeRightBar"] = false,
 	["FadeRightBar2"] = false,
-	["HideHighlight"] = false,
 	["Hotkey"] = true,
 	["Macro"] = true,
 	["MicroBar"] = true,
@@ -30,6 +24,14 @@ C["ActionBar"] = {
 	["OverrideWA"] = false,
 	["RightButtonSize"] = 34,
 	["StancePetSize"] = 28,
+	["Layout"] = {
+		["Options"] = {
+			["Mainbar 2x3x4"] = "3x4 Boxed arrangement",
+			["Mainbar 3x12"] = "Default Style",
+			["Mainbar 4x12"] = "Four Stacked",
+		},
+		["Value"] = "Default Style"
+	},
 }
 
 -- Announcements
@@ -43,7 +45,8 @@ C["Announcements"] = {
 			["Party Chat"] = "PARTY",
 			["Raid Chat Only"] = "RAID_ONLY",
 			["Raid Chat"] = "RAID",
-			["Say Chat"] = "SAY"
+			["Say Chat"] = "SAY",
+			["Yell Chat"] = "YELL"
 		},
 		["Value"] = "PARTY"
 	},
@@ -51,7 +54,6 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
-	["AutoBubbles"] = true,
 	["AutoCollapse"] = false,
 	["AutoDisenchant"] = false,
 	["AutoInvite"] = false,
@@ -60,11 +62,9 @@ C["Automation"] = {
 	["AutoResurrect"] = false,
 	["AutoResurrectThank"] = false,
 	["AutoReward"] = false,
+	["AutoSetRole"] = false,
 	["AutoTabBinder"] = false,
 	["BlockMovies"] = false,
-	["DeclinePetDuel"] = false,
-	["DeclinePvPDuel"] = false,
-	["ScreenShot"] = false,
 	["WhisperInvite"] = "inv",
 }
 
@@ -72,17 +72,18 @@ C["Inventory"] = {
 	["AutoSell"] = true,
 	["BagBar"] = true,
 	["BagBarMouseover"] = false,
-	["BagColumns"] = 10,
-	["BankColumns"] = 17,
-	["ButtonSize"] = 32,
-	["ButtonSpace"] = 6,
-	["DetailedReport"] = false,
+	["BagsWidth"] = 12,
+	["BagsiLvl"] = true,
+	["BankWidth"] = 14,
+	["DeleteButton"] = true,
 	["Enable"] = true,
-	["ItemLevel"] = false,
-	["JunkIcon"] = true,
-	["PulseNewItem"] = false,
-	["ReverseLoot"] = false,
-	["SortInverted"] = false,
+	["GatherEmpty"] = false,
+	["IconSize"] = 34,
+	["ItemFilter"] = true,
+	["ItemSetFilter"] = false,
+	["QuestItemFilter"] = false,
+	["ShowNewItem"] = true,
+	["TradeGoodsFilter"] = false,
 	["AutoRepair"] = {
 		["Options"] = {
 			[NONE] = "NONE",
@@ -109,15 +110,14 @@ C["Auras"] = {
 C["Chat"] = {
 	["Background"] = false,
 	["BackgroundAlpha"] = 0.25,
-	["BlockAddonAlert"] = true,
 	["ChatItemLevel"] = true,
+	["ChatMenu"] = true,
 	["Enable"] = true,
 	["EnableFilter"] = true,
 	["Fading"] = true,
 	["FadingTimeFading"] = 3,
 	["FadingTimeVisible"] = 20,
 	["Height"] = 149,
-	["QuickJoin"] = false,
 	["ScrollByX"] = 3,
 	["ShortenChannelNames"] = true,
 	["TabsMouseover"] = true,
@@ -130,7 +130,7 @@ C["DataBars"] = {
 	["AzeriteColor"] = {.901, .8, .601},
 	["Enable"] = true,
 	["ExperienceColor"] = {0, 0.4, 1, .8},
-	["Height"] = 12,
+	["Height"] = 14,
 	["HonorColor"] = {240/255, 114/255, 65/255},
 	["MouseOver"] = false,
 	["RestedColor"] = {1, 0, 1, 0.2},
@@ -141,11 +141,8 @@ C["DataBars"] = {
 
 -- Datatext
 C["DataText"] = {
-	["Battleground"] = true,
-	["LocalTime"] = true,
 	["System"] = true,
 	["Time"] = true,
-	["Time24Hr"] = GetCurrentRegion() ~= 1
 }
 
 C["Filger"] = {
@@ -175,6 +172,13 @@ C["General"] = {
 	["TexturesColor"] = {0.9, 0.9, 0.9},
 	["UIScale"] = 0.71111,
 	["Welcome"] = true,
+	["Border"] = {
+		["Options"] = {
+			["KkthnxUI"] = 1,
+			["Goldpaw"] = 2,
+		},
+		["Value"] = 1
+	},
 	["NumberPrefixStyle"] = {
 		["Options"] = {
 			["Standard: b/m/k"] = 1,
@@ -196,7 +200,7 @@ C["General"] = {
 
 -- Loot
 C["Loot"] = {
-	["AutoDisenchant"] = false,
+	["AutoConfirm"] = false,
 	["AutoGreed"] = false,
 	["Enable"] = true,
 	["FastLoot"] = false,
@@ -205,103 +209,95 @@ C["Loot"] = {
 
 -- Minimap
 C["Minimap"] = {
-	["Calendar"] = true,
 	["Enable"] = true,
-	["GarrisonLandingPage"] = true,
 	["ResetZoom"] = false,
 	["ResetZoomTime"] = 4,
+	["ShowGarrison"] = true,
 	["ShowRecycleBin"] = true,
 	["Size"] = 180,
+	["LocationText"] = {
+		["Options"] = {
+			["Always Display"] = "SHOW",
+			["Hide"] = "Hide",
+			["Minimap Mouseover"] = "MOUSEOVER",
+		},
+		["Value"] = "MOUSEOVER"
+	},
+	["BlipTexture"] = {
+		["Options"] = {
+			["Blizzard"] = "Interface\\MiniMap\\ObjectIconsAtlas",
+			["Charmed"] = "Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\Blip-Charmed",
+			["Nandini"] = "Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\Blip-Nandini-New",
+		},
+		["Value"] = "Interface\\MiniMap\\ObjectIconsAtlas"
+	},
 }
 
 -- Miscellaneous
 C["Misc"] = {
 	["AFKCamera"] = false,
 	["ColorPicker"] = false,
+	["EnchantmentScroll"] = false,
 	["EnhancedFriends"] = false,
 	["GemEnchantInfo"] = false,
 	["ImprovedStats"] = false,
 	["ItemLevel"] = false,
 	["KillingBlow"] = false,
 	["NoTalkingHead"] = false,
-	["ProfessionTabs"] = false,
 	["PvPEmote"] = false,
 	["SlotDurability"] = false,
+	["TradeTabs"] = false,
 }
 
 C["Nameplates"] = {
-	["GoodColor"] = {0.2, 0.8, 0.2},
-	["NearColor"] = {1, 1, 0},
 	["BadColor"] = {1, 0, 0},
-	["OffTankColor"] = {0, 0.5, 1},
 	["Clamp"] = false,
-	["ClassResource"] = true,
-	["Combat"] = false,
-	["Distance"] = 40,
+	["ClassIcons"] = false,
 	["Enable"] = true,
+	["GoodColor"] = {0.2, 0.8, 0.2},
 	["HealthValue"] = true,
-	["Height"] = 13,
+	["Height"] = 11,
+	["HighlightColor"] = {1, 1, 0},
+	["LoadDistance"] = 40,
+	["NearColor"] = {1, 1, 0},
 	["NonTargetAlpha"] = 0.35,
+	["OffTankColor"] = {0, 0.5, 1},
 	["OverlapH"] = 1.2,
-	["OverlapV"] = 1.2,
 	["QuestInfo"] = true,
-	["SelectedScale"] = 1.4,
+	["SelectedScale"] = 1.2,
+	["ShowFullHealth"] = true,
+	["ShowHealPrediction"] = false,
 	["Smooth"] = false,
-	["TankMode"] = false,
 	["Threat"] = false,
 	["TrackAuras"] = true,
+	["VerticalSpacing"] = 0.7,
 	["Width"] = 140,
-	["TargetArrowMark"] = {
-		["Options"] = {
-			["None"] = "NONE",
-			["Left / Right"] = "LEFT/RIGHT",
-			["Top"] = "TOP",
-		},
-		["Value"] = "LEFT/RIGHT"
-	},
-	["HealthFormat"] = {
-		["Options"] = {
-			["Current"] = "[KkthnxUI:HealthCurrent]",
-			["Percent"] = "[KkthnxUI:HealthPercent]",
-			["Current / Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
-		},
-		["Value"] = "[KkthnxUI:HealthPercent]"
-	},
-	["ShowEnemyCombat"] = {
-		["Options"] = {
-			[DISABLE] = "DISABLED",
-			["Toggle On In Combat"] = "TOGGLE_ON",
-			["Toggle Off In Combat"] = "TOGGLE_OFF",
-
-		},
-		["Value"] = "DISABLED"
-	},
-	["ShowFriendlyCombat"] = {
-		["Options"] = {
-			[DISABLE] = "DISABLED",
-			["Toggle On In Combat"] = "TOGGLE_ON",
-			["Toggle Off In Combat"] = "TOGGLE_OFF",
-
-		},
-		["Value"] = "DISABLED"
-	}
+	["HealthbarColor"] = {
+        ["Options"] = {
+            ["Dark"] = "Dark",
+            ["Value"] = "Value",
+            ["Class"] = "Class",
+        },
+        ["Value"] = "Class"
+    },
 }
 
 -- Skins
 C["Skins"] = {
-	--["BlizzardBags"] = false,
+	["BigWigs"] = false,
 	["ChatBubbles"] = true,
 	["DBM"] = false,
 	["Details"] = false,
-	["Hekili"] = false,
 	["Skada"] = false,
+	["Spy"] = false,
 	["TalkingHeadBackdrop"] = true,
+	["TitanClassic"] = false,
 	["WeakAuras"] = false,
 }
 
 -- Tooltip
 C["Tooltip"] = {
-	["AzeriteArmor"] = true,
+	["AzeriteArmor"] = false,
 	["ClassColor"] = false,
 	["CombatHide"] = false,
 	["Cursor"] = false,
@@ -312,6 +308,7 @@ C["Tooltip"] = {
 	["HideTitle"] = true,
 	["Icons"] = true,
 	["LFDRole"] = false,
+	["ShowIDs"] = false,
 	["SpecLevelByShift"] = true,
 	["TargetBy"] = true,
 }
@@ -355,65 +352,91 @@ C["Unitframe"] = {
 	["CastReactionColor"] = true,
 	["CastbarLatency"] = true,
 	["Castbars"] = true,
-	["ClassResource"] = true,
+	["ClassResources"] = true,
 	["CombatFade"] = false,
-	["CombatText"] = true,
+	["CombatText"] = false,
 	["DebuffHighlight"] = true,
 	["DebuffsOnTop"] = true,
 	["Enable"] = true,
 	["GlobalCooldown"] = false,
 	["HideTargetofTarget"] = false,
 	["OnlyShowPlayerDebuff"] = false,
+	["PlayerAuraBars"] = false,
 	["PlayerBuffs"] = false,
 	["PlayerCastbarHeight"] = 24,
 	["PlayerCastbarWidth"] = 260,
+	["PlayerPowerPrediction"] = true,
 	["PortraitTimers"] = false,
+	["PvPIndicator"] = true,
+	["ShowHealPrediction"] = true,
 	["ShowPlayerLevel"] = true,
 	["ShowPlayerName"] = false,
 	["Smooth"] = false,
+	["Stagger"] = true,
 	["Swingbar"] = false,
 	["SwingbarTimer"] = false,
+	["TargetAuraBars"] = false,
 	["TargetCastbarHeight"] = 24,
 	["TargetCastbarWidth"] = 260,
 	["TotemBar"] = true,
-	["PlayerHealthFormat"] = {
-		["Options"] = {
-			["Current"] = "[KkthnxUI:HealthCurrent]",
-			["Percent"] = "[KkthnxUI:HealthPercent]",
-			["Current / Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
-		},
-		["Value"] = "[KkthnxUI:HealthCurrent]"
+	["HealthbarColor"] = {
+        ["Options"] = {
+            ["Dark"] = "Dark",
+            ["Value"] = "Value",
+            ["Class"] = "Class",
+        },
+        ["Value"] = "Class"
 	},
-	["TargetHealthFormat"] = {
-		["Options"] = {
-			["Current"] = "[KkthnxUI:HealthCurrent]",
-			["Percent"] = "[KkthnxUI:HealthPercent]",
-			["Current / Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
-		},
-		["Value"] = "[KkthnxUI:HealthCurrent-Percent]"
-	}
 }
 
 C["Party"] = {
 	["Castbars"] = false,
 	["Enable"] = true,
+	["HorizonParty"] = false,
 	["PortraitTimers"] = false,
 	["ShowBuffs"] = true,
+	["ShowHealPrediction"] = true,
+	["ShowPet"] = false,
 	["ShowPlayer"] = true,
+	["ShowTarget"] = false,
 	["Smooth"] = false,
 	["TargetHighlight"] = false,
-}
-
-C["Arena"] = {
-	["Castbars"] = true,
-	["Enable"] = true,
-	["Smooth"] = false,
+	["HealthbarColor"] = {
+        ["Options"] = {
+            ["Dark"] = "Dark",
+            ["Value"] = "Value",
+            ["Class"] = "Class",
+        },
+        ["Value"] = "Class"
+    },
 }
 
 C["Boss"] = {
 	["Castbars"] = true,
 	["Enable"] = true,
 	["Smooth"] = false,
+	["HealthbarColor"] = {
+        ["Options"] = {
+            ["Dark"] = "Dark",
+            ["Value"] = "Value",
+            ["Class"] = "Class",
+        },
+        ["Value"] = "Class"
+    },
+}
+
+C["Arena"] = {
+	["Castbars"] = true,
+	["Enable"] = true,
+	["Smooth"] = false,
+	["HealthbarColor"] = {
+        ["Options"] = {
+            ["Dark"] = "Dark",
+            ["Value"] = "Value",
+            ["Class"] = "Class",
+        },
+        ["Value"] = "Class"
+    },
 }
 
 -- Raidframe
@@ -425,23 +448,26 @@ C["Raid"] = {
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
 	["Height"] = 40,
+	["HorizonRaid"] = true,
 	["MainTankFrames"] = true,
 	["ManabarShow"] = false,
-	["MaxUnitPerColumn"] = 10,
+	["NumGroups"] = 6,
 	["RaidUtility"] = true,
-	["ShowGroupText"] = true,
+	["ReverseRaid"] = false,
 	["ShowNotHereTimer"] = true,
-	["ShowRolePrefix"] = false,
+	["ShowTeamIndex"] = false,
 	["Smooth"] = false,
+	["SpecRaidPos"] = false,
 	["TargetHighlight"] = false,
 	["Width"] = 66,
-	["RaidLayout"] = {
-		["Options"] = {
-			[DAMAGE] = "Damage",
-			[HEALER] = "Healer"
-		},
-		["Value"] = "Damage"
-	},
+	["HealthbarColor"] = {
+        ["Options"] = {
+            ["Dark"] = "Dark",
+            ["Value"] = "Value",
+            ["Class"] = "Class",
+        },
+        ["Value"] = "Class"
+    },
 	["GroupBy"] = {
 		["Options"] = {
 			["Group"] = "GROUP",
@@ -451,19 +477,23 @@ C["Raid"] = {
 		["Value"] = "GROUP"
 	},
 	["HealthFormat"] = {
-		["Options"] = {
-			["Deficit"] = "[KkthnxUI:HealthDeficit]",
-			["Percent"] = "[KkthnxUI:HealthPercent]",
-		},
-		["Value"] = "[KkthnxUI:HealthDeficit]"
-	}
+        ["Options"] = {
+			["DisableRaidHP"] = 1,
+			["RaidHPPercent"] = 2,
+			["RaidHPCurrent"] = 3,
+			["RaidHPLost"] = 4,
+        },
+        ["Value"] = 1
+    },
 }
 
-C["QuestNotifier"] = {
-	["Enable"] = IsAddOnLoaded("QuestNotifier") and false,
-	["OnlyCompleteRing"] = false,
-	["QuestProgress"] = false,
-}
+if not IsAddOnLoaded("QuestNotifier") then
+	C["QuestNotifier"] = {
+		["Enable"] = IsAddOnLoaded("QuestNotifier") and false,
+		["OnlyCompleteRing"] = false,
+		["QuestProgress"] = false,
+	}
+end
 
 -- Worldmap
 C["WorldMap"] = {

@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 local Module = K:GetModule("Chat")
 
 local _G = _G
@@ -30,6 +30,7 @@ end
 
 local function highlightURL(_, url)
 	foundurl = true
+
 	return " "..convertLink("["..url.."]", url).." "
 end
 
@@ -41,27 +42,32 @@ function Module:SearchForURL(text, ...)
 	end
 
 	if not foundurl then
-		--192.168.1.1:1234
+		-- 192.168.1.1:1234
 		text = string_gsub(text, "(%s?)(%d%d?%d?%.%d%d?%d?%.%d%d?%d?%.%d%d?%d?:%d%d?%d?%d?%d?)(%s?)", highlightURL)
 	end
+
 	if not foundurl then
-		--192.168.1.1
+		-- 192.168.1.1
 		text = string_gsub(text, "(%s?)(%d%d?%d?%.%d%d?%d?%.%d%d?%d?%.%d%d?%d?)(%s?)", highlightURL)
 	end
+
 	if not foundurl then
-		--www.teamspeak.com:3333
+		-- www.teamspeak.com:3333
 		text = string_gsub(text, "(%s?)([%w_-]+%.?[%w_-]+%.[%w_-]+:%d%d%d?%d?%d?)(%s?)", highlightURL)
 	end
+
 	if not foundurl then
-		--http://www.google.com
+		-- http://www.google.com
 		text = string_gsub(text, "(%s?)(%a+://[%w_/%.%?%%=~&-'%-]+)(%s?)", highlightURL)
 	end
+
 	if not foundurl then
-		--www.google.com
+		-- www.google.com
 		text = string_gsub(text, "(%s?)(www%.[%w_/%.%?%%=~&-'%-]+)(%s?)", highlightURL)
 	end
+
 	if not foundurl then
-		--lol@lol.com
+		-- lol@lol.com
 		text = string_gsub(text, "(%s?)([_%w-%.~-]+@[_%w-]+%.[_%w-%.]+)(%s?)", highlightURL)
 	end
 
@@ -175,13 +181,3 @@ function Module:CreateCopyURL()
 	hooksecurefunc("ChatFrame_OnHyperlinkShow", self.HyperlinkShowHook)
 	hooksecurefunc("SetItemRef", self.SetItemRefHook)
 end
-
--- function Module:CreateCopyURL()
--- 	if C["Chat"].Enable ~= true then
--- 		return
--- 	end
-
--- 	for _, event in pairs(FindURL_Events) do
--- 		ChatFrame_AddMessageEventFilter(event, Module[event] or Module.FindURL)
--- 	end
--- end

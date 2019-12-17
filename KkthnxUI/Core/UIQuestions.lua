@@ -6,20 +6,29 @@ local string_gmatch = _G.string.gmatch
 local CreateFrame = _G.CreateFrame
 
 local UI_QUESTIONS = {
-    "• Q' How do I use Raid as Party?",
-    "• A' Disable the Party frames in config.",
+    "• Q': How do I use Raid as Party?",
+    "• A': Disable the Party frames in config.",
     " ",
-    "• Q' How do I add/remove Actionbars?",
-    "• A' ESC > Interface > ActionBars.",
+    "• Q': How do I add/remove Actionbars?",
+    "• A': ESC > Interface > ActionBars.",
     " ",
-    "• Q' Where are my Minimap buttons?",
-    "• A' Click the blue icon bottomleft of the minimap.",
+    "• Q': Where are my Minimap buttons?",
+    "• A': Click the pink icon BOTTOMLEFT of the minimap.",
     " ",
-    "• Q' How do I move spells on my bars?",
-    "• A' Hold Shift + Left-Click and drag.",
+    "• Q': How do I move spells on my bars?",
+    "• A': Hold Shift + Left-Click and drag.",
     " ",
-    "• Q' Why are my Nameplates different in Instances/Raids?",
-    "• A' Blame Blizzard for this. Call Them and complain 1-800-592-5499",
+    "• Q': How do I move stuff?",
+    "• A': Use the command |cFFFFFF00/moveui|r.",
+    " ",
+    "• Q': How do I scale the UI?",
+    "• A': ESC > KkthnxUI > General > Uncheck AutoScale > Input UIScale.",
+    " ",
+    "• Q': Why are my Nameplates not skinned in Instances/Raids?",
+    "• A': Blame Blizzard for this. Call them and complain 1-800-592-5499",
+    " ",
+    "• Q': Why are chat bubbles not skinned in Instances/Raids?",
+    "• A': Blame Blizzard for this. Call them and complain 1-800-592-5499",
 }
 
 local function ModifiedString(string)
@@ -64,30 +73,27 @@ local function CreateUIQuestions()
             return
 		end
 
-		local offset = 36
+		local offset = 10
 
-		local titleText = self:CreateFontString(nil, "OVERLAY")
-		titleText:FontTemplate(nil, 20, "")
-		titleText:SetPoint("CENTER", self, "TOP", 0, -16)
-		titleText:SetText(K.Title.." Frequently Answered Questions")
-
-		local headerBar = self:CreateTexture(nil, "ARTWORK")
-		headerBar:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
-		headerBar:SetTexCoord(0, 0.6640625, 0, 0.3125)
-		headerBar:SetVertexColor(1, 1, 1)
-		headerBar:SetPoint("CENTER", titleText)
-		headerBar:SetSize(titleText:GetWidth() + 4, 30)
+		local titleText = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+        titleText:FontTemplate(nil, 20, "")
+        titleText:SetShadowColor(0, 0, 0)
+        titleText:SetShadowOffset(1, -1)
+		titleText:SetPoint("TOPLEFT", 16, -16)
+		titleText:SetText("Frequently Answered Questions")
 
         for i = 1, #UI_QUESTIONS do
             local button = CreateFrame("Frame", "Button"..i, self)
             button:SetSize(375, 16)
-            button:SetPoint("TOPLEFT", self, "TOPLEFT", 5, -offset)
+            button:SetPoint("TOPLEFT", titleText, "BOTTOMLEFT", 0, -offset)
 
             if i <= #UI_QUESTIONS then
                 local string = ModifiedString(GetUIQuestionsInfo(i))
 
                 button.Text = button:CreateFontString(nil, "OVERLAY")
                 button.Text:FontTemplate(nil, 12, "")
+                button.Text:SetShadowColor(0, 0, 0)
+                button.Text:SetShadowOffset(1, -1)
                 button.Text:SetPoint("CENTER")
                 button.Text:SetPoint("LEFT", 0, 0)
                 button.Text:SetText(string)

@@ -1,8 +1,7 @@
 local K = unpack(select(2, ...))
-local Module = K:NewModule("Announcements", "AceEvent-3.0")
+local Module = K:NewModule("Announcements")
 
 function Module:OnEvent()
-    Module:CreateArenaAnnounce()
     Module:CreateInterruptAnnounce()
     Module:CreateSaySappedAnnounce()
 end

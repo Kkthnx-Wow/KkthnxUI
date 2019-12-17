@@ -5,7 +5,7 @@ local _G = _G
 local string_format = string.format
 
 local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
-local InterruptMessage = _G.INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"
+local InterruptMessage = "Interrupted %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"
 local IsActiveBattlefieldArena = _G.IsActiveBattlefieldArena
 local IsArenaSkirmish = _G.IsArenaSkirmish
 local IsInGroup = _G.IsInGroup
@@ -44,8 +44,10 @@ function Module:SetupInterruptAnnounce()
 		SendChatMessage(msg, inPartyLFG and "INSTANCE_CHAT" or (inRaid and "RAID" or "PARTY"))
 	elseif interruptAnnounce == "RAID_ONLY" and inRaid then
 		SendChatMessage(msg, inPartyLFG and "INSTANCE_CHAT" or "RAID")
-	elseif interruptAnnounce == "SAY" then
+	elseif interruptAnnounce == "SAY" and instanceType ~= "none" then
 		SendChatMessage(msg, "SAY")
+	elseif interruptAnnounce == "YELL" and instanceType ~= "none" then
+		SendChatMessage(msg, "YELL")
 	elseif interruptAnnounce == "EMOTE" then
 		SendChatMessage(msg, "EMOTE")
 	end

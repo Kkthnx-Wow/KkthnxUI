@@ -189,7 +189,16 @@ K.PopupDialogs["DELETE_GRAYS"] = {
 	button1 = _G.YES,
 	button2 = _G.NO,
 	OnAccept = function()
-		K:GetModule("Vendor"):VendorGrays(true)
+		for bag = 0, 4 do
+			for slot = 1, GetContainerNumSlots(bag) do
+				local name = GetContainerItemLink(bag,slot)
+				if name and string.find(name, "9d9d9d") then
+					print(name)
+					PickupContainerItem(bag,slot)
+					DeleteCursorItem()
+				end
+			end
+		end
 	end,
 	OnShow = function(self)
 		MoneyFrame_Update(self.moneyFrame, K.PopupDialogs["DELETE_GRAYS"].Money)

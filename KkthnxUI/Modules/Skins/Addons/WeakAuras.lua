@@ -1,10 +1,6 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
-if C["Skins"].WeakAuras ~= true then
-	return
-end
-
 local _G = _G
 local pairs = _G.pairs
 local unpack = _G.unpack
@@ -14,10 +10,11 @@ local IsAddOnLoaded = _G.IsAddOnLoaded
 local WeakAuras = _G.WeakAuras
 
 -- WeakAuras skin
-local ReskinWeakAuras = CreateFrame("Frame")
-ReskinWeakAuras:RegisterEvent("PLAYER_LOGIN")
-ReskinWeakAuras:RegisterEvent("ADDON_LOADED")
-ReskinWeakAuras:SetScript("OnEvent", function()
+function Module:ReskinWeakAuras()
+	if C["Skins"].WeakAuras ~= true then
+		return
+	end
+
 	if not IsAddOnLoaded("WeakAuras") then
 		return
 	end
@@ -79,4 +76,4 @@ ReskinWeakAuras:SetScript("OnEvent", function()
 			Skin_WeakAuras(regions.region, regions.regionType)
 		end
 	end
-end)
+end

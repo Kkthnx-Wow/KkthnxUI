@@ -77,21 +77,19 @@ end
 
 local function StatsPane(which)
 	local CharacterStatsPane = _G.CharacterStatsPane
-	local r, g, b = K.r, K.g, K.b
 
 	CharacterStatsPane[which]:StripTextures()
 	CharacterStatsPane[which].Title:SetFontObject(K.GetFont(C["UIFonts"].SkinFonts))
 	CharacterStatsPane[which].Title:SetFont(select(1, CharacterStatsPane[which].Title:GetFont()), 14, select(3, CharacterStatsPane[which].Title:GetFont()))
-	CharacterStatsPane[which].Title:SetTextColor(r, g, b)
+	CharacterStatsPane[which].Title:SetTextColor(255/255, 255/255, 255/255)
 
 	local headerBar = CharacterStatsPane[which]:CreateTexture(nil, "ARTWORK")
 	headerBar:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
 	headerBar:SetTexCoord(0, 0.6640625, 0, 0.3125)
-	headerBar:SetVertexColor(r, g, b)
+	headerBar:SetVertexColor(255/255, 204/255, 0/255)
 	headerBar:SetPoint("CENTER", CharacterStatsPane[which])
 	headerBar:SetSize(232, 30)
 end
-
 
 local function ReskinCharacterFrame()
 	if CharacterFrame:IsShown() then
@@ -146,7 +144,7 @@ local function ReskinCharacterFrame()
 	CharacterModelFrame:SetSize(0, 0)
 	CharacterModelFrame:ClearAllPoints()
 	CharacterModelFrame:SetPoint("TOPLEFT", CharacterFrame.Inset, 0, 0)
-	CharacterModelFrame:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, 0, 30)
+	CharacterModelFrame:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, 0, 20)
 	CharacterModelFrame:SetCamDistanceScale(1.1)
 
 	hooksecurefunc("CharacterFrame_Expand", function()

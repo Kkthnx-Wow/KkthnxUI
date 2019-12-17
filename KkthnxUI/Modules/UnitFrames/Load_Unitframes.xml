@@ -3,8 +3,8 @@
 	<!-- Load_Unitframes -->
 	<Script file="Core.lua" />
 	<Script file="Tags.lua" />
+	<Script file="Range.lua" />
 
-	<Include file="Elements\Load_Elements.xml" />
 	<Include file="Units\Load_Units.xml" />
 	<Include file="Groups\Load_Groups.xml" />
 </Ui>

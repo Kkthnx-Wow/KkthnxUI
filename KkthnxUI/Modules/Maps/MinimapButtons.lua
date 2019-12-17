@@ -24,35 +24,30 @@ function Module:CreateRecycleBin()
 	local r, g, b = K.r, K.g, K.b
 	local buttons = {}
 	local blackList = {
-		["BattlefieldMinimap"] = true,
-		["ButtonCollectFrame"] = true,
-		["FeedbackUIButton"] = true,
 		["GameTimeFrame"] = true,
-		["GarrisonLandingPageMinimapButton"] = true,
-		["HelpOpenTicketButton"] = true,
-		["HelpOpenWebTicketButton"] = true,
-		["MiniMapBattlefieldFrame"] = true,
 		["MiniMapLFGFrame"] = true,
-		["MiniMapMailFrame"] = true,
-		["MiniMapTracking"] = true,
-		["MiniMapVoiceChatFrame"] = true,
+		["BattlefieldMinimap"] = true,
 		["MinimapBackdrop"] = true,
-		["MinimapZoneTextButton"] = true,
-		["MinimapZoomIn"] = true,
-		["MinimapZoomOut"] = true,
+		["TimeManagerClockButton"] = true,
+		["FeedbackUIButton"] = true,
+		["HelpOpenTicketButton"] = true,
+		["MiniMapBattlefieldFrame"] = true,
 		["QueueStatusMinimapButton"] = true,
+		["GarrisonLandingPageMinimapButton"] = true,
+		["MinimapZoneTextButton"] = true,
 		["RecycleBinFrame"] = true,
 		["RecycleBinToggleButton"] = true,
-		["TimeManagerClockButton"] = true,
 	}
 
 	local bu = CreateFrame("Button", "RecycleBinToggleButton", Minimap)
+	bu:SetAlpha(0.8)
 	bu:SetSize(24, 24)
-	bu:SetPoint("BOTTOMLEFT", -15, -15)
+	bu:SetPoint("BOTTOMLEFT", -11, -5)
+	bu:SetHitRectInsets(8, 8, 8, 4)
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 	bu.Icon:SetAllPoints()
-	bu.Icon:SetTexture("Interface\\HelpFrame\\ReportLagIcon-Loot")
-	bu:SetHighlightTexture("Interface\\HelpFrame\\ReportLagIcon-Loot")
+	bu.Icon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\RecycleButton")
+	bu:SetHighlightTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\RecycleButton")
 	K.AddTooltip(bu, "ANCHOR_LEFT", "Minimap RecycleBin", "white")
 
 	local bin = CreateFrame("Frame", "RecycleBinFrame", UIParent)
@@ -79,10 +74,29 @@ function Module:CreateRecycleBin()
 		C_Timer_After(0.5, hideBinButton)
 	end
 
+	local secureAddons = {
+		["HANDYNOTESPIN"] = true,
+	}
+
+	local function isButtonSecure(name)
+		name = string_upper(name)
+		for addonName in pairs(secureAddons) do
+			if string_match(name, addonName) then
+				return true
+			end
+		end
+	end
+
+	local isCollecting
 	local function CollectRubbish()
+		if isCollecting then
+			return
+		end
+		isCollecting = true
+
 		for _, child in ipairs({Minimap:GetChildren()}) do
 			local name = child:GetName()
-			if name and not blackList[name] and not string_match(string_upper(name), "HANDYNOTES") then
+			if name and not blackList[name] and not isButtonSecure(name) then
 				if child:GetObjectType() == "Button" or string_match(string_upper(name), "BUTTON") then
 					child:SetParent(bin)
 					child:SetSize(22, 22)
@@ -135,6 +149,8 @@ function Module:CreateRecycleBin()
 				end
 			end
 		end
+
+		isCollecting = nil
 	end
 
 	local function SortRubbish()

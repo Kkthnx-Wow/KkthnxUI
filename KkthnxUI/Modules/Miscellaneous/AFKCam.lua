@@ -26,14 +26,14 @@ function Module:UpdateTime(Value)
 	local Seconds = Module.Seconds
 
 	if (Value >= 60) then
-		Minutes = math_floor(Value/60)
-		Seconds = Value - Minutes*60
+		Minutes = math_floor(Value / 60)
+		Seconds = Value - Minutes * 60
 	else
 		Minutes = 0
 		Seconds = Value
 	end
 
-	self.Time:SetText("|cffffffff" .. string_format("%.2d", Minutes) .. ":" .. string_format("%.2d", Seconds) .. "|r")
+	self.Time:SetText("|cffffffff"..string_format("%.2d", Minutes)..":"..string_format("%.2d", Seconds).."|r")
 
 	Module.Minutes = Minutes
 	Module.Seconds = Seconds
@@ -46,7 +46,12 @@ function Module:OnUpdate(Elapsed)
 		self.Total = (self.Total or 0) + 1
 
 		Module.LocalDate:SetFormattedText("%s", date( "%A |cffffffff%B %d|r"))
-		Module.LocalTime:SetFormattedText("%s", date( "|cffffffff%I:%M:%S|r %p"))
+
+		if GetCVarBool("timeMgrUseMilitaryTime") then
+			Module.LocalTime:SetFormattedText("%s", date( "|cffffffff%H:%M:%S|r"))
+		else
+			Module.LocalTime:SetFormattedText("%s", date( "|cffffffff%I:%M:%S|r %p"))
+		end
 
 		Module:UpdateTime(self.Total)
 
@@ -61,7 +66,7 @@ function Module:SetAFK(status)
 		UIParent:Hide()
 		UIFrameFadeIn(self.Frame, 1, self.Frame:GetAlpha(), 1)
 
-		self.Frame:SetScript("OnUpdate", Module.OnUpdate)
+		self.Frame:SetScript("OnUpdate", self.OnUpdate)
 
 		self.IsAFK = true
 	elseif (self.IsAFK) then
@@ -96,11 +101,19 @@ function Module:OnEvent(event, ...)
 		return
 	end
 
+	if (event == "ZONE_CHANGED") then
+		self:SetAFK(false)
+
+		return
+	end
+
 	if (event == "PLAYER_REGEN_ENABLED") then
 		K:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	end
 
-	if InCombatLockdown() or _G.CinematicFrame:IsShown() or _G.MovieFrame:IsShown() then return end
+	if InCombatLockdown() or _G.CinematicFrame:IsShown() or _G.MovieFrame:IsShown() then
+		return
+	end
 
 	if (UnitIsAFK("player")) then
 		Module:SetAFK(true)
@@ -161,6 +174,7 @@ function Module:SetupAFKCam()
 	K:RegisterEvent("PLAYER_FLAGS_CHANGED", Module.OnEvent)
 	K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.OnEvent)
 	K:RegisterEvent("PLAYER_REGEN_DISABLED", Module.OnEvent)
+	K:RegisterEvent("ZONE_CHANGED", Module.OnEvent)
 
 	UIParent:HookScript("OnShow", function()
 		if UnitIsAFK("player") then
@@ -183,9 +197,6 @@ function Module:CreateAFKCam()
 	if not C["Misc"].AFKCamera then
 		return
 	end
-
-	Module.Minutes = Module.Minutes or 0
-	Module.Seconds = Module.Seconds or 0
 
 	if not (self.IsCreated) then
 		self:SetupAFKCam()

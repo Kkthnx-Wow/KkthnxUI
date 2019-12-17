@@ -5,9 +5,9 @@
   	<Script file="Target.lua"/>
   	<Script file="TargetOfTarget.lua"/>
   	<Script file="Pet.lua"/>
-  	<Script file="Focus.lua"/>
-  	<Script file="FocusTarget.lua"/>
-  	<Script file="Arena.lua"/>
-  	<Script file="Boss.lua"/>
+    <Script file="Focus.lua"/>
+    <Script file="FocusTarget.lua"/>
+    <Script file="Boss.lua"/>
+    <Script file="Arena.lua"/>
     <Script file="Nameplates.lua"/>
 </Ui>

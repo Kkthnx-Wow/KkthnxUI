@@ -2,10 +2,9 @@ local K, C = unpack(select(2, ...))
 if C["Raid"].Enable ~= true then
 	return
 end
+
 local Module = K:GetModule("Unitframes")
-
 local oUF = oUF or K.oUF
-
 if not oUF then
 	K.Print("Could not find a vaild instance of oUF. Stopping Raid.lua code!")
 	return
@@ -19,11 +18,8 @@ local GetThreatStatusColor = _G.GetThreatStatusColor
 local UnitIsUnit = _G.UnitIsUnit
 local UnitPowerType = _G.UnitPowerType
 local UnitThreatSituation = _G.UnitThreatSituation
-local UnitPower = _G.UnitPower
-local UnitPowerMax = _G.UnitPowerMax
-local UnitIsConnected = _G.UnitIsConnected
 
-local function UpdateThreat(self, _, unit)
+local function UpdateRaidThreat(self, _, unit)
 	if unit ~= self.unit then
 		return
 	end
@@ -38,30 +34,30 @@ local function UpdateThreat(self, _, unit)
 end
 
 local function UpdateRaidPower(self, _, unit)
-    if self.unit ~= unit then
-        return
-    end
+	if self.unit ~= unit then
+		return
+	end
 
-    local _, powerToken = UnitPowerType(unit)
+	local _, powerToken = UnitPowerType(unit)
 
-    if powerToken == "MANA" and C["Raid"].ManabarShow then
-        if not self.Power:IsVisible() then
-            self.Health:ClearAllPoints()
-            self.Health:SetPoint("BOTTOMLEFT", self, 0, 5)
-            self.Health:SetPoint("TOPRIGHT", self)
+	if powerToken == "MANA" and C["Raid"].ManabarShow then
+		if not self.Power:IsVisible() then
+			self.Health:ClearAllPoints()
+			self.Health:SetPoint("BOTTOMLEFT", self, 0, 5)
+			self.Health:SetPoint("TOPRIGHT", self)
 
-            self.Power:Show()
-        end
-    else
-        if self.Power:IsVisible() then
-            self.Health:ClearAllPoints()
-            self.Health:SetAllPoints(self)
-            self.Power:Hide()
-        end
-    end
+			self.Power:Show()
+		end
+	else
+		if self.Power:IsVisible() then
+			self.Health:ClearAllPoints()
+			self.Health:SetAllPoints(self)
+			self.Power:Hide()
+		end
+	end
 end
 
-function Module:CreateRaid(unit)
+function Module:CreateRaid()
 	local RaidframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local RaidframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 	local HealPredictionTexture = K.GetTexture(C["UITextures"].HealPredictionTextures)
@@ -80,30 +76,46 @@ function Module:CreateRaid(unit)
 	self.Health.Value:SetPoint("CENTER", self.Health, 0, -9)
 	self.Health.Value:SetFontObject(RaidframeFont)
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 11, select(3, self.Health.Value:GetFont()))
-	self:Tag(self.Health.Value, C["Raid"].HealthFormat.Value)
+	self:Tag(self.Health.Value, "[raidhp]")
 
 	self.Health.colorDisconnected = true
-	self.Health.colorSmooth = false
-	self.Health.colorClass = true
-	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
 
-	K.SmoothBar(self.Health)
+	if C["Raid"].HealthbarColor.Value == "Value" then
+		self.Health.colorSmooth = true
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+	elseif C["Raid"].HealthbarColor.Value == "Dark" then
+		self.Health.colorSmooth = false
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+		self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
+	else
+		self.Health.colorSmooth = false
+		self.Health.colorClass = true
+		self.Health.colorReaction = true
+	end
+
+	if C["Raid"].Smooth then
+		self.Health.Smooth = true
+	end
 
 	if C["Raid"].ManabarShow then
 		self.Power = CreateFrame("StatusBar", nil, self)
 		self.Power:SetFrameStrata("LOW")
 		self.Power:SetFrameLevel(self:GetFrameLevel())
 		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
-        self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
-        self.Power:SetHeight(4.5)
+		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
+		self.Power:SetHeight(4.5)
 		self.Power:SetStatusBarTexture(RaidframeTexture)
 
 		self.Power.colorPower = true
-        self.Power.Smooth = true
+		self.Power.Smooth = true
 		self.Power.frequentUpdates = false
 
-		K.SmoothBar(self.Power)
+		if C["Raid"].Smooth then
+			self.Power.Smooth = true
+		end
 
 		self.Power.Background = self.Power:CreateTexture(nil, "BORDER")
 		self.Power.Background:SetAllPoints(self.Power)
@@ -111,11 +123,11 @@ function Module:CreateRaid(unit)
 		self.Power.Background.multiplier = 0.3
 
 		table.insert(self.__elements, UpdateRaidPower)
-        self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
-        UpdateRaidPower(self, _, unit)
+		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
+		UpdateRaidPower(self, _, unit)
 	end
 
-	-- HealPredictionAndAbsorb
+	--if C["Raid"].ShowHealPrediction then
 	local mhpb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
 	mhpb:SetWidth(1)
 	mhpb:SetTexture(HealPredictionTexture)
@@ -140,11 +152,11 @@ function Module:CreateRaid(unit)
 	oag:SetWidth(15)
 	oag:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
 	oag:SetBlendMode("ADD")
-	oag:SetAlpha(.7)
+	oag:SetAlpha(0.25)
 	oag:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 2)
 	oag:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -2)
 
-	local hab = CreateFrame("StatusBar", nil, self.Health)
+	local hab = CreateFrame("StatusBar", nil, self)
 	hab:SetPoint("TOP")
 	hab:SetPoint("BOTTOM")
 	hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
@@ -170,17 +182,14 @@ function Module:CreateRaid(unit)
 		overHealAbsorbGlow = ohg,
 		maxOverflow = 1,
 	}
+	--end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 3, -15)
 	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, -15)
 	self.Name:SetFontObject(RaidframeFont)
 	self.Name:SetWordWrap(false)
-	if C["Raid"].ShowRolePrefix then
-		self:Tag(self.Name, "[KkthnxUI:Role][KkthnxUI:NameShort]")
-	else
-		self:Tag(self.Name, "[KkthnxUI:NameShort]")
-	end
+	self:Tag(self.Name, "[lfdrole][name]")
 
 	self.Overlay = CreateFrame("Frame", nil, self)
 	self.Overlay:SetAllPoints(self.Health)
@@ -189,6 +198,12 @@ function Module:CreateRaid(unit)
 	self.ReadyCheckIndicator = self.Overlay:CreateTexture(nil, "OVERLAY", 2)
 	self.ReadyCheckIndicator:SetSize(22, 22)
 	self.ReadyCheckIndicator:SetPoint("CENTER")
+
+	self.PhaseIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.PhaseIndicator:SetSize(24, 24)
+	self.PhaseIndicator:SetPoint("CENTER")
+	self.PhaseIndicator:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\PhaseIcons.tga]])
+	self.PhaseIndicator.PostUpdate = Module.UpdatePhaseIcon
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetSize(16, 16)
@@ -208,49 +223,12 @@ function Module:CreateRaid(unit)
 		self.StatusIndicator:SetFontObject(RaidframeFont)
 		self.StatusIndicator:SetFont(select(1, self.StatusIndicator:GetFont()), 10, select(3, self.StatusIndicator:GetFont()))
 		self.StatusIndicator:SetTextColor(1, 0, 0)
-		self:Tag(self.StatusIndicator, "[KkthnxUI:Status]")
+		self:Tag(self.StatusIndicator, "[afkdnd]")
 	end
 
 	if C["Raid"].AuraWatch then
-		Module:CreateAuraWatch(self)
-
-		self.RaidDebuffs = CreateFrame("Frame", nil, self.Health)
-		self.RaidDebuffs:SetHeight(C["Raid"].AuraDebuffIconSize)
-		self.RaidDebuffs:SetWidth(C["Raid"].AuraDebuffIconSize)
-		self.RaidDebuffs:SetPoint("CENTER", self.Health)
-		self.RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 20)
-		self.RaidDebuffs:CreateBorder()
-
-		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "ARTWORK")
-		self.RaidDebuffs.icon:SetTexCoord(.1, .9, .1, .9)
-		self.RaidDebuffs.icon:SetAllPoints(self.RaidDebuffs)
-
-		self.RaidDebuffs.cd = CreateFrame("Cooldown", nil, self.RaidDebuffs, "CooldownFrameTemplate")
-		self.RaidDebuffs.cd:SetAllPoints(self.RaidDebuffs, 1, 1)
-		self.RaidDebuffs.cd:SetReverse(true)
-		self.RaidDebuffs.cd.noOCC = true
-		self.RaidDebuffs.cd.noCooldownCount = true
-		self.RaidDebuffs.cd:SetHideCountdownNumbers(true)
-
-		self.RaidDebuffs.showDispellableDebuff = true
-		self.RaidDebuffs.onlyMatchSpellID = true
-		self.RaidDebuffs.FilterDispellableDebuff = true
-
-		-- self.RaidDebuffs.forceShow = true -- TEST
-
-		self.RaidDebuffs.time = self.RaidDebuffs:CreateFontString(nil, "OVERLAY")
-		self.RaidDebuffs.time:SetFont(C["Media"].Font, 12, "OUTLINE")
-		self.RaidDebuffs.time:SetPoint("CENTER", self.RaidDebuffs, 0, 0)
-
-		self.RaidDebuffs.count = self.RaidDebuffs:CreateFontString(nil, "OVERLAY")
-		self.RaidDebuffs.count:SetFont(C["Media"].Font, 12, "OUTLINE")
-		self.RaidDebuffs.count:SetPoint("BOTTOMRIGHT", self.RaidDebuffs, "BOTTOMRIGHT", 2, 0)
-		self.RaidDebuffs.count:SetTextColor(1, .9, 0)
+		self.AuraWatch = Module.CreateAuraWatch(self)
 	end
-
-	self.ThreatIndicator = {}
-	self.ThreatIndicator.IsObjectType = function() end
-	self.ThreatIndicator.Override = UpdateThreat
 
 	if C["Raid"].TargetHighlight then
 		self.OverlayFrame = CreateFrame("Frame", nil, self)
@@ -273,7 +251,6 @@ function Module:CreateRaid(unit)
 		end
 
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateRaidTargetGlow, true)
-		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidTargetGlow, true)
 	end
 
 	self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
@@ -292,6 +269,11 @@ function Module:CreateRaid(unit)
 	self.Highlight:SetVertexColor(.6, .6, .6)
 	self.Highlight:SetBlendMode("ADD")
 	self.Highlight:Hide()
+
+	self.ThreatIndicator = {
+		IsObjectType = function() end,
+		Override = UpdateRaidThreat,
+	}
 
 	self.Range = Module.CreateRangeIndicator(self)
 end

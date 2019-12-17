@@ -23,6 +23,7 @@ local GameMenuFrame = _G.GameMenuFrame
 local HEIRLOOMS = _G.HEIRLOOMS
 local HELP_BUTTON = _G.HELP_BUTTON
 local HideUIPanel = _G.HideUIPanel
+local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsInGuild = _G.IsInGuild
 local IsShiftKeyDown = _G.IsShiftKeyDown

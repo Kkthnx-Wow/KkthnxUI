@@ -29,37 +29,37 @@ local SPELL_FAILED_SPELL_IN_PROGRESS = _G.SPELL_FAILED_SPELL_IN_PROGRESS
 local SPELL_FAILED_TARGET_AURASTATE = _G.SPELL_FAILED_TARGET_AURASTATE
 local UIErrorsFrame = _G.UIErrorsFrame
 
-local UI_ERROR_LIST = { -- Lets hope 'UI_ERROR_LIST' is not going to be used one day. :o
+local KKUI_ERROR_LIST = {
 	[ERR_ABILITY_COOLDOWN] = true,
 	[ERR_ATTACK_MOUNTED] = true,
-	[ERR_ITEM_COOLDOWN] = true,
-	[ERR_NO_ATTACK_TARGET] = true,
-	[ERR_OUT_OF_ARCANE_CHARGES] = true,
-	[ERR_OUT_OF_CHI] = true,
-	[ERR_OUT_OF_COMBO_POINTS] = true,
 	[ERR_OUT_OF_ENERGY] = true,
 	[ERR_OUT_OF_FOCUS] = true,
 	[ERR_OUT_OF_HEALTH] = true,
-	[ERR_OUT_OF_HOLY_POWER] = true,
 	[ERR_OUT_OF_MANA] = true,
-	[ERR_OUT_OF_POWER_DISPLAY] = true,
 	[ERR_OUT_OF_RAGE] = true,
 	[ERR_OUT_OF_RANGE] = true,
 	[ERR_OUT_OF_RUNES] = true,
+	[ERR_OUT_OF_HOLY_POWER] = true,
 	[ERR_OUT_OF_RUNIC_POWER] = true,
 	[ERR_OUT_OF_SOUL_SHARDS] = true,
+	[ERR_OUT_OF_ARCANE_CHARGES] = true,
+	[ERR_OUT_OF_COMBO_POINTS] = true,
+	[ERR_OUT_OF_CHI] = true,
+	[ERR_OUT_OF_POWER_DISPLAY] = true,
 	[ERR_SPELL_COOLDOWN] = true,
+	[ERR_ITEM_COOLDOWN] = true,
 	[SPELL_FAILED_BAD_IMPLICIT_TARGETS] = true,
 	[SPELL_FAILED_BAD_TARGETS] = true,
 	[SPELL_FAILED_CASTER_AURASTATE] = true,
 	[SPELL_FAILED_NO_COMBO_POINTS] = true,
 	[SPELL_FAILED_SPELL_IN_PROGRESS] = true,
 	[SPELL_FAILED_TARGET_AURASTATE] = true,
+	[ERR_NO_ATTACK_TARGET] = true,
 }
 
 local isRegistered = true
 function Module.ErrorBlocker_OnEvent(event, text)
-	if InCombatLockdown() and UI_ERROR_LIST[text] then
+	if InCombatLockdown() and KKUI_ERROR_LIST[text] then
 		if isRegistered then
 			UIErrorsFrame:UnregisterEvent(event)
 			isRegistered = false

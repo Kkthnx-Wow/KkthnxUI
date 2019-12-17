@@ -78,7 +78,7 @@ local function UpdateBlizzardFonts()
 	SetFont(InvoiceFont_Med, NORMAL_FONT, 12) -- mail
 	SetFont(InvoiceFont_Small, NORMAL_FONT, C["General"].FontSize) -- mail
 	SetFont(MailFont_Large, NORMAL_FONT, 14) -- mail
-	SetFont(NumberFont_Outline_Huge, NORMAL_FONT, 28, "THINOUTLINE", 28)
+	SetFont(NumberFont_Outline_Huge, NORMAL_FONT, 28, "OUTLINE", 28)
 	SetFont(NumberFont_Outline_Large, NORMAL_FONT, 15, "OUTLINE")
 	SetFont(NumberFont_Outline_Med, NORMAL_FONT, C["General"].FontSize * 1.1, "OUTLINE")
 	SetFont(NumberFont_OutlineThick_Mono_Small, NORMAL_FONT, C["General"].FontSize, "OUTLINE")
@@ -191,6 +191,8 @@ local function UpdateBlizzardFonts()
 	for frame, _ in pairs(rewardFrames) do
 		HandleReward(MapQuestInfoRewardsFrame[frame])
 	end
+
+	-- RecruitAFriendFrame.MoreDetails.Text:FontTemplate()
 end
 
 -- New Fonts Need to be set as soon as possible...

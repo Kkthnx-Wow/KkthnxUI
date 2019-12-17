@@ -1,10 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 
 local _G = _G
-local tonumber = _G.tonumber
-local max = _G.max
-local min = _G.min
-local format = _G.format
 
 local APPLY = _G.APPLY
 local CLOSE = _G.CLOSE
@@ -23,8 +19,6 @@ local SlashCmdList = _G.SlashCmdList
 local UIErrorsFrame = _G.UIErrorsFrame
 
 local Install = CreateFrame("Frame", "KkthnxUIInstaller", UIParent)
-Install.CreateUIScale = CreateFrame("Frame")
-
 local InstallFont = K.GetFont(C["UIFonts"].GeneralFonts)
 local InstallTexture = K.GetTexture(C["UITextures"].GeneralTextures)
 
@@ -33,53 +27,15 @@ Install.CurrentStep = 0
 Install.Width = 500
 Install.Height = 200
 
-local function clipScale(scale)
-	return tonumber(format("%.5f", scale))
-end
-
-local function GetPerfectScale()
-	local scale
-	local bestScale = max(0.4, min(1.15, 768 / K.ScreenHeight))
-	local pixelScale = 768 / K.ScreenHeight
-
-	if C["General"].AutoScale then
-		scale = clipScale(bestScale)
-	else
-		scale = C["General"].UIScale
-	end
-
-	K.Mult = (bestScale / scale) - ((bestScale - pixelScale) / scale)
-
-	return scale
-end
-
-local isScaling = false
-local function SetupUIScale()
-	if isScaling then
-		return
-	end
-	isScaling = true
-
-	local scale = GetPerfectScale()
-	local parentScale = UIParent:GetScale()
-	if scale ~= parentScale then
-		UIParent:SetScale(scale)
-	end
-
-	_G.KkthnxUIData[GetRealmName()][UnitName("player")].UIScale = clipScale(scale)
-
-	isScaling = false
-end
+local charRealm = gsub(K.Realm, "[%s%-]", "")
+local charName = K.Name.."-"..charRealm
 
 function Install:ResetData()
 	_G.KkthnxUIData[GetRealmName()][UnitName("player")] = {}
-	_G.KkthnxUIData[GetRealmName()][UnitName("player")].UIScale = 0.71111
-	_G.KkthnxUIData[GetRealmName()][UnitName("player")].LockUIScale = false
-	_G.KkthnxUIData[GetRealmName()][UnitName("player")].AutoInvite = false
 	_G.KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap = false
 	_G.KkthnxUIData[GetRealmName()][UnitName("player")].AutoQuest = false
 	_G.KkthnxUIData[GetRealmName()][UnitName("player")].BindType = 1
-	_G.KkthnxUIData[GetRealmName()][UnitName("player")].WatchedMovies = {}
+	_G.KkthnxUIData[GetRealmName()][UnitName("player")].FavouriteItems = {}
 	_G.KkthnxUIData[GetRealmName()][UnitName("player")]["Mover"] = {}
 
 	if (_G.KkthnxUIConfigPerAccount) then
@@ -93,8 +49,11 @@ end
 
 function Install:Step1()
 	_G.SetActionBarToggles(1, 1, 1, 1)
-	SetCVar("overrideArchive", 0)
+
+	_G.SetActionBarToggles(1, 1, 1, 1)
 	SetCVar("ActionButtonUseKeyDown", 1)
+	SetCVar("ShowClassColorInNameplate", 1)
+	SetCVar("UberTooltips", 1)
 	SetCVar("alwaysShowActionBars", 1)
 	SetCVar("autoOpenLootHistory", 0)
 	SetCVar("autoQuestProgress", 1)
@@ -109,24 +68,31 @@ function Install:Step1()
 	SetCVar("nameplateMotion", 1)
 	SetCVar("nameplateShowFriendlyNPCs", 1)
 	SetCVar("nameplateShowSelf", 0)
+	SetCVar("overrideArchive", 0)
 	SetCVar("removeChatDelay", 1)
 	SetCVar("screenshotQuality", 10)
 	SetCVar("showArenaEnemyFrames", 0)
-	SetCVar("ShowClassColorInNameplate", 1)
 	SetCVar("showQuestTrackingTooltips", 1)
 	SetCVar("showTutorials", 0)
 	SetCVar("showVKeyCastbar", 1)
 	SetCVar("spamFilter", 0)
 	SetCVar("threatWarning", 3)
-	SetCVar("UberTooltips", 1)
 	SetCVar("violenceLevel", 5)
 	SetCVar("wholeChatWindowClickable", 0)
-	SetCVar("worldPreloadNonCritical", 0)
+
+	if charName == "Kkthnx-Sethraliss" then
+		-- print(charName)
+		SetCVar("RAIDweatherDensity", 0)
+		SetCVar("WeatherDensity", 0)
+		SetCVar("ffxDeath", 0)
+		SetCVar("ffxGlow", 0)
+		SetCVar("ffxNether", 0)
+	end
 
 	_G.InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
 	_G.InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
 
-	UIErrorsFrame:AddMessage(L["CVars Installed"], K.Color.r, K.Color.g, K.Color.b, 53, 2)
+	UIErrorsFrame:AddMessage(L["CVars Installed"], K.r, K.g, K.b, 53, 2)
 
 	self:Hide()
 end
@@ -140,18 +106,15 @@ function Install:Step2()
 
 	Chat:Install()
 	Chat:SetDefaultChatFramesPositions()
-
-	UIErrorsFrame:AddMessage(L["Chat Installed"], K.Color.r, K.Color.g, K.Color.b, 53, 2)
+	UIErrorsFrame:AddMessage(L["Chat Installed"], K.r, K.g, K.b, 53, 2)
 
 	self:Hide()
 end
 
 function Install:Step3()
 	_G.KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete = true
-	_G.KkthnxUIData[GetRealmName()][UnitName("player")].LockUIScale = true
-	SetupUIScale()
-
-	UIErrorsFrame:AddMessage("UI Scale Applied", K.Color.r, K.Color.g, K.Color.b, 53, 2)
+	K.SetupUIScale()
+	UIErrorsFrame:AddMessage("UI Scale Applied", K.r, K.g, K.b, 53, 2)
 
 	self:Hide()
 end
@@ -166,7 +129,7 @@ function Install:PrintStep(PageNum)
 	if (not Text) then
 		self:Hide()
 		if (PageNum > self.MaxStepNumber) then
-			PlaySound(11466) -- A_BLCKTMPLE_Illidan_04
+			PlaySound(2847)
 			ReloadUI()
 		end
 		return
@@ -353,10 +316,11 @@ function Install:Launch()
 	self.SkipButton.Text = self.SkipButton:CreateFontString(nil, "OVERLAY")
 	self.SkipButton.Text:SetFontObject(InstallFont)
 	self.SkipButton.Text:SetPoint("CENTER")
-	self.SkipButton.Text:SetText(format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, L["Skip Install"]))
+	self.SkipButton.Text:SetText(K.MyClassColor..L["Skip Install"])
 	self.SkipButton:SetScript("OnClick", function()
+		K.SetupUIScale() -- Be sure we apply scale on a skipped install because whatever!
 		_G.KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete = true
-		PlaySound(19092) -- VO_PCGoblinMale_Cry
+		PlaySound(6916) -- VO_PCGoblinMale_Cry
 		ReloadUI()
 	end)
 
@@ -390,88 +354,78 @@ end
 
 -- On login function
 Install:RegisterEvent("ADDON_LOADED")
-Install:SetScript("OnEvent", function(self, _, name)
-	if (name ~= "KkthnxUI") then
-		return
-	end
-
+Install:RegisterEvent("PLAYER_ENTERING_WORLD")
+Install:RegisterEvent("PLAYER_LOGIN")
+Install:SetScript("OnEvent", function(self, event)
 	local playerName = UnitName("player")
 	local playerRealm = GetRealmName()
 
-	-- Define the saved variables first. This is important
-	if (not _G.KkthnxUIData) then
-		_G.KkthnxUIData = _G.KkthnxUIData or {}
+	if (event == "ADDON_LOADED") then -- Define the saved variables first. This is important
+		if (not _G.KkthnxUIData) then
+			_G.KkthnxUIData = _G.KkthnxUIData or {}
+		end
+
+		-- Create missing entries in the saved vars if they don"t exist.
+		if (not _G.KkthnxUIData[playerRealm]) then
+			_G.KkthnxUIData[playerRealm] = _G.KkthnxUIData[playerRealm] or {}
+		end
+
+		if (not _G.KkthnxUIData[playerRealm][playerName]) then
+			_G.KkthnxUIData[playerRealm][playerName] = _G.KkthnxUIData[playerRealm][playerName] or {}
+		end
+
+		if (_G.KkthnxUIDataPerChar) then
+			_G.KkthnxUIData[playerRealm][playerName] = _G.KkthnxUIDataPerChar
+			_G.KkthnxUIDataPerChar = nil
+		end
+
+		if (not _G.KkthnxUIData[playerRealm][playerName].RevealWorldMap) then
+			_G.KkthnxUIData[playerRealm][playerName].RevealWorldMap = _G.KkthnxUIData[playerRealm][playerName].RevealWorldMap or false
+		end
+
+		if (not _G.KkthnxUIData[playerRealm][playerName].AutoQuest) then
+			_G.KkthnxUIData[playerRealm][playerName].AutoQuest = _G.KkthnxUIData[playerRealm][playerName].AutoQuest or false
+		end
+
+		if (not _G.KkthnxUIData[playerRealm][playerName].BindType) then
+			_G.KkthnxUIData[playerRealm][playerName].BindType = _G.KkthnxUIData[playerRealm][playerName].BindType or 1
+		end
+
+		if (not _G.KkthnxUIData[playerRealm][playerName].FavouriteItems) then
+			_G.KkthnxUIData[playerRealm][playerName].FavouriteItems = _G.KkthnxUIData[playerRealm][playerName].FavouriteItems or {}
+		end
+
+		if (not _G.KkthnxUIData[playerRealm][playerName]["Mover"]) then
+			_G.KkthnxUIData[playerRealm][playerName]["Mover"] = _G.KkthnxUIData[playerRealm][playerName]["Mover"] or {}
+		end
+
+		if (not _G.KkthnxUIData[playerRealm][playerName].LuaErrorDisabledAddOns) then
+			_G.KkthnxUIData[playerRealm][playerName].LuaErrorDisabledAddOns = _G.KkthnxUIData[playerRealm][playerName].LuaErrorDisabledAddOns or {}
+		end
+
+		if (not _G.KkthnxUIData[playerRealm][playerName]["TempAnchor"]) then
+			_G.KkthnxUIData[playerRealm][playerName]["TempAnchor"] = _G.KkthnxUIData[playerRealm][playerName]["TempAnchor"] or {}
+		end
+	elseif (event == "PLAYER_ENTERING_WORLD") then
+		-- Install default if we never ran KkthnxUI on this character.
+		local IsInstalled = _G.KkthnxUIData[playerRealm][playerName].InstallComplete
+		if (not IsInstalled) then
+			self:Launch()
+		else
+			if C["General"].AutoScale then
+				K.HideInterfaceOption(Advanced_UseUIScale)
+				K.HideInterfaceOption(Advanced_UIScaleSlider)
+			end
+		end
+
+		-- Welcome message
+		if (not _G.KkthnxUIData[playerRealm][playerName].InstallComplete) then
+			K.Delay(8, Install.WelcomeMessageDelay)
+		end
+	elseif (event == "PLAYER_LOGIN") then
+		K.SetupUIScale()
+		K:RegisterEvent("UI_SCALE_CHANGED", K.SetupUIScale)
 	end
-
-	-- Create missing entries in the saved vars if they don"t exist.
-	if (not _G.KkthnxUIData[playerRealm]) then
-		_G.KkthnxUIData[playerRealm] = _G.KkthnxUIData[playerRealm] or {}
-	end
-
-	if (not _G.KkthnxUIData[playerRealm][playerName]) then
-		_G.KkthnxUIData[playerRealm][playerName] = _G.KkthnxUIData[playerRealm][playerName] or {}
-	end
-
-	if (_G.KkthnxUIDataPerChar) then
-		_G.KkthnxUIData[playerRealm][playerName] = _G.KkthnxUIDataPerChar
-		_G.KkthnxUIDataPerChar = nil
-	end
-
-	if (not _G.KkthnxUIData[playerRealm][playerName].UIScale) then
-		_G.KkthnxUIData[playerRealm][playerName].UIScale = _G.KkthnxUIData[playerRealm][playerName].UIScale or 0.71111
-	end
-
-	if (not _G.KkthnxUIData[playerRealm][playerName].LockUIScale) then
-		_G.KkthnxUIData[playerRealm][playerName].LockUIScale = _G.KkthnxUIData[playerRealm][playerName].LockUIScale or false
-	end
-
-	if (not _G.KkthnxUIData[playerRealm][playerName].RevealWorldMap) then
-		_G.KkthnxUIData[playerRealm][playerName].RevealWorldMap = _G.KkthnxUIData[playerRealm][playerName].RevealWorldMap or false
-	end
-
-	if (not _G.KkthnxUIData[playerRealm][playerName].AutoInvite) then
-		_G.KkthnxUIData[playerRealm][playerName].AutoInvite = _G.KkthnxUIData[playerRealm][playerName].AutoInvite or false
-	end
-
-	if (not _G.KkthnxUIData[playerRealm][playerName].AutoQuest) then
-		_G.KkthnxUIData[playerRealm][playerName].AutoQuest = _G.KkthnxUIData[playerRealm][playerName].AutoQuest or false
-	end
-
-	if (not _G.KkthnxUIData[playerRealm][playerName].BindType) then
-		_G.KkthnxUIData[playerRealm][playerName].BindType = _G.KkthnxUIData[playerRealm][playerName].BindType or 1
-	end
-
-	if (not _G.KkthnxUIData[playerRealm][playerName].WatchedMovies) then
-		_G.KkthnxUIData[playerRealm][playerName].WatchedMovies = _G.KkthnxUIData[playerRealm][playerName].WatchedMovies or {}
-	end
-
-	if (not _G.KkthnxUIData[playerRealm][playerName]["Mover"]) then
-		_G.KkthnxUIData[playerRealm][playerName]["Mover"] = _G.KkthnxUIData[playerRealm][playerName]["Mover"] or {}
-	end
-
-	if (_G.KkthnxUIData and _G.KkthnxUIData[playerRealm] and _G.KkthnxUIData[playerRealm][playerName] and _G.KkthnxUIData[playerRealm][playerName].Movers) then
-		_G.KkthnxUIData[playerRealm][playerName]["Mover"] = _G.KkthnxUIData[playerRealm][playerName].Movers
-		_G.KkthnxUIData[playerRealm][playerName].Movers = nil
-	end
-
-	-- Install default if we never ran KkthnxUI on this character.
-	local IsInstalled = _G.KkthnxUIData[playerRealm][playerName].InstallComplete
-	if (not IsInstalled) then
-		self:Launch()
-	end
-
-	-- Welcome message
-	if (not _G.KkthnxUIData[playerRealm][playerName].InstallComplete) then
-		K.Delay(8, Install.WelcomeMessageDelay)
-	end
-
-	self:UnregisterEvent("ADDON_LOADED")
-end)
-
-Install.CreateUIScale:RegisterEvent("PLAYER_LOGIN")
-Install.CreateUIScale:SetScript("OnEvent", function(self)
-	SetupUIScale()
-	self:RegisterEvent("UI_SCALE_CHANGED", SetupUIScale)
 end)
 
 _G.SLASH_INSTALLUI1 = "/install"
