@@ -217,16 +217,18 @@ SlashCmdList["KKUI_KEYBINDS"] = function()
 			or key == "LALT"
 			or key == "RALT"
 			or key == "UNKNOWN"
+			or key == "LeftButton"
+			or key == "MiddleButton"
 			then
 				return
 			end
 
-			if key == "MiddleButton" then
-				key = "BUTTON3"
+			if key == "Button4" then
+				key = "BUTTON4"
 			end
 
-			if key:find("Button%d") then
-				key = key:upper()
+			if key == "Button5" then
+				key = "BUTTON5"
 			end
 
 			local alt = IsAltKeyDown() and "ALT-" or ""
@@ -260,7 +262,7 @@ SlashCmdList["KKUI_KEYBINDS"] = function()
 
 		function bind:Deactivate(save)
 			if save then
-				AttemptToSaveBindings(KkthnxUIData[GetRealmName()][UnitName("player")].BindType)
+				SaveBindings(KkthnxUIData[GetRealmName()][UnitName("player")].BindType)
 				print("|cffffff00"..KEY_BOUND.."|r")
 			else
 				LoadBindings(KkthnxUIData[GetRealmName()][UnitName("player")].BindType)

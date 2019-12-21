@@ -1,7 +1,7 @@
 ## Interface: 80205
 ## Name: KkthnxUI
 ## Title: |cff4488ffKkthnxUI|r
-## Notes: |cff666666By Josh "Kkthnx" Russell|r |n|n|cffffffffA simple User Interface replacement |nAddOn for World of Warcraft.|r|r|n|n|cff4488ffThis addon supports:|r BFA |cff666666Patch: 8.2.5|r|n|n
+## Notes: |cff666666By Josh "Kkthnx" Russell|r |n|n|cffffffffA simple User Interface replacement |nAddOn for World of Warcraft.|r|r|n|n|cff4488ffThis addon supports:|r BFA |cff666666Patch: 8.2|r|n|n
 ## Author: Kkthnx
 ## Version: 9.09
 ## DefaultState: Enabled

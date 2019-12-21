@@ -174,10 +174,7 @@ function Module:CreateNakedButtons()
 	DressUpNudeBtn:ClearAllPoints()
 	DressUpNudeBtn:SetPoint("RIGHT", DressUpFrameResetButton, "LEFT", 0, 0)
 	DressUpNudeBtn:SetScript("OnClick", function()
-		DressUpFrameResetButton:Click() -- Done First In Case Any Slots Refuse To Clear
-		for i = 1, 19 do
-			DressUpModel:UndressSlot(i) -- Done This Way To Prevent Issues With Undress
-		end
+		SetupPlayerForModelScene(DressUpFrame.ModelScene, {}, false, false)
 	end)
 
 	local DressUpTabBtn = CreateFrame("Button", "Tabard", DressUpFrame, "UIPanelButtonTemplate")
@@ -187,7 +184,21 @@ function Module:CreateNakedButtons()
 	DressUpTabBtn:ClearAllPoints()
 	DressUpTabBtn:SetPoint("RIGHT", DressUpNudeBtn, "LEFT", 0, 0)
 	DressUpTabBtn:SetScript("OnClick", function()
-		DressUpModel:UndressSlot(19)
+		-- Store all appearance sources in table
+		local appearanceSources = {}
+		local playerActor = DressUpFrame.ModelScene:GetPlayerActor()
+		for slotID = 1, 19 do
+			local appearanceSourceID, illusionSourceID = playerActor:GetSlotTransmogSources(slotID)
+			table.insert(appearanceSources, appearanceSourceID)
+		end
+		-- Strip model
+		SetupPlayerForModelScene(DressUpFrame.ModelScene, {}, false, false)
+		-- Apply all appearance sources except tabard slot (19)
+		for slotID = 1, 18 do
+			if appearanceSources[slotID] and appearanceSources[slotID] > 0 then
+				playerActor:TryOn(appearanceSources[slotID])
+			end
+		end
 	end)
 
 	-- Only Show Dressup Buttons If Its A Player (Reset Button Will Show Too)
@@ -201,67 +212,52 @@ function Module:CreateNakedButtons()
 		DressUpTabBtn:Hide()
 	end)
 
-	local BtnStrata, BtnLevel = SideDressUpModelResetButton:GetFrameStrata(), SideDressUpModelResetButton:GetFrameLevel()
-
 	-- Add Buttons To Auction House Dressup Frame
 	local DressUpSideBtn = CreateFrame("Button", "Tabard", SideDressUpFrame, "UIPanelButtonTemplate")
-	DressUpSideBtn:SetPoint("BOTTOMLEFT", 14, 20)
+	DressUpSideBtn:SetPoint("BOTTOMLEFT", 14, 40)
 	DressUpSideBtn:SetSize(60, 22)
 	DressUpSideBtn:SetText("Tabard")
-	DressUpSideBtn:SetFrameStrata(BtnStrata)
-	DressUpSideBtn:SetFrameLevel(BtnLevel)
+	DressUpSideBtn:SetFrameLevel(4)
+	DressUpSideBtn:SetFrameStrata("HIGH")
 	DressUpSideBtn:SetScript("OnClick", function()
-		SideDressUpModel:UndressSlot(19)
-	end)
-
-	local DressUpSideNudeBtn = CreateFrame("Button", "Nude", SideDressUpFrame, "UIPanelButtonTemplate")
-	DressUpSideNudeBtn:SetPoint("BOTTOMRIGHT", -18, 20)
-	DressUpSideNudeBtn:SetSize(60, 22)
-	DressUpSideNudeBtn:SetText("Nude")
-	DressUpSideNudeBtn:SetFrameStrata(BtnStrata)
-	DressUpSideNudeBtn:SetFrameLevel(BtnLevel)
-	DressUpSideNudeBtn:SetScript("OnClick", function()
-		SideDressUpModelResetButton:Click() -- Done First In Case Any Slots Refuse To Clear
-		for i = 1, 19 do
-			SideDressUpModel:UndressSlot(i) -- Done This Way To Prevent Issues With Undress
+		-- Store all appearance sources in table
+		local appearanceSources = {}
+		local playerActor = SideDressUpFrame.ModelScene:GetPlayerActor()
+		for slotID = 1, 19 do
+			local appearanceSourceID, illusionSourceID = playerActor:GetSlotTransmogSources(slotID)
+			table.insert(appearanceSources, appearanceSourceID)
+		end
+		-- Strip model
+		SetupPlayerForModelScene(SideDressUpFrame.ModelScene, {}, false, false)
+		-- Apply all appearance sources except tabard slot (19)
+		for slotID = 1, 18 do
+			if appearanceSources[slotID] and appearanceSources[slotID] > 0 then
+				playerActor:TryOn(appearanceSources[slotID])
+			end
 		end
 	end)
 
-	-- Only Show Side Dressup Buttons If Its A Player (Reset Button Will Show Too)
-	hooksecurefunc(SideDressUpModelResetButton, "Show", function()
+	local DressUpSideNudeBtn = CreateFrame("Button", "Nude", SideDressUpFrame, "UIPanelButtonTemplate")
+	DressUpSideNudeBtn:SetPoint("BOTTOMRIGHT", -18, 40)
+	DressUpSideNudeBtn:SetSize(60, 22)
+	DressUpSideNudeBtn:SetText("Nude")
+	DressUpSideNudeBtn:SetFrameLevel(4)
+	DressUpSideNudeBtn:SetFrameStrata("HIGH")
+	DressUpSideNudeBtn:SetScript("OnClick", function()
+		-- Strip model
+		SetupPlayerForModelScene(SideDressUpFrame.ModelScene, {}, false, false)
+	end)
+
+	-- Only show side dressup buttons if its a player (reset button will show too)
+	hooksecurefunc(SideDressUpFrame.ResetButton, "Show", function()
 		DressUpSideBtn:Show()
 		DressUpSideNudeBtn:Show()
 	end)
 
-	hooksecurefunc(SideDressUpModelResetButton, "Hide", function()
+	hooksecurefunc(SideDressUpFrame.ResetButton, "Hide", function()
 		DressUpSideBtn:Hide()
 		DressUpSideNudeBtn:Hide()
 	end)
-
-	-- Function To Set Animations
-	local function SetupAnimations()
-		DressUpModel:SetAnimation(255)
-		SideDressUpModel:SetAnimation(255)
-	end
-
-	-- Dressing Room
-	hooksecurefunc("DressUpFrame_Show", SetupAnimations)
-	DressUpFrame.ResetButton:HookScript("OnClick", SetupAnimations)
-	-- Auction House Dressing Room
-	hooksecurefunc(SideDressUpModel, "SetUnit", SetupAnimations)
-	SideDressUpModelResetButton:HookScript("OnClick", SetupAnimations)
-
-	-- Function To Hide Controls
-	local function SetupControls()
-		CharacterModelFrameControlFrame:Hide()
-		DressUpModelControlFrame:Hide()
-		SideDressUpModelControlFrame:Hide()
-	end
-
-	-- Hide Controls For Character Sheet, Dressing Room And Auction House Dressing Room
-	CharacterModelFrameControlFrame:HookScript("OnShow", SetupControls)
-	DressUpModelControlFrame:HookScript("OnShow", SetupControls)
-	SideDressUpModelControlFrame:HookScript("OnShow", SetupControls)
 
 	-- Wardrobe (Used By Transmogrifier Npc)
 	local function DoBlizzardCollectionsFunc()
@@ -734,7 +730,7 @@ function Module:OnEnable()
 	self:CreateImprovedStats()
 	self:CreateKillingBlow()
 	self:CreateMerchantItemLevel()
-	-- self:CreateNakedButtons()
+	self:CreateNakedButtons()
 	self:CreateNoTalkingHead()
 	self:CreatePulseCooldown()
 	self:CreatePvPEmote()

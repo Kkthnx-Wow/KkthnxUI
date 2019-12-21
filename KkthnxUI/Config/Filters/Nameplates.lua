@@ -18,17 +18,18 @@ end
 K.DebuffWhiteList = {
 	-- Death Knight
 	[SpellName(108194)] = true,	-- Asphyxiate
-	[SpellName(47476)] = true,	-- Strangulate
-	[SpellName(55078)] = true,	-- Blood Plague
-	[SpellName(55095)] = true,	-- Frost Fever
+	[SpellName(47476)] = true, -- Strangulate
+	[SpellName(55078)] = true, -- Blood Plague
+	[SpellName(55095)] = true, -- Frost Fever
 	-- Druid
-	[SpellName(33786)] = true,	-- Cyclone
-	[SpellName(339)] = true,	-- Entangling Roots
-	[SpellName(164812)] = true,	-- Moonfire
+	[SpellName(33786)] = true, -- Cyclone
+	[SpellName(339)] = true, -- Entangling Roots
+	[SpellName(164812)] = true, -- Moonfire
 	[SpellName(164815)] = true,	-- Sunfire
-	[SpellName(58180)] = true,	-- Infected Wounds
+	[SpellName(58180)] = true, -- Infected Wounds
 	[SpellName(155722)] = true,	-- Rake
-	[SpellName(1079)] = true,	-- Rip
+	[SpellName(1079)] = true, -- Rip
+	[SpellName(127797)] = true,	-- Ursol's Vortex
 	-- Hunter
 	[SpellName(131894)] = true,	-- A Murder Of Crows
 	[SpellName(13812)] = true,	-- Explosive Trap
@@ -38,31 +39,32 @@ K.DebuffWhiteList = {
 	[SpellName(217200)] = true,	-- Barbed Shot
 	[SpellName(3355)] = true,	-- Freezing Trap
 	[SpellName(5116)] = true,	-- Concussive Shot
+	[SpellName(117405)] = true,	-- Binding Shot
 	-- Mage
-	[SpellName(118)] = true,	-- Polymorph
-	[SpellName(31661)] = true,	-- Dragon's Breath
-	[SpellName(122)] = true,	-- Frost Nova
-	[SpellName(44457)] = true,	-- Living Bomb
+	[SpellName(118)] = true, -- Polymorph
+	[SpellName(31661)] = true, -- Dragon's Breath
+	[SpellName(122)] = true, -- Frost Nova
+	[SpellName(44457)] = true, -- Living Bomb
 	[SpellName(114923)] = true,	-- Nether Tempest
-	[SpellName(120)] = true,	-- Cone of Cold
+	[SpellName(120)] = true, -- Cone of Cold
 	-- Monk
 	[SpellName(115078)] = true,	-- Paralysis
 	-- Paladin
 	[SpellName(20066)] = true,	-- Repentance
-	[SpellName(853)] = true,	-- Hammer of Justice
+	[SpellName(853)] = true, -- Hammer of Justice
 	[SpellName(183218)] = true,	-- Hand of Hindrance
 	-- Priest
 	[SpellName(204213)] = true,	-- Purge the Wicked
-	[SpellName(9484)] = true,	-- Shackle Undead
-	[SpellName(8122)] = true,	-- Psychic Scream
-	[SpellName(64044)] = true,	-- Psychic Horror
-	[SpellName(15487)] = true,	-- Silence
-	[SpellName(589)] = true,	-- Shadow Word: Pain
+	[SpellName(9484)] = true, -- Shackle Undead
+	[SpellName(8122)] = true, -- Psychic Scream
+	[SpellName(64044)] = true, -- Psychic Horror
+	[SpellName(15487)] = true, -- Silence
+	[SpellName(589)] = true, -- Shadow Word: Pain
 	[SpellName(34914)] = true,	-- Vampiric Touch
 	-- Rogue
-	[SpellName(6770)] = true,	-- Sap
-	[SpellName(2094)] = true,	-- Blind
-	[SpellName(1776)] = true,	-- Gouge
+	[SpellName(6770)] = true, -- Sap
+	[SpellName(2094)] = true, -- Blind
+	[SpellName(1776)] = true, -- Gouge
 	-- Shaman
 	[SpellName(51514)] = true,	-- Hex
 	[SpellName(3600)] = true,	-- Earthbind
@@ -70,25 +72,27 @@ K.DebuffWhiteList = {
 	[SpellName(188389)] = true,	-- Flame Shock
 	[SpellName(197209)] = true,	-- Lightning Rod
 	-- Warlock
-	[SpellName(710)] = true,	-- Banish
-	[SpellName(6789)] = true,	-- Mortal Coil
-	[SpellName(5782)] = true,	-- Fear
-	[SpellName(5484)] = true,	-- Howl of Terror
-	[SpellName(6358)] = true,	-- Seduction
-	[SpellName(30283)] = true,	-- Shadowfury
-	[SpellName(603)] = true,	-- Doom
-	[SpellName(980)] = true,	-- Agony
+	[SpellName(710)] = true, -- Banish
+	[SpellName(6789)] = true, -- Mortal Coil
+	[SpellName(5782)] = true, -- Fear
+	[SpellName(5484)] = true, -- Howl of Terror
+	[SpellName(6358)] = true, -- Seduction
+	[SpellName(30283)] = true, -- Shadowfury
+	[SpellName(603)] = true, -- Doom
+	[SpellName(980)] = true, -- Agony
 	[SpellName(146739)] = true,	-- Corruption
-	[SpellName(48181)] = true,	-- Haunt
-	[SpellName(348)] = true,	-- Immolate
-	[SpellName(30108)] = true,	-- Unstable Affliction
+	[SpellName(48181)] = true, -- Haunt
+	[SpellName(348)] = true, -- Immolate
+	[SpellName(30108)] = true, -- Unstable Affliction
 	-- Warrior
-	[SpellName(5246)] = true,	-- Intimidating Shout
+	[SpellName(5246)] = true, -- Intimidating Shout
 	[SpellName(132168)] = true,	-- Shockwave
 	[SpellName(115767)] = true,	-- Deep Wounds
 	-- Racial
-	[SpellName(20549)] = true,	-- War Stomp (Tauren)
+	[SpellName(20549)] = true, -- War Stomp (Tauren)
 	[SpellName(107079)] = true,	-- Quaking Palm (Pandaren)
+	-- Misc
+	[SpellName(272295)] = true, -- Bounty Hunted
 }
 
 K.DebuffBlackList = {
@@ -132,7 +136,8 @@ K.BuffWhiteList = {
 	[SpellName(116267)] = true,	-- Incanter's Flow
 	[SpellName(198924)] = true,	-- Quickening
 	[SpellName(205766)] = true,	-- Bone Chilling
-	[SpellName(130)] = true,	-- Slow Fall
+	[SpellName(130)] = true, -- Slow Fall
+	[SpellName(45438)] = true, -- Ice Block
 	-- Monk
 	[SpellName(116680)] = true,	-- Thunder Focus Tea
 	[SpellName(116847)] = true,	-- Rushing Jade Wind
@@ -153,23 +158,24 @@ K.BuffWhiteList = {
 	[SpellName(184662)] = true,	-- Shield of Vengeance
 	[SpellName(53563)] = true,	-- Beacon of Light
 	[SpellName(156910)] = true,	-- Beacon of Faith
-	[SpellName(6940)] = true,	-- Blessing of Sacrifice
-	[SpellName(1044)] = true,	-- Blessing of Freedom
-	[SpellName(1022)] = true,	-- Blessing of Protection
+	[SpellName(6940)] = true, -- Blessing of Sacrifice
+	[SpellName(1044)] = true, -- Blessing of Freedom
+	[SpellName(1022)] = true, -- Bl essing of Protection
+	[SpellName(642)] = true, -- Divine Shield
 	-- Priest
-	[SpellName(17)] = true,		-- Power Word: Shield
-	[SpellName(81782)] = true,	-- Power Word: Barrier
-	[SpellName(139)] = true,	-- Renew
-	[SpellName(33206)] = true,	-- Pain Suppression
-	[SpellName(41635)] = true,	-- Prayer of Mending
-	[SpellName(47788)] = true,	-- Guardian Spirit
-	[SpellName(114908)] = true,	-- Spirit Shell Shield
+	[SpellName(17)] = true, -- Power Word: Shield
+	[SpellName(81782)] = true, -- Power Word: Barrier
+	[SpellName(139)] = true, -- Renew
+	[SpellName(33206)] = true, -- Pain Suppression
+	[SpellName(41635)] = true, -- Prayer of Mending
+	[SpellName(47788)] = true, -- Guardian Spirit
+	[SpellName(114908)] = true, -- Spirit Shell Shield
 	[SpellName(152118)] = true,	-- Clarity of Will
 	[SpellName(121557)] = true,	-- Angelic Feather
-	[SpellName(65081)] = true,	-- Body and Soul
+	[SpellName(65081)] = true, -- Body and Soul
 	[SpellName(214121)] = true,	-- Body and Mind
-	[SpellName(77489)] = true,	-- Echo of Light
-	[SpellName(64901)] = true,	-- Symbol of Hope
+	[SpellName(77489)] = true, -- Echo of Light
+	[SpellName(64901)] = true, -- Symbol of Hope
 	[SpellName(194384)] = true,	-- Attonement
 	-- Rogue
 	[SpellName(5171)] = true,	-- Slice and Dice

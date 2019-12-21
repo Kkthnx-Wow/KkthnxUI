@@ -1,10 +1,11 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
+local pairs = _G.pairs
 local table_insert = _G.table.insert
 local table_remove = _G.table.remove
-local pairs = _G.pairs
+local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
 local GetActionInfo = _G.GetActionInfo
@@ -19,7 +20,7 @@ local hooksecurefunc = _G.hooksecurefunc
 
 local PulseCooldown = CreateFrame("Frame")
 local ActiveCount = 0
-local MinTreshold = 14
+local MinTreshold = C["PulseCooldown"].MinTreshold
 local Running = false
 local CurrentTime
 local GetCD
@@ -34,9 +35,9 @@ local ActiveCDs = {
 
 local Blacklist = {
 	["item"] = {
-		[6948] = true, -- Hearthstone
-		[140192] = true, -- Dalaran Hearthstone
 		[110560] = true, -- Garrison Hearthstone
+		[140192] = true, -- Dalaran Hearthstone
+		[6948] = true, -- Hearthstone
 	},
 
 	["player"] = {
@@ -63,8 +64,8 @@ local function GetTexture(cd, id)
 end
 
 local Frame = CreateFrame("Frame", nil, UIParent)
-Frame:SetSize(70, 70)
-Frame:SetPoint("CENTER", UIParent, "CENTER", 0, 240) -- -300
+Frame:SetSize(C["PulseCooldown"].Size, C["PulseCooldown"].Size)
+Frame:SetPoint("CENTER", UIParent, "CENTER", 0, 260)
 Frame:CreateBorder()
 Frame:SetAlpha(0)
 
@@ -76,7 +77,7 @@ Frame.Anim = CreateAnimationGroup(Frame)
 
 Frame.AnimIn = Frame.Anim:CreateAnimation("Fade")
 Frame.AnimIn:SetChange(1)
-Frame.AnimIn:SetDuration(0.2) -- 0.3
+Frame.AnimIn:SetDuration(0.2)
 Frame.AnimIn:SetEasing("in")
 
 Frame.AnimOut = Frame.Anim:CreateAnimation("Fade")
@@ -85,7 +86,7 @@ Frame.AnimOut:SetDuration(0.6)
 Frame.AnimOut:SetEasing("out")
 
 Frame.Sleep = Frame.Anim:CreateAnimation("Sleep")
-Frame.Sleep:SetDuration(1.4)
+Frame.Sleep:SetDuration(C["PulseCooldown"].HoldTime)
 Frame.Sleep:SetScript("OnFinished", function()
 	Frame.AnimOut:Play()
 end)
@@ -121,7 +122,9 @@ local function OnUpdate(self, ela)
 						Frame.Icon:SetTexture(Texture)
 						PlayAnimation()
 					end
-					-- PlaySound(18192, "master") -- https://www.wowhead.com/sound=18192/fx-sonarping
+					if C["PulseCooldown"].Sound then
+						PlaySound(18192, "master") -- https://www.wowhead.com/sound=18192/fx-sonarping
+					end
 					table_remove(Data, Position)
 					ActiveCount = ActiveCount - 1
 				end
@@ -208,15 +211,18 @@ local function UseContainerItem(bag, slot)
 end
 
 function Module:CreatePulseCooldown()
-	-- if (not C["BLAH"]) then
-	-- 	return
-	-- end
+	if C["PulseCooldown"].Enable ~= true then
+		return
+	end
 
-	local Anchor = CreateFrame("Frame", "KKUICooldownFlash", UIParent)
-	Anchor:SetSize(70, 70)
-	Anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 240)
+	local Anchor = CreateFrame("Frame", "KKUIPulseCooldown", UIParent)
+	Anchor:SetSize(C["PulseCooldown"].Size, C["PulseCooldown"].Size)
+	Anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 260)
 
-	K.Mover(Anchor, "PulseCooldown", "PulseCooldown", {"CENTER", UIParent, "CENTER", 0, 240}, 70, 70)
+	Frame:SetSize(C["PulseCooldown"].Size, C["PulseCooldown"].Size)
+	Frame:SetAllPoints(Anchor)
+
+	K.Mover(Anchor, "PulseCooldown", "PulseCooldown", {"CENTER", UIParent, "CENTER", 0, 260}, C["PulseCooldown"].Size, C["PulseCooldown"].Size)
 
 	K:RegisterEvent("SPELL_UPDATE_COOLDOWN", Module.SPELL_UPDATE_COOLDOWN)
 	K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UNIT_SPELLCAST_SUCCEEDED)

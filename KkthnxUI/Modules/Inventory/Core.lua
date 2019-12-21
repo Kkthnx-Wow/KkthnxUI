@@ -56,6 +56,48 @@ function Module:ReverseSort()
 	KKUI_Backpack:BAG_UPDATE()
 end
 
+function Module:UpdateItemUpgradeIcon()
+	if not C["Inventory"].UpgradeIcon then
+		self.UpgradeIcon:SetShown(false)
+		self:SetScript("OnUpdate", nil)
+		return
+	end
+
+	local itemIsUpgrade = _G.IsContainerItemAnUpgrade(self:GetParent():GetID(), self:GetID())
+	if itemIsUpgrade == nil then -- nil means not all the data was available to determine if this is an upgrade.
+		self.UpgradeIcon:SetShown(false)
+		self:SetScript("OnUpdate", Module.UpgradeCheck_OnUpdate)
+	else
+		self.UpgradeIcon:SetShown(itemIsUpgrade)
+		self:SetScript("OnUpdate", nil)
+	end
+end
+
+local ITEM_UPGRADE_CHECK_TIME = 0.5
+function Module:UpgradeCheck_OnUpdate(elapsed)
+	self.timeSinceUpgradeCheck = (self.timeSinceUpgradeCheck or 0) + elapsed
+	if self.timeSinceUpgradeCheck >= ITEM_UPGRADE_CHECK_TIME then
+		Module.UpdateItemUpgradeIcon(self)
+		self.timeSinceUpgradeCheck = 0
+	end
+end
+
+function Module:UpdateItemScrapIcon()
+	if not C["Inventory"].ScrapIcon then
+		self.ScrapIcon:SetShown(false)
+		return
+	end
+
+	local itemLoc = _G.ItemLocation:CreateFromBagAndSlot(self:GetParent():GetID(), self:GetID())
+	if itemLoc and itemLoc ~= "" then
+		if C["Inventory"].ScrapIcon and (C_Item.DoesItemExist(itemLoc) and C_Item.CanScrapItem(itemLoc)) then
+			self.ScrapIcon:SetShown(itemLoc)
+		else
+			self.ScrapIcon:SetShown(false)
+		end
+	end
+end
+
 function Module:UpdateAnchors(parent, bags)
 	local anchor = parent
 	for _, bag in ipairs(bags) do
@@ -73,7 +115,7 @@ function Module:UpdateAnchors(parent, bags)
 end
 
 local function highlightFunction(button, match)
-	button:SetAlpha(match and 1 or .3)
+	button:SetAlpha(match and 1 or 0.3)
 end
 
 function Module:CreateInfoFrame()
@@ -84,8 +126,6 @@ function Module:CreateInfoFrame()
 	local icon = CreateFrame("Button", nil, infoFrame)
 	icon:SetSize(18, 18)
 	icon:SetPoint("LEFT")
-	icon:SkinButton()
-	icon:CreateInnerShadow()
 
 	icon.Icon = icon:CreateTexture(nil, "ARTWORK")
 	icon.Icon:SetAllPoints()
@@ -129,7 +169,8 @@ end
 function Module:CreateCloseButton()
 	local closeButton = CreateFrame("Button", nil, self)
 	closeButton:SetSize(18, 18)
-	closeButton:SkinButton()
+	closeButton:CreateBorder()
+	closeButton:StyleButton()
 	closeButton:CreateInnerShadow()
 
 	closeButton.Icon = closeButton:CreateTexture(nil, "ARTWORK")
@@ -147,7 +188,8 @@ end
 function Module:CreateRestoreButton(f)
 	local restoreButton = CreateFrame("Button", nil, self)
 	restoreButton:SetSize(18, 18)
-	restoreButton:SkinButton()
+	restoreButton:CreateBorder()
+	restoreButton:StyleButton()
 	restoreButton:CreateInnerShadow()
 
 	restoreButton.Icon = restoreButton:CreateTexture(nil, "ARTWORK")
@@ -176,7 +218,8 @@ end
 function Module:CreateReagentButton(f)
 	local reagentButton = CreateFrame("Button", nil, self)
 	reagentButton:SetSize(18, 18)
-	reagentButton:SkinButton()
+	reagentButton:CreateBorder()
+	reagentButton:StyleButton()
 	reagentButton:CreateInnerShadow()
 
 	reagentButton.Icon = reagentButton:CreateTexture(nil, "ARTWORK")
@@ -209,7 +252,8 @@ end
 function Module:CreateBankButton(f)
 	local BankButton = CreateFrame("Button", nil, self)
 	BankButton:SetSize(18, 18)
-	BankButton:SkinButton()
+	BankButton:CreateBorder()
+	BankButton:StyleButton()
 	BankButton:CreateInnerShadow()
 
 	BankButton.Icon = BankButton:CreateTexture(nil, "ARTWORK")
@@ -234,7 +278,8 @@ end
 function Module:CreateDepositButton()
 	local DepositButton = CreateFrame("Button", nil, self)
 	DepositButton:SetSize(18, 18)
-	DepositButton:SkinButton()
+	DepositButton:CreateBorder()
+	DepositButton:StyleButton()
 	DepositButton:CreateInnerShadow()
 
 	DepositButton.Icon = DepositButton:CreateTexture(nil, "ARTWORK")
@@ -253,7 +298,8 @@ end
 function Module:CreateBagToggle()
 	local bagToggleButton = CreateFrame("Button", nil, self)
 	bagToggleButton:SetSize(18, 18)
-	bagToggleButton:SkinButton()
+	bagToggleButton:CreateBorder()
+	bagToggleButton:StyleButton()
 	bagToggleButton:CreateInnerShadow()
 
 	bagToggleButton.Icon = bagToggleButton:CreateTexture(nil, "ARTWORK")
@@ -280,7 +326,8 @@ end
 function Module:CreateSortButton(name)
 	local sortButton = CreateFrame("Button", nil, self)
 	sortButton:SetSize(18, 18)
-	sortButton:SkinButton()
+	sortButton:CreateBorder()
+	sortButton:StyleButton()
 	sortButton:CreateInnerShadow()
 
 	sortButton.Icon = sortButton:CreateTexture(nil, "ARTWORK")
@@ -319,7 +366,8 @@ function Module:CreateDeleteButton()
 
 	local deleteButton = CreateFrame("Button", nil, self)
 	deleteButton:SetSize(18, 18)
-	deleteButton:SkinButton()
+	deleteButton:CreateBorder()
+	deleteButton:StyleButton()
 	deleteButton:CreateInnerShadow()
 
 	deleteButton.Icon = deleteButton:CreateTexture(nil, "ARTWORK")
@@ -331,7 +379,7 @@ function Module:CreateDeleteButton()
 	deleteButton:SetScript("OnClick", function(self)
 		deleteEnable = not deleteEnable
 		if deleteEnable then
-			self:SetBackdropBorderColor(1, .8, 0)
+			self:SetBackdropBorderColor(1, 0, 0)
 			self.Icon:SetDesaturated(true)
 			self.text = enabledText
 		else
@@ -364,18 +412,20 @@ function Module:CreateFavouriteButton()
 
 	local favouriteButton = CreateFrame("Button", nil, self)
 	favouriteButton:SetSize(18, 18)
-	favouriteButton:SkinButton()
+	favouriteButton:CreateBorder()
+	favouriteButton:StyleButton()
 	favouriteButton:CreateInnerShadow()
 
 	favouriteButton.Icon = favouriteButton:CreateTexture(nil, "ARTWORK")
-	favouriteButton.Icon:SetAllPoints()
+	favouriteButton.Icon:SetPoint("TOPLEFT", -3, -1)
+	favouriteButton.Icon:SetPoint("BOTTOMRIGHT", 3, -4)
 	favouriteButton.Icon:SetTexCoord(unpack(K.TexCoords))
-	favouriteButton.Icon:SetTexture("Interface\\ICONS\\Ability_DeathKnight_HeartstopAura")
+	favouriteButton.Icon:SetTexture("Interface\\Common\\friendship-heart")
 
 	favouriteButton:SetScript("OnClick", function(self)
 		favouriteEnable = not favouriteEnable
 		if favouriteEnable then
-			self:SetBackdropBorderColor(1, .8, 0)
+			self:SetBackdropBorderColor(1, 0, 0)
 			self.Icon:SetDesaturated(true)
 			self.text = enabledText
 		else
@@ -615,6 +665,11 @@ function Module:OnEnable()
 		self.junkIcon:SetSize(20, 20)
 		self.junkIcon:SetPoint("TOPRIGHT", 1, 0)
 
+		self.ScrapIcon = self:CreateTexture(nil, "OVERLAY")
+		self.ScrapIcon:SetAtlas("bags-icon-scrappable")
+		self.ScrapIcon:SetSize(14, 12)
+		self.ScrapIcon:SetPoint("TOPLEFT", 1, -1)
+
 		self.Quest = self:CreateTexture(nil, "ARTWORK")
 		self.Quest:SetSize(26, 26)
 		self.Quest:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")
@@ -688,12 +743,12 @@ function Module:OnEnable()
 		end
 
 		if self.UpgradeIcon then
-			local itemIsUpgrade = _G.IsContainerItemAnUpgrade(self:GetParent():GetID(), self:GetID())
-			if not itemIsUpgrade or itemIsUpgrade == nil then
-				self.UpgradeIcon:SetShown(false)
-			else
-				self.UpgradeIcon:SetShown(itemIsUpgrade or true)
-			end
+			-- Check if item is an upgrade and show/hide upgrade icon accordingly
+			Module.UpdateItemUpgradeIcon(self)
+		end
+
+		if self.ScrapIcon then
+			Module.UpdateItemScrapIcon(self)
 		end
 
 		if IsAddOnLoaded("CanIMogIt") then

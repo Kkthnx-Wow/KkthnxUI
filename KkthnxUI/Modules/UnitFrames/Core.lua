@@ -16,7 +16,6 @@ local tonumber = _G.tonumber
 local unpack = _G.unpack
 
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
-local COOLDOWN_Anchor = _G.COOLDOWN_Anchor
 local CreateFrame = _G.CreateFrame
 local DebuffTypeColor = _G.DebuffTypeColor
 local GetNumGroupMembers = _G.GetNumGroupMembers
@@ -32,17 +31,9 @@ local IsInInstance = _G.IsInInstance
 local IsInRaid = _G.IsInRaid
 local MAX_ARENA_ENEMIES = _G.MAX_ARENA_ENEMIES
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
-local PVE_PVP_CC_Anchor = _G.PVE_PVP_CC_Anchor
-local PVE_PVP_DEBUFF_Anchor = _G.PVE_PVP_DEBUFF_Anchor
-local P_BUFF_ICON_Anchor = _G.P_BUFF_ICON_Anchor
-local P_PROC_ICON_Anchor = _G.P_PROC_ICON_Anchor
 local PlaySound = _G.PlaySound
 local SOUNDKIT = _G.SOUNDKIT
-local SPECIAL_P_BUFF_ICON_Anchor = _G.SPECIAL_P_BUFF_ICON_Anchor
 local SetCVar = _G.SetCVar
-local T_BUFF_Anchor = _G.T_BUFF_Anchor
-local T_DEBUFF_ICON_Anchor = _G.T_DEBUFF_ICON_Anchor
-local T_DE_BUFF_BAR_Anchor = _G.T_DE_BUFF_BAR_Anchor
 local UIParent = _G.UIParent
 local UnitAura = _G.UnitAura
 local UnitCanAttack = _G.UnitCanAttack
@@ -486,11 +477,6 @@ function Module:PostCastStart(unit)
 		updateCastBarTicks(self, numTicks)
 	elseif not UnitIsUnit(unit, "player") and self.notInterruptible then
 		self:SetStatusBarColor(unpack(K.Colors.castbar.notInterruptibleColor))
-	end
-
-	-- Fix for empty icon
-	if self.Icon and not self.Icon:GetTexture() then
-		self.Icon:SetTexture(136243)
 	end
 end
 
@@ -1277,9 +1263,9 @@ function Module:CreateUnits()
 					end
 				else
 					if reverse then
-						groups[i]:SetPoint("TOPRIGHT", groups[i-1], "TOPLEFT", -5, 0)
+						groups[i]:SetPoint("TOPRIGHT", groups[i-1], "TOPLEFT", -6, 0)
 					else
-						groups[i]:SetPoint("TOPLEFT", groups[i-1], "TOPRIGHT", 5, 0)
+						groups[i]:SetPoint("TOPLEFT", groups[i-1], "TOPRIGHT", 6, 0)
 					end
 				end
 			end
@@ -1333,21 +1319,20 @@ function Module:CreateUnits()
 	end
 end
 
-function Module:UpdateClickableSize()
-	C_NamePlate.SetNamePlateEnemySize(C["Nameplates"].Width, C["Nameplates"].Height + 40)
-	C_NamePlate.SetNamePlateFriendlySize(C["Nameplates"].Width, C["Nameplates"].Height + 40)
-end
-
 function Module:SetNameplateCVars()
+	if InCombatLockdown() then
+		return
+	end
+
 	if C["Nameplates"].Clamp then
-		SetCVar("nameplateOtherTopInset", .05)
-		SetCVar("nameplateOtherBottomInset", .08)
+		SetCVar("nameplateOtherTopInset", 0.05)
+		SetCVar("nameplateOtherBottomInset", 0.08)
 	else
 		SetCVar("nameplateOtherTopInset", -1)
 		SetCVar("nameplateOtherBottomInset", -1)
 	end
 
-	SetCVar("nameplateOverlapH", .8)
+	SetCVar("nameplateOverlapH", 0.8)
 	SetCVar("nameplateOverlapV", C["Nameplates"].VerticalSpacing)
 	SetCVar("nameplateMaxDistance", C["Nameplates"].LoadDistance)
 	SetCVar("nameplateMinAlpha", 1)
@@ -1356,52 +1341,48 @@ function Module:SetNameplateCVars()
 	SetCVar("showQuestTrackingTooltips", 1)
 	SetCVar("namePlateMinScale", 1)
 	SetCVar("namePlateMaxScale", 1)
-	SetCVar("nameplateSelectedScale", 1)
 	SetCVar("nameplateLargerScale", 1)
 	SetCVar("nameplateSelectedScale", C["Nameplates"].SelectedScale or 1)
-
-	Module:UpdateClickableSize()
-	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", Module.UpdateClickableSize)
 end
 
 function Module:CreateFilgerAnchors()
 	if C["Filger"].Enable and C["Unitframe"].Enable then
-		P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 169)
-		P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+		K.P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 169)
+		K.P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-		P_PROC_ICON_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 169)
-		P_PROC_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+		K.P_PROC_ICON_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 169)
+		K.P_PROC_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-		SPECIAL_P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 211)
-		SPECIAL_P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+		K.SPECIAL_P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 211)
+		K.SPECIAL_P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-		T_DEBUFF_ICON_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 211)
-		T_DEBUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+		K.T_DEBUFF_ICON_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 211)
+		K.T_DEBUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-		T_BUFF_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 253)
-		T_BUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
+		K.T_BUFF_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 253)
+		K.T_BUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
 
-		PVE_PVP_DEBUFF_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 253)
-		PVE_PVP_DEBUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
+		K.PVE_PVP_DEBUFF_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 253)
+		K.PVE_PVP_DEBUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
 
-		PVE_PVP_CC_Anchor:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMLEFT", -2, -44)
-		PVE_PVP_CC_Anchor:SetSize(221, 25)
+		K.PVE_PVP_CC_Anchor:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMLEFT", -2, -44)
+		K.PVE_PVP_CC_Anchor:SetSize(221, 25)
 
-		COOLDOWN_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 63, 17)
-		COOLDOWN_Anchor:SetSize(C["Filger"].CooldownSize, C["Filger"].CooldownSize)
+		K.COOLDOWN_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 63, 17)
+		K.COOLDOWN_Anchor:SetSize(C["Filger"].CooldownSize, C["Filger"].CooldownSize)
 
-		T_DE_BUFF_BAR_Anchor:SetPoint("TOPLEFT", "oUF_Target", "BOTTOMRIGHT", 6, 25)
-		T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
+		K.T_DE_BUFF_BAR_Anchor:SetPoint("TOPLEFT", "oUF_Target", "BOTTOMRIGHT", 6, 25)
+		K.T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
 
-		K.Mover(P_BUFF_ICON_Anchor, "P_BUFF_ICON", "P_BUFF_ICON", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 169})
-		K.Mover(P_PROC_ICON_Anchor, "P_PROC_ICON", "P_PROC_ICON", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 169})
-		K.Mover(SPECIAL_P_BUFF_ICON_Anchor, "SPECIAL_P_BUFF_ICON", "SPECIAL_P_BUFF_ICON", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 211})
-		K.Mover(T_DEBUFF_ICON_Anchor, "T_DEBUFF_ICON", "T_DEBUFF_ICON", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 211})
-		K.Mover(T_BUFF_Anchor, "T_BUFF", "T_BUFF", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 253})
-		K.Mover(PVE_PVP_DEBUFF_Anchor, "PVE_PVP_DEBUFF", "PVE_PVP_DEBUFF", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 253})
-		K.Mover(PVE_PVP_CC_Anchor, "PVE_PVP_CC", "PVE_PVP_CC", {"TOPLEFT", "oUF_Player", "BOTTOMLEFT", -2, -44})
-		K.Mover(COOLDOWN_Anchor, "COOLDOWN", "COOLDOWN", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 63, 17})
-		K.Mover(T_DE_BUFF_BAR_Anchor, "T_DE_BUFF_BAR", "T_DE_BUFF_BAR", {"TOPLEFT", "oUF_Target", "BOTTOMRIGHT", 6, 25})
+		K.Mover(K.P_BUFF_ICON_Anchor, "P_BUFF_ICON", "P_BUFF_ICON", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 169})
+		K.Mover(K.P_PROC_ICON_Anchor, "P_PROC_ICON", "P_PROC_ICON", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 169})
+		K.Mover(K.SPECIAL_P_BUFF_ICON_Anchor, "SPECIAL_P_BUFF_ICON", "SPECIAL_P_BUFF_ICON", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 211})
+		K.Mover(K.T_DEBUFF_ICON_Anchor, "T_DEBUFF_ICON", "T_DEBUFF_ICON", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 211})
+		K.Mover(K.T_BUFF_Anchor, "T_BUFF", "T_BUFF", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 253})
+		K.Mover(K.PVE_PVP_DEBUFF_Anchor, "PVE_PVP_DEBUFF", "PVE_PVP_DEBUFF", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 253})
+		K.Mover(K.PVE_PVP_CC_Anchor, "PVE_PVP_CC", "PVE_PVP_CC", {"TOPLEFT", "oUF_Player", "BOTTOMLEFT", -2, -44})
+		K.Mover(K.COOLDOWN_Anchor, "COOLDOWN", "COOLDOWN", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 63, 17})
+		K.Mover(K.T_DE_BUFF_BAR_Anchor, "T_DE_BUFF_BAR", "T_DE_BUFF_BAR", {"TOPLEFT", "oUF_Target", "BOTTOMRIGHT", 6, 25})
 	end
 end
 
@@ -1492,19 +1473,27 @@ function Module:OnEnable()
 		self:UpdateGroupRoles()
 		self:QuestIconCheck()
 
-		-- Disable The Default Class Resource Bars
-		if NamePlateDriverFrame then
-			DeathKnightResourceOverlayFrame:UnregisterAllEvents()
-			ClassNameplateBarMageFrame:UnregisterAllEvents()
-			ClassNameplateBarWindwalkerMonkFrame:UnregisterAllEvents()
-			ClassNameplateBarPaladinFrame:UnregisterAllEvents()
-			ClassNameplateBarRogueDruidFrame:UnregisterAllEvents()
-			ClassNameplateBarWarlockFrame:UnregisterAllEvents()
-			ClassNameplateManaBarFrame:UnregisterAllEvents()
-			ClassNameplateBrewmasterBarFrame:UnregisterAllEvents()
-			NamePlateDriverFrame:SetClassNameplateManaBar(nil)
-			NamePlateDriverFrame:SetClassNameplateBar(nil)
+		local BlizzPlateManaBar = _G.NamePlateDriverFrame.classNamePlatePowerBar
+		if BlizzPlateManaBar then
+			BlizzPlateManaBar:Hide()
+			BlizzPlateManaBar:UnregisterAllEvents()
 		end
+
+		hooksecurefunc(_G.NamePlateDriverFrame, "SetupClassNameplateBars", function(frame)
+			if not frame or frame:IsForbidden() then
+				return
+			end
+
+			if frame.classNamePlateMechanicFrame then
+				frame.classNamePlateMechanicFrame:Hide()
+			end
+
+			if frame.classNamePlatePowerBar then
+				frame.classNamePlatePowerBar:Hide()
+				frame.classNamePlatePowerBar:UnregisterAllEvents()
+			end
+		end)
+
 	end
 
 	if C["Unitframe"].Enable then

@@ -22,6 +22,7 @@
    <Include file="Blizzard\Miscellaneous.lua" />
    <Include file="Blizzard\ObjectiveTracker.lua" />
    <Include file="Blizzard\PvP.lua" />
+   <Include file="Blizzard\ScrappingMachine.lua" />
    <Include file="Blizzard\SpellBook.lua" />
    <Include file="Blizzard\TalkingHead.lua" />
 </Ui>

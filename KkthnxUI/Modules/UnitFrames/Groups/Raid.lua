@@ -200,7 +200,7 @@ function Module:CreateRaid()
 	self.ReadyCheckIndicator:SetPoint("CENTER")
 
 	self.PhaseIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.PhaseIndicator:SetSize(24, 24)
+	self.PhaseIndicator:SetSize(22, 22)
 	self.PhaseIndicator:SetPoint("CENTER")
 	self.PhaseIndicator:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\PhaseIcons.tga]])
 	self.PhaseIndicator.PostUpdate = Module.UpdatePhaseIcon

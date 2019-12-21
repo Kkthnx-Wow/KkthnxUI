@@ -15,9 +15,8 @@ local CreateFrame = _G.CreateFrame
 local UIParent = _G.UIParent
 local Minimap = _G.Minimap
 
-
 function Module:CreateRecycleBin()
-	if not C["Minimap"]["ShowRecycleBin"] then
+	if not C["Minimap"].ShowRecycleBin then
 		return
 	end
 
@@ -41,13 +40,12 @@ function Module:CreateRecycleBin()
 
 	local bu = CreateFrame("Button", "RecycleBinToggleButton", Minimap)
 	bu:SetAlpha(0.8)
-	bu:SetSize(24, 24)
-	bu:SetPoint("BOTTOMLEFT", -11, -5)
-	bu:SetHitRectInsets(8, 8, 8, 4)
+	bu:SetSize(16, 16)
+	bu:SetPoint("BOTTOMLEFT", -7, -7)
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 	bu.Icon:SetAllPoints()
-	bu.Icon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\RecycleButton")
-	bu:SetHighlightTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\RecycleButton")
+	bu.Icon:SetTexture("Interface\\COMMON\\Indicator-Yellow")
+	bu:SetHighlightTexture("Interface\\COMMON\\Indicator-Yellow")
 	K.AddTooltip(bu, "ANCHOR_LEFT", "Minimap RecycleBin", "white")
 
 	local bin = CreateFrame("Frame", "RecycleBinFrame", UIParent)
@@ -76,6 +74,7 @@ function Module:CreateRecycleBin()
 
 	local secureAddons = {
 		["HANDYNOTESPIN"] = true,
+		["GATHERMATEPIN"] = true,
 	}
 
 	local function isButtonSecure(name)
@@ -176,8 +175,10 @@ function Module:CreateRecycleBin()
 		SortRubbish()
 		if bin:IsShown() then
 			clickFunc()
+			bu.Icon:SetDesaturated(false)
 		else
 			K.UIFrameFadeIn(bin, 0.5, 0, 1)
+			bu.Icon:SetDesaturated(true)
 		end
 	end)
 

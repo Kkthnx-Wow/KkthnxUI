@@ -1,11 +1,11 @@
-local K, C = unpack(select(2, ...))
+local _, C = unpack(select(2, ...))
 
 local _G = _G
 
-local DAMAGE = _G.DAMAGE
-local DISABLE = _G.DISABLE
-local HEALER = _G.HEALER
+local GUILD = _G.GUILD
 local IsAddOnLoaded = _G.IsAddOnLoaded
+local NONE = _G.NONE
+local PLAYER = _G.PLAYER
 
 -- Actionbar
 C["ActionBar"] = {
@@ -36,7 +36,9 @@ C["ActionBar"] = {
 
 -- Announcements
 C["Announcements"] = {
+	["ItemAlert"] = false,
 	["PullCountdown"] = true,
+	["RareAlert"] = false,
 	["SaySapped"] = false,
 	["Interrupt"] = {
 		["Options"] = {
@@ -82,15 +84,17 @@ C["Inventory"] = {
 	["ItemFilter"] = true,
 	["ItemSetFilter"] = false,
 	["QuestItemFilter"] = false,
+	["ScrapIcon"] = true,
 	["ShowNewItem"] = true,
 	["TradeGoodsFilter"] = false,
+	["UpgradeIcon"] = true,
 	["AutoRepair"] = {
 		["Options"] = {
-			[NONE] = "NONE",
-			[GUILD] = "GUILD",
-			[PLAYER] = "PLAYER",
+			[NONE] = 0,
+			[GUILD] = 1,
+			[PLAYER] = 2,
 		},
-		["Value"] = "PLAYER"
+		["Value"] = 2
 	},
 }
 
@@ -172,13 +176,6 @@ C["General"] = {
 	["TexturesColor"] = {0.9, 0.9, 0.9},
 	["UIScale"] = 0.71111,
 	["Welcome"] = true,
-	["Border"] = {
-		["Options"] = {
-			["KkthnxUI"] = 1,
-			["Goldpaw"] = 2,
-		},
-		["Value"] = 1
-	},
 	["NumberPrefixStyle"] = {
 		["Options"] = {
 			["Standard: b/m/k"] = 1,
@@ -262,7 +259,6 @@ C["Nameplates"] = {
 	["NearColor"] = {1, 1, 0},
 	["NonTargetAlpha"] = 0.35,
 	["OffTankColor"] = {0, 0.5, 1},
-	["OverlapH"] = 1.2,
 	["QuestInfo"] = true,
 	["SelectedScale"] = 1.2,
 	["ShowFullHealth"] = true,
@@ -280,6 +276,14 @@ C["Nameplates"] = {
         },
         ["Value"] = "Class"
     },
+}
+
+C["PulseCooldown"] = {
+	["Enable"] = false,
+	["HoldTime"] = 1.2,
+	["MinTreshold"] = 14,
+	["Size"] = 70,
+	["Sound"] = false,
 }
 
 -- Skins

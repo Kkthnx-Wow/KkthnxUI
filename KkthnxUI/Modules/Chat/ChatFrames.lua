@@ -234,17 +234,20 @@ function Module:StyleFrame(frame)
 
 	-- Create our own texture for edit box
 	EditBox:ClearAllPoints()
-	EditBox:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 2, 26)
-	EditBox:SetPoint("BOTTOMRIGHT", ChatFrame1, "TOPRIGHT", 23, 26)
-	EditBox:SetHeight(22)
+	EditBox:SetPoint("BOTTOM", ChatFrame1, "TOP", 10, 24)
+	if C["Chat"].Background then
+		EditBox:SetSize(C["Chat"].Width + 29, 24)
+	else
+		EditBox:SetSize(C["Chat"].Width + 18, 24)
+	end
 	EditBox:CreateBorder()
 
-	--Character count
+	-- Character count
 	EditBox.CharacterCount = EditBox:CreateFontString()
 	EditBox.CharacterCount:FontTemplate()
-	EditBox.CharacterCount:SetTextColor(190, 190, 190, 0.4)
-	EditBox.CharacterCount:SetPoint("TOPRIGHT", EditBox, "TOPRIGHT", -5, 0)
-	EditBox.CharacterCount:SetPoint("BOTTOMRIGHT", EditBox, "BOTTOMRIGHT", -5, 0)
+	EditBox.CharacterCount:SetTextColor(68/255, 136/255, 255/255, 0.5)
+	EditBox.CharacterCount:SetPoint("TOPRIGHT", EditBox, "TOPRIGHT", 0, -1)
+	EditBox.CharacterCount:SetPoint("BOTTOMRIGHT", EditBox, "BOTTOMRIGHT", 0, -1)
 	EditBox.CharacterCount:SetJustifyH("CENTER")
 	EditBox.CharacterCount:SetWidth(30)
 
@@ -563,7 +566,7 @@ function Module:SetupFrame()
 	QuickJoinToastButton:SetAlpha(0)
 
 	ChatMenu:ClearAllPoints()
-	ChatMenu:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 0, 16)
+	ChatMenu:SetPoint("BOTTOMRIGHT", ChatFrame1, "TOPRIGHT", 28, 10)
 
 	VoiceChatPromptActivateChannel:CreateShadow(true)
 	VoiceChatPromptActivateChannel.AcceptButton:SkinButton()

@@ -5,8 +5,6 @@ local ModuleNewFeature = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIc
 
 local _G = _G
 
-local REVERSE_NEW_LOOT_TEXT = _G.REVERSE_NEW_LOOT_TEXT
-
 _G.KkthnxUIConfig["enUS"] = {
 	-- Menu Groups Display Names
 	["GroupNames"] = {
@@ -26,12 +24,13 @@ _G.KkthnxUIConfig["enUS"] = {
 		["Misc"] = "Miscellaneous",
 		["Nameplates"] = "Nameplates",
 		["Party"] = "Party",
+		["PulseCooldown"] = "Pulse Cooldown",
 		["QuestNotifier"] = "Quest Notifier",
 		["Raid"] = "Raid",
 		["Skins"] = "Skins",
 		["Tooltip"] = "Tooltip",
-		["UIFonts"] = ModuleNewFeature.."Fonts",
-		["UITextures"] = ModuleNewFeature.."Textures",
+		["UIFonts"] = "Fonts",
+		["UITextures"] = "Textures",
 		["Unitframe"] = "Unit Frames",
 		["WorldMap"] = "World Map",
 	},
@@ -118,6 +117,14 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["Interrupt"] = {
 			["Name"] = "Announce Interrupts",
+		},
+
+		["RareAlert"] = {
+			["Name"] = "Announce Rares, Chests & War Supplies",
+		},
+
+		["ItemAlert"] = {
+			["Name"] = "Announce Items Being Placed",
 		}
 	},
 
@@ -158,6 +165,10 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["AutoReward"] = {
 			["Name"] = "Auto Select Quest Rewards",
+		},
+
+		["AutoSetRole"] = {
+			["Name"] = "Auto Set Your Role In Groups",
 		},
 
 		["AutoTabBinder"] = {
@@ -203,6 +214,14 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["ClassRelatedFilter"] = {
 			["Name"] = "Filter Class Items",
+		},
+
+		["ScrapIcon"] = {
+			["Name"] = "Show Scrap Icon",
+		},
+
+		["UpgradeIcon"] = {
+			["Name"] = "Show Upgrade Icon",
 		},
 
 		["QuestItemFilter"] = {
@@ -419,7 +438,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["System"] = {
-			["Name"] = "Show FPS/MS on Minimap",
+			["Name"] = "Show FPS and Latency",
 		},
 
 		["Time"] = {
@@ -594,11 +613,6 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "AFK Camera",
 		},
 
-		["AutoDismountStand"] = {
-			["Name"] = "Auto Stand/Dismount",
-			["Desc"] = "Will make you stand/dismount when you want to cast or fight something",
-		},
-
 		["ColorPicker"] = {
 			["Name"] = "Enhanced Color Picker",
 		},
@@ -607,26 +621,8 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Enhanced Colors (Friends/Guild +)",
 		},
 
-		["EnhancedMenu"] = {
-			["Name"] = "Add guild invite and more to dropdowns",
-			["Desc"] = "Add 'Guild Invite' and 'Add Friend' options in target right-click menu."
-		},
-
 		["GemEnchantInfo"] = {
 			["Name"] = "Character/Inspect Gem/Enchant Info",
-		},
-
-		["ImprovedProfessionWindow"] = {
-			["Name"] = "Display A Better Profession Window Style",
-		},
-
-		["ImprovedQuestLog"] = {
-			["Name"] = "Display A Better Questlog Style",
-			["Desc"] = "Expand default QuestLog.|n|nYou don't need addons like ClassicQuestLog any more."
-		},
-
-		["ImprovedTrainerWindow"] = {
-			["Name"] = "Display A Better Trainer Window Style",
 		},
 
 		["ItemLevel"] = {
@@ -641,10 +637,6 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Auto Emote On Your Killing Blow",
 		},
 
-		["ShowHelmCloak"] = {
-			["Name"] = "Show Helm/Cloak Buttons On Character Frame",
-		},
-
 		["ShowWowHeadLinks"] = {
 			["Name"] = "Show Wowhead Links Above Questlog Frame",
 		},
@@ -657,6 +649,21 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Show TradeTabs",
 			["Desc"] = "Add spellbook-like tabs to the TradeSkillFrame. It will add one for each of your professions and one for each of the profession 'suppliment' abilities (cooking, disenchant, etc)"
 		},
+
+		["EnchantmentScroll"] = {
+			["Name"] = "Create Enchantment Scrolls With A Single Click"
+
+		},
+
+		["ImprovedStats"] = {
+			["Name"] = "Display Character Frame Full Stats"
+
+		},
+
+		["NoTalkingHead"] = {
+			["Name"] = "Remove And Hide The TalkingHead Frame"
+
+		}
 	},
 
 	-- Nameplates Local
@@ -707,14 +714,6 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Non-Target Nameplate Alpha",
 		},
 
-		["OverlapH"] = {
-			["Name"] = "Overlap Horizontal",
-		},
-
-		["OverlapV"] = {
-			["Name"] = "Overlap Vertical",
-		},
-
 		["QuestInfo"] = {
 			["Name"] = "Show Quest Info Icon",
 		},
@@ -724,7 +723,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["ShowFullHealth"] = {
-			["Name"] = "Show full Health",
+			["Name"] = "Show Full Health",
 		},
 
 		["Smooth"] = {
@@ -770,6 +769,18 @@ _G.KkthnxUIConfig["enUS"] = {
 		["ShowFriendlyCombat"] = {
 			["Name"] = "Show Friendly Combat",
 		},
+
+		["LoadDistance"] = {
+			["Name"] = "Load Distance",
+		},
+
+		["ShowHealPrediction"] = {
+			["Name"] = "Show Health Prediction Bars",
+		},
+
+		["VerticalSpacing"] = {
+			["Name"] = "Vertical Spacing",
+		}
 	},
 
 	-- Skins Local
@@ -825,12 +836,16 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Enable Castbars",
 		},
 
-		["ComboPoints"] = {
-			["Name"] = "Show Combo Points (|CFFFFF569Rogue|r/|CFFFF7D0ADruid|r)",
+		["ClassResources"] = {
+			["Name"] = "Show Class Resources",
 		},
 
-		["Totems"] = {
-			["Name"] = "Show Totems (|CFF0070DEShaman|r)",
+		["Stagger"] = {
+			["Name"] = "Show |CFF00FF96Monk|r Stagger Bar",
+		},
+
+		["PlayerPowerPrediction"] = {
+			["Name"] = "Show Player Power Prediction",
 		},
 
 		["CombatFade"] = {
@@ -895,10 +910,6 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["ShowHealPrediction"] = {
 			["Name"] = "Show HealPrediction Statusbars",
-		},
-
-		["ShowPetHappinessIcon"] = {
-			["Name"] = "Show Player Pet Happiness Icon"..CreateTextureMarkup([[Interface\PetPaperDollFrame\UI-PetHappiness]], 128, 64, 16, 14, 0, 0.1875, 0, 0.359375, 0, 0),
 		},
 
 		["ShowPlayerLevel"] = {
@@ -1043,6 +1054,28 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 	},
 
+	["PulseCooldown"] = {
+		["Enable"] = {
+			["Name"] = "Enable PulseCooldown",
+		},
+
+		["HoldTime"] = {
+			["Name"] = "How Long To Display",
+		},
+
+		["MinTreshold"] = {
+			["Name"] = "Minimal Threshold Time",
+		},
+
+		["Size"] = {
+			["Name"] = "Icon Size",
+		},
+
+		["Sound"] = {
+			["Name"] = "Play Sound On Pulse",
+		},
+	},
+
 	-- QuestNotifier Local
 	["QuestNotifier"] = {
 		["Enable"] = {
@@ -1173,7 +1206,7 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Show Player/Mouse Coordinates",
 		},
 
-		["MapFader"] = {
+		["FadeWhenMoving"] = {
 			["Name"] = "Fade Worldmap When Moving",
 		},
 
@@ -1211,6 +1244,10 @@ _G.KkthnxUIConfig["enUS"] = {
 
 	-- Tooltip Local
 	["Tooltip"] = {
+		["AzeriteArmor"] = {
+			["Name"] = "Show Azerite Tooltip Traits",
+		},
+
 		["ClassColor"] = {
 			["Name"] = "Quality Color Border",
 		},

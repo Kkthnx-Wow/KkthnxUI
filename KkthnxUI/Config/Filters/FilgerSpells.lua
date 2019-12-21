@@ -1,5 +1,7 @@
-local _, C = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true or C["Filger"].Enable ~= true then return end
+local K, C = unpack(select(2, ...))
+if C["Unitframe"].Enable ~= true or C["Filger"].Enable ~= true then
+	return
+end
 
 ----------------------------------------------------------------------------------------
 --	The best way to add or delete spell is to go at www.wowhead.com, search for a spell.
@@ -7,15 +9,15 @@ if C["Unitframe"].Enable ~= true or C["Filger"].Enable ~= true then return end
 --	Take the number ID at the end of the URL, and add it to the list
 ----------------------------------------------------------------------------------------
 
-P_BUFF_ICON_Anchor = CreateFrame("Frame", "P_BUFF_ICON_Anchor", UIParent)
-P_PROC_ICON_Anchor = CreateFrame("Frame", "P_PROC_ICON_Anchor", UIParent)
-SPECIAL_P_BUFF_ICON_Anchor = CreateFrame("Frame", "SPECIAL_P_BUFF_ICON_Anchor", UIParent)
-T_DEBUFF_ICON_Anchor = CreateFrame("Frame", "T_DEBUFF_ICON_Anchor", UIParent)
-T_BUFF_Anchor = CreateFrame("Frame", "T_BUFF_Anchor", UIParent)
-PVE_PVP_DEBUFF_Anchor = CreateFrame("Frame", "PVE_PVP_DEBUFF_Anchor", UIParent)
-PVE_PVP_CC_Anchor = CreateFrame("Frame", "PVE_PVP_CC_Anchor", UIParent)
-COOLDOWN_Anchor = CreateFrame("Frame", "COOLDOWN_Anchor", UIParent)
-T_DE_BUFF_BAR_Anchor = CreateFrame("Frame", "T_DE_BUFF_BAR_Anchor", UIParent)
+K.P_BUFF_ICON_Anchor = CreateFrame("Frame", "P_BUFF_ICON_Anchor", UIParent)
+K.P_PROC_ICON_Anchor = CreateFrame("Frame", "P_PROC_ICON_Anchor", UIParent)
+K.SPECIAL_P_BUFF_ICON_Anchor = CreateFrame("Frame", "SPECIAL_P_BUFF_ICON_Anchor", UIParent)
+K.T_DEBUFF_ICON_Anchor = CreateFrame("Frame", "T_DEBUFF_ICON_Anchor", UIParent)
+K.T_BUFF_Anchor = CreateFrame("Frame", "T_BUFF_Anchor", UIParent)
+K.PVE_PVP_DEBUFF_Anchor = CreateFrame("Frame", "PVE_PVP_DEBUFF_Anchor", UIParent)
+K.PVE_PVP_CC_Anchor = CreateFrame("Frame", "PVE_PVP_CC_Anchor", UIParent)
+K.COOLDOWN_Anchor = CreateFrame("Frame", "COOLDOWN_Anchor", UIParent)
+K.T_DE_BUFF_BAR_Anchor = CreateFrame("Frame", "T_DE_BUFF_BAR_Anchor", UIParent)
 
 C["FilgerSpells"] = {
 	["DEATHKNIGHT"] = {
@@ -26,7 +28,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_BUFF_ICON_Anchor},
+			Position = {"TOP", K.P_BUFF_ICON_Anchor},
 
 			-- Empower Rune Weapon
 			{spellID = 47568, unitID = "player", caster = "player", filter = "BUFF"},
@@ -66,7 +68,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_PROC_ICON_Anchor},
+			Position = {"TOP", K.P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Icy Talons
@@ -96,7 +98,7 @@ C["FilgerSpells"] = {
 			-- Interval = 3,
 			-- Alpha = 1,
 			-- IconSize = C["Filger"].BuffSize,
-			-- Position = {"TOP", T_DEBUFF_ICON_Anchor},
+			-- Position = {"TOP", K.T_DEBUFF_ICON_Anchor},
 
 
 		-- },
@@ -109,7 +111,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 186,
-			Position = {"LEFT", T_DE_BUFF_BAR_Anchor},
+			Position = {"LEFT", K.T_DE_BUFF_BAR_Anchor},
 
 			-- Festering Wound
 			{spellID = 194310, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -130,7 +132,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].CooldownSize,
-			Position = {"TOP", COOLDOWN_Anchor},
+			Position = {"TOP", K.COOLDOWN_Anchor},
 
 			-- Self
 			-- Apocalypse
@@ -257,7 +259,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_BUFF_ICON_Anchor},
+			Position = {"TOP", K.P_BUFF_ICON_Anchor},
 
 			-- Metamorphosis
 			{spellID = 187827, unitID = "player", caster = "player", filter = "BUFF"},
@@ -283,7 +285,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_PROC_ICON_Anchor},
+			Position = {"TOP", K.P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Soul Fragments
@@ -305,7 +307,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", T_DEBUFF_ICON_Anchor},
+			Position = {"TOP", K.T_DEBUFF_ICON_Anchor},
 
 			-- Dark Slash
 			{spellID = 258860, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -335,7 +337,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 186,
-			Position = {"LEFT", T_DE_BUFF_BAR_Anchor},
+			Position = {"LEFT", K.T_DE_BUFF_BAR_Anchor},
 
 			-- Darkness
 			{spellID = 209426, unitID = "target", caster = "player", filter = "BUFF"},
@@ -349,7 +351,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PVE_PVP_CC_Anchor},
+			Position = {"LEFT", K.PVE_PVP_CC_Anchor},
 
 			-- Imprison
 			{spellID = 217832, unitID = "focus", caster = "all", filter = "DEBUFF"},
@@ -361,7 +363,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].CooldownSize,
-			Position = {"TOP", COOLDOWN_Anchor},
+			Position = {"TOP", K.COOLDOWN_Anchor},
 
 			-- Self
 			-- Consume Magic
@@ -460,7 +462,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_BUFF_ICON_Anchor},
+			Position = {"TOP", K.P_BUFF_ICON_Anchor},
 
 			-- Incarnation: Chosen of Elune
 			{spellID = 102560, unitID = "player", caster = "player", filter = "BUFF"},
@@ -506,7 +508,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_PROC_ICON_Anchor},
+			Position = {"TOP", K.P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Warrior of Elune
@@ -538,7 +540,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", T_DEBUFF_ICON_Anchor},
+			Position = {"TOP", K.T_DEBUFF_ICON_Anchor},
 
 			-- Moonfire
 			{spellID = 164812, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -569,7 +571,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 186,
-			Position = {"LEFT", T_DE_BUFF_BAR_Anchor},
+			Position = {"LEFT", K.T_DE_BUFF_BAR_Anchor},
 
 			-- Lifebloom
 			{spellID = 33763, unitID = "target", caster = "player", filter = "BUFF"},
@@ -593,7 +595,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PVE_PVP_CC_Anchor},
+			Position = {"LEFT", K.PVE_PVP_CC_Anchor},
 
 			-- Cyclone
 			{spellID = 33786, unitID = "focus", caster = "all", filter = "DEBUFF"},
@@ -607,7 +609,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].CooldownSize,
-			Position = {"TOP", COOLDOWN_Anchor},
+			Position = {"TOP", K.COOLDOWN_Anchor},
 
 			-- Self
 			-- Nature's Cure
@@ -716,7 +718,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_BUFF_ICON_Anchor},
+			Position = {"TOP", K.P_BUFF_ICON_Anchor},
 
 			-- Coordinated Assault
 			{spellID = 266779, unitID = "player", caster = "player", filter = "BUFF"},
@@ -760,7 +762,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_PROC_ICON_Anchor},
+			Position = {"TOP", K.P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Viper's Venom
@@ -798,7 +800,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", T_DEBUFF_ICON_Anchor},
+			Position = {"TOP", K.T_DEBUFF_ICON_Anchor},
 
 			-- Black Arrow
 			{spellID = 194599, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -846,7 +848,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PVE_PVP_CC_Anchor},
+			Position = {"LEFT", K.PVE_PVP_CC_Anchor},
 
 			-- Wyvern Sting
 			{spellID = 19386, unitID = "focus", caster = "player", filter = "DEBUFF"},
@@ -860,7 +862,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].CooldownSize,
-			Position = {"TOP", COOLDOWN_Anchor},
+			Position = {"TOP", K.COOLDOWN_Anchor},
 
 			-- Self
 			-- Concussive Shot
@@ -971,7 +973,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_BUFF_ICON_Anchor},
+			Position = {"TOP", K.P_BUFF_ICON_Anchor},
 
 			-- Ice Block
 			{spellID = 45438, unitID = "player", caster = "player", filter = "BUFF"},
@@ -1011,7 +1013,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_PROC_ICON_Anchor},
+			Position = {"TOP", K.P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Fingers of Frost
@@ -1039,7 +1041,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", T_DEBUFF_ICON_Anchor},
+			Position = {"TOP", K.T_DEBUFF_ICON_Anchor},
 
 			-- Arcane Charge
 			{spellID = 36032, unitID = "player", caster = "player", filter = "DEBUFF"},
@@ -1074,7 +1076,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PVE_PVP_CC_Anchor},
+			Position = {"LEFT", K.PVE_PVP_CC_Anchor},
 
 			-- Polymorph
 			{spellID = 118, unitID = "focus", caster = "all", filter = "DEBUFF"},
@@ -1086,7 +1088,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].CooldownSize,
-			Position = {"TOP", COOLDOWN_Anchor},
+			Position = {"TOP", K.COOLDOWN_Anchor},
 
 			-- Self
 			-- Remove Curse
@@ -1215,7 +1217,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_BUFF_ICON_Anchor},
+			Position = {"TOP", K.P_BUFF_ICON_Anchor},
 
 			-- Fortifying Brew
 			{spellID = 120954, unitID = "player", caster = "player", filter = "BUFF"},
@@ -1255,7 +1257,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_PROC_ICON_Anchor},
+			Position = {"TOP", K.P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Rushing Jade Wind
@@ -1289,7 +1291,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", T_DEBUFF_ICON_Anchor},
+			Position = {"TOP", K.T_DEBUFF_ICON_Anchor},
 
 			-- Touch of Death
 			{spellID = 115080, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -1311,7 +1313,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PVE_PVP_CC_Anchor},
+			Position = {"LEFT", K.PVE_PVP_CC_Anchor},
 
 			-- Paralysis
 			{spellID = 115078, unitID = "focus", caster = "player", filter = "DEBUFF"},
@@ -1323,7 +1325,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].CooldownSize,
-			Position = {"TOP", COOLDOWN_Anchor},
+			Position = {"TOP", K.COOLDOWN_Anchor},
 
 			-- Self
 			-- Detox
@@ -1436,7 +1438,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_BUFF_ICON_Anchor},
+			Position = {"TOP", K.P_BUFF_ICON_Anchor},
 
 			-- Inquisition
 			{spellID = 84963, unitID = "player", caster = "player", filter = "BUFF"},
@@ -1474,7 +1476,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_PROC_ICON_Anchor},
+			Position = {"TOP", K.P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Divine Purpose
@@ -1506,7 +1508,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", T_DEBUFF_ICON_Anchor},
+			Position = {"TOP", K.T_DEBUFF_ICON_Anchor},
 
 			-- Execution Sentence
 			{spellID = 267799, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -1529,7 +1531,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].CooldownSize,
-			Position = {"TOP", COOLDOWN_Anchor},
+			Position = {"TOP", K.COOLDOWN_Anchor},
 
 			-- Self
 			-- Eye of Tyr
@@ -1644,7 +1646,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_BUFF_ICON_Anchor},
+			Position = {"TOP", K.P_BUFF_ICON_Anchor},
 
 			-- Atonement
 			{spellID = 194384, unitID = "player", caster = "player", filter = "BUFF"},
@@ -1693,7 +1695,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_PROC_ICON_Anchor},
+			Position = {"TOP", K.P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Power of the Dark Side
@@ -1721,7 +1723,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", T_DEBUFF_ICON_Anchor},
+			Position = {"TOP", K.T_DEBUFF_ICON_Anchor},
 
 			-- Schism
 			{spellID = 214621, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -1738,7 +1740,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 186,
-			Position = {"LEFT", T_DE_BUFF_BAR_Anchor},
+			Position = {"LEFT", K.T_DE_BUFF_BAR_Anchor},
 
 			-- Renew
 			{spellID = 139, unitID = "target", caster = "player", filter = "BUFF"},
@@ -1766,7 +1768,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PVE_PVP_CC_Anchor},
+			Position = {"LEFT", K.PVE_PVP_CC_Anchor},
 
 			-- Shackle Undead
 			{spellID = 9484, unitID = "focus", caster = "player", filter = "DEBUFF"},
@@ -1780,7 +1782,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].CooldownSize,
-			Position = {"TOP", COOLDOWN_Anchor},
+			Position = {"TOP", K.COOLDOWN_Anchor},
 
 			-- Self
 			-- Purify
@@ -1927,7 +1929,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_BUFF_ICON_Anchor},
+			Position = {"TOP", K.P_BUFF_ICON_Anchor},
 
 			-- Slice and Dice
 			{spellID = 5171, unitID = "player", caster = "player", filter = "BUFF"},
@@ -1979,7 +1981,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_PROC_ICON_Anchor},
+			Position = {"TOP", K.P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Shuriken Combo
@@ -2011,7 +2013,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", T_DEBUFF_ICON_Anchor},
+			Position = {"TOP", K.T_DEBUFF_ICON_Anchor},
 
 			-- Rupture
 			{spellID = 1943, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -2045,7 +2047,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PVE_PVP_CC_Anchor},
+			Position = {"LEFT", K.PVE_PVP_CC_Anchor},
 
 			-- Blind
 			{spellID = 2094, unitID = "focus", caster = "player", filter = "DEBUFF"},
@@ -2059,7 +2061,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].CooldownSize,
-			Position = {"TOP", COOLDOWN_Anchor},
+			Position = {"TOP", K.COOLDOWN_Anchor},
 
 			-- Self
 			-- Stealth
@@ -2164,7 +2166,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_BUFF_ICON_Anchor},
+			Position = {"TOP", K.P_BUFF_ICON_Anchor},
 
 			-- Elemental Mastery
 			{spellID = 16166, unitID = "player", caster = "player", filter = "BUFF"},
@@ -2196,7 +2198,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_PROC_ICON_Anchor},
+			Position = {"TOP", K.P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Lava Surge
@@ -2230,7 +2232,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", T_DEBUFF_ICON_Anchor},
+			Position = {"TOP", K.T_DEBUFF_ICON_Anchor},
 
 			-- Stormstrike
 			{spellID = 17364, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -2255,7 +2257,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 186,
-			Position = {"LEFT", T_DE_BUFF_BAR_Anchor},
+			Position = {"LEFT", K.T_DE_BUFF_BAR_Anchor},
 
 			-- Earth Shield
 			{spellID = 204288, unitID = "target", caster = "player", filter = "BUFF"},
@@ -2271,7 +2273,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PVE_PVP_CC_Anchor},
+			Position = {"LEFT", K.PVE_PVP_CC_Anchor},
 
 			-- Hex
 			{spellID = 51514, unitID = "focus", caster = "player", filter = "DEBUFF"},
@@ -2283,7 +2285,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].CooldownSize,
-			Position = {"TOP", COOLDOWN_Anchor},
+			Position = {"TOP", K.COOLDOWN_Anchor},
 
 			-- Self
 			-- Cleanse Spirit
@@ -2378,7 +2380,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_BUFF_ICON_Anchor},
+			Position = {"TOP", K.P_BUFF_ICON_Anchor},
 
 			-- Dark Soul: Misery
 			{spellID = 113860, unitID = "player", caster = "player", filter = "BUFF"},
@@ -2412,7 +2414,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_PROC_ICON_Anchor},
+			Position = {"TOP", K.P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Backdraft
@@ -2432,7 +2434,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", T_DEBUFF_ICON_Anchor},
+			Position = {"TOP", K.T_DEBUFF_ICON_Anchor},
 
 			-- Self
 			-- Enslave Demon
@@ -2450,7 +2452,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 186,
-			Position = {"LEFT", T_DE_BUFF_BAR_Anchor},
+			Position = {"LEFT", K.T_DE_BUFF_BAR_Anchor},
 
 			-- Havoc
 			{spellID = 80240, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -2496,7 +2498,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PVE_PVP_CC_Anchor},
+			Position = {"LEFT", K.PVE_PVP_CC_Anchor},
 
 			-- Banish
 			{spellID = 710, unitID = "focus", caster = "player", filter = "DEBUFF"},
@@ -2510,7 +2512,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].CooldownSize,
-			Position = {"TOP", COOLDOWN_Anchor},
+			Position = {"TOP", K.COOLDOWN_Anchor},
 
 			-- Self
 			-- Devour Magic (Felhunter)
@@ -2599,7 +2601,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_BUFF_ICON_Anchor},
+			Position = {"TOP", K.P_BUFF_ICON_Anchor},
 
 			-- In For The Kill
 			{spellID = 248622, unitID = "player", caster = "player", filter = "BUFF"},
@@ -2639,7 +2641,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", P_PROC_ICON_Anchor},
+			Position = {"TOP", K.P_PROC_ICON_Anchor},
 
 			-- Victorious
 			{spellID = 32216, unitID = "player", caster = "player", filter = "BUFF"},
@@ -2672,7 +2674,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", T_DEBUFF_ICON_Anchor},
+			Position = {"TOP", K.T_DEBUFF_ICON_Anchor},
 
 			-- Siegebreaker
 			{spellID = 280773, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -2695,7 +2697,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].CooldownSize,
-			Position = {"TOP", COOLDOWN_Anchor},
+			Position = {"TOP", K.COOLDOWN_Anchor},
 
 			-- Self
 			-- Pummel
@@ -2808,7 +2810,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
-			Position = {"TOP", SPECIAL_P_BUFF_ICON_Anchor},
+			Position = {"TOP", K.SPECIAL_P_BUFF_ICON_Anchor},
 
 			-- Potions: Miscellaneous
 			-- Invisibility [Invisibility Potion]
@@ -2929,7 +2931,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].PvPSize,
-			Position = {"TOP", PVE_PVP_DEBUFF_Anchor},
+			Position = {"TOP", K.PVE_PVP_DEBUFF_Anchor},
 
 			-- Crowd Controls
 			-- Death Knight
@@ -3195,7 +3197,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C["Filger"].PvPSize,
-			Position = {"TOP", T_BUFF_Anchor},
+			Position = {"TOP", K.T_BUFF_Anchor},
 
 			-- Death Knight
 			-- Anti-Magic Shell
@@ -3519,10 +3521,12 @@ C["FilgerSpells"] = {
 			-- Seaforium Bombs
 			{spellID = 66271, unitID = "target", caster = "all", filter = "DEBUFF"},
 			-- Drinking in Arena
-			-- Drinking
+			-- Drink
 			{spellID = 80167, unitID = "target", caster = "all", filter = "BUFF"},
-			-- Mage Food
+			-- Refreshment [Mage Food]
 			{spellID = 167152, unitID = "target", caster = "all", filter = "BUFF"},
+			-- Food & Drink
+			{spellID = 257427, unitID = "target", caster = "all", filter = "BUFF"},
 
 			-- Mythic
 			-- Sanguine Ichor

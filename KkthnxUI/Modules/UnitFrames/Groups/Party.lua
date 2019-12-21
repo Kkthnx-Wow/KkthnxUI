@@ -132,19 +132,6 @@ function Module:CreateParty()
 		self.Buffs.CustomFilter = Module.CustomAuraFilter.Blacklist
 	end
 
-	-- self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
-	-- self.Debuffs:SetHeight(18)
-	-- self.Debuffs:SetWidth(92)
-	-- self.Debuffs:SetPoint("LEFT", self.Health, "RIGHT", 6, 0)
-	-- self.Debuffs.size = 18
-	-- self.Debuffs.num = 5
-	-- self.Debuffs.spacing = 6
-	-- self.Debuffs.initialAnchor = "TOPLEFT"
-	-- self.Debuffs["growth-y"] = "DOWN"
-	-- self.Debuffs["growth-x"] = "RIGHT"
-	-- self.Debuffs.PostCreateIcon = Module.PostCreateAura
-	-- self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
-
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 	self.Debuffs:SetHeight(18)
 	self.Debuffs:SetWidth(108)
@@ -317,7 +304,7 @@ function Module:CreateParty()
 	end
 
 	self.PhaseIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.PhaseIndicator:SetSize(24, 24)
+	self.PhaseIndicator:SetSize(22, 22)
 	self.PhaseIndicator:SetPoint("LEFT", self.Health, "RIGHT", 1, 0)
 	self.PhaseIndicator:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\PhaseIcons.tga]])
 	self.PhaseIndicator.PostUpdate = Module.UpdatePhaseIcon

@@ -126,15 +126,15 @@ function Module:CreateBoss()
 	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
 
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
-	self.Debuffs:SetHeight(24)
-	self.Debuffs:SetWidth(24 * 3 + 6 * 2)
-	self.Debuffs:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
-	self.Debuffs.size = 24
-	self.Debuffs.num = 8
+	self.Debuffs:SetWidth(154)
+	self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
+	self.Debuffs.num = 6 * 1
 	self.Debuffs.spacing = 6
-	self.Debuffs.initialAnchor = "TOPRIGHT"
+	self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num / 1 - 1))) / self.Debuffs.num)) * 1)
+	self.Debuffs:SetHeight(self.Debuffs.size * 1)
+	self.Debuffs.initialAnchor = "BOTTOMLEFT"
 	self.Debuffs["growth-y"] = "DOWN"
-	self.Debuffs["growth-x"] = "LEFT"
+	self.Debuffs["growth-x"] = "RIGHT"
 	self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura

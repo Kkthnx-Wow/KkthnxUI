@@ -406,13 +406,11 @@ function Module:ReskinTooltip()
 			self = self:GetParent()
 		end
 
-		local bgLevel = (self:GetFrameLevel() - 1 >= 0 and self:GetFrameLevel() - 1) or (0)
-		local bg = CreateFrame("Frame", nil, self)
-		bg:SetPoint("TOPLEFT", self, 2, -2)
-		bg:SetPoint("BOTTOMRIGHT", self, -2, 2)
-		bg:SetFrameLevel(bgLevel)
-		bg:CreateBorder()
-		self.bg = bg
+		self.bg = CreateFrame("Frame", nil, self)
+		self.bg:SetPoint("TOPLEFT", self, 2, -2)
+		self.bg:SetPoint("BOTTOMRIGHT", self, -2, 2)
+		self.bg:SetFrameLevel(self:GetFrameLevel()) -- Look into this issue later.
+		self.bg:CreateBorder()
 
 		-- other gametooltip-like support
 		self.GetBackdrop = getBackdrop

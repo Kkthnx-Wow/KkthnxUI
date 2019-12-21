@@ -26,12 +26,13 @@ _G.KkthnxUIConfig["deDE"] = {
 		["Misc"] = "Diverses",
 		["Nameplates"] = "Namensplaketten",
 		["Party"] = "Gruppe",
+		["PulseCooldown"] = "Pulse Cooldown",
 		["QuestNotifier"] = "Questbenachrichtigung",
 		["Raid"] = "Raid",
 		["Skins"] = "Aussehen",
 		["Tooltip"] = "Tooltip",
-		["UIFonts"] = ModuleNewFeature.."Schriftarten",
-		["UITextures"] = ModuleNewFeature.."Texturen",
+		["UIFonts"] = "Schriftarten",
+		["UITextures"] = "Texturen",
 		["Unitframe"] = "Einheitenfenster",
 		["WorldMap"] = "Weltkarte",
 	},
@@ -119,6 +120,14 @@ _G.KkthnxUIConfig["deDE"] = {
 
 		["Interrupt"] = {
 			["Name"] = "Unterbrechungen ansagen",
+		},
+
+		["RareAlert"] = {
+			["Name"] = "Announce Rares, Chests & War Supplies",
+		},
+
+		["ItemAlert"] = {
+			["Name"] = "Announce Items Being Placed",
 		}
 	},
 
@@ -159,6 +168,10 @@ _G.KkthnxUIConfig["deDE"] = {
 
 		["AutoReward"] = {
 			["Name"] = "Questbelohnungen automatisch auswählen",
+		},
+
+		["AutoSetRole"] = {
+			["Name"] = "Auto Set Your Role In Groups",
 		},
 
 		["AutoTabBinder"] = {
@@ -204,8 +217,17 @@ _G.KkthnxUIConfig["deDE"] = {
 		["ButtonSpace"] = {
 			["Name"] = "Abstand der Taschenknöpfe zueinander",
 		},
+
 		["ClassRelatedFilter"] = {
 			["Name"] = "Filter für Klassenspezifische Gegenstände",
+		},
+
+		["ScrapIcon"] = {
+			["Name"] = "Show Scrap Icon",
+		},
+
+		["UpgradeIcon"] = {
+			["Name"] = "Show Upgrade Icon",
 		},
 
 		["QuestItemFilter"] = {
@@ -444,7 +466,7 @@ _G.KkthnxUIConfig["deDE"] = {
 		},
 
 		["System"] = {
-			["Name"] = "Zeige FPS/MS an der Minikarte",
+			["Name"] = "FPS und Latenz anzeigen",
 		},
 
 		["Time"] = {
@@ -624,11 +646,6 @@ _G.KkthnxUIConfig["deDE"] = {
 			["Name"] = "AFK Kamera",
 		},
 
-		["AutoDismountStand"] = {
-			["Name"] = "Automatisch aufstehen/absitzen",
-			["Desc"] = "Lässst dich aufstehen/absitzen wenn du einen Zauber wirken oder etwas bekämpfen willst",
-		},
-
 		["ColorPicker"] = {
 			["Name"] = "Verbesserter Farbwähler",
 		},
@@ -637,22 +654,8 @@ _G.KkthnxUIConfig["deDE"] = {
 			["Name"] = "Verbesserte Farben (Freunde/Gilde +)",
 		},
 
-		["EnhancedMenu"] = {
-			["Name"] = "Füge Gildeneinladung und mehr zu Kontextmenüs hinzu",
-			["Desc"] = "Füge 'Gildeneinladung' und 'Freund hinzufügen' zum Kontextmenü des Zieles hinzu."
-		},
-
 		["GemEnchantInfo"] = {
 			["Name"] = "Charakter/Betrachten Edelsteine-/Verzauberungsinfo",
-		},
-
-		["ImprovedProfessionWindow"] = {
-			["Name"] = "Verbessert das aussehen der Berufefenster",
-		},
-
-		["ImprovedQuestLog"] = {
-			["Name"] = "Verbessere das Aussehen des Questlogs",
-			["Desc"] = "Macht das QuestLog breiter.|n|nAddons wie ClassicQuestLog werden nicht mehr benötigt."
 		},
 
 		["ItemLevel"] = {
@@ -667,10 +670,6 @@ _G.KkthnxUIConfig["deDE"] = {
 			["Name"] = "Automatisches Emote bei Tötungsschlag/-treffer",
 		},
 
-		["ShowHelmCloak"] = {
-			["Name"] = "Zeige Knöpfe für Helm/Umhang im Charakterfenster",
-		},
-
 		["ShowWowHeadLinks"] = {
 			["Name"] = "Zeige Wowhead Links über dem Questlog Fenster",
 		},
@@ -678,6 +677,21 @@ _G.KkthnxUIConfig["deDE"] = {
 		["SlotDurability"] = {
 			["Name"] = "Zeige Slothaltbarkeit in %",
 		},
+
+		["EnchantmentScroll"] = {
+			["Name"] = "Create Enchantment Scrolls With A Single Click"
+
+		},
+
+		["ImprovedStats"] = {
+			["Name"] = "Display Character Frame Full Stats"
+
+		},
+
+		["NoTalkingHead"] = {
+			["Name"] = "Remove And Hide The TalkingHead Frame"
+
+		}
 	},
 
 	-- Nameplates Local
@@ -736,14 +750,6 @@ _G.KkthnxUIConfig["deDE"] = {
 			["Name"] = "Alpha für Nichtziel Namensplaketten",
 		},
 
-		["OverlapH"] = {
-			["Name"] = "Horizontale Überlappung",
-		},
-
-		["OverlapV"] = {
-			["Name"] = "Veritkale Überlappung",
-		},
-
 		["QuestInfo"] = {
 			["Name"] = "Zeige Questinformationssymbol",
 		},
@@ -795,6 +801,18 @@ _G.KkthnxUIConfig["deDE"] = {
 		["ShowFriendlyCombat"] = {
 			["Name"] = "Zeige freundliche im Kampf",
 		},
+
+		["LoadDistance"] = {
+			["Name"] = "Load Distance",
+		},
+
+		["ShowHealPrediction"] = {
+			["Name"] = "Show Health Prediction Bars",
+		},
+
+		["VerticalSpacing"] = {
+			["Name"] = "Vertical Spacing",
+		}
 	},
 
 	-- Skins Local
@@ -850,8 +868,16 @@ _G.KkthnxUIConfig["deDE"] = {
 			["Name"] = "Zauberleisten aktivieren",
 		},
 
-		["ClassResource"] = {
-			["Name"] = "Klassenressourcen anzeigen",
+		["ClassResources"] = {
+			["Name"] = "Show Class Resources",
+		},
+
+		["Stagger"] = {
+			["Name"] = "Show |CFF00FF96Monk|r Stagger Bar",
+		},
+
+		["PlayerPowerPrediction"] = {
+			["Name"] = "Show Player Power Prediction",
 		},
 
 		["CombatFade"] = {
@@ -916,10 +942,6 @@ _G.KkthnxUIConfig["deDE"] = {
 
 		["ShowHealPrediction"] = {
 			["Name"] = "Zeige hereinkommende Heilung an",
-		},
-
-		["ShowPetHappinessIcon"] = {
-			["Name"] = "Zeige Symbol für Zufriedenheit des Begleiters (Jäger)"..CreateTextureMarkup([[Interface\PetPaperDollFrame\UI-PetHappiness]], 128, 64, 16, 14, 0, 0.1875, 0, 0.359375, 0, 0),
 		},
 
 		["ShowPlayerLevel"] = {
@@ -1056,6 +1078,28 @@ _G.KkthnxUIConfig["deDE"] = {
 		},
 	},
 
+	["PulseCooldown"] = {
+		["Enable"] = {
+			["Name"] = "Enable PulseCooldown",
+		},
+
+		["HoldTime"] = {
+			["Name"] = "How Long To Display",
+		},
+
+		["MinTreshold"] = {
+			["Name"] = "Minimal Threshold Time",
+		},
+
+		["Size"] = {
+			["Name"] = "Icon Size",
+		},
+
+		["Sound"] = {
+			["Name"] = "Play Sound On Pulse",
+		},
+	},
+
 	-- QuestNotifier Local
 	["QuestNotifier"] = {
 		["Enable"] = {
@@ -1186,7 +1230,7 @@ _G.KkthnxUIConfig["deDE"] = {
 			["Name"] = "Zeige Spieler/Maus Koordinaten",
 		},
 
-		["MapFader"] = {
+		["FadeWhenMoving"] = {
 			["Name"] = "Weltkarte verblassen lassen bei Bewegung",
 		},
 
@@ -1205,6 +1249,10 @@ _G.KkthnxUIConfig["deDE"] = {
 
 	-- Tooltip Local
 	["Tooltip"] = {
+		["AzeriteArmor"] = {
+			["Name"] = "Show Azerite Tooltip Traits",
+		},
+
 		["ClassColor"] = {
 			["Name"] = "Färbe Rahmen abhängig von der Qualität",
 		},

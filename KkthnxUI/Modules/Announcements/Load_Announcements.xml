@@ -5,5 +5,7 @@
 
     <Script file="Countdown.lua"/>
     <Script file="Interrupt.lua"/>
+    <Script file="ItemAlert.lua"/>
+    <Script file="RareAlert.lua"/>
     <Script file="Sapped.lua"/>
 </Ui>

@@ -31,60 +31,11 @@ local function SkinMiscStuff()
 	end
 end
 
-local function SkinTestCraftingUI()
-	local rankFrame = TradeSkillFrame.RankFrame
-	rankFrame:SetStatusBarTexture(C["Media"].Texture)
-	rankFrame.SetStatusBarColor = K.Noop
-	rankFrame:GetStatusBarTexture():SetGradient("VERTICAL", 0.1, 0.3, 0.9, 0.2, 0.4, 1)
-	rankFrame.RankText:FontTemplate(nil, 11)
-	K.CreateBorder(rankFrame)
-	rankFrame.BorderMid:Hide()
-	rankFrame.BorderLeft:Hide()
-	rankFrame.BorderRight:Hide()
-
-	hooksecurefunc(TradeSkillFrame.DetailsFrame, "RefreshDisplay", function()
-		local ResultIcon = TradeSkillFrame.DetailsFrame.Contents.ResultIcon
-		ResultIcon:StyleButton()
-		if ResultIcon:GetNormalTexture() then
-			ResultIcon:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
-			ResultIcon:GetNormalTexture():SetInside()
-		end
-
-		ResultIcon:CreateBorder()
-		ResultIcon.IconBorder:SetTexture()
-		ResultIcon.ResultBorder:SetTexture()
-
-		for i = 1, #TradeSkillFrame.DetailsFrame.Contents.Reagents do
-			local Button = TradeSkillFrame.DetailsFrame.Contents.Reagents[i]
-			local Icon = Button.Icon
-			local Count = Button.Count
-
-			Icon:SetTexCoord(unpack(K.TexCoords))
-			Icon:SetDrawLayer("OVERLAY")
-			if not Icon.backdrop then
-				Icon.backdrop = CreateFrame("Frame", nil, Button)
-				Icon.backdrop:SetFrameLevel(Button:GetFrameLevel() - 1)
-				Icon.backdrop:CreateBorder()
-				Icon.backdrop:SetAllPoints(Icon)
-			end
-
-			Icon:SetParent(Icon.backdrop)
-			Count:SetParent(Icon.backdrop)
-			Count:SetDrawLayer("OVERLAY")
-
-			Button.NameFrame:Kill()
-		end
-	end)
-end
-
 local function SkinDebugTools()
 	-- EventTraceFrame
 	EventTraceFrame:CreateBorder(nil, nil, nil, true)
 	EventTraceFrameCloseButton:SkinCloseButton()
-
-	EventTraceFrameScroll:SkinScrollBar()
 end
 
 table_insert(Module.NewSkin["KkthnxUI"], SkinMiscStuff)
-Module.NewSkin["Blizzard_TradeSkillUI"] = SkinTestCraftingUI
 Module.NewSkin["Blizzard_DebugTools"] = SkinDebugTools

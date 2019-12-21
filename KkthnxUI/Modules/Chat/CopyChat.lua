@@ -22,7 +22,7 @@ local UIParent = _G.UIParent
 
 local lines, menu, frame, editBox = {}
 local CopyChatFont = K.GetFont(C["UIFonts"].ChatFonts)
-local menuFrame = CreateFrame("Frame", "QuickClickMenu", UIParent, "UIDropDownMenuTemplate")
+local menuFrame = CreateFrame("Frame", "KKUIQuickClickMenu", UIParent, "UIDropDownMenuTemplate")
 local leftButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "
 local rightButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "
 
@@ -137,6 +137,11 @@ function Module:ChatCopy_OnClick(btn)
 		if not frame:IsShown() then
 			local chatframe = _G.SELECTED_DOCK_FRAME
 			local _, fontSize = chatframe:GetFont()
+
+			if fontSize < 12 then
+				fontSize = 12
+			end
+
 			FCF_SetChatWindowFontSize(chatframe, chatframe, .01)
 			PlaySound(21968)
 			frame:Show()
@@ -149,9 +154,12 @@ function Module:ChatCopy_OnClick(btn)
 			frame:Hide()
 		end
 	elseif btn == "RightButton" then
-		PlaySound(111)
-		ToggleFrame(menu)
-		C["Chat"].ChatMenu = menu:IsShown()
+		if not ChatMenu:IsShown() then
+			PlaySound(111)
+			ToggleFrame(_G.ChatMenu)
+		else
+			ChatMenu:Hide()
+		end
 	end
 end
 
@@ -159,7 +167,6 @@ function Module:ChatCopy_CreateMenu()
 	menu = CreateFrame("Frame", nil, UIParent)
 	menu:SetSize(22, 100)
 	menu:SetPoint("TOPRIGHT", _G.ChatFrame1, 22, 0)
-	menu:SetShown(C["Chat"].ChatMenu)
 
 	-- Create Configbutton
 	local kkuiconfig = CreateFrame("Button", nil, UIParent)
@@ -179,12 +186,10 @@ function Module:ChatCopy_CreateMenu()
 		end
 	end)
 
-	K.AddTooltip(kkuiconfig, "ANCHOR_RIGHT", "Copy Chat")
-
 	kkuiconfig:SetScript("OnEnter", function(self)
 		K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
 
-		local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
+		local anchor, _, xoff, yoff = "ANCHOR_RIGHT", self:GetParent(), 10, 5
 		GameTooltip:SetOwner(self, anchor, xoff, yoff)
 		GameTooltip:ClearLines()
 		GameTooltip:AddDoubleLine(leftButtonString..L["Left Click"], L["Toggle Quick Menu"], 1, 1, 1)
@@ -229,18 +234,10 @@ function Module:ChatCopy_CreateMenu()
 			end
 		end)
 
-		K.AddTooltip(damagemeter, "ANCHOR_RIGHT", "")
-
-		if IsAddOnLoaded("Details") then
-			K.AddTooltip(damagemeter, "ANCHOR_RIGHT", "Toggle Details")
-		elseif IsAddOnLoaded("Skada") then
-			K.AddTooltip(damagemeter, "ANCHOR_RIGHT", "Toggle Skada")
-		end
-
 		damagemeter:SetScript("OnEnter", function(self)
 			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
 
-			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
+			local anchor, _, xoff, yoff = "ANCHOR_RIGHT", self:GetParent(), 10, 5
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
 			GameTooltip:ClearLines()
 			if IsAddOnLoaded("Details") then
@@ -319,14 +316,25 @@ function Module:ChatCopy_Create()
 	copy.Texture:SetTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
 	copy:RegisterForClicks("AnyUp")
 	copy:SetScript("OnClick", self.ChatCopy_OnClick)
-	K.AddTooltip(copy, "ANCHOR_RIGHT", "Copy Chat")
 
-	copy:HookScript("OnEnter", function(self)
+	copy:SetScript("OnEnter", function(self)
 		K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+
+		local anchor, _, xoff, yoff = "ANCHOR_RIGHT", self:GetParent(), 10, 5
+		GameTooltip:SetOwner(self, anchor, xoff, yoff)
+		GameTooltip:ClearLines()
+		GameTooltip:AddDoubleLine(leftButtonString..L["Left Click"], "Copy Chat", 1, 1, 1)
+		GameTooltip:AddDoubleLine(rightButtonString..L["Right Click"], "Chat Menu", 1, 1, 1)
+
+		GameTooltip:Show()
 	end)
 
-	copy:HookScript("OnLeave", function(self)
+	copy:SetScript("OnLeave", function(self)
 		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+
+		if not GameTooltip:IsForbidden() then
+			GameTooltip:Hide()
+		end
 	end)
 end
 

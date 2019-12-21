@@ -349,20 +349,18 @@ K:RegisterEvent("PLAYER_LOGIN", CheckRole)
 K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
 
 -- Chat channel check
-function K.CheckChat(warning)
+function K.CheckChat()
 	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
-		return "INSTANCE_CHAT"
-	elseif IsInRaid(LE_PARTY_CATEGORY_HOME) then
-		if warning and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or IsEveryoneAssistant()) then
-			return "RAID_WARNING"
-		else
-			return "RAID"
-		end
+			return "INSTANCE_CHAT"
 	elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
-		return "PARTY"
+			if IsInRaid() then
+				return "RAID"
+			else
+				return "PARTY"
+			end
+	else
+		return "SAY"
 	end
-
-	return "SAY"
 end
 
 -- Tooltip code ripped from StatBlockCore by Funkydude

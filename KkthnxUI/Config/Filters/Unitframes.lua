@@ -1,15 +1,18 @@
 local K = unpack(select(2, ...))
 
 local _G = _G
-local print = _G.print
+local string_find = _G.string.find
+local unpack = _G.unpack
 
 local GetSpellInfo = _G.GetSpellInfo
+local GetSpellSubtext = _G.GetSpellSubtext
+local IsPlayerSpell = _G.IsPlayerSpell
 
-local function SpellName(id)
+local function GetSpellName(id)
 	local name = GetSpellInfo(id)
 	if not name then
-		print("|cff3c9bedKkthnxUI:|r SpellID is not valid: " .. id .. ". Please check for an updated version, if none exists report to Kkthnx in Discord.")
-		return "Impale"
+		K.Print("SpellID is not valid: "..id..". Please check for an updated version, if none exists report this to 'Kkthnx' in the KkthnxUI Discord.")
+		return 0
 	else
 		return name
 	end
@@ -20,24 +23,24 @@ local function Defaults(priorityOverride)
 end
 
 -- BuffWatch: List of personal spells to show on unitframes as icon
-local function AuraWatch_AddSpell(id, point, color, anyUnit, onlyShowMissing, displayText, textThreshold, xOffset, yOffset, sizeOverride)
+local function GetAuraWatchSpell(id, point, color, anyUnit, onlyShowMissing, displayText, textThreshold, xOffset, yOffset, sizeOverride)
 
 	local r, g, b = 1, 1, 1
 	if color then r, g, b = unpack(color) end
 
 	local rankText = GetSpellSubtext(id)
-	local spellRank = rankText and strfind(rankText, '%d') and GetSpellSubtext(id) or nil
+	local spellRank = rankText and string_find(rankText, "%d") and GetSpellSubtext(id) or nil
 
 	return {
 		enabled = true,
 		id = id,
 		name = GetSpellInfo(id),
 		rank = spellRank,
-		point = point or 'TOPLEFT',
+		point = point or "TOPLEFT",
 		color = {r = r, g = g, b = b},
 		anyUnit = anyUnit or false,
 		onlyShowMissing = onlyShowMissing or false,
-		styleOverride = 'Default',
+		styleOverride = "Default",
 		displayText = displayText or true,
 		textThreshold = textThreshold or -1,
 		xOffset = xOffset or 0,
@@ -104,7 +107,7 @@ K.DebuffsTracking["RaidDebuffs"] = {
 		[275835] = Defaults(), -- Stinging Venom Coating
 		[273930] = Defaults(), -- Hindering Cut
 		[257292] = Defaults(), -- Heavy Slash
-		[261428] = Defaults(), -- Hangman's Noose
+		[261428] = Defaults(), -- Hangman"s Noose
 		[256897] = Defaults(), -- Clamping Jaws
 		[272874] = Defaults(), -- Trample
 		[273470] = Defaults(), -- Gut Shot
@@ -157,7 +160,7 @@ K.DebuffsTracking["RaidDebuffs"] = {
 		[278456] = Defaults(), -- Infest
 		[264153] = Defaults(), -- Spit
 
-		-- Atal'Dazar
+		-- Atal"Dazar
 		[252781] = Defaults(), -- Unstable Hex
 		[250096] = Defaults(), -- Wracking Pain
 		[250371] = Defaults(), -- Lingering Nausea
@@ -172,7 +175,7 @@ K.DebuffsTracking["RaidDebuffs"] = {
 		[255434] = Defaults(), -- Serrated Teeth
 		[256577] = Defaults(), -- Soulfeast
 
-		--King's Rest
+		--King"s Rest
 		[270492] = Defaults(), -- Hex
 		[267763] = Defaults(), -- Wretched Discharge
 		[276031] = Defaults(), -- Pit of Despair
@@ -239,7 +242,7 @@ K.DebuffsTracking["RaidDebuffs"] = {
 		[265019] = Defaults(), -- Savage Cleave
 		[265377] = Defaults(), -- Hooked Snare
 		[265625] = Defaults(), -- Dark Omen
-		[260685] = Defaults(), -- Taint of G'huun
+		[260685] = Defaults(), -- Taint of G"huun
 		[266107] = Defaults(), -- Thirst for Blood
 		[260455] = Defaults(), -- Serrated Fangs
 
@@ -307,14 +310,14 @@ K.DebuffsTracking["RaidDebuffs"] = {
 		[272018] = Defaults(), -- Absorbed in Darkness
 		[274358] = Defaults(), -- Rupturing Blood
 
-		-- Zek'voz, Herald of N'zoth
+		-- Zek"voz, Herald of N"zoth
 		[265237] = Defaults(), -- Shatter
 		[265264] = Defaults(), -- Void Lash
 		[265360] = Defaults(), -- Roiling Deceit
-		[265662] = Defaults(), -- Corruptor's Pact
+		[265662] = Defaults(), -- Corruptor"s Pact
 		[265646] = Defaults(), -- Will of the Corruptor
 
-		-- G'huun
+		-- G"huun
 		[263436] = Defaults(), -- Imperfect Physiology
 		[263227] = Defaults(), -- Putrid Blood
 		[263372] = Defaults(), -- Power Matrix
@@ -325,7 +328,7 @@ K.DebuffsTracking["RaidDebuffs"] = {
 		[270287] = Defaults(), -- Blighted Ground
 
 		-- Siege of Zuldazar
-		-- Ra'wani Kanae/Frida Ironbellows
+		-- Ra"wani Kanae/Frida Ironbellows
 		[283573] = Defaults(), -- Sacred Blade
 		[283617] = Defaults(), -- Wave of Light
 		[283651] = Defaults(), -- Blinding Faith
@@ -373,7 +376,7 @@ K.DebuffsTracking["RaidDebuffs"] = {
 		[289858] = Defaults(), -- Crushed
 		[284662] = Defaults(), -- Seal of Purification
 		[284676] = Defaults(), -- Seal of Purification
-		[285178] = Defaults(), -- Serpent's Breath
+		[285178] = Defaults(), -- Serpent"s Breath
 		[285010] = Defaults(), -- Poison Toad Slime
 
 		-- Jadefire Masters
@@ -395,16 +398,16 @@ K.DebuffsTracking["RaidDebuffs"] = {
 		[284214] = Defaults(), -- Trample
 
 		-- Conclave of the Chosen
-		[284663] = Defaults(), -- Bwonsamdi's Wrath
+		[284663] = Defaults(), -- Bwonsamdi"s Wrath
 		[282444] = Defaults(), -- Lacerating Claws
 		[282592] = Defaults(), -- Bleeding Wounds
 		[282209] = Defaults(), -- Mark of Prey
 		[285879] = Defaults(), -- Mind Wipe
 		[282135] = Defaults(), -- Crawling Hex
 		[286060] = Defaults(), -- Cry of the Fallen
-		[282447] = Defaults(), -- Kimbul's Wrath
-		[282834] = Defaults(), -- Kimbul's Wrath
-		[286811] = Defaults(), -- Akunda's Wrath
+		[282447] = Defaults(), -- Kimbul"s Wrath
+		[282834] = Defaults(), -- Kimbul"s Wrath
+		[286811] = Defaults(), -- Akunda"s Wrath
 		[286838] = Defaults(), -- Static Orb
 
 		--Crucible of Storms
@@ -417,15 +420,15 @@ K.DebuffsTracking["RaidDebuffs"] = {
 		[282589] = Defaults(), -- Mind Scramble
 		[292826] = Defaults(), -- Mind Scramble
 
-		--Fa'thuul the Feared
+		--Fa"thuul the Feared
 		[284851] = Defaults(), -- Touch of the End
 		[286459] = Defaults(), -- Feedback: Void
 		[286457] = Defaults(), -- Feedback: Ocean
 		[286458] = Defaults(), -- Feedback: Storm
-		[285367] = Defaults(), -- Piercing Gaze of N'Zoth
+		[285367] = Defaults(), -- Piercing Gaze of N"Zoth
 		[284733] = Defaults(), -- Embrace of the Void
 		[284722] = Defaults(), -- Umbral Shell
-		[285345] = Defaults(), -- Maddening Eyes of N'Zoth
+		[285345] = Defaults(), -- Maddening Eyes of N"Zoth
 		[285477] = Defaults(), -- Obscurity
 		[285652] = Defaults(), -- Insatiable Torment
 
@@ -458,7 +461,7 @@ K.DebuffsTracking["RaidDebuffs"] = {
 		[294715] = Defaults(), -- Toxic Brand
 
 		--The Queen’s Court
-		[301830] = Defaults(), -- Pashmar's Touch
+		[301830] = Defaults(), -- Pashmar"s Touch
 		[296851] = Defaults(), -- Fanatical Verdict
 		[297836] = Defaults(), -- Potent Spark
 		[297586] = Defaults(), -- Suffering
@@ -538,9 +541,9 @@ K.DebuffsTracking["CCDebuffs"] = {
 		[204490] = Defaults(2), -- Sigil of Silence
 		[179057] = Defaults(3), -- Chaos Nova
 		[211881] = Defaults(4), -- Fel Eruption
-		[205630] = Defaults(3), -- Illidan's Grasp
-		[208618] = Defaults(3), -- Illidan's Grasp (Afterward)
-		[213491] = Defaults(4), -- Demonic Trample (it's this one or the other)
+		[205630] = Defaults(3), -- Illidan"s Grasp
+		[208618] = Defaults(3), -- Illidan"s Grasp (Afterward)
+		[213491] = Defaults(4), -- Demonic Trample (it"s this one or the other)
 		[208645] = Defaults(4), -- Demonic Trample
 		--Druid
 		[81261] = Defaults(2), -- Solar Beam
@@ -556,7 +559,7 @@ K.DebuffsTracking["CCDebuffs"] = {
 		[339] = Defaults(1), -- Entangling Roots
 		[2637] = Defaults(1), -- Hibernate
 		--Hunter
-		[202933] = Defaults(2), -- Spider Sting (it's this one or the other)
+		[202933] = Defaults(2), -- Spider Sting (it"s this one or the other)
 		[233022] = Defaults(2), -- Spider Sting
 		[213691] = Defaults(4), -- Scatter Shot
 		[19386] = Defaults(3), -- Wyvern Sting
@@ -568,8 +571,8 @@ K.DebuffsTracking["CCDebuffs"] = {
 		[190927] = Defaults(1), -- Harpoon
 		[201158] = Defaults(1), -- Super Sticky Tar
 		[162480] = Defaults(1), -- Steel Trap
-		[212638] = Defaults(1), -- Tracker's Net
-		[200108] = Defaults(1), -- Ranger's Net
+		[212638] = Defaults(1), -- Tracker"s Net
+		[200108] = Defaults(1), -- Ranger"s Net
 		--Mage
 		[61721] = Defaults(3), -- Rabbit (Poly)
 		[61305] = Defaults(3), -- Black Cat (Poly)
@@ -585,7 +588,7 @@ K.DebuffsTracking["CCDebuffs"] = {
 		[277792] = Defaults(3), -- Bumblebee (Poly)
 		[118] = Defaults(3), -- Polymorph
 		[82691] = Defaults(3), -- Ring of Frost
-		[31661] = Defaults(3), -- Dragon's Breath
+		[31661] = Defaults(3), -- Dragon"s Breath
 		[122] = Defaults(1), -- Frost Nova
 		[33395] = Defaults(1), -- Freeze
 		[157997] = Defaults(1), -- Ice Nova
@@ -600,12 +603,12 @@ K.DebuffsTracking["CCDebuffs"] = {
 		[233759] = Defaults(2), -- Grapple Weapon
 		[123407] = Defaults(1), -- Spinning Fire Blossom
 		[116706] = Defaults(1), -- Disable
-		[232055] = Defaults(4), -- Fists of Fury (it's this one or the other)
+		[232055] = Defaults(4), -- Fists of Fury (it"s this one or the other)
 		--Paladin
 		[853] = Defaults(3), -- Hammer of Justice
 		[20066] = Defaults(3), -- Repentance
 		[105421] = Defaults(3), -- Blinding Light
-		[31935] = Defaults(2), -- Avenger's Shield
+		[31935] = Defaults(2), -- Avenger"s Shield
 		[217824] = Defaults(2), -- Shield of Virtue
 		[205290] = Defaults(3), -- Wake of Ashes
 		--Priest
@@ -673,62 +676,62 @@ K.DebuffsTracking["CCDebuffs"] = {
 -- Raid Buffs (Squared Aura Tracking List)
 K.BuffsTracking = {
 	PRIEST = {
-		[194384] = AuraWatch_AddSpell(194384, "TOPRIGHT", {1, 1, 0.66}), -- Atonement
-		[214206] = AuraWatch_AddSpell(214206, "TOPRIGHT", {1, 1, 0.66}), -- Atonement (PvP)
-		[41635] = AuraWatch_AddSpell(41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}), -- Prayer of Mending
-		[193065] = AuraWatch_AddSpell(193065, "BOTTOMRIGHT", {0.54, 0.21, 0.78}), -- Masochism
-		[139] = AuraWatch_AddSpell(139, "BOTTOMLEFT", {0.4, 0.7, 0.2}), -- Renew
-		[6788] = AuraWatch_AddSpell(6788, "BOTTOMLEFT", {0.89, 0.1, 0.1}), -- Weakened Soul
-		[17] = AuraWatch_AddSpell(17, "TOPLEFT", {0.7, 0.7, 0.7}, true), -- Power Word: Shield
-		[47788] = AuraWatch_AddSpell(47788, "LEFT", {0.86, 0.45, 0}, true), -- Guardian Spirit
-		[33206] = AuraWatch_AddSpell(33206, "LEFT", {0.47, 0.35, 0.74}, true), -- Pain Suppression
+		[194384] = GetAuraWatchSpell(194384, "TOPRIGHT", {1, 1, 0.66}), -- Atonement
+		[214206] = GetAuraWatchSpell(214206, "TOPRIGHT", {1, 1, 0.66}), -- Atonement (PvP)
+		[41635] = GetAuraWatchSpell(41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}), -- Prayer of Mending
+		[193065] = GetAuraWatchSpell(193065, "BOTTOMRIGHT", {0.54, 0.21, 0.78}), -- Masochism
+		[139] = GetAuraWatchSpell(139, "BOTTOMLEFT", {0.4, 0.7, 0.2}), -- Renew
+		[6788] = GetAuraWatchSpell(6788, "BOTTOMLEFT", {0.89, 0.1, 0.1}), -- Weakened Soul
+		[17] = GetAuraWatchSpell(17, "TOPLEFT", {0.7, 0.7, 0.7}, true), -- Power Word: Shield
+		[47788] = GetAuraWatchSpell(47788, "LEFT", {0.86, 0.45, 0}, true), -- Guardian Spirit
+		[33206] = GetAuraWatchSpell(33206, "LEFT", {0.47, 0.35, 0.74}, true), -- Pain Suppression
 	},
 	DRUID = {
-		[774] = AuraWatch_AddSpell(774, "TOPRIGHT", {0.8, 0.4, 0.8}), 		-- Rejuvenation
-		[155777] = AuraWatch_AddSpell(155777, "RIGHT", {0.8, 0.4, 0.8}), 		-- Germination
-		[8936] = AuraWatch_AddSpell(8936, "BOTTOMLEFT", {0.2, 0.8, 0.2}),		-- Regrowth
-		[33763] = AuraWatch_AddSpell(33763, "TOPLEFT", {0.4, 0.8, 0.2}), 		-- Lifebloom
-		[48438] = AuraWatch_AddSpell(48438, "BOTTOMRIGHT", {0.8, 0.4, 0}),		-- Wild Growth
-		[207386] = AuraWatch_AddSpell(207386, "TOP", {0.4, 0.2, 0.8}), 		-- Spring Blossoms
-		[102351] = AuraWatch_AddSpell(102351, "LEFT", {0.2, 0.8, 0.8}), 		-- Cenarion Ward (Initial Buff)
-		[102352] = AuraWatch_AddSpell(102352, "LEFT", {0.2, 0.8, 0.8}), 		-- Cenarion Ward (HoT)
-		[200389] = AuraWatch_AddSpell(200389, "BOTTOM", {1, 1, 0.4}), 		-- Cultivation
+		[774] = GetAuraWatchSpell(774, "TOPRIGHT", {0.8, 0.4, 0.8}), 		-- Rejuvenation
+		[155777] = GetAuraWatchSpell(155777, "RIGHT", {0.8, 0.4, 0.8}), 		-- Germination
+		[8936] = GetAuraWatchSpell(8936, "BOTTOMLEFT", {0.2, 0.8, 0.2}),		-- Regrowth
+		[33763] = GetAuraWatchSpell(33763, "TOPLEFT", {0.4, 0.8, 0.2}), 		-- Lifebloom
+		[48438] = GetAuraWatchSpell(48438, "BOTTOMRIGHT", {0.8, 0.4, 0}),		-- Wild Growth
+		[207386] = GetAuraWatchSpell(207386, "TOP", {0.4, 0.2, 0.8}), 		-- Spring Blossoms
+		[102351] = GetAuraWatchSpell(102351, "LEFT", {0.2, 0.8, 0.8}), 		-- Cenarion Ward (Initial Buff)
+		[102352] = GetAuraWatchSpell(102352, "LEFT", {0.2, 0.8, 0.8}), 		-- Cenarion Ward (HoT)
+		[200389] = GetAuraWatchSpell(200389, "BOTTOM", {1, 1, 0.4}), 		-- Cultivation
 	},
 	PALADIN = {
-		[53563] = AuraWatch_AddSpell(53563, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Light
-		[156910] = AuraWatch_AddSpell(156910, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Faith
-		[200025] = AuraWatch_AddSpell(200025, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Virtue
-		[1022] = AuraWatch_AddSpell(1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true), -- Hand of Protection
-		[1044] = AuraWatch_AddSpell(1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true), -- Hand of Freedom
-		[6940] = AuraWatch_AddSpell(6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true), -- Hand of Sacrifice
-		[223306] = AuraWatch_AddSpell(223306, 'BOTTOMLEFT', {0.7, 0.7, 0.3}), -- Bestow Faith
-		[287280] = AuraWatch_AddSpell(287280, 'TOPLEFT', {0.2, 0.8, 0.2}), -- Glimmer of Light (Artifact HoT)
+		[53563] = GetAuraWatchSpell(53563, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Light
+		[156910] = GetAuraWatchSpell(156910, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Faith
+		[200025] = GetAuraWatchSpell(200025, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Virtue
+		[1022] = GetAuraWatchSpell(1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true), -- Hand of Protection
+		[1044] = GetAuraWatchSpell(1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true), -- Hand of Freedom
+		[6940] = GetAuraWatchSpell(6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true), -- Hand of Sacrifice
+		[223306] = GetAuraWatchSpell(223306, "BOTTOMLEFT", {0.7, 0.7, 0.3}), -- Bestow Faith
+		[287280] = GetAuraWatchSpell(287280, "TOPLEFT", {0.2, 0.8, 0.2}), -- Glimmer of Light (Artifact HoT)
 	},
 	SHAMAN = {
-		[61295] = AuraWatch_AddSpell(61295, "TOPRIGHT", {0.7, 0.3, 0.7}), 	 -- Riptide
-		[974] = AuraWatch_AddSpell(974, "BOTTOMRIGHT", {0.2, 0.2, 1}), 	 -- Earth Shield
+		[61295] = GetAuraWatchSpell(61295, "TOPRIGHT", {0.7, 0.3, 0.7}), 	 -- Riptide
+		[974] = GetAuraWatchSpell(974, "BOTTOMRIGHT", {0.2, 0.2, 1}), 	 -- Earth Shield
 	},
 	MONK = {
-		[119611] = AuraWatch_AddSpell(119611, "TOPLEFT", {0.3, 0.8, 0.6}), -- Renewing Mist
-		[116849] = AuraWatch_AddSpell(116849, "TOPRIGHT", {0.2, 0.8, 0.2}, true), -- Life Cocoon
-		[124682] = AuraWatch_AddSpell(124682, "BOTTOMLEFT", {0.8, 0.8, 0.25}), -- Enveloping Mist
-		[191840] = AuraWatch_AddSpell(191840, "BOTTOMRIGHT", {0.27, 0.62, 0.7}), -- Essence Font
+		[119611] = GetAuraWatchSpell(119611, "TOPLEFT", {0.3, 0.8, 0.6}), -- Renewing Mist
+		[116849] = GetAuraWatchSpell(116849, "TOPRIGHT", {0.2, 0.8, 0.2}, true), -- Life Cocoon
+		[124682] = GetAuraWatchSpell(124682, "BOTTOMLEFT", {0.8, 0.8, 0.25}), -- Enveloping Mist
+		[191840] = GetAuraWatchSpell(191840, "BOTTOMRIGHT", {0.27, 0.62, 0.7}), -- Essence Font
 	},
 	ROGUE = {
-		[57934] = AuraWatch_AddSpell(57934, "TOPRIGHT", {0.89, 0.09, 0.05}),		 -- Tricks of the Trade
+		[57934] = GetAuraWatchSpell(57934, "TOPRIGHT", {0.89, 0.09, 0.05}),		 -- Tricks of the Trade
 	},
 	WARRIOR = {
-		[114030] = AuraWatch_AddSpell(114030, "TOPLEFT", {0.2, 0.2, 1}), 	 -- Vigilance
-		[3411] = AuraWatch_AddSpell(3411, "TOPRIGHT", {0.89, 0.09, 0.05}), 	 -- Intervene
+		[114030] = GetAuraWatchSpell(114030, "TOPLEFT", {0.2, 0.2, 1}), 	 -- Vigilance
+		[3411] = GetAuraWatchSpell(3411, "TOPRIGHT", {0.89, 0.09, 0.05}), 	 -- Intervene
 	},
 	PET = {
 		-- Warlock Pets
-		[193396] = AuraWatch_AddSpell(193396, 'TOPRIGHT', {0.6, 0.2, 0.8}, true), -- Demonic Empowerment
+		[193396] = GetAuraWatchSpell(193396, "TOPRIGHT", {0.6, 0.2, 0.8}, true), -- Demonic Empowerment
 		-- Hunter Pets
-		[272790] = AuraWatch_AddSpell(272790, 'TOPLEFT', {0.89, 0.09, 0.05}, true), -- Frenzy
-		[136] = AuraWatch_AddSpell(136, 'TOPRIGHT', {0.2, 0.8, 0.2}, true) -- Mend Pet
+		[272790] = GetAuraWatchSpell(272790, "TOPLEFT", {0.89, 0.09, 0.05}, true), -- Frenzy
+		[136] = GetAuraWatchSpell(136, "TOPRIGHT", {0.2, 0.8, 0.2}, true) -- Mend Pet
 	},
-	HUNTER = {}, --Keep even if it's an empty table, so a reference to G.unitframe.buffwatch[E.myclass][SomeValue] doesn't trigger error
+	HUNTER = {}, -- Keep even if it"s an empty table, so a reference to G.unitframe.buffwatch[E.myclass][SomeValue] doesn"t trigger error
 	DEMONHUNTER = {},
 	WARLOCK = {},
 	MAGE = {},
@@ -835,19 +838,31 @@ K.AuraBlackList = {
 }
 
 K.ChannelingTicks = {
-	-- Warlock
-	[198590] = 6, -- Drain Soul
-	[755]    = 6, -- Health Funnel
-	[234153] = 6, -- Drain Life
-	-- Priest
-	[64843]  = 4, -- Divine Hymn
-	[15407]  = 4, -- Mind Flay
-	[48045] = 5, -- Mind Sear
-	[47757] = 5, -- Penance (it seems, that this spell have on own ID for channeling. Its not the actual spell itself)
-	-- Mage
-	[5143]   = 5,  -- Arcane Missiles
-	[12051]  = 3,  -- Evocation
-	[205021] = 10, -- Ray of Frost
-	--Druid
-	[740]    = 4, -- Tranquility
+	[GetSpellName(12051)] = 3, -- Evocation
+	[GetSpellName(15407)] = 4, -- Mind Flay
+	[GetSpellName(198590)] = 5, -- Drain Soul
+	[GetSpellName(205021)] = 5, -- Ray of Frost
+	[GetSpellName(205065)] = 6, -- Void Torrent
+	[GetSpellName(234153)] = 5, -- Drain Life
+	[GetSpellName(291944)] = 6, -- Regeneratin'
+	[GetSpellName(47540)] = 3, -- Penance
+	[GetSpellName(5143)] = 5, -- Arcane Missiles
+	[GetSpellName(64843)] = 4, -- Divine Hymn
+	[GetSpellName(740)] = 4, -- Tranquility
+	[GetSpellName(755)] = 3, -- Health Funnel
 }
+
+if K.Class == "PRIEST" then
+	local penance = GetSpellName(47540)
+	local function updateTicks()
+		local numTicks = 3
+		if IsPlayerSpell(193134) then -- Enhanced Mind Flay
+			numTicks = 4
+		end
+
+		K.ChannelingTicks[penance] = numTicks
+	end
+
+	K:RegisterEvent("PLAYER_LOGIN", updateTicks)
+	K:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", updateTicks)
+end

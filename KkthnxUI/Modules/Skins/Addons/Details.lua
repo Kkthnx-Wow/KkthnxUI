@@ -29,7 +29,7 @@ function Module:ReskinDetails()
 		instance:ToolbarMenuButtonsSize(1)
 		instance:AttributeMenu(true, 0, 3, "KkthnxUI_Normal", 12, {1, 1, 1}, 1, false)
 		instance:SetBarSettings(20, KkthnxUIData["ResetDetails"] and "KkthnxUI_Statusbar" or nil)
-		instance:SetBarTextSettings(12, "KkthnxUI_Normal", nil, nil, nil, true, true, nil, nil, nil, nil, nil, nil, false, nil, false, nil)
+		instance:SetBarTextSettings(KkthnxUIData["ResetDetails"] and 12 or nil, "KkthnxUI_Normal", nil, nil, nil, true, true, nil, nil, nil, nil, nil, nil, false, nil, false, nil)
 
 		instance.baseframe:CreateBackdrop()
 		instance.baseframe.Backdrop:SetPoint("TOPLEFT", -1, 18)
@@ -78,12 +78,12 @@ function Module:ReskinDetails()
 	listener:RegisterEvent("DETAILS_INSTANCE_OPEN")
 	function listener:OnDetailsEvent(event, instance)
 		if event == "DETAILS_INSTANCE_OPEN" then
-			setupInstance(instance)
-
-			if instance:GetId() == 2 then
+			if not instance.styled and instance:GetId() == 2 then
 				instance1:SetSize(260, 112)
 				EmbedWindow(instance, -3, 140, 250, 112)
+
 			end
+			setupInstance(instance)
 		end
 	end
 
@@ -93,6 +93,14 @@ function Module:ReskinDetails()
 	if current < 3 then
 		_detalhes.numerical_system = current
 		_detalhes:SelectNumericalSystem()
+	end
+
+	_detalhes.OpenWelcomeWindow = function()
+		if instance1 then
+			EmbedWindow(instance1, -370, 4, 260, 126)
+			instance1:SetBarSettings(20, "KkthnxUI_Statusbar")
+			instance1:SetBarTextSettings(12, "KkthnxUI_Normal", nil, nil, nil, true, true, nil, nil, nil, nil, nil, nil, false, nil, false, nil)
+		end
 	end
 
 	KkthnxUIData["ResetDetails"] = false

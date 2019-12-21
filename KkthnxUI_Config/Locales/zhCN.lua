@@ -5,8 +5,6 @@ local ModuleNewFeature = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIc
 
 local _G = _G
 
-local REVERSE_NEW_LOOT_TEXT = _G.REVERSE_NEW_LOOT_TEXT
-
 _G.KkthnxUIConfig["zhCN"] = {
 	-- Menu Groups Display Names
 	["GroupNames"] = {
@@ -26,12 +24,13 @@ _G.KkthnxUIConfig["zhCN"] = {
 		["Misc"] = "杂项",
 		["Nameplates"] = "姓名板",
 		["Party"] = "小队",
+		["PulseCooldown"] = "Pulse Cooldown",
 		["QuestNotifier"] = "任务通告",
 		["Raid"] = "团队",
 		["Skins"] = "皮肤",
 		["Tooltip"] = "鼠标提示",
-		["UIFonts"] = ModuleNewFeature.."字体",
-		["UITextures"] = ModuleNewFeature.."材质",
+		["UIFonts"] = "字体",
+		["UITextures"] = "材质",
 		["Unitframe"] = "单位框体",
 		["WorldMap"] = "世界地图",
 	},
@@ -122,6 +121,14 @@ _G.KkthnxUIConfig["zhCN"] = {
 
 		["Interrupt"] = {
 			["Name"] = "通告打断施法",
+		},
+
+		["RareAlert"] = {
+			["Name"] = "Announce Rares, Chests & War Supplies",
+		},
+
+		["ItemAlert"] = {
+			["Name"] = "Announce Items Being Placed",
 		}
 	},
 
@@ -162,6 +169,10 @@ _G.KkthnxUIConfig["zhCN"] = {
 
 		["AutoReward"] = {
 			["Name"] = "自动选择任务奖励",
+		},
+
+		["AutoSetRole"] = {
+			["Name"] = "Auto Set Your Role In Groups",
 		},
 
 		["AutoTabBinder"] = {
@@ -207,6 +218,14 @@ _G.KkthnxUIConfig["zhCN"] = {
 
 		["ClassRelatedFilter"] = {
 			["Name"] = "过滤职业物品",
+		},
+
+		["ScrapIcon"] = {
+			["Name"] = "Show Scrap Icon",
+		},
+
+		["UpgradeIcon"] = {
+			["Name"] = "Show Upgrade Icon",
 		},
 
 		["QuestItemFilter"] = {
@@ -423,7 +442,7 @@ _G.KkthnxUIConfig["zhCN"] = {
 		},
 
 		["System"] = {
-			["Name"] = "小地图显示帧数/延迟",
+			["Name"] = "顯示FPS和延遲",
 		},
 
 		["Time"] = {
@@ -598,11 +617,6 @@ _G.KkthnxUIConfig["zhCN"] = {
 			["Name"] = "AFK 镜头",
 		},
 
-		["AutoDismountStand"] = {
-			["Name"] = "自动 站立/下马",
-			["Desc"] = "当你想施法或进入战斗时，将使你 站立/下马",
-		},
-
 		["ColorPicker"] = {
 			["Name"] = "增强拾色器",
 		},
@@ -611,26 +625,8 @@ _G.KkthnxUIConfig["zhCN"] = {
 			["Name"] = "增强着色 (好友/公会 +)",
 		},
 
-		["EnhancedMenu"] = {
-			["Name"] = "添加公会邀请和更多的下拉列表",
-			["Desc"] = "添加 '公会邀请' 和 '添加好友' 选项到目标右键菜单."
-		},
-
 		["GemEnchantInfo"] = {
 			["Name"] = "角色/检查 宝石/附魔 信息",
-		},
-
-		["ImprovedProfessionWindow"] = {
-			["Name"] = "显示一个更好的专业窗口",
-		},
-
-		["ImprovedQuestLog"] = {
-			["Name"] = "显示一个更好的任务日志",
-			["Desc"] = "扩展默认任务日志.|n|n你不再需要像ClassicQuestLog的插件了."
-		},
-
-		["ImprovedTrainerWindow"] = {
-			["Name"] = "显示一个更好训练窗口",
 		},
 
 		["ItemLevel"] = {
@@ -645,10 +641,6 @@ _G.KkthnxUIConfig["zhCN"] = {
 			["Name"] = "当你击杀时自动发送表情",
 		},
 
-		["ShowHelmCloak"] = {
-			["Name"] = "在角色框体上显示 头盔/披风 按钮",
-		},
-
 		["ShowWowHeadLinks"] = {
 			["Name"] = "在任务日志框体上显示 Wowhead 链接",
 		},
@@ -656,6 +648,21 @@ _G.KkthnxUIConfig["zhCN"] = {
 		["SlotDurability"] = {
 			["Name"] = "显示耐久度百分比",
 		},
+
+		["EnchantmentScroll"] = {
+			["Name"] = "Create Enchantment Scrolls With A Single Click"
+
+		},
+
+		["ImprovedStats"] = {
+			["Name"] = "Display Character Frame Full Stats"
+
+		},
+
+		["NoTalkingHead"] = {
+			["Name"] = "Remove And Hide The TalkingHead Frame"
+
+		}
 	},
 
 	-- Nameplates Local
@@ -704,14 +711,6 @@ _G.KkthnxUIConfig["zhCN"] = {
 
 		["NonTargetAlpha"] = {
 			["Name"] = "无目标时姓名板透明度",
-		},
-
-		["OverlapH"] = {
-			["Name"] = "水平重叠",
-		},
-
-		["OverlapV"] = {
-			["Name"] = "垂直重叠",
 		},
 
 		["QuestInfo"] = {
@@ -769,6 +768,18 @@ _G.KkthnxUIConfig["zhCN"] = {
 		["ShowFriendlyCombat"] = {
 			["Name"] = "显示友善战斗",
 		},
+
+		["LoadDistance"] = {
+			["Name"] = "Load Distance",
+		},
+
+		["ShowHealPrediction"] = {
+			["Name"] = "Show Health Prediction Bars",
+		},
+
+		["VerticalSpacing"] = {
+			["Name"] = "Vertical Spacing",
+		}
 	},
 
 	-- Skins Local
@@ -824,12 +835,16 @@ _G.KkthnxUIConfig["zhCN"] = {
 			["Name"] = "启用施法条",
 		},
 
-		["ComboPoints"] = {
-			["Name"] = "显示连击点 (|CFFFFF569潜行者|r/|CFFFF7D0A德鲁伊|r)",
+		["ClassResources"] = {
+			["Name"] = "Show Class Resources",
 		},
 
-		["Totems"] = {
-			["Name"] = "显示图腾 (|CFF0070DE萨满|r)",
+		["Stagger"] = {
+			["Name"] = "Show |CFF00FF96Monk|r Stagger Bar",
+		},
+
+		["PlayerPowerPrediction"] = {
+			["Name"] = "Show Player Power Prediction",
 		},
 
 		["CombatFade"] = {
@@ -890,10 +905,6 @@ _G.KkthnxUIConfig["zhCN"] = {
 
 		["ShowHealPrediction"] = {
 			["Name"] = "显示治疗预读状态条",
-		},
-
-		["ShowPetHappinessIcon"] = {
-			["Name"] = "显示玩家宠物快乐度图标"..CreateTextureMarkup([[Interface\PetPaperDollFrame\UI-PetHappiness]], 128, 64, 16, 14, 0, 0.1875, 0, 0.359375, 0, 0),
 		},
 
 		["ShowPlayerLevel"] = {
@@ -1034,6 +1045,28 @@ _G.KkthnxUIConfig["zhCN"] = {
 		},
 	},
 
+	["PulseCooldown"] = {
+		["Enable"] = {
+			["Name"] = "Enable PulseCooldown",
+		},
+
+		["HoldTime"] = {
+			["Name"] = "How Long To Display",
+		},
+
+		["MinTreshold"] = {
+			["Name"] = "Minimal Threshold Time",
+		},
+
+		["Size"] = {
+			["Name"] = "Icon Size",
+		},
+
+		["Sound"] = {
+			["Name"] = "Play Sound On Pulse",
+		},
+	},
+
 	-- QuestNotifier Local
 	["QuestNotifier"] = {
 		["Enable"] = {
@@ -1164,7 +1197,7 @@ _G.KkthnxUIConfig["zhCN"] = {
 			["Name"] = "显示 玩家/鼠标 坐标",
 		},
 
-		["MapFader"] = {
+		["FadeWhenMoving"] = {
 			["Name"] = "移动时渐隐世界地图",
 		},
 
@@ -1183,6 +1216,10 @@ _G.KkthnxUIConfig["zhCN"] = {
 
 	-- Tooltip Local
 	["Tooltip"] = {
+		["AzeriteArmor"] = {
+			["Name"] = "Show Azerite Tooltip Traits",
+		},
+
 		["ClassColor"] = {
 			["Name"] = "按品质显示边框颜色",
 		},

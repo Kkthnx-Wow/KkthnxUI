@@ -5,8 +5,6 @@ local ModuleNewFeature = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIc
 
 local _G = _G
 
-local REVERSE_NEW_LOOT_TEXT = _G.REVERSE_NEW_LOOT_TEXT
-
 _G.KkthnxUIConfig["ruRU"] = {
 	-- Menu Groups Display Names
 	["GroupNames"] = {
@@ -28,12 +26,13 @@ _G.KkthnxUIConfig["ruRU"] = {
 		["Misc"] = "Разное",
 		["Nameplates"] = "Полосы здоровья",
 		["Party"] = "Группа",
+		["PulseCooldown"] = "Pulse Cooldown",
 		["QuestNotifier"] = "Квесты",
 		["Raid"] = "Рейд",
 		["Skins"] = "Шкурки",
 		["Tooltip"] = "Подсказка",
-		["UIFonts"] = ModuleNewFeature.."Шрифты",
-		["UITextures"] = ModuleNewFeature.."Текстуры",
+		["UIFonts"] = "Шрифты",
+		["UITextures"] = "Текстуры",
 		["Unitframe"] = "Рамки персонажей",
 		["WorldMap"] = "Карта мира",
 	},
@@ -121,6 +120,14 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 		["Interrupt"] = {
 			["Name"] = "Сказать о прерывании",
+		},
+
+		["RareAlert"] = {
+			["Name"] = "Announce Rares, Chests & War Supplies",
+		},
+
+		["ItemAlert"] = {
+			["Name"] = "Announce Items Being Placed",
 		}
 	},
 
@@ -161,6 +168,10 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 		["AutoReward"] = {
 			["Name"] = "Автоматически выбирать награду за задания",
+		},
+
+		["AutoSetRole"] = {
+			["Name"] = "Auto Set Your Role In Groups",
 		},
 
 		["AutoTabBinder"] = {
@@ -207,6 +218,14 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 		["ClassRelatedFilter"] = {
 			["Name"] = "Фильтровать классовые предметы",
+		},
+
+		["ScrapIcon"] = {
+			["Name"] = "Show Scrap Icon",
+		},
+
+		["UpgradeIcon"] = {
+			["Name"] = "Show Upgrade Icon",
 		},
 
 		["QuestItemFilter"] = {
@@ -418,7 +437,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["System"] = {
-			["Name"] = "Показывать FPS/MS на миникарте",
+			["Name"] = "Показать FPS и латентность",
 		},
 
 		["Time"] = {
@@ -590,11 +609,6 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "AFK режим",
 		},
 
-		["AutoDismountStand"] = {
-			["Name"] = "Автоматически встать/спешиться",
-			["Desc"] = "Персонаж автоматически встанет или слезет с маунта если вы атакуете или применяете заклинание",
-		},
-
 		["ColorPicker"] = {
 			["Name"] = "Улучшенное окно выбора цвета интерфейса",
 		},
@@ -603,20 +617,8 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Улучшенные цвета (в окнах Друзей/Гильдии +)",
 		},
 
-		["EnhancedMenu"] = {
-			["Name"] = "Приглашение в гильдию по меню другого игрока",
-		},
-
 		["GemEnchantInfo"] = {
 			["Name"] = "Показывать зачарования в окне персонажа",
-		},
-
-		["ImprovedProfessionWindow"] = {
-			["Name"] = "Улучшенное окно Профессий",
-		},
-
-		["ImprovedQuestLog"] = {
-			["Name"] = "Улучшение журнала заданий",
 		},
 
 		["ItemLevel"] = {
@@ -631,10 +633,6 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Эмоция при убийстве другого игрока",
 		},
 
-		["ShowHelmCloak"] = {
-			["Name"] = "Показать кнопки 'плащ/шлем' в окне персонажа",
-		},
-
 		["ShowWowHeadLinks"] = {
 			["Name"] = "Показывать ссылку на wowhead в окне заданий",
 		},
@@ -642,6 +640,21 @@ _G.KkthnxUIConfig["ruRU"] = {
 		["SlotDurability"] = {
 			["Name"] = "Показывать прочность вещей в окне персонажа",
 		},
+
+		["EnchantmentScroll"] = {
+			["Name"] = "Create Enchantment Scrolls With A Single Click"
+
+		},
+
+		["ImprovedStats"] = {
+			["Name"] = "Display Character Frame Full Stats"
+
+		},
+
+		["NoTalkingHead"] = {
+			["Name"] = "Remove And Hide The TalkingHead Frame"
+
+		}
 	},
 
 	-- Nameplates Local
@@ -689,14 +702,6 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 		["NonTargetAlpha"] = {
 			["Name"] = "Прозрачность невыбранных как Цель",
-		},
-
-		["OverlapH"] = {
-			["Name"] = "Наложение горизонтальное",
-		},
-
-		["OverlapV"] = {
-			["Name"] = "Наложение вертикальное",
 		},
 
 		["QuestInfo"] = {
@@ -750,6 +755,18 @@ _G.KkthnxUIConfig["ruRU"] = {
 		["ShowFriendlyCombat"] = { --Перевести
 			["Name"] = "Show Friendly Combat",
 		},
+
+		["LoadDistance"] = {
+			["Name"] = "Load Distance",
+		},
+
+		["ShowHealPrediction"] = {
+			["Name"] = "Show Health Prediction Bars",
+		},
+
+		["VerticalSpacing"] = {
+			["Name"] = "Vertical Spacing",
+		}
 	},
 
 	-- Skins Local
@@ -805,8 +822,16 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Показывать полосы заклинаний",
 		},
 
-		["ClassResource"] = {
-			["Name"] = "Показывать ресурсы класса (мана, ярость и т.д.)",
+		["ClassResources"] = {
+			["Name"] = "Show Class Resources",
+		},
+
+		["Stagger"] = {
+			["Name"] = "Show |CFF00FF96Monk|r Stagger Bar",
+		},
+
+		["PlayerPowerPrediction"] = {
+			["Name"] = "Show Player Power Prediction",
 		},
 
 		["CombatFade"] = {
@@ -867,9 +892,6 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 		["ShowHealPrediction"] = { --Перевести
 			["Name"] = "Show HealPrediction Statusbars",
-		},
-		["ShowPetHappinessIcon"] = {
-			["Name"] = "Показывать иконку Счастья у пета"..CreateTextureMarkup([[Interface\PetPaperDollFrame\UI-PetHappiness]], 128, 64, 16, 14, 0, 0.1875, 0, 0.359375, 0, 0),
 		},
 
 		["ShowPlayerLevel"] = {
@@ -1010,6 +1032,28 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 	},
 
+	["PulseCooldown"] = {
+		["Enable"] = {
+			["Name"] = "Enable PulseCooldown",
+		},
+
+		["HoldTime"] = {
+			["Name"] = "How Long To Display",
+		},
+
+		["MinTreshold"] = {
+			["Name"] = "Minimal Threshold Time",
+		},
+
+		["Size"] = {
+			["Name"] = "Icon Size",
+		},
+
+		["Sound"] = {
+			["Name"] = "Play Sound On Pulse",
+		},
+	},
+
 	-- QuestNotifier Local
 	["QuestNotifier"] = {
 		["Enable"] = {
@@ -1140,7 +1184,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Показывать ваши и курсора координаты",
 		},
 
-		["MapFader"] = {
+		["FadeWhenMoving"] = {
 			["Name"] = "Прозрачность карты при движении",
 		},
 
@@ -1159,6 +1203,10 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 	-- Tooltip Local
 	["Tooltip"] = {
+		["AzeriteArmor"] = {
+			["Name"] = "Show Azerite Tooltip Traits",
+		},
+
 		["ClassColor"] = {
 			["Name"] = "Рамка по цвету качества",
 		},

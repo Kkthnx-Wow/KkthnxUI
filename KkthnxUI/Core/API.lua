@@ -128,9 +128,9 @@ local function CreateShadow(f, bd, parent)
 
 	parent = parent or f
 
-	local shadowLevel = (f:GetFrameLevel() - 1 >= 0 and f:GetFrameLevel() - 1) or (0)
 	local shadow = CreateFrame("Frame", nil, f)
-	shadow:SetFrameLevel(shadowLevel)
+	shadow:SetFrameLevel(1)
+	shadow:SetFrameStrata(f:GetFrameStrata())
 	shadow:SetPoint("TOPLEFT", parent, -4, 4)
 	shadow:SetPoint("BOTTOMRIGHT", parent, 4, -4)
 
