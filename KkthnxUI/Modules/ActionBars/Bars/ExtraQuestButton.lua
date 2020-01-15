@@ -159,7 +159,7 @@ function ExtraQuestButton:PLAYER_LOGIN()
 	local Artwork = self:CreateTexture("$parentArtwork", "OVERLAY")
 	Artwork:SetPoint("BOTTOMLEFT", 2, 2)
 	Artwork:SetSize(28, 26)
-	Artwork:SetAtlas("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")
+	Artwork:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")
 	self.Artwork = Artwork
 
 	self:RegisterEvent("UPDATE_BINDINGS")

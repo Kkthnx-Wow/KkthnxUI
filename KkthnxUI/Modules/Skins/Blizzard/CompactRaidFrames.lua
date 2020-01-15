@@ -47,7 +47,7 @@ local function ReskinCompactRaidFrames()
 		CompactRaidFrameManagerDisplayFrameHiddenModeToggle,
 		CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateReadyCheck,
 		CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateRolePoll,
-		CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton,
+		--CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton,
 		CompactRaidFrameManagerDisplayFrameLockedModeToggle,
 	}
 
@@ -62,7 +62,7 @@ local function ReskinCompactRaidFrames()
 		buttonBorder:SetFrameLevel(button:GetFrameLevel() == 0 and 1 or button:GetFrameLevel() - 1)
 		buttonBorder:SkinButton()
 	end
-	CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:SetNormalTexture("Interface\\RaidFrame\\Raid-WorldPing")
+	--CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:SetNormalTexture("Interface\\RaidFrame\\Raid-WorldPing")
 
 	for i = 1, 8 do
 		select(i, CompactRaidFrameManager:GetRegions()):SetAlpha(0)

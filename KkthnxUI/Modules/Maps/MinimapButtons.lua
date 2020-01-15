@@ -159,7 +159,7 @@ function Module:CreateRecycleBin()
 
 		local lastbutton
 		for _, button in pairs(buttons) do
-			if button:IsShown() then
+			if button.IsShown and button:IsShown() then
 				button:ClearAllPoints()
 				if not lastbutton then
 					button:SetPoint("RIGHT", bin, -3, 0)
@@ -182,7 +182,7 @@ function Module:CreateRecycleBin()
 		end
 	end)
 
-	C_Timer_After(0.3, function()
+	C_Timer_After(0.4, function()
 		CollectRubbish()
 		SortRubbish()
 	end)

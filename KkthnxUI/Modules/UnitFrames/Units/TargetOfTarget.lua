@@ -69,11 +69,15 @@ function Module:CreateTargetOfTarget()
 	self.Power.frequentUpdates = false
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOM", self.Power, 0, -18)
+	self.Name:SetPoint("BOTTOM", self.Power, 0, -16)
 	self.Name:SetWidth(81 * 0.96)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
-	self:Tag(self.Name, "[color][name]")
+	if C["Unitframe"].HealthbarColor.Value == "Class" then
+		self:Tag(self.Name, "[name]")
+	else
+		self:Tag(self.Name, "[color][name]")
+	end
 
 	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
@@ -103,7 +107,7 @@ function Module:CreateTargetOfTarget()
 	self.Health:SetPoint("TOPRIGHT", -self.Portrait:GetWidth() - 6, 0)
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
-	self.Level:SetPoint("BOTTOM", self.Portrait, 0, -18)
+	self.Level:SetPoint("BOTTOM", self.Portrait, 0, -16)
 	self.Level:SetFontObject(UnitframeFont)
 	self:Tag(self.Level, "[fulllevel]")
 

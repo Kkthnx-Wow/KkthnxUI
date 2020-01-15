@@ -97,7 +97,7 @@ function Module:CreateRaid()
 	end
 
 	if C["Raid"].Smooth then
-		self.Health.Smooth = true
+		K.SmoothBar(self.Health)
 	end
 
 	if C["Raid"].ManabarShow then
@@ -110,11 +110,10 @@ function Module:CreateRaid()
 		self.Power:SetStatusBarTexture(RaidframeTexture)
 
 		self.Power.colorPower = true
-		self.Power.Smooth = true
 		self.Power.frequentUpdates = false
 
 		if C["Raid"].Smooth then
-			self.Power.Smooth = true
+			K.SmoothBar(self.Power)
 		end
 
 		self.Power.Background = self.Power:CreateTexture(nil, "BORDER")
@@ -127,62 +126,62 @@ function Module:CreateRaid()
 		UpdateRaidPower(self, _, unit)
 	end
 
-	--if C["Raid"].ShowHealPrediction then
-	local mhpb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
-	mhpb:SetWidth(1)
-	mhpb:SetTexture(HealPredictionTexture)
-	mhpb:SetVertexColor(0, 1, 0.5, 0.25)
+	if C["Raid"].ShowHealPrediction then
+		local mhpb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
+		mhpb:SetWidth(1)
+		mhpb:SetTexture(HealPredictionTexture)
+		mhpb:SetVertexColor(0, 1, 0.5, 0.25)
 
-	local ohpb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
-	ohpb:SetWidth(1)
-	ohpb:SetTexture(HealPredictionTexture)
-	ohpb:SetVertexColor(0, 1, 0, 0.25)
+		local ohpb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
+		ohpb:SetWidth(1)
+		ohpb:SetTexture(HealPredictionTexture)
+		ohpb:SetVertexColor(0, 1, 0, 0.25)
 
-	local abb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
-	abb:SetWidth(1)
-	abb:SetTexture(HealPredictionTexture)
-	abb:SetVertexColor(1, 1, 0, 0.25)
+		local abb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
+		abb:SetWidth(1)
+		abb:SetTexture(HealPredictionTexture)
+		abb:SetVertexColor(1, 1, 0, 0.25)
 
-	local abbo = self.Health:CreateTexture(nil, "ARTWORK", nil, 1)
-	abbo:SetAllPoints(abb)
-	abbo:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
-	abbo.tileSize = 32
+		local abbo = self.Health:CreateTexture(nil, "ARTWORK", nil, 1)
+		abbo:SetAllPoints(abb)
+		abbo:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		abbo.tileSize = 32
 
-	local oag = self.Health:CreateTexture(nil, "ARTWORK", nil, 1)
-	oag:SetWidth(15)
-	oag:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
-	oag:SetBlendMode("ADD")
-	oag:SetAlpha(0.25)
-	oag:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 2)
-	oag:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -2)
+		local oag = self.Health:CreateTexture(nil, "ARTWORK", nil, 1)
+		oag:SetWidth(15)
+		oag:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
+		oag:SetBlendMode("ADD")
+		oag:SetAlpha(0.25)
+		oag:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 2)
+		oag:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -2)
 
-	local hab = CreateFrame("StatusBar", nil, self)
-	hab:SetPoint("TOP")
-	hab:SetPoint("BOTTOM")
-	hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
-	hab:SetWidth(C["Raid"].Width)
-	hab:SetReverseFill(true)
-	hab:SetStatusBarTexture(HealPredictionTexture)
-	hab:SetStatusBarColor(1, 0, 0, 0.25)
+		local hab = CreateFrame("StatusBar", nil, self.Health)
+		hab:SetPoint("TOP")
+		hab:SetPoint("BOTTOM")
+		hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
+		hab:SetWidth(C["Raid"].Width)
+		hab:SetReverseFill(true)
+		hab:SetStatusBarTexture(HealPredictionTexture)
+		hab:SetStatusBarColor(1, 0, 0, 0.25)
 
-	local ohg = self.Health:CreateTexture(nil, "ARTWORK", nil, 1)
-	ohg:SetWidth(15)
-	ohg:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb")
-	ohg:SetBlendMode("ADD")
-	ohg:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", 5, 2)
-	ohg:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMLEFT", 5, -2)
+		local ohg = self.Health:CreateTexture(nil, "ARTWORK", nil, 1)
+		ohg:SetWidth(15)
+		ohg:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb")
+		ohg:SetBlendMode("ADD")
+		ohg:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", 5, 2)
+		ohg:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMLEFT", 5, -2)
 
-	self.HealPredictionAndAbsorb = {
-		myBar = mhpb,
-		otherBar = ohpb,
-		absorbBar = abb,
-		absorbBarOverlay = abbo,
-		overAbsorbGlow = oag,
-		healAbsorbBar = hab,
-		overHealAbsorbGlow = ohg,
-		maxOverflow = 1,
-	}
-	--end
+		self.HealPredictionAndAbsorb = {
+			myBar = mhpb,
+			otherBar = ohpb,
+			absorbBar = abb,
+			absorbBarOverlay = abbo,
+			overAbsorbGlow = oag,
+			healAbsorbBar = hab,
+			overHealAbsorbGlow = ohg,
+			maxOverflow = 1,
+		}
+	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 3, -15)
@@ -200,7 +199,7 @@ function Module:CreateRaid()
 	self.ReadyCheckIndicator:SetPoint("CENTER")
 
 	self.PhaseIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.PhaseIndicator:SetSize(22, 22)
+	self.PhaseIndicator:SetSize(20, 20)
 	self.PhaseIndicator:SetPoint("CENTER")
 	self.PhaseIndicator:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\PhaseIcons.tga]])
 	self.PhaseIndicator.PostUpdate = Module.UpdatePhaseIcon
@@ -230,12 +229,43 @@ function Module:CreateRaid()
 		self.AuraWatch = Module.CreateAuraWatch(self)
 	end
 
-	if C["Raid"].TargetHighlight then
-		self.OverlayFrame = CreateFrame("Frame", nil, self)
-		self.OverlayFrame:SetFrameLevel(self:GetFrameLevel() + 2)
-		self.OverlayFrame:SetAllPoints()
+	if C["Raid"].AuraDebuffs then
+		self.RaidDebuffs = CreateFrame("Frame", nil, self)
+		self.RaidDebuffs:SetFrameLevel(self:GetFrameLevel() + 20)
+		self.RaidDebuffs:SetSize(C["Raid"].AuraDebuffIconSize, C["Raid"].AuraDebuffIconSize)
+		self.RaidDebuffs:SetPoint("CENTER", self, 0, 0)
+		self.RaidDebuffs:CreateBorder()
+		self.RaidDebuffs:CreateInnerShadow()
 
-		self.TargetHighlight = self.OverlayFrame:CreateTexture(nil, "OVERLAY")
+		self.RaidDebuffs.showDispellableDebuff = true
+		self.RaidDebuffs.onlyMatchSpellID = true
+		-- self.RaidDebuffs.forceShow = true -- TEST
+
+		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "OVERLAY")
+		self.RaidDebuffs.icon:SetTexCoord(unpack(K.TexCoords))
+		self.RaidDebuffs.icon:SetAllPoints()
+
+		self.RaidDebuffs.count = self.RaidDebuffs:CreateFontString(nil, "OVERLAY")
+		self.RaidDebuffs.count:SetPoint("BOTTOMRIGHT", 0, 1)
+		self.RaidDebuffs.count:FontTemplate(nil, 10, "OUTLINE")
+		self.RaidDebuffs.count:SetTextColor(1, 0.9, 0)
+
+		self.RaidDebuffs.time = self.RaidDebuffs:CreateFontString(nil, "OVERLAY")
+		self.RaidDebuffs.time:SetPoint("CENTER")
+		self.RaidDebuffs.time:FontTemplate(nil, 10, "OUTLINE")
+		self.RaidDebuffs.time:SetTextColor(1, 0.9, 0)
+
+		self.RaidDebuffs.cd = CreateFrame("Cooldown", nil, self.RaidDebuffs, "CooldownFrameTemplate")
+		self.RaidDebuffs.cd:SetPoint("TOPLEFT", 1, -1)
+		self.RaidDebuffs.cd:SetPoint("BOTTOMRIGHT", -1, 1)
+		self.RaidDebuffs.cd:SetReverse(true)
+		self.RaidDebuffs.cd.noOCC = true
+		self.RaidDebuffs.cd.noCooldownCount = true
+		self.RaidDebuffs.cd:SetHideCountdownNumbers(true)
+	end
+
+	if C["Raid"].TargetHighlight then
+		self.TargetHighlight = self.Overlay:CreateTexture(nil, "OVERLAY")
 		self.TargetHighlight:SetTexture([[Interface\RAIDFRAME\Raid-FrameHighlights]])
 		self.TargetHighlight:SetTexCoord(0.00781250, 0.55468750, 0.28906250, 0.55468750)
 		self.TargetHighlight:SetVertexColor(0.84, 0.75, 0.65)
@@ -251,6 +281,7 @@ function Module:CreateRaid()
 		end
 
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateRaidTargetGlow, true)
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidTargetGlow, true)
 	end
 
 	self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")

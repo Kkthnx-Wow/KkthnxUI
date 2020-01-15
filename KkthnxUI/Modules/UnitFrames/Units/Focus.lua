@@ -49,7 +49,7 @@ function Module:CreateFocus()
     end
 
 	if C["Unitframe"].Smooth then
-		self.Health.Smooth = true
+		K.SmoothBar(self.Health)
 	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
@@ -68,7 +68,7 @@ function Module:CreateFocus()
 	self.Power.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		self.Power.Smooth = true
+		K.SmoothBar(self.Power)
 	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
@@ -82,7 +82,11 @@ function Module:CreateFocus()
 	self.Name:SetWidth(156 * 0.90)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
-	self:Tag(self.Name, "[color][name][afkdnd]")
+	if C["Unitframe"].HealthbarColor.Value == "Class" then
+		self:Tag(self.Name, "[name][afkdnd]")
+	else
+		self:Tag(self.Name, "[color][name][afkdnd]")
+	end
 
 	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)

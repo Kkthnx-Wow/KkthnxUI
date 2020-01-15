@@ -34,9 +34,9 @@ local SortBags = _G.SortBags
 local SortBankBags = _G.SortBankBags
 
 local bagsFont = K.GetFont(C["UIFonts"].InventoryFonts)
-local deleteEnable, favouriteEnable
-
+local deleteEnable, favouriteEnable, splitEnable
 local sortCache = {}
+
 function Module:ReverseSort()
 	for bag = 0, 4 do
 		local numSlots = GetContainerNumSlots(bag)
@@ -454,17 +454,8 @@ local function favouriteOnClick(self)
 			KkthnxUIData[K.Realm][K.Name].FavouriteItems[itemID] = true
 		end
 		ClearCursor()
-		KKUI_Backpack:BAG_UPDATE()
+		Module:UpdateAllBags()
 	end
-end
-
-function Module:ButtonOnClick(btn)
-	if btn ~= "LeftButton" then
-		return
-	end
-
-	deleteButtonOnClick(self)
-	favouriteOnClick(self)
 end
 
 function Module:GetContainerEmptySlot(bagID)
@@ -540,7 +531,108 @@ function Module:CreateFreeSlots()
 	self.freeSlot = slot
 end
 
+local function saveSplitCount(self)
+	local count = self:GetText() or ""
+	KkthnxUIData[K.Realm][K.Name].SplitCount = tonumber(count) or 1
+end
+
+local function editBoxClearFocus(self)
+	self:ClearFocus()
+end
+
+function Module:CreateSplitButton()
+	local enabledText = K.SystemColor..L["StackSplitEnable"]
+
+	local splitFrame = CreateFrame("Frame", nil, self)
+	splitFrame:SetSize(100, 50)
+	splitFrame:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
+	K.CreateFontString(splitFrame, 14, L["Split Count"], "", "system", "TOP", 1, -5)
+	splitFrame:CreateBorder()
+	splitFrame:Hide()
+
+	local editBox = CreateFrame("EditBox", nil, splitFrame)
+	editBox:CreateBorder()
+	editBox:SetWidth(90)
+	editBox:SetHeight(20)
+	editBox:SetAutoFocus(false)
+	editBox:SetTextInsets(5, 5, 0, 0)
+	editBox:SetFontObject(bagsFont)
+	editBox:SetPoint("BOTTOMLEFT", 5, 5)
+	editBox:SetScript("OnEscapePressed", editBoxClearFocus)
+	editBox:SetScript("OnEnterPressed", editBoxClearFocus)
+	editBox:SetScript("OnTextChanged", saveSplitCount)
+
+	local splitButton = CreateFrame("Button", nil, self)
+	splitButton:SetSize(18, 18)
+	splitButton:CreateBorder()
+	splitButton:StyleButton()
+	splitButton:CreateInnerShadow()
+
+	splitButton.Icon = splitButton:CreateTexture(nil, "ARTWORK")
+	splitButton.Icon:SetPoint("TOPLEFT", -1, 3)
+	splitButton.Icon:SetPoint("BOTTOMRIGHT", 1, -3)
+	splitButton.Icon:SetTexCoord(unpack(K.TexCoords))
+	splitButton.Icon:SetTexture("Interface\\HELPFRAME\\ReportLagIcon-AuctionHouse")
+
+	splitButton:SetScript("OnClick", function(self, btn)
+		splitEnable = not splitEnable
+		if splitEnable then
+			self:SetBackdropBorderColor(1, 0, 0)
+			self.Icon:SetDesaturated(true)
+			self.text = enabledText
+			splitFrame:Show()
+			editBox:SetText(KkthnxUIData[K.Realm][K.Name].SplitCount)
+		else
+			self:SetBackdropBorderColor()
+			self.Icon:SetDesaturated(false)
+			self.text = nil
+			splitFrame:Hide()
+		end
+		self:GetScript("OnEnter")(self)
+	end)
+	splitButton.title = L["Quick Split"]
+	K.AddTooltip(splitButton, "ANCHOR_TOP")
+
+	return splitButton
+end
+
+local function splitOnClick(self)
+	if not splitEnable then
+		return
+	end
+
+	PickupContainerItem(self.bagID, self.slotID)
+
+	local texture, itemCount, locked = GetContainerItemInfo(self.bagID, self.slotID)
+	if texture and not locked and itemCount and itemCount > KkthnxUIData[K.Realm][K.Name].SplitCount then
+		SplitContainerItem(self.bagID, self.slotID, KkthnxUIData[K.Realm][K.Name].SplitCount)
+
+		local bagID, slotID = Module:GetEmptySlot("Main")
+		if slotID then
+			PickupContainerItem(bagID, slotID)
+		end
+	end
+end
+
+function Module:ButtonOnClick(btn)
+	if btn ~= "LeftButton" then
+		return
+	end
+
+	deleteButtonOnClick(self)
+	favouriteOnClick(self)
+	splitOnClick(self)
+end
+
+function Module:UpdateAllBags()
+	if self.Bags and self.Bags:IsShown() then
+		self.Bags:BAG_UPDATE()
+	end
+end
+
 function Module:OnEnable()
+	self:CreateInventoryBar()
+
 	if not C["Inventory"].Enable then
 		return
 	end
@@ -727,6 +819,10 @@ function Module:OnEnable()
 		end
 	end
 
+	local function isItemNeedsLevel(item)
+		return item.link and item.level and item.rarity > 1 and (item.subType == EJ_LOOT_SLOT_FILTER_ARTIFACT_RELIC or item.classID == LE_ITEM_CLASS_WEAPON or item.classID == LE_ITEM_CLASS_ARMOR)
+	end
+
 	function MyButton:OnUpdate(item)
 		if MerchantFrame:IsShown() then
 			if item.isInSet then
@@ -736,7 +832,7 @@ function Module:OnEnable()
 			end
 		end
 
-		if MerchantFrame:IsShown() and item.rarity == LE_ITEM_QUALITY_POOR and item.sellPrice > 0 then
+		if item.rarity == LE_ITEM_QUALITY_POOR and item.sellPrice > 0 then
 			self.junkIcon:SetAlpha(1)
 		else
 			self.junkIcon:SetAlpha(0)
@@ -769,9 +865,10 @@ function Module:OnEnable()
 		end
 
 		if showItemLevel then
-			if item.link and item.level and item.rarity > 1 and (item.classID == LE_ITEM_CLASS_WEAPON or item.classID == LE_ITEM_CLASS_ARMOR) then
+			if isItemNeedsLevel(item) then
 				local level = K.GetItemLevel(item.link, item.bagID, item.slotID) or item.level
 				local color = BAG_ITEM_QUALITY_COLORS[item.rarity]
+
 				self.iLvl:SetText(level)
 				self.iLvl:SetTextColor(color.r, color.g, color.b)
 			else
@@ -782,6 +879,12 @@ function Module:OnEnable()
 		if self.glowFrame then
 			if C_NewItems_IsNewItem(item.bagID, item.slotID) and self.glowFrame and self.glowFrame.Animation then
 				self.glowFrame:Show()
+				local color = BAG_ITEM_QUALITY_COLORS[item.rarity]
+				if color then
+					self.glowFrame:SetVertexColor(color.r, color.g, color.b)
+				else
+					self.glowFrame:SetVertexColor(1, 1, 1)
+				end
 				self.glowFrame.Animation:Play()
 				self.glowFrame.Animation.Playing = true
 			else
@@ -899,9 +1002,10 @@ function Module:OnEnable()
 			Module.CreateBagBar(self, settings, 4)
 			buttons[2] = Module.CreateRestoreButton(self, f)
 			buttons[3] = Module.CreateBagToggle(self)
-			buttons[5] = Module.CreateFavouriteButton(self)
+			buttons[5] = Module.CreateSplitButton(self)
+			buttons[6] = Module.CreateFavouriteButton(self)
 			if deleteButton then
-				buttons[6] = Module.CreateDeleteButton(self)
+				buttons[7] = Module.CreateDeleteButton(self)
 			end
 		elseif name == "Bank" then
 			Module.CreateBagBar(self, settings, 7)
@@ -913,7 +1017,7 @@ function Module:OnEnable()
 		end
 		buttons[4] = Module.CreateSortButton(self, name)
 
-		for i = 1, 6 do
+		for i = 1, 7 do
 			local bu = buttons[i]
 			if not bu then break end
 			if i == 1 then
@@ -945,7 +1049,7 @@ function Module:OnEnable()
 	function BagButton:OnUpdate()
 		local id = GetInventoryItemID("player", (self.GetInventorySlot and self:GetInventorySlot()) or self.invID)
 		local quality = id and select(3, GetItemInfo(id)) or 0
-		if quality == 1 then
+		if not quality or quality == 1 then
 			quality = 0
 		end
 

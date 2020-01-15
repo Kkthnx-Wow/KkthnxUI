@@ -55,7 +55,7 @@ function Module:CreateTarget(unit)
     end
 
 	if C["Unitframe"].Smooth then
-		self.Health.Smooth = true
+		K.SmoothBar(self.Health)
 	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
@@ -74,7 +74,7 @@ function Module:CreateTarget(unit)
 	self.Power.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		self.Power.Smooth = true
+		K.SmoothBar(self.Power)
 	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
@@ -88,7 +88,11 @@ function Module:CreateTarget(unit)
 	self.Name:SetWidth(156 * 0.90)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
-	self:Tag(self.Name, "[color][name][afkdnd]")
+	if C["Unitframe"].HealthbarColor.Value == "Class" then
+		self:Tag(self.Name, "[name][afkdnd]")
+	else
+		self:Tag(self.Name, "[color][name][afkdnd]")
+	end
 
 	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
@@ -144,7 +148,8 @@ function Module:CreateTarget(unit)
 		self.Buffs["growth-x"] = "RIGHT"
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
-		self.Buffs.CustomFilter = Module.CustomAuraFilter.Blacklist
+		--self.Buffs.CustomFilter = Module.CustomAuraFilter.Blacklist
+		self.Buffs.CustomFilter = K.CustomBuffFilter.target
 
 		self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 		self.Debuffs:SetWidth(156)
@@ -159,6 +164,7 @@ function Module:CreateTarget(unit)
 		self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 		self.Debuffs.PostCreateIcon = Module.PostCreateAura
 		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
+		self.Debuffs.CustomFilter = K.CustomDebuffFilter.target
 	else
 		self.Auras = CreateFrame("Frame", self:GetName().."Auras", self)
 		self.Auras.gap = false
@@ -189,11 +195,11 @@ function Module:CreateTarget(unit)
 		self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
 
-		self.Castbar.Shield = self.Castbar:CreateTexture(nil, "OVERLAY")
+		self.Castbar.Shield = self.Castbar:CreateTexture(nil, "OVERLAY", 7)
 		self.Castbar.Shield:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CastBorderShield")
 		self.Castbar.Shield:SetTexCoord(0, 0.84375, 0, 1)
 		self.Castbar.Shield:SetSize(C["Unitframe"].TargetCastbarHeight * 0.84375, C["Unitframe"].TargetCastbarHeight)
-		self.Castbar.Shield:SetPoint("RIGHT", self.Castbar, 26, 0)
+		self.Castbar.Shield:SetPoint("CENTER", 0, -14)
 		self.Castbar.Shield:SetVertexColor(0.5, 0.5, 0.7)
 
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
@@ -264,7 +270,7 @@ function Module:CreateTarget(unit)
 		oag:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 2)
 		oag:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -2)
 
-		local hab = CreateFrame("StatusBar", nil, self)
+		local hab = CreateFrame("StatusBar", nil, self.Health)
 		hab:SetPoint("TOP")
 		hab:SetPoint("BOTTOM")
 		hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())

@@ -3,14 +3,19 @@
 local _, ns = ...
 local oUF = ns.oUF or oUF
 
-local strfind = string.find
-local GetTime = GetTime
-local GetInventoryItemID = GetInventoryItemID
-local UnitAttackSpeed = UnitAttackSpeed
-local UnitRangedDamage = UnitRangedDamage
-local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
-local UnitGUID = UnitGUID
-local GetUnitSpeed = GetUnitSpeed
+local _G = _G
+local strfind = _G.string.find
+local unpack = _G.unpack
+
+local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
+local CreateFrame = _G.CreateFrame
+local GetInventoryItemID = _G.GetInventoryItemID
+local GetSpellInfo = _G.GetSpellInfo
+local GetTime = _G.GetTime
+local UnitAttackSpeed = _G.UnitAttackSpeed
+local UnitCastingInfo = _G.UnitCastingInfo
+local UnitGUID = _G.UnitGUID
+local UnitRangedDamage = _G.UnitRangedDamage
 
 local meleeing, rangeing, lasthit
 local MainhandID = GetInventoryItemID("player", 16)
@@ -23,9 +28,17 @@ local function SwingStopped(element)
 	local swingMH = bar.Mainhand
 	local swingOH = bar.Offhand
 
-	if swing:IsShown() then return end
-	if swingMH:IsShown() then return end
-	if swingOH:IsShown() then return end
+	if swing:IsShown() then
+		return
+	end
+
+	if swingMH:IsShown() then
+		return
+	end
+
+	if swingOH:IsShown() then
+		return
+	end
 
 	bar:Hide()
 end
@@ -95,7 +108,8 @@ do
 						slamtime = 0
 					end
 				else
-					delayTime = 0
+					-- delayTime = 0 -- Not used anywhere?
+					-- print("[oUF_Swing] DelayTime is", delayTime)
 					self:Hide()
 					self:SetScript("OnUpdate", nil)
 					meleeing = false
@@ -109,8 +123,13 @@ do
 end
 
 local function MeleeChange(self, _, unit)
-	if unit ~= "player" then return end
-	if not meleeing then return end
+	if unit ~= "player" then
+		return
+	end
+
+	if not meleeing then
+		return
+	end
 
 	local bar = self.Swing
 	local swing = bar.Twohand
@@ -191,8 +210,13 @@ local function MeleeChange(self, _, unit)
 end
 
 local function RangedChange(self, _, unit)
-	if unit ~= "player" then return end
-	if not rangeing then return end
+	if unit ~= "player" then
+		return
+	end
+
+	if not rangeing then
+		return
+	end
 
 	local bar = self.Swing
 	local swing = bar.Twohand
@@ -219,8 +243,13 @@ local function RangedChange(self, _, unit)
 end
 
 local function Ranged(self, _, unit, _, spellID)
-	if unit ~= "player" then return end
-	if spellID ~= 75 and spellID ~= 5019 then return end
+	if unit ~= "player" then
+		return
+	end
+
+	if spellID ~= 75 and spellID ~= 5019 then
+		return
+	end
 
 	local bar = self.Swing
 	local swing = bar.Twohand
@@ -246,8 +275,13 @@ end
 
 local function Melee(self)
 	local _, subevent, _, GUID = CombatLogGetCurrentEventInfo()
-	if GUID ~= UnitGUID("player") then return end
-	if not strfind(subevent, "SWING") then return end
+	if GUID ~= UnitGUID("player") then
+		return
+	end
+
+	if not strfind(subevent, "SWING") then
+		return
+	end
 
 	local bar = self.Swing
 	local swing = bar.Twohand
@@ -257,7 +291,6 @@ local function Melee(self)
 	-- calculation of new hits is in OnDurationUpdate
 	-- workaround, cant differ between mainhand and offhand hits
 	local now = GetTime()
-
 	if not meleeing then
 		bar:Show()
 		swing:Hide()
@@ -304,10 +337,21 @@ end
 local function ParryHaste(self)
 	local _, subevent, _, _, _, _, tarGUID, _, missType = CombatLogGetCurrentEventInfo()
 
-	if tarGUID ~= UnitGUID("player") then return end
-	if not meleeing then return end
-	if not strfind(subevent, "MISSED") then return end
-	if missType ~= "PARRY" then return end
+	if tarGUID ~= UnitGUID("player") then
+		return
+	end
+
+	if not meleeing then
+		return
+	end
+
+	if not strfind(subevent, "MISSED") then
+		return
+	end
+
+	if missType ~= "PARRY" then
+		return
+	end
 
 	local bar = self.Swing
 	local swing = bar.Twohand
@@ -316,7 +360,6 @@ local function ParryHaste(self)
 
 	local _, dualwield = UnitAttackSpeed("player")
 	local now = GetTime()
-
 	-- needed calculations, so the timer doesnt jump on parryhaste
 	if dualwield then
 		local percentage = (swingMH.max - now) / swingMH.speed
@@ -363,7 +406,10 @@ local function Ooc(self)
 	meleeing = false
 	rangeing = false
 
-	if not bar.hideOoc then return end
+	if not bar.hideOoc then
+		return
+	end
+
 	bar:Hide()
 	bar.Twohand:Hide()
 	bar.Mainhand:Hide()
@@ -439,23 +485,28 @@ local function Enable(self, unit)
 			bar.Twohand.Text = bar.Text
 			bar.Twohand.Text:SetParent(bar.Twohand)
 		end
+
 		if bar.TextMH then
 			bar.Mainhand.Text = bar.TextMH
 			bar.Mainhand.Text:SetParent(bar.Mainhand)
 		end
+
 		if bar.TextOH then
 			bar.Offhand.Text = bar.TextOH
 			bar.Offhand.Text:SetParent(bar.Offhand)
 		end
+
 		if bar.OverrideText then
 			bar.Twohand.OverrideText = bar.OverrideText
 			bar.Mainhand.OverrideText = bar.OverrideText
 			bar.Offhand.OverrideText = bar.OverrideText
 		end
+
 		if not bar.disableRanged then
 			self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", Ranged)
 			self:RegisterEvent("UNIT_RANGEDDAMAGE", RangedChange)
 		end
+
 		if not bar.disableMelee then
 			self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Melee, true)
 			self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", ParryHaste, true)
@@ -474,6 +525,7 @@ local function Disable(self)
 			self:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", Ranged)
 			self:UnregisterEvent("UNIT_RANGEDDAMAGE", RangedChange)
 		end
+
 		if not bar.disableMelee then
 			self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Melee)
 			self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", ParryHaste)

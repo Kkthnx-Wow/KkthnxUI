@@ -7,6 +7,7 @@ function Module.UpdateTalkingHead(event, ...)
 		if (addon ~= "Blizzard_TalkingHeadUI") then
 			return
 		end
+
 		K:UnregisterEvent("ADDON_LOADED", Module.UpdateTalkingHead)
 	end
 

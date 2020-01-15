@@ -2,13 +2,14 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
-local bit_band = bit.band
-local math_random = math.random
-local select = select
+local bit_band = _G.bit.band
+local math_random = _G.math.random
+local select = _G.select
 
 local DoEmote = _G.DoEmote
 local GetAchievementInfo = _G.GetAchievementInfo
 local unitFilter = _G.COMBATLOG_OBJECT_CONTROL_PLAYER
+local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
 
 local PVPEmotes = {
 	"BARK", "BECKON", "BITE", "BONK", "BYE", "CACKLE",
@@ -41,7 +42,7 @@ function Module.COMBAT_LOG_EVENT_UNFILTERED()
 end
 
 function Module:CreatePvPEmote()
-	if C.Misc.PvPEmote ~= true then
+	if C["Misc"].PvPEmote ~= true then
 		return
 	end
 

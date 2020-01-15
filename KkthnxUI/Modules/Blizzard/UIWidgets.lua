@@ -37,8 +37,8 @@ function Module:CreateUIWidgets()
 	belowMiniMapHolder:SetPoint("TOP", UIParent, "TOP", 0, -70)
 	belowMiniMapHolder:SetSize(128, 30)
 
-	K.Mover(topCenterHolder, "TopCenterContainer", "TopCenterContainer", {"TOP", UIParent, "TOP", 0, -30}, 128, 30)
-	K.Mover(belowMiniMapHolder, "BelowMinimapContainer", "BelowMinimapContainer", {"TOP", UIParent, "TOP", 0, -70}, 128, 30)
+	K.Mover(topCenterHolder, "TopCenterContainer", "TopCenterContainer", {"TOP", UIParent, "TOP", 0, -46}, 128, 30)
+	K.Mover(belowMiniMapHolder, "BelowMinimapContainer", "BelowMinimapContainer", {"TOP", UIParent, "TOP", 0, -76}, 128, 30)
 
 	topCenterContainer:ClearAllPoints()
 	topCenterContainer:SetPoint("CENTER", topCenterHolder)

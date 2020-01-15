@@ -157,16 +157,18 @@ local function ReskinObjectiveTracker()
 				icon:SetMask("")
 				icon:SetTexCoord(unpack(K.TexCoords))
 
-				if not progressBar.Shadow then
-					progressBar:CreateShadow(true, icon)
-					progressBar.Shadow:SetShown(icon:IsShown() and icon:GetTexture() ~= nil)
+				if not progressBar.iconShadow then
+					progressBar.iconShadow = CreateFrame("Frame", nil, progressBar)
+					progressBar.iconShadow:SetAllPoints(icon)
+					progressBar.iconShadow:CreateShadow(true)
+					progressBar.iconShadow:SetShown(icon:IsShown() and icon:GetTexture() ~= nil)
 				end
 			end
 
 			_G.BonusObjectiveTrackerProgressBar_PlayFlareAnim = K.Noop
 			progressBar.isSkinned = true
-		elseif icon and progressBar.Shadow then
-			progressBar.Shadow:SetShown(icon:IsShown() and icon:GetTexture() ~= nil)
+		elseif icon and progressBar.iconShadow then
+			progressBar.iconShadow:SetShown(icon:IsShown() and icon:GetTexture() ~= nil)
 		end
 	end
 

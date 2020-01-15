@@ -219,20 +219,7 @@ function Module:StyleFrame(frame)
 	Frame:SetTimeVisible(C["Chat"].FadingTimeVisible)
 	Frame:SetFadeDuration(C["Chat"].FadingTimeFading)
 
-	-- Disable alt key usage
-	EditBox:SetAltArrowKeyMode(false)
-
-	-- Hide editbox on login
-	EditBox:Hide()
-
-	-- Hide editbox instead of fading
-	EditBox:HookScript("OnEditFocusLost", function(self)
-		self:Hide()
-	end)
-
-	EditBox:HookScript("OnTextChanged", OnTextChanged)
-
-	-- Create our own texture for edit box
+	-- Move the edit box
 	EditBox:ClearAllPoints()
 	EditBox:SetPoint("BOTTOM", ChatFrame1, "TOP", 10, 24)
 	if C["Chat"].Background then
@@ -240,6 +227,21 @@ function Module:StyleFrame(frame)
 	else
 		EditBox:SetSize(C["Chat"].Width + 18, 24)
 	end
+
+	-- Disable alt key usage
+	EditBox:SetAltArrowKeyMode(false)
+
+	EditBox:HookScript("OnTextChanged", OnTextChanged)
+
+	-- Hide editbox on login
+	EditBox:Hide()
+
+	-- Hide editbox instead of fading
+	EditBox:HookScript("OnEditFocusLost", function(self)
+		EditBox.historyIndex = 		self:Hide()
+	end)
+
+	-- Create our own texture for edit box
 	EditBox:CreateBorder()
 
 	-- Character count
@@ -340,6 +342,9 @@ function Module:SetDefaultChatFramesPositions()
 			end
 		end
 
+		-- set default KkthnxUI font size
+		FCF_SetChatWindowFontSize(nil, Frame, 12)
+
 		if (not Frame.isLocked) then
 			FCF_SetLocked(Frame, 1)
 		end
@@ -367,15 +372,15 @@ function Module:SetChatFramePosition()
 	end
 
 	local Frame = self
-
-	if not Frame:IsMovable() then
-		return
-	end
-
 	local ID = Frame:GetID()
+
 	local Settings = KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame"..ID]
 
 	if Settings then
+		if not Frame:IsMovable() then
+			return
+		end
+
 		local Anchor1, Anchor2, X, Y = unpack(Settings)
 
 		Frame:SetUserPlaced(true)
@@ -463,6 +468,9 @@ function Module:Install()
 	ChatFrame_RemoveAllMessageGroups(ChatFrame4)
 	ChatFrame_AddChannel(ChatFrame4, TRADE)
 	ChatFrame_AddChannel(ChatFrame4, GENERAL)
+	if GetLocale() == "enUS" and K.Realm == "Sethraliss" then
+		ChatFrame_AddChannel(ChatFrame4, "world_en")
+	end
 
 	-- Loot
 	ChatFrame_RemoveAllMessageGroups(ChatFrame5)
@@ -473,15 +481,36 @@ function Module:Install()
 	ChatFrame_AddMessageGroup(ChatFrame5, "MONEY")
 	ChatFrame_AddMessageGroup(ChatFrame5, "SKILL")
 
-	DEFAULT_CHAT_FRAME:SetUserPlaced(true)
-
-	-- MoveChatFrames()
-	FCF_SelectDockFrame(ChatFrame1)
+	-- Enable Classcolor
+	ToggleChatColorNamesByClassGroup(true, "SAY")
+	ToggleChatColorNamesByClassGroup(true, "EMOTE")
+	ToggleChatColorNamesByClassGroup(true, "YELL")
+	ToggleChatColorNamesByClassGroup(true, "GUILD")
+	ToggleChatColorNamesByClassGroup(true, "OFFICER")
+	ToggleChatColorNamesByClassGroup(true, "GUILD_ACHIEVEMENT")
+	ToggleChatColorNamesByClassGroup(true, "ACHIEVEMENT")
+	ToggleChatColorNamesByClassGroup(true, "WHISPER")
+	ToggleChatColorNamesByClassGroup(true, "PARTY")
+	ToggleChatColorNamesByClassGroup(true, "PARTY_LEADER")
+	ToggleChatColorNamesByClassGroup(true, "RAID")
+	ToggleChatColorNamesByClassGroup(true, "RAID_LEADER")
+	ToggleChatColorNamesByClassGroup(true, "RAID_WARNING")
+	ToggleChatColorNamesByClassGroup(true, "BATTLEGROUND")
+	ToggleChatColorNamesByClassGroup(true, "BATTLEGROUND_LEADER")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL1")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL2")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL3")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL4")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL5")
+	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT")
+	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT_LEADER")
 
 	-- Adjust Chat Colors
 	ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255) -- General
 	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255) -- Trade
 	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- Local Defense
+
+	DEFAULT_CHAT_FRAME:SetUserPlaced(true)
 
 	self:SetDefaultChatFramesPositions()
 end
@@ -516,6 +545,13 @@ function Module:SwitchSpokenDialect(button)
 	end
 end
 
+function Module:AddMessage(text, ...)
+	-- Short Channels
+	text = text:gsub("|h%[(%d+)%. .-%]|h", "|h[%1]|h")
+
+	return self.DefaultAddMessage(self, text, ...)
+end
+
 function Module:SetupFrame()
 	for i = 1, NUM_CHAT_WINDOWS do
 		local Frame = _G["ChatFrame"..i]
@@ -533,27 +569,18 @@ function Module:SetupFrame()
 			end
 		else
 			if C["Chat"].ShortenChannelNames then
-				local am = Frame.AddMessage
-
-				Frame.AddMessage = function(frame, text, ...)
-					return am(frame, text:gsub("|h%[(%d+)%. .-%]|h", "|h%1|h"), ...)
-				end
+				Frame.DefaultAddMessage = Frame.AddMessage
+				Frame.AddMessage = Module.AddMessage
 			end
 		end
 	end
 
 	-- Remember last channel
-	ChatTypeInfo.BN_WHISPER.sticky = 1
-	ChatTypeInfo.CHANNEL.sticky = 1
-	ChatTypeInfo.EMOTE.sticky = 0
-	ChatTypeInfo.GUILD.sticky = 1
-	ChatTypeInfo.INSTANCE_CHAT.sticky = 1
-	ChatTypeInfo.OFFICER.sticky = 1
-	ChatTypeInfo.PARTY.sticky = 1
-	ChatTypeInfo.RAID.sticky = 1
-	ChatTypeInfo.SAY.sticky = 1
 	ChatTypeInfo.WHISPER.sticky = 1
-	ChatTypeInfo.YELL.sticky = 0
+	ChatTypeInfo.BN_WHISPER.sticky = 1
+	ChatTypeInfo.OFFICER.sticky = 1
+	ChatTypeInfo.RAID_WARNING.sticky = 1
+	ChatTypeInfo.CHANNEL.sticky = 1
 
 	ChatConfigFrameDefaultButton:Kill()
 	ChatFrameMenuButton:Kill()
@@ -576,10 +603,6 @@ function Module:SetupFrame()
 	VoiceChatPromptActivateChannel.SetPoint = K.Noop
 
 	if C["Chat"].ShortenChannelNames then
-		-- Online/Offline Info
-		_G.ERR_FRIEND_ONLINE_SS = string_gsub(_G.ERR_FRIEND_ONLINE_SS, "%]%|h", "]|h|cff00c957")
-		_G.ERR_FRIEND_OFFLINE_S = string_gsub(_G.ERR_FRIEND_OFFLINE_S, "%%s", "%%s|cffff7f50")
-
 		-- Guild
 		_G.CHAT_GUILD_GET = "|Hchannel:GUILD|hG|h %s "
 		_G.CHAT_OFFICER_GET = "|Hchannel:OFFICER|hO|h %s "
@@ -670,16 +693,13 @@ function Module:OnEnable()
 		self.SetChatFont(ChatFrame)
 	end
 
-	if (not C["Chat"].WhisperSound) then
-		return
+	if C["Chat"].WhisperSound == true then
+		K:RegisterEvent("CHAT_MSG_WHISPER", Module.PlayWhisperSound)
+		K:RegisterEvent("CHAT_MSG_BN_WHISPER", Module.PlayWhisperSound)
+	else
+		K:UnregisterEvent("CHAT_MSG_WHISPER", Module.PlayWhisperSound)
+		K:UnregisterEvent("CHAT_MSG_BN_WHISPER", Module.PlayWhisperSound)
 	end
-
-	local Whisper = CreateFrame("Frame")
-	Whisper:RegisterEvent("CHAT_MSG_WHISPER")
-	Whisper:RegisterEvent("CHAT_MSG_BN_WHISPER")
-	Whisper:SetScript("OnEvent", function()
-		Module:PlayWhisperSound()
-	end)
 
 	if C["Chat"].Background then
 		local ChatFrameBG = CreateFrame("Frame", "KKUI_ChatFrameBG", UIParent)

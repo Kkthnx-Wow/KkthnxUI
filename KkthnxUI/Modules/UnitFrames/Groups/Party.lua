@@ -54,7 +54,7 @@ function Module:CreateParty()
     end
 
 	if C["Party"].Smooth then
-		self.Health.Smooth = true
+		K.SmoothBar(self.Health)
 	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
@@ -74,7 +74,7 @@ function Module:CreateParty()
 	self.Power.SetFrequentUpdates = true
 
 	if C["Party"].Smooth then
-		self.Power.Smooth = true
+		K.SmoothBar(self.Power)
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
@@ -82,7 +82,11 @@ function Module:CreateParty()
 	self.Name:SetWidth(124)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
-	self:Tag(self.Name, "[leadassist][lfdrole][color][name]")
+	if C["Party"].HealthbarColor.Value == "Class" then
+		self:Tag(self.Name, "[leadassist][lfdrole][name]")
+	else
+		self:Tag(self.Name, "[leadassist][lfdrole][color][name]")
+	end
 
 	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
@@ -129,7 +133,8 @@ function Module:CreateParty()
 		self.Buffs["growth-x"] = "RIGHT"
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
-		self.Buffs.CustomFilter = Module.CustomAuraFilter.Blacklist
+		-- self.Buffs.CustomFilter = Module.CustomAuraFilter.Blacklist
+		self.Buffs.CustomFilter = K.CustomBuffFilter.target
 	end
 
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
@@ -228,7 +233,7 @@ function Module:CreateParty()
 		oag:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 2)
 		oag:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -2)
 
-		local hab = CreateFrame("StatusBar", nil, self)
+		local hab = CreateFrame("StatusBar", nil, self.Health)
 		hab:SetPoint("TOP")
 		hab:SetPoint("BOTTOM")
 		hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
@@ -267,17 +272,12 @@ function Module:CreateParty()
 	end
 
 	if (C["Party"].TargetHighlight) then
-		self.HighlightOverlayFrame = CreateFrame("Frame", nil, self)
-		self.HighlightOverlayFrame:SetPoint("TOPLEFT", self.Portrait, -2, 2)
-		self.HighlightOverlayFrame:SetPoint("BOTTOMRIGHT", self.Portrait, 2, -2)
-		self.HighlightOverlayFrame:SetFrameLevel(7) -- Will always be above since 3D = 5 and Class and Default = 4
-
-		self.TargetHighlight = self.HighlightOverlayFrame:CreateTexture(nil, "OVERLAY")
+		self.TargetHighlight = self.Overlay:CreateTexture(nil, "OVERLAY")
+		self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -2, 2)
+		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 2, -2)
 		self.TargetHighlight:SetTexture("Interface\\Buttons\\CheckButtonHilight")
 		self.TargetHighlight:SetBlendMode("ADD")
 		self.TargetHighlight:SetVertexColor(0.84, 0.75, 0.65)
-		self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -2, 2)
-		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 2, -2)
 		self.TargetHighlight:Hide()
 
 		local function UpdatePartyTargetGlow()
@@ -289,6 +289,7 @@ function Module:CreateParty()
 		end
 
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdatePartyTargetGlow, true)
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyTargetGlow, true)
 	end
 
 	self.ReadyCheckIndicator = self.Health:CreateTexture(nil, "OVERLAY")
@@ -304,8 +305,8 @@ function Module:CreateParty()
 	end
 
 	self.PhaseIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.PhaseIndicator:SetSize(22, 22)
-	self.PhaseIndicator:SetPoint("LEFT", self.Health, "RIGHT", 1, 0)
+	self.PhaseIndicator:SetSize(20, 20)
+	self.PhaseIndicator:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
 	self.PhaseIndicator:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\PhaseIcons.tga]])
 	self.PhaseIndicator.PostUpdate = Module.UpdatePhaseIcon
 
@@ -336,6 +337,14 @@ function Module:CreateParty()
 		self.DebuffHighlightFilter = true
 		self.DebuffHighlightFilterTable = K.DebuffHighlightColors
 	end
+
+	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
+	self.Highlight:SetAllPoints()
+	self.Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
+	self.Highlight:SetTexCoord(0, 1, .5, 1)
+	self.Highlight:SetVertexColor(.6, .6, .6)
+	self.Highlight:SetBlendMode("ADD")
+	self.Highlight:Hide()
 
 	self.ThreatIndicator = {
 		IsObjectType = function() end,

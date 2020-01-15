@@ -4,29 +4,31 @@ local Module = K:GetModule("Tooltip")
 local _G = _G
 local string_match = _G.string.match
 local string_split = _G.string.split
+local tonumber = _G.tonumber
 
 local BOSS = _G.BOSS
 local C_EncounterJournal_GetSectionInfo = _G.C_EncounterJournal.GetSectionInfo
 local EJ_GetEncounterInfo = _G.EJ_GetEncounterInfo
 local EJ_GetInstanceInfo = _G.EJ_GetInstanceInfo
+local GameTooltip = _G.GameTooltip
 local GetDifficultyInfo = _G.GetDifficultyInfo
 local INSTANCE = _G.INSTANCE
-local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS or 10
+local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 
 local orig1, orig2, sectionInfo = {}, {}, {}
 local linkTypes = {
-	item = true,
-	enchant = true,
-	spell = true,
-	quest = true,
-	unit = true,
-	talent = true,
 	achievement = true,
+	azessence = true,
+	currency = true,
+	enchant = true,
 	glyph = true,
 	instancelock = true,
-	currency = true,
+	item = true,
 	keystone = true,
-	azessence = true,
+	quest = true,
+	spell = true,
+	talent = true,
+	unit = true,
 }
 
 function Module:HyperLink_SetPet(link)
@@ -121,4 +123,7 @@ local function hookCommunitiesFrame(event, addon)
 		K:UnregisterEvent(event, hookCommunitiesFrame)
 	end
 end
-K:RegisterEvent("ADDON_LOADED", hookCommunitiesFrame)
+
+if K.Realm ~= "Sethraliss" and K.WowPatch ~= "8.2.0" then
+	K:RegisterEvent("ADDON_LOADED", hookCommunitiesFrame)
+end

@@ -4,16 +4,13 @@ assert(oUF, "oUF FloatingCombatFeedback was unable to locate oUF install")
 
 local _G = _G
 local select, tremove, tinsert, wipe = _G.select, _G.table.remove, _G.table.insert, _G.table.wipe
-local m_cos, m_sin, m_pi, m_random, bit_bor = _G.math.cos, _G.math.sin, _G.math.pi, _G.math.random, _G.bit.bor
-local strupper = _G.strupper
+local m_cos, m_sin, m_pi, m_random, bit_bor, bit_band = _G.math.cos, _G.math.sin, _G.math.pi, _G.math.random, _G.bit.bor, _G.bit.band
 
-local ATTACK = _G.ATTACK
 local BreakUpLargeNumbers = _G.BreakUpLargeNumbers
 local COMBATLOG_OBJECT_AFFILIATION_MINE = _G.COMBATLOG_OBJECT_AFFILIATION_MINE
 local COMBATLOG_OBJECT_CONTROL_PLAYER = _G.COMBATLOG_OBJECT_CONTROL_PLAYER
 local COMBATLOG_OBJECT_REACTION_FRIENDLY = _G.COMBATLOG_OBJECT_REACTION_FRIENDLY
 local COMBATLOG_OBJECT_TYPE_GUARDIAN = _G.COMBATLOG_OBJECT_TYPE_GUARDIAN
-local COMBATLOG_OBJECT_TYPE_PET = _G.COMBATLOG_OBJECT_TYPE_PET
 local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
 local ENTERING_COMBAT = _G.ENTERING_COMBAT
 local GetSpellTexture = _G.GetSpellTexture
@@ -29,7 +26,10 @@ local SCHOOL_MASK_PHYSICAL = _G.SCHOOL_MASK_PHYSICAL or 0x01
 local SCHOOL_MASK_SHADOW = _G.SCHOOL_MASK_SHADOW or 0x20
 local UnitGUID = _G.UnitGUID
 
-local MyPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_MINE, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
+local function IsMyPet(flags)
+    return bit_band(flags, COMBATLOG_OBJECT_AFFILIATION_MINE) > 0
+end
+
 local GuardianFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_MINE, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_GUARDIAN)
 
 local function clamp(v)
@@ -257,10 +257,9 @@ local function onEvent(self, event, ...)
 		local isPlayer = playerGUID == sourceGUID
 		local atTarget = UnitGUID("target") == destGUID
 		local atPlayer = playerGUID == destGUID
-		local isVehicle = element.showPets and sourceFlags == GuardianFlags
-		local isPet = element.showPets and sourceFlags == MyPetFlags
+		local isPet = element.showPets and IsMyPet(sourceFlags)
 
-		if (unit == "target" and (isPlayer or isPet or isVehicle) and atTarget) or (unit == "player" and atPlayer) then
+		if (unit == "target" and (isPlayer or isPet) and atTarget) or (unit == "player" and atPlayer) then
 			local value = eventFilter[eventType]
 			if not value then return end
 

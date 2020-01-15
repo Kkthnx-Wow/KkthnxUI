@@ -1,10 +1,11 @@
 local _, ns = ...
+local oUF = ns.oUF or oUF
 
 -- Sourced: ElvUI (Elvz)
 
 local _G = _G
-local pairs = pairs
-local type = type
+local pairs = _G.pairs
+local type = _G.type
 
 local UnitAffectingCombat = _G.UnitAffectingCombat
 local UnitCastingInfo = _G.UnitCastingInfo
@@ -13,23 +14,11 @@ local UnitExists = _G.UnitExists
 local UnitHealth = _G.UnitHealth
 local UnitHealthMax = _G.UnitHealthMax
 
-local LibClassicCasterino = LibStub('LibClassicCasterino', true)
-if (LibClassicCasterino) then
-	UnitCastingInfo = function(unit)
-		return LibClassicCasterino:UnitCastingInfo(unit)
-	end
-
-	UnitChannelInfo = function(unit)
-		return LibClassicCasterino:UnitChannelInfo(unit)
-	end
-end
-
-local oUF = ns.oUF or oUF
 local frames, allFrames = {}, {}
 local showStatus
 
 local function CheckForReset()
-	for frame, unit in pairs(allFrames) do
+	for frame, _ in pairs(allFrames) do
 		if frame.fadeInfo and frame.fadeInfo.reset then
 			frame:SetAlpha(1)
 			frame.fadeInfo.reset = nil
@@ -40,7 +29,7 @@ end
 local function FadeFramesInOut(fade, unit)
 	local K = KkthnxUI[1]
 
-	for frame, unit in pairs(frames) do
+	for frame, _ in pairs(frames) do
 		if not UnitExists(unit) then
 			return
 		end
@@ -68,6 +57,7 @@ local function Update(self, arg1, arg2)
 	if arg1 == "UNIT_HEALTH" and self and self.unit ~= arg2 then
 		return
 	end
+
 	if type(arg1) == "boolean" and not frames[self] then
 		return
 	end
@@ -127,11 +117,14 @@ local function Enable(self, unit)
 			self:HookScript("OnEnter", function(self)
 				Update(self, true)
 			end)
+
 			self:HookScript("OnLeave", function(self)
 				Update(self, false)
 			end)
+
 			self.CombatFadeHooked = true
 		end
+
 		return true
 	end
 end

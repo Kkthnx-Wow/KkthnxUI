@@ -386,11 +386,9 @@ function Module:OnEnter()
 		self.itemDataLoadedCancelFunc = azeriteItem:ContinueWithCancelOnItemLoad(function()
 			local azeriteItemName = azeriteItem:GetItemName()
 
-			_G.GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItemName.." ("..currentLevel..")", nil, nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
-			_G.GameTooltip:AddDoubleLine(L["AP"], string_format(' %d / %d (%d%%)', cur, max, cur / max * 100), 1, 1, 1)
-			_G.GameTooltip:AddDoubleLine(L["Remaining"], string_format(' %d (%d%% - %d '..L["Bars"]..')', max - cur, (max - cur) / max * 100, 10 * (max - cur) / max), 1, 1, 1)
-
-			_G.GameTooltip:Show()
+			GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItemName.." ("..currentLevel..")", nil, nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
+			GameTooltip:AddDoubleLine(L["AP"], string_format(' %d / %d (%d%%)', cur, max, cur / max * 100), 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["Remaining"], string_format(' %d (%d%% - %d '..L["Bars"]..')', max - cur, (max - cur) / max * 100, 10 * (max - cur) / max), 1, 1, 1)
 		end)
 	end
 
@@ -458,7 +456,7 @@ function Module:OnEnable()
 		return
 	end
 
-	Module.Bars = {}
+	self.Bars = {}
 
 	self.Container = CreateFrame("button", "KkthnxUI_Databars", K.PetBattleHider)
 	self.Container:SetWidth(C["DataBars"].Width)

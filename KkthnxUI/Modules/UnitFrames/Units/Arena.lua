@@ -68,7 +68,7 @@ function Module:CreateArena()
 	self:SetAttribute("type2", "focus")
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	self.Health:SetHeight(24)
+	self.Health:SetHeight(28)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
@@ -89,7 +89,9 @@ function Module:CreateArena()
 		self.Health.colorReaction = true
 	end
 
-	self.Health.Smooth = true
+	if C["Arena"].Smooth then
+		K.SmoothBar(self.Health)
+	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
@@ -97,7 +99,7 @@ function Module:CreateArena()
 	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	self.Power:SetHeight(12)
+	self.Power:SetHeight(14)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
@@ -106,7 +108,9 @@ function Module:CreateArena()
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = true
 
-	self.Power.Smooth = true
+	if C["Arena"].Smooth then
+		K.SmoothBar(self.Power)
+	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
 	self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
@@ -114,39 +118,63 @@ function Module:CreateArena()
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
 	self:Tag(self.Power.Value, "[power]")
 
+	self.PVPSpecIcon = CreateFrame("Frame", nil, self)
+	self.PVPSpecIcon:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+	self.PVPSpecIcon:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
+	self.PVPSpecIcon:CreateBorder()
+	self.PVPSpecIcon:CreateInnerShadow()
+
+	self.Trinket = CreateFrame("Frame", nil, self)
+	self.Trinket:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+	self.Trinket:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
+	-- self.Trinket:CreateBorder()
+	-- self.Trinket:CreateInnerShadow()
+
+	self.Health:ClearAllPoints()
+	self.Health:SetPoint("TOPLEFT", self.PVPSpecIcon:GetWidth() + 6, 0)
+	self.Health:SetPoint("TOPRIGHT")
+
+	self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
+	self.Portrait:SetFrameLevel(self.Health:GetFrameLevel())
+	self.Portrait:SetAllPoints()
+	self.Portrait:SetAlpha(0.2)
+
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("TOP", self.Health, 0, 16)
 	self.Name:SetWidth(156 * 0.90)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
-	self:Tag(self.Name, "[color][name]")
+	self:Tag(self.Name, "[name]")
 
 	self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
-	self.Buffs:SetWidth(156)
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-	self.Buffs.num = 6 * 1
+	self.Buffs:SetWidth(156)
+	self.Buffs.num = 6
 	self.Buffs.spacing = 6
-	self.Buffs.size = ((((self.Buffs:GetWidth() - (self.Buffs.spacing * (self.Buffs.num / 1 - 1))) / self.Buffs.num)) * 1)
-	self.Buffs:SetHeight(self.Buffs.size * 1)
+	self.Buffs.size = ((((self.Buffs:GetWidth() - (self.Buffs.spacing * (self.Buffs.num - 1))) / self.Buffs.num)))
+	self.Buffs:SetHeight(self.Buffs.size)
 	self.Buffs.initialAnchor = "TOPLEFT"
 	self.Buffs["growth-y"] = "DOWN"
 	self.Buffs["growth-x"] = "RIGHT"
 	self.Buffs.PostCreateIcon = Module.PostCreateAura
 	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
+	-- self.Buffs.CustomFilter = Module.CustomAuraFilter.Blacklist
+	self.Buffs.CustomFilter = K.CustomBuffFilter.target
 
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
-	self.Debuffs:SetHeight(24)
-	self.Debuffs:SetWidth(24 * 3 + 6 * 2) -- Size x 3 + Spacing x 2
-	self.Debuffs:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
-	self.Debuffs.size = 24
-	self.Debuffs.num = 8
+	self.Debuffs:SetWidth(156)
+	self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
+	self.Debuffs.num = 6
 	self.Debuffs.spacing = 6
-	self.Debuffs.initialAnchor = "RIGHT"
-	self.Debuffs["growth-y"] = "DOWN"
-	self.Debuffs["growth-x"] = "LEFT"
+	self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num - 1))) / self.Debuffs.num)))
+	self.Debuffs:SetHeight(self.Debuffs.size)
+	self.Debuffs.initialAnchor = "TOPLEFT"
+	self.Debuffs["growth-y"] = "UP"
+	self.Debuffs["growth-x"] = "RIGHT"
 	self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
+	self.Debuffs.CustomFilter = K.CustomDebuffFilter.target
 
 	self.Castbar = CreateFrame("StatusBar", "BossCastbar", self)
 	self.Castbar:SetStatusBarTexture(UnitframeTexture)
@@ -198,18 +226,6 @@ function Module:CreateArena()
 	self.Castbar.Icon:SetPoint("LEFT", self.Castbar, "RIGHT", 6, 0)
 
 	self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
-
-	self.PVPSpecIcon = CreateFrame("Frame", nil, self)
-	self.PVPSpecIcon:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-	self.PVPSpecIcon:SetPoint("RIGHT", self, "LEFT", -6, 0)
-	self.PVPSpecIcon:CreateBorder()
-	self.PVPSpecIcon:CreateInnerShadow()
-
-	self.Trinket = CreateFrame("Frame", nil, self)
-	self.Trinket:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-	self.Trinket:SetPoint("RIGHT", self, "LEFT", -6, 0)
-	self.Trinket:CreateBorder()
-	self.Trinket:CreateInnerShadow()
 
 	self.PostUpdate = PostUpdateArenaPreparationSpec
 end

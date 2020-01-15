@@ -3,6 +3,8 @@
     xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Groups -->
     <Script file="Party.lua"/>
+    <Script file="PartyTarget.lua"/>
+    <Script file="PartyPet.lua"/>
     <Include file="Raid.xml"/>
     <Script file="Raid.lua"/>
 </Ui>

@@ -435,6 +435,13 @@ function Module:StyleAllActionButtons(cfg)
 	SpellFlyout:HookScript("OnShow", checkForFlyoutButtons)
 end
 
+local function HideHighlightButton(self)
+	if self.overlay then
+		self.overlay:Hide()
+		ActionButton_HideOverlayGlow(self)
+	end
+end
+
 function Module:CreateBarSkin()
 	local cfgFont = K.GetFont(C["UIFonts"].ActionBarsFonts)
 
@@ -522,5 +529,9 @@ function Module:CreateBarSkin()
 	if C["ActionBar"].Hotkey then
 		Module:UpdateStanceHotKey()
 		K:RegisterEvent("UPDATE_BINDINGS", Module.UpdateStanceHotKey)
+	end
+
+	if C["ActionBar"].HideHighlight then
+		hooksecurefunc("ActionButton_ShowOverlayGlow", HideHighlightButton)
 	end
 end

@@ -23,16 +23,15 @@ local function UpdateAzeriteItem(self)
 		self.RankFrame.Label:SetPoint("TOPLEFT", self, 2, -1)
 		self.RankFrame.Label:SetTextColor(1, .5, 0)
 
+		self:StyleButton(true)
+
 		self.styled = true
 	end
-
-	self:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
-	self:GetHighlightTexture():SetAllPoints()
 end
 
 local function UpdateAzeriteEmpoweredItem(self)
 	self.AzeriteTexture:SetAtlas("AzeriteIconFrame")
-	self.AzeriteTexture:SetInside()
+	self.AzeriteTexture:SetAllPoints()
 	self.AzeriteTexture:SetTexCoord(unpack(K.TexCoords))
 	self.AzeriteTexture:SetDrawLayer("BORDER", 1)
 end
@@ -61,7 +60,7 @@ local function FixSidebarTabCoords()
 			tab.TabBg:Kill()
 
 			if i == 1 then
-				for x=1, tab:GetNumRegions() do
+				for x = 1, tab:GetNumRegions() do
 					local region = select(x, tab:GetRegions())
 					region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
 					hooksecurefunc(region, "SetTexCoord", function(self, x1)
@@ -76,8 +75,6 @@ local function FixSidebarTabCoords()
 end
 
 local function StatsPane(which)
-	local CharacterStatsPane = _G.CharacterStatsPane
-
 	CharacterStatsPane[which]:StripTextures()
 	CharacterStatsPane[which].Title:SetFontObject(K.GetFont(C["UIFonts"].SkinFonts))
 	CharacterStatsPane[which].Title:SetFont(select(1, CharacterStatsPane[which].Title:GetFont()), 14, select(3, CharacterStatsPane[which].Title:GetFont()))
@@ -181,7 +178,7 @@ local function ReskinCharacterFrame()
 		StatsPane("AttributesCategory")
 	end
 
-	--Buttons used to toggle between equipment manager, titles, and character stats
+	-- Buttons used to toggle between equipment manager, titles, and character stats
 	hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", FixSidebarTabCoords)
 end
 

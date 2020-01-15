@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("InventoryBar")
+local Module = K:GetModule("Bags")
 
 local _G = _G
 local table_insert = _G.table.insert
@@ -50,7 +50,7 @@ function Module:SizeAndPositionBagBar()
 
 	local visibility = "[petbattle] hide; show"
 	if visibility and visibility:match("[\n\r]") then
-		visibility = visibility:gsub("[\n\r]","")
+		visibility = visibility:gsub("[\n\r]", "")
 	end
 
 	RegisterStateDriver(KKUI_BagBar, "visibility", visibility)
@@ -82,7 +82,7 @@ function Module:SizeAndPositionBagBar()
 	KKUI_BagBar:SetHeight(bagBarSize + buttonPadding * 2)
 end
 
-function Module:OnEnable()
+function Module:CreateInventoryBar()
 	if not C["ActionBar"].Enable then
 		return
 	end

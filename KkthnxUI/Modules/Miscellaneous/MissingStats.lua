@@ -18,10 +18,12 @@ function Module:CreateImprovedStats()
 	local statPanel = CreateFrame("Frame", nil, CharacterFrameInsetRight)
 	statPanel:SetSize(200, 350)
 	statPanel:SetPoint("TOP", 0, -5)
+
 	local scrollFrame = CreateFrame("ScrollFrame", nil, statPanel, "UIPanelScrollFrameTemplate")
 	scrollFrame:SetAllPoints()
 	scrollFrame.ScrollBar:Hide()
 	scrollFrame.ScrollBar.Show = K.Noop
+
 	local stat = CreateFrame("Frame", nil, scrollFrame)
 	stat:SetSize(200, 1)
 	scrollFrame:SetScrollChild(stat)

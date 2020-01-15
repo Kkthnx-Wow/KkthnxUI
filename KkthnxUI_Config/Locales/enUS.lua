@@ -22,7 +22,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		["Loot"] = "Loot",
 		["Minimap"] = "Minimap",
 		["Misc"] = "Miscellaneous",
-		["Nameplates"] = "Nameplates",
+		["Nameplate"] = "Nameplates",
 		["Party"] = "Party",
 		["PulseCooldown"] = "Pulse Cooldown",
 		["QuestNotifier"] = "Quest Notifier",
@@ -56,7 +56,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable ActionBars",
+			["Name"] = "|cff00cc4c".."Enable ActionBars",
 		},
 
 		["EquipBorder"] = {
@@ -125,6 +125,14 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["ItemAlert"] = {
 			["Name"] = "Announce Items Being Placed",
+		},
+
+		["BrokenSpell"] = {
+			["Name"] = "Announce When Someone Breaks A Crowd Control Spell",
+		},
+
+		["Interrupt"] = {
+			["Name"] = "Announce Interrupt/Stolen/Dispell In Groups",
 		}
 	},
 
@@ -137,6 +145,14 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["AutoCollapse"] = {
 			["Name"] = "Auto Collapse Objective Tracker",
+		},
+
+		["AutoDeclineDuels"] = {
+			["Name"] = "Auto Decline Player Duels",
+		},
+
+		["AutoDeclinePetDuels"] = {
+			["Name"] = "Auto Decline Pet Duels",
 		},
 
 		["AutoInvite"] = {
@@ -208,7 +224,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable",
+			["Name"] = "|cff00cc4c".."Enable Inventory",
 			["Desc"] = "Enable/Disable the Inventory Module.",
 		},
 
@@ -302,7 +318,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable",
+			["Name"] = "|cff00cc4c".."Enable Auras",
 		},
 
 		["Reminder"] = {
@@ -314,7 +330,15 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["ReverseDebuffs"] = {
-			["Name"] = "DeBuffs Grow Right",
+			["Name"] = "Debuffs Grow Right",
+		},
+
+		["Statue"] = {
+			["Name"] = "Show |CFF00FF96Monk|r Statue",
+		},
+
+		["Totems"] = {
+			["Name"] = "Show Totems Bar",
 		},
 	},
 
@@ -328,16 +352,12 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Chat Background Alpha",
 		},
 
-		["BlockAddonAlert"] = {
-			["Name"] = "Block Addon Alerts",
-		},
-
 		["ChatItemLevel"] = {
-			["Name"] = "Show iLvl on ChatFrames",
+			["Name"] = "Show ItemLevel on ChatFrames",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Chat",
+			["Name"] = "|cff00cc4c".."Enable Chat",
 		},
 
 		["EnableFilter"] = {
@@ -390,7 +410,7 @@ _G.KkthnxUIConfig["enUS"] = {
 	-- Databars Local
 	["DataBars"] = {
 		["Enable"] = {
-			["Name"] = "Enable DataBars",
+			["Name"] = "|cff00cc4c".."Enable DataBars",
 		},
 
 		["ExperienceColor"] = {
@@ -473,7 +493,8 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Filger",
+			["Name"] = "|cff00cc4c".."Enable Filger",
+			["Desc"] = "Filger is a very minimal buff/debuff tracking module that will allow you to track buffs/debuffs on yourself, target, etc, and also can be used to track cooldowns."
 		},
 
 		["MaxTestIcon"] = {
@@ -498,6 +519,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		["AutoScale"] = {
 			["Name"] = "Auto Scale",
 		},
+
 		["ColorTextures"] = {
 			["Name"] = "Color 'Most' KkthnxUI Borders",
 		},
@@ -538,6 +560,10 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Show Welcome Message",
 		},
 
+		["VersionCheck"] = {
+			["Name"] = "|cff00cc4c".."Enable Version Checking",
+		},
+
 		["NumberPrefixStyle"] = {
 			["Name"] = "Unitframe Number Prefix Style",
 		},
@@ -558,7 +584,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Loot",
+			["Name"] = "|cff00cc4c".."Enable Loot",
 		},
 
 		["FastLoot"] = {
@@ -566,7 +592,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["GroupLoot"] = {
-			["Name"] = "Enable Group Loot",
+			["Name"] = "|cff00cc4c".."Enable Group Loot",
 		},
 	},
 
@@ -577,7 +603,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Minimap",
+			["Name"] = "|cff00cc4c".."Enable Minimap",
 		},
 
 		["ResetZoom"] = {
@@ -586,6 +612,10 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["ResetZoomTime"] = {
 			["Name"] = "Reset Zoom Time",
+		},
+
+		["ShowGarrison"] = {
+			["Name"] = "Show Garrison Button",
 		},
 
 		["ShowRecycleBin"] = {
@@ -667,120 +697,134 @@ _G.KkthnxUIConfig["enUS"] = {
 	},
 
 	-- Nameplates Local
-	["Nameplates"] = {
-		["GoodColor"] = {
-			["Name"] = "Good Threat Color",
+	["Nameplate"] = {
+		["AKSProgress"] = {
+			["Name"] = "Show AngryKeystones Progress",
 		},
 
-		["NearColor"] = {
-			["Name"] = "Near Threat Color",
+		["AuraSize"] = {
+			["Name"] = "Auras Size",
 		},
 
-		["BadColor"] = {
-			["Name"] = "Bad Threat Color",
-		},
-
-		["OffTankColor"] = {
-			["Name"] = "Off Tank Threat Color",
-		},
-
-		["Clamp"] = {
-			["Name"] = "Clamp Nameplates",
-			["Desc"] = "Clamp nameplates to the top of the screen when outside of view."
-		},
-
-		["ClassIcons"] = {
-			["Name"] = "Show Enemy Class Icons",
-			["Desc"] = "Show Enemy Class Icons to help better determine what class they are. |n|nThis is helpful for people who are colorblind!"
-		},
-
-		["Combat"] = {
-			["Name"] = "Show Nameplates In Combat",
+		["Distance"] = {
+			["Name"] = "Nameplete MaxDistance",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Nameplates",
+			["Name"] = "|cff00cc4c".."Enable Nameplates",
 		},
 
-		["HealthValue"] = {
+		["ExplosivesScale"] = {
+			["Name"] = "Scale Nameplates for Explosives",
+		},
+
+		["ClassIcon"] = {
+			["Name"] = "Show Hostile Player ClassIcons",
+		},
+
+		["HealerIcon"] = {
+			["Name"] = "Show Healer Icons In Arena/Battlegrounds",
+		},
+
+		["FullHealth"] = {
 			["Name"] = "Show Health Value",
 		},
 
-		["Height"] = {
-			["Name"] = "Nameplate Height",
+		["HealthTextSize"] = {
+			["Name"] = "HealthText FontSize",
 		},
 
-		["NonTargetAlpha"] = {
+		["InsideView"] = {
+			["Name"] = "Interacted Nameplate Stay Inside",
+		},
+
+		["MaxPowerGlow"] = {
+			["Name"] = "Fully Charged Glow",
+		},
+
+		["MinAlpha"] = {
 			["Name"] = "Non-Target Nameplate Alpha",
 		},
 
-		["QuestInfo"] = {
-			["Name"] = "Show Quest Info Icon",
+		["HostileCC"] = {
+			["Name"] = "Show Hostile ClassColor",
 		},
 
-		["SelectedScale"] = {
-			["Name"] = "Selected Nameplate Scale",
+		["FriendlyCC"] = {
+			["Name"] = "Show Friendly ClassColor",
 		},
 
-		["ShowFullHealth"] = {
-			["Name"] = "Show Full Health",
-		},
-
-		["Smooth"] = {
-			["Name"] = "Smooth Bars",
+		["DPSRevertThreat"] = {
+			["Name"] = "Revert Threat Color If Not Tank",
 		},
 
 		["TankMode"] = {
-			["Name"] = "Tank Mode",
+			["Name"] = "Force TankMode Colored",
 		},
 
-		["Threat"] = {
-			["Name"] = "Nameplate Threat",
+		["CustomUnitColor"] = {
+			["Name"] = "Colored Custom Units",
 		},
 
-		["TrackAuras"] = {
-			["Name"] = "Track Buffs/DeBuffs",
+		["MinScale"] = {
+			["Name"] = "Non-Target Nameplate Scale",
 		},
 
-		["Width"] = {
+		["NameTextSize"] = {
+			["Name"] = "NameText FontSize",
+		},
+
+		["NameplateClassPower"] = {
+			["Name"] = "Target Nameplate ClassPower",
+		},
+
+		["PPHeight"] = {
+			["Name"] = "Classpower/Healthbar Height",
+		},
+
+		["PPHideOOC"] = {
+			["Name"] = "Only Visible in Combat",
+		},
+
+		["PPIconSize"] = {
+			["Name"] = "PlayerPlate IconSize",
+		},
+
+		["PPPHeight"] = {
+			["Name"] = "PlayerPlate Powerbar Height",
+		},
+
+		["PPPowerText"] = {
+			["Name"] = "Show PlayerPlate Power Value",
+		},
+
+		["PlateHeight"] = {
+			["Name"] = "Nameplate Height",
+		},
+
+		["PlateWidth"] = {
 			["Name"] = "Nameplate Width",
 		},
 
-		["HealthbarColor"] = {
-			["Name"] = "Health Color Format",
+		["QuestIndicator"] = {
+			["Name"] = "Quest Progress Indicator",
 		},
 
-		["LevelFormat"] = {
-			["Name"] = "Level Format Display",
-		},
-
-		["TargetArrowMark"] = {
-			["Name"] = "Show Target Arrows",
-		},
-
-		["HealthFormat"] = {
-			["Name"] = "Health Format Display",
-		},
-
-		["ShowEnemyCombat"] = {
-			["Name"] = "Show Enemy Combat",
-		},
-
-		["ShowFriendlyCombat"] = {
-			["Name"] = "Show Friendly Combat",
-		},
-
-		["LoadDistance"] = {
-			["Name"] = "Load Distance",
-		},
-
-		["ShowHealPrediction"] = {
-			["Name"] = "Show Health Prediction Bars",
+		["ShowPlayerPlate"] = {
+			["Name"] = "Show Pensonal Resource",
 		},
 
 		["VerticalSpacing"] = {
-			["Name"] = "Vertical Spacing",
-		}
+			["Name"] = "Nameplate Vertical Spacing",
+		},
+
+		["MaxAuras"] = {
+			["Name"] = "Max Auras",
+		},
+
+		["TargetIndicator"] = {
+			["Name"] = "TargetIndicator Style",
+		},
 	},
 
 	-- Skins Local
@@ -833,7 +877,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["Castbars"] = {
-			["Name"] = "Enable Castbars",
+			["Name"] = "|cff00cc4c".."Enable Castbars",
 		},
 
 		["ClassResources"] = {
@@ -865,15 +909,15 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Unitframes",
-		},
-
-		["EnergyTick"] = {
-			["Name"] = "Show Energy/Mana Ticks",
+			["Name"] = "|cff00cc4c".."Enable Unitframes",
 		},
 
 		["GlobalCooldown"] = {
 			["Name"] = "Show Global Cooldown",
+		},
+
+		["ResurrectSound"] = {
+			["Name"] = "Sound Played When You Are Resurrected",
 		},
 
 		["HideTargetofTarget"] = {
@@ -980,7 +1024,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Arena",
+			["Name"] = "|cff00cc4c".."Enable Arena",
 		},
 
 		["Smooth"] = {
@@ -995,7 +1039,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Boss",
+			["Name"] = "|cff00cc4c".."Enable Boss",
 		},
 
 		["Smooth"] = {
@@ -1010,7 +1054,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Party",
+			["Name"] = "|cff00cc4c".."Enable Party",
 		},
 
 		["HorizonParty"] = {
@@ -1056,7 +1100,7 @@ _G.KkthnxUIConfig["enUS"] = {
 
 	["PulseCooldown"] = {
 		["Enable"] = {
-			["Name"] = "Enable PulseCooldown",
+			["Name"] = "|cff00cc4c".."Enable PulseCooldown",
 		},
 
 		["HoldTime"] = {
@@ -1079,7 +1123,7 @@ _G.KkthnxUIConfig["enUS"] = {
 	-- QuestNotifier Local
 	["QuestNotifier"] = {
 		["Enable"] = {
-			["Name"] = "Enable QuestNotifier",
+			["Name"] = "|cff00cc4c".."Enable QuestNotifier",
 		},
 
 		["QuestProgress"] = {
@@ -1107,6 +1151,10 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Reverse Raid Frame Growth",
 		},
 
+		["ShowHealPrediction"] = {
+			["Name"] = "Show HealPrediction Statusbars",
+		},
+
 		["HorizonRaid"] = {
 			["Name"] = "Horizontal Raid Frames",
 		},
@@ -1123,6 +1171,10 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Show AuraWatch Icons",
 		},
 
+		["AuraDebuffs"] = {
+			["Name"] = "Show AuraDebuff Icons",
+		},
+
 		["AuraWatchIconSize"] = {
 			["Name"] = "AuraWatch Icon Size",
 		},
@@ -1132,7 +1184,7 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Raidframes",
+			["Name"] = "|cff00cc4c".."Enable Raidframes",
 		},
 
 		["Height"] = {

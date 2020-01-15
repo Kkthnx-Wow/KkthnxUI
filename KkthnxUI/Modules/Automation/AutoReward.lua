@@ -9,11 +9,7 @@ local GetQuestItemInfo = _G.GetQuestItemInfo
 local GetItemInfo = _G.GetItemInfo
 local GetNumQuestChoices = _G.GetNumQuestChoices
 
-function Module:QUEST_COMPLETE()
-	if not C["Automation"].AutoReward then
-		return
-	end
-
+local function SetupAutoReward(self)
 	local firstItem = _G.QuestInfoRewardsFrameQuestInfoItem1
 	if not firstItem then
 		return
@@ -23,14 +19,13 @@ function Module:QUEST_COMPLETE()
 	local numQuests = GetNumQuestChoices()
 
 	if not self.QuestRewardGoldIconFrame then
-		local frame = CreateFrame("Frame", nil, firstItem)
-		frame:SetFrameStrata("HIGH")
-		frame:SetSize(20, 20)
-		frame.Icon = frame:CreateTexture(nil, "OVERLAY")
-		frame.Icon:SetAllPoints(frame)
-		frame.Icon:SetTexture("Interface\\MONEYFRAME\\UI-GoldIcon")
-
-		self.QuestRewardGoldIconFrame = frame
+		print(self)
+		self.QuestRewardGoldIconFrame = CreateFrame("Frame", nil, firstItem)
+		self.QuestRewardGoldIconFrame:SetFrameStrata("HIGH")
+		self.QuestRewardGoldIconFrame:SetSize(20, 20)
+		self.QuestRewardGoldIconFrame.Icon = self.QuestRewardGoldIconFrame:CreateTexture(nil, "OVERLAY")
+		self.QuestRewardGoldIconFrame.Icon:SetAllPoints(self.QuestRewardGoldIconFrame)
+		self.QuestRewardGoldIconFrame.Icon:SetTexture("Interface\\MONEYFRAME\\UI-GoldIcon")
 	end
 
 	self.QuestRewardGoldIconFrame:Hide()
@@ -66,5 +61,5 @@ function Module:CreateAutoReward()
 		return
 	end
 
-	K:RegisterEvent("QUEST_COMPLETE", self.QUEST_COMPLETE)
+	K:RegisterEvent("QUEST_COMPLETE", SetupAutoReward)
 end

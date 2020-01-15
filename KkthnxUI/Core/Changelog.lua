@@ -3,23 +3,16 @@ local Module = K:NewModule("Changelog")
 
 local ChangeLogData = {
 	"Changes:",
-	"• Add Arena Frames",
-	"• Add Focus and FocusTarget frames. Update oUF",
-	"• Add Threat Back To Nameplates",
-	"• Add Threat Back to Player, Target, ToT, Pet, Party and Raid",
-	"• Cleanup and handle skins loading differently for addons",
-	"• Cleanup settings. Fix error when tracking honor",
-	"• Finish copychat rewrite, Add back minimap button",
-	"• Fix an error on new char load",
-	"• Overhaul Party / Raid Frames",
-	"• PowerPrediction and Classpower updates",
-	"• Refactor MicroMenu",
-	"• Toggle Inventory ItemGlow and Update Locales",
-	"• Update Bagbar code",
-	"• Update Taint Fixes",
-	"• Update and Fix QuestNotifier",
+	"• Refactored Raidframes",
+	"• Fixed taint in actionbars",
+	"• Refactored Nameplates",
+	"• Various code cleanups",
+	"• Performance improvements",
+	"• Various libraries updated",
+	"• Stack splitter added to bags",
+
 	" ",
-	"• This update consists of 34 commits, 71,060 additions and 6,656 deletions",
+	--"• This update consists of 34 commits, 71,060 additions and 6,656 deletions",
 
     -- Important Notes We Want The User To Know!
     " ",

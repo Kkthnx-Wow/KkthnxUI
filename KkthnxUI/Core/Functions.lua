@@ -168,13 +168,14 @@ end
 
 function K.UnitColor(unit)
 	local r, g, b = 1, 1, 1
+
 	if UnitIsPlayer(unit) then
 		local class = select(2, UnitClass(unit))
 		if class then
 			r, g, b = K.ColorClass(class)
 		end
 	elseif UnitIsTapDenied(unit) then
-		r, g, b = .6, .6, .6
+		r, g, b = 0.6, 0.6, 0.6
 	else
 		local reaction = UnitReaction(unit, "player")
 		if reaction then
@@ -331,7 +332,11 @@ end
 -- RoleUpdater
 local function CheckRole()
 	local tree = GetSpecialization()
-	if not tree then return end
+	if not tree then
+		return
+	end
+
+	K.Specialization = tree
 	local _, _, _, _, role, stat = GetSpecializationInfo(tree)
 	if role == "TANK" then
 		K.Role = "Tank"
@@ -349,18 +354,19 @@ K:RegisterEvent("PLAYER_LOGIN", CheckRole)
 K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
 
 -- Chat channel check
-function K.CheckChat()
+function K.CheckChat(warning)
 	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
-			return "INSTANCE_CHAT"
+		return "INSTANCE_CHAT"
+	elseif IsInRaid(LE_PARTY_CATEGORY_HOME) then
+		if warning and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or IsEveryoneAssistant()) then
+			return "RAID_WARNING"
+		else
+			return "RAID"
+		end
 	elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
-			if IsInRaid() then
-				return "RAID"
-			else
-				return "PARTY"
-			end
-	else
-		return "SAY"
+		return "PARTY"
 	end
+	return "SAY"
 end
 
 -- Tooltip code ripped from StatBlockCore by Funkydude
@@ -537,28 +543,28 @@ function K.HideInterfaceOption(self)
 	end
 
 	self:SetAlpha(0)
-	self:SetScale(.0001)
+	self:SetScale(0.0001)
 end
 
--- Format seconds to min/hour/day
-local Day, Hour, Minute = 86400, 3600, 60
+-- Timer Format
+local day, hour, minute = 86400, 3600, 60
 function K.FormatTime(s)
-	if s == math_huge then
-		return
-	end
-
-	if s >= Day then
-		return string_format("%d"..K.MyClassColor.."d", s / Day), s % Day
-	elseif s >= Hour then
-		return string_format("%d"..K.MyClassColor.."h", s / Hour), s % Hour
-	elseif s >= Minute then
-		return string_format("%d"..K.MyClassColor.."m", s / Minute), s % Minute
+	if s >= day then
+		return string_format("%d"..K.MyClassColor.."d", s/day), s%day
+	elseif s >= hour then
+		return string_format("%d"..K.MyClassColor.."h", s/hour), s%hour
+	elseif s >= minute then
+		return string_format("%d"..K.MyClassColor.."m", s/minute), s%minute
 	elseif s > 10 then
 		return string_format("|cffcccc33%d|r", s), s - math_floor(s)
 	elseif s > 3 then
 		return string_format("|cffffff00%d|r", s), s - math_floor(s)
 	else
-		return string_format("|cffff0000%.1f|r", s), s - string_format("%.1f", s)
+		if C["ActionBar"].DecimalCD then
+			return string_format("|cffff0000%.1f|r", s), s - string_format("%.1f", s)
+		else
+			return string_format("|cffff0000%d|r", s + .5), s - math_floor(s)
+		end
 	end
 end
 

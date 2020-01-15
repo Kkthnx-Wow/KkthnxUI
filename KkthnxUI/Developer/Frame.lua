@@ -27,22 +27,21 @@ local UNKNOWN = _G.UNKNOWN
 local UnitGUID = _G.UnitGUID
 local UnitName = _G.UnitName
 
---[[
-	KkthnxUI DevTools:
-
-	/getenc, get selected encounters info
-	/getid, get instance id
-	/getnpc, get npc name and id
-	/kf, get frame names
-	/kg, show grid on WorldFrame
-	/ks, get spell name and description
-	/kt, get gametooltip names
-]]
+-- KkthnxUI DevTools:
+-- /getenc, get selected encounters info
+-- /getid, get instance id
+-- /getnpc, get npc name and id
+-- /kf, get frame names
+-- /kg, show grid on WorldFrame
+-- /ks, get spell name and description
+-- /kt, get gametooltip names
 
 local dev = {
+	"ForumTroll",
 	"Kkthnx",
-	"ForumTroll"
+	"Slimfast"
 }
+
 local function isDeveloper()
 	for _, name in pairs(dev) do
 		if K.Name == name then
@@ -126,7 +125,7 @@ do
 	C_ChatInfo_RegisterAddonMessagePrefix("KkthnxUIFVC")
 
 	local function PrintVerCheck()
-		print(K.InfoColor.."------------------------")
+		print("------------------------")
 		for name, version in pairs(versionList) do
 			print(name.." "..version)
 		end

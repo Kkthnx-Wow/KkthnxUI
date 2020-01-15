@@ -1,19 +1,17 @@
 -- Sourced: Tukui (Tukz)
 -- Edited: KkthnxUI (Kkthnx)
 
--- Lua API
 local _G = _G
-local math_floor = math.floor
-local select = select
-local string_find = string.find
-local string_lower = string.lower
-local table_insert = table.insert
-local table_sort = table.sort
-local tonumber = tonumber
-local type = type
-local unpack = unpack
+local math_floor = _G.math.floor
+local select = _G.select
+local string_find = _G.string.find
+local string_lower = _G.string.lower
+local table_insert = _G.table.insert
+local table_sort = _G.table.sort
+local tonumber = _G.tonumber
+local type = _G.type
+local unpack = _G.unpack
 
--- Wow API
 local APPLY = _G.APPLY
 local CLOSE = _G.CLOSE
 local COLOR = _G.COLOR
@@ -23,13 +21,14 @@ local GameTooltip = _G.GameTooltip
 local GetLocale = _G.GetLocale
 local GetRealmName = _G.GetRealmName
 local HideUIPanel = _G.HideUIPanel
+local PlaySound = _G.PlaySound
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local ReloadUI = _G.ReloadUI
 local ShowUIPanel = _G.ShowUIPanel
 local UIParent = _G.UIParent
+local UNKNOWN = _G.UNKNOWN
 local UnitClass = _G.UnitClass
 local UnitName = _G.UnitName
-local UNKNOWN = _G.UNKNOWN
 
 local KkthnxUIConfig = CreateFrame("Frame", "KkthnxUIConfig", UIParent)
 KkthnxUIConfig.Functions = {}
@@ -258,14 +257,14 @@ end
 
 local function ButtonOnClick(self)
 	if self.Toggled then
-		self.Tex:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
-		self.Tex:SetAlpha(0)
+		self.Tex:SetTexture(nil)
 		self.Toggled = false
+		self.Label:SetTextColor(128/255, 128/255, 128/255)
 		PlaySound(857)
 	else
 		self.Tex:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check")
-		self.Tex:SetAlpha(1)
 		self.Toggled = true
+		self.Label:SetTextColor(255/255, 255/255, 255/255)
 		PlaySound(856)
 	end
 
@@ -275,13 +274,13 @@ end
 local function ButtonCheck(self)
 	self.Toggled = true
 	self.Tex:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check")
-	self.Tex:SetAlpha(1)
+	self.Label:SetTextColor(255/255, 255/255, 255/255)
 end
 
 local function ButtonUncheck(self)
 	self.Toggled = false
-	self.Tex:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
-	self.Tex:SetAlpha(0)
+	self.Tex:SetTexture(nil)
+	self.Label:SetTextColor(128/255, 128/255, 128/255)
 end
 
 local function ResetColor(self)
@@ -926,7 +925,6 @@ local function ShowGroup(group)
 		or group
 		KkthnxUIConfigFrameTitle.Text:SetText(msg)
 	end
-	-- KkthnxUIConfigFrameTitle.Text:SetText(KkthnxUIConfig[Locale]["GroupNames"][group] or group)
 	KkthnxUIConfigFrameTitle.Text:SetTextColor(68 / 255, 136 / 255, 255 / 255)
 
 	if GroupPages[group].Slider then
@@ -1010,6 +1008,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	CloseButton:SkinButton()
 	CloseButton:SetSize(624/3, 22)
 	CloseButton:SetScript("OnClick", function()
+		PlaySound(604)
 		ConfigFrame:Hide()
 	end)
 	CloseButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
@@ -1194,7 +1193,6 @@ function KkthnxUIConfig:CreateConfigWindow()
 				or Group
 				Button.Text:SetText(msg)
 			end
-			-- Button.Text:SetText(KkthnxUIConfig[Locale]["GroupNames"][Group] or Group)
 
 			Button.Active = Button:CreateTexture(nil, "ARTWORK")
 			Button.Active:SetAlpha(0.3)
@@ -1235,12 +1233,17 @@ do
 	SlashCmdList["CONFIG"] = function()
 		if (not KkthnxUIConfigFrame) then
 			KkthnxUIConfig:CreateConfigWindow()
+			PlaySound(603)
 		end
+
 		if KkthnxUIConfigFrame:IsVisible() then
 			KkthnxUIConfigFrame:Hide()
+			PlaySound(604)
 		else
 			KkthnxUIConfigFrame:Show()
+			PlaySound(603)
 		end
+
 		HideUIPanel(GameMenuFrame)
 	end
 	SLASH_CONFIG1 = "/config"

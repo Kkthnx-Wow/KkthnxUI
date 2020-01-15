@@ -1,219 +1,193 @@
 local K = unpack(select(2, ...))
 
 local _G = _G
-local print = _G.print
 
-local GetSpellInfo = _G.GetSpellInfo
+local C_EncounterJournal_GetSectionInfo = _G.C_EncounterJournal.GetSectionInfo
 
-local function SpellName(id)
-	local name = GetSpellInfo(id)
-	if not name then
-		print("|cff3c9bedKkthnxUI:|r SpellID is not valid: " .. id .. ". Please check for an updated version, if none exists report to Kkthnx in Discord.")
-		return "Impale"
-	else
-		return name
-	end
+-- Spell Whitelist
+K.NameplateWhiteList = {
+	-- Buffs
+	[642] = true, -- Divine Shield
+	[1022] = true, -- Blessing of Protection
+	[23920] = true, -- Spell Reflection
+	[45438] = true, -- Ice Block
+	[186265] = true, -- Aspect of the Turtle
+
+	-- Debuffs
+	[2094] = true, -- Blind
+	[117405] = true, -- Binding Shot
+	[127797] = true, -- Ursol's Vortex
+	[20549] = true, -- War Stomp
+	[107079] = true, -- Quaking Palm
+	[272295] = true, -- Bounty Hunted
+
+	-- Dungeons
+	[283640] = true, -- Rattled
+	[293724] = true, -- Shield Generator
+	[298602] = true, -- Smoke Cloud
+
+	[258317] = true, -- Riot Shield
+	[257899] = true, -- Painful Motivation, Freedom Town
+	[268008] = true, -- Viper temptation, temple
+	[260792] = true, -- Dust cloud, temple
+	[260416] = true, -- Metamorphosis
+	[267981] = true, -- Aura of Protection, Temple of Storms
+	[274631] = true, -- Lesser Iron Wall Blessing, Temple of Storms
+	[267901] = true, -- Iron Wall Blessing, Temple of Storms
+	[276767] = true, -- Devouring the Nether, Temple of Storms
+	[268212] = true, -- Small Enchanted Enchantment, Temple of the Storm
+	[268186] = true, -- Enchanted Enchantment, Temple of the Storm
+	[263246] = true, -- Shield of Lightning, Temple of Storms
+	[263276] = true, -- Cover, mine
+	[257597] = true, -- Azerite infusion, mining area
+	[269302] = true, -- Venomblade, Mine
+	[260805] = true, -- Rainbow of Focus, Manor
+	[264027] = true, -- Enchanted Candle, Manor
+	[258653] = true, -- Psionic Barrier, Atadasa
+	[255960] = true, -- Greater Voodoo, Atadasa
+	[255967] = true,
+	[255968] = true,
+	[255970] = true,
+	[255972] = true,
+	[228318] = true, -- Provoked
+	[226510] = true, -- Blood pool
+	[277242] = true, -- Symbiosis
+	[290026] = true, -- Queen's Decree: Backlash
+	[290027] = true,
+	[302418] = true, -- Queen's Decree: Unstoppable
+	[302419] = true, -- Nether Horizon
+	[302421] = true, -- Queen's Decree: Hidden
+
+	-- Raids
+	[296389] = true, -- Upsurge, Azshara's Glow
+	[296650] = true, -- Hardened Carapace, Lord Ashvan
+	[296914] = true, -- Growing Chaos, Ogozoia
+	[282209] = true, -- Predator Mark
+	[296704] = true, -- Checks and balances, Queen's court
+	[295099] = true, -- Penetrating the Dark, Zakul
+	[300428] = true, -- Enrage, Azshara
+	[297912] = true, -- Tormented
+	[300551] = true, -- Enchantment
+
+	[287693] = true, -- Recessive connection, Unat
+	[282741] = true, -- Shadow Shell
+	[285333] = true, -- Unnatural regeneration
+	[285642] = true, -- Gift of Enzos: Chaos
+
+	[283619] = true, -- Tide of Light, Warrior of Light
+	[284468] = true, -- Aura of Retribution
+	[283933] = true, -- Justice trial
+	[284593] = true, -- Penance
+	[283583] = true, -- Dedication
+	[288294] = true, -- Holy Blessing
+	[288298] = true, -- Self-discipline
+	[287469] = true, -- Ridicule and prayer
+	[287439] = true, -- Divine Hammer
+	[286436] = true, -- Emerald Storm, Jadefire Master
+	[286425] = true, -- Flame shield
+	[287652] = true, -- Overload
+	[282098] = true, -- Gift of the Wind, Chosen Order
+	[287650] = true, -- Boiling Fury
+	[282736] = true, -- Divine Wrath
+	[285945] = true, -- Rapid wind
+	[286007] = true, -- Dragon Swarm Hunter
+	[289162] = true, -- Relentless Immortal, King Raskaja
+	[288117] = true, -- Imbued Spirit
+	[287297] = true, -- Winding up, master craftsman
+	[286558] = true, -- Tide Mask, Storm Wall
+	[287995] = true, -- Current shield
+	[284997] = true, -- Covered Fist
+	[287322] = true, -- Ice barrier, Jaina
+
+	[276093] = true, -- Scarlet Mirror, Zul
+	[276299] = true, -- Congestion outbreak, Zul
+	[276434] = true, -- Rotten Flesh, Zul
+	[276900] = true, -- Critical Blaze, Mithrax the Breaker
+	[263482] = true, -- Restructuring shock, Gohorn
+	[263284] = true, -- Blood Power, Gohorn
+	[268074] = true, -- Dark Intent, Gohorn
+	[275204] = true, -- Unstoppable corruption, Gohorn
+
+	[207327] = true, -- Purification and Destruction, Cui Li Aix
+	[236513] = true, -- Boneguard Armor, Agglomerate
+	[240315] = true, -- Hardened Shell, Hayattan Egg Shield
+	[241521] = true, -- Torture Shard
+	[250074] = true, -- Purification, Aionar
+	[250555] = true, -- Fel Shield, Aionar
+	[246504] = true, -- Program launch, Gingaros
+	[249863] = true, -- Titan Face, Destruction Witch Club
+	[244903] = true, -- Catalysis, Agramar
+	[247091] = true, -- Catalysis, Agrammar
+	[253021] = true, -- Fate, Argus the Desolate
+	[255496] = true, -- Sword of the Universe, Argus the Desolate
+	[255478] = true, -- Eternal Blade, Argus the Desolate
+	[255418] = true, -- Physically Vulnerable, Argus the Silent
+	[255425] = true, -- Frost is vulnerable, Argus the Silent
+	[255430] = true, -- Shadow is vulnerable, Argus the Silent
+	[255429] = true, -- Flames are vulnerable, Argus the Silent
+	[255419] = true, -- Holy and Vulnerable, Argus the Silent
+	[255422] = true, -- Naturally Vulnerable, Argus the Silent
+	[255433] = true, -- Arcane Vulnerable, Argus the Silent
+}
+
+-- Spell Blacklist
+K.NameplateBlackList = {
+	[15407]		= true, -- Mental flogging
+	-- [1490]	= true, -- Chaos Branding
+	-- [113746]	= true, -- Mysterious palm
+	[51714]		= true, -- Sharp frost
+	[199721]	= true, -- Rotten Aura
+	[214968]	= true, -- Necro's Aura
+	[214975]	= true, -- Heart Suppression Aura
+	[273977]	= true, -- Dead Grip
+	[276919]	= true, -- Under pressure
+	[206930]	= true, -- Heart blow
+}
+
+-- ID from Dungeon Journal
+-- The number is the GUID. After selecting the target, enter /getnpc to get info
+local function GetSectionInfo(id)
+	return C_EncounterJournal_GetSectionInfo(id).title
 end
 
-K.DebuffWhiteList = {
-	-- Death Knight
-	[SpellName(108194)] = true,	-- Asphyxiate
-	[SpellName(47476)] = true, -- Strangulate
-	[SpellName(55078)] = true, -- Blood Plague
-	[SpellName(55095)] = true, -- Frost Fever
-	-- Druid
-	[SpellName(33786)] = true, -- Cyclone
-	[SpellName(339)] = true, -- Entangling Roots
-	[SpellName(164812)] = true, -- Moonfire
-	[SpellName(164815)] = true,	-- Sunfire
-	[SpellName(58180)] = true, -- Infected Wounds
-	[SpellName(155722)] = true,	-- Rake
-	[SpellName(1079)] = true, -- Rip
-	[SpellName(127797)] = true,	-- Ursol's Vortex
-	-- Hunter
-	[SpellName(131894)] = true,	-- A Murder Of Crows
-	[SpellName(13812)] = true,	-- Explosive Trap
-	[SpellName(187650)] = true,	-- Freezing Trap
-	[SpellName(194279)] = true,	-- Caltrops
-	[SpellName(19577)] = true,	-- Concussive Shot
-	[SpellName(217200)] = true,	-- Barbed Shot
-	[SpellName(3355)] = true,	-- Freezing Trap
-	[SpellName(5116)] = true,	-- Concussive Shot
-	[SpellName(117405)] = true,	-- Binding Shot
-	-- Mage
-	[SpellName(118)] = true, -- Polymorph
-	[SpellName(31661)] = true, -- Dragon's Breath
-	[SpellName(122)] = true, -- Frost Nova
-	[SpellName(44457)] = true, -- Living Bomb
-	[SpellName(114923)] = true,	-- Nether Tempest
-	[SpellName(120)] = true, -- Cone of Cold
-	-- Monk
-	[SpellName(115078)] = true,	-- Paralysis
-	-- Paladin
-	[SpellName(20066)] = true,	-- Repentance
-	[SpellName(853)] = true, -- Hammer of Justice
-	[SpellName(183218)] = true,	-- Hand of Hindrance
-	-- Priest
-	[SpellName(204213)] = true,	-- Purge the Wicked
-	[SpellName(9484)] = true, -- Shackle Undead
-	[SpellName(8122)] = true, -- Psychic Scream
-	[SpellName(64044)] = true, -- Psychic Horror
-	[SpellName(15487)] = true, -- Silence
-	[SpellName(589)] = true, -- Shadow Word: Pain
-	[SpellName(34914)] = true,	-- Vampiric Touch
-	-- Rogue
-	[SpellName(6770)] = true, -- Sap
-	[SpellName(2094)] = true, -- Blind
-	[SpellName(1776)] = true, -- Gouge
-	-- Shaman
-	[SpellName(51514)] = true,	-- Hex
-	[SpellName(3600)] = true,	-- Earthbind
-	[SpellName(196840)] = true,	-- Frost Shock
-	[SpellName(188389)] = true,	-- Flame Shock
-	[SpellName(197209)] = true,	-- Lightning Rod
-	-- Warlock
-	[SpellName(710)] = true, -- Banish
-	[SpellName(6789)] = true, -- Mortal Coil
-	[SpellName(5782)] = true, -- Fear
-	[SpellName(5484)] = true, -- Howl of Terror
-	[SpellName(6358)] = true, -- Seduction
-	[SpellName(30283)] = true, -- Shadowfury
-	[SpellName(603)] = true, -- Doom
-	[SpellName(980)] = true, -- Agony
-	[SpellName(146739)] = true,	-- Corruption
-	[SpellName(48181)] = true, -- Haunt
-	[SpellName(348)] = true, -- Immolate
-	[SpellName(30108)] = true, -- Unstable Affliction
-	-- Warrior
-	[SpellName(5246)] = true, -- Intimidating Shout
-	[SpellName(132168)] = true,	-- Shockwave
-	[SpellName(115767)] = true,	-- Deep Wounds
-	-- Racial
-	[SpellName(20549)] = true, -- War Stomp (Tauren)
-	[SpellName(107079)] = true,	-- Quaking Palm (Pandaren)
-	-- Misc
-	[SpellName(272295)] = true, -- Bounty Hunted
+-- Custom Special Units
+K.NameplateCustomUnits = {
+	[120651] = true, -- Explosives
+	[141851] = true, -- Spawn of G'huun
+	[153377] = true, -- Goop
+	[155432] = true, -- Enchanted Emissary <The Queen's Handmaiden>
+	[155433] = true, -- Void-Touched Emissary <The Queen's Handmaiden>
+	[155434] = true, -- Emissary of the Tides <The Queen's Handmaiden>
+
+	[GetSectionInfo(14544)] = true,	-- Halegarh Mist Watcher
+	[GetSectionInfo(14595)] = true,	-- Abyss Stalker
+	[GetSectionInfo(16588)] = true,	-- Screaming Antitongue
+	[GetSectionInfo(16350)] = true,	-- Shadow of Varimathras
+
+	[GetSectionInfo(18540)] = true,	-- Nazmani Blood Warlock
+	[GetSectionInfo(18104)] = true,	-- Scattered Tentacles
+	[GetSectionInfo(18232)] = true,	-- Ashvan Gunner
+	[GetSectionInfo(18499)] = true,	-- Clotted blood
+	[GetSectionInfo(18078)] = true,	-- Spider Weaver
+	[GetSectionInfo(18007)] = true,	-- Plague Polymer
+	[GetSectionInfo(18053)] = true,	-- Soul thorns
+	[GetSectionInfo(18312)] = true,	-- Blood beast
+	[GetSectionInfo(18890)] = true,	-- Charzax
+	[GetSectionInfo(18321)] = true,	-- Entwined Snake Swarm
+	[GetSectionInfo(18271)] = true,	-- Burst Totem
+	[GetSectionInfo(17026)] = true,	-- Vertigo wine barrel
+	[GetSectionInfo(19656)] = true,	-- Zombie Dust Totem
+	[GetSectionInfo(19393)] = true,	-- Snowfury Soul
+	[GetSectionInfo(19279)] = true,	-- Charming Siren
+	[GetSectionInfo(19019)] = true,	-- Greedy hunter
 }
 
-K.DebuffBlackList = {
-	-- [SpellName(spellID)] = true,	-- Spell Name
-}
-
-K.BuffWhiteList = {
-	-- Demon Hunter
-	[SpellName(203819)] = true,	-- Demon Spikes
-	[SpellName(187827)] = true,	-- Metamorphosis (Vengeance)
-	[SpellName(212800)] = true,	-- Blur
-	[SpellName(196555)] = true,	-- Netherwalk
-	[SpellName(209426)] = true,	-- Darkness
-	-- Druid
-	[SpellName(22842)] = true,	-- Frenzied Regeneration
-	[SpellName(192081)] = true,	-- Ironfur
-	[SpellName(61336)] = true,	-- Survival Instincts
-	[SpellName(22812)] = true,	-- Barkskin
-	[SpellName(213680)] = true,	-- Guardian of Elune
-	[SpellName(774)] = true,	-- Rejuvenation
-	[SpellName(8936)] = true,	-- Regrowth
-	[SpellName(33763)] = true,	-- Lifebloom
-	[SpellName(188550)] = true,	-- Lifebloom (Hfc 4-Set Bonus)
-	[SpellName(48438)] = true,	-- Wild Growth
-	[SpellName(102342)] = true,	-- Ironbark
-	[SpellName(155777)] = true,	-- Rejuvenation (Germination)
-	[SpellName(102351)] = true,	-- Cenarion Ward
-	[SpellName(102352)] = true,	-- Cenarion Ward Proc
-	[SpellName(77761)] = true,	-- Stampeding Roar
-	-- Hunter
-	[SpellName(190931)] = true,	-- Mongoose Fury
-	[SpellName(186257)] = true,	-- Aspect of the Cheetah
-	[SpellName(186258)] = true,	-- Aspect of the Cheetah
-	[SpellName(186289)] = true,	-- Aspect of the Eagle
-	[SpellName(186265)] = true,	-- Aspect of the Turtle
-	[SpellName(34477)] = true,	-- Misdirection
-	-- Mage
-	[SpellName(108839)] = true,	-- Ice Floes
-	[SpellName(108843)] = true,	-- Blazing Speed
-	[SpellName(116014)] = true,	-- Rune of Power
-	[SpellName(116267)] = true,	-- Incanter's Flow
-	[SpellName(198924)] = true,	-- Quickening
-	[SpellName(205766)] = true,	-- Bone Chilling
-	[SpellName(130)] = true, -- Slow Fall
-	[SpellName(45438)] = true, -- Ice Block
-	-- Monk
-	[SpellName(116680)] = true,	-- Thunder Focus Tea
-	[SpellName(116847)] = true,	-- Rushing Jade Wind
-	[SpellName(119085)] = true,	-- Chi Torpedo
-	[SpellName(120954)] = true,	-- Fortifying Brew
-	[SpellName(122278)] = true,	-- Dampen Harm
-	[SpellName(122783)] = true,	-- Diffuse Magic
-	[SpellName(196725)] = true,	-- Refreshing Jade Wind
-	[SpellName(215479)] = true,	-- Ironskin Brew
-	[SpellName(116841)] = true,	-- Tiger's Lust
-	[SpellName(116844)] = true,	-- Ring of Peace
-	[SpellName(116849)] = true,	-- Life Cocoon
-	[SpellName(119611)] = true,	-- Renewing Mist
-	[SpellName(124081)] = true,	-- Zen Sphere
-	[SpellName(124682)] = true,	-- Enveloping Mist
-	[SpellName(191840)] = true,	-- Essence Font
-	-- Paladin
-	[SpellName(184662)] = true,	-- Shield of Vengeance
-	[SpellName(53563)] = true,	-- Beacon of Light
-	[SpellName(156910)] = true,	-- Beacon of Faith
-	[SpellName(6940)] = true, -- Blessing of Sacrifice
-	[SpellName(1044)] = true, -- Blessing of Freedom
-	[SpellName(1022)] = true, -- Bl essing of Protection
-	[SpellName(642)] = true, -- Divine Shield
-	-- Priest
-	[SpellName(17)] = true, -- Power Word: Shield
-	[SpellName(81782)] = true, -- Power Word: Barrier
-	[SpellName(139)] = true, -- Renew
-	[SpellName(33206)] = true, -- Pain Suppression
-	[SpellName(41635)] = true, -- Prayer of Mending
-	[SpellName(47788)] = true, -- Guardian Spirit
-	[SpellName(114908)] = true, -- Spirit Shell Shield
-	[SpellName(152118)] = true,	-- Clarity of Will
-	[SpellName(121557)] = true,	-- Angelic Feather
-	[SpellName(65081)] = true, -- Body and Soul
-	[SpellName(214121)] = true,	-- Body and Mind
-	[SpellName(77489)] = true, -- Echo of Light
-	[SpellName(64901)] = true, -- Symbol of Hope
-	[SpellName(194384)] = true,	-- Attonement
-	-- Rogue
-	[SpellName(5171)] = true,	-- Slice and Dice
-	[SpellName(185311)] = true,	-- Crimson Vial
-	[SpellName(193538)] = true,	-- Alacrity
-	[SpellName(193356)] = true,	-- Broadsides
-	[SpellName(199600)] = true,	-- Buried Treasure
-	[SpellName(193358)] = true,	-- Grand Melee
-	[SpellName(199603)] = true,	-- Jolly Roger
-	[SpellName(193357)] = true,	-- Shark Infested Waters
-	[SpellName(193359)] = true,	-- True Bearing
-	-- Shaman
-	[SpellName(61295)] = true,	-- Riptide
-	-- Warlock
-	[SpellName(5697)] = true,	-- Unending Breath
-	[SpellName(20707)] = true,	-- Soulstone
-	-- Warrior
-	[SpellName(871)] = true,	-- Shield Wall
-	[SpellName(1719)] = true,	-- Battle Cry
-	[SpellName(12975)] = true,	-- Last Stand
-	[SpellName(18499)] = true,	-- Berserker Rage
-	[SpellName(23920)] = true,	-- Spell Reflection
-	[SpellName(107574)] = true,	-- Avatar
-	[SpellName(114030)] = true,	-- Vigilance
-	[SpellName(132404)] = true,	-- Shield Block
-	[SpellName(184362)] = true,	-- Enrage
-	[SpellName(184364)] = true,	-- Enraged Regeneration
-	[SpellName(190456)] = true,	-- Ignore Pain
-	[SpellName(202539)] = true,	-- Frenzy
-	[SpellName(202602)] = true,	-- Into the Fray
-	[SpellName(206333)] = true,	-- Taste for Blood
-	[SpellName(227744)] = true,	-- Ravager
-}
-
-K.BuffBlackList = {
-	-- [SpellName(spellID)] = true,	-- Spell Name
-}
-
-K.PlateBlacklist = {
-	-- ["Spell Name"] = true,
+-- Display the unit of energy value
+K.NameplateShowPowerList = {
+	[155432] = true, -- Magic messenger
+	[152703] = true, -- Walking Shocker X1, Difficult McCargon
+	[GetSectionInfo(13015)] = true,	-- Cleaner
+	[GetSectionInfo(15903)] = true,	-- Embers of Tessarac
+	[GetSectionInfo(18540)] = true,	-- Nazmani Blood Warlock
+	[GetSectionInfo(18539)] = true,	-- Crusher
 }

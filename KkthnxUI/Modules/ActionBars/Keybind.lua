@@ -28,7 +28,7 @@ local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
 local bind, localmacros, frame = CreateFrame("Frame", "KkthnxUI_HoverBind", UIParent), 0
 SlashCmdList["KKUI_KEYBINDS"] = function()
 	if InCombatLockdown() then
-		print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
+		K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
 		return
 	end
 
@@ -67,7 +67,9 @@ SlashCmdList["KKUI_KEYBINDS"] = function()
 		end)
 
 		function bind:Update(b, spellmacro)
-			if not self.enabled or InCombatLockdown() then return end
+			if not self.enabled or InCombatLockdown() then
+				return
+			end
 
 			self.button = b
 			self.spellmacro = spellmacro
@@ -202,7 +204,7 @@ SlashCmdList["KKUI_KEYBINDS"] = function()
 				for i = 1, #self.button.bindings do
 					SetBinding(self.button.bindings[i])
 				end
-				print("|cffffff00"..UNBIND.."|r".." |cff00ff00"..self.button.name.."|r.")
+				K.Print("|cffffff00"..UNBIND.."|r".." |cff00ff00"..self.button.name.."|r.")
 				self:Update(self.button, self.spellmacro)
 				if self.spellmacro ~= "MACRO" then
 					GameTooltip:Hide()
@@ -241,7 +243,7 @@ SlashCmdList["KKUI_KEYBINDS"] = function()
 				SetBinding(alt..ctrl..shift..key, self.spellmacro.." "..self.button.name)
 			end
 
-			print(alt..ctrl..shift..key.." |cff00ff00"..KEY1.."|r "..self.button.name..".")
+			K.Print(alt..ctrl..shift..key.." |cff00ff00"..KEY1.."|r "..self.button.name..".")
 			self:Update(self.button, self.spellmacro)
 
 			if self.spellmacro ~= "MACRO" then
@@ -263,10 +265,10 @@ SlashCmdList["KKUI_KEYBINDS"] = function()
 		function bind:Deactivate(save)
 			if save then
 				SaveBindings(KkthnxUIData[GetRealmName()][UnitName("player")].BindType)
-				print("|cffffff00"..KEY_BOUND.."|r")
+				K.Print("|cffffff00"..KEY_BOUND.."|r")
 			else
 				LoadBindings(KkthnxUIData[GetRealmName()][UnitName("player")].BindType)
-				print("|cffffff00"..UNCHECK_ALL.."|r")
+				K.Print("|cffffff00"..UNCHECK_ALL.."|r")
 			end
 
 			self.enabled = false

@@ -24,6 +24,5 @@ function Module:OnEnable()
     self:CreateRaidUtility()
     self:CreateTalkingHeadFrame()
     self:CreateTimerTracker()
-    self:CreateTotemBar()
     self:CreateUIWidgets()
 end

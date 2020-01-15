@@ -193,7 +193,7 @@ oUF.Tags.Events["raidhp"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_NAME_UPDAT
 -- Nameplate tags
 oUF.Tags.Methods["nphp"] = function(unit)
 	local per = oUF.Tags.Methods["perhp"](unit) or 0
-	if C["Nameplates"].ShowFullHealth then
+	if C["Nameplate"].FullHealth then
 		local cur = UnitHealth(unit)
 		return ValueAndPercent(cur, per)
 	elseif per < 100 then

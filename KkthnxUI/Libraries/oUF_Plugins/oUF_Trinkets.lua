@@ -1,6 +1,16 @@
 local _, ns = ...
 local oUF = ns.oUF or oUF
-assert(oUF, 'oUF not loaded')
+assert(oUF, "oUF not loaded")
+
+local _G = _G
+
+local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
+local GetTime = _G.GetTime
+local IsInInstance = _G.IsInInstance
+local UnitExists = _G.UnitExists
+local UnitFactionGroup = _G.UnitFactionGroup
+local UnitGUID = _G.UnitGUID
+local UnitIsPlayer = _G.UnitIsPlayer
 
 local trinketSpells = {
 	[208683] = 120,
@@ -19,15 +29,17 @@ local GetTrinketIcon = function(unit)
 end
 
 local Update = function(self, event, ...)
-	local _, instanceType = IsInInstance();
-	if instanceType ~= 'arena' then
-		self.Trinket:Hide();
-		return;
+	local _, instanceType = IsInInstance()
+	if instanceType ~= "arena" then
+		self.Trinket:Hide()
+		return
 	else
-		self.Trinket:Show();
+		self.Trinket:Show()
 	end
 
-	if(self.Trinket.PreUpdate) then self.Trinket:PreUpdate(event) end
+	if (self.Trinket.PreUpdate) then
+		self.Trinket:PreUpdate(event)
+	end
 
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local _, eventType, _, sourceGUID, _, _, _, _, _, _, _, spellID = CombatLogGetCurrentEventInfo()
@@ -41,11 +53,13 @@ local Update = function(self, event, ...)
 				self.Trinket.Icon:SetTexture(GetTrinketIcon(unit))
 			end
 		end
-	elseif event == 'PLAYER_ENTERING_WORLD' then
+	elseif event == "PLAYER_ENTERING_WORLD" then
 		CooldownFrame_Set(self.Trinket.cooldownFrame, 1, 1, 1)
 	end
 
-	if(self.Trinket.PostUpdate) then self.Trinket:PostUpdate(event) end
+	if (self.Trinket.PostUpdate) then
+		self.Trinket:PostUpdate(event)
+	end
 end
 
 local Enable = function(self)
@@ -56,14 +70,15 @@ local Enable = function(self)
 
 		if not self.Trinket.cooldownFrame then
 			self.Trinket.cooldownFrame = CreateFrame("Cooldown", nil, self.Trinket, "CooldownFrameTemplate")
-			self.Trinket.cooldownFrame:SetAllPoints(self.Trinket)
+			self.Trinket.cooldownFrame:SetPoint("TOPLEFT", self.Trinket, 1, -1)
+			self.Trinket.cooldownFrame:SetPoint("BOTTOMRIGHT", self.Trinket, -1, 1)
 		end
 
 		if not self.Trinket.Icon then
 			self.Trinket.Icon = self.Trinket:CreateTexture(nil, "BORDER")
 			self.Trinket.Icon:SetAllPoints(self.Trinket)
 			self.Trinket.Icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-			self.Trinket.Icon:SetTexture(GetTrinketIcon('player'))
+			self.Trinket.Icon:SetTexture(GetTrinketIcon("player"))
 		end
 
 		return true
@@ -79,4 +94,4 @@ local Disable = function(self)
 	end
 end
 
-oUF:AddElement('Trinket', Update, Enable, Disable)
+oUF:AddElement("Trinket", Update, Enable, Disable)

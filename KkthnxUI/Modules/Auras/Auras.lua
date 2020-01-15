@@ -1,7 +1,7 @@
 local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Auras")
 
--- Sourced: KkthnxUI (Siweia)
+-- Sourced: NDui (Siweia)
 
 local _G = _G
 local format, floor, strmatch, select, unpack = _G.format, _G.floor, _G.strmatch, _G.select, _G.unpack
@@ -41,6 +41,13 @@ function Module:OnEnable()
     local debuffAnchor = K.Mover(self.DebuffFrame, "Debuffs", "DebuffAnchor", {"TOPRIGHT", buffAnchor, "BOTTOMRIGHT", 0, -12})
     self.DebuffFrame:ClearAllPoints()
     self.DebuffFrame:SetPoint("TOPRIGHT", debuffAnchor)
+
+    -- Elements
+	if K.Class == "MONK" then
+		self:CreateMonkStatue()
+	elseif K.Class == "SHAMAN" then
+		self:CreateShamanTotems()
+    end
 
     self:CreateReminder()
 end

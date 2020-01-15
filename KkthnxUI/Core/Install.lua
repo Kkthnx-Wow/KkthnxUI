@@ -18,6 +18,8 @@ local UnitName = _G.UnitName
 local SlashCmdList = _G.SlashCmdList
 local UIErrorsFrame = _G.UIErrorsFrame
 
+-- DetectVersion = DB.Version
+
 local Install = CreateFrame("Frame", "KkthnxUIInstaller", UIParent)
 local InstallFont = K.GetFont(C["UIFonts"].GeneralFonts)
 local InstallTexture = K.GetTexture(C["UITextures"].GeneralTextures)
@@ -100,12 +102,10 @@ end
 function Install:Step2()
 	local Chat = K:GetModule("Chat")
 
-	if (not Chat) then
-		return
+	if (Chat) then
+		Chat:Install()
 	end
 
-	Chat:Install()
-	Chat:SetDefaultChatFramesPositions()
 	UIErrorsFrame:AddMessage(L["Chat Installed"], K.r, K.g, K.b, 53, 2)
 
 	self:Hide()
@@ -395,6 +395,10 @@ Install:SetScript("OnEvent", function(self, event)
 			_G.KkthnxUIData[playerRealm][playerName].FavouriteItems = _G.KkthnxUIData[playerRealm][playerName].FavouriteItems or {}
 		end
 
+		if (not _G.KkthnxUIData[playerRealm][playerName].SplitCount) then
+			_G.KkthnxUIData[playerRealm][playerName].SplitCount = _G.KkthnxUIData[playerRealm][playerName].SplitCount or 1
+		end
+
 		if (not _G.KkthnxUIData[playerRealm][playerName]["Mover"]) then
 			_G.KkthnxUIData[playerRealm][playerName]["Mover"] = _G.KkthnxUIData[playerRealm][playerName]["Mover"] or {}
 		end
@@ -405,6 +409,10 @@ Install:SetScript("OnEvent", function(self, event)
 
 		if (not _G.KkthnxUIData[playerRealm][playerName]["TempAnchor"]) then
 			_G.KkthnxUIData[playerRealm][playerName]["TempAnchor"] = _G.KkthnxUIData[playerRealm][playerName]["TempAnchor"] or {}
+		end
+
+		if (not _G.KkthnxUIData[playerRealm][playerName].DetectVersion) then
+			_G.KkthnxUIData[playerRealm][playerName].DetectVersion = _G.KkthnxUIData[playerRealm][playerName].DetectVersion or K.Version
 		end
 	elseif (event == "PLAYER_ENTERING_WORLD") then
 		-- Install default if we never ran KkthnxUI on this character.

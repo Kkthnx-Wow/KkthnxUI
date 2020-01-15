@@ -30,6 +30,8 @@ K.PrivateChatEventSpam = {
 	"%[(.*)Announce by(.*)%]",
 	"%[(.*)Autobroadcast(.*)%]",
 	"%[(.*)BG Queue Announcer(.*)%]",
+	"has joined the instance group.",
+	"%has joined the instance group.%",
 }
 
 K.PrivateChatNoEventSpam = {}

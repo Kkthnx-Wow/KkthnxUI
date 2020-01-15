@@ -5,7 +5,6 @@ local K, C = unpack(select(2, ...))
 local _G = _G
 local assert = _G.assert
 local getmetatable = _G.getmetatable
-local pairs = _G.pairs
 local select = _G.select
 
 local CreateFrame = _G.CreateFrame
@@ -121,37 +120,44 @@ local function CreateBackground(f, a)
 	f:SetBackdropBorderColor(0, 0, 0)
 end
 
-local function CreateShadow(f, bd, parent)
+
+local function CreateShadow(f, bd)
 	if f.Shadow then
 		return
 	end
 
-	parent = parent or f
+	local frame = f
+	if f:GetObjectType() == "Texture" then
+		frame = f:GetParent()
+	end
+	local lvl = frame:GetFrameLevel()
+	-- if not m then
+	-- 	m, s = 2, 3
+	-- end
 
-	local shadow = CreateFrame("Frame", nil, f)
-	shadow:SetFrameLevel(1)
-	shadow:SetFrameStrata(f:GetFrameStrata())
-	shadow:SetPoint("TOPLEFT", parent, -4, 4)
-	shadow:SetPoint("BOTTOMRIGHT", parent, 4, -4)
-
+	f.Shadow = CreateFrame("Frame", nil, frame)
+	f.Shadow:SetPoint("TOPLEFT", f, -3, 3)
+	f.Shadow:SetPoint("BOTTOMRIGHT", f, 3, -3)
 	if bd then
-		shadow:SetBackdrop({
+		f.Shadow:SetBackdrop({
 			bgFile = C["Media"].Blank,
 			edgeFile = C["Media"].Glow,
-			edgeSize = 4,
+			edgeSize = 3,
 			insets = {left = 3, right = 3, top = 3, bottom = 3}
 		})
 	else
-		shadow:SetBackdrop({
+		f.Shadow:SetBackdrop({
 			edgeFile = C["Media"].Glow,
-			edgeSize = 4
+			edgeSize = 3
 		})
 	end
+	f.Shadow:SetFrameLevel(lvl == 0 and 0 or lvl - 1)
+	if bd then
+		f.Shadow:SetBackdropColor(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], C.Media.BackdropColor[4])
+	end
+	f.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 
-	shadow:SetBackdropColor(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], C.Media.BackdropColor[4])
-	shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
-
-	f.Shadow = shadow
+	return f.Shadow
 end
 
 local function CreateInnerShadow(f, isLayer, isAlpha, isLPoints, isRPoints)
@@ -185,24 +191,25 @@ local function Kill(object)
 end
 
 local StripTexturesBlizzFrames = {
-	"Inset",
-	"inset",
-	"InsetFrame",
-	"LeftInset",
-	"RightInset",
-	"NineSlice",
+	"ArtOverlayFrame",
 	"BG",
-	"border",
 	"Border",
 	"BorderFrame",
-	"bottomInset",
 	"BottomInset",
+	"FilligreeOverlay",
+	"Inset",
+	"InsetFrame",
+	"LeftInset",
+	"NineSlice",
+	"Portrait",
+	"PortraitOverlay",
+	"RightInset",
+	"ScrollFrameBorder",
 	"bgLeft",
 	"bgRight",
-	"FilligreeOverlay",
-	"PortraitOverlay",
-	"ArtOverlayFrame",
-	"Portrait",
+	"border",
+	"bottomInset",
+	"inset",
 	"portrait",
 }
 

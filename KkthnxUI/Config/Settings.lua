@@ -14,9 +14,10 @@ C["ActionBar"] = {
 	["DecimalCD"] = true,
 	["DefaultButtonSize"] = 34,
 	["Enable"] = true,
-	["EquipBorder"] = true,
+	-- ["EquipBorder"] = true,
 	["FadeRightBar"] = false,
 	["FadeRightBar2"] = false,
+	["HideHighlight"] = false,
 	["Hotkey"] = true,
 	["Macro"] = true,
 	["MicroBar"] = true,
@@ -40,34 +41,39 @@ C["Announcements"] = {
 	["PullCountdown"] = true,
 	["RareAlert"] = false,
 	["SaySapped"] = false,
-	["Interrupt"] = {
-		["Options"] = {
-			["Disabled"] = "NONE",
-			["Emote Chat"] = "EMOTE",
-			["Party Chat"] = "PARTY",
-			["Raid Chat Only"] = "RAID_ONLY",
-			["Raid Chat"] = "RAID",
-			["Say Chat"] = "SAY",
-			["Yell Chat"] = "YELL"
-		},
-		["Value"] = "PARTY"
-	},
+	-- ["Interrupt"] = {
+	-- 	["Options"] = {
+	-- 		["Disabled"] = "NONE",
+	-- 		["Emote Chat"] = "EMOTE",
+	-- 		["Party Chat"] = "PARTY",
+	-- 		["Raid Chat Only"] = "RAID_ONLY",
+	-- 		["Raid Chat"] = "RAID",
+	-- 		["Say Chat"] = "SAY",
+	-- 		["Yell Chat"] = "YELL"
+	-- 	},
+	-- 	["Value"] = "PARTY"
+	-- },
+
+	["BrokenSpell"] = true,
+	["Interrupt"] = true,
 }
 
 -- Automation
 C["Automation"] = {
 	["AutoCollapse"] = false,
+	["AutoDeclineDuels"] = false,
+	["AutoDeclinePetDuels"] = false,
 	["AutoDisenchant"] = false,
 	["AutoInvite"] = false,
 	["AutoQuest"] = false,
 	["AutoRelease"] = false,
 	["AutoResurrect"] = false,
 	["AutoResurrectThank"] = false,
-	["AutoReward"] = false,
+	-- ["AutoReward"] = false,
 	["AutoSetRole"] = false,
 	["AutoTabBinder"] = false,
 	["BlockMovies"] = false,
-	["WhisperInvite"] = "inv",
+	["WhisperInvite"] = "inv+",
 }
 
 C["Inventory"] = {
@@ -108,6 +114,8 @@ C["Auras"] = {
 	["Reminder"] = false,
 	["ReverseBuffs"] = false,
 	["ReverseDebuffs"] = false,
+	["Statue"] = true,
+	["Totems"] = true,
 }
 
 -- Chat
@@ -115,7 +123,6 @@ C["Chat"] = {
 	["Background"] = false,
 	["BackgroundAlpha"] = 0.25,
 	["ChatItemLevel"] = true,
-	["ChatMenu"] = true,
 	["Enable"] = true,
 	["EnableFilter"] = true,
 	["Fading"] = true,
@@ -175,6 +182,7 @@ C["General"] = {
 	["ReplaceBlizzardFonts"] = true,
 	["TexturesColor"] = {0.9, 0.9, 0.9},
 	["UIScale"] = 0.71111,
+	["VersionCheck"] = true,
 	["Welcome"] = true,
 	["NumberPrefixStyle"] = {
 		["Options"] = {
@@ -246,36 +254,56 @@ C["Misc"] = {
 	["TradeTabs"] = false,
 }
 
-C["Nameplates"] = {
-	["BadColor"] = {1, 0, 0},
-	["Clamp"] = false,
-	["ClassIcons"] = false,
+C["Nameplate"] = {
+	["AKSProgress"] = false,
+	["AuraSize"] = 22,
+	["ClassIcon"] = false,
+	["CustomColor"] = {0, 0.8, 0.3},
+	["CustomUnitColor"] = true,
+	["DPSRevertThreat"] = false,
+	["Distance"] = 42,
 	["Enable"] = true,
-	["GoodColor"] = {0.2, 0.8, 0.2},
-	["HealthValue"] = true,
-	["Height"] = 11,
-	["HighlightColor"] = {1, 1, 0},
-	["LoadDistance"] = 40,
-	["NearColor"] = {1, 1, 0},
-	["NonTargetAlpha"] = 0.35,
-	["OffTankColor"] = {0, 0.5, 1},
-	["QuestInfo"] = true,
-	["SelectedScale"] = 1.2,
-	["ShowFullHealth"] = true,
-	["ShowHealPrediction"] = false,
+	["ExplosivesScale"] = false,
+	["FriendlyCC"] = false,
+	["FullHealth"] = false,
+	["HealerIcon"] = false,
+	["HealthTextSize"] = 12,
+	["HostileCC"] = true,
+	["InsecureColor"] = {1, 0, 0},
+	["InsideView"] = true,
+	["MaxAuras"] = 5,
+	["MaxPowerGlow"] = false,
+	["MinAlpha"] = 0.35,
+	["MinScale"] = 1,
+	["NameTextSize"] = 10,
+	["NameplateClassPower"] = true,
+	["OffTankColor"] = {0.2, 0.7, 0.5},
+	["PPHeight"] = 5,
+	["PPHideOOC"] = true,
+	["PPIconSize"] = 32,
+	["PPPHeight"] = 6,
+	["PPPowerText"] = true,
+	["PlateHeight"] = 6,
+	["PlateWidth"] = 134,
+	["QuestIndicator"] = true,
+	["SecureColor"] = {1, 0, 1},
+	["ShowPlayerPlate"] = true,
 	["Smooth"] = false,
-	["Threat"] = false,
-	["TrackAuras"] = true,
+	["TankMode"] = false,
+	["TargetIndicatorColor"] = {1, 1, 0},
+	["TransColor"] = {1, 0.8, 0},
 	["VerticalSpacing"] = 0.7,
-	["Width"] = 140,
-	["HealthbarColor"] = {
-        ["Options"] = {
-            ["Dark"] = "Dark",
-            ["Value"] = "Value",
-            ["Class"] = "Class",
-        },
-        ["Value"] = "Class"
-    },
+	["TargetIndicator"] = {
+		["Options"] = {
+			["Disable"] = 1,
+			["Top Arrow"] = 2,
+			["Right Arrow"] = 3,
+			["Border Glow"] = 4,
+			["Top Arrow + Glow"] = 5,
+			["Right Arrow + Glow"] = 6,
+		},
+		["Value"] = 4
+	},
 }
 
 C["PulseCooldown"] = {
@@ -372,6 +400,7 @@ C["Unitframe"] = {
 	["PlayerPowerPrediction"] = true,
 	["PortraitTimers"] = false,
 	["PvPIndicator"] = true,
+	["ResurrectSound"] = false,
 	["ShowHealPrediction"] = true,
 	["ShowPlayerLevel"] = true,
 	["ShowPlayerName"] = false,
@@ -382,7 +411,6 @@ C["Unitframe"] = {
 	["TargetAuraBars"] = false,
 	["TargetCastbarHeight"] = 24,
 	["TargetCastbarWidth"] = 260,
-	["TotemBar"] = true,
 	["HealthbarColor"] = {
         ["Options"] = {
             ["Dark"] = "Dark",
@@ -446,6 +474,7 @@ C["Arena"] = {
 -- Raidframe
 C["Raid"] = {
 	["AuraDebuffIconSize"] = 22,
+	["AuraDebuffs"] = true,
 	["AuraWatch"] = true,
 	["AuraWatchIconSize"] = 11,
 	["AuraWatchTexture"] = true,
@@ -458,6 +487,7 @@ C["Raid"] = {
 	["NumGroups"] = 6,
 	["RaidUtility"] = true,
 	["ReverseRaid"] = false,
+	["ShowHealPrediction"] = true,
 	["ShowNotHereTimer"] = true,
 	["ShowTeamIndex"] = false,
 	["Smooth"] = false,
@@ -472,20 +502,12 @@ C["Raid"] = {
         },
         ["Value"] = "Class"
     },
-	["GroupBy"] = {
-		["Options"] = {
-			["Group"] = "GROUP",
-			["Class"] = "CLASS",
-			["Role"] = "ROLE"
-		},
-		["Value"] = "GROUP"
-	},
 	["HealthFormat"] = {
         ["Options"] = {
-			["DisableRaidHP"] = 1,
-			["RaidHPPercent"] = 2,
-			["RaidHPCurrent"] = 3,
-			["RaidHPLost"] = 4,
+			["Disable HP"] = 1,
+			["Health Percentage"] = 2,
+			["Health Remaining"] = 3,
+			["Health Lost"] = 4,
         },
         ["Value"] = 1
     },

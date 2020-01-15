@@ -8,9 +8,52 @@ if (not oUF) then
 end
 
 local _G = _G
-local select = select
+local select = _G.select
+local string_format = _G.string.format
 
 local CreateFrame = _G.CreateFrame
+
+-- Class Powers
+function Module.PostUpdateUnitframeClassPower(element, cur, max, diff, powerType)
+	if diff then
+		for i = 1, max do
+			element[i]:SetWidth((156 - (max - 1) * 6) / max)
+		end
+	end
+
+	if (K.Class == "ROGUE" or K.Class == "DRUID") and (powerType == "COMBO_POINTS") and element.__owner.unit ~= "vehicle" then
+		for i = 1, 6 do
+			element[i]:SetStatusBarColor(unpack(K.Colors.power.COMBO_POINTS[i]))
+		end
+	end
+
+	if (powerType == "COMBO_POINTS" or powerType == "HOLY_POWER") and element.__owner.unit ~= "vehicle" and cur == max then
+		for i = 1, 6 do
+			if element[i]:IsShown() then
+				K.libCustomGlow.AutoCastGlow_Start(element[i])
+			end
+		end
+	else
+		for i = 1, 6 do
+			K.libCustomGlow.AutoCastGlow_Stop(element[i])
+		end
+	end
+end
+
+function Module.PostUpdateAddPower(element, _, cur, max)
+	if element.Text and max > 0 then
+		local perc = cur / max * 100
+		if perc == 100 then
+			perc = ""
+			element:SetAlpha(0)
+		else
+			perc = string_format("%d%%", perc)
+			element:SetAlpha(1)
+		end
+
+		element.Text:SetText(perc)
+	end
+end
 
 function Module:CreatePlayer()
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
@@ -34,7 +77,10 @@ function Module:CreatePlayer()
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
-	self.Health.Smooth = C["Unitframe"].Smooth
+
+	if C["Unitframe"].Smooth then
+		K.SmoothBar(self.Health)
+	end
 
 	if C["Unitframe"].HealthbarColor.Value == "Value" then
 		self.Health.colorSmooth = true
@@ -67,7 +113,7 @@ function Module:CreatePlayer()
 	self.Power.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		self.Power.Smooth = true
+		K.SmoothBar(self.Power)
 	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
@@ -131,7 +177,8 @@ function Module:CreatePlayer()
 		self.Buffs["growth-x"] = "RIGHT"
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
-		self.Buffs.CustomFilter = Module.CustomAuraFilter.Blacklist
+		-- self.Buffs.CustomFilter = Module.CustomAuraFilter.Blacklist
+		self.Buffs.CustomFilter = K.CustomBuffFilter.player
 	end
 
 	if (C["Unitframe"].Castbars) then
@@ -200,7 +247,10 @@ function Module:CreatePlayer()
 
 		self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
 
-		K.Mover(self.Castbar, "PlayerCastBar", "PlayerCastBar", {"BOTTOM", UIParent, "BOTTOM", 14, 200})
+		local mover = K.Mover(self.Castbar, "Player Castbar", "PlayerCB", {"BOTTOM", UIParent, "BOTTOM", 14, 200})
+		self.Castbar:ClearAllPoints()
+		self.Castbar:SetPoint("RIGHT", mover)
+		self.Castbar.mover = mover
 	end
 
 	if C["Unitframe"].ShowHealPrediction then
@@ -232,7 +282,7 @@ function Module:CreatePlayer()
 		oag:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 2)
 		oag:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -2)
 
-		local hab = CreateFrame("StatusBar", nil, self)
+		local hab = CreateFrame("StatusBar", nil, self.Health)
 		hab:SetPoint("TOP")
 		hab:SetPoint("BOTTOM")
 		hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
@@ -280,7 +330,11 @@ function Module:CreatePlayer()
 		self.Name:SetPoint("TOP", self.Health, 0, 16)
 		self.Name:SetWidth(156)
 		self.Name:SetFontObject(UnitframeFont)
-		self:Tag(self.Name, "[color][name]")
+		if C["Unitframe"].HealthbarColor.Value == "Class" then
+			self:Tag(self.Name, "[name]")
+		else
+			self:Tag(self.Name, "[color][name]")
+		end
 	end
 
 	-- Level
@@ -323,6 +377,10 @@ function Module:CreatePlayer()
 			if K.Class == "DEATHKNIGHT" then
 				bars[i].timer = K.CreateFontString(bars[i], 13, "")
 			end
+
+			if K.Class == "ROGUE" or K.Class == "DRUID" then
+				bars[i]:SetStatusBarColor(unpack(K.Colors.power.COMBO_POINTS[i]))
+			end
 		end
 
 		if K.Class == "DEATHKNIGHT" then
@@ -331,7 +389,7 @@ function Module:CreatePlayer()
 			bars.PostUpdate = Module.PostUpdateRunes
 			self.Runes = bars
 		else
-			bars.PostUpdate = Module.PostUpdateClassPower
+			bars.PostUpdate = Module.PostUpdateUnitframeClassPower
 			self.ClassPower = bars
 		end
 
@@ -413,9 +471,11 @@ function Module:CreatePlayer()
 
 	-- Swing timer
 	if C["Unitframe"].Swingbar then
+		local swingWidth = C["Unitframe"].PlayerCastbarWidth - C["Unitframe"].PlayerCastbarHeight - 5
+
 		self.Swing = CreateFrame("Frame", "KKUI_SwingBar", self)
-		self.Swing:SetSize(260, 14)
-		self.Swing:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 280)
+		self.Swing:SetSize(swingWidth, 14)
+		self.Swing:SetPoint("BOTTOM", self.Castbar.mover, "BOTTOM", 0, -20)
 
 		self.Swing.Twohand = CreateFrame("Statusbar", nil, self.Swing)
 		self.Swing.Twohand:SetPoint("TOPLEFT")
@@ -442,8 +502,8 @@ function Module:CreatePlayer()
 		self.Swing.Twohand.Spark:SetPoint("CENTER", self.Swing.Twohand:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 		self.Swing.Mainhand = CreateFrame("Statusbar", nil, self.Swing)
-		self.Swing.Mainhand:SetPoint("BOTTOM", self.Castbar, 0, 0)
-		self.Swing.Mainhand:SetSize(260, 16)
+		self.Swing.Mainhand:SetPoint("BOTTOM", self.Castbar.mover, "BOTTOM", 0, -20)
+		self.Swing.Mainhand:SetSize(swingWidth, 14)
 		self.Swing.Mainhand:SetStatusBarTexture(UnitframeTexture)
 		self.Swing.Mainhand:SetStatusBarColor(0.8, 0.3, 0.3)
 		self.Swing.Mainhand:SetFrameLevel(20)
@@ -466,8 +526,8 @@ function Module:CreatePlayer()
 		self.Swing.Mainhand.Spark:SetPoint("CENTER", self.Swing.Mainhand:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 		self.Swing.Offhand = CreateFrame("Statusbar", nil, self.Swing)
-		self.Swing.Offhand:SetPoint("BOTTOM", self.Swing.Mainhand, "TOP", 0, 2)
-		self.Swing.Offhand:SetSize(260, 16)
+		self.Swing.Offhand:SetPoint("BOTTOM", self.Swing.Mainhand, "TOP", 0, 6)
+		self.Swing.Offhand:SetSize(swingWidth, 14)
 		self.Swing.Offhand:SetStatusBarTexture(UnitframeTexture)
 		self.Swing.Offhand:SetStatusBarColor(0.8, 0.3, 0.3)
 		self.Swing.Offhand:SetFrameLevel(20)

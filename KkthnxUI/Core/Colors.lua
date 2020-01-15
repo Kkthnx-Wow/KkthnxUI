@@ -37,36 +37,17 @@ oUF.colors.reaction = {
 	[8] = {0.29, 0.67, 0.30}, -- Exalted
 }
 
-oUF.colors.factioncolors = {
-	["1"] = {r = 0.87, g = 0.37, b = 0.37}, -- Hated
-	["2"] = {r = 0.87, g = 0.37, b = 0.37}, -- Hostile
-	["3"] = {r = 0.87, g = 0.37, b = 0.37}, -- Unfriendly
-	["4"] = {r = 0.85, g = 0.77, b = 0.36}, -- Neutral
-	["5"] = {r = 0.29, g = 0.67, b = 0.30}, -- Friendly
-	["6"] = {r = 0.29, g = 0.67, b = 0.30}, -- Honored
-	["7"] = {r = 0.29, g = 0.67, b = 0.30}, -- Revered
-	["8"] = {r = 0.29, g = 0.67, b = 0.30}, -- Exalted
-}
-
 oUF.colors.selection = {
-	[0] = {255 / 255, 0 / 255, 0 / 255}, -- HOSTILE
-	[1] = {255 / 255, 129 / 255, 0 / 255}, -- UNFRIENDLY
-	[2] = {255 / 255, 255 / 255, 0 / 255}, -- NEUTRAL
-	[3] = {0 / 255, 255 / 255, 0 / 255}, -- FRIENDLY
-	-- not used by oUF, we always use extended colours
-	[4] = {0 / 255, 0 / 255, 255 / 255}, -- PLAYER_SIMPLE
-	[5] = {96 / 255, 96 / 255, 255 / 255}, -- PLAYER_EXTENDED
-	[6] = {170 / 255, 170 / 255, 255 / 255}, -- PARTY
-	[7] = {170 / 255, 255 / 255, 170 / 255}, -- PARTY_PVP
-	[8] = {83 / 255, 201 / 255, 255 / 255}, -- FRIEND
-	[9] = {128 / 255, 128 / 255, 128 / 255}, -- DEAD
-	-- unavailable to players
-	-- [10] = {}, -- COMMENTATOR_TEAM_1
-	-- unavailable to players
-	-- [11] = {}, -- COMMENTATOR_TEAM_2
-	-- not used by oUF, inconsistent due to bugs and its reliance on cvars
-	[12] = {255 / 255, 255 / 255, 139 / 255}, -- SELF
-	[13] = {0 / 255, 153 / 255, 0 / 255}, -- BATTLEGROUND_FRIENDLY_PVP
+	[0] = {r = 254/255, g = 045/255, b = 045/255}, -- HOSTILE
+	[1] = {r = 255/255, g = 129/255, b = 050/255}, -- UNFRIENDLY
+	[2] = {r = 255/255, g = 217/255, b = 050/255}, -- NEUTRAL
+	[3] = {r = 050/255, g = 180/255, b = 000/255}, -- FRIENDLY
+	[5] = {r = 102/255, g = 136/255, b = 255/255}, -- PLAYER_EXTENDED
+	[6] = {r = 102/255, g = 050/255, b = 255/255}, -- PARTY
+	[7] = {r = 187/255, g = 050/255, b = 255/255}, -- PARTY_PVP
+	[8] = {r = 050/255, g = 255/255, b = 108/255}, -- FRIEND
+	[9] = {r = 153/255, g = 153/255, b = 153/255}, -- DEAD
+	[13] = {r = 025/255, g = 147/255, b = 072/255}, -- BATTLEGROUND_FRIENDLY_PVP
 }
 
 oUF.colors.runes = {
@@ -76,34 +57,35 @@ oUF.colors.runes = {
 }
 
 oUF.colors.power = {
-	["HOLY_POWER"] = {0.95, 0.90, 0.60},
-	["CHI"] = {0.71, 1.00, 0.92},
-	["RUNES"] = {0.55, 0.57, 0.61},
-	["SOUL_SHARDS"] = {0.50, 0.32, 0.55},
-	["AMMOSLOT"] = {0.80, 0.60, 0.00},
-	["FUEL"] = {0.00, 0.55, 0.50},
-	["POWER_TYPE_STEAM"] = {0.55, 0.57, 0.61},
-	["POWER_TYPE_PYRITE"] = {0.60, 0.09, 0.17},
 	["ALTPOWER"] = {0.00, 1.00, 1.00},
+	["AMMOSLOT"] = {0.80, 0.60, 0.00},
+	["ARCANE_CHARGES"] = {0.41, 0.8, 0.94},
+	["CHI"] = {0.71, 1.00, 0.92},
+	-- ["COMBO_POINTS"] = {0.69, 0.31, 0.31},
 	["ENERGY"] = {0.65, 0.63, 0.35},
 	["FOCUS"] = {0.71, 0.43, 0.27},
+	["FUEL"] = {0.00, 0.55, 0.50},
 	["FURY"] = {227/255, 126/255, 39/255, atlas = "_DemonHunter-DemonicFuryBar"},
+	["HOLY_POWER"] = {0.95, 0.90, 0.60},
 	["INSANITY"] = {0.55, 0.14, 0.69, atlas = "_Priest-InsanityBar"},
 	["LUNAR_POWER"] = {.9, .86, .12, atlas = "_Druid-LunarBar"},
 	["MAELSTROM"] = {0, 0.5, 1, atlas = "_Shaman-MaelstromBar"},
 	["MANA"] = {0.31, 0.45, 0.63},
 	["PAIN"] = {1.00, 0.61, 0.00, atlas = "_DemonHunter-DemonicPainBar"},
+	["POWER_TYPE_PYRITE"] = {0.60, 0.09, 0.17},
+	["POWER_TYPE_STEAM"] = {0.55, 0.57, 0.61},
 	["RAGE"] = {0.78, 0.25, 0.25},
+	["RUNES"] = {0.55, 0.57, 0.61},
 	["RUNIC_POWER"] = {0, 0.82, 1},
-	["COMBO_POINTS"] = {0.69, 0.31, 0.31},
-	-- ["COMBO_POINTS"] = {
-	-- 	[1] = {0.69, 0.31, 0.31},
-	-- 	[2] = {0.65, 0.42, 0.31},
-	-- 	[3] = {0.65, 0.63, 0.35},
-	-- 	[4] = {0.50, 0.63, 0.35},
-	-- 	[5] = {0.33, 0.63, 0.33},
-	-- 	[6] = {0.03, 0.63, 0.33},
-	-- },
+	["SOUL_SHARDS"] = {0.50, 0.32, 0.55},
+	["COMBO_POINTS"] = {
+		[1] = {0.69, 0.31, 0.31},
+		[2] = {0.65, 0.42, 0.31},
+		[3] = {0.65, 0.63, 0.35},
+		[4] = {0.50, 0.63, 0.35},
+		[5] = {0.33, 0.63, 0.33},
+		[6] = {0.03, 0.63, 0.33},
+	},
 	["STAGGER"] = {
 		{132/255, 255/255, 132/255},
 		{255/255, 250/255, 183/255},

@@ -1,7 +1,4 @@
 local K, C = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true then
-	return
-end
 local Module = K:GetModule("Unitframes")
 
 local oUF = oUF or K.oUF
@@ -50,7 +47,7 @@ function Module:CreateBoss()
     end
 
 	if C["Boss"].Smooth then
-		self.Health.Smooth = true
+		K.SmoothBar(self.Health)
 	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
@@ -67,9 +64,10 @@ function Module:CreateBoss()
 
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
+	self.Power.displayAltPower = true
 
 	if C["Boss"].Smooth then
-		self.Power.Smooth = true
+		K.SmoothBar(self.Power)
 	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
@@ -83,7 +81,11 @@ function Module:CreateBoss()
 	self.Name:SetWidth(156 * 0.90)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
-	self:Tag(self.Name, "[color][name]")
+	if C["Boss"].HealthbarColor.Value == "Class" then
+		self:Tag(self.Name, "[name]")
+	else
+		self:Tag(self.Name, "[color][name]")
+	end
 
 	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
@@ -195,6 +197,4 @@ function Module:CreateBoss()
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	self.RaidTargetIndicator:SetSize(16, 16)
-
-	self.Range = Module.CreateRangeIndicator(self)
 end

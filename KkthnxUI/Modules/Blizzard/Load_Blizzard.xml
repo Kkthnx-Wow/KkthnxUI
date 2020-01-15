@@ -17,6 +17,5 @@
     <Script file="RaidUtility.lua"/>
     <Script file="TalkingHeadFrame.lua"/>
     <Script file="TimerTracker.lua"/>
-    <Script file="TotemBar.lua"/>
     <Script file="UIWidgets.lua"/>
 </Ui>

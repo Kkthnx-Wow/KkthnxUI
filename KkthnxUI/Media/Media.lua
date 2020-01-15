@@ -31,6 +31,8 @@ C["Media"] = {
 	WarningSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Warning.ogg]],
 	WhisperSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Whisper.ogg]],
 	ZorkUI = [[Interface\AddOns\KkthnxUI\Media\Textures\ZorkUI.tga]],
+	NPHealer = [[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Healer.tga]],
+	NPArrow = [[Interface\AddOns\KkthnxUI\Media\Nameplates\arrow_single_right_64.tga]],
 }
 
 if (K.Client == "koKR" or K.Client == "zhTW" or K.Client == "zhCN") then

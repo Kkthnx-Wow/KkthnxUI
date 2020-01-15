@@ -73,7 +73,11 @@ function Module:CreateFocusTarget()
 	self.Name:SetWidth(81 * 0.96)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
-	self:Tag(self.Name, "[color][name]")
+	if C["Unitframe"].HealthbarColor.Value == "Class" then
+		self:Tag(self.Name, "[name]")
+	else
+		self:Tag(self.Name, "[color][name]")
+	end
 
 	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)

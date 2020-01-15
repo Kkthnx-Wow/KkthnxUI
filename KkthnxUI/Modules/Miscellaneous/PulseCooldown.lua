@@ -67,6 +67,7 @@ local Frame = CreateFrame("Frame", nil, UIParent)
 Frame:SetSize(C["PulseCooldown"].Size, C["PulseCooldown"].Size)
 Frame:SetPoint("CENTER", UIParent, "CENTER", 0, 260)
 Frame:CreateBorder()
+Frame:CreateInnerShadow()
 Frame:SetAlpha(0)
 
 Frame.Icon = Frame:CreateTexture(nil, "OVERLAY")

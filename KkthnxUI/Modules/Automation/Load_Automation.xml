@@ -6,11 +6,12 @@
    <Script file="AutoBlockMovies.lua" />
    <Script file="AutoDecline.lua" />
    <Script file="AutoDisenchant.lua" />
+   <Script file="AutoGossip.lua" />
    <Script file="AutoInvite.lua" />
    <Script file="AutoQuest.lua" />
    <Script file="AutoRelease.lua" />
    <Script file="AutoResurrect.lua" />
-   <Script file="AutoReward.lua" />
+   <!-- <Script file="AutoReward.lua" /> -->
    <Script file="AutoSetRole.lua" />
    <Script file="AutoWhisperInvite.lua" />
 </Ui>

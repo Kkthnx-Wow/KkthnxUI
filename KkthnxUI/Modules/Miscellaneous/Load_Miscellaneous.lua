@@ -592,11 +592,16 @@ hooksecurefunc("MerchantItemButton_OnModifiedClick", hideSplitFrame)
 -- Fix blizz guild news hyperlink error
 do
 	local function fixGuildNews(event, addon)
-		if addon ~= "Blizzard_GuildUI" then return end
+		if addon ~= "Blizzard_GuildUI" then
+			return
+		end
 
 		local _GuildNewsButton_OnEnter = GuildNewsButton_OnEnter
 		function GuildNewsButton_OnEnter(self)
-			if not (self.newsInfo and self.newsInfo.whatText) then return end
+			if not (self.newsInfo and self.newsInfo.whatText) then
+				return
+			end
+
 			_GuildNewsButton_OnEnter(self)
 		end
 
@@ -604,11 +609,16 @@ do
 	end
 
 	local function fixCommunitiesNews(event, addon)
-		if addon ~= "Blizzard_Communities" then return end
+		if addon ~= "Blizzard_Communities" then
+			return
+		end
 
 		local _CommunitiesGuildNewsButton_OnEnter = CommunitiesGuildNewsButton_OnEnter
 		function CommunitiesGuildNewsButton_OnEnter(self)
-			if not (self.newsInfo and self.newsInfo.whatText) then return end
+			if not (self.newsInfo and self.newsInfo.whatText) then
+				return
+			end
+
 			_CommunitiesGuildNewsButton_OnEnter(self)
 		end
 
@@ -665,8 +675,8 @@ do
 	local function onUpdate(self, elapsed)
 		if IsShiftKeyDown() then
 			self.elapsed = self.elapsed + elapsed
-			if self.elapsed > 5 then
-				UIErrorsFrame:AddMessage(K.InfoColor.."Your SHIFT key may be stuck.")
+			if self.elapsed > 7 then
+				UIErrorsFrame:AddMessage(K.InfoColor.."Your SHIFT key may be stuck!")
 				self:Hide()
 			end
 		end
@@ -686,6 +696,7 @@ do
 			end
 		end
 	end
+
 	K:RegisterEvent("MODIFIER_STATE_CHANGED", ShiftKeyOnEvent)
 end
 
@@ -722,8 +733,19 @@ do
 	K:RegisterEvent("DELETE_ITEM_CONFIRM", deleteConfirm)
 end
 
+do
+	local function soundOnResurrect()
+		if C["Unitframe"].ResurrectSound then
+			PlaySound("72978", "Master")
+		end
+	end
+
+	K:RegisterEvent("RESURRECT_REQUEST", soundOnResurrect)
+end
+
 function Module:OnEnable()
 	self:CreateAFKCam()
+	self:CreateChatBubbles()
 	self:CreateDurabilityFrame()
 	self:CreateExtendInstance()
 	self:CreateImprovedMail()
@@ -760,11 +782,39 @@ function Module:OnEnable()
 		StaticPopupDialogs.TOO_MANY_LUA_ERRORS.button1 = nil
 
 		_G.PetBattleQueueReadyFrame.hideOnEscape = nil
+
+		if (PVPReadyDialog) then
+			PVPReadyDialog.leaveButton:Hide()
+			PVPReadyDialog.enterButton:ClearAllPoints()
+			PVPReadyDialog.enterButton:SetPoint("BOTTOM", PVPReadyDialog, "BOTTOM", 0, 25)
+		end
 	end
 
-	if (PVPReadyDialog) then
-		PVPReadyDialog.leaveButton:Hide()
-		PVPReadyDialog.enterButton:ClearAllPoints()
-		PVPReadyDialog.enterButton:SetPoint("BOTTOM", PVPReadyDialog, "BOTTOM", 0, 25)
+	do
+		local clubFrames = {
+			GetFramesRegisteredForEvent("CLUB_INVITATION_ADDED_FOR_SELF")
+		}
+
+		for i = 1, #clubFrames do
+			clubFrames[i]:UnregisterEvent("CLUB_INVITATION_ADDED_FOR_SELF")
+		end
+	end
+
+	do
+		local socialFrames = {
+			GetFramesRegisteredForEvent("SOCIAL_QUEUE_UPDATE")
+		}
+
+		for i = 1, #socialFrames do
+			socialFrames[i]:UnregisterEvent("SOCIAL_QUEUE_UPDATE")
+		end
+
+		_G.FriendsTabHeaderTab2:Hide()
+		_G.FriendsTabHeaderTab3:ClearAllPoints()
+		_G.FriendsTabHeaderTab3:SetPoint("LEFT", _G.FriendsTabHeaderTab1, "RIGHT", 0, 0)
+		_G.QuickJoinFrame:Hide()
+		_G.QuickJoinToastButton:Hide()
+		_G.QuickJoinFrame:UnregisterAllEvents()
+		_G.QuickJoinToastButton:UnregisterAllEvents()
 	end
 end

@@ -204,12 +204,15 @@ K:RegisterEvent("ADDON_LOADED", function(_, addon)
 	GameMenuButton:SetScript("OnClick", function()
 		if (not KkthnxUIConfigFrame) then
 			KkthnxUIConfig:CreateConfigWindow()
+			PlaySound(603)
 		end
 
 		if KkthnxUIConfigFrame:IsVisible() then
 			KkthnxUIConfigFrame:Hide()
+			PlaySound(604)
 		else
 			KkthnxUIConfigFrame:Show()
+			PlaySound(603)
 		end
 
 		HideUIPanel(GameMenuFrame)
@@ -309,7 +312,7 @@ do
 		buttonGitHub:SetPoint("TOPLEFT", titleButtons, "BOTTOMLEFT", 0, -8)
 		buttonGitHub:SkinButton()
 		buttonGitHub:SetScript("OnClick", function()
-			K.StaticPopup_Show("GITHUB_EDITBOX", nil, nil, "https://github.com/kkthnx-wow/KkthnxUI_Classic")
+			K.StaticPopup_Show("GITHUB_EDITBOX", nil, nil, "https://github.com/Kkthnx-Wow/KkthnxUI_8.2.0")
 		end)
 		buttonGitHub.Text = buttonGitHub:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 		buttonGitHub.Text:SetPoint("CENTER", buttonGitHub)
@@ -320,7 +323,7 @@ do
 		buttonBugReport:SetPoint("LEFT", buttonGitHub, "RIGHT", 6, 0)
 		buttonBugReport:SkinButton()
 		buttonBugReport:SetScript("OnClick", function()
-			K.StaticPopup_Show("GITHUB_EDITBOX", nil, nil, "https://github.com/kkthnx-wow/KkthnxUI_Classic/issues/new")
+			K.StaticPopup_Show("GITHUB_EDITBOX", nil, nil, "https://github.com/Kkthnx-Wow/KkthnxUI_8.2.0/issues/new")
 		end)
 		buttonBugReport.Text = buttonBugReport:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 		buttonBugReport.Text:SetPoint("CENTER", buttonBugReport)

@@ -3,6 +3,8 @@ local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
 
+local hooksecurefunc = _G.hooksecurefunc
+
 function Module:CreateDurabilityFrame()
 	DurabilityFrame:SetFrameStrata("HIGH")
 

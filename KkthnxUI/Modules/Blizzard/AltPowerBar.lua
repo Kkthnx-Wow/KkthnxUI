@@ -53,7 +53,7 @@ end
 
 function Module:PositionAltPowerBar()
 	local holder = CreateFrame("Frame", "AltPowerBarHolder", UIParent)
-	holder:SetPoint("TOP", UIParent, "TOP", 0, -18)
+	holder:SetPoint("TOP", UIParent, "TOP", 0, -46)
 	holder:SetSize(128, 50)
 
 	_G.PlayerPowerBarAlt:ClearAllPoints()
@@ -66,7 +66,7 @@ function Module:PositionAltPowerBar()
 	-- Doing ".ClearAllPoints = K.Noop" causes error when you enter combat.
 	hooksecurefunc(_G.PlayerPowerBarAlt, "ClearAllPoints", Module.PositionAltPower)
 
-	K.Mover(holder, "PlayerPowerBarAlt", "Alternative Power", {"TOP", UIParent, "TOP", 0, -18}, statusWidth or 250, statusHeight or 20)
+	K.Mover(holder, "PlayerPowerBarAlt", "Alternative Power", {"TOP", UIParent, "TOP", 0, -46}, statusWidth or 250, statusHeight or 20)
 end
 
 function Module:UpdateAltPowerBarColors()

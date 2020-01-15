@@ -4,11 +4,12 @@ local Module = K:GetModule("Automation")
 local _G = _G
 
 local IsInInstance = _G.IsInInstance
+local C_DeathInfo_GetSelfResurrectOptions = _G.C_DeathInfo.GetSelfResurrectOptions
+local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
 
--- Auto release the spirit in battlegrounds
-function Module.PLAYER_DEAD()
+local function PLAYER_DEAD()
 	-- If player has ability to self-resurrect (soulstone, reincarnation, etc), do nothing and quit
-	if C_DeathInfo.GetSelfResurrectOptions() and #C_DeathInfo.GetSelfResurrectOptions() > 0 then
+	if C_DeathInfo_GetSelfResurrectOptions() and #C_DeathInfo_GetSelfResurrectOptions() > 0 then
 		return
 	end
 
@@ -20,7 +21,7 @@ function Module.PLAYER_DEAD()
 	end
 
 	-- Resurrect if playuer is in a PvP location
-	local areaID = C_Map.GetBestMapForUnit("player") or 0
+	local areaID = C_Map_GetBestMapForUnit("player") or 0
 	if areaID == 123 -- Wintergrasp
 	or areaID == 244 -- Tol Barad (PvP)
 	or areaID == 588 -- Ashran
@@ -33,10 +34,11 @@ function Module.PLAYER_DEAD()
 	return
 end
 
+
 function Module:CreateAutoRelease()
 	if C["Automation"].AutoRelease ~= true then
 		return
 	end
 
-	K:RegisterEvent("PLAYER_DEAD", self.PLAYER_DEAD)
+	K:RegisterEvent("PLAYER_DEAD", PLAYER_DEAD)
 end

@@ -23,10 +23,12 @@ local function Defaults(priorityOverride)
 end
 
 -- BuffWatch: List of personal spells to show on unitframes as icon
-local function GetAuraWatchSpell(id, point, color, anyUnit, onlyShowMissing, displayText, textThreshold, xOffset, yOffset, sizeOverride)
+local function GetAuraWatchSpell(id, point, color, anyUnit, onlyShowMissing, displayText, textThreshold, xOffset, yOffset)
 
 	local r, g, b = 1, 1, 1
-	if color then r, g, b = unpack(color) end
+	if color then
+		r, g, b = unpack(color)
+	end
 
 	local rankText = GetSpellSubtext(id)
 	local spellRank = rankText and string_find(rankText, "%d") and GetSpellSubtext(id) or nil
@@ -40,12 +42,12 @@ local function GetAuraWatchSpell(id, point, color, anyUnit, onlyShowMissing, dis
 		color = {r = r, g = g, b = b},
 		anyUnit = anyUnit or false,
 		onlyShowMissing = onlyShowMissing or false,
-		styleOverride = "Default",
+		style = "texturedIcon",
 		displayText = displayText or true,
 		textThreshold = textThreshold or -1,
 		xOffset = xOffset or 0,
 		yOffset = yOffset or 0,
-		sizeOverride = sizeOverride or 0,
+		size = 11,
 	}
 end
 
@@ -835,6 +837,24 @@ K.AuraBlackList = {
 	[97340] = true, -- Guild Champion
 	[97341] = true, -- Guild Champion
 	[97821] = true -- Void-Touched
+}
+
+K.ImportantBuffs = {
+	[1022] = true, -- Hand of Protection
+	[178207] = true, -- Drums of Fury
+	[17] = K.Class == "PRIEST", -- Power Word: Shield
+	[20707] = true, -- Soulstone
+	[230935] = true, -- Drums of the Mountain
+	[2825] = true, -- Bloodlust
+	[32182] = true, -- Heroism
+	[80353] = true, -- Time Warp
+	[90355] = true, -- Ancient Hysteria
+}
+
+K.ImportantDebuffs = {
+	[212570] = true, -- Surrendered Soul
+	[25771] = K.Class == "PALADIN", -- Forbearance
+	[6788] = K.Class == "PRIEST", -- Weakened Soul
 }
 
 K.ChannelingTicks = {

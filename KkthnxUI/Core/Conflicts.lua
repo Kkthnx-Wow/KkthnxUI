@@ -100,7 +100,7 @@ or K.CheckAddOnState("Kui_Nameplates")
 or K.CheckAddOnState("bdNameplates")
 or K.CheckAddOnState("Plater")
 or K.CheckAddOnState("NiceNameplates") then
-	C["Nameplates"].Enable = false
+	C["Nameplate"].Enable = false
 end
 
 if K.CheckAddOnState("TipTop")
