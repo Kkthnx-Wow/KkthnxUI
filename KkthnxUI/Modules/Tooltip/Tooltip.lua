@@ -377,7 +377,7 @@ end
 
 -- Tooltip skin
 local function getBackdrop(self)
-	return self.bg:GetBackdrop()
+	return self.tooltipBackground:GetBackdrop()
 end
 
 local function getBackdropColor()
@@ -406,11 +406,11 @@ function Module:ReskinTooltip()
 			self = self:GetParent()
 		end
 
-		self.bg = CreateFrame("Frame", nil, self)
-		self.bg:SetPoint("TOPLEFT", self, 2, -2)
-		self.bg:SetPoint("BOTTOMRIGHT", self, -2, 2)
-		self.bg:SetFrameLevel(self:GetFrameLevel()) -- Look into this issue later.
-		self.bg:CreateBorder()
+		self.tooltipBackground = CreateFrame("Frame", nil, self)
+		self.tooltipBackground:SetPoint("TOPLEFT", self, 2, -2)
+		self.tooltipBackground:SetPoint("BOTTOMRIGHT", self, -2, 2)
+		self.tooltipBackground:SetFrameLevel(self:GetFrameLevel()) -- Look into this issue later.
+		self.tooltipBackground:CreateBorder()
 
 		-- other gametooltip-like support
 		self.GetBackdrop = getBackdrop
@@ -419,7 +419,7 @@ function Module:ReskinTooltip()
 
 		self.tipStyled = true
 	end
-	self.bg:SetBackdropBorderColor()
+	self.tooltipBackground:SetBackdropBorderColor()
 
 	if C["Tooltip"].ClassColor and self.GetItem then
 		local _, item = self:GetItem()
@@ -427,7 +427,7 @@ function Module:ReskinTooltip()
 			local quality = select(3, GetItemInfo(item))
 			local color = BAG_ITEM_QUALITY_COLORS[quality or 1]
 			if color then
-				self.bg:SetBackdropBorderColor(color.r, color.g, color.b)
+				self.tooltipBackground:SetBackdropBorderColor(color.r, color.g, color.b)
 			end
 		end
 	end
