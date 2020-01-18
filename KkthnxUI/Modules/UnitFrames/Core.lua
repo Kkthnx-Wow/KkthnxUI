@@ -1163,7 +1163,10 @@ function Module:OnEnable()
 	-- Register our units / layout
 	self:CreateUnits()
 	self:CreateFilgerAnchors()
-	self:UpdateRangeCheckSpells()
+
+	if C["Unitframe"].Enable or C["Party"].Enable or C["Raid"].Enable then
+		self:UpdateRangeCheckSpells()
+	end
 
 	if C["Raid"].AuraWatch then
 		local RaidDebuffs = CreateFrame("Frame")

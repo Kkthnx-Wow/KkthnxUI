@@ -1,7 +1,4 @@
 local K, C = unpack(select(2, ...))
-if C["Raid"].Enable ~= true then
-	return
-end
 
 local Module = K:GetModule("Unitframes")
 local oUF = oUF or K.oUF

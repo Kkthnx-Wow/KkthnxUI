@@ -21,7 +21,7 @@ function Module:InitializeTalkingHead()
 
 	-- Put the actual talking head into our /moverui holder
 	content:ClearAllPoints()
-	content:SetPoint("BOTTOM", Module.frame, "BOTTOM", 0, 0)
+	content:SetPoint("CENTER", Module.frame, "CENTER", 0, 0)
 	content.ignoreFramePositionManager = true
 
 	-- Kill off Blizzard's repositioning

@@ -3,7 +3,7 @@
 ## Title: |cff4488ffKkthnxUI|r
 ## Notes: |cff666666By Josh "Kkthnx" Russell|r |n|n|cffffffffA simple User Interface replacement |nAddOn for World of Warcraft.|r|r|n|n|cff4488ffThis addon supports:|r BFA |cff666666Patch: 8.2|r|n|n
 ## Author: Kkthnx
-## Version: 9.10.1
+## Version: 9.10.2
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIData
 ## SavedVariablesPerCharacter: KkthnxUIDataPerChar
@@ -11,17 +11,17 @@
 ## X-Category: Interface Enhancements
 ## X-Credits: Alza, Azilroka, Blazeflack, Caellian, Caith, Darth Predator, Elv, Firestorm Community, Goldpaw, Haleth, Haste, Hungtar, Hydra, Ishtara, KkthnxUI Community, LightSpark, Magicnachos, Merathilis, Nightcracker, P3lim, Rav99, Roth, Shestak, Simpy, siweia, Sophia, Sticklord, Tekkub, Tohveli, Tukz, Tulla, Tuller, oUF Team
 ## X-Thanks: Goldpaw, Yoni @ twitch.tv/yoni
-## X-Curse-Packaged-Version: 9.10.1
+## X-Curse-Packaged-Version: 9.10.2
 ## X-Curse-Project-ID: 342348
 ## X-Curse-Project-Name: KkthnxUI
 ## X-WoWI-ID: 25333
 ## X-Discord: https://discord.gg/YUmxqQm
-## X-BugReport: https://github.com/kkthnx-wow/KkthnxUI_8.2.0/issues/new
+## X-BugReport: https://github.com/kkthnx-wow/KkthnxUI/issues/new
 ## X-License: The MIT License (MIT)
 ## X-Localizations: enUS, deDE, ruRU, zhCN
 ## X-Translation: deDE: |cff4488ffBaine|r, ruRU: |cff4488ffEnumaElis|r, zhCN: |cff4488ffyaoenqi|r
 ## X-oUF: oUFKkthnxUI
-## X-Website: https://github.com/kkthnx-wow/KkthnxUI_8.2.0
+## X-Website: https://github.com/kkthnx-wow/KkthnxUI
 
 # -- Load Core File
 KkthnxUI.xml

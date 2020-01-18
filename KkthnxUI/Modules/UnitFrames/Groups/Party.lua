@@ -1,9 +1,6 @@
 local K, C = unpack(select(2, ...))
-if C["Party"].Enable ~= true then
-	return
-end
-
 local Module = K:GetModule("Unitframes")
+
 local oUF = oUF or K.oUF
 if not oUF then
 	K.Print("Could not find a vaild instance of oUF. Stopping Party.lua code!")

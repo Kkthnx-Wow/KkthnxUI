@@ -283,7 +283,7 @@ function Module:OnEnable()
 	Minimap:CreateBorder()
 	Minimap:CreateInnerShadow(nil, 0.4)
 	Minimap:SetScale(1.0)
-	Minimap:SetBlipTexture(C["Minimap"].BlipTexture.Value)
+	-- Minimap:SetBlipTexture(C["Minimap"].BlipTexture.Value) -- Broken for now until we fix our Media file for this.
 
 	Minimap:HookScript("OnEnter", function(mm)
 		if C["Minimap"].LocationText.Value ~= "MOUSEOVER" or not C["Minimap"].Enable then

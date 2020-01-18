@@ -228,14 +228,14 @@ C["Minimap"] = {
 		},
 		["Value"] = "MOUSEOVER"
 	},
-	["BlipTexture"] = {
-		["Options"] = {
-			["Blizzard"] = "Interface\\MiniMap\\ObjectIconsAtlas",
-			["Charmed"] = "Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\Blip-Charmed",
-			["Nandini"] = "Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\Blip-Nandini-New",
-		},
-		["Value"] = "Interface\\MiniMap\\ObjectIconsAtlas"
-	},
+	-- ["BlipTexture"] = {
+	-- 	["Options"] = {
+	-- 		["Blizzard"] = "Interface\\MiniMap\\ObjectIconsAtlas",
+	-- 		["Charmed"] = "Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\Blip-Charmed",
+	-- 		["Nandini"] = "Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\Blip-Nandini-New",
+	-- 	},
+	-- 	["Value"] = "Interface\\MiniMap\\ObjectIconsAtlas"
+	-- },
 }
 
 -- Miscellaneous
@@ -287,7 +287,7 @@ C["Nameplate"] = {
 	["PlateWidth"] = 134,
 	["QuestIndicator"] = true,
 	["SecureColor"] = {1, 0, 1},
-	["ShowPlayerPlate"] = true,
+	["ShowPlayerPlate"] = false,
 	["Smooth"] = false,
 	["TankMode"] = false,
 	["TargetIndicatorColor"] = {1, 1, 0},
