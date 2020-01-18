@@ -259,25 +259,21 @@ function Module:CreateNakedButtons()
 		DressUpSideNudeBtn:Hide()
 	end)
 
-	-- Wardrobe (Used By Transmogrifier Npc)
+	-- Wardrobe (used by transmogrifier NPC)
 	local function DoBlizzardCollectionsFunc()
-		-- Hide Positioning Controls
-		WardrobeTransmogFrameControlFrame:HookScript("OnShow", WardrobeTransmogFrameControlFrame.Hide)
-		-- Disable Special Animations
-		hooksecurefunc(WardrobeTransmogFrame.Model, "SetUnit", function()
-			WardrobeTransmogFrame.Model:SetAnimation(255)
-		end)
+		-- Hide positioning controls
+		WardrobeTransmogFrame.ModelScene.ControlFrame:HookScript("OnShow", WardrobeTransmogFrame.ModelScene.ControlFrame.Hide)
 	end
 
 	if IsAddOnLoaded("Blizzard_Collections") then
 		DoBlizzardCollectionsFunc()
 	else
-		local waitCollectionsFrame = CreateFrame("FRAME")
-		waitCollectionsFrame:RegisterEvent("ADDON_LOADED")
-		waitCollectionsFrame:SetScript("OnEvent", function(_, _, arg1)
+		local waitFrame = CreateFrame("FRAME")
+		waitFrame:RegisterEvent("ADDON_LOADED")
+		waitFrame:SetScript("OnEvent", function(self, event, arg1)
 			if arg1 == "Blizzard_Collections" then
 				DoBlizzardCollectionsFunc()
-				waitCollectionsFrame:UnregisterAllEvents()
+				waitFrame:UnregisterAllEvents()
 			end
 		end)
 	end
@@ -790,31 +786,31 @@ function Module:OnEnable()
 		end
 	end
 
-	do
-		local clubFrames = {
-			GetFramesRegisteredForEvent("CLUB_INVITATION_ADDED_FOR_SELF")
-		}
+	-- do
+	-- 	local clubFrames = {
+	-- 		GetFramesRegisteredForEvent("CLUB_INVITATION_ADDED_FOR_SELF")
+	-- 	}
 
-		for i = 1, #clubFrames do
-			clubFrames[i]:UnregisterEvent("CLUB_INVITATION_ADDED_FOR_SELF")
-		end
-	end
+	-- 	for i = 1, #clubFrames do
+	-- 		clubFrames[i]:UnregisterEvent("CLUB_INVITATION_ADDED_FOR_SELF")
+	-- 	end
+	-- end
 
-	do
-		local socialFrames = {
-			GetFramesRegisteredForEvent("SOCIAL_QUEUE_UPDATE")
-		}
+	-- do
+	-- 	local socialFrames = {
+	-- 		GetFramesRegisteredForEvent("SOCIAL_QUEUE_UPDATE")
+	-- 	}
 
-		for i = 1, #socialFrames do
-			socialFrames[i]:UnregisterEvent("SOCIAL_QUEUE_UPDATE")
-		end
+	-- 	for i = 1, #socialFrames do
+	-- 		socialFrames[i]:UnregisterEvent("SOCIAL_QUEUE_UPDATE")
+	-- 	end
 
-		_G.FriendsTabHeaderTab2:Hide()
-		_G.FriendsTabHeaderTab3:ClearAllPoints()
-		_G.FriendsTabHeaderTab3:SetPoint("LEFT", _G.FriendsTabHeaderTab1, "RIGHT", 0, 0)
-		_G.QuickJoinFrame:Hide()
-		_G.QuickJoinToastButton:Hide()
-		_G.QuickJoinFrame:UnregisterAllEvents()
-		_G.QuickJoinToastButton:UnregisterAllEvents()
-	end
+	-- 	_G.FriendsTabHeaderTab2:Hide()
+	-- 	_G.FriendsTabHeaderTab3:ClearAllPoints()
+	-- 	_G.FriendsTabHeaderTab3:SetPoint("LEFT", _G.FriendsTabHeaderTab1, "RIGHT", 0, 0)
+	-- 	_G.QuickJoinFrame:Hide()
+	-- 	_G.QuickJoinToastButton:Hide()
+	-- 	_G.QuickJoinFrame:UnregisterAllEvents()
+	-- 	_G.QuickJoinToastButton:UnregisterAllEvents()
+	-- end
 end

@@ -1,5 +1,6 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
+local ModuleTooltip = K:GetModule("Tooltip")
 
 local _G = _G
 
@@ -64,7 +65,9 @@ function Module:CreateItemTexture(slot, relF, x, y)
 end
 
 function Module:CreateItemString(frame, strType)
-	if frame.fontCreated then return end
+	if frame.fontCreated then
+		return
+	end
 
 	for index, slot in pairs(inspectSlots) do
 		if index ~= 4 then
@@ -78,8 +81,8 @@ function Module:CreateItemString(frame, strType)
 			slotFrame.enchantText:SetPoint(relF, slotFrame, x, y)
 			slotFrame.enchantText:SetTextColor(0, 1, 0)
 			for i = 1, 10 do
-				local offset = (i-1)*18 + 5
-				local iconX = x > 0 and x+offset or x-offset
+				local offset = (i - 1) * 20 + 5
+				local iconX = x > 0 and x + offset or x - offset
 				local iconY = index > 15 and 20 or 2
 				slotFrame["textureIcon"..i] = Module:CreateItemTexture(slotFrame, relF, iconX, iconY)
 			end
@@ -89,8 +92,66 @@ function Module:CreateItemString(frame, strType)
 	frame.fontCreated = true
 end
 
+local azeriteSlots = {
+	[1] = true,
+	[3] = true,
+	[5] = true,
+}
+
+local locationCache = {}
+local function GetSlotItemLocation(id)
+	if not azeriteSlots[id] then
+		return
+	end
+
+	local itemLocation = locationCache[id]
+	if not itemLocation then
+		itemLocation = ItemLocation:CreateFromEquipmentSlot(id)
+		locationCache[id] = itemLocation
+	end
+	return itemLocation
+end
+
+function Module:ItemLevel_UpdateTraits(button, id, link)
+	-- if not C["Misc"].AzeriteTraits then
+	-- 	return
+	-- end
+
+	local empoweredItemLocation = GetSlotItemLocation(id)
+	if not empoweredItemLocation then
+		return
+	end
+
+	local allTierInfo = ModuleTooltip:Azerite_UpdateTier(link)
+	if not allTierInfo then
+		return
+	end
+
+	for i = 1, 2 do
+		local powerIDs = allTierInfo[i].azeritePowerIDs
+		if powerIDs[1] == 13 or not powerIDs[4] then
+			break
+		end
+
+		for _, powerID in pairs(powerIDs) do
+			local selected = C_AzeriteEmpoweredItem.IsPowerSelected(empoweredItemLocation, powerID)
+			if selected then
+				local spellID = ModuleTooltip:Azerite_PowerToSpell(powerID)
+				local name, _, icon = GetSpellInfo(spellID)
+				local texture = button["textureIcon"..i]
+				if name and texture then
+					texture:SetTexture(icon)
+					texture.bg:Show()
+				end
+			end
+		end
+	end
+end
+
 function Module:ItemLevel_SetupLevel(frame, strType, unit)
-	if not UnitExists(unit) then return end
+	if not UnitExists(unit) then
+		return
+	end
 
 	Module:CreateItemString(frame, strType)
 
@@ -159,6 +220,10 @@ function Module:ItemLevel_SetupLevel(frame, strType, unit)
 						end
 					end
 				end
+
+				if strType == "Character" then
+					Module:ItemLevel_UpdateTraits(slotFrame, index, link)
+				end
 			end
 		end
 	end
@@ -215,7 +280,11 @@ function Module:ItemLevel_ScrappingUpdate()
 	if not self.iLvl then
 		self.iLvl = K.CreateFontString(self, 12, "", "OUTLINE", false, "BOTTOMLEFT", 1, 1)
 	end
-	if not self.itemLink then self.iLvl:SetText("") return end
+
+	if not self.itemLink then
+		self.iLvl:SetText("")
+		return
+	end
 
 	local quality = 1
 	if self.itemLocation and not self.item:IsItemEmpty() and self.item:GetItemName() then
@@ -238,7 +307,9 @@ function Module.ItemLevel_ScrappingShow(event, addon)
 end
 
 function Module:CreateSlotItemLevel()
-	if not C["Misc"].ItemLevel then return end
+	if not C["Misc"].ItemLevel then
+		return
+	end
 
 	-- iLvl on CharacterFrame
 	CharacterFrame:HookScript("OnShow", Module.ItemLevel_UpdatePlayer)

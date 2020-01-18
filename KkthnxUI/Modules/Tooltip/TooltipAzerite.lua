@@ -52,49 +52,54 @@ function Module:Azerite_PowerToSpell(id)
 	return spellID
 end
 
-function Module:Azerite_UpdateItem()
-	local link = select(2, self:GetItem())
-    if not link then
-        return
-    end
-
-    if not C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID(link) then
-        return
-    end
+function Module:Azerite_UpdateTier(link)
+	if not C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID(link) then
+		return
+	end
 
 	local allTierInfo = tierCache[link]
 	if not allTierInfo then
 		allTierInfo = C_AzeriteEmpoweredItem_GetAllTierInfoByItemID(link)
 		tierCache[link] = allTierInfo
-    end
+	end
 
-    if not allTierInfo then
+	return allTierInfo
+end
+
+function Module:Azerite_UpdateItem()
+	local link = select(2, self:GetItem())
+    if not link then
         return
-    end
+	end
+
+	local allTierInfo = Module:Azerite_UpdateTier(link)
+	if not allTierInfo then
+		return
+	end
 
 	Module.Azerite_ScanTooltip(self)
-    if #tipList == 0 then
-        return
-    end
+	if #tipList == 0 then
+		return
+	end
 
-	local index = 1
+    local index = 1
 	for i = 1, #allTierInfo do
 		local powerIDs = allTierInfo[i].azeritePowerIDs
-        if powerIDs[1] == 13 then
-            break
-        end
+		if powerIDs[1] == 13 then
+			break
+		end
 
 		local lineIndex = tipList[index]
-        if not lineIndex then
-            break
-        end
+		if not lineIndex then
+			break
+		end
 
 		local tooltipText = ""
 		for _, id in ipairs(powerIDs) do
 			local spellID = Module:Azerite_PowerToSpell(id)
-            if not spellID then
-                break
-            end
+			if not spellID then
+				break
+			end
 
 			local name, _, icon = GetSpellInfo(spellID)
 			local found = name == powerList[lineIndex]
@@ -108,11 +113,11 @@ function Module:Azerite_UpdateItem()
 		if tooltipText ~= "" then
 			local line = _G[self:GetName().."TextLeft"..lineIndex]
 			-- if C["Tooltip"].OnlyArmorIcons then
-				-- line:SetText(tooltipText)
-				-- _G[self:GetName().."TextLeft"..lineIndex+1]:SetText("")
+			-- 	line:SetText(tooltipText)
+			-- 	_G[self:GetName().."TextLeft"..lineIndex+1]:SetText("")
 			-- else
 				line:SetText(line:GetText().."\n "..tooltipText)
-			-- end
+			--end
 		end
 
 		index = index + 1

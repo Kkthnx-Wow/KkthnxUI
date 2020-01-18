@@ -3,7 +3,6 @@ local K, C = unpack(select(2, ...))
 local _G = _G
 local math_abs = _G.math.abs
 local math_floor = _G.math.floor
-local math_huge = _G.math.huge
 local mod = _G.mod
 local select = _G.select
 local string_find = _G.string.find
@@ -43,10 +42,11 @@ local UnitIsTapDenied = _G.UnitIsTapDenied
 local UnitReaction = _G.UnitReaction
 
 local iLvlDB = {}
-local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
-local essenceDescription = GetSpellDescription(277253)
-local essenceTextureID = 2975691
 local itemLevelString = string_gsub(ITEM_LEVEL, "%%d", "")
+local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
+local essenceTextureID = 2975691
+local essenceDescription = GetSpellDescription(277253)
+local ITEM_SPELL_TRIGGER_ONEQUIP = ITEM_SPELL_TRIGGER_ONEQUIP
 
 function K.Print(...)
 	(_G.DEFAULT_CHAT_FRAME):AddMessage(string_join("", "|cff3c9bed", "KkthnxUI:|r ", ...))
@@ -231,7 +231,9 @@ function K:InspectItemTextures()
 				K.ScanTooltip.essences[step][3] = texture -- border texture placed by the atlas
 
 				step = step + 1
-				if selected then K.ScanTooltip.gems[i-1] = nil end
+				if selected then
+					K.ScanTooltip.gems[i-1] = nil
+				end
 			else
 				K.ScanTooltip.gems[i] = texture
 			end
