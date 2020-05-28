@@ -1,6 +1,10 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Blizzard")
 
+local _G = _G
+local pairs = _G.pairs
+local select = _G.select
+
 -- Timer tracker
 local function SkinIt(bar)
 	local BlizzTimerTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
@@ -19,12 +23,7 @@ local function SkinIt(bar)
 	bar:SetSize(222, 24)
 	bar:SetStatusBarTexture(BlizzTimerTexture)
 	bar:SetStatusBarColor(170 / 255, 10 / 255, 10 / 255)
-
-	bar.Backgrounds = bar:CreateTexture(nil, "BACKGROUND", -2)
-	bar.Backgrounds:SetAllPoints()
-	bar.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(bar)
+	bar:CreateBorder()
 
 	bar.spark = bar:CreateTexture(nil, "OVERLAY")
 	bar.spark:SetWidth(64)
@@ -35,10 +34,6 @@ local function SkinIt(bar)
 end
 
 function Module.START_TIMER()
-	if C["Unitframe"].Enable ~= true then
-		return
-	end
-
 	for _, b in pairs(TimerTracker.timerList) do
 		if b["bar"] and not b["bar"].skinned then
 			SkinIt(b["bar"])

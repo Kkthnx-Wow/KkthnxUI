@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Load_Tooltip -->
-   <Script file="Tooltip.lua" />
+   <Script file="Core.lua" />
 
    <Script file="TooltipAzerite.lua" />
    <Script file="TooltipHover.lua" />
@@ -9,4 +9,5 @@
    <Script file="TooltipIcons.lua" />
    <Script file="TooltipSpecLevel.lua" />
    <Script file="TooltipTargeted.lua" />
+   <!-- <Script file="TooltipCorruptionRank.lua" /> -->
 </Ui>

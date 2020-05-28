@@ -2,6 +2,7 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Chat")
 
 local _G = _G
+local string_find = string.find
 local string_format = _G.string.format
 local string_gsub = _G.string.gsub
 local string_len = _G.string.len
@@ -28,21 +29,21 @@ local FCF_ResetChatWindows = _G.FCF_ResetChatWindows
 local FCF_SetLocked = _G.FCF_SetLocked
 local FCF_SetWindowName = _G.FCF_SetWindowName
 local GetChannelName = _G.GetChannelName
+local GetCVar = _G.GetCVar
+local GetInstanceInfo = _G.GetInstanceInfo
+local GetItemIcon = _G.GetItemIcon
 local GetRealmName = _G.GetRealmName
+local hooksecurefunc = _G.hooksecurefunc
+local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsInGroup = _G.IsInGroup
-local InCombatLockdown = _G.InCombatLockdown
 local IsInRaid = _G.IsInRaid
 local IsShiftKeyDown = _G.IsShiftKeyDown
-local LE_REALM_RELATION_SAME = _G.LE_REALM_RELATION_SAME
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlaySoundFile = _G.PlaySoundFile
-local ToggleFrame = _G.ToggleFrame
+local SetCVar = _G.SetCVar
 local UIParent = _G.UIParent
-local GetInstanceInfo = _G.GetInstanceInfo
 local UnitName = _G.UnitName
-local UnitRealmRelationship = _G.UnitRealmRelationship
-local hooksecurefunc = _G.hooksecurefunc
 
 local function GetGroupDistribution()
 	local _, instanceType = GetInstanceInfo()
@@ -61,48 +62,53 @@ local function GetGroupDistribution()
 	return "/s "
 end
 
-local function OnTextChanged(editbox)
-	local text = editbox:GetText()
+local repeatedText
+local function OnTextChanged(EditBox)
+	local text = EditBox:GetText()
+	local len = string_len(text)
 
-	if InCombatLockdown() then
+	if (not repeatedText or not string_find(text, repeatedText, 1, true)) and InCombatLockdown() then
 		local MIN_REPEAT_CHARACTERS = 5
-		if string_len(text) > MIN_REPEAT_CHARACTERS then
+		if len > MIN_REPEAT_CHARACTERS then
 			local repeatChar = true
-			for i = 1, MIN_REPEAT_CHARACTERS, 1 do
-				if string_sub(text, (0 - i), (0 - i)) ~= string_sub(text,(-1 - i),(-1 - i)) then
+			for i=1, MIN_REPEAT_CHARACTERS, 1 do
+				local first = -1 - i
+				if string_sub(text,-i,-i) ~= string_sub(text,first,first) then
 					repeatChar = false
 					break
 				end
 			end
-
 			if repeatChar then
-				editbox:Hide()
+				repeatedText = text
+				EditBox:Hide()
 				return
 			end
 		end
 	end
 
-	if string_len(text) < 5 then
-		if string_sub(text, 1, 4) == "/tt " then
-			local unitname, realm = UnitName("target")
-			if unitname then
-				unitname = string_gsub(unitname, " ", "")
+	if len == 4 then
+		if text == "/tt " then
+			local Name, Realm = UnitName("target")
+			if Name then
+				Name = string_gsub(Name,"%s", "")
+
+				if Realm and Realm ~= "" then
+					Name = string_format("%s-%s", Name, string_gsub(Realm,"[%s%-]", ""))
+				end
 			end
 
-			if unitname and UnitRealmRelationship("target") ~= LE_REALM_RELATION_SAME then
-				unitname = string_format("%s-%s", unitname, string_gsub(realm, " ", ""))
-			end
-
-			ChatFrame_SendTell((unitname or "Invalid Target"), ChatFrame1)
-		end
-
-		if string_sub(text, 1, 4) == "/gr " then
-			editbox:SetText(GetGroupDistribution()..string_sub(text, 5))
-			ChatEdit_ParseText(editbox, 0)
+			ChatFrame_SendTell(Name or "Invalid Target", _G.ChatFrame1)
+		elseif text == "/gr " then
+			EditBox:SetText(GetGroupDistribution()..string_sub(text, 5))
+			ChatEdit_ParseText(EditBox, 0)
 		end
 	end
 
-	editbox.CharacterCount:SetText((255 - string_len(text)))
+	EditBox.CharacterCount:SetText(len > 0 and (255 - len) or "")
+
+	if repeatedText then
+		repeatedText = nil
+	end
 end
 
 -- Update editbox border color
@@ -196,16 +202,13 @@ function Module:StyleFrame(frame)
 		EditBox:Hide()
 	end)
 
-	-- Kill Scroll Bars
-	if Scroll then
-		Scroll:Kill()
-		ScrollBottom:Kill()
-		ScrollTex:Kill()
-	end
+	Scroll:Kill()
+	ScrollBottom:Kill()
+	ScrollTex:Kill()
 
 	-- Style the tab font
-	TabText:SetFont(TabFont, TabFontSize, TabFontFlags)
-	TabText.SetFont = K.Noop
+	TabText:SetFont(TabFont, TabFontSize + 1, TabFontFlags)
+	-- TabText.SetFont = K.Noop
 
 	-- Tabs Alpha
 	if C["Chat"].TabsMouseover ~= true then
@@ -221,12 +224,8 @@ function Module:StyleFrame(frame)
 
 	-- Move the edit box
 	EditBox:ClearAllPoints()
-	EditBox:SetPoint("BOTTOM", ChatFrame1, "TOP", 10, 24)
-	if C["Chat"].Background then
-		EditBox:SetSize(C["Chat"].Width + 29, 24)
-	else
-		EditBox:SetSize(C["Chat"].Width + 18, 24)
-	end
+	EditBox:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", -4, 24)
+	EditBox:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 22, 48)
 
 	-- Disable alt key usage
 	EditBox:SetAltArrowKeyMode(false)
@@ -238,7 +237,7 @@ function Module:StyleFrame(frame)
 
 	-- Hide editbox instead of fading
 	EditBox:HookScript("OnEditFocusLost", function(self)
-		EditBox.historyIndex = 		self:Hide()
+		self:Hide()
 	end)
 
 	-- Create our own texture for edit box
@@ -325,12 +324,15 @@ function Module:SetDefaultChatFramesPositions()
 		KkthnxUIData[GetRealmName()][UnitName("player")].Chat = {}
 	end
 
+	local Height = 150
+	local Width = 380
+
 	for i = 1, NUM_CHAT_WINDOWS do
 		local Frame = _G["ChatFrame"..i]
 		local ID = Frame:GetID()
 
 		-- Set font size and chat frame size
-		Frame:SetSize(C["Chat"].Width, C["Chat"].Height)
+		Frame:SetSize(Width, Height)
 
 		-- Move general bottom left
 		if ID == 1 then
@@ -342,15 +344,12 @@ function Module:SetDefaultChatFramesPositions()
 			end
 		end
 
-		-- set default KkthnxUI font size
-		FCF_SetChatWindowFontSize(nil, Frame, 12)
-
 		if (not Frame.isLocked) then
 			FCF_SetLocked(Frame, 1)
 		end
 
 		local Anchor1, _, Anchor2, X, Y = Frame:GetPoint()
-		KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame"..i] = {Anchor1, Anchor2, X, Y, C["Chat"].Width, C["Chat"].Height}
+		KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame"..i] = {Anchor1, Anchor2, X, Y, Width, Height}
 	end
 end
 
@@ -381,12 +380,12 @@ function Module:SetChatFramePosition()
 			return
 		end
 
-		local Anchor1, Anchor2, X, Y = unpack(Settings)
+		local Anchor1, Anchor2, X, Y, Width, Height = unpack(Settings)
 
 		Frame:SetUserPlaced(true)
 		Frame:ClearAllPoints()
 		Frame:SetPoint(Anchor1, UIParent, Anchor2, X, Y)
-		Frame:SetSize(C["Chat"].Width, C["Chat"].Height)
+		Frame:SetSize(Width, Height)
 	end
 end
 
@@ -505,6 +504,13 @@ function Module:Install()
 	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT")
 	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT_LEADER")
 
+	-- set default KkthnxUI font size
+	FCF_SetChatWindowFontSize(nil, ChatFrame1, 12)
+	FCF_SetChatWindowFontSize(nil, ChatFrame2, 12)
+	FCF_SetChatWindowFontSize(nil, ChatFrame3, 12)
+	FCF_SetChatWindowFontSize(nil, ChatFrame4, 12)
+	FCF_SetChatWindowFontSize(nil, ChatFrame5, 12)
+
 	-- Adjust Chat Colors
 	ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255) -- General
 	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255) -- Trade
@@ -520,17 +526,13 @@ function Module:OnMouseWheel(delta)
 		if IsShiftKeyDown() then
 			self:ScrollToBottom()
 		else
-			for _ = 1, (C["Chat"].ScrollByX or 3) do
-				self:ScrollDown()
-			end
+			self:ScrollDown()
 		end
 	elseif (delta > 0) then
 		if IsShiftKeyDown() then
 			self:ScrollToTop()
 		else
-			for _ = 1, (C["Chat"].ScrollByX or 3) do
-				self:ScrollUp()
-			end
+			self:ScrollUp()
 		end
 	end
 end
@@ -541,15 +543,8 @@ end
 
 function Module:SwitchSpokenDialect(button)
 	if (IsAltKeyDown() and button == "LeftButton") then
-		ToggleFrame(ChatMenu)
+		K.TogglePanel(ChatMenu)
 	end
-end
-
-function Module:AddMessage(text, ...)
-	-- Short Channels
-	text = text:gsub("|h%[(%d+)%. .-%]|h", "|h[%1]|h")
-
-	return self.DefaultAddMessage(self, text, ...)
 end
 
 function Module:SetupFrame()
@@ -566,11 +561,6 @@ function Module:SetupFrame()
 		if i == 2 then
 			if CombatLogQuickButtonFrame then
 				CombatLogQuickButtonFrame_Custom:Hide()
-			end
-		else
-			if C["Chat"].ShortenChannelNames then
-				Frame.DefaultAddMessage = Frame.AddMessage
-				Frame.AddMessage = Module.AddMessage
 			end
 		end
 	end
@@ -601,45 +591,21 @@ function Module:SetupFrame()
 	VoiceChatPromptActivateChannel:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 0, 14)
 	VoiceChatPromptActivateChannel.ClearAllPoints = K.Noop
 	VoiceChatPromptActivateChannel.SetPoint = K.Noop
+end
 
-	if C["Chat"].ShortenChannelNames then
-		-- Guild
-		_G.CHAT_GUILD_GET = "|Hchannel:GUILD|hG|h %s "
-		_G.CHAT_OFFICER_GET = "|Hchannel:OFFICER|hO|h %s "
-
-		-- Raid
-		_G.CHAT_RAID_GET = "|Hchannel:RAID|hR|h %s "
-		_G.CHAT_RAID_WARNING_GET = "RW %s "
-		_G.CHAT_RAID_LEADER_GET = "|Hchannel:RAID|hRL|h %s "
-
-		-- Party
-		_G.CHAT_PARTY_GET = "|Hchannel:PARTY|hP|h %s "
-		_G.CHAT_PARTY_LEADER_GET ="|Hchannel:PARTY|hPL|h %s "
-		_G.CHAT_PARTY_GUIDE_GET ="|Hchannel:PARTY|hPG|h %s "
-
-		-- Instance
-		_G.CHAT_INSTANCE_CHAT_GET = "|Hchannel:INSTANCE|hI|h %s "
-		_G.CHAT_INSTANCE_CHAT_LEADER_GET ="|Hchannel:INSTANCE|hIL|h %s "
-
-		-- Battleground
-		_G.CHAT_BATTLEGROUND_GET = "|Hchannel:BATTLEGROUND|hB|h %s "
-		_G.CHAT_BATTLEGROUND_LEADER_GET = "|Hchannel:BATTLEGROUND|hBL|h %s "
-
-		-- Whisper
-		_G.CHAT_WHISPER_INFORM_GET = "to %s "
-		_G.CHAT_WHISPER_GET = "from %s "
-		_G.CHAT_BN_WHISPER_INFORM_GET = "to %s "
-		_G.CHAT_BN_WHISPER_GET = "from %s "
-
-		-- Say/Yell
-		_G.CHAT_SAY_GET = "%s "
-		_G.CHAT_YELL_GET = "%s "
-
-		-- Flags
-		_G.CHAT_FLAG_AFK = "[AFK] "
-		_G.CHAT_FLAG_DND = "[DND] "
-		_G.CHAT_FLAG_GM = "[GM] "
+function Module:CreateChatLootIcons(_, message, ...)
+	if not C["Chat"].LootIcons then
+		return
 	end
+
+	local function Icon(link)
+		local texture = GetItemIcon(link)
+		return "\124T"..texture..":12:12:0:0:64:64:5:59:5:59\124t"..link
+	end
+
+	message = message:gsub("(\124c%x+\124Hitem:.-\124h\124r)", Icon)
+
+	return false, message, ...
 end
 
 function Module:OnEnable()
@@ -649,6 +615,10 @@ function Module:OnEnable()
 
 	self:MoveAudioButtons()
 	self:SetupFrame()
+
+	if C["Chat"].LockPositionSize or K.Name == "Kkthnx" then
+		K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.SetDefaultChatFramesPositions)
+	end
 
 	hooksecurefunc("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
 	hooksecurefunc("FCF_OpenTemporaryWindow", Module.StyleTempFrame)
@@ -661,8 +631,8 @@ function Module:OnEnable()
 	local CombatLogButton = _G.CombatLogQuickButtonFrame_Custom
 	if CombatLogButton then
 		local CombatLogFontContainer = _G.ChatFrame2 and _G.ChatFrame2.FontStringContainer
-		CombatLogButton:StripTextures()
-		CombatLogButton:CreateShadow(true)
+		CombatLogButton:CreateBorder(nil, nil, nil, true)
+		CombatLogButton:SetFrameLevel(4)
 
 		if CombatLogFontContainer then
 			CombatLogButton:ClearAllPoints()
@@ -679,8 +649,10 @@ function Module:OnEnable()
 		end
 
 		local CombatLogProgressBar = _G.CombatLogQuickButtonFrame_CustomProgressBar
-		CombatLogProgressBar:SetStatusBarTexture(C.Media.Texture)
-		CombatLogProgressBar:SetInside(CombatLogButton)
+		CombatLogProgressBar:SetFrameLevel(4)
+		CombatLogProgressBar:SetStatusBarTexture(C["Media"].Texture)
+		CombatLogProgressBar:SetPoint("TOPLEFT", CombatLogButton, "TOPLEFT", 0, -0)
+		CombatLogProgressBar:SetPoint("BOTTOMRIGHT", CombatLogButton, "BOTTOMRIGHT", -0, 0)
 		_G.CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SetSize(20, 22)
 		_G.CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SetPoint("TOPRIGHT", CombatLogButton, "TOPRIGHT", 0, -1)
 		_G.CombatLogQuickButtonFrame_CustomTexture:Hide()
@@ -693,7 +665,7 @@ function Module:OnEnable()
 		self.SetChatFont(ChatFrame)
 	end
 
-	if C["Chat"].WhisperSound == true then
+	if C["Chat"].WhisperSound then
 		K:RegisterEvent("CHAT_MSG_WHISPER", Module.PlayWhisperSound)
 		K:RegisterEvent("CHAT_MSG_BN_WHISPER", Module.PlayWhisperSound)
 	else
@@ -702,14 +674,19 @@ function Module:OnEnable()
 	end
 
 	if C["Chat"].Background then
+		local Width, Height = ChatFrame1:GetSize()
 		local ChatFrameBG = CreateFrame("Frame", "KKUI_ChatFrameBG", UIParent)
-		ChatFrameBG:SetSize(C["Chat"].Width + 29, C["Chat"].Height + 8)
+		ChatFrameBG:SetSize(Width + 26, Height + 8)
 		ChatFrameBG:SetPoint("TOPLEFT", ChatFrame1, "TOPLEFT", -4, 5)
 		ChatFrameBG:SetFrameStrata("BACKGROUND")
 		ChatFrameBG:CreateBorder()
 	end
 
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", Module.CreateChatLootIcons)
+
 	self:CreateChatFilter()
+	self:CreateChatItemLevels()
+	self:CreateChatRename()
 	self:CreateCopyChat()
 	self:CreateCopyURL()
 end

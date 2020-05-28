@@ -28,6 +28,10 @@ local CustomFilterList = {
 	[161053] = true, -- 水手咸饼干
 }
 
+local isPetToy = {
+	[174925] = true,
+}
+
 local function isCustomFilter(item)
 	if not C["Inventory"].ItemFilter then
 		return
@@ -50,7 +54,11 @@ local function isItemJunk(item)
 		return
 	end
 
-	return item.rarity == LE_ITEM_QUALITY_POOR and item.sellPrice > 0
+	if not C["Inventory"].FilterJunk then
+		return
+	end
+
+	return (item.rarity == LE_ITEM_QUALITY_POOR or KkthnxUIData[K.Realm][K.Name].CustomJunkList[item.id]) and item.sellPrice and item.sellPrice > 0
 end
 
 local function isAzeriteArmor(item)
@@ -102,10 +110,14 @@ local function isMountAndPet(item)
 		return
 	end
 
-	return item.classID == LE_ITEM_CLASS_MISCELLANEOUS and (item.subClassID == LE_ITEM_MISCELLANEOUS_MOUNT or item.subClassID == LE_ITEM_MISCELLANEOUS_COMPANION_PET)
+	if not C["Inventory"].FilterMount then
+		return
+	end
+
+	return (not isPetToy[item.id]) and item.classID == LE_ITEM_CLASS_MISCELLANEOUS and (item.subClassID == LE_ITEM_MISCELLANEOUS_MOUNT or item.subClassID == LE_ITEM_MISCELLANEOUS_COMPANION_PET)
 end
 
-local function isItemTrade(item)
+local function isTradeGoods(item)
 	if not C["Inventory"].ItemFilter then
 		return
 	end
@@ -142,77 +154,83 @@ local function isEmptySlot(item)
 		return
 	end
 
-	return Module.initComplete and not item.texture and not Module.SpecialBags[item.bagID]
+	return Module.initComplete and not item.texture and Module.BagsType[item.bagID] == 0
 end
 
 function Module:GetFilters()
-	local onlyBags = function(item)
-		return isItemInBag(item) and not isItemEquipment(item) and not isItemConsumble(item) and not isItemTrade(item) and not isItemQuest(item) and not isAzeriteArmor(item) and not isItemJunk(item) and not isMountAndPet(item) and not isItemFavourite(item) and not isEmptySlot(item)
+	local filters = {}
+
+	filters.onlyBags = function(item)
+		return isItemInBag(item) and not isItemEquipment(item) and not isItemConsumble(item) and not isItemQuest(item) and not isAzeriteArmor(item) and not isItemJunk(item) and not isMountAndPet(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item)
 	end
 
-	local bagAzeriteItem = function(item)
+	filters.bagAzeriteItem = function(item)
 		return isItemInBag(item) and isAzeriteArmor(item)
 	end
 
-	local bagEquipment = function(item)
+	filters.bagEquipment = function(item)
 		return isItemInBag(item) and isItemEquipment(item)
 	end
 
-	local bagConsumble = function(item)
+	filters.bagConsumble = function(item)
 		return isItemInBag(item) and isItemConsumble(item)
 	end
 
-	local bagTradeGoods = function(item)
-		return isItemInBag(item) and isItemTrade(item)
-	end
-
-	local bagQuestItem = function(item)
+	filters.bagQuestItem = function(item)
 		return isItemInBag(item) and isItemQuest(item)
 	end
 
-	local bagsJunk = function(item)
+	filters.bagsJunk = function(item)
 		return isItemInBag(item) and isItemJunk(item)
 	end
 
-	local onlyBank = function(item)
-		return isItemInBank(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumble(item) and not isAzeriteArmor(item) and not isMountAndPet(item) and not isItemFavourite(item) and not isEmptySlot(item)
+	filters.onlyBank = function(item)
+		return isItemInBank(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumble(item) and not isAzeriteArmor(item) and not isMountAndPet(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item)
 	end
 
-	local bankAzeriteItem = function(item)
+	filters.bankAzeriteItem = function(item)
 		return isItemInBank(item) and isAzeriteArmor(item)
 	end
 
-	local bankLegendary = function(item)
+	filters.bankLegendary = function(item)
 		return isItemInBank(item) and isItemLegendary(item)
 	end
 
-	local bankEquipment = function(item)
+	filters.bankEquipment = function(item)
 		return isItemInBank(item) and isItemEquipment(item)
 	end
 
-	local bankConsumble = function(item)
+	filters.bankConsumble = function(item)
 		return isItemInBank(item) and isItemConsumble(item)
 	end
 
-	local onlyReagent = function(item)
+	filters.onlyReagent = function(item)
 		return item.bagID == -3 and not isEmptySlot(item)
 	end
 
-	local bagMountPet = function(item)
+	filters.bagMountPet = function(item)
 		return isItemInBag(item) and isMountAndPet(item)
 	end
 
-	local bankMountPet = function(item)
+	filters.bankMountPet = function(item)
 		return isItemInBank(item) and isMountAndPet(item)
 	end
 
-	local bagFavourite = function(item)
+	filters.bagFavourite = function(item)
 		return isItemInBag(item) and isItemFavourite(item)
 	end
 
-	local bankFavourite = function(item)
+	filters.bankFavourite = function(item)
 		return isItemInBank(item) and isItemFavourite(item)
 	end
 
-	return onlyBags, bagAzeriteItem, bagEquipment, bagConsumble, bagTradeGoods, bagQuestItem, bagsJunk, onlyBank, bankAzeriteItem, bankLegendary, bankEquipment, bankConsumble, onlyReagent, bagMountPet, bankMountPet, bagFavourite, bankFavourite
+	filters.bagGoods = function(item)
+		return isItemInBag(item) and isTradeGoods(item)
+	end
+
+	filters.bankGoods = function(item)
+		return isItemInBank(item) and isTradeGoods(item)
+	end
+
+	return filters
 end

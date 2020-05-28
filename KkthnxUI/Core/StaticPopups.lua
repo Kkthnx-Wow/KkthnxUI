@@ -42,23 +42,16 @@ local Realm = GetRealmName()
 K.PopupDialogs = {}
 K.StaticPopup_DisplayedFrames = {}
 
-K.PopupDialogs["LINK_COPY_DIALOG"] = {
-	text = "Armory",
-	button1 = OKAY,
-	timeout = 0,
-	whileDead = true,
+K.PopupDialogs["FRIENDS_BROADCAST"] = {
+	text = BN_BROADCAST_TOOLTIP,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		local Parent = self:GetParent()
+
+		BNSetCustomMessage(Parent.EditBox:GetText())
+	end,
 	hasEditBox = true,
-	editBoxWidth = 350,
-	OnShow = function(self, ...)
-		self.editBox:SetFocus()
-	end,
-	EditBoxOnEnterPressed = function(self)
-		self:GetParent():Hide()
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide()
-	end,
-	preferredIndex = 3,
 }
 
 K.PopupDialogs["QUEST_CHECK_ID"] = {
@@ -94,7 +87,7 @@ K.PopupDialogs["QUEST_CHECK_ID"] = {
 }
 
 K.PopupDialogs["GITHUB_EDITBOX"] = {
-	text = format("|cff4488ff%s |r", "KkthnxUI GitHub"),
+	text = format("|cff669dff%s |r", "KkthnxUI GitHub"),
 	button1 = OKAY,
 	hasEditBox = 1,
 	OnShow = function(self, data)
@@ -133,7 +126,7 @@ K.PopupDialogs["GITHUB_EDITBOX"] = {
 }
 
 K.PopupDialogs["DISCORD_EDITBOX"] = {
-	text = format("|cff4488ff%s |r", "KkthnxUI Discord"),
+	text = format("|cff669dff%s |r", "KkthnxUI Discord"),
 	button1 = OKAY,
 	hasEditBox = 1,
 	OnShow = function(self, data)
@@ -169,44 +162,6 @@ K.PopupDialogs["DISCORD_EDITBOX"] = {
 	whileDead = 1,
 	preferredIndex = 3,
 	hideOnEscape = 1,
-}
-
-K.PopupDialogs["CONFIG_RL"] = {
-	text = L["Changes Reload"],
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function()
-		K.PixelPerfect.RequireReload = false
-		ReloadUI()
-	end,
-	hideOnEscape = false,
-	whileDead = 1,
-	preferredIndex = 3
-}
-
-K.PopupDialogs["DELETE_GRAYS"] = {
-	text = string.format("|cffff0000%s|r", L["Delete Grays"]),
-	button1 = _G.YES,
-	button2 = _G.NO,
-	OnAccept = function()
-		for bag = 0, 4 do
-			for slot = 1, GetContainerNumSlots(bag) do
-				local name = GetContainerItemLink(bag,slot)
-				if name and string.find(name, "9d9d9d") then
-					print(name)
-					PickupContainerItem(bag,slot)
-					DeleteCursorItem()
-				end
-			end
-		end
-	end,
-	OnShow = function(self)
-		MoneyFrame_Update(self.moneyFrame, K.PopupDialogs["DELETE_GRAYS"].Money)
-	end,
-	timeout = 4,
-	whileDead = 1,
-	hideOnEscape = false,
-	hasMoneyFrame = 1,
 }
 
 K.PopupDialogs["CHANGES_RL"] = {

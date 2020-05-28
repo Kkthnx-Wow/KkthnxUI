@@ -82,14 +82,6 @@ local function ApplyVertexColor(texture, color)
 	hooksecurefunc(texture, "SetVertexColor", ResetVertexColor)
 end
 
-local function ApplyBlend(region, blend)
-	if not blend then
-		return
-	end
-
-	region:SetBlendMode(blend)
-end
-
 local function ApplyAlpha(region, alpha)
 	if not alpha then
 		return
@@ -151,7 +143,6 @@ local function SetupTexture(texture, cfg, func, button)
 	ApplyPoints(texture, cfg.points)
 	ApplyVertexColor(texture, cfg.color)
 	ApplyAlpha(texture, cfg.alpha)
-	ApplyBlend(texture, cfg.blend)
 
 	if func == "SetTexture" then
 		ApplyTexture(texture, cfg.file)
@@ -271,6 +262,7 @@ function Module:StyleActionButton(button, cfg)
 	-- Backdrop
 	button:CreateBorder()
 	button:CreateInnerShadow()
+	button:StyleButton()
 
 	-- Textures
 	SetupTexture(icon, cfg.icon, "SetTexture", icon)
@@ -342,6 +334,7 @@ function Module:StyleExtraActionButton(cfg)
 	-- Border
 	button:CreateBorder()
 	button:CreateInnerShadow()
+	button:StyleButton()
 
 	-- Textures
 	SetupTexture(icon, cfg.icon, "SetTexture", icon)
@@ -350,7 +343,6 @@ function Module:StyleExtraActionButton(cfg)
 	SetupTexture(pushedTexture, cfg.pushedTexture, "SetPushedTexture", button)
 	SetupTexture(highlightTexture, cfg.highlightTexture, "SetHighlightTexture", button)
 	SetupTexture(checkedTexture, cfg.checkedTexture, "SetCheckedTexture", button)
-	highlightTexture:SetBlendMode("ADD")
 
 	-- Cooldown
 	SetupCooldown(cooldown, cfg.cooldown)
@@ -435,16 +427,8 @@ function Module:StyleAllActionButtons(cfg)
 	SpellFlyout:HookScript("OnShow", checkForFlyoutButtons)
 end
 
-local function HideHighlightButton(self)
-	if self.overlay then
-		self.overlay:Hide()
-		ActionButton_HideOverlayGlow(self)
-	end
-end
-
 function Module:CreateBarSkin()
 	local cfgFont = K.GetFont(C["UIFonts"].ActionBarsFonts)
-
 	local cfg = {
 		icon = {
 			texCoord = K.TexCoords,
@@ -471,19 +455,15 @@ function Module:CreateBarSkin()
 		},
 
 		pushedTexture = {
-			file = "Interface\\Buttons\\ButtonHilight-Square",
-			blend = "ADD"
+			-- file = ""
 		},
 
 		checkedTexture = {
-			file = "Interface\\Buttons\\CheckButtonHilight",
-			blend = "ADD"
+			-- file = ""
 		},
 
 		highlightTexture = {
-			file = "Interface\\Buttons\\ButtonHilight-Square",
-			color = {1, 1, 1},
-			blend = "ADD",
+			-- file = ""
 		},
 
 		cooldown = {
@@ -529,9 +509,5 @@ function Module:CreateBarSkin()
 	if C["ActionBar"].Hotkey then
 		Module:UpdateStanceHotKey()
 		K:RegisterEvent("UPDATE_BINDINGS", Module.UpdateStanceHotKey)
-	end
-
-	if C["ActionBar"].HideHighlight then
-		hooksecurefunc("ActionButton_ShowOverlayGlow", HideHighlightButton)
 	end
 end

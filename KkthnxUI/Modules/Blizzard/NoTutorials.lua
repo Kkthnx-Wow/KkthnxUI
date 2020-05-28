@@ -1,11 +1,14 @@
 local K, C = unpack(select(2, ...))
-if not C["General"].DisableTutorialButtons or K.CheckAddOnState("TutorialBuster") then
-	return
-end
+--local Module = K:GetModule("Blizzard")
 
 local _G = _G
 
-do
+-- function Module:CreateNoTutorials()
+-- 	if not C["General"].DisableTutorialButtons then
+-- 		return
+-- 	end
+
+
 	if _G.IsAddOnLoaded("Blizzard_TalentUI") then
 		_G.PlayerTalentFrameSpecializationTutorialButton:Kill()
 		_G.PlayerTalentFrameTalentsTutorialButton:Kill()
@@ -38,8 +41,13 @@ do
 	_G.LFDMicroButtonAlert:Hide()
 
 	_G.TutorialFrameAlertButton:UnregisterAllEvents()
+	_G.TutorialFrameAlertButton:SetParent(K.UIFrameHider)
 	_G.TutorialFrameAlertButton:Hide()
 
 	_G.TalentMicroButtonAlert:UnregisterAllEvents()
 	_G.TalentMicroButtonAlert:SetParent(K.UIFrameHider)
-end
+	_G.TalentMicroButtonAlert:Hide()
+
+	-- _G.SplashFrame:SetParent(K.UIFrameHider)
+	-- _G.SplashFrame:Hide()
+--end

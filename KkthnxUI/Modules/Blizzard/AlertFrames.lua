@@ -2,15 +2,16 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Blizzard")
 
 local _G = _G
+local ipairs = _G.ipairs
+local pairs = _G.pairs
 
-local UIParent = _G.UIParent
 local AlertFrame = _G.AlertFrame
-local GroupLootContainer = _G.GroupLootContainer
 local CreateFrame = _G.CreateFrame
+local GroupLootContainer = _G.GroupLootContainer
 local hooksecurefunc = _G.hooksecurefunc
+local UIParent = _G.UIParent
 
 local POSITION, ANCHOR_POINT, YOFFSET = "TOP", "BOTTOM", -18
-
 function K:PostAlertMove()
 	local AlertFrameHolder = _G.AlertFrameHolder
 
@@ -116,7 +117,7 @@ function Module:GroupLootContainer_Update()
 			if prevFrame and not (prevFrame == frame) then
 				frame:SetPoint(POSITION, prevFrame, ANCHOR_POINT, 0, YOFFSET)
 			else
-				frame:SetPoint(POSITION, self, POSITION, 0, self.reservedSize * (i-1 + 0.5))
+				frame:SetPoint(POSITION, self, POSITION, 0, self.reservedSize * (i - 1 + 0.5))
 			end
 
 			lastIdx = i
@@ -124,7 +125,7 @@ function Module:GroupLootContainer_Update()
 	end
 
 	if (lastIdx) then
-		self:Height(self.reservedSize * lastIdx)
+		self:SetHeight(self.reservedSize * lastIdx)
 		self:Show()
 	else
 		self:Hide()

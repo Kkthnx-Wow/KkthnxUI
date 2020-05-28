@@ -60,6 +60,7 @@ local function UpdatePowerColorArenaPreparation(self, specID)
 end
 
 function Module:CreateArena()
+	self.mystyle = "arena"
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
@@ -90,7 +91,7 @@ function Module:CreateArena()
 	end
 
 	if C["Arena"].Smooth then
-		K.SmoothBar(self.Health)
+		K:SmoothBar(self.Health)
 	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
@@ -109,7 +110,7 @@ function Module:CreateArena()
 	self.Power.frequentUpdates = true
 
 	if C["Arena"].Smooth then
-		K.SmoothBar(self.Power)
+		K:SmoothBar(self.Power)
 	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
@@ -127,8 +128,6 @@ function Module:CreateArena()
 	self.Trinket = CreateFrame("Frame", nil, self)
 	self.Trinket:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 	self.Trinket:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
-	-- self.Trinket:CreateBorder()
-	-- self.Trinket:CreateInnerShadow()
 
 	self.Health:ClearAllPoints()
 	self.Health:SetPoint("TOPLEFT", self.PVPSpecIcon:GetWidth() + 6, 0)
@@ -156,10 +155,9 @@ function Module:CreateArena()
 	self.Buffs.initialAnchor = "TOPLEFT"
 	self.Buffs["growth-y"] = "DOWN"
 	self.Buffs["growth-x"] = "RIGHT"
+	self.Buffs.showStealableBuffs = true
 	self.Buffs.PostCreateIcon = Module.PostCreateAura
 	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
-	-- self.Buffs.CustomFilter = Module.CustomAuraFilter.Blacklist
-	self.Buffs.CustomFilter = K.CustomBuffFilter.target
 
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 	self.Debuffs:SetWidth(156)
@@ -171,10 +169,10 @@ function Module:CreateArena()
 	self.Debuffs.initialAnchor = "TOPLEFT"
 	self.Debuffs["growth-y"] = "UP"
 	self.Debuffs["growth-x"] = "RIGHT"
+	self.Debuffs.CustomFilter = Module.CustomFilter
 	self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
-	self.Debuffs.CustomFilter = K.CustomDebuffFilter.target
 
 	self.Castbar = CreateFrame("StatusBar", "BossCastbar", self)
 	self.Castbar:SetStatusBarTexture(UnitframeTexture)

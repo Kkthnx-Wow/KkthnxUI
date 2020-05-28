@@ -3,16 +3,21 @@ local Module = K:GetModule("Miscellaneous")
 local ModuleTooltip = K:GetModule("Tooltip")
 
 local _G = _G
+local next = _G.next
+local pairs = _G.pairs
+local select = _G.select
+local type = _G.type
 
-local BAG_ITEM_QUALITY_COLORS = _G.BAG_ITEM_QUALITY_COLORS
+local C_AzeriteEmpoweredItem_IsPowerSelected = _G.C_AzeriteEmpoweredItem.IsPowerSelected
 local EquipmentManager_GetItemInfoByLocation = _G.EquipmentManager_GetItemInfoByLocation
 local EquipmentManager_UnpackLocation = _G.EquipmentManager_UnpackLocation
 local GetContainerItemLink = _G.GetContainerItemLink
 local GetInventoryItemLink = _G.GetInventoryItemLink
 local GetItemInfo = _G.GetItemInfo
+local GetSpellInfo = _G.GetSpellInfo
+local hooksecurefunc = _G.hooksecurefunc
 local UnitExists = _G.UnitExists
 local UnitGUID = _G.UnitGUID
-local hooksecurefunc = _G.hooksecurefunc
 
 local inspectSlots = {
 	"Head",
@@ -34,8 +39,18 @@ local inspectSlots = {
 	"SecondaryHand",
 }
 
+local azeriteSlots = {
+	[1] = true,
+	[3] = true,
+	[5] = true,
+}
+
+local locationCache = {}
+
 function Module:GetSlotAnchor(index)
-	if not index then return end
+	if not index then
+		return
+	end
 
 	if index <= 5 or index == 9 or index == 15 then
 		return "BOTTOMLEFT", 40, 20
@@ -75,11 +90,13 @@ function Module:CreateItemString(frame, strType)
 			slotFrame.iLvlText = K.CreateFontString(slotFrame, 12, "", "OUTLINE")
 			slotFrame.iLvlText:ClearAllPoints()
 			slotFrame.iLvlText:SetPoint("BOTTOMLEFT", slotFrame, 1, 1)
+
 			local relF, x, y = Module:GetSlotAnchor(index)
 			slotFrame.enchantText = K.CreateFontString(slotFrame, 12, "", "OUTLINE")
 			slotFrame.enchantText:ClearAllPoints()
 			slotFrame.enchantText:SetPoint(relF, slotFrame, x, y)
 			slotFrame.enchantText:SetTextColor(0, 1, 0)
+
 			for i = 1, 10 do
 				local offset = (i - 1) * 20 + 5
 				local iconX = x > 0 and x + offset or x - offset
@@ -92,13 +109,6 @@ function Module:CreateItemString(frame, strType)
 	frame.fontCreated = true
 end
 
-local azeriteSlots = {
-	[1] = true,
-	[3] = true,
-	[5] = true,
-}
-
-local locationCache = {}
 local function GetSlotItemLocation(id)
 	if not azeriteSlots[id] then
 		return
@@ -109,14 +119,11 @@ local function GetSlotItemLocation(id)
 		itemLocation = ItemLocation:CreateFromEquipmentSlot(id)
 		locationCache[id] = itemLocation
 	end
+
 	return itemLocation
 end
 
 function Module:ItemLevel_UpdateTraits(button, id, link)
-	-- if not C["Misc"].AzeriteTraits then
-	-- 	return
-	-- end
-
 	local empoweredItemLocation = GetSlotItemLocation(id)
 	if not empoweredItemLocation then
 		return
@@ -128,13 +135,13 @@ function Module:ItemLevel_UpdateTraits(button, id, link)
 	end
 
 	for i = 1, 2 do
-		local powerIDs = allTierInfo[i].azeritePowerIDs
-		if powerIDs[1] == 13 or not powerIDs[4] then
+		local powerIDs = allTierInfo[i] and allTierInfo[i].azeritePowerIDs
+		if not powerIDs or powerIDs[1] == 13 then
 			break
 		end
 
 		for _, powerID in pairs(powerIDs) do
-			local selected = C_AzeriteEmpoweredItem.IsPowerSelected(empoweredItemLocation, powerID)
+			local selected = C_AzeriteEmpoweredItem_IsPowerSelected(empoweredItemLocation, powerID)
 			if selected then
 				local spellID = ModuleTooltip:Azerite_PowerToSpell(powerID)
 				local name, _, icon = GetSpellInfo(spellID)
@@ -146,6 +153,71 @@ function Module:ItemLevel_UpdateTraits(button, id, link)
 			end
 		end
 	end
+end
+
+function Module:ItemLevel_UpdateInfo(slotFrame, info, quality)
+	local infoType = type(info)
+	local level
+	if infoType == "table" then
+		level = info.iLvl
+	else
+		level = info
+	end
+
+	if level and level > 1 and quality then
+		local color = K.QualityColors[quality]
+		slotFrame.iLvlText:SetText(level)
+		slotFrame.iLvlText:SetTextColor(color.r, color.g, color.b)
+	end
+
+	if infoType == "table" then
+		local enchant = info.enchantText
+		if enchant then
+			slotFrame.enchantText:SetText(enchant)
+		end
+
+		local gemStep, essenceStep = 1, 1
+		for i = 1, 10 do
+			local texture = slotFrame["textureIcon"..i]
+			local bg = texture.bg
+			local gem = info.gems and info.gems[gemStep]
+			local essence = not gem and (info.essences and info.essences[essenceStep])
+			if gem then
+				texture:SetTexture(gem)
+				bg:SetBackdropBorderColor()
+				bg:Show()
+
+				gemStep = gemStep + 1
+			elseif essence and next(essence) then
+				local r = essence[4]
+				local g = essence[5]
+				local b = essence[6]
+				if r and g and b then
+					bg:SetBackdropBorderColor(r, g, b)
+				else
+					bg:SetBackdropBorderColor()
+				end
+
+				local selected = essence[1]
+				texture:SetTexture(selected)
+				bg:Show()
+
+				essenceStep = essenceStep + 1
+			end
+		end
+	end
+end
+
+function Module:ItemLevel_RefreshInfo(link, unit, index, slotFrame)
+	C_Timer.After(.1, function()
+		local quality = select(3, GetItemInfo(link))
+		local info = K.GetItemLevel(link, unit, index, C["Misc"].GemEnchantInfo)
+		if info == "tooSoon" then
+			return
+		end
+
+		Module:ItemLevel_UpdateInfo(slotFrame, info, quality)
+	end)
 end
 
 function Module:ItemLevel_SetupLevel(frame, strType, unit)
@@ -170,55 +242,10 @@ function Module:ItemLevel_SetupLevel(frame, strType, unit)
 			if link then
 				local quality = select(3, GetItemInfo(link))
 				local info = K.GetItemLevel(link, unit, index, C["Misc"].GemEnchantInfo)
-				local infoType = type(info)
-				local level
-				if infoType == "table" then
-					level = info.iLvl
+				if info == "tooSoon" then
+					Module:ItemLevel_RefreshInfo(link, unit, index, slotFrame)
 				else
-					level = info
-				end
-
-				if level and level > 1 and quality then
-					local color = BAG_ITEM_QUALITY_COLORS[quality]
-					slotFrame.iLvlText:SetText(level)
-					slotFrame.iLvlText:SetTextColor(color.r, color.g, color.b)
-				end
-
-				if infoType == "table" then
-					local enchant = info.enchantText
-					if enchant then
-						slotFrame.enchantText:SetText(enchant)
-					end
-
-					local gemStep, essenceStep = 1, 1
-					for i = 1, 10 do
-						local texture = slotFrame["textureIcon"..i]
-						local bg = texture.bg
-						local gem = info.gems and info.gems[gemStep]
-						local essence = not gem and (info.essences and info.essences[essenceStep])
-						if gem then
-							texture:SetTexture(gem)
-							bg:SetBackdropBorderColor()
-							bg:Show()
-
-							gemStep = gemStep + 1
-						elseif essence and next(essence) then
-							local r = essence[4]
-							local g = essence[5]
-							local b = essence[6]
-							if r and g and b then
-								bg:SetBackdropBorderColor(r, g, b)
-							else
-								bg:SetBackdropBorderColor()
-							end
-
-							local selected = essence[1]
-							texture:SetTexture(selected)
-							bg:Show()
-
-							essenceStep = essenceStep + 1
-						end
-					end
+					Module:ItemLevel_UpdateInfo(slotFrame, info, quality)
 				end
 
 				if strType == "Character" then
@@ -254,7 +281,7 @@ function Module:ItemLevel_FlyoutUpdate(bag, slot, quality)
 		level = K.GetItemLevel(link, "player", slot)
 	end
 
-	local color = BAG_ITEM_QUALITY_COLORS[quality or 1]
+	local color = K.QualityColors[quality or 1]
 	self.iLvl:SetText(level)
 	self.iLvl:SetTextColor(color.r, color.g, color.b)
 end
@@ -267,7 +294,10 @@ function Module:ItemLevel_FlyoutSetup()
 	end
 
 	local _, _, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(location)
-	if voidStorage then return end
+	if voidStorage then
+		return
+	end
+
 	local quality = select(13, EquipmentManager_GetItemInfoByLocation(location))
 	if bags then
 		Module.ItemLevel_FlyoutUpdate(self, bag, slot, quality)
@@ -290,8 +320,9 @@ function Module:ItemLevel_ScrappingUpdate()
 	if self.itemLocation and not self.item:IsItemEmpty() and self.item:GetItemName() then
 		quality = self.item:GetItemQuality()
 	end
+
 	local level = K.GetItemLevel(self.itemLink)
-	local color = BAG_ITEM_QUALITY_COLORS[quality]
+	local color = K.QualityColors[quality]
 	self.iLvl:SetText(level)
 	self.iLvl:SetTextColor(color.r, color.g, color.b)
 end

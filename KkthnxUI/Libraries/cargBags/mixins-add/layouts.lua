@@ -31,11 +31,10 @@ function layouts.grid(self, columns, spacing, xOffset, yOffset)
 	columns, spacing = columns or 8, spacing or 5
 	xOffset, yOffset = xOffset or 0, yOffset or 0
 
-
 	local width, height = 0, 0
-	local col, row = 0, 0
+	local col
+	local row = 0
 	for i, button in ipairs(self.buttons) do
-
 		if (i == 1) then -- Hackish, I know
 			width, height = button:GetSize()
 		end
@@ -44,16 +43,16 @@ function layouts.grid(self, columns, spacing, xOffset, yOffset)
 		if (col == 0) then
 			col = columns
 		end
-		row = math.ceil(i/columns)
+		row = math.ceil(i / columns)
 
-		local xPos = (col-1) * (width + spacing)
-		local yPos = -1 * (row-1) * (height + spacing)
+		local xPos = (col - 1) * (width + spacing)
+		local yPos = -1 * (row - 1) * (height + spacing)
 
 		button:ClearAllPoints()
-		button:SetPoint("TOPLEFT", self, "TOPLEFT", xPos+xOffset, yPos+yOffset)
+		button:SetPoint("TOPLEFT", self, "TOPLEFT", xPos + xOffset, yPos + yOffset)
 	end
 
-	return columns * (width+spacing)-spacing, row * (height+spacing)-spacing
+	return columns * (width + spacing) - spacing, row * (height + spacing) - spacing
 end
 
 --[[!
@@ -77,5 +76,5 @@ function layouts.circle(self, radius, xOffset, yOffset)
 		button:SetPoint("TOPLEFT", self, "TOPLEFT", radius+x+xOffset, y-radius+yOffset)
 	end
 
-	return radius*2, radius*2
+	return radius * 2, radius * 2
 end

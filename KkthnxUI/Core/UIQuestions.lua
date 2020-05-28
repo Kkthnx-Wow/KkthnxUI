@@ -43,12 +43,12 @@ local function ModifiedString(string)
         if subHeader then
             newString = tostring("|cFFFFFF00"..prefix.."|r"..suffix)
         else
-            newString = tostring("|cff4488ff"..prefix.."|r"..suffix)
+            newString = tostring("|cff669dff"..prefix.."|r"..suffix)
         end
     end
 
     for pattern in string_gmatch(string, "(Q.*')") do
-        newString = newString:gsub(pattern, "|cff4488ff"..pattern:gsub("'", "").."|r")
+        newString = newString:gsub(pattern, "|cff669dff"..pattern:gsub("'", "").."|r")
     end
 
     for pattern in string_gmatch(string, "(A.*')") do
@@ -66,8 +66,11 @@ local function GetUIQuestionsInfo(i)
     end
 end
 
-local function CreateUIQuestions()
-	if not K.AboutPanel.Questions then return end
+K:RegisterEvent("PLAYER_LOGIN", function()
+    if not K.AboutPanel.Questions then
+        return
+    end
+
     K.AboutPanel.Questions:SetScript("OnShow", function(self)
         if self.show then
             return
@@ -104,6 +107,4 @@ local function CreateUIQuestions()
 
 		self.show = true
     end)
-end
-
-CreateUIQuestions()
+end)

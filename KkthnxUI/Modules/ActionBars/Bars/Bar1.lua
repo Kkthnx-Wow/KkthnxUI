@@ -12,6 +12,8 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
 function Module:OnEnable()
+	self:CreateMicroMenu()
+
 	if not C["ActionBar"].Enable then
 		return
 	end
@@ -20,17 +22,18 @@ function Module:OnEnable()
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
 	local layout = C["ActionBar"].Layout.Value
+	local buttonSize = C["ActionBar"].DefaultButtonSize
 
 	-- Create The Frame To Hold The Buttons
-	local frame = CreateFrame("Frame", "KkthnxUI_ActionBar1", UIParent, "SecureHandlerStateTemplate")
+	local frame = CreateFrame("Frame", "KKUI_ActionBar1", UIParent, "SecureHandlerStateTemplate")
 
 	if layout == "3x4 Boxed arrangement" then
-		frame:SetWidth(3 * FilterConfig.size + (3 - 1) * margin + 2 * padding)
-		frame:SetHeight(4 * FilterConfig.size + (4 - 1) * margin + 2 * padding)
+		frame:SetWidth(3 * buttonSize + (3 - 1) * margin + 2 * padding)
+		frame:SetHeight(4 * buttonSize + (4 - 1) * margin + 2 * padding)
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -305, 124}
 	else
-		frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
-		frame:SetHeight(FilterConfig.size + 2 * padding)
+		frame:SetWidth(num * buttonSize + (num - 1) * margin + 2 * padding)
+		frame:SetHeight(buttonSize + 2 * padding)
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 4}
 	end
 
@@ -39,14 +42,14 @@ function Module:OnEnable()
 			local button = _G["ActionButton"..i]
 			table_insert(buttonList, button) -- Add The Button Object To The List
 			button:SetParent(frame)
-			button:SetSize(FilterConfig.size, FilterConfig.size)
+			button:SetSize(buttonSize, buttonSize)
 			button:ClearAllPoints()
 
 			if i == 1 then
 				button:SetPoint("TOPLEFT", frame, padding, padding)
-			elseif (i-1)%3 == 0 then
+			elseif (i - 1) % 3 == 0 then
 				local previous = _G["ActionButton"..i - 3]
-				button:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, margin*(-1))
+				button:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, margin * (-1))
 			else
 				local previous = _G["ActionButton"..i - 1]
 				button:SetPoint("LEFT", previous, "RIGHT", margin, 0)
@@ -57,7 +60,7 @@ function Module:OnEnable()
 			local button = _G["ActionButton"..i]
 			table_insert(buttonList, button) -- Add The Button Object To The List
 			button:SetParent(frame)
-			button:SetSize(FilterConfig.size, FilterConfig.size)
+			button:SetSize(buttonSize, buttonSize)
 			button:ClearAllPoints()
 
 			if i == 1 then
@@ -75,7 +78,7 @@ function Module:OnEnable()
 
 	-- Create Drag Frame And Drag Functionality
 	if K.ActionBars.userPlaced then
-		K.Mover(frame, "Main Actionbar", "Bar1", frame.Pos)
+		frame.mover = K.Mover(frame, "Main Actionbar", "Bar1", frame.Pos)
 	end
 
 	if FilterConfig.fader then
@@ -115,7 +118,14 @@ function Module:OnEnable()
 	self:HideBlizz()
 	self:CreateBarSkin()
 	self:HookActionEvents()
-	self:CreateMicroMenu()
+
+	if PlayerTalentFrame then
+		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	else
+		hooksecurefunc("TalentFrame_LoadUI", function()
+			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		end)
+	end
 
 	-- Vehicle Fix
 	local function getActionTexture(button)

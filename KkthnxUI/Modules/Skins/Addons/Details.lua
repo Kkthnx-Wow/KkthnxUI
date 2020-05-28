@@ -4,12 +4,20 @@ local Module = K:GetModule("Skins")
 local _G = _G
 
 local IsAddOnLoaded = _G.IsAddOnLoaded
-local Details = _G.Details
 
 function Module:ReskinDetails()
 	if not IsAddOnLoaded("Details") or not C["Skins"].Details then
 		return
 	end
+
+	local Details = _G.Details
+
+	-- instance table can be nil sometimes
+	Details.tabela_instancias = Details.tabela_instancias or {}
+	Details.instances_amount = Details.instances_amount or 5
+
+	-- toggle windows on init
+	Details:ReabrirTodasInstancias()
 
 	local function setupInstance(instance)
 		if instance.styled then
@@ -88,14 +96,13 @@ function Module:ReskinDetails()
 	end
 
 	-- Numberize
-	local _detalhes = _G._detalhes
 	local current = C["General"].NumberPrefixStyle.Value
 	if current < 3 then
-		_detalhes.numerical_system = current
-		_detalhes:SelectNumericalSystem()
+		Details.numerical_system = current
+		Details:SelectNumericalSystem()
 	end
 
-	_detalhes.OpenWelcomeWindow = function()
+	Details.OpenWelcomeWindow = function()
 		if instance1 then
 			EmbedWindow(instance1, -370, 4, 260, 126)
 			instance1:SetBarSettings(20, "KkthnxUI_Statusbar")

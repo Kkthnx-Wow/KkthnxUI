@@ -43,7 +43,7 @@ if GetLocale() == "ruRU" then
 	L["Favourite Mode"] = "Режим Избранного"
 	L["Feathermoon Stronghold"] = "Крепость Оперенной Луны"
 	L["Fishy Loot"] = "Fishy Loot" --Перевести
-	L["FixParty"] = "\n|cff4488ff".."Если вы застряли в группе, попробуйте следующее".."|r\n\n|cff00ff001.|r Пригласите кого-нибудь в свою группу.\n|cff00ff002.|r Переделайте группу в рейд.\n|cff00ff003.|r Выйдите из группы.\n|cff00ff004.|r Пригласите друзей в свою новую группу.\n\n"
+	L["FixParty"] = "\n|cff669dff".."Если вы застряли в группе, попробуйте следующее".."|r\n\n|cff00ff001.|r Пригласите кого-нибудь в свою группу.\n|cff00ff002.|r Переделайте группу в рейд.\n|cff00ff003.|r Выйдите из группы.\n|cff00ff004.|r Пригласите друзей в свою новую группу.\n\n"
 	L["From"] = "От"
 	L["General"] = "Общее"
 	L["Ghost"] = "Призрак"
@@ -103,11 +103,11 @@ if GetLocale() == "ruRU" then
 	L["Skip Install"] = "Пропустить установку"
 	L["Sold Grays"] = "Продано серых вещей на сумму: %s"
 	L["Stack Cap"] = "Stack Caps" -- Перевести
-	L["Step 0"] = "Thank you for choosing |cff4488ffKkthnxUI|r!|n|nYou will be guided through the installation process in a few simple steps. At each step, you can decide whether or not you want to apply or skip the presented settings."
+	L["Step 0"] = "Thank you for choosing |cff669dffKkthnxUI|r!|n|nYou will be guided through the installation process in a few simple steps. At each step, you can decide whether or not you want to apply or skip the presented settings."
 	L["Step 1"] = "The first step applies the essential settings. This is |cffff0000recommended|r for any use unless you want to apply only a specific part of the settings.|n|nClick 'Apply' to apply the settings and 'Next' to continue the install process. If you wish to skip this step just press 'Next'."
 	L["Step 2"] = "The second step applies the correct chat setup. If you are a new user this step is recommended. If you are an existing user you may want to skip this step.|n|nClick 'Apply' to apply the settings and 'Next' to continue the install process. If you wish to skip this step just press 'Next'."
 	L["Step 3"] = "The third step applies the correct UI Scale setup. If you decide you do not like this you can adjust the scale in |cffffd200ESC > System > Advanced|r and you will see UI Scale slider you can adjust!"
-	L["Step 4"] = "Installation is complete. Please click the 'Complete' button to reload the UI. |n|nThank you for using |cff4488ffKkthnxUI|r! You Rock!"
+	L["Step 4"] = "Installation is complete. Please click the 'Complete' button to reload the UI. |n|nThank you for using |cff669dffKkthnxUI|r! You Rock!"
 	L["Stranger"] = "Stranger" -- Перевести
 	L["Switch to Bank"] = "Переключиться на Банк"
 	L["Targeted By"] = "Цель для:"

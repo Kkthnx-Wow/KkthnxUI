@@ -30,41 +30,7 @@ RegisterAttributeDriver(K.UIFrameHider, "state-visibility", "hide")
 K.PetBattleHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
 K.PetBattleHider:SetAllPoints()
 K.PetBattleHider:SetFrameStrata("LOW")
-RegisterStateDriver(K.PetBattleHider, "state-visibility", "[petbattle] hide; show")
-
-function K.PointsRestricted(frame)
-	if frame and not pcall(frame.GetPoint, frame) then
-		return true
-	end
-end
-
-local function SetOutside(obj, anchor, xOffset, yOffset, anchor2)
-	xOffset = xOffset or 0
-	yOffset = yOffset or 0
-	anchor = anchor or obj:GetParent()
-
-	assert(anchor)
-	if K.PointsRestricted(obj) or obj:GetPoint() then
-		obj:ClearAllPoints()
-	end
-
-	obj:SetPoint("TOPLEFT", anchor, "TOPLEFT", -xOffset, yOffset)
-	obj:SetPoint("BOTTOMRIGHT", anchor2 or anchor, "BOTTOMRIGHT", xOffset, -yOffset)
-end
-
-local function SetInside(obj, anchor, xOffset, yOffset, anchor2)
-	xOffset = xOffset or 0
-	yOffset = yOffset or 0
-	anchor = anchor or obj:GetParent()
-
-	assert(anchor)
-	if K.PointsRestricted(obj) or obj:GetPoint() then
-		obj:ClearAllPoints()
-	end
-
-	obj:SetPoint("TOPLEFT", anchor, "TOPLEFT", xOffset, -yOffset)
-	obj:SetPoint("BOTTOMRIGHT", anchor2 or anchor, "BOTTOMRIGHT", -xOffset, yOffset)
-end
+RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
 
 local function CreateBorder(f, bLayer, bOffset, bPoints, strip)
 	if f.Backgrounds then
@@ -79,7 +45,7 @@ local function CreateBorder(f, bLayer, bOffset, bPoints, strip)
 		f:StripTextures()
 	end
 
-	K.CreateBorder(f, bOffset)
+	K.CreateBorder(f, bOffset) -- object, offset, size, drawLayer, drawSubLevel, path
 
 	local backgrounds = f:CreateTexture(nil, "BACKGROUND")
 	backgrounds:SetDrawLayer("BACKGROUND", bLayer)
@@ -285,49 +251,32 @@ end
 
 local function StyleButton(button, noHover, noPushed, noChecked)
 	if button.SetHighlightTexture and not button.hover and not noHover then
-		local hover = button:CreateTexture()
-		hover:SetVertexColor(1, 1, 1)
-		hover:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
-		hover:SetBlendMode("ADD")
-		hover:SetAllPoints()
-		button.hover = hover
-		button:SetHighlightTexture(hover)
+		button:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+		button:GetHighlightTexture():SetAllPoints()
 	end
 
 	if button.SetPushedTexture and not button.pushed and not noPushed then
-		local pushed = button:CreateTexture()
-		pushed:SetVertexColor(1.0, 0.82, 0.0)
-		pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
-		pushed:SetBlendMode("ADD")
-		pushed:SetDesaturated(true)
-		pushed:SetAllPoints()
-		button.pushed = pushed
-		button:SetPushedTexture(pushed)
+		button:SetPushedTexture("Interface\\Buttons\\ButtonHilight-Square")
+		button:GetPushedTexture():SetBlendMode("ADD")
+		button:GetPushedTexture():SetDesaturated(true)
+		button:GetPushedTexture():SetVertexColor(246, 196, 66)
+		button:GetPushedTexture():SetAllPoints()
 	end
 
 	if button.SetCheckedTexture and not button.checked and not noChecked then
-		local checked = button:CreateTexture()
-		checked:SetTexture("Interface\\Buttons\\CheckButtonHilight")
-		checked:SetBlendMode("ADD")
-		checked:SetAllPoints()
-		button.checked = checked
-		button:SetCheckedTexture(checked)
+		button:SetCheckedTexture("Interface\\Buttons\\CheckButtonHilight")
+		button:GetCheckedTexture():SetBlendMode("ADD")
+		button:GetCheckedTexture():SetAllPoints()
 	end
 
-	local cooldown = button:GetName() and _G[button:GetName() .. "Cooldown"]
-	if cooldown and button:IsObjectType("Frame") then
+	local name = button.GetName and button:GetName()
+	local cooldown = name and _G[name.."Cooldown"]
+	if cooldown then
 		cooldown:ClearAllPoints()
 		cooldown:SetPoint("TOPLEFT", 1, -1)
 		cooldown:SetPoint("BOTTOMRIGHT", -1, 1)
 		cooldown:SetDrawEdge(false)
 		cooldown:SetSwipeColor(0, 0, 0, 1)
-	end
-
-	if button.SetNormalFontObject then
-		button:SetNormalFontObject(KkthnxUIFont)
-		button:SetHighlightFontObject(KkthnxUIFont)
-		button:SetDisabledFontObject(KkthnxUIFont)
-		button:SetPushedTextOffset(0, 0)
 	end
 end
 
@@ -518,72 +467,31 @@ local function SkinScrollBar(f, width)
 	f:SetScript("OnMouseWheel", scrollBarHook)
 end
 
--- local function SkinScrollBarTest()
--- 	local frame = self:GetName()
--- 	self:GetParent():StipTextures()
--- 	self:StripTextures()
+local function WatchPixelSnap(frame, snap)
+	if (frame and not frame:IsForbidden()) and frame.PixelSnapDisabled and snap then
+		frame.PixelSnapDisabled = nil
+	end
+end
 
--- 	local bu = (self.ThumbTexture or self.thumbTexture) or frame and _G[frame.."ThumbTexture"]
--- 	bu:SetAlpha(0)
--- 	bu:SetWidth(17)
+local function DisablePixelSnap(frame)
+	if (frame and not frame:IsForbidden()) and not frame.PixelSnapDisabled then
+		if frame.SetSnapToPixelGrid then
+			frame:SetSnapToPixelGrid(false)
+			frame:SetTexelSnappingBias(0)
+		elseif frame.GetStatusBarTexture then
+			local texture = frame:GetStatusBarTexture()
+			if texture and texture.SetSnapToPixelGrid then
+				texture:SetSnapToPixelGrid(false)
+				texture:SetTexelSnappingBias(0)
+			end
+		end
 
--- 	bu.bg = F.CreateBDFrame(self, 0)
--- 	bu.bg:SetPoint("TOPLEFT", bu, 0, -2)
--- 	bu.bg:SetPoint("BOTTOMRIGHT", bu, 0, 4)
-
--- 	local tex = F.CreateGradient(self)
--- 	tex:SetPoint("TOPLEFT", bu.bg, 0, -0)
--- 	tex:SetPoint("BOTTOMRIGHT", bu.bg, -0, 0)
-
--- 	local up, down = self:GetChildren()
--- 	up:SetWidth(17)
--- 	down:SetWidth(17)
-
--- 	up:SkinButton()
--- 	down:SkinButton()
-
--- 	up:SetDisabledTexture((C.Media.Blank)
--- 	local dis1 = up:GetDisabledTexture()
--- 	dis1:SetVertexColor(0, 0, 0, .4)
--- 	dis1:SetDrawLayer("OVERLAY")
-
--- 	down:SetDisabledTexture(C.Media.Blank)
--- 	local dis2 = down:GetDisabledTexture()
--- 	dis2:SetVertexColor(0, 0, 0, .4)
--- 	dis2:SetDrawLayer("OVERLAY")
-
--- 	local uptex = up:CreateTexture(nil, "ARTWORK")
--- 	uptex:SetTexture("^")
--- 	uptex:SetSize(8, 8)
--- 	uptex:SetPoint("CENTER")
--- 	uptex:SetVertexColor(1, 1, 1)
--- 	up.bgTex = uptex
-
--- 	local downtex = down:CreateTexture(nil, "ARTWORK")
--- 	downtex:SetTexture("*")
--- 	downtex:SetSize(8, 8)
--- 	downtex:SetPoint("CENTER")
--- 	downtex:SetVertexColor(1, 1, 1)
--- 	down.bgTex = downtex
-
--- 	--up:HookScript("OnEnter", textureOnEnter)
--- 	--up:HookScript("OnLeave", textureOnLeave)
--- 	--down:HookScript("OnEnter", textureOnEnter)
--- 	--down:HookScript("OnLeave", textureOnLeave)
--- 	self:HookScript("OnEnter", scrollOnEnter)
--- 	self:HookScript("OnLeave", scrollOnLeave)
--- end
+		frame.PixelSnapDisabled = true
+	end
+end
 
 local function AddCustomAPI(object)
 	local MetaTable = getmetatable(object).__index
-
-	if not object.SetOutside then
-		MetaTable.SetOutside = SetOutside
-	end
-
-	if not object.SetInside then
-		MetaTable.SetInside = SetInside
-	end
 
 	if not object.CreateBorder then
 		MetaTable.CreateBorder = CreateBorder
@@ -640,6 +548,17 @@ local function AddCustomAPI(object)
 	if not object.SkinScrollBar then
 		MetaTable.SkinScrollBar = SkinScrollBar
 	end
+
+	if not object.DisabledPixelSnap then
+		if MetaTable.SetTexture then hooksecurefunc(MetaTable, "SetTexture", DisablePixelSnap) end
+		if MetaTable.SetTexCoord then hooksecurefunc(MetaTable, "SetTexCoord", DisablePixelSnap) end
+		if MetaTable.CreateTexture then hooksecurefunc(MetaTable, "CreateTexture", DisablePixelSnap) end
+		if MetaTable.SetVertexColor then hooksecurefunc(MetaTable, "SetVertexColor", DisablePixelSnap) end
+		if MetaTable.SetColorTexture then hooksecurefunc(MetaTable, "SetColorTexture", DisablePixelSnap) end
+		if MetaTable.SetSnapToPixelGrid then hooksecurefunc(MetaTable, "SetSnapToPixelGrid", WatchPixelSnap) end
+		if MetaTable.SetStatusBarTexture then hooksecurefunc(MetaTable, "SetStatusBarTexture", DisablePixelSnap) end
+		MetaTable.DisabledPixelSnap = true
+	end
 end
 
 local Handled = {["Frame"] = true}
@@ -648,6 +567,7 @@ local Object = CreateFrame("Frame")
 AddCustomAPI(Object)
 AddCustomAPI(Object:CreateTexture())
 AddCustomAPI(Object:CreateFontString())
+AddCustomAPI(Object:CreateMaskTexture())
 
 Object = EnumerateFrames()
 while Object do

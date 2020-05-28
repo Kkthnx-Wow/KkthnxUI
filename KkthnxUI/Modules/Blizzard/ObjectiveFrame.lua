@@ -4,10 +4,13 @@ local Module = K:GetModule("Blizzard")
 local _G = _G
 local math_min = _G.math.min
 
+local CreateFrame = _G.CreateFrame
+local GetInstanceInfo = _G.GetInstanceInfo
 local GetScreenHeight = _G.GetScreenHeight
 local GetScreenWidth = _G.GetScreenWidth
-local RegisterStateDriver = _G.RegisterStateDriver
 local hooksecurefunc = _G.hooksecurefunc
+local RegisterStateDriver = _G.RegisterStateDriver
+local UIParent = _G.UIParent
 
 function Module:SetObjectiveFrameHeight()
 	local top = ObjectiveTrackerFrame:GetTop() or 0
@@ -32,7 +35,7 @@ local function IsFramePositionedLeft(frame)
 end
 
 function Module:SetObjectiveFrameAutoHide()
-	if not _G.ObjectiveTrackerFrame.AutoHider then -- Kaliel's Tracker prevents Module:MoveObjectiveFrame() from executing
+	if not _G.ObjectiveTrackerFrame.AutoHider then -- Kaliel"s Tracker prevents Module:MoveObjectiveFrame() from executing
 		return
 	end
 
@@ -94,11 +97,20 @@ function Module:MoveObjectiveFrame()
 
 	ObjectiveTrackerFrame.AutoHider:SetScript("OnShow", _G.ObjectiveTracker_Expand)
 
-	self:SetObjectiveFrameAutoHide()
+	Module:SetObjectiveFrameAutoHide()
+end
+
+-- Currently Bugged :(
+function Module:ShowObjectiveQuestsCount()
+	local NumQuests = select(2, GetNumQuestLogEntries())
+	local MaxQuests = C_QuestLog.GetMaxNumQuestsCanAccept()
+
+	ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetFormattedText("%s: %s/%s", TRACKER_HEADER_QUESTS, NumQuests, MaxQuests)
+	ObjectiveTrackerFrame.HeaderMenu.Title:SetFormattedText("%s: %s/%s", OBJECTIVES_TRACKER_LABEL, NumQuests, MaxQuests)
+	-- WorldMapFrame.BorderFrame.TitleText:SetFormattedText("%s: %s/%s", MAP_AND_QUEST_LOG, NumQuests, MaxQuests)
 end
 
 function Module:CreateObjectiveFrame()
-	if not K.CheckAddOnState("DugisGuideViewerZ") then
-		self:MoveObjectiveFrame()
-	end
+	Module:MoveObjectiveFrame()
+	-- K:RegisterEvent("QUEST_LOG_UPDATE", self.ShowObjectiveQuestsCount)
 end

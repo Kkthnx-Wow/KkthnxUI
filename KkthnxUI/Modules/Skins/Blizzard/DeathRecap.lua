@@ -2,35 +2,30 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
 local _G = _G
-
-local CreateFrame = _G.CreateFrame
+local select = _G.select
+local unpack = _G.unpack
 
 local function ReskinDeathRecapFrame()
-    local DeathRecapFrame = _G["DeathRecapFrame"]
-    DeathRecapFrame:StripTextures()
-	DeathRecapFrame:CreateBorder()
-    DeathRecapFrame.CloseButton:SkinButton()
+    local DeathRecapFrame = _G.DeathRecapFrame
+    DeathRecapFrame.CloseXButton:SkinCloseButton()
+    DeathRecapFrame:CreateBorder(nil, nil, nil, true)
 
     for i = 1, 5 do
-        local IconBorder = DeathRecapFrame["Recap" .. i].SpellInfo.IconBorder
-        local Icon = DeathRecapFrame["Recap" .. i].SpellInfo.Icon
+        local iconBorder = DeathRecapFrame["Recap"..i].SpellInfo.IconBorder
+        local icon = DeathRecapFrame["Recap"..i].SpellInfo.Icon
 
-        IconBorder:SetAlpha(0)
-        Icon:SetTexCoord(.08, .92, .08, .92)
+        iconBorder:SetAlpha(0)
+        icon:SetTexCoord(unpack(K.TexCoords))
+        DeathRecapFrame["Recap"..i].SpellInfo:CreateBackdrop()
+        DeathRecapFrame["Recap"..i].SpellInfo.Backdrop:SetAllPoints(icon)
+        icon:SetParent(DeathRecapFrame["Recap"..i].SpellInfo.Backdrop)
+    end
 
-        DeathRecapFrame["Recap" .. i].SpellInfo.Backgrounds = DeathRecapFrame["Recap" .. i].SpellInfo:CreateTexture(nil, "BACKGROUND", -2)
-		DeathRecapFrame["Recap" .. i].SpellInfo.Backgrounds:SetAllPoints()
-		DeathRecapFrame["Recap" .. i].SpellInfo.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		DeathRecapFrame["Recap" .. i].SpellInfo.Borders = CreateFrame("Frame", nil, DeathRecapFrame["Recap" .. i].SpellInfo)
-		DeathRecapFrame["Recap" .. i].SpellInfo.Borders:SetFrameLevel(DeathRecapFrame["Recap" .. i].SpellInfo:GetFrameLevel() + 1)
-		DeathRecapFrame["Recap" .. i].SpellInfo.Borders:SetAllPoints()
-		K.CreateBorder(DeathRecapFrame["Recap" .. i].SpellInfo.Borders)
-
-        DeathRecapFrame["Recap" .. i].SpellInfo.Backgrounds:SetOutside(Icon)
-        DeathRecapFrame["Recap" .. i].SpellInfo.Borders:SetOutside(Icon)
-
-        Icon:SetParent(DeathRecapFrame["Recap" .. i].SpellInfo.Borders)
+    for i = 1, DeathRecapFrame:GetNumChildren() do
+        local child = select(i, DeathRecapFrame:GetChildren())
+        if (child:IsObjectType("Button") and child.GetText) and child:GetText() == CLOSE then
+            child:SkinButton()
+        end
     end
 end
 

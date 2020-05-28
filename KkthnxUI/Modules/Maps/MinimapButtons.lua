@@ -39,14 +39,16 @@ function Module:CreateRecycleBin()
 	}
 
 	local bu = CreateFrame("Button", "RecycleBinToggleButton", Minimap)
-	bu:SetAlpha(0.8)
+	bu:SetAlpha(0.6)
 	bu:SetSize(16, 16)
+	bu:ClearAllPoints()
 	bu:SetPoint("BOTTOMLEFT", -7, -7)
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 	bu.Icon:SetAllPoints()
-	bu.Icon:SetTexture("Interface\\COMMON\\Indicator-Yellow")
+	bu.Icon:SetTexture("Interface\\COMMON\\Indicator-Gray")
 	bu:SetHighlightTexture("Interface\\COMMON\\Indicator-Yellow")
-	K.AddTooltip(bu, "ANCHOR_LEFT", "Minimap RecycleBin", "white")
+	bu:SetPushedTexture("Interface\\COMMON\\Indicator-Green")
+	K.AddTooltip(bu, "ANCHOR_LEFT", "Minimap RecycleBin|n|nCollects minimap buttons and makes them accessible through a pop out menu", "white")
 
 	local bin = CreateFrame("Frame", "RecycleBinFrame", UIParent)
 	bin:SetPoint("RIGHT", bu, "LEFT", -3, -6)
@@ -70,6 +72,7 @@ function Module:CreateRecycleBin()
 	local function clickFunc()
 		K.UIFrameFadeOut(bin, 0.5, 1, 0)
 		C_Timer_After(0.5, hideBinButton)
+		PlaySound(825)
 	end
 
 	local secureAddons = {
@@ -175,10 +178,9 @@ function Module:CreateRecycleBin()
 		SortRubbish()
 		if bin:IsShown() then
 			clickFunc()
-			bu.Icon:SetDesaturated(false)
 		else
 			K.UIFrameFadeIn(bin, 0.5, 0, 1)
-			bu.Icon:SetDesaturated(true)
+			PlaySound(825)
 		end
 	end)
 

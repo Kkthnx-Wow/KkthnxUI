@@ -120,13 +120,8 @@ end
 
 -- Function to check if quest ID is blocked
 local function IsQuestIDBlocked(questID)
-	if questID then
-		if questID == 43923	-- Starlight Rose
-		or questID == 43924	-- Leyblood
-		or questID == 43925	-- Runescale Koi
-		then
-			return true
-		end
+	if K.AutoQuestIDBlocked[questID] then
+		return true
 	end
 end
 

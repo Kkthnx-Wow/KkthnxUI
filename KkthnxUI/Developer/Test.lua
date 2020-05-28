@@ -1,2 +1,7 @@
 local K, C, L = unpack(select(2, ...))
--- local Testing = K:NewModule("Testing")
+
+if not K.isDeveloper then
+	return
+end
+
+-- local Module = K:NewModule("Testing")

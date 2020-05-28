@@ -2,6 +2,8 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
 local _G = _G
+local pairs = _G.pairs
+local select = _G.select
 local table_insert = _G.table.insert
 
 local CharacterHandsSlot = _G.CharacterHandsSlot
@@ -16,16 +18,14 @@ local unpack = _G.unpack
 
 local function UpdateAzeriteItem(self)
 	if not self.styled then
+		self.styled = true
+
 		self.AzeriteTexture:SetAlpha(0)
 		self.RankFrame.Texture:SetTexture()
 		self.RankFrame.Label:FontTemplate(nil, nil, "OUTLINE")
 		self.RankFrame.Label:ClearAllPoints()
 		self.RankFrame.Label:SetPoint("TOPLEFT", self, 2, -1)
-		self.RankFrame.Label:SetTextColor(1, .5, 0)
-
-		self:StyleButton(true)
-
-		self.styled = true
+		self.RankFrame.Label:SetTextColor(1, 0.5, 0)
 	end
 end
 
@@ -70,6 +70,15 @@ local function FixSidebarTabCoords()
 					end)
 				end
 			end
+		end
+	end
+end
+
+local function UpdateFactionSkins()
+	for i = 1, _G.NUM_FACTIONS_DISPLAYED, 1 do
+		local statusbar = _G["ReputationBar"..i.."ReputationBar"]
+		if statusbar then
+			statusbar:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
 		end
 	end
 end
@@ -122,6 +131,7 @@ local function ReskinCharacterFrame()
 
 			slot.ignoreTexture:SetTexture([[Interface\PaperDollInfoFrame\UI-GearManager-LeaveItem-Transparent]])
 			slot.IconBorder:SetAlpha(0)
+
 			hooksecurefunc(slot.IconBorder, "SetVertexColor", function(_, r, g, b)
 				slot:SetBackdropBorderColor(r, g, b)
 			end)
@@ -180,6 +190,11 @@ local function ReskinCharacterFrame()
 
 	-- Buttons used to toggle between equipment manager, titles, and character stats
 	hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", FixSidebarTabCoords)
+
+	-- Reskin Reputation Statusbars
+	hooksecurefunc("ExpandFactionHeader", UpdateFactionSkins)
+	hooksecurefunc("CollapseFactionHeader", UpdateFactionSkins)
+	hooksecurefunc("ReputationFrame_Update", UpdateFactionSkins)
 end
 
 table_insert(Module.NewSkin["KkthnxUI"], ReskinCharacterFrame)

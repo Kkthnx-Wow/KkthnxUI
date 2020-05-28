@@ -7,7 +7,6 @@ local table_insert = _G.table.insert
 
 local CanExitVehicle = _G.CanExitVehicle
 local CreateFrame = _G.CreateFrame
-local GameTooltip_Hide = _G.GameTooltip_Hide
 local MainMenuBarVehicleLeaveButton_OnEnter = _G.MainMenuBarVehicleLeaveButton_OnEnter
 local RegisterStateDriver = _G.RegisterStateDriver
 local TaxiRequestEarlyLanding = _G.TaxiRequestEarlyLanding
@@ -19,25 +18,28 @@ function Module:CreateLeaveVehicle()
 	local padding, margin = 0, 5
 	local num = 1
 	local buttonList = {}
+	local buttonSize = C["ActionBar"].DefaultButtonSize
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KkthnxUI_LeaveVehicleBar", UIParent, "SecureHandlerStateTemplate")
-	frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
-	frame:SetHeight(FilterConfig.size + 2 * padding)
+	frame:SetWidth(num * buttonSize + (num - 1) * margin + 2 * padding)
+	frame:SetHeight(buttonSize + 2 * padding)
 	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 260, 4}
 
 	-- The Button
 	local button = CreateFrame("CheckButton", "KkthnxUI_LeaveVehicleButton", frame, "ActionButtonTemplate, SecureHandlerClickTemplate")
 	table_insert(buttonList, button) -- Add The Button Object To The List
-	button:SetSize(FilterConfig.size, FilterConfig.size)
+	button:SetSize(buttonSize, buttonSize)
 	button:SetPoint("BOTTOMLEFT", frame, padding, padding)
 	button:StyleButton()
 	button:RegisterForClicks("AnyUp")
+
 	button.icon:SetTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
 	button.icon:SetTexCoord(.216, .784, .216, .784)
+
 	button:SetNormalTexture(nil)
 	button:GetPushedTexture():SetTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
-	K.CreateBorder(button)
+	button:CreateBorder()
 	button:CreateInnerShadow()
 
 	local function onClick(self)
@@ -49,9 +51,10 @@ function Module:CreateLeaveVehicle()
 
 		self:SetChecked(false)
 	end
+
 	button:SetScript("OnClick", onClick)
 	button:SetScript("OnEnter", MainMenuBarVehicleLeaveButton_OnEnter)
-	button:SetScript("OnLeave", GameTooltip_Hide)
+	button:SetScript("OnLeave", K.HideTooltip)
 
 	-- Frame Visibility
 	frame.frameVisibility = "[canexitvehicle]c;[mounted]m;n"
@@ -64,7 +67,7 @@ function Module:CreateLeaveVehicle()
 
 	-- Create Drag Frame And Drag Functionality
 	if K.ActionBars.userPlaced then
-		K.Mover(frame, "LeaveVehicle", "LeaveVehicle", frame.Pos)
+		frame.mover = K.Mover(frame, "LeaveVehicle", "LeaveVehicle", frame.Pos)
 	end
 
 	-- create the mouseover functionality

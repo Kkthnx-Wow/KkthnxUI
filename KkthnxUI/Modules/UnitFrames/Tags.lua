@@ -7,10 +7,9 @@ if not oUF then
 end
 
 local _G = _G
-local math_floor = _G.math.floor
 local string_format = _G.string.format
 
-local ALTERNATE_POWER_INDEX = _G.ALTERNATE_POWER_INDEX
+local ALTERNATE_POWER_INDEX = Enum.PowerType.Alternate or 10
 local CHAT_MSG_AFK = _G.CHAT_MSG_AFK
 local DEAD = _G.DEAD
 local DND = _G.DND
@@ -23,6 +22,7 @@ local UNKNOWN = _G.UNKNOWN
 local UnitBattlePetLevel = _G.UnitBattlePetLevel
 local UnitClass = _G.UnitClass
 local UnitClassification = _G.UnitClassification
+local UnitEffectiveLevel = _G.UnitEffectiveLevel
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitHasVehicleUI = _G.UnitHasVehicleUI
 local UnitHealth = _G.UnitHealth
@@ -42,7 +42,6 @@ local UnitIsTapDenied = _G.UnitIsTapDenied
 local UnitIsWildBattlePet = _G.UnitIsWildBattlePet
 local UnitLevel = _G.UnitLevel
 local UnitPower = _G.UnitPower
-local UnitPowerMax = _G.UnitPowerMax
 local UnitPowerType = _G.UnitPowerType
 local UnitReaction = _G.UnitReaction
 local UnitStagger = _G.UnitStagger
@@ -50,11 +49,11 @@ local UnitStagger = _G.UnitStagger
 local function ColorPercent(value)
 	local r, g, b
 	if value < 20 then
-		r, g, b = 1, .1, .1
+		r, g, b = 1, 0.1, 0.1
 	elseif value < 35 then
-		r, g, b = 1, .5, 0
+		r, g, b = 1, 0.5, 0
 	elseif value < 80 then
-		r, g, b = 1, .9, .3
+		r, g, b = 1, 0.9, 0.3
 	else
 		r, g, b = 1, 1, 1
 	end
@@ -76,7 +75,7 @@ oUF.Tags.Methods["hp"] = function(unit)
 	else
 		local per = oUF.Tags.Methods["perhp"](unit) or 0
 		local cur = UnitHealth(unit)
-		if (unit == "player" and not UnitHasVehicleUI(unit)) or unit == "target" or unit == "focus" then
+		if (unit == "player" and not UnitHasVehicleUI(unit)) or unit == "target" or unit == "focus" or string.find(unit, "party") then
 			return ValueAndPercent(cur, per)
 		else
 			return ColorPercent(per)
@@ -96,7 +95,7 @@ oUF.Tags.Methods["power"] = function(unit)
 		end
 	else
 		return per
-    end
+	end
 end
 oUF.Tags.Events["power"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER"
 
@@ -116,7 +115,7 @@ oUF.Tags.Methods["color"] = function(unit)
 		return K.RGBToHex(1, 1, 1)
 	end
 end
-oUF.Tags.Events["color"] = "UNIT_HEALTH UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_FACTION UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Events["color"] = "UNIT_HEALTH UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 
 oUF.Tags.Methods["afkdnd"] = function(unit)
 	if UnitIsAFK(unit) then
@@ -138,34 +137,38 @@ oUF.Tags.Methods["DDG"] = function(unit)
 		return "|cffCFCFCF"..PLAYER_OFFLINE.."|r"
 	end
 end
-oUF.Tags.Events["DDG"] = "UNIT_HEALTH UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Events["DDG"] = "UNIT_HEALTH UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION UNIT_FLAGS PLAYER_FLAGS_CHANGED"
 
 -- Level tags
 oUF.Tags.Methods["fulllevel"] = function(unit)
-	local level = UnitLevel(unit)
+	if not UnitIsConnected(unit) then
+		return "??"
+	end
+
+	local realLevel = UnitLevel(unit)
+	local level = UnitEffectiveLevel(unit)
 	if UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) then
 		level = UnitBattlePetLevel(unit)
 	end
 
 	local color = K.RGBToHex(GetCreatureDifficultyColor(level))
+	local str
 	if level > 0 then
-		level = color..level.."|r"
+		local realTag = level ~= realLevel and "*" or ""
+		str = color..level..realTag.."|r"
 	else
-		level = "|cffff0000??|r"
+		str = "|cffff0000??|r"
 	end
-	local str = level
 
 	local class = UnitClassification(unit)
-	if not UnitIsConnected(unit) then
-		str = "??"
-	elseif class == "worldboss" then
-		str = "|cffff0000Boss|r"
+	if class == "worldboss" then
+		str = "|cffAF5050Boss|r"
 	elseif class == "rareelite" then
-		str = level.."|cff0080ffR|r+"
+		str = str.."|cffAF5050R|r+"
 	elseif class == "elite" then
-		str = level.."+"
+		str = str.."|cffAF5050+|r"
 	elseif class == "rare" then
-		str = level.."|cff0080ffR|r"
+		str = str.."|cffAF5050R|r"
 	end
 
 	return str
@@ -248,16 +251,22 @@ oUF.Tags.Events["pppower"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWE
 -- AltPower value tag
 oUF.Tags.Methods["altpower"] = function(unit)
 	local cur = UnitPower(unit, ALTERNATE_POWER_INDEX)
-	local max = UnitPowerMax(unit, ALTERNATE_POWER_INDEX)
-	if max > 0 and not UnitIsDeadOrGhost(unit) then
-		return string_format("%s%%", math_floor(cur / max*100 + .5))
+	if cur > 0 then
+		local _, r, g, b = UnitAlternatePowerTextureInfo(unit, 2)
+		if not r then
+			r, g, b = 1, 1, 1
+		end
+
+		return K.RGBToHex(r, g, b)..cur
+	else
+		return nil
 	end
 end
-oUF.Tags.Events["altpower"] = "UNIT_POWER_UPDATE"
+oUF.Tags.Events["altpower"] = "UNIT_POWER_UPDATE UNIT_POWER_BAR_SHOW UNIT_POWER_BAR_HIDE"
 
 -- Monk stagger
 oUF.Tags.Methods["monkstagger"] = function(unit)
-	if unit ~= "player" then
+	if unit ~= "player" or K.Class ~= "MONK" then
 		return
 	end
 

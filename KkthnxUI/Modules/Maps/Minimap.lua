@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("Minimap", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
+local Module = K:NewModule("Minimap")
 
 local _G = _G
 
@@ -88,7 +88,7 @@ function Module:UpdateSettings()
 		return
 	end
 
-	Minimap.Location:SetWidth(K.MinimapSize)
+	Minimap.Location:SetWidth(K.MinimapSize - 30)
 
 	if C["Minimap"].LocationText.Value ~= "SHOW" or not C["Minimap"].Enable then
 		Minimap.Location:Hide()
@@ -140,11 +140,12 @@ function Module:UpdateSettings()
 	if MiniMapMailFrame then
 		MiniMapMailFrame:ClearAllPoints()
 		if C["DataText"].Time then
-			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
+			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 6)
+			MiniMapMailFrame:SetScale(1.2)
 		else
 			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -6)
+			MiniMapMailFrame:SetScale(1.2)
 		end
-		MiniMapMailFrame:SetScale(1.2)
 		MiniMapMailFrame:SetHitRectInsets(8, 8, 12, 11)
 	end
 
@@ -153,37 +154,41 @@ function Module:UpdateSettings()
 		QueueStatusMinimapButton:ClearAllPoints()
 		QueueStatusMinimapButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
 
-		local queueIcon = Minimap:CreateTexture(nil, "ARTWORK")
+		local queueIcon = Minimap:CreateTexture(nil, "OVERLAY")
 		queueIcon:SetPoint("CENTER", QueueStatusMinimapButton)
-		queueIcon:SetSize(50, 50)
+		queueIcon:SetSize(40, 40)
 		queueIcon:SetTexture("Interface\\Minimap\\Raid_Icon")
 
-		local anim = queueIcon:CreateAnimationGroup()
-		anim:SetLooping("REPEAT")
-		anim.rota = anim:CreateAnimation("Rotation")
-		anim.rota:SetDuration(3)
-		anim.rota:SetDegrees(360)
+		local EyeAnimation = queueIcon:CreateAnimationGroup()
+		EyeAnimation:SetLooping("REPEAT")
+		EyeAnimation.Rotation = EyeAnimation:CreateAnimation("Rotation")
+		EyeAnimation.Rotation:SetDuration(6)
+		EyeAnimation.Rotation:SetDegrees(360)
 
 		hooksecurefunc("QueueStatusFrame_Update", function()
 			queueIcon:SetShown(QueueStatusMinimapButton:IsShown())
 		end)
 
-		hooksecurefunc("EyeTemplate_StartAnimating", function() anim:Play() end)
-		hooksecurefunc("EyeTemplate_StopAnimating", function() anim:Stop() end)
+		hooksecurefunc("EyeTemplate_StartAnimating", function()
+			EyeAnimation:Play()
+		end)
+
+		hooksecurefunc("EyeTemplate_StopAnimating", function()
+			EyeAnimation:Stop()
+		end)
 	end
 
 	if MiniMapInstanceDifficulty and GuildInstanceDifficulty then
 		MiniMapInstanceDifficulty:ClearAllPoints()
 		MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
-		MiniMapInstanceDifficulty:SetScale(0.9)
+
 		GuildInstanceDifficulty:ClearAllPoints()
 		GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
-		GuildInstanceDifficulty:SetScale(0.9)
 	end
 
 	if MiniMapChallengeMode then
 		MiniMapChallengeMode:ClearAllPoints()
-		MiniMapChallengeMode:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 8, -8)
+		MiniMapChallengeMode:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
 	end
 
 	if StreamingIcon then
@@ -267,23 +272,16 @@ function Module:OnEnable()
 		return
 	end
 
-	local pos
 	local MinimapFrameHolder = CreateFrame("Frame", "MinimapFrameHolder", Minimap)
-	if K.CheckAddOnState("TitanClassic") then
-		pos = {"TOPRIGHT", UIParent, "TOPRIGHT", -4, -30}
-	else
-		MinimapFrameHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -4, -4)
-		pos = {"TOPRIGHT", UIParent, "TOPRIGHT", -4, -4}
-	end
+	MinimapFrameHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -4, -4)
 	MinimapFrameHolder:SetSize(C["Minimap"].Size, C["Minimap"].Size)
 
 	Minimap:ClearAllPoints()
 	Minimap:SetPoint("CENTER", MinimapFrameHolder, "CENTER", 0, 0)
-	Minimap:SetMaskTexture(C["Media"].Blank)
 	Minimap:CreateBorder()
-	Minimap:CreateInnerShadow(nil, 0.4)
-	Minimap:SetScale(1.0)
-	-- Minimap:SetBlipTexture(C["Minimap"].BlipTexture.Value) -- Broken for now until we fix our Media file for this.
+	Minimap:CreateInnerShadow(nil, 0.6)
+	Minimap:SetMaskTexture(C["Media"].Blank)
+	Minimap:SetBlipTexture(C["Minimap"].BlipTexture.Value)
 
 	Minimap:HookScript("OnEnter", function(mm)
 		if C["Minimap"].LocationText.Value ~= "MOUSEOVER" or not C["Minimap"].Enable then
@@ -304,7 +302,7 @@ function Module:OnEnable()
 	Minimap.Location = Minimap:CreateFontString(nil, "OVERLAY")
 	Minimap.Location:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 	Minimap.Location:SetFont(select(1, Minimap.Location:GetFont()), 13, select(3, Minimap.Location:GetFont()))
-	Minimap.Location:SetPoint("TOP", Minimap, "TOP", 0, -4)
+	Minimap.Location:SetPoint("TOP", Minimap, "TOP", 0, -6)
 	Minimap.Location:SetJustifyH("CENTER")
 	Minimap.Location:SetJustifyV("MIDDLE")
 	if C["Minimap"].LocationText.Value ~= "SHOW" or not C["Minimap"].Enable then
@@ -342,10 +340,10 @@ function Module:OnEnable()
 	_G.Minimap:SetQuestBlobRingScalar(0)
 	_G.MinimapCluster:EnableMouse(false)
 
-	K.Mover(MinimapFrameHolder, "Minimap", "Minimap", pos)
+	K.Mover(MinimapFrameHolder, "Minimap", "Minimap", {"TOPRIGHT", UIParent, "TOPRIGHT", -4, -4})
 
 	Minimap:EnableMouseWheel(true)
-	Minimap:SetScript("OnMouseWheel", Module.OnMouseWheelScroll)
+	Minimap:SetScript("OnMouseWheel", self.OnMouseWheelScroll)
 
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", self.UpdateZoneText)
 	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", self.UpdateZoneText)

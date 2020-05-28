@@ -4,25 +4,31 @@ local K, C, L = unpack(select(2, ...))
 -- Edited: KkthnxUI (Kkthnx)
 
 local _G = _G
+local select = _G.select
 local string_find = _G.string.find
 local string_match = _G.string.match
+local string_split = _G.string.split
 
+local C_PetJournal_GetNumCollectedInfo = _G.C_PetJournal.GetNumCollectedInfo
 local CreateFrame = _G.CreateFrame
 local GetAuctionItemInfo = _G.GetAuctionItemInfo
 local GetAuctionItemLink = _G.GetAuctionItemLink
 local GetBuybackItemInfo = _G.GetBuybackItemInfo
 local GetBuybackItemLink = _G.GetBuybackItemLink
+local GetCurrentGuildBankTab = _G.GetCurrentGuildBankTab
+local GetGuildBankItemInfo = _G.GetGuildBankItemInfo
+local GetGuildBankItemLink = _G.GetGuildBankItemLink
 local GetItemInfo = _G.GetItemInfo
 local GetMerchantItemInfo = _G.GetMerchantItemInfo
 local GetMerchantItemLink = _G.GetMerchantItemLink
 local GetMerchantNumItems = _G.GetMerchantNumItems
 local GetNumAuctionItems = _G.GetNumAuctionItems
 local GetNumBuybackItems = _G.GetNumBuybackItems
+local hooksecurefunc = _G.hooksecurefunc
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local UIParent = _G.UIParent
-local hooksecurefunc = _G.hooksecurefunc
 
-local COLOR = {r = .1, g = 1, b = .1}
+local COLOR = {r = 0.1, g = 1, b = 0.1}
 local knowables, knowns = {
 	[LE_ITEM_CLASS_CONSUMABLE] = true,
 	[LE_ITEM_CLASS_RECIPE] = true,
@@ -31,8 +37,11 @@ local knowables, knowns = {
 local tooltip = CreateFrame("GameTooltip", "AlreadyKnownTooltip", nil, "GameTooltipTemplate")
 
 local function isPetCollected(speciesID)
-	if not speciesID or speciesID == 0 then return end
-	local numOwned = C_PetJournal.GetNumCollectedInfo(speciesID)
+	if not speciesID or speciesID == 0 then
+		return
+	end
+
+	local numOwned = C_PetJournal_GetNumCollectedInfo(speciesID)
 	if numOwned > 0 then
 		return true
 	end
@@ -41,25 +50,32 @@ end
 local function IsAlreadyKnown(link, index)
 	if not link then return end
 
-	if strmatch(link, "battlepet:") then
-		local speciesID = select(2, strsplit(":", link))
+	if string_match(link, "battlepet:") then
+		local speciesID = select(2, string_split(":", link))
 		return isPetCollected(speciesID)
-	elseif strmatch(link, "item:") then
+	elseif string_match(link, "item:") then
 		local name, _, _, _, _, _, _, _, _, _, _, itemClassID = GetItemInfo(link)
-		if not name then return end
+		if not name then
+			return
+		end
 
 		if itemClassID == LE_ITEM_CLASS_BATTLEPET and index then
 			local speciesID = tooltip:SetGuildBankItem(GetCurrentGuildBankTab(), index)
 			return isPetCollected(speciesID)
 		else
-			if knowns[link] then return true end
-			if not knowables[itemClassID] then return end
+			if knowns[link] then
+				return true
+			end
+
+			if not knowables[itemClassID] then
+				return
+			end
 
 			tooltip:SetOwner(UIParent, "ANCHOR_NONE")
 			tooltip:SetHyperlink(link)
 			for i = 1, tooltip:NumLines() do
 				local text = _G[tooltip:GetName().."TextLeft"..i]:GetText() or ""
-				if strfind(text, COLLECTED) or text == ITEM_SPELL_KNOWN then
+				if string_find(text, COLLECTED) or text == ITEM_SPELL_KNOWN then
 					knowns[link] = true
 					return true
 				end
@@ -73,7 +89,9 @@ local function MerchantFrame_UpdateMerchantInfo()
 	local numItems = GetMerchantNumItems()
 	for i = 1, MERCHANT_ITEMS_PER_PAGE do
 		local index = (MerchantFrame.page - 1) * MERCHANT_ITEMS_PER_PAGE + i
-		if index > numItems then return end
+		if index > numItems then
+			return
+		end
 
 		local button = _G["MerchantItem"..i.."ItemButton"]
 		if button and button:IsShown() then
@@ -81,7 +99,7 @@ local function MerchantFrame_UpdateMerchantInfo()
 			if isUsable and IsAlreadyKnown(GetMerchantItemLink(index)) then
 				local r, g, b = COLOR.r, COLOR.g, COLOR.b
 				if numAvailable == 0 then
-					r, g, b = r*.5, g*.5, b*.5
+					r, g, b = r * 0.5, g * 0.5, b * 0.5
 				end
 				SetItemButtonTextureVertexColor(button, r, g, b)
 			end
@@ -93,7 +111,9 @@ hooksecurefunc("MerchantFrame_UpdateMerchantInfo", MerchantFrame_UpdateMerchantI
 local function MerchantFrame_UpdateBuybackInfo()
 	local numItems = GetNumBuybackItems()
 	for index = 1, BUYBACK_ITEMS_PER_PAGE do
-		if index > numItems then return end
+		if index > numItems then
+			return
+		end
 
 		local button = _G["MerchantItem"..index.."ItemButton"]
 		if button and button:IsShown() then
@@ -108,12 +128,16 @@ hooksecurefunc("MerchantFrame_UpdateBuybackInfo", MerchantFrame_UpdateBuybackInf
 
 -- guild bank frame
 local function GuildBankFrame_Update()
-	if GuildBankFrame.mode ~= "bank" then return end
+	if GuildBankFrame.mode ~= "bank" then
+		return
+	end
 
 	local tab = GetCurrentGuildBankTab()
 	for i = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 		local index = mod(i, NUM_SLOTS_PER_GUILDBANK_GROUP)
-		if index == 0 then index = NUM_SLOTS_PER_GUILDBANK_GROUP end
+		if index == 0 then
+			index = NUM_SLOTS_PER_GUILDBANK_GROUP
+		end
 
 		local button = _G["GuildBankColumn"..math.ceil((i - .5) / NUM_SLOTS_PER_GUILDBANK_GROUP).."Button"..index]
 		if button and button:IsShown() then
@@ -141,7 +165,9 @@ local function AuctionFrameBrowse_Update()
 	local offset = FauxScrollFrame_GetOffset(BrowseScrollFrame)
 	for i = 1, NUM_BROWSE_TO_DISPLAY do
 		local index = offset + i
-		if index > numItems then return end
+		if index > numItems then
+			return
+		end
 
 		local texture = _G["BrowseButton"..i.."ItemIconTexture"]
 		if texture and texture:IsShown() then
@@ -158,7 +184,9 @@ local function AuctionFrameBid_Update()
 	local offset = FauxScrollFrame_GetOffset(BidScrollFrame)
 	for i = 1, NUM_BIDS_TO_DISPLAY do
 		local index = offset + i
-		if index > numItems then return end
+		if index > numItems then
+			return
+		end
 
 		local texture = _G["BidButton"..i.."ItemIconTexture"]
 		if texture and texture:IsShown() then
@@ -175,7 +203,9 @@ local function AuctionFrameAuctions_Update()
 	local offset = FauxScrollFrame_GetOffset(AuctionsScrollFrame)
 	for i = 1, NUM_AUCTIONS_TO_DISPLAY do
 		local index = offset + i
-		if index > numItems then return end
+		if index > numItems then
+			return
+		end
 
 		local texture = _G["AuctionsButton"..i.."ItemIconTexture"]
 		if texture and texture:IsShown() then
@@ -183,7 +213,7 @@ local function AuctionFrameAuctions_Update()
 			if canUse and IsAlreadyKnown(GetAuctionItemLink("owner", index)) then
 				local r, g, b = COLOR.r, COLOR.g, COLOR.b
 				if saleStatus == 1 then
-					r, g, b = r*.5, g*.5, b*.5
+					r, g, b = r * 0.5, g * 0.5, b * 0.5
 				end
 				texture:SetVertexColor(r, g, b)
 			end
@@ -217,6 +247,7 @@ if not (isBlizzard_GuildBankUILoaded and isBlizzard_AuctionUILoaded) then
 			OnEvent = nil
 		end
 	end
+
 	tooltip:SetScript("OnEvent", OnEvent)
 	tooltip:RegisterEvent("ADDON_LOADED")
 end

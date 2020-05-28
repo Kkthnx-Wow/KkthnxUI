@@ -52,7 +52,6 @@ function Module.UpdateDurability()
 		local SlotDurStr = GetDurStrings(item)
 
 		if ((v2 ~= 0) and (percent ~= 1)) then
-
 			SlotDurStr:SetText("")
 			if (math.ceil(percent * 100) < 100)then
 				SlotDurStr:SetTextColor(GetThresholdColour(percent))

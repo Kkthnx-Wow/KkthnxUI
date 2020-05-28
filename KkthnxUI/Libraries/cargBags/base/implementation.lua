@@ -37,6 +37,7 @@ local GetItemInfo = _G.GetItemInfo
 local InCombatLockdown = _G.InCombatLockdown
 local LE_ITEM_CLASS_MISCELLANEOUS = _G.LE_ITEM_CLASS_MISCELLANEOUS or 15
 local LE_ITEM_MISCELLANEOUS_COMPANION_PET = _G.LE_ITEM_MISCELLANEOUS_COMPANION_PET or 2
+local setmetatable = _G.setmetatable
 local UIParent = _G.UIParent
 
 -- @class Implementation

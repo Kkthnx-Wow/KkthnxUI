@@ -2,233 +2,293 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
-local pairs = _G.pairs
+local bit_band = _G.bit.band
 local table_insert = _G.table.insert
 local table_remove = _G.table.remove
+local table_wipe = _G.table.wipe
 local unpack = _G.unpack
 
+local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
 local CreateFrame = _G.CreateFrame
 local GetActionInfo = _G.GetActionInfo
+local GetActionTexture = _G.GetActionTexture
 local GetContainerItemID = _G.GetContainerItemID
 local GetInventoryItemID = _G.GetInventoryItemID
+local GetInventoryItemTexture = _G.GetInventoryItemTexture
 local GetItemCooldown = _G.GetItemCooldown
 local GetItemInfo = _G.GetItemInfo
+local GetPetActionCooldown = _G.GetPetActionCooldown
+local GetPetActionInfo = _G.GetPetActionInfo
 local GetSpellCooldown = _G.GetSpellCooldown
+local GetSpellInfo = _G.GetSpellInfo
 local GetSpellTexture = _G.GetSpellTexture
 local GetTime = _G.GetTime
+local IsInInstance = _G.IsInInstance
+local PlaySound = _G.PlaySound
 local hooksecurefunc = _G.hooksecurefunc
 
-local PulseCooldown = CreateFrame("Frame")
-local ActiveCount = 0
-local MinTreshold = C["PulseCooldown"].MinTreshold
-local Running = false
-local CurrentTime
-local GetCD
-local Spells = {}
-local Elapsed = 0
-local Delay = 0.5
+local fadeInTime, fadeOutTime, maxAlpha, elapsed, runtimer = 0.5, 0.7, 1, 0, 0
+local animScale, iconSize, holdTime, threshold = C["PulseCooldown"].AnimScale, C["PulseCooldown"].Size, C["PulseCooldown"].HoldTime, C["PulseCooldown"].Threshold
+local cooldowns, animating, watching = {}, {}, {}
 
-local ActiveCDs = {
-	["item"] = {},
-	["player"] = {},
+K.PulseIgnoredSpells = {
+	GetSpellInfo(110560), -- Garrison Hearthstone
+	GetSpellInfo(140192), -- Dalaran Hearthstone
+	GetSpellInfo(6948),	-- Hearthstone
+	GetSpellInfo(125439), -- Revive Battle Pets
 }
 
-local Blacklist = {
-	["item"] = {
-		[110560] = true, -- Garrison Hearthstone
-		[140192] = true, -- Dalaran Hearthstone
-		[6948] = true, -- Hearthstone
-	},
+local PulseCooldownFrame = CreateFrame("Frame", "PulseCooldownFrame", UIParent)
+PulseCooldownFrame:CreateBorder()
+PulseCooldownFrame:CreateInnerShadow()
+PulseCooldownFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 260)
 
-	["player"] = {
-		[125439] = true, -- Revive Battle Pets
-	},
-}
+PulseCooldownFrame.Icon = PulseCooldownFrame:CreateTexture(nil, "ARTWORK")
+PulseCooldownFrame.Icon:SetTexCoord(unpack(K.TexCoords))
+PulseCooldownFrame.Icon:SetAllPoints(PulseCooldownFrame)
 
-local TextureFilter = {
-	[136235] = true
-}
-
-local function GetTexture(cd, id)
-	local Texture
-
-	if (cd == "item") then
-		Texture = select(10, GetItemInfo(id))
-	else
-		Texture = GetSpellTexture(id)
+-- Utility Functions
+local function tcount(tab)
+	local n = 0
+	for _ in pairs(tab) do
+		n = n + 1
 	end
 
-	if (not TextureFilter[Texture]) then
-		return Texture
-	end
+	return n
 end
 
-local Frame = CreateFrame("Frame", nil, UIParent)
-Frame:SetSize(C["PulseCooldown"].Size, C["PulseCooldown"].Size)
-Frame:SetPoint("CENTER", UIParent, "CENTER", 0, 260)
-Frame:CreateBorder()
-Frame:CreateInnerShadow()
-Frame:SetAlpha(0)
+local function memoize(f)
+	local cache = nil
+	local memoized = {}
 
-Frame.Icon = Frame:CreateTexture(nil, "OVERLAY")
-Frame.Icon:SetAllPoints()
-Frame.Icon:SetTexCoord(unpack(K.TexCoords))
+	local function get()
+		if (cache == nil) then
+			cache = f()
+		end
 
-Frame.Anim = CreateAnimationGroup(Frame)
-
-Frame.AnimIn = Frame.Anim:CreateAnimation("Fade")
-Frame.AnimIn:SetChange(1)
-Frame.AnimIn:SetDuration(0.2)
-Frame.AnimIn:SetEasing("in")
-
-Frame.AnimOut = Frame.Anim:CreateAnimation("Fade")
-Frame.AnimOut:SetChange(0)
-Frame.AnimOut:SetDuration(0.6)
-Frame.AnimOut:SetEasing("out")
-
-Frame.Sleep = Frame.Anim:CreateAnimation("Sleep")
-Frame.Sleep:SetDuration(C["PulseCooldown"].HoldTime)
-Frame.Sleep:SetScript("OnFinished", function()
-	Frame.AnimOut:Play()
-end)
-
-local function PlayAnimation()
-	Frame.AnimIn:Play()
-
-	Frame.Sleep:Play()
-end
-
-local function OnUpdate(self, ela)
-	Elapsed = Elapsed + ela
-
-	if (Elapsed < Delay) then
-		return
+		return cache
 	end
 
-	CurrentTime = GetTime()
+	memoized.resetCache = function()
+		cache = nil
+	end
 
-	for CDType, Data in pairs(ActiveCDs) do
-		GetCD = (CDType == "item") and GetItemCooldown or GetSpellCooldown
+	setmetatable(memoized, {__call = get})
 
-		for Position, ID in pairs(Data) do
-			local Start, Duration = GetCD(ID)
+	return memoized
+end
 
-			if (Start ~= nil) then
-				local Remaining = Start + Duration - CurrentTime
+local function GetPetActionIndexByName(name)
+	for i = 1, NUM_PET_ACTION_SLOTS, 1 do
+		if GetPetActionInfo(i) == name then
+			return i
+		end
+	end
 
-				if (Remaining <= 0) then
-					local Texture = GetTexture(CDType, ID)
+	return nil
+end
 
-					if Texture then
-						Frame.Icon:SetTexture(Texture)
-						PlayAnimation()
+-- Cooldown/Animation
+local function OnUpdate(_, update)
+	elapsed = elapsed + update
+	if elapsed > 0.05 then
+		for i, v in pairs(watching) do
+			if GetTime() >= v[1] + 0.5 then
+				local getCooldownDetails
+				if v[2] == "spell" then
+					getCooldownDetails = memoize(function()
+						local start, duration, enabled = GetSpellCooldown(v[3])
+						return {name = GetSpellInfo(v[3]), texture = GetSpellTexture(v[3]), start = start, duration = duration, enabled = enabled}
+					end)
+				elseif v[2] == "item" then
+					getCooldownDetails = memoize(function()
+						local start, duration, enabled = GetItemCooldown(i)
+						return {name = GetItemInfo(i), texture = v[3], start = start, duration = duration, enabled = enabled}
+					end)
+				elseif v[2] == "pet" then
+					getCooldownDetails = memoize(function()
+						local name, texture = GetPetActionInfo(v[3])
+						local start, duration, enabled = GetPetActionCooldown(v[3])
+						return {name = name, texture = texture, isPet = true, start = start, duration = duration, enabled = enabled}
+					end)
+				end
+
+				local cooldown = getCooldownDetails()
+				if K.PulseIgnoredSpells[cooldown.name] then
+					watching[i] = nil
+				else
+					if cooldown.enabled ~= 0 then
+						if cooldown.duration and cooldown.duration > threshold and cooldown.texture then
+							cooldowns[i] = getCooldownDetails
+						end
 					end
-					if C["PulseCooldown"].Sound then
-						PlaySound(18192, "master") -- https://www.wowhead.com/sound=18192/fx-sonarping
+
+					if not (cooldown.enabled == 0 and v[2] == "spell") then
+						watching[i] = nil
 					end
-					table_remove(Data, Position)
-					ActiveCount = ActiveCount - 1
 				end
 			end
 		end
-	end
 
-	if (ActiveCount <= 0) then
-		self:SetScript("OnUpdate", nil)
-		Running = false
-	end
-
-	Elapsed = 0
-end
-
--- UNIT_SPELLCAST_SUCCEEDED fetches casts, and then SPELL_UPDATE_COOLDOWN checks them after the GCD is done (Otherwise GetSpellCooldown detects GCD)
-function Module:SPELL_UPDATE_COOLDOWN()
-	for i = #Spells, 1, -1 do
-		local _, Duration = GetSpellCooldown(Spells[i])
-
-		if (Duration >= MinTreshold) then
-			table_insert(ActiveCDs.player, Spells[i])
-			ActiveCount = ActiveCount + 1
-
-			if (ActiveCount > 0 and not Running) then
-				PulseCooldown:SetScript("OnUpdate", OnUpdate)
-				Running = true
+		for i, getCooldownDetails in pairs(cooldowns) do
+			local cooldown = getCooldownDetails()
+			local remaining = cooldown.duration - (GetTime() - cooldown.start)
+			if remaining <= 0 then
+				table_insert(animating, {cooldown.texture, cooldown.isPet, cooldown.name})
+				cooldowns[i] = nil
 			end
 		end
 
-		table_remove(Spells, i)
-	end
-end
-
-function Module:UNIT_SPELLCAST_SUCCEEDED(unit, _, id)
-	if (unit == "player") then
-		if Blacklist["player"][id] then
+		elapsed = 0
+		if #animating == 0 and tcount(watching) == 0 and tcount(cooldowns) == 0 then
+			PulseCooldownFrame:SetScript("OnUpdate", nil)
 			return
 		end
+	end
 
-		table_insert(Spells, id)
+	if #animating > 0 then
+		runtimer = runtimer + update
+		if runtimer > (fadeInTime + holdTime + fadeOutTime) then
+			table_remove(animating, 1)
+			runtimer = 0
+			PulseCooldownFrame.Icon:SetTexture(nil)
+			PulseCooldownFrame:SetBackdropBorderColor(0, 0, 0, 0)
+			PulseCooldownFrame:SetBackdropColor(0, 0, 0, 0)
+			PulseCooldownFrame.InnerShadow:SetVertexColor(0, 0, 0, 0)
+		else
+			if not PulseCooldownFrame.Icon:GetTexture() then
+				PulseCooldownFrame.Icon:SetTexture(animating[1][1])
+				if C["PulseCooldown"].Sound == true then
+					PlaySound(18192, "Master")
+				end
+			end
+
+			local alpha = maxAlpha
+			if runtimer < fadeInTime then
+				alpha = maxAlpha * (runtimer / fadeInTime)
+			elseif runtimer >= fadeInTime + holdTime then
+				alpha = maxAlpha - (maxAlpha * ((runtimer - holdTime - fadeInTime) / fadeOutTime))
+			end
+
+			PulseCooldownFrame:SetAlpha(alpha)
+
+			local scale = iconSize + (iconSize * ((animScale - 1) * (runtimer / (fadeInTime + holdTime + fadeOutTime))))
+			PulseCooldownFrame:SetWidth(scale)
+			PulseCooldownFrame:SetHeight(scale)
+			PulseCooldownFrame:SetBackdropBorderColor()
+			PulseCooldownFrame:SetBackdropColor(.04, .04, .04, 0.9)
+			PulseCooldownFrame.InnerShadow:SetVertexColor(.04, .04, .04, 1)
+		end
 	end
 end
 
-local function StartItem(id)
-	if Blacklist["item"][id] then
-		return
+-- Event Handlers
+function Module:ADDON_LOADED()
+	for _, v in pairs(K.PulseIgnoredSpells) do
+		K.PulseIgnoredSpells[v] = true
 	end
 
-	local _, Duration = GetItemCooldown(id)
-	if (Duration and Duration > MinTreshold) then
-		table_insert(ActiveCDs.item, id)
-		ActiveCount = ActiveCount + 1
+	K:UnregisterEvent("ADDON_LOADED", self.ADDON_LOADED)
+end
 
-		if (ActiveCount > 0 and not Running) then
-			PulseCooldown:SetScript("OnUpdate", OnUpdate)
-			Running = true
+function Module:SPELL_UPDATE_COOLDOWN()
+	for _, getCooldownDetails in pairs(cooldowns) do
+		getCooldownDetails.resetCache()
+	end
+end
+
+function Module:UNIT_SPELLCAST_SUCCEEDED(unit, _, spellID)
+	if unit == "player" then
+		watching[spellID] = {GetTime(), "spell", spellID}
+		PulseCooldownFrame:SetScript("OnUpdate", OnUpdate)
+	end
+end
+
+function Module:COMBAT_LOG_EVENT_UNFILTERED()
+	local _, eventType, _, _, _, sourceFlags, _, _, _, _, _, spellID = CombatLogGetCurrentEventInfo()
+	if eventType == "SPELL_CAST_SUCCESS" then
+		if (bit_band(sourceFlags, COMBATLOG_OBJECT_TYPE_PET) == COMBATLOG_OBJECT_TYPE_PET and bit_band(sourceFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) == COMBATLOG_OBJECT_AFFILIATION_MINE) then
+			local name = GetSpellInfo(spellID)
+			local index = GetPetActionIndexByName(name)
+			if index and not select(7, GetPetActionInfo(index)) then
+				watching[spellID] = {GetTime(), "pet", index}
+			elseif not index and spellID then
+				watching[spellID] = {GetTime(), "spell", spellID}
+			else
+				return
+			end
+
+			PulseCooldownFrame:SetScript("OnUpdate", OnUpdate)
 		end
+	end
+end
+
+function Module:PLAYER_ENTERING_WORLD()
+	local _, instanceType = IsInInstance()
+	if instanceType == "arena" then
+		PulseCooldownFrame:SetScript("OnUpdate", nil)
+		table_wipe(cooldowns)
+		table_wipe(watching)
 	end
 end
 
 local function UseAction(slot)
-	local ActionType, ItemID = GetActionInfo(slot)
-
-	if (ActionType == "item") then
-		StartItem(ItemID)
+	local actionType, itemID = GetActionInfo(slot)
+	if actionType == "item" then
+		local texture = GetActionTexture(slot)
+		watching[itemID] = {GetTime(), "item", texture}
 	end
 end
 
 local function UseInventoryItem(slot)
-	local ItemID = GetInventoryItemID("player", slot)
-
-	if ItemID then
-		StartItem(ItemID)
+	local itemID = GetInventoryItemID("player", slot)
+	if itemID then
+		local texture = GetInventoryItemTexture("player", slot)
+		watching[itemID] = {GetTime(), "item", texture}
 	end
 end
 
 local function UseContainerItem(bag, slot)
-	local ItemID = GetContainerItemID(bag, slot)
-
-	if ItemID then
-		StartItem(ItemID)
+	local itemID = GetContainerItemID(bag, slot)
+	if itemID then
+		local texture = select(10, GetItemInfo(itemID))
+		watching[itemID] = {GetTime(), "item", texture}
 	end
 end
 
 function Module:CreatePulseCooldown()
-	if C["PulseCooldown"].Enable ~= true then
+	if not C["PulseCooldown"].Enable then
 		return
 	end
 
-	local Anchor = CreateFrame("Frame", "KKUIPulseCooldown", UIParent)
+	local Anchor = CreateFrame("Frame", "PulseCooldownAnchor", UIParent)
 	Anchor:SetSize(C["PulseCooldown"].Size, C["PulseCooldown"].Size)
 	Anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 260)
 
-	Frame:SetSize(C["PulseCooldown"].Size, C["PulseCooldown"].Size)
-	Frame:SetAllPoints(Anchor)
+	PulseCooldownFrame:SetPoint("CENTER", Anchor, "CENTER", 0, 0)
 
-	K.Mover(Anchor, "PulseCooldown", "PulseCooldown", {"CENTER", UIParent, "CENTER", 0, 260}, C["PulseCooldown"].Size, C["PulseCooldown"].Size)
+	K.Mover(PulseCooldownFrame, "PulseCooldown", "PulseCooldown", {"CENTER", UIParent, "CENTER", 0, 260}, C["PulseCooldown"].Size, C["PulseCooldown"].Size)
 
-	K:RegisterEvent("SPELL_UPDATE_COOLDOWN", Module.SPELL_UPDATE_COOLDOWN)
-	K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UNIT_SPELLCAST_SUCCEEDED)
+	K:RegisterEvent("ADDON_LOADED", self.ADDON_LOADED)
+	K:RegisterEvent("SPELL_UPDATE_COOLDOWN", self.SPELL_UPDATE_COOLDOWN)
+	K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", self.UNIT_SPELLCAST_SUCCEEDED)
+	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self.COMBAT_LOG_EVENT_UNFILTERED)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", self.PLAYER_ENTERING_WORLD)
+	PulseCooldownFrame:SetScript("OnEvent", function(self, event, ...)
+		self[event](self, ...)
+	end)
 
 	hooksecurefunc("UseAction", UseAction)
 	hooksecurefunc("UseInventoryItem", UseInventoryItem)
 	hooksecurefunc("UseContainerItem", UseContainerItem)
 end
+
+SlashCmdList.PulseCooldown = function()
+	table_insert(animating, {GetSpellTexture(87214)})
+	if C["PulseCooldown"].Sound == true then
+		PlaySoundFile(18192, "Master")
+	end
+
+	PulseCooldownFrame:SetScript("OnUpdate", OnUpdate)
+end
+SLASH_PulseCooldown1 = "/pulsecd"

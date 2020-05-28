@@ -26,7 +26,7 @@ function Module:CreateExtrabar()
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KkthnxUI_ExtraActionBar", UIParent, "SecureHandlerStateTemplate")
-	frame:SetWidth(num * FilterConfig.size + (num-1) * margin + 2 * padding)
+	frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
 	frame:SetHeight(FilterConfig.size + 2 * padding)
 	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 272, 34}
 
@@ -48,7 +48,7 @@ function Module:CreateExtrabar()
 
 	-- Create Drag Frame And Drag Functionality
 	if K.ActionBars.userPlaced then
-		K.Mover(frame, "Extrabar", "Extrabar", frame.Pos)
+		frame.mover = K.Mover(frame, "Extrabar", "Extrabar", frame.Pos)
 	end
 
 	-- create the mouseover functionality
@@ -65,7 +65,7 @@ function Module:CreateExtrabar()
 	local spellButton = _G.ZoneAbilityFrame.SpellButton
 	spellButton.Style:SetAlpha(0)
 	spellButton.Icon:SetTexCoord(unpack(K.TexCoords))
-	spellButton:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
+	spellButton:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
 	spellButton:CreateBorder()
 	spellButton:CreateInnerShadow()
 

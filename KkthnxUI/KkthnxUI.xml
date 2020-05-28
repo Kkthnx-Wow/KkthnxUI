@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<!-- Fonts -->
+	<Include file="FontStyles.xml" />
 	<!-- Libraries -->
 	<Include file="Libraries\Load_Libraries.xml" />
 	<!-- Engine -->
 	<Script file="Init.lua" />
+	<!-- Locales -->
+	<Include file="Locales\Load_Locales.xml" />
 	<!-- Settings -->
 	<Script file="Config\Settings.lua" />
 	<!-- Media -->
 	<Script file="Media\Media.lua" />
-	<!-- Locales -->
-	<Include file="Locales\Load_Locales.xml" />
 	<!-- Core -->
 	<Include file="Core\Load_Core.xml" />
 	<!-- Filters -->
 	<Include file="Config\Filters\Load_Filters.xml" />
-	<!-- AddOnData -->
-	<Include file="Config\AddOnData\Load_AddOnData.xml" />
 	<!-- Developer -->
 	<Include file="Developer\Load_Developer.xml" />
-	<!-- DataText -->
-	<Include file="Modules\Datatext\Load_Datatext.xml" />
 	<!-- ActionBars -->
 	<Include file="Modules\ActionBars\ActionBar.xml" />
 	<!-- Unitframes -->
@@ -34,6 +32,8 @@
 	<Include file="Modules\Blizzard\Load_Blizzard.xml" />
 	<!-- Chat -->
 	<Include file="Modules\Chat\Load_Chat.xml" />
+	<!-- DataText -->
+	<Include file="Modules\Datatext\Load_Datatext.xml" />
 	<!-- DataBars -->
 	<Include file="Modules\Databars\Load_Databars.xml" />
 	<!-- Inventory -->

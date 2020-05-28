@@ -2,7 +2,6 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Mover")
 
 local _G = _G
-local math_floor = _G.math.floor
 local table_wipe = _G.table.wipe
 local unpack = _G.unpack
 
@@ -79,9 +78,9 @@ function K:Mover(text, value, anchor, width, height)
 end
 
 function Module:CalculateMoverPoints(mover, trimX, trimY)
-	local screenWidth = math_floor(UIParent:GetRight() + .5)
-	local screenHeight = math_floor(UIParent:GetTop() + .5)
-	local screenCenter = math_floor(UIParent:GetCenter() + .5)
+	local screenWidth = K.Round(UIParent:GetRight())
+	local screenHeight = K.Round(UIParent:GetTop())
+	local screenCenter = K.Round(UIParent:GetCenter(), nil)
 	local x, y = mover:GetCenter()
 
 	local LEFT = screenWidth / 3
@@ -115,7 +114,7 @@ end
 
 function Module:UpdateTrimFrame()
 	local x, y = Module:CalculateMoverPoints(self)
-	x, y = math_floor(x + .5), math_floor(y + .5)
+	x, y = K.Round(x), K.Round(y)
 	f.__x:SetText(x)
 	f.__y:SetText(y)
 	f.__x.__current = x
@@ -127,7 +126,7 @@ function Module:DoTrim(trimX, trimY)
 	local mover = updater.__owner
 	if mover then
 		local x, y, point = Module:CalculateMoverPoints(mover, trimX, trimY)
-		x, y = math_floor(x + .5), math_floor(y + .5)
+		x, y = K.Round(x), K.Round(y)
 		f.__x:SetText(x)
 		f.__y:SetText(y)
 		f.__x.__current = x
@@ -171,8 +170,8 @@ end
 function Module:Mover_OnDragStop()
 	self:StopMovingOrSizing()
 	local orig, _, tar, x, y = self:GetPoint()
-	x = math_floor(x + .5)
-	y = math_floor(y + .5)
+	x = K.Round(x)
+	y = K.Round(y)
 
 	self:ClearAllPoints()
 	self:SetPoint(orig, "UIParent", tar, x, y)
@@ -188,6 +187,7 @@ function Module:UnlockElements()
 			mover:Show()
 		end
 	end
+
 	f:Show()
 end
 
@@ -202,7 +202,7 @@ function Module:LockElements()
 end
 
 _G.StaticPopupDialogs["RESET_MOVER"] = {
-	text = "Reset Mover Confirm",
+	text = "Are you sure to reset frames position?",
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function()

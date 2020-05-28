@@ -3,48 +3,61 @@ local AddOnName, Engine = ...
 local _G = _G
 local math_max = _G.math.max
 local math_min = _G.math.min
+local next = _G.next
+local pairs = _G.pairs
+local select = _G.select
 local string_format = _G.string.format
 local string_lower = _G.string.lower
-local string_match = _G.string.match
 local table_insert = _G.table.insert
 local tonumber = _G.tonumber
 local unpack = _G.unpack
 
+local BAG_ITEM_QUALITY_COLORS = _G.BAG_ITEM_QUALITY_COLORS
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local C_Timer_After = _G.C_Timer.After
 local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
 local CreateFrame = _G.CreateFrame
 local GetAddOnEnableState = _G.GetAddOnEnableState
 local GetAddOnInfo = _G.GetAddOnInfo
 local GetAddOnMetadata = _G.GetAddOnMetadata
 local GetBuildInfo = _G.GetBuildInfo
-local GetCVar = _G.GetCVar
 local GetLocale = _G.GetLocale
 local GetNumAddOns = _G.GetNumAddOns
 local GetPhysicalScreenSize = _G.GetPhysicalScreenSize
 local GetRealmName = _G.GetRealmName
+local GetTime = _G.GetTime
+local InCombatLockdown = _G.InCombatLockdown
+local IsAddOnLoaded = _G.IsAddOnLoaded
+local LE_ITEM_QUALITY_COMMON = _G.LE_ITEM_QUALITY_COMMON
+local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 local LOCALIZED_CLASS_NAMES_MALE = _G.LOCALIZED_CLASS_NAMES_MALE
 local LibStub = _G.LibStub
+local PlaySound = _G.PlaySound
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local UnitClass = _G.UnitClass
 local UnitFactionGroup = _G.UnitFactionGroup
+local UnitGUID = _G.UnitGUID
 local UnitLevel = _G.UnitLevel
 local UnitName = _G.UnitName
 local UnitRace = _G.UnitRace
-
-local Resolution = select(1, GetPhysicalScreenSize()).."x"..select(2, GetPhysicalScreenSize())
-local Windowed = Display_DisplayModeDropDown:windowedmode()
+local hooksecurefunc = _G.hooksecurefunc
 
 -- Engine
 Engine[1] = {} -- K, Main
 Engine[2] = {} -- C, Config
 Engine[3] = {} -- L, Locales
 
-local K = unpack(Engine)
+local K, C = unpack(Engine)
 
 K.oUF = Engine.oUF
 K.cargBags = Engine.cargBags
 K.libButtonGlow = LibStub("LibButtonGlow-1.0", true)
 K.libCustomGlow = LibStub("LibCustomGlow-1.0", true)
+
+K.AddOns = {}
+K.AddOnVersion = {}
+K.activeTimers = K.activeTimers or {} -- Active timer list
+local activeTimers = K.activeTimers -- Upvalue our private data
 
 K.Title = GetAddOnMetadata(AddOnName, "Title")
 K.Version = GetAddOnMetadata(AddOnName, "Version")
@@ -63,43 +76,42 @@ K.Client = GetLocale()
 K.Realm = GetRealmName()
 K.Media = "Interface\\AddOns\\KkthnxUI\\Media\\"
 K.LSM = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
-K.Resolution = Resolution or (Windowed and GetCVar("gxWindowedResolution")) or GetCVar("gxFullscreenResolution")
-K.ScreenHeight = select(2, GetPhysicalScreenSize())
-K.ScreenWidth = select(1, GetPhysicalScreenSize())
-K.UIScale = math_min(1, math_max(0.64, 768 / string_match(Resolution, "%d+x(%d+)")))
+K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
+K.Resolution = string_format("%dx%d", K.ScreenWidth, K.ScreenHeight)
 K.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "ffdbebfa"} -- Keep this until I convert the rest.
 K.TexCoords = {0.08, 0.92, 0.08, 0.92}
-K.Welcome = "|cff4488ffKkthnxUI "..K.Version.." "..K.Client.."|r - /helpui"
+K.Welcome = "|cff669DFFKkthnxUI "..K.Version.." "..K.Client.."|r - /helpui"
 K.ScanTooltip = CreateFrame("GameTooltip", "KkthnxUI_ScanTooltip", _G.UIParent, "GameTooltipTemplate")
 K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
-K.GreyColor = "|cff7b8489"
-K.InfoColor = "|cff4488ff"
-K.SystemColor = "|cffffcc00"
+K.GreyColor = "|CFF7b8489"
+K.InfoColor = "|CFF669DFF"
+K.SystemColor = "|CFFFFCC66"
 
 K.CodeDebug = false -- Don't touch this, unless you know what you are doing?
 
-BAG_ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_POOR] = {r = 0.62, g = 0.62, b = 0.62}
-BAG_ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_COMMON] = {r = 1, g = 1, b = 1}
+K.QualityColors = {}
+local qualityColors = BAG_ITEM_QUALITY_COLORS
+for index, value in pairs(qualityColors) do
+	K.QualityColors[index] = {r = value.r, g = value.g, b = value.b}
+end
+K.QualityColors[-1] = {r = 1, g = 1, b = 1}
+K.QualityColors[LE_ITEM_QUALITY_POOR] = {r = 0.61, g = 0.61, b = 0.61}
+K.QualityColors[LE_ITEM_QUALITY_COMMON] = {r = 1, g = 1, b = 1}
 
 K.ClassList = {}
 for k, v in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 	K.ClassList[v] = k
 end
-K.ClassColors = {}
--- PRIEST ClassColor
-RAID_CLASS_COLORS["PRIEST"].r = 0.86
-RAID_CLASS_COLORS["PRIEST"].g = 0.92
-RAID_CLASS_COLORS["PRIEST"].b = 0.98
-RAID_CLASS_COLORS["PRIEST"].colorStr = "ffdbebfa"
 
+K.ClassColors = {}
 local colors = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
 for class, value in pairs(colors) do
 	K.ClassColors[class] = {}
 	K.ClassColors[class].r = value.r
 	K.ClassColors[class].g = value.g
 	K.ClassColors[class].b = value.b
-	K.ClassColors[class].colorStr =  value.colorStr
+	K.ClassColors[class].colorStr = value.colorStr
 end
 K.r, K.g, K.b = K.ClassColors[K.Class].r, K.ClassColors[K.Class].g, K.ClassColors[K.Class].b
 K.MyClassColor = string_format("|cff%02x%02x%02x", K.r * 255, K.g * 255, K.b * 255)
@@ -145,7 +157,7 @@ end
 -- Modules
 function K:NewModule(name)
 	if modules[name] then
-		print("Module <"..name.."> has been registered.")
+		K.Print("Module <"..name.."> has been registered.")
 		return
 	end
 
@@ -159,19 +171,100 @@ end
 
 function K:GetModule(name)
 	if not modules[name] then
-		print("Module <"..name.."> does not exist.")
+		K.Print("Module <"..name.."> does not exist.")
 		return
 	end
 
 	return modules[name]
 end
 
+local function GetBestScale()
+	return math_max(0.4, math_min(1.15, 768 / K.ScreenHeight))
+end
+
+function K:SetupUIScale(init)
+	if C["General"].AutoScale then
+		C["General"].UIScale = GetBestScale()
+	end
+
+	local scale = C["General"].UIScale
+	if init == true then
+		local pixel, ratio = 1, 768 / K.ScreenHeight
+		K.Mult = (pixel / scale) - ((pixel - ratio) / scale)
+	elseif not InCombatLockdown() then
+		UIParent:SetScale(scale)
+	end
+end
+
+local isScaling = false
+function K:UpdatePixelScale(event)
+	if isScaling then
+		return
+	end
+	isScaling = true
+
+	if event == "UI_SCALE_CHANGED" then
+		K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
+		K.Resolution = string_format("%dx%d", K.ScreenWidth, K.ScreenHeight)
+	end
+
+	K:SetupUIScale(true)
+	K:SetupUIScale()
+
+	isScaling = false
+end
+
+function K:Scale(x)
+	local mult = K.Mult
+	return mult * math.floor(x / mult + 0.5)
+end
+
 K:RegisterEvent("PLAYER_LOGIN", function()
+	local configSettings
+	local configName = UnitName("player")
+	local configRealm = GetRealmName()
+
+	-- Config Clean and Small Here xD
+	if (KkthnxUIConfigPerAccount) then
+		configSettings = KkthnxUIConfigShared.Account
+	else
+		configSettings = KkthnxUIConfigShared[configRealm][configName]
+	end
+
+	for group, options in pairs(configSettings) do
+		if C[group] then
+			local Count = 0
+
+			for option, value in pairs(options) do
+				if (C[group][option] ~= nil) then
+					if (C[group][option] == value) then
+						configSettings[group][option] = nil
+					else
+						Count = Count + 1
+
+						C[group][option] = value
+					end
+				end
+			end
+
+			-- Keeps KkthnxUIConfig clean and small
+			if (Count == 0) then
+				configSettings[group] = nil
+			end
+		else
+			configSettings[group] = nil
+		end
+	end
+
+	-- Update UIScale
+	K:SetupUIScale()
+	K:RegisterEvent("UI_SCALE_CHANGED", K.UpdatePixelScale)
+
 	for _, module in next, initQueue do
 		if module.OnEnable then
 			module:OnEnable()
 		else
-			print("Module <"..module.name.."> does not loaded.")
+			K.Print("Module <"..module.name.."> does not loaded.")
 		end
 	end
 
@@ -195,12 +288,111 @@ K:RegisterEvent("ADDON_LOADED", function(_, addon)
 		return
 	end
 
+	local playerName = UnitName("player")
+	local playerRealm = GetRealmName()
+
+	if (not KkthnxUIData) then
+		KkthnxUIData = {}
+	end
+
+	-- Create missing entries in the saved vars if they don"t exist.
+	if (not KkthnxUIData[playerRealm]) then
+		KkthnxUIData[playerRealm] = {}
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName]) then
+		KkthnxUIData[playerRealm][playerName] = {}
+	end
+
+	if (KkthnxUIDataPerChar) then
+		KkthnxUIData[playerRealm][playerName] = KkthnxUIDataPerChar
+		KkthnxUIDataPerChar = nil
+	end
+
+	if (not KkthnxUIData.ChangelogVersion) then
+		KkthnxUIData.ChangelogVersion = {}
+	end
+
+	-- Blizzard have too many issues with per character saved variables, we now move them (if they exists) to account saved variables.
+	if (not KkthnxUIConfigShared) then
+		KkthnxUIConfigShared = {}
+	end
+
+	if (not KkthnxUIConfigShared.Account) then
+		KkthnxUIConfigShared.Account = {}
+	end
+
+	if (not KkthnxUIConfigShared[playerRealm]) then
+		KkthnxUIConfigShared[playerRealm] = {}
+	end
+
+	if (not KkthnxUIConfigShared[playerRealm][playerName]) then
+		KkthnxUIConfigShared[playerRealm][playerName] = {}
+	end
+
+	if (KkthnxUIConfigNotShared) then
+		KkthnxUIConfigShared[playerRealm][playerName] = KkthnxUIConfigNotShared
+		KkthnxUIConfigNotShared = nil
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].RevealWorldMap) then
+		KkthnxUIData[playerRealm][playerName].RevealWorldMap = false
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].AutoQuest) then
+		KkthnxUIData[playerRealm][playerName].AutoQuest = false
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].BindType) then
+		KkthnxUIData[playerRealm][playerName].BindType = 1
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].FavouriteItems) then
+		KkthnxUIData[playerRealm][playerName].FavouriteItems = {}
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].SplitCount) then
+		KkthnxUIData[playerRealm][playerName].SplitCount = 1
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].CustomJunkList) then
+		KkthnxUIData[playerRealm][playerName].CustomJunkList = {}
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].Mover) then
+		KkthnxUIData[playerRealm][playerName].Mover = {}
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].LuaErrorDisabledAddOns) then
+		KkthnxUIData[playerRealm][playerName].LuaErrorDisabledAddOns = {}
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].MoviesSeen) then
+		KkthnxUIData[playerRealm][playerName].MoviesSeen = {}
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].TempAnchor) then
+		KkthnxUIData[playerRealm][playerName].TempAnchor = {}
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].DetectVersion) then
+		KkthnxUIData[playerRealm][playerName].DetectVersion = K.Version
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].ContactList) then
+		KkthnxUIData[playerRealm][playerName].ContactList = {}
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].KeystoneInfo) then
+		KkthnxUIData[playerRealm][playerName].KeystoneInfo = {}
+	end
+
 	K.GUID = UnitGUID("player")
 	K.CreateStaticPopups()
 
 	-- KkthnxUI GameMenu Button.
 	local GameMenuButton = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")
-	GameMenuButton:SetText(string_format("|cff4488ff%s|r", AddOnName))
+	GameMenuButton:SetText(string_format("|cff669DFF%s|r", AddOnName))
 	GameMenuButton:SetScript("OnClick", function()
 		if (not KkthnxUIConfigFrame) then
 			KkthnxUIConfig:CreateConfigWindow()
@@ -224,6 +416,8 @@ K:RegisterEvent("ADDON_LOADED", function(_, addon)
 		GameMenuButton:SetPoint("TOPLEFT", GameMenuButtonAddons, "BOTTOMLEFT", 0, -1)
 		hooksecurefunc("GameMenuFrame_UpdateVisibleButtons", PositionGameMenuButton)
 	end
+
+	K:UnregisterEvent("ADDON_LOADED")
 end)
 
 -- Event return values were wrong: https://wow.gamepedia.com/PLAYER_LEVEL_UP
@@ -235,8 +429,6 @@ K:RegisterEvent("PLAYER_LEVEL_UP", function(_, level)
 	K.Level = level
 end)
 
-K.AddOns = {}
-K.AddOnVersion = {}
 for i = 1, GetNumAddOns() do
 	local Name = GetAddOnInfo(i)
 	K.AddOns[string_lower(Name)] = GetAddOnEnableState(K.Name, Name) == 2
@@ -246,7 +438,7 @@ end
 do
 	K.AboutPanel = CreateFrame("Frame", nil, _G.InterfaceOptionsFramePanelContainer)
 	K.AboutPanel:Hide()
-	K.AboutPanel.name = K.Title
+	K.AboutPanel.name = K.Title or "KkthnxUI"
 	K.AboutPanel:SetScript("OnShow", function(self)
 		if self.show then
 			return
@@ -382,6 +574,123 @@ do
 	_G.InterfaceOptions_AddCategory(K.AboutPanel)
 	_G.InterfaceOptions_AddCategory(K.AboutPanel.Commands)
 	_G.InterfaceOptions_AddCategory(K.AboutPanel.Questions)
+end
+
+-- Ripped out of AceTimer :|
+local function new(self, loop, func, delay, ...)
+	if delay < 0.01 then
+		delay = 0.01 -- Restrict to the lowest time that the C_Timer API allows us
+	end
+
+	local timer = {
+		object = self,
+		func = func,
+		looping = loop,
+		argsCount = select("#", ...),
+		delay = delay,
+		ends = GetTime() + delay,
+		...
+	}
+
+	activeTimers[timer] = timer
+
+	-- Create new timer closure to wrap the "timer" object
+	timer.callback = function()
+		if not timer.cancelled then
+			if type(timer.func) == "string" then
+				-- We manually set the unpack count to prevent issues with an arg set that contains nil and ends with nil
+				-- e.g. local t = {1, 2, nil, 3, nil} print(#t) will result in 2, instead of 5. This fixes said issue.
+				timer.object[timer.func](timer.object, unpack(timer, 1, timer.argsCount))
+			else
+				timer.func(unpack(timer, 1, timer.argsCount))
+			end
+
+			if timer.looping and not timer.cancelled then
+				-- Compensate delay to get a perfect average delay, even if individual times don't match up perfectly
+				-- due to fps differences
+				local time = GetTime()
+				local delay = timer.delay - (time - timer.ends)
+				-- Ensure the delay doesn't go below the threshold
+				if delay < 0.01 then
+					delay = 0.01
+				end
+
+				C_Timer_After(delay, timer.callback)
+				timer.ends = time + delay
+			else
+				activeTimers[timer.handle or timer] = nil
+			end
+		end
+	end
+
+	C_Timer_After(delay, timer.callback)
+	return timer
+end
+
+-- Schedule a new one-shot timer.
+function K:ScheduleTimer(func, delay, ...)
+	if not func or not delay then
+		K.Print(": ScheduleTimer(callback, delay, args...): 'callback' and 'delay' must have set values.", 2)
+	end
+
+	if type(func) == "string" then
+		if type(self) ~= "table" then
+			K.Print(": ScheduleTimer(callback, delay, args...): 'self' - must be a table.", 2)
+		elseif not self[func] then
+			K.Print(": ScheduleTimer(callback, delay, args...): Tried to register '"..func.."' as the callback, but it doesn't exist in the module.", 2)
+		end
+	end
+
+	return new(self, nil, func, delay, ...)
+end
+
+-- Schedule a repeating timer.
+function K:ScheduleRepeatingTimer(func, delay, ...)
+	if not func or not delay then
+		K.Print(": ScheduleRepeatingTimer(callback, delay, args...): 'callback' and 'delay' must have set values.", 2)
+	end
+
+	if type(func) == "string" then
+		if type(self) ~= "table" then
+			K.Print(": ScheduleRepeatingTimer(callback, delay, args...): 'self' - must be a table.", 2)
+		elseif not self[func] then
+			K.Print(": ScheduleRepeatingTimer(callback, delay, args...): Tried to register '"..func.."' as the callback, but it doesn't exist in the module.", 2)
+		end
+	end
+
+	return new(self, true, func, delay, ...)
+end
+
+-- Cancels a timer with the given id, registered by the same addon object as used for `:ScheduleTimer`
+function K:CancelTimer(id)
+	local timer = activeTimers[id]
+
+	if not timer then
+		return false
+	else
+		timer.cancelled = true
+		activeTimers[id] = nil
+		return true
+	end
+end
+
+-- Cancels all timers registered to the current addon object ('self')
+function K:CancelAllTimers()
+	for k,v in next, activeTimers do
+		if v.object == self then
+			K.CancelTimer(self, k)
+		end
+	end
+end
+
+-- Returns the time left for a timer with the given id, registered by the current addon object ('self').
+function K:TimeLeft(id)
+	local timer = activeTimers[id]
+	if not timer then
+		return 0
+	else
+		return timer.ends - GetTime()
+	end
 end
 
 _G[AddOnName] = Engine

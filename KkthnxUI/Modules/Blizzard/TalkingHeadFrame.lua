@@ -8,44 +8,28 @@ local table_remove = _G.table.remove
 
 -- WoW Objects
 local UIParent = _G.UIParent
-local UIPARENT_MANAGED_FRAME_POSITIONS = _G.UIPARENT_MANAGED_FRAME_POSITIONS
+local IsAddOnLoaded = _G.IsAddOnLoaded
 
-function Module:InitializeTalkingHead()
-	local content = _G.TalkingHeadFrame
+local function InitializeTalkingHead()
+	local TalkingHeadFrame = _G.TalkingHeadFrame
 
-	-- This means the addon hasn't been loaded,
-	-- so we register a listener and return.
-	if (not content) then
-		return K:RegisterEvent("ADDON_LOADED", Module.WaitForTalkingHead)
-	end
+	-- Prevent WoW from moving the frame around
+	TalkingHeadFrame.ignoreFramePositionManager = true
+	_G.UIPARENT_MANAGED_FRAME_POSITIONS.TalkingHeadFrame = nil
 
-	-- Put the actual talking head into our /moverui holder
-	content:ClearAllPoints()
-	content:SetPoint("CENTER", Module.frame, "CENTER", 0, 0)
-	content.ignoreFramePositionManager = true
+	-- Set default position
+	TalkingHeadFrame:ClearAllPoints()
+	TalkingHeadFrame:SetPoint("TOP", UIParent, "TOP", 0, -18)
 
-	-- Kill off Blizzard's repositioning
-	UIParent:UnregisterEvent("TALKINGHEAD_REQUESTED")
-	UIPARENT_MANAGED_FRAME_POSITIONS["TalkingHeadFrame"] = nil
+	K.Mover(TalkingHeadFrame, "Talking Head Frame", "Talking Head Frame", {"TOP", UIParent, "TOP", 0, -18})
 
 	-- Iterate through all alert subsystems in order to find the one created for TalkingHeadFrame, and then remove it.
 	-- We do this to prevent alerts from anchoring to this frame when it is shown.
-	local AlertFrame = _G.AlertFrame
-	for index, alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
-		if (alertFrameSubSystem.anchorFrame and (alertFrameSubSystem.anchorFrame == content)) then
-			table_remove(AlertFrame.alertFrameSubSystems, index)
+	for index, alertFrameSubSystem in ipairs(_G.AlertFrame.alertFrameSubSystems) do
+		if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == TalkingHeadFrame then
+			table_remove(_G.AlertFrame.alertFrameSubSystems, index)
 		end
 	end
-end
-
-function Module:WaitForTalkingHead(_, ...)
-	local addon = ...
-	if (addon ~= "Blizzard_TalkingHeadUI") then
-		return
-	end
-
-	Module:InitializeTalkingHead()
-	K:UnregisterEvent("ADDON_LOADED", Module.WaitForTalkingHead)
 end
 
 function Module:CreateTalkingHeadFrame()
@@ -53,10 +37,15 @@ function Module:CreateTalkingHeadFrame()
 		return
 	end
 
-	-- Create our container frame
-	Module.frame = CreateFrame("Frame", "KKUITalkingHeadMover", UIParent)
-	Module.frame:SetPoint("TOP", UIParent, "TOP", 0, -18)
-	Module.frame:SetSize(570, 155)
-
-	K.Mover(Module.frame, "TalkingHeadFrame", "TalkingHeadFrame", {"TOP", UIParent, "TOP", 0, -18}, 570, 155)
+	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
+		InitializeTalkingHead()
+	else --We want the mover to be available immediately, so we load it ourselves
+		local f = CreateFrame("Frame")
+		f:RegisterEvent("PLAYER_ENTERING_WORLD")
+		f:SetScript("OnEvent", function(frame, event)
+			frame:UnregisterEvent(event)
+			_G.TalkingHead_LoadUI()
+			InitializeTalkingHead()
+		end)
+	end
 end

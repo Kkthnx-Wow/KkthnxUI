@@ -8,27 +8,28 @@ local next = _G.next
 local pairs = _G.pairs
 local tonumber = _G.tonumber
 
-local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local C_LootHistoryGetItem = _G.C_LootHistory.GetItem
 local C_LootHistoryGetPlayerInfo = _G.C_LootHistory.GetPlayerInfo
 local ChatEdit_InsertLink = _G.ChatEdit_InsertLink
 local CreateFrame = _G.CreateFrame
 local CursorOnUpdate = _G.CursorOnUpdate
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local DressUpItemLink = _G.DressUpItemLink
-local GREED = _G.GREED
+local GameTooltip = _G.GameTooltip
 local GameTooltip_ShowCompareItem = _G.GameTooltip_ShowCompareItem
 local GetLootRollItemInfo = _G.GetLootRollItemInfo
 local GetLootRollItemLink = _G.GetLootRollItemLink
 local GetLootRollTimeLeft = _G.GetLootRollTimeLeft
-local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
+local GREED = _G.GREED
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsModifiedClick = _G.IsModifiedClick
 local IsShiftKeyDown = _G.IsShiftKeyDown
+local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
 local NEED = _G.NEED
 local PASS = _G.PASS
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
-local ROLL_DISENCHANT = _G.ROLL_DISENCHANT
 local ResetCursor = _G.ResetCursor
+local ROLL_DISENCHANT = _G.ROLL_DISENCHANT
 local RollOnLoot = _G.RollOnLoot
 local SetDesaturation = _G.SetDesaturation
 local ShowInspectCursor = _G.ShowInspectCursor
@@ -202,11 +203,6 @@ function Module:CreateRollFrame()
 	status:SetStatusBarColor(0.8, 0.8, 0.8, 0.9)
 	status.parent = frame
 	frame.status = status
-
-	-- status.bg = status:CreateTexture(nil, "BACKGROUND")
-	-- status.bg:SetAlpha(0.1)
-	-- status.bg:SetAllPoints()
-	-- status.bg:SetDrawLayer("BACKGROUND", 2)
 
 	local spark = frame:CreateTexture(nil, "OVERLAY")
 	spark:SetSize(128, FRAME_HEIGHT)

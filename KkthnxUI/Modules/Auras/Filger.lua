@@ -1,16 +1,14 @@
 local K, C, _ = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true or C["Filger"].Enable ~= true then
-	return
-end
 
 local _G = _G
 local ipairs = _G.ipairs
 local pairs = _G.pairs
 local select = _G.select
-local unpack = _G.unpack
+local string_format = _G.string.format
 local table_insert = _G.table.insert
-local table_sort = _G.table.sort
 local table_remove = _G.table.remove
+local table_sort = _G.table.sort
+local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
 local GameTooltip = _G.GameTooltip
@@ -34,7 +32,7 @@ function Filger:TooltipOnEnter()
 		local str = "spell:%s"
 		GameTooltip:ClearLines()
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 0, 3)
-		GameTooltip:SetHyperlink(format(str, self.spellID))
+		GameTooltip:SetHyperlink(string_format(str, self.spellID))
 		GameTooltip:Show()
 	end
 end
@@ -46,7 +44,10 @@ end
 function Filger:UnitAura(unitID, inSpellID, spellName, filter, absID)
 	for i = 1, 40 do
 		local name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID = UnitAura(unitID, i, filter)
-		if not name then break end
+		if not name then
+			break
+		end
+
 		if (absID and spellID == inSpellID) or (not absID and name == spellName) then
 			return name, spellID, icon, count, duration, expirationTime, unitCaster
 		end
@@ -74,8 +75,14 @@ function Filger:UpdateCD()
 end
 
 function Filger:DisplayActives()
-	if not self.actives then return end
-	if not self.bars then self.bars = {} end
+	if not self.actives then
+		return
+	end
+
+	if not self.bars then
+		self.bars = {}
+	end
+
 	local id = self.Id
 	local index = 1
 	local previous = nil
@@ -162,7 +169,7 @@ function Filger:DisplayActives()
 					bar.bg = CreateFrame("Frame", "$parentBG", bar.statusbar)
 					bar.bg:SetFrameLevel(4)
 					bar.bg:SetAllPoints()
-					K.CreateBorder(bar.bg)
+					bar.bg:CreateBorder()
 				end
 
 				if bar.background then
@@ -202,9 +209,11 @@ function Filger:DisplayActives()
 					bar.spellname:SetJustifyH("LEFT")
 				end
 			end
+
 			bar.spellID = 0
 			self.bars[index] = bar
 		end
+
 		previous = bar
 		index = index + 1
 	end
@@ -329,7 +338,7 @@ local function FindAuras(self, unit)
 			end
 
 			local data = SpellGroups[self.Id].spells[name] or SpellGroups[self.Id].spells[spid]
-			if data and (data.caster ~= 1 and (caster == data.caster or data.caster == "all") or MyUnits[caster]) and data.unitID == unit then
+			if data and (data.caster ~= 1 and (caster == data.caster or data.caster == "all") or MyUnits[caster]) and (not data.unitID or data.unitID == unit) then
 				if data.absID then
 					data = SpellGroups[self.Id].spells[spid]
 				end
@@ -344,21 +353,26 @@ local function FindAuras(self, unit)
 						local slotLink = GetInventoryItemLink("player", data.slotID)
 						_, _, _, _, _, _, _, _, _, icon = GetItemInfo(slotLink)
 					end
-					self.actives[spid] = {data = data, name = name, icon = icon, count = count, start = GetTime(), duration = data.duration, spid = spid, sort = data.sort}
+					self.actives[spid] = {data = data, name = name, icon = icon, count = count, start = expirationTime - duration, duration = data.duration, spid = spid, sort = data.sort}
 				end
 			end
 			index = index + 1
 		end
 	end
+
 	Filger.DisplayActives(self)
 end
 
 function Filger:OnEvent(event, unit, _, castID)
-	if C["Filger"].DisableCD == true and self.Name == "COOLDOWN" then
+	if not C["Unitframe"].Enable or not C["Filger"].Enable then
 		return
 	end
 
-	if C["Filger"].DisablePvP == true and (self.Name == "PVE/PVP_DEBUFF" or self.Name == "T_BUFF") then
+	if C["Filger"].DisableCD and self.Name == "COOLDOWN" then
+		return
+	end
+
+	if C["Filger"].DisablePvP and (self.Name == "PVE/PVP_DEBUFF" or self.Name == "T_BUFF") then
 		return
 	end
 

@@ -10,6 +10,7 @@ local select = select
 local CreateFrame = _G.CreateFrame
 
 function Module:CreateBoss()
+	self.mystyle = "boss"
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
@@ -26,7 +27,7 @@ function Module:CreateBoss()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = C["General"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
+	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
@@ -47,7 +48,7 @@ function Module:CreateBoss()
     end
 
 	if C["Boss"].Smooth then
-		K.SmoothBar(self.Health)
+		K:SmoothBar(self.Health)
 	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
@@ -67,7 +68,7 @@ function Module:CreateBoss()
 	self.Power.displayAltPower = true
 
 	if C["Boss"].Smooth then
-		K.SmoothBar(self.Power)
+		K:SmoothBar(self.Power)
 	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
@@ -87,14 +88,14 @@ function Module:CreateBoss()
 		self:Tag(self.Name, "[color][name]")
 	end
 
-	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
+	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 		self.Portrait:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
 		self.Portrait:CreateBorder()
 		self.Portrait:CreateInnerShadow()
-	elseif C["General"].PortraitStyle.Value ~= "ThreeDPortraits" then
+	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		self.Portrait = self.Health:CreateTexture("BossPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
@@ -105,7 +106,7 @@ function Module:CreateBoss()
 		self.Portrait.Border:CreateBorder()
 		self.Portrait.Border:CreateInnerShadow()
 
-		if (C["General"].PortraitStyle.Value == "ClassPortraits" or C["General"].PortraitStyle.Value == "NewClassPortraits") then
+		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end
 	end
@@ -114,30 +115,35 @@ function Module:CreateBoss()
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT", -self.Portrait:GetWidth() - 6, 0)
 
+	local aurasSetWidth = 156
 	self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
-	self.Buffs:SetWidth(154)
-	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-	self.Buffs.num = 6 * 1
-	self.Buffs.spacing = 6
-	self.Buffs.size = ((((self.Buffs:GetWidth() - (self.Buffs.spacing * (self.Buffs.num / 1 - 1))) / self.Buffs.num)) * 1)
-	self.Buffs:SetHeight(self.Buffs.size * 1)
+	self.Buffs:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -6)
 	self.Buffs.initialAnchor = "TOPLEFT"
-	self.Buffs["growth-y"] = "DOWN"
 	self.Buffs["growth-x"] = "RIGHT"
+	self.Buffs["growth-y"] = "DOWN"
+	self.Buffs.num = 6
+	self.Buffs.spacing = 6
+	self.Buffs.iconsPerRow = 6
+	self.Buffs.onlyShowPlayer = false
+	self.Buffs.size = Module.auraIconSize(aurasSetWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
+	self.Buffs:SetWidth(aurasSetWidth)
+	self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+	self.Buffs.showStealableBuffs = true
 	self.Buffs.PostCreateIcon = Module.PostCreateAura
 	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
 
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
-	self.Debuffs:SetWidth(154)
-	self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
-	self.Debuffs.num = 6 * 1
 	self.Debuffs.spacing = 6
-	self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num / 1 - 1))) / self.Debuffs.num)) * 1)
-	self.Debuffs:SetHeight(self.Debuffs.size * 1)
-	self.Debuffs.initialAnchor = "BOTTOMLEFT"
+	self.Debuffs.initialAnchor = "TOPRIGHT"
+	self.Debuffs["growth-x"] = "LEFT"
 	self.Debuffs["growth-y"] = "DOWN"
-	self.Debuffs["growth-x"] = "RIGHT"
-	self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
+	self.Debuffs:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
+	self.Debuffs.num = 10
+	self.Debuffs.iconsPerRow = 5
+	self.Debuffs.CustomFilter = Module.CustomFilter
+	self.Debuffs.size = Module.auraIconSize(aurasSetWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
+	self.Debuffs:SetWidth(aurasSetWidth)
+	self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num/self.Debuffs.iconsPerRow + .5))
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 

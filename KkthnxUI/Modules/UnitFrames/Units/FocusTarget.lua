@@ -1,7 +1,11 @@
 local K, C = unpack(select(2, ...))
+if C["Unitframe"].Enable ~= true then
+	return
+end
 local Module = K:GetModule("Unitframes")
 
 local oUF = oUF or K.oUF
+
 if not oUF then
 	K.Print("Could not find a vaild instance of oUF. Stopping FocusTarget.lua code!")
 	return
@@ -28,7 +32,7 @@ function Module:CreateFocusTarget()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = C["General"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
+	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
@@ -75,14 +79,14 @@ function Module:CreateFocusTarget()
 		self:Tag(self.Name, "[color][name]")
 	end
 
-	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
+	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 		self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
 		self.Portrait:CreateBorder()
 		self.Portrait:CreateInnerShadow()
-	elseif C["General"].PortraitStyle.Value ~= "ThreeDPortraits" then
+	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		self.Portrait = self.Health:CreateTexture("PlayerPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
@@ -93,7 +97,7 @@ function Module:CreateFocusTarget()
 		self.Portrait.Border:CreateBorder()
 		self.Portrait.Border:CreateInnerShadow()
 
-		if (C["General"].PortraitStyle.Value == "ClassPortraits" or C["General"].PortraitStyle.Value == "NewClassPortraits") then
+		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end
 	end

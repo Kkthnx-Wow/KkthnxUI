@@ -1,4 +1,8 @@
 local K, C = unpack(select(2, ...))
+if C["Raid"].Enable ~= true then
+	return
+end
+
 local Module = K:GetModule("Unitframes")
 local oUF = oUF or K.oUF
 if not oUF then
@@ -39,7 +43,7 @@ local function UpdateRaidPower(self, _, unit)
 	if powerToken == "MANA" and C["Raid"].ManabarShow then
 		if not self.Power:IsVisible() then
 			self.Health:ClearAllPoints()
-			self.Health:SetPoint("BOTTOMLEFT", self, 0, 5)
+			self.Health:SetPoint("BOTTOMLEFT", self, 0, 6)
 			self.Health:SetPoint("TOPRIGHT", self)
 
 			self.Power:Show()
@@ -93,7 +97,7 @@ function Module:CreateRaid()
 	end
 
 	if C["Raid"].Smooth then
-		K.SmoothBar(self.Health)
+		K:SmoothBar(self.Health)
 	end
 
 	if C["Raid"].ManabarShow then
@@ -102,14 +106,14 @@ function Module:CreateRaid()
 		self.Power:SetFrameLevel(self:GetFrameLevel())
 		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
 		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
-		self.Power:SetHeight(4.5)
+		self.Power:SetHeight(5.5)
 		self.Power:SetStatusBarTexture(RaidframeTexture)
 
 		self.Power.colorPower = true
 		self.Power.frequentUpdates = false
 
 		if C["Raid"].Smooth then
-			K.SmoothBar(self.Power)
+			K:SmoothBar(self.Power)
 		end
 
 		self.Power.Background = self.Power:CreateTexture(nil, "BORDER")
@@ -260,25 +264,25 @@ function Module:CreateRaid()
 		self.RaidDebuffs.cd:SetHideCountdownNumbers(true)
 	end
 
-	if C["Raid"].TargetHighlight then
-		self.TargetHighlight = self.Overlay:CreateTexture(nil, "OVERLAY")
-		self.TargetHighlight:SetTexture([[Interface\RAIDFRAME\Raid-FrameHighlights]])
-		self.TargetHighlight:SetTexCoord(0.00781250, 0.55468750, 0.28906250, 0.55468750)
-		self.TargetHighlight:SetVertexColor(0.84, 0.75, 0.65)
-		self.TargetHighlight:SetAllPoints()
-		self.TargetHighlight:Hide()
+	if (C["Raid"].TargetHighlight) then
+        self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay)
+        self.TargetHighlight:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
+        self.TargetHighlight:SetPoint("TOPLEFT", self, -6, 6)
+        self.TargetHighlight:SetPoint("BOTTOMRIGHT", self, 6, -6)
+        self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
+        self.TargetHighlight:Hide()
 
-		local function UpdateRaidTargetGlow()
-			if UnitIsUnit("target", self.unit) then
-				self.TargetHighlight:Show()
-			else
-				self.TargetHighlight:Hide()
-			end
-		end
+        local function UpdateRaidTargetGlow()
+            if UnitIsUnit("target", self.unit) then
+                self.TargetHighlight:Show()
+            else
+                self.TargetHighlight:Hide()
+            end
+        end
 
-		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateRaidTargetGlow, true)
-		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidTargetGlow, true)
-	end
+        self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateRaidTargetGlow, true)
+        self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidTargetGlow, true)
+    end
 
 	self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.DebuffHighlight:SetAllPoints(self.Health)

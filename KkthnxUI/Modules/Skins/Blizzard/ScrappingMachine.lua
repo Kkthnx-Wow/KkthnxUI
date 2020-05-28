@@ -3,10 +3,15 @@ local Module = K:GetModule("Skins")
 
 local _G = _G
 local unpack = _G.unpack
+local pairs = _G.pairs
 
 local hooksecurefunc = _G.hooksecurefunc
 
 local function SkinScrappingMachine()
+	if not IsAddOnLoaded("Blizzard_ScrappingMachineUI") then
+		return
+	end
+
 	local MachineFrame = _G.ScrappingMachineFrame
 
 	MachineFrame:CreateBorder(nil, nil, nil, true)

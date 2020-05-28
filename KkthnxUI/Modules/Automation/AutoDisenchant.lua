@@ -1,7 +1,4 @@
 local K, C = unpack(select(2, ...))
-if C["Automation"].AutoDisenchant ~= true or K.CheckAddOnState("Molinari") then
-	return
-end
 
 local _G = _G
 
@@ -30,6 +27,10 @@ local GetItemInfoFromHyperlink = _G.GetItemInfoFromHyperlink
 
 local button = CreateFrame("Button", "OneClickMPD", UIParent, "SecureActionButtonTemplate, AutoCastShineTemplate")
 button:SetScript("OnEvent", function(self, event, ...)
+	if C["Automation"].AutoDisenchant ~= true or K.CheckAddOnState("Molinari") then
+		return
+	end
+
 	self[event](self, ...)
 end)
 button:RegisterEvent("PLAYER_LOGIN")

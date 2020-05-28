@@ -25,9 +25,9 @@ local function SetupFasterLoot()
 end
 
 function Module:CreateFasterLoot()
-	if C["Loot"].FastLoot then
-		K:RegisterEvent("LOOT_READY", SetupFasterLoot)
-	else
-		K:UnregisterEvent("LOOT_READY", SetupFasterLoot)
+	if not C["Loot"].FastLoot then
+		return
 	end
+
+	K:RegisterEvent("LOOT_READY", SetupFasterLoot)
 end

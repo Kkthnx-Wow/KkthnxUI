@@ -1,7 +1,4 @@
 local K, C, L = unpack(select(2, ...))
-if C["Minimap"].Enable ~= true then
-	return
-end
 
 local _G = _G
 
@@ -289,6 +286,10 @@ local menuList = {
 }
 
 Minimap:SetScript("OnMouseUp", function(self, btn)
+	if C["Minimap"].Enable ~= true then
+		return
+	end
+
 	HideDropDownMenu(1, nil, KkthnxUIMiniMapTrackingDropDown)
 	menuFrame:Hide()
 

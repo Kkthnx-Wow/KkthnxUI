@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Load_Filters -->
-   <Script file="Actionbar.lua" />
-   <Script file="AutoDisenchant.lua" />
-   <Script file="AutoQuest.lua" />
-   <Script file="ExtraQuestButton.lua" />
-   <Script file="FilgerSpells.lua" />
-   <Script file="Nameplates.lua" />
-   <Script file="RangeSpells.lua" />
-   <Script file="Reminder.lua" />
-   <Script file="Unitframes.lua" />
-   <Script file="WorldMapPlusData.lua" />
+   <Script file="ActionbarFadeFilter.lua" />
+   <Script file="AutoDisenchantFilter.lua" />
+   <Script file="AutoQuestFilter.lua" />
+   <Script file="BadBuffsFilter.lua" />
+   <Script file="ExtraQuestButtonFilter.lua" />
+   <Script file="FilgerSpellsFilter.lua" />
+   <Script file="NameplateAurasFilter.lua" />
+   <Script file="RaidUtilityBuffsFilter.lua" />
+   <Script file="RangeSpellsFilter.lua" />
+   <Script file="SpellRemindersFilter.lua" />
+   <Script file="UnitframeAurasFilter.lua" />
+   <Script file="WorldMapPlusFilter.lua" />
 </Ui>

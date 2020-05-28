@@ -7,8 +7,27 @@ local CreateFrame = _G.CreateFrame
 
 local KkthnxUIMedia = CreateFrame("Frame", "KkthnxUIFonts")
 
--- fix the shadow font
-local s = K.Mult or 1
+local s = 1
+-- local fontsDB = {normal = {}, outline = {}}
+-- local fontPrefix = "KkthnxUI"
+
+-- for i = 10, 100 do
+-- 	local fontNormal = _G[fontPrefix.."Font"..i]
+-- 	if fontNormal then
+-- 		fontsDB.normal[i] = fontNormal
+-- 		fontsDB.normal[i]:SetShadowColor(0, 0, 0, 1)
+-- 		fontsDB.normal[i]:SetShadowOffset(1, -1 / 2)
+-- 	end
+
+-- 	local fontOutline = _G[fontPrefix.."Font"..i.."_Outline"]
+-- 	if fontOutline then
+-- 		fontsDB.outline[i] = fontOutline
+-- 	end
+-- end
+
+-- function K.GetFonts(size, outline)
+-- 	return fontsDB[outline and "outline" or "normal"][size]
+-- end
 
 -- Create our own fonts
 local KkthnxUIFont = CreateFont("KkthnxUIFont")
@@ -54,6 +73,7 @@ BlizzardFontOutline:SetShadowOffset(0, -0)
 local TextureTable = {
 	["AltzUI"] = C["Media"].AltzUI,
 	["AsphyxiaUI"] = C["Media"].AsphyxiaUI,
+	["AzeriteUI"] = C["Media"].AzeriteUI,
 	["Blank"] = C["Media"].Blank,
 	["DiabolicUI"] = C["Media"].DiabolicUI,
 	["Flat"] = C["Media"].FlatTexture,

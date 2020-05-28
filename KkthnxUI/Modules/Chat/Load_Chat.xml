@@ -2,7 +2,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Load_Chat -->
    <Script file="ChatFrames.lua" />
+
+   <Script file="ChannelRename.lua" />
+   <Script file="ChatFilter.lua" />
    <Script file="CopyChat.lua" />
    <Script file="CopyUrl.lua" />
-   <Script file="Filters.lua" />
+   <Script file="ItemLevel.lua" />
 </Ui>

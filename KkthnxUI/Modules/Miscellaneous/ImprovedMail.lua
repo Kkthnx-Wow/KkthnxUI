@@ -1,4 +1,4 @@
-local K, _, L = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
@@ -259,6 +259,188 @@ function Module:InboxItem_OnEnter()
 	end
 end
 
+local function updatePicker()
+	local swatch = ColorPickerFrame.__swatch
+	local r, g, b = ColorPickerFrame:GetColorRGB()
+	swatch.tex:SetVertexColor(r, g, b)
+	swatch.color.r, swatch.color.g, swatch.color.b = r, g, b
+end
+
+local function cancelPicker()
+	local swatch = ColorPickerFrame.__swatch
+	local r, g, b = ColorPicker_GetPreviousValues()
+	swatch.tex:SetVertexColor(r, g, b)
+	swatch.color.r, swatch.color.g, swatch.color.b = r, g, b
+end
+
+
+local function openColorPicker(self)
+	local r, g, b = self.color.r, self.color.g, self.color.b
+	ColorPickerFrame.__swatch = self
+	ColorPickerFrame.func = updatePicker
+	ColorPickerFrame.previousValues = {r = r, g = g, b = b}
+	ColorPickerFrame.cancelFunc = cancelPicker
+	ColorPickerFrame:SetColorRGB(r, g, b)
+	ColorPickerFrame:Show()
+end
+
+local function editBoxClearFocus(self)
+	self:ClearFocus()
+end
+
+function Module:MailBox_ContactList()
+	local bars = {}
+	local barIndex = 0
+
+	local bu = CreateFrame("Button", nil, SendMailFrame)
+	bu:SetSize(22, 22)
+	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
+	bu.Icon:SetAllPoints()
+	bu.Icon:SetTexture("Interface\\WorldMap\\Gear_64")
+	bu.Icon:SetTexCoord(0, .5, 0, .5)
+	bu:SetHighlightTexture("Interface\\WorldMap\\Gear_64")
+	bu:GetHighlightTexture():SetTexCoord(0, .5, 0, .5)
+	bu:SetPoint("LEFT", SendMailNameEditBox, "RIGHT", 3, 0)
+
+	local list = CreateFrame("Frame", nil, bu)
+	list:SetSize(204, 418)
+	list:SetPoint("TOPLEFT", MailFrame, "TOPRIGHT", 5, -2)
+	list:SetFrameStrata("Tooltip")
+	list:CreateBorder()
+	K.CreateFontString(list, 12, "Contact List", "", "system", "TOP", 0, -5)
+
+	local editbox = CreateFrame("EditBox", nil, list)
+	editbox:SetSize(120, 20)
+	editbox:SetAutoFocus(false)
+	editbox:SetTextInsets(5, 5, 0, 0)
+	editbox:FontTemplate()
+	editbox:CreateBorder()
+	editbox:SetScript("OnEscapePressed", editBoxClearFocus)
+	editbox:SetScript("OnEnterPressed", editBoxClearFocus)
+	editbox:SetPoint("TOPLEFT", 5, -22)
+
+	local swatch = CreateFrame("Button", nil, list)
+	swatch:SetSize(20, 20)
+	swatch.text = K.CreateFontString(swatch, 14, list, "", false, "LEFT", 26, 0)
+	swatch:CreateBorder()
+	swatch:CreateInnerShadow()
+
+	local tex = swatch:CreateTexture()
+	tex:SetAllPoints()
+	tex:SetTexture(C["Media"].Texture)
+	tex:SetVertexColor(1, 1, 1, 1)
+	swatch.tex = tex
+	swatch.color = {r = 1, g = 1, b = 1}
+	swatch:SetScript("OnClick", openColorPicker)
+	swatch:SetPoint("LEFT", editbox, "RIGHT", 6, 0)
+
+	local function sortBars()
+		local index = 0
+		for _, bar in pairs(bars) do
+			if bar:IsShown() then
+				bar:SetPoint("TOPLEFT", list, 5, -50 - index*22)
+				index = index + 1
+			end
+		end
+	end
+
+	local function buttonOnClick(self)
+		local text = self.name:GetText() or ""
+		SendMailNameEditBox:SetText(text)
+	end
+
+	local function deleteOnClick(self)
+		KkthnxUIData[K.Realm][K.Name].ContactList[self.__owner.name:GetText()] = nil
+		self.__owner:Hide()
+		sortBars()
+		barIndex = barIndex - 1
+	end
+
+	local function createContactBar(text, r, g, b)
+		local button = CreateFrame("Button", nil, list)
+		button:SetSize(164, 20)
+		button.HL = button:CreateTexture(nil, "HIGHLIGHT")
+		button.HL:SetAllPoints()
+		button.HL:SetColorTexture(1, 1, 1, .25)
+
+		button.name = K.CreateFontString(button, 13, text, "", false, "LEFT", 10, 0)
+		button.name:SetPoint("RIGHT", button, "LEFT", 230, 0)
+		button.name:SetJustifyH("LEFT")
+		button.name:SetTextColor(r, g, b)
+
+		button:RegisterForClicks("AnyUp")
+		button:SetScript("OnClick", buttonOnClick)
+
+		button.delete = CreateFrame("Button", nil, button)
+		button.delete:SetWidth(18)
+		button.delete:SetHeight(18)
+
+		button.delete.Icon = button.delete:CreateTexture(nil, "ARTWORK")
+		button.delete.Icon:SetAllPoints()
+		button.delete.Icon:SetTexture("Interface\\RAIDFRAME\\ReadyCheck-NotReady")
+		button.delete.Icon:SetTexCoord(unpack(K.TexCoords))
+
+		button.delete:SetPoint("LEFT", button, "RIGHT", 5, 0)
+		button.delete.__owner = button
+		button.delete:SetScript("OnClick", deleteOnClick)
+
+		return button
+	end
+
+	local function createBar(text, r, g, b)
+		if barIndex < 17 then
+			barIndex = barIndex + 1
+		end
+		for i = 1, barIndex do
+			if not bars[i] then
+				bars[i] = createContactBar(text, r, g, b)
+			end
+			if not bars[i]:IsShown() then
+				bars[i]:Show()
+				bars[i].name:SetText(text)
+				bars[i].name:SetTextColor(r, g, b)
+				break
+			end
+		end
+	end
+
+	bu:SetScript("OnClick", function()
+		K.TogglePanel(list)
+	end)
+
+	local add = CreateFrame("Button", nil, list)
+	add:SetSize(42, 20)
+	add:SetPoint("LEFT", swatch, "RIGHT", 6, 0)
+	add:SkinButton()
+	add.name = K.CreateFontString(add, 13, ADD, "", "system", "CENTER", 0, -1)
+	add:SetScript("OnClick", function()
+		local text = editbox:GetText()
+		if text == "" or tonumber(text) then -- incorrect input
+			return
+		end
+
+		if not strfind(text, "-") then -- complete player realm name
+			text = text.."-"..K.Realm
+		end
+
+		local r, g, b = swatch.tex:GetVertexColor()
+		KkthnxUIData[K.Realm][K.Name].ContactList[text] = r..":"..g..":"..b
+		createBar(text, r, g, b)
+		sortBars()
+		editbox:SetText("")
+	end)
+
+	for name, color in pairs(KkthnxUIData[K.Realm][K.Name].ContactList) do
+		if color then
+			local r, g, b = strsplit(":", color)
+			r, g, b = tonumber(r), tonumber(g), tonumber(b)
+			createBar(name, r, g, b)
+		end
+	end
+
+	sortBars()
+end
+
 function Module:CreateMailBox()
 	for i = 1, 7 do
 		local itemButton = _G["MailItem"..i.."Button"]
@@ -288,6 +470,8 @@ function Module:CreateMailBox()
 
 	hooksecurefunc("InboxFrame_Update", Module.InboxFrame_Hook)
 	hooksecurefunc("InboxFrameItem_OnEnter", Module.InboxItem_OnEnter)
+
+	Module:MailBox_ContactList()
 
 	-- Replace the alert frame
 	if InboxTooMuchMail then

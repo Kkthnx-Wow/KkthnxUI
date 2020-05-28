@@ -2,10 +2,10 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("DataBars")
 
 local _G = _G
-local math_floor = math.floor
-local pairs = pairs
-local string_format = string.format
-local select = select
+local math_floor = _G.math.floor
+local pairs = _G.pairs
+local select = _G.select
+local string_format = _G.string.format
 
 local ARTIFACT_POWER = _G.ARTIFACT_POWER
 local C_AzeriteItem_FindActiveAzeriteItem = _G.C_AzeriteItem.FindActiveAzeriteItem
@@ -15,7 +15,6 @@ local C_Reputation_GetFactionParagonInfo = _G.C_Reputation.GetFactionParagonInfo
 local C_Reputation_IsFactionParagon = _G.C_Reputation.IsFactionParagon
 local CreateFrame = _G.CreateFrame
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
-local FactionStandingLabelUnknown = _G.UNKNOWN
 local GameTooltip = _G.GameTooltip
 local GetExpansionLevel = _G.GetExpansionLevel
 local GetFactionInfo = _G.GetFactionInfo
@@ -35,9 +34,10 @@ local UnitHonor = _G.UnitHonor
 local UnitHonorLevel = _G.UnitHonorLevel
 local UnitHonorMax = _G.UnitHonorMax
 local UnitIsPVP = _G.UnitIsPVP
-local UnitLevel = _G.UnitLevel
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
+
+local FactionStandingLabelUnknown = _G.UNKNOWN
 local backupColor = _G.FACTION_BAR_COLORS[1]
 
 local function GetUnitXP(unit)
@@ -49,13 +49,13 @@ local function GetUnitXP(unit)
 end
 
 function Module:SetupExperience()
-	local expbar = CreateFrame("StatusBar", "KkthnxUI_ExperienceBar", self.Container)
+	local expbar = CreateFrame("StatusBar", "KKUI_ExperienceBar", self.Container)
 	expbar:SetStatusBarTexture(self.DatabaseTexture)
 	expbar:SetStatusBarColor(C["DataBars"].ExperienceColor[1], C["DataBars"].ExperienceColor[2], C["DataBars"].ExperienceColor[3], C["DataBars"].ExperienceColor[4])
 	expbar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
 	expbar:CreateBorder()
 
-	local restbar = CreateFrame("StatusBar", "KkthnxUI_RestBar", self.Container)
+	local restbar = CreateFrame("StatusBar", "KKUI_RestBar", self.Container)
 	restbar:SetStatusBarTexture(self.DatabaseTexture)
 	restbar:SetStatusBarColor(C["DataBars"].RestedColor[1], C["DataBars"].RestedColor[2], C["DataBars"].RestedColor[3], C["DataBars"].RestedColor[4])
 	restbar:SetFrameLevel(3)
@@ -81,7 +81,7 @@ function Module:SetupExperience()
 end
 
 function Module:SetupReputation()
-	local reputation = CreateFrame("StatusBar", "KkthnxUI_ReputationBar", self.Container)
+	local reputation = CreateFrame("StatusBar", "KKUI_ReputationBar", self.Container)
 	reputation:SetStatusBarTexture(self.DatabaseTexture)
 	reputation:SetStatusBarColor(1, 1, 1)
 	reputation:SetSize(C["DataBars"].Width, C["DataBars"].Height)
@@ -106,7 +106,7 @@ function Module:SetupReputation()
 end
 
 function Module:SetupAzerite()
-	local azerite = CreateFrame("Statusbar", "KkthnxUI_AzeriteBar", self.Container)
+	local azerite = CreateFrame("Statusbar", "KKUI_AzeriteBar", self.Container)
 	azerite:SetStatusBarTexture(self.DatabaseTexture)
 	azerite:SetStatusBarColor(C["DataBars"].AzeriteColor[1], C["DataBars"].AzeriteColor[2], C["DataBars"].AzeriteColor[3])
 	azerite:SetSize(C["DataBars"].Width, C["DataBars"].Height)
@@ -129,7 +129,11 @@ function Module:SetupAzerite()
 end
 
 function Module:SetupHonor()
-	local honor = CreateFrame("StatusBar", "KkthnxUI_HonorBar", self.Container)
+	if not C["DataBars"].TrackHonor then
+		return
+	end
+
+	local honor = CreateFrame("StatusBar", "KKUI_HonorBar", self.Container)
 	honor:SetStatusBarTexture(self.DatabaseTexture)
 	honor:SetStatusBarColor(C["DataBars"].HonorColor[1], C["DataBars"].HonorColor[2], C["DataBars"].HonorColor[3])
 	honor:SetSize(C["DataBars"].Width, C["DataBars"].Height)
@@ -154,13 +158,14 @@ function Module:SetupHonor()
 end
 
 function Module:UpdateReputation()
+	local repBar = self.Bars.Reputation
 	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
 
 	local numFactions = GetNumFactions()
 	if not name then
-		self.Bars.Reputation:Hide()
+		repBar:Hide()
 	else
-		self.Bars.Reputation:Show()
+		repBar:Show()
 
 		local ID, isFriend, friendText, standingLabel
 		local isCapped
@@ -182,10 +187,10 @@ function Module:UpdateReputation()
 			end
 		end
 
-		self.Bars.Reputation:SetMinMaxValues(min, max)
-		self.Bars.Reputation:SetValue(value)
+		repBar:SetMinMaxValues(min, max)
+		repBar:SetValue(value)
 		local color = FACTION_BAR_COLORS[reaction] or backupColor
-		self.Bars.Reputation:SetStatusBarColor(color.r, color.g, color.b)
+		repBar:SetStatusBarColor(color.r, color.g, color.b)
 
 		for i = 1, numFactions do
 			local factionName, _, standingID,_,_,_,_,_,_,_,_,_,_, FactionID = GetFactionInfo(i)
@@ -219,41 +224,42 @@ function Module:UpdateReputation()
 				text = string_format("%s: %s - %d%% [%s]", name, K.ShortValue(value - min), ((value - min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel)
 			end
 
-			self.Bars.Reputation.Text:SetText(text)
+			repBar.Text:SetText(text)
 		end
 	end
 end
 
 function Module:UpdateExperience()
-	if (K.Level == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled() then
-		self.Bars.Experience:Hide()
-	else
-		self.Bars.Experience:Show()
+	local expBar = self.Bars.Experience
 
-		local cur, max = GetUnitXP('player')
+	if (K.Level == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled() then
+		expBar:Hide()
+	else
+		expBar:Show()
+
+		local cur, max = GetUnitXP("player")
 		if max <= 0 then
 			max = 1
 		end
 
-		self.Bars.Experience:SetMinMaxValues(0, max)
-		-- self.Bars.Experience:SetValue(cur - 1 >= 0 and cur - 1 or 0) -- this is set twice here for some reason
-		self.Bars.Experience:SetValue(cur)
+		expBar:SetMinMaxValues(0, max)
+		expBar:SetValue(cur)
 
 		local rested = GetXPExhaustion()
 
 		if rested and rested > 0 then
-			self.Bars.Experience.RestBar:SetMinMaxValues(0, max)
-			self.Bars.Experience.RestBar:SetValue(min(cur + rested, max))
+			expBar.RestBar:SetMinMaxValues(0, max)
+			expBar.RestBar:SetValue(min(cur + rested, max))
 
 			if C["DataBars"].Text then
-				self.Bars.Experience.Text:SetText(string_format("%s - %d%% R:%s [%d%%]", K.ShortValue(cur), cur / max * 100, K.ShortValue(rested), rested / max * 100))
+				expBar.Text:SetText(string_format("%s - %d%% R:%s [%d%%]", K.ShortValue(cur), cur / max * 100, K.ShortValue(rested), rested / max * 100))
 			end
 		else
-			self.Bars.Experience.RestBar:SetMinMaxValues(0, 1)
-			self.Bars.Experience.RestBar:SetValue(0)
+			expBar.RestBar:SetMinMaxValues(0, 1)
+			expBar.RestBar:SetValue(0)
 
 			if C["DataBars"].Text then
-				self.Bars.Experience.Text:SetText(string_format("%s - %d%%", K.ShortValue(cur), cur / max * 100))
+				expBar.Text:SetText(string_format("%s - %d%%", K.ShortValue(cur), cur / max * 100))
 			end
 		end
 	end
@@ -264,27 +270,28 @@ function Module:UpdateAzerite(event, unit)
 		return
 	end
 
+	local azBar = self.Bars.Azerite
+
 	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
 	if not azeriteItemLocation or C_AzeriteItem.IsAzeriteItemAtMaxLevel() then
-		self.Bars.Azerite:Hide()
+		azBar:Hide()
 	else
-		self.Bars.Azerite:Show()
+		azBar:Show()
 
 		local xp, totalLevelXP = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
 		local currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
 
-		self.Bars.Azerite:SetMinMaxValues(0, totalLevelXP)
-		self.Bars.Azerite:SetValue(xp)
+		azBar:SetMinMaxValues(0, totalLevelXP)
+		azBar:SetValue(xp)
 
 		if C["DataBars"].Text then
-			self.Bars.Azerite.Text:SetText(string_format("%s - %s%% [%s]", K.ShortValue(xp), math_floor(xp / totalLevelXP * 100), currentLevel))
+			azBar.Text:SetText(string_format("%s - %s%% [%s]", K.ShortValue(xp), math_floor(xp / totalLevelXP * 100), currentLevel))
 		end
 	end
 end
 
 function Module:UpdateHonor(event, unit)
 	if not C["DataBars"].TrackHonor then
-		self.Bars.Honor:Hide()
 		return
 	end
 
@@ -292,17 +299,12 @@ function Module:UpdateHonor(event, unit)
 		return
 	end
 
-	local showHonor = true
-	if not UnitIsPVP("player") then
-		showHonor = false
-	elseif UnitLevel("player") < _G.MAX_PLAYER_LEVEL then
-		showHonor = false
-	end
+	local honBar = self.Bars.Honor
 
-	if not showHonor then
-		self.Bars.Honor:Hide()
+	if (not UnitIsPVP("player")) or (K.Level < MAX_PLAYER_LEVEL) then
+		honBar:Hide()
 	else
-		self.Bars.Honor:Show()
+		honBar:Show()
 
 		local current = UnitHonor("player")
 		local max = UnitHonorMax("player")
@@ -311,18 +313,18 @@ function Module:UpdateHonor(event, unit)
 			max = 1
 		end
 
-		self.Bars.Honor:SetMinMaxValues(0, max)
-		self.Bars.Honor:SetValue(current)
+		honBar:SetMinMaxValues(0, max)
+		honBar:SetValue(current)
 
 		if C["DataBars"].Text then
-			self.Bars.Honor.Text:SetText(string_format("%s - %d%%", K.ShortValue(current), current / max * 100))
+			honBar.Text:SetText(string_format("%s - %d%%", K.ShortValue(current), current / max * 100))
 		end
 	end
 end
 
 function Module:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_LEFT")
 	GameTooltip:ClearLines()
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
 	if C["DataBars"].MouseOver then
 		K.UIFrameFadeIn(self.Container, 0.25, self.Container:GetAlpha(), 1)
@@ -359,7 +361,8 @@ function Module:OnEnter()
 		end
 
 		if name then
-			GameTooltip:AddLine(name)
+			local color = FACTION_BAR_COLORS[reaction] or backupColor
+			GameTooltip:AddLine(name, color.r, color.g, color.b)
 
 			local friendID, friendTextLevel, _
 			if factionID then
@@ -384,11 +387,11 @@ function Module:OnEnter()
 		local currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
 
 		self.itemDataLoadedCancelFunc = azeriteItem:ContinueWithCancelOnItemLoad(function()
-			local azeriteItemName = azeriteItem:GetItemName()
-
-			GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItemName.." ("..currentLevel..")", nil, nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
-			GameTooltip:AddDoubleLine(L["AP"], string_format(' %d / %d (%d%%)', cur, max, cur / max * 100), 1, 1, 1)
-			GameTooltip:AddDoubleLine(L["Remaining"], string_format(' %d (%d%% - %d '..L["Bars"]..')', max - cur, (max - cur) / max * 100, 10 * (max - cur) / max), 1, 1, 1)
+				local azeriteItemName = azeriteItem:GetItemName()
+				GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItemName.." ("..currentLevel..")", nil,  nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
+				GameTooltip:AddDoubleLine(L["AP"], string_format(" %d / %d (%d%%)", cur, max, cur / max  * 100), 1, 1, 1)
+				GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", max - cur, (max - cur) / max * 100, 10 * (max - cur) / max), 1, 1, 1)
+				GameTooltip:Show()
 		end)
 	end
 
@@ -417,7 +420,7 @@ function Module:OnLeave()
 	GameTooltip:Hide()
 end
 
-function Module.OnUpdate()
+function Module:OnUpdate()
 	Module:UpdateExperience()
 	Module:UpdateReputation()
 	Module:UpdateAzerite()
@@ -458,11 +461,9 @@ function Module:OnEnable()
 
 	self.Bars = {}
 
-	self.Container = CreateFrame("button", "KkthnxUI_Databars", K.PetBattleHider)
+	self.Container = CreateFrame("button", "KKUI_Databars", K.PetBattleHider)
 	self.Container:SetWidth(C["DataBars"].Width)
 	self.Container:SetPoint("TOP", "Minimap", "BOTTOM", 0, -6)
-	self.Container:RegisterForClicks("RightButtonUp", "LeftButtonUp", "MiddleButtonUp")
-
 	self.Container:HookScript("OnEnter", self.OnEnter)
 	self.Container:HookScript("OnLeave", self.OnLeave)
 

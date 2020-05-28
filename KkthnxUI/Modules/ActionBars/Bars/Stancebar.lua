@@ -15,17 +15,18 @@ function Module:CreateStancebar()
 	local num = NUM_STANCE_SLOTS
 	local buttonList = {}
 	local layout = C["ActionBar"].Layout.Value
+	local buttonSize = C["ActionBar"].StancePetSize
 
 	-- Make A Frame That Fits The Size Of All Microbuttons
 	local frame = CreateFrame("Frame", "KkthnxUI_StanceBar", UIParent, "SecureHandlerStateTemplate")
-	frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
-	frame:SetHeight(FilterConfig.size + 2 * padding + 2)
+	frame:SetWidth(num * buttonSize + (num - 1) * margin + 2 * padding)
+	frame:SetHeight(buttonSize + 2 * padding + 2)
 	if layout == "Four Stacked" then
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -70, 164}
+		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -60, 164}
 	elseif layout == "3x4 Boxed arrangement" then
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -70, 44}
+		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -60, 44}
 	else
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -70, 124}
+		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -60, 124}
 	end
 
 	-- Stance Bar
@@ -39,7 +40,7 @@ function Module:CreateStancebar()
 	for i = 1, num do
 		local button = _G["StanceButton"..i]
 		table_insert(buttonList, button) -- Add The Button Object To The List
-		button:SetSize(FilterConfig.size, FilterConfig.size)
+		button:SetSize(buttonSize, buttonSize)
 		button:ClearAllPoints()
 
 		if i == 1 then
@@ -50,13 +51,31 @@ function Module:CreateStancebar()
 		end
 	end
 
+	PossessBarFrame:SetParent(frame)
+	PossessBarFrame:EnableMouse(false)
+	PossessBackground1:SetTexture(nil)
+	PossessBackground2:SetTexture(nil)
+
+	for i = 1, NUM_POSSESS_SLOTS do
+		local button = _G["PossessButton"..i]
+		table_insert(buttonList, button) -- Add The Button Object To The List
+		button:SetSize(buttonSize, buttonSize)
+		button:ClearAllPoints()
+		if i == 1 then
+			button:SetPoint("BOTTOMLEFT", frame, padding, padding + 1)
+		else
+			local previous = _G["PossessButton"..i - 1]
+			button:SetPoint("LEFT", previous, "RIGHT", margin, 0)
+		end
+	end
+
 	-- Show/hide The Frame On A Given State Driver
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
 	-- create drag frame and drag functionality
 	if K.ActionBars.userPlaced then
-		K.Mover(frame, "StanceBar", "StanceBar", frame.Pos)
+		frame.mover = K.Mover(frame, "StanceBar", "StanceBar", frame.Pos)
 	end
 
 	-- create the mouseover functionality

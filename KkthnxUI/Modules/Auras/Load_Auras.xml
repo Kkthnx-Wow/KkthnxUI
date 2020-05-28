@@ -21,6 +21,12 @@
 			<OnLeave function="GameTooltip_Hide" />
 		</Scripts>
 	</Button>
+	<Button name="KKUI_AuraTemplate20" inherits="KKUI_AuraTemplate" virtual="true">
+		<Size x="20" y="20" />
+	</Button>
+	<Button name="KKUI_AuraTemplate22" inherits="KKUI_AuraTemplate" virtual="true">
+		<Size x="22" y="22" />
+	</Button>
 	<Button name="KKUI_AuraTemplate24" inherits="KKUI_AuraTemplate" virtual="true">
 		<Size x="24" y="24" />
 	</Button>

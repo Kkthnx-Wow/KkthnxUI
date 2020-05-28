@@ -7,10 +7,10 @@ local GetItemInfo = _G.GetItemInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local GetMerchantItemLink = _G.GetMerchantItemLink
 local GetMerchantNumItems = _G.GetMerchantNumItems
+local hooksecurefunc = _G.hooksecurefunc
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
 local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
 local MERCHANT_ITEMS_PER_PAGE = _G.MERCHANT_ITEMS_PER_PAGE
-local hooksecurefunc = _G.hooksecurefunc
 
 function Module:MerchantItemlevel()
 	local numItems = GetMerchantNumItems()

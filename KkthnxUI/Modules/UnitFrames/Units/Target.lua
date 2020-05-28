@@ -1,4 +1,8 @@
 local K, C = unpack(select(2, ...))
+if C["Unitframe"].Enable ~= true then
+	return
+end
+
 local Module = K:GetModule("Unitframes")
 local oUF = oUF or K.oUF
 
@@ -12,7 +16,9 @@ local select = select
 
 local CreateFrame = _G.CreateFrame
 
-function Module:CreateTarget(unit)
+function Module:CreateTarget()
+	self.mystyle = "target"
+
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 	local HealPredictionTexture = K.GetTexture(C["UITextures"].HealPredictionTextures)
@@ -28,30 +34,31 @@ function Module:CreateTarget(unit)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
+	self.Health:SetReverseFill(true)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = C["General"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
+	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 
 	if C["Unitframe"].HealthbarColor.Value == "Value" then
-        self.Health.colorSmooth = true
-        self.Health.colorClass = false
-        self.Health.colorReaction = false
-    elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
-        self.Health.colorSmooth = false
-        self.Health.colorClass = false
-        self.Health.colorReaction = false
-        self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
-    else
-        self.Health.colorSmooth = false
-        self.Health.colorClass = true
-        self.Health.colorReaction = true
-    end
+		self.Health.colorSmooth = true
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+	elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
+		self.Health.colorSmooth = false
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+		self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
+	else
+		self.Health.colorSmooth = false
+		self.Health.colorClass = true
+		self.Health.colorReaction = true
+	end
 
 	if C["Unitframe"].Smooth then
-		K.SmoothBar(self.Health)
+		K:SmoothBar(self.Health)
 	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
@@ -64,13 +71,14 @@ function Module:CreateTarget(unit)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
+	self.Power:SetReverseFill(true)
 	self.Power:CreateBorder()
 
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		K.SmoothBar(self.Power)
+		K:SmoothBar(self.Power)
 	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
@@ -90,14 +98,14 @@ function Module:CreateTarget(unit)
 		self:Tag(self.Name, "[color][name][afkdnd]")
 	end
 
-	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
+	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 		self.Portrait:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
 		self.Portrait:CreateBorder()
 		self.Portrait:CreateInnerShadow()
-	elseif C["General"].PortraitStyle.Value ~= "ThreeDPortraits" then
+	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		self.Portrait = self.Health:CreateTexture("TargetPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
@@ -108,7 +116,7 @@ function Module:CreateTarget(unit)
 		self.Portrait.Border:CreateBorder()
 		self.Portrait.Border:CreateInnerShadow()
 
-		if (C["General"].PortraitStyle.Value == "ClassPortraits" or C["General"].PortraitStyle.Value == "NewClassPortraits") then
+		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end
 	end
@@ -117,65 +125,43 @@ function Module:CreateTarget(unit)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT", -self.Portrait:GetWidth() - 6, 0)
 
-	if C["Unitframe"].TargetAuraBars then
-		self.AuraBars = CreateFrame("Frame", self:GetName().."AuraBars", self)
-		self.AuraBars:SetHeight(18)
-		self.AuraBars:SetWidth(210)
-		self.AuraBars:SetPoint("TOPLEFT", 0, 38)
-		self.AuraBars.auraBarTexture = UnitframeTexture
-		self.AuraBars.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
-		self.AuraBars.PostCreateBar = Module.PostCreateAuraBar
-		self.AuraBars.spacing = 6
-		self.AuraBars.gap = 6
-		self.AuraBars.width = 186
-		self.AuraBars.height = 18
-
-		K.Mover(self.AuraBars, "TargetAuraBars", "TargetAuraBars", {"TOPLEFT", self, 0, 38})
-	elseif C["Unitframe"].DebuffsOnTop then
-		self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
-		self.Buffs:SetWidth(156)
-		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		self.Buffs.num = 6 * 4
-		self.Buffs.spacing = 6
-		self.Buffs.size = ((((self.Buffs:GetWidth() - (self.Buffs.spacing * (self.Buffs.num / 4 - 1))) / self.Buffs.num)) * 4)
-		self.Buffs:SetHeight(self.Buffs.size * 4)
-		self.Buffs.initialAnchor = "TOPLEFT"
-		self.Buffs["growth-y"] = "DOWN"
-		self.Buffs["growth-x"] = "RIGHT"
-		self.Buffs.PostCreateIcon = Module.PostCreateAura
-		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
-		--self.Buffs.CustomFilter = Module.CustomAuraFilter.Blacklist
-		self.Buffs.CustomFilter = K.CustomBuffFilter.target
+	if C["Unitframe"].TargetDebuffs then
+		local width = 156
 
 		self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
-		self.Debuffs:SetWidth(156)
-		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 50)
-		self.Debuffs.num = 5 * 4
 		self.Debuffs.spacing = 6
-		self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num / 4 - 1))) / self.Debuffs.num)) * 4)
-		self.Debuffs:SetHeight(self.Debuffs.size * 4)
 		self.Debuffs.initialAnchor = "TOPLEFT"
-		self.Debuffs["growth-y"] = "UP"
 		self.Debuffs["growth-x"] = "RIGHT"
+		self.Debuffs["growth-y"] = "UP"
+		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 46)
+		self.Debuffs.num = 6
+		self.Debuffs.iconsPerRow = 5
+		self.Debuffs.size = Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
+		self.Debuffs:SetWidth(width)
+		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num/self.Debuffs.iconsPerRow + .5))
 		self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 		self.Debuffs.PostCreateIcon = Module.PostCreateAura
 		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
-		self.Debuffs.CustomFilter = K.CustomDebuffFilter.target
-	else
-		self.Auras = CreateFrame("Frame", self:GetName().."Auras", self)
-		self.Auras.gap = false
-		self.Auras:SetWidth(156)
-		self.Auras:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		self.Auras.num = 6 * 4
-		self.Auras.spacing = 6
-		self.Auras.size = ((((self.Auras:GetWidth() - (self.Auras.spacing * (self.Auras.num / 4 - 1))) / self.Auras.num)) * 4)
-		self.Auras:SetHeight(self.Auras.size * 4)
-		self.Auras.initialAnchor = "TOPLEFT"
-		self.Auras["growth-y"] = "DOWN"
-		self.Auras["growth-x"] = "RIGHT"
-		self.Auras.showStealableBuffs = true
-		self.Auras.PostCreateIcon = Module.PostCreateAura
-		self.Auras.PostUpdateIcon = Module.PostUpdateAura
+	end
+
+	if C["Unitframe"].TargetBuffs then
+		local width = 156
+
+		self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
+		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+		self.Buffs.initialAnchor = "TOPLEFT"
+		self.Buffs["growth-x"] = "RIGHT"
+		self.Buffs["growth-y"] = "DOWN"
+		self.Buffs.num = 6
+		self.Buffs.spacing = 6
+		self.Buffs.iconsPerRow = 6
+		self.Buffs.onlyShowPlayer = false
+		self.Buffs.size = Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing)
+		self.Buffs:SetWidth(width)
+		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+		self.Buffs.showStealableBuffs = true
+		self.Buffs.PostCreateIcon = Module.PostCreateAura
+		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
 	end
 
 	if (C["Unitframe"].Castbars) then
@@ -191,7 +177,11 @@ function Module:CreateTarget(unit)
 		self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
 
-		self.Castbar.Shield = self.Castbar:CreateTexture(nil, "OVERLAY", 7)
+		self.ShieldOverlay = CreateFrame("Frame", nil, self.Castbar) -- We will use this to overlay onto our special borders.
+		self.ShieldOverlay:SetAllPoints()
+		self.ShieldOverlay:SetFrameLevel(5)
+
+		self.Castbar.Shield = self.ShieldOverlay:CreateTexture(nil, "OVERLAY")
 		self.Castbar.Shield:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CastBorderShield")
 		self.Castbar.Shield:SetTexCoord(0, 0.84375, 0, 1)
 		self.Castbar.Shield:SetSize(C["Unitframe"].TargetCastbarHeight * 0.84375, C["Unitframe"].TargetCastbarHeight)
@@ -263,15 +253,15 @@ function Module:CreateTarget(unit)
 		oag:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
 		oag:SetBlendMode("ADD")
 		oag:SetAlpha(0.25)
-		oag:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 2)
-		oag:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -2)
+		oag:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", 10, 2)
+		oag:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMLEFT", 10, -2)
 
 		local hab = CreateFrame("StatusBar", nil, self.Health)
 		hab:SetPoint("TOP")
 		hab:SetPoint("BOTTOM")
-		hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
+		hab:SetPoint("LEFT", self.Health:GetStatusBarTexture())
 		hab:SetWidth(156)
-		hab:SetReverseFill(true)
+		hab:SetReverseFill(false)
 		hab:SetStatusBarTexture(HealPredictionTexture)
 		hab:SetStatusBarColor(1, 0, 0, 0.25)
 
@@ -279,8 +269,8 @@ function Module:CreateTarget(unit)
 		ohg:SetWidth(15)
 		ohg:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb")
 		ohg:SetBlendMode("ADD")
-		ohg:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", 5, 2)
-		ohg:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMLEFT", 5, -2)
+		ohg:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -10, 2)
+		ohg:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -10, -2)
 
 		self.HealPredictionAndAbsorb = {
 			myBar = mhpb,
@@ -339,7 +329,8 @@ function Module:CreateTarget(unit)
 		self.PortraitTimer = CreateFrame("Frame", "$parentPortraitTimer", self.Health)
 		self.PortraitTimer:CreateInnerShadow()
 		self.PortraitTimer:SetFrameLevel(5) -- Watch me
-		self.PortraitTimer:SetInside(self.Portrait, 1, 1)
+		self.PortraitTimer:SetPoint("TOPLEFT", self.Portrait, "TOPLEFT", 1, -1)
+		self.PortraitTimer:SetPoint("BOTTOMRIGHT", self.Portrait, "BOTTOMRIGHT", -1, 1)
 		self.PortraitTimer:Hide()
 	end
 

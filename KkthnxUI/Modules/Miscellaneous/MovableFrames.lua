@@ -1,5 +1,8 @@
 local K, C = unpack(select(2, ...))
 
+local _G = _G
+local pairs = _G.pairs
+
 local frames = {
 	-- ["FrameName"] = true (the parent frame should be moved) or false (the frame itself should be moved)
 	-- for child frames (i.e. frames that don't have a name, but only a parentKey="XX" use
@@ -12,7 +15,6 @@ local frames = {
 	["ChatConfigFrame"] = false,
 	["DressUpFrame"] = false,
 	["FriendsFrame"] = false,
-	["GameMenuFrame"] = false,
 	["GossipFrame"] = false,
 	["GuildInviteFrame"] = false,
 	["GuildRegistrarFrame"] = false,
@@ -30,7 +32,6 @@ local frames = {
 	["PVEFrame"] = false,
 	["RaidParentFrame"] = false,
 	["ReputationFrame"] = true,
-	["ScrollOfResurrectionSelectionFrame"] = false,
 	["SendMailFrame"] = true,
 	["SpellBookFrame"] = false,
 	["SplashFrame"] = false,
@@ -55,45 +56,45 @@ end
 
 -- Frames provided by load on demand addons, hooked when the addon is loaded.
 local lodFrames = {
-	-- AddonName = {list of frames, same syntax as above}
-	Blizzard_AchievementUI = {["AchievementFrame"] = false, ["AchievementFrameHeader"] = true, ["AchievementFrameCategoriesContainer"] = "AchievementFrame", ["AchievementFrame.searchResults"] = false},
-	Blizzard_AdventureMap = {["AdventureMapQuestChoiceDialog"] = false},
-	Blizzard_AlliedRacesUI = {["AlliedRacesFrame"] = false},
-	Blizzard_ArchaeologyUI = {["ArchaeologyFrame"] = false},
-	Blizzard_ArtifactUI = {["ArtifactFrame"] = false, ["ArtifactRelicForgeFrame"] = false},
-	Blizzard_AuctionUI = {["AuctionFrame"] = false},
-	Blizzard_AzeriteEssenceUI = {["AzeriteEssenceUI"] = false},
-	Blizzard_AzeriteRespecUI = {["AzeriteRespecFrame"] = false},
-	Blizzard_AzeriteUI = {["AzeriteEmpoweredItemUI"] = false},
-	Blizzard_BarbershopUI = {["BarberShopFrame"] = false},
-	Blizzard_BindingUI = {["KeyBindingFrame"] = false},
-	Blizzard_BlackMarketUI = {["BlackMarketFrame"] = false},
-	Blizzard_Calendar = {["CalendarFrame"] = false, ["CalendarCreateEventFrame"] = true},
-	Blizzard_ChallengesUI = {["ChallengesKeystoneFrame"] = false},
-	Blizzard_Collections = {["WardrobeFrame"] = false, ["WardrobeOutfitEditFrame"] = false},
-	Blizzard_Communities = {["CommunitiesFrame"] = false, ["CommunitiesSettingsDialog"] = false, ["CommunitiesGuildLogFrame"] = false, ["CommunitiesTicketManagerDialog"] = false, ["CommunitiesAvatarPickerDialog"] = false, ["CommunitiesFrame.NotificationSettingsDialog"] = false},
-	Blizzard_FlightMap = {["FlightMapFrame"] = false},
-	Blizzard_GMSurveyUI = {["GMSurveyFrame"] = false},
-	Blizzard_GuildBankUI = {["GuildBankFrame"] = false, ["GuildBankEmblemFrame"] = true},
-	Blizzard_GuildControlUI = {["GuildControlUI"] = false},
-	Blizzard_GuildRecruitmentUI = {["CommunitiesGuildRecruitmentFrame"] = false},
-	Blizzard_GuildUI = {["GuildFrame"] = false, ["GuildRosterFrame"] = true, ["GuildFrame.TitleMouseover"] = true},
-	Blizzard_InspectUI = {["InspectFrame"] = false, ["InspectPVPFrame"] = true, ["InspectTalentFrame"] = true},
-	Blizzard_IslandsPartyPoseUI = {["IslandsPartyPoseFrame"] = false},
-	Blizzard_IslandsQueueUI = {["IslandsQueueFrame"] = false},
-	Blizzard_ItemSocketingUI = {["ItemSocketingFrame"] = false},
-	Blizzard_ItemUpgradeUI = {["ItemUpgradeFrame"] = false},
-	Blizzard_LookingForGuildUI = {["LookingForGuildFrame"] = false},
-	Blizzard_MacroUI = {["MacroFrame"] = false},
-	Blizzard_ObliterumUI = {["ObliterumForgeFrame"] = false},
-	Blizzard_OrderHallUI = {["OrderHallTalentFrame"] = false,},
-	Blizzard_ScrappingMachineUI = {["ScrappingMachineFrame"] = false},
-	Blizzard_TalentUI = {["PlayerTalentFrame"] = false, ["PVPTalentPrestigeLevelDialog"] = false,},
-	Blizzard_TimeManager = {["TimeManagerFrame"] = false},
-	Blizzard_TokenUI = {["TokenFrame"] = true},
-	Blizzard_TradeSkillUI = {["TradeSkillFrame"] = false},
-	Blizzard_TrainerUI = {["ClassTrainerFrame"] = false},
-	Blizzard_VoidStorageUI = {["VoidStorageFrame"] = false, ["VoidStorageBorderFrameMouseBlockFrame"] = "VoidStorageFrame"},
+	-- AddonName = { list of frames, same syntax as above }
+	Blizzard_AchievementUI		= { ["AchievementFrame"] = false, ["AchievementFrameHeader"] = true, ["AchievementFrameCategoriesContainer"] = "AchievementFrame", ["AchievementFrame.searchResults"] = false },
+	Blizzard_AdventureMap		= { ["AdventureMapQuestChoiceDialog"] = false },
+	Blizzard_AlliedRacesUI		= { ["AlliedRacesFrame"] = false },
+	Blizzard_ArchaeologyUI		= { ["ArchaeologyFrame"] = false },
+	Blizzard_ArtifactUI			= { ["ArtifactFrame"] = false, ["ArtifactRelicForgeFrame"] = false },
+	Blizzard_AuctionHouseUI		= { ["AuctionHouseFrame"] = false },
+	Blizzard_AzeriteEssenceUI	= { ["AzeriteEssenceUI"] = false },
+	Blizzard_AzeriteRespecUI	= { ["AzeriteRespecFrame"] = false },
+	Blizzard_AzeriteUI			= { ["AzeriteEmpoweredItemUI"] = false },
+	Blizzard_BarbershopUI		= { ["BarberShopFrame"] = false },
+	Blizzard_BindingUI			= { ["KeyBindingFrame"] = false },
+	Blizzard_BlackMarketUI		= { ["BlackMarketFrame"] = false },
+	Blizzard_Calendar			= { ["CalendarFrame"] = false, ["CalendarCreateEventFrame"] = true, ["CalendarEventPickerFrame"] = false },
+	Blizzard_ChallengesUI		= { ["ChallengesKeystoneFrame"] = false },
+	Blizzard_Collections		= { ["WardrobeFrame"] = false, ["WardrobeOutfitEditFrame"] = false },
+	Blizzard_Communities		= { ["CommunitiesFrame"] = false, ["CommunitiesSettingsDialog"] = false, ["CommunitiesGuildLogFrame"] = false, ["CommunitiesTicketManagerDialog"] = false, ["CommunitiesAvatarPickerDialog"] = false, ["CommunitiesFrame.NotificationSettingsDialog"] = false, ["ClubFinderCommunityAndGuildFinderFrame.RequestToJoinFrame"] = false},
+	Blizzard_FlightMap			= { ["FlightMapFrame"] = false },
+	Blizzard_GMSurveyUI			= { ["GMSurveyFrame"] = false },
+	Blizzard_GuildBankUI		= { ["GuildBankFrame"] = false, ["GuildBankEmblemFrame"] = true },
+	Blizzard_GuildControlUI		= { ["GuildControlUI"] = false },
+	Blizzard_GuildRecruitmentUI	= { ["CommunitiesGuildRecruitmentFrame"] = false },
+	Blizzard_GuildUI			= { ["GuildFrame"] = false, ["GuildRosterFrame"] = true, ["GuildFrame.TitleMouseover"] = true },
+	Blizzard_InspectUI			= { ["InspectFrame"] = false, ["InspectPVPFrame"] = true, ["InspectTalentFrame"] = true },
+	Blizzard_IslandsPartyPoseUI	= { ["IslandsPartyPoseFrame"] = false },
+	Blizzard_IslandsQueueUI		= { ["IslandsQueueFrame"] = false },
+	Blizzard_ItemSocketingUI	= { ["ItemSocketingFrame"] = false },
+	Blizzard_ItemUpgradeUI		= { ["ItemUpgradeFrame"] = false },
+	Blizzard_LookingForGuildUI	= { ["LookingForGuildFrame"] = false },
+	Blizzard_MacroUI			= { ["MacroFrame"] = false },
+	Blizzard_ObliterumUI		= { ["ObliterumForgeFrame"] = false },
+	Blizzard_OrderHallUI		= { ["OrderHallTalentFrame"] = false, },
+	Blizzard_ScrappingMachineUI	= { ["ScrappingMachineFrame"] = false },
+	Blizzard_TalentUI			= { ["PlayerTalentFrame"] = false, ["PVPTalentPrestigeLevelDialog"] = false, },
+	Blizzard_TimeManager		= { ["TimeManagerFrame"] = false },
+	Blizzard_TokenUI			= { ["TokenFrame"] = true },
+	Blizzard_TradeSkillUI		= { ["TradeSkillFrame"] = false },
+	Blizzard_TrainerUI			= { ["ClassTrainerFrame"] = false },
+	Blizzard_VoidStorageUI		= { ["VoidStorageFrame"] = false, ["VoidStorageBorderFrameMouseBlockFrame"] = "VoidStorageFrame" },
 }
 
 local parentFrame, hooked = {}, {}
@@ -178,18 +179,23 @@ local function HookFrames(list)
 end
 
 local function InitSetup()
+	if C["General"].MoveBlizzardFrames ~= true then
+		return
+	end
+
 	HookFrames(frames)
 	IsFrameExists()
 end
+K:RegisterEvent("PLAYER_LOGIN", InitSetup)
 
 local function AddonLoaded(_, name)
+	if C["General"].MoveBlizzardFrames ~= true then
+		return
+	end
+
 	local frameList = lodFrames[name]
 	if frameList then
 		HookFrames(frameList)
 	end
 end
-
-if C["General"].MoveBlizzardFrames then
-	K:RegisterEvent("PLAYER_LOGIN", InitSetup)
-	K:RegisterEvent("ADDON_LOADED", AddonLoaded)
-end
+K:RegisterEvent("ADDON_LOADED", AddonLoaded)

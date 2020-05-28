@@ -27,7 +27,7 @@ function Module:SetupTooltipIcon(icon)
 		if not line then break end
 		local text = line:GetText() or ""
 		if string_match(text, "|T.-:[%d+:]+|t") then
-			line:SetText(gsub(text, "|T(.-):[%d+:]+|t", "|T%1:20:20:"..newString.."|t"))
+			line:SetText(gsub(text, "|T(.-):[%d+:]+|t", "|T%1:12:12:"..newString.."|t"))
 		end
 	end
 end
@@ -74,6 +74,9 @@ end
 
 function Module:ReskinRewardIcon()
 	self.Icon:SetTexCoord(unpack(K.TexCoords))
+
+	self.Count:ClearAllPoints()
+	self.Count:SetPoint("BOTTOMRIGHT",self.Icon, "BOTTOMRIGHT", 1, 1)
 
 	self.bg = CreateFrame("Frame", nil, self)
 	self.bg:SetPoint("TOPLEFT", self.Icon, 0, -0) -- Might need to be 0

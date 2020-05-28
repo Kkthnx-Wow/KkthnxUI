@@ -2,8 +2,8 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Blizzard")
 
 local _G = _G
-local floor = math.floor
-local format = string.format
+local floor = _G.math.floor
+local format = _G.string.format
 
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc

@@ -3,6 +3,9 @@ local K = unpack(select(2, ...))
 -- Sourced: ElvUI (Elvz)
 -- Edited: KkthnxUI (Kkthnx)
 
+local FADEFRAMES, FADEMANAGER = {}, CreateFrame("FRAME")
+FADEMANAGER.delay = 0.025
+
 function K.FlashLoopFinished(self, requested)
 	if not requested then
 		self:Play()
@@ -108,9 +111,6 @@ function K.SlideOut(obj, customName)
 	obj[customName].out1:Play()
 end
 
-local FADEFRAMES, FADEMANAGER = {}, CreateFrame("FRAME")
-FADEMANAGER.delay = 0.025
-
 function K.UIFrameFade_OnUpdate(_, elapsed)
 	FADEMANAGER.timer = (FADEMANAGER.timer or 0) + elapsed
 
@@ -209,7 +209,7 @@ function K.UIFrameFade(frame, info)
 		FADEFRAMES[frame] = info -- Read Below Comment
 		FADEMANAGER:SetScript("OnUpdate", K.UIFrameFade_OnUpdate)
 	else
-		FADEFRAMES[frame] = info -- Keep These Both, We Need This Updated In The Event Its Changed To Another Ref From A Plugin Or Sth, Don"t Move It Up!
+		FADEFRAMES[frame] = info -- Keep These Both, We Need This Updated In The Event Its Changed To Another Ref From A Plugin Or Sth, Don't Move It Up!
 	end
 end
 

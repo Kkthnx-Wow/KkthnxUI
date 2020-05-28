@@ -12,7 +12,7 @@ local StaticPopup_Show = _G.StaticPopup_Show
 -- Force User To Disable Kkthnxui If Another Addon Is Enabled With It!
 if K.CheckAddOnState("KkthnxUI") and K.CheckAddOnState("Tukui") or K.CheckAddOnState("ElvUI") or K.CheckAddOnState("DiabolicUI") or K.CheckAddOnState("DuffedUI") or K.CheckAddOnState("ShestakUI") then
 	StaticPopupDialogs.KKTHNXUI_INCOMPATIBLE = {
-		text = "Oh no, you have |cff4488ffKkthnxUI|r and another UserInterface enabled at the same time. Disable KkthnxUI!",
+		text = "Oh no, you have |cff669dffKkthnxUI|r and another UserInterface enabled at the same time. Disable KkthnxUI!",
 		button1 = "Disable KkthnxUI",
 		OnAccept = function()
 			DisableAddOn("KkthnxUI")
@@ -68,7 +68,7 @@ or K.CheckAddOnState("Bartender4")
 or K.CheckAddOnState("RazerNaga")
 or K.CheckAddOnState("daftMainBar")
 or (K.CheckAddOnState("ConsolePortBar") and K.CheckAddOnState("ConsolePort")) then -- We Have To Check For Main Consoleport Addon Too.
-	C["DataBars"].Enable = false
+	-- C["DataBars"].Enable = false
 	C["ActionBar"].Enable = false
 	C["ActionBar"].MicroBar = false
 	C["Inventory"].BagBar = false

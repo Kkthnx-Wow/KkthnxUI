@@ -5,6 +5,7 @@ local _G = _G
 local string_format = _G.string.format
 local table_wipe = _G.table.wipe
 
+local date = _G.date
 local C_VignetteInfo_GetVignetteInfo = _G.C_VignetteInfo.GetVignetteInfo
 local GetAtlasInfo = _G.GetAtlasInfo
 local GetInstanceInfo = _G.GetInstanceInfo
@@ -36,7 +37,9 @@ function Module:RareAlert_Update(id)
 		local atlasHeight = height / (txBottom-txTop)
 		local tex = string_format("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t", filename, 0, 0, atlasWidth, atlasHeight, atlasWidth * txLeft, atlasWidth * txRight, atlasHeight * txTop, atlasHeight * txBottom)
 
-		UIErrorsFrame:AddMessage(K.InfoColor.."Rare Nearby!"..tex..(info.name or ""))
+		-- UIErrorsFrame:AddMessage(K.InfoColor.."Rare Nearby!"..tex..(info.name or ""))
+		local currrentTime = C["Chat"].TimestampFormat.Value == 1 and "|cff00ff00["..date("%H:%M:%S").."]|r" or ""
+		K.Print(currrentTime.." >> "..K.InfoColor.."Rare nearby!"..tex..(info.name or ""))
 
 		RareAlertCache[id] = true
 	end

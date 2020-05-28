@@ -4,6 +4,7 @@ local _G = _G
 local math_abs = _G.math.abs
 local math_floor = _G.math.floor
 local mod = _G.mod
+local next = _G.next
 local select = _G.select
 local string_find = _G.string.find
 local string_format = _G.string.format
@@ -14,6 +15,7 @@ local string_match = _G.string.match
 local table_insert = _G.table.insert
 local table_remove = _G.table.remove
 local table_wipe = _G.table.wipe
+local tonumber = _G.tonumber
 local type = _G.type
 local unpack = _G.unpack
 
@@ -21,16 +23,14 @@ local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
 local ENCHANTED_TOOLTIP_LINE = _G.ENCHANTED_TOOLTIP_LINE
 local GameTooltip = _G.GameTooltip
-local GetScreenHeight = _G.GetScreenHeight
-local GetScreenWidth = _G.GetScreenWidth
 local GetSpecialization = _G.GetSpecialization
 local GetSpecializationInfo = _G.GetSpecializationInfo
 local GetSpellDescription = _G.GetSpellDescription
-local ITEM_LEVEL = _G.ITEM_LEVEL
-local ITEM_SPELL_TRIGGER_ONEQUIP = _G.ITEM_SPELL_TRIGGER_ONEQUIP
 local IsEveryoneAssistant = _G.IsEveryoneAssistant
 local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
+local ITEM_LEVEL = _G.ITEM_LEVEL
+local ITEM_SPELL_TRIGGER_ONEQUIP = _G.ITEM_SPELL_TRIGGER_ONEQUIP
 local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME
 local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
 local UIParent = _G.UIParent
@@ -42,11 +42,10 @@ local UnitIsTapDenied = _G.UnitIsTapDenied
 local UnitReaction = _G.UnitReaction
 
 local iLvlDB = {}
-local itemLevelString = string_gsub(ITEM_LEVEL, "%%d", "")
 local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
-local essenceTextureID = 2975691
 local essenceDescription = GetSpellDescription(277253)
-local ITEM_SPELL_TRIGGER_ONEQUIP = ITEM_SPELL_TRIGGER_ONEQUIP
+local essenceTextureID = 2975691
+local itemLevelString = string_gsub(ITEM_LEVEL, "%%d", "")
 
 function K.Print(...)
 	(_G.DEFAULT_CHAT_FRAME):AddMessage(string_join("", "|cff3c9bed", "KkthnxUI:|r ", ...))
@@ -79,18 +78,6 @@ function K.ShortValue(n)
 	else
 		return string_format("%.0f", n)
 	end
-end
-
-function K.CommaValue(value)
-	local k
-	while true do
-		value, k = string.gsub(value, "^(-?%d+)(%d%d%d)", '%1,%2')
-		if (k == 0) then
-			break
-		end
-	end
-
-	return value
 end
 
 -- Return rounded number
@@ -187,8 +174,16 @@ function K.UnitColor(unit)
 	return r, g, b
 end
 
+function K.TogglePanel(frame)
+	if frame:IsShown() then
+		frame:Hide()
+	else
+		frame:Show()
+	end
+end
+
 function K.GetNPCID(guid)
-	local id = tonumber(string.match((guid or ""), "%-(%d-)%-%x-$"))
+	local id = tonumber(string_match((guid or ""), "%-(%d-)%-%x-$"))
 	return id
 end
 
@@ -231,9 +226,7 @@ function K:InspectItemTextures()
 				K.ScanTooltip.essences[step][3] = texture -- border texture placed by the atlas
 
 				step = step + 1
-				if selected then
-					K.ScanTooltip.gems[i-1] = nil
-				end
+				if selected then K.ScanTooltip.gems[i-1] = nil end
 			else
 				K.ScanTooltip.gems[i] = texture
 			end
@@ -352,7 +345,8 @@ local function CheckRole()
 		end
 	end
 end
-K:RegisterEvent("PLAYER_LOGIN", CheckRole)
+K:RegisterEvent("PLAYER_ENTERING_WORLD", CheckRole)
+K:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", CheckRole)
 K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
 
 -- Chat channel check
@@ -402,7 +396,9 @@ local function tooltipOnEnter(self)
 		GameTooltip:AddLine(self.title)
 	end
 
-	if tonumber(self.text) then
+	if self.text and string_find(self.text, "|H.+|h") then
+		GameTooltip:SetHyperlink(self.text)
+	elseif tonumber(self.text) then
 		GameTooltip:SetSpellByID(self.text)
 	elseif self.text then
 		local r, g, b = 1, 1, 1
@@ -427,6 +423,11 @@ function K.AddTooltip(self, anchor, text, color)
 
 	self:SetScript("OnEnter", tooltipOnEnter)
 	self:SetScript("OnLeave", K.HideTooltip)
+end
+
+function K.Scale(x)
+	local mult = C.mult
+	return mult * math_floor(x / mult + .5)
 end
 
 -- Movable Frame
@@ -492,39 +493,6 @@ function K.ShortenString(string, numChars, dots)
 	end
 end
 
-function K.GetScreenQuadrant(frame)
-	local x, y = frame:GetCenter()
-	local screenWidth = GetScreenWidth()
-	local screenHeight = GetScreenHeight()
-	local point
-
-	if not frame:GetCenter() then
-		return "UNKNOWN", frame:GetName()
-	end
-
-	if (x > (screenWidth / 3) and x < (screenWidth / 3) * 2) and y > (screenHeight / 3) * 2 then
-		point = "TOP"
-	elseif x < (screenWidth / 3) and y > (screenHeight / 3)*2 then
-		point = "TOPLEFT"
-	elseif x > (screenWidth / 3) * 2 and y > (screenHeight / 3) * 2 then
-		point = "TOPRIGHT"
-	elseif (x > (screenWidth / 3) and x < (screenWidth / 3) * 2) and y < (screenHeight / 3) then
-		point = "BOTTOM"
-	elseif x < (screenWidth / 3) and y < (screenHeight / 3) then
-		point = "BOTTOMLEFT"
-	elseif x > (screenWidth / 3) * 2 and y < (screenHeight / 3) then
-		point = "BOTTOMRIGHT"
-	elseif x < (screenWidth / 3) and (y > (screenHeight / 3) and y < (screenHeight / 3) * 2) then
-		point = "LEFT"
-	elseif x > (screenWidth / 3) * 2 and y < (screenHeight / 3) * 2 and y > (screenHeight / 3) then
-		point = "RIGHT"
-	else
-		point = "CENTER"
-	end
-
-	return point
-end
-
 function K.ColorGradient(perc, ...)
 	if perc >= 1 then
 		return select(select("#", ...) - 2, ...)
@@ -552,11 +520,11 @@ end
 local day, hour, minute = 86400, 3600, 60
 function K.FormatTime(s)
 	if s >= day then
-		return string_format("%d"..K.MyClassColor.."d", s/day), s%day
+		return string_format("%d"..K.MyClassColor.."d", s / day), s % day
 	elseif s >= hour then
-		return string_format("%d"..K.MyClassColor.."h", s/hour), s%hour
+		return string_format("%d"..K.MyClassColor.."h", s / hour), s % hour
 	elseif s >= minute then
-		return string_format("%d"..K.MyClassColor.."m", s/minute), s%minute
+		return string_format("%d"..K.MyClassColor.."m", s / minute), s % minute
 	elseif s > 10 then
 		return string_format("|cffcccc33%d|r", s), s - math_floor(s)
 	elseif s > 3 then
@@ -570,10 +538,45 @@ function K.FormatTime(s)
 	end
 end
 
+function K.FormatTimeRaw(s)
+	if s >= day then
+		return string_format("%dd", s/day)
+	elseif s >= hour then
+		return string_format("%dh", s/hour)
+	elseif s >= minute then
+		return string_format("%dm", s/minute)
+	elseif s >= 3 then
+		return math_floor(s)
+	else
+		return string_format("%d", s)
+	end
+end
+
+function K:CooldownOnUpdate(elapsed, raw)
+	local formatTime = raw and K.FormatTimeRaw or K.FormatTime
+	self.elapsed = (self.elapsed or 0) + elapsed
+	if self.elapsed >= 0.1 then
+		local timeLeft = self.expiration - GetTime()
+		if timeLeft > 0 then
+			local text = formatTime(timeLeft)
+			self.timer:SetText(text)
+		else
+			self:SetScript("OnUpdate", nil)
+			self.timer:SetText(nil)
+		end
+		self.elapsed = 0
+	end
+end
+
+-- Money text formatting, code taken from Scrooge by thelibrarian (http://www.wowace.com/addons/scrooge)
+local ICON_COPPER = "|TInterface\\MoneyFrame\\UI-CopperIcon:12:12|t"
+local ICON_SILVER = "|TInterface\\MoneyFrame\\UI-SilverIcon:12:12|t"
+local ICON_GOLD = "|TInterface\\MoneyFrame\\UI-GoldIcon:12:12|t"
 function K.FormatMoney(amount)
-	local coppername = "|cffeda55fc|r"
-	local silvername = "|cffc7c7cfs|r"
-	local goldname = "|cffffd700g|r"
+	local coppername = "|cffeda55fc|r" or ICON_COPPER
+	local silvername = "|cffc7c7cfs|r" or ICON_SILVER
+	local goldname = "|cffffd700g|r" or ICON_GOLD
+
 	local value = math_abs(amount)
 	local gold = math_floor(value / 10000)
 	local silver = math_floor(mod(value / 100, 100))
@@ -616,7 +619,6 @@ end
 K.WaitTable = {}
 K.WaitFrame = CreateFrame("Frame", "KkthnxUI_WaitFrame", _G.UIParent)
 K.WaitFrame:SetScript("OnUpdate", K.WaitFunc)
-
 -- Add time before calling a function
 function K.Delay(delay, func, ...)
 	if type(delay) ~= "number" or type(func) ~= "function" then

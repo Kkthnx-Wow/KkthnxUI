@@ -6,20 +6,12 @@ assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 local _G = _G
 
-local math_abs = _G.math.abs
-local math_max = _G.math.max
-local math_min = _G.math.min
 local pairs = _G.pairs
-local select = _G.select
 local string_format = _G.string.format
-local string_match = _G.string.match
-local tonumber = _G.tonumber
 local unpack = _G.unpack
 
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
-local DebuffTypeColor = _G.DebuffTypeColor
-local GetFramerate = _G.GetFramerate
 local GetRuneCooldown = _G.GetRuneCooldown
 local GetSpecialization = _G.GetSpecialization
 local GetThreatStatusColor = _G.GetThreatStatusColor
@@ -32,7 +24,6 @@ local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
 local PlaySound = _G.PlaySound
 local SOUNDKIT = _G.SOUNDKIT
 local UIParent = _G.UIParent
-local UnitAura = _G.UnitAura
 local UnitCanAttack = _G.UnitCanAttack
 local UnitClass = _G.UnitClass
 local UnitExists = _G.UnitExists
@@ -56,38 +47,6 @@ local oUF_RaidDebuffs = _G.oUF_RaidDebuffs
 
 local castbarTicks = {}
 
-K.CustomBuffFilter = {
-	player = function(_, _, aura, _, _, _, _, duration, _, caster, _, _, spellID, _, _, casterIsPlayer)
-		if K.AuraBlackList[spellID] then
-			return false
-		else
-			return not casterIsPlayer or duration and duration > 0 and duration <= 300 and (aura.isPlayer or caster == "pet") or K.ImportantBuffs[spellID]
-		end
-	end,
-
-	target = function(_, unit, aura, _, _, _, _, _, _, caster, _, _, spellID, _, _, casterIsPlayer)
-		if K.AuraBlackList[spellID] then
-			return false
-		elseif (UnitIsFriend(unit, "player")) then
-			return aura.isPlayer or caster == "pet" or not casterIsPlayer or K.ImportantBuffs[spellID]
-		else
-			return true
-		end
-	end,
-}
-
-K.CustomDebuffFilter = {
-	target = function(_, unit, aura, _, _, _, _, _, _, caster, _, _, spellID, _, isBossDebuff, casterIsPlayer)
-		if K.AuraBlackList[spellID] then
-			return false
-		elseif (not UnitIsFriend(unit, "player")) then
-			return aura.isPlayer or caster == "pet" or not casterIsPlayer or isBossDebuff or K.ImportantDebuffs[spellID]
-		else
-			return true
-		end
-	end,
-}
-
 function Module:UpdateClassPortraits(unit)
 	if not unit then
 		return
@@ -95,15 +54,13 @@ function Module:UpdateClassPortraits(unit)
 
 	local _, unitClass = UnitClass(unit)
 	if unitClass then
-		local PortraitValue = C["General"].PortraitStyle.Value
+		local PortraitValue = C["Unitframe"].PortraitStyle.Value
 		local ClassTCoords = CLASS_ICON_TCOORDS[unitClass]
 
 		local defaultCPs = "ClassPortraits"
 		local newCPs = "NewClassPortraits"
 
-		for _, value in pairs({
-			PortraitValue,
-		}) do
+		for _, value in pairs({PortraitValue}) do
 			if value and value == defaultCPs and UnitIsPlayer(unit) then
 				self:SetTexture("Interface\\WorldStateFrame\\ICONS-CLASSES")
 				if ClassTCoords then
@@ -160,7 +117,7 @@ function Module:UpdateThreat(_, unit)
 	end
 
 	local Status = UnitThreatSituation(unit)
-	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
+	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 		if not self.Portrait then
 			return
 		end
@@ -171,7 +128,7 @@ function Module:UpdateThreat(_, unit)
 		else
 			self.Portrait:SetBackdropBorderColor()
 		end
-	elseif C["General"].PortraitStyle.Value ~= "ThreeDPortraits" then
+	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		if not self.Portrait.Border then
 			return
 		end
@@ -186,7 +143,7 @@ function Module:UpdateThreat(_, unit)
 end
 
 function Module:UpdateHealth(unit, cur, max)
-	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
+	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 		return
 	end
 
@@ -226,41 +183,6 @@ function Module:CreateHeader()
 
 		self.Highlight:Hide()
 	end)
-end
-
--- Smoothy
-local smoothingTable = {}
-local smoothingFrame = CreateFrame("Frame")
-smoothingFrame:SetScript("OnUpdate", function()
-	local limit = 30 / GetFramerate()
-	for bar, value in pairs(smoothingTable) do
-		local cur = bar:GetValue()
-		local new = cur + math_min((value-cur) / 8, math_max(value-cur, limit))
-		if new ~= new then
-			new = value
-		end
-
-		bar:SetValue_(new)
-		if cur == value or math_abs(new - value) < 1 then
-			smoothingTable[bar] = nil
-			bar:SetValue_(value)
-		end
-	end
-end)
-
-local function SetSmoothValue(self, value)
-	if value ~= self:GetValue() or value == 0 then
-		smoothingTable[self] = value
-	else
-		smoothingTable[self] = nil
-	end
-end
-
-function K.SmoothBar(self)
-	if not self.SetValue_ then
-		self.SetValue_ = self.SetValue
-		self.SetValue = SetSmoothValue
-	end
 end
 
 -- Castbar Functions
@@ -451,188 +373,137 @@ function Module:PostCastFailed()
 	self:Show()
 end
 
-function Module:CreateAuraTimer(elapsed)
-	if (self.TimeLeft) then
-		self.Elapsed = (self.Elapsed or 0) + elapsed
-
-		if self.Elapsed >= 0.1 then
-			if not self.First then
-				self.TimeLeft = self.TimeLeft - self.Elapsed
-			else
-				self.TimeLeft = self.TimeLeft - GetTime()
-				self.First = false
-			end
-
-			if self.TimeLeft > 0 then
-				local Time = K.FormatTime(self.TimeLeft)
-				self.Remaining:SetText(Time)
-
-				if self.TimeLeft <= 5 then
-					self.Remaining:SetTextColor(1, 0, 0)
-				else
-					self.Remaining:SetTextColor(1, 1, 1)
-				end
-			else
-				self.Remaining:Hide()
-				self:SetScript("OnUpdate", nil)
-			end
-
-			self.Elapsed = 0
-		end
-	end
+function Module.auraIconSize(w, n, s)
+	return (w - (n - 1) * s) / n
 end
 
-function Module:CancelPlayerBuff()
-	if InCombatLockdown() then
-		return
-	end
+function Module.PostCreateAura(element, button)
+	local fontSize = element.fontSize or element.size * 0.52
+	local parentFrame = CreateFrame("Frame", nil, button)
+	parentFrame:SetAllPoints()
+	parentFrame:SetFrameLevel(button:GetFrameLevel() + 3)
+	button.count = K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
+	button.cd.noOCC = true
+	button.cd.noCooldownCount = true
+	button.cd:SetReverse(true)
+	button.cd:SetHideCountdownNumbers(true)
+	button.icon:SetAllPoints()
+	button.icon:SetTexCoord(unpack(K.TexCoords))
+	button.cd:ClearAllPoints()
 
-	CancelUnitBuff("player", self.index)
-end
-
-function Module:PostCreateAura(button)
-	-- Set "self.Buffs.isCancellable" to true to a buffs frame to be able to cancel click
-	local isCancellable = button:GetParent().isCancellable
-	local fontSize = button:GetParent().fontSize or button:GetParent().size * 0.45
-
-	if string_match(button:GetName(), "NamePlate") and C["Nameplate"].Enable then
-		-- Skin aura button
+	if element.__owner.mystyle == "nameplate" then
+		button.cd:SetAllPoints()
 		button:CreateShadow(true)
 		button:CreateInnerShadow()
-		button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
-
-		button.Remaining = button:CreateFontString(nil, "OVERLAY")
-		button.Remaining:SetFontObject(K.GetFont(C["UIFonts"].NameplateFonts))
-		button.Remaining:SetFont(select(1, button.Remaining:GetFont()), fontSize, "OUTLINE")
-		button.Remaining:SetShadowOffset(0, 0)
-		button.Remaining:SetPoint("CENTER", 1, 0)
-
-		button.cd.noOCC = true
-		button.cd.noCooldownCount = true
-		button.cd:SetReverse(true)
-		button.cd:SetFrameLevel(button:GetFrameLevel() + 1)
-		button.cd:ClearAllPoints()
-		button.cd:SetPoint("TOPLEFT")
-		button.cd:SetPoint("BOTTOMRIGHT")
-		button.cd:SetHideCountdownNumbers(true)
-
-		button.icon:SetAllPoints()
-		button.icon:SetTexCoord(unpack(K.TexCoords))
-		button.icon:SetDrawLayer("ARTWORK")
-
-		button.count:SetPoint("BOTTOMRIGHT", 3, 0)
-		button.count:SetJustifyH("RIGHT")
-		button.count:SetFontObject(K.GetFont(C["UIFonts"].NameplateFonts))
-		button.count:SetFont(select(1, button.count:GetFont()), fontSize, "OUTLINE")
-		button.count:SetShadowOffset(0, 0)
 	else
-		-- Right-click-cancel script
-		if isCancellable then
-			-- Add a button.index to allow CancelUnitAura to work with player
-			local Name = button:GetName()
-			local Index = tonumber(Name:gsub("%D", ""))
-
-			button.index = Index
-			button:SetScript("OnMouseUp", Module.CancelPlayerBuff)
-		end
-
-		-- Skin aura button
-		button:CreateBorder()
-		button:CreateInnerShadow()
-		button:SetBackdropBorderColor()
-
-		button.Remaining = button:CreateFontString(nil, "OVERLAY")
-		button.Remaining:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-		button.Remaining:SetFont(select(1, button.Remaining:GetFont()), fontSize, "OUTLINE")
-		button.Remaining:SetShadowOffset(0, 0)
-		button.Remaining:SetPoint("CENTER", 1, 0)
-
-		button.cd.noOCC = true
-		button.cd.noCooldownCount = true
-		button.cd:SetReverse(true)
-		button.cd:SetFrameLevel(button:GetFrameLevel() + 1)
-		button.cd:ClearAllPoints()
 		button.cd:SetPoint("TOPLEFT", 1, -1)
 		button.cd:SetPoint("BOTTOMRIGHT", -1, 1)
-		button.cd:SetHideCountdownNumbers(true)
-
-		button.icon:SetAllPoints()
-		button.icon:SetTexCoord(unpack(K.TexCoords))
-		button.icon:SetDrawLayer("ARTWORK")
-
-		button.count:SetPoint("BOTTOMRIGHT", 3, 0)
-		button.count:SetJustifyH("RIGHT")
-		button.count:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-		button.count:SetFont(select(1, button.count:GetFont()), fontSize, "OUTLINE")
-		button.count:SetShadowOffset(0, 0)
+		button:CreateBorder()
+		button:CreateInnerShadow()
 	end
 
 	button.overlay:SetTexture(nil)
+	button.stealable:SetParent(parentFrame)
 	button.stealable:SetAtlas("bags-newitem")
 
-	button.OverlayFrame = CreateFrame("Frame", nil, button, nil)
-	button.OverlayFrame:SetFrameLevel(button.cd:GetFrameLevel() + 1)
-	button.count:SetParent(button.OverlayFrame)
-	button.Remaining:SetParent(button.OverlayFrame)
+	button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
 end
 
-function Module:PostUpdateAura(unit, button, index)
-	local _, _, _, DType, Duration, ExpirationTime, _, IsStealable = UnitAura(unit, index, button.filter)
+local filteredStyle = {
+	["arena"] = true,
+	["boss"] = true,
+	["nameplate"] = true,
+	["target"] = true,
+}
 
-	if button then
-		if (button.filter == "HARMFUL") then
-			if (not UnitIsFriend("player", unit) and not button.isPlayer) then
-				if string_match(button:GetName(), "NamePlate") and button.Shadow then
-					button.icon:SetDesaturated(true)
-					button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
-				else
-					button.icon:SetDesaturated(true)
-					button:SetBackdropBorderColor()
-				end
-			else
-				local color = DebuffTypeColor[DType] or DebuffTypeColor.none
-				if string_match(button:GetName(), "NamePlate") and button.Shadow then
-					button.icon:SetDesaturated(false)
-					button.Shadow:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8, 0.8)
-				else
-					button.icon:SetDesaturated(false)
-					button:SetBackdropBorderColor(color.r, color.g, color.b)
-				end
-			end
+function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, debuffType)
+	local whatStyle = element.__owner.mystyle
+	button:SetSize(element.size, element.size)
+
+	if button.isDebuff and filteredStyle[whatStyle] and not button.isPlayer then
+		button.icon:SetDesaturated(true)
+	else
+		button.icon:SetDesaturated(false)
+	end
+
+	if button.isDebuff then
+		local color = oUF.colors.debuff[debuffType] or oUF.colors.debuff.none
+		if whatStyle == "nameplate" and button.Shadow then
+			button.Shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.8)
 		else
-			if (IsStealable or DType == "Magic") and not UnitIsFriend("player", unit) and not button.stealable:IsShown() then
-				button.stealable:Show()
-			else
-				button.stealable:Hide()
-			end
+			button:SetBackdropBorderColor(color[1], color[2], color[3])
 		end
-
-		if button.Remaining then
-			if Duration and (Duration > 0) then
-				button:SetScript("OnUpdate", Module.CreateAuraTimer)
-				button.Remaining:Show()
-			else
-				button:SetScript("OnUpdate", nil)
-				button.Remaining:Hide()
-			end
+	else
+		if whatStyle == "nameplate" and button.Shadow then
+			button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+		else
+			button:SetBackdropBorderColor()
 		end
+	end
 
-		button.Duration = Duration
-		button.TimeLeft = ExpirationTime
-		button.First = true
+	if duration and duration > 0 then
+		button.expiration = expiration
+		button:SetScript("OnUpdate", K.CooldownOnUpdate)
+		button.timer:Show()
+	else
+		button:SetScript("OnUpdate", nil)
+		button.timer:Hide()
+	end
+end
+
+function Module.bolsterPreUpdate(element)
+	element.bolster = 0
+	element.bolsterIndex = nil
+end
+
+function Module.bolsterPostUpdate(element)
+	if not element.bolsterIndex then
+		return
+	end
+
+	for _, button in pairs(element) do
+		if button == element.bolsterIndex then
+			button.count:SetText(element.bolster)
+			return
+		end
+	end
+end
+
+function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster, isStealable, _, spellID, _, _, _, nameplateShowAll)
+	local style = element.__owner.mystyle
+	if name and spellID == 209859 then
+		element.bolster = element.bolster + 1
+		if not element.bolsterIndex then
+			element.bolsterIndex = button
+			return true
+		end
+	elseif style == "nameplate" or style == "boss" or style == "arena" then
+		if K.NameplateBlackList[spellID] then
+			return false
+		elseif element.showStealableBuffs and isStealable and not UnitIsPlayer(unit) then
+			return true
+		elseif K.NameplateWhiteList[spellID] then
+			return true
+		else
+			return nameplateShowAll or (caster == "player" or caster == "pet" or caster == "vehicle")
+		end
+	elseif (element.onlyShowPlayer and button.isPlayer) or (not element.onlyShowPlayer and name) then
+		return true
 	end
 end
 
 function Module:CreateAuraWatch()
 	local auras = CreateFrame("Frame", nil, self)
 	auras:SetFrameLevel(self:GetFrameLevel() + 10)
-	auras:SetPoint("TOPLEFT", self, 2, -2)
-	auras:SetPoint("BOTTOMRIGHT", self, -2, 2)
+	auras:SetPoint("TOPLEFT", self.Health, 3, -3)
+	auras:SetPoint("BOTTOMRIGHT", self.Health, -3, 3)
 	auras.presentAlpha = 1
 	auras.missingAlpha = 0
 	auras.strictMatching = true
 	auras.PostCreateIcon = Module.AuraWatchPostCreateIcon
 	auras.PostUpdateIcon = Module.AuraWatchPostUpdateIcon
+
+	auras:SetSize(C["Raid"].AuraWatchIconSize, C["Raid"].AuraWatchIconSize)
 
 	if (self.unit == "pet") then
 		auras.watched = K.BuffsTracking.PET
@@ -640,13 +511,12 @@ function Module:CreateAuraWatch()
 		auras.watched = K.BuffsTracking[K.Class]
 	end
 
-	auras.size = C["Raid"].AuraWatchIconSize
-
 	return auras
 end
 
 function Module:AuraWatchPostCreateIcon(button)
 	button:CreateShadow(true)
+	button:SetSize(C["Raid"].AuraWatchIconSize, C["Raid"].AuraWatchIconSize)
 
 	button.count:FontTemplate(nil, 10)
 	button.count:ClearAllPoints()
@@ -662,39 +532,18 @@ function Module:AuraWatchPostCreateIcon(button)
 end
 
 function Module:AuraWatchPostUpdateIcon(_, button)
-	local Settings = self.watched[button.spellID]
-	if (Settings) then -- This should never fail.
+	local awSettings = self.watched[button.spellID]
+	if (awSettings) then -- This should never fail.
+		button.cd.textThreshold = awSettings.textThreshold ~= -1 and awSettings.textThreshold
+
+		button:SetSize(C["Raid"].AuraWatchIconSize, C["Raid"].AuraWatchIconSize)
 		button.icon:SetVertexColor(1, 1, 1)
 		button.icon:SetTexCoord(unpack(K.TexCoords))
 		button.icon:Show()
 
-		if Settings.style == "texturedIcon" and button.filter == "HARMFUL" then
+		if awSettings.style == "texturedIcon" and button.filter == "HARMFUL" and button.Shadow then
 			button.Shadow:SetBackdropBorderColor(1, 0, 0)
 		end
-	end
-end
-
-function Module:PostCreateAuraBar(bar)
-	if not bar.isSkinned then
-		bar:CreateBorder()
-		bar:SetPoint("LEFT")
-		bar:SetPoint("RIGHT")
-
-		bar.icon.frame = CreateFrame("Frame", nil, bar)
-		bar.icon.frame:SetAllPoints(bar.icon)
-		bar.icon.frame:SetFrameLevel(bar:GetFrameLevel())
-		bar.icon.frame:CreateBorder()
-		bar.icon.frame:CreateInnerShadow()
-
-		bar.timeText:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-		bar.nameText:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-
-		bar.nameText:SetJustifyH("LEFT")
-		bar.nameText:SetJustifyV("MIDDLE")
-		bar.nameText:SetPoint("RIGHT", bar.timeText, "LEFT", -4, 0)
-		bar.nameText:SetWordWrap(false)
-
-		bar.isSkinned = true
 	end
 end
 
@@ -752,11 +601,11 @@ function Module:CreateUnits()
 		oUF:RegisterStyle("PlayerPlate", Module.CreatePlayerPlate)
 		oUF:SetActiveStyle("PlayerPlate")
 		local plate = oUF:Spawn("player", "oUF_PlayerPlate", true)
-		K.Mover(plate, "PlayerNP", "PlayerPlate", {"BOTTOM", UIParent, "BOTTOM", 0, 400}, plate:GetWidth(), 20)
+		K.Mover(plate, "PlayerNP", "PlayerPlate", {"BOTTOM", UIParent, "BOTTOM", 0, 282}, plate:GetWidth(), 20)
 	end
 
 	if C["Unitframe"].Enable then
-		oUF:RegisterStyle("Player", Module.CreatePlayer)
+		oUF:RegisterStyle("Player",  Module.CreatePlayer)
 		oUF:RegisterStyle("Target", Module.CreateTarget)
 		oUF:RegisterStyle("ToT", Module.CreateTargetOfTarget)
 		oUF:RegisterStyle("Focus", Module.CreateFocus)
@@ -766,12 +615,12 @@ function Module:CreateUnits()
 		oUF:SetActiveStyle("Player")
 		local Player = oUF:Spawn("player", "oUF_Player")
 		Player:SetSize(210, 48)
-		K.Mover(Player, "PlayerUF", "PlayerUF", {"BOTTOM", UIParent, "BOTTOM", -290, 320}, 210, 50)
+		K.Mover(Player, "PlayerUF", "PlayerUF", {"BOTTOM", UIParent, "BOTTOM", -290, 320}, 210, 48)
 
 		oUF:SetActiveStyle("Target")
 		local Target = oUF:Spawn("target", "oUF_Target")
 		Target:SetSize(210, 48)
-		K.Mover(Target, "TargetUF", "TargetUF", {"BOTTOM", UIParent, "BOTTOM", 290, 320}, 210, 50)
+		K.Mover(Target, "TargetUF", "TargetUF", {"BOTTOM", UIParent, "BOTTOM", 290, 320}, TargetWidth, TargetHeight)
 
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("ToT")
@@ -846,9 +695,9 @@ function Module:CreateUnits()
 		oUF:SetActiveStyle("Party")
 
 		local xOffset, yOffset = 6, C["Party"].ShowBuffs and 54 or 18
-		local moverWidth = C["Party"].HorizonParty and (164 * 5 + xOffset * 4) or 164
-		local moverHeight = C["Party"].HorizonParty and 34 or (34 * 5 + yOffset * 4)
-		local groupingOrder = C["Party"].HorizonParty and "TANK,HEALER,DAMAGER,NONE" or "NONE,DAMAGER,HEALER,TANK"
+		local moverWidth = 164
+		local moverHeight = 34 * 5 + yOffset * 4
+		local groupingOrder = "NONE,DAMAGER,HEALER,TANK"
 
 		local party = oUF:SpawnHeader("oUF_Party", nil, "solo,party",
 		"showPlayer", true,
@@ -861,7 +710,7 @@ function Module:CreateUnits()
 		"groupingOrder", groupingOrder,
 		"groupBy", "ASSIGNEDROLE",
 		"sortMethod", "NAME",
-		"point", C["Party"].HorizonParty and "LEFT" or "BOTTOM",
+		"point", "BOTTOM",
 		"columnAnchorPoint", "LEFT",
 		"oUF-initialConfigFunction", ([[
 		self:SetWidth(%d)
@@ -872,72 +721,76 @@ function Module:CreateUnits()
 		party:ClearAllPoints()
 		party:SetPoint("TOPLEFT", partyMover)
 
-		if C["Party"].ShowTarget then
-			oUF:RegisterStyle("PartyTarget", Module.CreatePartyTarget)
-			oUF:SetActiveStyle("PartyTarget")
+		--if C["Party"].ShowTarget then
+		--	oUF:RegisterStyle("PartyTarget", Module.CreatePartyTarget)
+		--	oUF:SetActiveStyle("PartyTarget")
 
-			local partyTargetMoverWidth = C["Party"].HorizonParty and (64 * 5 + xOffset * 4) or 64
-			local partyTargetMoverHeight = C["Party"].HorizonParty and 34 or (34 * 5 + yOffset * 4)
+		--	local xOffset, yOffset = 6, C["Party"].ShowBuffs and 78 or 43
+		--	local partyTargetMoverWidth = 64
+		--	local partyTargetMoverHeight = 10 * 5 + yOffset * 4
 
-			-- Party targets
-			local partytarget = oUF:SpawnHeader("oUF_PartyTarget", nil, "solo,party",
-			"showSolo", false,
-			"showPlayer", true,
-			"groupBy", "ASSIGNEDROLE",
-			"groupingOrder", groupingOrder,
-			"sortMethod", "NAME",
-			"showParty", true,
-			"showRaid", false,
-			"yOffset", yOffset,
-			"point", C["Party"].HorizonParty and "LEFT" or "BOTTOM",
-			"columnAnchorPoint", "LEFT",
-			"oUF-initialConfigFunction", ([[
-			self:SetWidth(%d)
-			self:SetHeight(%d)
-			self:SetAttribute("unitsuffix", "target")
-			]]):format(64, 34))
+		--	-- Party targets
+		--	local partytarget = oUF:SpawnHeader("oUF_PartyTarget", nil, "solo,party",
+		--	"showPlayer", true,
+		--	"showSolo", false,
+		--	"showParty", true,
+		--	"showRaid", false,
+		--	"xoffset", xOffset,
+		--	"yOffset", yOffset,
+		--	"groupFilter", "1",
+		--	"groupingOrder", groupingOrder,
+		--	"groupBy", "ASSIGNEDROLE",
+		--	"sortMethod", "NAME",
+		--	"point", "BOTTOM",
+		--	"columnAnchorPoint", "LEFT",
+		--	"oUF-initialConfigFunction", ([[
+		--	self:SetWidth(%d)
+		--	self:SetHeight(%d)
+		--	self:SetAttribute("unitsuffix", "target")
+		--	]]):format(64, 10))
 
-			local partyTargetMover = K.Mover(partytarget, "PartyTargetFrame", "PartyTargetFrame", {"LEFT", partyMover, "RIGHT", 6, 0}, partyTargetMoverWidth, partyTargetMoverHeight)
-			partytarget:ClearAllPoints()
-			partytarget:SetPoint("TOPLEFT", partyTargetMover)
-		end
+		--	local partyTargetMover = K.Mover(partytarget, "PartyTargetFrame", "PartyTargetFrame", {"LEFT", partyMover, "RIGHT", 6, 0}, partyTargetMoverWidth, partyTargetMoverHeight)
+		--	partytarget:ClearAllPoints()
+		--	partytarget:SetPoint("TOPLEFT", partyTargetMover)
+		--end
 
 		-- Party pets
-		if C["Party"].ShowPet then
-			oUF:RegisterStyle("PartyPet", Module.CreatePartyPet)
-			oUF:SetActiveStyle("PartyPet")
+		--if C["Party"].ShowPet then
+		--	oUF:RegisterStyle("PartyPet", Module.CreatePartyPet)
+		--	oUF:SetActiveStyle("PartyPet")
 
-			local partyPetMoverWidth = C["Party"].HorizonParty and (64 * 5 + xOffset * 4) or 64
-			local partyPetMoverHeight = C["Party"].HorizonParty and 34 or (34 * 5 + yOffset * 4)
+		--	local xOffset, yOffset = 6, C["Party"].ShowBuffs and 72 or 18
+		--	local partyPetMoverWidth = 64
+		--	local partyPetMoverHeight = 10 * 5 + yOffset * 4
 
-			local partypet = oUF:SpawnHeader("oUF_PartyPet", nil, "solo,party",
-			"showSolo", false,
-			"showPlayer", true,
-			"groupBy", "ASSIGNEDROLE",
-			"groupingOrder", groupingOrder,
-			"sortMethod", "NAME",
-			"showParty", true,
-			"showRaid", false,
-			"yOffset", yOffset,
-			"point", C["Party"].HorizonParty and "LEFT" or "BOTTOM",
-			"columnAnchorPoint", "LEFT",
-			"oUF-initialConfigFunction", ([[
-			self:SetWidth(%d)
-			self:SetHeight(%d)
-			self:SetAttribute("unitsuffix", "pet")
-			]]):format(64, 34))
+		--	local partypet = oUF:SpawnHeader("oUF_PartyPet", nil, "solo,party",
+		--	"showSolo", false,
+		--	"showPlayer", true,
+		--	"groupBy", "ASSIGNEDROLE",
+		--	"groupingOrder", groupingOrder,
+		--	"sortMethod", "NAME",
+		--	"showParty", true,
+		--	"showRaid", false,
+		--	"yOffset", yOffset,
+		--	"point", "BOTTOM",
+		--	"columnAnchorPoint", "LEFT",
+		--	"oUF-initialConfigFunction", ([[
+		--	self:SetWidth(%d)
+		--	self:SetHeight(%d)
+		--	self:SetAttribute("unitsuffix", "pet")
+		--	]]):format(64, 10))
 
-			local partypetposition
-			if C["Party"].ShowTarget then
-				partypetposition = {"LEFT", partyMover, "RIGHT", 76, 0}
-			else
-				partypetposition = {"LEFT", partyMover, "RIGHT", 6, 0}
-			end
+		--	local partypetposition
+		--	if C["Party"].ShowTarget then
+		--		partypetposition = {"LEFT", partyMover, "RIGHT", 76, 0}
+		--	else
+		--		partypetposition = {"LEFT", partyMover, "RIGHT", 6, 0}
+		--	end
 
-			local partyPetMover = K.Mover(partypet, "PartyPetFrame", "PartyPetFrame", partypetposition, partyPetMoverWidth, partyPetMoverHeight)
-			partypet:ClearAllPoints()
-			partypet:SetPoint("TOPLEFT", partyPetMover)
-		end
+		--	local partyPetMover = K.Mover(partypet, "PartyPetFrame", "PartyPetFrame", partypetposition, partyPetMoverWidth, partyPetMoverHeight)
+		--	partypet:ClearAllPoints()
+		--	partypet:SetPoint("TOPLEFT", partyPetMover)
+		--end
 	end
 
 	if C["Raid"].Enable then
@@ -988,13 +841,13 @@ function Module:CreateUnits()
 			groups[i] = CreateGroup("oUF_Raid"..i, i)
 			if i == 1 then
 				if horizonRaid then
-					raidMover = K.Mover(groups[i], "RaidFrame", "RaidFrame", {"TOPLEFT", UIParent, "TOPLEFT", 4, -60}, (raidWidth + 5) * 5, (raidHeight + (C["Raid"].ShowTeamIndex and 21 or 15)) * numGroups)
+					raidMover = K.Mover(groups[i], "RaidFrame", "RaidFrame", {"TOPLEFT", UIParent, "TOPLEFT", 4, -180}, (raidWidth + 5) * 5, (raidHeight + (C["Raid"].ShowTeamIndex and 21 or 15)) * numGroups)
 					if reverse then
 						groups[i]:ClearAllPoints()
 						groups[i]:SetPoint("BOTTOMLEFT", raidMover)
 					end
 				else
-					raidMover = K.Mover(groups[i], "RaidFrame", "RaidFrame", {"TOPLEFT", UIParent, "TOPLEFT", 4, -60}, (raidWidth + 5) * numGroups, (raidHeight + 10) * 5)
+					raidMover = K.Mover(groups[i], "RaidFrame", "RaidFrame", {"TOPLEFT", UIParent, "TOPLEFT", 4, -180}, (raidWidth + 5) * numGroups, (raidHeight + 10) * 5)
 					if reverse then
 						groups[i]:ClearAllPoints()
 						groups[i]:SetPoint("TOPRIGHT", raidMover)
@@ -1038,11 +891,11 @@ function Module:CreateUnits()
 
 					local specIndex = GetSpecialization()
 					if not KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] then
-						KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = {"TOPLEFT", UIParent, "TOPLEFT", 4, -60}
+						KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = {"TOPLEFT", UIParent, "TOPLEFT", 4, -180}
 					end
 
 					raidMover:ClearAllPoints()
-					raidMover:SetPoint(unpack(KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex]))
+					raidMover:SetPoint(unpack(KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex]) or "TOPLEFT", UIParent, "TOPLEFT", 4, -180) -- Why does this return nil?
 				end
 			end
 			K:RegisterEvent("PLAYER_ENTERING_WORLD", UpdateSpecPos)
@@ -1063,41 +916,41 @@ end
 function Module:CreateFilgerAnchors()
 	if C["Filger"].Enable and C["Unitframe"].Enable then
 		--P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 169)
-		P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+		K.P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
 		--P_PROC_ICON_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 169)
-		P_PROC_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+		K.P_PROC_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
 		--SPECIAL_P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 211)
-		SPECIAL_P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+		K.SPECIAL_P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
 		--T_DEBUFF_ICON_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 211)
-		T_DEBUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+		K.T_DEBUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
 		--T_BUFF_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 253)
-		T_BUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
+		K.T_BUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
 
 		--PVE_PVP_DEBUFF_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 253)
-		PVE_PVP_DEBUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
+		K.PVE_PVP_DEBUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
 
 		--PVE_PVP_CC_Anchor:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMLEFT", -2, -44)
-		PVE_PVP_CC_Anchor:SetSize(221, 25)
+		K.PVE_PVP_CC_Anchor:SetSize(221, 25)
 
 		--COOLDOWN_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 63, 17)
-		COOLDOWN_Anchor:SetSize(C["Filger"].CooldownSize, C["Filger"].CooldownSize)
+		K.COOLDOWN_Anchor:SetSize(C["Filger"].CooldownSize, C["Filger"].CooldownSize)
 
 		--T_DE_BUFF_BAR_Anchor:SetPoint("TOPLEFT", "oUF_Target", "BOTTOMRIGHT", 6, 25)
-		T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
+		K.T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
 
-		K.Mover(P_BUFF_ICON_Anchor, "P_BUFF_ICON", "P_BUFF_ICON", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 169})
-		K.Mover(P_PROC_ICON_Anchor, "P_PROC_ICON", "P_PROC_ICON", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 169})
-		K.Mover(SPECIAL_P_BUFF_ICON_Anchor, "SPECIAL_P_BUFF_ICON", "SPECIAL_P_BUFF_ICON", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 211})
-		K.Mover(T_DEBUFF_ICON_Anchor, "T_DEBUFF_ICON", "T_DEBUFF_ICON", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 211})
-		K.Mover(T_BUFF_Anchor, "T_BUFF", "T_BUFF", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 253})
-		K.Mover(PVE_PVP_DEBUFF_Anchor, "PVE_PVP_DEBUFF", "PVE_PVP_DEBUFF", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 253})
-		K.Mover(PVE_PVP_CC_Anchor, "PVE_PVP_CC", "PVE_PVP_CC", {"TOPLEFT", "oUF_Player", "BOTTOMLEFT", -2, -44})
-		K.Mover(COOLDOWN_Anchor, "COOLDOWN", "COOLDOWN", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 63, 17})
-		K.Mover(T_DE_BUFF_BAR_Anchor, "T_DE_BUFF_BAR", "T_DE_BUFF_BAR", {"TOPLEFT", "oUF_Target", "BOTTOMRIGHT", 6, 25})
+		K.Mover(K.P_BUFF_ICON_Anchor, "P_BUFF_ICON", "P_BUFF_ICON", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 169})
+		K.Mover(K.P_PROC_ICON_Anchor, "P_PROC_ICON", "P_PROC_ICON", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 169})
+		K.Mover(K.SPECIAL_P_BUFF_ICON_Anchor, "SPECIAL_P_BUFF_ICON", "SPECIAL_P_BUFF_ICON", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 211})
+		K.Mover(K.T_DEBUFF_ICON_Anchor, "T_DEBUFF_ICON", "T_DEBUFF_ICON", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 211})
+		K.Mover(K.T_BUFF_Anchor, "T_BUFF", "T_BUFF", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 253})
+		K.Mover(K.PVE_PVP_DEBUFF_Anchor, "PVE_PVP_DEBUFF", "PVE_PVP_DEBUFF", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 253})
+		K.Mover(K.PVE_PVP_CC_Anchor, "PVE_PVP_CC", "PVE_PVP_CC", {"TOPLEFT", "oUF_Player", "BOTTOMLEFT", -2, -44})
+		K.Mover(K.COOLDOWN_Anchor, "COOLDOWN", "COOLDOWN", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 63, 17})
+		K.Mover(K.T_DE_BUFF_BAR_Anchor, "T_DE_BUFF_BAR", "T_DE_BUFF_BAR", {"TOPLEFT", "oUF_Target", "BOTTOMRIGHT", 6, 25})
 	end
 end
 
@@ -1162,11 +1015,8 @@ end
 function Module:OnEnable()
 	-- Register our units / layout
 	self:CreateUnits()
+	self:UpdateRangeCheckSpells()
 	self:CreateFilgerAnchors()
-
-	if C["Unitframe"].Enable or C["Party"].Enable or C["Raid"].Enable then
-		self:UpdateRangeCheckSpells()
-	end
 
 	if C["Raid"].AuraWatch then
 		local RaidDebuffs = CreateFrame("Frame")

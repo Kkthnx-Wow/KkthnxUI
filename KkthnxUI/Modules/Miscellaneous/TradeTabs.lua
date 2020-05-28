@@ -1,47 +1,40 @@
 local K, C = unpack(select(2, ...))
-if K.CheckAddOnState("TradeSkillMaster") then
-	return
-end
+local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
-local pairs = pairs
-local table_insert = table.insert
+local pairs = _G.pairs
+local select = _G.select
+local table_insert = _G.table.insert
+local unpack = _G.unpack
 
-local BOOKTYPE_PROFESSION = _G.BOOKTYPE_PROFESSION
 local C_ToyBox_GetToyInfo = _G.C_ToyBox.GetToyInfo
 local C_ToyBox_IsToyUsable = _G.C_ToyBox.IsToyUsable
+local C_TradeSkillUI_GetOnlyShowMakeableRecipes = _G.C_TradeSkillUI.GetOnlyShowMakeableRecipes
+local C_TradeSkillUI_GetOnlyShowSkillUpRecipes = _G.C_TradeSkillUI.GetOnlyShowSkillUpRecipes
+local C_TradeSkillUI_SetOnlyShowMakeableRecipes = _G.C_TradeSkillUI.SetOnlyShowMakeableRecipes
+local C_TradeSkillUI_SetOnlyShowSkillUpRecipes = _G.C_TradeSkillUI.SetOnlyShowSkillUpRecipes
+local CastSpell = _G.CastSpell
 local CreateFrame = _G.CreateFrame
 local GetItemCooldown = _G.GetItemCooldown
+local GetItemCount = _G.GetItemCount
+local GetItemInfo = _G.GetItemInfo
 local GetProfessionInfo = _G.GetProfessionInfo
 local GetProfessions = _G.GetProfessions
 local GetSpellBookItemInfo = _G.GetSpellBookItemInfo
 local GetSpellCooldown = _G.GetSpellCooldown
 local GetSpellInfo = _G.GetSpellInfo
 local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsCurrentSpell = _G.IsCurrentSpell
 local IsPassiveSpell = _G.IsPassiveSpell
+local IsPlayerSpell = _G.IsPlayerSpell
 local PlayerHasToy = _G.PlayerHasToy
 
-local pairs, ipairs, tinsert = pairs, ipairs, table.insert
-local TradeTabs = CreateFrame("Frame")
-
-local whitelist = {
-	[171] = true, -- Alchemy
-	[164] = true, -- Blacksmithing
-	[185] = true, -- Cooking
-	[333] = true, -- Enchanting
-	[202] = true, -- Engineering
-	[129] = true, -- First Aid
-	[773] = true, -- Inscription
-	[755] = true, -- Jewelcrafting
-	[165] = true, -- Leatherworking
-	[186] = true, -- Mining
-	[197] = true, -- Tailoring
-	[182] = true, -- Herbalism
-	[393] = true, -- Skinning
-	[356] = true, -- Fishing
-}
+local BOOKTYPE_PROFESSION = _G.BOOKTYPE_PROFESSION
+local RUNEFORGING_ID = 53428
+local PICK_LOCK = 1804
+local CHEF_HAT = 134020
+local THERMAL_ANVIL = 87216
+local tabList = {}
 
 local onlyPrimary = {
 	[171] = true, -- Alchemy
@@ -51,162 +44,212 @@ local onlyPrimary = {
 	[356] = true, -- Fishing
 }
 
-local RUNEFORGING = 53428 -- Runeforging spellid
-local CHEF_HAT = 134020
+function Module:UpdateProfessions()
+	local prof1, prof2, _, fish, cook = GetProfessions()
+	local profs = {prof1, prof2, fish, cook}
 
-function TradeTabs:OnEvent(event, addon)
-	if not C["Misc"].TradeTabs then return end
-	if event == "ADDON_LOADED" and addon == "Blizzard_TradeSkillUI" then
-		self:UnregisterEvent(event)
-		if InCombatLockdown() then
-			self:RegisterEvent("PLAYER_REGEN_ENABLED")
-		else
-			self:Initialize()
-		end
-	elseif event == "PLAYER_REGEN_ENABLED" then
-		self:UnregisterEvent(event)
-		self:Initialize()
+	if K.Class == "DEATHKNIGHT" then
+		Module:TradeTabs_Create(nil, RUNEFORGING_ID)
+	elseif K.Class == "ROGUE" and IsPlayerSpell(PICK_LOCK) then
+		Module:TradeTabs_Create(nil, PICK_LOCK)
 	end
-end
 
-local function buildSpellList()
-	local p1, p2, _, fishing, cooking = GetProfessions()
-	local profs = {p1, p2, cooking, fishing}
-	local tradeSpells = {}
-	local extras = 0
-
+	local isCook
 	for _, prof in pairs(profs) do
-		local _, _, _, _, abilities, offset, skillLine = GetProfessionInfo(prof)
-		if whitelist[skillLine] then
-			if onlyPrimary[skillLine] then
-				abilities = 1
-			end
+		local _, _, _, _, numSpells, spelloffset, skillLine = GetProfessionInfo(prof)
+		if skillLine == 185 then isCook = true end
 
-			for i = 1, abilities do
-				if not IsPassiveSpell(i + offset, BOOKTYPE_PROFESSION) then
-					if i > 1 then
-						tinsert(tradeSpells, i + offset)
-						extras = extras + 1
+		numSpells = onlyPrimary[skillLine] and 1 or numSpells
+		if numSpells > 0 then
+			for i = 1, numSpells do
+				local slotID = i + spelloffset
+				if not IsPassiveSpell(slotID, BOOKTYPE_PROFESSION) then
+					local spellID = select(2, GetSpellBookItemInfo(slotID, BOOKTYPE_PROFESSION))
+					if i == 1 then
+						Module:TradeTabs_Create(slotID, spellID)
 					else
-						tinsert(tradeSpells, #tradeSpells + 1 - extras, i + offset)
+						Module:TradeTabs_Create(nil, spellID)
 					end
 				end
 			end
 		end
 	end
 
-	return tradeSpells
+	if isCook and PlayerHasToy(CHEF_HAT) and C_ToyBox_IsToyUsable(CHEF_HAT) then
+		Module:TradeTabs_Create(nil, nil, CHEF_HAT)
+	end
+	if GetItemCount(THERMAL_ANVIL) > 0 then
+		Module:TradeTabs_Create(nil, nil, nil, THERMAL_ANVIL)
+	end
 end
 
-function TradeTabs:Initialize()
-	if self.initialized or not IsAddOnLoaded("Blizzard_TradeSkillUI") then return end -- Shouldn't need this, but I'm paranoid
+function Module:TradeTabs_Update()
+	for _, tab in pairs(tabList) do
+		local spellID = tab.spellID
+		local itemID = tab.itemID
 
-	local parent = TradeSkillFrame
-	local tradeSpells = buildSpellList()
-	local prev, foundCooking
-
-	-- if player is a DK, insert runeforging at the top
-	if select(2, UnitClass("player")) == "DEATHKNIGHT" then
-		prev = self:CreateTab(parent, RUNEFORGING)
-		prev:SetPoint("TOPLEFT", parent, "TOPRIGHT", 2, -44)
-	end
-
-	for _, slot in ipairs(tradeSpells) do
-		local _, spellID = GetSpellBookItemInfo(slot, BOOKTYPE_PROFESSION)
-		local tab = self:CreateTab(parent, spellID)
-		if spellID == 818 then foundCooking = true end
-
-		local point, relPoint, x, y = "TOPLEFT", "BOTTOMLEFT", 0, -10
-		if not prev then
-			prev, relPoint, x, y = parent, "TOPRIGHT", 3, -40
+		if IsCurrentSpell(spellID) then
+			tab:SetChecked(true)
+			tab.cover:Show()
+		else
+			tab:SetChecked(false)
+			tab.cover:Hide()
 		end
-		tab:SetPoint(point, prev, relPoint, x, y)
 
-		prev = tab
-	end
-
-	if foundCooking and PlayerHasToy(CHEF_HAT) and C_ToyBox.IsToyUsable(CHEF_HAT) then
-		local tab = self:CreateTab(parent, CHEF_HAT, true)
-		tab:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, -10)
-	end
-
-	self.initialized = true
-end
-
-local function onEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-	GameTooltip:SetText(self.tooltip)
-	self:GetParent():LockHighlight()
-end
-
-local function onLeave(self)
-	GameTooltip:Hide()
-	self:GetParent():UnlockHighlight()
-end
-
-local function updateSelection(self)
-	if IsCurrentSpell(self.spellID) then
-		self:SetChecked(true)
-		self.clickStopper:Show()
-	else
-		self:SetChecked(false)
-		self.clickStopper:Hide()
-	end
-
-	local start, duration
-	if self.type == "toy" then
-		start, duration = GetItemCooldown(self.spellID)
-	else
-		start, duration = GetSpellCooldown(self.spellID)
-	end
-	if start and duration and duration > 1.5 then
-		self.CD:SetCooldown(start, duration)
+		local start, duration
+		if itemID then
+			start, duration = GetItemCooldown(itemID)
+		else
+			start, duration = GetSpellCooldown(spellID)
+		end
+		if start and duration and duration > 1.5 then
+			tab.CD:SetCooldown(start, duration)
+		end
 	end
 end
 
-local function createClickStopper(button)
-	local f = CreateFrame("Frame", nil, button)
-	f:SetAllPoints(button)
-	f:EnableMouse(true)
-	f:SetScript("OnEnter", onEnter)
-	f:SetScript("OnLeave", onLeave)
-	button.clickStopper = f
-	f.tooltip = button.tooltip
-	f:Hide()
+function Module:TradeTabs_Reskin()
+	for _, tab in pairs(tabList) do
+		tab:GetRegions():Hide()
+		tab:CreateBorder()
+
+		local texture = tab:GetNormalTexture()
+		if texture then
+			texture:SetTexCoord(unpack(K.TexCoords))
+		end
+	end
 end
 
-function TradeTabs:CreateTab(parent, spellID, isToy)
-	local name, texture, _
-	if isToy then
-		_, name, texture = C_ToyBox.GetToyInfo(spellID)
+function Module:TradeTabs_OnClick()
+	CastSpell(self.slotID, BOOKTYPE_PROFESSION)
+end
+
+local index = 1
+function Module:TradeTabs_Create(slotID, spellID, toyID, itemID)
+	local name, _, texture
+	if toyID then
+		_, name, texture = C_ToyBox_GetToyInfo(toyID)
+	elseif itemID then
+		name, _, _, _, _, _, _, _, _, texture = GetItemInfo(itemID)
 	else
 		name, _, texture = GetSpellInfo(spellID)
 	end
 
-	local button = CreateFrame("CheckButton", nil, parent, "SpellBookSkillLineTabTemplate, SecureActionButtonTemplate")
-	button.tooltip = name
-	button.spellID = spellID
-	button.spell = name
-	button:Show()
-	button.type = isToy and "toy" or "spell"
-	button:SetAttribute("type", button.type)
-	button:SetAttribute(button.type, name)
+	local tab = CreateFrame("CheckButton", nil, TradeSkillFrame, "SpellBookSkillLineTabTemplate, SecureActionButtonTemplate")
+	tab.tooltip = name
+	tab.slotID = slotID
+	tab.spellID = spellID
+	tab.itemID = toyID or itemID
+	tab.type = (toyID and "toy") or (itemID and "item") or "spell"
+	if slotID then
+		tab:SetScript("OnClick", Module.TradeTabs_OnClick)
+	else
+		tab:SetAttribute("type", tab.type)
+		tab:SetAttribute(tab.type, name)
+	end
+	tab:SetNormalTexture(texture)
+	tab:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
+	tab:Show()
 
-	button:SetNormalTexture(texture)
-	button:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
+	tab.CD = CreateFrame("Cooldown", nil, tab, "CooldownFrameTemplate")
+	tab.CD:SetAllPoints()
 
-	button.CD = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
-	button.CD:SetAllPoints()
+	tab.cover = CreateFrame("Frame", nil, tab)
+	tab.cover:SetAllPoints()
+	tab.cover:EnableMouse(true)
 
-	button:SetScript("OnEvent", updateSelection)
-	button:RegisterEvent("TRADE_SKILL_SHOW")
-	button:RegisterEvent("TRADE_SKILL_CLOSE")
-	button:RegisterEvent("CURRENT_SPELL_CAST_CHANGED")
-
-	createClickStopper(button)
-	updateSelection(button)
-	return button
+	tab:SetPoint("TOPLEFT", TradeSkillFrame, "TOPRIGHT", 3, -index * 42)
+	table_insert(tabList, tab)
+	index = index + 1
 end
 
-TradeTabs:RegisterEvent("ADDON_LOADED")
-TradeTabs:SetScript("OnEvent", TradeTabs.OnEvent)
+function Module:TradeTabs_FilterIcons()
+	local buttonList = {
+		[1] = {"Atlas:bags-greenarrow", TRADESKILL_FILTER_HAS_SKILL_UP, C_TradeSkillUI_GetOnlyShowSkillUpRecipes, C_TradeSkillUI_SetOnlyShowSkillUpRecipes},
+		[2] = {"Interface\\RAIDFRAME\\ReadyCheck-Ready", CRAFT_IS_MAKEABLE, C_TradeSkillUI_GetOnlyShowMakeableRecipes, C_TradeSkillUI_SetOnlyShowMakeableRecipes},
+	}
+
+	local function filterClick(self)
+		local value = self.__value
+		if value[3]() then
+			value[4](false)
+			self:SetBackdropBorderColor(0, 0, 0)
+		else
+			value[4](true)
+			self:SetBackdropBorderColor(1, .8, 0)
+		end
+	end
+
+	local buttons = {}
+	for index, value in pairs(buttonList) do
+		local bu = CreateFrame("Button", nil, TradeSkillFrame)
+		bu:SetSize(18, 18)
+		bu:SetPoint("RIGHT", TradeSkillFrame.FilterButton, "LEFT", -5 - (index - 1) * 24, 0)
+		bu:CreateBorder()
+		bu.Icon = bu:CreateTexture(nil, "ARTWORK")
+		bu.Icon:SetAllPoints()
+		bu.Icon:SetTexCoord(unpack(K.TexCoords))
+		local atlas = string.match(value[1], "Atlas:(.+)$")
+		if atlas then
+			bu.Icon:SetAtlas(atlas)
+		else
+			bu.Icon:SetTexture(value[1])
+		end
+		K.AddTooltip(bu, "ANCHOR_TOP", value[2])
+		bu.__value = value
+		bu:SetScript("OnClick", filterClick)
+
+		buttons[index] = bu
+	end
+
+	local function updateFilterStatus()
+		for index, value in pairs(buttonList) do
+			if value[3]() then
+				buttons[index]:SetBackdropBorderColor(1, .8, 0)
+			else
+				buttons[index]:SetBackdropBorderColor()
+			end
+		end
+	end
+
+	K:RegisterEvent("TRADE_SKILL_LIST_UPDATE", updateFilterStatus)
+end
+
+function Module:TradeTabs_OnLoad()
+	Module:UpdateProfessions()
+
+	Module:TradeTabs_Reskin()
+	Module:TradeTabs_Update()
+	K:RegisterEvent("TRADE_SKILL_SHOW", Module.TradeTabs_Update)
+	K:RegisterEvent("TRADE_SKILL_CLOSE", Module.TradeTabs_Update)
+	K:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.TradeTabs_Update)
+
+	Module:TradeTabs_FilterIcons()
+end
+
+function Module.TradeTabs_OnEvent(event, addon)
+	if event == "ADDON_LOADED" and addon == "Blizzard_TradeSkillUI" then
+		K:UnregisterEvent(event, Module.TradeTabs_OnEvent)
+
+		if InCombatLockdown() then
+			K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.TradeTabs_OnEvent)
+		else
+			Module:TradeTabs_OnLoad()
+		end
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		K:UnregisterEvent(event, Module.TradeTabs_OnEvent)
+		Module:TradeTabs_OnLoad()
+	end
+end
+
+function Module:CreateTradeTabs()
+	if not C["Misc"].TradeTabs then
+		return
+	end
+
+	if K.CheckAddOnState("TradeSkillMaster") then
+		return
+	end
+
+	K:RegisterEvent("ADDON_LOADED", Module.TradeTabs_OnEvent)
+end

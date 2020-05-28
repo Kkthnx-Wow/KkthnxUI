@@ -50,11 +50,11 @@ oUF.colors.selection = {
 	[13] = {r = 025/255, g = 147/255, b = 072/255}, -- BATTLEGROUND_FRIENDLY_PVP
 }
 
-oUF.colors.runes = {
-	[1] = {0.69, 0.31, 0.31},
-	[2] = {0.41, 0.80, 1.00},
-	[3] = {0.65, 0.63, 0.35},
-}
+--oUF.colors.runes = {
+--	[1] = {0.69, 0.31, 0.31},
+--	[2] = {0.41, 0.80, 1.00},
+--	[3] = {173 / 255, 235 / 255, 66 / 255},
+--}
 
 oUF.colors.power = {
 	["ALTPOWER"] = {0.00, 1.00, 1.00},
@@ -65,13 +65,13 @@ oUF.colors.power = {
 	["ENERGY"] = {0.65, 0.63, 0.35},
 	["FOCUS"] = {0.71, 0.43, 0.27},
 	["FUEL"] = {0.00, 0.55, 0.50},
-	["FURY"] = {227/255, 126/255, 39/255, atlas = "_DemonHunter-DemonicFuryBar"},
+	["FURY"] = {0.78, 0.26, 0.99},
 	["HOLY_POWER"] = {0.95, 0.90, 0.60},
-	["INSANITY"] = {0.55, 0.14, 0.69, atlas = "_Priest-InsanityBar"},
-	["LUNAR_POWER"] = {.9, .86, .12, atlas = "_Druid-LunarBar"},
-	["MAELSTROM"] = {0, 0.5, 1, atlas = "_Shaman-MaelstromBar"},
+	["INSANITY"] = {0.40, 0.00, 0.80},
+	["LUNAR_POWER"] = {0.93, 0.51, 0.93},
+	["MAELSTROM"] = {0.00, 0.50, 1.00},
 	["MANA"] = {0.31, 0.45, 0.63},
-	["PAIN"] = {1.00, 0.61, 0.00, atlas = "_DemonHunter-DemonicPainBar"},
+	["PAIN"] = {1.00, 0.61, 0.00},
 	["POWER_TYPE_PYRITE"] = {0.60, 0.09, 0.17},
 	["POWER_TYPE_STEAM"] = {0.55, 0.57, 0.61},
 	["RAGE"] = {0.78, 0.25, 0.25},

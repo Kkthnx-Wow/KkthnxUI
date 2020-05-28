@@ -56,6 +56,8 @@ function Module.PostUpdateAddPower(element, _, cur, max)
 end
 
 function Module:CreatePlayer()
+	self.mystyle = "player"
+
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 	local HealPredictionTexture = K.GetTexture(C["UITextures"].HealPredictionTextures)
@@ -73,13 +75,13 @@ function Module:CreatePlayer()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = C["General"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
+	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		K.SmoothBar(self.Health)
+		K:SmoothBar(self.Health)
 	end
 
 	if C["Unitframe"].HealthbarColor.Value == "Value" then
@@ -113,7 +115,7 @@ function Module:CreatePlayer()
 	self.Power.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		K.SmoothBar(self.Power)
+		K:SmoothBar(self.Power)
 	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
@@ -122,14 +124,14 @@ function Module:CreatePlayer()
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
 	self:Tag(self.Power.Value, "[power]")
 
-	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
+	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 		self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
 		self.Portrait:CreateBorder()
 		self.Portrait:CreateInnerShadow()
-	elseif C["General"].PortraitStyle.Value ~= "ThreeDPortraits" then
+	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		self.Portrait = self.Health:CreateTexture("PlayerPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
@@ -140,7 +142,7 @@ function Module:CreatePlayer()
 		self.Portrait.Border:CreateBorder()
 		self.Portrait.Border:CreateInnerShadow()
 
-		if (C["General"].PortraitStyle.Value == "ClassPortraits" or C["General"].PortraitStyle.Value == "NewClassPortraits") then
+		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end
 	end
@@ -149,36 +151,97 @@ function Module:CreatePlayer()
 	self.Health:SetPoint("TOPLEFT", self.Portrait:GetWidth() + 6, 0)
 	self.Health:SetPoint("TOPRIGHT")
 
-	if C["Unitframe"].PlayerAuraBars then
-		self.AuraBars = CreateFrame("Frame", self:GetName().."AuraBars", self)
-		self.AuraBars:SetHeight(18)
-		self.AuraBars:SetWidth(210)
-		self.AuraBars:SetPoint("TOPLEFT", 0, 38)
-		self.AuraBars.auraBarTexture = UnitframeTexture
-		self.AuraBars.PostCreateBar = Module.PostCreateAuraBar
-		self.AuraBars.CustomFilter = Module.CustomAuraFilter.Blacklist
-		self.AuraBars.spacing = 6
-		self.AuraBars.gap = 6
-		self.AuraBars.width = 186
-		self.AuraBars.height = 18
+	if C["Unitframe"].ClassResources then
+		local bar = CreateFrame("Frame", "Player_ClassPowerBar", self)
+		bar:SetSize(156, 14)
 
-		K.Mover(self.AuraBars, "PlayerAuraBars", "PlayerAuraBars", {"TOPLEFT", self, 0, 38})
-	elseif C["Unitframe"].PlayerBuffs then
+		if C["Unitframe"].ShowPlayerName then
+			bar.Pos = {"TOPLEFT", self.Health, 0, 36}
+		else
+			bar.Pos = {"TOPLEFT", self.Health, 0, 20}
+		end
+
+		local bars = {}
+		for i = 1, 6 do
+			bars[i] = CreateFrame("StatusBar", nil, bar)
+			bars[i]:SetHeight(14)
+			bars[i]:SetWidth((156 - 5 * 6) / 6)
+			bars[i]:SetStatusBarTexture(UnitframeTexture)
+			bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
+			bars[i]:CreateBorder()
+
+			if i == 1 then
+				bars[i]:SetPoint("BOTTOMLEFT")
+			else
+				bars[i]:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
+			end
+
+			if K.Class == "DEATHKNIGHT" then
+				bars[i].timer = K.CreateFontString(bars[i], 12, "")
+			end
+
+			if K.Class == "ROGUE" or K.Class == "DRUID" then
+				bars[i]:SetStatusBarColor(unpack(K.Colors.power.COMBO_POINTS[i]))
+			end
+		end
+
+		if K.Class == "DEATHKNIGHT" then
+			bars.colorSpec = true
+			bars.sortOrder = "asc"
+			bars.PostUpdate = Module.PostUpdateRunes
+			self.Runes = bars
+		else
+			bars.PostUpdate = Module.PostUpdateUnitframeClassPower
+			self.ClassPower = bars
+		end
+
+		K.Mover(bar, "ClassPowerBar", "ClassPowerBar", bar.Pos, 156, 14)
+	end
+
+	if C["Unitframe"].PlayerBuffs then
+		local width = 156
+
 		self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
-
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		self.Buffs:SetWidth(156)
-		self.Buffs.num = 6 * 4
-		self.Buffs.spacing = 6
-		self.Buffs.size = ((((self.Buffs:GetWidth() - (self.Buffs.spacing * (self.Buffs.num / 4 - 1))) / self.Buffs.num)) * 4)
-		self.Buffs:SetHeight(self.Buffs.size * 4)
 		self.Buffs.initialAnchor = "TOPLEFT"
-		self.Buffs["growth-y"] = "DOWN"
 		self.Buffs["growth-x"] = "RIGHT"
+		self.Buffs["growth-y"] = "DOWN"
+		self.Buffs.num = 6
+		self.Buffs.spacing = 6
+		self.Buffs.iconsPerRow = 6
+		self.Buffs.onlyShowPlayer = false
+
+		self.Buffs.size = Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing)
+		self.Buffs:SetWidth(width)
+		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+
+		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
-		-- self.Buffs.CustomFilter = Module.CustomAuraFilter.Blacklist
-		self.Buffs.CustomFilter = K.CustomBuffFilter.player
+	end
+
+	if C["Unitframe"].PlayerDeBuffs then
+		local width = 156
+
+		self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
+		self.Debuffs.spacing = 6
+		self.Debuffs.initialAnchor = "TOPLEFT"
+		self.Debuffs["growth-x"] = "RIGHT"
+		self.Debuffs["growth-y"] = "UP"
+
+		if C["Unitframe"].ClassResources and _G.Player_ClassPowerBar then
+			self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6 + _G.Player_ClassPowerBar:GetHeight())
+		else
+			self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 44)
+		end
+
+		self.Debuffs.num = 6
+		self.Debuffs.iconsPerRow = 5
+		self.Debuffs.size = Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
+		self.Debuffs:SetWidth(width)
+		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * floor(self.Debuffs.num/self.Debuffs.iconsPerRow + .5))
+		self.Debuffs.PostCreateIcon = Module.PostCreateAura
+		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 	end
 
 	if (C["Unitframe"].Castbars) then
@@ -338,7 +401,7 @@ function Module:CreatePlayer()
 	end
 
 	-- Level
-	if C["Unitframe"].ShowPlayerLevel and K.Level ~= _G.MAX_PLAYER_LEVEL then
+	if C["Unitframe"].ShowPlayerLevel then
 		self.Level = self:CreateFontString(nil, "OVERLAY")
 		self.Level:SetPoint("TOP", self.Portrait, 0, 15)
 		self.Level:SetFontObject(UnitframeFont)
@@ -348,53 +411,6 @@ function Module:CreatePlayer()
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.LeaderIndicator:SetSize(14, 14)
 	self.LeaderIndicator:SetPoint("TOPLEFT", self.Overlay, "TOPLEFT", 0, 8)
-
-	if C["Unitframe"].ClassResources then
-		local bar = CreateFrame("Frame", "ClassPowerBar", self)
-		bar:SetSize(156, 14)
-
-		if C["Unitframe"].ShowPlayerName then
-			bar.Pos = {"TOPLEFT", self.Health, 0, 36}
-		else
-			bar.Pos = {"TOPLEFT", self.Health, 0, 20}
-		end
-
-		local bars = {}
-		for i = 1, 6 do
-			bars[i] = CreateFrame("StatusBar", nil, bar)
-			bars[i]:SetHeight(14)
-			bars[i]:SetWidth((156 - 5 * 6) / 6)
-			bars[i]:SetStatusBarTexture(UnitframeTexture)
-			bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
-			bars[i]:CreateBorder()
-
-			if i == 1 then
-				bars[i]:SetPoint("BOTTOMLEFT")
-			else
-				bars[i]:SetPoint("LEFT", bars[i-1], "RIGHT", 6, 0)
-			end
-
-			if K.Class == "DEATHKNIGHT" then
-				bars[i].timer = K.CreateFontString(bars[i], 13, "")
-			end
-
-			if K.Class == "ROGUE" or K.Class == "DRUID" then
-				bars[i]:SetStatusBarColor(unpack(K.Colors.power.COMBO_POINTS[i]))
-			end
-		end
-
-		if K.Class == "DEATHKNIGHT" then
-			bars.colorSpec = true
-			bars.sortOrder = "asc"
-			bars.PostUpdate = Module.PostUpdateRunes
-			self.Runes = bars
-		else
-			bars.PostUpdate = Module.PostUpdateUnitframeClassPower
-			self.ClassPower = bars
-		end
-
-		K.Mover(bar, "ClassPowerBar", "ClassPowerBar", bar.Pos, 156, 14)
-	end
 
 	if C["Unitframe"].Stagger then
 		if K.Class == "MONK" then
@@ -431,6 +447,22 @@ function Module:CreatePlayer()
 			self.AdditionalPower.Text:SetPoint("CENTER", self.AdditionalPower, "CENTER", 0, -1)
 
 			self.AdditionalPower.PostUpdate = Module.PostUpdateAddPower
+
+			self.AdditionalPower.displayPairs = {
+				["DRUID"] = {
+					[1] = true,
+					[3] = true,
+					[8] = true,
+				},
+
+				["SHAMAN"] = {
+					[11] = true,
+				},
+
+				["PRIEST"] = {
+					[13] = true,
+				}
+			}
 		end
 	end
 
@@ -599,7 +631,8 @@ function Module:CreatePlayer()
 		self.PortraitTimer = CreateFrame("Frame", "$parentPortraitTimer", self.Health)
 		self.PortraitTimer:CreateInnerShadow()
 		self.PortraitTimer:SetFrameLevel(5) -- Watch me
-		self.PortraitTimer:SetInside(self.Portrait, 1, 1)
+		self.PortraitTimer:SetPoint("TOPLEFT", self.Portrait, "TOPLEFT", 1, -1)
+		self.PortraitTimer:SetPoint("BOTTOMRIGHT", self.Portrait, "BOTTOMRIGHT", -1, 1)
 		self.PortraitTimer:Hide()
 	end
 

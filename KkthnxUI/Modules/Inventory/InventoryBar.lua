@@ -15,7 +15,7 @@ local function OnEnter()
 		return
 	end
 
-	K.UIFrameFadeIn(KKUI_BagBar, 0.2, KKUI_BagBar:GetAlpha(), 1)
+	K.UIFrameFadeIn(Module.BagBar, 0.2, Module.BagBar:GetAlpha(), 1)
 end
 
 local function OnLeave()
@@ -23,7 +23,7 @@ local function OnLeave()
 		return
 	end
 
-	K.UIFrameFadeOut(KKUI_BagBar, 0.2, KKUI_BagBar:GetAlpha(), 0.25)
+	K.UIFrameFadeOut(Module.BagBar, 0.2, Module.BagBar:GetAlpha(), 0.25)
 end
 
 function Module:SkinBag(bag)
@@ -40,7 +40,7 @@ function Module:SkinBag(bag)
 end
 
 function Module:SizeAndPositionBagBar()
-	if not KKUI_BagBar then
+	if not Module.BagBar then
 		return
 	end
 
@@ -53,22 +53,16 @@ function Module:SizeAndPositionBagBar()
 		visibility = visibility:gsub("[\n\r]", "")
 	end
 
-	RegisterStateDriver(KKUI_BagBar, "visibility", visibility)
+	RegisterStateDriver(Module.BagBar, "visibility", visibility)
+	Module.BagBar:SetAlpha(C["Inventory"].BagBarMouseover and 0.25 or 1)
 
-	if C["Inventory"].BagBarMouseover then
-		KKUI_BagBar:SetAlpha(0.25)
-	else
-		KKUI_BagBar:SetAlpha(1)
-	end
-
-	for i = 1, #KKUI_BagBar.buttons do
-		local button = KKUI_BagBar.buttons[i]
-		local prevButton = KKUI_BagBar.buttons[i - 1]
+	for i, button in ipairs(Module.BagBar.buttons) do
+		local prevButton = Module.BagBar.buttons[i - 1]
 		button:SetSize(bagBarSize, bagBarSize)
 		button:ClearAllPoints()
 
 		if i == 1 then
-			button:SetPoint("RIGHT", KKUI_BagBar, "RIGHT", 0, 0)
+			button:SetPoint("RIGHT", Module.BagBar, "RIGHT", 0, 0)
 		elseif prevButton then
 			button:SetPoint("RIGHT", prevButton, "LEFT", -buttonSpacing, 0)
 		end
@@ -78,8 +72,8 @@ function Module:SizeAndPositionBagBar()
 		end
 	end
 
-	KKUI_BagBar:SetWidth(bagBarSize * (NUM_BAG_FRAMES + 1) + buttonSpacing * (NUM_BAG_FRAMES) + buttonPadding * 2)
-	KKUI_BagBar:SetHeight(bagBarSize + buttonPadding * 2)
+	Module.BagBar:SetWidth(bagBarSize * (NUM_BAG_FRAMES + 1) + buttonSpacing * (NUM_BAG_FRAMES) + buttonPadding * 2)
+	Module.BagBar:SetHeight(bagBarSize + buttonPadding * 2)
 end
 
 function Module:CreateInventoryBar()
@@ -92,18 +86,18 @@ function Module:CreateInventoryBar()
 	end
 
 	local setPosition
-	local KKUI_BagBar = CreateFrame("Frame", "KKUI_BagBar", UIParent)
+	Module.BagBar = CreateFrame("Frame", "KKUI_BagBar", UIParent)
 	if C["ActionBar"].MicroBar then
 		setPosition = {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 38}
 	else
 		setPosition = {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4}
 	end
-	KKUI_BagBar.buttons = {}
-	KKUI_BagBar:EnableMouse(true)
-	KKUI_BagBar:SetScript("OnEnter", OnEnter)
-	KKUI_BagBar:SetScript("OnLeave", OnLeave)
+	Module.BagBar.buttons = {}
+	Module.BagBar:EnableMouse(true)
+	Module.BagBar:SetScript("OnEnter", OnEnter)
+	Module.BagBar:SetScript("OnLeave", OnLeave)
 
-	_G.MainMenuBarBackpackButton:SetParent(KKUI_BagBar)
+	_G.MainMenuBarBackpackButton:SetParent(Module.BagBar)
 	_G.MainMenuBarBackpackButton.SetParent = K.Noop
 	_G.MainMenuBarBackpackButton:ClearAllPoints()
 	_G.MainMenuBarBackpackButtonCount:FontTemplate(nil, 11, "OUTLINE")
@@ -112,20 +106,21 @@ function Module:CreateInventoryBar()
 	_G.MainMenuBarBackpackButton:HookScript("OnEnter", OnEnter)
 	_G.MainMenuBarBackpackButton:HookScript("OnLeave", OnLeave)
 
-	table_insert(KKUI_BagBar.buttons, _G.MainMenuBarBackpackButton)
+	table_insert(Module.BagBar.buttons, _G.MainMenuBarBackpackButton)
 	self:SkinBag(_G.MainMenuBarBackpackButton)
 
 	for i = 0, NUM_BAG_FRAMES - 1 do
 		local b = _G["CharacterBag"..i.."Slot"]
-		b:SetParent(KKUI_BagBar)
+		b:SetParent(Module.BagBar)
 		b.SetParent = K.Noop
 		b:HookScript("OnEnter", OnEnter)
 		b:HookScript("OnLeave", OnLeave)
 
 		self:SkinBag(b)
-		table_insert(KKUI_BagBar.buttons, b)
+		table_insert(Module.BagBar.buttons, b)
 	end
 
 	self:SizeAndPositionBagBar()
-	K.Mover(KKUI_BagBar, "BagBar", "BagBar", setPosition)
+	K.Mover(Module.BagBar, "BagBar", "BagBar", setPosition)
+	K:RegisterEvent("BAG_SLOT_FLAGS_UPDATED", Module.SizeAndPositionBagBar)
 end

@@ -1,11 +1,8 @@
 local K, C = unpack(select(2, ...))
-if C["Automation"].AutoTabBinder ~= true then
-	return
-end
+local Module = K:GetModule("Automation")
 
 local _G = _G
 
-local CreateFrame = _G.CreateFrame
 local GetBindingAction = _G.GetBindingAction
 local GetBindingKey = _G.GetBindingKey
 local GetCurrentBindingSet = _G.GetCurrentBindingSet
@@ -15,61 +12,57 @@ local IsInInstance = _G.IsInInstance
 local SaveBindings = _G.SaveBindings
 local SetBinding = _G.SetBinding
 
--- Sourced:	RE/TabBinder by Veev/AcidWeb
-local TabBinder = CreateFrame("Frame")
-TabBinder:RegisterEvent("PLAYER_ENTERING_WORLD")
-TabBinder:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-TabBinder:RegisterEvent("PLAYER_REGEN_ENABLED")
-TabBinder:RegisterEvent("DUEL_REQUESTED")
-TabBinder:RegisterEvent("DUEL_FINISHED")
-TabBinder:RegisterEvent("CHAT_MSG_SYSTEM")
+-- Replace these into our config later?
+local isFail = false
+local isOpenWorld = false
+local isDefaultKey = true
 
-local RTB_Fail, RTB_DefaultKey, LastTargetKey, TargetKey, CurrentBind, Success = false, true
-
-TabBinder:SetScript("OnEvent", function(_, event, ...)
-	if event == "CHAT_MSG_SYSTEM" then
-		local RTBChatMessage = ...
-		if RTBChatMessage == ERR_DUEL_REQUESTED then
+function Module:OnTabBinderEvent(event, ...)
+	if event == "ZONE_CHANGED_NEW_AREA" or (event == "PLAYER_REGEN_ENABLED" and isFail) or event == "DUEL_REQUESTED" or event == "DUEL_FINISHED" or event == "CHAT_MSG_SYSTEM" then
+		if event == "CHAT_MSG_SYSTEM" and ... == _G.ERR_DUEL_REQUESTED then
 			event = "DUEL_REQUESTED"
+		elseif event == "CHAT_MSG_SYSTEM" then
+			return
 		end
-	elseif event == "ZONE_CHANGED_NEW_AREA" or event == "PLAYER_ENTERING_WORLD" or (event == "PLAYER_REGEN_ENABLED" and RTB_Fail) or event == "DUEL_REQUESTED" or event == "DUEL_FINISHED" then
+
 		local BindSet = GetCurrentBindingSet()
 		if BindSet ~= 1 and BindSet ~= 2 then
 			return
 		end
 
 		if InCombatLockdown() then
-			RTB_Fail = true
+			isFail = true
 			return
 		end
 
 		local PVPType = GetZonePVPInfo()
 		local _, ZoneType = IsInInstance()
-
-		TargetKey = GetBindingKey("TARGETNEARESTENEMYPLAYER")
+		local TargetKey = GetBindingKey("TARGETNEARESTENEMYPLAYER")
 		if TargetKey == nil then
 			TargetKey = GetBindingKey("TARGETNEARESTENEMY")
 		end
 
-		if TargetKey == nil and RTB_DefaultKey then
+		if TargetKey == nil and isDefaultKey then
 			TargetKey = "TAB"
 		end
 
-		LastTargetKey = GetBindingKey("TARGETPREVIOUSENEMYPLAYER")
+		local LastTargetKey = GetBindingKey("TARGETPREVIOUSENEMYPLAYER")
 		if LastTargetKey == nil then
 			LastTargetKey = GetBindingKey("TARGETPREVIOUSENEMY")
 		end
 
-		if LastTargetKey == nil and RTB_DefaultKey then
+		if LastTargetKey == nil and isDefaultKey then
 			LastTargetKey = "SHIFT-TAB"
 		end
 
+		local CurrentBind
 		if TargetKey then
 			CurrentBind = GetBindingAction(TargetKey)
 		end
 
-		if ZoneType == "arena" or ZoneType == "pvp" or PVPType == "combat" or event == "DUEL_REQUESTED" then
+		if ZoneType == "arena" or ZoneType == "pvp" or (isOpenWorld and ZoneType == "none") or PVPType == "combat" or event == "DUEL_REQUESTED" then
 			if CurrentBind ~= "TARGETNEARESTENEMYPLAYER" then
+				local Success
 				if TargetKey == nil then
 					Success = true
 				else
@@ -82,13 +75,15 @@ TabBinder:SetScript("OnEvent", function(_, event, ...)
 
 				if Success then
 					SaveBindings(BindSet)
-					RTB_Fail = false
+					isFail = false
+					K.Print("\124cFF74D06C[AutoTabBinder]\124r PVP Mode")
 				else
-					RTB_Fail = true
+					isFail = true
 				end
 			end
 		else
 			if CurrentBind ~= "TARGETNEARESTENEMY" then
+				local Success
 				if TargetKey == nil then
 					Success = true
 				else
@@ -101,11 +96,24 @@ TabBinder:SetScript("OnEvent", function(_, event, ...)
 
 				if Success then
 					SaveBindings(BindSet)
-					RTB_Fail = false
+					isFail = false
+					K.Print("\124cFF74D06C[AutoTabBinder]\124r PVE Mode")
 				else
-					RTB_Fail = true
+					isFail = true
 				end
 			end
 		end
 	end
-end)
+end
+
+function Module:CreateAutoTabBinder()
+	if not C["Automation"].AutoTabBinder then
+		return
+	end
+
+	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", self.OnTabBinderEvent)
+	K:RegisterEvent("PLAYER_REGEN_ENABLED", self.OnTabBinderEvent)
+	K:RegisterEvent("DUEL_REQUESTED", self.OnTabBinderEvent)
+	K:RegisterEvent("DUEL_FINISHED", self.OnTabBinderEvent)
+	K:RegisterEvent("CHAT_MSG_SYSTEM", self.OnTabBinderEvent)
+end

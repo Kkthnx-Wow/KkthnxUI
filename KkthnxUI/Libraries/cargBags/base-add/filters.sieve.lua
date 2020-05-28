@@ -46,9 +46,17 @@ end
 	Empties the filter table
 ]]
 function FilterSet:Empty()
-	for k in pairs(self.funcs) do self.funcs[k] = nil end
-	for k in pairs(self.params) do self.params[k] = nil end
-	for k in pairs(self.chained) do self.chained[k] = nil end
+	for k in pairs(self.funcs) do
+		self.funcs[k] = nil
+	end
+
+	for k in pairs(self.params) do
+		self.params[k] = nil
+	end
+
+	for k in pairs(self.chained) do
+		self.chained[k] = nil
+	end
 end
 
 --[[!
@@ -67,7 +75,7 @@ end
 	@param flag <bool> whether the filter is enabled (-1: inverted) [optional]
 ]]
 function FilterSet:SetExtended(filter, param, flag)
-	if(not flag and param) then
+	if (not flag and param) then
 		flag = true
 	end
 
@@ -81,7 +89,7 @@ end
 	@param ... <function> a list of filters
 ]]
 function FilterSet:SetMultiple(flag, ...)
-	for i=1, select("#", ...) do
+	for i = 1, select("#", ...) do
 		local filter = select(i, ...)
 		self:Set(filter, flag)
 	end

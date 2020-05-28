@@ -31,10 +31,11 @@ function Module.AutoInvite(event, _, _, _, _, _, _, inviterGUID)
 end
 
 function Module:CreateAutoInvite()
-	if C["Automation"].AutoInvite ~= true then
-		return
+	if C["Automation"].AutoInvite == true then
+		K:RegisterEvent("PARTY_INVITE_REQUEST", self.AutoInvite)
+		K:RegisterEvent("GROUP_ROSTER_UPDATE", self.AutoInvite)
+	else
+		K:UnregisterEvent("PARTY_INVITE_REQUEST", self.AutoInvite)
+		K:UnregisterEvent("GROUP_ROSTER_UPDATE", self.AutoInvite)
 	end
-
-	K:RegisterEvent("PARTY_INVITE_REQUEST", self.AutoInvite)
-	K:RegisterEvent("GROUP_ROSTER_UPDATE", self.AutoInvite)
 end

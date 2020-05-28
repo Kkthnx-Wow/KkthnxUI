@@ -66,7 +66,7 @@ function Module:ReskinDBM()
                     backdroptex:SetPoint("TOPLEFT", icon1.overlay, "TOPLEFT", 1, -1)
                     backdroptex:SetPoint("BOTTOMRIGHT", icon1.overlay, "BOTTOMRIGHT", -1, 1)
                     backdroptex:SetTexCoord(unpack(K.TexCoords))
-                    icon1.overlay:CreateShadow(true)
+                    icon1.overlay:CreateBorder()
                 end
 
                 if not (icon2.overlay) then
@@ -79,7 +79,7 @@ function Module:ReskinDBM()
                     backdroptex:SetPoint("TOPLEFT", icon2.overlay, "TOPLEFT", 1, -1)
                     backdroptex:SetPoint("BOTTOMRIGHT", icon2.overlay, "BOTTOMRIGHT", -1, 1)
                     backdroptex:SetTexCoord(unpack(K.TexCoords))
-                    icon2.overlay:CreateShadow(true)
+                    icon2.overlay:CreateBorder()
                 end
 
                 if bar.color then
@@ -109,7 +109,7 @@ function Module:ReskinDBM()
                         frame.bg = CreateFrame("Frame", nil, frame)
                         frame.bg:SetAllPoints()
                     end
-                    frame.bg:CreateShadow(true)
+                    frame.bg:CreateBorder()
                     frame.styled = true
                 end
 

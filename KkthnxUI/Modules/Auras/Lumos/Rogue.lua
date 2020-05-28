@@ -42,7 +42,7 @@ function Module:PostCreateLumos(self)
 		bu:CreateShadow()
 
 		if i == 1 then
-			bu:SetPoint("BOTTOMLEFT", self.ClassPower[1], "TOPLEFT", 0, 5)
+			bu:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 8 + self.Health:GetHeight())
 		else
 			bu:SetPoint("LEFT", buttons[i-1], "RIGHT", 2, 0)
 		end

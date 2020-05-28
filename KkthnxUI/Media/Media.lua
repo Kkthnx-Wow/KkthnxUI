@@ -3,12 +3,13 @@ local K, C = unpack(select(2, ...))
 C["Media"] = {
 	AltzUI = [[Interface\AddOns\KkthnxUI\Media\Textures\AltzUI.tga]],
 	AsphyxiaUI = [[Interface\AddOns\KkthnxUI\Media\Textures\AsphyxiaUI.tga]],
+	AzeriteUI = [[Interface\AddOns\KkthnxUI\Media\Textures\AzeriteUI.tga]],
 	BackdropColor = {.04, .04, .04, 0.9},
 	Blank = [[Interface\BUTTONS\WHITE8X8]],
 	BlankFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Invisible.ttf]],
 	Border = [[Interface\AddOns\KkthnxUI\Media\Border\Border.tga]],
-	BorderGlow = [[Interface\AddOns\KkthnxUI\Media\Border\BorderGlow.tga]],
 	BorderColor = {1, 1, 1},
+	BorderGlow = [[Interface\AddOns\KkthnxUI\Media\Border\BorderGlow.tga]],
 	CombatFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]],
 	Copy = [[Interface\AddOns\KkthnxUI\Media\Chat\Copy.tga]],
 	DiabolicUI = [[Interface\AddOns\KkthnxUI\Media\Textures\DiabolicUI.tga]],
@@ -21,6 +22,9 @@ C["Media"] = {
 	Logo = [[Interface\AddOns\KkthnxUI\Media\Textures\Logo.tga]],
 	Mouseover = [[Interface\AddOns\KkthnxUI\Media\Textures\Mouseover.tga]],
 	NewClassPortraits = [[Interface\AddOns\KkthnxUI\Media\Unitframes\NEW-ICONS-CLASSES.blp]],
+	NPArrow = [[Interface\AddOns\KkthnxUI\Media\Nameplates\arrow_single_right_64.tga]],
+	NPHealer = [[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Healer.tga]],
+	NPTank = [[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Tank.tga]],
 	Proc_Sound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Proc.ogg]],
 	Shader = [[Interface\AddOns\KkthnxUI\Media\Textures\Shader.tga]],
 	SkullFlowerUI = [[Interface\AddOns\KkthnxUI\Media\Textures\SkullFlowerUI.tga]],
@@ -31,8 +35,6 @@ C["Media"] = {
 	WarningSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Warning.ogg]],
 	WhisperSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Whisper.ogg]],
 	ZorkUI = [[Interface\AddOns\KkthnxUI\Media\Textures\ZorkUI.tga]],
-	NPHealer = [[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Healer.tga]],
-	NPArrow = [[Interface\AddOns\KkthnxUI\Media\Nameplates\arrow_single_right_64.tga]],
 }
 
 if (K.Client == "koKR" or K.Client == "zhTW" or K.Client == "zhCN") then

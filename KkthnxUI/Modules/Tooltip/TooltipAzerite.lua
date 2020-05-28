@@ -14,8 +14,8 @@ local C_AzeriteEmpoweredItem_GetAllTierInfoByItemID = _G.C_AzeriteEmpoweredItem.
 local IsAddOnLoaded = _G.IsAddOnLoaded
 
 local tipList, powerList, powerCache, tierCache = {}, {}, {}, {}
+local iconString = "|T%s:18:18:0:0:64:64:5:59:5:59"
 
-local iconString = "|T%s:18:22:0:0:64:64:5:59:5:59"
 local function getIconString(icon, known)
 	if known then
 		return string_format(iconString..":255:255:255|t", icon)
@@ -116,7 +116,7 @@ function Module:Azerite_UpdateItem()
 			-- 	line:SetText(tooltipText)
 			-- 	_G[self:GetName().."TextLeft"..lineIndex+1]:SetText("")
 			-- else
-				line:SetText(line:GetText().."\n "..tooltipText)
+				line:SetText(line:GetText().."\n  "..tooltipText)
 			--end
 		end
 

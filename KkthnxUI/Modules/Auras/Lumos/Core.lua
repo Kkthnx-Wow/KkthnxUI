@@ -48,7 +48,9 @@ function Module:UpdateCooldown(button, spellID, texture)
 	else
 		button.CD:Hide()
 		button.Icon:SetDesaturated(false)
-		if charges == maxCharges then button.Count:SetTextColor(1, 0, 0) end
+		if charges == maxCharges then
+			button.Count:SetTextColor(1, 0, 0)
+		end
 	end
 
 	if texture then
@@ -110,7 +112,7 @@ function Module:UpdateTotemAura(button, texture, spellID, glow)
 	local found
 	for slot = 1, 4 do
 		local haveTotem, _, start, dur, icon = GetTotemInfo(slot)
-		if haveTotem and icon == texture and (start+dur-GetTime() > 0) then
+		if haveTotem and icon == texture and (start + dur - GetTime() > 0) then
 			button.CD:SetCooldown(start, dur)
 			button.CD:Show()
 			button.Icon:SetDesaturated(false)

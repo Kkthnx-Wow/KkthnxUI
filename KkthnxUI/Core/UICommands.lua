@@ -18,13 +18,13 @@ local UI_COMMANDS = {
     "• '/install' - Brings up the installer again",
     "• '/kb' - Allows for quick keybinding",
     "• '/killquests' - Deletes/Removes all quests in your objective tracker",
+    "• '/kstatus' - Show a window with info to help with bug reports if needed",
     "• '/luaerror' - Enable/Disables Lua errors in your game -> on/off",
     "• '/moveui' - Allows you to move most the UI elements",
     "• '/profile list /profile #' - See current profiles, selecting a profile number",
     "• '/rc' - Quick way to do a ready check",
     "• '/rd' - Disbands your raid group",
     "• '/resetinstance' - Reset your instances",
-    "• '/kstatus' - Show a window with info to help with bug reports if needed",
 }
 
 local function ModifiedString(string)
@@ -39,12 +39,12 @@ local function ModifiedString(string)
         if subHeader then
             newString = tostring("|cFFFFFF00"..prefix.."|r"..suffix)
         else
-            newString = tostring("|cff4488ff"..prefix.."|r"..suffix)
+            newString = tostring("|cff669dff"..prefix.."|r"..suffix)
         end
     end
 
     for pattern in string_gmatch(string, "('.*')") do
-        newString = newString:gsub(pattern, "|cff4488ff"..pattern:gsub("'", "").."|r")
+        newString = newString:gsub(pattern, "|cff669dff"..pattern:gsub("'", "").."|r")
     end
 
     return newString
@@ -58,8 +58,11 @@ local function GetUICommandsInfo(i)
     end
 end
 
-local function CreateUICommands()
-	if not K.AboutPanel.Commands then return end
+K:RegisterEvent("PLAYER_LOGIN", function()
+    if not K.AboutPanel.Commands then
+        return
+    end
+
     K.AboutPanel.Commands:SetScript("OnShow", function(self)
         if self.show then
             return
@@ -97,6 +100,4 @@ local function CreateUICommands()
 
 		self.show = true
     end)
-end
-
-CreateUICommands()
+end)

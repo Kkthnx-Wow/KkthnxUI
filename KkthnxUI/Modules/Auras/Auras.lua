@@ -4,10 +4,23 @@ local Module = K:NewModule("Auras")
 -- Sourced: NDui (Siweia)
 
 local _G = _G
-local format, floor, strmatch, select, unpack = _G.format, _G.floor, _G.strmatch, _G.select, _G.unpack
+local math_floor = _G.math.floor
+local select = _G.select
+local string_format = _G.string.format
+local string_match = _G.string.match
+local unpack = _G.unpack
+
+local CreateFrame = _G.CreateFrame
 local DebuffTypeColor = _G.DebuffTypeColor
-local UnitAura, GetTime = _G.UnitAura, _G.GetTime
-local GetInventoryItemQuality, GetInventoryItemTexture, GetItemQualityColor, GetWeaponEnchantInfo = _G.GetInventoryItemQuality, _G.GetInventoryItemTexture, _G.GetItemQualityColor, _G.GetWeaponEnchantInfo
+local GetInventoryItemQuality = _G.GetInventoryItemQuality
+local GetInventoryItemTexture = _G.GetInventoryItemTexture
+local GetItemQualityColor = _G.GetItemQualityColor
+local GetTime = _G.GetTime
+local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
+local RegisterAttributeDriver = _G.RegisterAttributeDriver
+local RegisterStateDriver = _G.RegisterStateDriver
+local UIParent = _G.UIParent
+local UnitAura = _G.UnitAura
 
 local margin, offset, settings = 6, 12
 function Module:OnEnable()
@@ -33,7 +46,7 @@ function Module:OnEnable()
 
     -- Movers
     self.BuffFrame = self:CreateAuraHeader("HELPFUL")
-    local buffAnchor = K.Mover(self.BuffFrame, "Buffs", "BuffAnchor", {"TOPRIGHT", Minimap, "TOPLEFT", -6, 0})
+    local buffAnchor = K.Mover(self.BuffFrame, "Buffs", "BuffAnchor", {"TOPRIGHT", _G.Minimap, "TOPLEFT", -6, 0})
     self.BuffFrame:ClearAllPoints()
     self.BuffFrame:SetPoint("TOPRIGHT", buffAnchor)
 
@@ -43,13 +56,32 @@ function Module:OnEnable()
     self.DebuffFrame:SetPoint("TOPRIGHT", debuffAnchor)
 
     -- Elements
-	if K.Class == "MONK" then
-		self:CreateMonkStatue()
-	elseif K.Class == "SHAMAN" then
-		self:CreateShamanTotems()
+    if K.Class == "MONK" then
+        self:CreateMonkStatue()
+    elseif K.Class == "SHAMAN" then
+        self:CreateShamanTotems()
     end
 
     self:CreateReminder()
+end
+
+local day, hour, minute = 86400, 3600, 60
+function Module:FormatAuraTime(s)
+    if s >= day then
+        return string_format("%d"..K.MyClassColor.."d", s / day), s % day
+    elseif s >= hour then
+        return string_format("%s"..K.MyClassColor.."h", K.Round(s / hour, 1)), s % hour
+    elseif s >= 10 * minute then
+        return string_format("%d"..K.MyClassColor.."m", s / minute), s % minute
+    elseif s >= minute then
+        return string_format("%d:%.2d", s / minute, s % minute), s - math_floor(s)
+    elseif s > 10 then
+        return string_format("%d"..K.MyClassColor.."s", s), s - math_floor(s)
+    elseif s > 5 then
+        return string_format("|cffffff00%.1f|r", s), s - string_format("%.1f", s)
+    else
+        return string_format("|cffff0000%.1f|r", s), s - string_format("%.1f", s)
+    end
 end
 
 function Module:UpdateTimer(elapsed)
@@ -70,10 +102,10 @@ function Module:UpdateTimer(elapsed)
     end
 
     if self.timeLeft >= 0 then
-		local timer, nextUpdate = K.FormatTime(self.timeLeft)
-		self.nextUpdate = nextUpdate
-		self.timer:SetText(timer)
-	end
+        local timer, nextUpdate = Module:FormatAuraTime(self.timeLeft)
+        self.nextUpdate = nextUpdate
+        self.timer:SetText(timer)
+    end
 end
 
 function Module:UpdateAuras(button, index)
@@ -85,15 +117,15 @@ function Module:UpdateAuras(button, index)
         if duration > 0 and expirationTime then
             local timeLeft = expirationTime - GetTime()
             if not button.timeLeft then
-				button.nextUpdate = -1
+                button.nextUpdate = -1
                 button.timeLeft = timeLeft
                 button:SetScript("OnUpdate", Module.UpdateTimer)
             else
                 button.timeLeft = timeLeft
             end
             -- Need Reviewed
-			button.nextUpdate = -1
-			Module.UpdateTimer(button, 0)
+            button.nextUpdate = -1
+            Module.UpdateTimer(button, 0)
         else
             button.timeLeft = nil
             button.timer:SetText("")
@@ -124,7 +156,7 @@ function Module:UpdateTempEnchant(button, index)
 
     local offset = 2
     local weapon = button:GetName():sub(-1)
-    if strmatch(weapon, "2") then
+    if string_match(weapon, "2") then
         offset = 6
     end
 
@@ -133,17 +165,17 @@ function Module:UpdateTempEnchant(button, index)
     end
 
     local expirationTime = select(offset, GetWeaponEnchantInfo())
-	if expirationTime then
-		button.offset = offset
-		button:SetScript("OnUpdate", Module.UpdateTimer)
-		button.nextUpdate = -1
-		Module.UpdateTimer(button, 0)
-	else
-		button.offset = nil
-		button.timeLeft = nil
-		button:SetScript("OnUpdate", nil)
-		button.timer:SetText("")
-	end
+    if expirationTime then
+        button.offset = offset
+        button:SetScript("OnUpdate", Module.UpdateTimer)
+        button.nextUpdate = -1
+        Module.UpdateTimer(button, 0)
+    else
+        button.offset = nil
+        button.timeLeft = nil
+        button:SetScript("OnUpdate", nil)
+        button.timer:SetText("")
+    end
 end
 
 function Module:OnAttributeChanged(attribute, value)
@@ -159,7 +191,7 @@ function Module:UpdateHeader(header)
     if header:GetAttribute("filter") == "HELPFUL" then
         cfg = settings.Buffs
         header:SetAttribute("consolidateTo", 0)
-		header:SetAttribute("weaponTemplate", format("KKUI_AuraTemplate%d", cfg.size))
+        header:SetAttribute("weaponTemplate", string_format("KKUI_AuraTemplate%d", cfg.size))
     end
 
     header:SetAttribute("separateOwn", 1)
@@ -174,12 +206,12 @@ function Module:UpdateHeader(header)
     header:SetAttribute("yOffset", 0)
     header:SetAttribute("wrapXOffset", 0)
     header:SetAttribute("wrapYOffset", -(cfg.size + offset))
-    header:SetAttribute("template", format("KKUI_AuraTemplate%d", cfg.size))
+    header:SetAttribute("template", string_format("KKUI_AuraTemplate%d", cfg.size))
 
     local index = 1
     local child = select(index, header:GetChildren())
     while child do
-        if (floor(child:GetWidth() * 100 + .5) / 100) ~= cfg.size then
+        if (math_floor(child:GetWidth() * 100 + 0.5) / 100) ~= cfg.size then
             child:SetSize(cfg.size, cfg.size)
         end
 
@@ -223,7 +255,7 @@ function Module:CreateAuraIcon(button)
     if header:GetAttribute("filter") == "HELPFUL" then
         cfg = settings.Buffs
     end
-    local fontSize = floor(cfg.size / 30 * 12 + .5)
+    local fontSize = math_floor(cfg.size / 30 * 12 + 0.5)
 
     button.icon = button:CreateTexture(nil, "BORDER")
     button.icon:SetAllPoints()
@@ -235,7 +267,7 @@ function Module:CreateAuraIcon(button)
     button.count:SetFont(select(1, button.count:GetFont()), fontSize, select(3, button.count:GetFont()))
 
     button.timer = button:CreateFontString(nil, "OVERLAY")
-    button.timer:SetPoint("TOP", button, "BOTTOM", 1, -4)
+    button.timer:SetPoint("TOP", button, "BOTTOM", 1, 5)
     button.timer:SetFontObject(K.GetFont(C["UIFonts"].AuraFonts))
     button.timer:SetFont(select(1, button.timer:GetFont()), fontSize, select(3, button.timer:GetFont()))
 

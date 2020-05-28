@@ -10,19 +10,19 @@ local CreateFrame = _G.CreateFrame
 local GetCurrentRegionName = _G.GetCurrentRegionName
 local GuildMicroButton = _G.GuildMicroButton
 local GuildMicroButtonTabard = _G.GuildMicroButtonTabard
+local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
-local MICRO_BUTTONS = _G.MICRO_BUTTONS
 local MainMenuBarPerformanceBar = _G.MainMenuBarPerformanceBar
 local MainMenuMicroButton = _G.MainMenuMicroButton
+local MICRO_BUTTONS = _G.MICRO_BUTTONS
 local MicroButtonPortrait = _G.MicroButtonPortrait
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 local UpdateMicroButtonsParent = _G.UpdateMicroButtonsParent
-local hooksecurefunc = _G.hooksecurefunc
 
 local function onLeaveBar()
 	if C["ActionBar"].MicroBarMouseover then
-		K.UIFrameFadeOut(KKUI_MicroBar, 0.2, KKUI_MicroBar:GetAlpha(), 0.25)
+		K.UIFrameFadeOut(Module.MicroBar, 0.2, Module.MicroBar:GetAlpha(), 0.25)
 	end
 end
 
@@ -41,10 +41,10 @@ local function onUpdate(self, elapsed)
 end
 
 local function onEnter()
-	if C["ActionBar"].MicroBarMouseover and not KKUI_MicroBar.IsMouseOvered then
-		KKUI_MicroBar.IsMouseOvered = true
-		KKUI_MicroBar:SetScript("OnUpdate", onUpdate)
-		K.UIFrameFadeIn(KKUI_MicroBar, 0.2, KKUI_MicroBar:GetAlpha(), 1)
+	if C["ActionBar"].MicroBarMouseover and not Module.MicroBar.IsMouseOvered then
+		Module.MicroBar.IsMouseOvered = true
+		Module.MicroBar:SetScript("OnUpdate", onUpdate)
+		K.UIFrameFadeIn(Module.MicroBar, 0.2, Module.MicroBar:GetAlpha(), 1)
 	end
 end
 
@@ -68,26 +68,30 @@ function Module.HandleMicroButton(button)
 	f:SetAllPoints(button)
 	button.backdrop = f
 
-	button:SetParent(KKUI_MicroBar)
+	button:SetParent(Module.MicroBar)
 	button:GetHighlightTexture():Kill()
 	button:HookScript("OnEnter", onEnter)
 	button:HookScript("OnLeave", onLeave)
 	button:SetHitRectInsets(0, 0, 0, 0)
 
 	if button.Flash then
-		button.Flash:SetInside()
+		button.Flash:SetPoint("TOPLEFT", button, "TOPLEFT", 0, -0)
+		button.Flash:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -0, 0)
 		button.Flash:SetTexture()
 	end
 
 	pushed:SetTexCoord(0.22, 0.81, 0.26, 0.82)
-	pushed:SetInside(f)
+	pushed:SetPoint("TOPLEFT", f, "TOPLEFT", 0, -0)
+	pushed:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -0, 0)
 
 	normal:SetTexCoord(0.22, 0.81, 0.21, 0.82)
-	normal:SetInside(f)
+	normal:SetPoint("TOPLEFT", f, "TOPLEFT", 0, -0)
+	normal:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -0, 0)
 
 	if disabled then
 		disabled:SetTexCoord(0.22, 0.81, 0.21, 0.82)
-		disabled:SetInside(f)
+		disabled:SetPoint("TOPLEFT", f, "TOPLEFT", 0, -0)
+		disabled:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -0, 0)
 	end
 end
 
@@ -101,11 +105,11 @@ end
 
 function Module.UpdateMicroButtonsParent()
 	for _, x in pairs(MICRO_BUTTONS) do
-		_G[x]:SetParent(KKUI_MicroBar)
+		_G[x]:SetParent(Module.MicroBar)
 	end
 end
 
--- We use this table to sort the micro buttons on our bar to match Blizzard's button placements.
+-- We use this table to sort the micro buttons on our bar to match Blizzard"s button placements.
 local __buttonIndex = {
 	[8] = "CollectionsMicroButton",
 	[9] = "EJMicroButton",
@@ -134,16 +138,16 @@ function Module.UpdateMicroBarVisibility()
 		visibility = visibility:gsub("[\n\r]","")
 	end
 
-	RegisterStateDriver(KKUI_MicroBar.visibility, "visibility", (C["ActionBar"].MicroBar and visibility) or "hide")
+	RegisterStateDriver(Module.MicroBar.visibility, "visibility", (C["ActionBar"].MicroBar and visibility) or "hide")
 end
 
 function Module.UpdateMicroPositionDimensions()
-	if not KKUI_MicroBar then
+	if not Module.MicroBar then
 		return
 	end
 
 	local numRows = 1
-	local prevButton = KKUI_MicroBar
+	local prevButton = Module.MicroBar
 	local offset = 4
 	local spacing = offset + 2
 
@@ -152,7 +156,7 @@ function Module.UpdateMicroPositionDimensions()
 		button:SetSize(20, 20 * 1.4)
 		button:ClearAllPoints()
 
-		if prevButton == KKUI_MicroBar then
+		if prevButton == Module.MicroBar then
 			button:SetPoint("TOPLEFT", prevButton, "TOPLEFT", offset, -offset)
 		else
 			button:SetPoint("LEFT", prevButton, "RIGHT", spacing, 0)
@@ -161,23 +165,25 @@ function Module.UpdateMicroPositionDimensions()
 		prevButton = button
 	end
 
-	if C["ActionBar"].MicroBarMouseover and not KKUI_MicroBar:IsMouseOver() then
-		KKUI_MicroBar:SetAlpha(0.25)
+	if C["ActionBar"].MicroBarMouseover and not Module.MicroBar:IsMouseOver() then
+		Module.MicroBar:SetAlpha(0.25)
 	else
-		KKUI_MicroBar:SetAlpha(1)
+		Module.MicroBar:SetAlpha(1)
 	end
 
 	Module.MicroWidth = (((_G["CharacterMicroButton"]:GetWidth() + spacing) * 11) - spacing) + (offset * 2)
 	Module.MicroHeight = (((_G["CharacterMicroButton"]:GetHeight() + spacing) * numRows) - spacing) + (offset * 2)
-	KKUI_MicroBar:SetSize(Module.MicroWidth, Module.MicroHeight)
+	Module.MicroBar:SetSize(Module.MicroWidth, Module.MicroHeight)
 
 	Module.UpdateMicroBarVisibility()
 end
 
 function Module.UpdateMicroButtons()
-	GuildMicroButtonTabard:SetInside(GuildMicroButton)
+	GuildMicroButtonTabard:SetPoint("TOPLEFT", GuildMicroButton, "TOPLEFT", 2, -2)
+	GuildMicroButtonTabard:SetPoint("BOTTOMRIGHT", GuildMicroButton, "BOTTOMRIGHT", -2, 2)
 
-	GuildMicroButtonTabard.background:SetInside(GuildMicroButton)
+	GuildMicroButtonTabard.background:SetPoint("TOPLEFT", GuildMicroButton, "TOPLEFT", 2, -2)
+	GuildMicroButtonTabard.background:SetPoint("BOTTOMRIGHT", GuildMicroButton, "BOTTOMRIGHT", -2, 2)
 	GuildMicroButtonTabard.background:SetTexCoord(0.17, 0.87, 0.5, 0.908)
 
 	GuildMicroButtonTabard.emblem:ClearAllPoints()
@@ -188,25 +194,21 @@ function Module.UpdateMicroButtons()
 end
 
 function Module:CreateMicroMenu()
-	if not C["ActionBar"].Enable then
+	if not C["ActionBar"].MicroBar then
 		return
 	end
 
-	if C["ActionBar"].MicroBar ~= true then
-		return
-	end
+	Module.MicroBar = CreateFrame("Frame", "KKUI_MicroBar", UIParent)
+	Module.MicroBar:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0)
+	Module.MicroBar:EnableMouse(false)
 
-	local microBar = CreateFrame("Frame", "KKUI_MicroBar", UIParent)
-	microBar:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0)
-	microBar:EnableMouse(false)
-
-	microBar.visibility = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-	microBar.visibility:SetScript("OnShow", function()
-		microBar:Show()
+	Module.MicroBar.visibility = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+	Module.MicroBar.visibility:SetScript("OnShow", function()
+		Module.MicroBar:Show()
 	end)
 
-	microBar.visibility:SetScript("OnHide", function()
-		microBar:Hide()
+	Module.MicroBar.visibility:SetScript("OnHide", function()
+		Module.MicroBar:Hide()
 	end)
 
 	for _, x in pairs(MICRO_BUTTONS) do
@@ -221,7 +223,7 @@ function Module:CreateMicroMenu()
 	hooksecurefunc("MoveMicroButtons", Module.UpdateMicroPositionDimensions)
 	hooksecurefunc("UpdateMicroButtons", Module.UpdateMicroButtons)
 
-	UpdateMicroButtonsParent(microBar)
+	UpdateMicroButtonsParent(Module.MicroBar)
 
 	Module.MainMenuMicroButton_SetNormal()
 	Module.UpdateMicroPositionDimensions()
@@ -232,5 +234,5 @@ function Module:CreateMicroMenu()
 		MainMenuBarPerformanceBar:Hide()
 	end
 
-	K.Mover(microBar, "MicroBar", "MicroBar", {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0}, (((_G["CharacterMicroButton"]:GetWidth() + 6) * 11) - 6) + (4 * 2), (((_G["CharacterMicroButton"]:GetHeight() + 6) * 1) - 6) + (4 * 2))
+	K.Mover(Module.MicroBar, "MicroBar", "MicroBar", {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0}, (((_G["CharacterMicroButton"]:GetWidth() + 6) * 11) - 6) + (4 * 2), (((_G["CharacterMicroButton"]:GetHeight() + 6) * 1) - 6) + (4 * 2))
 end

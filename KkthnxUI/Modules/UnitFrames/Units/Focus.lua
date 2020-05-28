@@ -1,4 +1,7 @@
 local K, C = unpack(select(2, ...))
+if C["Unitframe"].Enable ~= true then
+	return
+end
 local Module = K:GetModule("Unitframes")
 
 local oUF = oUF or K.oUF
@@ -25,7 +28,7 @@ function Module:CreateFocus()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = C["General"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
+	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
@@ -46,7 +49,7 @@ function Module:CreateFocus()
     end
 
 	if C["Unitframe"].Smooth then
-		K.SmoothBar(self.Health)
+		K:SmoothBar(self.Health)
 	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
@@ -65,7 +68,7 @@ function Module:CreateFocus()
 	self.Power.frequentUpdates = true
 
 	if C["Unitframe"].Smooth then
-		K.SmoothBar(self.Power)
+		K:SmoothBar(self.Power)
 	end
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
@@ -85,14 +88,14 @@ function Module:CreateFocus()
 		self:Tag(self.Name, "[color][name][afkdnd]")
 	end
 
-	if C["General"].PortraitStyle.Value == "ThreeDPortraits" then
+	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 		self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
 		self.Portrait:CreateBorder()
 		self.Portrait:CreateInnerShadow()
-	elseif C["General"].PortraitStyle.Value ~= "ThreeDPortraits" then
+	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		self.Portrait = self.Health:CreateTexture("PlayerPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
@@ -103,7 +106,7 @@ function Module:CreateFocus()
 		self.Portrait.Border:CreateBorder()
 		self.Portrait.Border:CreateInnerShadow()
 
-		if (C["General"].PortraitStyle.Value == "ClassPortraits" or C["General"].PortraitStyle.Value == "NewClassPortraits") then
+		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end
 	end
@@ -112,50 +115,46 @@ function Module:CreateFocus()
 	self.Health:SetPoint("TOPLEFT", self.Portrait:GetWidth() + 6, 0)
 	self.Health:SetPoint("TOPRIGHT")
 
-	if C["Unitframe"].DebuffsOnTop then
-		self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
-		self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
-		self.Auras = CreateFrame("Frame", self:GetName().."Auras", self)
+	--if C["Unitframe"].PlayerBuffs then
+		local focusAurasWidth = 156
 
-		self.Buffs:SetWidth(156)
+		self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		self.Buffs.num = 6 * 4
-		self.Buffs.spacing = 6
-		self.Buffs.size = ((((self.Buffs:GetWidth() - (self.Buffs.spacing * (self.Buffs.num / 4 - 1))) / self.Buffs.num)) * 4)
-		self.Buffs:SetHeight(self.Buffs.size * 4)
 		self.Buffs.initialAnchor = "TOPLEFT"
-		self.Buffs["growth-y"] = "DOWN"
 		self.Buffs["growth-x"] = "RIGHT"
+		self.Buffs["growth-y"] = "DOWN"
+		self.Buffs.num = 6
+		self.Buffs.spacing = 6
+		self.Buffs.iconsPerRow = 6
+		self.Buffs.onlyShowPlayer = false
+
+		self.Buffs.size = Module.auraIconSize(focusAurasWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
+		self.Buffs:SetWidth(focusAurasWidth)
+		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+
+		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
+	--end
 
-		self.Debuffs:SetWidth(154)
-		self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, -70)
-		self.Debuffs.num = 4 * 4
+	--if C["Unitframe"].PlayerDeBuffs then
+		--local width = 156
+
+		self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 		self.Debuffs.spacing = 6
-		self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num / 4 - 1))) / self.Debuffs.num)) * 4)
-		self.Debuffs:SetHeight(self.Debuffs.size * 4)
 		self.Debuffs.initialAnchor = "TOPLEFT"
-		self.Debuffs["growth-y"] = "UP"
 		self.Debuffs["growth-x"] = "RIGHT"
-		self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
+		self.Debuffs["growth-y"] = "UP"
+		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 44)
+
+		self.Debuffs.num = 6
+		self.Debuffs.iconsPerRow = 5
+		self.Debuffs.size = Module.auraIconSize(focusAurasWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
+		self.Debuffs:SetWidth(focusAurasWidth)
+		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * floor(self.Debuffs.num/self.Debuffs.iconsPerRow + .5))
 		self.Debuffs.PostCreateIcon = Module.PostCreateAura
 		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
-	else
-		self.Auras.gap = false
-		self.Auras:SetWidth(154)
-		self.Auras:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		self.Auras.num = 5 * 4
-		self.Auras.spacing = 6
-		self.Auras.size = ((((self.Auras:GetWidth() - (self.Auras.spacing * (self.Auras.num / 4 - 1))) / self.Auras.num)) * 4)
-		self.Auras:SetHeight(self.Auras.size * 4)
-		self.Auras.initialAnchor = "TOPLEFT"
-		self.Auras["growth-y"] = "DOWN"
-		self.Auras["growth-x"] = "RIGHT"
-		self.Auras.showStealableBuffs = true
-		self.Auras.PostCreateIcon = Module.PostCreateAura
-		self.Auras.PostUpdateIcon = Module.PostUpdateAura
-	end
+	--end
 
 	if (C["Unitframe"].Castbars) then
 		self.Castbar = CreateFrame("StatusBar", "FocusCastbar", self)

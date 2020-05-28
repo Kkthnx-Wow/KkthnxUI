@@ -1,4 +1,7 @@
 local K, C = unpack(select(2, ...))
+if C["Raid"].Enable ~= true then
+	return
+end
 
 local Module = K:GetModule("Unitframes")
 local oUF = oUF or K.oUF
@@ -15,44 +18,6 @@ local GetThreatStatusColor = _G.GetThreatStatusColor
 local UnitIsUnit = _G.UnitIsUnit
 local UnitPowerType = _G.UnitPowerType
 local UnitThreatSituation = _G.UnitThreatSituation
-
-local function UpdateRaidThreat(self, _, unit)
-	if unit ~= self.unit then
-		return
-	end
-
-	local situation = UnitThreatSituation(unit)
-	if (situation and situation > 0) then
-		local r, g, b = GetThreatStatusColor(situation)
-		self:SetBackdropBorderColor(r, g, b)
-	else
-		self:SetBackdropBorderColor()
-	end
-end
-
-local function UpdatePartyTargetPower(self, _, unit)
-	if self.unit ~= unit then
-		return
-	end
-
-	local _, powerToken = UnitPowerType(unit)
-
-	if powerToken == "MANA" and C["Raid"].ManabarShow then
-		if not self.Power:IsVisible() then
-			self.Health:ClearAllPoints()
-			self.Health:SetPoint("BOTTOMLEFT", self, 0, 5)
-			self.Health:SetPoint("TOPRIGHT", self)
-
-			self.Power:Show()
-		end
-	else
-		if self.Power:IsVisible() then
-			self.Health:ClearAllPoints()
-			self.Health:SetAllPoints(self)
-			self.Power:Hide()
-		end
-	end
-end
 
 function Module:CreatePartyTarget()
 	local RaidframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
@@ -75,7 +40,7 @@ function Module:CreatePartyTarget()
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, 0, -9)
 	self.Health.Value:SetFontObject(RaidframeFont)
-	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 11, select(3, self.Health.Value:GetFont()))
+	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[raidhp]")
 
 	self.Health.colorDisconnected = true
@@ -99,31 +64,6 @@ function Module:CreatePartyTarget()
 	if C["Party"].Smooth then
 		self.Health.Smooth = true
 	end
-
-	self.Power = CreateFrame("StatusBar", nil, self)
-	self.Power:SetFrameStrata("LOW")
-	self.Power:SetFrameLevel(self:GetFrameLevel())
-	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
-	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
-	self.Power:SetHeight(4.5)
-	self.Power:SetStatusBarTexture(RaidframeTexture)
-
-	self.Power.colorPower = true
-	self.Power.Smooth = true
-	self.Power.frequentUpdates = false
-
-	if C["Party"].Smooth then
-		self.Power.Smooth = true
-	end
-
-	self.Power.Background = self.Power:CreateTexture(nil, "BORDER")
-	self.Power.Background:SetAllPoints(self.Power)
-	self.Power.Background:SetColorTexture(.2, .2, .2)
-	self.Power.Background.multiplier = 0.3
-
-	table.insert(self.__elements, UpdatePartyTargetPower)
-	self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePartyTargetPower)
-	UpdatePartyTargetPower(self, _, unit)
 
 	self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 	self.Portrait:SetFrameLevel(self.Health:GetFrameLevel())
@@ -265,11 +205,6 @@ function Module:CreatePartyTarget()
 	self.Highlight:SetVertexColor(.6, .6, .6)
 	self.Highlight:SetBlendMode("ADD")
 	self.Highlight:Hide()
-
-	self.ThreatIndicator = {
-		IsObjectType = function() end,
-		Override = UpdateRaidThreat,
-	}
 
 	self.Range = Module.CreateRangeIndicator(self)
 end

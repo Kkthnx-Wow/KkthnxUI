@@ -4,6 +4,7 @@
     <Script file="Load_Announcements.lua"/>
 
     <Script file="Countdown.lua"/>
+    <!-- <Script file="Dispell.lua"/> -->
     <Script file="Interrupt.lua"/>
     <Script file="ItemAlert.lua"/>
     <Script file="RareAlert.lua"/>

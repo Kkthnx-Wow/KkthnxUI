@@ -15,6 +15,7 @@ local unpack = _G.unpack
 local APPLY = _G.APPLY
 local CLOSE = _G.CLOSE
 local COLOR = _G.COLOR
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local CreateFrame = _G.CreateFrame
 local GameMenuFrame = _G.GameMenuFrame
 local GameTooltip = _G.GameTooltip
@@ -1001,7 +1002,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	InfoFrame.Text = InfoFrame:CreateFontString(nil, "OVERLAY")
 	InfoFrame.Text:SetFont(C["Media"].Font, 14)
 	InfoFrame.Text:SetShadowOffset(s, -s/2)
-	InfoFrame.Text:SetText("Welcome to |cff4488ffKkthnxUI|r v"..K.Version.." "..K.Client..", "..K.MyClassColor..K.Name)
+	InfoFrame.Text:SetText("Welcome to |cff669dffKkthnxUI|r v"..K.Version.." "..K.Client..", "..K.MyClassColor..K.Name)
 	InfoFrame.Text:SetPoint("CENTER", InfoFrame, 0, 0)
 
 	local CloseButton = CreateFrame("Button", nil, InfoFrame)
@@ -1061,7 +1062,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	local ResetCVarsButton = CreateFrame("Button", nil, InfoFrame)
 	ResetCVarsButton:SkinButton()
 	ResetCVarsButton:SetSize(624/3, 22)
-	ResetCVarsButton:SetScript("OnClick", K["Install"].Step1)
+	--ResetCVarsButton:SetScript("OnClick", K["Install"].Step1)
 	ResetCVarsButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	ResetCVarsButton:SetPoint("TOP", CloseButton, "BOTTOM", 0, -6)
 
@@ -1074,7 +1075,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	local ResetChatButton = CreateFrame("Button", nil, InfoFrame)
 	ResetChatButton:SkinButton()
 	ResetChatButton:SetSize(624/3, 22)
-	ResetChatButton:SetScript("OnClick", K["Install"].Step2)
+	--ResetChatButton:SetScript("OnClick", K["Install"].Step2)
 	ResetChatButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	ResetChatButton:SetPoint("TOP", ReloadButton, "BOTTOM", 0, -6)
 
@@ -1087,7 +1088,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	local ResetButton = CreateFrame("Button", nil, InfoFrame)
 	ResetButton:SkinButton()
 	ResetButton:SetSize(624/3, 22)
-	ResetButton:SetScript("OnClick", K["Install"].ResetData)
+	--ResetButton:SetScript("OnClick", K["Install"].ResetData)
 	ResetButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	ResetButton:SetPoint("TOP", GlobalButton, "BOTTOM", 0, -6)
 

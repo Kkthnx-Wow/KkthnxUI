@@ -5,51 +5,48 @@ local Module = K:GetModule("Skins")
 -- Edited: KkthnxUI (Kkthnx)
 
 local _G = _G
-local table_insert = table.insert
+local table_insert = _G.table.insert
 
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
 
 local function ReskinLossOfControlFrame()
+	local LossOfControlFrame = _G.LossOfControlFrame
+
 	local IconBackdrop = CreateFrame("Frame", nil, LossOfControlFrame)
-
-	IconBackdrop.Background = IconBackdrop:CreateTexture(nil, "BACKGROUND", -1)
-	IconBackdrop.Background:SetAllPoints()
-	IconBackdrop.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(IconBackdrop)
-
+	IconBackdrop:CreateBorder()
+	IconBackdrop:CreateInnerShadow()
+	IconBackdrop:SetBackdropBorderColor(1, 0, 0)
 	IconBackdrop:SetAllPoints(LossOfControlFrame.Icon)
 	IconBackdrop:SetFrameLevel(LossOfControlFrame:GetFrameLevel())
-	IconBackdrop:SetBackdropBorderColor(1, 0, 0, 1)
 
 	LossOfControlFrame.Icon:SetTexCoord(.1, .9, .1, .9)
 	LossOfControlFrame:StripTextures()
 	LossOfControlFrame.AbilityName:ClearAllPoints()
 	LossOfControlFrame:SetSize(LossOfControlFrame.Icon:GetWidth() + 50, LossOfControlFrame.Icon:GetWidth() + 50)
 
-	hooksecurefunc("LossOfControlFrame_SetUpDisplay", function(self)
-		self.Icon:ClearAllPoints()
-		self.Icon:SetPoint("CENTER", self, "CENTER", 0, 0)
+	hooksecurefunc("LossOfControlFrame_SetUpDisplay", function(s)
+		s.Icon:ClearAllPoints()
+		s.Icon:SetPoint("CENTER", s, "CENTER", 0, 0)
 
-		self.AbilityName:ClearAllPoints()
-		self.AbilityName:SetPoint("BOTTOM", self, 0, -4)
-		self.AbilityName.scrollTime = nil
-		self.AbilityName:FontTemplate(C.Media.Font, 20, "OUTLINE")
+		s.AbilityName:ClearAllPoints()
+		s.AbilityName:SetPoint("BOTTOM", s, 0, -8)
+		s.AbilityName.scrollTime = nil
+		s.AbilityName:FontTemplate(nil, 20, "OUTLINE")
 
-		self.TimeLeft.NumberText:ClearAllPoints()
-		self.TimeLeft.NumberText:SetPoint("BOTTOM", self, 0, -26)
-		self.TimeLeft.NumberText.scrollTime = nil
-		self.TimeLeft.NumberText:FontTemplate(C.Media.Font, 20, "OUTLINE")
+		s.TimeLeft.NumberText:ClearAllPoints()
+		s.TimeLeft.NumberText:SetPoint("BOTTOM", s, 4, -38)
+		s.TimeLeft.NumberText.scrollTime = nil
+		s.TimeLeft.NumberText:FontTemplate(nil, 20, "OUTLINE")
 
-		self.TimeLeft.SecondsText:ClearAllPoints()
-		self.TimeLeft.SecondsText:SetPoint("BOTTOM", self, 0, -48)
-		self.TimeLeft.SecondsText.scrollTime = nil
-		self.TimeLeft.SecondsText:FontTemplate(C.Media.Font, 20, "OUTLINE")
+		s.TimeLeft.SecondsText:ClearAllPoints()
+		s.TimeLeft.SecondsText:SetPoint("BOTTOM", s, 0, -60)
+		s.TimeLeft.SecondsText.scrollTime = nil
+		s.TimeLeft.SecondsText:FontTemplate(nil, 20, "OUTLINE")
 
 		-- always stop shake animation on start
-		if self.Anim:IsPlaying() then
-			self.Anim:Stop()
+		if s.Anim:IsPlaying() then
+			s.Anim:Stop()
 		end
 	end)
 end

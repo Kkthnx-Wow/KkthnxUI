@@ -8,20 +8,22 @@ local string_len = _G.string.len
 local string_match = _G.string.match
 local string_split = _G.string.split
 local string_sub = _G.string.sub
+local tostring = _G.tostring
 
 local BNGetFriendInfoByID = _G.BNGetFriendInfoByID
 local BNGetGameAccountInfo = _G.BNGetGameAccountInfo
 local BNInviteFriend = _G.BNInviteFriend
 local CanCooperateWithGameAccount = _G.CanCooperateWithGameAccount
 local ChatEdit_ClearChat = _G.ChatEdit_ClearChat
+local hooksecurefunc = _G.hooksecurefunc
 local InviteToGroup = _G.InviteToGroup
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsModifiedClick = _G.IsModifiedClick
 local IsModifierKeyDown = _G.IsModifierKeyDown
 local LAST_ACTIVE_CHAT_EDIT_BOX = _G.LAST_ACTIVE_CHAT_EDIT_BOX
-local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS or 10
-local hooksecurefunc = _G.hooksecurefunc
+local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
+local StaticPopup_Visible = _G.StaticPopup_Visible
 
 local foundurl = false
 local function convertLink(text, value)
@@ -77,6 +79,7 @@ end
 function Module:HyperlinkShowHook(link, _, button)
 	local type, value = string_match(link, "(%a+):(.+)")
 	local hide
+
 	if button == "LeftButton" and IsModifierKeyDown() then
 		if type == "player" then
 			local unit = string_match(value, "([^:]+)")
@@ -173,7 +176,9 @@ function Module:CreateCopyURL()
 
 	local orig = ItemRefTooltip.SetHyperlink
 	function ItemRefTooltip:SetHyperlink(link, ...)
-		if link and string_sub(link, 0, 3) == "url" then return end
+		if link and string_sub(link, 0, 3) == "url" then
+			return
+		end
 
 		return orig(self, link, ...)
 	end

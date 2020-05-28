@@ -1,167 +1,108 @@
-local K = unpack(select(2,...))
-local Module = K:NewModule("Changelog")
+local K, C = unpack(select(2,...))
 
-local ChangeLogData = {
-	"Changes:",
-	"• Refactored Raidframes",
-	"• Fixed taint in actionbars",
-	"• Refactored Nameplates",
-	"• Various code cleanups",
-	"• Performance improvements",
-	"• Various libraries updated",
-	"• Stack splitter added to bags",
+local _G = _G
+local string_split = _G.string.split
+local pairs = _G.pairs
 
-	" ",
-	--"• This update consists of 34 commits, 71,060 additions and 6,656 deletions",
+local CreateFrame = _G.CreateFrame
 
-    -- Important Notes We Want The User To Know!
-    " ",
-    "Notes:",
-    "• If you are enjoying the UI do not forget to drop by our DISCORD!",
-    " ",
-    "Social URLs:",
-    "• |cff7289DADiscord:|r https://discord.gg/YUmxqQm",
-    "• |cff3b5998Facebook:|r https://www.facebook.com/kkthnxui",
-    "• |cff1da1f2Twitter:|r https://twitter.com/kkthnxui",
+local changelogData = {
+	"Added Delete Junk/Trash Button From Bags",
+	"Cleanup Castbar Channel Ticks",
+	"Cleanup Miscellaneous File Code",
+	"Cleanup Some Bags Code",
+	"Fix Tooltip Comapre With Cursor",
+	"Fixed Auto Decline Duels Module",
+	"Fixed Loading Saved Variables",
+	"Fixed NoTutorials Code Not Working",
+	"Fixed Taint With Overriding Priest Color",
+	"Install Cleanup",
+	"K.UIFrameHider Changed",
+	"Merge BlizzBugFixes Code",
+	"Move CustomSettings Into Install",
+	"Remove AutoGossip Module",
+	"Remove Chat Filter Module",
+	"Remove SetOutside and SetInside Functions",
+	"Revert Interrupt Code",
+	"Rewrote Auto Latency Compensation Code",
+	"Rewrote Short Channel Names Module",
+	"Smooth Module Rewrote For Statusbars",
+	"Unitframe Code Cleanup",
+	"Update Events For RoleCheck Function",
 }
 
-local URL_PATTERNS = {
-	"^(%a[%w+.-]+://%S+)",
-	"%f[%S](%a[%w+.-]+://%S+)",
-	"^(www%.[-%w_%%]+%.(%a%a+))",
-	"%f[%S](www%.[-%w_%%]+%.(%a%a+))",
-	"(%S+@[%w_.-%%]+%.(%a%a+))",
-}
-
-local function formatURL(url)
-	url = "|cFFFFFFFF[|Hurl:"..url.."|h"..url.."|h]|r "
-	return url
-end
-
-local function ModifiedString(string)
-	local count = string.find(string, ":")
-	local newString = string
-
-	if count then
-		local prefix = string.sub(string, 0, count)
-		local suffix = string.sub(string, count + 1)
-		local subHeader = string.find(string, "•")
-
-		if subHeader then
-			newString = tostring("|cFFFFFF00"..prefix.."|r"..suffix)
-		else
-			newString = tostring("|cff4488ff"..prefix.."|r"..suffix)
-		end
+local changelogFrame
+local function changelog()
+	if changelogFrame then
+		changelogFrame:Show()
+		return
 	end
 
-	for pattern in gmatch(string, "('.*')") do
-		newString = newString:gsub(pattern, "|cff4488ff"..pattern:gsub("'", "").."|r")
+	changelogFrame = CreateFrame("Frame", "KKUI_ChangeLog", UIParent)
+	changelogFrame:SetPoint("CENTER")
+	changelogFrame:SetFrameStrata("HIGH")
+	changelogFrame:CreateBorder()
+
+	K.CreateFontString(changelogFrame, 30, K.Title, "", true, "TOPLEFT", 10, 28)
+	K.CreateFontString(changelogFrame, 14, K.Version, "", true, "TOPLEFT", 140, 16)
+	K.CreateFontString(changelogFrame, 16, "Changelog", "", true, "TOP", 0, -10)
+	K.CreateMoverFrame(changelogFrame)
+
+	local kkthnxLogo = changelogFrame:CreateTexture(nil, "OVERLAY")
+	kkthnxLogo:SetSize(512, 256)
+	kkthnxLogo:SetBlendMode("ADD")
+	kkthnxLogo:SetAlpha(0.06)
+	kkthnxLogo:SetTexture(C["Media"].Logo)
+	kkthnxLogo:SetPoint("CENTER", changelogFrame, "CENTER", 0, 0)
+
+	local leftLine = CreateFrame("Frame", nil, changelogFrame)
+	leftLine:SetPoint("TOP", -50, -35)
+	K.CreateGF(leftLine, 100, 1, "Horizontal", 0.7, 0.7, 0.7, 0, 0.7)
+	leftLine:SetFrameStrata("HIGH")
+
+	local rightLine = CreateFrame("Frame", nil, changelogFrame)
+	rightLine:SetPoint("TOP", 50, -35)
+	K.CreateGF(rightLine, 100, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
+	rightLine:SetFrameStrata("HIGH")
+
+	local offset = 0
+	for n, t in pairs(changelogData) do
+		K.CreateFontString(changelogFrame, 12, K.InfoColor..n..": |r"..t, "", false, "TOPLEFT", 15, -(50 + offset))
+		offset = offset + 20
 	end
+	changelogFrame:SetSize(400, 60 + offset)
 
-	-- Find URLs
-	for _, v in pairs(URL_PATTERNS) do
-		if string.find(string, v) then
-			newString = gsub(string, v, formatURL("%1"))
-		end
-	end
-
-	return newString
-end
-
-local function GetChangeLogInfo(i)
-	for line, info in pairs(ChangeLogData) do
-		if line == i then
-			return info
-		end
-	end
-end
-
-function Module:CreateChangelog()
-	local frame = CreateFrame("Frame", "KkthnxUIChangeLog", UIParent)
-	frame:SetPoint("TOP", UIParent, "TOP", 0, -108)
-	frame:SetSize(480, 420)
-	frame:CreateBorder()
-	frame:SetMovable(true)
-	frame:EnableMouse(true)
-	frame:RegisterForDrag("LeftButton")
-	frame:SetScript("OnDragStart", frame.StartMoving)
-	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
-	frame:SetClampedToScreen(true)
-
-	local title = CreateFrame("Button", nil, frame)
-	title:SkinButton()
-	title:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 0, 6)
-	title:SetSize(480, 26)
-	title:SetScript("OnClick", function()
-		PlaySound(11803)
+	local close = CreateFrame("Button", nil, changelogFrame)
+	close:SkinButton()
+	close:SetSize(400, 22)
+	close:SetScript("OnClick", function()
+		changelogFrame:Hide()
 	end)
-	title.title = "I dare you to click me!!!"
-	K.AddTooltip(title, "ANCHOR_TOP")
+	close:SetFrameLevel(changelogFrame:GetFrameLevel() + 1)
+	close:SetPoint("TOPLEFT", changelogFrame, "BOTTOMLEFT", 0, -6)
 
-	title.text = title:CreateFontString(nil, "OVERLAY")
-	title.text:FontTemplate(nil, 20, "")
-	title.text:SetPoint("CENTER", title, 0, 0)
-	title.text:SetText(K.Title.." ChangeLog v"..string.format("|cff4488ff%s|r", K.Version))
+	close.Text = close:CreateFontString(nil, "OVERLAY")
+	close.Text:FontTemplate(nil, 14, "")
+	close.Text:SetPoint("CENTER", close)
+	close.Text:SetTextColor(1, 0, 0)
+	close.Text:SetText(CLOSE)
+end
 
-	frame.close = CreateFrame("Button", nil, frame)
-	frame.close:SkinButton()
-	frame.close:SetSize(480, 24)
-	frame.close:SetScript("OnClick", function()
-		frame:Hide()
-	end)
-	frame.close:SetFrameLevel(frame:GetFrameLevel() + 1)
-	frame.close:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 0, -6)
-
-	frame.close.Text = frame.close:CreateFontString(nil, "OVERLAY")
-	frame.close.Text:FontTemplate(nil, 16, "")
-	frame.close.Text:SetPoint("CENTER", frame.close)
-	frame.close.Text:SetTextColor(1, 0, 0)
-	frame.close.Text:SetText("|cffFF0000"..CLOSE.."|r")
-
-	local offset = 4
-	for i = 1, #ChangeLogData do
-		local button = CreateFrame("Frame", "Button"..i, frame)
-		button:SetSize(375, 16)
-		button:SetPoint("TOPLEFT", frame, "TOPLEFT", 5, -offset)
-
-		if i <= #ChangeLogData then
-			local string, isURL = ModifiedString(GetChangeLogInfo(i))
-
-			button.Text = button:CreateFontString(nil, "OVERLAY")
-			button.Text:FontTemplate(nil, 12, "")
-			button.Text:SetPoint("CENTER")
-			button.Text:SetPoint("LEFT", 0, 0)
-			button.Text:SetText(string)
-			button.Text:SetWordWrap(false)
-		end
-
-		offset = offset + 16
+local function compareToShow(event)
+	if KKUI_Tutorial then
+		return
 	end
-end
 
-function Module:ToggleChangeLog()
-	if not KkthnxUIChangeLog then
-		self:CreateChangelog()
+	local old1, old2 = string_split(".", KkthnxUIData.ChangelogVersion or "")
+	local cur1, cur2 = string_split(".", K.Version)
+	if old1 ~= cur1 or old2 ~= cur2 then
+		changelog()
+		KkthnxUIData.ChangelogVersion = K.Version
 	end
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF or 857)
 
-	local fadeInfo = {}
-	fadeInfo.mode = "IN"
-	fadeInfo.timeToFade = 0.5
-	fadeInfo.startAlpha = 0
-	fadeInfo.endAlpha = 1
-	K.UIFrameFade(KkthnxUIChangeLog, fadeInfo)
+	K:UnregisterEvent(event, compareToShow)
 end
+-- K:RegisterEvent("PLAYER_ENTERING_WORLD", compareToShow)
 
-function Module:CheckVersion()
-	if not KkthnxUIData[K.Realm][K.Name]["Version"] or (KkthnxUIData[K.Realm][K.Name]["Version"] and KkthnxUIData[K.Realm][K.Name]["Version"] ~= K.Version) then
-		KkthnxUIData[K.Realm][K.Name]["Version"] = K.Version
-		Module:ToggleChangeLog()
-	end
-end
-
-function Module:OnEnable()
-	K.Delay(6, function()
-		Module:CheckVersion()
-	end)
-end
+SlashCmdList["KKUI_CHANGELOG"] = changelog
+SLASH_KKUI_CHANGELOG1 = "/kcl"

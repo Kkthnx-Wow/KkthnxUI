@@ -13,7 +13,7 @@ local type = _G.type
 local borderLayer = "OVERLAY"
 local borderLevel = 1
 local borderOffset = 4
-local borderSize = 16
+local borderSize = 12
 local borderPath = C["Media"].Border
 
 -- Local cache of our borders

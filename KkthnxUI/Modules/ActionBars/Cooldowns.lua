@@ -2,10 +2,10 @@ local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Cooldowns")
 
 local _G = _G
-local math_floor = math.floor
-local pairs = pairs
-local select = select
-local string_find = string.find
+local math_floor = _G.math.floor
+local pairs = _G.pairs
+local select = _G.select
+local string_find = _G.string.find
 
 local CreateFrame = _G.CreateFrame
 local GetActionCooldown = _G.GetActionCooldown
@@ -197,9 +197,7 @@ function Module:OnEnable()
 
 	local cooldownIndex = getmetatable(ActionButton1Cooldown).__index
 	hooksecurefunc(cooldownIndex, "SetCooldown", Module.StartTimer)
-
 	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", Module.HideCooldownNumbers)
-
 	K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Module.ActionbarUpateCooldown)
 
 	if _G["ActionBarButtonEventsFrame"].frames then

@@ -7,57 +7,31 @@ local math_max = math.max
 
 local CreateFrame = _G.CreateFrame
 local GetAddOnInfo = _G.GetAddOnInfo
-local GetCurrentResolution = _G.GetCurrentResolution
 local GetCVar = _G.GetCVar
 local GetLocale = _G.GetLocale
 local GetNumAddOns = _G.GetNumAddOns
 local GetRealZoneText = _G.GetRealZoneText
-local GetScreenResolutions = _G.GetScreenResolutions
 local GetSpecialization = _G.GetSpecialization
 local GetSpecializationInfo = _G.GetSpecializationInfo
-local UnitLevel = _G.UnitLevel
-local GetAddOnEnableState = _G.GetAddOnEnableState
-
-local function IsAddOnEnabled(addon)
-	return GetAddOnEnableState(K.Name, addon) == 2
-end
 
 local function AreOtherAddOnsEnabled()
-	local name
 	for i = 1, GetNumAddOns() do
-		name = GetAddOnInfo(i)
-		if ((name ~= "KkthnxUI" and name ~= "KkthnxUI_Config") and IsAddOnEnabled(name)) then -- Loaded or load on demand
+		local name = GetAddOnInfo(i)
+		if name ~= "KkthnxUI" and name ~= "KkthnxUI_Config" and K.CheckAddOnState(name) then -- Loaded or load on demand
 			return "Yes"
 		end
 	end
 	return "No"
 end
 
-local function GetUiScale()
-	local uiScale = GetCVar("uiScale")
-	local minUiScale = "0.6"
-
-	return math_max(uiScale, minUiScale)
-end
-
 local function GetDisplayMode()
-	local window, maximize = GetCVar("gxWindow"), GetCVar("gxMaximize")
-	local displayMode
-
-	if window == "1" then
-		if maximize == "1" then
-			displayMode = "Windowed (Fullscreen)"
-		else
-			displayMode = "Windowed"
-		end
-	else
-		displayMode = "Fullscreen"
-	end
-
-	return displayMode
+	local window, maximize = GetCVar("gxWindow") == "1", GetCVar("gxMaximize") == "1"
+	return (window and maximize and "Windowed (Fullscreen)") or (window and "Windowed") or "Fullscreen"
 end
 
 local EnglishClassName = {
+	["DEATHKNIGHT"] = "Death Knight",
+	["DEMONHUNTER"] = "Demon Hunter",
 	["DRUID"] = "Druid",
 	["HUNTER"] = "Hunter",
 	["MAGE"] = "Mage",
@@ -70,112 +44,155 @@ local EnglishClassName = {
 	["WARRIOR"] = "Warrior",
 }
 
-local function GetResolution()
-	return (({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution"))
+local EnglishSpecName = {
+	[250] = "Blood",
+	[251] = "Frost",
+	[252] = "Unholy",
+	[102] = "Balance",
+	[103] = "Feral",
+	[104] = "Guardian",
+	[105] = "Restoration",
+	[253] = "Beast Mastery",
+	[254] = "Marksmanship",
+	[255] = "Survival",
+	[62] = "Arcane",
+	[63] = "Fire",
+	[64] = "Frost",
+	[268] = "Brewmaster",
+	[270] = "Mistweaver",
+	[269] = "Windwalker",
+	[65] = "Holy",
+	[66] = "Protection",
+	[70] = "Retribution",
+	[256] = "Discipline",
+	[257] = "Holy",
+	[258] = "Shadow",
+	[259] = "Assasination",
+	[260] = "Combat",
+	[261] = "Sublety",
+	[262] = "Elemental",
+	[263] = "Enhancement",
+	[264] = "Restoration",
+	[265] = "Affliction",
+	[266] = "Demonoligy",
+	[267] = "Destruction",
+	[71] = "Arms",
+	[72] = "Fury",
+	[73] = "Protection",
+	[577] = "Havoc",
+	[581] = "Vengeance",
+}
+
+local function GetSpecName()
+	return EnglishSpecName[GetSpecializationInfo(GetSpecialization())]
 end
 
-local function PixelBestSize()
-	return max(0.4, min(1.15, 768 / K.ScreenHeight))
-end
+local function CreateContentLines(num, parent, anchorTo)
+	local content = CreateFrame("Frame", nil, parent)
+	content:SetSize(260, (num * 20) + ((num - 1) * 5)) --20 height and 5 spacing
+	content:SetPoint("TOP", anchorTo, "BOTTOM",0 , -5)
 
-local function PixelClip(num)
-	local str = num and tostring(num)
-	if str and strlen(str) > 4 then
-		return tonumber(strsub(str, 0, 4))
+	for i = 1, num do
+		local line = CreateFrame("Frame", nil, content)
+		line:SetSize(260, 20)
+
+		local text = line:CreateFontString(nil, "ARTWORK", "SystemFont_Outline")
+		text:SetAllPoints()
+		text:SetJustifyH("LEFT")
+		text:SetJustifyV("MIDDLE")
+		line.Text = text
+
+		local numLine = line
+		if i == 1 then
+			numLine:SetPoint("TOP", content, "TOP")
+		else
+			numLine:SetPoint("TOP", content["Line"..(i-1)], "BOTTOM", 0, -5)
+		end
+
+		content["Line"..i] = numLine
 	end
-	return num
+
+	return content
 end
 
-function K.CreateStatusFrame()
+local function CloseClicked()
+	if K.StatusReportToggled then
+		K.StatusReportToggled = nil
+		K:ToggleOptionsUI()
+	end
+end
+
+function K:CreateStatusFrame()
 	local function CreateSection(width, height, parent, anchor1, anchorTo, anchor2, yOffset)
 		local section = CreateFrame("Frame", nil, parent)
 		section:SetSize(width, height)
 		section:SetPoint(anchor1, anchorTo, anchor2, 0, yOffset)
 
-		section.Header = CreateFrame("Frame", nil, section)
-		section.Header:SetSize(300, 30)
-		section.Header:SetPoint("TOP", section)
+		local header = CreateFrame("Frame", nil, section)
+		header:SetSize(300, 30)
+		header:SetPoint("TOP", section)
+		section.Header = header
 
-		section.Header.Text = section.Header:CreateFontString(nil, "ARTWORK", "SystemFont_Outline")
-		section.Header.Text:SetPoint("TOP")
-		section.Header.Text:SetPoint("BOTTOM")
-		section.Header.Text:SetJustifyH("CENTER")
-		section.Header.Text:SetJustifyV("MIDDLE")
-		local font, height, flags = section.Header.Text:GetFont()
-		section.Header.Text:SetFont(font, height * 1.3, flags)
+		local text = section.Header:CreateFontString(nil, "ARTWORK", "SystemFont_Outline")
+		text:SetPoint("TOP")
+		text:SetPoint("BOTTOM")
+		text:SetJustifyH("CENTER")
+		text:SetJustifyV("MIDDLE")
 
-		section.Header.LeftDivider = section.Header:CreateTexture(nil, "ARTWORK")
-		section.Header.LeftDivider:SetHeight(8)
-		section.Header.LeftDivider:SetPoint("LEFT", section.Header, "LEFT", 5, 0)
-		section.Header.LeftDivider:SetPoint("RIGHT", section.Header.Text, "LEFT", -5, 0)
-		section.Header.LeftDivider:SetTexture("Interface\\Tooltips\\UI-Tooltip-Border")
-		section.Header.LeftDivider:SetTexCoord(0.81, 0.94, 0.5, 1)
+		local font, fontHeight, fontFlags = text:GetFont()
+		text:FontTemplate(font, fontHeight * 1.3, fontFlags)
+		section.Header.Text = text
 
-		section.Header.RightDivider = section.Header:CreateTexture(nil, "ARTWORK")
-		section.Header.RightDivider:SetHeight(8)
-		section.Header.RightDivider:SetPoint("RIGHT", section.Header, "RIGHT", -5, 0)
-		section.Header.RightDivider:SetPoint("LEFT", section.Header.Text, "RIGHT", 5, 0)
-		section.Header.RightDivider:SetTexture("Interface\\Tooltips\\UI-Tooltip-Border")
-		section.Header.RightDivider:SetTexCoord(0.81, 0.94, 0.5, 1)
+		local leftDivider = section.Header:CreateTexture(nil, "ARTWORK")
+		leftDivider:SetHeight(6)
+		leftDivider:SetPoint("LEFT", section.Header, "LEFT", 5, 0)
+		leftDivider:SetPoint("RIGHT", section.Header.Text, "LEFT", -5, 0)
+		leftDivider:SetTexture("Interface\\Tooltips\\UI-Tooltip-Border")
+		leftDivider:SetTexCoord(0.81, 0.94, 0.5, 1)
+		section.Header.LeftDivider = leftDivider
+
+		local rightDivider = section.Header:CreateTexture(nil, "ARTWORK")
+		rightDivider:SetHeight(6)
+		rightDivider:SetPoint("RIGHT", section.Header, "RIGHT", -5, 0)
+		rightDivider:SetPoint("LEFT", section.Header.Text, "RIGHT", 5, 0)
+		rightDivider:SetTexture("Interface\\Tooltips\\UI-Tooltip-Border")
+		rightDivider:SetTexCoord(0.81, 0.94, 0.5, 1)
+		section.Header.RightDivider = rightDivider
 
 		return section
 	end
 
-	local function CreateContentLines(num, parent, anchorTo)
-		local content = CreateFrame("Frame", nil, parent)
-		content:SetSize(260, (num * 20) + ((num - 1) * 5)) -- 20 height and 5 spacing
-		content:SetPoint("TOP", anchorTo, "BOTTOM", 0, -5)
-
-		for i = 1, num do
-			local line = CreateFrame("Frame", nil, content)
-			line:SetSize(260, 20)
-			line.Text = line:CreateFontString(nil, "ARTWORK", "SystemFont_Outline")
-			line.Text:SetAllPoints()
-			line.Text:SetJustifyH("LEFT")
-			line.Text:SetJustifyV("MIDDLE")
-			content["Line" .. i] = line
-
-			if i == 1 then
-				content["Line" .. i]:SetPoint("TOP", content, "TOP")
-			else
-				content["Line" .. i]:SetPoint("TOP", content["Line" .. (i - 1)], "BOTTOM", 0, -5)
-			end
-		end
-
-		return content
-	end
-
 	--Main frame
-	local StatusFrame = CreateFrame("Frame", "KkthnxUIStatusReport", UIParent)
+	local StatusFrame = CreateFrame("Frame", "KKUI_StatusReport", UIParent)
 	StatusFrame:SetSize(320, 555)
 	StatusFrame:SetPoint("CENTER", UIParent, "CENTER")
 	StatusFrame:SetFrameStrata("HIGH")
 	StatusFrame:CreateBorder()
-	StatusFrame:SetShown(false)
 	StatusFrame:SetMovable(true)
+	StatusFrame:Hide()
 
-	-- Close Button
+	--Close button and script to retoggle the options.
 	StatusFrame.CloseButton = CreateFrame("Button", nil, StatusFrame, "UIPanelCloseButton")
 	StatusFrame.CloseButton:SetPoint("TOPRIGHT", 0, 1)
 	StatusFrame.CloseButton:SkinCloseButton()
-	StatusFrame.CloseButton:RegisterForClicks("AnyUp")
-	StatusFrame.CloseButton:SetScript("OnClick", function(self)
-		self:GetParent():Hide()
-	end)
+	StatusFrame.CloseButton:HookScript("OnClick", CloseClicked)
 
-	-- Title logo (drag to move frame)
-	StatusFrame.TitleLogoFrame = CreateFrame("Frame", nil, StatusFrame, "TitleDragAreaTemplate")
-	StatusFrame.TitleLogoFrame:SetSize(128, 64)
-	StatusFrame.TitleLogoFrame:SetPoint("CENTER", StatusFrame, "TOP", 0, 0)
-	StatusFrame.TitleLogoFrame.Texture = StatusFrame.TitleLogoFrame:CreateTexture(nil, "ARTWORK")
-	StatusFrame.TitleLogoFrame.Texture:SetTexture(C["Media"].Logo)
-	StatusFrame.TitleLogoFrame.Texture:SetAllPoints()
+	--Title logo (drag to move frame)
+	local titleLogoFrame = CreateFrame("Frame", nil, StatusFrame, "TitleDragAreaTemplate")
+	titleLogoFrame:SetPoint("CENTER", StatusFrame, "CENTER")
+	titleLogoFrame:SetSize(512, 256)
+	StatusFrame.TitleLogoFrame = titleLogoFrame
 
-	StatusFrame.TitleLogoFrame.Shade = StatusFrame.TitleLogoFrame:CreateTexture(nil, "BACKGROUND")
-	StatusFrame.TitleLogoFrame.Shade:SetTexture(C["Media"].Shader)
-	StatusFrame.TitleLogoFrame.Shade:SetPoint("TOPLEFT", StatusFrame.TitleLogoFrame.Texture, "TOPLEFT", -6, 6)
-	StatusFrame.TitleLogoFrame.Shade:SetPoint("BOTTOMRIGHT", StatusFrame.TitleLogoFrame.Texture, "BOTTOMRIGHT", 6, -6)
-	StatusFrame.TitleLogoFrame.Shade:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4] )
+	K.CreateFontString(StatusFrame, 30, K.Title, "", true, "TOPLEFT", 10, 28)
+	K.CreateFontString(StatusFrame, 16, "Status Report", "", true, "TOPLEFT", 140, 17)
+
+	local titleTexture = StatusFrame.TitleLogoFrame:CreateTexture(nil, "ARTWORK")
+	titleTexture:SetPoint("CENTER", titleLogoFrame, "CENTER")
+	titleTexture:SetTexture(C["Media"].Logo)
+	titleTexture:SetSize(512, 256)
+	titleTexture:SetBlendMode("ADD")
+	titleTexture:SetAlpha(0.06)
+	titleLogoFrame.Texture = titleTexture
 
 	--Sections
 	StatusFrame.Section1 = CreateSection(300, 125, StatusFrame, "TOP", StatusFrame, "TOP", -30)
@@ -184,10 +201,10 @@ function K.CreateStatusFrame()
 	StatusFrame.Section4 = CreateSection(300, 60, StatusFrame, "TOP", StatusFrame.Section3, "BOTTOM", 0)
 
 	--Section headers
-	StatusFrame.Section1.Header.Text:SetText("|cff4488ffAddOn Info|r")
-	StatusFrame.Section2.Header.Text:SetText("|cff4488ffWoW Info|r")
-	StatusFrame.Section3.Header.Text:SetText("|cff4488ffCharacter Info|r")
-	StatusFrame.Section4.Header.Text:SetText("|cff4488ffReport To|r")
+	StatusFrame.Section1.Header.Text:SetText("|cff1784d1AddOn Info|r")
+	StatusFrame.Section2.Header.Text:SetText("|cff1784d1WoW Info|r")
+	StatusFrame.Section3.Header.Text:SetText("|cff1784d1Character Info|r")
+	StatusFrame.Section4.Header.Text:SetText("|cff1784d1Export To|r")
 
 	--Section content
 	StatusFrame.Section1.Content = CreateContentLines(4, StatusFrame.Section1, StatusFrame.Section1.Header)
@@ -199,62 +216,62 @@ function K.CreateStatusFrame()
 
 	--Content lines
 	StatusFrame.Section1.Content.Line1.Text:SetFormattedText("Version of KkthnxUI: |cff4beb2c%s|r", K.Version)
-	StatusFrame.Section1.Content.Line2.Text:SetFormattedText("Other AddOns Enabled: |cff4beb2c%s|r", AreOtherAddOnsEnabled() )
-	StatusFrame.Section1.Content.Line3.Text:SetFormattedText("Scale: |cff4beb2c%s|r", (C["General"].UIScale))
-	StatusFrame.Section1.Content.Line3.Text:SetFormattedText("Recommended Scale: |cff4beb2c%s|r", PixelClip(PixelBestSize()))
-	StatusFrame.Section1.Content.Line4.Text:SetFormattedText("UI Scale Is: |cff4beb2c%s|r", GetUiScale())
-
+	StatusFrame.Section1.Content.Line2.Text:SetFormattedText("Other AddOns Enabled: |cff4beb2c%s|r", AreOtherAddOnsEnabled())
+	StatusFrame.Section1.Content.Line3.Text:SetFormattedText("Recommended Scale: |cff4beb2c%s|r", math_max(0.4, math.min(1.15, 768 / K.ScreenHeight)))
+	StatusFrame.Section1.Content.Line4.Text:SetFormattedText("UI Scale Is: |cff4beb2c%s|r", C["General"].UIScale)
 	StatusFrame.Section2.Content.Line1.Text:SetFormattedText("Version of WoW: |cff4beb2c%s (build %s)|r", K.WowPatch, K.WowBuild)
 	StatusFrame.Section2.Content.Line2.Text:SetFormattedText("Client Language: |cff4beb2c%s|r", GetLocale())
 	StatusFrame.Section2.Content.Line3.Text:SetFormattedText("Display Mode: |cff4beb2c%s|r", GetDisplayMode())
-	StatusFrame.Section2.Content.Line4.Text:SetFormattedText("Resolution: |cff4beb2c%s|r", GetResolution())
-	StatusFrame.Section2.Content.Line5.Text:SetFormattedText("Using Mac Client: |cff4beb2c%s|r", (IsMacClient() == true and "Yes" or "No") )
-	StatusFrame.Section3.Content.Line1.Text:SetFormattedText("Faction: |cff4beb2c%s|r", select(2, UnitFactionGroup("player")) )
+	StatusFrame.Section2.Content.Line4.Text:SetFormattedText("Resolution: |cff4beb2c%s|r", K.Resolution)
+	StatusFrame.Section2.Content.Line5.Text:SetFormattedText("Using Mac Client: |cff4beb2c%s|r", (IsMacClient() == true and "Yes" or "No"))
+	StatusFrame.Section3.Content.Line1.Text:SetFormattedText("Faction: |cff4beb2c%s|r", K.Faction)
 	StatusFrame.Section3.Content.Line2.Text:SetFormattedText("Race: |cff4beb2c%s|r", K.Race)
 	StatusFrame.Section3.Content.Line3.Text:SetFormattedText("Class: |cff4beb2c%s|r", EnglishClassName[K.Class])
-	StatusFrame.Section3.Content.Line4.Text:SetFormattedText("Level: |cff4beb2c%s|r", UnitLevel("player"))
-	StatusFrame.Section3.Content.Line5.Text:SetFormattedText("Zone: |cff4beb2c%s|r", GetRealZoneText())
+	StatusFrame.Section3.Content.Line4.Text:SetFormattedText("Specialization: |cff4beb2c%s|r", GetSpecName())
+	StatusFrame.Section3.Content.Line5.Text:SetFormattedText("Level: |cff4beb2c%s|r", K.Level)
+	StatusFrame.Section3.Content.Line6.Text:SetFormattedText("Zone: |cff4beb2c%s|r", GetRealZoneText())
 
 	--Export buttons
 	StatusFrame.Section4.Content.Button1 = CreateFrame("Button", nil, StatusFrame.Section4.Content, "UIPanelButtonTemplate")
-	StatusFrame.Section4.Content.Button1:SetSize(100, 23)
+	StatusFrame.Section4.Content.Button1:SetSize(100, 25)
 	StatusFrame.Section4.Content.Button1:SetPoint("LEFT", StatusFrame.Section4.Content, "LEFT")
-	StatusFrame.Section4.Content.Button1:SetText("|cff7289DADiscord")
-	StatusFrame.Section4.Content.Button1:SkinButton()
-	StatusFrame.Section4.Content.Button1:SetScript("OnClick", function()
-		K.StaticPopup_Show("DISCORD_EDITBOX", nil, nil, "https://discord.gg/YUmxqQm")
-	end)
-
+	StatusFrame.Section4.Content.Button1:SetText("Not")
+	StatusFrame.Section4.Content.Button1:SetButtonState("DISABLED")
 	StatusFrame.Section4.Content.Button2 = CreateFrame("Button", nil, StatusFrame.Section4.Content, "UIPanelButtonTemplate")
-	StatusFrame.Section4.Content.Button2:SetSize(100, 23)
+	StatusFrame.Section4.Content.Button2:SetSize(100, 25)
 	StatusFrame.Section4.Content.Button2:SetPoint("RIGHT", StatusFrame.Section4.Content, "RIGHT")
-	StatusFrame.Section4.Content.Button2:SetText("|cff6e5494Github")
+	StatusFrame.Section4.Content.Button2:SetText("Implemented")
+	StatusFrame.Section4.Content.Button2:SetButtonState("DISABLED")
+	StatusFrame.Section4.Content.Button1:SkinButton()
 	StatusFrame.Section4.Content.Button2:SkinButton()
-	StatusFrame.Section4.Content.Button2:SetScript("OnClick", function()
-		K.StaticPopup_Show("GITHUB_EDITBOX", nil, nil, "https://github.com/Kkthnx/KkthnxUI/issues")
-	end)
 
-	K.StatusFrame = StatusFrame
+	return StatusFrame
 end
 
 local function UpdateDynamicValues()
-	K.StatusFrame.Section2.Content.Line3.Text:SetFormattedText("Display Mode: |cff4beb2c%s|r", GetDisplayMode())
-	K.StatusFrame.Section2.Content.Line4.Text:SetFormattedText("Resolution: |cff4beb2c%s|r", GetResolution())
-	K.StatusFrame.Section3.Content.Line5.Text:SetFormattedText("Level: |cff4beb2c%s|r", UnitLevel("player"))
-	K.StatusFrame.Section3.Content.Line6.Text:SetFormattedText("Zone: |cff4beb2c%s|r", GetRealZoneText())
+	local StatusFrame = K.StatusFrame
+
+	local Section2 = StatusFrame.Section2
+	Section2.Content.Line3.Text:SetFormattedText("Display Mode: |cff4beb2c%s|r", GetDisplayMode())
+	Section2.Content.Line4.Text:SetFormattedText("Resolution: |cff4beb2c%s|r", K.Resolution)
+
+	local Section3 = StatusFrame.Section3
+	Section3.Content.Line4.Text:SetFormattedText("Specialization: |cff4beb2c%s|r", GetSpecName())
+	Section3.Content.Line5.Text:SetFormattedText("Level: |cff4beb2c%s|r", K.Level)
+	Section3.Content.Line6.Text:SetFormattedText("Zone: |cff4beb2c%s|r", GetRealZoneText())
 end
 
 _G.SlashCmdList["KKUI_STATUSREPORT"] = function()
 	if not K.StatusFrame then
-		K.CreateStatusFrame()
+		K.StatusFrame = K:CreateStatusFrame()
 	end
 
 	if not K.StatusFrame:IsShown() then
 		UpdateDynamicValues()
 		K.StatusFrame:Raise() -- Set framelevel above everything else
-		K.StatusFrame:SetShown(true)
+		K.StatusFrame:Show()
 	else
-		K.StatusFrame:SetShown(false)
+		K.StatusFrame:Hide()
 	end
 end
 _G.SLASH_KKUI_STATUSREPORT1 = "/kstatus"

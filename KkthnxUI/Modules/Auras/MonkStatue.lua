@@ -1,5 +1,17 @@
 local K, C = unpack(select(2, ...))
-local A = K:GetModule("Auras")
+local Module = K:GetModule("Auras")
+
+local _G = _G
+local unpack = _G.unpack
+
+local CreateFrame = _G.CreateFrame
+local GameTooltip = _G.GameTooltip
+local GetSpecialization = _G.GetSpecialization
+local GetSpellInfo = _G.GetSpellInfo
+local GetSpellTexture = _G.GetSpellTexture
+local GetTotemInfo = _G.GetTotemInfo
+local IsPlayerSpell = _G.IsPlayerSpell
+local UIParent = _G.UIParent
 
 -- Monk Statue
 local bu
@@ -10,16 +22,18 @@ local function StatueGo()
 	end
 
 	bu = CreateFrame("Button", nil, UIParent, "SecureActionButtonTemplate")
-	bu:SetSize(30, 30)
+	bu:SetSize(44, 44)
 
-    bu.CD = CreateFrame("Cooldown", nil, bu, "CooldownFrameTemplate")
+	bu.CD = CreateFrame("Cooldown", nil, bu, "CooldownFrameTemplate")
 	bu.CD:SetAllPoints()
 	bu.CD:SetReverse(true)
 
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 	bu.Icon:SetAllPoints()
 	bu.Icon:SetTexCoord(unpack(K.TexCoords))
+
 	bu:CreateBorder()
+	--bu:CreateInnerShadow()
 
 	bu:RegisterForClicks("AnyUp")
 	bu:SetAttribute("type1", "macro")
@@ -37,7 +51,7 @@ local function StatueGo()
 	end)
 	bu:SetScript("OnLeave", K.HideTooltip)
 
-	K.Mover(bu, "Statue", "Statue", {"TOPRIGHT", UIParent, "BOTTOM", -460, 300}, 30, 30)
+	K.Mover(bu, "Statue", "Statue", {"TOPRIGHT", UIParent, "BOTTOM", -460, 300}, 44, 44)
 end
 
 -- localizaed
@@ -46,7 +60,7 @@ local serpentStatueTex = GetSpellTexture(115313)
 local oxStatue = GetSpellInfo(115315)
 local oxStatueTex = GetSpellTexture(115315)
 
-function A:UpdateStatue()
+function Module:UpdateStatue()
 	local haveTotem, _, start, dur = GetTotemInfo(1)
 	if haveTotem then
 		bu.CD:SetCooldown(start, dur)
@@ -54,7 +68,7 @@ function A:UpdateStatue()
 		bu:SetAlpha(1)
 	else
 		bu.CD:Hide()
-		bu:SetAlpha(.3)
+		bu:SetAlpha(0.3)
 	end
 end
 
@@ -74,12 +88,12 @@ local function checkSpec(event)
 		end
 
 		bu:SetAttribute("macrotext1", "/tar "..statue)
-		K:RegisterEvent("PLAYER_TOTEM_UPDATE", A.UpdateStatue)
+		K:RegisterEvent("PLAYER_TOTEM_UPDATE", Module.UpdateStatue)
 	else
 		if bu then
 			bu:Hide()
 		end
-		K:UnregisterEvent("PLAYER_TOTEM_UPDATE", A.UpdateStatue)
+		K:UnregisterEvent("PLAYER_TOTEM_UPDATE", Module.UpdateStatue)
 	end
 
 	if event == "PLAYER_ENTERING_WORLD" then
@@ -87,7 +101,7 @@ local function checkSpec(event)
 	end
 end
 
-function A:CreateMonkStatue()
+function Module:CreateMonkStatue()
 	if not C["Auras"].Statue then
 		return
 	end

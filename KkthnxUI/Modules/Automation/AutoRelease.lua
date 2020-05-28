@@ -36,9 +36,9 @@ end
 
 
 function Module:CreateAutoRelease()
-	if C["Automation"].AutoRelease ~= true then
-		return
+	if C["Automation"].AutoRelease == true then
+		K:RegisterEvent("PLAYER_DEAD", PLAYER_DEAD)
+	else
+		K:UnregisterEvent("PLAYER_DEAD", PLAYER_DEAD)
 	end
-
-	K:RegisterEvent("PLAYER_DEAD", PLAYER_DEAD)
 end

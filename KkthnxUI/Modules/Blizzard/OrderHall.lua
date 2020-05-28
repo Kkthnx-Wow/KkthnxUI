@@ -26,7 +26,7 @@ hall:CreateBorder()
 K.CreateMoverFrame(hall)
 hall.Icon = hall:CreateTexture(nil, "ARTWORK")
 hall.Icon:SetAllPoints()
-if C["General"].PortraitStyle.Value == "NewClassPortraits" then
+if C["Unitframe"].PortraitStyle.Value == "NewClassPortraits" then
 	local betterClassIcons = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\BetterClassIcons\\%s.tga"
 	hall.Icon:SetTexture(betterClassIcons:format(K.Class))
 	hall.Icon:SetTexCoord(0.15, 0.85, 0.15, 0.85)

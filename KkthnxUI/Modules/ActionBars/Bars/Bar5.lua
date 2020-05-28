@@ -16,16 +16,17 @@ function Module:CreateBar5()
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
 	local layout = C["ActionBar"].Layout.Value
+	local buttonSize = C["ActionBar"].RightButtonSize
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KkthnxUI_ActionBar5", UIParent, "SecureHandlerStateTemplate")
 	if layout == "Four Stacked" then
-		frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
-		frame:SetHeight(FilterConfig.size + 2 * padding)
+		frame:SetWidth(num * buttonSize + (num - 1) * margin + 2 * padding)
+		frame:SetHeight(buttonSize + 2 * padding)
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 124}
 	else
-		frame:SetWidth(FilterConfig.size + 2  *  padding)
-		frame:SetHeight(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
+		frame:SetWidth(buttonSize + 2  *  padding)
+		frame:SetHeight(num * buttonSize + (num - 1) * margin + 2 * padding)
 		frame.Pos = {"RIGHT", UIParent, "RIGHT", -(frame:GetWidth() + 10), 0}
 	end
 
@@ -36,7 +37,7 @@ function Module:CreateBar5()
 	for i = 1, num do
 		local button = _G["MultiBarLeftButton"..i]
 		table_insert(buttonList, button) -- Add The Button Object To The List
-		button:SetSize(FilterConfig.size, FilterConfig.size)
+		button:SetSize(buttonSize, buttonSize)
 		button:ClearAllPoints()
 		if layout == "Four Stacked" then
 			if i == 1 then
@@ -60,7 +61,7 @@ function Module:CreateBar5()
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
 	if K.ActionBars.userPlaced then
-		K.Mover(frame, SHOW_MULTIBAR4_TEXT, "Bar5", frame.Pos)
+		frame.mover = K.Mover(frame, SHOW_MULTIBAR4_TEXT, "Bar5", frame.Pos)
 	end
 
 	if C["ActionBar"].FadeRightBar2 and FilterConfig.fader then

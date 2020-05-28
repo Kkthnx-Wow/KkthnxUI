@@ -89,13 +89,16 @@ function Module:CreateRaidMarker()
 	marker:SetFrameStrata("DIALOG")
 
 	for i = 1, 8 do
-		local button = CreateFrame("Button", "RaidMarkIconButton" .. i, marker)
+		local button = CreateFrame("Button", "RaidMarkIconButton"..i, marker)
 		button:SetSize(40, 40)
 		button:SetID(i)
-		button.Texture = button:CreateTexture(button:GetName() .. "NormalTexture", "ARTWORK")
+
+		button.Texture = button:CreateTexture(button:GetName().."NormalTexture", "ARTWORK")
 		button.Texture:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\UI-RaidTargetingIcons]])
 		button.Texture:SetAllPoints()
+
 		SetRaidTargetIconTexture(button.Texture, i)
+
 		button:RegisterForClicks("LeftbuttonUp", "RightbuttonUp")
 		button:SetScript("OnClick", Module.RaidMarkButton_OnClick)
 		button:SetScript("OnEnter", Module.RaidMarkButton_OnEnter)

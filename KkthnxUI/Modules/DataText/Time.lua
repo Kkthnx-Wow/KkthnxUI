@@ -1,18 +1,15 @@
 local K, C, L = unpack(select(2, ...))
-if C["DataText"].Time ~= true then
-	return
-end
-
 local Module = K:GetModule("Infobar")
-local ModuleInfo = Module:RegisterInfobar("KkthnxUITime", {"BOTTOM", Minimap, "BOTTOM", 0, 2})
 
 local _G = _G
 local date = _G.date
+local math_floor = _G.math.floor
+local mod = _G.mod
+local pairs = _G.pairs
 local string_find = _G.string.find
 local string_format = _G.string.format
 local time = _G.time
-local mod = _G.mod
-local math_floor = _G.math.floor
+local tonumber = _G.tonumber
 
 local C_AreaPoiInfo_GetAreaPOISecondsLeft = _G.C_AreaPoiInfo.GetAreaPOISecondsLeft
 local C_Calendar_GetDate = _G.C_Calendar.GetDate
@@ -34,13 +31,14 @@ local GetSavedInstanceInfo = _G.GetSavedInstanceInfo
 local GetSavedWorldBossInfo = _G.GetSavedWorldBossInfo
 local InCombatLockdown = _G.InCombatLockdown
 local IsQuestFlaggedCompleted = _G.IsQuestFlaggedCompleted
+local RequestRaidInfo = _G.RequestRaidInfo
 local SecondsToTime = _G.SecondsToTime
 
 -- Data
 local timeBonusList = {
-	52834, 52838,	-- Gold
-	52835, 52839,	-- Honor
-	52837, 52840,	-- Resources
+	52834, 52838, -- Gold
+	52835, 52839, -- Honor
+	52837, 52840, -- Resources
 }
 
 local timeQuestList = {
@@ -67,8 +65,8 @@ local bfaZoneTime = {
 }
 
 local invIndex = {
-	[1] = {title = "Legion Invasion", duration = 66600, maps = {630, 641, 650, 634}, timeTable = {}, baseTime = legionZoneTime[region] or legionZoneTime["CN"]}, -- need reviewed
-	[2] = {title = "BFA Invasion", duration = 68400, maps = {862, 863, 864, 896, 942, 895}, timeTable = {4, 1, 6, 2, 5, 3}, baseTime = bfaZoneTime[region] or bfaZoneTime["CN"]},
+	[1] = {title = L["Legion Invasion"], duration = 66600, maps = {630, 641, 650, 634}, timeTable = {}, baseTime = legionZoneTime[region] or legionZoneTime["CN"]}, -- need reviewed
+	[2] = {title = L["BFA Invasion"], duration = 68400, maps = {862, 863, 864, 896, 942, 895}, timeTable = {4, 1, 6, 2, 5, 3}, baseTime = bfaZoneTime[region] or bfaZoneTime["CN"]},
 }
 
 local mapAreaPoiIDs = {
@@ -88,17 +86,23 @@ local function updateTimerFormat(color, hour, minute)
 	if GetCVarBool("timeMgrUseMilitaryTime") then
 		return string_format(color..TIMEMANAGER_TICKER_24HOUR, hour, minute)
 	else
-		local timerUnit = K.MyClassColor..(hour < 12 and "am" or "pm")
+		local timerUnit = K.MyClassColor..(hour < 12 and " AM" or " PM")
 
-		if hour > 12 then
-			hour = hour - 12
+		if hour >= 12 then
+			if hour > 12 then
+				hour = hour - 12
+			end
+		else
+			if hour == 0 then
+				hour = 12
+			end
 		end
 
 		return string_format(color..TIMEMANAGER_TICKER_12HOUR..timerUnit, hour, minute)
 	end
 end
 
-ModuleInfo.onUpdate = function(self, elapsed)
+function Module:OnUpdate(elapsed)
 	self.timer = (self.timer or 3) + elapsed
 	if self.timer > 5 then
 		local color = C_Calendar_GetNumPendingInvites() > 0 and "|cffFF0000" or ""
@@ -109,7 +113,7 @@ ModuleInfo.onUpdate = function(self, elapsed)
 		else
 			hour, minute = GetGameTime()
 		end
-		self.text:SetText(updateTimerFormat(color, hour, minute))
+		Module.TimeFont:SetText(updateTimerFormat(color, hour, minute))
 
 		self.timer = 0
 	end
@@ -154,6 +158,7 @@ local function getInvasionInfo(mapID)
 	local areaPoiID = mapAreaPoiIDs[mapID]
 	local seconds = C_AreaPoiInfo_GetAreaPOISecondsLeft(areaPoiID)
 	local mapInfo = C_Map_GetMapInfo(mapID)
+
 	return seconds, mapInfo.name
 end
 
@@ -199,7 +204,7 @@ local function addTitle(text)
 	end
 end
 
-ModuleInfo.onEnter = function(self)
+function Module:OnEnter()
 	RequestRaidInfo()
 
 	local r, g, b
@@ -211,8 +216,8 @@ ModuleInfo.onEnter = function(self)
 	local w, m, d, y = today.weekday, today.month, today.monthDay, today.year
 	GameTooltip:AddLine(string_format(FULLDATE, CALENDAR_WEEKDAY_NAMES[w], CALENDAR_FULLDATE_MONTH_NAMES[m], d, y), 0, 0.6, 1)
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine("Local Time", GameTime_GetLocalTime(true), nil, nil, nil, 1, 1, 1)
-	GameTooltip:AddDoubleLine("Realm Time", GameTime_GetGameTime(true), nil, nil, nil, 1, 1, 1)
+	GameTooltip:AddDoubleLine("Local Time", GameTime_GetLocalTime(true), nil, nil, nil, 192/255, 192/255, 192/255)
+	GameTooltip:AddDoubleLine("Realm Time", GameTime_GetGameTime(true), nil, nil, nil, 192/255, 192/255, 192/255)
 
 
 	-- World bosses
@@ -220,8 +225,8 @@ ModuleInfo.onEnter = function(self)
 	for i = 1, GetNumSavedWorldBosses() do
 		local name, id, reset = GetSavedWorldBossInfo(i)
 		if not (id == 11 or id == 12 or id == 13) then
-			addTitle(RAID_INFO_WORLD_BOSS)
-			GameTooltip:AddDoubleLine(name, SecondsToTime(reset, true, nil, 3), 1, 1, 1, 1, 1, 1)
+			addTitle(WORLD_BOSSES_TEXT)
+			GameTooltip:AddDoubleLine(name, SecondsToTime(reset, true, nil, 3), 1, 1, 1, 192/255, 192/255, 192/255)
 		end
 	end
 
@@ -230,11 +235,11 @@ ModuleInfo.onEnter = function(self)
 	for i = 1, GetNumSavedInstances() do
 		local name, _, reset, diff, locked, extended = GetSavedInstanceInfo(i)
 		if diff == 23 and (locked or extended) then
-			addTitle(DUNGEON_DIFFICULTY3..DUNGEONS)
+			addTitle("Saved Dungeon(s)")
 			if extended then
 				r, g, b = 0.3, 1, 0.3
 			else
-				r, g, b = 1, 1, 1
+				r, g, b = 192/255, 192/255, 192/255
 			end
 
 			GameTooltip:AddDoubleLine(name, SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
@@ -246,11 +251,11 @@ ModuleInfo.onEnter = function(self)
 	for i = 1, GetNumSavedInstances() do
 		local name, _, reset, _, locked, extended, _, isRaid, _, diffName = GetSavedInstanceInfo(i)
 		if isRaid and (locked or extended) then
-			addTitle(RAID_INFO)
+			addTitle(L["Saved Raid(s)"])
 			if extended then
 				r,g,b = 0.3, 1, 0.3
 			else
-				r,g,b = 1, 1, 1
+				r,g,b = 192/255, 192/255, 192/255
 			end
 
 			GameTooltip:AddDoubleLine(name.." - "..diffName, SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
@@ -274,21 +279,21 @@ ModuleInfo.onEnter = function(self)
 			r,g,b = 0, 1, 0
 		end
 
-		GameTooltip:AddDoubleLine(bonusName, count.."/"..maxCoins, 1,1,1, r,g,b)
+		GameTooltip:AddDoubleLine(bonusName, count.."/"..maxCoins, 1,1,1, r, g, b)
 	end
 
-	-- local iwqID = C_IslandsQueue_GetIslandsWeeklyQuestID()
-	-- if iwqID and UnitLevel("player") == 120 then
-	-- 	addTitle(QUESTS_LABEL)
-	-- 	if IsQuestFlaggedCompleted(iwqID) then
-	-- 		GameTooltip:AddDoubleLine(ISLANDS_HEADER, QUEST_COMPLETE, 1,1,1, 1,0,0)
-	-- 	else
-	-- 		local cur, max = select(4, GetQuestObjectiveInfo(iwqID, 1, false))
-	-- 		local stautsText = cur.."/"..max
-	-- 		if not cur or not max then stautsText = LFG_LIST_LOADING end
-	-- 		GameTooltip:AddDoubleLine(ISLANDS_HEADER, stautsText, 1,1,1, 0,1,0)
-	-- 	end
-	-- end
+	local iwqID = C_IslandsQueue.GetIslandsWeeklyQuestID()
+	if iwqID and UnitLevel("player") == 120 then
+		addTitle(QUESTS_LABEL)
+		if IsQuestFlaggedCompleted(iwqID) then
+			GameTooltip:AddDoubleLine(ISLANDS_HEADER, QUEST_COMPLETE, 1,1,1, 1,0,0)
+		else
+			local cur, max = select(4, GetQuestObjectiveInfo(iwqID, 1, false))
+			local stautsText = cur.."/"..max
+			if not cur or not max then stautsText = LFG_LIST_LOADING end
+			GameTooltip:AddDoubleLine(ISLANDS_HEADER, stautsText, 1,1,1, 0,1,0)
+		end
+	end
 
 	for _, v in pairs(timeQuestList) do
 		if v.name and IsQuestFlaggedCompleted(v.id) then
@@ -313,11 +318,11 @@ ModuleInfo.onEnter = function(self)
 				r, g, b = 0, 1, 0
 			end
 
-			GameTooltip:AddDoubleLine("Current Invasion "..zoneName, string_format("%.2d:%.2d", timeLeft / 60, timeLeft % 60), 1, 1, 1, r, g, b)
+			GameTooltip:AddDoubleLine(L["Current Invasion"]..zoneName, string_format("%.2d:%.2d", timeLeft / 60, timeLeft % 60), 1, 1, 1, r, g, b)
 		end
 
 		local nextLocation = GetNextLocation(nextTime, index)
-		GameTooltip:AddDoubleLine("Next Invasion "..nextLocation, date("%m/%d %H:%M", nextTime), 1, 1, 1, 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Next Invasion"]..nextLocation, date("%m/%d %H:%M", nextTime), 1, 1, 1, 192/255, 192/255, 192/255)
 	end
 
 	-- Help Info
@@ -327,9 +332,11 @@ ModuleInfo.onEnter = function(self)
 	GameTooltip:Show()
 end
 
-ModuleInfo.onLeave = K.HideTooltip
+function Module:OnLeave()
+	GameTooltip:Hide()
+end
 
-ModuleInfo.onMouseUp = function(_, btn)
+function Module:OnMouseUp(_, btn)
 	if btn == "RightButton" then
 		ToggleTimeManager()
 	else
@@ -337,6 +344,35 @@ ModuleInfo.onMouseUp = function(_, btn)
 			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
 			return
 		end
+
 		ToggleCalendar()
 	end
+end
+
+function Module:CreateTimeDataText()
+	if not C["DataText"].Time then
+		return
+	end
+
+	Module.TimeFrame = CreateFrame("Frame", "KKUI_TimeDataText", UIParent)
+
+	local TimeFontLocation
+	Module.TimeFont = Module.TimeFrame:CreateFontString("OVERLAY")
+	Module.TimeFont:FontTemplate(nil, 13)
+	Module.TimeFont:ClearAllPoints()
+
+	if C["General"].IamSophia then
+		TimeFontLocation = {"BOTTOM", Minimap, "BOTTOM", 0, 20}
+	else
+		TimeFontLocation = {"BOTTOM", Minimap, "BOTTOM", 0, 2}
+	end
+
+	Module.TimeFont:SetPoint(unpack(TimeFontLocation))
+
+	Module.TimeFrame:SetAllPoints(Module.TimeFont)
+
+	Module.TimeFrame:SetScript("OnUpdate", Module.OnUpdate)
+	Module.TimeFrame:SetScript("OnEnter", Module.OnEnter)
+	Module.TimeFrame:SetScript("OnLeave", Module.OnLeave)
+	Module.TimeFrame:SetScript("OnMouseUp", Module.OnMouseUp)
 end

@@ -3,6 +3,8 @@
    <!-- Load_Automation -->
    <Script file="Load_Automation.lua" />
 
+   <Script file="AutoReward.lua" />
+   <Script file="AutoBadBuffs.lua" />
    <Script file="AutoBlockMovies.lua" />
    <Script file="AutoDecline.lua" />
    <Script file="AutoDisenchant.lua" />
@@ -11,7 +13,8 @@
    <Script file="AutoQuest.lua" />
    <Script file="AutoRelease.lua" />
    <Script file="AutoResurrect.lua" />
-   <!-- <Script file="AutoReward.lua" /> -->
+   <Script file="AutoScreenShot.lua" />
    <Script file="AutoSetRole.lua" />
+   <Script file="AutoTabBinder.lua" />
    <Script file="AutoWhisperInvite.lua" />
 </Ui>

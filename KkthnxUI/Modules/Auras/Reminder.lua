@@ -2,10 +2,10 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Auras")
 
 local _G = _G
-local next = next
-local pairs = pairs
-local table_insert = table.insert
-local unpack = unpack
+local next = _G.next
+local pairs = _G.pairs
+local table_insert = _G.table.insert
+local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
 local GetSpecialization = _G.GetSpecialization
@@ -28,8 +28,14 @@ function Module:Reminder_Update(cfg)
 	local combat = cfg.combat
 	local instance = cfg.instance
 	local pvp = cfg.pvp
+	local cooldown = cfg.cooldown
 	local isPlayerSpell, isRightSpec, isInCombat, isInInst, isInPVP = true, true
 	local inInst, instType = IsInInstance()
+
+	if cooldown and GetItemCooldown(cooldown) > 0 then -- check rune cooldown
+		frame:Hide()
+		return
+	end
 
 	if depend and not IsPlayerSpell(depend) then
 		isPlayerSpell = false
@@ -56,7 +62,7 @@ function Module:Reminder_Update(cfg)
 	end
 
 	frame:Hide()
-	if isPlayerSpell and isRightSpec and (isInCombat or isInInst or isInPVP) and not UnitInVehicle("player") then
+	if isPlayerSpell and isRightSpec and (isInCombat or isInInst or isInPVP) and not UnitInVehicle("player") and not UnitIsDeadOrGhost("player") then
 		for i = 1, 32 do
 			local name, _, _, _, _, _, _, _, _, spellID = UnitBuff("player", i)
 			if not name then
@@ -80,13 +86,18 @@ function Module:Reminder_Create(cfg)
 	frame.Icon = frame:CreateTexture(nil, "ARTWORK")
 	frame.Icon:SetAllPoints()
 	frame.Icon:SetTexCoord(unpack(K.TexCoords))
+
+	local texture = cfg.texture
+	if not texture then
+		for spellID in pairs(cfg.spells) do
+			texture = GetSpellTexture(spellID)
+			break
+		end
+	end
+	frame.Icon:SetTexture(texture)
+
 	frame:CreateBorder()
 	frame:CreateInnerShadow()
-
-	for spell in pairs(cfg.spells) do
-		frame.Icon:SetTexture(GetSpellTexture(spell))
-		break
-	end
 
 	frame.text = frame:CreateFontString(nil, "OVERLAY")
 	frame.text:SetFontObject(K.GetFont(C["UIFonts"].AuraFonts))
@@ -123,7 +134,29 @@ function Module:Reminder_OnEvent()
 	Module:Reminder_UpdateAnchor()
 end
 
+function Module:Reminder_AddRune()
+	if GetItemCount(174906) == 0 then
+		return
+	end
+
+	if not groups then
+		groups = {}
+	end
+
+	table_insert(groups, {
+		spells = {
+			[317065] = true,
+			[270058] = true,
+		},
+		texture = 839983,
+		cooldown = 174906,
+		instance = true,
+	})
+end
+
 function Module:CreateReminder()
+	Module:Reminder_AddRune()
+
 	if not groups then
 		return
 	end

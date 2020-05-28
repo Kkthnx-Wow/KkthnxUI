@@ -16,16 +16,17 @@ function Module:CreateBar2()
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
 	local layout = C["ActionBar"].Layout.Value
+	local buttonSize = C["ActionBar"].DefaultButtonSize
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KkthnxUI_ActionBar2", UIParent, "SecureHandlerStateTemplate")
 	if layout == "3x4 Boxed arrangement" then
-		frame:SetWidth(3 * FilterConfig.size + (3 - 1) * margin + 2 * padding)
-		frame:SetHeight(4 * FilterConfig.size + (4 - 1) * margin + 2 * padding)
+		frame:SetWidth(3 * buttonSize + (3 - 1) * margin + 2 * padding)
+		frame:SetHeight(4 * buttonSize + (4 - 1) * margin + 2 * padding)
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 305, 124}
 	else
-		frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
-		frame:SetHeight(FilterConfig.size + 2 * padding)
+		frame:SetWidth(num * buttonSize + (num - 1) * margin + 2 * padding)
+		frame:SetHeight(buttonSize + 2 * padding)
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 44}
 	end
 
@@ -37,7 +38,7 @@ function Module:CreateBar2()
 		for i = 1, num do
 			local button = _G["MultiBarBottomLeftButton"..i]
 			table_insert(buttonList, button) -- Add The Button Object To The List
-			button:SetSize(FilterConfig.size, FilterConfig.size)
+			button:SetSize(buttonSize, buttonSize)
 			button:ClearAllPoints()
 			if i == 1 then
 				button:SetPoint("TOPLEFT", frame, padding, padding)
@@ -53,7 +54,7 @@ function Module:CreateBar2()
 		for i = 1, num do
 			local button = _G["MultiBarBottomLeftButton"..i]
 			table_insert(buttonList, button) -- Add The Button Object To The List
-			button:SetSize(FilterConfig.size, FilterConfig.size)
+			button:SetSize(buttonSize, buttonSize)
 			button:ClearAllPoints()
 			if i == 1 then
 				button:SetPoint("BOTTOMLEFT", frame, padding, padding)
@@ -70,7 +71,7 @@ function Module:CreateBar2()
 
 	-- Create Drag Frame And Drag Functionality
 	if K.ActionBars.userPlaced then
-		K.Mover(frame, SHOW_MULTIBAR1_TEXT, "Bar2", frame.Pos)
+		frame.mover = K.Mover(frame, SHOW_MULTIBAR1_TEXT, "Bar2", frame.Pos)
 	end
 
 	if FilterConfig.fader then

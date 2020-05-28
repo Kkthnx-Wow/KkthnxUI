@@ -2,24 +2,26 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Tooltip")
 
 local _G = _G
+local select = _G.select
 local string_format = _G.string.format
 local string_match = _G.string.match
+local tonumber = _G.tonumber
 
 local ACHIEVEMENTS = _G.ACHIEVEMENTS
 local BAGSLOT = _G.BAGSLOT
 local BANK = _G.BANK
-local CURRENCY = _G.CURRENCY
 local C_TradeSkillUI_GetRecipeReagentItemLink = _G.C_TradeSkillUI.GetRecipeReagentItemLink
+local CURRENCY = _G.CURRENCY
 local GetCurrencyListLink = _G.GetCurrencyListLink
 local GetItemCount = _G.GetItemCount
 local GetItemInfo = _G.GetItemInfo
 local GetUnitName = _G.GetUnitName
+local hooksecurefunc = _G.hooksecurefunc
 local ITEMS = _G.ITEMS
 local QUESTS_LABEL = _G.QUESTS_LABEL
 local SPELLS = _G.SPELLS
 local TALENT = _G.TALENT
 local UnitAura = _G.UnitAura
-local hooksecurefunc = _G.hooksecurefunc
 
 local types = {
 	achievement = ACHIEVEMENTS.."ID:",

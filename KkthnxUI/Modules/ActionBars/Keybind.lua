@@ -4,13 +4,14 @@ local K, C, L = unpack(select(2, ...))
 -- Updated: Kkthnx (KkthnxUI)
 
 local _G = _G
-local print = _G.print
 local tonumber = _G.tonumber
 
 local APPLY = _G.APPLY
 local CANCEL = _G.CANCEL
+local CreateFrame = _G.CreateFrame
 local EnumerateFrames = _G.EnumerateFrames
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local GameTooltip = _G.GameTooltip
 local GetBindingKey = _G.GetBindingKey
 local GetMacroInfo = _G.GetMacroInfo
 local GetSpellBookItemName = _G.GetSpellBookItemName
@@ -264,10 +265,10 @@ SlashCmdList["KKUI_KEYBINDS"] = function()
 
 		function bind:Deactivate(save)
 			if save then
-				SaveBindings(KkthnxUIData[GetRealmName()][UnitName("player")].BindType)
+				SaveBindings(KkthnxUIData[K.Realm][K.Name].BindType)
 				K.Print("|cffffff00"..KEY_BOUND.."|r")
 			else
-				LoadBindings(KkthnxUIData[GetRealmName()][UnitName("player")].BindType)
+				LoadBindings(KkthnxUIData[K.Realm][K.Name].BindType)
 				K.Print("|cffffff00"..UNCHECK_ALL.."|r")
 			end
 
@@ -346,13 +347,13 @@ SlashCmdList["KKUI_KEYBINDS"] = function()
 			local checkBox = CreateFrame("CheckButton", nil, frame, "OptionsCheckButtonTemplate")
 			checkBox:SetSize(14, 14)
 			checkBox:SkinCheckBox()
-			checkBox:SetChecked(KkthnxUIData[GetRealmName()][UnitName("player")].BindType == 2)
+			checkBox:SetChecked(KkthnxUIData[K.Realm][K.Name].BindType == 2)
 			checkBox:SetPoint("CENTER", frame.bottom, -96, 0)
 			checkBox:SetScript("OnClick", function(self)
 				if self:GetChecked() == true then
-					KkthnxUIData[GetRealmName()][UnitName("player")].BindType = 2
+					KkthnxUIData[K.Realm][K.Name].BindType = 2
 				else
-					KkthnxUIData[GetRealmName()][UnitName("player")].BindType = 1
+					KkthnxUIData[K.Realm][K.Name].BindType = 1
 				end
 			end)
 

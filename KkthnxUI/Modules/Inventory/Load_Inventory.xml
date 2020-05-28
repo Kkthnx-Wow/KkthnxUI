@@ -4,5 +4,6 @@
     <Script file="Core.lua"/>
 	<Script file="Filters.lua"/>
     <Script file="InventoryBar.lua"/>
-    <Script file="Vendor.lua"/>
+    <Script file="AutoRepair.lua"/>
+    <Script file="AutoSell.lua"/>
 </Ui>

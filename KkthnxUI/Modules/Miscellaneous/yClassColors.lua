@@ -1,7 +1,4 @@
 local K, C = unpack(select(2, ...))
-if C["Misc"].EnhancedFriends ~= true then
-	return
-end
 
 local oUF = oUF or K.oUF
 assert(oUF, "KkthnxUI was unable to locate oUF.")
@@ -10,21 +7,28 @@ assert(oUF, "KkthnxUI was unable to locate oUF.")
 -- Edited: KkthnxUI (Kkthnx)
 
 local _G = _G
+local ipairs = _G.ipairs
 local string_format = _G.string.format
 local table_insert = _G.table.insert
 local table_wipe = _G.table.wipe
 local unpack = _G.unpack
 
+local BNET_CLIENT_WOW = _G.BNET_CLIENT_WOW
 local C_BattleNet_GetFriendAccountInfo = _G.C_BattleNet.GetFriendAccountInfo
-local C_FriendList_GetNumWhoResults = _G.C_FriendList.GetNumWhoResults
 local C_FriendList_GetFriendInfoByIndex = _G.C_FriendList.GetFriendInfoByIndex
+local C_FriendList_GetNumWhoResults = _G.C_FriendList.GetNumWhoResults
 local C_FriendList_GetWhoInfo = _G.C_FriendList.GetWhoInfo
+local FRIENDS_BUTTON_TYPE_BNET = _G.FRIENDS_BUTTON_TYPE_BNET
+local FRIENDS_BUTTON_TYPE_WOW = _G.FRIENDS_BUTTON_TYPE_WOW
+local FRIENDS_LEVEL_TEMPLATE = _G.FRIENDS_LEVEL_TEMPLATE
+local FRIENDS_WOW_NAME_COLOR_CODE = _G.FRIENDS_WOW_NAME_COLOR_CODE
 local GetCVar = _G.GetCVar
 local GetGuildInfo = _G.GetGuildInfo
 local GetGuildRosterInfo = _G.GetGuildRosterInfo
 local GetGuildTradeSkillInfo = _G.GetGuildTradeSkillInfo
 local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
 local GetRealZoneText = _G.GetRealZoneText
+local UIDropDownMenu_GetSelectedID = _G.UIDropDownMenu_GetSelectedID
 local UnitRace = _G.UnitRace
 local hooksecurefunc = _G.hooksecurefunc
 
@@ -108,7 +112,10 @@ local function updateGuildView()
 end
 
 local function updateGuildUI(event, addon)
-	if addon ~= "Blizzard_GuildUI" then return end
+	if addon ~= "Blizzard_GuildUI" or C["Misc"].EnhancedFriends ~= true then
+		return
+	end
+
 	hooksecurefunc("GuildRoster_SetView", setView)
 	hooksecurefunc("GuildRoster_Update", updateGuildView)
 	hooksecurefunc(GuildRosterContainer, "update", updateGuildView)
@@ -118,10 +125,13 @@ end
 K:RegisterEvent("ADDON_LOADED", updateGuildUI)
 
 -- Friends
-local FRIENDS_LEVEL_TEMPLATE = FRIENDS_LEVEL_TEMPLATE:gsub("%%d", "%%s") -- Upvalue FRIENDS_LEVEL_TEMPLATE??
+local FRIENDS_LEVEL_TEMPLATE = FRIENDS_LEVEL_TEMPLATE:gsub("%%d", "%%s")
 FRIENDS_LEVEL_TEMPLATE = FRIENDS_LEVEL_TEMPLATE:gsub("%$d", "%$s")
-
 local function friendsFrame()
+	if C["Misc"].EnhancedFriends ~= true then
+		return
+	end
+
 	local scrollFrame = FriendsListFrameScrollFrame
 	local buttons = scrollFrame.buttons
 	local playerArea = GetRealZoneText()
@@ -174,11 +184,16 @@ hooksecurefunc("FriendsFrame_UpdateFriends", friendsFrame)
 -- Whoframe
 local columnTable = {}
 local function updateWhoList()
+	if C["Misc"].EnhancedFriends ~= true then
+		return
+	end
+
 	local scrollFrame = WhoListScrollFrame
 	local offset = HybridScrollFrame_GetOffset(scrollFrame)
 	local buttons = scrollFrame.buttons
 	local numButtons = #buttons
 	local numWhos = C_FriendList_GetNumWhoResults()
+
 	local playerZone = GetRealZoneText()
 	local playerGuild = GetGuildInfo("player")
 	local playerRace = UnitRace("player")

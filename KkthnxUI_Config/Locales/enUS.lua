@@ -1,7 +1,4 @@
--- local MissingDesc = "The description for this module/setting is missing. Someone should really remind Kkthnx to do his job!"
 local ModuleNewFeature = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:0:0:0:0|t]] -- Used for newly implemented features.
--- local PerformanceIncrease = "|n|nDisabling this may slightly increase performance|r" -- For semi-high CPU options
--- local RestoreDefault = "|n|nRight-click to restore to default" -- For color pickers
 
 local _G = _G
 
@@ -126,23 +123,10 @@ _G.KkthnxUIConfig["enUS"] = {
 		["ItemAlert"] = {
 			["Name"] = "Announce Items Being Placed",
 		},
-
-		["BrokenSpell"] = {
-			["Name"] = "Announce When Someone Breaks A Crowd Control Spell",
-		},
-
-		["Interrupt"] = {
-			["Name"] = "Announce Interrupt/Stolen/Dispell In Groups",
-		}
 	},
 
 	-- Automation Local
 	["Automation"] = {
-		["AutoBubbles"] = {
-			["Name"] = "Auto Toggle Chat Bubbles",
-			["Desc"] = "Toggle chat bubbles depending on your InstanceType. If you are in a Dungeon/Raid, It will be toggled off."
-		},
-
 		["AutoCollapse"] = {
 			["Name"] = "Auto Collapse Objective Tracker",
 		},
@@ -179,8 +163,18 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Say 'Thank You' When Resurrected",
 		},
 
+		["AutoScreenshot"] = {
+			["Name"] = "Auto Screenshot Achievements",
+			["Desc"] = "Auto screenshot any achievement you obtain."
+		},
+
 		["AutoReward"] = {
 			["Name"] = "Auto Select Quest Rewards",
+		},
+
+		["AutoBlockStrangerInvites"] = {
+			["Name"] = "Blocks Invites From Strangers",
+			["Desc"] = "Declines all invites from anyone who is NOT a guild member or a friend on your friends list."
 		},
 
 		["AutoSetRole"] = {
@@ -197,6 +191,11 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["BlockMovies"] = {
 			["Name"] = "Block Movies You Already Seen",
+		},
+
+		["NoBadBuffs"] = {
+			["Name"] = "Automatically Remove Annoying Buffs",
+			["Desc"] = "This will automatically remove buffs like |cff0070dd[Lucille's Sewing Needle]|r"
 		},
 
 		["DeclinePvPDuel"] = {
@@ -228,8 +227,19 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Enable/Disable the Inventory Module.",
 		},
 
+		["FilterJunk"] = {
+			["Name"] = "Filter Junk Items",
+			["Desc"] = "Requires 'Item Filtering' to be enabled",
+		},
+
+		["FilterMount"] = {
+			["Name"] = "Filter Mounts",
+			["Desc"] = "Requires 'Item Filtering' to be enabled",
+		},
+
 		["ClassRelatedFilter"] = {
 			["Name"] = "Filter Class Items",
+			["Desc"] = "Requires 'Item Filtering' to be enabled",
 		},
 
 		["ScrapIcon"] = {
@@ -242,10 +252,12 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["QuestItemFilter"] = {
 			["Name"] = "Filter Quest Items",
+			["Desc"] = "Requires 'Item Filtering' to be enabled",
 		},
 
 		["TradeGoodsFilter"] = {
-			["Name"] = "Filter Trade/Goods Items",
+			["Name"] = "Filter Trade Good Items",
+			["Desc"] = "Requires 'Item Filtering' to be enabled",
 		},
 
 		["BagsWidth"] = {
@@ -282,11 +294,6 @@ _G.KkthnxUIConfig["enUS"] = {
 
 		["ShowNewItem"] = {
 			["Name"] = "Show New Item Glow",
-		},
-
-		["SpecialBagsColor"] = {
-			["Name"] = "Show Special Bags Color",
-			["Desc"] = "Show color for special bags:|n|n- |CFFABD473Hunter|r quiver or ammo pouch|n- |CFF8787EDWarlock|r soul pouch|n- Enchanted mageweave pouch|n- Herb pouch"
 		},
 
 		["BagsiLvl"] = {
@@ -344,14 +351,6 @@ _G.KkthnxUIConfig["enUS"] = {
 
 	-- Chat Local
 	["Chat"] = {
-		["Background"] = {
-			["Name"] = "Show Chat Background",
-		},
-
-		["BackgroundAlpha"] = {
-			["Name"] = "Chat Background Alpha",
-		},
-
 		["ChatItemLevel"] = {
 			["Name"] = "Show ItemLevel on ChatFrames",
 		},
@@ -373,38 +372,56 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["FadingTimeVisible"] = {
-			["Name"] = "Fading Chat Visible TIme",
+			["Name"] = "Fading Chat Visible Time",
 		},
 
-		["Height"] = {
-			["Name"] = "Chat Height",
+		["LootIcons"] = {
+			["Name"] = "Show Chat Loot Icons",
+			["Desc"] = "Displays a chat icon next to any loot you pick up in your chat window."
 		},
 
-		["QuickJoin"] = {
-			["Name"] = "Quick Join Messages",
-			["Desc"] = "Show clickable Quick Join messages inside of the chat."
+		["OldChatNames"] = {
+			["Name"] = "Use Default Channel Names",
 		},
 
-		["ScrollByX"] = {
-			["Name"] = "Scroll by '#' Lines",
+		["PhasingAlert"] = {
+			["Name"] = "Phasing Chat Alerts",
+			["Desc"] = "Everytime you phase of any sort. KkthnxUI will notify you of this in your chatframe."
 		},
 
-		["ShortenChannelNames"] = {
-			["Name"] = "Shorten Channel Names",
+		["WhisperColor"] = {
+			["Name"] = "Differ Whipser Colors",
+		},
+
+		["BlockStranger"] = {
+			["Name"] = "Block Whispers From Strangers",
+			["Desc"] = "If checked, only accept whispers from party or raid members, friends and guild members."
+		},
+
+		["BlockAddonAlert"] = {
+			["Name"] = "Block Addon Alert",
 		},
 
 		["TabsMouseover"] = {
 			["Name"] = "Fade Chat Tabs",
 		},
 
+		["TimestampFormat"] = {
+			["Name"] = "Custom Chat Timestamps",
+			["Desc"] = "Pick 4 different timestamps to display in your chat.",
+		},
+
 		["WhisperSound"] = {
 			["Name"] = "Whisper Sound",
 		},
 
-		["Width"] = {
-			["Name"] = "Chat Width",
+		["Background"] = {
+			["Name"] = "Show Chat Background",
 		},
 
+		["FilterMatches"] = {
+			["Name"] = "Filter Matches Number",
+		},
 	},
 
 	-- Databars Local
@@ -860,6 +877,22 @@ _G.KkthnxUIConfig["enUS"] = {
 
 	-- Unitframe Local
 	["Unitframe"] = {
+		["PlayerBuffs"] = {
+			["Name"] = "Show Player Frame Buffs",
+		},
+
+		["PlayerDeBuffs"] = {
+			["Name"] = "Show Player Frame Debuffs",
+		},
+
+		["TargetBuffs"] = {
+			["Name"] = "Show Target Frame Buffs",
+		},
+
+		["TargetDebuffs"] = {
+			["Name"] = "Show Target Frame Debuffs",
+		},
+
 		["AdditionalPower"] = {
 			["Name"] = "Show Additional Mana Power (|CFFFF7D0ADruid|r, |CFFFFFFFFPriest|r, |CFF0070DEShaman|r)",
 		},
@@ -1051,6 +1084,14 @@ _G.KkthnxUIConfig["enUS"] = {
 	["Party"] = {
 		["Castbars"] = {
 			["Name"] = "Show Castbars",
+		},
+
+		["ShowTarget"] = {
+			["Name"] = "Show Party Targets",
+		},
+
+		["ShowPet"] = {
+			["Name"] = "Show Party Pets",
 		},
 
 		["Enable"] = {

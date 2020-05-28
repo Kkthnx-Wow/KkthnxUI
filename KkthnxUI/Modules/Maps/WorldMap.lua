@@ -12,7 +12,7 @@ local PLAYER = _G.PLAYER
 local SetUIPanelAttribute = _G.SetUIPanelAttribute
 local UIParent = _G.UIParent
 local UnitPosition = _G.UnitPosition
-local WorldMapFrame = _G.WorldMapFrame
+-- local WorldMapFrame = _G.WorldMapFrame
 local hooksecurefunc = _G.hooksecurefunc
 
 local mapRects = {}
@@ -21,6 +21,7 @@ local currentMapID, playerCoords, cursorCoords
 local smallerMapScale = 0.8
 
 function Module:SetLargeWorldMap()
+	local WorldMapFrame = _G.WorldMapFrame
 	WorldMapFrame:SetParent(UIParent)
 	WorldMapFrame:SetScale(1)
 	WorldMapFrame.ScrollContainer.Child:SetScale(smallerMapScale)
@@ -40,12 +41,14 @@ function Module:SetLargeWorldMap()
 end
 
 function Module:UpdateMaximizedSize()
+	local WorldMapFrame = _G.WorldMapFrame
 	local width, height = WorldMapFrame:GetSize()
 	local magicNumber = (1 - smallerMapScale) * 100
 	WorldMapFrame:SetSize((width * smallerMapScale) - (magicNumber + 2), (height * smallerMapScale) - 2)
 end
 
 function Module:SynchronizeDisplayState()
+	local WorldMapFrame = _G.WorldMapFrame
 	if WorldMapFrame:IsMaximized() then
 		WorldMapFrame:ClearAllPoints()
 		WorldMapFrame:SetPoint("CENTER", UIParent)
@@ -53,6 +56,7 @@ function Module:SynchronizeDisplayState()
 end
 
 function Module:SetSmallWorldMap()
+	local WorldMapFrame = _G.WorldMapFrame
 	if not WorldMapFrame:IsMaximized() then
 		WorldMapFrame:ClearAllPoints()
 		WorldMapFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 16, -94)
@@ -80,6 +84,7 @@ function Module:GetPlayerMapPos(mapID)
 end
 
 function Module:GetCursorCoords()
+	local WorldMapFrame = _G.WorldMapFrame
 	if not WorldMapFrame.ScrollContainer:IsMouseOver() then
 		return
 	end
@@ -94,12 +99,15 @@ end
 
 local function CoordsFormat(owner, none)
 	local text = none and ": --, --" or ": %.1f, %.1f"
+
 	return owner..K.MyClassColor..text
 end
 
 function Module:UpdateCoords(elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
-	if self.elapsed > .1 then
+	if self.elapsed > 0.1 then
+		self.elapsed = 0
+
 		local cursorX, cursorY = Module:GetCursorCoords()
 		if cursorX and cursorY then
 			cursorCoords:SetFormattedText(CoordsFormat("Mouse"), 100 * cursorX, 100 * cursorY)
@@ -117,8 +125,6 @@ function Module:UpdateCoords(elapsed)
 				playerCoords:SetFormattedText(CoordsFormat(PLAYER), 100 * x, 100 * y)
 			end
 		end
-
-		self.elapsed = 0
 	end
 end
 
@@ -142,7 +148,9 @@ function Module:MapFadeOnUpdate(elapsed)
 
 		local object = self.FadeObject
 		local settings = object and object.FadeSettings
-		if not settings then return end
+		if not settings then
+			return
+		end
 
 		local fadeOut = IsPlayerMoving() and (not settings.fadePredicate or settings.fadePredicate())
 		local endAlpha = (fadeOut and (settings.minAlpha or 0.5)) or settings.maxAlpha or 1
@@ -170,13 +178,18 @@ end
 
 function Module:EnableMapFading(frame)
 	if not fadeFrame then
-		fadeFrame = CreateFrame("FRAME")
+		fadeFrame = CreateFrame("Frame")
 		fadeFrame:SetScript("OnUpdate", Module.MapFadeOnUpdate)
 		frame:HookScript("OnHide", Module.StopMapFromFading)
 	end
 
-	if not fadeFrame.FadeObject then fadeFrame.FadeObject = {} end
-	if not fadeFrame.FadeObject.FadeSettings then fadeFrame.FadeObject.FadeSettings = {} end
+	if not fadeFrame.FadeObject then
+		fadeFrame.FadeObject = {}
+	end
+
+	if not fadeFrame.FadeObject.FadeSettings then
+		fadeFrame.FadeObject.FadeSettings = {}
+	end
 
 	local settings = fadeFrame.FadeObject.FadeSettings
 	settings.fadePredicate = Module.MapShouldFade
@@ -196,28 +209,43 @@ function Module:UpdateMapFade(_, _, _, fadePredicate) -- self is frame
 		if C["WorldMap"].FadeWhenMoving then
 			Module:EnableMapFading(self)
 		end
-
-		-- we can't use the blizzard function because `durationSec` was never finished being implimented?
-		-- PlayerMovementFrameFader.AddDeferredFrame(self, C["WorldMap"].AlphaWhenMoving, 1, E.global.general.fadeMapDuration, M.MapShouldFade)
 	end
 end
 
 function Module:OnEnable()
 	if C["WorldMap"].Coordinates then
-		playerCoords = WorldMapFrame.BorderFrame:CreateFontString(nil, "OVERLAY")
-		playerCoords:FontTemplate(nil, 13, "OUTLINE")
-		playerCoords:SetPoint("BOTTOMLEFT", 5, 5)
-		playerCoords:SetTextColor(1, 1 ,0)
+		local coordsFrame = CreateFrame("FRAME", nil, WorldMapFrame.ScrollContainer)
+		coordsFrame:SetSize(WorldMapFrame:GetWidth(), 17)
+		coordsFrame:SetPoint("BOTTOMLEFT", 17)
+		coordsFrame:SetPoint("BOTTOMRIGHT", 0)
 
-		cursorCoords = WorldMapFrame.BorderFrame:CreateFontString(nil, "OVERLAY")
+		coordsFrame.Texture = coordsFrame:CreateTexture(nil, "BACKGROUND")
+		coordsFrame.Texture:SetAllPoints()
+		coordsFrame.Texture:SetTexture(C["Media"].Blank)
+		coordsFrame.Texture:SetVertexColor(0.04, 0.04, 0.04, 0.5)
+
+		-- Create cursor coordinates frame
+		cursorCoords = WorldMapFrame.ScrollContainer:CreateFontString(nil, "OVERLAY")
 		cursorCoords:FontTemplate(nil, 13, "OUTLINE")
-		cursorCoords:SetPoint("LEFT", playerCoords, "RIGHT", 5, 0)
-		cursorCoords:SetTextColor(1, 1 ,0)
+		cursorCoords:SetSize(200, 16)
+		cursorCoords:SetParent(coordsFrame)
+		cursorCoords:ClearAllPoints()
+		cursorCoords:SetPoint("BOTTOMLEFT", 152, 1)
+		--cursorCoords:SetTextColor(178/255, 178/255, 178/255)
+
+		-- Create player coordinates frame
+		playerCoords = WorldMapFrame.ScrollContainer:CreateFontString(nil, "OVERLAY")
+		playerCoords:FontTemplate(nil, 13, "OUTLINE")
+		playerCoords:SetSize(200, 16)
+		playerCoords:SetParent(coordsFrame)
+		playerCoords:ClearAllPoints()
+		playerCoords:SetPoint("BOTTOMRIGHT", -132, 1)
+		--playerCoords:SetTextColor(178/255, 178/255, 178/255)
 
 		hooksecurefunc(WorldMapFrame, "OnFrameSizeChanged", self.UpdateMapID)
 		hooksecurefunc(WorldMapFrame, "OnMapChanged", self.UpdateMapID)
 
-		local CoordsUpdater = CreateFrame("Frame", nil, WorldMapFrame.BorderFrame)
+		local CoordsUpdater = CreateFrame("Frame", nil, WorldMapFrame.ScrollContainer)
 		CoordsUpdater:SetScript("OnUpdate", self.UpdateCoords)
 	end
 
@@ -255,4 +283,5 @@ function Module:OnEnable()
 	-- SetCVar("mapFade", E.global.general.fadeMapWhenMoving and 1 or 0)
 
 	self:CreateWorldMapReveal()
+	self:CreateWowHeadLinks()
 end

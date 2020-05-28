@@ -3,6 +3,11 @@
     <!-- Load_DataText -->
     <Script file="DataText.lua"/>
 
+    <Script file="Friends.lua"/>
+    <Script file="Gold.lua"/>
+    <Script file="Guild.lua"/>
+    <Script file="QuickJoin.lua"/>
     <Script file="System.lua"/>
+    <Script file="Talents.lua"/>
     <Script file="Time.lua"/>
 </Ui>

@@ -22,8 +22,13 @@ local _, ns = ...
 local cargBags = ns.cargBags
 
 local _G = _G
+local ipairs = _G.ipairs
+local pairs = _G.pairs
+local table_insert = _G.table.insert
+local table_remove = _G.table.remove
 
 local CreateFrame = _G.CreateFrame
+local setmetatable = _G.setmetatable
 
 -- @class Container
 -- The container class provides the virtual bags for cargBags
@@ -50,11 +55,13 @@ function Container:New(name, ...)
 	container:ScheduleContentCallback()
 
 	container.implementation.contByName[name] = container -- Make this into pretty function?
-	table.insert(container.implementation.contByID, container)
+	table_insert(container.implementation.contByID, container)
 
 	container:SetParent(self.implementation)
 
-	if(container.OnCreate) then container:OnCreate(name, ...) end
+	if (container.OnCreate) then
+		container:OnCreate(name, ...)
+	end
 
 	return container
 end
@@ -67,7 +74,7 @@ function Container:AddButton(button)
 	button.container = self
 	button:SetParent(self.bags[button.bagID])
 	self:ScheduleContentCallback()
-	table.insert(self.buttons, button)
+	table_insert(self.buttons, button)
 
 	if (button.OnAdd) then
 		button:OnAdd(self)
@@ -96,7 +103,7 @@ function Container:RemoveButton(button)
 				self:OnButtonRemove(button)
 			end
 
-			return table.remove(self.buttons, i)
+			return table_remove(self.buttons, i)
 		end
 	end
 end

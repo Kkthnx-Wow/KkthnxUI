@@ -1,13 +1,15 @@
 local K, C = unpack(select(2, ...))
 local UF = K:GetModule("Unitframes")
 
+local oUF = oUF or K.oUF
+assert(oUF, "KkthnxUI was unable to locate oUF.")
+
 local _G = _G
 local math_floor = _G.math.floor
 local math_rad = _G.math.rad
 local pairs = _G.pairs
 local string_format = _G.string.format
 local string_match = _G.string.match
-local table_wipe = _G.table.wipe
 local tonumber = _G.tonumber
 local unpack = _G.unpack
 
@@ -18,14 +20,8 @@ local C_Scenario_GetCriteriaInfo = _G.C_Scenario.GetCriteriaInfo
 local C_Scenario_GetInfo = _G.C_Scenario.GetInfo
 local C_Scenario_GetStepInfo = _G.C_Scenario.GetStepInfo
 local CreateFrame = _G.CreateFrame
-local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
-local GetBattlefieldScore = _G.GetBattlefieldScore
 local GetInstanceInfo = _G.GetInstanceInfo
-local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
-local GetNumGroupMembers = _G.GetNumGroupMembers
-local GetNumSubgroupMembers = _G.GetNumSubgroupMembers
 local GetPlayerInfoByGUID = _G.GetPlayerInfoByGUID
-local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local INTERRUPTED = _G.INTERRUPTED
 local InCombatLockdown = _G.InCombatLockdown
 local IsInGroup = _G.IsInGroup
@@ -37,105 +33,19 @@ local UnitClassification = _G.UnitClassification
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
 local UnitGUID = _G.UnitGUID
-local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitIsConnected = _G.UnitIsConnected
+local UnitIsFriend = _G.UnitIsFriend
+local UnitIsPVPSanctuary = _G.UnitIsPVPSanctuary
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsTapDenied = _G.UnitIsTapDenied
 local UnitIsUnit = _G.UnitIsUnit
 local UnitName = _G.UnitName
 local UnitPlayerControlled = _G.UnitPlayerControlled
 local UnitReaction = _G.UnitReaction
-local UnitSelectionColor = _G.UnitSelectionColor
-local UnitThreatSituation = _G.UnitThreatSituation
 local hooksecurefunc = _G.hooksecurefunc
 
-local NameplateTexture = K.GetTexture(C["UITextures"].NameplateTextures)
--- local NameplateFont = K.GetFont(C["UIFonts"].NameplateFonts)
-local HealPredictionTexture = K.GetTexture(C["UITextures"].HealPredictionTextures)
-
-local healList, exClass, healerSpecs = {}, {}, {}
-local testing = false
-
-exClass.DEATHKNIGHT = true
-exClass.MAGE = true
-exClass.ROGUE = true
-exClass.WARLOCK = true
-exClass.WARRIOR = true
-
-if C["Nameplate"].HealerIcon == true then
-	local HealerEventFrame = CreateFrame("Frame")
-	HealerEventFrame.factions = {
-		["Horde"] = 1,
-		["Alliance"] = 0,
-	}
-
-	local healerSpecIDs = {
-		105, -- Druid Restoration
-		270, -- Monk Mistweaver
-		65,	-- Paladin Holy
-		256, -- Priest Discipline
-		257, -- Priest Holy
-		264, -- Shaman Restoration
-	}
-
-	for _, specID in pairs(healerSpecIDs) do
-		local _, name = GetSpecializationInfoByID(specID)
-		if name and not healerSpecs[name] then
-			healerSpecs[name] = true
-		end
-	end
-
-	local lastCheck = 20
-	local function CheckHealers(_, elapsed)
-		lastCheck = lastCheck + elapsed
-		if lastCheck > 25 then
-			lastCheck = 0
-			healList = {}
-			for i = 1, GetNumBattlefieldScores() do
-				local name, _, _, _, _, faction, _, _, _, _, _, _, _, _, _, talentSpec = GetBattlefieldScore(i)
-
-				if name and healerSpecs[talentSpec] and HealerEventFrame.factions[UnitFactionGroup("player")] == faction then
-					name = name:match("(.+)%-.+") or name
-					healList[name] = talentSpec
-				end
-			end
-		end
-	end
-
-	local function CheckArenaHealers(_, elapsed)
-		lastCheck = lastCheck + elapsed
-		if lastCheck > 25 then
-			lastCheck = 0
-			healList = {}
-			for i = 1, 5 do
-				local specID = GetArenaOpponentSpec(i)
-				if specID and specID > 0 then
-					local name = UnitName(string_format("arena%d", i))
-					local _, talentSpec = GetSpecializationInfoByID(specID)
-					if name and healerSpecs[talentSpec] then
-						healList[name] = talentSpec
-					end
-				end
-			end
-		end
-	end
-
-	HealerEventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-	HealerEventFrame:RegisterEvent("PLAYER_ENTERING_BATTLEGROUND")
-	HealerEventFrame:SetScript("OnEvent", function(_, event)
-		if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_ENTERING_BATTLEGROUND" then
-			local _, instanceType = IsInInstance()
-			if instanceType == "pvp" then
-				HealerEventFrame:SetScript("OnUpdate", CheckHealers)
-			elseif instanceType == "arena" then
-				HealerEventFrame:SetScript("OnUpdate", CheckArenaHealers)
-			else
-				healList = {}
-				HealerEventFrame:SetScript("OnUpdate", nil)
-			end
-		end
-	end)
-end
+local AKDcache = {}
+local isInGroup
 
 -- Init
 function UF:PlateInsideView()
@@ -167,6 +77,10 @@ function UF:UpdatePlateSpacing()
 end
 
 function UF:UpdateClickableSize()
+	if InCombatLockdown() then
+		return
+	end
+
 	C_NamePlate.SetNamePlateEnemySize(C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight + 40)
 	C_NamePlate.SetNamePlateFriendlySize(C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight + 40)
 end
@@ -226,28 +140,13 @@ function UF:UpdateUnitPower()
 	end
 end
 
--- Refresh for Nameplates quest into
-local groupRoles, isInGroup = {}
 local function refreshGroupRoles()
 	local isInRaid = IsInRaid()
 	isInGroup = isInRaid or IsInGroup()
-	table_wipe(groupRoles)
-
-	if isInGroup then
-		local numPlayers = (isInRaid and GetNumGroupMembers()) or GetNumSubgroupMembers()
-		local unit = (isInRaid and "raid") or "party"
-		for i = 1, numPlayers do
-			local index = unit..i
-			if UnitExists(index) then
-				groupRoles[UnitName(index)] = UnitGroupRolesAssigned(index)
-			end
-		end
-	end
 end
 
 local function resetGroupRoles()
 	isInGroup = IsInRaid() or IsInGroup()
-	table_wipe(groupRoles)
 end
 
 function UF:UpdateGroupRoles()
@@ -265,15 +164,16 @@ function UF.UpdateColor(element, unit)
 	local isPlayer = UnitIsPlayer(unit)
 	local status = UnitThreatSituation("player", unit) or false -- just in case
 	local reaction = UnitReaction(unit, "player")
+
 	local reactionColor = K.Colors.reaction[reaction]
 	local customColor = C["Nameplate"].CustomColor
 	local secureColor = C["Nameplate"].SecureColor
 	local transColor = C["Nameplate"].TransColor
 	local insecureColor = C["Nameplate"].InsecureColor
 	local revertThreat = C["Nameplate"].DPSRevertThreat
-	local offTankColor = C["Nameplate"].OffTankColor
-	local r, g, b
+	-- local offTankColor = C["Nameplate"].OffTankColor
 
+	local r, g, b
 	if not UnitIsConnected(unit) then
 		r, g, b = 0.7, 0.7, 0.7
 	else
@@ -289,30 +189,21 @@ function UF.UpdateColor(element, unit)
 			r, g, b = K.UnitColor(unit)
 		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) then
 			r, g, b = 0.6, 0.6, 0.6
-		elseif not UnitIsTapDenied(unit) and not UnitIsPlayer(unit) then
-			if reactionColor then
-				r, g, b = reactionColor[1], reactionColor[2], reactionColor[3]
-			else
-				r, g, b = UnitSelectionColor(unit, true)
-			end
 		else
-			if status and (C["Nameplate"].TankMode or K.Role == "Tank") then
+			if not UnitIsTapDenied(unit) and not UnitIsPlayer(unit) then
+				if reactionColor then
+					r, g, b = reactionColor[1], reactionColor[2], reactionColor[3]
+				else
+					r, g, b = UnitSelectionColor(unit, true)
+				end
+			end
+
+			if status and (C["Nameplate"].TankMode and K.Role == "Tank") then
 				if status == 3 then
 					if K.Role ~= "Tank" and revertThreat then
 						r, g, b = insecureColor[1], insecureColor[2], insecureColor[3]
 					else
-						if IsInGroup() or IsInRaid() then
-							for i = 1, GetNumGroupMembers() do
-								if UnitExists("raid"..i) and not UnitIsUnit("raid"..i, "player") then
-									local isTanking = UnitThreatSituation("raid"..i, self.unit)
-									if isTanking and UnitGroupRolesAssigned("raid"..i) == "TANK" then
-										r, g, b = offTankColor[1], offTankColor[2], offTankColor[3]
-									else
-										r, g, b = secureColor[1], secureColor[2], secureColor[3]
-									end
-								end
-							end
-						end
+						r, g, b = secureColor[1], secureColor[2], secureColor[3]
 					end
 				elseif status == 2 or status == 1 then
 					r, g, b = transColor[1], transColor[2], transColor[3]
@@ -333,11 +224,11 @@ function UF.UpdateColor(element, unit)
 
 	if isCustomUnit or (not C["Nameplate"].TankMode and K.Role ~= "Tank") then
 		if status and status == 3 then
-			element.Shadow:SetBackdropBorderColor(1, 0, 0, 0.8)
+			element.Shadow:SetBackdropBorderColor(1, 0, 0, 1)
 		elseif status and (status == 2 or status == 1) then
-			element.Shadow:SetBackdropBorderColor(1, 1, 0, 0.8)
+			element.Shadow:SetBackdropBorderColor(1, 1, 0, 1)
 		else
-			element.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+			element.Shadow:SetBackdropBorderColor(0, 0, 0, 1)
 		end
 	else
 		element.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
@@ -352,19 +243,19 @@ function UF:UpdateThreatColor(_, unit)
 	UF.UpdateColor(self.Health, unit)
 end
 
-function UF:CreateThreatColor(self)
-	local frame = CreateFrame("Frame", nil, self)
-	self.ThreatIndicator = frame
-	self.ThreatIndicator.Override = UF.UpdateThreatColor
-end
-
 -- Target indicator
 function UF:UpdateTargetChange()
-	local element = self.TargetIndicator
 	if UnitIsUnit(self.unit, "target") and not UnitIsUnit(self.unit, "player") then
-		element:SetAlpha(1)
+		self.TargetIndicator:SetAlpha(1)
+		self:SetAlpha(1)
 	else
-		element:SetAlpha(0)
+		if not UnitExists("target") or UnitIsUnit(self.unit, "player") then
+			self.TargetIndicator:SetAlpha(0)
+			self:SetAlpha(1)
+		else
+			self.TargetIndicator:SetAlpha(0)
+			self:SetAlpha(0.35)
+		end
 	end
 end
 
@@ -429,7 +320,6 @@ function UF:AddTargetIndicator(self)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", UF.UpdateTargetChange, true)
 end
 
--- Quest progress
 local isInInstance
 local function CheckInstanceStatus()
 	isInInstance = IsInInstance()
@@ -444,7 +334,6 @@ function UF:QuestIconCheck()
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", CheckInstanceStatus)
 end
 
-local unitTip = CreateFrame("GameTooltip", "KKUIQuestUnitTip", nil, "GameTooltipTemplate")
 function UF:UpdateQuestUnit(_, unit)
 	if not C["Nameplate"].QuestIndicator then
 		return
@@ -459,23 +348,23 @@ function UF:UpdateQuestUnit(_, unit)
 	unit = unit or self.unit
 
 	local isLootQuest, questProgress
-	unitTip:SetOwner(UIParent, "ANCHOR_NONE")
-	unitTip:SetUnit(unit)
+	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+	K.ScanTooltip:SetUnit(unit)
 
-	for i = 2, unitTip:NumLines() do
-		local textLine = _G[unitTip:GetName().."TextLeft"..i]
+	for i = 2, K.ScanTooltip:NumLines() do
+		local textLine = _G[K.ScanTooltip:GetName().."TextLeft"..i]
 		local text = textLine:GetText()
 		if textLine and text then
 			local r, g, b = textLine:GetTextColor()
-			if r > .99 and g > .82 and b == 0 then
+			if r > 0.99 and g > 0.82 and b == 0 then
 				if isInGroup and text == K.Name or not isInGroup then
 					isLootQuest = true
 
-					local questLine = _G[unitTip:GetName().."TextLeft"..(i+1)]
+					local questLine = _G[K.ScanTooltip:GetName().."TextLeft"..(i+1)]
 					local questText = questLine:GetText()
 					if questLine and questText then
 						local current, goal = string_match(questText, "(%d+)/(%d+)")
-						local progress = string_match(questText, "(%d+)%%")
+						local progress = string_match(questText, "([%d%.]+)%%")
 						if current and goal then
 							current = tonumber(current)
 							goal = tonumber(goal)
@@ -491,7 +380,7 @@ function UF:UpdateQuestUnit(_, unit)
 								isLootQuest = nil
 							elseif progress < 100 then
 								questProgress = progress.."%"
-								break
+								--break -- lower priority on progress
 							end
 						end
 					end
@@ -520,15 +409,17 @@ function UF:AddQuestIcon(self)
 		return
 	end
 
-	self.questIcon = self:CreateTexture(nil, "OVERLAY", nil, 2)
-	self.questIcon:SetPoint("LEFT", self, "RIGHT", 2, 0)
-	self.questIcon:SetSize(18, 18)
-	self.questIcon:SetAtlas("adventureguide-microbutton-alert")
-	self.questIcon:Hide()
+	local qicon = self:CreateTexture(nil, "OVERLAY", nil, 2)
+	qicon:SetPoint("LEFT", self, "RIGHT", -1, 0)
+	qicon:SetSize(18, 18)
+	qicon:SetAtlas("adventureguide-microbutton-alert")
+	qicon:Hide()
 
-	self.questCount = K.CreateFontString(self, 11, "", "", nil, "LEFT", 0, 0)
-	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -1, 0)
+	local count = K.CreateFontString(self, 10, "", "", nil, "LEFT", 0, 0)
+	count:SetPoint("LEFT", qicon, "RIGHT", -2, 0)
 
+	self.questIcon = qicon
+	self.questCount = count
 	self:RegisterEvent("QUEST_LOG_UPDATE", UF.UpdateQuestUnit, true)
 end
 
@@ -542,7 +433,6 @@ function UF:AddDungeonProgress(self)
 	self.progressText:SetPoint("LEFT", self, "RIGHT", 5, 0)
 end
 
-local cache = {}
 function UF:UpdateDungeonProgress(unit)
 	if not self.progressText or not AngryKeystones_Data then
 		return
@@ -560,13 +450,13 @@ function UF:UpdateDungeonProgress(unit)
 		local info = AngryKeystones_Data.progress[npcID]
 		if info then
 			local numCriteria = select(3, C_Scenario_GetStepInfo())
-			local total = cache[name]
+			local total = AKDcache[name]
 			if not total then
 				for criteriaIndex = 1, numCriteria do
 					local _, _, _, _, totalQuantity, _, _, _, _, _, _, _, isWeightedProgress = C_Scenario_GetCriteriaInfo(criteriaIndex)
 					if isWeightedProgress then
-						cache[name] = totalQuantity
-						total = cache[name]
+						AKDcache[name] = totalQuantity
+						total = AKDcache[name]
 						break
 					end
 				end
@@ -749,8 +639,8 @@ function UF:AddClassIcon(self)
 end
 
 function UF:UpdatePlateClassIcons(unit)
-	if C["Nameplate"].ClassIcon == true then
-		if UnitIsPlayer(unit) and (UnitReaction("player", unit) and UnitReaction("player", unit) <= 4) then
+	if C["Nameplate"].ClassIcon then
+		if (self.frameType == "ENEMY_PLAYER") then
 			local _, class = UnitClass(unit)
 			local texcoord = CLASS_ICON_TCOORDS[class]
 			self.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
@@ -758,35 +648,6 @@ function UF:UpdatePlateClassIcons(unit)
 		else
 			self.Class.Icon:SetTexCoord(0, 0, 0, 0)
 			self.Class:Hide()
-		end
-	end
-end
-
-function UF:AddHealerIcon(self)
-	if C["Nameplate"].HealerIcon == true then
-		self.HPHeal = self:CreateTexture(nil, "OVERLAY")
-		self.HPHeal:SetTexture(C["Media"].NPHealer)
-		self.HPHeal:SetPoint("BOTTOM", self.Auras, "TOP", 0, -20)
-	end
-end
-
-function UF:UpdateHealerIcon(unit)
-	if C["Nameplate"].HealerIcon == true then
-		local name = UnitName(unit)
-		if name then
-			if testing then
-				self.HPHeal:Show()
-			else
-				if healList[name] then
-					if exClass[healList[name]] then
-						self.HPHeal:Hide()
-					else
-						self.HPHeal:Show()
-					end
-				else
-					self.HPHeal:Hide()
-				end
-			end
 		end
 	end
 end
@@ -812,49 +673,28 @@ function UF:AddInterruptInfo()
 	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self.UpdateCastbarInterrupt)
 end
 
-function UF.CustomFilter(element, unit, _, _, _, _, _, _, _, caster, isStealable, _, spellID, _, _, _, nameplateShowAll)
-	if K.NameplateBlackList[spellID] then
-		return false
-	elseif element.showStealableBuffs and isStealable and not UnitIsPlayer(unit) then
-		return true
-	elseif K.NameplateWhiteList[spellID] then
-		return true
-	else
-		return nameplateShowAll or (caster == "player" or caster == "pet" or caster == "vehicle")
-	end
-end
-
-local function auraIconSize(w, n, s)
-	return (w - (n - 1) * s) / n
-end
-
 -- Create Nameplates
 function UF:CreatePlates()
 	self.mystyle = "nameplate"
+
 	self:SetSize(C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight)
 	self:SetPoint("CENTER")
+	self:SetScale(1)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetAllPoints()
-	self.Health:SetStatusBarTexture(NameplateTexture)
+	self.Health:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 	self.Health:CreateShadow(true)
-	self.Health.UpdateColor = UF.UpdateColor
-	self.Health.frequentUpdates = true
 
-	self.Health.Smooth = true
-	self.Health.colorTapping = true
-	self.Health.colorDisconnected = true
-	self.Health.colorClass = true
-	self.Health.colorReaction = true
-	self.Health.colorHealth = true
+	self.Health.frequentUpdates = true
+	self.Health.UpdateColor = UF.UpdateColor
 
 	if C["Nameplate"].Smooth then
-		K.SmoothBar(self.Health)
+		K:SmoothBar(self.Health)
 	end
 
 	self.levelText = K.CreateFontString(self.Health, C["Nameplate"].NameTextSize, "", "", false)
 	self.levelText:SetJustifyH("RIGHT")
-	--self.levelText:SetWidth(self:GetWidth() * 0.85)
 	self.levelText:ClearAllPoints()
 	self.levelText:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 3)
 	self:Tag(self.levelText, "[nplevel]")
@@ -873,7 +713,7 @@ function UF:CreatePlates()
 	self.Castbar = CreateFrame("StatusBar", "oUF_CastbarNameplate", self)
 	self.Castbar:SetHeight(20)
 	self.Castbar:SetWidth(self:GetWidth() - 22)
-	self.Castbar:SetStatusBarTexture(NameplateTexture)
+	self.Castbar:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 	self.Castbar:CreateShadow(true)
 	self.Castbar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -3)
 	self.Castbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -3)
@@ -921,17 +761,17 @@ function UF:CreatePlates()
 
 	local mhpb = self:CreateTexture(nil, "BORDER", nil, 5)
 	mhpb:SetWidth(1)
-	mhpb:SetTexture(HealPredictionTexture)
+	mhpb:SetTexture(K.GetTexture(C["UITextures"].HealPredictionTextures))
 	mhpb:SetVertexColor(0, 1, 0.5, 0.25)
 
 	local ohpb = self:CreateTexture(nil, "BORDER", nil, 5)
 	ohpb:SetWidth(1)
-	ohpb:SetTexture(HealPredictionTexture)
+	ohpb:SetTexture(K.GetTexture(C["UITextures"].HealPredictionTextures))
 	ohpb:SetVertexColor(0, 1, 0, 0.25)
 
 	local abb = self:CreateTexture(nil, "BORDER", nil, 5)
 	abb:SetWidth(1)
-	abb:SetTexture(HealPredictionTexture)
+	abb:SetTexture(K.GetTexture(C["UITextures"].HealPredictionTextures))
 	abb:SetVertexColor(1, 1, 0, 0.25)
 
 	local abbo = self:CreateTexture(nil, "ARTWORK", nil, 1)
@@ -953,7 +793,7 @@ function UF:CreatePlates()
 	hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
 	hab:SetWidth(self.Health:GetWidth())
 	hab:SetReverseFill(true)
-	hab:SetStatusBarTexture(HealPredictionTexture)
+	hab:SetStatusBarTexture(K.GetTexture(C["UITextures"].HealPredictionTextures))
 	hab:SetStatusBarColor(1, 0, 0, 0.25)
 
 	local ohg = self:CreateTexture(nil, "ARTWORK", nil, 1)
@@ -976,19 +816,16 @@ function UF:CreatePlates()
 
 	self.Auras = CreateFrame("Frame", nil, self)
 	self.Auras:SetFrameLevel(self:GetFrameLevel() + 2)
-	self.Auras.gap = true
-	self.Auras.initialAnchor = "TOPLEFT"
-	self.Auras["growth-y"] = "DOWN"
-	self.Auras.spacing = 5
-	self.Auras.initialAnchor = "BOTTOMLEFT"
+	self.Auras.spacing = 4
+	self.Auras.initdialAnchor = "BOTTOMLEFT"
 	self.Auras["growth-y"] = "UP"
 	if C["Nameplate"].ShowPlayerPlate and C["Nameplate"].NameplateClassPower then
 		self.Auras:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 15 + _G.oUF_ClassPowerBar:GetHeight() + 6)
 	else
-		self.Auras:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 15)
+		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 16)
 	end
 	self.Auras.numTotal = C["Nameplate"].MaxAuras
-	self.Auras.spacing = 3
+	self.Auras.iconsPerRow = C["Nameplate"].MaxAurasPerRow or 6
 	self.Auras.size = C["Nameplate"].AuraSize
 	self.Auras.gap = false
 	self.Auras.disableMouse = true
@@ -996,7 +833,7 @@ function UF:CreatePlates()
 	local width = self:GetWidth()
 	local maxAuras = self.Auras.numTotal or self.Auras.numBuffs + self.Auras.numDebuffs
 	local maxLines = self.Auras.iconsPerRow and math_floor(maxAuras / self.Auras.iconsPerRow + 0.5) or 2
-	self.Auras.size = self.Auras.iconsPerRow and auraIconSize(width, self.Auras.iconsPerRow, self.Auras.spacing) or self.Auras.size
+	self.Auras.size = self.Auras.iconsPerRow and UF.auraIconSize(width, self.Auras.iconsPerRow, self.Auras.spacing) or self.Auras.size
 	self.Auras:SetWidth(width)
 	self.Auras:SetHeight((self.Auras.size + self.Auras.spacing) * maxLines)
 
@@ -1004,26 +841,29 @@ function UF:CreatePlates()
 	self.Auras.CustomFilter = UF.CustomFilter
 	self.Auras.PostCreateIcon = UF.PostCreateAura
 	self.Auras.PostUpdateIcon = UF.PostUpdateAura
+	self.Auras.PreUpdate = UF.bolsterPreUpdate
+	self.Auras.PostUpdate = UF.bolsterPostUpdate
 
 	self.PvPClassificationIndicator = self:CreateTexture(nil, "ARTWORK")
 	self.PvPClassificationIndicator:SetSize(18, 18)
 	self.PvPClassificationIndicator:SetPoint("LEFT", self, "RIGHT", 6, 0)
-
-	UF:CreateThreatColor(self)
 
 	self.powerText = K.CreateFontString(self, 15)
 	self.powerText:ClearAllPoints()
 	self.powerText:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -4)
 	self:Tag(self.powerText, "[nppp]")
 
+	local CreateThreatIndicator = CreateFrame("Frame", nil, self)
+	self.ThreatIndicator = CreateThreatIndicator
+	self.ThreatIndicator.Override = UF.UpdateThreatColor
+
 	-- UF:AddFollowerXP(self) -- Enable when fixed.
 	UF:MouseoverIndicator(self)
 	UF:AddTargetIndicator(self)
 	UF:AddCreatureIcon(self)
-	UF:AddQuestIcon(self)
 	UF:AddDungeonProgress(self)
-	UF:AddClassIcon(self)
-	UF:AddHealerIcon(self)
+	-- UF:AddClassIcon(self)
+	UF:AddQuestIcon(self)
 end
 
 -- Classpower on target nameplate
@@ -1038,7 +878,7 @@ function UF:UpdateClassPowerAnchor()
 	if nameplate then
 		bar:SetParent(nameplate.unitFrame)
 		bar:ClearAllPoints()
-		bar:SetPoint("TOPLEFT", nameplate.unitFrame, "TOPLEFT", 0, 22)
+		bar:SetPoint("TOPLEFT", nameplate.unitFrame.nameText, "TOPLEFT", 0, 12)
 		bar:Show()
 	else
 		bar:Hide()
@@ -1101,12 +941,30 @@ function UF:PostUpdatePlates(event, unit)
 	end
 
 	if event == "NAME_PLATE_UNIT_ADDED" then
+		self.isPlayer = UnitIsPlayer(unit)
+		self.reaction = UnitReaction("player", unit)
+
+		if UnitIsUnit(unit, "player") then
+			self.frameType = "PLAYER"
+		elseif UnitIsPVPSanctuary(unit) or (self.isPlayer and UnitIsFriend("player", unit) and self.reaction and self.reaction >= 5) then
+			self.frameType = "FRIENDLY_PLAYER"
+		elseif not self.isPlayer and (self.reaction and self.reaction >= 5) or UnitFactionGroup(unit) == "Neutral" then
+			self.frameType = "FRIENDLY_NPC"
+		elseif not self.isPlayer and (self.reaction and self.reaction <= 4) then
+			self.frameType = "ENEMY_NPC"
+		else
+			self.frameType = "ENEMY_PLAYER"
+		end
+
 		self.unitName = UnitName(unit)
 		self.unitGUID = UnitGUID(unit)
 		if self.unitGUID then
 			guidToPlate[self.unitGUID] = self
 		end
 		self.npcID = K.GetNPCID(self.unitGUID)
+
+		local blizzPlate = self:GetParent().UnitFrame
+		self.widget = blizzPlate.WidgetContainer
 	elseif event == "NAME_PLATE_UNIT_REMOVED" then
 		if self.unitGUID then
 			guidToPlate[self.unitGUID] = nil
@@ -1119,8 +977,7 @@ function UF:PostUpdatePlates(event, unit)
 	UF.UpdateUnitClassify(self, unit)
 	UF.UpdateExplosives(self, event, unit)
 	UF.UpdateDungeonProgress(self, unit)
-	UF.UpdatePlateClassIcons(self, unit)
-	UF.UpdateHealerIcon(self, unit)
+	-- UF.UpdatePlateClassIcons(self, unit)
 	UF:UpdateClassPowerAnchor()
 end
 
@@ -1136,6 +993,8 @@ function UF:PlateVisibility(event)
 end
 
 function UF:CreatePlayerPlate()
+	self.mystyle = "PlayerPlate"
+
 	local iconSize, margin = C["Nameplate"].PPIconSize, 2
 
 	self:SetSize(iconSize * 5 + margin * 4, C["Nameplate"].PPHeight)
@@ -1144,14 +1003,14 @@ function UF:CreatePlayerPlate()
 
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetAllPoints()
-	self.Health:SetStatusBarTexture(NameplateTexture)
+	self.Health:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 	self.Health:SetStatusBarColor(.1, .1, .1)
 	self.Health:CreateShadow(true)
 
 	self.Health.colorHealth = true
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	self.Power:SetStatusBarTexture(NameplateTexture)
+	self.Power:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 	self.Power:SetHeight(C["Nameplate"].PPPHeight)
 	self.Power:SetWidth(self:GetWidth())
 	self.Power:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -3)
@@ -1165,16 +1024,24 @@ function UF:CreatePlayerPlate()
 	self.Power.frequentUpdates = true
 
 	do
+		local barWidth, barHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
+		local CPBarPoint = {"TOPLEFT", 12, 4}
+
+		if self.mystyle == "PlayerPlate" then
+			barWidth, barHeight = self:GetWidth(), self.Health:GetHeight()
+			CPBarPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 3}
+		end
+
 		local bar = CreateFrame("Frame", "oUF_ClassPowerBar", self.Health)
-		bar:SetSize(C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight)
-		bar:SetPoint("TOPLEFT", self.Health, 0, 3)
+		bar:SetSize(barWidth, barHeight)
+		bar:SetPoint(unpack(CPBarPoint))
 
 		local bars = {}
 		for i = 1, 6 do
 			bars[i] = CreateFrame("StatusBar", nil, bar)
-			bars[i]:SetHeight(C["Nameplate"].PlateHeight)
-			bars[i]:SetWidth((C["Nameplate"].PlateWidth - 5 * 6) / 6)
-			bars[i]:SetStatusBarTexture(NameplateTexture)
+			bars[i]:SetHeight(barHeight)
+			bars[i]:SetWidth((barWidth - 5 * 6) / 6)
+			bars[i]:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 			bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
 
 			if i == 1 then
@@ -1186,7 +1053,7 @@ function UF:CreatePlayerPlate()
 			bars[i]:CreateShadow(true)
 
 			if K.Class == "DEATHKNIGHT" then
-				bars[i].timer = K.CreateFontString(bars[i], 13, "")
+				bars[i].timer = K.CreateFontString(bars[i], 10, "")
 			end
 
 			if K.Class == "ROGUE" or K.Class == "DRUID" then
@@ -1215,7 +1082,7 @@ function UF:CreatePlayerPlate()
 		self.Stagger = CreateFrame("StatusBar", self:GetName().."Stagger", self)
 		self.Stagger:SetPoint("TOPLEFT", self.Health, 0, 8)
 		self.Stagger:SetSize(self:GetWidth(), self:GetHeight())
-		self.Stagger:SetStatusBarTexture(NameplateTexture)
+		self.Stagger:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 		self.Stagger:CreateShadow(true)
 
 		self.Stagger.Value = self.Stagger:CreateFontString(nil, "OVERLAY")

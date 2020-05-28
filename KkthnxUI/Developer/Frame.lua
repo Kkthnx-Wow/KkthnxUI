@@ -36,18 +36,15 @@ local UnitName = _G.UnitName
 -- /ks, get spell name and description
 -- /kt, get gametooltip names
 
-local dev = {
-	"ForumTroll",
-	"Kkthnx",
-	"Slimfast"
+K.Devs = {
+	["Aceer-Stormreaver"] = true,
+	["Kkthnx-Stormreaver"] = true,
+	["Kkthnx-Sethraliss"] = true,
+	["Kkthnxtv-Sethraliss"] = true,
+	["Superfreak-Sethraliss"] = true,
 }
-
 local function isDeveloper()
-	for _, name in pairs(dev) do
-		if K.Name == name then
-			return true
-		end
-	end
+	return K.Devs[K.Name.."-"..K.Realm]
 end
 K.isDeveloper = isDeveloper()
 

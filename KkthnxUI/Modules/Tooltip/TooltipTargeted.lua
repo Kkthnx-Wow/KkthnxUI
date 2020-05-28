@@ -2,16 +2,16 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Tooltip")
 
 local _G = _G
+local table_concat = _G.table.concat
 local table_insert = _G.table.insert
 local table_wipe = _G.table.wipe
-local table_concat = _G.table.concat
 
-local IsInGroup = _G.IsInGroup
-local UnitExists = _G.UnitExists
 local GetNumGroupMembers = _G.GetNumGroupMembers
+local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
-local UnitIsUnit = _G.UnitIsUnit
+local UnitExists = _G.UnitExists
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
+local UnitIsUnit = _G.UnitIsUnit
 local UnitName = _G.UnitName
 
 local targetTable = {}

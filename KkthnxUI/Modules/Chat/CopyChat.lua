@@ -5,7 +5,7 @@ local Module = K:GetModule("Chat")
 
 local _G = _G
 local sring_format = _G.string.format
-local string_gsub = string.gsub
+local string_gsub = _G.string.gsub
 local table_concat = _G.table.concat
 local tostring = _G.tostring
 
@@ -17,12 +17,11 @@ local PlaySound = _G.PlaySound
 local STATUS = _G.STATUS
 local ScrollFrameTemplate_OnMouseWheel = _G.ScrollFrameTemplate_OnMouseWheel
 local SlashCmdList = _G.SlashCmdList
-local ToggleFrame = _G.ToggleFrame
 local UIParent = _G.UIParent
 
 local lines, menu, frame, editBox = {}
 local CopyChatFont = K.GetFont(C["UIFonts"].ChatFonts)
-local menuFrame = CreateFrame("Frame", "KKUIQuickClickMenu", UIParent, "UIDropDownMenuTemplate")
+local menuFrame = CreateFrame("Frame", "KKUI_QuickMenu", UIParent, "UIDropDownMenuTemplate")
 local leftButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "
 local rightButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "
 
@@ -33,9 +32,9 @@ local menuList = {
 			SlashCmdList["KKUI_STATUSREPORT"]()
 	end},
 
-	{text = L["Install"], notCheckable = true, func = function()
-			K.Install:Launch()
-	end},
+	--{text = L["Install"], notCheckable = true, func = function()
+	--		K.Install:Launch()
+	--end},
 
 	{text = L["MoveUI"], notCheckable = true, func = function()
 			SlashCmdList["KKUI_MOVEUI"]()
@@ -45,13 +44,13 @@ local menuList = {
 			SlashCmdList["KKUI_UIPROFILES"]("list")
 	end},
 
-	{text = L["KkthnxUI Help"], notCheckable = true, func = function()
-			K.Print("Command Not Implemented")
-	end},
+	--{text = L["KkthnxUI Help"], notCheckable = true, func = function()
+	--		K.Print("Command Not Implemented")
+	--end},
 
-	{text = L["Changelog"], notCheckable = true, func = function()
-			K:GetModule("Changelog"):ToggleChangeLog()
-	end},
+	--{text = L["Changelog"], notCheckable = true, func = function()
+	--		K:GetModule("Changelog"):ToggleChangeLog()
+	--end},
 
 	{text = RELOADUI, notCheckable = true, func = function()
 			if InCombatLockdown() then
@@ -59,6 +58,16 @@ local menuList = {
 				return
 			end
 			ReloadUI()
+	end},
+
+	{text = BINDING_NAME_TOGGLECOMBATLOG, notCheckable = true, func = function()
+		if not LoggingCombat() then
+			LoggingCombat(true)
+			K.Print("|cffffff00"..COMBATLOGENABLED.."|r")
+		elseif LoggingCombat() then
+			LoggingCombat(false)
+			K.Print("|cffffff00"..COMBATLOGDISABLED.."|r")
+		end
 	end},
 
 	{text = L["Discord"], notCheckable = true, func = function()
@@ -124,6 +133,7 @@ function Module:GetChatLines()
 		if msg and not isMessageProtected(msg) then
 			r, g, b = r or 1, g or 1, b or 1
 			msg = colorReplace(msg, r, g, b)
+
 			lines[index] = tostring(msg)
 			index = index + 1
 		end
@@ -137,11 +147,6 @@ function Module:ChatCopy_OnClick(btn)
 		if not frame:IsShown() then
 			local chatframe = _G.SELECTED_DOCK_FRAME
 			local _, fontSize = chatframe:GetFont()
-
-			if fontSize < 12 then
-				fontSize = 12
-			end
-
 			FCF_SetChatWindowFontSize(chatframe, chatframe, .01)
 			PlaySound(21968)
 			frame:Show()
@@ -155,8 +160,13 @@ function Module:ChatCopy_OnClick(btn)
 		end
 	elseif btn == "RightButton" then
 		if not ChatMenu:IsShown() then
+			if InCombatLockdown() then
+				UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+				return
+			end
+
 			PlaySound(111)
-			ToggleFrame(_G.ChatMenu)
+			K.TogglePanel(_G.ChatMenu)
 		else
 			ChatMenu:Hide()
 		end
@@ -164,7 +174,7 @@ function Module:ChatCopy_OnClick(btn)
 end
 
 function Module:ChatCopy_CreateMenu()
-	menu = CreateFrame("Frame", nil, UIParent)
+	menu = CreateFrame("Frame", "KKUI_ChatMenu", UIParent)
 	menu:SetSize(22, 100)
 	menu:SetPoint("TOPRIGHT", _G.ChatFrame1, 22, 0)
 
@@ -285,8 +295,9 @@ function Module:ChatCopy_Create()
 	editBox:EnableMouse(true)
 	editBox:SetAutoFocus(false)
 	editBox:SetFontObject(CopyChatFont)
+	editBox:SetFont(select(1, editBox:GetFont()), 12, select(3, editBox:GetFont()))
 	editBox:SetWidth(scrollArea:GetWidth())
-	editBox:SetHeight(scrollArea:GetHeight())
+	editBox:SetHeight(400)
 	editBox:SetScript("OnEscapePressed", function()
 		frame:Hide()
 	end)

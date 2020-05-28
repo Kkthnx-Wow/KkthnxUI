@@ -22,6 +22,16 @@ class-generation, helper-functions and the Blizzard-replacement.
 local parent, ns = ...
 local global = GetAddOnMetadata(parent, 'X-cargBags')
 
+local _G = _G
+local math_floor = _G.math_floor
+local select = _G.select
+local pairs = _G.pairs
+
+local CreateFrame = _G.CreateFrame
+local getmetatable = _G.getmetatable
+local IsLoggedIn = _G.IsLoggedIn
+local setmetatable = _G.setmetatable
+
 -- @class table
 -- @name cargBags
 -- This class provides the underlying fundamental functions, such as
@@ -132,7 +142,6 @@ end
 
 cargBags:RegisterEvent("BANKFRAME_OPENED")
 cargBags:RegisterEvent("BANKFRAME_CLOSED")
-
 cargBags:SetScript("OnEvent", function(self, event)
 	if (not self.blizzard) then
 		return
@@ -168,11 +177,11 @@ cargBags:SetScript("OnEvent", function(self, event)
 end)
 
 	local handlerFuncs = setmetatable({}, {__index = function(self, handler)
-	self[handler] = function(self, ...)
-		return self[handler] and self[handler](self, ...)
-	end
+		self[handler] = function(self, ...)
+			return self[handler] and self[handler](self, ...)
+		end
 
-	return self[handler]
+		return self[handler]
 end})
 
 -- Sets a number of script handlers by redirecting them to the members function, e.g. self:OnEvent(self, ...)
@@ -190,7 +199,7 @@ end
 -- @param slotID <number>
 -- @return bagSlot <number>
 function cargBags.ToBagSlot(bagID, slotID)
-	return bagID*100+slotID
+	return bagID * 100 + slotID
 end
 
 -- Gets the bagID-slotID-pair of a bagSlot-index
@@ -198,7 +207,7 @@ end
 -- @return bagID <number>
 -- @return bagSlot <number>
 function cargBags.FromBagSlot(bagSlot)
-	return floor(bagSlot/100), bagSlot % 100
+	return math_floor(bagSlot/100), bagSlot % 100
 end
 
 -- Creates a new item table which has access to ItemKeys

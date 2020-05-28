@@ -16,16 +16,17 @@ function Module:CreateBar3()
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
 	local layout = C["ActionBar"].Layout.Value
+	local buttonSize = C["ActionBar"].DefaultButtonSize
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KkthnxUI_ActionBar3", UIParent, "SecureHandlerStateTemplate")
 	if layout == "3x4 Boxed arrangement" then
-		frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
-		frame:SetHeight(FilterConfig.size + 2 * padding)
+		frame:SetWidth(num * buttonSize + (num - 1) * margin + 2 * padding)
+		frame:SetHeight(buttonSize + 2 * padding)
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 4}
 	else
-		frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
-		frame:SetHeight(FilterConfig.size + 2 * padding)
+		frame:SetWidth(num * buttonSize + (num - 1) * margin + 2 * padding)
+		frame:SetHeight(buttonSize + 2 * padding)
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 84}
 	end
 
@@ -36,7 +37,7 @@ function Module:CreateBar3()
 	for i = 1, num do
 		local button = _G["MultiBarBottomRightButton"..i]
 		table_insert(buttonList, button) -- Add The Button Object To The List
-		button:SetSize(FilterConfig.size, FilterConfig.size)
+		button:SetSize(buttonSize, buttonSize)
 		button:ClearAllPoints()
 		if i == 1 then
 			button:SetPoint("LEFT", frame, padding, 0)
@@ -52,7 +53,7 @@ function Module:CreateBar3()
 
 	-- Create Drag Frame And Drag Functionality
 	if K.ActionBars.userPlaced then
-		K.Mover(frame, SHOW_MULTIBAR2_TEXT, "Bar3", frame.Pos)
+		frame.mover = K.Mover(frame, SHOW_MULTIBAR2_TEXT, "Bar3", frame.Pos)
 	end
 
 	if FilterConfig.fader then
