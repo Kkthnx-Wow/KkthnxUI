@@ -7,9 +7,9 @@ local string_gsub = _G.string.gsub
 local table_wipe = _G.table.wipe
 
 local BNGetNumFriends = _G.BNGetNumFriends
-local C_BattleNet_GetFriendAccountInfo = _G.BNGetFriendInfo
-local C_BattleNet_GetFriendGameAccountInfo = _G.BNGetFriendGameAccountInfo
-local C_BattleNet_GetFriendNumGameAccounts = _G.BNGetNumFriendGameAccounts
+local C_BattleNet_GetFriendAccountInfo = _G.C_BattleNet.GetFriendAccountInfo
+local C_BattleNet_GetFriendGameAccountInfo = _G.C_BattleNet.GetFriendGameAccountInfo
+local C_BattleNet_GetFriendNumGameAccounts = _G.C_BattleNet.GetFriendNumGameAccounts
 local C_LFGList_GetSearchResultInfo = _G.C_LFGList.GetSearchResultInfo
 local C_SocialQueue_GetAllGroups = _G.C_SocialQueue.GetAllGroups
 local C_SocialQueue_GetGroupMembers = _G.C_SocialQueue.GetGroupMembers
@@ -18,6 +18,7 @@ local QUICK_JOIN = _G.QUICK_JOIN
 local SocialQueueUtil_GetQueueName = _G.SocialQueueUtil_GetQueueName
 local SocialQueueUtil_GetRelationshipInfo = _G.SocialQueueUtil_GetRelationshipInfo
 local UNKNOWN = _G.UNKNOWN
+local BNET_CLIENT_WOW = _G.BNET_CLIENT_WOW
 
 local quickJoin = {}
 
