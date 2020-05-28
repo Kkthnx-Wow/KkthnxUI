@@ -12,6 +12,7 @@ end
 
 local _G = _G
 local select = _G.select
+local math_floor = _G.math.floor
 
 local CreateFrame = _G.CreateFrame
 local UnitIsUnit = _G.UnitIsUnit
@@ -134,7 +135,7 @@ function Module:CreateParty()
 		self.Buffs.onlyShowPlayer = false
 		self.Buffs.size = Module.auraIconSize(aurasSetWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
 		self.Buffs:SetWidth(aurasSetWidth)
-		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num / self.Buffs.iconsPerRow + 0.5))
+		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math_floor(self.Buffs.num / self.Buffs.iconsPerRow + 0.5))
 		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
@@ -151,7 +152,7 @@ function Module:CreateParty()
 	self.Debuffs.CustomFilter = Module.CustomFilter
 	self.Debuffs.size = Module.auraIconSize(aurasSetWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing + 2.5)
 	self.Debuffs:SetWidth(aurasSetWidth)
-	self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num/self.Debuffs.iconsPerRow + 0.5))
+	self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math_floor(self.Debuffs.num/self.Debuffs.iconsPerRow + 0.5))
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 
@@ -271,10 +272,6 @@ function Module:CreateParty()
 	self.StatusIndicator:SetFontObject(UnitframeFont)
 	self.StatusIndicator:SetFont(select(1, self.StatusIndicator:GetFont()), 10, select(3, self.StatusIndicator:GetFont()))
 	self:Tag(self.StatusIndicator, "[afkdnd]")
-
-	if C["Raid"].AuraWatch then
-		self.AuraWatch = Module.CreateAuraWatch(self)
-	end
 
 	if (C["Party"].TargetHighlight) then
         self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay)

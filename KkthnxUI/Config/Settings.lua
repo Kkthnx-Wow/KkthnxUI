@@ -73,6 +73,7 @@ C["Automation"] = {
 	["AutoDeclineDuels"] = false,
 	["AutoDeclinePetDuels"] = false,
 	["AutoDisenchant"] = false,
+	["AutoDungeonThanks"] = false,
 	["AutoInvite"] = false,
 	["AutoQuest"] = false,
 	["AutoRelease"] = false,

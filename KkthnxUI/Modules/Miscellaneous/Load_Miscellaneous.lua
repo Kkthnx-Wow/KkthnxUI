@@ -569,7 +569,11 @@ do
 end
 
 do
-	local function TestComplete()
+	local function CreateAutoDungeonThanks()
+		if not C["Automation"].AutoDungeonThanks then
+			return
+		end
+
 		local isLFG = _G.IsPartyLFG()
 
 		_G.C_Timer.After(1.5, function() -- Give this more time to say thanks.
@@ -578,7 +582,7 @@ do
 			end
 		end)
 	end
-	K:RegisterEvent("LFG_COMPLETION_REWARD", TestComplete)
+	K:RegisterEvent("LFG_COMPLETION_REWARD", CreateAutoDungeonThanks)
 end
 
 function Module:OnEnable()
