@@ -700,7 +700,7 @@ function Module:CreateUnits()
 		local groupingOrder = "NONE,DAMAGER,HEALER,TANK"
 
 		local party = oUF:SpawnHeader("oUF_Party", nil, "solo,party",
-		"showPlayer", true,
+		"showPlayer", C["Party"].ShowPlayer,
 		"showSolo", false,
 		"showParty", true,
 		"showRaid", false,
