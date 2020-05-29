@@ -63,6 +63,7 @@ function Module:OnEnable()
     end
 
     self:CreateReminder()
+    self:CreateFilger()
 end
 
 local day, hour, minute = 86400, 3600, 60

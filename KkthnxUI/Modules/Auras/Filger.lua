@@ -1,4 +1,5 @@
 local K, C, _ = unpack(select(2, ...))
+local Module = K:GetModule("Auras")
 
 local _G = _G
 local ipairs = _G.ipairs
@@ -508,160 +509,163 @@ function Filger:OnEvent(event, unit, _, castID)
 	end
 end
 
-if C["FilgerSpells"] and C["FilgerSpells"]["ALL"] then
-	if not C["FilgerSpells"][K.Class] then
-		C["FilgerSpells"][K.Class] = {}
-	end
-
-	for i = 1, #C["FilgerSpells"]["ALL"], 1 do
-		local merge = false
-		local spellListAll = C["FilgerSpells"]["ALL"][i]
-		local spellListClass = nil
-		for j = 1, #C["FilgerSpells"][K.Class], 1 do
-			spellListClass = C["FilgerSpells"][K.Class][j]
-			local mergeAll = spellListAll.Merge or false
-			local mergeClass = spellListClass.Merge or false
-			if spellListClass.Name == spellListAll.Name and (mergeAll or mergeClass) then
-				merge = true
-				break
-			end
+function Module:CreateFilger()
+	if C["FilgerSpells"] and C["FilgerSpells"]["ALL"] then
+		if not C["FilgerSpells"][K.Class] then
+			C["FilgerSpells"][K.Class] = {}
 		end
-		if not merge or not spellListClass then
-			table_insert(C["FilgerSpells"][K.Class], C["FilgerSpells"]["ALL"][i])
-		else
-			for j = 1, #spellListAll, 1 do
-				table_insert(spellListClass, spellListAll[j])
-			end
-		end
-	end
-end
 
-if K.CustomFilgerSpell then
-	for _, data in pairs(K.CustomFilgerSpell) do
-		for class, _ in pairs(C["FilgerSpells"]) do
-			if class == K.Class then
-				for i = 1, #C["FilgerSpells"][class], 1 do
-					if C["FilgerSpells"][class][i]["Name"] == data[1] then
-						table_insert(C["FilgerSpells"][class][i], data[2])
-					end
+		for i = 1, #C["FilgerSpells"]["ALL"], 1 do
+			local merge = false
+			local spellListAll = C["FilgerSpells"]["ALL"][i]
+			local spellListClass = nil
+			for j = 1, #C["FilgerSpells"][K.Class], 1 do
+				spellListClass = C["FilgerSpells"][K.Class][j]
+				local mergeAll = spellListAll.Merge or false
+				local mergeClass = spellListClass.Merge or false
+				if spellListClass.Name == spellListAll.Name and (mergeAll or mergeClass) then
+					merge = true
+					break
 				end
 			end
-		end
-	end
-end
 
-if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
-	for index in pairs(C["FilgerSpells"]) do
-		if index ~= K.Class then
-			C["FilgerSpells"][index] = nil
-		end
-	end
-
-	local idx = {}
-	for i = 1, #C["FilgerSpells"][K.Class], 1 do
-		local jdx = {}
-		local data = C["FilgerSpells"][K.Class][i]
-		local group = {spells = {}}
-
-		for j = 1, #data, 1 do
-			local name
-			if data[j].spellID then
-				name = GetSpellInfo(data[j].spellID)
+			if not merge or not spellListClass then
+				table_insert(C["FilgerSpells"][K.Class], C["FilgerSpells"]["ALL"][i])
 			else
-				local slotLink = GetInventoryItemLink("player", data[j].slotID)
-				if slotLink then
-					name = GetItemInfo(slotLink)
+				for j = 1, #spellListAll, 1 do
+					table_insert(spellListClass, spellListAll[j])
 				end
 			end
-
-			if name or data[j].slotID then
-				local id
-				if data[j].absID then
-					id = data[j].spellID or data[j].slotID
-				else
-					id = GetSpellInfo(data[j].spellID) or data[j].slotID
-				end
-
-				data[j].sort = j
-				group.spells[id] = data[j]
-			end
-
-			if not name and not data[j].slotID then
-				print("|cffff0000WARNING: spell/slot ID ["..(data[j].spellID or data[j].slotID or "UNKNOWN").."] no longer exists! Report this to Kkthnx.|r")
-				table_insert(jdx, j)
-			end
-		end
-
-		for _, v in ipairs(jdx) do
-			table_remove(data, v)
-		end
-
-		group.data = data
-		table.insert(SpellGroups, i, group)
-
-		if #data == 0 then
-			print("|cffff0000WARNING: section ["..data.Name.."] is empty! Report this to Kkthnx.|r")
-			table_insert(idx, i)
 		end
 	end
 
-	for _, v in ipairs(idx) do
-		table_remove(C["FilgerSpells"][K.Class], v)
-	end
-
-	for i = 1, #SpellGroups, 1 do
-		local data = SpellGroups[i].data
-		local frame = CreateFrame("Frame", "FilgerFrame"..i.."_"..data.Name, K.PetBattleHider)
-		frame.Id = i
-		frame.Name = data.Name
-		frame.Direction = data.Direction or "DOWN"
-		frame.IconSide = data.IconSide or "LEFT"
-		frame.Mode = data.Mode or "ICON"
-		frame.Interval = data.Interval or 3
-		frame:SetAlpha(data.Alpha or 1)
-		frame.IconSize = data.IconSize or C["Filger"].BuffSize
-		frame.BarWidth = data.BarWidth or 186
-		frame.Position = data.Position or "CENTER"
-		frame:SetPoint(unpack(data.Position))
-		frame.actives = {}
-
-		if C["Filger"].TestMode then
-			frame.actives = {}
-			for j = 1, math.min(C["Filger"].MaxTestIcon, #C["FilgerSpells"][K.Class][i]), 1 do
-				local data = C["FilgerSpells"][K.Class][i][j]
-				local name, icon
-				if data.spellID then
-					name, _, icon = GetSpellInfo(data.spellID)
-				elseif data.slotID then
-					local slotLink = GetInventoryItemLink("player", data.slotID)
-					if slotLink then
-						name, _, _, _, _, _, _, _, _, icon = GetItemInfo(slotLink)
+	if K.CustomFilgerSpell then
+		for _, data in pairs(K.CustomFilgerSpell) do
+			for class, _ in pairs(C["FilgerSpells"]) do
+				if class == K.Class then
+					for i = 1, #C["FilgerSpells"][class], 1 do
+						if C["FilgerSpells"][class][i]["Name"] == data[1] then
+							table_insert(C["FilgerSpells"][class][i], data[2])
+						end
 					end
 				end
-				frame.actives[j] = {data = data, name = name, icon = icon, count = 9, start = 0, duration = 0, spid = data.spellID or data.slotID, sort = data.sort}
 			end
-			Filger.DisplayActives(frame)
-		else
-			for j = 1, #C["FilgerSpells"][K.Class][i], 1 do
-				local data = C["FilgerSpells"][K.Class][i][j]
-				if data.filter == "CD" then
-					frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
-					break
-				elseif data.trigger == "NONE" then
-					frame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-					break
+		end
+	end
+
+	if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
+		for index in pairs(C["FilgerSpells"]) do
+			if index ~= K.Class then
+				C["FilgerSpells"][index] = nil
+			end
+		end
+
+		local idx = {}
+		for i = 1, #C["FilgerSpells"][K.Class], 1 do
+			local jdx = {}
+			local data = C["FilgerSpells"][K.Class][i]
+			local group = {spells = {}}
+
+			for j = 1, #data, 1 do
+				local name
+				if data[j].spellID then
+					name = GetSpellInfo(data[j].spellID)
+				else
+					local slotLink = GetInventoryItemLink("player", data[j].slotID)
+					if slotLink then
+						name = GetItemInfo(slotLink)
+					end
 				end
 
-				if data.filter ~= "CD" then
-					frame:RegisterEvent("UNIT_AURA")
-					break
+				if name or data[j].slotID then
+					local id
+					if data[j].absID then
+						id = data[j].spellID or data[j].slotID
+					else
+						id = GetSpellInfo(data[j].spellID) or data[j].slotID
+					end
+
+					data[j].sort = j
+					group.spells[id] = data[j]
+				end
+
+				if not name and not data[j].slotID then
+					print("|cffff0000WARNING: spell/slot ID ["..(data[j].spellID or data[j].slotID or "UNKNOWN").."] no longer exists! Report this to Kkthnx.|r")
+					table_insert(jdx, j)
 				end
 			end
 
-			frame:RegisterEvent("PLAYER_FOCUS_CHANGED")
-			frame:RegisterEvent("PLAYER_TARGET_CHANGED")
-			frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-			frame:SetScript("OnEvent", Filger.OnEvent)
+			for _, v in ipairs(jdx) do
+				table_remove(data, v)
+			end
+
+			group.data = data
+			table_insert(SpellGroups, i, group)
+
+			if #data == 0 then
+				print("|cffff0000WARNING: section ["..data.Name.."] is empty! Report this to Kkthnx.|r")
+				table_insert(idx, i)
+			end
+		end
+
+		for _, v in ipairs(idx) do
+			table_remove(C["FilgerSpells"][K.Class], v)
+		end
+
+		for i = 1, #SpellGroups, 1 do
+			local data = SpellGroups[i].data
+			local frame = CreateFrame("Frame", "FilgerFrame"..i.."_"..data.Name, K.PetBattleHider)
+			frame.Id = i
+			frame.Name = data.Name
+			frame.Direction = data.Direction or "DOWN"
+			frame.IconSide = data.IconSide or "LEFT"
+			frame.Mode = data.Mode or "ICON"
+			frame.Interval = data.Interval or 3
+			frame:SetAlpha(data.Alpha or 1)
+			frame.IconSize = data.IconSize or C["Filger"].BuffSize
+			frame.BarWidth = data.BarWidth or 186
+			frame.Position = data.Position or "CENTER"
+			frame:SetPoint(unpack(data.Position))
+			frame.actives = {}
+
+			if C["Filger"].TestMode then
+				frame.actives = {}
+				for j = 1, math.min(C["Filger"].MaxTestIcon, #C["FilgerSpells"][K.Class][i]), 1 do
+					local data = C["FilgerSpells"][K.Class][i][j]
+					local name, icon
+					if data.spellID then
+						name, _, icon = GetSpellInfo(data.spellID)
+					elseif data.slotID then
+						local slotLink = GetInventoryItemLink("player", data.slotID)
+						if slotLink then
+							name, _, _, _, _, _, _, _, _, icon = GetItemInfo(slotLink)
+						end
+					end
+					frame.actives[j] = {data = data, name = name, icon = icon, count = 9, start = 0, duration = 0, spid = data.spellID or data.slotID, sort = data.sort}
+				end
+				Filger.DisplayActives(frame)
+			else
+				for j = 1, #C["FilgerSpells"][K.Class][i], 1 do
+					local data = C["FilgerSpells"][K.Class][i][j]
+					if data.filter == "CD" then
+						frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+						break
+					elseif data.trigger == "NONE" then
+						frame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+						break
+					end
+
+					if data.filter ~= "CD" then
+						frame:RegisterEvent("UNIT_AURA")
+						break
+					end
+				end
+
+				frame:RegisterEvent("PLAYER_FOCUS_CHANGED")
+				frame:RegisterEvent("PLAYER_TARGET_CHANGED")
+				frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+				frame:SetScript("OnEvent", Filger.OnEvent)
+			end
 		end
 	end
 end

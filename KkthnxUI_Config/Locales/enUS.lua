@@ -147,6 +147,11 @@ _G.KkthnxUIConfig["enUS"] = {
 			["Name"] = "Auto Disenchant With 'ALT'",
 		},
 
+		["AutoDungeonThanks"] = {
+			["Name"] = "Auto Thank Dungeon Groups",
+			["Desc"] = "This will auto thank your dungeon group members on completion of the dungeon",
+		},
+
 		["AutoQuest"] = {
 			["Name"] = "Auto Accept & Turnin Quests",
 		},

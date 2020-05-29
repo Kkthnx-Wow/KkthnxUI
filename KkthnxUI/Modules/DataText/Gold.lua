@@ -3,7 +3,6 @@ local Module = K:GetModule("Infobar")
 
 local _G = _G
 local string_format = _G.string.format
-local string_join = _G.string.join
 local table_insert = _G.table.insert
 local table_wipe = _G.table.wipe
 
@@ -93,7 +92,7 @@ local function OnEnter()
 	for k,_ in pairs(KkthnxUIData.gold[K.Realm]) do
 		if KkthnxUIData.gold[K.Realm][k] then
 			local class = KkthnxUIData.class[K.Realm][k] or "PRIEST"
-			local color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[class] or PRIEST_COLOR
+			local color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[class] or RAID_CLASS_COLORS.PRIEST_COLOR
 			table_insert(myGold,
 			{
 				name = k,
