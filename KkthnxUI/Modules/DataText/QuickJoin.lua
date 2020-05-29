@@ -142,13 +142,7 @@ local function OnUpdate()
 		end
 	end
 
-	if next(quickJoin) then
-		Module.LFDFont:SetFormattedText("%s", #quickJoinGroups)
-	else
-		Module.LFDFont:SetText(" ")
-	end
-
-	-- Module.LFDFont:SetFormattedText("%s", #quickJoinGroups)
+	Module.LFDFont:SetFormattedText("%s", #quickJoinGroups)
 end
 
 local function OnMouseUp(_, button)
