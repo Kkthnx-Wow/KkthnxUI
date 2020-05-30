@@ -11,6 +11,8 @@ local string_format = _G.string.format
 local time = _G.time
 local tonumber = _G.tonumber
 
+local CALENDAR_FULLDATE_MONTH_NAMES = _G.CALENDAR_FULLDATE_MONTH_NAMES
+local CALENDAR_WEEKDAY_NAMES = _G.CALENDAR_WEEKDAY_NAMES
 local C_AreaPoiInfo_GetAreaPOISecondsLeft = _G.C_AreaPoiInfo.GetAreaPOISecondsLeft
 local C_Calendar_GetDate = _G.C_Calendar.GetDate
 local C_Calendar_GetDayEvent = _G.C_Calendar.GetDayEvent
@@ -19,6 +21,8 @@ local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
 local C_Calendar_OpenCalendar = _G.C_Calendar.OpenCalendar
 local C_Calendar_SetAbsMonth = _G.C_Calendar.SetAbsMonth
 local C_Map_GetMapInfo = _G.C_Map.GetMapInfo
+local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local FULLDATE = _G.FULLDATE
 local GameTime_GetGameTime = _G.GameTime_GetGameTime
 local GameTime_GetLocalTime = _G.GameTime_GetLocalTime
 local GetCVar = _G.GetCVar
@@ -29,10 +33,19 @@ local GetNumSavedInstances = _G.GetNumSavedInstances
 local GetNumSavedWorldBosses = _G.GetNumSavedWorldBosses
 local GetSavedInstanceInfo = _G.GetSavedInstanceInfo
 local GetSavedWorldBossInfo = _G.GetSavedWorldBossInfo
+local ISLANDS_HEADER = _G.ISLANDS_HEADER
 local InCombatLockdown = _G.InCombatLockdown
 local IsQuestFlaggedCompleted = _G.IsQuestFlaggedCompleted
+local LFG_LIST_LOADING = _G.LFG_LIST_LOADING
+local PLAYER_DIFFICULTY_TIMEWALKER = _G.PLAYER_DIFFICULTY_TIMEWALKER
+local QUESTS_LABEL = _G.QUESTS_LABEL
+local QUEST_COMPLETE = _G.QUEST_COMPLETE
+local QUEUE_TIME_UNAVAILABLE = _G.QUEUE_TIME_UNAVAILABLE
 local RequestRaidInfo = _G.RequestRaidInfo
 local SecondsToTime = _G.SecondsToTime
+local TIMEMANAGER_TICKER_12HOUR = _G.TIMEMANAGER_TICKER_12HOUR
+local TIMEMANAGER_TICKER_24HOUR = _G.TIMEMANAGER_TICKER_24HOUR
+local WORLD_BOSSES_TEXT = _G.WORLD_BOSSES_TEXT
 
 -- Data
 local timeBonusList = {
@@ -290,7 +303,9 @@ function Module:OnEnter()
 		else
 			local cur, max = select(4, GetQuestObjectiveInfo(iwqID, 1, false))
 			local stautsText = cur.."/"..max
-			if not cur or not max then stautsText = LFG_LIST_LOADING end
+			if not cur or not max then
+				stautsText = LFG_LIST_LOADING
+			end
 			GameTooltip:AddDoubleLine(ISLANDS_HEADER, stautsText, 1,1,1, 0,1,0)
 		end
 	end
@@ -338,14 +353,14 @@ end
 
 function Module:OnMouseUp(_, btn)
 	if btn == "RightButton" then
-		ToggleTimeManager()
+		_G.ToggleTimeManager()
 	else
 		if InCombatLockdown() then
-			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+			_G.UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
 			return
 		end
 
-		ToggleCalendar()
+		_G.ToggleCalendar()
 	end
 end
 
@@ -356,18 +371,11 @@ function Module:CreateTimeDataText()
 
 	Module.TimeFrame = CreateFrame("Frame", "KKUI_TimeDataText", UIParent)
 
-	local TimeFontLocation
 	Module.TimeFont = Module.TimeFrame:CreateFontString("OVERLAY")
 	Module.TimeFont:FontTemplate(nil, 13)
 	Module.TimeFont:ClearAllPoints()
 
-	if C["General"].IamSophia then
-		TimeFontLocation = {"BOTTOM", Minimap, "BOTTOM", 0, 20}
-	else
-		TimeFontLocation = {"BOTTOM", Minimap, "BOTTOM", 0, 2}
-	end
-
-	Module.TimeFont:SetPoint(unpack(TimeFontLocation))
+	Module.TimeFont:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 2)
 
 	Module.TimeFrame:SetAllPoints(Module.TimeFont)
 

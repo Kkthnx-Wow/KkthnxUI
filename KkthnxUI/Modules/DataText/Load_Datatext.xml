@@ -8,6 +8,5 @@
     <Script file="Guild.lua"/>
     <Script file="QuickJoin.lua"/>
     <Script file="System.lua"/>
-    <Script file="Talents.lua"/>
     <Script file="Time.lua"/>
 </Ui>

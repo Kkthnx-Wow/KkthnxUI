@@ -10,7 +10,6 @@
    <Script file="EnchantScroll.lua" />
    <Script file="ImprovedMail.lua" />
    <Script file="KillingBlow.lua" />
-   <Script file="LogoAnimation.lua" />
    <Script file="MDGuildBest.lua" />
    <Script file="MerchantItemlevel.lua" />
    <Script file="MissingStats.lua" />

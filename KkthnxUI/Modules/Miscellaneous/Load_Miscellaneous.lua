@@ -607,7 +607,6 @@ function Module:OnEnable()
 	self:CreateTradeTabs()
 	self:CreateTradeTargetInfo()
 	self:CreateVehicleSeatMover()
-	-- self:CreateLogoAnimation()
 
 	do
 		StaticPopupDialogs.ADDON_ACTION_FORBIDDEN.button1 = nil

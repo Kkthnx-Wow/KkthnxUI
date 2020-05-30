@@ -7,6 +7,5 @@ function Module:OnEnable()
 	-- self:CreateQuickJoinDataText()
 	self:CreateSocialDataText()
 	self:CreateSystemDataText()
-	-- self:CreateTalentDataText()
 	self:CreateTimeDataText()
 end

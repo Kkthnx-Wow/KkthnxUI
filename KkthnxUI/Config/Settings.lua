@@ -178,7 +178,6 @@ C["DataText"] = {
 	["Friends"] = true,
 	["Guild"] = true,
 	["System"] = true,
-	["Talents"] = true,
 	["Time"] = true,
 }
 

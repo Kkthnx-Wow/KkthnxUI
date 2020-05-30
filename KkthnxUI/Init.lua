@@ -179,7 +179,8 @@ function K:GetModule(name)
 end
 
 local function GetBestScale()
-	return math_max(0.4, math_min(1.15, 768 / K.ScreenHeight))
+	local scale = math_max(0.4, math_min(1.15, 768 / K.ScreenHeight))
+	return K.Round(scale, 2)
 end
 
 function K:SetupUIScale(init)
@@ -268,19 +269,38 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 		end
 	end
 
+	local KKGUIButton = CreateFrame("Button", "GameMenuFrame_KKUI", GameMenuFrame, "GameMenuButtonTemplate")
+	KKGUIButton:SetText((string_format("|cff669DFF%s|r", AddOnName)))
+	KKGUIButton:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
+	GameMenuFrame:HookScript("OnShow", function(self)
+		GameMenuButtonLogout:SetPoint("TOP", KKGUIButton, "BOTTOM", 0, -21)
+		self:SetHeight(self:GetHeight() + KKGUIButton:GetHeight() + 22)
+	end)
+
+	KKGUIButton:SetScript("OnClick", function()
+		if InCombatLockdown() then
+			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+			return
+		end
+
+		if (not KkthnxUIConfigFrame) then
+			KkthnxUIConfig:CreateConfigWindow()
+			PlaySound(603)
+		end
+
+		if KkthnxUIConfigFrame:IsVisible() then
+			KkthnxUIConfigFrame:Hide()
+			PlaySound(604)
+		else
+			KkthnxUIConfigFrame:Show()
+			PlaySound(603)
+		end
+
+		HideUIPanel(GameMenuFrame)
+	end)
+
 	K.Modules = modules
 end)
-
-local function PositionGameMenuButton()
-	GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + GameMenuButtonLogout:GetHeight())
-	local _, relTo, _, _, offY = GameMenuButtonLogout:GetPoint()
-	if relTo ~= GameMenuFrame[AddOnName] then
-		GameMenuFrame[AddOnName]:ClearAllPoints()
-		GameMenuFrame[AddOnName]:SetPoint("TOPLEFT", relTo, "BOTTOMLEFT", 0, -1)
-		GameMenuButtonLogout:ClearAllPoints()
-		GameMenuButtonLogout:SetPoint("TOPLEFT", GameMenuFrame[AddOnName], "BOTTOMLEFT", 0, offY)
-	end
-end
 
 -- Got to check for addon name, or this will fire for ALL addons, creating a ton of buttons!
 K:RegisterEvent("ADDON_LOADED", function(_, addon)
@@ -389,33 +409,6 @@ K:RegisterEvent("ADDON_LOADED", function(_, addon)
 
 	K.GUID = UnitGUID("player")
 	K.CreateStaticPopups()
-
-	-- KkthnxUI GameMenu Button.
-	local GameMenuButton = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")
-	GameMenuButton:SetText(string_format("|cff669DFF%s|r", AddOnName))
-	GameMenuButton:SetScript("OnClick", function()
-		if (not KkthnxUIConfigFrame) then
-			KkthnxUIConfig:CreateConfigWindow()
-			PlaySound(603)
-		end
-
-		if KkthnxUIConfigFrame:IsVisible() then
-			KkthnxUIConfigFrame:Hide()
-			PlaySound(604)
-		else
-			KkthnxUIConfigFrame:Show()
-			PlaySound(603)
-		end
-
-		HideUIPanel(GameMenuFrame)
-	end)
-	GameMenuFrame[AddOnName] = GameMenuButton
-
-	if not IsAddOnLoaded("ConsolePortUI_Menu") then
-		GameMenuButton:SetSize(GameMenuButtonLogout:GetWidth(), GameMenuButtonLogout:GetHeight())
-		GameMenuButton:SetPoint("TOPLEFT", GameMenuButtonAddons, "BOTTOMLEFT", 0, -1)
-		hooksecurefunc("GameMenuFrame_UpdateVisibleButtons", PositionGameMenuButton)
-	end
 
 	K:UnregisterEvent("ADDON_LOADED")
 end)
