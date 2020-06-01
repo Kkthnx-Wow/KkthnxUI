@@ -17,6 +17,7 @@ local GetSpellInfo = _G.GetSpellInfo
 local ITEM_MOD_CORRUPTION = _G.ITEM_MOD_CORRUPTION
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsCorruptedItem = _G.IsCorruptedItem
+local IsShiftKeyDown = _G.IsShiftKeyDown
 local TOTAL_CORRUPTION_TOOLTIP_LINE = _G.TOTAL_CORRUPTION_TOOLTIP_LINE
 local UnitGUID = _G.UnitGUID
 local hooksecurefunc = _G.hooksecurefunc
@@ -100,7 +101,7 @@ local corruptionDataFix = {
 local linkCache = {}
 local corruptionR, corruptionG, corruptionB = .584, .428, .82
 local summaries = {}
-local cloakResString = "(%d+) "..ITEM_MOD_CORRUPTION_RESISTANCE
+local cloakResString = "(%d+)%s?"..ITEM_MOD_CORRUPTION_RESISTANCE
 local essenceTextureIDs = {
 	[2967101] = true,
 	[3193842] = true,
@@ -116,17 +117,17 @@ function Module:Corruption_Search(link)
 	if not value then
 		local itemID, itemString = string_match(link, "item:(%d+):([%-?%d:]+)")
 		local isCorruptedWeapon = corruptionDataFix[itemID]
-		if isCorruptedWeapon then
+		for index in string_gmatch(itemString, "%d+") do
+			if corruptionData[index] then
+				value = corruptionData[index]
+				linkCache[link] = value
+				break
+			end
+		end
+
+		if not value and isCorruptedWeapon then
 			value = corruptionData[isCorruptedWeapon]
 			linkCache[link] = value
-		else
-			for index in string_gmatch(itemString, "%d+") do
-				if corruptionData[index] then
-					value = corruptionData[index]
-					linkCache[link] = value
-					break
-				end
-			end
 		end
 	end
 	return value
@@ -141,8 +142,11 @@ function Module:Corruption_Convert(name, icon, level)
 		local line = _G[self:GetName().."TextLeft"..i]
 		local text = line:GetText()
 		if text and string_match(text, ITEM_MOD_CORRUPTION) then
-			-- line:SetText(text.." - "..getIconString(icon)..name.." "..level)
-			line:SetText("+"..getIconString(icon)..name.." "..level)
+			if IsShiftKeyDown() then
+				line:SetText(text.." - "..getIconString(icon)..name.." "..level)
+			else
+				line:SetText("+"..getIconString(icon)..name.." "..level)
+			end
 			return
 		end
 	end
@@ -194,7 +198,7 @@ function Module:Corruption_AddSummary()
 	GameTooltip:AddLine(" ")
 
 	for value, count in next, summaries do
-		GameTooltip:AddLine("+"..count.." "..getIconString(value.icon)..value.name.." "..value.level, corruptionR, corruptionG, corruptionB)
+		GameTooltip:AddDoubleLine(getIconString(value.icon)..value.name.." "..value.level, "x"..count, corruptionR, corruptionG, corruptionB, 1, 1, 1)
 	end
 
 	if not next(summaries) then

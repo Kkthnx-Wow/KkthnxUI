@@ -461,7 +461,7 @@ do
 		end
 	end
 
-	local function isKkthnxUILoaded(_, _, addon)
+	local function isKkthnxUILoaded(_, addon)
 		if addon ~= "KkthnxUI" then
 			return
 		end

@@ -501,34 +501,6 @@ local function TooltipSetFont(font, size)
 	font:SetFont(select(1, font:GetFont()), size, select(3, font:GetFont()))
 end
 
-function Module:CreateTooltipFonts()
-	local textSize = 12
-	local headerSize = 13
-
-	TooltipSetFont(GameTooltipHeaderText, headerSize)
-	TooltipSetFont(GameTooltipText, textSize)
-	TooltipSetFont(GameTooltipTextSmall, textSize)
-
-	if GameTooltip.hasMoney then
-		for i = 1, GameTooltip.numMoneyFrames do
-			TooltipSetFont(_G["GameTooltipMoneyFrame"..i.."PrefixText"], textSize)
-			TooltipSetFont(_G["GameTooltipMoneyFrame"..i.."SuffixText"], textSize)
-			TooltipSetFont(_G["GameTooltipMoneyFrame"..i.."GoldButtonText"], textSize)
-			TooltipSetFont(_G["GameTooltipMoneyFrame"..i.."SilverButtonText"], textSize)
-			TooltipSetFont(_G["GameTooltipMoneyFrame"..i.."CopperButtonText"], textSize)
-		end
-	end
-
-	for _, tt in ipairs(GameTooltip.shoppingTooltips) do
-		for i = 1, tt:GetNumRegions() do
-			local region = select(i, tt:GetRegions())
-			if region:IsObjectType("FontString") then
-				TooltipSetFont(region, textSize)
-			end
-		end
-	end
-end
-
 function Module:OnEnable()
 	_G.GameTooltip:HookScript("OnTooltipCleared", self.OnTooltipCleared)
 	_G.GameTooltip:HookScript("OnTooltipSetUnit", self.OnTooltipSetUnit)
@@ -547,12 +519,11 @@ function Module:OnEnable()
 	BNToastFrame.CloseButton:SetPoint("TOPRIGHT", 4, 4)
 
 	-- Elements
-	self:CreateTooltipFonts()
 	self:CreateTargetedInfo()
 	self:CreateTooltipID()
 	self:CreateTooltipIcons()
 	self:CreateTooltipAzerite()
-	-- self:CreateCorruptionRank()
+	self:CreateCorruptionRank()
 end
 
 -- Tooltip Skin Registration

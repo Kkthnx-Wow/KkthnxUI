@@ -179,8 +179,7 @@ function K:GetModule(name)
 end
 
 local function GetBestScale()
-	local scale = math_max(0.4, math_min(1.15, 768 / K.ScreenHeight))
-	return K.Round(scale, 2)
+	return math_max(0.4, math_min(1.15, 768 / K.ScreenHeight))
 end
 
 function K:SetupUIScale(init)
@@ -274,7 +273,7 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	KKGUIButton:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
 	GameMenuFrame:HookScript("OnShow", function(self)
 		GameMenuButtonLogout:SetPoint("TOP", KKGUIButton, "BOTTOM", 0, -21)
-		self:SetHeight(self:GetHeight() + KKGUIButton:GetHeight() + 22)
+		self:SetHeight(self:GetHeight() + KKGUIButton:GetHeight() + 26)
 	end)
 
 	KKGUIButton:SetScript("OnClick", function()

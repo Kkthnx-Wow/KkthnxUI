@@ -39,8 +39,8 @@ K.PulseIgnoredSpells = {
 }
 
 local PulseCooldownFrame = CreateFrame("Frame", "PulseCooldownFrame", UIParent)
-PulseCooldownFrame:CreateBorder()
-PulseCooldownFrame:CreateInnerShadow()
+-- PulseCooldownFrame:CreateBorder()
+-- PulseCooldownFrame:CreateInnerShadow()
 PulseCooldownFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 260)
 
 PulseCooldownFrame.Icon = PulseCooldownFrame:CreateTexture(nil, "ARTWORK")
@@ -152,9 +152,9 @@ local function OnUpdate(_, update)
 			table_remove(animating, 1)
 			runtimer = 0
 			PulseCooldownFrame.Icon:SetTexture(nil)
-			PulseCooldownFrame:SetBackdropBorderColor(0, 0, 0, 0)
-			PulseCooldownFrame:SetBackdropColor(0, 0, 0, 0)
-			PulseCooldownFrame.InnerShadow:SetVertexColor(0, 0, 0, 0)
+			-- PulseCooldownFrame:SetBackdropBorderColor(0, 0, 0, 0)
+			-- PulseCooldownFrame:SetBackdropColor(0, 0, 0, 0)
+			-- PulseCooldownFrame.InnerShadow:SetVertexColor(0, 0, 0, 0)
 		else
 			if not PulseCooldownFrame.Icon:GetTexture() then
 				PulseCooldownFrame.Icon:SetTexture(animating[1][1])
@@ -175,9 +175,9 @@ local function OnUpdate(_, update)
 			local scale = iconSize + (iconSize * ((animScale - 1) * (runtimer / (fadeInTime + holdTime + fadeOutTime))))
 			PulseCooldownFrame:SetWidth(scale)
 			PulseCooldownFrame:SetHeight(scale)
-			PulseCooldownFrame:SetBackdropBorderColor()
-			PulseCooldownFrame:SetBackdropColor(.04, .04, .04, 0.9)
-			PulseCooldownFrame.InnerShadow:SetVertexColor(.04, .04, .04, 1)
+			-- PulseCooldownFrame:SetBackdropBorderColor()
+			-- PulseCooldownFrame:SetBackdropColor(.04, .04, .04, 0.9)
+			-- PulseCooldownFrame.InnerShadow:SetVertexColor(.04, .04, .04, 1)
 		end
 	end
 end

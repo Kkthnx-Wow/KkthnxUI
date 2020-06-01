@@ -3,6 +3,8 @@ local _, C = unpack(select(2, ...))
 
 local _G = _G
 
+local hooksecurefunc = _G.hooksecurefunc
+
 local function SetFont(obj, font, size, style, sr, sg, sb, sa, sox, soy, r, g, b)
 	obj:SetFont(font, size, style)
 
@@ -91,10 +93,10 @@ local function Force_UpdateBlizzardFonts()
 		SetFont(_G.NumberFont_Shadow_Med,				NORMAL, C["General"].FontSize)			-- Chat EditBox
 		SetFont(_G.NumberFont_Shadow_Small,				NORMAL, C["General"].FontSize)
 		SetFont(_G.NumberFontNormalSmall,				NORMAL, 11, "OUTLINE")						-- Calendar, EncounterJournal
-		-- SetFont(_G.Number11Font,						NORMAL, 11)
-		-- SetFont(_G.Number12Font,						NORMAL, 12)
-		-- SetFont(_G.Number15Font,						NORMAL, 15)
-		-- SetFont(_G.PriceFont,							NORMAL, 13)
+		SetFont(_G.Number11Font,						NORMAL, 11)
+		SetFont(_G.Number12Font,						NORMAL, 12)
+		SetFont(_G.Number15Font,						NORMAL, 15)
+		SetFont(_G.PriceFont,							NORMAL, 13)
 		SetFont(_G.PVPArenaTextString,					NORMAL, 22, "".."OUTLINE")
 		SetFont(_G.PVPInfoTextString,					NORMAL, 22, "".."OUTLINE")
 		SetFont(_G.QuestFont,							NORMAL, C["General"].FontSize)
@@ -135,17 +137,17 @@ local function Force_UpdateBlizzardFonts()
 		SetFont(_G.Game10Font_o1,						NORMAL, 10, "OUTLINE")
 		SetFont(_G.SystemFont_Shadow_Huge4,				NORMAL, 27, nil, nil, nil, nil, nil, 1, -1)
 		SetFont(_G.SystemFont_Shadow_Outline_Huge4,		NORMAL, 27, "OUTLINE", nil, nil, nil, nil, 1, -1)
-		-- SetFont(_G.Number11Font,						NUMBER, 11)
+		SetFont(_G.Number11Font,						NUMBER, 11)
 		SetFont(_G.Number12Font_o1,						NUMBER, 12, "OUTLINE")
-		-- SetFont(_G.Number13Font,						NUMBER, 13)
-		-- SetFont(_G.Number13FontGray,					NUMBER, 13)
-		-- SetFont(_G.Number13FontWhite,					NUMBER, 13)
-		-- SetFont(_G.Number13FontYellow,					NUMBER, 13)
-		-- SetFont(_G.Number14FontGray,					NUMBER, 14)
-		-- SetFont(_G.Number14FontWhite,					NUMBER, 14)
-		-- SetFont(_G.Number18Font,						NUMBER, 18)
-		-- SetFont(_G.Number18FontWhite,					NUMBER, 18)
-		-- SetFont(_G.FriendsFont_11,						NORMAL, 11)
+		SetFont(_G.Number13Font,						NUMBER, 13)
+		SetFont(_G.Number13FontGray,					NUMBER, 13)
+		SetFont(_G.Number13FontWhite,					NUMBER, 13)
+		SetFont(_G.Number13FontYellow,					NUMBER, 13)
+		SetFont(_G.Number14FontGray,					NUMBER, 14)
+		SetFont(_G.Number14FontWhite,					NUMBER, 14)
+		SetFont(_G.Number18Font,						NUMBER, 18)
+		SetFont(_G.Number18FontWhite,					NUMBER, 18)
+		SetFont(_G.FriendsFont_11,						NORMAL, 11)
 		SetFont(_G.SpellFont_Small,						NORMAL, 10)
 		SetFont(_G.SubSpellFont,						NORMAL, 10) -- Spellbook Sub Names
 	end
@@ -166,6 +168,17 @@ local function Force_UpdateBlizzardFonts()
 						txt:FontTemplate(C["Media"].Font, 11, "")
 					end
 				end)
+			end
+		end
+	end)
+
+	hooksecurefunc("LFGListCategorySelection_AddButton", function(self, btnIndex)
+		local button = self.CategoryButtons[btnIndex]
+		if (button) then
+			if not button.isFontFixed then
+				--Fix issue with labels not following changes to GameFontNormal as they should
+				button.Label:SetFontObject(_G.GameFontNormal)
+				button.isFontFixed = true
 			end
 		end
 	end)

@@ -327,7 +327,7 @@ function Module:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
 	if C["DataBars"].MouseOver then
-		K.UIFrameFadeIn(self.Container, 0.25, self.Container:GetAlpha(), 1)
+		K.UIFrameFadeIn(Module.Container, 0.25, Module.Container:GetAlpha(), 1)
 	end
 
 	if MAX_PLAYER_LEVEL ~= K.Level then
@@ -414,7 +414,7 @@ end
 
 function Module:OnLeave()
 	if C["DataBars"].MouseOver then
-		K.UIFrameFadeOut(self.Container, 1, self.Container:GetAlpha(), 0.25)
+		K.UIFrameFadeOut(Module.Container, 1, Module.Container:GetAlpha(), 0.25)
 	end
 
 	GameTooltip:Hide()

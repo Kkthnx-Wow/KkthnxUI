@@ -9,5 +9,5 @@
    <Script file="TooltipIcons.lua" />
    <Script file="TooltipSpecLevel.lua" />
    <Script file="TooltipTargeted.lua" />
-   <!-- <Script file="TooltipCorruptionRank.lua" /> -->
+   <Script file="TooltipCorruptionRank.lua" />
 </Ui>
