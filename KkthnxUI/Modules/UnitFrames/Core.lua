@@ -477,6 +477,12 @@ function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster,
 			element.bolsterIndex = button
 			return true
 		end
+	elseif style == "player" or style == "target" or style == "party" then
+		if K.AuraBlackList[spellID] then
+			return false
+		else
+			return true
+		end
 	elseif style == "nameplate" or style == "boss" or style == "arena" then
 		if K.NameplateBlackList[spellID] then
 			return false

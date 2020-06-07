@@ -660,60 +660,60 @@ K.DebuffsTracking["CCDebuffs"] = {
 -- Raid Buffs (Squared Aura Tracking List)
 K.BuffsTracking = {
 	PRIEST = {
-		[194384] = GetAuraWatchSpell(194384, "TOPRIGHT", {1, 1, 0.66}),          -- Atonement
-		[214206] = GetAuraWatchSpell(214206, "TOPRIGHT", {1, 1, 0.66}),          -- Atonement (PvP)
-		[41635]  = GetAuraWatchSpell(41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}),     -- Prayer of Mending
+		[194384] = GetAuraWatchSpell(194384, "TOPRIGHT", {1, 1, 0.66}), -- Atonement
+		[214206] = GetAuraWatchSpell(214206, "TOPRIGHT", {1, 1, 0.66}), -- Atonement (PvP)
+		[41635] = GetAuraWatchSpell(41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}), -- Prayer of Mending
 		[193065] = GetAuraWatchSpell(193065, "BOTTOMRIGHT", {0.54, 0.21, 0.78}), -- Masochism
-		[139]    = GetAuraWatchSpell(139, "BOTTOMLEFT", {0.4, 0.7, 0.2}),        -- Renew
-		[6788]   = GetAuraWatchSpell(6788, "BOTTOMLEFT", {0.89, 0.1, 0.1}),       -- Weakened Soul
-		[17]     = GetAuraWatchSpell(17, "TOPLEFT", {0.7, 0.7, 0.7}, true),      -- Power Word: Shield
-		[47788]  = GetAuraWatchSpell(47788, "LEFT", {0.86, 0.45, 0}, true),      -- Guardian Spirit
-		[33206]  = GetAuraWatchSpell(33206, "LEFT", {0.47, 0.35, 0.74}, true),   -- Pain Suppression
+		[139] = GetAuraWatchSpell(139, "BOTTOMLEFT", {0.4, 0.7, 0.2}), -- Renew
+		[6788] = GetAuraWatchSpell(6788, "BOTTOMLEFT", {0.89, 0.1, 0.1}), -- Weakened Soul
+		[17] = GetAuraWatchSpell(17, "TOPLEFT", {0.7, 0.7, 0.7}, true), -- Power Word: Shield
+		[47788] = GetAuraWatchSpell(47788, "LEFT", {0.86, 0.45, 0}, true), -- Guardian Spirit
+		[33206] = GetAuraWatchSpell(33206, "LEFT", {0.47, 0.35, 0.74}, true), -- Pain Suppression
 	},
 	DRUID = {
-		[774]    = GetAuraWatchSpell(774, "TOPRIGHT", {0.8, 0.4, 0.8}),   		-- Rejuvenation
-		[155777] = GetAuraWatchSpell(155777, "RIGHT", {0.8, 0.4, 0.8}),   		-- Germination
-		[8936]   = GetAuraWatchSpell(8936, "BOTTOMLEFT", {0.2, 0.8, 0.2}),		-- Regrowth
-		[33763]  = GetAuraWatchSpell(33763, "TOPLEFT", {0.4, 0.8, 0.2}),  		-- Lifebloom
-		[48438]  = GetAuraWatchSpell(48438, "BOTTOMRIGHT", {0.8, 0.4, 0}),		-- Wild Growth
-		[207386] = GetAuraWatchSpell(207386, "TOP", {0.4, 0.2, 0.8}),     		-- Spring Blossoms
-		[102351] = GetAuraWatchSpell(102351, "LEFT", {0.2, 0.8, 0.8}),    		-- Cenarion Ward (Initial Buff)
-		[102352] = GetAuraWatchSpell(102352, "LEFT", {0.2, 0.8, 0.8}),    		-- Cenarion Ward (HoT)
-		[200389] = GetAuraWatchSpell(200389, "BOTTOM", {1, 1, 0.4}),      		-- Cultivation
+		[774] = GetAuraWatchSpell(774, "TOPRIGHT", {0.8, 0.4, 0.8}), 		-- Rejuvenation
+		[155777] = GetAuraWatchSpell(155777, "RIGHT", {0.8, 0.4, 0.8}), 		-- Germination
+		[8936] = GetAuraWatchSpell(8936, "BOTTOMLEFT", {0.2, 0.8, 0.2}),		-- Regrowth
+		[33763] = GetAuraWatchSpell(33763, "TOPLEFT", {0.4, 0.8, 0.2}), 		-- Lifebloom
+		[48438] = GetAuraWatchSpell(48438, "BOTTOMRIGHT", {0.8, 0.4, 0}),		-- Wild Growth
+		[207386] = GetAuraWatchSpell(207386, "TOP", {0.4, 0.2, 0.8}), 		-- Spring Blossoms
+		[102351] = GetAuraWatchSpell(102351, "LEFT", {0.2, 0.8, 0.8}), 		-- Cenarion Ward (Initial Buff)
+		[102352] = GetAuraWatchSpell(102352, "LEFT", {0.2, 0.8, 0.8}), 		-- Cenarion Ward (HoT)
+		[200389] = GetAuraWatchSpell(200389, "BOTTOM", {1, 1, 0.4}), 		-- Cultivation
 	},
 	PALADIN = {
-		[53563]  = GetAuraWatchSpell(53563, "TOPRIGHT", {0.7, 0.3, 0.7}),          -- Beacon of Light
-		[156910] = GetAuraWatchSpell(156910, "TOPRIGHT", {0.7, 0.3, 0.7}),         -- Beacon of Faith
-		[200025] = GetAuraWatchSpell(200025, "TOPRIGHT", {0.7, 0.3, 0.7}),         -- Beacon of Virtue
-		[1022]   = GetAuraWatchSpell(1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true),    -- Hand of Protection
-		[1044]   = GetAuraWatchSpell(1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true),  -- Hand of Freedom
-		[6940]   = GetAuraWatchSpell(6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true), -- Hand of Sacrifice
-		[223306] = GetAuraWatchSpell(223306, 'BOTTOMLEFT', {0.7, 0.7, 0.3}),       -- Bestow Faith
-		[287280] = GetAuraWatchSpell(287280, 'TOPLEFT', {0.2, 0.8, 0.2}),          -- Glimmer of Light (Artifact HoT)
+		[53563] = GetAuraWatchSpell(53563, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Light
+		[156910] = GetAuraWatchSpell(156910, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Faith
+		[200025] = GetAuraWatchSpell(200025, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Virtue
+		[1022] = GetAuraWatchSpell(1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true), -- Hand of Protection
+		[1044] = GetAuraWatchSpell(1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true), -- Hand of Freedom
+		[6940] = GetAuraWatchSpell(6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true), -- Hand of Sacrifice
+		[223306] = GetAuraWatchSpell(223306, 'BOTTOMLEFT', {0.7, 0.7, 0.3}), -- Bestow Faith
+		[287280] = GetAuraWatchSpell(287280, 'TOPLEFT', {0.2, 0.8, 0.2}), -- Glimmer of Light (Artifact HoT)
 	},
 	SHAMAN = {
-		[61295]  = GetAuraWatchSpell(61295, "TOPRIGHT", {0.7, 0.3, 0.7}),   	 -- Riptide
+		[61295] = GetAuraWatchSpell(61295, "TOPRIGHT", {0.7, 0.3, 0.7}), 	 -- Riptide
 		[974] = GetAuraWatchSpell(974, "BOTTOMRIGHT", {0.2, 0.2, 1}), 	 -- Earth Shield
 	},
 	MONK = {
-		[119611] = GetAuraWatchSpell(119611, "TOPLEFT", {0.3, 0.8, 0.6}),        -- Renewing Mist
+		[119611] = GetAuraWatchSpell(119611, "TOPLEFT", {0.3, 0.8, 0.6}), -- Renewing Mist
 		[116849] = GetAuraWatchSpell(116849, "TOPRIGHT", {0.2, 0.8, 0.2}, true), -- Life Cocoon
-		[124682] = GetAuraWatchSpell(124682, "BOTTOMLEFT", {0.8, 0.8, 0.25}),    -- Enveloping Mist
-		[191840] = GetAuraWatchSpell(191840, "BOTTOMRIGHT", {0.27, 0.62, 0.7}),  -- Essence Font
+		[124682] = GetAuraWatchSpell(124682, "BOTTOMLEFT", {0.8, 0.8, 0.25}), -- Enveloping Mist
+		[191840] = GetAuraWatchSpell(191840, "BOTTOMRIGHT", {0.27, 0.62, 0.7}), -- Essence Font
 	},
 	ROGUE = {
 		[57934] = GetAuraWatchSpell(57934, "TOPRIGHT", {0.89, 0.09, 0.05}),		 -- Tricks of the Trade
 	},
 	WARRIOR = {
-		[114030] = GetAuraWatchSpell(114030, "TOPLEFT", {0.2, 0.2, 1}),     	 -- Vigilance
-		[3411]   = GetAuraWatchSpell(3411, "TOPRIGHT", {0.89, 0.09, 0.05}), 	 -- Intervene
+		[114030] = GetAuraWatchSpell(114030, "TOPLEFT", {0.2, 0.2, 1}), 	 -- Vigilance
+		[3411] = GetAuraWatchSpell(3411, "TOPRIGHT", {0.89, 0.09, 0.05}), 	 -- Intervene
 	},
 	PET = {
 		-- Warlock Pets
 		[193396] = GetAuraWatchSpell(193396, 'TOPRIGHT', {0.6, 0.2, 0.8}, true), -- Demonic Empowerment
 		-- Hunter Pets
 		[272790] = GetAuraWatchSpell(272790, 'TOPLEFT', {0.89, 0.09, 0.05}, true), -- Frenzy
-		[136]   = GetAuraWatchSpell(136, 'TOPRIGHT', {0.2, 0.8, 0.2}, true)      -- Mend Pet
+		[136] = GetAuraWatchSpell(136, 'TOPRIGHT', {0.2, 0.8, 0.2}, true) -- Mend Pet
 	},
 	HUNTER = {}, -- Keep even if it's an empty table, so a reference to G.unitframe.buffwatch[E.myclass][SomeValue] doesn't trigger error
 	DEMONHUNTER = {},

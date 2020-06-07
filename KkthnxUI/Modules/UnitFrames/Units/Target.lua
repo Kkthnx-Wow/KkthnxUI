@@ -162,6 +162,7 @@ function Module:CreateTarget()
 		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
+		self.Buffs.CustomFilter = Module.CustomFilter
 	end
 
 	if (C["Unitframe"].Castbars) then

@@ -139,6 +139,7 @@ function Module:CreateParty()
 		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
+		self.Buffs.CustomFilter = Module.CustomFilter
 	end
 
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
