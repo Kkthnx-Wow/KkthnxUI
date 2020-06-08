@@ -231,7 +231,7 @@ function Module:OnEnable()
 		cursorCoords:SetParent(coordsFrame)
 		cursorCoords:ClearAllPoints()
 		cursorCoords:SetPoint("BOTTOMLEFT", 152, 1)
-		--cursorCoords:SetTextColor(178/255, 178/255, 178/255)
+		cursorCoords:SetTextColor(255/255, 204/255, 102/255)
 
 		-- Create player coordinates frame
 		playerCoords = WorldMapFrame.ScrollContainer:CreateFontString(nil, "OVERLAY")
@@ -240,7 +240,7 @@ function Module:OnEnable()
 		playerCoords:SetParent(coordsFrame)
 		playerCoords:ClearAllPoints()
 		playerCoords:SetPoint("BOTTOMRIGHT", -132, 1)
-		--playerCoords:SetTextColor(178/255, 178/255, 178/255)
+		playerCoords:SetTextColor(255/255, 204/255, 102/255)
 
 		hooksecurefunc(WorldMapFrame, "OnFrameSizeChanged", self.UpdateMapID)
 		hooksecurefunc(WorldMapFrame, "OnMapChanged", self.UpdateMapID)

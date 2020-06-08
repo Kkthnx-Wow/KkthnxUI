@@ -442,25 +442,25 @@ local function HelloWorld()
 	lr:SetPoint("TOP", 50, -35)
 	K.CreateGF(lr, 100, 1, "Horizontal", .7, .7, .7, .7, 0)
 	lr:SetFrameStrata("HIGH")
-	K.CreateFontString(welcome, 13, "Thanks for choosing |cff669dffKkthnxUI|r,", "", false, "TOPLEFT", 20, -50)
-	K.CreateFontString(welcome, 13, "there are some commands for you as follows: ", "", false, "TOPLEFT", 20, -70)
+	K.CreateFontString(welcome, 13, "Thank you for choosing |cff669dffKkthnxUI|r, v"..K.SystemColor..K.Version.."|r,", "", false, "TOPLEFT", 20, -50)
+	K.CreateFontString(welcome, 13, "Below you will find a couple useful slash commands: ", "", false, "TOPLEFT", 20, -70)
 
-	local c1, c2 = "|c00D9C45C", "|c004AAB4C" -- YELLOW -- GREEN ??
+	local c1, c2 = K.InfoColor, K.SystemColor -- YELLOW -- GREEN ??
 	local lines = {
-		c1.." /kb "..c2.."Easy Key-Bindings;",
-		c1.." /moveui "..c2.."Unlock Most UI Elements;",
-		c1.." /rl "..c2.."Reload all The AddOns;",
-		c1.." /kcl "..c2.."Show KkthnxUI Changelog.",
-		c1.." /kstatus "..c2.."Show KkthnxUI Status Report.",
-		c1.." /profile list "..c2.."Show KkthnxUI Profiles List.",
+		c1.."/kb "..c2.."Easy Key-Bindings;",
+		c1.."/moveui "..c2.."Unlock Most UI Elements;",
+		c1.."/rl "..c2.."Reload all The AddOns;",
+		c1.."/kcl "..c2.."Show KkthnxUI Changelog.",
+		c1.."/kstatus "..c2.."Show KkthnxUI Status Report.",
+		c1.."/profile list "..c2.."Show KkthnxUI Profiles List.",
 	}
 
 	for index, line in pairs(lines) do
-		K.CreateFontString(welcome, 13, line, "", false, "TOPLEFT", 20, -100-index*20)
+		K.CreateFontString(welcome, 13, line, "", false, "TOPLEFT", 20, -120 - index * 20)
 	end
 
 	K.CreateFontString(welcome, 13, "If this is your first time using |cff669dffKkthnxUI|r,", "", false, "TOPLEFT", 20, -310)
-	K.CreateFontString(welcome, 13, "please go for a tutorial by clicking the button below.", "", false, "TOPLEFT", 20, -330)
+	K.CreateFontString(welcome, 13, "Please take a minute to go through the turtoral!", "", false, "TOPLEFT", 20, -330)
 
 	if KkthnxUIData[K.Realm][K.Name].InstallComplete then
 		local close = CreateFrame("Button", nil, welcome)

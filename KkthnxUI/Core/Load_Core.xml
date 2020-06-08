@@ -9,11 +9,11 @@
     <Script file="Commands.lua"/>
     <Script file="Animation.lua"/>
     <Script file="Colors.lua"/>
-    <Script file="Install.lua"/>
     <Script file="Smoothy.lua"/>
     <Script file="Conflicts.lua"/>
     <Script file="CheckVersion.lua"/>
     <Script file="Movers.lua"/>
+    <Script file="Install.lua"/>
     <Script file="Changelog.lua"/>
     <Script file="UICommands.lua"/>
     <Script file="UIQuestions.lua"/>

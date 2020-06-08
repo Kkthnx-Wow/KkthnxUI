@@ -27,7 +27,6 @@ local GetPhysicalScreenSize = _G.GetPhysicalScreenSize
 local GetRealmName = _G.GetRealmName
 local GetTime = _G.GetTime
 local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.IsAddOnLoaded
 local LE_ITEM_QUALITY_COMMON = _G.LE_ITEM_QUALITY_COMMON
 local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 local LOCALIZED_CLASS_NAMES_MALE = _G.LOCALIZED_CLASS_NAMES_MALE
@@ -40,7 +39,6 @@ local UnitGUID = _G.UnitGUID
 local UnitLevel = _G.UnitLevel
 local UnitName = _G.UnitName
 local UnitRace = _G.UnitRace
-local hooksecurefunc = _G.hooksecurefunc
 
 -- Engine
 Engine[1] = {} -- K, Main
