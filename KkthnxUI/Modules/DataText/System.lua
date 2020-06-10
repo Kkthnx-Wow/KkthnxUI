@@ -33,6 +33,7 @@ local percentageString = "%.2f%%"
 local homeLatencyString = "%d ms"
 local kiloByteString = "%d kb"
 local megaByteString = "%.2f mb"
+local cpuProfiling = GetCVar("scriptProfile") == "1"
 
 local function formatMem(memory)
 	local mult = 10^1
@@ -121,8 +122,6 @@ end
 local ipTypes = {"IPv4", "IPv6"}
 function Module:OnSystemEnter()
 	enteredFrame = true
-
-	local cpuProfiling = GetCVar("scriptProfile") == "1"
 
 	GameTooltip:SetOwner(Module.SystemFrame, "ANCHOR_NONE")
 	GameTooltip:SetPoint(K.GetAnchors(Module.SystemFrame))

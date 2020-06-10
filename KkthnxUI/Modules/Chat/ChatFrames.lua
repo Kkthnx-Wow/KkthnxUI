@@ -29,7 +29,6 @@ local FCF_ResetChatWindows = _G.FCF_ResetChatWindows
 local FCF_SetLocked = _G.FCF_SetLocked
 local FCF_SetWindowName = _G.FCF_SetWindowName
 local GetChannelName = _G.GetChannelName
-local GetCVar = _G.GetCVar
 local GetInstanceInfo = _G.GetInstanceInfo
 local GetItemIcon = _G.GetItemIcon
 local GetRealmName = _G.GetRealmName
@@ -41,7 +40,6 @@ local IsInRaid = _G.IsInRaid
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlaySoundFile = _G.PlaySoundFile
-local SetCVar = _G.SetCVar
 local UIParent = _G.UIParent
 local UnitName = _G.UnitName
 
@@ -202,13 +200,15 @@ function Module:StyleFrame(frame)
 		EditBox:Hide()
 	end)
 
-	Scroll:Kill()
-	ScrollBottom:Kill()
-	ScrollTex:Kill()
+	if Scroll then
+		Scroll:Kill()
+		ScrollBottom:Kill()
+		ScrollTex:Kill()
+	end
 
 	-- Style the tab font
 	TabText:SetFont(TabFont, TabFontSize + 1, TabFontFlags)
-	-- TabText.SetFont = K.Noop
+	TabText.SetFont = K.Noop
 
 	-- Tabs Alpha
 	if C["Chat"].TabsMouseover ~= true then
@@ -595,6 +595,10 @@ end
 
 function Module:CreateChatLootIcons(_, message, ...)
 	if not C["Chat"].LootIcons then
+		return
+	end
+
+	if IsAddOnLoaded("ChatLinkIcons") then
 		return
 	end
 

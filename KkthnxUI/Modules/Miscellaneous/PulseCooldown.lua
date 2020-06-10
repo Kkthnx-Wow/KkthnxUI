@@ -40,9 +40,7 @@ K.PulseIgnoredSpells = {
 
 local PulseCooldownFrame = CreateFrame("Frame", "PulseCooldownFrame", UIParent)
 PulseCooldownFrame:CreateBorder()
--- PulseCooldownFrame:CreateInnerShadow()
 PulseCooldownFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 260)
-PulseCooldownFrame:SetFrameLevel(6)
 
 PulseCooldownFrame.Icon = PulseCooldownFrame:CreateTexture(nil, "ARTWORK")
 PulseCooldownFrame.Icon:SetTexCoord(unpack(K.TexCoords))
@@ -153,7 +151,9 @@ local function OnUpdate(_, update)
 			table_remove(animating, 1)
 			runtimer = 0
 			PulseCooldownFrame.Icon:SetTexture(nil)
-			PulseCooldownFrame:HideBorder()
+			PulseCooldownFrame:SetAlpha(0)
+			-- PulseCooldownFrame:SetBackdropBorderColor(0, 0, 0, 0)
+			-- PulseCooldownFrame:SetBackdropColor(0, 0, 0, 0)
 		else
 			if not PulseCooldownFrame.Icon:GetTexture() then
 				PulseCooldownFrame.Icon:SetTexture(animating[1][1])
@@ -174,8 +174,9 @@ local function OnUpdate(_, update)
 			local scale = iconSize + (iconSize * ((animScale - 1) * (runtimer / (fadeInTime + holdTime + fadeOutTime))))
 			PulseCooldownFrame:SetWidth(scale)
 			PulseCooldownFrame:SetHeight(scale)
-			-- SHOW BORDER
-			PulseCooldownFrame:ShowBorder()
+			PulseCooldownFrame:SetAlpha(1)
+			-- PulseCooldownFrame:SetBackdropBorderColor(1, 1, 1, 1)
+			-- PulseCooldownFrame:SetBackdropColor(0.04, 0.04, 0.04, 0.9)
 		end
 	end
 end
@@ -281,7 +282,7 @@ function Module:CreatePulseCooldown()
 	hooksecurefunc("UseContainerItem", UseContainerItem)
 end
 
-SlashCmdList.PulseCooldown = function()
+SlashCmdList.KKUIPCD = function()
 	table_insert(animating, {GetSpellTexture(87214)})
 	if C["PulseCooldown"].Sound == true then
 		PlaySoundFile(18192, "Master")
@@ -289,4 +290,4 @@ SlashCmdList.PulseCooldown = function()
 
 	PulseCooldownFrame:SetScript("OnUpdate", OnUpdate)
 end
-SLASH_PulseCooldown1 = "/pulsecd"
+SLASH_KKUIPCD1 = "/pulsecd"

@@ -36,6 +36,7 @@ function Module:CreateImprovedStats()
 	local stat = CreateFrame("Frame", nil, scrollFrame)
 	stat:SetSize(200, 1)
 	scrollFrame:SetScrollChild(stat)
+
 	CharacterStatsPane:ClearAllPoints()
 	CharacterStatsPane:SetParent(stat)
 	CharacterStatsPane:SetAllPoints(stat)

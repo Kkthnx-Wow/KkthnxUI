@@ -46,6 +46,10 @@ local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
 local essenceDescription = GetSpellDescription(277253)
 local essenceTextureID = 2975691
 local itemLevelString = string_gsub(ITEM_LEVEL, "%%d", "")
+K.activeTimers = K.activeTimers or {} -- Active timer list
+local activeTimers = K.activeTimers -- Upvalue our private data
+K.hooks = {}
+local Hooks = K.hooks
 
 function K.Print(...)
 	(_G.DEFAULT_CHAT_FRAME):AddMessage(string_join("", "|cff3c9bed", "KkthnxUI:|r ", ...))
@@ -638,4 +642,205 @@ function K.Delay(delay, func, ...)
 	end
 
 	return true
+end
+
+function K:ClearHook(frame, handler, hook, uniqueID)
+	if (not Hooks[frame]) or (not Hooks[frame][handler]) then
+		return
+	end
+
+	local hookList = Hooks[frame][handler]
+
+	if uniqueID then
+		hookList.unique[uniqueID] = nil
+	else
+		for id = #hookList.list,1,-1 do
+			local func = hookList.list[id]
+			if (func == hook) then
+				table.remove(hookList.list, id)
+			end
+		end
+	end
+end
+
+function K:SetHook(frame, handler, hook, uniqueID)
+	-- If the hook is a method, we need a uniqueID for our module reference list!
+	if (type(hook) == "string") then
+		-- Let's make this backwards compatible and just make up an ID when it's not provided(?)
+		if (not uniqueID) then
+			uniqueID = (self:GetName()).."_"..hook
+		end
+
+		-- Reference the module
+		K[uniqueID] = self
+	end
+
+	if (not Hooks[frame]) then
+		Hooks[frame] = {}
+	end
+
+	if (not Hooks[frame][handler]) then
+		Hooks[frame][handler] = { list = {}, unique = {} }
+		-- We only need a single handler
+		-- Problem discovered in 8.2.0:
+		-- The 'self' here will only refer to the first module
+		-- that registered a hook for this frame and script handler.
+		-- Meaning unless we track each registration's module,
+		-- we'll get a nil error or weird bug by usind the wrong 'self'!
+		local hookList = Hooks[frame][handler]
+		frame:HookScript(handler, function(...)
+			for id,func in pairs(hookList.unique) do
+				if (type(func) == "string") then
+					local module = K[id]
+					if (module) then
+						module[func](module, id, ...)
+					end
+				else
+					-- We allow unique hooks to just run a function
+					-- without passing the self.
+					func(...)
+				end
+			end
+
+			-- This only ever occurs when the hook is a function,
+			-- and no uniqueID is given.
+			for _, func in ipairs(hookList.list) do
+				func(...)
+			end
+		end)
+	end
+
+	local hookList = Hooks[frame][handler]
+	if uniqueID then
+		hookList.unique[uniqueID] = hook
+	else
+		local exists
+		for _, func in ipairs(hookList.list) do
+			if (func == hook) then
+				exists = true
+				break
+			end
+		end
+
+		if (not exists) then
+			table_insert(hookList.list, hook)
+		end
+	end
+end
+
+-- Ripped out of AceTimer :|
+local function new(self, loop, func, delay, ...)
+	if delay < 0.01 then
+		delay = 0.01 -- Restrict to the lowest time that the C_Timer API allows us
+	end
+
+	local timer = {
+		object = self,
+		func = func,
+		looping = loop,
+		argsCount = select("#", ...),
+		delay = delay,
+		ends = GetTime() + delay,
+		...
+	}
+
+	activeTimers[timer] = timer
+
+	-- Create new timer closure to wrap the "timer" object
+	timer.callback = function()
+		if not timer.cancelled then
+			if type(timer.func) == "string" then
+				-- We manually set the unpack count to prevent issues with an arg set that contains nil and ends with nil
+				-- e.g. local t = {1, 2, nil, 3, nil} print(#t) will result in 2, instead of 5. This fixes said issue.
+				timer.object[timer.func](timer.object, unpack(timer, 1, timer.argsCount))
+			else
+				timer.func(unpack(timer, 1, timer.argsCount))
+			end
+
+			if timer.looping and not timer.cancelled then
+				-- Compensate delay to get a perfect average delay, even if individual times don't match up perfectly
+				-- due to fps differences
+				local time = GetTime()
+				local delay = timer.delay - (time - timer.ends)
+				-- Ensure the delay doesn't go below the threshold
+				if delay < 0.01 then
+					delay = 0.01
+				end
+
+				C_Timer_After(delay, timer.callback)
+				timer.ends = time + delay
+			else
+				activeTimers[timer.handle or timer] = nil
+			end
+		end
+	end
+
+	C_Timer_After(delay, timer.callback)
+	return timer
+end
+
+-- Schedule a new one-shot timer.
+function K:ScheduleTimer(func, delay, ...)
+	if not func or not delay then
+		K.Print(": ScheduleTimer(callback, delay, args...): 'callback' and 'delay' must have set values.", 2)
+	end
+
+	if type(func) == "string" then
+		if type(self) ~= "table" then
+			K.Print(": ScheduleTimer(callback, delay, args...): 'self' - must be a table.", 2)
+		elseif not self[func] then
+			K.Print(": ScheduleTimer(callback, delay, args...): Tried to register '"..func.."' as the callback, but it doesn't exist in the module.", 2)
+		end
+	end
+
+	return new(self, nil, func, delay, ...)
+end
+
+-- Schedule a repeating timer.
+function K:ScheduleRepeatingTimer(func, delay, ...)
+	if not func or not delay then
+		K.Print(": ScheduleRepeatingTimer(callback, delay, args...): 'callback' and 'delay' must have set values.", 2)
+	end
+
+	if type(func) == "string" then
+		if type(self) ~= "table" then
+			K.Print(": ScheduleRepeatingTimer(callback, delay, args...): 'self' - must be a table.", 2)
+		elseif not self[func] then
+			K.Print(": ScheduleRepeatingTimer(callback, delay, args...): Tried to register '"..func.."' as the callback, but it doesn't exist in the module.", 2)
+		end
+	end
+
+	return new(self, true, func, delay, ...)
+end
+
+-- Cancels a timer with the given id, registered by the same addon object as used for `:ScheduleTimer`
+function K:CancelTimer(id)
+	local timer = activeTimers[id]
+
+	if not timer then
+		return false
+	else
+		timer.cancelled = true
+		activeTimers[id] = nil
+		return true
+	end
+end
+
+-- Cancels all timers registered to the current addon object ('self')
+function K:CancelAllTimers()
+	for k,v in next, activeTimers do
+		if v.object == self then
+			K.CancelTimer(self, k)
+		end
+	end
+end
+
+-- Returns the time left for a timer with the given id, registered by the current addon object ('self').
+function K:TimeLeft(id)
+	local timer = activeTimers[id]
+	if not timer then
+		return 0
+	else
+		return timer.ends - GetTime()
+	end
 end

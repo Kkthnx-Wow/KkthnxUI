@@ -13,7 +13,7 @@ function Module.UpdateTalkingHead(self, event, ...)
 
 	local TalkingHeadFrame = _G.TalkingHeadFrame
 
-	if C["Misc"].NoTalkingHead ~= true then
+	if not C["Misc"].NoTalkingHead then
 		if TalkingHeadFrame then
 			-- The frame is loaded, so we re-register any needed events,
 			-- just in case this is a manual user called re-enabling.

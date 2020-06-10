@@ -641,7 +641,8 @@ _G.KkthnxUIConfig["enUS"] = {
 		},
 
 		["ShowRecycleBin"] = {
-			["Name"] = "Show Recycle Bin",
+			["Name"] = "Show Minimap Button Collector",
+			["Desc"] = "Gather up all of your addon minimap buttons and put them into a frame at the bottom left corner of the minimap.",
 		},
 
 		["Size"] = {

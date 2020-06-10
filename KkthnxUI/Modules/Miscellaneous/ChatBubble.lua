@@ -22,122 +22,6 @@ local TOOLTIP_BORDER = C["Media"].Glow
 Module.customBubbles = {} -- local bubble registry
 Module.numChildren = -1 -- worldframe children
 Module.numBubbles = 0 -- worldframe customBubbles
-Module.hooks = {}
-
-local Hooks = Module.hooks
-
--- Syntax check
-local check = function(value, num, ...)
-	assert(type(num) == "number", ("Bad argument #%.0f to '%s': %s expected, got %s"):format(2, "Check", "number", type(num)))
-	for i = 1,select("#", ...) do
-		if type(value) == select(i, ...) then
-			return
-		end
-	end
-	local types = string.join(", ", ...)
-	local name = string.match(debugstack(2, 2, 0), ": in function [`<](.-)['>]")
-	error(("Bad argument #%.0f to '%s': %s expected, got %s"):format(num, name, types, type(value)), 3)
-end
-
--- @input
--- frameHandle, scriptHandler, hook[, uniqueID]
-function Module:ClearHook(frame, handler, hook, uniqueID)
-	check(frame, 1, "table")
-	check(handler, 2, "string")
-	check(hook, 3, "function", "string")
-
-	if (not Hooks[frame]) or (not Hooks[frame][handler]) then
-		return
-	end
-
-	local hookList = Hooks[frame][handler]
-
-	if uniqueID then
-		hookList.unique[uniqueID] = nil
-	else
-		for id = #hookList.list,1,-1 do
-			local func = hookList.list[id]
-			if (func == hook) then
-				table.remove(hookList.list, id)
-			end
-		end
-	end
-end
-
--- @input
--- frameHandle, scriptHandler, hook[, uniqueID]
-function Module:SetHook(frame, handler, hook, uniqueID)
-	check(frame, 1, "table")
-	check(handler, 2, "string")
-	check(hook, 3, "function", "string")
-	check(uniqueID, 4, "string", "nil")
-
-	-- If the hook is a method, we need a uniqueID for our module reference list!
-	if (type(hook) == "string") then
-
-		-- Let's make this backwards compatible and just make up an ID when it's not provided(?)
-		if (not uniqueID) then
-			uniqueID = (self:GetName()).."_"..hook
-		end
-
-		-- Reference the module
-		Module[uniqueID] = self
-	end
-
-	if (not Hooks[frame]) then
-		Hooks[frame] = {}
-	end
-
-	if (not Hooks[frame][handler]) then
-		Hooks[frame][handler] = { list = {}, unique = {} }
-
-		-- We only need a single handler
-		-- Problem discovered in 8.2.0:
-		-- The 'self' here will only refer to the first module
-		-- that registered a hook for this frame and script handler.
-		-- Meaning unless we track each registration's module,
-		-- we'll get a nil error or weird bug by usind the wrong 'self'!
-		local hookList = Hooks[frame][handler]
-		frame:HookScript(handler, function(...)
-			for id,func in pairs(hookList.unique) do
-				if (type(func) == "string") then
-					local module = Module[id]
-					if (module) then
-						module[func](module, id, ...)
-					end
-				else
-					-- We allow unique hooks to just run a function
-					-- without passing the self.
-					func(...)
-				end
-			end
-
-			-- This only ever occurs when the hook is a function,
-			-- and no uniqueID is given.
-			for _,func in ipairs(hookList.list) do
-				func(...)
-			end
-		end)
-	end
-
-	local hookList = Hooks[frame][handler]
-
-	if uniqueID then
-		hookList.unique[uniqueID] = hook
-	else
-		local exists
-		for _,func in ipairs(hookList.list) do
-			if (func == hook) then
-				exists = true
-				break
-			end
-		end
-
-		if (not exists) then
-			table.insert(hookList.list, hook)
-		end
-	end
-end
 
 -- Custom Bubble parent frame
 Module.BubbleBox = CreateFrame("Frame", nil, UIParent)
@@ -394,19 +278,19 @@ function Module:OnBubbleEvent(event)
 				--SetCVar("chatBubbles", 0)
 			end
 
-			Module:SetHook(UIParent, "OnHide", Module.UpdateBubbleVisibility, "CG_UIPARENT_ONHIDE_BUBBLEUPDATE")
-			Module:SetHook(UIParent, "OnShow", Module.UpdateBubbleVisibility, "CG_UIPARENT_ONSHOW_BUBBLEUPDATE")
-			Module:SetHook(CinematicFrame, "OnHide", Module.UpdateBubbleVisibility, "CG_CINEMATICFRAME_ONHIDE_BUBBLEUPDATE")
-			Module:SetHook(CinematicFrame, "OnShow", Module.UpdateBubbleVisibility, "CG_CINEMATICFRAME_ONSHOW_BUBBLEUPDATE")
-			Module:SetHook(MovieFrame, "OnHide", Module.UpdateBubbleVisibility, "CG_MOVIEFRAME_ONHIDE_BUBBLEUPDATE")
-			Module:SetHook(MovieFrame, "OnShow", Module.UpdateBubbleVisibility, "CG_MOVIEFRAME_ONSHOW_BUBBLEUPDATE")
+			K:SetHook(UIParent, "OnHide", Module.UpdateBubbleVisibility, "CG_UIPARENT_ONHIDE_BUBBLEUPDATE")
+			K:SetHook(UIParent, "OnShow", Module.UpdateBubbleVisibility, "CG_UIPARENT_ONSHOW_BUBBLEUPDATE")
+			K:SetHook(CinematicFrame, "OnHide", Module.UpdateBubbleVisibility, "CG_CINEMATICFRAME_ONHIDE_BUBBLEUPDATE")
+			K:SetHook(CinematicFrame, "OnShow", Module.UpdateBubbleVisibility, "CG_CINEMATICFRAME_ONSHOW_BUBBLEUPDATE")
+			K:SetHook(MovieFrame, "OnHide", Module.UpdateBubbleVisibility, "CG_MOVIEFRAME_ONHIDE_BUBBLEUPDATE")
+			K:SetHook(MovieFrame, "OnShow", Module.UpdateBubbleVisibility, "CG_MOVIEFRAME_ONSHOW_BUBBLEUPDATE")
 		else
-			Module:ClearHook(UIParent, "OnHide", Module.UpdateBubbleVisibility, "CG_UIPARENT_ONHIDE_BUBBLEUPDATE")
-			Module:ClearHook(UIParent, "OnShow", Module.UpdateBubbleVisibility, "CG_UIPARENT_ONSHOW_BUBBLEUPDATE")
-			Module:ClearHook(CinematicFrame, "OnHide", Module.UpdateBubbleVisibility, "CG_CINEMATICFRAME_ONHIDE_BUBBLEUPDATE")
-			Module:ClearHook(CinematicFrame, "OnShow", Module.UpdateBubbleVisibility, "CG_CINEMATICFRAME_ONSHOW_BUBBLEUPDATE")
-			Module:ClearHook(MovieFrame, "OnHide", Module.UpdateBubbleVisibility, "CG_MOVIEFRAME_ONHIDE_BUBBLEUPDATE")
-			Module:ClearHook(MovieFrame, "OnShow", Module.UpdateBubbleVisibility, "CG_MOVIEFRAME_ONSHOW_BUBBLEUPDATE")
+			K:ClearHook(UIParent, "OnHide", Module.UpdateBubbleVisibility, "CG_UIPARENT_ONHIDE_BUBBLEUPDATE")
+			K:ClearHook(UIParent, "OnShow", Module.UpdateBubbleVisibility, "CG_UIPARENT_ONSHOW_BUBBLEUPDATE")
+			K:ClearHook(CinematicFrame, "OnHide", Module.UpdateBubbleVisibility, "CG_CINEMATICFRAME_ONHIDE_BUBBLEUPDATE")
+			K:ClearHook(CinematicFrame, "OnShow", Module.UpdateBubbleVisibility, "CG_CINEMATICFRAME_ONSHOW_BUBBLEUPDATE")
+			K:ClearHook(MovieFrame, "OnHide", Module.UpdateBubbleVisibility, "CG_MOVIEFRAME_ONHIDE_BUBBLEUPDATE")
+			K:ClearHook(MovieFrame, "OnShow", Module.UpdateBubbleVisibility, "CG_MOVIEFRAME_ONSHOW_BUBBLEUPDATE")
 		end
 
 		Module:UpdateBubbleVisibility()
