@@ -3,7 +3,7 @@ local Module = K:GetModule("ActionBar")
 local FilterConfig = K.ActionBars.petBar
 
 local _G = _G
-local table_insert = table.insert
+local table_insert = _G.table.insert
 
 local CreateFrame = _G.CreateFrame
 local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS

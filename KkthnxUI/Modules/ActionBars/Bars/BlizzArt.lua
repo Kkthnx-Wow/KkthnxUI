@@ -2,11 +2,29 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
 
 local _G = _G
-local next, tonumber = next, tonumber
+local next = _G.next
+local tonumber = _G.tonumber
 
+local ACTION_BUTTON_SHOW_GRID_REASON_CVAR = _G.ACTION_BUTTON_SHOW_GRID_REASON_CVAR
+local ActionBarDownButton = _G.ActionBarDownButton
+local ActionBarUpButton = _G.ActionBarUpButton
+local ActionButton_ShowGrid = _G.ActionButton_ShowGrid
+local BackpackTokenFrame_Update = _G.BackpackTokenFrame_Update
 local GetCVar = _G.GetCVar
-local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
+local MainMenuBar = _G.MainMenuBar
+local MainMenuBarArtFrame = _G.MainMenuBarArtFrame
+local MainMenuBarVehicleLeaveButton = _G.MainMenuBarVehicleLeaveButton
+local MicroButtonAndBagsBar = _G.MicroButtonAndBagsBar
+local OverrideActionBar = _G.OverrideActionBar
+local OverrideActionBarExpBar = _G.OverrideActionBarExpBar
+local OverrideActionBarHealthBar = _G.OverrideActionBarHealthBar
+local OverrideActionBarPitchFrame = _G.OverrideActionBarPitchFrame
+local OverrideActionBarPowerBar = _G.OverrideActionBarPowerBar
+local StatusTrackingBarManager = _G.StatusTrackingBarManager
+local TokenFrame_LoadUI = _G.TokenFrame_LoadUI
+local TokenFrame_Update = _G.TokenFrame_Update
+local hooksecurefunc = _G.hooksecurefunc
 
 local scripts = {
 	"OnClick",
@@ -54,6 +72,8 @@ function Module:HideBlizz()
 		return
 	end
 
+	local updateAfterCombat
+
 	MainMenuBar:SetMovable(true)
 	MainMenuBar:SetUserPlaced(true)
 	MainMenuBar.ignoreFramePositionManager = true
@@ -64,7 +84,10 @@ function Module:HideBlizz()
 	end
 
 	for _, frame in next, framesToDisable do
-		frame:UnregisterAllEvents()
+		if frame.UnregisterAllEvents then
+			frame:UnregisterAllEvents()
+		end
+
 		DisableAllScripts(frame)
 	end
 
@@ -77,7 +100,6 @@ function Module:HideBlizz()
 		end
 	end
 
-	local updateAfterCombat
 	local function ToggleButtonGrid()
 		if InCombatLockdown() then
 			updateAfterCombat = true

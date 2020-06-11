@@ -10,15 +10,15 @@ local CreateFrame = _G.CreateFrame
 local GetCurrentRegionName = _G.GetCurrentRegionName
 local GuildMicroButton = _G.GuildMicroButton
 local GuildMicroButtonTabard = _G.GuildMicroButtonTabard
-local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
+local MICRO_BUTTONS = _G.MICRO_BUTTONS
 local MainMenuBarPerformanceBar = _G.MainMenuBarPerformanceBar
 local MainMenuMicroButton = _G.MainMenuMicroButton
-local MICRO_BUTTONS = _G.MICRO_BUTTONS
 local MicroButtonPortrait = _G.MicroButtonPortrait
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 local UpdateMicroButtonsParent = _G.UpdateMicroButtonsParent
+local hooksecurefunc = _G.hooksecurefunc
 
 local function onLeaveBar()
 	if C["ActionBar"].MicroBarMouseover then

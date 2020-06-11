@@ -8,9 +8,9 @@ local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
 local HasAction = _G.HasAction
-local hooksecurefunc = _G.hooksecurefunc
 local IsActionInRange = _G.IsActionInRange
 local IsUsableAction = _G.IsUsableAction
+local hooksecurefunc = _G.hooksecurefunc
 
 local UPDATE_DELAY = .2
 local buttonColors, buttonsToUpdate = {}, {}
@@ -18,8 +18,8 @@ local updater = CreateFrame("Frame")
 
 local colors = {
 	["normal"] = {1.0, 1.0, 1.0},
-	["oor"] = {0.8, 0.1, 0.1},
 	["oom"] = {0.5, 0.5, 1.0},
+	["oor"] = {0.8, 0.1, 0.1},
 	["unusable"] = {0.4, 0.4, 0.4}
 }
 
@@ -40,6 +40,7 @@ function Module:UpdateButtons()
 		for button in pairs(buttonsToUpdate) do
 			self.UpdateButtonUsable(button)
 		end
+
 		return true
 	end
 
@@ -96,6 +97,7 @@ function Module:Register()
 	self:HookScript("OnShow", Module.UpdateButtonStatus)
 	self:HookScript("OnHide", Module.UpdateButtonStatus)
 	self:SetScript("OnUpdate", nil)
+
 	Module.UpdateButtonStatus(self)
 end
 

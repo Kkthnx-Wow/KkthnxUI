@@ -8,8 +8,8 @@ local table_insert = _G.table.insert
 local CreateFrame = _G.CreateFrame
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
-local UIParent = _G.UIParent
 local SHOW_MULTIBAR2_TEXT = _G.SHOW_MULTIBAR2_TEXT
+local UIParent = _G.UIParent
 
 function Module:CreateBar3()
 	local padding, margin = 0, 6

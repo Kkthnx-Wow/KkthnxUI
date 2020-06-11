@@ -2,11 +2,12 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
 
 local _G = _G
-local unpack = _G.unpack
+local next = _G.next
 local string_gsub = _G.string.gsub
+local unpack = _G.unpack
 
-local hooksecurefunc = _G.hooksecurefunc
 local GetBindingKey = _G.GetBindingKey
+local hooksecurefunc = _G.hooksecurefunc
 
 local function CallButtonFunctionByName(button, func, ...)
 	if button and func and button[func] then
