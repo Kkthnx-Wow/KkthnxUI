@@ -272,7 +272,6 @@ C["Misc"] = {
 C["Nameplate"] = {
 	["AKSProgress"] = false,
 	["AuraSize"] = 22,
-	-- ["ClassIcon"] = false,
 	["CustomColor"] = {0, 0.8, 0.3},
 	["CustomUnitColor"] = true,
 	["Distance"] = 42,

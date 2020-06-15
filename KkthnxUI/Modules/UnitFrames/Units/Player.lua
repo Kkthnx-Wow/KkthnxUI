@@ -46,9 +46,11 @@ function Module.PostUpdateAddPower(element, _, cur, max)
 		if perc == 100 then
 			perc = ""
 			element:SetAlpha(0)
+			Player_ClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 20)
 		else
 			perc = string_format("%d%%", perc)
 			element:SetAlpha(1)
+			Player_ClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 40)
 		end
 
 		element.Text:SetText(perc)

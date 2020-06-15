@@ -623,34 +623,34 @@ function UF:AddFollowerXP(self)
 	self.NazjatarFollowerXP.progressText = K.CreateFontString(self.NazjatarFollowerXP, 9)
 end
 
-function UF:AddClassIcon(self)
-	if C["Nameplate"].ClassIcon == true then
-		self.Class = CreateFrame("Frame", nil, self)
+-- function UF:AddClassIcon(self)
+-- 	if C["Nameplate"].ClassIcon == true then
+-- 		self.Class = CreateFrame("Frame", nil, self)
 
-		self.Class.Icon = self.Class:CreateTexture(nil, "OVERLAY")
-		self.Class.Icon:SetSize(self:GetHeight() * 2 + 3, self:GetHeight() * 2 + 3)
-		self.Class.Icon:SetPoint("BOTTOMRIGHT", self.Castbar, "BOTTOMLEFT", -3, 0)
-		self.Class.Icon:SetTexture("Interface\\WorldStateFrame\\Icons-Classes")
-		self.Class.Icon:SetTexCoord(0, 0, 0, 0)
+-- 		self.Class.Icon = self.Class:CreateTexture(nil, "OVERLAY")
+-- 		self.Class.Icon:SetSize(self:GetHeight() * 2 + 3, self:GetHeight() * 2 + 3)
+-- 		self.Class.Icon:SetPoint("BOTTOMRIGHT", self.Castbar, "BOTTOMLEFT", -3, 0)
+-- 		self.Class.Icon:SetTexture("Interface\\WorldStateFrame\\Icons-Classes")
+-- 		self.Class.Icon:SetTexCoord(0, 0, 0, 0)
 
-		self.Class:SetAllPoints(self.Class.Icon)
-		self.Class:CreateShadow(true)
-	end
-end
+-- 		self.Class:SetAllPoints(self.Class.Icon)
+-- 		self.Class:CreateShadow(true)
+-- 	end
+-- end
 
-function UF:UpdatePlateClassIcons(unit)
-	if C["Nameplate"].ClassIcon then
-		if (self.frameType == "ENEMY_PLAYER") then
-			local _, class = UnitClass(unit)
-			local texcoord = CLASS_ICON_TCOORDS[class]
-			self.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
-			self.Class:Show()
-		else
-			self.Class.Icon:SetTexCoord(0, 0, 0, 0)
-			self.Class:Hide()
-		end
-	end
-end
+-- function UF:UpdatePlateClassIcons(unit)
+-- 	if C["Nameplate"].ClassIcon then
+-- 		if (self.frameType == "ENEMY_PLAYER") then
+-- 			local _, class = UnitClass(unit)
+-- 			local texcoord = CLASS_ICON_TCOORDS[class]
+-- 			self.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
+-- 			self.Class:Show()
+-- 		else
+-- 			self.Class.Icon:SetTexCoord(0, 0, 0, 0)
+-- 			self.Class:Hide()
+-- 		end
+-- 	end
+-- end
 
 -- Interrupt info on castbars
 local guidToPlate = {}
@@ -759,60 +759,62 @@ function UF:CreatePlates()
 	self.RaidTargetIndicator:SetPoint("RIGHT", self, "LEFT", -5, 0)
 	self.RaidTargetIndicator:SetSize(16, 16)
 
-	local mhpb = self:CreateTexture(nil, "BORDER", nil, 5)
-	mhpb:SetWidth(1)
-	mhpb:SetTexture(K.GetTexture(C["UITextures"].HealPredictionTextures))
-	mhpb:SetVertexColor(0, 1, 0.5, 0.25)
+	do
+		local mhpb = self:CreateTexture(nil, "BORDER", nil, 5)
+		mhpb:SetWidth(1)
+		mhpb:SetTexture(K.GetTexture(C["UITextures"].HealPredictionTextures))
+		mhpb:SetVertexColor(0, 1, 0.5, 0.25)
 
-	local ohpb = self:CreateTexture(nil, "BORDER", nil, 5)
-	ohpb:SetWidth(1)
-	ohpb:SetTexture(K.GetTexture(C["UITextures"].HealPredictionTextures))
-	ohpb:SetVertexColor(0, 1, 0, 0.25)
+		local ohpb = self:CreateTexture(nil, "BORDER", nil, 5)
+		ohpb:SetWidth(1)
+		ohpb:SetTexture(K.GetTexture(C["UITextures"].HealPredictionTextures))
+		ohpb:SetVertexColor(0, 1, 0, 0.25)
 
-	local abb = self:CreateTexture(nil, "BORDER", nil, 5)
-	abb:SetWidth(1)
-	abb:SetTexture(K.GetTexture(C["UITextures"].HealPredictionTextures))
-	abb:SetVertexColor(1, 1, 0, 0.25)
+		local abb = self:CreateTexture(nil, "BORDER", nil, 5)
+		abb:SetWidth(1)
+		abb:SetTexture(K.GetTexture(C["UITextures"].HealPredictionTextures))
+		abb:SetVertexColor(1, 1, 0, 0.25)
 
-	local abbo = self:CreateTexture(nil, "ARTWORK", nil, 1)
-	abbo:SetAllPoints(abb)
-	abbo:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
-	abbo.tileSize = 32
+		local abbo = self:CreateTexture(nil, "ARTWORK", nil, 1)
+		abbo:SetAllPoints(abb)
+		abbo:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+		abbo.tileSize = 32
 
-	local oag = self:CreateTexture(nil, "ARTWORK", nil, 1)
-	oag:SetWidth(15)
-	oag:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
-	oag:SetBlendMode("ADD")
-	oag:SetAlpha(.25)
-	oag:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 2)
-	oag:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -2)
+		local oag = self:CreateTexture(nil, "ARTWORK", nil, 1)
+		oag:SetWidth(15)
+		oag:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
+		oag:SetBlendMode("ADD")
+		oag:SetAlpha(.25)
+		oag:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 2)
+		oag:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -2)
 
-	local hab = CreateFrame("StatusBar", nil, self)
-	hab:SetPoint("TOP")
-	hab:SetPoint("BOTTOM")
-	hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
-	hab:SetWidth(self.Health:GetWidth())
-	hab:SetReverseFill(true)
-	hab:SetStatusBarTexture(K.GetTexture(C["UITextures"].HealPredictionTextures))
-	hab:SetStatusBarColor(1, 0, 0, 0.25)
+		local hab = CreateFrame("StatusBar", nil, self)
+		hab:SetPoint("TOP")
+		hab:SetPoint("BOTTOM")
+		hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
+		hab:SetWidth(self.Health:GetWidth())
+		hab:SetReverseFill(true)
+		hab:SetStatusBarTexture(K.GetTexture(C["UITextures"].HealPredictionTextures))
+		hab:SetStatusBarColor(1, 0, 0, 0.25)
 
-	local ohg = self:CreateTexture(nil, "ARTWORK", nil, 1)
-	ohg:SetWidth(15)
-	ohg:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb")
-	ohg:SetBlendMode("ADD")
-	ohg:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", 5, 2)
-	ohg:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMLEFT", 5, -2)
+		local ohg = self:CreateTexture(nil, "ARTWORK", nil, 1)
+		ohg:SetWidth(15)
+		ohg:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb")
+		ohg:SetBlendMode("ADD")
+		ohg:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", 5, 2)
+		ohg:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMLEFT", 5, -2)
 
-	self.HealPredictionAndAbsorb = {
-		myBar = mhpb,
-		otherBar = ohpb,
-		absorbBar = abb,
-		absorbBarOverlay = abbo,
-		overAbsorbGlow = oag,
-		healAbsorbBar = hab,
-		overHealAbsorbGlow = ohg,
-		maxOverflow = 1,
-	}
+		self.HealPredictionAndAbsorb = {
+			myBar = mhpb,
+			otherBar = ohpb,
+			absorbBar = abb,
+			absorbBarOverlay = abbo,
+			overAbsorbGlow = oag,
+			healAbsorbBar = hab,
+			overHealAbsorbGlow = ohg,
+			maxOverflow = 1,
+		}
+	end
 
 	self.Auras = CreateFrame("Frame", nil, self)
 	self.Auras:SetFrameLevel(self:GetFrameLevel() + 2)
@@ -820,9 +822,9 @@ function UF:CreatePlates()
 	self.Auras.initdialAnchor = "BOTTOMLEFT"
 	self.Auras["growth-y"] = "UP"
 	if C["Nameplate"].ShowPlayerPlate and C["Nameplate"].NameplateClassPower then
-		self.Auras:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 15 + _G.oUF_ClassPowerBar:GetHeight() + 6)
+		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 5 + _G.oUF_ClassPowerBar:GetHeight())
 	else
-		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 16)
+		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 5)
 	end
 	self.Auras.numTotal = C["Nameplate"].MaxAuras
 	self.Auras.iconsPerRow = C["Nameplate"].MaxAurasPerRow or 6
@@ -878,7 +880,7 @@ function UF:UpdateClassPowerAnchor()
 	if nameplate then
 		bar:SetParent(nameplate.unitFrame)
 		bar:ClearAllPoints()
-		bar:SetPoint("TOPLEFT", nameplate.unitFrame.nameText, "TOPLEFT", 0, 12)
+		bar:SetPoint("BOTTOM", nameplate.unitFrame, "TOP", 0, 26)
 		bar:Show()
 	else
 		bar:Hide()
@@ -941,20 +943,20 @@ function UF:PostUpdatePlates(event, unit)
 	end
 
 	if event == "NAME_PLATE_UNIT_ADDED" then
-		self.isPlayer = UnitIsPlayer(unit)
-		self.reaction = UnitReaction("player", unit)
+		-- self.isPlayer = UnitIsPlayer(unit)
+		-- self.reaction = UnitReaction("player", unit)
 
-		if UnitIsUnit(unit, "player") then
-			self.frameType = "PLAYER"
-		elseif UnitIsPVPSanctuary(unit) or (self.isPlayer and UnitIsFriend("player", unit) and self.reaction and self.reaction >= 5) then
-			self.frameType = "FRIENDLY_PLAYER"
-		elseif not self.isPlayer and (self.reaction and self.reaction >= 5) or UnitFactionGroup(unit) == "Neutral" then
-			self.frameType = "FRIENDLY_NPC"
-		elseif not self.isPlayer and (self.reaction and self.reaction <= 4) then
-			self.frameType = "ENEMY_NPC"
-		else
-			self.frameType = "ENEMY_PLAYER"
-		end
+		-- if UnitIsUnit(unit, "player") then
+		-- 	self.frameType = "PLAYER"
+		-- elseif UnitIsPVPSanctuary(unit) or (self.isPlayer and UnitIsFriend("player", unit) and self.reaction and self.reaction >= 5) then
+		-- 	self.frameType = "FRIENDLY_PLAYER"
+		-- elseif not self.isPlayer and (self.reaction and self.reaction >= 5) or UnitFactionGroup(unit) == "Neutral" then
+		-- 	self.frameType = "FRIENDLY_NPC"
+		-- elseif not self.isPlayer and (self.reaction and self.reaction <= 4) then
+		-- 	self.frameType = "ENEMY_NPC"
+		-- else
+		-- 	self.frameType = "ENEMY_PLAYER"
+		-- end
 
 		self.unitName = UnitName(unit)
 		self.unitGUID = UnitGUID(unit)
@@ -1024,8 +1026,8 @@ function UF:CreatePlayerPlate()
 	self.Power.frequentUpdates = true
 
 	do
-		local barWidth, barHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
-		local CPBarPoint = {"TOPLEFT", 12, 4}
+		local barWidth, barHeight = self:GetWidth(), self.Health:GetHeight() --C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
+		local CPBarPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 3}
 
 		if self.mystyle == "PlayerPlate" then
 			barWidth, barHeight = self:GetWidth(), self.Health:GetHeight()
@@ -1043,6 +1045,7 @@ function UF:CreatePlayerPlate()
 			bars[i]:SetWidth((barWidth - 5 * 6) / 6)
 			bars[i]:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 			bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
+			bars[i]:CreateShadow(true)
 
 			if i == 1 then
 				bars[i]:SetPoint("BOTTOMLEFT")
@@ -1050,14 +1053,8 @@ function UF:CreatePlayerPlate()
 				bars[i]:SetPoint("LEFT", bars[i-1], "RIGHT", 6, 0)
 			end
 
-			bars[i]:CreateShadow(true)
-
 			if K.Class == "DEATHKNIGHT" then
 				bars[i].timer = K.CreateFontString(bars[i], 10, "")
-			end
-
-			if K.Class == "ROGUE" or K.Class == "DRUID" then
-				bars[i]:SetStatusBarColor(unpack(K.Colors.power.COMBO_POINTS[i]))
 			end
 
 			if C["Nameplate"].ShowPlayerPlate then
