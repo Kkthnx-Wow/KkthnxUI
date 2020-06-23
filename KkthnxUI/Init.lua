@@ -175,7 +175,8 @@ function K:GetModule(name)
 end
 
 local function GetBestScale()
-	return math_max(0.4, math_min(1.15, 768 / K.ScreenHeight))
+	local scale = math_max(0.4, math_min(1.15, 768 / K.ScreenHeight))
+	return K.Round(scale, 2)
 end
 
 function K:SetupUIScale(init)

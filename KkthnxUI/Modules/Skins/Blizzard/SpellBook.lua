@@ -28,6 +28,10 @@ local function LoadSpellBookSkin()
 		button:CreateInnerShadow()
 
 		if button.SpellHighlightTexture then
+			if icon then
+				button.SpellHighlightTexture:SetPoint("TOPLEFT", button, "TOPLEFT", -7, 7)
+				button.SpellHighlightTexture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 7, -7)
+			end
 			K.Flash(button.SpellHighlightTexture, 1, true)
 		end
 

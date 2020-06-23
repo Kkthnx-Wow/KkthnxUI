@@ -109,22 +109,16 @@ local function SkinMiscStuff()
 		iconBorderFrame:CreateBorder()
 		iconBorderFrame:CreateInnerShadow()
 	end
-
-	-- do
-	-- 	_G.FriendsTabHeaderRecruitAFriendButton:SetSize(22, 22)
-	-- 	_G.FriendsTabHeaderRecruitAFriendButton:CreateBorder()
-	-- 	_G.FriendsTabHeaderRecruitAFriendButton:StyleButton()
-	-- 	_G.FriendsTabHeaderRecruitAFriendButton:CreateInnerShadow()
-	-- 	_G.FriendsTabHeaderRecruitAFriendButtonIcon:SetDrawLayer("OVERLAY")
-	-- 	_G.FriendsTabHeaderRecruitAFriendButtonIcon:SetTexCoord(_G.unpack(K.TexCoords))
-	-- 	_G.FriendsTabHeaderRecruitAFriendButtonIcon:SetAllPoints()
-	-- end
 end
 
 local function SkinDebugTools()
+	if not IsAddOnLoaded("Blizzard_DebugTools") then
+		return
+	end
+
 	-- EventTraceFrame
-	_G.EventTraceFrame:CreateBorder(nil, nil, nil, true)
-	_G.EventTraceFrameCloseButton:SkinCloseButton()
+	EventTraceFrame:CreateBorder(nil, nil, nil, true)
+	EventTraceFrameCloseButton:SkinCloseButton()
 end
 
 local function SkinAchievementBars()

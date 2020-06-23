@@ -12,6 +12,7 @@ local string_format = _G.string.format
 local string_match = _G.string.match
 local tonumber = _G.tonumber
 local unpack = _G.unpack
+local table_wipe = _G.table.wipe
 
 local Ambiguate = _G.Ambiguate
 local C_MythicPlus_GetCurrentAffixes = _G.C_MythicPlus.GetCurrentAffixes
@@ -28,14 +29,10 @@ local IsInGroup = _G.IsInGroup
 local IsInInstance = _G.IsInInstance
 local IsInRaid = _G.IsInRaid
 local SetCVar = _G.SetCVar
-local UnitClass = _G.UnitClass
 local UnitClassification = _G.UnitClassification
 local UnitExists = _G.UnitExists
-local UnitFactionGroup = _G.UnitFactionGroup
 local UnitGUID = _G.UnitGUID
 local UnitIsConnected = _G.UnitIsConnected
-local UnitIsFriend = _G.UnitIsFriend
-local UnitIsPVPSanctuary = _G.UnitIsPVPSanctuary
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsTapDenied = _G.UnitIsTapDenied
 local UnitIsUnit = _G.UnitIsUnit
@@ -44,8 +41,25 @@ local UnitPlayerControlled = _G.UnitPlayerControlled
 local UnitReaction = _G.UnitReaction
 local hooksecurefunc = _G.hooksecurefunc
 
-local AKDcache = {}
+local CPBarPoint = {"TOPLEFT", 12, 4}
+local aksCacheData = {}
+local barHeight = C["Nameplate"].PlateHeight
+local barWidth = C["Nameplate"].PlateWidth
+local explosivesID = 120651
+local groupRoles = {}
+local guidToPlate = {}
+local hasExplosives
 local isInGroup
+local isInInstance
+local isTargetClassPower
+
+-- Unit classification
+local classify = {
+	elite = {1, 1, 1},
+	rare = {1, 1, 1, true},
+	rareelite = {1, .1, .1},
+	worldboss = {0, 1, 0},
+}
 
 -- Init
 function UF:PlateInsideView()
@@ -140,19 +154,45 @@ function UF:UpdateUnitPower()
 	end
 end
 
+-- Off-tank threat color
 local function refreshGroupRoles()
 	local isInRaid = IsInRaid()
 	isInGroup = isInRaid or IsInGroup()
+	table_wipe(groupRoles)
+
+	if isInGroup then
+		local numPlayers = (isInRaid and GetNumGroupMembers()) or GetNumSubgroupMembers()
+		local unit = (isInRaid and "raid") or "party"
+		for i = 1, numPlayers do
+			local index = unit..i
+			if UnitExists(index) then
+				groupRoles[UnitName(index)] = UnitGroupRolesAssigned(index)
+			end
+		end
+	end
 end
 
 local function resetGroupRoles()
 	isInGroup = IsInRaid() or IsInGroup()
+	table_wipe(groupRoles)
 end
 
 function UF:UpdateGroupRoles()
 	refreshGroupRoles()
 	K:RegisterEvent("GROUP_ROSTER_UPDATE", refreshGroupRoles)
 	K:RegisterEvent("GROUP_LEFT", resetGroupRoles)
+end
+
+function UF:CheckTankStatus(unit)
+	local index = unit.."target"
+	local unitRole = isInGroup and UnitExists(index) and not UnitIsUnit(index, "player") and groupRoles[UnitName(index)] or "NONE"
+	if unitRole == "TANK" and K.Role == "Tank" then
+		self.feedbackUnit = index
+		self.isOffTank = true
+	else
+		self.feedbackUnit = "player"
+		self.isOffTank = false
+	end
 end
 
 -- Update unit color
@@ -162,56 +202,51 @@ function UF.UpdateColor(element, unit)
 	local npcID = self.npcID
 	local isCustomUnit = K.NameplateCustomUnits[name] or K.NameplateCustomUnits[npcID]
 	local isPlayer = UnitIsPlayer(unit)
-	local status = UnitThreatSituation("player", unit) or false -- just in case
+	local status = UnitThreatSituation(self.feedbackUnit or "player", unit) or false -- just in case
 	local reaction = UnitReaction(unit, "player")
-
-	local reactionColor = K.Colors.reaction[reaction]
-	local customColor = C["Nameplate"].CustomColor
-	local secureColor = C["Nameplate"].SecureColor
-	local transColor = C["Nameplate"].TransColor
-	local insecureColor = C["Nameplate"].InsecureColor
+	local customColor = {r=0, g=.8, b=.3}
+	local secureColor = {r=1, g=0, b=1}
+	local transColor = {r=1, g=.8, b=0}
+	local insecureColor = {r=1, g=0, b=0}
 	local revertThreat = C["Nameplate"].DPSRevertThreat
-	-- local offTankColor = C["Nameplate"].OffTankColor
-
+	local offTankColor = {r=.2, g=.7, b=.5}
 	local r, g, b
+
 	if not UnitIsConnected(unit) then
-		r, g, b = 0.7, 0.7, 0.7
+		r, g, b = .7, .7, .7
 	else
 		if isCustomUnit then
-			r, g, b = customColor[1], customColor[2], customColor[3]
+			r, g, b = customColor.r, customColor.g, customColor.b
 		elseif isPlayer and (reaction and reaction >= 5) then
 			if C["Nameplate"].FriendlyCC then
 				r, g, b = K.UnitColor(unit)
 			else
-				r, g, b = unpack(K.Colors.power["MANA"])
+				r, g, b = .3, .3, 1
 			end
 		elseif isPlayer and (reaction and reaction <= 4) and C["Nameplate"].HostileCC then
 			r, g, b = K.UnitColor(unit)
 		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) then
-			r, g, b = 0.6, 0.6, 0.6
+			r, g, b = .6, .6, .6
 		else
-			if not UnitIsTapDenied(unit) and not UnitIsPlayer(unit) then
-				if reactionColor then
-					r, g, b = reactionColor[1], reactionColor[2], reactionColor[3]
-				else
-					r, g, b = UnitSelectionColor(unit, true)
-				end
-			end
-
-			if status and (C["Nameplate"].TankMode and K.Role == "Tank") then
+			r, g, b = UnitSelectionColor(unit, true)
+			if status and (C["Nameplate"].TankMode or K.Role == "Tank") then
 				if status == 3 then
 					if K.Role ~= "Tank" and revertThreat then
-						r, g, b = insecureColor[1], insecureColor[2], insecureColor[3]
+						r, g, b = insecureColor.r, insecureColor.g, insecureColor.b
 					else
-						r, g, b = secureColor[1], secureColor[2], secureColor[3]
+						if self.isOffTank then
+							r, g, b = offTankColor.r, offTankColor.g, offTankColor.b
+						else
+							r, g, b = secureColor.r, secureColor.g, secureColor.b
+						end
 					end
 				elseif status == 2 or status == 1 then
-					r, g, b = transColor[1], transColor[2], transColor[3]
+					r, g, b = transColor.r, transColor.g, transColor.b
 				elseif status == 0 then
 					if K.Role ~= "Tank" and revertThreat then
-						r, g, b = secureColor[1], secureColor[2], secureColor[3]
+						r, g, b = secureColor.r, secureColor.g, secureColor.b
 					else
-						r, g, b = insecureColor[1], insecureColor[2], insecureColor[3]
+						r, g, b = insecureColor.r, insecureColor.g, insecureColor.b
 					end
 				end
 			end
@@ -224,14 +259,16 @@ function UF.UpdateColor(element, unit)
 
 	if isCustomUnit or (not C["Nameplate"].TankMode and K.Role ~= "Tank") then
 		if status and status == 3 then
-			element.Shadow:SetBackdropBorderColor(1, 0, 0, 1)
+			self.ThreatIndicator:SetBackdropBorderColor(1, 0, 0)
+			self.ThreatIndicator:Show()
 		elseif status and (status == 2 or status == 1) then
-			element.Shadow:SetBackdropBorderColor(1, 1, 0, 1)
+			self.ThreatIndicator:SetBackdropBorderColor(1, 1, 0)
+			self.ThreatIndicator:Show()
 		else
-			element.Shadow:SetBackdropBorderColor(0, 0, 0, 1)
+			self.ThreatIndicator:Hide()
 		end
 	else
-		element.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+		self.ThreatIndicator:Hide()
 	end
 end
 
@@ -240,22 +277,45 @@ function UF:UpdateThreatColor(_, unit)
 		return
 	end
 
+	UF.CheckTankStatus(self, unit)
 	UF.UpdateColor(self.Health, unit)
 end
 
+function UF:CreateThreatColor(self)
+	local threatIndicator = CreateFrame("Frame", nil, self)
+	threatIndicator:SetPoint("TOPLEFT", self, -3, 3)
+	threatIndicator:SetPoint("BOTTOMRIGHT", self, 3, -3)
+	threatIndicator:SetBackdrop({edgeFile = C["Media"].Glow, edgeSize = 3})
+	threatIndicator:Hide()
+
+	self.ThreatIndicator = threatIndicator
+	self.ThreatIndicator.Override = UF.UpdateThreatColor
+end
+
+
 -- Target indicator
 function UF:UpdateTargetChange()
+	-- if UnitIsUnit(self.unit, "target") and not UnitIsUnit(self.unit, "player") then
+	-- 	self.TargetIndicator:SetAlpha(1)
+	-- 	self:SetAlpha(1)
+	-- else
+	-- 	if not UnitExists("target") or UnitIsUnit(self.unit, "player") then
+	-- 		self.TargetIndicator:SetAlpha(0)
+	-- 		self:SetAlpha(1)
+	-- 	else
+	-- 		self.TargetIndicator:SetAlpha(0)
+	-- 		self:SetAlpha(0.35)
+	-- 	end
+	-- end
+
+	if C["Nameplate"].TargetIndicator.Value == 1 then
+		return
+	end
+
 	if UnitIsUnit(self.unit, "target") and not UnitIsUnit(self.unit, "player") then
 		self.TargetIndicator:SetAlpha(1)
-		self:SetAlpha(1)
 	else
-		if not UnitExists("target") or UnitIsUnit(self.unit, "player") then
-			self.TargetIndicator:SetAlpha(0)
-			self:SetAlpha(1)
-		else
-			self.TargetIndicator:SetAlpha(0)
-			self:SetAlpha(0.35)
-		end
+		self.TargetIndicator:SetAlpha(0)
 	end
 end
 
@@ -320,7 +380,6 @@ function UF:AddTargetIndicator(self)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", UF.UpdateTargetChange, true)
 end
 
-local isInInstance
 local function CheckInstanceStatus()
 	isInInstance = IsInInstance()
 end
@@ -450,13 +509,13 @@ function UF:UpdateDungeonProgress(unit)
 		local info = AngryKeystones_Data.progress[npcID]
 		if info then
 			local numCriteria = select(3, C_Scenario_GetStepInfo())
-			local total = AKDcache[name]
+			local total = aksCacheData[name]
 			if not total then
 				for criteriaIndex = 1, numCriteria do
 					local _, _, _, _, totalQuantity, _, _, _, _, _, _, _, isWeightedProgress = C_Scenario_GetCriteriaInfo(criteriaIndex)
 					if isWeightedProgress then
-						AKDcache[name] = totalQuantity
-						total = AKDcache[name]
+						aksCacheData[name] = totalQuantity
+						total = aksCacheData[name]
 						break
 					end
 				end
@@ -476,14 +535,6 @@ function UF:UpdateDungeonProgress(unit)
 		end
 	end
 end
-
--- Unit classification
-local classify = {
-	rare = {1, 1, 1, true},
-	elite = {1, 1, 1},
-	rareelite = {1, .1, .1},
-	worldboss = {0, 1, 0},
-}
 
 function UF:AddCreatureIcon(self)
 	local iconFrame = CreateFrame("Frame", nil, self)
@@ -512,15 +563,13 @@ function UF:UpdateUnitClassify(unit)
 end
 
 -- Scale plates for explosives
-local hasExplosives
-local id = 120651
 function UF:UpdateExplosives(event, unit)
 	if not hasExplosives or unit ~= self.unit then
 		return
 	end
 
 	local npcID = self.npcID
-	if event == "NAME_PLATE_UNIT_ADDED" and npcID == id then
+	if event == "NAME_PLATE_UNIT_ADDED" and npcID == explosivesID then
 		self:SetScale(1.25)
 	elseif event == "NAME_PLATE_UNIT_REMOVED" then
 		self:SetScale(1)
@@ -623,37 +672,7 @@ function UF:AddFollowerXP(self)
 	self.NazjatarFollowerXP.progressText = K.CreateFontString(self.NazjatarFollowerXP, 9)
 end
 
--- function UF:AddClassIcon(self)
--- 	if C["Nameplate"].ClassIcon == true then
--- 		self.Class = CreateFrame("Frame", nil, self)
-
--- 		self.Class.Icon = self.Class:CreateTexture(nil, "OVERLAY")
--- 		self.Class.Icon:SetSize(self:GetHeight() * 2 + 3, self:GetHeight() * 2 + 3)
--- 		self.Class.Icon:SetPoint("BOTTOMRIGHT", self.Castbar, "BOTTOMLEFT", -3, 0)
--- 		self.Class.Icon:SetTexture("Interface\\WorldStateFrame\\Icons-Classes")
--- 		self.Class.Icon:SetTexCoord(0, 0, 0, 0)
-
--- 		self.Class:SetAllPoints(self.Class.Icon)
--- 		self.Class:CreateShadow(true)
--- 	end
--- end
-
--- function UF:UpdatePlateClassIcons(unit)
--- 	if C["Nameplate"].ClassIcon then
--- 		if (self.frameType == "ENEMY_PLAYER") then
--- 			local _, class = UnitClass(unit)
--- 			local texcoord = CLASS_ICON_TCOORDS[class]
--- 			self.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
--- 			self.Class:Show()
--- 		else
--- 			self.Class.Icon:SetTexCoord(0, 0, 0, 0)
--- 			self.Class:Hide()
--- 		end
--- 	end
--- end
-
 -- Interrupt info on castbars
-local guidToPlate = {}
 function UF:UpdateCastbarInterrupt(...)
 	local _, eventType, _, sourceGUID, sourceName, _, _, destGUID = ...
 	if eventType == "SPELL_INTERRUPT" and destGUID and sourceName and sourceName ~= "" then
@@ -756,7 +775,8 @@ function UF:CreatePlates()
 	self.Castbar.PostCastNotInterruptible = UF.PostUpdateInterruptible
 
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.RaidTargetIndicator:SetPoint("RIGHT", self, "LEFT", -5, 0)
+	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)
+	self.RaidTargetIndicator:SetParent(self.Health)
 	self.RaidTargetIndicator:SetSize(16, 16)
 
 	do
@@ -822,7 +842,7 @@ function UF:CreatePlates()
 	self.Auras.initdialAnchor = "BOTTOMLEFT"
 	self.Auras["growth-y"] = "UP"
 	if C["Nameplate"].ShowPlayerPlate and C["Nameplate"].NameplateClassPower then
-		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 5 + _G.oUF_ClassPowerBar:GetHeight())
+		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 6 + _G.oUF_NameplateClassPowerBar:GetHeight())
 	else
 		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 5)
 	end
@@ -846,6 +866,8 @@ function UF:CreatePlates()
 	self.Auras.PreUpdate = UF.bolsterPreUpdate
 	self.Auras.PostUpdate = UF.bolsterPostUpdate
 
+	UF:CreateThreatColor(self)
+
 	self.PvPClassificationIndicator = self:CreateTexture(nil, "ARTWORK")
 	self.PvPClassificationIndicator:SetSize(18, 18)
 	self.PvPClassificationIndicator:SetPoint("LEFT", self, "RIGHT", 6, 0)
@@ -855,32 +877,26 @@ function UF:CreatePlates()
 	self.powerText:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -4)
 	self:Tag(self.powerText, "[nppp]")
 
-	local CreateThreatIndicator = CreateFrame("Frame", nil, self)
-	self.ThreatIndicator = CreateThreatIndicator
-	self.ThreatIndicator.Override = UF.UpdateThreatColor
-
-	-- UF:AddFollowerXP(self) -- Enable when fixed.
+	--UF:AddFollowerXP(self)
 	UF:MouseoverIndicator(self)
 	UF:AddTargetIndicator(self)
 	UF:AddCreatureIcon(self)
-	UF:AddDungeonProgress(self)
-	-- UF:AddClassIcon(self)
 	UF:AddQuestIcon(self)
+	UF:AddDungeonProgress(self)
 end
 
 -- Classpower on target nameplate
-local isTargetClassPower
 function UF:UpdateClassPowerAnchor()
 	if not isTargetClassPower then
 		return
 	end
 
-	local bar = _G.oUF_ClassPowerBar
+	local bar = _G.oUF_NameplateClassPowerBar
 	local nameplate = C_NamePlate_GetNamePlateForUnit("target")
 	if nameplate then
 		bar:SetParent(nameplate.unitFrame)
 		bar:ClearAllPoints()
-		bar:SetPoint("BOTTOM", nameplate.unitFrame, "TOP", 0, 26)
+		bar:SetPoint("BOTTOM", nameplate.unitFrame, "TOP", 0, 14)
 		bar:Show()
 	else
 		bar:Hide()
@@ -888,7 +904,7 @@ function UF:UpdateClassPowerAnchor()
 end
 
 function UF:UpdateTargetClassPower()
-	local bar = _G.oUF_ClassPowerBar
+	local bar = _G.oUF_NameplateClassPowerBar
 	local playerPlate = _G.oUF_PlayerPlate
 
 	if not bar or not playerPlate then
@@ -943,21 +959,6 @@ function UF:PostUpdatePlates(event, unit)
 	end
 
 	if event == "NAME_PLATE_UNIT_ADDED" then
-		-- self.isPlayer = UnitIsPlayer(unit)
-		-- self.reaction = UnitReaction("player", unit)
-
-		-- if UnitIsUnit(unit, "player") then
-		-- 	self.frameType = "PLAYER"
-		-- elseif UnitIsPVPSanctuary(unit) or (self.isPlayer and UnitIsFriend("player", unit) and self.reaction and self.reaction >= 5) then
-		-- 	self.frameType = "FRIENDLY_PLAYER"
-		-- elseif not self.isPlayer and (self.reaction and self.reaction >= 5) or UnitFactionGroup(unit) == "Neutral" then
-		-- 	self.frameType = "FRIENDLY_NPC"
-		-- elseif not self.isPlayer and (self.reaction and self.reaction <= 4) then
-		-- 	self.frameType = "ENEMY_NPC"
-		-- else
-		-- 	self.frameType = "ENEMY_PLAYER"
-		-- end
-
 		self.unitName = UnitName(unit)
 		self.unitGUID = UnitGUID(unit)
 		if self.unitGUID then
@@ -979,7 +980,6 @@ function UF:PostUpdatePlates(event, unit)
 	UF.UpdateUnitClassify(self, unit)
 	UF.UpdateExplosives(self, event, unit)
 	UF.UpdateDungeonProgress(self, unit)
-	-- UF.UpdatePlateClassIcons(self, unit)
 	UF:UpdateClassPowerAnchor()
 end
 
@@ -1025,16 +1025,13 @@ function UF:CreatePlayerPlate()
 	self.Power.colorReaction = true
 	self.Power.frequentUpdates = true
 
-	do
-		local barWidth, barHeight = self:GetWidth(), self.Health:GetHeight() --C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
-		local CPBarPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 3}
-
+	if C["Nameplate"].NameplateClassPower then
 		if self.mystyle == "PlayerPlate" then
-			barWidth, barHeight = self:GetWidth(), self.Health:GetHeight()
+			barWidth, barHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
 			CPBarPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 3}
 		end
 
-		local bar = CreateFrame("Frame", "oUF_ClassPowerBar", self.Health)
+		local bar = CreateFrame("Frame", "oUF_NameplateClassPowerBar", self.Health)
 		bar:SetSize(barWidth, barHeight)
 		bar:SetPoint(unpack(CPBarPoint))
 
@@ -1050,7 +1047,7 @@ function UF:CreatePlayerPlate()
 			if i == 1 then
 				bars[i]:SetPoint("BOTTOMLEFT")
 			else
-				bars[i]:SetPoint("LEFT", bars[i-1], "RIGHT", 6, 0)
+				bars[i]:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
 			end
 
 			if K.Class == "DEATHKNIGHT" then

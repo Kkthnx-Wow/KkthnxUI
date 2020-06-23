@@ -46,11 +46,15 @@ function Module.PostUpdateAddPower(element, _, cur, max)
 		if perc == 100 then
 			perc = ""
 			element:SetAlpha(0)
-			Player_ClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 20)
+			if Player_ClassPowerBar then
+				Player_ClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 20)
+			end
 		else
 			perc = string_format("%d%%", perc)
 			element:SetAlpha(1)
-			Player_ClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 40)
+			if Player_ClassPowerBar then
+				Player_ClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 40)
+			end
 		end
 
 		element.Text:SetText(perc)
@@ -154,7 +158,7 @@ function Module:CreatePlayer()
 	self.Health:SetPoint("TOPRIGHT")
 
 	if C["Unitframe"].ClassResources then
-		local bar = CreateFrame("Frame", "Player_ClassPowerBar", self)
+		local bar = CreateFrame("Frame", "oUF_PlayerClassPowerBar", self)
 		bar:SetSize(156, 14)
 
 		if C["Unitframe"].ShowPlayerName then
@@ -197,7 +201,7 @@ function Module:CreatePlayer()
 			self.ClassPower = bars
 		end
 
-		K.Mover(bar, "ClassPowerBar", "ClassPowerBar", bar.Pos, 156, 14)
+		K.Mover(bar, "PlayerClassPower", "ClassPowerBar", bar.Pos, 156, 14)
 	end
 
 	if C["Unitframe"].PlayerBuffs then

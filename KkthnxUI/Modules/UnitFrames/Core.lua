@@ -600,14 +600,14 @@ function Module:CreateUnits()
 
 		oUF:RegisterStyle("Nameplates", Module.CreatePlates)
 		oUF:SetActiveStyle("Nameplates")
-		oUF:SpawnNamePlates("oUF_Nameplates", Module.PostUpdatePlates)
+		oUF:SpawnNamePlates("oUF_NPs", Module.PostUpdatePlates)
 	end
 
 	if C["Nameplate"].ShowPlayerPlate then
 		oUF:RegisterStyle("PlayerPlate", Module.CreatePlayerPlate)
 		oUF:SetActiveStyle("PlayerPlate")
 		local plate = oUF:Spawn("player", "oUF_PlayerPlate", true)
-		K.Mover(plate, "PlayerNP", "PlayerPlate", {"BOTTOM", UIParent, "BOTTOM", 0, 282}, plate:GetWidth(), 20)
+		K.Mover(plate, "PlayerNP", "PlayerPlate", {"BOTTOM", UIParent, "BOTTOM", 0, 282}, plate:GetWidth(), plate:GetHeight())
 	end
 
 	if C["Unitframe"].Enable then
@@ -626,7 +626,7 @@ function Module:CreateUnits()
 		oUF:SetActiveStyle("Target")
 		local Target = oUF:Spawn("target", "oUF_Target")
 		Target:SetSize(210, 48)
-		K.Mover(Target, "TargetUF", "TargetUF", {"BOTTOM", UIParent, "BOTTOM", 290, 320}, TargetWidth, TargetHeight)
+		K.Mover(Target, "TargetUF", "TargetUF", {"BOTTOM", UIParent, "BOTTOM", 290, 320}, 210, 48)
 
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("ToT")

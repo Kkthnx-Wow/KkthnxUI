@@ -7,15 +7,15 @@ function Module:ReskinWorldQuestTab()
 		return
 	end
 
-	for _, Button in ipairs(WQT_QuestScrollFrame.buttons) do
-        Button.Reward:SetSize(26, 26)
-        Button.Reward:CreateBorder()
-        Button.Reward.Icon:SetTexCoord(unpack(K.TexCoords))
-		Button.Reward.IconBorder:SetAlpha(0)
-        hooksecurefunc(Button.Reward.IconBorder, "SetVertexColor", function(self, r, g, b)
-            Button.Reward:SetBackdropBorderColor(r, g, b)
-        end)
-	end
+	-- for _, Button in ipairs(WQT_QuestScrollFrame.buttons) do
+    --     Button.Rewards:SetSize(26, 26)
+    --     Button.Rewards:CreateBorder()
+    --     Button.Rewards.Icon:SetTexCoord(unpack(K.TexCoords))
+	-- 	Button.Rewards.IconBorder:SetAlpha(0)
+    --     hooksecurefunc(Button.Rewards.IconBorder, "SetVertexColor", function(self, r, g, b)
+    --         Button.Rewards:SetBackdropBorderColor(r, g, b)
+    --     end)
+	-- end
 
 	for _, Tooltip in pairs({WQT_CompareTooltip1, WQT_CompareTooltip2, WQT_Tooltip}) do
         TT.ReskinTooltip(Tooltip)
