@@ -369,12 +369,10 @@ function Module:CreateTimeDataText()
 		return
 	end
 
-	Module.TimeFrame = CreateFrame("Frame", "KKUI_TimeDataText", UIParent)
+	Module.TimeFrame = CreateFrame("Frame", "KKUI_TimeDataText", Minimap)
 
 	Module.TimeFont = Module.TimeFrame:CreateFontString("OVERLAY")
 	Module.TimeFont:FontTemplate(nil, 13)
-	Module.TimeFont:ClearAllPoints()
-
 	Module.TimeFont:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 2)
 
 	Module.TimeFrame:SetAllPoints(Module.TimeFont)
