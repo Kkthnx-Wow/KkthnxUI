@@ -7,9 +7,17 @@ local pairs = _G.pairs
 local CreateFrame = _G.CreateFrame
 
 local changelogData = {
-	"Removed Guild Best Mythic Dungeon Module > Use AddOn!",
+	"Added Tooltip Pet Info",
+	"Added XPBar For Nazjatar Follower NPC?",
+	"Fixed Nameplate ClassPower",
+	"Fixed/Reskinned Chat Bubbles",
+	"Moved Nameplate Raid Target Icons",
 	"Removed A Command",
+	"Removed Guild Best Mythic Dungeon Module",
 	"Removed Mail Contact List",
+	"Rework PCD Disappearing Rapidly",
+	"Temp Fix For Skinning Errors",
+	"Various Files Cleaned",
 }
 
 local changelogFrame

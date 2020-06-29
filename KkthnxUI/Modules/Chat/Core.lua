@@ -2,7 +2,7 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Chat")
 
 local _G = _G
-local string_find = string.find
+local string_find = _G.string.find
 local string_format = _G.string.format
 local string_gsub = _G.string.gsub
 local string_len = _G.string.len
@@ -32,7 +32,6 @@ local GetChannelName = _G.GetChannelName
 local GetInstanceInfo = _G.GetInstanceInfo
 local GetItemIcon = _G.GetItemIcon
 local GetRealmName = _G.GetRealmName
-local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsInGroup = _G.IsInGroup
@@ -42,6 +41,7 @@ local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlaySoundFile = _G.PlaySoundFile
 local UIParent = _G.UIParent
 local UnitName = _G.UnitName
+local hooksecurefunc = _G.hooksecurefunc
 
 local function GetGroupDistribution()
 	local _, instanceType = GetInstanceInfo()
@@ -224,7 +224,11 @@ function Module:StyleFrame(frame)
 
 	-- Move the edit box
 	EditBox:ClearAllPoints()
-	EditBox:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", -4, 24)
+	if C["Chat"].Background then
+		EditBox:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", -4, 24)
+	else
+		EditBox:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 1, 24)
+	end
 	EditBox:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 22, 48)
 
 	-- Disable alt key usage
@@ -310,7 +314,7 @@ function Module:StyleTempFrame()
 
 	Module:KillPetBattleCombatLog(Frame)
 
-	-- Make sure it"s not skinned already
+	-- Make sure it's not skinned already
 	if Frame.IsSkinned then
 		return
 	end
@@ -319,10 +323,16 @@ function Module:StyleTempFrame()
 	Module:StyleFrame(Frame)
 end
 
+local isChatUpdating = false
 function Module:SetDefaultChatFramesPositions()
 	if (not KkthnxUIData[GetRealmName()][UnitName("player")].Chat) then
 		KkthnxUIData[GetRealmName()][UnitName("player")].Chat = {}
 	end
+
+	if isChatUpdating then
+		return
+	end
+	isChatUpdating = true
 
 	local Height = 150
 	local Width = 380
@@ -351,6 +361,8 @@ function Module:SetDefaultChatFramesPositions()
 		local Anchor1, _, Anchor2, X, Y = Frame:GetPoint()
 		KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame"..i] = {Anchor1, Anchor2, X, Y, Width, Height}
 	end
+
+	isChatUpdating = false
 end
 
 function Module:SaveChatFramePositionAndDimensions()
@@ -467,9 +479,6 @@ function Module:Install()
 	ChatFrame_RemoveAllMessageGroups(ChatFrame4)
 	ChatFrame_AddChannel(ChatFrame4, TRADE)
 	ChatFrame_AddChannel(ChatFrame4, GENERAL)
-	if GetLocale() == "enUS" and K.Realm == "Sethraliss" then
-		ChatFrame_AddChannel(ChatFrame4, "world_en")
-	end
 
 	-- Loot
 	ChatFrame_RemoveAllMessageGroups(ChatFrame5)
@@ -620,16 +629,18 @@ function Module:OnEnable()
 	self:MoveAudioButtons()
 	self:SetupFrame()
 
-	if C["Chat"].LockPositionSize or K.Name == "Kkthnx" then
-		K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.SetDefaultChatFramesPositions)
+	if K.isDeveloper then
+		self:SetDefaultChatFramesPositions()
+		hooksecurefunc("FCF_SavePositionAndDimensions", self.SetDefaultChatFramesPositions)
+		K:RegisterEvent("UI_SCALE_CHANGED", self.SetDefaultChatFramesPositions)
 	end
 
-	hooksecurefunc("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
-	hooksecurefunc("FCF_OpenTemporaryWindow", Module.StyleTempFrame)
-	hooksecurefunc("FCF_RestorePositionAndDimensions", Module.SetChatFramePosition)
-	hooksecurefunc("FCF_SavePositionAndDimensions", Module.SaveChatFramePositionAndDimensions)
-	hooksecurefunc("FCFTab_UpdateAlpha", Module.NoMouseAlpha)
-	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
+	hooksecurefunc("ChatEdit_UpdateHeader", self.UpdateEditBoxColor)
+	hooksecurefunc("FCF_OpenTemporaryWindow", self.StyleTempFrame)
+	hooksecurefunc("FCF_RestorePositionAndDimensions", self.SetChatFramePosition)
+	hooksecurefunc("FCF_SavePositionAndDimensions", self.SaveChatFramePositionAndDimensions)
+	hooksecurefunc("FCFTab_UpdateAlpha", self.NoMouseAlpha)
+	hooksecurefunc("FCFTab_UpdateColors", self.UpdateTabColors)
 
 	-- Combat Log Skinning (credit: Aftermathh)
 	local CombatLogButton = _G.CombatLogQuickButtonFrame_Custom
