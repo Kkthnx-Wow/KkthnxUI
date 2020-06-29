@@ -586,7 +586,6 @@ do
 end
 
 function Module:OnEnable()
-	self:CreateAFKCam()
 	self:CreateBlockStrangerInvites()
 	self:CreateChatBubbles()
 	self:CreateDurabilityFrame()
@@ -604,6 +603,7 @@ function Module:OnEnable()
 	self:CreateRaidMarker()
 	self:CreateSlotDurability()
 	self:CreateSlotItemLevel()
+	self:CreateSpinCam()
 	self:CreateTradeTabs()
 	self:CreateTradeTargetInfo()
 	self:CreateVehicleSeatMover()

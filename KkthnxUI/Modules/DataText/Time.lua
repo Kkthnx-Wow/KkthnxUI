@@ -31,6 +31,7 @@ local GetCurrencyInfo = _G.GetCurrencyInfo
 local GetGameTime = _G.GetGameTime
 local GetNumSavedInstances = _G.GetNumSavedInstances
 local GetNumSavedWorldBosses = _G.GetNumSavedWorldBosses
+local GetQuestObjectiveInfo = _G.GetQuestObjectiveInfo
 local GetSavedInstanceInfo = _G.GetSavedInstanceInfo
 local GetSavedWorldBossInfo = _G.GetSavedWorldBossInfo
 local ISLANDS_HEADER = _G.ISLANDS_HEADER
@@ -296,7 +297,7 @@ function Module:OnEnter()
 	end
 
 	local iwqID = C_IslandsQueue.GetIslandsWeeklyQuestID()
-	if iwqID and UnitLevel("player") == 120 then
+	if iwqID and K.Level == 120 then
 		addTitle(QUESTS_LABEL)
 		if IsQuestFlaggedCompleted(iwqID) then
 			GameTooltip:AddDoubleLine(ISLANDS_HEADER, QUEST_COMPLETE, 1,1,1, 1,0,0)
@@ -351,7 +352,7 @@ function Module:OnLeave()
 	GameTooltip:Hide()
 end
 
-function Module:OnMouseUp(_, btn)
+function Module:OnMouseUp(btn)
 	if btn == "RightButton" then
 		_G.ToggleTimeManager()
 	else
@@ -366,6 +367,10 @@ end
 
 function Module:CreateTimeDataText()
 	if not C["DataText"].Time then
+		return
+	end
+
+	if not Minimap then
 		return
 	end
 

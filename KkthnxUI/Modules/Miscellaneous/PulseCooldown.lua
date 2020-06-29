@@ -27,7 +27,7 @@ local IsInInstance = _G.IsInInstance
 local PlaySound = _G.PlaySound
 local hooksecurefunc = _G.hooksecurefunc
 
-local fadeInTime, fadeOutTime, maxAlpha, elapsed, runtimer = 0.5, 0.7, 1, 0, 0
+local fadeInTime, fadeOutTime, maxAlpha, elapsed, runtimer = 0.2, 0.2, 1, 0, 0
 local animScale, iconSize, holdTime, threshold = C["PulseCooldown"].AnimScale, C["PulseCooldown"].Size, C["PulseCooldown"].HoldTime, C["PulseCooldown"].Threshold
 local cooldowns, animating, watching = {}, {}, {}
 
@@ -40,6 +40,7 @@ K.PulseIgnoredSpells = {
 
 local PulseCooldownFrame = CreateFrame("Frame", "PulseCooldownFrame", UIParent)
 PulseCooldownFrame:CreateBorder()
+PulseCooldownFrame:CreateInnerShadow()
 PulseCooldownFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 260)
 
 PulseCooldownFrame.Icon = PulseCooldownFrame:CreateTexture(nil, "ARTWORK")
@@ -151,9 +152,10 @@ local function OnUpdate(_, update)
 			table_remove(animating, 1)
 			runtimer = 0
 			PulseCooldownFrame.Icon:SetTexture(nil)
-			PulseCooldownFrame:SetAlpha(0)
-			-- PulseCooldownFrame:SetBackdropBorderColor(0, 0, 0, 0)
-			-- PulseCooldownFrame:SetBackdropColor(0, 0, 0, 0)
+			PulseCooldownFrame:SetBackdropBorderColor(0, 0, 0, 0)
+			PulseCooldownFrame:SetBackdropColor(0, 0, 0, 0)
+			PulseCooldownFrame.Backgrounds:SetColorTexture(0, 0, 0, 0)
+			PulseCooldownFrame.InnerShadow:SetVertexColor(0, 0, 0, 0)
 		else
 			if not PulseCooldownFrame.Icon:GetTexture() then
 				PulseCooldownFrame.Icon:SetTexture(animating[1][1])
@@ -174,9 +176,10 @@ local function OnUpdate(_, update)
 			local scale = iconSize + (iconSize * ((animScale - 1) * (runtimer / (fadeInTime + holdTime + fadeOutTime))))
 			PulseCooldownFrame:SetWidth(scale)
 			PulseCooldownFrame:SetHeight(scale)
-			PulseCooldownFrame:SetAlpha(1)
-			-- PulseCooldownFrame:SetBackdropBorderColor(1, 1, 1, 1)
-			-- PulseCooldownFrame:SetBackdropColor(0.04, 0.04, 0.04, 0.9)
+			PulseCooldownFrame:SetBackdropBorderColor(1, 1, 1, 1)
+			PulseCooldownFrame:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+			PulseCooldownFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+			PulseCooldownFrame.InnerShadow:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 		end
 	end
 end

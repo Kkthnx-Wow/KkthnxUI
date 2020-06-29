@@ -39,6 +39,8 @@ local UnitIsUnit = _G.UnitIsUnit
 local UnitName = _G.UnitName
 local UnitPlayerControlled = _G.UnitPlayerControlled
 local UnitReaction = _G.UnitReaction
+local UnitSelectionColor = _G.UnitSelectionColor
+local UnitThreatSituation = _G.UnitThreatSituation
 local hooksecurefunc = _G.hooksecurefunc
 
 local CPBarPoint = {"TOPLEFT", 12, 4}
@@ -196,57 +198,70 @@ function UF:CheckTankStatus(unit)
 end
 
 -- Update unit color
-function UF.UpdateColor(element, unit)
-	local self = element.__owner
+function UF.UpdateColor(self, _, unit)
+	if not unit or self.unit ~= unit then
+		return
+	end
+
+	local element = self.Health
 	local name = self.unitName
 	local npcID = self.npcID
 	local isCustomUnit = K.NameplateCustomUnits[name] or K.NameplateCustomUnits[npcID]
 	local isPlayer = UnitIsPlayer(unit)
 	local status = UnitThreatSituation(self.feedbackUnit or "player", unit) or false -- just in case
 	local reaction = UnitReaction(unit, "player")
-	local customColor = {r=0, g=.8, b=.3}
-	local secureColor = {r=1, g=0, b=1}
-	local transColor = {r=1, g=.8, b=0}
-	local insecureColor = {r=1, g=0, b=0}
-	local revertThreat = C["Nameplate"].DPSRevertThreat
-	local offTankColor = {r=.2, g=.7, b=.5}
-	local r, g, b
 
+	local reactionColor = K.Colors.reaction[reaction]
+	local customColor = C["Nameplate"].CustomColor
+	local secureColor = C["Nameplate"].SecureColor
+	local transColor = C["Nameplate"].TransColor
+	local insecureColor = C["Nameplate"].InsecureColor
+	local revertThreat = C["Nameplate"].DPSRevertThreat
+	local offTankColor = C["Nameplate"].OffTankColor
+
+	local r, g, b
 	if not UnitIsConnected(unit) then
-		r, g, b = .7, .7, .7
+		r, g, b = 0.7, 0.7, 0.7
 	else
 		if isCustomUnit then
-			r, g, b = customColor.r, customColor.g, customColor.b
+			r, g, b = customColor[1], customColor[2], customColor[3]
 		elseif isPlayer and (reaction and reaction >= 5) then
 			if C["Nameplate"].FriendlyCC then
 				r, g, b = K.UnitColor(unit)
 			else
-				r, g, b = .3, .3, 1
+				r, g, b = unpack(K.Colors.power["MANA"])
 			end
 		elseif isPlayer and (reaction and reaction <= 4) and C["Nameplate"].HostileCC then
 			r, g, b = K.UnitColor(unit)
 		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) then
 			r, g, b = .6, .6, .6
 		else
-			r, g, b = UnitSelectionColor(unit, true)
+			if not UnitIsTapDenied(unit) and not UnitIsPlayer(unit) then
+				if reactionColor then
+					r, g, b = reactionColor[1], reactionColor[2], reactionColor[3]
+				else
+					r, g, b = UnitSelectionColor(unit, true)
+				end
+			end
+
 			if status and (C["Nameplate"].TankMode or K.Role == "Tank") then
 				if status == 3 then
 					if K.Role ~= "Tank" and revertThreat then
-						r, g, b = insecureColor.r, insecureColor.g, insecureColor.b
+						r, g, b = insecureColor[1], insecureColor[2], insecureColor[3]
 					else
 						if self.isOffTank then
-							r, g, b = offTankColor.r, offTankColor.g, offTankColor.b
+							r, g, b = offTankColor[1], offTankColor[2], offTankColor[3]
 						else
-							r, g, b = secureColor.r, secureColor.g, secureColor.b
+							r, g, b = secureColor[1], secureColor[2], secureColor[3]
 						end
 					end
 				elseif status == 2 or status == 1 then
 					r, g, b = transColor.r, transColor.g, transColor.b
 				elseif status == 0 then
 					if K.Role ~= "Tank" and revertThreat then
-						r, g, b = secureColor.r, secureColor.g, secureColor.b
+						r, g, b = secureColor[1], secureColor[2], secureColor[3]
 					else
-						r, g, b = insecureColor.r, insecureColor.g, insecureColor.b
+						r, g, b = insecureColor[1], insecureColor[2], insecureColor[3]
 					end
 				end
 			end
@@ -278,7 +293,7 @@ function UF:UpdateThreatColor(_, unit)
 	end
 
 	UF.CheckTankStatus(self, unit)
-	UF.UpdateColor(self.Health, unit)
+	UF.UpdateColor(self, _, unit)
 end
 
 function UF:CreateThreatColor(self)

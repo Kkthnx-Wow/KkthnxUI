@@ -46,18 +46,27 @@ function Module.PostUpdateAddPower(element, _, cur, max)
 		if perc == 100 then
 			perc = ""
 			element:SetAlpha(0)
-			if Player_ClassPowerBar then
-				Player_ClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 20)
+			if oUF_PlayerClassPowerBar then
+				oUF_PlayerClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 20)
 			end
 		else
 			perc = string_format("%d%%", perc)
 			element:SetAlpha(1)
-			if Player_ClassPowerBar then
-				Player_ClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 40)
+			if oUF_PlayerClassPowerBar then
+				oUF_PlayerClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 40)
 			end
 		end
 
 		element.Text:SetText(perc)
+	end
+end
+
+local function updatePartySync(self)
+	local hasJoined = C_QuestSession.HasJoined()
+	if(hasJoined) then
+		self.QuestSyncIndicator:Show()
+	else
+		self.QuestSyncIndicator:Hide()
 	end
 end
 
@@ -236,8 +245,8 @@ function Module:CreatePlayer()
 		self.Debuffs["growth-x"] = "RIGHT"
 		self.Debuffs["growth-y"] = "UP"
 
-		if C["Unitframe"].ClassResources and _G.Player_ClassPowerBar then
-			self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6 + _G.Player_ClassPowerBar:GetHeight())
+		if C["Unitframe"].ClassResources and _G.oUF_PlayerClassPowerBar then
+			self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6 + _G.oUF_PlayerClassPowerBar:GetHeight())
 		else
 			self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 44)
 		end
@@ -621,6 +630,16 @@ function Module:CreatePlayer()
 	self.RestingIndicator:SetPoint("RIGHT", 0, 2)
 	self.RestingIndicator:SetSize(22, 22)
 	self.RestingIndicator:SetAlpha(0.7)
+
+	self.QuestSyncIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.QuestSyncIndicator:SetPoint("BOTTOMLEFT", self.Overlay, "BOTTOMLEFT", -4, -13)
+	self.QuestSyncIndicator:SetSize(26, 26)
+	self.QuestSyncIndicator:SetAtlas("QuestSharing-DialogIcon")
+	self.QuestSyncIndicator:Hide()
+
+	self:RegisterEvent("QUEST_SESSION_LEFT", updatePartySync, true)
+	self:RegisterEvent("QUEST_SESSION_JOINED", updatePartySync, true)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", updatePartySync, true)
 
 	if C["Unitframe"].DebuffHighlight then
 		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")

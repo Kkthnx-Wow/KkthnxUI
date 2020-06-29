@@ -10,13 +10,13 @@ local C_ChatBubbles_GetAllChatBubbles = _G.C_ChatBubbles.GetAllChatBubbles
 local function getBackdrop()
 	return {
 		bgFile = C["Media"].Blank,
-		edgeFile = C["Media"].Glow,
-		edgeSize = 4,
+		edgeFile = C["Media"].Border,
+		edgeSize = 12,
 		insets = {
-			left = 4,
-			right = 4,
-			top = 4,
-			bottom = 4
+			left = 8,
+			right = 8,
+			top = 8,
+			bottom = 8
 		}
 	}
 end
@@ -38,8 +38,8 @@ function Module:CreateChatBubbles()
 
 		frame:SetFrameStrata("BACKGROUND")
 		frame:SetBackdrop(getBackdrop())
-		frame:SetBackdropColor(0.04, 0.04, 0.04, 0.6)
-		frame:SetBackdropBorderColor(0, 0, 0, 0.8)
+		frame:SetBackdropColor(.04, .04, .04, 0.9)
+		frame:SetBackdropBorderColor(1, 1, 1, 1)
 		frame:SetScale(UIParent:GetScale())
 	end
 

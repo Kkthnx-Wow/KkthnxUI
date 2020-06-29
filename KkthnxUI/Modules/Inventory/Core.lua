@@ -133,7 +133,6 @@ function Module:CreateInfoFrame()
 	icon.Icon:SetAllPoints()
 	icon.Icon:SetTexCoord(unpack(K.TexCoords))
 	icon.Icon:SetTexture("Interface\\Minimap\\Tracking\\None")
-	icon.Icon:SetTexCoord(1, 0, 0, 1)
 
 	local search = self:SpawnPlugin("SearchBar", infoFrame)
 	search.highlightFunction = highlightFunction
