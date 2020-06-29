@@ -73,6 +73,10 @@ function Module:OnSystemUpdate(t)
 	int = int - t
 	int2 = int2 - t
 
+	if int < 0 then
+		int = 10
+	end
+
 	if int2 < 0 then
 		local isFPS = math.floor(GetFramerate())
 		local latencyString = select(4, GetNetStats())

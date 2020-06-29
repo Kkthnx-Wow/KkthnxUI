@@ -14,7 +14,6 @@ local unpack = _G.unpack
 
 local BAG_ITEM_QUALITY_COLORS = _G.BAG_ITEM_QUALITY_COLORS
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
-local C_Timer_After = _G.C_Timer.After
 local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
 local CreateFrame = _G.CreateFrame
 local GetAddOnEnableState = _G.GetAddOnEnableState
@@ -25,7 +24,6 @@ local GetLocale = _G.GetLocale
 local GetNumAddOns = _G.GetNumAddOns
 local GetPhysicalScreenSize = _G.GetPhysicalScreenSize
 local GetRealmName = _G.GetRealmName
-local GetTime = _G.GetTime
 local InCombatLockdown = _G.InCombatLockdown
 local LE_ITEM_QUALITY_COMMON = _G.LE_ITEM_QUALITY_COMMON
 local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR

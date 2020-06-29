@@ -30,7 +30,6 @@ function Module:CreateTargetOfTarget()
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
-	self.Health:SetReverseFill(true)
 	self.Health:CreateBorder()
 
 	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
@@ -64,7 +63,6 @@ function Module:CreateTargetOfTarget()
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
-	self.Power:SetReverseFill(true)
 	self.Power:CreateBorder()
 
 	self.Power.colorPower = true

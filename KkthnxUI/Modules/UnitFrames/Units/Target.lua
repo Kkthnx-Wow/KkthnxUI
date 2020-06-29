@@ -34,7 +34,6 @@ function Module:CreateTarget()
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
-	self.Health:SetReverseFill(true)
 	self.Health:CreateBorder()
 
 	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
@@ -71,7 +70,6 @@ function Module:CreateTarget()
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
-	self.Power:SetReverseFill(true)
 	self.Power:CreateBorder()
 
 	self.Power.colorPower = true
@@ -254,15 +252,15 @@ function Module:CreateTarget()
 		oag:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
 		oag:SetBlendMode("ADD")
 		oag:SetAlpha(0.25)
-		oag:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", 10, 2)
-		oag:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMLEFT", 10, -2)
+		oag:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 2)
+		oag:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -2)
 
 		local hab = CreateFrame("StatusBar", nil, self.Health)
 		hab:SetPoint("TOP")
 		hab:SetPoint("BOTTOM")
-		hab:SetPoint("LEFT", self.Health:GetStatusBarTexture())
+		hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
 		hab:SetWidth(156)
-		hab:SetReverseFill(false)
+		hab:SetReverseFill(true)
 		hab:SetStatusBarTexture(HealPredictionTexture)
 		hab:SetStatusBarColor(1, 0, 0, 0.25)
 
@@ -270,8 +268,8 @@ function Module:CreateTarget()
 		ohg:SetWidth(15)
 		ohg:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb")
 		ohg:SetBlendMode("ADD")
-		ohg:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -10, 2)
-		ohg:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -10, -2)
+		ohg:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", 5, 2)
+		ohg:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMLEFT", 5, -2)
 
 		self.HealPredictionAndAbsorb = {
 			myBar = mhpb,

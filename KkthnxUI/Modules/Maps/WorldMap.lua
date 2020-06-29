@@ -12,7 +12,6 @@ local PLAYER = _G.PLAYER
 local SetUIPanelAttribute = _G.SetUIPanelAttribute
 local UIParent = _G.UIParent
 local UnitPosition = _G.UnitPosition
--- local WorldMapFrame = _G.WorldMapFrame
 local hooksecurefunc = _G.hooksecurefunc
 
 local mapRects = {}
@@ -281,7 +280,6 @@ function Module:OnEnable()
 	-- currently we dont need to touch this cvar because we have our own control for this currently
 	-- see the comment in `M:UpdateMapFade` about `durationSec` for more information
 	-- SetCVar("mapFade", E.global.general.fadeMapWhenMoving and 1 or 0)
-
 	self:CreateWorldMapReveal()
 	self:CreateWowHeadLinks()
 end

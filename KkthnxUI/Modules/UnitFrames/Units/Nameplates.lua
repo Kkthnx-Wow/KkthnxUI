@@ -310,19 +310,6 @@ end
 
 -- Target indicator
 function UF:UpdateTargetChange()
-	-- if UnitIsUnit(self.unit, "target") and not UnitIsUnit(self.unit, "player") then
-	-- 	self.TargetIndicator:SetAlpha(1)
-	-- 	self:SetAlpha(1)
-	-- else
-	-- 	if not UnitExists("target") or UnitIsUnit(self.unit, "player") then
-	-- 		self.TargetIndicator:SetAlpha(0)
-	-- 		self:SetAlpha(1)
-	-- 	else
-	-- 		self.TargetIndicator:SetAlpha(0)
-	-- 		self:SetAlpha(0.35)
-	-- 	end
-	-- end
-
 	if C["Nameplate"].TargetIndicator.Value == 1 then
 		return
 	end
@@ -679,12 +666,14 @@ end
 
 -- NazjatarFollowerXP
 function UF:AddFollowerXP(self)
-	self.NazjatarFollowerXP = CreateFrame("StatusBar", nil, self)
-	self.NazjatarFollowerXP:SetStatusBarTexture(C["Media"].Texture)
-	self.NazjatarFollowerXP:SetSize(C["Nameplate"].PlateWidth * 0.75, C["Nameplate"].PlateHeight)
-	self.NazjatarFollowerXP:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -5)
+	self.WidgetXPBar = CreateFrame("StatusBar", nil, self)
+	self.WidgetXPBar:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
+	self.WidgetXPBar:SetStatusBarColor(255/255, 204/255, 102/255)
+	self.WidgetXPBar:SetSize(C["Nameplate"].PlateWidth * 0.75, C["Nameplate"].PlateHeight)
+	self.WidgetXPBar:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -5)
+	self.WidgetXPBar:CreateShadow(true)
 
-	self.NazjatarFollowerXP.progressText = K.CreateFontString(self.NazjatarFollowerXP, 9)
+	self.WidgetXPBar.ProgressText = K.CreateFontString(self.WidgetXPBar, 8, "", "")
 end
 
 -- Interrupt info on castbars
@@ -892,7 +881,7 @@ function UF:CreatePlates()
 	self.powerText:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -4)
 	self:Tag(self.powerText, "[nppp]")
 
-	--UF:AddFollowerXP(self)
+	UF:AddFollowerXP(self)
 	UF:MouseoverIndicator(self)
 	UF:AddTargetIndicator(self)
 	UF:AddCreatureIcon(self)
