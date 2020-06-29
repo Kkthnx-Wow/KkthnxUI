@@ -164,7 +164,7 @@ local function OnEvent(_, event)
 	end
 
 	if Module.isHovered then
-		Module.SocialFrame:GetScript("OnEnter")(Module.SocialFrame)
+		Module.SocialFrame:GetScript("OnEnter", Module.SocialFrame)
 	end
 end
 
@@ -175,10 +175,10 @@ local function OnUpdate()
 
 	if IsAltKeyDown() and not Module.IsAltKeyDown then
 		Module.IsAltKeyDown = true
-		Module.SocialFrame:GetScript("OnEnter")(Module.SocialFrame)
+		Module.SocialFrame:GetScript("OnEnter", Module.SocialFrame)
 	elseif not IsAltKeyDown() and Module.IsAltKeyDown then
 		Module.IsAltKeyDown = false
-		Module.SocialFrame:GetScript("OnEnter")(Module.SocialFrame)
+		Module.SocialFrame:GetScript("OnEnter", Module.SocialFrame)
 	end
 end
 
@@ -330,6 +330,7 @@ local function OnEnter()
 		GameTooltip:AddLine("|cffffffff".."Social".."|r".." (O)")
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddDoubleLine(K.InfoColor..FRIENDS_LIST, string_format("%s: %s/%s", K.InfoColor..GUILD_ONLINE_LABEL, totalonline, totalfriends))
+
 		if online > 0 then
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine(WOW_FRIEND)
@@ -507,6 +508,7 @@ function Module:CreateSocialDataText()
 	K:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE", OnEvent)
 	K:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE", OnEvent)
 	K:RegisterEvent("BN_FRIEND_INFO_CHANGED", OnEvent)
+	K:RegisterEvent("BN_FRIEND_LIST_SIZE_CHANGED", OnEvent)
 
 	Module.SocialFrame:SetScript("OnClick", OnClick)
 	Module.SocialFrame:SetScript("OnEvent", OnEvent)

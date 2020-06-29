@@ -395,38 +395,6 @@ SlashCmdList["KKUI_COMMANDSHELPS"] = function()
 end
 SLASH_KKUI_COMMANDSHELPS1 = "/helpui"
 
--- Enable lua error by command
-function SlashCmdList.LUAERROR(msg)
-	local switch = strlower(msg)
-	if switch == "on" then
-		for i = 1, GetNumAddOns() do
-			local name = GetAddOnInfo(i)
-			if (name ~= "KkthnxUI" and name ~= "KkthnxUI_Config") and K.CheckAddOnState(name) then
-				DisableAddOn(name, K.Name)
-				_G.KkthnxUIData[GetRealmName()][UnitName("player")].LuaErrorDisabledAddOns[name] = i
-			end
-		end
-
-		SetCVar("scriptErrors", 1)
-		ReloadUI()
-	elseif switch == "off" then
-		if next(_G.KkthnxUIData[GetRealmName()][UnitName("player")].LuaErrorDisabledAddOns) then
-			for name in pairs(_G.KkthnxUIData[GetRealmName()][UnitName("player")].LuaErrorDisabledAddOns) do
-				EnableAddOn(name, K.Name)
-			end
-
-			wipe(_G.KkthnxUIData[GetRealmName()][UnitName("player")].LuaErrorDisabledAddOns)
-			ReloadUI()
-		end
-
-		SetCVar("scriptErrors", 0)
-		K.Print("Lua errors off.")
-	else
-		K.Print("/luaerror on - /luaerror off")
-	end
-end
-_G.SLASH_LUAERROR1 = "/luaerror"
-
 -- Convert party to raid
 SlashCmdList["PARTYTORAID"] = function()
 	if GetNumGroupMembers() > 0 then

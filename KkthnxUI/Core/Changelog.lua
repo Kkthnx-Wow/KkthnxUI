@@ -7,28 +7,9 @@ local pairs = _G.pairs
 local CreateFrame = _G.CreateFrame
 
 local changelogData = {
-	"Added Delete Junk/Trash Button From Bags",
-	"Cleanup Castbar Channel Ticks",
-	"Cleanup Miscellaneous File Code",
-	"Cleanup Some Bags Code",
-	"Fix Tooltip Comapre With Cursor",
-	"Fixed Auto Decline Duels Module",
-	"Fixed Loading Saved Variables",
-	"Fixed NoTutorials Code Not Working",
-	"Fixed Taint With Overriding Priest Color",
-	"Install Cleanup",
-	"K.UIFrameHider Changed",
-	"Merge BlizzBugFixes Code",
-	"Move CustomSettings Into Install",
-	"Remove AutoGossip Module",
-	"Remove Chat Filter Module",
-	"Remove SetOutside and SetInside Functions",
-	"Revert Interrupt Code",
-	"Rewrote Auto Latency Compensation Code",
-	"Rewrote Short Channel Names Module",
-	"Smooth Module Rewrote For Statusbars",
-	"Unitframe Code Cleanup",
-	"Update Events For RoleCheck Function",
+	"Removed Guild Best Mythic Dungeon Module > Use AddOn!",
+	"Removed A Command",
+	"Removed Mail Contact List",
 }
 
 local changelogFrame
@@ -93,16 +74,15 @@ local function compareToShow(event)
 		return
 	end
 
-	local old1, old2 = string_split(".", KkthnxUIData.ChangelogVersion or "")
+	local old1, old2 = string_split(".", KkthnxUIData[K.Realm][K.Name].ChangelogVersion or "")
 	local cur1, cur2 = string_split(".", K.Version)
 	if old1 ~= cur1 or old2 ~= cur2 then
 		changelog()
-		KkthnxUIData.ChangelogVersion = K.Version
+		KkthnxUIData[K.Realm][K.Name].ChangelogVersion = K.Version
 	end
-
 	K:UnregisterEvent(event, compareToShow)
 end
--- K:RegisterEvent("PLAYER_ENTERING_WORLD", compareToShow)
+K:RegisterEvent("PLAYER_ENTERING_WORLD", compareToShow)
 
 SlashCmdList["KKUI_CHANGELOG"] = changelog
 SLASH_KKUI_CHANGELOG1 = "/kcl"

@@ -39,7 +39,7 @@ function Module:SetupSpinCam(event)
 	end
 end
 
-function Module:CreateAFKCam()
+function Module:CreateSpinCam()
 	if not C["Misc"].AFKCamera then
 		return
 	end

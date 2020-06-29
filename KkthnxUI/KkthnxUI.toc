@@ -3,7 +3,7 @@
 ## Title: |cff669DFFKkthnxUI|r
 ## Notes: |cff666666By Josh "Kkthnx" Russell|r |n|n|cffffffffA simple User Interface replacement |nAddOn for World of Warcraft.|r|r|n|n|cff669DFFThis addon supports:|r BFA |cff666666Patch: 8.3|r|n|n
 ## Author: Kkthnx
-## Version: 9.10.5
+## Version: 9.10.6
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIData
 ## SavedVariablesPerCharacter: KkthnxUIDataPerChar

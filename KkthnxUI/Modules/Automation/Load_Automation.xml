@@ -5,7 +5,6 @@
 
    <Script file="AutoReward.lua" />
    <Script file="AutoBadBuffs.lua" />
-   <Script file="AutoBlockMovies.lua" />
    <Script file="AutoDecline.lua" />
    <!-- <Script file="AutoDisenchant.lua" /> -->
    <Script file="AutoGossip.lua" />

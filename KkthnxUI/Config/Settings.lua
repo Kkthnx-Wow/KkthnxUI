@@ -82,7 +82,6 @@ C["Automation"] = {
 	["AutoScreenshot"] = false,
 	["AutoSetRole"] = false,
 	["AutoTabBinder"] = false,
-	["BlockMovies"] = false,
 	["NoBadBuffs"] = false,
 	["WhisperInvite"] = "inv+",
 }
@@ -504,7 +503,7 @@ C["Raid"] = {
 	["Enable"] = true,
 	["Height"] = 40,
 	["HorizonRaid"] = true,
-	["MainTankFrames"] = true,
+	-- ["MainTankFrames"] = true,
 	["ManabarShow"] = false,
 	["NumGroups"] = 6,
 	["RaidUtility"] = true,

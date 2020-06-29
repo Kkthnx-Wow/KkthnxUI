@@ -325,10 +325,6 @@ K:RegisterEvent("ADDON_LOADED", function(_, addon)
 		KkthnxUIDataPerChar = nil
 	end
 
-	if (not KkthnxUIData.ChangelogVersion) then
-		KkthnxUIData.ChangelogVersion = {}
-	end
-
 	-- Blizzard have too many issues with per character saved variables, we now move them (if they exists) to account saved variables.
 	if (not KkthnxUIConfigShared) then
 		KkthnxUIConfigShared = {}
@@ -379,14 +375,6 @@ K:RegisterEvent("ADDON_LOADED", function(_, addon)
 		KkthnxUIData[playerRealm][playerName].Mover = {}
 	end
 
-	if (not KkthnxUIData[playerRealm][playerName].LuaErrorDisabledAddOns) then
-		KkthnxUIData[playerRealm][playerName].LuaErrorDisabledAddOns = {}
-	end
-
-	if (not KkthnxUIData[playerRealm][playerName].MoviesSeen) then
-		KkthnxUIData[playerRealm][playerName].MoviesSeen = {}
-	end
-
 	if (not KkthnxUIData[playerRealm][playerName].TempAnchor) then
 		KkthnxUIData[playerRealm][playerName].TempAnchor = {}
 	end
@@ -395,12 +383,8 @@ K:RegisterEvent("ADDON_LOADED", function(_, addon)
 		KkthnxUIData[playerRealm][playerName].DetectVersion = K.Version
 	end
 
-	if (not KkthnxUIData[playerRealm][playerName].ContactList) then
-		KkthnxUIData[playerRealm][playerName].ContactList = {}
-	end
-
-	if (not KkthnxUIData[playerRealm][playerName].KeystoneInfo) then
-		KkthnxUIData[playerRealm][playerName].KeystoneInfo = {}
+	if (not KkthnxUIData[playerRealm][playerName].ChangelogVersion) then
+		KkthnxUIData[playerRealm][playerName].ChangelogVersion = ""
 	end
 
 	K.GUID = UnitGUID("player")
