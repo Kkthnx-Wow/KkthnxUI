@@ -943,6 +943,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	local C = KkthnxUI[2]
 	local L = KkthnxUI[3]
 	local SettingText = KkthnxUIConfigPerAccount and L["Character Settings"] or L["Global Settings"]
+	local Installer = K:GetModule("Installer")
 
 	self:UpdateColorDefaults()
 
@@ -1062,7 +1063,11 @@ function KkthnxUIConfig:CreateConfigWindow()
 	local ResetCVarsButton = CreateFrame("Button", nil, InfoFrame)
 	ResetCVarsButton:SkinButton()
 	ResetCVarsButton:SetSize(624/3, 22)
-	--ResetCVarsButton:SetScript("OnClick", K["Install"].Step1)
+	ResetCVarsButton:SetScript("OnClick", function()
+		Installer:ForceDefaultCVars()
+		UIErrorsFrame:AddMessage(K.InfoColor.."Default CVars Settings Loaded.")
+	end)
+
 	ResetCVarsButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	ResetCVarsButton:SetPoint("TOP", CloseButton, "BOTTOM", 0, -6)
 
@@ -1075,7 +1080,10 @@ function KkthnxUIConfig:CreateConfigWindow()
 	local ResetChatButton = CreateFrame("Button", nil, InfoFrame)
 	ResetChatButton:SkinButton()
 	ResetChatButton:SetSize(624/3, 22)
-	--ResetChatButton:SetScript("OnClick", K["Install"].Step2)
+	ResetChatButton:SetScript("OnClick", function()
+		Installer:ForceChatSettings()
+		UIErrorsFrame:AddMessage(K.InfoColor.."Default ChatFrame Settings Loaded")
+	end)
 	ResetChatButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	ResetChatButton:SetPoint("TOP", ReloadButton, "BOTTOM", 0, -6)
 
@@ -1088,7 +1096,10 @@ function KkthnxUIConfig:CreateConfigWindow()
 	local ResetButton = CreateFrame("Button", nil, InfoFrame)
 	ResetButton:SkinButton()
 	ResetButton:SetSize(624/3, 22)
-	--ResetButton:SetScript("OnClick", K["Install"].ResetData)
+	ResetButton:SetScript("OnClick", function()
+		Installer:ResetInstallData()
+		UIErrorsFrame:AddMessage(K.InfoColor.."Default UI Settings Loaded")
+	end)
 	ResetButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	ResetButton:SetPoint("TOP", GlobalButton, "BOTTOM", 0, -6)
 

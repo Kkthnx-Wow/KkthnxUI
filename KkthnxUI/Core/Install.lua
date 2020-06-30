@@ -1,15 +1,26 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("Settings")
+local Module = K:NewModule("Installer")
 
 local _G = _G
-local print = _G.print
 
 local SetCVar = _G.SetCVar
 local CreateFrame = _G.CreateFrame
 local IsAddOnLoaded = _G.IsAddOnLoaded
 
+function Module:ResetInstallData()
+	KkthnxUIData[K.Realm][K.Name] = {}
+
+	if (KkthnxUIConfigPerAccount) then
+		KkthnxUIConfigShared.Account = {}
+	else
+		KkthnxUIConfigShared[K.Realm][K.Name] = {}
+	end
+
+	ReloadUI()
+end
+
 -- Tuitorial
-local function ForceDefaultSettings()
+function Module:ForceDefaultCVars()
 	SetActionBarToggles(1, 1, 1, 1)
 	SetCVar("ActionButtonUseKeyDown", 1)
 	SetCVar("alwaysCompareItems", 1)
@@ -45,7 +56,7 @@ local function ForceRaidFrame()
 	CompactUnitFrameProfiles_UpdateCurrentPanel()
 end
 
-local function ForceChatSettings()
+function Module:ForceChatSettings()
 	local Chat = K:GetModule("Chat")
 
 	if (Chat) then
@@ -371,23 +382,23 @@ local function YesTutor()
 	apply:SetScript("OnClick", function()
 		pass:Show()
 		if currentPage == 1 then
-			ForceDefaultSettings()
+			Module:ForceDefaultCVars()
 			ForceRaidFrame()
-			UIErrorsFrame:AddMessage(K.InfoColor.."Default settings loaded.")
+			UIErrorsFrame:AddMessage(K.InfoColor.."Default CVars Loaded.")
 		elseif currentPage == 2 then
-			ForceChatSettings()
-			UIErrorsFrame:AddMessage(K.InfoColor.."Chat frame settings loaded")
+			Module:ForceChatSettings()
+			UIErrorsFrame:AddMessage(K.InfoColor.."Chat Frame Settings Loaded")
 		elseif currentPage == 3 then
 			KkthnxUIData[K.Realm][K.Name].AutoScale = true
 			K:SetupUIScale()
-			UIErrorsFrame:AddMessage(K.InfoColor.."UI Scale loaded")
+			UIErrorsFrame:AddMessage(K.InfoColor.."UI Scale Loaded")
 		elseif currentPage == 4 then
 			KkthnxUIData["DBMRequest"] = true
 			KkthnxUIData["SkadaRequest"] = true
 			KkthnxUIData["BWRequest"] = true
 			ForceAddonSkins()
 			KkthnxUIData["ResetDetails"] = true
-			UIErrorsFrame:AddMessage(K.InfoColor.."Relevant addons settings loaded, You need to ReloadUI.")
+			UIErrorsFrame:AddMessage(K.InfoColor.."Relevant AddOns Settings Loaded, You need to ReloadUI.")
 			pass:Hide()
 		elseif currentPage == 5 then
 			KkthnxUIData[K.Realm][K.Name].InstallComplete = true
