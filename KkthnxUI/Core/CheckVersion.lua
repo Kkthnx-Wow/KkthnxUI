@@ -85,7 +85,7 @@ function Module:VersionCheck_Update(...)
 		Module:VersionCheck_Send(distType)
 	end
 
-	Module:VersionCheck_Initial()
+	Module:VersionCheck_Init()
 end
 
 function Module:VersionCheck_UpdateGroup()
