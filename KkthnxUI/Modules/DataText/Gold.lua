@@ -65,7 +65,7 @@ local function Currency(id, weekly, capped)
 	end
 end
 
-local function OnEnter()
+function Module:CurrencyOnEnter()
 	local _, _, archaeology, _, cooking = GetProfessions()
 
 	GameTooltip:SetOwner(Module.CurrencyFrame, "ANCHOR_NONE")
@@ -210,11 +210,11 @@ local function OnEnter()
 	GameTooltip:Show()
 end
 
-local function OnLeave()
+function Module:CurrencyOnLeave()
 	GameTooltip:Hide()
 end
 
-local function OnEvent()
+function Module:CurrencyOnEvent()
 	if not IsLoggedIn() then
 		return
 	end
@@ -256,7 +256,7 @@ local function OnEvent()
 	end
 end
 
-local function OnMouseUp(_, btn)
+function Module:CurrencyOnMouseUp(btn)
 	if InCombatLockdown() then
 		UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
 		return
@@ -267,7 +267,7 @@ local function OnMouseUp(_, btn)
 	elseif btn == "RightButton" then
 		if IsShiftKeyDown() then
 			table_wipe(KkthnxUIData.gold)
-			OnEvent()
+			Module:CurrencyOnEvent()
 			GameTooltip:Hide()
 		elseif IsControlKeyDown() then
 			IsProfit = 0
@@ -292,17 +292,17 @@ function Module:CreateCurrencyDataText()
 	Module.CurrencyFrame:SetAllPoints(_G.CharacterMicroButton)
 
 	-- Gold
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
-	K:RegisterEvent("PLAYER_MONEY", OnEvent)
-	K:RegisterEvent("SEND_MAIL_MONEY_CHANGED", OnEvent)
-	K:RegisterEvent("SEND_MAIL_COD_CHANGED", OnEvent)
-	K:RegisterEvent("PLAYER_TRADE_MONEY", OnEvent)
-	K:RegisterEvent("TRADE_MONEY_CHANGED", OnEvent)
-	K:RegisterEvent("CHAT_MSG_CURRENCY", OnEvent)
-	K:RegisterEvent("CURRENCY_DISPLAY_UPDATE", OnEvent)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.CurrencyOnEvent)
+	K:RegisterEvent("PLAYER_MONEY", Module.CurrencyOnEvent)
+	K:RegisterEvent("SEND_MAIL_MONEY_CHANGED", Module.CurrencyOnEvent)
+	K:RegisterEvent("SEND_MAIL_COD_CHANGED", Module.CurrencyOnEvent)
+	K:RegisterEvent("PLAYER_TRADE_MONEY", Module.CurrencyOnEvent)
+	K:RegisterEvent("TRADE_MONEY_CHANGED", Module.CurrencyOnEvent)
+	K:RegisterEvent("CHAT_MSG_CURRENCY", Module.CurrencyOnEvent)
+	K:RegisterEvent("CURRENCY_DISPLAY_UPDATE", Module.CurrencyOnEvent)
 
-	Module.CurrencyFrame:SetScript("OnEvent", OnEvent)
-	Module.CurrencyFrame:SetScript("OnMouseUp", OnMouseUp)
-	Module.CurrencyFrame:SetScript("OnEnter", OnEnter)
-	Module.CurrencyFrame:SetScript("OnLeave", OnLeave)
+	Module.CurrencyFrame:SetScript("OnEvent", Module.CurrencyOnEvent)
+	Module.CurrencyFrame:SetScript("OnMouseUp", Module.CurrencyOnMouseUp)
+	Module.CurrencyFrame:SetScript("OnEnter", Module.CurrencyOnEnter)
+	Module.CurrencyFrame:SetScript("OnLeave", Module.CurrencyOnLeave)
 end

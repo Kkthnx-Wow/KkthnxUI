@@ -7,7 +7,6 @@ if not oUF then
 end
 
 local _G = _G
-local string_format = _G.string.format
 
 local ALTERNATE_POWER_INDEX = Enum.PowerType.Alternate or 10
 local CHAT_MSG_AFK = _G.CHAT_MSG_AFK
@@ -276,7 +275,7 @@ oUF.Tags.Methods["monkstagger"] = function(unit)
 		return
 	end
 
-	return K.ShortValue(cur).." - "..K.MyClassColor..math.floor(perc * 100 + .5).."%"
+	return K.ShortValue(cur).." | "..K.MyClassColor..K.Round(perc * 100).."%"
 end
 oUF.Tags.Events["monkstagger"] = "UNIT_MAXHEALTH UNIT_AURA"
 

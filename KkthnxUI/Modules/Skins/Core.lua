@@ -9,39 +9,39 @@ local string_find = _G.string.find
 local NO = _G.NO
 
 Module.Blizzard_Regions = {
-	"Left",
-	"Middle",
-	"Right",
-	"Mid",
-	"LeftDisabled",
-	"MiddleDisabled",
-	"RightDisabled",
-	"TopLeft",
-	"TopRight",
+	"Background",
+	"Border",
 	"BottomLeft",
-	"BottomRight",
-	"TopMiddle",
-	"MiddleLeft",
-	"MiddleRight",
+	"BottomLeftTex",
 	"BottomMiddle",
+	"BottomRight",
+	"BottomRightTex",
+	"BottomTex",
+	"Cover",
+	"Left",
+	"LeftDisabled",
+	"LeftTex",
+	"Mid",
+	"Middle",
+	"MiddleDisabled",
+	"MiddleLeft",
 	"MiddleMiddle",
+	"MiddleRight",
+	"MiddleTex",
+	"Right",
+	"RightDisabled",
+	"RightTex",
 	"TabSpacer",
 	"TabSpacer1",
 	"TabSpacer2",
-	"_RightSeparator",
-	"_LeftSeparator",
-	"Cover",
-	"Border",
-	"Background",
-	"TopTex",
+	"TopLeft",
 	"TopLeftTex",
+	"TopMiddle",
+	"TopRight",
 	"TopRightTex",
-	"LeftTex",
-	"BottomTex",
-	"BottomLeftTex",
-	"BottomRightTex",
-	"RightTex",
-	"MiddleTex",
+	"TopTex",
+	"_LeftSeparator",
+	"_RightSeparator",
 }
 
 Module.NewSkin = {}
@@ -126,7 +126,7 @@ function Module:SkinEditBox(frame)
 	frame.Backdrop:SetFrameLevel(frame:GetFrameLevel())
 
 	if EditBoxName and (string_find(EditBoxName, "Silver") or string_find(EditBoxName, "Copper")) then
-		frame.Backdrop:SetPoint("BOTTOMRIGHT", -12, -2)
+		frame.Backdrop:SetPoint("BOTTOMRIGHT", -10, 0)
 	end
 end
 

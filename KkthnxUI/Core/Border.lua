@@ -107,28 +107,28 @@ function K.CreateBorder(object, offset, size, drawLayer, drawSubLevel, path)
 	topLeft:SetPoint("TOPLEFT", object, "TOPLEFT", offset - size, -offset + size)
 	topLeft:SetSize(size, size)
 	topLeft:SetTexture(path)
-	topLeft:SetTexCoord(4 / 8, 5 / 8, 0, 1)
+	topLeft:SetTexCoord(4/8, 5/8, 0, 1)
 
 	local topRight = object:CreateTexture()
 	topRight:SetDrawLayer(drawLayer, drawSubLevel)
 	topRight:SetPoint("TOPRIGHT", object, "TOPRIGHT", -offset + size, -offset + size)
 	topRight:SetSize(size, size)
 	topRight:SetTexture(path)
-	topRight:SetTexCoord(5 / 8, 6 / 8, 0, 1)
+	topRight:SetTexCoord(5/8, 6/8, 0, 1)
 
 	local bottomLeft = object:CreateTexture()
 	bottomLeft:SetDrawLayer(drawLayer, drawSubLevel)
 	bottomLeft:SetPoint("BOTTOMLEFT", object, "BOTTOMLEFT", offset - size, offset - size)
 	bottomLeft:SetSize(size, size)
 	bottomLeft:SetTexture(path)
-	bottomLeft:SetTexCoord(6 / 8, 7 / 8, 0, 1)
+	bottomLeft:SetTexCoord(6/8, 7/8, 0, 1)
 
 	local bottomRight = object:CreateTexture()
 	bottomRight:SetDrawLayer(drawLayer, drawSubLevel)
 	bottomRight:SetPoint("BOTTOMRIGHT", object, "BOTTOMRIGHT", -offset + size, offset - size)
 	bottomRight:SetSize(size, size)
 	bottomRight:SetTexture(path)
-	bottomRight:SetTexCoord(7 / 8, 8 / 8, 0, 1)
+	bottomRight:SetTexCoord(7/8, 8/8, 0, 1)
 
 	-- Then create the sides, which are connected to the corners
 	local left = object:CreateTexture()
@@ -136,14 +136,14 @@ function K.CreateBorder(object, offset, size, drawLayer, drawSubLevel, path)
 	left:SetPoint("TOPLEFT", topLeft, "BOTTOMLEFT")
 	left:SetPoint("BOTTOMRIGHT", bottomLeft, "TOPRIGHT")
 	left:SetTexture(path)
-	left:SetTexCoord(0 / 8, 1 / 8, 0, 1)
+	left:SetTexCoord(0/8, 1/8, 0, 1)
 
 	local right = object:CreateTexture()
 	right:SetDrawLayer(drawLayer, drawSubLevel)
 	right:SetPoint("TOPRIGHT", topRight, "BOTTOMRIGHT")
 	right:SetPoint("BOTTOMLEFT", bottomRight, "TOPLEFT")
 	right:SetTexture(path)
-	right:SetTexCoord(1 / 8, 2 / 8, 0, 1)
+	right:SetTexCoord(1/8, 2/8, 0, 1)
 
 	-- top and bottom needs to be rotated 90 degrees clockwise,
 	-- so we need to use the (ULx, ULy, LLx, LLy, URx, URy, LRx, LRy) version of texcoord here.
@@ -152,14 +152,14 @@ function K.CreateBorder(object, offset, size, drawLayer, drawSubLevel, path)
 	top:SetPoint("TOPLEFT", topLeft, "TOPRIGHT")
 	top:SetPoint("BOTTOMRIGHT", topRight, "BOTTOMLEFT")
 	top:SetTexture(path)
-	top:SetTexCoord(2 / 8, 1, 3 / 8, 1, 2 / 8, 0, 3 / 8, 0)
+	top:SetTexCoord(2/8, 1, 3/8, 1, 2/8, 0, 3/8, 0)
 
 	local bottom = object:CreateTexture()
 	bottom:SetDrawLayer(drawLayer, drawSubLevel)
 	bottom:SetPoint("BOTTOMLEFT", bottomLeft, "BOTTOMRIGHT")
 	bottom:SetPoint("TOPRIGHT", bottomRight, "TOPLEFT")
 	bottom:SetTexture(path)
-	bottom:SetTexCoord(3 / 8, 1, 4 / 8, 1, 3 / 8, 0, 4 / 8, 0)
+	bottom:SetTexCoord(3/8, 1, 4/8, 1, 3/8, 0, 4/8, 0)
 
 	-- Store the border textures in our local cache,
 	-- without directly exposing the textures to the modules.

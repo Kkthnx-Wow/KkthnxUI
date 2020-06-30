@@ -38,7 +38,7 @@ local UIErrorsFrame = _G.UIErrorsFrame
 local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
 
--- Social Datatext MODULE TEST
+-- Social Datatext
 local totalFriendsOnline = 0
 local totalBattleNetOnline = 0
 local BNTable = {}
@@ -77,6 +77,7 @@ local menuList = {
 			K.StaticPopup_Show("SET_BN_BROADCAST")
 	end},
 }
+
 local function BuildFriendTable(total)
 	totalFriendsOnline = 0
 	table_wipe(friendTable)
@@ -150,7 +151,7 @@ local clientTags = {
 	["BSAp"] = "|TInterface\\CHATFRAME\\UI-ChatIcon-Battlenet:16:16:0:-1|t"
 }
 
-local function OnEvent(_, event)
+function Module:SocialOnEvent(event)
 	if event ~= "GROUP_ROSTER_UPDATE" then
 		local _, numBNetOnline = BNGetNumFriends()
 		local online, total = 0, GetNumFriends()
@@ -163,26 +164,26 @@ local function OnEvent(_, event)
 		Module.SocialFont:SetText(string_format("%d", online))
 	end
 
-	if Module.isHovered then
-		Module.SocialFrame:GetScript("OnEnter", Module.SocialFrame)
+	if Module.SocialHovered then
+		Module.SocialFrame:GetScript("OnEnter")(Module.SocialOnEnter)
 	end
 end
 
-local function OnUpdate()
-	if not Module.isHovered then
+function Module:SocialOnUpdate()
+	if not Module.SocialHovered then
 		return
 	end
 
-	if IsAltKeyDown() and not Module.IsAltKeyDown then
-		Module.IsAltKeyDown = true
-		Module.SocialFrame:GetScript("OnEnter", Module.SocialFrame)
-	elseif not IsAltKeyDown() and Module.IsAltKeyDown then
-		Module.IsAltKeyDown = false
-		Module.SocialFrame:GetScript("OnEnter", Module.SocialFrame)
+	if IsAltKeyDown() and not Module.SocialAltKeyDown then
+		Module.SocialAltKeyDown = true
+		Module.SocialFrame:GetScript("OnEnter")(Module.SocialOnEnter)
+	elseif not IsAltKeyDown() and Module.SocialAltKeyDown then
+		Module.SocialAltKeyDown = false
+		Module.SocialFrame:GetScript("OnEnter")(Module.SocialOnEnter)
 	end
 end
 
-local function OnClick(self, b)
+function Module:SocialOnClick(b)
 	if InCombatLockdown() then
 		UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
 		return
@@ -194,7 +195,7 @@ local function OnClick(self, b)
 		ToggleFriendsFrame(1)
 	elseif b == "RightButton" then
 		GameTooltip:Hide()
-		Module.isHovered = false
+		Module.SocialHovered = false
 
 		local BNTotal = BNGetNumFriends()
 		local total = GetNumFriends()
@@ -296,9 +297,9 @@ local function OnClick(self, b)
 	end
 end
 
-local function OnEnter()
+function Module:SocialOnEnter()
 	ShowFriends()
-	Module.isHovered = true
+	Module.SocialHovered = true
 
 	local online, total = 0, GetNumFriends()
 	local name, level, class, zone, connected, status, note, classc, levelc, zone_r, zone_g, zone_b, grouped, realm_r, realm_g, realm_b
@@ -363,7 +364,7 @@ local function OnEnter()
 
 				grouped = (UnitInParty(name) or UnitInRaid(name)) and (GetRealZoneText() == zone and " |cff7fff00*|r" or " |cffff7f00*|r") or ""
 				GameTooltip:AddDoubleLine(string_format("|cff%02x%02x%02x%d|r %s%s%s", levelc.r * 255, levelc.g * 255, levelc.b * 255, level, name, grouped, " "..status), zone, classc.r, classc.g, classc.b, zone_r, zone_g, zone_b)
-				if Module.IsAltKeyDown and note then
+				if Module.SocialAltKeyDown and note then
 					GameTooltip:AddLine(K.InfoColor.." "..note)
 				end
 			end
@@ -423,7 +424,7 @@ local function OnEnter()
 							grouped = " |cffff0000*|r"
 						end
 						GameTooltip:AddDoubleLine(string_format("%s (|cff%02x%02x%02x%d|r |cff%02x%02x%02x%s|r%s) |cff%02x%02x%02x%s|r", client, levelc.r * 255, levelc.g * 255, levelc.b * 255, level, classc.r * 255, classc.g * 255, classc.b * 255, characterName, grouped, 255, 0, 0, status), accountInfo.accountName, 238, 238, 238, 238, 238, 238)
-						if Module.IsAltKeyDown then
+						if Module.SocialAltKeyDown then
 							if GetRealZoneText() == zone then
 								zone_r, zone_g, zone_b = 0.3, 1.0, 0.3
 							else
@@ -461,13 +462,13 @@ local function OnEnter()
 		GameTooltip:Show()
 	else
 		GameTooltip:Hide()
-		Module.isHovered = false
+		Module.SocialHovered = false
 	end
 end
 
-local function OnLeave()
+function Module:SocialOnLeave()
 	GameTooltip:Hide()
-	Module.isHovered = false
+	Module.SocialHovered = false
 end
 
 function Module:CreateSocialDataText()
@@ -498,21 +499,21 @@ function Module:CreateSocialDataText()
 	Module.SocialTexture:SetPoint("CENTER", Module.SocialFrame, "CENTER")
 	Module.SocialTexture:SetSize(32, 32)
 
-	Module.SocialFont = Module.SocialFrame:CreateFontString('OVERLAY')
+	Module.SocialFont = Module.SocialFrame:CreateFontString("OVERLAY")
 	Module.SocialFont:FontTemplate(nil, 11, "OUTLINE")
 	Module.SocialFont:SetPoint("CENTER", Module.SocialFrame, "CENTER", 0, -3)
 
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
-	K:RegisterEvent("GROUP_ROSTER_UPDATE", OnEvent)
-	K:RegisterEvent("FRIENDLIST_UPDATE", OnEvent)
-	K:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE", OnEvent)
-	K:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE", OnEvent)
-	K:RegisterEvent("BN_FRIEND_INFO_CHANGED", OnEvent)
-	K:RegisterEvent("BN_FRIEND_LIST_SIZE_CHANGED", OnEvent)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.SocialOnEvent)
+	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.SocialOnEvent)
+	K:RegisterEvent("FRIENDLIST_UPDATE", Module.SocialOnEvent)
+	K:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE", Module.SocialOnEvent)
+	K:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE", Module.SocialOnEvent)
+	K:RegisterEvent("BN_FRIEND_INFO_CHANGED", Module.SocialOnEvent)
+	K:RegisterEvent("BN_FRIEND_LIST_SIZE_CHANGED", Module.SocialOnEvent)
 
-	Module.SocialFrame:SetScript("OnClick", OnClick)
-	Module.SocialFrame:SetScript("OnEvent", OnEvent)
-	Module.SocialFrame:SetScript("OnUpdate", OnUpdate)
-	Module.SocialFrame:SetScript("OnEnter", OnEnter)
-	Module.SocialFrame:SetScript("OnLeave", OnLeave)
+	Module.SocialFrame:SetScript("OnClick", Module.SocialOnClick)
+	Module.SocialFrame:SetScript("OnEvent", Module.SocialOnEvent)
+	Module.SocialFrame:SetScript("OnUpdate", Module.SocialOnUpdate)
+	Module.SocialFrame:SetScript("OnEnter", Module.SocialOnEnter)
+	Module.SocialFrame:SetScript("OnLeave", Module.SocialOnLeave)
 end

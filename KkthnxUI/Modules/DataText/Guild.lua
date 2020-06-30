@@ -45,9 +45,20 @@ local function BuildGuildTable()
 	end)
 end
 
-function Module:OnGuildEnter()
+function Module:GuildOnEnter()
+	if not IsInGuild() then
+		GameTooltip:SetOwner(_G.GuildMicroButton, "ANCHOR_NONE")
+		GameTooltip:SetPoint(K.GetAnchors(_G.GuildMicroButton))
+		GameTooltip:ClearLines()
+
+		GameTooltip:AddLine("|cffffffff"..LOOKINGFORGUILD.."|r".." (J)")
+
+		GameTooltip:Show()
+		return
+	end
+
 	if IsInGuild() then
-		Module.IsTooltipHovered = true
+		Module.GuildHovered = true
 		C_GuildInfo_GuildRoster()
 		local name, rank, level, zone, note, officernote, connected, status, class, isMobile, zone_r, zone_g, zone_b, classc, levelc, grouped
 		local total, _, online = GetNumGuildMembers()
@@ -93,7 +104,7 @@ function Module:OnGuildEnter()
 
 					classc, levelc = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[class], GetQuestDifficultyColor(level)
 					grouped = (UnitInParty(name) or UnitInRaid(name)) and (GetRealZoneText() == zone and " |cff7fff00*|r" or " |cffff7f00*|r") or ""
-					if Module.IsAltDown then
+					if Module.GuildAltKeyDown then
 						GameTooltip:AddDoubleLine(string_format("%s%s |cff999999- |cffffffff%s", grouped, name, rank), zone, classc.r, classc.g, classc.b, zone_r, zone_g, zone_b)
 						if note ~= "" then
 							GameTooltip:AddLine(K.InfoColor.." "..NOTE_COLON.." "..note)
@@ -132,67 +143,60 @@ function Module:OnGuildEnter()
 		end
 
 		GameTooltip:Show()
-	else
-		GameTooltip:AddLine("|cffffffff"..LOOKINGFORGUILD.."|r".." (J)")
 	end
 end
 
-function Module:OnGuildLeave()
-	if Module.OnGuildEnter then
-		GameTooltip:Hide()
-		Module.IsTooltipHovered = false
-	end
+function Module:GuildOnLeave()
+	GameTooltip:Hide()
+	Module.GuildHovered = false
 end
 
-function Module:OnGuildEvent()
-	if Module.IsTooltipHovered then
-		Module:OnGuildEnter()
+function Module:GuildOnEvent()
+	if Module.GuildHovered then
+		Module.GuildFrame:GetScript("OnEnter")(Module.GuildOnEnter)
 	end
 
 	if IsInGuild() then
 		BuildGuildTable()
-
-		local function DelayHasGuildFont()
-			local _, _, online = GetNumGuildMembers()
-			Module.GuildFont:SetFormattedText("%d", online)
-		end
-		K.Delay(5, DelayHasGuildFont)
+		local _, _, guildOnline = GetNumGuildMembers()
+		Module.GuildFont:SetFormattedText("%d", guildOnline)
 	else
-		local function DelayHasNoGuildFont()
-			Module.GuildFont:SetText(" ")
-		end
-		K.Delay(5, DelayHasNoGuildFont)
+		Module.GuildFont:SetText(" ")
 	end
 end
 
-function Module:OnGuildUpdate()
+function Module:GuildOnUpdate(elapsed)
 	if IsInGuild() then
-		if not Module.IsTooltipHovered then
+		if not Module.GuildHovered then
 			return
 		end
 
-		if IsAltKeyDown() and not Module.IsAltDown then
-			Module.IsAltDown = true
-			Module:OnGuildEnter()
-		elseif not IsAltKeyDown() and Module.IsAltDown then
-			Module.IsAltDown = false
-			Module:OnGuildEnter()
+		if IsAltKeyDown() and not Module.GuildAltKeyDown then
+			Module.GuildAltKeyDown = true
+			Module.GuildFrame:GetScript("OnEnter")(Module.GuildOnEnter)
+		elseif not IsAltKeyDown() and Module.GuildAltKeyDown then
+			Module.GuildAltKeyDown = false
+			Module.GuildFrame:GetScript("OnEnter")(Module.GuildOnEnter)
 		end
 
-		if not Module.IsGMOTD then
-			K.Delay(2, C_GuildInfo_GuildRoster())
+		if not Module.GuildMOTD then
+			Module.GuildElapsed = (Module.GuildElapsed or 0) + elapsed
+			if Module.GuildElapsed > 1 then
+				C_GuildInfo_GuildRoster()
+				Module.GuildElapsed = 0
+			end
 
 			if GetGuildRosterMOTD() ~= "" then
-				Module.IsGMOTD = true
-				if Module.IsTooltipHovered then
-					Module:OnGuildEnter()
+				Module.GuildMOTD = true
+				if Module.GuildHovered then
+					Module.GuildFrame:GetScript("OnEnter")(Module.GuildOnEnter)
 				end
 			end
 		end
 	end
 end
 
-function Module:OnGuildMouseUp(btn)
+function Module:GuildOnMouseUp(btn)
 	if InCombatLockdown() then
 		UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
 		return
@@ -203,10 +207,10 @@ function Module:OnGuildMouseUp(btn)
 	elseif btn == "MiddleButton" and IsInGuild() then
 		local s = CURRENT_GUILD_SORTING
 		SortGuildRoster(IsShiftKeyDown() and s or (IsAltKeyDown() and (s == "rank" and "note" or "rank") or s == "class" and "name" or s == "name" and "level" or s == "level" and "zone" or "class"))
-		Module:OnGuildEnter()
+		Module:GuildOnEnter()
 	elseif btn == "RightButton" and IsInGuild() then
 		GameTooltip:Hide()
-		Module.IsTooltipHovered = false
+		Module.GuildHovered = false
 
 		local grouped
 		local menuCountWhispers = 0
@@ -282,14 +286,16 @@ function Module:CreateGuildDataText()
 	SortGuildRoster(Module.GuildSorting == "note" and "rank" or "note")
 	SortGuildRoster(Module.GuildSorting)
 
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.OnGuildEvent)
-	K:RegisterEvent("GUILD_ROSTER_UPDATE", Module.OnGuildEvent)
-	K:RegisterEvent("PLAYER_GUILD_UPDATE", Module.OnGuildEvent)
-	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.OnGuildEvent)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.GuildOnEvent)
+	K:RegisterEvent("GUILD_ROSTER_UPDATE", Module.GuildOnEvent)
+	K:RegisterEvent("PLAYER_GUILD_UPDATE", Module.GuildOnEvent)
+	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.GuildOnEvent)
 
-	Module.GuildFrame:SetScript("OnUpdate", Module.OnGuildUpdate)
-	Module.GuildFrame:SetScript("OnEvent", Module.OnGuildEvent)
-	Module.GuildFrame:SetScript("OnMouseUp", Module.OnGuildMouseUp)
-	Module.GuildFrame:SetScript("OnEnter", Module.OnGuildEnter)
-	Module.GuildFrame:SetScript("OnLeave", Module.OnGuildLeave)
+	Module.GuildFrame:SetScript("OnUpdate", Module.GuildOnUpdate)
+	Module.GuildFrame:SetScript("OnEvent", Module.GuildOnEvent)
+	Module.GuildFrame:SetScript("OnMouseUp", Module.GuildOnMouseUp)
+	Module.GuildFrame:SetScript("OnEnter", Module.GuildOnEnter)
+	Module.GuildFrame:SetScript("OnLeave", Module.GuildOnLeave)
+
+	Module:GuildOnUpdate()
 end

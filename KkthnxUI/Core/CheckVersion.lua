@@ -13,6 +13,9 @@ local GetTime = _G.GetTime
 local IsInGroup = _G.IsInGroup
 local IsInGuild = _G.IsInGuild
 
+local isVCInit
+local lastVCTime = 0
+
 function Module:VersionCheck_Compare(new, old)
 	local new1, new2 = string_split(".", new)
 	new1, new2 = tonumber(new1), tonumber(new2)
@@ -44,19 +47,27 @@ function Module:VersionCheck_Create(text)
 	frame:Show()
 end
 
-local hasChecked
-function Module:VersionCheck_Initial()
-	if not hasChecked then
-		if Module:VersionCheck_Compare(KkthnxUIData[K.Realm][K.Name].DetectVersion, K.Version) == "IsNew" then
+function Module:VersionCheck_Init()
+	if not isVCInit then
+		local status = Module:VersionCheck_Compare(KkthnxUIData[K.Realm][K.Name].DetectVersion, K.Version)
+		if status == "IsNew" then
 			local release = string_gsub(KkthnxUIData[K.Realm][K.Name].DetectVersion, "(%d+)$", "0")
-			Module:VersionCheck_Create(string_format(" |cff669dffKkthnxUI|r is out of date, the latest release is |cff70C0F5%s|r", release))
+			Module:VersionCheck_Create(string_format("|cff669dffKkthnxUI|r is out of date, the latest release is |cff70C0F5%s|r", release))
+		elseif status == "IsOld" then
+			KkthnxUIData[K.Realm][K.Name].DetectVersion = K.Version
 		end
 
-		hasChecked = true
+		isVCInit = true
 	end
 end
 
-local lastTime = 0
+function Module:VersionCheck_Send(channel)
+	if GetTime() - lastVCTime >= 10 then
+		C_ChatInfo_SendAddonMessage("KKUIVersionCheck", KkthnxUIData[K.Realm][K.Name].DetectVersion, channel)
+		lastVCTime = GetTime()
+	end
+end
+
 function Module:VersionCheck_Update(...)
 	local prefix, msg, distType, author = ...
 	if prefix ~= "KKUIVersionCheck" then
@@ -71,37 +82,30 @@ function Module:VersionCheck_Update(...)
 	if status == "IsNew" then
 		KkthnxUIData[K.Realm][K.Name].DetectVersion = msg
 	elseif status == "IsOld" then
-		if GetTime() - lastTime > 10 then
-			C_ChatInfo_SendAddonMessage("KKUIVersionCheck", KkthnxUIData[K.Realm][K.Name].DetectVersion, distType)
-			lastTime = GetTime()
-		end
+		Module:VersionCheck_Send(distType)
 	end
 
 	Module:VersionCheck_Initial()
 end
 
-local prevTime = 0
 function Module:VersionCheck_UpdateGroup()
-	if not IsInGroup() or (GetTime() - prevTime < 30) then
+	if not IsInGroup() then
 		return
 	end
 
-	prevTime = GetTime()
-	C_ChatInfo_SendAddonMessage("KKUIVersionCheck", K.Version, K.CheckChat())
+	Module:VersionCheck_Send(K.CheckChat())
 end
 
 function Module:OnEnable()
-	hasChecked = not C["General"].VersionCheck
-
-	K:RegisterEvent("CHAT_MSG_ADDON", self.VersionCheck_Update)
-
-	Module:VersionCheck_Initial()
+	Module:VersionCheck_Init()
 	C_ChatInfo_RegisterAddonMessagePrefix("KKUIVersionCheck")
+	K:RegisterEvent("CHAT_MSG_ADDON", Module.VersionCheck_Update)
 
 	if IsInGuild() then
 		C_ChatInfo_SendAddonMessage("KKUIVersionCheck", K.Version, "GUILD")
+		lastVCTime = GetTime()
 	end
 
-	self:VersionCheck_UpdateGroup()
-	K:RegisterEvent("GROUP_ROSTER_UPDATE", self.VersionCheck_UpdateGroup)
+	Module:VersionCheck_UpdateGroup()
+	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.VersionCheck_UpdateGroup)
 end
