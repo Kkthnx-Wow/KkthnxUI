@@ -114,29 +114,6 @@ function Module:UpdateSettings()
 		end
 	end
 
-	if GameTimeFrame then
-		if not C["Minimap"].Calendar then
-			GameTimeFrame:Hide()
-		else
-			GameTimeFrame:SetParent(Minimap)
-			GameTimeFrame:SetScale(0.6)
-			GameTimeFrame:ClearAllPoints()
-			GameTimeFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -3, -3)
-			GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
-			GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
-			GameTimeFrame:SetNormalTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Calendar.blp")
-			GameTimeFrame:SetPushedTexture(nil)
-			GameTimeFrame:SetHighlightTexture(nil)
-
-			local GameTimeFont = GameTimeFrame:GetFontString()
-			GameTimeFont:ClearAllPoints()
-			GameTimeFont:SetPoint("CENTER", 0, -6)
-			GameTimeFont:SetFontObject("KkthnxUIFont")
-			GameTimeFont:SetFont(select(1, GameTimeFont:GetFont()), 20, select(3, GameTimeFont:GetFont()))
-			GameTimeFont:SetShadowOffset(0, 0)
-		end
-	end
-
 	if MiniMapMailFrame then
 		MiniMapMailFrame:ClearAllPoints()
 		if C["DataText"].Time then
@@ -156,7 +133,7 @@ function Module:UpdateSettings()
 
 		local queueIcon = Minimap:CreateTexture(nil, "OVERLAY")
 		queueIcon:SetPoint("CENTER", QueueStatusMinimapButton)
-		queueIcon:SetSize(40, 40)
+		queueIcon:SetSize(50, 50)
 		queueIcon:SetTexture("Interface\\Minimap\\Raid_Icon")
 
 		local EyeAnimation = queueIcon:CreateAnimationGroup()

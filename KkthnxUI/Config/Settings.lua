@@ -223,6 +223,7 @@ C["Loot"] = {
 	["Enable"] = true,
 	["FastLoot"] = false,
 	["GroupLoot"] = true,
+	["OnlyLootQuestItems"] = true,
 }
 
 -- Minimap

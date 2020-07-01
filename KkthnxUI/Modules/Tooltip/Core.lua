@@ -68,6 +68,9 @@ local UnitRace = _G.UnitRace
 local UnitRealmRelationship = _G.UnitRealmRelationship
 local YOU = _G.YOU
 
+local tipTable = {}
+local GameTooltip_Mover
+
 local classification = {
 	worldboss = string_format("|cffAF5050 %s|r", BOSS),
 	rareelite = string_format("|cffAF5050+ %s|r", ITEM_QUALITY3_DESC),
@@ -86,10 +89,6 @@ function Module:GetUnit()
 end
 
 function Module:HideLines()
-	if self:IsForbidden() then
-		return
-	end
-
 	for i = 3, self:NumLines() do
 		local tiptext = _G["GameTooltipTextLeft"..i]
 		local linetext = tiptext:GetText()
@@ -117,10 +116,6 @@ function Module:HideLines()
 end
 
 function Module:GetLevelLine()
-	if self:IsForbidden() then
-		return
-	end
-
 	for i = 2, self:NumLines() do
 		local tiptext = _G["GameTooltipTextLeft"..i]
 		local linetext = tiptext:GetText()
@@ -157,10 +152,6 @@ function Module:OnTooltipCleared()
 end
 
 function Module:OnTooltipSetUnit()
-	if self:IsForbidden() then
-		return
-	end
-
 	if C["Tooltip"].CombatHide and InCombatLockdown() then
 		self:Hide()
 		return
@@ -382,7 +373,6 @@ function Module:GameTooltip_ShowProgressBar()
 end
 
 -- Anchor and mover
-local GameTooltip_Mover
 function Module:GameTooltip_SetDefaultAnchor(parent)
 	if self:IsForbidden() then
 		return
@@ -432,8 +422,16 @@ function Module:GameTooltip_ComparisonFix(anchorFrame, shoppingTooltip1, shoppin
 end
 
 -- Tooltip skin
-local function getBackdrop(self)
-	return self.tooltipBackground:GetBackdrop()
+local fakeBg = CreateFrame("Frame", nil, UIParent)
+fakeBg:SetBackdrop({
+	bgFile = C["Media"].Blank,
+	edgeFile = C["Media"].Border,
+	edgeSize = 12,
+	insets = {left = 8, right = 8, top = 8, bottom = 8}
+})
+
+local function getBackdrop()
+	return fakeBg:GetBackdrop()
 end
 
 local function getBackdropColor()
@@ -445,17 +443,21 @@ local function getBackdropBorderColor()
 end
 
 function Module:ReskinTooltip()
-	if not self or (self == K.ScanTooltip or self.IsEmbedded) or self:IsForbidden() then
+	if not self then
+		if K.isDeveloper then
+			K.Print("Unknown tooltip spotted!")
+		end
+
+		return
+	end
+
+	if self:IsForbidden() then
 		return
 	end
 
 	if not self.isTipStyled then
 		self:SetBackdrop(nil)
 		self:DisableDrawLayer("BACKGROUND")
-
-		if self:GetObjectType() == "Texture" then
-			self = self:GetParent()
-		end
 
 		self.tooltipBackground = CreateFrame("Frame", nil, self)
 		self.tooltipBackground:SetPoint("TOPLEFT", self, 2, -2)
@@ -496,11 +498,6 @@ function Module:GameTooltip_SetBackdropStyle()
 	self:SetBackdrop(nil)
 end
 
-local function TooltipSetFont(font, size)
-	font:SetFontObject(K.GetFont(C["UIFonts"].TooltipFonts))
-	font:SetFont(select(1, font:GetFont()), size, select(3, font:GetFont()))
-end
-
 function Module:OnEnable()
 	_G.GameTooltip:HookScript("OnTooltipCleared", self.OnTooltipCleared)
 	_G.GameTooltip:HookScript("OnTooltipSetUnit", self.OnTooltipSetUnit)
@@ -527,7 +524,6 @@ function Module:OnEnable()
 end
 
 -- Tooltip Skin Registration
-local tipTable = {}
 function Module:RegisterTooltips(addon, func)
 	tipTable[addon] = func
 end
@@ -638,6 +634,11 @@ Module:RegisterTooltips("KkthnxUI", function()
 
 	-- Others
 	C_Timer_After(5, function()
+		-- BagSync
+		if BSYC_EventAlertTooltip then
+			Module.ReskinTooltip(BSYC_EventAlertTooltip)
+		end
+
 		-- Lib minimap icon
 		if LibDBIconTooltip then
 			Module.ReskinTooltip(LibDBIconTooltip)
@@ -668,12 +669,12 @@ Module:RegisterTooltips("KkthnxUI", function()
 		end)
 	end
 
-	if IsAddOnLoaded("MethodDungeonTools") then
+	if IsAddOnLoaded("MythicDungeonTools") then
 		local isMDTStyled
-		hooksecurefunc(MethodDungeonTools, "ShowInterface", function()
+		hooksecurefunc(MDT, "ShowInterface", function()
 			if not isMDTStyled then
-				Module.ReskinTooltip(MethodDungeonTools.tooltip)
-				Module.ReskinTooltip(MethodDungeonTools.pullTooltip)
+				Module.ReskinTooltip(MDT.tooltip)
+				Module.ReskinTooltip(MDT.pullTooltip)
 				isMDTStyled = true
 			end
 		end)

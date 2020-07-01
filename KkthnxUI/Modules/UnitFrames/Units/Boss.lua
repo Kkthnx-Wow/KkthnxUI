@@ -5,12 +5,14 @@ local oUF = oUF or K.oUF
 assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 local _G = _G
-local select = select
+local math_floor = _G.math.floor
+local select = _G.select
 
 local CreateFrame = _G.CreateFrame
 
 function Module:CreateBoss()
 	self.mystyle = "boss"
+
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
@@ -127,7 +129,7 @@ function Module:CreateBoss()
 	self.Buffs.onlyShowPlayer = false
 	self.Buffs.size = Module.auraIconSize(aurasSetWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
 	self.Buffs:SetWidth(aurasSetWidth)
-	self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+	self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math_floor(self.Buffs.num / self.Buffs.iconsPerRow + .5))
 	self.Buffs.showStealableBuffs = true
 	self.Buffs.PostCreateIcon = Module.PostCreateAura
 	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
@@ -138,12 +140,12 @@ function Module:CreateBoss()
 	self.Debuffs["growth-x"] = "LEFT"
 	self.Debuffs["growth-y"] = "DOWN"
 	self.Debuffs:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
-	self.Debuffs.num = 10
-	self.Debuffs.iconsPerRow = 5
+	self.Debuffs.num = 4
+	self.Debuffs.iconsPerRow = 4
 	self.Debuffs.CustomFilter = Module.CustomFilter
-	self.Debuffs.size = Module.auraIconSize(aurasSetWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
-	self.Debuffs:SetWidth(aurasSetWidth)
-	self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num/self.Debuffs.iconsPerRow + .5))
+	self.Debuffs.size = Module.auraIconSize(aurasSetWidth - 44, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
+	self.Debuffs:SetWidth(aurasSetWidth - 44)
+	self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math_floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 

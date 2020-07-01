@@ -616,6 +616,11 @@ _G.KkthnxUIConfig["enUS"] = {
 		["GroupLoot"] = {
 			["Name"] = "|cff00cc4c".."Enable Group Loot",
 		},
+
+		["OnlyLootQuestItems"] = {
+			["Name"] = "Only Loot Quest Items",
+			["Desc"] = "This will only loot Quest Items and Money! Nothing else will be looted unless you loot it manually. |n|n|CFF669DFFThis requires|r 'Auto Loot' |CFF669DFFto be turned off!|r",
+		},
 	},
 
 	-- Minimap Local
