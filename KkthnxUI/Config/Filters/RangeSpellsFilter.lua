@@ -16,6 +16,7 @@ K["spellRangeCheck"] = {
 		},
 		petSpells = {}
 	},
+
 	DRUID = {
 		enemySpells = {
 			[8921] = true -- Moonfire (40 yards, all specs, lvl 3)
@@ -29,6 +30,7 @@ K["spellRangeCheck"] = {
 		},
 		petSpells = {}
 	},
+
 	PALADIN = {
 		enemySpells = {
 			[62124] = true, -- Hand of Reckoning (30 yards)
@@ -48,6 +50,7 @@ K["spellRangeCheck"] = {
 		},
 		petSpells = {}
 	},
+
 	SHAMAN = {
 		enemySpells = {
 			[188196] = true, -- Lightning Bolt (Elemental) (40 yards)
@@ -64,6 +67,7 @@ K["spellRangeCheck"] = {
 		},
 		petSpells = {}
 	},
+
 	WARLOCK = {
 		enemySpells = {
 			[5782] = true -- Fear (30 yards)
@@ -82,6 +86,7 @@ K["spellRangeCheck"] = {
 			[755] = true -- Health Funnel (45 yards)
 		}
 	},
+
 	MAGE = {
 		enemySpells = {
 			[118] = true -- Polymorph (30 yards)
@@ -97,6 +102,7 @@ K["spellRangeCheck"] = {
 		resSpells = {},
 		petSpells = {}
 	},
+
 	HUNTER = {
 		enemySpells = {
 			[75] = true -- Auto Shot (40 yards)
@@ -108,6 +114,7 @@ K["spellRangeCheck"] = {
 			[982] = true -- Mend Pet (45 yards)
 		}
 	},
+
 	DEATHKNIGHT = {
 		enemySpells = {
 			[49576] = true -- Death Grip
@@ -121,6 +128,7 @@ K["spellRangeCheck"] = {
 		},
 		petSpells = {}
 	},
+
 	ROGUE = {
 		enemySpells = {
 			[185565] = true, -- Poisoned Knife (Assassination) (30 yards)
@@ -135,6 +143,7 @@ K["spellRangeCheck"] = {
 		resSpells = {},
 		petSpells = {}
 	},
+
 	WARRIOR = {
 		enemySpells = {
 			[5246] = true, -- Intimidating Shout (Arms/Fury) (8 yards)
@@ -147,6 +156,7 @@ K["spellRangeCheck"] = {
 		resSpells = {},
 		petSpells = {}
 	},
+
 	MONK = {
 		enemySpells = {
 			[115546] = true -- Provoke (30 yards)
@@ -162,6 +172,7 @@ K["spellRangeCheck"] = {
 		},
 		petSpells = {}
 	},
+
 	DEMONHUNTER = {
 		enemySpells = {
 			[183752] = true -- Consume Magic (20 yards)

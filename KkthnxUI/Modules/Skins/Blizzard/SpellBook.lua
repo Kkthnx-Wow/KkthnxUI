@@ -45,8 +45,13 @@ local function LoadSpellBookSkin()
 	hooksecurefunc("SpellButton_UpdateButton", function()
 		for i = 1, _G.SPELLS_PER_PAGE do
 			local button = _G["SpellButton" .. i]
+			local icon = _G["SpellButton"..i.."IconTexture"]
 
 			if button.SpellHighlightTexture then
+				if icon then
+					button.SpellHighlightTexture:SetPoint("TOPLEFT", button, "TOPLEFT", -7, 7)
+					button.SpellHighlightTexture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 7, -7)
+				end
 				K.Flash(button.SpellHighlightTexture, 1, true)
 			end
 		end

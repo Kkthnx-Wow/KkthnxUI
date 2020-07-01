@@ -275,7 +275,7 @@ oUF.Tags.Methods["monkstagger"] = function(unit)
 		return
 	end
 
-	return K.ShortValue(cur).." | "..K.MyClassColor..K.Round(perc * 100).."%"
+	return K.ShortValue(cur).." - "..K.MyClassColor..K.Round(perc * 100).."%"
 end
 oUF.Tags.Events["monkstagger"] = "UNIT_MAXHEALTH UNIT_AURA"
 
