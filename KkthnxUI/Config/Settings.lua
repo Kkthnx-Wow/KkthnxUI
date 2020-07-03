@@ -72,7 +72,7 @@ C["Automation"] = {
 	["AutoCollapse"] = false,
 	["AutoDeclineDuels"] = false,
 	["AutoDeclinePetDuels"] = false,
-	-- ["AutoDisenchant"] = false,
+	["AutoDisenchant"] = false,
 	["AutoDungeonThanks"] = false,
 	["AutoInvite"] = false,
 	["AutoQuest"] = false,
@@ -223,7 +223,7 @@ C["Loot"] = {
 	["Enable"] = true,
 	["FastLoot"] = false,
 	["GroupLoot"] = true,
-	["OnlyLootQuestItems"] = true,
+	["OnlyLootQuestItems"] = false,
 }
 
 -- Minimap

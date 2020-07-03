@@ -632,7 +632,7 @@ function Module:CreatePlayer()
 	self.RestingIndicator:SetAlpha(0.7)
 
 	self.QuestSyncIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.QuestSyncIndicator:SetPoint("BOTTOMLEFT", self.Overlay, "BOTTOMLEFT", -4, -13)
+	self.QuestSyncIndicator:SetPoint("BOTTOM", self.Portrait, "BOTTOM", 0, -13)
 	self.QuestSyncIndicator:SetSize(26, 26)
 	self.QuestSyncIndicator:SetAtlas("QuestSharing-DialogIcon")
 	self.QuestSyncIndicator:Hide()

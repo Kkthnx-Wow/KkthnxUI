@@ -1,9 +1,4 @@
-local K, C, L = unpack(select(2, ...))
-
-if not K.isDeveloper then
-	return
-end
-
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("AutoQuestLoot")
 
 local _G = _G
@@ -15,16 +10,16 @@ local GetNumLootItems =_G.GetNumLootItems
 local GetNumQuestLeaderBoards =_G.GetNumQuestLeaderBoards
 local GetNumQuestLogEntries =_G.GetNumQuestLogEntries
 local GetQuestLogLeaderBoard =_G.GetQuestLogLeaderBoard
+local LootSlot = _G.LootSlot
 
-local function isInTable(item, table)
-	for key, value in pairs(table) do
-		if value == item then
-			return key
-		end
-	end
-
-	return false
-end
+local coinTextureIDs = {
+	[133784] = true,
+	[133785] = true,
+	[133786] = true,
+	[133787] = true,
+	[133788] = true,
+	[133789] = true
+}
 
 function Module:CreateAutoQuestLoot()
 	for questIndex = 1, GetNumQuestLogEntries() do
@@ -34,8 +29,12 @@ function Module:CreateAutoQuestLoot()
 				local _, _, _, _, itemName = string_find(leaderboardTxt, "([%d]+)%s*/%s*([%d]+)%s*(.*)%s*")
 				if itemName then
 					for lootIndex = 1, GetNumLootItems() do
-						local _, lootName = GetLootSlotInfo(lootIndex)
-						if lootName == itemName then
+						local _, lootName, _, _, _, _, isQuestItem, questId, isActive = GetLootSlotInfo(lootIndex)
+						if (questId and not isActive) then
+							LootSlot(lootIndex)
+						elseif (questId or isQuestItem) then
+							LootSlot(lootIndex)
+						elseif lootName == itemName then
 							LootSlot(lootIndex)
 						end
 					end
@@ -46,7 +45,8 @@ function Module:CreateAutoQuestLoot()
 
 	for lootIndex = 1, GetNumLootItems() do
 		local lootIcon = GetLootSlotInfo(lootIndex)
-		if isInTable(lootIcon, {133789, 133788, 133787, 133786, 133785, 133784}) then
+		if coinTextureIDs[lootIcon] then
+			print(coinTextureIDs)
 			LootSlot(lootIndex)
 		end
 	end

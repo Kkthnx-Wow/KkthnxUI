@@ -422,16 +422,16 @@ function Module:GameTooltip_ComparisonFix(anchorFrame, shoppingTooltip1, shoppin
 end
 
 -- Tooltip skin
-local fakeBg = CreateFrame("Frame", nil, UIParent)
-fakeBg:SetBackdrop({
+local FakeTooltipBackground = CreateFrame("Frame", nil, UIParent)
+FakeTooltipBackground:SetBackdrop({
 	bgFile = C["Media"].Blank,
-	edgeFile = C["Media"].Border,
+	edgeFile = C["Media"].BorderTooltip,
 	edgeSize = 12,
-	insets = {left = 8, right = 8, top = 8, bottom = 8}
+	insets = {left = 4, right = 4, top = 4, bottom = 4}
 })
 
 local function getBackdrop()
-	return fakeBg:GetBackdrop()
+	return FakeTooltipBackground:GetBackdrop()
 end
 
 local function getBackdropColor()
