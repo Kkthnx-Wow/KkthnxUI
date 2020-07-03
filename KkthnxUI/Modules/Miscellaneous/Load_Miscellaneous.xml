@@ -3,6 +3,7 @@
    <!-- Load_Miscellaneous -->
    <Script file="Load_Miscellaneous.lua" />
 
+   <Script file="AFKCam.lua" />
    <Script file="AlreadyKnown.lua" />
    <Script file="ChatBubble.lua" />
    <Script file="Durability.lua" />
@@ -20,7 +21,6 @@
    <Script file="RaidMarker.lua" />
    <Script file="SlotDurability.lua" />
    <Script file="SlotItemLevel.lua" />
-   <Script file="SpinCam.lua" />
    <Script file="StatusReport.lua" />
    <Script file="TradeTabs.lua" />
    <Script file="yClassColors.lua" />

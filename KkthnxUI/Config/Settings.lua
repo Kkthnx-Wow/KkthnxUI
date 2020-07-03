@@ -67,7 +67,7 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
-	-- ["AutoReward"] = false,
+	["AutoReward"] = false,
 	["AutoBlockStrangerInvites"] = false,
 	["AutoCollapse"] = false,
 	["AutoDeclineDuels"] = false,

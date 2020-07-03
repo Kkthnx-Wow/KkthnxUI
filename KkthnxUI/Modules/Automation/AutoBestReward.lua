@@ -17,17 +17,17 @@ function Module:SetupAutoBestReward()
 	local bestValue, bestItem = 0
 	local numQuests = GetNumQuestChoices()
 
-	if not self.QuestRewardGoldIconFrame then
-		local frame = CreateFrame("Frame", nil, firstItem)
-		frame:SetFrameStrata("HIGH")
-		frame:SetSize(20, 20)
-		frame.Icon = frame:CreateTexture(nil, "OVERLAY")
-		frame.Icon:SetAllPoints(frame)
-		frame.Icon:SetTexture([[Interface\MONEYFRAME\UI-GoldIcon]])
-		self.QuestRewardGoldIconFrame = frame
+	if not Module.QuestRewardGoldIconFrame then
+		Module.QuestRewardGoldIconFrame = CreateFrame("Frame", nil, firstItem)
+		Module.QuestRewardGoldIconFrame:SetFrameStrata("HIGH")
+		Module.QuestRewardGoldIconFrame:SetSize(20, 20)
+
+		Module.QuestRewardGoldIconFrame.Icon = Module.QuestRewardGoldIconFrame:CreateTexture(nil, "OVERLAY")
+		Module.QuestRewardGoldIconFrame.Icon:SetAllPoints(Module.QuestRewardGoldIconFrame)
+		Module.QuestRewardGoldIconFrame.Icon:SetTexture([[Interface\MONEYFRAME\UI-GoldIcon]])
 	end
 
-	self.QuestRewardGoldIconFrame:Hide()
+	Module.QuestRewardGoldIconFrame:Hide()
 
 	if numQuests < 2 then
 		return
@@ -48,15 +48,15 @@ function Module:SetupAutoBestReward()
 	if bestItem then
 		local btn = _G["QuestInfoRewardsFrameQuestInfoItem"..bestItem]
 		if btn and btn.type == "choice" then
-			self.QuestRewardGoldIconFrame:ClearAllPoints()
-			self.QuestRewardGoldIconFrame:Point("TOPRIGHT", btn, "TOPRIGHT", -2, -2)
-			self.QuestRewardGoldIconFrame:Show()
+			Module.QuestRewardGoldIconFrame:ClearAllPoints()
+			Module.QuestRewardGoldIconFrame:SetPoint("TOPRIGHT", btn, "TOPRIGHT", -2, -2)
+			Module.QuestRewardGoldIconFrame:Show()
 		end
 	end
 end
 
 function Module:CreateAutoBestReward()
-    if not C["Automation"].QuestRewardMostValue then
+    if not C["Automation"].AutoReward then
         return
     end
 

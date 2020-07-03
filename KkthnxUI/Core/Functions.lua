@@ -26,11 +26,12 @@ local GameTooltip = _G.GameTooltip
 local GetSpecialization = _G.GetSpecialization
 local GetSpecializationInfo = _G.GetSpecializationInfo
 local GetSpellDescription = _G.GetSpellDescription
+local GetTime = _G.GetTime
+local ITEM_LEVEL = _G.ITEM_LEVEL
+local ITEM_SPELL_TRIGGER_ONEQUIP = _G.ITEM_SPELL_TRIGGER_ONEQUIP
 local IsEveryoneAssistant = _G.IsEveryoneAssistant
 local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
-local ITEM_LEVEL = _G.ITEM_LEVEL
-local ITEM_SPELL_TRIGGER_ONEQUIP = _G.ITEM_SPELL_TRIGGER_ONEQUIP
 local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME
 local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
 local UIParent = _G.UIParent
@@ -46,6 +47,9 @@ local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
 local essenceDescription = GetSpellDescription(277253)
 local essenceTextureID = 2975691
 local itemLevelString = string_gsub(ITEM_LEVEL, "%%d", "")
+
+K.activeTimers = K.activeTimers or {} -- Active timer list
+local activeTimers = K.activeTimers -- Upvalue our private data
 
 function K.Print(...)
 	(_G.DEFAULT_CHAT_FRAME):AddMessage(string_join("", "|cff3c9bed", "KkthnxUI:|r ", ...))
@@ -638,4 +642,116 @@ function K.Delay(delay, func, ...)
 	end
 
 	return true
+end
+
+-- AceTimer
+local function new(self, loop, func, delay, ...)
+	if delay < 0.01 then
+		delay = 0.01 -- Restrict to the lowest time that the C_Timer API allows us
+	end
+
+	local timer = {
+		object = self,
+		func = func,
+		looping = loop,
+		argsCount = select("#", ...),
+		delay = delay,
+		ends = GetTime() + delay,
+		...
+	}
+
+	activeTimers[timer] = timer
+
+	-- Create new timer closure to wrap the "timer" object
+	timer.callback = function()
+		if not timer.cancelled then
+			if type(timer.func) == "string" then
+				-- We manually set the unpack count to prevent issues with an arg set that contains nil and ends with nil
+				-- e.g. local t = {1, 2, nil, 3, nil} print(#t) will result in 2, instead of 5. This fixes said issue.
+				timer.object[timer.func](timer.object, unpack(timer, 1, timer.argsCount))
+			else
+				timer.func(unpack(timer, 1, timer.argsCount))
+			end
+
+			if timer.looping and not timer.cancelled then
+				-- Compensate delay to get a perfect average delay, even if individual times don't match up perfectly
+				-- due to fps differences
+				local time = GetTime()
+				local delay = timer.delay - (time - timer.ends)
+				-- Ensure the delay doesn't go below the threshold
+				if delay < 0.01 then
+					delay = 0.01
+				end
+
+				C_Timer_After(delay, timer.callback)
+				timer.ends = time + delay
+			else
+				activeTimers[timer.handle or timer] = nil
+			end
+		end
+	end
+
+	C_Timer_After(delay, timer.callback)
+	return timer
+end
+
+function K:ScheduleTimer(func, delay, ...)
+	if not func or not delay then
+		K.Print(": ScheduleTimer(callback, delay, args...): 'callback' and 'delay' must have set values.", 2)
+	end
+
+	if type(func) == "string" then
+		if type(self) ~= "table" then
+			K.Print(": ScheduleTimer(callback, delay, args...): 'self' - must be a table.", 2)
+		elseif not self[func] then
+			K.Print(": ScheduleTimer(callback, delay, args...): Tried to register '"..func.."' as the callback, but it doesn't exist in the module.", 2)
+		end
+	end
+
+	return new(self, nil, func, delay, ...)
+end
+
+function K:ScheduleRepeatingTimer(func, delay, ...)
+	if not func or not delay then
+		K.Print(": ScheduleRepeatingTimer(callback, delay, args...): 'callback' and 'delay' must have set values.", 2)
+	end
+
+	if type(func) == "string" then
+		if type(self) ~= "table" then
+			K.Print(": ScheduleRepeatingTimer(callback, delay, args...): 'self' - must be a table.", 2)
+		elseif not self[func] then
+			K.Print(": ScheduleRepeatingTimer(callback, delay, args...): Tried to register '"..func.."' as the callback, but it doesn't exist in the module.", 2)
+		end
+	end
+
+	return new(self, true, func, delay, ...)
+end
+
+function K:CancelTimer(id)
+	local timer = activeTimers[id]
+
+	if not timer then
+		return false
+	else
+		timer.cancelled = true
+		activeTimers[id] = nil
+		return true
+	end
+end
+
+function K:CancelAllTimers()
+	for k, v in next, activeTimers do
+		if v.object == self then
+			K.CancelTimer(self, k)
+		end
+	end
+end
+
+function K:TimeLeft(id)
+	local timer = activeTimers[id]
+	if not timer then
+		return 0
+	else
+		return timer.ends - GetTime()
+	end
 end
