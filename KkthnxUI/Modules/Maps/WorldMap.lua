@@ -4,9 +4,7 @@ local Module = K:NewModule("WorldMap")
 local _G = _G
 
 local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
-local C_Map_GetWorldPosFromMapPos = _G.C_Map.GetWorldPosFromMapPos
 local CreateFrame = _G.CreateFrame
-local CreateVector2D = _G.CreateVector2D
 local IsPlayerMoving = _G.IsPlayerMoving
 local PLAYER = _G.PLAYER
 local SetUIPanelAttribute = _G.SetUIPanelAttribute
@@ -14,8 +12,6 @@ local UIParent = _G.UIParent
 local UnitPosition = _G.UnitPosition
 local hooksecurefunc = _G.hooksecurefunc
 
-local mapRects = {}
-local tempVec2D = CreateVector2D(0, 0)
 local currentMapID, playerCoords, cursorCoords
 local smallerMapScale = 0.8
 
@@ -62,26 +58,6 @@ function Module:SetSmallWorldMap()
 	end
 end
 
-function Module:GetPlayerMapPos(mapID)
-	tempVec2D.x, tempVec2D.y = UnitPosition("player")
-	if not tempVec2D.x then
-		return
-	end
-
-	local mapRect = mapRects[mapID]
-	if not mapRect then
-		mapRect = {}
-		mapRect[1] = select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(0, 0)))
-		mapRect[2] = select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(1, 1)))
-		mapRect[2]:Subtract(mapRect[1])
-
-		mapRects[mapID] = mapRect
-	end
-	tempVec2D:Subtract(mapRect[1])
-
-	return tempVec2D.y / mapRect[2].y, tempVec2D.x / mapRect[2].x
-end
-
 function Module:GetCursorCoords()
 	local WorldMapFrame = _G.WorldMapFrame
 	if not WorldMapFrame.ScrollContainer:IsMouseOver() then
@@ -117,7 +93,7 @@ function Module:UpdateCoords(elapsed)
 		if not currentMapID then
 			playerCoords:SetText(CoordsFormat(PLAYER, true))
 		else
-			local x, y = Module:GetPlayerMapPos(currentMapID)
+			local x, y = K.GetPlayerMapPos(currentMapID)
 			if not x or (x == 0 and y == 0) then
 				playerCoords:SetText(CoordsFormat(PLAYER, true))
 			else

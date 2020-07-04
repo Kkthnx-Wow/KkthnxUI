@@ -105,7 +105,7 @@ end
 local function createSlot(id)
 	local iconsize = (iconSize - 4)
 
-	local frame = CreateFrame("Button", "KkthnxLootSlot"..id, lootFrame)
+	local frame = CreateFrame("Button", "KKUI_LootSlot"..id, lootFrame)
 	frame:SetPoint("LEFT", 8, 0)
 	frame:SetPoint("RIGHT", -8, 0)
 	frame:SetHeight(iconsize)
@@ -305,12 +305,12 @@ function Module:OnEnable()
 		return
 	end
 
-	lootFrameHolder = CreateFrame("Frame", "KkthnxLootFrameHolder", UIParent)
+	lootFrameHolder = CreateFrame("Frame", "KKUI_LootFrameHolder", UIParent)
 	lootFrameHolder:SetPoint("TOPLEFT", 36, -195)
 	lootFrameHolder:SetWidth(150)
 	lootFrameHolder:SetHeight(22)
 
-	lootFrame = CreateFrame("Button", "KkthnxLootFrame", lootFrameHolder)
+	lootFrame = CreateFrame("Button", "KKUI_LootFrame", lootFrameHolder)
 	lootFrame:SetClampedToScreen(true)
 	lootFrame:SetPoint("TOPLEFT")
 	lootFrame:SetSize(256, 64)
@@ -335,10 +335,11 @@ function Module:OnEnable()
 	end
 
 	LootFrame:UnregisterAllEvents()
-	table_insert(UISpecialFrames, "KkthnxLootFrame")
+	table_insert(UISpecialFrames, "KKUI_LootFrame")
 
-	self:CreateGroupLoot()
 	self:CreateAutoConfirm()
 	self:CreateAutoGreed()
+	self:CreateAutoQuestLoot()
 	self:CreateFasterLoot()
+	self:CreateGroupLoot()
 end

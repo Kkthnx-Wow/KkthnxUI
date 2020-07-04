@@ -176,6 +176,7 @@ C["DataText"] = {
 	["Currency"] = true,
 	["Friends"] = true,
 	["Guild"] = true,
+	["Location"] = true,
 	["System"] = true,
 	["Time"] = true,
 }
@@ -234,14 +235,14 @@ C["Minimap"] = {
 	["ShowGarrison"] = true,
 	["ShowRecycleBin"] = true,
 	["Size"] = 180,
-	["LocationText"] = {
-		["Options"] = {
-			["Always Display"] = "SHOW",
-			["Hide"] = "Hide",
-			["Minimap Mouseover"] = "MOUSEOVER",
-		},
-		["Value"] = "MOUSEOVER"
-	},
+	--["LocationText"] = {
+	--	["Options"] = {
+	--		["Always Display"] = "SHOW",
+	--		["Hide"] = "Hide",
+	--		["Minimap Mouseover"] = "MOUSEOVER",
+	--	},
+	--	["Value"] = "MOUSEOVER"
+	--},
 	["BlipTexture"] = {
 		["Options"] = {
 			["Blizzard"] = "Interface\\MiniMap\\ObjectIconsAtlas",

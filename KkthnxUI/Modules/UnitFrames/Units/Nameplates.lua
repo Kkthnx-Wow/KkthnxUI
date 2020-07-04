@@ -472,11 +472,11 @@ function UF:AddQuestIcon(self)
 
 	local qicon = self:CreateTexture(nil, "OVERLAY", nil, 2)
 	qicon:SetPoint("LEFT", self, "RIGHT", -1, 0)
-	qicon:SetSize(18, 18)
+	qicon:SetSize(20, 20)
 	qicon:SetAtlas("adventureguide-microbutton-alert")
 	qicon:Hide()
 
-	local count = K.CreateFontString(self, 10, "", "", nil, "LEFT", 0, 0)
+	local count = K.CreateFontString(self, 12, "", "", nil, "LEFT", 0, 0)
 	count:SetPoint("LEFT", qicon, "RIGHT", -2, 0)
 
 	self.questIcon = qicon

@@ -19,6 +19,7 @@ local tonumber = _G.tonumber
 local type = _G.type
 local unpack = _G.unpack
 
+local C_Map_GetWorldPosFromMapPos = _G.C_Map.GetWorldPosFromMapPos
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
 local ENCHANTED_TOOLTIP_LINE = _G.ENCHANTED_TOOLTIP_LINE
@@ -27,11 +28,11 @@ local GetSpecialization = _G.GetSpecialization
 local GetSpecializationInfo = _G.GetSpecializationInfo
 local GetSpellDescription = _G.GetSpellDescription
 local GetTime = _G.GetTime
-local ITEM_LEVEL = _G.ITEM_LEVEL
-local ITEM_SPELL_TRIGGER_ONEQUIP = _G.ITEM_SPELL_TRIGGER_ONEQUIP
 local IsEveryoneAssistant = _G.IsEveryoneAssistant
 local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
+local ITEM_LEVEL = _G.ITEM_LEVEL
+local ITEM_SPELL_TRIGGER_ONEQUIP = _G.ITEM_SPELL_TRIGGER_ONEQUIP
 local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME
 local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
 local UIParent = _G.UIParent
@@ -47,6 +48,9 @@ local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
 local essenceDescription = GetSpellDescription(277253)
 local essenceTextureID = 2975691
 local itemLevelString = string_gsub(ITEM_LEVEL, "%%d", "")
+
+local mapRects = {}
+local tempVec2D = CreateVector2D(0, 0)
 
 K.activeTimers = K.activeTimers or {} -- Active timer list
 local activeTimers = K.activeTimers -- Upvalue our private data
@@ -570,6 +574,26 @@ function K:CooldownOnUpdate(elapsed, raw)
 		end
 		self.elapsed = 0
 	end
+end
+
+function K.GetPlayerMapPos(mapID)
+	tempVec2D.x, tempVec2D.y = UnitPosition("player")
+	if not tempVec2D.x then
+		return
+	end
+
+	local mapRect = mapRects[mapID]
+	if not mapRect then
+		mapRect = {}
+		mapRect[1] = select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(0, 0)))
+		mapRect[2] = select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(1, 1)))
+		mapRect[2]:Subtract(mapRect[1])
+
+		mapRects[mapID] = mapRect
+	end
+	tempVec2D:Subtract(mapRect[1])
+
+	return tempVec2D.y / mapRect[2].y, tempVec2D.x / mapRect[2].x
 end
 
 -- Money text formatting, code taken from Scrooge by thelibrarian (http://www.wowace.com/addons/scrooge)

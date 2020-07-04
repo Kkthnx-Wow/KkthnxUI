@@ -1,10 +1,12 @@
 local K = unpack(select(2, ...))
 
 local _G = _G
+local print = _G.print
 local string_find = _G.string.find
 local string_format = _G.string.format
 local string_split = _G.string.split
 local table_wipe = _G.table.wipe
+local tostring = _G.tostring
 
 local C_ChatInfo_RegisterAddonMessagePrefix = _G.C_ChatInfo.RegisterAddonMessagePrefix
 local C_ChatInfo_SendAddonMessage = _G.C_ChatInfo.SendAddonMessage
@@ -23,9 +25,9 @@ local IsInRaid = _G.IsInRaid
 local MouseIsOver = _G.MouseIsOver
 local NAME = _G.NAME
 local SlashCmdList = _G.SlashCmdList
-local UNKNOWN = _G.UNKNOWN
 local UnitGUID = _G.UnitGUID
 local UnitName = _G.UnitName
+local UNKNOWN = _G.UNKNOWN
 
 -- KkthnxUI DevTools:
 -- /getenc, get selected encounters info

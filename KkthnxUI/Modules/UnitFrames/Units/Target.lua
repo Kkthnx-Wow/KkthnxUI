@@ -352,6 +352,10 @@ function Module:CreateTarget()
 	self.ResurrectIndicator:SetSize(44, 44)
 	self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
 
+	self.QuestIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.QuestIndicator:SetSize(20, 20)
+	self.QuestIndicator:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -6, 6)
+
 	if C["Unitframe"].DebuffHighlight then
 		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
 		self.DebuffHighlight:SetAllPoints(self.Health)

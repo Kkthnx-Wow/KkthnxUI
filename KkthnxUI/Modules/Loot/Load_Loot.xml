@@ -7,4 +7,5 @@
     <Script file="AutoConfirm.lua"/>
     <Script file="AutoGreed.lua"/>
     <Script file="FasterLoot.lua"/>
+    <Script file="AutoQuestLoot.lua"/>
 </Ui>
