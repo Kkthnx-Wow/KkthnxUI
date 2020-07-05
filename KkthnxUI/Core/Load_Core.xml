@@ -13,6 +13,7 @@
     <Script file="Conflicts.lua"/>
     <Script file="Movers.lua"/>
     <Script file="Install.lua"/>
+    <Script file="Dropdown.lua"/>
     <Script file="Changelog.lua"/>
     <Script file="CheckVersion.lua"/>
     <Script file="UICommands.lua"/>

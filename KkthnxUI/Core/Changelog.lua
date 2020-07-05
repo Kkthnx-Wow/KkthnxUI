@@ -7,13 +7,15 @@ local pairs = _G.pairs
 local CreateFrame = _G.CreateFrame
 
 local changelogData = {
-	"Cleanup DataText Modules",
-	"Fix GitHub URLs",
-	"Fix Range Module Throwing Error",
-	"Fix Reset Buttons In Config",
-	"Update AlreadyKnown Code",
-	"Update CheckVersion Code",
-	"Update Moveable Frame Code",
+	"New Minimap Code",
+	"New Keybind Code",
+	"Added Only Loot Quest Items Module",
+	"New Location DataText",
+	"Fixed Auto Best Value For Quests",
+	"Updated BlizzBugFixes",
+	"Added Close Quest Fix",
+	"Re-Added AFKCam",
+	"Various File Cleanups",
 }
 
 local changelogFrame

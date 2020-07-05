@@ -2,8 +2,9 @@ local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Minimap")
 
 local _G = _G
-local select = _G.select
 local pairs = _G.pairs
+local select = _G.select
+local table_insert = _G.table.insert
 
 local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
@@ -14,7 +15,7 @@ local IsAddOnLoaded = _G.IsAddOnLoaded
 local UIErrorsFrame = _G.UIErrorsFrame
 local UnitClass = _G.UnitClass
 
-function Module:CreatePulse()
+function Module:CreateStyle()
 	local minimapBorder = CreateFrame("Frame", nil, Minimap)
 	minimapBorder:SetAllPoints(Minimap)
 	minimapBorder:SetFrameLevel(Minimap:GetFrameLevel())
@@ -145,9 +146,9 @@ function Module:ReskinRegions()
 
 	local inviteNotification = CreateFrame("Button", nil, UIParent)
 	inviteNotification:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 13})
-    inviteNotification:SetPoint("TOPLEFT", Minimap, -6, 6)
-    inviteNotification:SetPoint("BOTTOMRIGHT", Minimap, 6, -6)
-    inviteNotification:SetBackdropBorderColor(1, 1, 0)
+	inviteNotification:SetPoint("TOPLEFT", Minimap, -6, 6)
+	inviteNotification:SetPoint("BOTTOMRIGHT", Minimap, 6, -6)
+	inviteNotification:SetBackdropBorderColor(1, 1, 0)
 	inviteNotification:Hide()
 
 	K.CreateFontString(inviteNotification, 12, K.InfoColor.."Pending Calendar Invite(s)!", "")
@@ -170,7 +171,7 @@ function Module:ReskinRegions()
 	end)
 end
 
-function Module:CreateMapPing()
+function Module:CreatePing()
 	local pingFrame = CreateFrame("Frame", nil, Minimap)
 	pingFrame:SetAllPoints()
 	pingFrame.text = K.CreateFontString(pingFrame, 16, "", "", false, "TOP", 0, C["DataText"].Location and -24 or -6)
@@ -272,8 +273,8 @@ function Module:OnEnable()
 	Minimap:SetQuestBlobRingScalar(0)
 
 	-- Add Elements
-	self:CreateMapPing()
-	self:CreatePulse()
+	self:CreatePing()
+	self:CreateStyle()
 	self:CreateRecycleBin()
 	self:ReskinRegions()
 end

@@ -128,7 +128,7 @@ function Module:CreateLocationDataText()
 	end
 
 	Module.LocationFrame = CreateFrame("Frame", "KKUI_LocationDataText", UIParent)
-	Module.LocationFrame:SetPoint("TOP", Minimap, "TOP", 0, -6)
+	Module.LocationFrame:SetPoint("TOP", Minimap, "TOP", 0, -4)
 	Module.LocationFrame:SetSize(Minimap:GetWidth() - 12, 14)
 	Module.LocationFrame:SetFrameLevel(Minimap:GetFrameLevel() + 2)
 

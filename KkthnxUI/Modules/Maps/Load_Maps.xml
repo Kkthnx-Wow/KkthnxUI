@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Maps -->
-    <Script file="MicroMenu.lua"/>
     <Script file="MiniMap.lua"/>
     <Script file="MinimapButtons.lua"/>
     <Script file="WorldMap.lua"/>
