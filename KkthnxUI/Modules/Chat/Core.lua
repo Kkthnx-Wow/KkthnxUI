@@ -69,7 +69,7 @@ local function OnTextChanged(EditBox)
 		local MIN_REPEAT_CHARACTERS = 5
 		if len > MIN_REPEAT_CHARACTERS then
 			local repeatChar = true
-			for i=1, MIN_REPEAT_CHARACTERS, 1 do
+			for i = 1, MIN_REPEAT_CHARACTERS, 1 do
 				local first = -1 - i
 				if string_sub(text,-i,-i) ~= string_sub(text,first,first) then
 					repeatChar = false
@@ -156,9 +156,9 @@ end
 
 function Module:UpdateTabColors(selected)
 	if selected then
-		self:GetFontString():SetTextColor(1, .8, 0)
+		self:GetFontString():SetTextColor(1, 0.8, 0)
 	else
-		self:GetFontString():SetTextColor(.5, .5, .5)
+		self:GetFontString():SetTextColor(0.5, 0.5, 0.5)
 	end
 end
 

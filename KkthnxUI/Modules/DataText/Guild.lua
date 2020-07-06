@@ -3,23 +3,35 @@ local Module = K:GetModule("Infobar")
 
 local _G = _G
 local string_format = _G.string.format
-local table_wipe = _G.table.wipe
 local table_sort = _G.table.sort
+local table_wipe = _G.table.wipe
 
+local ALT_KEY = _G.ALT_KEY
 local Ambiguate = _G.Ambiguate
 local C_GuildInfo_GuildRoster = _G.C_GuildInfo.GuildRoster
+local CURRENT_GUILD_SORTING = _G.CURRENT_GUILD_SORTING
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local GetGuildInfo = _G.GetGuildInfo
 local GetGuildRosterInfo = _G.GetGuildRosterInfo
 local GetGuildRosterMOTD = _G.GetGuildRosterMOTD
 local GetNumGuildMembers = _G.GetNumGuildMembers
 local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
 local GetRealZoneText = _G.GetRealZoneText
+local GUILD = _G.GUILD
+local GUILD_MOTD = _G.GUILD_MOTD
+local GUILD_ONLINE_LABEL = _G.GUILD_ONLINE_LABEL
+local hooksecurefunc = _G.hooksecurefunc
+local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsInGuild = _G.IsInGuild
 local IsShiftKeyDown = _G.IsShiftKeyDown
+local LOOKINGFORGUILD = _G.LOOKINGFORGUILD
+local NOTE_COLON = _G.NOTE_COLON
+local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local REMOTE_CHAT = _G.REMOTE_CHAT
+local UIErrorsFrame = _G.UIErrorsFrame
 local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
-local hooksecurefunc = _G.hooksecurefunc
 
 local menuFrame = CreateFrame("Frame", "KKUI_GuildDropDownMenu", UIParent, "UIDropDownMenuTemplate")
 local menuList = {
@@ -113,7 +125,7 @@ function Module:GuildOnEnter()
 						if officernote ~= "" and EPGP then
 							local ep, gp = EPGP:GetEPGP(name)
 							if ep then
-								officernote = " EP: "..ep.." GP: "..gp.." PR: "..string.format("%.3f", ep / gp)
+								officernote = " EP: "..ep.." GP: "..gp.." PR: "..string_format("%.3f", ep / gp)
 							else
 								officernote = " O."..NOTE_COLON.." "..officernote
 							end
@@ -229,7 +241,7 @@ function Module:GuildOnMouseUp(btn)
 					if not guildTable[i][10] then
 						menuCountInvites = menuCountInvites + 1
 						menuList[2].menuList[menuCountInvites] = {
-							text = string.format("|cff%02x%02x%02x%d|r |cff%02x%02x%02x%s|r %s", levelc.r * 255, levelc.g * 255, levelc.b * 255, guildTable[i][3], classc.r * 255, classc.g * 255, classc.b * 255, Ambiguate(guildTable[i][1], "all"), ""),
+							text = string_format("|cff%02x%02x%02x%d|r |cff%02x%02x%02x%s|r %s", levelc.r * 255, levelc.g * 255, levelc.b * 255, guildTable[i][3], classc.r * 255, classc.g * 255, classc.b * 255, Ambiguate(guildTable[i][1], "all"), ""),
 							arg1 = guildTable[i][1],
 							notCheckable = true,
 							func = function(_, arg1)
@@ -241,7 +253,7 @@ function Module:GuildOnMouseUp(btn)
 				end
 				menuCountWhispers = menuCountWhispers + 1
 				menuList[3].menuList[menuCountWhispers] = {
-					text = string.format("|cff%02x%02x%02x%d|r |cff%02x%02x%02x%s|r %s", levelc.r * 255, levelc.g * 255, levelc.b * 255, guildTable[i][3], classc.r * 255, classc.g * 255, classc.b * 255, Ambiguate(guildTable[i][1], "all"), grouped),
+					text = string_format("|cff%02x%02x%02x%d|r |cff%02x%02x%02x%s|r %s", levelc.r * 255, levelc.g * 255, levelc.b * 255, guildTable[i][3], classc.r * 255, classc.g * 255, classc.b * 255, Ambiguate(guildTable[i][1], "all"), grouped),
 					arg1 = guildTable[i][1],
 					notCheckable = true,
 					func = function(_, arg1)
@@ -252,7 +264,7 @@ function Module:GuildOnMouseUp(btn)
 			end
 		end
 
-		EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 2)
+		EasyMenu(menuList, menuFrame, Module.GuildFrame, 0, 0, "MENU", 2)
 	end
 end
 

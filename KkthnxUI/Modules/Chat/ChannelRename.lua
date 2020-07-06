@@ -4,6 +4,7 @@ local Module = K:GetModule("Chat")
 local _G = _G
 local string_find = _G.string.find
 local string_gsub = _G.string.gsub
+local string_match = _G.string.match
 
 local BetterDate = _G.BetterDate
 local INTERFACE_ACTION_BLOCKED = _G.INTERFACE_ACTION_BLOCKED
@@ -27,7 +28,7 @@ function Module:SetupChannelNames(text, ...)
 	end
 
 	-- Dev logo
-	local unitName = string.match(text, "|Hplayer:([^|:]+)")
+	local unitName = string_match(text, "|Hplayer:([^|:]+)")
 	if unitName and K.Devs[unitName] then
 		text = string_gsub(text, "(|Hplayer.+)", "|T".."Interface\\AddOns\\KkthnxUI\\Media\\Chat\\KKUI"..":12:28:-3:-1|t%1")
 	end

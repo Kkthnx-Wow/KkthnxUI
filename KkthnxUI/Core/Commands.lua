@@ -90,7 +90,7 @@ SlashCmdList["KKUI_UIPROFILES"] = function(msg)
 	end
 
 	if not msg or msg == "" then
-		print(L["ProfileInfo"])
+		K.Print(L["ProfileInfo"])
 	else
 		local IsConfigLoaded = IsAddOnLoaded("KkthnxUI_Config")
 		-- Split the msg into multiple arguments.
@@ -107,28 +107,30 @@ SlashCmdList["KKUI_UIPROFILES"] = function(msg)
 					return
 				end
 
-				if Server ~= "Gold" and Server ~= "Class" then
+				if Server ~= "gold" and Server ~= "class" and Server ~= "faction" then
 					if type(KkthnxUIData[Server]) == "table" then
 						for Character, Table in pairs(KkthnxUIData[Server]) do
-							table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
+							if Character ~= "gold" and Character ~= "class" and Character ~= "faction" then
+								table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
 
-							if IsConfigLoaded then
-								if KkthnxUIConfigShared and KkthnxUIConfigShared[Server] and KkthnxUIConfigShared[Server][Character] then
-									table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
-								else
-									if not KkthnxUIConfigShared then
-										KkthnxUIConfigShared = {}
+								if IsConfigLoaded then
+									if KkthnxUIConfigShared and KkthnxUIConfigShared[Server] and KkthnxUIConfigShared[Server][Character] then
+										table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
+									else
+										if not KkthnxUIConfigShared then
+											KkthnxUIConfigShared = {}
+										end
+
+										if not KkthnxUIConfigShared[Server] then
+											KkthnxUIConfigShared[Server] = {}
+										end
+
+										if not KkthnxUIConfigShared[Server][Character] then
+											KkthnxUIConfigShared[Server][Character] = {}
+										end
+
+										table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
 									end
-
-									if not KkthnxUIConfigShared[Server] then
-										KkthnxUIConfigShared[Server] = {}
-									end
-
-									if not KkthnxUIConfigShared[Server][Character] then
-										KkthnxUIConfigShared[Server][Character] = {}
-									end
-
-									table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
 								end
 							end
 
@@ -141,7 +143,6 @@ SlashCmdList["KKUI_UIPROFILES"] = function(msg)
 			-- Only do this if the user previously has done a /profile list,
 			-- and an indexed listing of the profiles is actually available.
 			if KkthnxUI.Profiles and KkthnxUI.Profiles.Data then
-
 				-- Retrieve the profile ID
 				local Profile = tonumber(arg1)
 
@@ -167,16 +168,18 @@ SlashCmdList["KKUI_UIPROFILES"] = function(msg)
 
 					-- Search through the stored data for the matching table
 					for Server, Table in pairs(KkthnxUIData) do
-						if Server ~= "Gold" and Server ~= "Class" then
+						if Server ~= "gold" and Server ~= "class" and Server ~= "faction" then
 							if type(KkthnxUIData[Server]) == "table" then
 								for Character, Table in pairs(KkthnxUIData[Server]) do
-									if Table == Data then
-										CharacterName = Character
-										ServerName = Server
-										KkthnxUIData[Server][Character] = nil
-										KkthnxUIConfigShared[Server][Character] = nil
-										found = true
-										break
+									if Character ~= "gold" and Character ~= "class" and Character ~= "faction" then
+										if Table == Data then
+											CharacterName = Character
+											ServerName = Server
+											KkthnxUIData[Server][Character] = nil
+											KkthnxUIConfigShared[Server][Character] = nil
+											found = true
+											break
+										end
 									end
 								end
 
@@ -205,15 +208,16 @@ SlashCmdList["KKUI_UIPROFILES"] = function(msg)
 						-- so we can get the character and server names.
 						local found
 						for Server, Table in pairs(KkthnxUIData) do
-							if Server ~= "Gold" or Server ~= "gold" or Server ~= "Class" or Server ~= "class" then
+							if Server ~= "gold" and Server ~= "class" and Server ~= "faction" then
 								for Character, Table in pairs(KkthnxUIData[Server]) do
-
-									-- We found the matching table so we break and exit this loop,
-									-- to allow the outer iteration loop to continue faster.
-									if Table == Data then
-										K.Print(L["Profile"] ..Profile..": ["..Server.."] - ["..Character.."]")
-										found = true
-										break
+									if Character ~= "gold" and Character ~= "class" and Character ~= "faction" then
+										-- We found the matching table so we break and exit this loop,
+										-- to allow the outer iteration loop to continue faster.
+										if Table == Data then
+											K.Print(L["Profile"] ..Profile..": ["..Server.."] - ["..Character.."]")
+											found = true
+											break
+										end
 									end
 								end
 

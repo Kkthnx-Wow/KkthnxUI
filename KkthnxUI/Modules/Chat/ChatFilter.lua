@@ -2,8 +2,9 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Chat")
 
 local _G = _G
-local ipairs = ipairs
-local string_match = string.match
+local ipairs = _G.ipairs
+local pairs = _G.pairs
+local string_match = _G.string.match
 
 local ChatFrame1 = _G.ChatFrame1
 local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter

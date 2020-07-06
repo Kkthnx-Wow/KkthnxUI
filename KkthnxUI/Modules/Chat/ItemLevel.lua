@@ -10,6 +10,8 @@ local string_match = _G.string.match
 local GetItemInfo = _G.GetItemInfo
 local GetItemStats = _G.GetItemStats
 local IsCorruptedItem = _G.IsCorruptedItem
+local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
+local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
 
 local itemCache = {}
 

@@ -6,8 +6,11 @@ local Module = K:GetModule("Tooltip")
 local _G = _G
 local string_find = _G.string.find
 local string_format = _G.string.format
+local string_split = _G.string.split
+local select = _G.select
 
 local CreateFrame = _G.CreateFrame
+local GameTooltip = _G.GameTooltip
 local GetAverageItemLevel = _G.GetAverageItemLevel
 local GetInspectSpecialization = _G.GetInspectSpecialization
 local GetInventoryItemLink = _G.GetInventoryItemLink
@@ -156,7 +159,7 @@ function Module:GetUnitItemLevel(unit)
 							if i < 16 then
 								total = total + level
 							elseif i > 15 and quality == LE_ITEM_QUALITY_ARTIFACT then
-								local relics = {select(4, strsplit(":", itemLink))}
+								local relics = {select(4, string_split(":", itemLink))}
 								for i = 1, 3 do
 									local relicID = relics[i] ~= "" and relics[i]
 									local relicLink = select(2, GetItemGem(itemLink, i))

@@ -2,11 +2,15 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Infobar")
 
 local _G = _G
-local table_wipe = _G.table.wipe
-local table_sort = _G.table.sort
+local pairs = _G.pairs
+local select = _G.select
 local string_format = _G.string.format
+local table_sort = _G.table.sort
+local table_wipe = _G.table.wipe
 
 local AVAILABLE = _G.AVAILABLE
+local BATTLENET_FRIEND = _G.BATTLENET_FRIEND
+local BN_BROADCAST_TOOLTIP = _G.BN_BROADCAST_TOOLTIP
 local BNET_CLIENT_COD = _G.BNET_CLIENT_COD
 local BNET_CLIENT_D3 = _G.BNET_CLIENT_D3
 local BNET_CLIENT_DESTINY2 = _G.BNET_CLIENT_DESTINY2
@@ -17,15 +21,16 @@ local BNET_CLIENT_SC2 = _G.BNET_CLIENT_SC2
 local BNET_CLIENT_WOW = _G.BNET_CLIENT_WOW
 local BNET_CLIENT_WTCG = _G.BNET_CLIENT_WTCG
 local BNGetNumFriends = _G.BNGetNumFriends
-local BN_BROADCAST_TOOLTIP = _G.BN_BROADCAST_TOOLTIP
-local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local C_BattleNet_GetFriendAccountInfo = _G.C_BattleNet.GetFriendAccountInfo
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local FRIENDS_LIST = _G.FRIENDS_LIST
 local GameTooltip = _G.GameTooltip
 local GetFriendInfo = _G.GetFriendInfo
 local GetLocale = _G.GetLocale
 local GetNumFriends = _G.GetNumFriends
 local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
 local GetRealZoneText = _G.GetRealZoneText
+local GUILD_ONLINE_LABEL = _G.GUILD_ONLINE_LABEL
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsChatAFK = _G.IsChatAFK
@@ -37,6 +42,7 @@ local SendChatMessage = _G.SendChatMessage
 local UIErrorsFrame = _G.UIErrorsFrame
 local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
+local WOW_FRIEND = _G.WOW_FRIEND
 
 -- Social Datatext
 local totalFriendsOnline = 0
@@ -293,7 +299,7 @@ function Module:SocialOnClick(b)
 			end
 		end
 
-		EasyMenu(menuList, menuFrame, self, 0, 0, "MENU")
+		EasyMenu(menuList, menuFrame, Module.SocialFrame, 0, 0, "MENU")
 	end
 end
 
@@ -330,7 +336,7 @@ function Module:SocialOnEnter()
 
 		GameTooltip:AddLine("|cffffffff".."Social".."|r".." (O)")
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(K.InfoColor..FRIENDS_LIST, string_format("%s: %s/%s", K.InfoColor..GUILD_ONLINE_LABEL, totalonline, totalfriends))
+		GameTooltip:AddDoubleLine(K.SystemColor..FRIENDS_LIST.."|r", string_format("%s: %s/%s", K.InfoColor..GUILD_ONLINE_LABEL, totalonline, totalfriends.."|r"))
 
 		if online > 0 then
 			GameTooltip:AddLine(" ")
