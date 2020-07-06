@@ -160,6 +160,7 @@ function K:NewModule(name)
 	modules[name] = module
 
 	table_insert(initQueue, module)
+
 	return module
 end
 
@@ -263,15 +264,15 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 		end
 	end
 
-	local KKGUIButton = CreateFrame("Button", "GameMenuFrame_KKUI", GameMenuFrame, "GameMenuButtonTemplate")
-	KKGUIButton:SetText((string_format("|cff669DFF%s|r", AddOnName)))
-	KKGUIButton:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
+	local KKUI_GUIButton = CreateFrame("Button", "GameMenuFrame_KKUI", GameMenuFrame, "GameMenuButtonTemplate")
+	KKUI_GUIButton:SetText((string_format("|cff669DFF%s|r", AddOnName)))
+	KKUI_GUIButton:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
 	GameMenuFrame:HookScript("OnShow", function(self)
-		GameMenuButtonLogout:SetPoint("TOP", KKGUIButton, "BOTTOM", 0, -21)
-		self:SetHeight(self:GetHeight() + KKGUIButton:GetHeight() + 26)
+		GameMenuButtonLogout:SetPoint("TOP", KKUI_GUIButton, "BOTTOM", 0, -21)
+		self:SetHeight(self:GetHeight() + KKUI_GUIButton:GetHeight() + 26)
 	end)
 
-	KKGUIButton:SetScript("OnClick", function()
+	KKUI_GUIButton:SetScript("OnClick", function()
 		if InCombatLockdown() then
 			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
 			return

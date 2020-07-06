@@ -75,6 +75,7 @@ function Module:GuildOnEnter()
 		local name, rank, level, zone, note, officernote, connected, status, class, isMobile, zone_r, zone_g, zone_b, classc, levelc, grouped
 		local total, _, online = GetNumGuildMembers()
 		local gmotd = GetGuildRosterMOTD()
+		local guildMOTDString = "|cff669dff%s |cffaaaaaa- |cffffffff%s"
 
 		GameTooltip:SetOwner(_G.GuildMicroButton, "ANCHOR_NONE")
 		GameTooltip:SetPoint(K.GetAnchors(_G.GuildMicroButton))
@@ -87,7 +88,7 @@ function Module:GuildOnEnter()
 		GameTooltip:AddLine(" ")
 
 		if gmotd ~= "" then
-			GameTooltip:AddLine(string_format(K.InfoColor.."%s |cffaaaaaa- |cffffffff%s", GUILD_MOTD, gmotd))
+			GameTooltip:AddLine(string_format(guildMOTDString, GUILD_MOTD, gmotd))
 		end
 
 		if Module.GuildMax ~= 0 and online >= 1 then

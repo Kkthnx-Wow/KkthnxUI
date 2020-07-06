@@ -3,16 +3,16 @@ local Module = K:GetModule("Infobar")
 
 local _G = _G
 local date = _G.date
+local ipairs = _G.ipairs
 local math_floor = _G.math.floor
 local mod = _G.mod
 local pairs = _G.pairs
 local string_find = _G.string.find
 local string_format = _G.string.format
+local table_insert = _G.table.insert
 local time = _G.time
 local tonumber = _G.tonumber
 
-local CALENDAR_FULLDATE_MONTH_NAMES = _G.CALENDAR_FULLDATE_MONTH_NAMES
-local CALENDAR_WEEKDAY_NAMES = _G.CALENDAR_WEEKDAY_NAMES
 local C_AreaPoiInfo_GetAreaPOISecondsLeft = _G.C_AreaPoiInfo.GetAreaPOISecondsLeft
 local C_Calendar_GetDate = _G.C_Calendar.GetDate
 local C_Calendar_GetDayEvent = _G.C_Calendar.GetDayEvent
@@ -21,26 +21,30 @@ local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
 local C_Calendar_OpenCalendar = _G.C_Calendar.OpenCalendar
 local C_Calendar_SetAbsMonth = _G.C_Calendar.SetAbsMonth
 local C_Map_GetMapInfo = _G.C_Map.GetMapInfo
+local CALENDAR_FULLDATE_MONTH_NAMES = _G.CALENDAR_FULLDATE_MONTH_NAMES
+local CALENDAR_WEEKDAY_NAMES = _G.CALENDAR_WEEKDAY_NAMES
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local FULLDATE = _G.FULLDATE
 local GameTime_GetGameTime = _G.GameTime_GetGameTime
 local GameTime_GetLocalTime = _G.GameTime_GetLocalTime
+local GameTooltip = _G.GameTooltip
+local GetCurrencyInfo = _G.GetCurrencyInfo
+local GetCurrentRegion = _G.GetCurrentRegion
 local GetCVar = _G.GetCVar
 local GetCVarBool = _G.GetCVarBool
-local GetCurrencyInfo = _G.GetCurrencyInfo
 local GetGameTime = _G.GetGameTime
 local GetNumSavedInstances = _G.GetNumSavedInstances
 local GetNumSavedWorldBosses = _G.GetNumSavedWorldBosses
 local GetQuestObjectiveInfo = _G.GetQuestObjectiveInfo
 local GetSavedInstanceInfo = _G.GetSavedInstanceInfo
 local GetSavedWorldBossInfo = _G.GetSavedWorldBossInfo
-local ISLANDS_HEADER = _G.ISLANDS_HEADER
 local InCombatLockdown = _G.InCombatLockdown
+local ISLANDS_HEADER = _G.ISLANDS_HEADER
 local IsQuestFlaggedCompleted = _G.IsQuestFlaggedCompleted
 local LFG_LIST_LOADING = _G.LFG_LIST_LOADING
 local PLAYER_DIFFICULTY_TIMEWALKER = _G.PLAYER_DIFFICULTY_TIMEWALKER
-local QUESTS_LABEL = _G.QUESTS_LABEL
 local QUEST_COMPLETE = _G.QUEST_COMPLETE
+local QUESTS_LABEL = _G.QUESTS_LABEL
 local QUEUE_TIME_UNAVAILABLE = _G.QUEUE_TIME_UNAVAILABLE
 local RequestRaidInfo = _G.RequestRaidInfo
 local SecondsToTime = _G.SecondsToTime
@@ -65,24 +69,45 @@ local timeQuestList = {
 	{name = "Timewarped", id = 55499, texture = 1129683}, -- WoD
 }
 
--- Check Invasion Status
 local region = GetCVar("portal")
-local legionZoneTime = {
-	["EU"] = 1565168400, -- CN-16
-	["US"] = 1565197200, -- CN-8
-	["CN"] = 1565226000, -- CN time 8/8/2019 09:00 [1]
-}
-local bfaZoneTime = {
-	["CN"] = 1546743600, -- CN time 1/6/2019 11:00 [1]
-	["EU"] = 1546768800, -- CN+7
-	["US"] = 1546769340, -- CN+16
-}
+if not region or #region ~= 2 then
+	local regionID = GetCurrentRegion()
+	region = regionID and ({ "US", "KR", "EU", "TW", "CN" })[regionID]
+end
 
+-- Sourced: NDui (siwei)
+-- Modified: InvasionTimer (Rhythm)
+-- Check Invasion Status
 local invIndex = {
-	[1] = {title = L["Legion Invasion"], duration = 66600, maps = {630, 641, 650, 634}, timeTable = {}, baseTime = legionZoneTime[region] or legionZoneTime["CN"]}, -- need reviewed
-	[2] = {title = L["BFA Invasion"], duration = 68400, maps = {862, 863, 864, 896, 942, 895}, timeTable = {4, 1, 6, 2, 5, 3}, baseTime = bfaZoneTime[region] or bfaZoneTime["CN"]},
+	{
+		title = L["BFA Invasion"],
+		interval = 68400,
+		duration = 25200,
+		maps = {862, 863, 864, 896, 942, 895},
+		timeTable = {4, 1, 6, 2, 5, 3},
+		-- Drustvar Beginning
+		baseTime = {
+			US = 1548032400, -- 01/20/2019 17:00 UTC-8
+			EU = 1548000000, -- 01/20/2019 16:00 UTC+0
+			CN = 1546743600, -- 01/06/2019 11:00 UTC+8
+		},
+	},
+	{
+		title = L["Legion Invasion"],
+		interval = 66600,
+		duration = 21600,
+		maps = {630, 641, 650, 634},
+		-- timeTable = {4, 3, 2, 1, 4, 2, 3, 1, 2, 4, 1, 3},
+		-- Stormheim Beginning then Highmountain
+		baseTime = {
+			US = 1547614800, -- 01/15/2019 21:00 UTC-8
+			EU = 1547586000, -- 01/15/2019 21:00 UTC+0
+			CN = 1546844400, -- 01/07/2019 15:00 UTC+8
+		},
+	}
 }
 
+-- Fallback
 local mapAreaPoiIDs = {
 	[630] = 5175,
 	[641] = 5210,
@@ -116,9 +141,9 @@ local function updateTimerFormat(color, hour, minute)
 	end
 end
 
-function Module:OnUpdate(elapsed)
-	self.timer = (self.timer or 3) + elapsed
-	if self.timer > 5 then
+function Module:TimeOnUpdate(elapsed)
+	Module.timer = (Module.timer or 3) + elapsed
+	if Module.timer > 5 then
 		local color = C_Calendar_GetNumPendingInvites() > 0 and "|cffFF0000" or ""
 
 		local hour, minute
@@ -129,7 +154,7 @@ function Module:OnUpdate(elapsed)
 		end
 		Module.TimeFont:SetText(updateTimerFormat(color, hour, minute))
 
-		self.timer = 0
+		Module.timer = 0
 	end
 end
 
@@ -185,28 +210,69 @@ local function CheckInvasion(index)
 	end
 end
 
-local function GetNextTime(baseTime, index)
+local function GetCurrentInvasion(index)
+	local inv = invIndex[index]
 	local currentTime = time()
-	local duration = invIndex[index].duration
-	local elapsed = mod(currentTime - baseTime, duration)
+	local baseTime = inv.baseTime[region]
+	local duration = inv.duration
+	local interval = inv.interval
+	local elapsed = mod(currentTime - baseTime, interval)
+	if elapsed < duration then
+		if inv.timeTable then
+			local count = #inv.timeTable
+			local round = mod(math_floor((currentTime - baseTime) / interval) + 1, count)
+			if round == 0 then
+				round = count
+			end
 
-	return duration - elapsed + currentTime
+			return duration - elapsed, C_Map_GetMapInfo(inv.maps[inv.timeTable[round]]).name
+		else
+			-- unknown order
+			local timeLeft, name = CheckInvasion(index)
+			if timeLeft then
+				-- found POI on map
+				return timeLeft, name
+			else
+				-- fallback
+				return duration - elapsed, UNKNOWN
+			end
+		end
+	end
 end
 
-local function GetNextLocation(nextTime, index)
+local function GetFutureInvasion(index, length)
+	if not length then
+		length = 1
+	end
+
+	local tbl = {}
 	local inv = invIndex[index]
-	local count = #inv.timeTable
-	if count == 0 then
-		return QUEUE_TIME_UNAVAILABLE
+	local currentTime = time()
+	local baseTime = inv.baseTime[region]
+	local interval = inv.interval
+	local elapsed = mod(currentTime - baseTime, interval)
+	local nextTime = interval - elapsed + currentTime
+
+	if not inv.timeTable then
+		for _ = 1, length do
+			table_insert(tbl, {nextTime, ""})
+			nextTime = nextTime + interval
+		end
+	else
+		local count = #inv.timeTable
+		local round = mod(math_floor((nextTime - baseTime) / interval) + 1, count)
+		for _ = 1, length do
+			if round == 0 then
+				round = count
+			end
+
+			table_insert(tbl, {nextTime, C_Map_GetMapInfo(inv.maps[inv.timeTable[round]]).name})
+			nextTime = nextTime + interval
+			round = mod(round + 1, count)
+		end
 	end
 
-	local elapsed = nextTime - inv.baseTime
-	local round = mod(math_floor(elapsed / inv.duration) + 1, count)
-	if round == 0 then
-		round = count
-	end
-
-	return C_Map_GetMapInfo(inv.maps[inv.timeTable[round]]).name
+	return tbl
 end
 
 local title
@@ -218,7 +284,7 @@ local function addTitle(text)
 	end
 end
 
-function Module:OnEnter()
+function Module:TimeOnEnter()
 	RequestRaidInfo()
 
 	local r, g, b
@@ -232,7 +298,6 @@ function Module:OnEnter()
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine("Local Time", GameTime_GetLocalTime(true), nil, nil, nil, 192/255, 192/255, 192/255)
 	GameTooltip:AddDoubleLine("Realm Time", GameTime_GetGameTime(true), nil, nil, nil, 192/255, 192/255, 192/255)
-
 
 	-- World bosses
 	title = false
@@ -267,9 +332,9 @@ function Module:OnEnter()
 		if isRaid and (locked or extended) then
 			addTitle(L["Saved Raid(s)"])
 			if extended then
-				r,g,b = 0.3, 1, 0.3
+				r, g, b = 0.3, 1, 0.3
 			else
-				r,g,b = 192/255, 192/255, 192/255
+				r, g, b = 192/255, 192/255, 192/255
 			end
 
 			GameTooltip:AddDoubleLine(name.." - "..diffName, SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
@@ -288,9 +353,9 @@ function Module:OnEnter()
 	if count > 0 then
 		addTitle(QUESTS_LABEL)
 		if count == maxCoins then
-			r,g,b = 1, 0, 0
+			r, g, b = 1, 0, 0
 		else
-			r,g,b = 0, 1, 0
+			r, g, b = 0, 1, 0
 		end
 
 		GameTooltip:AddDoubleLine(bonusName, count.."/"..maxCoins, 1,1,1, r, g, b)
@@ -324,21 +389,28 @@ function Module:OnEnter()
 	for index, value in ipairs(invIndex) do
 		title = false
 		addTitle(value.title)
-		local timeLeft, zoneName = CheckInvasion(index)
-		local nextTime = GetNextTime(value.baseTime, index)
-		if timeLeft then
-			timeLeft = timeLeft / 60
-			if timeLeft < 60 then
-				r, g, b = 1, 0, 0
-			else
-				r, g, b = 0, 1, 0
+		if value.baseTime[region] then
+			-- baseTime provided
+			local timeLeft, zoneName = GetCurrentInvasion(index)
+			if timeLeft then
+				timeLeft = timeLeft / 60
+				GameTooltip:AddDoubleLine(L["Current Invasion"]..zoneName, string_format("%dh %.2dm", timeLeft / 60, timeLeft % 60), 1, 1, 1, r, g, b)
 			end
 
-			GameTooltip:AddDoubleLine(L["Current Invasion"]..zoneName, string_format("%.2d:%.2d", timeLeft / 60, timeLeft % 60), 1, 1, 1, r, g, b)
+			local futureTable, i = GetFutureInvasion(index, 2)
+			for i = 1, #futureTable do
+				local nextTime, zoneName = unpack(futureTable[i])
+				GameTooltip:AddDoubleLine(L["Next Invasion"]..zoneName, date("%m/%d %H:%M", nextTime), 1, 1, 1, 192/255, 192/255, 192/255)
+			end
+		else
+			local timeLeft, zoneName = CheckInvasion(index)
+			if timeLeft then
+				timeLeft = timeLeft / 60
+				GameTooltip:AddDoubleLine(L["Current Invasion"]..zoneName, string_format("%dh %.2dm", timeLeft / 60, timeLeft % 60), 1, 1, 1, r, g, b)
+			else
+				GameTooltip:AddLine("Missing invasion info on your realm.")
+			end
 		end
-
-		local nextLocation = GetNextLocation(nextTime, index)
-		GameTooltip:AddDoubleLine(L["Next Invasion"]..nextLocation, date("%m/%d %H:%M", nextTime), 1, 1, 1, 192/255, 192/255, 192/255)
 	end
 
 	-- Help Info
@@ -348,11 +420,11 @@ function Module:OnEnter()
 	GameTooltip:Show()
 end
 
-function Module:OnLeave()
+function Module:TimeOnLeave()
 	GameTooltip:Hide()
 end
 
-function Module:OnMouseUp(btn)
+function Module:TimeOnMouseUp(btn)
 	if btn == "RightButton" then
 		_G.ToggleTimeManager()
 	else
@@ -382,8 +454,8 @@ function Module:CreateTimeDataText()
 
 	Module.TimeFrame:SetAllPoints(Module.TimeFont)
 
-	Module.TimeFrame:SetScript("OnUpdate", Module.OnUpdate)
-	Module.TimeFrame:SetScript("OnEnter", Module.OnEnter)
-	Module.TimeFrame:SetScript("OnLeave", Module.OnLeave)
-	Module.TimeFrame:SetScript("OnMouseUp", Module.OnMouseUp)
+	Module.TimeFrame:SetScript("OnUpdate", Module.TimeOnUpdate)
+	Module.TimeFrame:SetScript("OnEnter", Module.TimeOnEnter)
+	Module.TimeFrame:SetScript("OnLeave", Module.TimeOnLeave)
+	Module.TimeFrame:SetScript("OnMouseUp", Module.TimeOnMouseUp)
 end
