@@ -1,7 +1,4 @@
--- local MissingDesc = "The description for this module/setting is missing. Someone should really remind Kkthnx to do his job!"
 local ModuleNewFeature = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:0:0:0:0|t]] -- Used for newly implemented features.
--- local PerformanceIncrease = "|n|nDisabling this may slightly increase performance|r" -- For semi-high CPU options
--- local RestoreDefault = "|n|nRight-click to restore to default" -- For color pickers
 
 local _G = _G
 
@@ -11,10 +8,8 @@ _G.KkthnxUIConfig["ruRU"] = {
 		-- Let's Keep This In Alphabetical Order, Shall We?
 		["ActionBar"] = "Панели команд",
 		["Announcements"] = "Оповещения",
-		["Arena"] = "Арена",
 		["Auras"] = "Ауры",
 		["Automation"] = "Автоматизация",
-		["Boss"] = "Боссы",
 		["Chat"] = "Чат",
 		["DataBars"] = "Инфо-полосы",
 		["DataText"] = "Инфо-текст",
@@ -41,10 +36,12 @@ _G.KkthnxUIConfig["ruRU"] = {
 	["ActionBar"] = {
 		["Cooldowns"] = {
 			["Name"] = "Показывать кулдауны",
+			["Desc"] = "Display cooldowns on the actionbars and other elements.",
 		},
 
 		["Count"] = {
 			["Name"] = "Показывать кол-во предметов",
+			["Desc"] = "Show how many of the item you have in your bags on the actionbars.",
 		},
 
 		["DecimalCD"] = {
@@ -55,16 +52,13 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Размер кнопок главной панели",
 		},
 
-		["DisableStancePages"] = {
-			["Name"] = "Выключить панели стоек (Друид & Разбойник)",
-		},
-
 		["Enable"] = {
-			["Name"] = "Включить модуль Панелей команд",
+			["Name"] = "|cff00cc4c".."Включить модуль Панелей команд",
 		},
 
 		["EquipBorder"] = {
 			["Name"] = "Индикатор надетой вещи",
+			["Desc"] = "Display a green border for items you have equipped and put onto your actionbar. |n|nFor example, on use trinkets you put onto your bars will show a green border.",
 		},
 
 		["FadeRightBar"] = {
@@ -133,13 +127,16 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 	-- Automation Local
 	["Automation"] = {
-		["AutoBubbles"] = {
-			["Name"] = "Выключать облачка сообщений",
-			["Desc"] = "Автоматически выключает отображение облачков сообщений, если вы находитесь в подземелье/рейде."
-		},
-
 		["AutoCollapse"] = {
 			["Name"] = "Скрывать список заданий",
+		},
+
+		["AutoDeclineDuels"] = {
+			["Name"] = "Отклонять PVP-дуэли",
+		},
+
+		["AutoDeclinePetDuels"] = {
+			["Name"] = "Отклонять битву питомцев",
 		},
 
 		["AutoInvite"] = {
@@ -148,6 +145,11 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 		["AutoDisenchant"] = {
 			["Name"] = "Автораспыление вещей при нажатии 'ALT'",
+		},
+
+		["AutoDungeonThanks"] = {
+			["Name"] = "Auto Thank Dungeon Groups",
+			["Desc"] = "This will auto thank your dungeon group members on completion of the dungeon",
 		},
 
 		["AutoQuest"] = {
@@ -166,12 +168,22 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Говорить 'Thank You' при воскрешении",
 		},
 
+		["AutoScreenshot"] = {
+			["Name"] = "Скриншоты Достижений",
+			["Desc"] = "Автоматически делать скриншот при получении Достижений."
+		},
+
 		["AutoReward"] = {
 			["Name"] = "Автоматически выбирать награду за задания",
 		},
 
+		["AutoBlockStrangerInvites"] = {
+			["Name"] = "Blocks Invites From Strangers",
+			["Desc"] = "Declines all invites from anyone who is NOT a guild member or a friend on your friends list."
+		},
+
 		["AutoSetRole"] = {
-			["Name"] = "Auto Set Your Role In Groups",
+			["Name"] = "Автоматически выбирать роль в группе",
 		},
 
 		["AutoTabBinder"] = {
@@ -184,6 +196,11 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 		["BlockMovies"] = {
 			["Name"] = "Блокировать ролики, которые вы уже смотрели",
+		},
+
+		["NoBadBuffs"] = {
+			["Name"] = "Automatically Remove Annoying Buffs",
+			["Desc"] = "This will automatically remove buffs like |cff0070dd[Lucille's Sewing Needle]|r"
 		},
 
 		["DeclinePvPDuel"] = {
@@ -212,28 +229,41 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Включить модуль сумок",
+			["Name"] = "|cff00cc4c".."Включить модуль сумок",
 			["Desc"] = "Включает/выключает модуль отображения сумок.",
+		},
+
+		["FilterJunk"] = {
+			["Name"] = "Фильтровать Хлам",
+			["Desc"] = "'Фильтрация предметов' должна быть включена",
+		},
+
+		["FilterMount"] = {
+			["Name"] = "Фильтровать маунтов",
+			["Desc"] = "'Фильтрация предметов' должна быть включена",
 		},
 
 		["ClassRelatedFilter"] = {
 			["Name"] = "Фильтровать классовые предметы",
+			["Desc"] = "'Фильтрация предметов' должна быть включена",
 		},
 
 		["ScrapIcon"] = {
-			["Name"] = "Show Scrap Icon",
+			["Name"] = "Показывать иконку Хлама",
 		},
 
 		["UpgradeIcon"] = {
-			["Name"] = "Show Upgrade Icon",
+			["Name"] = "Показывать иконку улучшения предмета",
 		},
 
 		["QuestItemFilter"] = {
 			["Name"] = "Фильтровать предметы для заданий",
+			["Desc"] = "'Фильтрация предметов' должна быть включена",
 		},
 
-		["TradeGoodsFilter"] = { --Перевести
+		["TradeGoodsFilter"] = {
 			["Name"] = "Filter Trade/Goods Items",
+			["Desc"] = "'Фильтрация предметов' должна быть включена",
 		},
 
 		["BagsWidth"] = {
@@ -269,7 +299,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["ShowNewItem"] = {
-			["Name"] = "Show New Item Glow",
+			["Name"] = "Свечение вокруг новых предметов",
 		},
 
 		["BagsiLvl"] = {
@@ -301,7 +331,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Включить модуль аур",
+			["Name"] = "|cff00cc4c".."Включить модуль аур",
 		},
 
 		["Reminder"] = {
@@ -315,28 +345,24 @@ _G.KkthnxUIConfig["ruRU"] = {
 		["ReverseDebuffs"] = {
 			["Name"] = "Рост дебаффов вправо",
 		},
+
+		["Statue"] = {
+			["Name"] = "Показать статую |CFF00FF96Монаха|r",
+		},
+
+		["Totems"] = {
+			["Name"] = "Показать панель Тотемов",
+		},
 	},
 
 	-- Chat Local
 	["Chat"] = {
-		["Background"] = {
-			["Name"] = "Показывать фон чата",
-		},
-
-		["BackgroundAlpha"] = {
-			["Name"] = "Прозрачность фона",
-		},
-
-		["BlockAddonAlert"] = {
-			["Name"] = "Блокировать ошибки аддонов",
-		},
-
 		["ChatItemLevel"] = {
 			["Name"] = "Показывать уровень предметов в чате",
 		},
 
 		["Enable"] = {
-			["Name"] = "Включить модуль чата",
+			["Name"] = "|cff00cc4c".."Включить модуль чата",
 		},
 
 		["EnableFilter"] = {
@@ -355,33 +381,52 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Время неактивности для скрытия",
 		},
 
-		["Height"] = {
-			["Name"] = "Высота чата",
+		["LootIcons"] = {
+			["Name"] = "Show Chat Loot Icons",
+			["Desc"] = "Displays a chat icon next to any loot you pick up in your chat window."
 		},
 
-		["QuickJoin"] = { -- Перевести
-			["Name"] = "Quick Join Messages",
-			["Desc"] = "Show clickable Quick Join messages inside of the chat."
+		["OldChatNames"] = {
+			["Name"] = "Use Default Channel Names",
 		},
 
-		["ScrollByX"] = {
-			["Name"] = "Скроллить на '#' строк",
+		["PhasingAlert"] = {
+			["Name"] = "Phasing Chat Alerts",
+			["Desc"] = "Everytime you phase of any sort. KkthnxUI will notify you of this in your chatframe."
 		},
 
-		["ShortenChannelNames"] = {
-			["Name"] = "Короткие имена каналов",
+		["WhisperColor"] = {
+			["Name"] = "Differ Whipser Colors",
+		},
+
+		["BlockStranger"] = {
+			["Name"] = "Block Whispers From Strangers",
+			["Desc"] = "If checked, only accept whispers from party or raid members, friends and guild members."
+		},
+
+		["BlockAddonAlert"] = {
+			["Name"] = "Block Addon Alert",
 		},
 
 		["TabsMouseover"] = {
 			["Name"] = "Имена вкладок при наведении мыши",
 		},
 
+		["TimestampFormat"] = {
+			["Name"] = "Custom Chat Timestamps",
+			["Desc"] = "Pick 4 different timestamps to display in your chat.",
+		},
+
 		["WhisperSound"] = {
 			["Name"] = "Звук приватного сообщения",
 		},
 
-		["Width"] = {
-			["Name"] = "Ширина чата",
+		["Background"] = {
+			["Name"] = "Show Chat Background",
+		},
+
+		["FilterMatches"] = {
+			["Name"] = "Filter Matches Number",
 		},
 
 	},
@@ -389,7 +434,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 	-- Databars Local
 	["DataBars"] = {
 		["Enable"] = {
-			["Name"] = "Включить модуль инфо-полос",
+			["Name"] = "|cff00cc4c".."Включить модуль инфо-полос",
 		},
 
 		["ExperienceColor"] = {
@@ -437,7 +482,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["System"] = {
-			["Name"] = "Показать FPS и латентность",
+			["Name"] = "Показать FPS и задержку",
 		},
 
 		["Time"] = {
@@ -472,7 +517,8 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Включить модуль кулдаунов",
+			["Name"] = "|cff00cc4c".."Включить модуль кулдаунов",
+			["Desc"] = "Filger is a very minimal buff/debuff tracking module that will allow you to track buffs/debuffs on yourself, target, etc, and also can be used to track cooldowns."
 		},
 
 		["MaxTestIcon"] = {
@@ -494,6 +540,10 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 	-- General Local
 	["General"] = {
+		["AutoScale"] = {
+			["Name"] = "Автоматический масштаб",
+		},
+
 		["ColorTextures"] = {
 			["Name"] = "Раскрасить границы KkthnxUI",
 		},
@@ -534,6 +584,10 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Показывать приветственное сообщение",
 		},
 
+		["VersionCheck"] = {
+			["Name"] = "|cff00cc4c".."Включить проверку версии",
+		},
+
 		["NumberPrefixStyle"] = {
 			["Name"] = "Стиль сокращений цифровых значений",
 		},
@@ -554,7 +608,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Включить модуль лута",
+			["Name"] = "|cff00cc4c".."Включить модуль лута",
 		},
 
 		["FastLoot"] = {
@@ -562,7 +616,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["GroupLoot"] = {
-			["Name"] = "Включить групповой лут",
+			["Name"] = "|cff00cc4c".."Включить групповой лут",
 		},
 	},
 
@@ -573,7 +627,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Включить модуль миникарты",
+			["Name"] = "|cff00cc4c".."Включить модуль миникарты",
 		},
 
 		["ResetZoom"] = {
@@ -584,8 +638,13 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Таймер сброса увеличения",
 		},
 
+		["ShowGarrison"] = {
+			["Name"] = "Показать кнопку Гарнизона",
+		},
+
 		["ShowRecycleBin"] = {
 			["Name"] = "Показать корзину с кнопками",
+			["Desc"] = "Gather up all of your addon minimap buttons and put them into a frame at the bottom left corner of the minimap.",
 		},
 
 		["Size"] = {
@@ -641,6 +700,11 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Показывать прочность вещей в окне персонажа",
 		},
 
+		["TradeTabs"] = {
+			["Name"] = "Show TradeTabs",
+			["Desc"] = "Add spellbook-like tabs to the TradeSkillFrame. It will add one for each of your professions and one for each of the profession 'suppliment' abilities (cooking, disenchant, etc)"
+		},
+
 		["EnchantmentScroll"] = {
 			["Name"] = "Create Enchantment Scrolls With A Single Click"
 
@@ -658,115 +722,134 @@ _G.KkthnxUIConfig["ruRU"] = {
 	},
 
 	-- Nameplates Local
-	["Nameplates"] = {
-		["GoodColor"] = {
-			["Name"] = "Цвет угрозы 'хорошо'",
+	["Nameplate"] = {
+		["AKSProgress"] = {
+			["Name"] = "Show AngryKeystones Progress",
 		},
 
-		["NearColor"] = {
-			["Name"] = "Цвет угрозы 'опасность'",
+		["AuraSize"] = {
+			["Name"] = "Auras Size",
 		},
 
-		["BadColor"] = {
-			["Name"] = "Цвет угрозы 'срыв'",
-		},
-
-		["OffTankColor"] = {
-			["Name"] = "Цвет угрозы для оффтанка",
-		},
-
-		["Clamp"] = {
-			["Name"] = "Закрепить на экране",
-			["Desc"] = "Закрепить полосы у краёв экрана, если цель за его пределами."
-		},
-
-		["ClassResource"] = {
-			["Name"] = "Показывать классовые ресурсы (мана и т.д.)",
-		},
-
-		["Combat"] = {
-			["Name"] = "Показывать полосы в бою",
+		["Distance"] = {
+			["Name"] = "Nameplete MaxDistance",
 		},
 
 		["Enable"] = {
-			["Name"] = "Включить модуль полос здоровья",
+			["Name"] = "|cff00cc4c".."Включить модуль полос здоровья",
 		},
 
-		["HealthValue"] = {
-			["Name"] = "Показывать количество здоровья",
+		["ExplosivesScale"] = {
+			["Name"] = "Scale Nameplates for Explosives",
 		},
 
-		["Height"] = {
-			["Name"] = "Высота полос",
+		["ClassIcon"] = {
+			["Name"] = "Show Hostile Player ClassIcons",
 		},
 
-		["NonTargetAlpha"] = {
-			["Name"] = "Прозрачность невыбранных как Цель",
+		["HealerIcon"] = {
+			["Name"] = "Show Healer Icons In Arena/Battlegrounds",
 		},
 
-		["QuestInfo"] = {
-			["Name"] = "Показывать значок квестовых мобов",
+		["FullHealth"] = {
+			["Name"] = "Show Health Value",
 		},
 
-		["SelectedScale"] = {
-			["Name"] = "Масштаб Цели",
+		["HealthTextSize"] = {
+			["Name"] = "HealthText FontSize",
 		},
 
-		["Smooth"] = {
-			["Name"] = "Плавные полосы",
+		["InsideView"] = {
+			["Name"] = "Interacted Nameplate Stay Inside",
+		},
+
+		["MaxPowerGlow"] = {
+			["Name"] = "Fully Charged Glow",
+		},
+
+		["MinAlpha"] = {
+			["Name"] = "Non-Target Nameplate Alpha",
+		},
+
+		["HostileCC"] = {
+			["Name"] = "Show Hostile ClassColor",
+		},
+
+		["FriendlyCC"] = {
+			["Name"] = "Show Friendly ClassColor",
+		},
+
+		["DPSRevertThreat"] = {
+			["Name"] = "Revert Threat Color If Not Tank",
 		},
 
 		["TankMode"] = {
-			["Name"] = "Режим танка",
+			["Name"] = "Force TankMode Colored",
 		},
 
-		["Threat"] = {
-			["Name"] = "Угроза на полосах",
+		["CustomUnitColor"] = {
+			["Name"] = "Colored Custom Units",
 		},
 
-		["TrackAuras"] = {
-			["Name"] = "Показывать баффы/дебаффы",
+		["MinScale"] = {
+			["Name"] = "Non-Target Nameplate Scale",
 		},
 
-		["Width"] = {
-			["Name"] = "Высота полос",
+		["NameTextSize"] = {
+			["Name"] = "NameText FontSize",
 		},
 
-		["HealthbarColor"] = {
-			["Name"] = "Формат цвета полос здоровья",
+		["NameplateClassPower"] = {
+			["Name"] = "Target Nameplate ClassPower",
 		},
 
-		["LevelFormat"] = {
-			["Name"] = "Формат уровня моба",
+		["PPHeight"] = {
+			["Name"] = "Classpower/Healthbar Height",
 		},
 
-		["TargetArrowMark"] = {
-			["Name"] = "Стрелки на полосе Цели",
+		["PPHideOOC"] = {
+			["Name"] = "Only Visible in Combat",
 		},
 
-		["HealthFormat"] = {
-			["Name"] = "Формат значения здоровья",
+		["PPIconSize"] = {
+			["Name"] = "PlayerPlate IconSize",
 		},
 
-		["ShowEnemyCombat"] = { --Перевести
-			["Name"] = "Show Enemy Combat",
+		["PPPHeight"] = {
+			["Name"] = "PlayerPlate Powerbar Height",
 		},
 
-		["ShowFriendlyCombat"] = { --Перевести
-			["Name"] = "Show Friendly Combat",
+		["PPPowerText"] = {
+			["Name"] = "Show PlayerPlate Power Value",
 		},
 
-		["LoadDistance"] = {
-			["Name"] = "Load Distance",
+		["PlateHeight"] = {
+			["Name"] = "Nameplate Height",
 		},
 
-		["ShowHealPrediction"] = {
-			["Name"] = "Show Health Prediction Bars",
+		["PlateWidth"] = {
+			["Name"] = "Nameplate Width",
+		},
+
+		["QuestIndicator"] = {
+			["Name"] = "Quest Progress Indicator",
+		},
+
+		["ShowPlayerPlate"] = {
+			["Name"] = "Show Pensonal Resource",
 		},
 
 		["VerticalSpacing"] = {
-			["Name"] = "Vertical Spacing",
-		}
+			["Name"] = "Nameplate Vertical Spacing",
+		},
+
+		["MaxAuras"] = {
+			["Name"] = "Max Auras",
+		},
+
+		["TargetIndicator"] = {
+			["Name"] = "TargetIndicator Style",
+		},
 	},
 
 	-- Skins Local
@@ -791,7 +874,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Skada",
 		},
 
-		["TalkingHeadBackdrop"] = {--Перевести (в Классике такой функции нет в общем-то)
+		["TalkingHeadBackdrop"] = {
 			["Name"] = "Show TalkingHead Backdrop",
 		},
 
@@ -802,8 +885,24 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 	-- Unitframe Local
 	["Unitframe"] = {
+		["PlayerBuffs"] = {
+			["Name"] = "Show Player Frame Buffs",
+		},
+
+		["PlayerDeBuffs"] = {
+			["Name"] = "Show Player Frame Debuffs",
+		},
+
+		["TargetBuffs"] = {
+			["Name"] = "Show Target Frame Buffs",
+		},
+
+		["TargetDebuffs"] = {
+			["Name"] = "Show Target Frame Debuffs",
+		},
+
 		["AdditionalPower"] = {
-			["Name"] = "Показывать ману друидов при смене формы",
+			["Name"] = "Показывать дополнительный ресурс класса (|CFFFF7D0AДруид|r, |CFFFFFFFFЖрец|r, |CFF0070DEШаман|r)",
 		},
 
 		["CastClassColor"] = {
@@ -819,11 +918,11 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Castbars"] = {
-			["Name"] = "Показывать полосы заклинаний",
+			["Name"] = "|cff00cc4c".."Показывать полосы заклинаний",
 		},
 
 		["ClassResources"] = {
-			["Name"] = "Show Class Resources",
+			["Name"] = "Показывать ресурс класса",
 		},
 
 		["Stagger"] = {
@@ -842,7 +941,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Текст боя по краям экрана",
 		},
 
-		["DebuffHighlight"] = { --Перевести
+		["DebuffHighlight"] = {
 			["Name"] = "Show Health Debuff Highlight",
 		},
 
@@ -851,15 +950,15 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Включить модуль рамок персонажей",
-		},
-
-		["EnergyTick"] = {
-			["Name"] = "Показывать тики энергии (Друид / Разбойник)",
+			["Name"] = "|cff00cc4c".."Включить модуль рамок персонажей",
 		},
 
 		["GlobalCooldown"] = {
 			["Name"] = "Показывать Глобальный Кулдаун",
+		},
+
+		["ResurrectSound"] = {
+			["Name"] = "Sound Played When You Are Resurrected",
 		},
 
 		["HideTargetofTarget"] = {
@@ -868,6 +967,10 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 		["OnlyShowPlayerDebuff"] = {
 			["Name"] = "Показывать только ваши дебаффы",
+		},
+
+		["PlayerAuraBars"] = {
+			["Name"] = "Показывать ваши баффы в виде полос, а не иконок",
 		},
 
 		["PlayerBuffs"] = {
@@ -887,19 +990,19 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["PvPIndicator"] = {
-			["Name"] = "Show PvP Indicator on Player / Target",
+			["Name"] = "Показывать иконку PvP на Игроке/Цели",
 		},
 
-		["ShowHealPrediction"] = { --Перевести
+		["ShowHealPrediction"] = {
 			["Name"] = "Show HealPrediction Statusbars",
 		},
 
 		["ShowPlayerLevel"] = {
-			["Name"] = "Показывать ваш уровень",
+			["Name"] = "Показывать уровень игрока",
 		},
 
 		["ShowPlayerName"] = {
-			["Name"] = "Показывать ваше имя",
+			["Name"] = "Показывать имя игрока",
 		},
 
 		["Smooth"] = {
@@ -912,6 +1015,10 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 		["SwingbarTimer"] = {
 			["Name"] = "Таймер полосы автоатак",
+		},
+
+		["TargetAuraBars"] = {
+			["Name"] = "Показывать баффы цели в виде полос, а не иконок",
 		},
 
 		["TargetCastbarHeight"] = {
@@ -958,7 +1065,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Включить модуль арены",
+			["Name"] = "|cff00cc4c".."Включить модуль арены",
 		},
 
 		["Smooth"] = {
@@ -973,7 +1080,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Включить модуль боссов",
+			["Name"] = "|cff00cc4c".."Включить модуль боссов",
 		},
 
 		["Smooth"] = {
@@ -987,15 +1094,23 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Показывать полосу заклинаний",
 		},
 
+		["ShowTarget"] = {
+			["Name"] = "Показывать цели группы",
+		},
+
+		["ShowPet"] = {
+			["Name"] = "Показывать питомцев группы",
+		},
+
 		["Enable"] = {
-			["Name"] = "Включить модуль группы",
+			["Name"] = "|cff00cc4c".."Включить модуль группы",
 		},
 
 		["HorizonParty"] = {
-			["Name"] = "Horizontal Party Frames",
+			["Name"] = "Горизонтальное расположение группы",
 		},
 
-		["PortraitTimers"] = { --Перевести
+		["PortraitTimers"] = {
 			["Name"] = "Portrait Spell Timers",
 		},
 
@@ -1003,7 +1118,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Показывать баффы группы",
 		},
 
-		["ShowHealPrediction"] = { --Перевести
+		["ShowHealPrediction"] = {
 			["Name"] = "Show HealPrediction Statusbars",
 		},
 
@@ -1015,7 +1130,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Плавные полосы",
 		},
 
-		["TargetHighlight"] = { --Перевести
+		["TargetHighlight"] = {
 			["Name"] = "Show Highlighted Target",
 		},
 
@@ -1034,7 +1149,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 	["PulseCooldown"] = {
 		["Enable"] = {
-			["Name"] = "Enable PulseCooldown",
+			["Name"] = "|cff00cc4c".."Enable PulseCooldown",
 		},
 
 		["HoldTime"] = {
@@ -1057,7 +1172,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 	-- QuestNotifier Local
 	["QuestNotifier"] = {
 		["Enable"] = {
-			["Name"] = "Включить список заданий",
+			["Name"] = "|cff00cc4c".."Включить список заданий",
 		},
 
 		["QuestProgress"] = {
@@ -1065,7 +1180,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Desc"] = "Информирует о прогрессе заданий в чат группы. Спаммит, поэтому лучше не использовать в группе с незнакомцами!",
 		},
 
-		["OnlyCompleteRing"] = { --Перевести
+		["OnlyCompleteRing"] = {
 			["Name"] = "Only Complete Sound",
 			["Desc"] = "Only play the complete sound at the end of completing the quest"
 		},
@@ -1085,6 +1200,10 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Reverse Raid Frame Growth",
 		},
 
+		["ShowHealPrediction"] = {
+			["Name"] = "Show HealPrediction Statusbars",
+		},
+
 		["HorizonRaid"] = {
 			["Name"] = "Horizontal Raid Frames",
 		},
@@ -1101,6 +1220,10 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Show AuraWatch Icons",
 		},
 
+		["AuraDebuffs"] = {
+			["Name"] = "Show AuraDebuff Icons",
+		},
+
 		["AuraWatchIconSize"] = { --Перевести
 			["Name"] = "AuraWatch Icon Size",
 		},
@@ -1110,7 +1233,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Включить модуль рейда",
+			["Name"] = "|cff00cc4c".."Включить модуль рейда",
 		},
 
 		["Height"] = {
@@ -1134,7 +1257,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 		},
 
 		["ShowGroupText"] = {
-			["Name"] = "Показывать вашу группу #",
+			["Name"] = "Показывать номер группы #",
 		},
 
 		["ShowNotHereTimer"] = {
@@ -1149,7 +1272,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Плавные полосы",
 		},
 
-		["TargetHighlight"] = { --Перевести
+		["TargetHighlight"] = {
 			["Name"] = "Show Highlighted Target",
 		},
 
@@ -1176,7 +1299,7 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 	-- Worldmap Local
 	["WorldMap"] = {
-		["AlphaWhenMoving"] = { -- Нет применения в данной версии, MapFader ниже не то же самое?
+		["AlphaWhenMoving"] = {
 			["Name"] = "Alpha When Moving",
 		},
 
@@ -1190,6 +1313,25 @@ _G.KkthnxUIConfig["ruRU"] = {
 
 		["MapScale"] = {
 			["Name"] = "Масштаб карты",
+		},
+
+		["MapReveal"] = {
+			["Name"] = "Убрать туман",
+			["Desc"] = "Убирает туман с тех локаций где вы еще не были",
+		},
+
+		["PartyIconSize"] = {
+			["Name"] = "Размер иконки группы",
+			["Desc"] = "Adjust the size of player party icons on the world map",
+		},
+
+		["PlayerIconSize"] = {
+			["Name"] = "Размер иконки игрока",
+			["Desc"] = "Adjust the size of your player icon on the world map",
+		},
+
+		["WorldMapIcons"] = {
+			["Name"] = "Worldmap Scale",
 		},
 
 		["SmallWorldMap"] = {
