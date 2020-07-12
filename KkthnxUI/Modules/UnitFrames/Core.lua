@@ -471,7 +471,7 @@ end
 
 function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster, isStealable, _, spellID, _, _, _, nameplateShowAll)
 	local style = element.__owner.mystyle
-	if name and spellID == 209859 then
+	if(name and spellID == 209859) and (element.bolster ~= nil) then
 		element.bolster = element.bolster + 1
 		if not element.bolsterIndex then
 			element.bolsterIndex = button
