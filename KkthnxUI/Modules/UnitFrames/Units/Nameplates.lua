@@ -12,26 +12,32 @@ local string_format = _G.string.format
 local string_match = _G.string.match
 local tonumber = _G.tonumber
 local unpack = _G.unpack
-local table_wipe = _G.table.wipe
+-- local table_wipe = _G.table.wipe
 
 local Ambiguate = _G.Ambiguate
 local C_MythicPlus_GetCurrentAffixes = _G.C_MythicPlus.GetCurrentAffixes
 local C_NamePlate_GetNamePlateForUnit = _G.C_NamePlate.GetNamePlateForUnit
+local C_NamePlate_SetNamePlateEnemySize = _G.C_NamePlate.SetNamePlateEnemySize
+local C_NamePlate_SetNamePlateFriendlySize = _G.C_NamePlate.SetNamePlateFriendlySize
 local C_Scenario_GetCriteriaInfo = _G.C_Scenario.GetCriteriaInfo
 local C_Scenario_GetInfo = _G.C_Scenario.GetInfo
 local C_Scenario_GetStepInfo = _G.C_Scenario.GetStepInfo
 local CreateFrame = _G.CreateFrame
 local GetInstanceInfo = _G.GetInstanceInfo
+-- local GetNumGroupMembers = _G.GetNumGroupMembers
+-- local GetNumSubgroupMembers = _G.GetNumSubgroupMembers
 local GetPlayerInfoByGUID = _G.GetPlayerInfoByGUID
+local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local INTERRUPTED = _G.INTERRUPTED
 local InCombatLockdown = _G.InCombatLockdown
-local IsInGroup = _G.IsInGroup
+-- local IsInGroup = _G.IsInGroup
 local IsInInstance = _G.IsInInstance
-local IsInRaid = _G.IsInRaid
+-- local IsInRaid = _G.IsInRaid
 local SetCVar = _G.SetCVar
 local UnitClassification = _G.UnitClassification
 local UnitExists = _G.UnitExists
 local UnitGUID = _G.UnitGUID
+-- local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsTapDenied = _G.UnitIsTapDenied
@@ -48,18 +54,19 @@ local aksCacheData = {}
 local barHeight = C["Nameplate"].PlateHeight
 local barWidth = C["Nameplate"].PlateWidth
 local explosivesID = 120651
-local groupRoles = {}
+-- local groupRoles = {}
 local guidToPlate = {}
 local hasExplosives
-local isInGroup
+-- local isInGroup
 local isInInstance
 local isTargetClassPower
+local platesList = {}
 
 -- Unit classification
 local classify = {
 	elite = {1, 1, 1},
 	rare = {1, 1, 1, true},
-	rareelite = {1, .1, .1},
+	rareelite = {1, 0.1, 0.1},
 	worldboss = {0, 1, 0},
 }
 
@@ -97,8 +104,8 @@ function UF:UpdateClickableSize()
 		return
 	end
 
-	C_NamePlate.SetNamePlateEnemySize(C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight + 40)
-	C_NamePlate.SetNamePlateFriendlySize(C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight + 40)
+	C_NamePlate_SetNamePlateEnemySize(C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight + 40)
+	C_NamePlate_SetNamePlateFriendlySize(C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight + 40)
 end
 
 function UF:SetupCVars()
@@ -116,19 +123,19 @@ function UF:SetupCVars()
 
 	SetCVar("nameplateShowSelf", 0)
 	SetCVar("nameplateResourceOnTarget", 0)
-	K.HideInterfaceOption(InterfaceOptionsNamesPanelUnitNameplatesPersonalResource)
-	K.HideInterfaceOption(InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy)
+	K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesPersonalResource)
+	K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy)
 
 	UF:UpdateClickableSize()
-	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", UF.UpdateClickableSize)
+	hooksecurefunc(_G.NamePlateDriverFrame, "UpdateNamePlateOptions", UF.UpdateClickableSize)
 end
 
 function UF:BlockAddons()
-	if not DBM or not DBM.Nameplate then
+	if not _G.DBM or not _G.DBM.Nameplate then
 		return
 	end
 
-	function DBM.Nameplate:SupportedNPMod()
+	function _G.DBM.Nameplate:SupportedNPMod()
 		return true
 	end
 
@@ -142,7 +149,7 @@ function UF:BlockAddons()
 		end
 	end
 
-	hooksecurefunc(DBM.Nameplate, "Show", showAurasForDBM)
+	hooksecurefunc(_G.DBM.Nameplate, "Show", showAurasForDBM)
 end
 
 function UF:UpdateUnitPower()
@@ -157,45 +164,46 @@ function UF:UpdateUnitPower()
 end
 
 -- Off-tank threat color
-local function refreshGroupRoles()
-	local isInRaid = IsInRaid()
-	isInGroup = isInRaid or IsInGroup()
-	table_wipe(groupRoles)
+-- local function refreshGroupRoles()
+-- 	local isInRaid = IsInRaid()
+-- 	isInGroup = isInRaid or IsInGroup()
+-- 	table_wipe(groupRoles)
 
-	if isInGroup then
-		local numPlayers = (isInRaid and GetNumGroupMembers()) or GetNumSubgroupMembers()
-		local unit = (isInRaid and "raid") or "party"
-		for i = 1, numPlayers do
-			local index = unit..i
-			if UnitExists(index) then
-				groupRoles[UnitName(index)] = UnitGroupRolesAssigned(index)
-			end
-		end
-	end
-end
+-- 	if isInGroup then
+-- 		local numPlayers = (isInRaid and GetNumGroupMembers()) or GetNumSubgroupMembers()
+-- 		local unit = (isInRaid and "raid") or "party"
+-- 		for i = 1, numPlayers do
+-- 			local index = unit..i
+-- 			if UnitExists(index) then
+-- 				groupRoles[UnitName(index)] = UnitGroupRolesAssigned(index)
+-- 			end
+-- 		end
+-- 	end
+-- end
 
-local function resetGroupRoles()
-	isInGroup = IsInRaid() or IsInGroup()
-	table_wipe(groupRoles)
-end
+-- local function resetGroupRoles()
+-- 	isInGroup = IsInRaid() or IsInGroup()
+-- 	table_wipe(groupRoles)
+-- end
 
-function UF:UpdateGroupRoles()
-	refreshGroupRoles()
-	K:RegisterEvent("GROUP_ROSTER_UPDATE", refreshGroupRoles)
-	K:RegisterEvent("GROUP_LEFT", resetGroupRoles)
-end
+-- function UF:UpdateGroupRoles()
+-- 	refreshGroupRoles()
+-- 	K:RegisterEvent("GROUP_ROSTER_UPDATE", refreshGroupRoles)
+-- 	K:RegisterEvent("GROUP_LEFT", resetGroupRoles)
+-- end
 
-function UF:CheckTankStatus(unit)
-	local index = unit.."target"
-	local unitRole = isInGroup and UnitExists(index) and not UnitIsUnit(index, "player") and groupRoles[UnitName(index)] or "NONE"
-	if unitRole == "TANK" and K.Role == "Tank" then
-		self.feedbackUnit = index
-		self.isOffTank = true
-	else
-		self.feedbackUnit = "player"
-		self.isOffTank = false
-	end
-end
+-- function UF:CheckTankStatus(unit)
+-- 	local index = unit.."target"
+-- 	local unitRole = isInGroup and UnitExists(index) and not UnitIsUnit(index, "player") and groupRoles[UnitName(index)] or "NONE"
+-- 	if unitRole == "TANK" and K.Role == "Tank" then
+-- 		print("CheckTankStatus ", unitRole)
+-- 		self.feedbackUnit = index
+-- 		self.isOffTank = true
+-- 	else
+-- 		self.feedbackUnit = "player"
+-- 		self.isOffTank = false
+-- 	end
+-- end
 
 -- Update unit color
 function UF.UpdateColor(self, _, unit)
@@ -208,7 +216,7 @@ function UF.UpdateColor(self, _, unit)
 	local npcID = self.npcID
 	local isCustomUnit = K.NameplateCustomUnits[name] or K.NameplateCustomUnits[npcID]
 	local isPlayer = UnitIsPlayer(unit)
-	local status = UnitThreatSituation(self.feedbackUnit or "player", unit) or false -- just in case
+	local status = UnitThreatSituation("player", unit) or false -- just in case
 	local reaction = UnitReaction(unit, "player")
 
 	local reactionColor = K.Colors.reaction[reaction]
@@ -288,11 +296,12 @@ function UF.UpdateColor(self, _, unit)
 end
 
 function UF:UpdateThreatColor(_, unit)
+	-- print(unit)
 	if unit ~= self.unit then
 		return
 	end
 
-	UF.CheckTankStatus(self, unit)
+	-- UF.CheckTankStatus(self, unit)
 	UF.UpdateColor(self, _, unit)
 end
 
@@ -306,7 +315,6 @@ function UF:CreateThreatColor(self)
 	self.ThreatIndicator = threatIndicator
 	self.ThreatIndicator.Override = UF.UpdateThreatColor
 end
-
 
 -- Target indicator
 function UF:UpdateTargetChange()
@@ -470,17 +478,15 @@ function UF:AddQuestIcon(self)
 		return
 	end
 
-	local qicon = self:CreateTexture(nil, "OVERLAY", nil, 2)
-	qicon:SetPoint("LEFT", self, "RIGHT", -1, 0)
-	qicon:SetSize(20, 20)
-	qicon:SetAtlas("adventureguide-microbutton-alert")
-	qicon:Hide()
+	self.questIcon = self:CreateTexture(nil, "OVERLAY", nil, 2)
+	self.questIcon:SetPoint("LEFT", self, "RIGHT", -1, 0)
+	self.questIcon:SetSize(20, 20)
+	self.questIcon:SetAtlas("adventureguide-microbutton-alert")
+	self.questIcon:Hide()
 
-	local count = K.CreateFontString(self, 12, "", "", nil, "LEFT", 0, 0)
-	count:SetPoint("LEFT", qicon, "RIGHT", -2, 0)
+	self.questCount = K.CreateFontString(self, 12, "", "", nil, "LEFT", 0, 0)
+	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -2, 0)
 
-	self.questIcon = qicon
-	self.questCount = count
 	self:RegisterEvent("QUEST_LOG_UPDATE", UF.UpdateQuestUnit, true)
 end
 
@@ -887,6 +893,8 @@ function UF:CreatePlates()
 	UF:AddCreatureIcon(self)
 	UF:AddQuestIcon(self)
 	UF:AddDungeonProgress(self)
+
+	platesList[self] = self:GetName()
 end
 
 -- Classpower on target nameplate
