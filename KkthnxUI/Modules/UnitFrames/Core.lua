@@ -595,7 +595,7 @@ function Module:CreateUnits()
 		self:BlockAddons()
 		self:CheckExplosives()
 		self:AddInterruptInfo()
-		self:UpdateGroupRoles()
+		-- self:UpdateGroupRoles()
 		self:QuestIconCheck()
 
 		oUF:RegisterStyle("Nameplates", Module.CreatePlates)
