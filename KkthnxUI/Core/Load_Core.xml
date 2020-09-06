@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Core -->
+    <Script file="UIScale.lua"/>
     <Script file="Media.lua"/>
     <Script file="API.lua"/>
     <Script file="Functions.lua"/>
@@ -10,12 +11,9 @@
     <Script file="Animation.lua"/>
     <Script file="Colors.lua"/>
     <Script file="Smoothy.lua"/>
-    <Script file="Conflicts.lua"/>
     <Script file="Movers.lua"/>
     <Script file="Install.lua"/>
-    <Script file="Dropdown.lua"/>
     <Script file="Changelog.lua"/>
     <Script file="CheckVersion.lua"/>
-    <Script file="UICommands.lua"/>
-    <Script file="UIQuestions.lua"/>
+    <Script file="GUI.lua"/>
 </Ui>

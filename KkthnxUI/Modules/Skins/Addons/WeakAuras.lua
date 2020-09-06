@@ -6,11 +6,10 @@ local pairs = _G.pairs
 local unpack = _G.unpack
 
 local IsAddOnLoaded = _G.IsAddOnLoaded
-local WeakAuras = _G.WeakAuras
 
 -- WeakAuras skin
 function Module:ReskinWeakAuras()
-	if C["Skins"].WeakAuras ~= true then
+	if not C["Skins"].WeakAuras then
 		return
 	end
 
@@ -23,11 +22,7 @@ function Module:ReskinWeakAuras()
 			if not f.styled then
 				f.icon:SetTexCoord(unpack(K.TexCoords))
 				f.icon.SetTexCoord = K.Noop
-				f:CreateBorder()
-				--f.Shadow:HookScript("OnUpdate", function(self)
-				--	self:SetAlpha(self:GetParent().icon:GetAlpha())
-				--end)
-
+				f:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 				f.styled = true
 			end
 		elseif fType == "aurabar" then

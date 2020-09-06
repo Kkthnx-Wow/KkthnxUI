@@ -15,19 +15,23 @@ local minor = 13
 assert(LibStub, format("%s requires LibStub.", major))
 
 local Lib = LibStub:NewLibrary(major, minor)
-if not Lib then return end
+if not Lib then
+	return
+end
 
-local tonumber = _G.tonumber
+local _G = _G
+
 local strlower = _G.strlower
-local wipe = _G.wipe
+local tonumber = _G.tonumber
 local type = _G.type
+local wipe = _G.wipe
 
-local GetSpellTabInfo = _G.GetSpellTabInfo
+local GetNumSpellTabs = _G.GetNumSpellTabs
 local GetSpellBookItemInfo = _G.GetSpellBookItemInfo
 local GetSpellBookItemName = _G.GetSpellBookItemName
-local GetSpellLink = _G.GetSpellLink
 local GetSpellInfo = _G.GetSpellInfo
-
+local GetSpellLink = _G.GetSpellLink
+local GetSpellTabInfo = _G.GetSpellTabInfo
 local IsSpellInRange = _G.IsSpellInRange
 local SpellHasRange = _G.SpellHasRange
 
@@ -45,13 +49,17 @@ local isNumber = Lib.isNumber
 Lib.strlowerCache = Lib.strlowerCache or setmetatable(
 {}, {
 	__index = function(t, i)
-		if not i then return end
+		if not i then
+			return
+		end
+
 		local o
 		if type(i) == "number" then
 			o = i
 		else
 			o = strlower(i)
 		end
+
 		t[i] = o
 		return o
 	end,
@@ -91,7 +99,6 @@ local function UpdateBook(bookType)
 
 	for spellBookID = 1, max do
 		local type, baseSpellID = GetSpellBookItemInfo(spellBookID, bookType)
-
 		if type == "SPELL" or type == "PETACTION" then
 			local currentSpellName = GetSpellBookItemName(spellBookID, bookType)
 			local link = GetSpellLink(currentSpellName)
@@ -110,6 +117,7 @@ local function UpdateBook(bookType)
 			if currentSpellName and not spellsByName[strlower(currentSpellName)] then
 				spellsByName[strlower(currentSpellName)] = spellBookID
 			end
+
 			if currentSpellID and not spellsByID[currentSpellID] then
 				spellsByID[currentSpellID] = spellBookID
 			end
@@ -121,6 +129,7 @@ local function UpdateBook(bookType)
 				if baseSpellName and not spellsByName[strlower(baseSpellName)] then
 					spellsByName[strlower(baseSpellName)] = spellBookID
 				end
+
 				if baseSpellID and not spellsByID[baseSpellID] then
 					spellsByID[baseSpellID] = spellBookID
 				end
@@ -171,7 +180,6 @@ function Lib.IsSpellInRange(spellInput, unit)
 		end
 	else
 		local spellInput = strlowerCache[spellInput]
-
 		local spell = spellsByName_spell[spellInput]
 		if spell then
 			return IsSpellInRange(spell, "spell", unit)
@@ -184,9 +192,7 @@ function Lib.IsSpellInRange(spellInput, unit)
 
 		return IsSpellInRange(spellInput, unit)
 	end
-
 end
-
 
 --- Improved SpellHasRange.
 -- @name SpellRange.SpellHasRange
@@ -214,7 +220,6 @@ function Lib.SpellHasRange(spellInput)
 		end
 	else
 		local spellInput = strlowerCache[spellInput]
-
 		local spell = spellsByName_spell[spellInput]
 		if spell then
 			return SpellHasRange(spell, "spell")
@@ -227,5 +232,4 @@ function Lib.SpellHasRange(spellInput)
 
 		return SpellHasRange(spellInput)
 	end
-
 end

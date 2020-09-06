@@ -6,144 +6,138 @@ local table_insert = _G.table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
 
-local function SkinStatusBar(bar)
-	bar:StripTextures()
-	bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
-	bar:SetStatusBarColor(4/255, 179/255, 30/255)
-	bar:CreateBorder()
-
-	local StatusBarName = bar:GetName()
-	if _G[StatusBarName.."Title"] then
-		_G[StatusBarName.."Title"]:SetPoint("LEFT", 4, 0)
-	end
-
-	if _G[StatusBarName.."Label"] then
-		_G[StatusBarName.."Label"]:SetPoint("LEFT", 4, 0)
-	end
-
-	if _G[StatusBarName.."Text"] then
-		_G[StatusBarName.."Text"]:SetPoint("RIGHT", -4, 0)
-	end
-end
-
 local function SkinMiscStuff()
-	-- reskin popup buttons
-	for i = 1, 4 do
-		local StaticPopup = _G["StaticPopup"..i]
-		StaticPopup:HookScript("OnShow", function() -- UpdateRecapButton is created OnShow
-			if StaticPopup.UpdateRecapButton and (not StaticPopup.UpdateRecapButtonHooked) then
-				StaticPopup.UpdateRecapButtonHooked = true -- we should only hook this once
-				-- hooksecurefunc(_G["StaticPopup"..i], "UpdateRecapButton", S.UpdateRecapButton)
-			end
-		end)
-		StaticPopup:CreateBorder(nil, nil, nil, true)
+	-- do
+	-- 	for i = 1, 4 do
+	-- 		local frame = _G["StaticPopup"..i]
+	-- 		local bu = _G["StaticPopup"..i.."ItemFrame"]
+	-- 		local close = _G["StaticPopup"..i.."CloseButton"]
 
-		for j = 1, 4 do
-			local button = StaticPopup["button"..j]
-			button:SkinButton()
+	-- 		local gold = _G["StaticPopup"..i.."MoneyInputFrameGold"]
+	-- 		local silver = _G["StaticPopup"..i.."MoneyInputFrameSilver"]
+	-- 		local copper = _G["StaticPopup"..i.."MoneyInputFrameCopper"]
 
-			button.Flash:Hide()
+	-- 		_G["StaticPopup"..i.."ItemFrameNameFrame"]:Hide()
+	-- 		_G["StaticPopup"..i.."ItemFrameIconTexture"]:SetTexCoord(unpack(K.TexCoords))
 
-			button:CreateShadow()
-			button.Shadow:SetAlpha(0)
-			button.Shadow:SetBackdropBorderColor(1, 1, 1)
+	-- 		bu:SetNormalTexture("")
+	-- 		bu:SetHighlightTexture("")
+	-- 		bu:SetPushedTexture("")
+	-- 		bu:CreateBorder()
+	-- 		bu.IconBorder:SetAlpha(0)
+	-- 		frame["Border"]:Hide()
 
-			local anim1, anim2 = button.PulseAnim:GetAnimations()
-			anim1:SetTarget(button.Shadow)
-			anim2:SetTarget(button.Shadow)
-		end
+	-- 		silver:SetPoint("LEFT", gold, "RIGHT", 6, 0)
+	-- 		copper:SetPoint("LEFT", silver, "RIGHT", 6, 0)
 
-		_G["StaticPopup"..i.."EditBox"]:SetFrameLevel(_G["StaticPopup"..i.."EditBox"]:GetFrameLevel() + 1)
-		Module:SkinEditBox(_G["StaticPopup"..i.."EditBox"])
-		Module:SkinEditBox(_G["StaticPopup"..i.."MoneyInputFrameGold"])
-		Module:SkinEditBox(_G["StaticPopup"..i.."MoneyInputFrameSilver"])
-		Module:SkinEditBox(_G["StaticPopup"..i.."MoneyInputFrameCopper"])
-		_G["StaticPopup"..i.."EditBox"].Backdrop:SetPoint("TOPLEFT", 0, -6)
-		_G["StaticPopup"..i.."EditBox"].Backdrop:SetPoint("BOTTOMRIGHT", 0, 6)
-		_G["StaticPopup"..i.."ItemFrameNameFrame"]:Kill()
-		_G["StaticPopup"..i.."ItemFrame"]:CreateBorder()
-		_G["StaticPopup"..i.."ItemFrame"]:StyleButton()
-		_G["StaticPopup"..i.."ItemFrame"].IconBorder:SetAlpha(0)
-		_G["StaticPopup"..i.."ItemFrameIconTexture"]:SetTexCoord(unpack(K.TexCoords))
-		_G["StaticPopup"..i.."ItemFrameIconTexture"]:SetAllPoints()
+	-- 		frame:CreateBorder()
+	-- 		for j = 1, 4 do
+	-- 			frame["button"..j]:SkinButton()
+	-- 		end
+	-- 		frame["extraButton"]:SkinButton()
+	-- 		close:SkinCloseButton()
 
-		local normTex = _G["StaticPopup"..i.."ItemFrame"]:GetNormalTexture()
-		if normTex then
-			normTex:SetTexture()
-			hooksecurefunc(normTex, "SetTexture", function(s, tex)
-				if tex ~= nil then
-					s:SetTexture()
-				end
-			end)
-		end
+	-- 		Module:SkinEditBox(_G["StaticPopup"..i.."EditBox"], 20)
+	-- 		Module:SkinEditBox(gold)
+	-- 		Module:SkinEditBox(silver)
+	-- 		Module:SkinEditBox(copper)
+	-- 	end
 
-		-- Quality IconBorder
-		hooksecurefunc(_G["StaticPopup"..i.."ItemFrame"].IconBorder, "SetVertexColor", function(s, r, g, b)
-			s:GetParent():SetBackdropBorderColor(r, g, b)
-			s:SetTexture()
-		end)
+	-- 	hooksecurefunc("StaticPopup_Show", function(which, _, _, data)
+	-- 		local info = StaticPopupDialogs[which]
 
-		hooksecurefunc(_G["StaticPopup"..i.."ItemFrame"].IconBorder, "Hide", function(s)
-			s:GetParent():SetBackdropBorderColor()
-		end)
-	end
+	-- 		if not info then return end
+
+	-- 		local dialog = nil
+	-- 		dialog = StaticPopup_FindVisible(which, data)
+
+	-- 		if not dialog then
+	-- 			local index = 1
+	-- 			if info.preferredIndex then
+	-- 				index = info.preferredIndex
+	-- 			end
+
+	-- 			for i = index, STATICPOPUP_NUMDIALOGS do
+	-- 				local frame = _G["StaticPopup"..i]
+	-- 				if not frame:IsShown() then
+	-- 					dialog = frame
+	-- 					break
+	-- 				end
+	-- 			end
+
+	-- 			if not dialog and info.preferredIndex then
+	-- 				for i = 1, info.preferredIndex do
+	-- 					local frame = _G["StaticPopup"..i]
+	-- 					if not frame:IsShown() then
+	-- 						dialog = frame
+	-- 						break
+	-- 					end
+	-- 				end
+	-- 			end
+	-- 		end
+
+	-- 		if not dialog then
+	-- 			return
+	-- 		end
+
+	-- 		if info.closeButton then
+	-- 			local closeButton = _G[dialog:GetName().."CloseButton"]
+
+	-- 			closeButton:SetNormalTexture("")
+	-- 			closeButton:SetPushedTexture("")
+
+	-- 			if info.closeButtonIsHide then
+	-- 				for _, pixel in pairs(closeButton.pixels) do
+	-- 					pixel:Hide()
+	-- 				end
+
+	-- 				closeButton.minimize:Show()
+	-- 			else
+	-- 				for _, pixel in pairs(closeButton.pixels) do
+	-- 					pixel:Show()
+	-- 				end
+
+	-- 				closeButton.minimize:Hide()
+	-- 			end
+	-- 		end
+	-- 	end)
+
+	-- 	-- Pet battle queue popup
+	-- 	PetBattleQueueReadyFrame:CreateBorder()
+	-- 	-- PetBattleQueueReadyFrame.Art:CreateBorder()
+	-- 	PetBattleQueueReadyFrame.Border:Hide()
+	-- 	PetBattleQueueReadyFrame.AcceptButton:SkinButton()
+	-- 	PetBattleQueueReadyFrame.DeclineButton:SkinButton()
+
+	-- 	-- PlayerReportFrame
+	-- 	PlayerReportFrame:HookScript("OnShow", function(self)
+	-- 		if not self.styled then
+	-- 			self:StripTextures()
+	-- 			self:CreateBorder()
+	-- 			self.Comment:StripTextures()
+	-- 			Module:SkinEditBox(self.Comment)
+	-- 			self.ReportButton:SkinButton()
+	-- 			self.CancelButton:SkinButton()
+
+	-- 			self.styled = true
+	-- 		end
+	-- 	end)
+	-- end
 
 	do
-		_G.GhostFrameMiddle:SetAlpha(0)
-		_G.GhostFrameRight:SetAlpha(0)
-		_G.GhostFrameLeft:SetAlpha(0)
-		_G.GhostFrame:StripTextures(true)
-		_G.GhostFrame:SkinButton()
-		_G.GhostFrame:ClearAllPoints()
-		_G.GhostFrame:SetPoint("TOP", _G.UIParent, "TOP", 0, -90)
-		_G.GhostFrameContentsFrameText:SetPoint("TOPLEFT", 53, 0)
-		_G.GhostFrameContentsFrameIcon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		_G.GhostFrameContentsFrameIcon:SetPoint("RIGHT", _G.GhostFrameContentsFrameText, "LEFT", -12, 0)
+		for i = 1, 6 do
+			select(i, GhostFrame:GetRegions()):Hide()
+		end
 
-		local iconBorderFrame = _G.CreateFrame("Frame", nil, _G.GhostFrameContentsFrameIcon:GetParent())
-		iconBorderFrame:SetAllPoints(_G.GhostFrameContentsFrameIcon)
+		GhostFrameContentsFrameIcon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-		_G.GhostFrameContentsFrameIcon:SetSize(37, 38)
-		_G.GhostFrameContentsFrameIcon:SetParent(iconBorderFrame)
+		local FrameIconBorderFrame = CreateFrame("Frame", nil, GhostFrameContentsFrameIcon:GetParent())
+		FrameIconBorderFrame:SetAllPoints(GhostFrameContentsFrameIcon)
+		FrameIconBorderFrame:SetFrameLevel(GhostFrame:GetFrameLevel() + 1)
+		FrameIconBorderFrame:CreateBorder()
 
-		iconBorderFrame:CreateBorder()
-		iconBorderFrame:CreateInnerShadow()
-	end
-end
-
-local function SkinDebugTools()
-	if not IsAddOnLoaded("Blizzard_DebugTools") then
-		return
-	end
-
-	-- EventTraceFrame
-	EventTraceFrame:CreateBorder(nil, nil, nil, true)
-	EventTraceFrameCloseButton:SkinCloseButton()
-end
-
-local function SkinAchievementBars()
-	if not IsAddOnLoaded("Blizzard_AchievementUI") then
-		return
-	end
-
-	SkinStatusBar(_G.AchievementFrameSummaryCategoriesStatusBar)
-	SkinStatusBar(_G.AchievementFrameComparisonSummaryPlayerStatusBar)
-	SkinStatusBar(_G.AchievementFrameComparisonSummaryFriendStatusBar)
-
-	for i = 1, 12 do
-		local frame = _G["AchievementFrameSummaryCategoriesCategory"..i]
-		local button = _G["AchievementFrameSummaryCategoriesCategory"..i.."Button"]
-		local highlight = _G["AchievementFrameSummaryCategoriesCategory"..i.."ButtonHighlight"]
-
-		SkinStatusBar(frame)
-		button:StripTextures()
-		highlight:StripTextures()
-
-		_G[highlight:GetName().."Middle"]:SetColorTexture(1, 1, 1, 0.3)
-		_G[highlight:GetName().."Middle"]:SetAllPoints(frame)
+		GhostFrame:SkinButton()
 	end
 end
 
 table_insert(Module.NewSkin["KkthnxUI"], SkinMiscStuff)
-Module.NewSkin["Blizzard_DebugTools"] = SkinDebugTools
-Module.NewSkin["Blizzard_AchievementUI"] = SkinAchievementBars

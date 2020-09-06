@@ -101,8 +101,7 @@ function Module:CreateTarget()
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 		self.Portrait:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
-		self.Portrait:CreateBorder()
-		self.Portrait:CreateInnerShadow()
+		self.Portrait:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		self.Portrait = self.Health:CreateTexture("TargetPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
@@ -111,8 +110,7 @@ function Module:CreateTarget()
 
 		self.Portrait.Border = CreateFrame("Frame", nil, self)
 		self.Portrait.Border:SetAllPoints(self.Portrait)
-		self.Portrait.Border:CreateBorder()
-		self.Portrait.Border:CreateInnerShadow()
+		self.Portrait.Border:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
@@ -133,10 +131,10 @@ function Module:CreateTarget()
 		self.Debuffs["growth-y"] = "UP"
 		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 46)
 		self.Debuffs.num = 6
-		self.Debuffs.iconsPerRow = 5
+		self.Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 		self.Debuffs.size = Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
 		self.Debuffs:SetWidth(width)
-		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num/self.Debuffs.iconsPerRow + .5))
+		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
 		self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 		self.Debuffs.PostCreateIcon = Module.PostCreateAura
 		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
@@ -152,7 +150,7 @@ function Module:CreateTarget()
 		self.Buffs["growth-y"] = "DOWN"
 		self.Buffs.num = 6
 		self.Buffs.spacing = 6
-		self.Buffs.iconsPerRow = 6
+		self.Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
 		self.Buffs.onlyShowPlayer = false
 		self.Buffs.size = Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing)
 		self.Buffs:SetWidth(width)
@@ -215,8 +213,7 @@ function Module:CreateTarget()
 
 		self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
 		self.Castbar.Button:SetSize(20, 20)
-		self.Castbar.Button:CreateBorder()
-		self.Castbar.Button:CreateInnerShadow()
+		self.Castbar.Button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 		self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
 		self.Castbar.Icon:SetSize(C["Unitframe"].TargetCastbarHeight, C["Unitframe"].TargetCastbarHeight)
@@ -301,34 +298,21 @@ function Module:CreateTarget()
 			self.FloatingCombatFeedback[i] = parentFrame:CreateFontString("$parentText", "OVERLAY")
 		end
 
-		self.FloatingCombatFeedback.font = C["Media"].Font
+		self.FloatingCombatFeedback.font = C["Media"].CombatFont
 		self.FloatingCombatFeedback.fontFlags = "OUTLINE"
-		self.FloatingCombatFeedback.showPets = true
-		self.FloatingCombatFeedback.showHots = true
-		self.FloatingCombatFeedback.showAutoAttack = true
-		self.FloatingCombatFeedback.showOverHealing = false
+		self.FloatingCombatFeedback.showPets = C["Unitframe"].PetCombatText
+		self.FloatingCombatFeedback.showHots = C["Unitframe"].HotsDots
+		self.FloatingCombatFeedback.showAutoAttack = C["Unitframe"].AutoAttack
+		self.FloatingCombatFeedback.showOverHealing = C["Unitframe"].FCTOverHealing
 		self.FloatingCombatFeedback.abbreviateNumbers = true
-		self.FloatingCombatFeedback.colors = {
-			ABSORB = {0.84, 0.75, 0.65},
-			BLOCK = {0.84, 0.75, 0.65},
-			CRITENERGIZE = {0.31, 0.45, 0.63},
-			CRITHEAL = {0.33, 0.59, 0.33},
-			CRITICAL = {0.69, 0.31, 0.31},
-			CRUSHING = {0.69, 0.31, 0.31},
-			DAMAGE = {0.69, 0.31, 0.31},
-			ENERGIZE = {0.31, 0.45, 0.63},
-			GLANCING = {0.69, 0.31, 0.31},
-			HEAL = {0.33, 0.59, 0.33},
-			IMMUNE = {0.84, 0.75, 0.65},
-			MISS = {0.84, 0.75, 0.65},
-			RESIST = {0.84, 0.75, 0.65},
-			STANDARD = {0.84, 0.75, 0.65},
-		}
+
+		-- Default CombatText
+		SetCVar("enableFloatingCombatText", 0)
+		K.HideInterfaceOption(InterfaceOptionsCombatPanelEnableFloatingCombatText)
 	end
 
 	if C["Unitframe"].PortraitTimers then
 		self.PortraitTimer = CreateFrame("Frame", "$parentPortraitTimer", self.Health)
-		self.PortraitTimer:CreateInnerShadow()
 		self.PortraitTimer:SetFrameLevel(5) -- Watch me
 		self.PortraitTimer:SetPoint("TOPLEFT", self.Portrait, "TOPLEFT", 1, -1)
 		self.PortraitTimer:SetPoint("BOTTOMRIGHT", self.Portrait, "BOTTOMRIGHT", -1, 1)

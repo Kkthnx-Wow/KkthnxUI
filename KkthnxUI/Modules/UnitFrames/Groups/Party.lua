@@ -95,8 +95,7 @@ function Module:CreateParty()
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 		self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
-		self.Portrait:CreateBorder()
-		self.Portrait:CreateInnerShadow()
+		self.Portrait:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		self.Portrait = self.Health:CreateTexture("PlayerPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
@@ -105,8 +104,7 @@ function Module:CreateParty()
 
 		self.Portrait.Border = CreateFrame("Frame", nil, self)
 		self.Portrait.Border:SetAllPoints(self.Portrait)
-		self.Portrait.Border:CreateBorder()
-		self.Portrait.Border:CreateInnerShadow()
+		self.Portrait.Border:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
@@ -201,7 +199,7 @@ function Module:CreateParty()
 
 		self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
 		self.Castbar.Button:SetSize(16, 16)
-		self.Castbar.Button:CreateBorder()
+		self.Castbar.Button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 		self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
 		self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
@@ -300,7 +298,6 @@ function Module:CreateParty()
 
 	if C["Party"].PortraitTimers then
 		self.PortraitTimer = CreateFrame("Frame", "$parentPortraitTimer", self.Health)
-		self.PortraitTimer:CreateInnerShadow()
 		self.PortraitTimer:SetFrameLevel(6) -- Watch me
 		self.PortraitTimer:SetPoint("TOPLEFT", self.Portrait, "TOPLEFT", 1, -1)
 		self.PortraitTimer:SetPoint("BOTTOMRIGHT", self.Portrait, "BOTTOMRIGHT", -1, 1)
@@ -313,13 +310,13 @@ function Module:CreateParty()
 	self.PhaseIndicator:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\PhaseIcons.tga]])
 	self.PhaseIndicator.PostUpdate = Module.UpdatePhaseIcon
 
+	self.SummonIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.SummonIndicator:SetSize(20, 20)
+	self.SummonIndicator:SetPoint("CENTER", self.Overlay)
+
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	self.RaidTargetIndicator:SetSize(14, 14)
-
-	self.SummonIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.SummonIndicator:SetSize(28, 28)
-	self.SummonIndicator:SetPoint("CENTER", self.Portrait)
 
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(28, 28)
@@ -348,6 +345,31 @@ function Module:CreateParty()
 	self.Highlight:SetVertexColor(.6, .6, .6)
 	self.Highlight:SetBlendMode("ADD")
 	self.Highlight:Hide()
+
+	-- function UF:CreatePartyAltPower(self)
+		--if not NDuiDB["UFs"]["PartyAltPower"] then return end
+		local PWOnRight = false
+		local relF = "LEFT"
+		local relT = "RIGHT"
+		local xOffset = 6
+		local yOffset = 0
+		local otherSide = PWOnRight
+		if otherSide then
+			xOffset = -6
+			yOffset = 0
+		end
+
+		local altPower = K.CreateFontString(self, 10, "")
+		altPower:ClearAllPoints()
+		if otherSide then
+			altPower:SetPoint(relT, self.Power, relF, xOffset, yOffset)
+		else
+			local parent = self.Power
+			altPower:SetPoint(relF, parent, relT, xOffset, yOffset)
+		end
+		self:Tag(altPower, "[altpower]")
+		altPower:Show()
+--	end
 
 	self.ThreatIndicator = {
 		IsObjectType = function() end,

@@ -27,9 +27,9 @@ local function UpdateRaidThreat(self, _, unit)
 	local situation = UnitThreatSituation(unit)
 	if (situation and situation > 0) then
 		local r, g, b = GetThreatStatusColor(situation)
-		self:SetBackdropBorderColor(r, g, b)
+		self.KKUI_Border:SetVertexColor(r, g, b)
 	else
-		self:SetBackdropBorderColor()
+		self.KKUI_Border:SetVertexColor(1, 1, 1)
 	end
 end
 
@@ -204,6 +204,10 @@ function Module:CreateRaid()
 	self.PhaseIndicator:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\PhaseIcons.tga]])
 	self.PhaseIndicator.PostUpdate = Module.UpdatePhaseIcon
 
+	self.SummonIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.SummonIndicator:SetSize(20, 20)
+	self.SummonIndicator:SetPoint("CENTER", self.Overlay)
+
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetSize(16, 16)
 	self.RaidTargetIndicator:SetPoint("TOP", self, 0, 8)
@@ -235,7 +239,6 @@ function Module:CreateRaid()
 		self.RaidDebuffs:SetSize(C["Raid"].AuraDebuffIconSize, C["Raid"].AuraDebuffIconSize)
 		self.RaidDebuffs:SetPoint("CENTER", self, 0, 0)
 		self.RaidDebuffs:CreateBorder()
-		self.RaidDebuffs:CreateInnerShadow()
 
 		self.RaidDebuffs.showDispellableDebuff = true
 		self.RaidDebuffs.onlyMatchSpellID = true

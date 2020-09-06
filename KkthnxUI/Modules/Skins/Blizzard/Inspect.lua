@@ -31,19 +31,19 @@ local function ReskinInspectUI()
 
 	for _, slot in pairs({InspectPaperDollItemsFrame:GetChildren()}) do
 		if slot:IsObjectType("Button") or slot:IsObjectType("ItemButton") then
-			slot:CreateBorder(nil, nil, nil, true)
-			slot:CreateInnerShadow()
+			slot:StripTextures()
+			slot:CreateBorder(nil, nil, 10, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 			slot:StyleButton()
 			slot.icon:SetTexCoord(unpack(K.TexCoords))
 			slot:SetSize(36, 36)
 
 			slot.IconBorder:SetAlpha(0)
 			hooksecurefunc(slot.IconBorder, "SetVertexColor", function(_, r, g, b)
-				slot:SetBackdropBorderColor(r, g, b)
+				slot.KKUI_Border:SetVertexColor(r, g, b)
 			end)
 
 			hooksecurefunc(slot.IconBorder, "Hide", function()
-				slot:SetBackdropBorderColor()
+				slot.KKUI_Border:SetVertexColor(1, 1, 1)
 			end)
 		end
 	end

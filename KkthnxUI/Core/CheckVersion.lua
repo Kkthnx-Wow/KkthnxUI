@@ -12,6 +12,7 @@ local C_ChatInfo_SendAddonMessage = _G.C_ChatInfo.SendAddonMessage
 local GetTime = _G.GetTime
 local IsInGroup = _G.IsInGroup
 local IsInGuild = _G.IsInGuild
+local CreateFrame = _G.CreateFrame
 
 local isVCInit
 local lastVCTime = 0
@@ -32,10 +33,11 @@ end
 
 function Module:VersionCheck_Create(text)
 	local frame = CreateFrame("Frame", nil, nil, "MicroButtonAlertTemplate")
-	frame:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 20, 70)
+	frame:SetPoint("BOTTOMLEFT", _G.ChatFrame1, "TOPLEFT", 20, 70)
 	frame.Text:SetText(text)
 
-	frame:CreateBorder(nil, nil, nil, true)
+	frame:SripTextures()
+	frame:CreateBorder()
 
 	frame.CloseButton:ClearAllPoints()
 	frame.CloseButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 2, 2)

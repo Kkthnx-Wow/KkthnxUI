@@ -40,7 +40,11 @@ local function onUpdate(self, elapsed)
 	end
 end
 
-local function onEnter()
+local function onEnter(button)
+	if button.backdrop and button:IsEnabled() then
+		button.backdrop.KKUI_Border:SetVertexColor(1, 1, 0)
+	end
+
 	if C["ActionBar"].MicroBarMouseover and not Module.MicroBar.IsMouseOvered then
 		Module.MicroBar.IsMouseOvered = true
 		Module.MicroBar:SetScript("OnUpdate", onUpdate)
@@ -50,7 +54,7 @@ end
 
 local function onLeave(button)
 	if button.backdrop and button:IsEnabled() then
-		button.backdrop:SetBackdropBorderColor()
+		button.backdrop.KKUI_Border:SetVertexColor(1, 1, 1)
 	end
 end
 
@@ -63,8 +67,7 @@ function Module.HandleMicroButton(button)
 
 	local f = CreateFrame("Frame", nil, button)
 	f:SetFrameLevel(button:GetFrameLevel())
-	f:CreateBorder()
-	f:CreateInnerShadow()
+	f:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 	f:SetAllPoints(button)
 	button.backdrop = f
 

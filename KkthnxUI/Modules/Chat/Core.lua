@@ -31,7 +31,6 @@ local FCF_SetWindowName = _G.FCF_SetWindowName
 local GetChannelName = _G.GetChannelName
 local GetInstanceInfo = _G.GetInstanceInfo
 local GetItemIcon = _G.GetItemIcon
-local GetRealmName = _G.GetRealmName
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsInGroup = _G.IsInGroup
@@ -71,11 +70,12 @@ local function OnTextChanged(EditBox)
 			local repeatChar = true
 			for i = 1, MIN_REPEAT_CHARACTERS, 1 do
 				local first = -1 - i
-				if string_sub(text,-i,-i) ~= string_sub(text,first,first) then
+				if string_sub(text, -i, -i) ~= string_sub(text, first, first) then
 					repeatChar = false
 					break
 				end
 			end
+
 			if repeatChar then
 				repeatedText = text
 				EditBox:Hide()
@@ -128,20 +128,14 @@ function Module:UpdateEditBoxColor()
 
 	if chanName and (chatType == "CHANNEL") then
 		if chanName == 0 then
-			editbox:SetBackdropBorderColor()
+			editbox.KKUI_Border:SetVertexColor(1, 1, 1)
 		else
 			info = ChatTypeInfo[chatType..chanName]
-			editbox:SetBackdropBorderColor(info.r, info.g, info.b)
+			editbox.KKUI_Border:SetVertexColor(info.r, info.g, info.b)
 		end
 	else
-		editbox:SetBackdropBorderColor(info.r, info.g, info.b)
+		editbox.KKUI_Border:SetVertexColor(info.r, info.g, info.b)
 	end
-end
-
-function Module:MoveAudioButtons()
-	ChatFrameChannelButton:Kill()
-	ChatFrameToggleVoiceDeafenButton:Kill()
-	ChatFrameToggleVoiceMuteButton:Kill()
 end
 
 function Module:NoMouseAlpha()
@@ -250,9 +244,9 @@ function Module:StyleFrame(frame)
 	-- Character count
 	EditBox.CharacterCount = EditBox:CreateFontString()
 	EditBox.CharacterCount:FontTemplate()
-	EditBox.CharacterCount:SetTextColor(68/255, 136/255, 255/255, 0.5)
-	EditBox.CharacterCount:SetPoint("TOPRIGHT", EditBox, "TOPRIGHT", 0, -1)
-	EditBox.CharacterCount:SetPoint("BOTTOMRIGHT", EditBox, "BOTTOMRIGHT", 0, -1)
+	EditBox.CharacterCount:SetTextColor(123/255, 132/255, 137/255, 0.7)
+	EditBox.CharacterCount:SetPoint("TOPRIGHT", EditBox, "TOPRIGHT", 0, 0)
+	EditBox.CharacterCount:SetPoint("BOTTOMRIGHT", EditBox, "BOTTOMRIGHT", 0, 0)
 	EditBox.CharacterCount:SetJustifyH("CENTER")
 	EditBox.CharacterCount:SetWidth(30)
 
@@ -325,8 +319,8 @@ end
 
 local isChatUpdating = false
 function Module:SetDefaultChatFramesPositions()
-	if (not KkthnxUIData[GetRealmName()][UnitName("player")].Chat) then
-		KkthnxUIData[GetRealmName()][UnitName("player")].Chat = {}
+	if (not KkthnxUIData[K.Realm][K.Name].Chat) then
+		KkthnxUIData[K.Realm][K.Name].Chat = {}
 	end
 
 	if isChatUpdating then
@@ -359,7 +353,7 @@ function Module:SetDefaultChatFramesPositions()
 		end
 
 		local Anchor1, _, Anchor2, X, Y = Frame:GetPoint()
-		KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame"..i] = {Anchor1, Anchor2, X, Y, Width, Height}
+		KkthnxUIData[K.Realm][K.Name].Chat["Frame"..i] = {Anchor1, Anchor2, X, Y, Width, Height}
 	end
 
 	isChatUpdating = false
@@ -370,22 +364,22 @@ function Module:SaveChatFramePositionAndDimensions()
 	local Width, Height = self:GetSize()
 	local ID = self:GetID()
 
-	if not (KkthnxUIData[GetRealmName()][UnitName("player")].Chat) then
-		KkthnxUIData[GetRealmName()][UnitName("player")].Chat = {}
+	if not (KkthnxUIData[K.Realm][K.Name].Chat) then
+		KkthnxUIData[K.Realm][K.Name].Chat = {}
 	end
 
-	KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame"..ID] = {Anchor1, Anchor2, X, Y, Width, Height}
+	KkthnxUIData[K.Realm][K.Name].Chat["Frame"..ID] = {Anchor1, Anchor2, X, Y, Width, Height}
 end
 
 function Module:SetChatFramePosition()
-	if (not KkthnxUIData[GetRealmName()][UnitName("player")].Chat) then
+	if (not KkthnxUIData[K.Realm][K.Name].Chat) then
 		return
 	end
 
 	local Frame = self
 	local ID = Frame:GetID()
 
-	local Settings = KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame"..ID]
+	local Settings = KkthnxUIData[K.Realm][K.Name].Chat["Frame"..ID]
 
 	if Settings then
 		if not Frame:IsMovable() then
@@ -411,7 +405,7 @@ function Module:Install()
 	-- Combat Log
 	FCF_DockFrame(ChatFrame2)
 	FCF_SetLocked(ChatFrame2, 1)
-	FCF_SetWindowName(ChatFrame2, L["Combat"])
+	FCF_SetWindowName(ChatFrame2, L["CombatLog"])
 	ChatFrame2:Show()
 
 	-- Whispers
@@ -479,6 +473,25 @@ function Module:Install()
 	ChatFrame_RemoveAllMessageGroups(ChatFrame4)
 	ChatFrame_AddChannel(ChatFrame4, TRADE)
 	ChatFrame_AddChannel(ChatFrame4, GENERAL)
+
+	-- if K.Realm == "Sethraliss" then
+	-- 	local isLocale = _G.GetLocale()
+	-- 	local UIErrorsFrame = _G.UIErrorsFrame
+
+	-- 	if isLocale == "enUS" then
+	-- 		UIErrorsFrame:AddMessage("Joining"..K.InfoColor.." world_en|r chat as you are Locale "..isLocale.." and you are on realm "..K.Realm)
+	-- 		ChatFrame_AddChannel(ChatFrame4, "world_en")
+	-- 	elseif isLocale == "frFR" then
+	-- 		UIErrorsFrame:AddMessage("Joining"..K.InfoColor.." world_fr|r chat as you are Locale "..isLocale.." and you are on realm "..K.Realm)
+	-- 		ChatFrame_AddChannel(ChatFrame4, "world_fr")
+	-- 	elseif isLocale == "esES" then
+	-- 		UIErrorsFrame:AddMessage("Joining"..K.InfoColor.." world_es|r chat as you are Locale "..isLocale.." and you are on realm "..K.Realm)
+	-- 		ChatFrame_AddChannel(ChatFrame4, "world_es")
+	-- 	elseif isLocale == "ruRU" then
+	-- 		UIErrorsFrame:AddMessage("Joining"..K.InfoColor.." world_ru|r chat as you are Locale "..isLocale.." and you are on realm "..K.Realm)
+	-- 		ChatFrame_AddChannel(ChatFrame4, "world_ru")
+	-- 	end
+	-- end
 
 	-- Loot
 	ChatFrame_RemoveAllMessageGroups(ChatFrame5)
@@ -580,26 +593,6 @@ function Module:SetupFrame()
 	ChatTypeInfo.OFFICER.sticky = 1
 	ChatTypeInfo.RAID_WARNING.sticky = 1
 	ChatTypeInfo.CHANNEL.sticky = 1
-
-	ChatConfigFrameDefaultButton:Kill()
-	ChatFrameMenuButton:Kill()
-
-	QuickJoinToastButton:ClearAllPoints()
-	QuickJoinToastButton:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", -1, -18)
-	QuickJoinToastButton:EnableMouse(false)
-	QuickJoinToastButton.ClearAllPoints = K.Noop
-	QuickJoinToastButton.SetPoint = K.Noop
-	QuickJoinToastButton:SetAlpha(0)
-
-	ChatMenu:ClearAllPoints()
-	ChatMenu:SetPoint("BOTTOMRIGHT", ChatFrame1, "TOPRIGHT", 28, 10)
-
-	VoiceChatPromptActivateChannel:CreateShadow(true)
-	VoiceChatPromptActivateChannel.AcceptButton:SkinButton()
-	VoiceChatPromptActivateChannel.CloseButton:SkinCloseButton()
-	VoiceChatPromptActivateChannel:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 0, 14)
-	VoiceChatPromptActivateChannel.ClearAllPoints = K.Noop
-	VoiceChatPromptActivateChannel.SetPoint = K.Noop
 end
 
 function Module:CreateChatLootIcons(_, message, ...)
@@ -622,18 +615,11 @@ function Module:CreateChatLootIcons(_, message, ...)
 end
 
 function Module:OnEnable()
-	if (not C["Chat"].Enable) then
+	if not C["Chat"].Enable then
 		return
 	end
 
-	self:MoveAudioButtons()
 	self:SetupFrame()
-
-	if K.isDeveloper then
-		self:SetDefaultChatFramesPositions()
-		hooksecurefunc("FCF_SavePositionAndDimensions", self.SetDefaultChatFramesPositions)
-		K:RegisterEvent("UI_SCALE_CHANGED", self.SetDefaultChatFramesPositions)
-	end
 
 	hooksecurefunc("ChatEdit_UpdateHeader", self.UpdateEditBoxColor)
 	hooksecurefunc("FCF_OpenTemporaryWindow", self.StyleTempFrame)
@@ -646,13 +632,14 @@ function Module:OnEnable()
 	local CombatLogButton = _G.CombatLogQuickButtonFrame_Custom
 	if CombatLogButton then
 		local CombatLogFontContainer = _G.ChatFrame2 and _G.ChatFrame2.FontStringContainer
-		CombatLogButton:CreateBorder(nil, nil, nil, true)
+		CombatLogButton:StripTextures()
+		CombatLogButton:CreateBorder()
 		CombatLogButton:SetFrameLevel(4)
 
 		if CombatLogFontContainer then
 			CombatLogButton:ClearAllPoints()
 			CombatLogButton:SetPoint("BOTTOMLEFT", CombatLogFontContainer, "TOPLEFT", -1, 1)
-			CombatLogButton:SetPoint("BOTTOMRIGHT", CombatLogFontContainer, "TOPRIGHT", 0, 1)
+			CombatLogButton:SetPoint("BOTTOMRIGHT", CombatLogFontContainer, "TOPRIGHT", -3, 1)
 		end
 
 		for i = 1, 2 do
@@ -668,9 +655,9 @@ function Module:OnEnable()
 		CombatLogProgressBar:SetStatusBarTexture(C["Media"].Texture)
 		CombatLogProgressBar:SetPoint("TOPLEFT", CombatLogButton, "TOPLEFT", 0, -0)
 		CombatLogProgressBar:SetPoint("BOTTOMRIGHT", CombatLogButton, "BOTTOMRIGHT", -0, 0)
-		_G.CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SetSize(20, 22)
-		_G.CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SetPoint("TOPRIGHT", CombatLogButton, "TOPRIGHT", 0, -1)
-		_G.CombatLogQuickButtonFrame_CustomTexture:Hide()
+		CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SetSize(20, 22)
+		CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SetPoint("TOPRIGHT", CombatLogButton, "TOPRIGHT", 0, -1)
+		CombatLogQuickButtonFrame_CustomTexture:Hide()
 	end
 
 	for i = 1, 10 do
@@ -704,4 +691,5 @@ function Module:OnEnable()
 	self:CreateChatRename()
 	self:CreateCopyChat()
 	self:CreateCopyURL()
+	self:CreateVoiceActivity()
 end

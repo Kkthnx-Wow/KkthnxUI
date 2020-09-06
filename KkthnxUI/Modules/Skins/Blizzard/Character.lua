@@ -22,10 +22,9 @@ local function UpdateAzeriteItem(self)
 
 		self.AzeriteTexture:SetAlpha(0)
 		self.RankFrame.Texture:SetTexture()
-		self.RankFrame.Label:FontTemplate(nil, nil, "OUTLINE")
-		self.RankFrame.Label:ClearAllPoints()
 		self.RankFrame.Label:SetPoint("TOPLEFT", self, 2, -1)
 		self.RankFrame.Label:SetTextColor(1, 0.5, 0)
+		self.RankFrame.Label:FontTemplate(nil, nil, "OUTLINE")
 	end
 end
 
@@ -36,46 +35,44 @@ local function UpdateAzeriteEmpoweredItem(self)
 	self.AzeriteTexture:SetDrawLayer("BORDER", 1)
 end
 
-local function FixSidebarTabCoords()
-	for i = 1, #_G.PAPERDOLL_SIDEBARS do
+local function CorruptionIcon(self)
+	local itemLink = GetInventoryItemLink("player", self:GetID())
+	self.IconOverlay:SetShown(itemLink and IsCorruptedItem(itemLink))
+end
+
+local function ReskinPaperDollSidebar()
+	for i = 1, #PAPERDOLL_SIDEBARS do
 		local tab = _G["PaperDollSidebarTab"..i]
 
-		if tab and not tab.Backdrop then
-			tab:CreateBackdrop()
-			tab.Backdrop:SetBackdropBorderColor(255/255, 215/255, 0/255)
-			tab.Icon:SetAllPoints()
-			tab.Highlight:SetTexture("Interface\\Buttons\\UI-Button-Outline")
-			tab.Highlight:SetTexCoord(0.16, 0.86, 0.16, 0.86)
-			tab.Highlight:SetBlendMode("ADD")
-			tab.Highlight:SetPoint("TOPLEFT", tab, "TOPLEFT", -3, 3)
-			tab.Highlight:SetPoint("BOTTOMRIGHT", tab, "BOTTOMRIGHT", 4, -4)
-
-			-- Check for DejaCharacterStats. Lets hide the Texture if the AddOn is loaded.
-			if _G.IsAddOnLoaded("DejaCharacterStats") then
-				tab.Hider:SetTexture()
-			else
-				tab.Hider:SetColorTexture(0.0, 0.0, 0.0, 0.8)
-			end
-			tab.Hider:SetAllPoints(tab.Backdrop)
-			tab.TabBg:Kill()
-
+		if tab and not tab.styled then
 			if i == 1 then
-				for x = 1, tab:GetNumRegions() do
-					local region = select(x, tab:GetRegions())
+				for i = 1, 4 do
+					local region = select(i, tab:GetRegions())
 					region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
-					hooksecurefunc(region, "SetTexCoord", function(self, x1)
-						if x1 ~= 0.16001 then
-							self:SetTexCoord(0.16001, 0.86, 0.16, 0.86)
-						end
-					end)
+					region.SetTexCoord = K.Noop
 				end
 			end
+
+			tab.bg = CreateFrame("Frame", nil, tab)
+			tab.bg:SetFrameLevel(tab:GetFrameLevel())
+			tab.bg:SetAllPoints(tab)
+			tab.bg:CreateBorder(nil, nil, 10, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+
+			tab.Icon:SetAllPoints(tab.bg)
+			tab.Hider:SetAllPoints(tab.bg)
+			tab.Highlight:SetPoint("TOPLEFT", tab.bg, "TOPLEFT", 2, -2)
+			tab.Highlight:SetPoint("BOTTOMRIGHT", tab.bg, "BOTTOMRIGHT", -2, 2)
+			tab.Highlight:SetColorTexture(1, 1, 1, .25)
+			tab.Hider:SetColorTexture(.3, .3, .3, .4)
+			tab.TabBg:SetAlpha(0)
+
+			tab.styled = true
 		end
 	end
 end
 
 local function UpdateFactionSkins()
-	for i = 1, _G.NUM_FACTIONS_DISPLAYED, 1 do
+	for i = 1, NUM_FACTIONS_DISPLAYED, 1 do
 		local statusbar = _G["ReputationBar"..i.."ReputationBar"]
 		if statusbar then
 			statusbar:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
@@ -103,7 +100,7 @@ local function ReskinCharacterFrame()
 	end
 
 	-- Strip Textures
-	_G.CharacterModelFrame:StripTextures()
+	CharacterModelFrame:StripTextures()
 
 	for _, corner in pairs({"TopLeft", "TopRight", "BotLeft", "BotRight"}) do
 		local CharacterModelFrameBackground_Textures = _G["CharacterModelFrameBackground"..corner]
@@ -112,16 +109,13 @@ local function ReskinCharacterFrame()
 		end
 	end
 
-	for _, slot in pairs({_G.PaperDollItemsFrame:GetChildren()}) do
+	for _, slot in pairs({PaperDollItemsFrame:GetChildren()}) do
 		if slot:IsObjectType("Button") or slot:IsObjectType("ItemButton") then
-			slot:CreateBorder(nil, nil, nil, true)
-			slot:CreateInnerShadow()
+			slot:StripTextures()
+			slot:CreateBorder(nil, nil, 10, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 			slot:StyleButton(slot)
 			slot.icon:SetTexCoord(unpack(K.TexCoords))
 			slot:SetSize(36, 36)
-
-			hooksecurefunc(slot, "DisplayAsAzeriteItem", UpdateAzeriteItem)
-			hooksecurefunc(slot, "DisplayAsAzeriteEmpoweredItem", UpdateAzeriteEmpoweredItem)
 
 			if slot.popoutButton:GetPoint() == "TOP" then
 				slot.popoutButton:SetPoint("TOP", slot, "BOTTOM", 0, 2)
@@ -130,17 +124,36 @@ local function ReskinCharacterFrame()
 			end
 
 			slot.ignoreTexture:SetTexture([[Interface\PaperDollInfoFrame\UI-GearManager-LeaveItem-Transparent]])
+
+			slot.CorruptedHighlightTexture:SetAtlas("Nzoth-charactersheet-item-glow")
+			slot.IconOverlay:SetAtlas("Nzoth-inventory-icon")
+			slot.IconOverlay:SetAllPoints()
+
 			slot.IconBorder:SetAlpha(0)
 
 			hooksecurefunc(slot.IconBorder, "SetVertexColor", function(_, r, g, b)
-				slot:SetBackdropBorderColor(r, g, b)
+				slot.KKUI_Border:SetVertexColor(r, g, b)
 			end)
 
 			hooksecurefunc(slot.IconBorder, "Hide", function()
-				slot:SetBackdropBorderColor()
+				slot.KKUI_Border:SetVertexColor(1, 1, 1)
 			end)
+
+			hooksecurefunc(slot, "DisplayAsAzeriteItem", UpdateAzeriteItem)
+			hooksecurefunc(slot, "DisplayAsAzeriteEmpoweredItem", UpdateAzeriteEmpoweredItem)
+
+			slot:HookScript('OnShow', CorruptionIcon)
+			slot:HookScript('OnEvent', CorruptionIcon)
 		end
 	end
+
+	hooksecurefunc('PaperDollItemSlotButton_Update', function(slot)
+		local highlight = slot:GetHighlightTexture()
+		highlight:SetTexture(C["Media"].Blank)
+		highlight:SetVertexColor(1, 1, 1, .25)
+		highlight:SetPoint("TOPLEFT", slot, "TOPLEFT", 2, -2)
+		highlight:SetPoint("BOTTOMRIGHT", slot, "BOTTOMRIGHT", -2, 2)
+	end)
 
 	CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)
 	CharacterHandsSlot:SetPoint("TOPRIGHT", CharacterFrame.Inset, "TOPRIGHT", -6, -6)
@@ -174,8 +187,8 @@ local function ReskinCharacterFrame()
 		CharacterFrame.Inset.Bg:SetVertTile(true)
 	end)
 
-	_G.CharacterLevelText:FontTemplate()
-	_G.CharacterStatsPane.ItemLevelFrame.Value:FontTemplate(nil, 20)
+	CharacterLevelText:FontTemplate()
+	CharacterStatsPane.ItemLevelFrame.Value:FontTemplate(nil, 20)
 
 	CharacterStatsPane.ClassBackground:ClearAllPoints()
 	CharacterStatsPane.ClassBackground:SetHeight(CharacterStatsPane.ClassBackground:GetHeight() + 6)
@@ -189,7 +202,7 @@ local function ReskinCharacterFrame()
 	end
 
 	-- Buttons used to toggle between equipment manager, titles, and character stats
-	hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", FixSidebarTabCoords)
+	hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", ReskinPaperDollSidebar)
 
 	-- Reskin Reputation Statusbars
 	hooksecurefunc("ExpandFactionHeader", UpdateFactionSkins)

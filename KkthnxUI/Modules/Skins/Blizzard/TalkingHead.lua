@@ -23,16 +23,13 @@ local function SkinTalkingHead()
 		TalkingHeadFrame.Backdrop:SetSize(400, 115)
 
 		TalkingHeadFrame.MainFrame.Model:CreateBorder()
-		TalkingHeadFrame.MainFrame.Model:CreateInnerShadow()
 
 		local button = TalkingHeadFrame.MainFrame.CloseButton
 		button:SkinCloseButton()
 		button:ClearAllPoints()
 		button:SetPoint("TOPRIGHT", TalkingHeadFrame.BackgroundFrame, "TOPRIGHT", -25, -18)
 	else
-		TalkingHeadFrame.MainFrame.Model:CreateBorder()
-		TalkingHeadFrame.MainFrame.Model:CreateInnerShadow()
-
+		TalkingHeadFrame.MainFrame.Model:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 		TalkingHeadFrame.MainFrame.CloseButton:Kill()
 	end
 

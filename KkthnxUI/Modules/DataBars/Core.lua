@@ -40,7 +40,7 @@ local UnitXPMax = _G.UnitXPMax
 local FactionStandingLabelUnknown = _G.UNKNOWN
 local backupColor = _G.FACTION_BAR_COLORS[1]
 
-local function GetUnitXP(unit)
+function Module:GetUnitXP(unit)
 	if (unit == "pet") then
 		return GetPetExperience()
 	else
@@ -190,7 +190,11 @@ function Module:UpdateReputation()
 		repBar:SetMinMaxValues(min, max)
 		repBar:SetValue(value)
 		local color = FACTION_BAR_COLORS[reaction] or backupColor
-		repBar:SetStatusBarColor(color.r, color.g, color.b)
+		if factionID and C_Reputation_IsFactionParagon(factionID) then
+			repBar:SetStatusBarColor(51/255, 80/255, 194/255)
+		else
+			repBar:SetStatusBarColor(color.r, color.g, color.b)
+		end
 
 		for i = 1, numFactions do
 			local factionName, _, standingID,_,_,_,_,_,_,_,_,_,_, FactionID = GetFactionInfo(i)
@@ -237,7 +241,7 @@ function Module:UpdateExperience()
 	else
 		expBar:Show()
 
-		local cur, max = GetUnitXP("player")
+		local cur, max = Module:GetUnitXP("player")
 		if max <= 0 then
 			max = 1
 		end
@@ -331,7 +335,7 @@ function Module:OnEnter()
 	end
 
 	if MAX_PLAYER_LEVEL ~= K.Level then
-		local cur, max = GetUnitXP("player")
+		local cur, max = Module:GetUnitXP("player")
 		local rested = GetXPExhaustion()
 
 		GameTooltip:AddDoubleLine(L["Experience"], PLAYER.." "..LEVEL.." ("..K.Level..")", nil, nil, nil, 0.90, 0.80, 0.50)
@@ -455,7 +459,7 @@ function Module:OnEnable()
 	self.DatabaseTexture = K.GetTexture(C["UITextures"].DataBarsTexture)
 	self.DatabaseFont = K.GetFont(C["UIFonts"].DataBarsFonts)
 
-	if C["DataBars"].Enable ~= true then
+	if not C["DataBars"].Enable then
 		return
 	end
 

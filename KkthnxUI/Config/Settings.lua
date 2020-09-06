@@ -3,7 +3,6 @@ local _, C = unpack(select(2, ...))
 local _G = _G
 
 local GUILD = _G.GUILD
-local IsAddOnLoaded = _G.IsAddOnLoaded
 local NONE = _G.NONE
 local PLAYER = _G.PLAYER
 
@@ -14,8 +13,10 @@ C["ActionBar"] = {
 	["DecimalCD"] = true,
 	["DefaultButtonSize"] = 34,
 	["Enable"] = true,
+	["FadePetBar"] = false,
 	["FadeRightBar"] = false,
 	["FadeRightBar2"] = false,
+	["FadeStanceBar"] = false,
 	["Hotkey"] = true,
 	["Macro"] = true,
 	["MicroBar"] = true,
@@ -51,34 +52,22 @@ C["Announcements"] = {
 		},
 		["Value"] = "PARTY"
 	},
-	-- ["Dispell"] = {
-	-- 	["Options"] = {
-	-- 		["Disabled"] = "NONE",
-	-- 		["Emote"] = "EMOTE",
-	-- 		["Party Only"] = "PARTY",
-	-- 		["Party/Raid"] = "RAID",
-	-- 		["Raid Only"] = "RAID_ONLY",
-	-- 		["Say"] = "SAY",
-	-- 		["Yell"] = "YELL"
-	-- 	},
-	-- 	["Value"] = "PARTY"
-	-- },
 }
 
 -- Automation
 C["Automation"] = {
-	["AutoReward"] = false,
+	["AutoAcceptSummon"] = false,
 	["AutoBlockStrangerInvites"] = false,
 	["AutoCollapse"] = false,
 	["AutoDeclineDuels"] = false,
 	["AutoDeclinePetDuels"] = false,
 	["AutoDisenchant"] = false,
-	["AutoDungeonThanks"] = false,
 	["AutoInvite"] = false,
 	["AutoQuest"] = false,
 	["AutoRelease"] = false,
 	["AutoResurrect"] = false,
 	["AutoResurrectThank"] = false,
+	["AutoReward"] = false,
 	["AutoScreenshot"] = false,
 	["AutoSetRole"] = false,
 	["AutoTabBinder"] = false,
@@ -90,21 +79,27 @@ C["Inventory"] = {
 	["AutoSell"] = true,
 	["BagBar"] = true,
 	["BagBarMouseover"] = false,
+	["BagsItemLevel"] = false,
 	["BagsWidth"] = 12,
-	["BagsiLvl"] = true,
 	["BankWidth"] = 14,
 	["DeleteButton"] = true,
 	["Enable"] = true,
-	["FilterJunk"] = false,
-	["FilterMount"] = false,
+	["FilterAzerite"] = true,
+	["FilterConsumable"] = true,
+	["FilterEquipment"] = true,
+	["FilterFavourite"] = true,
+	["FilterGoods"] = false,
+	["FilterJunk"] = true,
+	["FilterLegendary"] = true,
+	["FilterMount"] = true,
+	["FilterQuest"] = true,
 	["GatherEmpty"] = false,
 	["IconSize"] = 34,
 	["ItemFilter"] = true,
 	["ItemSetFilter"] = false,
-	["QuestItemFilter"] = false,
-	["ScrapIcon"] = true,
+	["ReverseSort"] = false,
 	["ShowNewItem"] = true,
-	["TradeGoodsFilter"] = false,
+	["SpecialBagsColor"] = false,
 	["UpgradeIcon"] = true,
 	["AutoRepair"] = {
 		["Options"] = {
@@ -126,22 +121,30 @@ C["Auras"] = {
 	["Reminder"] = false,
 	["ReverseBuffs"] = false,
 	["ReverseDebuffs"] = false,
-	["Statue"] = true,
 	["Totems"] = true,
 }
 
 -- Chat
 C["Chat"] = {
-	["Background"] = false,
+	["Width"] = 380,
+	["Height"] = 190,
+	["Lock"] = true,
+	["AllowFriends"] = true,
+	["Background"] = true,
+	["BlockAddonAlert"] = false,
+	["BlockStranger"] = false,
+	["ChatFilterList"] = "%*",
+	["ChatFilterWhiteList"] = "",
 	["ChatItemLevel"] = true,
+	["ChatMenu"] = true,
 	["Enable"] = true,
 	["EnableFilter"] = true,
 	["Fading"] = true,
 	["FadingTimeFading"] = 3,
 	["FadingTimeVisible"] = 20,
+	["FilterMatches"] = 1,
 	["LootIcons"] = false,
 	["OldChatNames"] = false,
-	["PhasingAlert"] = true,
 	["TabsMouseover"] = true,
 	["WhisperColor"] = true,
 	["WhisperSound"] = true,
@@ -176,6 +179,7 @@ C["DataText"] = {
 	["Currency"] = true,
 	["Friends"] = true,
 	["Guild"] = true,
+	["Latency"] = true,
 	["Location"] = true,
 	["System"] = true,
 	["Time"] = true,
@@ -184,18 +188,25 @@ C["DataText"] = {
 C["Filger"] = {
 	["BuffSize"] = 36,
 	["CooldownSize"] = 30,
-	["DisableCD"] = false,
-	["DisablePvP"] = false,
-	["Expiration"] = false,
 	["Enable"] = false,
+	["Expiration"] = false,
 	["MaxTestIcon"] = 5,
 	["PvPSize"] = 60,
+	["ShowAuraBar"] = true,
+	["ShowBuff"] = true,
+	["ShowCD"] = true,
+	["ShowDebuff"] = true,
+	["ShowProc"] = true,
+	["ShowPvPPlayer"] = true,
+	["ShowPvPTarget"] = true,
+	["ShowSpecial"] = true,
 	["ShowTooltip"] = false,
 	["TestMode"] = false,
 }
 
 -- General
 C["General"] = {
+	["UseGlobal"] = false,
 	["AutoScale"] = true,
 	["ColorTextures"] = false,
 	["DisableTutorialButtons"] = false,
@@ -235,14 +246,14 @@ C["Minimap"] = {
 	["ShowGarrison"] = true,
 	["ShowRecycleBin"] = true,
 	["Size"] = 180,
-	--["LocationText"] = {
-	--	["Options"] = {
-	--		["Always Display"] = "SHOW",
-	--		["Hide"] = "Hide",
-	--		["Minimap Mouseover"] = "MOUSEOVER",
-	--	},
-	--	["Value"] = "MOUSEOVER"
-	--},
+	["LocationText"] = {
+		["Options"] = {
+			["Always Display"] = "SHOW",
+			["Hide"] = "Hide",
+			["Minimap Mouseover"] = "MOUSEOVER",
+		},
+		["Value"] = "MOUSEOVER"
+	},
 	["BlipTexture"] = {
 		["Options"] = {
 			["Blizzard"] = "Interface\\MiniMap\\ObjectIconsAtlas",
@@ -256,8 +267,8 @@ C["Minimap"] = {
 -- Miscellaneous
 C["Misc"] = {
 	["AFKCamera"] = false,
+	["AutoBubbles"] = false,
 	["ColorPicker"] = false,
-	["EnchantmentScroll"] = false,
 	["EnhancedFriends"] = false,
 	["GemEnchantInfo"] = false,
 	["ImprovedStats"] = false,
@@ -273,6 +284,7 @@ C["Misc"] = {
 C["Nameplate"] = {
 	["AKSProgress"] = false,
 	["AuraSize"] = 22,
+	["ClassIcon"] = false,
 	["CustomColor"] = {0, 0.8, 0.3},
 	["CustomUnitColor"] = true,
 	["Distance"] = 42,
@@ -287,8 +299,9 @@ C["Nameplate"] = {
 	["InsideView"] = true,
 	["MaxAuras"] = 5,
 	["MaxPowerGlow"] = false,
-	["MinAlpha"] = 0.35,
+	["MinAlpha"] = 1,
 	["MinScale"] = 1,
+	["NameOnly"] = true,
 	["NameplateClassPower"] = true,
 	["NameTextSize"] = 10,
 	["OffTankColor"] = {0.2, 0.7, 0.5},
@@ -307,6 +320,14 @@ C["Nameplate"] = {
 	["TargetIndicatorColor"] = {1, 1, 0},
 	["TransColor"] = {1, 0.8, 0},
 	["VerticalSpacing"] = 0.7,
+	["AuraFilter"] = {
+		["Options"] = {
+			["White & Black List"] = 1,
+			["List & Player"] = 2,
+			["List & Player & CCs"] = 3,
+		},
+		["Value"] = 3
+	},
 	["TargetIndicator"] = {
 		["Options"] = {
 			["Disable"] = 1,
@@ -333,21 +354,24 @@ C["PulseCooldown"] = {
 C["Skins"] = {
 	["Bartender4"] = false,
 	["BigWigs"] = false,
+	["BlizzardFrames"] = true,
 	["ChatBubbles"] = true,
-	["DBM"] = false,
+	["ChocolateBar"] = false,
+	["DeadlyBossMods"] = false,
 	["Details"] = false,
+	["Hekili"] = false,
 	["Skada"] = false,
 	["Spy"] = false,
 	["TalkingHeadBackdrop"] = true,
+	["TellMeWhen"] = false,
+	["TitanPanel"] = false,
 	["WeakAuras"] = false,
 }
 
 -- Tooltip
 C["Tooltip"] = {
-	["AzeriteArmor"] = false,
 	["ClassColor"] = false,
 	["CombatHide"] = false,
-	["CorruptionRank"] = false,
 	["Cursor"] = false,
 	["FactionIcon"] = false,
 	["HideJunkGuild"] = true,
@@ -396,8 +420,9 @@ C["UITextures"] = {
 -- Unitframe
 C["Unitframe"] = {
 	["AdditionalPower"] = true,
-	["CastClassColor"] = true,
-	["CastReactionColor"] = true,
+	["AutoAttack"] = true,
+	["CastClassColor"] = false,
+	["CastReactionColor"] = false,
 	["CastbarLatency"] = true,
 	["Castbars"] = true,
 	["ClassResources"] = true,
@@ -405,9 +430,12 @@ C["Unitframe"] = {
 	["CombatText"] = false,
 	["DebuffHighlight"] = true,
 	["Enable"] = true,
+	["FCTOverHealing"] = false,
 	["GlobalCooldown"] = false,
 	["HideTargetofTarget"] = false,
+	["HotsDots"] = true,
 	["OnlyShowPlayerDebuff"] = false,
+	["PetCombatText"] = true,
 	["PlayerBuffs"] = false,
 	["PlayerCastbarHeight"] = 24,
 	["PlayerCastbarWidth"] = 260,
@@ -424,9 +452,11 @@ C["Unitframe"] = {
 	["Swingbar"] = false,
 	["SwingbarTimer"] = false,
 	["TargetBuffs"] = true,
+	["TargetBuffsPerRow"] = 6,
 	["TargetCastbarHeight"] = 24,
 	["TargetCastbarWidth"] = 260,
 	["TargetDebuffs"] = true,
+	["TargetDebuffsPerRow"] = 5,
 	["HealthbarColor"] = {
         ["Options"] = {
             ["Dark"] = "Dark",
@@ -452,9 +482,8 @@ C["Party"] = {
 	["PortraitTimers"] = false,
 	["ShowBuffs"] = true,
 	["ShowHealPrediction"] = true,
-	-- ["ShowPet"] = false,
+	["ShowPet"] = false,
 	["ShowPlayer"] = true,
-	-- ["ShowTarget"] = false,
 	["Smooth"] = false,
 	["TargetHighlight"] = false,
 	["HealthbarColor"] = {
@@ -536,13 +565,11 @@ C["Raid"] = {
     },
 }
 
-if not IsAddOnLoaded("QuestNotifier") then
-	C["QuestNotifier"] = {
-		["Enable"] = IsAddOnLoaded("QuestNotifier") and false,
-		["OnlyCompleteRing"] = false,
-		["QuestProgress"] = false,
-	}
-end
+C["QuestNotifier"] = {
+	["Enable"] = false,
+	["OnlyCompleteRing"] = false,
+	["QuestProgress"] = false,
+}
 
 -- Worldmap
 C["WorldMap"] = {

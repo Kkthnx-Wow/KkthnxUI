@@ -248,6 +248,19 @@ oUF.Tags.Methods["pppower"] = function(unit)
 end
 oUF.Tags.Events["pppower"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER"
 
+oUF.Tags.Methods["npctitle"] = function(unit)
+	if UnitIsPlayer(unit) then return end
+
+	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+	K.ScanTooltip:SetUnit(unit)
+
+	local title = _G[format("KKUI_ScanTooltipTextLeft%d", GetCVarBool("colorblindmode") and 3 or 2)]:GetText()
+	if title and not strfind(title, "^"..LEVEL) then
+		return title
+	end
+end
+oUF.Tags.Events["npctitle"] = "UNIT_NAME_UPDATE"
+
 -- AltPower value tag
 oUF.Tags.Methods["altpower"] = function(unit)
 	local cur = UnitPower(unit, ALTERNATE_POWER_INDEX)
@@ -281,27 +294,19 @@ end
 oUF.Tags.Events["monkstagger"] = "UNIT_MAXHEALTH UNIT_AURA"
 
 oUF.Tags.Methods["leadassist"] = function(unit)
-	local IsLeader = UnitIsGroupLeader(unit)
-	local IsAssistant = UnitIsGroupAssistant(unit) or UnitIsRaidOfficer(unit)
-	local Assist, Lead = IsAssistant and "|cffffd100[A]|r " or "", IsLeader and "|cffffd100[L]|r " or ""
+	local isLeader = UnitIsGroupLeader(unit)
+	local isAssistant = UnitIsGroupAssistant(unit) or UnitIsRaidOfficer(unit)
+	local Assist, Lead = isAssistant and "|cffffd100[A]|r " or "", isLeader and "|cffffd100[L]|r " or ""
 
 	return (Lead..Assist)
 end
 oUF.Tags.Events["leadassist"] = "UNIT_NAME_UPDATE PARTY_LEADER_CHANGED GROUP_ROSTER_UPDATE"
 
 oUF.Tags.Methods["lfdrole"] = function(unit)
-	local role = UnitGroupRolesAssigned(unit)
-	local roleString = ""
-	local IsTank = TANK or UNKNOWN
-	local IsHealer = HEALER or UNKNOWN
-	local Tank, Healer = IsTank and "|cff0099CC[T]|r " or "", IsHealer and "|cff00FF00[H]|r " or ""
+	local isRole = UnitGroupRolesAssigned(unit)
+	local isTank, isHealer, isDamage = isRole == "TANK", isRole == "HEALER", isRole == "DAMAGER"
+	local Tank, Healer, Damage = isTank and "|cff0099CC[T]|r " or "", isHealer and "|cff00FF00[H]|r " or "", isDamage and "" or ""
 
-	if (role == "TANK") then
-		roleString = Tank
-	elseif (role == "HEALER") then
-		roleString = Healer
-	end
-
-	return roleString
+	return (Tank..Healer..Damage)
 end
 oUF.Tags.Events["lfdrole"] = "UNIT_NAME_UPDATE PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"

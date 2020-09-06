@@ -8,56 +8,97 @@ local getmetatable = _G.getmetatable
 local select = _G.select
 
 local CreateFrame = _G.CreateFrame
-local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local EnumerateFrames = _G.EnumerateFrames
-local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local GetAddOnMetadata = _G.GetAddOnMetadata
+local RegisterAttributeDriver = _G.RegisterAttributeDriver
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
-local UnitClass = _G.UnitClass
 
-local CustomClass = select(2, UnitClass("player"))
-local CustomClassColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[CustomClass] or RAID_CLASS_COLORS[CustomClass])
 local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
 
-BINDING_HEADER_KKTHNXUI = GetAddOnMetadata(..., "Title")
+do
+	BINDING_HEADER_KKTHNXUI = GetAddOnMetadata(..., "Title")
 
-K.UIFrameHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerAttributeTemplate")
-K.UIFrameHider:Hide()
-K.UIFrameHider:SetPoint("TOPLEFT", 0, 0)
-K.UIFrameHider:SetPoint("BOTTOMRIGHT", 0, 0)
-RegisterAttributeDriver(K.UIFrameHider, "state-visibility", "hide")
+	K.UIFrameHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerAttributeTemplate")
+	K.UIFrameHider:Hide()
+	K.UIFrameHider:SetPoint("TOPLEFT", 0, 0)
+	K.UIFrameHider:SetPoint("BOTTOMRIGHT", 0, 0)
+	RegisterAttributeDriver(K.UIFrameHider, "state-visibility", "hide")
 
-K.PetBattleHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-K.PetBattleHider:SetAllPoints()
-K.PetBattleHider:SetFrameStrata("LOW")
-RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
+	K.PetBattleHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+	K.PetBattleHider:SetAllPoints()
+	K.PetBattleHider:SetFrameStrata("LOW")
+	RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
+end
 
-local function CreateBorder(f, bLayer, bOffset, bPoints, strip)
-	if f.Backgrounds then
+-- This is a lot...
+local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha, bgBackground, innerShadow)
+	if bFrame.KKUI_Border or bFrame.KKUI_Background or bFrame.KKUI_InnerShadow then
 		return
 	end
 
-	bLayer = bLayer or -2
-	bOffset = bOffset or 4
-	bPoints = bPoints or 0
-
-	if strip then
-		f:StripTextures()
+	if bFrame:GetObjectType() == "Texture" then
+		bFrame = bFrame:GetParent()
 	end
 
-	K.CreateBorder(f, bOffset) -- object, offset, size, drawLayer, drawSubLevel, path
+	-- Border
+	local BorderSubLevel = bSubLevel or "OVERLAY"
+	local BorderLayer = bLayer or 1
+	local BorderSize = bSize or 12
+	local BorderTexture = bTexture or C["Media"].Border
+	local BorderOffset = bOffset or -4
+	local BorderRed = bRed or C["General"].ColorTextures and C["General"].TexturesColor[1] or C["Media"].BorderColor[1]
+	local BorderGreen = bGreen or C["General"].ColorTextures and C["General"].TexturesColor[2] or C["Media"].BorderColor[2]
+	local BorderBlue = bBlue or C["General"].ColorTextures and C["General"].TexturesColor[3] or C["Media"].BorderColor[3]
+	local BorderAlpha = bAlpha or 1
 
-	local backgrounds = f:CreateTexture(nil, "BACKGROUND")
-	backgrounds:SetDrawLayer("BACKGROUND", bLayer)
-	backgrounds:SetPoint("TOPLEFT", f ,"TOPLEFT", bPoints, -bPoints)
-	backgrounds:SetPoint("BOTTOMRIGHT", f ,"BOTTOMRIGHT", -bPoints, bPoints)
-	backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	-- Background
+	local BackgroundTexture = bgTexture or C["Media"].Blank
+	local BackgroundSubLevel = bgSubLevel or "BACKGROUND"
+	local BackgroundLayer = bgLayer or -1
+	local BackgroundPoint = bgPoint or 0
+	local BackgroundRed = bgRed or C["Media"].BackdropColor[1]
+	local BackgroundGreen = bgGreen or C["Media"].BackdropColor[2]
+	local BackgroundBlue = bgBlue or C["Media"].BackdropColor[3]
+	local BackgroundAlpha = bgAlpha or C["Media"].BackdropColor[4]
+	local UseBackground = bgBackground or true
 
-	f:SetBorderColor()
+	local UseInnerShadow = innerShadow or false
 
-	f.Backgrounds = backgrounds
+	-- Create Our Border
+	local kkui_border = K.CreateBorder(bFrame, BorderSubLevel, BorderLayer)
+	kkui_border:SetSize(BorderSize)
+	kkui_border:SetTexture(BorderTexture)
+	kkui_border:SetOffset(BorderOffset)
+	kkui_border:SetVertexColor(BorderRed, BorderGreen, BorderBlue, BorderAlpha)
+
+	-- Create Our Background (true/false)
+	if UseBackground then
+		local kkui_background = bFrame:CreateTexture()
+		kkui_background:SetDrawLayer(BackgroundSubLevel, BackgroundLayer)
+		kkui_background:SetTexture(BackgroundTexture)
+		kkui_background:SetPoint("TOPLEFT", bFrame ,"TOPLEFT", BackgroundPoint, -BackgroundPoint)
+		kkui_background:SetPoint("BOTTOMRIGHT", bFrame ,"BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint)
+		kkui_background:SetVertexColor(BackgroundRed, BackgroundGreen, BackgroundBlue, BackgroundAlpha)
+
+		bFrame.KKUI_Background = kkui_background
+	end
+
+	if UseInnerShadow then
+		local kkui_innershadow = bFrame:CreateTexture()
+		kkui_innershadow:SetDrawLayer("OVERLAY", 2)
+		kkui_innershadow:SetAtlas("Artifacts-BG-Shadow")
+		kkui_innershadow:SetPoint("TOPLEFT", bFrame, "TOPLEFT", 1, -1)
+		kkui_innershadow:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", -1, 1)
+		kkui_innershadow:SetAlpha(C["Media"].BackdropColor[4])
+
+		bFrame.KKUI_InnerShadow = kkui_innershadow
+	end
+
+	bFrame.KKUI_Border = kkui_border
 end
 
+-- Simple Create Backdrop.
 local function CreateBackdrop(f)
 	if f.Backdrop then
 		return
@@ -77,16 +118,7 @@ local function CreateBackdrop(f)
 	f.Backdrop = b
 end
 
-local function CreateBackground(f, a)
-	f:SetBackdrop({
-		bgFile = C["Media"].Blank, edgeFile = C["Media"].Blank, edgeSize = K.Mult,
-	})
-
-	f:SetBackdropColor(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], a or C.Media.BackdropColor[4])
-	f:SetBackdropBorderColor(0, 0, 0)
-end
-
-
+-- The Famous Shadow?
 local function CreateShadow(f, bd)
 	if f.Shadow then
 		return
@@ -97,9 +129,6 @@ local function CreateShadow(f, bd)
 		frame = f:GetParent()
 	end
 	local lvl = frame:GetFrameLevel()
-	-- if not m then
-	-- 	m, s = 2, 3
-	-- end
 
 	f.Shadow = CreateFrame("Frame", nil, frame)
 	f.Shadow:SetPoint("TOPLEFT", f, -3, 3)
@@ -126,25 +155,7 @@ local function CreateShadow(f, bd)
 	return f.Shadow
 end
 
-local function CreateInnerShadow(f, isLayer, isAlpha, isLPoints, isRPoints)
-	if f.InnerShadow then
-		return
-	end
-
-	isLayer = isLayer or -1
-	isAlpha = isAlpha or C.Media.BackdropColor[4]
-	isLPoints = isLPoints or 0
-	isRPoints = isRPoints or 0
-
-	local innerShadow = f:CreateTexture(nil, "OVERLAY", nil, isLayer)
-	innerShadow:SetAtlas("Artifacts-BG-Shadow")
-	innerShadow:SetPoint("TOPLEFT", isLPoints, isRPoints)
-	innerShadow:SetPoint("BOTTOMRIGHT", isLPoints, isRPoints - 1) -- Minus 1 here because it is off by default.
-	innerShadow:SetVertexColor(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], isAlpha)
-
-	f.InnerShadow = innerShadow
-end
-
+-- Its A Killer.
 local function Kill(object)
 	if object.UnregisterAllEvents then
 		object:UnregisterAllEvents()
@@ -226,6 +237,7 @@ local function StripTexts(object, kill, alpha)
 	StripType(STRIP_FONT, object, kill, alpha)
 end
 
+-- Font Template.
 local function FontTemplate(fs, font, fontSize, fontStyle)
 	fs.font = font
 	fs.fontSize = fontSize
@@ -249,114 +261,99 @@ local function FontTemplate(fs, font, fontSize, fontStyle)
 	end
 end
 
-local function StyleButton(button, noHover, noPushed, noChecked)
+local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
+	local pointsSet = setPoints or 2
+
 	if button.SetHighlightTexture and not button.hover and not noHover then
-		button:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
-		button:GetHighlightTexture():SetAllPoints()
+		local hover = button:CreateTexture()
+		hover:SetPoint("TOPLEFT", button, "TOPLEFT", pointsSet, -pointsSet)
+		hover:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -pointsSet, pointsSet)
+		hover:SetBlendMode("ADD")
+		hover:SetColorTexture(1, 1, 1, 0.3)
+		button:SetHighlightTexture(hover)
+		button.hover = hover
 	end
 
 	if button.SetPushedTexture and not button.pushed and not noPushed then
-		button:SetPushedTexture("Interface\\Buttons\\ButtonHilight-Square")
-		button:GetPushedTexture():SetBlendMode("ADD")
-		button:GetPushedTexture():SetDesaturated(true)
-		button:GetPushedTexture():SetVertexColor(246, 196, 66)
-		button:GetPushedTexture():SetAllPoints()
+		local pushed = button:CreateTexture()
+		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", pointsSet, -pointsSet)
+		pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -pointsSet, pointsSet)
+		pushed:SetBlendMode("ADD")
+		pushed:SetColorTexture(0.9, 0.8, 0.1, 0.3)
+		button:SetPushedTexture(pushed)
+		button.pushed = pushed
 	end
 
 	if button.SetCheckedTexture and not button.checked and not noChecked then
-		button:SetCheckedTexture("Interface\\Buttons\\CheckButtonHilight")
-		button:GetCheckedTexture():SetBlendMode("ADD")
-		button:GetCheckedTexture():SetAllPoints()
+		local checked = button:CreateTexture()
+		checked:SetPoint("TOPLEFT", button, "TOPLEFT", pointsSet, -pointsSet)
+		checked:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -pointsSet, pointsSet)
+		checked:SetBlendMode("ADD")
+		checked:SetColorTexture(1, 1, 1, 0.3)
+		button:SetCheckedTexture(checked)
+		button.checked = checked
 	end
 
 	local name = button.GetName and button:GetName()
 	local cooldown = name and _G[name.."Cooldown"]
 	if cooldown then
 		cooldown:ClearAllPoints()
-		cooldown:SetPoint("TOPLEFT", 1, -1)
-		cooldown:SetPoint("BOTTOMRIGHT", -1, 1)
+		cooldown:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+		cooldown:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
 		cooldown:SetDrawEdge(false)
 		cooldown:SetSwipeColor(0, 0, 0, 1)
 	end
 end
 
 local function SetModifiedBackdrop(self)
-	if not C["General"].ColorTextures then
-		self:SetBackdropBorderColor(CustomClassColor.r, CustomClassColor.g, CustomClassColor.b, 1)
+	if not self:IsEnabled() then
+		return
 	end
 
-	self:SetBackdropBorderColor(CustomClassColor.r, CustomClassColor.g, CustomClassColor.b, 1)
-	self.Backgrounds:SetColorTexture(CustomClassColor.r * .15, CustomClassColor.g * .15, CustomClassColor.b * .15, C.Media.BackdropColor[4])
+	self.KKUI_Border:SetVertexColor(102/255, 157/255, 255/255, 1)
 end
 
 local function SetOriginalBackdrop(self)
-	if not C["General"].ColorTextures then
-		self:SetBackdropBorderColor()
-	end
-
-	self:SetBackdropBorderColor()
-	self.Backgrounds:SetColorTexture(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], C.Media.BackdropColor[4])
+	self.KKUI_Border:SetVertexColor(1, 1, 1)
 end
 
-local function SkinButton(f, strip)
-	assert(f, "doesnt exist!")
+local blizzButtonRegions = {
+	"Left",
+	"Middle",
+	"Right",
+	"Mid",
+	"LeftDisabled",
+	"MiddleDisabled",
+	"RightDisabled",
+	"TopLeft",
+	"TopRight",
+	"BottomLeft",
+	"BottomRight",
+	"TopMiddle",
+	"MiddleLeft",
+	"MiddleRight",
+	"BottomMiddle",
+	"MiddleMiddle",
+	"TabSpacer",
+	"TabSpacer1",
+	"TabSpacer2",
+	"_RightSeparator",
+	"_LeftSeparator",
+	"Cover",
+	"Border",
+	"Background",
+	"TopTex",
+	"TopLeftTex",
+	"TopRightTex",
+	"LeftTex",
+	"BottomTex",
+	"BottomLeftTex",
+	"BottomRightTex",
+	"RightTex",
+	"MiddleTex",
+}
 
-	if f.Left then
-		f.Left:SetAlpha(0)
-	end
-
-	if f.Middle then
-		f.Middle:SetAlpha(0)
-	end
-
-	if f.Right then
-		f.Right:SetAlpha(0)
-	end
-
-	if f.TopLeft then
-		f.TopLeft:SetAlpha(0)
-	end
-
-	if f.TopMiddle then
-		f.TopMiddle:SetAlpha(0)
-	end
-
-	if f.TopRight then
-		f.TopRight:SetAlpha(0)
-	end
-
-	if f.MiddleLeft then
-		f.MiddleLeft:SetAlpha(0)
-	end
-
-	if f.MiddleMiddle then
-		f.MiddleMiddle:SetAlpha(0)
-	end
-
-	if f.MiddleRight then
-		f.MiddleRight:SetAlpha(0)
-	end
-
-	if f.BottomLeft then
-		f.BottomLeft:SetAlpha(0)
-	end
-
-	if f.BottomMiddle then
-		f.BottomMiddle:SetAlpha(0)
-	end
-
-	if f.BottomRight then
-		f.BottomRight:SetAlpha(0)
-	end
-
-	if f.LeftSeparator then
-		f.LeftSeparator:SetAlpha(0)
-	end
-
-	if f.RightSeparator then
-		f.RightSeparator:SetAlpha(0)
-	end
-
+local function SkinButton(f, forceStrip, innerShadow)
 	if f.SetNormalTexture then
 		f:SetNormalTexture("")
 	end
@@ -373,11 +370,23 @@ local function SkinButton(f, strip)
 		f:SetDisabledTexture("")
 	end
 
-	if strip then
+	local buttonName = f.GetName and f:GetName()
+	for _, region in pairs(blizzButtonRegions) do
+		region = buttonName and _G[buttonName..region] or f[region]
+		if region then
+			region:SetAlpha(0)
+		end
+	end
+
+	if forceStrip then
 		f:StripTextures()
 	end
 
-	f:CreateBorder()
+	if innerShadow then
+		f:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	else
+		f:CreateBorder()
+	end
 
 	f:HookScript("OnEnter", SetModifiedBackdrop)
 	f:HookScript("OnLeave", SetOriginalBackdrop)
@@ -387,19 +396,17 @@ local function SkinCloseButton(f, point, texture)
 	assert(f, "doesnt exist!")
 
 	f:StripTextures()
-	f:CreateBorder(nil, 12, 8)
+	f:CreateBorder(nil, nil, nil, nil, -12, nil, nil, nil, nil, nil, nil, nil, 8)
+
 	f:HookScript("OnEnter", SetModifiedBackdrop)
 	f:HookScript("OnLeave", SetOriginalBackdrop)
 	f:SetHitRectInsets(6, 6, 7, 7)
 
-	if not texture then
-		texture = CustomCloseButton
-	end
-
+	local closeTexture = texture or CustomCloseButton
 	if not f.button then
 		f.button = f:CreateTexture(nil, "OVERLAY")
 		f.button:SetSize(16, 16)
-		f.button:SetTexture(texture)
+		f.button:SetTexture(closeTexture)
 		f.button:SetPoint("CENTER", f, "CENTER")
 	end
 
@@ -409,7 +416,8 @@ local function SkinCloseButton(f, point, texture)
 end
 
 local function SkinCheckBox(f)
-	f:CreateBorder(nil, nil, nil, true)
+	f:StripTextures()
+	f:CreateBorder()
 
 	if f.SetCheckedTexture then
 		f:SetCheckedTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check")
@@ -437,148 +445,131 @@ local function SkinCheckBox(f)
 	f.SetHighlightTexture = K.Noop
 end
 
-local function scrollBarHook(f, delta)
-	f:SetValue(f:GetValue() - delta * 50)
+-- Handle arrows
+local arrowDegree = {
+	["up"] = 0,
+	["down"] = 180,
+	["left"] = 90,
+	["right"] = -90,
+}
+
+local function SetupArrow(self, direction)
+	self:SetTexture(C["Media"].Arrow)
+	self:SetRotation(rad(arrowDegree[direction]))
 end
 
-local function SkinScrollBar(f, width)
-	local frame = f:GetName()
+function K.ReskinArrow(self, direction)
+	self:SetSize(16, 16)
+	self:SkinButton()
 
-	if not width then
-		width = 6
-	end
+	self:SetDisabledTexture("Interface\\ChatFrame\\ChatFrameBackground")
+	local dis = self:GetDisabledTexture()
+	dis:SetVertexColor(0, 0, 0, .3)
+	dis:SetDrawLayer("OVERLAY")
+	dis:SetAllPoints()
 
-	local up, down = f:GetChildren()
-	if up then
-		up:Kill()
-	end
-
-	if down then
-		down:Kill()
-	end
-
-	local bu = (f.ThumbTexture or f.thumbTexture) or frame and _G[frame.."ThumbTexture"]
-	if bu then
-		bu:SetColorTexture(0.3, 0.3, 0.3)
-		bu:SetSize(width, 10)
-		bu:SetPoint("LEFT", -5, 0)
-	end
-
-	f:SetScript("OnMouseWheel", scrollBarHook)
+	local tex = self:CreateTexture(nil, "ARTWORK")
+	tex:SetAllPoints()
+	SetupArrow(tex, direction)
+	self.bgTex = tex
 end
 
-local function WatchPixelSnap(frame, snap)
-	if (frame and not frame:IsForbidden()) and frame.PixelSnapDisabled and snap then
-		frame.PixelSnapDisabled = nil
-	end
+local function GrabScrollBarElement(frame, element)
+	local frameName = frame:GetDebugName()
+	return frame[element] or frameName and (_G[frameName..element] or strfind(frameName, element)) or nil
 end
 
-local function DisablePixelSnap(frame)
-	if (frame and not frame:IsForbidden()) and not frame.PixelSnapDisabled then
-		if frame.SetSnapToPixelGrid then
-			frame:SetSnapToPixelGrid(false)
-			frame:SetTexelSnappingBias(0)
-		elseif frame.GetStatusBarTexture then
-			local texture = frame:GetStatusBarTexture()
-			if texture and texture.SetSnapToPixelGrid then
-				texture:SetSnapToPixelGrid(false)
-				texture:SetTexelSnappingBias(0)
-			end
-		end
+local function SkinScrollBar(self)
+	self:GetParent():StripTextures()
+	self:StripTextures()
 
-		frame.PixelSnapDisabled = true
+	local thumb = GrabScrollBarElement(self, "ThumbTexture") or GrabScrollBarElement(self, "thumbTexture") or self.GetThumbTexture and self:GetThumbTexture()
+	if thumb then
+		thumb:SetAlpha(0)
+		thumb:SetWidth(16)
+		self.thumb = thumb
+
+		local bg = CreateFrame("Frame", nil, self)
+		bg:CreateBorder()
+		bg:SetPoint("TOPLEFT", thumb, 0, -6)
+		bg:SetPoint("BOTTOMRIGHT", thumb, 0, 6)
+
+		thumb.bg = bg
 	end
+
+	local up, down = self:GetChildren()
+	K.ReskinArrow(up, "up")
+	K.ReskinArrow(down, "down")
 end
 
-local function AddCustomAPI(object)
-	local MetaTable = getmetatable(object).__index
+local function addapi(object)
+	local mt = getmetatable(object).__index
 
 	if not object.CreateBorder then
-		MetaTable.CreateBorder = CreateBorder
+		mt.CreateBorder = CreateBorder
 	end
 
 	if not object.CreateBackdrop then
-		MetaTable.CreateBackdrop = CreateBackdrop
-	end
-
-	if not object.CreateBackground then
-		MetaTable.CreateBackground = CreateBackground
+		mt.CreateBackdrop = CreateBackdrop
 	end
 
 	if not object.CreateShadow then
-		MetaTable.CreateShadow = CreateShadow
-	end
-
-	if not object.CreateInnerShadow then
-		MetaTable.CreateInnerShadow = CreateInnerShadow
+		mt.CreateShadow = CreateShadow
 	end
 
 	if not object.FontTemplate then
-		MetaTable.FontTemplate = FontTemplate
+		mt.FontTemplate = FontTemplate
 	end
 
 	if not object.Kill then
-		MetaTable.Kill = Kill
+		mt.Kill = Kill
 	end
 
 	if not object.SkinButton then
-		MetaTable.SkinButton = SkinButton
+		mt.SkinButton = SkinButton
 	end
 
 	if not object.StripTextures then
-		MetaTable.StripTextures = StripTextures
+		mt.StripTextures = StripTextures
 	end
 
 	if not object.StripTexts then
-		MetaTable.StripTexts = StripTexts
+		mt.StripTexts = StripTexts
 	end
 
 	if not object.StyleButton then
-		MetaTable.StyleButton = StyleButton
+		mt.StyleButton = StyleButton
 	end
 
 	if not object.SkinCloseButton then
-		MetaTable.SkinCloseButton = SkinCloseButton
+		mt.SkinCloseButton = SkinCloseButton
 	end
 
 	if not object.SkinCheckBox then
-		MetaTable.SkinCheckBox = SkinCheckBox
+		mt.SkinCheckBox = SkinCheckBox
 	end
 
 	if not object.SkinScrollBar then
-		MetaTable.SkinScrollBar = SkinScrollBar
-	end
-
-	if not object.DisabledPixelSnap then
-		if MetaTable.SetTexture then hooksecurefunc(MetaTable, "SetTexture", DisablePixelSnap) end
-		if MetaTable.SetTexCoord then hooksecurefunc(MetaTable, "SetTexCoord", DisablePixelSnap) end
-		if MetaTable.CreateTexture then hooksecurefunc(MetaTable, "CreateTexture", DisablePixelSnap) end
-		if MetaTable.SetVertexColor then hooksecurefunc(MetaTable, "SetVertexColor", DisablePixelSnap) end
-		if MetaTable.SetColorTexture then hooksecurefunc(MetaTable, "SetColorTexture", DisablePixelSnap) end
-		if MetaTable.SetSnapToPixelGrid then hooksecurefunc(MetaTable, "SetSnapToPixelGrid", WatchPixelSnap) end
-		if MetaTable.SetStatusBarTexture then hooksecurefunc(MetaTable, "SetStatusBarTexture", DisablePixelSnap) end
-		MetaTable.DisabledPixelSnap = true
+		mt.SkinScrollBar = SkinScrollBar
 	end
 end
 
-local Handled = {["Frame"] = true}
-local Object = CreateFrame("Frame")
+local handled = {Frame = true}
+local object = CreateFrame('Frame')
+addapi(object)
+addapi(object:CreateTexture())
+addapi(object:CreateFontString())
+addapi(object:CreateMaskTexture())
 
-AddCustomAPI(Object)
-AddCustomAPI(Object:CreateTexture())
-AddCustomAPI(Object:CreateFontString())
-AddCustomAPI(Object:CreateMaskTexture())
-
-Object = EnumerateFrames()
-while Object do
-	if not Object:IsForbidden() and not Handled[Object:GetObjectType()] then
-		AddCustomAPI(Object)
-		Handled[Object:GetObjectType()] = true
+object = EnumerateFrames()
+while object do
+	if not object:IsForbidden() and not handled[object:GetObjectType()] then
+		addapi(object)
+		handled[object:GetObjectType()] = true
 	end
 
-	Object = EnumerateFrames(Object)
+	object = EnumerateFrames(object)
 end
 
--- Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the "Frame" widget
-local ScrollFrame = CreateFrame("ScrollFrame")
-AddCustomAPI(ScrollFrame)
+addapi(_G.GameFontNormal) -- Add API to `CreateFont` objects without actually creating one
+addapi(CreateFrame('ScrollFrame')) -- Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the 'Frame' widget

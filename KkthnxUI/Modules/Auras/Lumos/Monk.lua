@@ -94,9 +94,9 @@ function Module:ChantLumos(self)
 			button.Icon:SetTexture(texture)
 
 			if button.Icon:GetTexture() == GetSpellTexture(124273) then
-				K.libCustomGlow.AutoCastGlow_Start(button)
+				K.libButtonGlow.ShowOverlayGlow(button)
 			else
-				K.libCustomGlow.AutoCastGlow_Stop(button)
+				K.libButtonGlow.HideOverlayGlow(button)
 			end
 		end
 	elseif GetSpecialization() == 2 then

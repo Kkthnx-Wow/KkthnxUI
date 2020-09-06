@@ -112,7 +112,7 @@ local function CheckTalentTree(tree)
 end
 
 local playerClass = select(2, UnitClass('player'))
-local function CheckSpec(self, event, levels)
+local function CheckSpec(_, event, levels)
 	-- Not interested in gained points from leveling
 	if event == "CHARACTER_POINTS_CHANGED" and levels > 0 then return end
 
@@ -171,7 +171,7 @@ local function OnUpdate(self, elapsed)
 	end
 end
 
-local function UpdateDebuff(self, name, icon, count, debuffType, duration, endTime, spellId, stackThreshold)
+local function UpdateDebuff(self, name, icon, count, debuffType, duration, endTime, _, stackThreshold)
 	local f = self.RaidDebuffs
 
 	if name and (count >= stackThreshold) then
@@ -211,7 +211,7 @@ local function UpdateDebuff(self, name, icon, count, debuffType, duration, endTi
 		end
 
 		local c = DispellColor[debuffType] or DispellColor.none
-		f:SetBackdropBorderColor(c[1], c[2], c[3])
+		f.KKUI_Border:SetVertexColor(c[1], c[2], c[3])
 
 		f:Show()
 	else

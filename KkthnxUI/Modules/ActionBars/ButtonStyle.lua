@@ -261,8 +261,7 @@ function Module:StyleActionButton(button, cfg)
 	end
 
 	-- Backdrop
-	button:CreateBorder()
-	button:CreateInnerShadow()
+	button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 	button:StyleButton()
 
 	-- Textures
@@ -333,8 +332,7 @@ function Module:StyleExtraActionButton(cfg)
 	local checkedTexture = button:GetCheckedTexture()
 
 	-- Border
-	button:CreateBorder()
-	button:CreateInnerShadow()
+	button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 	button:StyleButton()
 
 	-- Textures

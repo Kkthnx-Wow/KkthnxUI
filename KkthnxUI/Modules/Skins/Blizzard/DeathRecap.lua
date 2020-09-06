@@ -8,7 +8,8 @@ local unpack = _G.unpack
 local function ReskinDeathRecapFrame()
     local DeathRecapFrame = _G.DeathRecapFrame
     DeathRecapFrame.CloseXButton:SkinCloseButton()
-    DeathRecapFrame:CreateBorder(nil, nil, nil, true)
+    DeathRecapFrame:StripTextures()
+    DeathRecapFrame:CreateBorder()
 
     for i = 1, 5 do
         local iconBorder = DeathRecapFrame["Recap"..i].SpellInfo.IconBorder

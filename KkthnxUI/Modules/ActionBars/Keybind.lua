@@ -4,7 +4,6 @@ local Module = K:GetModule("ActionBar")
 -- Sourced: siweia (NDui)
 
 local _G = _G
-local print = _G.print
 local string_find = _G.string.find
 local string_format = _G.string.format
 local string_upper = _G.string.upper
@@ -15,7 +14,6 @@ local EnumerateFrames = _G.EnumerateFrames
 local GetBindingKey = _G.GetBindingKey
 local GetMacroInfo = _G.GetMacroInfo
 local GetSpellBookItemName = _G.GetSpellBookItemName
-local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsAltKeyDown = _G.IsAltKeyDown
@@ -24,43 +22,26 @@ local IsShiftKeyDown = _G.IsShiftKeyDown
 local LoadBindings = _G.LoadBindings
 local SaveBindings = _G.SaveBindings
 local SetBinding = _G.SetBinding
+local SlashCmdList = _G.SlashCmdList
 local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
+local hooksecurefunc = _G.hooksecurefunc
 
 -- Button types
 local function hookActionButton(self)
-	Module:Bind_Update(self)
+	local pet = self.commandName and string_find(self.commandName, "^BONUSACTION") and "PET"
+	local stance = self.commandName and string_find(self.commandName, "^SHAPESHIFT") and "STANCE"
+	Module:Bind_Update(self, pet or stance or nil)
 end
-
-local function hookStanceButton(self)
-	Module:Bind_Update(self, "STANCE")
-end
-
-local function hookPetButton(self)
-	Module:Bind_Update(self, "PET")
-end
-
 local function hookMacroButton(self)
 	Module:Bind_Update(self, "MACRO")
 end
-
 local function hookSpellButton(self)
 	Module:Bind_Update(self, "SPELL")
 end
 
 function Module:Bind_RegisterButton(button)
-	local action = ActionButton1:GetScript("OnClick")
-	local stance = StanceButton1:GetScript("OnClick")
-	local pet = PetActionButton1:GetScript("OnClick")
-
-	if button.IsProtected and button.IsObjectType and button.GetScript and button:IsObjectType("CheckButton") and button:IsProtected() then
-		local script = button:GetScript("OnClick")
-		if script == action then
-			button:HookScript("OnEnter", hookActionButton)
-		elseif script == stance then
-			button:HookScript("OnEnter", hookStanceButton)
-		elseif script == pet then
-			button:HookScript("OnEnter", hookPetButton)
-		end
+	if button.IsProtected and button.IsObjectType and button:IsObjectType("CheckButton") and button:IsProtected() then
+		button:HookScript("OnEnter", hookActionButton)
 	end
 end
 
@@ -91,7 +72,7 @@ function Module:Bind_Create()
 	frame:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(frame, "ANCHOR_NONE")
 		GameTooltip:SetPoint("BOTTOM", frame, "TOP", 0, 2)
-		GameTooltip:AddLine(frame.name, 1,1,1)
+		GameTooltip:AddLine(frame.tipName or frame.name, 0.6, 0.8, 1)
 
 		if #frame.bindings == 0 then
 			GameTooltip:AddLine(L["No Key Set"], 0.6, 0.6, 0.6)
@@ -171,6 +152,7 @@ function Module:Bind_Update(button, spellmacro)
 		if not frame.name then
 			return
 		end
+		frame.tipName = button.commandName and GetBindingName(button.commandName)
 
 		frame.id = tonumber(button:GetID())
 		if not frame.id or frame.id < 1 or frame.id > (spellmacro == "STANCE" and 10 or 12) then
@@ -184,6 +166,7 @@ function Module:Bind_Update(button, spellmacro)
 		if not frame.name then
 			return
 		end
+		frame.tipName = button.commandName and GetBindingName(button.commandName)
 
 		frame.action = tonumber(button.action)
 		if not frame.action or frame.action < 1 or frame.action > 132 then
@@ -226,7 +209,7 @@ function Module:Bind_Listener(key)
 				SetBinding(frame.bindings[i])
 			end
 		end
-		K.Print(string_format(L["Clear Binds"], frame.name))
+		K.Print(string_format(L["Clear binds"], frame.tipName or frame.name))
 
 		Module:Bind_Update(frame.button, frame.spellmacro)
 		if frame.spellmacro ~= "MACRO" and not GameTooltip:IsForbidden() then
@@ -258,7 +241,7 @@ function Module:Bind_Listener(key)
 	else
 		SetBinding(alt..ctrl..shift..key, frame.spellmacro.." "..frame.name)
 	end
-	K.Print(frame.name.." "..K.SystemColor..L["Key Bound To"].."|r "..alt..ctrl..shift..key)
+	K.Print((frame.tipName or frame.name).." |cff00ff00"..L["Key Bound To"].."|r "..alt..ctrl..shift..key)
 
 	Module:Bind_Update(frame.button, frame.spellmacro)
 	frame:GetScript("OnEnter")(self)
@@ -311,7 +294,7 @@ function Module:Bind_CreateDialog()
 	frame.top:SetPoint("TOP", 0, 26)
 	frame.top:CreateBorder()
 
-	K.CreateFontString(frame.top, 14, K.Title.." "..KEY_BINDING, "", false, "CENTER", 0, 0)
+	K.CreateFontString(frame.top, 14, K.Title.." "..K.SystemColor..KEY_BINDING, "", false, "CENTER", 0, 0)
 
 	frame.bottom = CreateFrame("Frame", nil, frame)
 	frame.bottom:SetSize(294, 20)
@@ -367,7 +350,7 @@ function Module:Bind_CreateDialog()
 	end)
 
 	checkBox.text = frame.bottom:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	checkBox.text:SetPoint("CENTER", 14, 0)
+	checkBox.text:SetPoint("CENTER", 0, 0)
 	checkBox.text:SetText(checkBox:GetChecked() and K.SystemColor..CHARACTER_SPECIFIC_KEYBINDINGS.."|r" or K.GreyColor..CHARACTER_SPECIFIC_KEYBINDINGS.."|r")
 	checkBox:SetHitRectInsets(0, 0 - checkBox.text:GetWidth(), 0, 0)
 	checkBox.text:Show()
@@ -390,15 +373,15 @@ SlashCmdList["KKUI_KEYBINDS"] = function(msg)
 	Module:Bind_CreateDialog()
 end
 
-SLASH_KKUI_KEYBINDS1 = "/bindkey"
-SLASH_KKUI_KEYBINDS2 = "/hoverbind"
-SLASH_KKUI_KEYBINDS3 = "/bk"
-SLASH_KKUI_KEYBINDS4 = "/bb"
+_G.SLASH_KKUI_KEYBINDS1 = "/bindkey"
+_G.SLASH_KKUI_KEYBINDS2 = "/hoverbind"
+_G.SLASH_KKUI_KEYBINDS3 = "/bk"
+_G.SLASH_KKUI_KEYBINDS4 = "/bb"
 
 if not K.CheckAddOnState("Bartender4") and not K.CheckAddOnState("Dominos") then
-	SLASH_KKUI_KEYBINDS5 = "/kb"
+	_G.SLASH_KKUI_KEYBINDS5 = "/kb"
 end
 
 if not K.CheckAddOnState("HealBot") then
-	SLASH_KKUI_KEYBINDS6 = "/hb"
+	_G.SLASH_KKUI_KEYBINDS6 = "/hb"
 end

@@ -61,9 +61,9 @@ end
 function Module:GlowOnEnd()
 	local elapsed = self.expire - GetTime()
 	if elapsed < 3 then
-		K.libCustomGlow.AutoCastGlow_Start(self.glowFrame)
+		K.libButtonGlow.ShowOverlayGlow(self.glowFrame)
 	else
-		K.libCustomGlow.AutoCastGlow_Stop(self.glowFrame)
+		K.libButtonGlow.HideOverlayGlow(self.glowFrame)
 	end
 end
 
@@ -88,21 +88,23 @@ function Module:UpdateAura(button, unit, auraID, filter, spellID, cooldown, glow
 				button.expire = expire
 				button:SetScript("OnUpdate", Module.GlowOnEnd)
 			else
-				K.libCustomGlow.AutoCastGlow_Start(button.glowFrame)
+				K.libButtonGlow.ShowOverlayGlow(button.glowFrame)
 			end
 		end
 	else
 		if cooldown then
 			self:UpdateCooldown(button, spellID)
 		else
-			if button.Count then button.Count:SetText("") end
+			if button.Count then
+				button.Count:SetText("")
+			end
 			button.CD:Hide()
 			button.Icon:SetDesaturated(true)
 		end
 
 		if glow then
 			button:SetScript("OnUpdate", nil)
-			K.libCustomGlow.AutoCastGlow_Stop(button.glowFrame)
+			K.libButtonGlow.HideOverlayGlow(button.glowFrame)
 		end
 	end
 end
@@ -123,7 +125,7 @@ function Module:UpdateTotemAura(button, texture, spellID, glow)
 					button.expire = start + dur
 					button:SetScript("OnUpdate", Module.GlowOnEnd)
 				else
-					K.libCustomGlow.AutoCastGlow_Start(button.glowFrame)
+					K.libButtonGlow.ShowOverlayGlow(button.glowFrame)
 				end
 			end
 			found = true
@@ -141,7 +143,7 @@ function Module:UpdateTotemAura(button, texture, spellID, glow)
 
 		if glow then
 			button:SetScript("OnUpdate", nil)
-			K.libCustomGlow.AutoCastGlow_Stop(button.glowFrame)
+			K.libButtonGlow.HideOverlayGlow(button.glowFrame)
 		end
 	end
 end
@@ -156,7 +158,7 @@ local function UpdateVisibility(self)
 		self.bu[i].Count:SetText("")
 		self.bu[i].CD:Hide()
 		self.bu[i]:SetScript("OnUpdate", nil)
-		K.libCustomGlow.AutoCastGlow_Stop(self.bu[i].glowFrame)
+		K.libButtonGlow.HideOverlayGlow(self.bu[i].glowFrame)
 	end
 
 	if Module.PostUpdateVisibility then

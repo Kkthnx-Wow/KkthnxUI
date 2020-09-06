@@ -2,8 +2,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Inventory -->
     <Script file="Core.lua"/>
-	<Script file="Filters.lua"/>
-    <Script file="InventoryBar.lua"/>
-    <Script file="AutoRepair.lua"/>
-    <Script file="AutoSell.lua"/>
+
+	<Script file="Elements\Filters.lua"/>
+    <Script file="Elements\AutoRepair.lua"/>
+    <Script file="Elements\AutoSell.lua"/>
+    <Script file="Elements\InventoryBar.lua"/>
 </Ui>

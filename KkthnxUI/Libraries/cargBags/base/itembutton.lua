@@ -40,8 +40,7 @@ local ItemButton = cargBags:NewClass("ItemButton", nil, "ItemButton")
 ]]
 function ItemButton:GetTemplate(bagID)
 	bagID = bagID or self.bagID
-	return (bagID == -3 and "ReagentBankItemButtonGenericTemplate") or (bagID == -1 and "BankItemButtonGenericTemplate") or (bagID and "ContainerFrameItemButtonTemplate") or "",
-      (bagID == -3 and ReagentBankFrame) or (bagID == -1 and BankFrame) or (bagID and _G["ContainerFrame"..bagID + 1]) or ""
+	return (bagID == -3 and "ReagentBankItemButtonGenericTemplate") or (bagID == -1 and "BankItemButtonGenericTemplate") or (bagID and "ContainerFrameItemButtonTemplate") or "", (bagID == -3 and ReagentBankFrame) or (bagID == -1 and BankFrame) or (bagID and _G["ContainerFrame"..bagID + 1]) or ""
 end
 
 local mt_gen_key = {__index = function(self,k)
@@ -55,11 +54,27 @@ end}
 	@param slotID <number>
 	@return button <ItemButton>
 ]]
+-- function ItemButton:New(bagID, slotID)
+-- 	self.recycled = self.recycled or setmetatable({}, mt_gen_key)
+
+-- 	local tpl, parent = self:GetTemplate(bagID)
+-- 	local button = table_remove(self.recycled[tpl]) or self:Create(tpl, parent)
+
+-- 	button.bagID = bagID
+-- 	button.slotID = slotID
+-- 	button:SetID(slotID)
+-- 	button:Show()
+-- 	button:HookScript("OnEnter", button.OnEnter)
+-- 	button:HookScript("OnLeave", button.OnLeave)
+
+-- 	return button
+-- end
+
 function ItemButton:New(bagID, slotID)
 	self.recycled = self.recycled or setmetatable({}, mt_gen_key)
 
 	local tpl, parent = self:GetTemplate(bagID)
-	local button = table_remove(self.recycled[tpl]) or self:Create(tpl, parent)
+	local button = table.remove(self.recycled[tpl]) or self:Create(tpl, parent)
 
 	button.bagID = bagID
 	button.slotID = slotID
@@ -67,6 +82,12 @@ function ItemButton:New(bagID, slotID)
 	button:Show()
 	button:HookScript("OnEnter", button.OnEnter)
 	button:HookScript("OnLeave", button.OnLeave)
+	if bagID == -3 then
+		button.GetInventorySlot = ReagentButtonInventorySlot
+	elseif bagID == -1 then
+		button.GetInventorySlot = ButtonInventorySlot
+	end
+	button.UpdateTooltip = button:GetScript("OnEnter") -- Fix tooltip update
 
 	return button
 end
@@ -77,7 +98,6 @@ end
 	@return button <ItemButton>
 	@callback button:OnCreate(tpl)
 ]]
-
 local function updateContextMatch(button)
 	local item = button:GetItemInfo()
 	local isItemSet = ScrappingMachineFrame and ScrappingMachineFrame:IsShown() and item and item.isInSet
@@ -119,6 +139,7 @@ function ItemButton:Create(tpl, parent)
 		btnICO:SetTexture("")
 	end
 
+	button:RegisterForDrag("LeftButton") -- fix button drag in 9.0
 	hooksecurefunc(button, "UpdateItemContextOverlay", updateContextMatch)
 
 	return button

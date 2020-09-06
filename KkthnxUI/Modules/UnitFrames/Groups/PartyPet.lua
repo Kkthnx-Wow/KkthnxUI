@@ -1,12 +1,8 @@
 local K, C = unpack(select(2, ...))
-if C["Raid"].Enable ~= true then
-	return
-end
-
 local Module = K:GetModule("Unitframes")
 local oUF = oUF or K.oUF
 if not oUF then
-	K.Print("Could not find a vaild instance of oUF. Stopping Raid.lua code!")
+	K.Print("Could not find a vaild instance of oUF. Stopping PartyPet.lua code!")
 	return
 end
 
@@ -18,7 +14,7 @@ local GetThreatStatusColor = _G.GetThreatStatusColor
 local UnitIsUnit = _G.UnitIsUnit
 local UnitThreatSituation = _G.UnitThreatSituation
 
-local function UpdateRaidThreat(self, _, unit)
+local function UpdatePartyPetThreat(self, _, unit)
 	if unit ~= self.unit then
 		return
 	end
@@ -26,15 +22,31 @@ local function UpdateRaidThreat(self, _, unit)
 	local situation = UnitThreatSituation(unit)
 	if (situation and situation > 0) then
 		local r, g, b = GetThreatStatusColor(situation)
-		self:SetBackdropBorderColor(r, g, b)
+		self.KKUI_Border:SetVertexColor(r, g, b)
 	else
-		self:SetBackdropBorderColor()
+		self.KKUI_Border:SetVertexColor(1, 1, 1)
+	end
+end
+
+local function UpdatePartyPetPower(self, _, unit)
+	if self.unit ~= unit then
+		return
+	end
+
+	if not self.Power:IsVisible() then
+		self.Health:ClearAllPoints()
+		self.Health:SetPoint("BOTTOMLEFT", self, 0, 6)
+		self.Health:SetPoint("TOPRIGHT", self)
 	end
 end
 
 function Module:CreatePartyPet()
-	local RaidframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
-	local RaidframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
+	if not C["Party"].Enable then
+		return
+	end
+
+	local PartyPetframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
+	local PartyPetframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()
@@ -47,13 +59,7 @@ function Module:CreatePartyPet()
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetFrameLevel(self:GetFrameLevel())
 	self.Health:SetAllPoints(self)
-	self.Health:SetStatusBarTexture(RaidframeTexture)
-
-	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
-	self.Health.Value:SetPoint("CENTER", self.Health, 0, -9)
-	self.Health.Value:SetFontObject(RaidframeFont)
-	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 11, select(3, self.Health.Value:GetFont()))
-	self:Tag(self.Health.Value, "[raidhp]")
+	self.Health:SetStatusBarTexture(PartyPetframeTexture)
 
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
@@ -73,15 +79,35 @@ function Module:CreatePartyPet()
 		self.Health.colorReaction = true
 	end
 
+	self.Power = CreateFrame("StatusBar", nil, self)
+	self.Power:SetFrameStrata("LOW")
+	self.Power:SetFrameLevel(self:GetFrameLevel())
+	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
+	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
+	self.Power:SetHeight(5.5)
+	self.Power:SetStatusBarTexture(PartyPetframeTexture)
+
+	self.Power.colorPower = true
+	self.Power.frequentUpdates = false
+
+	self.Power.Background = self.Power:CreateTexture(nil, "BORDER")
+	self.Power.Background:SetAllPoints(self.Power)
+	self.Power.Background:SetColorTexture(.2, .2, .2)
+	self.Power.Background.multiplier = 0.3
+
+	table.insert(self.__elements, UpdatePartyPetPower)
+	self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePartyPetPower)
+	UpdatePartyPetPower(self, _, unit)
+
 	self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 	self.Portrait:SetFrameLevel(self.Health:GetFrameLevel())
 	self.Portrait:SetAllPoints()
-	self.Portrait:SetAlpha(0.2)
+	self.Portrait:SetAlpha(0.4)
 
 	self.Name = self.Overlay:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("BOTTOMLEFT", self.Overlay, "TOPLEFT", 3, -15)
 	self.Name:SetPoint("BOTTOMRIGHT", self.Overlay, "TOPRIGHT", -3, -15)
-	self.Name:SetFontObject(RaidframeFont)
+	self.Name:SetFontObject(PartyPetframeFont)
 	self.Name:SetWordWrap(false)
 	self:Tag(self.Name, "[name]")
 
@@ -89,31 +115,24 @@ function Module:CreatePartyPet()
 	self.RaidTargetIndicator:SetSize(16, 16)
 	self.RaidTargetIndicator:SetPoint("TOP", self, 0, 8)
 
-	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.ResurrectIndicator:SetSize(30, 30)
-	self.ResurrectIndicator:SetPoint("CENTER", 0, -3)
-
 	if C["Party"].TargetHighlight then
-		self.OverlayFrame = CreateFrame("Frame", nil, self)
-		self.OverlayFrame:SetFrameLevel(self:GetFrameLevel() + 2)
-		self.OverlayFrame:SetAllPoints()
+		self.PartyPetHighlight = CreateFrame("Frame", nil, self.Overlay)
+		self.PartyPetHighlight:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
+		self.PartyPetHighlight:SetPoint("TOPLEFT", self, -6, 6)
+		self.PartyPetHighlight:SetPoint("BOTTOMRIGHT", self, 6, -6)
+		self.PartyPetHighlight:SetBackdropBorderColor(1, 1, 0)
+		self.PartyPetHighlight:Hide()
 
-		self.TargetHighlight = self.OverlayFrame:CreateTexture(nil, "OVERLAY")
-		self.TargetHighlight:SetTexture([[Interface\RAIDFRAME\Raid-FrameHighlights]])
-		self.TargetHighlight:SetTexCoord(0.00781250, 0.55468750, 0.28906250, 0.55468750)
-		self.TargetHighlight:SetVertexColor(0.84, 0.75, 0.65)
-		self.TargetHighlight:SetAllPoints()
-		self.TargetHighlight:Hide()
-
-		local function UpdateRaidTargetGlow()
+		local function UpdatePartyPetTargetGlow()
 			if UnitIsUnit("target", self.unit) then
-				self.TargetHighlight:Show()
+				self.PartyPetHighlight:Show()
 			else
-				self.TargetHighlight:Hide()
+				self.PartyPetHighlight:Hide()
 			end
 		end
 
-		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateRaidTargetGlow, true)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdatePartyPetTargetGlow, true)
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyPetTargetGlow, true)
 	end
 
 	self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
@@ -135,7 +154,7 @@ function Module:CreatePartyPet()
 
 	self.ThreatIndicator = {
 		IsObjectType = function() end,
-		Override = UpdateRaidThreat,
+		Override = UpdatePartyPetThreat,
 	}
 
 	self.Range = Module.CreateRangeIndicator(self)

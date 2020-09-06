@@ -10,7 +10,8 @@ function Module:ReskinSimulationcraft()
 		return
 	end
 
-	SimcCopyFrame:CreateBorder(nil, nil, nil, true)
+	SimcCopyFrame:StripTextures()
+	SimcCopyFrame:CreateBorder()
 	SimcCopyFrameButton:SkinButton()
 	SimcCopyFrameScrollScrollBar:SetAlpha(0)
 end

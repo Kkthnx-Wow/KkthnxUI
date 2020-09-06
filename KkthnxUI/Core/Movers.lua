@@ -14,9 +14,11 @@ local IsControlKeyDown = _G.IsControlKeyDown
 local IsModifierKeyDown = _G.IsModifierKeyDown
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local LOCK = _G.LOCK
+local NONE = _G.NONE
 local OKAY = _G.OKAY
 local PlaySound = _G.PlaySound
 local RESET = _G.RESET
+local SOUNDKIT = _G.SOUNDKIT
 local StaticPopup_Show = _G.StaticPopup_Show
 local UIErrorsFrame = _G.UIErrorsFrame
 local UIParent = _G.UIParent
@@ -29,6 +31,8 @@ local updater
 function K:Mover(text, value, anchor, width, height)
 	local key = "Mover"
 
+	K:VerifyData()
+
 	if KkthnxUIData[GetRealmName()][UnitName("player")] and not KkthnxUIData[GetRealmName()][UnitName("player")][key] then
 		KkthnxUIData[GetRealmName()][UnitName("player")][key] = {}
 	end
@@ -40,6 +44,7 @@ function K:Mover(text, value, anchor, width, height)
 	mover:Hide()
 	mover:SetHighlightTexture("Interface\\BUTTONS\\WHITE8X8")
 	mover:GetHighlightTexture():SetAlpha(0.3)
+
 	local bg = mover:CreateTexture(nil, "BACKGROUND", nil, 0)
 	bg:SetColorTexture(38/255, 125/255, 206/255, 90/255)
 	bg:SetAllPoints()
@@ -198,7 +203,7 @@ function Module:LockElements()
 	end
 
 	f:Hide()
-	SlashCmdList["KKUI_TOGGLEGRID"]("1")
+	_G.SlashCmdList["KKUI_TOGGLEGRID"]("1")
 end
 
 _G.StaticPopupDialogs["RESET_MOVER"] = {
@@ -250,7 +255,7 @@ local function CreateConsole()
 	bu[1]:SetScript("OnClick", Module.LockElements)
 
 	bu[2]:SetScript("OnClick", function()
-		SlashCmdList["KKUI_TOGGLEGRID"]("64")
+		_G.SlashCmdList["KKUI_TOGGLEGRID"]("64")
 	end)
 
 	bu[3]:SetScript("OnClick", function()

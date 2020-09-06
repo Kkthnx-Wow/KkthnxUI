@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Announcements -->
-    <Script file="Load_Announcements.lua"/>
+    <Script file="Core.lua"/>
 
-    <Script file="Countdown.lua"/>
-    <!-- <Script file="Dispell.lua"/> -->
-    <Script file="Interrupt.lua"/>
-    <Script file="ItemAlert.lua"/>
-    <Script file="RareAlert.lua"/>
-    <Script file="Sapped.lua"/>
+    <Script file="Elements\Countdown.lua"/>
+    <Script file="Elements\Interrupt.lua"/>
+    <Script file="Elements\ItemAlert.lua"/>
+    <Script file="Elements\RareAlert.lua"/>
+    <Script file="Elements\Sapped.lua"/>
 </Ui>

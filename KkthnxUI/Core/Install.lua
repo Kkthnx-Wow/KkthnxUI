@@ -2,42 +2,79 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Installer")
 
 local _G = _G
+local table_wipe = _G.table.wipe
 
-local SetCVar = _G.SetCVar
+local APPLY = _G.APPLY
+local CHAT = _G.CHAT
 local CreateFrame = _G.CreateFrame
+local DEFAULT = _G.DEFAULT
+local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
+local PlaySound = _G.PlaySound
+local SETTINGS = _G.SETTINGS
+local SOUNDKIT = _G.SOUNDKIT
+local SetCVar = _G.SetCVar
+local UIErrorsFrame = _G.UIErrorsFrame
+local UIParent = _G.UIParent
+local UI_SCALE = _G.UI_SCALE
 
 function Module:ResetInstallData()
-	KkthnxUIData[K.Realm][K.Name] = {}
-
-	if (KkthnxUIConfigPerAccount) then
-		KkthnxUIConfigShared.Account = {}
+	if KkthnxUISettingsPerCharacter[K.Realm][K.Name].General and KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal then
+		KkthnxUISettings = {}
 	else
-		KkthnxUIConfigShared[K.Realm][K.Name] = {}
+		KkthnxUISettingsPerCharacter[K.Realm][K.Name] = {}
 	end
 
-	ReloadUI()
+	if KkthnxUIData[K.Realm][K.Name].Mover then
+		KkthnxUIData[K.Realm][K.Name].Mover = {}
+	end
 end
 
 -- Tuitorial
 function Module:ForceDefaultCVars()
 	SetActionBarToggles(1, 1, 1, 1)
 	SetCVar("ActionButtonUseKeyDown", 1)
+	SetCVar("UberTooltips", 1)
 	SetCVar("alwaysCompareItems", 1)
 	SetCVar("alwaysShowActionBars", 1)
 	SetCVar("autoLootDefault", 1)
+	SetCVar("autoOpenLootHistory", 0)
+	SetCVar("autoQuestProgress", 1)
 	SetCVar("autoQuestWatch", 1)
 	SetCVar("autoSelfCast", 1)
+	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
+	SetCVar("chatMouseScroll", 1)
+	SetCVar("chatStyle", "classic")
 	SetCVar("ffxGlow", 0)
+	SetCVar("fstack_preferParentKeys", 0) -- Add back the frame names via fstack!
 	SetCVar("lockActionBars", 1)
 	SetCVar("lootUnderMouse", 1)
+	SetCVar("lossOfControl", 1)
 	SetCVar("nameplateMotion", 1)
 	SetCVar("nameplateShowAll", 1)
 	SetCVar("nameplateShowEnemies", 1)
 	SetCVar("overrideArchive", 0)
 	SetCVar("screenshotQuality", 10)
+	SetCVar("showQuestTrackingTooltips", 1)
 	SetCVar("showTutorials", 0)
+	SetCVar("spamFilter", 0)
+	SetCVar("statusTextDisplay", "BOTH")
+	SetCVar("taintLog", 0)
+	SetCVar("threatWarning", 3)
 	SetCVar("useCompactPartyFrames", 1)
+	SetCVar("violenceLevel", 5)
+	SetCVar("wholeChatWindowClickable", 0)
+
+	if K.isDeveloper then
+		SetCVar("SpellQueueWindow", 30)
+		SetCVar("WorldTextScale", 1.2)
+		SetCVar("nameplateMotionSpeed", .025)
+		SetCVar("ShowClassColorInFriendlyNameplate", 1)
+		SetCVar("nameplateShowOnlyNames", 1)
+		SetCVar("floatingCombatTextFloatMode", 1)
+		SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
+		SetCVar("floatingCombatTextCombatDamageDirectionalOffset", 10)
+	end
 end
 
 local function ForceRaidFrame()
@@ -45,15 +82,15 @@ local function ForceRaidFrame()
 		return
 	end
 
-	if not CompactUnitFrameProfiles then
+	if not _G.CompactUnitFrameProfiles then
 		return
 	end
 
-	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "useClassColors", true)
-	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "displayPowerBar", true)
-	SetRaidProfileOption(CompactUnitFrameProfiles.selectedProfile, "displayBorder", false)
-	CompactUnitFrameProfiles_ApplyCurrentSettings()
-	CompactUnitFrameProfiles_UpdateCurrentPanel()
+	_G.SetRaidProfileOption(_G.CompactUnitFrameProfiles.selectedProfile, "useClassColors", true)
+	_G.SetRaidProfileOption(_G.CompactUnitFrameProfiles.selectedProfile, "displayPowerBar", true)
+	_G.SetRaidProfileOption(_G.CompactUnitFrameProfiles.selectedProfile, "displayBorder", false)
+	_G.CompactUnitFrameProfiles_ApplyCurrentSettings()
+	_G.CompactUnitFrameProfiles_UpdateCurrentPanel()
 end
 
 function Module:ForceChatSettings()
@@ -64,6 +101,27 @@ function Module:ForceChatSettings()
 	end
 end
 
+local function ForceMaxDPSOptions()
+	if not IsAddOnLoaded("MaxDps") then
+		return
+	end
+
+	if MaxDpsOptions then
+		table_wipe(MaxDpsOptions)
+	end
+
+	MaxDpsOptions = {
+		["global"] = {
+			["texture"] = "Interface\\Cooldown\\star4",
+			["customRotations"] = {
+			},
+			["disabledInfo"] = true,
+		},
+	}
+
+	KkthnxUIData["MaxDpsRequest"] = false
+end
+
 -- DBM bars
 local function ForceDBMOptions()
 	if not IsAddOnLoaded("DBM-Core") then
@@ -71,7 +129,7 @@ local function ForceDBMOptions()
 	end
 
 	if DBT_AllPersistentOptions then
-		wipe(DBT_AllPersistentOptions)
+		table_wipe(DBT_AllPersistentOptions)
 	end
 
 	DBT_AllPersistentOptions = {
@@ -106,18 +164,18 @@ local function ForceDBMOptions()
 		},
 	}
 
-	if not DBM_AllSavedOptions["Default"] then
-		DBM_AllSavedOptions["Default"] = {}
+	if not _G.DBM_AllSavedOptions["Default"] then
+		_G.DBM_AllSavedOptions["Default"] = {}
 	end
-	DBM_AllSavedOptions["Default"]["WarningY"] = -170
-	DBM_AllSavedOptions["Default"]["WarningX"] = 0
-	DBM_AllSavedOptions["Default"]["WarningFontStyle"] = "OUTLINE"
-	DBM_AllSavedOptions["Default"]["SpecialWarningX"] = 0
-	DBM_AllSavedOptions["Default"]["SpecialWarningY"] = -260
-	DBM_AllSavedOptions["Default"]["SpecialWarningFontStyle"] = "OUTLINE"
-	DBM_AllSavedOptions["Default"]["HideObjectivesFrame"] = false
-	DBM_AllSavedOptions["Default"]["WarningFontSize"] = 18
-	DBM_AllSavedOptions["Default"]["SpecialWarningFontSize2"] = 24
+	_G.DBM_AllSavedOptions["Default"]["WarningY"] = -170
+	_G.DBM_AllSavedOptions["Default"]["WarningX"] = 0
+	_G.DBM_AllSavedOptions["Default"]["WarningFontStyle"] = "OUTLINE"
+	_G.DBM_AllSavedOptions["Default"]["SpecialWarningX"] = 0
+	_G.DBM_AllSavedOptions["Default"]["SpecialWarningY"] = -260
+	_G.DBM_AllSavedOptions["Default"]["SpecialWarningFontStyle"] = "OUTLINE"
+	_G.DBM_AllSavedOptions["Default"]["HideObjectivesFrame"] = false
+	_G.DBM_AllSavedOptions["Default"]["WarningFontSize"] = 18
+	_G.DBM_AllSavedOptions["Default"]["SpecialWarningFontSize2"] = 24
 
 	KkthnxUIData["DBMRequest"] = false
 end
@@ -129,8 +187,9 @@ local function ForceSkadaOptions()
 	end
 
 	if SkadaDB then
-		wipe(SkadaDB)
+		table_wipe(SkadaDB)
 	end
+
 	SkadaDB = {
 		["hasUpgraded"] = true,
 		["profiles"] = {
@@ -185,7 +244,33 @@ local function ForceSkadaOptions()
 			},
 		},
 	}
+
 	KkthnxUIData["SkadaRequest"] = false
+end
+
+local function ForceCursorTrail()
+	if not IsAddOnLoaded("CursorTrail") then
+		return
+	end
+
+	if CursorTrail_PlayerConfig then
+		table_wipe(CursorTrail_PlayerConfig)
+	end
+
+	CursorTrail_PlayerConfig = {
+		["FadeOut"] = false,
+		["UserOfsY"] = 0,
+		["UserShowMouseLook"] = false,
+		["ModelID"] = 166492,
+		["UserAlpha"] = 0.9,
+		["UserOfsX"] = 0.1,
+		["UserScale"] = 0.4,
+		["UserShadowAlpha"] = 0,
+		["UserShowOnlyInCombat"] = false,
+		["Strata"] = "HIGH",
+	}
+
+	KkthnxUIData["CursorTrailRequest"] = false
 end
 
 -- BigWigs
@@ -195,7 +280,7 @@ local function ForceBigwigs()
 	end
 
 	if BigWigs3DB then
-		wipe(BigWigs3DB)
+		table_wipe(BigWigs3DB)
 	end
 
 	BigWigs3DB = {
@@ -274,6 +359,7 @@ local function ForceBigwigs()
 			},
 		},
 	}
+
 	KkthnxUIData["BWRequest"] = false
 end
 
@@ -288,6 +374,14 @@ local function ForceAddonSkins()
 
 	if KkthnxUIData["BWRequest"] then
 		ForceBigwigs()
+	end
+
+	if KkthnxUIData["MaxDpsRequest"] then
+		ForceMaxDPSOptions()
+	end
+
+	if KkthnxUIData["CursorTrailRequest"] then
+		ForceCursorTrail()
 	end
 end
 
@@ -389,13 +483,14 @@ local function YesTutor()
 			Module:ForceChatSettings()
 			UIErrorsFrame:AddMessage(K.InfoColor.."Chat Frame Settings Loaded")
 		elseif currentPage == 3 then
-			KkthnxUIData[K.Realm][K.Name].AutoScale = true
 			K:SetupUIScale()
 			UIErrorsFrame:AddMessage(K.InfoColor.."UI Scale Loaded")
 		elseif currentPage == 4 then
 			KkthnxUIData["DBMRequest"] = true
 			KkthnxUIData["SkadaRequest"] = true
 			KkthnxUIData["BWRequest"] = true
+			KkthnxUIData["MaxDpsRequest"] = true
+			KkthnxUIData["CursorTrailRequest"] = true
 			ForceAddonSkins()
 			KkthnxUIData["ResetDetails"] = true
 			UIErrorsFrame:AddMessage(K.InfoColor.."Relevant AddOns Settings Loaded, You need to ReloadUI.")
@@ -499,13 +594,13 @@ local function HelloWorld()
 	end)
 end
 
-SlashCmdList["KKTHNXUI"] = HelloWorld
-SLASH_KKTHNXUI1 = "/install"
+_G.SlashCmdList["KKUI_INSTALLER"] = HelloWorld
+_G.SLASH_KKUI_INSTALLER1 = "/install"
 
 function Module:OnEnable()
 	-- Hide options
-	K.HideInterfaceOption(Advanced_UseUIScale)
-	K.HideInterfaceOption(Advanced_UIScaleSlider)
+	K.HideInterfaceOption(_G.Advanced_UseUIScale)
+	K.HideInterfaceOption(_G.Advanced_UIScaleSlider)
 
 	-- Tutorial and settings
 	ForceAddonSkins()

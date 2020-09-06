@@ -1,27 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Load_Miscellaneous -->
-   <Script file="Load_Miscellaneous.lua" />
+   <Script file="Core.lua" />
 
-   <Script file="AFKCam.lua" />
-   <Script file="AlreadyKnown.lua" />
-   <Script file="ChatBubble.lua" />
-   <Script file="Durability.lua" />
-   <Script file="EnchantScroll.lua" />
-   <Script file="ImprovedMail.lua" />
-   <Script file="KillingBlow.lua" />
-   <Script file="MerchantItemlevel.lua" />
-   <Script file="MissingStats.lua" />
-   <Script file="MovableFrames.lua" />
-   <Script file="NoTalkingHead.lua" />
-   <Script file="PulseCooldown.lua" />
-   <Script file="PvPEmote.lua" />
-   <Script file="QuestNotifier.lua" />
-   <Script file="QueueTimer.lua" />
-   <Script file="RaidMarker.lua" />
-   <Script file="SlotDurability.lua" />
-   <Script file="SlotItemLevel.lua" />
-   <Script file="StatusReport.lua" />
-   <Script file="TradeTabs.lua" />
-   <Script file="yClassColors.lua" />
+   <Script file="Elements\AFKCam.lua" />
+   <Script file="Elements\AlreadyKnown.lua" />
+   <Script file="Elements\ChatBubble.lua" />
+   <Script file="Elements\Durability.lua" />
+   <Script file="Elements\ImprovedMail.lua" />
+   <Script file="Elements\KillingBlow.lua" />
+   <Script file="Elements\MerchantItemlevel.lua" />
+   <Script file="Elements\MissingStats.lua" />
+   <Script file="Elements\MovableFrames.lua" />
+   <Script file="Elements\PulseCooldown.lua" />
+   <Script file="Elements\QuestNotifier.lua" />
+   <Script file="Elements\QuickJoin.lua" />
+   <Script file="Elements\RaidMarker.lua" />
+   <Script file="Elements\SlotDurability.lua" />
+   <Script file="Elements\SlotItemLevel.lua" />
+   <Script file="Elements\StatusReport.lua" />
+   <Script file="Elements\TradeTabs.lua" />
+   <Script file="Elements\yClassColors.lua" />
 </Ui>

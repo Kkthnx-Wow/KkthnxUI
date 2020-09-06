@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Load_Automation -->
-   <Script file="Load_Automation.lua" />
+   <Script file="Core.lua" />
 
-   <Script file="AutoDisenchant.lua" />
-   <Script file="AutoBadBuffs.lua" />
-   <Script file="AutoBestReward.lua" />
-   <Script file="AutoDecline.lua" />
-   <Script file="AutoGossip.lua" />
-   <Script file="AutoInvite.lua" />
-   <Script file="AutoQuest.lua" />
-   <Script file="AutoRelease.lua" />
-   <Script file="AutoResurrect.lua" />
-   <Script file="AutoScreenShot.lua" />
-   <Script file="AutoSetRole.lua" />
-   <Script file="AutoTabBinder.lua" />
-   <Script file="AutoWhisperInvite.lua" />
+   <Script file="Elements\AcceptSummon.lua" />
+   <Script file="Elements\BadBuffs.lua" />
+   <Script file="Elements\BestReward.lua" />
+   <Script file="Elements\DeclineDuel.lua" />
+   <Script file="Elements\Disenchant.lua" />
+   <Script file="Elements\Invite.lua" />
+   <Script file="Elements\Quest.lua" />
+   <Script file="Elements\Release.lua" />
+   <Script file="Elements\Resurrect.lua" />
+   <Script file="Elements\ScreenShot.lua" />
+   <Script file="Elements\SetRole.lua" />
+   <Script file="Elements\TabBinder.lua" />
+   <Script file="Elements\WhisperInvite.lua" />
 </Ui>

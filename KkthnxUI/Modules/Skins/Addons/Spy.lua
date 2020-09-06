@@ -11,17 +11,20 @@ function Module:ReskinSpy()
 	end
 
 	if Spy_MainWindow.Background then
+		Spy_MainWindow.Background:StripTextures()
 		Spy_MainWindow.Background:CreateBorder()
 		Spy_MainWindow:StripTextures()
 	else
-		Spy_MainWindow:CreateBorder(nil, nil, nil, true)
+		Spy_MainWindow:StripTextures()
+		Spy_MainWindow:CreateBorder()
 	end
 
-    Spy_AlertWindow:CreateBorder(nil, nil, nil, true)
-
-    Spy_MainWindow.CloseButton:SkinCloseButton()
+	TestFrame:StripTextures()
+	TestFrame:CreateBorder()
+	Spy_AlertWindow:StripTextures()
+	Spy_AlertWindow:CreateBorder()
+	Spy_MainWindow.CloseButton:SkinCloseButton()
     Spy_MainWindow.CloseButton:SetSize(28, 28)
-    Spy_MainWindow.CloseButton:SetPoint("TOPRIGHT", 0, -7)
-
+    Spy_MainWindow.CloseButton:SetPoint("TOPRIGHT", 0, -8)
 	Spy_AlertWindow:SetPoint("TOP", UIParent, "TOP", 0, -130)
 end

@@ -8,19 +8,40 @@ local unpack = _G.unpack
 
 local hooksecurefunc = _G.hooksecurefunc
 
+local function AffixesSetup(self)
+	for _, frame in ipairs(self.Affixes) do
+		frame.Border:SetTexture(nil)
+		frame.Portrait:SetTexture(nil)
+		if not frame.bg then
+			frame.Portrait:SetTexCoord(unpack(K.TexCoords))
+			frame.bg = CreateFrame("Frame", nil, frame)
+			frame.bg:SetFrameLevel(bar:GetFrameLevel())
+			frame.bg:SetAllPoints(frame.Portrait)
+			frame.bg:CreateBorder()
+		end
+
+		if frame.info then
+			frame.Portrait:SetTexture(CHALLENGE_MODE_EXTRA_AFFIX_INFO[frame.info.key].texture)
+		elseif frame.affixID then
+			local _, _, filedataid = C_ChallengeMode.GetAffixInfo(frame.affixID)
+			frame.Portrait:SetTexture(filedataid)
+		end
+	end
+end
+
 local function ReskinObjectiveTracker()
 	local colorR, colorG, colorB = K.r, K.g, K.b
 	local LE_QUEST_FREQUENCY_DAILY = LE_QUEST_FREQUENCY_DAILY or 2
-	-- local C_QuestLog_IsQuestReplayable = C_QuestLog.IsQuestReplayable
+	local C_QuestLog_IsQuestReplayable = C_QuestLog.IsQuestReplayable
 
 	local function reskinQuestIcon(_, block)
 		local itemButton = block.itemButton
 		if itemButton and not itemButton.styled then
 			itemButton:SetNormalTexture("")
 			itemButton:SetPushedTexture("")
+			itemButton:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
 			itemButton.icon:SetTexCoord(unpack(K.TexCoords))
-			itemButton:CreateBorder()
-			itemButton:CreateInnerShadow()
+			itemButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 			itemButton.styled = true
 		end
@@ -30,9 +51,9 @@ local function ReskinObjectiveTracker()
 			rightButton:SetNormalTexture("")
 			rightButton:SetPushedTexture("")
 			rightButton:SetSize(22, 22)
-			rightButton.Icon:SetSize(18, 18)
-			rightButton:CreateBorder()
-			rightButton:CreateInnerShadow()
+			rightButton.Icon:SetPoint("TOPLEFT", rightButton, "TOPLEFT", 1, -1)
+			rightButton.Icon:SetPoint("BOTTOMRIGHT", rightButton, "BOTTOMRIGHT", -1, 1)
+			rightButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 			rightButton.styled = true
 		end
@@ -75,13 +96,14 @@ local function ReskinObjectiveTracker()
 		bar:StripTextures()
 		bar:SetStatusBarTexture(C["Media"].Texture)
 		bar:SetStatusBarColor(colorR, colorG, colorB)
+		bar:SetHeight(18)
 
 		bar.spark = bar:CreateTexture(nil, "OVERLAY")
 		bar.spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
 		bar.spark:SetTexture(C["Media"].Spark_128)
-		bar.spark:SetSize(64, bar:GetHeight())
+		bar.spark:SetSize(32, bar:GetHeight())
 		bar.spark:SetBlendMode("ADD")
-		bar.spark:SetAlpha(0.8)
+		bar.spark:SetAlpha(0.9)
 
 		bar.bg = CreateFrame("Frame", nil, bar)
 		bar.bg:SetFrameLevel(bar:GetFrameLevel())
@@ -100,12 +122,12 @@ local function ReskinObjectiveTracker()
 			BonusObjectiveTrackerProgressBar_PlayFlareAnim = K.Noop
 
 			icon:SetMask(nil)
-
-			icon.bg = CreateFrame("Frame", nil, bar)
-			icon.bg:SetFrameLevel(bar:GetFrameLevel())
-			icon.bg:SetAllPoints(icon)
-			icon.bg:CreateBorder()
-			icon.bg:CreateInnerShadow()
+			if not icon.bg then
+				icon.bg = CreateFrame("Frame", nil, bar)
+				icon.bg:SetFrameLevel(bar:GetFrameLevel())
+				icon.bg:SetAllPoints(icon)
+				icon.bg:CreateBorder()
+			end
 
 			icon:SetTexCoord(unpack(K.TexCoords))
 			icon:ClearAllPoints()
@@ -126,8 +148,6 @@ local function ReskinObjectiveTracker()
 		local bar = progressBar.Bar
 
 		if not bar.bg then
-			bar:ClearAllPoints()
-			bar:SetPoint("LEFT")
 			reskinBarTemplate(bar)
 		end
 	end)
@@ -143,6 +163,63 @@ local function ReskinObjectiveTracker()
 	hooksecurefunc(QUEST_TRACKER_MODULE, "AddTimerBar", reskinTimerBar)
 	hooksecurefunc(SCENARIO_TRACKER_MODULE, "AddTimerBar", reskinTimerBar)
 	hooksecurefunc(ACHIEVEMENT_TRACKER_MODULE, "AddTimerBar", reskinTimerBar)
+
+	-- Reskin Blocks
+	hooksecurefunc("ScenarioStage_CustomizeBlock", function(block)
+		block.NormalBG:SetTexture("")
+		if not block.bg then
+			block.bg = CreateFrame("Frame", nil, block)
+			block.bg:SetPoint("TOPLEFT", block.GlowTexture, 4, -2)
+			block.bg:SetPoint("BOTTOMRIGHT", block.GlowTexture, -4, 2)
+			block.bg:SetFrameLevel(block:GetFrameLevel())
+			block.bg:CreateBorder()
+		end
+	end)
+
+	hooksecurefunc(SCENARIO_CONTENT_TRACKER_MODULE, "Update", function()
+		local widgetContainer = ScenarioStageBlock.WidgetContainer
+		if not widgetContainer then
+			return
+		end
+
+		local widgetFrame = widgetContainer:GetChildren()
+		if widgetFrame and widgetFrame.Frame then
+			widgetFrame.Frame:SetAlpha(0)
+			for _, bu in next, {widgetFrame.CurrencyContainer:GetChildren()} do
+				if bu and not bu.styled then
+					bu.Icon:SetTexCoord(unpack(K.TexCoords))
+					bu.Icon:CreateBorder()
+
+					bu.styled = true
+				end
+			end
+		end
+	end)
+
+	hooksecurefunc("Scenario_ChallengeMode_ShowBlock", function()
+		local block = ScenarioChallengeModeBlock
+		if not block.bg then
+			block.TimerBG:Hide()
+			block.TimerBGBack:Hide()
+			block.timerbg = CreateFrame("Frame", nil, block)
+			block.timerbg:SetPoint("TOPLEFT", block.TimerBGBack, 6, -2)
+			block.timerbg:SetPoint("BOTTOMRIGHT", block.TimerBGBack, -6, -5)
+			block.timerbg:CreateBorder()
+
+			block.StatusBar:SetStatusBarTexture(C["Media"].Texture)
+			block.StatusBar:SetStatusBarColor(colorR, colorG, colorB)
+			block.StatusBar:SetHeight(10)
+
+			select(3, block:GetRegions()):Hide()
+			block.bg = CreateFrame("Frame", nil, block)
+			block.bg:SetPoint("TOPLEFT", block, 4, -2)
+			block.bg:SetPoint("BOTTOMRIGHT", block, -4, 0)
+			block.bg:SetFrameLevel(block:GetFrameLevel())
+			block.bg:CreateBorder()
+		end
+	end)
+
+	hooksecurefunc("Scenario_ChallengeMode_SetUpAffixes", AffixesSetup)
 
 	-- Minimize Button
 	local minimize = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
@@ -167,13 +244,14 @@ local function ReskinObjectiveTracker()
 
 		for button in pairs(QuestScrollFrame.titleFramePool.activeObjects) do
 			if title and not isHeader and button.questID == questID then
-				local title = "["..level.."] "..title
 				if isComplete then
 					title = "|cffff78ff"..title
-					--elseif C_QuestLog_IsQuestReplayable(questID) then
-					--	title = "|cff00ff00"..title
+				elseif C_QuestLog_IsQuestReplayable(questID) then
+					title = "|cff00ff00"..title
 				elseif frequency == LE_QUEST_FREQUENCY_DAILY then
 					title = "|cff3399ff"..title
+				else
+					title = "["..level.."] "..title
 				end
 				button.Text:SetText(title)
 				button.Text:SetPoint("TOPLEFT", 24, -5)

@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local UF = K:GetModule("Unitframes")
+local Module = K:GetModule("Unitframes")
 
 local oUF = oUF or K.oUF
 assert(oUF, "KkthnxUI was unable to locate oUF.")
@@ -10,9 +10,9 @@ local math_rad = _G.math.rad
 local pairs = _G.pairs
 local string_format = _G.string.format
 local string_match = _G.string.match
+local table_wipe = _G.table.wipe
 local tonumber = _G.tonumber
 local unpack = _G.unpack
--- local table_wipe = _G.table.wipe
 
 local Ambiguate = _G.Ambiguate
 local C_MythicPlus_GetCurrentAffixes = _G.C_MythicPlus.GetCurrentAffixes
@@ -24,20 +24,18 @@ local C_Scenario_GetInfo = _G.C_Scenario.GetInfo
 local C_Scenario_GetStepInfo = _G.C_Scenario.GetStepInfo
 local CreateFrame = _G.CreateFrame
 local GetInstanceInfo = _G.GetInstanceInfo
--- local GetNumGroupMembers = _G.GetNumGroupMembers
--- local GetNumSubgroupMembers = _G.GetNumSubgroupMembers
+local GetNumGroupMembers = _G.GetNumGroupMembers
+local GetNumSubgroupMembers = _G.GetNumSubgroupMembers
 local GetPlayerInfoByGUID = _G.GetPlayerInfoByGUID
-local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local INTERRUPTED = _G.INTERRUPTED
 local InCombatLockdown = _G.InCombatLockdown
--- local IsInGroup = _G.IsInGroup
-local IsInInstance = _G.IsInInstance
--- local IsInRaid = _G.IsInRaid
+local IsInGroup = _G.IsInGroup
+local IsInRaid = _G.IsInRaid
 local SetCVar = _G.SetCVar
 local UnitClassification = _G.UnitClassification
 local UnitExists = _G.UnitExists
 local UnitGUID = _G.UnitGUID
--- local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
+local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsTapDenied = _G.UnitIsTapDenied
@@ -54,13 +52,13 @@ local aksCacheData = {}
 local barHeight = C["Nameplate"].PlateHeight
 local barWidth = C["Nameplate"].PlateWidth
 local explosivesID = 120651
--- local groupRoles = {}
+local groupRoles = {}
 local guidToPlate = {}
 local hasExplosives
--- local isInGroup
+local isInGroup
 local isInInstance
 local isTargetClassPower
-local platesList = {}
+-- local platesList = {}
 
 -- Unit classification
 local classify = {
@@ -71,7 +69,7 @@ local classify = {
 }
 
 -- Init
-function UF:PlateInsideView()
+function Module:PlateInsideView()
 	if C["Nameplate"].InsideView then
 		SetCVar("nameplateOtherTopInset", 0.05)
 		SetCVar("nameplateOtherBottomInset", 0.08)
@@ -81,43 +79,43 @@ function UF:PlateInsideView()
 	end
 end
 
-function UF:UpdatePlateScale()
+function Module:UpdatePlateScale()
 	SetCVar("namePlateMinScale", C["Nameplate"].MinScale)
 	SetCVar("namePlateMaxScale", C["Nameplate"].MinScale)
 end
 
-function UF:UpdatePlateAlpha()
-	SetCVar("nameplateMinAlpha", 1)
-	SetCVar("nameplateMaxAlpha", 1)
+function Module:UpdatePlateAlpha()
+	SetCVar("nameplateMinAlpha", C["Nameplate"].MinAlpha)
+	SetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
 end
 
-function UF:UpdatePlateRange()
+function Module:UpdatePlateRange()
 	SetCVar("nameplateMaxDistance", C["Nameplate"].Distance)
 end
 
-function UF:UpdatePlateSpacing()
+function Module:UpdatePlateSpacing()
 	SetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
 end
 
-function UF:UpdateClickableSize()
+function Module:UpdateClickableSize()
 	if InCombatLockdown() then
 		return
 	end
 
-	C_NamePlate_SetNamePlateEnemySize(C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight + 40)
-	C_NamePlate_SetNamePlateFriendlySize(C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight + 40)
+	C_NamePlate_SetNamePlateEnemySize(C["Nameplate"].PlateWidth * C["General"].UIScale, C["Nameplate"].PlateHeight * C["General"].UIScale + 40)
+	C_NamePlate_SetNamePlateFriendlySize(C["Nameplate"].PlateWidth * C["General"].UIScale, C["Nameplate"].PlateHeight * C["General"].UIScale + 40)
 end
 
-function UF:SetupCVars()
-	UF:PlateInsideView()
-	SetCVar("nameplateOverlapH", .8)
-	UF:UpdatePlateSpacing()
-	UF:UpdatePlateRange()
-	UF:UpdatePlateAlpha()
+function Module:SetupCVars()
+	Module:PlateInsideView()
+	SetCVar("nameplateOverlapH", 0.8)
+	Module:UpdatePlateSpacing()
+	Module:UpdatePlateRange()
+	Module:UpdatePlateAlpha()
 	SetCVar("nameplateSelectedAlpha", 1)
 	SetCVar("showQuestTrackingTooltips", 1)
 
-	UF:UpdatePlateScale()
+	Module:UpdatePlateScale()
 	SetCVar("nameplateSelectedScale", 1)
 	SetCVar("nameplateLargerScale", 1)
 
@@ -126,11 +124,11 @@ function UF:SetupCVars()
 	K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesPersonalResource)
 	K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy)
 
-	UF:UpdateClickableSize()
-	hooksecurefunc(_G.NamePlateDriverFrame, "UpdateNamePlateOptions", UF.UpdateClickableSize)
+	Module:UpdateClickableSize()
+	hooksecurefunc(_G.NamePlateDriverFrame, "UpdateNamePlateOptions", Module.UpdateClickableSize)
 end
 
-function UF:BlockAddons()
+function Module:BlockAddons()
 	if not _G.DBM or not _G.DBM.Nameplate then
 		return
 	end
@@ -152,7 +150,7 @@ function UF:BlockAddons()
 	hooksecurefunc(_G.DBM.Nameplate, "Show", showAurasForDBM)
 end
 
-function UF:UpdateUnitPower()
+function Module:UpdateUnitPower()
 	local unitName = self.unitName
 	local npcID = self.npcID
 	local shouldShowPower = K.NameplateShowPowerList[unitName] or K.NameplateShowPowerList[npcID]
@@ -164,49 +162,49 @@ function UF:UpdateUnitPower()
 end
 
 -- Off-tank threat color
--- local function refreshGroupRoles()
--- 	local isInRaid = IsInRaid()
--- 	isInGroup = isInRaid or IsInGroup()
--- 	table_wipe(groupRoles)
+local function refreshGroupRoles()
+	local isInRaid = IsInRaid()
+	isInGroup = isInRaid or IsInGroup()
+	table_wipe(groupRoles)
 
--- 	if isInGroup then
--- 		local numPlayers = (isInRaid and GetNumGroupMembers()) or GetNumSubgroupMembers()
--- 		local unit = (isInRaid and "raid") or "party"
--- 		for i = 1, numPlayers do
--- 			local index = unit..i
--- 			if UnitExists(index) then
--- 				groupRoles[UnitName(index)] = UnitGroupRolesAssigned(index)
--- 			end
--- 		end
--- 	end
--- end
+	if isInGroup then
+		local numPlayers = (isInRaid and GetNumGroupMembers()) or GetNumSubgroupMembers()
+		local unit = (isInRaid and "raid") or "party"
+		for i = 1, numPlayers do
+			local index = unit..i
+			if UnitExists(index) then
+				groupRoles[UnitName(index)] = UnitGroupRolesAssigned(index)
+			end
+		end
+	end
+end
 
--- local function resetGroupRoles()
--- 	isInGroup = IsInRaid() or IsInGroup()
--- 	table_wipe(groupRoles)
--- end
+local function resetGroupRoles()
+	isInGroup = IsInRaid() or IsInGroup()
+	table_wipe(groupRoles)
+end
 
--- function UF:UpdateGroupRoles()
--- 	refreshGroupRoles()
--- 	K:RegisterEvent("GROUP_ROSTER_UPDATE", refreshGroupRoles)
--- 	K:RegisterEvent("GROUP_LEFT", resetGroupRoles)
--- end
+function Module:UpdateGroupRoles()
+	refreshGroupRoles()
+	K:RegisterEvent("GROUP_ROSTER_UPDATE", refreshGroupRoles)
+	K:RegisterEvent("GROUP_LEFT", resetGroupRoles)
+end
 
--- function UF:CheckTankStatus(unit)
--- 	local index = unit.."target"
--- 	local unitRole = isInGroup and UnitExists(index) and not UnitIsUnit(index, "player") and groupRoles[UnitName(index)] or "NONE"
--- 	if unitRole == "TANK" and K.Role == "Tank" then
--- 		print("CheckTankStatus ", unitRole)
--- 		self.feedbackUnit = index
--- 		self.isOffTank = true
--- 	else
--- 		self.feedbackUnit = "player"
--- 		self.isOffTank = false
--- 	end
--- end
+function Module:CheckTankStatus(unit)
+	local index = unit.."target"
+	local unitRole = isInGroup and UnitExists(index) and not UnitIsUnit(index, "player") and groupRoles[UnitName(index)] or "NONE"
+	if unitRole == "TANK" and K.Role == "Tank" then
+		print("CheckTankStatus ", unitRole)
+		self.feedbackUnit = index
+		self.isOffTank = true
+	else
+		self.feedbackUnit = "player"
+		self.isOffTank = false
+	end
+end
 
 -- Update unit color
-function UF.UpdateColor(self, _, unit)
+function Module:UpdateColor(_, unit)
 	if not unit or self.unit ~= unit then
 		return
 	end
@@ -215,8 +213,9 @@ function UF.UpdateColor(self, _, unit)
 	local name = self.unitName
 	local npcID = self.npcID
 	local isCustomUnit = K.NameplateCustomUnits[name] or K.NameplateCustomUnits[npcID]
-	local isPlayer = UnitIsPlayer(unit)
-	local status = UnitThreatSituation("player", unit) or false -- just in case
+	local isPlayer = self.isPlayer
+	local isFriendly = self.isFriendly
+	local status = self.feedbackUnit and UnitThreatSituation(self.feedbackUnit, unit) or false -- just in case
 	local reaction = UnitReaction(unit, "player")
 
 	local reactionColor = K.Colors.reaction[reaction]
@@ -233,13 +232,13 @@ function UF.UpdateColor(self, _, unit)
 	else
 		if isCustomUnit then
 			r, g, b = customColor[1], customColor[2], customColor[3]
-		elseif isPlayer and (reaction and reaction >= 5) then
+		elseif isPlayer and isFriendly then
 			if C["Nameplate"].FriendlyCC then
 				r, g, b = K.UnitColor(unit)
 			else
 				r, g, b = unpack(K.Colors.power["MANA"])
 			end
-		elseif isPlayer and (reaction and reaction <= 4) and C["Nameplate"].HostileCC then
+		elseif isPlayer and (not isFriendly) and C["Nameplate"].HostileCC then
 			r, g, b = K.UnitColor(unit)
 		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) then
 			r, g, b = .6, .6, .6
@@ -295,17 +294,16 @@ function UF.UpdateColor(self, _, unit)
 	end
 end
 
-function UF:UpdateThreatColor(_, unit)
-	-- print(unit)
+function Module:UpdateThreatColor(_, unit)
 	if unit ~= self.unit then
 		return
 	end
 
-	-- UF.CheckTankStatus(self, unit)
-	UF.UpdateColor(self, _, unit)
+	Module.CheckTankStatus(self, unit)
+	Module.UpdateColor(self, _, unit)
 end
 
-function UF:CreateThreatColor(self)
+function Module:CreateThreatColor(self)
 	local threatIndicator = CreateFrame("Frame", nil, self)
 	threatIndicator:SetPoint("TOPLEFT", self, -3, 3)
 	threatIndicator:SetPoint("BOTTOMRIGHT", self, 3, -3)
@@ -313,64 +311,86 @@ function UF:CreateThreatColor(self)
 	threatIndicator:Hide()
 
 	self.ThreatIndicator = threatIndicator
-	self.ThreatIndicator.Override = UF.UpdateThreatColor
+	self.ThreatIndicator.Override = Module.UpdateThreatColor
 end
 
 -- Target indicator
-function UF:UpdateTargetChange()
+function Module:UpdateTargetChange()
+	local element = self.TargetIndicator
 	if C["Nameplate"].TargetIndicator.Value == 1 then
 		return
 	end
 
 	if UnitIsUnit(self.unit, "target") and not UnitIsUnit(self.unit, "player") then
-		self.TargetIndicator:SetAlpha(1)
+		element:Show()
 	else
-		self.TargetIndicator:SetAlpha(0)
+		element:Hide()
 	end
 end
 
-function UF:UpdateTargetIndicator(self)
+function Module:UpdateTargetIndicator()
 	local style = C["Nameplate"].TargetIndicator.Value
 
+	local element = self.TargetIndicator
+	local isNameOnly = self.isNameOnly
 	if style == 1 then
-		self.TargetIndicator:Hide()
+		element:Hide()
 	else
 		if style == 2 then
-			self.TargetIndicator.TopArrow:Show()
-			self.TargetIndicator.RightArrow:Hide()
-			self.TargetIndicator.Glow:Hide()
+			element.TopArrow:Show()
+			element.RightArrow:Hide()
+			element.Glow:Hide()
+			element.nameGlow:Hide()
 		elseif style == 3 then
-			self.TargetIndicator.TopArrow:Hide()
-			self.TargetIndicator.RightArrow:Show()
-			self.TargetIndicator.Glow:Hide()
+			element.TopArrow:Hide()
+			element.RightArrow:Show()
+			element.Glow:Hide()
+			element.nameGlow:Hide()
 		elseif style == 4 then
-			self.TargetIndicator.TopArrow:Hide()
-			self.TargetIndicator.RightArrow:Hide()
-			self.TargetIndicator.Glow:Show()
+			element.TopArrow:Hide()
+			element.RightArrow:Hide()
+			if isNameOnly then
+				element.Glow:Hide()
+				element.nameGlow:Show()
+			else
+				element.Glow:Show()
+				element.nameGlow:Hide()
+			end
 		elseif style == 5 then
-			self.TargetIndicator.TopArrow:Show()
-			self.TargetIndicator.RightArrow:Hide()
-			self.TargetIndicator.Glow:Show()
+			element.TopArrow:Show()
+			element.RightArrow:Hide()
+			if isNameOnly then
+				element.Glow:Hide()
+				element.nameGlow:Show()
+			else
+				element.Glow:Show()
+				element.nameGlow:Hide()
+			end
 		elseif style == 6 then
-			self.TargetIndicator.TopArrow:Hide()
-			self.TargetIndicator.RightArrow:Show()
-			self.TargetIndicator.Glow:Show()
+			element.TopArrow:Hide()
+			element.RightArrow:Show()
+			if isNameOnly then
+				element.Glow:Hide()
+				element.nameGlow:Show()
+			else
+				element.Glow:Show()
+				element.nameGlow:Hide()
+			end
 		end
-
-		self.TargetIndicator:Show()
+		element:Show()
 	end
 end
 
-function UF:AddTargetIndicator(self)
+function Module:AddTargetIndicator(self)
 	self.TargetIndicator = CreateFrame("Frame", nil, self)
 	self.TargetIndicator:SetAllPoints()
 	self.TargetIndicator:SetFrameLevel(0)
-	self.TargetIndicator:SetAlpha(0)
+	self.TargetIndicator:Hide()
 
 	self.TargetIndicator.TopArrow = self.TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
 	self.TargetIndicator.TopArrow:SetSize(40, 40)
 	self.TargetIndicator.TopArrow:SetTexture(C["Media"].NPArrow)
-	self.TargetIndicator.TopArrow:SetPoint("BOTTOM", self.TargetIndicator, "TOP", 0, 10)
+	self.TargetIndicator.TopArrow:SetPoint("BOTTOM", self.TargetIndicator, "TOP", 0, 40)
 	self.TargetIndicator.TopArrow:SetRotation(math_rad(-90))
 
 	self.TargetIndicator.RightArrow = self.TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
@@ -386,15 +406,22 @@ function UF:AddTargetIndicator(self)
 	self.TargetIndicator.Glow:SetBackdropBorderColor(unpack(C["Nameplate"].TargetIndicatorColor))
 	self.TargetIndicator.Glow:SetFrameLevel(0)
 
-	UF:UpdateTargetIndicator(self)
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", UF.UpdateTargetChange, true)
+	self.TargetIndicator.nameGlow = self.TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
+	self.TargetIndicator.nameGlow:SetSize(150, 70)
+	self.TargetIndicator.nameGlow:SetTexture("Interface\\GLUES\\Models\\UI_Draenei\\GenericGlow64")
+	self.TargetIndicator.nameGlow:SetVertexColor(102/255, 157/255, 255/255)
+	self.TargetIndicator.nameGlow:SetBlendMode("ADD")
+	self.TargetIndicator.nameGlow:SetPoint("CENTER", self, "BOTTOM")
+
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateTargetChange, true)
+	Module.UpdateTargetIndicator(self)
 end
 
 local function CheckInstanceStatus()
 	isInInstance = IsInInstance()
 end
 
-function UF:QuestIconCheck()
+function Module:QuestIconCheck()
 	if not C["Nameplate"].QuestIndicator then
 		return
 	end
@@ -403,7 +430,7 @@ function UF:QuestIconCheck()
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", CheckInstanceStatus)
 end
 
-function UF:UpdateQuestUnit(_, unit)
+function Module:UpdateQuestUnit(_, event, unit)
 	if not C["Nameplate"].QuestIndicator then
 		return
 	end
@@ -414,7 +441,13 @@ function UF:UpdateQuestUnit(_, unit)
 		return
 	end
 
-	unit = unit or self.unit
+	if event ~= "UNIT_NAME_UPDATE" then
+		unit = self.unit
+	end
+
+	if unit ~= self.unit then
+		return
+	end
 
 	local isLootQuest, questProgress
 	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
@@ -429,7 +462,7 @@ function UF:UpdateQuestUnit(_, unit)
 				if isInGroup and text == K.Name or not isInGroup then
 					isLootQuest = true
 
-					local questLine = _G[K.ScanTooltip:GetName().."TextLeft"..(i+1)]
+					local questLine = _G[K.ScanTooltip:GetName().."TextLeft"..(i + 1)]
 					local questText = questLine:GetText()
 					if questLine and questText then
 						local current, goal = string_match(questText, "(%d+)/(%d+)")
@@ -460,12 +493,12 @@ function UF:UpdateQuestUnit(_, unit)
 
 	if questProgress then
 		self.questCount:SetText(questProgress)
-		self.questIcon:SetAtlas("Warfronts-BaseMapIcons-Horde-Barracks-Minimap")
+		self.questIcon:SetTexture("Interface\\WorldMap\\Skull_64Grey")
 		self.questIcon:Show()
 	else
 		self.questCount:SetText("")
 		if isLootQuest then
-			self.questIcon:SetAtlas("adventureguide-microbutton-alert")
+			self.questIcon:SetAtlas("QuestNormal")
 			self.questIcon:Show()
 		else
 			self.questIcon:Hide()
@@ -473,25 +506,59 @@ function UF:UpdateQuestUnit(_, unit)
 	end
 end
 
-function UF:AddQuestIcon(self)
+function Module:AddQuestIcon(self)
 	if not C["Nameplate"].QuestIndicator then
 		return
 	end
 
 	self.questIcon = self:CreateTexture(nil, "OVERLAY", nil, 2)
-	self.questIcon:SetPoint("LEFT", self, "RIGHT", -1, 0)
-	self.questIcon:SetSize(20, 20)
-	self.questIcon:SetAtlas("adventureguide-microbutton-alert")
+	self.questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0)
+	self.questIcon:SetSize(18, 18)
+	self.questIcon:SetAtlas("QuestNormal")
 	self.questIcon:Hide()
 
-	self.questCount = K.CreateFontString(self, 12, "", "", nil, "LEFT", 0, 0)
+	self.questCount = K.CreateFontString(self, 11, "", "", nil, "LEFT", 0, 0)
 	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -2, 0)
 
-	self:RegisterEvent("QUEST_LOG_UPDATE", UF.UpdateQuestUnit, true)
+	self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
+	self:RegisterEvent("UNIT_NAME_UPDATE", Module.UpdateQuestUnit, true)
+end
+
+function Module:AddClassIcon(self)
+	if not C["Nameplate"].ClassIcon then
+		return
+	end
+
+	self.Class = CreateFrame("Frame", nil, self)
+	self.Class:SetSize(self:GetHeight() * 2 + 3, self:GetHeight() * 2 + 3)
+	self.Class:SetPoint("BOTTOMLEFT", self.Castbar, "BOTTOMRIGHT", 3, 0)
+	self.Class:CreateShadow(true)
+
+	self.Class.Icon = self.Class:CreateTexture(nil, "OVERLAY")
+	self.Class.Icon:SetAllPoints()
+	self.Class.Icon:SetTexture("Interface\\WorldStateFrame\\Icons-Classes")
+	self.Class.Icon:SetTexCoord(0, 0, 0, 0)
+end
+
+function Module:UpdateClassIcon(self, unit)
+	if not C["Nameplate"].ClassIcon then
+		return
+	end
+
+	local reaction = UnitReaction(unit, "player")
+	if UnitIsPlayer(self.unit) and (reaction and reaction <= 4) then
+		local _, class = UnitClass(unit)
+		local texcoord = CLASS_ICON_TCOORDS[class]
+		self.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
+		self.Class:Show()
+	else
+		self.Class.Icon:SetTexCoord(0, 0, 0, 0)
+		self.Class:Hide()
+	end
 end
 
 -- Dungeon progress, AngryKeystones required
-function UF:AddDungeonProgress(self)
+function Module:AddDungeonProgress(self)
 	if not C["Nameplate"].AKSProgress then
 		return
 	end
@@ -500,7 +567,7 @@ function UF:AddDungeonProgress(self)
 	self.progressText:SetPoint("LEFT", self, "RIGHT", 5, 0)
 end
 
-function UF:UpdateDungeonProgress(unit)
+function Module:UpdateDungeonProgress(unit)
 	if not self.progressText or not AngryKeystones_Data then
 		return
 	end
@@ -538,40 +605,40 @@ function UF:UpdateDungeonProgress(unit)
 			end
 
 			if value and total then
-				self.progressText:SetText(string_format("+%.2f", value / total*100))
+				self.progressText:SetText(string_format("+%.2f", value / total * 100))
 			end
 		end
 	end
 end
 
-function UF:AddCreatureIcon(self)
+function Module:AddCreatureIcon(self)
 	local iconFrame = CreateFrame("Frame", nil, self)
 	iconFrame:SetAllPoints()
 	iconFrame:SetFrameLevel(self:GetFrameLevel() + 2)
 
-	self.creatureIcon = iconFrame:CreateTexture(nil, "ARTWORK")
-	self.creatureIcon:SetAtlas("VignetteKill")
-	self.creatureIcon:SetPoint("BOTTOMLEFT", self, "LEFT", 0, -4)
-	self.creatureIcon:SetSize(14, 14)
-	self.creatureIcon:Hide()
+	self.ClassifyIndicator = iconFrame:CreateTexture(nil, "ARTWORK")
+	self.ClassifyIndicator:SetAtlas("VignetteKill")
+	self.ClassifyIndicator:SetPoint("BOTTOMLEFT", self, "LEFT", 0, -4)
+	self.ClassifyIndicator:SetSize(14, 14)
+	self.ClassifyIndicator:Hide()
 end
 
-function UF:UpdateUnitClassify(unit)
-	local class = UnitClassification(unit)
-	if self.creatureIcon then
-		if class and classify[class] then
+function Module:UpdateUnitClassify(unit)
+	if self.ClassifyIndicator then
+		local class = UnitClassification(unit)
+		if (not self.isNameOnly) and class and classify[class] then
 			local r, g, b, desature = unpack(classify[class])
-			self.creatureIcon:SetVertexColor(r, g, b)
-			self.creatureIcon:SetDesaturated(desature)
-			self.creatureIcon:Show()
+			self.ClassifyIndicator:SetVertexColor(r, g, b)
+			self.ClassifyIndicator:SetDesaturated(desature)
+			self.ClassifyIndicator:Show()
 		else
-			self.creatureIcon:Hide()
+			self.ClassifyIndicator:Hide()
 		end
 	end
 end
 
 -- Scale plates for explosives
-function UF:UpdateExplosives(event, unit)
+function Module:UpdateExplosives(event, unit)
 	if not hasExplosives or unit ~= self.unit then
 		return
 	end
@@ -608,7 +675,7 @@ local function checkAffixes(event)
 	K:UnregisterEvent(event, checkAffixes)
 end
 
-function UF:CheckExplosives()
+function Module:CheckExplosives()
 	if not C["Nameplate"].ExplosivesScale then
 		return
 	end
@@ -617,7 +684,7 @@ function UF:CheckExplosives()
 end
 
 -- Mouseover indicator
-function UF:IsMouseoverUnit()
+function Module:IsMouseoverUnit()
 	if not self or not self.unit then
 		return
 	end
@@ -629,7 +696,7 @@ function UF:IsMouseoverUnit()
 	return false
 end
 
-function UF:UpdateMouseoverShown()
+function Module:UpdateMouseoverShown()
 	if not self or not self.unit then
 		return
 	end
@@ -642,7 +709,7 @@ function UF:UpdateMouseoverShown()
 	end
 end
 
-function UF:MouseoverIndicator(self)
+function Module:MouseoverIndicator(self)
 	self.HighlightIndicator = CreateFrame("Frame", nil, self.Health)
 	self.HighlightIndicator:SetAllPoints(self)
 	self.HighlightIndicator:Hide()
@@ -651,13 +718,13 @@ function UF:MouseoverIndicator(self)
 	self.HighlightIndicator.Texture:SetAllPoints()
 	self.HighlightIndicator.Texture:SetColorTexture(1, 1, 1, .25)
 
-	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT", UF.UpdateMouseoverShown, true)
+	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT", Module.UpdateMouseoverShown, true)
 
 	self.HighlightUpdater = CreateFrame("Frame", nil, self)
 	self.HighlightUpdater:SetScript("OnUpdate", function(_, elapsed)
 		self.HighlightUpdater.elapsed = (self.HighlightUpdater.elapsed or 0) + elapsed
 		if self.HighlightUpdater.elapsed > .1 then
-			if not UF.IsMouseoverUnit(self) then
+			if not Module.IsMouseoverUnit(self) then
 				self.HighlightUpdater:Hide()
 			end
 
@@ -671,7 +738,7 @@ function UF:MouseoverIndicator(self)
 end
 
 -- NazjatarFollowerXP
-function UF:AddFollowerXP(self)
+function Module:AddFollowerXP(self)
 	self.WidgetXPBar = CreateFrame("StatusBar", nil, self)
 	self.WidgetXPBar:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 	self.WidgetXPBar:SetStatusBarColor(255/255, 204/255, 102/255)
@@ -683,7 +750,7 @@ function UF:AddFollowerXP(self)
 end
 
 -- Interrupt info on castbars
-function UF:UpdateCastbarInterrupt(...)
+function Module:UpdateCastbarInterrupt(...)
 	local _, eventType, _, sourceGUID, sourceName, _, _, destGUID = ...
 	if eventType == "SPELL_INTERRUPT" and destGUID and sourceName and sourceName ~= "" then
 		local nameplate = guidToPlate[destGUID]
@@ -698,17 +765,21 @@ function UF:UpdateCastbarInterrupt(...)
 	end
 end
 
-function UF:AddInterruptInfo()
+function Module:AddInterruptInfo()
 	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self.UpdateCastbarInterrupt)
 end
 
 -- Create Nameplates
-function UF:CreatePlates()
+function Module:CreatePlates()
 	self.mystyle = "nameplate"
 
 	self:SetSize(C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight)
 	self:SetPoint("CENTER")
 	self:SetScale(1)
+
+	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	self.Overlay:SetAllPoints()
+	self.Overlay:SetFrameLevel(4)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetAllPoints()
@@ -716,27 +787,33 @@ function UF:CreatePlates()
 	self.Health:CreateShadow(true)
 
 	self.Health.frequentUpdates = true
-	self.Health.UpdateColor = UF.UpdateColor
+	self.Health.UpdateColor = Module.UpdateColor
 
 	if C["Nameplate"].Smooth then
 		K:SmoothBar(self.Health)
 	end
 
-	self.levelText = K.CreateFontString(self.Health, C["Nameplate"].NameTextSize, "", "", false)
+	self.levelText = K.CreateFontString(self, C["Nameplate"].NameTextSize, "", "", false)
 	self.levelText:SetJustifyH("RIGHT")
 	self.levelText:ClearAllPoints()
 	self.levelText:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 3)
 	self:Tag(self.levelText, "[nplevel]")
 
-	self.nameText = K.CreateFontString(self.Health, C["Nameplate"].NameTextSize, "", "", false)
+	self.nameText = K.CreateFontString(self, C["Nameplate"].NameTextSize, "", "", false)
 	self.nameText:SetJustifyH("LEFT")
 	self.nameText:SetWidth(self:GetWidth() * 0.85)
 	self.nameText:ClearAllPoints()
 	self.nameText:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 3)
 	self:Tag(self.nameText, "[name]")
 
-	self.healthValue = K.CreateFontString(self.Health, C["Nameplate"].HealthTextSize, "", "", false, "CENTER", 0, 0)
-	self.healthValue:SetPoint("CENTER", self, 0, 0)
+	self.npcTitle = K.CreateFontString(self, C["Nameplate"].NameTextSize - 1)
+	self.npcTitle:ClearAllPoints()
+	self.npcTitle:SetPoint("TOP", self, "BOTTOM", 0, -10)
+	self.npcTitle:Hide()
+	self:Tag(self.npcTitle, "[npctitle]")
+
+	self.healthValue = K.CreateFontString(self.Overlay, C["Nameplate"].HealthTextSize, "", "", false, "CENTER", 0, 0)
+	self.healthValue:SetPoint("CENTER", self.Overlay, 0, 0)
 	self:Tag(self.healthValue, "[nphp]")
 
 	self.Castbar = CreateFrame("StatusBar", "oUF_CastbarNameplate", self)
@@ -774,15 +851,15 @@ function UF:CreatePlates()
 
 	self.Castbar.timeToHold = .5
 	self.Castbar.decimal = "%.1f"
-	self.Castbar.OnUpdate = UF.OnCastbarUpdate
-	self.Castbar.PostCastStart = UF.PostCastStart
-	self.Castbar.PostChannelStart = UF.PostCastStart
-	self.Castbar.PostCastStop = UF.PostCastStop
-	self.Castbar.PostChannelStop = UF.PostChannelStop
-	self.Castbar.PostCastFailed = UF.PostCastFailed
-	self.Castbar.PostCastInterrupted = UF.PostCastFailed
-	self.Castbar.PostCastInterruptible = UF.PostUpdateInterruptible
-	self.Castbar.PostCastNotInterruptible = UF.PostUpdateInterruptible
+	self.Castbar.OnUpdate = Module.OnCastbarUpdate
+	self.Castbar.PostCastStart = Module.PostCastStart
+	self.Castbar.PostChannelStart = Module.PostCastStart
+	self.Castbar.PostCastStop = Module.PostCastStop
+	self.Castbar.PostChannelStop = Module.PostChannelStop
+	self.Castbar.PostCastFailed = Module.PostCastFailed
+	self.Castbar.PostCastInterrupted = Module.PostCastFailed
+	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+	self.Castbar.PostCastNotInterruptible = Module.PostUpdateInterruptible
 
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)
@@ -865,40 +942,46 @@ function UF:CreatePlates()
 	local width = self:GetWidth()
 	local maxAuras = self.Auras.numTotal or self.Auras.numBuffs + self.Auras.numDebuffs
 	local maxLines = self.Auras.iconsPerRow and math_floor(maxAuras / self.Auras.iconsPerRow + 0.5) or 2
-	self.Auras.size = self.Auras.iconsPerRow and UF.auraIconSize(width, self.Auras.iconsPerRow, self.Auras.spacing) or self.Auras.size
+	self.Auras.size = self.Auras.iconsPerRow and Module.auraIconSize(width, self.Auras.iconsPerRow, self.Auras.spacing) or self.Auras.size
 	self.Auras:SetWidth(width)
 	self.Auras:SetHeight((self.Auras.size + self.Auras.spacing) * maxLines)
 
 	self.Auras.showStealableBuffs = true
-	self.Auras.CustomFilter = UF.CustomFilter
-	self.Auras.PostCreateIcon = UF.PostCreateAura
-	self.Auras.PostUpdateIcon = UF.PostUpdateAura
-	self.Auras.PreUpdate = UF.bolsterPreUpdate
-	self.Auras.PostUpdate = UF.bolsterPostUpdate
+	self.Auras.CustomFilter = Module.CustomFilter
+	self.Auras.PostCreateIcon = Module.PostCreateAura
+	self.Auras.PostUpdateIcon = Module.PostUpdateAura
+	self.Auras.PreUpdate = Module.bolsterPreUpdate
+	self.Auras.PostUpdate = Module.bolsterPostUpdate
 
-	UF:CreateThreatColor(self)
+	Module:CreateThreatColor(self)
 
 	self.PvPClassificationIndicator = self:CreateTexture(nil, "ARTWORK")
 	self.PvPClassificationIndicator:SetSize(18, 18)
-	self.PvPClassificationIndicator:SetPoint("LEFT", self, "RIGHT", 6, 0)
+	self.PvPClassificationIndicator:ClearAllPoints()
+	if C["Nameplate"].ClassIcon then
+		self.PvPClassificationIndicator:SetPoint("TOPLEFT", self, "TOPRIGHT", 5, 20)
+	else
+		self.PvPClassificationIndicator:SetPoint("LEFT", self, "RIGHT", 6, 0)
+	end
 
 	self.powerText = K.CreateFontString(self, 15)
 	self.powerText:ClearAllPoints()
 	self.powerText:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -4)
 	self:Tag(self.powerText, "[nppp]")
 
-	UF:AddFollowerXP(self)
-	UF:MouseoverIndicator(self)
-	UF:AddTargetIndicator(self)
-	UF:AddCreatureIcon(self)
-	UF:AddQuestIcon(self)
-	UF:AddDungeonProgress(self)
+	Module:AddFollowerXP(self)
+	Module:MouseoverIndicator(self)
+	Module:AddTargetIndicator(self)
+	Module:AddCreatureIcon(self)
+	Module:AddQuestIcon(self)
+	Module:AddDungeonProgress(self)
+	Module:AddClassIcon(self)
 
-	platesList[self] = self:GetName()
+	--platesList[self] = self:GetName()
 end
 
 -- Classpower on target nameplate
-function UF:UpdateClassPowerAnchor()
+function Module:UpdateClassPowerAnchor()
 	if not isTargetClassPower then
 		return
 	end
@@ -915,7 +998,7 @@ function UF:UpdateClassPowerAnchor()
 	end
 end
 
-function UF:UpdateTargetClassPower()
+function Module:UpdateTargetClassPower()
 	local bar = _G.oUF_NameplateClassPowerBar
 	local playerPlate = _G.oUF_PlayerPlate
 
@@ -925,7 +1008,7 @@ function UF:UpdateTargetClassPower()
 
 	if C["Nameplate"].NameplateClassPower then
 		isTargetClassPower = true
-		UF:UpdateClassPowerAnchor()
+		Module:UpdateClassPowerAnchor()
 	else
 		isTargetClassPower = false
 		bar:SetParent(playerPlate.Health)
@@ -935,7 +1018,106 @@ function UF:UpdateTargetClassPower()
 	end
 end
 
-function UF.PostUpdateNameplateClassPower(element, cur, max, diff, powerType)
+local DisabledElements = {
+	"Health", "Castbar", "HealPredictionAndAbsorb", "PvPClassificationIndicator", "ThreatIndicator"
+}
+function Module:UpdatePlateByType()
+	local name = self.nameText
+	local level = self.levelText
+	local hpval = self.healthValue
+	local title = self.npcTitle
+	local raidtarget = self.RaidTargetIndicator
+	local classify = self.ClassifyIndicator
+	local questIcon = self.questIcon
+	local widgetBar = self.WidgetXPBar
+
+	name:ClearAllPoints()
+	raidtarget:ClearAllPoints()
+
+	if self.isNameOnly then
+		for _, element in pairs(DisabledElements) do
+			if self:IsElementEnabled(element) then
+				self:DisableElement(element)
+			end
+		end
+
+		name:SetJustifyH("CENTER")
+		self:Tag(name, "[color][name] [nplevel]")
+		name:UpdateTag()
+		name:SetPoint("CENTER", self, "BOTTOM")
+
+		self:Tag(level, "")
+		level:UpdateTag()
+
+		hpval:Hide()
+		title:Show()
+
+		raidtarget:SetPoint("TOP", title, "BOTTOM", 0, -5)
+		raidtarget:SetParent(self)
+		classify:Hide()
+		if questIcon then
+			questIcon:SetPoint("LEFT", name, "RIGHT", 0, 0)
+		end
+
+		widgetBar:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -12)
+	else
+		for _, element in pairs(DisabledElements) do
+			if not self:IsElementEnabled(element) then
+				self:EnableElement(element)
+			end
+		end
+
+		name:SetJustifyH("LEFT")
+		self:Tag(name, "[name]")
+		name:UpdateTag()
+		name:SetWidth(self:GetWidth() * 0.85)
+		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 3)
+
+		level:SetJustifyH("RIGHT")
+		self:Tag(self.levelText, "[nplevel]")
+		level:UpdateTag()
+		level:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 3)
+
+		hpval:Show()
+		title:Hide()
+
+		raidtarget:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)
+		raidtarget:SetParent(self.Health)
+		classify:Show()
+		if questIcon then
+			questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0)
+		end
+
+		widgetBar:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -5)
+	end
+
+	Module.UpdateTargetIndicator(self)
+end
+
+function Module:RefreshPlateType(unit)
+	self.reaction = UnitReaction(unit, "player")
+	self.isFriendly = self.reaction and self.reaction >= 5
+	self.isNameOnly = C["Nameplate"].NameOnly and self.isFriendly or false
+
+	if self.previousType == nil or self.previousType ~= self.isNameOnly then
+		Module.UpdatePlateByType(self)
+		self.previousType = self.isNameOnly
+	end
+end
+
+function Module:OnUnitFactionChanged(unit)
+	local nameplate = C_NamePlate_GetNamePlateForUnit(unit, issecure())
+	local unitFrame = nameplate and nameplate.unitFrame
+	if unitFrame and unitFrame.unitName then
+		Module.RefreshPlateType(unitFrame, unit)
+	end
+end
+
+function Module:RefreshPlateOnFactionChanged()
+	K:RegisterEvent("UNIT_FACTION", Module.OnUnitFactionChanged)
+end
+
+function Module.PostUpdateNameplateClassPower(element, cur, max, diff, powerType)
 	if diff then
 		for i = 1, max do
 			element[i]:SetWidth((C["Nameplate"].PlateWidth - (max - 1) * 6) / max)
@@ -952,20 +1134,20 @@ function UF.PostUpdateNameplateClassPower(element, cur, max, diff, powerType)
 		for i = 1, 6 do
 			if element[i]:IsShown() then
 				if C["Nameplate"].ShowPlayerPlate and C["Nameplate"].MaxPowerGlow then
-					K.libCustomGlow.AutoCastGlow_Start(element[i])
+					K.libButtonGlow.ShowOverlayGlow(element[i])
 				end
 			end
 		end
 	else
 		for i = 1, 6 do
 			if C["Nameplate"].ShowPlayerPlate and C["Nameplate"].MaxPowerGlow then
-				K.libCustomGlow.AutoCastGlow_Stop(element[i])
+				K.libButtonGlow.HideOverlayGlow(element[i])
 			end
 		end
 	end
 end
 
-function UF:PostUpdatePlates(event, unit)
+function Module:PostUpdatePlates(event, unit)
 	if not self then
 		return
 	end
@@ -976,37 +1158,47 @@ function UF:PostUpdatePlates(event, unit)
 		if self.unitGUID then
 			guidToPlate[self.unitGUID] = self
 		end
+
 		self.npcID = K.GetNPCID(self.unitGUID)
+		self.isPlayer = UnitIsPlayer(unit)
 
 		local blizzPlate = self:GetParent().UnitFrame
 		self.widget = blizzPlate.WidgetContainer
+
+		Module.RefreshPlateType(self, unit)
 	elseif event == "NAME_PLATE_UNIT_REMOVED" then
 		if self.unitGUID then
 			guidToPlate[self.unitGUID] = nil
 		end
 	end
 
-	UF.UpdateUnitPower(self)
-	UF.UpdateTargetChange(self)
-	UF.UpdateQuestUnit(self, event, unit)
-	UF.UpdateUnitClassify(self, unit)
-	UF.UpdateExplosives(self, event, unit)
-	UF.UpdateDungeonProgress(self, unit)
-	UF:UpdateClassPowerAnchor()
+	if event ~= "NAME_PLATE_UNIT_REMOVED" then
+		Module.UpdateUnitPower(self)
+		Module.UpdateTargetChange(self)
+		Module.UpdateQuestUnit(self, event, unit)
+		Module.UpdateUnitClassify(self, unit)
+		Module.UpdateDungeonProgress(self, unit)
+		Module:UpdateClassIcon(self, unit)
+		Module:UpdateClassPowerAnchor()
+	end
+
+	Module.UpdateExplosives(self, event, unit)
 end
 
 -- Player Nameplate
-function UF:PlateVisibility(event)
+function Module:PlateVisibility(event)
 	if (event == "PLAYER_REGEN_DISABLED" or InCombatLockdown()) and UnitIsUnit("player", self.unit) then
 		K.UIFrameFadeIn(self.Health, 0.3, self.Health:GetAlpha(), 1)
 		K.UIFrameFadeIn(self.Power, 0.3, self.Power:GetAlpha(), 1)
+		K.UIFrameFadeIn(self.Auras, 0.3, self.Power:GetAlpha(), 1)
 	else
 		K.UIFrameFadeOut(self.Health, 2, self.Health:GetAlpha(), 0.1)
 		K.UIFrameFadeOut(self.Power, 2, self.Power:GetAlpha(), 0.1)
+		K.UIFrameFadeIn(self.Auras, 2, self.Power:GetAlpha(), 0.1)
 	end
 end
 
-function UF:CreatePlayerPlate()
+function Module:CreatePlayerPlate()
 	self.mystyle = "PlayerPlate"
 
 	local iconSize, margin = C["Nameplate"].PPIconSize, 2
@@ -1076,10 +1268,10 @@ function UF:CreatePlayerPlate()
 		if K.Class == "DEATHKNIGHT" then
 			bars.colorSpec = true
 			bars.sortOrder = "asc"
-			bars.PostUpdate = UF.PostUpdateRunes
+			bars.PostUpdate = Module.PostUpdateRunes
 			self.Runes = bars
 		else
-			bars.PostUpdate = UF.PostUpdateNameplateClassPower
+			bars.PostUpdate = Module.PostUpdateNameplateClassPower
 			self.ClassPower = bars
 		end
 	end
@@ -1097,6 +1289,32 @@ function UF:CreatePlayerPlate()
 		self:Tag(self.Stagger.Value, "[monkstagger]")
 	end
 
+	self.Auras = CreateFrame("Frame", nil, self)
+	self.Auras:SetFrameLevel(self:GetFrameLevel() + 2)
+	self.Auras.spacing = 4
+	self.Auras.initdialAnchor = "BOTTOMLEFT"
+	self.Auras["growth-y"] = "UP"
+	self.Auras:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 5)
+	self.Auras.numTotal = C["Nameplate"].MaxAuras
+	self.Auras.iconsPerRow = C["Nameplate"].MaxAurasPerRow or 6
+	self.Auras.size = C["Nameplate"].AuraSize
+	self.Auras.gap = false
+	self.Auras.disableMouse = true
+
+	local width = self:GetWidth()
+	local maxAuras = self.Auras.numTotal or self.Auras.numBuffs + self.Auras.numDebuffs
+	local maxLines = self.Auras.iconsPerRow and math_floor(maxAuras / self.Auras.iconsPerRow + 0.5) or 2
+	self.Auras.size = self.Auras.iconsPerRow and Module.auraIconSize(width, self.Auras.iconsPerRow, self.Auras.spacing) or self.Auras.size
+	self.Auras:SetWidth(width)
+	self.Auras:SetHeight((self.Auras.size + self.Auras.spacing) * maxLines)
+
+	self.Auras.showStealableBuffs = true
+	self.Auras.CustomFilter = Module.CustomFilter
+	self.Auras.PostCreateIcon = Module.PostCreateAura
+	self.Auras.PostUpdateIcon = Module.PostUpdateAura
+	self.Auras.PreUpdate = Module.bolsterPreUpdate
+	self.Auras.PostUpdate = Module.bolsterPostUpdate
+
 	K:GetModule("Auras"):CreateLumos(self)
 
 	if C["Nameplate"].PPPowerText then
@@ -1107,13 +1325,13 @@ function UF:CreatePlayerPlate()
 		self:Tag(power, "[pppower]")
 	end
 
-	UF:UpdateTargetClassPower()
+	Module:UpdateTargetClassPower()
 
 	if C["Nameplate"].PPHideOOC then
-		self:RegisterEvent("UNIT_EXITED_VEHICLE", UF.PlateVisibility)
-		self:RegisterEvent("UNIT_ENTERED_VEHICLE", UF.PlateVisibility)
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", UF.PlateVisibility, true)
-		self:RegisterEvent("PLAYER_REGEN_DISABLED", UF.PlateVisibility, true)
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", UF.PlateVisibility, true)
+		self:RegisterEvent("UNIT_EXITED_VEHICLE", Module.PlateVisibility)
+		self:RegisterEvent("UNIT_ENTERED_VEHICLE", Module.PlateVisibility)
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", Module.PlateVisibility, true)
+		self:RegisterEvent("PLAYER_REGEN_DISABLED", Module.PlateVisibility, true)
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", Module.PlateVisibility, true)
 	end
 end

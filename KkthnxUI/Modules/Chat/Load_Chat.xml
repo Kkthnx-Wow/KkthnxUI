@@ -3,9 +3,10 @@
    <!-- Load_Chat -->
    <Script file="Core.lua" />
 
-   <Script file="ChannelRename.lua" />
-   <Script file="ChatFilter.lua" />
-   <Script file="CopyChat.lua" />
-   <Script file="CopyUrl.lua" />
-   <Script file="ItemLevel.lua" />
+   <Script file="Elements\Copy.lua" />
+   <Script file="Elements\Filters.lua" />
+   <Script file="Elements\ILevel.lua" />
+   <Script file="Elements\Rename.lua" />
+   <Script file="Elements\URL.lua" />
+   <Script file="Elements\Voice.lua" />
 </Ui>

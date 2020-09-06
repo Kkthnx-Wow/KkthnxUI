@@ -7,6 +7,15 @@ local BartenderFont = K.GetFont(C["UIFonts"].SkinFonts)
 local BartenderTexture = K.GetTexture(C["UITextures"].SkinTextures)
 
 function Module:ReskinBartender4()
+	if IsAddOnLoaded("RareScanner") then
+		--if scanner_button then
+			scanner_button:StripTextures()
+			scanner_button:SkinButton()
+			scanner_button.FilterDisabledButton:SkinButton(nil, nil, '-')
+			scanner_button.CloseButton:SkinCloseButton()
+		--end
+	end
+
 	if not IsAddOnLoaded("Bartender4") or not C["Skins"].Bartender4 then
 		return
 	end
@@ -36,9 +45,9 @@ function Module:ReskinBartender4()
 		if Border and Button.isSkinned then
 			Border:SetTexture("")
 			if Border:IsShown() then
-				Button:SetBackdropBorderColor(0.08, 0.70, 0)
+				Button.KKUI_Border:SetVertexColor(0.08, 0.70, 0)
 			else
-				Button:SetBackdropBorderColor()
+				Button.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
 		end
 
@@ -65,7 +74,6 @@ function Module:ReskinBartender4()
 		end
 
 		Button:CreateBorder()
-		Button:CreateInnerShadow()
 		Button:UnregisterEvent("ACTIONBAR_SHOWGRID")
 		Button:UnregisterEvent("ACTIONBAR_HIDEGRID")
 
@@ -107,7 +115,8 @@ function Module:ReskinBartender4()
 
 		if MainMenuBarBackpackButton then
 			local Texture = MainMenuBarBackpackButton.icon:GetTexture()
-			MainMenuBarBackpackButton:CreateBorder(nil, nil, nil, true)
+			MainMenuBarBackpackButton:StripTextures()
+			MainMenuBarBackpackButton:CreateBorder()
 			MainMenuBarBackpackButton.icon:SetTexCoord(unpack(K.TexCoords))
 			MainMenuBarBackpackButton.icon:SetAllPoints(MainMenuBarBackpackButton)
 			MainMenuBarBackpackButton.icon.SetTexCoord = function() end
@@ -116,7 +125,8 @@ function Module:ReskinBartender4()
 			for i = 0, 3 do
 				if _G["CharacterBag"..i.."Slot"] then
 					local Texture = _G["CharacterBag"..i.."Slot"].icon:GetTexture()
-					_G["CharacterBag"..i.."Slot"]:CreateBorder(nil, nil, nil, true)
+					_G["CharacterBag"..i.."Slot"]:StripTextures()
+					_G["CharacterBag"..i.."Slot"]:CreateBorder()
 					_G["CharacterBag"..i.."Slot"].icon:SetTexCoord(unpack(K.TexCoords))
 					_G["CharacterBag"..i.."Slot"].icon:SetAllPoints(_G["CharacterBag"..i.."Slot"])
 					_G["CharacterBag"..i.."Slot"].icon.SetTexCoord = function() end

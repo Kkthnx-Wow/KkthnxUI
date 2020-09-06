@@ -95,8 +95,7 @@ function Module:CreateBoss()
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 		self.Portrait:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
-		self.Portrait:CreateBorder()
-		self.Portrait:CreateInnerShadow()
+		self.Portrait:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		self.Portrait = self.Health:CreateTexture("BossPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
@@ -105,8 +104,7 @@ function Module:CreateBoss()
 
 		self.Portrait.Border = CreateFrame("Frame", nil, self)
 		self.Portrait.Border:SetAllPoints(self.Portrait)
-		self.Portrait.Border:CreateBorder()
-		self.Portrait.Border:CreateInnerShadow()
+		self.Portrait.Border:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
@@ -119,7 +117,7 @@ function Module:CreateBoss()
 
 	local aurasSetWidth = 156
 	self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
-	self.Buffs:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -6)
+	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 	self.Buffs.initialAnchor = "TOPLEFT"
 	self.Buffs["growth-x"] = "RIGHT"
 	self.Buffs["growth-y"] = "DOWN"
@@ -192,7 +190,7 @@ function Module:CreateBoss()
 
 		self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
 		self.Castbar.Button:SetSize(20, 20)
-		self.Castbar.Button:CreateBorder()
+		self.Castbar.Button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 		self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
 		self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
@@ -205,4 +203,26 @@ function Module:CreateBoss()
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	self.RaidTargetIndicator:SetSize(16, 16)
+
+	local PWOnRight = false
+		local relF = "RIGHT"
+		local relT = "LEFT"
+		local xOffset = -6
+		local yOffset = 0
+		local otherSide = PWOnRight
+		if otherSide then
+			xOffset = -6
+			yOffset = 0
+		end
+
+		local altPower = K.CreateFontString(self, 10, "")
+		altPower:ClearAllPoints()
+		if otherSide then
+			altPower:SetPoint(relT, self.Power, relF, xOffset, yOffset)
+		else
+			local parent = self.Power
+			altPower:SetPoint(relF, parent, relT, xOffset, yOffset)
+		end
+		self:Tag(altPower, "[altpower]")
+		altPower:Show()
 end

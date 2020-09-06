@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 
 local _G = _G
+local pairs = _G.pairs
+local print = _G.print
 local string_find = _G.string.find
 local string_gsub = _G.string.gsub
 local string_lower = _G.string.lower
@@ -8,19 +10,28 @@ local string_split = _G.string.split
 local string_trim = _G.string.trim
 local table_insert = _G.table.insert
 local table_remove = _G.table.remove
+local type = _G.type
+local tonumber = _G.tonumber
 
+local ACCEPT = _G.ACCEPT
 local AbandonQuest = _G.AbandonQuest
+local CANCEL = _G.CANCEL
 local CombatLogClearEntries = _G.CombatLogClearEntries
 local ConvertToParty = _G.ConvertToParty
 local ConvertToRaid = _G.ConvertToRaid
 local DoReadyCheck = _G.DoReadyCheck
 local ERR_NOT_IN_GROUP = _G.ERR_NOT_IN_GROUP
-local EnableAddOn = _G.EnableAddOn
+local GetContainerItemLink = _G.GetContainerItemLink
+local GetContainerNumSlots = _G.GetContainerNumSlots
+local GetItemInfo = _G.GetItemInfo
+local GetLocale = _G.GetLocale
 local GetNumGroupMembers = _G.GetNumGroupMembers
 local GetNumQuestLogEntries = _G.GetNumQuestLogEntries
-local GetRealmName = _G.GetRealmName
+local GetQuestLogTitle = _G.GetQuestLogTitle
+local IsQuestFlaggedCompleted = _G.IsQuestFlaggedCompleted
 local LeaveParty = _G.LeaveParty
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
+local PlaySound = _G.PlaySound
 local ReloadUI = _G.ReloadUI
 local RepopMe = _G.RepopMe
 local RetrieveCorpse = _G.RetrieveCorpse
@@ -28,10 +39,12 @@ local SelectQuestLogEntry = _G.SelectQuestLogEntry
 local SetAbandonQuest = _G.SetAbandonQuest
 local SetCVar = _G.SetCVar
 local SlashCmdList = _G.SlashCmdList
+local UIErrorsFrame = _G.UIErrorsFrame
 local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
-local UnitName = _G.UnitName
+
+local SelectedProfile = 0
 
 local function parseArguments(msg)
 	-- Remove spaces at the start and end
@@ -49,93 +62,48 @@ local function parseArguments(msg)
 	end
 end
 
--- ConfigFrame
-SlashCmdList["KKUI_CONFIGUI"] = function()
-	if (not KkthnxUIConfig) then
-		print("KkthnxUI config not found!")
-		return
-	end
-
-	if (not KkthnxUIConfigFrame) then
-		KkthnxUIConfig:CreateConfigWindow()
-	end
-
-	if KkthnxUIConfigFrame:IsVisible() then
-		KkthnxUIConfigFrame:Hide()
-	else
-		KkthnxUIConfigFrame:Show()
-	end
-end
-SLASH_KKUI_CONFIGUI1 = "/config"
-SLASH_KKUI_CONFIGUI2 = "/configui"
-SLASH_KKUI_CONFIGUI3 = "/cfg"
-
-SlashCmdList["KKUI_RESETNAMEPLATESVARS"] = function()
-	K:GetModule("Unitframes"):NameplatesVarsReset()
-end
-SLASH_KKUI_RESETNAMEPLATESVARS1 = "/fixplates"
-SLASH_KKUI_RESETNAMEPLATESVARS2 = "/resetnameplates"
-SLASH_KKUI_RESETNAMEPLATESVARS3 = "/resetplates"
-SLASH_KKUI_RESETNAMEPLATESVARS4 = "/rnp"
-
 -- Profiles data/listings
 SlashCmdList["KKUI_UIPROFILES"] = function(msg)
 	if not KkthnxUIData then
 		return
 	end
 
-	if KkthnxUIConfigPerAccount then
-		K.Print(L["ConfigPerAccount"])
-		return
-	end
-
 	if not msg or msg == "" then
-		K.Print(L["ProfileInfo"])
+		print(" ")
+		K.Print("/profile list")
+		print(" List current profiles available")
+		K.Print("/profile #")
+		print(" Apply a profile, replace '#' with a profile number")
+		K.Print("/profile delete #")
+		print(" Delete a profile, replace '#' with a profile number")
+		print(" ")
 	else
-		local IsConfigLoaded = IsAddOnLoaded("KkthnxUI_Config")
 		-- Split the msg into multiple arguments.
 		-- This function will return any number of arguments.
 		local command, arg1 = parseArguments(msg)
-
 		if msg == "list" or msg == "l" then
 			KkthnxUI.Profiles = {}
 			KkthnxUI.Profiles.Data = {}
 			KkthnxUI.Profiles.Options = {}
 
+			local EmptyTable = {}
 			for Server, Table in pairs(KkthnxUIData) do
 				if not Server then
 					return
 				end
 
-				if Server ~= "gold" and Server ~= "class" and Server ~= "faction" then
-					if type(KkthnxUIData[Server]) == "table" then
-						for Character, Table in pairs(KkthnxUIData[Server]) do
-							if Character ~= "gold" and Character ~= "class" and Character ~= "faction" then
-								table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
+				if type(KkthnxUIData[Server]) == "table" then
+					for Character, Table in pairs(KkthnxUIData[Server]) do
+						table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
 
-								if IsConfigLoaded then
-									if KkthnxUIConfigShared and KkthnxUIConfigShared[Server] and KkthnxUIConfigShared[Server][Character] then
-										table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
-									else
-										if not KkthnxUIConfigShared then
-											KkthnxUIConfigShared = {}
-										end
-
-										if not KkthnxUIConfigShared[Server] then
-											KkthnxUIConfigShared[Server] = {}
-										end
-
-										if not KkthnxUIConfigShared[Server][Character] then
-											KkthnxUIConfigShared[Server][Character] = {}
-										end
-
-										table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
-									end
-								end
-							end
-
-							K.Print(L["Profile"] .. #KkthnxUI.Profiles.Data..": ["..Server.."] - ["..Character.."]")
+						-- GUI options, it can be not found if you didn't log at least once since version 1.10 on that toon.
+						if KkthnxUISettingsPerCharacter and KkthnxUISettingsPerCharacter[Server] and KkthnxUISettingsPerCharacter[Server][Character] then
+							table_insert(KkthnxUI.Profiles.Options, KkthnxUISettingsPerCharacter[Server][Character])
+						else
+							table_insert(KkthnxUI.Profiles.Options, EmptyTable)
 						end
+
+						K.Print(L["Profile"]..#KkthnxUI.Profiles.Data..": ["..Server.."] - ["..Character.."]")
 					end
 				end
 			end
@@ -144,23 +112,16 @@ SlashCmdList["KKUI_UIPROFILES"] = function(msg)
 			-- and an indexed listing of the profiles is actually available.
 			if KkthnxUI.Profiles and KkthnxUI.Profiles.Data then
 				-- Retrieve the profile ID
-				local Profile = tonumber(arg1)
-
+				SelectedProfile = tonumber(arg1)
 				-- Retrieve the profile table
-				local Data = KkthnxUI.Profiles.Data[Profile]
-
+				local Data = KkthnxUI.Profiles.Data[SelectedProfile]
 				-- Return an error if the user entered a non existing profile
 				if not Data then
 					K.Print(L["ProfileNotFound"])
 					return
 				else
-
-					-- Deleting the current profile requires a reload
-					local CurrentServer = GetRealmName()
-					local CurrentCharacter = UnitName("player")
-
-					if Data == KkthnxUIData[CurrentServer][CurrentCharacter] then
-						return K["Install"]:ResetData()
+					if Data == KkthnxUIData[K.Realm][K.Name] then
+						K:GetModule("Installer"):ResetInstallData()
 					end
 
 					local CharacterName, ServerName
@@ -168,110 +129,111 @@ SlashCmdList["KKUI_UIPROFILES"] = function(msg)
 
 					-- Search through the stored data for the matching table
 					for Server, Table in pairs(KkthnxUIData) do
-						if Server ~= "gold" and Server ~= "class" and Server ~= "faction" then
-							if type(KkthnxUIData[Server]) == "table" then
-								for Character, Table in pairs(KkthnxUIData[Server]) do
-									if Character ~= "gold" and Character ~= "class" and Character ~= "faction" then
-										if Table == Data then
-											CharacterName = Character
-											ServerName = Server
-											KkthnxUIData[Server][Character] = nil
-											KkthnxUIConfigShared[Server][Character] = nil
-											found = true
-											break
-										end
-									end
-								end
-
-								if found then
+						if type(KkthnxUIData[Server]) == "table" then
+							for Character, Table in pairs(KkthnxUIData[Server]) do
+								if Table == Data then
+									CharacterName = Character
+									ServerName = Server
+									KkthnxUIData[Server][Character] = nil
+									KkthnxUISettingsPerCharacter[Server][Character] = nil
+									found = true
 									break
 								end
 							end
 						end
+
+						if found then
+							break
+						end
 					end
 
 					-- Delete the profile listing entries too.
-					table_remove(KkthnxUI.Profiles.Data, Profile)
-					table_remove(KkthnxUI.Profiles.Options, Profile)
+					table_remove(KkthnxUI.Profiles.Data, SelectedProfile)
+					table_remove(KkthnxUI.Profiles.Options, SelectedProfile)
 
 					-- Tell the user about the deletion
-					K.Print(L["Profile"] .. #KkthnxUI.Profiles.Data .. L["ProfileDel"] .. "["..ServerName.."] - ["..CharacterName.."]")
+					K.Print(L["Profile"]..#KkthnxUI.Profiles.Data..L["ProfileDel"].."["..ServerName.."] - ["..CharacterName.."]")
 
 					-- Do a new listing to show the users the order now,
 					-- in case they wish to delete more profiles.
-
 					-- First iterate through the indexed profile table
-					for Profile = 1, #KkthnxUI.Profiles.Data do
-						local Data = KkthnxUI.Profiles.Data[Profile]
+					for SelectedProfile = 1, #KkthnxUI.Profiles.Data do
+						local Data = KkthnxUI.Profiles.Data[SelectedProfile]
 
 						-- Search through the saved data for the matching table,
 						-- so we can get the character and server names.
 						local found
 						for Server, Table in pairs(KkthnxUIData) do
-							if Server ~= "gold" and Server ~= "class" and Server ~= "faction" then
-								for Character, Table in pairs(KkthnxUIData[Server]) do
-									if Character ~= "gold" and Character ~= "class" and Character ~= "faction" then
-										-- We found the matching table so we break and exit this loop,
-										-- to allow the outer iteration loop to continue faster.
-										if Table == Data then
-											K.Print(L["Profile"] ..Profile..": ["..Server.."] - ["..Character.."]")
-											found = true
-											break
-										end
-									end
-								end
-
-								if found then
+							for Character, Table in pairs(KkthnxUIData[Server]) do
+								-- We found the matching table so we break and exit this loop,
+								-- to allow the outer iteration loop to continue faster.
+								if Table == Data then
+									K.Print(L["Profile"] ..SelectedProfile..": ["..Server.."] - ["..Character.."]")
+									found = true
 									break
 								end
+							end
+
+							if found then
+								break
 							end
 						end
 					end
 				end
 			end
 		else
-			local CurrentServer = GetRealmName()
-			local CurrentCharacter = UnitName("player")
-			local Profile = tonumber(msg)
-
-			if not KkthnxUI.Profiles or not KkthnxUI.Profiles.Data[Profile] then
+			SelectedProfile = tonumber(msg)
+			if not KkthnxUI.Profiles or not KkthnxUI.Profiles.Data[SelectedProfile] then
 				K.Print(L["ProfileNotFound"])
 				return
 			end
 
-			KkthnxUIData[CurrentServer][CurrentCharacter] = KkthnxUI.Profiles.Data[Profile]
-			if IsConfigLoaded then
-				KkthnxUIConfigShared[CurrentServer][CurrentCharacter] = KkthnxUI.Profiles.Options[Profile]
-			end
-
-			ReloadUI()
+			K.StaticPopup_Show("KKUI_IMPORT_PROFILE")
 		end
 	end
 end
-SLASH_KKUI_UIPROFILES1 = "/profile"
-SLASH_KKUI_UIPROFILES2 = "/profiles"
+_G.SLASH_KKUI_UIPROFILES1 = "/profile"
+_G.SLASH_KKUI_UIPROFILES2 = "/profiles"
+
+-- Create a KkthnxUI popup for profiles
+K.PopupDialogs["KKUI_IMPORT_PROFILE"] = {
+	text = "Are you sure you want to import this profile? Continue?",
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		KkthnxUIData[K.Realm][K.Name] = KkthnxUI.Profiles.Data[SelectedProfile]
+
+		if KkthnxUISettingsPerCharacter[K.Realm][K.Name].General and KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal then
+			-- Look like we use globals for gui, don't import gui settings, keep globals
+		else
+			KkthnxUISettingsPerCharacter[K.Realm][K.Name] = KkthnxUI.Profiles.Options[SelectedProfile]
+		end
+
+		ReloadUI()
+	end,
+}
 
 -- Fixes the issue when the dialog to release spirit does not come up.
 SlashCmdList["KKUI_FIXRELEASE"] = function()
 	RetrieveCorpse()
 	RepopMe()
 end
-SLASH_KKUI_FIXRELEASE1 = "/release"
-SLASH_KKUI_FIXRELEASE2 = "/repop"
+_G.SLASH_KKUI_FIXRELEASE1 = "/release"
+_G.SLASH_KKUI_FIXRELEASE2 = "/repop"
 
 -- Fixes the issue when players get stuck in party on felsong.
 SlashCmdList["KKUI_FIXPARTY"] = function()
 	LeaveParty()
 	print(L["FixParty"])
 end
-SLASH_KKUI_FIXPARTY1 = "/killparty"
-SLASH_KKUI_FIXPARTY2 = "/leaveparty"
+_G.SLASH_KKUI_FIXPARTY1 = "/killparty"
+_G.SLASH_KKUI_FIXPARTY2 = "/leaveparty"
 
 -- Ready check
 SlashCmdList["KKUI_READYCHECK"] = function()
 	DoReadyCheck()
 end
-SLASH_KKUI_READYCHECK1 = "/rc"
+_G.SLASH_KKUI_READYCHECK1 = "/rc"
 
 local QuestCheckSubDomain = (setmetatable({
 	ruRU = "ru",
@@ -298,38 +260,38 @@ SlashCmdList["KKUI_CHECKQUESTSTATUS"] = function(questid)
 	end
 
 	if (IsQuestFlaggedCompleted(questid) == true) then
-		UIErrorsFrame:AddMessage(QuestCheckComplete.."Quest ".. "|CFFFFFF00[" .. questid .. "]|r" .. L["CheckQuestComplete"])
+		UIErrorsFrame:AddMessage(QuestCheckComplete.."Quest ".. "|CFFFFFF00["..questid.."]|r"..L["CheckQuestComplete"])
 		PlaySound("878")
-		K.Print(WoWHeadLoc .. questid)
+		K.Print(WoWHeadLoc..questid)
 	else
-		UIErrorsFrame:AddMessage(QuestCheckIncomplete.."Quest ".. "|CFFFFFF00[" .. questid .. "]|r" .. L["CheckQuestNotComplete"])
+		UIErrorsFrame:AddMessage(QuestCheckIncomplete.."Quest ".. "|CFFFFFF00["..questid.."]|r"..L["CheckQuestNotComplete"])
 		PlaySound("847")
-		K.Print(WoWHeadLoc .. questid)
+		K.Print(WoWHeadLoc..questid)
 	end
 end
-SLASH_KKUI_CHECKQUESTSTATUS1 = "/checkquest"
-SLASH_KKUI_CHECKQUESTSTATUS2 = "/questcheck"
+_G.SLASH_KKUI_CHECKQUESTSTATUS1 = "/checkquest"
+_G.SLASH_KKUI_CHECKQUESTSTATUS2 = "/questcheck"
 
 -- Help frame.
 SlashCmdList["KKUI_GMTICKET"] = function()
-	ToggleHelpFrame()
+	_G.ToggleHelpFrame()
 end
-SLASH_KKUI_GMTICKET1 = "/gm"
-SLASH_KKUI_GMTICKET2 = "/ticket"
+_G.SLASH_KKUI_GMTICKET1 = "/gm"
+_G.SLASH_KKUI_GMTICKET2 = "/ticket"
 
 SlashCmdList["KKUI_DELETEQUESTITEMS"] = function()
 	for bag = 0, 4 do
 		for slot = 1, _G.GetContainerNumSlots(bag) do
-			local itemLink = _G.GetContainerItemLink(bag, slot)
-			if itemLink and _G.select(12, _G.GetItemInfo(itemLink)) == _G.LE_ITEM_CLASS_QUESTITEM then
+			local itemLink = GetContainerItemLink(bag, slot)
+			if itemLink and select(12, GetItemInfo(itemLink)) == _G.LE_ITEM_CLASS_QUESTITEM then
 				_G.print(itemLink)
-				PickupContainerItem(bag, slot) DeleteCursorItem()
+				_G.PickupContainerItem(bag, slot) _G.DeleteCursorItem()
 			end
 		end
 	end
 end
-SLASH_KKUI_DELETEQUESTITEMS1 = "/deletequestitems"
-SLASH_KKUI_DELETEQUESTITEMS2 = "/dqi"
+_G.SLASH_KKUI_DELETEQUESTITEMS1 = "/deletequestitems"
+_G.SLASH_KKUI_DELETEQUESTITEMS2 = "/dqi"
 
 SlashCmdList["KKUI_DELETEHEIRLOOMS"] = function()
 	for bag = 0, 4 do
@@ -337,51 +299,51 @@ SlashCmdList["KKUI_DELETEHEIRLOOMS"] = function()
 			local name = GetContainerItemLink(bag,slot)
 			if name and string.find(name,"00ccff") then
 				print(name)
-				PickupContainerItem(bag,slot)
-				DeleteCursorItem()
+				_G.PickupContainerItem(bag,slot)
+				_G.DeleteCursorItem()
 			end
 		end
 	end
 end
-SLASH_KKUI_DELETEHEIRLOOMS1 = "/deleteheirlooms"
-SLASH_KKUI_DELETEHEIRLOOMS2 = "/deletelooms"
+_G.SLASH_KKUI_DELETEHEIRLOOMS1 = "/deleteheirlooms"
+_G.SLASH_KKUI_DELETEHEIRLOOMS2 = "/deletelooms"
 
 SlashCmdList["KKUI_RESETINSTANCE"] = function()
-	ResetInstances()
+	_G.ResetInstances()
 end
-SLASH_KKUI_RESETINSTANCE1 = "/ri"
-SLASH_KKUI_RESETINSTANCE2 = "/instancereset"
-SLASH_KKUI_RESETINSTANCE3 = "/resetinstance"
+_G.SLASH_KKUI_RESETINSTANCE1 = "/ri"
+_G.SLASH_KKUI_RESETINSTANCE2 = "/instancereset"
+_G.SLASH_KKUI_RESETINSTANCE3 = "/resetinstance"
 
 -- Toggle the binding frame incase we unbind esc.
 SlashCmdList["KKUI_KEYBINDFRAME"] = function()
-	if not KeyBindingFrame then
-		KeyBindingFrame_LoadUI()
+	if not _G.KeyBindingFrame then
+		_G.KeyBindingFrame_LoadUI()
 	end
 
-	ShowUIPanel(KeyBindingFrame)
+	_G.ShowUIPanel(_G.KeyBindingFrame)
 end
-SLASH_KKUI_KEYBINDFRAME1 = "/binds"
+_G.SLASH_KKUI_KEYBINDFRAME1 = "/binds"
 
 -- Fix The CombatLog.
 SlashCmdList["KKUI_CLEARCOMBATLOG"] = function()
 	CombatLogClearEntries()
 end
-SLASH_KKUI_CLEARCOMBATLOG1 = "/clearcombat"
-SLASH_KKUI_CLEARCOMBATLOG2 = "/clfix"
+_G.SLASH_KKUI_CLEARCOMBATLOG1 = "/clearcombat"
+_G.SLASH_KKUI_CLEARCOMBATLOG2 = "/clfix"
 
 -- Here we can restart wow"s engine. could be use for sound issues and more.
 SlashCmdList["KKUI_FIXGFXENGINE"] = function()
 	K.StaticPopup_Show("RESTART_GFX")
 end
-SLASH_KKUI_FIXGFXENGINE1 = "/restartgfx"
-SLASH_KKUI_FIXGFXENGINE2 = "/fixgfx"
+_G.SLASH_KKUI_FIXGFXENGINE1 = "/restartgfx"
+_G.SLASH_KKUI_FIXGFXENGINE2 = "/fixgfx"
 
 -- Clear all quests in questlog
 SlashCmdList["KKUI_ABANDONQUESTS"] = function()
 	local numEntries, numQuests = GetNumQuestLogEntries()
 	for questLogIndex = 1, numEntries do
-		local questTitle, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID = GetQuestLogTitle(questLogIndex)
+		local _, _, _, isHeader = GetQuestLogTitle(questLogIndex)
 
 		if (not isHeader) then
 			SelectQuestLogEntry(questLogIndex)
@@ -390,14 +352,14 @@ SlashCmdList["KKUI_ABANDONQUESTS"] = function()
 		end
 	end
 end
-SLASH_KKUI_ABANDONQUESTS1 = "/killquests"
-SLASH_KKUI_ABANDONQUESTS2 = "/clearquests"
+_G.SLASH_KKUI_ABANDONQUESTS1 = "/killquests"
+_G.SLASH_KKUI_ABANDONQUESTS2 = "/clearquests"
 
 -- KkthnxUI help commands
 SlashCmdList["KKUI_COMMANDSHELPS"] = function()
 	print(L["Commands"].UIHelp)
 end
-SLASH_KKUI_COMMANDSHELPS1 = "/helpui"
+_G.SLASH_KKUI_COMMANDSHELPS1 = "/helpui"
 
 -- Convert party to raid
 SlashCmdList["PARTYTORAID"] = function()
@@ -434,7 +396,7 @@ _G.SLASH_FPS1 = "/fps"
 -- Deadly boss mods testing.
 SlashCmdList["DBMTEST"] = function()
 	if K.CheckAddOnState("DBM-Core") then
-		DBM:DemoMode()
+		_G.DBM:DemoMode()
 	end
 end
 _G.SLASH_DBMTEST1 = "/dbmtest"

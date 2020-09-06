@@ -172,4 +172,3 @@ function Container:FilterForFunction(func, filters)
 		func(button, result)
 	end
 end
-

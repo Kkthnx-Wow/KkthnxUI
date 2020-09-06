@@ -11,26 +11,23 @@ local function LoadSpellBookSkin()
 	local professionTexture = K.GetTexture(C["UITextures"].SkinTextures)
 
 	for i = 1, _G.SPELLS_PER_PAGE do
-		local button = _G["SpellButton" .. i]
-		local icon = _G["SpellButton" .. i .. "IconTexture"]
-		local slot = _G["SpellButton" .. i .. "SlotFrame"]
-		local highlight =_G["SpellButton" .. i .. "Highlight"]
-
-		highlight:SetColorTexture(1, 1, 1, 0.3)
-		highlight:SetAllPoints(icon)
+		local button = _G["SpellButton"..i]
+		local icon = _G["SpellButton"..i.."IconTexture"]
+		local slot = _G["SpellButton"..i.."SlotFrame"]
+		local highlight =_G["SpellButton"..i.."Highlight"]
 
 		button.EmptySlot:SetTexture("")
 		button.UnlearnedFrame:SetTexture("")
 		slot:SetTexture("")
 		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		icon:SetAllPoints()
-		button:CreateBorder()
-		button:CreateInnerShadow()
+		button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 		if button.SpellHighlightTexture then
+			button.SpellHighlightTexture:SetColorTexture(0.8, 0.8, 0, 0.6)
 			if icon then
-				button.SpellHighlightTexture:SetPoint("TOPLEFT", button, "TOPLEFT", -7, 7)
-				button.SpellHighlightTexture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 7, -7)
+				button.SpellHighlightTexture:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
+				button.SpellHighlightTexture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
 			end
 			K.Flash(button.SpellHighlightTexture, 1, true)
 		end
@@ -40,17 +37,26 @@ local function LoadSpellBookSkin()
 			button.shine:SetPoint("TOPLEFT", button, "TOPLEFT", -3, 3)
 			button.shine:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 3, -3)
 		end
+
+		highlight:SetPoint("TOPLEFT", icon, "TOPLEFT", 2, -2)
+		highlight:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", -2, 2)
+		hooksecurefunc(highlight, "SetTexture", function(s, texture)
+			if texture == [[Interface\Buttons\ButtonHilight-Square]] then
+				s:SetColorTexture(1, 1, 1, 0.3)
+			end
+		end)
 	end
 
 	hooksecurefunc("SpellButton_UpdateButton", function()
 		for i = 1, _G.SPELLS_PER_PAGE do
-			local button = _G["SpellButton" .. i]
+			local button = _G["SpellButton"..i]
 			local icon = _G["SpellButton"..i.."IconTexture"]
 
 			if button.SpellHighlightTexture then
+				button.SpellHighlightTexture:SetColorTexture(0.8, 0.8, 0, 0.6)
 				if icon then
-					button.SpellHighlightTexture:SetPoint("TOPLEFT", button, "TOPLEFT", -7, 7)
-					button.SpellHighlightTexture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 7, -7)
+					button.SpellHighlightTexture:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
+					button.SpellHighlightTexture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
 				end
 				K.Flash(button.SpellHighlightTexture, 1, true)
 			end

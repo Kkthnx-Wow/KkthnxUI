@@ -89,6 +89,10 @@ function Module:GetUnit()
 end
 
 function Module:HideLines()
+	if self:IsForbidden() then
+		return
+	end
+
 	for i = 3, self:NumLines() do
 		local tiptext = _G["GameTooltipTextLeft"..i]
 		local linetext = tiptext:GetText()
@@ -116,6 +120,10 @@ function Module:HideLines()
 end
 
 function Module:GetLevelLine()
+	if self:IsForbidden() then
+		return
+	end
+
 	for i = 2, self:NumLines() do
 		local tiptext = _G["GameTooltipTextLeft"..i]
 		local linetext = tiptext:GetText()
@@ -146,12 +154,20 @@ function Module:InsertFactionFrame(faction)
 end
 
 function Module:OnTooltipCleared()
+	if self:IsForbidden() then
+		return
+	end
+
 	if self.factionFrame and self.factionFrame:GetAlpha() ~= 0 then
 		self.factionFrame:SetAlpha(0)
 	end
 end
 
 function Module:OnTooltipSetUnit()
+	if self:IsForbidden() then
+		return
+	end
+
 	if C["Tooltip"].CombatHide and InCombatLockdown() then
 		self:Hide()
 		return
@@ -285,21 +301,19 @@ function Module:OnTooltipSetUnit()
 			end
 
 			local tar = string_format("%s%s", (tarRicon and ICON_LIST[tarRicon].."10|t") or "", Module:GetTarget(unit.."target"))
-			GameTooltip:AddLine(TARGET..": "..tar)
+			self:AddLine(TARGET..": "..tar)
 		end
 
 		if alive then
-			GameTooltipStatusBar:SetStatusBarColor(K.UnitColor(unit))
+			self.StatusBar:SetStatusBarColor(K.UnitColor(unit))
 		else
-			GameTooltipStatusBar:Hide()
+			self.StatusBar:Hide()
 		end
 	else
-		GameTooltipStatusBar:SetStatusBarColor(0, 0.9, 0)
+		self.StatusBar:SetStatusBarColor(0, 0.9, 0)
 	end
 
-	if UnitIsPlayer(unit) then
-		Module.InspectUnitSpecAndLevel(self)
-	end
+	Module.InspectUnitSpecAndLevel(self)
 end
 
 function Module:StatusBar_OnValueChanged(value)
@@ -324,52 +338,50 @@ function Module:StatusBar_OnValueChanged(value)
 end
 
 function Module:ReskinStatusBar()
-	if GameTooltipStatusBar then
-		GameTooltipStatusBar:ClearAllPoints()
-		GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 2, 4)
-		GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -2, 4)
-		GameTooltipStatusBar:SetStatusBarTexture(K.GetTexture(C["UITextures"].TooltipTextures))
-		GameTooltipStatusBar:SetHeight(10)
-		GameTooltipStatusBar:CreateBorder()
-	end
-end
-
-function Module:GameTooltip_ShowStatusBar()
-	if not self or self:IsForbidden() then
+	if not self or self:IsForbidden() or not self.StatusBar then
 		return
 	end
 
-	if not self.statusBarPool then
+	self.StatusBar:ClearAllPoints()
+	self.StatusBar:SetPoint("BOTTOMLEFT", self.tooltipStyle, "TOPLEFT", 0, 6)
+	self.StatusBar:SetPoint("BOTTOMRIGHT", self.tooltipStyle, "TOPRIGHT", -0, 6)
+	self.StatusBar:SetStatusBarTexture(K.GetTexture(C["UITextures"].TooltipTextures))
+	self.StatusBar:SetHeight(10)
+	self.StatusBar:CreateBorder()
+end
+
+function Module:GameTooltip_ShowStatusBar()
+	if not self or self:IsForbidden() or not self.statusBarPool then
 		return
 	end
 
 	local bar = self.statusBarPool:GetNextActive()
-	if bar and not bar.isStyled then
-		bar:StripTextures()
-		bar:CreateBorder()
-		bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].TooltipTextures))
-
-		bar.isStyled = true
-	end
-end
-
-function Module:GameTooltip_ShowProgressBar()
-	if not self or self:IsForbidden() then
+	if (not bar or not bar.text) or bar.isStyled then
 		return
 	end
 
-	if not self.progressBarPool then
+	bar:StripTextures()
+	bar:CreateBorder()
+	bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].TooltipTextures))
+
+	bar.isStyled = true
+end
+
+function Module:GameTooltip_ShowProgressBar()
+	if not self or self:IsForbidden() or not self.progressBarPool then
 		return
 	end
 
 	local bar = self.progressBarPool:GetNextActive()
-	if bar and not bar.isStyled then
-		bar.Bar:StripTextures()
-		bar.Bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].TooltipTextures))
-		bar.Bar:CreateBorder()
-
-		bar.isStyled = true
+	if (not bar or not bar.Bar) or bar.isStyled then
+		return
 	end
+
+	bar.Bar:StripTextures()
+	bar.Bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].TooltipTextures))
+	bar.Bar:CreateBorder()
+
+	bar.isStyled = true
 end
 
 -- Anchor and mover
@@ -422,8 +434,8 @@ function Module:GameTooltip_ComparisonFix(anchorFrame, shoppingTooltip1, shoppin
 end
 
 -- Tooltip skin
-local FakeTooltipBackground = CreateFrame("Frame", nil, UIParent)
-FakeTooltipBackground:SetBackdrop({
+local fakeTooltipStyle = CreateFrame("Frame", nil, UIParent)
+fakeTooltipStyle:SetBackdrop({
 	bgFile = C["Media"].Blank,
 	edgeFile = C["Media"].BorderTooltip,
 	edgeSize = 12,
@@ -431,7 +443,7 @@ FakeTooltipBackground:SetBackdrop({
 })
 
 local function getBackdrop()
-	return FakeTooltipBackground:GetBackdrop()
+	return fakeTooltipStyle:GetBackdrop()
 end
 
 local function getBackdropColor()
@@ -447,7 +459,6 @@ function Module:ReskinTooltip()
 		if K.isDeveloper then
 			K.Print("Unknown tooltip spotted!")
 		end
-
 		return
 	end
 
@@ -459,24 +470,24 @@ function Module:ReskinTooltip()
 		self:SetBackdrop(nil)
 		self:DisableDrawLayer("BACKGROUND")
 
-		self.tooltipBackground = CreateFrame("Frame", nil, self)
-		self.tooltipBackground:SetPoint("TOPLEFT", self, 2, -2)
-		self.tooltipBackground:SetPoint("BOTTOMRIGHT", self, -2, 2)
-		self.tooltipBackground:SetFrameLevel(self:GetFrameLevel())
-		self.tooltipBackground:CreateBorder()
+		self.tooltipStyle = CreateFrame("Frame", nil, self)
+		self.tooltipStyle:SetPoint("TOPLEFT", self, 2, -2)
+		self.tooltipStyle:SetPoint("BOTTOMRIGHT", self, -2, 2)
+		self.tooltipStyle:SetFrameLevel(self:GetFrameLevel())
+		self.tooltipStyle:CreateBorder("ARTWORK")
 
 		-- other gametooltip-like support
 		self.GetBackdrop = getBackdrop
 		self.GetBackdropColor = getBackdropColor
 		self.GetBackdropBorderColor = getBackdropBorderColor
 
-		if GameTooltipStatusBar then
+		if self.StatusBar then
 			Module.ReskinStatusBar(self)
 		end
 
 		self.isTipStyled = true
 	end
-	self.tooltipBackground:SetBackdropBorderColor()
+	self.tooltipStyle.KKUI_Border:SetVertexColor(1, 1, 1)
 
 	if C["Tooltip"].ClassColor and self.GetItem then
 		local _, item = self:GetItem()
@@ -484,14 +495,14 @@ function Module:ReskinTooltip()
 			local quality = select(3, GetItemInfo(item))
 			local color = K.QualityColors[quality or 1]
 			if color then
-				self.tooltipBackground:SetBackdropBorderColor(color.r, color.g, color.b)
+				self.tooltipStyle.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 			end
 		end
 	end
 end
 
 function Module:GameTooltip_SetBackdropStyle()
-	if not self or not self.isTipStyled then
+	if not self.isTipStyled then
 		return
 	end
 
@@ -499,28 +510,21 @@ function Module:GameTooltip_SetBackdropStyle()
 end
 
 function Module:OnEnable()
-	_G.GameTooltip:HookScript("OnTooltipCleared", self.OnTooltipCleared)
-	_G.GameTooltip:HookScript("OnTooltipSetUnit", self.OnTooltipSetUnit)
-	_G.GameTooltipStatusBar:SetScript("OnValueChanged", self.StatusBar_OnValueChanged)
+	GameTooltip.StatusBar = GameTooltipStatusBar
+	GameTooltip:HookScript("OnTooltipCleared", self.OnTooltipCleared)
+	GameTooltip:HookScript("OnTooltipSetUnit", self.OnTooltipSetUnit)
+	GameTooltip.StatusBar:SetScript("OnValueChanged", self.StatusBar_OnValueChanged)
 	hooksecurefunc("GameTooltip_ShowStatusBar", self.GameTooltip_ShowStatusBar)
 	hooksecurefunc("GameTooltip_ShowProgressBar", self.GameTooltip_ShowProgressBar)
 	hooksecurefunc("GameTooltip_SetDefaultAnchor", self.GameTooltip_SetDefaultAnchor)
 	hooksecurefunc("GameTooltip_SetBackdropStyle", self.GameTooltip_SetBackdropStyle)
 	hooksecurefunc("GameTooltip_AnchorComparisonTooltips", self.GameTooltip_ComparisonFix)
 
-	-- Battlenet toast frame
-	BNToastFrame:SetClampedToScreen(true)
-	BNToastFrame:CreateBorder()
-	BNToastFrame.CloseButton:SkinCloseButton()
-	BNToastFrame.CloseButton:SetSize(32, 32)
-	BNToastFrame.CloseButton:SetPoint("TOPRIGHT", 4, 4)
-
 	-- Elements
+	self:CreateMountSource()
 	self:CreateTargetedInfo()
 	self:CreateTooltipID()
 	self:CreateTooltipIcons()
-	self:CreateTooltipAzerite()
-	self:CreateCorruptionRank()
 end
 
 -- Tooltip Skin Registration
@@ -538,38 +542,38 @@ K:RegisterEvent("ADDON_LOADED", addonStyled)
 
 Module:RegisterTooltips("KkthnxUI", function()
 	local tooltips = {
-		_G.ChatMenu,
-		_G.EmoteMenu,
-		_G.LanguageMenu,
-		_G.VoiceMacroMenu,
-		_G.GameTooltip,
-		_G.EmbeddedItemTooltip,
-		_G.ItemRefTooltip,
-		_G.ItemRefShoppingTooltip1,
-		_G.ItemRefShoppingTooltip2,
-		_G.ShoppingTooltip1,
-		_G.ShoppingTooltip2,
-		_G.AutoCompleteBox,
-		_G.FriendsTooltip,
-		_G.QuestScrollFrame.StoryTooltip,
-		_G.GeneralDockManagerOverflowButtonList,
-		_G.ReputationParagonTooltip,
-		_G.QuestScrollFrame.WarCampaignTooltip,
-		_G.NamePlateTooltip,
-		_G.QueueStatusFrame,
-		_G.FloatingGarrisonFollowerTooltip,
-		_G.FloatingGarrisonFollowerAbilityTooltip,
-		_G.FloatingGarrisonMissionTooltip,
-		_G.GarrisonFollowerAbilityTooltip,
-		_G.GarrisonFollowerTooltip,
-		_G.FloatingGarrisonShipyardFollowerTooltip,
-		_G.GarrisonShipyardFollowerTooltip,
-		_G.BattlePetTooltip,
-		_G.PetBattlePrimaryAbilityTooltip,
-		_G.PetBattlePrimaryUnitTooltip,
-		_G.FloatingBattlePetTooltip,
-		_G.FloatingPetBattleAbilityTooltip,
-		_G.IMECandidatesFrame
+		ChatMenu,
+		EmoteMenu,
+		LanguageMenu,
+		VoiceMacroMenu,
+		GameTooltip,
+		EmbeddedItemTooltip,
+		ItemRefTooltip,
+		ItemRefShoppingTooltip1,
+		ItemRefShoppingTooltip2,
+		ShoppingTooltip1,
+		ShoppingTooltip2,
+		AutoCompleteBox,
+		FriendsTooltip,
+		QuestScrollFrame.StoryTooltip,
+		GeneralDockManagerOverflowButtonList,
+		ReputationParagonTooltip,
+		QuestScrollFrame.WarCampaignTooltip,
+		NamePlateTooltip,
+		QueueStatusFrame,
+		FloatingGarrisonFollowerTooltip,
+		FloatingGarrisonFollowerAbilityTooltip,
+		FloatingGarrisonMissionTooltip,
+		GarrisonFollowerAbilityTooltip,
+		GarrisonFollowerTooltip,
+		FloatingGarrisonShipyardFollowerTooltip,
+		GarrisonShipyardFollowerTooltip,
+		BattlePetTooltip,
+		PetBattlePrimaryAbilityTooltip,
+		PetBattlePrimaryUnitTooltip,
+		FloatingBattlePetTooltip,
+		FloatingPetBattleAbilityTooltip,
+		IMECandidatesFrame
 	}
 
 	for _, f in pairs(tooltips) do
@@ -684,6 +688,7 @@ end)
 Module:RegisterTooltips("Blizzard_DebugTools", function()
 	Module.ReskinTooltip(FrameStackTooltip)
 	Module.ReskinTooltip(EventTraceTooltip)
+
 	FrameStackTooltip:SetScale(UIParent:GetScale())
 	EventTraceTooltip:SetParent(UIParent)
 	EventTraceTooltip:SetFrameStrata("TOOLTIP")
@@ -699,7 +704,7 @@ Module:RegisterTooltips("Blizzard_Collections", function()
 end)
 
 Module:RegisterTooltips("Blizzard_GarrisonUI", function()
-	local gt = {
+	local Garrison_Tooltips = {
 		GarrisonMissionMechanicTooltip,
 		GarrisonMissionMechanicFollowerCounterTooltip,
 		GarrisonShipyardMapMissionTooltip,
@@ -708,7 +713,8 @@ Module:RegisterTooltips("Blizzard_GarrisonUI", function()
 		GarrisonFollowerAbilityWithoutCountersTooltip,
 		GarrisonFollowerMissionAbilityWithoutCountersTooltip
 	}
-	for _, f in pairs(gt) do
+
+	for _, f in pairs(Garrison_Tooltips) do
 		f:HookScript("OnShow", Module.ReskinTooltip)
 	end
 end)

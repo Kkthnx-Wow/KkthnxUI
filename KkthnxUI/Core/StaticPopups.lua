@@ -1,15 +1,15 @@
 local K, _, L = unpack(select(2, ...))
 
 local _G = _G
-local assert = assert
-local pairs = pairs
-local print = print
-local table_contains = tContains
-local table_insert = table.insert
-local table_remove = table.remove
-local table_wipe = table.wipe
-local type = type
-local unpack = unpack
+local assert = _G.assert
+local pairs = _G.pairs
+local print = _G.print
+local table_contains = _G.tContains
+local table_insert = _G.table.insert
+local table_remove = _G.table.remove
+local table_wipe = _G.table.wipe
+local type = _G.type
+local unpack = _G.unpack
 
 local ACCEPT = _G.ACCEPT
 local AutoCompleteEditBox_OnEnterPressed = _G.AutoCompleteEditBox_OnEnterPressed
@@ -20,7 +20,6 @@ local DisableAddOn = _G.DisableAddOn
 local EnableAddOn = _G.EnableAddOn
 local GetBankSlotCost = _G.GetBankSlotCost
 local GetBindingFromClick = _G.GetBindingFromClick
-local GetRealmName = _G.GetRealmName
 local InCinematic = _G.InCinematic
 local MoneyFrame_Update = _G.MoneyFrame_Update
 local PlaySound = _G.PlaySound
@@ -28,19 +27,34 @@ local PurchaseSlot = _G.PurchaseSlot
 local ReloadUI = _G.ReloadUI
 local RestartGx = _G.RestartGx
 local RunBinding = _G.RunBinding
-local SOUNDKIT = _G.SOUNDKIT
-local StaticPopup_Resize = _G.StaticPopup_Resize
 local STATICPOPUP_TEXTURE_ALERT = _G.STATICPOPUP_TEXTURE_ALERT
 local STATICPOPUP_TEXTURE_ALERTGEAR = _G.STATICPOPUP_TEXTURE_ALERTGEAR
+local StaticPopup_Resize = _G.StaticPopup_Resize
 local UIParent = _G.UIParent
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
-local UnitName = _G.UnitName
-
-local Name = UnitName("player")
-local Realm = GetRealmName()
 
 K.PopupDialogs = {}
 K.StaticPopup_DisplayedFrames = {}
+
+local tempButtonLocs = {} -- So we don"t make a new table each time.
+
+-- Create a KkthnxUI popup for profiles
+K.PopupDialogs["KKUI_IMPORT_PROFILE"] = {
+	text = "Are you sure you want to import this profile? Continue?",
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		KkthnxUIData[K.Realm][K.Name] = KkthnxUI.Profiles.Data[SelectedProfile]
+
+		if KkthnxUISettingsPerCharacter[K.Realm][K.Name].General and KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal then
+			-- Look like we use globals for gui, don"t import gui settings, keep globals
+		else
+			KkthnxUISettingsPerCharacter[K.Realm][K.Name] = KkthnxUI.Profiles.Options[SelectedProfile]
+		end
+
+		ReloadUI()
+	end,
+}
 
 K.PopupDialogs["FRIENDS_BROADCAST"] = {
 	text = BN_BROADCAST_TOOLTIP,
@@ -66,7 +80,7 @@ K.PopupDialogs["QUEST_CHECK_ID"] = {
 		K.CheckQuestStatus(self.editBox:GetText())
 	end,
 
-	OnShow = function(self, ...)
+	OnShow = function(self)
 		self.editBox:SetFocus()
 	end,
 
@@ -255,7 +269,7 @@ K.PopupDialogs["RESET_UI"] = {
 		end
 	end,
 	OnCancel = function()
-		KkthnxUIData[Realm][Name].InstallComplete = true
+		KkthnxUIData[K.Realm][K.Name].InstallComplete = true
 	end,
 	hideOnEscape = false,
 	whileDead = 1,
@@ -276,7 +290,7 @@ K.PopupDialogs["WARNING_BLIZZARD_ADDONS"] = {
 	preferredIndex = 3
 }
 
-K.PopupDialogs["KKTHNXUI_OUTDATED"] = {
+K.PopupDialogs["KKUI_OUTDATED"] = {
 	text = L["KkthnxUI Outdated"],
 	button1 = OKAY,
 	timeout = 0,
@@ -285,7 +299,7 @@ K.PopupDialogs["KKTHNXUI_OUTDATED"] = {
 	editBoxWidth = 325,
 	OnShow = function(self)
 		self.editBox:SetFocus()
-		self.editBox:SetText("https://github.com/kkthnx-wow/KkthnxUI_8.0.1")
+		self.editBox:SetText("https://github.com/kkthnx-wow/KKUI_8.0.1")
 		self.editBox:HighlightText()
 	end,
 	EditBoxOnEnterPressed = function(self)
@@ -299,7 +313,7 @@ K.PopupDialogs["KKTHNXUI_OUTDATED"] = {
 
 local MAX_STATIC_POPUPS = 4
 function K.StaticPopup_OnShow(self)
-	PlaySound(PlaySoundKitID and "igmainmenuopen" or SOUNDKIT.IG_MAINMENU_OPEN)
+	PlaySound(850)
 
 	local dialog = K.PopupDialogs[self.which]
 	local OnShow = dialog.OnShow
@@ -307,9 +321,11 @@ function K.StaticPopup_OnShow(self)
 	if (OnShow) then
 		OnShow(self, self.data)
 	end
+
 	if (dialog.hasMoneyInputFrame) then
 		_G[self:GetName().."MoneyInputFrameGold"]:SetFocus()
 	end
+
 	if (dialog.enterClicksFirstButton) then
 		self:SetScript("OnKeyDown", K.StaticPopup_OnKeyDown)
 	end
@@ -333,6 +349,7 @@ function K.StaticPopup_EscapePressed()
 			closed = 1
 		end
 	end
+
 	return closed
 end
 
@@ -351,13 +368,16 @@ function K.StaticPopup_CollapseTable()
 end
 
 function K.StaticPopup_SetUpPosition(_, dialog)
-	if (not table_contains(K.StaticPopup_DisplayedFrames, dialog)) then
+	if not table_contains(K.StaticPopup_DisplayedFrames, dialog) then
 		local lastFrame = K.StaticPopup_DisplayedFrames[#K.StaticPopup_DisplayedFrames]
-		if (lastFrame) then
+		dialog:ClearAllPoints()
+
+		if lastFrame then
 			dialog:SetPoint("TOP", lastFrame, "BOTTOM", 0, -4)
 		else
 			dialog:SetPoint("TOP", UIParent, "TOP", 0, -100)
 		end
+
 		table_insert(K.StaticPopup_DisplayedFrames, dialog)
 	end
 end
@@ -376,7 +396,7 @@ function K.StaticPopupSpecial_Hide(frame)
 	K.StaticPopup_CollapseTable()
 end
 
---Used to figure out if we can resize a frame
+-- Used to figure out if we can resize a frame
 function K.StaticPopup_IsLastDisplayedFrame(frame)
 	for i = #K.StaticPopup_DisplayedFrames, 1, -1 do
 		local popup = K.StaticPopup_DisplayedFrames[i]
@@ -384,6 +404,7 @@ function K.StaticPopup_IsLastDisplayedFrame(frame)
 			return frame == popup
 		end
 	end
+
 	return false
 end
 
@@ -418,7 +439,7 @@ function K.StaticPopup_OnKeyDown(self, key)
 end
 
 function K.StaticPopup_OnHide(self)
-	PlaySound(PlaySoundKitID and "igmainmenuclose" or SOUNDKIT.IG_MAINMENU_CLOSE)
+	PlaySound(851) -- IG_MAINMENU_CLOSE
 
 	K.StaticPopup_CollapseTable()
 
@@ -427,48 +448,50 @@ function K.StaticPopup_OnHide(self)
 	if (OnHide) then
 		OnHide(self, self.data)
 	end
+
 	self.extraFrame:Hide()
+
 	if (dialog.enterClicksFirstButton) then
 		self:SetScript("OnKeyDown", nil)
 	end
 end
 
 function K.StaticPopup_OnUpdate(self, elapsed)
-	if (self.timeleft and self.timeleft > 0) then
-		local which = self.which
-		local timeleft = self.timeleft - elapsed
-		if (timeleft <= 0) then
-			if (not K.PopupDialogs[which].timeoutInformationalOnly) then
-				self.timeleft = 0
-				local OnCancel = K.PopupDialogs[which].OnCancel
-				if (OnCancel) then
-					OnCancel(self, self.data, "timeout")
+	local info = K.PopupDialogs[self.which]
+
+	if self.timeleft and self.timeleft > 0 then
+		self.timeleft = self.timeleft - elapsed
+		if self.timeleft <= 0 then
+			if not info.timeoutInformationalOnly then
+				self.timeleft = nil
+
+				if info.OnCancel then
+					info.OnCancel(self, self.data, "timeout")
 				end
+
 				self:Hide()
 			end
 			return
 		end
-		self.timeleft = timeleft
 	end
 
-	if (self.startDelay) then
-		local which = self.which
-		local timeleft = self.startDelay - elapsed
-		if (timeleft <= 0) then
+	if self.startDelay then
+		self.startDelay = self.startDelay - elapsed
+		if self.startDelay <= 0 then
 			self.startDelay = nil
-			local text = _G[self:GetName().."Text"]
-			text:SetFormattedText(K.PopupDialogs[which].text, text.text_arg1, text.text_arg2)
-			local button1 = _G[self:GetName().."Button1"]
-			button1:Enable()
-			StaticPopup_Resize(self, which)
+
+			local name = self:GetName()
+			local text = _G[name.."Text"]
+			text:SetFormattedText(info.text, text.text_arg1, text.text_arg2)
+			_G[name.."Button1"]:Enable()
+
+			StaticPopup_Resize(self, self.which)
 			return
 		end
-		self.startDelay = timeleft
 	end
 
-	local onUpdate = K.PopupDialogs[self.which].OnUpdate
-	if (onUpdate) then
-		onUpdate(self, elapsed)
+	if info.OnUpdate then
+		info.OnUpdate(self, elapsed)
 	end
 end
 
@@ -476,11 +499,13 @@ function K.StaticPopup_OnClick(self, index)
 	if (not self:IsShown()) then
 		return
 	end
+
 	local which = self.which
 	local info = K.PopupDialogs[which]
 	if (not info) then
 		return nil
 	end
+
 	local hide = true
 	if (index == 1) then
 		local OnAccept = info.OnAccept
@@ -516,6 +541,7 @@ function K.StaticPopup_EditBoxOnEnterPressed(self)
 		which = parent:GetParent().which
 		dialog = parent:GetParent()
 	end
+
 	if (not self.autoCompleteParams or not AutoCompleteEditBox_OnEnterPressed(self)) then
 		EditBoxOnEnterPressed = K.PopupDialogs[which].EditBoxOnEnterPressed
 		if (EditBoxOnEnterPressed) then
@@ -545,12 +571,14 @@ function K.StaticPopup_FindVisible(which, data)
 	if (not info) then
 		return nil
 	end
+
 	for index = 1, MAX_STATIC_POPUPS, 1 do
-		local frame = _G["KkthnxUI_StaticPopup"..index]
+		local frame = _G["KKUI_StaticPopup"..index]
 		if (frame:IsShown() and (frame.which == which) and (not info.multiple or (frame.data == data))) then
 			return frame
 		end
 	end
+
 	return nil
 end
 
@@ -589,8 +617,13 @@ function K.StaticPopup_Resize(dialog, which)
 	elseif (info.hasMoneyInputFrame) then
 		height = height + 22
 	end
+
 	if (info.hasItemFrame) then
 		height = height + 64
+	end
+
+	if (info.hasCheckButton ) then
+		height = height + 32
 	end
 
 	if (height > maxHeightSoFar) then
@@ -604,7 +637,6 @@ function K.StaticPopup_OnEvent(self)
 	K.StaticPopup_Resize(self, self.which)
 end
 
-local tempButtonLocs = {}	-- So we don"t make a new table each time.
 function K.StaticPopup_Show(which, text_arg1, text_arg2, data)
 	local info = K.PopupDialogs[which]
 	if (not info) then
@@ -615,6 +647,7 @@ function K.StaticPopup_Show(which, text_arg1, text_arg2, data)
 		if (info.OnCancel) then
 			info.OnCancel()
 		end
+
 		return nil
 	end
 
@@ -622,14 +655,16 @@ function K.StaticPopup_Show(which, text_arg1, text_arg2, data)
 		if (info.OnCancel) then
 			info.OnCancel()
 		end
+
 		return nil
 	end
 
 	if (info.cancels) then
 		for index = 1, MAX_STATIC_POPUPS, 1 do
-			local frame = _G["KkthnxUI_StaticPopup"..index]
+			local frame = _G["KKUI_StaticPopup"..index]
 			if (frame:IsShown() and (frame.which == info.cancels)) then
 				frame:Hide()
+
 				local OnCancel = K.PopupDialogs[frame.which].OnCancel
 				if (OnCancel) then
 					OnCancel(frame, frame.data, "override")
@@ -649,14 +684,16 @@ function K.StaticPopup_Show(which, text_arg1, text_arg2, data)
 		end
 		dialog:Hide()
 	end
+
 	if (not dialog) then
 		-- Find a free dialog
 		local index = 1
 		if (info.preferredIndex) then
 			index = info.preferredIndex
 		end
+
 		for i = index, MAX_STATIC_POPUPS do
-			local frame = _G["KkthnxUI_StaticPopup"..i]
+			local frame = _G["KKUI_StaticPopup"..i]
 			if (not frame:IsShown()) then
 				dialog = frame
 				break
@@ -664,144 +701,145 @@ function K.StaticPopup_Show(which, text_arg1, text_arg2, data)
 		end
 
 		-- If dialog not found and there"s a preferredIndex then try to find an available frame before the preferredIndex
-			if (not dialog and info.preferredIndex) then
-				for i = 1, info.preferredIndex do
-					local frame = _G["KkthnxUI_StaticPopup"..i]
-					if (not frame:IsShown()) then
-						dialog = frame
-						break
-					end
+		if (not dialog and info.preferredIndex) then
+			for i = 1, info.preferredIndex do
+				local frame = _G["KKUI_StaticPopup"..i]
+				if (not frame:IsShown()) then
+					dialog = frame
+					break
 				end
 			end
 		end
-		if (not dialog) then
-			if (info.OnCancel) then
-				info.OnCancel()
-			end
-			return nil
+	end
+
+	if (not dialog) then
+		if (info.OnCancel) then
+			info.OnCancel()
+		end
+		return nil
+	end
+
+	dialog.maxHeightSoFar, dialog.maxWidthSoFar = 0, 0
+	-- Set the text of the dialog
+	local text = _G[dialog:GetName().."Text"]
+	text:SetFormattedText(info.text, text_arg1, text_arg2)
+
+	-- Show or hide the close button
+	if (info.closeButton) then
+		local closeButton = _G[dialog:GetName().."CloseButton"]
+		if (info.closeButtonIsHide) then
+			closeButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-HideButton-Up")
+			closeButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-HideButton-Down")
+		else
+			closeButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
+			closeButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
+		end
+		closeButton:Show()
+	else
+		_G[dialog:GetName().."CloseButton"]:Hide()
+	end
+
+	-- Set the editbox of the dialog
+	local editBox = _G[dialog:GetName().."EditBox"]
+	if (info.hasEditBox) then
+		editBox:Show()
+
+		if (info.maxLetters) then
+			editBox:SetMaxLetters(info.maxLetters)
+			editBox:SetCountInvisibleLetters(info.countInvisibleLetters)
 		end
 
-		dialog.maxHeightSoFar, dialog.maxWidthSoFar = 0, 0
-		-- Set the text of the dialog
-		local text = _G[dialog:GetName().."Text"]
-		text:SetFormattedText(info.text, text_arg1, text_arg2)
+		if (info.maxBytes) then
+			editBox:SetMaxBytes(info.maxBytes)
+		end
 
-		-- Show or hide the close button
-		if (info.closeButton) then
-			local closeButton = _G[dialog:GetName().."CloseButton"]
-			if (info.closeButtonIsHide) then
-				closeButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-HideButton-Up")
-				closeButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-HideButton-Down")
+		editBox:SetText("")
+		if (info.editBoxWidth) then
+			editBox:SetWidth(info.editBoxWidth)
+		else
+			editBox:SetWidth(130)
+		end
+	else
+		editBox:Hide()
+	end
+
+	-- Show or hide money frame
+	if (info.hasMoneyFrame) then
+		_G[dialog:GetName().."MoneyFrame"]:Show()
+		_G[dialog:GetName().."MoneyInputFrame"]:Hide()
+	elseif (info.hasMoneyInputFrame) then
+		local moneyInputFrame = _G[dialog:GetName().."MoneyInputFrame"]
+		moneyInputFrame:Show()
+		_G[dialog:GetName().."MoneyFrame"]:Hide()
+		-- Set OnEnterPress for money input frames
+		if (info.EditBoxOnEnterPressed) then
+			moneyInputFrame.gold:SetScript("OnEnterPressed", K.StaticPopup_EditBoxOnEnterPressed)
+			moneyInputFrame.silver:SetScript("OnEnterPressed", K.StaticPopup_EditBoxOnEnterPressed)
+			moneyInputFrame.copper:SetScript("OnEnterPressed", K.StaticPopup_EditBoxOnEnterPressed)
+		else
+			moneyInputFrame.gold:SetScript("OnEnterPressed", nil)
+			moneyInputFrame.silver:SetScript("OnEnterPressed", nil)
+			moneyInputFrame.copper:SetScript("OnEnterPressed", nil)
+		end
+	else
+		_G[dialog:GetName().."MoneyFrame"]:Hide()
+		_G[dialog:GetName().."MoneyInputFrame"]:Hide()
+	end
+
+	-- Show or hide item button
+	if (info.hasItemFrame) then
+		_G[dialog:GetName().."ItemFrame"]:Show()
+		if (data and type(data) == "table") then
+			_G[dialog:GetName().."ItemFrame"].link = data.link
+			_G[dialog:GetName().."ItemFrameIconTexture"]:SetTexture(data.texture)
+			local nameText = _G[dialog:GetName().."ItemFrameText"]
+			nameText:SetTextColor(unpack(data.color or {1, 1, 1, 1}))
+			nameText:SetText(data.name)
+			if (data.count and data.count > 1) then
+				_G[dialog:GetName().."ItemFrameCount"]:SetText(data.count)
+				_G[dialog:GetName().."ItemFrameCount"]:Show()
 			else
-				closeButton:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
-				closeButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
+				_G[dialog:GetName().."ItemFrameCount"]:Hide()
 			end
-			closeButton:Show()
-		else
-			_G[dialog:GetName().."CloseButton"]:Hide()
 		end
+	else
+		_G[dialog:GetName().."ItemFrame"]:Hide()
+	end
 
-		-- Set the editbox of the dialog
-		local editBox = _G[dialog:GetName().."EditBox"]
-		if (info.hasEditBox) then
-			editBox:Show()
+	-- Set the miscellaneous variables for the dialog
+	dialog.which = which
+	dialog.timeleft = info.timeout
+	dialog.hideOnEscape = info.hideOnEscape
+	dialog.exclusive = info.exclusive
+	dialog.enterClicksFirstButton = info.enterClicksFirstButton
+	-- Clear out data
+	dialog.data = data
 
-			if (info.maxLetters) then
-				editBox:SetMaxLetters(info.maxLetters)
-				editBox:SetCountInvisibleLetters(info.countInvisibleLetters)
-			end
-			if (info.maxBytes) then
-				editBox:SetMaxBytes(info.maxBytes)
-			end
-			editBox:SetText("")
-			if (info.editBoxWidth) then
-				editBox:SetWidth(info.editBoxWidth)
-			else
-				editBox:SetWidth(130)
-			end
-		else
-			editBox:Hide()
-		end
+	-- Set the buttons of the dialog
+	local button1 = _G[dialog:GetName().."Button1"]
+	local button2 = _G[dialog:GetName().."Button2"]
+	local button3 = _G[dialog:GetName().."Button3"]
 
-		-- Show or hide money frame
-		if (info.hasMoneyFrame) then
-			_G[dialog:GetName().."MoneyFrame"]:Show()
-			_G[dialog:GetName().."MoneyInputFrame"]:Hide()
-		elseif (info.hasMoneyInputFrame) then
-			local moneyInputFrame = _G[dialog:GetName().."MoneyInputFrame"]
-			moneyInputFrame:Show()
-			_G[dialog:GetName().."MoneyFrame"]:Hide()
-			-- Set OnEnterPress for money input frames
-			if (info.EditBoxOnEnterPressed) then
-				moneyInputFrame.gold:SetScript("OnEnterPressed", K.StaticPopup_EditBoxOnEnterPressed)
-				moneyInputFrame.silver:SetScript("OnEnterPressed", K.StaticPopup_EditBoxOnEnterPressed)
-				moneyInputFrame.copper:SetScript("OnEnterPressed", K.StaticPopup_EditBoxOnEnterPressed)
-			else
-				moneyInputFrame.gold:SetScript("OnEnterPressed", nil)
-				moneyInputFrame.silver:SetScript("OnEnterPressed", nil)
-				moneyInputFrame.copper:SetScript("OnEnterPressed", nil)
-			end
-		else
-			_G[dialog:GetName().."MoneyFrame"]:Hide()
-			_G[dialog:GetName().."MoneyInputFrame"]:Hide()
-		end
-
-		-- Show or hide item button
-		if (info.hasItemFrame) then
-			_G[dialog:GetName().."ItemFrame"]:Show()
-			if (data and type(data) == "table") then
-				_G[dialog:GetName().."ItemFrame"].link = data.link
-				_G[dialog:GetName().."ItemFrameIconTexture"]:SetTexture(data.texture)
-				local nameText = _G[dialog:GetName().."ItemFrameText"]
-				nameText:SetTextColor(unpack(data.color or {1, 1, 1, 1}))
-				nameText:SetText(data.name)
-				if (data.count and data.count > 1) then
-					_G[dialog:GetName().."ItemFrameCount"]:SetText(data.count)
-					_G[dialog:GetName().."ItemFrameCount"]:Show()
-				else
-					_G[dialog:GetName().."ItemFrameCount"]:Hide()
-				end
-			end
-		else
-			_G[dialog:GetName().."ItemFrame"]:Hide()
-		end
-
-		-- Set the miscellaneous variables for the dialog
-		dialog.which = which
-		dialog.timeleft = info.timeout
-		dialog.hideOnEscape = info.hideOnEscape
-		dialog.exclusive = info.exclusive
-		dialog.enterClicksFirstButton = info.enterClicksFirstButton
-		-- Clear out data
-		dialog.data = data
-
-		-- Set the buttons of the dialog
-		local button1 = _G[dialog:GetName().."Button1"]
-		local button2 = _G[dialog:GetName().."Button2"]
-		local button3 = _G[dialog:GetName().."Button3"]
-
-		do	-- If there is any recursion in this block, we may get errors (tempButtonLocs is static). If you have to recurse, we"ll have to create a new table each time.
-		assert(#tempButtonLocs == 0)	-- If this fails, we"re recursing. (See the table.wipe at the end of the block)
-
+	do -- If there is any recursion in this block, we may get errors (tempButtonLocs is static). If you have to recurse, we"ll have to create a new table each time.
+		assert(#tempButtonLocs == 0) -- If this fails, we"re recursing. (See the table.wipe at the end of the block)
 		table_insert(tempButtonLocs, button1)
 		table_insert(tempButtonLocs, button2)
 		table_insert(tempButtonLocs, button3)
 
 		for i = #tempButtonLocs, 1, -1 do
-			--Do this stuff before we move it. (This is why we go back-to-front)
+			-- Do this stuff before we move it. (This is why we go back-to-front)
 			tempButtonLocs[i]:SetText(info["button"..i])
 			tempButtonLocs[i]:Hide()
 			tempButtonLocs[i]:ClearAllPoints()
-			--Now we possibly remove it.
+			-- Now we possibly remove it.
 			if (not (info["button"..i] and (not info["DisplayButton"..i] or info["DisplayButton"..i](dialog)))) then
 				table_remove(tempButtonLocs, i)
 			end
 		end
 
 		local numButtons = #tempButtonLocs
-		--Save off the number of buttons.
+		-- Save off the number of buttons.
 		dialog.numButtons = numButtons
-
 		if (numButtons == 3) then
 			tempButtonLocs[1]:SetPoint("BOTTOMRIGHT", dialog, "BOTTOM", -72, 16)
 		elseif (numButtons == 2) then
@@ -821,6 +859,7 @@ function K.StaticPopup_Show(which, text_arg1, text_arg2, data)
 			else
 				tempButtonLocs[i]:SetWidth(120)
 			end
+
 			tempButtonLocs[i]:Enable()
 			tempButtonLocs[i]:Show()
 		end
@@ -851,6 +890,24 @@ function K.StaticPopup_Show(which, text_arg1, text_arg2, data)
 		alertIcon:Hide()
 	end
 
+	-- Show or hide the checkbox
+	local checkButton = _G[dialog:GetName().."CheckButton"]
+	local checkButtonText = _G[dialog:GetName().."CheckButtonText"]
+	if (info.hasCheckButton) then
+		checkButton:ClearAllPoints()
+		checkButton:SetPoint("BOTTOMLEFT", 24, 20 + button1:GetHeight())
+
+		if (info.checkButtonText) then
+			checkButtonText:SetText(info.checkButtonText)
+			checkButtonText:Show()
+		else
+			checkButtonText:Hide()
+		end
+		checkButton:Show()
+	else
+		checkButton:Hide()
+	end
+
 	if (info.StartDelay) then
 		dialog.startDelay = info.StartDelay()
 		button1:Disable()
@@ -867,6 +924,7 @@ function K.StaticPopup_Show(which, text_arg1, text_arg2, data)
 
 	-- Finally size and show the dialog
 	K.StaticPopup_SetUpPosition(_, dialog)
+
 	dialog:Show()
 
 	K.StaticPopup_Resize(dialog, which)
@@ -880,18 +938,89 @@ end
 
 function K.StaticPopup_Hide(which, data)
 	for index = 1, MAX_STATIC_POPUPS, 1 do
-		local dialog = _G["KkthnxUI_StaticPopup"..index]
+		local dialog = _G["KKUI_StaticPopup"..index]
 		if ((dialog.which == which) and (not data or (data == dialog.data))) then
 			dialog:Hide()
 		end
 	end
 end
 
+function K.StaticPopup_CheckButtonOnClick(self)
+	local which = self:GetParent().which
+	local info = K.PopupDialogs[which]
+	if (not info) then
+		return nil
+	end
+
+	self:SetChecked(self:GetChecked())
+
+	if (info.checkButtonOnClick) then
+		info.checkButtonOnClick(self)
+	end
+end
+
+-- Static popup secure buttons
+local SecureButtons = {}
+
+local SecureOnEnter = function(s)
+	s.text:SetTextColor(1, 1, 1)
+end
+
+local SecureOnLeave = function(s)
+	s.text:SetTextColor(1, 0.17, 0.26)
+end
+
+function K.StaticPopup_CreateSecureButton(_, popup, button, text, macro)
+	local btn = CreateFrame("Button", nil, popup, "SecureActionButtonTemplate")
+	btn:SetAttribute("type", "macro")
+	btn:SetAttribute("macrotext", macro)
+	btn:SetAllPoints(button)
+	btn:Size(button:GetSize())
+	btn:HookScript("OnEnter", SecureOnEnter)
+	btn:HookScript("OnLeave", SecureOnLeave)
+	btn:SkinButton()
+
+	local t = btn:CreateFontString(nil, "OVERLAY", btn)
+	t:SetPoint("CENTER", 0, 1)
+	t:FontTemplate(nil, nil, "NONE")
+	t:SetJustifyH("CENTER")
+	t:SetText(text)
+	btn.text = t
+
+	btn:SetFontString(t)
+	btn:SetTemplate(nil, true)
+	SecureOnLeave(btn)
+
+	return btn
+end
+
+function K.StaticPopup_GetAllSecureButtons()
+	return SecureButtons
+end
+
+function K.StaticPopup_GetSecureButton(which)
+	return SecureButtons[which]
+end
+
+function K.StaticPopup_PositionSecureButton(popup, popupButton, secureButton)
+	secureButton:SetParent(popup)
+	secureButton:SetAllPoints(popupButton)
+	secureButton:Size(popupButton:GetSize())
+end
+
+function K.StaticPopup_SetSecureButton(which, btn)
+	if SecureButtons[which] then
+		error("A secure StaticPopup Button called `"..which.."` already exists.")
+	end
+
+	SecureButtons[which] = btn
+end
+
 function K.CreateStaticPopups()
 	K.StaticPopupFrames = {}
 
 	for index = 1, MAX_STATIC_POPUPS do
-		K.StaticPopupFrames[index] = CreateFrame("Frame", "KkthnxUI_StaticPopup"..index, UIParent, "StaticPopupTemplate")
+		K.StaticPopupFrames[index] = CreateFrame("Frame", "KKUI_StaticPopup"..index, UIParent, "StaticPopupTemplate")
 		K.StaticPopupFrames[index]:SetID(index)
 
 		-- Fix Scripts
@@ -901,14 +1030,46 @@ function K.CreateStaticPopups()
 		K.StaticPopupFrames[index]:SetScript("OnEvent", K.StaticPopup_OnEvent)
 
 		for i = 1, 3 do
-			_G["KkthnxUI_StaticPopup"..index.."Button"..i]:SetScript("OnClick", function(self)
-				K.StaticPopup_OnClick(self:GetParent(), self:GetID())
+			_G["KKUI_StaticPopup"..index.."Button"..i]:SetScript("OnClick", function(button)
+				K.StaticPopup_OnClick(button:GetParent(), button:GetID())
 			end)
 		end
 
-		_G["KkthnxUI_StaticPopup"..index.."EditBox"]:SetScript("OnEnterPressed", K.StaticPopup_EditBoxOnEnterPressed)
-		_G["KkthnxUI_StaticPopup"..index.."EditBox"]:SetScript("OnEscapePressed", K.StaticPopup_EditBoxOnEscapePressed)
-		_G["KkthnxUI_StaticPopup"..index.."EditBox"]:SetScript("OnTextChanged", K.StaticPopup_EditBoxOnTextChanged)
+		_G["KKUI_StaticPopup"..index.."EditBox"]:SetScript("OnEnterPressed", K.StaticPopup_EditBoxOnEnterPressed)
+		_G["KKUI_StaticPopup"..index.."EditBox"]:SetScript("OnEscapePressed", K.StaticPopup_EditBoxOnEscapePressed)
+		_G["KKUI_StaticPopup"..index.."EditBox"]:SetScript("OnTextChanged", K.StaticPopup_EditBoxOnTextChanged)
+
+		_G["KKUI_StaticPopup"..index.."CheckButton"] = CreateFrame("CheckButton", "KKUI_StaticPopup"..index.."CheckButton", _G["KKUI_StaticPopup"..index], "UICheckButtonTemplate")
+		_G["KKUI_StaticPopup"..index.."CheckButton"]:SetScript("OnClick", K.StaticPopup_CheckButtonOnClick)
+
+		-- Skinning
+		K.StaticPopupFrames[index].Border:StripTextures()
+		K.StaticPopupFrames[index]:CreateBorder()
+
+		for i = 1, 3 do
+			_G["KKUI_StaticPopup"..index.."Button"..i]:SkinButton()
+		end
+
+		_G["KKUI_StaticPopup"..index.."CheckButton"]:SetSize(24, 24)
+		_G["KKUI_StaticPopup"..index.."CheckButtonText"]:FontTemplate(nil, nil, "")
+		_G["KKUI_StaticPopup"..index.."CheckButtonText"]:SetTextColor(1, 0.17, 0.26)
+		_G["KKUI_StaticPopup"..index.."CheckButtonText"]:SetPoint("LEFT", _G["KKUI_StaticPopup"..index.."CheckButton"], "RIGHT", 4, 1)
+		-- SkinsModule:SkinCheckBox(_G["KKUI_StaticPopup"..index.."CheckButton"])
+
+		--local SkinsModule = K:GetModule("Skins")
+		_G["KKUI_StaticPopup"..index.."EditBox"]:SetFrameLevel(_G["KKUI_StaticPopup"..index.."EditBox"]:GetFrameLevel() + 1)
+		--SkinsModule:SkinEditBox(_G["KKUI_StaticPopup"..index.."EditBox"])
+		--SkinsModule:SkinEditBox(_G["KKUI_StaticPopup"..index.."MoneyInputFrameGold"])
+		--SkinsModule:SkinEditBox(_G["KKUI_StaticPopup"..index.."MoneyInputFrameSilver"])
+		--SkinsModule:SkinEditBox(_G["KKUI_StaticPopup"..index.."MoneyInputFrameCopper"])
+		--_G["KKUI_StaticPopup"..index.."EditBox"].Backdrop:SetPoint("TOPLEFT", -2, -4)
+		--_G["KKUI_StaticPopup"..index.."EditBox"].Backdrop:SetPoint("BOTTOMRIGHT", 2, 4)
+		--_G["KKUI_StaticPopup"..index.."ItemFrameNameFrame"]:Kill()
+		--_G["KKUI_StaticPopup"..index.."ItemFrame"]:GetNormalTexture():Kill()
+		--_G["KKUI_StaticPopup"..index.."ItemFrame"]:CreateBorder()
+		--_G["KKUI_StaticPopup"..index.."ItemFrame"]:StyleButton()
+		--_G["KKUI_StaticPopup"..index.."ItemFrameIconTexture"]:SetTexCoord(unpack(K.TexCoords))
+		-- _G["KKUI_StaticPopup"..index.."ItemFrameIconTexture"]:SetInside()
 	end
 
 	hooksecurefunc("StaticPopup_SetUpPosition", function(self)

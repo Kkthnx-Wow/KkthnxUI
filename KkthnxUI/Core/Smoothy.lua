@@ -1,10 +1,11 @@
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 
 -- ls_UI, lightspark
 
 local _G = _G
 local next, Lerp = _G.next, _G.Lerp
 local abs = _G.math.abs
+local CreateFrame = _G.CreateFrame
 
 local activeObjects = {}
 local handledObjects = {}

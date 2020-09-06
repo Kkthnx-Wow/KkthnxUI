@@ -61,7 +61,6 @@ The following options are listed by priority. The first check that returns true 
 
 ## Attributes
 
-.disconnected - Indicates whether the unit is disconnected (boolean)
 .tapped       - Indicates whether the unit is tapped by the player (boolean)
 
 ## Examples
@@ -117,7 +116,7 @@ local function UpdateColor(element, unit, cur, min, max, displayType)
 	local r, g, b, t
 	if(element.colorTapping and element.tapped) then
 		t = parent.colors.tapped
-	elseif(element.colorDisconnected and element.disconnected) then
+	elseif(element.colorDisconnected and not UnitIsConnected(unit)) then
 		t = parent.colors.disconnected
 	elseif(displayType == ALTERNATE_POWER_INDEX and element.altPowerColor) then
 		t = element.altPowerColor
@@ -205,17 +204,15 @@ local function Update(self, event, unit)
 	end
 
 	local cur, max = UnitPower(unit, displayType), UnitPowerMax(unit, displayType)
-	local disconnected = not UnitIsConnected(unit)
 	local tapped = not UnitPlayerControlled(unit) and UnitIsTapDenied(unit)
 	element:SetMinMaxValues(min or 0, max)
 
-	if(disconnected) then
+	if not UnitIsConnected(unit) then
 		element:SetValue(max)
 	else
 		element:SetValue(cur)
 	end
 
-	element.disconnected = disconnected
 	element.tapped = tapped
 
 	--[[ Override: Power:UpdateColor(unit, cur, min, max, displayType)

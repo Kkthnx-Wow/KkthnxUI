@@ -30,12 +30,12 @@ function Module.PostUpdateUnitframeClassPower(element, cur, max, diff, powerType
 	if (powerType == "COMBO_POINTS" or powerType == "HOLY_POWER") and element.__owner.unit ~= "vehicle" and cur == max then
 		for i = 1, 6 do
 			if element[i]:IsShown() then
-				K.libCustomGlow.AutoCastGlow_Start(element[i])
+				K.libButtonGlow.ShowOverlayGlow(element[i])
 			end
 		end
 	else
 		for i = 1, 6 do
-			K.libCustomGlow.AutoCastGlow_Stop(element[i])
+			K.libButtonGlow.HideOverlayGlow(element[i])
 		end
 	end
 end
@@ -144,8 +144,7 @@ function Module:CreatePlayer()
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 		self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
-		self.Portrait:CreateBorder()
-		self.Portrait:CreateInnerShadow()
+		self.Portrait:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		self.Portrait = self.Health:CreateTexture("PlayerPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
@@ -154,8 +153,7 @@ function Module:CreatePlayer()
 
 		self.Portrait.Border = CreateFrame("Frame", nil, self)
 		self.Portrait.Border:SetAllPoints(self.Portrait)
-		self.Portrait.Border:CreateBorder()
-		self.Portrait.Border:CreateInnerShadow()
+		self.Portrait.Border:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
@@ -316,8 +314,7 @@ function Module:CreatePlayer()
 
 		self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
 		self.Castbar.Button:SetSize(20, 20)
-		self.Castbar.Button:CreateBorder()
-		self.Castbar.Button:CreateInnerShadow()
+		self.Castbar.Button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 		self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
 		self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
@@ -492,29 +489,17 @@ function Module:CreatePlayer()
 			self.FloatingCombatFeedback[i] = parentFrame:CreateFontString("$parentText", "OVERLAY")
 		end
 
-		self.FloatingCombatFeedback.font = C["Media"].Font
+		self.FloatingCombatFeedback.font = C["Media"].CombatFont
 		self.FloatingCombatFeedback.fontFlags = "OUTLINE"
-		self.FloatingCombatFeedback.showPets = true
-		self.FloatingCombatFeedback.showHots = true
-		self.FloatingCombatFeedback.showAutoAttack = true
-		self.FloatingCombatFeedback.showOverHealing = false
+		self.FloatingCombatFeedback.showPets = C["Unitframe"].PetCombatText
+		self.FloatingCombatFeedback.showHots = C["Unitframe"].HotsDots
+		self.FloatingCombatFeedback.showAutoAttack = C["Unitframe"].AutoAttack
+		self.FloatingCombatFeedback.showOverHealing = C["Unitframe"].FCTOverHealing
 		self.FloatingCombatFeedback.abbreviateNumbers = true
-		self.FloatingCombatFeedback.colors = {
-			ABSORB = {0.84, 0.75, 0.65},
-			BLOCK = {0.84, 0.75, 0.65},
-			CRITENERGIZE = {0.31, 0.45, 0.63},
-			CRITHEAL = {0.33, 0.59, 0.33},
-			CRITICAL = {0.69, 0.31, 0.31},
-			CRUSHING = {0.69, 0.31, 0.31},
-			DAMAGE = {0.69, 0.31, 0.31},
-			ENERGIZE = {0.31, 0.45, 0.63},
-			GLANCING = {0.69, 0.31, 0.31},
-			HEAL = {0.33, 0.59, 0.33},
-			IMMUNE = {0.84, 0.75, 0.65},
-			MISS = {0.84, 0.75, 0.65},
-			RESIST = {0.84, 0.75, 0.65},
-			STANDARD = {0.84, 0.75, 0.65},
-		}
+
+		-- Default CombatText
+		SetCVar("enableFloatingCombatText", 0)
+		K.HideInterfaceOption(InterfaceOptionsCombatPanelEnableFloatingCombatText)
 	end
 
 	-- Swing timer
@@ -523,7 +508,7 @@ function Module:CreatePlayer()
 
 		self.Swing = CreateFrame("Frame", "KKUI_SwingBar", self)
 		self.Swing:SetSize(swingWidth, 14)
-		self.Swing:SetPoint("BOTTOM", self.Castbar.mover, "BOTTOM", 0, -20)
+		self.Swing:SetPoint("BOTTOM", self.Castbar.mover, "BOTTOM", 0, -22)
 
 		self.Swing.Twohand = CreateFrame("Statusbar", nil, self.Swing)
 		self.Swing.Twohand:SetPoint("TOPLEFT")
@@ -550,7 +535,7 @@ function Module:CreatePlayer()
 		self.Swing.Twohand.Spark:SetPoint("CENTER", self.Swing.Twohand:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 		self.Swing.Mainhand = CreateFrame("Statusbar", nil, self.Swing)
-		self.Swing.Mainhand:SetPoint("BOTTOM", self.Castbar.mover, "BOTTOM", 0, -20)
+		self.Swing.Mainhand:SetPoint("BOTTOM", self.Castbar.mover, "BOTTOM", 0, -22)
 		self.Swing.Mainhand:SetSize(swingWidth, 14)
 		self.Swing.Mainhand:SetStatusBarTexture(UnitframeTexture)
 		self.Swing.Mainhand:SetStatusBarColor(0.8, 0.3, 0.3)
@@ -655,7 +640,6 @@ function Module:CreatePlayer()
 
 	if C["Unitframe"].PortraitTimers then
 		self.PortraitTimer = CreateFrame("Frame", "$parentPortraitTimer", self.Health)
-		self.PortraitTimer:CreateInnerShadow()
 		self.PortraitTimer:SetFrameLevel(5) -- Watch me
 		self.PortraitTimer:SetPoint("TOPLEFT", self.Portrait, "TOPLEFT", 1, -1)
 		self.PortraitTimer:SetPoint("BOTTOMRIGHT", self.Portrait, "BOTTOMRIGHT", -1, 1)

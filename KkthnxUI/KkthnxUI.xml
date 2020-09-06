@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<!-- Fonts -->
-	<Include file="FontStyles.xml" />
 	<!-- Libraries -->
 	<Include file="Libraries\Load_Libraries.xml" />
 	<!-- Engine -->
@@ -14,12 +12,10 @@
 	<Script file="Media\Media.lua" />
 	<!-- Core -->
 	<Include file="Core\Load_Core.xml" />
-	<!-- Filters -->
-	<Include file="Config\Filters\Load_Filters.xml" />
-	<!-- Developer -->
-	<Include file="Developer\Load_Developer.xml" />
+	<!-- Config -->
+	<Include file="Config\Load_Config.xml" />
 	<!-- ActionBars -->
-	<Include file="Modules\ActionBars\ActionBar.xml" />
+	<Include file="Modules\ActionBars\Load_ActionBar.xml" />
 	<!-- Unitframes -->
 	<Include file="Modules\Unitframes\Load_Unitframes.xml" />
 	<!-- Announcements -->
@@ -46,9 +42,9 @@
 	<Include file="Modules\Tooltip\Load_Tooltip.xml" />
 	<!-- Miscellaneous -->
 	<Include file="Modules\Miscellaneous\Load_Miscellaneous.xml" />
-	<Include file="Bindings.xml" />
+	<Include file="Load_Bindings.xml" />
 	<!-- Skins -->
 	<Include file="Modules\Skins\Load_Skins.xml" />
-	<!-- Debug -->
-	<Script file="Developer\Debug.lua" />
+	<!-- Developer -->
+	<Include file="Developer\Load_Developer.xml" />
 </Ui>

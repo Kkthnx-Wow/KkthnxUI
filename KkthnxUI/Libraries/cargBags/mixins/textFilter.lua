@@ -31,6 +31,10 @@ local cargBags = ns.cargBags
 local Container = cargBags.classes.Container
 local Implementation = cargBags.classes.Implementation
 
+local _G = _G
+local tonumber = _G.tonumber
+local type = _G.type
+
 local defaultFilters = {
 	n = function(i, arg)
 		return i.name and i.name:lower():match(arg)

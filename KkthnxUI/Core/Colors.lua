@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local oUF = oUF or K.oUF
 
 if (not oUF) then
@@ -9,11 +9,11 @@ end
 oUF.colors.fallback = {1, 1, 0.8}
 
 oUF.colors.castbar = {
-	CastingColor = {0.26, 0.53, 1.0},
-	ChannelingColor = {0.26, 0.53, 1.0},
-	notInterruptibleColor = {0.78, 0.25, 0.25},
-	CompleteColor = {0.1, 0.8, 0},
-	FailColor = {1, 0.1, 0},
+	CastingColor = {1.0, 0.7, 0.0},
+	ChannelingColor = {0.0, 1.0, 0.0},
+	notInterruptibleColor = {0.7, 0.7, 0.7},
+	CompleteColor = {0.0, 1.0, 0.0},
+	FailColor = {1.0, 0.0, 0.0},
 }
 
 -- Aura Coloring
@@ -49,12 +49,6 @@ oUF.colors.selection = {
 	[9] = {r = 153/255, g = 153/255, b = 153/255}, -- DEAD
 	[13] = {r = 025/255, g = 147/255, b = 072/255}, -- BATTLEGROUND_FRIENDLY_PVP
 }
-
---oUF.colors.runes = {
---	[1] = {0.69, 0.31, 0.31},
---	[2] = {0.41, 0.80, 1.00},
---	[3] = {173 / 255, 235 / 255, 66 / 255},
---}
 
 oUF.colors.power = {
 	["ALTPOWER"] = {0.00, 1.00, 1.00},
@@ -107,13 +101,6 @@ oUF.colors.class = {
 	["SHAMAN"] = {0.16, 0.31, 0.61},
 	["WARLOCK"] = {0.58, 0.51, 0.79},
 	["WARRIOR"] = {0.78, 0.61, 0.43},
-}
-
-oUF.colors.totems = {
-	[1] = oUF.colors.class[K.Class], -- Totem 1
-	[2] = oUF.colors.class[K.Class], -- Totem 2
-	[3] = oUF.colors.class[K.Class], -- Totem 3
-	[4] = oUF.colors.class[K.Class], -- Totem 4
 }
 
 oUF.colors.specpowertypes = {

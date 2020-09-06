@@ -52,10 +52,10 @@ function Module:ChantLumos(self)
 			UpdateCooldown(button, 228260, true)
 			if IsUsableSpell(228260) then
 				button.Icon:SetDesaturated(false)
-				K.libCustomGlow.AutoCastGlow_Start(button.glowFrame)
+				K.libButtonGlow.ShowOverlayGlow(button.glowFrame)
 			else
 				button.Icon:SetDesaturated(true)
-				K.libCustomGlow.AutoCastGlow_Stop(button.glowFrame)
+				K.libButtonGlow.HideOverlayGlow(button.glowFrame)
 			end
 		end
 

@@ -5,17 +5,12 @@ local string_split = _G.string.split
 local pairs = _G.pairs
 
 local CreateFrame = _G.CreateFrame
+local UIParent = _G.UIParent
+local CLOSE = _G.CLOSE
 
 local changelogData = {
-	"New Minimap Code",
-	"New Keybind Code",
-	"Added Only Loot Quest Items Module",
-	"New Location DataText",
-	"Fixed Auto Best Value For Quests",
-	"Updated BlizzBugFixes",
-	"Added Close Quest Fix",
-	"Re-Added AFKCam",
-	"Various File Cleanups",
+	"No Changelog Until Offical Release.",
+	"I'am Kkthnx, and I approve of this message?",
 }
 
 local changelogFrame
@@ -76,7 +71,7 @@ local function changelog()
 end
 
 local function compareToShow(event)
-	if KKUI_Tutorial then
+	if _G.KKUI_Tutorial then
 		return
 	end
 
@@ -90,5 +85,5 @@ local function compareToShow(event)
 end
 K:RegisterEvent("PLAYER_ENTERING_WORLD", compareToShow)
 
-SlashCmdList["KKUI_CHANGELOG"] = changelog
+_G.SlashCmdList["KKUI_CHANGELOG"] = changelog
 SLASH_KKUI_CHANGELOG1 = "/kcl"

@@ -207,7 +207,7 @@ end
 -- @return bagID <number>
 -- @return bagSlot <number>
 function cargBags.FromBagSlot(bagSlot)
-	return math_floor(bagSlot/100), bagSlot % 100
+	return math_floor(bagSlot / 100), bagSlot % 100
 end
 
 -- Creates a new item table which has access to ItemKeys

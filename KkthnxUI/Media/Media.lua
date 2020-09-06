@@ -2,6 +2,7 @@ local K, C = unpack(select(2, ...))
 
 C["Media"] = {
 	AltzUI = [[Interface\AddOns\KkthnxUI\Media\Textures\AltzUI.tga]],
+	Arrow = [[Interface\AddOns\KkthnxUI\Media\Textures\Arrow.tga]],
 	AsphyxiaUI = [[Interface\AddOns\KkthnxUI\Media\Textures\AsphyxiaUI.tga]],
 	AzeriteUI = [[Interface\AddOns\KkthnxUI\Media\Textures\AzeriteUI.tga]],
 	BackdropColor = {.04, .04, .04, 0.9},
@@ -9,7 +10,7 @@ C["Media"] = {
 	BlankFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Invisible.ttf]],
 	Border = [[Interface\AddOns\KkthnxUI\Media\Border\Border.tga]],
 	BorderColor = {1, 1, 1, 1},
-	BorderGlow = [[Interface\AddOns\KkthnxUI\Media\Border\BorderGlow.tga]],
+	BorderGlow = [[Interface\AddOns\KkthnxUI\Media\Border\Border_Glow_Overlay.tga]],
 	BorderTooltip = [[Interface\AddOns\KkthnxUI\Media\Border\Border_Tooltip.tga]],
 	CombatFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]],
 	Copy = [[Interface\AddOns\KkthnxUI\Media\Chat\Copy.tga]],
@@ -48,7 +49,7 @@ if K.LSM == nil then
 end
 
 -- LibSharedMedia Stuff
-K.LSM:Register("border", "KkthnxUI_Border", [[Interface\AddOns\KkthnxUI\Media\Border\Border.tga]])
+K.LSM:Register("border", "KkthnxUI_Border", [[Interface\AddOns\KkthnxUI\Media\Border\Border_Tooltip.tga]])
 K.LSM:Register("border", "KkthnxUI_GlowTex", [[Interface\AddOns\KkthnxUI\Media\Textures\GlowTex]])
 K.LSM:Register("font", "KkthnxUI_Damage", [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]], K.LSM.LOCALE_BIT_ruRU + K.LSM.LOCALE_BIT_western)
 K.LSM:Register("font", "KkthnxUI_Normal", [[Interface\AddOns\KkthnxUI\Media\Fonts\Normal.ttf]], K.LSM.LOCALE_BIT_ruRU + K.LSM.LOCALE_BIT_western)

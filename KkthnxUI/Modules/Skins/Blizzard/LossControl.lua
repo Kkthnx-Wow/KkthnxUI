@@ -14,9 +14,8 @@ local function ReskinLossOfControlFrame()
 	local LossOfControlFrame = _G.LossOfControlFrame
 
 	local IconBackdrop = CreateFrame("Frame", nil, LossOfControlFrame)
-	IconBackdrop:CreateBorder()
-	IconBackdrop:CreateInnerShadow()
-	IconBackdrop:SetBackdropBorderColor(1, 0, 0)
+	IconBackdrop:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	IconBackdrop.KKUI_Border:SetVertexColor(1, 0, 0)
 	IconBackdrop:SetAllPoints(LossOfControlFrame.Icon)
 	IconBackdrop:SetFrameLevel(LossOfControlFrame:GetFrameLevel())
 

@@ -4,7 +4,6 @@ local Module = K:NewModule("Minimap")
 local _G = _G
 local pairs = _G.pairs
 local select = _G.select
-local table_insert = _G.table.insert
 
 local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
@@ -14,22 +13,30 @@ local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local UIErrorsFrame = _G.UIErrorsFrame
 local UnitClass = _G.UnitClass
+local Minimap = _G.Minimap
 
 function Module:CreateStyle()
 	local minimapBorder = CreateFrame("Frame", nil, Minimap)
 	minimapBorder:SetAllPoints(Minimap)
 	minimapBorder:SetFrameLevel(Minimap:GetFrameLevel())
-	minimapBorder:CreateBorder()
-	minimapBorder:CreateInnerShadow(nil, 0.6)
+	minimapBorder:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	minimapBorder.KKUI_InnerShadow:SetAlpha(0.7)
 
-	local function updateMinimapBorderAnimation(event)
-		if event == "PLAYER_REGEN_DISABLED" then
-			minimapBorder:SetBackdropBorderColor(1, 0, 0)
-		elseif not InCombatLockdown() then
-			if C_Calendar_GetNumPendingInvites() > 0 or MiniMapMailFrame:IsShown() then
-				minimapBorder:SetBackdropBorderColor(1, 1, 0)
+	local minimapMailPulse = CreateFrame("Frame", nil, Minimap)
+	minimapMailPulse:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
+	minimapMailPulse:SetPoint("TOPLEFT", minimapBorder, -6, 6)
+	minimapMailPulse:SetPoint("BOTTOMRIGHT", minimapBorder, 6, -6)
+	minimapMailPulse:SetBackdropBorderColor(1, 1, 0, 0.6)
+	minimapMailPulse:Hide()
+
+	local function updateMinimapBorderAnimation()
+		if not InCombatLockdown() then
+			if C_Calendar_GetNumPendingInvites() > 0 or MiniMapMailFrame:IsShown() and not IsInInstance() then
+				minimapMailPulse:Show()
+				K.Flash(minimapMailPulse, 1, true)
 			else
-				minimapBorder:SetBorderColor()
+				minimapMailPulse:Hide()
+				K.StopFlash(minimapMailPulse)
 			end
 		end
 	end
@@ -43,7 +50,8 @@ function Module:CreateStyle()
 			return
 		end
 
-		minimapBorder:SetBorderColor()
+		minimapMailPulse:Hide()
+		K.StopFlash(minimapMailPulse)
 	end)
 end
 
@@ -122,6 +130,7 @@ function Module:ReskinRegions()
 		local difficultyFlag = _G[v]
 		difficultyFlag:ClearAllPoints()
 		difficultyFlag:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+		difficultyFlag:SetScale(0.9)
 	end
 
 	-- Mail icon
@@ -194,6 +203,10 @@ function Module:CreatePing()
 	pingAnimation.fader:SetStartDelay(3)
 
 	K:RegisterEvent("MINIMAP_PING", function(_, unit)
+		if unit == "player" then -- Do show ourself. -.-
+			return
+		end
+
 		local class = select(2, UnitClass(unit))
 		local r, g, b = K.ColorClass(class)
 		local name = GetUnitName(unit)

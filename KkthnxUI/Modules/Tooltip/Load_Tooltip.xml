@@ -3,12 +3,11 @@
    <!-- Load_Tooltip -->
    <Script file="Core.lua" />
 
-   <Script file="TooltipAzerite.lua" />
-   <Script file="TooltipCorruptionRank.lua" />
-   <Script file="TooltipHover.lua" />
-   <Script file="TooltipID.lua" />
-   <Script file="TooltipIcons.lua" />
-   <Script file="TooltipPetInfo.lua" />
-   <Script file="TooltipSpecLevel.lua" />
-   <Script file="TooltipTargeted.lua" />
+   <Script file="Elements\Hover.lua" />
+   <Script file="Elements\ID.lua" />
+   <Script file="Elements\Icons.lua" />
+   <Script file="Elements\Mount.lua" />
+   <Script file="Elements\Pet.lua" />
+   <Script file="Elements\SpecLevel.lua" />
+   <Script file="Elements\Targeted.lua" />
 </Ui>

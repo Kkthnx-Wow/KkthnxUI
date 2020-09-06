@@ -87,7 +87,7 @@ cargBags:RegisterPlugin("TagDisplay", function(self, tagString, parent)
 	plugin.SetTagString = setTagString
 	plugin.tags = tagPool
 	plugin.tagEvents = tagEvents
-	plugin.iconValues = "16:16:0:0"
+	plugin.iconValues = "16:16:0:0:64:64:4:60:4:60"
 	plugin.forceEvent = function(event)
 		updater(plugin, event)
 	end
@@ -131,10 +131,10 @@ end
 tagPool["item"] = function(self, item)
 	local bags = GetItemCount(item, nil)
 	local total = GetItemCount(item, true)
-	local bank = total-bags
+	local bank = total - bags
 
 	if (total > 0) then
-		return bags .. (bank and " ("..bank..")") .. createIcon(GetItemIcon(item), self.iconValues)
+		return bags..(bank and " ("..bank..")")..createIcon(GetItemIcon(item), self.iconValues)
 	end
 end
 
@@ -142,7 +142,7 @@ tagPool["currency"] = function(self, id)
 	local _, count, icon = GetBackpackCurrencyInfo(id)
 
 	if (count) then
-		return count .. createIcon(icon, self.iconValues)
+		return BreakUpLargeNumbers(count)..createIcon(icon, self.iconValues)
 	end
 end
 tagEvents["currency"] = {"CHAT_MSG_CURRENCY", "CURRENCY_DISPLAY_UPDATE"}
@@ -160,14 +160,11 @@ end
 tagEvents["currencies"] = tagEvents["currency"]
 
 -- Money text formatting, code taken from Scrooge by thelibrarian (http://www.wowace.com/addons/scrooge)
-local ICON_COPPER = "|TInterface\\MoneyFrame\\UI-CopperIcon:12:12|t"
-local ICON_SILVER = "|TInterface\\MoneyFrame\\UI-SilverIcon:12:12|t"
-local ICON_GOLD = "|TInterface\\MoneyFrame\\UI-GoldIcon:12:12|t"
 tagPool["money"] = function()
 	local moneyamount = GetMoney() or 0
-	local coppername = "|cffeda55fc|r" or ICON_COPPER
-	local silvername = "|cffc7c7cfs|r" or ICON_SILVER
-	local goldname = "|cffffd700g|r" or ICON_GOLD
+	local coppername = "|cffeda55fc|r"
+	local silvername = "|cffc7c7cfs|r"
+	local goldname = "|cffffd700g|r"
 
 	local value = math.abs(moneyamount)
 	local gold = math.floor(value / 10000)

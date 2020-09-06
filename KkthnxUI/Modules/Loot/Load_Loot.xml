@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Loot -->
-    <Script file="Loot.lua"/>
+    <Script file="Core.lua"/>
 
-    <Script file="GroupLoot.lua"/>
-    <Script file="AutoConfirm.lua"/>
-    <Script file="AutoGreed.lua"/>
-    <Script file="FasterLoot.lua"/>
-    <Script file="AutoQuestLoot.lua"/>
+    <Script file="Elements\GroupLoot.lua"/>
+    <Script file="Elements\AutoConfirm.lua"/>
+    <Script file="Elements\AutoGreed.lua"/>
+    <Script file="Elements\FasterLoot.lua"/>
+    <Script file="Elements\AutoQuestLoot.lua"/>
+    <Script file="Elements\ImprovedLoot.lua"/>
 </Ui>

@@ -31,6 +31,10 @@ DESCRIPTION
 local _, ns = ...
 local cargBags = ns.cargBags
 
+local _G = _G
+local tonumber = _G.tonumber
+local type = _G.type
+
 local bagStrings = {
 	["backpack"] = {0},
 	["bags"] = {1, 2, 3, 4},
@@ -65,7 +69,7 @@ function cargBags:ParseBags(bags)
 	if (min) then
 		local t = {}
 		for i = min, max do
-			t[#t+1] = i
+			t[#t + 1] = i
 		end
 
 		bagStrings[bags] = t

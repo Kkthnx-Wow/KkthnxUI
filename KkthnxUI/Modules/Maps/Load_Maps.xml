@@ -2,10 +2,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Maps -->
     <Script file="MiniMap.lua"/>
-    <Script file="MinimapButtons.lua"/>
     <Script file="WorldMap.lua"/>
-    <Script file="WorldMapReveal.lua"/>
-    <Script file="WowHeadLink.lua"/>
+
+    <Script file="Elements\Buttons.lua"/>
+    <Script file="Elements\Reveal.lua"/>
+    <Script file="Elements\WowHead.lua"/>
 
    	<Frame name="KkthnxUIMapsGlobalPinTemplate" inherits="BaseHighlightableMapPoiPinTemplate" enableMouseClicks="true" enableMouseMotion="true" mixin="KkthnxUIMapsGlobalPinMixin" virtual="true" />
 </Ui>

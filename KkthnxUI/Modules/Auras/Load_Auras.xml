@@ -79,10 +79,10 @@
 		<Size x="40" y="40" />
 	</Button>
 
-	<Script file="Auras.lua" />
-	<Script file="Reminder.lua" />
-	<Script file="Totems.lua" />
-	<Script file="Filger.lua" />
-	<Script file="MonkStatue.lua" />
+	<Script file="Core.lua" />
+
+	<Script file="Elements\Filger.lua" />
+	<Script file="Elements\Reminder.lua" />
+	<Script file="Elements\Totems.lua" />
 	<Include file="Lumos\Lumos.xml" />
 </Ui>

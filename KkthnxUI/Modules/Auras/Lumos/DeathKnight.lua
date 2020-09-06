@@ -49,11 +49,11 @@ local function UpdateBuffValue(button, spellID)
 		button.CD:SetCooldown(expire-duration, duration)
 		button.CD:Show()
 		button.Icon:SetDesaturated(false)
-		K.libCustomGlow.AutoCastGlow_Start(button.glowFrame)
+		K.libButtonGlow.ShowOverlayGlow(button.glowFrame)
 	else
 		button.Count:SetText("")
 		UpdateCooldown(button, spellID)
-		K.libCustomGlow.AutoCastGlow_Stop(button.glowFrame)
+		K.libButtonGlow.HideOverlayGlow(button.glowFrame)
 	end
 
 	button.Count:SetTextColor(1, 1, 1)

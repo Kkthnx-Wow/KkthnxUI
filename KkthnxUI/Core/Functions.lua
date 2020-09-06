@@ -22,17 +22,18 @@ local unpack = _G.unpack
 local C_Map_GetWorldPosFromMapPos = _G.C_Map.GetWorldPosFromMapPos
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
+local CreateVector2D = _G.CreateVector2D
 local ENCHANTED_TOOLTIP_LINE = _G.ENCHANTED_TOOLTIP_LINE
 local GameTooltip = _G.GameTooltip
 local GetSpecialization = _G.GetSpecialization
 local GetSpecializationInfo = _G.GetSpecializationInfo
 local GetSpellDescription = _G.GetSpellDescription
 local GetTime = _G.GetTime
+local ITEM_LEVEL = _G.ITEM_LEVEL
+local ITEM_SPELL_TRIGGER_ONEQUIP = _G.ITEM_SPELL_TRIGGER_ONEQUIP
 local IsEveryoneAssistant = _G.IsEveryoneAssistant
 local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
-local ITEM_LEVEL = _G.ITEM_LEVEL
-local ITEM_SPELL_TRIGGER_ONEQUIP = _G.ITEM_SPELL_TRIGGER_ONEQUIP
 local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME
 local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
 local UIParent = _G.UIParent
@@ -51,9 +52,6 @@ local itemLevelString = string_gsub(ITEM_LEVEL, "%%d", "")
 
 local mapRects = {}
 local tempVec2D = CreateVector2D(0, 0)
-
-K.activeTimers = K.activeTimers or {} -- Active timer list
-local activeTimers = K.activeTimers -- Upvalue our private data
 
 function K.Print(...)
 	(_G.DEFAULT_CHAT_FRAME):AddMessage(string_join("", "|cff3c9bed", "KkthnxUI:|r ", ...))
@@ -261,7 +259,7 @@ function K:CollectEssenceInfo(index, lineText, slotInfo)
 	local essence = slotInfo.essences[step]
 	if essence and next(essence) and (string_find(lineText, ITEM_SPELL_TRIGGER_ONEQUIP, nil, true) and string_find(lineText, essenceDescription, nil, true)) then
 		for i = 4, 2, -1 do
-			local line = _G[K.ScanTooltip:GetName().."TextLeft"..index-i]
+			local line = _G[K.ScanTooltip:GetName().."TextLeft"..index - i]
 			local text = line and line:GetText()
 
 			if text and (not string_match(text, "^[ +]")) and essence and next(essence) then
@@ -346,15 +344,14 @@ local function CheckRole()
 	elseif role == "HEALER" then
 		K.Role = "Healer"
 	elseif role == "DAMAGER" then
-		if stat == 4 then	--1力量，2敏捷，4智力
+		if stat == 4 then -- 1 Strength, 2 Agility, 4 Intellect
 			K.Role = "Caster"
 		else
 			K.Role = "Melee"
 		end
 	end
 end
-K:RegisterEvent("PLAYER_ENTERING_WORLD", CheckRole)
-K:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", CheckRole)
+K:RegisterEvent("PLAYER_LOGIN", CheckRole)
 K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
 
 -- Chat channel check
@@ -396,6 +393,10 @@ function K.HideTooltip()
 end
 
 local function tooltipOnEnter(self)
+	if GameTooltip:IsForbidden() then
+		return
+	end
+
 	GameTooltip:SetOwner(self, "ANCHOR_NONE")
 	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
@@ -433,11 +434,6 @@ function K.AddTooltip(self, anchor, text, color)
 	self:SetScript("OnLeave", K.HideTooltip)
 end
 
-function K.Scale(x)
-	local mult = C.mult
-	return mult * math_floor(x / mult + .5)
-end
-
 -- Movable Frame
 function K.CreateMoverFrame(self, parent, saved)
 	local frame = parent or self
@@ -456,6 +452,7 @@ function K.CreateMoverFrame(self, parent, saved)
 		if not saved then
 			return
 		end
+
 		local orig, _, tar, x, y = frame:GetPoint()
 		KkthnxUIData[K.Realm][K.Name]["TempAnchor"][frame:GetName()] = {orig, "UIParent", tar, x, y}
 	end)
@@ -501,20 +498,6 @@ function K.ShortenString(string, numChars, dots)
 	end
 end
 
-function K.ColorGradient(perc, ...)
-	if perc >= 1 then
-		return select(select("#", ...) - 2, ...)
-	elseif perc <= 0 then
-		return ...
-	end
-
-	local num = select("#", ...) / 3
-	local segment, relperc = math.modf(perc * (num - 1))
-	local r1, g1, b1, r2, g2, b2 = select((segment * 3) + 1, ...)
-
-	return r1 + (r2 - r1) * relperc, g1 + (g2 - g1) * relperc, b1 + (b2 - b1) * relperc
-end
-
 function K.HideInterfaceOption(self)
 	if not self then
 		return
@@ -548,11 +531,11 @@ end
 
 function K.FormatTimeRaw(s)
 	if s >= day then
-		return string_format("%dd", s/day)
+		return string_format("%dd", s / day)
 	elseif s >= hour then
-		return string_format("%dh", s/hour)
+		return string_format("%dh", s / hour)
 	elseif s >= minute then
-		return string_format("%dm", s/minute)
+		return string_format("%dm", s / minute)
 	elseif s >= 3 then
 		return math_floor(s)
 	else
@@ -577,7 +560,7 @@ function K:CooldownOnUpdate(elapsed, raw)
 end
 
 function K.GetPlayerMapPos(mapID)
-	tempVec2D.x, tempVec2D.y = UnitPosition("player")
+	tempVec2D.x, tempVec2D.y = _G.UnitPosition("player")
 	if not tempVec2D.x then
 		return
 	end
@@ -597,13 +580,10 @@ function K.GetPlayerMapPos(mapID)
 end
 
 -- Money text formatting, code taken from Scrooge by thelibrarian (http://www.wowace.com/addons/scrooge)
-local ICON_COPPER = "|TInterface\\MoneyFrame\\UI-CopperIcon:12:12|t"
-local ICON_SILVER = "|TInterface\\MoneyFrame\\UI-SilverIcon:12:12|t"
-local ICON_GOLD = "|TInterface\\MoneyFrame\\UI-GoldIcon:12:12|t"
 function K.FormatMoney(amount)
-	local coppername = "|cffeda55fc|r" or ICON_COPPER
-	local silvername = "|cffc7c7cfs|r" or ICON_SILVER
-	local goldname = "|cffffd700g|r" or ICON_GOLD
+	local coppername = "|cffeda55fc|r"
+	local silvername = "|cffc7c7cfs|r"
+	local goldname = "|cffffd700g|r"
 
 	local value = math_abs(amount)
 	local gold = math_floor(value / 10000)
@@ -645,7 +625,7 @@ function K.WaitFunc(_, elapse)
 end
 
 K.WaitTable = {}
-K.WaitFrame = CreateFrame("Frame", "KkthnxUI_WaitFrame", _G.UIParent)
+K.WaitFrame = CreateFrame("Frame", "KKUI_WaitFrame", _G.UIParent)
 K.WaitFrame:SetScript("OnUpdate", K.WaitFunc)
 -- Add time before calling a function
 function K.Delay(delay, func, ...)
@@ -668,7 +648,8 @@ function K.Delay(delay, func, ...)
 	return true
 end
 
--- AceTimer
+K.activeTimers = K.activeTimers or {} -- Active timer list
+local activeTimers = K.activeTimers -- Upvalue our private data
 local function new(self, loop, func, delay, ...)
 	if delay < 0.01 then
 		delay = 0.01 -- Restrict to the lowest time that the C_Timer API allows us
@@ -706,7 +687,6 @@ local function new(self, loop, func, delay, ...)
 				if delay < 0.01 then
 					delay = 0.01
 				end
-
 				C_Timer_After(delay, timer.callback)
 				timer.ends = time + delay
 			else
@@ -714,44 +694,47 @@ local function new(self, loop, func, delay, ...)
 			end
 		end
 	end
-
 	C_Timer_After(delay, timer.callback)
+
 	return timer
 end
 
-function K:ScheduleTimer(func, delay, ...)
+-- Schedule a new one-shot timer.
+function K.ScheduleTimer(self, func, delay, ...)
 	if not func or not delay then
-		K.Print(": ScheduleTimer(callback, delay, args...): 'callback' and 'delay' must have set values.", 2)
+		K.Print("ScheduleTimer(callback, delay, args...): 'callback' and 'delay' must have set values.", 2)
 	end
 
 	if type(func) == "string" then
 		if type(self) ~= "table" then
-			K.Print(": ScheduleTimer(callback, delay, args...): 'self' - must be a table.", 2)
+			K.Print("ScheduleTimer(callback, delay, args...): 'self' - must be a table.", 2)
 		elseif not self[func] then
-			K.Print(": ScheduleTimer(callback, delay, args...): Tried to register '"..func.."' as the callback, but it doesn't exist in the module.", 2)
+			K.Print("ScheduleTimer(callback, delay, args...): Tried to register '"..func.."' as the callback, but it doesn't exist in the module.", 2)
 		end
 	end
 
 	return new(self, nil, func, delay, ...)
 end
 
-function K:ScheduleRepeatingTimer(func, delay, ...)
+-- Schedule a repeating timer.
+function K.ScheduleRepeatingTimer(self, func, delay, ...)
 	if not func or not delay then
-		K.Print(": ScheduleRepeatingTimer(callback, delay, args...): 'callback' and 'delay' must have set values.", 2)
+		K.Print("ScheduleRepeatingTimer(callback, delay, args...): 'callback' and 'delay' must have set values.", 2)
 	end
 
 	if type(func) == "string" then
 		if type(self) ~= "table" then
-			K.Print(": ScheduleRepeatingTimer(callback, delay, args...): 'self' - must be a table.", 2)
+			K.Print("ScheduleRepeatingTimer(callback, delay, args...): 'self' - must be a table.", 2)
 		elseif not self[func] then
-			K.Print(": ScheduleRepeatingTimer(callback, delay, args...): Tried to register '"..func.."' as the callback, but it doesn't exist in the module.", 2)
+			K.Print("ScheduleRepeatingTimer(callback, delay, args...): Tried to register '"..func.."' as the callback, but it doesn't exist in the module.", 2)
 		end
 	end
 
 	return new(self, true, func, delay, ...)
 end
 
-function K:CancelTimer(id)
+-- Cancels a timer with the given id, registered by the same addon object as used for `:ScheduleTimer`
+function K.CancelTimer(id)
 	local timer = activeTimers[id]
 
 	if not timer then
@@ -763,19 +746,11 @@ function K:CancelTimer(id)
 	end
 end
 
-function K:CancelAllTimers()
+-- Cancels all timers registered to the current addon object ('self')
+function K.CancelAllTimers(self)
 	for k, v in next, activeTimers do
 		if v.object == self then
 			K.CancelTimer(self, k)
 		end
-	end
-end
-
-function K:TimeLeft(id)
-	local timer = activeTimers[id]
-	if not timer then
-		return 0
-	else
-		return timer.ends - GetTime()
 	end
 end
