@@ -269,7 +269,7 @@ function Module:TimeOnEnter()
 	for i = 1, GetNumSavedWorldBosses() do
 		local name, id, reset = GetSavedWorldBossInfo(i)
 		if not (id == 11 or id == 12 or id == 13) then
-			addTitle(WORLD_BOSSES_TEXT)
+			addTitle(RAID_INFO_WORLD_BOSS)
 			GameTooltip:AddDoubleLine(name, SecondsToTime(reset, true, nil, 3), 1, 1, 1, 192/255, 192/255, 192/255)
 		end
 	end

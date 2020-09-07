@@ -84,7 +84,7 @@ local ActionBar = function(self)
 end
 
 local Announcements = function(self)
-	local Window = self:CreateWindow("Announcements")
+	local Window = self:CreateWindow(L["Announcements"])
 
 	Window:CreateSection("Announcement Toggles")
 	Window:CreateSwitch("Announcements", "ItemAlert", "Announce Items Being Placed")
@@ -95,7 +95,7 @@ local Announcements = function(self)
 end
 
 local Automation = function(self)
-	local Window = self:CreateWindow("Automation")
+	local Window = self:CreateWindow(L["Automation"])
 
 	Window:CreateSection("Automation Toggles")
 
@@ -118,7 +118,7 @@ local Automation = function(self)
 end
 
 local Inventory = function(self)
-	local Window = self:CreateWindow("Inventory")
+	local Window = self:CreateWindow(L["Inventory"])
 
 	Window:CreateSection("Inventory Toggles")
 	Window:CreateSwitch("Inventory", "Enable", "|cff00cc4c".."Enable Inventory")
@@ -153,7 +153,7 @@ local Inventory = function(self)
 end
 
 local Auras = function(self)
-	local Window = self:CreateWindow("Auras")
+	local Window = self:CreateWindow(L["Auras"])
 
 	Window:CreateSection("Aura Toggles")
 	Window:CreateSwitch("Auras", "Enable", "|cff00cc4c".."Enable Auras")
@@ -170,7 +170,7 @@ local Auras = function(self)
 end
 
 local Chat = function(self)
-	local Window = self:CreateWindow("Chat")
+	local Window = self:CreateWindow(L["Chat"])
 
 	Window:CreateSection("Chat Toggles")
 	Window:CreateSwitch("Chat", "Enable", "|cff00cc4c".."Enable Chat")
@@ -199,7 +199,7 @@ local Chat = function(self)
 end
 
 local DataBars = function(self)
-	local Window = self:CreateWindow("DataBars")
+	local Window = self:CreateWindow(L["DataBars"])
 
 	Window:CreateSection("DataBar Toggles")
 	Window:CreateSwitch("DataBars", "Enable", "|cff00cc4c".."Enable DataBars")
@@ -219,7 +219,7 @@ local DataBars = function(self)
 end
 
 local DataText = function(self)
-	local Window = self:CreateWindow("DataText")
+	local Window = self:CreateWindow(L["DataText"])
 
 	Window:CreateSection("DataText Toggles")
 	Window:CreateSwitch("DataText", "Currency", "Enable Currency Info")
@@ -232,7 +232,7 @@ local DataText = function(self)
 end
 
 local Filger = function(self)
-	local Window = self:CreateWindow("Filger")
+	local Window = self:CreateWindow(L["Filger"])
 
 	Window:CreateSection("Filger Toggles")
 	Window:CreateSwitch("Filger", "Enable", "|cff00cc4c".."Enable Filger")
@@ -260,7 +260,7 @@ local Filger = function(self)
 end
 
 local General = function(self)
-	local Window = self:CreateWindow("General", true)
+	local Window = self:CreateWindow(L["General"], true)
 
 	Window:CreateSection("General Toggles")
 	Window:CreateSwitch("General", "AutoScale", "Auto Scale")
@@ -281,7 +281,7 @@ local General = function(self)
 end
 
 local Loot = function(self)
-	local Window = self:CreateWindow("Loot")
+	local Window = self:CreateWindow(L["Loot"])
 
 	Window:CreateSection("Loot Toggles")
 	Window:CreateSwitch("Loot", "Enable", "|cff00cc4c".."Enable Loot")
@@ -293,7 +293,7 @@ local Loot = function(self)
 end
 
 local Minimap = function(self)
-	local Window = self:CreateWindow("Minimap")
+	local Window = self:CreateWindow(L["Minimap"])
 
 	Window:CreateSection("Minimap Toggles")
 	Window:CreateSwitch("Minimap", "Enable", "|cff00cc4c".."Enable Minimap")
@@ -307,7 +307,7 @@ local Minimap = function(self)
 end
 
 local Misc = function(self)
-	local Window = self:CreateWindow("Misc")
+	local Window = self:CreateWindow(L["Misc"])
 
 	Window:CreateSection("Misc Toggles")
 	Window:CreateSwitch("Misc", "AFKCamera", "AFK Camera")
@@ -325,7 +325,7 @@ local Misc = function(self)
 end
 
 local Nameplate = function(self)
-	local Window = self:CreateWindow("Nameplate")
+	local Window = self:CreateWindow(L["Nameplate"])
 
 	Window:CreateSection("Nameplate Toggles")
 	Window:CreateSwitch("Nameplate", "Enable", "|cff00cc4c".."Enable Nameplates")
@@ -375,7 +375,7 @@ local Nameplate = function(self)
 end
 
 local PulseCooldown = function(self)
-	local Window = self:CreateWindow("PulseCooldown")
+	local Window = self:CreateWindow(L["PulseCooldown"])
 
 	Window:CreateSection("PulseCooldown Toggles")
 	Window:CreateSwitch("PulseCooldown", "Enable", "|cff00cc4c".."Enable PulseCooldown")
@@ -389,7 +389,7 @@ local PulseCooldown = function(self)
 end
 
 local Skins = function(self)
-	local Window = self:CreateWindow("Skins")
+	local Window = self:CreateWindow(L["Skins"])
 
 	Window:CreateSection("Skins Toggles")
 
@@ -410,7 +410,7 @@ local Skins = function(self)
 end
 
 local Tooltip = function(self)
-	local Window = self:CreateWindow("Tooltip")
+	local Window = self:CreateWindow(L["Tooltip"])
 
 	Window:CreateSection("Tooltip Toggles")
 	Window:CreateSwitch("Tooltip", "ClassColor", "Quality Color Border")
@@ -429,7 +429,7 @@ local Tooltip = function(self)
 end
 
 local UIFonts = function(self)
-	local Window = self:CreateWindow("UIFonts")
+	local Window = self:CreateWindow(L["UIFonts"])
 
 	Window:CreateSection("UI Fonts")
 
@@ -450,7 +450,7 @@ local UIFonts = function(self)
 end
 
 local UITextures = function(self)
-	local Window = self:CreateWindow("UITextures")
+	local Window = self:CreateWindow(L["UITextures"])
 
 	Window:CreateSection("UI Textures")
 
@@ -467,7 +467,7 @@ local UITextures = function(self)
 end
 
 local Unitframe = function(self)
-	local Window = self:CreateWindow("Unitframe")
+	local Window = self:CreateWindow(L["Unitframe"])
 
 	Window:CreateSection("Unitframe Toggles")
 	Window:CreateSwitch("Unitframe", "CastClassColor", "Class Color Castbars")
@@ -525,7 +525,7 @@ local Unitframe = function(self)
 end
 
 local Party = function(self)
-	local Window = self:CreateWindow("Party")
+	local Window = self:CreateWindow(L["Party"])
 
 	Window:CreateSection("Party Toggles")
 	Window:CreateSwitch("Party", "Enable", "|cff00cc4c".."Enable Party")
@@ -543,7 +543,7 @@ local Party = function(self)
 end
 
 local Boss = function(self)
-	local Window = self:CreateWindow("Boss")
+	local Window = self:CreateWindow(L["Boss"])
 
 	Window:CreateSection("Boss Toggles")
 	Window:CreateSwitch("Boss", "Enable", "|cff00cc4c".."Enable Boss", "Toggle Boss Module On/Off")
@@ -555,7 +555,7 @@ local Boss = function(self)
 end
 
 local Arena = function(self)
-	local Window = self:CreateWindow("Arena")
+	local Window = self:CreateWindow(L["Arena"])
 
 	Window:CreateSection("Arena Toggles")
 	Window:CreateSwitch("Arena", "Enable", "|cff00cc4c".."Enable Arena")
@@ -567,7 +567,7 @@ local Arena = function(self)
 end
 
 local Raid = function(self)
-	local Window = self:CreateWindow("Raid")
+	local Window = self:CreateWindow(L["Raid"])
 
 	Window:CreateSection("Raid Toggles")
 	Window:CreateSwitch("Raid", "Enable", "|cff00cc4c".."Enable Raidframes")
@@ -602,7 +602,7 @@ local QuestNotifier = function(self)
 		return
 	end
 
-	local Window = self:CreateWindow("QuestNotifier")
+	local Window = self:CreateWindow(L["QuestNotifier"])
 
 	Window:CreateSection("QuestNotifier Toggles")
 	Window:CreateSwitch("QuestNotifier", "Enable", "|cff00cc4c".."Enable QuestNotifier")
@@ -611,7 +611,7 @@ local QuestNotifier = function(self)
 end
 
 local WorldMap = function(self)
-	local Window = self:CreateWindow("WorldMap")
+	local Window = self:CreateWindow(L["WorldMap"])
 
 	Window:CreateSection("WorldMap Toggles")
 	Window:CreateSwitch("WorldMap", "Coordinates", "Show Player/Mouse Coordinates")

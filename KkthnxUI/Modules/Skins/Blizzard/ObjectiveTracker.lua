@@ -15,7 +15,7 @@ local function AffixesSetup(self)
 		if not frame.bg then
 			frame.Portrait:SetTexCoord(unpack(K.TexCoords))
 			frame.bg = CreateFrame("Frame", nil, frame)
-			frame.bg:SetFrameLevel(bar:GetFrameLevel())
+			frame.bg:SetFrameLevel(frame:GetFrameLevel())
 			frame.bg:SetAllPoints(frame.Portrait)
 			frame.bg:CreateBorder()
 		end
@@ -72,6 +72,11 @@ local function ReskinObjectiveTracker()
 		headerBG:SetVertexColor(colorR, colorG, colorB, 0.8)
 		headerBG:SetPoint("BOTTOMLEFT", 0, -4)
 		headerBG:SetSize(250, 30)
+
+		local text = header.Text
+		text:SetFontObject(K.GetFont(C["UIFonts"].QuestTrackerFonts))
+		text:SetFont(select(1, text:GetFont()), 13, select(3, text:GetFont()))
+		text:SetParent(header)
 	end
 
 	local headers = {
