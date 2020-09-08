@@ -6,10 +6,11 @@ local floor = _G.math.floor
 local format = _G.string.format
 
 local CreateFrame = _G.CreateFrame
-local hooksecurefunc = _G.hooksecurefunc
-local UnitAlternatePowerInfo = _G.UnitAlternatePowerInfo
-local UnitPowerMax = _G.UnitPowerMax
+local GameTooltip = _G.GameTooltip
+local GetUnitPowerBarInfo = _G.GetUnitPowerBarInfo
+local GetUnitPowerBarStrings = _G.GetUnitPowerBarStrings
 local UnitPower = _G.UnitPower
+local UnitPowerMax = _G.UnitPowerMax
 
 local statusBarColor = {r = 0.2, g = 0.4, b = 0.8}
 local statusWidth = 250
@@ -18,14 +19,14 @@ local statusBar = K.GetTexture(C["UITextures"].GeneralTextures)
 local font = K.GetFont(C["UIFonts"].GeneralFonts)
 
 local function updateTooltip(self)
-	if _G.GameTooltip:IsForbidden() then
+	if GameTooltip:IsForbidden() then
 		return
 	end
 
 	if self.powerName and self.powerTooltip then
-		_G.GameTooltip:SetText(self.powerName, 1, 1, 1)
-		_G.GameTooltip:AddLine(self.powerTooltip, nil, nil, nil, 1)
-		_G.GameTooltip:Show()
+		GameTooltip:SetText(self.powerName, 1, 1, 1)
+		GameTooltip:AddLine(self.powerTooltip, nil, nil, nil, 1)
+		GameTooltip:Show()
 	end
 end
 
@@ -34,21 +35,17 @@ local function onEnter(self)
 		return
 	end
 
-	_G.GameTooltip:ClearAllPoints()
-	_G.GameTooltip_SetDefaultAnchor(_G.GameTooltip, self)
+	GameTooltip:ClearAllPoints()
+	GameTooltip_SetDefaultAnchor(_G.GameTooltip, self)
 	updateTooltip(self)
 end
 
 local function onLeave()
-	_G.GameTooltip:Hide()
+	GameTooltip:Hide()
 end
 
 function Module:SetAltPowerBarText(text, name, value, max)
-	text:SetText(format('%s: %s / %s', name, value, max))
-end
-
-function Module:PositionAltPower()
-	self:SetPoint("CENTER", _G.AltPowerBarHolder, "CENTER")
+	text:SetText(format("%s: %s / %s", name, value, max))
 end
 
 function Module:PositionAltPowerBar()
@@ -59,19 +56,15 @@ function Module:PositionAltPowerBar()
 	_G.PlayerPowerBarAlt:ClearAllPoints()
 	_G.PlayerPowerBarAlt:SetPoint("CENTER", holder, "CENTER")
 	_G.PlayerPowerBarAlt:SetParent(holder)
-	_G.PlayerPowerBarAlt.ignoreFramePositionManager = true
-
-	-- The Blizzard function FramePositionDelegate:UIParentManageFramePositions()
-	-- calls :ClearAllPoints on PlayerPowerBarAlt under certain conditions.
-	-- Doing ".ClearAllPoints = K.Noop" causes error when you enter combat.
-	hooksecurefunc(_G.PlayerPowerBarAlt, "ClearAllPoints", Module.PositionAltPower)
+	_G.PlayerPowerBarAlt:SetMovable(true)
+	_G.PlayerPowerBarAlt:SetUserPlaced(true)
+	_G.UIPARENT_MANAGED_FRAME_POSITIONS.PlayerPowerBarAlt = nil
 
 	K.Mover(holder, "PlayerPowerBarAlt", "Alternative Power", {"TOP", UIParent, "TOP", 0, -46}, statusWidth or 250, statusHeight or 20)
 end
 
 function Module:UpdateAltPowerBarColors()
-	local bar = _G.KKUI_AltPowerBar
-	bar:SetStatusBarColor(statusBarColor.r, statusBarColor.g, statusBarColor.b)
+	_G.KKUI_AltPowerBar:SetStatusBarColor(statusBarColor.r, statusBarColor.g, statusBarColor.b)
 end
 
 function Module:UpdateAltPowerBarSettings()
@@ -89,8 +82,9 @@ function Module:UpdateAltPowerBar()
 	_G.PlayerPowerBarAlt:UnregisterAllEvents()
 	_G.PlayerPowerBarAlt:Hide()
 
-	local barType, min, _, _, _, _, _, _, _, _, powerName, powerTooltip = UnitAlternatePowerInfo("player")
-	if barType then
+	local barInfo = GetUnitPowerBarInfo("player");
+	local powerName, powerTooltip = GetUnitPowerBarStrings("player");
+	if barInfo then
 		local power = UnitPower("player", _G.ALTERNATE_POWER_INDEX)
 		local maxPower = UnitPowerMax("player", _G.ALTERNATE_POWER_INDEX) or 0
 		local perc = (maxPower > 0 and floor(power / maxPower * 100)) or 0
@@ -102,8 +96,14 @@ function Module:UpdateAltPowerBar()
 		self.powerValue = power
 
 		self:Show()
-		self:SetMinMaxValues(min, maxPower)
+		self:SetMinMaxValues(barInfo.minPower, maxPower)
 		self:SetValue(power)
+
+		if barInfo.ID == 554 then -- Sanity 8.3: N"Zoth Eye
+			self.textures:Show()
+		else
+			self.textures:Hide()
+		end
 
 		Module:SetAltPowerBarText(self.text, powerName or "", power or 0, maxPower, perc)
 	else
@@ -113,6 +113,7 @@ function Module:UpdateAltPowerBar()
 		self.powerTooltip = nil
 		self.powerValue = nil
 
+		self.textures:Hide()
 		self:Hide()
 	end
 end
@@ -132,6 +133,33 @@ function Module:SkinAltPowerBar()
 	powerbar.text:SetPoint("CENTER", powerbar, "CENTER")
 	powerbar.text:SetJustifyH("CENTER")
 
+	do -- NZoth textures
+		local texTop = powerbar:CreateTexture(nil, "OVERLAY")
+		local texBotomLeft = powerbar:CreateTexture(nil, "OVERLAY")
+		local texBottomRight = powerbar:CreateTexture(nil, "OVERLAY")
+
+		powerbar.textures = {
+			TOP = texTop, BOTTOMLEFT = texBotomLeft, BOTTOMRIGHT = texBottomRight,
+			Show = function()
+				texTop:Show()
+				texBotomLeft:Show()
+				texBottomRight:Show()
+			end,
+			Hide = function()
+				texTop:Hide()
+				texBotomLeft:Hide()
+				texBottomRight:Hide()
+			end,
+		}
+
+		texTop:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\NZothTop]])
+		texTop:SetPoint("CENTER", powerbar, "TOP", 0, -19)
+		texBotomLeft:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\NZothBottomLeft]])
+		texBotomLeft:SetPoint("BOTTOMLEFT", powerbar, "BOTTOMLEFT", -7, -10)
+		texBottomRight:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\NZothBottomRight]])
+		texBottomRight:SetPoint("BOTTOMRIGHT", powerbar, "BOTTOMRIGHT", 7, -10)
+	end
+
 	Module:UpdateAltPowerBarSettings()
 	Module:UpdateAltPowerBarColors()
 
@@ -139,7 +167,6 @@ function Module:SkinAltPowerBar()
 	powerbar:RegisterEvent("UNIT_POWER_UPDATE")
 	powerbar:RegisterEvent("UNIT_POWER_BAR_SHOW")
 	powerbar:RegisterEvent("UNIT_POWER_BAR_HIDE")
-	powerbar:RegisterEvent("PLAYER_TARGET_CHANGED")
 	powerbar:RegisterEvent("PLAYER_ENTERING_WORLD")
 	powerbar:SetScript("OnEvent", Module.UpdateAltPowerBar)
 end

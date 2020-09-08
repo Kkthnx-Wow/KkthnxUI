@@ -15,5 +15,4 @@
    <Script file="Elements\ScreenShot.lua" />
    <Script file="Elements\SetRole.lua" />
    <Script file="Elements\TabBinder.lua" />
-   <Script file="Elements\WhisperInvite.lua" />
 </Ui>

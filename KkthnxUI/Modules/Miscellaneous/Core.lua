@@ -147,26 +147,6 @@ do
 	_G.SLASH_KKUI_TOGGLEGRID3 = "/grid"
 end
 
-function Module:CreateAutoDismount()
-	-- if not C["Misc"]["AutoDismount"] then return end
-
-	local dismountString = {
-		[ERR_ATTACK_MOUNTED] = true,
-		[ERR_NOT_WHILE_MOUNTED] = true,
-		[ERR_TAXIPLAYERALREADYMOUNTED] = true,
-		[SPELL_FAILED_NOT_MOUNTED] = true,
-	}
-
-	local function updateEvent(_, ...)
-		local _, msg = ...
-		if dismountString[msg] then
-			Dismount()
-		end
-	end
-
-	K:RegisterEvent("UI_ERROR_MESSAGE", updateEvent)
-end
-
 -- Auto chatBubbles
 do
 	local function updateBubble()
@@ -186,6 +166,27 @@ do
 		end
 	end
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
+end
+
+-- Hide Bossbanner
+function Module:CreateBossBanner()
+	if C["Misc"].HideBanner and not C["Misc"].KillingBlow then
+		BossBanner:UnregisterAllEvents()
+	else
+		BossBanner:RegisterEvent("BOSS_KILL")
+		BossBanner:RegisterEvent("ENCOUNTER_LOOT_RECEIVED")
+	end
+end
+
+-- Hide boss emote
+function Module:CreateBossEmote()
+	if C["Misc"].HideBossEmote then
+		RaidBossEmoteFrame:UnregisterAllEvents()
+	else
+		RaidBossEmoteFrame:RegisterEvent("RAID_BOSS_EMOTE")
+		RaidBossEmoteFrame:RegisterEvent("RAID_BOSS_WHISPER")
+		RaidBossEmoteFrame:RegisterEvent("CLEAR_BOSS_EMOTES")
+	end
 end
 
 -- TradeFrame hook
@@ -547,8 +548,9 @@ end
 
 function Module:OnEnable()
 	self:CreateAFKCam()
-	-- self:CreateAutoDismount()
 	self:CreateBlockStrangerInvites()
+	self:CreateBossBanner()
+	self:CreateBossEmote()
 	self:CreateChatBubbles()
 	self:CreateDurabilityFrame()
 	self:CreateImprovedMail()

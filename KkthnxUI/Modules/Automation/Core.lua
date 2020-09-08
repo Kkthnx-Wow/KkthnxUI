@@ -12,5 +12,4 @@ function Module:OnEnable()
     self:CreateAutoScreenShot()
     self:CreateAutoSetRole()
     self:CreateAutoTabBinder()
-    self:CreateAutoWhisperInvite()
 end
