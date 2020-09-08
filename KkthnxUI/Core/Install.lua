@@ -25,8 +25,8 @@ function Module:ResetInstallData()
 		KkthnxUISettingsPerCharacter[K.Realm][K.Name] = {}
 	end
 
-	if KkthnxUIData[K.Realm][K.Name].Mover then
-		KkthnxUIData[K.Realm][K.Name].Mover = {}
+	if KkthnxUIData[K.Realm][K.Name]["Mover"] then
+		KkthnxUIData[K.Realm][K.Name]["Mover"] = {}
 	end
 end
 
