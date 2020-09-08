@@ -38,19 +38,19 @@ function Module:CreateTargetOfTarget()
 	self.Health.frequentUpdates = true
 
 	if C["Unitframe"].HealthbarColor.Value == "Value" then
-        self.Health.colorSmooth = true
-        self.Health.colorClass = false
-        self.Health.colorReaction = false
-    elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
-        self.Health.colorSmooth = false
-        self.Health.colorClass = false
-        self.Health.colorReaction = false
-        self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
-    else
-        self.Health.colorSmooth = false
-        self.Health.colorClass = true
-        self.Health.colorReaction = true
-    end
+		self.Health.colorSmooth = true
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+	elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
+		self.Health.colorSmooth = false
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+		self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
+	else
+		self.Health.colorSmooth = false
+		self.Health.colorClass = true
+		self.Health.colorReaction = true
+	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
@@ -68,15 +68,17 @@ function Module:CreateTargetOfTarget()
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
 
-	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOM", self.Power, 0, -16)
-	self.Name:SetWidth(81 * 0.96)
-	self.Name:SetFontObject(UnitframeFont)
-	self.Name:SetWordWrap(false)
-	if C["Unitframe"].HealthbarColor.Value == "Class" then
-		self:Tag(self.Name, "[name]")
-	else
-		self:Tag(self.Name, "[color][name]")
+	if C["Unitframe"].TargetOfTargetName then
+		self.Name = self:CreateFontString(nil, "OVERLAY")
+		self.Name:SetPoint("BOTTOM", self.Power, 0, -16)
+		self.Name:SetWidth(81 * 0.96)
+		self.Name:SetFontObject(UnitframeFont)
+		self.Name:SetWordWrap(false)
+		if C["Unitframe"].HealthbarColor.Value == "Class" then
+			self:Tag(self.Name, "[name]")
+		else
+			self:Tag(self.Name, "[color][name]")
+		end
 	end
 
 	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
@@ -104,14 +106,20 @@ function Module:CreateTargetOfTarget()
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT", -self.Portrait:GetWidth() - 6, 0)
 
-	self.Level = self:CreateFontString(nil, "OVERLAY")
-	self.Level:SetPoint("BOTTOM", self.Portrait, 0, -16)
-	self.Level:SetFontObject(UnitframeFont)
-	self:Tag(self.Level, "[fulllevel]")
+	if C["Unitframe"].TargetOfTargetLevel then
+		self.Level = self:CreateFontString(nil, "OVERLAY")
+		self.Level:SetPoint("BOTTOM", self.Portrait, 0, -16)
+		self.Level:SetFontObject(UnitframeFont)
+		self:Tag(self.Level, "[fulllevel]")
+	end
 
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 	self.Debuffs:SetWidth(82)
-	self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -20)
+	if C["Unitframe"].TargetOfTargetName and C["Unitframe"].TargetOfTargetLevel then
+		self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -20)
+	else
+		self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+	end
 	self.Debuffs.num = 4 * 4
 	self.Debuffs.spacing = 6
 	self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num / 4 - 1))) / self.Debuffs.num)) * 4)

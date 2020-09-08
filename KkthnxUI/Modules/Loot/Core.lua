@@ -339,7 +339,6 @@ function Module:OnEnable()
 
 	self:CreateAutoConfirm()
 	self:CreateAutoGreed()
-	self:CreateAutoQuestLoot()
 	self:CreateFasterLoot()
 	self:CreateGroupLoot()
 	self:CreateImprovedLoot()

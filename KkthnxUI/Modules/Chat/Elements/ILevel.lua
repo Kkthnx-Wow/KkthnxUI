@@ -10,12 +10,23 @@ local string_rep = _G.string.rep
 local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
 local GetItemInfo = _G.GetItemInfo
 local GetItemStats = _G.GetItemStats
-local IsCorruptedItem = _G.IsCorruptedItem
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
 local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
 
 local itemCache = {}
-local corruptedString = "|T3004126:0:0:0:0:64:64:5:59:5:59|t"
+
+local socketWatchList = {
+	["BLUE"] = true,
+	["RED"] = true,
+	["YELLOW"] = true,
+	["COGWHEEL"] = true,
+	["HYDRAULIC"] = true,
+	["META"] = true,
+	["PRISMATIC"] = true,
+	["PUNCHCARDBLUE"] = true,
+	["PUNCHCARDRED"] = true,
+	["PUNCHCARDYELLOW"] = true,
+}
 
 -- Show itemlevel on chat hyperlinks
 local function isItemHasLevel(link)
@@ -35,16 +46,12 @@ local function isItemHasGem(link)
 	local stats = GetItemStats(link)
 	for stat, count in pairs(stats) do
 		local socket = string_match(stat, "EMPTY_SOCKET_(%S+)")
-		if socket then
+		if socket and socketWatchList[socket] then
 			text = text..GetSocketTexture(socket, count)
 		end
 	end
 
 	return text
-end
-
-local function isItemCorrupted(link)
-	return IsCorruptedItem(link) and corruptedString or ""
 end
 
 local function convertItemLevel(link)
@@ -56,7 +63,7 @@ local function convertItemLevel(link)
 	if itemLink then
 		local name, itemLevel = isItemHasLevel(itemLink)
 		if name and itemLevel then
-			link = string_gsub(link, "|h%[(.-)%]|h", "|h["..name.."("..itemLevel..")]|h"..isItemCorrupted(itemLink)..isItemHasGem(itemLink))
+			link = string_gsub(link, "|h%[(.-)%]|h", "|h["..name.."("..itemLevel..")]|h"..isItemHasGem(itemLink))
 			itemCache[link] = link
 		end
 	end

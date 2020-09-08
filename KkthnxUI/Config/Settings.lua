@@ -228,7 +228,6 @@ C["Loot"] = {
 	["Enable"] = true,
 	["FastLoot"] = false,
 	["GroupLoot"] = true,
-	["OnlyLootQuestItems"] = false,
 }
 
 -- Minimap
@@ -431,6 +430,8 @@ C["Unitframe"] = {
 	["HotsDots"] = true,
 	["OnlyShowPlayerDebuff"] = false,
 	["PetCombatText"] = true,
+	["TargetOfTargetName"] = true,
+	["TargetOfTargetLevel"] = true,
 	["PlayerBuffs"] = false,
 	["PlayerCastbarHeight"] = 24,
 	["PlayerCastbarWidth"] = 260,
