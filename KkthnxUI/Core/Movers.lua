@@ -31,12 +31,6 @@ local updater
 function K:Mover(text, value, anchor, width, height)
 	local key = "Mover"
 
-	K:VerifyData()
-
-	if KkthnxUIData[GetRealmName()][UnitName("player")] and not KkthnxUIData[GetRealmName()][UnitName("player")][key] then
-		KkthnxUIData[GetRealmName()][UnitName("player")][key] = {}
-	end
-
 	local mover = CreateFrame("Button", nil, UIParent)
 	mover:SetFrameLevel(self:GetFrameLevel() + 1)
 	mover:SetWidth(width or self:GetWidth())

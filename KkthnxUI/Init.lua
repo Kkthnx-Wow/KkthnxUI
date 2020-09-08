@@ -185,7 +185,7 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	K.Modules = modules
 end)
 
-function K:VerifyData()
+local function CreateSavedVariables()
 	if (not KkthnxUIData) then
 		KkthnxUIData = {}
 	end
@@ -222,8 +222,8 @@ function K:VerifyData()
 		KkthnxUIData[K.Realm][K.Name].CustomJunkList = {}
 	end
 
-	if (not KkthnxUIData[K.Realm][K.Name].Mover) then
-		KkthnxUIData[K.Realm][K.Name].Mover = {}
+	if (not KkthnxUIData[K.Realm][K.Name]["Mover"]) then
+		KkthnxUIData[K.Realm][K.Name]["Mover"] = {}
 	end
 
 	if (not KkthnxUIData[K.Realm][K.Name].TempAnchor) then
@@ -239,7 +239,7 @@ function K:VerifyData()
 	end
 end
 
-function K:StoreDefaults()
+local function StoreDefaults()
 	K.Defaults = {}
 
 	for group, options in pairs(C) do
@@ -263,7 +263,7 @@ function K:StoreDefaults()
 	end
 end
 
-function K:LoadCustomSettings()
+local function LoadCustomSettings()
 	local Settings
 
 	if (not KkthnxUISettingsPerCharacter) then
@@ -333,9 +333,9 @@ K:RegisterEvent("ADDON_LOADED", function(_, addon)
 	end
 
 	-- Add SavedVariables
-	K:VerifyData()
-	K:StoreDefaults()
-	K:LoadCustomSettings()
+	CreateSavedVariables()
+	StoreDefaults()
+	LoadCustomSettings()
 
 	-- Enable GUI
 	K["GUI"]:Enable()
