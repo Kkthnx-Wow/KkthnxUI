@@ -8,7 +8,6 @@ local unpack = _G.unpack
 local CANCEL = _G.CANCEL
 local CreateFrame = _G.CreateFrame
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
-local GetRealmName = _G.GetRealmName
 local InCombatLockdown = _G.InCombatLockdown
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsModifierKeyDown = _G.IsModifierKeyDown
@@ -22,7 +21,6 @@ local SOUNDKIT = _G.SOUNDKIT
 local StaticPopup_Show = _G.StaticPopup_Show
 local UIErrorsFrame = _G.UIErrorsFrame
 local UIParent = _G.UIParent
-local UnitName = _G.UnitName
 
 -- Frame Mover
 local MoverList, f = {}
@@ -30,6 +28,10 @@ local updater
 
 function K:Mover(text, value, anchor, width, height)
 	local key = "Mover"
+
+	if not KkthnxUIData[K.Realm][K.Name][key] then
+		KkthnxUIData[K.Realm][K.Name][key] = {}
+	end
 
 	local mover = CreateFrame("Button", nil, UIParent)
 	mover:SetFrameLevel(self:GetFrameLevel() + 1)
@@ -49,10 +51,10 @@ function K:Mover(text, value, anchor, width, height)
 	mover.text:SetText(text)
 	mover.text:SetWidth(mover:GetWidth())
 
-	if not KkthnxUIData[GetRealmName()][UnitName("player")][key][value] then
+	if not KkthnxUIData[K.Realm][K.Name][key][value] then
 		mover:SetPoint(unpack(anchor))
 	else
-		mover:SetPoint(unpack(KkthnxUIData[GetRealmName()][UnitName("player")][key][value]))
+		mover:SetPoint(unpack(KkthnxUIData[K.Realm][K.Name][key][value]))
 	end
 
 	mover:EnableMouse(true)
@@ -132,7 +134,7 @@ function Module:DoTrim(trimX, trimY)
 		f.__y.__current = y
 		mover:ClearAllPoints()
 		mover:SetPoint(point, UIParent, point, x, y)
-		KkthnxUIData[GetRealmName()][UnitName("player")][mover.__key][mover.__value] = {point, "UIParent", point, x, y}
+		KkthnxUIData[K.Realm][K.Name][mover.__key][mover.__value] = {point, "UIParent", point, x, y}
 	end
 end
 
@@ -142,7 +144,7 @@ function Module:Mover_OnClick(btn)
 	elseif IsControlKeyDown() and btn == "RightButton" then
 		self:ClearAllPoints()
 		self:SetPoint(unpack(self.__anchor))
-		KkthnxUIData[GetRealmName()][UnitName("player")][self.__key][self.__value] = nil
+		KkthnxUIData[K.Realm][K.Name][self.__key][self.__value] = nil
 	end
 
 	updater.__owner = self
@@ -174,7 +176,7 @@ function Module:Mover_OnDragStop()
 
 	self:ClearAllPoints()
 	self:SetPoint(orig, "UIParent", tar, x, y)
-	KkthnxUIData[GetRealmName()][UnitName("player")][self.__key][self.__value] = {orig, "UIParent", tar, x, y}
+	KkthnxUIData[K.Realm][K.Name][self.__key][self.__value] = {orig, "UIParent", tar, x, y}
 	Module.UpdateTrimFrame(self)
 	updater:Hide()
 end
@@ -205,7 +207,7 @@ _G.StaticPopupDialogs["RESET_MOVER"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function()
-		table_wipe(KkthnxUIData[GetRealmName()][UnitName("player")]["Mover"])
+		table_wipe(KkthnxUIData[K.Realm][K.Name]["Mover"])
 		_G.ReloadUI()
 	end,
 }

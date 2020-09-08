@@ -222,8 +222,8 @@ local function CreateSavedVariables()
 		KkthnxUIData[K.Realm][K.Name].CustomJunkList = {}
 	end
 
-	if (not KkthnxUIData[K.Realm][K.Name]["Mover"]) then
-		KkthnxUIData[K.Realm][K.Name]["Mover"] = {}
+	if (not KkthnxUIData[K.Realm][K.Name].Mover) then
+		KkthnxUIData[K.Realm][K.Name].Mover = {}
 	end
 
 	if (not KkthnxUIData[K.Realm][K.Name].TempAnchor) then
