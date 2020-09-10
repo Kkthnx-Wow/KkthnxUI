@@ -371,9 +371,96 @@ end
 
 GUI.Widgets.CreateSwitch = CreateSwitch
 
+local EditBoxOnEnter = function(self)
+	self.Highlight:SetAlpha(WidgetHighlightAlpha)
+end
+
+local EditBoxOnLeave = function(self)
+	self.Highlight:SetAlpha(0)
+end
+
+local EditBoxOnEnterPressed = function(self)
+	local Value = self:GetText()
+
+	if (type(tonumber(Value)) == "number") then -- Assume we want a number, not a string
+		Value = tonumber(Value)
+	end
+
+	SetValue(self.Group, self.Option, Value)
+
+	if self.Hook then
+		self.Hook(Value, self.Group)
+	end
+
+	self:SetAutoFocus(false)
+	self:ClearFocus()
+end
+
+local EditBoxOnEscapePressed = function(self)
+	self:SetText(self.Value)
+
+	self:SetAutoFocus(false)
+	self:ClearFocus()
+end
+
+local EditBoxWidth = 134
+local CreateEditBox = function(self, group, option, text, hook)
+	local Value = C[group][option]
+
+	local Anchor = CreateFrame("Frame", nil, self)
+	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
+
+	local EditBox = CreateFrame("Frame", nil, Anchor)
+	EditBox:SetPoint("LEFT", Anchor, 0, 0)
+	EditBox:SetSize(EditBoxWidth, WidgetHeight)
+	EditBox:CreateBorder()
+
+	EditBox.Highlight = EditBox:CreateTexture(nil, "OVERLAY")
+	EditBox.Highlight:SetAllPoints()
+	EditBox.Highlight:SetTexture(Texture)
+	EditBox.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	EditBox.Highlight:SetAlpha(0)
+
+	EditBox.Label = EditBox:CreateFontString(nil, "OVERLAY")
+	EditBox.Label:SetPoint("LEFT", EditBox, "RIGHT", LabelSpacing, 0)
+	EditBox.Label:SetWidth(WidgetListWidth - (EditBoxWidth + EditBoxWidth) - (Spacing * 5))
+	EditBox.Label:SetJustifyH("LEFT")
+	StyleFont(EditBox.Label, Font, 12)
+	EditBox.Label:SetText(text)
+
+	EditBox.Box = CreateFrame("EditBox", nil, EditBox)
+	StyleFont(EditBox.Box, Font, 12)
+	EditBox.Box:SetPoint("TOPLEFT", EditBox, 0, 0)
+	EditBox.Box:SetPoint("BOTTOMRIGHT", EditBox, 0, 0)
+	EditBox.Box:SetJustifyH("CENTER")
+	EditBox.Box:SetMaxLetters(999)
+	EditBox.Box:SetAutoFocus(false)
+	EditBox.Box:EnableKeyboard(true)
+	EditBox.Box:EnableMouse(true)
+	EditBox.Box:EnableMouseWheel(true)
+	EditBox.Box:SetText(Value)
+	EditBox.Box:SetScript("OnEnterPressed", EditBoxOnEnterPressed)
+	EditBox.Box:SetScript("OnEscapePressed", EditBoxOnEscapePressed)
+	EditBox.Box:SetScript("OnEnter", EditBoxOnEnter)
+	EditBox.Box:SetScript("OnLeave", EditBoxOnLeave)
+
+	EditBox.Box.Group = group
+	EditBox.Box.Option = option
+	EditBox.Box.Value = Value
+	EditBox.Box.Hook = hook
+	EditBox.Box.Parent = EditBox
+	EditBox.Box.Highlight = EditBox.Highlight
+
+	tinsert(self.Widgets, Anchor)
+
+	return EditBox
+end
+
+GUI.Widgets.CreateEditBox = CreateEditBox
+
 -- Sliders
 local SliderWidth = 84
-local EditboxWidth = 46
+local SliderEditBoxWidth = 46
 
 local Round = function(num, dec)
 	local Mult = 10 ^ (dec or 0)
@@ -381,11 +468,11 @@ local Round = function(num, dec)
 	return floor(num * Mult + 0.5) / Mult
 end
 
-local EditBoxOnEnter = function(self)
+local SliderEditBoxOnEnter = function(self)
 	self.Highlight:SetAlpha(WidgetHighlightAlpha)
 end
 
-local EditBoxOnLeave = function(self)
+local  SliderEditBoxOnLeave = function(self)
 	self.Highlight:SetAlpha(0)
 end
 
@@ -453,7 +540,7 @@ local SliderOnMouseWheel = function(self, delta)
 	self.EditBox:SetText(Value)
 end
 
-local EditBoxOnEnterPressed = function(self)
+local SliderEditBoxOnEnterPressed = function(self)
 	local Value = tonumber(self:GetText())
 
 	if (type(Value) ~= "number") then
@@ -469,7 +556,7 @@ local EditBoxOnEnterPressed = function(self)
 	self:ClearFocus()
 end
 
-local EditBoxOnChar = function(self)
+local SliderEditBoxOnChar = function(self)
 	local Value = tonumber(self:GetText())
 
 	if (type(Value) ~= "number") then
@@ -477,12 +564,12 @@ local EditBoxOnChar = function(self)
 	end
 end
 
-local EditBoxOnMouseDown = function(self)
+local SliderEditBoxOnMouseDown = function(self)
 	self:SetAutoFocus(true)
 	self:SetText(self.Value)
 end
 
-local EditBoxOnEditFocusLost = function(self)
+local SliderEditBoxOnEditFocusLost = function(self)
 	if (self.Value > self.MaxValue) then
 		self.Value = self.MaxValue
 	elseif (self.Value < self.MinValue) then
@@ -492,7 +579,7 @@ local EditBoxOnEditFocusLost = function(self)
 	self:SetText(self.Value)
 end
 
-local EditBoxOnMouseWheel = function(self, delta)
+local SliderEditBoxOnMouseWheel = function(self, delta)
 	if self:HasFocus() then
 		self:SetAutoFocus(false)
 		self:ClearFocus()
@@ -524,7 +611,7 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 
 	local EditBox = CreateFrame("Frame", nil, Anchor)
 	EditBox:SetPoint("LEFT", Anchor, 0, 0)
-	EditBox:SetSize(EditboxWidth, WidgetHeight)
+	EditBox:SetSize(SliderEditBoxWidth, WidgetHeight)
 	EditBox:CreateBorder()
 
 	EditBox.Highlight = EditBox:CreateTexture(nil, "OVERLAY")
@@ -544,14 +631,14 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 	EditBox.Box:EnableMouse(true)
 	EditBox.Box:EnableMouseWheel(true)
 	EditBox.Box:SetText(Value)
-	EditBox.Box:SetScript("OnMouseWheel", EditBoxOnMouseWheel)
-	EditBox.Box:SetScript("OnMouseDown", EditBoxOnMouseDown)
-	EditBox.Box:SetScript("OnEscapePressed", EditBoxOnEnterPressed)
-	EditBox.Box:SetScript("OnEnterPressed", EditBoxOnEnterPressed)
-	EditBox.Box:SetScript("OnEditFocusLost", EditBoxOnEditFocusLost)
-	EditBox.Box:SetScript("OnChar", EditBoxOnChar)
-	EditBox.Box:SetScript("OnEnter", EditBoxOnEnter)
-	EditBox.Box:SetScript("OnLeave", EditBoxOnLeave)
+	EditBox.Box:SetScript("OnMouseWheel", SliderEditBoxOnMouseWheel)
+	EditBox.Box:SetScript("OnMouseDown", SliderEditBoxOnMouseDown)
+	EditBox.Box:SetScript("OnEscapePressed", SliderEditBoxOnEnterPressed)
+	EditBox.Box:SetScript("OnEnterPressed", SliderEditBoxOnEnterPressed)
+	EditBox.Box:SetScript("OnEditFocusLost", SliderEditBoxOnEditFocusLost)
+	EditBox.Box:SetScript("OnChar", SliderEditBoxOnChar)
+	EditBox.Box:SetScript("OnEnter", SliderEditBoxOnEnter)
+	EditBox.Box:SetScript("OnLeave", SliderEditBoxOnLeave)
 	EditBox.Box.Group = group
 	EditBox.Box.Option = option
 	EditBox.Box.MinValue = minvalue
@@ -586,7 +673,7 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 
 	Slider.Label = Slider:CreateFontString(nil, "OVERLAY")
 	Slider.Label:SetPoint("LEFT", Slider, "RIGHT", LabelSpacing, 0)
-	Slider.Label:SetWidth(WidgetListWidth - (SliderWidth + EditboxWidth) - (Spacing * 5))
+	Slider.Label:SetWidth(WidgetListWidth - (SliderWidth + SliderEditBoxWidth) - (Spacing * 5))
 	Slider.Label:SetJustifyH("LEFT")
 	StyleFont(Slider.Label, Font, 12)
 	Slider.Label:SetText(text)

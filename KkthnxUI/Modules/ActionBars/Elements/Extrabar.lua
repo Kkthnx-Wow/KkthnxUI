@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K, _, L = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
 local FilterConfig = K.ActionBars.extraBar
 
@@ -25,7 +25,7 @@ function Module:CreateExtrabar()
 	local buttonList = {}
 
 	-- Create The Frame To Hold The Buttons
-	local frame = CreateFrame("Frame", "KkthnxUI_ExtraActionBar", UIParent, "SecureHandlerStateTemplate")
+	local frame = CreateFrame("Frame", "KKUI_ExtraActionBar", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
 	frame:SetHeight(FilterConfig.size + 2 * padding)
 	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 272, 34}
@@ -48,7 +48,7 @@ function Module:CreateExtrabar()
 
 	-- Create Drag Frame And Drag Functionality
 	if K.ActionBars.userPlaced then
-		frame.mover = K.Mover(frame, "Extrabar", "Extrabar", frame.Pos)
+		frame.mover = K.Mover(frame, L["Extrabar"], "Extrabar", frame.Pos)
 	end
 
 	-- create the mouseover functionality

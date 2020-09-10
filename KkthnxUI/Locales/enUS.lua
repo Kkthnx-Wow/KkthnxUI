@@ -3,10 +3,12 @@ local K, _, L = unpack(select(2, ...))
 -- ActionBar Locales
 L["Clear Binds"] = "|CFFFFCC66All keybinds cleared for|r %s"
 L["Discard KeyBinds"] = "Keybinds discarded."
+L["Extrabar"] = "Extra Actionbar"
 L["Key Binding"] = "Key"
 L["Key Bound To"] = "bound to"
 L["Key Index"] = "Index"
 L["Keybind Mode"] = "Hover, your mouse over any action button, to bind it. Press the escape key or right click to clear the current action button's keybinding."
+L["Main Actionbar"] = "Main Actionbar"
 L["No Key Set"] = "No key set"
 L["Save KeyBinds"] = "Keybinds saved."
 

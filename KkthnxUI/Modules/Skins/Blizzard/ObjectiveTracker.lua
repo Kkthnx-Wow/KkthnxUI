@@ -193,8 +193,10 @@ local function ReskinObjectiveTracker()
 			for _, bu in next, {widgetFrame.CurrencyContainer:GetChildren()} do
 				if bu and not bu.styled then
 					bu.Icon:SetTexCoord(unpack(K.TexCoords))
-					bu.Icon:CreateBorder()
-
+					bu.bg = CreateFrame("Frame", nil, bu)
+					bu.bg:SetAllPoints(bu.Icon)
+					bu.bg:SetFrameLevel(bu:GetFrameLevel())
+					bu.bg:CreateBorder(nil, nil, 10, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 					bu.styled = true
 				end
 			end

@@ -474,25 +474,6 @@ function Module:Install()
 	ChatFrame_AddChannel(ChatFrame4, TRADE)
 	ChatFrame_AddChannel(ChatFrame4, GENERAL)
 
-	-- if K.Realm == "Sethraliss" then
-	-- 	local isLocale = _G.GetLocale()
-	-- 	local UIErrorsFrame = _G.UIErrorsFrame
-
-	-- 	if isLocale == "enUS" then
-	-- 		UIErrorsFrame:AddMessage("Joining"..K.InfoColor.." world_en|r chat as you are Locale "..isLocale.." and you are on realm "..K.Realm)
-	-- 		ChatFrame_AddChannel(ChatFrame4, "world_en")
-	-- 	elseif isLocale == "frFR" then
-	-- 		UIErrorsFrame:AddMessage("Joining"..K.InfoColor.." world_fr|r chat as you are Locale "..isLocale.." and you are on realm "..K.Realm)
-	-- 		ChatFrame_AddChannel(ChatFrame4, "world_fr")
-	-- 	elseif isLocale == "esES" then
-	-- 		UIErrorsFrame:AddMessage("Joining"..K.InfoColor.." world_es|r chat as you are Locale "..isLocale.." and you are on realm "..K.Realm)
-	-- 		ChatFrame_AddChannel(ChatFrame4, "world_es")
-	-- 	elseif isLocale == "ruRU" then
-	-- 		UIErrorsFrame:AddMessage("Joining"..K.InfoColor.." world_ru|r chat as you are Locale "..isLocale.." and you are on realm "..K.Realm)
-	-- 		ChatFrame_AddChannel(ChatFrame4, "world_ru")
-	-- 	end
-	-- end
-
 	-- Loot
 	ChatFrame_RemoveAllMessageGroups(ChatFrame5)
 	ChatFrame_AddMessageGroup(ChatFrame5, "COMBAT_XP_GAIN")

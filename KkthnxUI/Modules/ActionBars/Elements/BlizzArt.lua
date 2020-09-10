@@ -84,10 +84,7 @@ function Module:HideBlizz()
 	end
 
 	for _, frame in next, framesToDisable do
-		if frame.UnregisterAllEvents then
-			frame:UnregisterAllEvents()
-		end
-
+		frame:UnregisterAllEvents()
 		DisableAllScripts(frame)
 	end
 

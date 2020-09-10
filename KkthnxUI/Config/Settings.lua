@@ -56,6 +56,7 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
+	["WhisperInvite"] = "inv+",
 	["AutoAcceptSummon"] = false,
 	["AutoCollapse"] = false,
 	["AutoDeclineDuels"] = false,
@@ -124,8 +125,8 @@ C["Auras"] = {
 
 -- Chat
 C["Chat"] = {
-	["Width"] = 380,
-	["Height"] = 190,
+	["Width"] = 370,
+	["Height"] = 185,
 	["Lock"] = true,
 	["AllowFriends"] = true,
 	["Background"] = true,

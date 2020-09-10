@@ -19,7 +19,7 @@ function Module:CreateBar5()
 	local buttonSize = C["ActionBar"].RightButtonSize
 
 	-- Create The Frame To Hold The Buttons
-	local frame = CreateFrame("Frame", "KkthnxUI_ActionBar5", UIParent, "SecureHandlerStateTemplate")
+	local frame = CreateFrame("Frame", "KKUI_ActionBar5", UIParent, "SecureHandlerStateTemplate")
 	if layout == "Four Stacked" then
 		frame:SetWidth(num * buttonSize + (num - 1) * margin + 2 * padding)
 		frame:SetHeight(buttonSize + 2 * padding)

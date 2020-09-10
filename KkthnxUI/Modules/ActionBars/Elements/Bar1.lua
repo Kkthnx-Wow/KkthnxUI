@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("ActionBar")
 local FilterConfig = K.ActionBars.actionBar1
 
@@ -80,7 +80,7 @@ function Module:OnEnable()
 
 	-- Create Drag Frame And Drag Functionality
 	if K.ActionBars.userPlaced then
-		frame.mover = K.Mover(frame, "Main Actionbar", "Bar1", frame.Pos)
+		frame.mover = K.Mover(frame, L["Main Actionbar"], "Bar1", frame.Pos)
 	end
 
 	if FilterConfig.fader then

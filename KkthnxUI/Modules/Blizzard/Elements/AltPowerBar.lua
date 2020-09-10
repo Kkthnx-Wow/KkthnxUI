@@ -99,12 +99,6 @@ function Module:UpdateAltPowerBar()
 		self:SetMinMaxValues(barInfo.minPower, maxPower)
 		self:SetValue(power)
 
-		if barInfo.ID == 554 then -- Sanity 8.3: N"Zoth Eye
-			self.textures:Show()
-		else
-			self.textures:Hide()
-		end
-
 		Module:SetAltPowerBarText(self.text, powerName or "", power or 0, maxPower, perc)
 	else
 		self.powerMaxValue = nil
@@ -113,7 +107,6 @@ function Module:UpdateAltPowerBar()
 		self.powerTooltip = nil
 		self.powerValue = nil
 
-		self.textures:Hide()
 		self:Hide()
 	end
 end
@@ -133,32 +126,12 @@ function Module:SkinAltPowerBar()
 	powerbar.text:SetPoint("CENTER", powerbar, "CENTER")
 	powerbar.text:SetJustifyH("CENTER")
 
-	do -- NZoth textures
-		local texTop = powerbar:CreateTexture(nil, "OVERLAY")
-		local texBotomLeft = powerbar:CreateTexture(nil, "OVERLAY")
-		local texBottomRight = powerbar:CreateTexture(nil, "OVERLAY")
-
-		powerbar.textures = {
-			TOP = texTop, BOTTOMLEFT = texBotomLeft, BOTTOMRIGHT = texBottomRight,
-			Show = function()
-				texTop:Show()
-				texBotomLeft:Show()
-				texBottomRight:Show()
-			end,
-			Hide = function()
-				texTop:Hide()
-				texBotomLeft:Hide()
-				texBottomRight:Hide()
-			end,
-		}
-
-		texTop:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\NZothTop]])
-		texTop:SetPoint("CENTER", powerbar, "TOP", 0, -19)
-		texBotomLeft:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\NZothBottomLeft]])
-		texBotomLeft:SetPoint("BOTTOMLEFT", powerbar, "BOTTOMLEFT", -7, -10)
-		texBottomRight:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\NZothBottomRight]])
-		texBottomRight:SetPoint("BOTTOMRIGHT", powerbar, "BOTTOMRIGHT", 7, -10)
-	end
+	powerbar.spark = powerbar:CreateTexture(nil, "OVERLAY")
+	powerbar.spark:SetWidth(64)
+	powerbar.spark:SetHeight(powerbar:GetHeight())
+	powerbar.spark:SetTexture(C["Media"].Spark_128)
+	powerbar.spark:SetBlendMode("ADD")
+	powerbar.spark:SetPoint("CENTER", powerbar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	Module:UpdateAltPowerBarSettings()
 	Module:UpdateAltPowerBarColors()

@@ -19,7 +19,7 @@ function Module:CreateBar3()
 	local buttonSize = C["ActionBar"].DefaultButtonSize
 
 	-- Create The Frame To Hold The Buttons
-	local frame = CreateFrame("Frame", "KkthnxUI_ActionBar3", UIParent, "SecureHandlerStateTemplate")
+	local frame = CreateFrame("Frame", "KKUI_ActionBar3", UIParent, "SecureHandlerStateTemplate")
 	if layout == "3x4 Boxed arrangement" then
 		frame:SetWidth(num * buttonSize + (num - 1) * margin + 2 * padding)
 		frame:SetHeight(buttonSize + 2 * padding)

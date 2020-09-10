@@ -113,6 +113,7 @@ local Automation = function(self)
 	Window:CreateSwitch("Automation", "AutoSetRole", "Auto Set Your Role In Groups")
 	Window:CreateSwitch("Automation", "AutoTabBinder", "Only Tab Target Enemy Players")
 	Window:CreateSwitch("Automation", "NoBadBuffs", "Automatically Remove Annoying Buffs")
+	Window:CreateEditBox("Automation", "WhisperInvite", "Auto Accept Invite Keyword")
 end
 
 local Inventory = function(self)

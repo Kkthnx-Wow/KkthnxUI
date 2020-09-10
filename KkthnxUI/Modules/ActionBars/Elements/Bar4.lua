@@ -18,7 +18,7 @@ function Module:CreateBar4()
 	local buttonSize = C["ActionBar"].RightButtonSize
 
 	-- Create The Frame To Hold The Buttons
-	local frame = CreateFrame("Frame", "KkthnxUI_ActionBar4", UIParent, "SecureHandlerStateTemplate")
+	local frame = CreateFrame("Frame", "KKUI_ActionBar4", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(buttonSize + 2 * padding)
 	frame:SetHeight(num * buttonSize + (num - 1) * margin + 2 * padding)
 	frame.Pos = {"RIGHT", UIParent, "RIGHT", -4, 0}

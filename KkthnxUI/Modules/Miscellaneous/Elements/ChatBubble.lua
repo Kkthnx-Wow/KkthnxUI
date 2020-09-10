@@ -114,6 +114,10 @@ local function ToggleChatBubbleScript()
 end
 
 function Module:CreateChatBubbles()
+    if not C["Skins"].ChatBubbles then
+        return
+    end
+
     K:RegisterEvent("PLAYER_ENTERING_WORLD", ToggleChatBubbleScript)
 
     Module.BubbleFrame = CreateFrame("Frame")
