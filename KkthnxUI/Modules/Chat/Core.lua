@@ -667,6 +667,7 @@ function Module:OnEnable()
 
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", Module.CreateChatLootIcons)
 
+	self:CreateChatFilter()
 	self:CreateChatItemLevels()
 	self:CreateChatRename()
 	self:CreateCopyChat()

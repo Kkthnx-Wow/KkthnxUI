@@ -56,8 +56,8 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
-	["WhisperInvite"] = "inv+",
 	["AutoAcceptSummon"] = false,
+	["AutoBlockStrangerInvites"] = false,
 	["AutoCollapse"] = false,
 	["AutoDeclineDuels"] = false,
 	["AutoDeclinePetDuels"] = false,
@@ -72,6 +72,7 @@ C["Automation"] = {
 	["AutoSetRole"] = false,
 	["AutoTabBinder"] = false,
 	["NoBadBuffs"] = false,
+	["WhisperInvite"] = "inv+",
 }
 
 C["Inventory"] = {
@@ -125,6 +126,11 @@ C["Auras"] = {
 
 -- Chat
 C["Chat"] = {
+	["BlockAddonAlert"] = false,
+	["BlockStranger"] = false,
+	["ChatFilterList"] = "%*",
+	["ChatFilterWhiteList"] = "",
+	["EnableFilter"] = true,
 	["Width"] = 370,
 	["Height"] = 185,
 	["Lock"] = true,
@@ -200,16 +206,16 @@ C["Filger"] = {
 
 -- General
 C["General"] = {
-	["UseGlobal"] = false,
 	["AutoScale"] = true,
 	["ColorTextures"] = false,
-	["DisableTutorialButtons"] = false,
 	["FontSize"] = 12,
 	["HideErrors"] = true,
 	["MoveBlizzardFrames"] = false,
+	["NoTutorialButtons"] = false,
 	["ReplaceBlizzardFonts"] = true,
 	["TexturesColor"] = {0.9, 0.9, 0.9},
 	["UIScale"] = 0.71111,
+	["UseGlobal"] = false,
 	["VersionCheck"] = true,
 	["Welcome"] = true,
 	["NumberPrefixStyle"] = {
@@ -431,8 +437,8 @@ C["Unitframe"] = {
 	["HotsDots"] = true,
 	["OnlyShowPlayerDebuff"] = false,
 	["PetCombatText"] = true,
-	["TargetOfTargetName"] = true,
-	["TargetOfTargetLevel"] = true,
+	["HideTargetOfTargetLevel"] = false,
+	["HideTargetOfTargetName"] = false,
 	["PlayerBuffs"] = false,
 	["PlayerCastbarHeight"] = 24,
 	["PlayerCastbarWidth"] = 260,
@@ -530,7 +536,7 @@ C["Raid"] = {
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
 	["Height"] = 40,
-	["HorizonRaid"] = true,
+	["HorizonRaid"] = false,
 	-- ["MainTankFrames"] = true,
 	["ManabarShow"] = false,
 	["NumGroups"] = 6,

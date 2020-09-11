@@ -27,12 +27,21 @@ local YES = _G.YES
 
 local profit, spent, oldMoney, ticker = 0, 0, 0
 
+local crossRealms = GetAutoCompleteRealms()
+if not crossRealms or #crossRealms == 0 then
+	crossRealms = {[1] = K.Realm}
+end
+
 StaticPopupDialogs["RESETGOLD"] = {
 	text = "Are you sure to reset the gold count?",
 	button1 = YES,
 	button2 = NO,
 	OnAccept = function()
-		table_wipe(KkthnxUIGold.totalGold[K.Realm])
+		for _, realm in pairs(crossRealms) do
+			if KkthnxUIGold.totalGold[realm] then
+				table_wipe(KkthnxUIGold.totalGold[realm])
+			end
+		end
 		KkthnxUIGold.totalGold[K.Realm][K.Name] = {GetMoney(), K.Class}
 	end,
 	whileDead = 1,
@@ -68,10 +77,16 @@ local function OnEvent(_, event)
 		profit = profit + change
 	end
 
-	KkthnxUIGold = KkthnxUIGold or {}
-	KkthnxUIGold.totalGold = KkthnxUIGold.totalGold or {}
-	KkthnxUIGold.totalGold[K.Realm] = KkthnxUIGold.totalGold[K.Realm] or {}
-	KkthnxUIGold.totalGold[K.Realm][K.Name] = {GetMoney(), K.Class}
+	if not KkthnxUIGold[K.Realm] then
+		KkthnxUIGold.totalGold[K.Realm] = {}
+	end
+
+	if not KkthnxUIGold.totalGold[K.Realm][K.Name] then
+		KkthnxUIGold.totalGold[K.Realm][K.Name] = {}
+	end
+
+	KkthnxUIGold.totalGold[K.Realm][K.Name][1] = GetMoney()
+	KkthnxUIGold.totalGold[K.Realm][K.Name][2] = K.Class
 
 	oldMoney = newMoney
 end
@@ -84,7 +99,7 @@ local function OnEnter()
 	GameTooltip:AddLine(K.InfoColor..CURRENCY)
 	GameTooltip:AddLine(" ")
 
-	GameTooltip:AddLine("Session:", .6, .8, 1)
+	GameTooltip:AddLine("Session:", 0.6, 0.8, 1)
 	GameTooltip:AddDoubleLine("Earned", K.FormatMoney(profit), 1, 1, 1, 1, 1, 1)
 	GameTooltip:AddDoubleLine("Spent", K.FormatMoney(spent), 1, 1, 1, 1, 1, 1)
 	if profit < spent then
@@ -95,13 +110,18 @@ local function OnEnter()
 	GameTooltip:AddLine(" ")
 
 	local totalGold = 0
-	GameTooltip:AddLine("Characters:", 0.6, 0.8, 1)
-	local thisRealmList = KkthnxUIGold.totalGold[K.Realm]
-	for k, v in pairs(thisRealmList) do
-		local gold, class = unpack(v)
-		local r, g, b = K.ColorClass(class)
-		GameTooltip:AddDoubleLine(getClassIcon(class)..k, K.FormatMoney(gold), r, g, b, 1, 1, 1)
-		totalGold = totalGold + gold
+	GameTooltip:AddLine("Characters On Realm:", 0.6, 0.8, 1)
+	for _, realm in pairs(crossRealms) do
+		local thisRealmList = KkthnxUIGold.totalGold[realm]
+		if thisRealmList then
+			for k, v in pairs(thisRealmList) do
+				local name = Ambiguate(k.."-"..realm, "none")
+				local gold, class = unpack(v)
+				local r, g, b = K.ColorClass(class)
+				GameTooltip:AddDoubleLine(getClassIcon(class)..name, K.FormatMoney(gold), r,g,b, 1,1,1)
+				totalGold = totalGold + gold
+			end
+		end
 	end
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(TOTAL..":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)

@@ -39,6 +39,11 @@ Engine[1] = {} -- K, Main
 Engine[2] = {} -- C, Config
 Engine[3] = {} -- L, Locales
 
+KkthnxUIData = {}
+KkthnxUISettings = {}
+KkthnxUIGold = {}
+KkthnxUISettingsPerCharacter = {}
+
 local K, C, L = unpack(Engine)
 
 K.oUF = Engine.oUF
@@ -79,7 +84,7 @@ K.InfoColor = "|CFF669DFF"
 K.InfoColorTint = "|CFFA3D3FF"
 K.SystemColor = "|CFFFFCC66"
 
-K.CodeDebug = false -- Don"t touch this, unless you know what you are doing?
+K.CodeDebug = false
 
 K.QualityColors = {}
 local qualityColors = BAG_ITEM_QUALITY_COLORS
@@ -186,56 +191,52 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 end)
 
 local function CreateSavedVariables()
-	if (not KkthnxUIData) then
-		KkthnxUIData = {}
-	end
-
-	if (not KkthnxUIData[K.Realm]) then
+	if not KkthnxUIData[K.Realm] then
 		KkthnxUIData[K.Realm] = {}
 	end
 
-	if (not KkthnxUIData[K.Realm][K.Name]) then
+	if not KkthnxUIData[K.Realm][K.Name] then
 		KkthnxUIData[K.Realm][K.Name] = {}
 	end
 
-	if (not KkthnxUIData[K.Realm][K.Name].RevealWorldMap) then
-		KkthnxUIData[K.Realm][K.Name].RevealWorldMap = false
-	end
-
-	if (not KkthnxUIData[K.Realm][K.Name].AutoQuest) then
+	if not KkthnxUIData[K.Realm][K.Name].AutoQuest then
 		KkthnxUIData[K.Realm][K.Name].AutoQuest = false
 	end
 
-	if (not KkthnxUIData[K.Realm][K.Name].BindType) then
+	if not KkthnxUIData[K.Realm][K.Name].BindType then
 		KkthnxUIData[K.Realm][K.Name].BindType = 1
 	end
 
-	if (not KkthnxUIData[K.Realm][K.Name].FavouriteItems) then
-		KkthnxUIData[K.Realm][K.Name].FavouriteItems = {}
+	if not KkthnxUIData[K.Realm][K.Name].ChangeLog then
+		KkthnxUIData[K.Realm][K.Name].ChangeLog = {}
 	end
 
-	if (not KkthnxUIData[K.Realm][K.Name].SplitCount) then
-		KkthnxUIData[K.Realm][K.Name].SplitCount = 1
-	end
-
-	if (not KkthnxUIData[K.Realm][K.Name].CustomJunkList) then
+	if not KkthnxUIData[K.Realm][K.Name].CustomJunkList then
 		KkthnxUIData[K.Realm][K.Name].CustomJunkList = {}
 	end
 
-	if (not KkthnxUIData[K.Realm][K.Name].Mover) then
-		KkthnxUIData[K.Realm][K.Name].Mover = {}
-	end
-
-	if (not KkthnxUIData[K.Realm][K.Name].TempAnchor) then
-		KkthnxUIData[K.Realm][K.Name].TempAnchor = {}
-	end
-
-	if (not KkthnxUIData[K.Realm][K.Name].DetectVersion) then
+	if not KkthnxUIData[K.Realm][K.Name].DetectVersion then
 		KkthnxUIData[K.Realm][K.Name].DetectVersion = K.Version
 	end
 
-	if (not KkthnxUIData[K.Realm][K.Name].ChangelogVersion) then
-		KkthnxUIData[K.Realm][K.Name].ChangelogVersion = ""
+	if not KkthnxUIData[K.Realm][K.Name].FavouriteItems then
+		KkthnxUIData[K.Realm][K.Name].FavouriteItems = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].Mover then
+		KkthnxUIData[K.Realm][K.Name].Mover = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].RevealWorldMap then
+		KkthnxUIData[K.Realm][K.Name].RevealWorldMap = false
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].SplitCount then
+		KkthnxUIData[K.Realm][K.Name].SplitCount = 1
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].TempAnchor then
+		KkthnxUIData[K.Realm][K.Name].TempAnchor = {}
 	end
 end
 

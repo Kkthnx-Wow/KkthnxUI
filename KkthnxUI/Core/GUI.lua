@@ -68,7 +68,7 @@ local LastActiveWindow
 
 local CreditLines = {"|CFFfa6a56Patreons|r", K.GreyColor.."<----------------->|r", "|CFFfa6a56Tier 1|r", "Shale", "Tr0uBl3Sh00t3R", "Bbobz", "Roflmao", "", "|CFFfa6a56Tier 2|r", "Big Balkan Wolf", "", "|CFFfa6a56Tier 4|r", "|cff0070DERokalm|r", "", "|CFFFFCC66Credits|r", K.GreyColor.."<----------------->|r", "Aftermathh", "Alza", "Azilroka", "Blazeflack", "Caellian", "Caith", "|CCFA9D271Cassamarra|r", "Darth Predator", "Elv", "|CFFFF7D0AGoldpaw|r", "Haleth", "Haste", "Hungtar", "Hydra", "Ishtara", "KkthnxUI Community", "LightSpark", "Magicnachos", "Merathilis", "Nightcracker", "P3lim", "Rav99", "Roth", "Shestak", "Simpy", "siweia", "|CFFC41F3BSophia|r", "Sticklord", "Tekkub", "Tohveli", "Tukz", "Tulla", "Tuller", "oUF Team"}
 
-local GUI = CreateFrame("Frame", "KkthnxUIGUI", UIParent)
+local GUI = CreateFrame("Frame", "KKUI_GUI", UIParent)
 GUI.Windows = {}
 GUI.Buttons = {}
 GUI.Queue = {}
@@ -120,7 +120,12 @@ end
 
 local AnchorOnEnter = function(self)
 	if (self.Tooltip and match(self.Tooltip, "%S")) then
-		GameTooltip_SetDefaultAnchor(GameTooltip, self)
+		-- GameTooltip_SetDefaultAnchor(GameTooltip, self)
+		GameTooltip:ClearLines()
+		GameTooltip:SetOwner(self, "ANCHOR_NONE")
+		GameTooltip:SetPoint("TOPLEFT", KKUI_GUI, "TOPRIGHT", -3, -6)
+		GameTooltip:AddLine("Tips")
+		GameTooltip:AddLine("|nMost options require a full UI reload|nYou can do this by clicking the |CFF00CC4CApply|r button|n|n", 0.6, 0.8, 1, 1)
 
 		GameTooltip:AddLine(self.Tooltip, nil, nil, nil, true)
 		GameTooltip:Show()
@@ -380,16 +385,12 @@ local EditBoxOnLeave = function(self)
 end
 
 local EditBoxOnEnterPressed = function(self)
-	local Value = self:GetText()
-
-	if (type(tonumber(Value)) == "number") then -- Assume we want a number, not a string
-		Value = tonumber(Value)
-	end
+	local Value = self.Value and tonumber(self:GetText()) or tostring(self:GetText())
 
 	SetValue(self.Group, self.Option, Value)
 
 	if self.Hook then
-		self.Hook(Value, self.Group)
+		self.Hook(self.Value, self.Group)
 	end
 
 	self:SetAutoFocus(false)
@@ -404,11 +405,14 @@ local EditBoxOnEscapePressed = function(self)
 end
 
 local EditBoxWidth = 134
-local CreateEditBox = function(self, group, option, text, hook)
+local CreateEditBox = function(self, group, option, text, tooltip, hook)
 	local Value = C[group][option]
 
 	local Anchor = CreateFrame("Frame", nil, self)
 	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
+	Anchor:SetScript("OnEnter", AnchorOnEnter)
+	Anchor:SetScript("OnLeave", AnchorOnLeave)
+	Anchor.Tooltip = tooltip
 
 	local EditBox = CreateFrame("Frame", nil, Anchor)
 	EditBox:SetPoint("LEFT", Anchor, 0, 0)

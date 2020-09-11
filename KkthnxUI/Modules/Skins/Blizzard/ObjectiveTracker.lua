@@ -131,13 +131,14 @@ local function ReskinObjectiveTracker()
 				icon.bg = CreateFrame("Frame", nil, bar)
 				icon.bg:SetFrameLevel(bar:GetFrameLevel())
 				icon.bg:SetAllPoints(icon)
-				icon.bg:CreateBorder()
+				icon.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 			end
 
 			icon:SetTexCoord(unpack(K.TexCoords))
 			icon:ClearAllPoints()
 			icon:SetPoint("TOPLEFT", bar, "TOPRIGHT", 6, 0)
 			icon:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 24, 0)
+			icon:SetDrawLayer("BACKGROUND", 0) -- -1
 		end
 
 		if icon.bg then

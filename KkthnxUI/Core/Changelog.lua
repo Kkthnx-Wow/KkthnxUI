@@ -10,7 +10,6 @@ local CLOSE = _G.CLOSE
 
 local changelogData = {
 	"No Changelog Until Offical Release.",
-	"I'am Kkthnx, and I approve of this message?",
 }
 
 local changelogFrame
@@ -75,11 +74,11 @@ local function compareToShow(event)
 		return
 	end
 
-	local old1, old2 = string_split(".", KkthnxUIData[K.Realm][K.Name].ChangelogVersion or "")
+	local old1, old2 = string_split(".", KkthnxUIData[K.Realm][K.Name].ChangeLog.Version or "")
 	local cur1, cur2 = string_split(".", K.Version)
 	if old1 ~= cur1 or old2 ~= cur2 then
 		changelog()
-		KkthnxUIData[K.Realm][K.Name].ChangelogVersion = K.Version
+		KkthnxUIData[K.Realm][K.Name].ChangeLog.Version = K.Version
 	end
 	K:UnregisterEvent(event, compareToShow)
 end

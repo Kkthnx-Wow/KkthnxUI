@@ -36,7 +36,7 @@ function Module:VersionCheck_Create(text)
 	frame:SetPoint("BOTTOMLEFT", _G.ChatFrame1, "TOPLEFT", 20, 70)
 	frame.Text:SetText(text)
 
-	frame:SripTextures()
+	frame:StripTextures()
 	frame:CreateBorder()
 
 	frame.CloseButton:ClearAllPoints()

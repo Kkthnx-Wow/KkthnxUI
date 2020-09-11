@@ -28,6 +28,7 @@ local GetScreenHeight = _G.GetScreenHeight
 local GetScreenWidth = _G.GetScreenWidth
 local GetSpellInfo = _G.GetSpellInfo
 local InCombatLockdown = _G.InCombatLockdown
+local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsCharacterFriend = _G.IsCharacterFriend
 local IsGuildMember = _G.IsGuildMember
@@ -546,7 +547,45 @@ local function TalkingHeadOnLoad(event, addon)
 	end
 end
 
+function Module:CreateKillTutorials()
+	if not C["General"].NoTutorialButtons then
+		return
+	end
+
+	_G.HelpOpenTicketButtonTutorial:Kill()
+	_G.HelpPlate:Kill()
+	_G.HelpPlateTooltip:Kill()
+	_G.SpellBookFrameTutorialButton:Kill()
+	_G.EJMicroButtonAlert:Kill()
+	_G.WorldMapFrame.BorderFrame.Tutorial:Kill()
+end
+
+local function KillCollectionsTutorials(event, addon)
+	if not C["General"].NoTutorialButtons then
+		return
+	end
+
+	if addon == "Blizzard_Collections" then
+		_G.PetJournalTutorialButton:Kill()
+		K:UnregisterEvent(event, KillCollectionsTutorials)
+	end
+end
+
+local function KillTalentTutorials(event, addon)
+	if not C["General"].NoTutorialButtons then
+		return
+	end
+
+	if addon == "Blizzard_TalentUI" then
+		_G.PlayerTalentFrameSpecializationTutorialButton:Kill()
+		_G.PlayerTalentFrameTalentsTutorialButton:Kill()
+		_G.PlayerTalentFramePetSpecializationTutorialButton:Kill()
+		K:UnregisterEvent(event, KillTalentTutorials)
+	end
+end
+
 function Module:OnEnable()
+	self:CreateKillTutorials()
 	self:CreateAFKCam()
 	self:CreateBlockStrangerInvites()
 	self:CreateBossBanner()
@@ -572,5 +611,17 @@ function Module:OnEnable()
 		NoTalkingHeads()
 	else
 		K:RegisterEvent("ADDON_LOADED", TalkingHeadOnLoad)
+	end
+
+	if IsAddOnLoaded("Blizzard_Collections") then
+		KillCollectionsTutorials()
+	else
+		K:RegisterEvent("ADDON_LOADED", KillCollectionsTutorials)
+	end
+
+	if IsAddOnLoaded("Blizzard_TalentUI") then
+		KillTalentTutorials()
+	else
+		K:RegisterEvent("ADDON_LOADED", KillTalentTutorials)
 	end
 end

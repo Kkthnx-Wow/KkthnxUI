@@ -4,6 +4,7 @@
    <Script file="Core.lua" />
 
    <Script file="Elements\Copy.lua" />
+   <Script file="Elements\Filters.lua" />
    <Script file="Elements\ILevel.lua" />
    <Script file="Elements\Rename.lua" />
    <Script file="Elements\URL.lua" />

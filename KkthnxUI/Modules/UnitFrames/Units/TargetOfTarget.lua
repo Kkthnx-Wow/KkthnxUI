@@ -68,7 +68,7 @@ function Module:CreateTargetOfTarget()
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
 
-	if C["Unitframe"].TargetOfTargetName then
+	if not C["Unitframe"].HideTargetOfTargetName then
 		self.Name = self:CreateFontString(nil, "OVERLAY")
 		self.Name:SetPoint("BOTTOM", self.Power, 0, -16)
 		self.Name:SetWidth(81 * 0.96)
@@ -106,7 +106,7 @@ function Module:CreateTargetOfTarget()
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT", -self.Portrait:GetWidth() - 6, 0)
 
-	if C["Unitframe"].TargetOfTargetLevel then
+	if not C["Unitframe"].HideTargetOfTargetLevel then
 		self.Level = self:CreateFontString(nil, "OVERLAY")
 		self.Level:SetPoint("BOTTOM", self.Portrait, 0, -16)
 		self.Level:SetFontObject(UnitframeFont)
@@ -115,7 +115,7 @@ function Module:CreateTargetOfTarget()
 
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 	self.Debuffs:SetWidth(82)
-	if C["Unitframe"].TargetOfTargetName and C["Unitframe"].TargetOfTargetLevel then
+	if C["Unitframe"].HideTargetOfTargetName and C["Unitframe"].HideTargetOfTargetLevel then
 		self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -20)
 	else
 		self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
