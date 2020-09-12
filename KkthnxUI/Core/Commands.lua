@@ -121,7 +121,9 @@ SlashCmdList["KKUI_UIPROFILES"] = function(msg)
 					return
 				else
 					if Data == KkthnxUIData[K.Realm][K.Name] then
-						K:GetModule("Installer"):ResetInstallData()
+						local Installer = K:GetModule("Installer")
+						Installer:ResetSettings()
+						Installer:ResetData()
 					end
 
 					local CharacterName, ServerName

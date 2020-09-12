@@ -39,11 +39,6 @@ Engine[1] = {} -- K, Main
 Engine[2] = {} -- C, Config
 Engine[3] = {} -- L, Locales
 
-KkthnxUIData = {}
-KkthnxUISettings = {}
-KkthnxUIGold = {}
-KkthnxUISettingsPerCharacter = {}
-
 local K, C, L = unpack(Engine)
 
 K.oUF = Engine.oUF
@@ -190,7 +185,11 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	K.Modules = modules
 end)
 
-local function CreateSavedVariables()
+function K.CheckSavedVariables()
+	if not KkthnxUIData then
+		KkthnxUIData = {}
+	end
+
 	if not KkthnxUIData[K.Realm] then
 		KkthnxUIData[K.Realm] = {}
 	end
@@ -240,7 +239,7 @@ local function CreateSavedVariables()
 	end
 end
 
-local function StoreDefaults()
+function K.StoreDefaults()
 	K.Defaults = {}
 
 	for group, options in pairs(C) do
@@ -264,7 +263,7 @@ local function StoreDefaults()
 	end
 end
 
-local function LoadCustomSettings()
+function K.LoadCustomSettings()
 	local Settings
 
 	if (not KkthnxUISettingsPerCharacter) then
@@ -328,18 +327,21 @@ local function LoadCustomSettings()
 	end
 end
 
+K:RegisterEvent("VARIABLES_LOADED", function()
+	-- Add SavedVariables
+	K.CheckSavedVariables()
+	K.StoreDefaults()
+	K.LoadCustomSettings()
+
+	-- Enable GUI
+	K["GUI"]:Enable()
+end)
+
 K:RegisterEvent("ADDON_LOADED", function(_, addon)
 	if addon ~= "KkthnxUI" then
 		return
 	end
 
-	-- Add SavedVariables
-	CreateSavedVariables()
-	StoreDefaults()
-	LoadCustomSettings()
-
-	-- Enable GUI
-	K["GUI"]:Enable()
 	-- Setup UI Scale
 	K:SetupUIScale(true)
 	-- Create Create Static Popups

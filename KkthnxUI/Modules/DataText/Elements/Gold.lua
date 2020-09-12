@@ -77,6 +77,9 @@ local function OnEvent(_, event)
 		profit = profit + change
 	end
 
+	KkthnxUIGold = KkthnxUIGold or {}
+	KkthnxUIGold.totalGold = KkthnxUIGold.totalGold or {}
+
 	if not KkthnxUIGold[K.Realm] then
 		KkthnxUIGold.totalGold[K.Realm] = {}
 	end

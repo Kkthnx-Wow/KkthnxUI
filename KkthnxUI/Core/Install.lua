@@ -18,16 +18,30 @@ local UIErrorsFrame = _G.UIErrorsFrame
 local UIParent = _G.UIParent
 local UI_SCALE = _G.UI_SCALE
 
-function Module:ResetInstallData()
+function Module:ResetSettings()
 	if KkthnxUISettingsPerCharacter[K.Realm][K.Name].General and KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal then
 		KkthnxUISettings = {}
 	else
 		KkthnxUISettingsPerCharacter[K.Realm][K.Name] = {}
 	end
 
-	if KkthnxUIData[K.Realm][K.Name].Mover then
-		KkthnxUIData[K.Realm][K.Name].Mover = {}
+	K.CheckSavedVariables()
+end
+
+function Module:ResetData()
+	KkthnxUIData[K.Realm][K.Name] = {}
+
+	K.CheckSavedVariables()
+
+	FCF_ResetChatWindows()
+
+	if ChatConfigFrame:IsShown() then
+		ChatConfig_UpdateChatSettings()
 	end
+
+	Module:ForceDefaultCVars()
+
+	ReloadUI()
 end
 
 -- Tuitorial
@@ -476,6 +490,7 @@ local function YesTutor()
 	apply:SetScript("OnClick", function()
 		pass:Show()
 		if currentPage == 1 then
+			K.CheckSavedVariables()
 			Module:ForceDefaultCVars()
 			ForceRaidFrame()
 			UIErrorsFrame:AddMessage(K.InfoColor.."Default CVars Loaded.")
