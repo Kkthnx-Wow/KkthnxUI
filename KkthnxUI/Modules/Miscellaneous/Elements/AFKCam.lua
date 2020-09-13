@@ -27,8 +27,6 @@ local GetTime = _G.GetTime
 local InCombatLockdown = _G.InCombatLockdown
 local IsInGuild = _G.IsInGuild
 local IsMacClient = _G.IsMacClient
-local MoveViewLeftStart = _G.MoveViewLeftStart
-local MoveViewLeftStop = _G.MoveViewLeftStop
 local MovieFrame = _G.MovieFrame
 local NONE = _G.NONE
 local PVEFrame_ToggleFrame = _G.PVEFrame_ToggleFrame
@@ -39,7 +37,6 @@ local TIMEMANAGER_TICKER_24HOUR = _G.TIMEMANAGER_TICKER_24HOUR
 local UnitCastingInfo = _G.UnitCastingInfo
 local UnitIsAFK = _G.UnitIsAFK
 
-local CAMERA_SPEED = 0.035
 local ignoreKeys = {
 	LALT = true,
 	LSHIFT = true,

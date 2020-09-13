@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Infobar")
 
 local _G = _G
@@ -124,7 +124,7 @@ end
 
 local function setFrameRate()
 	local fps = math_floor(GetFramerate())
-	Module.SystemFrame.Text:SetText("FPS"..": "..colorFPS(fps))
+	Module.SystemFrame.Text:SetText(L["FPS"]..": "..colorFPS(fps))
 end
 
 local function OnEnter()
@@ -161,12 +161,12 @@ local function OnEnter()
 			for i = (maxAddOns + 1), numEnabled do
 				hiddenMemory = hiddenMemory + infoTable[i][3]
 			end
-			GameTooltip:AddDoubleLine(string_format(showMoreString, numEnabled - maxAddOns, "Hidden", "Hold Shift"), formatMemory(hiddenMemory), 0.6, 0.8, 1, 0.6, 0.8, 1)
+			GameTooltip:AddDoubleLine(string_format(showMoreString, numEnabled - maxAddOns, L["Hidden"], L["Hold Shift"]), formatMemory(hiddenMemory), 0.6, 0.8, 1, 0.6, 0.8, 1)
 		end
 	else
 		local totalCPU = UpdateCPU()
 		local passedTime = math_max(1, GetTime() - Module.CheckLoginTime)
-		GameTooltip:AddDoubleLine("System", string_format(usageString, totalCPU / passedTime, 0, 0.6, 1, 0.6, 0.8, 1))
+		GameTooltip:AddDoubleLine(L["System"], string_format(usageString, totalCPU / passedTime, 0, 0.6, 1, 0.6, 0.8, 1))
 		GameTooltip:AddLine(" ")
 
 		local numEnabled = 0
@@ -185,16 +185,16 @@ local function OnEnter()
 			for i = (maxAddOns + 1), numEnabled do
 				hiddenUsage = hiddenUsage + infoTable[i][4]
 			end
-			GameTooltip:AddDoubleLine(string_format(showMoreString, numEnabled - maxAddOns, "Hidden", "Hold Shift"), string_format(usageString, hiddenUsage / passedTime), 0.6, 0.8, 1, 0.6, 0.8, 1)
+			GameTooltip:AddDoubleLine(string_format(showMoreString, numEnabled - maxAddOns, L["Hidden"], L["Hold Shift"]), string_format(usageString, hiddenUsage / passedTime), 0.6, 0.8, 1, 0.6, 0.8, 1)
 		end
 	end
 
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(" ", "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:230:307|t ".."Collect Memory".." ", 1, 1, 1, 0.6, 0.8, 1)
+	GameTooltip:AddDoubleLine(" ", "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:230:307|t "..L["Collect Memory"].." ", 1, 1, 1, 0.6, 0.8, 1)
 	if scriptProfileStatus then
-		GameTooltip:AddDoubleLine(" ", "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:333:411|t ".."SwitchMode".." ", 1, 1, 1, 0.6, 0.8, 1)
+		GameTooltip:AddDoubleLine(" ", "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:333:411|t "..L["SwitchMode"].." ", 1, 1, 1, 0.6, 0.8, 1)
 	end
-	GameTooltip:AddDoubleLine(" ", "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t ".."CPU Usage"..": "..(GetCVarBool("scriptProfile") and enableString or disableString).." ", 1, 1, 1, 0.6, 0.8, 1)
+	GameTooltip:AddDoubleLine(" ", "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t "..L["CPU Usage"]..": "..(GetCVarBool("scriptProfile") and enableString or disableString).." ", 1, 1, 1, 0.6, 0.8, 1)
 	GameTooltip:Show()
 end
 
@@ -233,7 +233,7 @@ local function OnMouseUp(self, btn)
 		end
 		local before = gcinfo()
 		collectgarbage("collect")
-		K.Print(string_format("|cff66C6FF%s:|r %s", "Memory Collected", formatMemory(before - gcinfo())))
+		K.Print(string_format("|cff66C6FF%s:|r %s", L["Memory Collected"], formatMemory(before - gcinfo())))
 		OnEnter()
 	elseif btn == "RightButton" and scriptProfileStatus then
 		Module.ShowMemory = not Module.ShowMemory

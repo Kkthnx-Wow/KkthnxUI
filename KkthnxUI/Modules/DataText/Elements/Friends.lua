@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Infobar")
 
 local _G = _G
@@ -165,7 +165,7 @@ end
 
 local function OnUpdate(self, elapsed)
 	self.timer = (self.timer or 0) + elapsed
-	if self.timer > .1 then
+	if self.timer > 0.1 then
 		if not friendsFrame:IsMouseOver() then
 			self:Hide()
 			self:SetScript("OnUpdate", nil)
@@ -212,9 +212,9 @@ local function setupFriendsFrame()
 	scrollFrame:SetScrollChild(roster)
 	friendsFrame.roster = roster
 
-	local whspInfo = K.InfoColor.." |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:333:411|t ".."Whisper"
+	local whspInfo = K.InfoColor.." |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:333:411|t "..L["Whisper"]
 	K.CreateFontString(friendsFrame, 12, whspInfo, "", false, "BOTTOMRIGHT", -15, 26)
-	local invtInfo = K.InfoColor.."ALT +".." |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:230:307|t ".."Invite"
+	local invtInfo = K.InfoColor.."ALT +".." |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:230:307|t "..L["Invite"]
 	K.CreateFontString(friendsFrame, 12, invtInfo, "", false, "BOTTOMRIGHT", -15, 10)
 end
 
@@ -225,7 +225,7 @@ local function createInviteMenu()
 
 	menuFrame = CreateFrame("Frame", "FriendsInfobarMenu", friendsFrame, "UIDropDownMenuTemplate")
 	menuFrame:SetFrameStrata("TOOLTIP")
-	menuList[1] = {text = "Join or Invite", isTitle = true, notCheckable = true}
+	menuList[1] = {text = L["Join or Invite"], isTitle = true, notCheckable = true}
 end
 
 local function inviteFunc(_, bnetIDGameAccount, guid)
@@ -269,7 +269,10 @@ local function buttonOnClick(self, btn)
 					end
 				end
 
-				if index == 2 then return end
+				if index == 2 then
+					return
+				end
+
 				if index == 3 then
 					FriendsFrame_InviteOrRequestToJoin(lastGameAccountGUID, lastGameAccountID)
 				else
@@ -294,7 +297,7 @@ local function buttonOnEnter(self)
 	GameTooltip:ClearLines()
 
 	if self.isBNet then
-		GameTooltip:AddLine("BN", 0,.6,1)
+		GameTooltip:AddLine(L["BN"], 0,.6,1)
 		GameTooltip:AddLine(" ")
 
 		local index, accountName, _, _, _, _, _, _, _, note, broadcastText, broadcastTime = unpack(self.data)
@@ -346,7 +349,7 @@ local function buttonOnEnter(self)
 			GameTooltip:AddLine(string_format(broadcastString, broadcastText, FriendsFrame_GetLastOnline(broadcastTime)), 0.3, 0.6, 0.8, 1)
 		end
 	else
-		GameTooltip:AddLine("WoW", 1, 0.8, 0)
+		GameTooltip:AddLine(L["WoW"], 1, 0.8, 0)
 		GameTooltip:AddLine(" ")
 
 		local name, level, class, area = unpack(self.data)

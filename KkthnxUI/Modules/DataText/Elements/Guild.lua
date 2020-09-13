@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Infobar")
 
 local _G = _G
@@ -62,7 +62,7 @@ function Module:ReskinScrollBar()
 	local scrollBar = self.ScrollBar
 	scrollBar.ScrollUpButton:Kill()
 	scrollBar.ScrollDownButton:Kill()
-	scrollBar.ThumbTexture:SetColorTexture(.3, .3, .3)
+	scrollBar.ThumbTexture:SetColorTexture(0.3, 0.3, 0.3)
 	scrollBar.ThumbTexture:SetSize(3, 10)
 	scrollBar.ThumbTexture:SetPoint("LEFT", -5, 0)
 	self:SetScript("OnMouseWheel", scrollBarHook)
@@ -124,9 +124,7 @@ local function setupInfoFrame()
 	K.CreateFontString(bu[4], 12, ZONE, "", false, "RIGHT", 0, 0)
 
 	for i = 1, 4 do
-		KkthnxUIData = KkthnxUIData or {}
-		KkthnxUIData[K.Realm] = KkthnxUIData[K.Realm] or {}
-		KkthnxUIData[K.Realm][K.Name] = KkthnxUIData[K.Realm][K.Name] or {}
+		K.CheckSavedVariables()
 		KkthnxUIData[K.Realm][K.Name]["GuildSortBy"] = KkthnxUIData[K.Realm][K.Name]["GuildSortBy"] or 1
 		KkthnxUIData[K.Realm][K.Name]["GuildSortOrder"] = KkthnxUIData[K.Realm][K.Name]["GuildSortOrder"] or true
 
@@ -137,11 +135,11 @@ local function setupInfoFrame()
 		end)
 	end
 
-	local whspInfo = K.InfoColorTint.." |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:333:411|t ".."Whisper"
+	local whspInfo = K.InfoColorTint.." |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:333:411|t "..L["Whisper"]
 	K.CreateFontString(infoFrame, 12, whspInfo, "", false, "BOTTOMRIGHT", -15, 42)
-	local invtInfo = K.InfoColorTint.."ALT +".." |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:230:307|t ".."Invite"
+	local invtInfo = K.InfoColorTint.."ALT +".." |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:230:307|t "..L["Invite"]
 	K.CreateFontString(infoFrame, 12, invtInfo, "", false, "BOTTOMRIGHT", -15, 26)
-	local copyInfo = K.InfoColorTint.."SHIFT +".." |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:230:307|t ".."Copy Name"
+	local copyInfo = K.InfoColorTint.."SHIFT +".." |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:230:307|t "..L["Copy Name"]
 	K.CreateFontString(infoFrame, 12, copyInfo, "", false, "BOTTOMRIGHT", -15, 10)
 
 	local scrollFrame = CreateFrame("ScrollFrame", nil, infoFrame, "UIPanelScrollFrameTemplate")

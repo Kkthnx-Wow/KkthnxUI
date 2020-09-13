@@ -55,7 +55,6 @@ local RequestRaidInfo = _G.RequestRaidInfo
 local SecondsToTime = _G.SecondsToTime
 local TIMEMANAGER_TICKER_12HOUR = _G.TIMEMANAGER_TICKER_12HOUR
 local TIMEMANAGER_TICKER_24HOUR = _G.TIMEMANAGER_TICKER_24HOUR
-local WORLD_BOSSES_TEXT = _G.WORLD_BOSSES_TEXT
 
 -- Data
 local timeBonusList = {
@@ -261,8 +260,8 @@ function Module:TimeOnEnter()
 	local w, m, d, y = today.weekday, today.month, today.monthDay, today.year
 	GameTooltip:AddLine(string_format(FULLDATE, CALENDAR_WEEKDAY_NAMES[w], CALENDAR_FULLDATE_MONTH_NAMES[m], d, y), 0, 0.6, 1)
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine("Local Time", GameTime_GetLocalTime(true), nil, nil, nil, 192/255, 192/255, 192/255)
-	GameTooltip:AddDoubleLine("Realm Time", GameTime_GetGameTime(true), nil, nil, nil, 192/255, 192/255, 192/255)
+	GameTooltip:AddDoubleLine(L["Local Time"], GameTime_GetLocalTime(true), nil, nil, nil, 192/255, 192/255, 192/255)
+	GameTooltip:AddDoubleLine(L["Realm Time"], GameTime_GetGameTime(true), nil, nil, nil, 192/255, 192/255, 192/255)
 
 	-- World bosses
 	title = false
