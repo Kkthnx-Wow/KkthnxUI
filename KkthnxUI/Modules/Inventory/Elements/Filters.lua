@@ -179,13 +179,14 @@ end
 function Module:GetFilters()
 	local filters = {}
 
-	filters.onlyBags = function(item) return isItemInBag(item) and not isItemEquipment(item) and not isItemConsumable(item) and not isAzeriteArmor(item) and not isItemJunk(item) and not isMountAndPet(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) end
+	filters.onlyBags = function(item) return isItemInBag(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAzeriteArmor(item) and not isItemJunk(item) and not isMountAndPet(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) end
 	filters.bagAzeriteItem = function(item) return isItemInBag(item) and isAzeriteArmor(item) end
 	filters.bagEquipment = function(item) return isItemInBag(item) and isItemEquipment(item) end
 	filters.bagConsumable = function(item) return isItemInBag(item) and isItemConsumable(item) end
 	filters.bagsJunk = function(item) return isItemInBag(item) and isItemJunk(item) end
 	filters.onlyBank = function(item) return isItemInBank(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAzeriteArmor(item) and not isMountAndPet(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) end
 	filters.bankAzeriteItem = function(item) return isItemInBank(item) and isAzeriteArmor(item) end
+	filters.bagLegendary = function(item) return isItemInBag(item) and isItemLegendary(item) end
 	filters.bankLegendary = function(item) return isItemInBank(item) and isItemLegendary(item) end
 	filters.bankEquipment = function(item) return isItemInBank(item) and isItemEquipment(item) end
 	filters.bankConsumable = function(item) return isItemInBank(item) and isItemConsumable(item) end

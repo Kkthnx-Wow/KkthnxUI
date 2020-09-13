@@ -739,6 +739,9 @@ function Module:OnEnable()
 		f.azeriteItem = MyContainer:New("AzeriteItem", {Columns = bagsWidth, Parent = f.main})
 		f.azeriteItem:SetFilter(filters.bagAzeriteItem, true)
 
+		f.bagLegendary = MyContainer:New("BagLegendary", {Columns = bagsWidth, Parent = f.main})
+		f.bagLegendary:SetFilter(filters.bagLegendary, true)
+
 		f.equipment = MyContainer:New("Equipment", {Columns = bagsWidth, Parent = f.main})
 		f.equipment:SetFilter(filters.bagEquipment, true)
 
@@ -788,7 +791,7 @@ function Module:OnEnable()
 		f.reagent:SetPoint("BOTTOMLEFT", f.bank)
 		f.reagent:Hide()
 
-		Module.BagGroup = {f.azeriteItem, f.equipment, f.bagCompanion, f.bagGoods, f.bagQuest, f.consumable, f.bagFavourite, f.junk}
+		Module.BagGroup = {f.azeriteItem, f.equipment, f.bagLegendary, f.bagCompanion, f.bagGoods, f.bagQuest, f.consumable, f.bagFavourite, f.junk}
 		Module.BankGroup = {f.bankAzeriteItem, f.bankEquipment, f.bankLegendary, f.bankCompanion, f.bankGoods, f.bankQuest, f.bankConsumable, f.bankFavourite}
 	end
 
@@ -1092,6 +1095,8 @@ function Module:OnEnable()
 			else
 				label = BAG_FILTER_EQUIPMENT
 			end
+		elseif name == "BagLegendary" then
+			label = LOOT_JOURNAL_LEGENDARIES
 		elseif name == "BankLegendary" then
 			label = LOOT_JOURNAL_LEGENDARIES
 		elseif string_match(name, "Consumable$") then

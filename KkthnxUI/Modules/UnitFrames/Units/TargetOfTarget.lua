@@ -68,18 +68,17 @@ function Module:CreateTargetOfTarget()
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
 
-	if not C["Unitframe"].HideTargetOfTargetName then
-		self.Name = self:CreateFontString(nil, "OVERLAY")
-		self.Name:SetPoint("BOTTOM", self.Power, 0, -16)
-		self.Name:SetWidth(81 * 0.96)
-		self.Name:SetFontObject(UnitframeFont)
-		self.Name:SetWordWrap(false)
-		if C["Unitframe"].HealthbarColor.Value == "Class" then
-			self:Tag(self.Name, "[name]")
-		else
-			self:Tag(self.Name, "[color][name]")
-		end
+	self.Name = self:CreateFontString(nil, "OVERLAY")
+	self.Name:SetPoint("BOTTOM", self.Power, 0, -16)
+	self.Name:SetWidth(81 * 0.96)
+	self.Name:SetFontObject(UnitframeFont)
+	self.Name:SetWordWrap(false)
+	if C["Unitframe"].HealthbarColor.Value == "Class" then
+		self:Tag(self.Name, "[name]")
+	else
+		self:Tag(self.Name, "[color][name]")
 	end
+	self.Name:SetShown(not C["Unitframe"].HideTargetOfTargetName)
 
 	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
@@ -106,20 +105,15 @@ function Module:CreateTargetOfTarget()
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT", -self.Portrait:GetWidth() - 6, 0)
 
-	if not C["Unitframe"].HideTargetOfTargetLevel then
-		self.Level = self:CreateFontString(nil, "OVERLAY")
-		self.Level:SetPoint("BOTTOM", self.Portrait, 0, -16)
-		self.Level:SetFontObject(UnitframeFont)
-		self:Tag(self.Level, "[fulllevel]")
-	end
+	self.Level = self:CreateFontString(nil, "OVERLAY")
+	self.Level:SetPoint("BOTTOM", self.Portrait, 0, -16)
+	self.Level:SetFontObject(UnitframeFont)
+	self:Tag(self.Level, "[fulllevel]")
+	self.Level:SetShown(not C["Unitframe"].HideTargetOfTargetLevel)
 
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 	self.Debuffs:SetWidth(82)
-	if C["Unitframe"].HideTargetOfTargetName and C["Unitframe"].HideTargetOfTargetLevel then
-		self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -20)
-	else
-		self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-	end
+	self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, C["Unitframe"].HideTargetOfTargetName and C["Unitframe"].HideTargetOfTargetLevel and -6 or -20)
 	self.Debuffs.num = 4 * 4
 	self.Debuffs.spacing = 6
 	self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num / 4 - 1))) / self.Debuffs.num)) * 4)
