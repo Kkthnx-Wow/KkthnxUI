@@ -21,13 +21,13 @@ function Module:CreateLeaveVehicle()
 	local buttonSize = C["ActionBar"].DefaultButtonSize
 
 	-- Create The Frame To Hold The Buttons
-	local frame = CreateFrame("Frame", "KkthnxUI_LeaveVehicleBar", UIParent, "SecureHandlerStateTemplate")
+	local frame = CreateFrame("Frame", "KKUI_LeaveVehicleBar", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(num * buttonSize + (num - 1) * margin + 2 * padding)
 	frame:SetHeight(buttonSize + 2 * padding)
 	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 260, 4}
 
 	-- The Button
-	local button = CreateFrame("CheckButton", "KkthnxUI_LeaveVehicleButton", frame, "ActionButtonTemplate, SecureHandlerClickTemplate")
+	local button = CreateFrame("CheckButton", "KKUI_LeaveVehicleButton", frame, "ActionButtonTemplate, SecureHandlerClickTemplate")
 	table_insert(buttonList, button) -- Add The Button Object To The List
 	button:SetSize(buttonSize, buttonSize)
 	button:SetPoint("BOTTOMLEFT", frame, padding, padding)
@@ -37,23 +37,21 @@ function Module:CreateLeaveVehicle()
 	button.icon:SetTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
 	button.icon:SetTexCoord(.216, .784, .216, .784)
 
-	button:SetNormalTexture(nil)
-	button:GetPushedTexture():SetTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
-	button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	button.__lockIcon = true
 
-	local function onClick(self)
+	button:SetScript("OnEnter", MainMenuBarVehicleLeaveButton_OnEnter)
+	button:SetScript("OnLeave", K.HideTooltip)
+	button:SetScript("OnClick", function(self)
 		if UnitOnTaxi("player") then
 			TaxiRequestEarlyLanding()
 		else
 			VehicleExit()
 		end
-
+		self:SetChecked(true)
+	end)
+	button:SetScript("OnShow", function(self)
 		self:SetChecked(false)
-	end
-
-	button:SetScript("OnClick", onClick)
-	button:SetScript("OnEnter", MainMenuBarVehicleLeaveButton_OnEnter)
-	button:SetScript("OnLeave", K.HideTooltip)
+	end)
 
 	-- Frame Visibility
 	frame.frameVisibility = "[canexitvehicle]c;[mounted]m;n"

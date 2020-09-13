@@ -265,7 +265,9 @@ function Module:StyleActionButton(button, cfg)
 	button:StyleButton()
 
 	-- Textures
-	SetupTexture(icon, cfg.icon, "SetTexture", icon)
+	if not button.__lockIcon then
+		SetupTexture(icon, cfg.icon, "SetTexture", icon)
+	end
 	SetupTexture(flash, cfg.flash, "SetTexture", flash)
 	SetupTexture(flyoutBorder, cfg.flyoutBorder, "SetTexture", flyoutBorder)
 	SetupTexture(flyoutBorderShadow, cfg.flyoutBorderShadow, "SetTexture", flyoutBorderShadow)
@@ -405,6 +407,9 @@ function Module:StyleAllActionButtons(cfg)
 	for i = 1, NUM_POSSESS_SLOTS do
 		Module:StyleActionButton(_G["PossessButton"..i], cfg)
 	end
+
+	-- Leave Vehicle
+	Module:StyleActionButton(_G["KKUI_LeaveVehicleButton"], cfg)
 
 	-- Extra action button
 	Module:StyleExtraActionButton(cfg)

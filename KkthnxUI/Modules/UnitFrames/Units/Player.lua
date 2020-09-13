@@ -27,16 +27,17 @@ function Module.PostUpdateUnitframeClassPower(element, cur, max, diff, powerType
 		end
 	end
 
-	if (powerType == "COMBO_POINTS" or powerType == "HOLY_POWER") and element.__owner.unit ~= "vehicle" and cur == max then
-		for i = 1, 6 do
-			if element[i]:IsShown() then
-				K.libButtonGlow.ShowOverlayGlow(element[i])
-			end
+	element.thisColor = cur == max and 1 or 2
+	if not element.prevColor or element.prevColor ~= element.thisColor then
+		local r, g, b = 1, 0, 0
+		if element.thisColor == 2 then
+			local color = element.__owner.colors.power[powerType]
+			r, g, b = color[1], color[2], color[3]
 		end
-	else
-		for i = 1, 6 do
-			K.libButtonGlow.HideOverlayGlow(element[i])
+		for i = 1, #element do
+			element[i]:SetStatusBarColor(r, g, b)
 		end
+		element.prevColor = element.thisColor
 	end
 end
 

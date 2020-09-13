@@ -825,6 +825,11 @@ function Module:CreatePlates()
 	self.Castbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -3)
 	self.Castbar:SetHeight(self:GetHeight())
 
+	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
+	self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
+	self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
+	self.Castbar.Spark:SetBlendMode("ADD")
+
 	self.Castbar.Time = K.CreateFontString(self.Castbar, 10, "", "", false, "RIGHT", -2, 0)
 	self.Castbar.Text = K.CreateFontString(self.Castbar, 10, "", "", false, "LEFT", 2, 0)
 	self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -5, 0)
@@ -1130,20 +1135,17 @@ function Module.PostUpdateNameplateClassPower(element, cur, max, diff, powerType
 		end
 	end
 
-	if (powerType == "COMBO_POINTS" or powerType == "HOLY_POWER") and element.__owner.unit ~= "vehicle" and cur == max then
-		for i = 1, 6 do
-			if element[i]:IsShown() then
-				if C["Nameplate"].ShowPlayerPlate and C["Nameplate"].MaxPowerGlow then
-					K.libButtonGlow.ShowOverlayGlow(element[i])
-				end
-			end
+	element.thisColor = cur == max and 1 or 2
+	if not element.prevColor or element.prevColor ~= element.thisColor then
+		local r, g, b = 1, 0, 0
+		if element.thisColor == 2 then
+			local color = element.__owner.colors.power[powerType]
+			r, g, b = color[1], color[2], color[3]
 		end
-	else
-		for i = 1, 6 do
-			if C["Nameplate"].ShowPlayerPlate and C["Nameplate"].MaxPowerGlow then
-				K.libButtonGlow.HideOverlayGlow(element[i])
-			end
+		for i = 1, #element do
+			element[i]:SetStatusBarColor(r, g, b)
 		end
+		element.prevColor = element.thisColor
 	end
 end
 
@@ -1257,12 +1259,6 @@ function Module:CreatePlayerPlate()
 			if K.Class == "DEATHKNIGHT" then
 				bars[i].timer = K.CreateFontString(bars[i], 10, "")
 			end
-
-			if C["Nameplate"].ShowPlayerPlate then
-				bars[i].glow = CreateFrame("Frame", nil, bars[i])
-				bars[i].glow:SetPoint("TOPLEFT", -3, 2)
-				bars[i].glow:SetPoint("BOTTOMRIGHT", 3, -2)
-			end
 		end
 
 		if K.Class == "DEATHKNIGHT" then
@@ -1315,23 +1311,93 @@ function Module:CreatePlayerPlate()
 	self.Auras.PreUpdate = Module.bolsterPreUpdate
 	self.Auras.PostUpdate = Module.bolsterPostUpdate
 
-	K:GetModule("Auras"):CreateLumos(self)
-
-	if C["Nameplate"].PPPowerText then
-		local textFrame = CreateFrame("Frame", nil, self.Power)
-		textFrame:SetAllPoints()
-
-		local power = K.CreateFontString(textFrame, 14, "")
-		self:Tag(power, "[pppower]")
+	if C["Nameplate"].ClassAuras then
+		K:GetModule("Auras"):CreateLumos(self)
 	end
 
+	local textFrame = CreateFrame("Frame", nil, self.Power)
+	textFrame:SetAllPoints()
+	self.powerText = K.CreateFontString(textFrame, 14, "")
+	self:Tag(self.powerText, "[pppower]")
+	Module:TogglePlatePower()
+
+	Module:CreateGCDTicker(self)
 	Module:UpdateTargetClassPower()
+	Module:TogglePlateVisibility()
+end
+
+function Module:TogglePlatePower()
+	local plate = _G.oUF_PlayerPlate
+	if not plate then
+		return
+	end
+
+	plate.powerText:SetShown(C["Nameplate"].PPPowerText)
+end
+
+function Module:TogglePlateVisibility()
+	local plate = _G.oUF_PlayerPlate
+	if not plate then
+		return
+	end
 
 	if C["Nameplate"].PPHideOOC then
-		self:RegisterEvent("UNIT_EXITED_VEHICLE", Module.PlateVisibility)
-		self:RegisterEvent("UNIT_ENTERED_VEHICLE", Module.PlateVisibility)
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", Module.PlateVisibility, true)
-		self:RegisterEvent("PLAYER_REGEN_DISABLED", Module.PlateVisibility, true)
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", Module.PlateVisibility, true)
+		plate:RegisterEvent("UNIT_EXITED_VEHICLE", Module.PlateVisibility)
+		plate:RegisterEvent("UNIT_ENTERED_VEHICLE", Module.PlateVisibility)
+		plate:RegisterEvent("PLAYER_REGEN_ENABLED", Module.PlateVisibility, true)
+		plate:RegisterEvent("PLAYER_REGEN_DISABLED", Module.PlateVisibility, true)
+		plate:RegisterEvent("PLAYER_ENTERING_WORLD", Module.PlateVisibility, true)
+		Module.PlateVisibility(plate)
+	else
+		plate:UnregisterEvent("UNIT_EXITED_VEHICLE", Module.PlateVisibility)
+		plate:UnregisterEvent("UNIT_ENTERED_VEHICLE", Module.PlateVisibility)
+		plate:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.PlateVisibility)
+		plate:UnregisterEvent("PLAYER_REGEN_DISABLED", Module.PlateVisibility)
+		plate:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.PlateVisibility)
+		Module.PlateVisibility(plate, "PLAYER_REGEN_DISABLED")
 	end
+end
+
+function Module:UpdateGCDTicker(elapsed)
+	local start, duration = GetSpellCooldown(61304)
+	if start > 0 and duration > 0 then
+		if self.duration ~= duration then
+			self:SetMinMaxValues(0, duration)
+			self.duration = duration
+		end
+		self:SetValue(GetTime() - start)
+		self.spark:Show()
+	else
+		self.spark:Hide()
+	end
+end
+
+function Module:CreateGCDTicker(self)
+	local ticker = CreateFrame("StatusBar", nil, self.Power)
+	ticker:SetFrameLevel(self:GetFrameLevel() + 3)
+	ticker:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
+	ticker:GetStatusBarTexture():SetAlpha(0)
+	ticker:SetAllPoints()
+
+	local spark = ticker:CreateTexture(nil, "OVERLAY")
+	spark:SetTexture(C["Media"].Spark_16)
+	spark:SetSize(8, self.Power:GetHeight())
+	spark:SetBlendMode("ADD")
+	spark:SetPoint("CENTER", ticker:GetStatusBarTexture(), "RIGHT", 0, 0)
+	ticker.spark = spark
+
+	ticker:SetScript("OnUpdate", Module.UpdateGCDTicker)
+	self.GCDTicker = ticker
+
+	Module:ToggleGCDTicker()
+end
+
+function Module:ToggleGCDTicker()
+	local plate = _G.oUF_PlayerPlate
+	local ticker = plate and plate.GCDTicker
+	if not ticker then
+		return
+	end
+
+	ticker:SetShown(C["Nameplate"].PPGCDTicker)
 end
