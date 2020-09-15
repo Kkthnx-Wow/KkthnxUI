@@ -48,6 +48,33 @@ local function SkinAchievementBars()
 		_G[highlight:GetName().."Middle"]:SetPoint("TOPLEFT", frame, "TOPLEFT", 2, -2)
 		_G[highlight:GetName().."Middle"]:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -2, 2)
 	end
+
+	hooksecurefunc("AchievementButton_GetProgressBar", function(index)
+		local frame = _G["AchievementFrameProgressBar"..index]
+		if frame then
+			if not frame.skinned then
+				frame:StripTextures()
+				frame:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
+				frame:SetStatusBarColor(4/255, 179/255, 30/255)
+				frame:CreateBorder()
+				frame:SetFrameLevel(frame:GetFrameLevel() + 3)
+				frame:SetHeight(frame:GetHeight() - 2)
+
+				frame.text:ClearAllPoints()
+				frame.text:SetPoint("CENTER", frame, "CENTER")
+				frame.text:SetJustifyH("CENTER")
+
+				if index > 1 then
+					frame:ClearAllPoints()
+					frame:SetPoint("TOP", _G["AchievementFrameProgressBar"..index - 1], "BOTTOM", 0, -5)
+					frame.SetPoint = K.Noop
+					frame.ClearAllPoints = K.Noop
+				end
+
+				frame.skinned = true
+			end
+		end
+	end)
 end
 
 Module.NewSkin["Blizzard_AchievementUI"] = SkinAchievementBars

@@ -49,6 +49,7 @@ function Module:ForceDefaultCVars()
 	SetActionBarToggles(1, 1, 1, 1)
 	SetCVar("ActionButtonUseKeyDown", 1)
 	SetCVar("UberTooltips", 1)
+	SetCVar("WorldTextScale", 1.2)
 	SetCVar("alwaysCompareItems", 1)
 	SetCVar("alwaysShowActionBars", 1)
 	SetCVar("autoLootDefault", 1)
@@ -60,6 +61,11 @@ function Module:ForceDefaultCVars()
 	SetCVar("chatMouseScroll", 1)
 	SetCVar("chatStyle", "classic")
 	SetCVar("ffxGlow", 0)
+	SetCVar("floatingCombatTextCombatDamage", 1)
+	SetCVar("floatingCombatTextCombatDamageDirectionalOffset", 10)
+	SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
+	SetCVar("floatingCombatTextCombatHealing", 1)
+	SetCVar("floatingCombatTextFloatMode", 1)
 	SetCVar("fstack_preferParentKeys", 0) -- Add back the frame names via fstack!
 	SetCVar("lockActionBars", 1)
 	SetCVar("lootUnderMouse", 1)
@@ -81,13 +87,8 @@ function Module:ForceDefaultCVars()
 
 	if K.isDeveloper then
 		SetCVar("SpellQueueWindow", 30)
-		SetCVar("WorldTextScale", 1.2)
-		SetCVar("nameplateMotionSpeed", .025)
 		SetCVar("ShowClassColorInFriendlyNameplate", 1)
 		SetCVar("nameplateShowOnlyNames", 1)
-		SetCVar("floatingCombatTextFloatMode", 1)
-		SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
-		SetCVar("floatingCombatTextCombatDamageDirectionalOffset", 10)
 	end
 end
 
@@ -513,7 +514,7 @@ local function YesTutor()
 		elseif currentPage == 5 then
 			KkthnxUIData[K.Realm][K.Name].InstallComplete = true
 			tutor:Hide()
-			K.StaticPopup_Show("CHANGES_RL")
+			K.StaticPopup_Show("KKUI_CHANGES_RELOAD")
 			currentPage = 0
 			PlaySound(11466)
 			K.Print(K.SystemColor.."Thank you for installing "..K.InfoColor.."v"..K.Version.." "..K.MyClassColor..K.Name.."|r"..K.SystemColor.."! Enjoy your|r "..K.MyClassColor..K.Class.."|r |cffa83f39<3|r")

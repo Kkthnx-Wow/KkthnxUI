@@ -31,10 +31,10 @@ function Module:ForceUpdate()
 	self:Show()
 end
 
-function Module:OnSizeChanged(width)
+function Module:OnSizeChanged(width, height)
 	local cooldownFont = K.GetFont(C["UIFonts"].ActionBarsFonts)
 
-	local fontScale = math_floor(width + 0.5) / ICON_SIZE
+	local fontScale = K.Round((width + height) / 2) / ICON_SIZE
 	if fontScale == self.fontScale then
 		return
 	end
@@ -96,13 +96,13 @@ function Module:StartTimer(start, duration)
 		return
 	end
 
-	if self.noOCC or self.noCooldownCount or hideNumbers[self] then
+	if self.noCooldownCount or hideNumbers[self] then
 		return
 	end
 
-	local frameName = self.GetName and self:GetName() or ""
-	if C["ActionBar"].OverrideWA and string_find(frameName, "WeakAuras") then
-		self.noOCC = true
+	local frameName = self.GetName and self:GetName()
+	if C["ActionBar"].OverrideWA and frameName and string_find(frameName, "WeakAuras") then
+		self.noCooldownCount = true
 		return
 	end
 

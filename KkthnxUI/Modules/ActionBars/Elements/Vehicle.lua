@@ -37,7 +37,7 @@ function Module:CreateLeaveVehicle()
 	button.icon:SetTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
 	button.icon:SetTexCoord(.216, .784, .216, .784)
 
-	button.__lockIcon = true
+	button.icon.__lockdown = true
 
 	button:SetScript("OnEnter", MainMenuBarVehicleLeaveButton_OnEnter)
 	button:SetScript("OnLeave", K.HideTooltip)

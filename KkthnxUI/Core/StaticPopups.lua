@@ -56,16 +56,35 @@ K.PopupDialogs["KKUI_IMPORT_PROFILE"] = {
 	end,
 }
 
-K.PopupDialogs["FRIENDS_BROADCAST"] = {
-	text = BN_BROADCAST_TOOLTIP,
+K.PopupDialogs["KKUI_RESET_DATA"] = {
+	text = "Are you sure you want to reset all KkthnxUI Data?",
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function(self)
-		local Parent = self:GetParent()
-
-		BNSetCustomMessage(Parent.EditBox:GetText())
+	OnAccept = function()
+		K:GetModule("Installer"):ResetSettings()
+		K:GetModule("Installer"):ResetData()
+		ReloadUI()
 	end,
-	hasEditBox = true,
+}
+
+K.PopupDialogs["KKUI_RESET_CVARS"] = {
+	text = "Are you sure you want to reset all KkthnxUI CVars?",
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function()
+		K:GetModule("Installer"):ForceDefaultCVars()
+		ReloadUI()
+	end,
+}
+
+K.PopupDialogs["KKUI_RESET_CHAT"] = {
+	text = "Are you sure you want to reset KkthnxUI Chat?",
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function()
+		K:GetModule("Installer"):ForceChatSettings()
+		ReloadUI()
+	end,
 }
 
 K.PopupDialogs["QUEST_CHECK_ID"] = {
@@ -100,46 +119,7 @@ K.PopupDialogs["QUEST_CHECK_ID"] = {
 	preferredIndex = 3,
 }
 
-K.PopupDialogs["GITHUB_EDITBOX"] = {
-	text = format("|cff669dff%s |r", "KkthnxUI GitHub"),
-	button1 = OKAY,
-	hasEditBox = 1,
-	OnShow = function(self, data)
-		self.editBox:SetAutoFocus(false)
-		self.editBox.width = self.editBox:GetWidth()
-		self.editBox:SetWidth(280)
-		self.editBox:AddHistoryLine("text")
-		self.editBox.temptxt = data
-		self.editBox:SetText(data)
-		self.editBox:HighlightText()
-		self.editBox:SetJustifyH("CENTER")
-	end,
-	OnHide = function(self)
-		self.editBox:SetWidth(self.editBox.width or 50)
-		self.editBox.width = nil
-		self.temptxt = nil
-	end,
-	EditBoxOnEnterPressed = function(self)
-		self:GetParent():Hide()
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide()
-	end,
-	EditBoxOnTextChanged = function(self)
-		if(self:GetText() ~= self.temptxt) then
-			self:SetText(self.temptxt)
-		end
-		self:HighlightText()
-		self:ClearFocus()
-	end,
-	OnAccept = K.Noop,
-	timeout = 0,
-	whileDead = 1,
-	preferredIndex = 3,
-	hideOnEscape = 1,
-}
-
-K.PopupDialogs["DISCORD_EDITBOX"] = {
+K.PopupDialogs["KKUI_DISCORD_LINK"] = {
 	text = format("|cff669dff%s |r", "KkthnxUI Discord"),
 	button1 = OKAY,
 	hasEditBox = 1,
@@ -178,7 +158,7 @@ K.PopupDialogs["DISCORD_EDITBOX"] = {
 	hideOnEscape = 1,
 }
 
-K.PopupDialogs["CHANGES_RL"] = {
+K.PopupDialogs["KKUI_CHANGES_RELOAD"] = {
 	text = L["Changes Reload"],
 	button1 = ACCEPT,
 	button2 = CANCEL,
@@ -202,40 +182,6 @@ K.PopupDialogs["RESTART_GFX"] = {
 	whileDead = 1,
 }
 
-K.PopupDialogs["DISBAND_RAID"] = {
-	text = L["Disband Group"],
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function()
-		K.DisbandRaidGroup()
-	end,
-	OnCancel = function()
-		print(CANCEL)
-	end,
-	hideOnEscape = true,
-	whileDead = 1,
-}
-
-K.PopupDialogs["CANNOT_BUY_BANK_SLOT"] = {
-	text = L["Can't Buy Slot"],
-	button1 = ACCEPT,
-	timeout = 0,
-	whileDead = 1,
-}
-
-K.PopupDialogs["BUY_BANK_SLOT"] = {
-	text = CONFIRM_BUY_BANK_SLOT,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = PurchaseSlot,
-	OnShow = function(self)
-		MoneyFrame_Update(self.moneyFrame, GetBankSlotCost())
-	end,
-	hasMoneyFrame = 1,
-	timeout = 0,
-	hideOnEscape = 1,
-}
-
 K.PopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
 	text = CONFIRM_LOOT_DISTRIBUTION,
 	button1 = YES,
@@ -244,72 +190,6 @@ K.PopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
 	hideOnEscape = 1,
 	preferredIndex = 3,
 }
-
-K.PopupDialogs["DISABLE_UI"] = {
-	text = "DISABLE_UI",
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function()
-		DisableAddOn("KkthnxUI")
-		ReloadUI()
-	end,
-	hideOnEscape = false,
-	whileDead = 1,
-	preferredIndex = 3
-}
-
-K.PopupDialogs["RESET_UI"] = {
-	text = L["Reset KkthnxUI"],
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function()
-		K.Install:Launch()
-		if UIConfig and UIConfig:IsShown() then
-			UIConfigMain:Hide()
-		end
-	end,
-	OnCancel = function()
-		KkthnxUIData[K.Realm][K.Name].InstallComplete = true
-	end,
-	hideOnEscape = false,
-	whileDead = 1,
-	preferredIndex = 3
-}
-
-K.PopupDialogs["WARNING_BLIZZARD_ADDONS"] = {
-	text = L["Warning Blizzard AddOns"],
-	button1 = OKAY,
-	OnAccept = function()
-		EnableAddOn("Blizzard_CompactRaidFrames")
-		ReloadUI()
-	end,
-	showAlert = true,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = false,
-	preferredIndex = 3
-}
-
-K.PopupDialogs["KKUI_OUTDATED"] = {
-	text = L["KkthnxUI Outdated"],
-	button1 = OKAY,
-	timeout = 0,
-	whileDead = true,
-	hasEditBox = true,
-	editBoxWidth = 325,
-	OnShow = function(self)
-		self.editBox:SetFocus()
-		self.editBox:SetText("https://github.com/kkthnx-wow/KKUI_8.0.1")
-		self.editBox:HighlightText()
-	end,
-	EditBoxOnEnterPressed = function(self)
-		self:GetParent():Hide()
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide()
-	end,
-}
-
 
 local MAX_STATIC_POPUPS = 4
 function K.StaticPopup_OnShow(self)

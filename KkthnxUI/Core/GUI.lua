@@ -1724,10 +1724,10 @@ GUI.Enable = function(self)
 	local FooterButtonWidth = ((HeaderWidth / 4) - Spacing) + 1
 
 	-- Global button
-	local GlobalButtonString = K.GreyColor.."You are using per-character settings, push me for global|r"
+	local GlobalButtonString = K.MyClassColor.."You are using per-character settings, push me for global|r"
 
 	if KkthnxUISettingsPerCharacter[K.Realm][K.Name].General and KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal then
-		GlobalButtonString = K.GreyColor.."You are using global settings, push me for per-character|r"
+		GlobalButtonString = K.MyClassColor.."You are using global settings, push me for per-character|r"
 	end
 
 	local Global = CreateFrame("Frame", nil, self.Footer)
@@ -1801,8 +1801,7 @@ GUI.Enable = function(self)
 	Reset:SetScript("OnEnter", ButtonOnEnter)
 	Reset:SetScript("OnLeave", ButtonOnLeave)
 	Reset:HookScript("OnMouseUp", function()
-		K:GetModule("Installer"):ResetSettings()
-		K:GetModule("Installer"):ResetData()
+		K.StaticPopup_Show("KKUI_RESET_DATA")
 	end)
 
 	Reset.Highlight = Reset:CreateTexture(nil, "OVERLAY")
@@ -1878,7 +1877,7 @@ GUI.Enable = function(self)
 	ResetCVars:SetScript("OnEnter", ButtonOnEnter)
 	ResetCVars:SetScript("OnLeave", ButtonOnLeave)
 	ResetCVars:HookScript("OnMouseUp", function()
-		K:GetModule("Installer"):ForceDefaultCVars()
+		K.StaticPopup_Show("KKUI_RESET_CVARS")
 	end)
 
 	ResetCVars.Highlight = ResetCVars:CreateTexture(nil, "OVERLAY")
@@ -1904,7 +1903,7 @@ GUI.Enable = function(self)
 	ResetChat:SetScript("OnEnter", ButtonOnEnter)
 	ResetChat:SetScript("OnLeave", ButtonOnLeave)
 	ResetChat:HookScript("OnMouseUp", function()
-		K:GetModule("Installer"):ForceChatSettings()
+		K.StaticPopup_Show("KKUI_RESET_CHAT")
 	end)
 
 	ResetChat.Highlight = ResetChat:CreateTexture(nil, "OVERLAY")

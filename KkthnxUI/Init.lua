@@ -68,7 +68,6 @@ K.Media = "Interface\\AddOns\\KkthnxUI\\Media\\"
 K.LSM = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
 K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
 K.Resolution = string_format("%dx%d", K.ScreenWidth, K.ScreenHeight)
-K.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "ffdbebfa"} -- Keep this until I convert the rest.
 K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 K.Welcome = "|cff669DFFKkthnxUI "..K.Version.." "..K.Client.."|r - /helpui"
 K.ScanTooltip = CreateFrame("GameTooltip", "KKUI_ScanTooltip", nil, "GameTooltipTemplate")
