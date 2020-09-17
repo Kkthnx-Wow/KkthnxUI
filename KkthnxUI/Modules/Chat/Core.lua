@@ -537,7 +537,7 @@ function Module:OnEnable()
 		ChatFrameBG:SetFrameStrata("BACKGROUND")
 		ChatFrameBG:CreateBorder()
 
-		local ChatTabsBG = CreateFrame("Frame", nil, ChatFrameBG)
+		local ChatTabsBG = CreateFrame("Frame", "KKUI_ChatTabsBG", ChatFrameBG)
 		ChatTabsBG:CreateBorder()
 		ChatTabsBG:SetSize(C["Chat"].Width + 16, 24)
 		ChatTabsBG:SetPoint("TOP", ChatFrameBG, "TOP", 0, -5)

@@ -55,6 +55,24 @@ local function UpdateTargetDebuffs()
 	element:ForceUpdate()
 end
 
+local function UpdateChatSize()
+	ChatFrame1:SetSize(C["Chat"].Width, C["Chat"].Height)
+
+	if C["Chat"].Background then
+		if KKUI_ChatFrameBG then
+			KKUI_ChatFrameBG:SetSize(C["Chat"].Width + 26, C["Chat"].Height + 34)
+		end
+
+		if KKUI_ChatTabsBG then
+			KKUI_ChatTabsBG:SetSize(C["Chat"].Width + 16, 24)
+		end
+	end
+
+	if KKUI_ChatMenu then
+		KKUI_ChatMenu:SetHeight(C["Chat"].Height - 6)
+	end
+end
+
 -- Translate Below Before Shadowlands
 local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
@@ -183,6 +201,10 @@ local Chat = function(self)
 	Window:CreateSwitch("Chat", "WhisperColor", "Differ Whipser Colors")
 	Window:CreateSwitch("Chat", "WhisperSound", "Whisper Sound")
 	Window:CreateDropdown("Chat", "TimestampFormat", "Custom Chat Timestamps")
+
+	Window:CreateSection("Chat Values")
+	Window:CreateSlider("Chat", "Width", "Chat Width", 300, 600, 10, UpdateChatSize)
+	Window:CreateSlider("Chat", "Height", "Chat Height", 150, 600, 10, UpdateChatSize)
 
 	Window:CreateSection("Chat Fading")
 	Window:CreateSwitch("Chat", "Fading", "Fade Chat")
