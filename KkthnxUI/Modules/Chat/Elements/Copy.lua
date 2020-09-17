@@ -322,8 +322,8 @@ end
 
 function Module:ChatCopy_CreateMenu()
 	menu = CreateFrame("Frame", "KKUI_ChatMenu", UIParent)
-	menu:SetSize(25, ChatFrame1:GetHeight())
-	menu:SetPoint("TOPRIGHT", _G.ChatFrame1, 22, 0)
+	menu:SetSize(18, ChatFrame1:GetHeight() - 6)
+	menu:SetPoint("TOPRIGHT", _G.ChatFrame1, 18, -5)
 	menu:SetShown(C["Chat"].ChatMenu)
 
 	_G.ChatFrameMenuButton:ClearAllPoints()
@@ -395,8 +395,8 @@ function Module:ChatCopy_Create()
 	end)
 
 	local copy = CreateFrame("Button", "KKUI_ChatCopyButton", UIParent)
-	copy:SetPoint("BOTTOM", menu, 0, 1)
-	copy:SkinButton()
+	copy:SetPoint("BOTTOM", menu)
+	copy:CreateBorder()
 	copy:SetSize(16, 16)
 	copy:SetAlpha(0.25)
 

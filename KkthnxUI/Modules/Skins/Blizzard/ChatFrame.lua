@@ -7,8 +7,6 @@ local table_insert = _G.table.insert
 local hooksecurefunc = _G.hooksecurefunc
 
 local function SkinChatFrame()
-	local homeTex = "Interface\\Buttons\\UI-HomeButton"
-
 	-- Battlenet toast frame
 	BNToastFrame:SetClampedToScreen(true)
 	BNToastFrame:SetBackdrop(nil)

@@ -236,6 +236,43 @@ function K.CheckSavedVariables()
 	if not KkthnxUIData[K.Realm][K.Name].TempAnchor then
 		KkthnxUIData[K.Realm][K.Name].TempAnchor = {}
 	end
+
+	if not KkthnxUIData[K.Realm][K.Name].Chat then
+		KkthnxUIData[K.Realm][K.Name].Chat = {
+			["Frame1"] = {
+				"BOTTOMLEFT",
+				"BOTTOMLEFT",
+				34,
+				50,
+				370,
+				108,
+			},
+			["Frame4"] = {
+				"BOTTOMRIGHT",
+				"BOTTOMRIGHT",
+				-34,
+				50,
+				370,
+				108,
+			},
+			["Frame3"] = {
+				"TOPLEFT",
+				"TOPLEFT",
+				0,
+				0,
+				370,
+				108,
+			},
+			["Frame2"] = {
+				"TOPLEFT",
+				"TOPLEFT",
+				0,
+				0,
+				370,
+				108,
+			},
+		}
+	end
 end
 
 function K.StoreDefaults()
