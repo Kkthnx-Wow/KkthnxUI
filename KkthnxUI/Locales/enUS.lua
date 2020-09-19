@@ -23,6 +23,11 @@ L["Rare Spotted"] = "Rare Spotted "
 L["Lack"] = "Lack of"
 
 -- Automation Locales
+L["Auto Quest Disabled Desc"] = "Enable to use auto questing. |n|nHolding SHIFT will temporarily disable the auto accept/turnin"
+L["Auto Quest Disabled"] = "Status: |CFFFF0000Disabled|r"
+L["Auto Quest Enabled Desc"] = "Disable to not use auto questing. |n|nHolding SHIFT will temporarily disable the auto accept/turnin"
+L["Auto Quest Enabled"] = "Status: |CFF008000Enabled|r"
+L["Auto Quest"] = "Auto Quest"
 L["Bad Buff Message"] = "Removed \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"
 L["The summon from"] = "The summon from"
 L["will be automatically accepted in 10 seconds unless cancelled."] = "will be automatically accepted in 10 seconds unless cancelled."

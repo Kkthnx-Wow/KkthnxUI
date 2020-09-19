@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 
 local _G = _G
 local table_wipe = _G.table.wipe
@@ -78,7 +78,7 @@ local function SetupAutoQuestCheckButton()
 
 	AutoQuestCheckButton.text = AutoQuestCheckButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	AutoQuestCheckButton.text:SetPoint("LEFT", 24, 0)
-	AutoQuestCheckButton.text:SetText("Auto Quest")
+	AutoQuestCheckButton.text:SetText(L["Auto Quest"])
 
 	AutoQuestCheckButton:SetHitRectInsets(0, 0 - AutoQuestCheckButton.text:GetWidth(), 0, 0)
 	AutoQuestCheckButton:SetChecked(KkthnxUIData[K.Realm][K.Name].AutoQuest)
@@ -98,13 +98,13 @@ local function SetupAutoQuestCheckButton()
 		local r, g, b = 0.2, 1.0, 0.2
 
 		if KkthnxUIData[K.Realm][K.Name].AutoQuest == true then
-			GameTooltip:AddLine("Disable Auto Accept")
+			GameTooltip:AddLine(L["Auto Quest Enabled"])
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine("Disable to not auto accept.", r, g, b)
+			GameTooltip:AddLine(L["Auto Quest Enabled Desc"], r, g, b)
 		else
-			GameTooltip:AddLine("Enable Auto Accept")
+			GameTooltip:AddLine(L["Auto Quest Disabled"])
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine("Enable to auto accept.", r, g, b)
+			GameTooltip:AddLine(L["Auto Quest Disabled Desc"], r, g, b)
 		end
 
 		GameTooltip:Show()
