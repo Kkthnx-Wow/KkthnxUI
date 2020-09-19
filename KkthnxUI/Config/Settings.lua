@@ -357,6 +357,7 @@ C["Skins"] = {
 	["Bartender4"] = false,
 	["BigWigs"] = false,
 	["BlizzardFrames"] = true,
+	["ChatBubbleAlpha"] = 0.9,
 	["ChatBubbles"] = true,
 	["ChocolateBar"] = false,
 	["DeadlyBossMods"] = false,

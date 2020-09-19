@@ -107,24 +107,24 @@ function Module:AdjustQueuedAnchors(relativeAlert)
 end
 
 function Module:GroupLootContainer_Update()
-	local lastIdx = nil
+	local lastIdx
 
 	for i = 1, self.maxIndex do
 		local frame = self.rollFrames[i]
-		local prevFrame = self.rollFrames[i-1]
-		if ( frame ) then
+		if frame then
 			frame:ClearAllPoints()
-			if prevFrame and not (prevFrame == frame) then
+			local prevFrame = self.rollFrames[i-1]
+			if prevFrame and prevFrame ~= frame then
 				frame:SetPoint(POSITION, prevFrame, ANCHOR_POINT, 0, YOFFSET)
 			else
-				frame:SetPoint(POSITION, self, POSITION, 0, self.reservedSize * (i - 1 + 0.5))
+				frame:SetPoint(POSITION, self, POSITION, 0, YOFFSET)
 			end
 
 			lastIdx = i
 		end
 	end
 
-	if (lastIdx) then
+	if lastIdx then
 		self:SetHeight(self.reservedSize * lastIdx)
 		self:Show()
 	else

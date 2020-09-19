@@ -56,7 +56,8 @@ local function UpdateTargetDebuffs()
 end
 
 local function UpdateChatSize()
-	ChatFrame1:SetSize(C["Chat"].Width, C["Chat"].Height)
+	local CF1 = ChatFrame1
+	CF1:SetSize(C["Chat"].Width, C["Chat"].Height)
 
 	if C["Chat"].Background then
 		if KKUI_ChatFrameBG then
@@ -71,6 +72,16 @@ local function UpdateChatSize()
 	if KKUI_ChatMenu then
 		KKUI_ChatMenu:SetHeight(C["Chat"].Height - 6)
 	end
+
+	if CF1.mover then
+		CF1.mover:SetSize(C["Chat"].Width, C["Chat"].Height)
+	end
+end
+
+local function UpdateChatBubble()
+	for _, chatBubble in pairs(C_ChatBubbles.GetAllChatBubbles()) do
+		chatBubble.KKUI_Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Skins"].ChatBubbleAlpha)
+    end
 end
 
 -- Translate Below Before Shadowlands
@@ -421,7 +432,6 @@ local Skins = function(self)
 	local Window = self:CreateWindow(L["Skins"])
 
 	Window:CreateSection("Skins Toggles")
-
 	Window:CreateSwitch("Skins", "Bartender4", "Bartender4 Skin")
 	Window:CreateSwitch("Skins", "BigWigs", "BigWigs Skin")
 	Window:CreateSwitch("Skins", "BlizzardFrames", "Skin Some Blizzard Frames & Objects")
@@ -436,6 +446,9 @@ local Skins = function(self)
 	Window:CreateSwitch("Skins", "TellMeWhen", "TellMeWhen Skin")
 	Window:CreateSwitch("Skins", "TitanPanel", "TitanPanel Skin")
 	Window:CreateSwitch("Skins", "WeakAuras", "WeakAuras Skin")
+
+	Window:CreateSection("Skin Values")
+	Window:CreateSlider("Skins", "ChatBubbleAlpha", "ChatBubbles Background Alpha", 0, 1, 0.1, UpdateChatBubble)
 end
 
 local Tooltip = function(self)

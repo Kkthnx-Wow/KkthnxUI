@@ -65,6 +65,7 @@ local function SkinBubble(frame)
 	frame.Name = name
 
     frame:CreateBorder(nil, nil, 10)
+    frame.KKUI_Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Skins"].ChatBubbleAlpha)
 
     frame:HookScript("OnShow", UpdateBubbleBorder)
     frame:SetFrameStrata("DIALOG") -- Doesn't work currently in Legion due to a bug on Blizzards end

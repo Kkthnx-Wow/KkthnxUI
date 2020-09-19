@@ -26,8 +26,8 @@ local TOTAL = _G.TOTAL
 local YES = _G.YES
 
 local profit, spent, oldMoney, ticker = 0, 0, 0
-
 local crossRealms = GetAutoCompleteRealms()
+
 if not crossRealms or #crossRealms == 0 then
 	crossRealms = {[1] = K.Realm}
 end
@@ -80,7 +80,7 @@ local function OnEvent(_, event)
 	KkthnxUIGold = KkthnxUIGold or {}
 	KkthnxUIGold.totalGold = KkthnxUIGold.totalGold or {}
 
-	if not KkthnxUIGold[K.Realm] then
+	if not KkthnxUIGold.totalGold[K.Realm] then
 		KkthnxUIGold.totalGold[K.Realm] = {}
 	end
 
@@ -121,7 +121,7 @@ local function OnEnter()
 				local name = Ambiguate(k.."-"..realm, "none")
 				local gold, class = unpack(v)
 				local r, g, b = K.ColorClass(class)
-				GameTooltip:AddDoubleLine(getClassIcon(class)..name, K.FormatMoney(gold), r,g,b, 1,1,1)
+				GameTooltip:AddDoubleLine(getClassIcon(class)..name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
 				totalGold = totalGold + gold
 			end
 		end
@@ -137,6 +137,7 @@ local function OnEnter()
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine(CURRENCY..":", 0.6, 0.8, 1)
 		end
+
 		if name and count then
 			local _, _, _, _, _, total = GetCurrencyInfo(currencyID)
 			local iconTexture = " |T"..icon..":12:12:0:0:50:50:4:46:4:46|t"
@@ -149,6 +150,7 @@ local function OnEnter()
 	end
 
 	GameTooltip:AddLine(" ")
+	GameTooltip:AddDoubleLine(" ", " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:230:307|t ".."Character Frame".." ", 1, 1, 1, 0.6, 0.8, 1)
 	GameTooltip:AddDoubleLine(" ", " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:230:307|t ".."Currency Panel".." ", 1, 1, 1, 0.6, 0.8, 1)
 	GameTooltip:AddDoubleLine(" ", "CTRL +".." |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:333:411|t ".."Reset Gold".." ", 1, 1, 1, 0.6, 0.8, 1)
 	GameTooltip:Show()
@@ -159,6 +161,8 @@ local function OnMouseUp(_, button)
 		StaticPopup_Show("RESETGOLD")
 	elseif button == "MiddleButton" then
 		OnEnter()
+	elseif button == "LeftButton" then
+		ToggleCharacter("PaperDollFrame")
 	else
 		if InCombatLockdown() then
 			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
