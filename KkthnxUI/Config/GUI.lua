@@ -95,10 +95,14 @@ local ActionBar = function(self)
 	Window:CreateSwitch("ActionBar", "Cooldowns", "Show Cooldowns")
 	Window:CreateSwitch("ActionBar", "Count", "Enable Count")
 	Window:CreateSwitch("ActionBar", "DecimalCD", "Format Cooldowns As Decimals")
-	Window:CreateSwitch("ActionBar", "FadePetBar", "Mouseover PetBar")
+	if C["ActionBar"].PetBar then
+		Window:CreateSwitch("ActionBar", "FadePetBar", "Mouseover PetBar")
+	end
 	Window:CreateSwitch("ActionBar", "FadeRightBar", "Mouseover RightBar 1")
 	Window:CreateSwitch("ActionBar", "FadeRightBar2", "Mouseover RightBar 2")
-	Window:CreateSwitch("ActionBar", "FadeStanceBar", "Mouseover StanceBar")
+	if C["ActionBar"].StanceBar then
+		Window:CreateSwitch("ActionBar", "FadeStanceBar", "Mouseover StanceBar")
+	end
 	Window:CreateSwitch("ActionBar", "Hotkey", "Enable Hotkey")
 	Window:CreateSwitch("ActionBar", "Macro", "Enable Macro")
 	Window:CreateSwitch("ActionBar", "MicroBar", "Enable MicroBar")
