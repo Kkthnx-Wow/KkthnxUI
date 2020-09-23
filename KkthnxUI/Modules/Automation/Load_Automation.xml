@@ -3,17 +3,18 @@
    <!-- Load_Automation -->
    <Script file="Core.lua" />
 
-   <Script file="Elements\AcceptSummon.lua" />
    <Script file="Elements\BadBuffs.lua" />
    <Script file="Elements\BestReward.lua" />
    <Script file="Elements\DeclineDuel.lua" />
    <Script file="Elements\Disenchant.lua" />
    <Script file="Elements\Invite.lua" />
+   <Script file="Elements\PartySync.lua" />
    <Script file="Elements\Quest.lua" />
    <Script file="Elements\Release.lua" />
    <Script file="Elements\Resurrect.lua" />
    <Script file="Elements\ScreenShot.lua" />
    <Script file="Elements\SetRole.lua" />
+   <Script file="Elements\Summon.lua" />
    <Script file="Elements\TabBinder.lua" />
    <Script file="Elements\WhisperInvite.lua" />
 </Ui>

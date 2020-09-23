@@ -26,12 +26,11 @@ local function SetupAutoAcceptSummon()
 			end
 		end)
 	end
-
 	return
 end
 
 function Module:CreateAutoAcceptSummon()
-	if not C["Automation"].AutoAcceptSummon then
+	if not C["Automation"].AutoSummon then
 		K:UnregisterEvent("CONFIRM_SUMMON", SetupAutoAcceptSummon)
 		return
 	end

@@ -698,6 +698,7 @@ function Module:OnEnable()
 	local bankWidth = C["Inventory"].BankWidth
 	local iconSize = C["Inventory"].IconSize
 	local showItemLevel = C["Inventory"].BagsItemLevel
+	local showBindType = C["Inventory"].BagsBindType
 	local deleteButton = C["Inventory"].DeleteButton
 	local itemSetFilter = C["Inventory"].ItemSetFilter
 	local showNewItem = C["Inventory"].ShowNewItem
@@ -855,6 +856,10 @@ function Module:OnEnable()
 		self.iLvl:SetFontObject(bagsFont)
 		self.iLvl:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
 
+		self.bindType = K.CreateFontString(self, 12, "", "OUTLINE", false, "TOPRIGHT", 2, 0)
+		self.bindType:SetFontObject(bagsFont)
+		self.bindType:SetFont(select(1, self.bindType:GetFont()), 12, select(3, self.bindType:GetFont()))
+
 		if showNewItem then
 			if not self.glowFrame then
 				self.glowFrame = CreateFrame("Frame", nil, self)
@@ -984,6 +989,44 @@ function Module:OnEnable()
 		else
 			buttonIconTexture:SetVertexColor(1, 1, 1)
 		end
+
+		if showBindType and (item.bindType == 2 or item.bindType == 3) then
+			local BoE, BoU
+			K.ScanTooltip:SetOwner(_G.UIParent, "ANCHOR_NONE")
+			if self.GetInventorySlot then -- this fixes bank bagid -1
+				K.ScanTooltip:SetInventoryItem("player", self:GetInventorySlot())
+			else
+				K.ScanTooltip:SetBagItem(item.bagID, item.slotID)
+			end
+			K.ScanTooltip:Show()
+
+			local bindTypeLines = (GetCVarBool("colorblindmode") and 5) or 4
+			for i = 2, bindTypeLines do
+				local line = _G["KKUI_ScanTooltipTextLeft"..i]:GetText()
+				if not line or line == "" then
+					break
+				end
+
+				if line == _G.ITEM_SOULBOUND or line == _G.ITEM_ACCOUNTBOUND or line == _G.ITEM_BNETACCOUNTBOUND then
+					break
+				end
+
+				BoE, BoU = line == _G.ITEM_BIND_ON_EQUIP, line == _G.ITEM_BIND_ON_USE
+				if (BoE or BoU) then
+					break
+				end
+			end
+			K.ScanTooltip:Hide()
+
+			if BoE or BoU then
+				local color = K.QualityColors[item.rarity]
+				self.bindType:SetText(BoE and L["BoE"] or L["BoU"])
+				self.bindType:SetVertexColor(color.r, color.g, color.b)
+			end
+		else
+			self.bindType:SetText("")
+		end
+
 
 		if self.glowFrame then
 			if C_NewItems_IsNewItem(item.bagID, item.slotID) then

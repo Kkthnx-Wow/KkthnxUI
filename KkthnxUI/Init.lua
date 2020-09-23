@@ -1,6 +1,8 @@
 local AddOnName, Engine = ...
 
 local _G = _G
+local math_max = _G.math.max
+local math_min = _G.math.min
 local next = _G.next
 local pairs = _G.pairs
 local select = _G.select
@@ -169,7 +171,47 @@ function K:GetModule(name)
 	return modules[name]
 end
 
+local function GetBestScale()
+	local scale = math_max(0.4, math_min(1.15, 768 / K.ScreenHeight))
+	return K.Round(scale, 2)
+end
+
+function K:SetupUIScale(init)
+	if C["General"].AutoScale then
+		C["General"].UIScale = GetBestScale()
+	end
+
+	local scale = C["General"].UIScale
+	if init then
+		local pixel = 1
+		local ratio = 768 / K.ScreenHeight
+		K.Mult = (pixel / scale) - ((pixel - ratio) / scale)
+	elseif not InCombatLockdown() then
+		UIParent:SetScale(scale)
+	end
+end
+
+local isScaling = false
+local function UpdatePixelScale(event)
+	if isScaling then
+		return
+	end
+	isScaling = true
+
+	if event == "UI_SCALE_CHANGED" then
+		K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
+	end
+
+	K:SetupUIScale(true)
+	K:SetupUIScale()
+
+	isScaling = false
+end
+
 K:RegisterEvent("PLAYER_LOGIN", function()
+	K:SetupUIScale()
+	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
+
 	for _, module in next, initQueue do
 		if module.OnEnable then
 			module:OnEnable()
@@ -177,9 +219,6 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 			K.Print("Module ["..module.name.."] failed to load!")
 		end
 	end
-
-	K:SetupUIScale()
-	K:RegisterEvent("UI_SCALE_CHANGED", K.UpdatePixelScale)
 
 	K.Modules = modules
 end)
@@ -242,16 +281,16 @@ function K.CheckSavedVariables()
 			["Frame1"] = {
 				"BOTTOMLEFT",
 				"BOTTOMLEFT",
-				34,
-				50,
+				8,
+				8,
 				370,
 				108,
 			},
-			["Frame4"] = {
-				"BOTTOMRIGHT",
-				"BOTTOMRIGHT",
-				-34,
-				50,
+			["Frame2"] = {
+				"TOPLEFT",
+				"TOPLEFT",
+				0,
+				0,
 				370,
 				108,
 			},
@@ -263,9 +302,9 @@ function K.CheckSavedVariables()
 				370,
 				108,
 			},
-			["Frame2"] = {
-				"TOPLEFT",
-				"TOPLEFT",
+			["Frame4"] = {
+				"BOTTOMRIGHT",
+				"BOTTOMRIGHT",
 				0,
 				0,
 				370,
@@ -368,24 +407,14 @@ K:RegisterEvent("VARIABLES_LOADED", function()
 	K.CheckSavedVariables()
 	K.StoreDefaults()
 	K.LoadCustomSettings()
-
-	-- Enable GUI
-	K["GUI"]:Enable()
-end)
-
-K:RegisterEvent("ADDON_LOADED", function(_, addon)
-	if addon ~= "KkthnxUI" then
-		return
-	end
-
 	-- Setup UI Scale
 	K:SetupUIScale(true)
 	-- Create Create Static Popups
 	K.CreateStaticPopups()
 	-- Some GUID Stuff
 	K.GUID = UnitGUID("player")
-
-	K:UnregisterEvent("ADDON_LOADED")
+	-- Enable GUI
+	K["GUI"]:Enable()
 end)
 
 -- Event return values were wrong: https://wow.gamepedia.com/PLAYER_LEVEL_UP

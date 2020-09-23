@@ -313,7 +313,7 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 		i.id = GetContainerItemID(bagID, slotID)
 
 		local texture
-		i.name, i.link, i.rarity, i.level, i.minLevel, i.type, i.subType, i.stackCount, i.equipLoc, texture, i.sellPrice, i.classID, i.subClassID = GetItemInfo(clink)
+		i.name, i.link, i.rarity, i.level, i.minLevel, i.type, i.subType, i.stackCount, i.equipLoc, texture, i.sellPrice, i.classID, i.subClassID, i.bindType = GetItemInfo(clink)
 		i.texture = i.texture or texture
 		i.rarity = i.rarity or i.quality
 

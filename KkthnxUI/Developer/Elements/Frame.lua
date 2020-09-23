@@ -39,12 +39,8 @@ local UNKNOWN = _G.UNKNOWN
 -- /kt, get gametooltip names
 
 K.Devs = {
-	["Aceer-Stormreaver"] = true,
 	["Kkthnx-Sargeras"] = true,
-	["Kkthnx-Sethraliss"] = true,
-	["Kkthnx-Stormreaver"] = true,
-	["Kkthnxtv-Sethraliss"] = true,
-	["Superfreak-Sethraliss"] = true,
+	["Kkthnxui-Sargeras"] = true,
 }
 
 local function isDeveloper()

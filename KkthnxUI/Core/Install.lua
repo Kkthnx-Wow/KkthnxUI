@@ -1,6 +1,9 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Installer")
 
+-- Sourced: NDui (siweia)
+-- Edited: KkthnxUI (Kkthnx)
+
 local _G = _G
 local table_wipe = _G.table.wipe
 
@@ -499,6 +502,7 @@ local function YesTutor()
 			Module:ForceChatSettings()
 			UIErrorsFrame:AddMessage(K.InfoColor.."Chat Frame Settings Loaded")
 		elseif currentPage == 3 then
+			C["General"].AutoScale = true
 			K:SetupUIScale()
 			UIErrorsFrame:AddMessage(K.InfoColor.."UI Scale Loaded")
 		elseif currentPage == 4 then
@@ -614,6 +618,8 @@ _G.SlashCmdList["KKUI_INSTALLER"] = HelloWorld
 _G.SLASH_KKUI_INSTALLER1 = "/install"
 
 function Module:OnEnable()
+	K.CheckSavedVariables()
+
 	-- Hide options
 	K.HideInterfaceOption(_G.Advanced_UseUIScale)
 	K.HideInterfaceOption(_G.Advanced_UIScaleSlider)

@@ -22,6 +22,7 @@ local OverrideActionBarHealthBar = _G.OverrideActionBarHealthBar
 local OverrideActionBarPitchFrame = _G.OverrideActionBarPitchFrame
 local OverrideActionBarPowerBar = _G.OverrideActionBarPowerBar
 local StatusTrackingBarManager = _G.StatusTrackingBarManager
+local StreamingIcon = _G.StreamingIcon
 local TokenFrame_LoadUI = _G.TokenFrame_LoadUI
 local TokenFrame_Update = _G.TokenFrame_Update
 local hooksecurefunc = _G.hooksecurefunc
@@ -42,6 +43,7 @@ local scripts = {
 local framesToHide = {
 	MainMenuBar,
 	OverrideActionBar,
+	StreamingIcon,
 }
 
 local framesToDisable = {

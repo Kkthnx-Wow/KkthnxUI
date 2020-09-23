@@ -397,14 +397,13 @@ function Module:Install()
 		ChatFrame_AddMessageGroup(_G.ChatFrame1, v)
 	end
 
-	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame3)
-
 	ChatGroups = {"COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "SKILL", "LOOT", "CURRENCY", "MONEY"}
 	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame4)
 	for _, v in ipairs(ChatGroups) do
 		ChatFrame_AddMessageGroup(_G.ChatFrame4, v)
 	end
 
+	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame3)
 	ChatFrame_AddChannel(_G.ChatFrame1, GENERAL)
 	ChatFrame_RemoveChannel(_G.ChatFrame1, TRADE)
 	ChatFrame_AddChannel(_G.ChatFrame3, TRADE)
@@ -412,6 +411,20 @@ function Module:Install()
 	ChatGroups = {"SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL"}
 	for i = 1, _G.MAX_WOW_CHAT_CHANNELS do
 		table.insert(ChatGroups, "CHANNEL"..i)
+	end
+
+	if K.isDeveloper then
+		FCF_OpenNewWindow("Whisper")
+		FCF_SetLocked(ChatFrame5, 1)
+		FCF_DockFrame(ChatFrame5)
+		FCF_SetChatWindowFontSize(nil, ChatFrame5, 12)
+
+		ChatGroups = {"WHISPER", "BN_WHISPER"}
+		ChatFrame_RemoveAllMessageGroups(_G.ChatFrame5)
+		for _, v in ipairs(ChatGroups) do
+			ChatFrame_RemoveMessageGroup(_G.ChatFrame1, v)
+			ChatFrame_AddMessageGroup(_G.ChatFrame5, v)
+		end
 	end
 
 	for _, v in ipairs(ChatGroups) do

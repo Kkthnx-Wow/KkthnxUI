@@ -56,13 +56,14 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
-	["AutoAcceptSummon"] = false,
+	["AutoSummon"] = false,
 	["AutoBlockStrangerInvites"] = false,
 	["AutoCollapse"] = false,
 	["AutoDeclineDuels"] = false,
 	["AutoDeclinePetDuels"] = false,
 	["AutoDisenchant"] = false,
 	["AutoInvite"] = false,
+	["AutoPartySync"] = false,
 	["AutoQuest"] = false,
 	["AutoRelease"] = false,
 	["AutoResurrect"] = false,
@@ -98,6 +99,7 @@ C["Inventory"] = {
 	["ItemFilter"] = true,
 	["ItemSetFilter"] = false,
 	["ReverseSort"] = false,
+	["BagsBindType"] = false,
 	["ShowNewItem"] = true,
 	["SpecialBagsColor"] = false,
 	["UpgradeIcon"] = true,

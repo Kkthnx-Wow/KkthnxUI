@@ -96,6 +96,8 @@ L["World Protocol"] = "World Protocol"
 -- General Locales
 
 -- Inventory Locales
+L["BoE"] = "BoE"
+L["BoU"] = "BoU"
 L["Can't Buy Slot"] = "Can't buy anymore slots!"
 L["Delete Mode Enabled"] = "|nYou can destroy container item by holding CTRL+ALT. |n|nThe item quality must be lower than |cff0070ddRare|r"
 L["Favourite Mode Enabled"] = "|nYou can now star items.|n|nIf 'Bags ItemFilter' is enabled, the item you starred will be added to the 'Preferences' filter slots.|n|nThis is not available to |cff9d9d9dTrash|r"
@@ -224,3 +226,6 @@ L["UIFonts"] = "UIFonts"
 L["UITextures"] = "UITextures"
 L["Unitframe"] = "Unitframe"
 L["WorldMap"] = "WorldMap"
+
+-- GUI Config Name Locales
+-- Actionbars

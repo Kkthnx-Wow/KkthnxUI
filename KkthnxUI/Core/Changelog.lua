@@ -1,5 +1,8 @@
 local K, C = unpack(select(2,...))
 
+-- Sourced: NDui (siweia)
+-- Edited: KkthnxUI (Kkthnx)
+
 local _G = _G
 local string_split = _G.string.split
 local pairs = _G.pairs
@@ -9,7 +12,17 @@ local UIParent = _G.UIParent
 local CLOSE = _G.CLOSE
 
 local changelogData = {
-	"No Changelog Until Offical Release.",
+	K.SystemColor.."KkthnxUI is now v10.0.1.|r",
+	"Fixed fonts not being loaded properly",
+	"Fixed spelling mistakes in GUI.",
+	"Force AutoScale on installer.",
+	"Goodbye annoying StreamingIcon",
+	"Improved spacing on Boss frames",
+	"Move UIScale into Init.lua",
+	"New PartySync accept module added.",
+	"Small media folder cleanup",
+	"Testing new combat font. Feedback on Discord!",
+	"Updated AutoInvite code",
 }
 
 local changelogFrame
@@ -25,7 +38,7 @@ local function changelog()
 	changelogFrame:CreateBorder()
 
 	K.CreateFontString(changelogFrame, 30, K.Title, "", true, "TOPLEFT", 10, 28)
-	K.CreateFontString(changelogFrame, 14, K.Version, "", true, "TOPLEFT", 140, 16)
+	K.CreateFontString(changelogFrame, 14, K.Version, "", true, "TOPLEFT", 150, 16)
 	K.CreateFontString(changelogFrame, 16, "Changelog", "", true, "TOP", 0, -10)
 	K.CreateMoverFrame(changelogFrame)
 
@@ -51,11 +64,11 @@ local function changelog()
 		K.CreateFontString(changelogFrame, 12, K.InfoColor..n..": |r"..t, "", false, "TOPLEFT", 15, -(50 + offset))
 		offset = offset + 20
 	end
-	changelogFrame:SetSize(400, 60 + offset)
+	changelogFrame:SetSize(456, 60 + offset)
 
 	local close = CreateFrame("Button", nil, changelogFrame)
 	close:SkinButton()
-	close:SetSize(400, 22)
+	close:SetSize(456, 24)
 	close:SetScript("OnClick", function()
 		changelogFrame:Hide()
 	end)

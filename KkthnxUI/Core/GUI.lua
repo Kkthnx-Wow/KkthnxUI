@@ -1,7 +1,7 @@
 local K, C = unpack(select(2, ...))
 
--- Sourced Tukui (Tukz & Hydra)
--- Translate the GUI
+-- Sourced: Tukui (Tukz & Hydra)
+-- Edited: KkthnxUI (Kkthnx)
 
 local _G = _G
 

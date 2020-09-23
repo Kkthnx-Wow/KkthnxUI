@@ -16,7 +16,6 @@ local function SkinChatFrame()
 	BNToastFrame.CloseButton:SkinCloseButton()
 	BNToastFrame.CloseButton:SetSize(32, 32)
 	BNToastFrame.CloseButton:SetPoint("TOPRIGHT", 4, 4)
-	K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", {"TOPLEFT", ChatFrame1Tab, "TOPLEFT", -4, 140}, BNToastFrame:GetWidth(), BNToastFrame:GetHeight())
 
 	local friendTex = "Interface\\HELPFRAME\\ReportLagIcon-Chat"
 	local queueTex = "Interface\\HELPFRAME\\HelpIcon-ItemRestoration"
@@ -77,10 +76,6 @@ local function SkinChatFrame()
 	VoiceChatChannelActivatedNotification.CloseButton:SkinCloseButton()
 	VoiceChatChannelActivatedNotification.CloseButton:SetSize(32, 32)
 	VoiceChatChannelActivatedNotification.CloseButton:SetPoint("TOPRIGHT", 4, 4)
-
-	local vccanMover = K.Mover(VoiceChatChannelActivatedNotification, "VoiceActivatedNotification", "VoiceActivatedNotification", {"TOPLEFT", ChatFrame1Tab, "TOPLEFT", -4, 196}, VoiceChatChannelActivatedNotification:GetWidth(), VoiceChatChannelActivatedNotification:GetHeight())
-	VoiceChatChannelActivatedNotification:ClearAllPoints()
-	VoiceChatChannelActivatedNotification:SetPoint("TOPLEFT", vccanMover)
 end
 
 table_insert(Module.NewSkin["KkthnxUI"], SkinChatFrame)

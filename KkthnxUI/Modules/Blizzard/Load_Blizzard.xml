@@ -8,7 +8,6 @@
     <Script file="Elements\BlizzBugFixes.lua"/>
     <Script file="Elements\ColorPicker.lua"/>
     <Script file="Elements\ErrorFilter.lua"/>
-    <Script file="Elements\Fonts.lua"/>
     <Script file="Elements\MirrorBars.lua"/>
     <Script file="Elements\ObjectiveFrame.lua"/>
     <Script file="Elements\OrderHall.lua"/>

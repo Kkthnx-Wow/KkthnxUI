@@ -1,6 +1,9 @@
 local K, C = unpack(select(2, ...))
 local Module = K:NewModule("VersionCheck")
 
+-- Sourced: NDui (siweia)
+-- Edited: KkthnxUI (Kkthnx)
+
 local _G = _G
 local string_format = _G.string.format
 local string_gsub = _G.string.gsub

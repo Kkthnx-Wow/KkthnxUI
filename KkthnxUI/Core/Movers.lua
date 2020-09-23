@@ -1,6 +1,9 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Mover")
 
+-- Sourced: NDui (siweia)
+-- Edited: KkthnxUI (Kkthnx)
+
 local _G = _G
 local table_wipe = _G.table.wipe
 local unpack = _G.unpack
