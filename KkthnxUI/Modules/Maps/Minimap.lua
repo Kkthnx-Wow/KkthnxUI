@@ -4,6 +4,7 @@ local Module = K:NewModule("Minimap")
 local _G = _G
 local pairs = _G.pairs
 local select = _G.select
+local string_format = _G.string.format
 
 local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
@@ -11,9 +12,146 @@ local GetUnitName = _G.GetUnitName
 local HideUIPanel = _G.HideUIPanel
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
-local UIErrorsFrame = _G.UIErrorsFrame
-local UnitClass = _G.UnitClass
+local IsInGuild = _G.IsInGuild
 local Minimap = _G.Minimap
+local UnitClass = _G.UnitClass
+local table_insert = _G.table.insert
+
+-- Create the new minimap tracking dropdown frame and initialize it
+local KKUI_MiniMapTrackingDropDown = CreateFrame("Frame", "KKUI_MiniMapTrackingDropDown", _G.UIParent, "UIDropDownMenuTemplate")
+KKUI_MiniMapTrackingDropDown:SetID(1)
+KKUI_MiniMapTrackingDropDown:SetClampedToScreen(true)
+KKUI_MiniMapTrackingDropDown:Hide()
+_G.UIDropDownMenu_Initialize(KKUI_MiniMapTrackingDropDown, _G.MiniMapTrackingDropDown_Initialize, "MENU")
+KKUI_MiniMapTrackingDropDown.noResize = true
+
+-- Create the minimap micro menu
+local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent, "UIDropDownMenuTemplate")
+local guildText = IsInGuild() and ACHIEVEMENTS_GUILD_TAB or LOOKINGFORGUILD
+local micromenu = {
+	{text = K.SystemColor.."Micro Menu", notClickable = true, notCheckable = true},
+	{text = "", notClickable = true, notCheckable = true},
+
+	{text = CHARACTER_BUTTON, notCheckable = 1, func = function()
+			ToggleCharacter("PaperDollFrame")
+	end},
+
+	{text = SPELLBOOK_ABILITIES_BUTTON, notCheckable = 1, func = function()
+			ToggleFrame(SpellBookFrame)
+	end},
+
+	{text = TALENTS_BUTTON, notCheckable = 1, func = function()
+			if not PlayerTalentFrame then
+				TalentFrame_LoadUI()
+			end
+			if K.Level >= SHOW_SPEC_LEVEL then
+				ShowUIPanel(PlayerTalentFrame)
+			else
+				K.Print(K.InfoColor..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_SPEC_LEVEL).."|r")
+			end
+	end},
+
+	{text = ACHIEVEMENT_BUTTON, notCheckable = 1, func = function()
+			ToggleAchievementFrame()
+	end},
+
+	{text = QUESTLOG_BUTTON, notCheckable = 1, func = function()
+			ToggleQuestLog()
+	end},
+
+	{text = guildText, notCheckable = 1, func = function()
+			ToggleGuildFrame()
+	end},
+
+	{text = SOCIAL_BUTTON, notCheckable = 1, func = function()
+			ToggleFriendsFrame(1)
+	end},
+
+	{text = RAID, notCheckable = 1, func = function()
+			ToggleFriendsFrame(3)
+	end},
+
+	{text = CHAT_CHANNELS, notCheckable = 1, func = function()
+			ToggleChannelFrame()
+	end},
+
+	{text = PLAYER_V_PLAYER, notCheckable = 1, func = function()
+			if K.Level >= SHOW_PVP_LEVEL then
+				TogglePVPUI()
+			else
+				K.Print(K.InfoColor..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL).."|r")
+			end
+	end},
+
+	{text = DUNGEONS_BUTTON, notCheckable = 1, func = function()
+			if K.Level >= SHOW_LFD_LEVEL then
+				PVEFrame_ToggleFrame("GroupFinderFrame", nil)
+			else
+				pK.Print(K.InfoColor..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL).."|r")
+			end
+	end},
+
+	{text = ADVENTURE_JOURNAL, notCheckable = 1, func = function()
+			if C_AdventureJournal.CanBeShown() then
+				ToggleEncounterJournal()
+			else
+				K.Print(K.InfoColor..FEATURE_NOT_YET_AVAILABLE.."|r")
+			end
+	end},
+
+	{text = QUESTLOG_BUTTON, notCheckable = 1, func = function()
+			OpenQuestLog()
+	end},
+
+	{text = MOUNTS, notCheckable = 1, func = function()
+			ToggleCollectionsJournal(1)
+	end},
+
+	{text = PETS, notCheckable = 1, func = function()
+			ToggleCollectionsJournal(2)
+	end},
+
+	{text = TOY_BOX, notCheckable = 1, func = function()
+			ToggleCollectionsJournal(3)
+	end},
+
+	{text = HEIRLOOMS, notCheckable = 1, func = function()
+			ToggleCollectionsJournal(4)
+	end},
+
+	{text = WARDROBE, notCheckable = 1, func = function()
+			if InCombatLockdown() then
+				K.Print(K.InfoColor..ERR_NOT_IN_COMBAT.."|r") return
+			end
+			ToggleCollectionsJournal(5)
+	end},
+
+	{text = HELP_BUTTON, notCheckable = 1, func = function()
+			ToggleHelpFrame()
+	end},
+
+	{text = EVENTS_LABEL, notCheckable = 1, func = function()
+			ToggleCalendar()
+	end},
+
+	{text = BATTLEFIELD_MINIMAP, notCheckable = 1, func = function()
+			ToggleBattlefieldMap()
+	end},
+
+	{text = LOOT_ROLLS, notCheckable = 1, func = function()
+			ToggleFrame(LootHistoryFrame)
+	end},
+}
+
+if not IsTrialAccount() and not C_StorePublic.IsDisabledByParentalControls() then
+	table_insert(micromenu, {text = BLIZZARD_STORE, notCheckable = 1, func = function() StoreMicroButton:Click() end})
+end
+
+if K.Level > 99 then
+	table_insert(micromenu, {text = ORDER_HALL_LANDING_PAGE_TITLE, notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
+elseif K.Level > 89 then
+	table_insert(micromenu, {text = GARRISON_LANDING_PAGE_TITLE, notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
+end
 
 function Module:CreateStyle()
 	local minimapBorder = CreateFrame("Frame", nil, Minimap)
@@ -249,16 +387,29 @@ function Module:OnEnable()
 
 	-- Click Func
 	Minimap:SetScript("OnMouseUp", function(self, btn)
-		if btn == "MiddleButton" then
+		_G.HideDropDownMenu(1, nil, KKUI_MiniMapTrackingDropDown)
+		menuFrame:Hide()
+
+		local position = Minimap.mover:GetPoint()
+		if btn == "MiddleButton" or (btn == "RightButton" and IsShiftKeyDown()) then
 			if InCombatLockdown() then
-				UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+				_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
 				return
 			end
-			ToggleCalendar()
+
+			if position:match("LEFT") then
+				EasyMenu(micromenu, menuFrame, "cursor", 0, 0, "MENU")
+			else
+				EasyMenu(micromenu, menuFrame, "cursor", -160, 0, "MENU")
+			end
 		elseif btn == "RightButton" then
-			ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, self, -(self:GetWidth() * 0.7), (self:GetWidth() * 0.3))
+			if position:match("LEFT") then
+				ToggleDropDownMenu(1, nil, KKUI_MiniMapTrackingDropDown, "cursor", 0, 0, "MENU", 2)
+			else
+				ToggleDropDownMenu(1, nil, KKUI_MiniMapTrackingDropDown, "cursor", -160, 0, "MENU", 2)
+			end
 		else
-			Minimap_OnClick(self)
+			_G.Minimap_OnClick(self)
 		end
 	end)
 

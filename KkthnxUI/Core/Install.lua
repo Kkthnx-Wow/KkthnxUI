@@ -249,7 +249,7 @@ local function ForceSkadaOptions()
 								["a"] = 0,
 							},
 						},
-						["bartexture"] = "KkthnxUI",
+						["bartexture"] = "KKUI_Statusbar",
 					}, -- [1]
 				},
 				["tooltiprows"] = 10,
@@ -313,11 +313,11 @@ local function ForceBigwigs()
 						["BigWigsAnchor_width"] = 175,
 						["growup"] = true,
 						["interceptMouse"] = false,
-						["barStyle"] = "KkthnxUI",
+						["barStyle"] = "KKUI_Statusbar",
 						["LeftButton"] = {
 							["emphasize"] = false,
 						},
-						["font"] = "KkthnxUIFont",
+						["font"] = "KKUI_Normal",
 						["onlyInterceptOnKeypress"] = true,
 						["emphasizeMultiplier"] = 1,
 						["BigWigsEmphasizeAnchor_x"] = 810,
@@ -331,7 +331,7 @@ local function ForceBigwigs()
 				["profiles"] = {
 					["Default"] = {
 						["fontSize"] = 28,
-						["font"] = "KkthnxUIFont",
+						["font"] = "KKUI_Normal",
 					},
 				},
 			},
@@ -339,7 +339,7 @@ local function ForceBigwigs()
 				["profiles"] = {
 					["Default"] = {
 						["fontSize"] = 18,
-						["font"] = "KkthnxUIFont",
+						["font"] = "KKUI_Normal",
 						["BWEmphasizeCountdownMessageAnchor_x"] = 665,
 						["BWMessageAnchor_x"] = 616,
 						["BWEmphasizeCountdownMessageAnchor_y"] = 530,
@@ -351,7 +351,7 @@ local function ForceBigwigs()
 				["profiles"] = {
 					["Default"] = {
 						["fontSize"] = 18,
-						["font"] = "KkthnxUIFont",
+						["font"] = "KKUI_Normal",
 						["posy"] = 346,
 						["width"] = 140,
 						["posx"] = 1024,
@@ -364,7 +364,7 @@ local function ForceBigwigs()
 					["Default"] = {
 						["posx"] = 1002,
 						["fontSize"] = 14,
-						["font"] = "KkthnxUIFont",
+						["font"] = "KKUI_Normal",
 						["fontOutline"] = "OUTLINE",
 						["posy"] = 490,
 					},

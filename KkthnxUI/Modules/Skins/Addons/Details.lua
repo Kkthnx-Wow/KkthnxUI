@@ -35,9 +35,9 @@ function Module:ReskinDetails()
 		instance:SetBackdropTexture("None")
 		instance:MenuAnchor(16, 3)
 		instance:ToolbarMenuButtonsSize(1)
-		instance:AttributeMenu(true, 0, 3, "KkthnxUI_Normal", 12, {1, 1, 1}, 1, false)
-		instance:SetBarSettings(20, KkthnxUIData["ResetDetails"] and "KkthnxUI_Statusbar" or nil)
-		instance:SetBarTextSettings(KkthnxUIData["ResetDetails"] and 12 or nil, "KkthnxUI_Normal", nil, nil, nil, true, true, nil, nil, nil, nil, nil, nil, false, nil, false, nil)
+		instance:AttributeMenu(true, 0, 3, "KKUI_Normal", 12, {1, 1, 1}, 1, false)
+		instance:SetBarSettings(20, KkthnxUIData["ResetDetails"] and "KKUI_Statusbar" or nil)
+		instance:SetBarTextSettings(KkthnxUIData["ResetDetails"] and 12 or nil, "KKUI_Normal", nil, nil, nil, true, true, nil, nil, nil, nil, nil, nil, false, nil, false, nil)
 
 		instance.baseframe:CreateBackdrop()
 		instance.baseframe.Backdrop:SetPoint("TOPLEFT", -1, 18)
@@ -105,8 +105,8 @@ function Module:ReskinDetails()
 	Details.OpenWelcomeWindow = function()
 		if instance1 then
 			EmbedWindow(instance1, -370, 4, 260, 126)
-			instance1:SetBarSettings(20, "KkthnxUI_Statusbar")
-			instance1:SetBarTextSettings(12, "KkthnxUI_Normal", nil, nil, nil, true, true, nil, nil, nil, nil, nil, nil, false, nil, false, nil)
+			instance1:SetBarSettings(20, "KKUI_StatusBar")
+			instance1:SetBarTextSettings(12, "KKUI_Normal", nil, nil, nil, true, true, nil, nil, nil, nil, nil, nil, false, nil, false, nil)
 		end
 	end
 

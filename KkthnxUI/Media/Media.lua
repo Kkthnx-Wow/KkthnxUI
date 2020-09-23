@@ -42,6 +42,8 @@ C["Media"] = {
 if (K.Client == "koKR" or K.Client == "zhTW" or K.Client == "zhCN") then
 	C["Media"].Font = STANDARD_TEXT_FONT
 	C["Media"].CombatFont = DAMAGE_TEXT_FONT
+elseif (K.Client ~= "enUS" and K.Client ~= "frFR" and K.Client ~= "enGB") then
+	C["Media"].CombatFont = DAMAGE_TEXT_FONT
 end
 
 if K.LSM == nil then
@@ -49,11 +51,11 @@ if K.LSM == nil then
 end
 
 -- LibSharedMedia Stuff
-K.LSM:Register("border", "KkthnxUI_Border", [[Interface\AddOns\KkthnxUI\Media\Border\Border_Tooltip.tga]])
-K.LSM:Register("border", "KkthnxUI_GlowTex", [[Interface\AddOns\KkthnxUI\Media\Textures\GlowTex]])
-K.LSM:Register("font", "KkthnxUI_Damage", [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]], K.LSM.LOCALE_BIT_ruRU + K.LSM.LOCALE_BIT_western)
-K.LSM:Register("font", "KkthnxUI_Normal", [[Interface\AddOns\KkthnxUI\Media\Fonts\Normal.ttf]], K.LSM.LOCALE_BIT_ruRU + K.LSM.LOCALE_BIT_western)
+K.LSM:Register("border", "KKUI_Border", [[Interface\AddOns\KkthnxUI\Media\Border\Border_Tooltip.tga]])
+K.LSM:Register("border", "KKUI_GlowTex", [[Interface\AddOns\KkthnxUI\Media\Textures\GlowTex]])
+K.LSM:Register("font", "KKUI_Damage", [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]])
+K.LSM:Register("font", "KKUI_Normal", [[Interface\AddOns\KkthnxUI\Media\Fonts\Normal.ttf]])
 K.LSM:Register("sound", "GameMaster_Whisper", [[Sound\Spells\Simongame_visual_gametick.wav]])
-K.LSM:Register("sound", "KkthnxUI_Whisper", [[Interface\AddOns\KkthnxUI\Media\Sounds\KWhisper.ogg]])
-K.LSM:Register("sound", "Spell_Proc", [[Interface\AddOns\KkthnxUI\Media\Sounds\Proc.ogg]])
-K.LSM:Register("statusbar", "KkthnxUI_StatusBar", [[Interface\TargetingFrame\UI-StatusBar]])
+K.LSM:Register("sound", "KKUI_SpellProc", [[Interface\AddOns\KkthnxUI\Media\Sounds\Proc.ogg]])
+K.LSM:Register("sound", "KKUI_Whisper", [[Interface\AddOns\KkthnxUI\Media\Sounds\KWhisper.ogg]])
+K.LSM:Register("statusbar", "KKUI_StatusBar", [[Interface\TargetingFrame\UI-StatusBar]])

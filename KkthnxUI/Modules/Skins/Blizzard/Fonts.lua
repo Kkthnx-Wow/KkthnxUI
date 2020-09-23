@@ -179,7 +179,7 @@ function Module:ReskinBlizzardFonts()
 		local button = self.CategoryButtons[btnIndex]
 		if (button) then
 			if not button.isFontFixed then
-				--Fix issue with labels not following changes to GameFontNormal as they should
+				-- Fix issue with labels not following changes to GameFontNormal as they should
 				button.Label:SetFontObject(_G.GameFontNormal)
 				button.isFontFixed = true
 			end

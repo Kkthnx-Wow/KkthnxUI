@@ -41,7 +41,7 @@ function Module:OnEnable()
 	self:ReskinDetails()
 	self:ReskinHekili()
 	self:ReskinImmersion()
-	self:ReskinOPie()
+	-- self:ReskinOPie() -- Broken atm
 	self:ReskinRaiderIO()
 	self:ReskinSimulationcraft()
 	self:ReskinSkada()
