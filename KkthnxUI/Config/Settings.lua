@@ -99,7 +99,6 @@ C["Inventory"] = {
 	["ItemFilter"] = true,
 	["ItemSetFilter"] = false,
 	["ReverseSort"] = false,
-	["BagsBindType"] = false,
 	["ShowNewItem"] = true,
 	["SpecialBagsColor"] = false,
 	["UpgradeIcon"] = true,
