@@ -11,6 +11,10 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
 function Module:CreatePetbar()
+	if not C["ActionBar"].PetBar then
+		return
+	end
+
 	local padding, margin = 0, 6
 	local num = NUM_PET_ACTION_SLOTS
 	local buttonList = {}

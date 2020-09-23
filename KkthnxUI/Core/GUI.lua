@@ -854,10 +854,10 @@ local ScrollMenu = function(self)
 	for i = 1, #self do
 		if (i >= self.Offset) and (i <= self.Offset + ListItemsToShow - 1) then
 			if (not First) then
-				self[i]:SetPoint("TOPLEFT", self, 0, 0)
+				self[i]:SetPoint("TOPLEFT", self, 3, -3)
 				First = true
 			else
-				self[i]:SetPoint("TOPLEFT", self[i - 1], "BOTTOMLEFT", 0, 1)
+				self[i]:SetPoint("TOPLEFT", self[i - 1], "BOTTOMLEFT", 0, -6)
 			end
 
 			self[i]:Show()
@@ -963,10 +963,10 @@ local AddDropdownScrollBar = function(self)
 	ScrollBar:Show()
 
 	for i = 1, #self do
-		self[i]:SetWidth((DropdownWidth - Width) - (Spacing * 3) - 1)
+		self[i]:SetWidth((DropdownWidth - Width) - (Spacing * 3) + 2)
 	end
 
-	self:SetHeight(((WidgetHeight + 4) * ListItemsToShow) + 6)
+	self:SetHeight(((WidgetHeight + 6) * ListItemsToShow) - 0)
 end
 
 local CreateDropdown = function(self, group, option, text, custom)
@@ -1059,9 +1059,9 @@ local CreateDropdown = function(self, group, option, text, custom)
 
 	Dropdown.Menu = CreateFrame("Frame", nil, Dropdown)
 	Dropdown.Menu:SetPoint("TOP", Dropdown, "BOTTOM", 0, -6)
-	Dropdown.Menu:SetSize(DropdownWidth, 6)
+	Dropdown.Menu:SetSize(DropdownWidth, 1)
 	Dropdown.Menu:CreateBorder()
-	Dropdown.Menu:SetFrameLevel(Dropdown.Menu:GetFrameLevel() + 4)
+	Dropdown.Menu:SetFrameLevel(Dropdown.Menu:GetFrameLevel() + 2)
 	Dropdown.Menu:SetFrameStrata("DIALOG")
 	Dropdown.Menu:Hide()
 	Dropdown.Menu:SetAlpha(0)
@@ -1104,21 +1104,18 @@ local CreateDropdown = function(self, group, option, text, custom)
 		MenuItem.GrandParent = MenuItem:GetParent():GetParent()
 
 		MenuItem.Highlight = MenuItem:CreateTexture(nil, "OVERLAY")
-		MenuItem.Highlight:SetPoint("TOPLEFT", MenuItem, 1, -1)
-		MenuItem.Highlight:SetPoint("BOTTOMRIGHT", MenuItem, -1, 1)
+		MenuItem.Highlight:SetAllPoints()
 		MenuItem.Highlight:SetTexture(Texture)
 		MenuItem.Highlight:SetVertexColor(123/255, 132/255, 137/255)
 		MenuItem.Highlight:SetAlpha(0)
 
 		MenuItem.Texture = MenuItem:CreateTexture(nil, "ARTWORK")
-		MenuItem.Texture:SetPoint("TOPLEFT", MenuItem, 1, -1)
-		MenuItem.Texture:SetPoint("BOTTOMRIGHT", MenuItem, -1, 1)
+		MenuItem.Texture:SetAllPoints()
 		MenuItem.Texture:SetTexture(Texture)
 		MenuItem.Texture:SetVertexColor(unpack(BrightColor))
 
 		MenuItem.Selected = MenuItem:CreateTexture(nil, "OVERLAY")
-		MenuItem.Selected:SetPoint("TOPLEFT", MenuItem, 1, -1)
-		MenuItem.Selected:SetPoint("BOTTOMRIGHT", MenuItem, -1, 1)
+		MenuItem.Selected:SetAllPoints()
 		MenuItem.Selected:SetTexture(Texture)
 		MenuItem.Selected:SetVertexColor(R, G, B)
 
@@ -1179,7 +1176,7 @@ local CreateDropdown = function(self, group, option, text, custom)
 	if (#Dropdown.Menu > ListItemsToShow) then
 		AddDropdownScrollBar(Dropdown.Menu)
 	else
-		Dropdown.Menu:SetHeight(((WidgetHeight + 4) * Count) + 6)
+		Dropdown.Menu:SetHeight(((WidgetHeight + 6) * Count) + 0)
 	end
 
 	if self.Widgets then
@@ -1719,7 +1716,6 @@ GUI.Enable = function(self)
 	self.Footer:SetFrameStrata("DIALOG")
 	self.Footer:SetSize(HeaderWidth, HeaderHeight)
 	self.Footer:SetPoint("BOTTOM", self, 0, Spacing)
-	self.Footer:SetBackdropColor(unpack(LightColor))
 
 	local FooterButtonWidth = ((HeaderWidth / 4) - Spacing) + 1
 
@@ -1795,7 +1791,6 @@ GUI.Enable = function(self)
 	Reset:SetSize(FooterButtonWidth - 1, HeaderHeight)
 	Reset:SetPoint("LEFT", Apply, "RIGHT", (Spacing - 1), 0)
 	Reset:CreateBorder()
-	Reset:SetBackdropColor(unpack(BrightColor))
 	Reset:SetScript("OnMouseDown", ButtonOnMouseDown)
 	Reset:SetScript("OnMouseUp", ButtonOnMouseUp)
 	Reset:SetScript("OnEnter", ButtonOnEnter)

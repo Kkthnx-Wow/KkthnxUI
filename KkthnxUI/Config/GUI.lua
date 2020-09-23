@@ -104,6 +104,8 @@ local ActionBar = function(self)
 	Window:CreateSwitch("ActionBar", "MicroBar", "Enable MicroBar")
 	Window:CreateSwitch("ActionBar", "MicroBarMouseover", "Enable MicroBarMouseover")
 	Window:CreateSwitch("ActionBar", "OverrideWA", "Enable OverrideWA")
+	Window:CreateSwitch("ActionBar", "PetBar", "Show PetBar")
+	Window:CreateSwitch("ActionBar", "StanceBar", "Show StanceBar")
 
 	Window:CreateSection("ActionBar Sizes")
 	Window:CreateSlider("ActionBar", "DefaultButtonSize", "Set MainBars Button Size", 28, 36, 1)

@@ -11,6 +11,10 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
 function Module:CreateStancebar()
+	if not C["ActionBar"].StanceBar then
+		return
+	end
+
 	local padding, margin = 0, 6
 	local num = NUM_STANCE_SLOTS
 	local buttonList = {}
