@@ -13,7 +13,13 @@ local CLOSE = _G.CLOSE
 
 local changelogData = {
 	K.SystemColor.."KkthnxUI is now v10.0.1.|r",
-	"Fixed a rare nil error on a new character",
+	"Added the option to hide Petbar.",
+	"Added the option to hide Stancebar.",
+	"Fixed GUI dropdowns.",
+	"Fixed a rare nil error on a new character.",
+	"Reverted to an older font.",
+	"Added more checks to other clients against my chosen font.",
+	"Added micromenu back to minimap.",
 }
 
 local changelogFrame
