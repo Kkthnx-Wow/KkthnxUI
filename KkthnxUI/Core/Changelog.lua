@@ -13,16 +13,7 @@ local CLOSE = _G.CLOSE
 
 local changelogData = {
 	K.SystemColor.."KkthnxUI is now v10.0.1.|r",
-	"Fixed fonts not being loaded properly",
-	"Fixed spelling mistakes in GUI.",
-	"Force AutoScale on installer.",
-	"Goodbye annoying StreamingIcon",
-	"Improved spacing on Boss frames",
-	"Move UIScale into Init.lua",
-	"New PartySync accept module added.",
-	"Small media folder cleanup",
-	"Testing new combat font. Feedback on Discord!",
-	"Updated AutoInvite code",
+	"Fixed a rare nil error on a new character",
 }
 
 local changelogFrame
