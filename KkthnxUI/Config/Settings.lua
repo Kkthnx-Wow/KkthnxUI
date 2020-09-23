@@ -214,6 +214,7 @@ C["General"] = {
 	["MoveBlizzardFrames"] = false,
 	["NoTutorialButtons"] = false,
 	["ReplaceBlizzardFonts"] = true,
+	["ReplaceCombatFont"] = true,
 	["TexturesColor"] = {0.9, 0.9, 0.9},
 	["UIScale"] = 0.71111,
 	["UseGlobal"] = false,

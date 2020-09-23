@@ -39,9 +39,12 @@ function Module:ReskinBlizzardFonts()
 
 	_G.CHAT_FONT_HEIGHTS = {12, 13, 14, 15, 16, 17, 18, 19, 20}
 
+	if C["General"].ReplaceCombatFont then
+		_G.DAMAGE_TEXT_FONT = COMBAT
+	end
+
 	if C["General"].ReplaceBlizzardFonts then
 		_G.UNIT_NAME_FONT		= NAMEFONT
-		_G.DAMAGE_TEXT_FONT		= COMBAT
 		_G.STANDARD_TEXT_FONT	= NORMAL
 
 		SetFont(_G.AchievementFont_Small,				NORMAL, C["General"].FontSize) -- Achiev dates

@@ -306,6 +306,7 @@ local General = function(self)
 	Window:CreateSwitch("General", "MoveBlizzardFrames", "Move Blizzard Frames")
 	Window:CreateSwitch("General", "NoTutorialButtons", "Disable 'Some' Blizzard Tutorials")
 	Window:CreateSwitch("General", "ReplaceBlizzardFonts", "Replace 'Some' Blizzard Fonts")
+	Window:CreateSwitch("General", "ReplaceCombatFont", "Replace Blizzard Combat Font")
 	Window:CreateSwitch("General", "VersionCheck", "Enable Version Checking")
 	Window:CreateSwitch("General", "Welcome", "Show Welcome Message")
 	if C["General"].ReplaceBlizzardFonts then
