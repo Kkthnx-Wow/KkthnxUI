@@ -402,7 +402,7 @@ function K.LoadCustomSettings()
 	end
 end
 
-K:RegisterEvent("VARIABLES_LOADED", function()
+K:RegisterEvent("VARIABLES_LOADED", function(event)
 	-- Add SavedVariables
 	K.CheckSavedVariables()
 	K.StoreDefaults()
@@ -415,6 +415,8 @@ K:RegisterEvent("VARIABLES_LOADED", function()
 	K.GUID = UnitGUID("player")
 	-- Enable GUI
 	K["GUI"]:Enable()
+
+	K:UnregisterEvent(event)
 end)
 
 -- Event return values were wrong: https://wow.gamepedia.com/PLAYER_LEVEL_UP

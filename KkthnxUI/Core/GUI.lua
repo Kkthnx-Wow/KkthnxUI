@@ -33,12 +33,8 @@ local Texture = C["Media"].Texture
 local ArrowUp = "Interface\\Buttons\\Arrow-Up-Down"
 local ArrowDown = "Interface\\Buttons\\Arrow-Down-Down"
 
-local LightColor = {0.175, 0.175, 0.175}
 local BGColor = {0.2, 0.2, 0.2}
 local BrightColor = {0.35, 0.35, 0.35}
--- local HeaderColor = {0.43, 0.43, 0.43}
-
--- local GreyColor = {123/255, 132/255, 137/255}
 
 local Color = K.Colors.class[select(2, UnitClass("player"))]
 local R, G, B = unpack(Color)
@@ -66,7 +62,64 @@ local WidgetHighlightAlpha = 0.25
 
 local LastActiveWindow
 
-local CreditLines = {"|CFFfa6a56Patreons|r", K.GreyColor.."<----------------->|r", "|CFFfa6a56Tier 1|r", "Shale", "Tr0uBl3Sh00t3R", "Bbobz", "Roflmao", "", "|CFFfa6a56Tier 2|r", "Big Balkan Wolf", "", "|CFFfa6a56Tier 4|r", "|cff0070DERokalm|r", "", "|CFFFFCC66Credits|r", K.GreyColor.."<----------------->|r", "Aftermathh", "Alza", "Azilroka", "Blazeflack", "Caellian", "Caith", "|CCFA9D271Cassamarra|r", "Darth Predator", "Elv", "|CFFFF7D0AGoldpaw|r", "Haleth", "Haste", "Hungtar", "Hydra", "Ishtara", "KkthnxUI Community", "LightSpark", "Magicnachos", "Merathilis", "Nightcracker", "P3lim", "Rav99", "Roth", "Shestak", "Simpy", "siweia", "|CFFC41F3BSophia|r", "Sticklord", "Tekkub", "Tohveli", "Tukz", "Tulla", "Tuller", "oUF Team"}
+local CreditLines = {
+	K.GreyColor.."~~~~|r |CFFfa6a56Patreons|r "..K.GreyColor.."~~~~",
+	-- Tier 1
+	"|CFFfa6a56Tier 1|r",
+	"Shale",
+	"Tr0uBl3Sh00t3R",
+	"Bbobz",
+	"Roflmao",
+	"",
+	-- Tier 2
+	"|CFFfa6a56Tier 2|r",
+	"Big Balkan Wolf",
+	"",
+	-- Tier 3
+	"|CFFfa6a56Tier 3|r",
+	"|CFFF58CBAChirs|r",
+	"thondr",
+	"",
+	-- Tier 4
+	"|CFFfa6a56Tier 4|r",
+	"|cff0070DERokalm|r",
+	"",
+	K.GreyColor.."~~~~|r |CFFFFCC66Credits|r "..K.GreyColor.."~~~~",
+	"Aftermathh",
+	"Alza",
+	"Azilroka",
+	"Blazeflack",
+	"Caellian",
+	"Caith",
+	"|CCFA9D271Cassamarra|r",
+	"Darth Predator",
+	"Elv",
+	"|CFFFF7D0AGoldpaw|r",
+	"Haleth",
+	"Haste",
+	"Hungtar",
+	"Hydra",
+	"Ishtara",
+	"KkthnxUI Community",
+	"LightSpark",
+	"Magicnachos",
+	"Merathilis",
+	"Nightcracker",
+	"P3lim",
+	"Rav99",
+	"Roth",
+	"Shestak",
+	"Simpy",
+	"siweia",
+	"|CFFC41F3BSophia|r",
+	"Sticklord",
+	"Tekkub",
+	"Tohveli",
+	"Tukz",
+	"Tulla",
+	"Tuller",
+	"oUF Team",
+}
 
 local GUI = CreateFrame("Frame", "KKUI_GUI", UIParent)
 GUI.Windows = {}
@@ -1975,7 +2028,7 @@ GUI.Enable = function(self)
 	Scrollable:SetSize(ScrollFrame:GetSize())
 
 	CreditFrame.Move = CreateAnimationGroup(Scrollable):CreateAnimation("Move")
-	CreditFrame.Move:SetDuration(12)
+	CreditFrame.Move:SetDuration(24)
 	CreditFrame.Move:SetScript("OnFinished", function(self)
 		local Parent = self:GetParent()
 

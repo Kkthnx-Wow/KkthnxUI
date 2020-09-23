@@ -268,5 +268,4 @@ function Module:CreateChatFilter()
 	hooksecurefunc(BNToastFrame, "ShowToast", self.BlockTrashClub)
 
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", isPlayerOnIslands)
-
 end
