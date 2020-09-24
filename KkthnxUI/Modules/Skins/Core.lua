@@ -7,9 +7,9 @@ local type = _G.type
 
 Module.NewSkin = {}
 Module.NewSkin["KkthnxUI"] = {}
-K:RegisterEvent("ADDON_LOADED", function(_, addon)
+K:RegisterEvent("ADDON_LOADED", function(event, addon)
 	if IsAddOnLoaded("Skinner") or IsAddOnLoaded("Aurora") or not C["Skins"].BlizzardFrames then
-		K:UnregisterEvent("ADDON_LOADED")
+		K:UnregisterEvent(event)
 		return
 	end
 
