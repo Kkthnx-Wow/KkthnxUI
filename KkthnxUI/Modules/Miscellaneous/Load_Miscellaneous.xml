@@ -5,7 +5,6 @@
 
    <Script file="Elements\AFKCam.lua" />
    <Script file="Elements\AlreadyKnown.lua" />
-   <Script file="Elements\ChatBubble.lua" />
    <Script file="Elements\Durability.lua" />
    <Script file="Elements\ImprovedMail.lua" />
    <Script file="Elements\KillingBlow.lua" />

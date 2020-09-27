@@ -43,6 +43,16 @@ Engine[3] = {} -- L, Locales
 
 local K, C, L = unpack(Engine)
 
+-- Deprecated
+LE_ITEM_QUALITY_POOR = Enum.ItemQuality.Poor
+LE_ITEM_QUALITY_COMMON = Enum.ItemQuality.Common
+LE_ITEM_QUALITY_UNCOMMON = Enum.ItemQuality.Uncommon
+LE_ITEM_QUALITY_RARE = Enum.ItemQuality.Rare
+LE_ITEM_QUALITY_EPIC = Enum.ItemQuality.Epic
+LE_ITEM_QUALITY_LEGENDARY = Enum.ItemQuality.Legendary
+LE_ITEM_QUALITY_ARTIFACT = Enum.ItemQuality.Artifact
+LE_ITEM_QUALITY_HEIRLOOM = Enum.ItemQuality.Heirloom
+
 K.oUF = Engine.oUF
 K.cargBags = Engine.cargBags
 K.Unfit = LibStub("Unfit-1.0")

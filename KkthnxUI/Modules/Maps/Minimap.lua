@@ -160,7 +160,7 @@ function Module:CreateStyle()
 	minimapBorder:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 	minimapBorder.KKUI_InnerShadow:SetAlpha(0.7)
 
-	local minimapMailPulse = CreateFrame("Frame", nil, Minimap)
+	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, BackdropTemplateMixin and "BackdropTemplate" or nil)
 	minimapMailPulse:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
 	minimapMailPulse:SetPoint("TOPLEFT", minimapBorder, -6, 6)
 	minimapMailPulse:SetPoint("BOTTOMRIGHT", minimapBorder, 6, -6)
@@ -195,36 +195,38 @@ end
 
 function Module:ReskinRegions()
 	-- Garrison
-	if GarrisonLandingPageMinimapButton then
-		if not C["Minimap"].ShowGarrison then
-			-- ugly hack to keep the keybind functioning
-			GarrisonLandingPageMinimapButton:SetParent(K.UIFrameHider)
-			GarrisonLandingPageMinimapButton:UnregisterAllEvents()
-			GarrisonLandingPageMinimapButton:Show()
-			GarrisonLandingPageMinimapButton.Hide = GarrisonLandingPageMinimapButton.Show
-		else
-			GarrisonLandingPageMinimapButton:ClearAllPoints()
-			GarrisonLandingPageMinimapButton:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, 0)
-			GarrisonLandingPageMinimapButton:SetScale(0.8)
-			if GarrisonLandingPageTutorialBox then
-				GarrisonLandingPageTutorialBox:SetScale(1)
-				GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
+	hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function(self)
+		if GarrisonLandingPageMinimapButton then
+			if not C["Minimap"].ShowGarrison then
+				-- ugly hack to keep the keybind functioning
+				GarrisonLandingPageMinimapButton:SetParent(K.UIFrameHider)
+				GarrisonLandingPageMinimapButton:UnregisterAllEvents()
+				GarrisonLandingPageMinimapButton:Show()
+				GarrisonLandingPageMinimapButton.Hide = GarrisonLandingPageMinimapButton.Show
+			else
+				GarrisonLandingPageMinimapButton:ClearAllPoints()
+				GarrisonLandingPageMinimapButton:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, 0)
+				GarrisonLandingPageMinimapButton:SetScale(0.8)
+				if GarrisonLandingPageTutorialBox then
+					GarrisonLandingPageTutorialBox:SetScale(1)
+					GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
+				end
+			end
+
+			if not IsAddOnLoaded("GarrisonMissionManager") then
+				GarrisonLandingPageMinimapButton:RegisterForClicks("AnyUp")
+				GarrisonLandingPageMinimapButton:HookScript("OnClick", function(_, btn, down)
+					if btn == "MiddleButton" and not down then
+						HideUIPanel(GarrisonLandingPage)
+						ShowGarrisonLandingPage(LE_GARRISON_TYPE_7_0)
+					elseif btn == "RightButton" and not down then
+						HideUIPanel(GarrisonLandingPage)
+						ShowGarrisonLandingPage(LE_GARRISON_TYPE_6_0)
+					end
+				end)
 			end
 		end
-
-		if not IsAddOnLoaded("GarrisonMissionManager") then
-			GarrisonLandingPageMinimapButton:RegisterForClicks("AnyUp")
-			GarrisonLandingPageMinimapButton:HookScript("OnClick", function(_, btn, down)
-				if btn == "MiddleButton" and not down then
-					HideUIPanel(GarrisonLandingPage)
-					ShowGarrisonLandingPage(LE_GARRISON_TYPE_7_0)
-				elseif btn == "RightButton" and not down then
-					HideUIPanel(GarrisonLandingPage)
-					ShowGarrisonLandingPage(LE_GARRISON_TYPE_6_0)
-				end
-			end)
-		end
-	end
+	end)
 
 	-- QueueStatus Button
 	if QueueStatusMinimapButton then
@@ -291,7 +293,7 @@ function Module:ReskinRegions()
 		GameTimeCalendarInvitesTexture:SetPoint("TOPRIGHT")
 	end
 
-	local inviteNotification = CreateFrame("Button", nil, UIParent)
+	local inviteNotification = CreateFrame("Button", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate" or nil)
 	inviteNotification:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 13})
 	inviteNotification:SetPoint("TOPLEFT", Minimap, -6, 6)
 	inviteNotification:SetPoint("BOTTOMRIGHT", Minimap, 6, -6)

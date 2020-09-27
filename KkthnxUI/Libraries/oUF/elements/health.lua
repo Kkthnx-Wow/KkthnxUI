@@ -45,6 +45,10 @@ The following options are listed by priority. The first check that returns true 
 
 .multiplier - Used to tint the background based on the main widgets R, G and B values. Defaults to 1 (number)[0-1]
 
+## Attributes
+
+.disconnected - Indicates whether the unit is disconnected (boolean)
+
 ## Examples
 
 	-- Position and size
@@ -85,7 +89,7 @@ local function UpdateColor(self, event, unit)
 	local element = self.Health
 
 	local r, g, b, t
-	if(element.colorDisconnected and not UnitIsConnected(unit)) then
+	if(element.colorDisconnected and element.disconnected) then
 		t = self.colors.disconnected
 	elseif(element.colorTapping and not UnitPlayerControlled(unit) and UnitIsTapDenied(unit)) then
 		t = self.colors.tapped
@@ -160,6 +164,7 @@ local function Update(self, event, unit)
 
 	element.cur = cur
 	element.max = max
+	element.disconnected = disconnected
 
 	--[[ Callback: Health:PostUpdate(unit, cur, max)
 	Called after the element has been updated.
@@ -212,13 +217,11 @@ local function SetHealthUpdateMethod(self, state, force)
 
 		if state then
 			self.Health:SetScript('OnUpdate', onUpdateHealth)
-			self:UnregisterEvent('UNIT_HEALTH_FREQUENT', Path)
 			self:UnregisterEvent('UNIT_HEALTH', Path)
 			self:UnregisterEvent('UNIT_MAXHEALTH', Path)
 		else
 			self.Health:SetScript('OnUpdate', nil)
 			self:RegisterEvent('UNIT_HEALTH', Path) -- Needed for Pet Battles
-			self:RegisterEvent('UNIT_HEALTH_FREQUENT', Path)
 			self:RegisterEvent('UNIT_MAXHEALTH', Path)
 		end
 	end
@@ -264,7 +267,6 @@ local function Disable(self)
 		element:Hide()
 
 		element:SetScript('OnUpdate', nil)
-		self:UnregisterEvent('UNIT_HEALTH_FREQUENT', Path)
 		self:UnregisterEvent('UNIT_HEALTH', Path)
 		self:UnregisterEvent('UNIT_MAXHEALTH', Path)
 

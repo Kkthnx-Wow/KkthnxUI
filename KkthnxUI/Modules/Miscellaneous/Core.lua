@@ -552,11 +552,11 @@ function Module:CreateKillTutorials()
 		return
 	end
 
-	_G.HelpOpenTicketButtonTutorial:Kill()
+	--_G.HelpOpenTicketButtonTutorial:Kill()
 	_G.HelpPlate:Kill()
 	_G.HelpPlateTooltip:Kill()
 	_G.SpellBookFrameTutorialButton:Kill()
-	_G.EJMicroButtonAlert:Kill()
+	--_G.EJMicroButtonAlert:Kill()
 	_G.WorldMapFrame.BorderFrame.Tutorial:Kill()
 end
 
@@ -590,7 +590,6 @@ function Module:OnEnable()
 	self:CreateBlockStrangerInvites()
 	self:CreateBossBanner()
 	self:CreateBossEmote()
-	self:CreateChatBubbles()
 	self:CreateDurabilityFrame()
 	self:CreateImprovedMail()
 	self:CreateImprovedStats()

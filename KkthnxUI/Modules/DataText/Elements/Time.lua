@@ -22,6 +22,8 @@ local C_Calendar_GetNumDayEvents = _G.C_Calendar.GetNumDayEvents
 local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
 local C_Calendar_OpenCalendar = _G.C_Calendar.OpenCalendar
 local C_Calendar_SetAbsMonth = _G.C_Calendar.SetAbsMonth
+local C_CurrencyInfo_GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo
+local C_DateAndTime_GetCurrentCalendarTime = _G.C_DateAndTime.GetCurrentCalendarTime
 local C_IslandsQueue_GetIslandsWeeklyQuestID = _G.C_IslandsQueue.GetIslandsWeeklyQuestID
 local C_Map_GetMapInfo = _G.C_Map.GetMapInfo
 local C_TaskQuest_GetQuestInfoByQuestID = _G.C_TaskQuest.GetQuestInfoByQuestID
@@ -33,7 +35,6 @@ local GameTime_GetLocalTime = _G.GameTime_GetLocalTime
 local GameTooltip = _G.GameTooltip
 local GetCVar = _G.GetCVar
 local GetCVarBool = _G.GetCVarBool
-local GetCurrencyInfo = _G.GetCurrencyInfo
 local GetGameTime = _G.GetGameTime
 local GetNumSavedInstances = _G.GetNumSavedInstances
 local GetNumSavedWorldBosses = _G.GetNumSavedWorldBosses
@@ -152,10 +153,10 @@ function Module:TimeOnUpdate(elapsed)
 	end
 end
 
-local bonusName = GetCurrencyInfo(1580)
+local bonusName = C_CurrencyInfo_GetCurrencyInfo(1580).name
 local isTimeWalker, walkerTexture
 local function checkTimeWalker(event)
-	local date = C_Calendar_GetDate()
+	local date = C_DateAndTime_GetCurrentCalendarTime()
 	C_Calendar_SetAbsMonth(date.month, date.year)
 	C_Calendar_OpenCalendar()
 
@@ -256,7 +257,7 @@ function Module:TimeOnEnter()
 	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
 
-	local today = C_Calendar_GetDate()
+	local today = C_DateAndTime_GetCurrentCalendarTime()
 	local w, m, d, y = today.weekday, today.month, today.monthDay, today.year
 	GameTooltip:AddLine(string_format(FULLDATE, CALENDAR_WEEKDAY_NAMES[w], CALENDAR_FULLDATE_MONTH_NAMES[m], d, y), 0, 0.6, 1)
 	GameTooltip:AddLine(" ")
@@ -309,7 +310,7 @@ function Module:TimeOnEnter()
 	title = false
 	local count, maxCoins = 0, 2
 	for _, id in pairs(timeBonusList) do
-		if IsQuestFlaggedCompleted(id) then
+		if C_QuestLog.IsQuestFlaggedCompleted(id) then
 			count = count + 1
 		end
 	end
@@ -340,7 +341,7 @@ function Module:TimeOnEnter()
 	end
 
 	for _, v in ipairs(horrificVisions) do
-		if IsQuestFlaggedCompleted(v.id) then
+		if C_QuestLog.IsQuestFlaggedCompleted(v.id) then
 			addTitle(QUESTS_LABEL)
 			GameTooltip:AddDoubleLine(SPLASH_BATTLEFORAZEROTH_8_3_0_FEATURE1_TITLE, v.desc, 1, 1, 1, 0, 1, 0)
 			break
@@ -350,7 +351,7 @@ function Module:TimeOnEnter()
 	local iwqID = C_IslandsQueue_GetIslandsWeeklyQuestID()
 	if iwqID and K.Level == 120 then
 		addTitle(QUESTS_LABEL)
-		if IsQuestFlaggedCompleted(iwqID) then
+		if C_QuestLog.IsQuestFlaggedCompleted(iwqID) then
 			GameTooltip:AddDoubleLine(ISLANDS_HEADER, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 		else
 			local cur, max = select(4, GetQuestObjectiveInfo(iwqID, 1, false))
@@ -365,7 +366,7 @@ function Module:TimeOnEnter()
 	end
 
 	for _, id in pairs(lesserVisions) do
-		if IsQuestFlaggedCompleted(id) then
+		if C_QuestLog.IsQuestFlaggedCompleted(id) then
 			addTitle(QUESTS_LABEL)
 			GameTooltip:AddDoubleLine("LesserVision", QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 			break
@@ -377,14 +378,14 @@ function Module:TimeOnEnter()
 	end
 
 	for _, v in pairs(nzothAssaults) do
-		if IsQuestFlaggedCompleted(v) then
+		if C_QuestLog.IsQuestFlaggedCompleted(v) then
 			addTitle(QUESTS_LABEL)
 			GameTooltip:AddDoubleLine(GetNzothThreatName(v), QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 		end
 	end
 
 	for _, v in pairs(timeQuestList) do
-		if v.name and IsQuestFlaggedCompleted(v.id) then
+		if v.name and C_QuestLog.IsQuestFlaggedCompleted(v.id) then
 			if v.name == "Timewarped" and isTimeWalker and checkTexture(v.texture) or v.name ~= "Timewarped" then
 				addTitle(QUESTS_LABEL)
 				GameTooltip:AddDoubleLine(v.name, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)

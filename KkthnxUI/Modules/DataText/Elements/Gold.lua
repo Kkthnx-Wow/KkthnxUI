@@ -132,7 +132,7 @@ local function OnEnter()
 	GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t ".."Token:", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), .6,.8,1, 1, 1, 1)
 
 	for i = 1, GetNumWatchedTokens() do
-		local name, count, icon, currencyID = GetBackpackCurrencyInfo(i)
+		local name, count, icon, currencyID = C_CurrencyInfo.GetBackpackCurrencyInfo(i)
 		if name and i == 1 then
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine(CURRENCY..":", 0.6, 0.8, 1)
