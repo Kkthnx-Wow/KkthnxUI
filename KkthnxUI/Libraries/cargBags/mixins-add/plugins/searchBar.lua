@@ -1,29 +1,29 @@
 --[[
 LICENSE
-	cargBags: An inventory framework addon for World of Warcraft
+cargBags: An inventory framework addon for World of Warcraft
 
-	Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
+Copyright (C) 2010 Constantin "Cargor" Schomburg <xconstruct@gmail.com>
 
-	cargBags is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
+cargBags is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	cargBags is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+cargBags is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with cargBags; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+You should have received a copy of the GNU General Public License
+along with cargBags; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 DESCRIPTION:
-	Provides a searchbar for your containers.
-	If you specify a frame as arg #2, it will serve as a clickable placeholder to open it
+Provides a searchbar for your containers.
+If you specify a frame as arg #2, it will serve as a clickable placeholder to open it
 
 DEPENDENCIES
-	mixins/textFilter.lua
+mixins/textFilter.lua
 ]]
 
 local _, ns = ...
@@ -38,19 +38,19 @@ local function apply(self, container, text)
 end
 
 local function doSearch(self, text)
-	if(type(text) == "string") then
+	if (type(text) == "string") then
 		self:SetText(text)
 	else
 		text = self:GetText()
 	end
 
-	if(self.currFilters) then
+	if (self.currFilters) then
 		self.currFilters:Empty()
 	end
 
 	self.currFilters = self.parent.implementation:ParseTextFilter(text, self.currFilters, self.textFilters)
 
-	if(self.isGlobal) then
+	if (self.isGlobal) then
 		for _, container in pairs(self.parent.implementation.contByName) do
 			apply(self, container, text)
 		end
@@ -74,12 +74,18 @@ end
 local function onEscape(search)
 	doSearch(search, "")
 	search:ClearFocus()
-	if(search.OnEscapePressed) then search:OnEscapePressed() end
+
+	if (search.OnEscapePressed) then
+		search:OnEscapePressed()
+	end
 end
 
 local function onEnter(search)
 	search:ClearFocus()
-	if(search.OnEnterPressed) then search:OnEnterPressed() end
+
+	if (search.OnEnterPressed) then
+		search:OnEnterPressed()
+	end
 end
 
 cargBags:RegisterPlugin("SearchBar", function(self, target)
@@ -118,7 +124,7 @@ cargBags:RegisterPlugin("SearchBar", function(self, target)
 	search:SetScript("OnEscapePressed", onEscape)
 	search:SetScript("OnEnterPressed", onEnter)
 
-	if(target) then
+	if (target) then
 		search:SetAutoFocus(true)
 		search:SetAllPoints(target)
 		search:Hide()

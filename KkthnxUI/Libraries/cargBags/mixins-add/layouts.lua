@@ -23,34 +23,43 @@ DESCRIPTION
 DEPENDENCIES
 	mixins/api-common.lua
 ]]
+
 local _, ns = ...
 local layouts = ns.cargBags.classes.Container.layouts
+
+local _G = _G
+local ipairs = _G.ipairs
+local math_ceil = _G.math.ceil
+local math_cos = _G.math.cos
+local math_pi = _G.math.pi
+local math_sin = _G.math.sin
 
 function layouts.grid(self, columns, spacing, xOffset, yOffset)
 	columns, spacing = columns or 8, spacing or 5
 	xOffset, yOffset = xOffset or 0, yOffset or 0
 
-
 	local width, height = 0, 0
-	local col, row = 0, 0
+	local col
+	local row = 0
 	for i, button in ipairs(self.buttons) do
-
-		if(i == 1) then -- Hackish, I know
+		if (i == 1) then -- Hackish, I know
 			width, height = button:GetSize()
 		end
 
 		col = i % columns
-		if(col == 0) then col = columns end
-		row = math.ceil(i/columns)
+		if (col == 0) then
+			col = columns
+		end
+		row = math_ceil(i / columns)
 
-		local xPos = (col-1) * (width + spacing)
-		local yPos = -1 * (row-1) * (height + spacing)
+		local xPos = (col - 1) * (width + spacing)
+		local yPos = -1 * (row - 1) * (height + spacing)
 
 		button:ClearAllPoints()
-		button:SetPoint("TOPLEFT", self, "TOPLEFT", xPos+xOffset, yPos+yOffset)
+		button:SetPoint("TOPLEFT", self, "TOPLEFT", xPos + xOffset, yPos + yOffset)
 	end
 
-	return columns * (width+spacing)-spacing, row * (height+spacing)-spacing
+	return columns * (width + spacing) - spacing, row * (height + spacing) - spacing
 end
 
 --[[!
@@ -59,18 +68,20 @@ end
 	@param xOffset <number> x-offset of the whole layout [default: 0]
 	@param yOffset <number> y-offset of the whole layout [default: 0]
 ]]
+
 function layouts.circle(self, radius, xOffset, yOffset)
-	radius = radius or (#self.buttons*50)/math.pi/2
+	radius = radius or (#self.buttons * 50) / math_pi / 2
 	xOffset, yOffset = xOffset or 0, yOffset or 0
 
-	local a = 360/#self.buttons
+	local a = 360 / #self.buttons
 
 	for i, button in ipairs(self.buttons) do
-		local x = radius*cos(a*i)
-		local y = -radius*sin(a*i)
+		local x = radius * math_cos(a * i)
+		local y = -radius * math_sin(a * i)
 
 		button:ClearAllPoints()
-		button:SetPoint("TOPLEFT", self, "TOPLEFT", radius+x+xOffset, y-radius+yOffset)
+		button:SetPoint("TOPLEFT", self, "TOPLEFT", radius + x + xOffset, y - radius + yOffset)
 	end
-	return radius*2, radius*2
+
+	return radius * 2, radius * 2
 end

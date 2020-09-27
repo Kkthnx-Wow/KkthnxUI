@@ -304,7 +304,7 @@ function Module:UpdateThreatColor(_, unit)
 end
 
 function Module:CreateThreatColor(self)
-	local threatIndicator = CreateFrame("Frame", nil, self, BackdropTemplateMixin and "BackdropTemplate" or nil)
+	local threatIndicator = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	threatIndicator:SetPoint("TOPLEFT", self, -3, 3)
 	threatIndicator:SetPoint("BOTTOMRIGHT", self, 3, -3)
 	threatIndicator:SetBackdrop({edgeFile = C["Media"].Glow, edgeSize = 3})
@@ -399,7 +399,7 @@ function Module:AddTargetIndicator(self)
 	self.TargetIndicator.RightArrow:SetPoint("LEFT", self.TargetIndicator, "RIGHT", 3, 0)
 	self.TargetIndicator.RightArrow:SetRotation(math_rad(-180))
 
-	self.TargetIndicator.Glow = CreateFrame("Frame", nil, self.TargetIndicator, BackdropTemplateMixin and "BackdropTemplate" or nil)
+	self.TargetIndicator.Glow = CreateFrame("Frame", nil, self.TargetIndicator, "BackdropTemplate")
 	self.TargetIndicator.Glow:SetPoint("TOPLEFT", self.TargetIndicator, -5, 5)
 	self.TargetIndicator.Glow:SetPoint("BOTTOMRIGHT", self.TargetIndicator, 5, -5)
 	self.TargetIndicator.Glow:SetBackdrop({edgeFile = C["Media"].Glow, edgeSize = 4})

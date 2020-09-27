@@ -29,25 +29,23 @@ local Implementation = cargBags.classes.Implementation
 local Container = cargBags.classes.Container
 local ItemButton = cargBags.classes.ItemButton
 
---[[################################
-	Layouts
-		Methods for positioning the buttons in a container
-##################################]]
+local _G = _G
+local table_sort = _G.table.sort
 
 Container.layouts = {}
+cargBags.plugins = {}
+Container.sorts = {}
+ItemButton.scaffolds = {}
 
+-- Layouts
+-- Methods for positioning the buttons in a container
 function Container:LayoutButtons(layout, ...)
 	return self.layouts[layout](self, ...)
 end
 
 
---[[################################
-	Plugins
-		Additional widgets for a bag
-##################################]]
-
-cargBags.plugins = {}
-
+-- Plugins
+-- Additional widgets for a bag
 function Implementation:SpawnPlugin(name, ...)
 	if(cargBags.plugins[name]) then
 		local plugin = cargBags.plugins[name](self, ...)
@@ -63,25 +61,14 @@ function cargBags:RegisterPlugin(name, func)
 	cargBags.plugins[name] = func
 end
 
-
---[[################################
-	Sorts
-		Sort-functions for your containers
-##################################]]
-
-Container.sorts = {}
-
+-- Sorts
+-- Sort-functions for your containers
 function Container:SortButtons(arg1)
-	table.sort(self.buttons, self.sorts[arg1] or arg1)
+	table_sort(self.buttons, self.sorts[arg1] or arg1)
 end
 
---[[################################
-	Scaffolds
-		Templates for ItemButtons
-##################################]]
-
-ItemButton.scaffolds = {}
-
+-- Scaffolds
+-- Templates for ItemButtons
 function ItemButton:Scaffold(name, ...)
 	return self.scaffolds[name](self, ...)
 end

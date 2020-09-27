@@ -160,7 +160,7 @@ function Module:CreateStyle()
 	minimapBorder:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 	minimapBorder.KKUI_InnerShadow:SetAlpha(0.7)
 
-	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, BackdropTemplateMixin and "BackdropTemplate" or nil)
+	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, "BackdropTemplate")
 	minimapMailPulse:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
 	minimapMailPulse:SetPoint("TOPLEFT", minimapBorder, -6, 6)
 	minimapMailPulse:SetPoint("BOTTOMRIGHT", minimapBorder, 6, -6)
@@ -293,7 +293,7 @@ function Module:ReskinRegions()
 		GameTimeCalendarInvitesTexture:SetPoint("TOPRIGHT")
 	end
 
-	local inviteNotification = CreateFrame("Button", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate" or nil)
+	local inviteNotification = CreateFrame("Button", nil, UIParent, "BackdropTemplate")
 	inviteNotification:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 13})
 	inviteNotification:SetPoint("TOPLEFT", Minimap, -6, 6)
 	inviteNotification:SetPoint("BOTTOMRIGHT", Minimap, 6, -6)

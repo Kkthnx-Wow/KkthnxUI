@@ -33,7 +33,9 @@ local cargBags = ns.cargBags
 local L
 
 function cargBags:GetLocalizedTypes()
-	if(L) then return L end
+	if (L) then
+		return L
+	end
 
 	L = {}
 

@@ -362,7 +362,7 @@ function Module:CreateAFKCam()
 	Module.AFKMode.top:SetPoint("TOP", Module.AFKMode, 0, 6)
 	Module.AFKMode.top:CreateBorder()
 
-	Module.AFKMode.bottom = CreateFrame("Frame", nil, Module.AFKMode, "BackdropTemplate")
+	Module.AFKMode.bottom = CreateFrame("Frame", nil, Module.AFKMode)
 	Module.AFKMode.bottom:SetFrameLevel(Module.AFKMode:GetFrameLevel() - 1)
 	Module.AFKMode.bottom:CreateBorder()
 	Module.AFKMode.bottom:SetPoint("BOTTOM", Module.AFKMode, "BOTTOM", 0, -6)

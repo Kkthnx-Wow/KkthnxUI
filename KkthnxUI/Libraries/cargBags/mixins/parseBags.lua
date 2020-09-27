@@ -31,15 +31,19 @@ DESCRIPTION
 local _, ns = ...
 local cargBags = ns.cargBags
 
+local _G = _G
+local tonumber = _G.tonumber
+local type = _G.type
+
 local bagStrings = {
-	["backpack"]		= { 0 },
-	["bags"]			= { 1, 2, 3, 4 },
-	["backpack+bags"]	= { 0, 1, 2, 3, 4, },
-	["bankframe"]		= { -1 },
-	["bankframe+bank"]	= { -1, 5, 6, 7, 8, 9, 10, 11 },
-	["bankreagent"]		= { -3 },
-	["bank"]			= { 5, 6, 7, 8, 9, 10, 11 },
-	["keyring"]			= { -2 },
+	["backpack"] = {0},
+	["bags"] = {1, 2, 3, 4},
+	["backpack+bags"] = {0, 1, 2, 3, 4},
+	["bankframe"] = {-1},
+	["bankframe+bank"] = {-1, 5, 6, 7, 8, 9, 10, 11},
+	["bankreagent"] = {-3},
+	["bank"] = {5, 6, 7, 8, 9, 10, 11},
+	["keyring"] = {-2},
 }
 cargBags.BagStrings = bagStrings
 
@@ -49,20 +53,32 @@ cargBags.BagStrings = bagStrings
 	@return bags <table>
 ]]
 function cargBags:ParseBags(bags)
-	if not bags then return end
-	if(type(bags) == "table") then return bags end
-	if(bagStrings[bags]) then return bagStrings[bags] end
+	if not bags then
+		return
+	end
+
+	if (type(bags) == "table") then
+		return bags
+	end
+
+	if (bagStrings[bags]) then
+		return bagStrings[bags]
+	end
+
 	local min, max = bags:match("(%d+)-(%d+)")
-	if(min) then
+	if (min) then
 		local t = {}
-		for i=min, max do
-			t[#t+1] = i
+		for i = min, max do
+			t[#t + 1] = i
 		end
+
 		bagStrings[bags] = t
+
 		return t
-	elseif(tonumber(bags)) then
+	elseif (tonumber(bags)) then
 		local t = {tonumber(bags)}
 		bagStrings[bags] = t
+
 		return t
 	end
 end

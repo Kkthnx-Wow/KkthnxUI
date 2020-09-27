@@ -130,7 +130,7 @@ local function CreateShadow(f, bd)
 	end
 	local lvl = frame:GetFrameLevel()
 
-	f.Shadow = CreateFrame("Frame", nil, frame, BackdropTemplateMixin and "BackdropTemplate" or nil)
+	f.Shadow = CreateFrame("Frame", nil, frame, "BackdropTemplate")
 	f.Shadow:SetPoint("TOPLEFT", f, -3, 3)
 	f.Shadow:SetPoint("BOTTOMRIGHT", f, 3, -3)
 	if bd then
