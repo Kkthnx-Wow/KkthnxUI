@@ -365,6 +365,10 @@ function Module:UpdateMinimapScale()
 end
 
 function Module:OnEnable()
+	if not C["Minimap"].Enable then
+		return
+	end
+
 	-- Shape and Position
 	Minimap:SetFrameLevel(10)
 	Minimap:SetMaskTexture(C["Media"].Blank)

@@ -41,7 +41,6 @@ local UnitName = _G.UnitName
 local hooksecurefunc = _G.hooksecurefunc
 
 local repeatedText
-local isBattleNet
 
 local function GetGroupDistribution()
 	local _, instanceType = GetInstanceInfo()
@@ -154,28 +153,31 @@ end
 
 function Module:UpdateTabColors(selected)
 	if self.glow:IsShown() then
-		if isBattleNet then
-			self:GetFontString():SetTextColor(0, 1, 0.96)
+		if self.whisperIndex == 1 then
+			self.Text:SetTextColor(1, .5, 1)
+		elseif self.whisperIndex == 2 then
+			self.Text:SetTextColor(0, 1, .96)
 		else
-			self:GetFontString():SetTextColor(1, 0.5, 1)
+			self.Text:SetTextColor(1, .8, 0)
 		end
 	elseif selected then
-		self:GetFontString():SetTextColor(1, 0.8, 0)
+		self.Text:SetTextColor(1, .8, 0)
+		self.whisperIndex = 0
 	else
-		self:GetFontString():SetTextColor(0.5, 0.5, 0.5)
+		self.Text:SetTextColor(.5, .5, .5)
+		self.whisperIndex = 0
 	end
 end
 
 function Module:UpdateTabEventColors(event)
-	local Frame = self:GetName()
-	local Tab = _G[Frame.."Tab"]
-
+	local tab = _G[self:GetName().."Tab"]
+	local selected = GeneralDockManager.selected:GetID() == tab:GetID()
 	if event == "CHAT_MSG_WHISPER" then
-		isBattleNet = nil
-		FCFTab_UpdateColors(Tab, GeneralDockManager.selected:GetID() == Tab:GetID())
+		tab.whisperIndex = 1
+		Module.UpdateTabColors(tab, selected)
 	elseif event == "CHAT_MSG_BN_WHISPER" then
-		isBattleNet = true
-		FCFTab_UpdateColors(Tab, GeneralDockManager.selected:GetID() == Tab:GetID())
+		tab.whisperIndex = 2
+		Module.UpdateTabColors(tab, selected)
 	end
 end
 

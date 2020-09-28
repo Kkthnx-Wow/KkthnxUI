@@ -9,8 +9,8 @@ local string_format = _G.string.format
 local tonumber = _G.tonumber
 local math_random = _G.math.random
 
-local C_DateAndTime_GetCurrentCalendarTime = _G.C_DateAndTime.GetCurrentCalendarTime
 local C_Calendar_GetNumPendingInvites =_G.C_Calendar.GetNumPendingInvites
+local C_DateAndTime_GetCurrentCalendarTime = _G.C_DateAndTime.GetCurrentCalendarTime
 local C_PetBattles_IsInBattle = _G.C_PetBattles.IsInBattle
 local CinematicFrame = _G.CinematicFrame
 local CloseAllWindows = _G.CloseAllWindows
@@ -27,6 +27,8 @@ local GetTime = _G.GetTime
 local InCombatLockdown = _G.InCombatLockdown
 local IsInGuild = _G.IsInGuild
 local IsMacClient = _G.IsMacClient
+local IsPlayerAtEffectiveMaxLevel = _G.IsPlayerAtEffectiveMaxLevel
+local IsXPUserDisabled = _G.IsXPUserDisabled
 local MovieFrame = _G.MovieFrame
 local NONE = _G.NONE
 local PVEFrame_ToggleFrame = _G.PVEFrame_ToggleFrame
@@ -36,6 +38,9 @@ local TIMEMANAGER_TICKER_12HOUR = _G.TIMEMANAGER_TICKER_12HOUR
 local TIMEMANAGER_TICKER_24HOUR = _G.TIMEMANAGER_TICKER_24HOUR
 local UnitCastingInfo = _G.UnitCastingInfo
 local UnitIsAFK = _G.UnitIsAFK
+local UnitLevel = _G.UnitLevel
+local UnitXP = _G.UnitXP
+local UnitXPMax = _G.UnitXPMax
 
 local ignoreKeys = {
 	LALT = true,
@@ -81,26 +86,27 @@ local stats = {
 	107,	-- Creatures killed
 	112,	-- Deaths from drowning
 	114,	-- Deaths from falling
+	115,	-- Deaths from fire and lava
 	319,	-- Duels won
 	320,	-- Duels lost
-	321,	-- Total raid and dungeon deaths
 	326,	-- Gold from quest rewards
 	328,	-- Total gold acquired
+	329,	-- Auctions posted
+	331,	-- Most expensive bid on auction
+	332,	-- Most expensive auction sold
 	333,	-- Gold looted
 	334,	-- Most gold ever owned
 	338,	-- Vanity pets owned
-	339,	-- Mounts owned
-	342,	-- Epic items acquired
+	345,	-- Health potions consumed
 	349,	-- Flight paths taken
 	353,	-- Number of times hearthed
-	377,	-- Most factions at Exalted
 	588,	-- Total Honorable Kills
+	812,	-- Healthstones used
 	837,	-- Arenas won
 	838,	-- Arenas played
 	839,	-- Battlegrounds played
 	840,	-- Battlegrounds won
 	919,	-- Gold earned from auctions
-	931,	-- Total factions encountered
 	932,	-- Total 5-player dungeons entered
 	933,	-- Total 10-player raids entered
 	934,	-- Total 25-player raids entered
@@ -108,27 +114,22 @@ local stats = {
 	1045,	-- Total cheers
 	1047,	-- Total facepalms
 	1065,	-- Total waves
-	1066,	-- Total times LOL"d
-	1149,	-- Talent tree respecs
+	1066,	-- Total times LOL'd
 	1197,	-- Total kills
 	1198,	-- Total kills that grant experience or honor
+	1336,	-- Creature type killed the most
 	1339,	-- Mage portal taken most
-	1487,	-- Killing Blows
+	1487,	-- Total Killing Blows
 	1491,	-- Battleground Killing Blows
 	1518,	-- Fish caught
-	1716,	-- Battleground with the most Killing Blows
+	1776,	-- Food eaten most
 	2277,	-- Summons accepted
 	5692,	-- Rated battlegrounds played
+	5693,	-- Rated battleground played the most
+	5695,	-- Rated battleground won the most
 	5694,	-- Rated battlegrounds won
 	7399,	-- Challenge mode dungeons completed
 	8278,	-- Pet Battles won at max level
-	10060,	-- Garrison Followers recruited
-	10181,	-- Garrision Missions completed
-	10184,	-- Garrision Rare Missions completed
-	11234,	-- Class Hall Champions recruited
-	11235,	-- Class Hall Troops recruited
-	11236,	-- Class Hall Missions completed
-	11237,	-- Class Hall Rare Missions completed
 }
 
 if IsMacClient() then
@@ -214,8 +215,11 @@ local function GetXPinfo()
 		return
 	end
 
-	local cur, max = K:GetModule("DataBars"):GetUnitXP("player")
-	return string_format("|cfff0ff00%d%%|r (%s) %s |cfff0ff00%d|r", (max - cur) / max * 100, K.ShortValue(max - cur), "remaining till level", K.Level + 1)
+	local cur, max = UnitXP('player'), UnitXPMax('player')
+	if max <= 0 then max = 1 end
+	local curlvl = UnitLevel('player')
+
+	return string_format("|cfff0ff00%d%%|r (%s) %s |cfff0ff00%d|r", (max - cur) / max * 100, K.ShortValue(max - cur), "remaining till level", curlvl + 1)
 end
 
 function Module:SetAFK(status)
