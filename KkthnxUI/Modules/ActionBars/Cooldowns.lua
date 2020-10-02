@@ -68,10 +68,6 @@ function Module:TimerOnUpdate(elapsed)
 	end
 end
 
-function Module:ScalerOnSizeChanged(...)
-	Module.OnSizeChanged(self.timer, ...)
-end
-
 function Module:OnCreate()
 	local scaler = CreateFrame("Frame", nil, self)
 	scaler:SetAllPoints(self)
@@ -80,7 +76,6 @@ function Module:OnCreate()
 	timer:Hide()
 	timer:SetAllPoints(scaler)
 	timer:SetScript("OnUpdate", Module.TimerOnUpdate)
-	scaler.timer = timer
 
 	local text = timer:CreateFontString(nil, "BACKGROUND")
 	text:SetPoint("CENTER", 2, 0)
@@ -88,7 +83,9 @@ function Module:OnCreate()
 	timer.text = text
 
 	Module.OnSizeChanged(timer, scaler:GetSize())
-	scaler:SetScript("OnSizeChanged", Module.ScalerOnSizeChanged)
+	scaler:SetScript("OnSizeChanged", function(_, ...)
+		Module.OnSizeChanged(timer, ...)
+	end)
 
 	self.timer = timer
 	return timer
@@ -208,7 +205,7 @@ function Module:OnEnable()
 			Module.RegisterActionButton(frame)
 		end
 	end
-	--hooksecurefunc("ActionBarButtonEventsFrame_RegisterFrame", Module.RegisterActionButton)
+	hooksecurefunc("ActionBarButtonEventsFrame_RegisterFrame", Module.RegisterActionButton)
 
 	-- Hide Default Cooldown
 	if not InCombatLockdown() then

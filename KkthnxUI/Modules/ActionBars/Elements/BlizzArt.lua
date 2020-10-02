@@ -27,8 +27,6 @@ local TokenFrame_LoadUI = _G.TokenFrame_LoadUI
 local TokenFrame_Update = _G.TokenFrame_Update
 local hooksecurefunc = _G.hooksecurefunc
 
-local updateAfterCombat
-
 local scripts = {
 	"OnClick",
 	"OnEnter",
@@ -71,46 +69,13 @@ local function DisableAllScripts(frame)
 	end
 end
 
-local function buttonShowGrid(name, showgrid)
-	for i = 1, 12 do
-		local button = _G[name..i]
-		if button then
-			button:SetAttribute("showgrid", showgrid)
-			button:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_CVAR)
-		end
-	end
-end
-
-local function toggleButtonGrid()
-	if InCombatLockdown() then
-		updateAfterCombat = true
-		K:RegisterEvent("PLAYER_REGEN_ENABLED", toggleButtonGrid)
-	else
-		local showgrid = tonumber(GetCVar("alwaysShowActionBars"))
-		buttonShowGrid("ActionButton", showgrid)
-		buttonShowGrid("MultiBarBottomRightButton", showgrid)
-		--buttonShowGrid("KKUI_CustomBarButton", showgrid)
-		if updateAfterCombat then
-			K:UnregisterEvent("PLAYER_REGEN_ENABLED", toggleButtonGrid)
-			updateAfterCombat = false
-		end
-	end
-end
-
-local function hideFakeExtraBar(event, addon)
-	if addon == "Blizzard_BindingUI" then
-		--K.HideObject(QuickKeybindFrame.phantomExtraActionButton)
-		K:UnregisterEvent(event, hideFakeExtraBar)
-	end
-end
-
-local function updateTokenVisibility()
-	TokenFrame_LoadUI()
-	TokenFrame_Update()
-	BackpackTokenFrame_Update()
-end
-
 function Module:HideBlizz()
+	if not C["ActionBar"].Enable then
+		return
+	end
+
+	local updateAfterCombat
+
 	MainMenuBar:SetMovable(true)
 	MainMenuBar:SetUserPlaced(true)
 	MainMenuBar.ignoreFramePositionManager = true
@@ -125,10 +90,38 @@ function Module:HideBlizz()
 		DisableAllScripts(frame)
 	end
 
-	-- Update button grid
-	hooksecurefunc("MultiActionBar_UpdateGridVisibility", toggleButtonGrid)
+	-- Update Button Grid
+	local function buttonShowGrid(name, showgrid)
+		for i = 1, 12 do
+			local button = _G[name..i]
+			button:SetAttribute("showgrid", showgrid)
+			ActionButton_ShowGrid(button, ACTION_BUTTON_SHOW_GRID_REASON_CVAR)
+		end
+	end
+
+	local function ToggleButtonGrid()
+		if InCombatLockdown() then
+			updateAfterCombat = true
+			K:RegisterEvent("PLAYER_REGEN_ENABLED", ToggleButtonGrid)
+		else
+			local showgrid = tonumber(GetCVar("alwaysShowActionBars"))
+			buttonShowGrid("ActionButton", showgrid)
+			buttonShowGrid("MultiBarBottomRightButton", showgrid)
+			if updateAfterCombat then
+				K:UnregisterEvent("PLAYER_REGEN_ENABLED", ToggleButtonGrid)
+				updateAfterCombat = false
+			end
+		end
+	end
+	hooksecurefunc("MultiActionBar_UpdateGridVisibility", ToggleButtonGrid)
+
 	-- Update token panel
-	K:RegisterEvent("CURRENCY_DISPLAY_UPDATE", updateTokenVisibility)
-	-- Fake ExtraActionButton
-	K:RegisterEvent("ADDON_LOADED", hideFakeExtraBar)
+	local function updateToken()
+		TokenFrame_LoadUI()
+		TokenFrame_Update()
+		BackpackTokenFrame_Update()
+	end
+	K:RegisterEvent("CURRENCY_DISPLAY_UPDATE", updateToken)
+
+	_G.InterfaceOptionsActionBarsPanelStackRightBars:Kill()
 end

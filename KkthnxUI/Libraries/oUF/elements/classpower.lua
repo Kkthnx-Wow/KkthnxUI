@@ -52,6 +52,7 @@ local _, PlayerClass = UnitClass('player')
 -- sourced from FrameXML/Constants.lua
 local SPEC_MAGE_ARCANE = SPEC_MAGE_ARCANE or 1
 local SPEC_MONK_WINDWALKER = SPEC_MONK_WINDWALKER or 3
+local SPEC_PALADIN_RETRIBUTION = SPEC_PALADIN_RETRIBUTION or 3
 local SPEC_WARLOCK_DESTRUCTION = SPEC_WARLOCK_DESTRUCTION or 3
 local SPELL_POWER_ENERGY = Enum.PowerType.Energy or 3
 local SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints or 4
@@ -81,7 +82,7 @@ local function UpdateColor(element, powerType)
 end
 
 local function Update(self, event, unit, powerType)
-	if(not (unit and (UnitIsUnit(unit, 'player') and (not powerType or powerType == ClassPowerType)
+	if(not (unit and (UnitIsUnit(unit, 'player') and powerType == ClassPowerType
 		or unit == 'vehicle' and powerType == 'COMBO_POINTS'))) then
 		return
 	end
@@ -97,7 +98,7 @@ local function Update(self, event, unit, powerType)
 		element:PreUpdate()
 	end
 
-	local cur, max, mod, oldMax, chargedIndex
+	local cur, max, mod, oldMax
 	if(event ~= 'ClassPowerDisable') then
 		local powerID = unit == 'vehicle' and SPELL_POWER_COMBO_POINTS or ClassPowerID
 		cur = UnitPower(unit, powerID, true)
@@ -110,12 +111,6 @@ local function Update(self, event, unit, powerType)
 		-- BUG: Destruction is supposed to show partial soulshards, but Affliction and Demonology should only show full ones
 		if(ClassPowerType == 'SOUL_SHARDS' and GetSpecialization() ~= SPEC_WARLOCK_DESTRUCTION) then
 			cur = cur - cur % 1
-		end
-
-		if(PlayerClass == 'ROGUE') then
-			local chargedPoints = GetUnitChargedPowerPoints(unit)
-			-- according to Blizzard there will only be one
-			chargedIndex = chargedPoints and chargedPoints[1]
 		end
 
 		local numActive = cur + 0.9
@@ -149,10 +144,9 @@ local function Update(self, event, unit, powerType)
 	* max           - the maximum amount of power (number)
 	* hasMaxChanged - indicates whether the maximum amount has changed since the last update (boolean)
 	* powerType     - the active power type (string)
-	* chargedIndex  - the index of the currently charged power point (number?)
 	--]]
 	if(element.PostUpdate) then
-		return element:PostUpdate(cur, max, oldMax ~= max, powerType, chargedIndex)
+		return element:PostUpdate(cur, max, oldMax ~= max, powerType)
 	end
 end
 
@@ -190,7 +184,7 @@ local function Visibility(self, event, unit)
 		end
 	end
 
-	local isEnabled = element.__isEnabled
+	local isEnabled = element.isEnabled
 	local powerType = unit == 'vehicle' and 'COMBO_POINTS' or ClassPowerType
 
 	if(shouldEnable) then
@@ -205,22 +199,8 @@ local function Visibility(self, event, unit)
 
 	if(shouldEnable and not isEnabled) then
 		ClassPowerEnable(self)
-
-		--[[ Callback: ClassPower:PostVisibility(isVisible)
-		Called after the element's visibility has been changed.
-
-		* self      - the ClassPower element
-		* isVisible - the current visibility state of the element (boolean)
-		--]]
-		if(element.PostVisibility) then
-			element:PostVisibility(true)
-		end
 	elseif(not shouldEnable and (isEnabled or isEnabled == nil)) then
 		ClassPowerDisable(self)
-
-		if(element.PostVisibility) then
-			element:PostVisibility(false)
-		end
 	elseif(shouldEnable and isEnabled) then
 		Path(self, event, unit, powerType)
 	end
@@ -246,11 +226,7 @@ do
 		self:RegisterEvent('UNIT_POWER_FREQUENT', Path)
 		self:RegisterEvent('UNIT_MAXPOWER', Path)
 
-		if(PlayerClass == 'ROGUE') then
-			self:RegisterEvent('UNIT_POWER_POINT_CHARGE', Path)
-		end
-
-		self.ClassPower.__isEnabled = true
+		self.ClassPower.isEnabled = true
 
 		if(UnitHasVehicleUI('player')) then
 			Path(self, 'ClassPowerEnable', 'vehicle', 'COMBO_POINTS')
@@ -262,14 +238,13 @@ do
 	function ClassPowerDisable(self)
 		self:UnregisterEvent('UNIT_POWER_FREQUENT', Path)
 		self:UnregisterEvent('UNIT_MAXPOWER', Path)
-		self:UnregisterEvent('UNIT_POWER_POINT_CHARGE', Path)
 
 		local element = self.ClassPower
 		for i = 1, #element do
 			element[i]:Hide()
 		end
 
-		element.__isEnabled = false
+		self.ClassPower.isEnabled = false
 		Path(self, 'ClassPowerDisable', 'player', ClassPowerType)
 	end
 
@@ -280,6 +255,7 @@ do
 	elseif(PlayerClass == 'PALADIN') then
 		ClassPowerID = SPELL_POWER_HOLY_POWER
 		ClassPowerType = 'HOLY_POWER'
+		RequireSpec = SPEC_PALADIN_RETRIBUTION
 	elseif(PlayerClass == 'WARLOCK') then
 		ClassPowerID = SPELL_POWER_SOUL_SHARDS
 		ClassPowerType = 'SOUL_SHARDS'

@@ -48,5 +48,5 @@ function Module:RealmRestartReminder(_, msg)
 end
 
 function Module:OnEnable()
-	K:RegisterEvent("CHAT_MSG_SYSTEM", self.RealmRestartReminder)
+	K:RegisterEvent("CHAT_MSG_SYSTEM", Module.RealmRestartReminder)
 end

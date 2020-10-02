@@ -567,22 +567,17 @@ function K.GetPlayerMapPos(mapID)
 
 	local mapRect = mapRects[mapID]
 	if not mapRect then
-		local pos1 = select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(0, 0)))
-		local pos2 = select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(1, 1)))
-		if not pos1 or not pos2 then
-			return
-		end
-
-		mapRect = {pos1, pos2}
+		mapRect = {}
+		mapRect[1] = select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(0, 0)))
+		mapRect[2] = select(2, C_Map_GetWorldPosFromMapPos(mapID, CreateVector2D(1, 1)))
 		mapRect[2]:Subtract(mapRect[1])
 
 		mapRects[mapID] = mapRect
 	end
 	tempVec2D:Subtract(mapRect[1])
 
-	return tempVec2D.y/mapRect[2].y, tempVec2D.x/mapRect[2].x
+	return tempVec2D.y / mapRect[2].y, tempVec2D.x / mapRect[2].x
 end
-
 
 -- Money text formatting, code taken from Scrooge by thelibrarian (http://www.wowace.com/addons/scrooge)
 function K.FormatMoney(amount)

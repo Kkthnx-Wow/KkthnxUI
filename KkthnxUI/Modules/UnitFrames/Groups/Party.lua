@@ -273,7 +273,7 @@ function Module:CreateParty()
 	self:Tag(self.StatusIndicator, "[afkdnd]")
 
 	if (C["Party"].TargetHighlight) then
-        self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
+        self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay)
         self.TargetHighlight:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
         self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -6, 6)
         self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 6, -6)
@@ -347,7 +347,7 @@ function Module:CreateParty()
 	self.Highlight:Hide()
 
 	-- function UF:CreatePartyAltPower(self)
-		--if not C["UFs"]["PartyAltPower"] then return end
+		--if not NDuiDB["UFs"]["PartyAltPower"] then return end
 		local PWOnRight = false
 		local relF = "LEFT"
 		local relT = "RIGHT"

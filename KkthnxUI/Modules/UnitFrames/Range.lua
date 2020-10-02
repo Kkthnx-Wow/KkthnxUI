@@ -76,7 +76,7 @@ local function friendlyIsInRange(unit)
 		unit = getUnit(unit) -- swap the unit with `raid#` or `party#` when its NOT `player`, UnitIsUnit is true, and its not using `raid#` or `party#` already
 	end
 
-	if UnitPhaseReason(unit) then
+	if UnitIsWarModePhased(unit) or not UnitInPhase(unit) then
 		return false -- is not in same phase
 	end
 

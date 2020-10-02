@@ -33,9 +33,8 @@ local oUF = ns.oUF
 local ALTERNATE_POWER_INDEX = Enum.PowerType.Alternate or 10
 
 local function updateTooltip(self)
-	local name, tooltip = GetUnitPowerBarStringsByID(self.__barID)
-	GameTooltip:SetText(name or '', 1, 1, 1)
-	GameTooltip:AddLine(tooltip or '', nil, nil, nil, true)
+	GameTooltip:SetText(self.powerName, 1, 1, 1)
+	GameTooltip:AddLine(self.powerTooltip, nil, nil, nil, 1)
 	GameTooltip:Show()
 end
 
@@ -64,13 +63,14 @@ local function Update(self, event, unit, powerType)
 		element:PreUpdate()
 	end
 
-	local cur, max, min
-	local barInfo = element.__barInfo
-
-	if(barInfo) then
+	local cur, max
+	local barType, min, _, _, _, _, _, _, _, _, powerName, powerTooltip = UnitAlternatePowerInfo(unit)
+	element.barType = barType
+	element.powerName = powerName
+	element.powerTooltip = powerTooltip
+	if(barType) then
 		cur = UnitPower(unit, ALTERNATE_POWER_INDEX)
 		max = UnitPowerMax(unit, ALTERNATE_POWER_INDEX)
-		min = barInfo.minPower
 		element:SetMinMaxValues(min, max)
 		element:SetValue(cur)
 	end
@@ -80,9 +80,9 @@ local function Update(self, event, unit, powerType)
 
 	* self - the AlternativePower element
 	* unit - the unit for which the update has been triggered (string)
-	* cur  - the current value of the unit's alternative power (number?)
-	* min  - the minimum value of the unit's alternative power (number?)
-	* max  - the maximum value of the unit's alternative power (number?)
+	* cur  - the current value of the unit's alternative power (number)
+	* min  - the minimum value of the unit's alternative power (number)
+	* max  - the maximum value of the unit's alternative power (number)
 	--]]
 	if(element.PostUpdate) then
 		return element:PostUpdate(unit, cur, min, max)
@@ -105,14 +105,9 @@ local function Visibility(self, event, unit)
 	if(unit ~= self.unit) then return end
 	local element = self.AlternativePower
 
-	local barID = UnitPowerBarID(unit)
-	local barInfo = GetUnitPowerBarInfoByID(barID)
-	element.__barID = barID
-	element.__barInfo = barInfo
-	if(barInfo and (barInfo.showOnRaid and (UnitInParty(unit) or UnitInRaid(unit))
-		or not barInfo.hideFromOthers or UnitIsUnit(unit, 'player')
-		or UnitIsUnit(self.realUnit, 'player')))
-	then
+	local barType, _, _, _, _, hideFromOthers, showOnRaid = UnitAlternatePowerInfo(unit)
+	if(barType and (showOnRaid and (UnitInParty(unit) or UnitInRaid(unit)) or not hideFromOthers
+		or UnitIsUnit(unit, 'player') or UnitIsUnit(self.realUnit, 'player'))) then
 		self:RegisterEvent('UNIT_POWER_UPDATE', Path)
 		self:RegisterEvent('UNIT_MAXPOWER', Path)
 

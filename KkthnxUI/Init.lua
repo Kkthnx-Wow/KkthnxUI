@@ -43,20 +43,11 @@ Engine[3] = {} -- L, Locales
 
 local K, C, L = unpack(Engine)
 
--- Deprecated
-LE_ITEM_QUALITY_POOR = Enum.ItemQuality.Poor
-LE_ITEM_QUALITY_COMMON = Enum.ItemQuality.Common
-LE_ITEM_QUALITY_UNCOMMON = Enum.ItemQuality.Uncommon
-LE_ITEM_QUALITY_RARE = Enum.ItemQuality.Rare
-LE_ITEM_QUALITY_EPIC = Enum.ItemQuality.Epic
-LE_ITEM_QUALITY_LEGENDARY = Enum.ItemQuality.Legendary
-LE_ITEM_QUALITY_ARTIFACT = Enum.ItemQuality.Artifact
-LE_ITEM_QUALITY_HEIRLOOM = Enum.ItemQuality.Heirloom
-
+K.LSM = LibStub:GetLibrary("LibSharedMedia-3.0")
 K.oUF = Engine.oUF
 K.cargBags = Engine.cargBags
-K.Unfit = LibStub("Unfit-1.0")
-K.libButtonGlow = LibStub("LibButtonGlow-1.0", true)
+K.Unfit = LibStub:GetLibrary("Unfit-1.0")
+K.libButtonGlow = LibStub:GetLibrary("LibButtonGlow-1.0", true)
 
 K.AddOns = {}
 K.AddOnVersion = {}
@@ -77,7 +68,6 @@ K.Level = UnitLevel("player")
 K.Client = GetLocale()
 K.Realm = GetRealmName()
 K.Media = "Interface\\AddOns\\KkthnxUI\\Media\\"
-K.LSM = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
 K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
 K.Resolution = string_format("%dx%d", K.ScreenWidth, K.ScreenHeight)
 K.TexCoords = {0.08, 0.92, 0.08, 0.92}

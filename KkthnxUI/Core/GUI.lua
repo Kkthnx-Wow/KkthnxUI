@@ -275,11 +275,11 @@ local ButtonOnLeave = function(self)
 end
 
 local ButtonOnMouseDown = function(self)
-	self.KKUI_Background:SetVertexColor(unpack(BGColor))
+	self:SetBackdropColor(unpack(BGColor))
 end
 
 local ButtonOnMouseUp = function(self)
-	self.KKUI_Background:SetVertexColor(unpack(C["Media"].BackdropColor))
+	self:SetBackdropColor(unpack(BrightColor))
 end
 
 local CreateButton = function(self, midtext, text, func)

@@ -6,19 +6,21 @@ local next = _G.next
 local pairs = _G.pairs
 local unpack = _G.unpack
 
+local CreateFrame = _G.CreateFrame
 local HasAction = _G.HasAction
 local IsActionInRange = _G.IsActionInRange
 local IsUsableAction = _G.IsUsableAction
+local hooksecurefunc = _G.hooksecurefunc
 
 local UPDATE_DELAY = .2
 local buttonColors, buttonsToUpdate = {}, {}
 local updater = CreateFrame("Frame")
 
 local colors = {
-	["normal"] = {1, 1, 1},
-	["oor"] = {.8, .1, .1},
-	["oom"] = {.5, .5, 1},
-	["unusable"] = {.3, .3, .3}
+	["normal"] = {1.0, 1.0, 1.0},
+	["oom"] = {0.5, 0.5, 1.0},
+	["oor"] = {0.8, 0.1, 0.1},
+	["unusable"] = {0.4, 0.4, 0.4}
 }
 
 function Module:OnUpdateRange(elapsed)
@@ -38,6 +40,7 @@ function Module:UpdateButtons()
 		for button in pairs(buttonsToUpdate) do
 			self.UpdateButtonUsable(button)
 		end
+
 		return true
 	end
 
@@ -94,6 +97,7 @@ function Module:Register()
 	self:HookScript("OnShow", Module.UpdateButtonStatus)
 	self:HookScript("OnHide", Module.UpdateButtonStatus)
 	self:SetScript("OnUpdate", nil)
+
 	Module.UpdateButtonStatus(self)
 end
 
@@ -101,10 +105,8 @@ local function button_UpdateUsable(button)
 	Module.UpdateButtonUsable(button, true)
 end
 
-function Module:RegisterButtonRange(button)
-	if button.Update then
-		Module.Register(button)
-		hooksecurefunc(button, "Update", Module.UpdateButtonStatus)
-		hooksecurefunc(button, "UpdateUsable", button_UpdateUsable)
-	end
+function Module:HookActionEvents()
+	hooksecurefunc("ActionButton_OnUpdate", self.Register)
+	hooksecurefunc("ActionButton_Update", self.UpdateButtonStatus)
+	hooksecurefunc("ActionButton_UpdateUsable", button_UpdateUsable)
 end

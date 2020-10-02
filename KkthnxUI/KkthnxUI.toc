@@ -1,4 +1,4 @@
-## Interface: 90001
+## Interface: 80300
 ## Name: KkthnxUI
 ## Title: |cff669DFFKkthnxUI|r
 ## Notes: Custom user interface.|n|n|cff669DFFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/Kkthnx|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
@@ -7,7 +7,6 @@
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIData, KkthnxUISettings, KkthnxUIGold, KkthnxUISettingsPerCharacter
 ## SavedVariablesPerCharacter: KkthnxUISettingsPerChar
-## OptionalDeps: Clique
 ## X-Category: Interface Enhancements
 ## X-Discord: https://discord.gg/YUmxqQm
 ## X-BugReport: https://github.com/kkthnx-wow/KkthnxUI/issues/new

@@ -41,7 +41,6 @@ local UNKNOWN = _G.UNKNOWN
 K.Devs = {
 	["Kkthnx-Sargeras"] = true,
 	["Kkthnxui-Sargeras"] = true,
-	["Kkthnx-Broxigar"] = true,
 }
 
 local function isDeveloper()

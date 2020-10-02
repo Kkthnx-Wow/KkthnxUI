@@ -194,7 +194,6 @@ function Module:CheckTankStatus(unit)
 	local index = unit.."target"
 	local unitRole = isInGroup and UnitExists(index) and not UnitIsUnit(index, "player") and groupRoles[UnitName(index)] or "NONE"
 	if unitRole == "TANK" and K.Role == "Tank" then
-		print("CheckTankStatus ", unitRole)
 		self.feedbackUnit = index
 		self.isOffTank = true
 	else
@@ -304,7 +303,7 @@ function Module:UpdateThreatColor(_, unit)
 end
 
 function Module:CreateThreatColor(self)
-	local threatIndicator = CreateFrame("Frame", nil, self, "BackdropTemplate")
+	local threatIndicator = CreateFrame("Frame", nil, self)
 	threatIndicator:SetPoint("TOPLEFT", self, -3, 3)
 	threatIndicator:SetPoint("BOTTOMRIGHT", self, 3, -3)
 	threatIndicator:SetBackdrop({edgeFile = C["Media"].Glow, edgeSize = 3})
@@ -399,7 +398,7 @@ function Module:AddTargetIndicator(self)
 	self.TargetIndicator.RightArrow:SetPoint("LEFT", self.TargetIndicator, "RIGHT", 3, 0)
 	self.TargetIndicator.RightArrow:SetRotation(math_rad(-180))
 
-	self.TargetIndicator.Glow = CreateFrame("Frame", nil, self.TargetIndicator, "BackdropTemplate")
+	self.TargetIndicator.Glow = CreateFrame("Frame", nil, self.TargetIndicator)
 	self.TargetIndicator.Glow:SetPoint("TOPLEFT", self.TargetIndicator, -5, 5)
 	self.TargetIndicator.Glow:SetPoint("BOTTOMRIGHT", self.TargetIndicator, 5, -5)
 	self.TargetIndicator.Glow:SetBackdrop({edgeFile = C["Media"].Glow, edgeSize = 4})

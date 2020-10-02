@@ -220,8 +220,8 @@ function Module:CreateMicroMenu()
 
 	MicroButtonPortrait:SetAllPoints(CharacterMicroButton.backdrop)
 
-	-- hooksecurefunc("MainMenuMicroButton_SetPushed", Module.MainMenuMicroButton_SetPushed)
-	-- hooksecurefunc("MainMenuMicroButton_SetNormal", Module.MainMenuMicroButton_SetNormal)
+	hooksecurefunc("MainMenuMicroButton_SetPushed", Module.MainMenuMicroButton_SetPushed)
+	hooksecurefunc("MainMenuMicroButton_SetNormal", Module.MainMenuMicroButton_SetNormal)
 	hooksecurefunc("UpdateMicroButtonsParent", Module.UpdateMicroButtonsParent)
 	hooksecurefunc("MoveMicroButtons", Module.UpdateMicroPositionDimensions)
 	hooksecurefunc("UpdateMicroButtons", Module.UpdateMicroButtons)

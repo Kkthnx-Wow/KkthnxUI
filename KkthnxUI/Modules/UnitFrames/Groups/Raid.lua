@@ -268,7 +268,7 @@ function Module:CreateRaid()
 	end
 
 	if (C["Raid"].TargetHighlight) then
-        self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
+        self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay)
         self.TargetHighlight:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
         self.TargetHighlight:SetPoint("TOPLEFT", self, -6, 6)
         self.TargetHighlight:SetPoint("BOTTOMRIGHT", self, 6, -6)

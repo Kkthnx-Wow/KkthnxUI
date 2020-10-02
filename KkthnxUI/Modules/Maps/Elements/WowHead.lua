@@ -157,7 +157,7 @@ function Module:CreateWowHeadLinks()
 			questID = QuestMapFrame_GetDetailQuestID()
 		else
 			-- Get quest ID from currently selected quest on world map
-			questID = C_SuperTrack.GetSuperTrackedQuestID()
+			questID = GetSuperTrackedQuestID()
 		end
 		if questID then
 			-- Hide editbox if quest ID is invalid
@@ -181,7 +181,7 @@ function Module:CreateWowHeadLinks()
 	end
 
 	-- Set URL when super tracked quest changes and on startup
-	mEB:RegisterEvent("SUPER_TRACKING_CHANGED")
+	mEB:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED")
 	mEB:SetScript("OnEvent", SetQuestInBox)
 	SetQuestInBox()
 

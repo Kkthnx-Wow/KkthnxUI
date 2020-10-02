@@ -2,57 +2,65 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
+local math_ceil = _G.math.ceil
+local tonumber = _G.tonumber
 
 local GetInventorySlotInfo = _G.GetInventorySlotInfo
 local GetInventoryItemDurability = _G.GetInventoryItemDurability
 
-local SLOTIDS = {}
-for _, slot in pairs({"Head", "Shoulder", "Chest", "Waist", "Legs", "Feet", "Wrist", "Hands", "MainHand", "SecondaryHand"}) do
-	SLOTIDS[slot] = GetInventorySlotInfo(slot.."Slot")
+local SlotDurStrs = {}
+local Slots = {
+	"Head",
+	"Shoulder",
+	"Chest",
+	"Waist",
+	"Legs",
+	"Feet",
+	"Wrist",
+	"Hands",
+	"MainHand",
+	"SecondaryHand"
+}
+
+local function GetDurStrings(name)
+	if (not SlotDurStrs[name]) then
+		local slot = _G["Character"..name.."Slot"]
+		SlotDurStrs[name] = slot:CreateFontString("OVERLAY")
+		SlotDurStrs[name]:FontTemplate(nil, 11, "OUTLINE")
+		SlotDurStrs[name]:SetPoint("TOPRIGHT", 1, -1)
+	end
+
+	return SlotDurStrs[name]
 end
 
-local function RYGColorGradient(perc)
-	local relperc = perc * 2 % 1
-	if perc <= 0 then
+local function GetThresholdColour(percent)
+	if percent < 0 then
 		return 1, 0, 0
-	elseif perc < 0.5 then
-		return 1, relperc, 0
-	elseif perc == 0.5 then
-		return 1, 1, 0
-	elseif perc < 1.0 then
-		return 1 - relperc, 1, 0
-	else
+	elseif percent <= 0.5 then
+		return 1, percent * 2, 0
+	elseif percent >= 1 then
 		return 0, 1, 0
+	else
+		return 2 - percent * 2, 1, 0
 	end
 end
 
-local fontstrings = setmetatable({}, {
-	__index = function(t, i)
-		local gslot = _G["Character"..i.."Slot"]
-		local fstr = K.CreateFontString(gslot, 12, "", "OUTLINE")
-		fstr:SetPoint("TOPRIGHT", gslot, 1, -1)
-		t[i] = fstr
-		return fstr
-	end,
-})
-
-function Module:SetupSlotDurability()
-	local min = 1
-	for slot, id in pairs(SLOTIDS) do
+function Module.UpdateDurability()
+	for _, item in ipairs(Slots) do
+		local id, _ = GetInventorySlotInfo(item.."Slot")
 		local v1, v2 = GetInventoryItemDurability(id)
+		v1, v2 = tonumber(v1) or 0, tonumber(v2) or 0
+		local percent = v1 / v2
+		local SlotDurStr = GetDurStrings(item)
 
-		if v1 and v2 and v2 ~= 0 then
-			min = math.min(v1 / v2, min)
-			local str = fontstrings[slot]
-			str:SetTextColor(RYGColorGradient(v1 / v2))
-			if v1 < v2 then
-				str:SetText(string.format("%d%%", v1 / v2 * 100))
-			else
-				str:SetText(nil)
+		if ((v2 ~= 0) and (percent ~= 1)) then
+			SlotDurStr:SetText("")
+			if (math_ceil(percent * 100) < 100) then
+				SlotDurStr:SetTextColor(GetThresholdColour(percent))
+				SlotDurStr:SetText(math_ceil(percent * 100).."%")
 			end
 		else
-			local str = rawget(fontstrings, slot)
-			if str then str:SetText(nil) end
+			SlotDurStr:SetText("")
 		end
 	end
 end
@@ -62,7 +70,19 @@ function Module:CreateSlotDurability()
 		return
 	end
 
-	Module:SetupSlotDurability()
-	K:RegisterEvent("ADDON_LOADED", Module.SetupSlotDurability)
-	K:RegisterEvent("UPDATE_INVENTORY_DURABILITY", Module.SetupSlotDurability)
+	CharacterFrame:HookScript("OnShow", Module.CharacterFrame_OnShow)
+	CharacterFrame:HookScript("OnHide", Module.CharacterFrame_OnHide)
+end
+
+function Module.CharacterFrame_OnShow()
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.UpdateDurability)
+	K:RegisterEvent("UNIT_INVENTORY_CHANGED", Module.UpdateDurability)
+	K:RegisterEvent("UPDATE_INVENTORY_DURABILITY", Module.UpdateDurability)
+	Module.UpdateDurability()
+end
+
+function Module.CharacterFrame_OnHide()
+	K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.UpdateDurability)
+	K:UnregisterEvent("UNIT_INVENTORY_CHANGED", Module.UpdateDurability)
+	K:UnregisterEvent("UPDATE_INVENTORY_DURABILITY", Module.UpdateDurability)
 end

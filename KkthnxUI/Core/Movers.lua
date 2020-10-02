@@ -34,7 +34,7 @@ function K:Mover(text, value, anchor, width, height)
 
 	K.CheckSavedVariables()
 
-	local mover = CreateFrame("Button", nil, UIParent, "BackdropTemplate")
+	local mover = CreateFrame("Button", nil, UIParent)
 	mover:SetFrameLevel(self:GetFrameLevel() + 1)
 	mover:SetWidth(width or self:GetWidth())
 	mover:SetHeight(height or self:GetHeight())

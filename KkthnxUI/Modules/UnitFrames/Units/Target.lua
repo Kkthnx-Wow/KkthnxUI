@@ -130,7 +130,7 @@ function Module:CreateTarget()
 		self.Debuffs["growth-x"] = "RIGHT"
 		self.Debuffs["growth-y"] = "UP"
 		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 46)
-		self.Debuffs.num = 6
+		self.Debuffs.num = C["Unitframe"].TargetDebuffsPerRow
 		self.Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 		self.Debuffs.size = Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
 		self.Debuffs:SetWidth(width)
@@ -148,13 +148,13 @@ function Module:CreateTarget()
 		self.Buffs.initialAnchor = "TOPLEFT"
 		self.Buffs["growth-x"] = "RIGHT"
 		self.Buffs["growth-y"] = "DOWN"
-		self.Buffs.num = 6
+		self.Buffs.num = C["Unitframe"].TargetBuffsPerRow
 		self.Buffs.spacing = 6
 		self.Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
 		self.Buffs.onlyShowPlayer = false
-		self.Buffs.size = Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing)
+		self.Buffs.size = self.Buffs.iconsPerRow and Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing) or self.Buffs.size
 		self.Buffs:SetWidth(width)
-		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * self.Buffs.iconsPerRow and math.floor(self.Buffs.num / self.Buffs.iconsPerRow + 0.5) or 2)
 		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura

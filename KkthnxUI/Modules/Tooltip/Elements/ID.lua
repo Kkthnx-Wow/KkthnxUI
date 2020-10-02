@@ -9,15 +9,15 @@ local tonumber = _G.tonumber
 
 local BAGSLOT = _G.BAGSLOT
 local BANK = _G.BANK
-local CURRENCY = _G.CURRENCY
-local C_CurrencyInfo_GetCurrencyListLink = _G.C_CurrencyInfo.GetCurrencyListLink
 local C_TradeSkillUI_GetRecipeReagentItemLink = _G.C_TradeSkillUI.GetRecipeReagentItemLink
+local CURRENCY = _G.CURRENCY
+local GetCurrencyListLink = _G.GetCurrencyListLink
 local GetItemCount = _G.GetItemCount
 local GetItemInfo = _G.GetItemInfo
 local GetUnitName = _G.GetUnitName
+local hooksecurefunc = _G.hooksecurefunc
 local TALENT = _G.TALENT
 local UnitAura = _G.UnitAura
-local hooksecurefunc = _G.hooksecurefunc
 
 local types = {
 	achievement = "Achievement".."ID:",
@@ -162,7 +162,7 @@ function Module:CreateTooltipID()
 
 	-- Currencies
 	hooksecurefunc(GameTooltip, "SetCurrencyToken", function(self, index)
-		local id = tonumber(string_match(C_CurrencyInfo_GetCurrencyListLink(index), "currency:(%d+)"))
+		local id = tonumber(string_match(GetCurrencyListLink(index), "currency:(%d+)"))
 		if id then
 			Module.AddLineForID(self, id, types.currency)
 		end

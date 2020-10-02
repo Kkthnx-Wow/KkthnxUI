@@ -16,6 +16,7 @@ local C_Reputation_IsFactionParagon = _G.C_Reputation.IsFactionParagon
 local CreateFrame = _G.CreateFrame
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GameTooltip = _G.GameTooltip
+local GetExpansionLevel = _G.GetExpansionLevel
 local GetFactionInfo = _G.GetFactionInfo
 local GetFriendshipReputation = _G.GetFriendshipReputation
 local GetNumFactions = _G.GetNumFactions
@@ -25,6 +26,7 @@ local GetXPExhaustion = _G.GetXPExhaustion
 local HONOR = _G.HONOR
 local IsXPUserDisabled = _G.IsXPUserDisabled
 local LEVEL = _G.LEVEL
+local MAX_PLAYER_LEVEL_TABLE = _G.MAX_PLAYER_LEVEL_TABLE
 local MAX_REPUTATION_REACTION = _G.MAX_REPUTATION_REACTION
 local REPUTATION = _G.REPUTATION
 local STANDING = _G.STANDING
@@ -39,7 +41,7 @@ local FactionStandingLabelUnknown = _G.UNKNOWN
 local backupColor = _G.FACTION_BAR_COLORS[1]
 
 function Module:GetUnitXP(unit)
-	if unit == "pet" then
+	if (unit == "pet") then
 		return GetPetExperience()
 	else
 		return UnitXP(unit), UnitXPMax(unit)
@@ -234,18 +236,20 @@ end
 function Module:UpdateExperience()
 	local expBar = self.Bars.Experience
 
-	if IsPlayerAtEffectiveMaxLevel() or IsXPUserDisabled() then
+	if (K.Level == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled() then
 		expBar:Hide()
 	else
 		expBar:Show()
 
-		local cur, max, rested = UnitXP('player'), UnitXPMax('player'), GetXPExhaustion()
+		local cur, max = Module:GetUnitXP("player")
 		if max <= 0 then
 			max = 1
 		end
 
 		expBar:SetMinMaxValues(0, max)
 		expBar:SetValue(cur)
+
+		local rested = GetXPExhaustion()
 
 		if rested and rested > 0 then
 			expBar.RestBar:SetMinMaxValues(0, max)
@@ -330,7 +334,7 @@ function Module:OnEnter()
 		K.UIFrameFadeIn(Module.Container, 0.25, Module.Container:GetAlpha(), 1)
 	end
 
-	if not IsPlayerAtEffectiveMaxLevel() then
+	if MAX_PLAYER_LEVEL ~= K.Level then
 		local cur, max = Module:GetUnitXP("player")
 		local rested = GetXPExhaustion()
 
@@ -344,7 +348,7 @@ function Module:OnEnter()
 	end
 
 	if GetWatchedFactionInfo() then
-		if not IsPlayerAtEffectiveMaxLevel() then
+		if MAX_PLAYER_LEVEL ~= K.Level then
 			GameTooltip:AddLine(" ")
 		end
 
@@ -378,7 +382,7 @@ function Module:OnEnter()
 
 	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
 	if azeriteItemLocation then
-		if not IsPlayerAtEffectiveMaxLevel() or GetWatchedFactionInfo() then
+		if MAX_PLAYER_LEVEL ~= K.Level or GetWatchedFactionInfo() then
 			GameTooltip:AddLine(" ")
 		end
 
@@ -396,7 +400,7 @@ function Module:OnEnter()
 	end
 
 	if C["DataBars"].TrackHonor then
-		if IsPlayerAtEffectiveMaxLevel() and UnitIsPVP("player") then
+		if K.Level == MAX_PLAYER_LEVEL and UnitIsPVP("player") then
 			GameTooltip:AddLine(" ")
 
 			local current = UnitHonor("player")
