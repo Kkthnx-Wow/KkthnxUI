@@ -857,7 +857,7 @@ function Module:OnEnable()
 
 		if showNewItem then
 			if not self.glowFrame then
-				self.glowFrame = CreateFrame("Frame", nil, self)
+				self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
 				self.glowFrame:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
 				self.glowFrame:SetPoint("TOPLEFT", self, -6, 6)
 				self.glowFrame:SetPoint("BOTTOMRIGHT", self, 6, -6)
@@ -1210,8 +1210,6 @@ function Module:OnEnable()
 
 	K:RegisterEvent("TRADE_SHOW", Module.OpenBags)
 	K:RegisterEvent("TRADE_CLOSED", Module.CloseBags)
-	K:RegisterEvent("AUCTION_HOUSE_SHOW", Module.OpenBags)
-	K:RegisterEvent("AUCTION_HOUSE_CLOSED", Module.CloseBags)
 
 	-- Fixes
 	BankFrame.GetRight = function()

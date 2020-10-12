@@ -194,6 +194,7 @@ function Module:CheckTankStatus(unit)
 	local index = unit.."target"
 	local unitRole = isInGroup and UnitExists(index) and not UnitIsUnit(index, "player") and groupRoles[UnitName(index)] or "NONE"
 	if unitRole == "TANK" and K.Role == "Tank" then
+		print("CheckTankStatus ", unitRole)
 		self.feedbackUnit = index
 		self.isOffTank = true
 	else
@@ -303,7 +304,7 @@ function Module:UpdateThreatColor(_, unit)
 end
 
 function Module:CreateThreatColor(self)
-	local threatIndicator = CreateFrame("Frame", nil, self)
+	local threatIndicator = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	threatIndicator:SetPoint("TOPLEFT", self, -3, 3)
 	threatIndicator:SetPoint("BOTTOMRIGHT", self, 3, -3)
 	threatIndicator:SetBackdrop({edgeFile = C["Media"].Glow, edgeSize = 3})
@@ -398,7 +399,7 @@ function Module:AddTargetIndicator(self)
 	self.TargetIndicator.RightArrow:SetPoint("LEFT", self.TargetIndicator, "RIGHT", 3, 0)
 	self.TargetIndicator.RightArrow:SetRotation(math_rad(-180))
 
-	self.TargetIndicator.Glow = CreateFrame("Frame", nil, self.TargetIndicator)
+	self.TargetIndicator.Glow = CreateFrame("Frame", nil, self.TargetIndicator, "BackdropTemplate")
 	self.TargetIndicator.Glow:SetPoint("TOPLEFT", self.TargetIndicator, -5, 5)
 	self.TargetIndicator.Glow:SetPoint("BOTTOMRIGHT", self.TargetIndicator, 5, -5)
 	self.TargetIndicator.Glow:SetBackdrop({edgeFile = C["Media"].Glow, edgeSize = 4})
@@ -748,6 +749,13 @@ function Module:AddFollowerXP(self)
 	self.WidgetXPBar.ProgressText = K.CreateFontString(self.WidgetXPBar, 8, "", "")
 end
 
+-- WidgetContainer
+function Module:AddWidgetContainer(self)
+	self.WidgetContainer = CreateFrame("Frame", nil, self, "UIWidgetContainerTemplate")
+	self.WidgetContainer:SetPoint("BOTTOM", self, "TOP")
+	self.WidgetContainer:Hide()
+end
+
 -- Interrupt info on castbars
 function Module:UpdateCastbarInterrupt(...)
 	local _, eventType, _, sourceGUID, sourceName, _, _, destGUID = ...
@@ -855,15 +863,12 @@ function Module:CreatePlates()
 
 	self.Castbar.timeToHold = .5
 	self.Castbar.decimal = "%.1f"
+
 	self.Castbar.OnUpdate = Module.OnCastbarUpdate
 	self.Castbar.PostCastStart = Module.PostCastStart
-	self.Castbar.PostChannelStart = Module.PostCastStart
 	self.Castbar.PostCastStop = Module.PostCastStop
-	self.Castbar.PostChannelStop = Module.PostChannelStop
-	self.Castbar.PostCastFailed = Module.PostCastFailed
-	self.Castbar.PostCastInterrupted = Module.PostCastFailed
+	self.Castbar.PostCastFail = Module.PostCastFailed
 	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-	self.Castbar.PostCastNotInterruptible = Module.PostUpdateInterruptible
 
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)
@@ -973,7 +978,7 @@ function Module:CreatePlates()
 	self.powerText:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -4)
 	self:Tag(self.powerText, "[nppp]")
 
-	Module:AddFollowerXP(self)
+	Module:AddWidgetContainer(self)
 	Module:MouseoverIndicator(self)
 	Module:AddTargetIndicator(self)
 	Module:AddCreatureIcon(self)
@@ -1033,8 +1038,8 @@ function Module:UpdatePlateByType()
 	local raidtarget = self.RaidTargetIndicator
 	local classify = self.ClassifyIndicator
 	local questIcon = self.questIcon
-	local widgetBar = self.WidgetXPBar
 
+	name:SetShown(not self.widgetsOnly)
 	name:ClearAllPoints()
 	raidtarget:ClearAllPoints()
 
@@ -1062,8 +1067,6 @@ function Module:UpdatePlateByType()
 		if questIcon then
 			questIcon:SetPoint("LEFT", name, "RIGHT", 0, 0)
 		end
-
-		widgetBar:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -12)
 	else
 		for _, element in pairs(DisabledElements) do
 			if not self:IsElementEnabled(element) then
@@ -1091,8 +1094,6 @@ function Module:UpdatePlateByType()
 		if questIcon then
 			questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0)
 		end
-
-		widgetBar:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -5)
 	end
 
 	Module.UpdateTargetIndicator(self)
@@ -1101,7 +1102,7 @@ end
 function Module:RefreshPlateType(unit)
 	self.reaction = UnitReaction(unit, "player")
 	self.isFriendly = self.reaction and self.reaction >= 5
-	self.isNameOnly = C["Nameplate"].NameOnly and self.isFriendly or false
+	self.isNameOnly = C["Nameplate"].NameOnly and self.isFriendly or self.widgetsOnly or false
 
 	if self.previousType == nil or self.previousType ~= self.isNameOnly then
 		Module.UpdatePlateByType(self)
@@ -1121,7 +1122,7 @@ function Module:RefreshPlateOnFactionChanged()
 	K:RegisterEvent("UNIT_FACTION", Module.OnUnitFactionChanged)
 end
 
-function Module.PostUpdateNameplateClassPower(element, cur, max, diff, powerType)
+function Module.PostUpdateNameplateClassPower(element, cur, max, diff, powerType, chargedIndex)
 	if diff then
 		for i = 1, max do
 			element[i]:SetWidth((C["Nameplate"].PlateWidth - (max - 1) * 6) / max)
@@ -1141,10 +1142,22 @@ function Module.PostUpdateNameplateClassPower(element, cur, max, diff, powerType
 			local color = element.__owner.colors.power[powerType]
 			r, g, b = color[1], color[2], color[3]
 		end
+
 		for i = 1, #element do
 			element[i]:SetStatusBarColor(r, g, b)
 		end
 		element.prevColor = element.thisColor
+	end
+
+	if chargedIndex and chargedIndex ~= element.thisCharge then
+		local bar = element[chargedIndex]
+		element.chargeStar:SetParent(bar)
+		element.chargeStar:SetPoint("CENTER", bar)
+		element.chargeStar:Show()
+		element.thisCharge = chargedIndex
+	else
+		element.chargeStar:Hide()
+		element.thisCharge = nil
 	end
 end
 
@@ -1163,14 +1176,16 @@ function Module:PostUpdatePlates(event, unit)
 		self.npcID = K.GetNPCID(self.unitGUID)
 		self.isPlayer = UnitIsPlayer(unit)
 
-		local blizzPlate = self:GetParent().UnitFrame
-		self.widget = blizzPlate.WidgetContainer
+		self.widgetsOnly = UnitNameplateShowsWidgetsOnly(unit)
+		self.WidgetContainer:RegisterForWidgetSet(UnitWidgetSet(unit), oUF.Widget_DefaultLayout, nil, unit)
 
 		Module.RefreshPlateType(self, unit)
 	elseif event == "NAME_PLATE_UNIT_REMOVED" then
 		if self.unitGUID then
 			guidToPlate[self.unitGUID] = nil
 		end
+		self.npcID = nil
+		self.WidgetContainer:UnregisterForWidgetSet()
 	end
 
 	if event ~= "NAME_PLATE_UNIT_REMOVED" then
@@ -1182,7 +1197,6 @@ function Module:PostUpdatePlates(event, unit)
 		Module:UpdateClassIcon(self, unit)
 		Module:UpdateClassPowerAnchor()
 	end
-
 	Module.UpdateExplosives(self, event, unit)
 end
 
@@ -1264,8 +1278,15 @@ function Module:CreatePlayerPlate()
 			bars.colorSpec = true
 			bars.sortOrder = "asc"
 			bars.PostUpdate = Module.PostUpdateRunes
+			bars.__max = 6
 			self.Runes = bars
 		else
+			local chargeStar = bar:CreateTexture()
+			chargeStar:SetAtlas("VignetteKill")
+			chargeStar:SetSize(24, 24)
+			chargeStar:Hide()
+			bars.chargeStar = chargeStar
+
 			bars.PostUpdate = Module.PostUpdateNameplateClassPower
 			self.ClassPower = bars
 		end

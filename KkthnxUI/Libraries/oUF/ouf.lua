@@ -24,21 +24,21 @@ PetBattleFrameHider:SetAllPoints()
 PetBattleFrameHider:SetFrameStrata('LOW')
 RegisterStateDriver(PetBattleFrameHider, 'visibility', '[petbattle] hide; show')
 
--- updating of "invalid" units, function edited by ElvUI
+-- updating of "invalid" units.
 local function enableTargetUpdate(object)
-	object.onUpdateFrequency = object.onUpdateFrequency or 0.1
+	object.onUpdateFrequency = object.onUpdateFrequency or .5
 	object.__eventless = true
 
+	local total = 0
 	object:SetScript('OnUpdate', function(self, elapsed)
-		if not self.unit then
+		if(not self.unit) then
 			return
-		elseif self.elapsed and self.elapsed > self.onUpdateFrequency then
+		elseif(total > self.onUpdateFrequency) then
 			self:UpdateAllElements('OnUpdate')
-
-			self.elapsed = 0
-		else
-			self.elapsed = (self.elapsed or 0) + elapsed
+			total = 0
 		end
+
+		total = total + elapsed
 	end)
 end
 Private.enableTargetUpdate = enableTargetUpdate
@@ -775,7 +775,6 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 	eventHandler:RegisterEvent('NAME_PLATE_UNIT_ADDED')
 	eventHandler:RegisterEvent('NAME_PLATE_UNIT_REMOVED')
 	eventHandler:RegisterEvent('PLAYER_TARGET_CHANGED')
-	eventHandler:RegisterEvent('UNIT_FACTION')
 
 	if(IsLoggedIn()) then
 		if(nameplateCVars) then
@@ -804,13 +803,6 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 			-- ForceUpdate calls layout devs have to do themselves
 			if(nameplate) then
 				nameplate.unitFrame:UpdateAllElements(event)
-			end
-		elseif(event == 'UNIT_FACTION' and unit) then
-			local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
-			if(not nameplate) then return end
-
-			if(nameplateCallback) then
-				nameplateCallback(nameplate.unitFrame, event, unit)
 			end
 		elseif(event == 'NAME_PLATE_UNIT_ADDED' and unit) then
 			local nameplate = C_NamePlate.GetNamePlateForUnit(unit)

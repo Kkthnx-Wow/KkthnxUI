@@ -14,7 +14,7 @@ local type = _G.type
 local tonumber = _G.tonumber
 
 local ACCEPT = _G.ACCEPT
-local AbandonQuest = _G.AbandonQuest
+local C_QuestLog_GetNumQuestLogEntries = _G.C_QuestLog.GetNumQuestLogEntries
 local CANCEL = _G.CANCEL
 local CombatLogClearEntries = _G.CombatLogClearEntries
 local ConvertToParty = _G.ConvertToParty
@@ -26,17 +26,17 @@ local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetItemInfo = _G.GetItemInfo
 local GetLocale = _G.GetLocale
 local GetNumGroupMembers = _G.GetNumGroupMembers
-local GetNumQuestLogEntries = _G.GetNumQuestLogEntries
-local GetQuestLogTitle = _G.GetQuestLogTitle
-local IsQuestFlaggedCompleted = _G.IsQuestFlaggedCompleted
+local C_QuestLog_GetTitleForLogIndex = _G.C_QuestLog.GetTitleForLogIndex
+local C_QuestLog_SetSelectedQuest = _G.C_QuestLog.SetSelectedQuest
+local C_QuestLog_IsQuestFlaggedCompleted = _G.C_QuestLog.IsQuestFlaggedCompleted
 local LeaveParty = _G.LeaveParty
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlaySound = _G.PlaySound
 local ReloadUI = _G.ReloadUI
 local RepopMe = _G.RepopMe
 local RetrieveCorpse = _G.RetrieveCorpse
-local SelectQuestLogEntry = _G.SelectQuestLogEntry
-local SetAbandonQuest = _G.SetAbandonQuest
+local C_QuestLog_SetAbandonQuest = _G.C_QuestLog.SetAbandonQuest
+local C_QuestLog_AbandonQuest = _G.C_QuestLog.AbandonQuest
 local SetCVar = _G.SetCVar
 local SlashCmdList = _G.SlashCmdList
 local UIErrorsFrame = _G.UIErrorsFrame
@@ -261,7 +261,7 @@ SlashCmdList["KKUI_CHECKQUESTSTATUS"] = function(questid)
 		return
 	end
 
-	if (IsQuestFlaggedCompleted(questid) == true) then
+	if (C_QuestLog_IsQuestFlaggedCompleted(questid) == true) then
 		UIErrorsFrame:AddMessage(QuestCheckComplete.."Quest ".. "|CFFFFFF00["..questid.."]|r"..L["CheckQuestComplete"])
 		PlaySound("878")
 		K.Print(WoWHeadLoc..questid)
@@ -343,14 +343,14 @@ _G.SLASH_KKUI_FIXGFXENGINE2 = "/fixgfx"
 
 -- Clear all quests in questlog
 SlashCmdList["KKUI_ABANDONQUESTS"] = function()
-	local numEntries, numQuests = GetNumQuestLogEntries()
-	for questLogIndex = 1, numEntries do
-		local _, _, _, isHeader = GetQuestLogTitle(questLogIndex)
+	local numShownEntries, numQuests = C_QuestLog_GetNumQuestLogEntries()
+	for questLogIndex = 1, numShownEntries do
+		local _, _, _, title = C_QuestLog_GetTitleForLogIndex(questLogIndex)
 
-		if (not isHeader) then
-			SelectQuestLogEntry(questLogIndex)
-			SetAbandonQuest()
-			AbandonQuest()
+		if (not title) then
+			C_QuestLog_SetSelectedQuest(questLogIndex)
+			C_QuestLog_SetAbandonQuest()
+			C_QuestLog_AbandonQuest()
 		end
 	end
 end

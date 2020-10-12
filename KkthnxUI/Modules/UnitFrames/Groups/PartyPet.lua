@@ -116,7 +116,7 @@ function Module:CreatePartyPet()
 	self.RaidTargetIndicator:SetPoint("TOP", self, 0, 8)
 
 	if C["Party"].TargetHighlight then
-		self.PartyPetHighlight = CreateFrame("Frame", nil, self.Overlay)
+		self.PartyPetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
 		self.PartyPetHighlight:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
 		self.PartyPetHighlight:SetPoint("TOPLEFT", self, -6, 6)
 		self.PartyPetHighlight:SetPoint("BOTTOMRIGHT", self, 6, -6)

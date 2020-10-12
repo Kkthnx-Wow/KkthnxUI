@@ -181,13 +181,9 @@ function Module:CreateParty()
 
 		self.Castbar.OnUpdate = Module.OnCastbarUpdate
 		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostChannelStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostChannelStop = Module.PostChannelStop
-		self.Castbar.PostCastFailed = Module.PostCastFailed
-		self.Castbar.PostCastInterrupted = Module.PostCastFailed
+		self.Castbar.PostCastFail = Module.PostCastFailed
 		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-		self.Castbar.PostCastNotInterruptible = Module.PostUpdateInterruptible
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Text:SetFont(select(1, self.Castbar.Text:GetFont()), 11, select(3, self.Castbar.Text:GetFont()))
@@ -273,7 +269,7 @@ function Module:CreateParty()
 	self:Tag(self.StatusIndicator, "[afkdnd]")
 
 	if (C["Party"].TargetHighlight) then
-        self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay)
+        self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
         self.TargetHighlight:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
         self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -6, 6)
         self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 6, -6)
@@ -347,7 +343,7 @@ function Module:CreateParty()
 	self.Highlight:Hide()
 
 	-- function UF:CreatePartyAltPower(self)
-		--if not NDuiDB["UFs"]["PartyAltPower"] then return end
+		--if not C["UFs"]["PartyAltPower"] then return end
 		local PWOnRight = false
 		local relF = "LEFT"
 		local relT = "RIGHT"

@@ -834,6 +834,7 @@ K.ChannelingTicks = {
 	[64843] = 4, -- Divine Hymn
 	[740] = 4, -- Tranquility
 	[755] = 3, -- Health Funnel
+	[314791] = 4, -- Changeable Phantom Energy
 }
 
 if K.Class == "PRIEST" then

@@ -346,7 +346,7 @@ function Module:ReskinStatusBar()
 	self.StatusBar:SetPoint("BOTTOMLEFT", self.tooltipStyle, "TOPLEFT", 0, 6)
 	self.StatusBar:SetPoint("BOTTOMRIGHT", self.tooltipStyle, "TOPRIGHT", -0, 6)
 	self.StatusBar:SetStatusBarTexture(K.GetTexture(C["UITextures"].TooltipTextures))
-	self.StatusBar:SetHeight(10)
+	self.StatusBar:SetHeight(11)
 	self.StatusBar:CreateBorder()
 end
 
@@ -433,27 +433,6 @@ function Module:GameTooltip_ComparisonFix(anchorFrame, shoppingTooltip1, shoppin
 	end
 end
 
--- Tooltip skin
-local fakeTooltipStyle = CreateFrame("Frame", nil, UIParent)
-fakeTooltipStyle:SetBackdrop({
-	bgFile = C["Media"].Blank,
-	edgeFile = C["Media"].BorderTooltip,
-	edgeSize = 12,
-	insets = {left = 4, right = 4, top = 4, bottom = 4}
-})
-
-local function getBackdrop()
-	return fakeTooltipStyle:GetBackdrop()
-end
-
-local function getBackdropColor()
-	return 0.04, 0.04, 0.04, 0.9
-end
-
-local function getBackdropBorderColor()
-	return 1, 1, 1
-end
-
 function Module:ReskinTooltip()
 	if not self then
 		if K.isDeveloper then
@@ -476,13 +455,14 @@ function Module:ReskinTooltip()
 		self.tooltipStyle:SetFrameLevel(self:GetFrameLevel())
 		self.tooltipStyle:CreateBorder("ARTWORK")
 
-		-- other gametooltip-like support
-		self.GetBackdrop = getBackdrop
-		self.GetBackdropColor = getBackdropColor
-		self.GetBackdropBorderColor = getBackdropBorderColor
-
 		if self.StatusBar then
 			Module.ReskinStatusBar(self)
+		end
+
+		if self.GetBackdrop then
+			self.GetBackdrop = self.tooltipStyle.GetBackdrop
+			self.GetBackdropColor =self.tooltipStyle.GetBackdropColor
+			self.GetBackdropBorderColor = self.tooltipStyle.GetBackdropBorderColor
 		end
 
 		self.isTipStyled = true
@@ -501,7 +481,7 @@ function Module:ReskinTooltip()
 	end
 end
 
-function Module:GameTooltip_SetBackdropStyle()
+function Module:SharedTooltip_SetBackdropStyle()
 	if not self.isTipStyled then
 		return
 	end
@@ -511,14 +491,14 @@ end
 
 function Module:OnEnable()
 	GameTooltip.StatusBar = GameTooltipStatusBar
-	GameTooltip:HookScript("OnTooltipCleared", self.OnTooltipCleared)
-	GameTooltip:HookScript("OnTooltipSetUnit", self.OnTooltipSetUnit)
-	GameTooltip.StatusBar:SetScript("OnValueChanged", self.StatusBar_OnValueChanged)
-	hooksecurefunc("GameTooltip_ShowStatusBar", self.GameTooltip_ShowStatusBar)
-	hooksecurefunc("GameTooltip_ShowProgressBar", self.GameTooltip_ShowProgressBar)
-	hooksecurefunc("GameTooltip_SetDefaultAnchor", self.GameTooltip_SetDefaultAnchor)
-	hooksecurefunc("GameTooltip_SetBackdropStyle", self.GameTooltip_SetBackdropStyle)
-	hooksecurefunc("GameTooltip_AnchorComparisonTooltips", self.GameTooltip_ComparisonFix)
+	GameTooltip:HookScript("OnTooltipCleared", Module.OnTooltipCleared)
+	GameTooltip:HookScript("OnTooltipSetUnit", Module.OnTooltipSetUnit)
+	GameTooltip.StatusBar:SetScript("OnValueChanged", Module.StatusBar_OnValueChanged)
+	hooksecurefunc("GameTooltip_ShowStatusBar", Module.GameTooltip_ShowStatusBar)
+	hooksecurefunc("GameTooltip_ShowProgressBar", Module.GameTooltip_ShowProgressBar)
+	hooksecurefunc("GameTooltip_SetDefaultAnchor", Module.GameTooltip_SetDefaultAnchor)
+	hooksecurefunc("SharedTooltip_SetBackdropStyle", Module.SharedTooltip_SetBackdropStyle)
+	hooksecurefunc("GameTooltip_AnchorComparisonTooltips", Module.GameTooltip_ComparisonFix)
 
 	-- Elements
 	self:CreateMountSource()
@@ -580,7 +560,7 @@ Module:RegisterTooltips("KkthnxUI", function()
 		f:HookScript("OnShow", Module.ReskinTooltip)
 	end
 
-	_G.ItemRefCloseButton:SkinCloseButton()
+	_G.ItemRefTooltip.CloseButton:SkinCloseButton()
 	_G.FloatingBattlePetTooltip.CloseButton:SkinCloseButton()
 	_G.FloatingPetBattleAbilityTooltip.CloseButton:SkinCloseButton()
 

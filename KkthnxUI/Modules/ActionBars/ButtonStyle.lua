@@ -220,6 +220,13 @@ function Module:UpdateHotKey()
 	end
 end
 
+function Module:HookHotKey(button)
+	Module.UpdateHotKey(button)
+	if button.UpdateHotkeys then
+		hooksecurefunc(button, "UpdateHotkeys", Module.UpdateHotKey)
+	end
+end
+
 function Module:StyleActionButton(button, cfg)
 	if not button then
 		return
@@ -294,7 +301,7 @@ function Module:StyleActionButton(button, cfg)
 	if hotkey then
 		if C["ActionBar"].Hotkey then
 			hotkey:SetParent(overlay)
-			Module.UpdateHotKey(button)
+			Module:HookHotKey(button)
 			SetupFontString(hotkey, cfg.hotkey)
 		else
 			hotkey:Hide()
@@ -309,6 +316,8 @@ function Module:StyleActionButton(button, cfg)
 			name:Hide()
 		end
 	end
+
+	Module:RegisterButtonRange(button)
 
 	button.__styled = true
 end
@@ -353,7 +362,7 @@ function Module:StyleExtraActionButton(cfg)
 	local hotcountFont = K.GetFont(C["UIFonts"].ActionBarsFonts)
 	if C["ActionBar"].Hotkey then
 		hotkey:SetParent(overlay)
-		Module.UpdateHotKey(button)
+		Module:HookHotKey(button)
 		cfg.hotkey.font = hotcountFont
 		SetupFontString(hotkey, cfg.hotkey)
 	else
@@ -368,13 +377,15 @@ function Module:StyleExtraActionButton(cfg)
 		count:Hide()
 	end
 
+	Module:RegisterButtonRange(button)
+
 	button.__styled = true
 end
 
 function Module:UpdateStanceHotKey()
 	for i = 1, NUM_STANCE_SLOTS do
 		_G["StanceButton"..i.."HotKey"]:SetText(GetBindingKey("SHAPESHIFTBUTTON"..i))
-		Module.UpdateHotKey(_G["StanceButton"..i])
+		Module:HookHotKey(_G["StanceButton"..i])
 	end
 end
 
@@ -506,7 +517,6 @@ function Module:CreateBarSkin()
 	Module:StyleAllActionButtons(cfg)
 
 	-- Update hotkeys
-	hooksecurefunc("ActionButton_UpdateHotkeys", Module.UpdateHotKey)
 	hooksecurefunc("PetActionButton_SetHotkeys", Module.UpdateHotKey)
 	if C["ActionBar"].Hotkey then
 		Module:UpdateStanceHotKey()

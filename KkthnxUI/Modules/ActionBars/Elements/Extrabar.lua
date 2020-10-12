@@ -4,20 +4,11 @@ local FilterConfig = K.ActionBars.extraBar
 
 local _G = _G
 local table_insert = _G.table.insert
-local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
-
-local function DisableExtraButtonTexture(self, _, loop)
-	if loop then
-		return
-	end
-
-	self:SetTexture("", true)
-end
 
 function Module:CreateExtrabar()
 	local padding, margin = 10, 5
@@ -40,6 +31,7 @@ function Module:CreateExtrabar()
 	-- The Extra Button
 	local button = _G.ExtraActionButton1
 	table_insert(buttonList, button) -- Add The Button Object To The List
+	--table_insert(Module.buttons, button)
 	button:SetSize(FilterConfig.size, FilterConfig.size)
 
 	-- Show/hide The Frame On A Given State Driver
@@ -56,18 +48,35 @@ function Module:CreateExtrabar()
 		K.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
 	end
 
-	-- Zone Ability
-	_G.ZoneAbilityFrame:ClearAllPoints()
-	_G.ZoneAbilityFrame.ignoreFramePositionManager = true
-	_G.ZoneAbilityFrameNormalTexture:SetAlpha(0)
-	K.Mover(_G.ZoneAbilityFrame, "ZoneAbilityFrame", "ZoneAbilityFrame", {"BOTTOM", UIParent, "BOTTOM", 270, 34}, 64, 64)
+	-- ZoneAbility
+	local zoneFrame = CreateFrame("Frame", "NDui_ActionBarZone", UIParent)
+	zoneFrame:SetWidth(FilterConfig.size + 2 * padding)
+	zoneFrame:SetHeight(FilterConfig.size + 2 * padding)
+	zoneFrame.Pos = {"BOTTOM", UIParent, "BOTTOM", -250, 100}
+	zoneFrame.mover = K.Mover(zoneFrame, "Zone Ability", "ZoneAbility", zoneFrame.Pos)
 
-	local spellButton = _G.ZoneAbilityFrame.SpellButton
-	spellButton.Style:SetAlpha(0)
-	spellButton.Icon:SetTexCoord(unpack(K.TexCoords))
-	spellButton:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
-	spellButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	ZoneAbilityFrame:SetParent(zoneFrame)
+	ZoneAbilityFrame:ClearAllPoints()
+	ZoneAbilityFrame:SetPoint("CENTER", zoneFrame)
+	ZoneAbilityFrame.ignoreFramePositionManager = true
+	ZoneAbilityFrame.Style:SetAlpha(0)
 
-	hooksecurefunc(_G.ExtraActionButton1.style, "SetTexture", DisableExtraButtonTexture)
-	hooksecurefunc(_G.ZoneAbilityFrame.SpellButton.Style, "SetTexture", DisableExtraButtonTexture)
+	hooksecurefunc(ZoneAbilityFrame, "UpdateDisplayedZoneAbilities", function(self)
+		for spellButton in self.SpellButtonContainer:EnumerateActive() do
+			if spellButton and not spellButton.styled then
+				spellButton.NormalTexture:SetAlpha(0)
+				spellButton:SetPushedTexture(C.Media.Texture) -- force it to gain a texture
+				spellButton:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
+				--B.ReskinIcon(spellButton.Icon, true)
+				spellButton.styled = true
+			end
+		end
+	end)
+
+	-- Fix button visibility
+	hooksecurefunc(ZoneAbilityFrame, "SetParent", function(self, parent)
+		if parent == ExtraAbilityContainer then
+			self:SetParent(zoneFrame)
+		end
+	end)
 end

@@ -69,7 +69,7 @@ end
 
 function Module:UpdateAura(button, unit, auraID, filter, spellID, cooldown, glow)
 	button.Icon:SetTexture(GetSpellTexture(spellID))
-	local name, count, duration, expire, caster = self:GetUnitAura(unit, auraID, filter)
+	local name, count, duration, expire, caster = Module:GetUnitAura(unit, auraID, filter)
 	if name and caster == "player" then
 		if button.Count then
 			if count == 0 then
@@ -93,7 +93,7 @@ function Module:UpdateAura(button, unit, auraID, filter, spellID, cooldown, glow
 		end
 	else
 		if cooldown then
-			self:UpdateCooldown(button, spellID)
+			Module:UpdateCooldown(button, spellID)
 		else
 			if button.Count then
 				button.Count:SetText("")
@@ -135,7 +135,7 @@ function Module:UpdateTotemAura(button, texture, spellID, glow)
 
 	if not found then
 		if spellID then
-			self:UpdateCooldown(button, spellID)
+			Module:UpdateCooldown(button, spellID)
 		else
 			button.CD:Hide()
 			button.Icon:SetDesaturated(true)
@@ -154,11 +154,13 @@ local function UpdateVisibility(self)
 	end
 
 	for i = 1, 5 do
-		self.bu[i].Count:SetTextColor(1, 1, 1)
-		self.bu[i].Count:SetText("")
-		self.bu[i].CD:Hide()
-		self.bu[i]:SetScript("OnUpdate", nil)
-		K.libButtonGlow.HideOverlayGlow(self.bu[i].glowFrame)
+		local bu = self.lumos[i]
+		bu.Count:SetTextColor(1, 1, 1)
+		bu.Count:SetText("")
+		bu.CD:Hide()
+		bu:SetScript("OnUpdate", nil)
+		bu.Icon:SetDesaturated(true)
+		K.libButtonGlow.HideOverlayGlow(bu.glowFrame)
 	end
 
 	if Module.PostUpdateVisibility then
@@ -195,7 +197,7 @@ function Module:CreateLumos(self)
 		return
 	end
 
-	self.bu = {}
+	self.lumos = {}
 	local iconSize = self.iconSize
 	for i = 1, 5 do
 		local bu = CreateFrame("Frame", nil, self.Health)
@@ -211,7 +213,8 @@ function Module:CreateLumos(self)
 		bu:CreateShadow()
 
 		bu.glowFrame = CreateFrame("Frame", nil, bu)
-		bu.glowFrame:SetAllPoints()
+		bu.glowFrame:SetPoint("TOPLEFT", bu, -4, 4)
+		bu.glowFrame:SetPoint("BOTTOMRIGHT", bu, 4, -4)
 		bu.glowFrame:SetSize(iconSize, iconSize)
 		bu.glowFrame:SetFrameLevel(bu:GetFrameLevel())
 
@@ -223,10 +226,10 @@ function Module:CreateLumos(self)
 		if i == 1 then
 			bu:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -5)
 		else
-			bu:SetPoint("LEFT", self.bu[i-1], "RIGHT", 2, 0)
+			bu:SetPoint("LEFT", self.lumos[i-1], "RIGHT", 2, 0)
 		end
 
-		self.bu[i] = bu
+		self.lumos[i] = bu
 	end
 
 	if Module.PostCreateLumos then

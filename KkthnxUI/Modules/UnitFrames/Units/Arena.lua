@@ -198,13 +198,9 @@ function Module:CreateArena()
 
 	self.Castbar.OnUpdate = Module.OnCastbarUpdate
 	self.Castbar.PostCastStart = Module.PostCastStart
-	self.Castbar.PostChannelStart = Module.PostCastStart
 	self.Castbar.PostCastStop = Module.PostCastStop
-	self.Castbar.PostChannelStop = Module.PostChannelStop
-	self.Castbar.PostCastFailed = Module.PostCastFailed
-	self.Castbar.PostCastInterrupted = Module.PostCastFailed
+	self.Castbar.PostCastFail = Module.PostCastFailed
 	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-	self.Castbar.PostCastNotInterruptible = Module.PostUpdateInterruptible
 
 	self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 	self.Castbar.Text:SetPoint("LEFT", 3.5, 0)

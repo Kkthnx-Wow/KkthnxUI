@@ -130,7 +130,7 @@ function Module:CreateTarget()
 		self.Debuffs["growth-x"] = "RIGHT"
 		self.Debuffs["growth-y"] = "UP"
 		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 46)
-		self.Debuffs.num = C["Unitframe"].TargetDebuffsPerRow
+		self.Debuffs.num = 20
 		self.Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 		self.Debuffs.size = Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
 		self.Debuffs:SetWidth(width)
@@ -148,7 +148,7 @@ function Module:CreateTarget()
 		self.Buffs.initialAnchor = "TOPLEFT"
 		self.Buffs["growth-x"] = "RIGHT"
 		self.Buffs["growth-y"] = "DOWN"
-		self.Buffs.num = C["Unitframe"].TargetBuffsPerRow
+		self.Buffs.num = 15
 		self.Buffs.spacing = 6
 		self.Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
 		self.Buffs.onlyShowPlayer = false
@@ -196,13 +196,9 @@ function Module:CreateTarget()
 
 		self.Castbar.OnUpdate = Module.OnCastbarUpdate
 		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostChannelStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostChannelStop = Module.PostChannelStop
-		self.Castbar.PostCastFailed = Module.PostCastFailed
-		self.Castbar.PostCastInterrupted = Module.PostCastFailed
+		self.Castbar.PostCastFail = Module.PostCastFailed
 		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-		self.Castbar.PostCastNotInterruptible = Module.PostUpdateInterruptible
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)

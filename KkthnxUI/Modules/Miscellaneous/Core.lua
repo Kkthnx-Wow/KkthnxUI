@@ -552,11 +552,11 @@ function Module:CreateKillTutorials()
 		return
 	end
 
-	_G.HelpOpenTicketButtonTutorial:Kill()
+	--_G.HelpOpenTicketButtonTutorial:Kill()
 	_G.HelpPlate:Kill()
 	_G.HelpPlateTooltip:Kill()
 	_G.SpellBookFrameTutorialButton:Kill()
-	_G.EJMicroButtonAlert:Kill()
+	--_G.EJMicroButtonAlert:Kill()
 	_G.WorldMapFrame.BorderFrame.Tutorial:Kill()
 end
 
@@ -585,16 +585,16 @@ local function KillTalentTutorials(event, addon)
 end
 
 function Module:OnEnable()
-	self:CreateKillTutorials()
 	self:CreateAFKCam()
 	self:CreateBlockStrangerInvites()
 	self:CreateBossBanner()
 	self:CreateBossEmote()
-	self:CreateChatBubbles()
 	self:CreateDurabilityFrame()
 	self:CreateImprovedMail()
 	self:CreateImprovedStats()
+	self:CreateKillTutorials()
 	self:CreateKillingBlow()
+	self:CreateLoginAnimation()
 	self:CreateMerchantItemLevel()
 	self:CreateOverrideAWQ()
 	self:CreatePulseCooldown()

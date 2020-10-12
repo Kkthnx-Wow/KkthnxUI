@@ -22,6 +22,7 @@
 
    <Include file="Blizzard\Achievement.lua" />
    <Include file="Blizzard\Character.lua" />
+   <Include file="Blizzard\ChatBubble.lua" />
    <Include file="Blizzard\ChatFrame.lua" />
    <Include file="Blizzard\DeathRecap.lua" />
    <Include file="Blizzard\Debug.lua" />

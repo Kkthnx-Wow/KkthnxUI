@@ -46,7 +46,7 @@ local cargBags = ns.cargBags
 local _G = _G
 
 local CalculateTotalNumberOfFreeBagSlots = _G.CalculateTotalNumberOfFreeBagSlots
-local GetBackpackCurrencyInfo = _G.GetBackpackCurrencyInfo
+local C_CurrencyInfo_GetBackpackCurrencyInfo = _G.C_CurrencyInfo.GetBackpackCurrencyInfo
 local GetContainerNumFreeSlots = _G.GetContainerNumFreeSlots
 local GetItemCount = _G.GetItemCount
 local GetItemIcon = _G.GetItemIcon
@@ -139,7 +139,8 @@ tagPool["item"] = function(self, item)
 end
 
 tagPool["currency"] = function(self, id)
-	local _, count, icon = GetBackpackCurrencyInfo(id)
+	local currencyInfo = C_CurrencyInfo_GetBackpackCurrencyInfo(id)
+	local _, count, icon = _, currencyInfo.quantity, currencyInfo.iconFileID
 
 	if (count) then
 		return BreakUpLargeNumbers(count)..createIcon(icon, self.iconValues)

@@ -111,18 +111,18 @@ function Module:PostUpdatePvPIndicator(unit, status)
 end
 
 function Module:UpdateThreat(_, unit)
-	if (unit ~= self.unit) then
+	if unit ~= self.unit then
 		return
 	end
 
-	local Status = UnitThreatSituation(unit)
+	local status = UnitThreatSituation(unit)
 	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 		if not self.Portrait then
 			return
 		end
 
-		if (Status and Status > 0) then
-			local r, g, b = GetThreatStatusColor(Status)
+		if status and status > 1 then
+			local r, g, b = unpack(oUF.colors.threat[status])
 			self.Portrait.KKUI_Border:SetVertexColor(r, g, b)
 		else
 			self.Portrait.KKUI_Border:SetVertexColor(1, 1, 1)
@@ -132,8 +132,8 @@ function Module:UpdateThreat(_, unit)
 			return
 		end
 
-		if (Status and Status > 0) then
-			local r, g, b = GetThreatStatusColor(Status)
+		if status and status > 1 then
+			local r, g, b = unpack(oUF.colors.threat[status])
 			self.Portrait.Border.KKUI_Border:SetVertexColor(r, g, b)
 		else
 			self.Portrait.Border.KKUI_Border:SetVertexColor(1, 1, 1)
@@ -193,7 +193,7 @@ local function updateCastBarTicks(bar, numTicks)
 				castbarTicks[i] = bar:CreateTexture(nil, "OVERLAY")
 				castbarTicks[i]:SetTexture(C["Media"].Blank)
 				castbarTicks[i]:SetVertexColor(0, 0, 0, 0.8)
-				castbarTicks[i]:SetWidth(2)
+				castbarTicks[i]:SetWidth(K.Mult)
 				castbarTicks[i]:SetHeight(bar:GetHeight())
 			end
 			castbarTicks[i]:ClearAllPoints()
@@ -358,13 +358,6 @@ function Module:PostCastStop()
 		self.fadeOut = true
 	end
 
-	self:SetValue(self.max)
-	self:Show()
-end
-
-function Module:PostChannelStop()
-	self.fadeOut = true
-	self:SetValue(0)
 	self:Show()
 end
 

@@ -165,6 +165,13 @@ L["Start Stop Countdown"] = "Start/Stop Countdown"
 L["Stranger"] = "Stranger"
 
 -- Nameplate Locales
+L["AttackSpeed"] = "AS"
+L["CD"] = "CD"
+L["Combo"] = "Com"
+L["Crit"] = "Crit"
+L["Power"] = "PW"
+L["Strike"] = "SS"
+
 -- Party Locales
 -- PulseCooldown Locales
 -- QuestNotifier Locales

@@ -13,7 +13,6 @@ local C_WowTokenPublic_GetCurrentMarketPrice = _G.C_WowTokenPublic.GetCurrentMar
 local C_WowTokenPublic_UpdateMarketPrice = _G.C_WowTokenPublic.UpdateMarketPrice
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GameTooltip = _G.GameTooltip
-local GetBackpackCurrencyInfo = _G.GetBackpackCurrencyInfo
 local GetCurrencyInfo = _G.GetCurrencyInfo
 local GetMoney = _G.GetMoney
 local GetNumWatchedTokens = _G.GetNumWatchedTokens
@@ -132,14 +131,15 @@ local function OnEnter()
 	GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t ".."Token:", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), .6,.8,1, 1, 1, 1)
 
 	for i = 1, GetNumWatchedTokens() do
-		local name, count, icon, currencyID = GetBackpackCurrencyInfo(i)
+		local currencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo(i)
+		local name, count, icon, currencyID = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID, currencyInfo.currencyTypesID
 		if name and i == 1 then
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine(CURRENCY..":", 0.6, 0.8, 1)
 		end
 
 		if name and count then
-			local _, _, _, _, _, total = GetCurrencyInfo(currencyID)
+			local total = C_CurrencyInfo.GetCurrencyInfo(currencyID).maxQuantity
 			local iconTexture = " |T"..icon..":12:12:0:0:50:50:4:46:4:46|t"
 			if total > 0 then
 				GameTooltip:AddDoubleLine(name, count.."/"..total..iconTexture, 1, 1, 1, 1, 1, 1)

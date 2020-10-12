@@ -14,7 +14,7 @@ local string_format = _G.string.format
 local CreateFrame = _G.CreateFrame
 
 -- Class Powers
-function Module.PostUpdateUnitframeClassPower(element, cur, max, diff, powerType)
+function Module.PostUpdateUnitframeClassPower(element, cur, max, diff, powerType, chargedIndex)
 	if diff then
 		for i = 1, max do
 			element[i]:SetWidth((156 - (max - 1) * 6) / max)
@@ -34,14 +34,26 @@ function Module.PostUpdateUnitframeClassPower(element, cur, max, diff, powerType
 			local color = element.__owner.colors.power[powerType]
 			r, g, b = color[1], color[2], color[3]
 		end
+
 		for i = 1, #element do
 			element[i]:SetStatusBarColor(r, g, b)
 		end
 		element.prevColor = element.thisColor
 	end
+
+	if chargedIndex and chargedIndex ~= element.thisCharge then
+		local bar = element[chargedIndex]
+		element.chargeStar:SetParent(bar)
+		element.chargeStar:SetPoint("CENTER", bar)
+		element.chargeStar:Show()
+		element.thisCharge = chargedIndex
+	else
+		element.chargeStar:Hide()
+		element.thisCharge = nil
+	end
 end
 
-function Module.PostUpdateAddPower(element, _, cur, max)
+function Module.PostUpdateAddPower(element, cur, max)
 	if element.Text and max > 0 then
 		local perc = cur / max * 100
 		if perc == 100 then
@@ -203,8 +215,15 @@ function Module:CreatePlayer()
 			bars.colorSpec = true
 			bars.sortOrder = "asc"
 			bars.PostUpdate = Module.PostUpdateRunes
+			bars.__max = 6
 			self.Runes = bars
 		else
+			local chargeStar = bar:CreateTexture()
+			chargeStar:SetAtlas("VignetteKill")
+			chargeStar:SetSize(24, 24)
+			chargeStar:Hide()
+			bars.chargeStar = chargeStar
+
 			bars.PostUpdate = Module.PostUpdateUnitframeClassPower
 			self.ClassPower = bars
 		end
@@ -293,13 +312,9 @@ function Module:CreatePlayer()
 
 		self.Castbar.OnUpdate = Module.OnCastbarUpdate
 		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostChannelStart = Module.PostCastStart
 		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostChannelStop = Module.PostChannelStop
 		self.Castbar.PostCastFail = Module.PostCastFailed
-		self.Castbar.PostCastInterrupted = Module.PostCastFailed
 		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-		self.Castbar.PostCastNotInterruptible = Module.PostUpdateInterruptible
 
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)

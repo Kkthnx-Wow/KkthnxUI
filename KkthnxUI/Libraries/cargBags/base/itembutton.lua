@@ -22,10 +22,10 @@ local cargBags = ns.cargBags
 
 local _G = _G
 local table_insert = _G.table.insert
-local table_remove = _G.table.remove
 
+local ReagentButtonInventorySlot = _G.ReagentButtonInventorySlot
+local ButtonInventorySlot = _G.ButtonInventorySlot
 local setmetatable = _G.setmetatable
-local hooksecurefunc = _G.hooksecurefunc
 
 --[[!
 	@class ItemButton
@@ -54,21 +54,6 @@ end}
 	@param slotID <number>
 	@return button <ItemButton>
 ]]
--- function ItemButton:New(bagID, slotID)
--- 	self.recycled = self.recycled or setmetatable({}, mt_gen_key)
-
--- 	local tpl, parent = self:GetTemplate(bagID)
--- 	local button = table_remove(self.recycled[tpl]) or self:Create(tpl, parent)
-
--- 	button.bagID = bagID
--- 	button.slotID = slotID
--- 	button:SetID(slotID)
--- 	button:Show()
--- 	button:HookScript("OnEnter", button.OnEnter)
--- 	button:HookScript("OnLeave", button.OnLeave)
-
--- 	return button
--- end
 
 function ItemButton:New(bagID, slotID)
 	self.recycled = self.recycled or setmetatable({}, mt_gen_key)
@@ -82,12 +67,16 @@ function ItemButton:New(bagID, slotID)
 	button:Show()
 	button:HookScript("OnEnter", button.OnEnter)
 	button:HookScript("OnLeave", button.OnLeave)
+
 	if bagID == -3 then
 		button.GetInventorySlot = ReagentButtonInventorySlot
+		button.UpdateTooltip = BankFrameItemButton_OnEnter
 	elseif bagID == -1 then
 		button.GetInventorySlot = ButtonInventorySlot
+		button.UpdateTooltip = BankFrameItemButton_OnEnter
+	else
+		button.UpdateTooltip = ContainerFrameItemButton_OnUpdate
 	end
-	button.UpdateTooltip = button:GetScript("OnEnter") -- Fix tooltip update
 
 	return button
 end
@@ -98,17 +87,11 @@ end
 	@return button <ItemButton>
 	@callback button:OnCreate(tpl)
 ]]
-local function updateContextMatch(button)
-	local item = button:GetItemInfo()
-	local isItemSet = ScrappingMachineFrame and ScrappingMachineFrame:IsShown() and item and item.isInSet
-	button:SetAlpha((button.ItemContextOverlay:IsShown() or isItemSet) and .3 or 1)
-end
-
 function ItemButton:Create(tpl, parent)
 	local impl = self.implementation
 	impl.numSlots = (impl.numSlots or 0) + 1
 	local name = ("%sSlot%d"):format(impl.name, impl.numSlots)
-	local button = setmetatable(CreateFrame("ItemButton", name, parent, tpl), self.__index)
+	local button = setmetatable(CreateFrame("ItemButton", name, parent, tpl..", BackdropTemplate"), self.__index)
 
 	if (button.Scaffold) then
 		button:Scaffold(tpl)
@@ -140,7 +123,6 @@ function ItemButton:Create(tpl, parent)
 	end
 
 	button:RegisterForDrag("LeftButton") -- fix button drag in 9.0
-	hooksecurefunc(button, "UpdateItemContextOverlay", updateContextMatch)
 
 	return button
 end
@@ -158,6 +140,6 @@ end
 	@param item <table> [optional]
 	@return item <table>
 ]]
-function ItemButton:GetItemInfo(item)
+function ItemButton:GetInfo(item)
 	return self.implementation:GetItemInfo(self.bagID, self.slotID, item)
 end

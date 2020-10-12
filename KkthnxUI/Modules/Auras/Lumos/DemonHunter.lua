@@ -10,7 +10,6 @@ local _G = _G
 local GetSpecialization = _G.GetSpecialization
 local GetSpellCount = _G.GetSpellCount
 local GetSpellTexture = _G.GetSpellTexture
-local IsPlayerSpell = _G.IsPlayerSpell
 local IsUsableSpell = _G.IsUsableSpell
 
 local function UpdateCooldown(button, spellID, texture)
@@ -35,30 +34,23 @@ local function UpdateSpellStatus(button, spellID)
 end
 
 function Module:ChantLumos(self)
-	if GetSpecialization() == 1 then
+	local spec = GetSpecialization()
+	if spec == 1 then
+		UpdateBuff(self.lumos[1], 258920, 258920, true)
+		UpdateBuff(self.lumos[2], 188499, 188499, true, true)
+		UpdateCooldown(self.lumos[3], 198013, true)
+		UpdateCooldown(self.lumos[4], 179057, true)
+		UpdateBuff(self.lumos[5], 191427, 162264, true, true)
+	elseif spec == 2 then
 		do
-			local button = self.bu[1]
-			if IsPlayerSpell(258920) then
-				UpdateBuff(button, 258920, 258920, true)
-			else
-				UpdateSpellStatus(button, 162794)
-			end
-		end
-
-		UpdateBuff(self.bu[2], 188499, 188499, true, true)
-		UpdateCooldown(self.bu[3], 198013, true)
-		UpdateCooldown(self.bu[4], 179057, true)
-		UpdateBuff(self.bu[5], 191427, 162264, true, true)
-	elseif GetSpecialization() == 2 then
-		do
-			local button, spellID = self.bu[1], 228477
+			local button, spellID = self.lumos[1], 228477
 			UpdateSpellStatus(button, spellID)
 			button.Count:SetText(GetSpellCount(spellID))
 		end
 
-		UpdateBuff(self.bu[2], 178740, 178740, true)
-		UpdateDebuff(self.bu[3], 204021, 207744, true, true)
-		UpdateBuff(self.bu[4], 203720, 203819, true, "END")
-		UpdateBuff(self.bu[5], 187827, 187827, true, true)
+		UpdateBuff(self.lumos[2], 258920, 258920, true)
+		UpdateBuff(self.lumos[3], 203720, 203819, true, "END")
+		UpdateDebuff(self.lumos[4], 204021, 207771, true, true)
+		UpdateBuff(self.lumos[5], 187827, 187827, true, true)
 	end
 end

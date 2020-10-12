@@ -8,7 +8,6 @@ end
 local _G = _G
 local math_floor = _G.math.floor
 
-local C_PaperDollInfo_GetStaggerPercentage = _G.C_PaperDollInfo.GetStaggerPercentage
 local GetSpecialization = _G.GetSpecialization
 local GetSpellCount = _G.GetSpellCount
 local GetSpellTexture = _G.GetSpellTexture
@@ -41,38 +40,15 @@ local function UpdateSpellStatus(button, spellID)
 end
 
 function Module:ChantLumos(self)
-	if GetSpecialization() == 1 then
-		do
-			local button = self.bu[1]
-			local stagger, staggerAgainstTarget = C_PaperDollInfo_GetStaggerPercentage("player")
-			local amount = staggerAgainstTarget or stagger
-			if amount > 0 then
-				button.Count:SetText(math_floor(amount))
-				button.Icon:SetDesaturated(false)
-			else
-				button.Count:SetText("")
-				button.Icon:SetDesaturated(true)
-			end
-			button.Icon:SetTexture(GetSpellTexture(115069))
-		end
+	local spec = GetSpecialization()
+	if spec == 1 then
+		UpdateCooldown(self.lumos[1], 121253, true)
+		UpdateBuff(self.lumos[2], 215479, 215479, false, "END")
+		UpdateBuff(self.lumos[3], 322507, 322507, true)
+		Module:UpdateTotemAura(self.lumos[4], 608951, 132578, true)
 
 		do
-			local button = self.bu[2]
-			local count = GetSpellCount(115072)
-			button.Count:SetText(count)
-			if count > 0 then
-				button.Icon:SetDesaturated(false)
-			else
-				button.Icon:SetDesaturated(true)
-			end
-			button.Icon:SetTexture(GetSpellTexture(115072))
-		end
-
-		UpdateBuff(self.bu[3], 115308, 215479, true, "END")
-		UpdateBuff(self.bu[4], 195630, 195630, false, "END")
-
-		do
-			local button = self.bu[5]
+			local button = self.lumos[5]
 			local name, _, duration, expire, _, spellID = GetUnitAura("player", 124275, "HARMFUL")
 			if not name then
 				name, _, duration, expire, _, spellID = GetUnitAura("player", 124274, "HARMFUL")
@@ -99,33 +75,33 @@ function Module:ChantLumos(self)
 				K.libButtonGlow.HideOverlayGlow(button)
 			end
 		end
-	elseif GetSpecialization() == 2 then
-		UpdateCooldown(self.bu[1], 115151, true)
-		UpdateCooldown(self.bu[2], 191837, true)
-		UpdateBuff(self.bu[3], 116680, 116680, true, true)
-		UpdateTargetBuff(self.bu[4], 116849, 116849, true)
-		UpdateCooldown(self.bu[5], 115310, true)
-	elseif GetSpecialization() == 3 then
-		UpdateCooldown(self.bu[1], 113656, true)
-		UpdateCooldown(self.bu[2], 107428, true)
+	elseif spec == 2 then
+		UpdateCooldown(self.lumos[1], 115151, true)
+		UpdateCooldown(self.lumos[2], 191837, true)
+		UpdateBuff(self.lumos[3], 116680, 116680, true, true)
+		UpdateTargetBuff(self.lumos[4], 116849, 116849, true)
+		UpdateCooldown(self.lumos[5], 115310, true)
+	elseif spec == 3 then
+		UpdateCooldown(self.lumos[1], 113656, true)
+		UpdateCooldown(self.lumos[2], 107428, true)
 
 		do
-			local button = self.bu[3]
+			local button = self.lumos[3]
 			button.Count:SetText(GetSpellCount(101546))
 			UpdateSpellStatus(button, 101546)
 		end
 
-		UpdateBuff(self.bu[4], 137639, 137639, true)
-
 		do
-			local button = self.bu[5]
-			if IsPlayerSpell(123904) then
-				Module:UpdateTotemAura(button, 620832, 123904, true)
-			elseif IsPlayerSpell(116847) then
-				UpdateBuff(button, 116847, 116847, false, true)
+			local button = self.lumos[4]
+			if IsPlayerSpell(152175) then
+				UpdateCooldown(button, 152175, true)
+			elseif IsPlayerSpell(152173) then
+				UpdateBuff(button, 152173, 152173, true, true)
 			else
-				UpdateBuff(button, 196741, 196741)
+				UpdateBuff(button, 137639, 137639, true)
 			end
 		end
+
+		Module:UpdateTotemAura(self.lumos[5], 620832, 123904, true)
 	end
 end
