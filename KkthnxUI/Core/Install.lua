@@ -621,8 +621,8 @@ function Module:OnEnable()
 	K.CheckSavedVariables()
 
 	-- Hide options
-	K.HideInterfaceOption(_G.Advanced_UseUIScale)
-	K.HideInterfaceOption(_G.Advanced_UIScaleSlider)
+	K.HideInterfaceOption(_G.Display_UseUIScale)
+	K.HideInterfaceOption(_G.Display_UIScaleSlider)
 
 	-- Tutorial and settings
 	ForceAddonSkins()

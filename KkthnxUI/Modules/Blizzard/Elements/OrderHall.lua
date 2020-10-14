@@ -4,13 +4,17 @@ local Module = K:GetModule("Blizzard")
 -- Sourced: NDui (siweia)
 
 local _G = _G
+local string_format = _G.string.format
 
-local ipairs, format = _G.ipairs, _G.format
-local GetCurrencyInfo, IsShiftKeyDown = _G.GetCurrencyInfo, _G.IsShiftKeyDown
-local C_Garrison_GetCurrencyTypes = _G.C_Garrison.GetCurrencyTypes
+local C_CurrencyInfo_GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo
 local C_Garrison_GetClassSpecCategoryInfo = _G.C_Garrison.GetClassSpecCategoryInfo
+local C_Garrison_GetCurrencyTypes = _G.C_Garrison.GetCurrencyTypes
 local C_Garrison_RequestClassSpecCategoryInfo = _G.C_Garrison.RequestClassSpecCategoryInfo
-local LE_GARRISON_TYPE_7_0, LE_FOLLOWER_TYPE_GARRISON_7_0 = _G.LE_GARRISON_TYPE_7_0, _G.LE_FOLLOWER_TYPE_GARRISON_7_0
+local IsAddOnLoaded = _G.IsAddOnLoaded
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local LE_FOLLOWER_TYPE_GARRISON_7_0 = _G.Enum.GarrisonFollowerType.FollowerType_7_0
+local LE_GARRISON_TYPE_7_0 = _G.Enum.GarrisonType.Type_7_0
+local hooksecurefunc = _G.hooksecurefunc
 
 function Module:OrderHall_CreateIcon()
 	local hall = CreateFrame("Frame", "KKUI_OrderHallIcon", UIParent)
@@ -39,13 +43,15 @@ function Module:OrderHall_CreateIcon()
 	-- Default objects
 	K.HideInterfaceOption(OrderHallCommandBar)
 	OrderHallCommandBar.CurrencyHitTest:Kill()
-	GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
 end
 
 function Module:OrderHall_Refresh()
 	C_Garrison_RequestClassSpecCategoryInfo(LE_FOLLOWER_TYPE_GARRISON_7_0)
 	local currency = C_Garrison_GetCurrencyTypes(LE_GARRISON_TYPE_7_0)
-	self.name, self.amount, self.texture = GetCurrencyInfo(currency)
+	local info = C_CurrencyInfo_GetCurrencyInfo(currency)
+	self.name = info.name
+	self.amount = info.quantity
+	self.texture = info.iconFileID
 
 	local categoryInfo = C_Garrison_GetClassSpecCategoryInfo(LE_FOLLOWER_TYPE_GARRISON_7_0)
 	for index, info in ipairs(categoryInfo) do
@@ -70,7 +76,7 @@ function Module:OrderHall_OnShiftDown(btn)
 end
 
 local function getIconString(texture)
-	return format("|T%s:12:12:0:0:64:64:5:59:5:59|t ", texture)
+	return string_format("|T%s:12:12:0:0:64:64:5:59:5:59|t ", texture)
 end
 
 function Module:OrderHall_OnEnter()
@@ -80,7 +86,7 @@ function Module:OrderHall_OnEnter()
 	GameTooltip:ClearLines()
 	GameTooltip:AddLine(K.MyClassColor.._G["ORDER_HALL_"..K.Class])
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(getIconString(self.texture)..self.name, self.amount, 1,1,1, 1,1,1)
+	GameTooltip:AddDoubleLine(getIconString(self.texture)..self.name, self.amount, 1, 1, 1, 1, 1, 1)
 
 	local blank
 	for i = 1, self.numCategory do
@@ -91,9 +97,9 @@ function Module:OrderHall_OnEnter()
 
 		local category = self.Category[i]
 		if category then
-			GameTooltip:AddDoubleLine(getIconString(category.icon)..category.name, category.count.."/"..category.limit, 1,1,1, 1,1,1)
+			GameTooltip:AddDoubleLine(getIconString(category.icon)..category.name, category.count.."/"..category.limit, 1, 1, 1, 1, 1, 1)
 			if IsShiftKeyDown() then
-				GameTooltip:AddLine(category.description, .6,.8,1, 1)
+				GameTooltip:AddLine(category.description, 0.6, 0.8, 1, 1)
 			end
 		end
 	end

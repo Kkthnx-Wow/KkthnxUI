@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 
 -- Sourced: AlreadyKnown (villiv)
 -- Edited: KkthnxUI (Kkthnx)
@@ -6,11 +6,9 @@ local K, C, L = unpack(select(2, ...))
 local _G = _G
 local math_ceil = _G.math.ceil
 local mod = _G.mod
-local select = _G.select
 local string_find = _G.string.find
 local string_format = _G.string.format
 local string_match = _G.string.match
-local string_split = _G.string.split
 
 local BUYBACK_ITEMS_PER_PAGE = _G.BUYBACK_ITEMS_PER_PAGE or 12
 local COLLECTED = _G.COLLECTED
@@ -39,15 +37,13 @@ local SetItemButtonTextureVertexColor = _G.SetItemButtonTextureVertexColor
 local UIParent = _G.UIParent
 local hooksecurefunc = _G.hooksecurefunc
 
-local COLOR = {r = 0.1, g = 1, b = 0.1}
+local COLOR = {r = .1, g = 1, b = .1}
 local knowables = {
 	[LE_ITEM_CLASS_CONSUMABLE] = true,
 	[LE_ITEM_CLASS_RECIPE] = true,
 	[LE_ITEM_CLASS_MISCELLANEOUS] = true,
 }
-
 local knowns = {}
-local tooltip = CreateFrame("GameTooltip", "AlreadyKnownTooltip", nil, "GameTooltipTemplate")
 
 local function isPetCollected(speciesID)
 	if not speciesID or speciesID == 0 then
@@ -65,18 +61,22 @@ local function IsAlreadyKnown(link, index)
 		return
 	end
 
-	if string_match(link, "battlepet:") then
-		local speciesID = select(2, string_split(":", link))
-		return isPetCollected(speciesID)
-	elseif string_match(link, "item:") then
-		local name, _, _, _, _, _, _, _, _, _, _, itemClassID = GetItemInfo(link)
+	local linkType, linkID = string_match(link, "|H(%a+):(%d+)")
+	linkID = tonumber(linkID)
+
+	if linkType == "battlepet" then
+		return isPetCollected(linkID)
+	elseif linkType == "item" then
+		local name, _, _, level, _, _, _, _, _, _, _, itemClassID = GetItemInfo(link)
 		if not name then
 			return
 		end
 
 		if itemClassID == LE_ITEM_CLASS_BATTLEPET and index then
-			local speciesID = tooltip:SetGuildBankItem(GetCurrentGuildBankTab(), index)
+			local speciesID = K.ScanTooltip:SetGuildBankItem(GetCurrentGuildBankTab(), index)
 			return isPetCollected(speciesID)
+		-- elseif Module.ConduitData[linkID] and Module.ConduitData[linkID] >= level then -- Implement Later
+			-- return true
 		else
 			if knowns[link] then
 				return true
@@ -86,10 +86,10 @@ local function IsAlreadyKnown(link, index)
 				return
 			end
 
-			tooltip:SetOwner(UIParent, "ANCHOR_NONE")
-			tooltip:SetHyperlink(link)
-			for i = 1, tooltip:NumLines() do
-				local text = _G[tooltip:GetName().."TextLeft"..i]:GetText() or ""
+			K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+			K.ScanTooltip:SetHyperlink(link)
+			for i = 1, K.ScanTooltip:NumLines() do
+				local text = _G["KKUI_ScanTooltipTextLeft"..i]:GetText() or ""
 				if string_find(text, COLLECTED) or text == ITEM_SPELL_KNOWN then
 					knowns[link] = true
 					return true
@@ -143,7 +143,6 @@ hooksecurefunc("MerchantFrame_UpdateBuybackInfo", Hook_UpdateBuybackInfo)
 
 local function Hook_UpdateAuctionHouse(self)
 	local numResults = self.getNumEntries()
-
 	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame)
 	local buttonCount = #buttons
 	local offset = self:GetScrollOffset()
