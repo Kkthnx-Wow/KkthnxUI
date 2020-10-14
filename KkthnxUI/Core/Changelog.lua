@@ -12,14 +12,19 @@ local UIParent = _G.UIParent
 local CLOSE = _G.CLOSE
 
 local changelogData = {
-	K.SystemColor.."KkthnxUI is now v10.0.1.|r",
-	"Added the option to hide Petbar.",
-	"Added the option to hide Stancebar.",
-	"Fixed GUI dropdowns.",
-	"Fixed a rare nil error on a new character.",
-	"Reverted to an older font.",
-	"Added more checks to other clients against my chosen font.",
-	"Added micromenu back to minimap.",
+	K.SystemColor.."KkthnxUI is now v10.0.5.|r",
+	"Add temp mover to WorldMap.",
+	"Added more font changes to Font skinning.",
+	"Cleanup old textures.",
+	"Fixed an error in Extrabar.",
+	"Fixed an issue with inventory not showing junk.",
+	"Many more changes and updates for PrePatch.",
+	"Removed AutoDisenchant module.",
+	"Update old API in Miscellaneous.",
+	"Update texture path for unitframes PvPIndacator.",
+	"Updated ImprovedMail code.",
+	"Updated MovableFrames for PrePatch.",
+	"Updated oUF core.",
 }
 
 local changelogFrame
