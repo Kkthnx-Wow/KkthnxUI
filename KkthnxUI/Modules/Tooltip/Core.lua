@@ -444,9 +444,12 @@ function Module:ReskinTooltip()
 	if self:IsForbidden() then
 		return
 	end
+	self:SetScale(1)
 
 	if not self.isTipStyled then
-		self:SetBackdrop(nil)
+		if self.SetBackdrop then
+			self:SetBackdrop(nil)
+		end
 		self:DisableDrawLayer("BACKGROUND")
 
 		self.tooltipStyle = CreateFrame("Frame", nil, self)

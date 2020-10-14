@@ -239,7 +239,7 @@ function Module:CreatePlayer()
 		self.Buffs.initialAnchor = "TOPLEFT"
 		self.Buffs["growth-x"] = "RIGHT"
 		self.Buffs["growth-y"] = "DOWN"
-		self.Buffs.num = 6
+		self.Buffs.num = 15
 		self.Buffs.spacing = 6
 		self.Buffs.iconsPerRow = 6
 		self.Buffs.onlyShowPlayer = false
@@ -269,7 +269,7 @@ function Module:CreatePlayer()
 			self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 44)
 		end
 
-		self.Debuffs.num = 6
+		self.Debuffs.num = 20
 		self.Debuffs.iconsPerRow = 5
 		self.Debuffs.size = Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
 		self.Debuffs:SetWidth(width)
