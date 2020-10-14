@@ -14,7 +14,6 @@ local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
 local GetRuneCooldown = _G.GetRuneCooldown
 local GetSpecialization = _G.GetSpecialization
-local GetThreatStatusColor = _G.GetThreatStatusColor
 local GetTime = _G.GetTime
 local InCombatLockdown = _G.InCombatLockdown
 local IsInInstance = _G.IsInInstance
@@ -100,7 +99,7 @@ function Module:PostUpdatePvPIndicator(unit, status)
 		self:SetTexture("Interface\\TargetingFrame\\UI-PVP-FFA")
 		self:SetTexCoord(0, 0.65625, 0, 0.65625)
 	elseif factionGroup and UnitIsPVP(unit) and status ~= nil then
-		self:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\ObjectiveWidget")
+		self:SetTexture("Interface\\QUESTFRAME\\objectivewidget")
 
 		if factionGroup == "Alliance" then
 			self:SetTexCoord(0.00390625, 0.136719, 0.511719, 0.671875)

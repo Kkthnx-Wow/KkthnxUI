@@ -10,7 +10,6 @@ local string_match = _G.string.match
 local tonumber = _G.tonumber
 
 local BID = _G.BID
-local BNGetGameAccountInfoByGUID = _G.BNGetGameAccountInfoByGUID
 local C_BattleNet_GetGameAccountInfoByGUID = _G.BNGetGameAccountInfoByGUID
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
 local C_Timer_After = _G.C_Timer.After
@@ -30,7 +29,6 @@ local GetSpellInfo = _G.GetSpellInfo
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsAltKeyDown = _G.IsAltKeyDown
-local IsCharacterFriend = _G.IsCharacterFriend
 local IsGuildMember = _G.IsGuildMember
 local NO = _G.NO
 local PlaySound = _G.PlaySound
@@ -209,7 +207,7 @@ function Module:CreateTradeTargetInfo()
 		end
 
 		local text = "|cffff0000"..L["Stranger"]
-		if BNGetGameAccountInfoByGUID(guid) or IsCharacterFriend(guid) then
+		if C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) then
 			text = "|cffffff00"..FRIEND
 		elseif IsGuildMember(guid) then
 			text = "|cff00ff00"..GUILD
