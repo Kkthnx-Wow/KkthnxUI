@@ -10,7 +10,7 @@ local string_match = _G.string.match
 local tonumber = _G.tonumber
 
 local BID = _G.BID
-local C_BattleNet_GetGameAccountInfoByGUID = _G.BNGetGameAccountInfoByGUID
+local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
