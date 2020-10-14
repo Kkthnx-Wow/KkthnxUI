@@ -130,7 +130,7 @@ function ExtraQuestButton:PLAYER_LOGIN()
 		if _G.KKUI_ActionBarExtra then
 			self:SetPoint("CENTER", _G.KKUI_ActionBarExtra)
 		else
-			K.Mover(self, "ExtraQuestButton", "Extrabar", {"BOTTOM", UIParent, "BOTTOM", 250, 100})
+			K.Mover(self, "ExtraQuestButton", "Extrabar", {"BOTTOM", UIParent, "BOTTOM", 272, 34})
 		end
 	end
 

@@ -154,10 +154,8 @@ local PhaseIconTexCoords = {
 	[2] = {34 / 128, 66 / 128, 1 / 64, 33 / 64},
 }
 
-function Module:UpdatePhaseIcon(isInSamePhase)
-	if not isInSamePhase then
-		self:SetTexCoord(unpack(PhaseIconTexCoords[UnitIsWarModePhased(self.__owner.unit) and 2 or 1]))
-	end
+function Module:UpdatePhaseIcon(isPhased)
+	self:SetTexCoord(unpack(PhaseIconTexCoords[isPhased == 2 and 2 or 1]))
 end
 
 function Module:CreateHeader()

@@ -364,6 +364,55 @@ function Module:UpdateMinimapScale()
 	Minimap.mover:SetSize(size, size)
 end
 
+function Module:Minimap_OnMouseWheel(zoom)
+	if zoom > 0 then
+		Minimap_ZoomIn()
+	else
+		Minimap_ZoomOut()
+	end
+end
+
+function Module:Minimap_OnMouseUp(btn)
+	_G.HideDropDownMenu(1, nil, KKUI_MiniMapTrackingDropDown)
+	menuFrame:Hide()
+
+	local position = Minimap.mover:GetPoint()
+	if btn == "MiddleButton" or (btn == "RightButton" and IsShiftKeyDown()) then
+		if InCombatLockdown() then
+			_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+			return
+		end
+
+		if position:match("LEFT") then
+			EasyMenu(micromenu, menuFrame, "cursor", 0, 0, "MENU")
+		else
+			EasyMenu(micromenu, menuFrame, "cursor", -160, 0, "MENU")
+		end
+	elseif btn == "RightButton" then
+		if position:match("LEFT") then
+			ToggleDropDownMenu(1, nil, KKUI_MiniMapTrackingDropDown, "cursor", 0, 0, "MENU", 2)
+		else
+			ToggleDropDownMenu(1, nil, KKUI_MiniMapTrackingDropDown, "cursor", -160, 0, "MENU", 2)
+		end
+	else
+		_G.Minimap_OnClick(self)
+	end
+end
+
+function Module:SetupHybridMinimap()
+	local mapCanvas = HybridMinimap.MapCanvas
+	mapCanvas:SetMaskTexture("Interface\\Buttons\\WHITE8X8")
+	mapCanvas:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)
+	mapCanvas:SetScript("OnMouseUp", Module.Minimap_OnMouseUp)
+end
+
+function Module:HybridMinimapOnLoad(addon)
+	if addon == "Blizzard_HybridMinimap" then
+		Module:SetupHybridMinimap()
+		K:UnregisterEvent(self, Module.HybridMinimapOnLoad)
+	end
+end
+
 function Module:OnEnable()
 	if not C["Minimap"].Enable then
 		return
@@ -381,43 +430,9 @@ function Module:OnEnable()
 
 	self:UpdateMinimapScale()
 
-	-- Mousewheel Zoom
 	Minimap:EnableMouseWheel(true)
-	Minimap:SetScript("OnMouseWheel", function(_, zoom)
-		if zoom > 0 then
-			Minimap_ZoomIn()
-		else
-			Minimap_ZoomOut()
-		end
-	end)
-
-	-- Click Func
-	Minimap:SetScript("OnMouseUp", function(self, btn)
-		_G.HideDropDownMenu(1, nil, KKUI_MiniMapTrackingDropDown)
-		menuFrame:Hide()
-
-		local position = Minimap.mover:GetPoint()
-		if btn == "MiddleButton" or (btn == "RightButton" and IsShiftKeyDown()) then
-			if InCombatLockdown() then
-				_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
-				return
-			end
-
-			if position:match("LEFT") then
-				EasyMenu(micromenu, menuFrame, "cursor", 0, 0, "MENU")
-			else
-				EasyMenu(micromenu, menuFrame, "cursor", -160, 0, "MENU")
-			end
-		elseif btn == "RightButton" then
-			if position:match("LEFT") then
-				ToggleDropDownMenu(1, nil, KKUI_MiniMapTrackingDropDown, "cursor", 0, 0, "MENU", 2)
-			else
-				ToggleDropDownMenu(1, nil, KKUI_MiniMapTrackingDropDown, "cursor", -160, 0, "MENU", 2)
-			end
-		else
-			_G.Minimap_OnClick(self)
-		end
-	end)
+	Minimap:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)
+	Minimap:SetScript("OnMouseUp", Module.Minimap_OnMouseUp)
 
 	-- Hide Blizz
 	local frames = {
@@ -447,4 +462,7 @@ function Module:OnEnable()
 	self:CreateStyle()
 	self:CreateRecycleBin()
 	self:ReskinRegions()
+
+	-- HybridMinimap
+	K:RegisterEvent("ADDON_LOADED", Module.HybridMinimapOnLoad)
 end
