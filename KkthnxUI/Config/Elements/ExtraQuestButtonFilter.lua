@@ -1,14 +1,14 @@
 local K = unpack(select(2, ...))
 
 -- Warlords of Draenor intro quest items which inspired this addon
-K.ExtraQuestButton_BlackList = {
+K.Blacklist = {
 	[113191] = true,
 	[110799] = true,
 	[109164] = true,
 }
 
 -- Quests with incorrect or missing quest area blobs
-K.ExtraQuestButton_QuestAreas = {
+K.QuestAreas = {
 	-- Global
 	[24629] = true,
 	-- Icecrown
@@ -33,7 +33,7 @@ K.ExtraQuestButton_QuestAreas = {
 }
 
 -- Quests items with incorrect or missing quest area blobs
-K.ExtraQuestButton_ItemAreas = {
+K.ItemAreas = {
 	-- Global
 	[34862] = true,
 	[34833] = true,
@@ -96,5 +96,5 @@ K.ExtraQuestButton_ItemAreas = {
 	-- Tiragarde Sound
 	[154878] = 895,
 	-- Mechagon
-	[168813] = 1462
+	[168813] = 1462,
 }

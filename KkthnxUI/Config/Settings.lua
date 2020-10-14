@@ -63,7 +63,6 @@ C["Automation"] = {
 	["AutoCollapse"] = false,
 	["AutoDeclineDuels"] = false,
 	["AutoDeclinePetDuels"] = false,
-	["AutoDisenchant"] = false,
 	["AutoInvite"] = false,
 	["AutoPartySync"] = false,
 	["AutoQuest"] = false,

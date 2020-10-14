@@ -14,6 +14,7 @@ local C_CurrencyInfo_GetCurrencyListLink = _G.C_CurrencyInfo.GetCurrencyListLink
 local C_TradeSkillUI_GetRecipeReagentItemLink = _G.C_TradeSkillUI.GetRecipeReagentItemLink
 local GetItemCount = _G.GetItemCount
 local GetItemInfo = _G.GetItemInfo
+local GetItemInfoFromHyperlink = _G.GetItemInfoFromHyperlink
 local GetUnitName = _G.GetUnitName
 local TALENT = _G.TALENT
 local UnitAura = _G.UnitAura
@@ -89,7 +90,7 @@ end
 function Module:SetItemID()
 	local link = select(2, self:GetItem())
 	if link then
-		local id = string_match(link, "item:(%d+):")
+		local id = GetItemInfoFromHyperlink(link)
 		local keystone = string_match(link, "|Hkeystone:([0-9]+):")
 		if keystone then
 			id = tonumber(keystone)

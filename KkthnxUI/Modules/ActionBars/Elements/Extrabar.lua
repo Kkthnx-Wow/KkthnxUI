@@ -1,4 +1,4 @@
-local K, _, L = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
 local FilterConfig = K.ActionBars.extraBar
 
@@ -65,7 +65,7 @@ function Module:CreateExtrabar()
 		for spellButton in self.SpellButtonContainer:EnumerateActive() do
 			if spellButton and not spellButton.styled then
 				spellButton.NormalTexture:SetAlpha(0)
-				spellButton:SetPushedTexture(C.Media.Texture) -- force it to gain a texture
+				spellButton:SetPushedTexture(C["Media"].Texture) -- force it to gain a texture
 				spellButton:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
 				--B.ReskinIcon(spellButton.Icon, true)
 				spellButton.styled = true

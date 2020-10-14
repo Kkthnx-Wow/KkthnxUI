@@ -44,7 +44,7 @@ local frames = {
 	["TokenFrame"] = true,
 	["TradeFrame"] = false,
 	["TutorialFrame"] = false,
-	["VideoOptionsFrame"] = false
+	["VideoOptionsFrame"] = false,
 }
 
 -- Frame Existing Check
@@ -52,30 +52,29 @@ local function IsFrameExists()
 	for k in pairs(frames) do
 		local name = _G[k]
 		if not name and K.isDeveloper then
-			print("Frame not found:", k)
+			K.Print("Frame not found:", k)
 		end
 	end
 end
 
 -- Frames provided by load on demand addons, hooked when the addon is loaded.
 local lodFrames = {
-	-- AddonName = { list of frames, same syntax as above }
+	-- AddonName = {list of frames, same syntax as above}
 	Blizzard_AchievementUI		= {["AchievementFrame"] = false, ["AchievementFrameHeader"] = true, ["AchievementFrameCategoriesContainer"] = "AchievementFrame", ["AchievementFrame.searchResults"] = false},
 	Blizzard_AdventureMap		= {["AdventureMapQuestChoiceDialog"] = false},
 	Blizzard_AlliedRacesUI		= {["AlliedRacesFrame"] = false},
 	Blizzard_ArchaeologyUI		= {["ArchaeologyFrame"] = false},
 	Blizzard_ArtifactUI			= {["ArtifactFrame"] = false, ["ArtifactRelicForgeFrame"] = false},
-	-- Blizzard_AuctionHouseUI		= {["AuctionHouseFrame"] = false},
-	Blizzard_AuctionUI			= {["AuctionFrame"] = false},
+	Blizzard_AuctionHouseUI		= {["AuctionHouseFrame"] = false},
 	Blizzard_AzeriteEssenceUI	= {["AzeriteEssenceUI"] = false},
 	Blizzard_AzeriteRespecUI	= {["AzeriteRespecFrame"] = false},
 	Blizzard_AzeriteUI			= {["AzeriteEmpoweredItemUI"] = false},
-	Blizzard_BarbershopUI		= {["BarberShopFrame"] = false},
-	Blizzard_BindingUI			= {["KeyBindingFrame"] = false},
+	Blizzard_BindingUI			= {["KeyBindingFrame"] = false, ["QuickKeybindFrame"] = false},
 	Blizzard_BlackMarketUI		= {["BlackMarketFrame"] = false},
 	Blizzard_Calendar			= {["CalendarFrame"] = false, ["CalendarCreateEventFrame"] = true, ["CalendarEventPickerFrame"] = false},
 	Blizzard_ChallengesUI		= {["ChallengesKeystoneFrame"] = false},
 	Blizzard_Collections		= {["WardrobeFrame"] = false, ["WardrobeOutfitEditFrame"] = false},
+	Blizzard_CovenantSanctum	= {["CovenantSanctumFrame"] = false},
 	Blizzard_Communities		= {["CommunitiesFrame"] = false, ["CommunitiesSettingsDialog"] = false, ["CommunitiesGuildLogFrame"] = false, ["CommunitiesTicketManagerDialog"] = false, ["CommunitiesAvatarPickerDialog"] = false, ["CommunitiesFrame.NotificationSettingsDialog"] = false, ["ClubFinderCommunityAndGuildFinderFrame.RequestToJoinFrame"] = false},
 	Blizzard_FlightMap			= {["FlightMapFrame"] = false},
 	Blizzard_GMSurveyUI			= {["GMSurveyFrame"] = false},
@@ -98,7 +97,8 @@ local lodFrames = {
 	Blizzard_TokenUI			= {["TokenFrame"] = true},
 	Blizzard_TradeSkillUI		= {["TradeSkillFrame"] = false},
 	Blizzard_TrainerUI			= {["ClassTrainerFrame"] = false},
-	Blizzard_VoidStorageUI		= {["VoidStorageFrame"] = false, ["VoidStorageBorderFrameMouseBlockFrame"] = "VoidStorageFrame"}
+	Blizzard_VoidStorageUI		= {["VoidStorageFrame"] = false, ["VoidStorageBorderFrameMouseBlockFrame"] = "VoidStorageFrame"},
+	Blizzard_WeeklyRewards		= {["WeeklyRewardsFrame"] = false},
 }
 
 local function MouseDownHandler(frame, button)
@@ -133,13 +133,15 @@ local function HookScript(frame, script, handler)
 end
 
 local function HookFrame(name, moveParent)
-	-- find frame, name may contain dots for children, e.g. ReforgingFrame.InvisibleButton
+	-- find frame
+	-- name may contain dots for children, e.g. ReforgingFrame.InvisibleButton
 	local frame = _G
-	for s in _G.string.gmatch(name, "%w+") do
+	for s in string.gmatch(name, "%w+") do
 		if frame then
 			frame = frame[s]
 		end
 	end
+
 	-- check if frame was found
 	if frame == _G then
 		frame = nil
@@ -169,10 +171,8 @@ local function HookFrame(name, moveParent)
 		frame:EnableMouse(true)
 		frame:SetMovable(true)
 		frame:SetClampedToScreen(false)
-
 		HookScript(frame, "OnMouseDown", MouseDownHandler)
 		HookScript(frame, "OnMouseUp", MouseUpHandler)
-
 		hooked[name] = true
 	end
 end
@@ -191,7 +191,6 @@ local function InitSetup()
 	HookFrames(frames)
 	IsFrameExists()
 end
-K:RegisterEvent("PLAYER_LOGIN", InitSetup)
 
 local function AddonLoaded(_, name)
 	if not C["General"].MoveBlizzardFrames then
@@ -203,4 +202,5 @@ local function AddonLoaded(_, name)
 		HookFrames(frameList)
 	end
 end
+K:RegisterEvent("PLAYER_LOGIN", InitSetup)
 K:RegisterEvent("ADDON_LOADED", AddonLoaded)

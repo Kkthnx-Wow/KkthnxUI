@@ -4,7 +4,6 @@
    <Script file="GUI.lua" />
 
    <Script file="Elements\ActionbarFadeFilter.lua" />
-   <Script file="Elements\AutoDisenchantFilter.lua" />
    <Script file="Elements\AutoQuestFilter.lua" />
    <Script file="Elements\BadBuffsFilter.lua" />
    <Script file="Elements\ExtraQuestButtonFilter.lua" />

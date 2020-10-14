@@ -4,9 +4,7 @@ local Module = K:GetModule("Miscellaneous")
 local _G = _G
 local pairs = _G.pairs
 local select = _G.select
-local string_match = _G.string.match
 local table_wipe = _G.table.wipe
-local tonumber = _G.tonumber
 
 local CreateFrame = _G.CreateFrame
 local DELETE = _G.DELETE
@@ -14,7 +12,6 @@ local ERR_MAIL_DELETE_ITEM_ERROR = _G.ERR_MAIL_DELETE_ITEM_ERROR
 local GameTooltip = _G.GameTooltip
 local GetInboxHeaderInfo = _G.GetInboxHeaderInfo
 local GetInboxItem = _G.GetInboxItem
-local GetInboxItemLink = _G.GetInboxItemLink
 local GetItemInfo = _G.GetItemInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local InboxTooMuchMail = _G.InboxTooMuchMail
@@ -60,11 +57,11 @@ function Module:InboxItem_OnEnter()
 
 		if itemAttached > 1 then
 			GameTooltip:AddLine(L["Attach List"])
-			for itemID in pairs(inboxItems) do
+			for itemID, count in pairs(inboxItems) do
 				local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture = GetItemInfo(itemID)
 				if itemName then
 					local r, g, b = GetItemQualityColor(itemQuality)
-					GameTooltip:AddDoubleLine(" |T"..itemTexture..":12:12:0:0:50:50:4:46:4:46|t "..itemName, value, r, g, b)
+					GameTooltip:AddDoubleLine(" |T"..itemTexture..":12:12:0:0:50:50:4:46:4:46|t "..itemName, count, r, g, b)
 				end
 			end
 			GameTooltip:Show()

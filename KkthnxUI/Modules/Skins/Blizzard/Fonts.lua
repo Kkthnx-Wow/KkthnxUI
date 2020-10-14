@@ -10,6 +10,10 @@ local table_insert = _G.table.insert
 local hooksecurefunc = _G.hooksecurefunc
 
 local function SetFont(obj, font, size, style, sr, sg, sb, sa, sox, soy, r, g, b)
+	if not obj then
+		return
+	end
+
 	obj:SetFont(font, size, style)
 
 	if sr and sg and sb then
@@ -25,10 +29,6 @@ local function SetFont(obj, font, size, style, sr, sg, sb, sa, sox, soy, r, g, b
 	elseif r then
 		obj:SetAlpha(r)
 	end
-end
-
-local function WorldMapBountyBoard(Frame)
-	Frame.BountyName:FontTemplate()
 end
 
 function Module:ReskinBlizzardFonts()
@@ -68,6 +68,7 @@ function Module:ReskinBlizzardFonts()
 		SetFont(_G.Game18Font,							NORMAL, 18)									-- MissionUI Bonus Chance
 		SetFont(_G.Game24Font, 							NORMAL, 24)									-- Garrison Mission level (in detail frame)
 		SetFont(_G.Game30Font,							NORMAL, 30)									-- Mission Level
+		SetFont(_G.Game40Font,							NORMAL, 40)
 		SetFont(_G.Game42Font,							NORMAL, 42)									-- PVP Stuff
 		SetFont(_G.Game46Font,							NORMAL, 46)									-- Added in 7.3.5 used for ?
 		SetFont(_G.Game48Font,							NORMAL, 48)
@@ -79,6 +80,7 @@ function Module:ReskinBlizzardFonts()
 		SetFont(_G.GameFontHighlightMedium,				NORMAL, 15)									-- Fix QuestLog Title mouseover
 		SetFont(_G.GameFontHighlightSmall2,				NORMAL, C["General"].FontSize)				-- Skill or Recipe description on TradeSkill frame
 		SetFont(_G.GameFontNormalHuge2,					NORMAL, 24)									-- Mythic weekly best dungeon name
+		SetFont(_G.GameFontNormalLarge,					NORMAL, 16)
 		SetFont(_G.GameFontNormalLarge2,				NORMAL, 15) 								-- Garrison Follower Names
 		SetFont(_G.GameFontNormalMed1,					NORMAL, 14)									-- WoW Token Info
 		SetFont(_G.GameFontNormalMed2,					NORMAL, C["General"].FontSize*1.1)			-- Quest tracker
@@ -98,6 +100,7 @@ function Module:ReskinBlizzardFonts()
 		SetFont(_G.Number11Font,						NORMAL, 11)
 		SetFont(_G.Number12Font,						NORMAL, 12)
 		SetFont(_G.Number15Font,						NORMAL, 15)
+		SetFont(_G.Number16Font,						NORMAL, 16)
 		SetFont(_G.PriceFont,							NORMAL, 13)
 		SetFont(_G.PVPArenaTextString,					NORMAL, 22, 'OUTLINE')
 		SetFont(_G.PVPInfoTextString,					NORMAL, 22, 'OUTLINE')
@@ -182,6 +185,16 @@ function Module:ReskinBlizzardFonts()
 			end
 		end
 	end)
+
+	WorldMapFrame.NavBar.homeButton.text:FontTemplate()
+	SplashFrame.Header:FontTemplate(nil, 22)
+	LFGListFrame.ApplicationViewer.EntryName:FontTemplate()
+	LFGListFrame.ApplicationViewer.NameColumnHeader.Label:FontTemplate()
+	LFGListFrame.ApplicationViewer.RoleColumnHeader.Label:FontTemplate()
+	LFGListFrame.ApplicationViewer.ItemLevelColumnHeader.Label:FontTemplate()
+	LFGListFrame.ApplicationViewer.PrivateGroup:FontTemplate()
+	_G.InvoiceTextFontNormal:FontTemplate(nil, 13)
+	_G.MailTextFontNormal:FontTemplate(nil, 13)
 end
 
 table_insert(Module.NewSkin["KkthnxUI"], Module.ReskinBlizzardFonts)
