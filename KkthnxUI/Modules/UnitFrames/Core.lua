@@ -119,6 +119,10 @@ function Module:UpdateThreat(_, unit)
 			return
 		end
 
+		if not self.Portrait.KKUI_Border then
+			return
+		end
+
 		if status and status > 1 then
 			local r, g, b = unpack(oUF.colors.threat[status])
 			self.Portrait.KKUI_Border:SetVertexColor(r, g, b)
@@ -127,6 +131,10 @@ function Module:UpdateThreat(_, unit)
 		end
 	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		if not self.Portrait.Border then
+			return
+		end
+
+		if not self.Portrait.Border.KKUI_Border then
 			return
 		end
 
