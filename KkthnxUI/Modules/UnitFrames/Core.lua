@@ -38,7 +38,6 @@ local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsUnit = _G.UnitIsUnit
-local UnitIsWarModePhased = _G.UnitIsWarModePhased
 local UnitReaction = _G.UnitReaction
 local UnitThreatSituation = _G.UnitThreatSituation
 local oUF_RaidDebuffs = _G.oUF_RaidDebuffs

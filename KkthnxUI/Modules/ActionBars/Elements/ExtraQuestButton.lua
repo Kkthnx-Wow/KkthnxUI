@@ -203,6 +203,13 @@ function ExtraQuestButton:QUEST_TURNED_IN(_, questID)
 end
 
 ExtraQuestButton:SetScript("OnEnter", function(self)
+	if not self.itemLink then
+		if K.isDeveloper then
+			K.Print("ExtraQuestButton: invalid item link.")
+		end
+		return
+	end
+
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT")
 	GameTooltip:SetHyperlink(self.itemLink)
 end)
@@ -323,9 +330,9 @@ function ExtraQuestButton:RemoveItem()
 	end
 end
 
-local function GetQuestDistance(questID)
+local function GetQuestDistance(questID, isWorldQuest)
 	local distanceSq, onContinent = C_QuestLog_GetDistanceSqToQuest(questID)
-	if onContinent then
+	if isWorldQuest or onContinent then
 		return sqrt(distanceSq)
 	end
 end
@@ -352,7 +359,7 @@ local function GetClosestQuestItem()
 					closestQuestLink = itemLink
 					closestQuestTexture = texture
 				elseif not isComplete or showCompleted then
-					local distance = GetQuestDistance(questID)
+					local distance = GetQuestDistance(questID, true)
 					if distance and distance <= closestDistance then
 						closestDistance = distance
 						closestQuestLink = itemLink

@@ -10,12 +10,17 @@ local string_split = _G.string.split
 local string_trim = _G.string.trim
 local table_insert = _G.table.insert
 local table_remove = _G.table.remove
-local type = _G.type
 local tonumber = _G.tonumber
+local type = _G.type
 
 local ACCEPT = _G.ACCEPT
-local C_QuestLog_GetNumQuestLogEntries = _G.C_QuestLog.GetNumQuestLogEntries
 local CANCEL = _G.CANCEL
+local C_QuestLog_AbandonQuest = _G.C_QuestLog.AbandonQuest
+local C_QuestLog_GetInfo = _G.C_QuestLog.GetInfo
+local C_QuestLog_GetNumQuestLogEntries = _G.C_QuestLog.GetNumQuestLogEntries
+local C_QuestLog_IsQuestFlaggedCompleted = _G.C_QuestLog.IsQuestFlaggedCompleted
+local C_QuestLog_SetAbandonQuest = _G.C_QuestLog.SetAbandonQuest
+local C_QuestLog_SetSelectedQuest = _G.C_QuestLog.SetSelectedQuest
 local CombatLogClearEntries = _G.CombatLogClearEntries
 local ConvertToParty = _G.ConvertToParty
 local ConvertToRaid = _G.ConvertToRaid
@@ -26,17 +31,12 @@ local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetItemInfo = _G.GetItemInfo
 local GetLocale = _G.GetLocale
 local GetNumGroupMembers = _G.GetNumGroupMembers
-local C_QuestLog_GetTitleForLogIndex = _G.C_QuestLog.GetTitleForLogIndex
-local C_QuestLog_SetSelectedQuest = _G.C_QuestLog.SetSelectedQuest
-local C_QuestLog_IsQuestFlaggedCompleted = _G.C_QuestLog.IsQuestFlaggedCompleted
 local LeaveParty = _G.LeaveParty
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlaySound = _G.PlaySound
 local ReloadUI = _G.ReloadUI
 local RepopMe = _G.RepopMe
 local RetrieveCorpse = _G.RetrieveCorpse
-local C_QuestLog_SetAbandonQuest = _G.C_QuestLog.SetAbandonQuest
-local C_QuestLog_AbandonQuest = _G.C_QuestLog.AbandonQuest
 local SetCVar = _G.SetCVar
 local SlashCmdList = _G.SlashCmdList
 local UIErrorsFrame = _G.UIErrorsFrame
@@ -343,14 +343,17 @@ _G.SLASH_KKUI_FIXGFXENGINE2 = "/fixgfx"
 
 -- Clear all quests in questlog
 SlashCmdList["KKUI_ABANDONQUESTS"] = function()
-	local numShownEntries, numQuests = C_QuestLog_GetNumQuestLogEntries()
+	local numShownEntries = C_QuestLog_GetNumQuestLogEntries()
 	for questLogIndex = 1, numShownEntries do
-		local _, _, _, title = C_QuestLog_GetTitleForLogIndex(questLogIndex)
+		local info = C_QuestLog_GetInfo(questLogIndex)
+		local questID = info.questID
+		local isHeader = info.isHeader
 
-		if (not title) then
-			C_QuestLog_SetSelectedQuest(questLogIndex)
+		if (not isHeader) then
+			C_QuestLog_SetSelectedQuest(questID)
 			C_QuestLog_SetAbandonQuest()
 			C_QuestLog_AbandonQuest()
+			PlaySound(SOUNDKIT.IG_QUEST_LOG_ABANDON_QUEST)
 		end
 	end
 end

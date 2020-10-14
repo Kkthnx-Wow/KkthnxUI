@@ -1,22 +1,13 @@
 --[[
 # Element: Power Bar
-
 Handles the updating of a status bar that displays the unit's power.
-
 ## Widget
-
 Power - A `StatusBar` used to represent the unit's power.
-
 ## Sub-Widgets
-
 .bg - A `Texture` used as a background. It will inherit the color of the main StatusBar.
-
 ## Notes
-
 A default texture will be applied if the widget is a StatusBar and doesn't have a texture or a color set.
-
 ## Options
-
 .frequentUpdates                  - Indicates whether to use UNIT_POWER_FREQUENT instead UNIT_POWER_UPDATE to update the
                                     bar (boolean)
 .displayAltPower                  - Use this to let the widget display alternative power, if the unit has one.
@@ -25,9 +16,7 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
 .smoothGradient                   - 9 color values to be used with the .colorSmooth option (table)
 .considerSelectionInCombatHostile - Indicates whether selection should be considered hostile while the unit is in
                                     combat with the player (boolean)
-
 The following options are listed by priority. The first check that returns true decides the color of the bar.
-
 .colorDisconnected - Use `self.colors.disconnected` to color the bar if the unit is offline (boolean)
 .colorTapping      - Use `self.colors.tapping` to color the bar if the unit isn't tapped by the player (boolean)
 .colorThreat       - Use `self.colors.threat[threat]` to color the bar based on the unit's threat status. `threat` is
@@ -35,8 +24,9 @@ The following options are listed by priority. The first check that returns true 
 .colorPower        - Use `self.colors.power[token]` to color the bar based on the unit's power type. This method will
                      fall-back to `:GetAlternativeColor()` if it can't find a color matching the token. If this function
                      isn't defined, then it will attempt to color based upon the alternative power colors returned by
-                     [UnitPowerType](http://wowprogramming.com/docs/api/UnitPowerType.html). Finally, if these aren't
-                     defined, then it will attempt to color the bar based upon `self.colors.power[type]` (boolean)
+                     [UnitPowerType](http://wowprogramming.com/docs/api/UnitPowerType.html). If these aren't
+                     defined, then it will attempt to color the bar based upon `self.colors.power[type]`. In case of
+                     failure it'll default to `self.colors.power.MANA` (boolean)
 .colorClass        - Use `self.colors.class[class]` to color the bar based on unit class. `class` is defined by the
                      second return of [UnitClass](http://wowprogramming.com/docs/api/UnitClass.html) (boolean)
 .colorClassNPC     - Use `self.colors.class[class]` to color the bar if the unit is a NPC (boolean)
@@ -50,26 +40,20 @@ The following options are listed by priority. The first check that returns true 
                      [UnitReaction](http://wowprogramming.com/docs/api/UnitReaction.html) (boolean)
 .colorSmooth       - Use `smoothGradient` if present or `self.colors.smooth` to color the bar with a smooth gradient
                      based on the player's current power percentage (boolean)
-
 ## Sub-Widget Options
-
 .multiplier - A multiplier used to tint the background based on the main widgets R, G and B values. Defaults to 1
               (number)[0-1]
-
 ## Examples
-
     -- Position and size
     local Power = CreateFrame('StatusBar', nil, self)
     Power:SetHeight(20)
     Power:SetPoint('BOTTOM')
     Power:SetPoint('LEFT')
     Power:SetPoint('RIGHT')
-
     -- Add a background
     local Background = Power:CreateTexture(nil, 'BACKGROUND')
     Background:SetAllPoints(Power)
     Background:SetTexture(1, 1, 1, .5)
-
     -- Options
     Power.frequentUpdates = true
     Power.colorTapping = true
@@ -77,10 +61,8 @@ The following options are listed by priority. The first check that returns true 
     Power.colorPower = true
     Power.colorClass = true
     Power.colorReaction = true
-
     -- Make the background darker.
     Background.multiplier = .5
-
     -- Register it with oUF
     Power.bg = Background
     self.Power = Power
@@ -102,7 +84,6 @@ and the minimum value for the given power type (see [info.minPower](https://wow.
 or nil if the unit has no alternative (alternate) power or it should not be
 displayed. In case of a nil return, the element defaults to the primary power
 type and zero for the minimum value.
-
 * self - the Power element
 --]]
 local function GetDisplayPower(element)
@@ -117,7 +98,7 @@ local function UpdateColor(self, event, unit)
 	if(self.unit ~= unit) then return end
 	local element = self.Power
 
-	local ptype, ptoken, altR, altG, altB = UnitPowerType(unit)
+	local pType, pToken, altR, altG, altB = UnitPowerType(unit)
 
 	local r, g, b, t
 	if(element.colorDisconnected and not UnitIsConnected(unit)) then
@@ -128,16 +109,18 @@ local function UpdateColor(self, event, unit)
 		t =  self.colors.threat[UnitThreatSituation('player', unit)]
 	elseif(element.colorPower) then
 		if(element.displayType ~= ALTERNATE_POWER_INDEX) then
-			t = self.colors.power[ptoken or ptype]
+			t = self.colors.power[pToken]
 			if(not t) then
 				if(element.GetAlternativeColor) then
-					r, g, b = element:GetAlternativeColor(unit, ptype, ptoken, altR, altG, altB)
+					r, g, b = element:GetAlternativeColor(unit, pType, pToken, altR, altG, altB)
 				elseif(altR) then
 					r, g, b = altR, altG, altB
 					if(r > 1 or g > 1 or b > 1) then
 						-- BUG: As of 7.0.3, altR, altG, altB may be in 0-1 or 0-255 range.
 						r, g, b = r / 255, g / 255, b / 255
 					end
+				else
+					t = self.colors.power[pType] or self.colors.power.MANA
 				end
 			end
 		else
@@ -173,7 +156,6 @@ local function UpdateColor(self, event, unit)
 
 	--[[ Callback: Power:PostUpdateColor(unit, r, g, b)
 	Called after the element color has been updated.
-
 	* self - the Power element
 	* unit - the unit for which the update has been triggered (string)
 	* r    - the red component of the used color (number)[0-1]
@@ -188,7 +170,6 @@ end
 local function ColorPath(self, ...)
 	--[[ Override: Power.UpdateColor(self, event, unit)
 	Used to completely override the internal function for updating the widgets' colors.
-
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* unit  - the unit accompanying the event (string)
@@ -202,7 +183,6 @@ local function Update(self, event, unit)
 
 	--[[ Callback: Power:PreUpdate(unit)
 	Called before the element has been updated.
-
 	* self - the Power element
 	* unit - the unit for which the update has been triggered (string)
 	--]]
@@ -231,7 +211,6 @@ local function Update(self, event, unit)
 
 	--[[ Callback: Power:PostUpdate(unit, cur, min, max)
 	Called after the element has been updated.
-
 	* self - the Power element
 	* unit - the unit for which the update has been triggered (string)
 	* cur  - the unit's current power value (number)
@@ -246,7 +225,6 @@ end
 local function Path(self, ...)
 	--[[ Override: Power.Override(self, event, unit, ...)
 	Used to completely override the internal update function.
-
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* unit  - the unit accompanying the event (string)
@@ -263,7 +241,6 @@ end
 
 --[[ Power:SetColorDisconnected(state, isForced)
 Used to toggle coloring if the unit is offline.
-
 * self     - the Power element
 * state    - the desired state (boolean)
 * isForced - forces the event update even if the state wasn't changed (boolean)
@@ -281,7 +258,6 @@ end
 
 --[[ Power:SetColorSelection(state, isForced)
 Used to toggle coloring by the unit's selection.
-
 * self     - the Power element
 * state    - the desired state (boolean)
 * isForced - forces the event update even if the state wasn't changed (boolean)
@@ -299,7 +275,6 @@ end
 
 --[[ Power:SetColorTapping(state, isForced)
 Used to toggle coloring if the unit isn't tapped by the player.
-
 * self     - the Power element
 * state    - the desired state (boolean)
 * isForced - forces the event update even if the state wasn't changed (boolean)
@@ -317,7 +292,6 @@ end
 
 --[[ Power:SetColorThreat(state, isForced)
 Used to toggle coloring by the unit's threat status.
-
 * self     - the Power element
 * state    - the desired state (boolean)
 * isForced - forces the event update even if the state wasn't changed (boolean)
@@ -335,7 +309,6 @@ end
 
 --[[ Power:SetFrequentUpdates(state, isForced)
 Used to toggle frequent updates.
-
 * self     - the Power element
 * state    - the desired state (boolean)
 * isForced - forces the event update even if the state wasn't changed (boolean)
