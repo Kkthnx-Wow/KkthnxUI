@@ -12,19 +12,19 @@ local UIParent = _G.UIParent
 local CLOSE = _G.CLOSE
 
 local changelogData = {
-	K.SystemColor.."KkthnxUI is now v10.0.5.|r",
-	"Add temp mover to WorldMap.",
-	"Added more font changes to Font skinning.",
-	"Cleanup old textures.",
-	"Fixed an error in Extrabar.",
-	"Fixed an issue with inventory not showing junk.",
-	"Many more changes and updates for PrePatch.",
-	"Removed AutoDisenchant module.",
+	K.SystemColor.."KkthnxUI is now v10.0.6.|r",
+	"Fix delete texture missing on ImprovedMail.",
+	"Fixed /killquests I think?",
+	"Fixed AlreadyKnown bugs.",
+	"Fixed ColorPicker errors.",
+	"Fixed Orderhall icon bugs.",
+	"Fixed error in altpower tag.",
+	"Fixed issue with threat not getting KKUI_Border.",
+	"Fixed rare tooltip nil error.",
+	"Fixed unitframe phase icons.",
 	"Update old API in Miscellaneous.",
-	"Update texture path for unitframes PvPIndacator.",
-	"Updated ImprovedMail code.",
-	"Updated MovableFrames for PrePatch.",
 	"Updated oUF core.",
+	"Use Goldpaws temp MaxDps fix. <3.",
 }
 
 local changelogFrame
