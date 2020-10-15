@@ -7,17 +7,17 @@ if not oUF then
 end
 
 local _G = _G
+local string_format = _G.string.format
+local string_find = _G.string.find
 
+local LEVEL = _G.LEVEL
 local ALTERNATE_POWER_INDEX = Enum.PowerType.Alternate or 10
 local CHAT_MSG_AFK = _G.CHAT_MSG_AFK
 local DEAD = _G.DEAD
 local DND = _G.DND
 local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
 local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
-local HEALER = _G.HEALER
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
-local TANK = _G.TANK
-local UNKNOWN = _G.UNKNOWN
 local UnitBattlePetLevel = _G.UnitBattlePetLevel
 local UnitClass = _G.UnitClass
 local UnitClassification = _G.UnitClassification
@@ -254,8 +254,8 @@ oUF.Tags.Methods["npctitle"] = function(unit)
 	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	K.ScanTooltip:SetUnit(unit)
 
-	local title = _G[format("KKUI_ScanTooltipTextLeft%d", GetCVarBool("colorblindmode") and 3 or 2)]:GetText()
-	if title and not strfind(title, "^"..LEVEL) then
+	local title = _G[string_format("KKUI_ScanTooltipTextLeft%d", GetCVarBool("colorblindmode") and 3 or 2)]:GetText()
+	if title and not string_find(title, "^"..LEVEL) then
 		return title
 	end
 end
@@ -264,18 +264,9 @@ oUF.Tags.Events["npctitle"] = "UNIT_NAME_UPDATE"
 -- AltPower value tag
 oUF.Tags.Methods["altpower"] = function(unit)
 	local cur = UnitPower(unit, ALTERNATE_POWER_INDEX)
-	if cur > 0 then
-		local _, r, g, b = UnitAlternatePowerTextureInfo(unit, 2)
-		if not r then
-			r, g, b = 1, 1, 1
-		end
-
-		return K.RGBToHex(r, g, b)..cur
-	else
-		return nil
-	end
+	return cur > 0 and cur
 end
-oUF.Tags.Events["altpower"] = "UNIT_POWER_UPDATE UNIT_POWER_BAR_SHOW UNIT_POWER_BAR_HIDE"
+oUF.Tags.Events["altpower"] = "UNIT_POWER_UPDATE UNIT_MAXPOWER"
 
 -- Monk stagger
 oUF.Tags.Methods["monkstagger"] = function(unit)

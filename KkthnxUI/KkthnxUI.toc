@@ -5,6 +5,7 @@
 ## Author: Josh "Kthnx" Russell
 ## Version: 10.0.5
 ## DefaultState: Enabled
+## LoadOnDemand: 0
 ## SavedVariables: KkthnxUIData, KkthnxUISettings, KkthnxUIGold, KkthnxUISettingsPerCharacter
 ## SavedVariablesPerCharacter: KkthnxUISettingsPerChar
 ## OptionalDeps: Clique
@@ -17,7 +18,7 @@
 ## X-oUF: oUFKkthnxUI
 ## X-Curse-Project-ID: 95528
 ## X-WoWI-ID: 24615
-## X-Website: https://github.com/kkthnx-wow/KkthnxUI
+## X-Website: https://www.curseforge.com/wow/addons/kkthnxui
 
 # -- Load Core File
 KkthnxUI.xml
