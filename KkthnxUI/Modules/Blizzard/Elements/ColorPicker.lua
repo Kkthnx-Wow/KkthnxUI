@@ -227,7 +227,7 @@ function Module:CreateColorPicker()
 	t:Hide()
 
 	-- add copy button to the _G.ColorPickerFrame
-	local b = CreateFrame("Button", "ColorPPCopy", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	local b = CreateFrame("Button", "ColorPPCopy", _G.ColorPickerFrame, "UIPanelButtonTemplate, BackdropTemplate")
 	b:SetText(CALENDAR_COPY_EVENT)
 	b:SetWidth(60)
 	b:SetHeight(22)
@@ -247,7 +247,7 @@ function Module:CreateColorPicker()
 	end)
 
 	--class color button
-	b = CreateFrame("Button", "ColorPPClass", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b = CreateFrame("Button", "ColorPPClass", _G.ColorPickerFrame, "UIPanelButtonTemplate, BackdropTemplate")
 	b:SetText(CLASS)
 	b:SetWidth(80)
 	b:SetHeight(22)
@@ -262,7 +262,7 @@ function Module:CreateColorPicker()
 	end)
 
 	-- add paste button to the _G.ColorPickerFrame
-	b = CreateFrame("Button", "ColorPPPaste", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b = CreateFrame("Button", "ColorPPPaste", _G.ColorPickerFrame, "UIPanelButtonTemplate, BackdropTemplate")
 	b:SetText(CALENDAR_PASTE_EVENT)
 	b:SetWidth(60)
 	b:SetHeight(22)
@@ -281,7 +281,7 @@ function Module:CreateColorPicker()
 	end)
 
 	-- add defaults button to the _G.ColorPickerFrame
-	b = CreateFrame("Button", "ColorPPDefault", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b = CreateFrame("Button", "ColorPPDefault", _G.ColorPickerFrame, "UIPanelButtonTemplate, BackdropTemplate")
 	b:SetText(DEFAULT)
 	b:SetWidth(80)
 	b:SetHeight(22)
@@ -325,7 +325,7 @@ function Module:CreateColorPicker()
 	local boxes = {"R", "G", "B", "H", "A"}
 	for i = 1, #boxes do
 		local rgb = boxes[i]
-		local box = CreateFrame("EditBox", "ColorPPBox"..rgb, _G.ColorPickerFrame, "InputBoxTemplate")
+		local box = CreateFrame("EditBox", "ColorPPBox"..rgb, _G.ColorPickerFrame, "InputBoxTemplate, BackdropTemplate")
 		box:SetPoint("TOP", "ColorPickerWheel", "BOTTOM", 0, -15)
 		box:SetFrameStrata("DIALOG")
 		box:SetAutoFocus(false)

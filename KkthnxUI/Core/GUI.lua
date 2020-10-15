@@ -1331,12 +1331,12 @@ local CreateColorSelection = function(self, group, option, text, tooltip)
 	Anchor:SetScript("OnLeave", AnchorOnLeave)
 	Anchor.Tooltip = tooltip
 
-	local Swatch = CreateFrame("Frame", nil, Anchor)
+	local Swatch = CreateFrame("Frame", nil, Anchor, "BackdropTemplate")
 	Swatch:SetSize(WidgetHeight, WidgetHeight)
 	Swatch:SetPoint("LEFT", Anchor, 0, 0)
 	Swatch:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Texture, nil, nil, nil, CurrentR, CurrentG, CurrentB)
 
-	Swatch.Select = CreateFrame("Frame", nil, Swatch)
+	Swatch.Select = CreateFrame("Frame", nil, Swatch, "BackdropTemplate")
 	Swatch.Select:SetSize(ColorButtonWidth, WidgetHeight)
 	Swatch.Select:SetPoint("LEFT", Swatch, "RIGHT", Spacing, 0)
 	Swatch.Select:CreateBorder()
