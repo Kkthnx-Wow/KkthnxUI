@@ -15,7 +15,6 @@
    <Script file="Elements\PulseCooldown.lua" />
    <Script file="Elements\QuestNotifier.lua" />
    <Script file="Elements\QuickJoin.lua" />
-   <Script file="Elements\RaidMarker.lua" />
    <Script file="Elements\SlotDurability.lua" />
    <Script file="Elements\SlotItemLevel.lua" />
    <Script file="Elements\StatusReport.lua" />

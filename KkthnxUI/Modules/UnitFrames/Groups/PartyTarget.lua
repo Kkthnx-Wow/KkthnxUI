@@ -1,8 +1,4 @@
 local K, C = unpack(select(2, ...))
-if C["Raid"].Enable ~= true then
-	return
-end
-
 local Module = K:GetModule("Unitframes")
 local oUF = oUF or K.oUF
 if not oUF then
@@ -14,10 +10,7 @@ local _G = _G
 local select = select
 
 local CreateFrame = _G.CreateFrame
-local GetThreatStatusColor = _G.GetThreatStatusColor
 local UnitIsUnit = _G.UnitIsUnit
-local UnitPowerType = _G.UnitPowerType
-local UnitThreatSituation = _G.UnitThreatSituation
 
 function Module:CreatePartyTarget()
 	local RaidframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
@@ -196,7 +189,6 @@ function Module:CreatePartyTarget()
 	self.DebuffHighlight:SetBlendMode("ADD")
 	self.DebuffHighlightAlpha = 0.45
 	self.DebuffHighlightFilter = true
-	self.DebuffHighlightFilterTable = K.DebuffHighlightColors
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()

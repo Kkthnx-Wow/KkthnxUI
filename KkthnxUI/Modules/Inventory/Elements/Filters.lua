@@ -4,15 +4,19 @@ local Module = K:GetModule("Bags")
 local _G = _G
 
 local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = _G.C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
-local EJ_LOOT_SLOT_FILTER_ARTIFACT_RELIC = _G.EJ_LOOT_SLOT_FILTER_ARTIFACT_RELIC
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
 local LE_ITEM_CLASS_CONSUMABLE = _G.LE_ITEM_CLASS_CONSUMABLE
+local LE_ITEM_CLASS_GEM = _G.LE_ITEM_CLASS_GEM
 local LE_ITEM_CLASS_ITEM_ENHANCEMENT = _G.LE_ITEM_CLASS_ITEM_ENHANCEMENT
 local LE_ITEM_CLASS_MISCELLANEOUS = _G.LE_ITEM_CLASS_MISCELLANEOUS
 local LE_ITEM_CLASS_TRADEGOODS = _G.LE_ITEM_CLASS_TRADEGOODS
 local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
+local LE_ITEM_GEM_ARTIFACTRELIC = _G.LE_ITEM_GEM_ARTIFACTRELIC
 local LE_ITEM_MISCELLANEOUS_COMPANION_PET = _G.LE_ITEM_MISCELLANEOUS_COMPANION_PET
 local LE_ITEM_MISCELLANEOUS_MOUNT = _G.LE_ITEM_MISCELLANEOUS_MOUNT
+local LE_ITEM_QUALITY_COMMON = _G.LE_ITEM_QUALITY_COMMON
+local LE_ITEM_QUALITY_LEGENDARY = _G.LE_ITEM_QUALITY_LEGENDARY
+local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 
 -- Custom filter
 local CustomFilterList = {
@@ -73,6 +77,10 @@ local function isAzeriteArmor(item)
 	return C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID(item.link) and not (C["Inventory"].ItemSetFilter and item.isInSet)
 end
 
+function Module:isArtifactRelic(item)
+	return item.classID == LE_ITEM_CLASS_GEM and item.subClassID == LE_ITEM_GEM_ARTIFACTRELIC
+end
+
 local function isItemEquipment(item)
 	if not C["Inventory"].ItemFilter then
 		return
@@ -85,7 +93,7 @@ local function isItemEquipment(item)
 	if C["Inventory"].ItemSetFilter then
 		return item.isInSet
 	else
-		return item.level and item.rarity > LE_ITEM_QUALITY_COMMON and (item.subType == EJ_LOOT_SLOT_FILTER_ARTIFACT_RELIC or item.classID == LE_ITEM_CLASS_WEAPON or item.classID == LE_ITEM_CLASS_ARMOR)
+		return item.level and item.rarity > LE_ITEM_QUALITY_COMMON and (Module:isArtifactRelic(item) or item.classID == LE_ITEM_CLASS_WEAPON or item.classID == LE_ITEM_CLASS_ARMOR)
 	end
 end
 

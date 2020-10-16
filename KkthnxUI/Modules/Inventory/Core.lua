@@ -11,7 +11,7 @@ local string_match = _G.string.match
 local table_wipe = _G.table.wipe
 local unpack = _G.unpack
 
-local IsReagentBankUnlocked = _G.IsReagentBankUnlocked
+local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 local C_NewItems_IsNewItem = _G.C_NewItems.IsNewItem
 local C_NewItems_RemoveNewItem = _G.C_NewItems.RemoveNewItem
 local C_Timer_After = _G.C_Timer.After
@@ -26,6 +26,9 @@ local GetItemInfo = _G.GetItemInfo
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsControlKeyDown = _G.IsControlKeyDown
+local IsReagentBankUnlocked = _G.IsReagentBankUnlocked
+local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
+local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
 local PickupContainerItem = _G.PickupContainerItem
 local PlaySound = _G.PlaySound
 local SOUNDKIT = _G.SOUNDKIT
@@ -887,21 +890,21 @@ function Module:OnEnable()
 	end
 
 	local bagTypeColor = {
-		[0] = {0, 0, 0, .25}, -- 容器
-		[1] = false, -- 弹药袋
-		[2] = {0, .5, 0, .25}, -- 草药袋
-		[3] = {.8, 0, .8, .25}, -- 附魔袋
-		[4] = {1, .8, 0, .25}, -- 工程袋
-		[5] = {0, .8, .8, .25}, -- 宝石袋
-		[6] = {.5, .4, 0, .25}, -- 矿石袋
-		[7] = {.8, .5, .5, .25}, -- 制皮包
-		[8] = {.8, .8, .8, .25}, -- 铭文包
-		[9] = {.4, .6, 1, .25}, -- 工具箱
-		[10] = {.8, 0, 0, .25}, -- 烹饪包
+		[0] = {0, 0, 0, .25}, -- container
+		[1] = false, -- Ammunition bag
+		[2] = {0, .5, 0, .25}, -- Herbal bag
+		[3] = {.8, 0, .8, .25}, -- Enchant bag
+		[4] = {1, .8, 0, .25}, -- Engineering bag
+		[5] = {0, .8, .8, .25}, -- Gem bag
+		[6] = {.5, .4, 0, .25}, -- Ore bag
+		[7] = {.8, .5, .5, .25}, -- Leather bag
+		[8] = {.8, .8, .8, .25}, -- Inscription bag
+		[9] = {.4, .6, 1, .25}, -- Toolbox
+		[10] = {.8, 0, 0, .25}, -- Cooking bag
 	}
 
 	local function isItemNeedsLevel(item)
-		return item.link and item.level and item.rarity > 1 and (item.subType == EJ_LOOT_SLOT_FILTER_ARTIFACT_RELIC or item.classID == LE_ITEM_CLASS_WEAPON or item.classID == LE_ITEM_CLASS_ARMOR)
+		return item.link and item.level and item.rarity > 1 and (Module:isArtifactRelic(item) or item.classID == LE_ITEM_CLASS_WEAPON or item.classID == LE_ITEM_CLASS_ARMOR)
 	end
 
 	local function GetIconOverlayAtlas(item)
@@ -911,20 +914,16 @@ function Module:OnEnable()
 
 		if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(item.link) then
 			return "AzeriteIconFrame"
-		elseif IsCorruptedItem(item.link) then
-			return "Nzoth-inventory-icon"
 		end
 	end
 
 	function MyButton:OnUpdate(item)
 		local buttonIconTexture = _G[self:GetName().."IconTexture"]
 
-		if MerchantFrame:IsShown() then
-			if item.isInSet then
-				self:SetAlpha(0.25)
-			else
-				self:SetAlpha(1)
-			end
+		if MerchantFrame:IsShown() and item.isInSet then
+			self:SetAlpha(.3)
+		else
+			self:SetAlpha(1)
 		end
 
 		if self.JunkIcon then

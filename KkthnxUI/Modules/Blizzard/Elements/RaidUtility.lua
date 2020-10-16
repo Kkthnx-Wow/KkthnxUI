@@ -617,6 +617,121 @@ function Module:RaidTool_CreateMenu(parent)
 	parent.buttons = bu
 end
 
+function Module:RaidTool_EasyMarker()
+	local menuFrame = CreateFrame("Frame", "KKUI_EasyMarking", UIParent, "UIDropDownMenuTemplate")
+	local menuList = {
+		{text = RAID_TARGET_NONE, func = function() SetRaidTarget("target", 0) end},
+		{text = K.RGBToHex(1, .92, 0)..RAID_TARGET_1.." "..ICON_LIST[1].."12|t", func = function() SetRaidTarget("target", 1) end},
+		{text = K.RGBToHex(.98, .57, 0)..RAID_TARGET_2.." "..ICON_LIST[2].."12|t", func = function() SetRaidTarget("target", 2) end},
+		{text = K.RGBToHex(.83, .22, .9)..RAID_TARGET_3.." "..ICON_LIST[3].."12|t", func = function() SetRaidTarget("target", 3) end},
+		{text = K.RGBToHex(.04, .95, 0)..RAID_TARGET_4.." "..ICON_LIST[4].."12|t", func = function() SetRaidTarget("target", 4) end},
+		{text = K.RGBToHex(.7, .82, .875)..RAID_TARGET_5.." "..ICON_LIST[5].."12|t", func = function() SetRaidTarget("target", 5) end},
+		{text = K.RGBToHex(0, .71, 1)..RAID_TARGET_6.." "..ICON_LIST[6].."12|t", func = function() SetRaidTarget("target", 6) end},
+		{text = K.RGBToHex(1, .24, .168)..RAID_TARGET_7.." "..ICON_LIST[7].."12|t", func = function() SetRaidTarget("target", 7) end},
+		{text = K.RGBToHex(.98, .98, .98)..RAID_TARGET_8.." "..ICON_LIST[8].."12|t", func = function() SetRaidTarget("target", 8) end},
+	}
+
+	WorldFrame:HookScript("OnMouseDown", function(_, btn)
+		if not C["Misc"].EasyMarking then
+			return
+		end
+
+		if btn == "LeftButton" and IsControlKeyDown() and UnitExists("mouseover") then
+			if not IsInGroup() or (IsInGroup() and not IsInRaid()) or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
+				local ricon = GetRaidTargetIndex("mouseover")
+				for i = 1, 8 do
+					if ricon == i then
+						menuList[i + 1].checked = true
+					else
+						menuList[i + 1].checked = false
+					end
+				end
+				EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 1)
+			end
+		end
+	end)
+end
+
+function Module:RaidTool_WorldMarker()
+	local iconTexture = {
+		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_6",
+		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_4",
+		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_3",
+		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_7",
+		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_1",
+		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_2",
+		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_5",
+		"Interface\\TargetingFrame\\UI-RaidTargetingIcon_8",
+		"Interface\\Buttons\\UI-GroupLoot-Pass-Up",
+	}
+
+	local frame = CreateFrame("Frame", "KKUI_WorldMarkers", UIParent)
+	frame:SetPoint("RIGHT", -100, 0)
+	frame:SetFrameStrata("HIGH")
+	K.CreateMoverFrame(frame, nil, true)
+	K.RestoreMoverFrame(frame)
+	frame:CreateBorder()
+	frame.buttons = {}
+
+	for i = 1, 9 do
+		local button = CreateFrame("Button", nil, frame, "SecureActionButtonTemplate")
+		button:SetSize(24, 24)
+		button.Icon = button:CreateTexture(nil, "ARTWORK")
+		button.Icon:SetAllPoints()
+		button.Icon:SetTexCoord(unpack(K.TexCoords))
+		button.Icon:SetTexture(iconTexture[i])
+		button:SetHighlightTexture(iconTexture[i])
+		button:SetPushedTexture(iconTexture[i])
+
+		if i ~= 9 then
+			button:RegisterForClicks("AnyDown")
+			button:SetAttribute("type", "macro")
+			button:SetAttribute("macrotext1", string_format("/wm %d", i))
+			button:SetAttribute("macrotext2", string_format("/cwm %d", i))
+		else
+			button:SetScript("OnClick", ClearRaidMarker)
+		end
+		frame.buttons[i] = button
+	end
+
+	Module:RaidTool_UpdateGrid()
+end
+
+local markerTypeToRow = {
+	[1] = 3,
+	[2] = 9,
+	[3] = 1,
+	[4] = 3,
+}
+function Module:RaidTool_UpdateGrid()
+	local frame = _G["KKUI_WorldMarkers"]
+	if not frame then
+		return
+	end
+
+	local size, margin = 24, 5
+	local showType = C["Misc"].ShowMarkerBar.Value
+	local perRow = markerTypeToRow[showType]
+
+	for i = 1, 9 do
+		local button = frame.buttons[i]
+		button:ClearAllPoints()
+		if i == 1 then
+			button:SetPoint("TOPLEFT", frame, margin, -margin)
+		elseif mod(i - 1, perRow) ==  0 then
+			button:SetPoint("TOP", frame.buttons[i - perRow], "BOTTOM", 0, -margin)
+		else
+			button:SetPoint("LEFT", frame.buttons[i - 1], "RIGHT", margin, 0)
+		end
+	end
+
+	local column = min(9, perRow)
+	local rows = ceil(9 / perRow)
+	frame:SetWidth(column * size + (column - 1) * margin + 2 * margin)
+	frame:SetHeight(size * rows + (rows - 1) * margin + 2 * margin)
+	frame:SetShown(showType ~= 4)
+end
+
 function Module:CreateRaidUtility()
 	if not C["Raid"].RaidUtility then
 		return
@@ -629,4 +744,7 @@ function Module:CreateRaidUtility()
 	Module:RaidTool_Marker(frame)
 	Module:RaidTool_BuffChecker(frame)
 	Module:RaidTool_CreateMenu(frame)
+
+	Module:RaidTool_EasyMarker()
+	Module:RaidTool_WorldMarker()
 end

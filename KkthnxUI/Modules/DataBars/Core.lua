@@ -16,16 +16,14 @@ local C_Reputation_IsFactionParagon = _G.C_Reputation.IsFactionParagon
 local CreateFrame = _G.CreateFrame
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GameTooltip = _G.GameTooltip
-local GetFactionInfo = _G.GetFactionInfo
 local GetFriendshipReputation = _G.GetFriendshipReputation
-local GetNumFactions = _G.GetNumFactions
 local GetPetExperience = _G.GetPetExperience
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local GetXPExhaustion = _G.GetXPExhaustion
 local HONOR = _G.HONOR
+local IsPlayerAtEffectiveMaxLevel = _G.IsPlayerAtEffectiveMaxLevel
 local IsXPUserDisabled = _G.IsXPUserDisabled
 local LEVEL = _G.LEVEL
-local MAX_REPUTATION_REACTION = _G.MAX_REPUTATION_REACTION
 local REPUTATION = _G.REPUTATION
 local STANDING = _G.STANDING
 local UnitHonor = _G.UnitHonor
@@ -35,8 +33,16 @@ local UnitIsPVP = _G.UnitIsPVP
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
 
-local FactionStandingLabelUnknown = _G.UNKNOWN
 local backupColor = _G.FACTION_BAR_COLORS[1]
+-- Experience
+local CurrentXP, XPToLevel, RestedXP, PercentRested
+local PercentXP, RemainXP, RemainTotal, RemainBars
+-- Honor
+local CurrentHonor, MaxHonor, CurrentLevel, PercentHonor, RemainingHonor
+
+function Module:ExperienceBar_ShouldBeVisible()
+	return not IsPlayerAtEffectiveMaxLevel() and not IsXPUserDisabled()
+end
 
 function Module:GetUnitXP(unit)
 	if unit == "pet" then
@@ -70,7 +76,8 @@ function Module:SetupExperience()
 	local etext = expbar:CreateFontString(nil, "OVERLAY")
 	etext:SetFontObject(self.DatabaseFont)
 	etext:SetFont(select(1, etext:GetFont()), 11, select(3, etext:GetFont()))
-	etext:SetPoint("CENTER")
+	etext:SetPoint("LEFT", expbar, "RIGHT", -3, 0)
+	etext:SetPoint("RIGHT", expbar, "LEFT", 3, 0)
 
 	self.Bars.Experience = expbar
 	expbar.RestBar = restbar
@@ -96,7 +103,8 @@ function Module:SetupReputation()
 	rtext:SetFont(select(1, rtext:GetFont()), 11, select(3, rtext:GetFont()))
 	rtext:SetWidth(C["DataBars"].Width - 6)
 	rtext:SetWordWrap(false)
-	rtext:SetPoint("CENTER")
+	rtext:SetPoint("LEFT", reputation, "RIGHT", -3, 0)
+	rtext:SetPoint("RIGHT", reputation, "LEFT", 3, 0)
 
 	self.Bars.Reputation = reputation
 	reputation.Spark = rspark
@@ -119,7 +127,8 @@ function Module:SetupAzerite()
 	local atext = azerite:CreateFontString(nil, "OVERLAY")
 	atext:SetFontObject(self.DatabaseFont)
 	atext:SetFont(select(1, atext:GetFont()), 11, select(3, atext:GetFont()))
-	atext:SetPoint("CENTER")
+	atext:SetPoint("LEFT", azerite, "RIGHT", -3, 0)
+	atext:SetPoint("RIGHT", azerite, "LEFT", 3, 0)
 
 	self.Bars.Azerite = azerite
 	azerite.Spark = aspark
@@ -127,10 +136,6 @@ function Module:SetupAzerite()
 end
 
 function Module:SetupHonor()
-	if not C["DataBars"].TrackHonor then
-		return
-	end
-
 	local honor = CreateFrame("StatusBar", "KKUI_HonorBar", self.Container)
 	honor:SetStatusBarTexture(self.DatabaseTexture)
 	honor:SetStatusBarColor(C["DataBars"].HonorColor[1], C["DataBars"].HonorColor[2], C["DataBars"].HonorColor[3])
@@ -148,7 +153,8 @@ function Module:SetupHonor()
 	htext:SetFont(select(1, htext:GetFont()), 11, select(3, htext:GetFont()))
 	htext:SetWidth(C["DataBars"].Width - 6)
 	htext:SetWordWrap(false)
-	htext:SetPoint("CENTER")
+	htext:SetPoint("LEFT", honor, "RIGHT", -3, 0)
+	htext:SetPoint("RIGHT", honor, "LEFT", 3, 0)
 
 	self.Bars.Honor = honor
 	honor.Spark = hspark
@@ -157,111 +163,114 @@ end
 
 function Module:UpdateReputation()
 	local repBar = self.Bars.Reputation
-	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
+	local name, reaction, Min, Max, value, factionID = GetWatchedFactionInfo()
 
-	local numFactions = GetNumFactions()
 	if not name then
 		repBar:Hide()
+		return
 	else
 		repBar:Show()
-
-		local ID, isFriend, friendText, standingLabel
-		local isCapped
-
-		if factionID and C_Reputation_IsFactionParagon(factionID) then
-			local currentValue, threshold, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(factionID)
-			if currentValue and threshold then
-				min, max = 0, threshold
-				value = currentValue % threshold
-				if hasRewardPending then
-					value = value + threshold
-				end
-			end
-		else
-			if reaction == _G.MAX_REPUTATION_REACTION then
-				-- max rank, make it look like a full bar
-				min, max, value = 0, 1, 1
-				isCapped = true
-			end
-		end
-
-		repBar:SetMinMaxValues(min, max)
-		repBar:SetValue(value)
-		local color = FACTION_BAR_COLORS[reaction] or backupColor
-		if factionID and C_Reputation_IsFactionParagon(factionID) then
-			repBar:SetStatusBarColor(51/255, 80/255, 194/255)
-		else
-			repBar:SetStatusBarColor(color.r, color.g, color.b)
-		end
-
-		for i = 1, numFactions do
-			local factionName, _, standingID,_,_,_,_,_,_,_,_,_,_, FactionID = GetFactionInfo(i)
-			local friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(FactionID)
-			if factionName == name then
-				if friendID ~= nil then
-					isFriend = true
-					friendText = friendTextLevel
-				else
-					ID = standingID
-				end
-			end
-		end
-
-		if ID then
-			standingLabel = K.ShortenString(_G["FACTION_STANDING_LABEL" .. ID], 1, false) -- F = Friendly, N = Neutral and so on.
-		else
-			standingLabel = FactionStandingLabelUnknown
-		end
-
-		local maxMinDiff = max - min
-		if (maxMinDiff == 0) then
-			maxMinDiff = 1
-		end
-
-		local text
-		if C["DataBars"].Text then
-			if isCapped then
-				text = string_format("%s: [%s]", name, isFriend and friendText or standingLabel)
-			else
-				text = string_format("%s: %s - %d%% [%s]", name, K.ShortValue(value - min), ((value - min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel)
-			end
-
-			repBar.Text:SetText(text)
-		end
 	end
+
+	local displayString
+	local isCapped, isFriend, friendText, standingLabel
+	local friendshipID = GetFriendshipReputation(factionID)
+	local color = FACTION_BAR_COLORS[reaction] or backupColor
+
+	if friendshipID then
+		local _, friendRep, _, _, _, _, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionID)
+		isFriend, reaction, friendText = true, 5, friendTextLevel
+		if nextFriendThreshold then
+			Min, Max, value = friendThreshold, nextFriendThreshold, friendRep;
+		else
+			Min, Max, value = 0, 1, 1
+			isCapped = true
+		end
+	elseif C_Reputation_IsFactionParagon(factionID) then
+		local currentValue, threshold, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(factionID)
+		if currentValue and threshold then
+			Min, Max = 0, threshold
+			value = currentValue % threshold
+			if hasRewardPending then
+				value = value + threshold
+			end
+		end
+	elseif reaction == _G.MAX_REPUTATION_REACTION then
+		Min, Max, value = 0, 1, 1
+		isCapped = true
+	end
+
+	repBar:SetMinMaxValues(Min, Max)
+	repBar:SetValue(value)
+	repBar:SetStatusBarColor(color.r, color.g, color.b)
+
+	standingLabel = _G["FACTION_STANDING_LABEL"..reaction]
+
+	-- Prevent a division by zero
+	local maxMinDiff = Max - Min
+	if maxMinDiff == 0 then
+		maxMinDiff = 1
+	end
+
+	if isCapped and C["DataBars"].Text then
+		-- show only name and standing on exalted
+		displayString = string_format("%s: [%s]", name, isFriend and friendText or standingLabel)
+	else
+		displayString = string_format("%s: %s - %d%% [%s]", name, K.ShortValue(value - Min), ((value - Min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel)
+	end
+
+	repBar.Text:SetText(displayString)
 end
 
 function Module:UpdateExperience()
 	local expBar = self.Bars.Experience
 
-	if IsPlayerAtEffectiveMaxLevel() or IsXPUserDisabled() then
+	if (not Module:ExperienceBar_ShouldBeVisible()) then
 		expBar:Hide()
+		return
 	else
 		expBar:Show()
+	end
 
-		local cur, max, rested = UnitXP('player'), UnitXPMax('player'), GetXPExhaustion()
-		if max <= 0 then
-			max = 1
+	CurrentXP, XPToLevel, RestedXP = UnitXP("player"), UnitXPMax("player"), GetXPExhaustion()
+	if XPToLevel <= 0 then
+		XPToLevel = 1
+	end
+
+	local remainXP = XPToLevel - CurrentXP
+	local remainPercent = remainXP / XPToLevel
+	RemainTotal, RemainBars = remainPercent * 100, remainPercent * 20
+	PercentXP, RemainXP = (CurrentXP / XPToLevel) * 100, K.ShortValue(remainXP)
+
+	local displayString
+	if not Module:ExperienceBar_ShouldBeVisible() then
+		expBar:SetMinMaxValues(0, 1)
+		expBar:SetValue(1)
+
+		if C["DataBars"].Text then
+			displayString = IsXPUserDisabled() and "Disabled" or "Max Level"
+		end
+	else
+		expBar:SetMinMaxValues(0, XPToLevel)
+		expBar:SetValue(CurrentXP)
+
+		displayString = string_format("%s - %.2f%%", K.ShortValue(CurrentXP), PercentXP)
+
+		local isRested = RestedXP and RestedXP > 0
+		if isRested then
+			expBar.RestBar:SetMinMaxValues(0, XPToLevel)
+			expBar.RestBar:SetValue(math.min(CurrentXP + RestedXP, XPToLevel))
+
+			PercentRested = (RestedXP / XPToLevel) * 100
+
+			displayString = string_format("%s R:%s [%.2f%%]", displayString, K.ShortValue(RestedXP), PercentRested)
 		end
 
-		expBar:SetMinMaxValues(0, max)
-		expBar:SetValue(cur)
+		expBar.RestBar:SetShown(isRested)
+	end
 
-		if rested and rested > 0 then
-			expBar.RestBar:SetMinMaxValues(0, max)
-			expBar.RestBar:SetValue(min(cur + rested, max))
-
-			if C["DataBars"].Text then
-				expBar.Text:SetText(string_format("%s - %d%% R:%s [%d%%]", K.ShortValue(cur), cur / max * 100, K.ShortValue(rested), rested / max * 100))
-			end
-		else
-			expBar.RestBar:SetMinMaxValues(0, 1)
-			expBar.RestBar:SetValue(0)
-
-			if C["DataBars"].Text then
-				expBar.Text:SetText(string_format("%s - %d%%", K.ShortValue(cur), cur / max * 100))
-			end
-		end
+	if C["DataBars"].Text then
+		expBar.Text:SetText(displayString)
 	end
 end
 
@@ -273,56 +282,55 @@ function Module:UpdateAzerite(event, unit)
 	local azBar = self.Bars.Azerite
 
 	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
-	if not azeriteItemLocation or C_AzeriteItem.IsAzeriteItemAtMaxLevel() then
+	if not azeriteItemLocation or C_AzeriteItem.IsAzeriteItemAtMaxLevel() or K.Level > 50 then
 		azBar:Hide()
 	else
 		azBar:Show()
 
-		local xp, totalLevelXP = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
+		local cur, max = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
 		local currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
 
-		azBar:SetMinMaxValues(0, totalLevelXP)
-		azBar:SetValue(xp)
+		azBar:SetMinMaxValues(0, max)
+		azBar:SetValue(cur)
 
 		if C["DataBars"].Text then
-			azBar.Text:SetText(string_format("%s - %s%% [%s]", K.ShortValue(xp), math_floor(xp / totalLevelXP * 100), currentLevel))
+			azBar.Text:SetFormattedText("%s - %s%% [%s]", K.ShortValue(cur), math_floor(cur / max * 100), currentLevel)
 		end
 	end
 end
 
 function Module:UpdateHonor(event, unit)
-	if not C["DataBars"].TrackHonor then
-		return
-	end
-
-	if event == "PLAYER_FLAGS_CHANGED" and unit ~= "player" then
-		return
-	end
-
 	local honBar = self.Bars.Honor
 
-	if (not UnitIsPVP("player")) or (K.Level < MAX_PLAYER_LEVEL) then
+	if not C["DataBars"].TrackHonor or not UnitIsPVP("player") or (event == "PLAYER_FLAGS_CHANGED" and unit ~= "player") then
 		honBar:Hide()
 	else
 		honBar:Show()
 
-		local current = UnitHonor("player")
-		local max = UnitHonorMax("player")
+		CurrentHonor, MaxHonor, CurrentLevel = UnitHonor("player"), UnitHonorMax("player"), UnitHonorLevel("player")
 
-		if max == 0 then
-			max = 1
+		-- Guard against division by zero, which appears to be an issue when zoning in/out of dungeons
+		if MaxHonor == 0 then
+			MaxHonor = 1
 		end
 
-		honBar:SetMinMaxValues(0, max)
-		honBar:SetValue(current)
+		PercentHonor, RemainingHonor = (CurrentHonor / MaxHonor) * 100, MaxHonor - CurrentHonor
+
+		honBar:SetMinMaxValues(0, MaxHonor)
+		honBar:SetValue(CurrentHonor)
+
 
 		if C["DataBars"].Text then
-			honBar.Text:SetText(string_format("%s - %d%%", K.ShortValue(current), current / max * 100))
+			honBar.Text:SetText(string_format("%s - %d%%", K.ShortValue(CurrentHonor), PercentHonor))
 		end
 	end
 end
 
 function Module:OnEnter()
+	if GameTooltip:IsForbidden() then
+		return
+	end
+
 	GameTooltip:ClearLines()
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
@@ -330,16 +338,15 @@ function Module:OnEnter()
 		K.UIFrameFadeIn(Module.Container, 0.25, Module.Container:GetAlpha(), 1)
 	end
 
-	if not IsPlayerAtEffectiveMaxLevel() then
-		local cur, max = Module:GetUnitXP("player")
-		local rested = GetXPExhaustion()
+	if Module:ExperienceBar_ShouldBeVisible() then
+		GameTooltip:AddLine(L["Experience"])
 
-		GameTooltip:AddDoubleLine(L["Experience"], PLAYER.." "..LEVEL.." ("..K.Level..")", nil, nil, nil, 0.90, 0.80, 0.50)
-		GameTooltip:AddDoubleLine(L["XP"], string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math_floor(cur / max * 100)), 1, 1, 1)
-		GameTooltip:AddDoubleLine(L["Remaining"], string_format("%s (%s%% - %s "..L["Bars"]..")", K.ShortValue(max - cur), math_floor((max - cur) / max * 100), math_floor(20 * (max - cur) / max)), 1, 1, 1)
+		GameTooltip:AddDoubleLine(LEVEL, string_format("%s", K.Level), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["XP"], string_format(" %d / %d (%.2f%%)", CurrentXP, XPToLevel, PercentXP), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %s (%.2f%% - %d "..L["Bars"]..")", RemainXP, RemainTotal, RemainBars), 1, 1, 1)
 
-		if rested then
-			GameTooltip:AddDoubleLine(L["Rested"], string_format("+%s (%s%%)", K.ShortValue(rested), math_floor(rested / max * 100)), 1, 1, 1)
+		if RestedXP and RestedXP > 0 then
+			GameTooltip:AddDoubleLine(L["Rested"], string_format("+%d (%.2f%%)", RestedXP, PercentRested), 1, 1, 1)
 		end
 	end
 
@@ -369,43 +376,40 @@ function Module:OnEnter()
 				friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(factionID)
 			end
 
-			GameTooltip:AddDoubleLine(STANDING..":", (friendID and friendTextLevel) or _G["FACTION_STANDING_LABEL" .. reaction], 1, 1, 1)
-			if reaction ~= MAX_REPUTATION_REACTION or C_Reputation_IsFactionParagon(factionID) then
+			GameTooltip:AddDoubleLine(STANDING..":", (friendID and friendTextLevel) or _G["FACTION_STANDING_LABEL"..reaction], 1, 1, 1)
+			if reaction ~= _G.MAX_REPUTATION_REACTION or C_Reputation_IsFactionParagon(factionID) then
 				GameTooltip:AddDoubleLine(REPUTATION..":", string_format("%d / %d (%d%%)", value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
 			end
 		end
 	end
 
-	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
-	if azeriteItemLocation then
-		if not IsPlayerAtEffectiveMaxLevel() or GetWatchedFactionInfo() then
+	local azeriteItem, currentLevel, curXP, maxXP
+	local function dataLoadedCancelFunc()
+		if not IsPlayerAtEffectiveMaxLevel() or GetWatchedFactionInfo() or IsPlayerAtEffectiveMaxLevel and C["DataBars"].TrackHonor then
 			GameTooltip:AddLine(" ")
 		end
+		GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItem:GetItemName().." ("..currentLevel..")", nil, nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
+		GameTooltip:AddDoubleLine(L["AP"], string_format(" %d / %d (%d%%)", curXP, maxXP, curXP / maxXP * 100), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", maxXP - curXP, (maxXP - curXP) / maxXP * 100, 10 * (maxXP - curXP) / maxXP), 1, 1, 1)
+	end
 
-		local azeriteItem = Item:CreateFromItemLocation(azeriteItemLocation)
-		local cur, max = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
-		local currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
+	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
+	if azeriteItemLocation then
+		curXP, maxXP = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
+		currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
 
-		self.itemDataLoadedCancelFunc = azeriteItem:ContinueWithCancelOnItemLoad(function()
-				local azeriteItemName = azeriteItem:GetItemName()
-				GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItemName.." ("..currentLevel..")", nil,  nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
-				GameTooltip:AddDoubleLine(L["AP"], string_format(" %d / %d (%d%%)", cur, max, cur / max  * 100), 1, 1, 1)
-				GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", max - cur, (max - cur) / max * 100, 10 * (max - cur) / max), 1, 1, 1)
-				GameTooltip:Show()
-		end)
+		azeriteItem = Item:CreateFromItemLocation(azeriteItemLocation)
+		azeriteItem:ContinueWithCancelOnItemLoad(dataLoadedCancelFunc)
 	end
 
 	if C["DataBars"].TrackHonor then
 		if IsPlayerAtEffectiveMaxLevel() and UnitIsPVP("player") then
 			GameTooltip:AddLine(" ")
 
-			local current = UnitHonor("player")
-			local max = UnitHonorMax("player")
-			local level = UnitHonorLevel("player")
-
-			GameTooltip:AddDoubleLine(HONOR.." "..LEVEL, level)
-			GameTooltip:AddDoubleLine(L["Honor XP"], string_format(" %d / %d (%d%%)", current, max, current/max * 100), 1, 1, 1)
-			GameTooltip:AddDoubleLine(L["Honor Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
+			GameTooltip:AddLine(HONOR)
+			GameTooltip:AddDoubleLine(LEVEL, CurrentLevel, 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["Honor XP"], string_format(" %d / %d (%d%%)", CurrentHonor, MaxHonor, PercentHonor), 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["Honor Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", RemainingHonor, (RemainingHonor) / MaxHonor * 100, 20 * (RemainingHonor) / MaxHonor), 1, 1, 1)
 		end
 	end
 
@@ -473,15 +477,24 @@ function Module:OnEnable()
 	self:SetupHonor()
 	self:OnUpdate()
 
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", self.OnUpdate)
-	K:RegisterEvent("PLAYER_LEVEL_UP", self.OnUpdate)
+	-- All Events
+	--K:RegisterEvent("PLAYER_ENTERING_WORLD", self.OnUpdate)
+
+	-- Exp Events
 	K:RegisterEvent("PLAYER_XP_UPDATE", self.OnUpdate)
-	K:RegisterEvent("UPDATE_EXHAUSTION", self.OnUpdate)
 	K:RegisterEvent("DISABLE_XP_GAIN", self.OnUpdate)
 	K:RegisterEvent("ENABLE_XP_GAIN", self.OnUpdate)
+	K:RegisterEvent("UPDATE_EXHAUSTION", self.OnUpdate)
+
+	-- Rep Events
 	K:RegisterEvent("UPDATE_FACTION", self.OnUpdate)
+	K:RegisterEvent("COMBAT_TEXT_UPDATE", self.OnUpdate)
+
+	-- Azerite Events
 	K:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", self.OnUpdate)
 	K:RegisterEvent("UNIT_INVENTORY_CHANGED", self.OnUpdate)
+
+	-- Honor Events
 	K:RegisterEvent("HONOR_XP_UPDATE", self.OnUpdate)
 	K:RegisterEvent("PLAYER_FLAGS_CHANGED", self.OnUpdate)
 

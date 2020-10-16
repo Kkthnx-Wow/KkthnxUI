@@ -262,18 +262,17 @@ function Module:CreatePlayer()
 		self.Debuffs.initialAnchor = "TOPLEFT"
 		self.Debuffs["growth-x"] = "RIGHT"
 		self.Debuffs["growth-y"] = "UP"
-
+		self.Debuffs:ClearAllPoints()
 		if C["Unitframe"].ClassResources and _G.oUF_PlayerClassPowerBar then
-			self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6 + _G.oUF_PlayerClassPowerBar:GetHeight())
+			self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 46 + 6)
 		else
-			self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 44)
+			self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 46)
 		end
-
 		self.Debuffs.num = 20
 		self.Debuffs.iconsPerRow = 5
 		self.Debuffs.size = Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
 		self.Debuffs:SetWidth(width)
-		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * floor(self.Debuffs.num/self.Debuffs.iconsPerRow + .5))
+		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
 		self.Debuffs.PostCreateIcon = Module.PostCreateAura
 		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 	end
@@ -457,42 +456,39 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].AdditionalPower then
-		if K.Class == "DRUID" or K.Class == "PRIEST" or K.Class == "SHAMAN" then
-			self.AdditionalPower = CreateFrame("StatusBar", self:GetName().."AdditionalPower", self)
-			self.AdditionalPower:SetHeight(14)
-			self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
-			self.AdditionalPower:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
-			self.AdditionalPower:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
-			self.AdditionalPower.colorPower = true
-			self.AdditionalPower:CreateBorder()
-			self.AdditionalPower.frequentUpdates = true
+		self.AdditionalPower = CreateFrame("StatusBar", self:GetName().."AdditionalPower", self)
+		self.AdditionalPower:SetHeight(14)
+		self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
+		self.AdditionalPower:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
+		self.AdditionalPower:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
+		self.AdditionalPower.colorPower = true
+		self.AdditionalPower:CreateBorder()
+		self.AdditionalPower.frequentUpdates = true
 
-			if C["Unitframe"].Smooth then
-				self.AdditionalPower.Smooth = true
-			end
-
-			self.AdditionalPower.Text = self.AdditionalPower:CreateFontString(nil, "OVERLAY")
-			self.AdditionalPower.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-			self.AdditionalPower.Text:SetPoint("CENTER", self.AdditionalPower, "CENTER", 0, -1)
-
-			self.AdditionalPower.PostUpdate = Module.PostUpdateAddPower
-
-			self.AdditionalPower.displayPairs = {
-				["DRUID"] = {
-					[1] = true,
-					[3] = true,
-					[8] = true,
-				},
-
-				["SHAMAN"] = {
-					[11] = true,
-				},
-
-				["PRIEST"] = {
-					[13] = true,
-				}
-			}
+		if C["Unitframe"].Smooth then
+			self.AdditionalPower.Smooth = true
 		end
+
+		self.AdditionalPower.Text = self.AdditionalPower:CreateFontString(nil, "OVERLAY")
+		self.AdditionalPower.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+		self.AdditionalPower.Text:SetPoint("CENTER", self.AdditionalPower, "CENTER", 0, -1)
+
+		self.AdditionalPower.PostUpdate = Module.PostUpdateAddPower
+		self.AdditionalPower.displayPairs = {
+			["DRUID"] = {
+				[1] = true,
+				[3] = true,
+				[8] = true,
+			},
+
+			["SHAMAN"] = {
+				[11] = true,
+			},
+
+			["PRIEST"] = {
+				[13] = true,
+			}
+		}
 	end
 
 	if C["Unitframe"].CombatText then
@@ -651,7 +647,6 @@ function Module:CreatePlayer()
 
 		self.DebuffHighlightAlpha = 0.45
 		self.DebuffHighlightFilter = true
-		self.DebuffHighlightFilterTable = K.DebuffHighlightColors
 	end
 
 	if C["Unitframe"].PortraitTimers then

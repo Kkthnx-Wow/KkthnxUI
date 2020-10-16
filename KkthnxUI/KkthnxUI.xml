@@ -42,7 +42,6 @@
 	<Include file="Modules\Tooltip\Load_Tooltip.xml" />
 	<!-- Miscellaneous -->
 	<Include file="Modules\Miscellaneous\Load_Miscellaneous.xml" />
-	<Include file="Load_Bindings.xml" />
 	<!-- Skins -->
 	<Include file="Modules\Skins\Load_Skins.xml" />
 	<!-- Developer -->

@@ -35,11 +35,6 @@ local function UpdateAzeriteEmpoweredItem(self)
 	self.AzeriteTexture:SetDrawLayer("BORDER", 1)
 end
 
-local function CorruptionIcon(self)
-	local itemLink = GetInventoryItemLink("player", self:GetID())
-	self.IconOverlay:SetShown(itemLink and IsCorruptedItem(itemLink))
-end
-
 local function ReskinPaperDollSidebar()
 	for i = 1, #PAPERDOLL_SIDEBARS do
 		local tab = _G["PaperDollSidebarTab"..i]
@@ -125,10 +120,6 @@ local function ReskinCharacterFrame()
 
 			slot.ignoreTexture:SetTexture([[Interface\PaperDollInfoFrame\UI-GearManager-LeaveItem-Transparent]])
 
-			slot.CorruptedHighlightTexture:SetAtlas("Nzoth-charactersheet-item-glow")
-			slot.IconOverlay:SetAtlas("Nzoth-inventory-icon")
-			slot.IconOverlay:SetAllPoints()
-
 			slot.IconBorder:SetAlpha(0)
 
 			hooksecurefunc(slot.IconBorder, "SetVertexColor", function(_, r, g, b)
@@ -141,9 +132,6 @@ local function ReskinCharacterFrame()
 
 			hooksecurefunc(slot, "DisplayAsAzeriteItem", UpdateAzeriteItem)
 			hooksecurefunc(slot, "DisplayAsAzeriteEmpoweredItem", UpdateAzeriteEmpoweredItem)
-
-			slot:HookScript('OnShow', CorruptionIcon)
-			slot:HookScript('OnEvent', CorruptionIcon)
 		end
 	end
 

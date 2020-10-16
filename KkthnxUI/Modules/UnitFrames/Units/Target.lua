@@ -1,8 +1,4 @@
 local K, C = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true then
-	return
-end
-
 local Module = K:GetModule("Unitframes")
 local oUF = oUF or K.oUF
 
@@ -347,7 +343,6 @@ function Module:CreateTarget()
 
 		self.DebuffHighlightAlpha = 0.45
 		self.DebuffHighlightFilter = true
-		self.DebuffHighlightFilterTable = K.DebuffHighlightColors
 	end
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")

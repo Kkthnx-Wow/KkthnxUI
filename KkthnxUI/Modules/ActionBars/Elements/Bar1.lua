@@ -13,7 +13,7 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 local hooksecurefunc = _G.hooksecurefunc
 
-function Module:OnEnable()
+function Module:CreateBar1()
 	self:CreateMicroMenu()
 
 	if not C["ActionBar"].Enable then
@@ -108,7 +108,38 @@ function Module:OnEnable()
 	]])
 	RegisterStateDriver(frame, "page", actionPage)
 
+	-- Fix button texture, need reviewed
+	local function FixActionBarTexture()
+		for _, button in next, buttonList do
+			local icon = button.icon
+			local texture = GetActionTexture(button.action)
+			if texture then
+				icon:SetTexture(texture)
+				icon:Show()
+			else
+				icon:Hide()
+			end
+			Module.UpdateButtonUsable(button)
+		end
+	end
+	K:RegisterEvent("SPELL_UPDATE_ICON", FixActionBarTexture)
+	K:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", FixActionBarTexture)
+	K:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR", FixActionBarTexture)
+end
+
+function Module:OnEnable()
+	Module.buttons = {}
+
+	if PlayerTalentFrame then
+		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	else
+		hooksecurefunc("TalentFrame_LoadUI", function()
+			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		end)
+	end
+
 	-- Add Elements
+	self:CreateBar1()
 	self:CreateBar2()
 	self:CreateBar3()
 	self:CreateBar4()
@@ -120,30 +151,4 @@ function Module:OnEnable()
 	self:CreateStancebar()
 	self:HideBlizz()
 	self:CreateBarSkin()
-
-	if PlayerTalentFrame then
-		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	else
-		hooksecurefunc("TalentFrame_LoadUI", function()
-			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-		end)
-	end
-
-	-- Vehicle Fix
-	local function getActionTexture(button)
-		return GetActionTexture(button.action)
-	end
-
-	K:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", function()
-		for _, button in next, buttonList do
-			local icon = button.icon
-			local texture = getActionTexture(button)
-			if texture then
-				icon:SetTexture(texture)
-				icon:Show()
-			else
-				icon:Hide()
-			end
-		end
-	end)
 end

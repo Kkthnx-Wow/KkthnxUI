@@ -33,14 +33,6 @@ local function GetAuraWatchSpell(id, point, color, anyUnit, onlyShowMissing, dis
 	}
 end
 
-K.DebuffHighlightColors = {
-	[25771] = {
-		enable = false,
-		style = "FILL",
-		color = {r = 0.85, g = 0, b = 0, a = 0.85}
-	},
-}
-
 K.DebuffsTracking = {}
 K.DebuffsTracking["RaidDebuffs"] = {
 	["type"] = "Whitelist",

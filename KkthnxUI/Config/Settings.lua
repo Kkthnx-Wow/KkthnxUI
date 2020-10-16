@@ -271,6 +271,7 @@ C["Misc"] = {
 	["AFKCamera"] = false,
 	["AutoBubbles"] = false,
 	["ColorPicker"] = false,
+	["EasyMarking"] = false,
 	["EnhancedFriends"] = false,
 	["GemEnchantInfo"] = false,
 	["HideBanner"] = false,
@@ -283,6 +284,15 @@ C["Misc"] = {
 	["ShowWowHeadLinks"] = false,
 	["SlotDurability"] = false,
 	["TradeTabs"] = false,
+	["ShowMarkerBar"] = {
+		["Options"] = {
+			["Grids"] = 1,
+			["Horizontal"] = 2,
+			["Vertical"] = 3,
+			[DISABLE] = 4,
+		},
+		["Value"] = 4
+	},
 }
 
 C["Nameplate"] = {

@@ -153,7 +153,6 @@ function Module:ReskinBlizzardFonts()
 		SetFont(_G.FriendsFont_11,						NORMAL, 11)
 		SetFont(_G.SpellFont_Small,						NORMAL, 10)
 		SetFont(_G.SubSpellFont,						NORMAL, 10) -- Spellbook Sub Names
-
 	end
 
 	-- Titles
@@ -194,7 +193,11 @@ function Module:ReskinBlizzardFonts()
 	LFGListFrame.ApplicationViewer.ItemLevelColumnHeader.Label:FontTemplate()
 	LFGListFrame.ApplicationViewer.PrivateGroup:FontTemplate()
 	_G.InvoiceTextFontNormal:FontTemplate(nil, 13)
+	_G.InvoiceTextFontNormal:SetShadowOffset(0, 0)
+	_G.InvoiceTextFontNormal:SetShadowColor(0, 0, 0, 0)
 	_G.MailTextFontNormal:FontTemplate(nil, 13)
+	_G.MailTextFontNormal:SetShadowOffset(0, 0)
+	_G.MailTextFontNormal:SetShadowColor(0, 0, 0, 0)
 end
 
 table_insert(Module.NewSkin["KkthnxUI"], Module.ReskinBlizzardFonts)

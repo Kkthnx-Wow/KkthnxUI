@@ -866,20 +866,26 @@ local MenuItemOnMouseUp = function(self)
 		SetValue(self.Group, self.Option, self.Key)
 
 		self.GrandParent.Value = self.Key
+
+		if self.GrandParent.Hook then
+			print(self.GrandParent.Hook)
+			self.GrandParent.Hook(self.Key, self.Group)
+		end
 	else
 		SetValue(self.Group, self.Option, self.Value)
 
 		self.GrandParent.Value = self.Value
+
+		if self.GrandParent.Hook then
+			print(self.GrandParent.Hook)
+			self.GrandParent.Hook(self.Value, self.Group)
+		end
 	end
 
 	if (self.GrandParent.Type == "Texture") then
 		self.GrandParent.Texture:SetTexture(K.GetTexture(self.Key))
 	elseif (self.GrandParent.Type == "Font") then
 		self.GrandParent.Current:SetFontObject(K.GetFont(self.Key))
-	end
-
-	if self.GrandParent.Hook then
-		self.GrandParent.Hook(self.Value)
 	end
 
 	self.GrandParent.Current:SetText(self.Key)
@@ -1022,7 +1028,7 @@ local AddDropdownScrollBar = function(self)
 	self:SetHeight(((WidgetHeight + 6) * ListItemsToShow) - 0)
 end
 
-local CreateDropdown = function(self, group, option, text, custom)
+local CreateDropdown = function(self, group, option, text, custom, hook)
 	local Value
 	local Selections
 
@@ -1052,6 +1058,7 @@ local CreateDropdown = function(self, group, option, text, custom)
 	Dropdown.Group = group
 	Dropdown.Option = option
 	Dropdown.Type = custom
+	Dropdown.Hook = hook
 
 	Dropdown.Texture = Dropdown:CreateTexture(nil, "ARTWORK")
 	Dropdown.Texture:SetAllPoints()

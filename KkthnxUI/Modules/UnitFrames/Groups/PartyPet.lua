@@ -7,7 +7,6 @@ if not oUF then
 end
 
 local _G = _G
-local select = select
 
 local CreateFrame = _G.CreateFrame
 local GetThreatStatusColor = _G.GetThreatStatusColor
@@ -41,10 +40,6 @@ local function UpdatePartyPetPower(self, _, unit)
 end
 
 function Module:CreatePartyPet()
-	if not C["Party"].Enable then
-		return
-	end
-
 	local PartyPetframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local PartyPetframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
@@ -142,7 +137,6 @@ function Module:CreatePartyPet()
 	self.DebuffHighlight:SetBlendMode("ADD")
 	self.DebuffHighlightAlpha = 0.45
 	self.DebuffHighlightFilter = true
-	self.DebuffHighlightFilterTable = K.DebuffHighlightColors
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()

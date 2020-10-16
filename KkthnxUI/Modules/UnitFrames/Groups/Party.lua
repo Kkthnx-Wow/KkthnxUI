@@ -1,8 +1,4 @@
 local K, C = unpack(select(2, ...))
-if C["Party"].Enable ~= true then
-	return
-end
-
 local Module = K:GetModule("Unitframes")
 local oUF = oUF or K.oUF
 if not oUF then
@@ -19,6 +15,7 @@ local UnitIsUnit = _G.UnitIsUnit
 
 function Module:CreateParty()
 	self.mystyle = "party"
+
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 	local HealPredictionTexture = K.GetTexture(C["UITextures"].HealPredictionTextures)
@@ -331,7 +328,6 @@ function Module:CreateParty()
 
 		self.DebuffHighlightAlpha = 0.45
 		self.DebuffHighlightFilter = true
-		self.DebuffHighlightFilterTable = K.DebuffHighlightColors
 	end
 
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")

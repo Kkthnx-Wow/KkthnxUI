@@ -139,8 +139,13 @@ local function reskinProgressbarWithIcon(_, _, line)
 		BonusObjectiveTrackerProgressBar_PlayFlareAnim = K.Noop
 
 		icon:SetMask(nil)
+		icon.bg = CreateFrame("Frame", nil, bar)
+		icon.bg:SetAllPoints(icon)
+		icon.bg:SetFrameLevel(bar:GetFrameLevel())
+		icon.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		icon:SetTexCoord(unpack(K.TexCoords))
 		icon:ClearAllPoints()
-		icon:SetPoint("TOPLEFT", bar, "TOPRIGHT", 5, 0)
+		icon:SetPoint("TOPLEFT", bar, "TOPRIGHT", 6, 0)
 		icon:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 25, 0)
 	end
 

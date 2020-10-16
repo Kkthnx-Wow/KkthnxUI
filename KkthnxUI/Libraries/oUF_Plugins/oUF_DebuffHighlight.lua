@@ -1,196 +1,161 @@
 local _, ns = ...
 local oUF = ns.oUF
-if not oUF then return end
 
 local _G = _G
 
-local UnitAura = _G.UnitAura
+local UnitClass = _G.UnitClass
 local UnitCanAssist = _G.UnitCanAssist
+local UnitAura = _G.UnitAura
 local GetSpecialization = _G.GetSpecialization
-local GetActiveSpecGroup = _G.GetActiveSpecGroup
-local Classic = _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC
 
-local DispelList, BlackList = {}, {}
-
---local DispellPriority = { Magic = 4, Curse = 3, Disease = 2, Poison = 1 }
---local FilterList = {}
-
-if Classic then
-	DispelList.PRIEST	= {Magic = true, Disease = true}
-	DispelList.SHAMAN	= {Poison = true, Disease = true}
-	DispelList.PALADIN	= {Magic = true, Poison = true, Disease = true}
-	DispelList.MAGE		= {Curse = true}
-	DispelList.DRUID	= {Curse = true, Poison = true}
-	DispelList.WARLOCK	= {Magic = true}
-else
-	DispelList.PRIEST	= {Magic = true, Disease = true}
-	DispelList.SHAMAN	= {Magic = false, Curse = true}
-	DispelList.PALADIN	= {Magic = false, Poison = true, Disease = true}
-	DispelList.DRUID	= {Magic = false, Curse = true, Poison = true, Disease = false}
-	DispelList.MONK		= {Magic = false, Poison = true, Disease = true}
-	DispelList.MAGE		= {Curse = true}
-end
+local CanDispel = {
+	DRUID = {Magic = false, Curse = true, Poison = true},
+	MAGE = {Curse = true},
+	MONK = {Magic = false, Poison = true, Disease = true},
+	PALADIN = {Magic = false, Poison = true, Disease = true},
+	PRIEST = {Magic = false, Disease = true},
+	SHAMAN = {Magic = false, Curse = true}
+}
 
 local playerClass = select(2, UnitClass("player"))
-local CanDispel = DispelList[playerClass] or {}
+local dispellist = CanDispel[playerClass] or {}
+local origColors = {}
+local origBorderColors = {}
 
-if not Classic then
-	BlackList[140546] = true -- Fully Mutated
-	BlackList[136184] = true -- Thick Bones
-	BlackList[136186] = true -- Clear mind
-	BlackList[136182] = true -- Improved Synapses
-	BlackList[136180] = true -- Keen Eyesight
-	BlackList[105171] = true -- Deep Corruption
-	BlackList[108220] = true -- Deep Corruption
-	BlackList[116095] = true -- Disable, Slow
-	BlackList[137637] = true -- Warbringer, Slow
-end
-
-local function GetAuraType(unit, filter, filterTable)
-	if not unit or not UnitCanAssist("player", unit) then
-		return
+local function GetDebuffType(unit, filter)
+	if not UnitCanAssist("player", unit) then
+		return nil
 	end
 
 	local i = 1
 	while true do
-		local name, texture, _, debufftype, _, _, _, _, _, spellID = UnitAura(unit, i, "HARMFUL")
+		local _, texture, _, debufftype = UnitAura(unit, i, "HARMFUL")
 		if not texture then
 			break
 		end
 
-		local filterSpell = filterTable[spellID] or filterTable[name]
-		if filterTable and filterSpell then
-			if filterSpell.enable then
-				return debufftype, texture, true, filterSpell.style, filterSpell.color
-			end
-		elseif debufftype and (not filter or (filter and CanDispel[debufftype])) and not (BlackList[name] or BlackList[spellID]) then
+		if debufftype and not filter or (filter and dispellist[debufftype]) then
 			return debufftype, texture
 		end
-
 		i = i + 1
-	end
-
-	i = 1
-	while true do
-		local _, texture, _, debufftype, _, _, _, _, _, spellID = UnitAura(unit, i)
-		if not texture then
-			break
-		end
-
-		local filterSpell = filterTable[spellID]
-		if filterTable and filterSpell and filterSpell.enable then
-			return debufftype, texture, true, filterSpell.style, filterSpell.color
-		end
-
-		i = i + 1
-	end
-end
-
---[[
-local function FilterTable()
-	local debufftype, texture, filterSpell
-	return debufftype, texture, true, filterSpell.style, filterSpell.color
-end
-]]
-
-local function CheckTalentTree(tree)
-	local activeGroup = GetActiveSpecGroup()
-	local spec = activeGroup and GetSpecialization(false, false, activeGroup)
-
-	if spec then
-		return tree == spec
 	end
 end
 
 local function CheckSpec()
-	if Classic then
-		return
-	end
+	local spec = GetSpecialization()
 
-	-- Check for certain talents to see if we can dispel magic or not
-	if playerClass == "PALADIN" then
-		CanDispel.Magic = CheckTalentTree(1)
-	elseif playerClass == "SHAMAN" then
-		CanDispel.Magic = CheckTalentTree(3)
-	elseif playerClass == "DRUID" then
-		CanDispel.Magic = CheckTalentTree(4)
+	if playerClass == "DRUID" then
+		if spec == 4 then
+			dispellist.Magic = true
+		else
+			dispellist.Magic = false
+		end
 	elseif playerClass == "MONK" then
-		CanDispel.Magic = CheckTalentTree(2)
+		if spec == 2 then
+			dispellist.Magic = true
+		else
+			dispellist.Magic = false
+		end
+	elseif playerClass == "PALADIN" then
+		if spec == 1 then
+			dispellist.Magic = true
+		else
+			dispellist.Magic = false
+		end
+	elseif playerClass == "PRIEST" then
+		if spec == 3 then
+			dispellist.Magic = false
+		else
+			dispellist.Magic = true
+		end
+	elseif playerClass == "SHAMAN" then
+		if spec == 3 then
+			dispellist.Magic = true
+		else
+			dispellist.Magic = false
+		end
 	end
 end
 
-local function Update(self, _, unit)
-	if unit ~= self.unit then
+local function Update(object, _, unit)
+	if object.unit ~= unit then
 		return
 	end
 
-	local debuffType, texture, wasFiltered, style, color = GetAuraType(unit, self.AuraHighlightFilter, self.AuraHighlightFilterTable)
-	if wasFiltered then
-		if style == "GLOW" and self.AuraHightlightGlow then
-			self.AuraHightlightGlow:Show()
-			self.AuraHightlightGlow:SetBackdropBorderColor(color.r, color.g, color.b)
-		elseif self.AuraHightlightGlow then
-			self.AuraHightlightGlow:Hide()
-			self.AuraHighlight:SetVertexColor(color.r, color.g, color.b, color.a)
-		end
-	elseif debuffType then
-		color = DebuffTypeColor[debuffType or "none"]
+	local debuffType, texture = GetDebuffType(unit, object.DebuffHighlightFilter)
+	if debuffType then
+		local color = DebuffTypeColor[debuffType]
+		if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder then
+			if object.DebuffHighlightBackdrop then
+				object:SetBackdropColor(color.r, color.g, color.b, object.DebuffHighlightAlpha or 1)
+			end
 
-		if self.AuraHighlightBackdrop and self.AuraHightlightGlow then
-			self.AuraHightlightGlow:Show()
-			self.AuraHightlightGlow:SetBackdropBorderColor(color.r, color.g, color.b)
-		elseif self.AuraHighlightUseTexture then
-			self.AuraHighlight:SetTexture(texture)
+			if object.DebuffHighlightBackdropBorder then
+				object:SetBackdropBorderColor(color.r, color.g, color.b, object.DebuffHighlightAlpha or 1)
+			end
+		elseif object.DebuffHighlightUseTexture then
+			object.DebuffHighlight:SetTexture(texture)
 		else
-			self.AuraHighlight:SetVertexColor(color.r, color.g, color.b, color.a)
+			object.DebuffHighlight:SetVertexColor(color.r, color.g, color.b, object.DebuffHighlightAlpha or 0.5)
 		end
 	else
-		if self.AuraHightlightGlow then
-			self.AuraHightlightGlow:Hide()
-		end
+		if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder then
+			local color
+			if object.DebuffHighlightBackdrop then
+				color = origColors[object]
+				object:SetBackdropColor(color.r, color.g, color.b, color.a)
+			end
 
-		if self.AuraHighlightUseTexture then
-			self.AuraHighlight:SetTexture(nil)
+			if object.DebuffHighlightBackdropBorder then
+				color = origBorderColors[object]
+				object:SetBackdropBorderColor(color.r, color.g, color.b, color.a)
+			end
+		elseif object.DebuffHighlightUseTexture then
+			object.DebuffHighlight:SetTexture(nil)
 		else
-			self.AuraHighlight:SetVertexColor(0, 0, 0, 0)
-		end
-	end
-
-	if self.AuraHighlight.PostUpdate then
-		self.AuraHighlight:PostUpdate(self, debuffType, texture, wasFiltered, style, color)
-	end
-end
-
-local function Enable(self)
-	if self.AuraHighlight then
-		self:RegisterEvent("UNIT_AURA", Update)
-		return true
-	end
-end
-
-local function Disable(self)
-	local element = self.AuraHighlight
-	if element then
-		self:UnregisterEvent("UNIT_AURA", Update)
-
-		if self.AuraHightlightGlow then
-			self.AuraHightlightGlow:Hide()
-		end
-
-		if element then
-			element:SetVertexColor(0, 0, 0, 0)
+			local color = origColors[object]
+			object.DebuffHighlight:SetVertexColor(color.r, color.g, color.b, color.a)
 		end
 	end
 end
 
-local f = CreateFrame("Frame")
-f:RegisterEvent("CHARACTER_POINTS_CHANGED")
+local function Enable(object)
+	-- If we're not highlighting this unit return
+	if not object.DebuffHighlightBackdrop and not object.DebuffHighlightBackdropBorder and not object.DebuffHighlight then
+		return
+	end
+	-- If we're filtering highlights and we're not of the dispelling type, return
+	if object.DebuffHighlightFilter and not CanDispel[playerClass] then
+		return
+	end
 
-if not Classic then
-	f:RegisterEvent("PLAYER_TALENT_UPDATE")
-	f:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+	-- Make sure aura scanning is active for this object
+	object:RegisterEvent("UNIT_AURA", Update)
+	object:RegisterEvent("PLAYER_TALENT_UPDATE", CheckSpec, true)
+	CheckSpec()
+
+	if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder then
+		local r, g, b, a = object:GetBackdropColor()
+		origColors[object] = {r = r, g = g, b = b, a = a}
+		r, g, b, a = object:GetBackdropBorderColor()
+		origBorderColors[object] = {r = r, g = g, b = b, a = a}
+	elseif not object.DebuffHighlightUseTexture then
+		local r, g, b, a = object.DebuffHighlight:GetVertexColor()
+		origColors[object] = {r = r, g = g, b = b, a = a}
+	end
+
+	return true
 end
 
-f:SetScript("OnEvent", CheckSpec)
+local function Disable(object)
+	if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder or object.DebuffHighlight then
+		object:UnregisterEvent("UNIT_AURA", Update)
+		object:UnregisterEvent("PLAYER_TALENT_UPDATE", CheckSpec)
+	end
+end
 
-oUF:AddElement("AuraHighlight", Update, Enable, Disable)
+oUF:AddElement("DebuffHighlight", Update, Enable, Disable)
+
+for _, frame in ipairs(oUF.objects) do
+	Enable(frame)
+end
