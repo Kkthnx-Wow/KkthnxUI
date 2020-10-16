@@ -14,34 +14,29 @@ function Module:CreateExtrabar()
 	local padding, margin = 10, 5
 	local num = 1
 	local buttonList = {}
+	local size = FilterConfig.size
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KKUI_ExtraActionBar", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
 	frame:SetHeight(FilterConfig.size + 2 * padding)
 	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 272, 34}
+	frame.mover = K.Mover(frame, "Extrabar", "Extrabar", frame.Pos)
 
-	-- Move The Buttons Into Position And Reparent Them
-	_G.ExtraActionBarFrame:EnableMouse(false)
-	_G.ExtraActionBarFrame:SetParent(frame)
-	_G.ExtraActionBarFrame:ClearAllPoints()
-	_G.ExtraActionBarFrame:SetPoint("CENTER", 0, 0)
-	_G.ExtraActionBarFrame.ignoreFramePositionManager = true
+	ExtraActionBarFrame:EnableMouse(false)
+	ExtraAbilityContainer:SetParent(frame)
+	ExtraAbilityContainer:ClearAllPoints()
+	ExtraAbilityContainer:SetPoint("CENTER", frame)
+	ExtraAbilityContainer.ignoreFramePositionManager = true
 
-	-- The Extra Button
-	local button = _G.ExtraActionButton1
-	table_insert(buttonList, button) -- Add The Button Object To The List
-	--table_insert(Module.buttons, button)
-	button:SetSize(FilterConfig.size, FilterConfig.size)
+	local button = ExtraActionButton1
+	table_insert(buttonList, button)
+	table_insert(Module.buttons, button)
+	button:SetSize(size, size)
 
 	-- Show/hide The Frame On A Given State Driver
 	frame.frameVisibility = "[extrabar] show; hide"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
-
-	-- Create Drag Frame And Drag Functionality
-	if K.ActionBars.userPlaced then
-		frame.mover = K.Mover(frame, L["Extrabar"], "Extrabar", frame.Pos)
-	end
 
 	-- create the mouseover functionality
 	if FilterConfig.fader then
@@ -49,9 +44,9 @@ function Module:CreateExtrabar()
 	end
 
 	-- ZoneAbility
-	local zoneFrame = CreateFrame("Frame", "NDui_ActionBarZone", UIParent)
-	zoneFrame:SetWidth(FilterConfig.size + 2 * padding)
-	zoneFrame:SetHeight(FilterConfig.size + 2 * padding)
+	local zoneFrame = CreateFrame("Frame", "KKUI_ActionBarZone", UIParent)
+	zoneFrame:SetWidth(size + 2 * padding)
+	zoneFrame:SetHeight(size + 2 * padding)
 	zoneFrame.Pos = {"BOTTOM", UIParent, "BOTTOM", -250, 100}
 	zoneFrame.mover = K.Mover(zoneFrame, "Zone Ability", "ZoneAbility", zoneFrame.Pos)
 
@@ -67,7 +62,12 @@ function Module:CreateExtrabar()
 				spellButton.NormalTexture:SetAlpha(0)
 				spellButton:SetPushedTexture(C["Media"].Texture) -- force it to gain a texture
 				spellButton:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
-				--B.ReskinIcon(spellButton.Icon, true)
+				spellButton.Icon:SetTexCoord(unpack(K.TexCoords))
+				local bg = CreateFrame("Frame", nil, spellButton)
+				bg:SetAllPoints(spellButton.Icon)
+				bg:SetFrameLevel(spellButton:GetFrameLevel())
+				bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+
 				spellButton.styled = true
 			end
 		end

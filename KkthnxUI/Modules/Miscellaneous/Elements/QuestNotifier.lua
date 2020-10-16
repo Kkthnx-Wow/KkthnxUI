@@ -15,10 +15,11 @@ local tonumber = _G.tonumber
 local C_QuestLog_GetInfo = _G.C_QuestLog.GetInfo
 local C_QuestLog_GetLogIndexForQuestID = _G.C_QuestLog.GetLogIndexForQuestID
 local C_QuestLog_GetNumQuestLogEntries = _G.C_QuestLog.GetNumQuestLogEntries
+local C_QuestLog_GetQuestIDForLogIndex = _G.C_QuestLog.GetQuestIDForLogIndex
 local C_QuestLog_GetQuestTagInfo = _G.C_QuestLog.GetQuestTagInfo
+local C_QuestLog_GetTitleForQuestID = _G.C_QuestLog.GetTitleForQuestID
 local C_QuestLog_IsComplete = _G.C_QuestLog.IsComplete
 local C_QuestLog_IsWorldQuest = _G.C_QuestLog.IsWorldQuest
-local GetQuestLink = _G.GetQuestLink
 local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
 local IsPartyLFG = _G.IsPartyLFG
@@ -32,17 +33,17 @@ local soundKitID = _G.SOUNDKIT.ALARM_CLOCK_WARNING_3
 local debugMode = true
 local completedQuest, initComplete = {}
 
-local function acceptText(link, daily)
+local function acceptText(title, daily)
 	if daily then
-		return string_format("%s [%s]%s", "Accept Quest", DAILY, link)
+		return string_format("%s: [%s]%s", "Accept Quest", DAILY, title)
 	else
-		return string_format("%s %s", "Accept Quest", link)
+		return string_format("%s: %s", "Accept Quest", title)
 	end
 end
 
-local function completeText(link)
+local function completeText(title)
 	PlaySound(soundKitID, "Master")
-	return string_format("%s %s", link, QUEST_COMPLETE)
+	return string_format("%s %s", title, QUEST_COMPLETE)
 end
 
 local function sendQuestMsg(msg)
@@ -104,29 +105,29 @@ function Module:FindQuestProgress(_, msg)
 end
 
 function Module:FindQuestAccept(questID)
-	local link = GetQuestLink(questID)
+	local tagInfo = C_QuestLog_GetQuestTagInfo(questID)
+	if tagInfo and tagInfo.worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION then
+		return
+	end
+
 	local questLogIndex = C_QuestLog_GetLogIndexForQuestID(questID)
-	if link and questLogIndex then
+	if questLogIndex then
 		local info = C_QuestLog_GetInfo(questLogIndex)
-		local frequency = info.frequency
-		local tagID, _, worldQuestType = C_QuestLog_GetQuestTagInfo(questID)
-		if tagID == 109 or worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION then
-			return
+		if info then
+			sendQuestMsg(acceptText(info.title, info.frequency == LE_QUEST_FREQUENCY_DAILY))
 		end
-		sendQuestMsg(acceptText(link, frequency == LE_QUEST_FREQUENCY_DAILY))
 	end
 end
 
 function Module:FindQuestComplete()
 	for i = 1, C_QuestLog_GetNumQuestLogEntries() do
-		local info = C_QuestLog_GetInfo(i)
-		local questID = info.questID
-		local link = GetQuestLink(questID)
+		local questID = C_QuestLog_GetQuestIDForLogIndex(i)
+		local title = C_QuestLog_GetTitleForQuestID(questID)
 		local isComplete = C_QuestLog_IsComplete(questID)
 		local isWorldQuest = C_QuestLog_IsWorldQuest(questID)
-		if link and isComplete and not completedQuest[questID] and not isWorldQuest then
+		if title and isComplete and not completedQuest[questID] and not isWorldQuest then
 			if initComplete then
-				sendQuestMsg(completeText(link))
+				sendQuestMsg(completeText(title))
 			end
 			completedQuest[questID] = true
 		end
@@ -136,9 +137,9 @@ end
 
 function Module:FindWorldQuestComplete(questID)
 	if C_QuestLog_IsWorldQuest(questID) then
-		local link = GetQuestLink(questID)
-		if link and not completedQuest[questID] then
-			sendQuestMsg(completeText(link))
+		local title = C_QuestLog_GetTitleForQuestID(questID)
+		if title and not completedQuest[questID] then
+			sendQuestMsg(completeText(title))
 			completedQuest[questID] = true
 		end
 	end

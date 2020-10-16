@@ -8,7 +8,6 @@ local tonumber = _G.tonumber
 local ACTION_BUTTON_SHOW_GRID_REASON_CVAR = _G.ACTION_BUTTON_SHOW_GRID_REASON_CVAR
 local ActionBarDownButton = _G.ActionBarDownButton
 local ActionBarUpButton = _G.ActionBarUpButton
-local ActionButton_ShowGrid = _G.ActionButton_ShowGrid
 local BackpackTokenFrame_Update = _G.BackpackTokenFrame_Update
 local GetCVar = _G.GetCVar
 local InCombatLockdown = _G.InCombatLockdown
@@ -89,7 +88,7 @@ local function toggleButtonGrid()
 		local showgrid = tonumber(GetCVar("alwaysShowActionBars"))
 		buttonShowGrid("ActionButton", showgrid)
 		buttonShowGrid("MultiBarBottomRightButton", showgrid)
-		--buttonShowGrid("KKUI_CustomBarButton", showgrid)
+		-- buttonShowGrid("KKUI_CustomBarButton", showgrid)
 		if updateAfterCombat then
 			K:UnregisterEvent("PLAYER_REGEN_ENABLED", toggleButtonGrid)
 			updateAfterCombat = false
@@ -99,7 +98,7 @@ end
 
 local function hideFakeExtraBar(event, addon)
 	if addon == "Blizzard_BindingUI" then
-		--K.HideObject(QuickKeybindFrame.phantomExtraActionButton)
+		QuickKeybindFrame.phantomExtraActionButton:Kill()
 		K:UnregisterEvent(event, hideFakeExtraBar)
 	end
 end

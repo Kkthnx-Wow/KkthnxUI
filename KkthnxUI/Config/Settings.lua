@@ -211,7 +211,6 @@ C["General"] = {
 	["AutoScale"] = true,
 	["ColorTextures"] = false,
 	["FontSize"] = 12,
-	["HideErrors"] = true,
 	["MoveBlizzardFrames"] = false,
 	["NoTutorialButtons"] = false,
 	["ReplaceBlizzardFonts"] = true,

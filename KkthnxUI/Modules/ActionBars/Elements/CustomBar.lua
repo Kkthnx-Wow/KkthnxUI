@@ -55,10 +55,10 @@ function Module:UpdateCustomBar()
 		button:ClearAllPoints()
 		if i == 1 then
 			button:SetPoint("TOPLEFT", frame, padding, -padding)
-		elseif mod(i-1, perRow) ==  0 then
-			button:SetPoint("TOP", frame.buttons[i-perRow], "BOTTOM", 0, -margin)
+		elseif mod(i - 1, perRow) ==  0 then
+			button:SetPoint("TOP", frame.buttons[i - perRow], "BOTTOM", 0, -margin)
 		else
-			button:SetPoint("LEFT", frame.buttons[i-1], "RIGHT", margin, 0)
+			button:SetPoint("LEFT", frame.buttons[i - 1], "RIGHT", margin, 0)
 		end
 		button:SetAttribute("statehidden", false)
 		button:Show()

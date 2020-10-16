@@ -11,20 +11,25 @@ local CreateFrame = _G.CreateFrame
 local UIParent = _G.UIParent
 local CLOSE = _G.CLOSE
 
+-- Starting words used in changelog.
+-- Fixed, Added, Removed, Various.
+
 local changelogData = {
-	K.SystemColor.."KkthnxUI is now v10.0.6.|r",
-	"Fix delete texture missing on ImprovedMail.",
-	"Fixed /killquests I think?",
-	"Fixed AlreadyKnown bugs.",
-	"Fixed ColorPicker errors.",
-	"Fixed Orderhall icon bugs.",
-	"Fixed error in altpower tag.",
-	"Fixed issue with threat not getting KKUI_Border.",
-	"Fixed rare tooltip nil error.",
-	"Fixed unitframe phase icons.",
-	"Update old API in Miscellaneous.",
-	"Updated oUF core.",
-	"Use Goldpaws temp MaxDps fix. <3.",
+	K.SystemColor.."KkthnxUI is now v10.0.7.|r",
+	"Added new easy marking module.",
+	"Added new world markers bar module.",
+	"Fixed bags itemlevel to always be a number.",
+	"Fixed debuffs on player frame.",
+	"Fixed mail font having its shadow.",
+	"Removed most corruption related code.",
+	"Removed our error filter.",
+	"Updated actionbar 1.",
+	"Updated all data bars.",
+	"Updated auto quest accept/turnin.",
+	"Updated debuff highlight.",
+	"Updated filger spells.",
+	"Updated power prediction.",
+	"Various code cleanups and corrections.",
 }
 
 local changelogFrame
@@ -40,7 +45,7 @@ local function changelog()
 	changelogFrame:CreateBorder()
 
 	K.CreateFontString(changelogFrame, 30, K.Title, "", true, "TOPLEFT", 10, 28)
-	K.CreateFontString(changelogFrame, 14, K.Version, "", true, "TOPLEFT", 150, 16)
+	K.CreateFontString(changelogFrame, 14, K.Version, "", true, "TOPLEFT", 140, 16)
 	K.CreateFontString(changelogFrame, 16, "Changelog", "", true, "TOP", 0, -10)
 	K.CreateMoverFrame(changelogFrame)
 
