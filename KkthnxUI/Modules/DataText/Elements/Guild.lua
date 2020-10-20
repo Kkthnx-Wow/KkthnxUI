@@ -339,7 +339,7 @@ end
 
 local function OnEvent(_, event, ...)
 	if not IsInGuild() then
-		Module.GuildDataTextFrame.Text:SetText("...")
+		Module.GuildDataTextFrame.Text:SetText("")
 		return
 	end
 
@@ -361,6 +361,7 @@ end
 
 local function OnEnter()
 	if not IsInGuild() then
+		K.AddTooltip(Module.GuildDataTextFrame, "ANCHOR_RIGHT", "Guild and Communities |CFFFFFF00(J)|r")
 		return
 	end
 
@@ -410,9 +411,9 @@ local function OnMouseUp(_, btn)
 	end
 
 	if btn == "LeftButton" then
-		ToggleFrame(GuildFrame)
-	elseif btn == "RightButton" then
 		ToggleCommunitiesFrame()
+	elseif btn == "RightButton" then
+		ToggleFrame(GuildFrame)
 	end
 end
 

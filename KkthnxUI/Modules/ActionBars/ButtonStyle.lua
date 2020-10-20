@@ -299,13 +299,9 @@ function Module:StyleActionButton(button, cfg)
 	end
 
 	if hotkey then
-		if C["ActionBar"].Hotkey then
-			hotkey:SetParent(overlay)
-			Module:HookHotKey(button)
-			SetupFontString(hotkey, cfg.hotkey)
-		else
-			hotkey:Hide()
-		end
+		hotkey:SetParent(overlay)
+		Module:HookHotKey(button)
+		SetupFontString(hotkey, cfg.hotkey)
 	end
 
 	if name then
@@ -360,14 +356,10 @@ function Module:StyleExtraActionButton(cfg)
 	overlay:SetAllPoints()
 
 	local hotcountFont = K.GetFont(C["UIFonts"].ActionBarsFonts)
-	if C["ActionBar"].Hotkey then
-		hotkey:SetParent(overlay)
-		Module:HookHotKey(button)
-		cfg.hotkey.font = hotcountFont
-		SetupFontString(hotkey, cfg.hotkey)
-	else
-		hotkey:Hide()
-	end
+	hotkey:SetParent(overlay)
+	Module:HookHotKey(button)
+	cfg.hotkey.font = hotcountFont
+	SetupFontString(hotkey, cfg.hotkey)
 
 	if C["ActionBar"].Count then
 		count:SetParent(overlay)
@@ -396,6 +388,7 @@ function Module:StyleAllActionButtons(cfg)
 		Module:StyleActionButton(_G["MultiBarBottomRightButton"..i], cfg)
 		Module:StyleActionButton(_G["MultiBarRightButton"..i], cfg)
 		Module:StyleActionButton(_G["MultiBarLeftButton"..i], cfg)
+		Module:StyleActionButton(_G["KKUI_CustomBarButton"..i], cfg)
 	end
 
 	for i = 1, 6 do
@@ -518,8 +511,6 @@ function Module:CreateBarSkin()
 
 	-- Update hotkeys
 	hooksecurefunc("PetActionButton_SetHotkeys", Module.UpdateHotKey)
-	if C["ActionBar"].Hotkey then
-		Module:UpdateStanceHotKey()
-		K:RegisterEvent("UPDATE_BINDINGS", Module.UpdateStanceHotKey)
-	end
+	Module:UpdateStanceHotKey()
+	K:RegisterEvent("UPDATE_BINDINGS", Module.UpdateStanceHotKey)
 end

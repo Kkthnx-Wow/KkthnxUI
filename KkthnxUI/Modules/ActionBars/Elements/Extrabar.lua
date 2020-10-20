@@ -47,7 +47,7 @@ function Module:CreateExtrabar()
 	local zoneFrame = CreateFrame("Frame", "KKUI_ActionBarZone", UIParent)
 	zoneFrame:SetWidth(size + 2 * padding)
 	zoneFrame:SetHeight(size + 2 * padding)
-	zoneFrame.Pos = {"BOTTOM", UIParent, "BOTTOM", -250, 100}
+	zoneFrame.Pos = {"BOTTOM", UIParent, "BOTTOM", 272, 34}
 	zoneFrame.mover = K.Mover(zoneFrame, "Zone Ability", "ZoneAbility", zoneFrame.Pos)
 
 	ZoneAbilityFrame:SetParent(zoneFrame)

@@ -37,11 +37,23 @@ local backupColor = _G.FACTION_BAR_COLORS[1]
 -- Experience
 local CurrentXP, XPToLevel, RestedXP, PercentRested
 local PercentXP, RemainXP, RemainTotal, RemainBars
+local QuestLogXP = 0
 -- Honor
 local CurrentHonor, MaxHonor, CurrentLevel, PercentHonor, RemainingHonor
 
 function Module:ExperienceBar_ShouldBeVisible()
 	return not IsPlayerAtEffectiveMaxLevel() and not IsXPUserDisabled()
+end
+
+function Module:ExperienceBar_CheckQuests(questID, completedOnly)
+	if not questID then
+		return
+	end
+
+	local isCompleted = C_QuestLog.ReadyForTurnIn(questID)
+	if not completedOnly or isCompleted then
+		QuestLogXP = QuestLogXP + GetQuestLogRewardXP(questID)
+	end
 end
 
 function Module:GetUnitXP(unit)
@@ -326,6 +338,18 @@ function Module:UpdateHonor(event, unit)
 	end
 end
 
+function Module:UpdateQuestExperience()
+	if not Module:ExperienceBar_ShouldBeVisible() then
+		return
+	end
+
+	QuestLogXP = 0
+
+	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
+		Module:ExperienceBar_CheckQuests(C_QuestLog.GetQuestIDForLogIndex(i))
+	end
+end
+
 function Module:OnEnter()
 	if GameTooltip:IsForbidden() then
 		return
@@ -344,6 +368,7 @@ function Module:OnEnter()
 		GameTooltip:AddDoubleLine(LEVEL, string_format("%s", K.Level), 1, 1, 1)
 		GameTooltip:AddDoubleLine(L["XP"], string_format(" %d / %d (%.2f%%)", CurrentXP, XPToLevel, PercentXP), 1, 1, 1)
 		GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %s (%.2f%% - %d "..L["Bars"]..")", RemainXP, RemainTotal, RemainBars), 1, 1, 1)
+		GameTooltip:AddDoubleLine("Quest Log XP:", QuestLogXP, 1, 1, 1)
 
 		if RestedXP and RestedXP > 0 then
 			GameTooltip:AddDoubleLine(L["Rested"], string_format("+%d (%.2f%%)", RestedXP, PercentRested), 1, 1, 1)
@@ -478,13 +503,17 @@ function Module:OnEnable()
 	self:OnUpdate()
 
 	-- All Events
-	--K:RegisterEvent("PLAYER_ENTERING_WORLD", self.OnUpdate)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", self.OnUpdate)
 
 	-- Exp Events
 	K:RegisterEvent("PLAYER_XP_UPDATE", self.OnUpdate)
 	K:RegisterEvent("DISABLE_XP_GAIN", self.OnUpdate)
 	K:RegisterEvent("ENABLE_XP_GAIN", self.OnUpdate)
 	K:RegisterEvent("UPDATE_EXHAUSTION", self.OnUpdate)
+
+	K:RegisterEvent("QUEST_LOG_UPDATE", self.UpdateQuestExperience)
+	K:RegisterEvent("ZONE_CHANGED", self.UpdateQuestExperience)
+	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", self.UpdateQuestExperience)
 
 	-- Rep Events
 	K:RegisterEvent("UPDATE_FACTION", self.OnUpdate)

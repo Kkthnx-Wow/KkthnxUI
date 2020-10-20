@@ -13,9 +13,6 @@ local IsAddOnLoaded = _G.IsAddOnLoaded
 local hooksecurefunc = _G.hooksecurefunc
 
 function Module:ReskinDeadlyBossMods()
-    local DBMFont = K.GetFont(C["UIFonts"].SkinFonts)
-    local DBMTexture = K.GetTexture(C["UITextures"].SkinTextures)
-
     -- Default notice message
     local RaidNotice_AddMessage_ = RaidNotice_AddMessage
     RaidNotice_AddMessage = function(noticeFrame, textString, colorInfo)
@@ -139,11 +136,11 @@ function Module:ReskinDeadlyBossMods()
                 end
 
                 if not texture.styled then
-                    texture:SetTexture(DBMTexture)
+                    texture:SetTexture(C["Media"].Texture)
                     texture.styled = true
                 end
 
-                tbar:SetStatusBarTexture(DBMTexture)
+                tbar:SetStatusBarTexture(C["Media"].Texture)
                 if not tbar.styled then
                     tbar:SetPoint("TOPLEFT", frame, "TOPLEFT")
                     tbar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT")
@@ -163,8 +160,7 @@ function Module:ReskinDeadlyBossMods()
                     name:SetPoint("LEFT", frame, "LEFT", 2, 8)
                     name:SetPoint("RIGHT", frame, "LEFT", tbar:GetWidth() * 0.85, 8)
                     name.SetPoint = K.Noop
-					name:SetFontObject(DBMFont)
-					name:SetFont(select(1, name:GetFont()), 12, "OUTLINE")
+					name:SetFont(C["Media"].Font, 12, "OUTLINE")
                     name.SetFont = K.Noop
                     name:SetJustifyH("LEFT")
                     name:SetWordWrap(false)
@@ -176,8 +172,7 @@ function Module:ReskinDeadlyBossMods()
                     timer:ClearAllPoints()
                     timer:SetPoint("RIGHT", frame, "RIGHT", -2, 8)
                     timer.SetPoint = K.Noop
-					timer:SetFontObject(DBMFont)
-					timer:SetFont(select(1, timer:GetFont()), 12, "OUTLINE")
+					timer:SetFont(C["Media"].Font, 12, "OUTLINE")
                     timer.SetFont = K.Noop
                     timer:SetJustifyH("RIGHT")
                     timer:SetShadowColor(0, 0, 0, 0)

@@ -1,30 +1,18 @@
 --[[
 # Element: Monk Stagger Bar
-
 Handles the visibility and updating of the Monk's stagger bar.
-
 ## Widget
-
 Stagger - A `StatusBar` used to represent the current stagger level.
-
 ## Sub-Widgets
-
 .bg - A `Texture` used as a background. It will inherit the color of the main StatusBar.
-
 ## Notes
-
 A default texture will be applied if the widget is a StatusBar and doesn't have a texture set.
-
 ## Sub-Widgets Options
-
 .multiplier - Used to tint the background based on the main widgets R, G and B values. Defaults to 1 (number)[0-1]
-
 ## Examples
-
     local Stagger = CreateFrame('StatusBar', nil, self)
     Stagger:SetSize(120, 20)
     Stagger:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, 0)
-
     -- Register with oUF
     self.Stagger = Stagger
 --]]
@@ -81,7 +69,6 @@ local function UpdateColor(self, event, unit)
 
 	--[[ Callback: Stagger:PostUpdateColor(r, g, b)
 	Called after the element color has been updated.
-
 	* self - the Stagger element
 	* r    - the red component of the used color (number)[0-1]
 	* g    - the green component of the used color (number)[0-1]
@@ -99,7 +86,6 @@ local function Update(self, event, unit)
 
 	--[[ Callback: Stagger:PreUpdate()
 	Called before the element has been updated.
-
 	* self - the Stagger element
 	--]]
 	if(element.PreUpdate) then
@@ -118,7 +104,6 @@ local function Update(self, event, unit)
 
 	--[[ Callback: Stagger:PostUpdate(cur, max)
 	Called after the element has been updated.
-
 	* self - the Stagger element
 	* cur  - the amount of staggered damage (number)
 	* max  - the player's maximum possible health value (number)
@@ -131,7 +116,6 @@ end
 local function Path(self, ...)
 	--[[ Override: Stagger.Override(self, event, unit)
 	Used to completely override the internal update function.
-
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* unit  - the unit accompanying the event (string)
@@ -140,7 +124,6 @@ local function Path(self, ...)
 
 	--[[ Override: Stagger.UpdateColor(self, event, unit)
 	Used to completely override the internal function for updating the widgets' colors.
-
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* unit  - the unit accompanying the event (string)
@@ -167,7 +150,6 @@ end
 local function VisibilityPath(self, ...)
 	--[[ Override: Stagger.OverrideVisibility(self, event, unit)
 	Used to completely override the internal visibility toggling function.
-
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* unit  - the unit accompanying the event (string)
@@ -197,6 +179,8 @@ local function Enable(self, unit)
 		MonkStaggerBar:UnregisterEvent('UNIT_DISPLAYPOWER')
 		MonkStaggerBar:UnregisterEvent('UNIT_EXITED_VEHICLE')
 		MonkStaggerBar:UnregisterEvent('UPDATE_VEHICLE_ACTIONBAR')
+
+		element:Hide()
 
 		return true
 	end

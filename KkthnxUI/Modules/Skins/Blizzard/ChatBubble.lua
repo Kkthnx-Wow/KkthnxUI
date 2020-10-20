@@ -18,18 +18,23 @@ local function reskinChatBubble(chatbubble)
 		bg:SetScale(UIParent:GetEffectiveScale())
 		bg:SetAllPoints(frame)
 		bg:CreateBorder(nil, nil, nil, nil, -14, nil, nil, nil, nil, nil, nil, nil, 10)
+		bg.KKUI_Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Skins"].ChatBubbleAlpha)
 
 		frame:SetBackdrop(nil)
 		frame.Tail:SetAlpha(0)
 		frame.String:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
 		frame.String:SetFont(select(1, frame.String:GetFont()), 10, select(3, frame.String:GetFont()))
+
+		-- bg.KKUI_Border:SetVertexColor(frame.String:GetTextColor())
 	end
 
 	chatbubble.styled = true
 end
 
 local function ApplyChatBubbleSkin()
-	--if not NDuiDB["Skins"]["BlizzardSkins"] then return end
+	if not C["Skins"].ChatBubbles then
+		return
+	end
 
 	local events = {
 		CHAT_MSG_SAY = "chatBubbles",

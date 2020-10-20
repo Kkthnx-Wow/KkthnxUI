@@ -1,8 +1,6 @@
 local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Unitframes")
-
 local oUF = oUF or K.oUF
-assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 local _G = _G
 
@@ -595,6 +593,95 @@ function Module.PostUpdateRunes(element, runemap)
 	end
 end
 
+Module.ClassPowerBarSize = {156, 14}
+Module.ClassPowerBarPoint = {"TOPLEFT", 0, 20}
+local barWidth, barHeight = unpack(Module.ClassPowerBarSize)
+
+function Module.PostUpdateClassPower(element, cur, max, diff, powerType, chargedIndex)
+	if diff then
+		for i = 1, max do
+			element[i]:SetWidth((barWidth - (max - 1) * 6) / max)
+		end
+	end
+
+	element.thisColor = cur == max and 1 or 2
+	if not element.prevColor or element.prevColor ~= element.thisColor then
+		local r, g, b = 1, 0, 0
+		if element.thisColor == 2 then
+			local color = element.__owner.colors.power[powerType]
+			r, g, b = color[1], color[2], color[3]
+		end
+
+		for i = 1, #element do
+			element[i]:SetStatusBarColor(r, g, b)
+		end
+		element.prevColor = element.thisColor
+	end
+
+	if chargedIndex and chargedIndex ~= element.thisCharge then
+		local bar = element[chargedIndex]
+		element.chargeStar:SetParent(bar)
+		element.chargeStar:SetPoint("CENTER", bar)
+		element.chargeStar:Show()
+		element.thisCharge = chargedIndex
+	else
+		element.chargeStar:Hide()
+		element.thisCharge = nil
+	end
+end
+
+function Module:CreateClassPower(self)
+	if self.mystyle == "PlayerPlate" then
+		barWidth, barHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
+		Module.ClassPowerBarPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 14}
+	end
+
+	local bar = CreateFrame("Frame", "oUF_ClassPowerBar", self.Health)
+	bar:SetSize(barWidth, barHeight)
+	bar:SetPoint(unpack(Module.ClassPowerBarPoint))
+
+	local bars = {}
+	for i = 1, 6 do
+		bars[i] = CreateFrame("StatusBar", nil, bar)
+		bars[i]:SetHeight(barHeight)
+		bars[i]:SetWidth((barWidth - 5 * 6) / 6)
+		bars[i]:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
+		bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
+		if self.mystyle == "PlayerPlate" then
+			bars[i]:CreateShadow(true)
+		else
+			bars[i]:CreateBorder()
+		end
+
+		if i == 1 then
+			bars[i]:SetPoint("BOTTOMLEFT")
+		else
+			bars[i]:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
+		end
+
+		if K.Class == "DEATHKNIGHT" then
+			bars[i].timer = K.CreateFontString(bars[i], 10, "")
+		end
+	end
+
+	if K.Class == "DEATHKNIGHT" then
+		bars.colorSpec = true
+		bars.sortOrder = "asc"
+		bars.PostUpdate = Module.PostUpdateRunes
+		bars.__max = 6
+		self.Runes = bars
+	else
+		local chargeStar = bar:CreateTexture()
+		chargeStar:SetAtlas("VignetteKill")
+		chargeStar:SetSize(24, 24)
+		chargeStar:Hide()
+		bars.chargeStar = chargeStar
+
+		bars.PostUpdate = Module.PostUpdateClassPower
+		self.ClassPower = bars
+	end
+end
+
 function Module:CreateUnits()
 	if C["Nameplate"].Enable then
 		self:SetupCVars()
@@ -673,7 +760,7 @@ function Module:CreateUnits()
 		local Boss = {}
 		for i = 1, MAX_BOSS_FRAMES do
 			Boss[i] = oUF:Spawn("boss"..i, "oUF_Boss"..i)
-			Boss[i]:SetSize(210, 44)
+			Boss[i]:SetSize(164, 34)
 
 			local moverWidth, moverHeight = Boss[i]:GetWidth(), Boss[i]:GetHeight() + 8
 			if i == 1 then

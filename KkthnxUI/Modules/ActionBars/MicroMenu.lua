@@ -112,7 +112,7 @@ function Module.UpdateMicroButtonsParent()
 	end
 end
 
--- We use this table to sort the micro buttons on our bar to match Blizzard"s button placements.
+-- We use this table to sort the micro buttons on our bar to match Blizzard's button placements.
 local __buttonIndex = {
 	[8] = "CollectionsMicroButton",
 	[9] = "EJMicroButton",
@@ -237,5 +237,5 @@ function Module:CreateMicroMenu()
 		MainMenuBarPerformanceBar:Hide()
 	end
 
-	K.Mover(Module.MicroBar, "MicroBar", "MicroBar", {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0}, (((_G["CharacterMicroButton"]:GetWidth() + 6) * 11) - 6) + (4 * 2), (((_G["CharacterMicroButton"]:GetHeight() + 6) * 1) - 6) + (4 * 2))
+	K.Mover(Module.MicroBar, "MicroBar", "MicroBar", {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0}, Module.MicroWidth, Module.MicroHeight)
 end

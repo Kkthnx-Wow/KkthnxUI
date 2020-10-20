@@ -1,8 +1,6 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
 
-local oUF = oUF or K.oUF
-
 local _G = _G
 local math_floor = _G.math.floor
 local select = _G.select
@@ -17,12 +15,12 @@ function Module:CreateBoss()
 
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()
-	self.Overlay:SetFrameLevel(5)
+	self.Overlay:SetFrameLevel(6)
 
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	self.Health:SetHeight(24)
+	self.Health:SetHeight(18)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
@@ -34,31 +32,32 @@ function Module:CreateBoss()
 	self.Health.frequentUpdates = true
 
 	if C["Boss"].HealthbarColor.Value == "Value" then
-        self.Health.colorSmooth = true
-        self.Health.colorClass = false
-        self.Health.colorReaction = false
-    elseif C["Boss"].HealthbarColor.Value == "Dark" then
-        self.Health.colorSmooth = false
-        self.Health.colorClass = false
-        self.Health.colorReaction = false
-        self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
-    else
-        self.Health.colorSmooth = false
-        self.Health.colorClass = true
-        self.Health.colorReaction = true
-    end
+		self.Health.colorSmooth = true
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+	elseif C["Boss"].HealthbarColor.Value == "Dark" then
+		self.Health.colorSmooth = false
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+		self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
+	else
+		self.Health.colorSmooth = false
+		self.Health.colorClass = true
+		self.Health.colorReaction = true
+	end
 
 	if C["Boss"].Smooth then
 		K:SmoothBar(self.Health)
 	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
-	self.Health.Value:SetFontObject(UnitframeFont)
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
+	self.Health.Value:SetFontObject(UnitframeFont)
+	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	self.Power:SetHeight(12)
+	self.Power:SetHeight(10)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
@@ -114,7 +113,7 @@ function Module:CreateBoss()
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT", -self.Portrait:GetWidth() - 6, 0)
 
-	local aurasSetWidth = 156
+	local aurasSetWidth = 124
 	self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 	self.Buffs.initialAnchor = "TOPLEFT"
@@ -126,23 +125,24 @@ function Module:CreateBoss()
 	self.Buffs.onlyShowPlayer = false
 	self.Buffs.size = Module.auraIconSize(aurasSetWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
 	self.Buffs:SetWidth(aurasSetWidth)
-	self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math_floor(self.Buffs.num / self.Buffs.iconsPerRow + .5))
+	self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math_floor(self.Buffs.num / self.Buffs.iconsPerRow + 0.5))
 	self.Buffs.showStealableBuffs = true
 	self.Buffs.PostCreateIcon = Module.PostCreateAura
 	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
+	self.Buffs.CustomFilter = Module.CustomFilter
 
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 	self.Debuffs.spacing = 6
-	self.Debuffs.initialAnchor = "TOPRIGHT"
-	self.Debuffs["growth-x"] = "LEFT"
+	self.Debuffs.initialAnchor = "LEFT"
+	self.Debuffs["growth-x"] = "RIGHT"
 	self.Debuffs["growth-y"] = "DOWN"
-	self.Debuffs:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
-	self.Debuffs.num = 4
-	self.Debuffs.iconsPerRow = 4
+	self.Debuffs:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
+	self.Debuffs.num = 5
+	self.Debuffs.iconsPerRow = 5
 	self.Debuffs.CustomFilter = Module.CustomFilter
-	self.Debuffs.size = Module.auraIconSize(aurasSetWidth - 44, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
-	self.Debuffs:SetWidth(aurasSetWidth - 44)
-	self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math_floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
+	self.Debuffs.size = Module.auraIconSize(aurasSetWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing + 2.5)
+	self.Debuffs:SetWidth(aurasSetWidth)
+	self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math_floor(self.Debuffs.num/self.Debuffs.iconsPerRow + 0.5))
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 
@@ -155,8 +155,8 @@ function Module:CreateBoss()
 		self.Castbar:ClearAllPoints()
 		self.Castbar:SetPoint("LEFT", 0, 0)
 		self.Castbar:SetPoint("RIGHT", -24, 0)
-		self.Castbar:SetPoint("TOP", 0, 24)
-		self.Castbar:SetHeight(18)
+		self.Castbar:SetPoint("TOP", 0, 22)
+		self.Castbar:SetHeight(16)
 
 		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
 		self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
@@ -199,25 +199,9 @@ function Module:CreateBoss()
 	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	self.RaidTargetIndicator:SetSize(16, 16)
 
-	local PWOnRight = false
-		local relF = "RIGHT"
-		local relT = "LEFT"
-		local xOffset = -6
-		local yOffset = 0
-		local otherSide = PWOnRight
-		if otherSide then
-			xOffset = -6
-			yOffset = 0
-		end
-
-		local altPower = K.CreateFontString(self, 10, "")
-		altPower:ClearAllPoints()
-		if otherSide then
-			altPower:SetPoint(relT, self.Power, relF, xOffset, yOffset)
-		else
-			local parent = self.Power
-			altPower:SetPoint(relF, parent, relT, xOffset, yOffset)
-		end
-		self:Tag(altPower, "[altpower]")
-		altPower:Show()
+	local altPower = K.CreateFontString(self, 10, "")
+	altPower:ClearAllPoints()
+	altPower:SetPoint("RIGHT", self.Power, "LEFT", -6, 0)
+	self:Tag(altPower, "[altpower]")
+	altPower:Show()
 end

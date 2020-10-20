@@ -1,24 +1,25 @@
 local K = unpack(select(2, ...))
 
 local ACTIONBAR_FADER = {
-	fadeInAlpha = 1,
-	fadeInDuration = .3,
-	fadeOutAlpha = .1,
-	fadeOutDuration = .8,
-	fadeOutDelay = .5,
+	fadeInAlpha = 1, -- Transparency when displayed
+	fadeInDuration = .3, -- Display time-consuming
+	fadeOutAlpha = .1, -- Transparency after fade
+	fadeOutDuration = .8, -- Fading time-consuming
+	fadeOutDelay = .5, -- Delay fade
 }
 
 K.ActionBars = {
-	userPlaced = true,
+	margin = 2, -- Key spacing
+	padding = 2, -- Edge spacing
 
-	actionBar1 = {fader = nil},
-	actionBar2 = {fader = nil},
-	actionBar3 = {fader = nil},
-	actionBar4 = {fader = ACTIONBAR_FADER},
-	actionBar5 = {fader = ACTIONBAR_FADER},
+	actionBar1 = {size = 34, fader = nil}, -- BAR1 Main action bar (below)
+	actionBar2 = {size = 34, fader = nil}, -- BAR2 Main action bar (top)
+	actionBar3 = {size = 32, fader = nil}, -- BAR3 Both sides of the main action bar
+	actionBar4 = {size = 32, fader = ACTIONBAR_FADER}, -- BAR4 Right action bar 1
+	actionBar5 = {size = 32, fader = ACTIONBAR_FADER}, -- BAR5 Right action bar 2
 
-	petBar = {fader = ACTIONBAR_FADER},
-	stanceBar = {fader = ACTIONBAR_FADER},
-	extraBar = {size = 56, fader = nil},
-	leaveVehicle = {fader = nil},
+	petBar = {size = 26, fader = nil}, -- PETBAR Pet action bar
+	stanceBar = {size = 30, fader = nil}, -- STANCE + POSSESSBAR Posture bar
+	extraBar = {size = 56, fader = nil}, -- EXTRABAR Extra action bar
+	leaveVehicle = {size = 32, fader = nil}, -- VEHICLE EXIT Leave vehicle button
 }

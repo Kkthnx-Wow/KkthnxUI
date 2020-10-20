@@ -2,10 +2,12 @@ local K, C = unpack(select(2, ...))
 
 -- Sourced: ExtraQuestButton, by p3lim
 
+
 local _G = _G
 local next = _G.next
+local sqrt = _G.sqrt
+local string_format = _G.string.format
 local type = _G.type
-local unpack = _G.unpack
 
 local C_Map_GetBestMapForUnit =_G.C_Map.GetBestMapForUnit
 local C_QuestLog_GetDistanceSqToQuest =_G.C_QuestLog.GetDistanceSqToQuest
@@ -13,16 +15,17 @@ local C_QuestLog_GetInfo =_G.C_QuestLog.GetInfo
 local C_QuestLog_GetLogIndexForQuestID =_G.C_QuestLog.GetLogIndexForQuestID
 local C_QuestLog_GetNumQuestLogEntries =_G.C_QuestLog.GetNumQuestLogEntries
 local C_QuestLog_GetNumQuestWatches =_G.C_QuestLog.GetNumQuestWatches
-local C_QuestLog_GetQuestIDForLogIndex =_G.C_QuestLog.GetQuestIDForLogIndex
+local C_QuestLog_GetNumWorldQuestWatches = _G.C_QuestLog.GetNumWorldQuestWatches
 local C_QuestLog_GetQuestIDForQuestWatchIndex =_G.C_QuestLog.GetQuestIDForQuestWatchIndex
+local C_QuestLog_GetQuestIDForWorldQuestWatchIndex = _G.C_QuestLog.GetQuestIDForWorldQuestWatchIndex
 local C_QuestLog_IsComplete =_G.C_QuestLog.IsComplete
 local C_QuestLog_IsWorldQuest =_G.C_QuestLog.IsWorldQuest
-local C_Timer_NewTicker =_G.C_Timer.NewTicker
 local CreateFrame = _G.CreateFrame
 local GetBindingKey = _G.GetBindingKey
 local GetBindingText = _G.GetBindingText
 local GetItemCooldown = _G.GetItemCooldown
 local GetItemCount = _G.GetItemCount
+local GetItemIcon = _G.GetItemIcon
 local GetItemInfoFromHyperlink =_G.GetItemInfoFromHyperlink
 local GetQuestLogSpecialItemInfo = _G.GetQuestLogSpecialItemInfo
 local GetTime = _G.GetTime
@@ -34,8 +37,7 @@ local QuestHasPOIInfo =_G.QuestHasPOIInfo
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
-local activeWorldQuests = {}
-local ticker
+local MAX_DISTANCE_YARDS = 1e5
 
 local ExtraQuestButton = CreateFrame("Button", "ExtraQuestButton", UIParent, "SecureActionButtonTemplate, SecureHandlerStateTemplate, SecureHandlerAttributeTemplate")
 ExtraQuestButton:SetMovable(true)
@@ -50,32 +52,31 @@ end)
 
 local visibilityState = "[extrabar][petbattle] hide; show"
 local onAttributeChanged = [[
-if name == "item" then
-	if value and not self:IsShown() and not HasExtraActionBar() then
-		self:Show()
-	elseif not value then
-		self:Hide()
+	if name == "item" then
+		if value and not self:IsShown() and not HasExtraActionBar() then
+			self:Show()
+		elseif not value then
+			self:Hide()
+			self:ClearBindings()
+		end
+	elseif name == "state-visible" then
+		if value == "show" then
+			self:CallMethod("Update")
+		else
+			self:Hide()
+			self:ClearBindings()
+		end
+	end
+	if self:IsShown() and (name == "item" or name == "binding") then
 		self:ClearBindings()
+		local key1, key2 = GetBindingKey("EXTRAACTIONBUTTON1")
+		if key1 then
+			self:SetBindingClick(1, key1, self, "LeftButton")
+		end
+		if key2 then
+			self:SetBindingClick(2, key2, self, "LeftButton")
+		end
 	end
-elseif name == "state-visible" then
-	if value == "show" then
-		self:CallMethod("Update")
-	else
-		self:Hide()
-		self:ClearBindings()
-	end
-end
-
-if self:IsShown() and (name == "item" or name == "binding") then
-	self:ClearBindings()
-	local key1, key2 = GetBindingKey("EXTRAACTIONBUTTON1")
-	if key1 then
-		self:SetBindingClick(1, key1, self, 'LeftButton')
-	end
-	if key2 then
-		self:SetBindingClick(2, key2, self, 'LeftButton')
-	end
-end
 ]]
 
 function ExtraQuestButton:BAG_UPDATE_COOLDOWN()
@@ -101,7 +102,7 @@ end
 
 function ExtraQuestButton:PLAYER_REGEN_ENABLED(event)
 	if self.itemID then
-		self:SetAttribute("item", "item:"..self.itemID)
+		self:SetAttribute("item", "item:" .. self.itemID)
 		self:UnregisterEvent(event)
 		self:BAG_UPDATE_COOLDOWN()
 	end
@@ -126,8 +127,8 @@ function ExtraQuestButton:PLAYER_LOGIN()
 	self:SetToplevel(true)
 
 	if not self:GetPoint() then
-		if _G.KKUI_ActionBarExtra then
-			self:SetPoint("CENTER", _G.KKUI_ActionBarExtra)
+		if _G.KKUI_ActionBarZone then
+			self:SetPoint("CENTER", _G.KKUI_ActionBarZone)
 		else
 			K.Mover(self, "ExtraQuestButton", "Extrabar", {"BOTTOM", UIParent, "BOTTOM", 272, 34})
 		end
@@ -140,10 +141,16 @@ function ExtraQuestButton:PLAYER_LOGIN()
 	local Icon = self:CreateTexture("$parentIcon", "ARTWORK")
 	Icon:SetAllPoints()
 	Icon:SetTexCoord(unpack(K.TexCoords))
-	self.Icon = Icon
+	local bg = CreateFrame("Frame", nil, self, "BackdropTemplate")
+	bg:SetAllPoints(Icon)
+	bg:SetFrameLevel(self:GetFrameLevel())
+	bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	bg:StyleButton()
 
-	self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
-	self:StyleButton()
+	self.HL = self:CreateTexture(nil, "HIGHLIGHT")
+	self.HL:SetColorTexture(1, 1, 1, .25)
+	self.HL:SetAllPoints(Icon)
+	self.Icon = Icon
 
 	local HotKey = self:CreateFontString("$parentHotKey", nil, "NumberFontNormal")
 	HotKey:SetPoint("TOP", 0, -5)
@@ -175,30 +182,6 @@ function ExtraQuestButton:PLAYER_LOGIN()
 	self:RegisterEvent("QUEST_ACCEPTED")
 	self:RegisterEvent("ZONE_CHANGED")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-	self:RegisterEvent("QUEST_TURNED_IN")
-end
-
-hooksecurefunc("QuestObjectiveSetupBlockButton_Item", function(block, questLogIndex, isQuestComplete)
-	if not block.itemButton then
-		return
-	end
-
-	local questID = C_QuestLog_GetQuestIDForLogIndex(questLogIndex)
-	if questID and activeWorldQuests[questID] then
-		return
-	end
-
-	if C_QuestLog_IsWorldQuest(questID) and not isQuestComplete then
-		activeWorldQuests[questID] = true
-		ExtraQuestButton:Update()
-	end
-end)
-
-function ExtraQuestButton:QUEST_TURNED_IN(_, questID)
-	if activeWorldQuests[questID] then
-		activeWorldQuests[questID] = nil
-		self:Update()
-	end
 end
 
 ExtraQuestButton:SetScript("OnEnter", function(self)
@@ -208,7 +191,6 @@ ExtraQuestButton:SetScript("OnEnter", function(self)
 		end
 		return
 	end
-
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT")
 	GameTooltip:SetHyperlink(self.itemLink)
 end)
@@ -275,22 +257,18 @@ ExtraQuestButton:SetScript("OnDisable", function(self)
 	self.HotKey:Hide()
 end)
 
-function ExtraQuestButton:SetItem(itemLink, texture)
+function ExtraQuestButton:SetItem(itemLink)
 	if HasExtraActionBar() then
 		return
 	end
 
 	if itemLink then
-		self.Icon:SetTexture(texture)
-		if itemLink == self.itemLink and self:IsShown() then
-			return
-		end
-
+		self.Icon:SetTexture(GetItemIcon(itemLink))
 		local itemID = GetItemInfoFromHyperlink(itemLink)
 		self.itemID = itemID
 		self.itemLink = itemLink
 
-		if K.Blacklist[itemID] then
+		if K.EQB_Blacklist[itemID] then
 			return
 		end
 	end
@@ -329,116 +307,103 @@ function ExtraQuestButton:RemoveItem()
 	end
 end
 
-local function GetQuestDistance(questID, isWorldQuest)
-	local distanceSq, onContinent = C_QuestLog_GetDistanceSqToQuest(questID)
-	if isWorldQuest or onContinent then
-		return sqrt(distanceSq)
+local function GetQuestDistanceWithItem(questID)
+	local questLogIndex = C_QuestLog_GetLogIndexForQuestID(questID)
+	if not questLogIndex then
+		return
+	end
+
+	local itemLink, _, _, showWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex)
+	if not itemLink then
+		local fallbackItemID = K.EQB_QuestItems[questID]
+		if fallbackItemID then
+			itemLink = string_format("|Hitem:%d|h", fallbackItemID)
+		end
+	end
+
+	if not itemLink then
+		return
+	end
+
+	if GetItemCount(itemLink) == 0 then
+		return
+	end
+
+	local shouldShowItem = not C_QuestLog_IsComplete(questID) or showWhenComplete
+	local distanceSq = C_QuestLog_GetDistanceSqToQuest(questID)
+	local distanceYd = distanceSq and sqrt(distanceSq)
+	if shouldShowItem and distanceYd and distanceYd <= MAX_DISTANCE_YARDS then
+		return distanceYd, itemLink
+	end
+
+	local questMapID = K.EQB_InaccurateQuestAreas[questID]
+	if questMapID then
+		local currentMapID = C_Map_GetBestMapForUnit("player")
+		if type(questMapID) == "boolean" then
+			return MAX_DISTANCE_YARDS - 1, itemLink
+		elseif type(questMapID) == "number" then
+			if questMapID == currentMapID then
+				return MAX_DISTANCE_YARDS - 2, itemLink
+			end
+		elseif type(questMapID) == "table" then
+			for _, mapID in next, questMapID do
+				if mapID == currentMapID then
+					return MAX_DISTANCE_YARDS - 2, itemLink
+				end
+			end
+		end
 	end
 end
 
 local function GetClosestQuestItem()
-	local closestQuestLink, closestQuestTexture
-	local closestDistance = 1e5
-	local numItems = 0
-	local currentMapID = C_Map_GetBestMapForUnit("player")
+	local closestQuestItemLink
+	local closestDistance = MAX_DISTANCE_YARDS
 
-	-- XXX: temporary solution for the above
-	for questID in next, activeWorldQuests do
-		local questLogIndex = C_QuestLog_GetLogIndexForQuestID(questID)
-		if questLogIndex then
-			local itemLink, texture, _, showCompleted = GetQuestLogSpecialItemInfo(questLogIndex)
-			if itemLink then
-				local areaID = K.QuestAreas[questID]
-				if not areaID then
-					areaID = K.ItemAreas[GetItemInfoFromHyperlink(itemLink)]
-				end
-
-				local isComplete = C_QuestLog_IsComplete(questID)
-				if areaID and (type(areaID) == "boolean" or areaID == currentMapID) then
-					closestQuestLink = itemLink
-					closestQuestTexture = texture
-				elseif not isComplete or showCompleted then
-					local distance = GetQuestDistance(questID, true)
-					if distance and distance <= closestDistance then
-						closestDistance = distance
-						closestQuestLink = itemLink
-						closestQuestTexture = texture
-					end
-				end
-
-				numItems = numItems + 1
+	for index = 1, C_QuestLog_GetNumWorldQuestWatches() do
+		-- this only tracks supertracked worldquests,
+		-- e.g. stuff the player has shift-clicked on the map
+		local questID = C_QuestLog_GetQuestIDForWorldQuestWatchIndex(index)
+		if questID then
+			local distance, itemLink = GetQuestDistanceWithItem(questID)
+			if distance and distance <= closestDistance then
+				closestDistance = distance
+				closestQuestItemLink = itemLink
 			end
 		end
 	end
 
-	if not closestQuestLink then
+	if not closestQuestItemLink then
 		for index = 1, C_QuestLog_GetNumQuestWatches() do
 			local questID = C_QuestLog_GetQuestIDForQuestWatchIndex(index)
 			if questID and QuestHasPOIInfo(questID) then
-				local isComplete = C_QuestLog_IsComplete(questID)
-				local questLogIndex = C_QuestLog_GetLogIndexForQuestID(questID)
-				local itemLink, texture, _, showCompleted = GetQuestLogSpecialItemInfo(questLogIndex)
-				if itemLink then
-					local areaID = K.QuestAreas[questID]
-					if not areaID then
-						areaID = K.ItemAreas[GetItemInfoFromHyperlink(itemLink)]
-					end
-
-					if areaID and (type(areaID) == "boolean" or areaID == currentMapID) then
-						closestQuestLink = itemLink
-						closestQuestTexture = texture
-					elseif not isComplete or showCompleted then
-						local distance = GetQuestDistance(questID)
-						if distance and distance <= closestDistance then
-							closestDistance = distance
-							closestQuestLink = itemLink
-							closestQuestTexture = texture
-						end
-					end
-
-					numItems = numItems + 1
+				local distance, itemLink = GetQuestDistanceWithItem(questID)
+				if distance and distance <= closestDistance then
+					closestDistance = distance
+					closestQuestItemLink = itemLink
 				end
 			end
 		end
 	end
 
-	if not closestQuestLink then
-		for questLogIndex = 1, C_QuestLog_GetNumQuestLogEntries() do
-			local info = C_QuestLog_GetInfo(questLogIndex)
+	if not closestQuestItemLink then
+		for index = 1, C_QuestLog_GetNumQuestLogEntries() do
+			local info = C_QuestLog_GetInfo(index)
 			local questID = info.questID
-			local isHeader = info.isHeader
-			local isComplete = C_QuestLog_IsComplete(questID)
-			if info and not isHeader and QuestHasPOIInfo(questID) then
-				local itemLink, texture, _, showCompleted = GetQuestLogSpecialItemInfo(questLogIndex)
-				if itemLink then
-					local areaID = K.QuestAreas[questID]
-					if not areaID then
-						areaID = K.ItemAreas[GetItemInfoFromHyperlink(itemLink)]
-					end
-
-					if areaID and (type(areaID) == "boolean" or areaID == currentMapID) then
-						closestQuestLink = itemLink
-						closestQuestTexture = texture
-					elseif not isComplete or showCompleted then
-						local distance = GetQuestDistance(questID)
-						if distance and distance <= closestDistance then
-							closestDistance = distance
-							closestQuestLink = itemLink
-							closestQuestTexture = texture
-						end
-					end
-
-					numItems = numItems + 1
+			if info and not info.isHeader and (not info.isHidden or C_QuestLog_IsWorldQuest(questID)) and QuestHasPOIInfo(questID) then
+				local distance, itemLink = GetQuestDistanceWithItem(questID)
+				if distance and distance <= closestDistance then
+					closestDistance = distance
+					closestQuestItemLink = itemLink
 				end
 			end
 		end
 	end
 
-	return closestQuestLink, closestQuestTexture, numItems
+	return closestQuestItemLink
 end
 
-local function updateTicker()
-	ExtraQuestButton:Update()
+function ExtraQuestButton:GetItemLink()
+	return self.itemLink
 end
 
 function ExtraQuestButton:Update()
@@ -446,17 +411,12 @@ function ExtraQuestButton:Update()
 		return
 	end
 
-	local itemLink, texture, numItems = GetClosestQuestItem()
+	local itemLink = GetClosestQuestItem()
 	if itemLink then
-		self:SetItem(itemLink, texture)
+		if itemLink ~= self:GetItemLink() then
+			self:SetItem(itemLink)
+		end
 	elseif self:IsShown() then
 		self:RemoveItem()
-	end
-
-	if numItems > 0 and not ticker then
-		ticker = C_Timer_NewTicker(30, updateTicker) -- might want to lower this
-	elseif numItems == 0 and ticker then
-		ticker:Cancel()
-		ticker = nil
 	end
 end

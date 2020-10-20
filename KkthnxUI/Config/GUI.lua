@@ -86,6 +86,31 @@ local function UpdateChatBubble()
     end
 end
 
+local function UpdateHotkeys()
+	local Bar = K:GetModule("ActionBar")
+	for _, button in pairs(Bar.buttons) do
+		if button.UpdateHotkeys then
+			button:UpdateHotkeys(button.buttonType)
+		end
+	end
+end
+
+local function UpdateMarkerGrid()
+	K:GetModule("Blizzard"):RaidTool_UpdateGrid()
+end
+
+local function UpdateCustomBar()
+	K:GetModule("ActionBar"):UpdateCustomBar()
+end
+
+local function UpdateFontSizes()
+	K:GetModule("Skins"):ReskinBlizzardFonts()
+end
+
+local function UpdateUIScale()
+	K:SetupUIScale()
+end
+
 -- Translate Below Before Shadowlands
 local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
@@ -103,13 +128,19 @@ local ActionBar = function(self)
 	if C["ActionBar"].StanceBar then
 		Window:CreateSwitch("ActionBar", "FadeStanceBar", "Mouseover StanceBar")
 	end
-	Window:CreateSwitch("ActionBar", "Hotkey", "Enable Hotkey")
+	Window:CreateSwitch("ActionBar", "Hotkey", "Enable Hotkey", nil, UpdateHotkeys)
 	Window:CreateSwitch("ActionBar", "Macro", "Enable Macro")
 	Window:CreateSwitch("ActionBar", "MicroBar", "Enable MicroBar")
 	Window:CreateSwitch("ActionBar", "MicroBarMouseover", "Enable MicroBarMouseover")
 	Window:CreateSwitch("ActionBar", "OverrideWA", "Enable OverrideWA")
 	Window:CreateSwitch("ActionBar", "PetBar", "Show PetBar")
 	Window:CreateSwitch("ActionBar", "StanceBar", "Show StanceBar")
+
+	Window:CreateSection("ActionBar Custom")
+	Window:CreateSwitch("ActionBar", "CustomBar", enableTextColor.."Enable CustomBar")
+	Window:CreateSlider("ActionBar", "CustomBarButtonSize", "Set CustomBar Button Size", 24, 60, 1, UpdateCustomBar)
+	Window:CreateSlider("ActionBar", "CustomBarNumButtons", "Set CustomBar Num Buttons", 1, 12, 1, UpdateCustomBar)
+	Window:CreateSlider("ActionBar", "CustomBarNumPerRow", "Set CustomBar Num PerRow", 1, 12, 1, UpdateCustomBar)
 
 	Window:CreateSection("ActionBar Sizes")
 	Window:CreateSlider("ActionBar", "DefaultButtonSize", "Set MainBars Button Size", 28, 36, 1)
@@ -305,7 +336,7 @@ local General = function(self)
 	local Window = self:CreateWindow(L["General"], true)
 
 	Window:CreateSection("General Toggles")
-	Window:CreateSwitch("General", "AutoScale", "Auto Scale", nil, K:SetupUIScale())
+	Window:CreateSwitch("General", "AutoScale", "Auto Scale", nil, UpdateUIScale)
 	Window:CreateSwitch("General", "ColorTextures", "Color 'Most' KkthnxUI Borders")
 	Window:CreateSwitch("General", "MoveBlizzardFrames", "Move Blizzard Frames")
 	Window:CreateSwitch("General", "NoTutorialButtons", "Disable 'Some' Blizzard Tutorials")
@@ -314,12 +345,12 @@ local General = function(self)
 	Window:CreateSwitch("General", "VersionCheck", "Enable Version Checking")
 	Window:CreateSwitch("General", "Welcome", "Show Welcome Message")
 	if C["General"].ReplaceBlizzardFonts then
-		Window:CreateSlider("General", "FontSize", "Adjust 'Some' Font Sizes", 10, 16, 1, K:GetModule("Skins"):ReskinBlizzardFonts())
+		Window:CreateSlider("General", "FontSize", "Adjust 'Some' Font Sizes", 10, 16, 1, UpdateFontSizes)
 	end
 	Window:CreateDropdown("General", "NumberPrefixStyle", "Number Prefix Style")
 
 	Window:CreateSection("General Scaling")
-	Window:CreateSlider("General", "UIScale", "Set UI scale", 0.4, 1.15, 0.01, K:SetupUIScale())
+	Window:CreateSlider("General", "UIScale", "Set UI scale", 0.4, 1.15, 0.01)
 
 	Window:CreateSection("General Colors")
 	Window:CreateColorSelection("General", "TexturesColor", "Textures Color")
@@ -369,7 +400,7 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "ShowWowHeadLinks", "Show Wowhead Links Above Questlog Frame")
 	Window:CreateSwitch("Misc", "SlotDurability", "Show Slot Durability %")
 	Window:CreateSwitch("Misc", "TradeTabs", "Add Spellbook-Like Tabs On TradeSkillFrame")
-	Window:CreateDropdown("Misc", "ShowMarkerBar", "World Markers Bar", nil, K:GetModule("Blizzard"):RaidTool_UpdateGrid())
+	Window:CreateDropdown("Misc", "ShowMarkerBar", "World Markers Bar", nil, UpdateMarkerGrid)
 end
 
 local Nameplate = function(self)

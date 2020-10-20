@@ -55,22 +55,30 @@ local function SkinFriendsFrame()
 	hooksecurefunc("FriendsFrame_UpdateFriends", UpdateScroll)
 	hooksecurefunc(FriendsListFrameScrollFrame, "update", UpdateScroll)
 
-	FriendsFrameBattlenetFrame:GetRegions():Hide()
-	local bg = CreateFrame("Frame", nil, FriendsFrameBattlenetFrame)
-	bg:SetFrameLevel(FriendsFrameBattlenetFrame:GetFrameLevel())
-	bg:SetPoint("TOPLEFT", 4, -5)
+	local friendsBNetFrame = FriendsFrameBattlenetFrame
+	local broadcastButton = friendsBNetFrame.BroadcastButton
+
+	friendsBNetFrame:GetRegions():Hide()
+	local bg = CreateFrame("Frame", nil, friendsBNetFrame)
+	bg:SetFrameLevel(friendsBNetFrame:GetFrameLevel())
+	bg:SetPoint("TOPLEFT", 4, -4)
 	bg:SetPoint("BOTTOMRIGHT", -4, 5)
-	bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
-	bg.KKUI_InnerShadow:SetAlpha(0.25)
+	bg:CreateBorder()
 	bg.KKUI_Background:SetVertexColor(0, 0.6, 1, 0.25)
 
-	local broadcastButton = FriendsFrameBattlenetFrame.BroadcastButton
 	broadcastButton:SetSize(20, 20)
 	broadcastButton:SkinButton(nil, true)
 
-	local newIcon = broadcastButton:CreateTexture(nil, "ARTWORK")
-	newIcon:SetAllPoints()
-	newIcon:SetTexture("Interface\\FriendsFrame\\BroadcastIcon")
+	local newBroadcastButton = broadcastButton:CreateTexture(nil, "ARTWORK")
+	newBroadcastButton:SetAllPoints()
+	newBroadcastButton:SetTexture("Interface\\FriendsFrame\\BroadcastIcon")
+
+	local function BroadcastButton_SetTexture(self)
+		self.BroadcastButton:SetNormalTexture("")
+		self.BroadcastButton:SetPushedTexture("")
+	end
+	hooksecurefunc(friendsBNetFrame.BroadcastFrame, "ShowFrame", BroadcastButton_SetTexture)
+	hooksecurefunc(friendsBNetFrame.BroadcastFrame, "HideFrame", BroadcastButton_SetTexture)
 end
 
 table_insert(Module.NewSkin["KkthnxUI"], SkinFriendsFrame)

@@ -1,11 +1,5 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
-local oUF = oUF or K.oUF
-
-if (not oUF) then
-	K.Print("Could not find a vaild instance of oUF. Stopping Player.lua code!")
-	return
-end
 
 local _G = _G
 local select = _G.select
@@ -18,12 +12,6 @@ function Module.PostUpdateUnitframeClassPower(element, cur, max, diff, powerType
 	if diff then
 		for i = 1, max do
 			element[i]:SetWidth((156 - (max - 1) * 6) / max)
-		end
-	end
-
-	if (K.Class == "ROGUE" or K.Class == "DRUID") and (powerType == "COMBO_POINTS") and element.__owner.unit ~= "vehicle" then
-		for i = 1, 6 do
-			element[i]:SetStatusBarColor(unpack(K.Colors.power.COMBO_POINTS[i]))
 		end
 	end
 
@@ -177,58 +165,8 @@ function Module:CreatePlayer()
 	self.Health:SetPoint("TOPLEFT", self.Portrait:GetWidth() + 6, 0)
 	self.Health:SetPoint("TOPRIGHT")
 
-	if C["Unitframe"].ClassResources then
-		local bar = CreateFrame("Frame", "oUF_PlayerClassPowerBar", self)
-		bar:SetSize(156, 14)
-
-		if C["Unitframe"].ShowPlayerName then
-			bar.Pos = {"TOPLEFT", self.Health, 0, 36}
-		else
-			bar.Pos = {"TOPLEFT", self.Health, 0, 20}
-		end
-
-		local bars = {}
-		for i = 1, 6 do
-			bars[i] = CreateFrame("StatusBar", nil, bar)
-			bars[i]:SetHeight(14)
-			bars[i]:SetWidth((156 - 5 * 6) / 6)
-			bars[i]:SetStatusBarTexture(UnitframeTexture)
-			bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
-			bars[i]:CreateBorder()
-
-			if i == 1 then
-				bars[i]:SetPoint("BOTTOMLEFT")
-			else
-				bars[i]:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
-			end
-
-			if K.Class == "DEATHKNIGHT" then
-				bars[i].timer = K.CreateFontString(bars[i], 12, "")
-			end
-
-			if K.Class == "ROGUE" or K.Class == "DRUID" then
-				bars[i]:SetStatusBarColor(unpack(K.Colors.power.COMBO_POINTS[i]))
-			end
-		end
-
-		if K.Class == "DEATHKNIGHT" then
-			bars.colorSpec = true
-			bars.sortOrder = "asc"
-			bars.PostUpdate = Module.PostUpdateRunes
-			bars.__max = 6
-			self.Runes = bars
-		else
-			local chargeStar = bar:CreateTexture()
-			chargeStar:SetAtlas("VignetteKill")
-			chargeStar:SetSize(24, 24)
-			chargeStar:Hide()
-			bars.chargeStar = chargeStar
-
-			bars.PostUpdate = Module.PostUpdateUnitframeClassPower
-			self.ClassPower = bars
-		end
-
-		K.Mover(bar, "PlayerClassPower", "ClassPowerBar", bar.Pos, 156, 14)
+	if C["Unitframe"].ClassResources and not C["Nameplate"].ShowPlayerPlate then
+		Module:CreateClassPower(self)
 	end
 
 	if C["Unitframe"].PlayerBuffs then

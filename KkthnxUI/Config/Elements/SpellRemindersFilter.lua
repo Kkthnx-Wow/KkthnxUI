@@ -3,7 +3,7 @@ local K = unpack(select(2, ...))
 -- Reminder Buffs Checklist
 K.ReminderBuffs = {
 	MAGE = {
-			{	spells = {	-- 奥术魔宠
+		{	spells = {	-- Arcane Familiar
 				[210126] = true,
 			},
 			depend = 205022,
@@ -12,7 +12,7 @@ K.ReminderBuffs = {
 			instance = true,
 			pvp = true,
 		},
-			{	spells = {	-- 奥术智慧
+		{	spells = {	-- Arcane Wisdom
 				[1459] = true,
 			},
 			depend = 1459,
@@ -20,7 +20,7 @@ K.ReminderBuffs = {
 		},
 	},
 	PRIEST = {
-			{	spells = {	-- 真言术耐
+		{	spells = {	-- Power word
 				[21562] = true,
 			},
 			depend = 21562,
@@ -28,7 +28,7 @@ K.ReminderBuffs = {
 		},
 	},
 	WARRIOR = {
-			{	spells = {	-- 战斗怒吼
+		{	spells = {	-- Battle roar
 				[6673] = true,
 			},
 			depend = 6673,
@@ -36,29 +36,51 @@ K.ReminderBuffs = {
 		},
 	},
 	SHAMAN = {
-			{	spells = {	-- 闪电之盾
-				[192106] = true,
+		{	spells = {
+				[192106] = true, -- Lightning Shield
+				[974] = true, -- Earth Shield
+				[52127] = true, -- Water shield
 			},
 			depend = 192106,
 			combat = true,
 			instance = true,
 			pvp = true,
 		},
+		{	spells = {
+				[33757] = true, -- Windfury weapon
+			},
+			depend = 33757,
+			combat = true,
+			instance = true,
+			pvp = true,
+			weaponIndex = 1,
+			spec = 2,
+		},
+		{	spells = {
+				[318038] = true, -- Fire tongue weapon
+			},
+			depend = 318038,
+			combat = true,
+			instance = true,
+			pvp = true,
+			weaponIndex = 2,
+			spec = 2,
+		},
 	},
 	ROGUE = {
-			{	spells = {	-- 伤害类毒药
-				[2823] = true,		-- 致命药膏
-				[8679] = true,		-- 致伤药膏
+		{	spells = {	-- Harmful poison
+				[2823] = true, -- Deadly ointment
+				[8679] = true, -- Wound ointment
+				[315584] = true, -- Quick-acting ointment
 			},
-			spec = 1,
 			combat = true,
 			instance = true,
 			pvp = true,
 		},
-			{	spells = {	-- 效果类毒药
-				[3408] = true,		-- 减速药膏
+		{	spells = {	-- Effect poison
+				[3408] = true, -- Slowing ointment
+				[5761] = true, -- Sluggish Ointment
 			},
-			spec = 1,
 			pvp = true,
 		},
 	},

@@ -25,7 +25,6 @@
    <Include file="Blizzard\ChatBubble.lua" />
    <Include file="Blizzard\ChatFrame.lua" />
    <Include file="Blizzard\DeathRecap.lua" />
-   <Include file="Blizzard\Debug.lua" />
    <Include file="Blizzard\Fonts.lua" />
    <Include file="Blizzard\Friends.lua" />
    <Include file="Blizzard\Inspect.lua" />

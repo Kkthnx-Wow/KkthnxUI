@@ -13,14 +13,35 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 local hooksecurefunc = _G.hooksecurefunc
 
-function Module:CreateBar1()
-	self:CreateMicroMenu()
+local padding, margin = 0, 6
 
-	if not C["ActionBar"].Enable then
-		return
+local function SetFrameSize(frame, size, num)
+	size = size or frame.buttonSize
+	num = num or frame.numButtons
+
+	local layout = C["ActionBar"].Layout.Value
+	if layout == "3x4 Boxed arrangement" then
+		frame:SetWidth(3 * size + (3 - 1) * margin + 2 * padding)
+		frame:SetHeight(4 * size + (4 - 1) * margin + 2 * padding)
+	else
+		frame:SetWidth(num * size + (num - 1) * margin + 2 * padding)
+		frame:SetHeight(size + 2 * padding)
 	end
 
-	local padding, margin = 0, 6
+	if not frame.mover then
+		frame.mover = K.Mover(frame, L["Main Actionbar"], "Bar1", frame.Pos)
+	else
+		frame.mover:SetSize(frame:GetSize())
+	end
+
+	if not frame.SetFrameSize then
+		frame.buttonSize = size
+		frame.numButtons = num
+		frame.SetFrameSize = SetFrameSize
+	end
+end
+
+function Module:CreateBar1()
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
 	local layout = C["ActionBar"].Layout.Value
@@ -30,12 +51,8 @@ function Module:CreateBar1()
 	local frame = CreateFrame("Frame", "KKUI_ActionBar1", UIParent, "SecureHandlerStateTemplate")
 
 	if layout == "3x4 Boxed arrangement" then
-		frame:SetWidth(3 * buttonSize + (3 - 1) * margin + 2 * padding)
-		frame:SetHeight(4 * buttonSize + (4 - 1) * margin + 2 * padding)
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -305, 124}
 	else
-		frame:SetWidth(num * buttonSize + (num - 1) * margin + 2 * padding)
-		frame:SetHeight(buttonSize + 2 * padding)
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 4}
 	end
 
@@ -43,6 +60,7 @@ function Module:CreateBar1()
 		for i = 1, num do
 			local button = _G["ActionButton"..i]
 			table_insert(buttonList, button) -- Add The Button Object To The List
+			table_insert(Module.buttons, button)
 			button:SetParent(frame)
 			button:SetSize(buttonSize, buttonSize)
 			button:ClearAllPoints()
@@ -61,6 +79,7 @@ function Module:CreateBar1()
 		for i = 1, num do
 			local button = _G["ActionButton"..i]
 			table_insert(buttonList, button) -- Add The Button Object To The List
+			table_insert(Module.buttons, button)
 			button:SetParent(frame)
 			button:SetSize(buttonSize, buttonSize)
 			button:ClearAllPoints()
@@ -74,14 +93,12 @@ function Module:CreateBar1()
 		end
 	end
 
+	frame.buttonList = buttonList
+	SetFrameSize(frame, buttonSize, num)
+
 	-- Show/hide The Frame On A Given State Driver
 	frame.frameVisibility = "[petbattle] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
-
-	-- Create Drag Frame And Drag Functionality
-	if K.ActionBars.userPlaced then
-		frame.mover = K.Mover(frame, L["Main Actionbar"], "Bar1", frame.Pos)
-	end
 
 	if FilterConfig.fader then
 		Module.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
@@ -136,6 +153,12 @@ function Module:OnEnable()
 		hooksecurefunc("TalentFrame_LoadUI", function()
 			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 		end)
+	end
+
+	self:CreateMicroMenu()
+
+	if not C["ActionBar"].Enable then
+		return
 	end
 
 	-- Add Elements

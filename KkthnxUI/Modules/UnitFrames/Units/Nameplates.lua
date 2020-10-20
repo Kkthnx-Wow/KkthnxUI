@@ -2,7 +2,6 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
 
 local oUF = oUF or K.oUF
-assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 local _G = _G
 local math_floor = _G.math.floor
@@ -49,8 +48,6 @@ local hooksecurefunc = _G.hooksecurefunc
 
 local CPBarPoint = {"TOPLEFT", 12, 4}
 local aksCacheData = {}
-local barHeight = C["Nameplate"].PlateHeight
-local barWidth = C["Nameplate"].PlateWidth
 local explosivesID = 120651
 local groupRoles = {}
 local guidToPlate = {}
@@ -737,22 +734,11 @@ function Module:MouseoverIndicator(self)
 	end)
 end
 
--- NazjatarFollowerXP
-function Module:AddFollowerXP(self)
-	self.WidgetXPBar = CreateFrame("StatusBar", nil, self)
-	self.WidgetXPBar:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
-	self.WidgetXPBar:SetStatusBarColor(255/255, 204/255, 102/255)
-	self.WidgetXPBar:SetSize(C["Nameplate"].PlateWidth * 0.75, C["Nameplate"].PlateHeight)
-	self.WidgetXPBar:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -5)
-	self.WidgetXPBar:CreateShadow(true)
-
-	self.WidgetXPBar.ProgressText = K.CreateFontString(self.WidgetXPBar, 8, "", "")
-end
-
 -- WidgetContainer
 function Module:AddWidgetContainer(self)
 	self.WidgetContainer = CreateFrame("Frame", nil, self, "UIWidgetContainerTemplate")
-	self.WidgetContainer:SetPoint("BOTTOM", self, "TOP")
+	self.WidgetContainer:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -5)
+	self.WidgetContainer:SetScale(1 / C["General"].UIScale) -- need reviewed
 	self.WidgetContainer:Hide()
 end
 
@@ -938,7 +924,7 @@ function Module:CreatePlates()
 	self.Auras.initdialAnchor = "BOTTOMLEFT"
 	self.Auras["growth-y"] = "UP"
 	if C["Nameplate"].ShowPlayerPlate and C["Nameplate"].NameplateClassPower then
-		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 6 + _G.oUF_NameplateClassPowerBar:GetHeight())
+		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 6 + _G.oUF_ClassPowerBar:GetHeight())
 	else
 		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 5)
 	end
@@ -995,7 +981,7 @@ function Module:UpdateClassPowerAnchor()
 		return
 	end
 
-	local bar = _G.oUF_NameplateClassPowerBar
+	local bar = _G.oUF_ClassPowerBar
 	local nameplate = C_NamePlate_GetNamePlateForUnit("target")
 	if nameplate then
 		bar:SetParent(nameplate.unitFrame)
@@ -1008,7 +994,7 @@ function Module:UpdateClassPowerAnchor()
 end
 
 function Module:UpdateTargetClassPower()
-	local bar = _G.oUF_NameplateClassPowerBar
+	local bar = _G.oUF_ClassPowerBar
 	local playerPlate = _G.oUF_PlayerPlate
 
 	if not bar or not playerPlate then
@@ -1122,45 +1108,6 @@ function Module:RefreshPlateOnFactionChanged()
 	K:RegisterEvent("UNIT_FACTION", Module.OnUnitFactionChanged)
 end
 
-function Module.PostUpdateNameplateClassPower(element, cur, max, diff, powerType, chargedIndex)
-	if diff then
-		for i = 1, max do
-			element[i]:SetWidth((C["Nameplate"].PlateWidth - (max - 1) * 6) / max)
-		end
-	end
-
-	if (K.Class == "ROGUE" or K.Class == "DRUID") and (powerType == "COMBO_POINTS") and element.__owner.unit ~= "vehicle" then
-		for i = 1, 6 do
-			element[i]:SetStatusBarColor(unpack(K.Colors.power.COMBO_POINTS[i]))
-		end
-	end
-
-	element.thisColor = cur == max and 1 or 2
-	if not element.prevColor or element.prevColor ~= element.thisColor then
-		local r, g, b = 1, 0, 0
-		if element.thisColor == 2 then
-			local color = element.__owner.colors.power[powerType]
-			r, g, b = color[1], color[2], color[3]
-		end
-
-		for i = 1, #element do
-			element[i]:SetStatusBarColor(r, g, b)
-		end
-		element.prevColor = element.thisColor
-	end
-
-	if chargedIndex and chargedIndex ~= element.thisCharge then
-		local bar = element[chargedIndex]
-		element.chargeStar:SetParent(bar)
-		element.chargeStar:SetPoint("CENTER", bar)
-		element.chargeStar:Show()
-		element.thisCharge = chargedIndex
-	else
-		element.chargeStar:Hide()
-		element.thisCharge = nil
-	end
-end
-
 function Module:PostUpdatePlates(event, unit)
 	if not self then
 		return
@@ -1225,7 +1172,7 @@ function Module:CreatePlayerPlate()
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetAllPoints()
 	self.Health:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
-	self.Health:SetStatusBarColor(.1, .1, .1)
+	self.Health:SetStatusBarColor(0.1, 0.1, 0.1)
 	self.Health:CreateShadow(true)
 
 	self.Health.colorHealth = true
@@ -1245,51 +1192,7 @@ function Module:CreatePlayerPlate()
 	self.Power.frequentUpdates = true
 
 	if C["Nameplate"].NameplateClassPower then
-		if self.mystyle == "PlayerPlate" then
-			barWidth, barHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
-			CPBarPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 3}
-		end
-
-		local bar = CreateFrame("Frame", "oUF_NameplateClassPowerBar", self.Health)
-		bar:SetSize(barWidth, barHeight)
-		bar:SetPoint(unpack(CPBarPoint))
-
-		local bars = {}
-		for i = 1, 6 do
-			bars[i] = CreateFrame("StatusBar", nil, bar)
-			bars[i]:SetHeight(barHeight)
-			bars[i]:SetWidth((barWidth - 5 * 6) / 6)
-			bars[i]:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
-			bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
-			bars[i]:CreateShadow(true)
-
-			if i == 1 then
-				bars[i]:SetPoint("BOTTOMLEFT")
-			else
-				bars[i]:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
-			end
-
-			if K.Class == "DEATHKNIGHT" then
-				bars[i].timer = K.CreateFontString(bars[i], 10, "")
-			end
-		end
-
-		if K.Class == "DEATHKNIGHT" then
-			bars.colorSpec = true
-			bars.sortOrder = "asc"
-			bars.PostUpdate = Module.PostUpdateRunes
-			bars.__max = 6
-			self.Runes = bars
-		else
-			local chargeStar = bar:CreateTexture()
-			chargeStar:SetAtlas("VignetteKill")
-			chargeStar:SetSize(24, 24)
-			chargeStar:Hide()
-			bars.chargeStar = chargeStar
-
-			bars.PostUpdate = Module.PostUpdateNameplateClassPower
-			self.ClassPower = bars
-		end
+		Module:CreateClassPower(self)
 	end
 
 	if K.Class == "MONK" then

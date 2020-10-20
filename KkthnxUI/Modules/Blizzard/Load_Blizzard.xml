@@ -3,9 +3,9 @@
     <!-- Load_Blizzard -->
     <Script file="Core.lua"/>
 
+    <Include file="Elements\TaintLess.xml" />
     <Script file="Elements\AlertFrames.lua"/>
     <Script file="Elements\AltPowerBar.lua"/>
-    <Script file="Elements\BlizzBugFixes.lua"/>
     <Script file="Elements\ColorPicker.lua"/>
     <Script file="Elements\MirrorBars.lua"/>
     <Script file="Elements\ObjectiveFrame.lua"/>

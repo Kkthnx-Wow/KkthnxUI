@@ -209,7 +209,7 @@ function Module:Bind_Listener(key)
 				SetBinding(frame.bindings[i])
 			end
 		end
-		K.Print(string_format(L["Clear binds"], frame.tipName or frame.name))
+		K.Print(string_format(L["Clear Binds"], frame.tipName or frame.name))
 
 		Module:Bind_Update(frame.button, frame.spellmacro)
 		if frame.spellmacro ~= "MACRO" and not GameTooltip:IsForbidden() then

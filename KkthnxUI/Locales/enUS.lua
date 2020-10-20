@@ -4,6 +4,7 @@ local K, _, L = unpack(select(2, ...))
 L["Clear Binds"] = "|CFFFFCC66All keybinds cleared for|r %s"
 L["Discard KeyBinds"] = "Keybinds discarded."
 L["Extrabar"] = "Extra Actionbar"
+L["KKUI_CustomBar"] = "CustomBar"
 L["Key Binding"] = "Key"
 L["Key Bound To"] = "bound to"
 L["Key Index"] = "Index"

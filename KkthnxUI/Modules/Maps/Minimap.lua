@@ -25,6 +25,8 @@ KKUI_MiniMapTrackingDropDown:Hide()
 _G.UIDropDownMenu_Initialize(KKUI_MiniMapTrackingDropDown, _G.MiniMapTrackingDropDown_Initialize, "MENU")
 KKUI_MiniMapTrackingDropDown.noResize = true
 
+local checkMinLevel = 10 -- Previous Constants were removed but all these are unlocked at 10.
+
 -- Create the minimap micro menu
 local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent, "UIDropDownMenuTemplate")
 local guildText = IsInGuild() and ACHIEVEMENTS_GUILD_TAB or LOOKINGFORGUILD
@@ -44,10 +46,10 @@ local micromenu = {
 			if not PlayerTalentFrame then
 				TalentFrame_LoadUI()
 			end
-			if K.Level >= SHOW_SPEC_LEVEL then
+			if K.Level >= 10 then
 				ShowUIPanel(PlayerTalentFrame)
 			else
-				K.Print(K.InfoColor..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_SPEC_LEVEL).."|r")
+				K.Print(K.InfoColor..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, checkMinLevel).."|r")
 			end
 	end},
 
@@ -76,18 +78,18 @@ local micromenu = {
 	end},
 
 	{text = PLAYER_V_PLAYER, notCheckable = 1, func = function()
-			if K.Level >= SHOW_PVP_LEVEL then
+			if K.Level >= checkMinLevel then
 				TogglePVPUI()
 			else
-				K.Print(K.InfoColor..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL).."|r")
+				K.Print(K.InfoColor..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, checkMinLevel).."|r")
 			end
 	end},
 
 	{text = DUNGEONS_BUTTON, notCheckable = 1, func = function()
-			if K.Level >= SHOW_LFD_LEVEL then
+			if K.Level >= checkMinLevel then
 				PVEFrame_ToggleFrame("GroupFinderFrame", nil)
 			else
-				pK.Print(K.InfoColor..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL).."|r")
+				K.Print(K.InfoColor..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, checkMinLevel).."|r")
 			end
 	end},
 

@@ -21,12 +21,16 @@ local diceSpells = {
 }
 
 function Module:PostCreateLumos(self)
+	local left, right, top, bottom = unpack(K.TexCoords)
+	top = top + 1 / 4
+	bottom = bottom - 1 / 4
+
 	local iconSize = (self:GetWidth() - 10) / 6
 	local buttons = {}
 	local offset = C["Nameplate"].NameplateClassPower and 8 or (8 * 2 + C["Nameplate"].PPBarHeight)
 	for i = 1, 6 do
 		local bu = CreateFrame("Frame", nil, self.Health)
-		bu:SetSize(iconSize, iconSize)
+		bu:SetSize(iconSize, iconSize / 2)
 		bu.Text = K.CreateFontString(bu, 12, diceSpells[i].text, "", false, "TOP", 1, 12)
 
 		bu.CD = CreateFrame("Cooldown", nil, bu, "CooldownFrameTemplate")
@@ -35,7 +39,7 @@ function Module:PostCreateLumos(self)
 
 		bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 		bu.Icon:SetAllPoints()
-		bu.Icon:SetTexCoord(unpack(K.TexCoords))
+		bu.Icon:SetTexCoord(left, right, top, bottom)
 		bu:CreateShadow()
 
 		if i == 1 then

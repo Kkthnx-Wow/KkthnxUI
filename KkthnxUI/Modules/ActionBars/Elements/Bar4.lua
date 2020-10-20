@@ -11,21 +11,57 @@ local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
+local padding, margin = 0, 6
+
+local function SetFrameSize(frame, size, num)
+	size = size or frame.buttonSize
+	num = num or frame.numButtons
+
+	frame:SetWidth(size + 2 * padding)
+	frame:SetHeight(num * size + (num-1) * margin + 2 * padding)
+
+	if not frame.mover then
+		frame.mover = K.Mover(frame, SHOW_MULTIBAR3_TEXT, "Bar4", frame.Pos)
+	else
+		frame.mover:SetSize(frame:GetSize())
+	end
+
+	if not frame.SetFrameSize then
+		frame.buttonSize = size
+		frame.numButtons = num
+		frame.SetFrameSize = SetFrameSize
+	end
+end
+
+local function updateVisibility(event)
+	if InCombatLockdown() then
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", updateVisibility)
+	else
+		InterfaceOptions_UpdateMultiActionBars()
+		K:UnregisterEvent(event, updateVisibility)
+	end
+end
+
+function Module:FixSizebarVisibility()
+	K:RegisterEvent("PET_BATTLE_OVER", updateVisibility)
+	K:RegisterEvent("PET_BATTLE_CLOSE", updateVisibility)
+	K:RegisterEvent("UNIT_EXITED_VEHICLE", updateVisibility)
+	K:RegisterEvent("UNIT_EXITING_VEHICLE", updateVisibility)
+end
+
 function Module:CreateBar4()
-	local padding, margin = 0, 6
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
 	local buttonSize = C["ActionBar"].RightButtonSize
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KKUI_ActionBar4", UIParent, "SecureHandlerStateTemplate")
-	frame:SetWidth(buttonSize + 2 * padding)
-	frame:SetHeight(num * buttonSize + (num - 1) * margin + 2 * padding)
 	frame.Pos = {"RIGHT", UIParent, "RIGHT", -4, 0}
 
 	-- Move The Buttons Into Position And Reparent Them
 	_G.MultiBarRight:SetParent(frame)
 	_G.MultiBarRight:EnableMouse(false)
+	_G.MultiBarRight.QuickKeybindGlow:SetTexture("")
 
 	for i = 1, num do
 		local button = _G["MultiBarRightButton"..i]
@@ -41,30 +77,16 @@ function Module:CreateBar4()
 		end
 	end
 
-	-- Show/hide The Frame On A Given State Driver
+	frame.buttonList = buttonList
+	SetFrameSize(frame, buttonSize, num)
+
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
-
-	-- Create Drag Frame And Drag Functionality
-	if K.ActionBars.userPlaced then
-		K.Mover(frame, SHOW_MULTIBAR3_TEXT, "Bar4", frame.Pos)
-	end
 
 	if C["ActionBar"].FadeRightBar and FilterConfig.fader then
 		Module.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
 	end
 
-	-- Fix Annoying Visibility
-	local function updateVisibility(event)
-		if InCombatLockdown() then
-			K:RegisterEvent("PLAYER_REGEN_ENABLED", updateVisibility)
-		else
-			InterfaceOptions_UpdateMultiActionBars()
-			K:UnregisterEvent(event, updateVisibility)
-		end
-	end
-	K:RegisterEvent("UNIT_EXITING_VEHICLE", updateVisibility)
-	K:RegisterEvent("UNIT_EXITED_VEHICLE", updateVisibility)
-	K:RegisterEvent("PET_BATTLE_CLOSE", updateVisibility)
-	K:RegisterEvent("PET_BATTLE_OVER", updateVisibility)
+	-- Fix visibility when leaving vehicle or petbattle
+	Module:FixSizebarVisibility()
 end

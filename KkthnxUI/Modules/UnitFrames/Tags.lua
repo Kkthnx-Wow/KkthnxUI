@@ -1,11 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 local oUF = oUF or K.oUF
 
-if not oUF then
-	K.Print("Could not find a vaild instance of oUF. Tags.lua code!")
-	return
-end
-
 local _G = _G
 local string_format = _G.string.format
 local string_find = _G.string.find

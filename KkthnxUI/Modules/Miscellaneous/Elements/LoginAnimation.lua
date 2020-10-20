@@ -1,8 +1,10 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
-local soundID = SOUNDKIT.UI_LEGENDARY_LOOT_TOAST
-local PlaySound = PlaySound
+local _G = _G
+
+local soundID = _G.SOUNDKIT.UI_LEGENDARY_LOOT_TOAST
+local PlaySound = _G.PlaySound
 
 local needAnimation
 
@@ -25,7 +27,7 @@ end
 
 function Module:Logo_Create()
 	local frame = CreateFrame("Frame", nil, UIParent)
-	frame:SetSize(512, 256)
+	frame:SetSize(300, 150)
 	frame:SetPoint("CENTER", UIParent, "BOTTOM", -500, GetScreenHeight() * 0.618)
 	frame:SetFrameStrata("HIGH")
 	frame:SetAlpha(0)
@@ -34,6 +36,8 @@ function Module:Logo_Create()
 	local tex = frame:CreateTexture()
 	tex:SetAllPoints()
 	tex:SetTexture(C["Media"].Logo)
+
+	K.CreateFontString(frame, 16, K.Version, "", true, "BOTTOM", 8, 10)
 
 	local delayTime = 0
 	local timer1 = .5

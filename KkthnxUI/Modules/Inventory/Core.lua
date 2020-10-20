@@ -920,12 +920,6 @@ function Module:OnEnable()
 	function MyButton:OnUpdate(item)
 		local buttonIconTexture = _G[self:GetName().."IconTexture"]
 
-		if MerchantFrame:IsShown() and item.isInSet then
-			self:SetAlpha(.3)
-		else
-			self:SetAlpha(1)
-		end
-
 		if self.JunkIcon then
 			if (item.rarity == LE_ITEM_QUALITY_POOR or KkthnxUIData[K.Realm][K.Name].CustomJunkList[item.id]) and item.sellPrice and item.sellPrice > 0 then
 				self.JunkIcon:Show()

@@ -1,6 +1,5 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
-local oUF = oUF or K.oUF
 
 local _G = _G
 

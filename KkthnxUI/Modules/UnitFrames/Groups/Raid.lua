@@ -1,13 +1,8 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
-local oUF = oUF or K.oUF
-if not oUF then
-	K.Print("Could not find a vaild instance of oUF. Stopping Raid.lua code!")
-	return
-end
 
 local _G = _G
-local select = select
+local select = _G.select
 
 local CreateFrame = _G.CreateFrame
 local GetThreatStatusColor = _G.GetThreatStatusColor
@@ -26,6 +21,17 @@ local function UpdateRaidThreat(self, _, unit)
 		self.KKUI_Border:SetVertexColor(r, g, b)
 	else
 		self.KKUI_Border:SetVertexColor(1, 1, 1)
+	end
+end
+
+local roleTexCoord = {
+	["TANK"] = {.5, .75, 0, 1},
+	["HEALER"] = {.75, 1, 0, 1},
+	["DAMAGER"] = {0, 0, 0, 0},
+}
+local function postUpdateRole(element, role)
+	if element:IsShown() then
+		element:SetTexCoord(unpack(roleTexCoord[role]))
 	end
 end
 
@@ -184,7 +190,8 @@ function Module:CreateRaid()
 	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, -15)
 	self.Name:SetFontObject(RaidframeFont)
 	self.Name:SetWordWrap(false)
-	self:Tag(self.Name, "[lfdrole][name]")
+	-- self:Tag(self.Name, "[lfdrole][name]")
+	self:Tag(self.Name, "[name]")
 
 	self.Overlay = CreateFrame("Frame", nil, self)
 	self.Overlay:SetAllPoints(self.Health)
@@ -193,6 +200,12 @@ function Module:CreateRaid()
 	self.ReadyCheckIndicator = self.Overlay:CreateTexture(nil, "OVERLAY", 2)
 	self.ReadyCheckIndicator:SetSize(22, 22)
 	self.ReadyCheckIndicator:SetPoint("CENTER")
+
+	self.GroupRoleIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.GroupRoleIndicator:SetPoint("TOPRIGHT", self, 5, 5)
+	self.GroupRoleIndicator:SetSize(12, 12)
+	self.GroupRoleIndicator:SetTexture("Interface\\LFGFrame\\LFGROLE")
+	self.GroupRoleIndicator.PostUpdate = postUpdateRole
 
 	self.PhaseIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.PhaseIndicator:SetSize(20, 20)

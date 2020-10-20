@@ -433,6 +433,27 @@ function Module:GameTooltip_ComparisonFix(anchorFrame, shoppingTooltip1, shoppin
 	end
 end
 
+-- Tooltip skin
+local fakeBg = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+fakeBg:SetBackdrop({
+	bgFile = C["Media"].Blank,
+	edgeFile = C["Media"].BorderTooltip,
+	edgeSize = 12,
+	insets = {left = 4, right = 4, top = 4, bottom = 4}
+})
+
+local function __GetBackdrop()
+	return fakeBg:GetBackdrop()
+end
+
+local function __GetBackdropColor()
+	return 0.04, 0.04, 0.04, 0.9
+end
+
+local function __GetBackdropBorderColor()
+	return 1, 1, 1
+end
+
 function Module:ReskinTooltip()
 	if not self then
 		if K.isDeveloper then
@@ -463,9 +484,9 @@ function Module:ReskinTooltip()
 		end
 
 		if self.GetBackdrop then
-			self.GetBackdrop = self.tooltipStyle.GetBackdrop
-			self.GetBackdropColor =self.tooltipStyle.GetBackdropColor
-			self.GetBackdropBorderColor = self.tooltipStyle.GetBackdropBorderColor
+			self.GetBackdrop = __GetBackdrop
+			self.GetBackdropColor = __GetBackdropColor
+			self.GetBackdropBorderColor = __GetBackdropBorderColor
 		end
 
 		self.isTipStyled = true

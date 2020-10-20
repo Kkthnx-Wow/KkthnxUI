@@ -60,6 +60,14 @@ K.IgnoreGossipNPC = {
 	[155261] = true, -- Sean Vickers, Stratholme
 	[150122] = true, -- Honor Hold Mage
 	[150131] = true, -- Salma Mage
+
+	[173021] = true, -- Engraved Tauren
+	[171589] = true, -- General Draven
+	[171787] = true, -- Civil Service Adrianistis
+	[171795] = true, -- Lady Moonberry
+	[171821] = true, -- Baroness Draka
+	[172558] = true, -- Ella Pathfinder (Tutor)
+	[172572] = true, -- Celeste Bellevenko (Tutor)
 }
 
 K.RogueClassHallInsignia = {
