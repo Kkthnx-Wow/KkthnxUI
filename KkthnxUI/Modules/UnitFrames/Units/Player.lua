@@ -399,7 +399,7 @@ function Module:CreatePlayer()
 		self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
 		self.AdditionalPower:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
 		self.AdditionalPower:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
-		self.AdditionalPower.colorPower = true
+		self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
 		self.AdditionalPower:CreateBorder()
 		self.AdditionalPower.frequentUpdates = true
 

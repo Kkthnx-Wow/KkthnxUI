@@ -510,6 +510,11 @@ function Module:CreateChatLootIcons(_, message, ...)
 	return false, message, ...
 end
 
+function Module:MoveBNToast()
+	self:ClearAllPoints()
+	self:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", -4, 68)
+end
+
 function Module:OnEnable()
 	if not C["Chat"].Enable then
 		return
@@ -524,6 +529,7 @@ function Module:OnEnable()
 	hooksecurefunc("FCFTab_UpdateAlpha", Module.NoMouseAlpha)
 	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
 	hooksecurefunc("FloatingChatFrame_OnEvent", Module.UpdateTabEventColors)
+	hooksecurefunc(BNToastFrame, "AddToast", Module.MoveBNToast)
 
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", Module.CreateChatLootIcons)
 
