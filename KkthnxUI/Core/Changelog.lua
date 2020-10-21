@@ -12,24 +12,33 @@ local UIParent = _G.UIParent
 local CLOSE = _G.CLOSE
 
 -- Starting words used in changelog.
--- Fixed, Added, Removed, Various.
+-- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	K.SystemColor.."KkthnxUI is now v10.0.7.|r",
-	"Added new easy marking module.",
-	"Added new world markers bar module.",
-	"Fixed bags itemlevel to always be a number.",
-	"Fixed debuffs on player frame.",
-	"Fixed mail font having its shadow.",
-	"Removed most corruption related code.",
-	"Removed our error filter.",
-	"Updated actionbar 1.",
-	"Updated all data bars.",
-	"Updated auto quest accept/turnin.",
-	"Updated debuff highlight.",
+	K.SystemColor.."KkthnxUI is now v10.0.8.|r",
+	"Added bnet toast to be moved properly.",
+	"Added custombar for actionbars.",
+	"Added taintless by townlong.",
+	"Added the amount of quest experience in questlog.",
+	"Fixed additional power not being the proper MANA color.",
+	"Fixed extra quest button not being shown.",
+	"Fixed inventory search bug.",
+	"Fixed locale for keybinds.",
+	"Fixed minimap drop options being bugged (micromenu).",
+	"Fixed tooltip bug with some addons like RareScanner.",
+	"Removed MaxDps temp fix.",
+	"Removed duplicated code.",
+	"Updated actionbar hotkeys.",
+	"Updated all actionbar code.",
+	"Updated auto quest npc filters.",
+	"Updated class power bars for nameplates and unitframe.",
 	"Updated filger spells.",
-	"Updated power prediction.",
-	"Various code cleanups and corrections.",
+	"Updated guild datatext code.",
+	"Updated oUF core.",
+	"Updated spell reminder spells.",
+	"Updated weakaura skin.",
+	"Various lumos cooldowns/buffs and debuffs updates.",
+	"Various other updates, fixes and changes that are unlisted.",
 }
 
 local changelogFrame
