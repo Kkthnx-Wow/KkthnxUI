@@ -4,21 +4,20 @@ local Module = K:GetModule("Automation")
 local _G = _G
 
 local C_SummonInfo_ConfirmSummon = _G.C_SummonInfo.ConfirmSummon
+local C_SummonInfo_GetSummonConfirmAreaName = _G.C_SummonInfo.GetSummonConfirmAreaName
+local C_SummonInfo_GetSummonConfirmSummoner = _G.C_SummonInfo.GetSummonConfirmSummoner
 local C_Timer_After = _G.C_Timer.After
-local GetSummonConfirmAreaName = _G.GetSummonConfirmAreaName
-local GetSummonConfirmSummoner = _G.GetSummonConfirmSummoner
 local StaticPopup_Hide = _G.StaticPopup_Hide
 local UnitAffectingCombat = _G.UnitAffectingCombat
 
 local function SetupAutoAcceptSummon()
 	if not UnitAffectingCombat("player") then
-		local sName = GetSummonConfirmSummoner()
-		local sLocation = GetSummonConfirmAreaName()
+		local sName = C_SummonInfo_GetSummonConfirmSummoner()
+		local sLocation = C_SummonInfo_GetSummonConfirmAreaName()
 		K.Print(L["The summon from"].." "..sName.." ("..sLocation..") "..L["will be automatically accepted in 10 seconds unless cancelled."])
-
 		C_Timer_After(10, function()
-			local sNameNew = GetSummonConfirmSummoner()
-			local sLocationNew = GetSummonConfirmAreaName()
+			local sNameNew = C_SummonInfo_GetSummonConfirmSummoner()
+			local sLocationNew = C_SummonInfo_GetSummonConfirmAreaName()
 			if sName == sNameNew and sLocation == sLocationNew then
 				-- Automatically accept summon after 10 seconds if summoner name and location have not changed
 				C_SummonInfo_ConfirmSummon()

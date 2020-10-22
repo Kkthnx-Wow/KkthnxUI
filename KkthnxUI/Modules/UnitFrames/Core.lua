@@ -125,7 +125,11 @@ function Module:UpdateThreat(_, unit)
 			local r, g, b = unpack(oUF.colors.threat[status])
 			self.Portrait.KKUI_Border:SetVertexColor(r, g, b)
 		else
-			self.Portrait.KKUI_Border:SetVertexColor(1, 1, 1)
+			if C["General"].ColorTextures then
+				self.Portrait.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			else
+				self.Portrait.KKUI_Border:SetVertexColor(1, 1, 1)
+			end
 		end
 	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		if not self.Portrait.Border then
@@ -140,7 +144,11 @@ function Module:UpdateThreat(_, unit)
 			local r, g, b = unpack(oUF.colors.threat[status])
 			self.Portrait.Border.KKUI_Border:SetVertexColor(r, g, b)
 		else
-			self.Portrait.Border.KKUI_Border:SetVertexColor(1, 1, 1)
+			if C["General"].ColorTextures then
+				self.Portrait.Border.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			else
+				self.Portrait.Border.KKUI_Border:SetVertexColor(1, 1, 1)
+			end
 		end
 	end
 end
@@ -426,11 +434,17 @@ function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, d
 		if whatStyle == "nameplate" or whatStyle == "PlayerPlate" and button.Shadow then
 			button.Shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.8)
 		else
-			button.KKUI_Border:SetVertexColor(color[1], color[2], color[3])
+			if C["General"].ColorTextures then
+				button.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			else
+				button.KKUI_Border:SetVertexColor(color[1], color[2], color[3])
+			end
 		end
 	else
 		if whatStyle == "nameplate" or whatStyle == "PlayerPlate" and button.Shadow then
 			button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+		elseif C["General"].ColorTextures then
+			button.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
 		else
 			button.KKUI_Border:SetVertexColor(1, 1, 1)
 		end

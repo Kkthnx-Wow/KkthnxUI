@@ -235,5 +235,6 @@ L["UITextures"] = "UITextures"
 L["Unitframe"] = "Unitframe"
 L["WorldMap"] = "WorldMap"
 
--- GUI Config Name Locales
+-- GUI Config Tooltip Locales
+L["ExecuteRatioTip"] = "If unit health percentage is lower than the execute cap value you set, its name turns red.|n|nThe execute indicator will be disabled on 0."
 -- Actionbars

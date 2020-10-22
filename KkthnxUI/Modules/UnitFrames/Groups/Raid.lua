@@ -24,17 +24,6 @@ local function UpdateRaidThreat(self, _, unit)
 	end
 end
 
-local roleTexCoord = {
-	["TANK"] = {.5, .75, 0, 1},
-	["HEALER"] = {.75, 1, 0, 1},
-	["DAMAGER"] = {0, 0, 0, 0},
-}
-local function postUpdateRole(element, role)
-	if element:IsShown() then
-		element:SetTexCoord(unpack(roleTexCoord[role]))
-	end
-end
-
 local function UpdateRaidPower(self, _, unit)
 	if self.unit ~= unit then
 		return
@@ -190,8 +179,7 @@ function Module:CreateRaid()
 	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, -15)
 	self.Name:SetFontObject(RaidframeFont)
 	self.Name:SetWordWrap(false)
-	-- self:Tag(self.Name, "[lfdrole][name]")
-	self:Tag(self.Name, "[name]")
+	self:Tag(self.Name, "[lfdrole][name]")
 
 	self.Overlay = CreateFrame("Frame", nil, self)
 	self.Overlay:SetAllPoints(self.Health)
@@ -200,12 +188,6 @@ function Module:CreateRaid()
 	self.ReadyCheckIndicator = self.Overlay:CreateTexture(nil, "OVERLAY", 2)
 	self.ReadyCheckIndicator:SetSize(22, 22)
 	self.ReadyCheckIndicator:SetPoint("CENTER")
-
-	self.GroupRoleIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.GroupRoleIndicator:SetPoint("TOPRIGHT", self, 5, 5)
-	self.GroupRoleIndicator:SetSize(12, 12)
-	self.GroupRoleIndicator:SetTexture("Interface\\LFGFrame\\LFGROLE")
-	self.GroupRoleIndicator.PostUpdate = postUpdateRole
 
 	self.PhaseIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.PhaseIndicator:SetSize(20, 20)

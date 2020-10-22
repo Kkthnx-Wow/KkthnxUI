@@ -491,7 +491,12 @@ function Module:ReskinTooltip()
 
 		self.isTipStyled = true
 	end
-	self.tooltipStyle.KKUI_Border:SetVertexColor(1, 1, 1)
+
+	if C["General"].ColorTextures then
+		self.tooltipStyle.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+	else
+		self.tooltipStyle.KKUI_Border:SetVertexColor(1, 1, 1)
+	end
 
 	if C["Tooltip"].ClassColor and self.GetItem then
 		local _, item = self:GetItem()

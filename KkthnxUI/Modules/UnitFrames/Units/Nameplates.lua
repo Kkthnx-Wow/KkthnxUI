@@ -46,7 +46,6 @@ local UnitSelectionColor = _G.UnitSelectionColor
 local UnitThreatSituation = _G.UnitThreatSituation
 local hooksecurefunc = _G.hooksecurefunc
 
-local CPBarPoint = {"TOPLEFT", 12, 4}
 local aksCacheData = {}
 local explosivesID = 120651
 local groupRoles = {}
@@ -222,6 +221,8 @@ function Module:UpdateColor(_, unit)
 	local insecureColor = C["Nameplate"].InsecureColor
 	local revertThreat = C["Nameplate"].DPSRevertThreat
 	local offTankColor = C["Nameplate"].OffTankColor
+	local executeRatio = C["Nameplate"].ExecuteRatio
+	local healthPerc = UnitHealth(unit) / (UnitHealthMax(unit) + .0001) * 100
 
 	local r, g, b
 	if not UnitIsConnected(unit) then
@@ -288,6 +289,12 @@ function Module:UpdateColor(_, unit)
 		end
 	else
 		self.ThreatIndicator:Hide()
+	end
+
+	if executeRatio > 0 and healthPerc <= executeRatio then
+		self.nameText:SetTextColor(1, 0, 0)
+	else
+		self.nameText:SetTextColor(1, 1, 1)
 	end
 end
 
@@ -929,15 +936,12 @@ function Module:CreatePlates()
 		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 5)
 	end
 	self.Auras.numTotal = C["Nameplate"].MaxAuras
-	self.Auras.iconsPerRow = C["Nameplate"].MaxAurasPerRow or 6
 	self.Auras.size = C["Nameplate"].AuraSize
 	self.Auras.gap = false
 	self.Auras.disableMouse = true
 
 	local width = self:GetWidth()
-	local maxAuras = self.Auras.numTotal or self.Auras.numBuffs + self.Auras.numDebuffs
-	local maxLines = self.Auras.iconsPerRow and math_floor(maxAuras / self.Auras.iconsPerRow + 0.5) or 2
-	self.Auras.size = self.Auras.iconsPerRow and Module.auraIconSize(width, self.Auras.iconsPerRow, self.Auras.spacing) or self.Auras.size
+	local maxLines = 2
 	self.Auras:SetWidth(width)
 	self.Auras:SetHeight((self.Auras.size + self.Auras.spacing) * maxLines)
 

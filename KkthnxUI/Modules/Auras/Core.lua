@@ -139,7 +139,11 @@ function Module:UpdateAuras(button, index)
             local color = DebuffTypeColor[debuffType or "none"]
             button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
         else
-            button.KKUI_Border:SetVertexColor(1, 1, 1)
+            if C["General"].ColorTextures then
+			    button.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+		    else
+                button.KKUI_Border:SetVertexColor(1, 1, 1)
+            end
         end
 
         button.icon:SetTexture(texture)

@@ -23,6 +23,12 @@ local function LoadSpellBookSkin()
 		icon:SetAllPoints()
 		button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
+		if C["General"].ColorTextures then
+			button.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+		else
+			button.KKUI_Border:SetVertexColor(1, 1, 1)
+		end
+
 		if button.SpellHighlightTexture then
 			button.SpellHighlightTexture:SetColorTexture(0.8, 0.8, 0, 0.6)
 			if icon then

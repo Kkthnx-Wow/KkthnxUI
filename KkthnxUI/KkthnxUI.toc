@@ -4,20 +4,10 @@
 ## Notes: Custom user interface.|n|n|cff669DFFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/Kkthnx|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
 ## Author: Josh "Kthnx" Russell
 ## Version: 10.0.8
-## DefaultState: Enabled
-## LoadOnDemand: 0
 ## SavedVariables: KkthnxUIData, KkthnxUISettings, KkthnxUIGold, KkthnxUISettingsPerCharacter
 ## SavedVariablesPerCharacter: KkthnxUISettingsPerChar
-## OptionalDeps: Clique
-## X-Category: Interface Enhancements
-## X-Discord: https://discord.gg/YUmxqQm
-## X-BugReport: https://github.com/kkthnx-wow/KkthnxUI/issues/new
-## X-License: MIT
-## X-Localizations: enUS
-## X-oUF: oUFKkthnxUI
 ## X-Curse-Project-ID: 95528
 ## X-WoWI-ID: 24615
-## X-Website: https://www.curseforge.com/wow/addons/kkthnxui
 
 # -- Load Core File
 KkthnxUI.xml

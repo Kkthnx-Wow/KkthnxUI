@@ -282,17 +282,18 @@ oUF.Tags.Events["monkstagger"] = "UNIT_MAXHEALTH UNIT_AURA"
 oUF.Tags.Methods["leadassist"] = function(unit)
 	local isLeader = UnitIsGroupLeader(unit)
 	local isAssistant = UnitIsGroupAssistant(unit) or UnitIsRaidOfficer(unit)
-	local Assist, Lead = isAssistant and "|cffffd100[A]|r " or "", isLeader and "|cffffd100[L]|r " or ""
+	local Assist, Lead = isAssistant and "|cffffd100[A]|r " or "", isLeader and "|cffffd100[L]|r" or ""
 
 	return (Lead..Assist)
 end
 oUF.Tags.Events["leadassist"] = "UNIT_NAME_UPDATE PARTY_LEADER_CHANGED GROUP_ROSTER_UPDATE"
 
 oUF.Tags.Methods["lfdrole"] = function(unit)
-	local isRole = UnitGroupRolesAssigned(unit)
-	local isTank, isHealer, isDamage = isRole == "TANK", isRole == "HEALER", isRole == "DAMAGER"
-	local Tank, Healer, Damage = isTank and "|cff0099CC[T]|r " or "", isHealer and "|cff00FF00[H]|r " or "", isDamage and "" or ""
+	local Role = UnitGroupRolesAssigned(unit)
+	local isTank = Role == "TANK"
+	local isHealer = Role == "HEALER"
+	local Tank, Healer = isTank and "|cff0099CC[T]|r" or "", isHealer and "|cff00FF00[H]|r" or ""
 
-	return (Tank..Healer..Damage)
+	return (Tank..Healer)
 end
-oUF.Tags.Events["lfdrole"] = "UNIT_NAME_UPDATE PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"
+oUF.Tags.Events["lfdrole"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"

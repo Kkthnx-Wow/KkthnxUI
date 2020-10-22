@@ -175,6 +175,33 @@ local function reskinMinimizeButton(button)
 	hooksecurefunc(button, "SetCollapsed", updateMinimizeButton)
 end
 
+local function AddQuestNumString()
+	local questNum = 0
+	local q, o
+	local block = _G.ObjectiveTrackerBlocksFrame
+	local frame = _G.ObjectiveTrackerFrame
+
+	if not InCombatLockdown() then
+		for questLogIndex = 1, C_QuestLog.GetNumQuestLogEntries() do
+			local info = C_QuestLog.GetInfo(questLogIndex)
+			if not info.isHeader and not info.isHidden then
+				questNum = questNum + 1
+			end
+		end
+
+		if questNum >= (MAX_QUESTS - 5) then -- go red
+			q = string.format("|cffff0000%d/%d|r %s", questNum, MAX_QUESTS, TRACKER_HEADER_QUESTS)
+			o = string.format("|cffff0000%d/%d|r %s", questNum, MAX_QUESTS, OBJECTIVES_TRACKER_LABEL)
+		else
+			q = string.format("%d/%d %s", questNum, MAX_QUESTS, TRACKER_HEADER_QUESTS)
+			o = string.format("%d/%d %s", questNum, MAX_QUESTS, OBJECTIVES_TRACKER_LABEL)
+		end
+
+		block.QuestHeader.Text:SetText(q)
+		frame.HeaderMenu.Title:SetText(o)
+	end
+end
+
 local function ReskinObjectiveTracker()
 	-- QuestIcons
 	hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", reskinQuestIcons)
@@ -217,6 +244,8 @@ local function ReskinObjectiveTracker()
 			reskinMinimizeButton(minimize)
 		end
 	end
+
+	hooksecurefunc("ObjectiveTracker_Update", AddQuestNumString)
 end
 
 table_insert(Module.NewSkin["KkthnxUI"], ReskinObjectiveTracker)

@@ -1,34 +1,23 @@
 --[[
 # Element: Phasing Indicator
-
 Toggles the visibility of an indicator based on the unit's phasing relative to the player.
-
 ## Widget
-
 PhaseIndicator - Any UI widget.
-
 ## Sub-Widgets
-
 Icon - A `Texture` to represent the phased status.
-
 ## Notes
-
 A default texture will be applied if the widget is a Texture and doesn't have a texture or a color set.
 OnEnter and OnLeave script handlers will be set to display a Tooltip if the widget is mouse enabled and does not have
 OnEnter and/or OnLeave handlers.
-
 ## Examples
-
     -- Position and size
     local PhaseIndicator = CreateFrame('Frame', nil, self)
     PhaseIndicator:SetSize(16, 16)
     PhaseIndicator:SetPoint('TOPLEFT', self)
     PhaseIndicator:EnableMouse(true)
-
     local Icon = PhaseIndicator:CreateTexture(nil, 'OVERLAY')
     Icon:SetAllPoints()
     PhaseIndicator.Icon = Icon
-
     -- Register it with oUF
     self.PhaseIndicator = PhaseIndicator
 --]]
@@ -38,23 +27,23 @@ local oUF = ns.oUF
 
 --[[ Override: PhaseIndicator:UpdateTooltip()
 Used to populate the tooltip when the widget is hovered.
-
 * self - the PhaseIndicator widget
 --]]
 local function UpdateTooltip(element)
-	local unit = element.__owner.unit
-	local reason = UnitPhaseReason(unit)
-	local text = reason and PartyUtil.GetPhasedReasonString(reason, unit) or ''
-
-	GameTooltip:SetText(text, nil, nil, nil, nil, true)
-	GameTooltip:Show()
+	local text = PartyUtil.GetPhasedReasonString(element.reason, element.__owner.unit)
+	if(text) then
+		GameTooltip:SetText(text, nil, nil, nil, nil, true)
+		GameTooltip:Show()
+	end
 end
 
 local function onEnter(element)
 	if(not element:IsVisible()) then return end
 
-	GameTooltip:SetOwner(element, 'ANCHOR_BOTTOMRIGHT')
-	element:UpdateTooltip()
+	if(element.reason) then
+		GameTooltip:SetOwner(element, 'ANCHOR_BOTTOMRIGHT')
+		element:UpdateTooltip()
+	end
 end
 
 local function onLeave()
@@ -68,35 +57,37 @@ local function Update(self, event, unit)
 
 	--[[ Callback: PhaseIndicator:PreUpdate()
 	Called before the element has been updated.
-
 	* self - the PhaseIndicator element
 	--]]
 	if(element.PreUpdate) then
 		element:PreUpdate()
 	end
 
-	local isInSamePhase = not UnitPhaseReason(unit)
-	if(not isInSamePhase and UnitIsPlayer(unit) and UnitIsConnected(unit)) then
+	-- BUG: UnitPhaseReason returns wrong data for friendly NPCs in phased scenarios like WM or Chromie Time
+	-- https://github.com/Stanzilla/WoWUIBugs/issues/49
+	local phaseReason = UnitIsPlayer(unit) and UnitIsConnected(unit) and UnitPhaseReason(unit) or nil
+	if(phaseReason) then
 		element:Show()
 	else
 		element:Hide()
 	end
 
-	--[[ Callback: PhaseIndicator:PostUpdate(isInSamePhase)
-	Called after the element has been updated.
+	element.reason = phaseReason
 
+	--[[ Callback: PhaseIndicator:PostUpdate(isInSamePhase, phaseReason)
+	Called after the element has been updated.
 	* self          - the PhaseIndicator element
 	* isInSamePhase - indicates whether the unit is in the same phase as the player (boolean)
+	* phaseReason   - the reason why the unit is in a different phase (number?)
 	--]]
 	if(element.PostUpdate) then
-		return element:PostUpdate(isInSamePhase)
+		return element:PostUpdate(not phaseReason, phaseReason)
 	end
 end
 
 local function Path(self, ...)
 	--[[ Override: PhaseIndicator.Override(self, event, ...)
 	Used to completely override the internal update function.
-
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* ...   - the arguments accompanying the event

@@ -13,6 +13,7 @@
    <Script file="Elements\Resurrect.lua" />
    <Script file="Elements\ScreenShot.lua" />
    <Script file="Elements\SetRole.lua" />
+   <Script file="Elements\SkipCinematic.lua" />
    <Script file="Elements\Summon.lua" />
    <Script file="Elements\TabBinder.lua" />
    <Script file="Elements\WhisperInvite.lua" />

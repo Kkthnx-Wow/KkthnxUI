@@ -471,12 +471,12 @@ function K.ReskinArrow(self, direction)
 	local tex = self:CreateTexture(nil, "ARTWORK")
 	tex:SetAllPoints()
 	SetupArrow(tex, direction)
-	self.bgTex = tex
+	self.__texture = tex
 end
 
 local function GrabScrollBarElement(frame, element)
 	local frameName = frame:GetDebugName()
-	return frame[element] or frameName and (_G[frameName..element] or strfind(frameName, element)) or nil
+	return frame[element] or frameName and (_G[frameName..element] or string.find(frameName, element)) or nil
 end
 
 local function SkinScrollBar(self)
@@ -493,7 +493,6 @@ local function SkinScrollBar(self)
 		bg:CreateBorder()
 		bg:SetPoint("TOPLEFT", thumb, 0, -6)
 		bg:SetPoint("BOTTOMRIGHT", thumb, 0, 6)
-
 		thumb.bg = bg
 	end
 

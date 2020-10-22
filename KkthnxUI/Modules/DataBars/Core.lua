@@ -56,14 +56,6 @@ function Module:ExperienceBar_CheckQuests(questID, completedOnly)
 	end
 end
 
-function Module:GetUnitXP(unit)
-	if unit == "pet" then
-		return GetPetExperience()
-	else
-		return UnitXP(unit), UnitXPMax(unit)
-	end
-end
-
 function Module:SetupExperience()
 	local expbar = CreateFrame("StatusBar", "KKUI_ExperienceBar", self.Container)
 	expbar:SetStatusBarTexture(self.DatabaseTexture)

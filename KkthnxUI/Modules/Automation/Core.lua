@@ -14,4 +14,5 @@ function Module:OnEnable()
     self:CreateAutoSetRole()
     self:CreateAutoTabBinder()
     self:CreateAutoWhisperInvite()
+    self:CreateSkipCinematic()
 end

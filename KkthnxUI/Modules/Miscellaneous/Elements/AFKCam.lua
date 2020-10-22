@@ -215,8 +215,10 @@ local function GetXPinfo()
 		return
 	end
 
-	local cur, max = UnitXP('player'), UnitXPMax('player')
-	if max <= 0 then max = 1 end
+	local cur, max = UnitXP("player"), UnitXPMax("player")
+	if max <= 0 then
+		max = 1
+	end
 	local curlvl = UnitLevel('player')
 
 	return string_format("|cfff0ff00%d%%|r (%s) %s |cfff0ff00%d|r", (max - cur) / max * 100, K.ShortValue(max - cur), "remaining till level", curlvl + 1)

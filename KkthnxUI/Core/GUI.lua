@@ -173,11 +173,10 @@ end
 
 local AnchorOnEnter = function(self)
 	if (self.Tooltip and match(self.Tooltip, "%S")) then
-		-- GameTooltip_SetDefaultAnchor(GameTooltip, self)
 		GameTooltip:ClearLines()
 		GameTooltip:SetOwner(self, "ANCHOR_NONE")
-		GameTooltip:SetPoint("TOPLEFT", KKUI_GUI, "TOPRIGHT", -3, -6)
-		GameTooltip:AddLine("Tips")
+		GameTooltip:SetPoint("TOPLEFT", KKUI_GUI, "TOPRIGHT", -3, -5)
+		GameTooltip:AddLine(INFO)
 		GameTooltip:AddLine("|nMost options require a full UI reload|nYou can do this by clicking the |CFF00CC4CApply|r button|n|n", 0.6, 0.8, 1, 1)
 
 		GameTooltip:AddLine(self.Tooltip, nil, nil, nil, true)
@@ -660,11 +659,14 @@ local SliderEditBoxOnMouseWheel = function(self, delta)
 	self.Slider:SetValue(self.Value)
 end
 
-local CreateSlider = function(self, group, option, text, minvalue, maxvalue, stepvalue, hook)
+local CreateSlider = function(self, group, option, text, minvalue, maxvalue, stepvalue, tooltip, hook)
 	local Value = C[group][option]
 
 	local Anchor = CreateFrame("Frame", nil, self)
 	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
+	Anchor:SetScript("OnEnter", AnchorOnEnter)
+	Anchor:SetScript("OnLeave", AnchorOnLeave)
+	Anchor.Tooltip = tooltip
 
 	local EditBox = CreateFrame("Frame", nil, Anchor)
 	EditBox:SetPoint("LEFT", Anchor, 0, 0)

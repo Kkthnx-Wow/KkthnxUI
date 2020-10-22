@@ -110,30 +110,30 @@ end
 
 -- Update editbox border color
 function Module:UpdateEditBoxColor()
-	local editbox = ChatEdit_ChooseBoxForSend()
-	local chatType = editbox:GetAttribute("chatType")
+	local EditBox = ChatEdit_ChooseBoxForSend()
+	local ChatType = EditBox:GetAttribute("chatType")
+	local Border = EditBox.KKUI_Border
 
-	if not chatType then
-		return
-	end
+	if Border then
+		if (ChatType == "CHANNEL") then
+			local ID = GetChannelName(EditBox:GetAttribute("channelTarget"))
 
-	local info = ChatTypeInfo[chatType]
-	local chanTarget = editbox:GetAttribute("channelTarget")
-	local chanName = chanTarget and GetChannelName(chanTarget)
-
-	-- Increase inset on right side to make room for character count text
-	local insetLeft, insetRight, insetTop, insetBottom = editbox:GetTextInsets()
-	editbox:SetTextInsets(insetLeft, insetRight + 26, insetTop, insetBottom)
-
-	if chanName and (chatType == "CHANNEL") then
-		if chanName == 0 then
-			editbox.KKUI_Border:SetVertexColor(1, 1, 1)
+			if (ID == 0) then
+				local R, G, B
+				if C["General"].ColorTextures then
+					R, G, B = unpack(C["General"].TexturesColor)
+				else
+					R, G, B = 1, 1, 1
+				end
+				Border:SetVertexColor(R, G, B)
+			else
+				local R, G, B = ChatTypeInfo[ChatType..ID].r, ChatTypeInfo[ChatType..ID].g, ChatTypeInfo[ChatType..ID].b
+				Border:SetVertexColor(R, G, B)
+			end
 		else
-			info = ChatTypeInfo[chatType..chanName]
-			editbox.KKUI_Border:SetVertexColor(info.r, info.g, info.b)
+			local R, G, B = ChatTypeInfo[ChatType].r, ChatTypeInfo[ChatType].g, ChatTypeInfo[ChatType].b
+			Border:SetVertexColor(R, G, B)
 		end
-	else
-		editbox.KKUI_Border:SetVertexColor(info.r, info.g, info.b)
 	end
 end
 

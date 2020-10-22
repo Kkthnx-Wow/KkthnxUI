@@ -550,11 +550,9 @@ function Module:CreateKillTutorials()
 		return
 	end
 
-	--_G.HelpOpenTicketButtonTutorial:Kill()
 	_G.HelpPlate:Kill()
 	_G.HelpPlateTooltip:Kill()
 	_G.SpellBookFrameTutorialButton:Kill()
-	--_G.EJMicroButtonAlert:Kill()
 	_G.WorldMapFrame.BorderFrame.Tutorial:Kill()
 end
 
@@ -577,8 +575,33 @@ local function KillTalentTutorials(event, addon)
 	if addon == "Blizzard_TalentUI" then
 		_G.PlayerTalentFrameSpecializationTutorialButton:Kill()
 		_G.PlayerTalentFrameTalentsTutorialButton:Kill()
-		_G.PlayerTalentFramePetSpecializationTutorialButton:Kill()
 		K:UnregisterEvent(event, KillTalentTutorials)
+	end
+end
+
+local function AcknowledgeTips()
+	if InCombatLockdown() then -- just incase cause this code path will call SetCVar
+		return
+	end
+
+	for frame in _G.HelpTip.framePool:EnumerateActive() do
+		frame:Acknowledge()
+	end
+end
+
+function Module:DisableHelpTip() -- auto complete helptips
+	if not C["General"].NoTutorialButtons then
+		return
+	end
+
+	hooksecurefunc(_G.HelpTip, "Show", AcknowledgeTips)
+	K.Delay(2, AcknowledgeTips)
+end
+
+local function KillNewPlayerExperience()
+	local NPE = NewPlayerExperience
+	if NPE and NPE:GetIsActive() then
+		NPE:Shutdown()
 	end
 end
 
@@ -603,6 +626,7 @@ function Module:OnEnable()
 	self:CreateTradeTabs()
 	self:CreateTradeTargetInfo()
 	self:CreateVehicleSeatMover()
+	self:DisableHelpTip()
 
 	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
 		NoTalkingHeads()
@@ -621,4 +645,11 @@ function Module:OnEnable()
 	else
 		K:RegisterEvent("ADDON_LOADED", KillTalentTutorials)
 	end
+
+	if NewPlayerExperience then
+		KillNewPlayerExperience()
+	else
+		K:RegisterEvent('ADDON_LOADED', KillNewPlayerExperience)
+	end
+
 end

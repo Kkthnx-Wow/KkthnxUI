@@ -62,7 +62,6 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
-	["AutoSummon"] = false,
 	["AutoBlockStrangerInvites"] = false,
 	["AutoCollapse"] = false,
 	["AutoDeclineDuels"] = false,
@@ -76,6 +75,8 @@ C["Automation"] = {
 	["AutoReward"] = false,
 	["AutoScreenshot"] = false,
 	["AutoSetRole"] = false,
+	["AutoSkipCinematic"] = true,
+	["AutoSummon"] = false,
 	["AutoTabBinder"] = false,
 	["NoBadBuffs"] = false,
 	["WhisperInvite"] = "inv+",
@@ -308,6 +309,7 @@ C["Nameplate"] = {
 	["DPSRevertThreat"] = false,
 	["Distance"] = 42,
 	["Enable"] = true,
+	["ExecuteRatio"] = 0,
 	["ExplosivesScale"] = false,
 	["FriendlyCC"] = false,
 	["FullHealth"] = false,

@@ -37,6 +37,7 @@
    <Include file="Blizzard\SpellBook.lua" />
    <Include file="Blizzard\TalkingHead.lua" />
    <Include file="Blizzard\TradeSkill.lua" />
+   <Include file="Blizzard\Tutorial.lua" />
    <Include file="Blizzard\WidgetFrame.lua" />
    <Include file="Blizzard\WorldMapFrame.lua" />
 </Ui>

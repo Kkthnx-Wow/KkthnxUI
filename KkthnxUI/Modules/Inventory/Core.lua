@@ -264,6 +264,9 @@ function Module:CreateBagToggle()
 		if self.BagBar:IsShown() then
 			bagToggleButton.KKUI_Border:SetVertexColor(1, .8, 0)
 			PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
+		elseif C["General"].ColorTextures then
+			bagToggleButton.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
 		else
 			bagToggleButton.KKUI_Border:SetVertexColor(1, 1, 1)
 			PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
@@ -436,7 +439,11 @@ function Module:CreateSplitButton()
 	splitButton.Icon:SetTexture("Interface\\HELPFRAME\\ReportLagIcon-AuctionHouse")
 
 	splitButton.__turnOff = function()
-		splitButton.KKUI_Border:SetVertexColor(1, 1, 1)
+		if C["General"].ColorTextures then
+			splitButton.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+		else
+			splitButton.KKUI_Border:SetVertexColor(1, 1, 1)
+		end
 		splitButton.Icon:SetDesaturated(false)
 		splitButton.text = nil
 		splitFrame:Hide()
@@ -499,7 +506,11 @@ function Module:CreateFavouriteButton()
 	favouriteButton.Icon:SetTexture("Interface\\Common\\friendship-heart")
 
 	favouriteButton.__turnOff = function()
-		favouriteButton.KKUI_Border:SetVertexColor(1, 1, 1)
+		if C["General"].ColorTextures then
+			favouriteButton.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+		else
+			favouriteButton.KKUI_Border:SetVertexColor(1, 1, 1)
+		end
 		favouriteButton.Icon:SetDesaturated(false)
 		favouriteButton.text = nil
 		favouriteEnable = nil
@@ -558,7 +569,11 @@ function Module:CreateJunkButton()
 	JunkButton.Icon:SetTexture("Interface\\BUTTONS\\UI-GroupLoot-Coin-Up")
 
 	JunkButton.__turnOff = function()
-		JunkButton.KKUI_Border:SetVertexColor(1, 1, 1)
+		if C["General"].ColorTextures then
+			JunkButton.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+		else
+			JunkButton.KKUI_Border:SetVertexColor(1, 1, 1)
+		end
 		JunkButton.Icon:SetDesaturated(false)
 		JunkButton.text = nil
 		customJunkEnable = nil
@@ -619,7 +634,11 @@ function Module:CreateDeleteButton()
 	deleteButton.Icon:SetTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up")
 
 	deleteButton.__turnOff = function()
-		deleteButton.KKUI_Border:SetVertexColor(1, 1, 1)
+		if C["General"].ColorTextures then
+			deleteButton.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+		else
+			deleteButton.KKUI_Border:SetVertexColor(1, 1, 1)
+		end
 		deleteButton.Icon:SetDesaturated(false)
 		deleteButton.text = nil
 		deleteEnable = nil
@@ -1021,7 +1040,11 @@ function Module:OnEnable()
 		elseif color and item.rarity and item.rarity > -1 then
 			self.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 		else
-			self.KKUI_Border:SetVertexColor(1, 1, 1)
+			if C["General"].ColorTextures then
+				self.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			else
+				self.KKUI_Border:SetVertexColor(1, 1, 1)
+			end
 		end
 	end
 
@@ -1178,7 +1201,11 @@ function Module:OnEnable()
 		if not self.hidden and not self.notBought then
 			self.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 		else
-			self.KKUI_Border:SetVertexColor(1, 1, 1)
+			if C["General"].ColorTextures then
+				self.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			else
+				self.KKUI_Border:SetVertexColor(1, 1, 1)
+			end
 		end
 
 		if classID == LE_ITEM_CLASS_CONTAINER then
