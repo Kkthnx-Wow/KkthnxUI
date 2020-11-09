@@ -206,7 +206,7 @@ function Module:SkinChat()
 	eb:ClearAllPoints()
 	eb:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, 26)
 	eb:SetPoint("TOPRIGHT", self, "TOPRIGHT", -3, 50)
-	eb:StripTextures()
+	eb:StripTextures(2)
 	eb:CreateBorder()
 	eb:HookScript("OnTextChanged", Module.EditBoxOnTextChanged)
 
@@ -219,7 +219,7 @@ function Module:SkinChat()
 	local tab = _G[name.."Tab"]
 	tab:SetAlpha(1)
 	tab.Text:SetFont(tabFont, tabFontSize + 1, tabFontFlags)
-	tab:StripTextures()
+	tab:StripTextures(7)
 	hooksecurefunc(tab, "SetAlpha", Module.TabSetAlpha)
 
 	-- Character count

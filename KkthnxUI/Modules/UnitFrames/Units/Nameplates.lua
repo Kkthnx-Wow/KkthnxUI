@@ -1006,7 +1006,7 @@ function Module:UpdateTargetClassPower()
 		isTargetClassPower = false
 		bar:SetParent(playerPlate.Health)
 		bar:ClearAllPoints()
-		bar:SetPoint("TOPLEFT", playerPlate.Health, 0, 3)
+		bar:SetPoint("BOTTOMLEFT", playerPlate.Health, "TOPLEFT", 0, 3)
 		bar:Show()
 	end
 end

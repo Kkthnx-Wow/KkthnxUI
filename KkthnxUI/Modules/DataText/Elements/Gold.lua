@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Infobar")
 
 local _G = _G
@@ -13,6 +13,7 @@ local C_WowTokenPublic_GetCurrentMarketPrice = _G.C_WowTokenPublic.GetCurrentMar
 local C_WowTokenPublic_UpdateMarketPrice = _G.C_WowTokenPublic.UpdateMarketPrice
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GameTooltip = _G.GameTooltip
+local GetAutoCompleteRealms = _G.GetAutoCompleteRealms
 local GetMoney = _G.GetMoney
 local GetNumWatchedTokens = _G.GetNumWatchedTokens
 local InCombatLockdown = _G.InCombatLockdown
@@ -100,18 +101,18 @@ local function OnEnter()
 	GameTooltip:AddLine(K.InfoColor..CURRENCY)
 	GameTooltip:AddLine(" ")
 
-	GameTooltip:AddLine("Session:", 0.6, 0.8, 1)
-	GameTooltip:AddDoubleLine("Earned", K.FormatMoney(profit), 1, 1, 1, 1, 1, 1)
-	GameTooltip:AddDoubleLine("Spent", K.FormatMoney(spent), 1, 1, 1, 1, 1, 1)
+	GameTooltip:AddLine(L["Session"], 0.6, 0.8, 1)
+	GameTooltip:AddDoubleLine(L["Earned"], K.FormatMoney(profit), 1, 1, 1, 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Spent"], K.FormatMoney(spent), 1, 1, 1, 1, 1, 1)
 	if profit < spent then
-		GameTooltip:AddDoubleLine("Deficit", K.FormatMoney(spent-profit), 1, 0, 0, 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Deficit"], K.FormatMoney(spent-profit), 1, 0, 0, 1, 1, 1)
 	elseif profit > spent then
-		GameTooltip:AddDoubleLine("Profit", K.FormatMoney(profit-spent), 0, 1, 0, 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Profit"], K.FormatMoney(profit-spent), 0, 1, 0, 1, 1, 1)
 	end
 	GameTooltip:AddLine(" ")
 
 	local totalGold = 0
-	GameTooltip:AddLine("Characters On Realm:", 0.6, 0.8, 1)
+	GameTooltip:AddLine(L["RealmCharacter"], 0.6, 0.8, 1)
 	for _, realm in pairs(crossRealms) do
 		local thisRealmList = KkthnxUIGold.totalGold[realm]
 		if thisRealmList then
@@ -149,9 +150,9 @@ local function OnEnter()
 	end
 
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(" ", " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:230:307|t ".."Character Frame".." ", 1, 1, 1, 0.6, 0.8, 1)
-	GameTooltip:AddDoubleLine(" ", " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:230:307|t ".."Currency Panel".." ", 1, 1, 1, 0.6, 0.8, 1)
-	GameTooltip:AddDoubleLine(" ", "CTRL +".." |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:333:411|t ".."Reset Gold".." ", 1, 1, 1, 0.6, 0.8, 1)
+	GameTooltip:AddDoubleLine(" ", K.LeftButton.."Character Frame".." ", 1, 1, 1, 0.6, 0.8, 1)
+	GameTooltip:AddDoubleLine(" ", K.RightButton.."Currency Panel".." ", 1, 1, 1, 0.6, 0.8, 1)
+	GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.6, 0.8, 1)
 	GameTooltip:Show()
 end
 

@@ -78,6 +78,45 @@ local function highlightFunction(button, match)
 	button:SetAlpha(match and 1 or 0.25)
 end
 
+function Module:UpdateItemUpgradeIcon(self)
+	if not C["Inventory"].UpgradeIcon then
+		self.UpgradeIcon:SetShown(false)
+		self:SetScript('OnUpdate', nil)
+		return
+	end
+
+	local itemIsUpgrade, containerID, slotID = nil, self:GetParent():GetID(), self:GetID()
+
+	-- We need to use the Pawn function here to show actually the icon, as Blizzard API doesnt seem to work.
+	if _G.PawnIsContainerItemAnUpgrade then
+		itemIsUpgrade = _G.PawnIsContainerItemAnUpgrade(containerID, slotID)
+	end
+
+	-- Pawn author suggests to fallback to Blizzard API anyways.
+	if itemIsUpgrade == nil then
+		itemIsUpgrade = _G.IsContainerItemAnUpgrade(containerID, slotID)
+	end
+
+	if itemIsUpgrade == nil then -- nil means not all the data was available to determine if this is an upgrade.
+		self.UpgradeIcon:SetShown(false)
+		self:SetScript('OnUpdate', Module.UpgradeCheck_OnUpdate)
+	else
+		self.UpgradeIcon:SetShown(itemIsUpgrade)
+		self:SetScript('OnUpdate', nil)
+	end
+end
+
+local ITEM_UPGRADE_CHECK_TIME = 0.5
+function Module:UpgradeCheck_OnUpdate(elapsed)
+	print("UpgradeCheck_OnUpdate")
+	self.timeSinceUpgradeCheck = (self.timeSinceUpgradeCheck or 0) + elapsed
+	if self.timeSinceUpgradeCheck >= ITEM_UPGRADE_CHECK_TIME then
+		Module:UpdateItemUpgradeIcon(self)
+		print(">=")
+		self.timeSinceUpgradeCheck = 0
+	end
+end
+
 function Module:CreateInfoFrame()
 	local infoFrame = CreateFrame("Button", nil, self)
 	infoFrame:SetPoint("TOPLEFT", 10, 0)
@@ -864,16 +903,28 @@ function Module:OnEnable()
 		parentFrame:SetAllPoints()
 		parentFrame:SetFrameLevel(5)
 
-		self.Favourite = parentFrame:CreateTexture(nil, "OVERLAY")
-		self.Favourite:SetAtlas("collections-icon-favorites")
-		self.Favourite:SetSize(24, 24)
-		self.Favourite:SetPoint("TOPRIGHT", 3, 2)
+		if self.UpgradeIcon then
+			self.UpgradeIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\UpgradeIcon.tga")
+			self.UpgradeIcon:SetTexCoord(0, 1, 0, 1)
+			self.UpgradeIcon:SetPoint("TOPLEFT", -C["Inventory"].IconSize / 20, C["Inventory"].IconSize / 20)
+			self.UpgradeIcon:SetSize(C["Inventory"].IconSize / 1.4, C["Inventory"].IconSize / 1.4)
+			self.UpgradeIcon:Hide()
+		end
 
-		self.Quest = self:CreateTexture(nil, "ARTWORK")
-		self.Quest:SetSize(26, 26)
-		self.Quest:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")
-		self.Quest:ClearAllPoints()
-		self.Quest:SetPoint("LEFT", self, "LEFT", 0, 1)
+		if not self.Favourite then
+			self.Favourite = parentFrame:CreateTexture(nil, "OVERLAY")
+			self.Favourite:SetAtlas("collections-icon-favorites")
+			self.Favourite:SetSize(24, 24)
+			self.Favourite:SetPoint("TOPRIGHT", 3, 2)
+		end
+
+		if not (self.Quest) then
+			self.Quest = self:CreateTexture(nil, "ARTWORK")
+			self.Quest:SetSize(26, 26)
+			self.Quest:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")
+			self.Quest:ClearAllPoints()
+			self.Quest:SetPoint("LEFT", self, "LEFT", 0, 1)
+		end
 
 		self.iLvl = K.CreateFontString(self, 12, "", "OUTLINE", false, "BOTTOMLEFT", 1, 1)
 		self.iLvl:SetFontObject(bagsFont)
@@ -962,20 +1013,8 @@ function Module:OnEnable()
 			self.IconOverlay:Hide()
 		end
 
-		if C["Inventory"].UpgradeIcon and self.UpgradeIcon then
-			self.UpgradeIcon:SetPoint("TOPLEFT", -C["Inventory"].IconSize / 12, C["Inventory"].IconSize / 12)
-			self.UpgradeIcon:SetSize(C["Inventory"].IconSize / 1.6, C["Inventory"].IconSize / 1.6)
-			if PawnIsContainerItemAnUpgrade then
-				itemIsUpgrade = PawnIsContainerItemAnUpgrade(self:GetParent():GetID(), self:GetID())
-			else
-				itemIsUpgrade = IsContainerItemAnUpgrade(self:GetParent():GetID(), self:GetID())
-			end
-
-			if itemIsUpgrade and itemIsUpgrade == true then
-				self.UpgradeIcon:SetShown(true)
-			else
-				self.UpgradeIcon:SetShown(false)
-			end
+		if self.UpgradeIcon then
+			Module:UpdateItemUpgradeIcon(self)
 		end
 
 		if IsAddOnLoaded("CanIMogIt") then

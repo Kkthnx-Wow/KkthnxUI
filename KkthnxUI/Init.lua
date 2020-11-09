@@ -90,6 +90,11 @@ K.GreyColor = "|CFF7b8489"
 K.InfoColor = "|CFF669DFF"
 K.InfoColorTint = "|CFFA3D3FF"
 K.SystemColor = "|CFFFFCC66"
+K.LeftButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:230:307|t "
+K.RightButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:333:410|t "
+K.ScrollButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t "
+K.AFKTex = "|T"..FRIENDS_TEXTURE_AFK..":14:14:0:0:16:16:1:15:1:15|t"
+K.DNDTex = "|T"..FRIENDS_TEXTURE_DND..":14:14:0:0:16:16:1:15:1:15|t"
 
 function K:IsMyPet(flags)
 	return bit.band(flags, COMBATLOG_OBJECT_AFFILIATION_MINE) > 0

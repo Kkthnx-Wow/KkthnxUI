@@ -648,8 +648,9 @@ end
 
 function Module:CreateClassPower(self)
 	if self.mystyle == "PlayerPlate" then
-		barWidth, barHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
-		Module.ClassPowerBarPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 14}
+		barWidth = C["Nameplate"].NameplateClassPower and C["Nameplate"].PlateWidth or C["Nameplate"].PPWidth
+		barHeight = C["Nameplate"].PPHeight
+		Module.ClassPowerBarPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 3}
 	end
 
 	local bar = CreateFrame("Frame", "oUF_ClassPowerBar", self.Health)
@@ -663,7 +664,7 @@ function Module:CreateClassPower(self)
 		bars[i]:SetWidth((barWidth - 5 * 6) / 6)
 		bars[i]:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 		bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
-		if self.mystyle == "PlayerPlate" then
+		if self.mystyle == "nameplate" or self.mystyle == "PlayerPlate" then
 			bars[i]:CreateShadow(true)
 		else
 			bars[i]:CreateBorder()
@@ -699,15 +700,7 @@ function Module:CreateClassPower(self)
 end
 
 function Module:CreateUnits()
-	if C["Nameplate"].Enable or
-		not IsAddOnLoaded("TidyPlates") or
-		not IsAddOnLoaded("nPlates") or
-		not IsAddOnLoaded("Kui_Nameplates") or
-		not IsAddOnLoaded("rNamePlates") or
-		not IsAddOnLoaded("EKplates") or
-		not IsAddOnLoaded("bdNameplates") or
-		not IsAddOnLoaded("Plater") then
-
+	if C["Nameplate"].Enable then
 		self:SetupCVars()
 		self:BlockAddons()
 		self:CheckExplosives()

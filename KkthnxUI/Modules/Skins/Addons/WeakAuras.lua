@@ -65,12 +65,8 @@ local function Skin_WeakAuras(f, fType)
 	end
 end
 
-function Module:ReskinWeakAuras()
+local function ReskinWeakAuras()
 	if not C["Skins"].WeakAuras then
-		return
-	end
-
-	if not IsAddOnLoaded("WeakAuras") then
 		return
 	end
 
@@ -107,3 +103,5 @@ function Module:ReskinWeakAuras()
 		end
 	end
 end
+
+Module:LoadWithAddOn("WeakAuras", "WeakAuras", ReskinWeakAuras)

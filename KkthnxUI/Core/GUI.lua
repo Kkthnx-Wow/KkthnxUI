@@ -17,8 +17,6 @@ local unpack = _G.unpack
 local CreateFrame = _G.CreateFrame
 local GameTooltip = _G.GameTooltip
 local UIParent = _G.UIParent
-local UnitClass = _G.UnitClass
-local select = _G.select
 
 local StyleFont = function(fs, font, size)
 	fs:SetFont(font, size)
@@ -33,14 +31,23 @@ local Texture = C["Media"].Texture
 local ArrowUp = "Interface\\Buttons\\Arrow-Up-Down"
 local ArrowDown = "Interface\\Buttons\\Arrow-Down-Down"
 
-local DruidIcon = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:196:256:0:64|t"
-local HunterIcon = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:64:128|t"
+local DeathKnightIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:128:196|t".."|CFFC41F3B"
+local DemonHunterIconColor = "".."|CFFA330C9"
+local DruidIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:196:256:0:64|t".."|CFFFF7D0A"
+local HunterIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:64:128|t".."|CFFA9D271"
+local MageIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:0:64|t".."|CFF40C7EB"
+local MonkIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:128:196|t".."|CFF00FF96"
+local PaladinIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:128:196|t".."|CFFF58CBA"
+local PriestIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:64:128|t".."|CFFFFFFFF"
+local RogueIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:0:64|t".."|CFFFFF569"
+local ShamanIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:64:128|t".."|CFF0070DE"
+local WarlockIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:196:256:64:128|t".."|CFF8787ED"
+local WarriorIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:0:64|t".."|CFFC79C6E"
 
 local BGColor = {0.2, 0.2, 0.2}
 local BrightColor = {0.35, 0.35, 0.35}
 
-local Color = K.Colors.class[select(2, UnitClass("player"))]
-local R, G, B = unpack(Color)
+local R, G, B = K.r, K.g, K.b
 
 local HeaderText = K.SystemColor.."Welcome to "..K.Title.." "..K.InfoColor.."v"..K.Version..", "..K.MyClassColor..K.Name
 
@@ -67,6 +74,7 @@ local LastActiveWindow
 
 local MySelectedProfile = K.Realm.."-"..K.Name
 
+-- Do not add class color/icon string unless they ask for it or agree apon it :D
 local CreditLines = {
 	K.GreyColor.."~~~~|r |CFFfa6a56Patreons|r "..K.GreyColor.."~~~~",
 	-- Tier 1
@@ -82,24 +90,25 @@ local CreditLines = {
 	"",
 	-- Tier 3
 	"|CFFfa6a56Tier 3|r",
-	"|CFFF58CBAChirs|r",
+	PaladinIconColor.."Chirs|r",
 	"thondr",
 	"",
 	-- Tier 4
 	"|CFFfa6a56Tier 4|r",
-	"|cff0070DERokalm|r",
+	ShamanIconColor.."Rokalm|r",
 	"",
 	K.GreyColor.."~~~~|r |CFFFFCC66Credits|r "..K.GreyColor.."~~~~",
 	"Aftermathh",
+	RogueIconColor.."Alteredcross|r",
 	"Alza",
 	"Azilroka",
 	"Blazeflack",
 	"Caellian",
 	"Caith",
-	HunterIcon.."|CCFA9D271Cassamarra|r",
+	HunterIconColor.."Cassamarra|r",
 	"Darth Predator",
 	"Elv - (|cff1784d1ElvUI|r)",
-	DruidIcon.."|CFFFF7D0AGoldpaw|r - (|c00000002|r|cff7284abA|r|cff6a7a9ez|r|cff617092e|r|cff596785r|r|cff505d78i|r|cff48536bt|r|cff3f495fe|r|cffffffffUI|r)",
+	DruidIconColor.."Goldpaw|r - (|c00000002|r|cff7284abA|r|cff6a7a9ez|r|cff617092e|r|cff596785r|r|cff505d78i|r|cff48536bt|r|cff3f495fe|r|cffffffffUI|r)",
 	"Haleth",
 	"Haste",
 	"Hungtar",
@@ -116,7 +125,7 @@ local CreditLines = {
 	"Shestak - (ShestakUI)",
 	"Simpy",
 	"siweia - (|cff0080ffNDui|r)",
-	"|CFFC41F3BSophia|r",
+	DeathKnightIconColor.."Sophia|r",
 	"Sticklord",
 	"Tekkub",
 	"Tohveli",

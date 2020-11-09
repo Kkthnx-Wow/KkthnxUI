@@ -353,9 +353,9 @@ local DataText = function(self)
 	-- Window:CreateSwitch("DataText", "Currency", L["Enable Currency Info"])
 	-- Window:CreateSwitch("DataText", "Friends", L["Enable Friends Info"])
 	-- Window:CreateSwitch("DataText", "Guild", L["Enable Guild Info"])
-	-- Window:CreateSwitch("DataText", "Latency", L["Enable Latency Info"])
+	Window:CreateSwitch("DataText", "Latency", L["Enable Latency Info"])
 	Window:CreateSwitch("DataText", "Location", L["Enable Minimap Location"])
-	-- Window:CreateSwitch("DataText", "System", L["Enable System Info"])
+	Window:CreateSwitch("DataText", "System", L["Enable System Info"])
 	Window:CreateSwitch("DataText", "Time", L["Enable Minimap Time"])
 end
 
