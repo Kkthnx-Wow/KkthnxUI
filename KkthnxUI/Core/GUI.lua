@@ -33,6 +33,9 @@ local Texture = C["Media"].Texture
 local ArrowUp = "Interface\\Buttons\\Arrow-Up-Down"
 local ArrowDown = "Interface\\Buttons\\Arrow-Down-Down"
 
+local DruidIcon = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:196:256:0:64|t"
+local HunterIcon = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:64:128|t"
+
 local BGColor = {0.2, 0.2, 0.2}
 local BrightColor = {0.35, 0.35, 0.35}
 
@@ -93,14 +96,14 @@ local CreditLines = {
 	"Blazeflack",
 	"Caellian",
 	"Caith",
-	"|CCFA9D271Cassamarra|r",
+	HunterIcon.."|CCFA9D271Cassamarra|r",
 	"Darth Predator",
-	"Elv",
-	"|CFFFF7D0AGoldpaw|r",
+	"Elv - (|cff1784d1ElvUI|r)",
+	DruidIcon.."|CFFFF7D0AGoldpaw|r - (|c00000002|r|cff7284abA|r|cff6a7a9ez|r|cff617092e|r|cff596785r|r|cff505d78i|r|cff48536bt|r|cff3f495fe|r|cffffffffUI|r)",
 	"Haleth",
 	"Haste",
 	"Hungtar",
-	"Hydra",
+	"Hydra - (|cFFFFC44DvUI|r)",
 	"Ishtara",
 	"KkthnxUI Community",
 	"LightSpark",
@@ -110,14 +113,14 @@ local CreditLines = {
 	"P3lim",
 	"Rav99",
 	"Roth",
-	"Shestak",
+	"Shestak - (ShestakUI)",
 	"Simpy",
-	"siweia",
+	"siweia - (|cff0080ffNDui|r)",
 	"|CFFC41F3BSophia|r",
 	"Sticklord",
 	"Tekkub",
 	"Tohveli",
-	"Tukz",
+	"Tukz - (|cffff8000Tukui|r)",
 	"Tulla",
 	"Tuller",
 	"oUF Team",
