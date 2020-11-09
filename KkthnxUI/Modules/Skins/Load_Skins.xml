@@ -28,7 +28,7 @@
 
    <Include file="Addons\Details.lua" />
    <Include file="Addons\DeadlyBossMods.lua" />
-   <Include file="Addons\Hekili.lua" />
+   <Include file="Addons\WeakAuras.lua" />
 
    <!-- <Include file="Addons\Bartender4.lua" />
    <Include file="Addons\BigWigs.lua" />
@@ -41,6 +41,7 @@
    <Include file="Addons\Simulationcraft.lua" />
    <Include file="Addons\Skada.lua" />
    <Include file="Addons\Spy.lua" />
+   <Include file="Addons\Hekili.lua" />
    <Include file="Addons\TellMeWhen.lua" />
    <Include file="Addons\TitanPanel.lua" />
    <Include file="Addons\WeakAuras.lua" /> -->
