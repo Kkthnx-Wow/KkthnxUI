@@ -65,7 +65,6 @@ function Module:OnEnable()
 
 	-- Module.loginTime = GetTime()
 
-	-- self:CreateCurrencyDataText()
 	-- self:CreateGuildDataText()
 	self:CreateLocationDataText()
 	-- self:CreateSocialDataText()

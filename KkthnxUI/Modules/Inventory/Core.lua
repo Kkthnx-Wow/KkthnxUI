@@ -81,7 +81,7 @@ end
 function Module:UpdateItemUpgradeIcon(self)
 	if not C["Inventory"].UpgradeIcon then
 		self.UpgradeIcon:SetShown(false)
-		self:SetScript('OnUpdate', nil)
+		self:SetScript("OnUpdate", nil)
 		return
 	end
 
@@ -99,22 +99,49 @@ function Module:UpdateItemUpgradeIcon(self)
 
 	if itemIsUpgrade == nil then -- nil means not all the data was available to determine if this is an upgrade.
 		self.UpgradeIcon:SetShown(false)
-		self:SetScript('OnUpdate', Module.UpgradeCheck_OnUpdate)
+		self:SetScript("OnUpdate", Module.UpgradeCheck_OnUpdate)
 	else
 		self.UpgradeIcon:SetShown(itemIsUpgrade)
-		self:SetScript('OnUpdate', nil)
+		self:SetScript("OnUpdate", nil)
 	end
 end
 
 local ITEM_UPGRADE_CHECK_TIME = 0.5
 function Module:UpgradeCheck_OnUpdate(elapsed)
-	print("UpgradeCheck_OnUpdate")
 	self.timeSinceUpgradeCheck = (self.timeSinceUpgradeCheck or 0) + elapsed
 	if self.timeSinceUpgradeCheck >= ITEM_UPGRADE_CHECK_TIME then
 		Module:UpdateItemUpgradeIcon(self)
-		print(">=")
 		self.timeSinceUpgradeCheck = 0
 	end
+end
+
+local profit, spent, oldMoney, ticker = 0, 0, 0
+local crossRealms = GetAutoCompleteRealms()
+
+if not crossRealms or #crossRealms == 0 then
+	crossRealms = {[1] = K.Realm}
+end
+
+StaticPopupDialogs["RESETGOLD"] = {
+	text = "Are you sure to reset the gold count?",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		for _, realm in pairs(crossRealms) do
+			if KkthnxUIGold.totalGold[realm] then
+				table_wipe(KkthnxUIGold.totalGold[realm])
+			end
+		end
+		KkthnxUIGold.totalGold[K.Realm][K.Name] = {GetMoney(), K.Class}
+	end,
+	whileDead = 1,
+}
+
+local function getClassIcon(class)
+	local c1, c2, c3, c4 = unpack(CLASS_ICON_TCOORDS[class])
+	c1, c2, c3, c4 = (c1 + 0.03) * 50, (c2 - 0.03) * 50, (c3 + 0.03) * 50, (c4 - 0.03) * 50
+	local classStr = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:12:12:0:0:50:50:"..c1..":"..c2..":"..c3..":"..c4.."|t "
+	return classStr or ""
 end
 
 function Module:CreateInfoFrame()
@@ -140,10 +167,136 @@ function Module:CreateInfoFrame()
 	search.Backdrop:SetPoint("TOPLEFT", -5, -7)
 	search.Backdrop:SetPoint("BOTTOMRIGHT", 5, 7)
 
-	local moneyTag = self:SpawnPlugin("TagDisplay", "[money]", infoFrame)
-	moneyTag:SetFontObject(bagsFont)
-	moneyTag:SetFont(select(1, moneyTag:GetFont()), 13, select(3, moneyTag:GetFont()))
-	moneyTag:SetPoint("LEFT", icon, "RIGHT", 6, 0)
+	local moneyTag = CreateFrame('Button', nil, infoFrame)
+	moneyTag:RegisterEvent("PLAYER_MONEY")
+	moneyTag:RegisterEvent("SEND_MAIL_MONEY_CHANGED")
+	moneyTag:RegisterEvent("SEND_MAIL_COD_CHANGED")
+	moneyTag:RegisterEvent("PLAYER_TRADE_MONEY")
+	moneyTag:RegisterEvent("TRADE_MONEY_CHANGED")
+	moneyTag:RegisterEvent("PLAYER_ENTERING_WORLD")
+	moneyTag:SetScript('OnEvent', function(self, event)
+		if not IsLoggedIn() then
+			return
+		end
+
+		if event == "PLAYER_ENTERING_WORLD" then
+			oldMoney = GetMoney()
+			self:UnregisterEvent(event)
+		end
+
+		if not ticker then
+			C_WowTokenPublic.UpdateMarketPrice()
+			ticker = C_Timer.NewTicker(60, C_WowTokenPublic.UpdateMarketPrice)
+		end
+
+		local newMoney = GetMoney()
+		local change = newMoney - oldMoney -- Positive if we gain money
+		if oldMoney > newMoney then -- Lost Money
+			spent = spent - change
+		else -- Gained Moeny
+			profit = profit + change
+		end
+
+		local moneyTagText = infoFrame:CreateFontString(nil, "OVERLAY")
+		moneyTagText:SetPoint("LEFT", icon, "RIGHT", 6, 0)
+		moneyTagText:SetFontObject(bagsFont)
+		moneyTagText:SetFont(select(1, moneyTagText:GetFont()), 13, select(3, moneyTagText:GetFont()))
+		moneyTagText:SetText(K.FormatMoney(newMoney))
+		moneyTagText:SetWordWrap(false)
+		moneyTag:SetAllPoints(moneyTagText)
+
+		KkthnxUIGold = KkthnxUIGold or {}
+		KkthnxUIGold.totalGold = KkthnxUIGold.totalGold or {}
+
+		if not KkthnxUIGold.totalGold[K.Realm] then
+			KkthnxUIGold.totalGold[K.Realm] = {}
+		end
+
+		if not KkthnxUIGold.totalGold[K.Realm][K.Name] then
+			KkthnxUIGold.totalGold[K.Realm][K.Name] = {}
+		end
+
+		KkthnxUIGold.totalGold[K.Realm][K.Name][1] = GetMoney()
+		KkthnxUIGold.totalGold[K.Realm][K.Name][2] = K.Class
+
+		oldMoney = newMoney
+	end)
+
+	moneyTag:SetScript('OnEnter', function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_NONE")
+		GameTooltip:SetPoint(K.GetAnchors(self))
+		GameTooltip:ClearLines()
+
+		GameTooltip:AddLine(K.InfoColor..CURRENCY)
+		GameTooltip:AddLine(" ")
+
+		GameTooltip:AddLine(L["Session"], 0.6, 0.8, 1)
+		GameTooltip:AddDoubleLine(L["Earned"], K.FormatMoney(profit), 1, 1, 1, 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Spent"], K.FormatMoney(spent), 1, 1, 1, 1, 1, 1)
+		if profit < spent then
+			GameTooltip:AddDoubleLine(L["Deficit"], K.FormatMoney(spent-profit), 1, 0, 0, 1, 1, 1)
+		elseif profit > spent then
+			GameTooltip:AddDoubleLine(L["Profit"], K.FormatMoney(profit-spent), 0, 1, 0, 1, 1, 1)
+		end
+		GameTooltip:AddLine(" ")
+
+		local totalGold = 0
+		GameTooltip:AddLine(L["RealmCharacter"], 0.6, 0.8, 1)
+		for _, realm in pairs(crossRealms) do
+			local thisRealmList = KkthnxUIGold.totalGold[realm]
+			if thisRealmList then
+				for k, v in pairs(thisRealmList) do
+					local name = Ambiguate(k.."-"..realm, "none")
+					local gold, class = unpack(v)
+					local r, g, b = K.ColorClass(class)
+					GameTooltip:AddDoubleLine(getClassIcon(class)..name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
+					totalGold = totalGold + gold
+				end
+			end
+		end
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddDoubleLine(TOTAL..":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t ".."Token:", K.FormatMoney(C_WowTokenPublic.GetCurrentMarketPrice() or 0), .6,.8,1, 1, 1, 1)
+
+		for i = 1, GetNumWatchedTokens() do
+			local currencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo(i)
+			local name, count, icon, currencyID = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID, currencyInfo.currencyTypesID
+			if name and i == 1 then
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine(CURRENCY..":", 0.6, 0.8, 1)
+			end
+
+			if name and count then
+				local total = C_CurrencyInfo.GetCurrencyInfo(currencyID).maxQuantity
+				local iconTexture = " |T"..icon..":12:12:0:0:50:50:4:46:4:46|t"
+				if total > 0 then
+					GameTooltip:AddDoubleLine(name, count.."/"..total..iconTexture, 1, 1, 1, 1, 1, 1)
+				else
+					GameTooltip:AddDoubleLine(name, count..iconTexture, 1, 1, 1, 1, 1, 1)
+				end
+			end
+		end
+
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.6, 0.8, 1)
+		GameTooltip:Show()
+	end)
+
+	moneyTag:HookScript('OnLeave', function()
+		K.HideTooltip()
+	end)
+
+	moneyTag:HookScript('OnMouseUp', function(_, button)
+		if IsControlKeyDown() and button == "RightButton" then
+			StaticPopup_Show("RESETGOLD")
+		else
+			if InCombatLockdown() then
+				UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+				return
+			end
+		end
+	end)
 
 	local currencyTag = self:SpawnPlugin("TagDisplay", "[currencies]", infoFrame)
 	currencyTag:SetFontObject(bagsFont)
@@ -752,7 +905,6 @@ function Module:OnEnable()
 	end
 
 	if IsAddOnLoaded("AdiBags") or IsAddOnLoaded("ArkInventory") or IsAddOnLoaded("cargBags_Nivaya") or IsAddOnLoaded("cargBags") or IsAddOnLoaded("Bagnon") or IsAddOnLoaded("Combuctor") or IsAddOnLoaded("TBag") or IsAddOnLoaded("BaudBag") then
-		C["Inventory"].Enable = false
 		return
 	end
 
@@ -918,7 +1070,7 @@ function Module:OnEnable()
 			self.Favourite:SetPoint("TOPRIGHT", 3, 2)
 		end
 
-		if not (self.Quest) then
+		if not self.Quest then
 			self.Quest = self:CreateTexture(nil, "ARTWORK")
 			self.Quest:SetSize(26, 26)
 			self.Quest:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")
@@ -994,7 +1146,6 @@ function Module:OnEnable()
 	end
 
 	function MyButton:OnUpdate(item)
-		local itemIsUpgrade
 		local buttonIconTexture = _G[self:GetName().."IconTexture"]
 
 		if self.JunkIcon then

@@ -201,7 +201,6 @@ C["DataBars"] = {
 
 -- Datatext
 C["DataText"] = {
-	-- ["Currency"] = true,
 	-- ["Friends"] = true,
 	-- ["Guild"] = true,
 	["Latency"] = true,

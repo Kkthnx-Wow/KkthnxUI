@@ -350,7 +350,6 @@ local DataText = function(self)
 	local Window = self:CreateWindow(L["DataText"])
 
 	Window:CreateSection("DataText Toggles")
-	-- Window:CreateSwitch("DataText", "Currency", L["Enable Currency Info"])
 	-- Window:CreateSwitch("DataText", "Friends", L["Enable Friends Info"])
 	-- Window:CreateSwitch("DataText", "Guild", L["Enable Guild Info"])
 	Window:CreateSwitch("DataText", "Latency", L["Enable Latency Info"])
