@@ -45,6 +45,7 @@ C["Announcements"] = {
 	["ItemAlert"] = false,
 	["PullCountdown"] = true,
 	["RareAlert"] = false,
+	["ResetInstance"] = true,
 	["SaySapped"] = false,
 	["Interrupt"] = {
 		["Options"] = {
@@ -66,6 +67,8 @@ C["Automation"] = {
 	["AutoCollapse"] = false,
 	["AutoDeclineDuels"] = false,
 	["AutoDeclinePetDuels"] = false,
+	["AutoDisenchant"] = false,
+	["AutoGoodbye"] = false,
 	["AutoInvite"] = false,
 	["AutoPartySync"] = false,
 	["AutoQuest"] = false,
@@ -128,33 +131,36 @@ C["Auras"] = {
 	["Reminder"] = false,
 	["ReverseBuffs"] = false,
 	["ReverseDebuffs"] = false,
+	["TotemSize"] = 32,
 	["Totems"] = true,
+	["VerticalTotems"] = true,
 }
 
 -- Chat
 C["Chat"] = {
+	["AllowFriends"] = true,
+	["Background"] = true,
 	["BlockAddonAlert"] = false,
 	["BlockStranger"] = false,
 	["ChatFilterList"] = "%*",
 	["ChatFilterWhiteList"] = "",
-	["EnableFilter"] = true,
-	["Width"] = 370,
-	["Height"] = 150,
-	["Lock"] = true,
-	["AllowFriends"] = true,
-	["Background"] = true,
 	["ChatItemLevel"] = true,
 	["ChatMenu"] = true,
 	["Enable"] = true,
+	["EnableFilter"] = true,
 	["Fading"] = true,
-	["FadingTimeFading"] = 3,
-	["FadingTimeVisible"] = 20,
+	["FadingTimeVisible"] = 100,
 	["FilterMatches"] = 1,
+	["Freedom"] = true,
+	["Height"] = 150,
+	["Lock"] = true,
 	["LootIcons"] = false,
 	["OldChatNames"] = false,
+	["Sticky"] = false,
 	["TabsMouseover"] = true,
 	["WhisperColor"] = true,
 	["WhisperSound"] = true,
+	["Width"] = 392,
 	["TimestampFormat"] = {
 		["Options"] = {
 			["Disable"] = 1,
@@ -176,39 +182,47 @@ C["DataBars"] = {
 	["HonorColor"] = {240/255, 114/255, 65/255},
 	["MouseOver"] = false,
 	["RestedColor"] = {1, 0, 1, 0.2},
-	["Text"] = true,
 	["TrackHonor"] = false,
 	["Width"] = 180,
+	["Text"] = {
+		["Options"] = {
+			["NONE"] = 0,
+			["PERCENT"] = 1,
+			["CURMAX"] = 2,
+			["CURPERC"] = 3,
+			["CUR"] = 4,
+			["REM"] = 5,
+			["CURREM"] = 6,
+			["CURPERCREM"] = 7,
+		},
+		["Value"] = 1
+	},
 }
 
 -- Datatext
 C["DataText"] = {
-	["Currency"] = true,
-	["Friends"] = true,
-	["Guild"] = true,
-	["Latency"] = true,
+	-- ["Currency"] = true,
+	-- ["Friends"] = true,
+	-- ["Guild"] = true,
+	-- ["Latency"] = true,
 	["Location"] = true,
-	["System"] = true,
+	-- ["System"] = true,
 	["Time"] = true,
+	-- ["GuildSortOrder"] = true,
+	-- ["GuildSortBy"] = 1,
 }
 
-C["Filger"] = {
-	["BuffSize"] = 36,
-	["CooldownSize"] = 30,
-	["Enable"] = false,
-	["Expiration"] = false,
-	["MaxTestIcon"] = 5,
-	["PvPSize"] = 60,
-	["ShowAuraBar"] = true,
-	["ShowBuff"] = true,
-	["ShowCD"] = true,
-	["ShowDebuff"] = true,
-	["ShowProc"] = true,
-	["ShowPvPPlayer"] = true,
-	["ShowPvPTarget"] = true,
-	["ShowSpecial"] = true,
-	["ShowTooltip"] = false,
-	["TestMode"] = false,
+C["AuraWatch"] = {
+	["Enable"] = true,
+	["ClickThrough"] = false,
+	["IconScale"] = 1,
+	["DeprecatedAuras"] = false,
+	["QuakeRing"] = false,
+	["InternalCD"] = {},
+	["AuraList"] = {
+		["Switcher"] = {},
+		["IgnoreSpells"] = {},
+	},
 }
 
 -- General
@@ -216,6 +230,7 @@ C["General"] = {
 	["AutoScale"] = true,
 	["ColorTextures"] = false,
 	["FontSize"] = 12,
+	["MissingTalentAlert"] = true,
 	["MoveBlizzardFrames"] = false,
 	["NoTutorialButtons"] = false,
 	["ReplaceBlizzardFonts"] = true,
@@ -233,6 +248,9 @@ C["General"] = {
 		},
 		["Value"] = 1
 	},
+	["Profiles"] = {
+		["Options"] = {},
+	},
 }
 
 -- Loot
@@ -246,6 +264,7 @@ C["Loot"] = {
 
 -- Minimap
 C["Minimap"] = {
+	["Calendar"] = true,
 	["Enable"] = true,
 	["ResetZoom"] = false,
 	["ResetZoomTime"] = 4,
@@ -429,7 +448,7 @@ C["UITextures"] = {
 	["DataBarsTexture"] = "KkthnxUI",
 	["FilgerTextures"] = "KkthnxUI",
 	["GeneralTextures"] = "KkthnxUI",
-	["HealPredictionTextures"] = "Blank",
+	["HealPredictionTextures"] = "KkthnxUI",
 	["LootTextures"] = "KkthnxUI",
 	["NameplateTextures"] = "KkthnxUI",
 	["QuestTrackerTexture"] = "KkthnxUI",
@@ -557,7 +576,7 @@ C["Raid"] = {
 	["Enable"] = true,
 	["Height"] = 40,
 	["HorizonRaid"] = false,
-	-- ["MainTankFrames"] = true,
+	["MainTankFrames"] = true,
 	["ManabarShow"] = false,
 	["NumGroups"] = 6,
 	["RaidUtility"] = true,
@@ -599,6 +618,7 @@ C["WorldMap"] = {
 	["AlphaWhenMoving"] = 0.35,
 	["Coordinates"] = true,
 	["FadeWhenMoving"] = true,
+	["MapRevealGlow"] = true,
 	["SmallWorldMap"] = true,
-	["WorldMapPlus"] = false,
+	["MapReveal"] = false,
 }

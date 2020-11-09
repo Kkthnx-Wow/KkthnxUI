@@ -1,6 +1,6 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
-local FilterConfig = K.ActionBars.actionBar4
+local FilterConfig = C.ActionBars.actionBar4
 
 local _G = _G
 local table_insert = _G.table.insert

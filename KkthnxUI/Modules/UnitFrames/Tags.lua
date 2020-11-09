@@ -5,13 +5,14 @@ local _G = _G
 local string_format = _G.string.format
 local string_find = _G.string.find
 
-local LEVEL = _G.LEVEL
 local ALTERNATE_POWER_INDEX = Enum.PowerType.Alternate or 10
 local CHAT_MSG_AFK = _G.CHAT_MSG_AFK
 local DEAD = _G.DEAD
 local DND = _G.DND
 local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
 local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
+local GetSpellInfo = _G.GetSpellInfo
+local LEVEL = _G.LEVEL
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local UnitBattlePetLevel = _G.UnitBattlePetLevel
 local UnitClass = _G.UnitClass
@@ -27,6 +28,7 @@ local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDND = _G.UnitIsDND
 local UnitIsDead = _G.UnitIsDead
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
+local UnitIsFeignDeath = _G.UnitIsFeignDeath
 local UnitIsGhost = _G.UnitIsGhost
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
@@ -39,6 +41,14 @@ local UnitPower = _G.UnitPower
 local UnitPowerType = _G.UnitPowerType
 local UnitReaction = _G.UnitReaction
 local UnitStagger = _G.UnitStagger
+
+local FEIGN_DEATH
+local function GetFeignDeathTag()
+	if not FEIGN_DEATH then
+		FEIGN_DEATH = GetSpellInfo(5384)
+	end
+	return FEIGN_DEATH
+end
 
 local function ColorPercent(value)
 	local r, g, b
@@ -64,7 +74,7 @@ local function ValueAndPercent(cur, per)
 end
 
 oUF.Tags.Methods["hp"] = function(unit)
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
+	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or UnitIsFeignDeath(unit) then
 		return oUF.Tags.Methods["DDG"](unit)
 	else
 		local per = oUF.Tags.Methods["perhp"](unit) or 0
@@ -123,7 +133,9 @@ end
 oUF.Tags.Events["afkdnd"] = "PLAYER_FLAGS_CHANGED"
 
 oUF.Tags.Methods["DDG"] = function(unit)
-	if UnitIsDead(unit) then
+	if UnitIsFeignDeath(unit) then
+		return "|cffCFCFCF"..GetFeignDeathTag().."|r"
+	elseif UnitIsDead(unit) then
 		return "|cffCFCFCF"..DEAD.."|r"
 	elseif UnitIsGhost(unit) then
 		return "|cffCFCFCF"..L["Ghost"].."|r"
@@ -172,7 +184,7 @@ oUF.Tags.Events["fulllevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_C
 
 -- RaidFrame tags
 oUF.Tags.Methods["raidhp"] = function(unit)
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
+	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or UnitIsFeignDeath(unit) then
 		return oUF.Tags.Methods["DDG"](unit)
 	elseif C["Raid"].HealthFormat.Value == 2 then
 		local per = oUF.Tags.Methods["perhp"](unit) or 0

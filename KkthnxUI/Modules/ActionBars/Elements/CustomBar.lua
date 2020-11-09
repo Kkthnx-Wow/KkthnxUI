@@ -6,7 +6,7 @@ local math_min = _G.math.min
 local math_ceil = _G.math.ceil
 local table_insert = _G.table.insert
 
-local FilterConfig = K.ActionBars.actionBar4
+local FilterConfig = C.ActionBars.actionBar4
 local padding, margin = 0, 6
 
 function Module:SetupCustomBar(anchor)

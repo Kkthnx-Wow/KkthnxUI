@@ -113,6 +113,10 @@ function Module:UpdateSpellCaster(...)
 end
 
 function Module:CreateTooltipID()
+	if not C["Tooltip"].ShowIDs then
+		return
+	end
+
 	-- Update all
 	hooksecurefunc(GameTooltip, "SetHyperlink", Module.SetHyperLinkID)
 	hooksecurefunc(ItemRefTooltip, "SetHyperlink", Module.SetHyperLinkID)
@@ -188,6 +192,13 @@ function Module:CreateTooltipID()
 	hooksecurefunc(GameTooltip, "SetAzeritePower", function(self, _, _, id)
 		if id then
 			Module.AddLineForID(self, id, types.azerite, true)
+		end
+	end)
+
+	-- Quests
+	hooksecurefunc("QuestMapLogTitleButton_OnEnter", function(self)
+		if self.questID then
+			Module.AddLineForID(GameTooltip, self.questID, types.quest)
 		end
 	end)
 end

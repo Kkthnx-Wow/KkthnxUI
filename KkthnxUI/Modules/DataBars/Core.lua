@@ -11,13 +11,15 @@ local ARTIFACT_POWER = _G.ARTIFACT_POWER
 local C_AzeriteItem_FindActiveAzeriteItem = _G.C_AzeriteItem.FindActiveAzeriteItem
 local C_AzeriteItem_GetAzeriteItemXPInfo = _G.C_AzeriteItem.GetAzeriteItemXPInfo
 local C_AzeriteItem_GetPowerLevel = _G.C_AzeriteItem.GetPowerLevel
+local C_AzeriteItem_IsAzeriteItemAtMaxLevel = _G.C_AzeriteItem.IsAzeriteItemAtMaxLevel
+local C_QuestLog_ReadyForTurnIn = _G.C_QuestLog.ReadyForTurnIn
 local C_Reputation_GetFactionParagonInfo = _G.C_Reputation.GetFactionParagonInfo
 local C_Reputation_IsFactionParagon = _G.C_Reputation.IsFactionParagon
 local CreateFrame = _G.CreateFrame
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GameTooltip = _G.GameTooltip
 local GetFriendshipReputation = _G.GetFriendshipReputation
-local GetPetExperience = _G.GetPetExperience
+local GetQuestLogRewardXP = _G.GetQuestLogRewardXP
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local GetXPExhaustion = _G.GetXPExhaustion
 local HONOR = _G.HONOR
@@ -33,11 +35,12 @@ local UnitIsPVP = _G.UnitIsPVP
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
 
-local backupColor = _G.FACTION_BAR_COLORS[1]
 -- Experience
 local CurrentXP, XPToLevel, RestedXP, PercentRested
 local PercentXP, RemainXP, RemainTotal, RemainBars
 local QuestLogXP = 0
+-- Reputation
+local backupColor = _G.FACTION_BAR_COLORS[1]
 -- Honor
 local CurrentHonor, MaxHonor, CurrentLevel, PercentHonor, RemainingHonor
 
@@ -50,7 +53,7 @@ function Module:ExperienceBar_CheckQuests(questID, completedOnly)
 		return
 	end
 
-	local isCompleted = C_QuestLog.ReadyForTurnIn(questID)
+	local isCompleted = C_QuestLog_ReadyForTurnIn(questID)
 	if not completedOnly or isCompleted then
 		QuestLogXP = QuestLogXP + GetQuestLogRewardXP(questID)
 	end
@@ -165,6 +168,80 @@ function Module:SetupHonor()
 	honor.Text = htext
 end
 
+function Module:UpdateExperience()
+	local expBar = self.Bars.Experience
+
+	if (not Module:ExperienceBar_ShouldBeVisible()) then
+		expBar:Hide()
+		return
+	else
+		expBar:Show()
+	end
+
+	CurrentXP, XPToLevel, RestedXP = UnitXP("player"), UnitXPMax("player"), GetXPExhaustion()
+	if XPToLevel <= 0 then
+		XPToLevel = 1
+	end
+
+	local remainXP = XPToLevel - CurrentXP
+	local remainPercent = remainXP / XPToLevel
+	RemainTotal, RemainBars = remainPercent * 100, remainPercent * 20
+	PercentXP, RemainXP = (CurrentXP / XPToLevel) * 100, K.ShortValue(remainXP)
+
+	local displayString, textFormat = "", C["DataBars"].Text.Value
+	if not Module:ExperienceBar_ShouldBeVisible() then
+		expBar:SetMinMaxValues(0, 1)
+		expBar:SetValue(1)
+
+		if textFormat ~= 0 then
+			displayString = IsXPUserDisabled() and "Disabled" or "Max Level"
+		end
+	else
+		expBar:SetMinMaxValues(0, XPToLevel)
+		expBar:SetValue(CurrentXP)
+
+		if textFormat == 1 then
+			displayString = string_format("%.2f%%", PercentXP)
+		elseif textFormat == 2 then
+			displayString = string_format("%s - %s", K.ShortValue(CurrentXP), K.ShortValue(XPToLevel))
+		elseif textFormat == 3 then
+			displayString = string_format("%s - %.2f%%", K.ShortValue(CurrentXP), PercentXP)
+		elseif textFormat == 4 then
+			displayString = string_format("%s", K.ShortValue(CurrentXP))
+		elseif textFormat == 5 then
+			displayString = string_format("%s", RemainXP)
+		elseif textFormat == 6 then
+			displayString = string_format("%s - %s", K.ShortValue(CurrentXP), RemainXP)
+		elseif textFormat == 7 then
+			displayString = string_format("%s - %.2f%% (%s)", K.ShortValue(CurrentXP), PercentXP, RemainXP)
+		end
+
+		local isRested = RestedXP and RestedXP > 0
+		if isRested then
+			expBar.RestBar:SetMinMaxValues(0, XPToLevel)
+			expBar.RestBar:SetValue(math.min(CurrentXP + RestedXP, XPToLevel))
+
+			PercentRested = (RestedXP / XPToLevel) * 100
+
+			if textFormat == 1 then
+				displayString = string_format("%s R:%.2f%%", displayString, PercentRested)
+			elseif textFormat == 3 then
+				displayString = string_format("%s R:%s [%.2f%%]", displayString, K.ShortValue(RestedXP), PercentRested)
+			elseif textFormat ~= 0 then
+				displayString = string_format("%s R:%s", displayString, K.ShortValue(RestedXP))
+			end
+		end
+
+		if C["DataBars"].showXPLevel then
+			displayString = string_format("%s %s : %s", LEVEL, K.Level, displayString)
+		end
+
+		expBar.RestBar:SetShown(isRested)
+	end
+
+	expBar.Text:SetText(displayString)
+end
+
 function Module:UpdateReputation()
 	local repBar = self.Bars.Reputation
 	local name, reaction, Min, Max, value, factionID = GetWatchedFactionInfo()
@@ -176,7 +253,7 @@ function Module:UpdateReputation()
 		repBar:Show()
 	end
 
-	local displayString
+	local displayString, textFormat = "", C["DataBars"].Text.Value
 	local isCapped, isFriend, friendText, standingLabel
 	local friendshipID = GetFriendshipReputation(factionID)
 	local color = FACTION_BAR_COLORS[reaction] or backupColor
@@ -216,66 +293,28 @@ function Module:UpdateReputation()
 		maxMinDiff = 1
 	end
 
-	if isCapped and C["DataBars"].Text then
+	if isCapped and textFormat ~= 0 then
 		-- show only name and standing on exalted
-		displayString = string_format("%s: [%s]", name, isFriend and friendText or standingLabel)
+		displayString = string_format("%s: [%s]", name, isFriend and friendText or K.ShortenString(standingLabel, 1, false))
 	else
-		displayString = string_format("%s: %s - %d%% [%s]", name, K.ShortValue(value - Min), ((value - Min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel)
+		if textFormat == 1 then
+			displayString = string_format("%s: %d%% [%s]", name, ((value - Min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel)
+		elseif textFormat == 2 then
+			displayString = string_format("%s: %s - %s [%s]", name, K.ShortValue(value - Min), K.ShortValue(Max - Min), isFriend and friendText or standingLabel)
+		elseif textFormat == 3 then
+			displayString = string_format("%s: %s - %d%% [%s]", name, K.ShortValue(value - Min), ((value - Min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel)
+		elseif textFormat == 4 then
+			displayString = string_format("%s: %s [%s]", name, K.ShortValue(value - Min), isFriend and friendText or standingLabel)
+		elseif textFormat == 5 then
+			displayString = string_format("%s: %s [%s]", name, K.ShortValue((Max - Min) - (value-Min)), isFriend and friendText or standingLabel)
+		elseif textFormat == 6 then
+			displayString = string_format("%s: %s - %s [%s]", name, K.ShortValue(value - Min), K.ShortValue((Max - Min) - (value-Min)), isFriend and friendText or standingLabel)
+		elseif textFormat == 7 then
+			displayString = string_format("%s: %s - %d%% (%s) [%s]", name, K.ShortValue(value - Min), ((value - Min) / (maxMinDiff) * 100), K.ShortValue((Max - Min) - (value-Min)), isFriend and friendText or standingLabel)
+		end
 	end
 
 	repBar.Text:SetText(displayString)
-end
-
-function Module:UpdateExperience()
-	local expBar = self.Bars.Experience
-
-	if (not Module:ExperienceBar_ShouldBeVisible()) then
-		expBar:Hide()
-		return
-	else
-		expBar:Show()
-	end
-
-	CurrentXP, XPToLevel, RestedXP = UnitXP("player"), UnitXPMax("player"), GetXPExhaustion()
-	if XPToLevel <= 0 then
-		XPToLevel = 1
-	end
-
-	local remainXP = XPToLevel - CurrentXP
-	local remainPercent = remainXP / XPToLevel
-	RemainTotal, RemainBars = remainPercent * 100, remainPercent * 20
-	PercentXP, RemainXP = (CurrentXP / XPToLevel) * 100, K.ShortValue(remainXP)
-
-	local displayString
-	if not Module:ExperienceBar_ShouldBeVisible() then
-		expBar:SetMinMaxValues(0, 1)
-		expBar:SetValue(1)
-
-		if C["DataBars"].Text then
-			displayString = IsXPUserDisabled() and "Disabled" or "Max Level"
-		end
-	else
-		expBar:SetMinMaxValues(0, XPToLevel)
-		expBar:SetValue(CurrentXP)
-
-		displayString = string_format("%s - %.2f%%", K.ShortValue(CurrentXP), PercentXP)
-
-		local isRested = RestedXP and RestedXP > 0
-		if isRested then
-			expBar.RestBar:SetMinMaxValues(0, XPToLevel)
-			expBar.RestBar:SetValue(math.min(CurrentXP + RestedXP, XPToLevel))
-
-			PercentRested = (RestedXP / XPToLevel) * 100
-
-			displayString = string_format("%s R:%s [%.2f%%]", displayString, K.ShortValue(RestedXP), PercentRested)
-		end
-
-		expBar.RestBar:SetShown(isRested)
-	end
-
-	if C["DataBars"].Text then
-		expBar.Text:SetText(displayString)
-	end
 end
 
 function Module:UpdateAzerite(event, unit)
@@ -286,7 +325,7 @@ function Module:UpdateAzerite(event, unit)
 	local azBar = self.Bars.Azerite
 
 	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
-	if not azeriteItemLocation or C_AzeriteItem.IsAzeriteItemAtMaxLevel() or K.Level > 50 then
+	if not azeriteItemLocation or C_AzeriteItem_IsAzeriteItemAtMaxLevel() or K.Level > 50 then
 		azBar:Hide()
 	else
 		azBar:Show()
@@ -297,9 +336,27 @@ function Module:UpdateAzerite(event, unit)
 		azBar:SetMinMaxValues(0, max)
 		azBar:SetValue(cur)
 
-		if C["DataBars"].Text then
+		local textFormat = C["DataBars"].Text.Value
+		if textFormat == 0 then
+			azBar.Text:SetText("")
+		elseif textFormat == 1 then
+			azBar.Text:SetFormattedText("%s%% [%s]", math_floor(cur / max * 100), currentLevel)
+		elseif textFormat == 2 then
+			azBar.Text:SetFormattedText("%s - %s [%s]", K.ShortValue(cur), K.ShortValue(max), currentLevel)
+		elseif textFormat == 3 then
 			azBar.Text:SetFormattedText("%s - %s%% [%s]", K.ShortValue(cur), math_floor(cur / max * 100), currentLevel)
+		elseif textFormat == 4 then
+			azBar.Text:SetFormattedText("%s [%s]", K.ShortValue(cur), currentLevel)
+		elseif textFormat == 5 then
+			azBar.Text:SetFormattedText("%s [%s]", K.ShortValue(max - cur), currentLevel)
+		elseif textFormat == 6 then
+			azBar.Text:SetFormattedText("%s - %s [%s]", K.ShortValue(cur), K.ShortValue(max - cur), currentLevel)
+		elseif textFormat == 7 then
+			azBar.Text:SetFormattedText("%s - %s%% (%s) [%s]", K.ShortValue(cur), math_floor(cur / max * 100), K.ShortValue(max - cur), currentLevel)
+		else
+			azBar.Text:SetFormattedText("[%s]", currentLevel)
 		end
+
 	end
 end
 
@@ -319,14 +376,28 @@ function Module:UpdateHonor(event, unit)
 		end
 
 		PercentHonor, RemainingHonor = (CurrentHonor / MaxHonor) * 100, MaxHonor - CurrentHonor
+		local displayString, textFormat = "", C["DataBars"].Text.Value
 
 		honBar:SetMinMaxValues(0, MaxHonor)
 		honBar:SetValue(CurrentHonor)
 
-
-		if C["DataBars"].Text then
-			honBar.Text:SetText(string_format("%s - %d%%", K.ShortValue(CurrentHonor), PercentHonor))
+		if textFormat == 1 then
+			displayString = string_format("%d%%", PercentHonor)
+		elseif textFormat == 2 then
+			displayString = string_format("%s - %s", K.ShortValue(CurrentHonor), K.ShortValue(MaxHonor))
+		elseif textFormat == 3 then
+			displayString = string_format("%s - %d%%", K.ShortValue(CurrentHonor), PercentHonor)
+		elseif textFormat == 4 then
+			displayString = string_format("%s", K.ShortValue(CurrentHonor))
+		elseif textFormat == 5 then
+			displayString = string_format("%s", K.ShortValue(RemainingHonor))
+		elseif textFormat == 6 then
+			displayString = string_format("%s - %s", K.ShortValue(CurrentHonor), K.ShortValue(RemainingHonor))
+		elseif textFormat == 7 then
+			displayString = string_format("%s - %d%% (%s)", K.ShortValue(CurrentHonor), CurrentHonor, K.ShortValue(RemainingHonor))
 		end
+
+		honBar.Text:SetText(displayString)
 	end
 end
 
@@ -347,8 +418,8 @@ function Module:OnEnter()
 		return
 	end
 
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
 	GameTooltip:ClearLines()
-	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
 	if C["DataBars"].MouseOver then
 		K.UIFrameFadeIn(Module.Container, 0.25, Module.Container:GetAlpha(), 1)
@@ -472,6 +543,23 @@ function Module:OnUpdate()
 	Module.Container:SetHeight(num_bars * (C["DataBars"].Height + 6) - 6)
 end
 
+function Module:UpdateDataBarsSize()
+	KKUI_ExperienceBar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
+	KKUI_ReputationBar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
+	KKUI_AzeriteBar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
+	KKUI_HonorBar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
+
+	local num_bars = 0
+	for _, bar in pairs(Module.Bars) do
+		if bar:IsShown() then
+			num_bars = num_bars + 1
+		end
+	end
+
+	Module.Container:SetSize(C["DataBars"].Width, num_bars * (C["DataBars"].Height + 6) - 6)
+	self.Container.mover:SetSize(C["DataBars"].Width, self.Container:GetHeight())
+end
+
 function Module:OnEnable()
 	self.DatabaseTexture = K.GetTexture(C["UITextures"].DataBarsTexture)
 	self.DatabaseFont = K.GetFont(C["UIFonts"].DataBarsFonts)
@@ -494,30 +582,25 @@ function Module:OnEnable()
 	self:SetupHonor()
 	self:OnUpdate()
 
-	-- All Events
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", self.OnUpdate)
-
-	-- Exp Events
 	K:RegisterEvent("PLAYER_XP_UPDATE", self.OnUpdate)
-	K:RegisterEvent("DISABLE_XP_GAIN", self.OnUpdate)
-	K:RegisterEvent("ENABLE_XP_GAIN", self.OnUpdate)
+	K:RegisterEvent("PLAYER_LEVEL_UP", self.OnUpdate)
 	K:RegisterEvent("UPDATE_EXHAUSTION", self.OnUpdate)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", self.OnUpdate)
+	K:RegisterEvent("UPDATE_FACTION", self.OnUpdate)
+	K:RegisterEvent("ARTIFACT_XP_UPDATE", self.OnUpdate)
+	K:RegisterEvent("UNIT_INVENTORY_CHANGED", self.OnUpdate)
+	K:RegisterEvent("ENABLE_XP_GAIN", self.OnUpdate)
+	K:RegisterEvent("DISABLE_XP_GAIN", self.OnUpdate)
+	K:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", self.OnUpdate)
+	K:RegisterEvent("HONOR_XP_UPDATE", self.OnUpdate)
 
 	K:RegisterEvent("QUEST_LOG_UPDATE", self.UpdateQuestExperience)
 	K:RegisterEvent("ZONE_CHANGED", self.UpdateQuestExperience)
 	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", self.UpdateQuestExperience)
 
-	-- Rep Events
-	K:RegisterEvent("UPDATE_FACTION", self.OnUpdate)
-	K:RegisterEvent("COMBAT_TEXT_UPDATE", self.OnUpdate)
-
-	-- Azerite Events
-	K:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", self.OnUpdate)
-	K:RegisterEvent("UNIT_INVENTORY_CHANGED", self.OnUpdate)
-
-	-- Honor Events
-	K:RegisterEvent("HONOR_XP_UPDATE", self.OnUpdate)
-	K:RegisterEvent("PLAYER_FLAGS_CHANGED", self.OnUpdate)
-
-	K.Mover(self.Container, "DataBars", "DataBars", {"TOP", "Minimap", "BOTTOM", 0, -6}, C["DataBars"].Width, self.Container:GetHeight())
+	if not self.Container.mover then
+		self.Container.mover = K.Mover(self.Container,  "DataBars", "DataBars", {"TOP", "Minimap", "BOTTOM", 0, -6})
+	else
+		self.Container.mover:SetSize(C["DataBars"].Width, self.Container:GetHeight())
+	end
 end

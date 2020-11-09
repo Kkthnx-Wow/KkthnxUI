@@ -10,10 +10,6 @@ local GetScreenWidth = _G.GetScreenWidth
 local hooksecurefunc = _G.hooksecurefunc
 local UIParent = _G.UIParent
 
-Module.inWorld = false
-Module.inInstance = _G.IsInInstance()
-Module.stopUpdate = true
-
 function Module:SetObjectiveFrameHeight()
 	local top = ObjectiveTrackerFrame:GetTop() or 0
 	local screenHeight = GetScreenHeight()
@@ -53,7 +49,7 @@ function Module:MoveObjectiveFrame()
 	ObjectiveFrameHolder:SetSize(130, 22)
 	ObjectiveFrameHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -200, -300)
 
-	K.Mover(ObjectiveFrameHolder, "ObjectiveFrameMover", "Objective Frame", {"TOPRIGHT", UIParent, "TOPRIGHT", -200, -300}, 130, 22)
+	K.Mover(ObjectiveFrameHolder, "ObjectiveFrameMover", "Objective Frame", {"TOPRIGHT", UIParent, "TOPRIGHT", -200, -300})
 
 	local ObjectiveTrackerFrame = _G.ObjectiveTrackerFrame
 	ObjectiveTrackerFrame:ClearAllPoints()
@@ -102,15 +98,6 @@ function Module:MoveObjectiveFrame()
 	self:SetObjectiveFrameAutoHide()
 end
 
-function Module:AutoHideObjectiveFrame()
-	Module.inWorld = true
-	Module.inInstance = IsInInstance()
-	if C["Automation"].AutoCollapse and Module.inInstance and not ObjectiveTrackerFrame.collapsed then
-		ObjectiveTracker_MinimizeButton_OnClick()
-	end
-end
-
 function Module:CreateObjectiveFrame()
 	Module:MoveObjectiveFrame()
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", self.AutoHideObjectiveFrame)
 end

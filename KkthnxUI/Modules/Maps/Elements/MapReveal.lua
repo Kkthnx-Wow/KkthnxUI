@@ -26,11 +26,11 @@ local function MapExplorationPin_RefreshOverlays(pin, fullUpdate)
 	end
 
 	local artID = C_Map_GetMapArtID(mapID)
-	if not artID or not K.WorldMapPlusData[artID] then
+	if not artID or not C.WorldMapPlusData[artID] then
 		return
 	end
 
-	local LeaMapsZone = K.WorldMapPlusData[artID]
+	local LeaMapsZone = C.WorldMapPlusData[artID]
 
 	-- Store already explored tiles in a table so they can be ignored
 	local TileExists = {}
@@ -107,7 +107,12 @@ local function MapExplorationPin_RefreshOverlays(pin, fullUpdate)
 					else
 						texture:Hide()
 					end
-					texture:SetVertexColor(.6, .6, .6)
+
+					if C["WorldMap"].MapRevealGlow then
+						texture:SetVertexColor(.7, .7, .7)
+					else
+						texture:SetVertexColor(1, 1, 1)
+					end
 
 					table_insert(overlayTextures, texture)
 				end
@@ -129,7 +134,7 @@ function Module:CreateWorldMapReveal()
 		return
 	end
 
-	if not C["WorldMap"].WorldMapPlus then
+	if not C["WorldMap"].MapReveal then
 		return
 	end
 

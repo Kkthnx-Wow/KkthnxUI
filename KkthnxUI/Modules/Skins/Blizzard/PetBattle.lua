@@ -1,5 +1,4 @@
 local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
 
 local _G = _G
 local unpack = _G.unpack
@@ -8,7 +7,7 @@ local table_insert = _G.table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
 
-local function ReskinPetBattle()
+table_insert(C.defaultThemes, function()
 	local r, g, b = K.r, K.g, K.b
 
 	-- Head Frame
@@ -348,6 +347,4 @@ local function ReskinPetBattle()
 		bg:SetFrameLevel(unit:GetFrameLevel())
 		bg:CreateBorder()
 	end
-end
-
-table_insert(Module.NewSkin["KkthnxUI"], ReskinPetBattle)
+end)

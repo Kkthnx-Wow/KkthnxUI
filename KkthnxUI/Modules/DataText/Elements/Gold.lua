@@ -13,7 +13,6 @@ local C_WowTokenPublic_GetCurrentMarketPrice = _G.C_WowTokenPublic.GetCurrentMar
 local C_WowTokenPublic_UpdateMarketPrice = _G.C_WowTokenPublic.UpdateMarketPrice
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GameTooltip = _G.GameTooltip
-local GetCurrencyInfo = _G.GetCurrencyInfo
 local GetMoney = _G.GetMoney
 local GetNumWatchedTokens = _G.GetNumWatchedTokens
 local InCombatLockdown = _G.InCombatLockdown
@@ -190,14 +189,15 @@ function Module:CreateCurrencyDataText()
 	end
 
 	Module.GoldDataTextFrame = CreateFrame("Button", nil, UIParent)
-	Module.GoldDataTextFrame:SetSize(_G.CharacterMicroButton:GetWidth(), _G.CharacterMicroButton:GetHeight())
+	Module.GoldDataTextFrame:SetSize(_G.CharacterMicroButton:GetWidth(), 8)
 	Module.GoldDataTextFrame:SetFrameLevel(_G.CharacterMicroButton:GetFrameLevel() + 2)
-	Module.GoldDataTextFrame:SetAllPoints(_G.CharacterMicroButton)
+	Module.GoldDataTextFrame:SetPoint("BOTTOMLEFT", _G.CharacterMicroButton, 2, 2)
+	Module.GoldDataTextFrame:SetPoint("BOTTOMRIGHT", _G.CharacterMicroButton, -2, 0)
 
 	Module.GoldDataTextFrame.Texture = Module.GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
-	Module.GoldDataTextFrame.Texture:SetTexture("Interface\\BUTTONS\\UI-GroupLoot-Coin-Up")
-	Module.GoldDataTextFrame.Texture:SetPoint("CENTER", Module.GoldDataTextFrame, "CENTER", 1, -8)
-	Module.GoldDataTextFrame.Texture:SetSize(14, 14)
+	Module.GoldDataTextFrame.Texture:SetTexture(C["Media"].Blank)
+	Module.GoldDataTextFrame.Texture:SetAllPoints(Module.GoldDataTextFrame)
+	Module.GoldDataTextFrame.Texture:SetVertexColor(255/255, 215/255, 0/255, 0.5)
 
 	Module.GoldDataTextFrame:RegisterEvent("PLAYER_MONEY", OnEvent)
 	Module.GoldDataTextFrame:RegisterEvent("SEND_MAIL_MONEY_CHANGED", OnEvent)

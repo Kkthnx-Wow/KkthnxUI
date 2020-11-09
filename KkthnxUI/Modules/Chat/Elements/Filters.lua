@@ -19,9 +19,7 @@ local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoBy
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
 local C_Timer_After = _G.C_Timer.After
 local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
-local ChatFrame_RemoveMessageEventFilter = _G.ChatFrame_RemoveMessageEventFilter
 local GetCVarBool = _G.GetCVarBool
-local GetInstanceInfo = _G.GetInstanceInfo
 local GetTime = _G.GetTime
 local IsGUIDInGroup = _G.IsGUIDInGroup
 local IsGuildMember = _G.IsGuildMember
@@ -33,7 +31,7 @@ local msgSymbols = {"`", "～", "＠", "＃", "^", "＊", "！", "？", "。", "
 local addonBlockList = {"%(Task completed%)", "%*%*.+%*%*", "%[Accept task%]", ":.+>", "<Bigfoot", "<iLvl>", "<LFG>", "<Team Item Level:.+>", "Attribute Notification", "EUI[:_]", "Interrupt:. +|Hspell", "Progress:", "PS death: .+>", "Task progress prompt", "wow.+Redemption Code", "wow.+Verification Code", "Xihan", "|Hspell.+=>", "【Love is not easy】", "【Love Plugin]", ("%-"):rep(20)}
 local trashClubs = {"Let's Play Games Together", "Salute Us", "Small Uplift", "Stand up", "Tribe Chowder"}
 
-Module.BadBoys = {} -- debug
+C.BadBoys = {} -- debug
 local FilterList = {}
 local chatLines = {}
 local cvar
@@ -42,7 +40,7 @@ local last = {}
 local prevLineID = 0
 local this = {}
 
-function K.SplitList(list, variable, cleanup)
+local function SplitList(list, variable, cleanup)
 	if cleanup then
 		table_wipe(list)
 	end
@@ -53,12 +51,12 @@ function K.SplitList(list, variable, cleanup)
 end
 
 function Module:UpdateFilterList()
-	K.SplitList(FilterList, C["Chat"].ChatFilterList, true)
+	SplitList(FilterList, C["Chat"].ChatFilterList, true)
 end
 
 local WhiteFilterList = {}
 function Module:UpdateFilterWhiteList()
-	K.SplitList(WhiteFilterList, C["Chat"].ChatFilterWhiteList, true)
+	SplitList(WhiteFilterList, C["Chat"].ChatFilterWhiteList, true)
 end
 
 -- ECF strings compare
@@ -79,7 +77,7 @@ function Module:CompareStrDiff(sA, sB) -- arrays of bytes
 		end
 	end
 
-	return this[len_b+1] / math_max(len_a, len_b)
+	return this[len_b + 1] / math_max(len_a, len_b)
 end
 
 function Module:GetFilterResult(event, msg, name, flag, guid)
@@ -93,7 +91,7 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 		return true
 	end
 
-	if Module.BadBoys[name] and Module.BadBoys[name] >= 5 then
+	if C.BadBoys[name] and C.BadBoys[name] >= 5 then
 		return true
 	end
 
@@ -149,7 +147,7 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 	end
 
 	local chatLinesSize = #chatLines
-	chatLines[chatLinesSize+1] = msgTable
+	chatLines[chatLinesSize + 1] = msgTable
 	for i = 1, chatLinesSize do
 		local line = chatLines[i]
 		if line[1] == msgTable[1] and ((msgTable[3] - line[3] < 0.6) or Module:CompareStrDiff(line[2], msgTable[2]) <= 0.1) then
@@ -170,7 +168,7 @@ function Module:UpdateChatFilter(event, msg, author, _, _, _, flag, _, _, _, _, 
 		local name = Ambiguate(author, "none")
 		filterResult = Module:GetFilterResult(event, msg, name, flag, guid)
 		if filterResult then
-			Module.BadBoys[name] = (Module.BadBoys[name] or 0) + 1
+			C.BadBoys[name] = (C.BadBoys[name] or 0) + 1
 		end
 	end
 
@@ -222,24 +220,13 @@ function Module:BlockTrashClub()
 	end
 end
 
--- Filter azerite message on island expeditions
-local azerite = ISLANDS_QUEUE_WEEKLY_QUEST_PROGRESS:gsub("%%d/%%d ", "")
-local function filterAzeriteGain(_, _, msg)
-	if string_find(msg, azerite) then
-		return true
-	end
-end
-
-local function isPlayerOnIslands()
-	local _, instanceType, _, _, maxPlayers = GetInstanceInfo()
-	if instanceType == "scenario" and (maxPlayers == 3 or maxPlayers == 6) then
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", filterAzeriteGain)
-	else
-		ChatFrame_RemoveMessageEventFilter("CHAT_MSG_SYSTEM", filterAzeriteGain)
-	end
-end
-
 function Module:CreateChatFilter()
+	hooksecurefunc(BNToastFrame, "ShowToast", self.BlockTrashClub)
+
+	if IsAddOnLoaded("EnhancedChatFilter") then
+		return
+	end
+
 	if C["Chat"].EnableFilter then
 		self:UpdateFilterList()
 		self:UpdateFilterWhiteList()
@@ -264,8 +251,4 @@ function Module:CreateChatFilter()
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", self.UpdateAddOnBlocker)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateAddOnBlocker)
 	end
-
-	hooksecurefunc(BNToastFrame, "ShowToast", self.BlockTrashClub)
-
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", isPlayerOnIslands)
 end

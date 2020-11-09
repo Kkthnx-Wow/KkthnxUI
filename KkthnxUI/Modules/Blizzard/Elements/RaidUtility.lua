@@ -14,8 +14,6 @@ local unpack = _G.unpack
 
 local CONVERT_TO_RAID = _G.CONVERT_TO_RAID
 local C_Timer_After = _G.C_Timer.After
-local ConvertToParty = _G.ConvertToParty
-local ConvertToRaid = _G.ConvertToRaid
 local CreateFrame = _G.CreateFrame
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local ERR_NOT_LEADER = _G.ERR_NOT_LEADER
@@ -403,7 +401,7 @@ function Module:RaidTool_BuffChecker(parent)
 				numPlayer = numPlayer + 1
 				for j = 1, numGroups do
 					local HasBuff
-					local buffTable = K.RaidUtilityBuffCheckList[j]
+					local buffTable = C.RaidUtilityBuffCheckList[j]
 					for k = 1, #buffTable do
 						local buffName = GetSpellInfo(buffTable[k])
 						for index = 1, 32 do
@@ -579,17 +577,17 @@ function Module:RaidTool_CreateMenu(parent)
 				end
 		end},
 		{CONVERT_TO_RAID, function()
-				if UnitIsGroupLeader("player") and not HasLFGRestrictions() and GetNumGroupMembers() <= 5 then
-					if IsInRaid() then
-						ConvertToParty()
-					else
-						ConvertToRaid()
-					end
-					frame:Hide()
-					frame:SetScript("OnUpdate", nil)
+			if UnitIsGroupLeader("player") and not HasLFGRestrictions() and GetNumGroupMembers() <= 5 then
+				if IsInRaid() then
+					C_PartyInfo.ConvertToParty()
 				else
-					UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_LEADER)
+					C_PartyInfo.ConvertToRaid()
 				end
+				frame:Hide()
+				frame:SetScript("OnUpdate", nil)
+			else
+				UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_LEADER)
+			end
 		end},
 		{ROLE_POLL, function()
 				if IsInGroup() and not HasLFGRestrictions() and (UnitIsGroupLeader("player") or (UnitIsGroupAssistant("player") and IsInRaid())) then

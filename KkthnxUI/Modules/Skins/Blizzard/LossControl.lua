@@ -1,5 +1,4 @@
-local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
+local _, C = unpack(select(2, ...))
 
 -- Sourced: ElvUI (Elvz)
 -- Edited: KkthnxUI (Kkthnx)
@@ -10,7 +9,7 @@ local table_insert = _G.table.insert
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
 
-local function ReskinLossOfControlFrame()
+table_insert(C.defaultThemes, function()
 	local LossOfControlFrame = _G.LossOfControlFrame
 
 	local IconBackdrop = CreateFrame("Frame", nil, LossOfControlFrame)
@@ -48,6 +47,4 @@ local function ReskinLossOfControlFrame()
 			s.Anim:Stop()
 		end
 	end)
-end
-
-table_insert(Module.NewSkin["KkthnxUI"], ReskinLossOfControlFrame)
+end)

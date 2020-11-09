@@ -1,21 +1,20 @@
-local _G = _G
-
-local K = _G.unpack(_G.select(2, ...))
+local K, C = _G.unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
 local SpellRange = _G.LibStub("SpellRange-1.0")
 
+local _G = _G
 local pairs, ipairs = _G.pairs, _G.ipairs
 
 local CheckInteractDistance = _G.CheckInteractDistance
 local UnitCanAttack = _G.UnitCanAttack
 local UnitInParty = _G.UnitInParty
-local UnitInPhase = _G.UnitInPhase
 local UnitInRaid = _G.UnitInRaid
 local UnitInRange = _G.UnitInRange
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
-local UnitIsWarModePhased = _G.UnitIsWarModePhased
+local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsUnit = _G.UnitIsUnit
+local UnitPhaseReason = _G.UnitPhaseReason
 
 local SR = {}
 
@@ -42,7 +41,7 @@ function Module:UpdateRangeCheckSpells()
 		SR[K.Class] = {}
 	end
 
-	for tbl, spells in pairs(K["spellRangeCheck"][K.Class]) do
+	for tbl, spells in pairs(C["SpellRangeCheck"][K.Class]) do
 		AddTable(tbl) -- Create the table holding spells, even if it ends up being an empty table
 		for spellID in pairs(spells) do
 			local enabled = spells[spellID]
@@ -76,7 +75,7 @@ local function friendlyIsInRange(unit)
 		unit = getUnit(unit) -- swap the unit with `raid#` or `party#` when its NOT `player`, UnitIsUnit is true, and its not using `raid#` or `party#` already
 	end
 
-	if UnitPhaseReason(unit) then
+	if UnitIsPlayer(unit) and UnitPhaseReason(unit) then
 		return false -- is not in same phase
 	end
 

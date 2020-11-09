@@ -16,12 +16,12 @@
 	<Include file="Config\Load_Config.xml" />
 	<!-- ActionBars -->
 	<Include file="Modules\ActionBars\Load_ActionBar.xml" />
+	<!-- Auras -->
+	<Include file="Modules\Auras\Load_Auras.xml" />
 	<!-- Unitframes -->
 	<Include file="Modules\Unitframes\Load_Unitframes.xml" />
 	<!-- Announcements -->
 	<Include file="Modules\Announcements\Load_Announcements.xml" />
-	<!-- Auras -->
-	<Include file="Modules\Auras\Load_Auras.xml" />
 	<!-- Automation -->
 	<Include file="Modules\Automation\Load_Automation.xml" />
 	<!-- Blizzard -->

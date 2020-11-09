@@ -11,7 +11,6 @@ local string_match = _G.string.match
 local table_wipe = _G.table.wipe
 local unpack = _G.unpack
 
-local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 local C_NewItems_IsNewItem = _G.C_NewItems.IsNewItem
 local C_NewItems_RemoveNewItem = _G.C_NewItems.RemoveNewItem
 local C_Timer_After = _G.C_Timer.After
@@ -25,10 +24,12 @@ local GetInventoryItemID = _G.GetInventoryItemID
 local GetItemInfo = _G.GetItemInfo
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
+local IsContainerItemAnUpgrade = _G.IsContainerItemAnUpgrade
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsReagentBankUnlocked = _G.IsReagentBankUnlocked
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
 local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
+local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 local PickupContainerItem = _G.PickupContainerItem
 local PlaySound = _G.PlaySound
 local SOUNDKIT = _G.SOUNDKIT
@@ -711,6 +712,11 @@ function Module:OnEnable()
 		return
 	end
 
+	if IsAddOnLoaded("AdiBags") or IsAddOnLoaded("ArkInventory") or IsAddOnLoaded("cargBags_Nivaya") or IsAddOnLoaded("cargBags") or IsAddOnLoaded("Bagnon") or IsAddOnLoaded("Combuctor") or IsAddOnLoaded("TBag") or IsAddOnLoaded("BaudBag") then
+		C["Inventory"].Enable = false
+		return
+	end
+
 	-- Settings
 	local bagsWidth = C["Inventory"].BagsWidth
 	local bankWidth = C["Inventory"].BankWidth
@@ -937,6 +943,7 @@ function Module:OnEnable()
 	end
 
 	function MyButton:OnUpdate(item)
+		local itemIsUpgrade
 		local buttonIconTexture = _G[self:GetName().."IconTexture"]
 
 		if self.JunkIcon then
@@ -955,9 +962,15 @@ function Module:OnEnable()
 			self.IconOverlay:Hide()
 		end
 
-		if self.UpgradeIcon then
-			self.UpgradeIcon:SetPoint("TOPLEFT", -3, 2)
-			local itemIsUpgrade = IsContainerItemAnUpgrade(self:GetParent():GetID(), self:GetID())
+		if C["Inventory"].UpgradeIcon and self.UpgradeIcon then
+			self.UpgradeIcon:SetPoint("TOPLEFT", -C["Inventory"].IconSize / 12, C["Inventory"].IconSize / 12)
+			self.UpgradeIcon:SetSize(C["Inventory"].IconSize / 1.6, C["Inventory"].IconSize / 1.6)
+			if PawnIsContainerItemAnUpgrade then
+				itemIsUpgrade = PawnIsContainerItemAnUpgrade(self:GetParent():GetID(), self:GetID())
+			else
+				itemIsUpgrade = IsContainerItemAnUpgrade(self:GetParent():GetID(), self:GetID())
+			end
+
 			if itemIsUpgrade and itemIsUpgrade == true then
 				self.UpgradeIcon:SetShown(true)
 			else

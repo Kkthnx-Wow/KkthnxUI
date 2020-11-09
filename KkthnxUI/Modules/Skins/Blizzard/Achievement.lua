@@ -26,7 +26,7 @@ local function SkinStatusBar(bar)
 	end
 end
 
-local function SkinAchievementBars()
+C.themes["Blizzard_AchievementUI"] = function()
 	if not IsAddOnLoaded("Blizzard_AchievementUI") then
 		return
 	end
@@ -76,5 +76,3 @@ local function SkinAchievementBars()
 		end
 	end)
 end
-
-Module.NewSkin["Blizzard_AchievementUI"] = SkinAchievementBars

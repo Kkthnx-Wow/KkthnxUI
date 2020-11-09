@@ -4,6 +4,7 @@ local _G = _G
 local assert = _G.assert
 local pairs = _G.pairs
 local print = _G.print
+local string_split = _G.string.split
 local table_contains = _G.tContains
 local table_insert = _G.table.insert
 local table_remove = _G.table.remove
@@ -16,14 +17,9 @@ local AutoCompleteEditBox_OnEnterPressed = _G.AutoCompleteEditBox_OnEnterPressed
 local AutoCompleteEditBox_OnTextChanged = _G.AutoCompleteEditBox_OnTextChanged
 local CANCEL = _G.CANCEL
 local CreateFrame = _G.CreateFrame
-local DisableAddOn = _G.DisableAddOn
-local EnableAddOn = _G.EnableAddOn
-local GetBankSlotCost = _G.GetBankSlotCost
 local GetBindingFromClick = _G.GetBindingFromClick
 local InCinematic = _G.InCinematic
-local MoneyFrame_Update = _G.MoneyFrame_Update
 local PlaySound = _G.PlaySound
-local PurchaseSlot = _G.PurchaseSlot
 local ReloadUI = _G.ReloadUI
 local RestartGx = _G.RestartGx
 local RunBinding = _G.RunBinding
@@ -37,24 +33,6 @@ K.PopupDialogs = {}
 K.StaticPopup_DisplayedFrames = {}
 
 local tempButtonLocs = {} -- So we don"t make a new table each time.
-
--- Create a KkthnxUI popup for profiles
-K.PopupDialogs["KKUI_IMPORT_PROFILE"] = {
-	text = "Are you sure you want to import this profile? Continue?",
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		KkthnxUIData[K.Realm][K.Name] = KkthnxUI.Profiles.Data[SelectedProfile]
-
-		if KkthnxUISettingsPerCharacter[K.Realm][K.Name].General and KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal then
-			-- Look like we use globals for gui, don"t import gui settings, keep globals
-		else
-			KkthnxUISettingsPerCharacter[K.Realm][K.Name] = KkthnxUI.Profiles.Options[SelectedProfile]
-		end
-
-		ReloadUI()
-	end,
-}
 
 K.PopupDialogs["KKUI_RESET_DATA"] = {
 	text = "Are you sure you want to reset all KkthnxUI Data?",

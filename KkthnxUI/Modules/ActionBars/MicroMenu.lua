@@ -154,7 +154,7 @@ function Module.UpdateMicroPositionDimensions()
 	local offset = 4
 	local spacing = offset + 2
 
-	for i = 1, #MICRO_BUTTONS-1 do
+	for i = 1, #MICRO_BUTTONS - 1 do
 		local button = _G[__buttonIndex[i]] or _G[MICRO_BUTTONS[i]]
 		button:SetSize(20, 20 * 1.4)
 		button:ClearAllPoints()
@@ -220,8 +220,6 @@ function Module:CreateMicroMenu()
 
 	MicroButtonPortrait:SetAllPoints(CharacterMicroButton.backdrop)
 
-	-- hooksecurefunc("MainMenuMicroButton_SetPushed", Module.MainMenuMicroButton_SetPushed)
-	-- hooksecurefunc("MainMenuMicroButton_SetNormal", Module.MainMenuMicroButton_SetNormal)
 	hooksecurefunc("UpdateMicroButtonsParent", Module.UpdateMicroButtonsParent)
 	hooksecurefunc("MoveMicroButtons", Module.UpdateMicroPositionDimensions)
 	hooksecurefunc("UpdateMicroButtons", Module.UpdateMicroButtons)
@@ -231,11 +229,9 @@ function Module:CreateMicroMenu()
 	Module.MainMenuMicroButton_SetNormal()
 	Module.UpdateMicroPositionDimensions()
 
-	if MainMenuBarPerformanceBar then
-		MainMenuBarPerformanceBar:SetTexture(nil)
-		MainMenuBarPerformanceBar:SetVertexColor(0, 0, 0, 0)
-		MainMenuBarPerformanceBar:Hide()
-	end
+	-- With this method we might don't taint anything. Instead of using :Kill()
+	MainMenuBarPerformanceBar:SetAlpha(0)
+	MainMenuBarPerformanceBar:SetScale(0.00001)
 
 	K.Mover(Module.MicroBar, "MicroBar", "MicroBar", {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0}, Module.MicroWidth, Module.MicroHeight)
 end

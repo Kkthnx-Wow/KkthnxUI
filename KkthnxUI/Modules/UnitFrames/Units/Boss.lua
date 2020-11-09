@@ -133,8 +133,8 @@ function Module:CreateBoss()
 
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 	self.Debuffs.spacing = 6
-	self.Debuffs.initialAnchor = "LEFT"
-	self.Debuffs["growth-x"] = "RIGHT"
+	self.Debuffs.initialAnchor = "RIGHT"
+	self.Debuffs["growth-x"] = "LEFT"
 	self.Debuffs["growth-y"] = "DOWN"
 	self.Debuffs:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
 	self.Debuffs.num = 5

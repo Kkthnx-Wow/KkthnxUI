@@ -1,7 +1,6 @@
 local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
 
-local function SkinTalkingHead()
+C.themes["Blizzard_TalkingHeadUI"] = function()
 	if K.CheckAddOnState("Immersion") or C["Misc"].NoTalkingHead then
 		return
 	end
@@ -47,5 +46,3 @@ local function SkinTalkingHead()
 	TalkingHeadFrame.TextFrame.Text:SetShadowColor(0, 0, 0, 1)
 	TalkingHeadFrame.TextFrame.Text:SetShadowOffset(2, -2)
 end
-
-Module.NewSkin["Blizzard_TalkingHeadUI"] = SkinTalkingHead

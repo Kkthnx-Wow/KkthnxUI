@@ -1,23 +1,34 @@
 --[[
 # Element: Phasing Indicator
+
 Toggles the visibility of an indicator based on the unit's phasing relative to the player.
+
 ## Widget
+
 PhaseIndicator - Any UI widget.
+
 ## Sub-Widgets
+
 Icon - A `Texture` to represent the phased status.
+
 ## Notes
+
 A default texture will be applied if the widget is a Texture and doesn't have a texture or a color set.
 OnEnter and OnLeave script handlers will be set to display a Tooltip if the widget is mouse enabled and does not have
 OnEnter and/or OnLeave handlers.
+
 ## Examples
+
     -- Position and size
     local PhaseIndicator = CreateFrame('Frame', nil, self)
     PhaseIndicator:SetSize(16, 16)
     PhaseIndicator:SetPoint('TOPLEFT', self)
     PhaseIndicator:EnableMouse(true)
+
     local Icon = PhaseIndicator:CreateTexture(nil, 'OVERLAY')
     Icon:SetAllPoints()
     PhaseIndicator.Icon = Icon
+
     -- Register it with oUF
     self.PhaseIndicator = PhaseIndicator
 --]]
@@ -27,6 +38,7 @@ local oUF = ns.oUF
 
 --[[ Override: PhaseIndicator:UpdateTooltip()
 Used to populate the tooltip when the widget is hovered.
+
 * self - the PhaseIndicator widget
 --]]
 local function UpdateTooltip(element)
@@ -57,6 +69,7 @@ local function Update(self, event, unit)
 
 	--[[ Callback: PhaseIndicator:PreUpdate()
 	Called before the element has been updated.
+
 	* self - the PhaseIndicator element
 	--]]
 	if(element.PreUpdate) then
@@ -76,6 +89,7 @@ local function Update(self, event, unit)
 
 	--[[ Callback: PhaseIndicator:PostUpdate(isInSamePhase, phaseReason)
 	Called after the element has been updated.
+
 	* self          - the PhaseIndicator element
 	* isInSamePhase - indicates whether the unit is in the same phase as the player (boolean)
 	* phaseReason   - the reason why the unit is in a different phase (number?)
@@ -88,6 +102,7 @@ end
 local function Path(self, ...)
 	--[[ Override: PhaseIndicator.Override(self, event, ...)
 	Used to completely override the internal update function.
+
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* ...   - the arguments accompanying the event

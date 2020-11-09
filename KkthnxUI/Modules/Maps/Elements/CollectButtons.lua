@@ -123,13 +123,16 @@ function Module:CreateRecycleBin()
 
 					if child:GetObjectType() == "Button" then
 						child:SetHighlightTexture(C["Media"].Blank) -- prevent nil function
+						child:GetHighlightTexture():SetPoint("TOPLEFT", child, "TOPLEFT", 2, -2)
+						child:GetHighlightTexture():SetPoint("BOTTOMRIGHT", child, "BOTTOMRIGHT", -2, 2)
 						child:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
 					elseif child:GetObjectType() == "Frame" then
 						child.highlight = child:CreateTexture(nil, "HIGHLIGHT")
-						child.highlight:SetAllPoints()
+						child.highlight:SetPoint("TOPLEFT", child, "TOPLEFT", 2, -2)
+						child.highlight:SetPoint("BOTTOMRIGHT", child, "BOTTOMRIGHT", -2, 2)
 						child.highlight:SetColorTexture(1, 1, 1, .25)
 					end
-					child:CreateShadow(true)
+					child:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 					-- Naughty Addons
 					if name == "DBMMinimapButton" then
@@ -157,9 +160,9 @@ function Module:CreateRecycleBin()
 			if button.IsShown and button:IsShown() then
 				button:ClearAllPoints()
 				if not lastbutton then
-					button:SetPoint("RIGHT", bin, -3, 0)
+					button:SetPoint("RIGHT", bin, -4, 0)
 				else
-					button:SetPoint("RIGHT", lastbutton, "LEFT", -3, 0)
+					button:SetPoint("RIGHT", lastbutton, "LEFT", -5, 0)
 				end
 				lastbutton = button
 			end

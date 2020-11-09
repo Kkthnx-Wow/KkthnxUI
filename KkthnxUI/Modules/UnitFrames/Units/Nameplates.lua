@@ -110,6 +110,7 @@ function Module:SetupCVars()
 	Module:UpdatePlateAlpha()
 	SetCVar("nameplateSelectedAlpha", 1)
 	SetCVar("showQuestTrackingTooltips", 1)
+	SetCVar("nameplateGlobalScale", 1)
 
 	Module:UpdatePlateScale()
 	SetCVar("nameplateSelectedScale", 1)
@@ -138,8 +139,8 @@ function Module:BlockAddons()
 			return
 		end
 
-		if not K.NameplateWhiteList[spellID] then
-			K.NameplateWhiteList[spellID] = true
+		if not C.NameplateWhiteList[spellID] then
+			C.NameplateWhiteList[spellID] = true
 		end
 	end
 
@@ -149,7 +150,7 @@ end
 function Module:UpdateUnitPower()
 	local unitName = self.unitName
 	local npcID = self.npcID
-	local shouldShowPower = K.NameplateShowPowerList[unitName] or K.NameplateShowPowerList[npcID]
+	local shouldShowPower = C.NameplateShowPowerList[unitName] or C.NameplateShowPowerList[npcID]
 	if shouldShowPower then
 		self.powerText:Show()
 	else
@@ -208,7 +209,7 @@ function Module:UpdateColor(_, unit)
 	local element = self.Health
 	local name = self.unitName
 	local npcID = self.npcID
-	local isCustomUnit = K.NameplateCustomUnits[name] or K.NameplateCustomUnits[npcID]
+	local isCustomUnit = C.NameplateCustomUnits[name] or C.NameplateCustomUnits[npcID]
 	local isPlayer = self.isPlayer
 	local isFriendly = self.isFriendly
 	local status = self.feedbackUnit and UnitThreatSituation(self.feedbackUnit, unit) or false -- just in case
@@ -434,7 +435,7 @@ function Module:QuestIconCheck()
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", CheckInstanceStatus)
 end
 
-function Module:UpdateQuestUnit(_, event, unit)
+function Module:UpdateQuestUnit(_, unit)
 	if not C["Nameplate"].QuestIndicator then
 		return
 	end
@@ -445,13 +446,7 @@ function Module:UpdateQuestUnit(_, event, unit)
 		return
 	end
 
-	if event ~= "UNIT_NAME_UPDATE" then
-		unit = self.unit
-	end
-
-	if unit ~= self.unit then
-		return
-	end
+	unit = unit or self.unit
 
 	local isLootQuest, questProgress
 	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
@@ -470,7 +465,7 @@ function Module:UpdateQuestUnit(_, event, unit)
 					local questText = questLine:GetText()
 					if questLine and questText then
 						local current, goal = string_match(questText, "(%d+)/(%d+)")
-						local progress = string_match(questText, "([%d%.]+)%%")
+						local progress = string_match(questText, "(%d+)%%")
 						if current and goal then
 							current = tonumber(current)
 							goal = tonumber(goal)
@@ -525,7 +520,6 @@ function Module:AddQuestIcon(self)
 	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -2, 0)
 
 	self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
-	self:RegisterEvent("UNIT_NAME_UPDATE", Module.UpdateQuestUnit, true)
 end
 
 function Module:AddClassIcon(self)

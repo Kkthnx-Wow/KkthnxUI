@@ -39,9 +39,16 @@ local UNKNOWN = _G.UNKNOWN
 -- /kt, get gametooltip names
 
 K.Devs = {
+	["Iamnsfw-Sargeras"] = true,
 	["Kkthnx-Sargeras"] = true,
+	["Kkthnxbye-Sargeras"] = true,
+	["Kkthnxtv-Sargeras"] = true,
 	["Kkthnxui-Sargeras"] = true,
-	["Kkthnx-Broxigar"] = true,
+	["Kkthnxx-Sargeras"] = true,
+	["Littledots-Sargeras"] = true,
+	["Superfreaky-Sargeras"] = true,
+	["Tattoofreak-Sargeras"] = true,
+	["Toxicfreak-Sargeras"] = true,
 }
 
 local function isDeveloper()

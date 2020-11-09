@@ -33,6 +33,7 @@ local UnitGUID = _G.UnitGUID
 local UnitLevel = _G.UnitLevel
 local UnitName = _G.UnitName
 local UnitRace = _G.UnitRace
+local UnitSex = _G.UnitSex
 
 -- Engine
 Engine[1] = {} -- K, Main
@@ -74,6 +75,7 @@ K.Faction = UnitFactionGroup("player")
 K.Level = UnitLevel("player")
 K.Client = GetLocale()
 K.Realm = GetRealmName()
+K.Sex = UnitSex("player")
 K.Media = "Interface\\AddOns\\KkthnxUI\\Media\\"
 K.LSM = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
 K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
@@ -81,12 +83,19 @@ K.Resolution = string_format("%dx%d", K.ScreenWidth, K.ScreenHeight)
 K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 K.Welcome = "|cff669DFFKkthnxUI "..K.Version.." "..K.Client.."|r - /helpui"
 K.ScanTooltip = CreateFrame("GameTooltip", "KKUI_ScanTooltip", nil, "GameTooltipTemplate")
+K.EasyMenu = CreateFrame("Frame", "KKUI_EasyMenu", UIParent, "UIDropDownMenuTemplate")
 K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
 K.GreyColor = "|CFF7b8489"
 K.InfoColor = "|CFF669DFF"
 K.InfoColorTint = "|CFFA3D3FF"
 K.SystemColor = "|CFFFFCC66"
+
+function K:IsMyPet(flags)
+	return bit.band(flags, COMBATLOG_OBJECT_AFFILIATION_MINE) > 0
+end
+K.PartyPetFlags = bit.bor(COMBATLOG_OBJECT_AFFILIATION_PARTY, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
+K.RaidPetFlags = bit.bor(COMBATLOG_OBJECT_AFFILIATION_RAID, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
 
 K.CodeDebug = false
 
@@ -184,7 +193,7 @@ local function GetBestScale()
 	return K.Round(scale, 2)
 end
 
-function K:SetupUIScale(init)
+function K.SetupUIScale(init)
 	if C["General"].AutoScale then
 		C["General"].UIScale = GetBestScale()
 	end
@@ -210,14 +219,14 @@ local function UpdatePixelScale(event)
 		K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
 	end
 
-	K:SetupUIScale(true)
-	K:SetupUIScale()
+	K.SetupUIScale(true)
+	K.SetupUIScale()
 
 	isScaling = false
 end
 
 K:RegisterEvent("PLAYER_LOGIN", function()
-	K:SetupUIScale()
+	K.SetupUIScale()
 	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
 
 	for _, module in next, initQueue do
@@ -272,6 +281,10 @@ function K.CheckSavedVariables()
 		KkthnxUIData[K.Realm][K.Name].Mover = {}
 	end
 
+	if not KkthnxUIData[K.Realm][K.Name].AuraWatchMover then
+		KkthnxUIData[K.Realm][K.Name].AuraWatchMover = {}
+	end
+
 	if not KkthnxUIData[K.Realm][K.Name].RevealWorldMap then
 		KkthnxUIData[K.Realm][K.Name].RevealWorldMap = false
 	end
@@ -280,49 +293,32 @@ function K.CheckSavedVariables()
 		KkthnxUIData[K.Realm][K.Name].SplitCount = 1
 	end
 
+	if not KkthnxUIData[K.Realm][K.Name].ContactList then
+		KkthnxUIData[K.Realm][K.Name].ContactList = {}
+	end
+
 	if not KkthnxUIData[K.Realm][K.Name].TempAnchor then
 		KkthnxUIData[K.Realm][K.Name].TempAnchor = {}
 	end
 
-	if not KkthnxUIData[K.Realm][K.Name].Chat then
-		KkthnxUIData[K.Realm][K.Name].Chat = {
-			["Frame1"] = {
-				"BOTTOMLEFT",
-				"BOTTOMLEFT",
-				8,
-				8,
-				370,
-				108,
-			},
-			["Frame2"] = {
-				"TOPLEFT",
-				"TOPLEFT",
-				0,
-				0,
-				370,
-				108,
-			},
-			["Frame3"] = {
-				"TOPLEFT",
-				"TOPLEFT",
-				0,
-				0,
-				370,
-				108,
-			},
-			["Frame4"] = {
-				"BOTTOMRIGHT",
-				"BOTTOMRIGHT",
-				0,
-				0,
-				370,
-				108,
-			},
-		}
+	if not KkthnxUIData[K.Realm][K.Name].InternalCD then
+		KkthnxUIData[K.Realm][K.Name].InternalCD = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].AuraWatchList then
+		KkthnxUIData[K.Realm][K.Name].AuraWatchList = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].AuraWatchList.Switcher then
+		KkthnxUIData[K.Realm][K.Name].AuraWatchList.Switcher = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells then
+		KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {}
 	end
 end
 
-function K.StoreDefaults()
+local function StoreDefaults()
 	K.Defaults = {}
 
 	for group, options in pairs(C) do
@@ -346,7 +342,7 @@ function K.StoreDefaults()
 	end
 end
 
-function K.LoadCustomSettings()
+local function LoadCustomSettings()
 	local Settings
 
 	if (not KkthnxUISettingsPerCharacter) then
@@ -358,12 +354,7 @@ function K.LoadCustomSettings()
 	end
 
 	if (not KkthnxUISettingsPerCharacter[K.Realm][K.Name]) then
-		if KkthnxUISettingsPerChar ~= nil then
-			-- old table for gui settings, KkthnxUISettingsPerChar is now deprecated and will be removed in a future build
-			KkthnxUISettingsPerCharacter[K.Realm][K.Name] = KkthnxUISettingsPerChar
-		else
-			KkthnxUISettingsPerCharacter[K.Realm][K.Name] = {}
-		end
+		KkthnxUISettingsPerCharacter[K.Realm][K.Name] = {}
 	end
 
 	if not KkthnxUISettings then
@@ -371,10 +362,13 @@ function K.LoadCustomSettings()
 	end
 
 	if KkthnxUISettingsPerCharacter[K.Realm][K.Name].General and KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal == true then
-		Settings = KkthnxUISettings
-	else
-		Settings = KkthnxUISettingsPerCharacter[K.Realm][K.Name]
+		KkthnxUISettingsPerCharacter[K.Realm][K.Name] = KkthnxUISettings
+		if KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal then
+			KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal = false
+		end
 	end
+
+	Settings = KkthnxUISettingsPerCharacter[K.Realm][K.Name]
 
 	for group, options in pairs(Settings) do
 		if C[group] then
@@ -410,11 +404,40 @@ function K.LoadCustomSettings()
 	end
 end
 
+local function LoadProfiles()
+	local Profiles = C["General"].Profiles
+	local Menu = Profiles.Options
+	local Data = KkthnxUIData
+	local GUISettings = KkthnxUISettingsPerCharacter
+	local Nickname = K.Name
+	local Server = K.Realm
+
+	if not GUISettings then
+		return
+	end
+
+	for Index, Table in pairs(GUISettings) do
+		local Server = Index
+
+		for Nickname, Settings in pairs(Table) do
+			local ProfileName = Server.."-"..Nickname
+			local MyProfileName = K.Realm.."-"..K.Name
+
+			if MyProfileName ~= ProfileName then
+				Menu[ProfileName] = ProfileName
+			else
+				Menu[ProfileName] = MyProfileName
+			end
+		end
+	end
+end
+
 K:RegisterEvent("VARIABLES_LOADED", function(event)
 	-- Add SavedVariables
 	K.CheckSavedVariables()
-	K.StoreDefaults()
-	K.LoadCustomSettings()
+	StoreDefaults()
+	LoadProfiles()
+	LoadCustomSettings()
 	-- Setup UI Scale
 	K:SetupUIScale(true)
 	-- Create Create Static Popups

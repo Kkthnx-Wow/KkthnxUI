@@ -1,6 +1,6 @@
-local K = unpack(select(2, ...))
+local _, C = unpack(select(2, ...))
 
-K["spellRangeCheck"] = {
+C.SpellRangeCheck = {
 	PRIEST = {
 		enemySpells = {
 			[585] = true, -- Smite (40 yards)

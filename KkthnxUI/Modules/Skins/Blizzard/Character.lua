@@ -1,10 +1,8 @@
 local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
 
 local _G = _G
 local pairs = _G.pairs
 local select = _G.select
-local table_insert = _G.table.insert
 
 local CharacterHandsSlot = _G.CharacterHandsSlot
 local CharacterHeadSlot = _G.CharacterHeadSlot
@@ -51,7 +49,7 @@ local function ReskinPaperDollSidebar()
 			tab.bg = CreateFrame("Frame", nil, tab)
 			tab.bg:SetFrameLevel(tab:GetFrameLevel())
 			tab.bg:SetAllPoints(tab)
-			tab.bg:CreateBorder(nil, nil, 10, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			tab.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 			tab.Icon:SetAllPoints(tab.bg)
 			tab.Hider:SetAllPoints(tab.bg)
@@ -89,7 +87,7 @@ local function StatsPane(which)
 	headerBar:SetSize(232, 30)
 end
 
-local function ReskinCharacterFrame()
+tinsert(C.defaultThemes, function()
 	if CharacterFrame:IsShown() then
 		HideUIPanel(CharacterFrame)
 	end
@@ -196,6 +194,6 @@ local function ReskinCharacterFrame()
 	hooksecurefunc("ExpandFactionHeader", UpdateFactionSkins)
 	hooksecurefunc("CollapseFactionHeader", UpdateFactionSkins)
 	hooksecurefunc("ReputationFrame_Update", UpdateFactionSkins)
-end
+end)
 
-table_insert(Module.NewSkin["KkthnxUI"], ReskinCharacterFrame)
+-- table_insert(Module.NewSkin["KkthnxUI"], ReskinCharacterFrame)

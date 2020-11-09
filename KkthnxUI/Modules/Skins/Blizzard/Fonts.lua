@@ -31,7 +31,7 @@ local function SetFont(obj, font, size, style, sr, sg, sb, sa, sox, soy, r, g, b
 	end
 end
 
-function Module:ReskinBlizzardFonts()
+tinsert(C.defaultThemes, function()
 	local NORMAL		= C["Media"].Font
 	local NUMBER		= C["Media"].Font
 	local COMBAT		= C["Media"].CombatFont
@@ -198,6 +198,4 @@ function Module:ReskinBlizzardFonts()
 	_G.MailTextFontNormal:FontTemplate(nil, 13)
 	_G.MailTextFontNormal:SetShadowOffset(0, 0)
 	_G.MailTextFontNormal:SetShadowColor(0, 0, 0, 0)
-end
-
-table_insert(Module.NewSkin["KkthnxUI"], Module.ReskinBlizzardFonts)
+end)

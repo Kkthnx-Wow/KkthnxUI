@@ -6,7 +6,7 @@ local table_insert = _G.table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
 
-local function SkinChatFrame()
+tinsert(C.defaultThemes, function()
 	-- Battlenet toast frame
 	BNToastFrame:SetClampedToScreen(true)
 	BNToastFrame:SetBackdrop(nil)
@@ -16,6 +16,10 @@ local function SkinChatFrame()
 	BNToastFrame.CloseButton:SkinCloseButton()
 	BNToastFrame.CloseButton:SetSize(32, 32)
 	BNToastFrame.CloseButton:SetPoint("TOPRIGHT", 4, 4)
+
+	-- if C["DataTex"].Friends then
+	-- 	return
+	-- end
 
 	local friendTex = "Interface\\HELPFRAME\\ReportLagIcon-Chat"
 	local queueTex = "Interface\\HELPFRAME\\HelpIcon-ItemRestoration"
@@ -28,7 +32,9 @@ local function SkinChatFrame()
 		self.FriendsButton:SetShown(not self.displayedToast)
 	end)
 	hooksecurefunc(QuickJoinToastButton, "UpdateQueueIcon", function(self)
-		if not self.displayedToast then return end
+		if not self.displayedToast then
+			return
+		end
 		self.QueueButton:SetTexture(queueTex)
 		self.FlashingLayer:SetTexture(queueTex)
 		self.FriendsButton:SetShown(false)
@@ -57,6 +63,9 @@ local function SkinChatFrame()
 		bg:Hide()
 	end)
 
+	-- QuickJoinToastButton:CreateBorder()
+	-- QuickJoinToastButton:StyleButton()
+
 	ChatFrameChannelButton:SkinButton()
 	ChatFrameChannelButton:SetSize(16, 16)
 
@@ -76,6 +85,4 @@ local function SkinChatFrame()
 	VoiceChatChannelActivatedNotification.CloseButton:SkinCloseButton()
 	VoiceChatChannelActivatedNotification.CloseButton:SetSize(32, 32)
 	VoiceChatChannelActivatedNotification.CloseButton:SetPoint("TOPRIGHT", 4, 4)
-end
-
-table_insert(Module.NewSkin["KkthnxUI"], SkinChatFrame)
+end)

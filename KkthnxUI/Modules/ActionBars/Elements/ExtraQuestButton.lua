@@ -2,7 +2,6 @@ local K, C = unpack(select(2, ...))
 
 -- Sourced: ExtraQuestButton, by p3lim
 
-
 local _G = _G
 local next = _G.next
 local sqrt = _G.sqrt
@@ -20,6 +19,7 @@ local C_QuestLog_GetQuestIDForQuestWatchIndex =_G.C_QuestLog.GetQuestIDForQuestW
 local C_QuestLog_GetQuestIDForWorldQuestWatchIndex = _G.C_QuestLog.GetQuestIDForWorldQuestWatchIndex
 local C_QuestLog_IsComplete =_G.C_QuestLog.IsComplete
 local C_QuestLog_IsWorldQuest =_G.C_QuestLog.IsWorldQuest
+local C_QuestLog_IsOnMap = _G.C_QuestLog.IsOnMap
 local CreateFrame = _G.CreateFrame
 local GetBindingKey = _G.GetBindingKey
 local GetBindingText = _G.GetBindingText
@@ -38,6 +38,7 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
 local MAX_DISTANCE_YARDS = 1e5
+local onlyCurrentZone = true
 
 local ExtraQuestButton = CreateFrame("Button", "ExtraQuestButton", UIParent, "SecureActionButtonTemplate, SecureHandlerStateTemplate, SecureHandlerAttributeTemplate")
 ExtraQuestButton:SetMovable(true)
@@ -61,6 +62,7 @@ local onAttributeChanged = [[
 		end
 	elseif name == "state-visible" then
 		if value == "show" then
+			self:Show()
 			self:CallMethod("Update")
 		else
 			self:Hide()
@@ -149,7 +151,8 @@ function ExtraQuestButton:PLAYER_LOGIN()
 
 	self.HL = self:CreateTexture(nil, "HIGHLIGHT")
 	self.HL:SetColorTexture(1, 1, 1, .25)
-	self.HL:SetAllPoints(Icon)
+	self.HL:SetPoint("TOPLEFT", Icon, "TOPLEFT", 2, -2)
+	self.HL:SetPoint("BOTTOMRIGHT", Icon, "BOTTOMRIGHT", -2, 2)
 	self.Icon = Icon
 
 	local HotKey = self:CreateFontString("$parentHotKey", nil, "NumberFontNormal")
@@ -268,7 +271,7 @@ function ExtraQuestButton:SetItem(itemLink)
 		self.itemID = itemID
 		self.itemLink = itemLink
 
-		if K.EQB_Blacklist[itemID] then
+		if C.EQB_Blacklist[itemID] then
 			return
 		end
 	end
@@ -315,7 +318,7 @@ local function GetQuestDistanceWithItem(questID)
 
 	local itemLink, _, _, showWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex)
 	if not itemLink then
-		local fallbackItemID = K.EQB_QuestItems[questID]
+		local fallbackItemID = C.EQB_QuestItems[questID]
 		if fallbackItemID then
 			itemLink = string_format("|Hitem:%d|h", fallbackItemID)
 		end
@@ -336,7 +339,7 @@ local function GetQuestDistanceWithItem(questID)
 		return distanceYd, itemLink
 	end
 
-	local questMapID = K.EQB_InaccurateQuestAreas[questID]
+	local questMapID = C.EQB_InaccurateQuestAreas[questID]
 	if questMapID then
 		local currentMapID = C_Map_GetBestMapForUnit("player")
 		if type(questMapID) == "boolean" then
@@ -355,6 +358,10 @@ local function GetQuestDistanceWithItem(questID)
 	end
 end
 
+local function IsQuestOnMap(questID)
+	return not onlyCurrentZone or C_QuestLog_IsOnMap(questID)
+end
+
 local function GetClosestQuestItem()
 	local closestQuestItemLink
 	local closestDistance = MAX_DISTANCE_YARDS
@@ -363,7 +370,7 @@ local function GetClosestQuestItem()
 		-- this only tracks supertracked worldquests,
 		-- e.g. stuff the player has shift-clicked on the map
 		local questID = C_QuestLog_GetQuestIDForWorldQuestWatchIndex(index)
-		if questID then
+		if questID and IsQuestOnMap(questID) then
 			local distance, itemLink = GetQuestDistanceWithItem(questID)
 			if distance and distance <= closestDistance then
 				closestDistance = distance
@@ -375,7 +382,7 @@ local function GetClosestQuestItem()
 	if not closestQuestItemLink then
 		for index = 1, C_QuestLog_GetNumQuestWatches() do
 			local questID = C_QuestLog_GetQuestIDForQuestWatchIndex(index)
-			if questID and QuestHasPOIInfo(questID) then
+			if questID and QuestHasPOIInfo(questID) and IsQuestOnMap(questID) then
 				local distance, itemLink = GetQuestDistanceWithItem(questID)
 				if distance and distance <= closestDistance then
 					closestDistance = distance
@@ -389,7 +396,7 @@ local function GetClosestQuestItem()
 		for index = 1, C_QuestLog_GetNumQuestLogEntries() do
 			local info = C_QuestLog_GetInfo(index)
 			local questID = info.questID
-			if info and not info.isHeader and (not info.isHidden or C_QuestLog_IsWorldQuest(questID)) and QuestHasPOIInfo(questID) then
+			if info and not info.isHeader and (not info.isHidden or C_QuestLog_IsWorldQuest(questID)) and QuestHasPOIInfo(questID) and IsQuestOnMap(questID) then
 				local distance, itemLink = GetQuestDistanceWithItem(questID)
 				if distance and distance <= closestDistance then
 					closestDistance = distance
@@ -402,10 +409,6 @@ local function GetClosestQuestItem()
 	return closestQuestItemLink
 end
 
-function ExtraQuestButton:GetItemLink()
-	return self.itemLink
-end
-
 function ExtraQuestButton:Update()
 	if HasExtraActionBar() or self.locked then
 		return
@@ -413,7 +416,7 @@ function ExtraQuestButton:Update()
 
 	local itemLink = GetClosestQuestItem()
 	if itemLink then
-		if itemLink ~= self:GetItemLink() then
+		if itemLink ~= self.itemLink then
 			self:SetItem(itemLink)
 		end
 	elseif self:IsShown() then

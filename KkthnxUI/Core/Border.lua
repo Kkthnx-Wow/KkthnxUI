@@ -53,11 +53,11 @@ local function border_SetSize(self, size)
 	self.RIGHT:SetWidth(size)
 
 	if self.calcTile then
-		local tile = (self.parent:GetWidth() + 2 * self.offset) / 16
+		local tile = (self.parent:GetWidth() + 2 * self.offset) / 12
 		self.TOP:SetTexCoord(0.25, tile, 0.375, tile, 0.25, 0, 0.375, 0)
 		self.BOTTOM:SetTexCoord(0.375, tile, 0.5, tile, 0.375, 0, 0.5, 0)
 
-		tile = (self.parent:GetHeight() + 2 * self.offset) / 16
+		tile = (self.parent:GetHeight() + 2 * self.offset) / 12
 		self.LEFT:SetTexCoord(0, 0.125, 0, tile)
 		self.RIGHT:SetTexCoord(0.125, 0.25, 0, tile)
 	end

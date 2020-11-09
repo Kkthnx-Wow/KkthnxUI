@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 
 local _G = _G
 local unpack = _G.unpack
@@ -10,7 +10,7 @@ local function Defaults(priorityOverride)
 end
 
 -- AuraWatch: List of personal spells to show on unitframes as icon
-function K:AuraWatch_AddSpell(id, point, color, anyUnit, onlyShowMissing, displayText, textThreshold, xOffset, yOffset)
+local function AuraWatch_AddSpell(id, point, color, anyUnit, onlyShowMissing, displayText, textThreshold, xOffset, yOffset)
 
 	local r, g, b = 1, 1, 1
 	if color then
@@ -33,8 +33,8 @@ function K:AuraWatch_AddSpell(id, point, color, anyUnit, onlyShowMissing, displa
 	}
 end
 
-K.DebuffsTracking = {}
-K.DebuffsTracking["RaidDebuffs"] = {
+C.DebuffsTracking = {}
+C.DebuffsTracking["RaidDebuffs"] = {
 	type = "Whitelist",
 	spells = {
 		-- Mythic+ Dungeons
@@ -669,7 +669,7 @@ K.DebuffsTracking["RaidDebuffs"] = {
 }
 
 -- CC DEBUFFS (TRACKING LIST)
-K.DebuffsTracking["CCDebuffs"] = {
+C.DebuffsTracking["CCDebuffs"] = {
 	type = "Whitelist",
 	spells = {
 		-- Death Knight
@@ -829,63 +829,63 @@ K.DebuffsTracking["CCDebuffs"] = {
 }
 
 -- Raid Buffs (Squared Aura Tracking List)
-K.BuffsTracking = {
+C.BuffsTracking = {
 	PRIEST = {
-		[194384] = K:AuraWatch_AddSpell(194384, "TOPRIGHT", {1, 1, 0.66}), -- Atonement
-		[214206] = K:AuraWatch_AddSpell(214206, "TOPRIGHT", {1, 1, 0.66}), -- Atonement (PvP)
-		[41635] = K:AuraWatch_AddSpell(41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}), -- Prayer of Mending
-		[193065] = K:AuraWatch_AddSpell(193065, "BOTTOMRIGHT", {0.54, 0.21, 0.78}), -- Masochism
-		[139] = K:AuraWatch_AddSpell(139, "BOTTOMLEFT", {0.4, 0.7, 0.2}), -- Renew
-		[6788] = K:AuraWatch_AddSpell(6788, "BOTTOMLEFT", {0.89, 0.1, 0.1}), -- Weakened Soul
-		[17] = K:AuraWatch_AddSpell(17, "TOPLEFT", {0.7, 0.7, 0.7}, true), -- Power Word: Shield
-		[47788] = K:AuraWatch_AddSpell(47788, "LEFT", {0.86, 0.45, 0}, true), -- Guardian Spirit
-		[33206] = K:AuraWatch_AddSpell(33206, "LEFT", {0.47, 0.35, 0.74}, true),		-- Pain Suppression
+		[194384] = AuraWatch_AddSpell(194384, "TOPRIGHT", {1, 1, 0.66}), -- Atonement
+		[214206] = AuraWatch_AddSpell(214206, "TOPRIGHT", {1, 1, 0.66}), -- Atonement (PvP)
+		[41635] = AuraWatch_AddSpell(41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}), -- Prayer of Mending
+		[193065] = AuraWatch_AddSpell(193065, "BOTTOMRIGHT", {0.54, 0.21, 0.78}), -- Masochism
+		[139] = AuraWatch_AddSpell(139, "BOTTOMLEFT", {0.4, 0.7, 0.2}), -- Renew
+		[6788] = AuraWatch_AddSpell(6788, "BOTTOMLEFT", {0.89, 0.1, 0.1}), -- Weakened Soul
+		[17] = AuraWatch_AddSpell(17, "TOPLEFT", {0.7, 0.7, 0.7}, true), -- Power Word: Shield
+		[47788] = AuraWatch_AddSpell(47788, "LEFT", {0.86, 0.45, 0}, true), -- Guardian Spirit
+		[33206] = AuraWatch_AddSpell(33206, "LEFT", {0.47, 0.35, 0.74}, true),		-- Pain Suppression
 	},
 	DRUID = {
-		[774] = K:AuraWatch_AddSpell(774, "TOPRIGHT", {0.8, 0.4, 0.8}), -- Rejuvenation
-		[155777] = K:AuraWatch_AddSpell(155777, "RIGHT", {0.8, 0.4, 0.8}), -- Germination
-		[8936] = K:AuraWatch_AddSpell(8936, "BOTTOMLEFT", {0.2, 0.8, 0.2}), -- Regrowth
-		[33763] = K:AuraWatch_AddSpell(33763, "TOPLEFT", {0.4, 0.8, 0.2}), -- Lifebloom (Normal version)
-		[188550] = K:AuraWatch_AddSpell(188550, "TOPLEFT", {0.4, 0.8, 0.2}), -- Lifebloom (Legendary version)
-		[48438] = K:AuraWatch_AddSpell(48438, "BOTTOMRIGHT", {0.8, 0.4, 0}), -- Wild Growth
-		[207386] = K:AuraWatch_AddSpell(207386, "TOP", {0.4, 0.2, 0.8}), -- Spring Blossoms
-		[102351] = K:AuraWatch_AddSpell(102351, "LEFT", {0.2, 0.8, 0.8}), -- Cenarion Ward (Initial Buff)
-		[102352] = K:AuraWatch_AddSpell(102352, "LEFT", {0.2, 0.8, 0.8}), -- Cenarion Ward (HoT)
-		[200389] = K:AuraWatch_AddSpell(200389, "BOTTOM", {1, 1, 0.4}), -- Cultivation
+		[774] = AuraWatch_AddSpell(774, "TOPRIGHT", {0.8, 0.4, 0.8}), -- Rejuvenation
+		[155777] = AuraWatch_AddSpell(155777, "RIGHT", {0.8, 0.4, 0.8}), -- Germination
+		[8936] = AuraWatch_AddSpell(8936, "BOTTOMLEFT", {0.2, 0.8, 0.2}), -- Regrowth
+		[33763] = AuraWatch_AddSpell(33763, "TOPLEFT", {0.4, 0.8, 0.2}), -- Lifebloom (Normal version)
+		[188550] = AuraWatch_AddSpell(188550, "TOPLEFT", {0.4, 0.8, 0.2}), -- Lifebloom (Legendary version)
+		[48438] = AuraWatch_AddSpell(48438, "BOTTOMRIGHT", {0.8, 0.4, 0}), -- Wild Growth
+		[207386] = AuraWatch_AddSpell(207386, "TOP", {0.4, 0.2, 0.8}), -- Spring Blossoms
+		[102351] = AuraWatch_AddSpell(102351, "LEFT", {0.2, 0.8, 0.8}), -- Cenarion Ward (Initial Buff)
+		[102352] = AuraWatch_AddSpell(102352, "LEFT", {0.2, 0.8, 0.8}), -- Cenarion Ward (HoT)
+		[200389] = AuraWatch_AddSpell(200389, "BOTTOM", {1, 1, 0.4}), -- Cultivation
 	},
 	PALADIN = {
-		[53563] = K:AuraWatch_AddSpell(53563, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Light
-		[156910] = K:AuraWatch_AddSpell(156910, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Faith
-		[200025] = K:AuraWatch_AddSpell(200025, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Virtue
-		[1022] = K:AuraWatch_AddSpell(1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true), -- Hand of Protection
-		[1044] = K:AuraWatch_AddSpell(1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true), -- Hand of Freedom
-		[6940] = K:AuraWatch_AddSpell(6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true), -- Hand of Sacrifice
-		[223306] = K:AuraWatch_AddSpell(223306, "BOTTOMLEFT", {0.7, 0.7, 0.3}), -- Bestow Faith
-		[287280] = K:AuraWatch_AddSpell(287280, "TOPLEFT", {0.2, 0.8, 0.2}), -- Glimmer of Light (Artifact HoT)
+		[53563] = AuraWatch_AddSpell(53563, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Light
+		[156910] = AuraWatch_AddSpell(156910, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Faith
+		[200025] = AuraWatch_AddSpell(200025, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Beacon of Virtue
+		[1022] = AuraWatch_AddSpell(1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true), -- Hand of Protection
+		[1044] = AuraWatch_AddSpell(1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true), -- Hand of Freedom
+		[6940] = AuraWatch_AddSpell(6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true), -- Hand of Sacrifice
+		[223306] = AuraWatch_AddSpell(223306, "BOTTOMLEFT", {0.7, 0.7, 0.3}), -- Bestow Faith
+		[287280] = AuraWatch_AddSpell(287280, "TOPLEFT", {0.2, 0.8, 0.2}), -- Glimmer of Light (Artifact HoT)
 	},
 	SHAMAN = {
-		[61295] = K:AuraWatch_AddSpell(61295, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Riptide
-		[974] = K:AuraWatch_AddSpell(974, "BOTTOMRIGHT", {0.2, 0.2, 1}), -- Earth Shield
+		[61295] = AuraWatch_AddSpell(61295, "TOPRIGHT", {0.7, 0.3, 0.7}), -- Riptide
+		[974] = AuraWatch_AddSpell(974, "BOTTOMRIGHT", {0.2, 0.2, 1}), -- Earth Shield
 	},
 	MONK = {
-		[119611] = K:AuraWatch_AddSpell(119611, "TOPLEFT", {0.3, 0.8, 0.6}), -- Renewing Mist
-		[116849] = K:AuraWatch_AddSpell(116849, "TOPRIGHT", {0.2, 0.8, 0.2}, true),	-- Life Cocoon
-		[124682] = K:AuraWatch_AddSpell(124682, "BOTTOMLEFT", {0.8, 0.8, 0.25}), -- Enveloping Mist
-		[191840] = K:AuraWatch_AddSpell(191840, "BOTTOMRIGHT", {0.27, 0.62, 0.7}), -- Essence Font
+		[119611] = AuraWatch_AddSpell(119611, "TOPLEFT", {0.3, 0.8, 0.6}), -- Renewing Mist
+		[116849] = AuraWatch_AddSpell(116849, "TOPRIGHT", {0.2, 0.8, 0.2}, true),	-- Life Cocoon
+		[124682] = AuraWatch_AddSpell(124682, "BOTTOMLEFT", {0.8, 0.8, 0.25}), -- Enveloping Mist
+		[191840] = AuraWatch_AddSpell(191840, "BOTTOMRIGHT", {0.27, 0.62, 0.7}), -- Essence Font
 	},
 	ROGUE = {
-		[57934] = K:AuraWatch_AddSpell(57934, "TOPRIGHT", {0.89, 0.09, 0.05}), -- Tricks of the Trade
+		[57934] = AuraWatch_AddSpell(57934, "TOPRIGHT", {0.89, 0.09, 0.05}), -- Tricks of the Trade
 	},
 	WARRIOR = {
-		[114030] = K:AuraWatch_AddSpell(114030, "TOPLEFT", {0.2, 0.2, 1}), -- Vigilance
-		[3411] = K:AuraWatch_AddSpell(3411, "TOPRIGHT", {0.89, 0.09, 0.05}), -- Intervene
+		[114030] = AuraWatch_AddSpell(114030, "TOPLEFT", {0.2, 0.2, 1}), -- Vigilance
+		[3411] = AuraWatch_AddSpell(3411, "TOPRIGHT", {0.89, 0.09, 0.05}), -- Intervene
 	},
 	PET = {
 		-- Warlock Pets
-		[193396] = K:AuraWatch_AddSpell(193396, "TOPRIGHT", {0.6, 0.2, 0.8}, true),	-- Demonic Empowerment
+		[193396] = AuraWatch_AddSpell(193396, "TOPRIGHT", {0.6, 0.2, 0.8}, true),	-- Demonic Empowerment
 		-- Hunter Pets
-		[272790] = K:AuraWatch_AddSpell(272790, "TOPLEFT", {0.89, 0.09, 0.05}, true), -- Frenzy
-		[136] = K:AuraWatch_AddSpell(136, "TOPRIGHT", {0.2, 0.8, 0.2}, true) -- Mend Pet
+		[272790] = AuraWatch_AddSpell(272790, "TOPLEFT", {0.89, 0.09, 0.05}, true), -- Frenzy
+		[136] = AuraWatch_AddSpell(136, "TOPRIGHT", {0.2, 0.8, 0.2}, true) -- Mend Pet
 	},
 	HUNTER = {},
 	DEMONHUNTER = {},
@@ -895,7 +895,7 @@ K.BuffsTracking = {
 }
 
 -- Filter this. Pointless to see.
-K.AuraBlackList = {
+C.AuraBlackList = {
 	[113942] = true, -- Demonic: Gateway
 	[117870] = true, -- Touch of The Titans
 	[123981] = true, -- Perdition
@@ -993,33 +993,41 @@ K.AuraBlackList = {
 	[97821] = true -- Void-Touched
 }
 
-K.ChannelingTicks = {
-	[12051] = 3, -- Evocation
-	[15407] = 4, -- Mind Flay
-	[198590] = 5, -- Drain Soul
-	[205021] = 5, -- Ray of Frost
+C.ChannelingTicks = {
+	[120360] = 15, -- Barrage shooting
+	[12051] = 6, -- wake
+	[15407] = 6, -- Mental Flay
+	[198013] = 10, -- Eye rim
+	[198590] = 5, -- Draw soul
+	[205021] = 5, -- Frost Ray
 	[205065] = 6, -- Void Torrent
-	[234153] = 5, -- Drain Life
-	[291944] = 6, -- Regeneratin"
+	[206931] = 3, -- Blood drinker
+	[212084] = 10,	-- Fel Destroy
+	[234153] = 5,	-- Draw life
+	[257044] = 7, -- Rapid fire
+	[291944] = 6, -- Rebirth, Zandalari troll
+	[314791] = 4, -- Changeable phantom energy
+	[324631] = 8, -- Forging of flesh and blood, covenant
+	[47757] = 3, -- Penance
 	[47758] = 3, -- Penance
-	[5143] = 5, -- Arcane Missiles
-	[64843] = 4, -- Divine Hymn
-	[740] = 4, -- Tranquility
-	[755] = 3, -- Health Funnel
-	[314791] = 4, -- Changeable Phantom Energy
+	[48045] = 6, -- Mental burn
+	[5143] = 4, -- Arcane Missile
+	[64843] = 4, -- Holy hymn
+	[740] = 4, -- peaceful
+	[755] = 5, -- Life channel
 }
 
 if K.Class == "PRIEST" then
-	local penanceID = 47758
 	local function updateTicks()
 		local numTicks = 3
 		if IsPlayerSpell(193134) then
 			numTicks = 4
 		end
 
-		K.ChannelingTicks[penanceID] = numTicks
+		C.ChannelingTicks[47757] = numTicks
+		C.ChannelingTicks[47758] = numTicks
 	end
 
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", updateTicks)
+	K:RegisterEvent("PLAYER_LOGIN", updateTicks)
 	K:RegisterEvent("PLAYER_TALENT_UPDATE", updateTicks)
 end

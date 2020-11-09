@@ -2,51 +2,90 @@ local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Skins")
 
 local _G = _G
-local pairs = _G.pairs
-local type = _G.type
+local table_wipe = _G.table.wipe
 
-Module.NewSkin = {}
-Module.NewSkin["KkthnxUI"] = {}
-K:RegisterEvent("ADDON_LOADED", function(event, addon)
-	if IsAddOnLoaded("Skinner") or IsAddOnLoaded("Aurora") or not C["Skins"].BlizzardFrames then
-		K:UnregisterEvent(event)
+local IsAddOnLoaded = _G.IsAddOnLoaded
+
+C.defaultThemes = {}
+C.themes = {}
+
+function Module:LoadDefaultSkins()
+	if IsAddOnLoaded("AuroraClassic") or IsAddOnLoaded("Aurora") then
 		return
 	end
 
-	for _addon, skinfunc in pairs(Module.NewSkin) do
-		if type(skinfunc) == "function" then
-			if _addon == addon then
-				if skinfunc then
-					skinfunc()
-				end
-			end
-		elseif type(skinfunc) == "table" then
-			if _addon == addon then
-				for _, skinfunc in pairs(Module.NewSkin[_addon]) do
-					if skinfunc then
-						skinfunc()
-					end
-				end
-			end
+	-- Reskin Blizzard UIs
+	for _, func in pairs(C.defaultThemes) do
+		func()
+	end
+	table_wipe(C.defaultThemes)
+
+	-- if not C["Skins"].BlizzardSkins then
+	-- 	return
+	-- end
+
+	for addonName, func in pairs(C.themes) do
+		local isLoaded, isFinished = IsAddOnLoaded(addonName)
+		if isLoaded and isFinished then
+			func()
+			C.themes[addonName] = nil
 		end
 	end
-end)
+
+	K:RegisterEvent("ADDON_LOADED", function(_, addonName)
+		local func = C.themes[addonName]
+		if func then
+			func()
+			C.themes[addonName] = nil
+		end
+	end)
+end
 
 function Module:OnEnable()
-	self:ReskinBartender4()
-	self:ReskinBigWigs()
-	self:ReskinBugSack()
-	self:ReskinChocolateBar()
+	Module:LoadDefaultSkins()
+
+	-- Add Skins
+	-- 	self:ReskinBartender4()
+	-- 	self:ReskinBigWigs()
+	-- 	self:ReskinBugSack()
+	-- 	self:ReskinChocolateBar()
 	self:ReskinDeadlyBossMods()
-	self:ReskinDetails()
-	self:ReskinHekili()
-	self:ReskinImmersion()
-	-- self:ReskinOPie() -- Broken atm
-	self:ReskinRaiderIO()
-	self:ReskinSimulationcraft()
-	self:ReskinSkada()
-	self:ReskinSpy()
-	self:ReskinTellMeWhen()
-	self:ReskinTitanPanel()
-	self:ReskinWeakAuras()
+	-- 	self:ReskinDetails()
+	--  self:ReskinHekili()
+	-- 	self:ReskinImmersion()
+	-- 	self:ReskinRaiderIO()
+	-- 	self:ReskinSimulationcraft()
+	-- 	self:ReskinSkada()
+	-- 	self:ReskinSpy()
+	-- 	self:ReskinTellMeWhen()
+	-- 	self:ReskinTitanPanel()
+	-- 	self:ReskinWeakAuras()
+
+	-- Register skin
+	-- local media = LibStub and LibStub("LibSharedMedia-3.0", true)
+	-- if media then
+	-- 	media:Register("statusbar", "normTex", C["Media"].Texture)
+	-- end
+end
+
+function Module:LoadWithAddOn(addonName, value, func)
+	local function loadFunc(event, addon)
+		if not C["Skins"][value] then
+			return
+		end
+
+		if event == "PLAYER_ENTERING_WORLD" then
+			K:UnregisterEvent(event, loadFunc)
+			if IsAddOnLoaded(addonName) then
+				func()
+				K:UnregisterEvent("ADDON_LOADED", loadFunc)
+			end
+		elseif event == "ADDON_LOADED" and addon == addonName then
+			func()
+			K:UnregisterEvent(event, loadFunc)
+		end
+	end
+
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", loadFunc)
+	K:RegisterEvent("ADDON_LOADED", loadFunc)
 end

@@ -1,7 +1,7 @@
-local K = unpack(select(2, ...))
+local _, C = unpack(select(2, ...))
 
 -- Warlords of Draenor intro quest items which inspired this addon
-K.EQB_Blacklist = {
+C.EQB_Blacklist = {
 	[113191] = true,
 	[110799] = true,
 	[109164] = true,
@@ -9,7 +9,7 @@ K.EQB_Blacklist = {
 
 -- quests that doesn't have a defined area on the map (questID = bool/mapID/{mapID,...})
 -- these have low priority during collision
-K.EQB_InaccurateQuestAreas = {
+C.EQB_InaccurateQuestAreas = {
 	[11731] = {84, 87, 103}, -- alliance capitals (missing Darnassus)
 	[11921] = {84, 87, 103}, -- alliance capitals (missing Darnassus)
 	[11922] = {18, 85, 88, 110}, -- horde capitals
@@ -33,11 +33,12 @@ K.EQB_InaccurateQuestAreas = {
 	[49864] = true, -- anywhere
 	[25798] = 64, -- Thousand Needles (TODO: test if we need to associate the item with the zone instead)
 	[25799] = 64, -- Thousand Needles (TODO: test if we need to associate the item with the zone instead)
+	[34461] = 590, -- Horde Garrison
 }
 
 -- items that should be used for a quest but aren't (questID = itemID)
 -- these have low priority during collision
-K.EQB_QuestItems = {
+C.EQB_QuestItems = {
 	-- (TODO: test if we need to associate any of these items with a zone directly instead)
 	[10129] = 28038, -- Hellfire Peninsula
 	[10146] = 28038, -- Hellfire Peninsula

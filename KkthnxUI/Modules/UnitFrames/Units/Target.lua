@@ -6,6 +6,8 @@ local select = select
 
 local CreateFrame = _G.CreateFrame
 
+local targetWidth = 160
+
 function Module:CreateTarget()
 	self.mystyle = "target"
 
@@ -77,7 +79,7 @@ function Module:CreateTarget()
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("TOP", self.Health, 0, 16)
-	self.Name:SetWidth(156 * 0.90)
+	self.Name:SetWidth(targetWidth * 0.90)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
 	if C["Unitframe"].HealthbarColor.Value == "Class" then
@@ -90,13 +92,13 @@ function Module:CreateTarget()
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-		self.Portrait:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
+		self.Portrait:SetPoint("LEFT", self, "RIGHT", 6, 0)
 		self.Portrait:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		self.Portrait = self.Health:CreateTexture("TargetPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-		self.Portrait:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
+		self.Portrait:SetPoint("LEFT", self, "RIGHT", 6, 0)
 
 		self.Portrait.Border = CreateFrame("Frame", nil, self)
 		self.Portrait.Border:SetAllPoints(self.Portrait)
@@ -107,12 +109,8 @@ function Module:CreateTarget()
 		end
 	end
 
-	self.Health:ClearAllPoints()
-	self.Health:SetPoint("TOPLEFT")
-	self.Health:SetPoint("TOPRIGHT", -self.Portrait:GetWidth() - 6, 0)
-
 	if C["Unitframe"].TargetDebuffs then
-		local width = 156
+		local width = targetWidth
 
 		self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 		self.Debuffs.spacing = 6
@@ -131,7 +129,7 @@ function Module:CreateTarget()
 	end
 
 	if C["Unitframe"].TargetBuffs then
-		local width = 156
+		local width = targetWidth
 
 		self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
@@ -244,7 +242,7 @@ function Module:CreateTarget()
 		hab:SetPoint("TOP")
 		hab:SetPoint("BOTTOM")
 		hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
-		hab:SetWidth(156)
+		hab:SetWidth(targetWidth)
 		hab:SetReverseFill(true)
 		hab:SetStatusBarTexture(HealPredictionTexture)
 		hab:SetStatusBarColor(1, 0, 0, 0.25)

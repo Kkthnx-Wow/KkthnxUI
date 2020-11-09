@@ -16,7 +16,6 @@ local tonumber = _G.tonumber
 local CALENDAR_FULLDATE_MONTH_NAMES = _G.CALENDAR_FULLDATE_MONTH_NAMES
 local CALENDAR_WEEKDAY_NAMES = _G.CALENDAR_WEEKDAY_NAMES
 local C_AreaPoiInfo_GetAreaPOISecondsLeft = _G.C_AreaPoiInfo.GetAreaPOISecondsLeft
-local C_Calendar_GetDate = _G.C_Calendar.GetDate
 local C_Calendar_GetDayEvent = _G.C_Calendar.GetDayEvent
 local C_Calendar_GetNumDayEvents = _G.C_Calendar.GetNumDayEvents
 local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
@@ -44,7 +43,6 @@ local GetSavedWorldBossInfo = _G.GetSavedWorldBossInfo
 local ISLANDS_HEADER = _G.ISLANDS_HEADER
 local InCombatLockdown = _G.InCombatLockdown
 local IsPlayerAtEffectiveMaxLevel = _G.IsPlayerAtEffectiveMaxLevel
-local IsQuestFlaggedCompleted = _G.IsQuestFlaggedCompleted
 local LFG_LIST_LOADING = _G.LFG_LIST_LOADING
 local PLAYER_DIFFICULTY_TIMEWALKER = _G.PLAYER_DIFFICULTY_TIMEWALKER
 local PVPGetConquestLevelInfo = _G.PVPGetConquestLevelInfo
@@ -274,11 +272,11 @@ function Module:TimeOnEnter()
 		end
 	end
 
-	-- Mythic Dungeons
+	-- Herioc/Mythic Dungeons
 	title = false
 	for i = 1, GetNumSavedInstances() do
-		local name, _, reset, diff, locked, extended = GetSavedInstanceInfo(i)
-		if diff == 23 and (locked or extended) then
+		local name, _, reset, diff, locked, extended, _, _, maxPlayers, diffName, numEncounters, encounterProgress = GetSavedInstanceInfo(i)
+		if (diff == 2 or diff == 23) and (locked or extended) and name then
 			addTitle("Saved Dungeon(s)")
 			if extended then
 				r, g, b = 0.3, 1, 0.3
@@ -286,15 +284,15 @@ function Module:TimeOnEnter()
 				r, g, b = 192/255, 192/255, 192/255
 			end
 
-			GameTooltip:AddDoubleLine(name, SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
+			GameTooltip:AddDoubleLine(name.." - "..maxPlayers.." "..PLAYER.." ("..diffName..") ("..encounterProgress.."/"..numEncounters..")", SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
 		end
 	end
 
 	-- Raids
 	title = false
 	for i = 1, GetNumSavedInstances() do
-		local name, _, reset, _, locked, extended, _, isRaid, _, diffName = GetSavedInstanceInfo(i)
-		if isRaid and (locked or extended) then
+		local name, _, reset, _, locked, extended, _, isRaid, _, diffName, numEncounters, encounterProgress = GetSavedInstanceInfo(i)
+		if isRaid and (locked or extended) and name then
 			addTitle(L["Saved Raid(s)"])
 			if extended then
 				r, g, b = 0.3, 1, 0.3
@@ -302,7 +300,7 @@ function Module:TimeOnEnter()
 				r, g, b = 192/255, 192/255, 192/255
 			end
 
-			GameTooltip:AddDoubleLine(name.." - "..diffName, SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
+			GameTooltip:AddDoubleLine(name.." - "..diffName.." ("..encounterProgress.."/"..numEncounters..")", SecondsToTime(reset, true, nil, 3), 1, 1, 1, r, g, b)
 		end
 	end
 

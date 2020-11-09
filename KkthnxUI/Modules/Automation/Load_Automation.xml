@@ -6,6 +6,8 @@
    <Script file="Elements\BadBuffs.lua" />
    <Script file="Elements\BestReward.lua" />
    <Script file="Elements\DeclineDuel.lua" />
+   <Script file="Elements\Disenchant.lua" />
+   <Script file="Elements\Goodbye.lua" />
    <Script file="Elements\Invite.lua" />
    <Script file="Elements\PartySync.lua" />
    <Script file="Elements\Quest.lua" />

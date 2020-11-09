@@ -195,7 +195,7 @@ function Module:ItemLevel_UpdateInfo(slotFrame, info, quality)
 		level = info
 	end
 
-	if level and level > 1 and quality then
+	if level and level > 1 and quality and quality > 1 then
 		local color = K.QualityColors[quality]
 		slotFrame.iLvlText:SetText(level)
 		slotFrame.iLvlText:SetTextColor(color.r, color.g, color.b)
@@ -303,6 +303,10 @@ function Module:ItemLevel_FlyoutUpdate(bag, slot, quality)
 		self.iLvl = K.CreateFontString(self, 12, "", "OUTLINE", false, "BOTTOMLEFT", 1, 1)
 	end
 
+	if quality and quality <= 1 then
+		return
+	end
+
 	local link, level
 	if bag then
 		link = GetContainerItemLink(bag, slot)
@@ -312,17 +316,18 @@ function Module:ItemLevel_FlyoutUpdate(bag, slot, quality)
 		level = K.GetItemLevel(link, "player", slot)
 	end
 
-	local color = K.QualityColors[quality or 1]
+	local color = K.QualityColors[quality or 0]
 	self.iLvl:SetText(level)
 	self.iLvl:SetTextColor(color.r, color.g, color.b)
 end
 
 function Module:ItemLevel_FlyoutSetup()
+	if self.iLvl then
+		self.iLvl:SetText("")
+	end
+
 	local location = self.location
 	if not location or location >= EQUIPMENTFLYOUT_FIRST_SPECIAL_LOCATION then
-		if self.iLvl then
-			self.iLvl:SetText("")
-		end
 		return
 	end
 

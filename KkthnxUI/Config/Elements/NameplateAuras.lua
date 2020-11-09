@@ -1,11 +1,11 @@
-local K = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 
 local _G = _G
 
 local C_EncounterJournal_GetSectionInfo = _G.C_EncounterJournal.GetSectionInfo
 
 -- Spell Whitelist
-K.NameplateWhiteList = {
+C.NameplateWhiteList = {
 	-- Buffs
 	[642] = true, -- Divine Shield
 	[1022] = true, -- Blessing of Protection
@@ -131,7 +131,7 @@ K.NameplateWhiteList = {
 }
 
 -- Spell Blacklist
-K.NameplateBlackList = {
+C.NameplateBlackList = {
 	[15407] = true, -- Mental flogging
 	-- [1490] = true, -- Chaos Branding
 	-- [113746] = true, -- Mysterious palm
@@ -144,7 +144,7 @@ K.NameplateBlackList = {
 	[206930] = true, -- Heart blow
 }
 
-K.PlayerNameplateWhiteList = {
+C.PlayerNameplateWhiteList = {
 	-- Demon Hunter
 	[203819] = true, -- Demon Spikes
 	[187827] = true, -- Metamorphosis (Vengeance)
@@ -253,7 +253,7 @@ K.PlayerNameplateWhiteList = {
 	[227744] = true, -- Ravager
 }
 
-K.PlayerNameplateBlackList = {
+C.PlayerNameplateBlackList = {
 	-- [spellID] = true, -- Spell Name
 }
 
@@ -264,7 +264,7 @@ local function GetSectionInfo(id)
 end
 
 -- Custom Special Units
-K.NameplateCustomUnits = {
+C.NameplateCustomUnits = {
 	[120651] = true, -- Explosives
 	[141851] = true, -- Spawn of G'huun
 	[153377] = true, -- Goop
@@ -297,7 +297,7 @@ K.NameplateCustomUnits = {
 }
 
 -- Display the unit of energy value
-K.NameplateShowPowerList = {
+C.NameplateShowPowerList = {
 	[152703] = true, -- Walking Shocker X1, Difficult McCargon
 	[155432] = true, -- Magic messenger
 	[GetSectionInfo(13015)] = true, -- Cleaner

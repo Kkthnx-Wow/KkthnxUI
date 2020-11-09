@@ -1,9 +1,6 @@
-local K = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
+local _, C = unpack(select(2, ...))
 
-local _G = _G
-
-local function SkinNPETutorial()
+C.themes["Blizzard_Tutorial"] = function()
     local tutorialFrame = NPE_TutorialKeyboardMouseFrame_Frame
     tutorialFrame.NineSlice:Hide()
     tutorialFrame:CreateBorder()
@@ -12,5 +9,3 @@ local function SkinNPETutorial()
     tutorialFrame.CloseButton:SkinCloseButton()
     NPE_TutorialKeyString:SetTextColor(1, 1, 1)
 end
-
-Module.NewSkin["Blizzard_Tutorial"] = SkinNPETutorial

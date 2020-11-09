@@ -2,16 +2,19 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Load_Config -->
    <Script file="GUI.lua" />
+   <Script file="AuraWatchGUI.lua" />
 
-   <Script file="Elements\ActionbarFadeFilter.lua" />
-   <Script file="Elements\AutoQuestFilter.lua" />
-   <Script file="Elements\BadBuffsFilter.lua" />
-   <Script file="Elements\ExtraQuestButtonFilter.lua" />
-   <Script file="Elements\FilgerSpellsFilter.lua" />
-   <Script file="Elements\NameplateAurasFilter.lua" />
-   <Script file="Elements\RaidUtilityBuffsFilter.lua" />
-   <Script file="Elements\RangeSpellsFilter.lua" />
-   <Script file="Elements\SpellRemindersFilter.lua" />
-   <Script file="Elements\UnitframeAurasFilter.lua" />
-   <Script file="Elements\WorldMapPlusFilter.lua" />
+   <Script file="Elements\ActionBarFade.lua" />
+   <Script file="Elements\AuraWatchSpells.lua" />
+   <Script file="Elements\AutoQuest.lua" />
+   <Script file="Elements\BadBuffs.lua" />
+   <Script file="Elements\ExtraQuestButton.lua" />
+   <Script file="Elements\NameplateAuras.lua" />
+   <Script file="Elements\RaidUtilityBuffs.lua" />
+   <Script file="Elements\RangeSpells.lua" />
+   <Script file="Elements\SpellReminders.lua" />
+   <Script file="Elements\UnitframeAuras.lua" />
+   <Script file="Elements\MapReveal.lua" />
+
+   <Include file="Elements\AuraWatchList\AuraWatchList.xml"/>
 </Ui>

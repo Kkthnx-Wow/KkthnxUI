@@ -213,8 +213,8 @@ end
 
 function Module:ChatCopy_CreateMenu()
 	menu = CreateFrame("Frame", "KKUI_ChatMenu", UIParent)
-	menu:SetSize(18, C["Chat"].Height - 6)
-	menu:SetPoint("TOPRIGHT", _G.ChatFrame1, 18, -5)
+	menu:SetSize(18, C["Chat"].Height)
+	menu:SetPoint("TOPRIGHT", _G.ChatFrame1, 20, -2)
 	menu:SetShown(C["Chat"].ChatMenu)
 
 	_G.ChatFrameMenuButton:ClearAllPoints()

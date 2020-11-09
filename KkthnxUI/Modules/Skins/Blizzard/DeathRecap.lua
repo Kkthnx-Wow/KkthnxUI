@@ -1,11 +1,10 @@
 local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
 
 local _G = _G
 local select = _G.select
 local unpack = _G.unpack
 
-local function ReskinDeathRecapFrame()
+C.themes["Blizzard_DeathRecap"] = function()
     local DeathRecapFrame = _G.DeathRecapFrame
     DeathRecapFrame.CloseXButton:SkinCloseButton()
     DeathRecapFrame:StripTextures()
@@ -29,5 +28,3 @@ local function ReskinDeathRecapFrame()
         end
     end
 end
-
-Module.NewSkin["Blizzard_DeathRecap"] = ReskinDeathRecapFrame

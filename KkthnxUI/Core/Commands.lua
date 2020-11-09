@@ -1,20 +1,11 @@
-local K, C, L = unpack(select(2, ...))
+local K, _, L = unpack(select(2, ...))
 
 local _G = _G
-local pairs = _G.pairs
 local print = _G.print
-local string_find = _G.string.find
-local string_gsub = _G.string.gsub
 local string_lower = _G.string.lower
-local string_split = _G.string.split
 local string_trim = _G.string.trim
-local table_insert = _G.table.insert
-local table_remove = _G.table.remove
 local tonumber = _G.tonumber
-local type = _G.type
 
-local ACCEPT = _G.ACCEPT
-local CANCEL = _G.CANCEL
 local C_QuestLog_AbandonQuest = _G.C_QuestLog.AbandonQuest
 local C_QuestLog_GetInfo = _G.C_QuestLog.GetInfo
 local C_QuestLog_GetNumQuestLogEntries = _G.C_QuestLog.GetNumQuestLogEntries
@@ -34,7 +25,6 @@ local GetNumGroupMembers = _G.GetNumGroupMembers
 local LeaveParty = _G.LeaveParty
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlaySound = _G.PlaySound
-local ReloadUI = _G.ReloadUI
 local RepopMe = _G.RepopMe
 local RetrieveCorpse = _G.RetrieveCorpse
 local SetCVar = _G.SetCVar
@@ -44,176 +34,14 @@ local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
-local SelectedProfile = 0
-
-local function parseArguments(msg)
-	-- Remove spaces at the start and end
-	msg = string_gsub(msg, "^%s+", "")
-	msg = string_gsub(msg, "%s+$", "")
-
-	-- Replace all space characters with single spaces
-	msg = string_gsub(msg, "%s+", " ")
-
-	-- If multiple arguments exist, split them into separate return values
-	if string_find(msg, "%s") then
-		return string_split(" ", msg)
-	else
-		return msg
-	end
-end
-
 -- Profiles data/listings
 SlashCmdList["KKUI_UIPROFILES"] = function(msg)
-	if not KkthnxUIData then
-		return
-	end
-
-	if not msg or msg == "" then
-		print(" ")
-		K.Print("/profile list")
-		print(" List current profiles available")
-		K.Print("/profile #")
-		print(" Apply a profile, replace '#' with a profile number")
-		K.Print("/profile delete #")
-		print(" Delete a profile, replace '#' with a profile number")
-		print(" ")
-	else
-		-- Split the msg into multiple arguments.
-		-- This function will return any number of arguments.
-		local command, arg1 = parseArguments(msg)
-		if msg == "list" or msg == "l" then
-			KkthnxUI.Profiles = {}
-			KkthnxUI.Profiles.Data = {}
-			KkthnxUI.Profiles.Options = {}
-
-			local EmptyTable = {}
-			for Server, Table in pairs(KkthnxUIData) do
-				if not Server then
-					return
-				end
-
-				if type(KkthnxUIData[Server]) == "table" then
-					for Character, Table in pairs(KkthnxUIData[Server]) do
-						table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
-
-						-- GUI options, it can be not found if you didn't log at least once since version 1.10 on that toon.
-						if KkthnxUISettingsPerCharacter and KkthnxUISettingsPerCharacter[Server] and KkthnxUISettingsPerCharacter[Server][Character] then
-							table_insert(KkthnxUI.Profiles.Options, KkthnxUISettingsPerCharacter[Server][Character])
-						else
-							table_insert(KkthnxUI.Profiles.Options, EmptyTable)
-						end
-
-						K.Print(L["Profile"]..#KkthnxUI.Profiles.Data..": ["..Server.."] - ["..Character.."]")
-					end
-				end
-			end
-		elseif command == "delete" or command == "del" then
-			-- Only do this if the user previously has done a /profile list,
-			-- and an indexed listing of the profiles is actually available.
-			if KkthnxUI.Profiles and KkthnxUI.Profiles.Data then
-				-- Retrieve the profile ID
-				SelectedProfile = tonumber(arg1)
-				-- Retrieve the profile table
-				local Data = KkthnxUI.Profiles.Data[SelectedProfile]
-				-- Return an error if the user entered a non existing profile
-				if not Data then
-					K.Print(L["ProfileNotFound"])
-					return
-				else
-					if Data == KkthnxUIData[K.Realm][K.Name] then
-						local Installer = K:GetModule("Installer")
-						Installer:ResetSettings()
-						Installer:ResetData()
-					end
-
-					local CharacterName, ServerName
-					local found
-
-					-- Search through the stored data for the matching table
-					for Server, Table in pairs(KkthnxUIData) do
-						if type(KkthnxUIData[Server]) == "table" then
-							for Character, Table in pairs(KkthnxUIData[Server]) do
-								if Table == Data then
-									CharacterName = Character
-									ServerName = Server
-									KkthnxUIData[Server][Character] = nil
-									KkthnxUISettingsPerCharacter[Server][Character] = nil
-									found = true
-									break
-								end
-							end
-						end
-
-						if found then
-							break
-						end
-					end
-
-					-- Delete the profile listing entries too.
-					table_remove(KkthnxUI.Profiles.Data, SelectedProfile)
-					table_remove(KkthnxUI.Profiles.Options, SelectedProfile)
-
-					-- Tell the user about the deletion
-					K.Print(L["Profile"]..#KkthnxUI.Profiles.Data..L["ProfileDel"].."["..ServerName.."] - ["..CharacterName.."]")
-
-					-- Do a new listing to show the users the order now,
-					-- in case they wish to delete more profiles.
-					-- First iterate through the indexed profile table
-					for SelectedProfile = 1, #KkthnxUI.Profiles.Data do
-						local Data = KkthnxUI.Profiles.Data[SelectedProfile]
-
-						-- Search through the saved data for the matching table,
-						-- so we can get the character and server names.
-						local found
-						for Server, Table in pairs(KkthnxUIData) do
-							for Character, Table in pairs(KkthnxUIData[Server]) do
-								-- We found the matching table so we break and exit this loop,
-								-- to allow the outer iteration loop to continue faster.
-								if Table == Data then
-									K.Print(L["Profile"] ..SelectedProfile..": ["..Server.."] - ["..Character.."]")
-									found = true
-									break
-								end
-							end
-
-							if found then
-								break
-							end
-						end
-					end
-				end
-			end
-		else
-			SelectedProfile = tonumber(msg)
-			if not KkthnxUI.Profiles or not KkthnxUI.Profiles.Data[SelectedProfile] then
-				K.Print(L["ProfileNotFound"])
-				return
-			end
-
-			K.StaticPopup_Show("KKUI_IMPORT_PROFILE")
-		end
+	if msg == "" or msg == "list" or msg == "l" then
+		K.Print("This command no longer has purpose. Please open KkthnxUI GUI and go to General and use the profile dropdown to pick the profile you want!")
 	end
 end
 _G.SLASH_KKUI_UIPROFILES1 = "/profile"
 _G.SLASH_KKUI_UIPROFILES2 = "/profiles"
-
--- Create a KkthnxUI popup for profiles
-K.PopupDialogs["KKUI_IMPORT_PROFILE"] = {
-	text = "Are you sure you want to import this profile? Continue?",
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function(self)
-		KkthnxUIData[K.Realm][K.Name] = KkthnxUI.Profiles.Data[SelectedProfile]
-
-		if KkthnxUISettingsPerCharacter[K.Realm][K.Name].General and KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal then
-			-- Look like we use globals for gui, don't import gui settings, keep globals
-		else
-			KkthnxUISettingsPerCharacter[K.Realm][K.Name] = KkthnxUI.Profiles.Options[SelectedProfile]
-		end
-
-		ReloadUI()
-	end,
-}
 
 -- Fixes the issue when the dialog to release spirit does not come up.
 SlashCmdList["KKUI_FIXRELEASE"] = function()

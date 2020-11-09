@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
 -- Lua
@@ -9,7 +9,7 @@ local PanelTemplates_GetSelectedTab = _G.PanelTemplates_GetSelectedTab
 local UnitClass = _G.UnitClass
 local hooksecurefunc = _G.hooksecurefunc
 
-local function ReskinInspectUI()
+C.themes["Blizzard_InspectUI"] = function()
 	if InspectFrame:IsShown() then
 		HideUIPanel(InspectFrame)
 	end
@@ -90,5 +90,3 @@ local function ReskinInspectUI()
 	-- Call it once to apply it from the start
 	OnInspectSwitchTabs(1)
 end
-
-Module.NewSkin["Blizzard_InspectUI"] = ReskinInspectUI

@@ -39,7 +39,7 @@ local BrightColor = {0.35, 0.35, 0.35}
 local Color = K.Colors.class[select(2, UnitClass("player"))]
 local R, G, B = unpack(Color)
 
-local HeaderText = K.Title..K.SystemColor.." v"..K.Version.."|r"
+local HeaderText = K.SystemColor.."Welcome to "..K.Title.." "..K.InfoColor.."v"..K.Version..", "..K.MyClassColor..K.Name
 
 local WindowWidth = 700
 -- local WindowHeight = 360
@@ -61,6 +61,8 @@ local WidgetHeight = 20 -- All widgets are the same height
 local WidgetHighlightAlpha = 0.25
 
 local LastActiveWindow
+
+local MySelectedProfile = K.Realm.."-"..K.Name
 
 local CreditLines = {
 	K.GreyColor.."~~~~|r |CFFfa6a56Patreons|r "..K.GreyColor.."~~~~",
@@ -127,6 +129,21 @@ GUI.Buttons = {}
 GUI.Queue = {}
 GUI.Widgets = {}
 
+-- Create a KkthnxUI popup for profiles
+K.PopupDialogs["KKUI_SWITCH_PROFILE"] = {
+	text = "Are you sure you want to switch your profile? If you accept, this current profile will be erased and replaced the character you selected!",
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function()
+		local SelectedServer, SelectedNickname = string.split("-", MySelectedProfile)
+
+		KkthnxUIData[K.Realm][K.Name] = KkthnxUIData[SelectedServer][SelectedNickname]
+		KkthnxUISettingsPerCharacter[K.Realm][K.Name] = KkthnxUISettingsPerCharacter[SelectedServer][SelectedNickname]
+
+		ReloadUI()
+	end,
+}
+
 local SetValue = function(group, option, value)
 	if (type(C[group][option]) == "table") then
 		if C[group][option].Value then
@@ -152,11 +169,7 @@ local SetValue = function(group, option, value)
 		KkthnxUISettingsPerCharacter[K.Realm][K.Name] = {}
 	end
 
-	if KkthnxUISettingsPerCharacter[K.Realm][K.Name].General and KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal then
-		Settings = KkthnxUISettings
-	else
-		Settings = KkthnxUISettingsPerCharacter[K.Realm][K.Name]
-	end
+	Settings = KkthnxUISettingsPerCharacter[K.Realm][K.Name]
 
 	if (not Settings[group]) then
 		Settings[group] = {}
@@ -263,7 +276,7 @@ end
 GUI.Widgets.CreateSection = CreateSection
 
 -- Buttons
-local ButtonWidth = 134
+local ButtonWidth = 138
 
 local ButtonOnEnter = function(self)
 	self.Highlight:SetAlpha(WidgetHighlightAlpha)
@@ -281,9 +294,12 @@ local ButtonOnMouseUp = function(self)
 	self.KKUI_Background:SetVertexColor(unpack(C["Media"].BackdropColor))
 end
 
-local CreateButton = function(self, midtext, text, func)
+local CreateButton = function(self, midtext, text, tooltip, func)
 	local Anchor = CreateFrame("Frame", nil, self)
 	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
+	Anchor:SetScript("OnEnter", AnchorOnEnter)
+	Anchor:SetScript("OnLeave", AnchorOnLeave)
+	Anchor.Tooltip = tooltip
 
 	local Button = CreateFrame("Frame", nil, Anchor)
 	Button:SetSize(ButtonWidth, WidgetHeight)
@@ -765,7 +781,7 @@ end
 GUI.Widgets.CreateSlider = CreateSlider
 
 -- Dropdown Menu
-local DropdownWidth = 134
+local DropdownWidth = 180
 local ListItemsToShow = 8
 local LastActiveDropdown
 
@@ -1030,7 +1046,7 @@ local AddDropdownScrollBar = function(self)
 	self:SetHeight(((WidgetHeight + 6) * ListItemsToShow) - 0)
 end
 
-local CreateDropdown = function(self, group, option, text, custom, hook)
+local CreateDropdown = function(self, group, option, text, custom, tooltip, hook)
 	local Value
 	local Selections
 
@@ -1049,6 +1065,9 @@ local CreateDropdown = function(self, group, option, text, custom, hook)
 
 	local Anchor = CreateFrame("Frame", nil, self)
 	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
+	Anchor:SetScript("OnEnter", AnchorOnEnter)
+	Anchor:SetScript("OnLeave", AnchorOnLeave)
+	Anchor.Tooltip = tooltip
 
 	local Dropdown = CreateFrame("Frame", nil, Anchor)
 	Dropdown:SetPoint("LEFT", Anchor, 0, 0)
@@ -1093,7 +1112,7 @@ local CreateDropdown = function(self, group, option, text, custom, hook)
 	Dropdown.Label:SetJustifyH("LEFT")
 	StyleFont(Dropdown.Label, Font, 12)
 	Dropdown.Label:SetJustifyH("LEFT")
-	Dropdown.Label:SetWidth(DropdownWidth - 4)
+	Dropdown.Label:SetWidth(WidgetListWidth - DropdownWidth - (Spacing * 4))
 	Dropdown.Label:SetText(text)
 
 	Dropdown.ArrowAnchor = CreateFrame("Frame", nil, Dropdown)
@@ -1183,7 +1202,7 @@ local CreateDropdown = function(self, group, option, text, custom, hook)
 
 		MenuItem.Text = MenuItem:CreateFontString(nil, "OVERLAY")
 		MenuItem.Text:SetPoint("LEFT", MenuItem, 5, 0)
-		MenuItem.Text:SetWidth((DropdownWidth - 6) - (Spacing * 2))
+		MenuItem.Text:SetWidth((DropdownWidth + 3) - (Spacing * 2))
 		MenuItem.Text:SetFontObject(K.GetFont("KkthnxUI"))
 		MenuItem.Text:SetJustifyH("LEFT")
 		MenuItem.Text:SetText(k)
@@ -1781,53 +1800,10 @@ GUI.Enable = function(self)
 
 	local FooterButtonWidth = ((HeaderWidth / 4) - Spacing) + 1
 
-	-- Global button
-	local GlobalButtonString = K.MyClassColor.."You are using per-character settings, push me for global|r"
-
-	if KkthnxUISettingsPerCharacter[K.Realm][K.Name].General and KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal then
-		GlobalButtonString = K.MyClassColor.."You are using global settings, push me for per-character|r"
-	end
-
-	local Global = CreateFrame("Frame", nil, self.Footer)
-	Global:SetSize(self.Footer:GetWidth(), HeaderHeight)
-	Global:SetPoint("LEFT", self.Footer, 0, 0)
-	Global:CreateBorder()
-	Global:SetScript("OnMouseDown", ButtonOnMouseDown)
-	Global:SetScript("OnMouseUp", ButtonOnMouseUp)
-	Global:SetScript("OnEnter", ButtonOnEnter)
-	Global:SetScript("OnLeave", ButtonOnLeave)
-	Global:HookScript("OnMouseUp", function()
-		local Settings = KkthnxUISettingsPerCharacter[K.Realm][K.Name]
-
-		if Settings.General and Settings.General.UseGlobal then
-			KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal = false
-		else
-			if not KkthnxUISettingsPerCharacter[K.Realm][K.Name].General then
-				KkthnxUISettingsPerCharacter[K.Realm][K.Name].General = {}
-			end
-
-			KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal = true
-		end
-
-		ReloadUI()
-	end)
-
-	Global.Highlight = Global:CreateTexture(nil, "OVERLAY")
-	Global.Highlight:SetAllPoints()
-	Global.Highlight:SetTexture(Texture)
-	Global.Highlight:SetVertexColor(123/255, 132/255, 137/255)
-	Global.Highlight:SetAlpha(0)
-
-	Global.Middle = Global:CreateFontString(nil, "OVERLAY")
-	Global.Middle:SetAllPoints()
-	StyleFont(Global.Middle, Font, 12)
-	Global.Middle:SetJustifyH("CENTER")
-	Global.Middle:SetText(GlobalButtonString)
-
 	-- Apply button
 	local Apply = CreateFrame("Frame", nil, self.Footer)
 	Apply:SetSize(FooterButtonWidth + 3, HeaderHeight)
-	Apply:SetPoint("LEFT", self.Footer, 0, -28)
+	Apply:SetPoint("LEFT", self.Footer, 0, 0)
 	Apply:CreateBorder()
 	Apply:SetScript("OnMouseDown", ButtonOnMouseDown)
 	Apply:SetScript("OnMouseUp", ButtonOnMouseUp)
@@ -2112,6 +2088,20 @@ GUI.PLAYER_REGEN_ENABLED = function(self)
 		self:Show()
 		self:SetAlpha(1)
 		self.CombatClosed = false
+	end
+end
+
+GUI.SetProfile = function(self)
+	local Dropdown = self:GetParent()
+	local Profile = Dropdown.Current:GetText()
+	local MyProfileName = K.Realm.."-"..K.Name
+
+	if Profile and Profile ~= K.Realm.."-"..K.Name then
+		MySelectedProfile = Profile
+
+		GUI:Toggle()
+
+		K.StaticPopup_Show("KKUI_SWITCH_PROFILE")
 	end
 end
 

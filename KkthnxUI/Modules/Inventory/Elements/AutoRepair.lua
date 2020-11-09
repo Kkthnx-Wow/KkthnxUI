@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Bags")
 
 local _G = _G
@@ -21,7 +21,7 @@ local function delayFunc()
 	if isBankEmpty then
 		autoRepair(true)
 	else
-		K.Print(string_format("%s%s", K.SystemColor.."Your items have been repaired using guild bank funds for:|r ", K.FormatMoney(repairAllCost)))
+		K.Print(string_format("%s%s", K.SystemColor..L["Repaired Items Guild"], K.FormatMoney(repairAllCost)))
 	end
 end
 
@@ -41,10 +41,10 @@ function autoRepair(override)
 		else
 			if myMoney > repairAllCost then
 				_G.RepairAllItems()
-				K.Print(string_format("%s%s", K.SystemColor.."Your items have been repaired for:|r ", K.FormatMoney(repairAllCost)))
+				K.Print(string_format("%s%s", K.SystemColor..L["Repaired Items"], K.FormatMoney(repairAllCost)))
 				return
 			else
-				K.Print(K.SystemColor.."You don't have enough money to repair,|r "..K.Name)
+				K.Print(K.SystemColor..L["Repaired Failed"]..K.Name)
 				return
 			end
 		end

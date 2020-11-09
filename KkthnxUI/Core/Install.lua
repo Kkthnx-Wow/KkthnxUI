@@ -22,11 +22,7 @@ local UIParent = _G.UIParent
 local UI_SCALE = _G.UI_SCALE
 
 function Module:ResetSettings()
-	if KkthnxUISettingsPerCharacter[K.Realm][K.Name].General and KkthnxUISettingsPerCharacter[K.Realm][K.Name].General.UseGlobal then
-		KkthnxUISettings = {}
-	else
-		KkthnxUISettingsPerCharacter[K.Realm][K.Name] = {}
-	end
+	KkthnxUISettingsPerCharacter[K.Realm][K.Name] = {}
 
 	K.CheckSavedVariables()
 end
@@ -49,50 +45,38 @@ end
 
 -- Tuitorial
 function Module:ForceDefaultCVars()
-	SetActionBarToggles(1, 1, 1, 1)
 	SetCVar("ActionButtonUseKeyDown", 1)
-	SetCVar("UberTooltips", 1)
 	SetCVar("WorldTextScale", 1.2)
 	SetCVar("alwaysCompareItems", 1)
 	SetCVar("alwaysShowActionBars", 1)
 	SetCVar("autoLootDefault", 1)
-	SetCVar("autoOpenLootHistory", 0)
-	SetCVar("autoQuestProgress", 1)
 	SetCVar("autoQuestWatch", 1)
 	SetCVar("autoSelfCast", 1)
 	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
-	SetCVar("chatMouseScroll", 1)
-	SetCVar("chatStyle", "classic")
-	SetCVar("ffxGlow", 0)
 	SetCVar("floatingCombatTextCombatDamage", 1)
 	SetCVar("floatingCombatTextCombatDamageDirectionalOffset", 10)
 	SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
 	SetCVar("floatingCombatTextCombatHealing", 1)
 	SetCVar("floatingCombatTextFloatMode", 1)
-	SetCVar("fstack_preferParentKeys", 0) -- Add back the frame names via fstack!
+	SetCVar("fstack_preferParentKeys", 0)
 	SetCVar("lockActionBars", 1)
 	SetCVar("lootUnderMouse", 1)
-	SetCVar("lossOfControl", 1)
 	SetCVar("nameplateMotion", 1)
 	SetCVar("nameplateShowAll", 1)
 	SetCVar("nameplateShowEnemies", 1)
 	SetCVar("overrideArchive", 0)
 	SetCVar("screenshotQuality", 10)
 	SetCVar("showNPETutorials", 0)
-	SetCVar("showQuestTrackingTooltips", 1)
 	SetCVar("showTutorials", 0)
 	SetCVar("spamFilter", 0)
-	SetCVar("statusTextDisplay", "BOTH")
-	SetCVar("taintLog", 0)
-	SetCVar("threatWarning", 3)
 	SetCVar("useCompactPartyFrames", 1)
-	SetCVar("violenceLevel", 5)
-	SetCVar("wholeChatWindowClickable", 0)
+	SetActionBarToggles(1, 1, 1, 1)
 
 	if K.isDeveloper then
-		SetCVar("SpellQueueWindow", 30)
-		SetCVar("ShowClassColorInFriendlyNameplate", 1)
+		SetCVar("ffxGlow", 0)
+		SetCVar("SpellQueueWindow", 20)
 		SetCVar("nameplateShowOnlyNames", 1)
+		SetCVar("ShowClassColorInFriendlyNameplate", 1)
 	end
 end
 
@@ -504,7 +488,7 @@ local function YesTutor()
 			UIErrorsFrame:AddMessage(K.InfoColor.."Chat Frame Settings Loaded")
 		elseif currentPage == 3 then
 			C["General"].AutoScale = true
-			K:SetupUIScale()
+			K.SetupUIScale()
 			UIErrorsFrame:AddMessage(K.InfoColor.."UI Scale Loaded")
 		elseif currentPage == 4 then
 			KkthnxUIData["DBMRequest"] = true

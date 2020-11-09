@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Bags")
 
 local _G = _G
@@ -18,7 +18,7 @@ local errorText = _G.ERR_VENDOR_DOESNT_BUY
 local function stopSelling(tell)
 	stop = true
 	if sellCount > 0 and tell then
-		K.Print(string_format("%s%s", K.SystemColor.."Vendored gray items for:|r ", K.FormatMoney(sellCount)))
+		K.Print(string_format("%s%s", K.SystemColor..L["Vendored Items"], K.FormatMoney(sellCount)))
 	end
 	sellCount = 0
 end
@@ -42,7 +42,7 @@ local function startSelling()
 					sellCount = sellCount + price*count
 					cache["b"..bag.."s"..slot] = true
 					_G.UseContainerItem(bag, slot)
-					C_Timer_After(.2, startSelling)
+					C_Timer_After(0.1, startSelling)
 					return
 				end
 			end

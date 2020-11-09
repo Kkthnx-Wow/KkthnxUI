@@ -1,11 +1,11 @@
 local _, ns = ...
-local oUF = ns.oUF or oUF
+local oUF = ns.oUF or _G.oUF
 
 local _G = _G
 
 local UnitIsConnected = _G.UnitIsConnected
 
-local Update = function(self, _, unit)
+local Update = function(self, event, unit)
     if unit ~= self.unit then
         return
     end
@@ -34,9 +34,9 @@ local Enable = function(self)
         officon.__owner = self
         officon.ForceUpdate = ForceUpdate
 
-        self:RegisterEvent('UNIT_CONNECTION', Path)
-		self:RegisterEvent('PARTY_MEMBER_ENABLE', Path)
-		self:RegisterEvent('PARTY_MEMBER_DISABLE', Path)
+        self:RegisterEvent("PARTY_MEMBER_DISABLE", Path)
+        self:RegisterEvent("PARTY_MEMBER_ENABLE", Path)
+        self:RegisterEvent("PLAYER_TARGET_CHANGED", Path, true)
 
         if officon:IsObjectType("Texture") and not officon:GetTexture() then
             officon:SetTexture("Interface\\CharacterFrame\\Disconnect-Icon")
@@ -50,9 +50,9 @@ local Disable = function(self)
     local officon = self.OfflineIcon
 
     if officon then
-        self:UnregisterEvent("UNIT_CONNECTION", Path)
-        self:UnregisterEvent("PARTY_MEMBER_ENABLE", Path)
         self:UnregisterEvent("PARTY_MEMBER_DISABLE", Path)
+        self:UnregisterEvent("PARTY_MEMBER_ENABLE", Path)
+        self:UnregisterEvent("PLAYER_TARGET_CHANGED", Path)
     end
 end
 

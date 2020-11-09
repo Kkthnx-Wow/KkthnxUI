@@ -46,7 +46,7 @@ function Module:ReskinCollapse(isAtlas)
 	local bg = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	bg:SetAllPoints(self)
 	bg:SetFrameLevel(self:GetFrameLevel())
-	bg:CreateBorder(nil, nil, 10, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 	bg:ClearAllPoints()
 	bg:SetSize(13, 13)
@@ -72,6 +72,8 @@ local function reskinQuestIcon(button)
 	button:SetNormalTexture("")
 	button:SetPushedTexture("")
 	button:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
+	button:GetHighlightTexture():SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
+	button:GetHighlightTexture():SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
 	local icon = button.icon or button.Icon
 	if icon then
 		icon:SetTexCoord(unpack(K.TexCoords))
@@ -98,6 +100,7 @@ local function reskinHeader(header)
 	bg:SetVertexColor(r, g, b, .8)
 	bg:SetPoint("BOTTOMLEFT", 0, -4)
 	bg:SetSize(250, 30)
+	header.bg = bg -- accessable for other addons
 end
 
 local function reskinBarTemplate(bar)
@@ -202,7 +205,7 @@ local function AddQuestNumString()
 	end
 end
 
-local function ReskinObjectiveTracker()
+table_insert(C.defaultThemes, function()
 	-- QuestIcons
 	hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", reskinQuestIcons)
 	hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", reskinQuestIcons)
@@ -246,6 +249,4 @@ local function ReskinObjectiveTracker()
 	end
 
 	hooksecurefunc("ObjectiveTracker_Update", AddQuestNumString)
-end
-
-table_insert(Module.NewSkin["KkthnxUI"], ReskinObjectiveTracker)
+end)

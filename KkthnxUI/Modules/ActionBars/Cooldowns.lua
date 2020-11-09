@@ -2,7 +2,6 @@ local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Cooldowns")
 
 local _G = _G
-local math_floor = _G.math.floor
 local pairs = _G.pairs
 local select = _G.select
 local string_find = _G.string.find

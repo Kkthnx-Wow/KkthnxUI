@@ -14,7 +14,7 @@ local function SetupAutoAcceptSummon()
 	if not UnitAffectingCombat("player") then
 		local sName = C_SummonInfo_GetSummonConfirmSummoner()
 		local sLocation = C_SummonInfo_GetSummonConfirmAreaName()
-		K.Print(L["The summon from"].." "..sName.." ("..sLocation..") "..L["will be automatically accepted in 10 seconds unless cancelled."])
+		K.Print(L["Summon From"] .." "..sName.." ("..sLocation..") "..L["Summon Warning"])
 		C_Timer_After(10, function()
 			local sNameNew = C_SummonInfo_GetSummonConfirmSummoner()
 			local sLocationNew = C_SummonInfo_GetSummonConfirmAreaName()

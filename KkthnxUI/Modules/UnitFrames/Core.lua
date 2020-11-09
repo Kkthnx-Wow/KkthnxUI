@@ -1,5 +1,6 @@
 local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Unitframes")
+local AuraModule = K:GetModule("Auras")
 local oUF = oUF or K.oUF
 
 local _G = _G
@@ -203,7 +204,7 @@ local function updateCastBarTicks(bar, numTicks)
 				castbarTicks[i] = bar:CreateTexture(nil, "OVERLAY")
 				castbarTicks[i]:SetTexture(C["Media"].Blank)
 				castbarTicks[i]:SetVertexColor(0, 0, 0, 0.8)
-				castbarTicks[i]:SetWidth(K.Mult)
+				castbarTicks[i]:SetWidth(2 * K.Mult)
 				castbarTicks[i]:SetHeight(bar:GetHeight())
 			end
 			castbarTicks[i]:ClearAllPoints()
@@ -327,7 +328,7 @@ function Module:PostCastStart(unit)
 
 		local numTicks = 0
 		if self.channeling then
-			numTicks = K.ChannelingTicks[self.spellID] or 0
+			numTicks = C.ChannelingTicks[self.spellID] or 0
 		end
 		updateCastBarTicks(self, numTicks)
 	elseif not UnitIsUnit(unit, "player") and self.notInterruptible then
@@ -408,6 +409,7 @@ function Module.PostCreateAura(element, button)
 	button.overlay:SetTexture(nil)
 	button.stealable:SetParent(parentFrame)
 	button.stealable:SetAtlas("bags-newitem")
+	button:HookScript("OnMouseDown", AuraModule.RemoveSpellFromIgnoreList)
 
 	button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
 end
@@ -487,28 +489,28 @@ function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster,
 			return true
 		end
 	elseif style == "player" or style == "target" or style == "party" then
-		if K.AuraBlackList[spellID] then
+		if C.AuraBlackList[spellID] then
 			return false
 		else
 			return true
 		end
 	elseif style == "nameplate" or style == "boss" or style == "arena" then
 		if element.__owner.isNameOnly then
-			return K.NameplateWhiteList[spellID]
-		elseif K.NameplateBlackList[spellID] then
+			return C.NameplateWhiteList[spellID]
+		elseif C.NameplateBlackList[spellID] then
 			return false
 		elseif element.showStealableBuffs and isStealable and not UnitIsPlayer(unit) then
 			return true
-		elseif K.NameplateWhiteList[spellID] then
+		elseif C.NameplateWhiteList[spellID] then
 			return true
 		else
 			local auraFilter = C["Nameplate"].AuraFilter.Value
 			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and (caster == "player" or caster == "pet" or caster == "vehicle"))
 		end
 	elseif style == "PlayerPlate" then
-		if (nameplateShowAll) and not K.PlayerNameplateBlackList[spellID] then
+		if (nameplateShowAll) and not C.PlayerNameplateBlackList[spellID] then
 			return true
-		elseif K.PlayerNameplateWhiteList[spellID] then
+		elseif C.PlayerNameplateWhiteList[spellID] then
 			return true
 		end
 	elseif (element.onlyShowPlayer and button.isPlayer) or (not element.onlyShowPlayer and name) then
@@ -530,9 +532,9 @@ function Module:CreateAuraWatch()
 	auras:SetSize(C["Raid"].AuraWatchIconSize, C["Raid"].AuraWatchIconSize)
 
 	if (self.unit == "pet") then
-		auras.watched = K.BuffsTracking.PET
+		auras.watched = C.BuffsTracking.PET
 	else
-		auras.watched = K.BuffsTracking[K.Class]
+		auras.watched = C.BuffsTracking[K.Class]
 	end
 
 	return auras
@@ -607,7 +609,7 @@ function Module.PostUpdateRunes(element, runemap)
 	end
 end
 
-Module.ClassPowerBarSize = {156, 14}
+Module.ClassPowerBarSize = {160, 14}
 Module.ClassPowerBarPoint = {"TOPLEFT", 0, 20}
 local barWidth, barHeight = unpack(Module.ClassPowerBarSize)
 
@@ -697,7 +699,15 @@ function Module:CreateClassPower(self)
 end
 
 function Module:CreateUnits()
-	if C["Nameplate"].Enable then
+	if C["Nameplate"].Enable or
+		not IsAddOnLoaded("TidyPlates") or
+		not IsAddOnLoaded("nPlates") or
+		not IsAddOnLoaded("Kui_Nameplates") or
+		not IsAddOnLoaded("rNamePlates") or
+		not IsAddOnLoaded("EKplates") or
+		not IsAddOnLoaded("bdNameplates") or
+		not IsAddOnLoaded("Plater") then
+
 		self:SetupCVars()
 		self:BlockAddons()
 		self:CheckExplosives()
@@ -714,11 +724,11 @@ function Module:CreateUnits()
 		oUF:RegisterStyle("PlayerPlate", Module.CreatePlayerPlate)
 		oUF:SetActiveStyle("PlayerPlate")
 		local plate = oUF:Spawn("player", "oUF_PlayerPlate", true)
-		K.Mover(plate, "PlayerNP", "PlayerPlate", {"BOTTOM", UIParent, "BOTTOM", 0, 282}, plate:GetWidth(), plate:GetHeight())
+		K.Mover(plate, "PlayerNP", "PlayerPlate", {"BOTTOM", UIParent, "BOTTOM", 0, 300}, plate:GetWidth(), plate:GetHeight())
 	end
 
 	if C["Unitframe"].Enable then
-		oUF:RegisterStyle("Player",  Module.CreatePlayer)
+		oUF:RegisterStyle("Player", Module.CreatePlayer)
 		oUF:RegisterStyle("Target", Module.CreateTarget)
 		oUF:RegisterStyle("ToT", Module.CreateTargetOfTarget)
 		oUF:RegisterStyle("Focus", Module.CreateFocus)
@@ -727,19 +737,19 @@ function Module:CreateUnits()
 
 		oUF:SetActiveStyle("Player")
 		local Player = oUF:Spawn("player", "oUF_Player")
-		Player:SetSize(210, 48)
-		K.Mover(Player, "PlayerUF", "PlayerUF", {"BOTTOM", UIParent, "BOTTOM", -290, 320}, 210, 48)
+		Player:SetSize(160, 48)
+		K.Mover(Player, "PlayerUF", "PlayerUF", {"BOTTOM", UIParent, "BOTTOM", -250, 320}, 160, 48)
 
 		oUF:SetActiveStyle("Target")
 		local Target = oUF:Spawn("target", "oUF_Target")
-		Target:SetSize(210, 48)
-		K.Mover(Target, "TargetUF", "TargetUF", {"BOTTOM", UIParent, "BOTTOM", 290, 320}, 210, 48)
+		Target:SetSize(160, 48)
+		K.Mover(Target, "TargetUF", "TargetUF", {"BOTTOM", UIParent, "BOTTOM", 250, 320}, 160, 48)
 
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("ToT")
 			local TargetOfTarget = oUF:Spawn("targettarget", "oUF_ToT")
 			TargetOfTarget:SetSize(116, 28)
-			K.Mover(TargetOfTarget, "TotUF", "TotUF", {"TOPLEFT", Target, "BOTTOMRIGHT", -48, -6}, 116, 28)
+			K.Mover(TargetOfTarget, "TotUF", "TotUF", {"TOPLEFT", Target, "BOTTOMRIGHT", 6, -6}, 116, 28)
 		end
 
 		oUF:SetActiveStyle("Pet")
@@ -748,7 +758,7 @@ function Module:CreateUnits()
 			Pet:SetParent(Player)
 		end
 		Pet:SetSize(116, 28)
-		K.Mover(Pet, "Pet", "Pet", {"TOPRIGHT", Player, "BOTTOMLEFT", 48, -6}, 116, 28)
+		K.Mover(Pet, "Pet", "Pet", {"TOPRIGHT", Player, "BOTTOMLEFT", -6, -6}, 116, 28)
 
 		oUF:SetActiveStyle("Focus")
 		local Focus = oUF:Spawn("focus", "oUF_Focus")
@@ -759,6 +769,7 @@ function Module:CreateUnits()
 			oUF:SetActiveStyle("FocusTarget")
 			local FocusTarget = oUF:Spawn("focustarget", "oUF_FocusTarget")
 			FocusTarget:SetSize(116, 28)
+			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", {"TOPRIGHT", Focus, "BOTTOMLEFT", 48, -6}, 116, 28)
 		end
 
 		K.HideInterfaceOption(InterfaceOptionsCombatPanelTargetOfTarget)
@@ -768,21 +779,21 @@ function Module:CreateUnits()
 	end
 
 	--if C["Boss"].Enable then
-		oUF:RegisterStyle("Boss", Module.CreateBoss)
-		oUF:SetActiveStyle("Boss")
+	oUF:RegisterStyle("Boss", Module.CreateBoss)
+	oUF:SetActiveStyle("Boss")
 
-		local Boss = {}
-		for i = 1, MAX_BOSS_FRAMES do
-			Boss[i] = oUF:Spawn("boss"..i, "oUF_Boss"..i)
-			Boss[i]:SetSize(164, 34)
+	local Boss = {}
+	for i = 1, MAX_BOSS_FRAMES do
+		Boss[i] = oUF:Spawn("boss"..i, "oUF_Boss"..i)
+		Boss[i]:SetSize(164, 34)
 
-			local moverWidth, moverHeight = Boss[i]:GetWidth(), Boss[i]:GetHeight() + 8
-			if i == 1 then
-				Boss[i].mover = K.Mover(Boss[i], "BossFrame"..i, "Boss1", {"BOTTOMRIGHT", UIParent, "RIGHT", -250, 140}, moverWidth, moverHeight)
-			else
-				Boss[i].mover = K.Mover(Boss[i], "BossFrame"..i, "Boss"..i, {"TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -66}, moverWidth, moverHeight)
-			end
+		local moverWidth, moverHeight = Boss[i]:GetWidth(), Boss[i]:GetHeight() + 8
+		if i == 1 then
+			Boss[i].mover = K.Mover(Boss[i], "BossFrame"..i, "Boss1", {"BOTTOMRIGHT", UIParent, "RIGHT", -250, 140}, moverWidth, moverHeight)
+		else
+			Boss[i].mover = K.Mover(Boss[i], "BossFrame"..i, "Boss"..i, {"TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -66}, moverWidth, moverHeight)
 		end
+	end
 	--end
 
 	if C["Arena"].Enable then
@@ -798,6 +809,11 @@ function Module:CreateUnits()
 	end
 
 	if C["Party"].Enable then
+		-- if IsAddOnLoaded("Grid") or IsAddOnLoaded("Grid2") or IsAddOnLoaded("HealBot") or IsAddOnLoaded("VuhDo") or IsAddOnLoaded("oUF_Freebgrid") then
+		-- 	C["Party"].Enable = false
+		-- 	return
+		-- end
+
 		oUF:RegisterStyle("Party", Module.CreateParty)
 		oUF:SetActiveStyle("Party")
 
@@ -830,6 +846,11 @@ function Module:CreateUnits()
 
 		-- Party pets
 		if C["Party"].Enable and C["Party"].ShowPet then
+			-- if IsAddOnLoaded("Grid") or IsAddOnLoaded("Grid2") or IsAddOnLoaded("HealBot") or IsAddOnLoaded("VuhDo") or IsAddOnLoaded("oUF_Freebgrid") then
+			-- 	C["Party"].ShowPet = false
+			-- 	return
+			-- end
+
 			oUF:RegisterStyle("PartyPet", Module.CreatePartyPet)
 			oUF:SetActiveStyle("PartyPet")
 
@@ -864,6 +885,11 @@ function Module:CreateUnits()
 	end
 
 	if C["Raid"].Enable then
+		-- if IsAddOnLoaded("Grid") or IsAddOnLoaded("Grid2") or IsAddOnLoaded("HealBot") or IsAddOnLoaded("VuhDo") or IsAddOnLoaded("oUF_Freebgrid") then
+		-- 	C["Raid"].Enable = false
+		-- 	return
+		-- end
+
 		oUF:RegisterStyle("Raid", Module.CreateRaid)
 		oUF:SetActiveStyle("Raid")
 
@@ -984,47 +1010,31 @@ function Module:CreateUnits()
 				KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidFrame"]
 			end)
 		end
-	end
-end
 
-function Module:CreateFilgerAnchors()
-	if C["Filger"].Enable and C["Unitframe"].Enable then
-		K.P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 169)
-		K.P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+		if C["Raid"].MainTankFrames then
+			oUF:RegisterStyle("MainTank", Module.CreateRaid)
+			oUF:SetActiveStyle("MainTank")
 
-		K.P_PROC_ICON_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 169)
-		K.P_PROC_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+			local horizonTankRaid = C["Raid"].HorizonRaid
+			local raidTankWidth, raidTankHeight = C["Raid"].Width, C["Raid"].Height
 
-		K.SPECIAL_P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 211)
-		K.SPECIAL_P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+			local raidtank = oUF:SpawnHeader("oUF_MainTank", nil, "raid",
+			"showRaid", true,
+			"xoffset", 6,
+			"yOffset", -6,
+			"groupFilter", "MAINTANK",
+			"point", horizonTankRaid and "LEFT" or "TOP",
+			"columnAnchworPoint", "LEFT",
+			"template", C["Raid"].MainTankFrames and "oUF_MainTankTT" or "oUF_MainTank",
+			"oUF-initialConfigFunction", ([[
+			self:SetWidth(%d)
+			self:SetHeight(%d)
+			]]):format(raidTankWidth, raidTankHeight))
 
-		K.T_DEBUFF_ICON_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 211)
-		K.T_DEBUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
-
-		K.T_BUFF_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 253)
-		K.T_BUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
-
-		K.PVE_PVP_DEBUFF_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 253)
-		K.PVE_PVP_DEBUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
-
-		K.PVE_PVP_CC_Anchor:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMLEFT", -2, -44)
-		K.PVE_PVP_CC_Anchor:SetSize(221, 25)
-
-		K.COOLDOWN_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 63, 17)
-		K.COOLDOWN_Anchor:SetSize(C["Filger"].CooldownSize, C["Filger"].CooldownSize)
-
-		K.T_DE_BUFF_BAR_Anchor:SetPoint("TOPLEFT", "oUF_Target", "BOTTOMRIGHT", 6, 25)
-		K.T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
-
-		K.Mover(K.P_BUFF_ICON_Anchor, "P_BUFF_ICON", "P_BUFF_ICON", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 169})
-		K.Mover(K.P_PROC_ICON_Anchor, "P_PROC_ICON", "P_PROC_ICON", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 169})
-		K.Mover(K.SPECIAL_P_BUFF_ICON_Anchor, "SPECIAL_P_BUFF_ICON", "SPECIAL_P_BUFF_ICON", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 211})
-		K.Mover(K.T_DEBUFF_ICON_Anchor, "T_DEBUFF_ICON", "T_DEBUFF_ICON", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 211})
-		K.Mover(K.T_BUFF_Anchor, "T_BUFF", "T_BUFF", {"BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 253})
-		K.Mover(K.PVE_PVP_DEBUFF_Anchor, "PVE_PVP_DEBUFF", "PVE_PVP_DEBUFF", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 253})
-		K.Mover(K.PVE_PVP_CC_Anchor, "PVE_PVP_CC", "PVE_PVP_CC", {"TOPLEFT", "oUF_Player", "BOTTOMLEFT", -2, -44})
-		K.Mover(K.COOLDOWN_Anchor, "COOLDOWN", "COOLDOWN", {"BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 63, 17})
-		K.Mover(K.T_DE_BUFF_BAR_Anchor, "T_DE_BUFF_BAR", "T_DE_BUFF_BAR", {"TOPLEFT", "oUF_Target", "BOTTOMRIGHT", 6, 25})
+			local raidtankMover = K.Mover(raidtank, "MainTankFrame", "MainTankFrame", {"TOPLEFT", UIParent, "TOPLEFT", 4, -4}, raidTankWidth, raidTankHeight)
+			raidtank:ClearAllPoints()
+			raidtank:SetPoint("TOPLEFT", raidtankMover)
+		end
 	end
 end
 
@@ -1036,12 +1046,12 @@ function Module:UpdateRaidDebuffIndicator()
 
 		if (ORD.RegisteredList ~= "RD") and (InstanceType == "party" or InstanceType == "raid") then
 			ORD:ResetDebuffData()
-			ORD:RegisterDebuffs(K.DebuffsTracking.RaidDebuffs.spells)
+			ORD:RegisterDebuffs(C.DebuffsTracking.RaidDebuffs.spells)
 			ORD.RegisteredList = "RD"
 		else
 			if ORD.RegisteredList ~= "CC" then
 				ORD:ResetDebuffData()
-				ORD:RegisterDebuffs(K.DebuffsTracking.CCDebuffs.spells)
+				ORD:RegisterDebuffs(C.DebuffsTracking.CCDebuffs.spells)
 				ORD.RegisteredList = "CC"
 			end
 		end
@@ -1090,7 +1100,6 @@ function Module:OnEnable()
 	-- Register our units / layout
 	self:CreateUnits()
 	self:UpdateRangeCheckSpells()
-	self:CreateFilgerAnchors()
 
 	if C["Raid"].AuraWatch then
 		local RaidDebuffs = CreateFrame("Frame")

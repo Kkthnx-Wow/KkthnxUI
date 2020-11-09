@@ -1,7 +1,7 @@
-local K = unpack(select(2, ...))
+local _, C = unpack(select(2, ...))
 
 -- Raidbuff Checklist
-K.RaidUtilityBuffCheckList = {
+C.RaidUtilityBuffCheckList = {
 	[1] = {		-- 合剂
 		251836,	-- 敏捷238
 		251837,	-- 智力238

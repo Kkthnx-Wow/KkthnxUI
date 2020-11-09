@@ -1,6 +1,6 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
-local FilterConfig = K.ActionBars.extraBar
+local FilterConfig = C.ActionBars.extraBar
 
 local _G = _G
 local table_insert = _G.table.insert
@@ -60,7 +60,7 @@ function Module:CreateExtrabar()
 		for spellButton in self.SpellButtonContainer:EnumerateActive() do
 			if spellButton and not spellButton.styled then
 				spellButton.NormalTexture:SetAlpha(0)
-				spellButton:SetPushedTexture(C["Media"].Texture) -- force it to gain a texture
+				spellButton:SetPushedTexture(C["Media"].Blank) -- force it to gain a texture
 				spellButton:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
 				spellButton.Icon:SetTexCoord(unpack(K.TexCoords))
 				local bg = CreateFrame("Frame", nil, spellButton)

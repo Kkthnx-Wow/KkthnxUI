@@ -173,19 +173,19 @@ function Module:TradeTabs_FilterIcons()
 		local value = self.__value
 		if value[3]() then
 			value[4](false)
-			self:SetBackdropBorderColor(0, 0, 0)
+			self.KKUI_Border:SetVertexColor(1, 1, 1)
 		else
 			value[4](true)
-			self:SetBackdropBorderColor(1, .8, 0)
+			self.KKUI_Border:SetVertexColor(1, .8, 0)
 		end
 	end
 
 	local buttons = {}
 	for index, value in pairs(buttonList) do
-		local bu = CreateFrame("Button", nil, TradeSkillFrame)
+		local bu = CreateFrame("Button", nil, TradeSkillFrame, "BackdropTemplate")
 		bu:SetSize(18, 18)
 		bu:SetPoint("RIGHT", TradeSkillFrame.FilterButton, "LEFT", -5 - (index - 1) * 24, 0)
-		bu:CreateBorder()
+		bu:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 		bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 		bu.Icon:SetAllPoints()

@@ -1,5 +1,4 @@
 local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
 
 local _G = _G
 local pairs = pairs
@@ -7,7 +6,7 @@ local table_insert = table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
 
-local function LoadSpellBookSkin()
+table_insert(C.defaultThemes, function()
 	local professionTexture = K.GetTexture(C["UITextures"].SkinTextures)
 
 	for i = 1, _G.SPELLS_PER_PAGE do
@@ -155,6 +154,4 @@ local function LoadSpellBookSkin()
 		statusbar.rankText:ClearAllPoints()
 		statusbar.rankText:SetPoint("CENTER")
 	end
-end
-
-table_insert(Module.NewSkin["KkthnxUI"], LoadSpellBookSkin)
+end)

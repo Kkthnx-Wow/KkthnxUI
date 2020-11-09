@@ -53,15 +53,15 @@ function Module:ItemAlert_CheckGroup()
 end
 
 function Module:PlacedItemAlert()
-	self:ItemAlert_CheckGroup()
-	K:RegisterEvent("GROUP_LEFT", self.ItemAlert_CheckGroup)
-	K:RegisterEvent("GROUP_JOINED", self.ItemAlert_CheckGroup)
+	Module:ItemAlert_CheckGroup()
+	K:RegisterEvent("GROUP_LEFT", Module.ItemAlert_CheckGroup)
+	K:RegisterEvent("GROUP_JOINED", Module.ItemAlert_CheckGroup)
 end
 
 function Module:CreateItemAnnounce()
-	if C["Announcements"].ItemAlert ~= true then
+	if not C["Announcements"].ItemAlert then
 		return
 	end
 
-    self:PlacedItemAlert()
+    Module:PlacedItemAlert()
 end

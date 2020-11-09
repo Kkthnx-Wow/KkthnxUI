@@ -10,7 +10,7 @@
 -- @name LibSpellRange-1.0.lua
 
 local major = "SpellRange-1.0"
-local minor = 13
+local minor = 15
 
 assert(LibStub, format("%s requires LibStub.", major))
 
@@ -19,24 +19,23 @@ if not Lib then
 	return
 end
 
-local _G = _G
-
-local strlower = _G.strlower
 local tonumber = _G.tonumber
-local type = _G.type
+local strlower = _G.strlower
 local wipe = _G.wipe
+local type = _G.type
 
+local GetSpellTabInfo = _G.GetSpellTabInfo
 local GetNumSpellTabs = _G.GetNumSpellTabs
 local GetSpellBookItemInfo = _G.GetSpellBookItemInfo
 local GetSpellBookItemName = _G.GetSpellBookItemName
-local GetSpellInfo = _G.GetSpellInfo
 local GetSpellLink = _G.GetSpellLink
-local GetSpellTabInfo = _G.GetSpellTabInfo
+local GetSpellInfo = _G.GetSpellInfo
+
 local IsSpellInRange = _G.IsSpellInRange
 local SpellHasRange = _G.SpellHasRange
 
 -- isNumber is basically a tonumber cache for maximum efficiency
-Lib.isNumber = Lib.isNumber or setmetatable({}, {
+	Lib.isNumber = Lib.isNumber or setmetatable({}, {
 	__mode = "kv",
 	__index = function(t, i)
 		local o = tonumber(i) or false
@@ -47,19 +46,15 @@ local isNumber = Lib.isNumber
 
 -- strlower cache for maximum efficiency
 Lib.strlowerCache = Lib.strlowerCache or setmetatable(
-{}, {
+	{}, {
 	__index = function(t, i)
-		if not i then
-			return
-		end
-
+		if not i then return end
 		local o
 		if type(i) == "number" then
 			o = i
 		else
 			o = strlower(i)
 		end
-
 		t[i] = o
 		return o
 	end,
@@ -83,12 +78,12 @@ local spellsByID_pet = Lib.spellsByID_pet
 
 -- Updates spellsByName and spellsByID
 local function UpdateBook(bookType)
-	local _, _, offs, numspells = GetSpellTabInfo(3)
-	local max = offs -- The offset of the next tab is the max ID of the previous tab.
-	if numspells == 0 then
-		-- New characters pre level 10 only have 2 tabs.
-		local _, _, offs, numspells = GetSpellTabInfo(2)
-		max = offs + numspells
+	local max = 0
+	for i = 1, GetNumSpellTabs() do
+		local _, _, offs, numspells, _, specId = GetSpellTabInfo(i)
+		if specId == 0 then
+			max = offs + numspells
+		end
 	end
 
 	local spellsByName = Lib["spellsByName_" .. bookType]
@@ -99,6 +94,7 @@ local function UpdateBook(bookType)
 
 	for spellBookID = 1, max do
 		local type, baseSpellID = GetSpellBookItemInfo(spellBookID, bookType)
+
 		if type == "SPELL" or type == "PETACTION" then
 			local currentSpellName = GetSpellBookItemName(spellBookID, bookType)
 			local link = GetSpellLink(currentSpellName)
@@ -117,7 +113,6 @@ local function UpdateBook(bookType)
 			if currentSpellName and not spellsByName[strlower(currentSpellName)] then
 				spellsByName[strlower(currentSpellName)] = spellBookID
 			end
-
 			if currentSpellID and not spellsByID[currentSpellID] then
 				spellsByID[currentSpellID] = spellBookID
 			end
@@ -129,7 +124,6 @@ local function UpdateBook(bookType)
 				if baseSpellName and not spellsByName[strlower(baseSpellName)] then
 					spellsByName[strlower(baseSpellName)] = spellBookID
 				end
-
 				if baseSpellID and not spellsByID[baseSpellID] then
 					spellsByID[baseSpellID] = spellBookID
 				end

@@ -1,5 +1,4 @@
 local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
 
 -- Sourced: ShestakUI
 
@@ -8,7 +7,7 @@ local table_insert = _G.table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
 
-local function ReskinWidgetFrame()
+table_insert(C.defaultThemes, function()
 	local atlasColors = {
 		["UI-Frame-Bar-Fill-Blue"] = {.2, .6, 1},
 		["UI-Frame-Bar-Fill-Red"] = {.9, .2, .2},
@@ -110,6 +109,4 @@ local function ReskinWidgetFrame()
 			bar.styled = true
 		end
 	end)
-end
-
-table_insert(Module.NewSkin["KkthnxUI"], ReskinWidgetFrame)
+end)

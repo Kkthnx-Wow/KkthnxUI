@@ -6,13 +6,12 @@ local table_insert = _G.table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
 
-local function SkinFriendsFrame()
+tinsert(C.defaultThemes, function()
 	-- GameIcons
 	for i = 1, FRIENDS_TO_DISPLAY do
 		local bu = _G["FriendsListFrameScrollFrameButton"..i]
 		local ic = bu.gameIcon
 
-		bu.background:Hide()
 		bu:SetHighlightTexture(C["Media"].Blank)
 		bu:GetHighlightTexture():SetVertexColor(.24, .56, 1, .2)
 
@@ -28,7 +27,7 @@ local function SkinFriendsFrame()
 		travelPass:SetSize(22, 22)
 		travelPass:SetPushedTexture(nil)
 		travelPass:SetDisabledTexture(nil)
-		travelPass:SetPoint("TOPRIGHT", -3, -6)
+		travelPass:SetPoint("TOPRIGHT", -2, -6)
 		travelPass:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 		local nt = travelPass:GetNormalTexture()
@@ -37,7 +36,8 @@ local function SkinFriendsFrame()
 
 		local hl = travelPass:GetHighlightTexture()
 		hl:SetColorTexture(1, 1, 1, .25)
-		hl:SetAllPoints()
+		hl:SetPoint("TOPLEFT", travelPass, "TOPLEFT", 2, -2)
+		hl:SetPoint("BOTTOMRIGHT", travelPass, "BOTTOMRIGHT", -2, 2)
 	end
 
 	local function UpdateScroll()
@@ -79,6 +79,4 @@ local function SkinFriendsFrame()
 	end
 	hooksecurefunc(friendsBNetFrame.BroadcastFrame, "ShowFrame", BroadcastButton_SetTexture)
 	hooksecurefunc(friendsBNetFrame.BroadcastFrame, "HideFrame", BroadcastButton_SetTexture)
-end
-
-table_insert(Module.NewSkin["KkthnxUI"], SkinFriendsFrame)
+end)

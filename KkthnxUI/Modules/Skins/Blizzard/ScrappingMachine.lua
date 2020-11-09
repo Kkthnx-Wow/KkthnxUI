@@ -1,5 +1,4 @@
-local K = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
+local K, C = unpack(select(2, ...))
 
 local _G = _G
 local unpack = _G.unpack
@@ -7,11 +6,7 @@ local pairs = _G.pairs
 
 local hooksecurefunc = _G.hooksecurefunc
 
-local function SkinScrappingMachine()
-	if not IsAddOnLoaded("Blizzard_ScrappingMachineUI") then
-		return
-	end
-
+C.themes["Blizzard_ScrappingMachineUI"] = function()
 	local MachineFrame = _G.ScrappingMachineFrame
 
 	MachineFrame:StripTextures()
@@ -40,5 +35,3 @@ local function SkinScrappingMachine()
 		end)
 	end
 end
-
-Module.NewSkin["Blizzard_ScrappingMachineUI"] = SkinScrappingMachine

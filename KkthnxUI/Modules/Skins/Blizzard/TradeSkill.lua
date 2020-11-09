@@ -1,9 +1,6 @@
 local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
 
-local _G = _G
-
-local function ReskinTradeSkill()
+C.themes["Blizzard_TradeSkillUI"] = function()
     local rankFrame = _G.TradeSkillFrame.RankFrame
 
 	rankFrame:SetStatusBarTexture(C["Media"].Texture)
@@ -14,5 +11,3 @@ local function ReskinTradeSkill()
 	rankFrame.BorderRight:Hide()
 	rankFrame:CreateBorder()
 end
-
-Module.NewSkin["Blizzard_TradeSkillUI"] = ReskinTradeSkill

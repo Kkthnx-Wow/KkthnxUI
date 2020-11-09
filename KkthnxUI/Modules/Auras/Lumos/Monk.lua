@@ -43,38 +43,11 @@ function Module:ChantLumos(self)
 	local spec = GetSpecialization()
 	if spec == 1 then
 		UpdateCooldown(self.lumos[1], 121253, true)
-		UpdateBuff(self.lumos[2], 215479, 215479, false, "END")
-		UpdateBuff(self.lumos[3], 322507, 322507, true)
-		Module:UpdateTotemAura(self.lumos[4], 608951, 132578, true)
-
-		do
-			local button = self.lumos[5]
-			local name, _, duration, expire, _, spellID = GetUnitAura("player", 124275, "HARMFUL")
-			if not name then
-				name, _, duration, expire, _, spellID = GetUnitAura("player", 124274, "HARMFUL")
-			end
-
-			if not name then
-				name, _, duration, expire, _, spellID = GetUnitAura("player", 124273, "HARMFUL")
-			end
-
-			if name and duration > 0 then
-				button.CD:SetCooldown(expire-10, 10)
-				button.CD:Show()
-				button.Icon:SetDesaturated(false)
-			else
-				button.CD:Hide()
-				button.Icon:SetDesaturated(true)
-			end
-			local texture = spellID and GetSpellTexture(spellID) or 463281
-			button.Icon:SetTexture(texture)
-
-			if button.Icon:GetTexture() == GetSpellTexture(124273) then
-				K.libButtonGlow.ShowOverlayGlow(button)
-			else
-				K.libButtonGlow.HideOverlayGlow(button)
-			end
-		end
+		UpdateCooldown(self.lumos[2], 322101, true)
+		self.lumos[2].Count:SetText(GetSpellCount(322101))
+		UpdateBuff(self.lumos[3], 215479, 215479)
+		UpdateBuff(self.lumos[4], 325092, 325092, nil, "END")
+		UpdateBuff(self.lumos[5], 322507, 322507, true)
 	elseif spec == 2 then
 		UpdateCooldown(self.lumos[1], 115151, true)
 		UpdateCooldown(self.lumos[2], 191837, true)

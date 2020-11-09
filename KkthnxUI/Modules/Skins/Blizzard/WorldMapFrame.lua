@@ -1,13 +1,13 @@
-local K = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
+local _, C = unpack(select(2, ...))
 
 local _G = _G
 local table_insert = _G.table.insert
+local setup = _G.MakeFunction
 
 local hooksecurefunc = _G.hooksecurefunc
 
 -- Party Sync button
-local function SkinWorldMapFrame()
+table_insert(C.defaultThemes, function()
 	local sessionManagement = _G.QuestMapFrame.QuestSessionManagement
 
 	local executeSessionCommand = sessionManagement.ExecuteSessionCommand
@@ -33,6 +33,4 @@ local function SkinWorldMapFrame()
 			self.ExecuteSessionCommand.normalIcon:SetAtlas(atlas)
 		end
 	end)
-end
-
-table_insert(Module.NewSkin["KkthnxUI"], SkinWorldMapFrame)
+end)

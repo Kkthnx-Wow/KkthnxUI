@@ -12,7 +12,7 @@ local hooksecurefunc = _G.hooksecurefunc
 local UIParent = _G.UIParent
 
 local POSITION, ANCHOR_POINT, YOFFSET = "TOP", "BOTTOM", -18
-function K:PostAlertMove()
+function Module:PostAlertMove()
 	local AlertFrameHolder = _G.AlertFrameHolder
 
 	local _, y = AlertFrameHolder:GetCenter()
@@ -162,6 +162,6 @@ function Module:CreateAlertFrames()
 		AlertSubSystem_AdjustPosition(alertFrameSubSystem)
 	end)
 
-	hooksecurefunc(AlertFrame, "UpdateAnchors", K.PostAlertMove)
+	hooksecurefunc(AlertFrame, "UpdateAnchors", Module.PostAlertMove)
 	hooksecurefunc("GroupLootContainer_Update", Module.GroupLootContainer_Update)
 end

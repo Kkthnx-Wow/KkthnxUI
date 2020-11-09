@@ -5,5 +5,6 @@ function Module:OnEnable()
     Module:CreateInterruptAnnounce()
     Module:CreateItemAnnounce()
     Module:CreateRareAnnounce()
+    Module:CreateResetInstance()
     Module:CreateSaySappedAnnounce()
 end

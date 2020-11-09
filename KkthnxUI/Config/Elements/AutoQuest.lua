@@ -1,6 +1,6 @@
-local K, C = unpack(select(2, ...))
+local _, C = unpack(select(2, ...))
 
-K.IgnoreQuestNPC = {
+C.IgnoreQuestNPC = {
 	[88570] = true, -- Fate-Twister Tiklal
 	[87391] = true, -- Fate-Twister Seress
 	[111243] = true, -- Archmage Lan'dalock
@@ -28,7 +28,7 @@ K.IgnoreQuestNPC = {
 	[143555] = true, -- Sand Silberman, PVP Quartermaster of Zuldazar
 }
 
-K.IgnoreGossipNPC = {
+C.IgnoreGossipNPC = {
 	-- Bodyguards
 	[86945] = true, -- Aeda Brightdawn (Horde)
 	[86933] = true, -- Vivianne (Horde)
@@ -70,24 +70,24 @@ K.IgnoreGossipNPC = {
 	[172572] = true, -- Celeste Bellevenko (Tutor)
 }
 
-K.RogueClassHallInsignia = {
+C.RogueClassHallInsignia = {
 	[97004] = true, -- "Red" Jack Findle
 	[96782] = true, -- Lucian Trias
 	[93188] = true, -- Mongar
 }
 
-K.FollowerAssignees = {
+C.FollowerAssignees = {
 	[138708] = true, -- Garona the Orc
 	[135614] = true, -- Master Matthias Shore
 }
 
-K.DarkmoonNPC = {
+C.DarkmoonNPC = {
 	[57850] = true, -- Teleportologist Fozlebub
 	[55382] = true, -- Darkmoon Faire Mystic Mage (Horde)
 	[54334] = true, -- Darkmoon Faire Mystic Mage (Alliance)
 }
 
-K.ItemBlacklist = {
+C.ItemBlacklist = {
 	-- Inscription weapons
 	[31690] = 79343, -- Inscribed Tiger Staff
 	[31691] = 79340, -- Inscribed Crane Staff
@@ -143,7 +143,7 @@ K.ItemBlacklist = {
 	[31664] = 88604, -- Nat's Fishing Journal
 }
 
-K.IgnoreProgressNPC = {
+C.IgnoreProgressNPC = {
 	[119388] = true,
 	[127037] = true,
 	[126954] = true,
@@ -153,7 +153,7 @@ K.IgnoreProgressNPC = {
 	[150563] = true, -- Skagit, Mechagon orders daily
 }
 
-K.CashRewards = {
+C.CashRewards = {
 	[45724] = 1e5, -- Champion's Purse
 	[64491] = 2e6, -- Royal Reward
 

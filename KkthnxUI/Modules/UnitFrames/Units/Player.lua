@@ -7,11 +7,13 @@ local string_format = _G.string.format
 
 local CreateFrame = _G.CreateFrame
 
+local playerWidth = 160
+
 -- Class Powers
 function Module.PostUpdateUnitframeClassPower(element, cur, max, diff, powerType, chargedIndex)
 	if diff then
 		for i = 1, max do
-			element[i]:SetWidth((156 - (max - 1) * 6) / max)
+			element[i]:SetWidth((playerWidth - (max - 1) * 6) / max)
 		end
 	end
 
@@ -144,13 +146,13 @@ function Module:CreatePlayer()
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-		self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
+		self.Portrait:SetPoint("RIGHT", self, "LEFT", -6, 0)
 		self.Portrait:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		self.Portrait = self.Health:CreateTexture("PlayerPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-		self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
+		self.Portrait:SetPoint("RIGHT", self, "LEFT", -6, 0)
 
 		self.Portrait.Border = CreateFrame("Frame", nil, self)
 		self.Portrait.Border:SetAllPoints(self.Portrait)
@@ -161,16 +163,12 @@ function Module:CreatePlayer()
 		end
 	end
 
-	self.Health:ClearAllPoints()
-	self.Health:SetPoint("TOPLEFT", self.Portrait:GetWidth() + 6, 0)
-	self.Health:SetPoint("TOPRIGHT")
-
 	if C["Unitframe"].ClassResources and not C["Nameplate"].ShowPlayerPlate then
 		Module:CreateClassPower(self)
 	end
 
 	if C["Unitframe"].PlayerBuffs then
-		local width = 156
+		local width = playerWidth
 
 		self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
@@ -193,7 +191,7 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].PlayerDeBuffs then
-		local width = 156
+		local width = playerWidth
 
 		self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 		self.Debuffs.spacing = 6
@@ -201,8 +199,8 @@ function Module:CreatePlayer()
 		self.Debuffs["growth-x"] = "RIGHT"
 		self.Debuffs["growth-y"] = "UP"
 		self.Debuffs:ClearAllPoints()
-		if C["Unitframe"].ClassResources and _G.oUF_PlayerClassPowerBar then
-			self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 46 + 6)
+		if C["Unitframe"].ClassResources and _G.oUF_ClassPowerBar then
+			self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 46 + 7)
 		else
 			self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 46)
 		end
@@ -315,7 +313,7 @@ function Module:CreatePlayer()
 		hab:SetPoint("TOP")
 		hab:SetPoint("BOTTOM")
 		hab:SetPoint("RIGHT", self.Health:GetStatusBarTexture())
-		hab:SetWidth(156)
+		hab:SetWidth(170)
 		hab:SetReverseFill(true)
 		hab:SetStatusBarTexture(HealPredictionTexture)
 		hab:SetStatusBarColor(1, 0, 0, 0.25)
@@ -342,12 +340,12 @@ function Module:CreatePlayer()
 	if C["Unitframe"].PlayerPowerPrediction then
 		local mainBar = CreateFrame("StatusBar", self:GetName().."PowerPrediction", self.Power)
 		mainBar:SetReverseFill(true)
-		mainBar:SetPoint("TOP")
-		mainBar:SetPoint("BOTTOM")
-		mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT")
+		mainBar:SetPoint("TOP", 0, -1)
+		mainBar:SetPoint("BOTTOM", 0, 1)
+		mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT", -1, 0)
 		mainBar:SetStatusBarTexture(HealPredictionTexture)
-		mainBar:SetStatusBarColor(1, 1, 1, 0.2)
-		mainBar:SetWidth(156)
+		mainBar:SetStatusBarColor(0.8, 0.1, 0.1, 0.6)
+		mainBar:SetWidth(playerWidth)
 
 		self.PowerPrediction = {
 			mainBar = mainBar
@@ -357,7 +355,7 @@ function Module:CreatePlayer()
 	if C["Unitframe"].ShowPlayerName then
 		self.Name = self:CreateFontString(nil, "OVERLAY")
 		self.Name:SetPoint("TOP", self.Health, 0, 16)
-		self.Name:SetWidth(156)
+		self.Name:SetWidth(playerWidth)
 		self.Name:SetFontObject(UnitframeFont)
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
 			self:Tag(self.Name, "[name]")
@@ -376,13 +374,13 @@ function Module:CreatePlayer()
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.LeaderIndicator:SetSize(14, 14)
-	self.LeaderIndicator:SetPoint("TOPLEFT", self.Overlay, "TOPLEFT", 0, 8)
+	self.LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, "TOPLEFT", 0, 8)
 
 	if C["Unitframe"].Stagger then
 		if K.Class == "MONK" then
 			self.Stagger = CreateFrame("StatusBar", self:GetName().."Stagger", self)
 			self.Stagger:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
-			self.Stagger:SetSize(156, 14)
+			self.Stagger:SetSize(playerWidth, 14)
 			self.Stagger:SetStatusBarTexture(UnitframeTexture)
 			self.Stagger:CreateBorder()
 
@@ -430,6 +428,11 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].CombatText then
+		if IsAddOnLoaded("MikScrollingBattleText") or IsAddOnLoaded("Parrot") or IsAddOnLoaded("xCT") or IsAddOnLoaded("sct") then
+			C["Unitframe"].CombatText = false
+			return
+		end
+
 		local parentFrame = CreateFrame("Frame", nil, UIParent)
 		self.FloatingCombatFeedback = CreateFrame("Frame", "oUF_Player_CombatTextFrame", parentFrame)
 		self.FloatingCombatFeedback:SetSize(32, 32)
@@ -597,7 +600,7 @@ function Module:CreatePlayer()
 
 	if C["Unitframe"].GlobalCooldown then
 		self.GlobalCooldown = CreateFrame("Frame", nil, self.Health)
-		self.GlobalCooldown:SetWidth(156)
+		self.GlobalCooldown:SetWidth(playerWidth)
 		self.GlobalCooldown:SetHeight(28)
 		self.GlobalCooldown:SetFrameStrata("HIGH")
 		self.GlobalCooldown:SetPoint("LEFT", self.Health, "LEFT", 0, 0)

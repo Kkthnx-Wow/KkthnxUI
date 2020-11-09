@@ -229,7 +229,7 @@ function Module:CreateRaid()
 		self.RaidDebuffs:SetFrameLevel(self:GetFrameLevel() + 20)
 		self.RaidDebuffs:SetSize(C["Raid"].AuraDebuffIconSize, C["Raid"].AuraDebuffIconSize)
 		self.RaidDebuffs:SetPoint("CENTER", self, 0, 0)
-		self.RaidDebuffs:CreateBorder()
+		self.RaidDebuffs:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 		self.RaidDebuffs.showDispellableDebuff = true
 		self.RaidDebuffs.onlyMatchSpellID = true

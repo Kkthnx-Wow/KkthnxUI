@@ -4,9 +4,9 @@
     <Script file="MiniMap.lua"/>
     <Script file="WorldMap.lua"/>
 
-    <Script file="Elements\Buttons.lua"/>
-    <Script file="Elements\Reveal.lua"/>
-    <Script file="Elements\WowHead.lua"/>
+    <Script file="Elements\CollectButtons.lua"/>
+    <Script file="Elements\MapReveal.lua"/>
+    <Script file="Elements\WowHeadLink.lua"/>
 
    	<Frame name="KkthnxUIMapsGlobalPinTemplate" inherits="BaseHighlightableMapPoiPinTemplate" enableMouseClicks="true" enableMouseMotion="true" mixin="KkthnxUIMapsGlobalPinMixin" virtual="true" />
 </Ui>

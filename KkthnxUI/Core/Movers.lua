@@ -29,8 +29,11 @@ local UIParent = _G.UIParent
 local MoverList, f = {}
 local updater
 
-function K:Mover(text, value, anchor, width, height)
+function K:Mover(text, value, anchor, width, height, isAuraWatch)
 	local key = "Mover"
+	if isAuraWatch then
+		key = "AuraWatchMover"
+	end
 
 	K.CheckSavedVariables()
 
@@ -66,12 +69,15 @@ function K:Mover(text, value, anchor, width, height)
 	mover.__key = key
 	mover.__value = value
 	mover.__anchor = anchor
+	mover.isAuraWatch = isAuraWatch
 	mover:SetScript("OnEnter", Module.Mover_OnEnter)
 	mover:SetScript("OnLeave", Module.Mover_OnLeave)
 	mover:SetScript("OnDragStart", Module.Mover_OnDragStart)
 	mover:SetScript("OnDragStop", Module.Mover_OnDragStop)
 	mover:SetScript("OnMouseUp", Module.Mover_OnClick)
-	table.insert(MoverList, mover)
+	if not isAuraWatch then
+		table.insert(MoverList, mover)
+	end
 
 	self:ClearAllPoints()
 	self:SetPoint("TOPLEFT", mover)
@@ -141,7 +147,11 @@ end
 
 function Module:Mover_OnClick(btn)
 	if IsShiftKeyDown() and btn == "RightButton" then
-		self:Hide()
+		if self.isAuraWatch then
+			UIErrorsFrame:AddMessage(K.InfoColor.."You can't hide AuraWatch mover by that.")
+		else
+			self:Hide()
+		end
 	elseif IsControlKeyDown() and btn == "RightButton" then
 		self:ClearAllPoints()
 		self:SetPoint(unpack(self.__anchor))
@@ -201,6 +211,7 @@ function Module:LockElements()
 
 	f:Hide()
 	_G.SlashCmdList["KKUI_TOGGLEGRID"]("1")
+	SlashCmdList.AuraWatch("lock")
 end
 
 _G.StaticPopupDialogs["RESET_MOVER"] = {
@@ -209,6 +220,7 @@ _G.StaticPopupDialogs["RESET_MOVER"] = {
 	button2 = CANCEL,
 	OnAccept = function()
 		table_wipe(KkthnxUIData[K.Realm][K.Name]["Mover"])
+		table_wipe(KkthnxUIData[K.Realm][K.Name]["AuraWatchMover"])
 		_G.ReloadUI()
 	end,
 }
@@ -221,7 +233,7 @@ local function CreateConsole()
 
 	f = CreateFrame("Frame", nil, UIParent)
 	f:SetPoint("CENTER", 0, 150)
-	f:SetSize(264, 62)
+	f:SetSize(218, 90)
 	f:CreateBorder()
 
 	f.text = f:CreateFontString(nil, "OVERLAY")
@@ -230,10 +242,10 @@ local function CreateConsole()
 	f.text:SetText(K.Title.." Movers Config")
 	f.text:SetWordWrap(false)
 
-	local bu, text = {}, {LOCK, "Grids", RESET}
-	for i = 1, 3 do
+	local bu, text = {}, {LOCK, "Grids", "AuraWatch", RESET}
+	for i = 1, 4 do
 		bu[i] = CreateFrame("Button", nil, f)
-		bu[i]:SetSize(80, 24)
+		bu[i]:SetSize(100, 24)
 		bu[i]:SkinButton()
 
 		bu[i].text = bu[i]:CreateFontString(nil, "OVERLAY")
@@ -243,7 +255,9 @@ local function CreateConsole()
 		bu[i].text:SetWordWrap(false)
 
 		if i == 1 then
-			bu[i]:SetPoint("BOTTOMLEFT", 6, 6)
+			bu[i]:SetPoint("BOTTOMLEFT", 6, 36)
+		elseif i == 3 then
+			bu[i]:SetPoint("TOP", bu[1], "BOTTOM", 0, -6)
 		else
 			bu[i]:SetPoint("LEFT", bu[i-1], "RIGHT", 6, 0)
 		end
@@ -255,7 +269,17 @@ local function CreateConsole()
 		_G.SlashCmdList["KKUI_TOGGLEGRID"]("64")
 	end)
 
-	bu[3]:SetScript("OnClick", function()
+	bu[3]:SetScript("OnClick", function(self)
+		self.state = not self.state
+		if self.state then
+			SlashCmdList.AuraWatch("move")
+		else
+			SlashCmdList.AuraWatch("lock")
+		end
+	end)
+
+	-- Reset
+	bu[4]:SetScript("OnClick", function()
 		StaticPopup_Show("RESET_MOVER")
 	end)
 

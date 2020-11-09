@@ -32,9 +32,11 @@ local function hookActionButton(self)
 	local stance = self.commandName and string_find(self.commandName, "^SHAPESHIFT") and "STANCE"
 	Module:Bind_Update(self, pet or stance or nil)
 end
+
 local function hookMacroButton(self)
 	Module:Bind_Update(self, "MACRO")
 end
+
 local function hookSpellButton(self)
 	Module:Bind_Update(self, "SPELL")
 end

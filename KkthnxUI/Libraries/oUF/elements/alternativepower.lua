@@ -1,17 +1,26 @@
 --[[
 # Element: Alternative Power Bar
+
 Handles the visibility and updating of a status bar that displays encounter- or quest-related power information, such as
 the number of hour glass charges during the Murozond encounter in the dungeon End Time.
+
 ## Widget
+
 AlternativePower - A `StatusBar` used to represent the unit's alternative power.
+
 ## Notes
+
 If mouse interactivity is enabled for the widget, `OnEnter` and/or `OnLeave` handlers will be set to display a tooltip.
 A default texture will be applied if the widget is a StatusBar and doesn't have a texture set.
+
 ## Options
+
 .smoothGradient                   - 9 color values to be used with the .colorSmooth option (table)
 .considerSelectionInCombatHostile - Indicates whether selection should be considered hostile while the unit is in
                                     combat with the player (boolean)
+
 The following options are listed by priority. The first check that returns true decides the color of the bar.
+
 .colorThreat       - Use `self.colors.threat[threat]` to color the bar based on the unit's threat status. `threat` is
                      defined by the first return of [UnitThreatSituation](https://wow.gamepedia.com/API_UnitThreatSituation) (boolean)
 .colorPower        - Use `self.colors.power[token]` to color the bar based on the unit's alternative power type
@@ -27,13 +36,16 @@ The following options are listed by priority. The first check that returns true 
                      [UnitReaction](http://wowprogramming.com/docs/api/UnitReaction.html) (boolean)
 .colorSmooth       - Use `self.colors.smooth` to color the bar with a smooth gradient based on the unit's current
                      alternative power percentage (boolean)
+
 ## Examples
+
     -- Position and size
     local AlternativePower = CreateFrame('StatusBar', nil, self)
     AlternativePower:SetHeight(20)
     AlternativePower:SetPoint('BOTTOM')
     AlternativePower:SetPoint('LEFT')
     AlternativePower:SetPoint('RIGHT')
+
     -- Register with oUF
     self.AlternativePower = AlternativePower
 --]]
@@ -104,6 +116,7 @@ local function UpdateColor(self, event, unit, powerType)
 
 	--[[ Callback: AlternativePower:PostUpdateColor(unit, r, g, b)
 	Called after the element color has been updated.
+
 	* self - the AlternativePower element
 	* unit - the unit for which the update has been triggered (string)
 	* r    - the red component of the used color (number)[0-1]
@@ -121,6 +134,7 @@ local function Update(self, event, unit, powerType)
 
 	--[[ Callback: AlternativePower:PreUpdate()
 	Called before the element has been updated.
+
 	* self - the AlternativePower element
 	--]]
 	if(element.PreUpdate) then
@@ -143,6 +157,7 @@ local function Update(self, event, unit, powerType)
 
 	--[[ Callback: AlternativePower:PostUpdate(unit, cur, min, max)
 	Called after the element has been updated.
+
 	* self - the AlternativePower element
 	* unit - the unit for which the update has been triggered (string)
 	* cur  - the current value of the unit's alternative power (number?)
@@ -157,6 +172,7 @@ end
 local function Path(self, ...)
 	--[[ Override: AlternativePower.Override(self, event, unit, ...)
 	Used to completely override the element's update process.
+
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* unit  - the unit accompanying the event (string)
@@ -166,6 +182,7 @@ local function Path(self, ...)
 
 	--[[ Override: AlternativePower.UpdateColor(self, event, unit, ...)
 	Used to completely override the internal function for updating the widgets' colors.
+
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* unit  - the unit accompanying the event (string)
@@ -203,6 +220,7 @@ end
 local function VisibilityPath(self, ...)
 	--[[ Override: AlternativePower.OverrideVisibility(self, event, unit)
 	Used to completely override the element's visibility update process.
+
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* unit  - the unit accompanying the event (string)
@@ -238,6 +256,7 @@ local function Enable(self, unit)
 
 			--[[ Override: AlternativePower:UpdateTooltip()
 			Called when the mouse is over the widget. Used to populate its tooltip.
+
 			* self - the AlternativePower element
 			--]]
 			if(not element.UpdateTooltip) then

@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 
 local _G = _G
 
@@ -14,7 +14,7 @@ local function SpellName(id)
 	end
 end
 
-K.CheckBadBuffs = {
+C.CheckBadBuffs = {
 	[SpellName(172003)] = true,	-- Slime Costume
 	[SpellName(172008)] = true,	-- Ghoul Costume
 	[SpellName(172010)] = true,	-- Abomination Costume

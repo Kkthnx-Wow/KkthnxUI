@@ -1,6 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("ActionBar")
-local FilterConfig = K.ActionBars.actionBar1
+local FilterConfig = C.ActionBars.actionBar1
 
 local _G = _G
 local next = _G.next
@@ -147,17 +147,14 @@ end
 function Module:OnEnable()
 	Module.buttons = {}
 
-	if PlayerTalentFrame then
-		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	else
-		hooksecurefunc("TalentFrame_LoadUI", function()
-			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-		end)
-	end
-
 	self:CreateMicroMenu()
 
 	if not C["ActionBar"].Enable then
+		return
+	end
+
+	if IsAddOnLoaded("Dominos") or IsAddOnLoaded("Bartender4") or IsAddOnLoaded("RazerNaga") then
+		C["ActionBar"].Enable = false
 		return
 	end
 

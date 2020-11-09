@@ -15,7 +15,7 @@ local UnitGUID = _G.UnitGUID
 local SendChatMessage = _G.SendChatMessage
 
 local INTERRUPT_MSG = L["Interrupted Message"]
-function Module:COMBAT_LOG_EVENT_UNFILTERED()
+function Module:SetupInterruptAnnounce()
 	local inGroup = IsInGroup()
 	if not inGroup then
 		return
@@ -55,9 +55,9 @@ function Module:COMBAT_LOG_EVENT_UNFILTERED()
 end
 
 function Module:CreateInterruptAnnounce()
-	if C["Announcements"].Interrupt.Value == "NONE" then
-		return
+	if not C["Announcements"].Interrupt.Value == "NONE" then
+		K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.SetupInterruptAnnounce)
+	else
+		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.SetupInterruptAnnounce)
 	end
-
-	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self.COMBAT_LOG_EVENT_UNFILTERED)
 end

@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local _, C = unpack(select(2, ...))
 
 local ACTIONBAR_FADER = {
 	fadeInAlpha = 1, -- Transparency when displayed
@@ -8,7 +8,7 @@ local ACTIONBAR_FADER = {
 	fadeOutDelay = .5, -- Delay fade
 }
 
-K.ActionBars = {
+C.ActionBars = {
 	margin = 2, -- Key spacing
 	padding = 2, -- Edge spacing
 

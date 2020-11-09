@@ -7,18 +7,13 @@ local unpack = _G.unpack
 local CreateFrame = _G.CreateFrame
 local GetTotemInfo = _G.GetTotemInfo
 
-local VerticleTotems = true
-local TotemSize = 32
-local margin = 6
-
--- Style
 local totems = {}
-
 function Module:TotemBar_Init()
-	local verticle = VerticleTotems
-	local iconSize = TotemSize
-	local width = verticle and (iconSize + margin * 2) or (iconSize * 4 + margin * 5)
-	local height = verticle and (iconSize * 4 + margin * 5) or (iconSize + margin * 2)
+	local margin = 6
+	local vertical = C["Auras"].VerticalTotems
+	local iconSize = C["Auras"].TotemSize
+	local width = vertical and (iconSize + margin * 2) or (iconSize * 4 + margin * 5)
+	local height = vertical and (iconSize * 4 + margin * 5) or (iconSize + margin * 2)
 
 	local totemBar = _G["KKUI_TotemBar"]
 	if not totemBar then
@@ -35,7 +30,6 @@ function Module:TotemBar_Init()
 		local totem = totems[i]
 		if not totem then
 			totem = CreateFrame("Frame", nil, totemBar)
-
 			totem.CD = CreateFrame("Cooldown", nil, totem, "CooldownFrameTemplate")
 			totem.CD:SetPoint("TOPLEFT", totem, "TOPLEFT", 1, -1)
 			totem.CD:SetPoint("BOTTOMRIGHT", totem, "BOTTOMRIGHT", -1, 1)
@@ -60,7 +54,7 @@ function Module:TotemBar_Init()
 		totem:ClearAllPoints()
 		if i == 1 then
 			totem:SetPoint("BOTTOMLEFT", margin, margin)
-		elseif verticle then
+		elseif vertical then
 			totem:SetPoint("BOTTOM", totems[i-1], "TOP", 0, margin)
 		else
 			totem:SetPoint("LEFT", totems[i-1], "RIGHT", margin, 0)

@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Auras")
 
 -- Sourced: NDui (Siweia)
@@ -59,7 +59,6 @@ function Module:OnEnable()
     -- Elements
     self:CreateTotems()
     self:CreateReminder()
-    self:CreateFilger()
 end
 
 local day, hour, minute = 86400, 3600, 60
@@ -108,7 +107,7 @@ end
 function Module:UpdateAuras(button, index)
     local filter = button:GetParent():GetAttribute("filter")
     local unit = button:GetParent():GetAttribute("unit")
-    local name, texture, count, debuffType, duration, expirationTime = UnitAura(unit, index, filter)
+    local name, texture, count, debuffType, duration, expirationTime, _, _, _, spellID = UnitAura(unit, index, filter)
 
     if name then
         if duration > 0 and expirationTime then
@@ -146,6 +145,7 @@ function Module:UpdateAuras(button, index)
             end
         end
 
+        button.spellID = spellID
         button.icon:SetTexture(texture)
         button.offset = nil
     end
@@ -252,6 +252,13 @@ function Module:CreateAuraHeader(filter)
     return header
 end
 
+function Module:RemoveSpellFromIgnoreList()
+	if IsAltKeyDown() and IsControlKeyDown() and self.spellID and KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells[self.spellID] then
+		KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells[self.spellID] = nil
+		K.Print(string.format(L["RemoveFromIgnoreList"], "", self.spellID))
+	end
+end
+
 function Module:CreateAuraIcon(button)
     local header = button:GetParent()
     local cfg = Module.settings.Debuffs
@@ -278,4 +285,5 @@ function Module:CreateAuraIcon(button)
     button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
     button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
+    button:HookScript("OnMouseDown", Module.RemoveSpellFromIgnoreList)
 end

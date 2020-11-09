@@ -18,7 +18,7 @@ local UIParent = _G.UIParent
 local UnitBuff = _G.UnitBuff
 local UnitInVehicle = _G.UnitInVehicle
 
-local groups = K.ReminderBuffs[K.Class]
+local groups = C.SpellReminderBuffs[K.Class]
 local iconSize = C["Auras"].DebuffSize + 4
 local frames, parentFrame = {}
 function Module:Reminder_Update(cfg)

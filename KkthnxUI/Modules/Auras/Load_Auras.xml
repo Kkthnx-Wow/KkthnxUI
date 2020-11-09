@@ -81,7 +81,7 @@
 
 	<Script file="Core.lua" />
 
-	<Script file="Elements\Filger.lua" />
+	<Script file="Elements\AuraWatch.lua" />
 	<Script file="Elements\Reminder.lua" />
 	<Script file="Elements\Totems.lua" />
 	<Include file="Lumos\Lumos.xml" />

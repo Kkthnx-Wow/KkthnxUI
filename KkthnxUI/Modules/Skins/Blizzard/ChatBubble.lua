@@ -1,10 +1,9 @@
 local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
 
 local _G = _G
 local table_insert = _G.table.insert
 
-local C_ChatBubbles_GetAllChatBubbles = C_ChatBubbles.GetAllChatBubbles
+local C_ChatBubbles_GetAllChatBubbles = _G.C_ChatBubbles.GetAllChatBubbles
 
 local function reskinChatBubble(chatbubble)
 	if chatbubble.styled then
@@ -21,21 +20,20 @@ local function reskinChatBubble(chatbubble)
 		bg.KKUI_Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Skins"].ChatBubbleAlpha)
 
 		frame:SetBackdrop(nil)
-		frame.Tail:SetAlpha(0)
-		frame.String:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
-		frame.String:SetFont(select(1, frame.String:GetFont()), 10, select(3, frame.String:GetFont()))
+		frame.Tail:Hide()
 
-		-- bg.KKUI_Border:SetVertexColor(frame.String:GetTextColor())
+		if frame.String then
+			frame.String:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
+			frame.String:SetFont(select(1, frame.String:GetFont()), 10, select(3, frame.String:GetFont()))
+		end
+
+		--bg.KKUI_Border:SetVertexColor(frame.String:GetTextColor())
 	end
 
 	chatbubble.styled = true
 end
 
-local function ApplyChatBubbleSkin()
-	if not C["Skins"].ChatBubbles then
-		return
-	end
-
+table_insert(C.defaultThemes, function()
 	local events = {
 		CHAT_MSG_SAY = "chatBubbles",
 		CHAT_MSG_YELL = "chatBubbles",
@@ -60,7 +58,7 @@ local function ApplyChatBubbleSkin()
 
 	bubbleHook:SetScript("OnUpdate", function(self, elapsed)
 		self.elapsed = self.elapsed + elapsed
-		if self.elapsed > .1 then
+		if self.elapsed > 0.1 then
 			for _, chatbubble in pairs(C_ChatBubbles_GetAllChatBubbles()) do
 				reskinChatBubble(chatbubble)
 			end
@@ -69,6 +67,4 @@ local function ApplyChatBubbleSkin()
 	end)
 
 	bubbleHook:Hide()
-end
-
-table_insert(Module.NewSkin["KkthnxUI"], ApplyChatBubbleSkin)
+end)
