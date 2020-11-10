@@ -152,6 +152,7 @@ function Module:CreateInfoFrame()
 	local icon = CreateFrame("Button", nil, infoFrame)
 	icon:SetSize(18, 18)
 	icon:SetPoint("LEFT")
+	icon:EnableMouse(false)
 
 	icon.Icon = icon:CreateTexture(nil, "ARTWORK")
 	icon.Icon:SetAllPoints()
@@ -167,14 +168,17 @@ function Module:CreateInfoFrame()
 	search.Backdrop:SetPoint("TOPLEFT", -5, -7)
 	search.Backdrop:SetPoint("BOTTOMRIGHT", 5, 7)
 
-	local moneyTag = CreateFrame('Button', nil, infoFrame)
-	moneyTag:RegisterEvent("PLAYER_MONEY")
-	moneyTag:RegisterEvent("SEND_MAIL_MONEY_CHANGED")
-	moneyTag:RegisterEvent("SEND_MAIL_COD_CHANGED")
-	moneyTag:RegisterEvent("PLAYER_TRADE_MONEY")
-	moneyTag:RegisterEvent("TRADE_MONEY_CHANGED")
-	moneyTag:RegisterEvent("PLAYER_ENTERING_WORLD")
-	moneyTag:SetScript('OnEvent', function(self, event)
+	local moneyFrame = CreateFrame('Button', nil, infoFrame)
+	moneyFrame:SetPoint("LEFT", icon, "RIGHT", 6, 0)
+	moneyFrame:SetSize(140, 16)
+
+	moneyFrame:RegisterEvent("PLAYER_MONEY")
+	moneyFrame:RegisterEvent("SEND_MAIL_MONEY_CHANGED")
+	moneyFrame:RegisterEvent("SEND_MAIL_COD_CHANGED")
+	moneyFrame:RegisterEvent("PLAYER_TRADE_MONEY")
+	moneyFrame:RegisterEvent("TRADE_MONEY_CHANGED")
+	moneyFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	moneyFrame:SetScript('OnEvent', function(self, event)
 		if not IsLoggedIn() then
 			return
 		end
@@ -197,17 +201,6 @@ function Module:CreateInfoFrame()
 			profit = profit + change
 		end
 
-		if not moneyTag.Text then
-			moneyTag.Text = infoFrame:CreateFontString(nil, "OVERLAY")
-			moneyTag.Text:SetPoint("LEFT", icon, "RIGHT", 6, 0)
-			moneyTag.Text:SetFontObject(bagsFont)
-			moneyTag.Text:SetFont(select(1, moneyTag.Text:GetFont()), 13, select(3, moneyTag.Text:GetFont()))
-			moneyTag.Text:SetText(K.FormatMoney(newMoney))
-			moneyTag.Text:SetWordWrap(false)
-			moneyTag:SetAllPoints(moneyTag.Text)
-			moneyTag.Text = true
-		end
-
 		KkthnxUIGold = KkthnxUIGold or {}
 		KkthnxUIGold.totalGold = KkthnxUIGold.totalGold or {}
 
@@ -225,7 +218,7 @@ function Module:CreateInfoFrame()
 		oldMoney = newMoney
 	end)
 
-	moneyTag:SetScript('OnEnter', function(self)
+	moneyFrame:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_NONE")
 		GameTooltip:SetPoint(K.GetAnchors(self))
 		GameTooltip:ClearLines()
@@ -286,11 +279,11 @@ function Module:CreateInfoFrame()
 		GameTooltip:Show()
 	end)
 
-	moneyTag:HookScript('OnLeave', function()
+	moneyFrame:HookScript("OnLeave", function()
 		K.HideTooltip()
 	end)
 
-	moneyTag:HookScript('OnMouseUp', function(_, button)
+	moneyFrame:HookScript("OnMouseUp", function(_, button)
 		if IsControlKeyDown() and button == "RightButton" then
 			StaticPopup_Show("RESETGOLD")
 		else
@@ -300,6 +293,11 @@ function Module:CreateInfoFrame()
 			end
 		end
 	end)
+
+	local moneyTag = self:SpawnPlugin("TagDisplay", "[money]", infoFrame)
+	moneyTag:SetFontObject(bagsFont)
+	moneyTag:SetFont(select(1, moneyTag:GetFont()), 13, select(3, moneyTag:GetFont()))
+	moneyTag:SetPoint("LEFT", moneyFrame, "LEFT", 1, 1)
 
 	local currencyTag = self:SpawnPlugin("TagDisplay", "[currencies]", infoFrame)
 	currencyTag:SetFontObject(bagsFont)
