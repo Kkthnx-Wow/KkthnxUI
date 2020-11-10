@@ -3,8 +3,6 @@
     <!-- Load_DataText -->
     <Script file="Core.lua"/>
 
-    <!-- <Script file="Elements\Friends.lua"/>
-    <Script file="Elements\Guild.lua"/> -->
     <Script file="Elements\Latency.lua"/>
     <Script file="Elements\Location.lua"/>
     <Script file="Elements\System.lua"/>

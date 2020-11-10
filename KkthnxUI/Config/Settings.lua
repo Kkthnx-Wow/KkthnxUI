@@ -201,14 +201,10 @@ C["DataBars"] = {
 
 -- Datatext
 C["DataText"] = {
-	-- ["Friends"] = true,
-	-- ["Guild"] = true,
 	["Latency"] = true,
 	["Location"] = true,
 	["System"] = true,
 	["Time"] = true,
-	-- ["GuildSortOrder"] = true,
-	-- ["GuildSortBy"] = 1,
 }
 
 C["AuraWatch"] = {
