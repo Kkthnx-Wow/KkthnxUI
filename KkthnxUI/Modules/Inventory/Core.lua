@@ -197,13 +197,16 @@ function Module:CreateInfoFrame()
 			profit = profit + change
 		end
 
-		local moneyTagText = infoFrame:CreateFontString(nil, "OVERLAY")
-		moneyTagText:SetPoint("LEFT", icon, "RIGHT", 6, 0)
-		moneyTagText:SetFontObject(bagsFont)
-		moneyTagText:SetFont(select(1, moneyTagText:GetFont()), 13, select(3, moneyTagText:GetFont()))
-		moneyTagText:SetText(K.FormatMoney(newMoney))
-		moneyTagText:SetWordWrap(false)
-		moneyTag:SetAllPoints(moneyTagText)
+		if not moneyTag.Text then
+			moneyTag.Text = infoFrame:CreateFontString(nil, "OVERLAY")
+			moneyTag.Text:SetPoint("LEFT", icon, "RIGHT", 6, 0)
+			moneyTag.Text:SetFontObject(bagsFont)
+			moneyTag.Text:SetFont(select(1, moneyTag.Text:GetFont()), 13, select(3, moneyTag.Text:GetFont()))
+			moneyTag.Text:SetText(K.FormatMoney(newMoney))
+			moneyTag.Text:SetWordWrap(false)
+			moneyTag:SetAllPoints(moneyTag.Text)
+			moneyTag.Text = true
+		end
 
 		KkthnxUIGold = KkthnxUIGold or {}
 		KkthnxUIGold.totalGold = KkthnxUIGold.totalGold or {}
