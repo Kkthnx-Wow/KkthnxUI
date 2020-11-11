@@ -1332,7 +1332,7 @@ local ColorOnMouseUp = function(self, button)
 
 			local NewValue = {NewR, NewG, NewB}
 
-			CPF.Button:GetParent():SetBackdropColor(NewR, NewG, NewB)
+			CPF.Button:GetParent().KKUI_Background:SetVertexColor(NewR, NewG, NewB)
 			CPF.Button.Value = NewValue
 
 			SetValue(CPF.Group, CPF.Option, NewValue)
@@ -1342,7 +1342,7 @@ local ColorOnMouseUp = function(self, button)
 	else
 		local Value = K.Defaults[self.Group][self.Option]
 
-		self:GetParent():SetBackdropColor(unpack(Value))
+		self:GetParent().KKUI_Background:SetVertexColor(unpack(Value))
 		self.Value = Value
 
 		SetValue(self.Group, self.Option, Value)
@@ -1350,7 +1350,7 @@ local ColorOnMouseUp = function(self, button)
 end
 
 local ColorOnMouseDown = function(self)
-	self:SetBackdropColor(unpack(BGColor))
+	self.KKUI_Background:SetVertexColor(unpack(BGColor))
 end
 
 local ColorOnEnter = function(self)

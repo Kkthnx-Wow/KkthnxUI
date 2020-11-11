@@ -52,7 +52,7 @@ function Module:CreateRecycleBin()
 
 	local bin = CreateFrame("Frame", "RecycleBinFrame", UIParent)
 	bin:SetSize(220, 30)
-	bin:SetPoint("RIGHT", bu, "LEFT", -3, 14)
+	bin:SetPoint("TOPRIGHT", bu, "BOTTOMLEFT", 0, 0)
 	bin:CreateBorder()
 	bin:Hide()
 	bin:SetFrameStrata("LOW")

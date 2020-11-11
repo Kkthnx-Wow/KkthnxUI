@@ -19,8 +19,14 @@ local function UpdateBagStatus()
 	if C["Inventory"].ItemSetFilter then
 		label = "Equipement Set"
 	end
-	_G.KKUI_BackpackEquipment.label:SetText(label)
-	_G.KKUI_BackpackBankEquipment.label:SetText(label)
+
+	if KKUI_BackpackEquipment then
+		_G.KKUI_BackpackEquipment.label:SetText(label)
+	end
+
+	if KKUI_BackpackBankEquipment then
+		_G.KKUI_BackpackBankEquipment.label:SetText(label)
+	end
 end
 
 local function UpdateTargetBuffs()
@@ -514,17 +520,18 @@ local Skins = function(self)
 	Window:CreateSection("Skins Toggles")
 	-- Window:CreateSwitch("Skins", "Bartender4", L["Bartender4 Skin"])
 	-- Window:CreateSwitch("Skins", "BigWigs", L["BigWigs Skin"])
-	Window:CreateSwitch("Skins", "BlizzardFrames", L["Skin Some Blizzard Frames & Objects"])
-	Window:CreateSwitch("Skins", "ChatBubbles", L["ChatBubbles Skin"])
 	-- Window:CreateSwitch("Skins", "ChocolateBar", L["ChocolateBar Skin"])
-	Window:CreateSwitch("Skins", "DeadlyBossMods", L["Deadly Boss Mods Skin"])
-	Window:CreateSwitch("Skins", "Details", L["Details Skin"])
 	-- Window:CreateSwitch("Skins", "Hekili", L["Hekili Skin"])
 	-- Window:CreateSwitch("Skins", "Skada", L["Skada Skin"])
 	-- Window:CreateSwitch("Skins", "Spy", L["Spy Skin"])
-	Window:CreateSwitch("Skins", "TalkingHeadBackdrop", L["TalkingHead Skin"])
 	-- Window:CreateSwitch("Skins", "TellMeWhen", L["TellMeWhen Skin"])
 	-- Window:CreateSwitch("Skins", "TitanPanel", L["TitanPanel Skin"])
+	Window:CreateSwitch("Skins", "BlizzardFrames", L["Skin Some Blizzard Frames & Objects"])
+	Window:CreateSwitch("Skins", "ChatBubbles", L["ChatBubbles Skin"])
+	Window:CreateSwitch("Skins", "DeadlyBossMods", L["Deadly Boss Mods Skin"])
+	Window:CreateSwitch("Skins", "Details", L["Details Skin"])
+	Window:CreateSwitch("Skins", "RareScanner", L["RareScanner Skin"])
+	Window:CreateSwitch("Skins", "TalkingHeadBackdrop", L["TalkingHead Skin"])
 	Window:CreateSwitch("Skins", "WeakAuras", L["WeakAuras Skin"])
 	Window:CreateButton(L["Reset Details"], nil, nil, ResetDetails)
 

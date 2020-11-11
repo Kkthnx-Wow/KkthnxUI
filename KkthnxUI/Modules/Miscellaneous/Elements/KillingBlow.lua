@@ -83,8 +83,13 @@ function Module:CreateKillingBlow()
 				end
 			end
 		end)
+
+		K:RegisterEvent("UPDATE_BATTLEFIELD_SCORE", self.OpponentsTable)
 	end
 
-	K:RegisterEvent("UPDATE_BATTLEFIELD_SCORE", self.OpponentsTable)
+	if not C["Misc"].PvPEmote then
+		return
+	end
+
 	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self.SetupKillingBlow)
 end

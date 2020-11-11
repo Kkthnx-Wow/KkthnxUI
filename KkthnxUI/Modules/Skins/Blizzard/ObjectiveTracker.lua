@@ -77,10 +77,11 @@ local function reskinQuestIcon(button)
 	local icon = button.icon or button.Icon
 	if icon then
 		icon:SetTexCoord(unpack(K.TexCoords))
-		local bg = CreateFrame("Frame", nil, button)
-		bg:SetAllPoints(icon)
-		bg:SetFrameLevel(button:GetFrameLevel())
-		bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		-- local bg = CreateFrame("Frame", nil, button)
+		-- bg:SetPoint("TOPLEFT", button, "TOPLEFT", 6, -6)
+		-- bg:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -6, 6)
+		-- bg:SetFrameLevel(button:GetFrameLevel())
+		-- bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 	end
 
 	button.styled = true
@@ -94,6 +95,7 @@ end
 local function reskinHeader(header)
 	header.Text:SetTextColor(r, g, b)
 	header.Background:SetTexture(nil)
+
 	local bg = header:CreateTexture(nil, "ARTWORK")
 	bg:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
 	bg:SetTexCoord(0, .66, 0, .31)
@@ -111,6 +113,9 @@ local function reskinBarTemplate(bar)
 	bar:StripTextures()
 	bar:SetStatusBarTexture(C["Media"].Texture)
 	bar:SetStatusBarColor(r, g, b)
+
+	bar.Label:SetPoint("CENTER", 0, 0)
+	bar.Label:FontTemplate(nil, 12)
 
 	bar.bg = CreateFrame("Frame", nil, bar)
 	bar.bg:SetAllPoints(bar)

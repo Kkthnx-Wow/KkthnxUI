@@ -24,7 +24,6 @@ local GetInventoryItemID = _G.GetInventoryItemID
 local GetItemInfo = _G.GetItemInfo
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
-local IsContainerItemAnUpgrade = _G.IsContainerItemAnUpgrade
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsReagentBankUnlocked = _G.IsReagentBankUnlocked
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
@@ -423,6 +422,20 @@ function Module:CreateBankButton(f)
 	return BankButton
 end
 
+local function updateDepositButtonStatus(bu)
+	if C["Inventory"].AutoDeposit then
+		bu.KKUI_Border:SetVertexColor(1, 0.8, 0)
+	else
+		bu.KKUI_Border:SetVertexColor(1, 1, 1)
+	end
+end
+
+function Module:AutoDeposit()
+	if C["Inventory"].AutoDeposit then
+		DepositReagentBank()
+	end
+end
+
 function Module:CreateDepositButton()
 	local DepositButton = CreateFrame("Button", nil, self)
 	DepositButton:SetSize(18, 18)
@@ -434,10 +447,17 @@ function Module:CreateDepositButton()
 	DepositButton.Icon:SetTexCoord(unpack(K.TexCoords))
 	DepositButton.Icon:SetTexture("Interface\\ICONS\\misc_arrowdown")
 
-	DepositButton:SetScript("OnClick", _G.DepositReagentBank)
+	DepositButton:SetScript("OnClick", function(_, btn)
+		if btn == "RightButton" then
+			C["Inventory"].AutoDeposit = not C["Inventory"].AutoDeposit
+			updateDepositButtonStatus(DepositButton)
+		else
+			DepositReagentBank()
+		end
+	end)
 
 	DepositButton.title = _G.REAGENTBANK_DEPOSIT
-	K.AddTooltip(DepositButton, "ANCHOR_TOP")
+	K.AddTooltip(DepositButton, "ANCHOR_TOP", K.InfoColor..L["AutoDepositTip"])
 
 	return DepositButton
 end
@@ -1228,6 +1248,11 @@ function Module:OnEnable()
 		else
 			self:SetBackdropColor(.04, .04, .04, 0.9)
 		end
+
+		-- Hide empty tooltip
+		if not GetContainerItemInfo(item.bagID, item.slotID) then
+			GameTooltip:Hide()
+		end
 	end
 
 	function MyButton:OnUpdateQuest(item)
@@ -1430,6 +1455,7 @@ function Module:OnEnable()
 
 	K:RegisterEvent("TRADE_SHOW", Module.OpenBags)
 	K:RegisterEvent("TRADE_CLOSED", Module.CloseBags)
+	K:RegisterEvent("BANKFRAME_OPENED", Module.AutoDeposit)
 
 	-- Fixes
 	BankFrame.GetRight = function()

@@ -3,19 +3,7 @@ local Module = K:GetModule("Skins")
 
 local _G = _G
 
-local BartenderFont = K.GetFont(C["UIFonts"].SkinFonts)
-local BartenderTexture = K.GetTexture(C["UITextures"].SkinTextures)
-
 function Module:ReskinBartender4()
-	if IsAddOnLoaded("RareScanner") then
-		--if scanner_button then
-			scanner_button:StripTextures()
-			scanner_button:SkinButton()
-			scanner_button.FilterDisabledButton:SkinButton(nil, nil, '-')
-			scanner_button.CloseButton:SkinCloseButton()
-		--end
-	end
-
 	if not IsAddOnLoaded("Bartender4") or not C["Skins"].Bartender4 then
 		return
 	end

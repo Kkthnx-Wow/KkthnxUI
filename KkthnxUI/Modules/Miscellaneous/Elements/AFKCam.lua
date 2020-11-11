@@ -47,6 +47,31 @@ local printKeys = {
 	["PRINTSCREEN"] = true,
 }
 
+local monthAbr = {
+	[1] = "Jan",
+	[2] = "Feb",
+	[3] = "Mar",
+	[4] = "Apr",
+	[5] = "May",
+	[6] = "Jun",
+	[7] = "Jul",
+	[8] = "Aug",
+	[9] = "Sep",
+	[10] = "Oct",
+	[11] = "Nov",
+	[12] = "Dec",
+}
+
+local daysAbr = {
+	[1] = "Sun",
+	[2] = "Mon",
+	[3] = "Tue",
+	[4] = "Wed",
+	[5] = "Thu",
+	[6] = "Fri",
+	[7] = "Sat",
+}
+
 -- Source wowhead.com
 local stats = {
 	60,		-- Total deaths
@@ -84,7 +109,7 @@ local stats = {
 	1045,	-- Total cheers
 	1047,	-- Total facepalms
 	1065,	-- Total waves
-	1066,	-- Total times LOL'd
+	1066,	-- Total times LOL"d
 	1197,	-- Total kills
 	1198,	-- Total kills that grant experience or honor
 	1336,	-- Creature type killed the most
@@ -111,8 +136,54 @@ local function IsIn(val, ...)
 	return false
 end
 
+local function setupTime(color, hour, minute)
+	if GetCVarBool("timeMgrUseMilitaryTime") then
+		return string_format(color..TIMEMANAGER_TICKER_24HOUR, hour, minute)
+	else
+		local timerUnit = K.MyClassColor..(hour < 12 and " AM" or " PM")
+
+		if hour >= 12 then
+			if hour > 12 then
+				hour = hour - 12
+			end
+		else
+			if hour == 0 then
+				hour = 12
+			end
+		end
+
+		return string_format(color..TIMEMANAGER_TICKER_12HOUR..timerUnit, hour, minute)
+	end
+end
+
+local function createTime(self)
+	local color = C_Calendar.GetNumPendingInvites() > 0 and "|cffFF0000" or ""
+	local hour, minute
+	if GetCVarBool("timeMgrUseLocalTime") then
+		hour, minute = tonumber(date("%H")), tonumber(date("%M"))
+	else
+		hour, minute = GetGameTime()
+	end
+
+	self.top.time:SetText(setupTime(color, hour, minute))
+end
+
+-- Create Date
+local function createDate(self)
+	local date = C_DateAndTime.GetCurrentCalendarTime()
+	local presentWeekday = date.weekday
+	local presentMonth = date.month
+	local presentDay = date.monthDay
+	local presentYear = date.year
+
+	self.top.date:SetFormattedText("%s, %s %d, %d", daysAbr[presentWeekday], monthAbr[presentMonth], presentDay, presentYear)
+end
+
 local function UpdateTimer(self)
 	local time = GetTime() - self.startTime
+
+	createTime(self)
+	createDate(self)
 	self.bottom.time:SetFormattedText("%02d:%02d", math_floor(time / 60), time % 60)
 end
 
@@ -227,7 +298,7 @@ local function AFKMode_OnEvent(self, event, ...)
 	end
 
 	if UnitCastingInfo("player") ~= nil then
-		-- Don't activate afk if player is crafting stuff, check back in 30 seconds
+		-- Don"t activate afk if player is crafting stuff, check back in 30 seconds
 		C_Timer_After(30, function()
 			AFKMode_OnEvent(self)
 		end)
@@ -342,7 +413,7 @@ function Module:CreateAFKCam()
 
 	AFKMode.chat = CreateFrame("ScrollingMessageFrame", nil, AFKMode)
 	AFKMode.chat:SetSize(500, 200)
-	AFKMode.chat:SetPoint("TOPLEFT", AFKMode, "TOPLEFT", 4, -4)
+	-- AFKMode.chat:SetPoint("TOPLEFT", AFKMode, "TOPLEFT", 4, -4)
 	AFKMode.chat:FontTemplate(nil, 12)
 	AFKMode.chat:SetJustifyH("LEFT")
 	AFKMode.chat:SetMaxLines(100)
@@ -356,16 +427,53 @@ function Module:CreateAFKCam()
 	AFKMode.chat:SetScript("OnMouseWheel", Chat_OnMouseWheel)
 	AFKMode.chat:SetScript("OnEvent", Chat_OnEvent)
 
-	AFKMode.bottom = CreateFrame("Frame", nil, AFKMode, "BackdropTemplate")
+	AFKMode.top = CreateFrame("Frame", nil, AFKMode)
+	AFKMode.top:SetFrameLevel(0)
+	AFKMode.top:CreateBorder()
+	AFKMode.top:SetPoint("TOP", AFKMode, "TOP", 0, 6)
+	AFKMode.top:SetSize(UIParent:GetWidth() + 12, 54)
+
+	AFKMode.chat:SetPoint("TOPLEFT", AFKMode.top, "BOTTOMLEFT", 10, -6)
+
+	AFKMode.bottom = CreateFrame("Frame", nil, AFKMode)
 	AFKMode.bottom:SetFrameLevel(0)
-	AFKMode.bottom:SetPoint("BOTTOM", AFKMode, "BOTTOM", 0, -6)
 	AFKMode.bottom:CreateBorder()
+	AFKMode.bottom:SetPoint("BOTTOM", AFKMode, "BOTTOM", 0, -6)
 	AFKMode.bottom:SetSize(UIParent:GetWidth() + 12, 120)
 
 	AFKMode.bottom.logo = AFKMode:CreateTexture(nil, "OVERLAY")
 	AFKMode.bottom.logo:SetSize(320, 150)
 	AFKMode.bottom.logo:SetPoint("CENTER", AFKMode.bottom, "CENTER", 0, 60)
 	AFKMode.bottom.logo:SetTexture(C["Media"].Logo)
+
+	AFKMode.top.time = AFKMode.top:CreateFontString(nil, "OVERLAY")
+	AFKMode.top.time:FontTemplate(nil, 16)
+	AFKMode.top.time:SetText("")
+	AFKMode.top.time:SetPoint("RIGHT", AFKMode.top, "RIGHT", -20, 0)
+	AFKMode.top.time:SetJustifyH("LEFT")
+	AFKMode.top.time:SetTextColor(0.7, 0.7, 0.7)
+
+	-- WoW logo
+	AFKMode.top.wowlogo = CreateFrame("Frame", nil, AFKMode) -- need this to upper the logo layer
+	AFKMode.top.wowlogo:SetPoint("TOP", AFKMode.top, "TOP", 0, -5)
+	AFKMode.top.wowlogo:SetFrameStrata("MEDIUM")
+	AFKMode.top.wowlogo:SetSize(300, 150)
+	AFKMode.top.wowlogo.tex = AFKMode.top.wowlogo:CreateTexture(nil, "OVERLAY")
+	local currentExpansionLevel = GetClampedCurrentExpansionLevel();
+	local expansionDisplayInfo = GetExpansionDisplayInfo(currentExpansionLevel);
+	if expansionDisplayInfo then
+		AFKMode.top.wowlogo.tex:SetTexture(expansionDisplayInfo.logo)
+	end
+	AFKMode.top.wowlogo.tex:SetAllPoints()
+
+
+	-- Date text
+	AFKMode.top.date = AFKMode.top:CreateFontString(nil, "OVERLAY")
+	AFKMode.top.date:FontTemplate(nil, 16)
+	AFKMode.top.date:SetText("")
+	AFKMode.top.date:SetPoint("LEFT", AFKMode.top, "LEFT", 20, 0)
+	AFKMode.top.date:SetJustifyH("RIGHT")
+	AFKMode.top.date:SetTextColor(0.7, 0.7, 0.7)
 
 	local factionGroup, size, offsetX, offsetY, nameOffsetX, nameOffsetY = K.Faction, 140, -20, -8, -10, -36
 	if factionGroup == "Neutral" then
@@ -424,16 +532,21 @@ function Module:CreateAFKCam()
 	AFKMode.bottom.name:SetPoint("TOPLEFT", AFKMode.bottom.faction, "TOPRIGHT", nameOffsetX, nameOffsetY)
 	AFKMode.bottom.name:SetTextColor(K.r, K.g, K.b)
 
+	AFKMode.bottom.playerInfo = AFKMode.bottom:CreateFontString(nil, "OVERLAY")
+	AFKMode.bottom.playerInfo:FontTemplate(nil, 20)
+	AFKMode.bottom.playerInfo:SetText(K.SystemColor..LEVEL.." "..K.Level.."|r "..K.GreyColor..K.Race.."|r "..K.MyClassColor..UnitClass("player").."|r")
+	AFKMode.bottom.playerInfo:SetPoint("TOPLEFT", AFKMode.bottom.name, "BOTTOMLEFT", 0, -6)
+
 	AFKMode.bottom.guild = AFKMode.bottom:CreateFontString(nil, "OVERLAY")
 	AFKMode.bottom.guild:FontTemplate(nil, 20)
 	AFKMode.bottom.guild:SetText(L["No Guild"])
-	AFKMode.bottom.guild:SetPoint("TOPLEFT", AFKMode.bottom.name, "BOTTOMLEFT", 0, -6)
+	AFKMode.bottom.guild:SetPoint("TOPLEFT", AFKMode.bottom.playerInfo, "BOTTOMLEFT", 0, -6)
 	AFKMode.bottom.guild:SetTextColor(0.7, 0.7, 0.7)
 
 	AFKMode.bottom.time = AFKMode.bottom:CreateFontString(nil, "OVERLAY")
 	AFKMode.bottom.time:FontTemplate(nil, 20)
 	AFKMode.bottom.time:SetText("00:00")
-	AFKMode.bottom.time:SetPoint("TOPLEFT", AFKMode.bottom.guild, "BOTTOMLEFT", 0, -6)
+	AFKMode.bottom.time:SetPoint("BOTTOM", AFKMode.bottom, "BOTTOM", 0, 20)
 	AFKMode.bottom.time:SetTextColor(0.7, 0.7, 0.7)
 
 	-- Random stats decor (taken from install routine)
