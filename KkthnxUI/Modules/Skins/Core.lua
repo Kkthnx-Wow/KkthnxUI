@@ -20,9 +20,9 @@ function Module:LoadDefaultSkins()
 	end
 	table_wipe(C.defaultThemes)
 
-	-- if not C["Skins"].BlizzardSkins then
-	-- 	return
-	-- end
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
 
 	for addonName, func in pairs(C.themes) do
 		local isLoaded, isFinished = IsAddOnLoaded(addonName)
@@ -45,27 +45,9 @@ function Module:OnEnable()
 	Module:LoadDefaultSkins()
 
 	-- Add Skins
-	-- 	self:ReskinBartender4()
-	-- 	self:ReskinBigWigs()
-	-- 	self:ReskinBugSack()
-	-- 	self:ReskinChocolateBar()
+	-- self:ReskinBigWigs()
 	self:ReskinDeadlyBossMods()
-	-- 	self:ReskinDetails()
-	--  self:ReskinHekili()
-	-- 	self:ReskinImmersion()
-	-- 	self:ReskinRaiderIO()
-	-- 	self:ReskinSimulationcraft()
-	-- 	self:ReskinSkada()
-	-- 	self:ReskinSpy()
-	-- 	self:ReskinTellMeWhen()
-	-- 	self:ReskinTitanPanel()
-	-- 	self:ReskinWeakAuras()
-
-	-- Register skin
-	-- local media = LibStub and LibStub("LibSharedMedia-3.0", true)
-	-- if media then
-	-- 	media:Register("statusbar", "normTex", C["Media"].Texture)
-	-- end
+	-- self:ReskinSkada()
 end
 
 function Module:LoadWithAddOn(addonName, value, func)

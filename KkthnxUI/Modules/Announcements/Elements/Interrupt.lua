@@ -56,8 +56,8 @@ end
 
 function Module:CreateInterruptAnnounce()
 	if not C["Announcements"].Interrupt.Value == "NONE" then
-		K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.SetupInterruptAnnounce)
-	else
-		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.SetupInterruptAnnounce)
+		return
 	end
+
+	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.SetupInterruptAnnounce)
 end
