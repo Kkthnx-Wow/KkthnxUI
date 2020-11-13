@@ -49,7 +49,7 @@ tinsert(C.defaultThemes, function()
 
 		SetFont(_G.AchievementFont_Small,				NORMAL, C["General"].FontSize)				-- Achiev dates
 		SetFont(_G.BossEmoteNormalHuge,					NORMAL, 24)									-- Talent Title
-		SetFont(_G.ChatBubbleFont,						NORMAL, 10)
+		-- SetFont(_G.ChatBubbleFont,						NORMAL, 10)
 		SetFont(_G.CoreAbilityFont,						NORMAL, 26)									-- Core abilities(title)
 		SetFont(_G.DestinyFontHuge,						NORMAL, 32)									-- Garrison Mission Report
 		SetFont(_G.DestinyFontMed,						NORMAL, 14)									-- Added in 7.3.5 used for ?

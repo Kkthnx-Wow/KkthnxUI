@@ -935,7 +935,6 @@ function Module:OnEnable()
 	local iconSize = C["Inventory"].IconSize
 	local showItemLevel = C["Inventory"].BagsItemLevel
 	local deleteButton = C["Inventory"].DeleteButton
-	local itemSetFilter = C["Inventory"].ItemSetFilter
 	local showNewItem = C["Inventory"].ShowNewItem
 
 	-- Init
@@ -981,6 +980,9 @@ function Module:OnEnable()
 		f.equipment = MyContainer:New("Equipment", {Columns = bagsWidth, Parent = f.main})
 		f.equipment:SetFilter(filters.bagEquipment, true)
 
+		f.equipSet = MyContainer:New("EquipSet", {Columns = bagsWidth, Parent = f.main})
+		f.equipSet:SetFilter(filters.bagEquipSet, true)
+
 		f.consumable = MyContainer:New("Consumable", {Columns = bagsWidth, Parent = f.main})
 		f.consumable:SetFilter(filters.bagConsumable, true)
 
@@ -1010,6 +1012,9 @@ function Module:OnEnable()
 		f.bankEquipment = MyContainer:New("BankEquipment", {Columns = bankWidth, Parent = f.bank})
 		f.bankEquipment:SetFilter(filters.bankEquipment, true)
 
+		f.bankEquipSet = MyContainer:New("BankEquipSet", {Columns = bankWidth, Parent = f.bank})
+		f.bankEquipSet:SetFilter(filters.bankEquipSet, true)
+
 		f.bankConsumable = MyContainer:New("BankConsumable", {Columns = bankWidth, Parent = f.bank})
 		f.bankConsumable:SetFilter(filters.bankConsumable, true)
 
@@ -1027,8 +1032,8 @@ function Module:OnEnable()
 		f.reagent:SetPoint("BOTTOMLEFT", f.bank)
 		f.reagent:Hide()
 
-		Module.BagGroup = {f.azeriteItem, f.equipment, f.bagLegendary, f.bagCompanion, f.bagGoods, f.bagQuest, f.consumable, f.bagFavourite, f.junk}
-		Module.BankGroup = {f.bankAzeriteItem, f.bankEquipment, f.bankLegendary, f.bankCompanion, f.bankGoods, f.bankQuest, f.bankConsumable, f.bankFavourite}
+		Module.BagGroup = {f.azeriteItem, f.equipment, f.bagLegendary, f.equipSet, f.bagCompanion, f.bagGoods, f.bagQuest, f.consumable, f.bagFavourite, f.junk}
+		Module.BankGroup = {f.bankAzeriteItem, f.bankEquipment, f.bankEquipSet, f.bankLegendary, f.bankCompanion, f.bankGoods, f.bankQuest, f.bankConsumable, f.bankFavourite}
 	end
 
 	local initBagType
@@ -1331,11 +1336,9 @@ function Module:OnEnable()
 		if string_match(name, "AzeriteItem$") then
 			label = "Azerite Armor"
 		elseif string_match(name, "Equipment$") then
-			if itemSetFilter then
-				label = "EquipmentSet Items"
-			else
-				label = BAG_FILTER_EQUIPMENT
-			end
+			label = BAG_FILTER_EQUIPMENT
+		elseif string_match(name, "EquipSet$") then
+			label = L["Equipement Set"]
 		elseif name == "BagLegendary" then
 			label = LOOT_JOURNAL_LEGENDARIES
 		elseif name == "BankLegendary" then

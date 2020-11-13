@@ -47,14 +47,12 @@ local UnitThreatSituation = _G.UnitThreatSituation
 local hooksecurefunc = _G.hooksecurefunc
 
 local aksCacheData = {}
-local explosivesID = 120651
-local groupRoles = {}
 local guidToPlate = {}
 local hasExplosives
-local isInGroup
+local explosivesID = 120651
+local groupRoles, isInGroup = {}
 local isInInstance
 local isTargetClassPower
--- local platesList = {}
 
 -- Unit classification
 local classify = {
@@ -191,7 +189,6 @@ function Module:CheckTankStatus(unit)
 	local index = unit.."target"
 	local unitRole = isInGroup and UnitExists(index) and not UnitIsUnit(index, "player") and groupRoles[UnitName(index)] or "NONE"
 	if unitRole == "TANK" and K.Role == "Tank" then
-		print("CheckTankStatus ", unitRole)
 		self.feedbackUnit = index
 		self.isOffTank = true
 	else
@@ -242,12 +239,10 @@ function Module:UpdateColor(_, unit)
 		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) then
 			r, g, b = .6, .6, .6
 		else
-			if not UnitIsTapDenied(unit) and not UnitIsPlayer(unit) then
-				if reactionColor then
-					r, g, b = reactionColor[1], reactionColor[2], reactionColor[3]
-				else
-					r, g, b = UnitSelectionColor(unit, true)
-				end
+			if reaction then
+				r, g, b = reactionColor[1], reactionColor[2], reactionColor[3]
+			else
+				r, g, b = UnitSelectionColor(unit, true)
 			end
 
 			if status and (C["Nameplate"].TankMode or K.Role == "Tank") then
@@ -969,8 +964,6 @@ function Module:CreatePlates()
 	Module:AddQuestIcon(self)
 	Module:AddDungeonProgress(self)
 	Module:AddClassIcon(self)
-
-	--platesList[self] = self:GetName()
 end
 
 -- Classpower on target nameplate

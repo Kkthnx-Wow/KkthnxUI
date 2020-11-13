@@ -699,6 +699,13 @@ function Module:CreateClassPower(self)
 	end
 end
 
+-- Units
+function Module:SetUnitFrameSize(unit)
+	local width = C["Unitframe"][unit.."Width"]
+	local height = C["Unitframe"][unit.."Height"]
+	self:SetSize(width, height)
+end
+
 function Module:CreateUnits()
 	if C["Nameplate"].Enable then
 		self:SetupCVars()

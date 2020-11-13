@@ -27,8 +27,8 @@ local function reskinChatBubble(chatbubble)
 
 		frame:SetBackdrop(nil)
 		frame.Tail:SetAlpha(0)
-		frame.String:SetFont(C["Media"].Font, 10, "")
-		frame.String:SetShadowOffset(1, -1)
+		frame.String:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
+		frame.String:SetFont(select(1, frame.String:GetFont()), 10, select(3, frame.String:GetFont()))
 	end
 
 	chatbubble.styled = true

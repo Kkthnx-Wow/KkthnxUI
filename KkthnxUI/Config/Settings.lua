@@ -96,6 +96,7 @@ C["Inventory"] = {
 	["Enable"] = true,
 	["FilterAzerite"] = true,
 	["FilterConsumable"] = true,
+	["FilterEquipSet"] = false,
 	["FilterEquipment"] = true,
 	["FilterFavourite"] = true,
 	["FilterGoods"] = false,
@@ -106,7 +107,6 @@ C["Inventory"] = {
 	["GatherEmpty"] = false,
 	["IconSize"] = 34,
 	["ItemFilter"] = true,
-	["ItemSetFilter"] = false,
 	["ReverseSort"] = false,
 	["ShowNewItem"] = true,
 	["SpecialBagsColor"] = false,
@@ -455,6 +455,8 @@ C["UITextures"] = {
 
 -- Unitframe
 C["Unitframe"] = {
+	["PlayerWidth"] = 245,
+	["PlayerHeight"] = 24,
 	["AdditionalPower"] = true,
 	["AutoAttack"] = true,
 	["CastClassColor"] = false,

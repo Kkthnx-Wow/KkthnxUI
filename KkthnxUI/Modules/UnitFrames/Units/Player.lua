@@ -9,39 +9,6 @@ local CreateFrame = _G.CreateFrame
 
 local playerWidth = 160
 
--- Class Powers
-function Module.PostUpdateUnitframeClassPower(element, cur, max, diff, powerType, chargedIndex)
-	if diff then
-		for i = 1, max do
-			element[i]:SetWidth((playerWidth - (max - 1) * 6) / max)
-		end
-	end
-
-	element.thisColor = cur == max and 1 or 2
-	if not element.prevColor or element.prevColor ~= element.thisColor then
-		local r, g, b = 1, 0, 0
-		if element.thisColor == 2 then
-			local color = element.__owner.colors.power[powerType]
-			r, g, b = color[1], color[2], color[3]
-		end
-
-		for i = 1, #element do
-			element[i]:SetStatusBarColor(r, g, b)
-		end
-		element.prevColor = element.thisColor
-	end
-
-	if chargedIndex and chargedIndex ~= element.thisCharge then
-		local bar = element[chargedIndex]
-		element.chargeStar:SetParent(bar)
-		element.chargeStar:SetPoint("CENTER", bar)
-		element.chargeStar:Show()
-		element.thisCharge = chargedIndex
-	else
-		element.chargeStar:Hide()
-		element.thisCharge = nil
-	end
-end
 
 function Module.PostUpdateAddPower(element, cur, max)
 	if element.Text and max > 0 then
@@ -49,14 +16,14 @@ function Module.PostUpdateAddPower(element, cur, max)
 		if perc == 100 then
 			perc = ""
 			element:SetAlpha(0)
-			if oUF_PlayerClassPowerBar then
-				oUF_PlayerClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 20)
+			if oUF_ClassPowerBar and oUF_ClassPowerBar:IsShown() then
+				oUF_ClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 20)
 			end
 		else
 			perc = string_format("%d%%", perc)
 			element:SetAlpha(1)
-			if oUF_PlayerClassPowerBar then
-				oUF_PlayerClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 40)
+			if oUF_ClassPowerBar and oUF_ClassPowerBar:IsShown() then
+				oUF_ClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 40)
 			end
 		end
 

@@ -438,20 +438,20 @@ local function LoadProfiles()
 end
 
 K:RegisterEvent("VARIABLES_LOADED", function(event)
+	-- Some GUID Stuff
+	K.GUID = UnitGUID("player")
+	-- Create Create Static Popups
+	K.CreateStaticPopups()
 	-- Add SavedVariables
 	K.CheckSavedVariables()
+	-- Settings
 	StoreDefaults()
 	LoadProfiles()
 	LoadCustomSettings()
 	-- Setup UI Scale
 	K:SetupUIScale(true)
-	-- Create Create Static Popups
-	K.CreateStaticPopups()
-	-- Some GUID Stuff
-	K.GUID = UnitGUID("player")
 	-- Enable GUI
 	K["GUI"]:Enable()
-
 	K:UnregisterEvent(event)
 end)
 

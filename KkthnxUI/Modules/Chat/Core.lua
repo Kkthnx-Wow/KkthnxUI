@@ -37,6 +37,7 @@ local SetCVar = _G.SetCVar
 local TRADE = _G.TRADE
 local hooksecurefunc = _G.hooksecurefunc
 
+local messageSoundID = SOUNDKIT.TELL_MESSAGE
 local maxLines = 1024
 
 local function GetGroupDistribution()
@@ -204,8 +205,8 @@ function Module:SkinChat()
 	local eb = _G[name.."EditBox"]
 	eb:SetAltArrowKeyMode(false)
 	eb:ClearAllPoints()
-	eb:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, 26)
-	eb:SetPoint("TOPRIGHT", self, "TOPRIGHT", -3, 50)
+	eb:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, 25)
+	eb:SetPoint("TOPRIGHT", self, "TOPRIGHT", 25, 50)
 	eb:StripTextures(2)
 	eb:CreateBorder()
 	eb:HookScript("OnTextChanged", Module.EditBoxOnTextChanged)
@@ -305,7 +306,6 @@ function Module:UpdateEditBoxColor()
 		end
 	end
 end
-hooksecurefunc("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
 
 function Module:UpdateTabChannelSwitch()
 	if string_sub(tostring(self:GetText()), 1, 1) == "/" then
@@ -330,7 +330,6 @@ function Module:UpdateTabChannelSwitch()
 		end
 	end
 end
-hooksecurefunc("ChatEdit_CustomTabPressed", Module.UpdateTabChannelSwitch)
 
 -- Quick Scroll
 function Module:QuickMouseScroll(dir)
@@ -350,7 +349,6 @@ function Module:QuickMouseScroll(dir)
 		end
 	end
 end
-hooksecurefunc("FloatingChatFrame_OnMouseScroll", Module.QuickMouseScroll)
 
 -- Sticky whisper
 function Module:ChatWhisperSticky()
@@ -462,22 +460,44 @@ function Module:Install()
 	FCF_SelectDockFrame(ChatFrame1)
 end
 
+local whisperEvents = {
+	["CHAT_MSG_WHISPER"] = true,
+	["CHAT_MSG_BN_WHISPER"] = true,
+}
+function Module:PlayWhisperSound(event)
+	if whisperEvents[event] then
+		local currentTime = GetTime()
+		if not self.soundTimer or currentTime > self.soundTimer then
+			PlaySound(messageSoundID, "master")
+		end
+		self.soundTimer = currentTime + 5
+	end
+end
+
 function Module:OnEnable()
+	if not C["Chat"].Enable then
+		return
+	end
+
 	for i = 1, NUM_CHAT_WINDOWS do
-		self.SkinChat(_G["ChatFrame"..i])
+		Module.SkinChat(_G["ChatFrame"..i])
 	end
 
 	hooksecurefunc("FCF_OpenTemporaryWindow", function()
 		for _, chatFrameName in ipairs(CHAT_FRAMES) do
 			local frame = _G[chatFrameName]
 			if frame.isTemporary then
-				self.SkinChat(frame)
+				Module.SkinChat(frame)
 			end
 		end
 	end)
 
-	hooksecurefunc("FCFTab_UpdateColors", self.UpdateTabColors)
-	hooksecurefunc("FloatingChatFrame_OnEvent", self.UpdateTabEventColors)
+	hooksecurefunc("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
+	hooksecurefunc("ChatEdit_CustomTabPressed", Module.UpdateTabChannelSwitch)
+	hooksecurefunc("FloatingChatFrame_OnMouseScroll", Module.QuickMouseScroll)
+	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
+	hooksecurefunc("FloatingChatFrame_OnEvent", Module.UpdateTabEventColors)
+	hooksecurefunc("ChatFrame_ConfigEventHandler", Module.PlayWhisperSound)
 
 	-- Font size
 	for i = 1, 15 do
@@ -491,19 +511,19 @@ function Module:OnEnable()
 	CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
 
 	-- Add Elements
-	self:ChatWhisperSticky()
-	self:CreateChatFilter()
-	self:CreateChatItemLevels()
-	self:CreateChatRename()
-	self:CreateCopyChat()
-	self:CreateCopyURL()
-	self:CreateVoiceActivity()
+	Module:ChatWhisperSticky()
+	Module:CreateChatFilter()
+	Module:CreateChatItemLevels()
+	Module:CreateChatRename()
+	Module:CreateCopyChat()
+	Module:CreateCopyURL()
+	Module:CreateVoiceActivity()
 
 	-- Lock chatframe
 	if C["Chat"].Lock then
-		hooksecurefunc("FCF_SavePositionAndDimensions", self.UpdateChatSize)
-		K:RegisterEvent("UI_SCALE_CHANGED", self.UpdateChatSize)
-		self:UpdateChatSize()
+		hooksecurefunc("FCF_SavePositionAndDimensions", Module.UpdateChatSize)
+		K:RegisterEvent("UI_SCALE_CHANGED", Module.UpdateChatSize)
+		Module:UpdateChatSize()
 	end
 
 	-- ProfanityFilter

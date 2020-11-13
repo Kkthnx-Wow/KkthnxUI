@@ -4,44 +4,44 @@
 	<Include file="Libraries\Load_Libraries.xml" />
 	<!-- Engine -->
 	<Script file="Init.lua" />
-	<!-- Locales -->
-	<Include file="Locales\Load_Locales.xml" />
 	<!-- Settings -->
 	<Script file="Config\Settings.lua" />
 	<!-- Media -->
 	<Script file="Media\Media.lua" />
+	<!-- Locales -->
+	<Include file="Locales\Load_Locales.xml" />
 	<!-- Core -->
 	<Include file="Core\Load_Core.xml" />
 	<!-- Config -->
 	<Include file="Config\Load_Config.xml" />
+	<!-- Blizzard -->
+	<Include file="Modules\Blizzard\Load_Blizzard.xml" />
+	<!-- DataText -->
+	<Include file="Modules\Datatext\Load_Datatext.xml" />
+	<!-- Chat -->
+	<Include file="Modules\Chat\Load_Chat.xml" />
+	<!-- Inventory -->
+	<Include file="Modules\Inventory\Load_Inventory.xml" />
 	<!-- ActionBars -->
 	<Include file="Modules\ActionBars\Load_ActionBar.xml" />
+	<!-- Miscellaneous -->
+	<Include file="Modules\Miscellaneous\Load_Miscellaneous.xml" />
 	<!-- Auras -->
 	<Include file="Modules\Auras\Load_Auras.xml" />
+	<!-- Maps -->
+	<Include file="Modules\Maps\Load_Maps.xml" />
 	<!-- Unitframes -->
 	<Include file="Modules\Unitframes\Load_Unitframes.xml" />
+	<!-- Tooltip -->
+	<Include file="Modules\Tooltip\Load_Tooltip.xml" />
 	<!-- Announcements -->
 	<Include file="Modules\Announcements\Load_Announcements.xml" />
 	<!-- Automation -->
 	<Include file="Modules\Automation\Load_Automation.xml" />
-	<!-- Blizzard -->
-	<Include file="Modules\Blizzard\Load_Blizzard.xml" />
-	<!-- Chat -->
-	<Include file="Modules\Chat\Load_Chat.xml" />
-	<!-- DataText -->
-	<Include file="Modules\Datatext\Load_Datatext.xml" />
 	<!-- DataBars -->
 	<Include file="Modules\Databars\Load_Databars.xml" />
-	<!-- Inventory -->
-	<Include file="Modules\Inventory\Load_Inventory.xml" />
 	<!-- Loot -->
 	<Include file="Modules\Loot\Load_Loot.xml" />
-	<!-- Maps -->
-	<Include file="Modules\Maps\Load_Maps.xml" />
-	<!-- Tooltip -->
-	<Include file="Modules\Tooltip\Load_Tooltip.xml" />
-	<!-- Miscellaneous -->
-	<Include file="Modules\Miscellaneous\Load_Miscellaneous.xml" />
 	<!-- Skins -->
 	<Include file="Modules\Skins\Load_Skins.xml" />
 	<!-- Developer -->

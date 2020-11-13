@@ -61,6 +61,19 @@ local function isItemJunk(item)
 	return (item.rarity == LE_ITEM_QUALITY_POOR or KkthnxUIData[K.Realm][K.Name].CustomJunkList[item.id]) and item.sellPrice and item.sellPrice > 0
 end
 
+local function isItemEquipSet(item)
+	if not C["Inventory"].ItemFilter then
+		return
+	end
+
+	if not C["Inventory"].FilterEquipSet then
+		return
+	end
+
+	return item.isInSet
+end
+
+
 local function isAzeriteArmor(item)
 	if not C["Inventory"].ItemFilter then
 		return
@@ -74,7 +87,7 @@ local function isAzeriteArmor(item)
 		return
 	end
 
-	return C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID(item.link) and not (C["Inventory"].ItemSetFilter and item.isInSet)
+	return C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID(item.link) and not isItemEquipSet(item)
 end
 
 function Module:isArtifactRelic(item)
@@ -90,11 +103,7 @@ local function isItemEquipment(item)
 		return
 	end
 
-	if C["Inventory"].ItemSetFilter then
-		return item.isInSet
-	else
-		return item.level and item.rarity > LE_ITEM_QUALITY_COMMON and (Module:isArtifactRelic(item) or item.classID == LE_ITEM_CLASS_WEAPON or item.classID == LE_ITEM_CLASS_ARMOR)
-	end
+	return item.level and item.rarity > LE_ITEM_QUALITY_COMMON and (Module:isArtifactRelic(item) or item.classID == LE_ITEM_CLASS_WEAPON or item.classID == LE_ITEM_CLASS_ARMOR) and not isItemEquipSet(item)
 end
 
 local function isItemConsumable(item)
@@ -184,16 +193,18 @@ end
 function Module:GetFilters()
 	local filters = {}
 
-	filters.onlyBags = function(item) return isItemInBag(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAzeriteArmor(item) and not isItemJunk(item) and not isMountAndPet(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) end
+	filters.onlyBags = function(item) return isItemInBag(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAzeriteArmor(item) and not isItemJunk(item) and not isMountAndPet(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) and not isItemEquipSet(item) end
 	filters.bagAzeriteItem = function(item) return isItemInBag(item) and isAzeriteArmor(item) end
 	filters.bagEquipment = function(item) return isItemInBag(item) and isItemEquipment(item) end
+	filters.bagEquipSet = function(item) return isItemInBag(item) and isItemEquipSet(item) end
 	filters.bagConsumable = function(item) return isItemInBag(item) and isItemConsumable(item) end
 	filters.bagsJunk = function(item) return isItemInBag(item) and isItemJunk(item) end
-	filters.onlyBank = function(item) return isItemInBank(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAzeriteArmor(item) and not isMountAndPet(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) end
+	filters.onlyBank = function(item) return isItemInBank(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAzeriteArmor(item) and not isMountAndPet(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) and not isItemEquipSet(item) end
 	filters.bankAzeriteItem = function(item) return isItemInBank(item) and isAzeriteArmor(item) end
 	filters.bagLegendary = function(item) return isItemInBag(item) and isItemLegendary(item) end
 	filters.bankLegendary = function(item) return isItemInBank(item) and isItemLegendary(item) end
 	filters.bankEquipment = function(item) return isItemInBank(item) and isItemEquipment(item) end
+	filters.bankEquipSet = function(item) return isItemInBank(item) and isItemEquipSet(item) end
 	filters.bankConsumable = function(item) return isItemInBank(item) and isItemConsumable(item) end
 	filters.onlyReagent = function(item) return item.bagID == -3 and not isEmptySlot(item) end
 	filters.bagMountPet = function(item) return isItemInBag(item) and isMountAndPet(item) end

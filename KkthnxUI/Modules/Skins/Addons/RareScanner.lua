@@ -12,7 +12,6 @@ local function ReskinRareScanner()
 		scanner_button:StripTextures()
 		scanner_button:SkinButton()
 		scanner_button.CloseButton:SkinCloseButton()
-		scanner_button.FilterDisabledButton:SkinCloseButton(nil, "-")
 	end
 end
 

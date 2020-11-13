@@ -77,11 +77,10 @@ local function reskinQuestIcon(button)
 	local icon = button.icon or button.Icon
 	if icon then
 		icon:SetTexCoord(unpack(K.TexCoords))
-		-- local bg = CreateFrame("Frame", nil, button)
-		-- bg:SetPoint("TOPLEFT", button, "TOPLEFT", 6, -6)
-		-- bg:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -6, 6)
-		-- bg:SetFrameLevel(button:GetFrameLevel())
-		-- bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		local bg = CreateFrame("Frame", nil, button)
+		bg:SetAllPoints(icon)
+		bg:SetFrameLevel(button:GetFrameLevel())
+		bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 	end
 
 	button.styled = true

@@ -4,7 +4,6 @@ local GUI = K["GUI"]
 local _G = _G
 
 local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
-local BAG_FILTER_EQUIPMENT = _G.BAG_FILTER_EQUIPMENT
 
 local enableTextColor = "|cff00cc4c"
 
@@ -14,19 +13,6 @@ end
 
 local function UpdateBagStatus()
 	K:GetModule("Bags"):UpdateAllBags()
-
-	local label = BAG_FILTER_EQUIPMENT
-	if C["Inventory"].ItemSetFilter then
-		label = "Equipement Set"
-	end
-
-	if KKUI_BackpackEquipment then
-		_G.KKUI_BackpackEquipment.label:SetText(label)
-	end
-
-	if KKUI_BackpackBankEquipment then
-		_G.KKUI_BackpackBankEquipment.label:SetText(label)
-	end
 end
 
 local function UpdateTargetBuffs()
@@ -245,6 +231,7 @@ local Inventory = function(self)
 	Window:CreateSection("Inventory Filters")
 	Window:CreateSwitch("Inventory", "FilterAzerite", L["Filter Azerite Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterConsumable", L["Filter Consumable Items"], nil, UpdateBagStatus)
+	Window:CreateSwitch("Inventory", "FilterEquipSet", L["Filter EquipSet"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterEquipment", L["Filter Equipment Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterFavourite", L["Filter Favourite Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterGoods", L["Filter Goods Items"], nil, UpdateBagStatus)
@@ -254,7 +241,6 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "FilterQuest", L["Filter Quest Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "GatherEmpty", L["Gather Empty Slots Into One Button"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "ItemFilter", L["Filter Items Into Categories"], nil, UpdateBagStatus)
-	Window:CreateSwitch("Inventory", "ItemSetFilter", L["Filter EquipmentSets"], nil, UpdateBagStatus)
 
 	Window:CreateSection("Inventory Sizes")
 	Window:CreateSlider("Inventory", "BagsWidth", L["Bags Width"], 8, 16, 1)
