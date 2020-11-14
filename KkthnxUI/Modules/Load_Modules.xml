@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
+   <Script file="Blizzard\Elements\Fonts.lua" />
    <!-- DataText -->
    <Script file="DataText\Core.lua" />
    <Script file="DataText\Elements\Latency.lua" />
@@ -154,7 +155,6 @@
    <Include file="Skins\Blizzard\ChatBubble.lua" />
    <Include file="Skins\Blizzard\ChatFrame.lua" />
    <Include file="Skins\Blizzard\DeathRecap.lua" />
-   <Include file="Skins\Blizzard\Fonts.lua" />
    <Include file="Skins\Blizzard\Friends.lua" />
    <Include file="Skins\Blizzard\Inspect.lua" />
    <Include file="Skins\Blizzard\LossControl.lua" />

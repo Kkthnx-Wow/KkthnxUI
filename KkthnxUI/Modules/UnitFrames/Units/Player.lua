@@ -16,15 +16,9 @@ function Module.PostUpdateAddPower(element, cur, max)
 		if perc == 100 then
 			perc = ""
 			element:SetAlpha(0)
-			if oUF_ClassPowerBar and oUF_ClassPowerBar:IsShown() then
-				oUF_ClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 20)
-			end
 		else
 			perc = string_format("%d%%", perc)
 			element:SetAlpha(1)
-			if oUF_ClassPowerBar and oUF_ClassPowerBar:IsShown() then
-				oUF_ClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 40)
-			end
 		end
 
 		element.Text:SetText(perc)
@@ -359,22 +353,34 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].AdditionalPower then
-		self.AdditionalPower = CreateFrame("StatusBar", self:GetName().."AdditionalPower", self)
-		self.AdditionalPower:SetHeight(14)
-		self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
-		self.AdditionalPower:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
+		self.AdditionalPower = CreateFrame("StatusBar", self:GetName().."AdditionalPower", self.Health)
+		self.AdditionalPower:SetHeight(5)
+		self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Health, 2, 2)
+		self.AdditionalPower:SetPoint("BOTTOMRIGHT", self.Health, -2, 2)
 		self.AdditionalPower:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
 		self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
-		self.AdditionalPower:CreateBorder()
 		self.AdditionalPower.frequentUpdates = true
 
 		if C["Unitframe"].Smooth then
-			self.AdditionalPower.Smooth = true
+			K:SmoothBar(self.AdditionalPower)
 		end
+
+		self.AdditionalPower.Spark = self.AdditionalPower:CreateTexture(nil, "OVERLAY")
+		self.AdditionalPower.Spark:SetTexture(C["Media"].Spark_16)
+		self.AdditionalPower.Spark:SetAlpha(0.4)
+		self.AdditionalPower.Spark:SetHeight(5)
+		self.AdditionalPower.Spark:SetBlendMode("ADD")
+		self.AdditionalPower.Spark:SetPoint("CENTER", self.AdditionalPower:GetStatusBarTexture(), "RIGHT", 0, 0)
+
+		self.AdditionalPower.Background = self.AdditionalPower:CreateTexture(nil, "BORDER")
+		self.AdditionalPower.Background:SetAllPoints(self.AdditionalPower)
+		self.AdditionalPower.Background:SetColorTexture(0.2, 0.2, 0.2)
+		self.AdditionalPower.Background.multiplier = 0.3
 
 		self.AdditionalPower.Text = self.AdditionalPower:CreateFontString(nil, "OVERLAY")
 		self.AdditionalPower.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-		self.AdditionalPower.Text:SetPoint("CENTER", self.AdditionalPower, "CENTER", 0, -1)
+		self.AdditionalPower.Text:SetFont(select(1, self.AdditionalPower.Text:GetFont()), 9, select(3, self.AdditionalPower.Text:GetFont()))
+		self.AdditionalPower.Text:SetPoint("LEFT", self.AdditionalPower, "LEFT", 1, 1)
 
 		self.AdditionalPower.PostUpdate = Module.PostUpdateAddPower
 		self.AdditionalPower.displayPairs = {

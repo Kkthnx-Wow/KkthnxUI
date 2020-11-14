@@ -224,12 +224,9 @@ C["AuraWatch"] = {
 C["General"] = {
 	["AutoScale"] = true,
 	["ColorTextures"] = false,
-	["FontSize"] = 12,
 	["MissingTalentAlert"] = true,
 	["MoveBlizzardFrames"] = false,
 	["NoTutorialButtons"] = false,
-	["ReplaceBlizzardFonts"] = true,
-	["ReplaceCombatFont"] = true,
 	["TexturesColor"] = {1, 1, 1},
 	["UIScale"] = 0.71111,
 	["UseGlobal"] = false,
@@ -402,6 +399,14 @@ C["Skins"] = {
 	["TellMeWhen"] = false,
 	["TitanPanel"] = false,
 	["WeakAuras"] = false,
+
+	["ReplaceNameFont"] = true,
+	["ReplaceCombatFont"] = true,
+	["ReplaceBlizzFonts"] = true,
+	["UnifiedBlizzFonts"] = false,
+	["ChatBubbleFontSize"] = 10,
+	["ChatBubbleFontOutline"] = false,
+	["FontSize"] = 12,
 }
 
 -- Tooltip
