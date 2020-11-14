@@ -189,7 +189,6 @@ function Module:CreateStyle()
 				minimapMailPulse:Show()
 				anim:Play()
 			else
-
 				anim:Stop()
 				minimapMailPulse:Hide()
 			end
@@ -404,7 +403,7 @@ function Module:ShowCalendar()
 			fs:ClearAllPoints()
 			fs:SetPoint("CENTER", 0, -5)
 			fs:FontTemplate(nil, 20)
-			fs:SetTextColor(0.2, 0.2, 0.1, 0.9)
+			fs:SetShadowOffset(0, 0)
 
 			GameTimeFrame.styled = true
 		end

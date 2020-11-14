@@ -366,13 +366,8 @@ local General = function(self)
 	Window:CreateSwitch("General", "ColorTextures", L["Color 'Most' KkthnxUI Borders"])
 	Window:CreateSwitch("General", "MoveBlizzardFrames", L["Move Blizzard Frames"])
 	Window:CreateSwitch("General", "NoTutorialButtons", L["Disable 'Some' Blizzard Tutorials"])
-	Window:CreateSwitch("General", "ReplaceBlizzardFonts", L["Replace 'Some' Blizzard Fonts"])
-	Window:CreateSwitch("General", "ReplaceCombatFont", L["Replace Blizzard Combat Font"])
 	Window:CreateSwitch("General", "VersionCheck", L["Enable Version Checking"])
 	Window:CreateSwitch("General", "Welcome", L["Show Welcome Message"])
-	if C["General"].ReplaceBlizzardFonts then
-		Window:CreateSlider("General", "FontSize", L["Adjust 'Some' Font Sizes"], 10, 16, 1, nil, UpdateFontSizes)
-	end
 	Window:CreateDropdown("General", "NumberPrefixStyle", L["Number Prefix Style"])
 
 	Window:CreateSection("General Scaling")
@@ -512,6 +507,7 @@ local Skins = function(self)
 	-- Window:CreateSwitch("Skins", "Spy", L["Spy Skin"])
 	-- Window:CreateSwitch("Skins", "TellMeWhen", L["TellMeWhen Skin"])
 	-- Window:CreateSwitch("Skins", "TitanPanel", L["TitanPanel Skin"])
+
 	Window:CreateSwitch("Skins", "BlizzardFrames", L["Skin Some Blizzard Frames & Objects"])
 	Window:CreateSwitch("Skins", "ChatBubbles", L["ChatBubbles Skin"])
 	Window:CreateSwitch("Skins", "DeadlyBossMods", L["Deadly Boss Mods Skin"])

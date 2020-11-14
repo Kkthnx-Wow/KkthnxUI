@@ -399,14 +399,6 @@ C["Skins"] = {
 	["TellMeWhen"] = false,
 	["TitanPanel"] = false,
 	["WeakAuras"] = false,
-
-	["ReplaceNameFont"] = true,
-	["ReplaceCombatFont"] = true,
-	["ReplaceBlizzFonts"] = true,
-	["UnifiedBlizzFonts"] = false,
-	["ChatBubbleFontSize"] = 10,
-	["ChatBubbleFontOutline"] = false,
-	["FontSize"] = 12,
 }
 
 -- Tooltip
