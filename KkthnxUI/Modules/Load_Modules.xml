@@ -146,8 +146,7 @@
    <Script file="Loot\Elements\AutoConfirm.lua" />
    <Script file="Loot\Elements\AutoGreed.lua" />
    <Script file="Loot\Elements\FasterLoot.lua" />
-   <Script file="Loot\Elements\ImprovedLoot.lua" />
-   <!-- Skins -->
+   <!-- Skins Blizzard -->
    <Include file="Skins\Core.lua" />
    <Include file="Skins\Blizzard\Achievement.lua" />
    <Include file="Skins\Blizzard\Archaeology.lua" />
@@ -170,10 +169,12 @@
    <Include file="Skins\Blizzard\Tutorial.lua" />
    <Include file="Skins\Blizzard\WidgetFrame.lua" />
    <Include file="Skins\Blizzard\WorldMapFrame.lua" />
+   <!-- Skins AddOns -->
    <Include file="Skins\Addons\DeadlyBossMods.lua" />
    <Include file="Skins\Addons\Details.lua" />
    <Include file="Skins\Addons\RareScanner.lua" />
    <Include file="Skins\Addons\WeakAuras.lua" />
+   <!-- Disabled/Broken/WIP AddOns -->
    <!-- <Include file="Skins\Addons\Bartender4.lua" />
    <Include file="Skins\Addons\BigWigs.lua" />
    <Include file="Skins\Addons\BugSack.lua" />

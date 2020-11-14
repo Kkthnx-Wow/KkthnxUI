@@ -245,7 +245,7 @@ local Inventory = function(self)
 	Window:CreateSection("Inventory Sizes")
 	Window:CreateSlider("Inventory", "BagsWidth", L["Bags Width"], 8, 16, 1)
 	Window:CreateSlider("Inventory", "BankWidth", L["Bank Width"], 10, 18, 1)
-	Window:CreateSlider("Inventory", "IconSize", L["Slot Icon Size"], 28, 36, 1)
+	Window:CreateSlider("Inventory", "IconSize", L["Slot Icon Size"], 28, 40, 1)
 end
 
 local Auras = function(self)
