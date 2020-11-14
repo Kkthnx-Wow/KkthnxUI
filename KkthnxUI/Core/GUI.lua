@@ -143,7 +143,7 @@ GUI.Queue = {}
 GUI.Widgets = {}
 
 -- Create a KkthnxUI popup for profiles
-K.PopupDialogs["KKUI_SWITCH_PROFILE"] = {
+StaticPopupDialogs["KKUI_SWITCH_PROFILE"] = {
 	text = "Are you sure you want to switch your profile? If you accept, this current profile will be erased and replaced the character you selected!",
 	button1 = YES,
 	button2 = NO,
@@ -1847,7 +1847,7 @@ GUI.Enable = function(self)
 	Reset:SetScript("OnEnter", ButtonOnEnter)
 	Reset:SetScript("OnLeave", ButtonOnLeave)
 	Reset:HookScript("OnMouseUp", function()
-		K.StaticPopup_Show("KKUI_RESET_DATA")
+		StaticPopup_Show("KKUI_RESET_DATA")
 	end)
 
 	Reset.Highlight = Reset:CreateTexture(nil, "OVERLAY")
@@ -1923,7 +1923,7 @@ GUI.Enable = function(self)
 	ResetCVars:SetScript("OnEnter", ButtonOnEnter)
 	ResetCVars:SetScript("OnLeave", ButtonOnLeave)
 	ResetCVars:HookScript("OnMouseUp", function()
-		K.StaticPopup_Show("KKUI_RESET_CVARS")
+		StaticPopup_Show("KKUI_RESET_CVARS")
 	end)
 
 	ResetCVars.Highlight = ResetCVars:CreateTexture(nil, "OVERLAY")
@@ -1949,7 +1949,7 @@ GUI.Enable = function(self)
 	ResetChat:SetScript("OnEnter", ButtonOnEnter)
 	ResetChat:SetScript("OnLeave", ButtonOnLeave)
 	ResetChat:HookScript("OnMouseUp", function()
-		K.StaticPopup_Show("KKUI_RESET_CHAT")
+		StaticPopup_Show("KKUI_RESET_CHAT")
 	end)
 
 	ResetChat.Highlight = ResetChat:CreateTexture(nil, "OVERLAY")
@@ -2114,7 +2114,7 @@ GUI.SetProfile = function(self)
 
 		GUI:Toggle()
 
-		K.StaticPopup_Show("KKUI_SWITCH_PROFILE")
+		StaticPopup_Show("KKUI_SWITCH_PROFILE")
 	end
 end
 

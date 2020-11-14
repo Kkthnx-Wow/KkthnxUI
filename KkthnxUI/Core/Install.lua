@@ -503,7 +503,7 @@ local function YesTutor()
 		elseif currentPage == 5 then
 			KkthnxUIData[K.Realm][K.Name].InstallComplete = true
 			tutor:Hide()
-			K.StaticPopup_Show("KKUI_CHANGES_RELOAD")
+			StaticPopup_Show("KKUI_CHANGES_RELOAD")
 			currentPage = 0
 			PlaySound(11466)
 			K.Print(K.SystemColor.."Thank you for installing "..K.InfoColor.."v"..K.Version.." "..K.MyClassColor..K.Name.."|r"..K.SystemColor.."! Enjoy your|r "..K.MyClassColor..K.Class.."|r |cffa83f39<3|r")

@@ -67,7 +67,7 @@ local menuList = {
 	end},
 
 	{text = L["Discord"], notCheckable = true, func = function()
-			K.StaticPopup_Show("KKUI_DISCORD_LINK", nil, nil, L["Discord URL"])
+			StaticPopup_Show("KKUI_DISCORD_LINK", nil, nil, L["Discord URL"])
 	end},
 	{text = "", notClickable = true, notCheckable = true},
 
@@ -110,7 +110,7 @@ local menuList = {
 
 					if IsAddOnLoaded("Details") then
 						_G.KkthnxUIData["ResetDetails"] = true
-						K.StaticPopup_Show("KKUI_CHANGES_RELOAD")
+						StaticPopup_Show("KKUI_CHANGES_RELOAD")
 					else
 						K.Print("Details is not loaded!")
 					end

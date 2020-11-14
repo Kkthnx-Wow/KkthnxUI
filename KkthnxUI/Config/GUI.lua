@@ -89,7 +89,7 @@ local function UpdateFontSizes()
 end
 
 local function UpdateUIScale()
-	K:SetupUIScale()
+	K.SetupUIScale()
 end
 
 local function SetupAuraWatch()

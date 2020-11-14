@@ -248,10 +248,8 @@ end)
 K:RegisterEvent("VARIABLES_LOADED", function(event)
 	-- Some GUID Stuff
 	K.GUID = UnitGUID("player")
-	-- Create Create Static Popups
-	K.CreateStaticPopups()
 	-- Setup UI Scale
-	K:SetupUIScale(true)
+	K.SetupUIScale(true)
 end)
 
 -- Event return values were wrong: https://wow.gamepedia.com/PLAYER_LEVEL_UP

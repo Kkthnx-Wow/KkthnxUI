@@ -65,7 +65,7 @@ SlashCmdList["KKUI_CHECKQUESTSTATUS"] = function(questid)
 		-- print("http://wowhead.com/quest=ID")
 		-- print("Example: /checkquest 12045")
 
-		K.StaticPopup_Show("QUEST_CHECK_ID")
+		StaticPopup_Show("QUEST_CHECK_ID")
 		return
 	end
 
