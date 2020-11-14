@@ -403,7 +403,7 @@ function Module:ShowCalendar()
 			local fs = GameTimeFrame:GetFontString()
 			fs:ClearAllPoints()
 			fs:SetPoint("CENTER", 0, -5)
-			fs:SetFont(STANDARD_TEXT_FONT, 20)
+			fs:FontTemplate(nil, 20)
 			fs:SetTextColor(0.2, 0.2, 0.1, 0.9)
 
 			GameTimeFrame.styled = true
