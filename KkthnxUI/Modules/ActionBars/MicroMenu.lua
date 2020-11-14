@@ -22,7 +22,7 @@ local hooksecurefunc = _G.hooksecurefunc
 
 local function onLeaveBar()
 	if C["ActionBar"].MicroBarMouseover then
-		K.UIFrameFadeOut(Module.MicroBar, 0.2, Module.MicroBar:GetAlpha(), 0.25)
+		UIFrameFadeOut(Module.MicroBar, 0.2, Module.MicroBar:GetAlpha(), 0.25)
 	end
 end
 
@@ -48,7 +48,7 @@ local function onEnter(button)
 	if C["ActionBar"].MicroBarMouseover and not Module.MicroBar.IsMouseOvered then
 		Module.MicroBar.IsMouseOvered = true
 		Module.MicroBar:SetScript("OnUpdate", onUpdate)
-		K.UIFrameFadeIn(Module.MicroBar, 0.2, Module.MicroBar:GetAlpha(), 1)
+		UIFrameFadeIn(Module.MicroBar, 0.2, Module.MicroBar:GetAlpha(), 1)
 	end
 end
 

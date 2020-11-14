@@ -62,7 +62,7 @@ function Module:CreateRecycleBin()
 	end
 
 	local function clickFunc()
-		K.UIFrameFadeOut(bin, 0.5, 1, 0)
+		UIFrameFadeOut(bin, 0.5, 1, 0)
 		C_Timer_After(0.5, hideBinButton)
 		PlaySound(825)
 	end
@@ -174,7 +174,7 @@ function Module:CreateRecycleBin()
 		if bin:IsShown() then
 			clickFunc()
 		else
-			K.UIFrameFadeIn(bin, 0.5, 0, 1)
+			UIFrameFadeIn(bin, 0.5, 0, 1)
 			PlaySound(825)
 		end
 	end)

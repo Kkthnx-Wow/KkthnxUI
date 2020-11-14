@@ -200,10 +200,10 @@ local function createStats()
 end
 
 local function UpdateStatMessage(self)
-	K.UIFrameFadeIn(self.statMsg.info, 1, 1, 0)
+	UIFrameFadeIn(self.statMsg.info, 1, 1, 0)
 	local createdStat = createStats()
 	self.statMsg.info:SetText(createdStat)
-	K.UIFrameFadeIn(self.statMsg.info, 1, 0, 1)
+	UIFrameFadeIn(self.statMsg.info, 1, 0, 1)
 end
 
 local function SetAFK(self, status)

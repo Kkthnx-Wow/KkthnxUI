@@ -298,7 +298,7 @@ function Module:ChatCopy_Create()
 	copy:SetScript("OnClick", self.ChatCopy_OnClick)
 
 	copy:SetScript("OnEnter", function(self)
-		K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+		UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
 
 		local anchor, _, xoff, yoff = "ANCHOR_RIGHT", self:GetParent(), 10, 5
 		GameTooltip:SetOwner(self, anchor, xoff, yoff)
@@ -310,7 +310,7 @@ function Module:ChatCopy_Create()
 	end)
 
 	copy:SetScript("OnLeave", function(self)
-		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+		UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
 
 		if not GameTooltip:IsForbidden() then
 			GameTooltip:Hide()
@@ -339,7 +339,7 @@ function Module:ChatCopy_Create()
 	end)
 
 	kkuiconfig:SetScript("OnEnter", function(self)
-		K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+		UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
 
 		local anchor, _, xoff, yoff = "ANCHOR_RIGHT", self:GetParent(), 10, 5
 		GameTooltip:SetOwner(self, anchor, xoff, yoff)
@@ -350,7 +350,7 @@ function Module:ChatCopy_Create()
 	end)
 
 	kkuiconfig:SetScript("OnLeave", function(self)
-		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+		UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
 
 		if not GameTooltip:IsForbidden() then
 			GameTooltip:Hide()

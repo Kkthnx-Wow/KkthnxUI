@@ -610,3 +610,81 @@ function K.FormatMoney(amount)
 
 	return str
 end
+
+function K.CheckSavedVariables()
+	if not KkthnxUIData then
+		KkthnxUIData = {}
+	end
+
+	if not KkthnxUIData[K.Realm] then
+		KkthnxUIData[K.Realm] = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name] then
+		KkthnxUIData[K.Realm][K.Name] = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].AutoQuest then
+		KkthnxUIData[K.Realm][K.Name].AutoQuest = false
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].BindType then
+		KkthnxUIData[K.Realm][K.Name].BindType = 1
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].ChangeLog then
+		KkthnxUIData[K.Realm][K.Name].ChangeLog = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].CustomJunkList then
+		KkthnxUIData[K.Realm][K.Name].CustomJunkList = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].DetectVersion then
+		KkthnxUIData[K.Realm][K.Name].DetectVersion = K.Version
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].FavouriteItems then
+		KkthnxUIData[K.Realm][K.Name].FavouriteItems = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].Mover then
+		KkthnxUIData[K.Realm][K.Name].Mover = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].AuraWatchMover then
+		KkthnxUIData[K.Realm][K.Name].AuraWatchMover = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].RevealWorldMap then
+		KkthnxUIData[K.Realm][K.Name].RevealWorldMap = false
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].SplitCount then
+		KkthnxUIData[K.Realm][K.Name].SplitCount = 1
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].ContactList then
+		KkthnxUIData[K.Realm][K.Name].ContactList = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].TempAnchor then
+		KkthnxUIData[K.Realm][K.Name].TempAnchor = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].InternalCD then
+		KkthnxUIData[K.Realm][K.Name].InternalCD = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].AuraWatchList then
+		KkthnxUIData[K.Realm][K.Name].AuraWatchList = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].AuraWatchList.Switcher then
+		KkthnxUIData[K.Realm][K.Name].AuraWatchList.Switcher = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells then
+		KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {}
+	end
+end

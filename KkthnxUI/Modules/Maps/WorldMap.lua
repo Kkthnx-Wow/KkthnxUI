@@ -166,7 +166,7 @@ function Module:MapFadeOnUpdate(elapsed)
 		object.fadeTimer = nil
 	end
 
-	K.UIFrameFade(_G.WorldMapFrame, object)
+	UIFrameFade(_G.WorldMapFrame, object)
 
 	self.elapsed = 0
 end

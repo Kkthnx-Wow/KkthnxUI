@@ -175,14 +175,23 @@ function Module:CreateStyle()
 	minimapMailPulse:SetBackdropBorderColor(1, 1, 0, 0.6)
 	minimapMailPulse:Hide()
 
+	local anim = minimapMailPulse:CreateAnimationGroup()
+	anim:SetLooping("BOUNCE")
+	anim.fader = anim:CreateAnimation("Alpha")
+	anim.fader:SetFromAlpha(0.8)
+	anim.fader:SetToAlpha(0.2)
+	anim.fader:SetDuration(1)
+	anim.fader:SetSmoothing("OUT")
+
 	local function updateMinimapBorderAnimation()
 		if not InCombatLockdown() then
 			if C_Calendar_GetNumPendingInvites() > 0 or MiniMapMailFrame:IsShown() and not IsInInstance() then
 				minimapMailPulse:Show()
-				K.Flash(minimapMailPulse, 1, true)
+				anim:Play()
 			else
+
+				anim:Stop()
 				minimapMailPulse:Hide()
-				K.StopFlash(minimapMailPulse)
 			end
 		end
 	end
@@ -196,8 +205,8 @@ function Module:CreateStyle()
 			return
 		end
 
+		anim:Stop()
 		minimapMailPulse:Hide()
-		K.StopFlash(minimapMailPulse)
 	end)
 end
 

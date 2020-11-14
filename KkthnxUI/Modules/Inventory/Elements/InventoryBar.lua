@@ -15,7 +15,7 @@ local function OnEnter()
 		return
 	end
 
-	K.UIFrameFadeIn(Module.BagBar, 0.2, Module.BagBar:GetAlpha(), 1)
+	UIFrameFadeIn(Module.BagBar, 0.2, Module.BagBar:GetAlpha(), 1)
 end
 
 local function OnLeave()
@@ -23,7 +23,7 @@ local function OnLeave()
 		return
 	end
 
-	K.UIFrameFadeOut(Module.BagBar, 0.2, Module.BagBar:GetAlpha(), 0.25)
+	UIFrameFadeOut(Module.BagBar, 0.2, Module.BagBar:GetAlpha(), 0.25)
 end
 
 function Module:SkinBag(bag)

@@ -1110,24 +1110,19 @@ function Module:OnEnable()
 		self.iLvl:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
 
 		if showNewItem then
-			if not self.glowFrame then
-				self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
-				self.glowFrame:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
-				self.glowFrame:SetPoint("TOPLEFT", self, -6, 6)
-				self.glowFrame:SetPoint("BOTTOMRIGHT", self, 6, -6)
-				self.glowFrame:Hide()
-			end
+			self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
+			self.glowFrame:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
+			self.glowFrame:SetPoint("TOPLEFT", self, -6, 6)
+			self.glowFrame:SetPoint("BOTTOMRIGHT", self, 6, -6)
+			self.glowFrame:Hide()
 
-			if not self.glowFrame.Animation then
-				self.glowFrame.Animation = self.glowFrame:CreateAnimationGroup()
-				self.glowFrame.Animation:SetLooping("BOUNCE")
-
-				self.glowFrame.Animation.FadeOut = self.glowFrame.Animation:CreateAnimation("Alpha")
-				self.glowFrame.Animation.FadeOut:SetFromAlpha(1)
-				self.glowFrame.Animation.FadeOut:SetToAlpha(0.1)
-				self.glowFrame.Animation.FadeOut:SetDuration(0.5)
-				self.glowFrame.Animation.FadeOut:SetSmoothing("IN_OUT")
-			end
+			self.glowFrame.Animation = self.glowFrame:CreateAnimationGroup()
+			self.glowFrame.Animation:SetLooping("BOUNCE")
+			self.glowFrame.Animation.Fader = self.glowFrame.Animation:CreateAnimation("Alpha")
+			self.glowFrame.Animation.Fader:SetFromAlpha(0.8)
+			self.glowFrame.Animation.Fader:SetToAlpha(0.2)
+			self.glowFrame.Animation.Fader:SetDuration(1)
+			self.glowFrame.Animation.Fader:SetSmoothing("OUT")
 		end
 
 		self:HookScript("OnClick", Module.ButtonOnClick)
@@ -1141,11 +1136,8 @@ function Module:OnEnable()
 
 	function MyButton:ItemOnEnter()
 		if self.glowFrame then
-			if self.glowFrame.Animation:IsPlaying() then
-				self.glowFrame.Animation:Stop()
-				self.glowFrame:Hide()
-			end
-			-- Clear things on blizzard side too.
+			self.glowFrame.Animation:Stop()
+			self.glowFrame:Hide()
 			C_NewItems_RemoveNewItem(self.bagID, self.slotID)
 		end
 	end
@@ -1242,7 +1234,6 @@ function Module:OnEnable()
 		if self.glowFrame then
 			if C_NewItems_IsNewItem(item.bagID, item.slotID) then
 				local color = K.QualityColors[item.rarity]
-
 				if item.questID or item.isQuestItem then
 					self.glowFrame:SetBackdropBorderColor(1, .82, .2)
 				elseif color and item.rarity and item.rarity > -1 then
@@ -1251,15 +1242,11 @@ function Module:OnEnable()
 					self.glowFrame:SetBackdropBorderColor(1, 1, 1)
 				end
 
-				if not self.glowFrame.Animation:IsPlaying() then
-					self.glowFrame.Animation:Play()
-					self.glowFrame:Show()
-				end
+				self.glowFrame.Animation:Play()
+				self.glowFrame:Show()
 			else
-				if self.glowFrame.Animation:IsPlaying() then
-					self.glowFrame.Animation:Stop()
-					self.glowFrame:Hide()
-				end
+				self.glowFrame.Animation:Stop()
+				self.glowFrame:Hide()
 			end
 		end
 

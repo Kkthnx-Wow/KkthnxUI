@@ -34,7 +34,6 @@ table_insert(C.defaultThemes, function()
 				button.SpellHighlightTexture:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
 				button.SpellHighlightTexture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
 			end
-			K.Flash(button.SpellHighlightTexture, 1, true)
 		end
 
 		if button.shine then
@@ -63,7 +62,6 @@ table_insert(C.defaultThemes, function()
 					button.SpellHighlightTexture:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
 					button.SpellHighlightTexture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
 				end
-				K.Flash(button.SpellHighlightTexture, 1, true)
 			end
 		end
 	end)
