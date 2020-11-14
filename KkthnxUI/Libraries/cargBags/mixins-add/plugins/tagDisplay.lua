@@ -141,7 +141,7 @@ end
 tagPool["currency"] = function(self, id)
 	local currencyInfo = C_CurrencyInfo_GetBackpackCurrencyInfo(id)
 	if currencyInfo and currencyInfo.quantity then
-		return BreakUpLargeNumbers(currencyInfo.quantity)..createIcon(currencyInfo.iconFileID, self.iconValues)
+		return createIcon(currencyInfo.iconFileID, self.iconValues)..BreakUpLargeNumbers(currencyInfo.quantity)
 	end
 end
 tagEvents["currency"] = {"CHAT_MSG_CURRENCY", "CURRENCY_DISPLAY_UPDATE"}
