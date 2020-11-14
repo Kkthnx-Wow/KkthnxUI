@@ -42,7 +42,7 @@ local function startSelling()
 					sellCount = sellCount + price*count
 					cache["b"..bag.."s"..slot] = true
 					_G.UseContainerItem(bag, slot)
-					C_Timer_After(0.1, startSelling)
+					C_Timer_After(0.15, startSelling)
 					return
 				end
 			end

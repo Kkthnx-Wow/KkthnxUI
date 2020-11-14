@@ -142,7 +142,7 @@ do
 	local function SendVerCheck(channel)
 		table_wipe(versionList)
 		C_ChatInfo_SendAddonMessage("KKUI_VersonCheck", "VersionCheck", channel)
-		K.Delay(3, PrintVerCheck)
+		C_Timer.After(3, PrintVerCheck)
 	end
 
 	local function VerCheckListen(_, ...)

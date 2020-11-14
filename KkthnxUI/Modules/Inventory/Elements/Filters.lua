@@ -187,7 +187,7 @@ local function isItemQuest(item)
 		return
 	end
 
-	return item.classID == LE_ITEM_CLASS_QUESTITEM
+	return item.isQuestItem
 end
 
 function Module:GetFilters()

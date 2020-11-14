@@ -22,12 +22,8 @@ local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetItemInfo = _G.GetItemInfo
 local GetLocale = _G.GetLocale
 local GetNumGroupMembers = _G.GetNumGroupMembers
-local LeaveParty = _G.LeaveParty
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlaySound = _G.PlaySound
-local RepopMe = _G.RepopMe
-local RetrieveCorpse = _G.RetrieveCorpse
-local SetCVar = _G.SetCVar
 local SlashCmdList = _G.SlashCmdList
 local UIErrorsFrame = _G.UIErrorsFrame
 local UnitInParty = _G.UnitInParty
@@ -42,22 +38,6 @@ SlashCmdList["KKUI_UIPROFILES"] = function(msg)
 end
 _G.SLASH_KKUI_UIPROFILES1 = "/profile"
 _G.SLASH_KKUI_UIPROFILES2 = "/profiles"
-
--- Fixes the issue when the dialog to release spirit does not come up.
-SlashCmdList["KKUI_FIXRELEASE"] = function()
-	RetrieveCorpse()
-	RepopMe()
-end
-_G.SLASH_KKUI_FIXRELEASE1 = "/release"
-_G.SLASH_KKUI_FIXRELEASE2 = "/repop"
-
--- Fixes the issue when players get stuck in party on felsong.
-SlashCmdList["KKUI_FIXPARTY"] = function()
-	LeaveParty()
-	print(L["FixParty"])
-end
-_G.SLASH_KKUI_FIXPARTY1 = "/killparty"
-_G.SLASH_KKUI_FIXPARTY2 = "/leaveparty"
 
 -- Ready check
 SlashCmdList["KKUI_READYCHECK"] = function()
@@ -162,13 +142,6 @@ end
 _G.SLASH_KKUI_CLEARCOMBATLOG1 = "/clearcombat"
 _G.SLASH_KKUI_CLEARCOMBATLOG2 = "/clfix"
 
--- Here we can restart wow"s engine. could be use for sound issues and more.
-SlashCmdList["KKUI_FIXGFXENGINE"] = function()
-	K.StaticPopup_Show("RESTART_GFX")
-end
-_G.SLASH_KKUI_FIXGFXENGINE1 = "/restartgfx"
-_G.SLASH_KKUI_FIXGFXENGINE2 = "/fixgfx"
-
 -- Clear all quests in questlog
 SlashCmdList["KKUI_ABANDONQUESTS"] = function()
 	local numShownEntries = C_QuestLog_GetNumQuestLogEntries()
@@ -188,12 +161,6 @@ end
 _G.SLASH_KKUI_ABANDONQUESTS1 = "/killquests"
 _G.SLASH_KKUI_ABANDONQUESTS2 = "/clearquests"
 
--- KkthnxUI help commands
-SlashCmdList["KKUI_COMMANDSHELPS"] = function()
-	print(L["Commands"].UIHelp)
-end
-_G.SLASH_KKUI_COMMANDSHELPS1 = "/helpui"
-
 -- Convert party to raid
 SlashCmdList["PARTYTORAID"] = function()
 	if GetNumGroupMembers() > 0 then
@@ -209,22 +176,6 @@ end
 _G.SLASH_PARTYTORAID1 = "/toraid"
 _G.SLASH_PARTYTORAID2 = "/toparty"
 _G.SLASH_PARTYTORAID3 = "/convert"
-
-SlashCmdList["VOLUME"] = function(value)
-	local numValue = tonumber(value)
-	if numValue and 0 <= numValue and numValue <= 1 then
-		SetCVar("Sound_MasterVolume", numValue)
-	end
-end
-_G.SLASH_VOLUME1 = "/vol"
-
-SlashCmdList["FPS"] = function(value)
-	local numValue = tonumber(value)
-	if numValue and 0 <= numValue then
-		SetCVar("maxFPS", numValue)
-	end
-end
-_G.SLASH_FPS1 = "/fps"
 
 -- Deadly boss mods testing.
 SlashCmdList["DBMTEST"] = function()

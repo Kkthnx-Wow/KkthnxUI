@@ -37,8 +37,6 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 		key = "AuraWatchMover"
 	end
 
-	print(KkthnxUIData[K.Realm][K.Name].AuraWatchMover)
-
 	local mover = CreateFrame("Button", nil, UIParent)
 	mover:SetWidth(width or self:GetWidth())
 	mover:SetHeight(height or self:GetHeight())

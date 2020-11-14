@@ -5,13 +5,18 @@ local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
 local bit_band = _G.bit.band
+local math_random = _G.math.random
 local table_wipe = _G.table.wipe
 
 local COMBATLOG_OBJECT_TYPE_PLAYER = _G.COMBATLOG_OBJECT_TYPE_PLAYER
 local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
+local DoEmote = _G.DoEmote
+local GetAchievementInfo = _G.GetAchievementInfo
 local GetBattlefieldScore = _G.GetBattlefieldScore
 local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
+local PlaySoundFile = _G.PlaySoundFile
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local UnitGUID = _G.UnitGUID
 local hooksecurefunc = _G.hooksecurefunc
 
 local pvpEmoteList = {
@@ -37,9 +42,8 @@ function Module:OpponentsTable()
 end
 
 function Module:SetupKillingBlow()
-	local _, subevent, _, _, Caster, _, _, _, TargetName, TargetFlags = CombatLogGetCurrentEventInfo()
-
-	if subevent == "PARTY_KILL" then
+	local _, subevent, sourceGUID, _, Caster, _, _, _, TargetName, TargetFlags = CombatLogGetCurrentEventInfo()
+	if subevent == "PARTY_KILL" and sourceGUID == UnitGUID("player") then
 		local mask = bit_band(TargetFlags, COMBATLOG_OBJECT_TYPE_PLAYER)
 		if Caster == K.Name and (BG_Opponents[TargetName] or mask > 0) then
 			if mask > 0 and BG_Opponents[TargetName] then
@@ -51,15 +55,13 @@ function Module:SetupKillingBlow()
 				TopBannerManager_Show(_G["BossBanner"], {name = TargetName, mode = "PVPKILL"})
 			end
 
-			if not C["Misc"].PvPEmote then
-				return
-			end
-
-			if select(4, GetAchievementInfo(247)) then
-				-- Fire off a random emote, to keep it interesting.
-				DoEmote(pvpEmoteList[math.random(1, #pvpEmoteList)], TargetName)
-			else
-				DoEmote("HUG", TargetName)
+			if C["Misc"].PvPEmote then
+				if select(4, GetAchievementInfo(247)) then
+					-- Fire off a random emote, to keep it interesting.
+					DoEmote(pvpEmoteList[math_random(1, #pvpEmoteList)], TargetName)
+				else
+					DoEmote("HUG", TargetName)
+				end
 			end
 		end
 	end
@@ -70,26 +72,19 @@ function Module:CreateKillingBlow()
 		return
 	end
 
-	if C["Misc"].KillingBlow then
-		hooksecurefunc(_G["BossBanner"], "PlayBanner", function(self, data)
-			if (data) then
-				if (data.mode == "PVPKILL") then
-					self.Title:SetText(data.name)
-					self.Title:Show()
-					self.SubTitle:Hide()
-					self:Show()
-					BossBanner_BeginAnims(self)
-					PlaySoundFile("Interface\\AddOns\\KkthnxUI\\Media\\Sounds\\KillingBlow.ogg", "Master")
-				end
+	hooksecurefunc(_G["BossBanner"], "PlayBanner", function(self, data)
+		if (data) then
+			if (data.mode == "PVPKILL") then
+				self.Title:SetText(data.name)
+				self.Title:Show()
+				self.SubTitle:Hide()
+				self:Show()
+				BossBanner_BeginAnims(self)
+				PlaySoundFile("Interface\\AddOns\\KkthnxUI\\Media\\Sounds\\KillingBlow.ogg", "Master")
 			end
-		end)
+		end
+	end)
 
-		K:RegisterEvent("UPDATE_BATTLEFIELD_SCORE", self.OpponentsTable)
-	end
-
-	if not C["Misc"].PvPEmote then
-		return
-	end
-
+	K:RegisterEvent("UPDATE_BATTLEFIELD_SCORE", self.OpponentsTable)
 	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self.SetupKillingBlow)
 end

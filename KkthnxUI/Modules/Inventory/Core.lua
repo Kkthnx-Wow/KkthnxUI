@@ -936,6 +936,7 @@ function Module:OnEnable()
 	local showItemLevel = C["Inventory"].BagsItemLevel
 	local deleteButton = C["Inventory"].DeleteButton
 	local showNewItem = C["Inventory"].ShowNewItem
+	local hasCanIMogIt = IsAddOnLoaded("CanIMogIt")
 
 	-- Init
 	local Backpack = cargBags:NewImplementation("KKUI_Backpack")
@@ -1130,6 +1131,12 @@ function Module:OnEnable()
 		end
 
 		self:HookScript("OnClick", Module.ButtonOnClick)
+
+		if hasCanIMogIt then
+			self.canIMogIt = parentFrame:CreateTexture(nil, "OVERLAY")
+			self.canIMogIt:SetSize(C["Inventory"].IconSize / 2.6, C["Inventory"].IconSize / 2.6)
+			self.canIMogIt:SetPoint(unpack(CanIMogIt.ICON_LOCATIONS[CanIMogItOptions["iconLocation"]]))
+		end
 	end
 
 	function MyButton:ItemOnEnter()
@@ -1171,6 +1178,21 @@ function Module:OnEnable()
 		end
 	end
 
+	local function UpdateCanIMogIt(self, item)
+		if not self.canIMogIt then
+			return
+		end
+
+		local text, unmodifiedText = CanIMogIt:GetTooltipText(nil, item.bagID, item.slotID)
+		if text and text ~= "" then
+			local icon = CanIMogIt.tooltipOverlayIcons[unmodifiedText]
+			self.canIMogIt:SetTexture(icon)
+			self.canIMogIt:Show()
+		else
+			self.canIMogIt:Hide()
+		end
+	end
+
 	function MyButton:OnUpdate(item)
 		local buttonIconTexture = _G[self:GetName().."IconTexture"]
 
@@ -1192,11 +1214,6 @@ function Module:OnEnable()
 
 		if self.UpgradeIcon then
 			Module:UpdateItemUpgradeIcon(self)
-		end
-
-		if IsAddOnLoaded("CanIMogIt") then
-			CIMI_AddToFrame(self, ContainerFrameItemButton_CIMIUpdateIcon)
-			ContainerFrameItemButton_CIMIUpdateIcon(self.CanIMogItOverlay)
 		end
 
 		if KkthnxUIData[K.Realm][K.Name].FavouriteItems[item.id] then
@@ -1258,6 +1275,9 @@ function Module:OnEnable()
 		if not GetContainerItemInfo(item.bagID, item.slotID) then
 			GameTooltip:Hide()
 		end
+
+		-- Support CanIMogIt
+		UpdateCanIMogIt(self, item)
 	end
 
 	function MyButton:OnUpdateQuest(item)
@@ -1354,7 +1374,7 @@ function Module:OnEnable()
 		elseif string_match(name, "Goods") then
 			label = AUCTION_CATEGORY_TRADE_GOODS
 		elseif string_match(name, "Quest") then
-			label = AUCTION_CATEGORY_QUEST_ITEMS
+			label = QUESTS_LABEL
 		end
 
 		if label then

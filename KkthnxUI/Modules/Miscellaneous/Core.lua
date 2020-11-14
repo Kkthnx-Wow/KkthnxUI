@@ -576,7 +576,7 @@ function Module:CreateDisableHelpTip() -- auto complete helptips
 	end
 
 	hooksecurefunc(_G.HelpTip, "Show", AcknowledgeTips)
-	K.Delay(2, AcknowledgeTips)
+	C_Timer_After(2, AcknowledgeTips)
 end
 
 local function KillNewPlayerExperience()
