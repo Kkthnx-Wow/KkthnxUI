@@ -24,7 +24,6 @@ local GetInventoryItemID = _G.GetInventoryItemID
 local GetItemInfo = _G.GetItemInfo
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
-local IsContainerItemAnUpgrade = _G.IsContainerItemAnUpgrade
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsReagentBankUnlocked = _G.IsReagentBankUnlocked
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
@@ -423,6 +422,20 @@ function Module:CreateBankButton(f)
 	return BankButton
 end
 
+local function updateDepositButtonStatus(bu)
+	if C["Inventory"].AutoDeposit then
+		bu.KKUI_Border:SetVertexColor(1, 0.8, 0)
+	else
+		bu.KKUI_Border:SetVertexColor(1, 1, 1)
+	end
+end
+
+function Module:AutoDeposit()
+	if C["Inventory"].AutoDeposit then
+		DepositReagentBank()
+	end
+end
+
 function Module:CreateDepositButton()
 	local DepositButton = CreateFrame("Button", nil, self)
 	DepositButton:SetSize(18, 18)
@@ -434,10 +447,17 @@ function Module:CreateDepositButton()
 	DepositButton.Icon:SetTexCoord(unpack(K.TexCoords))
 	DepositButton.Icon:SetTexture("Interface\\ICONS\\misc_arrowdown")
 
-	DepositButton:SetScript("OnClick", _G.DepositReagentBank)
+	DepositButton:SetScript("OnClick", function(_, btn)
+		if btn == "RightButton" then
+			C["Inventory"].AutoDeposit = not C["Inventory"].AutoDeposit
+			updateDepositButtonStatus(DepositButton)
+		else
+			DepositReagentBank()
+		end
+	end)
 
 	DepositButton.title = _G.REAGENTBANK_DEPOSIT
-	K.AddTooltip(DepositButton, "ANCHOR_TOP")
+	K.AddTooltip(DepositButton, "ANCHOR_TOP", K.InfoColor..L["AutoDepositTip"])
 
 	return DepositButton
 end
@@ -915,8 +935,8 @@ function Module:OnEnable()
 	local iconSize = C["Inventory"].IconSize
 	local showItemLevel = C["Inventory"].BagsItemLevel
 	local deleteButton = C["Inventory"].DeleteButton
-	local itemSetFilter = C["Inventory"].ItemSetFilter
 	local showNewItem = C["Inventory"].ShowNewItem
+	local hasCanIMogIt = IsAddOnLoaded("CanIMogIt")
 
 	-- Init
 	local Backpack = cargBags:NewImplementation("KKUI_Backpack")
@@ -961,6 +981,9 @@ function Module:OnEnable()
 		f.equipment = MyContainer:New("Equipment", {Columns = bagsWidth, Parent = f.main})
 		f.equipment:SetFilter(filters.bagEquipment, true)
 
+		f.equipSet = MyContainer:New("EquipSet", {Columns = bagsWidth, Parent = f.main})
+		f.equipSet:SetFilter(filters.bagEquipSet, true)
+
 		f.consumable = MyContainer:New("Consumable", {Columns = bagsWidth, Parent = f.main})
 		f.consumable:SetFilter(filters.bagConsumable, true)
 
@@ -990,6 +1013,9 @@ function Module:OnEnable()
 		f.bankEquipment = MyContainer:New("BankEquipment", {Columns = bankWidth, Parent = f.bank})
 		f.bankEquipment:SetFilter(filters.bankEquipment, true)
 
+		f.bankEquipSet = MyContainer:New("BankEquipSet", {Columns = bankWidth, Parent = f.bank})
+		f.bankEquipSet:SetFilter(filters.bankEquipSet, true)
+
 		f.bankConsumable = MyContainer:New("BankConsumable", {Columns = bankWidth, Parent = f.bank})
 		f.bankConsumable:SetFilter(filters.bankConsumable, true)
 
@@ -1007,8 +1033,8 @@ function Module:OnEnable()
 		f.reagent:SetPoint("BOTTOMLEFT", f.bank)
 		f.reagent:Hide()
 
-		Module.BagGroup = {f.azeriteItem, f.equipment, f.bagLegendary, f.bagCompanion, f.bagGoods, f.bagQuest, f.consumable, f.bagFavourite, f.junk}
-		Module.BankGroup = {f.bankAzeriteItem, f.bankEquipment, f.bankLegendary, f.bankCompanion, f.bankGoods, f.bankQuest, f.bankConsumable, f.bankFavourite}
+		Module.BagGroup = {f.azeriteItem, f.equipment, f.bagLegendary, f.equipSet, f.bagCompanion, f.bagGoods, f.bagQuest, f.consumable, f.bagFavourite, f.junk}
+		Module.BankGroup = {f.bankAzeriteItem, f.bankEquipment, f.bankEquipSet, f.bankLegendary, f.bankCompanion, f.bankGoods, f.bankQuest, f.bankConsumable, f.bankFavourite}
 	end
 
 	local initBagType
@@ -1084,36 +1110,34 @@ function Module:OnEnable()
 		self.iLvl:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
 
 		if showNewItem then
-			if not self.glowFrame then
-				self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
-				self.glowFrame:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
-				self.glowFrame:SetPoint("TOPLEFT", self, -6, 6)
-				self.glowFrame:SetPoint("BOTTOMRIGHT", self, 6, -6)
-				self.glowFrame:Hide()
-			end
+			self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
+			self.glowFrame:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
+			self.glowFrame:SetPoint("TOPLEFT", self, -6, 6)
+			self.glowFrame:SetPoint("BOTTOMRIGHT", self, 6, -6)
+			self.glowFrame:Hide()
 
-			if not self.glowFrame.Animation then
-				self.glowFrame.Animation = self.glowFrame:CreateAnimationGroup()
-				self.glowFrame.Animation:SetLooping("BOUNCE")
-
-				self.glowFrame.Animation.FadeOut = self.glowFrame.Animation:CreateAnimation("Alpha")
-				self.glowFrame.Animation.FadeOut:SetFromAlpha(1)
-				self.glowFrame.Animation.FadeOut:SetToAlpha(0.1)
-				self.glowFrame.Animation.FadeOut:SetDuration(0.5)
-				self.glowFrame.Animation.FadeOut:SetSmoothing("IN_OUT")
-			end
+			self.glowFrame.Animation = self.glowFrame:CreateAnimationGroup()
+			self.glowFrame.Animation:SetLooping("BOUNCE")
+			self.glowFrame.Animation.Fader = self.glowFrame.Animation:CreateAnimation("Alpha")
+			self.glowFrame.Animation.Fader:SetFromAlpha(0.8)
+			self.glowFrame.Animation.Fader:SetToAlpha(0.2)
+			self.glowFrame.Animation.Fader:SetDuration(1)
+			self.glowFrame.Animation.Fader:SetSmoothing("OUT")
 		end
 
 		self:HookScript("OnClick", Module.ButtonOnClick)
+
+		if hasCanIMogIt then
+			self.canIMogIt = parentFrame:CreateTexture(nil, "OVERLAY")
+			self.canIMogIt:SetSize(C["Inventory"].IconSize / 2.6, C["Inventory"].IconSize / 2.6)
+			self.canIMogIt:SetPoint(unpack(CanIMogIt.ICON_LOCATIONS[CanIMogItOptions["iconLocation"]]))
+		end
 	end
 
 	function MyButton:ItemOnEnter()
 		if self.glowFrame then
-			if self.glowFrame.Animation:IsPlaying() then
-				self.glowFrame.Animation:Stop()
-				self.glowFrame:Hide()
-			end
-			-- Clear things on blizzard side too.
+			self.glowFrame.Animation:Stop()
+			self.glowFrame:Hide()
 			C_NewItems_RemoveNewItem(self.bagID, self.slotID)
 		end
 	end
@@ -1146,6 +1170,21 @@ function Module:OnEnable()
 		end
 	end
 
+	local function UpdateCanIMogIt(self, item)
+		if not self.canIMogIt then
+			return
+		end
+
+		local text, unmodifiedText = CanIMogIt:GetTooltipText(nil, item.bagID, item.slotID)
+		if text and text ~= "" then
+			local icon = CanIMogIt.tooltipOverlayIcons[unmodifiedText]
+			self.canIMogIt:SetTexture(icon)
+			self.canIMogIt:Show()
+		else
+			self.canIMogIt:Hide()
+		end
+	end
+
 	function MyButton:OnUpdate(item)
 		local buttonIconTexture = _G[self:GetName().."IconTexture"]
 
@@ -1167,11 +1206,6 @@ function Module:OnEnable()
 
 		if self.UpgradeIcon then
 			Module:UpdateItemUpgradeIcon(self)
-		end
-
-		if IsAddOnLoaded("CanIMogIt") then
-			CIMI_AddToFrame(self, ContainerFrameItemButton_CIMIUpdateIcon)
-			ContainerFrameItemButton_CIMIUpdateIcon(self.CanIMogItOverlay)
 		end
 
 		if KkthnxUIData[K.Realm][K.Name].FavouriteItems[item.id] then
@@ -1200,7 +1234,6 @@ function Module:OnEnable()
 		if self.glowFrame then
 			if C_NewItems_IsNewItem(item.bagID, item.slotID) then
 				local color = K.QualityColors[item.rarity]
-
 				if item.questID or item.isQuestItem then
 					self.glowFrame:SetBackdropBorderColor(1, .82, .2)
 				elseif color and item.rarity and item.rarity > -1 then
@@ -1209,15 +1242,11 @@ function Module:OnEnable()
 					self.glowFrame:SetBackdropBorderColor(1, 1, 1)
 				end
 
-				if not self.glowFrame.Animation:IsPlaying() then
-					self.glowFrame.Animation:Play()
-					self.glowFrame:Show()
-				end
+				self.glowFrame.Animation:Play()
+				self.glowFrame:Show()
 			else
-				if self.glowFrame.Animation:IsPlaying() then
-					self.glowFrame.Animation:Stop()
-					self.glowFrame:Hide()
-				end
+				self.glowFrame.Animation:Stop()
+				self.glowFrame:Hide()
 			end
 		end
 
@@ -1228,6 +1257,14 @@ function Module:OnEnable()
 		else
 			self:SetBackdropColor(.04, .04, .04, 0.9)
 		end
+
+		-- Hide empty tooltip
+		if not GetContainerItemInfo(item.bagID, item.slotID) then
+			GameTooltip:Hide()
+		end
+
+		-- Support CanIMogIt
+		UpdateCanIMogIt(self, item)
 	end
 
 	function MyButton:OnUpdateQuest(item)
@@ -1306,11 +1343,9 @@ function Module:OnEnable()
 		if string_match(name, "AzeriteItem$") then
 			label = "Azerite Armor"
 		elseif string_match(name, "Equipment$") then
-			if itemSetFilter then
-				label = "EquipmentSet Items"
-			else
-				label = BAG_FILTER_EQUIPMENT
-			end
+			label = BAG_FILTER_EQUIPMENT
+		elseif string_match(name, "EquipSet$") then
+			label = L["Equipement Set"]
 		elseif name == "BagLegendary" then
 			label = LOOT_JOURNAL_LEGENDARIES
 		elseif name == "BankLegendary" then
@@ -1326,7 +1361,7 @@ function Module:OnEnable()
 		elseif string_match(name, "Goods") then
 			label = AUCTION_CATEGORY_TRADE_GOODS
 		elseif string_match(name, "Quest") then
-			label = AUCTION_CATEGORY_QUEST_ITEMS
+			label = QUESTS_LABEL
 		end
 
 		if label then
@@ -1430,6 +1465,7 @@ function Module:OnEnable()
 
 	K:RegisterEvent("TRADE_SHOW", Module.OpenBags)
 	K:RegisterEvent("TRADE_CLOSED", Module.CloseBags)
+	K:RegisterEvent("BANKFRAME_OPENED", Module.AutoDeposit)
 
 	-- Fixes
 	BankFrame.GetRight = function()

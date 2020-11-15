@@ -30,30 +30,25 @@ local MoverList, f = {}
 local updater
 
 function K:Mover(text, value, anchor, width, height, isAuraWatch)
+	K.CheckSavedVariables()
+
 	local key = "Mover"
 	if isAuraWatch then
 		key = "AuraWatchMover"
 	end
 
-	K.CheckSavedVariables()
-
-	local mover = CreateFrame("Button", nil, UIParent, "BackdropTemplate")
-	mover:SetFrameLevel(self:GetFrameLevel() + 1)
+	local mover = CreateFrame("Button", nil, UIParent)
 	mover:SetWidth(width or self:GetWidth())
 	mover:SetHeight(height or self:GetHeight())
+
+	mover.bg = mover:CreateTexture(nil, "BACKGROUND", nil, 0)
+	mover.bg:SetColorTexture(38/255, 125/255, 206/255, 90/255)
+	mover.bg:SetPoint("TOPLEFT", mover, "TOPLEFT", 2, -2)
+	mover.bg:SetPoint("BOTTOMRIGHT", mover, "BOTTOMRIGHT", -2, 2)
 	mover:Hide()
-	mover:SetHighlightTexture("Interface\\BUTTONS\\WHITE8X8")
-	mover:GetHighlightTexture():SetAlpha(0.3)
 
-	local bg = mover:CreateTexture(nil, "BACKGROUND", nil, 0)
-	bg:SetColorTexture(38/255, 125/255, 206/255, 90/255)
-	bg:SetAllPoints()
-
-	mover.text = mover:CreateFontString(nil, "OVERLAY")
-	mover.text:SetPoint("CENTER")
-	mover.text:FontTemplate()
-	mover.text:SetText(text)
-	mover.text:SetWidth(mover:GetWidth())
+	mover.text = K.CreateFontString(mover, 12, text, "")
+	mover.text:SetWordWrap(true)
 
 	if not KkthnxUIData[K.Realm][K.Name][key][value] then
 		mover:SetPoint(unpack(anchor))
@@ -75,6 +70,7 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 	mover:SetScript("OnDragStart", Module.Mover_OnDragStart)
 	mover:SetScript("OnDragStop", Module.Mover_OnDragStop)
 	mover:SetScript("OnMouseUp", Module.Mover_OnClick)
+
 	if not isAuraWatch then
 		table.insert(MoverList, mover)
 	end
@@ -163,12 +159,12 @@ function Module:Mover_OnClick(btn)
 end
 
 function Module:Mover_OnEnter()
-	self:SetBackdropBorderColor(K.r, K.g, K.b)
+	self.bg:SetColorTexture(K.r, K.g, K.b, 0.9)
 	self.text:SetTextColor(1, .8, 0)
 end
 
 function Module:Mover_OnLeave()
-	self:SetBackdropBorderColor(0, 0, 0)
+	self.bg:SetColorTexture(38/255, 125/255, 206/255, 90/255)
 	self.text:SetTextColor(1, 1, 1)
 end
 

@@ -9,39 +9,6 @@ local CreateFrame = _G.CreateFrame
 
 local playerWidth = 160
 
--- Class Powers
-function Module.PostUpdateUnitframeClassPower(element, cur, max, diff, powerType, chargedIndex)
-	if diff then
-		for i = 1, max do
-			element[i]:SetWidth((playerWidth - (max - 1) * 6) / max)
-		end
-	end
-
-	element.thisColor = cur == max and 1 or 2
-	if not element.prevColor or element.prevColor ~= element.thisColor then
-		local r, g, b = 1, 0, 0
-		if element.thisColor == 2 then
-			local color = element.__owner.colors.power[powerType]
-			r, g, b = color[1], color[2], color[3]
-		end
-
-		for i = 1, #element do
-			element[i]:SetStatusBarColor(r, g, b)
-		end
-		element.prevColor = element.thisColor
-	end
-
-	if chargedIndex and chargedIndex ~= element.thisCharge then
-		local bar = element[chargedIndex]
-		element.chargeStar:SetParent(bar)
-		element.chargeStar:SetPoint("CENTER", bar)
-		element.chargeStar:Show()
-		element.thisCharge = chargedIndex
-	else
-		element.chargeStar:Hide()
-		element.thisCharge = nil
-	end
-end
 
 function Module.PostUpdateAddPower(element, cur, max)
 	if element.Text and max > 0 then
@@ -49,15 +16,9 @@ function Module.PostUpdateAddPower(element, cur, max)
 		if perc == 100 then
 			perc = ""
 			element:SetAlpha(0)
-			if oUF_PlayerClassPowerBar then
-				oUF_PlayerClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 20)
-			end
 		else
 			perc = string_format("%d%%", perc)
 			element:SetAlpha(1)
-			if oUF_PlayerClassPowerBar then
-				oUF_PlayerClassPowerBar:SetPoint("TOPLEFT", oUF_Player.Health, 0, 40)
-			end
 		end
 
 		element.Text:SetText(perc)
@@ -392,22 +353,34 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].AdditionalPower then
-		self.AdditionalPower = CreateFrame("StatusBar", self:GetName().."AdditionalPower", self)
-		self.AdditionalPower:SetHeight(14)
-		self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
-		self.AdditionalPower:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
+		self.AdditionalPower = CreateFrame("StatusBar", self:GetName().."AdditionalPower", self.Health)
+		self.AdditionalPower:SetHeight(5)
+		self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Health, 2, 2)
+		self.AdditionalPower:SetPoint("BOTTOMRIGHT", self.Health, -2, 2)
 		self.AdditionalPower:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
 		self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
-		self.AdditionalPower:CreateBorder()
 		self.AdditionalPower.frequentUpdates = true
 
 		if C["Unitframe"].Smooth then
-			self.AdditionalPower.Smooth = true
+			K:SmoothBar(self.AdditionalPower)
 		end
+
+		self.AdditionalPower.Spark = self.AdditionalPower:CreateTexture(nil, "OVERLAY")
+		self.AdditionalPower.Spark:SetTexture(C["Media"].Spark_16)
+		self.AdditionalPower.Spark:SetAlpha(0.4)
+		self.AdditionalPower.Spark:SetHeight(5)
+		self.AdditionalPower.Spark:SetBlendMode("ADD")
+		self.AdditionalPower.Spark:SetPoint("CENTER", self.AdditionalPower:GetStatusBarTexture(), "RIGHT", 0, 0)
+
+		self.AdditionalPower.Background = self.AdditionalPower:CreateTexture(nil, "BORDER")
+		self.AdditionalPower.Background:SetAllPoints(self.AdditionalPower)
+		self.AdditionalPower.Background:SetColorTexture(0.2, 0.2, 0.2)
+		self.AdditionalPower.Background.multiplier = 0.3
 
 		self.AdditionalPower.Text = self.AdditionalPower:CreateFontString(nil, "OVERLAY")
 		self.AdditionalPower.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-		self.AdditionalPower.Text:SetPoint("CENTER", self.AdditionalPower, "CENTER", 0, -1)
+		self.AdditionalPower.Text:SetFont(select(1, self.AdditionalPower.Text:GetFont()), 9, select(3, self.AdditionalPower.Text:GetFont()))
+		self.AdditionalPower.Text:SetPoint("LEFT", self.AdditionalPower, "LEFT", 1, 1)
 
 		self.AdditionalPower.PostUpdate = Module.PostUpdateAddPower
 		self.AdditionalPower.displayPairs = {

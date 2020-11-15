@@ -43,7 +43,12 @@ C["ActionBar"] = {
 -- Announcements
 C["Announcements"] = {
 	["ItemAlert"] = false,
+	["KillingBlow"] = false,
+	["OnlyCompleteRing"] = false,
 	["PullCountdown"] = true,
+	["PvPEmote"] = false,
+	["QuestNotifier"] = false,
+	["QuestProgress"] = false,
 	["RareAlert"] = false,
 	["ResetInstance"] = true,
 	["SaySapped"] = false,
@@ -78,7 +83,7 @@ C["Automation"] = {
 	["AutoReward"] = false,
 	["AutoScreenshot"] = false,
 	["AutoSetRole"] = false,
-	["AutoSkipCinematic"] = true,
+	["AutoSkipCinematic"] = false,
 	["AutoSummon"] = false,
 	["AutoTabBinder"] = false,
 	["NoBadBuffs"] = false,
@@ -96,6 +101,7 @@ C["Inventory"] = {
 	["Enable"] = true,
 	["FilterAzerite"] = true,
 	["FilterConsumable"] = true,
+	["FilterEquipSet"] = false,
 	["FilterEquipment"] = true,
 	["FilterFavourite"] = true,
 	["FilterGoods"] = false,
@@ -106,7 +112,6 @@ C["Inventory"] = {
 	["GatherEmpty"] = false,
 	["IconSize"] = 34,
 	["ItemFilter"] = true,
-	["ItemSetFilter"] = false,
 	["ReverseSort"] = false,
 	["ShowNewItem"] = true,
 	["SpecialBagsColor"] = false,
@@ -224,12 +229,9 @@ C["AuraWatch"] = {
 C["General"] = {
 	["AutoScale"] = true,
 	["ColorTextures"] = false,
-	["FontSize"] = 12,
 	["MissingTalentAlert"] = true,
 	["MoveBlizzardFrames"] = false,
 	["NoTutorialButtons"] = false,
-	["ReplaceBlizzardFonts"] = true,
-	["ReplaceCombatFont"] = true,
 	["TexturesColor"] = {1, 1, 1},
 	["UIScale"] = 0.71111,
 	["UseGlobal"] = false,
@@ -296,9 +298,7 @@ C["Misc"] = {
 	["HideBossEmote"] = false,
 	["ImprovedStats"] = false,
 	["ItemLevel"] = false,
-	["KillingBlow"] = false,
 	["NoTalkingHead"] = false,
-	["PvPEmote"] = false,
 	["ShowWowHeadLinks"] = false,
 	["SlotDurability"] = false,
 	["TradeTabs"] = false,
@@ -395,6 +395,7 @@ C["Skins"] = {
 	["DeadlyBossMods"] = false,
 	["Details"] = false,
 	["Hekili"] = false,
+	["RareScanner"] = false,
 	["Skada"] = false,
 	["Spy"] = false,
 	["TalkingHeadBackdrop"] = true,
@@ -454,7 +455,9 @@ C["UITextures"] = {
 
 -- Unitframe
 C["Unitframe"] = {
-	["AdditionalPower"] = true,
+	["PlayerWidth"] = 245,
+	["PlayerHeight"] = 24,
+	["AdditionalPower"] = false,
 	["AutoAttack"] = true,
 	["CastClassColor"] = false,
 	["CastReactionColor"] = false,
@@ -600,12 +603,6 @@ C["Raid"] = {
         },
         ["Value"] = 1
     },
-}
-
-C["QuestNotifier"] = {
-	["Enable"] = false,
-	["OnlyCompleteRing"] = false,
-	["QuestProgress"] = false,
 }
 
 -- Worldmap

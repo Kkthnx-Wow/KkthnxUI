@@ -8,12 +8,12 @@
     <Script file="Border.lua"/>
     <Script file="StaticPopups.lua"/>
     <Script file="Commands.lua"/>
-    <Script file="Animation.lua"/>
     <Script file="Colors.lua"/>
     <Script file="Smoothy.lua"/>
     <Script file="Install.lua"/>
     <Script file="Movers.lua"/>
     <Script file="Changelog.lua"/>
     <Script file="CheckVersion.lua"/>
+    <Script file="Loading.lua"/>
     <Script file="GUI.lua"/>
 </Ui>

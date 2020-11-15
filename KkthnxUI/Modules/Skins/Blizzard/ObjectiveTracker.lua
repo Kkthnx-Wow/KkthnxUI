@@ -94,6 +94,7 @@ end
 local function reskinHeader(header)
 	header.Text:SetTextColor(r, g, b)
 	header.Background:SetTexture(nil)
+
 	local bg = header:CreateTexture(nil, "ARTWORK")
 	bg:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
 	bg:SetTexCoord(0, .66, 0, .31)
@@ -111,6 +112,9 @@ local function reskinBarTemplate(bar)
 	bar:StripTextures()
 	bar:SetStatusBarTexture(C["Media"].Texture)
 	bar:SetStatusBarColor(r, g, b)
+
+	bar.Label:SetPoint("CENTER", 0, 0)
+	bar.Label:FontTemplate(nil, 12)
 
 	bar.bg = CreateFrame("Frame", nil, bar)
 	bar.bg:SetAllPoints(bar)

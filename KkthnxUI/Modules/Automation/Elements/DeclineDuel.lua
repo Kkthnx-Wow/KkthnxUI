@@ -18,10 +18,11 @@ function Module:PET_BATTLE_PVP_DUEL_REQUESTED()
 end
 
 function Module:CreateAutoDeclineDuels()
-	if not C["Automation"].AutoDeclineDuels then
-		return
+	if C["Automation"].AutoDeclineDuels then
+		K:RegisterEvent("DUEL_REQUESTED", Module.DUEL_REQUESTED)
+		K:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED", Module.PET_BATTLE_PVP_DUEL_REQUESTED)
+	else
+		K:UnregisterEvent("DUEL_REQUESTED", Module.DUEL_REQUESTED)
+		K:UnregisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED", Module.PET_BATTLE_PVP_DUEL_REQUESTED)
 	end
-
-	K:RegisterEvent("DUEL_REQUESTED", self.DUEL_REQUESTED)
-	K:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED", self.PET_BATTLE_PVP_DUEL_REQUESTED)
 end

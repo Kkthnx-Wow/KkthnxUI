@@ -4,7 +4,6 @@ local GUI = K["GUI"]
 local _G = _G
 
 local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
-local BAG_FILTER_EQUIPMENT = _G.BAG_FILTER_EQUIPMENT
 
 local enableTextColor = "|cff00cc4c"
 
@@ -14,13 +13,6 @@ end
 
 local function UpdateBagStatus()
 	K:GetModule("Bags"):UpdateAllBags()
-
-	local label = BAG_FILTER_EQUIPMENT
-	if C["Inventory"].ItemSetFilter then
-		label = "Equipement Set"
-	end
-	_G.KKUI_BackpackEquipment.label:SetText(label)
-	_G.KKUI_BackpackBankEquipment.label:SetText(label)
 end
 
 local function UpdateTargetBuffs()
@@ -97,7 +89,7 @@ local function UpdateFontSizes()
 end
 
 local function UpdateUIScale()
-	K:SetupUIScale()
+	K.SetupUIScale()
 end
 
 local function SetupAuraWatch()
@@ -192,7 +184,14 @@ local Announcements = function(self)
 	Window:CreateSwitch("Announcements", "RareAlert", L["Announce Rares, Chests & War Supplies"])
 	Window:CreateSwitch("Announcements", "ResetInstance", L["Alert Group After Instance Resetting"])
 	Window:CreateSwitch("Announcements", "SaySapped", L["Announce When Sapped"])
+	Window:CreateSwitch("Announcements", "KillingBlow", L["Show Your Killing Blow Info"])
+	Window:CreateSwitch("Announcements", "PvPEmote", L["Auto Emote On Your Killing Blow"])
 	Window:CreateDropdown("Announcements", "Interrupt", L["Announce Interrupts"])
+
+	Window:CreateSection("QuestNotifier Toggles")
+	Window:CreateSwitch("Announcements", "QuestNotifier", enableTextColor..L["Enable QuestNotifier"])
+	Window:CreateSwitch("Announcements", "OnlyCompleteRing", L["Only Play Complete Quest Sound"])
+	Window:CreateSwitch("Announcements", "QuestProgress", L["Alert QuestProgress In Chat"])
 end
 
 local Automation = function(self)
@@ -239,6 +238,7 @@ local Inventory = function(self)
 	Window:CreateSection("Inventory Filters")
 	Window:CreateSwitch("Inventory", "FilterAzerite", L["Filter Azerite Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterConsumable", L["Filter Consumable Items"], nil, UpdateBagStatus)
+	Window:CreateSwitch("Inventory", "FilterEquipSet", L["Filter EquipSet"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterEquipment", L["Filter Equipment Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterFavourite", L["Filter Favourite Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterGoods", L["Filter Goods Items"], nil, UpdateBagStatus)
@@ -248,12 +248,11 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "FilterQuest", L["Filter Quest Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "GatherEmpty", L["Gather Empty Slots Into One Button"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "ItemFilter", L["Filter Items Into Categories"], nil, UpdateBagStatus)
-	Window:CreateSwitch("Inventory", "ItemSetFilter", L["Filter EquipmentSets"], nil, UpdateBagStatus)
 
 	Window:CreateSection("Inventory Sizes")
 	Window:CreateSlider("Inventory", "BagsWidth", L["Bags Width"], 8, 16, 1)
 	Window:CreateSlider("Inventory", "BankWidth", L["Bank Width"], 10, 18, 1)
-	Window:CreateSlider("Inventory", "IconSize", L["Slot Icon Size"], 28, 36, 1)
+	Window:CreateSlider("Inventory", "IconSize", L["Slot Icon Size"], 28, 40, 1)
 end
 
 local Auras = function(self)
@@ -350,8 +349,6 @@ local DataText = function(self)
 	local Window = self:CreateWindow(L["DataText"])
 
 	Window:CreateSection("DataText Toggles")
-	-- Window:CreateSwitch("DataText", "Friends", L["Enable Friends Info"])
-	-- Window:CreateSwitch("DataText", "Guild", L["Enable Guild Info"])
 	Window:CreateSwitch("DataText", "Latency", L["Enable Latency Info"])
 	Window:CreateSwitch("DataText", "Location", L["Enable Minimap Location"])
 	Window:CreateSwitch("DataText", "System", L["Enable System Info"])
@@ -374,13 +371,8 @@ local General = function(self)
 	Window:CreateSwitch("General", "ColorTextures", L["Color 'Most' KkthnxUI Borders"])
 	Window:CreateSwitch("General", "MoveBlizzardFrames", L["Move Blizzard Frames"])
 	Window:CreateSwitch("General", "NoTutorialButtons", L["Disable 'Some' Blizzard Tutorials"])
-	Window:CreateSwitch("General", "ReplaceBlizzardFonts", L["Replace 'Some' Blizzard Fonts"])
-	Window:CreateSwitch("General", "ReplaceCombatFont", L["Replace Blizzard Combat Font"])
 	Window:CreateSwitch("General", "VersionCheck", L["Enable Version Checking"])
 	Window:CreateSwitch("General", "Welcome", L["Show Welcome Message"])
-	if C["General"].ReplaceBlizzardFonts then
-		Window:CreateSlider("General", "FontSize", L["Adjust 'Some' Font Sizes"], 10, 16, 1, nil, UpdateFontSizes)
-	end
 	Window:CreateDropdown("General", "NumberPrefixStyle", L["Number Prefix Style"])
 
 	Window:CreateSection("General Scaling")
@@ -429,9 +421,7 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "HideBossEmote", L["Hide BossBanner"])
 	Window:CreateSwitch("Misc", "ImprovedStats", L["Display Character Frame Full Stats"])
 	Window:CreateSwitch("Misc", "ItemLevel", L["Show Character/Inspect ItemLevel Info"])
-	Window:CreateSwitch("Misc", "KillingBlow", L["Show Your Killing Blow Info"])
 	Window:CreateSwitch("Misc", "NoTalkingHead", L["Remove And Hide The TalkingHead Frame"])
-	Window:CreateSwitch("Misc", "PvPEmote", L["Auto Emote On Your Killing Blow"])
 	Window:CreateSwitch("Misc", "ShowWowHeadLinks", L["Show Wowhead Links Above Questlog Frame"])
 	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
 	Window:CreateSwitch("Misc", "TradeTabs", L["Add Spellbook-Like Tabs On TradeSkillFrame"])
@@ -514,17 +504,19 @@ local Skins = function(self)
 	Window:CreateSection("Skins Toggles")
 	-- Window:CreateSwitch("Skins", "Bartender4", L["Bartender4 Skin"])
 	-- Window:CreateSwitch("Skins", "BigWigs", L["BigWigs Skin"])
-	Window:CreateSwitch("Skins", "BlizzardFrames", L["Skin Some Blizzard Frames & Objects"])
-	Window:CreateSwitch("Skins", "ChatBubbles", L["ChatBubbles Skin"])
 	-- Window:CreateSwitch("Skins", "ChocolateBar", L["ChocolateBar Skin"])
-	Window:CreateSwitch("Skins", "DeadlyBossMods", L["Deadly Boss Mods Skin"])
-	Window:CreateSwitch("Skins", "Details", L["Details Skin"])
 	-- Window:CreateSwitch("Skins", "Hekili", L["Hekili Skin"])
 	-- Window:CreateSwitch("Skins", "Skada", L["Skada Skin"])
 	-- Window:CreateSwitch("Skins", "Spy", L["Spy Skin"])
-	Window:CreateSwitch("Skins", "TalkingHeadBackdrop", L["TalkingHead Skin"])
 	-- Window:CreateSwitch("Skins", "TellMeWhen", L["TellMeWhen Skin"])
 	-- Window:CreateSwitch("Skins", "TitanPanel", L["TitanPanel Skin"])
+
+	Window:CreateSwitch("Skins", "BlizzardFrames", L["Skin Some Blizzard Frames & Objects"])
+	Window:CreateSwitch("Skins", "ChatBubbles", L["ChatBubbles Skin"])
+	Window:CreateSwitch("Skins", "DeadlyBossMods", L["Deadly Boss Mods Skin"])
+	Window:CreateSwitch("Skins", "Details", L["Details Skin"])
+	Window:CreateSwitch("Skins", "RareScanner", L["RareScanner Skin"])
+	Window:CreateSwitch("Skins", "TalkingHeadBackdrop", L["TalkingHead Skin"])
 	Window:CreateSwitch("Skins", "WeakAuras", L["WeakAuras Skin"])
 	Window:CreateButton(L["Reset Details"], nil, nil, ResetDetails)
 
@@ -722,19 +714,6 @@ local Raid = function(self)
 	Window:CreateSection("Raid Misc")
 	Window:CreateDropdown("Raid", "HealthbarColor", L["Health Color Format"])
 	Window:CreateDropdown("Raid", "HealthFormat", L["Health Format"])
-end
-
-local QuestNotifier = function(self)
-	if IsAddOnLoaded("QuestNotifier") then
-		return
-	end
-
-	local Window = self:CreateWindow(L["QuestNotifier"])
-
-	Window:CreateSection("QuestNotifier Toggles")
-	Window:CreateSwitch("QuestNotifier", "Enable", enableTextColor..L["Enable QuestNotifier"])
-	Window:CreateSwitch("QuestNotifier", "OnlyCompleteRing", L["Only Play Complete Quest Sound"])
-	Window:CreateSwitch("QuestNotifier", "QuestProgress", L["Alert QuestProgress In Chat"])
 end
 
 local WorldMap = function(self)

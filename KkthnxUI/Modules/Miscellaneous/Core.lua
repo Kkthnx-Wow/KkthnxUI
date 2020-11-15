@@ -576,7 +576,7 @@ function Module:CreateDisableHelpTip() -- auto complete helptips
 	end
 
 	hooksecurefunc(_G.HelpTip, "Show", AcknowledgeTips)
-	K.Delay(2, AcknowledgeTips)
+	C_Timer_After(2, AcknowledgeTips)
 end
 
 local function KillNewPlayerExperience()
@@ -597,12 +597,10 @@ function Module:OnEnable()
 	self:CreateImprovedMail()
 	self:CreateImprovedStats()
 	self:CreateKillTutorials()
-	self:CreateKillingBlow()
 	self:CreateLoginAnimation()
 	self:CreateMerchantItemLevel()
 	self:CreateOverrideAWQ()
 	self:CreatePulseCooldown()
-	self:CreateQuestNotifier()
 	self:CreateQuickJoin()
 	self:CreateSlotDurability()
 	self:CreateSlotItemLevel()

@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Miscellaneous")
+local Module = K:GetModule("Announcements")
 
 local _G = _G
 local math_floor = _G.math.floor
@@ -53,7 +53,7 @@ local function completeText(questID)
 end
 
 local function sendQuestMsg(msg)
-	if C["QuestNotifier"].OnlyCompleteRing then
+	if C["Announcements"].OnlyCompleteRing then
 		return
 	end
 
@@ -86,11 +86,11 @@ local questMatches = {
 }
 
 function Module:FindQuestProgress(_, msg)
-	if not C["QuestNotifier"].QuestProgress then
+	if not C["Announcements"].QuestProgress then
 		return
 	end
 
-	if C["QuestNotifier"].OnlyCompleteRing then
+	if C["Announcements"].OnlyCompleteRing then
 		return
 	end
 
@@ -149,7 +149,7 @@ function Module:FindWorldQuestComplete(questID)
 end
 
 function Module:CreateQuestNotifier()
-	if C["QuestNotifier"].Enable and not IsAddOnLoaded("QuestNotifier") then
+	if C["Announcements"].QuestNotifier and not IsAddOnLoaded("QuestNotifier") then
 		K:RegisterEvent("QUEST_ACCEPTED", Module.FindQuestAccept)
 		K:RegisterEvent("QUEST_LOG_UPDATE", Module.FindQuestComplete)
 		K:RegisterEvent("QUEST_TURNED_IN", Module.FindWorldQuestComplete)

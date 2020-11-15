@@ -699,6 +699,13 @@ function Module:CreateClassPower(self)
 	end
 end
 
+-- Units
+function Module:SetUnitFrameSize(unit)
+	local width = C["Unitframe"][unit.."Width"]
+	local height = C["Unitframe"][unit.."Height"]
+	self:SetSize(width, height)
+end
+
 function Module:CreateUnits()
 	if C["Nameplate"].Enable then
 		self:SetupCVars()
@@ -988,7 +995,7 @@ function Module:CreateUnits()
 					end
 
 					raidMover:ClearAllPoints()
-					raidMover:SetPoint(unpack(KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex]) or "TOPLEFT", UIParent, "TOPLEFT", 4, -180) -- Why does this return nil?
+					raidMover:SetPoint(unpack(KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex]))
 				end
 			end
 			K:RegisterEvent("PLAYER_ENTERING_WORLD", UpdateSpecPos)
@@ -1024,7 +1031,7 @@ function Module:CreateUnits()
 			self:SetHeight(%d)
 			]]):format(raidTankWidth, raidTankHeight))
 
-			local raidtankMover = K.Mover(raidtank, "MainTankFrame", "MainTankFrame", {"TOPLEFT", UIParent, "TOPLEFT", 4, -4}, raidTankWidth, raidTankHeight)
+			local raidtankMover = K.Mover(raidtank, "MainTankFrame", "MainTankFrame", {"TOPLEFT", UIParent, "TOPLEFT", 4, -50}, raidTankWidth, raidTankHeight)
 			raidtank:ClearAllPoints()
 			raidtank:SetPoint("TOPLEFT", raidtankMover)
 		end

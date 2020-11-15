@@ -341,5 +341,4 @@ function Module:OnEnable()
 	self:CreateAutoGreed()
 	self:CreateFasterLoot()
 	self:CreateGroupLoot()
-	self:CreateImprovedLoot()
 end

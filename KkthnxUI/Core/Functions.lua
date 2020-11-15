@@ -12,16 +12,12 @@ local string_gsub = _G.string.gsub
 local string_join = _G.string.join
 local string_lower = _G.string.lower
 local string_match = _G.string.match
-local table_insert = _G.table.insert
-local table_remove = _G.table.remove
 local table_wipe = _G.table.wipe
 local tonumber = _G.tonumber
 local type = _G.type
 local unpack = _G.unpack
 
 local C_Map_GetWorldPosFromMapPos = _G.C_Map.GetWorldPosFromMapPos
-local C_Timer_After = _G.C_Timer.After
-local CreateFrame = _G.CreateFrame
 local CreateVector2D = _G.CreateVector2D
 local ENCHANTED_TOOLTIP_LINE = _G.ENCHANTED_TOOLTIP_LINE
 local GameTooltip = _G.GameTooltip
@@ -34,8 +30,6 @@ local ITEM_SPELL_TRIGGER_ONEQUIP = _G.ITEM_SPELL_TRIGGER_ONEQUIP
 local IsEveryoneAssistant = _G.IsEveryoneAssistant
 local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
-local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME
-local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
 local UIParent = _G.UIParent
 local UnitClass = _G.UnitClass
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
@@ -356,17 +350,18 @@ K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
 
 -- Chat channel check
 function K.CheckChat(warning)
-	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+	if IsPartyLFG() then
 		return "INSTANCE_CHAT"
-	elseif IsInRaid(LE_PARTY_CATEGORY_HOME) then
+	elseif IsInRaid() then
 		if warning and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or IsEveryoneAssistant()) then
 			return "RAID_WARNING"
 		else
 			return "RAID"
 		end
-	elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
+	elseif IsInGroup() then
 		return "PARTY"
 	end
+
 	return "SAY"
 end
 
@@ -611,44 +606,80 @@ function K.FormatMoney(amount)
 	return str
 end
 
--- Add time before calling a function
-function K.WaitFunc(_, elapse)
-	local i = 1
-	while i <= #K.WaitTable do
-		local data = K.WaitTable[i]
-		if data[1] > elapse then
-			data[1], i = data[1] - elapse, i + 1
-		else
-			table_remove(K.WaitTable, i)
-			data[2](unpack(data[3]))
-
-			if #K.WaitTable == 0 then
-				K.WaitFrame:Hide()
-			end
-		end
-	end
-end
-
-K.WaitTable = {}
-K.WaitFrame = CreateFrame("Frame", "KKUI_WaitFrame", _G.UIParent)
-K.WaitFrame:SetScript("OnUpdate", K.WaitFunc)
--- Add time before calling a function
-function K.Delay(delay, func, ...)
-	if type(delay) ~= "number" or type(func) ~= "function" then
-		return false
+function K.CheckSavedVariables()
+	if not KkthnxUIData then
+		KkthnxUIData = {}
 	end
 
-	-- Restrict to the lowest time that the C_Timer API allows us
-	if delay < 0.01 then
-		delay = 0.01
+	if not KkthnxUIData[K.Realm] then
+		KkthnxUIData[K.Realm] = {}
 	end
 
-	if select("#", ...) <= 0 then
-		C_Timer_After(delay, func)
-	else
-		table_insert(K.WaitTable, {delay, func, {...}})
-		K.WaitFrame:Show()
+	if not KkthnxUIData[K.Realm][K.Name] then
+		KkthnxUIData[K.Realm][K.Name] = {}
 	end
 
-	return true
+	if not KkthnxUIData[K.Realm][K.Name].AutoQuest then
+		KkthnxUIData[K.Realm][K.Name].AutoQuest = false
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].BindType then
+		KkthnxUIData[K.Realm][K.Name].BindType = 1
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].ChangeLog then
+		KkthnxUIData[K.Realm][K.Name].ChangeLog = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].CustomJunkList then
+		KkthnxUIData[K.Realm][K.Name].CustomJunkList = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].DetectVersion then
+		KkthnxUIData[K.Realm][K.Name].DetectVersion = K.Version
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].FavouriteItems then
+		KkthnxUIData[K.Realm][K.Name].FavouriteItems = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].Mover then
+		KkthnxUIData[K.Realm][K.Name].Mover = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].AuraWatchMover then
+		KkthnxUIData[K.Realm][K.Name].AuraWatchMover = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].RevealWorldMap then
+		KkthnxUIData[K.Realm][K.Name].RevealWorldMap = false
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].SplitCount then
+		KkthnxUIData[K.Realm][K.Name].SplitCount = 1
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].ContactList then
+		KkthnxUIData[K.Realm][K.Name].ContactList = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].TempAnchor then
+		KkthnxUIData[K.Realm][K.Name].TempAnchor = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].InternalCD then
+		KkthnxUIData[K.Realm][K.Name].InternalCD = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].AuraWatchList then
+		KkthnxUIData[K.Realm][K.Name].AuraWatchList = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].AuraWatchList.Switcher then
+		KkthnxUIData[K.Realm][K.Name].AuraWatchList.Switcher = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells then
+		KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {}
+	end
 end

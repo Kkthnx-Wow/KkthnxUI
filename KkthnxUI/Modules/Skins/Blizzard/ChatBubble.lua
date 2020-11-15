@@ -19,15 +19,16 @@ local function reskinChatBubble(chatbubble)
 		bg:CreateBorder(nil, nil, nil, nil, -14, nil, nil, nil, nil, nil, nil, nil, 10)
 		bg.KKUI_Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Skins"].ChatBubbleAlpha)
 
-		frame:SetBackdrop(nil)
-		frame.Tail:Hide()
-
-		if frame.String then
-			frame.String:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
-			frame.String:SetFont(select(1, frame.String:GetFont()), 10, select(3, frame.String:GetFont()))
+		if select(4, GetBuildInfo()) > 90001 then
+			frame:DisableDrawLayer("BORDER")
+		else
+			frame:SetBackdrop(nil)
 		end
 
-		--bg.KKUI_Border:SetVertexColor(frame.String:GetTextColor())
+		frame:SetBackdrop(nil)
+		frame.Tail:SetAlpha(0)
+		frame.String:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
+		frame.String:SetFont(select(1, frame.String:GetFont()), 10, select(3, frame.String:GetFont()))
 	end
 
 	chatbubble.styled = true

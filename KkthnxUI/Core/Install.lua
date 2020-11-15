@@ -74,7 +74,7 @@ function Module:ForceDefaultCVars()
 
 	if K.isDeveloper then
 		SetCVar("ffxGlow", 0)
-		SetCVar("SpellQueueWindow", 20)
+		SetCVar("SpellQueueWindow", 18)
 		SetCVar("nameplateShowOnlyNames", 1)
 		SetCVar("ShowClassColorInFriendlyNameplate", 1)
 	end
@@ -97,12 +97,76 @@ local function ForceRaidFrame()
 end
 
 function Module:ForceChatSettings()
-	local Chat = K:GetModule("Chat")
+	K:GetModule("Chat"):UpdateChatSize()
 
-	if (Chat) then
-		Chat:Install()
+	-- Create our custom chatframes
+	FCF_ResetChatWindows()
+	FCF_SetLocked(ChatFrame1, 1)
+	FCF_DockFrame(ChatFrame2)
+	FCF_SetLocked(ChatFrame2, 1)
+	FCF_OpenNewWindow(TRADE)
+	FCF_SetLocked(ChatFrame3, 1)
+	FCF_DockFrame(ChatFrame3)
+	FCF_OpenNewWindow(LOOT)
+	FCF_SetLocked(ChatFrame4, 1)
+	FCF_DockFrame(ChatFrame4)
+	FCF_SetChatWindowFontSize(nil, ChatFrame1, 12)
+	FCF_SetChatWindowFontSize(nil, ChatFrame2, 12)
+	FCF_SetChatWindowFontSize(nil, ChatFrame3, 12)
+	FCF_SetChatWindowFontSize(nil, ChatFrame4, 12)
+	FCF_SetWindowName(ChatFrame1, GENERAL)
+	FCF_SetWindowName(ChatFrame2, GUILD_EVENT_LOG)
+
+	local ChatGroups = {"SYSTEM", "CHANNEL", "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "MONSTER_SAY", "MONSTER_YELL", "MONSTER_EMOTE", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "ERRORS", "AFK", "DND", "IGNORED", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "BN_WHISPER", "BN_INLINE_TOAST_ALERT"}
+	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame1)
+	for _, v in ipairs(ChatGroups) do
+		ChatFrame_AddMessageGroup(_G.ChatFrame1, v)
 	end
+
+	ChatGroups = {"COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "SKILL", "LOOT", "CURRENCY", "MONEY"}
+	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame4)
+	for _, v in ipairs(ChatGroups) do
+		ChatFrame_AddMessageGroup(_G.ChatFrame4, v)
+	end
+
+	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame3)
+	ChatFrame_AddChannel(_G.ChatFrame1, GENERAL)
+	ChatFrame_RemoveChannel(_G.ChatFrame1, TRADE)
+	ChatFrame_AddChannel(_G.ChatFrame3, TRADE)
+
+	ChatGroups = {"SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL"}
+	for i = 1, _G.MAX_WOW_CHAT_CHANNELS do
+		table.insert(ChatGroups, "CHANNEL"..i)
+	end
+
+	if K.isDeveloper then
+		FCF_OpenNewWindow("Whisper")
+		FCF_SetLocked(ChatFrame5, 1)
+		FCF_DockFrame(ChatFrame5)
+		FCF_SetChatWindowFontSize(nil, ChatFrame5, 12)
+
+		ChatGroups = {"WHISPER", "BN_WHISPER"}
+		ChatFrame_RemoveAllMessageGroups(_G.ChatFrame5)
+		for _, v in ipairs(ChatGroups) do
+			ChatFrame_RemoveMessageGroup(_G.ChatFrame1, v)
+			ChatFrame_AddMessageGroup(_G.ChatFrame5, v)
+		end
+	end
+
+	for _, v in ipairs(ChatGroups) do
+		ToggleChatColorNamesByClassGroup(true, v)
+	end
+
+	-- Adjust Chat Colors
+	ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255) -- General
+	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255) -- Trade
+	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- Local Defense
+
+	FCF_SavePositionAndDimensions(ChatFrame1)
+
+	C["Chat"].Lock = true
 end
+
 
 local function ForceMaxDPSOptions()
 	if not IsAddOnLoaded("MaxDps") then
@@ -503,7 +567,7 @@ local function YesTutor()
 		elseif currentPage == 5 then
 			KkthnxUIData[K.Realm][K.Name].InstallComplete = true
 			tutor:Hide()
-			K.StaticPopup_Show("KKUI_CHANGES_RELOAD")
+			StaticPopup_Show("KKUI_CHANGES_RELOAD")
 			currentPage = 0
 			PlaySound(11466)
 			K.Print(K.SystemColor.."Thank you for installing "..K.InfoColor.."v"..K.Version.." "..K.MyClassColor..K.Name.."|r"..K.SystemColor.."! Enjoy your|r "..K.MyClassColor..K.Class.."|r |cffa83f39<3|r")

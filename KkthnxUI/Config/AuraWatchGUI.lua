@@ -320,7 +320,7 @@ local function CreatePanel()
 	f.Complete.text = K.CreateFontString(f.Complete, 12, OKAY, "", true)
 	f.Complete:SetScript("OnClick", function()
 		f:Hide()
-		K.StaticPopup_Show("KKUI_CHANGES_RELOAD")
+		StaticPopup_Show("KKUI_CHANGES_RELOAD")
 	end)
 
 	f.Reset = CreateFrame("Button", nil, f, "BackdropTemplate")

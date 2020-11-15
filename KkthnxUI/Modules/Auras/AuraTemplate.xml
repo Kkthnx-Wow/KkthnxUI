@@ -1,0 +1,76 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+   <Button name="KKUI_AuraTemplate" inherits="SecureActionButtonTemplate" virtual="true" framelevel="4">
+      <Size x="30" y="30" />
+      <Attributes>
+         <Attribute name="type" value="cancelaura" />
+      </Attributes>
+      <Scripts>
+         <OnLoad>KkthnxUI[1]:GetModule("Auras"):CreateAuraIcon(self)
+				self:RegisterForClicks("RightButtonUp")</OnLoad>
+         <OnEnter>GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -5, -5)
+				if(self:GetAttribute"index") then
+				GameTooltip:SetUnitAura(SecureButton_GetUnit(self:GetParent()), self:GetID(), self:GetParent():GetAttribute("filter"))
+				elseif(self:GetAttribute"target-slot") then
+				GameTooltip:SetInventoryItem("player", self:GetID())
+				end</OnEnter>
+         <OnLeave function="GameTooltip_Hide" />
+      </Scripts>
+   </Button>
+   <Button name="KKUI_AuraTemplate20" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="20" y="20" />
+   </Button>
+   <Button name="KKUI_AuraTemplate22" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="22" y="22" />
+   </Button>
+   <Button name="KKUI_AuraTemplate24" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="24" y="24" />
+   </Button>
+   <Button name="KKUI_AuraTemplate25" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="25" y="25" />
+   </Button>
+   <Button name="KKUI_AuraTemplate26" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="26" y="26" />
+   </Button>
+   <Button name="KKUI_AuraTemplate27" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="27" y="27" />
+   </Button>
+   <Button name="KKUI_AuraTemplate28" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="28" y="28" />
+   </Button>
+   <Button name="KKUI_AuraTemplate29" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="29" y="29" />
+   </Button>
+   <Button name="KKUI_AuraTemplate30" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="30" y="30" />
+   </Button>
+   <Button name="KKUI_AuraTemplate31" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="31" y="31" />
+   </Button>
+   <Button name="KKUI_AuraTemplate32" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="32" y="32" />
+   </Button>
+   <Button name="KKUI_AuraTemplate33" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="33" y="33" />
+   </Button>
+   <Button name="KKUI_AuraTemplate34" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="34" y="34" />
+   </Button>
+   <Button name="KKUI_AuraTemplate35" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="35" y="35" />
+   </Button>
+   <Button name="KKUI_AuraTemplate36" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="36" y="36" />
+   </Button>
+   <Button name="KKUI_AuraTemplate37" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="37" y="37" />
+   </Button>
+   <Button name="KKUI_AuraTemplate38" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="38" y="38" />
+   </Button>
+   <Button name="KKUI_AuraTemplate39" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="39" y="39" />
+   </Button>
+   <Button name="KKUI_AuraTemplate40" inherits="KKUI_AuraTemplate" virtual="true">
+      <Size x="40" y="40" />
+   </Button>
+</Ui>

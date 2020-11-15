@@ -422,7 +422,7 @@ function Module:OnEnter()
 	GameTooltip:ClearLines()
 
 	if C["DataBars"].MouseOver then
-		K.UIFrameFadeIn(Module.Container, 0.25, Module.Container:GetAlpha(), 1)
+		UIFrameFadeIn(Module.Container, 0.25, Module.Container:GetAlpha(), 1)
 	end
 
 	if Module:ExperienceBar_ShouldBeVisible() then
@@ -506,7 +506,7 @@ end
 
 function Module:OnLeave()
 	if C["DataBars"].MouseOver then
-		K.UIFrameFadeOut(Module.Container, 1, Module.Container:GetAlpha(), 0.25)
+		UIFrameFadeOut(Module.Container, 1, Module.Container:GetAlpha(), 0.25)
 	end
 
 	GameTooltip:Hide()
