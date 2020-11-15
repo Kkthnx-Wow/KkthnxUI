@@ -3,8 +3,8 @@ local Module = K:GetModule("Skins")
 
 local _G = _G
 
-function Module:ReskinBartender4()
-	if not IsAddOnLoaded("Bartender4") or not C["Skins"].Bartender4 then
+local function ReskinBartender4()
+	if not C["Skins"].Bartender4 then
 		return
 	end
 
@@ -61,7 +61,7 @@ function Module:ReskinBartender4()
 			BtnBG:Kill()
 		end
 
-		Button:CreateBorder()
+		Button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 		Button:UnregisterEvent("ACTIONBAR_SHOWGRID")
 		Button:UnregisterEvent("ACTIONBAR_HIDEGRID")
 
@@ -102,25 +102,25 @@ function Module:ReskinBartender4()
 		end
 
 		if MainMenuBarBackpackButton then
-			local Texture = MainMenuBarBackpackButton.icon:GetTexture()
-			MainMenuBarBackpackButton:StripTextures()
-			MainMenuBarBackpackButton:CreateBorder()
+			local BackpackButtonTexture = MainMenuBarBackpackButton.icon:GetTexture()
+			MainMenuBarBackpackButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 			MainMenuBarBackpackButton.icon:SetTexCoord(unpack(K.TexCoords))
 			MainMenuBarBackpackButton.icon:SetAllPoints(MainMenuBarBackpackButton)
 			MainMenuBarBackpackButton.icon.SetTexCoord = function() end
-			MainMenuBarBackpackButton.icon:SetTexture(Texture)
+			MainMenuBarBackpackButton.icon:SetTexture(BackpackButtonTexture)
 
 			for i = 0, 3 do
 				if _G["CharacterBag"..i.."Slot"] then
-					local Texture = _G["CharacterBag"..i.."Slot"].icon:GetTexture()
-					_G["CharacterBag"..i.."Slot"]:StripTextures()
-					_G["CharacterBag"..i.."Slot"]:CreateBorder()
+					local CharacterBagTexture = _G["CharacterBag"..i.."Slot"].icon:GetTexture()
+					_G["CharacterBag"..i.."Slot"]:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 					_G["CharacterBag"..i.."Slot"].icon:SetTexCoord(unpack(K.TexCoords))
 					_G["CharacterBag"..i.."Slot"].icon:SetAllPoints(_G["CharacterBag"..i.."Slot"])
 					_G["CharacterBag"..i.."Slot"].icon.SetTexCoord = function() end
-					_G["CharacterBag"..i.."Slot"].icon:SetTexture(Texture)
+					_G["CharacterBag"..i.."Slot"].icon:SetTexture(CharacterBagTexture)
 				end
 			end
 		end
 	end
 end
+
+Module:LoadWithAddOn("Bartender4", "Bartender4", ReskinBartender4)

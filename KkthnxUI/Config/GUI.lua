@@ -502,7 +502,7 @@ local Skins = function(self)
 	local Window = self:CreateWindow(L["Skins"])
 
 	Window:CreateSection("Skins Toggles")
-	-- Window:CreateSwitch("Skins", "Bartender4", L["Bartender4 Skin"])
+	Window:CreateSwitch("Skins", "Bartender4", L["Bartender4 Skin"])
 	-- Window:CreateSwitch("Skins", "BigWigs", L["BigWigs Skin"])
 	-- Window:CreateSwitch("Skins", "ChocolateBar", L["ChocolateBar Skin"])
 	-- Window:CreateSwitch("Skins", "Hekili", L["Hekili Skin"])
