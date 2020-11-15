@@ -49,9 +49,9 @@ local BrightColor = {0.35, 0.35, 0.35}
 
 local R, G, B = K.r, K.g, K.b
 
-local HeaderText = K.SystemColor.."Welcome to "..K.Title.." "..K.InfoColor.."v"..K.Version..", "..K.MyClassColor..K.Name
+local HeaderText = K.Title..K.SystemColor.." GUI|r"
 
-local WindowWidth = 700
+local WindowWidth = 620
 -- local WindowHeight = 360
 
 local Spacing = 7
@@ -60,7 +60,7 @@ local LabelSpacing = 6
 local HeaderWidth = WindowWidth - (Spacing * 2)
 local HeaderHeight = 22
 
-local ButtonListWidth = 120
+local ButtonListWidth = 130
 
 local MenuButtonWidth = ButtonListWidth - (Spacing * 2)
 local MenuButtonHeight = 20

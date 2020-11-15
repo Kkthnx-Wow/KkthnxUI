@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Miscellaneous")
+local Module = K:GetModule("Announcements")
 
 -- Sourced: ElvUI Shadow & Light (Darth_Predator, Repooc)
 
@@ -68,7 +68,7 @@ function Module:SetupKillingBlow()
 end
 
 function Module:CreateKillingBlow()
-	if not C["Misc"].KillingBlow and not C["Misc"].PvPEmote then
+	if not C["Announcements"].KillingBlow and not C["Announcements"].PvPEmote then
 		return
 	end
 

@@ -2,6 +2,7 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Automation")
 
 local _G = _G
+local math_random = _G.math.random
 
 local C_Timer_After = _G.C_Timer.After
 local SendChatMessage = _G.SendChatMessage
@@ -18,7 +19,7 @@ local AutoThankList = {
 
 function Module:SetupAutoGoodbye()
 	C_Timer_After(3, function()
-        SendChatMessage(AutoThankList[math.random(1, #AutoThankList)], "INSTANCE_CHAT")
+        SendChatMessage(AutoThankList[math_random(1, #AutoThankList)], "INSTANCE_CHAT")
     end)
 end
 

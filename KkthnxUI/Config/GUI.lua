@@ -184,7 +184,14 @@ local Announcements = function(self)
 	Window:CreateSwitch("Announcements", "RareAlert", L["Announce Rares, Chests & War Supplies"])
 	Window:CreateSwitch("Announcements", "ResetInstance", L["Alert Group After Instance Resetting"])
 	Window:CreateSwitch("Announcements", "SaySapped", L["Announce When Sapped"])
+	Window:CreateSwitch("Announcements", "KillingBlow", L["Show Your Killing Blow Info"])
+	Window:CreateSwitch("Announcements", "PvPEmote", L["Auto Emote On Your Killing Blow"])
 	Window:CreateDropdown("Announcements", "Interrupt", L["Announce Interrupts"])
+
+	Window:CreateSection("QuestNotifier Toggles")
+	Window:CreateSwitch("Announcements", "QuestNotifier", enableTextColor..L["Enable QuestNotifier"])
+	Window:CreateSwitch("Announcements", "OnlyCompleteRing", L["Only Play Complete Quest Sound"])
+	Window:CreateSwitch("Announcements", "QuestProgress", L["Alert QuestProgress In Chat"])
 end
 
 local Automation = function(self)
@@ -342,8 +349,6 @@ local DataText = function(self)
 	local Window = self:CreateWindow(L["DataText"])
 
 	Window:CreateSection("DataText Toggles")
-	-- Window:CreateSwitch("DataText", "Friends", L["Enable Friends Info"])
-	-- Window:CreateSwitch("DataText", "Guild", L["Enable Guild Info"])
 	Window:CreateSwitch("DataText", "Latency", L["Enable Latency Info"])
 	Window:CreateSwitch("DataText", "Location", L["Enable Minimap Location"])
 	Window:CreateSwitch("DataText", "System", L["Enable System Info"])
@@ -416,9 +421,7 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "HideBossEmote", L["Hide BossBanner"])
 	Window:CreateSwitch("Misc", "ImprovedStats", L["Display Character Frame Full Stats"])
 	Window:CreateSwitch("Misc", "ItemLevel", L["Show Character/Inspect ItemLevel Info"])
-	Window:CreateSwitch("Misc", "KillingBlow", L["Show Your Killing Blow Info"])
 	Window:CreateSwitch("Misc", "NoTalkingHead", L["Remove And Hide The TalkingHead Frame"])
-	Window:CreateSwitch("Misc", "PvPEmote", L["Auto Emote On Your Killing Blow"])
 	Window:CreateSwitch("Misc", "ShowWowHeadLinks", L["Show Wowhead Links Above Questlog Frame"])
 	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
 	Window:CreateSwitch("Misc", "TradeTabs", L["Add Spellbook-Like Tabs On TradeSkillFrame"])
@@ -711,19 +714,6 @@ local Raid = function(self)
 	Window:CreateSection("Raid Misc")
 	Window:CreateDropdown("Raid", "HealthbarColor", L["Health Color Format"])
 	Window:CreateDropdown("Raid", "HealthFormat", L["Health Format"])
-end
-
-local QuestNotifier = function(self)
-	if IsAddOnLoaded("QuestNotifier") then
-		return
-	end
-
-	local Window = self:CreateWindow(L["QuestNotifier"])
-
-	Window:CreateSection("QuestNotifier Toggles")
-	Window:CreateSwitch("QuestNotifier", "Enable", enableTextColor..L["Enable QuestNotifier"])
-	Window:CreateSwitch("QuestNotifier", "OnlyCompleteRing", L["Only Play Complete Quest Sound"])
-	Window:CreateSwitch("QuestNotifier", "QuestProgress", L["Alert QuestProgress In Chat"])
 end
 
 local WorldMap = function(self)

@@ -995,7 +995,7 @@ function Module:CreateUnits()
 					end
 
 					raidMover:ClearAllPoints()
-					raidMover:SetPoint(unpack(KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex]) or "TOPLEFT", UIParent, "TOPLEFT", 4, -180) -- Why does this return nil?
+					raidMover:SetPoint(unpack(KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex]))
 				end
 			end
 			K:RegisterEvent("PLAYER_ENTERING_WORLD", UpdateSpecPos)

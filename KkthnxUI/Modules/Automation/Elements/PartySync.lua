@@ -93,7 +93,9 @@ local function SetupAutoPartySyncAccept(self)
 end
 
 function Module:CreateAutoPartySyncAccept()
-	if C["Automation"].AutoPartySync then
-		hooksecurefunc(QuestSessionManager.StartDialog, "Show", SetupAutoPartySyncAccept)
+	if not C["Automation"].AutoPartySync then
+		return
 	end
+
+	hooksecurefunc(QuestSessionManager.StartDialog, "Show", SetupAutoPartySyncAccept)
 end

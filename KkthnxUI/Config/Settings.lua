@@ -43,7 +43,12 @@ C["ActionBar"] = {
 -- Announcements
 C["Announcements"] = {
 	["ItemAlert"] = false,
+	["KillingBlow"] = false,
+	["OnlyCompleteRing"] = false,
 	["PullCountdown"] = true,
+	["PvPEmote"] = false,
+	["QuestNotifier"] = false,
+	["QuestProgress"] = false,
 	["RareAlert"] = false,
 	["ResetInstance"] = true,
 	["SaySapped"] = false,
@@ -293,9 +298,7 @@ C["Misc"] = {
 	["HideBossEmote"] = false,
 	["ImprovedStats"] = false,
 	["ItemLevel"] = false,
-	["KillingBlow"] = false,
 	["NoTalkingHead"] = false,
-	["PvPEmote"] = false,
 	["ShowWowHeadLinks"] = false,
 	["SlotDurability"] = false,
 	["TradeTabs"] = false,
@@ -600,12 +603,6 @@ C["Raid"] = {
         },
         ["Value"] = 1
     },
-}
-
-C["QuestNotifier"] = {
-	["Enable"] = false,
-	["OnlyCompleteRing"] = false,
-	["QuestProgress"] = false,
 }
 
 -- Worldmap

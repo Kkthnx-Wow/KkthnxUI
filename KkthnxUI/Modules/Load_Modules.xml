@@ -59,13 +59,11 @@
    <Script file="Miscellaneous\Elements\AlreadyKnown.lua" />
    <Script file="Miscellaneous\Elements\Durability.lua" />
    <Script file="Miscellaneous\Elements\ImprovedMail.lua" />
-   <Script file="Miscellaneous\Elements\KillingBlow.lua" />
    <Script file="Miscellaneous\Elements\LoginAnimation.lua" />
    <Script file="Miscellaneous\Elements\MerchantItemlevel.lua" />
    <Script file="Miscellaneous\Elements\MissingStats.lua" />
    <Script file="Miscellaneous\Elements\MovableFrames.lua" />
    <Script file="Miscellaneous\Elements\PulseCooldown.lua" />
-   <Script file="Miscellaneous\Elements\QuestNotifier.lua" />
    <Script file="Miscellaneous\Elements\QuickJoin.lua" />
    <Script file="Miscellaneous\Elements\SlotDurability.lua" />
    <Script file="Miscellaneous\Elements\SlotItemLevel.lua" />
@@ -117,6 +115,8 @@
    <Script file="Announcements\Elements\Countdown.lua" />
    <Script file="Announcements\Elements\Interrupt.lua" />
    <Script file="Announcements\Elements\ItemAlert.lua" />
+   <Script file="Announcements\Elements\KillingBlow.lua" />
+   <Script file="Announcements\Elements\QuestNotifier.lua" />
    <Script file="Announcements\Elements\RareAlert.lua" />
    <Script file="Announcements\Elements\ResetInstance.lua" />
    <Script file="Announcements\Elements\Sapped.lua" />
