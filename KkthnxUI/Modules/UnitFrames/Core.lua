@@ -1031,7 +1031,7 @@ function Module:CreateUnits()
 			self:SetHeight(%d)
 			]]):format(raidTankWidth, raidTankHeight))
 
-			local raidtankMover = K.Mover(raidtank, "MainTankFrame", "MainTankFrame", {"TOPLEFT", UIParent, "TOPLEFT", 4, -4}, raidTankWidth, raidTankHeight)
+			local raidtankMover = K.Mover(raidtank, "MainTankFrame", "MainTankFrame", {"TOPLEFT", UIParent, "TOPLEFT", 4, -50}, raidTankWidth, raidTankHeight)
 			raidtank:ClearAllPoints()
 			raidtank:SetPoint("TOPLEFT", raidtankMover)
 		end
