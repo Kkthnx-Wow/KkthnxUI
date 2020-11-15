@@ -18,7 +18,7 @@ function Module:SetupResetInstance(text)
         systemMessage = _G[systemMessage]
         if (string_match(text, string_gsub(systemMessage, "%%s", ".+"))) then
             local instance = string_match(text, string_gsub(systemMessage, "%%s", "(.+)"))
-            SendChatMessage(string_format("KkthnxUI: " .. friendlyMessage, instance), K.CheckChat(true))
+            SendChatMessage(string_format("KkthnxUI: " .. friendlyMessage, instance), K.CheckChat())
             return
         end
     end

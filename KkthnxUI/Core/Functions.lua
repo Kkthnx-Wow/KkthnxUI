@@ -12,16 +12,12 @@ local string_gsub = _G.string.gsub
 local string_join = _G.string.join
 local string_lower = _G.string.lower
 local string_match = _G.string.match
-local table_insert = _G.table.insert
-local table_remove = _G.table.remove
 local table_wipe = _G.table.wipe
 local tonumber = _G.tonumber
 local type = _G.type
 local unpack = _G.unpack
 
 local C_Map_GetWorldPosFromMapPos = _G.C_Map.GetWorldPosFromMapPos
-local C_Timer_After = _G.C_Timer.After
-local CreateFrame = _G.CreateFrame
 local CreateVector2D = _G.CreateVector2D
 local ENCHANTED_TOOLTIP_LINE = _G.ENCHANTED_TOOLTIP_LINE
 local GameTooltip = _G.GameTooltip
@@ -356,17 +352,18 @@ K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
 
 -- Chat channel check
 function K.CheckChat(warning)
-	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+	if IsPartyLFG() then
 		return "INSTANCE_CHAT"
-	elseif IsInRaid(LE_PARTY_CATEGORY_HOME) then
+	elseif IsInRaid() then
 		if warning and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or IsEveryoneAssistant()) then
 			return "RAID_WARNING"
 		else
 			return "RAID"
 		end
-	elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
+	elseif IsInGroup() then
 		return "PARTY"
 	end
+
 	return "SAY"
 end
 

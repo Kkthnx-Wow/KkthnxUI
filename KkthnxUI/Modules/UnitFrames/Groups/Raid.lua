@@ -58,7 +58,6 @@ function Module:CreateRaid()
 	self:CreateBorder()
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	--self.Health:SetFrameStrata("LOW")
 	self.Health:SetFrameLevel(self:GetFrameLevel())
 	self.Health:SetAllPoints(self)
 	self.Health:SetStatusBarTexture(RaidframeTexture)

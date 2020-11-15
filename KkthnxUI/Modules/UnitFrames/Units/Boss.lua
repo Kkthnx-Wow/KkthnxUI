@@ -79,7 +79,7 @@ function Module:CreateBoss()
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("TOP", self.Health, 0, 16)
-	self.Name:SetWidth(156 * 0.90)
+	self.Name:SetWidth(124)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
 	if C["Boss"].HealthbarColor.Value == "Class" then
