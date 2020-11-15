@@ -1760,6 +1760,97 @@ local ToggleCreditsFrame = function()
 	end
 end
 
+local function CreateContactEditBox(parent, width, height)
+	local eb = CreateFrame("EditBox", nil, parent)
+	eb:SetSize(width, height)
+	eb:SetAutoFocus(false)
+	eb:SetTextInsets(5, 5, 0, 0)
+	eb:FontTemplate(nil, nil, "")
+
+	eb.bg = CreateFrame("Frame", nil, eb, "BackdropTemplate")
+	eb.bg:SetAllPoints()
+	eb.bg:SetFrameLevel(eb:GetFrameLevel())
+	eb.bg:CreateBorder()
+
+	eb:SetScript("OnEscapePressed", function(self)
+		self:ClearFocus()
+	end)
+
+	eb:SetScript("OnEnterPressed", function(self)
+		self:ClearFocus()
+	end)
+
+	eb.Type = "EditBox"
+	return eb
+end
+
+local CreateContactBox = function(parent, text, url, index)
+	K.CreateFontString(parent, 14, text, "", "system", "TOP", 0, -50 - (index - 1) * 60)
+	local box = CreateContactEditBox(parent, 250, 24)
+	box:SetPoint("TOP", 0, -70 - (index - 1) * 60)
+	box.url = url
+	box:SetText(box.url)
+	box:HighlightText()
+
+	box:SetScript("OnTextChanged", function(self)
+		self:SetText(self.url)
+		self:HighlightText()
+	end)
+
+	box:SetScript("OnCursorChanged", function(self)
+		self:SetText(self.url)
+		self:HighlightText()
+	end)
+end
+
+local AddContactFrame = function()
+	if GUI.ContactFrame then
+		GUI.ContactFrame:Show()
+		return
+	end
+
+	local frame = CreateFrame("Frame", nil, UIParent)
+	frame:SetSize(300, 340)
+	frame:SetPoint("CENTER")
+	frame:CreateBorder()
+
+	local frameLogo = frame:CreateTexture(nil, "OVERLAY")
+	frameLogo:SetSize(512, 256)
+	frameLogo:SetBlendMode("ADD")
+	frameLogo:SetAlpha(0.07)
+	frameLogo:SetTexture(C["Media"].Logo)
+	frameLogo:SetPoint("CENTER", frame, "CENTER", 0, 0)
+
+	K.CreateFontString(frame, 16, "Contact Me", "", true, "TOP", 0, -10)
+	local ll = CreateFrame("Frame", nil, frame)
+	ll:SetPoint("TOP", -40, -32)
+	K.CreateGF(ll, 80, 1, "Horizontal", .7, .7, .7, 0, .7)
+	ll:SetFrameStrata("HIGH")
+	local lr = CreateFrame("Frame", nil, frame)
+	lr:SetPoint("TOP", 40, -32)
+	K.CreateGF(lr, 80, 1, "Horizontal", .7, .7, .7, .7, 0)
+	lr:SetFrameStrata("HIGH")
+
+	CreateContactBox(frame, "|CFFee653aCurse|r", "https://www.curseforge.com/members/kkthnxtv", 1)
+	CreateContactBox(frame, "|CFF666aa7WowInterface|r", "https://www.wowinterface.com/forums/member.php?action=getinfo&userid=303422", 2)
+	CreateContactBox(frame, "|CFFf6f8faGitHub|r", "https://github.com/Kkthnx-Wow/KkthnxUI", 3)
+	CreateContactBox(frame, "|CFF7289DADiscord|r", "https://discord.gg/YUmxqQm", 4)
+
+	local back = CreateFrame("Button", nil, frame, "BackdropTemplate")
+	back:SetSize(120, 20)
+	back:SetPoint("BOTTOM", 0, 15)
+	back:SkinButton()
+	back.text = K.CreateFontString(back, 12, OKAY, "", true)
+	back:SetScript("OnClick", function()
+		frame:Hide()
+		if not GUI:IsShown() then -- Show our GUI again after they click the okay button (If our GUI isn't shown again by that time)
+			GUI:Toggle()
+		end
+	end)
+
+	GUI.ContactFrame = frame
+end
+
 GUI.Enable = function(self)
 	if self.Created then
 		return
@@ -1964,6 +2055,35 @@ GUI.Enable = function(self)
 	StyleFont(ResetChat.Middle, Font, 12)
 	ResetChat.Middle:SetJustifyH("CENTER")
 	ResetChat.Middle:SetText(K.SystemColor.."Reset Chat|r")
+
+	-- Contact Button
+	local ContactMe = CreateFrame("Frame", nil, self.Footer)
+	ContactMe:SetSize(self.Footer:GetWidth(), HeaderHeight)
+	ContactMe:SetPoint("BOTTOM", self.Footer, 0, -56)
+	ContactMe:CreateBorder()
+	ContactMe:SetScript("OnMouseDown", ButtonOnMouseDown)
+	ContactMe:SetScript("OnMouseUp", ButtonOnMouseUp)
+	ContactMe:SetScript("OnEnter", ButtonOnEnter)
+	ContactMe:SetScript("OnLeave", ButtonOnLeave)
+	ContactMe:HookScript("OnMouseUp", function()
+		if GUI:IsShown() then
+			GUI:Toggle()
+		end
+		AddContactFrame()
+	end)
+
+	ContactMe.Highlight = ContactMe:CreateTexture(nil, "OVERLAY")
+	ContactMe.Highlight:SetAllPoints()
+	ContactMe.Highlight:SetTexture(Texture)
+	ContactMe.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	ContactMe.Highlight:SetAlpha(0)
+
+	ContactMe.Middle = ContactMe:CreateFontString(nil, "OVERLAY")
+	ContactMe.Middle:SetPoint("CENTER", ContactMe, 0, 0)
+	ContactMe.Middle:SetWidth(FooterButtonWidth - (Spacing))
+	StyleFont(ContactMe.Middle, Font, 12)
+	ContactMe.Middle:SetJustifyH("CENTER")
+	ContactMe.Middle:SetText(K.SystemColor.."Need Help? Contact Me!|r")
 
 	-- Button list
 	self.ButtonList = CreateFrame("Frame", nil, self)

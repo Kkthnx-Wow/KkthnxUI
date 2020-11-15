@@ -29,6 +29,7 @@ local function ForceUpdateBlizzardFonts()
 	local NUMBER = C["Media"].Font
 	local COMBAT = C["Media"].CombatFont
 	local NAMEFONT = C["Media"].Font
+	local BUBBLE = C["Media"].Font
 
 	_G.UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = dropdownFontHeight
 	_G.CHAT_FONT_HEIGHTS = chatFontHeights
@@ -41,6 +42,7 @@ local function ForceUpdateBlizzardFonts()
 	local medium = size * 1.1
 	local small = size * 0.9
 
+	SetFont(_G.ChatBubbleFont, BUBBLE, 11)	-- 13
 	SetFont(_G.AchievementFont_Small, NORMAL, size)	-- 10 Achiev dates
 	SetFont(_G.BossEmoteNormalHuge, NORMAL, 24) -- Talent Title
 	SetFont(_G.CoreAbilityFont, NORMAL, 26) -- 32 Core abilities(title)
