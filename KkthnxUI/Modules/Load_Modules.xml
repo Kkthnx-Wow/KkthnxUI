@@ -23,6 +23,7 @@
    <!-- Chat -->
    <Script file="Chat\Core.lua" />
    <Script file="Chat\Elements\Copy.lua" />
+   <Script file="Chat\Elements\Emojis.lua" />
    <Script file="Chat\Elements\Filters.lua" />
    <Script file="Chat\Elements\ILevel.lua" />
    <Script file="Chat\Elements\Rename.lua" />
@@ -170,13 +171,13 @@
    <Include file="Skins\Blizzard\WidgetFrame.lua" />
    <Include file="Skins\Blizzard\WorldMapFrame.lua" />
    <!-- Skins AddOns -->
+   <Include file="Skins\Addons\Bartender4.lua" />
    <Include file="Skins\Addons\DeadlyBossMods.lua" />
    <Include file="Skins\Addons\Details.lua" />
    <Include file="Skins\Addons\RareScanner.lua" />
    <Include file="Skins\Addons\WeakAuras.lua" />
    <!-- Disabled/Broken/WIP AddOns -->
-   <!-- <Include file="Skins\Addons\Bartender4.lua" />
-   <Include file="Skins\Addons\BigWigs.lua" />
+   <!-- <Include file="Skins\Addons\BigWigs.lua" />
    <Include file="Skins\Addons\BugSack.lua" />
    <Include file="Skins\Addons\ChocolateBar.lua" />
    <Include file="Skins\Addons\Immersion.lua" />

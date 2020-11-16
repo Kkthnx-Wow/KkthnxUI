@@ -212,13 +212,14 @@ function Module:UpdateColor(_, unit)
 	local status = self.feedbackUnit and UnitThreatSituation(self.feedbackUnit, unit) or false -- just in case
 	local reaction = UnitReaction(unit, "player")
 
-	local reactionColor = K.Colors.reaction[reaction]
 	local customColor = C["Nameplate"].CustomColor
+	local insecureColor = C["Nameplate"].InsecureColor
+	local offTankColor = C["Nameplate"].OffTankColor
+	local reactionColor = K.Colors.reaction[reaction]
+	local revertThreat = C["Nameplate"].DPSRevertThreat
 	local secureColor = C["Nameplate"].SecureColor
 	local transColor = C["Nameplate"].TransColor
-	local insecureColor = C["Nameplate"].InsecureColor
-	local revertThreat = C["Nameplate"].DPSRevertThreat
-	local offTankColor = C["Nameplate"].OffTankColor
+
 	local executeRatio = C["Nameplate"].ExecuteRatio
 	local healthPerc = UnitHealth(unit) / (UnitHealthMax(unit) + .0001) * 100
 
@@ -303,11 +304,11 @@ function Module:UpdateThreatColor(_, unit)
 	Module.UpdateColor(self, _, unit)
 end
 
+-- Backdrop shadow
 function Module:CreateThreatColor(self)
-	local threatIndicator = CreateFrame("Frame", nil, self, "BackdropTemplate")
-	threatIndicator:SetPoint("TOPLEFT", self, -3, 3)
-	threatIndicator:SetPoint("BOTTOMRIGHT", self, 3, -3)
-	threatIndicator:SetBackdrop({edgeFile = C["Media"].Glow, edgeSize = 3})
+	local threatIndicator = self:CreateShadow()
+	threatIndicator:SetPoint("TOPLEFT", self.Health.backdrop, "TOPLEFT", -1, 1)
+	threatIndicator:SetPoint("BOTTOMRIGHT", self.Health.backdrop, "BOTTOMRIGHT", 1, -1)
 	threatIndicator:Hide()
 
 	self.ThreatIndicator = threatIndicator
@@ -388,26 +389,26 @@ function Module:AddTargetIndicator(self)
 	self.TargetIndicator:Hide()
 
 	self.TargetIndicator.TopArrow = self.TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
-	self.TargetIndicator.TopArrow:SetSize(40, 40)
+	self.TargetIndicator.TopArrow:SetSize(50, 50)
 	self.TargetIndicator.TopArrow:SetTexture(C["Media"].NPArrow)
 	self.TargetIndicator.TopArrow:SetPoint("BOTTOM", self.TargetIndicator, "TOP", 0, 40)
 	self.TargetIndicator.TopArrow:SetRotation(math_rad(-90))
 
 	self.TargetIndicator.RightArrow = self.TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
-	self.TargetIndicator.RightArrow:SetSize(40, 40)
+	self.TargetIndicator.RightArrow:SetSize(50, 50)
 	self.TargetIndicator.RightArrow:SetTexture(C["Media"].NPArrow)
 	self.TargetIndicator.RightArrow:SetPoint("LEFT", self.TargetIndicator, "RIGHT", 3, 0)
 	self.TargetIndicator.RightArrow:SetRotation(math_rad(-180))
 
 	self.TargetIndicator.Glow = CreateFrame("Frame", nil, self.TargetIndicator, "BackdropTemplate")
-	self.TargetIndicator.Glow:SetPoint("TOPLEFT", self.TargetIndicator, -5, 5)
-	self.TargetIndicator.Glow:SetPoint("BOTTOMRIGHT", self.TargetIndicator, 5, -5)
+	self.TargetIndicator.Glow:SetPoint("TOPLEFT", self.Health.backdrop, -2, 2)
+	self.TargetIndicator.Glow:SetPoint("BOTTOMRIGHT", self.Health.backdrop, 2, -2)
 	self.TargetIndicator.Glow:SetBackdrop({edgeFile = C["Media"].Glow, edgeSize = 4})
 	self.TargetIndicator.Glow:SetBackdropBorderColor(unpack(C["Nameplate"].TargetIndicatorColor))
 	self.TargetIndicator.Glow:SetFrameLevel(0)
 
 	self.TargetIndicator.nameGlow = self.TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
-	self.TargetIndicator.nameGlow:SetSize(150, 70)
+	self.TargetIndicator.nameGlow:SetSize(150, 80)
 	self.TargetIndicator.nameGlow:SetTexture("Interface\\GLUES\\Models\\UI_Draenei\\GenericGlow64")
 	self.TargetIndicator.nameGlow:SetVertexColor(102/255, 157/255, 255/255)
 	self.TargetIndicator.nameGlow:SetBlendMode("ADD")
@@ -507,11 +508,11 @@ function Module:AddQuestIcon(self)
 
 	self.questIcon = self:CreateTexture(nil, "OVERLAY", nil, 2)
 	self.questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0)
-	self.questIcon:SetSize(18, 18)
+	self.questIcon:SetSize(25, 25)
 	self.questIcon:SetAtlas("QuestNormal")
 	self.questIcon:Hide()
 
-	self.questCount = K.CreateFontString(self, 11, "", "", nil, "LEFT", 0, 0)
+	self.questCount = K.CreateFontString(self, 13, "", "", nil, "LEFT", 0, 0)
 	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -2, 0)
 
 	self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
@@ -556,7 +557,7 @@ function Module:AddDungeonProgress(self)
 		return
 	end
 
-	self.progressText = K.CreateFontString(self, 12, "", "", false, "LEFT", 0, 0)
+	self.progressText = K.CreateFontString(self, 13, "", "", false, "LEFT", 0, 0)
 	self.progressText:SetPoint("LEFT", self, "RIGHT", 5, 0)
 end
 
@@ -612,7 +613,7 @@ function Module:AddCreatureIcon(self)
 	self.ClassifyIndicator = iconFrame:CreateTexture(nil, "ARTWORK")
 	self.ClassifyIndicator:SetAtlas("VignetteKill")
 	self.ClassifyIndicator:SetPoint("BOTTOMLEFT", self, "LEFT", 0, -4)
-	self.ClassifyIndicator:SetSize(14, 14)
+	self.ClassifyIndicator:SetSize(19, 19)
 	self.ClassifyIndicator:Hide()
 end
 
@@ -638,9 +639,9 @@ function Module:UpdateExplosives(event, unit)
 
 	local npcID = self.npcID
 	if event == "NAME_PLATE_UNIT_ADDED" and npcID == explosivesID then
-		self:SetScale(1.25)
+		self:SetScale(C["General"].UIScale * 1.25)
 	elseif event == "NAME_PLATE_UNIT_REMOVED" then
-		self:SetScale(1)
+		self:SetScale(C["General"].UIScale)
 	end
 end
 
@@ -764,7 +765,7 @@ function Module:CreatePlates()
 
 	self:SetSize(C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight)
 	self:SetPoint("CENTER")
-	self:SetScale(1)
+	self:SetScale(C["General"].UIScale)
 
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()
@@ -773,7 +774,11 @@ function Module:CreatePlates()
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetAllPoints()
 	self.Health:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
-	self.Health:CreateShadow(true)
+
+	self.Health.backdrop = self.Health:CreateShadow(true) -- don't mess up with libs
+	self.Health.backdrop:SetPoint("TOPLEFT", self.Health, "TOPLEFT", -3, 3)
+	self.Health.backdrop:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 3, -3)
+	self.Health.backdrop:SetFrameLevel(self.Health:GetFrameLevel())
 
 	self.Health.frequentUpdates = true
 	self.Health.UpdateColor = Module.UpdateColor
@@ -819,8 +824,8 @@ function Module:CreatePlates()
 	self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
 	self.Castbar.Spark:SetBlendMode("ADD")
 
-	self.Castbar.Time = K.CreateFontString(self.Castbar, 10, "", "", false, "RIGHT", -2, 0)
-	self.Castbar.Text = K.CreateFontString(self.Castbar, 10, "", "", false, "LEFT", 2, 0)
+	self.Castbar.Time = K.CreateFontString(self.Castbar, C["Nameplate"].NameTextSize, "", "", false, "RIGHT", -2, 0)
+	self.Castbar.Text = K.CreateFontString(self.Castbar, C["Nameplate"].NameTextSize, "", "", false, "LEFT", 2, 0)
 	self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -5, 0)
 	self.Castbar.Text:SetJustifyH("LEFT")
 

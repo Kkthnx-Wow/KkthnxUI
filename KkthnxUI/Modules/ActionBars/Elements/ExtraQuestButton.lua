@@ -102,12 +102,28 @@ function ExtraQuestButton:BAG_UPDATE_DELAYED()
 	end
 end
 
-function ExtraQuestButton:PLAYER_REGEN_ENABLED(event)
-	if self.itemID then
-		self:SetAttribute("item", "item:" .. self.itemID)
-		self:UnregisterEvent(event)
-		self:BAG_UPDATE_COOLDOWN()
+function ExtraQuestButton:UpdateAttributes()
+	if InCombatLockdown() then
+		if not self.itemID and self:IsShown() then
+			self:SetAlpha(0)
+		end
+		self:RegisterEvent("PLAYER_REGEN_ENABLED")
+		return
+	else
+		self:SetAlpha(1)
 	end
+
+	if self.itemID then
+		self:SetAttribute("item", "item:"..self.itemID)
+		self:BAG_UPDATE_COOLDOWN()
+	else
+		self:SetAttribute("item", nil)
+	end
+end
+
+function ExtraQuestButton:PLAYER_REGEN_ENABLED(event)
+	self:UpdateAttributes()
+	self:UnregisterEvent(event)
 end
 
 function ExtraQuestButton:UPDATE_BINDINGS()
@@ -189,9 +205,6 @@ end
 
 ExtraQuestButton:SetScript("OnEnter", function(self)
 	if not self.itemLink then
-		if K.isDeveloper then
-			K.Print("ExtraQuestButton: invalid item link.")
-		end
 		return
 	end
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT")
@@ -291,23 +304,15 @@ function ExtraQuestButton:SetItem(itemLink)
 		end
 		K:GetModule("ActionBar").UpdateHotKey(self)
 
-		if InCombatLockdown() then
-			self:RegisterEvent("PLAYER_REGEN_ENABLED")
-		else
-			self:SetAttribute("item", "item:" .. self.itemID)
-			self:BAG_UPDATE_COOLDOWN()
-		end
+		self:UpdateAttributes()
 		self.updateRange = hasRange
 	end
 end
 
+
 function ExtraQuestButton:RemoveItem()
-	if InCombatLockdown() then
-		self.itemID = nil
-		self:RegisterEvent("PLAYER_REGEN_ENABLED")
-	else
-		self:SetAttribute("item", nil)
-	end
+	self.itemID = nil
+	self:UpdateAttributes()
 end
 
 local function IsQuestOnMap(questID)

@@ -6,6 +6,8 @@ local _G = _G
 local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
 
 local enableTextColor = "|cff00cc4c"
+local newFeatureIcon = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0|t"
+local emojiExample = "|TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t"
 
 local function UpdateBagSortOrder()
 	SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
@@ -228,7 +230,7 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "AutoSell", L["Auto Vendor Grays"])
 	Window:CreateSwitch("Inventory", "BagBar", L["Enable Bagbar"])
 	Window:CreateSwitch("Inventory", "BagBarMouseover", L["Fade Bagbar"])
-	Window:CreateSwitch("Inventory", "BagsItemLevel", L["Display Item Level"])
+	Window:CreateSwitch("Inventory", "BagsItemLevel", L["Display Item Level"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "DeleteButton", L["Bags Delete Button"])
 	Window:CreateSwitch("Inventory", "ReverseSort", L["Umm Reverse The Sorting"], nil, UpdateBagSortOrder)
 	Window:CreateSwitch("Inventory", "ShowNewItem", L["Show New Item Glow"])
@@ -293,11 +295,12 @@ local Chat = function(self)
 
 	Window:CreateSection("Chat Toggles")
 	Window:CreateSwitch("Chat", "Enable", enableTextColor..L["Enable Chat"])
-	Window:CreateSwitch("Chat", "Lock", enableTextColor..L["Lock Chat"])
 	Window:CreateSwitch("Chat", "Background", L["Show Chat Background"], nil, ToggleChatBackground)
 	Window:CreateSwitch("Chat", "ChatItemLevel", L["Show ItemLevel on ChatFrames"])
 	Window:CreateSwitch("Chat", "ChatMenu", L["Show Chat Menu Buttons"])
+	Window:CreateSwitch("Chat", "Emojis", newFeatureIcon.."Show Emojis In Chat"..emojiExample)
 	Window:CreateSwitch("Chat", "Freedom", L["Disable Chat Language Filter"])
+	Window:CreateSwitch("Chat", "Lock", enableTextColor..L["Lock Chat"])
 	Window:CreateSwitch("Chat", "LootIcons", L["Show Chat Loot Icons"])
 	Window:CreateSwitch("Chat", "OldChatNames", L["Use Default Channel Names"])
 	Window:CreateSwitch("Chat", "Sticky", L["Stick On Channel If Whispering"], nil, UpdateChatSticky)
@@ -451,7 +454,7 @@ local Nameplate = function(self)
 	Window:CreateDropdown("Nameplate", "TargetIndicator", L["TargetIndicator Style"])
 
 	Window:CreateSection("Nameplate Values")
-	Window:CreateSlider("Nameplate", "AuraSize", L["Auras Size"], 16, 28, 1)
+	Window:CreateSlider("Nameplate", "AuraSize", L["Auras Size"], 18, 40, 1)
 	Window:CreateSlider("Nameplate", "Distance", L["Nameplete MaxDistance"], 10, 100, 1)
 	Window:CreateSlider("Nameplate", "ExecuteRatio", L["Unit Execute Ratio"], 0, 90, 1, L["ExecuteRatioTip"])
 	Window:CreateSlider("Nameplate", "HealthTextSize", L["HealthText FontSize"], 8, 16, 1)
@@ -502,7 +505,7 @@ local Skins = function(self)
 	local Window = self:CreateWindow(L["Skins"])
 
 	Window:CreateSection("Skins Toggles")
-	-- Window:CreateSwitch("Skins", "Bartender4", L["Bartender4 Skin"])
+	Window:CreateSwitch("Skins", "Bartender4", L["Bartender4 Skin"])
 	-- Window:CreateSwitch("Skins", "BigWigs", L["BigWigs Skin"])
 	-- Window:CreateSwitch("Skins", "ChocolateBar", L["ChocolateBar Skin"])
 	-- Window:CreateSwitch("Skins", "Hekili", L["Hekili Skin"])

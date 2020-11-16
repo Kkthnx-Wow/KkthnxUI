@@ -5,6 +5,7 @@ local ipairs = _G.ipairs
 local next = _G.next
 
 local AcceptQuest = _G.AcceptQuest
+local AcknowledgeAutoAcceptQuest = _G.AcknowledgeAutoAcceptQuest
 local C_GossipInfo_GetActiveQuests = _G.C_GossipInfo.GetActiveQuests
 local C_GossipInfo_GetAvailableQuests = _G.C_GossipInfo.GetAvailableQuests
 local C_GossipInfo_GetNumActiveQuests = _G.C_GossipInfo.GetNumActiveQuests
@@ -15,6 +16,7 @@ local C_GossipInfo_SelectActiveQuest = _G.C_GossipInfo.SelectActiveQuest
 local C_GossipInfo_SelectAvailableQuest = _G.C_GossipInfo.SelectAvailableQuest
 local C_GossipInfo_SelectOption = _G.C_GossipInfo.SelectOption
 local C_QuestLog_GetQuestTagInfo = _G.C_QuestLog.GetQuestTagInfo
+local C_QuestLog_IsQuestTrivial = _G.C_QuestLog.IsQuestTrivial
 local C_QuestLog_IsWorldQuest = _G.C_QuestLog.IsWorldQuest
 local CloseQuest = _G.CloseQuest
 local CompleteQuest = _G.CompleteQuest
@@ -36,14 +38,17 @@ local GetQuestItemInfo = _G.GetQuestItemInfo
 local GetQuestItemLink = _G.GetQuestItemLink
 local GetQuestReward = _G.GetQuestReward
 local GetTrackingInfo = _G.GetTrackingInfo
+local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsQuestCompletable = _G.IsQuestCompletable
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local MINIMAP_TRACKING_TRIVIAL_QUESTS = _G.MINIMAP_TRACKING_TRIVIAL_QUESTS
 local QuestGetAutoAccept = _G.QuestGetAutoAccept
+local QuestIsFromAreaTrigger = _G.QuestIsFromAreaTrigger
 local SelectActiveQuest = _G.SelectActiveQuest
 local SelectAvailableQuest = _G.SelectAvailableQuest
 local ShowQuestComplete = _G.ShowQuestComplete
 local ShowQuestOffer = _G.ShowQuestOffer
+local StaticPopup_Hide = _G.StaticPopup_Hide
 local UnitGUID = _G.UnitGUID
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 
@@ -237,7 +242,11 @@ QuickQuest:Register("GOSSIP_CONFIRM", function(index)
 end)
 
 QuickQuest:Register("QUEST_DETAIL", function()
-	if not QuestGetAutoAccept() then
+	if QuestIsFromAreaTrigger() then
+		AcceptQuest()
+	elseif QuestGetAutoAccept() then
+		AcknowledgeAutoAcceptQuest()
+	elseif not C_QuestLog_IsQuestTrivial(GetQuestID()) or IsTrackingHidden() then
 		AcceptQuest()
 	end
 end)
@@ -339,7 +348,7 @@ local function AttemptAutoComplete(event)
 		if not C_QuestLog_IsWorldQuest(questID) then
 			if popUpType == "OFFER" then
 				ShowQuestOffer(questID)
-			else
+			elseif popUpType == "COMPLETE" then
 				ShowQuestComplete(questID)
 			end
 		end

@@ -35,6 +35,10 @@ local function reskinChatBubble(chatbubble)
 end
 
 table_insert(C.defaultThemes, function()
+	if not C["Skins"].ChatBubbles then
+		return
+	end
+
 	local events = {
 		CHAT_MSG_SAY = "chatBubbles",
 		CHAT_MSG_YELL = "chatBubbles",
