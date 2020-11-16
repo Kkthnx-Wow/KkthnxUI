@@ -40,6 +40,7 @@ local UNKNOWN = _G.UNKNOWN
 
 K.Devs = {
 	["Iamnsfw-Sargeras"] = true,
+	["Kkthnx-Thrall"] = true,
 	["Kkthnx-Sargeras"] = true,
 	["Kkthnxbye-Sargeras"] = true,
 	["Kkthnxtv-Sargeras"] = true,

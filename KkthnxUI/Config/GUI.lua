@@ -6,6 +6,8 @@ local _G = _G
 local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
 
 local enableTextColor = "|cff00cc4c"
+local newFeatureIcon = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0|t"
+local emojiExample = "|TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t"
 
 local function UpdateBagSortOrder()
 	SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
@@ -293,11 +295,12 @@ local Chat = function(self)
 
 	Window:CreateSection("Chat Toggles")
 	Window:CreateSwitch("Chat", "Enable", enableTextColor..L["Enable Chat"])
-	Window:CreateSwitch("Chat", "Lock", enableTextColor..L["Lock Chat"])
 	Window:CreateSwitch("Chat", "Background", L["Show Chat Background"], nil, ToggleChatBackground)
 	Window:CreateSwitch("Chat", "ChatItemLevel", L["Show ItemLevel on ChatFrames"])
 	Window:CreateSwitch("Chat", "ChatMenu", L["Show Chat Menu Buttons"])
+	Window:CreateSwitch("Chat", "Emojis", newFeatureIcon.."Show Emojis In Chat"..emojiExample)
 	Window:CreateSwitch("Chat", "Freedom", L["Disable Chat Language Filter"])
+	Window:CreateSwitch("Chat", "Lock", enableTextColor..L["Lock Chat"])
 	Window:CreateSwitch("Chat", "LootIcons", L["Show Chat Loot Icons"])
 	Window:CreateSwitch("Chat", "OldChatNames", L["Use Default Channel Names"])
 	Window:CreateSwitch("Chat", "Sticky", L["Stick On Channel If Whispering"], nil, UpdateChatSticky)

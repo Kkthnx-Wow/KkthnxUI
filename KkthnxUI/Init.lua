@@ -52,10 +52,11 @@ LE_ITEM_QUALITY_LEGENDARY = Enum.ItemQuality.Legendary
 LE_ITEM_QUALITY_ARTIFACT = Enum.ItemQuality.Artifact
 LE_ITEM_QUALITY_HEIRLOOM = Enum.ItemQuality.Heirloom
 
-K.oUF = Engine.oUF
-K.cargBags = Engine.cargBags
+K.Base64 = LibStub("LibBase64-1.0")
 K.Unfit = LibStub("Unfit-1.0")
+K.cargBags = Engine.cargBags
 K.libButtonGlow = LibStub("LibButtonGlow-1.0", true)
+K.oUF = Engine.oUF
 
 K.AddOns = {}
 K.AddOnVersion = {}

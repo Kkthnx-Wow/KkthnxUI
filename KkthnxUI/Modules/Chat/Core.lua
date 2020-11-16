@@ -449,6 +449,7 @@ function Module:OnEnable()
 	Module:CreateCopyChat()
 	Module:CreateCopyURL()
 	Module:CreateVoiceActivity()
+	Module:CreateEmojis()
 
 	-- Lock chatframe
 	if C["Chat"].Lock then

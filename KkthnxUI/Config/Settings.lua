@@ -151,6 +151,7 @@ C["Chat"] = {
 	["ChatFilterWhiteList"] = "",
 	["ChatItemLevel"] = true,
 	["ChatMenu"] = true,
+	["Emojis"] = false,
 	["Enable"] = true,
 	["EnableFilter"] = true,
 	["Fading"] = true,
