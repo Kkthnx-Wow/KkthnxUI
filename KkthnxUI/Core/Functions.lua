@@ -331,14 +331,13 @@ local function CheckRole()
 		return
 	end
 
-	K.Specialization = tree
 	local _, _, _, _, role, stat = GetSpecializationInfo(tree)
 	if role == "TANK" then
 		K.Role = "Tank"
 	elseif role == "HEALER" then
 		K.Role = "Healer"
 	elseif role == "DAMAGER" then
-		if stat == 4 then -- 1 Strength, 2 Agility, 4 Intellect
+		if stat == 4 then	-- 1 Strength, 2 Agility, 4 Intellect
 			K.Role = "Caster"
 		else
 			K.Role = "Melee"
@@ -346,14 +345,16 @@ local function CheckRole()
 	end
 end
 K:RegisterEvent("PLAYER_LOGIN", CheckRole)
+K:RegisterEvent("PLAYER_ENTERING_WORLD", CheckRole)
 K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
+K:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED', CheckRole)
 
 -- Chat channel check
-function K.CheckChat(warning)
+function K.CheckChat(useRaidWarning)
 	if IsPartyLFG() then
 		return "INSTANCE_CHAT"
 	elseif IsInRaid() then
-		if warning and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or IsEveryoneAssistant()) then
+		if useRaidWarning and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or IsEveryoneAssistant()) then
 			return "RAID_WARNING"
 		else
 			return "RAID"

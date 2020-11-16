@@ -82,13 +82,9 @@ local function ReskinBartender4()
 		Button.isSkinned = true
 	end
 
-	if BT4StatusBarTrackingManager then
-		BT4StatusBarTrackingManager:StripTextures()
-	end
-
 	for i = 1, 10 do
 		if _G["BT4Bar"..i] and _G["BT4Bar"..i].buttons then
-			for k, button in pairs(_G["BT4Bar"..i].buttons) do
+			for _, button in pairs(_G["BT4Bar"..i].buttons) do
 				StyleNormalButton(button)
 			end
 		end
