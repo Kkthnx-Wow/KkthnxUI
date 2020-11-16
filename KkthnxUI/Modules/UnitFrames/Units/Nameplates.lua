@@ -307,8 +307,8 @@ end
 -- Backdrop shadow
 function Module:CreateThreatColor(self)
 	local threatIndicator = self:CreateShadow()
-	threatIndicator:SetPoint("TOPLEFT", self.Health.backdrop, "TOPLEFT", -3, 3)
-	threatIndicator:SetPoint("BOTTOMRIGHT", self.Health.backdrop, "BOTTOMRIGHT", 3, -3)
+	threatIndicator:SetPoint("TOPLEFT", self.Health.backdrop, "TOPLEFT", -1, 1)
+	threatIndicator:SetPoint("BOTTOMRIGHT", self.Health.backdrop, "BOTTOMRIGHT", 1, -1)
 	threatIndicator:Hide()
 
 	self.ThreatIndicator = threatIndicator
@@ -401,8 +401,8 @@ function Module:AddTargetIndicator(self)
 	self.TargetIndicator.RightArrow:SetRotation(math_rad(-180))
 
 	self.TargetIndicator.Glow = CreateFrame("Frame", nil, self.TargetIndicator, "BackdropTemplate")
-	self.TargetIndicator.Glow:SetPoint("TOPLEFT", self.Health.backdrop, -5, 5)
-	self.TargetIndicator.Glow:SetPoint("BOTTOMRIGHT", self.Health.backdrop, 5, -5)
+	self.TargetIndicator.Glow:SetPoint("TOPLEFT", self.Health.backdrop, -2, 2)
+	self.TargetIndicator.Glow:SetPoint("BOTTOMRIGHT", self.Health.backdrop, 2, -2)
 	self.TargetIndicator.Glow:SetBackdrop({edgeFile = C["Media"].Glow, edgeSize = 4})
 	self.TargetIndicator.Glow:SetBackdropBorderColor(unpack(C["Nameplate"].TargetIndicatorColor))
 	self.TargetIndicator.Glow:SetFrameLevel(0)
@@ -776,9 +776,9 @@ function Module:CreatePlates()
 	self.Health:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 
 	self.Health.backdrop = self.Health:CreateShadow(true) -- don't mess up with libs
-	self.Health.backdrop:SetAllPoints()
+	self.Health.backdrop:SetPoint("TOPLEFT", self.Health, "TOPLEFT", -3, 3)
+	self.Health.backdrop:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 3, -3)
 	self.Health.backdrop:SetFrameLevel(self.Health:GetFrameLevel())
-	self.Health.backdrop:CreateShadow(true)
 
 	self.Health.frequentUpdates = true
 	self.Health.UpdateColor = Module.UpdateColor
