@@ -136,7 +136,7 @@ function Module:CreateBar1()
 			else
 				icon:Hide()
 			end
-			Module.UpdateButtonUsable(button)
+			button:UpdateUsable()
 		end
 	end
 	K:RegisterEvent("SPELL_UPDATE_ICON", FixActionBarTexture)

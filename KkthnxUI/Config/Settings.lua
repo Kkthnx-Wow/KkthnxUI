@@ -457,8 +457,6 @@ C["UITextures"] = {
 
 -- Unitframe
 C["Unitframe"] = {
-	["PlayerWidth"] = 245,
-	["PlayerHeight"] = 24,
 	["AdditionalPower"] = false,
 	["AutoAttack"] = true,
 	["CastClassColor"] = false,

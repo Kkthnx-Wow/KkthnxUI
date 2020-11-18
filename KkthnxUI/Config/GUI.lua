@@ -370,7 +370,6 @@ local General = function(self)
 	-- DeleteProfile.Menu:HookScript("OnHide", GUI.DeleteProfile)
 
 	Window:CreateSection("General Toggles")
-	Window:CreateSwitch("General", "AutoScale", L["Auto Scale"], nil, UpdateUIScale)
 	Window:CreateSwitch("General", "ColorTextures", L["Color 'Most' KkthnxUI Borders"])
 	Window:CreateSwitch("General", "MoveBlizzardFrames", L["Move Blizzard Frames"])
 	Window:CreateSwitch("General", "NoTutorialButtons", L["Disable 'Some' Blizzard Tutorials"])
@@ -379,7 +378,8 @@ local General = function(self)
 	Window:CreateDropdown("General", "NumberPrefixStyle", L["Number Prefix Style"])
 
 	Window:CreateSection("General Scaling")
-	Window:CreateSlider("General", "UIScale", L["Set UI scale"], 0.4, 1.15, 0.01, nil, UIScaleNotice)
+	Window:CreateSwitch("General", "AutoScale", L["Auto Scale"], L["AutoScaleTip"], UpdateUIScale)
+	Window:CreateSlider("General", "UIScale", L["Set UI scale"], 0.4, 1.15, 0.01, L["UIScaleTip"], UIScaleNotice)
 
 	Window:CreateSection("General Colors")
 	Window:CreateColorSelection("General", "TexturesColor", L["Textures Color"])

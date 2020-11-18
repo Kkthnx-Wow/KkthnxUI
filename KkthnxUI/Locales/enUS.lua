@@ -636,4 +636,6 @@ L["Show Smaller Worldmap"] = "Show Smaller Worldmap"
 L["Show Zones You Have Yet to Discover"] = "Show Zones You Have Yet to Discover"
 
 -- GUI Config Tooltip Locales
+L["AutoScaleTip"] = "Auto Scale the UI to pixel perfect based on your resolution.|n|nIf you wanna manaually scale the UI. You need to turn off 'Auto Scale' then apply the scale by using the slider"
+L["UIScaleTip"] = "Scale the UI based on your own peference.|n|nIf you wanna manaually scale the UI. You need to turn off 'Auto Scale' then apply the scale by using the slider"
 L["ExecuteRatioTip"] = "If unit health percentage is lower than the execute cap value you set, its name turns red.|n|nThe execute indicator will be disabled on 0."
