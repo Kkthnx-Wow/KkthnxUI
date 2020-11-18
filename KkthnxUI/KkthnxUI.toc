@@ -1,0 +1,13 @@
+## Interface: 90002
+## Name: KkthnxUI
+## Title: |cff669DFFKkthnxUI|r
+## Notes: Custom user interface.|n|n|cff669DFFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/Kkthnx|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
+## Author: Josh "Kthnx" Russell
+## Version: 10.0.9
+## SavedVariables: KkthnxUIData, KkthnxUISettings, KkthnxUIGold, KkthnxUISettingsPerCharacter
+## OptionalDeps: cargBags, Pawn
+## X-Curse-Project-ID: 95528
+## X-WoWI-ID: 24615
+
+# -- Load Core File
+KkthnxUI.xml

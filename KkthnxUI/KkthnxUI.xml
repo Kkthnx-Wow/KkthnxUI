@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+   <!-- Libraries -->
+   <Include file="Libraries\Load_Libraries.xml" />
+   <!-- Engine -->
+   <Script file="Init.lua" />
+   <!-- Settings -->
+   <Script file="Config\Settings.lua" />
+   <!-- Media -->
+   <Script file="Media\Media.lua" />
+   <!-- Locales -->
+   <Include file="Locales\Load_Locales.xml" />
+   <!-- Core -->
+   <Include file="Core\Load_Core.xml" />
+   <!-- Config -->
+   <Include file="Config\Load_Config.xml" />
+   <!-- Modules -->
+   <Include file="Modules\Load_Modules.xml" />
+   <!-- Developer -->
+   <Include file="Developer\Load_Developer.xml" />
+</Ui>
