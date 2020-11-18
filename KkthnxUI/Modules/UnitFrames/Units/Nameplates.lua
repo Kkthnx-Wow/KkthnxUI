@@ -982,7 +982,7 @@ function Module:UpdateClassPowerAnchor()
 	if nameplate then
 		bar:SetParent(nameplate.unitFrame)
 		bar:ClearAllPoints()
-		bar:SetPoint("BOTTOM", nameplate.unitFrame, "TOP", 0, 14)
+		bar:SetPoint("BOTTOM", nameplate.unitFrame, "TOP", 0, 18)
 		bar:Show()
 	else
 		bar:Hide()
@@ -1160,7 +1160,6 @@ function Module:CreatePlayerPlate()
 	self.mystyle = "PlayerPlate"
 
 	local iconSize, margin = C["Nameplate"].PPIconSize, 2
-
 	self:SetSize(iconSize * 5 + margin * 4, C["Nameplate"].PPHeight)
 	self:EnableMouse(false)
 	self.iconSize = iconSize
@@ -1187,9 +1186,7 @@ function Module:CreatePlayerPlate()
 	self.Power.colorReaction = true
 	self.Power.frequentUpdates = true
 
-	if C["Nameplate"].NameplateClassPower then
-		Module:CreateClassPower(self)
-	end
+	Module:CreateClassPower(self)
 
 	if K.Class == "MONK" then
 		self.Stagger = CreateFrame("StatusBar", self:GetName().."Stagger", self)

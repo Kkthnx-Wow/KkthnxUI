@@ -708,22 +708,34 @@ function Module:OnEnable()
 	-- MicroButton Talent Alert
 	local TalentMicroButtonAlert = _G.TalentMicroButtonAlert
 	if TalentMicroButtonAlert then -- why do we need to check this?
-		if C["General"].MissingTalentAlert then
-			TalentMicroButtonAlert:ClearAllPoints()
-			TalentMicroButtonAlert:SetPoint("CENTER", UIParent, "TOP", 0, -75)
+		if not C["General"].NoTutorialButtons then
 			TalentMicroButtonAlert:StripTextures()
+			TalentMicroButtonAlert:CreateBorder()
+
 			TalentMicroButtonAlert.Arrow:Hide()
+
+			TalentMicroButtonAlert.Text:ClearAllPoints()
+			TalentMicroButtonAlert.Text:SetPoint("CENTER", TalentMicroButtonAlert, "CENTER", 0, -10)
 			TalentMicroButtonAlert.Text:FontTemplate()
-			TalentMicroButtonAlert:CreateBackdrop("Transparent")
+
+			TalentMicroButtonAlert.CloseButton:ClearAllPoints()
+			TalentMicroButtonAlert.CloseButton:SetPoint("TOPRIGHT", TalentMicroButtonAlert, "TOPRIGHT", 3, 3)
 			TalentMicroButtonAlert.CloseButton:SkinCloseButton()
 
+			TalentMicroButtonAlert.arrow = TalentMicroButtonAlert:CreateTexture(nil, "OVERLAY")
+			TalentMicroButtonAlert.arrow:SetPoint("CENTER", TalentMicroButtonAlert.Arrow, -1, -2)
+			TalentMicroButtonAlert.arrow:SetTexture(C["Media"].Arrow)
+			TalentMicroButtonAlert.arrow:SetRotation(rad(180))
+			TalentMicroButtonAlert.arrow:SetSize(16, 16)
+			TalentMicroButtonAlert.arrow:SetAlpha(0.8)
+
 			TalentMicroButtonAlert.tex = TalentMicroButtonAlert:CreateTexture(nil, "OVERLAY")
-			TalentMicroButtonAlert.tex:SetPoint("RIGHT", -10, 0)
+			TalentMicroButtonAlert.tex:SetPoint("TOP", 0, -4)
 			TalentMicroButtonAlert.tex:SetTexture([[Interface\DialogFrame\UI-Dialog-Icon-AlertNew]])
-			TalentMicroButtonAlert.tex:SetSize(32, 32)
+			TalentMicroButtonAlert.tex:SetSize(26, 26)
+			TalentMicroButtonAlert.tex:SetAlpha(0.8)
 		else
 			TalentMicroButtonAlert:Kill() -- Kill it, because then the blizz default will show
 		end
 	end
-
 end

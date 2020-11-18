@@ -21,7 +21,6 @@ function Module:CreateRecycleBin()
 		return
 	end
 
-	local buttons = {}
 	local blackList = {
 		["GameTimeFrame"] = true,
 		["MiniMapLFGFrame"] = true,
@@ -29,7 +28,6 @@ function Module:CreateRecycleBin()
 		["MinimapBackdrop"] = true,
 		["TimeManagerClockButton"] = true,
 		["FeedbackUIButton"] = true,
-		["HelpOpenTicketButton"] = true,
 		["MiniMapBattlefieldFrame"] = true,
 		["QueueStatusMinimapButton"] = true,
 		["GarrisonLandingPageMinimapButton"] = true,
@@ -41,8 +39,8 @@ function Module:CreateRecycleBin()
 	local bu = CreateFrame("Button", "RecycleBinToggleButton", Minimap)
 	bu:SetAlpha(0.6)
 	bu:SetSize(16, 16)
-	bu:ClearAllPoints()
 	bu:SetPoint("BOTTOMLEFT", -7, -7)
+
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 	bu.Icon:SetAllPoints()
 	bu.Icon:SetTexture("Interface\\COMMON\\Indicator-Gray")
@@ -50,30 +48,30 @@ function Module:CreateRecycleBin()
 	bu:SetPushedTexture("Interface\\COMMON\\Indicator-Green")
 	K.AddTooltip(bu, "ANCHOR_LEFT", "Minimap RecycleBin|n|nCollects minimap buttons and makes them accessible through a pop out menu", "white")
 
+	local width, height = 220, 30
 	local bin = CreateFrame("Frame", "RecycleBinFrame", UIParent)
-	bin:SetSize(220, 30)
-	bin:SetPoint("TOPRIGHT", bu, "BOTTOMLEFT", 0, 0)
+	bin:SetPoint("BOTTOMRIGHT", bu, "BOTTOMLEFT", -3, 10)
+	bin:SetSize(width, height)
 	bin:CreateBorder()
+	bin:SetFrameStrata("TOOLTIP")
 	bin:Hide()
-	bin:SetFrameStrata("LOW")
 
 	local function hideBinButton()
 		bin:Hide()
 	end
 
 	local function clickFunc()
+		PlaySound(825)
 		UIFrameFadeOut(bin, 0.5, 1, 0)
 		C_Timer_After(0.5, hideBinButton)
-		PlaySound(825)
 	end
 
 	local secureAddons = {
-		["HANDYNOTESPIN"] = true,
-		["GATHERMATEPIN"] = true,
+		["GatherMatePin"] = true,
+		["HandyNotesPin"] = true,
 	}
 
 	local function isButtonSecure(name)
-		name = string_upper(name)
 		for addonName in pairs(secureAddons) do
 			if string_match(name, addonName) then
 				return true
@@ -81,73 +79,97 @@ function Module:CreateRecycleBin()
 		end
 	end
 
-	local isCollecting
-	local function CollectRubbish()
-		if isCollecting then
-			return
-		end
-		isCollecting = true
+	local currentIndex, pendingTime, timeThreshold = 0, 5, 12
+	local buttons, numMinimapChildren = {}, 0
+	local removedTextures = {
+		[136430] = true,
+		[136467] = true,
+	}
 
-		for _, child in ipairs({Minimap:GetChildren()}) do
-			local name = child:GetName()
-			if name and not blackList[name] and not isButtonSecure(name) then
-				if child:GetObjectType() == "Button" or string_match(string_upper(name), "BUTTON") then
-					child:SetParent(bin)
-					child:SetSize(22, 22)
-					for j = 1, child:GetNumRegions() do
-						local region = select(j, child:GetRegions())
-						if region:GetObjectType() == "Texture" then
-							local texture = region:GetTexture() or ""
-							if string_find(texture, "Interface\\CharacterFrame") or string_find(texture, "Interface\\Minimap") then
-								region:SetTexture(nil)
-							elseif texture == 136430 or texture == 136467 then
-								region:SetTexture(nil)
-							end
-							region:ClearAllPoints()
-							region:SetAllPoints()
-							region:SetTexCoord(unpack(K.TexCoords))
-						end
-					end
-
-					if child:HasScript("OnDragStart") then
-						child:SetScript("OnDragStart", nil)
-					end
-
-					if child:HasScript("OnDragStop") then
-						child:SetScript("OnDragStop", nil)
-					end
-
-					if child:HasScript("OnClick") then
-						child:HookScript("OnClick", clickFunc)
-					end
-
-					if child:GetObjectType() == "Button" then
-						child:SetHighlightTexture(C["Media"].Blank) -- prevent nil function
-						child:GetHighlightTexture():SetPoint("TOPLEFT", child, "TOPLEFT", 2, -2)
-						child:GetHighlightTexture():SetPoint("BOTTOMRIGHT", child, "BOTTOMRIGHT", -2, 2)
-						child:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
-					elseif child:GetObjectType() == "Frame" then
-						child.highlight = child:CreateTexture(nil, "HIGHLIGHT")
-						child.highlight:SetPoint("TOPLEFT", child, "TOPLEFT", 2, -2)
-						child.highlight:SetPoint("BOTTOMRIGHT", child, "BOTTOMRIGHT", -2, 2)
-						child.highlight:SetColorTexture(1, 1, 1, .25)
-					end
-					child:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
-
-					-- Naughty Addons
-					if name == "DBMMinimapButton" then
-						child:SetScript("OnMouseDown", nil)
-						child:SetScript("OnMouseUp", nil)
-					elseif name == "BagSync_MinimapButton" then
-						child:HookScript("OnMouseUp", clickFunc)
-					end
-
-					table_insert(buttons, child)
+	local function ReskinMinimapButton(child)
+		for j = 1, child:GetNumRegions() do
+			local region = select(j, child:GetRegions())
+			if region:IsObjectType("Texture") then
+				local texture = region:GetTexture() or ""
+				if removedTextures[texture] or string_find(texture, "Interface\\CharacterFrame") or string_find(texture, "Interface\\Minimap") then
+					region:SetTexture(nil)
 				end
+				region:ClearAllPoints()
+				region:SetAllPoints()
+				region:SetTexCoord(unpack(K.TexCoords))
+			end
+			child:SetSize(22, 22)
+			child:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		end
+
+		table_insert(buttons, child)
+	end
+
+	local function KillMinimapButtons()
+		for _, child in pairs(buttons) do
+			if not child.styled then
+				child:SetParent(bin)
+				if child:HasScript("OnDragStop") then
+					child:SetScript("OnDragStop", nil)
+				end
+
+				if child:HasScript("OnDragStart") then
+					child:SetScript("OnDragStart", nil)
+				end
+
+				if child:HasScript("OnClick") then
+					child:HookScript("OnClick", clickFunc)
+				end
+
+				if child:IsObjectType("Button") then
+					child:SetHighlightTexture(C["Media"].Blank) -- prevent nil function
+					child:GetHighlightTexture():SetPoint("TOPLEFT", child, "TOPLEFT", 2, -2)
+					child:GetHighlightTexture():SetPoint("BOTTOMRIGHT", child, "BOTTOMRIGHT", -2, 2)
+					child:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
+				elseif child:IsObjectType("Frame") then
+					child.highlight = child:CreateTexture(nil, "HIGHLIGHT")
+					child.highlight:SetPoint("TOPLEFT", child, "TOPLEFT", 2, -2)
+					child.highlight:SetPoint("BOTTOMRIGHT", child, "BOTTOMRIGHT", -2, 2)
+					child.highlight:SetColorTexture(1, 1, 1, .25)
+				end
+
+				-- Naughty Addons
+				local name = child:GetName()
+				if name == "DBMMinimapButton" then
+					child:SetScript("OnMouseDown", nil)
+					child:SetScript("OnMouseUp", nil)
+				elseif name == "BagSync_MinimapButton" then
+					child:HookScript("OnMouseUp", clickFunc)
+				end
+
+				child.styled = true
 			end
 		end
+	end
 
-		isCollecting = nil
+	local function CollectRubbish()
+		local numChildren = Minimap:GetNumChildren()
+		if numChildren ~= numMinimapChildren then
+			for i = 1, numChildren do
+				local child = select(i, Minimap:GetChildren())
+				local name = child and child.GetName and child:GetName()
+				if name and not child.isExamed and not blackList[name] then
+					if (child:IsObjectType("Button") or string_match(string_upper(name), "BUTTON")) and not isButtonSecure(name) then
+						ReskinMinimapButton(child)
+					end
+					child.isExamed = true
+				end
+			end
+
+			numMinimapChildren = numChildren
+		end
+
+		KillMinimapButtons()
+
+		currentIndex = currentIndex + 1
+		if currentIndex < timeThreshold then
+			C_Timer_After(pendingTime, CollectRubbish)
+		end
 	end
 
 	local function SortRubbish()
@@ -157,7 +179,7 @@ function Module:CreateRecycleBin()
 
 		local lastbutton
 		for _, button in pairs(buttons) do
-			if button.IsShown and button:IsShown() then
+			if next(button) and button:IsShown() then -- fix for fuxking AHDB
 				button:ClearAllPoints()
 				if not lastbutton then
 					button:SetPoint("RIGHT", bin, -4, 0)
@@ -174,13 +196,10 @@ function Module:CreateRecycleBin()
 		if bin:IsShown() then
 			clickFunc()
 		else
-			UIFrameFadeIn(bin, 0.5, 0, 1)
 			PlaySound(825)
+			UIFrameFadeIn(bin, 0.5, 0, 1)
 		end
 	end)
 
-	C_Timer_After(0.4, function()
-		CollectRubbish()
-		SortRubbish()
-	end)
+	CollectRubbish()
 end

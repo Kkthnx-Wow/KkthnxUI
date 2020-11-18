@@ -648,14 +648,18 @@ end
 
 function Module:CreateClassPower(self)
 	if self.mystyle == "PlayerPlate" then
-		barWidth = C["Nameplate"].NameplateClassPower and C["Nameplate"].PlateWidth or C["Nameplate"].PPWidth
-		barHeight = C["Nameplate"].PPHeight
+		barWidth = C["Nameplate"].NameplateClassPower and C["Nameplate"].PlateWidth or C["Nameplate"].PPIconSize * 5 + 2 * 4
+		barHeight = C["Nameplate"].NameplateClassPower and C["Nameplate"].PlateHeight or C["Nameplate"].PPHeight
 		Module.ClassPowerBarPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 3}
 	end
 
 	local bar = CreateFrame("Frame", "oUF_ClassPowerBar", self.Health)
 	bar:SetSize(barWidth, barHeight)
 	bar:SetPoint(unpack(Module.ClassPowerBarPoint))
+
+	if self.mystyle == "player" and C["Unitframe"].ClassResources and not C["Nameplate"].ShowPlayerPlate then
+		K.Mover(bar, "ClassPower", "ClassPower", {"TOPLEFT", self, 0, 20}, barWidth, barHeight)
+	end
 
 	local bars = {}
 	for i = 1, 6 do
@@ -697,13 +701,6 @@ function Module:CreateClassPower(self)
 		bars.PostUpdate = Module.PostUpdateClassPower
 		self.ClassPower = bars
 	end
-end
-
--- Units
-function Module:SetUnitFrameSize(unit)
-	local width = C["Unitframe"][unit.."Width"]
-	local height = C["Unitframe"][unit.."Height"]
-	self:SetSize(width, height)
 end
 
 function Module:CreateUnits()
