@@ -158,6 +158,7 @@
    <Include file="Skins\Blizzard\Friends.lua" />
    <Include file="Skins\Blizzard\Inspect.lua" />
    <Include file="Skins\Blizzard\LossControl.lua" />
+   <Include file="Skins\Blizzard\MailFrame.lua" />
    <Include file="Skins\Blizzard\Miscellaneous.lua" />
    <Include file="Skins\Blizzard\ObjectiveTracker.lua" />
    <Include file="Skins\Blizzard\PetBattle.lua" />

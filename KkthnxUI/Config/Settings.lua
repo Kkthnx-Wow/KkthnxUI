@@ -345,6 +345,7 @@ C["Nameplate"] = {
 	["PPIconSize"] = 32,
 	["PPPHeight"] = 6,
 	["PPPowerText"] = true,
+	["PPWidth"] = 175,
 	["PlateHeight"] = 13,
 	["PlateWidth"] = 170,
 	["QuestIndicator"] = true,
