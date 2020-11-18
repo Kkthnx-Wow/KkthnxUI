@@ -1,5 +1,5 @@
 
-local K, C, L = unpack(ns)
+local K, C = unpack(select(2, ...))
 
 tinsert(C.defaultThemes, function()
 	local texL, texR, texT, texB = unpack(K.TexCoords)
