@@ -12,18 +12,8 @@ local string_format = _G.string.format
 local GetInstanceInfo = _G.GetInstanceInfo
 local InCombatLockdown = _G.InCombatLockdown
 local UnitName = _G.UnitName
-local ChatFrame_AddMessageGroup = _G.ChatFrame_AddMessageGroup
-local ChatFrame_RemoveAllMessageGroups = _G.ChatFrame_RemoveAllMessageGroups
 local ChatTypeInfo = _G.ChatTypeInfo
 local ConsoleExec = _G.ConsoleExec
-local FCF_DockFrame = _G.FCF_DockFrame
-local FCF_OpenNewWindow = _G.FCF_OpenNewWindow
-local FCF_ResetChatWindows = _G.FCF_ResetChatWindows
-local FCF_SetChatWindowFontSize = _G.FCF_SetChatWindowFontSize
-local FCF_SetLocked = _G.FCF_SetLocked
-local FCF_SetWindowName = _G.FCF_SetWindowName
-local GENERAL = _G.GENERAL
-local GUILD_EVENT_LOG = _G.GUILD_EVENT_LOG
 local GetCVar = _G.GetCVar
 local GetChannelName = _G.GetChannelName
 local IsControlKeyDown = _G.IsControlKeyDown
@@ -32,9 +22,7 @@ local IsInGuild = _G.IsInGuild
 local IsInRaid = _G.IsInRaid
 local IsPartyLFG = _G.IsPartyLFG
 local IsShiftKeyDown = _G.IsShiftKeyDown
-local LOOT = _G.LOOT
 local SetCVar = _G.SetCVar
-local TRADE = _G.TRADE
 local hooksecurefunc = _G.hooksecurefunc
 
 local messageSoundID = SOUNDKIT.TELL_MESSAGE
@@ -177,20 +165,31 @@ local function CreateBackground(self)
 	return frame
 end
 
+-- https://git.tukui.org/Tukz/Tukui/-/blob/master/Tukui/Modules/ChatFrames/ChatFrames.lua#L55
+function Module:SetChatFont()
+	local Font = K.GetFont(C["UIFonts"].ChatFonts)
+	local Path, _, Flag = _G[Font]:GetFont()
+	local CurrentFont, CurrentSize, CurrentFlag = self:GetFont()
+
+	if (CurrentFont == Path and CurrentFlag == Flag) then
+		return
+	end
+
+	self:SetFont(Path, CurrentSize, Flag)
+end
+
 function Module:SkinChat()
 	if not self or self.styled then
 		return
 	end
 
+	local id = self:GetID()
 	local name = self:GetName()
-	local getFont = K.GetFont(C["UIFonts"].ChatFonts)
-	local font, fontSize, fontFlag = _G[getFont]:GetFont()
 	local getTabFont = K.GetFont(C["UIFonts"].ChatFonts)
 	local tabFont, tabFontSize, tabFontFlags = _G[getTabFont]:GetFont()
 
 	self:SetMaxResize(K.ScreenWidth, K.ScreenHeight)
 	self:SetMinResize(100, 50)
-	self:SetFont(font, fontSize, fontFlag)
 	self:SetClampRectInsets(0, 0, 0, 0)
 	self:SetClampedToScreen(false)
 	self:SetFading(C["Chat"].Fading)
@@ -220,6 +219,7 @@ function Module:SkinChat()
 	local tab = _G[name.."Tab"]
 	tab:SetAlpha(1)
 	tab.Text:SetFont(tabFont, tabFontSize + 1, tabFontFlags)
+	tab.Text.SetFont = K.Noop
 	tab:StripTextures(7)
 	hooksecurefunc(tab, "SetAlpha", Module.TabSetAlpha)
 
@@ -238,6 +238,14 @@ function Module:SkinChat()
 	self.ScrollToBottomButton:Kill()
 
 	self.oldAlpha = self.oldAlpha or 0 -- fix blizz error
+
+	-- Temp Chats
+	if (id > 10) then
+		self.SetChatFont(self)
+	end
+
+	-- Security for font, in case if revert back to WoW default we restore instantly the tukui font default.
+	hooksecurefunc(self, "SetFont", Module.SetChatFont)
 
 	self.styled = true
 end
@@ -412,6 +420,7 @@ function Module:OnEnable()
 
 	for i = 1, NUM_CHAT_WINDOWS do
 		Module.SkinChat(_G["ChatFrame"..i])
+		Module.SetChatFont(_G["ChatFrame"..i])
 	end
 
 	hooksecurefunc("FCF_OpenTemporaryWindow", function()

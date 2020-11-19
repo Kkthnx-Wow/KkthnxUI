@@ -114,7 +114,11 @@ local function KKUI_LoadProfiles()
 	end
 end
 
-K:RegisterEvent("VARIABLES_LOADED", function()
+K:RegisterEvent("ADDON_LOADED", function(_, addon)
+	if addon ~= "KkthnxUI" then
+		return
+	end
+
 	KKUI_CreateDefaults()
 	KKUI_LoadProfiles()
 	KKUI_LoadCustomSettings()

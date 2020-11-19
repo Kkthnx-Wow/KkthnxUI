@@ -246,7 +246,11 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	K.Modules = modules
 end)
 
-K:RegisterEvent("VARIABLES_LOADED", function(event)
+K:RegisterEvent("ADDON_LOADED", function(_, addon)
+	if addon ~= "KkthnxUI" then
+		return
+	end
+
 	-- Some GUID Stuff
 	K.GUID = UnitGUID("player")
 	-- Setup UI Scale
