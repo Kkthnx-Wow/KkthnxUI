@@ -516,9 +516,11 @@ function Module:CreateAFKCam()
 			modelOffsetY = 280
 		end
 	elseif K.Race == "Dwarf" or K.Race == "DarkIronDwarf" then
-		if K.Sex == 2 then modelOffsetY = 250 end
+		if K.Sex == 2 then
+			modelOffsetY = 250
+		end
 	elseif K.Race == "Vulpera" then
-		modelOffsetY = 140
+		modelOffsetY = 220
 	end
 
 	AFKMode.bottom.faction = AFKMode.bottom:CreateTexture(nil, "OVERLAY")
