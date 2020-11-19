@@ -36,31 +36,20 @@ table_insert(C.defaultThemes, function()
 		end
 
 		local NewBorder = CreateFrame("Frame", nil, button, "BackdropTemplate")
-		NewBorder:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
-		NewBorder:SetPoint("TOPLEFT", button, -6, 6)
-		NewBorder:SetPoint("BOTTOMRIGHT", button, 6, -6)
+		NewBorder:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 16})
+		NewBorder:SetPoint("TOPLEFT", button, -8, 8)
+		NewBorder:SetPoint("BOTTOMRIGHT", button, 8, -8)
 		NewBorder:SetBackdropBorderColor(1, 1, 0)
 		NewBorder:Hide()
-
-		local NewAnimation = NewBorder:CreateAnimationGroup()
-		NewAnimation:SetLooping("BOUNCE")
-		NewAnimation.Fader = NewAnimation:CreateAnimation("Alpha")
-		NewAnimation.Fader:SetFromAlpha(0.8)
-		NewAnimation.Fader:SetToAlpha(0.2)
-		NewAnimation.Fader:SetDuration(1)
-		NewAnimation.Fader:SetSmoothing("OUT")
-		NewAnimation.Fader:Stop()
 
 		hooksecurefunc(button.SpellHighlightTexture, "SetShown", function(_, value)
 			if value == true then
 				NewBorder:Show()
-				NewAnimation:Play()
 			end
 		end)
 
 		hooksecurefunc(button.SpellHighlightTexture, "Hide", function()
 			NewBorder:Hide()
-			NewAnimation:Stop()
 		end)
 	end
 
