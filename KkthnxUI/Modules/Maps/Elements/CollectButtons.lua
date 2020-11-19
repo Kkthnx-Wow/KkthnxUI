@@ -22,18 +22,18 @@ function Module:CreateRecycleBin()
 	end
 
 	local blackList = {
-		["GameTimeFrame"] = true,
-		["MiniMapLFGFrame"] = true,
 		["BattlefieldMinimap"] = true,
-		["MinimapBackdrop"] = true,
-		["TimeManagerClockButton"] = true,
 		["FeedbackUIButton"] = true,
-		["MiniMapBattlefieldFrame"] = true,
-		["QueueStatusMinimapButton"] = true,
+		["GameTimeFrame"] = true,
 		["GarrisonLandingPageMinimapButton"] = true,
+		["MiniMapBattlefieldFrame"] = true,
+		["MiniMapLFGFrame"] = true,
+		["MinimapBackdrop"] = true,
 		["MinimapZoneTextButton"] = true,
+		["QueueStatusMinimapButton"] = true,
 		["RecycleBinFrame"] = true,
 		["RecycleBinToggleButton"] = true,
+		["TimeManagerClockButton"] = true,
 	}
 
 	local bu = CreateFrame("Button", "RecycleBinToggleButton", Minimap)
@@ -53,7 +53,7 @@ function Module:CreateRecycleBin()
 	bin:SetPoint("BOTTOMRIGHT", bu, "BOTTOMLEFT", -3, 10)
 	bin:SetSize(width, height)
 	bin:CreateBorder()
-	bin:SetFrameStrata("TOOLTIP")
+	bin:SetFrameStrata("LOW")
 	bin:Hide()
 
 	local function hideBinButton()

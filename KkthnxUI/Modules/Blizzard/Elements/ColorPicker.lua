@@ -138,7 +138,7 @@ local function onColorSelect(frame, r, g, b)
 		delayCall()
 	elseif not delayFunc then
 		delayFunc = _G.ColorPickerFrame.func
-		K.Delay(delayWait, delayCall)
+		C_Timer.After(delayWait, delayCall)
 	end
 end
 
@@ -157,7 +157,7 @@ local function onValueChanged(frame, value)
 				delayFunc = opacityFunc
 			elseif not delayFunc then
 				delayFunc = opacityFunc
-				K.Delay(delayWait, delayCall)
+				C_Timer.After(delayWait, delayCall)
 			end
 		end
 	end

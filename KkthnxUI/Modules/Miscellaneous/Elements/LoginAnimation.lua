@@ -89,9 +89,11 @@ function Module:Logo_Create()
 	frame:SetScript("OnShow", function()
 		anim:Play()
 	end)
+
 	anim:SetScript("OnFinished", function()
 		frame:Hide()
 	end)
+
 	anim.fadeIn:SetScript("OnFinished", function()
 		PlaySound(soundID, "master")
 	end)
