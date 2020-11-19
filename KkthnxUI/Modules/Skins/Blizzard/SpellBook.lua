@@ -21,19 +21,12 @@ table_insert(C.defaultThemes, function()
 		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		icon:SetAllPoints()
 		button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		button:StyleButton()
 
 		if C["General"].ColorTextures then
 			button.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
 		else
 			button.KKUI_Border:SetVertexColor(1, 1, 1)
-		end
-
-		if button.SpellHighlightTexture then
-			button.SpellHighlightTexture:SetColorTexture(0.8, 0.8, 0, 0.6)
-			if icon then
-				button.SpellHighlightTexture:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
-				button.SpellHighlightTexture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
-			end
 		end
 
 		if button.shine then
@@ -42,26 +35,40 @@ table_insert(C.defaultThemes, function()
 			button.shine:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 3, -3)
 		end
 
-		highlight:SetPoint("TOPLEFT", icon, "TOPLEFT", 2, -2)
-		highlight:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", -2, 2)
-		hooksecurefunc(highlight, "SetTexture", function(s, texture)
-			if texture == [[Interface\Buttons\ButtonHilight-Square]] then
-				s:SetColorTexture(1, 1, 1, 0.3)
+		local NewBorder = CreateFrame("Frame", nil, button, "BackdropTemplate")
+		NewBorder:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
+		NewBorder:SetPoint("TOPLEFT", button, -6, 6)
+		NewBorder:SetPoint("BOTTOMRIGHT", button, 6, -6)
+		NewBorder:SetBackdropBorderColor(1, 1, 0)
+		NewBorder:Hide()
+
+		local NewAnimation = NewBorder:CreateAnimationGroup()
+		NewAnimation:SetLooping("BOUNCE")
+		NewAnimation.Fader = NewAnimation:CreateAnimation("Alpha")
+		NewAnimation.Fader:SetFromAlpha(0.8)
+		NewAnimation.Fader:SetToAlpha(0.2)
+		NewAnimation.Fader:SetDuration(1)
+		NewAnimation.Fader:SetSmoothing("OUT")
+		NewAnimation.Fader:Stop()
+
+		hooksecurefunc(button.SpellHighlightTexture, "SetShown", function(_, value)
+			if value == true then
+				NewBorder:Show()
+				NewAnimation:Play()
 			end
+		end)
+
+		hooksecurefunc(button.SpellHighlightTexture, "Hide", function()
+			NewBorder:Hide()
+			NewAnimation:Stop()
 		end)
 	end
 
 	hooksecurefunc("SpellButton_UpdateButton", function()
-		for i = 1, _G.SPELLS_PER_PAGE do
+		for i = 1, SPELLS_PER_PAGE do
 			local button = _G["SpellButton"..i]
-			local icon = _G["SpellButton"..i.."IconTexture"]
-
 			if button.SpellHighlightTexture then
-				button.SpellHighlightTexture:SetColorTexture(0.8, 0.8, 0, 0.6)
-				if icon then
-					button.SpellHighlightTexture:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
-					button.SpellHighlightTexture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
-				end
+				button.SpellHighlightTexture:SetTexture("")
 			end
 		end
 	end)
