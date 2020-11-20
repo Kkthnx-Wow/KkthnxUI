@@ -53,7 +53,6 @@ local function KKUI_LoadCustomSettings()
 	end
 
 	Settings = KkthnxUISettingsPerCharacter[K.Realm][K.Name]
-
 	for group, options in pairs(Settings) do
 		if C[group] then
 			local Count = 0
@@ -114,16 +113,9 @@ local function KKUI_LoadProfiles()
 	end
 end
 
-K:RegisterEvent("ADDON_LOADED", function(_, addon)
-	if addon ~= "KkthnxUI" then
-		return
-	end
-
+K:RegisterEvent("VARIABLES_LOADED", function()
 	KKUI_CreateDefaults()
 	KKUI_LoadProfiles()
 	KKUI_LoadCustomSettings()
-end)
-
-K:RegisterEvent("PLAYER_LOGIN", function()
 	K.GUI:Enable()
 end)

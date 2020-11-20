@@ -62,33 +62,69 @@ local classify = {
 	worldboss = {0, 1, 0},
 }
 
+function Module:SetCVar(cvar, value)
+	if GetCVar(cvar) ~= tostring(value) then
+		SetCVar(cvar, value)
+	end
+end
+
+function Module:ResetCVars()
+	Module:SetCVar("nameplateMinAlpha", 1)
+	Module:SetCVar("nameplateMaxAlpha", 1)
+	Module:SetCVar("nameplateClassResourceTopInset", GetCVarDefault("nameplateClassResourceTopInset"))
+	Module:SetCVar("nameplateGlobalScale", 1)
+	Module:SetCVar("NamePlateHorizontalScale", 1)
+	Module:SetCVar("nameplateLargeBottomInset", GetCVarDefault("nameplateLargeBottomInset"))
+	Module:SetCVar("nameplateLargerScale", 1)
+	Module:SetCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
+	Module:SetCVar("nameplateMaxAlphaDistance", GetCVarDefault("nameplateMaxAlphaDistance"))
+	Module:SetCVar("nameplateMaxScale", 1)
+	Module:SetCVar("nameplateMaxScaleDistance", 40)
+	Module:SetCVar("nameplateMinAlphaDistance", GetCVarDefault("nameplateMinAlphaDistance"))
+	Module:SetCVar("nameplateMinScale", 1)
+	Module:SetCVar("nameplateMinScaleDistance", 0)
+	Module:SetCVar("nameplateMotionSpeed", GetCVarDefault("nameplateMotionSpeed"))
+	Module:SetCVar("nameplateOccludedAlphaMult", GetCVarDefault("nameplateOccludedAlphaMult"))
+	Module:SetCVar("nameplateOtherAtBase", GetCVarDefault("nameplateOtherAtBase"))
+	Module:SetCVar("nameplateOverlapH", GetCVarDefault("nameplateOverlapH"))
+	Module:SetCVar("nameplateOverlapV", GetCVarDefault("nameplateOverlapV"))
+	Module:SetCVar("nameplateResourceOnTarget", GetCVarDefault("nameplateResourceOnTarget"))
+	Module:SetCVar("nameplateSelectedAlpha", 1)
+	Module:SetCVar("nameplateSelectedScale", 1)
+	Module:SetCVar("nameplateSelfAlpha", 1)
+	Module:SetCVar("nameplateSelfBottomInset", GetCVarDefault("nameplateSelfBottomInset"))
+	Module:SetCVar("nameplateSelfScale", 1)
+	Module:SetCVar("nameplateSelfTopInset", GetCVarDefault("nameplateSelfTopInset"))
+	Module:SetCVar("nameplateTargetBehindMaxDistance", 40)
+end
+
 -- Init
 function Module:PlateInsideView()
 	if C["Nameplate"].InsideView then
-		SetCVar("nameplateOtherTopInset", 0.05)
-		SetCVar("nameplateOtherBottomInset", 0.08)
+		Module:SetCVar("nameplateOtherTopInset", 0.05)
+		Module:SetCVar("nameplateOtherBottomInset", 0.08)
 	else
-		SetCVar("nameplateOtherTopInset", -1)
-		SetCVar("nameplateOtherBottomInset", -1)
+		Module:SetCVar("nameplateOtherTopInset", -1)
+		Module:SetCVar("nameplateOtherBottomInset", -1)
 	end
 end
 
 function Module:UpdatePlateScale()
-	SetCVar("namePlateMinScale", C["Nameplate"].MinScale)
-	SetCVar("namePlateMaxScale", C["Nameplate"].MinScale)
+	Module:SetCVar("namePlateMinScale", C["Nameplate"].MinScale)
+	Module:SetCVar("namePlateMaxScale", C["Nameplate"].MinScale)
 end
 
 function Module:UpdatePlateAlpha()
-	SetCVar("nameplateMinAlpha", C["Nameplate"].MinAlpha)
-	SetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
+	Module:SetCVar("nameplateMinAlpha", C["Nameplate"].MinAlpha)
+	Module:SetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
 end
 
 function Module:UpdatePlateRange()
-	SetCVar("nameplateMaxDistance", C["Nameplate"].Distance)
+	Module:SetCVar("nameplateMaxDistance", C["Nameplate"].Distance)
 end
 
 function Module:UpdatePlateSpacing()
-	SetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
+	Module:SetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
 end
 
 function Module:UpdateClickableSize()
@@ -102,20 +138,23 @@ end
 
 function Module:SetupCVars()
 	Module:PlateInsideView()
-	SetCVar("nameplateOverlapH", 0.8)
+	Module:SetCVar("nameplateOverlapH", 0.8)
 	Module:UpdatePlateSpacing()
 	Module:UpdatePlateRange()
 	Module:UpdatePlateAlpha()
-	SetCVar("nameplateSelectedAlpha", 1)
-	SetCVar("showQuestTrackingTooltips", 1)
-	SetCVar("nameplateGlobalScale", 1)
+	Module:SetCVar("nameplateSelectedAlpha", 1)
+	Module:SetCVar("showQuestTrackingTooltips", 1)
+	Module:SetCVar("nameplateGlobalScale", 1)
+	Module:SetCVar("nameplateMotion", 1)
+	Module:SetCVar("nameplateShowAll", 1)
+	Module:SetCVar("nameplateShowEnemies", 1)
 
 	Module:UpdatePlateScale()
-	SetCVar("nameplateSelectedScale", 1)
-	SetCVar("nameplateLargerScale", 1)
+	Module:SetCVar("nameplateSelectedScale", 1)
+	Module:SetCVar("nameplateLargerScale", 1)
 
-	SetCVar("nameplateShowSelf", 0)
-	SetCVar("nameplateResourceOnTarget", 0)
+	Module:SetCVar("nameplateShowSelf", 0)
+	Module:SetCVar("nameplateResourceOnTarget", 0)
 	K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesPersonalResource)
 	K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy)
 
@@ -775,7 +814,7 @@ function Module:CreatePlates()
 	self.Health:SetAllPoints()
 	self.Health:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 
-	self.Health.backdrop = self.Health:CreateShadow(true) -- don't mess up with libs
+	self.Health.backdrop = self.Health:CreateShadow(true) -- don"t mess up with libs
 	self.Health.backdrop:SetPoint("TOPLEFT", self.Health, "TOPLEFT", -3, 3)
 	self.Health.backdrop:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 3, -3)
 	self.Health.backdrop:SetFrameLevel(self.Health:GetFrameLevel())
@@ -844,7 +883,7 @@ function Module:CreatePlates()
 	self.Castbar.Shield = self.Castbar:CreateTexture(nil, "OVERLAY")
 	self.Castbar.Shield:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CastBorderShield")
 	self.Castbar.Shield:SetTexCoord(0, 0.84375, 0, 1)
-	self.Castbar.Shield:SetSize(14 * 0.84375, 14)
+	self.Castbar.Shield:SetSize(16 * 0.84375, 16)
 	self.Castbar.Shield:SetPoint("CENTER", 0, -5)
 	self.Castbar.Shield:SetVertexColor(0.5, 0.5, 0.7)
 
