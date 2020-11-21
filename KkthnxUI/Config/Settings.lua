@@ -301,9 +301,25 @@ C["Misc"] = {
 	["ImprovedStats"] = false,
 	["ItemLevel"] = false,
 	["NoTalkingHead"] = false,
+	["ParagonColor"] = {0, .5, .9},
+	["ParagonEnable"] = false,
+	["ParagonToast"] = false,
+	["ParagonToastFade"] = 5,
+	["ParagonToastSound"] = false,
 	["ShowWowHeadLinks"] = false,
 	["SlotDurability"] = false,
 	["TradeTabs"] = false,
+	["ParagonText"] = {
+		["Options"] = {
+			["Paragon".." (100/10000)"] = 1,
+            ["Exalted".." (100/10000)"] = 2,
+            ["Paragon".." x 1".." (100/10000)"] = 3,
+            ["100 (100/10000)"] = 4,
+            ["100/10000"] = 5,
+            ["9900"] = 6,
+		},
+		["Value"] = 1
+	},
 	["ShowMarkerBar"] = {
 		["Options"] = {
 			["Grids"] = 1,

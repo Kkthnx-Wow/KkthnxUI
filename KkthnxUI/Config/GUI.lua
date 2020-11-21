@@ -430,6 +430,14 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
 	Window:CreateSwitch("Misc", "TradeTabs", L["Add Spellbook-Like Tabs On TradeSkillFrame"])
 	Window:CreateDropdown("Misc", "ShowMarkerBar", L["World Markers Bar"], nil, nil, UpdateMarkerGrid)
+
+	Window:CreateSection("Paragon Repuatation")
+	Window:CreateSwitch("Misc", "ParagonEnable", "Paragon Enable")
+	Window:CreateSwitch("Misc", "ParagonToast", "Paragon Toast")
+	Window:CreateSwitch("Misc", "ParagonToastSound", "Paragon Toast Sound")
+	Window:CreateColorSelection("Misc", "ParagonColor", "Paragon Color")
+	Window:CreateSlider("Misc", "ParagonToastFade", "Paragon Toast Fade", 1, 15, 1)
+	Window:CreateDropdown("Misc", "ParagonText", "Paragon Text Format")
 end
 
 local Nameplate = function(self)

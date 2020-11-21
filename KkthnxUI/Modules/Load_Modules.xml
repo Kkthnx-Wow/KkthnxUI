@@ -73,6 +73,7 @@
    <Script file="Miscellaneous\Elements\StatusReport.lua" />
    <Script file="Miscellaneous\Elements\TradeTabs.lua" />
    <Script file="Miscellaneous\Elements\yClassColors.lua" />
+   <Script file="Miscellaneous\Elements\ParagonReputation.lua" />
    <!-- Auras -->
    <Include file="Auras\AuraTemplate.xml" />
    <Script file="Auras\Core.lua" />

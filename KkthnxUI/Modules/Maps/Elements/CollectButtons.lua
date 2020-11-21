@@ -66,18 +66,22 @@ function Module:CreateRecycleBin()
 		C_Timer_After(0.5, hideBinButton)
 	end
 
-	local secureAddons = {
+	local ignoredButtons = {
 		["GatherMatePin"] = true,
-		["HandyNotesPin"] = true,
+		["HandyNotes.-Pin"] = true,
 	}
 
-	local function isButtonSecure(name)
-		for addonName in pairs(secureAddons) do
+	local function isButtonIgnored(name)
+		for addonName in pairs(ignoredButtons) do
 			if string_match(name, addonName) then
 				return true
 			end
 		end
 	end
+
+	local isGoodLookingIcon = {
+		["Narci_MinimapButton"] = true,
+	}
 
 	local currentIndex, pendingTime, timeThreshold = 0, 5, 12
 	local buttons, numMinimapChildren = {}, 0
@@ -86,7 +90,7 @@ function Module:CreateRecycleBin()
 		[136467] = true,
 	}
 
-	local function ReskinMinimapButton(child)
+	local function ReskinMinimapButton(child, name)
 		for j = 1, child:GetNumRegions() do
 			local region = select(j, child:GetRegions())
 			if region:IsObjectType("Texture") then
@@ -96,7 +100,9 @@ function Module:CreateRecycleBin()
 				end
 				region:ClearAllPoints()
 				region:SetAllPoints()
-				region:SetTexCoord(unpack(K.TexCoords))
+				if not isGoodLookingIcon[name] then
+					region:SetTexCoord(unpack(K.TexCoords))
+				end
 			end
 			child:SetSize(22, 22)
 			child:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
@@ -154,7 +160,7 @@ function Module:CreateRecycleBin()
 				local child = select(i, Minimap:GetChildren())
 				local name = child and child.GetName and child:GetName()
 				if name and not child.isExamed and not blackList[name] then
-					if (child:IsObjectType("Button") or string_match(string_upper(name), "BUTTON")) and not isButtonSecure(name) then
+					if (child:IsObjectType("Button") or string_match(string_upper(name), "BUTTON")) and not isButtonIgnored(name) then
 						ReskinMinimapButton(child)
 					end
 					child.isExamed = true

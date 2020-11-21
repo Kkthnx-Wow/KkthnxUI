@@ -630,6 +630,8 @@ function Module:OnEnable()
 	self:CreateTradeTargetInfo()
 	self:CreateVehicleSeatMover()
 
+	self:CreateParagonReputation()
+
 	K:RegisterEvent("PLAYER_REGEN_DISABLED", Module.CreateErrorFrameToggle)
 	K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.CreateErrorFrameToggle)
 
