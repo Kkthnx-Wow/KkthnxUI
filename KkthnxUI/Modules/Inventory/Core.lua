@@ -77,43 +77,6 @@ local function highlightFunction(button, match)
 	button:SetAlpha(match and 1 or 0.25)
 end
 
-function Module:UpdateItemUpgradeIcon(self)
-	if not C["Inventory"].UpgradeIcon then
-		self.UpgradeIcon:SetShown(false)
-		self:SetScript("OnUpdate", nil)
-		return
-	end
-
-	local itemIsUpgrade, containerID, slotID = nil, self:GetParent():GetID(), self:GetID()
-
-	-- We need to use the Pawn function here to show actually the icon, as Blizzard API doesnt seem to work.
-	if _G.PawnIsContainerItemAnUpgrade then
-		itemIsUpgrade = _G.PawnIsContainerItemAnUpgrade(containerID, slotID)
-	end
-
-	-- Pawn author suggests to fallback to Blizzard API anyways.
-	if itemIsUpgrade == nil then
-		itemIsUpgrade = _G.IsContainerItemAnUpgrade(containerID, slotID)
-	end
-
-	if itemIsUpgrade == nil then -- nil means not all the data was available to determine if this is an upgrade.
-		self.UpgradeIcon:SetShown(false)
-		self:SetScript("OnUpdate", Module.UpgradeCheck_OnUpdate)
-	else
-		self.UpgradeIcon:SetShown(itemIsUpgrade)
-		self:SetScript("OnUpdate", nil)
-	end
-end
-
-local ITEM_UPGRADE_CHECK_TIME = 0.5
-function Module:UpgradeCheck_OnUpdate(elapsed)
-	self.timeSinceUpgradeCheck = (self.timeSinceUpgradeCheck or 0) + elapsed
-	if self.timeSinceUpgradeCheck >= ITEM_UPGRADE_CHECK_TIME then
-		Module:UpdateItemUpgradeIcon(self)
-		self.timeSinceUpgradeCheck = 0
-	end
-end
-
 local profit, spent, oldMoney, ticker = 0, 0, 0
 local crossRealms = GetAutoCompleteRealms()
 
@@ -937,6 +900,7 @@ function Module:OnEnable()
 	local deleteButton = C["Inventory"].DeleteButton
 	local showNewItem = C["Inventory"].ShowNewItem
 	local hasCanIMogIt = IsAddOnLoaded("CanIMogIt")
+	local hasPawn = IsAddOnLoaded("Pawn")
 
 	-- Init
 	local Backpack = cargBags:NewImplementation("KKUI_Backpack")
@@ -1185,6 +1149,20 @@ function Module:OnEnable()
 		end
 	end
 
+	local function UpdatePawnArrow(self, item)
+		if not hasPawn then
+			return
+		end
+
+		if not PawnIsContainerItemAnUpgrade then
+			return
+		end
+
+		if self.UpgradeIcon then
+			self.UpgradeIcon:SetShown(PawnIsContainerItemAnUpgrade(item.bagID, item.slotID))
+		end
+	end
+
 	function MyButton:OnUpdate(item)
 		local buttonIconTexture = _G[self:GetName().."IconTexture"]
 
@@ -1202,10 +1180,6 @@ function Module:OnEnable()
 			self.IconOverlay:Show()
 		else
 			self.IconOverlay:Hide()
-		end
-
-		if self.UpgradeIcon then
-			Module:UpdateItemUpgradeIcon(self)
 		end
 
 		if KkthnxUIData[K.Realm][K.Name].FavouriteItems[item.id] then
@@ -1265,6 +1239,8 @@ function Module:OnEnable()
 
 		-- Support CanIMogIt
 		UpdateCanIMogIt(self, item)
+		-- Support Pawn
+		UpdatePawnArrow(self, item)
 	end
 
 	function MyButton:OnUpdateQuest(item)

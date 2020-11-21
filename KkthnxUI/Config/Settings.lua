@@ -232,6 +232,7 @@ C["General"] = {
 	["ColorTextures"] = false,
 	["MissingTalentAlert"] = true,
 	["MoveBlizzardFrames"] = false,
+	["NoErrorFrame"] = false,
 	["NoTutorialButtons"] = false,
 	["TexturesColor"] = {1, 1, 1},
 	["UIScale"] = 0.71111,
@@ -300,9 +301,25 @@ C["Misc"] = {
 	["ImprovedStats"] = false,
 	["ItemLevel"] = false,
 	["NoTalkingHead"] = false,
+	["ParagonColor"] = {0, .5, .9},
+	["ParagonEnable"] = false,
+	["ParagonToast"] = false,
+	["ParagonToastFade"] = 5,
+	["ParagonToastSound"] = false,
 	["ShowWowHeadLinks"] = false,
 	["SlotDurability"] = false,
 	["TradeTabs"] = false,
+	["ParagonText"] = {
+		["Options"] = {
+			["Paragon".." (100/10000)"] = 1,
+            ["Exalted".." (100/10000)"] = 2,
+            ["Paragon".." x 1".." (100/10000)"] = 3,
+            ["100 (100/10000)"] = 4,
+            ["100/10000"] = 5,
+            ["9900"] = 6,
+		},
+		["Value"] = 1
+	},
 	["ShowMarkerBar"] = {
 		["Options"] = {
 			["Grids"] = 1,
@@ -439,6 +456,8 @@ C["UIFonts"] = {
 	["SkinFonts"] = "KkthnxUI",
 	["TooltipFonts"] = "KkthnxUI",
 	["UnitframeFonts"] = "KkthnxUI",
+	-- Font Sizes Will Go Here (Not Sure How Much I Care About Improving This)
+	["QuestFontSize"] = 12,
 }
 
 -- Textures
@@ -457,8 +476,6 @@ C["UITextures"] = {
 
 -- Unitframe
 C["Unitframe"] = {
-	["PlayerWidth"] = 245,
-	["PlayerHeight"] = 24,
 	["AdditionalPower"] = false,
 	["AutoAttack"] = true,
 	["CastClassColor"] = false,

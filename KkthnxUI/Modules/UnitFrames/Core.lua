@@ -705,6 +705,7 @@ end
 
 function Module:CreateUnits()
 	if C["Nameplate"].Enable then
+		self:ResetCVars()
 		self:SetupCVars()
 		self:BlockAddons()
 		self:CheckExplosives()

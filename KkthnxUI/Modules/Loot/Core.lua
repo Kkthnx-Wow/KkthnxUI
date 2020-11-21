@@ -301,7 +301,11 @@ function Module.LOOT_OPENED(_, autoloot)
 end
 
 function Module:OnEnable()
-	if C["Loot"].Enable ~= true then
+	if not C["Loot"].Enable then
+		return
+	end
+
+	if IsAddOnLoaded("aLoot") then
 		return
 	end
 

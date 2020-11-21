@@ -61,9 +61,6 @@ function Module:ForceDefaultCVars()
 	SetCVar("fstack_preferParentKeys", 0)
 	SetCVar("lockActionBars", 1)
 	SetCVar("lootUnderMouse", 1)
-	SetCVar("nameplateMotion", 1)
-	SetCVar("nameplateShowAll", 1)
-	SetCVar("nameplateShowEnemies", 1)
 	SetCVar("overrideArchive", 0)
 	SetCVar("screenshotQuality", 10)
 	SetCVar("showNPETutorials", 0)
@@ -97,6 +94,11 @@ local function ForceRaidFrame()
 end
 
 function Module:ForceChatSettings()
+	if KkthnxUISettingsPerCharacter[K.Realm][K.Name].Chat then
+		KkthnxUISettingsPerCharacter[K.Realm][K.Name].Chat.Width = 392
+		KkthnxUISettingsPerCharacter[K.Realm][K.Name].Chat.Height = 150
+	end
+
 	K:GetModule("Chat"):UpdateChatSize()
 
 	-- Create our custom chatframes

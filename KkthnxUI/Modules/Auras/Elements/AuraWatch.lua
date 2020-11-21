@@ -152,12 +152,6 @@ local function MakeMoveHandle(frame, text, value, anchor)
 end
 
 -- Aurawatch style
-local PetBattleFrameHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-PetBattleFrameHider:SetAllPoints()
-PetBattleFrameHider:SetFrameStrata("LOW")
-RegisterStateDriver(PetBattleFrameHider, "visibility", "[petbattle] hide; show")
-A.PetBattleFrameHider = PetBattleFrameHider
-
 local function tooltipOnEnter(self)
 	GameTooltip:ClearLines()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 3)
@@ -197,7 +191,7 @@ end
 local function BuildICON(iconSize)
 	iconSize = iconSize * C["AuraWatch"].IconScale
 
-	local frame = CreateFrame("Frame", nil, PetBattleFrameHider)
+	local frame = CreateFrame("Frame", nil, K.PetBattleHider)
 	frame:SetSize(iconSize, iconSize)
 
 	frame.bg = CreateFrame("Frame", nil, frame)
@@ -236,7 +230,7 @@ end
 
 -- Bar mode
 local function BuildBAR(barWidth, iconSize)
-	local frame = CreateFrame("Frame", nil, PetBattleFrameHider)
+	local frame = CreateFrame("Frame", nil, K.PetBattleHider)
 	frame:SetSize(iconSize, iconSize)
 	frame:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
@@ -625,7 +619,7 @@ function A:AuraWatch_IntTimer(elapsed)
 end
 
 function A:AuraWatch_SetupInt(intID, itemID, duration, unitID, guid, sourceName)
-	if not PetBattleFrameHider:IsShown() then
+	if not K.PetBattleHider:IsShown() then
 		return
 	end
 

@@ -53,7 +53,6 @@ local function KKUI_LoadCustomSettings()
 	end
 
 	Settings = KkthnxUISettingsPerCharacter[K.Realm][K.Name]
-
 	for group, options in pairs(Settings) do
 		if C[group] then
 			local Count = 0
@@ -118,8 +117,6 @@ K:RegisterEvent("VARIABLES_LOADED", function()
 	KKUI_CreateDefaults()
 	KKUI_LoadProfiles()
 	KKUI_LoadCustomSettings()
-end)
-
-K:RegisterEvent("PLAYER_LOGIN", function()
+	K.SetupUIScale(true)
 	K.GUI:Enable()
 end)

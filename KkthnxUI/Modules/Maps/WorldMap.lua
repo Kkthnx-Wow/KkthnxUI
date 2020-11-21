@@ -257,7 +257,7 @@ function Module:OnEnable()
 		WorldMapFrame.BlackoutFrame.Blackout:SetTexture(nil)
 		WorldMapFrame.BlackoutFrame:EnableMouse(false)
 
-		K.CreateMoverFrame(WorldMapFrame, nil, true)
+		--K.CreateMoverFrame(WorldMapFrame, nil, true)
 
 		hooksecurefunc(WorldMapFrame, "Maximize", self.SetLargeWorldMap)
 		hooksecurefunc(WorldMapFrame, "Minimize", self.SetSmallWorldMap)
@@ -271,6 +271,8 @@ function Module:OnEnable()
 
 	-- This lets us control the maps fading function
 	hooksecurefunc(PlayerMovementFrameFader, "AddDeferredFrame", self.UpdateMapFade)
+
+	QuestMapFrame:SetScript("OnHide", nil) -- fix map toggle taint
 
 	-- Enable/Disable map fading when moving
 	-- currently we dont need to touch this cvar because we have our own control for this currently

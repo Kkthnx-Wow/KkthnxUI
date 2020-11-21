@@ -408,6 +408,7 @@ local function CreatePanel()
 			icon:SetScript("OnEnter", iconOnEnter)
 			icon:SetScript("OnLeave", K.HideTooltip)
 		end
+
 		close:SetScript("OnClick", function()
 			bar:Hide()
 			KkthnxUIData[K.Realm][K.Name].AuraWatchList[index][spellID] = nil

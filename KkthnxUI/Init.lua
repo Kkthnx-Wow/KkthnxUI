@@ -8,6 +8,7 @@ local pairs = _G.pairs
 local select = _G.select
 local string_format = _G.string.format
 local string_lower = _G.string.lower
+local string_split = _G.string.split
 local table_insert = _G.table.insert
 local tonumber = _G.tonumber
 local unpack = _G.unpack
@@ -235,6 +236,8 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	K.SetupUIScale()
 	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
 
+	K.GUID = UnitGUID("player")
+
 	for _, module in next, initQueue do
 		if module.OnEnable then
 			module:OnEnable()
@@ -244,13 +247,6 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	end
 
 	K.Modules = modules
-end)
-
-K:RegisterEvent("VARIABLES_LOADED", function(event)
-	-- Some GUID Stuff
-	K.GUID = UnitGUID("player")
-	-- Setup UI Scale
-	K.SetupUIScale(true)
 end)
 
 -- Event return values were wrong: https://wow.gamepedia.com/PLAYER_LEVEL_UP

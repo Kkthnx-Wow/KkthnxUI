@@ -137,6 +137,10 @@ local function UpdateFilterWhiteList()
 	K:GetModule("Chat"):UpdateFilterWhiteList()
 end
 
+local function UpdateQuestFontSize()
+	K:GetModule("Miscellaneous"):CreateQuestSizeUpdate()
+end
+
 -- Translate Below Before Shadowlands
 local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
@@ -362,26 +366,23 @@ local General = function(self)
 	local Window = self:CreateWindow(L["General"], true)
 
 	Window:CreateSection("Profiles")
-	local AddProfile = Window:CreateDropdown("General", "Profiles", L["Import a profile from another character"])
+	local AddProfile = Window:CreateDropdown("General", "Profiles", L["Import Profiles From Other Characters"])
 	AddProfile.Menu:HookScript("OnHide", GUI.SetProfile)
 
-	-- Window:CreateSection("Profiles Delete")
-	-- local DeleteProfile = Window:CreateDropdown("General", "Profiles", "Delete a profile from another character")
-	-- DeleteProfile.Menu:HookScript("OnHide", GUI.DeleteProfile)
-
 	Window:CreateSection("General Toggles")
-	Window:CreateSwitch("General", "AutoScale", L["Auto Scale"], nil, UpdateUIScale)
-	Window:CreateSwitch("General", "ColorTextures", L["Color 'Most' KkthnxUI Borders"])
 	Window:CreateSwitch("General", "MoveBlizzardFrames", L["Move Blizzard Frames"])
+	Window:CreateSwitch("General", "NoErrorFrame", L["Disable Blizzard Error Frame Combat"])
 	Window:CreateSwitch("General", "NoTutorialButtons", L["Disable 'Some' Blizzard Tutorials"])
 	Window:CreateSwitch("General", "VersionCheck", L["Enable Version Checking"])
 	Window:CreateSwitch("General", "Welcome", L["Show Welcome Message"])
 	Window:CreateDropdown("General", "NumberPrefixStyle", L["Number Prefix Style"])
 
 	Window:CreateSection("General Scaling")
-	Window:CreateSlider("General", "UIScale", L["Set UI scale"], 0.4, 1.15, 0.01, nil, UIScaleNotice)
+	Window:CreateSwitch("General", "AutoScale", L["Auto Scale"], L["AutoScaleTip"], UpdateUIScale)
+	Window:CreateSlider("General", "UIScale", L["Set UI scale"], 0.4, 1.15, 0.01, L["UIScaleTip"], UIScaleNotice)
 
 	Window:CreateSection("General Colors")
+	Window:CreateSwitch("General", "ColorTextures", L["Color 'Most' KkthnxUI Borders"])
 	Window:CreateColorSelection("General", "TexturesColor", L["Textures Color"])
 end
 
@@ -429,6 +430,14 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
 	Window:CreateSwitch("Misc", "TradeTabs", L["Add Spellbook-Like Tabs On TradeSkillFrame"])
 	Window:CreateDropdown("Misc", "ShowMarkerBar", L["World Markers Bar"], nil, nil, UpdateMarkerGrid)
+
+	Window:CreateSection("Paragon Reputation")
+	Window:CreateSwitch("Misc", "ParagonEnable", L["Paragon Enable"], L["ParagonReputationTip"])
+	Window:CreateSwitch("Misc", "ParagonToast", L["Paragon Toast"])
+	Window:CreateSwitch("Misc", "ParagonToastSound", L["Paragon Toast Sound"])
+	Window:CreateColorSelection("Misc", "ParagonColor", L["Paragon Color"])
+	Window:CreateSlider("Misc", "ParagonToastFade", L["Paragon Toast Fade"], 1, 15, 1)
+	Window:CreateDropdown("Misc", "ParagonText", L["Paragon Text Format"])
 end
 
 local Nameplate = function(self)
@@ -462,8 +471,8 @@ local Nameplate = function(self)
 	Window:CreateSlider("Nameplate", "MinAlpha", L["Non-Target Nameplate Alpha"], 0.1, 1, 0.1)
 	Window:CreateSlider("Nameplate", "MinScale", L["Non-Target Nameplate Scale"], 0.1, 3, 0.1)
 	Window:CreateSlider("Nameplate", "NameTextSize", L["NameText FontSize"], 8, 16, 1)
-	Window:CreateSlider("Nameplate", "PlateHeight", L["Nameplate Height"], 6, 12, 1)
-	Window:CreateSlider("Nameplate", "PlateWidth", L["Nameplate Width"], 80, 180, 1)
+	Window:CreateSlider("Nameplate", "PlateHeight", L["Nameplate Height"], 6, 28, 1)
+	Window:CreateSlider("Nameplate", "PlateWidth", L["Nameplate Width"], 80, 240, 1)
 	Window:CreateSlider("Nameplate", "VerticalSpacing", L["Nameplate Vertical Spacing"], 0.1, 1, 1)
 
 	Window:CreateSection("Player Nameplate Toggles")
@@ -550,7 +559,6 @@ local UIFonts = function(self)
 	local Window = self:CreateWindow(L["UIFonts"])
 
 	Window:CreateSection("UI Fonts")
-
 	Window:CreateDropdown("UIFonts", "ActionBarsFonts", L["Set ActionBar Font"], "Font")
 	Window:CreateDropdown("UIFonts", "AuraFonts", L["Set Auras Font"], "Font")
 	Window:CreateDropdown("UIFonts", "ChatFonts", L["Set Chat Font"], "Font")
@@ -565,13 +573,15 @@ local UIFonts = function(self)
 	Window:CreateDropdown("UIFonts", "SkinFonts", L["Set Skins Font"], "Font")
 	Window:CreateDropdown("UIFonts", "TooltipFonts", L["Set Tooltip Font"], "Font")
 	Window:CreateDropdown("UIFonts", "UnitframeFonts", L["Set Unitframe Font"], "Font")
+
+	Window:CreateSection("Font Sizes")
+	Window:CreateSlider("UIFonts", "QuestFontSize", L["Adjust QuestFont Size"], 10, 20, 1, nil, UpdateQuestFontSize)
 end
 
 local UITextures = function(self)
 	local Window = self:CreateWindow(L["UITextures"])
 
 	Window:CreateSection("UI Textures")
-
 	Window:CreateDropdown("UITextures", "DataBarsTexture", L["Set DataBars Texture"], "Texture")
 	Window:CreateDropdown("UITextures", "FilgerTextures", L["Set Filger Texture"], "Texture")
 	Window:CreateDropdown("UITextures", "GeneralTextures", L["Set General Texture"], "Texture")
