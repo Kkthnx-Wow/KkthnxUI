@@ -432,12 +432,12 @@ local Misc = function(self)
 	Window:CreateDropdown("Misc", "ShowMarkerBar", L["World Markers Bar"], nil, nil, UpdateMarkerGrid)
 
 	Window:CreateSection("Paragon Reputation")
-	Window:CreateSwitch("Misc", "ParagonEnable", "Paragon Enable")
-	Window:CreateSwitch("Misc", "ParagonToast", "Paragon Toast")
-	Window:CreateSwitch("Misc", "ParagonToastSound", "Paragon Toast Sound")
-	Window:CreateColorSelection("Misc", "ParagonColor", "Paragon Color")
-	Window:CreateSlider("Misc", "ParagonToastFade", "Paragon Toast Fade", 1, 15, 1)
-	Window:CreateDropdown("Misc", "ParagonText", "Paragon Text Format")
+	Window:CreateSwitch("Misc", "ParagonEnable", L["Paragon Enable"], L["ParagonReputationTip"])
+	Window:CreateSwitch("Misc", "ParagonToast", L["Paragon Toast"])
+	Window:CreateSwitch("Misc", "ParagonToastSound", L["Paragon Toast Sound"])
+	Window:CreateColorSelection("Misc", "ParagonColor", L["Paragon Color"])
+	Window:CreateSlider("Misc", "ParagonToastFade", L["Paragon Toast Fade"], 1, 15, 1)
+	Window:CreateDropdown("Misc", "ParagonText", L["Paragon Text Format"])
 end
 
 local Nameplate = function(self)
