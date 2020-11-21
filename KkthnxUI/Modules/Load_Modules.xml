@@ -65,6 +65,7 @@
    <Script file="Miscellaneous\Elements\MerchantItemlevel.lua" />
    <Script file="Miscellaneous\Elements\MissingStats.lua" />
    <Script file="Miscellaneous\Elements\MovableFrames.lua" />
+   <Script file="Miscellaneous\Elements\ParagonReputation.lua" />
    <Script file="Miscellaneous\Elements\PulseCooldown.lua" />
    <Script file="Miscellaneous\Elements\PvPQueueTimer.lua" />
    <Script file="Miscellaneous\Elements\QuickJoin.lua" />
@@ -73,7 +74,6 @@
    <Script file="Miscellaneous\Elements\StatusReport.lua" />
    <Script file="Miscellaneous\Elements\TradeTabs.lua" />
    <Script file="Miscellaneous\Elements\yClassColors.lua" />
-   <Script file="Miscellaneous\Elements\ParagonReputation.lua" />
    <!-- Auras -->
    <Include file="Auras\AuraTemplate.xml" />
    <Script file="Auras\Core.lua" />

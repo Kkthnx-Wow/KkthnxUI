@@ -183,13 +183,13 @@ function Module:CreateToast()
 	toast:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 250)
 	toast:SetSize(302, 70)
 	toast:SetClampedToScreen(true)
-    toast:Hide()
+	toast:Hide()
 
-    toast.texture = toast:CreateTexture(nil,"BACKGROUND")
-    toast.texture:SetPoint("TOPLEFT", toast, "TOPLEFT", -6, 4)
-    toast.texture:SetPoint("BOTTOMRIGHT", toast, "BOTTOMRIGHT", 4, -4)
-    toast.texture:SetTexture("Interface\\Garrison\\GarrisonToast")
-    toast.texture:SetTexCoord(0, .61, .33, .48)
+	toast.texture = toast:CreateTexture(nil,"BACKGROUND")
+	toast.texture:SetPoint("TOPLEFT", toast, "TOPLEFT", -6, 4)
+	toast.texture:SetPoint("BOTTOMRIGHT", toast, "BOTTOMRIGHT", 4, -4)
+	toast.texture:SetTexture("Interface\\Garrison\\GarrisonToast")
+	toast.texture:SetTexCoord(0, .61, .33, .48)
 
 	-- [Toast] Create Title Text
 	toast.title = toast:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
@@ -355,6 +355,10 @@ end
 
 function Module:CreateParagonReputation()
 	if not C["Misc"].ParagonEnable then
+		return
+	end
+
+	if IsAddOnLoaded("ParagonReputation") then
 		return
 	end
 
