@@ -232,6 +232,7 @@ C["General"] = {
 	["ColorTextures"] = false,
 	["MissingTalentAlert"] = true,
 	["MoveBlizzardFrames"] = false,
+	["NoErrorFrame"] = false,
 	["NoTutorialButtons"] = false,
 	["TexturesColor"] = {1, 1, 1},
 	["UIScale"] = 0.71111,
@@ -439,6 +440,8 @@ C["UIFonts"] = {
 	["SkinFonts"] = "KkthnxUI",
 	["TooltipFonts"] = "KkthnxUI",
 	["UnitframeFonts"] = "KkthnxUI",
+	-- Font Sizes Will Go Here (Not Sure How Much I Care About Improving This)
+	["QuestFontSize"] = 12,
 }
 
 -- Textures

@@ -180,6 +180,24 @@ function Module:CreateBossEmote()
 	end
 end
 
+function Module:CreateErrorFrameToggle(event)
+	if not C["General"].NoErrorFrame then
+		return
+	end
+
+	if event == "PLAYER_REGEN_DISABLED" then
+		_G.UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
+	else
+		_G.UIErrorsFrame:RegisterEvent("UI_ERROR_MESSAGE")
+	end
+end
+
+function Module:CreateQuestSizeUpdate()
+	QuestTitleFont:SetFont(QuestFont:GetFont(), C["UIFonts"].QuestFontSize + 3, nil)
+	QuestFont:SetFont(QuestFont:GetFont(), C["UIFonts"].QuestFontSize + 1, nil)
+	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["UIFonts"].QuestFontSize, nil)
+end
+
 function Module:CreateErrorsFrame()
 	local Font = K.GetFont(C["UIFonts"].GeneralFonts)
 	local Path, _, Flag = _G[Font]:GetFont()
@@ -603,6 +621,7 @@ function Module:OnEnable()
 	self:CreateOverrideAWQ()
 	self:CreatePulseCooldown()
 	self:CreatePvPQueueTimer()
+	self:CreateQuestSizeUpdate()
 	self:CreateQuickJoin()
 	self:CreateSlotDurability()
 	self:CreateSlotItemLevel()
@@ -610,6 +629,9 @@ function Module:OnEnable()
 	self:CreateTradeTabs()
 	self:CreateTradeTargetInfo()
 	self:CreateVehicleSeatMover()
+
+	K:RegisterEvent("PLAYER_REGEN_DISABLED", Module.CreateErrorFrameToggle)
+	K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.CreateErrorFrameToggle)
 
 	-- Unregister talent event
 	if PlayerTalentFrame then
