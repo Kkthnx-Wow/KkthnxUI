@@ -94,6 +94,11 @@ local function ForceRaidFrame()
 end
 
 function Module:ForceChatSettings()
+	if KkthnxUISettingsPerCharacter[K.Realm][K.Name].Chat then
+		KkthnxUISettingsPerCharacter[K.Realm][K.Name].Chat.Width = 392
+		KkthnxUISettingsPerCharacter[K.Realm][K.Name].Chat.Height = 150
+	end
+
 	K:GetModule("Chat"):UpdateChatSize()
 
 	-- Create our custom chatframes
