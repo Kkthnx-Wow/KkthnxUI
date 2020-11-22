@@ -46,6 +46,7 @@ local frames = {
 	["TradeFrame"] = false,
 	["TutorialFrame"] = false,
 	["VideoOptionsFrame"] = false,
+	["WorldMapFrame"] = false,
 }
 
 -- Frame Existing Check

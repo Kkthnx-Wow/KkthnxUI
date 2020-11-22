@@ -86,12 +86,13 @@ function Module:ColorWatchbar(bar)
 	end
 end
 
-function Module:SetupParagonTooltip(tt)
+function Module:SetupParagonTooltip()
 	if not C["Misc"].ParagonEnable then
 		return
 	end
 
-	local _, _, rewardQuestID, hasRewardPending = C_Reputation_GetFactionParagonInfo(tt.factionID)
+	local _, _, rewardQuestID, hasRewardPending = C_Reputation_GetFactionParagonInfo(self.factionID)
+	print(self.factionID)
 	if hasRewardPending then
 		local questIndex = C_QuestLog_GetLogIndexForQuestID(rewardQuestID)
 		local description = GetQuestLogCompletionText(questIndex) or ""

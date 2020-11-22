@@ -523,7 +523,7 @@ function Module:CreatePlayer()
 	self.CombatIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.CombatIndicator:SetSize(20, 20)
 	self.CombatIndicator:SetPoint("LEFT", 0, 0)
-	self.CombatIndicator:SetVertexColor(1, 0.2, 0.2, 1)
+	--self.CombatIndicator:SetVertexColor(1, 0.2, 0.2, 1)
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
