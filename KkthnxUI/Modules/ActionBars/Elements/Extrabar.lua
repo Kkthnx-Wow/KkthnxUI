@@ -47,7 +47,7 @@ function Module:CreateExtrabar()
 	local zoneFrame = CreateFrame("Frame", "KKUI_ActionBarZone", UIParent)
 	zoneFrame:SetWidth(size + 2 * padding)
 	zoneFrame:SetHeight(size + 2 * padding)
-	zoneFrame.Pos = {"BOTTOM", UIParent, "BOTTOM", 272, 34}
+	zoneFrame.Pos = {"BOTTOM", UIParent, "BOTTOM", 270, 32}
 	zoneFrame.mover = K.Mover(zoneFrame, "Zone Ability", "ZoneAbility", zoneFrame.Pos)
 
 	ZoneAbilityFrame:SetParent(zoneFrame)
@@ -60,8 +60,7 @@ function Module:CreateExtrabar()
 		for spellButton in self.SpellButtonContainer:EnumerateActive() do
 			if spellButton and not spellButton.styled then
 				spellButton.NormalTexture:SetAlpha(0)
-				spellButton:SetPushedTexture(C["Media"].Blank) -- force it to gain a texture
-				spellButton:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
+				spellButton:StyleButton()
 				spellButton.Icon:SetTexCoord(unpack(K.TexCoords))
 				local bg = CreateFrame("Frame", nil, spellButton)
 				bg:SetAllPoints(spellButton.Icon)
