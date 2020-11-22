@@ -113,10 +113,18 @@ local function KKUI_LoadProfiles()
 	end
 end
 
-K:RegisterEvent("VARIABLES_LOADED", function()
+local loader = CreateFrame("Frame")
+loader:RegisterEvent("ADDON_LOADED")
+loader:SetScript("OnEvent", function(self, _, addon)
+	if addon ~= "KkthnxUI" then
+		return
+	end
+
 	KKUI_CreateDefaults()
 	KKUI_LoadProfiles()
 	KKUI_LoadCustomSettings()
 	K.SetupUIScale(true)
 	K.GUI:Enable()
+
+	self:UnregisterAllEvents()
 end)

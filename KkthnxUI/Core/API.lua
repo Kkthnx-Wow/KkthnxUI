@@ -516,10 +516,6 @@ local function addapi(object)
 		mt.StripTextures = StripTextures
 	end
 
-	if not object.StripTexts then
-		mt.StripTexts = StripTexts
-	end
-
 	if not object.StyleButton then
 		mt.StyleButton = StyleButton
 	end

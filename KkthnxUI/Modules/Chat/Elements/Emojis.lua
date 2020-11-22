@@ -19,6 +19,7 @@ local setEmojiTexture = {
 	Grin = getEmojiMedia.."Grin.tga",
 	Heart = getEmojiMedia.."Heart.tga",
 	HeartEyes = getEmojiMedia.."HeartEyes.tga",
+	Joy = getEmojiMedia.."Joy.tga",
 	Kappa = getEmojiMedia.."Kappa.tga",
 	Meaw = getEmojiMedia.."Meaw.tga",
 	MiddleFinger = getEmojiMedia.."MiddleFinger.tga",
@@ -42,7 +43,6 @@ local setEmojiTexture = {
 	ThumbsUp = getEmojiMedia.."ThumbsUp.tga",
 	Wink = getEmojiMedia.."Wink.tga",
 	ZZZ = getEmojiMedia.."ZZZ.tga",
-	Joy = getEmojiMedia.."Joy.tga",
 }
 
 -- EMOJI EXPRESSION MAPS

@@ -8,7 +8,6 @@ local pairs = _G.pairs
 local select = _G.select
 local string_format = _G.string.format
 local string_lower = _G.string.lower
-local string_split = _G.string.split
 local table_insert = _G.table.insert
 local tonumber = _G.tonumber
 local unpack = _G.unpack
@@ -40,6 +39,11 @@ local UnitSex = _G.UnitSex
 Engine[1] = {} -- K, Main
 Engine[2] = {} -- C, Config
 Engine[3] = {} -- L, Locales
+
+KkthnxUIData = {}
+KkthnxUISettings = {}
+KkthnxUIGold = {}
+KkthnxUISettingsPerCharacter = {}
 
 local K, C, L = unpack(Engine)
 
