@@ -4,10 +4,18 @@ local Module = K:GetModule("Skins")
 -- Lua
 local _G = _G
 
+local GetInventoryItemLink = _G.GetInventoryItemLink
 local HideUIPanel = _G.HideUIPanel
+local IsCosmeticItem = _G.IsCosmeticItem
 local PanelTemplates_GetSelectedTab = _G.PanelTemplates_GetSelectedTab
 local UnitClass = _G.UnitClass
 local hooksecurefunc = _G.hooksecurefunc
+
+local function UpdateCosmetic(self)
+	local unit = InspectFrame.unit
+	local itemLink = unit and GetInventoryItemLink(unit, self:GetID())
+	self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
+end
 
 C.themes["Blizzard_InspectUI"] = function()
 	if InspectFrame:IsShown() then
@@ -47,6 +55,11 @@ C.themes["Blizzard_InspectUI"] = function()
 			end)
 		end
 	end
+
+	hooksecurefunc("InspectPaperDollItemSlotButton_Update", function(button)
+		button.icon:SetShown(button.hasItem)
+		UpdateCosmetic(button)
+	end)
 
 	InspectHeadSlot:SetPoint("TOPLEFT", InspectFrame.Inset, "TOPLEFT", 6, -6)
 	InspectHandsSlot:SetPoint("TOPRIGHT", InspectFrame.Inset, "TOPRIGHT", -6, -6)

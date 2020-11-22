@@ -86,7 +86,7 @@ function Module:ColorWatchbar(bar)
 	end
 end
 
-function Module:SetupParagonTooltip()
+function Module:SetupParagonTooltip(self)
 	if not C["Misc"].ParagonEnable then
 		return
 	end

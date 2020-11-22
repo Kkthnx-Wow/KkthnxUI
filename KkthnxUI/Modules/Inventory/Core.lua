@@ -11,8 +11,10 @@ local string_match = _G.string.match
 local table_wipe = _G.table.wipe
 local unpack = _G.unpack
 
+local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = _G.C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
 local C_NewItems_IsNewItem = _G.C_NewItems.IsNewItem
 local C_NewItems_RemoveNewItem = _G.C_NewItems.RemoveNewItem
+local C_Soulbinds_IsItemConduitByItemInfo = _G.C_Soulbinds.IsItemConduitByItemInfo
 local C_Timer_After = _G.C_Timer.After
 local ClearCursor = _G.ClearCursor
 local CreateFrame = _G.CreateFrame
@@ -25,6 +27,7 @@ local GetItemInfo = _G.GetItemInfo
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsControlKeyDown = _G.IsControlKeyDown
+local IsCosmeticItem = _G.IsCosmeticItem
 local IsReagentBankUnlocked = _G.IsReagentBankUnlocked
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
 local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
@@ -1129,8 +1132,12 @@ function Module:OnEnable()
 			return
 		end
 
-		if C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(item.link) then
+		if C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID(item.link) then
 			return "AzeriteIconFrame"
+		elseif IsCosmeticItem(item.link) then
+			return "CosmeticIconFrame"
+		elseif C_Soulbinds_IsItemConduitByItemInfo(item.link) then
+			return "ConduitIconFrame", "ConduitIconFrame-Corners"
 		end
 	end
 
