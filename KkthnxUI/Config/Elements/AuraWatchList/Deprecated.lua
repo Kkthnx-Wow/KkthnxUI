@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local module = K:GetModule("AurasTable")
+local Module = K:GetModule("AurasTable")
 
 -- 旧资料片数据 Auras for old expansions
 K.DeprecatedAuras = {

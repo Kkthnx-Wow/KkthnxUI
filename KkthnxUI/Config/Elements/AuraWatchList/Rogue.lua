@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local module = K:GetModule("AurasTable")
+local Module = K:GetModule("AurasTable")
 
 -- 盗贼的法术监控
 local list = {
@@ -89,4 +89,4 @@ local list = {
 	},
 }
 
-module:AddNewAuraWatch("ROGUE", list)
+Module:AddNewAuraWatch("ROGUE", list)

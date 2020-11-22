@@ -1,5 +1,5 @@
 local K, _, L = unpack(select(2, ...))
-local module = K:GetModule("AurasTable")
+local Module = K:GetModule("AurasTable")
 --[[
 >>> When adding custom, pay attention to the format, pay attention to commas, pay attention to letter case<<<
 The settings below ALL are common settings for all professions. For other situations, please add them under your profession. When you add, pay attention to whether it is repeated.
@@ -790,4 +790,4 @@ local list = {
 	},
 }
 
-module:AddNewAuraWatch("ALL", list)
+Module:AddNewAuraWatch("ALL", list)
