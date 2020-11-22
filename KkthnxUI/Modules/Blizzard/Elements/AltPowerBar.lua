@@ -63,7 +63,7 @@ end
 
 function Module:PositionAltPowerBar()
 	local holder = CreateFrame("Frame", "AltPowerBarHolder", UIParent)
-	holder:SetPoint("TOP", UIParent, "TOP", -1, -36)
+	holder:SetPoint("TOP", UIParent, "TOP", -1, -108)
 	holder:SetSize(128, 50)
 
 	_G.PlayerPowerBarAlt:ClearAllPoints()
@@ -73,7 +73,7 @@ function Module:PositionAltPowerBar()
 	_G.PlayerPowerBarAlt:SetUserPlaced(true)
 	_G.UIPARENT_MANAGED_FRAME_POSITIONS.PlayerPowerBarAlt = nil
 
-	K.Mover(holder, "PlayerPowerBarAlt", "Alternative Power", {"TOP", UIParent, "TOP", -1, -36}, AltPowerWidth or 250, AltPowerHeight or 20)
+	K.Mover(holder, "PlayerPowerBarAlt", "Alternative Power", {"TOP", UIParent, "TOP", -1, -108}, AltPowerWidth or 250, AltPowerHeight or 20)
 end
 
 function Module:UpdateAltPowerBarColors()

@@ -462,9 +462,10 @@ function Module:OnEnable()
 
 	-- Lock chatframe
 	if C["Chat"].Lock then
-		hooksecurefunc("FCF_SavePositionAndDimensions", Module.UpdateChatSize)
-		K:RegisterEvent("UI_SCALE_CHANGED", Module.UpdateChatSize)
 		Module:UpdateChatSize()
+		K:RegisterEvent("UI_SCALE_CHANGED", Module.UpdateChatSize)
+		hooksecurefunc("FCF_SavePositionAndDimensions", Module.UpdateChatSize)
+		FCF_SavePositionAndDimensions(ChatFrame1)
 	end
 
 	-- ProfanityFilter

@@ -522,8 +522,7 @@ function Module:CreatePlayer()
 
 	self.CombatIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.CombatIndicator:SetSize(20, 20)
-	self.CombatIndicator:SetPoint("LEFT", 0, 0)
-	self.CombatIndicator:SetVertexColor(1, 0.2, 0.2, 1)
+	self.CombatIndicator:SetPoint("LEFT", 2, 0)
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
@@ -538,9 +537,8 @@ function Module:CreatePlayer()
 	self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
 
 	self.RestingIndicator = self.Health:CreateTexture(nil, "OVERLAY")
-	self.RestingIndicator:SetPoint("RIGHT", 0, 2)
+	self.RestingIndicator:SetPoint("RIGHT", -2, 2)
 	self.RestingIndicator:SetSize(22, 22)
-	self.RestingIndicator:SetAlpha(0.7)
 
 	self.QuestSyncIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.QuestSyncIndicator:SetPoint("BOTTOM", self.Portrait, "BOTTOM", 0, -13)

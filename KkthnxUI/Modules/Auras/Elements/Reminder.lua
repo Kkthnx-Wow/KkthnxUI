@@ -8,8 +8,10 @@ local table_insert = _G.table.insert
 local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
+local GetItemCooldown = _G.GetItemCooldown
 local GetSpecialization = _G.GetSpecialization
 local GetSpellTexture = _G.GetSpellTexture
+local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
 local GetZonePVPInfo = _G.GetZonePVPInfo
 local InCombatLockdown = _G.InCombatLockdown
 local IsInInstance = _G.IsInInstance
@@ -21,6 +23,7 @@ local UnitInVehicle = _G.UnitInVehicle
 local groups = C.SpellReminderBuffs[K.Class]
 local iconSize = C["Auras"].DebuffSize + 4
 local frames, parentFrame = {}
+
 function Module:Reminder_Update(cfg)
 	local frame = cfg.frame
 	local depend = cfg.depend
@@ -31,6 +34,7 @@ function Module:Reminder_Update(cfg)
 	local cooldown = cfg.cooldown
 	local isPlayerSpell, isRightSpec, isInCombat, isInInst, isInPVP = true, true
 	local inInst, instType = IsInInstance()
+	local weaponIndex = cfg.weaponIndex
 
 	if cooldown and GetItemCooldown(cooldown) > 0 then -- check rune cooldown
 		frame:Hide()
@@ -63,18 +67,25 @@ function Module:Reminder_Update(cfg)
 
 	frame:Hide()
 	if isPlayerSpell and isRightSpec and (isInCombat or isInInst or isInPVP) and not UnitInVehicle("player") and not UnitIsDeadOrGhost("player") then
-		for i = 1, 32 do
-			local name, _, _, _, _, _, _, _, _, spellID = UnitBuff("player", i)
-			if not name then
-				break
-			end
-
-			if name and cfg.spells[spellID] then
+		if weaponIndex then
+			local hasMainHandEnchant, _, _, _, hasOffHandEnchant = GetWeaponEnchantInfo()
+			if (hasMainHandEnchant and weaponIndex == 1) or (hasOffHandEnchant and weaponIndex == 2) then
 				frame:Hide()
 				return
 			end
-		end
+		else
+			for i = 1, 32 do
+				local name, _, _, _, _, _, _, _, _, spellID = UnitBuff("player", i)
+				if not name then
+					break
+				end
 
+				if name and cfg.spells[spellID] then
+					frame:Hide()
+					return
+				end
+			end
+		end
 		frame:Show()
 	end
 end

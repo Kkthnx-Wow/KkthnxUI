@@ -44,8 +44,6 @@ function Module:SynchronizeDisplayState()
 	if WorldMapFrame:IsMaximized() then
 		WorldMapFrame:ClearAllPoints()
 		WorldMapFrame:SetPoint("CENTER", UIParent)
-	else
-		K.RestoreMoverFrame(WorldMapFrame)
 	end
 end
 
@@ -256,8 +254,6 @@ function Module:OnEnable()
 
 		WorldMapFrame.BlackoutFrame.Blackout:SetTexture(nil)
 		WorldMapFrame.BlackoutFrame:EnableMouse(false)
-
-		--K.CreateMoverFrame(WorldMapFrame, nil, true)
 
 		hooksecurefunc(WorldMapFrame, "Maximize", self.SetLargeWorldMap)
 		hooksecurefunc(WorldMapFrame, "Minimize", self.SetSmallWorldMap)

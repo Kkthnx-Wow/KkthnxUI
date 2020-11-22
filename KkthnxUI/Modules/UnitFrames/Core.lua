@@ -705,13 +705,13 @@ end
 
 function Module:CreateUnits()
 	if C["Nameplate"].Enable then
-		self:ResetCVars()
 		self:SetupCVars()
 		self:BlockAddons()
 		self:CheckExplosives()
 		self:AddInterruptInfo()
 		self:UpdateGroupRoles()
 		self:QuestIconCheck()
+		self:RefreshPlateOnFactionChanged()
 
 		oUF:RegisterStyle("Nameplates", Module.CreatePlates)
 		oUF:SetActiveStyle("Nameplates")

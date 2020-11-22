@@ -670,6 +670,11 @@ Module:RegisterTooltips("KkthnxUI", function()
 		if LootBarToolTip then
 			Module.ReskinTooltip(LootBarToolTip)
 		end
+
+		-- Narcissus
+		if NarciGameTooltip then
+			Module.ReskinTooltip(NarciGameTooltip)
+		end
 	end)
 
 	if IsAddOnLoaded("BattlePetBreedID") then

@@ -46,9 +46,9 @@ end
 -- Tuitorial
 function Module:ForceDefaultCVars()
 	SetCVar("ActionButtonUseKeyDown", 1)
+	SetCVar("UberTooltips", 1)
 	SetCVar("WorldTextScale", 1.2)
 	SetCVar("alwaysCompareItems", 1)
-	SetCVar("alwaysShowActionBars", 1)
 	SetCVar("autoLootDefault", 1)
 	SetCVar("autoQuestWatch", 1)
 	SetCVar("autoSelfCast", 1)
@@ -58,22 +58,28 @@ function Module:ForceDefaultCVars()
 	SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
 	SetCVar("floatingCombatTextCombatHealing", 1)
 	SetCVar("floatingCombatTextFloatMode", 1)
-	SetCVar("fstack_preferParentKeys", 0)
 	SetCVar("lockActionBars", 1)
 	SetCVar("lootUnderMouse", 1)
+	SetCVar("lossOfControl", 1)
 	SetCVar("overrideArchive", 0)
+	SetCVar("profanityFilter", 0)
 	SetCVar("screenshotQuality", 10)
-	SetCVar("showNPETutorials", 0)
+	SetCVar("showLootSpam", 1)
 	SetCVar("showTutorials", 0)
 	SetCVar("spamFilter", 0)
-	SetCVar("useCompactPartyFrames", 1)
 	SetActionBarToggles(1, 1, 1, 1)
+
+	if not InCombatLockdown() then
+		SetCVar("nameplateMotion", 1)
+		SetCVar("nameplateShowAll", 1)
+		SetCVar("nameplateShowEnemies", 1)
+		SetCVar("alwaysShowActionBars", 1)
+	end
 
 	if K.isDeveloper then
 		SetCVar("ffxGlow", 0)
-		SetCVar("SpellQueueWindow", 18)
+		SetCVar("SpellQueueWindow", 100)
 		SetCVar("nameplateShowOnlyNames", 1)
-		SetCVar("ShowClassColorInFriendlyNameplate", 1)
 	end
 end
 
@@ -85,6 +91,8 @@ local function ForceRaidFrame()
 	if not _G.CompactUnitFrameProfiles then
 		return
 	end
+
+	SetCVar("useCompactPartyFrames", 1)
 
 	_G.SetRaidProfileOption(_G.CompactUnitFrameProfiles.selectedProfile, "useClassColors", true)
 	_G.SetRaidProfileOption(_G.CompactUnitFrameProfiles.selectedProfile, "displayPowerBar", true)

@@ -10,7 +10,9 @@ local CharacterMainHandSlot = _G.CharacterMainHandSlot
 local CharacterModelFrame = _G.CharacterModelFrame
 local CharacterSecondaryHandSlot = _G.CharacterSecondaryHandSlot
 local CharacterStatsPane = _G.CharacterStatsPane
+local GetInventoryItemLink = _G.GetInventoryItemLink
 local HideUIPanel = _G.HideUIPanel
+local IsCosmeticItem = _G.IsCosmeticItem
 local hooksecurefunc = _G.hooksecurefunc
 local unpack = _G.unpack
 
@@ -31,6 +33,11 @@ local function UpdateAzeriteEmpoweredItem(self)
 	self.AzeriteTexture:SetAllPoints()
 	self.AzeriteTexture:SetTexCoord(unpack(K.TexCoords))
 	self.AzeriteTexture:SetDrawLayer("BORDER", 1)
+end
+
+local function UpdateCosmetic(self)
+	local itemLink = GetInventoryItemLink("player", self:GetID())
+	self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
 end
 
 local function ReskinPaperDollSidebar()
@@ -116,7 +123,9 @@ tinsert(C.defaultThemes, function()
 				slot.popoutButton:SetPoint("LEFT", slot, "RIGHT", -2, 0)
 			end
 
-			slot.ignoreTexture:SetTexture([[Interface\PaperDollInfoFrame\UI-GearManager-LeaveItem-Transparent]])
+			slot.ignoreTexture:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Transparent")
+			slot.IconOverlay:SetAtlas("CosmeticIconFrame")
+			slot.IconOverlay:SetAllPoints()
 
 			slot.IconBorder:SetAlpha(0)
 
@@ -133,12 +142,14 @@ tinsert(C.defaultThemes, function()
 		end
 	end
 
-	hooksecurefunc('PaperDollItemSlotButton_Update', function(slot)
+	hooksecurefunc("PaperDollItemSlotButton_Update", function(slot)
 		local highlight = slot:GetHighlightTexture()
 		highlight:SetTexture(C["Media"].Blank)
-		highlight:SetVertexColor(1, 1, 1, .25)
+		highlight:SetColorTexture(1, 1, 1, .25)
 		highlight:SetPoint("TOPLEFT", slot, "TOPLEFT", 2, -2)
 		highlight:SetPoint("BOTTOMRIGHT", slot, "BOTTOMRIGHT", -2, 2)
+
+		UpdateCosmetic(slot)
 	end)
 
 	CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)
@@ -195,5 +206,3 @@ tinsert(C.defaultThemes, function()
 	hooksecurefunc("CollapseFactionHeader", UpdateFactionSkins)
 	hooksecurefunc("ReputationFrame_Update", UpdateFactionSkins)
 end)
-
--- table_insert(Module.NewSkin["KkthnxUI"], ReskinCharacterFrame)
