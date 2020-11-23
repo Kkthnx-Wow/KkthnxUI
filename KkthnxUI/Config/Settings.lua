@@ -290,8 +290,6 @@ C["Minimap"] = {
 
 -- Miscellaneous
 C["Misc"] = {
-	["MouseTrail"] = true,
-	["MouseTrailColor"] = {1, 1, 1},
 	["AFKCamera"] = false,
 	["AutoBubbles"] = false,
 	["ColorPicker"] = false,
@@ -302,6 +300,8 @@ C["Misc"] = {
 	["HideBossEmote"] = false,
 	["ImprovedStats"] = false,
 	["ItemLevel"] = false,
+	["MouseTrail"] = false,
+	["MouseTrailColor"] = {1, 1, 1},
 	["NoTalkingHead"] = false,
 	["ParagonColor"] = {0, .5, .9},
 	["ParagonEnable"] = false,

@@ -4,10 +4,9 @@ local Module = K:GetModule("Miscellaneous")
 local _G = _G
 
 -- Mouse Trail
-local pollingRate = 1 / 20
-local numLines = 6
+local pollingRate = 1 / 60
+local numLines = 10
 local lines = {}
-local ticker
 
 local function GetLength(startX, startY, endX, endY)
 	-- Determine dimensions
@@ -43,6 +42,10 @@ local function UpdateTrail()
 end
 
 function Module:CreateMouseTrail()
+	if not C["Misc"].MouseTrail then
+		return
+	end
+
 	for i = 1, numLines do
 		local line = _G.UIParent:CreateLine()
 		line:SetThickness(_G.Lerp(5, 1, (i - 1) / numLines))
@@ -54,9 +57,5 @@ function Module:CreateMouseTrail()
 		lines[i] = {line = line, x = 0, y = 0}
 	end
 
-	if C["Misc"].MouseTrail then
-		ticker = _G.C_Timer.NewTicker(pollingRate, UpdateTrail)
-	else
-		ticker:Cancel()
-	end
+	C_Timer.NewTicker(pollingRate, UpdateTrail)
 end

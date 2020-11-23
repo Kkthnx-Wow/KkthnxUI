@@ -86,18 +86,8 @@ local function UpdateCustomBar()
 	K:GetModule("ActionBar"):UpdateCustomBar()
 end
 
-local function UpdateFontSizes()
-	K:GetModule("Skins"):ReskinBlizzardFonts()
-end
-
-local function UpdateUIScale()
-	K.SetupUIScale()
-end
-
 local function SetupAuraWatch()
-	if GUI:IsShown() then
-		GUI:Toggle()
-	end
+	GUI:Toggle()
 	SlashCmdList["KKUI_AWCONFIG"]() -- To Be Implemented
 end
 
@@ -378,7 +368,7 @@ local General = function(self)
 	Window:CreateDropdown("General", "NumberPrefixStyle", L["Number Prefix Style"])
 
 	Window:CreateSection("General Scaling")
-	Window:CreateSwitch("General", "AutoScale", L["Auto Scale"], L["AutoScaleTip"], UpdateUIScale)
+	Window:CreateSwitch("General", "AutoScale", L["Auto Scale"], L["AutoScaleTip"])
 	Window:CreateSlider("General", "UIScale", L["Set UI scale"], 0.4, 1.15, 0.01, L["UIScaleTip"], UIScaleNotice)
 
 	Window:CreateSection("General Colors")
@@ -432,7 +422,7 @@ local Misc = function(self)
 	Window:CreateDropdown("Misc", "ShowMarkerBar", L["World Markers Bar"], nil, nil, UpdateMarkerGrid)
 
 	Window:CreateSection("Paragon Reputation")
-	Window:CreateSwitch("Misc", "ParagonEnable", L["Paragon Enable"], L["ParagonReputationTip"])
+	Window:CreateSwitch("Misc", "ParagonEnable", newFeatureIcon..L["Paragon Enable"], L["ParagonReputationTip"])
 	Window:CreateSwitch("Misc", "ParagonToast", L["Paragon Toast"])
 	Window:CreateSwitch("Misc", "ParagonToastSound", L["Paragon Toast Sound"])
 	Window:CreateColorSelection("Misc", "ParagonColor", L["Paragon Color"])
@@ -440,8 +430,8 @@ local Misc = function(self)
 	Window:CreateDropdown("Misc", "ParagonText", L["Paragon Text Format"])
 
 	Window:CreateSection("Mouse Trail")
-	Window:CreateSwitch("Misc", "MouseTrail", "Mouse Trail Enable")
-	Window:CreateColorSelection("Misc", "MouseTrailColor", "Mouse Trail Color")
+	Window:CreateSwitch("Misc", "MouseTrail", newFeatureIcon..L["Enable Mouse Trail"])
+	Window:CreateColorSelection("Misc", "MouseTrailColor", L["Mouse Trail Color"])
 end
 
 local Nameplate = function(self)

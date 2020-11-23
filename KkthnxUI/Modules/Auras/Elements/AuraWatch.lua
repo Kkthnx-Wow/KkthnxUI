@@ -813,6 +813,7 @@ SlashCmdList.AuraWatch = function(msg)
 					value[i]:SetScript("OnUpdate", nil)
 					value[i]:Show()
 				end
+
 				if value[i].Icon then
 					value[i].Icon:SetColorTexture(0, 0, 0, .25)
 				end

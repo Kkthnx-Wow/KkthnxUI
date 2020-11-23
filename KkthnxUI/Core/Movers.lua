@@ -404,6 +404,7 @@ end
 _G.SLASH_KKUI_MOVEUI1 = "/moveui"
 _G.SLASH_KKUI_MOVEUI2 = "/mui"
 _G.SLASH_KKUI_MOVEUI3 = "/mm"
+_G.SLASH_KKUI_MOVEUI4 = "/mmm"
 
 function Module:OnEnable()
 	updater = CreateFrame("Frame")

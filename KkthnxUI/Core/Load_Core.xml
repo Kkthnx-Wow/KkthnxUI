@@ -12,8 +12,8 @@
     <Script file="Smoothy.lua"/>
     <Script file="Install.lua"/>
     <Script file="Movers.lua"/>
+    <Script file="Loading.lua"/>
     <Script file="Changelog.lua"/>
     <Script file="CheckVersion.lua"/>
-    <Script file="Loading.lua"/>
     <Script file="GUI.lua"/>
 </Ui>
