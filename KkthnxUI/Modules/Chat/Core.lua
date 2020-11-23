@@ -142,10 +142,6 @@ function Module:UpdateChatSize()
 		ChatFrame1.FontStringContainer:SetPoint("BOTTOMRIGHT", ChatFrame1, "BOTTOMRIGHT", 1, -1)
 	end
 
-	if ChatFrame1:IsShown() then
-		ChatFrame1:Hide()
-		ChatFrame1:Show()
-	end
 	ChatFrame1:ClearAllPoints()
 	ChatFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 7, 11)
 	ChatFrame1:SetWidth(C["Chat"].Width)
@@ -445,6 +441,9 @@ function Module:OnEnable()
 	end
 
 	-- Default
+	if CHAT_OPTIONS then -- only flash whisper
+		CHAT_OPTIONS.HIDE_FRAME_ALERTS = true
+	end
 	SetCVar("chatStyle", "classic")
 	SetCVar("whisperMode", "inline") -- blizz reset this on NPE
 	K.HideInterfaceOption(InterfaceOptionsSocialPanelChatStyle)

@@ -40,9 +40,6 @@ K.PulseIgnoredSpells = {
 
 local PulseCooldownFrame = CreateFrame("Frame", "KKUI_PulseCooldownFrame", UIParent)
 PulseCooldownFrame:CreateBorder(nil, nil, nil, nil, -5, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
--- PulseCooldownFrame.KKUI_Border:SetVertexColor(1, 1, 1, 1)
--- PulseCooldownFrame.KKUI_Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
--- PulseCooldownFrame.KKUI_InnerShadow:SetAlpha(C["Media"].BackdropColor[4])
 PulseCooldownFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 260)
 
 PulseCooldownFrame.Icon = PulseCooldownFrame:CreateTexture(nil, "ARTWORK")
@@ -92,6 +89,10 @@ end
 
 -- Cooldown/Animation
 local function OnUpdate(_, update)
+	if not C["PulseCooldown"].Enable then
+		return
+	end
+
 	elapsed = elapsed + update
 	if elapsed > 0.05 then
 		for i, v in pairs(watching) do

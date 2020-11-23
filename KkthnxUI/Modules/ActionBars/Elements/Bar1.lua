@@ -128,15 +128,20 @@ function Module:CreateBar1()
 	-- Fix button texture, need reviewed
 	local function FixActionBarTexture()
 		for _, button in next, buttonList do
+			local action = button.action
+			if action < 120 then
+				break
+			end
+
 			local icon = button.icon
-			local texture = GetActionTexture(button.action)
+			local texture = GetActionTexture(action)
 			if texture then
 				icon:SetTexture(texture)
-				icon:SetVertexColor(1, 1, 1) -- force it turn bright, needs review
 				icon:Show()
 			else
 				icon:Hide()
 			end
+			Module.UpdateButtonStatus(button)
 		end
 	end
 	K:RegisterEvent("SPELL_UPDATE_ICON", FixActionBarTexture)
@@ -154,7 +159,6 @@ function Module:OnEnable()
 	end
 
 	if IsAddOnLoaded("Dominos") or IsAddOnLoaded("Bartender4") or IsAddOnLoaded("RazerNaga") then
-		C["ActionBar"].Enable = false
 		return
 	end
 
