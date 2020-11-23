@@ -180,15 +180,17 @@ function Module:CreateBossEmote()
 	end
 end
 
-function Module:CreateErrorFrameToggle(event)
+local function CreateErrorFrameToggle(event)
 	if not C["General"].NoErrorFrame then
 		return
 	end
 
 	if event == "PLAYER_REGEN_DISABLED" then
 		_G.UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", CreateErrorFrameToggle)
 	else
 		_G.UIErrorsFrame:RegisterEvent("UI_ERROR_MESSAGE")
+		K:UnregisterEvent(event, CreateErrorFrameToggle)
 	end
 end
 
@@ -618,6 +620,7 @@ function Module:OnEnable()
 	self:CreateLFGQueueTimer()
 	self:CreateLoginAnimation()
 	self:CreateMerchantItemLevel()
+	self:CreateMouseTrail()
 	self:CreateOverrideAWQ()
 	self:CreateParagonReputation()
 	self:CreatePulseCooldown()
@@ -631,8 +634,7 @@ function Module:OnEnable()
 	self:CreateTradeTargetInfo()
 	self:CreateVehicleSeatMover()
 
-	K:RegisterEvent("PLAYER_REGEN_DISABLED", Module.CreateErrorFrameToggle)
-	K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.CreateErrorFrameToggle)
+	K:RegisterEvent("PLAYER_REGEN_DISABLED", CreateErrorFrameToggle)
 
 	-- Unregister talent event
 	if PlayerTalentFrame then

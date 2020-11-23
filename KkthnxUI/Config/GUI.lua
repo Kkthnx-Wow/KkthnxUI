@@ -438,6 +438,10 @@ local Misc = function(self)
 	Window:CreateColorSelection("Misc", "ParagonColor", L["Paragon Color"])
 	Window:CreateSlider("Misc", "ParagonToastFade", L["Paragon Toast Fade"], 1, 15, 1)
 	Window:CreateDropdown("Misc", "ParagonText", L["Paragon Text Format"])
+
+	Window:CreateSection("Mouse Trail")
+	Window:CreateSwitch("Misc", "MouseTrail", "Mouse Trail Enable")
+	Window:CreateColorSelection("Misc", "MouseTrailColor", "Mouse Trail Color")
 end
 
 local Nameplate = function(self)

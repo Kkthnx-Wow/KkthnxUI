@@ -290,6 +290,8 @@ C["Minimap"] = {
 
 -- Miscellaneous
 C["Misc"] = {
+	["MouseTrail"] = true,
+	["MouseTrailColor"] = {1, 1, 1},
 	["AFKCamera"] = false,
 	["AutoBubbles"] = false,
 	["ColorPicker"] = false,
