@@ -15,21 +15,16 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	K.SystemColor.."KkthnxUI is now v10.1.0.|r",
-	"Added 'some' addon conflict checks.",
-	"Added new hide error frame text in combat.",
-	"Added new mouse trail effect.",
-	"Added new paragon rep module",
-	"Added new quest font size changer slider",
-	"Added new tooltip conduit collected info.",
-	"Added support for cosmetic item and soulbinds",
-	"Fixed addons collection buttons falling behind bin.",
-	"Fixed dev/test throwing an error because ignored.",
-	"Fixed nil error with K.Mult when channeling with ticks.",
-	"Updated databars to hide azerite.",
-	"Updates locales.",
-	"Updates warlock lumos.",
-	"Various cleanup in aurawatch by Rav99.",
+	"Fixed Glass breaking the UI.",
+	"Fixed deDE locales missing.",
+	"Removed oUF_Offline.",
+	"Removed oUF_PortraitTimers.",
+	"Updated Bags filters for mounts/pets to collections.",
+	"Updated MouseTrail code.",
+	"Updated Unitframe spawn code",
+	"Updated extrabar and zoneability size/position",
+	"Updated isQuestItem bags filter",
+	"Updated locale duplicates.",
 }
 
 local changelogFrame
