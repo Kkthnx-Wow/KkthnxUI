@@ -965,10 +965,6 @@ function Module:CreateUnits()
 
 			if C["Raid"].ShowTeamIndex then
 				local parent = _G["oUF_Raid"..i.."UnitButton1"]
-				if not parent then
-					return
-				end
-
 				local teamIndex = K.CreateFontString(parent, 12, string_format(GROUP_NUMBER, i), "")
 				teamIndex:ClearAllPoints()
 				teamIndex:SetPoint("BOTTOM", parent, "TOP", 0, 5)

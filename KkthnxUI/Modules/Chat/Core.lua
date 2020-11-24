@@ -237,7 +237,7 @@ function Module:SkinChat()
 
 	-- Temp Chats
 	if (id > 10) then
-		self.SetChatFont(self)
+		Module.SetChatFont(self)
 	end
 
 	-- Security for font, in case if revert back to WoW default we restore instantly the tukui font default.
@@ -411,6 +411,10 @@ end
 
 function Module:OnEnable()
 	if not C["Chat"].Enable then
+		return
+	end
+
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
 		return
 	end
 

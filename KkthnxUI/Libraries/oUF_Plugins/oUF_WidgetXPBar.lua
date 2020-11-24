@@ -15,7 +15,7 @@ local function reskinWidgetBar(bar)
 		bar.BorderRight:SetAlpha(0)
 		bar.BorderCenter:SetAlpha(0)
 		bar.Spark:SetAlpha(0)
-		bar:CreateShadow(true)
+		-- bar:CreateShadow(true)
 
 		bar.styled = true
 	end

@@ -40,6 +40,7 @@ local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsTapDenied = _G.UnitIsTapDenied
 local UnitIsUnit = _G.UnitIsUnit
 local UnitName = _G.UnitName
+local UnitNameplateShowsWidgetsOnly = _G.UnitNameplateShowsWidgetsOnly
 local UnitPlayerControlled = _G.UnitPlayerControlled
 local UnitReaction = _G.UnitReaction
 local UnitSelectionColor = _G.UnitSelectionColor
@@ -735,7 +736,7 @@ end
 function Module:AddWidgetContainer(self)
 	self.WidgetContainer = CreateFrame("Frame", nil, self, "UIWidgetContainerTemplate")
 	self.WidgetContainer:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -5)
-	self.WidgetContainer:SetScale(1 / C["General"].UIScale) -- need reviewed
+	self.WidgetContainer:SetScale(1 / C["General"].UIScale or 1) -- need reviewed
 	self.WidgetContainer:Hide()
 end
 
@@ -1118,7 +1119,6 @@ function Module:PostUpdatePlates(event, unit)
 
 		self.npcID = K.GetNPCID(self.unitGUID)
 		self.isPlayer = UnitIsPlayer(unit)
-
 		self.widgetsOnly = UnitNameplateShowsWidgetsOnly(unit)
 		self.WidgetContainer:RegisterForWidgetSet(UnitWidgetSet(unit), oUF.Widget_DefaultLayout, nil, unit)
 
