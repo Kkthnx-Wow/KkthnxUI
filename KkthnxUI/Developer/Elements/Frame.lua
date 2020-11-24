@@ -1,6 +1,8 @@
 local K = unpack(select(2, ...))
 
 local _G = _G
+local math_ceil = _G.math.ceil
+local math_floor = _G.math.floor
 local print = _G.print
 local string_find = _G.string.find
 local string_format = _G.string.format
@@ -17,6 +19,8 @@ local EJ_GetInstanceInfo = _G.EJ_GetInstanceInfo
 local EJ_SelectInstance = _G.EJ_SelectInstance
 local EnumerateFrames = _G.EnumerateFrames
 local GetInstanceInfo = _G.GetInstanceInfo
+local GetScreenHeight = _G.GetScreenHeight
+local GetScreenWidth = _G.GetScreenWidth
 local GetSpellDescription = _G.GetSpellDescription
 local GetSpellInfo = _G.GetSpellInfo
 local GetSpellTexture = _G.GetSpellTexture
@@ -25,9 +29,9 @@ local IsInRaid = _G.IsInRaid
 local MouseIsOver = _G.MouseIsOver
 local NAME = _G.NAME
 local SlashCmdList = _G.SlashCmdList
+local UNKNOWN = _G.UNKNOWN
 local UnitGUID = _G.UnitGUID
 local UnitName = _G.UnitName
-local UNKNOWN = _G.UNKNOWN
 
 -- KkthnxUI DevTools:
 -- /getenc, get selected encounters info
@@ -219,3 +223,84 @@ end
 _G.SLASH_WOWVERSION1 = "/getpatch"
 _G.SLASH_WOWVERSION2 = "/getbuild"
 _G.SLASH_WOWVERSION3 = "/getinterface"
+
+-- Grids
+local grid
+local boxSize = 32
+local function Grid_Create()
+	grid = CreateFrame("Frame", nil, UIParent)
+	grid.boxSize = boxSize
+	grid:SetAllPoints(UIParent)
+
+	local size = 2
+	local width = GetScreenWidth()
+	local ratio = width / GetScreenHeight()
+	local height = GetScreenHeight() * ratio
+
+	local wStep = width / boxSize
+	local hStep = height / boxSize
+
+	for i = 0, boxSize do
+		local tx = grid:CreateTexture(nil, "BACKGROUND")
+		if i == boxSize / 2 then
+			tx:SetColorTexture(1, 0, 0, .5)
+		else
+			tx:SetColorTexture(0, 0, 0, .5)
+		end
+		tx:SetPoint("TOPLEFT", grid, "TOPLEFT", i * wStep - (size / 2), 0)
+		tx:SetPoint("BOTTOMRIGHT", grid, "BOTTOMLEFT", i * wStep + (size / 2), 0)
+	end
+	height = GetScreenHeight()
+
+	do
+		local tx = grid:CreateTexture(nil, "BACKGROUND")
+		tx:SetColorTexture(1, 0, 0, .5)
+		tx:SetPoint("TOPLEFT", grid, "TOPLEFT", 0, -(height / 2) + (size / 2))
+		tx:SetPoint("BOTTOMRIGHT", grid, "TOPRIGHT", 0, -(height / 2 + size / 2))
+	end
+
+	for i = 1, math_floor((height / 2) / hStep) do
+		local tx = grid:CreateTexture(nil, "BACKGROUND")
+		tx:SetColorTexture(0, 0, 0, .5)
+
+		tx:SetPoint("TOPLEFT", grid, "TOPLEFT", 0, -(height / 2 + i * hStep) + (size / 2))
+		tx:SetPoint("BOTTOMRIGHT", grid, "TOPRIGHT", 0, -(height / 2 + i * hStep + size / 2))
+
+		tx = grid:CreateTexture(nil, "BACKGROUND")
+		tx:SetColorTexture(0, 0, 0, .5)
+
+		tx:SetPoint("TOPLEFT", grid, "TOPLEFT", 0, -(height / 2 - i * hStep) + (size / 2))
+		tx:SetPoint("BOTTOMRIGHT", grid, "TOPRIGHT", 0, -(height / 2 - i * hStep + size / 2))
+	end
+end
+
+local function Grid_Show()
+	if not grid then
+		Grid_Create()
+	elseif grid.boxSize ~= boxSize then
+		grid:Hide()
+		Grid_Create()
+	else
+		grid:Show()
+	end
+end
+
+local isAligning = false
+SlashCmdList["KKUI_TOGGLEGRID"] = function(arg)
+	if isAligning or arg == "1" then
+		if grid then
+			grid:Hide()
+		end
+		isAligning = false
+	else
+		boxSize = (math_ceil((tonumber(arg) or boxSize) / 32) * 32)
+		if boxSize > 256 then
+			boxSize = 256
+		end
+		Grid_Show()
+		isAligning = true
+	end
+end
+_G.SLASH_KKUI_TOGGLEGRID1 = "/showgrid"
+_G.SLASH_KKUI_TOGGLEGRID2 = "/align"
+_G.SLASH_KKUI_TOGGLEGRID3 = "/grid"

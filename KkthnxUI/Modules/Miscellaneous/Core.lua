@@ -2,8 +2,6 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Miscellaneous")
 
 local _G = _G
-local math_ceil = _G.math.ceil
-local math_floor = _G.math.floor
 local select = _G.select
 local string_match = _G.string.match
 local tonumber = _G.tonumber
@@ -22,8 +20,6 @@ local GetMerchantItemLink = _G.GetMerchantItemLink
 local GetMerchantItemMaxStack = _G.GetMerchantItemMaxStack
 local GetQuestLogRewardXP = _G.GetQuestLogRewardXP
 local GetRewardXP = _G.GetRewardXP
-local GetScreenHeight = _G.GetScreenHeight
-local GetScreenWidth = _G.GetScreenWidth
 local GetSpellInfo = _G.GetSpellInfo
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
@@ -31,7 +27,6 @@ local IsAltKeyDown = _G.IsAltKeyDown
 local IsGuildMember = _G.IsGuildMember
 local NO = _G.NO
 local PlaySound = _G.PlaySound
-local SlashCmdList = _G.SlashCmdList
 local StaticPopupDialogs = _G.StaticPopupDialogs
 local StaticPopup_Show = _G.StaticPopup_Show
 local UIParent = _G.UIParent
@@ -74,90 +69,6 @@ function Module:CreateTicketStatusFrameMove()
 		end
 	end)
 end
-
--- Grids
-local grid
-local boxSize = 32
-local function Grid_Create()
-	grid = CreateFrame("Frame", nil, UIParent)
-	grid.boxSize = boxSize
-	grid:SetAllPoints(UIParent)
-
-	local size = 2
-	local width = GetScreenWidth()
-	local ratio = width / GetScreenHeight()
-	local height = GetScreenHeight() * ratio
-
-	local wStep = width / boxSize
-	local hStep = height / boxSize
-
-	for i = 0, boxSize do
-		local tx = grid:CreateTexture(nil, "BACKGROUND")
-		if i == boxSize / 2 then
-			tx:SetColorTexture(1, 0, 0, .5)
-		else
-			tx:SetColorTexture(0, 0, 0, .5)
-		end
-		tx:SetPoint("TOPLEFT", grid, "TOPLEFT", i * wStep - (size / 2), 0)
-		tx:SetPoint("BOTTOMRIGHT", grid, "BOTTOMLEFT", i * wStep + (size / 2), 0)
-	end
-	height = GetScreenHeight()
-
-	do
-		local tx = grid:CreateTexture(nil, "BACKGROUND")
-		tx:SetColorTexture(1, 0, 0, .5)
-		tx:SetPoint("TOPLEFT", grid, "TOPLEFT", 0, -(height / 2) + (size / 2))
-		tx:SetPoint("BOTTOMRIGHT", grid, "TOPRIGHT", 0, -(height / 2 + size / 2))
-	end
-
-	for i = 1, math_floor((height/2)/hStep) do
-		local tx = grid:CreateTexture(nil, "BACKGROUND")
-		tx:SetColorTexture(0, 0, 0, .5)
-
-		tx:SetPoint("TOPLEFT", grid, "TOPLEFT", 0, -(height / 2 + i * hStep) + (size / 2))
-		tx:SetPoint("BOTTOMRIGHT", grid, "TOPRIGHT", 0, -(height / 2 + i * hStep + size / 2))
-
-		tx = grid:CreateTexture(nil, "BACKGROUND")
-		tx:SetColorTexture(0, 0, 0, .5)
-
-		tx:SetPoint("TOPLEFT", grid, "TOPLEFT", 0, -(height / 2 - i * hStep) + (size / 2))
-		tx:SetPoint("BOTTOMRIGHT", grid, "TOPRIGHT", 0, -(height / 2 - i * hStep + size / 2))
-	end
-end
-
-local function Grid_Show()
-	if not grid then
-		Grid_Create()
-	elseif grid.boxSize ~= boxSize then
-		grid:Hide()
-		Grid_Create()
-	else
-		grid:Show()
-	end
-end
-
-local isAligning = false
-SlashCmdList["KKUI_TOGGLEGRID"] = function(arg)
-	if isAligning or arg == "1" then
-		if grid then
-			grid:Hide()
-		end
-
-		isAligning = false
-	else
-		boxSize = (math_ceil((tonumber(arg) or boxSize) / 32) * 32)
-		if boxSize > 256 then
-			boxSize = 256
-		end
-
-		Grid_Show()
-		isAligning = true
-	end
-end
-
-_G.SLASH_KKUI_TOGGLEGRID1 = "/showgrid"
-_G.SLASH_KKUI_TOGGLEGRID2 = "/align"
-_G.SLASH_KKUI_TOGGLEGRID3 = "/grid"
 
 -- Hide Bossbanner
 function Module:CreateBossBanner()
