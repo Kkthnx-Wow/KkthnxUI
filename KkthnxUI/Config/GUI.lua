@@ -66,7 +66,7 @@ end
 local function UpdateChatBubble()
 	for _, chatBubble in pairs(C_ChatBubbles.GetAllChatBubbles()) do
 		chatBubble.KKUI_Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Skins"].ChatBubbleAlpha)
-    end
+	end
 end
 
 local function UpdateHotkeys()
@@ -756,7 +756,6 @@ GUI:AddWidgets(Misc)
 GUI:AddWidgets(Nameplate)
 GUI:AddWidgets(Party)
 GUI:AddWidgets(PulseCooldown)
-GUI:AddWidgets(QuestNotifier)
 GUI:AddWidgets(Raid)
 GUI:AddWidgets(Skins)
 GUI:AddWidgets(Tooltip)

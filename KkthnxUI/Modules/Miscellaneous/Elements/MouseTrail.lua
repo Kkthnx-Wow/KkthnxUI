@@ -9,6 +9,19 @@ local numLines = 8
 local lines = {}
 local ticker
 
+local function SetupTrail()
+	for i = 1, numLines do
+		local line = _G.UIParent:CreateLine()
+		line:SetThickness(_G.Lerp(5, 1, (i - 1) / numLines))
+		line:SetColorTexture(unpack(C["Misc"].MouseTrailColor))
+
+		local startA, endA = _G.Lerp(1, 0, (i - 1) / numLines), _G.Lerp(1, 0, i / numLines)
+		line:SetGradientAlpha("HORIZONTAL", 1, 1, 1, startA, 1, 1, 1, endA)
+
+		lines[i] = {line = line, x = 0, y = 0}
+	end
+end
+
 local function GetLength(startX, startY, endX, endY)
 	-- Determine dimensions
 	local dx, dy = endX - startX, endY - startY
@@ -44,20 +57,10 @@ end
 
 function Module:CreateMouseTrail()
 	if C["Misc"].MouseTrail then
+		SetupTrail()
 		ticker = _G.C_Timer.NewTicker(pollingRate, UpdateTrail)
 	elseif ticker then
 		ticker:Cancel()
 		return
-	end
-
-	for i = 1, numLines do
-		local line = _G.UIParent:CreateLine()
-		line:SetThickness(_G.Lerp(5, 1, (i - 1) / numLines))
-		line:SetColorTexture(unpack(C["Misc"].MouseTrailColor))
-
-		local startA, endA = _G.Lerp(1, 0, (i - 1) / numLines), _G.Lerp(1, 0, i / numLines)
-		line:SetGradientAlpha("HORIZONTAL", 1, 1, 1, startA, 1, 1, 1, endA)
-
-		lines[i] = {line = line, x = 0, y = 0}
 	end
 end
