@@ -516,6 +516,7 @@ L["TitanPanel Skin"] = "TitanPanel Skin"
 L["WeakAuras Skin"] = "WeakAuras Skin"
 
 L["Abbreviate Guild Names"] = "Abbreviate Guild Names"
+L["Conduit Collected Info"] = "Conduit Collected Info"
 L["Follow Cursor"] = "Follow Cursor"
 L["Hide Guild Rank"] = "Hide Guild Rank"
 L["Hide Player Title"] = "Hide Player Title"

@@ -430,6 +430,7 @@ C["Skins"] = {
 C["Tooltip"] = {
 	["ClassColor"] = false,
 	["CombatHide"] = false,
+	["ConduitInfo"] = false,
 	["Cursor"] = false,
 	["FactionIcon"] = false,
 	["HideJunkGuild"] = true,
@@ -460,7 +461,7 @@ C["UIFonts"] = {
 	["TooltipFonts"] = "KkthnxUI",
 	["UnitframeFonts"] = "KkthnxUI",
 	-- Font Sizes Will Go Here (Not Sure How Much I Care About Improving This)
-	["QuestFontSize"] = 12,
+	["QuestFontSize"] = 11,
 }
 
 -- Textures

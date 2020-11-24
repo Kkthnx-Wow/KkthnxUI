@@ -15,15 +15,21 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	K.SystemColor.."KkthnxUI is now v10.0.10.|r",
-	"Added new LFG queue timer.",
-	"Added new PvP queue timer.",
+	K.SystemColor.."KkthnxUI is now v10.1.0.|r",
+	"Added 'some' addon conflict checks.",
+	"Added new hide error frame text in combat.",
+	"Added new mouse trail effect.",
+	"Added new paragon rep module",
+	"Added new quest font size changer slider",
+	"Added new tooltip conduit collected info.",
+	"Added support for cosmetic item and soulbinds",
 	"Fixed addons collection buttons falling behind bin.",
-	"Fixed chat font reverting itself.",
-	"Updated locales.",
-	"Updated nameplate max width/height in GUI.",
-	"Updated skip cutscenes.",
-	"Updated spellbook missing spell animation/texture.",
+	"Fixed dev/test throwing an error because ignored.",
+	"Fixed nil error with K.Mult when channeling with ticks.",
+	"Updated databars to hide azerite.",
+	"Updates locales.",
+	"Updates warlock lumos.",
+	"Various cleanup in aurawatch by Rav99.",
 }
 
 local changelogFrame

@@ -530,6 +530,7 @@ function Module:OnEnable()
 	hooksecurefunc("GameTooltip_AnchorComparisonTooltips", Module.GameTooltip_ComparisonFix)
 
 	-- Elements
+	self:CreateConduitCollectionData()
 	self:CreateMountSource()
 	self:CreateTargetedInfo()
 	self:CreateTooltipID()

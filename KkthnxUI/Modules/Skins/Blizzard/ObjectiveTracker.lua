@@ -65,25 +65,29 @@ function Module:ReskinCollapse(isAtlas)
 end
 
 local function reskinQuestIcon(button)
-	if not button or button.styled then
+	if not button then
 		return
 	end
 
-	button:SetNormalTexture("")
-	button:SetPushedTexture("")
-	button:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
-	button:GetHighlightTexture():SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
-	button:GetHighlightTexture():SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
-	local icon = button.icon or button.Icon
-	if icon then
-		icon:SetTexCoord(unpack(K.TexCoords))
-		local bg = CreateFrame("Frame", nil, button)
-		bg:SetAllPoints(icon)
-		bg:SetFrameLevel(button:GetFrameLevel())
-		bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	if not button.styled then
+		button:SetSize(24, 24)
+		button:SetNormalTexture("")
+		button:SetPushedTexture("")
+		button:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
+		button:GetHighlightTexture():SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
+		button:GetHighlightTexture():SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
+		local icon = button.icon or button.Icon
+		if icon then
+			button.bg = icon:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			icon:SetAllPoints()
+		end
+
+		button.styled = true
 	end
 
-	button.styled = true
+	if button.bg then
+		button.bg:SetFrameLevel(0)
+	end
 end
 
 local function reskinQuestIcons(_, block)
@@ -244,6 +248,7 @@ table_insert(C.defaultThemes, function()
 	-- Minimize Button
 	local mainMinimize = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
 	reskinMinimizeButton(mainMinimize)
+	mainMinimize.bg.KKUI_Border:SetVertexColor(1, .8, 0)
 
 	for _, header in pairs(headers) do
 		local minimize = header.MinimizeButton

@@ -11,22 +11,21 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
 function Module:CreateExtrabar()
-	local padding, margin = 10, 5
-	local num = 1
+	local padding = 10
 	local buttonList = {}
 	local size = FilterConfig.size
 
 	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KKUI_ExtraActionBar", UIParent, "SecureHandlerStateTemplate")
-	frame:SetWidth(num * FilterConfig.size + (num - 1) * margin + 2 * padding)
-	frame:SetHeight(FilterConfig.size + 2 * padding)
-	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 272, 34}
+	frame:SetWidth(size + 2 * padding)
+	frame:SetHeight(size + 2 * padding)
+	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 270, 34}
 	frame.mover = K.Mover(frame, "Extrabar", "Extrabar", frame.Pos)
 
 	ExtraActionBarFrame:EnableMouse(false)
 	ExtraAbilityContainer:SetParent(frame)
 	ExtraAbilityContainer:ClearAllPoints()
-	ExtraAbilityContainer:SetPoint("CENTER", frame)
+	ExtraAbilityContainer:SetPoint("CENTER", frame, 0, 2 * padding)
 	ExtraAbilityContainer.ignoreFramePositionManager = true
 
 	local button = ExtraActionButton1
@@ -47,8 +46,8 @@ function Module:CreateExtrabar()
 	local zoneFrame = CreateFrame("Frame", "KKUI_ActionBarZone", UIParent)
 	zoneFrame:SetWidth(size + 2 * padding)
 	zoneFrame:SetHeight(size + 2 * padding)
-	zoneFrame.Pos = {"BOTTOM", UIParent, "BOTTOM", 270, 32}
-	zoneFrame.mover = K.Mover(zoneFrame, "Zone Ability", "ZoneAbility", zoneFrame.Pos)
+	zoneFrame.Pos = {"BOTTOM", UIParent, "BOTTOM", -270, 32}
+	zoneFrame.mover = K.Mover(zoneFrame, "Zone Ability", "Zone Ability", zoneFrame.Pos)
 
 	ZoneAbilityFrame:SetParent(zoneFrame)
 	ZoneAbilityFrame:ClearAllPoints()

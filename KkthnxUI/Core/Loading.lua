@@ -113,9 +113,9 @@ local function KKUI_LoadProfiles()
 	end
 end
 
-local loader = CreateFrame("Frame")
-loader:RegisterEvent("ADDON_LOADED")
-loader:SetScript("OnEvent", function(self, _, addon)
+local addonLoader = CreateFrame("Frame")
+addonLoader:RegisterEvent("ADDON_LOADED")
+addonLoader:SetScript("OnEvent", function(self, _, addon)
 	if addon ~= "KkthnxUI" then
 		return
 	end

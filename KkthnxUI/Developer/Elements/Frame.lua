@@ -40,8 +40,8 @@ local UNKNOWN = _G.UNKNOWN
 
 K.Devs = {
 	["Iamnsfw-Sargeras"] = true,
-	["Kkthnx-Thrall"] = true,
 	["Kkthnx-Sargeras"] = true,
+	["Kkthnx-Thrall"] = true,
 	["Kkthnxbye-Sargeras"] = true,
 	["Kkthnxtv-Sargeras"] = true,
 	["Kkthnxui-Sargeras"] = true,
@@ -177,7 +177,7 @@ do
 		end
 	end
 
-	_G.SLASH_KKTHNXUI_VER_CHECK1 = "/kkversion"
+	_G.SLASH_KKTHNXUI_VER_CHECK1 = "/kkver"
 end
 
 SlashCmdList["KKTHNXUI_GET_ENCOUNTERS"] = function()
