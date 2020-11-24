@@ -561,14 +561,6 @@ function Module:CreatePlayer()
 		self.DebuffHighlightFilter = true
 	end
 
-	if C["Unitframe"].PortraitTimers then
-		self.PortraitTimer = CreateFrame("Frame", "$parentPortraitTimer", self.Health)
-		self.PortraitTimer:SetFrameLevel(5) -- Watch me
-		self.PortraitTimer:SetPoint("TOPLEFT", self.Portrait, "TOPLEFT", 1, -1)
-		self.PortraitTimer:SetPoint("BOTTOMRIGHT", self.Portrait, "BOTTOMRIGHT", -1, 1)
-		self.PortraitTimer:Hide()
-	end
-
 	if C["Unitframe"].GlobalCooldown then
 		self.GlobalCooldown = CreateFrame("Frame", nil, self.Health)
 		self.GlobalCooldown:SetWidth(playerWidth)

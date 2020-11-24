@@ -6,9 +6,7 @@
    <Script file="oUF_DebuffHighlight.lua" />
    <Script file="oUF_FloatingCombatFeedback.lua" />
    <Script file="oUF_GlobalCooldown.lua" />
-   <Script file="oUF_Offline.lua" />
    <Script file="oUF_PVPSpecIcons.lua" />
-   <Script file="oUF_PortraitTimers.lua" />
    <Script file="oUF_RaidDebuffs.lua" />
    <Script file="oUF_Swing.lua" />
    <Script file="oUF_Trinkets.lua" />

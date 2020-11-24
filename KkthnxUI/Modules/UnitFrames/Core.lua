@@ -704,6 +704,13 @@ function Module:CreateClassPower(self)
 end
 
 function Module:CreateUnits()
+	local horizonRaid = C["Raid"].HorizonRaid
+	local numGroups = C["Raid"].NumGroups
+	local raidWidth, raidHeight = C["Raid"].Width, C["Raid"].Height
+	local reverse = C["Raid"].ReverseRaid
+	local showPartyFrame = C["Party"].Enable
+	local showTeamIndex = C["Raid"].ShowTeamIndex
+
 	if C["Nameplate"].Enable then
 		self:SetupCVars()
 		self:BlockAddons()
@@ -776,7 +783,6 @@ function Module:CreateUnits()
 		K:RegisterEvent("UNIT_FACTION", self.UNIT_FACTION)
 	end
 
-	--if C["Boss"].Enable then
 	oUF:RegisterStyle("Boss", Module.CreateBoss)
 	oUF:SetActiveStyle("Boss")
 
@@ -792,7 +798,6 @@ function Module:CreateUnits()
 			Boss[i].mover = K.Mover(Boss[i], "BossFrame"..i, "Boss"..i, {"TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -66}, moverWidth, moverHeight)
 		end
 	end
-	--end
 
 	if C["Arena"].Enable then
 		oUF:RegisterStyle("Arena", Module.CreateArena)
@@ -806,12 +811,7 @@ function Module:CreateUnits()
 		end
 	end
 
-	if C["Party"].Enable then
-		-- if IsAddOnLoaded("Grid") or IsAddOnLoaded("Grid2") or IsAddOnLoaded("HealBot") or IsAddOnLoaded("VuhDo") or IsAddOnLoaded("oUF_Freebgrid") then
-		-- 	C["Party"].Enable = false
-		-- 	return
-		-- end
-
+	if showPartyFrame then
 		oUF:RegisterStyle("Party", Module.CreateParty)
 		oUF:SetActiveStyle("Party")
 
@@ -842,32 +842,21 @@ function Module:CreateUnits()
 		party:ClearAllPoints()
 		party:SetPoint("TOPLEFT", partyMover)
 
-		-- Party pets
-		if C["Party"].Enable and C["Party"].ShowPet then
-			-- if IsAddOnLoaded("Grid") or IsAddOnLoaded("Grid2") or IsAddOnLoaded("HealBot") or IsAddOnLoaded("VuhDo") or IsAddOnLoaded("oUF_Freebgrid") then
-			-- 	C["Party"].ShowPet = false
-			-- 	return
-			-- end
-
+		if C["Party"].ShowPet then
 			oUF:RegisterStyle("PartyPet", Module.CreatePartyPet)
 			oUF:SetActiveStyle("PartyPet")
 
-			local partypetXOffset, partypetYOffset = 6, C["Party"].ShowBuffs and 54 or 25
+			local partypetXOffset, partypetYOffset = 6, 25
 			local partpetMoverWidth = 60
 			local partpetMoverHeight = 34 * 5 + partypetYOffset * 4
-			local partpetGroupingOrder = "NONE,DAMAGER,HEALER,TANK"
 
-			local partypet = oUF:SpawnHeader("oUF_PartyPet", nil, "solo,party",
-			"showPlayer", C["Party"].ShowPlayer,
+			local partyPet = oUF:SpawnHeader("oUF_PartyPet", nil, "solo,party",
+			"showPlayer", true,
 			"showSolo", false,
 			"showParty", true,
 			"showRaid", false,
 			"xoffset", partypetXOffset,
 			"yOffset", partypetYOffset,
-			"groupFilter", "1",
-			"groupingOrder", partpetGroupingOrder,
-			"groupBy", "ASSIGNEDROLE",
-			"sortMethod", "NAME",
 			"point", "BOTTOM",
 			"columnAnchorPoint", "LEFT",
 			"oUF-initialConfigFunction", ([[
@@ -876,25 +865,16 @@ function Module:CreateUnits()
 			self:SetAttribute("unitsuffix", "pet")
 			]]):format(60, 34))
 
-			local partypetMover = K.Mover(partypet, "PartyPetFrame", "PartyPetFrame", {"LEFT", partyMover, "RIGHT", 68, 0}, partpetMoverWidth, partpetMoverHeight)
-			partypet:ClearAllPoints()
-			partypet:SetPoint("TOPLEFT", partypetMover)
+			local moverAnchor = {"TOPLEFT", partyMover, "TOPRIGHT", 6, -40}
+			local petMover = K.Mover(partyPet, "PartyPetFrame", "PartyPetFrame", moverAnchor, partpetMoverWidth, partpetMoverHeight)
+			partyPet:ClearAllPoints()
+			partyPet:SetPoint("TOPLEFT", petMover)
 		end
 	end
 
 	if C["Raid"].Enable then
-		-- if IsAddOnLoaded("Grid") or IsAddOnLoaded("Grid2") or IsAddOnLoaded("HealBot") or IsAddOnLoaded("VuhDo") or IsAddOnLoaded("oUF_Freebgrid") then
-		-- 	C["Raid"].Enable = false
-		-- 	return
-		-- end
-
 		oUF:RegisterStyle("Raid", Module.CreateRaid)
 		oUF:SetActiveStyle("Raid")
-
-		local horizonRaid = C["Raid"].HorizonRaid
-		local numGroups = C["Raid"].NumGroups
-		local raidWidth, raidHeight = C["Raid"].Width, C["Raid"].Height
-		local reverse = C["Raid"].ReverseRaid
 
 		-- Hide Default RaidFrame
 		if CompactRaidFrameManager_SetSetting then
@@ -909,7 +889,7 @@ function Module:CreateUnits()
 			local group = oUF:SpawnHeader(name, nil, "solo,party,raid",
 			"showPlayer", true,
 			"showSolo", false,
-			"showParty", not C["Party"].Enable,
+			"showParty", not showPartyFrame,
 			"showRaid", true,
 			"xoffset", 6,
 			"yOffset", -6,
@@ -935,7 +915,7 @@ function Module:CreateUnits()
 			groups[i] = CreateGroup("oUF_Raid"..i, i)
 			if i == 1 then
 				if horizonRaid then
-					raidMover = K.Mover(groups[i], "RaidFrame", "RaidFrame", {"TOPLEFT", UIParent, "TOPLEFT", 4, -180}, (raidWidth + 5) * 5, (raidHeight + (C["Raid"].ShowTeamIndex and 21 or 15)) * numGroups)
+					raidMover = K.Mover(groups[i], "RaidFrame", "RaidFrame", {"TOPLEFT", UIParent, "TOPLEFT", 4, -180}, (raidWidth + 5) * 5, (raidHeight + (showTeamIndex and 21 or 15)) * numGroups)
 					if reverse then
 						groups[i]:ClearAllPoints()
 						groups[i]:SetPoint("BOTTOMLEFT", raidMover)
@@ -950,9 +930,9 @@ function Module:CreateUnits()
 			else
 				if horizonRaid then
 					if reverse then
-						groups[i]:SetPoint("BOTTOMLEFT", groups[i-1], "TOPLEFT", 0, C["Raid"].ShowTeamIndex and 21 or 15)
+						groups[i]:SetPoint("BOTTOMLEFT", groups[i-1], "TOPLEFT", 0, showTeamIndex and 21 or 15)
 					else
-						groups[i]:SetPoint("TOPLEFT", groups[i-1], "BOTTOMLEFT", 0, C["Raid"].ShowTeamIndex and -21 or -15)
+						groups[i]:SetPoint("TOPLEFT", groups[i-1], "BOTTOMLEFT", 0, showTeamIndex and -21 or -15)
 					end
 				else
 					if reverse then
@@ -963,7 +943,7 @@ function Module:CreateUnits()
 				end
 			end
 
-			if C["Raid"].ShowTeamIndex then
+			if showTeamIndex then
 				local parent = _G["oUF_Raid"..i.."UnitButton1"]
 				local teamIndex = K.CreateFontString(parent, 12, string_format(GROUP_NUMBER, i), "")
 				teamIndex:ClearAllPoints()
@@ -971,39 +951,39 @@ function Module:CreateUnits()
 			end
 		end
 
-		if raidMover then
-			if not C["Raid"].SpecRaidPos then
-				return
-			end
+		-- if raidMover then
+		-- 	if not C["Raid"].SpecRaidPos then
+		-- 		return
+		-- 	end
 
-			local function UpdateSpecPos(event, ...)
-				local unit, _, spellID = ...
-				if (event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player" and spellID == 200749) or event == "PLAYER_ENTERING_WORLD" then
-					if not GetSpecialization() then
-						return
-					end
+		-- 	local function UpdateSpecPos(event, ...)
+		-- 		local unit, _, spellID = ...
+		-- 		if (event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player" and spellID == 200749) or event == "PLAYER_ENTERING_WORLD" then
+		-- 			if not GetSpecialization() then
+		-- 				return
+		-- 			end
 
-					local specIndex = GetSpecialization()
-					if not KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] then
-						KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = {"TOPLEFT", UIParent, "TOPLEFT", 4, -180}
-					end
+		-- 			local specIndex = GetSpecialization()
+		-- 			if not KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] then
+		-- 				KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = {"TOPLEFT", UIParent, "TOPLEFT", 4, -180}
+		-- 			end
 
-					raidMover:ClearAllPoints()
-					raidMover:SetPoint(unpack(KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex]))
-				end
-			end
-			K:RegisterEvent("PLAYER_ENTERING_WORLD", UpdateSpecPos)
-			K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", UpdateSpecPos)
+		-- 			raidMover:ClearAllPoints()
+		-- 			raidMover:SetPoint(unpack(KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex]))
+		-- 		end
+		-- 	end
+		-- 	K:RegisterEvent("PLAYER_ENTERING_WORLD", UpdateSpecPos)
+		-- 	K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", UpdateSpecPos)
 
-			raidMover:HookScript("OnDragStop", function()
-				if not GetSpecialization() then
-					return
-				end
+		-- 	raidMover:HookScript("OnDragStop", function()
+		-- 		if not GetSpecialization() then
+		-- 			return
+		-- 		end
 
-				local specIndex = GetSpecialization()
-				KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidFrame"]
-			end)
-		end
+		-- 		local specIndex = GetSpecialization()
+		-- 		KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidFrame"]
+		-- 	end)
+		-- end
 
 		if C["Raid"].MainTankFrames then
 			oUF:RegisterStyle("MainTank", Module.CreateRaid)

@@ -284,14 +284,6 @@ function Module:CreateParty()
 	self.ReadyCheckIndicator:SetSize(20, 20)
 	self.ReadyCheckIndicator:SetPoint("LEFT", 0, 0)
 
-	if C["Party"].PortraitTimers then
-		self.PortraitTimer = CreateFrame("Frame", "$parentPortraitTimer", self.Health)
-		self.PortraitTimer:SetFrameLevel(6) -- Watch me
-		self.PortraitTimer:SetPoint("TOPLEFT", self.Portrait, "TOPLEFT", 1, -1)
-		self.PortraitTimer:SetPoint("BOTTOMRIGHT", self.Portrait, "BOTTOMRIGHT", -1, 1)
-		self.PortraitTimer:Hide()
-	end
-
 	self.PhaseIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.PhaseIndicator:SetSize(20, 20)
 	self.PhaseIndicator:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
@@ -309,10 +301,6 @@ function Module:CreateParty()
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(28, 28)
 	self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
-
-	self.OfflineIcon = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.OfflineIcon:SetSize(self.Portrait:GetWidth() + 14, self.Portrait:GetHeight() + 14)
-	self.OfflineIcon:SetPoint("CENTER", self.Portrait)
 
 	if C["Unitframe"].DebuffHighlight then
 		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")

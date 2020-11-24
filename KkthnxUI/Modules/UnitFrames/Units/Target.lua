@@ -295,14 +295,6 @@ function Module:CreateTarget()
 		K.HideInterfaceOption(InterfaceOptionsCombatPanelEnableFloatingCombatText)
 	end
 
-	if C["Unitframe"].PortraitTimers then
-		self.PortraitTimer = CreateFrame("Frame", "$parentPortraitTimer", self.Health)
-		self.PortraitTimer:SetFrameLevel(5) -- Watch me
-		self.PortraitTimer:SetPoint("TOPLEFT", self.Portrait, "TOPLEFT", 1, -1)
-		self.PortraitTimer:SetPoint("BOTTOMRIGHT", self.Portrait, "BOTTOMRIGHT", -1, 1)
-		self.PortraitTimer:Hide()
-	end
-
 	if C["Unitframe"].PvPIndicator then
 		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.PvPIndicator:SetSize(30, 33)

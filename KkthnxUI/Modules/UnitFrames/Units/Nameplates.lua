@@ -736,7 +736,7 @@ end
 function Module:AddWidgetContainer(self)
 	self.WidgetContainer = CreateFrame("Frame", nil, self, "UIWidgetContainerTemplate")
 	self.WidgetContainer:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -5)
-	self.WidgetContainer:SetScale(1 / C["General"].UIScale or 1) -- need reviewed
+	self.WidgetContainer:SetScale(K.Round(1 / C["General"].UIScale, 2)) -- need reviewed
 	self.WidgetContainer:Hide()
 end
 

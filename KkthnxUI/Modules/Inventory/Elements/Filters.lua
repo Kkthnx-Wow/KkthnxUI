@@ -17,6 +17,7 @@ local LE_ITEM_MISCELLANEOUS_MOUNT = _G.LE_ITEM_MISCELLANEOUS_MOUNT
 local LE_ITEM_QUALITY_COMMON = _G.LE_ITEM_QUALITY_COMMON
 local LE_ITEM_QUALITY_LEGENDARY = _G.LE_ITEM_QUALITY_LEGENDARY
 local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
+local C_ToyBox_GetToyInfo = _G.C_ToyBox.GetToyInfo
 
 -- Custom filter
 local CustomFilterList = {
@@ -134,16 +135,16 @@ local function isItemLegendary(item)
 	return item.rarity == LE_ITEM_QUALITY_LEGENDARY
 end
 
-local function isMountAndPet(item)
+local function isItemCollection(item)
 	if not C["Inventory"].ItemFilter then
 		return
 	end
 
-	if not C["Inventory"].FilterMount then
+	if not C["Inventory"].FilterCollection then
 		return
 	end
 
-	return (not isPetToy[item.id]) and item.classID == LE_ITEM_CLASS_MISCELLANEOUS and (item.subClassID == LE_ITEM_MISCELLANEOUS_MOUNT or item.subClassID == LE_ITEM_MISCELLANEOUS_COMPANION_PET)
+	return item.id and C_ToyBox_GetToyInfo(item.id) or (not isPetToy[item.id]) and item.classID == LE_ITEM_CLASS_MISCELLANEOUS and (item.subClassID == LE_ITEM_MISCELLANEOUS_MOUNT or item.subClassID == LE_ITEM_MISCELLANEOUS_COMPANION_PET)
 end
 
 local function isItemFavourite(item)
@@ -187,19 +188,19 @@ local function isItemQuest(item)
 		return
 	end
 
-	return item.isQuestItem
+	return item.questID or item.isQuestItem
 end
 
 function Module:GetFilters()
 	local filters = {}
 
-	filters.onlyBags = function(item) return isItemInBag(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAzeriteArmor(item) and not isItemJunk(item) and not isMountAndPet(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) and not isItemEquipSet(item) end
+	filters.onlyBags = function(item) return isItemInBag(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAzeriteArmor(item) and not isItemJunk(item) and not isItemCollection(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) and not isItemEquipSet(item) end
 	filters.bagAzeriteItem = function(item) return isItemInBag(item) and isAzeriteArmor(item) end
 	filters.bagEquipment = function(item) return isItemInBag(item) and isItemEquipment(item) end
 	filters.bagEquipSet = function(item) return isItemInBag(item) and isItemEquipSet(item) end
 	filters.bagConsumable = function(item) return isItemInBag(item) and isItemConsumable(item) end
 	filters.bagsJunk = function(item) return isItemInBag(item) and isItemJunk(item) end
-	filters.onlyBank = function(item) return isItemInBank(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAzeriteArmor(item) and not isMountAndPet(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) and not isItemEquipSet(item) end
+	filters.onlyBank = function(item) return isItemInBank(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAzeriteArmor(item) and not isItemCollection(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) and not isItemEquipSet(item) end
 	filters.bankAzeriteItem = function(item) return isItemInBank(item) and isAzeriteArmor(item) end
 	filters.bagLegendary = function(item) return isItemInBag(item) and isItemLegendary(item) end
 	filters.bankLegendary = function(item) return isItemInBank(item) and isItemLegendary(item) end
@@ -207,8 +208,8 @@ function Module:GetFilters()
 	filters.bankEquipSet = function(item) return isItemInBank(item) and isItemEquipSet(item) end
 	filters.bankConsumable = function(item) return isItemInBank(item) and isItemConsumable(item) end
 	filters.onlyReagent = function(item) return item.bagID == -3 and not isEmptySlot(item) end
-	filters.bagMountPet = function(item) return isItemInBag(item) and isMountAndPet(item) end
-	filters.bankMountPet = function(item) return isItemInBank(item) and isMountAndPet(item) end
+	filters.bagCollection = function(item) return isItemInBag(item) and isItemCollection(item) end
+	filters.bankCollection = function(item) return isItemInBank(item) and isItemCollection(item) end
 	filters.bagFavourite = function(item) return isItemInBag(item) and isItemFavourite(item) end
 	filters.bankFavourite = function(item) return isItemInBank(item) and isItemFavourite(item) end
 	filters.bagGoods = function(item) return isItemInBag(item) and isTradeGoods(item) end
