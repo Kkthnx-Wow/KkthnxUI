@@ -386,6 +386,7 @@ L["Honor Bar Color"] = "Honor Bar Color"
 L["Pick Text Formatting"] = "Pick Text Formatting"
 L["Rested Bar Color"] = "Rested Bar Color"
 L["Show Text"] = "Show Text"
+L["Track Azerite"] = "Track Azerite"
 L["Track Honor"] = "Track Honor"
 
 L["Enable Currency Info"] = "Enable Currency Info"

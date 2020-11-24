@@ -325,7 +325,7 @@ function Module:UpdateAzerite(event, unit)
 	local azBar = self.Bars.Azerite
 
 	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
-	if not azeriteItemLocation or C_AzeriteItem_IsAzeriteItemAtMaxLevel() or K.Level > 50 then
+	if not C["DataBars"].TrackAzerite or not azeriteItemLocation or C_AzeriteItem_IsAzeriteItemAtMaxLevel() or K.Level > 50 then
 		azBar:Hide()
 	else
 		azBar:Show()
@@ -482,7 +482,7 @@ function Module:OnEnter()
 	end
 
 	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
-	if azeriteItemLocation then
+	if C["DataBars"].TrackAzerite and azeriteItemLocation then
 		curXP, maxXP = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
 		currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
 
@@ -582,21 +582,48 @@ function Module:OnEnable()
 	self:SetupHonor()
 	self:OnUpdate()
 
-	K:RegisterEvent("PLAYER_XP_UPDATE", self.OnUpdate)
-	K:RegisterEvent("PLAYER_LEVEL_UP", self.OnUpdate)
-	K:RegisterEvent("UPDATE_EXHAUSTION", self.OnUpdate)
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", self.OnUpdate)
-	K:RegisterEvent("UPDATE_FACTION", self.OnUpdate)
-	K:RegisterEvent("ARTIFACT_XP_UPDATE", self.OnUpdate)
-	K:RegisterEvent("UNIT_INVENTORY_CHANGED", self.OnUpdate)
-	K:RegisterEvent("ENABLE_XP_GAIN", self.OnUpdate)
-	K:RegisterEvent("DISABLE_XP_GAIN", self.OnUpdate)
-	K:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", self.OnUpdate)
-	K:RegisterEvent("HONOR_XP_UPDATE", self.OnUpdate)
+	-- Experience
+	if Module:ExperienceBar_ShouldBeVisible() then
+		K:RegisterEvent("PLAYER_XP_UPDATE", self.OnUpdate)
+		K:RegisterEvent("DISABLE_XP_GAIN", self.OnUpdate)
+		K:RegisterEvent("ENABLE_XP_GAIN", self.OnUpdate)
+		K:RegisterEvent("UPDATE_EXHAUSTION", self.OnUpdate)
 
-	K:RegisterEvent("QUEST_LOG_UPDATE", self.UpdateQuestExperience)
-	K:RegisterEvent("ZONE_CHANGED", self.UpdateQuestExperience)
-	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", self.UpdateQuestExperience)
+		K:RegisterEvent("QUEST_LOG_UPDATE", self.UpdateQuestExperience)
+		K:RegisterEvent("ZONE_CHANGED", self.UpdateQuestExperience)
+		K:RegisterEvent("ZONE_CHANGED_NEW_AREA", self.UpdateQuestExperience)
+	else
+		K:UnregisterEvent("PLAYER_XP_UPDATE", self.OnUpdate)
+		K:UnregisterEvent("DISABLE_XP_GAIN", self.OnUpdate)
+		K:UnregisterEvent("ENABLE_XP_GAIN", self.OnUpdate)
+		K:UnregisterEvent("UPDATE_EXHAUSTION", self.OnUpdate)
+
+		K:UnregisterEvent("QUEST_LOG_UPDATE", self.UpdateQuestExperience)
+		K:UnregisterEvent("ZONE_CHANGED", self.UpdateQuestExperience)
+		K:UnregisterEvent("ZONE_CHANGED_NEW_AREA", self.UpdateQuestExperience)
+	end
+
+	-- Reputation
+	K:RegisterEvent("UPDATE_FACTION", self.OnUpdate)
+	K:RegisterEvent("COMBAT_TEXT_UPDATE", self.OnUpdate)
+
+	-- Azerite
+	if C["DataBars"].TrackAzerite then
+		K:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", self.OnUpdate)
+		K:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", self.OnUpdate)
+	else
+		K:UnregisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", self.OnUpdate)
+		K:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED", self.OnUpdate)
+	end
+
+	-- Honor
+	if C["DataBars"].TrackHonor then
+		K:RegisterEvent("HONOR_XP_UPDATE", self.OnUpdate)
+		K:RegisterEvent("PLAYER_FLAGS_CHANGED", self.OnUpdate)
+	else
+		K:UnregisterEvent("HONOR_XP_UPDATE", self.OnUpdate)
+		K:UnregisterEvent("PLAYER_FLAGS_CHANGED", self.OnUpdate)
+	end
 
 	if not self.Container.mover then
 		self.Container.mover = K.Mover(self.Container,  "DataBars", "DataBars", {"TOP", "Minimap", "BOTTOM", 0, -6})

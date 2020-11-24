@@ -188,6 +188,7 @@ C["DataBars"] = {
 	["HonorColor"] = {240/255, 114/255, 65/255},
 	["MouseOver"] = false,
 	["RestedColor"] = {1, 0, 1, 0.2},
+	["TrackAzerite"] = false,
 	["TrackHonor"] = false,
 	["Width"] = 180,
 	["Text"] = {

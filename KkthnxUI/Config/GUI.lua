@@ -328,6 +328,7 @@ local DataBars = function(self)
 	Window:CreateSwitch("DataBars", "Enable", enableTextColor..L["Enable DataBars"])
 	Window:CreateSwitch("DataBars", "MouseOver", L["Fade DataBars"])
 	Window:CreateSwitch("DataBars", "Text", L["Show Text"])
+	Window:CreateSwitch("DataBars", "TrackAzerite", L["Track Azerite"])
 	Window:CreateSwitch("DataBars", "TrackHonor", L["Track Honor"])
 	Window:CreateDropdown("DataBars", "Text", L["Pick Text Formatting"])
 
