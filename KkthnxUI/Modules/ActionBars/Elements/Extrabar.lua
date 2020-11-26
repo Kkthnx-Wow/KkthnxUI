@@ -19,7 +19,7 @@ function Module:CreateExtrabar()
 	local frame = CreateFrame("Frame", "KKUI_ExtraActionBar", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(size + 2 * padding)
 	frame:SetHeight(size + 2 * padding)
-	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 270, 34}
+	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 270, 32}
 	frame.mover = K.Mover(frame, "Extrabar", "Extrabar", frame.Pos)
 
 	ExtraActionBarFrame:EnableMouse(false)

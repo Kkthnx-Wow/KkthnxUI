@@ -6,17 +6,12 @@ if K.Class ~= "MONK" then
 end
 
 local _G = _G
-local math_floor = _G.math.floor
 
 local GetSpecialization = _G.GetSpecialization
 local GetSpellCount = _G.GetSpellCount
 local GetSpellTexture = _G.GetSpellTexture
 local IsPlayerSpell = _G.IsPlayerSpell
 local IsUsableSpell = _G.IsUsableSpell
-
-local function GetUnitAura(unit, spell, filter)
-	return Module:GetUnitAura(unit, spell, filter)
-end
 
 local function UpdateCooldown(button, spellID, texture)
 	return Module:UpdateCooldown(button, spellID, texture)

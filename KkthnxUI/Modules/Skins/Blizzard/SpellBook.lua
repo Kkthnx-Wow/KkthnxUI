@@ -4,65 +4,84 @@ local _G = _G
 local pairs = pairs
 local table_insert = table.insert
 
+local BOOKTYPE_PROFESSION = _G.BOOKTYPE_PROFESSION
+local GetProfessionInfo = _G.GetProfessionInfo
+local IsPassiveSpell = _G.IsPassiveSpell
+local SPELLS_PER_PAGE = _G.SPELLS_PER_PAGE
 local hooksecurefunc = _G.hooksecurefunc
 
 table_insert(C.defaultThemes, function()
 	local professionTexture = K.GetTexture(C["UITextures"].SkinTextures)
 
-	for i = 1, _G.SPELLS_PER_PAGE do
-		local button = _G["SpellButton"..i]
-		local icon = _G["SpellButton"..i.."IconTexture"]
-		local slot = _G["SpellButton"..i.."SlotFrame"]
-		local highlight =_G["SpellButton"..i.."Highlight"]
+	for i = 1, SPELLS_PER_PAGE do
+		local bu = _G["SpellButton"..i]
+		local ic = _G["SpellButton"..i.."IconTexture"]
 
-		button.EmptySlot:SetTexture("")
-		button.UnlearnedFrame:SetTexture("")
-		slot:SetTexture("")
-		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		icon:SetAllPoints()
-		button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
-		button:StyleButton()
+		_G["SpellButton"..i.."SlotFrame"]:SetAlpha(0)
+		bu.EmptySlot:SetAlpha(0)
+		bu.UnlearnedFrame:SetAlpha(0)
+		bu:SetCheckedTexture("")
+		bu:SetPushedTexture("")
 
-		if C["General"].ColorTextures then
-			button.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
-		else
-			button.KKUI_Border:SetVertexColor(1, 1, 1)
-		end
+		ic:SetTexCoord(unpack(K.TexCoords))
+		ic.bg = ic:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
-		if button.shine then
-			button.shine:ClearAllPoints()
-			button.shine:SetPoint("TOPLEFT", button, "TOPLEFT", -3, 3)
-			button.shine:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 3, -3)
-		end
-
-		local NewBorder = CreateFrame("Frame", nil, button, "BackdropTemplate")
+		local NewBorder = CreateFrame("Frame", nil, bu, "BackdropTemplate")
 		NewBorder:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 16})
-		NewBorder:SetPoint("TOPLEFT", button, -8, 8)
-		NewBorder:SetPoint("BOTTOMRIGHT", button, 8, -8)
+		NewBorder:SetPoint("TOPLEFT", bu, -8, 8)
+		NewBorder:SetPoint("BOTTOMRIGHT", bu, 8, -8)
 		NewBorder:SetBackdropBorderColor(1, 1, 0)
 		NewBorder:Hide()
 
-		hooksecurefunc(button.SpellHighlightTexture, "SetShown", function(_, value)
+		hooksecurefunc(bu.SpellHighlightTexture, "SetShown", function(_, value)
 			if value == true then
 				NewBorder:Show()
 			end
 		end)
 
-		hooksecurefunc(button.SpellHighlightTexture, "Hide", function()
+		hooksecurefunc(bu.SpellHighlightTexture, "Hide", function()
 			NewBorder:Hide()
 		end)
 	end
 
-	hooksecurefunc("SpellButton_UpdateButton", function()
-		for i = 1, SPELLS_PER_PAGE do
-			local button = _G["SpellButton"..i]
-			if button.SpellHighlightTexture then
-				button.SpellHighlightTexture:SetTexture("")
-			end
+	hooksecurefunc("SpellButton_UpdateButton", function(self)
+		if SpellBookFrame.bookType == BOOKTYPE_PROFESSION then
+			return
+		end
+
+		local slot = SpellBook_GetSpellBookSlot(self)
+		local isPassive = IsPassiveSpell(slot, SpellBookFrame.bookType)
+		local name = self:GetName()
+		local highlightTexture = _G[name.."Highlight"]
+		highlightTexture:SetPoint("TOPLEFT", 2, -2)
+		highlightTexture:SetPoint("BOTTOMRIGHT", -2, 2)
+		if isPassive then
+			highlightTexture:SetColorTexture(1, 1, 1, 0)
+		else
+			highlightTexture:SetColorTexture(1, 1, 1, .25)
+		end
+
+		local ic = _G[name.."IconTexture"]
+		if ic.bg then
+			ic.bg:SetShown(ic:IsShown())
 		end
 	end)
 
-	-- Profession Tab
+	-- Professions
+	local professions = {"PrimaryProfession1", "PrimaryProfession2", "SecondaryProfession1", "SecondaryProfession2", "SecondaryProfession3"}
+	for i, button in pairs(professions) do
+		local bu = _G[button]
+		bu.statusBar:StripTextures()
+		bu.statusBar:SetStatusBarTexture(professionTexture)
+		bu.statusBar:GetStatusBarTexture():SetGradient("VERTICAL", 0, .6, 0, 0, .8, 0)
+		bu.statusBar.rankText:SetPoint("CENTER")
+		bu.statusBar:CreateBorder()
+		if i > 2 then
+			bu.statusBar:ClearAllPoints()
+			bu.statusBar:SetPoint("BOTTOMLEFT", 16, 3)
+		end
+	end
+
 	local professionbuttons = {
 		"PrimaryProfession1SpellButtonTop",
 		"PrimaryProfession1SpellButtonBottom",
@@ -76,76 +95,40 @@ table_insert(C.defaultThemes, function()
 		"SecondaryProfession3SpellButtonRight",
 	}
 
-	local professionheaders = {
-		"PrimaryProfession1",
-		"PrimaryProfession2",
-		"SecondaryProfession1",
-		"SecondaryProfession2",
-		"SecondaryProfession3",
-	}
+	for _, button in pairs(professionbuttons) do
+		local bu = _G[button]
+		bu:StripTextures()
+		bu:SetPushedTexture("")
 
-	for _, header in pairs(professionheaders) do
-		_G[header.."Missing"]:SetTextColor(1, 0.8, 0)
-		_G[header.."Missing"]:SetShadowColor(0, 0, 0)
-		_G[header.."Missing"]:SetShadowOffset(1, -1)
-		_G[header].missingText:SetTextColor(.04, .04, .04)
+		local icon = bu.iconTexture
+		icon:ClearAllPoints()
+		icon:SetPoint("TOPLEFT", 2, -2)
+		icon:SetPoint("BOTTOMRIGHT", -2, 2)
+		icon:SetTexCoord(unpack(K.TexCoords))
+		icon.bg = icon:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+
+		local check = bu:GetCheckedTexture()
+		check:SetColorTexture(0, 1, 0, 0.3)
+		check:SetPoint("TOPLEFT", button, 2, -2)
+		check:SetPoint("BOTTOMRIGHT", button, -2, 2)
 	end
 
-	for _, button in pairs(professionbuttons) do
-		local icon = _G[button.."IconTexture"]
-		local rank = _G[button.."SubSpellName"]
-		local button = _G[button]
-		button:StripTextures()
+	for i = 1, 2 do
+		local bu = _G["PrimaryProfession"..i]
+		_G["PrimaryProfession"..i.."IconBorder"]:Hide()
+		bu.professionName:ClearAllPoints()
+		bu.professionName:SetPoint("TOPLEFT", 100, -4)
+		bu.icon:SetAlpha(1)
+		bu.icon:SetDesaturated(false)
+		bu.icon:SetTexCoord(unpack(K.TexCoords))
+	end
 
-		if rank then
-			rank:SetTextColor(1, 1, 1)
-		end
-
-		button:GetCheckedTexture():SetColorTexture(0, 1, 0, 0.3)
-		button:GetCheckedTexture():SetPoint("TOPLEFT", button, 4, -4)
-		button:GetCheckedTexture():SetPoint("BOTTOMRIGHT", button, -4, 4)
-
-		button.cooldown:SetPoint("TOPLEFT", button, 5, -5)
-		button.cooldown:SetPoint("BOTTOMRIGHT", button, -5, 5)
-
-		if icon then
-			icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-			icon:ClearAllPoints()
-			icon:SetPoint("TOPLEFT", 3, -3)
-			icon:SetPoint("BOTTOMRIGHT", -3, 3)
-
-			if not button.Backdrop then
-				button:CreateBackdrop()
-				button.Backdrop:SetFrameLevel(button:GetFrameLevel())
-				button.Backdrop:SetAllPoints(icon)
+	hooksecurefunc("FormatProfession", function(frame, index)
+		if index then
+			local _, texture = GetProfessionInfo(index)
+			if frame.icon and texture then
+				frame.icon:SetTexture(texture)
 			end
 		end
-	end
-
-	hooksecurefunc("UpdateProfessionButton", function()
-		for _, button in pairs(professionbuttons) do
-			local button = _G[button]
-			button:GetHighlightTexture():SetPoint("TOPLEFT", button, 3, -3)
-			button:GetHighlightTexture():SetPoint("BOTTOMRIGHT", button, -3, 3)
-		end
 	end)
-
-	local professionstatusbars = {
-		"PrimaryProfession1StatusBar",
-		"PrimaryProfession2StatusBar",
-		"SecondaryProfession1StatusBar",
-		"SecondaryProfession2StatusBar",
-		"SecondaryProfession3StatusBar",
-	}
-
-	for _, statusbar in pairs(professionstatusbars) do
-		local statusbar = _G[statusbar]
-		statusbar:StripTextures()
-		statusbar:SetStatusBarTexture(professionTexture)
-		statusbar:SetStatusBarColor(0, 0.8, 0)
-		statusbar:CreateBorder()
-
-		statusbar.rankText:ClearAllPoints()
-		statusbar.rankText:SetPoint("CENTER")
-	end
 end)

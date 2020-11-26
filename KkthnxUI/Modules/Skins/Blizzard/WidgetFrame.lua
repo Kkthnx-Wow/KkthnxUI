@@ -104,7 +104,7 @@ table_insert(C.defaultThemes, function()
 			bar.BorderRight:SetAlpha(0)
 			bar.BorderCenter:SetAlpha(0)
 			bar.Spark:SetAlpha(0)
-			bar:CreateBorder()
+			bar:CreateShadow(true)
 
 			bar.styled = true
 		end

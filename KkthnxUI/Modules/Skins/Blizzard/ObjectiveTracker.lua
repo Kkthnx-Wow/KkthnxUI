@@ -69,6 +69,10 @@ local function reskinQuestIcon(button)
 		return
 	end
 
+	if not button.SetNormalTexture then -- https://github.com/siweia/NDui/issues/113
+		return
+	end
+
 	if not button.styled then
 		button:SetSize(24, 24)
 		button:SetNormalTexture("")

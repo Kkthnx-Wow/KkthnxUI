@@ -1,5 +1,4 @@
 local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
 
 -- Lua
 local _G = _G
@@ -22,20 +21,7 @@ C.themes["Blizzard_InspectUI"] = function()
 		HideUIPanel(InspectFrame)
 	end
 
-	InspectModelFrameBackgroundBotLeft:Kill()
-	InspectModelFrameBackgroundBotRight:Kill()
-	InspectModelFrameBackgroundOverlay:Kill()
-	InspectModelFrameBackgroundTopLeft:Kill()
-	InspectModelFrameBackgroundTopRight:Kill()
-	InspectModelFrameBorderTopLeft:Kill()
-	InspectModelFrameBorderTopRight:Kill()
-	InspectModelFrameBorderTop:Kill()
-	InspectModelFrameBorderLeft:Kill()
-	InspectModelFrameBorderRight:Kill()
-	InspectModelFrameBorderBottomLeft:Kill()
-	InspectModelFrameBorderBottomRight:Kill()
-	InspectModelFrameBorderBottom:Kill()
-	InspectModelFrameBorderBottom2:Kill()
+	InspectModelFrame:StripTextures(true)
 
 	for _, slot in pairs({InspectPaperDollItemsFrame:GetChildren()}) do
 		if slot:IsObjectType("Button") or slot:IsObjectType("ItemButton") then

@@ -1,9 +1,4 @@
-local _, ns = ...
-local oUF = ns.oUF
-
-if not oUF then
-	return
-end
+local K = unpack(select(2, ...))
 
 -- Sourced: oUF_GCD (ALZA)
 
@@ -73,4 +68,4 @@ local function OnEnable(self)
 	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", OnUpdate_GlobalCooldown, true)
 end
 
-oUF:AddElement("GlobalCooldown", OnUpdate_GlobalCooldown, OnEnable)
+K.oUF:AddElement("GlobalCooldown", OnUpdate_GlobalCooldown, OnEnable)

@@ -89,6 +89,16 @@
    <Script file="Maps\Elements\MapReveal.lua" />
    <Script file="Maps\Elements\WowHeadLink.lua" />
    <!-- Unitframes -->
+   <Script file="UnitFrames\Plugins\oUF_AuraWatch.lua" />
+   <Script file="UnitFrames\Plugins\oUF_CombatFader.lua" />
+   <Script file="UnitFrames\Plugins\oUF_DebuffHighlight.lua" />
+   <Script file="UnitFrames\Plugins\oUF_FloatingCombatFeedback.lua" />
+   <Script file="UnitFrames\Plugins\oUF_GlobalCooldown.lua" />
+   <Script file="UnitFrames\Plugins\oUF_PVPSpecIcons.lua" />
+   <Script file="UnitFrames\Plugins\oUF_RaidDebuffs.lua" />
+   <Script file="UnitFrames\Plugins\oUF_Swing.lua" />
+   <Script file="UnitFrames\Plugins\oUF_Trinkets.lua" />
+   <Script file="UnitFrames\Plugins\oUF_WidgetXPBar.lua" />
    <Script file="UnitFrames\Core.lua" />
    <Script file="UnitFrames\Tags.lua" />
    <Script file="UnitFrames\Range.lua" />
@@ -159,6 +169,7 @@
    <Include file="Skins\Blizzard\Character.lua" />
    <Include file="Skins\Blizzard\ChatBubble.lua" />
    <Include file="Skins\Blizzard\ChatFrame.lua" />
+   <Include file="Skins\Blizzard\Collectables.lua" />
    <Include file="Skins\Blizzard\DeathRecap.lua" />
    <Include file="Skins\Blizzard\Friends.lua" />
    <Include file="Skins\Blizzard\Inspect.lua" />
@@ -167,15 +178,12 @@
    <Include file="Skins\Blizzard\Miscellaneous.lua" />
    <Include file="Skins\Blizzard\ObjectiveTracker.lua" />
    <Include file="Skins\Blizzard\PetBattle.lua" />
-   <Include file="Skins\Blizzard\PvP.lua" />
-   <Include file="Skins\Blizzard\ScrappingMachine.lua" />
    <Include file="Skins\Blizzard\SpellBook.lua" />
    <Include file="Skins\Blizzard\StaticPopup.lua" />
+   <Include file="Skins\Blizzard\Talent.lua" />
    <Include file="Skins\Blizzard\TalkingHead.lua" />
    <Include file="Skins\Blizzard\TradeSkill.lua" />
-   <Include file="Skins\Blizzard\Tutorial.lua" />
    <Include file="Skins\Blizzard\WidgetFrame.lua" />
-   <Include file="Skins\Blizzard\WorldMapFrame.lua" />
    <!-- Skins AddOns -->
    <Include file="Skins\Addons\Bartender4.lua" />
    <Include file="Skins\Addons\DeadlyBossMods.lua" />

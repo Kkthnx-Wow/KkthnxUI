@@ -1120,7 +1120,7 @@ function Module:PostUpdatePlates(event, unit)
 		self.npcID = K.GetNPCID(self.unitGUID)
 		self.isPlayer = UnitIsPlayer(unit)
 		self.widgetsOnly = UnitNameplateShowsWidgetsOnly(unit)
-		self.WidgetContainer:RegisterForWidgetSet(UnitWidgetSet(unit), oUF.Widget_DefaultLayout, nil, unit)
+		self.WidgetContainer:RegisterForWidgetSet(UnitWidgetSet(unit), K.Widget_DefaultLayout, nil, unit)
 
 		Module.RefreshPlateType(self, unit)
 	elseif event == "NAME_PLATE_UNIT_REMOVED" then

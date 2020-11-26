@@ -42,7 +42,11 @@ end
 
 local function onEnter(button)
 	if button.backdrop and button:IsEnabled() then
-		button.backdrop.KKUI_Border:SetVertexColor(1, 1, 0)
+		if C["General"].ColorTextures then
+			button.backdrop.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+		else
+			button.backdrop.KKUI_Border:SetVertexColor(102/255, 157/255, 255/255)
+		end
 	end
 
 	if C["ActionBar"].MicroBarMouseover and not Module.MicroBar.IsMouseOvered then
@@ -54,7 +58,11 @@ end
 
 local function onLeave(button)
 	if button.backdrop and button:IsEnabled() then
-		button.backdrop.KKUI_Border:SetVertexColor(1, 1, 1)
+		if C["General"].ColorTextures then
+			button.backdrop.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+		else
+			button.backdrop.KKUI_Border:SetVertexColor(1, 1, 1)
+		end
 	end
 end
 

@@ -201,6 +201,7 @@ function Module:CreatePlayer()
 			self.Castbar.Lag:SetFont(select(1, self.Castbar.Lag:GetFont()), 11, select(3, self.Castbar.Lag:GetFont()))
 			self.Castbar.Lag:SetTextColor(0.84, 0.75, 0.65)
 			self.Castbar.Lag:SetJustifyH("RIGHT")
+			self:RegisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent, true) -- Fix quests with WorldFrame interaction
 			self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent, true)
 		end
 

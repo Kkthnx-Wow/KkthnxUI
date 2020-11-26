@@ -1,6 +1,4 @@
-local _, ns = ...
-local oUF = ns.oUF or oUF
-assert(oUF, "oUF not loaded")
+local K = unpack(select(2, ...))
 
 local _G = _G
 
@@ -94,4 +92,4 @@ local Disable = function(self)
 	end
 end
 
-oUF:AddElement("Trinket", Update, Enable, Disable)
+K.oUF:AddElement("Trinket", Update, Enable, Disable)

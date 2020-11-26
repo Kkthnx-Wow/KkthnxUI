@@ -27,6 +27,10 @@ LFGReadyDialogTimer.StatusBar.Spark:SetBlendMode("ADD")
 
 _G.LFGDungeonReadyDialog.nextUpdate = 0
 local function Update_LFGQueueTimer()
+	if IsAddOnLoaded("DBM-Core") or IsAddOnLoaded("BigWigs") then
+		return
+	end
+
 	local object = _G.LFGDungeonReadyDialog
 	local oldTime = GetTime()
 	local flag = 0
@@ -34,10 +38,6 @@ local function Update_LFGQueueTimer()
 	local interval = 0.1
 
 	object:SetScript("OnUpdate", function(_, elapsed)
-		if IsAddOnLoaded("DBM-Core") or IsAddOnLoaded("BigWigs") then
-			return
-		end
-
 		object.nextUpdate = object.nextUpdate + elapsed
 		if object.nextUpdate > interval then
 			local newTime = GetTime()
@@ -66,9 +66,9 @@ end
 -- No config option for this as this will be disabled if replaced by one of the 2 addons that provide this.
 -- This is an important QoL addition.
 function Module:CreateLFGQueueTimer()
-	if not IsAddOnLoaded("DBM-Core") or not IsAddOnLoaded("BigWigs") then
-		K:RegisterEvent("LFG_PROPOSAL_SHOW", Setup_LFGQueueTimer)
-	else
-		K:UnregisterEvent("LFG_PROPOSAL_SHOW", Setup_LFGQueueTimer)
+	if IsAddOnLoaded("DBM-Core") or IsAddOnLoaded("BigWigs") then
+		return
 	end
+
+	K:RegisterEvent("LFG_PROPOSAL_SHOW", Setup_LFGQueueTimer)
 end

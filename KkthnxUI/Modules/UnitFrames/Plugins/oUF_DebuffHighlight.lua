@@ -1,5 +1,4 @@
-local _, ns = ...
-local oUF = ns.oUF
+local K = unpack(select(2, ...))
 
 local _G = _G
 
@@ -124,6 +123,7 @@ local function Enable(object)
 	if not object.DebuffHighlightBackdrop and not object.DebuffHighlightBackdropBorder and not object.DebuffHighlight then
 		return
 	end
+
 	-- If we're filtering highlights and we're not of the dispelling type, return
 	if object.DebuffHighlightFilter and not CanDispel[playerClass] then
 		return
@@ -154,8 +154,8 @@ local function Disable(object)
 	end
 end
 
-oUF:AddElement("DebuffHighlight", Update, Enable, Disable)
+K.oUF:AddElement("DebuffHighlight", Update, Enable, Disable)
 
-for _, frame in ipairs(oUF.objects) do
+for _, frame in ipairs(K.oUF.objects) do
 	Enable(frame)
 end

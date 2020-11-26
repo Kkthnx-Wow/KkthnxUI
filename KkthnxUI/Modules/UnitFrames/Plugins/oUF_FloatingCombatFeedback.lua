@@ -1,13 +1,10 @@
-local _, ns = ...
-local oUF = ns.oUF or oUF
-assert(oUF, "oUF FloatingCombatFeedback was unable to locate oUF install")
+local K = unpack(select(2, ...))
 
 local _G = _G
 local select, tremove, tinsert, wipe = _G.select, _G.table.remove, _G.table.insert, _G.table.wipe
-local m_cos, m_sin, m_pi, m_random, bit_band = _G.math.cos, _G.math.sin, _G.math.pi, _G.math.random, _G.bit.band
+local m_cos, m_sin, m_pi, m_random = _G.math.cos, _G.math.sin, _G.math.pi, _G.math.random
 
 local BreakUpLargeNumbers = _G.BreakUpLargeNumbers
-local COMBATLOG_OBJECT_AFFILIATION_MINE = _G.COMBATLOG_OBJECT_AFFILIATION_MINE
 local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
 local ENTERING_COMBAT = _G.ENTERING_COMBAT
 local GetSpellTexture = _G.GetSpellTexture
@@ -22,11 +19,6 @@ local SCHOOL_MASK_NONE = _G.SCHOOL_MASK_NONE or 0x00
 local SCHOOL_MASK_PHYSICAL = _G.SCHOOL_MASK_PHYSICAL or 0x01
 local SCHOOL_MASK_SHADOW = _G.SCHOOL_MASK_SHADOW or 0x20
 local UnitGUID = _G.UnitGUID
-
--- Flags
-function ns:IsMyPet(flags)
-	return bit_band(flags, COMBATLOG_OBJECT_AFFILIATION_MINE) > 0
-end
 
 local iconCache = {}
 local missCache = {}
@@ -91,7 +83,7 @@ end
 local animations = {
 	["fountain"] = function(self)
 		return self.x + self.xDirection * self.radius * (1 - m_cos(m_pi / 2 * self.progress)),
-			self.y + self.yDirection * self.radius * m_sin(m_pi / 2 * self.progress)
+		self.y + self.yDirection * self.radius * m_sin(m_pi / 2 * self.progress)
 	end,
 
 	["vertical"] = function(self)
@@ -104,7 +96,7 @@ local animations = {
 
 	["diagonal"] = function(self)
 		return self.x + self.xDirection * self.radius * self.progress,
-			self.y + self.yDirection * self.radius * self.progress
+		self.y + self.yDirection * self.radius * self.progress
 	end,
 
 	["static"] = function(self)
@@ -231,17 +223,14 @@ end
 
 local function formatNumber(self, amount)
 	local element = self.FloatingCombatFeedback
-	local KKUI = KkthnxUI[1]
-
 	if element.abbreviateNumbers then
-		return KKUI.ShortValue(amount)
+		return K.ShortValue(amount)
 	else
 		return BreakUpLargeNumbers(amount)
 	end
 end
 
 local playerGUID = UnitGUID("player")
-
 local function onEvent(self, event, ...)
 	local element = self.FloatingCombatFeedback
 	local unit = self.unit
@@ -259,7 +248,7 @@ local function onEvent(self, event, ...)
 		local isPlayer = playerGUID == sourceGUID
 		local atTarget = UnitGUID("target") == destGUID
 		local atPlayer = playerGUID == destGUID
-		local isPet = element.showPets and ns:IsMyPet(sourceFlags)
+		local isPet = element.showPets and K:IsMyPet(sourceFlags)
 
 		if (unit == "target" and (isPlayer or isPet) and atTarget) or (unit == "player" and atPlayer) then
 			local value = eventFilter[eventType]
@@ -426,4 +415,4 @@ local function Disable(self)
 	end
 end
 
-oUF:AddElement("FloatingCombatFeedback", Path, Enable, Disable)
+K.oUF:AddElement("FloatingCombatFeedback", Path, Enable, Disable)

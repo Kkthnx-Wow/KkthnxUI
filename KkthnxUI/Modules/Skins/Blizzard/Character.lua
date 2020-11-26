@@ -99,15 +99,7 @@ tinsert(C.defaultThemes, function()
 		HideUIPanel(CharacterFrame)
 	end
 
-	-- Strip Textures
-	CharacterModelFrame:StripTextures()
-
-	for _, corner in pairs({"TopLeft", "TopRight", "BotLeft", "BotRight"}) do
-		local CharacterModelFrameBackground_Textures = _G["CharacterModelFrameBackground"..corner]
-		if CharacterModelFrameBackground_Textures then
-			CharacterModelFrameBackground_Textures:Kill()
-		end
-	end
+	CharacterModelFrame:StripTextures(true)
 
 	for _, slot in pairs({PaperDollItemsFrame:GetChildren()}) do
 		if slot:IsObjectType("Button") or slot:IsObjectType("ItemButton") then

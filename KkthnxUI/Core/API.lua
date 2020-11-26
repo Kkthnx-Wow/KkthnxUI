@@ -62,7 +62,6 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	local BackgroundBlue = bgBlue or C["Media"].BackdropColor[3]
 	local BackgroundAlpha = bgAlpha or C["Media"].BackdropColor[4]
 	local UseBackground = bgBackground or true
-
 	local UseInnerShadow = innerShadow or false
 
 	-- Create Our Border

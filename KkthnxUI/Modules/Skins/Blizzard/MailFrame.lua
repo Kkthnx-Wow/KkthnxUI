@@ -1,7 +1,16 @@
 
 local K, C = unpack(select(2, ...))
 
-tinsert(C.defaultThemes, function()
+local _G = _G
+local table_insert = _G.table.insert
+
+local ATTACHMENTS_MAX_RECEIVE = _G.ATTACHMENTS_MAX_RECEIVE
+local ATTACHMENTS_MAX_SEND = _G.ATTACHMENTS_MAX_SEND
+local HasSendMailItem = _G.HasSendMailItem
+local INBOXITEMS_TO_DISPLAY = _G.INBOXITEMS_TO_DISPLAY
+local hooksecurefunc = _G.hooksecurefunc
+
+table_insert(C.defaultThemes, function()
 	local texL, texR, texT, texB = unpack(K.TexCoords)
 
 	for i = 1, INBOXITEMS_TO_DISPLAY do
@@ -11,7 +20,7 @@ tinsert(C.defaultThemes, function()
 		button:StripTextures()
 		button.Icon:SetTexCoord(texL, texR, texT, texB)
 		button.IconBorder:SetAlpha(0)
-		button:CreateBorder()
+		button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 		button:StyleButton()
 	end
 

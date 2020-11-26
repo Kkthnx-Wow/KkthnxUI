@@ -1,8 +1,7 @@
+local K = unpack(select(2, ...))
+
 -- Original work by Astromech
 -- Rewritten based on Auras by Azilroka
-
-local _, ns = ...
-local oUF = ns.oUF
 
 local _G = _G
 
@@ -57,7 +56,7 @@ local function createAuraIcon(element, index)
 	return button
 end
 
-local function customFilter(element, _, button, name, _, _, debuffType, _, _, caster, isStealable, _, spellID, canApply, isBossDebuff, casterIsPlayer)
+local function customFilter(element, _, button, _, _, _, _, _, _, caster, _, _, spellID, _, _, casterIsPlayer)
 	local setting = element.watched[spellID]
 	if not setting then
 		return false
@@ -251,7 +250,7 @@ local function filterIcons(element, unit, filter, limit, isDebuff, offset, dontH
 	return visible, hidden
 end
 
-local function UpdateAuras(self, event, unit)
+local function UpdateAuras(self, _, unit)
 	if (self.unit ~= unit) then
 		return
 	end
@@ -333,4 +332,4 @@ local function Disable(self)
 	end
 end
 
-oUF:AddElement("AuraWatch", Update, Enable, Disable)
+K.oUF:AddElement("AuraWatch", Update, Enable, Disable)

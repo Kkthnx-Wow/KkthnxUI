@@ -1,5 +1,4 @@
-local _, ns = ...
-local oUF = ns.oUF or oUF
+local K = unpack(select(2, ...))
 
 -- Sourced: ElvUI (Elvz)
 
@@ -145,4 +144,4 @@ local function Disable(self)
 	end
 end
 
-oUF:AddElement("CombatFade", Update, Enable, Disable)
+K.oUF:AddElement("CombatFade", Update, Enable, Disable)

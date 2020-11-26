@@ -312,6 +312,7 @@ end
 
 function ExtraQuestButton:RemoveItem()
 	self.itemID = nil
+	self.itemLink = nil
 	self:UpdateAttributes()
 end
 

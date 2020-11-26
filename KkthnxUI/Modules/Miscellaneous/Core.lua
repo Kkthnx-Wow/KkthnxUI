@@ -468,34 +468,7 @@ function Module:CreateKillTutorials()
 	_G.WorldMapFrame.BorderFrame.Tutorial:Kill()
 end
 
-local function KillCollectionsTutorials(event, addon)
-	if not C["General"].NoTutorialButtons then
-		return
-	end
-
-	if addon == "Blizzard_Collections" then
-		_G.PetJournalTutorialButton:Kill()
-		K:UnregisterEvent(event, KillCollectionsTutorials)
-	end
-end
-
-local function KillTalentTutorials(event, addon)
-	if not C["General"].NoTutorialButtons then
-		return
-	end
-
-	if addon == "Blizzard_TalentUI" then
-		_G.PlayerTalentFrameSpecializationTutorialButton:Kill()
-		_G.PlayerTalentFrameTalentsTutorialButton:Kill()
-		K:UnregisterEvent(event, KillTalentTutorials)
-	end
-end
-
 local function AcknowledgeTips()
-	if InCombatLockdown() then -- just incase cause this code path will call SetCVar
-		return
-	end
-
 	for frame in _G.HelpTip.framePool:EnumerateActive() do
 		frame:Acknowledge()
 	end
@@ -507,13 +480,27 @@ function Module:CreateDisableHelpTip() -- auto complete helptips
 	end
 
 	hooksecurefunc(_G.HelpTip, "Show", AcknowledgeTips)
-	C_Timer_After(2, AcknowledgeTips)
+	C_Timer_After(1, AcknowledgeTips)
 end
 
-local function KillNewPlayerExperience()
-	local NPE = NewPlayerExperience
-	if NPE and NPE:GetIsActive() then
-		NPE:Shutdown()
+local function ShutdownNPE(event)
+	local NPE = _G.NewPlayerExperience
+	if NPE then
+		if NPE:GetIsActive() then
+			NPE:Shutdown()
+		end
+
+		if event then
+			K:UnregisterEvent(event, ShutdownNPE)
+		end
+	end
+end
+
+function Module:CreateDisableNewPlayerExperience() -- disable new player experience
+	if _G.NewPlayerExperience then
+		ShutdownNPE()
+	else
+		K:RegisterEvent("ADDON_LOADED", ShutdownNPE)
 	end
 end
 
@@ -523,6 +510,7 @@ function Module:OnEnable()
 	self:CreateBossBanner()
 	self:CreateBossEmote()
 	self:CreateDisableHelpTip()
+	self:CreateDisableNewPlayerExperience()
 	self:CreateDurabilityFrameMove()
 	self:CreateErrorsFrame()
 	self:CreateImprovedMail()
@@ -580,24 +568,6 @@ function Module:OnEnable()
 		NoTalkingHeads()
 	else
 		K:RegisterEvent("ADDON_LOADED", TalkingHeadOnLoad)
-	end
-
-	if IsAddOnLoaded("Blizzard_Collections") then
-		KillCollectionsTutorials()
-	else
-		K:RegisterEvent("ADDON_LOADED", KillCollectionsTutorials)
-	end
-
-	if IsAddOnLoaded("Blizzard_TalentUI") then
-		KillTalentTutorials()
-	else
-		K:RegisterEvent("ADDON_LOADED", KillTalentTutorials)
-	end
-
-	if NewPlayerExperience then
-		KillNewPlayerExperience()
-	else
-		K:RegisterEvent("ADDON_LOADED", KillNewPlayerExperience)
 	end
 
 	-- Instant delete

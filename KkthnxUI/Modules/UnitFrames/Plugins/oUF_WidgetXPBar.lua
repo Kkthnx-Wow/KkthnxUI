@@ -1,5 +1,4 @@
-local _, ns = ...
-local oUF = ns.oUF or oUF
+local K = unpack(select(2, ...))
 
 -- Credit: ElvUI
 local ipairs = ipairs
@@ -15,13 +14,13 @@ local function reskinWidgetBar(bar)
 		bar.BorderRight:SetAlpha(0)
 		bar.BorderCenter:SetAlpha(0)
 		bar.Spark:SetAlpha(0)
-		-- bar:CreateShadow(true)
+		bar:CreateShadow(true)
 
 		bar.styled = true
 	end
 end
 
-function oUF:Widget_DefaultLayout(sortedWidgets)
+function K:Widget_DefaultLayout(sortedWidgets)
 	local widgetContainerFrame = self
 	local horizontalRowContainer = nil
 	local horizontalRowHeight = 0

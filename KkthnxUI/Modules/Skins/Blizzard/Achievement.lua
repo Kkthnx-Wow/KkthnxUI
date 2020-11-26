@@ -1,78 +1,54 @@
 local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
 
 local _G = _G
-local table_insert = _G.table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
 
-local function SkinStatusBar(bar)
-	bar:StripTextures()
-	bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
-	bar:SetStatusBarColor(4/255, 179/255, 30/255)
-	bar:CreateBorder()
-
-	local StatusBarName = bar:GetName()
-	if _G[StatusBarName.."Title"] then
-		_G[StatusBarName.."Title"]:SetPoint("LEFT", 4, 0)
-	end
-
-	if _G[StatusBarName.."Label"] then
-		_G[StatusBarName.."Label"]:SetPoint("LEFT", 4, 0)
-	end
-
-	if _G[StatusBarName.."Text"] then
-		_G[StatusBarName.."Text"]:SetPoint("RIGHT", -4, 0)
-	end
-end
-
 C.themes["Blizzard_AchievementUI"] = function()
-	if not IsAddOnLoaded("Blizzard_AchievementUI") then
-		return
-	end
-
-	SkinStatusBar(_G.AchievementFrameSummaryCategoriesStatusBar)
-	SkinStatusBar(_G.AchievementFrameComparisonSummaryPlayerStatusBar)
-	SkinStatusBar(_G.AchievementFrameComparisonSummaryFriendStatusBar)
+	AchievementFrameSummaryCategoriesStatusBar:StripTextures()
+	AchievementFrameSummaryCategoriesStatusBar:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
+	AchievementFrameSummaryCategoriesStatusBar:GetStatusBarTexture():SetGradient("VERTICAL", 0, .4, 0, 0, .6, 0)
+	AchievementFrameSummaryCategoriesStatusBarTitle:SetTextColor(1, 1, 1)
+	AchievementFrameSummaryCategoriesStatusBarTitle:SetPoint("LEFT", AchievementFrameSummaryCategoriesStatusBar, "LEFT", 6, 0)
+	AchievementFrameSummaryCategoriesStatusBarText:SetPoint("RIGHT", AchievementFrameSummaryCategoriesStatusBar, "RIGHT", -5, 0)
+	AchievementFrameSummaryCategoriesStatusBar:CreateBorder()
 
 	for i = 1, 12 do
-		local frame = _G["AchievementFrameSummaryCategoriesCategory"..i]
-		local button = _G["AchievementFrameSummaryCategoriesCategory"..i.."Button"]
-		local highlight = _G["AchievementFrameSummaryCategoriesCategory"..i.."ButtonHighlight"]
+		local bu = _G["AchievementFrameSummaryCategoriesCategory"..i]
+		bu:StripTextures()
+		bu:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
+		bu:GetStatusBarTexture():SetGradient("VERTICAL", 0, .4, 0, 0, .6, 0)
+		bu:CreateBorder()
 
-		SkinStatusBar(frame)
-		button:StripTextures()
-		highlight:StripTextures()
+		bu.label:SetTextColor(1, 1, 1)
+		bu.label:SetPoint("LEFT", bu, "LEFT", 6, 0)
+		bu.text:SetPoint("RIGHT", bu, "RIGHT", -5, 0)
 
-		_G[highlight:GetName().."Middle"]:SetColorTexture(1, 1, 1, 0.2)
-		_G[highlight:GetName().."Middle"]:SetPoint("TOPLEFT", frame, "TOPLEFT", 2, -2)
-		_G[highlight:GetName().."Middle"]:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -2, 2)
+		_G[bu:GetName().."ButtonHighlight"]:StripTextures()
+		_G[bu:GetName().."ButtonHighlight".."Middle"]:SetColorTexture(1, 1, 1, 0.2)
+		_G[bu:GetName().."ButtonHighlight".."Middle"]:SetPoint("TOPLEFT", bu, "TOPLEFT", 2, -2)
+		_G[bu:GetName().."ButtonHighlight".."Middle"]:SetPoint("BOTTOMRIGHT", bu, "BOTTOMRIGHT", -2, 2)
 	end
 
 	hooksecurefunc("AchievementButton_GetProgressBar", function(index)
-		local frame = _G["AchievementFrameProgressBar"..index]
-		if frame then
-			if not frame.skinned then
-				frame:StripTextures()
-				frame:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
-				frame:SetStatusBarColor(4/255, 179/255, 30/255)
-				frame:CreateBorder()
-				frame:SetFrameLevel(frame:GetFrameLevel() + 3)
-				frame:SetHeight(frame:GetHeight() - 2)
+		local bar = _G["AchievementFrameProgressBar"..index]
+		if not bar.styled then
+			bar:StripTextures()
+			bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
+			bar:CreateBorder()
 
-				frame.text:ClearAllPoints()
-				frame.text:SetPoint("CENTER", frame, "CENTER")
-				frame.text:SetJustifyH("CENTER")
-
-				if index > 1 then
-					frame:ClearAllPoints()
-					frame:SetPoint("TOP", _G["AchievementFrameProgressBar"..index - 1], "BOTTOM", 0, -5)
-					frame.SetPoint = K.Noop
-					frame.ClearAllPoints = K.Noop
-				end
-
-				frame.skinned = true
-			end
+			bar.styled = true
 		end
 	end)
+
+	local bars = {AchievementFrameComparisonSummaryPlayerStatusBar, AchievementFrameComparisonSummaryFriendStatusBar}
+	for _, bar in pairs(bars) do
+		bar:StripTextures()
+		bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
+		bar:GetStatusBarTexture():SetGradient("VERTICAL", 0, .4, 0, 0, .6, 0)
+		bar.title:SetTextColor(1, 1, 1)
+		bar.title:SetPoint("LEFT", bar, "LEFT", 6, 0)
+		bar.text:SetPoint("RIGHT", bar, "RIGHT", -5, 0)
+		bar:CreateBorder()
+	end
 end

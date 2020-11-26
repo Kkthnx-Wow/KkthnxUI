@@ -1,7 +1,6 @@
--- Based on oUF_Swing (by p3lim and Thalyra)
+local K = unpack(select(2, ...))
 
-local _, ns = ...
-local oUF = ns.oUF or oUF
+-- Based on oUF_Swing (by p3lim and Thalyra)
 
 local _G = _G
 local strfind = _G.string.find
@@ -538,4 +537,4 @@ local function Disable(self)
 	end
 end
 
-oUF:AddElement("Swing", nil, Enable, Disable)
+K.oUF:AddElement("Swing", nil, Enable, Disable)
