@@ -14,6 +14,8 @@ local function UpdateCosmetic(self)
 	local unit = InspectFrame.unit
 	local itemLink = unit and GetInventoryItemLink(unit, self:GetID())
 	self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
+	self.IconOverlay:SetPoint("TOPLEFT", 1, -1)
+	self.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
 end
 
 C.themes["Blizzard_InspectUI"] = function()

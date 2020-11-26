@@ -1040,7 +1040,8 @@ function Module:OnEnable()
 		self.Cooldown:SetPoint("TOPLEFT", 1, -1)
 		self.Cooldown:SetPoint("BOTTOMRIGHT", -1, 1)
 
-		self.IconOverlay:SetAllPoints()
+		self.IconOverlay:SetPoint("TOPLEFT", 1, -1)
+		self.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
 
 		self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 		self:StyleButton()

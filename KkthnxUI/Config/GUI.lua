@@ -571,7 +571,7 @@ local UIFonts = function(self)
 	Window:CreateDropdown("UIFonts", "UnitframeFonts", L["Set Unitframe Font"], "Font")
 
 	Window:CreateSection("Font Sizes")
-	Window:CreateSlider("UIFonts", "QuestFontSize", L["Adjust QuestFont Size"], 10, 20, 1, nil, UpdateQuestFontSize)
+	Window:CreateSlider("UIFonts", "QuestFontSize", L["Adjust QuestFont Size"], 10, 30, 1, nil, UpdateQuestFontSize)
 end
 
 local UITextures = function(self)

@@ -117,7 +117,8 @@ tinsert(C.defaultThemes, function()
 
 			slot.ignoreTexture:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Transparent")
 			slot.IconOverlay:SetAtlas("CosmeticIconFrame")
-			slot.IconOverlay:SetAllPoints()
+			slot.IconOverlay:SetPoint("TOPLEFT", 1, -1)
+			slot.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
 
 			slot.IconBorder:SetAlpha(0)
 
