@@ -4,6 +4,7 @@ local Private = oUF.Private
 
 local argcheck = Private.argcheck
 local error = Private.error
+local validateEvent = Private.validateEvent
 local validateUnit = Private.validateUnit
 local frame_metatable = Private.frame_metatable
 
@@ -86,7 +87,6 @@ local event_metatable = {
 --[[ Events: frame:RegisterEvent(event, func, unitless)
 Used to register a frame for a game event and add an event handler. OnUpdate polled frames are prevented from
 registering events.
-
 * self     - frame that will be registered for the given event.
 * event    - name of the event to register (string)
 * func     - a function that will be executed when the event fires. Multiple functions can be added for the same frame
@@ -104,8 +104,8 @@ function frame_metatable.__index:RegisterEvent(event, func, unitless)
 	argcheck(func, 3, 'function')
 
 	local curev = self[event]
-	local kind = type(curev)
 	if(curev) then
+		local kind = type(curev)
 		if(kind == 'function' and curev ~= func) then
 			self[event] = setmetatable({curev, func}, event_metatable)
 		elseif(kind == 'table') then
@@ -119,11 +119,12 @@ function frame_metatable.__index:RegisterEvent(event, func, unitless)
 		if(unitless or self.__eventless) then
 			-- re-register the event in case we have mixed registration
 			registerEvent(self, event)
+
 			if(self.unitEvents) then
 				self.unitEvents[event] = nil
 			end
 		end
-	else
+	elseif(validateEvent(event)) then
 		self[event] = func
 
 		if(not self:GetScript('OnEvent')) then
@@ -135,6 +136,7 @@ function frame_metatable.__index:RegisterEvent(event, func, unitless)
 		else
 			self.unitEvents = self.unitEvents or {}
 			self.unitEvents[event] = true
+
 			-- UpdateUnits will take care of unit event registration for header
 			-- units in case we don't have a valid unit yet
 			local unit1, unit2 = self.unit
@@ -151,7 +153,6 @@ end
 
 --[[ Events: frame:UnregisterEvent(event, func)
 Used to remove a function from the event handler list for a game event.
-
 * self  - the frame registered for the event
 * event - name of the registered event (string)
 * func  - function to be removed from the list of event handlers. If this is the only handler for the given event, then
