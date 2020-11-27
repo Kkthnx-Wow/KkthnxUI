@@ -11,8 +11,11 @@ local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GetUnitName = _G.GetUnitName
 local HideUIPanel = _G.HideUIPanel
 local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsInGuild = _G.IsInGuild
+local LE_GARRISON_TYPE_6_0 = _G.Enum.GarrisonType.Type_6_0
+local LE_GARRISON_TYPE_7_0 = _G.Enum.GarrisonType.Type_7_0
+local LE_GARRISON_TYPE_8_0 = _G.Enum.GarrisonType.Type_8_0
+local LE_GARRISON_TYPE_9_0 = _G.Enum.GarrisonType.Type_9_0
 local Minimap = _G.Minimap
 local UnitClass = _G.UnitClass
 local table_insert = _G.table.insert
@@ -147,17 +150,17 @@ local micromenu = {
 
 if not IsTrialAccount() and not C_StorePublic.IsDisabledByParentalControls() then
 	table_insert(micromenu, {text = BLIZZARD_STORE, notCheckable = 1, func = function()
-		StoreMicroButton:Click()
+			StoreMicroButton:Click()
 	end})
 end
 
 if K.Level > 99 then
 	table_insert(micromenu, {text = ORDER_HALL_LANDING_PAGE_TITLE, notCheckable = 1, func = function()
-		GarrisonLandingPage_Toggle()
+			GarrisonLandingPage_Toggle()
 	end})
 elseif K.Level > 89 then
 	table_insert(micromenu, {text = GARRISON_LANDING_PAGE_TITLE, notCheckable = 1, func = function()
-		GarrisonLandingPage_Toggle()
+			GarrisonLandingPage_Toggle()
 	end})
 end
 
@@ -165,8 +168,7 @@ function Module:CreateStyle()
 	local minimapBorder = CreateFrame("Frame", nil, Minimap)
 	minimapBorder:SetAllPoints(Minimap)
 	minimapBorder:SetFrameLevel(Minimap:GetFrameLevel())
-	minimapBorder:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
-	minimapBorder.KKUI_InnerShadow:SetAlpha(0.7)
+	minimapBorder:CreateBorder()
 
 	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, "BackdropTemplate")
 	minimapMailPulse:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
@@ -211,38 +213,37 @@ end
 
 function Module:ReskinRegions()
 	-- Garrison
-	hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function(self)
-		if GarrisonLandingPageMinimapButton then
-			if not C["Minimap"].ShowGarrison then
-				-- ugly hack to keep the keybind functioning
-				GarrisonLandingPageMinimapButton:SetParent(K.UIFrameHider)
-				GarrisonLandingPageMinimapButton:UnregisterAllEvents()
-				GarrisonLandingPageMinimapButton:Show()
-				GarrisonLandingPageMinimapButton.Hide = GarrisonLandingPageMinimapButton.Show
-			else
-				GarrisonLandingPageMinimapButton:ClearAllPoints()
-				GarrisonLandingPageMinimapButton:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, 0)
-				GarrisonLandingPageMinimapButton:SetScale(0.8)
-				if GarrisonLandingPageTutorialBox then
-					GarrisonLandingPageTutorialBox:SetScale(1)
-					GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
-				end
-			end
+	if C["Minimap"].ShowGarrison then
+		hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function(self)
+			self:ClearAllPoints()
+			self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, 0)
+			self:GetNormalTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
+			self:GetPushedTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
+			self:GetHighlightTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
+			self:SetSize(30, 30)
+		end)
 
-			if not IsAddOnLoaded("GarrisonMissionManager") then
-				GarrisonLandingPageMinimapButton:RegisterForClicks("AnyUp")
-				GarrisonLandingPageMinimapButton:HookScript("OnClick", function(_, btn, down)
-					if btn == "MiddleButton" and not down then
-						HideUIPanel(GarrisonLandingPage)
-						ShowGarrisonLandingPage(LE_GARRISON_TYPE_7_0)
-					elseif btn == "RightButton" and not down then
-						HideUIPanel(GarrisonLandingPage)
-						ShowGarrisonLandingPage(LE_GARRISON_TYPE_6_0)
-					end
-				end)
+		local menuList = {
+			{text =	GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_9_0, notCheckable = true},
+			{text =	WAR_CAMPAIGN, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_8_0, notCheckable = true},
+			{text =	ORDER_HALL_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_7_0, notCheckable = true},
+			{text =	GARRISON_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_6_0, notCheckable = true},
+		}
+		GarrisonLandingPageMinimapButton:HookScript("OnMouseDown", function(self, btn)
+			if btn == "RightButton" then
+				HideUIPanel(GarrisonLandingPage)
+				EasyMenu(menuList, K.EasyMenu, self, -80, 0, "MENU", 1)
 			end
-		end
-	end)
+		end)
+
+		GarrisonLandingPageMinimapButton:SetScript("OnEnter", function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+			GameTooltip:SetText(self.title, 1, 1, 1)
+			GameTooltip:AddLine(self.description, nil, nil, nil, true)
+			GameTooltip:AddLine("Right click to switch garrisons", nil, nil, nil, true)
+			GameTooltip:Show();
+		end)
+	end
 
 	-- QueueStatus Button
 	if QueueStatusMinimapButton then
@@ -339,7 +340,7 @@ end
 function Module:CreatePing()
 	local pingFrame = CreateFrame("Frame", nil, Minimap)
 	pingFrame:SetAllPoints()
-	pingFrame.text = K.CreateFontString(pingFrame, 16, "", "", false, "TOP", 0, C["DataText"].Location and -24 or -6)
+	pingFrame.text = K.CreateFontString(pingFrame, 18, "", "OUTLINE", false, "CENTER")
 
 	local pingAnimation = pingFrame:CreateAnimationGroup()
 
@@ -450,9 +451,12 @@ end
 
 function Module:SetupHybridMinimap()
 	local mapCanvas = HybridMinimap.MapCanvas
-	mapCanvas:SetMaskTexture("Interface\\Buttons\\WHITE8X8")
+	mapCanvas:SetMaskTexture(C["Media"].Blank)
 	mapCanvas:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)
 	mapCanvas:SetScript("OnMouseUp", Module.Minimap_OnMouseUp)
+	mapCanvas:SetScript('OnMouseUp', K.Noop)
+
+	HybridMinimap.CircleMask:StripTextures()
 end
 
 function Module:HybridMinimapOnLoad(addon)

@@ -403,7 +403,7 @@ function Module.PostCreateAura(element, button)
 	else
 		button.cd:SetPoint("TOPLEFT", 1, -1)
 		button.cd:SetPoint("BOTTOMRIGHT", -1, 1)
-		button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		button:CreateBorder()
 	end
 
 	button.overlay:SetTexture(nil)
@@ -712,13 +712,13 @@ function Module:CreateUnits()
 	local showTeamIndex = C["Raid"].ShowTeamIndex
 
 	if C["Nameplate"].Enable then
-		self:SetupCVars()
-		self:BlockAddons()
-		self:CheckExplosives()
-		self:AddInterruptInfo()
-		self:UpdateGroupRoles()
-		self:QuestIconCheck()
-		self:RefreshPlateOnFactionChanged()
+		Module:SetupCVars()
+		Module:BlockAddons()
+		Module:CheckExplosives()
+		Module:AddInterruptInfo()
+		Module:UpdateGroupRoles()
+		Module:QuestIconCheck()
+		Module:RefreshPlateOnFactionChanged()
 
 		oUF:RegisterStyle("Nameplates", Module.CreatePlates)
 		oUF:SetActiveStyle("Nameplates")
@@ -778,9 +778,9 @@ function Module:CreateUnits()
 		end
 
 		K.HideInterfaceOption(InterfaceOptionsCombatPanelTargetOfTarget)
-		K:RegisterEvent("PLAYER_TARGET_CHANGED", self.PLAYER_TARGET_CHANGED)
-		K:RegisterEvent("PLAYER_FOCUS_CHANGED", self.PLAYER_FOCUS_CHANGED)
-		K:RegisterEvent("UNIT_FACTION", self.UNIT_FACTION)
+		K:RegisterEvent("PLAYER_TARGET_CHANGED", Module.PLAYER_TARGET_CHANGED)
+		K:RegisterEvent("PLAYER_FOCUS_CHANGED", Module.PLAYER_FOCUS_CHANGED)
+		K:RegisterEvent("UNIT_FACTION", Module.UNIT_FACTION)
 	end
 
 	oUF:RegisterStyle("Boss", Module.CreateBoss)
@@ -1046,16 +1046,16 @@ local function CreateTargetSound(_, unit)
 	end
 end
 
-function Module.PLAYER_FOCUS_CHANGED()
+function Module:PLAYER_FOCUS_CHANGED()
 	CreateTargetSound("focus")
 end
 
-function Module.PLAYER_TARGET_CHANGED()
+function Module:PLAYER_TARGET_CHANGED()
 	CreateTargetSound("target")
 end
 
 local announcedPVP
-function Module.UNIT_FACTION(_, unit)
+function Module:UNIT_FACTION(unit)
 	if (unit ~= "player") then
 		return
 	end

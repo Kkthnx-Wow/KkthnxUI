@@ -27,6 +27,7 @@ C["Media"] = {
 	NPHealer = [[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Healer.tga]],
 	NPTank = [[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Tank.tga]],
 	NewClassPortraits = [[Interface\AddOns\KkthnxUI\Media\Unitframes\NEW-ICONS-CLASSES.blp]],
+	Palooza = [[Interface\AddOns\KkthnxUI\Media\Textures\Palooza.tga]],
 	Proc_Sound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Proc.ogg]],
 	Shader = [[Interface\AddOns\KkthnxUI\Media\Textures\Shader.tga]],
 	SkullFlowerUI = [[Interface\AddOns\KkthnxUI\Media\Textures\SkullFlowerUI.tga]],

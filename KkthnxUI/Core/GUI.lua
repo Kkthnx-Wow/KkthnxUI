@@ -121,6 +121,7 @@ local CreditLines = {
 	DruidIconColor.."Merathilis",
 	"Nightcracker",
 	"P3lim",
+	PriestIconColor.."Palooza|r",
 	DemonHunterIconColor.."Rav99",
 	"Roth",
 	"Shestak - (ShestakUI)",

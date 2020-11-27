@@ -46,7 +46,7 @@ function Module:ReskinCollapse(isAtlas)
 	local bg = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	bg:SetAllPoints(self)
 	bg:SetFrameLevel(self:GetFrameLevel())
-	bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	bg:ClearAllPoints()
 	bg:SetSize(13, 13)
@@ -82,7 +82,7 @@ local function reskinQuestIcon(button)
 		button:GetHighlightTexture():SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
 		local icon = button.icon or button.Icon
 		if icon then
-			button.bg = icon:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			button.bg = icon:CreateBorder()
 			icon:SetAllPoints()
 		end
 
@@ -157,7 +157,7 @@ local function reskinProgressbarWithIcon(_, _, line)
 		icon.bg = CreateFrame("Frame", nil, bar)
 		icon.bg:SetAllPoints(icon)
 		icon.bg:SetFrameLevel(bar:GetFrameLevel())
-		icon.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		icon.bg:CreateBorder()
 		icon:SetTexCoord(unpack(K.TexCoords))
 		icon:ClearAllPoints()
 		icon:SetPoint("TOPLEFT", bar, "TOPRIGHT", 6, 0)

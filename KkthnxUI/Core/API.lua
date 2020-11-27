@@ -32,8 +32,8 @@ do
 end
 
 -- This is a lot...
-local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha, bgBackground, innerShadow)
-	if bFrame.KKUI_Border or bFrame.KKUI_Background or bFrame.KKUI_InnerShadow then
+local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha, bgBackground)
+	if bFrame.KKUI_Border then
 		return
 	end
 
@@ -62,39 +62,31 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	local BackgroundBlue = bgBlue or C["Media"].BackdropColor[3]
 	local BackgroundAlpha = bgAlpha or C["Media"].BackdropColor[4]
 	local UseBackground = bgBackground or true
-	local UseInnerShadow = innerShadow or false
 
 	-- Create Our Border
-	local kkui_border = K.CreateBorder(bFrame, BorderSubLevel, BorderLayer)
-	kkui_border:SetSize(BorderSize)
-	kkui_border:SetTexture(BorderTexture)
-	kkui_border:SetOffset(BorderOffset)
-	kkui_border:SetVertexColor(BorderRed, BorderGreen, BorderBlue, BorderAlpha)
+	if not bFrame.KKUI_Border then
+		local kkui_border = K.CreateBorder(bFrame, BorderSubLevel, BorderLayer)
+		kkui_border:SetSize(BorderSize)
+		kkui_border:SetTexture(BorderTexture)
+		kkui_border:SetOffset(BorderOffset)
+		kkui_border:SetVertexColor(BorderRed, BorderGreen, BorderBlue, BorderAlpha)
+		bFrame.KKUI_Border = true
+		bFrame.KKUI_Border = kkui_border
+	end
 
 	-- Create Our Background (true/false)
 	if UseBackground then
-		local kkui_background = bFrame:CreateTexture()
-		kkui_background:SetDrawLayer(BackgroundSubLevel, BackgroundLayer)
-		kkui_background:SetTexture(BackgroundTexture)
-		kkui_background:SetPoint("TOPLEFT", bFrame ,"TOPLEFT", BackgroundPoint, -BackgroundPoint)
-		kkui_background:SetPoint("BOTTOMRIGHT", bFrame ,"BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint)
-		kkui_background:SetVertexColor(BackgroundRed, BackgroundGreen, BackgroundBlue, BackgroundAlpha)
-
-		bFrame.KKUI_Background = kkui_background
+		if not bFrame.KKUI_Background then
+			local kkui_background = bFrame:CreateTexture()
+			kkui_background:SetDrawLayer(BackgroundSubLevel, BackgroundLayer)
+			kkui_background:SetTexture(BackgroundTexture)
+			kkui_background:SetPoint("TOPLEFT", bFrame ,"TOPLEFT", BackgroundPoint, -BackgroundPoint)
+			kkui_background:SetPoint("BOTTOMRIGHT", bFrame ,"BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint)
+			kkui_background:SetVertexColor(BackgroundRed, BackgroundGreen, BackgroundBlue, BackgroundAlpha)
+			bFrame.KKUI_Background = true
+			bFrame.KKUI_Background = kkui_background
+		end
 	end
-
-	if UseInnerShadow then
-		local kkui_innershadow = bFrame:CreateTexture()
-		kkui_innershadow:SetDrawLayer("OVERLAY", 2)
-		kkui_innershadow:SetAtlas("Artifacts-BG-Shadow")
-		kkui_innershadow:SetPoint("TOPLEFT", bFrame, "TOPLEFT", 1, -1)
-		kkui_innershadow:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", -1, 1)
-		kkui_innershadow:SetAlpha(C["Media"].BackdropColor[4])
-
-		bFrame.KKUI_InnerShadow = kkui_innershadow
-	end
-
-	bFrame.KKUI_Border = kkui_border
 end
 
 -- Simple Create Backdrop.
@@ -245,7 +237,7 @@ local function FontTemplate(fs, font, fontSize, fontStyle)
 end
 
 local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
-	local pointsSet = setPoints or 2
+	local pointsSet = setPoints or 1
 
 	if button.SetHighlightTexture and not button.hover and not noHover then
 		local hover = button:CreateTexture()
@@ -336,7 +328,7 @@ local blizzButtonRegions = {
 	"MiddleTex",
 }
 
-local function SkinButton(f, forceStrip, innerShadow)
+local function SkinButton(f, forceStrip)
 	if f.SetNormalTexture then
 		f:SetNormalTexture("")
 	end
@@ -365,11 +357,7 @@ local function SkinButton(f, forceStrip, innerShadow)
 		f:StripTextures()
 	end
 
-	if innerShadow then
-		f:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
-	else
-		f:CreateBorder()
-	end
+	f:CreateBorder()
 
 	f:HookScript("OnEnter", SetModifiedBackdrop)
 	f:HookScript("OnLeave", SetOriginalBackdrop)

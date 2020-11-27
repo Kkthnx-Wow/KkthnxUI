@@ -3,64 +3,52 @@ local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
 
--- Mouse Trail
-local pollingRate = 0.05
-local numLines = 8
-local lines = {}
-local ticker
+local GetCursorPosition = _G.GetCursorPosition
 
-local function SetupTrail()
-	for i = 1, numLines do
-		local line = _G.UIParent:CreateLine()
-		line:SetThickness(_G.Lerp(5, 1, (i - 1) / numLines))
-		line:SetColorTexture(unpack(C["Misc"].MouseTrailColor))
+local x = 0
+local y = 0
+local speed = 0
 
-		local startA, endA = _G.Lerp(1, 0, (i - 1) / numLines), _G.Lerp(1, 0, i / numLines)
-		line:SetGradientAlpha("HORIZONTAL", 1, 1, 1, startA, 1, 1, 1, endA)
+local function OnUpdate(_, elapsed)
+	local dX = x
+	local dY = y
 
-		lines[i] = {line = line, x = 0, y = 0}
-	end
-end
+	x, y = GetCursorPosition()
+	dX = x - dX
+	dY = y - dY
 
-local function GetLength(startX, startY, endX, endY)
-	-- Determine dimensions
-	local dx, dy = endX - startX, endY - startY
+	local weight = 2048 ^ -elapsed
+	speed = min(weight * speed + (1 - weight) * sqrt(dX * dX + dY * dY) / elapsed, 1024)
 
-	-- Normalize direction if necessary
-	if dx < 0 then
-		dx, dy = -dx, -dy
-	end
-
-	-- Calculate actual length of line
-	return sqrt((dx * dx) + (dy * dy))
-end
-
-local function UpdateTrail()
-	local startX, startY = _G.GetScaledCursorPosition()
-
-	for i = 1, numLines do
-		local info = lines[i]
-
-		local endX, endY = info.x, info.y
-		if GetLength(startX, startY, endX, endY) < 0.1 then
-			info.line:Hide()
-		else
-			info.line:Show()
-			info.line:SetStartPoint("BOTTOMLEFT", _G.UIParent, startX, startY)
-			info.line:SetEndPoint("BOTTOMLEFT", _G.UIParent, endX, endY)
-		end
-
-		info.x, info.y = startX, startY
-		startX, startY = endX, endY
+	local size = speed / 6 - 16
+	if size > 0 then
+		local scale = UIParent:GetEffectiveScale()
+		Module.Texture:SetSize(size, size)
+		Module.Texture:SetPoint("CENTER", UIParent, "BOTTOMLEFT", (x + 0.5 * dX) / scale, (y + 0.5 * dY) / scale)
+		Module.Texture:Show()
+		Module.Texture:SetVertexColor(unpack(C["Misc"].MouseTrailColor))
+	else
+		Module.Texture:Hide()
 	end
 end
 
 function Module:CreateMouseTrail()
 	if C["Misc"].MouseTrail then
-		SetupTrail()
-		ticker = _G.C_Timer.NewTicker(pollingRate, UpdateTrail)
-	elseif ticker then
-		ticker:Cancel()
+		if not Module.Frame then
+			Module.Frame = CreateFrame("Frame", nil, UIParent)
+			Module.Frame:SetFrameStrata("TOOLTIP")
+
+			Module.Texture = Module.Frame:CreateTexture()
+			Module.Texture:SetTexture([[Interface\Cooldown\star4]])
+			Module.Texture:SetBlendMode("ADD")
+			Module.Texture:SetAlpha(0.5)
+
+			Module.Frame:SetScript("OnUpdate", OnUpdate)
+
+			Module.Frame = true
+		end
+	elseif Module.Frame then
+		Module.Frame:SetScript("OnUpdate", nil)
 		return
 	end
 end

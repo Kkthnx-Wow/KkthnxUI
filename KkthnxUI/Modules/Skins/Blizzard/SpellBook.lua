@@ -24,7 +24,7 @@ table_insert(C.defaultThemes, function()
 		bu:SetPushedTexture("")
 
 		ic:SetTexCoord(unpack(K.TexCoords))
-		ic.bg = ic:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		ic.bg = ic:CreateBorder()
 
 		local NewBorder = CreateFrame("Frame", nil, bu, "BackdropTemplate")
 		NewBorder:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 16})
@@ -105,7 +105,7 @@ table_insert(C.defaultThemes, function()
 		icon:SetPoint("TOPLEFT", 2, -2)
 		icon:SetPoint("BOTTOMRIGHT", -2, 2)
 		icon:SetTexCoord(unpack(K.TexCoords))
-		icon.bg = icon:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		icon.bg = icon:CreateBorder()
 
 		local check = bu:GetCheckedTexture()
 		check:SetColorTexture(0, 1, 0, 0.3)

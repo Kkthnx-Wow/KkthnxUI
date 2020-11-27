@@ -2,16 +2,10 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("DataBars")
 
 local _G = _G
-local math_floor = _G.math.floor
 local pairs = _G.pairs
 local select = _G.select
 local string_format = _G.string.format
 
-local ARTIFACT_POWER = _G.ARTIFACT_POWER
-local C_AzeriteItem_FindActiveAzeriteItem = _G.C_AzeriteItem.FindActiveAzeriteItem
-local C_AzeriteItem_GetAzeriteItemXPInfo = _G.C_AzeriteItem.GetAzeriteItemXPInfo
-local C_AzeriteItem_GetPowerLevel = _G.C_AzeriteItem.GetPowerLevel
-local C_AzeriteItem_IsAzeriteItemAtMaxLevel = _G.C_AzeriteItem.IsAzeriteItemAtMaxLevel
 local C_QuestLog_ReadyForTurnIn = _G.C_QuestLog.ReadyForTurnIn
 local C_Reputation_GetFactionParagonInfo = _G.C_Reputation.GetFactionParagonInfo
 local C_Reputation_IsFactionParagon = _G.C_Reputation.IsFactionParagon
@@ -116,30 +110,6 @@ function Module:SetupReputation()
 	self.Bars.Reputation = reputation
 	reputation.Spark = rspark
 	reputation.Text = rtext
-end
-
-function Module:SetupAzerite()
-	local azerite = CreateFrame("Statusbar", "KKUI_AzeriteBar", self.Container)
-	azerite:SetStatusBarTexture(self.DatabaseTexture)
-	azerite:SetStatusBarColor(C["DataBars"].AzeriteColor[1], C["DataBars"].AzeriteColor[2], C["DataBars"].AzeriteColor[3])
-	azerite:SetSize(C["DataBars"].Width, C["DataBars"].Height)
-	azerite:CreateBorder()
-
-	local aspark = azerite:CreateTexture(nil, "OVERLAY")
-	aspark:SetTexture(C["Media"].Spark_16)
-	aspark:SetHeight(C["DataBars"].Height)
-	aspark:SetBlendMode("ADD")
-	aspark:SetPoint("CENTER", azerite:GetStatusBarTexture(), "RIGHT", 0, 0)
-
-	local atext = azerite:CreateFontString(nil, "OVERLAY")
-	atext:SetFontObject(self.DatabaseFont)
-	atext:SetFont(select(1, atext:GetFont()), 11, select(3, atext:GetFont()))
-	atext:SetPoint("LEFT", azerite, "RIGHT", -3, 0)
-	atext:SetPoint("RIGHT", azerite, "LEFT", 3, 0)
-
-	self.Bars.Azerite = azerite
-	azerite.Spark = aspark
-	azerite.Text = atext
 end
 
 function Module:SetupHonor()
@@ -317,49 +287,6 @@ function Module:UpdateReputation()
 	repBar.Text:SetText(displayString)
 end
 
-function Module:UpdateAzerite(event, unit)
-	if (event == "UNIT_INVENTORY_CHANGED" and unit ~= "player") then
-		return
-	end
-
-	local azBar = self.Bars.Azerite
-
-	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
-	if not C["DataBars"].TrackAzerite or not azeriteItemLocation or C_AzeriteItem_IsAzeriteItemAtMaxLevel() or K.Level > 50 then
-		azBar:Hide()
-	else
-		azBar:Show()
-
-		local cur, max = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
-		local currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
-
-		azBar:SetMinMaxValues(0, max)
-		azBar:SetValue(cur)
-
-		local textFormat = C["DataBars"].Text.Value
-		if textFormat == 0 then
-			azBar.Text:SetText("")
-		elseif textFormat == 1 then
-			azBar.Text:SetFormattedText("%s%% [%s]", math_floor(cur / max * 100), currentLevel)
-		elseif textFormat == 2 then
-			azBar.Text:SetFormattedText("%s - %s [%s]", K.ShortValue(cur), K.ShortValue(max), currentLevel)
-		elseif textFormat == 3 then
-			azBar.Text:SetFormattedText("%s - %s%% [%s]", K.ShortValue(cur), math_floor(cur / max * 100), currentLevel)
-		elseif textFormat == 4 then
-			azBar.Text:SetFormattedText("%s [%s]", K.ShortValue(cur), currentLevel)
-		elseif textFormat == 5 then
-			azBar.Text:SetFormattedText("%s [%s]", K.ShortValue(max - cur), currentLevel)
-		elseif textFormat == 6 then
-			azBar.Text:SetFormattedText("%s - %s [%s]", K.ShortValue(cur), K.ShortValue(max - cur), currentLevel)
-		elseif textFormat == 7 then
-			azBar.Text:SetFormattedText("%s - %s%% (%s) [%s]", K.ShortValue(cur), math_floor(cur / max * 100), K.ShortValue(max - cur), currentLevel)
-		else
-			azBar.Text:SetFormattedText("[%s]", currentLevel)
-		end
-
-	end
-end
-
 function Module:UpdateHonor(event, unit)
 	local honBar = self.Bars.Honor
 
@@ -471,25 +398,6 @@ function Module:OnEnter()
 		end
 	end
 
-	local azeriteItem, currentLevel, curXP, maxXP
-	local function dataLoadedCancelFunc()
-		if not IsPlayerAtEffectiveMaxLevel() or GetWatchedFactionInfo() or IsPlayerAtEffectiveMaxLevel and C["DataBars"].TrackHonor then
-			GameTooltip:AddLine(" ")
-		end
-		GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItem:GetItemName().." ("..currentLevel..")", nil, nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
-		GameTooltip:AddDoubleLine(L["AP"], string_format(" %d / %d (%d%%)", curXP, maxXP, curXP / maxXP * 100), 1, 1, 1)
-		GameTooltip:AddDoubleLine(L["Remaining"], string_format(" %d (%d%% - %d "..L["Bars"]..")", maxXP - curXP, (maxXP - curXP) / maxXP * 100, 10 * (maxXP - curXP) / maxXP), 1, 1, 1)
-	end
-
-	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
-	if C["DataBars"].TrackAzerite and azeriteItemLocation then
-		curXP, maxXP = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
-		currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
-
-		azeriteItem = Item:CreateFromItemLocation(azeriteItemLocation)
-		azeriteItem:ContinueWithCancelOnItemLoad(dataLoadedCancelFunc)
-	end
-
 	if C["DataBars"].TrackHonor then
 		if IsPlayerAtEffectiveMaxLevel() and UnitIsPVP("player") then
 			GameTooltip:AddLine(" ")
@@ -515,7 +423,6 @@ end
 function Module:OnUpdate()
 	Module:UpdateExperience()
 	Module:UpdateReputation()
-	Module:UpdateAzerite()
 	Module:UpdateHonor()
 
 	if C["DataBars"].MouseOver then
@@ -546,7 +453,6 @@ end
 function Module:UpdateDataBarsSize()
 	KKUI_ExperienceBar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
 	KKUI_ReputationBar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
-	KKUI_AzeriteBar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
 	KKUI_HonorBar:SetSize(C["DataBars"].Width, C["DataBars"].Height)
 
 	local num_bars = 0
@@ -578,7 +484,6 @@ function Module:OnEnable()
 
 	self:SetupExperience()
 	self:SetupReputation()
-	self:SetupAzerite()
 	self:SetupHonor()
 	self:OnUpdate()
 
@@ -606,15 +511,6 @@ function Module:OnEnable()
 	-- Reputation
 	K:RegisterEvent("UPDATE_FACTION", self.OnUpdate)
 	K:RegisterEvent("COMBAT_TEXT_UPDATE", self.OnUpdate)
-
-	-- Azerite
-	if C["DataBars"].TrackAzerite then
-		K:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", self.OnUpdate)
-		K:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", self.OnUpdate)
-	else
-		K:UnregisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", self.OnUpdate)
-		K:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED", self.OnUpdate)
-	end
 
 	-- Honor
 	if C["DataBars"].TrackHonor then

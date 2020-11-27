@@ -185,7 +185,7 @@ local function CreateIndicator(name, parent, size)
 
 	if not button.isSkinned then
 		button.NormalTexture:SetTexture(nil)
-		button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		button:CreateBorder()
 		button:StyleButton()
 
 		button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)

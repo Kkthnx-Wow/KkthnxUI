@@ -64,7 +64,7 @@ function Module:CreateExtrabar()
 				local bg = CreateFrame("Frame", nil, spellButton)
 				bg:SetAllPoints(spellButton.Icon)
 				bg:SetFrameLevel(spellButton:GetFrameLevel())
-				bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+				bg:CreateBorder()
 
 				spellButton.styled = true
 			end

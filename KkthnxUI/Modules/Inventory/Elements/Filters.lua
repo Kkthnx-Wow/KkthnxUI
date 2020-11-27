@@ -3,7 +3,8 @@ local Module = K:GetModule("Bags")
 
 local _G = _G
 
-local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = _G.C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
+local C_Item_IsAnimaItemByID = _G.C_Item.IsAnimaItemByID
+local C_ToyBox_GetToyInfo = _G.C_ToyBox.GetToyInfo
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
 local LE_ITEM_CLASS_CONSUMABLE = _G.LE_ITEM_CLASS_CONSUMABLE
 local LE_ITEM_CLASS_GEM = _G.LE_ITEM_CLASS_GEM
@@ -17,7 +18,6 @@ local LE_ITEM_MISCELLANEOUS_MOUNT = _G.LE_ITEM_MISCELLANEOUS_MOUNT
 local LE_ITEM_QUALITY_COMMON = _G.LE_ITEM_QUALITY_COMMON
 local LE_ITEM_QUALITY_LEGENDARY = _G.LE_ITEM_QUALITY_LEGENDARY
 local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
-local C_ToyBox_GetToyInfo = _G.C_ToyBox.GetToyInfo
 
 -- Custom filter
 local CustomFilterList = {
@@ -74,13 +74,12 @@ local function isItemEquipSet(item)
 	return item.isInSet
 end
 
-
-local function isAzeriteArmor(item)
+local function isAnimaItem(item)
 	if not C["Inventory"].ItemFilter then
 		return
 	end
 
-	if not C["Inventory"].FilterAzerite then
+	if not C["Inventory"].FilterAnima then
 		return
 	end
 
@@ -88,7 +87,7 @@ local function isAzeriteArmor(item)
 		return
 	end
 
-	return C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID(item.link) and not isItemEquipSet(item)
+	return C_Item_IsAnimaItemByID(item.link)
 end
 
 function Module:isArtifactRelic(item)
@@ -194,14 +193,14 @@ end
 function Module:GetFilters()
 	local filters = {}
 
-	filters.onlyBags = function(item) return isItemInBag(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAzeriteArmor(item) and not isItemJunk(item) and not isItemCollection(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) and not isItemEquipSet(item) end
-	filters.bagAzeriteItem = function(item) return isItemInBag(item) and isAzeriteArmor(item) end
+	filters.onlyBags = function(item) return isItemInBag(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAnimaItem(item) and not isItemJunk(item) and not isItemCollection(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) and not isItemEquipSet(item) end
+	filters.bagAnimaItem = function(item) return isItemInBag(item) and isAnimaItem(item) end
 	filters.bagEquipment = function(item) return isItemInBag(item) and isItemEquipment(item) end
 	filters.bagEquipSet = function(item) return isItemInBag(item) and isItemEquipSet(item) end
 	filters.bagConsumable = function(item) return isItemInBag(item) and isItemConsumable(item) and not isItemCollection(item) end
 	filters.bagsJunk = function(item) return isItemInBag(item) and isItemJunk(item) end
-	filters.onlyBank = function(item) return isItemInBank(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAzeriteArmor(item) and not isItemCollection(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) and not isItemEquipSet(item) end
-	filters.bankAzeriteItem = function(item) return isItemInBank(item) and isAzeriteArmor(item) end
+	filters.onlyBank = function(item) return isItemInBank(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAnimaItem(item) and not isItemCollection(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) and not isItemEquipSet(item) end
+	filters.bankAnimaItem = function(item) return isItemInBank(item) and isAnimaItem(item) end
 	filters.bagLegendary = function(item) return isItemInBag(item) and isItemLegendary(item) end
 	filters.bankLegendary = function(item) return isItemInBank(item) and isItemLegendary(item) end
 	filters.bankEquipment = function(item) return isItemInBank(item) and isItemEquipment(item) end

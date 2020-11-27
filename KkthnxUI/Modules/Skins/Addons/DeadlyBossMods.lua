@@ -63,7 +63,7 @@ function Module:ReskinDeadlyBossMods()
 					backdroptex:SetPoint("BOTTOMRIGHT", icon1.overlay, "BOTTOMRIGHT", -1, 1)
 					backdroptex:SetTexCoord(unpack(K.TexCoords))
 
-					icon1.overlay:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+					icon1.overlay:CreateBorder()
 				end
 
 				if not (icon2.overlay) then
@@ -77,7 +77,7 @@ function Module:ReskinDeadlyBossMods()
 					backdroptex:SetPoint("BOTTOMRIGHT", icon2.overlay, "BOTTOMRIGHT", -1, 1)
 					backdroptex:SetTexCoord(unpack(K.TexCoords))
 
-					icon2.overlay:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+					icon2.overlay:CreateBorder()
 				end
 
 				if bar.color then

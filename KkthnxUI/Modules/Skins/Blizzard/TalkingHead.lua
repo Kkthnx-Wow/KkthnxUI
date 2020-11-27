@@ -28,7 +28,7 @@ C.themes["Blizzard_TalkingHeadUI"] = function()
 		button:ClearAllPoints()
 		button:SetPoint("TOPRIGHT", TalkingHeadFrame.BackgroundFrame, "TOPRIGHT", -25, -18)
 	else
-		TalkingHeadFrame.MainFrame.Model:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		TalkingHeadFrame.MainFrame.Model:CreateBorder()
 		TalkingHeadFrame.MainFrame.CloseButton:Kill()
 	end
 

@@ -48,7 +48,7 @@ local mapRects = {}
 local tempVec2D = CreateVector2D(0, 0)
 
 function K.Print(...)
-	(_G.DEFAULT_CHAT_FRAME):AddMessage(string_join("", "|cff3c9bed", "KkthnxUI:|r ", ...))
+	print("|cff3c9bedKkthnxUI:|r", ...)
 end
 
 -- Return short value of a number

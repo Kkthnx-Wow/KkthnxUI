@@ -197,7 +197,7 @@ local function BuildICON(iconSize)
 	frame.bg = CreateFrame("Frame", nil, frame)
 	frame.bg:SetAllPoints(frame)
 	frame.bg:SetFrameLevel(frame:GetFrameLevel())
-	frame.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	frame.bg:CreateBorder()
 
 	frame.Icon = frame:CreateTexture(nil, "ARTWORK")
 	frame.Icon:SetAllPoints(frame.bg)
@@ -232,7 +232,7 @@ end
 local function BuildBAR(barWidth, iconSize)
 	local frame = CreateFrame("Frame", nil, K.PetBattleHider)
 	frame:SetSize(iconSize, iconSize)
-	frame:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	frame:CreateBorder()
 
 	frame.Icon = frame:CreateTexture(nil, "ARTWORK")
 	frame.Icon:SetAllPoints()

@@ -70,6 +70,7 @@ local TextureTable = {
 	["Flat"] = C["Media"].FlatTexture,
 	["GoldpawUI"] = C["Media"].GoldpawUI,
 	["KkthnxUI"] = C["Media"].Texture,
+	["Palooza"] = C["Media"].Palooza,
 	["SkullFlowerUI"] = C["Media"].SkullFlowerUI,
 	["Tukui"] = C["Media"].Tukui,
 	["ZorkUI"] = C["Media"].ZorkUI,

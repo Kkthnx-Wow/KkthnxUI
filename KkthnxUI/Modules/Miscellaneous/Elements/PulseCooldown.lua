@@ -157,7 +157,6 @@ local function OnUpdate(_, update)
 			PulseCooldownFrame.Icon:SetTexture(nil)
 			PulseCooldownFrame.KKUI_Border:SetVertexColor(1, 1, 1, 0)
 			PulseCooldownFrame.KKUI_Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], 0)
-			PulseCooldownFrame.KKUI_InnerShadow:SetAlpha(0)
 		else
 			if not PulseCooldownFrame.Icon:GetTexture() then
 				PulseCooldownFrame.Icon:SetTexture(animating[1][1])
@@ -180,7 +179,6 @@ local function OnUpdate(_, update)
 			PulseCooldownFrame:SetHeight(scale)
 			PulseCooldownFrame.KKUI_Border:SetVertexColor(1, 1, 1, 1)
 			PulseCooldownFrame.KKUI_Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-			PulseCooldownFrame.KKUI_InnerShadow:SetAlpha(C["Media"].BackdropColor[4])
 		end
 	end
 end

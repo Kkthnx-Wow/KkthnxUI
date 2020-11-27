@@ -105,7 +105,7 @@ function Module:CreateRecycleBin()
 				end
 			end
 			child:SetSize(22, 22)
-			child:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			child:CreateBorder()
 		end
 
 		table_insert(buttons, child)

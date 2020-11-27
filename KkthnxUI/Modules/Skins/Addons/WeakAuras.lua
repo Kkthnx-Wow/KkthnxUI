@@ -43,7 +43,7 @@ local function Skin_WeakAuras(f, fType)
 			f.bg = CreateFrame("Frame", nil, f, "BackdropTemplate")
 			f.bg:SetAllPoints(f)
 			f.bg:SetFrameLevel(f:GetFrameLevel())
-			f.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			f.bg:CreateBorder()
 			f.bg.__icon = f.icon
 			f.bg:HookScript("OnUpdate", IconBgOnUpdate)
 
@@ -58,7 +58,7 @@ local function Skin_WeakAuras(f, fType)
 			UpdateIconTexCoord(f.icon)
 			hooksecurefunc(f.icon, "SetTexCoord", UpdateIconTexCoord)
 			f.iconFrame:SetAllPoints(f.icon)
-			f.iconFrame:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			f.iconFrame:CreateBorder()
 
 			f.styled = true
 		end

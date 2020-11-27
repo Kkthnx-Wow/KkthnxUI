@@ -81,7 +81,7 @@ function Module:ReskinRewardIcon()
 	self.bg = CreateFrame("Frame", nil, self)
 	self.bg:SetAllPoints(self.Icon)
 	self.bg:SetFrameLevel(2)
-	self.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	self.bg:CreateBorder()
 
 	local iconBorder = self.IconBorder
 	iconBorder:SetAlpha(0)

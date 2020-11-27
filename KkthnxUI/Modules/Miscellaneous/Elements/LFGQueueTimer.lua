@@ -9,66 +9,55 @@ local IsAddOnLoaded = _G.IsAddOnLoaded
 
 -- Queue timer on LFGDungeonReadyDialog
 
-local LFGReadyDialogTimer = CreateFrame("Frame", nil, _G.LFGDungeonReadyDialog)
-LFGReadyDialogTimer:SetPoint("TOP", _G.LFGDungeonReadyDialog, "BOTTOM", 0, -4)
-LFGReadyDialogTimer:SetSize(240, 14)
-LFGReadyDialogTimer:CreateBorder()
+local prev
+function Module:SetupLFGProposalTime()
+	if not prev then
+		local timerBar = CreateFrame("StatusBar", nil, LFGDungeonReadyDialog)
+		timerBar:SetPoint("TOP", LFGDungeonReadyDialog, "BOTTOM", 0, -4)
+		timerBar:SetStatusBarTexture(K.GetTexture(C["UITextures"].GeneralTextures))
+		timerBar:SetSize(240, 14)
+		timerBar:SetStatusBarColor(1, 0.1, 0)
+		timerBar:SetMinMaxValues(0, 40)
+		timerBar:CreateBorder()
+		timerBar:Show()
 
-LFGReadyDialogTimer.StatusBar = CreateFrame("StatusBar", nil, LFGReadyDialogTimer)
-LFGReadyDialogTimer.StatusBar:SetStatusBarTexture(K.GetTexture(C["UITextures"].GeneralTextures))
-LFGReadyDialogTimer.StatusBar:SetAllPoints()
-LFGReadyDialogTimer.StatusBar:SetFrameLevel(_G.LFGDungeonReadyDialog:GetFrameLevel() + 1)
-LFGReadyDialogTimer.StatusBar:SetStatusBarColor(1, 0.7, 0)
+		timerBar.spark = timerBar:CreateTexture(nil, "OVERLAY")
+		timerBar.spark:SetTexture(C["Media"].Spark_128)
+		timerBar.spark:SetSize(64, 14)
+		timerBar.spark:SetBlendMode("ADD")
+		timerBar.spark:SetPoint("CENTER", timerBar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
-LFGReadyDialogTimer.StatusBar.Spark = LFGReadyDialogTimer.StatusBar:CreateTexture(nil, "OVERLAY")
-LFGReadyDialogTimer.StatusBar.Spark:SetTexture(C["Media"].Spark_128)
-LFGReadyDialogTimer.StatusBar.Spark:SetSize(64, LFGReadyDialogTimer:GetHeight())
-LFGReadyDialogTimer.StatusBar.Spark:SetBlendMode("ADD")
+		timerBar.text = timerBar:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+		timerBar.text:SetPoint("CENTER", timerBar, "CENTER")
 
-_G.LFGDungeonReadyDialog.nextUpdate = 0
-local function Update_LFGQueueTimer()
-	if IsAddOnLoaded("DBM-Core") or IsAddOnLoaded("BigWigs") then
-		return
-	end
-
-	local object = _G.LFGDungeonReadyDialog
-	local oldTime = GetTime()
-	local flag = 0
-	local duration = 40
-	local interval = 0.1
-
-	object:SetScript("OnUpdate", function(_, elapsed)
-		object.nextUpdate = object.nextUpdate + elapsed
-		if object.nextUpdate > interval then
-			local newTime = GetTime()
-			if (newTime - oldTime) < duration then
-				local width = LFGReadyDialogTimer:GetWidth() * (newTime - oldTime) / duration
-				LFGReadyDialogTimer.StatusBar:SetPoint("BOTTOMRIGHT", LFGReadyDialogTimer, 0 - width, 0)
-				LFGReadyDialogTimer.StatusBar.Spark:SetPoint("CENTER", LFGReadyDialogTimer.StatusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
-				flag = flag + 1
-				if flag >= 10 then
-					flag = 0
-				end
-			else
-				object:SetScript("OnUpdate", nil)
+		Module.LFG_PROPOSAL_SHOW = function()
+			prev = GetTime() + 40
+			-- Play in Master for those that have SFX off or very low.
+			-- Using false as third arg to avoid the "only one of each sound at a time" throttle.
+			-- Only play via the "Master" channel if we have sounds turned on
+			local _, id = PlaySound(8960, "Master", false) -- SOUNDKIT.READY_CHECK
+			if id then
+				StopSound(id - 1) -- Should work most of the time to stop the blizz sound
 			end
-			object.nextUpdate = 0
 		end
-	end)
-end
+		Module:LFG_PROPOSAL_SHOW()
 
-local function Setup_LFGQueueTimer()
-	if LFGDungeonReadyDialog:IsShown() then
-		Update_LFGQueueTimer()
+		timerBar:SetScript("OnUpdate", function(f)
+			local timeLeft = prev - GetTime()
+			if timeLeft > 0 then
+				f:SetValue(timeLeft)
+				f.text:SetFormattedText("KkthnxUI: %.1f", timeLeft)
+			end
+		end)
 	end
 end
 
 -- No config option for this as this will be disabled if replaced by one of the 2 addons that provide this.
 -- This is an important QoL addition.
-function Module:CreateLFGQueueTimer()
+function Module:CreateLFGProposalTime()
 	if IsAddOnLoaded("DBM-Core") or IsAddOnLoaded("BigWigs") then
 		return
 	end
 
-	K:RegisterEvent("LFG_PROPOSAL_SHOW", Setup_LFGQueueTimer)
+	K:RegisterEvent("LFG_PROPOSAL_SHOW", Module.SetupLFGProposalTime)
 end

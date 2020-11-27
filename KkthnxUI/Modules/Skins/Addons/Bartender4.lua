@@ -61,7 +61,7 @@ local function ReskinBartender4()
 			BtnBG:Kill()
 		end
 
-		Button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		Button:CreateBorder()
 		Button:UnregisterEvent("ACTIONBAR_SHOWGRID")
 		Button:UnregisterEvent("ACTIONBAR_HIDEGRID")
 
@@ -99,7 +99,7 @@ local function ReskinBartender4()
 
 		if MainMenuBarBackpackButton then
 			local BackpackButtonTexture = MainMenuBarBackpackButton.icon:GetTexture()
-			MainMenuBarBackpackButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			MainMenuBarBackpackButton:CreateBorder()
 			MainMenuBarBackpackButton.icon:SetTexCoord(unpack(K.TexCoords))
 			MainMenuBarBackpackButton.icon:SetAllPoints(MainMenuBarBackpackButton)
 			MainMenuBarBackpackButton.icon.SetTexCoord = function() end
@@ -108,7 +108,7 @@ local function ReskinBartender4()
 			for i = 0, 3 do
 				if _G["CharacterBag"..i.."Slot"] then
 					local CharacterBagTexture = _G["CharacterBag"..i.."Slot"].icon:GetTexture()
-					_G["CharacterBag"..i.."Slot"]:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+					_G["CharacterBag"..i.."Slot"]:CreateBorder()
 					_G["CharacterBag"..i.."Slot"].icon:SetTexCoord(unpack(K.TexCoords))
 					_G["CharacterBag"..i.."Slot"].icon:SetAllPoints(_G["CharacterBag"..i.."Slot"])
 					_G["CharacterBag"..i.."Slot"].icon.SetTexCoord = function() end

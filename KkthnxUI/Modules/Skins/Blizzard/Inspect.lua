@@ -28,7 +28,7 @@ C.themes["Blizzard_InspectUI"] = function()
 	for _, slot in pairs({InspectPaperDollItemsFrame:GetChildren()}) do
 		if slot:IsObjectType("Button") or slot:IsObjectType("ItemButton") then
 			slot:StripTextures()
-			slot:CreateBorder(nil, nil, 10, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			slot:CreateBorder()
 			slot:StyleButton()
 			slot.icon:SetTexCoord(unpack(K.TexCoords))
 			slot:SetSize(36, 36)

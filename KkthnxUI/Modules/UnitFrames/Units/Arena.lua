@@ -119,7 +119,7 @@ function Module:CreateArena()
 	self.PVPSpecIcon = CreateFrame("Frame", nil, self)
 	self.PVPSpecIcon:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 	self.PVPSpecIcon:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
-	self.PVPSpecIcon:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	self.PVPSpecIcon:CreateBorder()
 
 	self.Trinket = CreateFrame("Frame", nil, self)
 	self.Trinket:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)

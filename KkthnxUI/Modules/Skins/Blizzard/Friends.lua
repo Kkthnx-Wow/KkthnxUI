@@ -21,14 +21,14 @@ tinsert(C.defaultThemes, function()
 		bu.bg = CreateFrame("Frame", nil, bu)
 		bu.bg:SetAllPoints(ic)
 		bu.bg:SetFrameLevel(bu:GetFrameLevel())
-		bu.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		bu.bg:CreateBorder()
 
 		local travelPass = bu.travelPassButton
 		travelPass:SetSize(22, 22)
 		travelPass:SetPushedTexture(nil)
 		travelPass:SetDisabledTexture(nil)
 		travelPass:SetPoint("TOPRIGHT", -2, -6)
-		travelPass:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		travelPass:CreateBorder()
 
 		local nt = travelPass:GetNormalTexture()
 		nt:SetTexture("Interface\\FriendsFrame\\PlusManz-PlusManz")
@@ -36,8 +36,8 @@ tinsert(C.defaultThemes, function()
 
 		local hl = travelPass:GetHighlightTexture()
 		hl:SetColorTexture(1, 1, 1, .25)
-		hl:SetPoint("TOPLEFT", travelPass, "TOPLEFT", 2, -2)
-		hl:SetPoint("BOTTOMRIGHT", travelPass, "BOTTOMRIGHT", -2, 2)
+		hl:SetPoint("TOPLEFT", travelPass, "TOPLEFT", 1, -1)
+		hl:SetPoint("BOTTOMRIGHT", travelPass, "BOTTOMRIGHT", -1, 1)
 	end
 
 	local function UpdateScroll()
