@@ -284,6 +284,14 @@ local cycles = {
 
 -- Update editbox border color
 function Module:UpdateEditBoxColor()
+	if not C["Chat"].Enable then
+		return
+	end
+
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
+		return
+	end
+
 	local editBox = ChatEdit_ChooseBoxForSend()
 	local chatType = editBox:GetAttribute("chatType")
 	local editBoxBorder = editBox.KKUI_Border
@@ -313,6 +321,14 @@ end
 hooksecurefunc("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
 
 function Module:UpdateTabChannelSwitch()
+	if not C["Chat"].Enable then
+		return
+	end
+
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
+		return
+	end
+
 	if string_sub(tostring(self:GetText()), 1, 1) == "/" then
 		return
 	end
@@ -348,6 +364,14 @@ local chatScrollInfo = {
 
 -- Quick Scroll
 function Module:QuickMouseScroll(dir)
+	if not C["Chat"].Enable then
+		return
+	end
+
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
+		return
+	end
+
 	if not KkthnxUIData[K.Realm][K.Name].Help["ChatScroll"] then
 		HelpTip:Show(ChatFrame1, chatScrollInfo)
 	end
