@@ -61,7 +61,6 @@
    <Script file="Miscellaneous\Elements\AlreadyKnown.lua" />
    <Script file="Miscellaneous\Elements\Durability.lua" />
    <Script file="Miscellaneous\Elements\ImprovedMail.lua" />
-   <Script file="Miscellaneous\Elements\LFGQueueTimer.lua" />
    <Script file="Miscellaneous\Elements\LoginAnimation.lua" />
    <Script file="Miscellaneous\Elements\MerchantItemlevel.lua" />
    <Script file="Miscellaneous\Elements\MissingStats.lua" />

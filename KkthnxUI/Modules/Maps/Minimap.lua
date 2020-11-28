@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Minimap")
 
 local _G = _G
@@ -467,7 +467,7 @@ function Module:HybridMinimapOnLoad(addon)
 end
 
 local minimapInfo = {
-	text = "Scroll minimap to zoom in or out, middle click to toggle calendar, right click to toggle track menu.",
+	text = L["MinimapHelpTip"],
 	buttonStyle = HelpTip.ButtonStyle.GotIt,
 	targetPoint = HelpTip.Point.LeftEdgeBottom,
 	onAcknowledgeCallback = K.HelpInfoAcknowledge,
