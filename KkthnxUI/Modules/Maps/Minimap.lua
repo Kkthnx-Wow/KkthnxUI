@@ -5,6 +5,7 @@ local _G = _G
 local pairs = _G.pairs
 local select = _G.select
 local string_format = _G.string.format
+local table_insert = _G.table.insert
 
 local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
@@ -18,7 +19,7 @@ local LE_GARRISON_TYPE_8_0 = _G.Enum.GarrisonType.Type_8_0
 local LE_GARRISON_TYPE_9_0 = _G.Enum.GarrisonType.Type_9_0
 local Minimap = _G.Minimap
 local UnitClass = _G.UnitClass
-local table_insert = _G.table.insert
+local hooksecurefunc = _G.hooksecurefunc
 
 -- Create the new minimap tracking dropdown frame and initialize it
 local KKUI_MiniMapTrackingDropDown = CreateFrame("Frame", "KKUI_MiniMapTrackingDropDown", _G.UIParent, "UIDropDownMenuTemplate")
@@ -213,37 +214,36 @@ end
 
 function Module:ReskinRegions()
 	-- Garrison
-	if C["Minimap"].ShowGarrison then
-		hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function(self)
-			self:ClearAllPoints()
-			self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, 0)
-			self:GetNormalTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
-			self:GetPushedTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
-			self:GetHighlightTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
-			self:SetSize(30, 30)
-		end)
+	hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function(self)
+		self:ClearAllPoints()
+		self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, 0)
+		self:GetNormalTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
+		self:GetPushedTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
+		self:GetHighlightTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
+		self:SetSize(30, 30)
+		self:SetAlpha(0.9)
+	end)
 
-		local menuList = {
-			{text =	GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_9_0, notCheckable = true},
-			{text =	WAR_CAMPAIGN, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_8_0, notCheckable = true},
-			{text =	ORDER_HALL_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_7_0, notCheckable = true},
-			{text =	GARRISON_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_6_0, notCheckable = true},
-		}
-		GarrisonLandingPageMinimapButton:HookScript("OnMouseDown", function(self, btn)
-			if btn == "RightButton" then
-				HideUIPanel(GarrisonLandingPage)
-				EasyMenu(menuList, K.EasyMenu, self, -80, 0, "MENU", 1)
-			end
-		end)
+	local menuList = {
+		{text =	GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_9_0, notCheckable = true},
+		{text =	WAR_CAMPAIGN, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_8_0, notCheckable = true},
+		{text =	ORDER_HALL_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_7_0, notCheckable = true},
+		{text =	GARRISON_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_6_0, notCheckable = true},
+	}
+	GarrisonLandingPageMinimapButton:HookScript("OnMouseDown", function(self, btn)
+		if btn == "RightButton" then
+			HideUIPanel(GarrisonLandingPage)
+			EasyMenu(menuList, K.EasyMenu, self, -80, 0, "MENU", 1)
+		end
+	end)
 
-		GarrisonLandingPageMinimapButton:SetScript("OnEnter", function(self)
-			GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-			GameTooltip:SetText(self.title, 1, 1, 1)
-			GameTooltip:AddLine(self.description, nil, nil, nil, true)
-			GameTooltip:AddLine("Right click to switch garrisons", nil, nil, nil, true)
-			GameTooltip:Show();
-		end)
-	end
+	GarrisonLandingPageMinimapButton:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+		GameTooltip:SetText(self.title, 1, 1, 1)
+		GameTooltip:AddLine(self.description, nil, nil, nil, true)
+		GameTooltip:AddLine("Right click to switch garrisons", nil, nil, nil, true)
+		GameTooltip:Show()
+	end)
 
 	-- QueueStatus Button
 	if QueueStatusMinimapButton then

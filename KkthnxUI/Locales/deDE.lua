@@ -429,7 +429,6 @@ L["Blip Icon Styles"] = "Blip Icon Styles"
 L["Enable Minimap"] = "Enable Minimap"
 L["Location Text Style"] = "Location Text Style"
 L["Minimap Size"] = "Minimap Size"
-L["Show Garrison Button"] = "Show Garrison Button"
 L["Show Minimap Button Collector"] = "Show Minimap Button Collector"
 L["Show Minimap Calendar"] = "Show Minimap Calendar"
 
