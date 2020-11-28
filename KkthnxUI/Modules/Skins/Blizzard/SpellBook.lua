@@ -27,9 +27,9 @@ table_insert(C.defaultThemes, function()
 		ic.bg = ic:CreateBorder()
 
 		local NewBorder = CreateFrame("Frame", nil, bu, "BackdropTemplate")
-		NewBorder:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 16})
-		NewBorder:SetPoint("TOPLEFT", bu, -8, 8)
-		NewBorder:SetPoint("BOTTOMRIGHT", bu, 8, -8)
+		NewBorder:SetBackdrop({edgeFile = C["Media"].BorderGlow, edgeSize = 16})
+		NewBorder:SetPoint("TOPLEFT", bu, -7, 7)
+		NewBorder:SetPoint("BOTTOMRIGHT", bu, 7, -7)
 		NewBorder:SetBackdropBorderColor(1, 1, 0)
 		NewBorder:Hide()
 

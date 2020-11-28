@@ -86,7 +86,7 @@ local list = {
 		{AuraID = 203155, UnitID = "player"}, -- Sniper
 		{AuraID = 235712, UnitID = "player", Combat = true}, -- Stable rotation, orange hand
 		{AuraID = 264735, UnitID = "player"}, -- Survival of the fittest
-		{AuraID = 260242, UnitID = "player"}, -- No frills
+		{AuraID = 260242, UnitID = "player", Flash = true}, -- No frills
 		{AuraID = 260395, UnitID = "player"}, -- Deadly shot
 		{AuraID = 269502, UnitID = "player"}, -- Deadly shot
 		{AuraID = 281036, UnitID = "player"}, -- Ferocious beast
@@ -96,7 +96,7 @@ local list = {
 		{AuraID = 265898, UnitID = "player"}, -- Engagement agreement
 		{AuraID = 268552, UnitID = "player"}, -- Viper Venom
 		{AuraID = 260249, UnitID = "player"}, -- Predator
-		{AuraID = 257622, UnitID = "player", Text = "A"}, -- Skill shooting
+		{AuraID = 257622, UnitID = "player", Text = "AoE"}, -- Skill shooting
 		{AuraID = 288613, UnitID = "player"}, -- crack shot
 		{AuraID = 274447, UnitID = "player"}, -- Thousand Miles Eye
 		{AuraID = 260243, UnitID = "player"}, -- Shooting

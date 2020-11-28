@@ -124,7 +124,6 @@ local function reskinBarTemplate(bar)
 	if bar.Label then
 		bar.Label:SetPoint("CENTER", 0, 0)
 		bar.Label:FontTemplate(nil, 12)
-		print(bar.Label)
 	end
 
 	bar.bg = CreateFrame("Frame", nil, bar)

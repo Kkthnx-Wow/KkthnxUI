@@ -262,9 +262,9 @@ function Module:CreateParty()
 
 	if (C["Party"].TargetHighlight) then
         self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
-        self.TargetHighlight:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
-        self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -6, 6)
-        self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 6, -6)
+        self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].BorderGlow, edgeSize = 12})
+        self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -5, 5)
+        self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 5, -5)
         self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
         self.TargetHighlight:Hide()
 

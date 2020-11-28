@@ -193,10 +193,10 @@ local list = {
 		{AuraID = 321368, UnitID = "target", Value = true},	-- 凋魂，冰缚之盾
 		{AuraID = 327416, UnitID = "target", Value = true},	-- 堡垒，心能回灌
 		-- PVP
-		{AuraID = 498, UnitID = "target"},		-- 圣佑术
-		{AuraID = 642, UnitID = "target"},		-- 圣盾术
-		{AuraID = 871, UnitID = "target"},		-- 盾墙
-		{AuraID = 5277, UnitID = "target"},		-- 闪避
+		{AuraID = 498, UnitID = "target"},		-- Holy Blessing
+		{AuraID = 642, UnitID = "target"},		-- Holy Shield
+		{AuraID = 871, UnitID = "target"},		-- Shield wall
+		{AuraID = 5277, UnitID = "target"},		-- dodge
 		{AuraID = 1044, UnitID = "target"},		-- 自由祝福
 		{AuraID = 6940, UnitID = "target"},		-- 牺牲祝福
 		{AuraID = 1022, UnitID = "target"},		-- 保护祝福

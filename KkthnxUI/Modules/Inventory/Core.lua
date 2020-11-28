@@ -924,9 +924,9 @@ function Module:OnEnable()
 
 		if showNewItem then
 			self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
-			self.glowFrame:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
-			self.glowFrame:SetPoint("TOPLEFT", self, -6, 6)
-			self.glowFrame:SetPoint("BOTTOMRIGHT", self, 6, -6)
+			self.glowFrame:SetBackdrop({edgeFile = C["Media"].BorderGlow, edgeSize = 12})
+			self.glowFrame:SetPoint("TOPLEFT", self, -5, 5)
+			self.glowFrame:SetPoint("BOTTOMRIGHT", self, 5, -5)
 			self.glowFrame:Hide()
 
 			self.glowFrame.Animation = self.glowFrame:CreateAnimationGroup()
