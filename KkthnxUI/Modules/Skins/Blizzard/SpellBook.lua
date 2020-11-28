@@ -85,7 +85,7 @@ table_insert(C.defaultThemes, function()
 		bu.statusBar:CreateBorder()
 		if i > 2 then
 			bu.statusBar:ClearAllPoints()
-			bu.statusBar:SetPoint("BOTTOMLEFT", 16, 3)
+			bu.statusBar:SetPoint("BOTTOMLEFT", 16, 4)
 		end
 	end
 
@@ -112,7 +112,11 @@ table_insert(C.defaultThemes, function()
 		icon:SetPoint("TOPLEFT", 2, -2)
 		icon:SetPoint("BOTTOMRIGHT", -2, 2)
 		icon:SetTexCoord(unpack(K.TexCoords))
-		icon.bg = icon:CreateBorder()
+
+		icon.bg = CreateFrame("Frame", nil, bu)
+		icon.bg:SetAllPoints(icon)
+		icon.bg:SetFrameLevel(bu:GetFrameLevel())
+		icon.bg:CreateBorder()
 
 		local check = bu:GetCheckedTexture()
 		check:SetColorTexture(0, 1, 0, 0.3)

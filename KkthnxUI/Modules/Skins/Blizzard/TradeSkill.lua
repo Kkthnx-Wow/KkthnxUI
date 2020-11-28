@@ -10,4 +10,6 @@ C.themes["Blizzard_TradeSkillUI"] = function()
 	rankFrame.BorderLeft:Hide()
 	rankFrame.BorderRight:Hide()
 	rankFrame:CreateBorder()
+
+	rankFrame.RankText:FontTemplate()
 end
