@@ -310,6 +310,7 @@ function Module:UpdateEditBoxColor()
 		end
 	end
 end
+hooksecurefunc("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
 
 function Module:UpdateTabChannelSwitch()
 	if string_sub(tostring(self:GetText()), 1, 1) == "/" then
@@ -334,9 +335,23 @@ function Module:UpdateTabChannelSwitch()
 		end
 	end
 end
+hooksecurefunc("ChatEdit_CustomTabPressed", Module.UpdateTabChannelSwitch)
+
+-- Quick Scroll
+local chatScrollInfo = {
+	text = "ChatScrollHelp",
+	buttonStyle = HelpTip.ButtonStyle.GotIt,
+	targetPoint = HelpTip.Point.RightEdgeCenter,
+	onAcknowledgeCallback = K.HelpInfoAcknowledge,
+	callbackArg = "ChatScroll",
+}
 
 -- Quick Scroll
 function Module:QuickMouseScroll(dir)
+	if not KkthnxUIData[K.Realm][K.Name].Help["ChatScroll"] then
+		HelpTip:Show(ChatFrame1, chatScrollInfo)
+	end
+
 	if dir > 0 then
 		if IsShiftKeyDown() then
 			self:ScrollToTop()
@@ -353,6 +368,7 @@ function Module:QuickMouseScroll(dir)
 		end
 	end
 end
+hooksecurefunc("FloatingChatFrame_OnMouseScroll", Module.QuickMouseScroll)
 
 -- Sticky whisper
 function Module:ChatWhisperSticky()
@@ -432,9 +448,6 @@ function Module:OnEnable()
 		end
 	end)
 
-	hooksecurefunc("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
-	hooksecurefunc("ChatEdit_CustomTabPressed", Module.UpdateTabChannelSwitch)
-	hooksecurefunc("FloatingChatFrame_OnMouseScroll", Module.QuickMouseScroll)
 	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
 	hooksecurefunc("FloatingChatFrame_OnEvent", Module.UpdateTabEventColors)
 	hooksecurefunc("ChatFrame_ConfigEventHandler", Module.PlayWhisperSound)

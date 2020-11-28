@@ -195,6 +195,10 @@ function K.GetAddOnVersion(addon)
 	return K.AddOnVersion[string_lower(addon)] or nil
 end
 
+function K.HelpInfoAcknowledge(callbackArg)
+	KkthnxUIData[K.Realm][K.Name].Help[callbackArg] = true
+end
+
 -- Itemlevel
 function K:InspectItemTextures()
 	if not K.ScanTooltip.gems then
@@ -682,5 +686,9 @@ function K.CheckSavedVariables()
 
 	if not KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells then
 		KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {}
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].Help then
+		KkthnxUIData[K.Realm][K.Name].Help = {}
 	end
 end

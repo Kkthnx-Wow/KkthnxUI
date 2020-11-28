@@ -49,6 +49,13 @@ table_insert(C.defaultThemes, function()
 			return
 		end
 
+		for i = 1, SPELLS_PER_PAGE do
+			local button = _G["SpellButton"..i]
+			if button.SpellHighlightTexture then
+				button.SpellHighlightTexture:SetTexture("")
+			end
+		end
+
 		local slot = SpellBook_GetSpellBookSlot(self)
 		local isPassive = IsPassiveSpell(slot, SpellBookFrame.bookType)
 		local name = self:GetName()

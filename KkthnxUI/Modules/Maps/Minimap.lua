@@ -466,6 +466,23 @@ function Module:HybridMinimapOnLoad(addon)
 	end
 end
 
+local minimapInfo = {
+	text = "Scroll minimap to zoom in or out, middle click to toggle calendar, right click to toggle track menu.",
+	buttonStyle = HelpTip.ButtonStyle.GotIt,
+	targetPoint = HelpTip.Point.LeftEdgeBottom,
+	onAcknowledgeCallback = K.HelpInfoAcknowledge,
+	callbackArg = "MinimapInfo",
+	alignment = 3,
+}
+
+function Module:ShowMinimapHelpInfo()
+	Minimap:HookScript("OnEnter", function()
+		if not KkthnxUIData[K.Realm][K.Name].Help["MinimapInfo"] then
+			HelpTip:Show(MinimapCluster, minimapInfo)
+		end
+	end)
+end
+
 function Module:OnEnable()
 	if not C["Minimap"].Enable then
 		return
@@ -515,6 +532,7 @@ function Module:OnEnable()
 	self:CreateStyle()
 	self:CreateRecycleBin()
 	self:ReskinRegions()
+	self:ShowMinimapHelpInfo()
 
 	-- HybridMinimap
 	K:RegisterEvent("ADDON_LOADED", Module.HybridMinimapOnLoad)

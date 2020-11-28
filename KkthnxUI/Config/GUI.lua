@@ -569,7 +569,6 @@ local UIFonts = function(self)
 	Window:CreateDropdown("UIFonts", "UnitframeFonts", L["Set Unitframe Font"], "Font")
 
 	Window:CreateSection("Font Tweaks")
-	Window:CreateSwitch("UIFonts", "SkinBlizzardFonts", "Skin 'Some' Blizzard Fonts")
 	Window:CreateSlider("UIFonts", "QuestFontSize", L["Adjust QuestFont Size"], 10, 30, 1, nil, UpdateQuestFontSize)
 end
 
