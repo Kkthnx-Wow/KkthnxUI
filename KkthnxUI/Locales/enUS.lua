@@ -378,7 +378,6 @@ L["Show Chat Menu Buttons"] = "Show Chat Menu Buttons"
 L["Show ItemLevel on ChatFrames"] = "Show ItemLevel on ChatFrames"
 L["Stick On Channel If Whispering"] = "Stick On Channel If Whispering"
 L["Use Default Channel Names"] = "Use Default Channel Names"
-L["Whisper Sound"] = "Whisper Sound"
 
 L["DataBars Height"] = "DataBars Height"
 L["DataBars Width"] = "DataBars Width"

@@ -173,9 +173,9 @@ function Module:CreateStyle()
 
 	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, "BackdropTemplate")
 	minimapMailPulse:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
-	minimapMailPulse:SetPoint("TOPLEFT", minimapBorder, -6, 6)
-	minimapMailPulse:SetPoint("BOTTOMRIGHT", minimapBorder, 6, -6)
-	minimapMailPulse:SetBackdropBorderColor(1, 1, 0, 0.6)
+	minimapMailPulse:SetPoint("TOPLEFT", minimapBorder, -5, 5)
+	minimapMailPulse:SetPoint("BOTTOMRIGHT", minimapBorder, 5, -5)
+	minimapMailPulse:SetBackdropBorderColor(1, 1, 0, 0.8)
 	minimapMailPulse:Hide()
 
 	local anim = minimapMailPulse:CreateAnimationGroup()
@@ -294,13 +294,14 @@ function Module:ReskinRegions()
 	if MiniMapMailFrame then
 		MiniMapMailFrame:ClearAllPoints()
 		if C["DataText"].Time then
-			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 6)
+			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -4)
 		else
-			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -6)
+			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -12)
 		end
-		MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
-		MiniMapMailFrame:SetScale(1.2)
-		MiniMapMailFrame:SetHitRectInsets(8, 8, 12, 11)
+		MiniMapMailIcon:SetTexture("Interface\\HELPFRAME\\ReportLagIcon-Mail")
+		MiniMapMailFrame:SetScale(1.8)
+		MiniMapMailIcon:SetRotation(rad(-27.5))
+		MiniMapMailFrame:SetHitRectInsets(11, 11, 11, 15)
 	end
 
 	-- Invites Icon
@@ -311,10 +312,10 @@ function Module:ReskinRegions()
 	end
 
 	local inviteNotification = CreateFrame("Button", nil, UIParent, "BackdropTemplate")
-	inviteNotification:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 13})
-	inviteNotification:SetPoint("TOPLEFT", Minimap, -6, 6)
-	inviteNotification:SetPoint("BOTTOMRIGHT", Minimap, 6, -6)
-	inviteNotification:SetBackdropBorderColor(1, 1, 0)
+	inviteNotification:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
+	inviteNotification:SetPoint("TOPLEFT", Minimap, -5, 5)
+	inviteNotification:SetPoint("BOTTOMRIGHT", Minimap, 5, -5)
+	inviteNotification:SetBackdropBorderColor(1, 1, 0, 0.8)
 	inviteNotification:Hide()
 
 	K.CreateFontString(inviteNotification, 12, K.InfoColor.."Pending Calendar Invite(s)!", "")

@@ -300,7 +300,6 @@ local Chat = function(self)
 	Window:CreateSwitch("Chat", "Sticky", L["Stick On Channel If Whispering"], nil, UpdateChatSticky)
 	Window:CreateSwitch("Chat", "TabsMouseover", L["Fade Chat Tabs"])
 	Window:CreateSwitch("Chat", "WhisperColor", L["Differ Whipser Colors"])
-	Window:CreateSwitch("Chat", "WhisperSound", L["Whisper Sound"])
 	Window:CreateDropdown("Chat", "TimestampFormat", L["Custom Chat Timestamps"])
 
 	Window:CreateSection("Chat Values")

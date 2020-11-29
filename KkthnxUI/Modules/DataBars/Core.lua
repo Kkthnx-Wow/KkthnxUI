@@ -82,7 +82,6 @@ function Module:SetupExperience()
 
 	self.Bars.Experience = expbar
 	expbar.RestBar = restbar
-	expbar.Spark = espark
 	expbar.Text = etext
 end
 
@@ -108,7 +107,6 @@ function Module:SetupReputation()
 	rtext:SetPoint("RIGHT", reputation, "LEFT", 3, 0)
 
 	self.Bars.Reputation = reputation
-	reputation.Spark = rspark
 	reputation.Text = rtext
 end
 
@@ -134,7 +132,6 @@ function Module:SetupHonor()
 	htext:SetPoint("RIGHT", honor, "LEFT", 3, 0)
 
 	self.Bars.Honor = honor
-	honor.Spark = hspark
 	honor.Text = htext
 end
 

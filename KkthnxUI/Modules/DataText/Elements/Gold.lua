@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("Gold")
+local Module = K:GetModule("Infobar")
 
 local _G = _G
 local pairs = _G.pairs
@@ -93,7 +93,7 @@ local function OnEvent(_, event)
 end
 
 local function OnEnter()
-    UIFrameFadeIn(Module.GoldDataTextFrame, 0.25, Module.GoldDataTextFrame:GetAlpha(), 1)
+    UIFrameFadeIn(Module.GoldDataTextFrame.Text, 0, Module.GoldDataTextFrame.Text:GetAlpha(), 1)
 
 	GameTooltip:SetOwner(Module.GoldDataTextFrame, "ANCHOR_NONE")
 		GameTooltip:SetPoint(K.GetAnchors(Module.GoldDataTextFrame))
@@ -171,28 +171,33 @@ local function OnMouseUp(_, btn)
 end
 
 local function OnLeave()
-    UIFrameFadeOut(Module.GoldDataTextFrame, 1, Module.GoldDataTextFrame:GetAlpha(), 0.25)
+    UIFrameFadeOut(Module.GoldDataTextFrame.Text, 1, Module.GoldDataTextFrame.Text:GetAlpha(), 0)
 	K.HideTooltip()
 end
 
-function Module:OnEnable()
+function Module:CreateGoldDataText()
     -- if not C["DataText"].Gold then
     --     return
-    -- end
+	-- end
+
+	if not QuickJoinToastButton or not QuickJoinToastButton:IsVisible() then
+		return
+	end
 
     Module.GoldDataTextFrame = CreateFrame("Button", nil, UIParent)
     Module.GoldDataTextFrame:SetParent(QuickJoinToastButton)
-    Module.GoldDataTextFrame:SetAlpha(0.25)
 
     Module.GoldDataTextFrame.Texture = Module.GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
-    Module.GoldDataTextFrame.Texture:SetPoint("LEFT", QuickJoinToastButton, "RIGHT", 6, 0)
-    Module.GoldDataTextFrame.Texture:SetTexture([[Interface\MONEYFRAME\UI-GoldIcon]])
+    Module.GoldDataTextFrame.Texture:SetPoint("BOTTOM", QuickJoinToastButton, "TOP", 0, 0)
+	Module.GoldDataTextFrame.Texture:SetTexture([[Interface\HELPFRAME\ReportLagIcon-AuctionHouse]])
+	Module.GoldDataTextFrame.Texture:SetSize(28, 28)
 
     Module.GoldDataTextFrame.Text = Module.GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
     Module.GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-    Module.GoldDataTextFrame.Text:SetPoint("LEFT",  Module.GoldDataTextFrame.Texture, "RIGHT", 4, 0)
+	Module.GoldDataTextFrame.Text:SetPoint("LEFT",  Module.GoldDataTextFrame.Texture, "RIGHT", 4, 0)
+	Module.GoldDataTextFrame.Text:SetAlpha(0)
 
-    Module.GoldDataTextFrame:SetAllPoints(Module.GoldDataTextFrame.Text)
+    Module.GoldDataTextFrame:SetAllPoints(Module.GoldDataTextFrame.Texture)
 
 	Module.GoldDataTextFrame:RegisterEvent("PLAYER_MONEY", OnEvent)
 	Module.GoldDataTextFrame:RegisterEvent("SEND_MAIL_MONEY_CHANGED", OnEvent)

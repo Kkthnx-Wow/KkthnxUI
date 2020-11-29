@@ -165,7 +165,6 @@ C["Chat"] = {
 	["Sticky"] = false,
 	["TabsMouseover"] = true,
 	["WhisperColor"] = true,
-	["WhisperSound"] = true,
 	["Width"] = 392,
 	["TimestampFormat"] = {
 		["Options"] = {
