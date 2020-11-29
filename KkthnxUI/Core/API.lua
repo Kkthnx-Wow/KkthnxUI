@@ -237,34 +237,36 @@ local function FontTemplate(fs, font, fontSize, fontStyle)
 end
 
 local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
-	local pointsSet = setPoints or 1
+	local pointsSet = setPoints or 0
 
 	if button.SetHighlightTexture and not button.hover and not noHover then
 		local hover = button:CreateTexture()
+		hover:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
 		hover:SetPoint("TOPLEFT", button, "TOPLEFT", pointsSet, -pointsSet)
 		hover:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -pointsSet, pointsSet)
 		hover:SetBlendMode("ADD")
-		hover:SetColorTexture(1, 1, 1, 0.3)
 		button:SetHighlightTexture(hover)
 		button.hover = hover
 	end
 
 	if button.SetPushedTexture and not button.pushed and not noPushed then
 		local pushed = button:CreateTexture()
+		pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+		pushed:SetDesaturated(true)
+		pushed:SetVertexColor(246/255, 196/255, 66/255)
 		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", pointsSet, -pointsSet)
 		pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -pointsSet, pointsSet)
 		pushed:SetBlendMode("ADD")
-		pushed:SetColorTexture(0.9, 0.8, 0.1, 0.3)
 		button:SetPushedTexture(pushed)
 		button.pushed = pushed
 	end
 
 	if button.SetCheckedTexture and not button.checked and not noChecked then
 		local checked = button:CreateTexture()
+		checked:SetTexture("Interface\\Buttons\\CheckButtonHilight")
 		checked:SetPoint("TOPLEFT", button, "TOPLEFT", pointsSet, -pointsSet)
 		checked:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -pointsSet, pointsSet)
 		checked:SetBlendMode("ADD")
-		checked:SetColorTexture(1, 1, 1, 0.3)
 		button:SetCheckedTexture(checked)
 		button.checked = checked
 	end

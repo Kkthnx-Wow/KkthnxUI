@@ -60,12 +60,12 @@ table_insert(C.defaultThemes, function()
 		local isPassive = IsPassiveSpell(slot, SpellBookFrame.bookType)
 		local name = self:GetName()
 		local highlightTexture = _G[name.."Highlight"]
-		highlightTexture:SetPoint("TOPLEFT", 2, -2)
-		highlightTexture:SetPoint("BOTTOMRIGHT", -2, 2)
+		--highlightTexture:SetPoint("TOPLEFT", 2, -2)
+		--highlightTexture:SetPoint("BOTTOMRIGHT", -2, 2)
 		if isPassive then
-			highlightTexture:SetColorTexture(1, 1, 1, 0)
+			--highlightTexture:SetColorTexture(1, 1, 1, 0)
 		else
-			highlightTexture:SetColorTexture(1, 1, 1, .25)
+			--highlightTexture:SetColorTexture(1, 1, 1, .25)
 		end
 
 		local ic = _G[name.."IconTexture"]

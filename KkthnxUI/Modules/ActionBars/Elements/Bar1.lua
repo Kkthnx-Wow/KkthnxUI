@@ -11,7 +11,6 @@ local GetActionTexture = _G.GetActionTexture
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
-local hooksecurefunc = _G.hooksecurefunc
 
 local padding, margin = 0, 6
 

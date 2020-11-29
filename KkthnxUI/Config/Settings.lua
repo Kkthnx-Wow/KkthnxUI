@@ -42,6 +42,8 @@ C["ActionBar"] = {
 
 -- Announcements
 C["Announcements"] = {
+	["AlertInChat"] = false,
+	["AlertInWild"] = false,
 	["ItemAlert"] = false,
 	["KillingBlow"] = false,
 	["OnlyCompleteRing"] = false,

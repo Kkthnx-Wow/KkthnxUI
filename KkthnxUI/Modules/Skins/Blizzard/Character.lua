@@ -137,10 +137,9 @@ tinsert(C.defaultThemes, function()
 
 	hooksecurefunc("PaperDollItemSlotButton_Update", function(slot)
 		local highlight = slot:GetHighlightTexture()
-		highlight:SetTexture(C["Media"].Blank)
-		highlight:SetColorTexture(1, 1, 1, .25)
-		highlight:SetPoint("TOPLEFT", slot, "TOPLEFT", 1, -1)
-		highlight:SetPoint("BOTTOMRIGHT", slot, "BOTTOMRIGHT", -1, 1)
+		highlight:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+		highlight:SetBlendMode("ADD")
+		highlight:SetAllPoints()
 
 		UpdateCosmetic(slot)
 	end)

@@ -77,4 +77,7 @@ C.EQB_QuestItems = {
 	[49402] = 154878, -- Tiragarde Sound
 	[50164] = 154878, -- Tiragarde Sound
 	[51646] = 154878, -- Tiragarde Sound
+	[12925] = 41612, -- Storm Peaks
+	[13425] = 41612, -- Storm Peaks
+	[27384] = 12888, -- Eastern Plaguelands
 }

@@ -48,8 +48,18 @@ function Module:RareAlert_Update(id)
 		local tex = string_format("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t", file, 0, 0, atlasWidth, atlasHeight, atlasWidth * txLeft, atlasWidth * txRight, atlasHeight * txTop, atlasHeight * txBottom)
 
 		UIErrorsFrame:AddMessage(K.SystemColor..tex..L["Rare Spotted"]..K.InfoColor.."["..(info.name or "").."]"..K.SystemColor.."!")
-		local currrentTime = C["Chat"].TimestampFormat.Value == 1 and K.GreyColor.."["..date("%H:%M:%S").."]" or ""
-		K.Print(currrentTime..K.SystemColor..tex..L["Rare Spotted"]..K.InfoColor.."["..(info.name or "").."]"..K.SystemColor.."!")
+		if C["Announcements"].AlertInChat then
+			local currrentTime = C["Chat"].TimestampFormat.Value == 1 and K.GreyColor.."["..date("%H:%M:%S").."]" or ""
+			K.Print(currrentTime..K.SystemColor..tex..L["Rare Spotted"]..K.InfoColor.."["..(info.name or "").."]"..K.SystemColor.."!")
+		end
+
+		if Module.RareInstType == "none" then
+			PlaySound(23404, "master")
+		end
+
+		if not C["Announcements"].AlertInWild or Module.RareInstType == "none" then
+			PlaySound(23404, "master")
+		end
 
 		RareAlertCache[id] = true
 	end
