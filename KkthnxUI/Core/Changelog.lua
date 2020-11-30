@@ -15,16 +15,7 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Fixed Glass breaking the UI.",
-	"Fixed deDE locales missing.",
-	"Removed oUF_Offline.",
-	"Removed oUF_PortraitTimers.",
-	"Updated Bags filters for mounts/pets to collections.",
-	"Updated MouseTrail code.",
-	"Updated Unitframe spawn code",
-	"Updated extrabar and zoneability size/position",
-	"Updated isQuestItem bags filter",
-	"Updated locale duplicates.",
+	"Nothing.",
 }
 
 local changelogFrame

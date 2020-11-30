@@ -415,31 +415,6 @@ function Module:CreateBlockStrangerInvites()
 	end)
 end
 
--- Override default settings for AngryWorldQuests
-function Module:CreateOverrideAWQ()
-	if not IsAddOnLoaded("AngryWorldQuests") then
-		return
-	end
-
-	AngryWorldQuests_Config = AngryWorldQuests_Config or {}
-	AngryWorldQuests_CharacterConfig = AngryWorldQuests_CharacterConfig or {}
-
-	local settings = {
-		hideFilteredPOI = true,
-		showContinentPOI = true,
-		sortMethod = 2,
-	}
-
-	local function overrideOptions(_, key)
-		local value = settings[key]
-		if value then
-			AngryWorldQuests_Config[key] = value
-			AngryWorldQuests_CharacterConfig[key] = value
-		end
-	end
-	hooksecurefunc(AngryWorldQuests.Modules.Config, "Set", overrideOptions)
-end
-
 local function NoTalkingHeads()
 	if not C["Misc"].NoTalkingHead then
 		return
@@ -516,10 +491,8 @@ function Module:OnEnable()
 	self:CreateImprovedMail()
 	self:CreateImprovedStats()
 	self:CreateKillTutorials()
-	self:CreateLoginAnimation()
 	self:CreateMerchantItemLevel()
 	self:CreateMouseTrail()
-	self:CreateOverrideAWQ()
 	self:CreateParagonReputation()
 	self:CreatePulseCooldown()
 	self:CreateQuestSizeUpdate()

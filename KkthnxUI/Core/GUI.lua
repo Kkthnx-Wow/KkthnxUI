@@ -900,7 +900,6 @@ local MenuItemOnMouseUp = function(self)
 		self.GrandParent.Value = self.Key
 
 		if self.GrandParent.Hook then
-			print(self.GrandParent.Hook)
 			self.GrandParent.Hook(self.Key, self.Group)
 		end
 	else
@@ -909,7 +908,6 @@ local MenuItemOnMouseUp = function(self)
 		self.GrandParent.Value = self.Value
 
 		if self.GrandParent.Hook then
-			print(self.GrandParent.Hook)
 			self.GrandParent.Hook(self.Value, self.Group)
 		end
 	end

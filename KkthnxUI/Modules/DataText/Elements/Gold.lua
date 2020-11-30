@@ -8,10 +8,14 @@ local unpack = _G.unpack
 
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CURRENCY = _G.CURRENCY
+local C_CurrencyInfo_GetBackpackCurrencyInfo = _G.C_CurrencyInfo.GetBackpackCurrencyInfo
+local C_CurrencyInfo_GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo
 local C_Timer_NewTicker = _G.C_Timer.NewTicker
+local C_WowTokenPublic_GetCurrentMarketPrice = _G.C_WowTokenPublic.GetCurrentMarketPrice
 local C_WowTokenPublic_UpdateMarketPrice = _G.C_WowTokenPublic.UpdateMarketPrice
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GameTooltip = _G.GameTooltip
+local GetAutoCompleteRealms = _G.GetAutoCompleteRealms
 local GetMoney = _G.GetMoney
 local GetNumWatchedTokens = _G.GetNumWatchedTokens
 local InCombatLockdown = _G.InCombatLockdown
@@ -22,7 +26,10 @@ local StaticPopupDialogs = _G.StaticPopupDialogs
 local TOTAL = _G.TOTAL
 local YES = _G.YES
 
-local profit, spent, oldMoney, ticker = 0, 0, 0
+local ticker
+local profit = 0
+local spent = 0
+local oldMoney = 0
 local crossRealms = GetAutoCompleteRealms()
 
 if not crossRealms or #crossRealms == 0 then
@@ -72,8 +79,8 @@ local function OnEvent(_, event)
 		spent = spent - change
 	else -- Gained Moeny
 		profit = profit + change
-    end
-    Module.GoldDataTextFrame.Text:SetText(K.FormatMoney(newMoney))
+	end
+	Module.GoldDataTextFrame.Text:SetText(K.FormatMoney(newMoney))
 
 	KkthnxUIGold = KkthnxUIGold or {}
 	KkthnxUIGold.totalGold = KkthnxUIGold.totalGold or {}
@@ -93,67 +100,71 @@ local function OnEvent(_, event)
 end
 
 local function OnEnter()
-    UIFrameFadeIn(Module.GoldDataTextFrame.Text, 0, Module.GoldDataTextFrame.Text:GetAlpha(), 1)
+	UIFrameFadeIn(Module.GoldDataTextFrame.Text, 0, Module.GoldDataTextFrame.Text:GetAlpha(), 1)
 
 	GameTooltip:SetOwner(Module.GoldDataTextFrame, "ANCHOR_NONE")
-		GameTooltip:SetPoint(K.GetAnchors(Module.GoldDataTextFrame))
-		GameTooltip:ClearLines()
+	GameTooltip:SetPoint(K.GetAnchors(Module.GoldDataTextFrame.Text))
+	GameTooltip:ClearLines()
 
-		GameTooltip:AddLine(K.InfoColor..CURRENCY)
-		GameTooltip:AddLine(" ")
+	GameTooltip:AddLine(K.InfoColor..CURRENCY)
+	GameTooltip:AddLine(" ")
 
-		GameTooltip:AddLine(L["Session"], 0.6, 0.8, 1)
-		GameTooltip:AddDoubleLine(L["Earned"], K.FormatMoney(profit), 1, 1, 1, 1, 1, 1)
-		GameTooltip:AddDoubleLine(L["Spent"], K.FormatMoney(spent), 1, 1, 1, 1, 1, 1)
-		if profit < spent then
-			GameTooltip:AddDoubleLine(L["Deficit"], K.FormatMoney(spent-profit), 1, 0, 0, 1, 1, 1)
-		elseif profit > spent then
-			GameTooltip:AddDoubleLine(L["Profit"], K.FormatMoney(profit-spent), 0, 1, 0, 1, 1, 1)
-		end
-		GameTooltip:AddLine(" ")
+	GameTooltip:AddLine(L["Session"], 0.6, 0.8, 1)
+	GameTooltip:AddDoubleLine(L["Earned"], K.FormatMoney(profit), 1, 1, 1, 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Spent"], K.FormatMoney(spent), 1, 1, 1, 1, 1, 1)
+	if profit < spent then
+		GameTooltip:AddDoubleLine(L["Deficit"], K.FormatMoney(spent - profit), 1, 0, 0, 1, 1, 1)
+	elseif profit > spent then
+		GameTooltip:AddDoubleLine(L["Profit"], K.FormatMoney(profit - spent), 0, 1, 0, 1, 1, 1)
+	end
+	GameTooltip:AddLine(" ")
 
-		local totalGold = 0
-		GameTooltip:AddLine(L["RealmCharacter"], 0.6, 0.8, 1)
-		for _, realm in pairs(crossRealms) do
-			local thisRealmList = KkthnxUIGold.totalGold[realm]
-			if thisRealmList then
-				for k, v in pairs(thisRealmList) do
-					local name = Ambiguate(k.."-"..realm, "none")
-					local gold, class = unpack(v)
-					local r, g, b = K.ColorClass(class)
-					GameTooltip:AddDoubleLine(getClassIcon(class)..name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
-					totalGold = totalGold + gold
-				end
+	local totalGold = 0
+	GameTooltip:AddLine(L["RealmCharacter"], 0.6, 0.8, 1)
+	for _, realm in pairs(crossRealms) do
+		local thisRealmList = KkthnxUIGold.totalGold[realm]
+		if thisRealmList then
+			for k, v in pairs(thisRealmList) do
+				local name = Ambiguate(k.."-"..realm, "none")
+				local gold, class = unpack(v)
+				local r, g, b = K.ColorClass(class)
+				GameTooltip:AddDoubleLine(getClassIcon(class)..name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
+				totalGold = totalGold + gold
 			end
 		end
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(TOTAL..":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t ".."Token:", K.FormatMoney(C_WowTokenPublic.GetCurrentMarketPrice() or 0), .6,.8,1, 1, 1, 1)
+	end
+	GameTooltip:AddLine(" ")
+	GameTooltip:AddDoubleLine(TOTAL..":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
+	GameTooltip:AddLine(" ")
+	GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t ".."Token:", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.6, 0.8, 1, 1, 1, 1)
 
-		for i = 1, GetNumWatchedTokens() do
-			local currencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo(i)
-			local name, count, icon, currencyID = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID, currencyInfo.currencyTypesID
-			if name and i == 1 then
-				GameTooltip:AddLine(" ")
-				GameTooltip:AddLine(CURRENCY..":", 0.6, 0.8, 1)
-			end
-
-			if name and count then
-				local total = C_CurrencyInfo.GetCurrencyInfo(currencyID).maxQuantity
-				local iconTexture = " |T"..icon..":12:12:0:0:50:50:4:46:4:46|t"
-				if total > 0 then
-					GameTooltip:AddDoubleLine(name, count.."/"..total..iconTexture, 1, 1, 1, 1, 1, 1)
-				else
-					GameTooltip:AddDoubleLine(name, count..iconTexture, 1, 1, 1, 1, 1, 1)
-				end
-			end
+	for i = 1, GetNumWatchedTokens() do
+		local currencyInfo = C_CurrencyInfo_GetBackpackCurrencyInfo(i)
+		if not currencyInfo then
+			break
 		end
 
-        GameTooltip:AddLine(" ")
-        GameTooltip:AddDoubleLine(" ", K.LeftButton.."Currency Panel".." ", 1, 1, 1, 0.6, 0.8, 1)
-		GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.6, 0.8, 1)
-		GameTooltip:Show()
+		local name, count, icon, currencyID = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID, currencyInfo.currencyTypesID
+		if name and i == 1 then
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine(CURRENCY..":", 0.6, 0.8, 1)
+		end
+
+		if name and count then
+			local total = C_CurrencyInfo_GetCurrencyInfo(currencyID).maxQuantity
+			local iconTexture = " |T"..icon..":12:12:0:0:50:50:4:46:4:46|t"
+			if total > 0 then
+				GameTooltip:AddDoubleLine(name, count.."/"..total..iconTexture, 1, 1, 1, 1, 1, 1)
+			else
+				GameTooltip:AddDoubleLine(name, count..iconTexture, 1, 1, 1, 1, 1, 1)
+			end
+		end
+	end
+
+	GameTooltip:AddLine(" ")
+	GameTooltip:AddDoubleLine(" ", K.LeftButton.."Currency Panel".." ", 1, 1, 1, 0.6, 0.8, 1)
+	GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.6, 0.8, 1)
+	GameTooltip:Show()
 end
 
 local function OnMouseUp(_, btn)
@@ -167,37 +178,32 @@ local function OnMouseUp(_, btn)
 			return
 		end
 		ToggleCharacter("TokenFrame")
-    end
+	end
 end
 
 local function OnLeave()
-    UIFrameFadeOut(Module.GoldDataTextFrame.Text, 1, Module.GoldDataTextFrame.Text:GetAlpha(), 0)
+	UIFrameFadeOut(Module.GoldDataTextFrame.Text, 1, Module.GoldDataTextFrame.Text:GetAlpha(), 0)
 	K.HideTooltip()
 end
 
 function Module:CreateGoldDataText()
-    -- if not C["DataText"].Gold then
-    --     return
-	-- end
-
-	if not QuickJoinToastButton or not QuickJoinToastButton:IsVisible() then
+	if not C["DataText"].Gold then
 		return
 	end
 
-    Module.GoldDataTextFrame = CreateFrame("Button", nil, UIParent)
-    Module.GoldDataTextFrame:SetParent(QuickJoinToastButton)
+	Module.GoldDataTextFrame = CreateFrame("Button", nil, UIParent)
+	Module.GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 4, -302)
+	Module.GoldDataTextFrame:SetSize(28, 28)
 
-    Module.GoldDataTextFrame.Texture = Module.GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
-    Module.GoldDataTextFrame.Texture:SetPoint("BOTTOM", QuickJoinToastButton, "TOP", 0, 0)
+	Module.GoldDataTextFrame.Texture = Module.GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
+	Module.GoldDataTextFrame.Texture:SetPoint("LEFT", Module.GoldDataTextFrame, "LEFT", 0, 0)
 	Module.GoldDataTextFrame.Texture:SetTexture([[Interface\HELPFRAME\ReportLagIcon-AuctionHouse]])
 	Module.GoldDataTextFrame.Texture:SetSize(28, 28)
 
-    Module.GoldDataTextFrame.Text = Module.GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
-    Module.GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.GoldDataTextFrame.Text:SetPoint("LEFT",  Module.GoldDataTextFrame.Texture, "RIGHT", 4, 0)
+	Module.GoldDataTextFrame.Text = Module.GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
+	Module.GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	Module.GoldDataTextFrame.Text:SetPoint("LEFT", Module.GoldDataTextFrame.Texture, "RIGHT", 4, 0)
 	Module.GoldDataTextFrame.Text:SetAlpha(0)
-
-    Module.GoldDataTextFrame:SetAllPoints(Module.GoldDataTextFrame.Texture)
 
 	Module.GoldDataTextFrame:RegisterEvent("PLAYER_MONEY", OnEvent)
 	Module.GoldDataTextFrame:RegisterEvent("SEND_MAIL_MONEY_CHANGED", OnEvent)
@@ -209,5 +215,7 @@ function Module:CreateGoldDataText()
 	Module.GoldDataTextFrame:SetScript("OnEvent", OnEvent)
 	Module.GoldDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
 	Module.GoldDataTextFrame:SetScript("OnEnter", OnEnter)
-    Module.GoldDataTextFrame:SetScript("OnLeave", OnLeave)
+	Module.GoldDataTextFrame:SetScript("OnLeave", OnLeave)
+
+	K.Mover(Module.GoldDataTextFrame, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 4, -302})
 end

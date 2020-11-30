@@ -46,7 +46,7 @@ function Module:ReskinCollapse(isAtlas)
 	local bg = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	bg:SetAllPoints(self)
 	bg:SetFrameLevel(self:GetFrameLevel())
-	bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	bg:CreateBorder()
 
 	bg:ClearAllPoints()
 	bg:SetSize(13, 13)
@@ -96,7 +96,7 @@ end
 
 local function reskinQuestIcons(_, block)
 	reskinQuestIcon(block.itemButton)
-	reskinQuestIcon(block.rightButton)
+	reskinQuestIcon(block.groupFinderButton)
 end
 
 local function reskinHeader(header)
@@ -124,6 +124,16 @@ local function reskinBarTemplate(bar)
 	if bar.Label then
 		bar.Label:SetPoint("CENTER", 0, 0)
 		bar.Label:FontTemplate(nil, 12)
+	end
+
+	if not bar.Spark then
+		bar.Spark = bar:CreateTexture(nil, "OVERLAY")
+		bar.Spark:SetWidth(64)
+		bar.Spark:SetHeight(bar:GetHeight())
+		bar.Spark:SetTexture(C["Media"].Spark_128)
+		bar.Spark:SetBlendMode("ADD")
+		bar.Spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
+		bar.Spark:SetAlpha(0.5)
 	end
 
 	bar.bg = CreateFrame("Frame", nil, bar)
