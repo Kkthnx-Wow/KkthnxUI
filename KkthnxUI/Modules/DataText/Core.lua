@@ -9,8 +9,10 @@ function Module:OnEnable()
 	Module.DNDTex = "|T"..FRIENDS_TEXTURE_DND..":14:14:0:0:16:16:1:15:1:15|t"
 
 	self:CreateGoldDataText()
+	self:CreateGuildDataText()
 	self:CreateSystemDataText()
 	self:CreateLatencyDataText()
 	self:CreateLocationDataText()
+	self:CreateSocialDataText()
 	self:CreateTimeDataText()
 end

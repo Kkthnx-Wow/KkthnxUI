@@ -207,6 +207,11 @@ C["DataBars"] = {
 
 -- Datatext
 C["DataText"] = {
+	["Friends"] = true,
+	["Gold"] = true,
+	["Guild"] = true,
+	["GuildSortBy"] = 1,
+	["GuildSortOrder"] = true,
 	["Latency"] = true,
 	["Location"] = true,
 	["System"] = true,

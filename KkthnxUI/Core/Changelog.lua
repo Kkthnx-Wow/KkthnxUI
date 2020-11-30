@@ -15,16 +15,28 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Fixed Glass breaking the UI.",
-	"Fixed deDE locales missing.",
-	"Removed oUF_Offline.",
-	"Removed oUF_PortraitTimers.",
-	"Updated Bags filters for mounts/pets to collections.",
-	"Updated MouseTrail code.",
-	"Updated Unitframe spawn code",
-	"Updated extrabar and zoneability size/position",
-	"Updated isQuestItem bags filter",
-	"Updated locale duplicates.",
+	"Added Paloozas new betterclassicons for unitframes.",
+	"Added Paloozas new high quality statusbar texture.",
+	"Added Paloozas new rounded borders.",
+	"Added Paloozas new rounded glow border.",
+	"Added friends, guild and money datatext back.",
+	"Added helptips for chat and minimap.",
+	"Added new datatext, mail and garrison icon.",
+	"Fixed 'some' fonts not following our font",
+	"Fixed chat scroll and hooks, glass still works AmiraMira <3.",
+	"Fixed groupfinder button skin in objectivetracker skin.",
+	"Fixed label bug in objectivetracker skin.",
+	"Fixed pushed, highlight and hover textures for new border.",
+	"Fixed spellreminder for shamans",
+	"Updated KkthnxUI file structure",
+	"Updated aurawatch spells",
+	"Updated oUF core",
+	"Updated professions frame skin.",
+	"Updated questfont size slider from 20 to 30",
+	"Updated rare alert settings in gui.",
+	"Updated spellreminder spells",
+	"If something is broken, blame someone else xD",
+	"You’re all wrong, the earth isn’t flat or round, it’s fucked.",
 }
 
 local changelogFrame

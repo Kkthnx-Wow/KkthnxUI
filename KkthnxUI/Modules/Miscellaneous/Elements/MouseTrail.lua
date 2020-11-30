@@ -1,6 +1,8 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
+-- REMINDER: Reports of texture just being stuck on screen?
+
 local _G = _G
 
 local GetCursorPosition = _G.GetCursorPosition
@@ -34,21 +36,14 @@ end
 
 function Module:CreateMouseTrail()
 	if C["Misc"].MouseTrail then
-		if not Module.Frame then
-			Module.Frame = CreateFrame("Frame", nil, UIParent)
-			Module.Frame:SetFrameStrata("TOOLTIP")
+		Module.Frame = CreateFrame("Frame", nil, UIParent)
+		Module.Frame:SetFrameStrata("TOOLTIP")
 
-			Module.Texture = Module.Frame:CreateTexture()
-			Module.Texture:SetTexture([[Interface\Cooldown\star4]])
-			Module.Texture:SetBlendMode("ADD")
-			Module.Texture:SetAlpha(0.5)
+		Module.Texture = Module.Frame:CreateTexture()
+		Module.Texture:SetTexture([[Interface\Cooldown\star4]]) -- Create texture picker dropdown in future?
+		Module.Texture:SetBlendMode("ADD")
+		Module.Texture:SetAlpha(0.5)
 
-			Module.Frame:SetScript("OnUpdate", OnUpdate)
-
-			Module.Frame = true
-		end
-	elseif Module.Frame then
-		Module.Frame:SetScript("OnUpdate", nil)
-		return
+		Module.Frame:SetScript("OnUpdate", OnUpdate)
 	end
 end

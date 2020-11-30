@@ -56,18 +56,7 @@ table_insert(C.defaultThemes, function()
 			end
 		end
 
-		local slot = SpellBook_GetSpellBookSlot(self)
-		local isPassive = IsPassiveSpell(slot, SpellBookFrame.bookType)
 		local name = self:GetName()
-		local highlightTexture = _G[name.."Highlight"]
-		--highlightTexture:SetPoint("TOPLEFT", 2, -2)
-		--highlightTexture:SetPoint("BOTTOMRIGHT", -2, 2)
-		if isPassive then
-			--highlightTexture:SetColorTexture(1, 1, 1, 0)
-		else
-			--highlightTexture:SetColorTexture(1, 1, 1, .25)
-		end
-
 		local ic = _G[name.."IconTexture"]
 		if ic.bg then
 			ic.bg:SetShown(ic:IsShown())
@@ -85,7 +74,7 @@ table_insert(C.defaultThemes, function()
 		bu.statusBar:CreateBorder()
 		if i > 2 then
 			bu.statusBar:ClearAllPoints()
-			bu.statusBar:SetPoint("BOTTOMLEFT", 16, 4)
+			bu.statusBar:SetPoint("BOTTOMLEFT", 16, 5)
 		end
 	end
 
@@ -128,18 +117,26 @@ table_insert(C.defaultThemes, function()
 		local bu = _G["PrimaryProfession"..i]
 		_G["PrimaryProfession"..i.."IconBorder"]:Hide()
 		bu.professionName:ClearAllPoints()
-		bu.professionName:SetPoint("TOPLEFT", 100, -4)
-		bu.icon:SetAlpha(1)
+		bu.professionName:SetPoint("TOPLEFT", 100, -6)
 		bu.icon:SetDesaturated(false)
-		bu.icon:SetTexCoord(unpack(K.TexCoords))
-	end
+		bu.icon:ClearAllPoints()
+		bu.icon:SetPoint("LEFT", 10, -5)
+		bu.icon:SetAlpha(0.9)
+		bu.icon:SetBlendMode("BLEND")
 
-	hooksecurefunc("FormatProfession", function(frame, index)
-		if index then
-			local _, texture = GetProfessionInfo(index)
-			if frame.icon and texture then
-				frame.icon:SetTexture(texture)
-			end
+		bu.bg1 = CreateFrame("Frame", nil, bu)
+		bu.bg1:SetAllPoints(bu.icon)
+		bu.bg1:SetFrameLevel(bu:GetFrameLevel() + 2)
+
+		bu.bg = bu.bg1:CreateTexture(nil, "OVERLAY")
+		bu.bg:SetPoint("TOPLEFT", bu.icon, "TOPLEFT", -13, 13)
+		bu.bg:SetPoint("BOTTOMRIGHT", bu.icon, "BOTTOMRIGHT", 13, -13)
+		bu.bg:SetTexture("Interface\\AuctionFrame\\AuctionHouse", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+		if C["General"].ColorTextures then
+			bu.bg:SetVertexColor(unpack(C["General"].TexturesColor))
+		else
+			bu.bg:SetVertexColor(0.8, 0.8, 0.8)
 		end
-	end)
+		bu.bg:SetTexCoord(0.555664, 0.688477, 0.689453, 0.955078)
+	end
 end)

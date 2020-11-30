@@ -43,8 +43,8 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 
 	mover.bg = mover:CreateTexture(nil, "BACKGROUND", nil, 0)
 	mover.bg:SetColorTexture(38/255, 125/255, 206/255, 90/255)
-	mover.bg:SetPoint("TOPLEFT", mover, "TOPLEFT", 2, -2)
-	mover.bg:SetPoint("BOTTOMRIGHT", mover, "BOTTOMRIGHT", -2, 2)
+	mover.bg:SetPoint("TOPLEFT", mover, "TOPLEFT", 1, -1)
+	mover.bg:SetPoint("BOTTOMRIGHT", mover, "BOTTOMRIGHT", -1, 1)
 	mover:Hide()
 
 	mover.text = K.CreateFontString(mover, 12, text, "")
