@@ -454,7 +454,7 @@ local function FriendsPanel_Init()
 
 	infoFrame = CreateFrame("Frame", "KKUI_FriendsInfoFrame", Module.FriendsDataTextFrame)
 	infoFrame:SetSize(400, 495)
-	infoFrame:SetPoint(K.GetAnchors(Module.FriendsDataTextFrame.Text))
+	infoFrame:SetPoint(K.GetAnchors(Module.FriendsDataTextFrame))
 	infoFrame:SetClampedToScreen(true)
 	infoFrame:SetFrameStrata("DIALOG")
 	infoFrame:CreateBorder()
@@ -524,7 +524,7 @@ local function FriendsPanel_Refresh()
 end
 
 local function OnEnter(self)
-	UIFrameFadeIn(Module.FriendsDataTextFrame.Text, 0, Module.FriendsDataTextFrame.Text:GetAlpha(), 1)
+	--UIFrameFadeIn(Module.FriendsDataTextFrame.Text, 0, Module.FriendsDataTextFrame.Text:GetAlpha(), 1)
 
 	local thisTime = GetTime()
 	if not prevTime or (thisTime-prevTime > 5) then
@@ -577,7 +577,7 @@ local function OnEvent(_, event, arg1)
 	end
 
 	FriendsPanel_Refresh()
-	Module.FriendsDataTextFrame.Text:SetText(string_format("%s: "..K.MyClassColor.."%d", FRIENDS, Module.totalOnline))
+	Module.FriendsDataTextFrame.Text:SetText(string_format("%d%s", Module.totalOnline, K.MyClassColor.."f"))
 
 	updateRequest = false
 	if infoFrame and infoFrame:IsShown() then
@@ -594,7 +594,7 @@ local function delayLeave()
 end
 
 local function OnLeave()
-	UIFrameFadeOut(Module.FriendsDataTextFrame.Text, 1, Module.FriendsDataTextFrame.Text:GetAlpha(), 0)
+	--UIFrameFadeOut(Module.FriendsDataTextFrame.Text, 1, Module.FriendsDataTextFrame.Text:GetAlpha(), 0)
 	GameTooltip:Hide()
 
 	if not infoFrame then
@@ -628,17 +628,17 @@ function Module:CreateSocialDataText()
 
 	Module.FriendsDataTextFrame = CreateFrame("Button", nil, UIParent)
 	Module.FriendsDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 4, -270)
-	Module.FriendsDataTextFrame:SetSize(28, 28)
+	Module.FriendsDataTextFrame:SetSize(32, 32)
 
 	Module.FriendsDataTextFrame.Texture = Module.FriendsDataTextFrame:CreateTexture(nil, "BACKGROUND")
 	Module.FriendsDataTextFrame.Texture:SetPoint("LEFT", Module.FriendsDataTextFrame, "LEFT", 0, 0)
 	Module.FriendsDataTextFrame.Texture:SetTexture("Interface\\HELPFRAME\\ReportLagIcon-Chat")
-	Module.FriendsDataTextFrame.Texture:SetSize(28, 28)
+	Module.FriendsDataTextFrame.Texture:SetSize(32, 32)
 
 	Module.FriendsDataTextFrame.Text = Module.FriendsDataTextFrame:CreateFontString(nil, "ARTWORK")
 	Module.FriendsDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.FriendsDataTextFrame.Text:SetPoint("LEFT", Module.FriendsDataTextFrame.Texture, "RIGHT", 4, 0)
-	Module.FriendsDataTextFrame.Text:SetAlpha(0)
+	Module.FriendsDataTextFrame.Text:SetPoint("CENTER", Module.FriendsDataTextFrame.Texture, "CENTER", 0, -6)
+	Module.FriendsDataTextFrame.Text:SetAlpha(0.9)
 
 	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE", OnEvent)
 	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE", OnEvent)

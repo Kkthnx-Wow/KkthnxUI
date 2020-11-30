@@ -10,8 +10,9 @@ local hooksecurefunc = _G.hooksecurefunc
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
+local padding = C.ActionBars.padding
+
 function Module:CreateExtrabar()
-	local padding = 10
 	local buttonList = {}
 	local size = FilterConfig.size
 
@@ -25,7 +26,7 @@ function Module:CreateExtrabar()
 	ExtraActionBarFrame:EnableMouse(false)
 	ExtraAbilityContainer:SetParent(frame)
 	ExtraAbilityContainer:ClearAllPoints()
-	ExtraAbilityContainer:SetPoint("CENTER", frame)
+	ExtraAbilityContainer:SetPoint("CENTER", frame, 0, 2 * padding)
 	ExtraAbilityContainer.ignoreFramePositionManager = true
 
 	local button = ExtraActionButton1

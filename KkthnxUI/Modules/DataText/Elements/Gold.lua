@@ -20,7 +20,6 @@ local GetMoney = _G.GetMoney
 local GetNumWatchedTokens = _G.GetNumWatchedTokens
 local InCombatLockdown = _G.InCombatLockdown
 local IsControlKeyDown = _G.IsControlKeyDown
-local IsLoggedIn = _G.IsLoggedIn
 local NO = _G.NO
 local StaticPopupDialogs = _G.StaticPopupDialogs
 local TOTAL = _G.TOTAL
@@ -59,10 +58,6 @@ local function getClassIcon(class)
 end
 
 local function OnEvent(_, event)
-	if not IsLoggedIn() then
-		return
-	end
-
 	if event == "PLAYER_ENTERING_WORLD" then
 		oldMoney = GetMoney()
 		Module.GoldDataTextFrame:UnregisterEvent(event)
@@ -80,7 +75,11 @@ local function OnEvent(_, event)
 	else -- Gained Moeny
 		profit = profit + change
 	end
-	Module.GoldDataTextFrame.Text:SetText(K.FormatMoney(newMoney))
+
+	local coppername = "|cffeda55fc|r"
+	local silvername = "|cffc7c7cfs|r"
+	local goldname = "|cffffd700g|r"
+	Module.GoldDataTextFrame.Text:SetText(goldname..silvername..coppername)
 
 	KkthnxUIGold = KkthnxUIGold or {}
 	KkthnxUIGold.totalGold = KkthnxUIGold.totalGold or {}
@@ -100,10 +99,10 @@ local function OnEvent(_, event)
 end
 
 local function OnEnter()
-	UIFrameFadeIn(Module.GoldDataTextFrame.Text, 0, Module.GoldDataTextFrame.Text:GetAlpha(), 1)
+	--UIFrameFadeIn(Module.GoldDataTextFrame.Text, 0, Module.GoldDataTextFrame.Text:GetAlpha(), 1)
 
 	GameTooltip:SetOwner(Module.GoldDataTextFrame, "ANCHOR_NONE")
-	GameTooltip:SetPoint(K.GetAnchors(Module.GoldDataTextFrame.Text))
+	GameTooltip:SetPoint(K.GetAnchors(Module.GoldDataTextFrame))
 	GameTooltip:ClearLines()
 
 	GameTooltip:AddLine(K.InfoColor..CURRENCY)
@@ -182,7 +181,7 @@ local function OnMouseUp(_, btn)
 end
 
 local function OnLeave()
-	UIFrameFadeOut(Module.GoldDataTextFrame.Text, 1, Module.GoldDataTextFrame.Text:GetAlpha(), 0)
+	--UIFrameFadeOut(Module.GoldDataTextFrame.Text, 1, Module.GoldDataTextFrame.Text:GetAlpha(), 0)
 	K.HideTooltip()
 end
 
@@ -193,17 +192,17 @@ function Module:CreateGoldDataText()
 
 	Module.GoldDataTextFrame = CreateFrame("Button", nil, UIParent)
 	Module.GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 4, -302)
-	Module.GoldDataTextFrame:SetSize(28, 28)
+	Module.GoldDataTextFrame:SetSize(32, 32)
 
 	Module.GoldDataTextFrame.Texture = Module.GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
 	Module.GoldDataTextFrame.Texture:SetPoint("LEFT", Module.GoldDataTextFrame, "LEFT", 0, 0)
-	Module.GoldDataTextFrame.Texture:SetTexture([[Interface\HELPFRAME\ReportLagIcon-AuctionHouse]])
-	Module.GoldDataTextFrame.Texture:SetSize(28, 28)
+	Module.GoldDataTextFrame.Texture:SetTexture([[Interface\HELPFRAME\ReportLagIcon-Loot]])
+	Module.GoldDataTextFrame.Texture:SetSize(32, 32)
 
 	Module.GoldDataTextFrame.Text = Module.GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
 	Module.GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.GoldDataTextFrame.Text:SetPoint("LEFT", Module.GoldDataTextFrame.Texture, "RIGHT", 4, 0)
-	Module.GoldDataTextFrame.Text:SetAlpha(0)
+	Module.GoldDataTextFrame.Text:SetPoint("CENTER", Module.GoldDataTextFrame.Texture, "CENTER", 0, -6)
+	Module.GoldDataTextFrame.Text:SetAlpha(0.9)
 
 	Module.GoldDataTextFrame:RegisterEvent("PLAYER_MONEY", OnEvent)
 	Module.GoldDataTextFrame:RegisterEvent("SEND_MAIL_MONEY_CHANGED", OnEvent)

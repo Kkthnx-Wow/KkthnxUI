@@ -113,18 +113,14 @@ local function UpdateCPU()
 end
 
 local function colorFPS(fps)
-	if fps < 15 then
-		return "|cffD80909"..fps
-	elseif fps < 30 then
-		return "|cffE8DA0F"..fps
-	else
-		return "|cff0CD809"..fps
+	if fps then
+		return K.MyClassColor..fps
 	end
 end
 
 local function setFrameRate()
 	local fps = math_floor(GetFramerate())
-	Module.SystemFrame.Text:SetText(L["FPS"]..": "..colorFPS(fps))
+	Module.SystemDataTextFrame.Text:SetText(fps..colorFPS("fps"))
 end
 
 local function OnEnter()
@@ -136,8 +132,8 @@ local function OnEnter()
 	local isShiftKeyDown = IsShiftKeyDown()
 	local maxShown = isShiftKeyDown and #infoTable or math_min(maxAddOns, #infoTable)
 
-	GameTooltip:SetOwner(Module.SystemFrame, "ANCHOR_NONE")
-	GameTooltip:SetPoint(K.GetAnchors(Module.SystemFrame))
+	GameTooltip:SetOwner(Module.SystemDataTextFrame, "ANCHOR_NONE")
+	GameTooltip:SetPoint(K.GetAnchors(Module.SystemDataTextFrame))
 	GameTooltip:ClearLines()
 
 	if Module.ShowMemory or not scriptProfileStatus then
@@ -225,7 +221,7 @@ StaticPopupDialogs["CPUUSAGE"] = {
 	whileDead = 1,
 }
 
-local function OnMouseUp(self, btn)
+local function OnMouseUp(_, btn)
 	if btn == "LeftButton" then
 		if scriptProfileStatus then
 			ResetCPUUsage()
@@ -262,16 +258,17 @@ function Module:CreateSystemDataText()
 
 	Module.CheckLoginTime = GetTime()
 
-	Module.SystemFrame = CreateFrame("Frame", "KKUI_SystemDataText", UIParent)
+	Module.SystemDataTextFrame = CreateFrame("Frame", "KKUI_SystemDataText", UIParent)
 
-	Module.SystemFrame.Text = Module.SystemFrame:CreateFontString("OVERLAY")
-	Module.SystemFrame.Text:FontTemplate(nil, 12)
-	Module.SystemFrame.Text:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -4)
+	Module.SystemDataTextFrame.Text = Module.SystemDataTextFrame:CreateFontString("OVERLAY")
+	Module.SystemDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	Module.SystemDataTextFrame.Text:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -4)
+	Module.SystemDataTextFrame.Text:SetAlpha(0.9)
 
-	Module.SystemFrame:SetAllPoints(Module.SystemFrame.Text)
+	Module.SystemDataTextFrame:SetAllPoints(Module.SystemDataTextFrame.Text)
 
-	Module.SystemFrame:SetScript("OnUpdate", OnUpdate)
-	Module.SystemFrame:SetScript("OnEnter", OnEnter)
-	Module.SystemFrame:SetScript("OnLeave", OnLeave)
-	Module.SystemFrame:SetScript("OnMouseUp", OnMouseUp)
+	Module.SystemDataTextFrame:SetScript("OnUpdate", OnUpdate)
+	Module.SystemDataTextFrame:SetScript("OnEnter", OnEnter)
+	Module.SystemDataTextFrame:SetScript("OnLeave", OnLeave)
+	Module.SystemDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
 end

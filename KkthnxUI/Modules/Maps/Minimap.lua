@@ -405,6 +405,7 @@ function Module:ShowCalendar()
 			fs:ClearAllPoints()
 			fs:SetPoint("CENTER", 0, -5)
 			fs:FontTemplate(nil, 20)
+			fs:SetAlpha(0.9)
 			fs:SetShadowOffset(0, 0)
 
 			GameTimeFrame.styled = true

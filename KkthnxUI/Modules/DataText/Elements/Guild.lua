@@ -205,7 +205,7 @@ local function GuildPanel_Init()
 
 	infoFrame = CreateFrame("Frame", "KKUI_GuildInfoFrame", Module.GuildDataTextFrame)
 	infoFrame:SetSize(335, 495)
-	infoFrame:SetPoint(K.GetAnchors(Module.GuildDataTextFrame.Text))
+	infoFrame:SetPoint(K.GetAnchors(Module.GuildDataTextFrame))
 	infoFrame:SetClampedToScreen(true)
 	infoFrame:SetFrameStrata("TOOLTIP")
 	infoFrame:CreateBorder()
@@ -344,7 +344,7 @@ end
 
 local function OnEvent(_, event, arg1)
 	if not IsInGuild() then
-		Module.GuildDataTextFrame.Text:SetText(GUILD..": "..K.MyClassColor..NONE)
+		Module.GuildDataTextFrame.Text:SetText("0")
 		return
 	end
 
@@ -355,7 +355,7 @@ local function OnEvent(_, event, arg1)
 	end
 
 	local online = select(3, GetNumGuildMembers())
-	Module.GuildDataTextFrame.Text:SetText(GUILD..": "..K.MyClassColor..online)
+	Module.GuildDataTextFrame.Text:SetText(online..K.MyClassColor.."g")
 
 	if infoFrame and infoFrame:IsShown() then
 		GuildPanel_Refresh()
@@ -364,8 +364,6 @@ local function OnEvent(_, event, arg1)
 end
 
 local function OnEnter()
-	UIFrameFadeIn(Module.GuildDataTextFrame.Text, 0, Module.GuildDataTextFrame.Text:GetAlpha(), 1)
-
 	if not IsInGuild() then
 		return
 	end
@@ -387,14 +385,13 @@ local function delayLeave()
 end
 
 local function OnLeave()
-	UIFrameFadeOut(Module.GuildDataTextFrame.Text, 1, Module.GuildDataTextFrame.Text:GetAlpha(), 0)
 	if not infoFrame then
 		return
 	end
 	C_Timer_After(0.1, delayLeave)
 end
 
-local function OnMouseUp()
+local function OnMouseUp(_, btn)
 	if InCombatLockdown() then
 		UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
 		return
@@ -409,27 +406,32 @@ local function OnMouseUp()
 	if not GuildFrame then
 		LoadAddOn("Blizzard_GuildUI")
 	end
-	ToggleFrame(GuildFrame)
+
+	if btn == "LeftButton" then
+		ToggleFrame(GuildFrame)
+	elseif btn == "RightButton" then
+		ToggleGuildFrame()
+	end
 end
 
 function Module:CreateGuildDataText()
-	if not C["DataText"].Friends then
+	if not C["DataText"].Guild then
 		return
 	end
 
 	Module.GuildDataTextFrame = CreateFrame("Button", nil, UIParent)
 	Module.GuildDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 4, -240)
-	Module.GuildDataTextFrame:SetSize(28, 28)
+	Module.GuildDataTextFrame:SetSize(32, 32)
 
 	Module.GuildDataTextFrame.Texture = Module.GuildDataTextFrame:CreateTexture(nil, "BACKGROUND")
 	Module.GuildDataTextFrame.Texture:SetPoint("LEFT", Module.GuildDataTextFrame, "LEFT", 0, 0)
 	Module.GuildDataTextFrame.Texture:SetTexture("Interface\\HELPFRAME\\HelpIcon-AccountSecurity")
-	Module.GuildDataTextFrame.Texture:SetSize(28, 28)
+	Module.GuildDataTextFrame.Texture:SetSize(32, 32)
 
 	Module.GuildDataTextFrame.Text = Module.GuildDataTextFrame:CreateFontString(nil, "ARTWORK")
 	Module.GuildDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.GuildDataTextFrame.Text:SetPoint("LEFT", Module.GuildDataTextFrame.Texture, "RIGHT", 4, 0)
-	Module.GuildDataTextFrame.Text:SetAlpha(0)
+	Module.GuildDataTextFrame.Text:SetPoint("CENTER", Module.GuildDataTextFrame.Texture, "CENTER", 0, -6)
+	Module.GuildDataTextFrame.Text:SetAlpha(0.9)
 
 	Module.GuildDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
 	Module.GuildDataTextFrame:RegisterEvent("GUILD_ROSTER_UPDATE", OnEvent)
