@@ -21,10 +21,7 @@ Donations are welcome, but not required to use the UI at all. Donations help me 
 Regards
 Josh *"Kkthnx"* Russell
 
-![image](https://user-images.githubusercontent.com/40672673/99481891-17862f80-2929-11eb-810a-77b1aa89c83c.png)  
-**Config**   
-![image](https://user-images.githubusercontent.com/40672673/99482230-6764f680-2929-11eb-8eea-7af55a2318fe.png)    
-**Bags**   
-![image](https://user-images.githubusercontent.com/40672673/99481826-f291bc80-2928-11eb-9be7-8c5518e22781.png)   
-**Char/Inspect**   
-![image](https://user-images.githubusercontent.com/40672673/99481943-3e446600-2929-11eb-8512-dbe5b51ece4b.png)
+![image](https://user-images.githubusercontent.com/40672673/100713305-1a9a0a80-3382-11eb-852e-4ed3889a6136.png)   
+![image](https://user-images.githubusercontent.com/40672673/100713358-31d8f800-3382-11eb-9ffa-ab298f6451d5.png)   
+![image](https://user-images.githubusercontent.com/40672673/100713411-43ba9b00-3382-11eb-8173-10178bca2bd4.png)   
+![image](https://user-images.githubusercontent.com/40672673/100713478-592fc500-3382-11eb-9cdb-713a9cdaa5a0.png)
