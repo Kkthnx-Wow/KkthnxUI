@@ -58,6 +58,10 @@ local function getClassIcon(class)
 end
 
 local function OnEvent(_, event)
+	if not IsLoggedIn() then
+		return
+	end
+
 	if event == "PLAYER_ENTERING_WORLD" then
 		oldMoney = GetMoney()
 		Module.GoldDataTextFrame:UnregisterEvent(event)
@@ -92,6 +96,10 @@ local function OnEvent(_, event)
 		KkthnxUIGold.totalGold[K.Realm][K.Name] = {}
 	end
 
+	KkthnxUIGold.ServerID = KkthnxUIGold.ServerID or {}
+	KkthnxUIGold.ServerID[K.ServerID] = KkthnxUIGold.ServerID[K.ServerID] or {}
+	KkthnxUIGold.ServerID[K.ServerID][K.Realm] = true
+
 	KkthnxUIGold.totalGold[K.Realm][K.Name][1] = GetMoney()
 	KkthnxUIGold.totalGold[K.Realm][K.Name][2] = K.Class
 
@@ -99,8 +107,6 @@ local function OnEvent(_, event)
 end
 
 local function OnEnter()
-	--UIFrameFadeIn(Module.GoldDataTextFrame.Text, 0, Module.GoldDataTextFrame.Text:GetAlpha(), 1)
-
 	GameTooltip:SetOwner(Module.GoldDataTextFrame, "ANCHOR_NONE")
 	GameTooltip:SetPoint(K.GetAnchors(Module.GoldDataTextFrame))
 	GameTooltip:ClearLines()
@@ -120,7 +126,7 @@ local function OnEnter()
 
 	local totalGold = 0
 	GameTooltip:AddLine(L["RealmCharacter"], 0.6, 0.8, 1)
-	for _, realm in pairs(crossRealms) do
+	for realm in pairs(KkthnxUIGold.ServerID[K.ServerID]) do
 		local thisRealmList = KkthnxUIGold.totalGold[realm]
 		if thisRealmList then
 			for k, v in pairs(thisRealmList) do
@@ -181,7 +187,6 @@ local function OnMouseUp(_, btn)
 end
 
 local function OnLeave()
-	--UIFrameFadeOut(Module.GoldDataTextFrame.Text, 1, Module.GoldDataTextFrame.Text:GetAlpha(), 0)
 	K.HideTooltip()
 end
 
