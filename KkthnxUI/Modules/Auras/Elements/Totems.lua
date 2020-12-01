@@ -39,7 +39,7 @@ function Module:TotemBar_Init()
 			totem.Icon:SetAllPoints()
 			totem.Icon:SetTexCoord(unpack(K.TexCoords))
 
-			totem:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			totem:CreateBorder()
 			totem:SetAlpha(0)
 			totems[i] = totem
 

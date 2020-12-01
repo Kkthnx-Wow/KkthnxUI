@@ -217,6 +217,8 @@ function Module:ChatCopy_CreateMenu()
 	menu:SetPoint("TOPRIGHT", _G.ChatFrame1, 20, -2)
 	menu:SetShown(C["Chat"].ChatMenu)
 
+	-- local infoBar = K:GetModule("Infobar")
+
 	_G.ChatFrameMenuButton:ClearAllPoints()
 	_G.ChatFrameMenuButton:SetPoint("TOP", menu)
 	_G.ChatFrameMenuButton:SetParent(menu)
@@ -234,6 +236,18 @@ function Module:ChatCopy_CreateMenu()
 	_G.ChatFrameToggleVoiceMuteButton:SetParent(menu)
 
 	_G.QuickJoinToastButton:SetParent(menu)
+
+	-- if infoBar.GoldDataTextFrame then
+	-- 	infoBar.GoldDataTextFrame:SetParent(menu)
+	-- end
+
+	-- if infoBar.FriendsDataTextFrame then
+	-- 	infoBar.FriendsDataTextFrame:SetParent(menu)
+	-- end
+
+	-- if infoBar.GuildDataTextFrame then
+	-- 	infoBar.GuildDataTextFrame:SetParent(menu)
+	-- end
 
 	_G.ChatAlertFrame:ClearAllPoints()
 	_G.ChatAlertFrame:SetPoint("BOTTOMLEFT", _G.ChatFrame1Tab, "TOPLEFT", 5, 25)

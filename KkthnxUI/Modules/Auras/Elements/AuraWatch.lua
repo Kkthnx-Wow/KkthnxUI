@@ -68,7 +68,7 @@ local function ConvertTable()
 		end
 	end
 
-	for _, v in pairs(K.AuraWatchList[K.Class]) do
+	for _, v in pairs(C.AuraWatchList[K.Class]) do
 		if v.Name == "Player Aura" then
 			InsertData(1, v.List)
 		elseif v.Name == "Target Aura" then
@@ -82,7 +82,7 @@ local function ConvertTable()
 		end
 	end
 
-	for i, v in pairs(K.AuraWatchList["ALL"]) do
+	for i, v in pairs(C.AuraWatchList["ALL"]) do
 		if v.Name == "Enchant Aura" then
 			InsertData(7, v.List)
 		elseif v.Name == "Raid Buff" then
@@ -94,21 +94,21 @@ local function ConvertTable()
 		elseif v.Name == "InternalCD" then
 			InsertData(10, v.List)
 			IntCD = v
-			tremove(K.AuraWatchList["ALL"], i)
+			tremove(C.AuraWatchList["ALL"], i)
 		end
 	end
 end
 
 local function BuildAuraList()
-	AuraList = K.AuraWatchList["ALL"] or {}
-	for class in pairs(K.AuraWatchList) do
+	AuraList = C.AuraWatchList["ALL"] or {}
+	for class in pairs(C.AuraWatchList) do
 		if class == K.Class then
-			for _, value in pairs(K.AuraWatchList[class]) do
+			for _, value in pairs(C.AuraWatchList[class]) do
 				tinsert(AuraList, value)
 			end
 		end
 	end
-	wipe(K.AuraWatchList)
+	wipe(C.AuraWatchList)
 end
 
 local function BuildUnitIDTable()
@@ -197,7 +197,7 @@ local function BuildICON(iconSize)
 	frame.bg = CreateFrame("Frame", nil, frame)
 	frame.bg:SetAllPoints(frame)
 	frame.bg:SetFrameLevel(frame:GetFrameLevel())
-	frame.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	frame.bg:CreateBorder()
 
 	frame.Icon = frame:CreateTexture(nil, "ARTWORK")
 	frame.Icon:SetAllPoints(frame.bg)
@@ -232,7 +232,7 @@ end
 local function BuildBAR(barWidth, iconSize)
 	local frame = CreateFrame("Frame", nil, K.PetBattleHider)
 	frame:SetSize(iconSize, iconSize)
-	frame:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	frame:CreateBorder()
 
 	frame.Icon = frame:CreateTexture(nil, "ARTWORK")
 	frame.Icon:SetAllPoints()

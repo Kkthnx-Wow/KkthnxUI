@@ -228,7 +228,7 @@ function Module:CreateRaid()
 		self.RaidDebuffs:SetFrameLevel(self:GetFrameLevel() + 20)
 		self.RaidDebuffs:SetSize(C["Raid"].AuraDebuffIconSize, C["Raid"].AuraDebuffIconSize)
 		self.RaidDebuffs:SetPoint("CENTER", self, 0, 0)
-		self.RaidDebuffs:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		self.RaidDebuffs:CreateBorder()
 
 		self.RaidDebuffs.showDispellableDebuff = true
 		self.RaidDebuffs.onlyMatchSpellID = true
@@ -259,9 +259,9 @@ function Module:CreateRaid()
 
 	if (C["Raid"].TargetHighlight) then
         self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
-        self.TargetHighlight:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
-        self.TargetHighlight:SetPoint("TOPLEFT", self, -6, 6)
-        self.TargetHighlight:SetPoint("BOTTOMRIGHT", self, 6, -6)
+        self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].BorderGlow, edgeSize = 12})
+        self.TargetHighlight:SetPoint("TOPLEFT", self, -5, 5)
+        self.TargetHighlight:SetPoint("BOTTOMRIGHT", self, 5, -5)
         self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
         self.TargetHighlight:Hide()
 

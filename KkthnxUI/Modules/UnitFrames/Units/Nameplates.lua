@@ -1,8 +1,6 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
 
-local oUF = oUF or K.oUF
-
 local _G = _G
 local math_floor = _G.math.floor
 local math_rad = _G.math.rad
@@ -84,10 +82,6 @@ function Module:UpdatePlateAlpha()
 	SetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
 end
 
-function Module:UpdatePlateRange()
-	SetCVar("nameplateMaxDistance", C["Nameplate"].Distance)
-end
-
 function Module:UpdatePlateSpacing()
 	SetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
 end
@@ -105,15 +99,14 @@ function Module:SetupCVars()
 	Module:PlateInsideView()
 	SetCVar("nameplateOverlapH", 0.8)
 	Module:UpdatePlateSpacing()
-	Module:UpdatePlateRange()
 	Module:UpdatePlateAlpha()
 	SetCVar("nameplateSelectedAlpha", 1)
 	SetCVar("showQuestTrackingTooltips", 1)
-	SetCVar("nameplateGlobalScale", 1)
 
 	Module:UpdatePlateScale()
 	SetCVar("nameplateSelectedScale", 1)
 	SetCVar("nameplateLargerScale", 1)
+	SetCVar("nameplateGlobalScale", 1)
 
 	SetCVar("nameplateShowSelf", 0)
 	SetCVar("nameplateResourceOnTarget", 0)
@@ -458,7 +451,7 @@ function Module:UpdateQuestUnit(_, unit)
 				if isInGroup and text == K.Name or not isInGroup then
 					isLootQuest = true
 
-					local questLine = _G[K.ScanTooltip:GetName().."TextLeft"..(i + 1)]
+					local questLine = _G["KKUI_ScanTooltipTextLeft"..(i+1)]
 					local questText = questLine:GetText()
 					if questLine and questText then
 						local current, goal = string_match(questText, "(%d+)/(%d+)")
@@ -734,9 +727,9 @@ end
 
 -- WidgetContainer
 function Module:AddWidgetContainer(self)
-	self.WidgetContainer = CreateFrame("Frame", nil, self, "UIWidgetContainerTemplate")
-	self.WidgetContainer:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -5)
-	self.WidgetContainer:SetScale(K.Round(1 / C["General"].UIScale, 2)) -- need reviewed
+	self.WidgetContainer = CreateFrame("Frame", nil, self, "UIWidgetContainerNoResizeTemplate")
+	self.WidgetContainer:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -10)
+	self.WidgetContainer:SetScale(K.Round(1 / C["General"].UIScale, 2))
 	self.WidgetContainer:Hide()
 end
 
@@ -761,6 +754,7 @@ function Module:AddInterruptInfo()
 end
 
 -- Create Nameplates
+local platesList = {}
 function Module:CreatePlates()
 	self.mystyle = "nameplate"
 
@@ -970,6 +964,8 @@ function Module:CreatePlates()
 	Module:AddQuestIcon(self)
 	Module:AddDungeonProgress(self)
 	Module:AddClassIcon(self)
+
+	platesList[self] = self:GetName()
 end
 
 -- Classpower on target nameplate
@@ -1038,9 +1034,7 @@ function Module:UpdatePlateByType()
 		name:UpdateTag()
 		name:SetPoint("CENTER", self, "BOTTOM")
 
-		self:Tag(level, "")
-		level:UpdateTag()
-
+		level:Hide()
 		hpval:Hide()
 		title:Show()
 
@@ -1063,11 +1057,7 @@ function Module:UpdatePlateByType()
 		name:SetWidth(self:GetWidth() * 0.85)
 		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 3)
 
-		level:SetJustifyH("RIGHT")
-		self:Tag(self.levelText, "[nplevel]")
-		level:UpdateTag()
-		level:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 3)
-
+		level:Show()
 		hpval:Show()
 		title:Hide()
 
@@ -1117,8 +1107,8 @@ function Module:PostUpdatePlates(event, unit)
 			guidToPlate[self.unitGUID] = self
 		end
 
-		self.npcID = K.GetNPCID(self.unitGUID)
 		self.isPlayer = UnitIsPlayer(unit)
+		self.npcID = K.GetNPCID(self.unitGUID)
 		self.widgetsOnly = UnitNameplateShowsWidgetsOnly(unit)
 		self.WidgetContainer:RegisterForWidgetSet(UnitWidgetSet(unit), K.Widget_DefaultLayout, nil, unit)
 
@@ -1274,7 +1264,7 @@ function Module:TogglePlateVisibility()
 	end
 end
 
-function Module:UpdateGCDTicker(elapsed)
+function Module:UpdateGCDTicker()
 	local start, duration = GetSpellCooldown(61304)
 	if start > 0 and duration > 0 then
 		if self.duration ~= duration then

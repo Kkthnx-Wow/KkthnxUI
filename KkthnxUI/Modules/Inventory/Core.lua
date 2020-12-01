@@ -80,35 +80,6 @@ local function highlightFunction(button, match)
 	button:SetAlpha(match and 1 or 0.25)
 end
 
-local profit, spent, oldMoney, ticker = 0, 0, 0
-local crossRealms = GetAutoCompleteRealms()
-
-if not crossRealms or #crossRealms == 0 then
-	crossRealms = {[1] = K.Realm}
-end
-
-StaticPopupDialogs["RESETGOLD"] = {
-	text = "Are you sure to reset the gold count?",
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function()
-		for _, realm in pairs(crossRealms) do
-			if KkthnxUIGold.totalGold[realm] then
-				table_wipe(KkthnxUIGold.totalGold[realm])
-			end
-		end
-		KkthnxUIGold.totalGold[K.Realm][K.Name] = {GetMoney(), K.Class}
-	end,
-	whileDead = 1,
-}
-
-local function getClassIcon(class)
-	local c1, c2, c3, c4 = unpack(CLASS_ICON_TCOORDS[class])
-	c1, c2, c3, c4 = (c1 + 0.03) * 50, (c2 - 0.03) * 50, (c3 + 0.03) * 50, (c4 - 0.03) * 50
-	local classStr = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:12:12:0:0:50:50:"..c1..":"..c2..":"..c3..":"..c4.."|t "
-	return classStr or ""
-end
-
 function Module:CreateInfoFrame()
 	local infoFrame = CreateFrame("Button", nil, self)
 	infoFrame:SetPoint("TOPLEFT", 10, 0)
@@ -133,136 +104,10 @@ function Module:CreateInfoFrame()
 	search.Backdrop:SetPoint("TOPLEFT", -5, -7)
 	search.Backdrop:SetPoint("BOTTOMRIGHT", 5, 7)
 
-	local moneyFrame = CreateFrame('Button', nil, infoFrame)
-	moneyFrame:SetPoint("LEFT", icon, "RIGHT", 6, 0)
-	moneyFrame:SetSize(140, 16)
-
-	moneyFrame:RegisterEvent("PLAYER_MONEY")
-	moneyFrame:RegisterEvent("SEND_MAIL_MONEY_CHANGED")
-	moneyFrame:RegisterEvent("SEND_MAIL_COD_CHANGED")
-	moneyFrame:RegisterEvent("PLAYER_TRADE_MONEY")
-	moneyFrame:RegisterEvent("TRADE_MONEY_CHANGED")
-	moneyFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-	moneyFrame:SetScript('OnEvent', function(self, event)
-		if not IsLoggedIn() then
-			return
-		end
-
-		if event == "PLAYER_ENTERING_WORLD" then
-			oldMoney = GetMoney()
-			self:UnregisterEvent(event)
-		end
-
-		if not ticker then
-			C_WowTokenPublic.UpdateMarketPrice()
-			ticker = C_Timer.NewTicker(60, C_WowTokenPublic.UpdateMarketPrice)
-		end
-
-		local newMoney = GetMoney()
-		local change = newMoney - oldMoney -- Positive if we gain money
-		if oldMoney > newMoney then -- Lost Money
-			spent = spent - change
-		else -- Gained Moeny
-			profit = profit + change
-		end
-
-		KkthnxUIGold = KkthnxUIGold or {}
-		KkthnxUIGold.totalGold = KkthnxUIGold.totalGold or {}
-
-		if not KkthnxUIGold.totalGold[K.Realm] then
-			KkthnxUIGold.totalGold[K.Realm] = {}
-		end
-
-		if not KkthnxUIGold.totalGold[K.Realm][K.Name] then
-			KkthnxUIGold.totalGold[K.Realm][K.Name] = {}
-		end
-
-		KkthnxUIGold.totalGold[K.Realm][K.Name][1] = GetMoney()
-		KkthnxUIGold.totalGold[K.Realm][K.Name][2] = K.Class
-
-		oldMoney = newMoney
-	end)
-
-	moneyFrame:SetScript("OnEnter", function(self)
-		GameTooltip:SetOwner(self, "ANCHOR_NONE")
-		GameTooltip:SetPoint(K.GetAnchors(self))
-		GameTooltip:ClearLines()
-
-		GameTooltip:AddLine(K.InfoColor..CURRENCY)
-		GameTooltip:AddLine(" ")
-
-		GameTooltip:AddLine(L["Session"], 0.6, 0.8, 1)
-		GameTooltip:AddDoubleLine(L["Earned"], K.FormatMoney(profit), 1, 1, 1, 1, 1, 1)
-		GameTooltip:AddDoubleLine(L["Spent"], K.FormatMoney(spent), 1, 1, 1, 1, 1, 1)
-		if profit < spent then
-			GameTooltip:AddDoubleLine(L["Deficit"], K.FormatMoney(spent-profit), 1, 0, 0, 1, 1, 1)
-		elseif profit > spent then
-			GameTooltip:AddDoubleLine(L["Profit"], K.FormatMoney(profit-spent), 0, 1, 0, 1, 1, 1)
-		end
-		GameTooltip:AddLine(" ")
-
-		local totalGold = 0
-		GameTooltip:AddLine(L["RealmCharacter"], 0.6, 0.8, 1)
-		for _, realm in pairs(crossRealms) do
-			local thisRealmList = KkthnxUIGold.totalGold[realm]
-			if thisRealmList then
-				for k, v in pairs(thisRealmList) do
-					local name = Ambiguate(k.."-"..realm, "none")
-					local gold, class = unpack(v)
-					local r, g, b = K.ColorClass(class)
-					GameTooltip:AddDoubleLine(getClassIcon(class)..name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
-					totalGold = totalGold + gold
-				end
-			end
-		end
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(TOTAL..":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t ".."Token:", K.FormatMoney(C_WowTokenPublic.GetCurrentMarketPrice() or 0), .6,.8,1, 1, 1, 1)
-
-		for i = 1, GetNumWatchedTokens() do
-			local currencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo(i)
-			local name, count, icon, currencyID = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID, currencyInfo.currencyTypesID
-			if name and i == 1 then
-				GameTooltip:AddLine(" ")
-				GameTooltip:AddLine(CURRENCY..":", 0.6, 0.8, 1)
-			end
-
-			if name and count then
-				local total = C_CurrencyInfo.GetCurrencyInfo(currencyID).maxQuantity
-				local iconTexture = " |T"..icon..":12:12:0:0:50:50:4:46:4:46|t"
-				if total > 0 then
-					GameTooltip:AddDoubleLine(name, count.."/"..total..iconTexture, 1, 1, 1, 1, 1, 1)
-				else
-					GameTooltip:AddDoubleLine(name, count..iconTexture, 1, 1, 1, 1, 1, 1)
-				end
-			end
-		end
-
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.6, 0.8, 1)
-		GameTooltip:Show()
-	end)
-
-	moneyFrame:HookScript("OnLeave", function()
-		K.HideTooltip()
-	end)
-
-	moneyFrame:HookScript("OnMouseUp", function(_, button)
-		if IsControlKeyDown() and button == "RightButton" then
-			StaticPopup_Show("RESETGOLD")
-		else
-			if InCombatLockdown() then
-				UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
-				return
-			end
-		end
-	end)
-
 	local moneyTag = self:SpawnPlugin("TagDisplay", "[money]", infoFrame)
 	moneyTag:SetFontObject(bagsFont)
 	moneyTag:SetFont(select(1, moneyTag:GetFont()), 13, select(3, moneyTag:GetFont()))
-	moneyTag:SetPoint("LEFT", moneyFrame, "LEFT", 1, 1)
+	moneyTag:SetPoint("LEFT", icon, "RIGHT", 5, 0)
 
 	local currencyTag = self:SpawnPlugin("TagDisplay", "[currencies]", infoFrame)
 	currencyTag:SetFontObject(bagsFont)
@@ -286,7 +131,7 @@ end
 function Module:CreateCloseButton()
 	local closeButton = CreateFrame("Button", nil, self)
 	closeButton:SetSize(18, 18)
-	closeButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	closeButton:CreateBorder()
 	closeButton:StyleButton()
 
 	closeButton.Icon = closeButton:CreateTexture(nil, "ARTWORK")
@@ -304,7 +149,7 @@ end
 function Module:CreateRestoreButton(f)
 	local restoreButton = CreateFrame("Button", nil, self)
 	restoreButton:SetSize(18, 18)
-	restoreButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	restoreButton:CreateBorder()
 	restoreButton:StyleButton()
 
 	restoreButton.Icon = restoreButton:CreateTexture(nil, "ARTWORK")
@@ -333,7 +178,7 @@ end
 function Module:CreateReagentButton(f)
 	local reagentButton = CreateFrame("Button", nil, self)
 	reagentButton:SetSize(18, 18)
-	reagentButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	reagentButton:CreateBorder()
 	reagentButton:StyleButton()
 
 	reagentButton.Icon = reagentButton:CreateTexture(nil, "ARTWORK")
@@ -366,7 +211,7 @@ end
 function Module:CreateBankButton(f)
 	local BankButton = CreateFrame("Button", nil, self)
 	BankButton:SetSize(18, 18)
-	BankButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	BankButton:CreateBorder()
 	BankButton:StyleButton()
 
 	BankButton.Icon = BankButton:CreateTexture(nil, "ARTWORK")
@@ -405,7 +250,7 @@ end
 function Module:CreateDepositButton()
 	local DepositButton = CreateFrame("Button", nil, self)
 	DepositButton:SetSize(18, 18)
-	DepositButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	DepositButton:CreateBorder()
 	DepositButton:StyleButton()
 
 	DepositButton.Icon = DepositButton:CreateTexture(nil, "ARTWORK")
@@ -431,7 +276,7 @@ end
 function Module:CreateBagToggle()
 	local bagToggleButton = CreateFrame("Button", nil, self)
 	bagToggleButton:SetSize(18, 18)
-	bagToggleButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	bagToggleButton:CreateBorder()
 	bagToggleButton:StyleButton()
 
 	bagToggleButton.Icon = bagToggleButton:CreateTexture(nil, "ARTWORK")
@@ -461,7 +306,7 @@ end
 function Module:CreateSortButton(name)
 	local sortButton = CreateFrame("Button", nil, self)
 	sortButton:SetSize(18, 18)
-	sortButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	sortButton:CreateBorder()
 	sortButton:StyleButton()
 
 	sortButton.Icon = sortButton:CreateTexture(nil, "ARTWORK")
@@ -552,7 +397,7 @@ function Module:CreateFreeSlots()
 
 	local slot = CreateFrame("Button", name.."FreeSlot", self)
 	slot:SetSize(self.iconSize, self.iconSize)
-	slot:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	slot:CreateBorder()
 	slot:StyleButton()
 	slot:SetScript("OnMouseUp", Module.FreeSlotOnDrop)
 	slot:SetScript("OnReceiveDrag", Module.FreeSlotOnDrop)
@@ -609,7 +454,7 @@ function Module:CreateSplitButton()
 
 	local splitButton = CreateFrame("Button", nil, self)
 	splitButton:SetSize(18, 18)
-	splitButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	splitButton:CreateBorder()
 	splitButton:StyleButton()
 
 	splitButton.Icon = splitButton:CreateTexture(nil, "ARTWORK")
@@ -676,7 +521,7 @@ function Module:CreateFavouriteButton()
 
 	local favouriteButton = CreateFrame("Button", nil, self)
 	favouriteButton:SetSize(18, 18)
-	favouriteButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	favouriteButton:CreateBorder()
 	favouriteButton:StyleButton()
 
 	favouriteButton.Icon = favouriteButton:CreateTexture(nil, "ARTWORK")
@@ -939,8 +784,8 @@ function Module:OnEnable()
 		f.bagFavourite = MyContainer:New("BagFavourite", {Columns = bagsWidth, Parent = f.main})
 		f.bagFavourite:SetFilter(filters.bagFavourite, true)
 
-		f.azeriteItem = MyContainer:New("AzeriteItem", {Columns = bagsWidth, Parent = f.main})
-		f.azeriteItem:SetFilter(filters.bagAzeriteItem, true)
+		f.animaItem = MyContainer:New("AnimaItem", {Columns = bagsWidth, Parent = f.main})
+		f.animaItem:SetFilter(filters.bagAnimaItem, true)
 
 		f.bagLegendary = MyContainer:New("BagLegendary", {Columns = bagsWidth, Parent = f.main})
 		f.bagLegendary:SetFilter(filters.bagLegendary, true)
@@ -971,8 +816,8 @@ function Module:OnEnable()
 		f.bankFavourite = MyContainer:New("BankFavourite", {Columns = bankWidth, Parent = f.bank})
 		f.bankFavourite:SetFilter(filters.bankFavourite, true)
 
-		f.bankAzeriteItem = MyContainer:New("BankAzeriteItem", {Columns = bankWidth, Parent = f.bank})
-		f.bankAzeriteItem:SetFilter(filters.bankAzeriteItem, true)
+		f.bankAnimaItem = MyContainer:New("BankAnimaItem", {Columns = bankWidth, Parent = f.bank})
+		f.bankAnimaItem:SetFilter(filters.bankAnimaItem, true)
 
 		f.bankLegendary = MyContainer:New("BankLegendary", {Columns = bankWidth, Parent = f.bank})
 		f.bankLegendary:SetFilter(filters.bankLegendary, true)
@@ -1000,8 +845,8 @@ function Module:OnEnable()
 		f.reagent:SetPoint("BOTTOMLEFT", f.bank)
 		f.reagent:Hide()
 
-		Module.BagGroup = {f.azeriteItem, f.equipment, f.bagLegendary, f.equipSet, f.bagCollection, f.bagGoods, f.bagQuest, f.consumable, f.bagFavourite, f.junk}
-		Module.BankGroup = {f.bankAzeriteItem, f.bankEquipment, f.bankEquipSet, f.bankLegendary, f.bankCollection, f.bankGoods, f.bankQuest, f.bankConsumable, f.bankFavourite}
+		Module.BagGroup = {f.animaItem, f.equipment, f.bagLegendary, f.equipSet, f.bagCollection, f.bagGoods, f.bagQuest, f.consumable, f.bagFavourite, f.junk}
+		Module.BankGroup = {f.bankAnimaItem, f.bankEquipment, f.bankEquipSet, f.bankLegendary, f.bankCollection, f.bankGoods, f.bankQuest, f.bankConsumable, f.bankFavourite}
 	end
 
 	local initBagType
@@ -1043,7 +888,7 @@ function Module:OnEnable()
 		self.IconOverlay:SetPoint("TOPLEFT", 1, -1)
 		self.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
 
-		self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		self:CreateBorder()
 		self:StyleButton()
 
 		local parentFrame = CreateFrame("Frame", nil, self)
@@ -1079,9 +924,9 @@ function Module:OnEnable()
 
 		if showNewItem then
 			self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
-			self.glowFrame:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
-			self.glowFrame:SetPoint("TOPLEFT", self, -6, 6)
-			self.glowFrame:SetPoint("BOTTOMRIGHT", self, 6, -6)
+			self.glowFrame:SetBackdrop({edgeFile = C["Media"].BorderGlow, edgeSize = 12})
+			self.glowFrame:SetPoint("TOPLEFT", self, -5, 5)
+			self.glowFrame:SetPoint("BOTTOMRIGHT", self, 5, -5)
 			self.glowFrame:Hide()
 
 			self.glowFrame.Animation = self.glowFrame:CreateAnimationGroup()
@@ -1324,8 +1169,8 @@ function Module:OnEnable()
 		K.CreateMoverFrame(self, settings.Parent, true)
 
 		local label
-		if string_match(name, "AzeriteItem$") then
-			label = "Azerite Armor"
+		if string_match(name, "AnimaItem$") then
+			label = WORLD_QUEST_REWARD_FILTERS_ANIMA
 		elseif string_match(name, "Equipment$") then
 			label = BAG_FILTER_EQUIPMENT
 		elseif string_match(name, "EquipSet$") then
@@ -1402,7 +1247,7 @@ function Module:OnEnable()
 		self:SetPushedTexture(nil)
 
 		self:SetSize(iconSize, iconSize)
-		self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		self:CreateBorder()
 		self:StyleButton()
 
 		self.Icon:SetAllPoints()

@@ -191,7 +191,7 @@ function Module:TradeTabs_FilterIcons()
 		local bu = CreateFrame("Button", nil, TradeSkillFrame, "BackdropTemplate")
 		bu:SetSize(18, 18)
 		bu:SetPoint("RIGHT", TradeSkillFrame.FilterButton, "LEFT", -5 - (index - 1) * 24, 0)
-		bu:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		bu:CreateBorder()
 
 		bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 		bu.Icon:SetAllPoints()

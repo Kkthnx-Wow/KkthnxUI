@@ -162,7 +162,7 @@ function ExtraQuestButton:PLAYER_LOGIN()
 	local bg = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	bg:SetAllPoints(Icon)
 	bg:SetFrameLevel(self:GetFrameLevel())
-	bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	bg:CreateBorder()
 	bg:StyleButton()
 
 	self.HL = self:CreateTexture(nil, "HIGHLIGHT")

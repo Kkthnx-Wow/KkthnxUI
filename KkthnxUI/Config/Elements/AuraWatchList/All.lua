@@ -1,45 +1,42 @@
 local K, _, L = unpack(select(2, ...))
 local Module = K:GetModule("AurasTable")
 --[[
->>> When adding custom, pay attention to the format, pay attention to commas, pay attention to letter case<<<
-The settings below ALL are common settings for all professions. For other situations, please add them under your profession. When you add, pay attention to whether it is repeated.
-Each group represents:
-Player Aura is a small buff group on his avatar, used to monitor those less important buffs;
-Special Aura, is the larger buff group on your profile picture, used to monitor the slightly important buff;
-Target Aura, is the buff group on the target avatar, used to monitor the debuff you need in the cycle;
-Focus Aura is the buff group of the focus, used to monitor the buff and debuff of the focus target;
-Spell Cooldown is a cooling time monitoring group, used to monitor jewelry, rings, skill CDs, etc.;
-Enchant Aura is a buff group triggered by various ethnic skills, potions, and accessories;
-Raid Buff is a group of important buffs of the team, used to monitor bloodthirsty, aura, team damage reduction, etc.;
-Raid Debuff, a debuff group that appears in team battles, is used to monitor roll calls that appear in battles, etc.;
-Warnings are buffs and debuffs that need to be paid attention to on the target. They can be used to monitor the vulnerability of the BOSS, the opponent's PVP abilities, and so on.
-
-Meaning of number:
-AuraID, supports BUFF and DEBUFF, when it is triggered in the game, please move your mouse to check the ID, or query the database yourself;
-SpellID is only used to monitor the CD of the skill. You can see the ID by directly clicking on the skill. In most cases, it is different from the BUFF/DEBUFF ID after it is triggered;
-ItemID, CD used to monitor items, such as Hearthstone, etc.;
-SlotID, the cooling time of each part of the equipment bar, commonly used are 11/12 rings, 6 belts, 15 cloaks, and 13/14 accessories column (only active accessories);
-TotemID, monitor the duration of the totem, the monk’s Xuan Niu is the number 1 totem, and the shaman 1-4 corresponds to 4 totems;
-UnitID is the target you want to monitor. It supports pet pet, player's own player, target target and focus;
-
-Various filtering methods:
-Caster is the releaser of the spell. If you do not indicate it, anyone who releases the spell will be monitored, such as hunter's mark, elemental curse, etc.;
-	Stack is the number of layers of some spells. If it is not marked, the whole process will be monitored. If it is marked, it will only be displayed after reaching the number of layers. For example, DK blood charge will only be prompted after 10 layers;
-	Value, enabled when it is true, used to monitor specific values ​​of BUFF/DEBUFF, such as priest’s shield, DK’s blood shield, etc.;
-	Timeless, for example, Shaman’s Lightning Shield, because it lasts for 1 hour, there is no need to monitor the time all the time. When Timeless is enabled, only the number of layers is monitored;
-	Combat, when activated, the buff will only be monitored during combat, such as hunter's sniper training, shaman's lightning shield;
-	Text, when enabled, it will be reminded with text under the BUFF icon, and the priority is lower than Value. For example, you can use this text to remind you when you need to get out of the crowd in a BUFF;
-	Flash, when enabled, the icon will be highlighted in a circle;
-
-	Instructions for use of the built-in CD:
-	{IntID = 208052, Duration = 30, ItemID = 132452}, - Severs’s secret
-	{IntID = 98008, Duration = 30, OnSuccess = true, UnitID = "all"}, - Soul Link
-	IntID, the spell or skill ID when the timing bar is triggered;
-	Duration, the duration of the custom timing bar;
-	ItemID, the name displayed on the timing bar, if it is not filled in, the Buff name when triggered will be used directly;
-	OnSuccess, the trigger used to monitor the successful casting of the skill, and the timing bar will be activated only when the skill is successfully cast. If you don’t fill it in, the timing bar will be triggered when you get the spell aura;
-	UnitID, used to filter the source of the target spell, the default is the player. If set to all, all members of the team/team will be monitored.
-	]]
+>>>自定义添加时，要注意格式，注意逗号，注意字母大小写<<<
+ALL下面是对全职业通用的设置，其他情况请在自己职业下添加。当你添加时，要注意是否重复。
+各组别分别代表的是：
+Player Aura，是自己头像上偏小的buff组，用来监视那些不那么重要的buff；
+Special Aura，是自己头像上偏大的buff组，用来监视稍微重要的buff；
+Target Aura，是目标头像上的buff组，用来监视你循环中需要的debuff；
+Focus Aura，是焦点的buff组，用来监视焦点目标的buff及debuff；
+Spell Cooldown，是冷却时间监控组，用来监视饰品、戒指、技能CD等；
+Enchant Aura，是各种种族技能、药水、饰品触发的buff分组；
+Raid Buff，是团队重要buff的分组，用来监控如嗜血、光环、团队减伤等等；
+Raid Debuff，是团队战斗中出现的debuff组，用来监控战斗中出现的点名等等；
+Warning，是目标身上需要注意的buff及debuff，可以用来监视BOSS的易伤、PVP对方的大招等等。
+数字编号含义：
+AuraID，支持BUFF和DEBUFF，在游戏中触发时，请鼠标移过去看看ID，或者自己查询数据库；
+SpellID，只是用来监视技能的CD，直接鼠标到技能上就可以看到该ID，大部分情况下与其触发后的BUFF/DEBUFF ID不一样；
+ItemID，用来监视物品的CD，例如炉石等等；
+SlotID，装备栏各部位的冷却时间，常用的有11/12戒指，6腰带，15披风，13/14饰品栏（仅主动饰品）；
+TotemID，监视图腾的持续时间，武僧的玄牛算1号图腾，萨满1-4对应4个图腾；
+UnitID，是你想监视的目标，支持宠物pet，玩家自身player，目标target和焦点focus；
+各种过滤方式：
+Caster，是法术的释放者，如果你没有标明，则任何释放该法术的都会被监视，例如猎人印记，元素诅咒等；
+Stack，是部分法术的层数，未标明则全程监视，有标明则只在达到该层数后显示，例如DK鲜血充能仅在10层后才提示；
+Value，为true时启用，用于监视一些BUFF/DEBUFF的具体数值，如牧师的盾，DK的血盾等等；
+Timeless，具体例如萨满的闪电盾，因为持续1个小时，没有必要一直监视时间，启用Timeless则只监视层数；
+Combat，启用时将仅在战斗中监视该buff，例如猎人的狙击训练，萨满的闪电护盾；
+Text，启用时将在BUFF图标下用文字提醒，优先级低于Value。比如中了某个BUFF需要出人群时，你就可以使用这个文字提醒；
+Flash，启用时在图标显示一圈高亮；
+内置CD使用说明：
+{IntID = 208052, Duration = 30, ItemID = 132452},	-- 塞弗斯的秘密
+{IntID = 98008, Duration = 30, OnSuccess = true, UnitID = "all"},	-- 灵魂链接
+IntID，计时条触发时的法术或者技能ID；
+Duration，自定义计时条的持续时间；
+ItemID，在计时条上显示的名称，如果不填写，就会直接使用触发时的Buff名称；
+OnSuccess，用于监控技能成功施放的触发器，仅当技能成功施放时开启计时条。如果不填写，则计时条由你获得该法术光环时触发；
+UnitID，用于过滤目标法术的来源，默认为player玩家自身。如果设置为all，则监控队伍/团队里的所有成员。
+]]
 
 -- 全职业的相关监控
 local list = {
@@ -196,10 +193,10 @@ local list = {
 		{AuraID = 321368, UnitID = "target", Value = true},	-- 凋魂，冰缚之盾
 		{AuraID = 327416, UnitID = "target", Value = true},	-- 堡垒，心能回灌
 		-- PVP
-		{AuraID = 498, UnitID = "target"},		-- 圣佑术
-		{AuraID = 642, UnitID = "target"},		-- 圣盾术
-		{AuraID = 871, UnitID = "target"},		-- 盾墙
-		{AuraID = 5277, UnitID = "target"},		-- 闪避
+		{AuraID = 498, UnitID = "target"},		-- Holy Blessing
+		{AuraID = 642, UnitID = "target"},		-- Holy Shield
+		{AuraID = 871, UnitID = "target"},		-- Shield wall
+		{AuraID = 5277, UnitID = "target"},		-- dodge
 		{AuraID = 1044, UnitID = "target"},		-- 自由祝福
 		{AuraID = 6940, UnitID = "target"},		-- 牺牲祝福
 		{AuraID = 1022, UnitID = "target"},		-- 保护祝福

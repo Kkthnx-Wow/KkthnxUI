@@ -118,7 +118,7 @@ function Module:updateTimerFormat(color, hour, minute)
 	if GetCVarBool("timeMgrUseMilitaryTime") then
 		return string_format(color..TIMEMANAGER_TICKER_24HOUR, hour, minute)
 	else
-		local timerUnit = K.MyClassColor..(hour < 12 and " AM" or " PM")
+		local timerUnit = K.MyClassColor..(hour < 12 and "am" or "pm")
 
 		if hour >= 12 then
 			if hour > 12 then
@@ -449,6 +449,7 @@ function Module:CreateTimeDataText()
 	Module.TimeFont = Module.TimeFrame:CreateFontString("OVERLAY")
 	Module.TimeFont:FontTemplate(nil, 13)
 	Module.TimeFont:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 2)
+	Module.TimeFont:SetAlpha(0.9)
 
 	Module.TimeFrame:SetAllPoints(Module.TimeFont)
 

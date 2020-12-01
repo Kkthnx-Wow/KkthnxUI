@@ -32,7 +32,7 @@ function Module:SkinBag(bag)
 	bag.IconBorder:SetAlpha(0)
 
 	bag:StripTextures()
-	bag:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	bag:CreateBorder()
 	bag:StyleButton(true)
 
 	icon:SetTexture(bag.oldTex)

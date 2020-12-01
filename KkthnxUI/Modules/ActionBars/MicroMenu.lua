@@ -75,7 +75,7 @@ function Module.HandleMicroButton(button)
 
 	local f = CreateFrame("Frame", nil, button)
 	f:SetFrameLevel(button:GetFrameLevel())
-	f:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	f:CreateBorder()
 	f:SetAllPoints(button)
 	button.backdrop = f
 

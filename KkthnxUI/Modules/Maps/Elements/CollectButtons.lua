@@ -105,7 +105,7 @@ function Module:CreateRecycleBin()
 				end
 			end
 			child:SetSize(22, 22)
-			child:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			child:CreateBorder()
 		end
 
 		table_insert(buttons, child)
@@ -128,10 +128,8 @@ function Module:CreateRecycleBin()
 				end
 
 				if child:IsObjectType("Button") then
-					child:SetHighlightTexture(C["Media"].Blank) -- prevent nil function
-					child:GetHighlightTexture():SetPoint("TOPLEFT", child, "TOPLEFT", 2, -2)
-					child:GetHighlightTexture():SetPoint("BOTTOMRIGHT", child, "BOTTOMRIGHT", -2, 2)
-					child:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
+					child:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square") -- prevent nil function
+					child:GetHighlightTexture():SetAllPoints(child)
 				elseif child:IsObjectType("Frame") then
 					child.highlight = child:CreateTexture(nil, "HIGHLIGHT")
 					child.highlight:SetPoint("TOPLEFT", child, "TOPLEFT", 2, -2)

@@ -20,7 +20,7 @@ table_insert(C.defaultThemes, function()
 		button:StripTextures()
 		button.Icon:SetTexCoord(texL, texR, texT, texB)
 		button.IconBorder:SetAlpha(0)
-		button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		button:CreateBorder()
 		button:StyleButton()
 	end
 
@@ -28,7 +28,7 @@ table_insert(C.defaultThemes, function()
 		local button = _G["SendMailAttachment"..i]
 		button:StripTextures()
 		button:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
-		button.bg = button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		button.bg = button:CreateBorder()
 		button:StyleButton()
 	end
 
@@ -46,7 +46,7 @@ table_insert(C.defaultThemes, function()
 		button:StripTextures()
 		button:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
 		button.icon:SetTexCoord(texL, texR, texT, texB)
-		button.bg = button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		button.bg = button:CreateBorder()
 		button:StyleButton()
 	end
 end)

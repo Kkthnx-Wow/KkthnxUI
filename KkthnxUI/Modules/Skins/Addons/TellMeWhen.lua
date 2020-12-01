@@ -15,7 +15,7 @@ function Module:ReskinTellMeWhen()
             self.bg = CreateFrame("Frame", nil, self)
 		    self.bg:SetFrameLevel(self:GetFrameLevel())
 		    self.bg:SetAllPoints(self)
-		    self.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		    self.bg:CreateBorder()
 		end
 	end)
 

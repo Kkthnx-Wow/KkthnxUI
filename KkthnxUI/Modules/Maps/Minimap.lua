@@ -1,21 +1,25 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Minimap")
 
 local _G = _G
 local pairs = _G.pairs
 local select = _G.select
 local string_format = _G.string.format
+local table_insert = _G.table.insert
 
 local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GetUnitName = _G.GetUnitName
 local HideUIPanel = _G.HideUIPanel
 local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsInGuild = _G.IsInGuild
+local LE_GARRISON_TYPE_6_0 = _G.Enum.GarrisonType.Type_6_0
+local LE_GARRISON_TYPE_7_0 = _G.Enum.GarrisonType.Type_7_0
+local LE_GARRISON_TYPE_8_0 = _G.Enum.GarrisonType.Type_8_0
+local LE_GARRISON_TYPE_9_0 = _G.Enum.GarrisonType.Type_9_0
 local Minimap = _G.Minimap
 local UnitClass = _G.UnitClass
-local table_insert = _G.table.insert
+local hooksecurefunc = _G.hooksecurefunc
 
 -- Create the new minimap tracking dropdown frame and initialize it
 local KKUI_MiniMapTrackingDropDown = CreateFrame("Frame", "KKUI_MiniMapTrackingDropDown", _G.UIParent, "UIDropDownMenuTemplate")
@@ -147,17 +151,17 @@ local micromenu = {
 
 if not IsTrialAccount() and not C_StorePublic.IsDisabledByParentalControls() then
 	table_insert(micromenu, {text = BLIZZARD_STORE, notCheckable = 1, func = function()
-		StoreMicroButton:Click()
+			StoreMicroButton:Click()
 	end})
 end
 
 if K.Level > 99 then
 	table_insert(micromenu, {text = ORDER_HALL_LANDING_PAGE_TITLE, notCheckable = 1, func = function()
-		GarrisonLandingPage_Toggle()
+			GarrisonLandingPage_Toggle()
 	end})
 elseif K.Level > 89 then
 	table_insert(micromenu, {text = GARRISON_LANDING_PAGE_TITLE, notCheckable = 1, func = function()
-		GarrisonLandingPage_Toggle()
+			GarrisonLandingPage_Toggle()
 	end})
 end
 
@@ -165,14 +169,13 @@ function Module:CreateStyle()
 	local minimapBorder = CreateFrame("Frame", nil, Minimap)
 	minimapBorder:SetAllPoints(Minimap)
 	minimapBorder:SetFrameLevel(Minimap:GetFrameLevel())
-	minimapBorder:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
-	minimapBorder.KKUI_InnerShadow:SetAlpha(0.7)
+	minimapBorder:CreateBorder()
 
 	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, "BackdropTemplate")
 	minimapMailPulse:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
-	minimapMailPulse:SetPoint("TOPLEFT", minimapBorder, -6, 6)
-	minimapMailPulse:SetPoint("BOTTOMRIGHT", minimapBorder, 6, -6)
-	minimapMailPulse:SetBackdropBorderColor(1, 1, 0, 0.6)
+	minimapMailPulse:SetPoint("TOPLEFT", minimapBorder, -5, 5)
+	minimapMailPulse:SetPoint("BOTTOMRIGHT", minimapBorder, 5, -5)
+	minimapMailPulse:SetBackdropBorderColor(1, 1, 0, 0.8)
 	minimapMailPulse:Hide()
 
 	local anim = minimapMailPulse:CreateAnimationGroup()
@@ -212,36 +215,34 @@ end
 function Module:ReskinRegions()
 	-- Garrison
 	hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function(self)
-		if GarrisonLandingPageMinimapButton then
-			if not C["Minimap"].ShowGarrison then
-				-- ugly hack to keep the keybind functioning
-				GarrisonLandingPageMinimapButton:SetParent(K.UIFrameHider)
-				GarrisonLandingPageMinimapButton:UnregisterAllEvents()
-				GarrisonLandingPageMinimapButton:Show()
-				GarrisonLandingPageMinimapButton.Hide = GarrisonLandingPageMinimapButton.Show
-			else
-				GarrisonLandingPageMinimapButton:ClearAllPoints()
-				GarrisonLandingPageMinimapButton:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, 0)
-				GarrisonLandingPageMinimapButton:SetScale(0.8)
-				if GarrisonLandingPageTutorialBox then
-					GarrisonLandingPageTutorialBox:SetScale(1)
-					GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
-				end
-			end
+		self:ClearAllPoints()
+		self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, 0)
+		self:GetNormalTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
+		self:GetPushedTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
+		self:GetHighlightTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
+		self:SetSize(30, 30)
+		self:SetAlpha(0.9)
+	end)
 
-			if not IsAddOnLoaded("GarrisonMissionManager") then
-				GarrisonLandingPageMinimapButton:RegisterForClicks("AnyUp")
-				GarrisonLandingPageMinimapButton:HookScript("OnClick", function(_, btn, down)
-					if btn == "MiddleButton" and not down then
-						HideUIPanel(GarrisonLandingPage)
-						ShowGarrisonLandingPage(LE_GARRISON_TYPE_7_0)
-					elseif btn == "RightButton" and not down then
-						HideUIPanel(GarrisonLandingPage)
-						ShowGarrisonLandingPage(LE_GARRISON_TYPE_6_0)
-					end
-				end)
-			end
+	local menuList = {
+		{text =	GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_9_0, notCheckable = true},
+		{text =	WAR_CAMPAIGN, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_8_0, notCheckable = true},
+		{text =	ORDER_HALL_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_7_0, notCheckable = true},
+		{text =	GARRISON_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_6_0, notCheckable = true},
+	}
+	GarrisonLandingPageMinimapButton:HookScript("OnMouseDown", function(self, btn)
+		if btn == "RightButton" then
+			HideUIPanel(GarrisonLandingPage)
+			EasyMenu(menuList, K.EasyMenu, self, -80, 0, "MENU", 1)
 		end
+	end)
+
+	GarrisonLandingPageMinimapButton:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+		GameTooltip:SetText(self.title, 1, 1, 1)
+		GameTooltip:AddLine(self.description, nil, nil, nil, true)
+		GameTooltip:AddLine("Right click to switch garrisons", nil, nil, nil, true)
+		GameTooltip:Show()
 	end)
 
 	-- QueueStatus Button
@@ -293,13 +294,14 @@ function Module:ReskinRegions()
 	if MiniMapMailFrame then
 		MiniMapMailFrame:ClearAllPoints()
 		if C["DataText"].Time then
-			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 6)
+			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -4)
 		else
-			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -6)
+			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -12)
 		end
-		MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
-		MiniMapMailFrame:SetScale(1.2)
-		MiniMapMailFrame:SetHitRectInsets(8, 8, 12, 11)
+		MiniMapMailIcon:SetTexture("Interface\\HELPFRAME\\ReportLagIcon-Mail")
+		MiniMapMailFrame:SetScale(1.8)
+		MiniMapMailIcon:SetRotation(rad(-27.5))
+		MiniMapMailFrame:SetHitRectInsets(11, 11, 11, 15)
 	end
 
 	-- Invites Icon
@@ -310,10 +312,10 @@ function Module:ReskinRegions()
 	end
 
 	local inviteNotification = CreateFrame("Button", nil, UIParent, "BackdropTemplate")
-	inviteNotification:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 13})
-	inviteNotification:SetPoint("TOPLEFT", Minimap, -6, 6)
-	inviteNotification:SetPoint("BOTTOMRIGHT", Minimap, 6, -6)
-	inviteNotification:SetBackdropBorderColor(1, 1, 0)
+	inviteNotification:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
+	inviteNotification:SetPoint("TOPLEFT", Minimap, -5, 5)
+	inviteNotification:SetPoint("BOTTOMRIGHT", Minimap, 5, -5)
+	inviteNotification:SetBackdropBorderColor(1, 1, 0, 0.8)
 	inviteNotification:Hide()
 
 	K.CreateFontString(inviteNotification, 12, K.InfoColor.."Pending Calendar Invite(s)!", "")
@@ -339,7 +341,7 @@ end
 function Module:CreatePing()
 	local pingFrame = CreateFrame("Frame", nil, Minimap)
 	pingFrame:SetAllPoints()
-	pingFrame.text = K.CreateFontString(pingFrame, 16, "", "", false, "TOP", 0, C["DataText"].Location and -24 or -6)
+	pingFrame.text = K.CreateFontString(pingFrame, 18, "", "OUTLINE", false, "CENTER")
 
 	local pingAnimation = pingFrame:CreateAnimationGroup()
 
@@ -403,6 +405,7 @@ function Module:ShowCalendar()
 			fs:ClearAllPoints()
 			fs:SetPoint("CENTER", 0, -5)
 			fs:FontTemplate(nil, 20)
+			fs:SetAlpha(0.9)
 			fs:SetShadowOffset(0, 0)
 
 			GameTimeFrame.styled = true
@@ -450,9 +453,12 @@ end
 
 function Module:SetupHybridMinimap()
 	local mapCanvas = HybridMinimap.MapCanvas
-	mapCanvas:SetMaskTexture("Interface\\Buttons\\WHITE8X8")
+	mapCanvas:SetMaskTexture(C["Media"].Blank)
 	mapCanvas:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)
 	mapCanvas:SetScript("OnMouseUp", Module.Minimap_OnMouseUp)
+	mapCanvas:SetScript('OnMouseUp', K.Noop)
+
+	HybridMinimap.CircleMask:StripTextures()
 end
 
 function Module:HybridMinimapOnLoad(addon)
@@ -460,6 +466,23 @@ function Module:HybridMinimapOnLoad(addon)
 		Module:SetupHybridMinimap()
 		K:UnregisterEvent(self, Module.HybridMinimapOnLoad)
 	end
+end
+
+local minimapInfo = {
+	text = L["MinimapHelpTip"],
+	buttonStyle = HelpTip.ButtonStyle.GotIt,
+	targetPoint = HelpTip.Point.LeftEdgeBottom,
+	onAcknowledgeCallback = K.HelpInfoAcknowledge,
+	callbackArg = "MinimapInfo",
+	alignment = 3,
+}
+
+function Module:ShowMinimapHelpInfo()
+	Minimap:HookScript("OnEnter", function()
+		if not KkthnxUIData[K.Realm][K.Name].Help["MinimapInfo"] then
+			HelpTip:Show(MinimapCluster, minimapInfo)
+		end
+	end)
 end
 
 function Module:OnEnable()
@@ -511,6 +534,7 @@ function Module:OnEnable()
 	self:CreateStyle()
 	self:CreateRecycleBin()
 	self:ReskinRegions()
+	self:ShowMinimapHelpInfo()
 
 	-- HybridMinimap
 	K:RegisterEvent("ADDON_LOADED", Module.HybridMinimapOnLoad)

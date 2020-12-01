@@ -56,12 +56,12 @@ local function ReskinPaperDollSidebar()
 			tab.bg = CreateFrame("Frame", nil, tab)
 			tab.bg:SetFrameLevel(tab:GetFrameLevel())
 			tab.bg:SetAllPoints(tab)
-			tab.bg:CreateBorder(nil, nil, 10, nil, nil, 255/255, 223/255, 0/255, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			tab.bg:CreateBorder(nil, nil, nil, nil, nil, 255/255, 223/255, 0/255, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 			tab.Icon:SetAllPoints(tab.bg)
 			tab.Hider:SetAllPoints(tab.bg)
-			tab.Highlight:SetPoint("TOPLEFT", tab.bg, "TOPLEFT", 2, -2)
-			tab.Highlight:SetPoint("BOTTOMRIGHT", tab.bg, "BOTTOMRIGHT", -2, 2)
+			tab.Highlight:SetPoint("TOPLEFT", tab.bg, "TOPLEFT", 1, -1)
+			tab.Highlight:SetPoint("BOTTOMRIGHT", tab.bg, "BOTTOMRIGHT", -1, 1)
 			tab.Highlight:SetColorTexture(1, 1, 1, .25)
 			tab.Hider:SetColorTexture(.3, .3, .3, .4)
 			tab.TabBg:SetAlpha(0)
@@ -104,7 +104,7 @@ tinsert(C.defaultThemes, function()
 	for _, slot in pairs({PaperDollItemsFrame:GetChildren()}) do
 		if slot:IsObjectType("Button") or slot:IsObjectType("ItemButton") then
 			slot:StripTextures()
-			slot:CreateBorder(nil, nil, 10, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			slot:CreateBorder()
 			slot:StyleButton(slot)
 			slot.icon:SetTexCoord(unpack(K.TexCoords))
 			slot:SetSize(36, 36)
@@ -137,10 +137,9 @@ tinsert(C.defaultThemes, function()
 
 	hooksecurefunc("PaperDollItemSlotButton_Update", function(slot)
 		local highlight = slot:GetHighlightTexture()
-		highlight:SetTexture(C["Media"].Blank)
-		highlight:SetColorTexture(1, 1, 1, .25)
-		highlight:SetPoint("TOPLEFT", slot, "TOPLEFT", 2, -2)
-		highlight:SetPoint("BOTTOMRIGHT", slot, "BOTTOMRIGHT", -2, 2)
+		highlight:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+		highlight:SetBlendMode("ADD")
+		highlight:SetAllPoints()
 
 		UpdateCosmetic(slot)
 	end)
@@ -179,6 +178,26 @@ tinsert(C.defaultThemes, function()
 
 	CharacterLevelText:FontTemplate()
 	CharacterStatsPane.ItemLevelFrame.Value:FontTemplate(nil, 20)
+
+	-- Titles
+	_G.PaperDollTitlesPane:HookScript('OnShow', function()
+		for _, object in pairs(_G.PaperDollTitlesPane.buttons) do
+			object.BgTop:SetTexture()
+			object.BgBottom:SetTexture()
+			object.BgMiddle:SetTexture()
+			object.text:FontTemplate(nil, 11)
+
+			if not object.text.hooked then
+				object.text.hooked = true
+
+				hooksecurefunc(object.text, "SetFont", function(txt, font)
+					if font ~= C["Media"].Font then
+						txt:FontTemplate(nil, 11)
+					end
+				end)
+			end
+		end
+	end)
 
 	CharacterStatsPane.ClassBackground:ClearAllPoints()
 	CharacterStatsPane.ClassBackground:SetHeight(CharacterStatsPane.ClassBackground:GetHeight() + 6)

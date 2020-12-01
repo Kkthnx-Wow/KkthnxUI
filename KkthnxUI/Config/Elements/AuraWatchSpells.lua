@@ -79,7 +79,7 @@ function Module:AddDeprecatedGroup()
 		return
 	end
 
-	for name, value in pairs(K.DeprecatedAuras) do
+	for name, value in pairs(C.DeprecatedAuras) do
 		for _, list in pairs(AuraWatchList["ALL"]) do
 			if list.Name == name then
 				local newTable = newAuraFormat(value)
@@ -89,10 +89,10 @@ function Module:AddDeprecatedGroup()
 			end
 		end
 	end
-	table_wipe(K.DeprecatedAuras)
+	table_wipe(C.DeprecatedAuras)
 end
 
 function Module:OnEnable()
 	Module:AddDeprecatedGroup()
-	K.AuraWatchList = AuraWatchList
+	C.AuraWatchList = AuraWatchList
 end

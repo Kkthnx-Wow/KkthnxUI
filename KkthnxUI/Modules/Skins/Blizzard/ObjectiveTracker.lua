@@ -46,7 +46,7 @@ function Module:ReskinCollapse(isAtlas)
 	local bg = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	bg:SetAllPoints(self)
 	bg:SetFrameLevel(self:GetFrameLevel())
-	bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	bg:CreateBorder()
 
 	bg:ClearAllPoints()
 	bg:SetSize(13, 13)
@@ -82,7 +82,7 @@ local function reskinQuestIcon(button)
 		button:GetHighlightTexture():SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
 		local icon = button.icon or button.Icon
 		if icon then
-			button.bg = icon:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			button.bg = icon:CreateBorder()
 			icon:SetAllPoints()
 		end
 
@@ -96,7 +96,7 @@ end
 
 local function reskinQuestIcons(_, block)
 	reskinQuestIcon(block.itemButton)
-	reskinQuestIcon(block.rightButton)
+	reskinQuestIcon(block.groupFinderButton)
 end
 
 local function reskinHeader(header)
@@ -121,8 +121,20 @@ local function reskinBarTemplate(bar)
 	bar:SetStatusBarTexture(C["Media"].Texture)
 	bar:SetStatusBarColor(r, g, b)
 
-	bar.Label:SetPoint("CENTER", 0, 0)
-	bar.Label:FontTemplate(nil, 12)
+	if bar.Label then
+		bar.Label:SetPoint("CENTER", 0, 0)
+		bar.Label:FontTemplate(nil, 12)
+	end
+
+	if not bar.Spark then
+		bar.Spark = bar:CreateTexture(nil, "OVERLAY")
+		bar.Spark:SetWidth(64)
+		bar.Spark:SetHeight(bar:GetHeight())
+		bar.Spark:SetTexture(C["Media"].Spark_128)
+		bar.Spark:SetBlendMode("ADD")
+		bar.Spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
+		bar.Spark:SetAlpha(0.5)
+	end
 
 	bar.bg = CreateFrame("Frame", nil, bar)
 	bar.bg:SetAllPoints(bar)
@@ -157,7 +169,7 @@ local function reskinProgressbarWithIcon(_, _, line)
 		icon.bg = CreateFrame("Frame", nil, bar)
 		icon.bg:SetAllPoints(icon)
 		icon.bg:SetFrameLevel(bar:GetFrameLevel())
-		icon.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+		icon.bg:CreateBorder()
 		icon:SetTexCoord(unpack(K.TexCoords))
 		icon:ClearAllPoints()
 		icon:SetPoint("TOPLEFT", bar, "TOPRIGHT", 6, 0)

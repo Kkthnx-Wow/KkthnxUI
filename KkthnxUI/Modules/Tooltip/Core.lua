@@ -477,7 +477,7 @@ function Module:ReskinTooltip()
 		self.tooltipStyle:SetPoint("TOPLEFT", self, 2, -2)
 		self.tooltipStyle:SetPoint("BOTTOMRIGHT", self, -2, 2)
 		self.tooltipStyle:SetFrameLevel(self:GetFrameLevel())
-		self.tooltipStyle:CreateBorder("ARTWORK")
+		self.tooltipStyle:CreateBorder()
 
 		if self.StatusBar then
 			Module.ReskinStatusBar(self)

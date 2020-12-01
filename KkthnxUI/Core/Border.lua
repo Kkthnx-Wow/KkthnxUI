@@ -53,11 +53,11 @@ local function border_SetSize(self, size)
 	self.RIGHT:SetWidth(size)
 
 	if self.calcTile then
-		local tile = (self.parent:GetWidth() + 2 * self.offset) / 12
+		local tile = (self.parent:GetWidth() + 2 * self.offset) / 16
 		self.TOP:SetTexCoord(0.25, tile, 0.375, tile, 0.25, 0, 0.375, 0)
 		self.BOTTOM:SetTexCoord(0.375, tile, 0.5, tile, 0.375, 0, 0.5, 0)
 
-		tile = (self.parent:GetHeight() + 2 * self.offset) / 12
+		tile = (self.parent:GetHeight() + 2 * self.offset) / 16
 		self.LEFT:SetTexCoord(0, 0.125, 0, tile)
 		self.RIGHT:SetTexCoord(0.125, 0.25, 0, tile)
 	end
@@ -98,7 +98,7 @@ function K.CreateBorder(parent, drawLayer, drawSubLevel)
 	}
 
 	for _, v in next, sections do
-		border[v] = parent:CreateTexture(nil, drawLayer, nil, drawSubLevel)
+		border[v] = parent:CreateTexture(nil, drawLayer or "OVERLAY", nil, drawSubLevel or 1)
 	end
 
 	border.TOPLEFT:SetTexCoord(0.5, 0.625, 0, 1)

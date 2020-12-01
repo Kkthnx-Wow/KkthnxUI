@@ -20,6 +20,6 @@ C.ActionBars = {
 
 	petBar = {size = 26, fader = ACTIONBAR_FADER}, -- PETBAR Pet action bar
 	stanceBar = {size = 30, fader = ACTIONBAR_FADER}, -- STANCE + POSSESSBAR Posture bar
-	extraBar = {size = 56, fader = nil}, -- EXTRABAR Extra action bar
+	extraBar = {size = 52, fader = nil}, -- EXTRABAR Extra action bar
 	leaveVehicle = {size = 32, fader = nil}, -- VEHICLE EXIT Leave vehicle button
 }

@@ -282,7 +282,7 @@ function Module:CreateAuraIcon(button)
     button.timer:SetFont(select(1, button.timer:GetFont()), fontSize, select(3, button.timer:GetFont()))
 
     button:StyleButton()
-    button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+    button:CreateBorder()
 
     button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
     button:HookScript("OnMouseDown", Module.RemoveSpellFromIgnoreList)

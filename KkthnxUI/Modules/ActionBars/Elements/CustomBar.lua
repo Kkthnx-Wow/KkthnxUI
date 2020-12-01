@@ -22,7 +22,7 @@ function Module:SetupCustomBar(anchor)
 	frame.mover = K.Mover(frame, L[name], "CustomBar", anchor)
 	frame.buttons = {}
 
-	RegisterStateDriver(frame, "visibility", "[petbattle] hide; show")
+	RegisterStateDriver(frame, "visibility", "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show")
 	RegisterStateDriver(frame, "page", page)
 
 	local buttonList = {}

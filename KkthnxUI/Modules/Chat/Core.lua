@@ -243,6 +243,8 @@ function Module:SkinChat()
 	-- Security for font, in case if revert back to WoW default we restore instantly the tukui font default.
 	hooksecurefunc(self, "SetFont", Module.SetChatFont)
 
+	QuickJoinToastButton:Hide()
+
 	self.styled = true
 end
 
@@ -284,6 +286,14 @@ local cycles = {
 
 -- Update editbox border color
 function Module:UpdateEditBoxColor()
+	if not C["Chat"].Enable then
+		return
+	end
+
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
+		return
+	end
+
 	local editBox = ChatEdit_ChooseBoxForSend()
 	local chatType = editBox:GetAttribute("chatType")
 	local editBoxBorder = editBox.KKUI_Border
@@ -310,8 +320,17 @@ function Module:UpdateEditBoxColor()
 		end
 	end
 end
+hooksecurefunc("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
 
 function Module:UpdateTabChannelSwitch()
+	if not C["Chat"].Enable then
+		return
+	end
+
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
+		return
+	end
+
 	if string_sub(tostring(self:GetText()), 1, 1) == "/" then
 		return
 	end
@@ -334,9 +353,31 @@ function Module:UpdateTabChannelSwitch()
 		end
 	end
 end
+hooksecurefunc("ChatEdit_CustomTabPressed", Module.UpdateTabChannelSwitch)
+
+-- Quick Scroll
+local chatScrollInfo = {
+	text = L["ChatHelpTip"],
+	buttonStyle = HelpTip.ButtonStyle.GotIt,
+	targetPoint = HelpTip.Point.RightEdgeCenter,
+	onAcknowledgeCallback = K.HelpInfoAcknowledge,
+	callbackArg = "ChatScroll",
+}
 
 -- Quick Scroll
 function Module:QuickMouseScroll(dir)
+	if not C["Chat"].Enable then
+		return
+	end
+
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
+		return
+	end
+
+	if not KkthnxUIData[K.Realm][K.Name].Help["ChatScroll"] then
+		HelpTip:Show(ChatFrame1, chatScrollInfo)
+	end
+
 	if dir > 0 then
 		if IsShiftKeyDown() then
 			self:ScrollToTop()
@@ -353,6 +394,7 @@ function Module:QuickMouseScroll(dir)
 		end
 	end
 end
+hooksecurefunc("FloatingChatFrame_OnMouseScroll", Module.QuickMouseScroll)
 
 -- Sticky whisper
 function Module:ChatWhisperSticky()
@@ -432,9 +474,6 @@ function Module:OnEnable()
 		end
 	end)
 
-	hooksecurefunc("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
-	hooksecurefunc("ChatEdit_CustomTabPressed", Module.UpdateTabChannelSwitch)
-	hooksecurefunc("FloatingChatFrame_OnMouseScroll", Module.QuickMouseScroll)
 	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
 	hooksecurefunc("FloatingChatFrame_OnEvent", Module.UpdateTabEventColors)
 	hooksecurefunc("ChatFrame_ConfigEventHandler", Module.PlayWhisperSound)

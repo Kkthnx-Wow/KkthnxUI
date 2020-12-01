@@ -146,7 +146,19 @@ local function ForceUpdateBlizzardFonts()
 	SetFont(_G.Tooltip_Med, NORMAL, size) -- 12
 	SetFont(_G.Tooltip_Small, NORMAL, size) -- 10
 	SetFont(_G.ZoneTextString, NORMAL, 32, "OUTLINE") -- 32
+
+	-- Text that does not follow our fonts fixed below
+	WorldMapFrame.NavBar.homeButton.text:FontTemplate()
+
+	hooksecurefunc("LFGListCategorySelection_AddButton", function(self, btnIndex)
+		local button = self.CategoryButtons[btnIndex]
+		if button then
+			if not button.isFontUpdated then
+				button.Label:SetFontObject(_G.GameFontNormal)
+				button.isFontUpdated = true
+			end
+		end
+	end)
 end
 
--- New Fonts Need to be set as soon as possible ...
 ForceUpdateBlizzardFonts()

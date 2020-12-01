@@ -9,16 +9,20 @@ local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
 local GetItemCooldown = _G.GetItemCooldown
+local GetItemCount = _G.GetItemCount
+local GetItemIcon = _G.GetItemIcon
 local GetSpecialization = _G.GetSpecialization
 local GetSpellTexture = _G.GetSpellTexture
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
 local GetZonePVPInfo = _G.GetZonePVPInfo
 local InCombatLockdown = _G.InCombatLockdown
+local IsEquippedItem = _G.IsEquippedItem
 local IsInInstance = _G.IsInInstance
 local IsPlayerSpell = _G.IsPlayerSpell
 local UIParent = _G.UIParent
 local UnitBuff = _G.UnitBuff
 local UnitInVehicle = _G.UnitInVehicle
+local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 
 local groups = C.SpellReminderBuffs[K.Class]
 local iconSize = C["Auras"].DebuffSize + 4
@@ -31,14 +35,21 @@ function Module:Reminder_Update(cfg)
 	local combat = cfg.combat
 	local instance = cfg.instance
 	local pvp = cfg.pvp
-	local cooldown = cfg.cooldown
-	local isPlayerSpell, isRightSpec, isInCombat, isInInst, isInPVP = true, true
+	local itemID = cfg.itemID
+	local equip = cfg.equip
+	local isPlayerSpell, isRightSpec, isEquipped, isInCombat, isInInst, isInPVP = true, true, true
 	local inInst, instType = IsInInstance()
 	local weaponIndex = cfg.weaponIndex
 
-	if cooldown and GetItemCooldown(cooldown) > 0 then -- check rune cooldown
-		frame:Hide()
-		return
+	if itemID then
+		if equip and not IsEquippedItem(itemID) then
+			isEquipped = false
+		end
+
+		if GetItemCount(itemID) == 0 or (not isEquipped) or GetItemCooldown(itemID) > 0 then -- Check item cooldown
+			frame:Hide()
+			return
+		end
 	end
 
 	if depend and not IsPlayerSpell(depend) then
@@ -144,30 +155,29 @@ function Module:Reminder_OnEvent()
 	Module:Reminder_UpdateAnchor()
 end
 
-function Module:Reminder_AddRune()
-	if GetItemCount(174906) == 0 then
-		return
-	end
-
+function Module:Reminder_AddItemGroup()
 	if not groups then
 		groups = {}
 	end
 
-	table_insert(groups, {
-		spells = {
-			[317065] = true,
-			[270058] = true,
-		},
-		texture = 839983,
-		cooldown = 174906,
-		instance = true,
-	})
+	for _, value in pairs(C.SpellReminderBuffs["ITEMS"]) do
+		if not value.disable and GetItemCount(value.itemID) > 0 then
+			if not value.texture then
+				value.texture = GetItemIcon(value.itemID)
+			end
+
+			if not groups then
+				groups = {}
+			end
+			table_insert(groups, value)
+		end
+	end
 end
 
 function Module:CreateReminder()
-	Module:Reminder_AddRune()
+	Module:Reminder_AddItemGroup()
 
-	if not groups then
+	if not groups or not next(groups) then
 		return
 	end
 

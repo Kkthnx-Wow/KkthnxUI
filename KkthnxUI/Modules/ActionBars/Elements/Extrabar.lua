@@ -10,8 +10,9 @@ local hooksecurefunc = _G.hooksecurefunc
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
+local padding = C.ActionBars.padding
+
 function Module:CreateExtrabar()
-	local padding = 10
 	local buttonList = {}
 	local size = FilterConfig.size
 
@@ -64,7 +65,7 @@ function Module:CreateExtrabar()
 				local bg = CreateFrame("Frame", nil, spellButton)
 				bg:SetAllPoints(spellButton.Icon)
 				bg:SetFrameLevel(spellButton:GetFrameLevel())
-				bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+				bg:CreateBorder()
 
 				spellButton.styled = true
 			end

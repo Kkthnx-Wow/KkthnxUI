@@ -21,26 +21,22 @@ local ipTypes = {
 }
 
 local function colorLatency(latency)
-	if latency < 250 then
-		return "|cff0CD809"..latency
-	elseif latency < 500 then
-		return "|cffE8DA0F"..latency
-	else
-		return "|cffD80909"..latency
+	if latency then
+		return K.MyClassColor..latency
 	end
 end
 
 local function setLatency()
 	local _, _, latencyHome, latencyWorld = GetNetStats()
 	local latency = math_max(latencyHome, latencyWorld)
-	Module.LatencyFrame.Text:SetText(L["MS"]..": "..colorLatency(latency))
+	Module.LatencyDataTextFrame.Text:SetText(latency..colorLatency("ms"))
 end
 
 local function OnEnter()
 	entered = true
 
-	GameTooltip:SetOwner(Module.LatencyFrame, "ANCHOR_NONE")
-	GameTooltip:SetPoint(K.GetAnchors(Module.LatencyFrame))
+	GameTooltip:SetOwner(Module.LatencyDataTextFrame, "ANCHOR_NONE")
+	GameTooltip:SetPoint(K.GetAnchors(Module.LatencyDataTextFrame))
 	GameTooltip:ClearLines()
 
 	GameTooltip:AddLine(L["Latency"], 0, 0.6, 1)
@@ -89,20 +85,21 @@ function Module:CreateLatencyDataText()
 		return
 	end
 
-	Module.LatencyFrame = CreateFrame("Frame", "KKUI_LatencyDataText", UIParent)
+	Module.LatencyDataTextFrame = CreateFrame("Button", nil, UIParent)
 
-	Module.LatencyFrame.Text = Module.LatencyFrame:CreateFontString("OVERLAY")
-	Module.LatencyFrame.Text:FontTemplate(nil, 12)
-	Module.LatencyFrame.Text:ClearAllPoints()
+	Module.LatencyDataTextFrame.Text = Module.LatencyDataTextFrame:CreateFontString("OVERLAY")
+	Module.LatencyDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	Module.LatencyDataTextFrame.Text:SetAlpha(0.9)
+	Module.LatencyDataTextFrame.Text:ClearAllPoints()
 	if C["DataText"].System then
-		Module.LatencyFrame.Text:SetPoint("LEFT", KKUI_SystemDataText, "RIGHT", 4, 0)
+		Module.LatencyDataTextFrame.Text:SetPoint("LEFT", _G.KKUI_SystemDataText, "RIGHT", 4, 0)
 	else
-		Module.LatencyFrame.Text:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -4)
+		Module.LatencyDataTextFrame.Text:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -4)
 	end
 
-	Module.LatencyFrame:SetAllPoints(Module.LatencyFrame.Text)
+	Module.LatencyDataTextFrame:SetAllPoints(Module.LatencyDataTextFrame.Text)
 
-	Module.LatencyFrame:SetScript("OnUpdate", OnUpdate)
-	Module.LatencyFrame:SetScript("OnEnter", OnEnter)
-	Module.LatencyFrame:SetScript("OnLeave", OnLeave)
+	Module.LatencyDataTextFrame:SetScript("OnUpdate", OnUpdate)
+	Module.LatencyDataTextFrame:SetScript("OnEnter", OnEnter)
+	Module.LatencyDataTextFrame:SetScript("OnLeave", OnLeave)
 end

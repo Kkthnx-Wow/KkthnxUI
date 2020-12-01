@@ -240,7 +240,11 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	K.SetupUIScale()
 	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
 
-	K.GUID = UnitGUID("player")
+	local playerGUID = UnitGUID("player")
+	local _, serverID = strsplit("-", playerGUID)
+	K.ServerID = tonumber(serverID)
+	K.GUID = playerGUID
+
 
 	for _, module in next, initQueue do
 		if module.OnEnable then
