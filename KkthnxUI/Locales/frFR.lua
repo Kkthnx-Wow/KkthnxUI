@@ -515,6 +515,7 @@ L["ChatBubbles Skin"] = "Skin des bulles de Chat"
 L["ChocolateBar Skin"] = "Skin de ChocolateBar"
 L["Deadly Boss Mods Skin"] = "Skin de Deadly Boss Mods"
 L["Details Skin"] = "Skin de Details"
+L["Dominos Skin"] = "Skin de Dominos" -- Needs Review
 L["Hekili Skin"] = "Skin d'Hekili"
 L["Skada Skin"] = "Skin de Skada"
 L["Skin Some Blizzard Frames & Objects"] = "Skin certaines fenêtres Blizzard"

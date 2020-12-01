@@ -27,7 +27,7 @@ local zoneInfo = {
 	sanctuary = {SANCTUARY_TERRITORY, {0.035, 0.58, 0.84}},
 }
 
-function Module:LocationOnEvent(self)
+function Module:LocationOnEvent()
 	if C["Minimap"].LocationText.Value == "HIDE" or not C["Minimap"].Enable then
 		return
 	end

@@ -638,7 +638,6 @@ function Module:CreateSocialDataText()
 	Module.FriendsDataTextFrame.Text = Module.FriendsDataTextFrame:CreateFontString(nil, "ARTWORK")
 	Module.FriendsDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 	Module.FriendsDataTextFrame.Text:SetPoint("CENTER", Module.FriendsDataTextFrame.Texture, "CENTER", 0, -6)
-	Module.FriendsDataTextFrame.Text:SetAlpha(0.9)
 
 	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE", OnEvent)
 	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE", OnEvent)

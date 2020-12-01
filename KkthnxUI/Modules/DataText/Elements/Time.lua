@@ -449,7 +449,6 @@ function Module:CreateTimeDataText()
 	Module.TimeFont = Module.TimeFrame:CreateFontString("OVERLAY")
 	Module.TimeFont:FontTemplate(nil, 13)
 	Module.TimeFont:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 2)
-	Module.TimeFont:SetAlpha(0.9)
 
 	Module.TimeFrame:SetAllPoints(Module.TimeFont)
 

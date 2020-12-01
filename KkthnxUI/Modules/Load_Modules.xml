@@ -186,6 +186,7 @@
    <Include file="Skins\Blizzard\WidgetFrame.lua" />
    <!-- Skins AddOns -->
    <Include file="Skins\Addons\Bartender4.lua" />
+   <Include file="Skins\Addons\Dominos.lua" />
    <Include file="Skins\Addons\DeadlyBossMods.lua" />
    <Include file="Skins\Addons\Details.lua" />
    <Include file="Skins\Addons\RareScanner.lua" />

@@ -45,9 +45,10 @@ function Module:OnEnable()
 	Module:LoadDefaultSkins()
 
 	-- Add Skins
-	-- self:ReskinBigWigs()
+	self:ReskinBartender4()
 	self:ReskinDeadlyBossMods()
-	-- self:ReskinSkada()
+	self:ReskinDominos()
+	self:ReskinRareScanner()
 end
 
 function Module:LoadWithAddOn(addonName, value, func)

@@ -3,12 +3,12 @@ local Module = K:GetModule("Skins")
 
 local _G = _G
 
-function Module:ReskinBartender4()
-	if not C["Skins"].Bartender4 then
+function Module:ReskinDominos()
+    if not C["Skins"].Dominos then
 		return
 	end
 
-	local function StyleNormalBartender4Button(self)
+	local function StyleNormalDominosButton(self)
 		local name = self:GetName()
 		if name:match("ExtraActionButton") then
 			return
@@ -43,7 +43,7 @@ function Module:ReskinBartender4()
 
 		if hotkey then
 			hotkey:ClearAllPoints()
-			hotkey:SetPoint("TOPRIGHT", 0, -4)
+			hotkey:SetPoint("TOPRIGHT", 0, 0)
 			hotkey:SetWidth(button:GetWidth() - 1)
 		end
 
@@ -64,11 +64,8 @@ function Module:ReskinBartender4()
 		end
 	end
 
-	local function StyleSmallBartender4Button(button, icon, name, hotkey, pet)
-		if not button then
-			return
-		end
-
+	local function StyleSmallDominosButton(button, icon, name, hotkey, pet)
+		if not button then return end
 		local flash = _G[name.."Flash"]
 		button:StyleButton()
 		button:SetNormalTexture("")
@@ -116,27 +113,44 @@ function Module:ReskinBartender4()
 	end
 
 	do
-		for i = 1, 120 do
-			if _G["BT4Button"..i] then
-				_G["BT4Button"..i]:StyleButton()
-				StyleNormalBartender4Button(_G["BT4Button"..i])
+		for i = 1, 60 do
+			if _G["DominosActionButton"..i] then
+				_G["DominosActionButton"..i]:StyleButton()
+				StyleNormalDominosButton(_G["DominosActionButton"..i])
 			end
 		end
 
+		for i = 1, 12 do
+			_G["ActionButton"..i]:StyleButton()
+			_G["MultiBarBottomLeftButton"..i]:StyleButton()
+			_G["MultiBarBottomRightButton"..i]:StyleButton()
+			_G["MultiBarLeftButton"..i]:StyleButton()
+			_G["MultiBarRightButton"..i]:StyleButton()
+			StyleNormalDominosButton(_G["ActionButton"..i])
+			StyleNormalDominosButton(_G["MultiBarBottomLeftButton"..i])
+			StyleNormalDominosButton(_G["MultiBarBottomRightButton"..i])
+			StyleNormalDominosButton(_G["MultiBarLeftButton"..i])
+			StyleNormalDominosButton(_G["MultiBarRightButton"..i])
+		end
+
 		for i = 1, NUM_STANCE_SLOTS do
-			local name = "BT4StanceButton"..i
+			local name = "StanceButton"..i
 			local button = _G[name]
 			local icon = _G[name.."Icon"]
 			local hotkey = _G[name.."HotKey"]
-			StyleSmallBartender4Button(button, icon, name, hotkey)
+			StyleSmallDominosButton(button, icon, name, hotkey)
 		end
 
 		for i = 1, NUM_PET_ACTION_SLOTS do
-			local name = "BT4PetButton"..i
+			local name = "PetActionButton"..i
 			local button = _G[name]
 			local icon = _G[name.."Icon"]
 			local hotkey = _G[name.."HotKey"]
-			StyleSmallBartender4Button(button, icon, name, hotkey, true)
+			StyleSmallDominosButton(button, icon, name, hotkey, true)
+		end
+
+		if DominosFrameexp then
+			DominosFrameexp:CreateBorder()
 		end
 	end
 end

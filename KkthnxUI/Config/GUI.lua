@@ -511,8 +511,23 @@ end
 local Skins = function(self)
 	local Window = self:CreateWindow(L["Skins"])
 
-	Window:CreateSection("Skins Toggles")
+	Window:CreateSection("Blizzard Skins")
+	Window:CreateSwitch("Skins", "BlizzardFrames", L["Skin Some Blizzard Frames & Objects"])
+	Window:CreateSwitch("Skins", "TalkingHeadBackdrop", L["TalkingHead Skin"])
+	Window:CreateSwitch("Skins", "WeakAuras", L["WeakAuras Skin"])
+	Window:CreateSwitch("Skins", "ChatBubbles", L["ChatBubbles Skin"])
+	Window:CreateSlider("Skins", "ChatBubbleAlpha", L["ChatBubbles Background Alpha"], 0, 1, 0.1, nil, UpdateChatBubble)
+
+	Window:CreateSection("AddOn Skins")
 	Window:CreateSwitch("Skins", "Bartender4", L["Bartender4 Skin"])
+	Window:CreateSwitch("Skins", "DeadlyBossMods", L["Deadly Boss Mods Skin"])
+	Window:CreateSwitch("Skins", "Dominos", L["Dominos Skin"])
+	Window:CreateSwitch("Skins", "RareScanner", L["RareScanner Skin"])
+	Window:CreateSwitch("Skins", "WeakAuras", L["WeakAuras Skin"])
+	Window:CreateSwitch("Skins", "Details", L["Details Skin"])
+	Window:CreateButton(L["Reset Details"], nil, nil, ResetDetails)
+
+	-- Disabled / Broken Skins
 	-- Window:CreateSwitch("Skins", "BigWigs", L["BigWigs Skin"])
 	-- Window:CreateSwitch("Skins", "ChocolateBar", L["ChocolateBar Skin"])
 	-- Window:CreateSwitch("Skins", "Hekili", L["Hekili Skin"])
@@ -520,18 +535,6 @@ local Skins = function(self)
 	-- Window:CreateSwitch("Skins", "Spy", L["Spy Skin"])
 	-- Window:CreateSwitch("Skins", "TellMeWhen", L["TellMeWhen Skin"])
 	-- Window:CreateSwitch("Skins", "TitanPanel", L["TitanPanel Skin"])
-
-	Window:CreateSwitch("Skins", "BlizzardFrames", L["Skin Some Blizzard Frames & Objects"])
-	Window:CreateSwitch("Skins", "ChatBubbles", L["ChatBubbles Skin"])
-	Window:CreateSwitch("Skins", "DeadlyBossMods", L["Deadly Boss Mods Skin"])
-	Window:CreateSwitch("Skins", "Details", L["Details Skin"])
-	Window:CreateSwitch("Skins", "RareScanner", L["RareScanner Skin"])
-	Window:CreateSwitch("Skins", "TalkingHeadBackdrop", L["TalkingHead Skin"])
-	Window:CreateSwitch("Skins", "WeakAuras", L["WeakAuras Skin"])
-	Window:CreateButton(L["Reset Details"], nil, nil, ResetDetails)
-
-	Window:CreateSection("Skin Values")
-	Window:CreateSlider("Skins", "ChatBubbleAlpha", L["ChatBubbles Background Alpha"], 0, 1, 0.1, nil, UpdateChatBubble)
 end
 
 local Tooltip = function(self)

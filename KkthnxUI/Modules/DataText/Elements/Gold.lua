@@ -207,7 +207,6 @@ function Module:CreateGoldDataText()
 	Module.GoldDataTextFrame.Text = Module.GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
 	Module.GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 	Module.GoldDataTextFrame.Text:SetPoint("CENTER", Module.GoldDataTextFrame.Texture, "CENTER", 0, -6)
-	Module.GoldDataTextFrame.Text:SetAlpha(0.9)
 
 	Module.GoldDataTextFrame:RegisterEvent("PLAYER_MONEY", OnEvent)
 	Module.GoldDataTextFrame:RegisterEvent("SEND_MAIL_MONEY_CHANGED", OnEvent)

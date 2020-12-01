@@ -263,7 +263,6 @@ function Module:CreateSystemDataText()
 	Module.SystemDataTextFrame.Text = Module.SystemDataTextFrame:CreateFontString("OVERLAY")
 	Module.SystemDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 	Module.SystemDataTextFrame.Text:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -4)
-	Module.SystemDataTextFrame.Text:SetAlpha(0.9)
 
 	Module.SystemDataTextFrame:SetAllPoints(Module.SystemDataTextFrame.Text)
 

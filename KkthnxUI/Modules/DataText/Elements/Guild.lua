@@ -431,7 +431,6 @@ function Module:CreateGuildDataText()
 	Module.GuildDataTextFrame.Text = Module.GuildDataTextFrame:CreateFontString(nil, "ARTWORK")
 	Module.GuildDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 	Module.GuildDataTextFrame.Text:SetPoint("CENTER", Module.GuildDataTextFrame.Texture, "CENTER", 0, -6)
-	Module.GuildDataTextFrame.Text:SetAlpha(0.9)
 
 	Module.GuildDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
 	Module.GuildDataTextFrame:RegisterEvent("GUILD_ROSTER_UPDATE", OnEvent)

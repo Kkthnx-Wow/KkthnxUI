@@ -417,6 +417,7 @@ C["Skins"] = {
 	["ChocolateBar"] = false,
 	["DeadlyBossMods"] = false,
 	["Details"] = false,
+	["Dominos"] = false,
 	["Hekili"] = false,
 	["RareScanner"] = false,
 	["Skada"] = false,

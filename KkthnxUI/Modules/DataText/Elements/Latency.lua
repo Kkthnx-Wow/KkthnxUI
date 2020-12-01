@@ -89,7 +89,6 @@ function Module:CreateLatencyDataText()
 
 	Module.LatencyDataTextFrame.Text = Module.LatencyDataTextFrame:CreateFontString("OVERLAY")
 	Module.LatencyDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.LatencyDataTextFrame.Text:SetAlpha(0.9)
 	Module.LatencyDataTextFrame.Text:ClearAllPoints()
 	if C["DataText"].System then
 		Module.LatencyDataTextFrame.Text:SetPoint("LEFT", _G.KKUI_SystemDataText, "RIGHT", 4, 0)
