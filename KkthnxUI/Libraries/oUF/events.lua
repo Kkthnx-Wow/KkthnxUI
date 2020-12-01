@@ -87,6 +87,7 @@ local event_metatable = {
 --[[ Events: frame:RegisterEvent(event, func, unitless)
 Used to register a frame for a game event and add an event handler. OnUpdate polled frames are prevented from
 registering events.
+
 * self     - frame that will be registered for the given event.
 * event    - name of the event to register (string)
 * func     - a function that will be executed when the event fires. Multiple functions can be added for the same frame
@@ -153,6 +154,7 @@ end
 
 --[[ Events: frame:UnregisterEvent(event, func)
 Used to remove a function from the event handler list for a game event.
+
 * self  - the frame registered for the event
 * event - name of the registered event (string)
 * func  - function to be removed from the list of event handlers. If this is the only handler for the given event, then
