@@ -770,7 +770,7 @@ function Module:CreatePlates()
 	self.Health:SetAllPoints()
 	self.Health:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 
-	self.Health.backdrop = self.Health:CreateShadow(true) -- don"t mess up with libs
+	self.Health.backdrop = self.Health:CreateShadow(true) -- don't mess up with libs
 	self.Health.backdrop:SetPoint("TOPLEFT", self.Health, "TOPLEFT", -3, 3)
 	self.Health.backdrop:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 3, -3)
 	self.Health.backdrop:SetFrameLevel(self.Health:GetFrameLevel())

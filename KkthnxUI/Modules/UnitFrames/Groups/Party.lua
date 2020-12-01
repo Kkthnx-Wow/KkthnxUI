@@ -290,9 +290,9 @@ function Module:CreateParty()
 	self.PhaseIndicator:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\PhaseIcons.tga]])
 	self.PhaseIndicator.PostUpdate = Module.UpdatePhaseIcon
 
-	self.SummonIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.SummonIndicator:SetSize(20, 20)
-	self.SummonIndicator:SetPoint("CENTER", self.Overlay)
+	self.SummonIndicator = self.Health:CreateTexture(nil, "OVERLAY")
+	self.SummonIndicator:SetSize(24, 24)
+	self.SummonIndicator:SetPoint("LEFT", 2, 0)
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)

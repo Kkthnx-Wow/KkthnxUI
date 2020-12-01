@@ -63,12 +63,14 @@ function Module:Bind_Create()
 		return
 	end
 
-	local frame = CreateFrame("Frame", nil, UIParent)
+	local frame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
 	frame:SetFrameStrata("DIALOG")
 	frame:EnableMouse(true)
 	frame:EnableKeyboard(true)
 	frame:EnableMouseWheel(true)
 	frame:CreateBorder()
+	frame.KKUI_Background:SetVertexColor(1, 0.8, 0, 0.25)
+	frame.KKUI_Border:SetVertexColor(1, 0.8, 0)
 	frame:Hide()
 
 	frame:SetScript("OnEnter", function()
@@ -77,12 +79,14 @@ function Module:Bind_Create()
 		GameTooltip:AddLine(frame.tipName or frame.name, 0.6, 0.8, 1)
 
 		if #frame.bindings == 0 then
-			GameTooltip:AddLine(L["No Key Set"], 0.6, 0.6, 0.6)
+			GameTooltip:AddLine(NOT_BOUND, 1, 0, 0)
+			GameTooltip:AddLine(PRESS_KEY_TO_BIND)
 		else
 			GameTooltip:AddDoubleLine(L["Key Index"], L["Key Binding"], 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
 			for i = 1, #frame.bindings do
-				GameTooltip:AddDoubleLine(i, frame.bindings[i])
+				GameTooltip:AddDoubleLine(i, frame.bindings[i], 1, 1, 1, 0, 1, 0)
 			end
+			GameTooltip:AddLine("Press the escape key or right click to unbind this action.", 1, 0.8, 0, 1)
 		end
 		GameTooltip:Show()
 	end)
@@ -105,10 +109,8 @@ function Module:Bind_Create()
 		end
 	end)
 
-	local button = EnumerateFrames()
-	while button do
+	for _, button in pairs(Module.buttons) do
 		Module:Bind_RegisterButton(button)
-		button = EnumerateFrames(button)
 	end
 
 	for i = 1, 12 do
@@ -145,7 +147,7 @@ function Module:Bind_Update(button, spellmacro)
 		frame.id = frame.button:GetID()
 		local colorIndex = K.Round(select(2, MacroFrameTab1Text:GetTextColor()), 1)
 		if colorIndex == 0.8 then
-			frame.id = frame.id + 36
+			frame.id = frame.id + MAX_ACCOUNT_MACROS
 		end
 		frame.name = GetMacroInfo(frame.id)
 		frame.bindings = {GetBindingKey(spellmacro.." "..frame.name)}
@@ -160,7 +162,7 @@ function Module:Bind_Update(button, spellmacro)
 		if not frame.id or frame.id < 1 or frame.id > (spellmacro == "STANCE" and 10 or 12) then
 			frame.bindstring = "CLICK "..frame.name..":LeftButton"
 		else
-			frame.bindstring = (spellmacro == "STANCE" and "SHAPESHIFTBUTTON" or "BONUSACTIONBUTTON")..frame.id
+			frame.bindstring = (spellmacro=="STANCE" and "SHAPESHIFTBUTTON" or "BONUSACTIONBUTTON")..frame.id
 		end
 		frame.bindings = {GetBindingKey(frame.bindstring)}
 	else
@@ -171,10 +173,10 @@ function Module:Bind_Update(button, spellmacro)
 		frame.tipName = button.commandName and GetBindingName(button.commandName)
 
 		frame.action = tonumber(button.action)
-		if not frame.action or frame.action < 1 or frame.action > 132 then
+		if button.isCustomButton or not frame.action or frame.action < 1 or frame.action > 168 then
 			frame.bindstring = "CLICK "..frame.name..":LeftButton"
 		else
-			local modact = 1 + (frame.action - 1) % 12
+			local modact = 1+(frame.action-1)%12
 			if frame.name == "ExtraActionButton1" then
 				frame.bindstring = "EXTRAACTIONBUTTON1"
 			elseif frame.action < 25 or frame.action > 72 then
@@ -191,16 +193,20 @@ function Module:Bind_Update(button, spellmacro)
 		end
 		frame.bindings = {GetBindingKey(frame.bindstring)}
 	end
+
+	-- Refresh tooltip
+	frame:GetScript("OnEnter")(self)
 end
 
 local ignoreKeys = {
 	["LALT"] = true,
-	["LCTRL"] = true,
-	["LSHIFT"] = true,
 	["RALT"] = true,
+	["LCTRL"] = true,
 	["RCTRL"] = true,
+	["LSHIFT"] = true,
 	["RSHIFT"] = true,
-	["UNKNOWN"] = true
+	["UNKNOWN"] = true,
+	["LeftButton"] = true,
 }
 
 function Module:Bind_Listener(key)
@@ -214,10 +220,6 @@ function Module:Bind_Listener(key)
 		K.Print(string_format(L["Clear Binds"], frame.tipName or frame.name))
 
 		Module:Bind_Update(frame.button, frame.spellmacro)
-		if frame.spellmacro ~= "MACRO" and not GameTooltip:IsForbidden() then
-			GameTooltip:Hide()
-		end
-
 		return
 	end
 
@@ -246,7 +248,6 @@ function Module:Bind_Listener(key)
 	K.Print((frame.tipName or frame.name).." |cff00ff00"..L["Key Bound To"].."|r "..alt..ctrl..shift..key)
 
 	Module:Bind_Update(frame.button, frame.spellmacro)
-	frame:GetScript("OnEnter")(self)
 end
 
 function Module:Bind_HideFrame()
@@ -348,23 +349,17 @@ function Module:Bind_CreateDialog()
 	checkBox:SetPoint("RIGHT", frame.bottom, "LEFT", -6, 0)
 	checkBox:SetScript("OnClick", function(self)
 		KkthnxUIData[K.Realm][K.Name].BindType = self:GetChecked() and 2 or 1
-		checkBox.text:SetText(self:GetChecked() and K.SystemColor..CHARACTER_SPECIFIC_KEYBINDINGS.."|r" or K.GreyColor..CHARACTER_SPECIFIC_KEYBINDINGS.."|r")
 	end)
 
 	checkBox.text = frame.bottom:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	checkBox.text:SetPoint("CENTER", 0, 0)
 	checkBox.text:SetText(checkBox:GetChecked() and K.SystemColor..CHARACTER_SPECIFIC_KEYBINDINGS.."|r" or K.GreyColor..CHARACTER_SPECIFIC_KEYBINDINGS.."|r")
 	checkBox:SetHitRectInsets(0, 0 - checkBox.text:GetWidth(), 0, 0)
-	checkBox.text:Show()
 
 	Module.keybindDialog = frame
 end
 
-SlashCmdList["KKUI_KEYBINDS"] = function(msg)
-	if msg ~= "" then -- don't mess up with this
-		return
-	end
-
+SlashCmdList["KKUI_KEYBINDS"] = function()
 	if InCombatLockdown() then
 		UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
 		return

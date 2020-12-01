@@ -98,7 +98,7 @@ function K.CreateBorder(parent, drawLayer, drawSubLevel)
 	}
 
 	for _, v in next, sections do
-		border[v] = parent:CreateTexture(nil, drawLayer or "OVERLAY", nil, drawSubLevel or 1)
+		border[v] = parent:CreateTexture(nil, drawLayer, nil, drawSubLevel)
 	end
 
 	border.TOPLEFT:SetTexCoord(0.5, 0.625, 0, 1)

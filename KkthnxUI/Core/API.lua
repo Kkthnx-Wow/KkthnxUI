@@ -37,7 +37,7 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 		return
 	end
 
-	if bFrame:GetObjectType() == "Texture" then
+	if bFrame:IsObjectType("Texture") then
 		bFrame = bFrame:GetParent()
 	end
 

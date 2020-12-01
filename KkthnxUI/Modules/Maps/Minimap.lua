@@ -166,7 +166,7 @@ elseif K.Level > 89 then
 end
 
 function Module:CreateStyle()
-	local minimapBorder = CreateFrame("Frame", nil, Minimap)
+	local minimapBorder = CreateFrame("Frame", "KKUI_MinimapBorder", Minimap)
 	minimapBorder:SetAllPoints(Minimap)
 	minimapBorder:SetFrameLevel(Minimap:GetFrameLevel())
 	minimapBorder:CreateBorder()
@@ -446,19 +446,16 @@ function Module:Minimap_OnMouseUp(btn)
 		else
 			ToggleDropDownMenu(1, nil, KKUI_MiniMapTrackingDropDown, "cursor", -160, 0, "MENU", 2)
 		end
-	else
+	elseif self.mover then
 		_G.Minimap_OnClick(self)
 	end
 end
 
 function Module:SetupHybridMinimap()
-	local mapCanvas = HybridMinimap.MapCanvas
-	mapCanvas:SetMaskTexture(C["Media"].Blank)
+	local mapCanvas = _G.HybridMinimap.MapCanvas
+	mapCanvas:SetMaskTexture("Interface\\Buttons\\WHITE8X8")
 	mapCanvas:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)
 	mapCanvas:SetScript("OnMouseUp", Module.Minimap_OnMouseUp)
-	mapCanvas:SetScript('OnMouseUp', K.Noop)
-
-	HybridMinimap.CircleMask:StripTextures()
 end
 
 function Module:HybridMinimapOnLoad(addon)
