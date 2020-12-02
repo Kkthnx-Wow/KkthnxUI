@@ -207,9 +207,9 @@ C["DataBars"] = {
 
 -- Datatext
 C["DataText"] = {
-	["Friends"] = true,
-	["Gold"] = true,
-	["Guild"] = true,
+	["Friends"] = false,
+	["Gold"] = false,
+	["Guild"] = false,
 	["GuildSortBy"] = 1,
 	["GuildSortOrder"] = true,
 	["Latency"] = true,
