@@ -514,7 +514,6 @@ local Skins = function(self)
 	Window:CreateSection("Blizzard Skins")
 	Window:CreateSwitch("Skins", "BlizzardFrames", L["Skin Some Blizzard Frames & Objects"])
 	Window:CreateSwitch("Skins", "TalkingHeadBackdrop", L["TalkingHead Skin"])
-	Window:CreateSwitch("Skins", "WeakAuras", L["WeakAuras Skin"])
 	Window:CreateSwitch("Skins", "ChatBubbles", L["ChatBubbles Skin"])
 	Window:CreateSlider("Skins", "ChatBubbleAlpha", L["ChatBubbles Background Alpha"], 0, 1, 0.1, nil, UpdateChatBubble)
 
