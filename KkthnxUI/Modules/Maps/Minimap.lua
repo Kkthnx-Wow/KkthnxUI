@@ -214,35 +214,19 @@ end
 
 function Module:ReskinRegions()
 	-- Garrison
-	hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function(self)
-		self:ClearAllPoints()
-		self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, 0)
-		self:GetNormalTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
-		self:GetPushedTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
-		self:GetHighlightTexture():SetTexture("Interface\\HelpFrame\\HelpIcon-ReportLag")
-		self:SetSize(30, 30)
-		self:SetAlpha(0.9)
-	end)
+	hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function()
+		local button = _G.GarrisonLandingPageMinimapButton
+		if button then
+			button:ClearAllPoints()
+			button:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -6, -6)
+			button:SetScale(0.7)
 
-	local menuList = {
-		{text =	GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_9_0, notCheckable = true},
-		{text =	WAR_CAMPAIGN, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_8_0, notCheckable = true},
-		{text =	ORDER_HALL_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_7_0, notCheckable = true},
-		{text =	GARRISON_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = LE_GARRISON_TYPE_6_0, notCheckable = true},
-	}
-	GarrisonLandingPageMinimapButton:HookScript("OnMouseDown", function(self, btn)
-		if btn == "RightButton" then
-			HideUIPanel(GarrisonLandingPage)
-			EasyMenu(menuList, K.EasyMenu, self, -80, 0, "MENU", 1)
+			local box = _G.GarrisonLandingPageTutorialBox
+			if box then
+				box:SetScale(1 / 0.7)
+				box:SetClampedToScreen(true)
+			end
 		end
-	end)
-
-	GarrisonLandingPageMinimapButton:SetScript("OnEnter", function(self)
-		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-		GameTooltip:SetText(self.title, 1, 1, 1)
-		GameTooltip:AddLine(self.description, nil, nil, nil, true)
-		GameTooltip:AddLine("Right click to switch garrisons", nil, nil, nil, true)
-		GameTooltip:Show()
 	end)
 
 	-- QueueStatus Button

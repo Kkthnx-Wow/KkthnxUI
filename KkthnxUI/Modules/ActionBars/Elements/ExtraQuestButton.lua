@@ -148,7 +148,7 @@ function ExtraQuestButton:PLAYER_LOGIN()
 		if _G.KKUI_ActionBarZone then
 			self:SetPoint("CENTER", _G.KKUI_ActionBarZone)
 		else
-			K.Mover(self, "ExtraQuestButton", "Extrabar", {"BOTTOM", UIParent, "BOTTOM", 270, 34})
+			K.Mover(self, "ExtraQuestButton", "Extrabar", {"BOTTOM", UIParent, "BOTTOM", 270, 42})
 		end
 	end
 
@@ -166,9 +166,10 @@ function ExtraQuestButton:PLAYER_LOGIN()
 	bg:StyleButton()
 
 	self.HL = self:CreateTexture(nil, "HIGHLIGHT")
-	self.HL:SetColorTexture(1, 1, 1, .25)
-	self.HL:SetPoint("TOPLEFT", Icon, "TOPLEFT", 2, -2)
-	self.HL:SetPoint("BOTTOMRIGHT", Icon, "BOTTOMRIGHT", -2, 2)
+	self.HL:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+	self.HL:SetPoint("TOPLEFT", Icon, "TOPLEFT", 0, -0)
+	self.HL:SetPoint("BOTTOMRIGHT", Icon, "BOTTOMRIGHT", -0, 0)
+	self.HL:SetBlendMode("ADD")
 	self.Icon = Icon
 
 	local HotKey = self:CreateFontString("$parentHotKey", nil, "NumberFontNormal")
