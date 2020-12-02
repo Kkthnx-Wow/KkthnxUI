@@ -291,7 +291,7 @@ function Module:CreateParty()
 	self.PhaseIndicator.PostUpdate = Module.UpdatePhaseIcon
 
 	self.SummonIndicator = self.Health:CreateTexture(nil, "OVERLAY")
-	self.SummonIndicator:SetSize(24, 24)
+	self.SummonIndicator:SetSize(20, 20)
 	self.SummonIndicator:SetPoint("LEFT", 2, 0)
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")

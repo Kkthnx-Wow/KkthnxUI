@@ -349,9 +349,7 @@ local function CheckRole()
 	end
 end
 K:RegisterEvent("PLAYER_LOGIN", CheckRole)
-K:RegisterEvent("PLAYER_ENTERING_WORLD", CheckRole)
 K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
-K:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED', CheckRole)
 
 -- Chat channel check
 function K.CheckChat(useRaidWarning)
@@ -583,7 +581,6 @@ function K.GetPlayerMapPos(mapID)
 	return tempVec2D.y/mapRect[2].y, tempVec2D.x/mapRect[2].x
 end
 
-
 -- Money text formatting, code taken from Scrooge by thelibrarian (http://www.wowace.com/addons/scrooge)
 function K.FormatMoney(amount)
 	local coppername = "|cffeda55fc|r"
@@ -624,9 +621,9 @@ function K.CheckSavedVariables()
 		KkthnxUIData[K.Realm][K.Name] = {}
 	end
 
-	if not KkthnxUIData[K.Realm][K.Name].AutoQuest then
-		KkthnxUIData[K.Realm][K.Name].AutoQuest = false
-	end
+	if KkthnxUIData[K.Realm][K.Name].AutoQuest == nil then
+        KkthnxUIData[K.Realm][K.Name].AutoQuest = false
+    end
 
 	if not KkthnxUIData[K.Realm][K.Name].BindType then
 		KkthnxUIData[K.Realm][K.Name].BindType = 1
@@ -640,8 +637,8 @@ function K.CheckSavedVariables()
 		KkthnxUIData[K.Realm][K.Name].CustomJunkList = {}
 	end
 
-	if not KkthnxUIData[K.Realm][K.Name].DetectVersion then
-		KkthnxUIData[K.Realm][K.Name].DetectVersion = K.Version
+	if KkthnxUIData[K.Realm][K.Name].DetectVersion == nil then
+        KkthnxUIData[K.Realm][K.Name].DetectVersion = K.Version
 	end
 
 	if not KkthnxUIData[K.Realm][K.Name].FavouriteItems then
@@ -656,9 +653,9 @@ function K.CheckSavedVariables()
 		KkthnxUIData[K.Realm][K.Name].AuraWatchMover = {}
 	end
 
-	if not KkthnxUIData[K.Realm][K.Name].RevealWorldMap then
-		KkthnxUIData[K.Realm][K.Name].RevealWorldMap = false
-	end
+	if KkthnxUIData[K.Realm][K.Name].RevealWorldMap == nil then
+        KkthnxUIData[K.Realm][K.Name].RevealWorldMap = false
+    end
 
 	if not KkthnxUIData[K.Realm][K.Name].SplitCount then
 		KkthnxUIData[K.Realm][K.Name].SplitCount = 1

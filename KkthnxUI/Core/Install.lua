@@ -78,7 +78,7 @@ function Module:ForceDefaultCVars()
 
 	if K.isDeveloper then
 		SetCVar("ffxGlow", 0)
-		SetCVar("SpellQueueWindow", 100)
+		SetCVar("SpellQueueWindow", 26)
 		SetCVar("nameplateShowOnlyNames", 1)
 	end
 end
