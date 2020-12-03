@@ -16,7 +16,7 @@ local PaperDollFrame_SetLabelAndText = _G.PaperDollFrame_SetLabelAndText
 local UnitAttackSpeed = _G.UnitAttackSpeed
 
 function Module:CreateImprovedStats()
-	if C["Misc"].ImprovedStats ~= true then
+	if not C["Misc"].ImprovedStats then
 		return
 	end
 

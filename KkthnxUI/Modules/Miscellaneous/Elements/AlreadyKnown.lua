@@ -1,4 +1,5 @@
 local K = unpack(select(2, ...))
+local Module = K:GetModule("Tooltip")
 
 -- Sourced: AlreadyKnown (villiv)
 -- Edited: KkthnxUI (Kkthnx)
@@ -75,8 +76,8 @@ local function IsAlreadyKnown(link, index)
 		if itemClassID == LE_ITEM_CLASS_BATTLEPET and index then
 			local speciesID = K.ScanTooltip:SetGuildBankItem(GetCurrentGuildBankTab(), index)
 			return isPetCollected(speciesID)
-		-- elseif Module.ConduitData[linkID] and Module.ConduitData[linkID] >= level then -- Implement Later
-			-- return true
+		elseif Module.ConduitData[linkID] and Module.ConduitData[linkID] >= level then
+			return true
 		else
 			if knowns[link] then
 				return true

@@ -21,13 +21,13 @@ local UnitAura = _G.UnitAura
 local hooksecurefunc = _G.hooksecurefunc
 
 local types = {
-	achievement = "Achievement".."ID:",
-	azerite = L["Trait"].."ID:",
-	currency = CURRENCY.."ID:",
-	item = "Item".."ID:",
-	quest = "Quest".."ID:",
-	spell = "Spell".."ID:",
+	spell = SPELLS.."ID:",
+	item = ITEMS.."ID:",
+	quest = QUESTS_LABEL.."ID:",
 	talent = TALENT.."ID:",
+	achievement = ACHIEVEMENTS.."ID:",
+	currency = CURRENCY.."ID:",
+	azerite = L["Trait"].."ID:",
 }
 
 function Module:AddLineForID(id, linkType, noadd)
