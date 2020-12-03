@@ -344,7 +344,11 @@ end
 
 local function OnEvent(_, event, arg1)
 	if not IsInGuild() then
-		Module.GuildDataTextFrame.Text:SetText("0")
+		if C["DataText"].HideText then
+			Module.GuildDataTextFrame.Text:SetText("")
+		else
+			Module.GuildDataTextFrame.Text:SetText("0")
+		end
 		return
 	end
 
@@ -355,7 +359,11 @@ local function OnEvent(_, event, arg1)
 	end
 
 	local online = select(3, GetNumGuildMembers())
-	Module.GuildDataTextFrame.Text:SetText(online..K.MyClassColor.."g")
+	if C["DataText"].HideText then
+		Module.GuildDataTextFrame.Text:SetText("")
+	else
+		Module.GuildDataTextFrame.Text:SetText(online)
+	end
 
 	if infoFrame and infoFrame:IsShown() then
 		GuildPanel_Refresh()

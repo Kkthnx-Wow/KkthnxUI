@@ -355,6 +355,9 @@ local DataText = function(self)
 	Window:CreateSwitch("DataText", "Location", L["Enable Minimap Location"])
 	Window:CreateSwitch("DataText", "System", L["Enable System Info"])
 	Window:CreateSwitch("DataText", "Time", L["Enable Minimap Time"])
+
+	Window:CreateSection("DataText Text")
+	Window:CreateSwitch("DataText", "HideText", "Hide 'Friends, Guild and Gold' Icon Text")
 end
 
 local General = function(self)

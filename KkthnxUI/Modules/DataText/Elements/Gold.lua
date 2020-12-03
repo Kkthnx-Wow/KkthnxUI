@@ -83,7 +83,11 @@ local function OnEvent(_, event)
 	local coppername = "|cffeda55fc|r"
 	local silvername = "|cffc7c7cfs|r"
 	local goldname = "|cffffd700g|r"
-	Module.GoldDataTextFrame.Text:SetText(goldname..silvername..coppername)
+	if C["DataText"].HideText then
+		Module.GoldDataTextFrame.Text:SetText("")
+	else
+		Module.GoldDataTextFrame.Text:SetText(goldname..silvername..coppername)
+	end
 
 	KkthnxUIGold = KkthnxUIGold or {}
 	KkthnxUIGold.totalGold = KkthnxUIGold.totalGold or {}

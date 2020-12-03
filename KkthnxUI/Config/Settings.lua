@@ -212,6 +212,7 @@ C["DataText"] = {
 	["Guild"] = false,
 	["GuildSortBy"] = 1,
 	["GuildSortOrder"] = true,
+	["HideText"] = true,
 	["Latency"] = true,
 	["Location"] = true,
 	["System"] = true,
