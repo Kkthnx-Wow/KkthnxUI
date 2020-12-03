@@ -453,6 +453,7 @@ C.BuffsTracking = {
 		[124682] = AuraWatch_AddSpell(124682, 'BOTTOMLEFT', {0.8, 0.8, 0.25}),		-- Enveloping Mist
 		[191840] = AuraWatch_AddSpell(191840, 'BOTTOMRIGHT', {0.27, 0.62, 0.7}),		-- Essence Font
 		[116841] = AuraWatch_AddSpell(116841, 'TOP', {0.12, 1.00, 0.53}),			-- Tiger's Lust (Freedom)
+		[325209] = AuraWatch_AddSpell(325209, 'BOTTOM', {0.3, 0.8, 0.6}),			-- Enveloping Breath
 	},
 	ROGUE = {
 		[57934] = AuraWatch_AddSpell(57934, 'TOPRIGHT', {0.89, 0.09, 0.05}),		-- Tricks of the Trade
@@ -465,7 +466,7 @@ C.BuffsTracking = {
 		[193396] = AuraWatch_AddSpell(193396, 'TOPRIGHT', {0.6, 0.2, 0.8}, true),	-- Demonic Empowerment
 		-- Hunter Pets
 		[272790] = AuraWatch_AddSpell(272790, 'TOPLEFT', {0.89, 0.09, 0.05}, true),	-- Frenzy
-		[136] = AuraWatch_AddSpell(290819, 'TOPRIGHT', {0.2, 0.8, 0.2}, true),		-- Mend Pet
+		[136] = AuraWatch_AddSpell(136, 'TOPRIGHT', {0.2, 0.8, 0.2}, true),		-- Mend Pet
 	},
 	HUNTER = {
 		[90361] = AuraWatch_AddSpell(90361, 'TOP', {0.34, 0.47, 0.31}),				-- Spirit Mend (HoT)
