@@ -100,6 +100,18 @@ local function ResetDetails()
 	end
 end
 
+local function UpdateBlipTextures()
+	K:GetModule("Minimap"):UpdateBlipTexture()
+end
+
+local function UpdateFilterList()
+	K:GetModule("Chat"):UpdateFilterList()
+end
+
+local function UpdateFilterWhiteList()
+	K:GetModule("Chat"):UpdateFilterWhiteList()
+end
+
 local function UpdateDataBarsSize()
 	K:GetModule("DataBars"):UpdateDataBarsSize()
 end
@@ -119,14 +131,6 @@ local function UIScaleNotice()
 	end
 end
 
-local function UpdateFilterList()
-	K:GetModule("Chat"):UpdateFilterList()
-end
-
-local function UpdateFilterWhiteList()
-	K:GetModule("Chat"):UpdateFilterWhiteList()
-end
-
 local function UpdateQuestFontSize()
 	K:GetModule("Miscellaneous"):CreateQuestSizeUpdate()
 end
@@ -140,14 +144,10 @@ local ActionBar = function(self)
 	Window:CreateSwitch("ActionBar", "Cooldowns", L["Show Cooldowns"])
 	Window:CreateSwitch("ActionBar", "Count", L["Enable Count"])
 	Window:CreateSwitch("ActionBar", "DecimalCD", L["Format Cooldowns As Decimals"])
-	if C["ActionBar"].PetBar then
-		Window:CreateSwitch("ActionBar", "FadePetBar", L["Mouseover PetBar"])
-	end
+	Window:CreateSwitch("ActionBar", "FadePetBar", L["Mouseover PetBar"])
 	Window:CreateSwitch("ActionBar", "FadeRightBar", L["Mouseover RightBar 1"])
 	Window:CreateSwitch("ActionBar", "FadeRightBar2", L["Mouseover RightBar 2"])
-	if C["ActionBar"].StanceBar then
-		Window:CreateSwitch("ActionBar", "FadeStanceBar", L["Mouseover StanceBar"])
-	end
+	Window:CreateSwitch("ActionBar", "FadeStanceBar", L["Mouseover StanceBar"])
 	Window:CreateSwitch("ActionBar", "Hotkey", L["Enable Hotkey"], nil, UpdateHotkeys)
 	Window:CreateSwitch("ActionBar", "Macro", L["Enable Macro"])
 	Window:CreateSwitch("ActionBar", "MicroBar", L["Enable MicroBar"])
@@ -298,7 +298,7 @@ local Chat = function(self)
 	Window:CreateSwitch("Chat", "ChatMenu", L["Show Chat Menu Buttons"])
 	Window:CreateSwitch("Chat", "Emojis", newFeatureIcon.."Show Emojis In Chat"..emojiExample)
 	Window:CreateSwitch("Chat", "Freedom", L["Disable Chat Language Filter"])
-	Window:CreateSwitch("Chat", "Lock", enableTextColor..L["Lock Chat"])
+	Window:CreateSwitch("Chat", "Lock", L["Lock Chat"])
 	Window:CreateSwitch("Chat", "LootIcons", L["Show Chat Loot Icons"])
 	Window:CreateSwitch("Chat", "OldChatNames", L["Use Default Channel Names"])
 	Window:CreateSwitch("Chat", "Sticky", L["Stick On Channel If Whispering"], nil, UpdateChatSticky)
@@ -402,7 +402,7 @@ local Minimap = function(self)
 	Window:CreateSwitch("Minimap", "Enable", enableTextColor..L["Enable Minimap"])
 	Window:CreateSwitch("Minimap", "Calendar", L["Show Minimap Calendar"], "If enabled, show minimap calendar icon on minimap.|nYou can simply click mouse middle button on minimap to toggle calendar even without this option.")
 	Window:CreateSwitch("Minimap", "ShowRecycleBin", L["Show Minimap Button Collector"])
-	Window:CreateDropdown("Minimap", "BlipTexture", L["Blip Icon Styles"])
+	Window:CreateDropdown("Minimap", "BlipTexture", L["Blip Icon Styles"], nil, nil, UpdateBlipTextures)
 	Window:CreateDropdown("Minimap", "LocationText", L["Location Text Style"])
 
 	Window:CreateSection("Minimap Sizes")
@@ -616,9 +616,7 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "ResurrectSound", L["Sound Played When You Are Resurrected"])
 	Window:CreateSwitch("Unitframe", "ShowHealPrediction", L["Show HealPrediction Statusbars"])
 	Window:CreateSwitch("Unitframe", "Smooth", L["Smooth Bars"])
-	if K.Class == "MONK" then
-		Window:CreateSwitch("Unitframe", "Stagger", L["Show |CFF00FF96Monk|r Stagger Bar"])
-	end
+	Window:CreateSwitch("Unitframe", "Stagger", L["Show |CFF00FF96Monk|r Stagger Bar"])
 	Window:CreateSwitch("Unitframe", "Swingbar", L["Unitframe Swingbar"])
 	Window:CreateSwitch("Unitframe", "SwingbarTimer", L["Unitframe Swingbar Timer"])
 

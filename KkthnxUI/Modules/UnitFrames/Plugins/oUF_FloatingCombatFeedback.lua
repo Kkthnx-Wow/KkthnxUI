@@ -248,7 +248,7 @@ local function onEvent(self, event, ...)
 		local isPlayer = playerGUID == sourceGUID
 		local atTarget = UnitGUID("target") == destGUID
 		local atPlayer = playerGUID == destGUID
-		local isPet = element.showPets and K:IsMyPet(sourceFlags)
+		local isPet = element.showPets and K.IsMyPet(sourceFlags)
 
 		if (unit == "target" and (isPlayer or isPet) and atTarget) or (unit == "player" and atPlayer) then
 			local value = eventFilter[eventType]

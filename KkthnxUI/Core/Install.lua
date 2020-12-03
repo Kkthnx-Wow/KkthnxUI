@@ -53,6 +53,7 @@ function Module:ForceDefaultCVars()
 	SetCVar("autoQuestWatch", 1)
 	SetCVar("autoSelfCast", 1)
 	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
+	SetCVar("chatStyle", "classic")
 	SetCVar("floatingCombatTextCombatDamage", 1)
 	SetCVar("floatingCombatTextCombatDamageDirectionalOffset", 10)
 	SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
@@ -67,6 +68,7 @@ function Module:ForceDefaultCVars()
 	SetCVar("showLootSpam", 1)
 	SetCVar("showTutorials", 0)
 	SetCVar("spamFilter", 0)
+	SetCVar("whisperMode", "inline")
 	SetActionBarToggles(1, 1, 1, 1)
 
 	if not InCombatLockdown() then
@@ -78,7 +80,7 @@ function Module:ForceDefaultCVars()
 
 	if K.isDeveloper then
 		SetCVar("ffxGlow", 0)
-		SetCVar("SpellQueueWindow", 26)
+		SetCVar("SpellQueueWindow", 22)
 		SetCVar("nameplateShowOnlyNames", 1)
 	end
 end

@@ -487,8 +487,6 @@ function Module:OnEnable()
 	if CHAT_OPTIONS then -- only flash whisper
 		CHAT_OPTIONS.HIDE_FRAME_ALERTS = true
 	end
-	SetCVar("chatStyle", "classic")
-	SetCVar("whisperMode", "inline") -- blizz reset this on NPE
 	K.HideInterfaceOption(InterfaceOptionsSocialPanelChatStyle)
 	CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
 

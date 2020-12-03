@@ -10,13 +10,8 @@ local table_insert = _G.table.insert
 local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GetUnitName = _G.GetUnitName
-local HideUIPanel = _G.HideUIPanel
 local InCombatLockdown = _G.InCombatLockdown
 local IsInGuild = _G.IsInGuild
-local LE_GARRISON_TYPE_6_0 = _G.Enum.GarrisonType.Type_6_0
-local LE_GARRISON_TYPE_7_0 = _G.Enum.GarrisonType.Type_7_0
-local LE_GARRISON_TYPE_8_0 = _G.Enum.GarrisonType.Type_8_0
-local LE_GARRISON_TYPE_9_0 = _G.Enum.GarrisonType.Type_9_0
 local Minimap = _G.Minimap
 local UnitClass = _G.UnitClass
 local hooksecurefunc = _G.hooksecurefunc
@@ -466,6 +461,10 @@ function Module:ShowMinimapHelpInfo()
 	end)
 end
 
+function Module:UpdateBlipTexture()
+	Minimap:SetBlipTexture(C["Minimap"].BlipTexture.Value)
+end
+
 function Module:OnEnable()
 	if not C["Minimap"].Enable then
 		return
@@ -481,9 +480,10 @@ function Module:OnEnable()
 	Minimap:SetPoint("TOPRIGHT", minimapMover)
 	Minimap.mover = minimapMover
 
-	self:UpdateMinimapScale()
 	self:HideMinimapClock()
 	self:ShowCalendar()
+	self:UpdateBlipTexture()
+	self:UpdateMinimapScale()
 
 	Minimap:EnableMouseWheel(true)
 	Minimap:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)

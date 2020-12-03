@@ -178,10 +178,13 @@ end
 
 local function enableTooltip(self)
 	self:EnableMouse(true)
+
 	self.HL = self:CreateTexture(nil, "HIGHLIGHT")
-	self.HL:SetColorTexture(1, 1, 1, .25)
-	self.HL:SetPoint("TOPLEFT", self, "TOPLEFT", 2, -2)
-	self.HL:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -2, 2)
+	self.HL:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+	self.HL:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -0)
+	self.HL:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -0, 0)
+	self.HL:SetBlendMode("ADD")
+
 	self:SetScript("OnEnter", tooltipOnEnter)
 	self:SetScript("OnLeave", K.HideTooltip)
 	self:SetScript("OnMouseDown", Module.RemoveSpellFromAuraList)
@@ -680,7 +683,7 @@ local eventList = {
 }
 
 local function checkPetFlags(sourceFlags, all)
-	if K:IsMyPet(sourceFlags) or (all and (sourceFlags == K.PartyPetFlags or sourceFlags == K.RaidPetFlags)) then
+	if K.IsMyPet(sourceFlags) or (all and (sourceFlags == K.PartyPetFlags or sourceFlags == K.RaidPetFlags)) then
 		return true
 	end
 end
