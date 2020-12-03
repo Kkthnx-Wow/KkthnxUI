@@ -19,7 +19,6 @@ local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
 local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
 
 local button = CreateFrame("Button", "KKUI_OneClickMPD", UIParent, "SecureActionButtonTemplate, AutoCastShineTemplate")
-button:Hide()
 button:SetScript("OnEvent", function(self, event, ...)
 	if not C["Automation"].AutoDisenchant then
 		return

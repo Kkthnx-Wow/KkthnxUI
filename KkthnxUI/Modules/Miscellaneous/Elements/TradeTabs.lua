@@ -149,12 +149,6 @@ function Module:TradeTabs_Create(slotID, spellID, toyID, itemID)
 		tab:SetAttribute(tab.type, name)
 	end
 	tab:SetNormalTexture(texture)
-	tab:GetHighlightTexture():SetPoint("TOPLEFT", tab, "TOPLEFT", 2, -2)
-	tab:GetHighlightTexture():SetPoint("BOTTOMRIGHT", tab, "BOTTOMRIGHT", -2, 2)
-	tab:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
-	tab:GetCheckedTexture():SetPoint("TOPLEFT", tab, "TOPLEFT", 2, -2)
-	tab:GetCheckedTexture():SetPoint("BOTTOMRIGHT", tab, "BOTTOMRIGHT", -2, 2)
-	tab:GetCheckedTexture():SetColorTexture(1, 1, 1, 0.3)
 	tab:Show()
 
 	tab.CD = CreateFrame("Cooldown", nil, tab, "CooldownFrameTemplate")

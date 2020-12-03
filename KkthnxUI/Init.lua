@@ -40,11 +40,6 @@ Engine[1] = {} -- K, Main
 Engine[2] = {} -- C, Config
 Engine[3] = {} -- L, Locales
 
-KkthnxUIData = {}
-KkthnxUISettings = {}
-KkthnxUIGold = {}
-KkthnxUISettingsPerCharacter = {}
-
 local K, C, L = unpack(Engine)
 
 -- Deprecated
