@@ -77,6 +77,7 @@ C["Automation"] = {
 	["AutoDisenchant"] = false,
 	["AutoGoodbye"] = false,
 	["AutoInvite"] = false,
+	["AutoOpenItems"] = false,
 	["AutoPartySync"] = false,
 	["AutoQuest"] = false,
 	["AutoRelease"] = false,

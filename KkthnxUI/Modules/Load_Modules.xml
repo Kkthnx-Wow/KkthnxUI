@@ -138,6 +138,7 @@
    <Script file="Announcements\Elements\Sapped.lua" />
    <!-- Automation -->
    <Script file="Automation\Core.lua" />
+   <Script file="Automation\Elements\AutoOpen.lua" />
    <Script file="Automation\Elements\BadBuffs.lua" />
    <Script file="Automation\Elements\BestReward.lua" />
    <Script file="Automation\Elements\DeclineDuel.lua" />

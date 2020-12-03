@@ -6,15 +6,16 @@
 
    <Script file="Elements\ActionBarFade.lua" />
    <Script file="Elements\AuraWatchSpells.lua" />
+   <Script file="Elements\AutoOpen.lua" />
    <Script file="Elements\AutoQuest.lua" />
    <Script file="Elements\BadBuffs.lua" />
    <Script file="Elements\ExtraQuestButton.lua" />
+   <Script file="Elements\MapReveal.lua" />
    <Script file="Elements\NameplateAuras.lua" />
    <Script file="Elements\RaidUtilityBuffs.lua" />
    <Script file="Elements\RangeSpells.lua" />
    <Script file="Elements\SpellReminders.lua" />
    <Script file="Elements\UnitframeAuras.lua" />
-   <Script file="Elements\MapReveal.lua" />
 
    <Include file="Elements\AuraWatchList\AuraWatchList.xml"/>
 </Ui>
