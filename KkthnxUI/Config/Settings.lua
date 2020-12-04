@@ -17,6 +17,7 @@ C["ActionBar"] = {
 	["DecimalCD"] = true,
 	["DefaultButtonSize"] = 34,
 	["Enable"] = true,
+	["FadeCustomBar"] = false,
 	["FadePetBar"] = false,
 	["FadeRightBar"] = false,
 	["FadeRightBar2"] = false,
