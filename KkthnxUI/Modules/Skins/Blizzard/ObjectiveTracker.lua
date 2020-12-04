@@ -75,11 +75,7 @@ local function reskinQuestIcon(button)
 
 	if not button.styled then
 		button:SetSize(24, 24)
-		button:SetNormalTexture("")
-		button:SetPushedTexture("")
-		button:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
-		button:GetHighlightTexture():SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
-		button:GetHighlightTexture():SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
+
 		local icon = button.icon or button.Icon
 		if icon then
 			button.bg = icon:CreateBorder()

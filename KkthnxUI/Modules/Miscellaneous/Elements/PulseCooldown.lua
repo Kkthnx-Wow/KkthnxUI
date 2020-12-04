@@ -46,6 +46,9 @@ PulseCooldownFrame.Icon = PulseCooldownFrame:CreateTexture(nil, "ARTWORK")
 PulseCooldownFrame.Icon:SetTexCoord(unpack(K.TexCoords))
 PulseCooldownFrame.Icon:SetAllPoints(PulseCooldownFrame)
 
+K.Debug("PulseCooldownFrame:", PulseCooldownFrame)
+K.Debug("PulseCooldownFrame.Icon:", PulseCooldownFrame.Icon)
+
 -- Utility Functions
 local function tcount(tab)
 	local n = 0
@@ -183,15 +186,6 @@ local function OnUpdate(_, update)
 	end
 end
 
--- Event Handlers
-function PulseCooldownFrame:ADDON_LOADED()
-	for _, v in pairs(K.PulseIgnoredSpells) do
-		K.PulseIgnoredSpells[v] = true
-	end
-
-	PulseCooldownFrame:UnregisterEvent("ADDON_LOADED")
-end
-
 function PulseCooldownFrame:SPELL_UPDATE_COOLDOWN()
 	for _, getCooldownDetails in pairs(cooldowns) do
 		getCooldownDetails.resetCache()
@@ -262,6 +256,10 @@ function Module:CreatePulseCooldown()
 		return
 	end
 
+	for _, v in pairs(K.PulseIgnoredSpells) do
+		K.PulseIgnoredSpells[v] = true
+	end
+
 	local Anchor = CreateFrame("Frame", "PulseCooldownAnchor", UIParent)
 	Anchor:SetSize(C["PulseCooldown"].Size, C["PulseCooldown"].Size)
 	Anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 260)
@@ -270,7 +268,6 @@ function Module:CreatePulseCooldown()
 
 	K.Mover(PulseCooldownFrame, "PulseCooldown", "PulseCooldown", {"CENTER", UIParent, "CENTER", 0, 260}, C["PulseCooldown"].Size, C["PulseCooldown"].Size)
 
-	PulseCooldownFrame:RegisterEvent("ADDON_LOADED")
 	PulseCooldownFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 	PulseCooldownFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	PulseCooldownFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")

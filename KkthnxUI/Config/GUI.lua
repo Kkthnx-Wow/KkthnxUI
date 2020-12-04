@@ -158,7 +158,7 @@ local ActionBar = function(self)
 
 	Window:CreateSection("ActionBar Custom")
 	Window:CreateSwitch("ActionBar", "CustomBar", enableTextColor..L["Enable CustomBar"])
-	Window:CreateSwitch("ActionBar", "CustomBarFader", L["Mouseover CustomBar"])
+	Window:CreateSwitch("ActionBar", "FadeCustomBar", L["Mouseover CustomBar"])
 	Window:CreateSlider("ActionBar", "CustomBarButtonSize", L["Set CustomBar Button Size"], 24, 60, 1, nil, UpdateCustomBar)
 	Window:CreateSlider("ActionBar", "CustomBarNumButtons", L["Set CustomBar Num Buttons"], 1, 12, 1, nil, UpdateCustomBar)
 	Window:CreateSlider("ActionBar", "CustomBarNumPerRow", L["Set CustomBar Num PerRow"], 1, 12, 1, nil, UpdateCustomBar)

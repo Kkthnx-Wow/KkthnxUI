@@ -790,6 +790,7 @@ function Module.AuraWatch_OnEvent(event, ...)
 end
 K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.AuraWatch_OnEvent)
 K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.AuraWatch_OnEvent)
+K.AddForProfiling("AuraWatch Events", "AuraWatch_OnEvent",  Module.AuraWatch_OnEvent)
 
 function Module:AuraWatch_OnUpdate(elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed

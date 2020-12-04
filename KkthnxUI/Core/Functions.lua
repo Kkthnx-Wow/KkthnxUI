@@ -36,6 +36,8 @@ local UnitReaction = _G.UnitReaction
 
 local iLvlDB = {}
 local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
+local essenceDescription = GetSpellDescription(277253)
+local essenceTextureID = 2975691
 local itemLevelString = string_gsub(ITEM_LEVEL, "%%d", "")
 
 local mapRects = {}
@@ -201,15 +203,37 @@ function K.InspectItemTextures()
 		table_wipe(K.ScanTooltip.gems)
 	end
 
+	if not K.ScanTooltip.essences then
+		K.ScanTooltip.essences = {}
+	else
+		for _, essences in pairs(K.ScanTooltip.essences) do
+			table_wipe(essences)
+		end
+	end
+
+	local step = 1
 	for i = 1, 10 do
 		local tex = _G[K.ScanTooltip:GetName().."Texture"..i]
 		local texture = tex and tex:IsShown() and tex:GetTexture()
 		if texture then
-			K.ScanTooltip.gems[i] = texture
+			if texture == essenceTextureID then
+				local selected = (K.ScanTooltip.gems[i-1] ~= essenceTextureID and K.ScanTooltip.gems[i-1]) or nil
+				if not K.ScanTooltip.essences[step] then
+					K.ScanTooltip.essences[step] = {}
+				end
+				K.ScanTooltip.essences[step][1] = selected -- essence texture if selected or nil
+				K.ScanTooltip.essences[step][2] = tex:GetAtlas() -- atlas place 'tooltip-heartofazerothessence-major' or 'tooltip-heartofazerothessence-minor'
+				K.ScanTooltip.essences[step][3] = texture -- border texture placed by the atlas
+
+				step = step + 1
+				if selected then K.ScanTooltip.gems[i-1] = nil end
+			else
+				K.ScanTooltip.gems[i] = texture
+			end
 		end
 	end
 
-	return K.ScanTooltip.gems
+	return K.ScanTooltip.gems, K.ScanTooltip.essences
 end
 
 function K.InspectItemInfo(text, slotInfo)
@@ -221,6 +245,27 @@ function K.InspectItemInfo(text, slotInfo)
 	local enchant = string_match(text, enchantString)
 	if enchant then
 		slotInfo.enchantText = enchant
+	end
+end
+
+function K.CollectEssenceInfo(index, lineText, slotInfo)
+	local step = 1
+	local essence = slotInfo.essences[step]
+	if essence and next(essence) and (string_find(lineText, ITEM_SPELL_TRIGGER_ONEQUIP, nil, true) and string_find(lineText, essenceDescription, nil, true)) then
+		for i = 4, 2, -1 do
+			local line = _G[K.ScanTooltip:GetName().."TextLeft"..index - i]
+			local text = line and line:GetText()
+
+			if text and (not string_match(text, "^[ +]")) and essence and next(essence) then
+				local r, g, b = line:GetTextColor()
+				essence[4] = r
+				essence[5] = g
+				essence[6] = b
+
+				step = step + 1
+				essence = slotInfo.essences[step]
+			end
+		end
 	end
 end
 
@@ -236,13 +281,14 @@ function K.GetItemLevel(link, arg1, arg2, fullScan)
 		end
 
 		local slotInfo = K.ScanTooltip.slotInfo
-		slotInfo.gems = K.InspectItemTextures()
+		slotInfo.gems, slotInfo.essences = K.InspectItemTextures()
 
 		for i = 1, K.ScanTooltip:NumLines() do
 			local line = _G[K.ScanTooltip:GetName().."TextLeft"..i]
 			if line then
 				local text = line:GetText() or ""
 				K.InspectItemInfo(text, slotInfo)
+				K.CollectEssenceInfo(i, text, slotInfo)
 			end
 		end
 
