@@ -151,7 +151,7 @@ function Module:CreateTarget()
 		self.Buffs.CustomFilter = Module.CustomFilter
 	end
 
-	if (C["Unitframe"].Castbars) then
+	if C["Unitframe"].TargetCastbar then
 		self.Castbar = CreateFrame("StatusBar", "TargetCastbar", self)
 		self.Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", 14, 335)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)

@@ -174,7 +174,7 @@ function Module:CreatePlayer()
 		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 	end
 
-	if (C["Unitframe"].Castbars) then
+	if C["Unitframe"].PlayerCastbar then
 		self.Castbar = CreateFrame("StatusBar", "PlayerCastbar", self)
 		self.Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", 14, 200)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)

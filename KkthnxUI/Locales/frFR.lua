@@ -570,8 +570,9 @@ L["Set Tooltip Texture"] = "Texture de l'info-bulle"
 L["Set Unitframe Texture"] = "Texture des barres d'unités"
 
 L["Class Color Castbars"] = "Barres d'incantation' aux couleurs de classe"
-L["Enable Castbars"] = "Activer les barres d'incantation'"
+L["Enable Player CastBar"] = "Enable Player Castbar" -- Needs Translations
 L["Enable Simple CombatText"] = "Activer les textes de combat simple"
+L["Enable Target CastBar"] = "Enable Target Castbar" -- Needs Translations
 L["Enable Unitframes"] = "Activer les barres d'unités"
 L["Fade Unitframes"] = "Fondu des barres d'unités"
 L["Health Color Format"] = "Format de couleur de la vie"
