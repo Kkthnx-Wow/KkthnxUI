@@ -43,14 +43,6 @@ local function OnUpdate(self, elapsed)
 	end
 end
 
--- local function OnEvent()
--- 	if coordX and coordY then
--- 		Module.CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()), 0, 0.6, 1)
--- 	else
--- 		Module.CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()), 0, 0.6, 1)
--- 	end
--- end
-
 local function OnEnter()
 	GameTooltip:SetOwner(Module.CoordsDataTextFrame, "ANCHOR_NONE")
 	GameTooltip:SetPoint(K.GetAnchors(Module.CoordsDataTextFrame))
@@ -72,7 +64,8 @@ local function OnMouseUp(_, btn)
 	local hasUnit = UnitExists("target") and not UnitIsPlayer("target")
 	local unitName = hasUnit and UnitName("target") or ""
 	local unitPlayer = "player"
-	local unitZone = GetZoneText() or UNKNOWN
+    local unitZone = GetZoneText() or UNKNOWN
+    local hyperLink = C_Map_GetUserWaypointHyperlink() or ""
 
 	if btn == "LeftButton" then
 		if InCombatLockdown() then UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
@@ -81,11 +74,11 @@ local function OnMouseUp(_, btn)
 		ToggleFrame(WorldMapFrame)
 	elseif not IsModifierKeyDown() and btn == "RightButton" then
 		C_Map_SetUserWaypoint(UiMapPoint.CreateFromCoordinates(C_Map_GetBestMapForUnit(unitPlayer), coordX, coordY))
-		ChatFrame_OpenChat(string_format("%s: %s (%s) %s %s", "My Position", unitZone, formatCoords(), C_Map_GetUserWaypointHyperlink(), unitName), SELECTED_DOCK_FRAME)
+		ChatFrame_OpenChat(string_format("%s: %s (%s) %s %s", "My Position", unitZone, formatCoords(), hyperLink, unitName), SELECTED_DOCK_FRAME)
 		C_Map_ClearUserWaypoint()
 	elseif IsControlKeyDown() and btn == "RightButton" then
 		C_Map_SetUserWaypoint(UiMapPoint.CreateFromCoordinates(C_Map_GetBestMapForUnit(unitPlayer), coordX, coordY))
-		ChatFrame_OpenChat(string_format("%s %s", C_Map_GetUserWaypointHyperlink(), unitName), SELECTED_DOCK_FRAME)
+		ChatFrame_OpenChat(string_format("%s %s", hyperLink, unitName), SELECTED_DOCK_FRAME)
 		C_Map_ClearUserWaypoint()
 	end
 end
