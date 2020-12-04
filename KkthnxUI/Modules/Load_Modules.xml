@@ -3,6 +3,7 @@
    <Script file="Blizzard\Elements\Fonts.lua" />
    <!-- DataText -->
    <Script file="DataText\Core.lua" />
+   <Script file="DataText\Elements\Coords.lua" />
    <Script file="DataText\Elements\Guild.lua" />
    <Script file="DataText\Elements\Friends.lua" />
    <Script file="DataText\Elements\Gold.lua" />

@@ -15,4 +15,5 @@ function Module:OnEnable()
 	self:CreateLocationDataText()
 	self:CreateSocialDataText()
 	self:CreateTimeDataText()
+	self:CreateCoordsDataText()
 end

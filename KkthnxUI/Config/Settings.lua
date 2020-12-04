@@ -209,6 +209,7 @@ C["DataBars"] = {
 
 -- Datatext
 C["DataText"] = {
+	["Coords"] = false,
 	["Friends"] = false,
 	["Gold"] = false,
 	["Guild"] = false,
