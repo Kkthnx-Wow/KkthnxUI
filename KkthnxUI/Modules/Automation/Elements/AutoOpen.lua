@@ -12,10 +12,8 @@ local USE_COLON = _G.USE_COLON
 local frame, atBank, atMail, atMerchant = CreateFrame("Frame")
 frame:SetScript("OnEvent", function(self, event, ...)
     if not C["Automation"].AutoOpenItems then
-        print(DISABLE)
 		return
     end
-    print(ENABLE)
 
 	self[event](...)
 end)

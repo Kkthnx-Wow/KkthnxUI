@@ -179,12 +179,24 @@ local function createDate(self)
 	self.top.date:SetFormattedText("%s, %s %d, %d", daysAbr[presentWeekday], monthAbr[presentMonth], presentDay, presentYear)
 end
 
-local function UpdateTimer(self)
-	local time = GetTime() - self.startTime
+local function UpdateLogOff(self)
+	local timePassed = GetTime() - self.startTime
+	local minutes = math_floor(timePassed/60)
+	local neg_seconds = -timePassed % 60
 
+	self.top.Status:SetValue(math_floor(timePassed))
+
+	if minutes - 29 == 0 and math_floor(neg_seconds) == 0 then
+		self.logoffTimer:Cancel()
+		self.countd.text:SetFormattedText("%s: |cfff0ff0000:00|r", "Logout Timer")
+	else
+		self.countd.text:SetFormattedText("%s: |cfff0ff00%02d:%02d|r", "Logout Timer", minutes -29, neg_seconds)
+	end
+end
+
+local function UpdateTimer(self)
 	createTime(self)
 	createDate(self)
-	self.bottom.time:SetFormattedText("%02d:%02d", math_floor(time / 60), time % 60)
 end
 
 -- Create random stats
@@ -238,6 +250,9 @@ local function SetAFK(self, status)
 		self.statsTimer = C_Timer_NewTicker(6, function()
 			UpdateStatMessage(self)
 		end)
+		self.logoffTimer = C_Timer_NewTicker(1, function()
+			UpdateLogOff(self)
+		end)
 
 		self.chat:RegisterEvent("CHAT_MSG_WHISPER")
 		self.chat:RegisterEvent("CHAT_MSG_BN_WHISPER")
@@ -253,11 +268,12 @@ local function SetAFK(self, status)
 
 		self.timer:Cancel()
 		self.statsTimer:Cancel()
+		self.logoffTimer:Cancel()
 		if self.animTimer then
 			self.animTimer:Cancel()
 		end
 
-		self.bottom.time:SetText("00:00")
+		self.countd.text:SetFormattedText("%s: |cfff0ff00-30:00|r", "Logout Timer")
 		self.statMsg.info:SetFormattedText("|cffb3b3b3%s|r", "Random Stats")
 
 		self.chat:UnregisterAllEvents()
@@ -466,7 +482,6 @@ function Module:CreateAFKCam()
 	end
 	AFKMode.top.wowlogo.tex:SetAllPoints()
 
-
 	-- Date text
 	AFKMode.top.date = AFKMode.top:CreateFontString(nil, "OVERLAY")
 	AFKMode.top.date:FontTemplate(nil, 16)
@@ -474,6 +489,16 @@ function Module:CreateAFKCam()
 	AFKMode.top.date:SetPoint("LEFT", AFKMode.top, "LEFT", 20, 0)
 	AFKMode.top.date:SetJustifyH("RIGHT")
 	AFKMode.top.date:SetTextColor(0.7, 0.7, 0.7)
+
+	-- Statusbar on Top frame decor showing time to log off (30mins)
+	AFKMode.top.Status = CreateFrame('StatusBar', nil, AFKMode.top)
+	AFKMode.top.Status:SetStatusBarTexture(C.Media.Texture)
+	AFKMode.top.Status:SetMinMaxValues(0, 1800)
+	AFKMode.top.Status:SetStatusBarColor(K.r, K.g, K.b, 1)
+	AFKMode.top.Status:SetFrameLevel(2)
+	AFKMode.top.Status:SetPoint('TOPRIGHT', AFKMode.top, 'BOTTOMRIGHT', 0, 6)
+	AFKMode.top.Status:SetPoint('BOTTOMLEFT', AFKMode.top, 'BOTTOMLEFT', 0, 1)
+	AFKMode.top.Status:SetValue(0)
 
 	local factionGroup, size, offsetX, offsetY, nameOffsetX, nameOffsetY = K.Faction, 140, -20, -8, -10, -36
 	if factionGroup == "Neutral" then
@@ -545,11 +570,11 @@ function Module:CreateAFKCam()
 	AFKMode.bottom.guild:SetPoint("TOPLEFT", AFKMode.bottom.playerInfo, "BOTTOMLEFT", 0, -6)
 	AFKMode.bottom.guild:SetTextColor(0.7, 0.7, 0.7)
 
-	AFKMode.bottom.time = AFKMode.bottom:CreateFontString(nil, "OVERLAY")
-	AFKMode.bottom.time:FontTemplate(nil, 20)
-	AFKMode.bottom.time:SetText("00:00")
-	AFKMode.bottom.time:SetPoint("BOTTOM", AFKMode.bottom, "BOTTOM", 0, 20)
-	AFKMode.bottom.time:SetTextColor(0.7, 0.7, 0.7)
+	-- AFKMode.bottom.time = AFKMode.bottom:CreateFontString(nil, "OVERLAY")
+	-- AFKMode.bottom.time:FontTemplate(nil, 20)
+	-- AFKMode.bottom.time:SetText("00:00")
+	-- AFKMode.bottom.time:SetPoint("BOTTOM", AFKMode.bottom, "BOTTOM", 0, 20)
+	-- AFKMode.bottom.time:SetTextColor(0.7, 0.7, 0.7)
 
 	-- Random stats decor (taken from install routine)
 	AFKMode.statMsg = CreateFrame("Frame", nil, AFKMode)
@@ -584,6 +609,33 @@ function Module:CreateAFKCam()
 	AFKMode.statMsg.info:SetText(string.format("|cffb3b3b3%s|r", "Random Stats"))
 	AFKMode.statMsg.info:SetJustifyH("CENTER")
 	AFKMode.statMsg.info:SetTextColor(0.7, 0.7, 0.7)
+
+	-- Countdown decor
+	AFKMode.countd = CreateFrame("Frame", nil, AFKMode)
+	AFKMode.countd:SetSize(418, 36)
+	AFKMode.countd:SetPoint("TOP", AFKMode.statMsg.lineBottom, "BOTTOM")
+
+	AFKMode.countd.bg = AFKMode.countd:CreateTexture(nil, 'BACKGROUND')
+	AFKMode.countd.bg:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	AFKMode.countd.bg:SetPoint('BOTTOM')
+	AFKMode.countd.bg:SetSize(326, 56)
+	AFKMode.countd.bg:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
+	AFKMode.countd.bg:SetVertexColor(1, 1, 1, 0.7)
+
+	AFKMode.countd.lineBottom = AFKMode.countd:CreateTexture(nil, 'BACKGROUND')
+	AFKMode.countd.lineBottom:SetDrawLayer('BACKGROUND', 2)
+	AFKMode.countd.lineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	AFKMode.countd.lineBottom:SetPoint('BOTTOM')
+	AFKMode.countd.lineBottom:SetSize(418, 7)
+	AFKMode.countd.lineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
+
+	-- 30 mins countdown text
+	AFKMode.countd.text = AFKMode.countd:CreateFontString(nil, 'OVERLAY')
+	AFKMode.countd.text:FontTemplate(nil, 12)
+	AFKMode.countd.text:SetPoint("CENTER", AFKMode.countd, "CENTER")
+	AFKMode.countd.text:SetJustifyH("CENTER")
+	AFKMode.countd.text:SetFormattedText("%s: |cfff0ff00-30:00|r", "Logout Timer")
+	AFKMode.countd.text:SetTextColor(0.7, 0.7, 0.7)
 
 	-- Use this frame to control position of the model
 	AFKMode.bottom.modelHolder = CreateFrame("Frame", nil, AFKMode.bottom)
