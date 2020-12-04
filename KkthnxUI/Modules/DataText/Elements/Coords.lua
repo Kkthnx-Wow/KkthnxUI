@@ -65,7 +65,7 @@ local function OnMouseUp(_, btn)
 	local unitName = hasUnit and UnitName("target") or ""
 	local unitPlayer = "player"
     local unitZone = GetZoneText() or UNKNOWN
-    local hyperLink = C_Map_GetUserWaypointHyperlink() or ""
+	local hyperLink = C_Map_GetUserWaypointHyperlink() or ""
 
 	if btn == "LeftButton" then
 		if InCombatLockdown() then UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
@@ -73,13 +73,13 @@ local function OnMouseUp(_, btn)
 		end
 		ToggleFrame(WorldMapFrame)
 	elseif not IsModifierKeyDown() and btn == "RightButton" then
+		C_Map_ClearUserWaypoint()
 		C_Map_SetUserWaypoint(UiMapPoint.CreateFromCoordinates(C_Map_GetBestMapForUnit(unitPlayer), coordX, coordY))
 		ChatFrame_OpenChat(string_format("%s: %s (%s) %s %s", "My Position", unitZone, formatCoords(), hyperLink, unitName), SELECTED_DOCK_FRAME)
-		C_Map_ClearUserWaypoint()
 	elseif IsControlKeyDown() and btn == "RightButton" then
+		C_Map_ClearUserWaypoint()
 		C_Map_SetUserWaypoint(UiMapPoint.CreateFromCoordinates(C_Map_GetBestMapForUnit(unitPlayer), coordX, coordY))
 		ChatFrame_OpenChat(string_format("%s %s", hyperLink, unitName), SELECTED_DOCK_FRAME)
-		C_Map_ClearUserWaypoint()
 	end
 end
 
