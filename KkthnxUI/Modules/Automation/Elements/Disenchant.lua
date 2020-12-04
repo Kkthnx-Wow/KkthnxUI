@@ -20,9 +20,9 @@ local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
 
 local button = CreateFrame("Button", "KKUI_OneClickMPD", UIParent, "SecureActionButtonTemplate, AutoCastShineTemplate")
 button:SetScript("OnEvent", function(self, event, ...)
-	-- if not C["Automation"].AutoDisenchant then
-	-- 	return
-	-- end
+	if not C["Automation"].AutoDisenchant then
+		return
+	end
 
 	self[event](self, ...)
 end)
