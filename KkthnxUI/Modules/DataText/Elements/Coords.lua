@@ -31,11 +31,11 @@ local function OnUpdate(self, elapsed)
 	if self.elapsed > .1 then
 		local x, y = K.GetPlayerMapPos(C_Map_GetBestMapForUnit("player"))
 		if x then
-            coordX, coordY = x, y
-            Module.CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()), 0, 0.6, 1)
+			coordX, coordY = x, y
+			Module.CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()), 0, 0.6, 1)
 		else
-            coordX, coordY = 0, 0
-            Module.CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()), 0, 0.6, 1)
+			coordX, coordY = 0, 0
+			Module.CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()), 0, 0.6, 1)
 			self:SetScript("OnUpdate", nil)
 		end
 
@@ -71,8 +71,8 @@ end
 local function OnMouseUp(_, btn)
 	local hasUnit = UnitExists("target") and not UnitIsPlayer("target")
 	local unitName = hasUnit and UnitName("target") or ""
-    local unitPlayer = "player"
-    local unitZone = GetZoneText() or UNKNOWN
+	local unitPlayer = "player"
+	local unitZone = GetZoneText() or UNKNOWN
 
 	if btn == "LeftButton" then
 		if InCombatLockdown() then UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)

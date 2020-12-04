@@ -9,6 +9,7 @@
    <Script file="Elements\AutoOpen.lua" />
    <Script file="Elements\AutoQuest.lua" />
    <Script file="Elements\BadBuffs.lua" />
+   <Script file="Elements\Disenchant.lua" />
    <Script file="Elements\ExtraQuestButton.lua" />
    <Script file="Elements\MapReveal.lua" />
    <Script file="Elements\NameplateAuras.lua" />
