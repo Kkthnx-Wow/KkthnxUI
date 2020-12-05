@@ -43,7 +43,7 @@ local blizzRegions = {
 }
 
 -- Handle editbox
-function K:ReskinEditBox(height, width)
+local function ReskinEditBox(self, height, width)
 	local frameName = self.GetName and self:GetName()
 	for _, region in pairs(blizzRegions) do
 		region = frameName and _G[frameName..region] or self[region]
@@ -55,12 +55,17 @@ function K:ReskinEditBox(height, width)
 	local bg = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	bg:SetAllPoints(self)
 	bg:SetFrameLevel(self:GetFrameLevel())
-	bg:SetPoint("TOPLEFT", 2, 0)
+	bg:SetPoint("TOPLEFT", -2, 0)
 	bg:SetPoint("BOTTOMRIGHT")
 	bg:CreateBorder()
 
-	if height then self:SetHeight(height) end
-	if width then self:SetWidth(width) end
+	if height then
+		self:SetHeight(height)
+	end
+
+	if width then
+		self:SetWidth(width)
+	end
 end
 
 table_insert(C.defaultThemes, function()
@@ -82,8 +87,8 @@ table_insert(C.defaultThemes, function()
 		--bu.bg = B.ReskinIcon(icon)
 		--B.ReskinIconBorder(bu.IconBorder)
 
-		silver:SetPoint("LEFT", gold, "RIGHT", 6, 0)
-		copper:SetPoint("LEFT", silver, "RIGHT", 6, 0)
+		silver:SetPoint("LEFT", gold, "RIGHT", 1, 0)
+		copper:SetPoint("LEFT", silver, "RIGHT", 1, 0)
 
 		frame.Border:Hide()
 		frame:CreateBorder()
@@ -93,10 +98,10 @@ table_insert(C.defaultThemes, function()
 		frame.extraButton:SkinButton()
 		close:SkinCloseButton()
 
-		K.ReskinEditBox(_G["StaticPopup"..i.."EditBox"], 20)
-		K.ReskinEditBox(gold)
-		K.ReskinEditBox(silver)
-		K.ReskinEditBox(copper)
+		ReskinEditBox(_G["StaticPopup"..i.."EditBox"], 20)
+		ReskinEditBox(gold)
+		ReskinEditBox(silver)
+		ReskinEditBox(copper)
 	end
 end)
 
@@ -168,7 +173,7 @@ PlayerReportFrame:HookScript("OnShow", function(self)
 		self:StripTextures()
 		self:CreateBorder()
 		self.Comment:StripTextures()
-		K.ReskinEditBox(self.Comment)
+		ReskinEditBox(self.Comment)
 		self.ReportButton:SkinButton()
 		self.CancelButton:SkinButton()
 

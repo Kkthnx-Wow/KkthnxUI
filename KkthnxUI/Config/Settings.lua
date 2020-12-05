@@ -90,6 +90,7 @@ C["Automation"] = {
 	["AutoSkipCinematic"] = false,
 	["AutoSummon"] = false,
 	["AutoTabBinder"] = false,
+	["AutoTrackPin"] = false,
 	["NoBadBuffs"] = false,
 	["WhisperInvite"] = "inv+",
 }

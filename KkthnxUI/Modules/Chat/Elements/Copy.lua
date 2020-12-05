@@ -211,13 +211,15 @@ function Module:ChatCopy_OnClick(btn)
 	end
 end
 
+local function ResetChatAlertJustify(frame)
+	frame:SetJustification("LEFT")
+end
+
 function Module:ChatCopy_CreateMenu()
 	menu = CreateFrame("Frame", "KKUI_ChatMenu", UIParent)
 	menu:SetSize(18, C["Chat"].Lock and C["Chat"].Height or _G.ChatFrame1:GetHeight())
 	menu:SetPoint("TOPRIGHT", _G.ChatFrame1, 20, -2)
 	menu:SetShown(C["Chat"].ChatMenu)
-
-	-- local infoBar = K:GetModule("Infobar")
 
 	_G.ChatFrameMenuButton:ClearAllPoints()
 	_G.ChatFrameMenuButton:SetPoint("TOP", menu)
@@ -237,20 +239,11 @@ function Module:ChatCopy_CreateMenu()
 
 	_G.QuickJoinToastButton:SetParent(menu)
 
-	-- if infoBar.GoldDataTextFrame then
-	-- 	infoBar.GoldDataTextFrame:SetParent(menu)
-	-- end
-
-	-- if infoBar.FriendsDataTextFrame then
-	-- 	infoBar.FriendsDataTextFrame:SetParent(menu)
-	-- end
-
-	-- if infoBar.GuildDataTextFrame then
-	-- 	infoBar.GuildDataTextFrame:SetParent(menu)
-	-- end
-
 	_G.ChatAlertFrame:ClearAllPoints()
 	_G.ChatAlertFrame:SetPoint("BOTTOMLEFT", _G.ChatFrame1Tab, "TOPLEFT", 5, 25)
+
+	ResetChatAlertJustify(_G.ChatAlertFrame)
+	hooksecurefunc(_G.ChatAlertFrame, "SetChatButtonSide", ResetChatAlertJustify)
 end
 
 function Module:ChatCopy_Create()

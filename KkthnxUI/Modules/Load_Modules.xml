@@ -146,6 +146,7 @@
    <Script file="Automation\Elements\Disenchant.lua" />
    <Script file="Automation\Elements\Goodbye.lua" />
    <Script file="Automation\Elements\Invite.lua" />
+   <Script file="Automation\Elements\MapPin.lua" />
    <Script file="Automation\Elements\PartySync.lua" />
    <Script file="Automation\Elements\Quest.lua" />
    <Script file="Automation\Elements\Release.lua" />

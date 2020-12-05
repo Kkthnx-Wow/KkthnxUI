@@ -64,7 +64,8 @@ local function OnMouseUp(_, btn)
 	local hasUnit = UnitExists("target") and not UnitIsPlayer("target")
 	local unitName = hasUnit and UnitName("target") or ""
 	local unitPlayer = "player"
-    local unitZone = GetZoneText() or UNKNOWN
+	local unitZone = GetZoneText() or UNKNOWN
+	local allowedPoint = C_Map.CanSetUserWaypointOnMap(WorldMapFrame:GetMapID()) and UiMapPoint.CreateFromCoordinates(C_Map_GetBestMapForUnit(unitPlayer), coordX, coordY) or ""
 	local hyperLink = C_Map_GetUserWaypointHyperlink() or ""
 
 	if btn == "LeftButton" then
@@ -73,12 +74,10 @@ local function OnMouseUp(_, btn)
 		end
 		ToggleFrame(WorldMapFrame)
 	elseif not IsModifierKeyDown() and btn == "RightButton" then
-		C_Map_ClearUserWaypoint()
-		C_Map_SetUserWaypoint(UiMapPoint.CreateFromCoordinates(C_Map_GetBestMapForUnit(unitPlayer), coordX, coordY))
+		C_Map_SetUserWaypoint(allowedPoint)
 		ChatFrame_OpenChat(string_format("%s: %s (%s) %s %s", "My Position", unitZone, formatCoords(), hyperLink, unitName), SELECTED_DOCK_FRAME)
 	elseif IsControlKeyDown() and btn == "RightButton" then
-		C_Map_ClearUserWaypoint()
-		C_Map_SetUserWaypoint(UiMapPoint.CreateFromCoordinates(C_Map_GetBestMapForUnit(unitPlayer), coordX, coordY))
+		C_Map_SetUserWaypoint(allowedPoint)
 		ChatFrame_OpenChat(string_format("%s %s", hyperLink, unitName), SELECTED_DOCK_FRAME)
 	end
 end
@@ -105,6 +104,7 @@ function Module:CreateCoordsDataText()
 	Module.CoordsDataTextFrame:RegisterEvent("ZONE_CHANGED_INDOORS", OnUpdate)
 	Module.CoordsDataTextFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA", OnUpdate)
 	Module.CoordsDataTextFrame:RegisterEvent("LOADING_SCREEN_DISABLED", OnUpdate)
+	Module.CoordsDataTextFrame:RegisterEvent("USER_WAYPOINT_UPDATED", OnUpdate)
 
 	Module.CoordsDataTextFrame:SetScript("OnEnter", OnEnter)
 	Module.CoordsDataTextFrame:SetScript("OnLeave", OnLeave)

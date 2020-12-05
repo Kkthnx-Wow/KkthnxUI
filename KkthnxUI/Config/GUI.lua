@@ -199,7 +199,6 @@ local Automation = function(self)
 	local Window = self:CreateWindow(L["Automation"])
 
 	Window:CreateSection("Automation Toggles")
-	Window:CreateEditBox("Automation", "WhisperInvite", L["Auto Accept Invite Keyword"])
 	Window:CreateSwitch("Automation", "AutoBlockStrangerInvites", L["Blocks Invites From Strangers"])
 	Window:CreateSwitch("Automation", "AutoCollapse", L["Auto Collapse Objective Tracker"])
 	Window:CreateSwitch("Automation", "AutoDeclineDuels", L["Decline PvP Duels"])
@@ -218,7 +217,9 @@ local Automation = function(self)
 	Window:CreateSwitch("Automation", "AutoSkipCinematic", L["Auto Skip All Cinematic/Movies"])
 	Window:CreateSwitch("Automation", "AutoSummon", L["Auto Accept Summon Requests"])
 	Window:CreateSwitch("Automation", "AutoTabBinder", L["Only Tab Target Enemy Players"])
+	Window:CreateSwitch("Automation", "AutoTrackPin", newFeatureIcon.."Automatically Track Newly Created Map Pins")
 	Window:CreateSwitch("Automation", "NoBadBuffs", L["Automatically Remove Annoying Buffs"])
+	Window:CreateEditBox("Automation", "WhisperInvite", L["Auto Accept Invite Keyword"])
 end
 
 local Inventory = function(self)

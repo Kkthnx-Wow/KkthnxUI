@@ -1,6 +1,7 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Automation")
 
+local _G = _G
 
 local AcceptGroup = _G.AcceptGroup
 local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
