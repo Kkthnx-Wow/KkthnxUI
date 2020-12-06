@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-    <!-- Load_Core -->
-    <Script file="Media.lua"/>
-    <Script file="API.lua"/>
-    <Script file="Functions.lua"/>
-    <Script file="Border.lua"/>
-    <Script file="StaticPopups.lua"/>
-    <Script file="Commands.lua"/>
-    <Script file="Colors.lua"/>
-    <Script file="Smoothy.lua"/>
-    <Script file="Install.lua"/>
-    <Script file="Movers.lua"/>
-    <Script file="Loading.lua"/>
-    <Script file="Changelog.lua"/>
-    <Script file="CheckVersion.lua"/>
-    <Script file="GUI.lua"/>
+   <!-- Load_Core -->
+   <Script file="Media.lua"/>
+   <Script file="API.lua"/>
+   <Script file="Functions.lua"/>
+   <Script file="Border.lua"/>
+   <Script file="StaticPopups.lua"/>
+   <Script file="Commands.lua"/>
+   <Script file="Colors.lua"/>
+   <Script file="Smoothy.lua"/>
+   <Script file="Install.lua"/>
+   <Script file="Movers.lua"/>
+   <Script file="Loading.lua"/>
+   <Script file="Changelog.lua"/>
+   <Script file="CheckVersion.lua"/>
+   <Script file="GUI.lua"/>
 </Ui>

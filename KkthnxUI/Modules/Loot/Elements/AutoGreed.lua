@@ -12,7 +12,7 @@ local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
 local RollOnLoot = _G.RollOnLoot
 
 local function SetupAutoGreed(_, _, id)
-    local _, _, _, quality, BoP, _, _, canDisenchant = GetLootRollItemInfo(id)
+	local _, _, _, quality, BoP, _, _, canDisenchant = GetLootRollItemInfo(id)
 	if id and quality == 2 and not BoP then
 		local link = GetLootRollItemLink(id)
 		local _, _, _, ilevel = GetItemInfo(link)
@@ -25,9 +25,9 @@ local function SetupAutoGreed(_, _, id)
 end
 
 function Module:CreateAutoGreed()
-    if not C["Loot"].AutoGreed or K.Level ~= MAX_PLAYER_LEVEL then
-        return
+	if not C["Loot"].AutoGreed or K.Level ~= MAX_PLAYER_LEVEL then
+		return
 	end
 
-    K:RegisterEvent("START_LOOT_ROLL", SetupAutoGreed)
+	K:RegisterEvent("START_LOOT_ROLL", SetupAutoGreed)
 end

@@ -328,11 +328,11 @@ C["Misc"] = {
 	["ParagonText"] = {
 		["Options"] = {
 			["Paragon".." (100/10000)"] = 1,
-            ["Exalted".." (100/10000)"] = 2,
-            ["Paragon".." x 1".." (100/10000)"] = 3,
-            ["100 (100/10000)"] = 4,
-            ["100/10000"] = 5,
-            ["9900"] = 6,
+			["Exalted".." (100/10000)"] = 2,
+			["Paragon".." x 1".." (100/10000)"] = 3,
+			["100 (100/10000)"] = 4,
+			["100/10000"] = 5,
+			["9900"] = 6,
 		},
 		["Value"] = 1
 	},
@@ -535,12 +535,12 @@ C["Unitframe"] = {
 	["TargetDebuffs"] = true,
 	["TargetDebuffsPerRow"] = 5,
 	["HealthbarColor"] = {
-        ["Options"] = {
-            ["Dark"] = "Dark",
-            ["Value"] = "Value",
-            ["Class"] = "Class",
-        },
-        ["Value"] = "Class"
+		["Options"] = {
+			["Dark"] = "Dark",
+			["Value"] = "Value",
+			["Class"] = "Class",
+		},
+		["Value"] = "Class"
 	},
 	["PortraitStyle"] = {
 		["Options"] = {
@@ -564,13 +564,13 @@ C["Party"] = {
 	["Smooth"] = false,
 	["TargetHighlight"] = false,
 	["HealthbarColor"] = {
-        ["Options"] = {
-            ["Dark"] = "Dark",
-            ["Value"] = "Value",
-            ["Class"] = "Class",
-        },
-        ["Value"] = "Class"
-    },
+		["Options"] = {
+			["Dark"] = "Dark",
+			["Value"] = "Value",
+			["Class"] = "Class",
+		},
+		["Value"] = "Class"
+	},
 }
 
 C["Boss"] = {
@@ -578,13 +578,13 @@ C["Boss"] = {
 	["Enable"] = true,
 	["Smooth"] = false,
 	["HealthbarColor"] = {
-        ["Options"] = {
-            ["Dark"] = "Dark",
-            ["Value"] = "Value",
-            ["Class"] = "Class",
-        },
-        ["Value"] = "Class"
-    },
+		["Options"] = {
+			["Dark"] = "Dark",
+			["Value"] = "Value",
+			["Class"] = "Class",
+		},
+		["Value"] = "Class"
+	},
 }
 
 C["Arena"] = {
@@ -592,13 +592,13 @@ C["Arena"] = {
 	["Enable"] = true,
 	["Smooth"] = false,
 	["HealthbarColor"] = {
-        ["Options"] = {
-            ["Dark"] = "Dark",
-            ["Value"] = "Value",
-            ["Class"] = "Class",
-        },
-        ["Value"] = "Class"
-    },
+		["Options"] = {
+			["Dark"] = "Dark",
+			["Value"] = "Value",
+			["Class"] = "Class",
+		},
+		["Value"] = "Class"
+	},
 }
 
 -- Raidframe
@@ -624,22 +624,22 @@ C["Raid"] = {
 	["TargetHighlight"] = false,
 	["Width"] = 66,
 	["HealthbarColor"] = {
-        ["Options"] = {
-            ["Dark"] = "Dark",
-            ["Value"] = "Value",
-            ["Class"] = "Class",
-        },
-        ["Value"] = "Class"
-    },
+		["Options"] = {
+			["Dark"] = "Dark",
+			["Value"] = "Value",
+			["Class"] = "Class",
+		},
+		["Value"] = "Class"
+	},
 	["HealthFormat"] = {
-        ["Options"] = {
+		["Options"] = {
 			["Disable HP"] = 1,
 			["Health Percentage"] = 2,
 			["Health Remaining"] = 3,
 			["Health Lost"] = 4,
-        },
-        ["Value"] = 1
-    },
+		},
+		["Value"] = 1
+	},
 }
 
 -- Worldmap

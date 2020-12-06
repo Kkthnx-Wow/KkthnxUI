@@ -28,19 +28,19 @@ function Module:CreatePet()
 	self.Health.frequentUpdates = true
 
 	if C["Unitframe"].HealthbarColor.Value == "Value" then
-        self.Health.colorSmooth = true
-        self.Health.colorClass = false
-        self.Health.colorReaction = false
-    elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
-        self.Health.colorSmooth = false
-        self.Health.colorClass = false
-        self.Health.colorReaction = false
-        self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
-    else
-        self.Health.colorSmooth = false
-        self.Health.colorClass = true
-        self.Health.colorReaction = true
-    end
+		self.Health.colorSmooth = true
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+  	  elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
+		self.Health.colorSmooth = false
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+		self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
+	else
+		self.Health.colorSmooth = false
+		self.Health.colorClass = true
+		self.Health.colorReaction = true
+	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)

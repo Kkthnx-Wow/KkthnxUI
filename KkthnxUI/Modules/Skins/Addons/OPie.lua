@@ -15,16 +15,16 @@ function prototype:SetIcon(texture)
 end
 
 function prototype:SetIconTexCoord(a, b, c, d, e, f, g, h)
-    if not a or not b or not c or not d then -- Broker plugins???
-        return
-    end
+	if not a or not b or not c or not d then -- Broker plugins???
+		return
+	end
 	self.Icon:SetTexCoord(a, b, c, d, e, f, g, h)
 end
 
 function prototype:SetIconVertexColor(r, g, b)
-    if r == 0.5 and g == 0.5 and b == 0.5 then -- don't darken icons on cooldown
-        return
-    end
+	if r == 0.5 and g == 0.5 and b == 0.5 then -- don't darken icons on cooldown
+		return
+	end
 
 	self.icon_r, self.icon_g, self.icon_b = r, g, b
 	if self.ustate == STATE_USABLE then
@@ -34,9 +34,9 @@ end
 
 function prototype:SetUsable(usable, _, cd, nomana, norange)
 	local state = usable and STATE_USABLE or (norange and STATE_NORANGE or (nomana and STATE_NOMANA or STATE_UNUSABLE))
-    if state == self.ustate then
-        return
-    end
+	if state == self.ustate then
+		return
+	end
 
 	self.ustate = state
 	if state == STATE_NORANGE then
@@ -51,8 +51,8 @@ function prototype:SetUsable(usable, _, cd, nomana, norange)
 end
 
 function prototype:SetDominantColor(r, g, b)
-    self.Border:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay")
-    self.KKUI_Border:SetVertexColor(r, g, b)
+	self.Border:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay")
+	self.KKUI_Border:SetVertexColor(r, g, b)
 end
 
 function prototype:SetOverlayIcon(texture, w, h, ...) -- not entirely sure what this is for
@@ -89,7 +89,7 @@ local displaySubs = {
 function prototype:SetBinding(text)
 	if not text then
 		return self.HotKey:SetText("")
-    end
+	end
 
 	for k, v in pairs(displaySubs) do
 		text = gsub(text, k, v)
@@ -205,19 +205,19 @@ local function CreateIndicator(name, parent, size)
 
 		button.checked:SetSize(size, size)
 		button.checked:ClearAllPoints()
-        button.checked:SetPoint("CENTER",0,0)
+		button.checked:SetPoint("CENTER",0,0)
 
 		button.isSkinned = true
 	end
-    tinsert(buttons, button)
+	tinsert(buttons, button)
 
 	return button
 end
 
 function Module:ReskinOPie()
-    if not IsAddOnLoaded("OPie") then
-        return
-    end
+	if not IsAddOnLoaded("OPie") then
+		return
+	end
 
-    OneRingLib.ext.OPieUI:SetIndicatorConstructor(CreateIndicator)
+	OneRingLib.ext.OPieUI:SetIndicatorConstructor(CreateIndicator)
 end

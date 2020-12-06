@@ -30,7 +30,7 @@ local itemList = {
 	[54710] = true, -- MOLL-E
 	[54711] = true,	-- Scrapbot
 	[67826] = true,	-- Jeeves
-    [265116] = true, -- Unstable Temporal Time Shifter
+	[265116] = true, -- Unstable Temporal Time Shifter
 }
 
 function Module:ItemAlert_Update(unit, _, spellID)
@@ -63,5 +63,5 @@ function Module:CreateItemAnnounce()
 		return
 	end
 
-    Module:PlacedItemAlert()
+	Module:PlacedItemAlert()
 end

@@ -2,9 +2,9 @@ local K = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
 function Module:ReskinImmersion()
-    if not IsAddOnLoaded("Immersion") then
-        return
-    end
+	if not IsAddOnLoaded("Immersion") then
+		return
+	end
 
 	ImmersionFrame.TalkBox.BackgroundFrame:StripTextures()
 	ImmersionFrame.TalkBox.BackgroundFrame:CreateBackdrop()
@@ -66,9 +66,9 @@ function Module:ReskinImmersion()
 
 			Button.Icon:SetTexCoord(unpack(K.TexCoords))
 			Button.Icon:SetDrawLayer("ARTWORK")
-            Button.Icon.Backdrop = CreateFrame("Frame", nil, Button)
-            Button.Icon.Backdrop:SetFrameLevel(Button:GetFrameLevel())
-            Button.Icon.Backdrop:CreateBorder()
+			Button.Icon.Backdrop = CreateFrame("Frame", nil, Button)
+			Button.Icon.Backdrop:SetFrameLevel(Button:GetFrameLevel())
+			Button.Icon.Backdrop:CreateBorder()
 			Button.Icon.Backdrop:SetAllPoints(Button.Icon)
 
 			Button.AutoCastShine = CreateFrame("Frame", "$parentShine", Button, "AutoCastShineTemplate")
@@ -108,12 +108,12 @@ function Module:ReskinImmersion()
 
 	ImmersionFrame:HookScript("OnEvent", function(self)
 		for _, Button in ipairs(self.TitleButtons.Buttons) do
-            if Button and not Button.Backdrop then
-                Button:CreateBackdrop()
+			if Button and not Button.Backdrop then
+				Button:CreateBackdrop()
 				Button:SetBackdrop(nil)
 
-                Button.Overlay:Hide()
-                Button.Backdrop:SetPoint("TOPLEFT", Button, 3, -3)
+				Button.Overlay:Hide()
+				Button.Backdrop:SetPoint("TOPLEFT", Button, 3, -3)
 				Button.Backdrop:SetPoint("BOTTOMRIGHT", Button, -3, 3)
 
 				Button.Hilite:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
@@ -135,7 +135,7 @@ function Module:ReskinImmersion()
 			if Button and not Button.Backdrop then
 				Button:CreateBackdrop()
 				Button.Icon:SetTexCoord(unpack(K.TexCoords))
-                Button.Icon:SetDrawLayer("ARTWORK")
+				Button.Icon:SetDrawLayer("ARTWORK")
 
 				Button.NameFrame:Hide()
 				Button.Border:Hide()

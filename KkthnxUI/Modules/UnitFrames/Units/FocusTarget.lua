@@ -7,9 +7,9 @@ local CreateFrame = _G.CreateFrame
 
 function Module:CreateFocusTarget()
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
-    local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
+	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
-    self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()
 	self.Overlay:SetFrameLevel(5)
 
@@ -28,19 +28,19 @@ function Module:CreateFocusTarget()
 	self.Health.frequentUpdates = true
 
 	if C["Unitframe"].HealthbarColor.Value == "Value" then
-        self.Health.colorSmooth = true
-        self.Health.colorClass = false
-        self.Health.colorReaction = false
-    elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
-        self.Health.colorSmooth = false
-        self.Health.colorClass = false
-        self.Health.colorReaction = false
-        self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
-    else
-        self.Health.colorSmooth = false
-        self.Health.colorClass = true
-        self.Health.colorReaction = true
-    end
+		self.Health.colorSmooth = true
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+	elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
+		self.Health.colorSmooth = false
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+		self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
+	else
+		self.Health.colorSmooth = false
+		self.Health.colorClass = true
+		self.Health.colorReaction = true
+	end
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
@@ -92,9 +92,9 @@ function Module:CreateFocusTarget()
 
 	self.Health:ClearAllPoints()
 	self.Health:SetPoint("TOPLEFT", self.Portrait:GetWidth() + 6, 0)
-    self.Health:SetPoint("TOPRIGHT")
+	self.Health:SetPoint("TOPRIGHT")
 
-    self.Level = self:CreateFontString(nil, "OVERLAY")
+	self.Level = self:CreateFontString(nil, "OVERLAY")
 	self.Level:SetPoint("BOTTOM", self.Portrait, 0, -16)
 	self.Level:SetFontObject(UnitframeFont)
 	self:Tag(self.Level, "[fulllevel]")

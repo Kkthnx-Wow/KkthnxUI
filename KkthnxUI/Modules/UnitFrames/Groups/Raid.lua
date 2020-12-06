@@ -258,24 +258,24 @@ function Module:CreateRaid()
 	end
 
 	if (C["Raid"].TargetHighlight) then
-        self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
-        self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].BorderGlow, edgeSize = 12})
-        self.TargetHighlight:SetPoint("TOPLEFT", self, -5, 5)
-        self.TargetHighlight:SetPoint("BOTTOMRIGHT", self, 5, -5)
-        self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
-        self.TargetHighlight:Hide()
+		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
+		self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].BorderGlow, edgeSize = 12})
+		self.TargetHighlight:SetPoint("TOPLEFT", self, -5, 5)
+		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self, 5, -5)
+		self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
+		self.TargetHighlight:Hide()
 
-        local function UpdateRaidTargetGlow()
-            if UnitIsUnit("target", self.unit) then
-                self.TargetHighlight:Show()
-            else
-                self.TargetHighlight:Hide()
-            end
-        end
+		local function UpdateRaidTargetGlow()
+			if UnitIsUnit("target", self.unit) then
+				self.TargetHighlight:Show()
+			else
+				self.TargetHighlight:Hide()
+			end
+		end
 
-        self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateRaidTargetGlow, true)
-        self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidTargetGlow, true)
-    end
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateRaidTargetGlow, true)
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidTargetGlow, true)
+	end
 
 	self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.DebuffHighlight:SetAllPoints(self.Health)

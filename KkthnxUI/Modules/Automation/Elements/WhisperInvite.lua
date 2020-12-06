@@ -14,8 +14,8 @@ local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
 function Module.WhisperInvite(event, ...)
-    local msg, author, _, _, _, _, _, _, _, _, _, _, presenceID = ...
-    if (not IsInGroup() or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and string_lower(msg) == string_lower(C["Automation"].WhisperInvite) then
+	local msg, author, _, _, _, _, _, _, _, _, _, _, presenceID = ...
+	if (not IsInGroup() or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and string_lower(msg) == string_lower(C["Automation"].WhisperInvite) then
 		if event == "CHAT_MSG_WHISPER" then
 			InviteUnit(author)
 		elseif event == "CHAT_MSG_BN_WHISPER" then

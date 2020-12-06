@@ -7,15 +7,15 @@ function Module:ReskinTellMeWhen()
 	end
 
 	if not C["Skins"].TellMeWhen then
-        return
-    end
+		return
+	end
 
 	TMW.Classes.Icon:PostHookMethod("OnNewInstance", function(self)
 		if not self.bg then
-            self.bg = CreateFrame("Frame", nil, self)
-		    self.bg:SetFrameLevel(self:GetFrameLevel())
-		    self.bg:SetAllPoints(self)
-		    self.bg:CreateBorder()
+			self.bg = CreateFrame("Frame", nil, self)
+			self.bg:SetFrameLevel(self:GetFrameLevel())
+			self.bg:SetAllPoints(self)
+			self.bg:CreateBorder()
 		end
 	end)
 

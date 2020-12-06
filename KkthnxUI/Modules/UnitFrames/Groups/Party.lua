@@ -33,19 +33,19 @@ function Module:CreateParty()
 	self.Health.frequentUpdates = true
 
 	if C["Party"].HealthbarColor.Value == "Value" then
-        self.Health.colorSmooth = true
-        self.Health.colorClass = false
-        self.Health.colorReaction = false
-    elseif C["Party"].HealthbarColor.Value == "Dark" then
-        self.Health.colorSmooth = false
-        self.Health.colorClass = false
-        self.Health.colorReaction = false
-        self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
-    else
-        self.Health.colorSmooth = false
-        self.Health.colorClass = true
-        self.Health.colorReaction = true
-    end
+		self.Health.colorSmooth = true
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+	elseif C["Party"].HealthbarColor.Value == "Dark" then
+		self.Health.colorSmooth = false
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+		self.Health:SetStatusBarColor(0.31, 0.31, 0.31)
+	else
+		self.Health.colorSmooth = false
+		self.Health.colorClass = true
+		self.Health.colorReaction = true
+	end
 
 	if C["Party"].Smooth then
 		K:SmoothBar(self.Health)
@@ -261,24 +261,24 @@ function Module:CreateParty()
 	self:Tag(self.StatusIndicator, "[afkdnd]")
 
 	if (C["Party"].TargetHighlight) then
-        self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
-        self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].BorderGlow, edgeSize = 12})
-        self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -5, 5)
-        self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 5, -5)
-        self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
-        self.TargetHighlight:Hide()
+		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
+		self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].BorderGlow, edgeSize = 12})
+		self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -5, 5)
+		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 5, -5)
+		self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
+		self.TargetHighlight:Hide()
 
-        local function UpdatePartyTargetGlow()
-            if UnitIsUnit("target", self.unit) then
-                self.TargetHighlight:Show()
-            else
-                self.TargetHighlight:Hide()
-            end
-        end
+		local function UpdatePartyTargetGlow()
+			if UnitIsUnit("target", self.unit) then
+				self.TargetHighlight:Show()
+			else
+				self.TargetHighlight:Hide()
+			end
+		end
 
-        self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdatePartyTargetGlow, true)
-        self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyTargetGlow, true)
-    end
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdatePartyTargetGlow, true)
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyTargetGlow, true)
+	end
 
 	self.ReadyCheckIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.ReadyCheckIndicator:SetSize(20, 20)

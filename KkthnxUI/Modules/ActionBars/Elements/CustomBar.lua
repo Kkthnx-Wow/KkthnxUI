@@ -47,9 +47,9 @@ end
 
 function Module:UpdateCustomBar()
 	local frame = _G.KKUI_CustomBar
-    if not frame then
-        return
-    end
+	if not frame then
+		return
+	end
 
 	local size = C["ActionBar"].CustomBarButtonSize
 	local num = C["ActionBar"].CustomBarNumButtons
