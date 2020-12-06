@@ -1,7 +1,7 @@
 local _, C = unpack(select(2, ...))
 
 if IsAddOnLoaded("UnlimitedMapPinDistance") then
-    return
+	return
 end
 
 -- Sourced: Unlimited Map Pin Distance (XAAM)
@@ -23,7 +23,7 @@ local IsAddOnLoaded = _G.IsAddOnLoaded
 
 do
 	local trackedAlphaBase = SuperTrackedFrame.GetTargetAlphaBaseValue
-    function SuperTrackedFrame:GetTargetAlphaBaseValue()
+	function SuperTrackedFrame:GetTargetAlphaBaseValue()
 		if trackedAlphaBase(self) == 0 and C_Navigation_GetDistance() >= 1000 then
 			return 0.6
 		else

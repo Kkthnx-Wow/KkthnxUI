@@ -21,11 +21,11 @@ function Module:CreateWowHeadLinks()
 
 	-- Add wowhead link by Goldpaw "Lars" Norberg
 	local subDomain = (setmetatable({
-	    ruRU = "ru",
-	    frFR = "fr", deDE = "de",
-	    esES = "es", esMX = "es",
-	    ptBR = "pt", ptPT = "pt", itIT = "it",
-	    koKR = "ko", zhTW = "cn", zhCN = "cn"
+		ruRU = "ru",
+		frFR = "fr", deDE = "de",
+		esES = "es", esMX = "es",
+		ptBR = "pt", ptPT = "pt", itIT = "it",
+		koKR = "ko", zhTW = "cn", zhCN = "cn"
 	}, { __index = function(t, v) return "www" end }))[GameLocale]
 
 	local wowheadLoc = subDomain..".wowhead.com"

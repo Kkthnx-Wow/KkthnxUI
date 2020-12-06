@@ -19,9 +19,9 @@ local function UserHasWayPoint()
 end
 
 function Module:CreateAutoMapPin()
-    if IsAddOnLoaded("AutoTrackMapPin") then
-        return
-    end
+	if IsAddOnLoaded("AutoTrackMapPin") then
+		return
+	end
 
 	if C["Automation"].AutoTrackPin then
 		K:RegisterEvent("USER_WAYPOINT_UPDATED", UserHasWayPoint)

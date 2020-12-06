@@ -555,7 +555,7 @@ end
 
 function Module:UpdateAuraWatch(UnitID)
 	local index = 1
-    while true do
+	while true do
 		local name, _, _, _, _, _, _, _, _, spellID = UnitBuff(UnitID, index)
 		if not name then
 			break
@@ -565,7 +565,7 @@ function Module:UpdateAuraWatch(UnitID)
 	end
 
 	local index = 1
-    while true do
+	while true do
 		local name, _, _, _, _, _, _, _, _, spellID = UnitDebuff(UnitID, index)
 		if not name then
 			break

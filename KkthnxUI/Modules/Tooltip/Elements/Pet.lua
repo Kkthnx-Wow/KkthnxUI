@@ -32,13 +32,13 @@ GameTooltip:HookScript("OnTooltipCleared", Module.PetInfoReset)
 
 function Module:PetInfoSetup()
 	local _, unit = self:GetUnit()
-    if not unit then
-        return
-    end
+	if not unit then
+		return
+	end
 
-    if not UnitIsBattlePet(unit) then
-        return
-    end
+	if not UnitIsBattlePet(unit) then
+		return
+	end
 
 	-- Pet Species icon
 	Module.PetInfoUpdate(self, UnitBattlePetType(unit))

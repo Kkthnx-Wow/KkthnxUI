@@ -4,7 +4,7 @@ local Module = K:GetModule("Skins")
 local _G = _G
 
 function Module:ReskinDominos()
-    if not C["Skins"].Dominos then
+	if not C["Skins"].Dominos then
 		return
 	end
 

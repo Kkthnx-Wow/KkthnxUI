@@ -5,12 +5,12 @@ local BigWigsFont = K.GetFont(C["UIFonts"].SkinFonts)
 local BigWigsTexture = K.GetTexture(C["UITextures"].SkinTextures)
 
 function Module:ReskinBigWigs()
-    if not C["Skins"].BigWigs or not IsAddOnLoaded("BigWigs") then
-        return
-    end
+	if not C["Skins"].BigWigs or not IsAddOnLoaded("BigWigs") then
+		return
+	end
 
-    if not BigWigs3DB then
-        return
+	if not BigWigs3DB then
+		return
 	end
 
 	local function removeStyle(bar)
@@ -87,14 +87,14 @@ function Module:ReskinBigWigs()
 		bars:RegisterBarStyle("KkthnxUI", {
 			apiVersion = 1,
 			version = 2,
-            GetSpacing = function(bar)
-                return bar:GetHeight() + 5
-            end,
+			GetSpacing = function(bar)
+				return bar:GetHeight() + 5
+			end,
 			ApplyStyle = styleBar,
 			BarStopped = removeStyle,
-            GetStyleName = function()
-                return "KkthnxUI"
-            end,
+			GetStyleName = function()
+				return "KkthnxUI"
+			end,
 		})
 	end
 

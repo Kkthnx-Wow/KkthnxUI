@@ -12,11 +12,11 @@ function Module:ReskinChocolateBar()
 
 	for i = 1, 20 do
 		local chocolateFrame = _G["ChocolateBar"..i]
-        if chocolateFrame then
+		if chocolateFrame then
 			chocolateFrame:StripTextures()
 			chocolateFrame:CreateBorder()
 		end
-    end
+	end
 
 	if RaidUtility_ShowButton then
 		RaidUtility_ShowButton:SetFrameStrata("TOOLTIP")

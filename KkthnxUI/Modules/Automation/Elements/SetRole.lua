@@ -34,11 +34,11 @@ local function SetupAutoSetRole()
 end
 
 function Module:CreateAutoSetRole()
-    if not C["Automation"].AutoSetRole then
-        return
-    end
+	if not C["Automation"].AutoSetRole then
+		return
+	end
 
-    K:RegisterEvent("PLAYER_TALENT_UPDATE", SetupAutoSetRole)
-    K:RegisterEvent("GROUP_ROSTER_UPDATE", SetupAutoSetRole)
-    RolePollPopup:UnregisterEvent("ROLE_POLL_BEGIN")
+	K:RegisterEvent("PLAYER_TALENT_UPDATE", SetupAutoSetRole)
+	K:RegisterEvent("GROUP_ROSTER_UPDATE", SetupAutoSetRole)
+	RolePollPopup:UnregisterEvent("ROLE_POLL_BEGIN")
 end

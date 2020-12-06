@@ -5,7 +5,7 @@ local _G = _G
 local GetLocale = _G.GetLocale
 
 if GetLocale() ~= "frFR" then
-    return
+	return
 end
 
 -- Module Locales

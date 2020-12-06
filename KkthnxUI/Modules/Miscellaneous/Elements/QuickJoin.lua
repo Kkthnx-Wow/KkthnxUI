@@ -22,7 +22,7 @@ local pendingFrame
 function Module:HookApplicationClick()
 	if LFGListFrame.SearchPanel.SignUpButton:IsEnabled() then
 		LFGListFrame.SearchPanel.SignUpButton:Click()
-    end
+	end
 
 	if LFGListApplicationDialog:IsShown() and LFGListApplicationDialog.SignUpButton:IsEnabled() then
 		LFGListApplicationDialog.SignUpButton:Click()
@@ -30,9 +30,9 @@ function Module:HookApplicationClick()
 end
 
 function Module:DialogHideInSecond()
-    if not pendingFrame then
-        return
-    end
+	if not pendingFrame then
+		return
+	end
 
 	if pendingFrame.informational then
 		StaticPopupSpecial_Hide(pendingFrame)
@@ -60,9 +60,9 @@ function Module:CreateQuickJoin()
 	end
 
 	hooksecurefunc("LFGListInviteDialog_Accept", function()
-        if PVEFrame:IsShown() then
-            HideUIPanel(PVEFrame)
-        end
+		if PVEFrame:IsShown() then
+			HideUIPanel(PVEFrame)
+		end
 	end)
 
 	hooksecurefunc("StaticPopup_Show", Module.HookDialogOnShow)
