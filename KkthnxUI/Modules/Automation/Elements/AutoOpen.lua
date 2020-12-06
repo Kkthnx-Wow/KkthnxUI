@@ -58,7 +58,6 @@ frame:Register("MERCHANT_CLOSED", function()
 end)
 
 frame:Register("BAG_UPDATE_DELAYED", function()
-	print("dwjqidjwqiojdiowqjdiwqo")
 	if atBank or atMail or atMerchant then
 		return
 	end
