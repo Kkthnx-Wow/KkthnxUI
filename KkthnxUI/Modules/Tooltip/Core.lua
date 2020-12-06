@@ -437,7 +437,7 @@ end
 local fakeBg = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
 fakeBg:SetBackdrop({
 	bgFile = C["Media"].Blank,
-	edgeFile = C["Media"].BorderTooltip,
+	edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. C["General"].BorderStyle.Value .. "\\Border_Tooltip.tga",
 	edgeSize = 12,
 	insets = {left = 4, right = 4, top = 4, bottom = 4}
 })

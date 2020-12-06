@@ -8,10 +8,10 @@ C["Media"] = {
 	BackdropColor = {.04, .04, .04, 0.9},
 	Blank = [[Interface\BUTTONS\WHITE8X8]],
 	BlankFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Invisible.ttf]],
-	Border = [[Interface\AddOns\KkthnxUI\Media\Border\Border.tga]],
+--	Border = [[Interface\AddOns\KkthnxUI\Media\Border\KkthnxUI\Border.tga]],
 	BorderColor = {1, 1, 1},
 	BorderGlow = [[Interface\AddOns\KkthnxUI\Media\Border\Border_Glow_Overlay.tga]],
-	BorderTooltip = [[Interface\AddOns\KkthnxUI\Media\Border\Border_Tooltip.tga]],
+--	BorderTooltip = [[Interface\AddOns\KkthnxUI\Media\Border\KkthnxUI\Border_Tooltip.tga]],
 	CombatFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]],
 	Copy = [[Interface\AddOns\KkthnxUI\Media\Chat\Copy.tga]],
 	DiabolicUI = [[Interface\AddOns\KkthnxUI\Media\Textures\DiabolicUI.tga]],
@@ -50,8 +50,8 @@ if K.LSM == nil then
 end
 
 -- LibSharedMedia Stuff
-K.LSM:Register("border", "KKUI_Border", [[Interface\AddOns\KkthnxUI\Media\Border\Border.tga]])
-K.LSM:Register("border", "KKUI_Border_Tooltip", [[Interface\AddOns\KkthnxUI\Media\Border\Border_Tooltip.tga]])
+K.LSM:Register("border", "KKUI_Border", [[Interface\AddOns\KkthnxUI\Media\Border\KkthnxUI\Border.tga]])
+K.LSM:Register("border", "KKUI_Border_Tooltip", [[Interface\AddOns\KkthnxUI\Media\Border\KkthnxUI\Border_Tooltip.tga]])
 K.LSM:Register("border", "KKUI_GlowTex", [[Interface\AddOns\KkthnxUI\Media\Textures\GlowTex]])
 K.LSM:Register("font", "KKUI_Damage", [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]])
 K.LSM:Register("font", "KKUI_Normal", [[Interface\AddOns\KkthnxUI\Media\Fonts\Normal.ttf]])
