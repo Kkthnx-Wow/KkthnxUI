@@ -252,8 +252,7 @@ C["General"] = {
 	["BorderStyle"] = {
 		["Options"] = {
 			["KkthnxUI"] = "KkthnxUI",
-			["AzeriteUI Dark"] = "AzeriteUI_Dark",
-			["AzeriteUI Lite"] = "AzeriteUI_Lite",
+			["AzeriteUI"] = "AzeriteUI",
 		},
 		["Value"] = "KkthnxUI"
 	},
