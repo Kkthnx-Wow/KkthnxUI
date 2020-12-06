@@ -412,6 +412,7 @@ L["Enable Minimap Time"] = "Afficher l'heure de la Minimap"
 L["Enable System Info"] = "Afficher les infos système"
 
 L["Auto Scale"] = "Echelle automatique"
+L["Border Style"] = "Border Style" -- Needs Translations
 L["Color 'Most' KkthnxUI Borders"] = "Couleur générale des bordures de KkthnxUI"
 L["Disable 'Some' Blizzard Tutorials"] = "Désactiver les tutoriels Blizzard"
 L["Disable Blizzard Error Frame Combat"] = "Désactiver la fenêtre d'erreur Blizzard pendant les combats"

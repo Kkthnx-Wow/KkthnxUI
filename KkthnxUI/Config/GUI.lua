@@ -376,6 +376,7 @@ local General = function(self)
 	Window:CreateSwitch("General", "NoTutorialButtons", L["Disable 'Some' Blizzard Tutorials"])
 	Window:CreateSwitch("General", "VersionCheck", L["Enable Version Checking"])
 	Window:CreateSwitch("General", "Welcome", L["Show Welcome Message"])
+	Window:CreateDropdown("General", "BorderStyle", L["Border Style"])
 	Window:CreateDropdown("General", "NumberPrefixStyle", L["Number Prefix Style"])
 
 	Window:CreateSection("General Scaling")

@@ -249,6 +249,13 @@ C["General"] = {
 	["UseGlobal"] = false,
 	["VersionCheck"] = true,
 	["Welcome"] = true,
+	["BorderStyle"] = {
+		["Options"] = {
+			["KkthnxUI"] = "KkthnxUI",
+			["AzeriteUI"] = "AzeriteUI",
+		},
+		["Value"] = "KkthnxUI"
+	},
 	["NumberPrefixStyle"] = {
 		["Options"] = {
 			["Standard: b/m/k"] = 1,
