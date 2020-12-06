@@ -91,6 +91,7 @@ local CreditLines = {
 	-- Tier 3
 	"|CFFfa6a56Tier 3|r",
 	PaladinIconColor.."Chirs|r",
+	HunterIconColor.."SnerkDevil",
 	"thondr",
 	"",
 	-- Tier 4
