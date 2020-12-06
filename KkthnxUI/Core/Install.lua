@@ -9,14 +9,30 @@ local table_wipe = _G.table.wipe
 
 local APPLY = _G.APPLY
 local CHAT = _G.CHAT
+local ChangeChatColor = _G.ChangeChatColor
+local ChatFrame_AddChannel = _G.ChatFrame_AddChannel
+local ChatFrame_AddMessageGroup = _G.ChatFrame_AddMessageGroup
+local ChatFrame_RemoveAllMessageGroups = _G.ChatFrame_RemoveAllMessageGroups
+local ChatFrame_RemoveChannel = _G.ChatFrame_RemoveChannel
 local CreateFrame = _G.CreateFrame
 local DEFAULT = _G.DEFAULT
+local FCF_DockFrame = _G.FCF_DockFrame
+local FCF_OpenNewWindow = _G.FCF_OpenNewWindow
+local FCF_ResetChatWindows = _G.FCF_ResetChatWindows
+local FCF_SavePositionAndDimensions = _G.FCF_SavePositionAndDimensions
+local FCF_SetChatWindowFontSize = _G.FCF_SetChatWindowFontSize
+local FCF_SetLocked = _G.FCF_SetLocked
+local FCF_SetWindowName = _G.FCF_SetWindowName
+local GENERAL = _G.GENERAL
+local GUILD_EVENT_LOG = _G.GUILD_EVENT_LOG
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local PlaySound = _G.PlaySound
 local SETTINGS = _G.SETTINGS
 local SOUNDKIT = _G.SOUNDKIT
 local SetCVar = _G.SetCVar
+local TRADE = _G.TRADE
+local ToggleChatColorNamesByClassGroup = _G.ToggleChatColorNamesByClassGroup
 local UIErrorsFrame = _G.UIErrorsFrame
 local UIParent = _G.UIParent
 local UI_SCALE = _G.UI_SCALE
@@ -150,6 +166,8 @@ function Module:ForceChatSettings()
 	for _, v in ipairs(ChatGroups) do
 		ChatFrame_AddMessageGroup(_G.ChatFrame4, v)
 	end
+
+	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame3)
 
 	ChatGroups = {"WHISPER", "BN_WHISPER"}
 	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame5)
