@@ -111,13 +111,13 @@
    <Script file="Tooltip\Elements\Targeted.lua" />
    <!-- Miscellaneous -->
    <Script file="Miscellaneous\Core.lua" />
-   <Script file="Miscellaneous\Elements\MouseTrail.lua" />
    <Script file="Miscellaneous\Elements\AFKCam.lua" />
    <Script file="Miscellaneous\Elements\AlreadyKnown.lua" />
    <Script file="Miscellaneous\Elements\Durability.lua" />
    <Script file="Miscellaneous\Elements\ImprovedMail.lua" />
    <Script file="Miscellaneous\Elements\MerchantItemlevel.lua" />
    <Script file="Miscellaneous\Elements\MissingStats.lua" />
+   <Script file="Miscellaneous\Elements\MouseTrail.lua" />
    <Script file="Miscellaneous\Elements\MovableFrames.lua" />
    <Script file="Miscellaneous\Elements\ParagonReputation.lua" />
    <Script file="Miscellaneous\Elements\PulseCooldown.lua" />
@@ -126,6 +126,7 @@
    <Script file="Miscellaneous\Elements\SlotItemLevel.lua" />
    <Script file="Miscellaneous\Elements\StatusReport.lua" />
    <Script file="Miscellaneous\Elements\TradeTabs.lua" />
+   <Script file="Miscellaneous\Elements\UnlimitedPinDistance.lua" />
    <Script file="Miscellaneous\Elements\yClassColors.lua" />
    <!-- Announcements -->
    <Script file="Announcements\Core.lua" />

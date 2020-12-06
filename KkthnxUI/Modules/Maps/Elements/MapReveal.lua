@@ -108,12 +108,7 @@ local function MapExplorationPin_RefreshOverlays(pin, fullUpdate)
 						texture:Hide()
 					end
 
-					if C["WorldMap"].MapRevealGlow then
-						texture:SetVertexColor(.7, .7, .7)
-					else
-						texture:SetVertexColor(1, 1, 1)
-					end
-
+					texture:SetVertexColor(0.8, 0.8, 0.8)
 					table_insert(overlayTextures, texture)
 				end
 			end
@@ -131,10 +126,6 @@ end
 
 function Module:CreateWorldMapReveal()
 	if IsAddOnLoaded("Leatrix_Maps") then
-		return
-	end
-
-	if not C["WorldMap"].MapReveal then
 		return
 	end
 

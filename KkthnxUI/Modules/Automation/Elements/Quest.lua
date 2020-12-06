@@ -130,11 +130,12 @@ end)
 function QuickQuest:Register(event, func)
 	self:RegisterEvent(event)
 	self[event] = function(...)
+		if IsAddOnLoaded("QuickQuest") or IsAddOnLoaded("AutoTurnIn") or IsAddOnLoaded("AAP-Core") then
+			KkthnxUIData[K.Realm][K.Name].AutoQuest = false
+			return
+		end
+
 		if KkthnxUIData[K.Realm][K.Name].AutoQuest and not IsShiftKeyDown() then
-			if IsAddOnLoaded("QuickQuest") then
-				KkthnxUIData[K.Realm][K.Name].AutoQuest = false
-				return
-			end
 			func(...)
 		end
 	end

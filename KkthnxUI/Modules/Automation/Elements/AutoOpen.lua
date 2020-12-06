@@ -11,16 +11,16 @@ local USE_COLON = _G.USE_COLON
 
 local frame, atBank, atMail, atMerchant = CreateFrame("Frame")
 frame:SetScript("OnEvent", function(self, event, ...)
-    if not C["Automation"].AutoOpenItems then
-		return
-    end
-
 	self[event](...)
 end)
 
 function frame:Register(event, func)
 	self:RegisterEvent(event)
 	self[event] = function(...)
+		if not C["Automation"].AutoOpenItems then
+			return
+		end
+
 		func(...)
 	end
 end
@@ -58,6 +58,7 @@ frame:Register("MERCHANT_CLOSED", function()
 end)
 
 frame:Register("BAG_UPDATE_DELAYED", function()
+	print("dwjqidjwqiojdiowqjdiwqo")
 	if atBank or atMail or atMerchant then
 		return
 	end

@@ -303,6 +303,7 @@ L["Auto Select Quest Rewards Best Value"] = "Auto Select Quest Rewards Best Valu
 L["Auto Set Your Role In Groups"] = "Auto Set Your Role In Groups"
 L["Auto Skip All Cinematic/Movies"] = "Auto Skip All Cinematic/Movies"
 L["Automatically Remove Annoying Buffs"] = "Automatically Remove Annoying Buffs"
+L["Automatically Track Newly Created Map Pins"] = "Automatically Track Newly Created Map Pins"
 L["Blocks Invites From Strangers"] = "Blocks Invites From Strangers"
 L["Decline Pet Duels"] = "Decline Pet Duels"
 L["Decline PvP Duels"] = "Decline PvP Duels"
@@ -638,10 +639,8 @@ L["Only Play Complete Quest Sound"] = "Only Play Complete Quest Sound"
 
 L["Alpha When Moving"] = "Alpha When Moving"
 L["Fade Worldmap When Moving"] = "Fade Worldmap When Moving"
-L["Show Map Reveal Overlay Shadow"] = "Show Map Reveal Overlay Shadow"
 L["Show Player/Mouse Coordinates"] = "Show Player/Mouse Coordinates"
 L["Show Smaller Worldmap"] = "Show Smaller Worldmap"
-L["Show Zones You Have Yet to Discover"] = "Show Zones You Have Yet to Discover"
 
 -- GUI Config Tooltip Locales
 L["AutoScaleTip"] = "Auto Scale the UI to pixel perfect based on your resolution.|n|nIf you wanna manaually scale the UI. You need to turn off 'Auto Scale' then apply the scale by using the slider"

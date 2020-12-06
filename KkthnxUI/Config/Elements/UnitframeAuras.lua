@@ -15,7 +15,6 @@ end
 
 -- AuraWatch: List of personal spells to show on unitframes as icon
 local function AuraWatch_AddSpell(id, point, color, anyUnit, onlyShowMissing, displayText, textThreshold, xOffset, yOffset)
-
 	local r, g, b = 1, 1, 1
 	if color then
 		r, g, b = unpack(color)

@@ -311,6 +311,7 @@ L["Auto Select Quest Rewards Best Value"] = "Sélectionner automatiquement la r�
 L["Auto Set Your Role In Groups"] = "Définir auto. votre rôle dans les groupes"
 L["Auto Skip All Cinematic/Movies"] = "Passer auto. les cinématiques"
 L["Automatically Remove Annoying Buffs"] = "Retirer auto. les améliorations inutiles"
+L["Automatically Track Newly Created Map Pins"] = "Automatically Track Newly Created Map Pins" -- Needs Translation
 L["Blocks Invites From Strangers"] = "Bloquez les invitations des joueurs inconnus"
 L["Decline Pet Duels"] = "Refuser les duels de mascottes"
 L["Decline PvP Duels"] = "Refuser les duels JcJ"
@@ -646,10 +647,8 @@ L["Only Play Complete Quest Sound"] = "Ne jouez que le son en réussite de quêt
 
 L["Alpha When Moving"] = "Alpha When Moving"
 L["Fade Worldmap When Moving"] = "Fondu de la carte du monde en mouvement"
-L["Show Map Reveal Overlay Shadow"] = "Show Map Reveal Overlay Shadow"
 L["Show Player/Mouse Coordinates"] = "Afficher les coordonnées du joueur/souris"
 L["Show Smaller Worldmap"] = "Afficher une carte du monde plus petite"
-L["Show Zones You Have Yet to Discover"] = "Afficher les zones non découvertes"
 
 -- GUI Config Tooltip Locales
 L["AutoScaleTip"] = "Mise à l'échelle automatique de l'IU au pixel près en fonction de votre résolution.|n|nSi vous voulez changer l'échelle manuellement, vous devez désactiver 'Echelle automatique' puis appliquer l'échelle en utilisant le curseur"

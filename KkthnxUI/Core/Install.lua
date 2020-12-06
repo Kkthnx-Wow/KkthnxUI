@@ -113,23 +113,33 @@ function Module:ForceChatSettings()
 
 	-- Create our custom chatframes
 	FCF_ResetChatWindows()
+
 	FCF_SetLocked(ChatFrame1, 1)
 	FCF_DockFrame(ChatFrame2)
 	FCF_SetLocked(ChatFrame2, 1)
+
 	FCF_OpenNewWindow(TRADE)
 	FCF_SetLocked(ChatFrame3, 1)
 	FCF_DockFrame(ChatFrame3)
+
 	FCF_OpenNewWindow(LOOT)
 	FCF_SetLocked(ChatFrame4, 1)
 	FCF_DockFrame(ChatFrame4)
+
+	FCF_OpenNewWindow(WHISPER)
+	FCF_SetLocked(ChatFrame5, 1)
+	FCF_DockFrame(ChatFrame5)
+
 	FCF_SetChatWindowFontSize(nil, ChatFrame1, 12)
 	FCF_SetChatWindowFontSize(nil, ChatFrame2, 12)
 	FCF_SetChatWindowFontSize(nil, ChatFrame3, 12)
 	FCF_SetChatWindowFontSize(nil, ChatFrame4, 12)
+	FCF_SetChatWindowFontSize(nil, ChatFrame5, 12)
+
 	FCF_SetWindowName(ChatFrame1, GENERAL)
 	FCF_SetWindowName(ChatFrame2, GUILD_EVENT_LOG)
 
-	local ChatGroups = {"SYSTEM", "CHANNEL", "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "MONSTER_SAY", "MONSTER_YELL", "MONSTER_EMOTE", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "ERRORS", "AFK", "DND", "IGNORED", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "BN_WHISPER", "BN_INLINE_TOAST_ALERT"}
+	local ChatGroups = {"SYSTEM", "CHANNEL", "SAY", "EMOTE", "YELL", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "MONSTER_SAY", "MONSTER_YELL", "MONSTER_EMOTE", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "ERRORS", "AFK", "DND", "IGNORED", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "BN_INLINE_TOAST_ALERT"}
 	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame1)
 	for _, v in ipairs(ChatGroups) do
 		ChatFrame_AddMessageGroup(_G.ChatFrame1, v)
@@ -141,7 +151,12 @@ function Module:ForceChatSettings()
 		ChatFrame_AddMessageGroup(_G.ChatFrame4, v)
 	end
 
-	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame3)
+	ChatGroups = {"WHISPER", "BN_WHISPER"}
+	ChatFrame_RemoveAllMessageGroups(_G.ChatFrame5)
+	for _, v in ipairs(ChatGroups) do
+		ChatFrame_AddMessageGroup(_G.ChatFrame5, v)
+	end
+
 	ChatFrame_AddChannel(_G.ChatFrame1, GENERAL)
 	ChatFrame_RemoveChannel(_G.ChatFrame1, TRADE)
 	ChatFrame_AddChannel(_G.ChatFrame3, TRADE)
@@ -149,20 +164,6 @@ function Module:ForceChatSettings()
 	ChatGroups = {"SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL"}
 	for i = 1, _G.MAX_WOW_CHAT_CHANNELS do
 		table.insert(ChatGroups, "CHANNEL"..i)
-	end
-
-	if K.isDeveloper then
-		FCF_OpenNewWindow("Whisper")
-		FCF_SetLocked(ChatFrame5, 1)
-		FCF_DockFrame(ChatFrame5)
-		FCF_SetChatWindowFontSize(nil, ChatFrame5, 12)
-
-		ChatGroups = {"WHISPER", "BN_WHISPER"}
-		ChatFrame_RemoveAllMessageGroups(_G.ChatFrame5)
-		for _, v in ipairs(ChatGroups) do
-			ChatFrame_RemoveMessageGroup(_G.ChatFrame1, v)
-			ChatFrame_AddMessageGroup(_G.ChatFrame5, v)
-		end
 	end
 
 	for _, v in ipairs(ChatGroups) do
