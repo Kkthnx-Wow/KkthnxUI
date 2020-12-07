@@ -131,6 +131,7 @@
    <!-- Announcements -->
    <Script file="Announcements\Core.lua" />
    <Script file="Announcements\Elements\Countdown.lua" />
+   <Script file="Announcements\Elements\HealthAlert.lua" />
    <Script file="Announcements\Elements\Interrupt.lua" />
    <Script file="Announcements\Elements\ItemAlert.lua" />
    <Script file="Announcements\Elements\KillingBlow.lua" />

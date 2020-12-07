@@ -182,6 +182,7 @@ local Announcements = function(self)
 	Window:CreateSwitch("Announcements", "SaySapped", L["Announce When Sapped"])
 	Window:CreateSwitch("Announcements", "KillingBlow", L["Show Your Killing Blow Info"])
 	Window:CreateSwitch("Announcements", "PvPEmote", L["Auto Emote On Your Killing Blow"])
+	Window:CreateSwitch("Announcements", "HealthAlert", L["Announce When Low On Health"])
 	Window:CreateDropdown("Announcements", "Interrupt", L["Announce Interrupts"])
 
 	Window:CreateSection("QuestNotifier Toggles")
