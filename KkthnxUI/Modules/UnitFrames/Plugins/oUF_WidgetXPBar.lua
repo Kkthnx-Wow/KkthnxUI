@@ -88,8 +88,8 @@ function K.Widget_DefaultLayout(widgetContainerFrame, sortedWidgets)
 					FixDefaultAnchor(horizontalRowContainer)
 					totalWidth = totalWidth + horizontalRowWidth
 					totalHeight = totalHeight + horizontalRowHeight
-					horizontalRowHeight = 0
-					horizontalRowWidth = 0
+					horizontalRowHeight = 1
+					horizontalRowWidth = 1
 					horizontalRowContainer = nil
 				end
 
@@ -112,8 +112,8 @@ function K.Widget_DefaultLayout(widgetContainerFrame, sortedWidgets)
 					FixDefaultAnchor(horizontalRowContainer)
 					totalWidth = totalWidth + horizontalRowWidth
 					totalHeight = totalHeight + horizontalRowHeight
-					horizontalRowHeight = 0
-					horizontalRowWidth = 0
+					horizontalRowHeight = 1
+					horizontalRowWidth = 1
 				end
 
 				local newHorizontalRowContainer = widgetContainerFrame.horizontalRowContainerPool:Acquire()

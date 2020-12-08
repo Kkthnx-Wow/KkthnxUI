@@ -8,6 +8,7 @@ local string_format = _G.string.format
 local string_match = _G.string.match
 local string_sub = _G.string.sub
 
+local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
 local C_Timer_After = _G.C_Timer.After
 local CinematicFrame_CancelCinematic = _G.CinematicFrame_CancelCinematic
 local GameMovieFinished = _G.GameMovieFinished
@@ -36,7 +37,9 @@ do
 			C_Timer_After(3, TrySkippingCinematic)
 			C_Timer_After(3.5, function()
 				if not alreadySkipped then
-					K.Print(L["This Cutscene Can Not Be Skipped"])
+					if not (C_Map_GetBestMapForUnit("player") == 1670 and K.Level == 60) then
+						K.Print(L["This Cutscene Can Not Be Skipped"])
+					end
 				else
 					alreadySkipped = false
 				end

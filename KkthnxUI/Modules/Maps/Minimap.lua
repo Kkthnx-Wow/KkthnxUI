@@ -164,6 +164,7 @@ function Module:CreateStyle()
 	local minimapBorder = CreateFrame("Frame", "KKUI_MinimapBorder", Minimap)
 	minimapBorder:SetAllPoints(Minimap)
 	minimapBorder:SetFrameLevel(Minimap:GetFrameLevel())
+	minimapBorder:SetFrameStrata("LOW")
 	minimapBorder:CreateBorder()
 
 	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, "BackdropTemplate")
@@ -431,7 +432,6 @@ function Module:Minimap_OnMouseUp(btn)
 end
 
 function Module:SetupHybridMinimap()
-	HybridMinimap:SetFrameStrata("LOW")
 	HybridMinimap.CircleMask:SetTexture("Interface\\BUTTONS\\WHITE8X8")
 end
 

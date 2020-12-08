@@ -709,6 +709,10 @@ function K.CheckSavedVariables()
 		KkthnxUIData[K.Realm][K.Name].AuraWatchList.Switcher = {}
 	end
 
+	if not KkthnxUIData[K.Realm][K.Name].KeystoneInfo then
+		KkthnxUIData[K.Realm][K.Name].KeystoneInfo = {}
+	end
+
 	if not KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells then
 		KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {}
 	end

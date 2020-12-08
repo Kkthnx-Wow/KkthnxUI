@@ -242,11 +242,11 @@ local function GuildPanel_Init()
 	K.CreateFontString(bu[4], 12, ZONE, "", false, "RIGHT", -5, 0)
 
 	K.CreateFontString(infoFrame, 12, Module.LineString, "", false, "BOTTOMRIGHT", -12, 58)
-	local whspInfo = K.InfoColor..Module.RightButton..L["Whisper"]
+	local whspInfo = K.InfoColor..K.RightButton..L["Whisper"]
 	K.CreateFontString(infoFrame, 12, whspInfo, "", false, "BOTTOMRIGHT", -15, 42)
-	local invtInfo = K.InfoColor.."ALT +"..Module.LeftButton..L["Invite"]
+	local invtInfo = K.InfoColor.."ALT +"..K.LeftButton..L["Invite"]
 	K.CreateFontString(infoFrame, 12, invtInfo, "", false, "BOTTOMRIGHT", -15, 26)
-	local copyInfo = K.InfoColor.."SHIFT +"..Module.LeftButton..L["Copy Name"]
+	local copyInfo = K.InfoColor.."SHIFT +"..K.LeftButton..L["Copy Name"]
 	K.CreateFontString(infoFrame, 12, copyInfo, "", false, "BOTTOMRIGHT", -15, 10)
 
 	local scrollFrame = CreateFrame("ScrollFrame", "KKUI_GuildInfobarScrollFrame", infoFrame, "HybridScrollFrameTemplate")
@@ -315,9 +315,9 @@ local function GuildPanel_Refresh()
 				end
 			else
 				if status == 1 then
-					status = Module.AFKTex
+					status = K.AFKTex
 				elseif status == 2 then
-					status = Module.DNDTex
+					status = K.DNDTex
 				else
 					status = " "
 				end

@@ -50,9 +50,9 @@ local function OnEnter()
 
 	GameTooltip:AddLine("If you target an NPC you are at and right click, you can also add that npc with your location you are sending to chat.", nil, nil, nil, true)
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine("CTRL +"..Module.RightButton.."Send Basic Position Info", 1, 1, 1)
-	GameTooltip:AddLine(Module.RightButton.."Send Detailed Position Info", 1, 1, 1)
-	GameTooltip:AddLine(Module.LeftButton.."Toggle WorldMap", 1, 1, 1)
+	GameTooltip:AddLine("CTRL +"..K.RightButton.."Send Basic Position Info", 1, 1, 1)
+	GameTooltip:AddLine(K.RightButton.."Send Detailed Position Info", 1, 1, 1)
+	GameTooltip:AddLine(K.LeftButton.."Toggle WorldMap", 1, 1, 1)
 	GameTooltip:Show()
 end
 

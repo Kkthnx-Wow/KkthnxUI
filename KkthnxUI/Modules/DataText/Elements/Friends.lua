@@ -502,9 +502,9 @@ local function FriendsPanel_Init()
 	scrollBar:SetValue(0)
 
 	K.CreateFontString(infoFrame, 12, Module.LineString, "", false, "BOTTOMRIGHT", -12, 42)
-	local whspInfo = K.InfoColor..Module.RightButton..L["Whisper"]
+	local whspInfo = K.InfoColor..K.RightButton..L["Whisper"]
 	K.CreateFontString(infoFrame, 12, whspInfo, "", false, "BOTTOMRIGHT", -15, 26)
-	local invtInfo = K.InfoColor.."ALT +"..Module.LeftButton..L["Invite"]
+	local invtInfo = K.InfoColor.."ALT +"..K.LeftButton..L["Invite"]
 	K.CreateFontString(infoFrame, 12, invtInfo, "", false, "BOTTOMRIGHT", -15, 10)
 end
 

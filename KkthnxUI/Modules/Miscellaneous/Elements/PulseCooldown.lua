@@ -39,15 +39,12 @@ K.PulseIgnoredSpells = {
 }
 
 local PulseCooldownFrame = CreateFrame("Frame", "KKUI_PulseCooldownFrame", UIParent)
-PulseCooldownFrame:CreateBorder(nil, nil, nil, nil, -5, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+PulseCooldownFrame:CreateBorder(nil, nil, nil, nil, -5)
 PulseCooldownFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 260)
 
 PulseCooldownFrame.Icon = PulseCooldownFrame:CreateTexture(nil, "ARTWORK")
 PulseCooldownFrame.Icon:SetTexCoord(unpack(K.TexCoords))
 PulseCooldownFrame.Icon:SetAllPoints(PulseCooldownFrame)
-
-K.Debug("PulseCooldownFrame:", PulseCooldownFrame)
-K.Debug("PulseCooldownFrame.Icon:", PulseCooldownFrame.Icon)
 
 -- Utility Functions
 local function tcount(tab)
@@ -194,7 +191,8 @@ end
 
 function PulseCooldownFrame:UNIT_SPELLCAST_SUCCEEDED(unit, _, spellID)
 	if unit == "player" then
-		watching[spellID] = {GetTime(), "spell", spellID}
+		local name = GetSpellInfo(spellID) -- Fix wrong double cd for trinket
+		watching[spellID] = {GetTime(), "spell", name}
 		PulseCooldownFrame:SetScript("OnUpdate", OnUpdate)
 	end
 end

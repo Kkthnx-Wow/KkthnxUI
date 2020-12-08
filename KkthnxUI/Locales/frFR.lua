@@ -469,6 +469,8 @@ L["Auras Size"] = "Taille des Auras"
 L["Classpower/Healthbar Height"] = "Hauteur de la Barre de ressource/Barre de vie"
 L["Colored Custom Units"] = "Colored Custom Units"
 L["Custom Color"] = "Couleur personnalisée"
+L["Custom PowerUnit List"] = "Custom PowerUnit List" -- Needs Translations
+L["Custom UnitColor List"] = "Custom UnitColor List" -- Needs Translations
 L["Enable GCD Ticker"] = "Activer GCD Ticker"
 L["Enable Nameplates"] = "Activer les noms"
 L["Enable Personal Resource"] = "Activer l'energie personnelle"
@@ -654,6 +656,7 @@ L["Show Smaller Worldmap"] = "Afficher une carte du monde plus petite"
 
 -- GUI Config Tooltip Locales
 L["AutoScaleTip"] = "Mise à l'échelle automatique de l'IU au pixel près en fonction de votre résolution.|n|nSi vous voulez changer l'échelle manuellement, vous devez désactiver 'Echelle automatique' puis appliquer l'échelle en utilisant le curseur"
+L["CustomUnitTip"] = "Enter unit name or npc ID.You can see unit npc ID in GameTooltip by holding KEY SHIFT." -- Needs Translations
 L["ExecuteRatioTip"] = "Si le pourcentage de santé de l'unité est inférieur à la valeur plafond d'exécution que vous avez fixée, son nom devient rouge.|n|nL'indicateur d'exécution sera désactivé sur 0."
 L["ParagonReputationTip"] = "Remplace les barres exaltées du cadre de réputation par des barres Parangon, que vous pouvez personnaliser vous-même avec les paramètres"
 L["UIScaleTip"] = "Modifier l'échelle de l'IU selon vos préférences|n|nSi vous voulez changer l'échelle manuellement, vous devez désactiver 'Echelle automatique' puis appliquer l'échelle en utilisant le curseur"
