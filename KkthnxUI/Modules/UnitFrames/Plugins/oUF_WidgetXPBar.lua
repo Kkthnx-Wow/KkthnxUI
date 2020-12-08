@@ -20,12 +20,22 @@ local function reskinWidgetBar(bar)
 	end
 end
 
+local function FixDefaultAnchor(self)
+	-- GetExtents will also fail if the LayoutFrame has no anchors set, so if that is the case, set an anchor and then clear it after we are done
+	local hadNoAnchors = (self:GetNumPoints() == 0)
+	if hadNoAnchors then
+		self:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, 0)
+	end
+end
+
 function K.Widget_DefaultLayout(widgetContainerFrame, sortedWidgets)
 	local horizontalRowContainer = nil
-	local horizontalRowHeight = 0
-	local horizontalRowWidth = 0
-	local totalWidth = 0
-	local totalHeight = 0
+
+	-- GetExtents will fail if the LayoutFrame has 0 width or height, so set them to 1 to start
+	local horizontalRowHeight = 1
+	local horizontalRowWidth = 1
+	local totalWidth = 1
+	local totalHeight = 1
 
 	widgetContainerFrame.horizontalRowContainerPool:ReleaseAll()
 
@@ -75,6 +85,7 @@ function K.Widget_DefaultLayout(widgetContainerFrame, sortedWidgets)
 
 				if horizontalRowContainer then
 					horizontalRowContainer:SetSize(horizontalRowWidth, horizontalRowHeight)
+					FixDefaultAnchor(horizontalRowContainer)
 					totalWidth = totalWidth + horizontalRowWidth
 					totalHeight = totalHeight + horizontalRowHeight
 					horizontalRowHeight = 0
@@ -97,8 +108,8 @@ function K.Widget_DefaultLayout(widgetContainerFrame, sortedWidgets)
 			local needNewRowContainer = not horizontalRowContainer or forceNewRow
 			if needNewRowContainer then
 				if horizontalRowContainer then
-					--horizontalRowContainer:Layout()
 					horizontalRowContainer:SetSize(horizontalRowWidth, horizontalRowHeight)
+					FixDefaultAnchor(horizontalRowContainer)
 					totalWidth = totalWidth + horizontalRowWidth
 					totalHeight = totalHeight + horizontalRowHeight
 					horizontalRowHeight = 0
@@ -138,9 +149,11 @@ function K.Widget_DefaultLayout(widgetContainerFrame, sortedWidgets)
 
 	if horizontalRowContainer then
 		horizontalRowContainer:SetSize(horizontalRowWidth, horizontalRowHeight)
+		FixDefaultAnchor(horizontalRowContainer)
 		totalWidth = totalWidth + horizontalRowWidth
 		totalHeight = totalHeight + horizontalRowHeight
 	end
 
 	widgetContainerFrame:SetSize(totalWidth, totalHeight)
+	FixDefaultAnchor(widgetContainerFrame)
 end

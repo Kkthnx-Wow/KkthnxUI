@@ -25,13 +25,6 @@ DESCRIPTION:
 local _, ns = ...
 local cargBags = ns.cargBags
 
-local _G = _G
-local tonumber = _G.tonumber
-local select = _G.select
-
-local GetContainerNumFreeSlots = _G.GetContainerNumFreeSlots
-local GetItemStats = _G.GetItemStats
-
 -- Returns the numeric item id (12345)
 cargBags.itemKeys["id"] = function(i)
 	return i.link and tonumber(i.link:match("item:(%d+)"))
@@ -48,12 +41,8 @@ cargBags.itemKeys["string"] = function(i)
 end
 
 cargBags.itemKeys["stats"] = function(i)
-	if (not i.link or not GetItemStats) then
-		return
-	end
-
+	if(not i.link or not GetItemStats) then return end
 	local stats = GetItemStats(i.link)
 	i.stats = stats
-
 	return stats
 end

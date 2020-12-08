@@ -101,6 +101,34 @@ function K.RGBToHex(r, g, b)
 	end
 end
 
+-- Table
+function K.CopyTable(source, target)
+	for key, value in pairs(source) do
+		if type(value) == "table" then
+			if not target[key] then
+				target[key] = {}
+			end
+
+			for k in pairs(value) do
+				target[key][k] = value[k]
+			end
+		else
+			target[key] = value
+		end
+	end
+end
+
+function K.SplitList(list, variable, cleanup)
+	if cleanup then
+		table_wipe(list)
+	end
+
+	for word in gmatch(variable, "%S+") do
+		word = tonumber(word) or word -- use number if exists, needs review
+		list[word] = true
+	end
+end
+
 -- Gradient Frame
 function K.CreateGF(self, w, h, o, r, g, b, a1, a2)
 	self:SetSize(w, h)

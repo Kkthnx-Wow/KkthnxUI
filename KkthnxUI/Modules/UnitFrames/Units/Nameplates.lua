@@ -46,12 +46,15 @@ local UnitThreatSituation = _G.UnitThreatSituation
 local hooksecurefunc = _G.hooksecurefunc
 
 local aksCacheData = {}
+local customUnits = {}
+local explosivesID = 120651
+local groupRoles = {}
 local guidToPlate = {}
 local hasExplosives
-local explosivesID = 120651
-local groupRoles, isInGroup = {}
+local isInGroup
 local isInInstance
 local isTargetClassPower
+local showPowerList = {}
 
 -- Unit classification
 local classify = {
@@ -139,10 +142,26 @@ function Module:BlockAddons()
 	hooksecurefunc(_G.DBM.Nameplate, "Show", showAurasForDBM)
 end
 
+function Module:CreateUnitTable()
+	table_wipe(customUnits)
+	if not C["Nameplate"].CustomUnitColor then
+		return
+	end
+
+	K.CopyTable(C.NameplateCustomUnits, customUnits)
+	K.SplitList(customUnits, C["Nameplate"].CustomUnitList)
+end
+
+function Module:CreatePowerUnitTable()
+	table_wipe(showPowerList)
+	K.CopyTable(C.NameplateShowPowerList, showPowerList)
+	K.SplitList(showPowerList, C["Nameplate"].PowerUnitList)
+end
+
 function Module:UpdateUnitPower()
 	local unitName = self.unitName
 	local npcID = self.npcID
-	local shouldShowPower = C.NameplateShowPowerList[unitName] or C.NameplateShowPowerList[npcID]
+	local shouldShowPower = showPowerList[unitName] or showPowerList[npcID]
 	if shouldShowPower then
 		self.powerText:Show()
 	else
@@ -200,7 +219,7 @@ function Module:UpdateColor(_, unit)
 	local element = self.Health
 	local name = self.unitName
 	local npcID = self.npcID
-	local isCustomUnit = C.NameplateCustomUnits[name] or C.NameplateCustomUnits[npcID]
+	local isCustomUnit = customUnits[name] or customUnits[npcID]
 	local isPlayer = self.isPlayer
 	local isFriendly = self.isFriendly
 	local status = self.feedbackUnit and UnitThreatSituation(self.feedbackUnit, unit) or false -- just in case

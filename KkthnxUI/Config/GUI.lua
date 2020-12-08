@@ -135,6 +135,14 @@ local function UpdateQuestFontSize()
 	K:GetModule("Miscellaneous"):CreateQuestSizeUpdate()
 end
 
+local function updateCustomUnitList()
+	K:GetModule("Unitframes"):CreateUnitTable()
+end
+
+local function updatePowerUnitList()
+	K:GetModule("Unitframes"):CreatePowerUnitTable()
+end
+
 -- Translate Below Before Shadowlands
 local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
@@ -319,8 +327,8 @@ local Chat = function(self)
 
 	Window:CreateSection("Chat Filter")
 	Window:CreateSwitch("Chat", "EnableFilter", enableTextColor..L["Enable Chat Filter"])
-	Window:CreateEditBox("Chat", "ChatFilterList", L["ChatFilter BlackList"], "Enter words you want blacklisted|n|nUse SPACES between each word|n|nPress enter when you are done", nil, UpdateFilterList)
-	Window:CreateEditBox("Chat", "ChatFilterWhiteList", L["ChatFilter WhiteList"], "Enter words you want whitelisted|n|nUse SPACES between each word|n|nPress enter when you are done", nil, UpdateFilterWhiteList)
+	Window:CreateEditBox("Chat", "ChatFilterList", L["ChatFilter BlackList"], "Enter words you want blacklisted|n|nUse SPACES between each word|n|nPress enter when you are done", UpdateFilterList)
+	Window:CreateEditBox("Chat", "ChatFilterWhiteList", L["ChatFilter WhiteList"], "Enter words you want whitelisted|n|nUse SPACES between each word|n|nPress enter when you are done", UpdateFilterWhiteList)
 	Window:CreateSwitch("Chat", "AllowFriends", L["Allow Spam From Friends"])
 	Window:CreateSwitch("Chat", "BlockAddonAlert", L["Block 'Some' AddOn Alerts"])
 	Window:CreateSwitch("Chat", "BlockStranger", L["Block Whispers From Strangers"])
@@ -467,6 +475,8 @@ local Nameplate = function(self)
 	Window:CreateSwitch("Nameplate", "TankMode", L["Force TankMode Colored"])
 	Window:CreateDropdown("Nameplate", "AuraFilter", L["Auras Filter Style"])
 	Window:CreateDropdown("Nameplate", "TargetIndicator", L["TargetIndicator Style"])
+	Window:CreateEditBox("Nameplate", "CustomUnitList", "Custom UnitColor List", nil, updateCustomUnitList)
+	Window:CreateEditBox("Nameplate", "PowerUnitList", "Custom PowerUnit List", nil, updatePowerUnitList)
 
 	Window:CreateSection("Nameplate Values")
 	Window:CreateSlider("Nameplate", "AuraSize", L["Auras Size"], 18, 40, 1)

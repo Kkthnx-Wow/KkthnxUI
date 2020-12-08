@@ -26,17 +26,16 @@ local GetItemInfo = _G.GetItemInfo
 local GetMouseFocus = _G.GetMouseFocus
 local GetRaidTargetIndex = _G.GetRaidTargetIndex
 local HEALER = _G.HEALER
-local hooksecurefunc = _G.hooksecurefunc
 local ICON_LIST = _G.ICON_LIST
-local InCombatLockdown = _G.InCombatLockdown
 local INTERACTIVE_SERVER_LABEL = _G.INTERACTIVE_SERVER_LABEL
+local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsInGroup = _G.IsInGroup
 local IsInGuild = _G.IsInGuild
 local IsShiftKeyDown = _G.IsShiftKeyDown
+local LEVEL = _G.LEVEL
 local LE_REALM_RELATION_COALESCED = _G.LE_REALM_RELATION_COALESCED
 local LE_REALM_RELATION_VIRTUAL = _G.LE_REALM_RELATION_VIRTUAL
-local LEVEL = _G.LEVEL
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local PVP = _G.PVP
 local TANK = _G.TANK
@@ -49,16 +48,17 @@ local UnitClassification = _G.UnitClassification
 local UnitCreatureType = _G.UnitCreatureType
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
+local UnitGUID = _G.UnitGUID
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
 local UnitIsAFK = _G.UnitIsAFK
 local UnitIsBattlePetCompanion = _G.UnitIsBattlePetCompanion
 local UnitIsConnected = _G.UnitIsConnected
-local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsDND = _G.UnitIsDND
-local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsPVP = _G.UnitIsPVP
+local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsUnit = _G.UnitIsUnit
 local UnitIsWildBattlePet = _G.UnitIsWildBattlePet
 local UnitLevel = _G.UnitLevel
@@ -67,6 +67,7 @@ local UnitPVPName = _G.UnitPVPName
 local UnitRace = _G.UnitRace
 local UnitRealmRelationship = _G.UnitRealmRelationship
 local YOU = _G.YOU
+local hooksecurefunc = _G.hooksecurefunc
 
 local tipTable = {}
 local GameTooltip_Mover
@@ -77,6 +78,7 @@ local classification = {
 	elite = "|cffAF5050+|r",
 	rare = string_format("|cffAF5050 %s|r", ITEM_QUALITY3_DESC)
 }
+local npcIDstring = "ID: "..K.InfoColor.."%s"
 
 function Module:GetUnit()
 	local _, unit = self and self:GetUnit()
@@ -302,6 +304,14 @@ function Module:OnTooltipSetUnit()
 
 			local tar = string_format("%s%s", (tarRicon and ICON_LIST[tarRicon].."10|t") or "", Module:GetTarget(unit.."target"))
 			self:AddLine(TARGET..": "..tar)
+		end
+
+		if not isPlayer and isShiftKeyDown then
+			local guid = UnitGUID(unit)
+			local npcID = K.GetNPCID(guid)
+			if npcID then
+				self:AddLine(string_format(npcIDstring, npcID))
+			end
 		end
 
 		if alive then

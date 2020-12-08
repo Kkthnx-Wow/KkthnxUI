@@ -218,7 +218,7 @@ function Module:ReskinRegions()
 
 			local box = _G.GarrisonLandingPageTutorialBox
 			if box then
-				box:SetScale(1 / 0.7)
+				box:SetScale(1 / 0.8)
 				box:SetClampedToScreen(true)
 			end
 		end
@@ -425,16 +425,14 @@ function Module:Minimap_OnMouseUp(btn)
 		else
 			ToggleDropDownMenu(1, nil, KKUI_MiniMapTrackingDropDown, "cursor", -160, 0, "MENU", 2)
 		end
-	elseif self.mover then
+	else
 		_G.Minimap_OnClick(self)
 	end
 end
 
 function Module:SetupHybridMinimap()
-	local mapCanvas = _G.HybridMinimap.MapCanvas
-	mapCanvas:SetMaskTexture("Interface\\Buttons\\WHITE8X8")
-	mapCanvas:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)
-	mapCanvas:SetScript("OnMouseUp", Module.Minimap_OnMouseUp)
+	HybridMinimap:SetFrameStrata("LOW")
+	HybridMinimap.CircleMask:SetTexture("Interface\\BUTTONS\\WHITE8X8")
 end
 
 function Module:HybridMinimapOnLoad(addon)

@@ -49,9 +49,9 @@ function Module:UpdateProfessions()
 	local profs = {prof1, prof2, fish, cook}
 
 	if K.Class == "DEATHKNIGHT" then
-		Module:TradeTabs_Create(nil, RUNEFORGING_ID)
+		Module:TradeTabs_Create(RUNEFORGING_ID)
 	elseif K.Class == "ROGUE" and IsPlayerSpell(PICK_LOCK) then
-		Module:TradeTabs_Create(nil, PICK_LOCK)
+		Module:TradeTabs_Create(PICK_LOCK)
 	end
 
 	local isCook
@@ -66,9 +66,9 @@ function Module:UpdateProfessions()
 				if not IsPassiveSpell(slotID, BOOKTYPE_PROFESSION) then
 					local spellID = select(2, GetSpellBookItemInfo(slotID, BOOKTYPE_PROFESSION))
 					if i == 1 then
-						Module:TradeTabs_Create(slotID, spellID)
+						Module:TradeTabs_Create(spellID)
 					else
-						Module:TradeTabs_Create(nil, spellID)
+						Module:TradeTabs_Create(spellID)
 					end
 				end
 			end
@@ -76,11 +76,11 @@ function Module:UpdateProfessions()
 	end
 
 	if isCook and PlayerHasToy(CHEF_HAT) and C_ToyBox_IsToyUsable(CHEF_HAT) then
-		Module:TradeTabs_Create(nil, nil, CHEF_HAT)
+		Module:TradeTabs_Create(nil, CHEF_HAT)
 	end
 
 	if GetItemCount(THERMAL_ANVIL) > 0 then
-		Module:TradeTabs_Create(nil, nil, nil, THERMAL_ANVIL)
+		Module:TradeTabs_Create(nil, nil, THERMAL_ANVIL)
 	end
 end
 
@@ -121,12 +121,8 @@ function Module:TradeTabs_Reskin()
 	end
 end
 
-function Module:TradeTabs_OnClick()
-	CastSpell(self.slotID, BOOKTYPE_PROFESSION)
-end
-
 local index = 1
-function Module:TradeTabs_Create(slotID, spellID, toyID, itemID)
+function Module:TradeTabs_Create(spellID, toyID, itemID)
 	local name, _, texture
 	if toyID then
 		_, name, texture = C_ToyBox_GetToyInfo(toyID)
@@ -138,16 +134,11 @@ function Module:TradeTabs_Create(slotID, spellID, toyID, itemID)
 
 	local tab = CreateFrame("CheckButton", nil, TradeSkillFrame, "SpellBookSkillLineTabTemplate, SecureActionButtonTemplate")
 	tab.tooltip = name
-	tab.slotID = slotID
 	tab.spellID = spellID
 	tab.itemID = toyID or itemID
 	tab.type = (toyID and "toy") or (itemID and "item") or "spell"
-	if slotID then
-		tab:SetScript("OnClick", Module.TradeTabs_OnClick)
-	else
-		tab:SetAttribute("type", tab.type)
-		tab:SetAttribute(tab.type, name)
-	end
+	tab:SetAttribute("type", tab.type)
+	tab:SetAttribute(tab.type, spellID or name)
 	tab:SetNormalTexture(texture)
 	tab:Show()
 

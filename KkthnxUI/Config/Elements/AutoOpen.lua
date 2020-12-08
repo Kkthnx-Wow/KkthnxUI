@@ -28,6 +28,7 @@ C.OpenItems = {
 	[107270] = true,	-- Bound Traveler's Scroll
 	[107271] = true,	-- Frozen Envelope
 	[10752] = true,		-- Emerald Encrusted Chest
+	[181475] = true,	-- Bounty of the Grove Wardens
 	[108738] = true,	-- Giant Draenor Clam
 	[108740] = true,	-- Stolen Weapons
 	[11024] = true,		-- Evergreen Herb Casing

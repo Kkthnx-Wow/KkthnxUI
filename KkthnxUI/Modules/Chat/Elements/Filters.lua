@@ -33,6 +33,7 @@ local trashClubs = {"Let's Play Games Together", "Salute Us", "Small Uplift", "S
 
 C.BadBoys = {} -- debug
 local FilterList = {}
+local WhiteFilterList = {}
 local chatLines = {}
 local cvar
 local filterResult = false
@@ -40,23 +41,12 @@ local last = {}
 local prevLineID = 0
 local this = {}
 
-local function SplitList(list, variable, cleanup)
-	if cleanup then
-		table_wipe(list)
-	end
-
-	for word in string_gmatch(variable, "%S+") do
-		list[word] = true
-	end
-end
-
 function Module:UpdateFilterList()
-	SplitList(FilterList, C["Chat"].ChatFilterList, true)
+	K.SplitList(FilterList, C["Chat"].ChatFilterList, true)
 end
 
-local WhiteFilterList = {}
 function Module:UpdateFilterWhiteList()
-	SplitList(WhiteFilterList, C["Chat"].ChatFilterWhiteList, true)
+	K.SplitList(WhiteFilterList, C["Chat"].ChatFilterWhiteList, true)
 end
 
 -- ECF strings compare
