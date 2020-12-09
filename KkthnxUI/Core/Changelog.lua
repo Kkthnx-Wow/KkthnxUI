@@ -15,20 +15,24 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Added Dominos skinning",
-	"Added French locales to load",
-	"Fixed Inventory filter collection spelling",
-	"Fixed RareScanner skinning",
-	"Fixed custombar keybinding",
-	"Fixed gold datatext rare server issue",
-	"Updated Bartender 4 skinning",
-	"Updated CheckRole function events",
-	"Updated Extrabar/quest button placement/size",
-	"Updated French locales",
-	"Updated GUI skins section",
-	"Updated K.CheckSavedVariables checking for nil then false or true",
-	"Updated profession window skinning",
-	"Updated some datatext code style",
+	"Added user choice for reveal glow color on map",
+	"Added auto track pin",
+	"Added control for mouseover alpha for any frames on mouseover",
+	"Added coords datatext for knowing when its dinner time xD",
+	"Added cyberox's border choice",
+	"Added cyberox's health alert",
+	"Added mythic guild best",
+	"Added options to disable target or player castbars",
+	"Added way for user to define custom units",
+	"Fixed changing custom blips on minimap",
+	"Fixed fading on custombar",
+	"Removed code taiting the UI in skinning",
+	"Removed oUF widget plugin",
+	"Updated AFK",
+	"Updated aurawatch spells",
+	"Updated auto open list",
+	"Updated install",
+	"Updated locales",
 }
 
 local changelogFrame
