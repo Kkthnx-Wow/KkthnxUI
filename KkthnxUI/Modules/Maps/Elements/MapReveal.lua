@@ -108,7 +108,12 @@ local function MapExplorationPin_RefreshOverlays(pin, fullUpdate)
 						texture:Hide()
 					end
 
-					texture:SetVertexColor(0.8, 0.8, 0.8)
+					if C["WorldMap"].MapRevealGlow then
+						texture:SetVertexColor(unpack(C["WorldMap"].MapRevealGlowColor))
+					else
+						texture:SetVertexColor(1, 1, 1)
+					end
+
 					table_insert(overlayTextures, texture)
 				end
 			end

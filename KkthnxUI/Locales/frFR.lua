@@ -655,6 +655,8 @@ L["Only Play Complete Quest Sound"] = "Ne jouez que le son en réussite de quêt
 
 L["Alpha When Moving"] = "Alpha When Moving"
 L["Fade Worldmap When Moving"] = "Fondu de la carte du monde en mouvement"
+L["Map Reveal Shadow Color"] = "Map Reveal Shadow Color" -- Needs Translations
+L["Map Reveal Shadow"] = "Map Reveal Shadow" -- Needs Translations
 L["Show Player/Mouse Coordinates"] = "Afficher les coordonnées du joueur/souris"
 L["Show Smaller Worldmap"] = "Afficher une carte du monde plus petite"
 
@@ -662,5 +664,6 @@ L["Show Smaller Worldmap"] = "Afficher une carte du monde plus petite"
 L["AutoScaleTip"] = "Mise à l'échelle automatique de l'IU au pixel près en fonction de votre résolution.|n|nSi vous voulez changer l'échelle manuellement, vous devez désactiver 'Echelle automatique' puis appliquer l'échelle en utilisant le curseur"
 L["CustomUnitTip"] = "Enter unit name or npc ID.You can see unit npc ID in GameTooltip by holding KEY SHIFT." -- Needs Translations
 L["ExecuteRatioTip"] = "Si le pourcentage de santé de l'unité est inférieur à la valeur plafond d'exécution que vous avez fixée, son nom devient rouge.|n|nL'indicateur d'exécution sera désactivé sur 0."
+L["MapRevealTip"] = "If enabled, once you enable map reveal, the unexplore areas will stay under a light shadow. You can pick whatever color you want the shadow." -- Needs Translations
 L["ParagonReputationTip"] = "Remplace les barres exaltées du cadre de réputation par des barres Parangon, que vous pouvez personnaliser vous-même avec les paramètres"
 L["UIScaleTip"] = "Modifier l'échelle de l'IU selon vos préférences|n|nSi vous voulez changer l'échelle manuellement, vous devez désactiver 'Echelle automatique' puis appliquer l'échelle en utilisant le curseur"

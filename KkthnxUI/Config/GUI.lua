@@ -761,6 +761,10 @@ local WorldMap = function(self)
 	Window:CreateSwitch("WorldMap", "FadeWhenMoving", L["Fade Worldmap When Moving"])
 	Window:CreateSwitch("WorldMap", "SmallWorldMap", L["Show Smaller Worldmap"])
 
+	Window:CreateSection("WorldMap Reveal")
+	Window:CreateSwitch("WorldMap", "MapRevealGlow", L["Map Reveal Shadow"], L["MapRevealTip"])
+	Window:CreateColorSelection("WorldMap", "MapRevealGlowColor", L["Map Reveal Shadow Color"])
+
 	Window:CreateSection("WorldMap Values")
 	Window:CreateSlider("WorldMap", "AlphaWhenMoving", L["Alpha When Moving"], 0.1, 1, 0.1)
 end

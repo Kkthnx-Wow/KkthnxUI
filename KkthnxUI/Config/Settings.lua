@@ -654,5 +654,7 @@ C["WorldMap"] = {
 	["AlphaWhenMoving"] = 0.35,
 	["Coordinates"] = true,
 	["FadeWhenMoving"] = true,
+	["MapRevealGlow"] = true,
+	["MapRevealGlowColor"] = {0.7, 0.7, 0.7},
 	["SmallWorldMap"] = true,
 }
