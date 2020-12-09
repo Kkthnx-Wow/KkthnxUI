@@ -97,7 +97,7 @@ function Module:CreateBar2()
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
-	if FilterConfig.fader then
+	if C["ActionBar"].FadeBottomBar2 and FilterConfig.fader then
 		Module.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
 	end
 end

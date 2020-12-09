@@ -17,7 +17,11 @@ C["ActionBar"] = {
 	["DecimalCD"] = true,
 	["DefaultButtonSize"] = 34,
 	["Enable"] = true,
+	["FadeBottomBar1"] = false,
+	["FadeBottomBar2"] = false,
+	["FadeBottomBar3"] = false,
 	["FadeCustomBar"] = false,
+	["FadeMicroBar"] = false,
 	["FadePetBar"] = false,
 	["FadeRightBar"] = false,
 	["FadeRightBar2"] = false,
@@ -25,7 +29,6 @@ C["ActionBar"] = {
 	["Hotkey"] = true,
 	["Macro"] = true,
 	["MicroBar"] = true,
-	["MicroBarMouseover"] = false,
 	["OverrideWA"] = false,
 	["PetBar"] = true,
 	["RightButtonSize"] = 34,
@@ -239,6 +242,7 @@ C["AuraWatch"] = {
 
 -- General
 C["General"] = {
+	["GlobalFade"] = 0,
 	["AutoScale"] = true,
 	["ColorTextures"] = false,
 	["MissingTalentAlert"] = true,

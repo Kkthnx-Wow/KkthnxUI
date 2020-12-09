@@ -279,6 +279,9 @@ L["Enable MicroBar"] = "Activer la barre de menu"
 L["Enable MicroBarMouseover"] = "Activer survol barre de menu"
 L["Enable OverrideWA"] = "Cacher les les temps de recharge avec WA"
 L["Format Cooldowns As Decimals"] = "Formater les temps de recharge en décimales"
+L["Mouseover BottomBar 1"] = "Mouseover BottomBar 1" -- Needs Translations
+L["Mouseover BottomBar 2"] = "Mouseover BottomBar 2" -- Needs Translations
+L["Mouseover BottomBar 3"] = "Mouseover BottomBar 3" -- Needs Translations
 L["Mouseover CustomBar"] = "Survol barre personnalisée"
 L["Mouseover PetBar"] = "Survol barre du familier"
 L["Mouseover RightBar 1"] = "Survol barre droite 1"
@@ -413,6 +416,7 @@ L["Enable Minimap Location"] = "Afficher la localisation de la Minimap"
 L["Enable Minimap Time"] = "Afficher l'heure de la Minimap"
 L["Enable System Info"] = "Afficher les infos système"
 
+L["Alpha Of Mouseover Elements"] = "Alpha Of Mouseover Elements" -- Needs Translations
 L["Auto Scale"] = "Echelle automatique"
 L["Border Style"] = "Style de bordure"
 L["Color 'Most' KkthnxUI Borders"] = "Couleur générale des bordures de KkthnxUI"

@@ -89,10 +89,6 @@ end
 
 -- Cooldown/Animation
 local function OnUpdate(_, update)
-	if not C["PulseCooldown"].Enable then
-		return
-	end
-
 	elapsed = elapsed + update
 	if elapsed > 0.05 then
 		for i, v in pairs(watching) do

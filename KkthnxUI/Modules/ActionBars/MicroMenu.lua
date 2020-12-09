@@ -21,8 +21,8 @@ local UpdateMicroButtonsParent = _G.UpdateMicroButtonsParent
 local hooksecurefunc = _G.hooksecurefunc
 
 local function onLeaveBar()
-	if C["ActionBar"].MicroBarMouseover then
-		UIFrameFadeOut(Module.MicroBar, 0.2, Module.MicroBar:GetAlpha(), 0.25)
+	if C["ActionBar"].FadeMicroBar then
+		UIFrameFadeOut(Module.MicroBar, 0.2, Module.MicroBar:GetAlpha(), C["General"].GlobalFade)
 	end
 end
 
@@ -49,7 +49,7 @@ local function onEnter(button)
 		end
 	end
 
-	if C["ActionBar"].MicroBarMouseover and not Module.MicroBar.IsMouseOvered then
+	if C["ActionBar"].FadeMicroBar and not Module.MicroBar.IsMouseOvered then
 		Module.MicroBar.IsMouseOvered = true
 		Module.MicroBar:SetScript("OnUpdate", onUpdate)
 		UIFrameFadeIn(Module.MicroBar, 0.2, Module.MicroBar:GetAlpha(), 1)
@@ -176,8 +176,8 @@ function Module.UpdateMicroPositionDimensions()
 		prevButton = button
 	end
 
-	if C["ActionBar"].MicroBarMouseover and not Module.MicroBar:IsMouseOver() then
-		Module.MicroBar:SetAlpha(0.25)
+	if C["ActionBar"].FadeMicroBar and not Module.MicroBar:IsMouseOver() then
+		Module.MicroBar:SetAlpha(C["General"].GlobalFade)
 	else
 		Module.MicroBar:SetAlpha(1)
 	end

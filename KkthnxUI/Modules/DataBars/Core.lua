@@ -6,14 +6,12 @@ local pairs = _G.pairs
 local select = _G.select
 local string_format = _G.string.format
 
-local C_QuestLog_ReadyForTurnIn = _G.C_QuestLog.ReadyForTurnIn
 local C_Reputation_GetFactionParagonInfo = _G.C_Reputation.GetFactionParagonInfo
 local C_Reputation_IsFactionParagon = _G.C_Reputation.IsFactionParagon
 local CreateFrame = _G.CreateFrame
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GameTooltip = _G.GameTooltip
 local GetFriendshipReputation = _G.GetFriendshipReputation
-local GetQuestLogRewardXP = _G.GetQuestLogRewardXP
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local GetXPExhaustion = _G.GetXPExhaustion
 local HONOR = _G.HONOR
@@ -322,7 +320,7 @@ function Module:OnEnter()
 	GameTooltip:ClearLines()
 
 	if C["DataBars"].MouseOver then
-		UIFrameFadeIn(Module.Container, 0.25, Module.Container:GetAlpha(), 1)
+		UIFrameFadeIn(Module.Container, 0.2, Module.Container:GetAlpha(), 1)
 	end
 
 	if Module:ExperienceBar_ShouldBeVisible() then
@@ -385,7 +383,7 @@ end
 
 function Module:OnLeave()
 	if C["DataBars"].MouseOver then
-		UIFrameFadeOut(Module.Container, 1, Module.Container:GetAlpha(), 0.25)
+		UIFrameFadeOut(Module.Container, 0.2, Module.Container:GetAlpha(), C["General"].GlobalFade)
 	end
 
 	GameTooltip:Hide()
@@ -397,7 +395,7 @@ function Module:OnUpdate()
 	Module:UpdateHonor()
 
 	if C["DataBars"].MouseOver then
-		Module.Container:SetAlpha(0.25)
+		Module.Container:SetAlpha(C["General"].GlobalFade)
 	else
 		Module.Container:SetAlpha(1)
 	end

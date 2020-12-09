@@ -23,7 +23,7 @@ local function OnLeave()
 		return
 	end
 
-	UIFrameFadeOut(Module.BagBar, 0.2, Module.BagBar:GetAlpha(), 0.25)
+	UIFrameFadeOut(Module.BagBar, 0.2, Module.BagBar:GetAlpha(), C["General"].GlobalFade)
 end
 
 function Module:SkinBag(bag)
@@ -55,7 +55,7 @@ function Module:SizeAndPositionBagBar()
 	end
 
 	RegisterStateDriver(Module.BagBar, "visibility", visibility)
-	Module.BagBar:SetAlpha(C["Inventory"].BagBarMouseover and 0.25 or 1)
+	Module.BagBar:SetAlpha(C["Inventory"].BagBarMouseover and C["General"].GlobalFade or 1)
 
 	for i, button in ipairs(Module.BagBar.buttons) do
 		local prevButton = Module.BagBar.buttons[i - 1]

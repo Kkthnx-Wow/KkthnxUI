@@ -1154,13 +1154,13 @@ end
 -- Player Nameplate
 function Module:PlateVisibility(event)
 	if (event == "PLAYER_REGEN_DISABLED" or InCombatLockdown()) and UnitIsUnit("player", self.unit) then
-		UIFrameFadeIn(self.Health, 0.3, self.Health:GetAlpha(), 1)
-		UIFrameFadeIn(self.Power, 0.3, self.Power:GetAlpha(), 1)
-		UIFrameFadeIn(self.Auras, 0.3, self.Power:GetAlpha(), 1)
+		UIFrameFadeIn(self.Health, 0.2, self.Health:GetAlpha(), 1)
+		UIFrameFadeIn(self.Power, 0.2, self.Power:GetAlpha(), 1)
+		UIFrameFadeIn(self.Auras, 0.2, self.Power:GetAlpha(), 1)
 	else
-		UIFrameFadeOut(self.Health, 2, self.Health:GetAlpha(), 0.1)
-		UIFrameFadeOut(self.Power, 2, self.Power:GetAlpha(), 0.1)
-		UIFrameFadeIn(self.Auras, 2, self.Power:GetAlpha(), 0.1)
+		UIFrameFadeOut(self.Health, 0.2, self.Health:GetAlpha(), C["General"].GlobalFade)
+		UIFrameFadeOut(self.Power, 0.2, self.Power:GetAlpha(), C["General"].GlobalFade)
+		UIFrameFadeOut(self.Auras, 0.2, self.Power:GetAlpha(), C["General"].GlobalFade)
 	end
 end
 
