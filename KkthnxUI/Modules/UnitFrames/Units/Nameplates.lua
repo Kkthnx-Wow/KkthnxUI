@@ -743,14 +743,6 @@ function Module:MouseoverIndicator(self)
 	end)
 end
 
--- WidgetContainer
-function Module:AddWidgetContainer(self)
-	self.WidgetContainer = CreateFrame("Frame", nil, self, "UIWidgetContainerNoResizeTemplate")
-	self.WidgetContainer:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -10)
-	self.WidgetContainer:SetScale(K.Round(1 / C["General"].UIScale, 2))
-	self.WidgetContainer:Hide()
-end
-
 -- Interrupt info on castbars
 function Module:UpdateCastbarInterrupt(...)
 	local _, eventType, _, sourceGUID, sourceName, _, _, destGUID = ...
@@ -975,7 +967,6 @@ function Module:CreatePlates()
 	self.powerText:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -4)
 	self:Tag(self.powerText, "[nppp]")
 
-	Module:AddWidgetContainer(self)
 	Module:MouseoverIndicator(self)
 	Module:AddTargetIndicator(self)
 	Module:AddCreatureIcon(self)
@@ -1062,6 +1053,11 @@ function Module:UpdatePlateByType()
 		if questIcon then
 			questIcon:SetPoint("LEFT", name, "RIGHT", 0, 0)
 		end
+
+		if self.widgetContainer then
+			self.widgetContainer:ClearAllPoints()
+			self.widgetContainer:SetPoint("TOP", title, "BOTTOM", 0, -5)
+		end
 	else
 		for _, element in pairs(DisabledElements) do
 			if not self:IsElementEnabled(element) then
@@ -1084,6 +1080,11 @@ function Module:UpdatePlateByType()
 		classify:Show()
 		if questIcon then
 			questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0)
+		end
+
+		if self.widgetContainer then
+			self.widgetContainer:ClearAllPoints()
+			self.widgetContainer:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -5)
 		end
 	end
 
@@ -1128,7 +1129,13 @@ function Module:PostUpdatePlates(event, unit)
 		self.isPlayer = UnitIsPlayer(unit)
 		self.npcID = K.GetNPCID(self.unitGUID)
 		self.widgetsOnly = UnitNameplateShowsWidgetsOnly(unit)
-		self.WidgetContainer:RegisterForWidgetSet(UnitWidgetSet(unit), K.Widget_DefaultLayout, nil, unit)
+
+		local blizzPlate = self:GetParent().UnitFrame
+		self.widgetContainer = blizzPlate.WidgetContainer
+		if self.widgetContainer then
+			self.widgetContainer:SetParent(self)
+			self.widgetContainer:SetScale(1 / C["General"].UIScale)
+		end
 
 		Module.RefreshPlateType(self, unit)
 	elseif event == "NAME_PLATE_UNIT_REMOVED" then
@@ -1136,7 +1143,6 @@ function Module:PostUpdatePlates(event, unit)
 			guidToPlate[self.unitGUID] = nil
 		end
 		self.npcID = nil
-		self.WidgetContainer:UnregisterForWidgetSet()
 	end
 
 	if event ~= "NAME_PLATE_UNIT_REMOVED" then
