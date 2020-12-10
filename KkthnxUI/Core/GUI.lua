@@ -1963,8 +1963,13 @@ GUI.Enable = function(self)
 	Move:SetScript("OnMouseUp", ButtonOnMouseUp)
 	Move:SetScript("OnEnter", ButtonOnEnter)
 	Move:SetScript("OnLeave", ButtonOnLeave)
-	Move:HookScript("OnMouseUp", function()
-		SlashCmdList["KKUI_MOVEUI"]()
+	Move:HookScript("OnMouseUp", function(self)
+		self.state = not self.state
+		if self.state then					
+			SlashCmdList["KKUI_MOVEUI"]()
+		else
+			SlashCmdList["KKUI_LOCKUI"]()
+		end
 	end)
 
 	Move.Highlight = Move:CreateTexture(nil, "OVERLAY")
@@ -1978,7 +1983,7 @@ GUI.Enable = function(self)
 	Move.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
 	StyleFont(Move.Middle, Font, 12)
 	Move.Middle:SetJustifyH("CENTER")
-	Move.Middle:SetText(K.SystemColor.."Move UI|r")
+	Move.Middle:SetText(K.SystemColor.."Toggle UI|r")
 
 	-- Credits button
 	local Credits = CreateFrame("Frame", nil, self.Footer)
