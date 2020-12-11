@@ -8,6 +8,7 @@ local tonumber = _G.tonumber
 
 local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
+local C_Navigation_GetDistance = _G.C_Navigation.GetDistance
 local C_QuestLog_GetSelectedQuest = _G.C_QuestLog.GetSelectedQuest
 local C_QuestLog_ShouldShowQuestRewards = _G.C_QuestLog.ShouldShowQuestRewards
 local C_Timer_After = _G.C_Timer.After
@@ -522,6 +523,17 @@ function Module:OnEnable()
 			_G.LFRBrowseFrame.timeToClear = nil
 		end
 	end)
+
+	if not IsAddOnLoaded("UnlimitedMapPinDistance") then
+		local trackedAlphaBase = _G.SuperTrackedFrame.GetTargetAlphaBaseValue
+		function _G.SuperTrackedFrame:GetTargetAlphaBaseValue()
+			if trackedAlphaBase(self) == 0 and C_Navigation_GetDistance() >= 1000 then
+				return 0.6
+			else
+				return trackedAlphaBase(self)
+			end
+		end
+	end
 
 	-- Auto chatBubbles
 	if C["Misc"].AutoBubbles then

@@ -1,85 +1,47 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Infobar")
 
+local _G = _G
 local string_format = _G.string.format
 
-local C_Map_ClearUserWaypoint = _G.C_Map.ClearUserWaypoint
 local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
-local C_Map_GetUserWaypointHyperlink = _G.C_Map.GetUserWaypointHyperlink
-local C_Map_SetUserWaypoint = _G.C_Map.SetUserWaypoint
-local ChatFrame_OpenChat = _G.ChatFrame_OpenChat
+local C_Map_GetPlayerMapPosition = _G.C_Map.GetPlayerMapPosition
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
-local GetZoneText = _G.GetZoneText
 local InCombatLockdown = _G.InCombatLockdown
-local IsControlKeyDown = _G.IsControlKeyDown
-local IsModifierKeyDown = _G.IsModifierKeyDown
-local SELECTED_DOCK_FRAME = _G.SELECTED_DOCK_FRAME
 local UIErrorsFrame = _G.UIErrorsFrame
-local UnitExists = _G.UnitExists
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitName = _G.UnitName
 local WorldMapFrame = _G.WorldMapFrame
 
-local coordX, coordY = 0, 0
-
-local function formatCoords()
-	return string_format("%.1f, %.1f", coordX * 100, coordY * 100)
-end
-
-local function OnUpdate(self, elapsed)
+local function UpdateCoords(self, elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
-	if self.elapsed > .1 then
-		local x, y = K.GetPlayerMapPos(C_Map_GetBestMapForUnit("player"))
-		if x then
-			coordX, coordY = x, y
-			Module.CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()), 0, 0.6, 1)
+	if self.elapsed > 0.1 then
+		local UnitMap = K.GetPlayerMapPos(C_Map_GetBestMapForUnit("player"))
+		local coordX, coordY = 0, 0
+
+		if UnitMap then
+			coordX, coordY = C_Map_GetPlayerMapPosition(UnitMap, "player"):GetXY()
+			Module.CoordsDataTextFrame.Texture:Show()
+		end
+
+		if coordX == 0 and coordY == 0 then
+			Module.CoordsDataTextFrame.Text:Hide()
+			Module.CoordsDataTextFrame.Texture:Hide()
+			Module.CoordsDataTextFrame.Text:SetText(string_format("--, --", coordX * 100, coordY * 100))
 		else
-			coordX, coordY = 0, 0
-			Module.CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()), 0, 0.6, 1)
-			self:SetScript("OnUpdate", nil)
+			Module.CoordsDataTextFrame.Text:Show()
+			Module.CoordsDataTextFrame.Texture:Show()
+			Module.CoordsDataTextFrame.Text:SetText(string_format("%.1f, %.1f", coordX * 100, coordY * 100))
 		end
 
 		self.elapsed = 0
 	end
 end
 
-local function OnEnter()
-	GameTooltip:SetOwner(Module.CoordsDataTextFrame, "ANCHOR_NONE")
-	GameTooltip:SetPoint(K.GetAnchors(Module.CoordsDataTextFrame))
-	GameTooltip:ClearLines()
-
-	GameTooltip:AddLine("If you target an NPC you are at and right click, you can also add that npc with your location you are sending to chat.", nil, nil, nil, true)
-	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine("CTRL +"..K.RightButton.."Send Basic Position Info", 1, 1, 1)
-	GameTooltip:AddLine(K.RightButton.."Send Detailed Position Info", 1, 1, 1)
-	GameTooltip:AddLine(K.LeftButton.."Toggle WorldMap", 1, 1, 1)
-	GameTooltip:Show()
-end
-
-local function OnLeave()
-	GameTooltip:Hide()
-end
-
-local function OnMouseUp(_, btn)
-	local hasUnit = UnitExists("target") and not UnitIsPlayer("target")
-	local unitName = hasUnit and UnitName("target") or ""
-	local unitPlayer = "player"
-	local unitZone = GetZoneText() or UNKNOWN
-	local allowedPoint = C_Map.CanSetUserWaypointOnMap(WorldMapFrame:GetMapID()) and UiMapPoint.CreateFromCoordinates(C_Map_GetBestMapForUnit(unitPlayer), coordX, coordY) or ""
-	local hyperLink = C_Map_GetUserWaypointHyperlink() or ""
-
-	if btn == "LeftButton" then
-		if InCombatLockdown() then UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
-			return
-		end
-		ToggleFrame(WorldMapFrame)
-	elseif not IsModifierKeyDown() and btn == "RightButton" then
-		C_Map_SetUserWaypoint(allowedPoint)
-		ChatFrame_OpenChat(string_format("%s: %s (%s) %s %s", "My Position", unitZone, formatCoords(), hyperLink, unitName), SELECTED_DOCK_FRAME)
-	elseif IsControlKeyDown() and btn == "RightButton" then
-		C_Map_SetUserWaypoint(allowedPoint)
-		ChatFrame_OpenChat(string_format("%s %s", hyperLink, unitName), SELECTED_DOCK_FRAME)
+local function OnMouseUp()
+	if InCombatLockdown() then
+		UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+		return
 	end
+	ToggleFrame(WorldMapFrame)
 end
 
 function Module:CreateCoordsDataText()
@@ -100,16 +62,8 @@ function Module:CreateCoordsDataText()
 	Module.CoordsDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 	Module.CoordsDataTextFrame.Text:SetPoint("CENTER", Module.CoordsDataTextFrame.Texture, "CENTER", 0, -6)
 
-	Module.CoordsDataTextFrame:RegisterEvent("ZONE_CHANGED", OnUpdate)
-	Module.CoordsDataTextFrame:RegisterEvent("ZONE_CHANGED_INDOORS", OnUpdate)
-	Module.CoordsDataTextFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA", OnUpdate)
-	Module.CoordsDataTextFrame:RegisterEvent("LOADING_SCREEN_DISABLED", OnUpdate)
-	Module.CoordsDataTextFrame:RegisterEvent("USER_WAYPOINT_UPDATED", OnUpdate)
-
-	Module.CoordsDataTextFrame:SetScript("OnEnter", OnEnter)
-	Module.CoordsDataTextFrame:SetScript("OnLeave", OnLeave)
 	Module.CoordsDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
-	Module.CoordsDataTextFrame:SetScript("OnUpdate", OnUpdate)
+	Module.CoordsDataTextFrame:SetScript("OnUpdate", UpdateCoords)
 
 	K.Mover(Module.CoordsDataTextFrame, "CoordsDataText", "CoordsDataText", {"TOP", UIParent, "TOP", 0, -40})
 end

@@ -200,7 +200,6 @@ function Module:CreateBoss()
 	self.RaidTargetIndicator:SetSize(16, 16)
 
 	local altPower = K.CreateFontString(self, 10, "")
-	altPower:ClearAllPoints()
 	altPower:SetPoint("RIGHT", self.Power, "LEFT", -6, 0)
 	self:Tag(altPower, "[altpower]")
 	altPower:Show()

@@ -126,7 +126,6 @@
    <Script file="Miscellaneous\Elements\SlotItemLevel.lua" />
    <Script file="Miscellaneous\Elements\StatusReport.lua" />
    <Script file="Miscellaneous\Elements\TradeTabs.lua" />
-   <Script file="Miscellaneous\Elements\UnlimitedPinDistance.lua" />
    <Script file="Miscellaneous\Elements\yClassColors.lua" />
    <!-- Announcements -->
    <Script file="Announcements\Core.lua" />

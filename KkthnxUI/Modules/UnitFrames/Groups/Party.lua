@@ -321,30 +321,10 @@ function Module:CreateParty()
 	self.Highlight:SetBlendMode("ADD")
 	self.Highlight:Hide()
 
-	-- function UF:CreatePartyAltPower(self)
-		--if not C["UFs"]["PartyAltPower"] then return end
-		local PWOnRight = false
-		local relF = "LEFT"
-		local relT = "RIGHT"
-		local xOffset = 6
-		local yOffset = 0
-		local otherSide = PWOnRight
-		if otherSide then
-			xOffset = -6
-			yOffset = 0
-		end
-
-		local altPower = K.CreateFontString(self, 10, "")
-		altPower:ClearAllPoints()
-		if otherSide then
-			altPower:SetPoint(relT, self.Power, relF, xOffset, yOffset)
-		else
-			local parent = self.Power
-			altPower:SetPoint(relF, parent, relT, xOffset, yOffset)
-		end
-		self:Tag(altPower, "[altpower]")
-		altPower:Show()
---	end
+	local altPower = K.CreateFontString(self, 10, "")
+	altPower:SetPoint("LEFT", self.Power, "RIGHT", 6, 0)
+	self:Tag(altPower, "[altpower]")
+	altPower:Show()
 
 	self.ThreatIndicator = {
 		IsObjectType = function() end,
