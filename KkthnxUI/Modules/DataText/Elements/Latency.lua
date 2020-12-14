@@ -15,21 +15,22 @@ local GetNetStats = _G.GetNetStats
 local UNKNOWN = _G.UNKNOWN
 
 local entered
-local ipTypes = {
-	"IPv4",
-	"IPv6",
-}
+local ipTypes = {"IPv4", "IPv6"}
 
 local function colorLatency(latency)
-	if latency then
-		return K.MyClassColor..latency
+	if latency < 250 then
+		return "|cff0CD809"..latency
+	elseif latency < 500 then
+		return "|cffE8DA0F"..latency
+	else
+		return "|cffD80909"..latency
 	end
 end
 
 local function setLatency()
 	local _, _, latencyHome, latencyWorld = GetNetStats()
 	local latency = math_max(latencyHome, latencyWorld)
-	Module.LatencyDataTextFrame.Text:SetText(latency..colorLatency("ms"))
+	Module.LatencyDataTextFrame.Text:SetText("MS"..":"..colorLatency(latency))
 end
 
 local function OnEnter()

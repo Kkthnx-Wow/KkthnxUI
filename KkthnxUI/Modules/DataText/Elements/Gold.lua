@@ -80,9 +80,9 @@ local function OnEvent(_, event)
 		profit = profit + change
 	end
 
-	local coppername = "|cffeda55fc|r"
-	local silvername = "|cffc7c7cfs|r"
-	local goldname = "|cffffd700g|r"
+	local coppername = "|cffeda55fC|r"
+	local silvername = "|cffc7c7cfS|r."
+	local goldname = "|cffffd700G|r."
 	if C["DataText"].HideText then
 		Module.GoldDataTextFrame.Text:SetText("")
 	else

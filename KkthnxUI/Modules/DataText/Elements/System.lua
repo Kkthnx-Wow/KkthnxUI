@@ -37,6 +37,7 @@ local usageColor = {0, 1, 0, 1, 1, 0, 1, 0, 0}
 local usageString = "%.3f ms"
 
 local maxAddOns = 12
+local infoTable = {}
 local entered
 
 local function formatMemory(value)
@@ -64,7 +65,6 @@ local function smoothColor(cur, max)
 	return r, g, b
 end
 
-local infoTable = {}
 local function BuildAddonList()
 	local numAddons = GetNumAddOns()
 	if numAddons == #infoTable then
@@ -113,14 +113,18 @@ local function UpdateCPU()
 end
 
 local function colorFPS(fps)
-	if fps then
-		return K.MyClassColor..fps
+	if fps < 15 then
+		return "|cffD80909"..fps
+	elseif fps < 30 then
+		return "|cffE8DA0F"..fps
+	else
+		return "|cff0CD809"..fps
 	end
 end
 
 local function setFrameRate()
 	local fps = math_floor(GetFramerate())
-	Module.SystemDataTextFrame.Text:SetText(fps..colorFPS("fps"))
+	Module.SystemDataTextFrame.Text:SetText(L["FPS"]..":"..colorFPS(fps))
 end
 
 local function OnEnter()

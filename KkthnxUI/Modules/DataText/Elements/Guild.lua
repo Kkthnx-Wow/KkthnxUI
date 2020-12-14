@@ -347,7 +347,7 @@ local function OnEvent(_, event, arg1)
 		if C["DataText"].HideText then
 			Module.GuildDataTextFrame.Text:SetText("")
 		else
-			Module.GuildDataTextFrame.Text:SetText("0")
+			Module.GuildDataTextFrame.Text:SetText("G"..":"..K.MyClassColor.."0")
 		end
 		return
 	end
@@ -362,7 +362,7 @@ local function OnEvent(_, event, arg1)
 	if C["DataText"].HideText then
 		Module.GuildDataTextFrame.Text:SetText("")
 	else
-		Module.GuildDataTextFrame.Text:SetText(online)
+		Module.GuildDataTextFrame.Text:SetText("G"..":"..K.MyClassColor..online)
 	end
 
 	if infoFrame and infoFrame:IsShown() then

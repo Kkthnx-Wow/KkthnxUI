@@ -204,7 +204,7 @@ function Module:ItemLevel_UpdateInfo(slotFrame, info, quality)
 	if infoType == "table" then
 		local enchant = info.enchantText
 		if enchant then
-			slotFrame.enchantText:SetText(enchant)
+			slotFrame.enchantText:SetText(string.utf8sub(enchant, 1, 18))
 		end
 
 		local gemStep, essenceStep = 1, 1

@@ -948,7 +948,7 @@ function Module:OnEnable()
 	end
 
 	function MyButton:ItemOnEnter()
-		if self.glowFrame then
+		if self.glowFrame.Animation and self.glowFrame.Animation:IsPlaying() then
 			self.glowFrame.Animation:Stop()
 			self.glowFrame:Hide()
 			C_NewItems_RemoveNewItem(self.bagID, self.slotID)
@@ -1069,11 +1069,15 @@ function Module:OnEnable()
 					self.glowFrame:SetBackdropBorderColor(1, 1, 1)
 				end
 
-				self.glowFrame.Animation:Play()
-				self.glowFrame:Show()
+				if not self.glowFrame.Animation:IsPlaying() then
+					self.glowFrame.Animation:Play()
+					self.glowFrame:Show()
+				end
 			else
-				self.glowFrame.Animation:Stop()
-				self.glowFrame:Hide()
+				if self.glowFrame.Animation and self.glowFrame.Animation:IsPlaying() then
+					self.glowFrame.Animation:Stop()
+					self.glowFrame:Hide()
+				end
 			end
 		end
 

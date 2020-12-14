@@ -162,7 +162,7 @@ function Module:KeystoneInfo_Create()
 		for fullName, info in pairs(KkthnxUIData[K.Realm][K.Name]["KeystoneInfo"]) do
 			local name = Ambiguate(fullName, "none")
 			local mapID, level, class, faction = string_split(":", info)
-			local color = K.RGBToHex(K.ClassColor(class))
+			local color = K.RGBToHex(K.ColorClass(class))
 			local factionColor = faction == "Horde" and "|cffff5040" or "|cff00adf0"
 			local dungeon = C_ChallengeMode_GetMapUIInfo(tonumber(mapID))
 			GameTooltip:AddDoubleLine(string_format(color.."%s:|r", name), string_format("%s%s(%s)|r", factionColor, dungeon, level))

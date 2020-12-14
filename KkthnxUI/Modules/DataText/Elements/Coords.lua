@@ -14,12 +14,13 @@ local WorldMapFrame = _G.WorldMapFrame
 local function UpdateCoords(self, elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
 	if self.elapsed > 0.1 then
-		local UnitMap = K.GetPlayerMapPos(C_Map_GetBestMapForUnit("player"))
+		local UnitMap = C_Map_GetBestMapForUnit("player")
 		local coordX, coordY = 0, 0
-
 		if UnitMap then
-			coordX, coordY = C_Map_GetPlayerMapPosition(UnitMap, "player"):GetXY()
-			Module.CoordsDataTextFrame.Texture:Show()
+			local GetPlayerMapPosition = C_Map_GetPlayerMapPosition(UnitMap, "player")
+			if GetPlayerMapPosition then
+				coordX, coordY = C_Map_GetPlayerMapPosition(UnitMap, "player"):GetXY()
+			end
 		end
 
 		if coordX == 0 and coordY == 0 then
