@@ -581,7 +581,7 @@ local function OnEvent(_, event, arg1)
 	if C["DataText"].HideText then
 		Module.FriendsDataTextFrame.Text:SetText("")
 	else
-		Module.FriendsDataTextFrame.Text:SetText(string_format("%d", Module.totalOnline))
+		Module.FriendsDataTextFrame.Text:SetText(string_format("%s:"..K.MyClassColor.."%d", "F", Module.totalOnline))
 	end
 
 	updateRequest = false

@@ -11,7 +11,7 @@ end
 -- Module Locales
 L["%s players"] = "%s joueurs"
 L["AP"] = "PP:"
-L["AddContactTip"] = "|nModifier la liste de contacts dont vous avez besoin, le format de saisie est 'NomPersonnage-NomDuRoyaume'.|nVous devez saisir uniquement le nom seulement si l'unité se trouve dans le même royaume que vous.|nVous pouvez personnaliser la couleur du texte pour les classer."
+L["AddContactTip"] = "|nModifier la liste de contacts dont vous avez besoin, le format de saisie est 'UnitName-RealmName'.|nVous devez saisir uniquement le nom seulement si l'unité se trouve dans le même royaume que vous.|nVous pouvez personnaliser la couleur du texte pour les classer." -- need translation
 L["AddToIgnoreList"] = "%s SpellID %s a été ajouté a la liste des ignorés de AuraWatch. Vous pouvez maintenir CTRL+ALT enfoncées et cliquer sur l'icône de UnitAura pour le supprimer des ignorés."
 L["All Buffs Ready"] = "[KkthnxUI] Tous les buffs sont prêts!"
 L["Attach List"] = "Liste des pièces jointes:"
@@ -278,11 +278,9 @@ L["Enable Macro"] = "Activer macro"
 L["Enable MicroBar"] = "Activer la barre de menu"
 L["Enable OverrideWA"] = "Cacher les les temps de recharge avec WA"
 L["Format Cooldowns As Decimals"] = "Formater les temps de recharge en décimales"
-L["Mouseover BottomBar 1"] = "Survol barre en bas 1"
-L["Mouseover BottomBar 2"] = "Survol barre en bas 2"
-L["Mouseover BottomBar 3"] = "Survol barre en bas 1"
+L["Mouseover BottomBar 3"] = "Mouseover BottomBar 3" -- Needs Translations
 L["Mouseover CustomBar"] = "Survol barre personnalisée"
-L["Mouseover MicroBar"] = "Survol micro-menu"
+L["Mouseover MicroBar"] = "Mouseover MicroBar" -- Needs Translations
 L["Mouseover PetBar"] = "Survol barre du familier"
 L["Mouseover RightBar 1"] = "Survol barre droite 1"
 L["Mouseover RightBar 2"] = "Survol barre droite 2"
@@ -383,7 +381,6 @@ L["Differ Whipser Colors"] = "Couleur différente des messages privés"
 L["Disable Chat Language Filter"] = "Désactiver le filtre à obscenité du chat"
 L["Enable Chat Filter"] = "Activer le filtre à obscenité du chat"
 L["Enable Chat"] = "Activer le Chat"
-L["Fade Chat Tabs"] = "Fondu des onglets du chat"
 L["Fade Chat Text"] = "Fondu du texte du chat"
 L["Fading Chat Visible Time"] = "Temps avant fondu du Chat"
 L["Filter Matches Number"] = "Filter Matches Number"
@@ -416,7 +413,6 @@ L["Enable Minimap Location"] = "Afficher la localisation de la Minimap"
 L["Enable Minimap Time"] = "Afficher l'heure de la Minimap"
 L["Enable System Info"] = "Afficher les infos système"
 
-L["Alpha Of Mouseover Elements"] = "Transparence des éléments de survol"
 L["Auto Scale"] = "Echelle automatique"
 L["Border Style"] = "Style de bordure"
 L["Color 'Most' KkthnxUI Borders"] = "Couleur générale des bordures de KkthnxUI"
@@ -471,7 +467,7 @@ L["World Markers Bar"] = "World Markers Bar"
 L["Auras Filter Style"] = "Style de filtre des Auras"
 L["Auras Size"] = "Taille des Auras"
 L["Classpower/Healthbar Height"] = "Hauteur de la Barre de ressource/Barre de vie"
-L["Colored Custom Units"] = "Couleur personnalisée des unités"
+L["Colored Custom Units"] = "Colored Custom Units"
 L["Custom Color"] = "Couleur personnalisée"
 L["Custom PowerUnit List"] = "Custom PowerUnit List" -- Needs Translations
 L["Custom UnitColor List"] = "Custom UnitColor List" -- Needs Translations
@@ -655,15 +651,15 @@ L["Only Play Complete Quest Sound"] = "Ne jouez que le son en réussite de quêt
 
 L["Alpha When Moving"] = "Alpha When Moving"
 L["Fade Worldmap When Moving"] = "Fondu de la carte du monde en mouvement"
-L["Map Reveal Shadow Color"] = "Couleur des zones révélées de la carte"
-L["Map Reveal Shadow"] = "Zones révélées"
+L["Map Reveal Shadow Color"] = "Map Reveal Shadow Color" -- Needs Translations
+L["Map Reveal Shadow"] = "Map Reveal Shadow" -- Needs Translations
 L["Show Player/Mouse Coordinates"] = "Afficher les coordonnées du joueur/souris"
 L["Show Smaller Worldmap"] = "Afficher une carte du monde plus petite"
 
 -- GUI Config Tooltip Locales
 L["AutoScaleTip"] = "Mise à l'échelle automatique de l'IU au pixel près en fonction de votre résolution.|n|nSi vous voulez changer l'échelle manuellement, vous devez désactiver 'Echelle automatique' puis appliquer l'échelle en utilisant le curseur"
-L["CustomUnitTip"] = "Entrez le nom de l'unité ou l'ID du PNJ. Vous pouvez voir l'ID du PNJ ou de l'unité dans l'info-bulle en maintenant la touche MAJ enfoncée."
+L["CustomUnitTip"] = "Enter unit name or npc ID.You can see unit npc ID in GameTooltip by holding KEY SHIFT." -- Needs Translations
 L["ExecuteRatioTip"] = "Si le pourcentage de santé de l'unité est inférieur à la valeur plafond d'exécution que vous avez fixée, son nom devient rouge.|n|nL'indicateur d'exécution sera désactivé sur 0."
-L["MapRevealTip"] = "Si cette option est activée, toutes les zones de la carte seront visibles. Les zones non explorées resteront dans une ombre légère. Vous pouvez choisir la couleur de l'ombre que vous souhaitez."
+L["MapRevealTip"] = "If enabled, once you enable map reveal, the unexplore areas will stay under a light shadow. You can pick whatever color you want the shadow." -- Needs Translations
 L["ParagonReputationTip"] = "Remplace les barres exaltées du cadre de réputation par des barres Parangon, que vous pouvez personnaliser vous-même avec les paramètres"
 L["UIScaleTip"] = "Modifier l'échelle de l'IU selon vos préférences|n|nSi vous voulez changer l'échelle manuellement, vous devez désactiver 'Echelle automatique' puis appliquer l'échelle en utilisant le curseur"

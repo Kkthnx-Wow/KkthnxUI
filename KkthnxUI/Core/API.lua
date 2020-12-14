@@ -19,13 +19,13 @@ local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseBu
 do
 	BINDING_HEADER_KKTHNXUI = GetAddOnMetadata(..., "Title")
 
-	K.UIFrameHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerAttributeTemplate")
+	K.UIFrameHider = CreateFrame("Frame", "KKUI_UIFrameHider", UIParent, "SecureHandlerAttributeTemplate")
 	K.UIFrameHider:Hide()
 	K.UIFrameHider:SetPoint("TOPLEFT", 0, 0)
 	K.UIFrameHider:SetPoint("BOTTOMRIGHT", 0, 0)
 	RegisterAttributeDriver(K.UIFrameHider, "state-visibility", "hide")
 
-	K.PetBattleHider = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+	K.PetBattleHider = CreateFrame("Frame", "KKUI_PetBattleHider", UIParent, "SecureHandlerStateTemplate")
 	K.PetBattleHider:SetAllPoints()
 	K.PetBattleHider:SetFrameStrata("LOW")
 	RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")

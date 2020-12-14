@@ -7,9 +7,8 @@ local _G = _G
 local GetContainerItemInfo = _G.GetContainerItemInfo
 local GetContainerItemLink = _G.GetContainerItemLink
 local GetContainerNumSlots = _G.GetContainerNumSlots
-local USE_COLON = _G.USE_COLON
 
-local frame, atBank, atMail, atMerchant = CreateFrame("Frame")
+local frame, atBank, atMail, atMerchant = _G.CreateFrame("Frame")
 frame:SetScript("OnEvent", function(self, event, ...)
 	self[event](...)
 end)
@@ -66,8 +65,8 @@ frame:Register("BAG_UPDATE_DELAYED", function()
 		for slot = 0, GetContainerNumSlots(bag) do
 			local _, _, locked, _, _, lootable, _, _, _, id = GetContainerItemInfo(bag, slot)
 			if lootable and not locked and id and C.OpenItems[id] then
-				K.Print("|cffff0000"..USE_COLON.." "..GetContainerItemLink(bag, slot).."|cffff0000.|r")
-				UseContainerItem(bag, slot)
+				K.Print(K.SystemColor.._G.USE.." "..GetContainerItemLink(bag, slot))
+				_G.UseContainerItem(bag, slot)
 				return
 			end
 		end

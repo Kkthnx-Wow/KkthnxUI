@@ -146,7 +146,7 @@ function Module:CreateFocus()
 		self.Debuffs.initialAnchor = "TOPLEFT"
 		self.Debuffs["growth-x"] = "RIGHT"
 		self.Debuffs["growth-y"] = "UP"
-		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 48)
+		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 62)
 
 		self.Debuffs.num = 6
 		self.Debuffs.iconsPerRow = 5
@@ -157,7 +157,7 @@ function Module:CreateFocus()
 		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 	--end
 
-	if (C["Unitframe"].Castbars) then
+	--if C["Unitframe"].Castbars then
 		self.Castbar = CreateFrame("StatusBar", "FocusCastbar", self)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
 		self.Castbar:SetClampedToScreen(true)
@@ -204,7 +204,7 @@ function Module:CreateFocus()
 		self.Castbar.Icon:SetPoint("RIGHT", self.Castbar, "LEFT", -6, 0)
 
 		self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
-	end
+	--end
 
 	if C["Unitframe"].ShowHealPrediction then
 		local mhpb = self.Health:CreateTexture(nil, "BORDER", nil, 5)

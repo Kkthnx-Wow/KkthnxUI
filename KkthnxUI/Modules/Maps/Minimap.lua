@@ -27,7 +27,7 @@ KKUI_MiniMapTrackingDropDown.noResize = true
 local checkMinLevel = 10 -- Previous Constants were removed but all these are unlocked at 10.
 
 -- Create the minimap micro menu
-local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent, "UIDropDownMenuTemplate")
+local menuFrame = CreateFrame("Frame", "KKUI_MinimapRightClickMenu", UIParent, "UIDropDownMenuTemplate")
 local guildText = IsInGuild() and ACHIEVEMENTS_GUILD_TAB or LOOKINGFORGUILD
 local micromenu = {
 	{text = K.SystemColor.."Micro Menu", notClickable = true, notCheckable = true},
@@ -127,6 +127,23 @@ local micromenu = {
 			ToggleCollectionsJournal(5)
 	end},
 
+	{text = GREAT_VAULT_REWARDS, notCheckable = 1, func = function()
+			if InCombatLockdown() then
+				K.Print(K.InfoColor..ERR_NOT_IN_COMBAT.."|r") return
+			end
+
+			if UIParentLoadAddOn("Blizzard_WeeklyRewards") then
+				if WeeklyRewardsFrame:IsShown() then
+					WeeklyRewardsFrame:Hide()
+				else
+					WeeklyRewardsFrame:Show()
+				end
+			else
+				LoadAddOn("Blizzard_WeeklyRewards")
+				WeeklyRewardsFrame:Show()
+			end
+	end},
+
 	{text = HELP_BUTTON, notCheckable = 1, func = function()
 			ToggleHelpFrame()
 	end},
@@ -185,11 +202,15 @@ function Module:CreateStyle()
 	local function updateMinimapBorderAnimation()
 		if not InCombatLockdown() then
 			if C_Calendar_GetNumPendingInvites() > 0 or MiniMapMailFrame:IsShown() and not IsInInstance() then
-				minimapMailPulse:Show()
-				anim:Play()
+				if not anim:IsPlaying() then
+					minimapMailPulse:Show()
+					anim:Play()
+				end
 			else
-				anim:Stop()
-				minimapMailPulse:Hide()
+				if anim and anim:IsPlaying() then
+					anim:Stop()
+					minimapMailPulse:Hide()
+				end
 			end
 		end
 	end
@@ -203,8 +224,10 @@ function Module:CreateStyle()
 			return
 		end
 
-		anim:Stop()
-		minimapMailPulse:Hide()
+		if anim and anim:IsPlaying() then
+			anim:Stop()
+			minimapMailPulse:Hide()
+		end
 	end)
 end
 

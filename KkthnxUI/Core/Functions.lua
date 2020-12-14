@@ -36,7 +36,7 @@ local UnitReaction = _G.UnitReaction
 
 local iLvlDB = {}
 local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
-local essenceDescription = GetSpellDescription(277253)
+local essenceDescription = _G.GetSpellDescription(277253)
 local essenceTextureID = 2975691
 local itemLevelString = string_gsub(ITEM_LEVEL, "%%d", "")
 
@@ -192,6 +192,8 @@ function K.UnitColor(unit)
 		if reaction then
 			local color = K.Colors.reaction[reaction]
 			r, g, b = color[1], color[2], color[3]
+		else
+			r, g, b = UnitSelectionColor(unit, true)
 		end
 	end
 
@@ -606,7 +608,7 @@ function K.GetPlayerMapPos(mapID)
 	end
 	tempVec2D:Subtract(mapRect[1])
 
-	return tempVec2D.y/mapRect[2].y, tempVec2D.x/mapRect[2].x
+	return tempVec2D.y / mapRect[2].y, tempVec2D.x / mapRect[2].x
 end
 
 -- Money text formatting, code taken from Scrooge by thelibrarian (http://www.wowace.com/addons/scrooge)
