@@ -6,7 +6,7 @@ local select = select
 
 local CreateFrame = _G.CreateFrame
 
-local targetWidth = 160
+local targetWidth = C["Unitframe"].TargetFrameWidth
 
 function Module:CreateTarget()
 	self.mystyle = "target"
@@ -22,7 +22,7 @@ function Module:CreateTarget()
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	self.Health:SetHeight(28)
+	self.Health:SetHeight(C["Unitframe"].TargetFrameHeight * 0.7)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
@@ -58,7 +58,7 @@ function Module:CreateTarget()
 	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	self.Power:SetHeight(14)
+	self.Power:SetHeight(C["Unitframe"].TargetFrameHeight * 0.3)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
@@ -92,13 +92,13 @@ function Module:CreateTarget()
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-		self.Portrait:SetPoint("LEFT", self, "RIGHT", 6, 0)
+		self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 		self.Portrait:CreateBorder()
 	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		self.Portrait = self.Health:CreateTexture("TargetPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-		self.Portrait:SetPoint("LEFT", self, "RIGHT", 6, 0)
+		self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
 		self.Portrait.Border = CreateFrame("Frame", nil, self)
 		self.Portrait.Border:SetAllPoints(self.Portrait)
