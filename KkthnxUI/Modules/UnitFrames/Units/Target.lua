@@ -6,7 +6,7 @@ local select = select
 
 local CreateFrame = _G.CreateFrame
 
-local targetWidth = 160
+local targetWidth = C["Unitframe"].TargetFrameWidth
 
 function Module:CreateTarget()
 	self.mystyle = "target"
@@ -22,7 +22,7 @@ function Module:CreateTarget()
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	self.Health:SetHeight(28)
+	self.Health:SetHeight(C["Unitframe"].TargetFrameHeight * 0.7)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
@@ -58,7 +58,7 @@ function Module:CreateTarget()
 	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	self.Power:SetHeight(14)
+	self.Power:SetHeight(C["Unitframe"].TargetFrameHeight * 0.3)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)

@@ -744,13 +744,18 @@ function Module:CreateUnits()
 
 		oUF:SetActiveStyle("Player")
 		local Player = oUF:Spawn("player", "oUF_Player")
-		Player:SetSize(160, 48)
-		K.Mover(Player, "PlayerUF", "PlayerUF", {"BOTTOM", UIParent, "BOTTOM", -250, 320}, 160, 48)
+		local PlayerFrameWidth = C["Unitframe"].PlayerFrameWidth
+		local PlayerFrameHeight = C["Unitframe"].PlayerFrameHeight + 6
+
+		Player:SetSize(PlayerFrameWidth, PlayerFrameHeight)
+		K.Mover(Player, "PlayerUF", "PlayerUF", {"BOTTOM", UIParent, "BOTTOM", -250, 320}, PlayerFrameWidth, PlayerFrameHeight)
 
 		oUF:SetActiveStyle("Target")
 		local Target = oUF:Spawn("target", "oUF_Target")
-		Target:SetSize(160, 48)
-		K.Mover(Target, "TargetUF", "TargetUF", {"BOTTOM", UIParent, "BOTTOM", 250, 320}, 160, 48)
+		local TargetFrameWidth = C["Unitframe"].TargetFrameWidth
+		local TargetFrameHeight = C["Unitframe"].TargetFrameHeight + 6
+		Target:SetSize(TargetFrameWidth, TargetFrameHeight)
+		K.Mover(Target, "TargetUF", "TargetUF", {"BOTTOM", UIParent, "BOTTOM", 250, 320}, TargetFrameWidth, TargetFrameHeight)
 
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("ToT")
