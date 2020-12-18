@@ -26,6 +26,11 @@ button:SetScript("OnEvent", function(self, event, ...)
 
 	self[event](self, ...)
 end)
+
+if not C["Automation"].AutoDisenchant then
+	button:EnableMouse(false)
+end
+
 button:RegisterEvent("PLAYER_LOGIN")
 
 function button:PLAYER_LOGIN()
