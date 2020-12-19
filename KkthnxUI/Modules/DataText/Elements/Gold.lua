@@ -83,10 +83,12 @@ local function OnEvent(_, event)
 	local coppername = "|cffeda55fC|r"
 	local silvername = "|cffc7c7cfS|r."
 	local goldname = "|cffffd700G|r."
-	if C["DataText"].HideText then
-		Module.GoldDataTextFrame.Text:SetText("")
-	else
-		Module.GoldDataTextFrame.Text:SetText(goldname..silvername..coppername)
+	if C["DataText"].Gold then
+		if C["DataText"].HideText then
+			Module.GoldDataTextFrame.Text:SetText("")
+		else
+			Module.GoldDataTextFrame.Text:SetText(goldname..silvername..coppername)
+		end
 	end
 
 	KkthnxUIGold = KkthnxUIGold or {}
@@ -195,22 +197,21 @@ local function OnLeave()
 end
 
 function Module:CreateGoldDataText()
-	if not C["DataText"].Gold then
-		return
-	end
-
 	Module.GoldDataTextFrame = CreateFrame("Button", nil, UIParent)
-	Module.GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 4, -302)
-	Module.GoldDataTextFrame:SetSize(32, 32)
+	
+	if C["DataText"].Gold then
+		Module.GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 4, -302)
+		Module.GoldDataTextFrame:SetSize(32, 32)
 
-	Module.GoldDataTextFrame.Texture = Module.GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
-	Module.GoldDataTextFrame.Texture:SetPoint("LEFT", Module.GoldDataTextFrame, "LEFT", 0, 0)
-	Module.GoldDataTextFrame.Texture:SetTexture([[Interface\HELPFRAME\ReportLagIcon-Loot]])
-	Module.GoldDataTextFrame.Texture:SetSize(32, 32)
+		Module.GoldDataTextFrame.Texture = Module.GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
+		Module.GoldDataTextFrame.Texture:SetPoint("LEFT", Module.GoldDataTextFrame, "LEFT", 0, 0)
+		Module.GoldDataTextFrame.Texture:SetTexture([[Interface\HELPFRAME\ReportLagIcon-Loot]])
+		Module.GoldDataTextFrame.Texture:SetSize(32, 32)
 
-	Module.GoldDataTextFrame.Text = Module.GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
-	Module.GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.GoldDataTextFrame.Text:SetPoint("CENTER", Module.GoldDataTextFrame.Texture, "CENTER", 0, -6)
+		Module.GoldDataTextFrame.Text = Module.GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
+		Module.GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+		Module.GoldDataTextFrame.Text:SetPoint("CENTER", Module.GoldDataTextFrame.Texture, "CENTER", 0, -6)
+	end
 
 	Module.GoldDataTextFrame:RegisterEvent("PLAYER_MONEY", OnEvent)
 	Module.GoldDataTextFrame:RegisterEvent("SEND_MAIL_MONEY_CHANGED", OnEvent)
@@ -220,9 +221,11 @@ function Module:CreateGoldDataText()
 	Module.GoldDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
 
 	Module.GoldDataTextFrame:SetScript("OnEvent", OnEvent)
-	Module.GoldDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
-	Module.GoldDataTextFrame:SetScript("OnEnter", OnEnter)
-	Module.GoldDataTextFrame:SetScript("OnLeave", OnLeave)
-
-	K.Mover(Module.GoldDataTextFrame, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 4, -302})
+	if C["DataText"].Gold then
+		Module.GoldDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
+		Module.GoldDataTextFrame:SetScript("OnEnter", OnEnter)
+		Module.GoldDataTextFrame:SetScript("OnLeave", OnLeave)
+		
+		K.Mover(Module.GoldDataTextFrame, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 4, -302})
+	end
 end
