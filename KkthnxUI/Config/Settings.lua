@@ -520,7 +520,7 @@ C["Unitframe"] = {
 	["OnlyShowPlayerDebuff"] = false,
 	["PetCombatText"] = true,
 	["PlayerBuffs"] = false,
-	["PlayerFrameWidth"] = 160,
+	["PlayerFrameWidth"] = 208,
 	["PlayerFrameHeight"] = 48,
 	["PlayerPower"] = true,
 	["PlayerCastbar"] = true,
@@ -539,7 +539,7 @@ C["Unitframe"] = {
 	["SwingbarTimer"] = false,
 	["TargetBuffs"] = true,
 	["TargetBuffsPerRow"] = 6,
-	["TargetFrameWidth"] = 160,
+	["TargetFrameWidth"] = 208,
 	["TargetFrameHeight"] = 48,
 	["TargetPower"] = true,
 	["TargetCastbar"] = true,
@@ -560,7 +560,8 @@ C["Unitframe"] = {
 			["3D Portraits"] = "ThreeDPortraits",
 			["Class Portraits"] = "ClassPortraits",
 			["New Class Portraits"] = "NewClassPortraits",
-			["Default Portraits"] = "DefaultPortraits"
+			["Default Portraits"] = "DefaultPortraits",
+			["No Portraits"] = "NoPortraits"
 		},
 		["Value"] = "DefaultPortraits"
 	},
