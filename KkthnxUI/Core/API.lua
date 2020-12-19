@@ -44,7 +44,12 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	-- Border
 	local BorderSubLevel = bSubLevel or "OVERLAY"
 	local BorderLayer = bLayer or 1
-	local BorderSize = bSize or 12
+	local BorderSize
+	if C["General"].BorderStyle.Value == "KkthnxUI" then
+		BorderSize = bSize or 12
+	else
+		BorderSize = bSize or 10
+	end
 	local BorderTexture = bTexture or "Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. C["General"].BorderStyle.Value .. "\\Border.tga"
 	local BorderOffset = bOffset or -4
 	local BorderRed = bRed or C["General"].ColorTextures and C["General"].TexturesColor[1] or C["Media"].BorderColor[1]
