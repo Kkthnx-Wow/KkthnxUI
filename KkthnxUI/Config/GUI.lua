@@ -691,6 +691,11 @@ local Unitframe = function(self)
 	Window:CreateSlider("Unitframe", "FocusFrameHeight", newFeatureIcon .. L["Focus Frame Height"], 20, 75, 1)
 	Window:CreateSlider("Unitframe", "FocusFrameWidth", newFeatureIcon .. L["Focus Frame Width"], 100, 300, 1)
 
+	Window:CreateSection("Unitframe Target Of Focus")
+	Window:CreateSwitch("Unitframe", "FocusTargetPower", newFeatureIcon .. L["Target of Focus Power Bar"])
+	Window:CreateSlider("Unitframe", "FocusTargetFrameHeight", newFeatureIcon .. L["Target of Focus Frame Height"], 10, 50, 1)
+	Window:CreateSlider("Unitframe", "FocusTargetFrameWidth", newFeatureIcon .. L["Target of Focus Frame Width"], 100, 300, 1)
+
 	Window:CreateSection("Unitframe Sizes")
 	Window:CreateSlider("Unitframe", "PlayerCastbarHeight", L["Player Castbar Height"], 20, 40, 1)
 	Window:CreateSlider("Unitframe", "PlayerCastbarWidth", L["Player Castbar Width"], 160, 300, 1)

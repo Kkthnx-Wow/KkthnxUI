@@ -753,7 +753,7 @@ function Module:CreateUnits()
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 			PlayerFrameWidth = C["Unitframe"].PlayerFrameWidth
 		else
-			PlayerFrameWidth = C["Unitframe"].PlayerFrameWidth - PlayerFrameHeight --subtract height from width without portrait to keep the same over width
+			PlayerFrameWidth = C["Unitframe"].PlayerFrameWidth - PlayerFrameHeight
 		end
 
 		Player:SetSize(PlayerFrameWidth, PlayerFrameHeight)
@@ -766,7 +766,7 @@ function Module:CreateUnits()
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 			TargetFrameWidth = C["Unitframe"].TargetFrameWidth
 		else
-			TargetFrameWidth = C["Unitframe"].TargetFrameWidth - TargetFrameHeight --subtract height from width without portrait to keep the same over width
+			TargetFrameWidth = C["Unitframe"].TargetFrameWidth - TargetFrameHeight
 		end
 		Target:SetSize(TargetFrameWidth, TargetFrameHeight)
 		K.Mover(Target, "TargetUF", "TargetUF", {"BOTTOM", UIParent, "BOTTOM", 250, 320}, TargetFrameWidth, TargetFrameHeight)
@@ -779,7 +779,7 @@ function Module:CreateUnits()
 			if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 				TargetOfTargetFrameWidth = C["Unitframe"].TargetTargetFrameWidth
 			else
-				TargetOfTargetFrameWidth = C["Unitframe"].TargetTargetFrameWidth - TargetOfTargetFrameHeight --subtract height from width without portrait to keep the same over width
+				TargetOfTargetFrameWidth = C["Unitframe"].TargetTargetFrameWidth - TargetOfTargetFrameHeight
 			end
 			TargetOfTarget:SetSize(TargetOfTargetFrameWidth, TargetOfTargetFrameHeight)
 			K.Mover(TargetOfTarget, "TotUF", "TotUF", {"TOPLEFT", Target, "BOTTOMRIGHT", 6, -6}, TargetOfTargetFrameWidth, TargetOfTargetFrameHeight)
@@ -795,7 +795,7 @@ function Module:CreateUnits()
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 			PetFrameWidth = C["Unitframe"].PetFrameWidth
 		else
-			PetFrameWidth = C["Unitframe"].PetFrameWidth - PetFrameHeight --subtract height from width without portrait to keep the same over width
+			PetFrameWidth = C["Unitframe"].PetFrameWidth - PetFrameHeight
 		end
 		Pet:SetSize(PetFrameWidth, PetFrameHeight)
 		K.Mover(Pet, "Pet", "Pet", {"TOPRIGHT", Player, "BOTTOMLEFT", -6, -6}, PetFrameWidth, PetFrameHeight)
@@ -807,16 +807,23 @@ function Module:CreateUnits()
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 			FocusFrameWidth = C["Unitframe"].FocusFrameWidth
 		else
-			FocusFrameWidth = C["Unitframe"].FocusFrameWidth - FocusFrameHeight --subtract height from width without portrait to keep the same over width
+			FocusFrameWidth = C["Unitframe"].FocusFrameWidth - FocusFrameHeight
 		end
 		Focus:SetSize(FocusFrameWidth, FocusFrameHeight)
-		K.Mover(Focus, "FocusUF", "FocusUF", {"BOTTOMRIGHT", Player, "TOPLEFT", -60, 30}, FocusFrameWidth, FocusFrameHeight) --210, 48
+		K.Mover(Focus, "FocusUF", "FocusUF", {"BOTTOMRIGHT", Player, "TOPLEFT", -60, 30}, FocusFrameWidth, FocusFrameHeight)
 
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("FocusTarget")
 			local FocusTarget = oUF:Spawn("focustarget", "oUF_FocusTarget")
-			FocusTarget:SetSize(116, 28)
-			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", {"TOPRIGHT", Focus, "BOTTOMLEFT", 48, -6}, 116, 28)
+			local FocusTargetFrameHeight = C["Unitframe"].FocusTargetFrameHeight + 6
+			local FocusTargetFrameWidth
+			if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+				FocusTargetFrameWidth = C["Unitframe"].FocusTargetFrameWidth
+			else
+				FocusTargetFrameWidth = C["Unitframe"].FocusTargetFrameWidth - FocusTargetFrameHeight
+			end
+			FocusTarget:SetSize(FocusTargetFrameWidth, FocusTargetFrameHeight)
+			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", {"TOPRIGHT", Focus, "BOTTOMLEFT", 48, -6}, FocusTargetFrameWidth, FocusTargetFrameHeight)
 		end
 
 		K.HideInterfaceOption(InterfaceOptionsCombatPanelTargetOfTarget)
