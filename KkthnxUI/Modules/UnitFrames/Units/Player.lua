@@ -47,7 +47,11 @@ function Module:CreatePlayer()
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	self.Health:SetHeight(C["Unitframe"].PlayerFrameHeight * 0.7)
+	if C["Unitframe"].PlayerPower then
+		self.Health:SetHeight(C["Unitframe"].PlayerFrameHeight * 0.7)
+	else
+		self.Health:SetHeight(C["Unitframe"].PlayerFrameHeight + 6)
+	end
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
@@ -83,7 +87,11 @@ function Module:CreatePlayer()
 	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	self.Power:SetHeight(C["Unitframe"].PlayerFrameHeight * 0.3)
+	if C["Unitframe"].PlayerPower then
+		self.Power:SetHeight(C["Unitframe"].PlayerFrameHeight * 0.3)
+	else
+		self.Power:SetHeight(0)
+	end
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
@@ -102,16 +110,22 @@ function Module:CreatePlayer()
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
 	self:Tag(self.Power.Value, "[power]")
 
+	local portraitSize
+	if C["Unitframe"].PlayerPower then
+		portraitSize = self.Health:GetHeight() + self.Power:GetHeight() + 6
+	else
+		portraitSize = self.Health:GetHeight() + self.Power:GetHeight()
+	end
 	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
-		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+		self.Portrait:SetSize(portraitSize, portraitSize)
 		self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 		self.Portrait:CreateBorder()
 	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 		self.Portrait = self.Health:CreateTexture("PlayerPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+		self.Portrait:SetSize(portraitSize, portraitSize)
 		self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 
 		self.Portrait.Border = CreateFrame("Frame", nil, self)
