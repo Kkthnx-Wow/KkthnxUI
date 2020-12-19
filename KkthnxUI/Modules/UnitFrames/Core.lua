@@ -753,7 +753,7 @@ function Module:CreateUnits()
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 			PlayerFrameWidth = C["Unitframe"].PlayerFrameWidth
 		else
-			PlayerFrameWidth = C["Unitframe"].PlayerFrameWidth - PlayerFrameHeight
+			PlayerFrameWidth = C["Unitframe"].PlayerFrameWidth - PlayerFrameHeight --subtract height from width without portrait to keep the same over width
 		end
 
 		Player:SetSize(PlayerFrameWidth, PlayerFrameHeight)
@@ -766,7 +766,7 @@ function Module:CreateUnits()
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 			TargetFrameWidth = C["Unitframe"].TargetFrameWidth
 		else
-			TargetFrameWidth = C["Unitframe"].TargetFrameWidth - TargetFrameHeight
+			TargetFrameWidth = C["Unitframe"].TargetFrameWidth - TargetFrameHeight --subtract height from width without portrait to keep the same over width
 		end
 		Target:SetSize(TargetFrameWidth, TargetFrameHeight)
 		K.Mover(Target, "TargetUF", "TargetUF", {"BOTTOM", UIParent, "BOTTOM", 250, 320}, TargetFrameWidth, TargetFrameHeight)
