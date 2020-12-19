@@ -802,8 +802,15 @@ function Module:CreateUnits()
 
 		oUF:SetActiveStyle("Focus")
 		local Focus = oUF:Spawn("focus", "oUF_Focus")
-		Focus:SetSize(210, 48)
-		K.Mover(Focus, "FocusUF", "FocusUF", {"BOTTOMRIGHT", Player, "TOPLEFT", -60, 30}, 210, 48)
+		local FocusFrameHeight = C["Unitframe"].FocusFrameHeight + 6
+		local FocusFrameWidth 
+		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+			FocusFrameWidth = C["Unitframe"].FocusFrameWidth
+		else
+			FocusFrameWidth = C["Unitframe"].FocusFrameWidth - FocusFrameHeight --subtract height from width without portrait to keep the same over width
+		end
+		Focus:SetSize(FocusFrameWidth, FocusFrameHeight)
+		K.Mover(Focus, "FocusUF", "FocusUF", {"BOTTOMRIGHT", Player, "TOPLEFT", -60, 30}, FocusFrameWidth, FocusFrameHeight) --210, 48
 
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("FocusTarget")
