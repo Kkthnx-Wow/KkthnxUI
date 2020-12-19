@@ -44,7 +44,7 @@ local oUF_RaidDebuffs = _G.oUF_RaidDebuffs
 local castbarTicks = {}
 
 function Module:UpdateClassPortraits(unit)
-	if not unit then
+	if not unit or C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 		return
 	end
 
@@ -73,6 +73,10 @@ function Module:UpdateClassPortraits(unit)
 end
 
 function Module:UpdatePortraitColor(unit, min, max)
+	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+		return
+	end
+
 	if not UnitIsConnected(unit) then
 		self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
 	elseif UnitIsDead(unit) then
@@ -108,7 +112,7 @@ function Module:PostUpdatePvPIndicator(unit, status)
 end
 
 function Module:UpdateThreat(_, unit)
-	if unit ~= self.unit then
+	if unit ~= self.unit or C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 		return
 	end
 
@@ -155,7 +159,7 @@ function Module:UpdateThreat(_, unit)
 end
 
 function Module:UpdateHealth(unit, cur, max)
-	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
+	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" or "NoPortraits" then
 		return
 	end
 
@@ -744,24 +748,41 @@ function Module:CreateUnits()
 
 		oUF:SetActiveStyle("Player")
 		local Player = oUF:Spawn("player", "oUF_Player")
-		local PlayerFrameWidth = C["Unitframe"].PlayerFrameWidth
 		local PlayerFrameHeight = C["Unitframe"].PlayerFrameHeight + 6
+		local PlayerFrameWidth 
+		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+			PlayerFrameWidth = C["Unitframe"].PlayerFrameWidth
+		else
+			PlayerFrameWidth = C["Unitframe"].PlayerFrameWidth - PlayerFrameHeight
+		end
 
 		Player:SetSize(PlayerFrameWidth, PlayerFrameHeight)
 		K.Mover(Player, "PlayerUF", "PlayerUF", {"BOTTOM", UIParent, "BOTTOM", -250, 320}, PlayerFrameWidth, PlayerFrameHeight)
 
 		oUF:SetActiveStyle("Target")
 		local Target = oUF:Spawn("target", "oUF_Target")
-		local TargetFrameWidth = C["Unitframe"].TargetFrameWidth
 		local TargetFrameHeight = C["Unitframe"].TargetFrameHeight + 6
+		local TargetFrameWidth
+		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+			TargetFrameWidth = C["Unitframe"].TargetFrameWidth
+		else
+			TargetFrameWidth = C["Unitframe"].TargetFrameWidth - TargetFrameHeight
+		end
 		Target:SetSize(TargetFrameWidth, TargetFrameHeight)
 		K.Mover(Target, "TargetUF", "TargetUF", {"BOTTOM", UIParent, "BOTTOM", 250, 320}, TargetFrameWidth, TargetFrameHeight)
 
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("ToT")
 			local TargetOfTarget = oUF:Spawn("targettarget", "oUF_ToT")
-			TargetOfTarget:SetSize(116, 28)
-			K.Mover(TargetOfTarget, "TotUF", "TotUF", {"TOPLEFT", Target, "BOTTOMRIGHT", 6, -6}, 116, 28)
+			local TargetOfTargetFrameHeight = C["Unitframe"].TargetTargetFrameHeight + 6
+			local TargetOfTargetFrameWidth
+			if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+				TargetOfTargetFrameWidth = C["Unitframe"].TargetTargetFrameWidth
+			else
+				TargetOfTargetFrameWidth = C["Unitframe"].TargetTargetFrameWidth - TargetOfTargetFrameHeight
+			end
+			TargetOfTarget:SetSize(TargetOfTargetFrameWidth, TargetOfTargetFrameHeight)
+			K.Mover(TargetOfTarget, "TotUF", "TotUF", {"TOPLEFT", Target, "BOTTOMRIGHT", 6, -6}, TargetOfTargetFrameWidth, TargetOfTargetFrameHeight)
 		end
 
 		oUF:SetActiveStyle("Pet")
@@ -769,19 +790,40 @@ function Module:CreateUnits()
 		if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
 			Pet:SetParent(Player)
 		end
-		Pet:SetSize(116, 28)
-		K.Mover(Pet, "Pet", "Pet", {"TOPRIGHT", Player, "BOTTOMLEFT", -6, -6}, 116, 28)
+		local PetFrameHeight = C["Unitframe"].PetFrameHeight + 6
+		local PetFrameWidth
+		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+			PetFrameWidth = C["Unitframe"].PetFrameWidth
+		else
+			PetFrameWidth = C["Unitframe"].PetFrameWidth - PetFrameHeight
+		end
+		Pet:SetSize(PetFrameWidth, PetFrameHeight)
+		K.Mover(Pet, "Pet", "Pet", {"TOPRIGHT", Player, "BOTTOMLEFT", -6, -6}, PetFrameWidth, PetFrameHeight)
 
 		oUF:SetActiveStyle("Focus")
 		local Focus = oUF:Spawn("focus", "oUF_Focus")
-		Focus:SetSize(210, 48)
-		K.Mover(Focus, "FocusUF", "FocusUF", {"BOTTOMRIGHT", Player, "TOPLEFT", -60, 30}, 210, 48)
+		local FocusFrameHeight = C["Unitframe"].FocusFrameHeight + 6
+		local FocusFrameWidth 
+		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+			FocusFrameWidth = C["Unitframe"].FocusFrameWidth
+		else
+			FocusFrameWidth = C["Unitframe"].FocusFrameWidth - FocusFrameHeight
+		end
+		Focus:SetSize(FocusFrameWidth, FocusFrameHeight)
+		K.Mover(Focus, "FocusUF", "FocusUF", {"BOTTOMRIGHT", Player, "TOPLEFT", -60, 30}, FocusFrameWidth, FocusFrameHeight)
 
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("FocusTarget")
 			local FocusTarget = oUF:Spawn("focustarget", "oUF_FocusTarget")
-			FocusTarget:SetSize(116, 28)
-			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", {"TOPRIGHT", Focus, "BOTTOMLEFT", 48, -6}, 116, 28)
+			local FocusTargetFrameHeight = C["Unitframe"].FocusTargetFrameHeight + 6
+			local FocusTargetFrameWidth
+			if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+				FocusTargetFrameWidth = C["Unitframe"].FocusTargetFrameWidth
+			else
+				FocusTargetFrameWidth = C["Unitframe"].FocusTargetFrameWidth - FocusTargetFrameHeight
+			end
+			FocusTarget:SetSize(FocusTargetFrameWidth, FocusTargetFrameHeight)
+			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", {"TOPRIGHT", Focus, "BOTTOMLEFT", 48, -6}, FocusTargetFrameWidth, FocusTargetFrameHeight)
 		end
 
 		K.HideInterfaceOption(InterfaceOptionsCombatPanelTargetOfTarget)

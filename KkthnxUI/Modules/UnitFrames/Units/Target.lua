@@ -102,24 +102,27 @@ function Module:CreateTarget()
 	else
 		portraitSize = self.Health:GetHeight() + self.Power:GetHeight()
 	end
-	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
-		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
-		self.Portrait:SetFrameStrata(self:GetFrameStrata())
-		self.Portrait:SetSize(portraitSize, portraitSize)
-		self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
-		self.Portrait:CreateBorder()
-	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
-		self.Portrait = self.Health:CreateTexture("TargetPortrait", "BACKGROUND", nil, 1)
-		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-		self.Portrait:SetSize(portraitSize, portraitSize)
-		self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
-		self.Portrait.Border = CreateFrame("Frame", nil, self)
-		self.Portrait.Border:SetAllPoints(self.Portrait)
-		self.Portrait.Border:CreateBorder()
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
+			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
+			self.Portrait:SetFrameStrata(self:GetFrameStrata())
+			self.Portrait:SetSize(portraitSize, portraitSize)
+			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
+			self.Portrait:CreateBorder()
+		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
+			self.Portrait = self.Health:CreateTexture("TargetPortrait", "BACKGROUND", nil, 1)
+			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+			self.Portrait:SetSize(portraitSize, portraitSize)
+			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
-		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
-			self.Portrait.PostUpdate = Module.UpdateClassPortraits
+			self.Portrait.Border = CreateFrame("Frame", nil, self)
+			self.Portrait.Border:SetAllPoints(self.Portrait)
+			self.Portrait.Border:CreateBorder()
+
+			if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
+				self.Portrait.PostUpdate = Module.UpdateClassPortraits
+			end
 		end
 	end
 
@@ -282,7 +285,11 @@ function Module:CreateTarget()
 
 	-- Level
 	self.Level = self:CreateFontString(nil, "OVERLAY")
-	self.Level:SetPoint("TOP", self.Portrait, 0, 15)
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		self.Level:SetPoint("TOP", self.Portrait, 0, 15)
+	else
+		self.Level:SetPoint("TOPRIGHT", self.Health, 0, 15)
+	end
 	self.Level:SetFontObject(UnitframeFont)
 	self:Tag(self.Level, "[fulllevel]")
 
@@ -312,21 +319,37 @@ function Module:CreateTarget()
 	if C["Unitframe"].PvPIndicator then
 		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.PvPIndicator:SetSize(30, 33)
-		self.PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", 2, 0)
+		if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+			self.PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", -2, 0)
+		else
+			self.PvPIndicator:SetPoint("LEFT", self.Health, "RIGHT", -2, 0)
+		end
 		self.PvPIndicator.PostUpdate = Module.PostUpdatePvPIndicator
 	end
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
+	else
+		self.RaidTargetIndicator:SetPoint("TOP", self.Health, "TOP", 0, 8)
+	end
 	self.RaidTargetIndicator:SetSize(16, 16)
 
 	self.ReadyCheckIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
-	self.ReadyCheckIndicator:SetSize(self.Portrait:GetWidth() - 4, self.Portrait:GetHeight() - 4)
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
+	else
+		self.ReadyCheckIndicator:SetPoint("CENTER", self.Health)
+	end
+	self.ReadyCheckIndicator:SetSize(C["Unitframe"].PlayerFrameHeight - 4, C["Unitframe"].PlayerFrameHeight - 4)
 
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(44, 44)
-	self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
+	else
+		self.ResurrectIndicator:SetPoint("CENTER", self.Health)
+	end
 
 	self.QuestIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.QuestIndicator:SetSize(20, 20)
