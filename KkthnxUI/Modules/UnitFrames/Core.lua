@@ -774,8 +774,15 @@ function Module:CreateUnits()
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("ToT")
 			local TargetOfTarget = oUF:Spawn("targettarget", "oUF_ToT")
-			TargetOfTarget:SetSize(116, 28)
-			K.Mover(TargetOfTarget, "TotUF", "TotUF", {"TOPLEFT", Target, "BOTTOMRIGHT", 6, -6}, 116, 28)
+			local TargetOfTargetFrameHeight = C["Unitframe"].TargetTargetFrameHeight + 6
+			local TargetOfTargetFrameWidth
+			if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+				TargetOfTargetFrameWidth = C["Unitframe"].TargetTargetFrameWidth
+			else
+				TargetOfTargetFrameWidth = C["Unitframe"].TargetTargetFrameWidth - TargetOfTargetFrameHeight --subtract height from width without portrait to keep the same over width
+			end
+			TargetOfTarget:SetSize(TargetOfTargetFrameWidth, TargetOfTargetFrameHeight)
+			K.Mover(TargetOfTarget, "TotUF", "TotUF", {"TOPLEFT", Target, "BOTTOMRIGHT", 6, -6}, TargetOfTargetFrameWidth, TargetOfTargetFrameHeight)
 		end
 
 		oUF:SetActiveStyle("Pet")
@@ -783,8 +790,15 @@ function Module:CreateUnits()
 		if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
 			Pet:SetParent(Player)
 		end
-		Pet:SetSize(116, 28)
-		K.Mover(Pet, "Pet", "Pet", {"TOPRIGHT", Player, "BOTTOMLEFT", -6, -6}, 116, 28)
+		local PetFrameHeight = C["Unitframe"].PetFrameHeight + 6
+		local PetFrameWidth
+		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+			PetFrameWidth = C["Unitframe"].PetFrameWidth
+		else
+			PetFrameWidth = C["Unitframe"].PetFrameWidth - PetFrameHeight --subtract height from width without portrait to keep the same over width
+		end
+		Pet:SetSize(PetFrameWidth, PetFrameHeight)
+		K.Mover(Pet, "Pet", "Pet", {"TOPRIGHT", Player, "BOTTOMLEFT", -6, -6}, PetFrameWidth, PetFrameHeight)
 
 		oUF:SetActiveStyle("Focus")
 		local Focus = oUF:Spawn("focus", "oUF_Focus")
