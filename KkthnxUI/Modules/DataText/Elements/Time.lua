@@ -15,6 +15,7 @@ local tonumber = _G.tonumber
 
 local CALENDAR_FULLDATE_MONTH_NAMES = _G.CALENDAR_FULLDATE_MONTH_NAMES
 local CALENDAR_WEEKDAY_NAMES = _G.CALENDAR_WEEKDAY_NAMES
+local C_AreaPoiInfo_GetAreaPOIInfo = C_AreaPoiInfo.GetAreaPOIInfo
 local C_AreaPoiInfo_GetAreaPOISecondsLeft = _G.C_AreaPoiInfo.GetAreaPOISecondsLeft
 local C_Calendar_GetDayEvent = _G.C_Calendar.GetDayEvent
 local C_Calendar_GetNumDayEvents = _G.C_Calendar.GetNumDayEvents
@@ -27,6 +28,7 @@ local C_IslandsQueue_GetIslandsWeeklyQuestID = _G.C_IslandsQueue.GetIslandsWeekl
 local C_Map_GetMapInfo = _G.C_Map.GetMapInfo
 local C_TaskQuest_GetQuestInfoByQuestID = _G.C_TaskQuest.GetQuestInfoByQuestID
 local C_TaskQuest_GetThreatQuests = _G.C_TaskQuest.GetThreatQuests
+local C_UIWidgetManager_GetTextWithStateWidgetVisualizationInfo = C_UIWidgetManager.GetTextWithStateWidgetVisualizationInfo
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local FULLDATE = _G.FULLDATE
 local GameTime_GetGameTime = _G.GameTime_GetGameTime
@@ -113,6 +115,20 @@ local horrificVisions = {
 	[7] = {id = 57845, desc = "430 (3+0)"},
 	[8] = {id = 57841, desc = "420 (1+0)"},
 }
+
+-- Torghast
+local TorghastWidgets, TorghastInfo = {
+	{nameID = 2925, levelID = 2930}, -- Fracture Chambers
+	{nameID = 2926, levelID = 2932}, -- Skoldus Hall
+	{nameID = 2924, levelID = 2934}, -- Soulforges
+	{nameID = 2927, levelID = 2936}, -- Coldheart Interstitia
+	{nameID = 2928, levelID = 2938}, -- Mort'regar
+	{nameID = 2929, levelID = 2940}, -- The Upper Reaches
+}
+
+local function CleanupLevelName(text)
+	return gsub(text, '|n', '')
+end
 
 function Module:updateTimerFormat(color, hour, minute)
 	if GetCVarBool("timeMgrUseMilitaryTime") then
@@ -409,6 +425,25 @@ function Module:TimeOnEnter()
 
 		local nextLocation = GetNextLocation(nextTime, index)
 		GameTooltip:AddDoubleLine(L["Next Invasion"]..nextLocation, date("%m/%d %H:%M", nextTime), 1, 1, 1, 192/255, 192/255, 192/255)
+	end
+
+	-- Torghast
+	if not TorghastInfo then
+		TorghastInfo = C_AreaPoiInfo_GetAreaPOIInfo(1543, 6640)
+	end
+
+	if TorghastInfo and IsQuestFlaggedCompleted(60136) then
+		title = false
+		for _, value in pairs(TorghastWidgets) do
+			local nameInfo = C_UIWidgetManager_GetTextWithStateWidgetVisualizationInfo(value.nameID)
+			if nameInfo and nameInfo.shownState == 1 then
+				addTitle(TorghastInfo.name)
+				local nameText = CleanupLevelName(nameInfo.text)
+				local levelText = AVAILABLE
+				if levelInfo and levelInfo.shownState == 1 then levelText = CleanupLevelName(levelInfo.text) end
+				GameTooltip:AddDoubleLine(nameText, levelText)
+			end
+		end
 	end
 
 	-- Help Info
