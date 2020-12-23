@@ -56,7 +56,7 @@ function Module:CreateDurabilityFrameMove()
 	hooksecurefunc(DurabilityFrame, "SetPoint", function(self, _, parent)
 		if parent == "MinimapCluster" or parent == MinimapCluster then
 			self:ClearAllPoints()
-			self:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 0, -30)
+			self:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -40, -50)
 		end
 	end)
 end
