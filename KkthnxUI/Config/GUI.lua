@@ -698,9 +698,9 @@ local Unitframe = function(self)
 
 	Window:CreateSection("Unitframe Sizes")
 	Window:CreateSlider("Unitframe", "PlayerCastbarHeight", L["Player Castbar Height"], 20, 40, 1)
-	Window:CreateSlider("Unitframe", "PlayerCastbarWidth", L["Player Castbar Width"], 160, 300, 1)
+	Window:CreateSlider("Unitframe", "PlayerCastbarWidth", L["Player Castbar Width"], 100, 300, 1)
 	Window:CreateSlider("Unitframe", "TargetCastbarHeight", L["Target Castbar Height"], 20, 40, 1)
-	Window:CreateSlider("Unitframe", "TargetCastbarWidth", L["Target Castbar Width"], 160, 300, 1)
+	Window:CreateSlider("Unitframe", "TargetCastbarWidth", L["Target Castbar Width"], 100, 300, 1)
 
 	Window:CreateSection("Unitframe Misc")
 	Window:CreateDropdown("Unitframe", "HealthbarColor", L["Health Color Format"])
