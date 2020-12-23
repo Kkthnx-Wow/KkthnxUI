@@ -609,8 +609,12 @@ function Module:CreatePlayer()
 
 	if C["Unitframe"].GlobalCooldown then
 		self.GlobalCooldown = CreateFrame("Frame", nil, self.Health)
-		self.GlobalCooldown:SetWidth(playerWidth)
-		self.GlobalCooldown:SetHeight(28)
+		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+			self.GlobalCooldown:SetWidth(C["Unitframe"].PlayerFrameWidth)
+		else
+			self.GlobalCooldown:SetWidth(C["Unitframe"].PlayerFrameWidth - C["Unitframe"].PlayerFrameHeight - 6)
+		end
+		self.GlobalCooldown:SetHeight(self.Health:GetHeight())
 		self.GlobalCooldown:SetFrameStrata("HIGH")
 		self.GlobalCooldown:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
 	end
