@@ -15,6 +15,7 @@ local tonumber = _G.tonumber
 
 local CALENDAR_FULLDATE_MONTH_NAMES = _G.CALENDAR_FULLDATE_MONTH_NAMES
 local CALENDAR_WEEKDAY_NAMES = _G.CALENDAR_WEEKDAY_NAMES
+local C_AreaPoiInfo_GetAreaPOIInfo = _G.C_AreaPoiInfo.GetAreaPOIInfo
 local C_AreaPoiInfo_GetAreaPOISecondsLeft = _G.C_AreaPoiInfo.GetAreaPOISecondsLeft
 local C_Calendar_GetDayEvent = _G.C_Calendar.GetDayEvent
 local C_Calendar_GetNumDayEvents = _G.C_Calendar.GetNumDayEvents
@@ -25,8 +26,10 @@ local C_CurrencyInfo_GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo
 local C_DateAndTime_GetCurrentCalendarTime = _G.C_DateAndTime.GetCurrentCalendarTime
 local C_IslandsQueue_GetIslandsWeeklyQuestID = _G.C_IslandsQueue.GetIslandsWeeklyQuestID
 local C_Map_GetMapInfo = _G.C_Map.GetMapInfo
+local C_QuestLog_IsQuestFlaggedCompleted = _G.C_QuestLog.IsQuestFlaggedCompleted
 local C_TaskQuest_GetQuestInfoByQuestID = _G.C_TaskQuest.GetQuestInfoByQuestID
 local C_TaskQuest_GetThreatQuests = _G.C_TaskQuest.GetThreatQuests
+local C_UIWidgetManager_GetTextWithStateWidgetVisualizationInfo = _G.C_UIWidgetManager.GetTextWithStateWidgetVisualizationInfo
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local FULLDATE = _G.FULLDATE
 local GameTime_GetGameTime = _G.GameTime_GetGameTime
@@ -238,6 +241,20 @@ local function GetNzothThreatName(questID)
 	return name
 end
 
+-- Torghast
+local TorghastWidgets, TorghastInfo = {
+	{nameID = 2925, levelID = 2930}, -- Fracture Chambers
+	{nameID = 2926, levelID = 2932}, -- Skoldus Hall
+	{nameID = 2924, levelID = 2934}, -- Soulforges
+	{nameID = 2927, levelID = 2936}, -- Coldheart Interstitia
+	{nameID = 2928, levelID = 2938}, -- Mort'regar
+	{nameID = 2929, levelID = 2940}, -- The Upper Reaches
+}
+
+local function CleanupLevelName(text)
+	return gsub(text, "|n", "")
+end
+
 local title
 local function addTitle(text)
 	if not title then
@@ -304,11 +321,30 @@ function Module:TimeOnEnter()
 		end
 	end
 
+	-- Torghast
+	if not TorghastInfo then
+		TorghastInfo = C_AreaPoiInfo_GetAreaPOIInfo(1543, 6640)
+	end
+
+	if TorghastInfo and C_QuestLog_IsQuestFlaggedCompleted(60136) then
+		title = false
+		for _, value in pairs(TorghastWidgets) do
+			local nameInfo = C_UIWidgetManager_GetTextWithStateWidgetVisualizationInfo(value.nameID)
+			if nameInfo and nameInfo.shownState == 1 then
+				addTitle(TorghastInfo.name)
+				local nameText = CleanupLevelName(nameInfo.text)
+				local levelInfo = C_UIWidgetManager_GetTextWithStateWidgetVisualizationInfo(value.levelID)
+				local levelText = levelInfo and CleanupLevelName(levelInfo.text) or UNKNOWN
+				GameTooltip:AddDoubleLine(nameText, levelText)
+			end
+		end
+	end
+
 	-- Quests
 	title = false
 	local count, maxCoins = 0, 2
 	for _, id in pairs(timeBonusList) do
-		if C_QuestLog.IsQuestFlaggedCompleted(id) then
+		if C_QuestLog_IsQuestFlaggedCompleted(id) then
 			count = count + 1
 		end
 	end
@@ -339,7 +375,7 @@ function Module:TimeOnEnter()
 	end
 
 	for _, v in ipairs(horrificVisions) do
-		if C_QuestLog.IsQuestFlaggedCompleted(v.id) then
+		if C_QuestLog_IsQuestFlaggedCompleted(v.id) then
 			addTitle(QUESTS_LABEL)
 			GameTooltip:AddDoubleLine(SPLASH_BATTLEFORAZEROTH_8_3_0_FEATURE1_TITLE, v.desc, 1, 1, 1, 0, 1, 0)
 			break
@@ -349,7 +385,7 @@ function Module:TimeOnEnter()
 	local iwqID = C_IslandsQueue_GetIslandsWeeklyQuestID()
 	if iwqID and K.Level == 120 then
 		addTitle(QUESTS_LABEL)
-		if C_QuestLog.IsQuestFlaggedCompleted(iwqID) then
+		if C_QuestLog_IsQuestFlaggedCompleted(iwqID) then
 			GameTooltip:AddDoubleLine(ISLANDS_HEADER, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 		else
 			local cur, max = select(4, GetQuestObjectiveInfo(iwqID, 1, false))
@@ -364,7 +400,7 @@ function Module:TimeOnEnter()
 	end
 
 	for _, id in pairs(lesserVisions) do
-		if C_QuestLog.IsQuestFlaggedCompleted(id) then
+		if C_QuestLog_IsQuestFlaggedCompleted(id) then
 			addTitle(QUESTS_LABEL)
 			GameTooltip:AddDoubleLine("LesserVision", QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 			break
@@ -376,14 +412,14 @@ function Module:TimeOnEnter()
 	end
 
 	for _, v in pairs(nzothAssaults) do
-		if C_QuestLog.IsQuestFlaggedCompleted(v) then
+		if C_QuestLog_IsQuestFlaggedCompleted(v) then
 			addTitle(QUESTS_LABEL)
 			GameTooltip:AddDoubleLine(GetNzothThreatName(v), QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 		end
 	end
 
 	for _, v in pairs(timeQuestList) do
-		if v.name and C_QuestLog.IsQuestFlaggedCompleted(v.id) then
+		if v.name and C_QuestLog_IsQuestFlaggedCompleted(v.id) then
 			if v.name == "Timewarped" and isTimeWalker and checkTexture(v.texture) or v.name ~= "Timewarped" then
 				addTitle(QUESTS_LABEL)
 				GameTooltip:AddDoubleLine(v.name, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
@@ -413,8 +449,9 @@ function Module:TimeOnEnter()
 
 	-- Help Info
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t ".."Toggle Calendar")
-	GameTooltip:AddLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t ".."Toggle Clock")
+	GameTooltip:AddLine(K.LeftButton.."Toggle Calendar")
+	GameTooltip:AddLine(K.ScrollButton..RATED_PVP_WEEKLY_VAULT)
+	GameTooltip:AddLine(K.RightButton.."Toggle Clock")
 	GameTooltip:Show()
 end
 
@@ -425,6 +462,15 @@ end
 function Module:TimeOnMouseUp(btn)
 	if btn == "RightButton" then
 		_G.ToggleTimeManager()
+	elseif btn == "MiddleButton" then
+		if not WeeklyRewardsFrame then
+			LoadAddOn("Blizzard_WeeklyRewards")
+		end
+		if InCombatLockdown() then
+			K.TogglePanel(WeeklyRewardsFrame)
+		else
+			ToggleFrame(WeeklyRewardsFrame)
+		end
 	else
 		if InCombatLockdown() then
 			_G.UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)

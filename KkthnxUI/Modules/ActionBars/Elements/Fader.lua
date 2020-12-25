@@ -39,11 +39,11 @@ local function StartFadeIn(frame)
 	end
 
 	frame.fader:Pause()
-	frame.fader.anim:SetFromAlpha(C["General"].GlobalFade or 0)
+	frame.fader.anim:SetFromAlpha(frame.faderConfig.fadeOutAlpha or 0)
 	frame.fader.anim:SetToAlpha(frame.faderConfig.fadeInAlpha or 1)
 	frame.fader.anim:SetDuration(frame.faderConfig.fadeInDuration or 0.3)
 	frame.fader.anim:SetSmoothing(frame.faderConfig.fadeInSmooth or "OUT")
-	-- Start Right Away
+	--start right away
 	frame.fader.anim:SetStartDelay(frame.faderConfig.fadeInDelay or 0)
 	frame.fader.finAlpha = frame.faderConfig.fadeInAlpha
 	frame.fader.direction = "in"
@@ -57,12 +57,12 @@ local function StartFadeOut(frame)
 
 	frame.fader:Pause()
 	frame.fader.anim:SetFromAlpha(frame.faderConfig.fadeInAlpha or 1)
-	frame.fader.anim:SetToAlpha(C["General"].GlobalFade or 0)
+	frame.fader.anim:SetToAlpha(frame.faderConfig.fadeOutAlpha or 0)
 	frame.fader.anim:SetDuration(frame.faderConfig.fadeOutDuration or 0.3)
 	frame.fader.anim:SetSmoothing(frame.faderConfig.fadeOutSmooth or "OUT")
-	-- Wait For Some Time Before Starting The Fadeout
+	--wait for some time before starting the fadeout
 	frame.fader.anim:SetStartDelay(frame.faderConfig.fadeOutDelay or 0)
-	frame.fader.finAlpha = C["General"].GlobalFade
+	frame.fader.finAlpha = frame.faderConfig.fadeOutAlpha
 	frame.fader.direction = "out"
 	frame.fader:Play()
 end

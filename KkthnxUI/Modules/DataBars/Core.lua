@@ -383,7 +383,7 @@ end
 
 function Module:OnLeave()
 	if C["DataBars"].MouseOver then
-		UIFrameFadeOut(Module.Container, 0.2, Module.Container:GetAlpha(), C["General"].GlobalFade)
+		UIFrameFadeOut(Module.Container, 0.2, Module.Container:GetAlpha(), 0)
 	end
 
 	GameTooltip:Hide()
@@ -395,7 +395,7 @@ function Module:OnUpdate()
 	Module:UpdateHonor()
 
 	if C["DataBars"].MouseOver then
-		Module.Container:SetAlpha(C["General"].GlobalFade)
+		Module.Container:SetAlpha(0)
 	else
 		Module.Container:SetAlpha(1)
 	end

@@ -113,7 +113,7 @@ function Module:CreateRaid()
 
 		table.insert(self.__elements, UpdateRaidPower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
-		UpdateRaidPower(self, _, unit)
+		UpdateRaidPower(self)
 	end
 
 	if C["Raid"].ShowHealPrediction then
@@ -219,45 +219,71 @@ function Module:CreateRaid()
 		self:Tag(self.StatusIndicator, "[afkdnd]")
 	end
 
-	if C["Raid"].AuraWatch then
-		self.AuraWatch = Module.CreateAuraWatch(self)
+	if C["Raid"].AuraTrack then
+		self.AuraTrack= CreateFrame("Frame", nil, self.Health)
+		self.AuraTrack:SetAllPoints()
+		self.AuraTrack.Texture = C["Media"].Blank
+		self.AuraTrack.Icons = C["Raid"].AuraTrackIcons
+		self.AuraTrack.SpellTextures = C["Raid"].AuraTrackSpellTextures
+		self.AuraTrack.Thickness = C["Raid"].AuraTrackThickness
+	elseif C["Raid"].RaidBuffs.Value ~= "Hide" then
+		self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self.Health)
+		local onlyShowPlayer = C["Raid"].RaidBuffs.Value == "Self"
+		local filter = C["Raid"].RaidBuffs.Value == "All" and "HELPFUL" or "HELPFUL|RAID"
+
+		self.Buffs:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 0, 0)
+		self.Buffs:SetHeight(16)
+		self.Buffs:SetWidth(79)
+		self.Buffs.size = 16
+		self.Buffs.num = 5
+		self.Buffs.numRow = 1
+		self.Buffs.spacing = 0
+		self.Buffs.initialAnchor = "TOPLEFT"
+		self.Buffs.disableCooldown = true
+		self.Buffs.disableMouse = true
+		self.Buffs.onlyShowPlayer = onlyShowPlayer
+		self.Buffs.desaturateNonPlayerBuffs = C["Raid"].DesaturateNonPlayerBuffs
+		self.Buffs.filter = filter
+		self.Buffs.IsRaid = true
+		self.Buffs.PostCreateIcon = Module.PostCreateAura
 	end
 
-	if C["Raid"].AuraDebuffs then
-		self.RaidDebuffs = CreateFrame("Frame", nil, self)
-		self.RaidDebuffs:SetFrameLevel(self:GetFrameLevel() + 20)
-		self.RaidDebuffs:SetSize(C["Raid"].AuraDebuffIconSize, C["Raid"].AuraDebuffIconSize)
-		self.RaidDebuffs:SetPoint("CENTER", self, 0, 0)
+	if C["Raid"].DebuffWatch then
+		self.RaidDebuffs = CreateFrame("Frame", nil, self.Health)
+		self.RaidDebuffs:SetHeight(self.Health:GetHeight() - 20)
+		self.RaidDebuffs:SetWidth(self.Health:GetHeight() - 20)
+		self.RaidDebuffs:SetPoint("CENTER", self.Health)
+		self.RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 10)
 		self.RaidDebuffs:CreateBorder()
 
-		self.RaidDebuffs.showDispellableDebuff = true
-		self.RaidDebuffs.onlyMatchSpellID = true
-		-- self.RaidDebuffs.forceShow = true -- TEST
-
-		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "OVERLAY")
-		self.RaidDebuffs.icon:SetTexCoord(unpack(K.TexCoords))
-		self.RaidDebuffs.icon:SetAllPoints()
-
-		self.RaidDebuffs.count = self.RaidDebuffs:CreateFontString(nil, "OVERLAY")
-		self.RaidDebuffs.count:SetPoint("BOTTOMRIGHT", 0, 1)
-		self.RaidDebuffs.count:FontTemplate(nil, 10, "OUTLINE")
-		self.RaidDebuffs.count:SetTextColor(1, 0.9, 0)
-
-		self.RaidDebuffs.time = self.RaidDebuffs:CreateFontString(nil, "OVERLAY")
-		self.RaidDebuffs.time:SetPoint("CENTER")
-		self.RaidDebuffs.time:FontTemplate(nil, 10, "OUTLINE")
-		self.RaidDebuffs.time:SetTextColor(1, 0.9, 0)
+		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "ARTWORK")
+		self.RaidDebuffs.icon:SetTexCoord(.1, .9, .1, .9)
+		self.RaidDebuffs.icon:SetAllPoints(self.RaidDebuffs)
 
 		self.RaidDebuffs.cd = CreateFrame("Cooldown", nil, self.RaidDebuffs, "CooldownFrameTemplate")
-		self.RaidDebuffs.cd:SetPoint("TOPLEFT", 1, -1)
-		self.RaidDebuffs.cd:SetPoint("BOTTOMRIGHT", -1, 1)
+		self.RaidDebuffs.cd:SetAllPoints(self.RaidDebuffs)
 		self.RaidDebuffs.cd:SetReverse(true)
 		self.RaidDebuffs.cd.noOCC = true
 		self.RaidDebuffs.cd.noCooldownCount = true
 		self.RaidDebuffs.cd:SetHideCountdownNumbers(true)
+		self.RaidDebuffs.cd:SetAlpha(0.7)
+
+		self.RaidDebuffs.onlyMatchSpellID = true
+		self.RaidDebuffs.showDispellableDebuff = false
+
+		self.RaidDebuffs.time = self.RaidDebuffs:CreateFontString(nil, "OVERLAY")
+		self.RaidDebuffs.time:SetFont(C["Media"].Font, 11, "OUTLINE")
+		self.RaidDebuffs.time:SetPoint("CENTER", self.RaidDebuffs, 1, 0)
+
+		self.RaidDebuffs.count = self.RaidDebuffs:CreateFontString(nil, "OVERLAY")
+		self.RaidDebuffs.count:SetFont(C["Media"].Font, 11, "OUTLINE")
+		self.RaidDebuffs.count:SetPoint("BOTTOMRIGHT", self.RaidDebuffs, "BOTTOMRIGHT", 2, 0)
+		self.RaidDebuffs.count:SetTextColor(1, .9, 0)
+
+		-- self.RaidDebuffs.forceShow = true
 	end
 
-	if (C["Raid"].TargetHighlight) then
+	if C["Raid"].TargetHighlight then
 		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
 		self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].BorderGlow, edgeSize = 12})
 		self.TargetHighlight:SetPoint("TOPLEFT", self, -5, 5)

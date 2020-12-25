@@ -1,11 +1,6 @@
 local K = unpack(select(2, ...))
-
-local _G = _G
-
-local UnitClass = _G.UnitClass
-local UnitCanAssist = _G.UnitCanAssist
-local UnitAura = _G.UnitAura
-local GetSpecialization = _G.GetSpecialization
+local _, ns = ...
+local oUF = ns.oUF or K.oUF
 
 local CanDispel = {
 	DRUID = {Magic = false, Curse = true, Poison = true},
@@ -16,8 +11,7 @@ local CanDispel = {
 	SHAMAN = {Magic = false, Curse = true}
 }
 
-local playerClass = select(2, UnitClass("player"))
-local dispellist = CanDispel[playerClass] or {}
+local dispellist = CanDispel[K.Class] or {}
 local origColors = {}
 local origBorderColors = {}
 
@@ -36,6 +30,7 @@ local function GetDebuffType(unit, filter)
 		if debufftype and not filter or (filter and dispellist[debufftype]) then
 			return debufftype, texture
 		end
+
 		i = i + 1
 	end
 end
@@ -43,31 +38,31 @@ end
 local function CheckSpec()
 	local spec = GetSpecialization()
 
-	if playerClass == "DRUID" then
+	if K.Class == "DRUID" then
 		if spec == 4 then
 			dispellist.Magic = true
 		else
 			dispellist.Magic = false
 		end
-	elseif playerClass == "MONK" then
+	elseif K.Class == "MONK" then
 		if spec == 2 then
 			dispellist.Magic = true
 		else
 			dispellist.Magic = false
 		end
-	elseif playerClass == "PALADIN" then
+	elseif K.Class == "PALADIN" then
 		if spec == 1 then
 			dispellist.Magic = true
 		else
 			dispellist.Magic = false
 		end
-	elseif playerClass == "PRIEST" then
+	elseif K.Class == "PRIEST" then
 		if spec == 3 then
 			dispellist.Magic = false
 		else
 			dispellist.Magic = true
 		end
-	elseif playerClass == "SHAMAN" then
+	elseif K.Class == "SHAMAN" then
 		if spec == 3 then
 			dispellist.Magic = true
 		else
@@ -125,7 +120,7 @@ local function Enable(object)
 	end
 
 	-- If we're filtering highlights and we're not of the dispelling type, return
-	if object.DebuffHighlightFilter and not CanDispel[playerClass] then
+	if object.DebuffHighlightFilter and not CanDispel[K.Class] then
 		return
 	end
 
@@ -154,8 +149,8 @@ local function Disable(object)
 	end
 end
 
-K.oUF:AddElement("DebuffHighlight", Update, Enable, Disable)
+oUF:AddElement("DebuffHighlight", Update, Enable, Disable)
 
-for _, frame in ipairs(K.oUF.objects) do
+for _, frame in ipairs(oUF.objects) do
 	Enable(frame)
 end

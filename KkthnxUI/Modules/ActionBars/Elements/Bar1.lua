@@ -99,7 +99,7 @@ function Module:CreateBar1()
 	frame.frameVisibility = "[petbattle] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
-	if C["ActionBar"].FadeBottomBar1 and FilterConfig.fader then
+	if FilterConfig.fader then
 		Module.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
 	end
 

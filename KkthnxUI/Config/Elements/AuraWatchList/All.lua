@@ -101,6 +101,7 @@ local list = {
 		{AuraID = 325013, UnitID = "player"},	-- 晋升者之赐
 		{AuraID = 308495, UnitID = "player"},	-- 共鸣箭
 		{AuraID = 328908, UnitID = "player"},	-- 战斗冥想
+		{AuraID = 345499, UnitID = "player"},	-- 执政官的祝福
 		-- 炼金石
 		{AuraID = 60233, UnitID = "player"},	-- 敏捷
 		{AuraID = 60229, UnitID = "player"},	-- 力量
@@ -124,9 +125,10 @@ local list = {
 		{AuraID = 32182, UnitID = "player"},	-- 英勇
 		{AuraID = 80353, UnitID = "player"},	-- 时间扭曲
 		{AuraID = 264667, UnitID = "player"},	-- 原始狂怒
-		{AuraID = 178207, UnitID = "player"},	-- 鼓
+		{AuraID = 178207, UnitID = "player"},	-- 狂怒战鼓
 		{AuraID = 230935, UnitID = "player"},	-- 高山战鼓
 		{AuraID = 256740, UnitID = "player"},	-- 漩涡战鼓
+		{AuraID = 309658, UnitID = "player"},	-- 死亡凶蛮战鼓
 		{AuraID = 102364, UnitID = "player"},	-- 青铜龙的祝福
 		{AuraID = 292686, UnitID = "player"},	-- 制皮鼓
 		-- 团队增益或减伤
@@ -173,6 +175,8 @@ local list = {
 		{AuraID = 240443, UnitID = "player", Flash = true},	-- 爆裂
 		-- 5人本
 		{AuraID = 327107, UnitID = "player"},	-- 赤红，闪耀光辉
+		{AuraID = 324092, UnitID = "player", Flash = true},	-- 赤红，闪耀光辉
+		{AuraID = 328737, UnitID = "player", Flash = true},	-- 赤红，光辉残片
 		{AuraID = 333299, UnitID = "player"},	-- 伤逝剧场，荒芜诅咒
 		{AuraID = 319637, UnitID = "player"},	-- 伤逝剧场，魂魄归体
 		{AuraID = 336258, UnitID = "player", Flash = true},	-- 凋魂之殇，落单狩猎
@@ -185,8 +189,15 @@ local list = {
 		{AuraID = 327893, UnitID = "player", Flash = true},	-- 彼界，邦桑迪的热情
 		{AuraID = 339978, UnitID = "player", Flash = true},	-- 彼界，安抚迷雾
 		{AuraID = 323569, UnitID = "player", Flash = true},	-- 彼界，溅洒精魂
+		{AuraID = 328453, UnitID = "player"},	-- 晋升高塔，压迫
 		{AuraID = 335805, UnitID = "player", Flash = true},	-- 晋升高塔，执政官的壁垒
-
+		{AuraID = 325027, UnitID = "player", Flash = true},	-- 仙林，荆棘爆发
+		-- 团本
+		{AuraID = 346035, UnitID = "player"},	-- 眩目步法，猩红议会
+		{AuraID = 331636, UnitID = "player", Flash = true},	-- 黑暗伴舞，猩红议会
+		{AuraID = 335293, UnitID = "player"},	-- 锁链联结，泥拳
+		{AuraID = 327039, UnitID = "player"},	-- 喂食时间，德纳修斯
+		{AuraID = 327089, UnitID = "player"},	-- 喂食时间，德纳修斯
 	},
 	["Warning"] = { -- 目标重要光环组
 		-- 大幻象
@@ -194,19 +205,28 @@ local list = {
 		{AuraID = 319643, UnitID = "target", Value = true},	-- 虚空哀嚎，吸收盾
 		-- 大米
 		{AuraID = 226510, UnitID = "target"},	-- 血池回血
-		-- 9.0副本
+		-- 5人本
 		{AuraID = 322773, UnitID = "target", Value = true},	-- 彼界，鲜血屏障
 		{AuraID = 320293, UnitID = "target", Value = true},	-- 伤逝剧场，融入死亡
+		{AuraID = 333737, UnitID = "target"},	-- 凋魂，凝结之疾
 		{AuraID = 321368, UnitID = "target", Value = true},	-- 凋魂，冰缚之盾
 		{AuraID = 327416, UnitID = "target", Value = true},	-- 晋升，心能回灌
 		{AuraID = 345561, UnitID = "target", Value = true},	-- 晋升，生命连结
 		{AuraID = 323149, UnitID = "target", Value = true},	-- 仙林，黑暗之拥
 		{AuraID = 340191, UnitID = "target", Value = true},	-- 仙林，再生辐光
+		-- 团本
+		{AuraID = 345902, UnitID = "target"},	-- 破裂的联结，猎手
+		{AuraID = 334695, UnitID = "target"},	-- 动荡的能量，猎手
+		{AuraID = 346792, UnitID = "target"},	-- 罪触之刃，猩红议会
+		{AuraID = 331314, UnitID = "target"},	-- 毁灭冲击，泥拳
+		{AuraID = 341250, UnitID = "target"},	-- 恐怖暴怒，泥拳
+		{AuraID = 329636, UnitID = "target", Value = true},	-- 坚岩形态，干将
+		{AuraID = 329808, UnitID = "target", Value = true},	-- 坚岩形态，干将
 		-- PVP
-		{AuraID = 498, UnitID = "target"},		-- Holy Blessing
-		{AuraID = 642, UnitID = "target"},		-- Holy Shield
-		{AuraID = 871, UnitID = "target"},		-- Shield wall
-		{AuraID = 5277, UnitID = "target"},		-- dodge
+		{AuraID = 498, UnitID = "target"},		-- 圣佑术
+		{AuraID = 642, UnitID = "target"},		-- 圣盾术
+		{AuraID = 871, UnitID = "target"},		-- 盾墙
+		{AuraID = 5277, UnitID = "target"},		-- 闪避
 		{AuraID = 1044, UnitID = "target"},		-- 自由祝福
 		{AuraID = 6940, UnitID = "target"},		-- 牺牲祝福
 		{AuraID = 1022, UnitID = "target"},		-- 保护祝福

@@ -223,12 +223,10 @@ function Module:UpdateColor(_, unit)
 	local isPlayer = self.isPlayer
 	local isFriendly = self.isFriendly
 	local status = self.feedbackUnit and UnitThreatSituation(self.feedbackUnit, unit) or false -- just in case
-	local reaction = UnitReaction(unit, "player")
 
 	local customColor = C["Nameplate"].CustomColor
 	local insecureColor = C["Nameplate"].InsecureColor
 	local offTankColor = C["Nameplate"].OffTankColor
-	local reactionColor = K.Colors.reaction[reaction]
 	local revertThreat = C["Nameplate"].DPSRevertThreat
 	local secureColor = C["Nameplate"].SecureColor
 	local transColor = C["Nameplate"].TransColor
@@ -253,12 +251,7 @@ function Module:UpdateColor(_, unit)
 		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) then
 			r, g, b = .6, .6, .6
 		else
-			if reaction then
-				r, g, b = reactionColor[1], reactionColor[2], reactionColor[3]
-			else
-				r, g, b = UnitSelectionColor(unit, true)
-			end
-
+			r, g, b = K.UnitColor(unit)
 			if status and (C["Nameplate"].TankMode or K.Role == "Tank") then
 				if status == 3 then
 					if K.Role ~= "Tank" and revertThreat then
@@ -271,7 +264,7 @@ function Module:UpdateColor(_, unit)
 						end
 					end
 				elseif status == 2 or status == 1 then
-					r, g, b = transColor.r, transColor.g, transColor.b
+					r, g, b = transColor[1], transColor[2], transColor[3]
 				elseif status == 0 then
 					if K.Role ~= "Tank" and revertThreat then
 						r, g, b = secureColor[1], secureColor[2], secureColor[3]
@@ -1164,9 +1157,9 @@ function Module:PlateVisibility(event)
 		UIFrameFadeIn(self.Power, 0.2, self.Power:GetAlpha(), 1)
 		UIFrameFadeIn(self.Auras, 0.2, self.Power:GetAlpha(), 1)
 	else
-		UIFrameFadeOut(self.Health, 0.2, self.Health:GetAlpha(), C["General"].GlobalFade)
-		UIFrameFadeOut(self.Power, 0.2, self.Power:GetAlpha(), C["General"].GlobalFade)
-		UIFrameFadeOut(self.Auras, 0.2, self.Power:GetAlpha(), C["General"].GlobalFade)
+		UIFrameFadeOut(self.Health, 0.2, self.Health:GetAlpha(), 0)
+		UIFrameFadeOut(self.Power, 0.2, self.Power:GetAlpha(), 0)
+		UIFrameFadeOut(self.Auras, 0.2, self.Power:GetAlpha(), 0)
 	end
 end
 

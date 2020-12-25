@@ -116,7 +116,6 @@ function Module:CreatePlayer()
 	else
 		portraitSize = self.Health:GetHeight() + self.Power:GetHeight()
 	end
-
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
@@ -144,50 +143,46 @@ function Module:CreatePlayer()
 		Module:CreateClassPower(self)
 	end
 
+	if C["Unitframe"].PlayerDeBuffs then
+		local width = playerWidth
+
+		self.Debuffs = CreateFrame("Frame", nil, self)
+		self.Debuffs.spacing = 6
+		self.Debuffs.initialAnchor = "TOPLEFT"
+		self.Debuffs["growth-x"] = "RIGHT"
+		self.Debuffs["growth-y"] = "UP"
+		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 48)
+		self.Debuffs.num = 14
+		self.Debuffs.iconsPerRow = 5
+
+		self.Debuffs.size =  Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
+		self.Debuffs:SetWidth(width)
+		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
+
+		self.Debuffs.PostCreateIcon = Module.PostCreateAura
+		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
+	end
+
 	if C["Unitframe"].PlayerBuffs then
 		local width = playerWidth
 
-		self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
+		self.Buffs = CreateFrame("Frame", nil, self)
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
 		self.Buffs["growth-x"] = "RIGHT"
 		self.Buffs["growth-y"] = "DOWN"
-		self.Buffs.num = 15
+		self.Buffs.num = 6
 		self.Buffs.spacing = 6
 		self.Buffs.iconsPerRow = 6
 		self.Buffs.onlyShowPlayer = false
 
 		self.Buffs.size = Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing)
 		self.Buffs:SetWidth(width)
-		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
 
 		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
-		self.Buffs.CustomFilter = Module.CustomFilter
-	end
-
-	if C["Unitframe"].PlayerDeBuffs then
-		local width = playerWidth
-
-		self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
-		self.Debuffs.spacing = 6
-		self.Debuffs.initialAnchor = "TOPLEFT"
-		self.Debuffs["growth-x"] = "RIGHT"
-		self.Debuffs["growth-y"] = "UP"
-		self.Debuffs:ClearAllPoints()
-		if C["Unitframe"].ClassResources and _G.oUF_ClassPowerBar then
-			self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 46 + 7)
-		else
-			self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 46)
-		end
-		self.Debuffs.num = 20
-		self.Debuffs.iconsPerRow = 5
-		self.Debuffs.size = Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
-		self.Debuffs:SetWidth(width)
-		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
-		self.Debuffs.PostCreateIcon = Module.PostCreateAura
-		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 	end
 
 	if C["Unitframe"].PlayerCastbar then
@@ -460,7 +455,8 @@ function Module:CreatePlayer()
 
 		self.Swing = CreateFrame("Frame", "KKUI_SwingBar", self)
 		self.Swing:SetSize(swingWidth, 14)
-		self.Swing:SetPoint("BOTTOM", self.Castbar.mover, "BOTTOM", 0, -22)
+		-- self.Swing:SetPoint("BOTTOM", self.Castbar.mover, "BOTTOM", 0, -22)
+		self.Swing:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 180)
 
 		self.Swing.Twohand = CreateFrame("Statusbar", nil, self.Swing)
 		self.Swing.Twohand:SetPoint("TOPLEFT")
@@ -487,7 +483,8 @@ function Module:CreatePlayer()
 		self.Swing.Twohand.Spark:SetPoint("CENTER", self.Swing.Twohand:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 		self.Swing.Mainhand = CreateFrame("Statusbar", nil, self.Swing)
-		self.Swing.Mainhand:SetPoint("BOTTOM", self.Castbar.mover, "BOTTOM", 0, -22)
+		-- self.Swing.Mainhand:SetPoint("BOTTOM", self.Castbar.mover, "BOTTOM", 0, -22)
+		self.Swing.Mainhand:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 180)
 		self.Swing.Mainhand:SetSize(swingWidth, 14)
 		self.Swing.Mainhand:SetStatusBarTexture(UnitframeTexture)
 		self.Swing.Mainhand:SetStatusBarColor(0.8, 0.3, 0.3)
@@ -536,7 +533,7 @@ function Module:CreatePlayer()
 
 		self.Swing.hideOoc = true
 
-		K.Mover(self.Swing, "PlayerSwingBar", "PlayerSwingBar", {"TOP", self.Castbar, "BOTTOM", 0, -5})
+		K.Mover(self.Swing, "PlayerSwingBar", "PlayerSwingBar", {"BOTTOM", UIParent, "BOTTOM", 0, 180})
 	end
 
 	if C["Unitframe"].PvPIndicator then
@@ -609,12 +606,8 @@ function Module:CreatePlayer()
 
 	if C["Unitframe"].GlobalCooldown then
 		self.GlobalCooldown = CreateFrame("Frame", nil, self.Health)
-		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-			self.GlobalCooldown:SetWidth(C["Unitframe"].PlayerFrameWidth)
-		else
-			self.GlobalCooldown:SetWidth(C["Unitframe"].PlayerFrameWidth - C["Unitframe"].PlayerFrameHeight - 6)
-		end
-		self.GlobalCooldown:SetHeight(self.Health:GetHeight())
+		self.GlobalCooldown:SetWidth(playerWidth)
+		self.GlobalCooldown:SetHeight(28)
 		self.GlobalCooldown:SetFrameStrata("HIGH")
 		self.GlobalCooldown:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
 	end
@@ -628,9 +621,7 @@ function Module:CreatePlayer()
 	self.Highlight:Hide()
 
 	self.ThreatIndicator = {
-		IsObjectType = function() end,
+		IsObjectType = K.Noop,
 		Override = Module.UpdateThreat,
 	}
-
-	self.CombatFade = C["Unitframe"].CombatFade
 end

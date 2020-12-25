@@ -197,8 +197,11 @@ local function OnLeave()
 end
 
 function Module:CreateGoldDataText()
+	if not C["DataText"].Gold then
+		return
+	end
+
 	Module.GoldDataTextFrame = CreateFrame("Button", nil, UIParent)
-	
 	if C["DataText"].Gold then
 		Module.GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 4, -302)
 		Module.GoldDataTextFrame:SetSize(32, 32)
@@ -225,7 +228,7 @@ function Module:CreateGoldDataText()
 		Module.GoldDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
 		Module.GoldDataTextFrame:SetScript("OnEnter", OnEnter)
 		Module.GoldDataTextFrame:SetScript("OnLeave", OnLeave)
-		
+
 		K.Mover(Module.GoldDataTextFrame, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 4, -302})
 	end
 end

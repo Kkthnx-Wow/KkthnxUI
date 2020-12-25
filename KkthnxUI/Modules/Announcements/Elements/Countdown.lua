@@ -10,7 +10,7 @@ local CreateFrame = _G.CreateFrame
 local SendChatMessage = _G.SendChatMessage
 
 do -- Sourced: Pull Countdown (Dridzt)
-	local PullCountdown = CreateFrame("Frame", "PullCountdown")
+	local PullCountdown = CreateFrame("Frame", "KKUI_PullCountdown")
 	local PullCountdownHandler = CreateFrame("Frame")
 	local firstdone, delay, target
 	local interval = 1.5

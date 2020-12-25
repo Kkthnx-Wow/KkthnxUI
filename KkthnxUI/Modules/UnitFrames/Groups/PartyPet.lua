@@ -142,8 +142,8 @@ function Module:CreatePartyPet()
 	self.Highlight:Hide()
 
 	self.ThreatIndicator = {
-		IsObjectType = function() end,
-		Override = UpdatePartyPetThreat,
+		IsObjectType = K.Noop,
+		Override = Module.UpdateThreat,
 	}
 
 	self.Range = Module.CreateRangeIndicator(self)

@@ -68,6 +68,7 @@ C.IgnoreGossipNPC = {
 	[171821] = true, -- Baroness Draka
 	[172558] = true, -- Ella Pathfinder (Tutor)
 	[172572] = true, -- Celeste Bellevenko (Tutor)
+	[175513] = true, -- 纳斯利亚审判官
 }
 
 C.RogueClassHallInsignia = {

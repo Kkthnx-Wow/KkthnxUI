@@ -22,7 +22,7 @@ local hooksecurefunc = _G.hooksecurefunc
 
 local function onLeaveBar()
 	if C["ActionBar"].FadeMicroBar then
-		UIFrameFadeOut(Module.MicroBar, 0.2, Module.MicroBar:GetAlpha(), C["General"].GlobalFade)
+		UIFrameFadeOut(Module.MicroBar, 0.2, Module.MicroBar:GetAlpha(), 0)
 	end
 end
 
@@ -177,7 +177,7 @@ function Module.UpdateMicroPositionDimensions()
 	end
 
 	if C["ActionBar"].FadeMicroBar and not Module.MicroBar:IsMouseOver() then
-		Module.MicroBar:SetAlpha(C["General"].GlobalFade)
+		Module.MicroBar:SetAlpha(0)
 	else
 		Module.MicroBar:SetAlpha(1)
 	end

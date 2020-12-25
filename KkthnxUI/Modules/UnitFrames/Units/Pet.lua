@@ -167,7 +167,7 @@ function Module:CreatePet()
 	self.Highlight:Hide()
 
 	self.ThreatIndicator = {
-		IsObjectType = function() end,
+		IsObjectType = K.Noop,
 		Override = Module.UpdateThreat,
 	}
 

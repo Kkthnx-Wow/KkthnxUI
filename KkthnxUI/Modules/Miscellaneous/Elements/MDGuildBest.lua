@@ -16,15 +16,16 @@ local C_ChallengeMode_GetGuildLeaders = _G.C_ChallengeMode.GetGuildLeaders
 local C_ChallengeMode_GetMapUIInfo = _G.C_ChallengeMode.GetMapUIInfo
 local C_MythicPlus_GetOwnedKeystoneChallengeMapID = _G.C_MythicPlus.GetOwnedKeystoneChallengeMapID
 local C_MythicPlus_GetOwnedKeystoneLevel = _G.C_MythicPlus.GetOwnedKeystoneLevel
+local C_MythicPlus_GetRunHistory = _G.C_MythicPlus.GetRunHistory
 local GetItemInfo = _G.GetItemInfo
 local IsAddOnLoaded = _G.IsAddOnLoaded
+local WEEKLY_REWARDS_MYTHIC_TOP_RUNS = _G.WEEKLY_REWARDS_MYTHIC_TOP_RUNS
 local hooksecurefunc = _G.hooksecurefunc
 
 local hasAngryKeystones
 local frame
+local WeeklyRunsThreshold = 10
 local resize
-local myFullName = K.Name.."-"..K.Realm
-local iconColor = K.QualityColors[LE_ITEM_QUALITY_EPIC or 4]
 
 L["Account Keystones"] = "Account Keystone"
 L["Reset Data"] = "Reset Data"
@@ -41,7 +42,7 @@ function Module:GuildBest_UpdateTooltip()
 	GameTooltip:AddLine(string_format(CHALLENGE_MODE_POWER_LEVEL, leaderInfo.keystoneLevel))
 	for i = 1, #leaderInfo.members do
 		local classColorStr = K.ClassColors[leaderInfo.members[i].classFileName].colorStr
-		GameTooltip:AddLine(string_format(CHALLENGE_MODE_GUILD_BEST_LINE, classColorStr,leaderInfo.members[i].name));
+		GameTooltip:AddLine(string_format(CHALLENGE_MODE_GUILD_BEST_LINE, classColorStr,leaderInfo.members[i].name))
 	end
 	GameTooltip:Show()
 end
@@ -136,16 +137,50 @@ function Module.GuildBest_OnLoad(event, addon)
 	if addon == "Blizzard_ChallengesUI" then
 		hooksecurefunc("ChallengesFrame_Update", Module.GuildBest_Update)
 		Module:KeystoneInfo_Create()
+		ChallengesFrame.WeeklyInfo.Child.WeeklyChest:HookScript("OnEnter", Module.KeystoneInfo_WeeklyRuns)
 
 		K:UnregisterEvent(event, Module.GuildBest_OnLoad)
 	end
 end
 
+local function sortHistory(entry1, entry2)
+	if entry1.level == entry2.level then
+		return entry1.mapChallengeModeID < entry2.mapChallengeModeID
+	else
+		return entry1.level > entry2.level
+	end
+end
+
+function Module:KeystoneInfo_WeeklyRuns()
+	local runHistory = C_MythicPlus_GetRunHistory(false, true)
+	if #runHistory > 0 then
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(string_format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, WeeklyRunsThreshold), 0.6, 0.8, 1)
+		table.sort(runHistory, sortHistory)
+
+		for i = 1, WeeklyRunsThreshold do
+			local runInfo = runHistory[i]
+			if not runInfo then
+				break
+			end
+
+			local name = C_ChallengeMode_GetMapUIInfo(runInfo.mapChallengeModeID)
+			local r, g, b = 0, 1, 0
+			if not runInfo.completed then
+				r, g, b = 1, 0, 0
+			end
+			GameTooltip:AddDoubleLine(name, "Lv."..runInfo.level, 1, 1, 1, r, g, b)
+		end
+		GameTooltip:Show()
+	end
+end
+
 function Module:KeystoneInfo_Create()
 	local texture = select(10, GetItemInfo(158923)) or 525134
+	local iconColor = K.QualityColors[LE_ITEM_QUALITY_EPIC or 4]
 	local button = CreateFrame("Frame", nil, ChallengesFrame.WeeklyInfo, "BackdropTemplate")
 	button:SetPoint("BOTTOMLEFT", 2, 67)
-    button:SetSize(35, 35)
+    button:SetSize(32, 32)
 
 	button.Icon = button:CreateTexture(nil, "ARTWORK")
 	button.Icon:SetAllPoints()
@@ -190,9 +225,9 @@ end
 function Module:KeystoneInfo_Update()
 	local mapID, keystoneLevel = Module:KeystoneInfo_UpdateBag()
 	if mapID then
-		KkthnxUIData[K.Realm][K.Name]["KeystoneInfo"][myFullName] = mapID..":"..keystoneLevel..":"..K.Class..":"..K.Faction
+		KkthnxUIData[K.Realm][K.Name]["KeystoneInfo"][K.Name.."-"..K.Realm] = mapID..":"..keystoneLevel..":"..K.Class..":"..K.Faction
 	else
-		KkthnxUIData[K.Realm][K.Name]["KeystoneInfo"][myFullName] = nil
+		KkthnxUIData[K.Realm][K.Name]["KeystoneInfo"][K.Name.."-"..K.Realm] = nil
 	end
 end
 

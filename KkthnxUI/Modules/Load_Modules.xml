@@ -13,7 +13,6 @@
    <Script file="DataText\Elements\Time.lua" />
    <!-- Blizzard -->
    <Script file="Blizzard\Core.lua" />
-   <Include file="Blizzard\Elements\TaintLess.xml" />
    <Script file="Blizzard\Elements\AlertFrames.lua" />
    <Script file="Blizzard\Elements\AltPowerBar.lua" />
    <Script file="Blizzard\Elements\ColorPicker.lua" />
@@ -72,12 +71,9 @@
    <Script file="Maps\Elements\MapReveal.lua" />
    <Script file="Maps\Elements\WowHeadLink.lua" />
    <!-- Unitframes -->
-   <Script file="UnitFrames\Plugins\oUF_AuraWatch.lua" />
-   <Script file="UnitFrames\Plugins\oUF_CombatFader.lua" />
+   <Script file="UnitFrames\Plugins\oUF_AuraTrack.lua" />
    <Script file="UnitFrames\Plugins\oUF_DebuffHighlight.lua" />
    <Script file="UnitFrames\Plugins\oUF_FloatingCombatFeedback.lua" />
-   <Script file="UnitFrames\Plugins\oUF_GlobalCooldown.lua" />
-   <Script file="UnitFrames\Plugins\oUF_PVPSpecIcons.lua" />
    <Script file="UnitFrames\Plugins\oUF_RaidDebuffs.lua" />
    <Script file="UnitFrames\Plugins\oUF_Swing.lua" />
    <Script file="UnitFrames\Plugins\oUF_Trinkets.lua" />
@@ -94,7 +90,6 @@
    <Script file="UnitFrames\Units\Arena.lua" />
    <Script file="UnitFrames\Units\Nameplates.lua" />
    <Script file="UnitFrames\Groups\Party.lua" />
-   <Script file="UnitFrames\Groups\PartyTarget.lua" />
    <Script file="UnitFrames\Groups\PartyPet.lua" />
    <Include file="UnitFrames\Groups\MainTankTemplate.xml" />
    <Script file="UnitFrames\Groups\Raid.lua" />

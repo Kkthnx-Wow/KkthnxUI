@@ -102,7 +102,6 @@ function Module:CreateTarget()
 	else
 		portraitSize = self.Health:GetHeight() + self.Power:GetHeight()
 	end
-
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
@@ -129,17 +128,19 @@ function Module:CreateTarget()
 	if C["Unitframe"].TargetDebuffs then
 		local width = targetWidth
 
-		self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
+		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
 		self.Debuffs.initialAnchor = "TOPLEFT"
 		self.Debuffs["growth-x"] = "RIGHT"
 		self.Debuffs["growth-y"] = "UP"
-		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 46)
-		self.Debuffs.num = 20
-		self.Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
-		self.Debuffs.size = Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
+		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 48)
+		self.Debuffs.num = 14
+		self.Debuffs.iconsPerRow = 5
+
+		self.Debuffs.size =  Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
 		self.Debuffs:SetWidth(width)
 		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
+
 		self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 		self.Debuffs.PostCreateIcon = Module.PostCreateAura
 		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
@@ -148,24 +149,25 @@ function Module:CreateTarget()
 	if C["Unitframe"].TargetBuffs then
 		local width = targetWidth
 
-		self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
+		self.Buffs = CreateFrame("Frame", nil, self)
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
 		self.Buffs["growth-x"] = "RIGHT"
 		self.Buffs["growth-y"] = "DOWN"
-		self.Buffs.num = 15
+		self.Buffs.num = 6
 		self.Buffs.spacing = 6
-		self.Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
+		self.Buffs.iconsPerRow = 6
 		self.Buffs.onlyShowPlayer = false
-		self.Buffs.size = self.Buffs.iconsPerRow and Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing) or self.Buffs.size
+
+		self.Buffs.size = Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing)
 		self.Buffs:SetWidth(width)
-		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * self.Buffs.iconsPerRow and math.floor(self.Buffs.num / self.Buffs.iconsPerRow + 0.5) or 2)
+		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+
 		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
 		self.Buffs.PreUpdate = Module.bolsterPreUpdate
 		self.Buffs.PostUpdate = Module.bolsterPostUpdate
-		self.Buffs.CustomFilter = Module.CustomFilter
 	end
 
 	if C["Unitframe"].TargetCastbar then
@@ -375,7 +377,7 @@ function Module:CreateTarget()
 	self.Highlight:Hide()
 
 	self.ThreatIndicator = {
-		IsObjectType = function() end,
+		IsObjectType = K.Noop,
 		Override = Module.UpdateThreat,
 	}
 

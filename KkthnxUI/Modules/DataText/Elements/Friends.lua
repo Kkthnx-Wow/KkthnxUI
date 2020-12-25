@@ -524,8 +524,6 @@ local function FriendsPanel_Refresh()
 end
 
 local function OnEnter(self)
-	--UIFrameFadeIn(Module.FriendsDataTextFrame.Text, 0, Module.FriendsDataTextFrame.Text:GetAlpha(), 1)
-
 	local thisTime = GetTime()
 	if not prevTime or (thisTime-prevTime > 5) then
 		FriendsPanel_Refresh()

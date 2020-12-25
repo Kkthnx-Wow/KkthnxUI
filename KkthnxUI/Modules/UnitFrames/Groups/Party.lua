@@ -327,7 +327,7 @@ function Module:CreateParty()
 	altPower:Show()
 
 	self.ThreatIndicator = {
-		IsObjectType = function() end,
+		IsObjectType = K.Noop,
 		Override = Module.UpdateThreat,
 	}
 

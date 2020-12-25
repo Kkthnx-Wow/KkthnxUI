@@ -32,8 +32,9 @@ local list = {
 		{AuraID = 5116, UnitID = "target", Caster = "player"}, -- Shock shot
 		{AuraID = 19386, UnitID = "target", Caster = "player"}, -- Pterodactyl Spike
 		{AuraID = 24394, UnitID = "target", Caster = "pet"}, -- Coercion
+		{AuraID = 321538, UnitID = "target", Caster = "pet"},		-- 血溅十方
 		{AuraID = 117526, UnitID = "target"}, -- Bondage shooting
-		{AuraID = 257284, UnitID = "target"}, -- Hunter's Mark
+		{AuraID = 257284, UnitID = "target", Caster = "player"}, -- Hunter's Mark
 		{AuraID = 131894, UnitID = "target", Caster = "player"}, -- Deadly Crow
 		{AuraID = 199803, UnitID = "target", Caster = "player"}, -- Precise aiming
 		{AuraID = 195645, UnitID = "target", Caster = "player"}, -- Trip
@@ -86,6 +87,7 @@ local list = {
 		{AuraID = 203155, UnitID = "player"}, -- Sniper
 		{AuraID = 235712, UnitID = "player", Combat = true}, -- Stable rotation, orange hand
 		{AuraID = 264735, UnitID = "player"}, -- Survival of the fittest
+		{AuraID = 281195, UnitID = "player"},	-- 优胜劣汰
 		{AuraID = 260242, UnitID = "player", Flash = true}, -- No frills
 		{AuraID = 260395, UnitID = "player"}, -- Deadly shot
 		{AuraID = 269502, UnitID = "player"}, -- Deadly shot

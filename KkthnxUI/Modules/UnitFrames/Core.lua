@@ -14,7 +14,7 @@ local CreateFrame = _G.CreateFrame
 local GetRuneCooldown = _G.GetRuneCooldown
 -- local GetSpecialization = _G.GetSpecialization
 local GetTime = _G.GetTime
-local InCombatLockdown = _G.InCombatLockdown
+local GetActiveSpecGroup = _G.GetActiveSpecGroup
 local IsInInstance = _G.IsInInstance
 local IsReplacingUnit = _G.IsReplacingUnit
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
@@ -401,7 +401,7 @@ function Module.PostCreateAura(element, button)
 	button.icon:SetTexCoord(unpack(K.TexCoords))
 	button.cd:ClearAllPoints()
 
-	if element.__owner.mystyle == "nameplate" or element.__owner.mystyle == "PlayerPlate" then
+	if element.__owner.mystyle == "nameplate" then
 		button.cd:SetAllPoints()
 		button:CreateShadow(true)
 	else
@@ -426,10 +426,14 @@ local filteredStyle = {
 }
 
 function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, debuffType)
-	local whatStyle = element.__owner.mystyle
-	button:SetSize(element.size, element.size)
+	local style = element.__owner.mystyle
+	if style == "nameplate" then
+		button:SetSize(element.size, element.size - 4)
+	else
+		button:SetSize(element.size, element.size)
+	end
 
-	if button.isDebuff and filteredStyle[whatStyle] and not button.isPlayer then
+	if button.isDebuff and filteredStyle[style] and not button.isPlayer then
 		button.icon:SetDesaturated(true)
 	else
 		button.icon:SetDesaturated(false)
@@ -437,7 +441,7 @@ function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, d
 
 	if button.isDebuff then
 		local color = oUF.colors.debuff[debuffType] or oUF.colors.debuff.none
-		if whatStyle == "nameplate" or whatStyle == "PlayerPlate" and button.Shadow then
+		if style == "nameplate" and button.Shadow then
 			button.Shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.8)
 		else
 			if C["General"].ColorTextures then
@@ -447,7 +451,7 @@ function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, d
 			end
 		end
 	else
-		if whatStyle == "nameplate" or whatStyle == "PlayerPlate" and button.Shadow then
+		if style == "nameplate" and button.Shadow then
 			button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 		elseif C["General"].ColorTextures then
 			button.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
@@ -492,12 +496,6 @@ function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster,
 			element.bolsterIndex = button
 			return true
 		end
-	elseif style == "player" or style == "target" or style == "party" then
-		if C.AuraBlackList[spellID] then
-			return false
-		else
-			return true
-		end
 	elseif style == "nameplate" or style == "boss" or style == "arena" then
 		if element.__owner.isNameOnly then
 			return C.NameplateWhiteList[spellID]
@@ -511,69 +509,8 @@ function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster,
 			local auraFilter = C["Nameplate"].AuraFilter.Value
 			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and (caster == "player" or caster == "pet" or caster == "vehicle"))
 		end
-	elseif style == "PlayerPlate" then
-		if (nameplateShowAll) and not C.PlayerNameplateBlackList[spellID] then
-			return true
-		elseif C.PlayerNameplateWhiteList[spellID] then
-			return true
-		end
 	elseif (element.onlyShowPlayer and button.isPlayer) or (not element.onlyShowPlayer and name) then
 		return true
-	end
-end
-
-function Module:CreateAuraWatch()
-	local auras = CreateFrame("Frame", nil, self)
-	auras:SetFrameLevel(self:GetFrameLevel() + 10)
-	auras:SetPoint("TOPLEFT", self.Health, 3, -3)
-	auras:SetPoint("BOTTOMRIGHT", self.Health, -3, 3)
-	auras.presentAlpha = 1
-	auras.missingAlpha = 0
-	auras.strictMatching = true
-	auras.PostCreateIcon = Module.AuraWatchPostCreateIcon
-	auras.PostUpdateIcon = Module.AuraWatchPostUpdateIcon
-
-	auras:SetSize(C["Raid"].AuraWatchIconSize, C["Raid"].AuraWatchIconSize)
-
-	if (self.unit == "pet") then
-		auras.watched = C.BuffsTracking.PET
-	else
-		auras.watched = C.BuffsTracking[K.Class]
-	end
-
-	return auras
-end
-
-function Module:AuraWatchPostCreateIcon(button)
-	button:CreateShadow(true)
-	button:SetSize(C["Raid"].AuraWatchIconSize, C["Raid"].AuraWatchIconSize)
-
-	button.count:FontTemplate(nil, 10)
-	button.count:ClearAllPoints()
-	button.count:SetPoint("CENTER", button, 2, -1)
-
-	if (button.cd) then
-		button.cd:SetAllPoints()
-		button.cd:SetReverse(true)
-		button.cd.noOCC = true
-		button.cd.noCooldownCount = true
-		button.cd:SetHideCountdownNumbers(true)
-	end
-end
-
-function Module:AuraWatchPostUpdateIcon(_, button)
-	local awSettings = self.watched[button.spellID]
-	if (awSettings) then -- This should never fail.
-		button.cd.textThreshold = awSettings.textThreshold ~= -1 and awSettings.textThreshold
-
-		button:SetSize(C["Raid"].AuraWatchIconSize, C["Raid"].AuraWatchIconSize)
-		button.icon:SetVertexColor(1, 1, 1)
-		button.icon:SetTexCoord(unpack(K.TexCoords))
-		button.icon:Show()
-
-		if awSettings.style == "texturedIcon" and button.filter == "HARMFUL" and button.Shadow then
-			button.Shadow:SetBackdropBorderColor(1, 0, 0)
-		end
 	end
 end
 
@@ -749,7 +686,7 @@ function Module:CreateUnits()
 		oUF:SetActiveStyle("Player")
 		local Player = oUF:Spawn("player", "oUF_Player")
 		local PlayerFrameHeight = C["Unitframe"].PlayerFrameHeight + 6
-		local PlayerFrameWidth 
+		local PlayerFrameWidth
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 			PlayerFrameWidth = C["Unitframe"].PlayerFrameWidth
 		else
@@ -787,9 +724,6 @@ function Module:CreateUnits()
 
 		oUF:SetActiveStyle("Pet")
 		local Pet = oUF:Spawn("pet", "oUF_Pet")
-		if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
-			Pet:SetParent(Player)
-		end
 		local PetFrameHeight = C["Unitframe"].PetFrameHeight + 6
 		local PetFrameWidth
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
@@ -803,7 +737,7 @@ function Module:CreateUnits()
 		oUF:SetActiveStyle("Focus")
 		local Focus = oUF:Spawn("focus", "oUF_Focus")
 		local FocusFrameHeight = C["Unitframe"].FocusFrameHeight + 6
-		local FocusFrameWidth 
+		local FocusFrameWidth
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 			FocusFrameWidth = C["Unitframe"].FocusFrameWidth
 		else
@@ -849,15 +783,15 @@ function Module:CreateUnits()
 	end
 
 	if C["Arena"].Enable then
-		oUF:RegisterStyle("Arena", Module.CreateArena)
-		oUF:SetActiveStyle("Arena")
+		-- oUF:RegisterStyle("Arena", Module.CreateArena)
+		-- oUF:SetActiveStyle("Arena")
 
-		local Arena = {}
-		for i = 1, 5 do
-			Arena[i] = oUF:Spawn("arena"..i, "oUF_Arena"..i)
-			Arena[i]:SetSize(210, 48)
-			Arena[i]:SetPoint("TOPLEFT", Boss[i].mover)
-		end
+		-- local Arena = {}
+		-- for i = 1, 5 do
+		-- 	Arena[i] = oUF:Spawn("arena"..i, "oUF_Arena"..i)
+		-- 	Arena[i]:SetSize(210, 48)
+		-- 	Arena[i]:SetPoint("TOPLEFT", Boss[i].mover)
+		-- end
 	end
 
 	if showPartyFrame then
@@ -1066,17 +1000,18 @@ function Module:UpdateRaidDebuffIndicator()
 
 	if (ORD) then
 		local _, InstanceType = IsInInstance()
+		ORD:ResetDebuffData()
 
-		if (ORD.RegisteredList ~= "RD") and (InstanceType == "party" or InstanceType == "raid") then
-			ORD:ResetDebuffData()
-			ORD:RegisterDebuffs(C.DebuffsTracking.RaidDebuffs.spells)
-			ORD.RegisteredList = "RD"
-		else
-			if ORD.RegisteredList ~= "CC" then
-				ORD:ResetDebuffData()
-				ORD:RegisterDebuffs(C.DebuffsTracking.CCDebuffs.spells)
-				ORD.RegisteredList = "CC"
+		if (InstanceType == "party" or InstanceType == "raid") then
+			ORD:RegisterDebuffs(C.DebuffsTracking_PvE.spells)
+		elseif (InstanceType == "pvp") then
+			if (K.Class == "PRIEST") or (K.Class == "PALADIN" and GetActiveSpecGroup() == 1) or (K.Class == "SHAMAN" and GetActiveSpecGroup() == 3) or (K.Class == "DRUID" and GetActiveSpecGroup() == 4) or (K.Class == "MONK" and GetActiveSpecGroup() == 2) then
+				ORD:RegisterDebuffs(C.DebuffsTracking_PvP.spells)
+			else
+				ORD:RegisterDebuffs(C.DebuffsTracking_CrowdControl.spells)
 			end
+		else
+			ORD:RegisterDebuffs(C.DebuffsTracking_PvP.spells) -- replace this one later with a new list
 		end
 	end
 end
@@ -1124,16 +1059,18 @@ function Module:OnEnable()
 	self:CreateUnits()
 	self:UpdateRangeCheckSpells()
 
-	if C["Raid"].AuraWatch then
+	if (C["Raid"].DebuffWatch) then
+		local ORD = K.oUF_RaidDebuffs or oUF_RaidDebuffs
 		local RaidDebuffs = CreateFrame("Frame")
-		RaidDebuffs:RegisterEvent("PLAYER_ENTERING_WORLD")
-		RaidDebuffs:SetScript("OnEvent", self.UpdateRaidDebuffIndicator)
 
-		local ORD = oUF_RaidDebuffs or K.oUF_RaidDebuffs
+		RaidDebuffs:RegisterEvent("PLAYER_ENTERING_WORLD")
+		RaidDebuffs:SetScript("OnEvent", Module.UpdateRaidDebuffIndicator)
+
 		if (ORD) then
 			ORD.ShowDispellableDebuff = true
 			ORD.FilterDispellableDebuff = true
 			ORD.MatchBySpellName = false
 		end
 	end
+
 end

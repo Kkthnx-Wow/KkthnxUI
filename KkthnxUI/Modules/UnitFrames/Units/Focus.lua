@@ -133,10 +133,30 @@ function Module:CreateFocus()
 		end
 	end
 
-	--if C["Unitframe"].PlayerBuffs then
-		local focusAurasWidth = 156
+	--if C["Unitframe"].FocusDeBuffs then
+		local width = 156
 
-		self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
+		self.Debuffs = CreateFrame("Frame", nil, self)
+		self.Debuffs.spacing = 6
+		self.Debuffs.initialAnchor = "TOPLEFT"
+		self.Debuffs["growth-x"] = "RIGHT"
+		self.Debuffs["growth-y"] = "UP"
+		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 56)
+		self.Debuffs.num = 14
+		self.Debuffs.iconsPerRow = 5
+
+		self.Debuffs.size =  Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
+		self.Debuffs:SetWidth(width)
+		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
+
+		self.Debuffs.PostCreateIcon = Module.PostCreateAura
+		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
+	--end
+
+	--if C["Unitframe"].FocusBuffs then
+		--local width = 156
+
+		self.Buffs = CreateFrame("Frame", nil, self)
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
 		self.Buffs["growth-x"] = "RIGHT"
@@ -146,32 +166,13 @@ function Module:CreateFocus()
 		self.Buffs.iconsPerRow = 6
 		self.Buffs.onlyShowPlayer = false
 
-		self.Buffs.size = Module.auraIconSize(focusAurasWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
-		self.Buffs:SetWidth(focusAurasWidth)
-		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+		self.Buffs.size = Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing)
+		self.Buffs:SetWidth(width)
+		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
 
 		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
-	--end
-
-	--if C["Unitframe"].PlayerDeBuffs then
-		--local width = 156
-
-		self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
-		self.Debuffs.spacing = 6
-		self.Debuffs.initialAnchor = "TOPLEFT"
-		self.Debuffs["growth-x"] = "RIGHT"
-		self.Debuffs["growth-y"] = "UP"
-		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 62)
-
-		self.Debuffs.num = 6
-		self.Debuffs.iconsPerRow = 5
-		self.Debuffs.size = Module.auraIconSize(focusAurasWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
-		self.Debuffs:SetWidth(focusAurasWidth)
-		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * floor(self.Debuffs.num/self.Debuffs.iconsPerRow + .5))
-		self.Debuffs.PostCreateIcon = Module.PostCreateAura
-		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 	--end
 
 	--if C["Unitframe"].Castbars then
@@ -181,7 +182,7 @@ function Module:CreateFocus()
 		self.Castbar:CreateBorder()
 
 		self.Castbar:ClearAllPoints()
-		self.Castbar:SetPoint("LEFT", 24, 0)
+		self.Castbar:SetPoint("LEFT", -30, 0)
 		self.Castbar:SetPoint("RIGHT")
 		self.Castbar:SetPoint("TOP", 0, 24)
 		self.Castbar:SetHeight(18)
@@ -289,7 +290,6 @@ function Module:CreateFocus()
 	self.RaidTargetIndicator:SetSize(16, 16)
 
 	self.ReadyCheckIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
 	else
@@ -317,7 +317,7 @@ function Module:CreateFocus()
 	self.Highlight:Hide()
 
 	self.ThreatIndicator = {
-		IsObjectType = function() end,
+		IsObjectType = K.Noop,
 		Override = Module.UpdateThreat,
 	}
 

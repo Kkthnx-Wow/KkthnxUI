@@ -467,7 +467,6 @@ function Module:ReskinTooltip()
 	if self:IsForbidden() then
 		return
 	end
-	self:SetScale(1)
 
 	if not self.isTipStyled then
 		if self.SetBackdrop then
@@ -521,13 +520,16 @@ function Module:SharedTooltip_SetBackdropStyle()
 end
 
 function Module:OnEnable()
-	Module.fakeBg = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-	Module.fakeBg:SetBackdrop({
-		bgFile = C["Media"].Blank,
-		edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. C["General"].BorderStyle.Value .. "\\Border_Tooltip.tga",
-		edgeSize = 12,
-		insets = {left = 4, right = 4, top = 4, bottom = 4}
-	})
+	if not Module.fakeBg then
+		Module.fakeBg = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+		Module.fakeBg:SetBackdrop({
+			bgFile = C["Media"].Blank,
+			edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. C["General"].BorderStyle.Value .. "\\Border_Tooltip.tga",
+			edgeSize = 12,
+			insets = {left = 4, right = 4, top = 4, bottom = 4}
+		})
+		Module.fakeBg = true
+	end
 
 	GameTooltip.StatusBar = GameTooltipStatusBar
 	GameTooltip:HookScript("OnTooltipCleared", Module.OnTooltipCleared)
