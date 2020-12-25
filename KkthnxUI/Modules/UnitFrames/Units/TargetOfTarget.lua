@@ -54,7 +54,7 @@ function Module:CreateTargetOfTarget()
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	if C["Unitframe"].TargetTargetPower then
-		self.Power:SetHeight(C["Unitframe"].TargetTargetFrameHeight * 0.3)
+		self.Power:SetHeight(C["Unitframe"].TargetTargetFrameHeight * 0.4)
 	else
 		self.Power:SetHeight(0)
 	end

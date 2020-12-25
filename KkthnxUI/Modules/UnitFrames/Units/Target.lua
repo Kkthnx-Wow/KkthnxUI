@@ -156,7 +156,7 @@ function Module:CreateTarget()
 		self.Buffs["growth-y"] = "DOWN"
 		self.Buffs.num = 6
 		self.Buffs.spacing = 6
-		self.Buffs.iconsPerRow = 6
+		self.Buffs.iconsPerRow = 8
 		self.Buffs.onlyShowPlayer = false
 
 		self.Buffs.size = Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing)
@@ -322,9 +322,9 @@ function Module:CreateTarget()
 		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.PvPIndicator:SetSize(30, 33)
 		if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-			self.PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", -2, 0)
+			self.PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", 2, 0)
 		else
-			self.PvPIndicator:SetPoint("LEFT", self.Health, "RIGHT", -2, 0)
+			self.PvPIndicator:SetPoint("LEFT", self.Health, "RIGHT", 2, 0)
 		end
 		self.PvPIndicator.PostUpdate = Module.PostUpdatePvPIndicator
 	end

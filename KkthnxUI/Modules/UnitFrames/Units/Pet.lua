@@ -35,7 +35,7 @@ function Module:CreatePet()
 		self.Health.colorSmooth = true
 		self.Health.colorClass = false
 		self.Health.colorReaction = false
-  	  elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
+	elseif C["Unitframe"].HealthbarColor.Value == "Dark" then
 		self.Health.colorSmooth = false
 		self.Health.colorClass = false
 		self.Health.colorReaction = false
@@ -54,7 +54,7 @@ function Module:CreatePet()
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	if C["Unitframe"].PetPower then
-		self.Power:SetHeight(C["Unitframe"].PetFrameHeight * 0.3)
+		self.Power:SetHeight(C["Unitframe"].PetFrameHeight * 0.4)
 	else
 		self.Power:SetHeight(0)
 	end
