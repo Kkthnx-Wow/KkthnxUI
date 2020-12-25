@@ -50,7 +50,7 @@ function Module:CreateFocusTarget()
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	if C["Unitframe"].FocusTargetPower then
-		self.Power:SetHeight(C["Unitframe"].PetFrameHeight * 0.3)
+		self.Power:SetHeight(C["Unitframe"].PetFrameHeight * 0.4)
 	else
 		self.Power:SetHeight(0)
 	end

@@ -757,7 +757,7 @@ function Module:CreateUnits()
 				FocusTargetFrameWidth = C["Unitframe"].FocusTargetFrameWidth - FocusTargetFrameHeight
 			end
 			FocusTarget:SetSize(FocusTargetFrameWidth, FocusTargetFrameHeight)
-			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", {"TOPRIGHT", Focus, "BOTTOMLEFT", 48, -6}, FocusTargetFrameWidth, FocusTargetFrameHeight)
+			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", {"TOPRIGHT", Focus, "BOTTOMLEFT", -6, -6}, FocusTargetFrameWidth, FocusTargetFrameHeight)
 		end
 
 		K.HideInterfaceOption(InterfaceOptionsCombatPanelTargetOfTarget)
