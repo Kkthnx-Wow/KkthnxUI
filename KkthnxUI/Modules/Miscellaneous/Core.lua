@@ -146,6 +146,83 @@ function Module:CreateTradeTargetInfo()
 	hooksecurefunc("TradeFrame_Update", updateColor)
 end
 
+-- Maw widget frame
+local maxValue = 1000
+local function GetMawBarValue()
+	local widgetInfo = C_UIWidgetManager.GetDiscreteProgressStepsVisualizationInfo(2885)
+	if widgetInfo and widgetInfo.shownState == 1 then
+		local value = widgetInfo.progressVal
+		return floor(value / maxValue), value % maxValue
+	end
+end
+
+local MawRankColor = {
+	[0] = {.6, .8, 1},
+	[1] = {0, .7, .3},
+	[2] = {0, 1, 0},
+	[3] = {1, .8, 0},
+	[4] = {1, .5, 0},
+	[5] = {1, 0, 0}
+}
+function Module:UpdateMawBarLayout()
+	local bar = Module.mawbar
+	local rank, value = GetMawBarValue()
+	if rank then
+		bar:SetStatusBarColor(unpack(MawRankColor[rank]))
+		if rank == 5 then
+			bar.text:SetText("Lv"..rank)
+			bar:SetValue(maxValue)
+		else
+			bar.text:SetText("Lv"..rank.." - "..value.."/"..maxValue)
+			bar:SetValue(value)
+		end
+		bar:Show()
+		UIWidgetTopCenterContainerFrame:Hide()
+	else
+		bar:Hide()
+		UIWidgetTopCenterContainerFrame:Show()
+	end
+end
+
+function Module:CreateMawWidgetFrame()
+	if Module.mawbar then
+		return
+	end
+
+	local bar = CreateFrame("StatusBar", nil, UIParent)
+	bar:SetPoint("TOP", 0, -50)
+	bar:SetSize(200, 16)
+	bar:SetMinMaxValues(0, 1000)
+	bar.text = K.CreateFontString(bar, 12)
+	bar:SetStatusBarTexture(C["Media"].Texture)
+	bar:CreateBorder()
+	K:SmoothBar(bar)
+	Module.mawbar = bar
+
+	K.Mover(bar, "MawThreatBar", "MawThreatBar", {"TOP", UIParent, 0, -50})
+
+	bar:SetScript("OnEnter", function(self)
+		local rank = GetMawBarValue()
+		local widgetInfo = rank and C_UIWidgetManager.GetTextureWithAnimationVisualizationInfo(2873 + rank)
+		if widgetInfo and widgetInfo.shownState == 1 then
+			GameTooltip:SetOwner(self, "ANCHOR_BOTTOM", 0, -10)
+			local header, nonHeader = SplitTextIntoHeaderAndNonHeader(widgetInfo.tooltip)
+			if header then
+				GameTooltip:AddLine(header, nil,nil,nil, 1)
+			end
+			if nonHeader then
+				GameTooltip:AddLine(nonHeader, nil,nil,nil, 1)
+			end
+			GameTooltip:Show()
+		end
+	end)
+	bar:SetScript("OnLeave", K.HideTooltip)
+
+	Module:UpdateMawBarLayout()
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.UpdateMawBarLayout)
+	K:RegisterEvent("UPDATE_UI_WIDGET", Module.UpdateMawBarLayout)
+end
+
 -- Archaeology counts
 do
 	local function CalculateArches(self)
@@ -505,6 +582,7 @@ function Module:OnEnable()
 	self:CreateTradeTabs()
 	self:CreateTradeTargetInfo()
 	self:CreateVehicleSeatMover()
+	self:CreateMawWidgetFrame()
 
 	K:RegisterEvent("PLAYER_REGEN_DISABLED", CreateErrorFrameToggle)
 

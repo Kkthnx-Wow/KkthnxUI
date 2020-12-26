@@ -334,7 +334,10 @@ function Module:TimeOnEnter()
 				addTitle(TorghastInfo.name)
 				local nameText = CleanupLevelName(nameInfo.text)
 				local levelInfo = C_UIWidgetManager_GetTextWithStateWidgetVisualizationInfo(value.levelID)
-				local levelText = levelInfo and CleanupLevelName(levelInfo.text) or UNKNOWN
+				local levelText = AVAILABLE
+				if levelInfo and levelInfo.shownState == 1 then
+					levelText = CleanupLevelName(levelInfo.text)
+				end
 				GameTooltip:AddDoubleLine(nameText, levelText)
 			end
 		end
