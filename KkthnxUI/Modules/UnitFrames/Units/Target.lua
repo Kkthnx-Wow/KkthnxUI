@@ -102,6 +102,7 @@ function Module:CreateTarget()
 	else
 		portraitSize = self.Health:GetHeight() + self.Power:GetHeight()
 	end
+
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
@@ -126,7 +127,7 @@ function Module:CreateTarget()
 	end
 
 	if C["Unitframe"].TargetDebuffs then
-		local width = targetWidth
+		local width = targetWidth - portraitSize
 
 		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
@@ -134,8 +135,8 @@ function Module:CreateTarget()
 		self.Debuffs["growth-x"] = "RIGHT"
 		self.Debuffs["growth-y"] = "UP"
 		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 48)
-		self.Debuffs.num = 14
-		self.Debuffs.iconsPerRow = 5
+		self.Debuffs.num = 15
+		self.Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 
 		self.Debuffs.size =  Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
 		self.Debuffs:SetWidth(width)
@@ -147,16 +148,16 @@ function Module:CreateTarget()
 	end
 
 	if C["Unitframe"].TargetBuffs then
-		local width = targetWidth
+		local width = targetWidth - portraitSize
 
 		self.Buffs = CreateFrame("Frame", nil, self)
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
 		self.Buffs["growth-x"] = "RIGHT"
 		self.Buffs["growth-y"] = "DOWN"
-		self.Buffs.num = 6
+		self.Buffs.num = 20
 		self.Buffs.spacing = 6
-		self.Buffs.iconsPerRow = 8
+		self.Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
 		self.Buffs.onlyShowPlayer = false
 
 		self.Buffs.size = Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing)

@@ -26,7 +26,14 @@ local function UpdateTargetBuffs()
 	local element = frame.Buffs
 	element.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
 
-	local width = 160 -- Static
+	local portraitSize
+	if C["Unitframe"].TargetPower then
+		portraitSize = frame.Health:GetHeight() + frame.Power:GetHeight() + 6
+	else
+		portraitSize = frame.Health:GetHeight() + frame.Power:GetHeight()
+	end
+
+	local width = C["Unitframe"].TargetFrameWidth - portraitSize
 	local maxLines = element.iconsPerRow and K.Round((element.num) / element.iconsPerRow)
 	element.size = K:GetModule("Unitframes").auraIconSize(width, element.iconsPerRow, element.spacing)
 	element:SetWidth(width)
@@ -43,7 +50,14 @@ local function UpdateTargetDebuffs()
 	local element = frame.Debuffs
 	element.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 
-	local width = 160 -- Static
+	local portraitSize
+	if C["Unitframe"].TargetPower then
+		portraitSize = frame.Health:GetHeight() + frame.Power:GetHeight() + 6
+	else
+		portraitSize = frame.Health:GetHeight() + frame.Power:GetHeight()
+	end
+
+	local width = C["Unitframe"].TargetFrameWidth - portraitSize
 	local maxLines = element.iconsPerRow and K.Round((element.num) / element.iconsPerRow)
 	element.size = K:GetModule("Unitframes").auraIconSize(width, element.iconsPerRow, element.spacing)
 	element:SetWidth(width)

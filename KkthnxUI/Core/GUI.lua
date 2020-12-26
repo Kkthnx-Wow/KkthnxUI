@@ -1965,7 +1965,7 @@ GUI.Enable = function(self)
 	Move:SetScript("OnLeave", ButtonOnLeave)
 	Move:HookScript("OnMouseUp", function(self)
 		self.state = not self.state
-		if self.state then					
+		if self.state then
 			SlashCmdList["KKUI_MOVEUI"]()
 		else
 			SlashCmdList["KKUI_LOCKUI"]()

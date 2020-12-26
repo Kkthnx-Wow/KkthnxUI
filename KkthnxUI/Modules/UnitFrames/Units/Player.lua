@@ -116,6 +116,7 @@ function Module:CreatePlayer()
 	else
 		portraitSize = self.Health:GetHeight() + self.Power:GetHeight()
 	end
+
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
@@ -144,7 +145,7 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].PlayerDeBuffs then
-		local width = playerWidth
+		local width = playerWidth - portraitSize
 
 		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
@@ -164,7 +165,7 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].PlayerBuffs then
-		local width = playerWidth
+		local width = playerWidth - portraitSize
 
 		self.Buffs = CreateFrame("Frame", nil, self)
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
