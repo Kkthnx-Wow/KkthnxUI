@@ -1,5 +1,3 @@
-local K, C = unpack(select(2, ...))
-
 -- Based on oUF_GCD(by ALZA)
 local _, ns = ...
 local oUF = ns.oUF
@@ -8,9 +6,9 @@ local starttime, duration, usingspell
 local GetTime = GetTime
 
 local Enable = function(self)
-    if not self.GCD then
-        return
-    end
+	if not self.GCD then
+		return
+	end
 
 	local bar = self.GCD
 	local width = bar:GetWidth()
@@ -21,7 +19,7 @@ local Enable = function(self)
 	bar.spark:SetVertexColor(unpack(bar.Color))
 	bar.spark:SetHeight(bar.Height)
 	bar.spark:SetWidth(bar.Width)
-    bar.spark:SetBlendMode("ADD")
+	bar.spark:SetBlendMode("ADD")
 	bar.spark:SetAlpha(0.5)
 
 	local function OnUpdateSpark()
