@@ -422,6 +422,19 @@ function Module:CreatePlayer()
 		}
 	end
 
+	-- GCD spark
+	if C["Unitframe"].GlobalCooldown then
+		self.GCD = CreateFrame("Frame", self:GetName().."_GlobalCooldown", self)
+		self.GCD:SetWidth(playerWidth - portraitSize)
+		self.GCD:SetHeight(self.Health:GetHeight())
+		self.GCD:SetFrameStrata("HIGH")
+		self.GCD:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
+
+		self.GCD.Color = {1, 1, 1}
+		self.GCD.Height = 26
+		self.GCD.Width = 128
+	end
+
 	if C["Unitframe"].CombatText then
 		if IsAddOnLoaded("MikScrollingBattleText") or IsAddOnLoaded("Parrot") or IsAddOnLoaded("xCT") or IsAddOnLoaded("sct") then
 			C["Unitframe"].CombatText = false
