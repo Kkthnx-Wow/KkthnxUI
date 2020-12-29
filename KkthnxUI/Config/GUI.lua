@@ -157,6 +157,89 @@ local function updatePowerUnitList()
 	K:GetModule("Unitframes"):CreatePowerUnitTable()
 end
 
+local function updatePlayerHeight()
+	local height = C["Unitframe"].PlayerFrameHeight
+	local player = _G.oUF_Player
+
+	if not player then
+		return
+	end
+
+	player:SetHeight(height + 6)
+
+	if C["Unitframe"].PlayerPower then
+		player.Health:SetHeight(height * 0.7)
+		player.Power:SetHeight(height * 0.3)
+	else
+		player.Health:SetHeight(height + 6)
+		player.Power:SetHeight(0)
+	end
+
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and C["Unitframe"].playerPower then
+		player.Portrait:SetHeight(player.Health:GetHeight() + player.Power:GetHeight() + 6)
+	end
+end
+
+local function updatePlayerWidth()
+	local width = C["Unitframe"].PlayerFrameWidth
+	local player = _G.oUF_Player
+
+	if not player then
+		return
+	end
+
+	player:SetWidth(width)
+	player.Health:SetWidth(width)
+	player.Power:SetWidth(width)
+
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and C["Unitframe"].PlayerPower then
+		player.Portrait:SetWidth(player.Health:GetHeight() + player.Power:GetHeight() + 6)
+	end
+end
+
+local function updateTargetHeight()
+	local height = C["Unitframe"].TargetFrameHeight
+	local target = _G.oUF_Target
+
+	if not target then
+		return
+	end
+
+	target:SetHeight(height + 6)
+
+	if C["Unitframe"].TargetPower then
+		target.Health:SetHeight(height * 0.7)
+		target.Power:SetHeight(height * 0.3)
+	else
+		target.Health:SetHeight(height + 6)
+		target.Power:SetHeight(0)
+	end
+
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and C["Unitframe"].TargetPower then
+		target.Portrait:SetHeight(target.Health:GetHeight() + target.Power:GetHeight() + 6)
+	end
+end
+
+local function updateTargetWidth()
+	local width = C["Unitframe"].TargetFrameWidth
+	local target = _G.oUF_Target
+
+	if not target then
+		return
+	end
+
+	target:SetWidth(width)
+	target.Health:SetWidth(width)
+	target.Power:SetWidth(width)
+
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and C["Unitframe"].TargetPower then
+		target.Portrait:SetWidth(target.Health:GetHeight() + target.Power:GetHeight() + 6)
+	end
+
+	UpdateTargetDebuffs()
+	UpdateTargetBuffs()
+end
+
 -- Translate Below Before Shadowlands
 local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
@@ -664,8 +747,8 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "Swingbar", L["Unitframe Swingbar"])
 	Window:CreateSwitch("Unitframe", "SwingbarTimer", L["Unitframe Swingbar Timer"])
 	Window:CreateSwitch("Unitframe", "PlayerPower", newFeatureIcon..L["Player Power Bar"])
-	Window:CreateSlider("Unitframe", "PlayerFrameHeight", newFeatureIcon..L["Player Frame Height"], 20, 75, 1)
-	Window:CreateSlider("Unitframe", "PlayerFrameWidth", newFeatureIcon..L["Player Frame Width"], 100, 300, 1)
+	Window:CreateSlider("Unitframe", "PlayerFrameHeight", newFeatureIcon..L["Player Frame Height"], 20, 75, 1, nil, updatePlayerHeight)
+	Window:CreateSlider("Unitframe", "PlayerFrameWidth", newFeatureIcon..L["Player Frame Width"], 100, 300, 1, nil, updatePlayerWidth)
 
 	Window:CreateSection("Unitframe Target")
 	Window:CreateSwitch("Unitframe", "OnlyShowPlayerDebuff", L["Only Show Your Debuffs"])
@@ -675,8 +758,8 @@ local Unitframe = function(self)
 	Window:CreateSlider("Unitframe", "TargetBuffsPerRow", L["Number of Buffs Per Row"], 4, 10, 1, nil, UpdateTargetBuffs)
 	Window:CreateSlider("Unitframe", "TargetDebuffsPerRow", L["Number of Debuffs Per Row"], 4, 10, 1, nil, UpdateTargetDebuffs)
 	Window:CreateSwitch("Unitframe", "TargetPower", newFeatureIcon..L["Target Power Bar"])
-	Window:CreateSlider("Unitframe", "TargetFrameHeight", newFeatureIcon..L["Target Frame Height"], 20, 75, 1)
-	Window:CreateSlider("Unitframe", "TargetFrameWidth", newFeatureIcon..L["Target Frame Width"], 100, 300, 1)
+	Window:CreateSlider("Unitframe", "TargetFrameHeight", newFeatureIcon..L["Target Frame Height"], 20, 75, 1, nil, updateTargetHeight)
+	Window:CreateSlider("Unitframe", "TargetFrameWidth", newFeatureIcon..L["Target Frame Width"], 100, 300, 1, nil, updateTargetWidth)
 
 	Window:CreateSection("Unitframe Pet")
 	Window:CreateSwitch("Unitframe", "PetPower", newFeatureIcon..L["Pet Power Bar"])

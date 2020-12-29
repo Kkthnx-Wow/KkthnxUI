@@ -195,6 +195,7 @@ C.OpenItems = {
 	[181732] = true, 	-- Tribute of the Ambitious
 	[181733] = true,	-- Tribute of the Duty-Bound
 	[181741] = true,	-- Tribute of the Paragon
+	[183702] = true,	-- Nature's Splendor
 	[184395] = true,	-- Fallen Adventurer's Cache
 	[184522] = true,	-- Veiled Satchel of Cooperation
 	[18804] = true,		-- Lord Grayson's Satchel

@@ -15,20 +15,21 @@ local UnitName = _G.UnitName
 
 local lastTime = 0
 local itemList = {
-	[226241] = true, -- Codex of the Tranquil Mind
-	[256230] = true, -- Codex of the Quiet Mind
-	[185709] = true, -- Sugar-Crusted Fish Feast
-	[259409] = true, -- Galley Banquet
-	[259410] = true, -- Bountiful Captain's Feast
-	[276972] = true, -- Mystical Cauldron
-	[286050] = true, -- Sanguinated Feast
-	[265116] = true, -- 8.0 Unstable Temporal Time Shifter
-
-	[308458] = true, -- Surprisingly Palatable Feast
-	[308462] = true, -- Feast of Gluttonous Hedonism
-	[345130] = true, -- 9.0 Disposable Spectrophasic Reanimator
-	[307157] = true, -- Eternal Cauldron
-	[324029] = true, -- Codex of the Still Mind
+	[185709] = true,
+	[226241] = true,
+	[256230] = true,
+	[259409] = true,
+	[259410] = true,
+	[265116] = true,
+	[276972] = true,
+	[286050] = true,
+	[307157] = true,
+	[308458] = true,
+	[308462] = true,
+	[324029] = true,
+	[345130] = true,
+	[54710] = true,
+	[67826] = true,
 }
 
 function Module:ItemAlert_Update(unit, _, spellID)
