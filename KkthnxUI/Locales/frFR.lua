@@ -581,6 +581,7 @@ L["Class Color Castbars"] = "Barres d'incantation' aux couleurs de classe"
 L["Enable Player CastBar"] = "Activer la barre d'incantation du joueur"
 L["Enable Simple CombatText"] = "Activer les textes de combat simple"
 L["Enable Target CastBar"] = "Activer la barre d'incantation de la cible"
+L["Enable Unitframes"] = "Enable Unitframes" -- Needs Translation
 L["Fade Unitframes"] = "Fondu des barres d'unités"
 L["Health Color Format"] = "Format de couleur de la vie"
 L["Hide TargetofTarget Frame"] = "Masquer la cible de la cible"

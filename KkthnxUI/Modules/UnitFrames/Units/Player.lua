@@ -630,6 +630,8 @@ function Module:CreatePlayer()
 		self.GlobalCooldown:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
 	end
 
+	self.CombatFade = C["Unitframe"].CombatFade
+
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()
 	self.Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")

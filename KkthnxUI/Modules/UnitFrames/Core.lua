@@ -724,6 +724,9 @@ function Module:CreateUnits()
 
 		oUF:SetActiveStyle("Pet")
 		local Pet = oUF:Spawn("pet", "oUF_Pet")
+		if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
+			Pet:SetParent(Player)
+		end
 		local PetFrameHeight = C["Unitframe"].PetFrameHeight + 6
 		local PetFrameWidth
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then

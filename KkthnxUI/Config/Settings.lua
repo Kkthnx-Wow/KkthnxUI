@@ -503,6 +503,7 @@ C["Unitframe"] = {
 	["CastReactionColor"] = false,
 	["CastbarLatency"] = true,
 	["ClassResources"] = true,
+	["CombatFade"] = true,
 	["CombatText"] = false,
 	["DebuffHighlight"] = true,
 	["Enable"] = true,
