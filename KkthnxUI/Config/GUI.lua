@@ -743,7 +743,9 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "PlayerCastbar", L["Enable Player CastBar"])
 	Window:CreateSwitch("Unitframe", "PlayerDeBuffs", L["Show Player Frame Debuffs"])
 	Window:CreateSwitch("Unitframe", "PlayerPowerPrediction", L["Show Player Power Prediction"])
-	Window:CreateSwitch("Unitframe", "ShowPlayerLevel", L["Show Player Frame Level"])
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		Window:CreateSwitch("Unitframe", "ShowPlayerLevel", L["Show Player Frame Level"])
+	end
 	Window:CreateSwitch("Unitframe", "ShowPlayerName", L["Show Player Frame Name"])
 	Window:CreateSwitch("Unitframe", "Swingbar", L["Unitframe Swingbar"])
 	Window:CreateSwitch("Unitframe", "SwingbarTimer", L["Unitframe Swingbar Timer"])

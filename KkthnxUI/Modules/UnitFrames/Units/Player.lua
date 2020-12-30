@@ -336,10 +336,18 @@ function Module:CreatePlayer()
 		self.Name:SetPoint("TOP", self.Health, 0, 16)
 		self.Name:SetWidth(playerWidth)
 		self.Name:SetFontObject(UnitframeFont)
-		if C["Unitframe"].HealthbarColor.Value == "Class" then
-			self:Tag(self.Name, "[name]")
+		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+			if C["Unitframe"].HealthbarColor.Value == "Class" then
+				self:Tag(self.Name, "[name] [fulllevel][afkdnd]")
+			else
+				self:Tag(self.Name, "[color][name] [fulllevel][afkdnd]")
+			end
 		else
-			self:Tag(self.Name, "[color][name]")
+			if C["Unitframe"].HealthbarColor.Value == "Class" then
+				self:Tag(self.Name, "[name][afkdnd]")
+			else
+				self:Tag(self.Name, "[color][name][afkdnd]")
+			end
 		end
 	end
 
@@ -347,9 +355,10 @@ function Module:CreatePlayer()
 	if C["Unitframe"].ShowPlayerLevel then
 		self.Level = self:CreateFontString(nil, "OVERLAY")
 		if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+			self.Level:Show()
 			self.Level:SetPoint("TOP", self.Portrait, 0, 15)
 		else
-			self.Level:SetPoint("TOPLEFT", self.Health, 0, 15)
+			self.Level:Hide()
 		end
 		self.Level:SetFontObject(UnitframeFont)
 		self:Tag(self.Level, "[fulllevel]")
