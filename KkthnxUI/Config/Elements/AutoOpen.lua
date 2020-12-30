@@ -190,6 +190,7 @@ C.OpenItems = {
 	[17969] = true,		-- Red Sack of Gems
 	[181372] = true,	-- Tribute of the Ascended
 	[181475] = true,	-- Bounty of the Grove Wardens
+	[181476] = true,	-- Tribute of the Wild Hunt
 	[181556] = true,	-- Tribute of the Court
 	[181557] = true,	-- Favor of the Court
 	[181732] = true, 	-- Tribute of the Ambitious
