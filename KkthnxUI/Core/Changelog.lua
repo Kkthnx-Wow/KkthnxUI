@@ -42,7 +42,7 @@ local changelogData = {
 	"Updated nameplate auras",
 	"Updated player/target nametag with no portraits",
 	"Updated raid debuffs",
-	K.SystemColor.." @AmiraVera|r thinks spiders are cute??? KILL IT WITH FIRE!",
+	K.SystemColor.."@AmiraVera|r thinks spiders are cute??? KILL IT WITH FIRE!",
 }
 
 local changelogFrame
