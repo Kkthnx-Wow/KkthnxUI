@@ -643,6 +643,7 @@ C["Raid"] = {
 	["TargetHighlight"] = false,
 	["Width"] = 66,
 
+	["DebuffWatchScale"] = 1,
 	["DebuffWatch"] = true,
 	["DesaturateNonPlayerBuffs"] = false,
 	["RaidBuffs"] = {

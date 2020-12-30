@@ -249,38 +249,36 @@ function Module:CreateRaid()
 	end
 
 	if C["Raid"].DebuffWatch then
+		local scale = C["Raid"].DebuffWatchScale
+		local size = 18
+
 		self.RaidDebuffs = CreateFrame("Frame", nil, self.Health)
-		self.RaidDebuffs:SetHeight(self.Health:GetHeight() - 20)
-		self.RaidDebuffs:SetWidth(self.Health:GetHeight() - 20)
+		self.RaidDebuffs:SetSize(size, size)
 		self.RaidDebuffs:SetPoint("CENTER", self.Health)
-		self.RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 10)
+		self.RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 3)
 		self.RaidDebuffs:CreateBorder()
+		self.RaidDebuffs:SetScale(scale)
+		self.RaidDebuffs:Hide()
 
 		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "ARTWORK")
-		self.RaidDebuffs.icon:SetTexCoord(.1, .9, .1, .9)
-		self.RaidDebuffs.icon:SetAllPoints(self.RaidDebuffs)
+		self.RaidDebuffs.icon:SetAllPoints()
+		self.RaidDebuffs.icon:SetTexCoord(unpack(K.TexCoords))
 
-		self.RaidDebuffs.cd = CreateFrame("Cooldown", nil, self.RaidDebuffs, "CooldownFrameTemplate")
-		self.RaidDebuffs.cd:SetAllPoints(self.RaidDebuffs)
-		self.RaidDebuffs.cd:SetReverse(true)
-		self.RaidDebuffs.cd.noOCC = true
-		self.RaidDebuffs.cd.noCooldownCount = true
-		self.RaidDebuffs.cd:SetHideCountdownNumbers(true)
-		self.RaidDebuffs.cd:SetAlpha(0.7)
+		local parentFrame = CreateFrame("Frame", nil, self.RaidDebuffs)
+		parentFrame:SetAllPoints()
+		parentFrame:SetFrameLevel(self.RaidDebuffs:GetFrameLevel() + 6)
+		self.RaidDebuffs.count = K.CreateFontString(parentFrame, 10, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
+		self.RaidDebuffs.timer = K.CreateFontString(self.RaidDebuffs, 11, "", "OUTLINE", false, "CENTER", 2, 0)
 
-		self.RaidDebuffs.onlyMatchSpellID = true
-		self.RaidDebuffs.showDispellableDebuff = false
+		self.RaidDebuffs.glowFrame = CreateFrame("Frame", nil, self.RaidDebuffs)
+		self.RaidDebuffs.glowFrame:SetPoint("TOPLEFT", self.RaidDebuffs, -4, 4)
+		self.RaidDebuffs.glowFrame:SetPoint("BOTTOMRIGHT", self.RaidDebuffs, 4, -4)
+		self.RaidDebuffs.glowFrame:SetSize(size, size)
+		self.RaidDebuffs.glowFrame:SetFrameLevel(self.RaidDebuffs:GetFrameLevel())
 
-		self.RaidDebuffs.time = self.RaidDebuffs:CreateFontString(nil, "OVERLAY")
-		self.RaidDebuffs.time:SetFont(C["Media"].Font, 11, "OUTLINE")
-		self.RaidDebuffs.time:SetPoint("CENTER", self.RaidDebuffs, 1, 0)
-
-		self.RaidDebuffs.count = self.RaidDebuffs:CreateFontString(nil, "OVERLAY")
-		self.RaidDebuffs.count:SetFont(C["Media"].Font, 11, "OUTLINE")
-		self.RaidDebuffs.count:SetPoint("BOTTOMRIGHT", self.RaidDebuffs, "BOTTOMRIGHT", 2, 0)
-		self.RaidDebuffs.count:SetTextColor(1, .9, 0)
-
-		-- self.RaidDebuffs.forceShow = true
+		self.RaidDebuffs.ShowDispellableDebuff = true
+		self.RaidDebuffs.ShowDebuffBorder = true
+		self.RaidDebuffs.FilterDispellableDebuff = true
 	end
 
 	if C["Raid"].TargetHighlight then

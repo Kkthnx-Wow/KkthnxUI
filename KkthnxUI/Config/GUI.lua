@@ -868,8 +868,8 @@ local Raid = function(self)
 	Window:CreateSection("Raid Debuffs [BETA/WIP]")
 	Window:CreateSwitch("Raid", "DebuffWatch", "Display dispellable debuffs")
 	Window:CreateSwitch("Raid", "DesaturateNonPlayerBuffs", "Displays other players buffs grayscaled")
+	Window:CreateSlider("Raid", "DebuffWatchScale", "Some DebuffWatch Scaling?", 0.8, 1.6, .1)
 	Window:CreateDropdown("Raid", "RaidBuffs", "Show buff on raid frames")
-
 
 	Window:CreateSection("Auras Tracking [BETA/WIP]")
 	Window:CreateSwitch("Raid", "AuraTrack", "Enable auras tracking module for healer")
