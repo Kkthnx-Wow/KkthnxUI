@@ -3,7 +3,7 @@ local GUI = K["GUI"]
 
 local _G = _G
 
-local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
+-- local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
 
 local enableTextColor = "|cff00cc4c"
 local newFeatureIcon = "|TInterface\\OptionsFrame\\UI-OptionsFrame-NewFeatureIcon:0|t"

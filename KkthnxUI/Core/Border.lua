@@ -1,7 +1,7 @@
 local K, C = unpack(select(2, ...))
 
 -- Lua
-local _G = getfenv(0)
+local _G = _G
 local next = _G.next
 local type = _G.type
 local unpack = _G.unpack
