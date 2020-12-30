@@ -5,7 +5,7 @@ local oUF = ns.oUF or oUF
 -- oUF_RaidDebuffs, by yleaf
 -- KkthnxUI MOD
 
-local debugMode = true
+local debugMode = false
 local class = K.Class
 local RaidDebuffsIgnore, invalidPrio = {}, -1
 
