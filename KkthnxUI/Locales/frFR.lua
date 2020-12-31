@@ -460,6 +460,7 @@ L["Paragon Toast Fade"] = "Fondu notification Parangon"
 L["Paragon Toast Sound"] = "Son notification Parangon"
 L["Paragon Toast"] = "Notification Parangon"
 L["Remove And Hide The TalkingHead Frame"] = "Désactiver et cacher la fenêtre parlante des PNJ"
+L["Replace Default Maw Threat Status"] = "Replace Default Maw Threat Status" -- Needs Translations
 L["Show Character/Inspect ItemLevel Info"] = "Afficher Personnage/Inspecter niveau d'objet"
 L["Show Slot Durability %"] = "Afficher la durabilité des objets %"
 L["Show Wowhead Links Above Questlog Frame"] = "Afficher un lien Wowhead au dessus de la fenêtre de suivi de quête"
@@ -666,6 +667,7 @@ L["Save Raid Positions Based On Specs"] = "Sauvergarder la position du raid par 
 L["Show AuraWatch Icons"] = "Afficher les icônes AuraWatch"
 L["Show Away/DND Status"] = "Afficher le statut Absent/Ne pas déranger"
 L["Show Group Number Team Index"] = "Afficher le numéro de groupe"
+L["Show MainTank Frames"] = "Show MainTank Frames" -- Needs Translations
 L["Show Manabars"] = "Afficher les barres de mana"
 L["Show Raid Utility Frame"] = "Afficher la fenêtre utilitaire de raid"
 

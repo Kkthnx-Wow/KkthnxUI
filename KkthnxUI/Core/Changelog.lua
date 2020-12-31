@@ -15,34 +15,8 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Added focus size and power options, no portrait support"..K.SystemColor.." @AmiraVera",
-	"Added focustarget size and power options, no portrait support"..K.SystemColor.." @AmiraVera",
-	"Added lockui slash command"..K.SystemColor.." @krevan88",
-	"Added new maw threat bar instead of the ugly texture",
-	"Added no portrait option for player/target"..K.SystemColor.." @AmiraVera",
-	"Added pet/tot size and powerbar options + no portrait support"..K.SystemColor.." @AmiraVera",
-	"Added player/target power bar option"..K.SystemColor.." @AmiraVera",
-	"Added player/target unitframe size options"..K.SystemColor.." @AmiraVera",
-	"Added shorter enchant strings. Thanks (ElvUI)",
-	"Fixed GuildBest nil value",
-	"Fixed debuffs too big on unitframes issue #48",
-	"Fixed disenchant module blocking clicks"..K.SystemColor.." @AmiraVera",
-	"Fixed error with having swingbar enabled and castbars disabled",
-	"Fixed gcd health overlay"..K.SystemColor.." @AmiraVera",
-	"Fixed nil error with coords",
-	"Fixed outdated currency values on characters with module disabled"..K.SystemColor.." @AmiraVera",
-	"Fixed player/target auras not being visible when power bar disabled"..K.SystemColor.." @AmiraVera",
-	"Fixed start nil value for PCD",
-	"Fixed tooltip nil value with other addons",
-	"Updated aurawatch auras",
-	"Updated azerite border style thickness"..K.SystemColor.." @AmiraVera",
-	"Updated durability frame position to be more visible.",
-	"Updated french locales"..K.SystemColor.." @Lionceaudor",
-	"Updated mapreveal locations to inclue torgast",
-	"Updated nameplate auras",
-	"Updated player/target nametag with no portraits",
-	"Updated raid debuffs",
-	K.SystemColor.."@AmiraVera|r thinks spiders are cute??? KILL IT WITH FIRE!",
+	"Added option to turn off the new maw threat bar",
+	"Added option for main tank frames",
 }
 
 local changelogFrame

@@ -185,6 +185,10 @@ function Module:UpdateMawBarLayout()
 end
 
 function Module:CreateMawWidgetFrame()
+	if not C["Misc"].MawThreatBar then
+		return
+	end
+
 	if Module.mawbar then
 		return
 	end
@@ -197,6 +201,13 @@ function Module:CreateMawWidgetFrame()
 	bar:SetStatusBarTexture(C["Media"].Texture)
 	bar:CreateBorder()
 	K:SmoothBar(bar)
+
+	bar.spark = bar:CreateTexture(nil, "OVERLAY")
+	bar.spark:SetTexture(C["Media"].Spark_16)
+	bar.spark:SetHeight(C["DataBars"].Height)
+	bar.spark:SetBlendMode("ADD")
+	bar.spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
+
 	Module.mawbar = bar
 
 	K.Mover(bar, "MawThreatBar", "MawThreatBar", {"TOP", UIParent, 0, -50})
