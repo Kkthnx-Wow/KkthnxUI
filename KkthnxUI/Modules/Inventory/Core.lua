@@ -895,28 +895,17 @@ function Module:OnEnable()
 		parentFrame:SetAllPoints()
 		parentFrame:SetFrameLevel(5)
 
-		if self.UpgradeIcon then
-			self.UpgradeIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\UpgradeIcon.tga")
-			self.UpgradeIcon:SetTexCoord(0, 1, 0, 1)
-			self.UpgradeIcon:SetPoint("TOPLEFT", -C["Inventory"].IconSize / 20, C["Inventory"].IconSize / 20)
-			self.UpgradeIcon:SetSize(C["Inventory"].IconSize / 1.4, C["Inventory"].IconSize / 1.4)
-			self.UpgradeIcon:Hide()
-		end
+		self.Favourite = parentFrame:CreateTexture(nil, "OVERLAY")
+		self.Favourite:SetAtlas("collections-icon-favorites")
+		self.Favourite:SetSize(24, 24)
+		self.Favourite:SetPoint("TOPRIGHT", 3, 2)
 
-		if not self.Favourite then
-			self.Favourite = parentFrame:CreateTexture(nil, "OVERLAY")
-			self.Favourite:SetAtlas("collections-icon-favorites")
-			self.Favourite:SetSize(24, 24)
-			self.Favourite:SetPoint("TOPRIGHT", 3, 2)
-		end
-
-		if not self.Quest then
-			self.Quest = self:CreateTexture(nil, "ARTWORK")
-			self.Quest:SetSize(26, 26)
-			self.Quest:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")
-			self.Quest:ClearAllPoints()
-			self.Quest:SetPoint("LEFT", self, "LEFT", 0, 1)
-		end
+		self.Quest = _G[self:GetName()..'IconQuestTexture'] or _G[self:GetName()].IconQuestTexture
+		self.Quest:SetSize(26, 26)
+		self.Quest:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")
+		self.Quest:ClearAllPoints()
+		self.Quest:SetPoint("LEFT", self, "LEFT", 0, 1)
+		self.Quest:Hide()
 
 		self.iLvl = K.CreateFontString(self, 12, "", "OUTLINE", false, "BOTTOMLEFT", 1, 1)
 		self.iLvl:SetFontObject(bagsFont)
@@ -1101,8 +1090,6 @@ function Module:OnEnable()
 	end
 
 	function MyButton:OnUpdateQuest(item)
-		local color = K.QualityColors[item.rarity]
-
 		if item.questID and not item.questActive then
 			self.Quest:Show()
 		else
@@ -1111,7 +1098,8 @@ function Module:OnEnable()
 
 		if item.questID or item.isQuestItem then
 			self.KKUI_Border:SetVertexColor(1, .82, .2)
-		elseif color and item.rarity and item.rarity > -1 then
+		elseif item.rarity and item.rarity > -1 then
+			local color = K.QualityColors[item.rarity]
 			self.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 		else
 			if C["General"].ColorTextures then
