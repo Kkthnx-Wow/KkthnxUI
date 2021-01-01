@@ -900,12 +900,10 @@ function Module:OnEnable()
 		self.Favourite:SetSize(24, 24)
 		self.Favourite:SetPoint("TOPRIGHT", 3, 2)
 
-		self.Quest = _G[self:GetName()..'IconQuestTexture'] or _G[self:GetName()].IconQuestTexture
-		self.Quest:SetSize(26, 26)
+		self.Quest = parentFrame:CreateTexture(nil, "OVERLAY")
 		self.Quest:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")
-		self.Quest:ClearAllPoints()
-		self.Quest:SetPoint("LEFT", self, "LEFT", 0, 1)
-		self.Quest:Hide()
+		self.Quest:SetSize(26, 26)
+		self.Quest:SetPoint("LEFT", 0, 1)
 
 		self.iLvl = K.CreateFontString(self, 12, "", "OUTLINE", false, "BOTTOMLEFT", 1, 1)
 		self.iLvl:SetFontObject(bagsFont)
