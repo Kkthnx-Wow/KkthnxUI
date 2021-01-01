@@ -699,7 +699,8 @@ Module:RegisterTooltips("KkthnxUI", function()
 		end)
 	end
 
-	if IsAddOnLoaded("MythicDungeonTools") then
+	-- MDT and DT
+	if MDT and MDT.ShowInterface then
 		local isMDTStyled
 		hooksecurefunc(MDT, "ShowInterface", function()
 			if not isMDTStyled then

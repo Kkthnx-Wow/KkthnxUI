@@ -42,14 +42,6 @@ local UnitPowerType = _G.UnitPowerType
 local UnitReaction = _G.UnitReaction
 local UnitStagger = _G.UnitStagger
 
-local FEIGN_DEATH
-local function GetFeignDeathTag()
-	if not FEIGN_DEATH then
-		FEIGN_DEATH = GetSpellInfo(5384)
-	end
-	return FEIGN_DEATH
-end
-
 local function ColorPercent(value)
 	local r, g, b
 	if value < 20 then
@@ -73,11 +65,20 @@ local function ValueAndPercent(cur, per)
 	end
 end
 
+local function GetUnitHealthPerc(unit)
+	local unitMaxHealth = UnitHealthMax(unit)
+	if unitMaxHealth == 0 then
+		return 0
+	else
+		return K.Round(UnitHealth(unit) / unitMaxHealth * 100, 1)
+	end
+end
+
 oUF.Tags.Methods["hp"] = function(unit)
 	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or UnitIsFeignDeath(unit) then
 		return oUF.Tags.Methods["DDG"](unit)
 	else
-		local per = oUF.Tags.Methods["perhp"](unit) or 0
+		local per = GetUnitHealthPerc(unit) or 0
 		local cur = UnitHealth(unit)
 		if (unit == "player" and not UnitHasVehicleUI(unit)) or unit == "target" or unit == "focus" or string.find(unit, "party") then
 			return ValueAndPercent(cur, per)
@@ -133,9 +134,7 @@ end
 oUF.Tags.Events["afkdnd"] = "PLAYER_FLAGS_CHANGED"
 
 oUF.Tags.Methods["DDG"] = function(unit)
-	if UnitIsFeignDeath(unit) then
-		return "|cffCFCFCF"..GetFeignDeathTag().."|r"
-	elseif UnitIsDead(unit) then
+	if UnitIsDead(unit) then
 		return "|cffCFCFCF"..DEAD.."|r"
 	elseif UnitIsGhost(unit) then
 		return "|cffCFCFCF"..L["Ghost"].."|r"
@@ -187,7 +186,7 @@ oUF.Tags.Methods["raidhp"] = function(unit)
 	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or UnitIsFeignDeath(unit) then
 		return oUF.Tags.Methods["DDG"](unit)
 	elseif C["Raid"].HealthFormat.Value == 2 then
-		local per = oUF.Tags.Methods["perhp"](unit) or 0
+		local per = GetUnitHealthPerc(unit) or 0
 		return ColorPercent(per)
 	elseif C["Raid"].HealthFormat.Value == 3 then
 		local cur = UnitHealth(unit)
@@ -202,7 +201,7 @@ oUF.Tags.Events["raidhp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CO
 
 -- Nameplate tags
 oUF.Tags.Methods["nphp"] = function(unit)
-	local per = oUF.Tags.Methods["perhp"](unit) or 0
+	local per = GetUnitHealthPerc(unit) or 0
 	if C["Nameplate"].FullHealth then
 		local cur = UnitHealth(unit)
 		return ValueAndPercent(cur, per)
