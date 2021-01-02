@@ -188,6 +188,7 @@ C.OpenItems = {
 	[17964] = true,		-- Gray Sack of Gems
 	[17965] = true,		-- Yellow Sack of Gems
 	[17969] = true,		-- Red Sack of Gems
+	[180974] = true,	-- Novice's Satchel
 	[181372] = true,	-- Tribute of the Ascended
 	[181475] = true,	-- Bounty of the Grove Wardens
 	[181476] = true,	-- Tribute of the Wild Hunt
