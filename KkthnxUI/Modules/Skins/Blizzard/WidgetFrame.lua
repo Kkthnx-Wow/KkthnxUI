@@ -42,7 +42,7 @@ table_insert(C.defaultThemes, function()
 						hooksecurefunc(bar, "SetStatusBarAtlas", updateBarTexture)
 
 						bar.newSpark = bar:CreateTexture(nil, "OVERLAY")
-						bar.newSpark:SetTexture(C["Media"].Spark_16)
+						bar.newSpark:SetTexture(C["MediaMisc"].Spark_16)
 						bar.newSpark:SetHeight(bar:GetHeight())
 						bar.newSpark:SetBlendMode("ADD")
 						bar.newSpark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)

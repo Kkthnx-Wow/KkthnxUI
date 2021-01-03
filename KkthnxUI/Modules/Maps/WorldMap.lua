@@ -221,7 +221,7 @@ function Module:OnEnable()
 
 		coordsFrame.Texture = coordsFrame:CreateTexture(nil, "BACKGROUND")
 		coordsFrame.Texture:SetAllPoints()
-		coordsFrame.Texture:SetTexture(C["Media"].Blank)
+		coordsFrame.Texture:SetTexture(C["MediaMisc"].Blank)
 		coordsFrame.Texture:SetVertexColor(0.04, 0.04, 0.04, 0.5)
 
 		-- Create cursor coordinates frame

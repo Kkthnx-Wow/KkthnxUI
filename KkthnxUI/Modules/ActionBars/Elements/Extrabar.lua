@@ -52,7 +52,11 @@ function Module:CreateExtrabar()
 
 	ZoneAbilityFrame:SetParent(zoneFrame)
 	ZoneAbilityFrame:ClearAllPoints()
-	ZoneAbilityFrame:SetPoint("CENTER", zoneFrame)
+	if buttonList == nil then
+		ZoneAbilityFrame:SetPoint("CENTER", zoneFrame)
+	else
+		ZoneAbilityFrame:SetPoint("BOTTOM", zoneFrame, "BOTTOM", 0, size / 2)
+	end
 	ZoneAbilityFrame.ignoreFramePositionManager = true
 	ZoneAbilityFrame.Style:SetAlpha(0)
 

@@ -122,7 +122,7 @@ local function reskinBarTemplate(bar)
 	end
 
 	bar:StripTextures()
-	bar:SetStatusBarTexture(C["Media"].Texture)
+	bar:SetStatusBarTexture(C["MediaMisc"].Texture)
 	bar:SetStatusBarColor(r, g, b)
 
 	if bar.Label then
@@ -134,7 +134,7 @@ local function reskinBarTemplate(bar)
 		bar.Spark = bar:CreateTexture(nil, "OVERLAY")
 		bar.Spark:SetWidth(64)
 		bar.Spark:SetHeight(bar:GetHeight())
-		bar.Spark:SetTexture(C["Media"].Spark_128)
+		bar.Spark:SetTexture(C["MediaMisc"].Spark_128)
 		bar.Spark:SetBlendMode("ADD")
 		bar.Spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
 		bar.Spark:SetAlpha(0.5)

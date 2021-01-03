@@ -17,7 +17,7 @@ local function reskinChatBubble(chatbubble)
 		bg:SetScale(UIParent:GetEffectiveScale())
 		bg:SetAllPoints(frame)
 		bg:CreateBorder(nil, nil, nil, nil, -14, nil, nil, nil, nil, nil, nil, nil, 10)
-		bg.KKUI_Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Skins"].ChatBubbleAlpha)
+		bg.KKUI_Background:SetVertexColor(C["MediaSettings"].BackdropColor[1], C["MediaSettings"].BackdropColor[2], C["MediaSettings"].BackdropColor[3], C["Skins"].ChatBubbleAlpha)
 
 		frame:DisableDrawLayer("BORDER")
 		frame.Tail:SetAlpha(0)

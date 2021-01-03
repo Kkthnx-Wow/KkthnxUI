@@ -79,7 +79,7 @@ end
 
 local function UpdateChatBubble()
 	for _, chatBubble in pairs(C_ChatBubbles.GetAllChatBubbles()) do
-		chatBubble.KKUI_Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Skins"].ChatBubbleAlpha)
+		chatBubble.KKUI_Background:SetVertexColor(C["MediaSettings"].BackdropColor[1], C["MediaSettings"].BackdropColor[2], C["MediaSettings"].BackdropColor[3], C["Skins"].ChatBubbleAlpha)
 	end
 end
 

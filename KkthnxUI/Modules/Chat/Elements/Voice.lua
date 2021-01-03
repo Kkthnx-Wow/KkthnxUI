@@ -144,7 +144,7 @@ function Module:CreateVoiceActivity()
 		chatHead.StatusBar:SetWidth(8)
 		chatHead.StatusBar:SetHeight(CHAT_HEAD_HEIGHT)
 		chatHead.StatusBar:CreateBorder()
-		chatHead.StatusBar:SetStatusBarTexture(C["Media"].Texture)
+		chatHead.StatusBar:SetStatusBarTexture(C["MediaMisc"].Texture)
 		chatHead.StatusBar:SetMinMaxValues(0, 1)
 
 		chatHead.StatusBar.anim = _G.CreateAnimationGroup(chatHead.StatusBar)

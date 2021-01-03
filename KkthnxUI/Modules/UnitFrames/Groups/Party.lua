@@ -159,7 +159,7 @@ function Module:CreateParty()
 		self.Castbar:SetHeight(16)
 
 		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-		self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
+		self.Castbar.Spark:SetTexture(C["MediaMisc"].Spark_128)
 		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
 
@@ -262,7 +262,7 @@ function Module:CreateParty()
 
 	if (C["Party"].TargetHighlight) then
 		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
-		self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].BorderGlow, edgeSize = 12})
+		self.TargetHighlight:SetBackdrop({edgeFile = C["MediaMisc"].BorderGlow, edgeSize = 12})
 		self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -5, 5)
 		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 5, -5)
 		self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
@@ -305,7 +305,7 @@ function Module:CreateParty()
 	if C["Unitframe"].DebuffHighlight then
 		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
 		self.DebuffHighlight:SetAllPoints(self.Health)
-		self.DebuffHighlight:SetTexture(C["Media"].Blank)
+		self.DebuffHighlight:SetTexture(C["MediaMisc"].Blank)
 		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
 		self.DebuffHighlight:SetBlendMode("ADD")
 
