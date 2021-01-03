@@ -27,7 +27,7 @@ table_insert(C.defaultThemes, function()
 		ic.bg = ic:CreateBorder()
 
 		local NewBorder = CreateFrame("Frame", nil, bu, "BackdropTemplate")
-		NewBorder:SetBackdrop({edgeFile = C["Media"].BorderGlow, edgeSize = 16})
+		NewBorder:SetBackdrop({edgeFile = C["MediaSettings"].BorderGlow, edgeSize = 16})
 		NewBorder:SetPoint("TOPLEFT", bu, -7, 7)
 		NewBorder:SetPoint("BOTTOMRIGHT", bu, 7, -7)
 		NewBorder:SetBackdropBorderColor(1, 1, 0)

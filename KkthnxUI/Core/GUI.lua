@@ -24,9 +24,9 @@ local StyleFont = function(fs, font, size)
 	fs:SetShadowOffset(1, -1)
 end
 
-local Font = C["Media"].Font
-local Texture = C["Media"].Texture
--- local Blank = C["Media"].Blank
+local Font = C["MediaFonts"].KKUI_Normal
+local Texture = C["MediaMisc"].Texture
+-- local Blank = C["MedMediaMiscia"].Blank
 
 local ArrowUp = "Interface\\Buttons\\Arrow-Up-Down"
 local ArrowDown = "Interface\\Buttons\\Arrow-Down-Down"
@@ -306,7 +306,7 @@ local ButtonOnMouseDown = function(self)
 end
 
 local ButtonOnMouseUp = function(self)
-	self.KKUI_Background:SetVertexColor(unpack(C["Media"].BackdropColor))
+	self.KKUI_Background:SetVertexColor(unpack(C["MediaSettings"].BackdropColor))
 end
 
 local CreateButton = function(self, midtext, text, tooltip, func)
@@ -425,7 +425,7 @@ local CreateSwitch = function(self, group, option, text, tooltip, hook)
 
 	Switch.Thumb = CreateFrame("Frame", nil, Switch)
 	Switch.Thumb:SetSize(WidgetHeight, WidgetHeight)
-	Switch.Thumb:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Texture, nil, nil, nil, 123/255, 132/255, 137/255)
+	Switch.Thumb:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["MediaMisc"].Texture, nil, nil, nil, 123/255, 132/255, 137/255)
 
 	Switch.Movement = CreateAnimationGroup(Switch.Thumb):CreateAnimation("Move")
 	Switch.Movement:SetDuration(0.1)
@@ -776,7 +776,7 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 	Thumb.Border = CreateFrame("Frame", nil, Slider)
 	Thumb.Border:SetPoint("TOPLEFT", Slider:GetThumbTexture(), 0, -1)
 	Thumb.Border:SetPoint("BOTTOMRIGHT", Slider:GetThumbTexture(), 0, 1)
-	Thumb.Border:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Texture, nil, nil, nil, 123/255, 132/255, 137/255)
+	Thumb.Border:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["MediaMisc"].Texture, nil, nil, nil, 123/255, 132/255, 137/255)
 
 	Slider.Progress = Slider:CreateTexture(nil, "ARTWORK")
 	Slider.Progress:SetPoint("TOPLEFT", Slider, 1, -1)
@@ -1375,7 +1375,7 @@ local CreateColorSelection = function(self, group, option, text, tooltip)
 	local Swatch = CreateFrame("Frame", nil, Anchor, "BackdropTemplate")
 	Swatch:SetSize(WidgetHeight, WidgetHeight)
 	Swatch:SetPoint("LEFT", Anchor, 0, 0)
-	Swatch:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Texture, nil, nil, nil, CurrentR, CurrentG, CurrentB)
+	Swatch:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["MediaMisc"].Texture, nil, nil, nil, CurrentR, CurrentG, CurrentB)
 
 	Swatch.Select = CreateFrame("Frame", nil, Swatch, "BackdropTemplate")
 	Swatch.Select:SetSize(ColorButtonWidth, WidgetHeight)
@@ -1818,7 +1818,7 @@ local AddContactFrame = function()
 	frameLogo:SetSize(512, 256)
 	frameLogo:SetBlendMode("ADD")
 	frameLogo:SetAlpha(0.07)
-	frameLogo:SetTexture(C["Media"].Logo)
+	frameLogo:SetTexture(C["MediaMisc"].Logo)
 	frameLogo:SetPoint("CENTER", frame, "CENTER", 0, 0)
 
 	K.CreateFontString(frame, 16, "Contact Me", "", true, "TOP", 0, -10)
@@ -2140,7 +2140,7 @@ GUI.Enable = function(self)
 	CreditLogo:SetSize(512, 256)
 	CreditLogo:SetBlendMode("ADD")
 	CreditLogo:SetAlpha(0.07)
-	CreditLogo:SetTexture(C["Media"].Logo)
+	CreditLogo:SetTexture(C["MediaMisc"].Logo)
 	CreditLogo:SetPoint("CENTER", CreditFrame, "CENTER", 0, 0)
 
 	local ScrollFrame = CreateFrame("ScrollFrame", nil, CreditFrame)

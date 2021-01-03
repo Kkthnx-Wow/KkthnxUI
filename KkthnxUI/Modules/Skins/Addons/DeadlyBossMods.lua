@@ -136,11 +136,11 @@ function Module:ReskinDeadlyBossMods()
 				end
 
 				if not texture.styled then
-					texture:SetTexture(C["Media"].Texture)
+					texture:SetTexture(C["MediaMisc"].Texture)
 					texture.styled = true
 				end
 
-				tbar:SetStatusBarTexture(C["Media"].Texture)
+				tbar:SetStatusBarTexture(C["MediaMisc"].Texture)
 				if not tbar.styled then
 					tbar:SetPoint("TOPLEFT", frame, "TOPLEFT")
 					tbar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT")
@@ -148,7 +148,7 @@ function Module:ReskinDeadlyBossMods()
 					tbar.styled = true
 
 					tbar.Spark = tbar:CreateTexture(nil, "OVERLAY")
-					tbar.Spark:SetTexture(C["Media"].Spark_16)
+					tbar.Spark:SetTexture(C["MediaMisc"].Spark_16)
 					tbar.Spark:SetBlendMode("ADD")
 					tbar.Spark:SetAlpha(.8)
 					tbar.Spark:SetPoint("TOPLEFT", tbar:GetStatusBarTexture(), "TOPRIGHT", -16, 0)
@@ -160,7 +160,7 @@ function Module:ReskinDeadlyBossMods()
 					name:SetPoint("LEFT", frame, "LEFT", 2, 8)
 					name:SetPoint("RIGHT", frame, "LEFT", tbar:GetWidth() * 0.85, 8)
 					name.SetPoint = K.Noop
-					name:SetFont(C["Media"].Font, 12, "OUTLINE")
+					name:SetFont(C["MediaFonts"].KKUI_Normal, 12, "OUTLINE")
 					name.SetFont = K.Noop
 					name:SetJustifyH("LEFT")
 					name:SetWordWrap(false)
@@ -172,7 +172,7 @@ function Module:ReskinDeadlyBossMods()
 					timer:ClearAllPoints()
 					timer:SetPoint("RIGHT", frame, "RIGHT", -2, 8)
 					timer.SetPoint = K.Noop
-					timer:SetFont(C["Media"].Font, 12, "OUTLINE")
+					timer:SetFont(C["MediaFonts"].KKUI_Normal, 12, "OUTLINE")
 					timer.SetFont = K.Noop
 					timer:SetJustifyH("RIGHT")
 					timer:SetShadowColor(0, 0, 0, 0)

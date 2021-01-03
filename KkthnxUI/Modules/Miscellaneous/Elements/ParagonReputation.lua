@@ -233,7 +233,7 @@ function Module:CreateBarOverlay(factionBar)
 	overlay:SetFrameLevel(3)
 
 	overlay.bar = overlay:CreateTexture("ARTWORK", nil, nil, -1)
-	overlay.bar:SetTexture(C["Media"].Texture)
+	overlay.bar:SetTexture(C["MediaMisc"].Texture)
 	overlay.bar:SetPoint("TOP", overlay)
 	overlay.bar:SetPoint("BOTTOM", overlay)
 	overlay.bar:SetPoint("LEFT", overlay)

@@ -25,11 +25,11 @@ end
 local dropdownFontHeight = 12
 local chatFontHeights = {12, 13, 14, 15, 16, 17, 18, 19, 20}
 local function ForceUpdateBlizzardFonts()
-	local NORMAL = C["Media"].Font
-	local NUMBER = C["Media"].Font
-	local COMBAT = C["Media"].CombatFont
-	local NAMEFONT = C["Media"].Font
-	local BUBBLE = C["Media"].Font
+	local NORMAL = C["MediaFonts"].KKUI_Normal
+	local NUMBER = C["MediaFonts"].KKUI_Normal
+	local COMBAT = C["MediaFonts"].KKUI_Damage
+	local NAMEFONT = C["MediaFonts"].KKUI_Normal
+	local BUBBLE = C["MediaFonts"].KKUI_Normal
 
 	_G.UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = dropdownFontHeight
 	_G.CHAT_FONT_HEIGHTS = chatFontHeights

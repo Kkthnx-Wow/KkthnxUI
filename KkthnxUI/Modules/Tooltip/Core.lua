@@ -522,7 +522,7 @@ end
 function Module:OnEnable()
 	Module.fakeBg = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
 	Module.fakeBg:SetBackdrop({
-		bgFile = C["Media"].Blank,
+		bgFile = C["MediaMisc"].Blank,
 		edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\".. C["General"].BorderStyle.Value.."\\Border_Tooltip.tga",
 		edgeSize = 12,
 		insets = {left = 4, right = 4, top = 4, bottom = 4}

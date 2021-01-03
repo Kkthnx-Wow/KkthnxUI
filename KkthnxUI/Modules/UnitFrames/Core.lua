@@ -206,7 +206,7 @@ local function updateCastBarTicks(bar, numTicks)
 		for i = 1, numTicks do
 			if not castbarTicks[i] then
 				castbarTicks[i] = bar:CreateTexture(nil, "OVERLAY")
-				castbarTicks[i]:SetTexture(C["Media"].Blank)
+				castbarTicks[i]:SetTexture(C["MediaMisc"].Blank)
 				castbarTicks[i]:SetVertexColor(0, 0, 0, 0.8)
 				castbarTicks[i]:SetWidth(2 * K.Mult)
 				castbarTicks[i]:SetHeight(bar:GetHeight())
