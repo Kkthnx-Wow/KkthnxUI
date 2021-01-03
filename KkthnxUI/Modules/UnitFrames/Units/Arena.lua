@@ -2,75 +2,34 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
+local math_floor = _G.math.floor
+local select = _G.select
 
 local CreateFrame = _G.CreateFrame
-local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
-local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
-local IsInInstance = _G.IsInInstance
-local UnitFactionGroup = _G.UnitFactionGroup
-
-local function PostUpdateArenaPreparationSpec(self)
-	local specIcon = self.PVPSpecIcon
-	local instanceType = select(2, IsInInstance())
-
-	if (instanceType == "arena") then
-		local specID = self.id and GetArenaOpponentSpec(tonumber(self.id))
-
-		if specID and specID > 0 then
-			local icon = select(4, GetSpecializationInfoByID(specID))
-
-			specIcon.Icon:SetTexture(icon)
-		else
-			specIcon.Icon:SetTexture([[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]])
-		end
-	else
-		local faction = UnitFactionGroup(self.unit)
-
-		if faction == "Horde" then
-			specIcon.Icon:SetTexture([[Interface\Icons\INV_BannerPVP_01]])
-		elseif faction == "Alliance" then
-			specIcon.Icon:SetTexture([[Interface\Icons\INV_BannerPVP_02]])
-		else
-			specIcon.Icon:SetTexture([[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]])
-		end
-	end
-
-	self.forceInRange = true
-end
-
-local function UpdatePowerColorArenaPreparation(self, specID)
-	-- oUF is unable to get power color on arena preparation, so we add this feature here.
-	local power = self
-	local playerClass = select(6, GetSpecializationInfoByID(specID))
-
-	if playerClass then
-		local powerColor = K.Colors.specpowertypes[playerClass][specID]
-
-		if powerColor then
-			local r, g, b = unpack(powerColor)
-
-			power:SetStatusBarColor(r, g, b)
-		else
-			power:SetStatusBarColor(0, 0, 0)
-		end
-	end
-end
 
 function Module:CreateArena()
-	self.mystyle = "arena"
+	self.mystyle = "Arena"
+
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
+	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	self.Overlay:SetAllPoints()
+	self.Overlay:SetFrameLevel(6)
+
 	Module.CreateHeader(self)
 
-	self:SetAttribute("type2", "focus")
-
 	self.Health = CreateFrame("StatusBar", nil, self)
-	self.Health:SetHeight(28)
+	self.Health:SetHeight(18)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
+
+	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
+	self.Health.colorTapping = true
+	self.Health.colorDisconnected = true
+	self.Health.frequentUpdates = true
 
 	if C["Arena"].HealthbarColor.Value == "Value" then
 		self.Health.colorSmooth = true
@@ -94,17 +53,19 @@ function Module:CreateArena()
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	self.Health.Value:SetFontObject(UnitframeFont)
+	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	self.Power:SetHeight(14)
+	self.Power:SetHeight(10)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
 	self.Power:CreateBorder()
-	self.Power.UpdateColorArenaPreparation = UpdatePowerColorArenaPreparation
+
 	self.Power.colorPower = true
-	self.Power.frequentUpdates = true
+	self.Power.frequentUpdates = false
+	self.Power.displayAltPower = true
 
 	if C["Arena"].Smooth then
 		K:SmoothBar(self.Power)
@@ -116,106 +77,134 @@ function Module:CreateArena()
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
 	self:Tag(self.Power.Value, "[power]")
 
-	self.PVPSpecIcon = CreateFrame("Frame", nil, self)
-	self.PVPSpecIcon:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-	self.PVPSpecIcon:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
-	self.PVPSpecIcon:CreateBorder()
-
-	self.Trinket = CreateFrame("Frame", nil, self)
-	self.Trinket:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-	self.Trinket:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
-
-	self.Health:ClearAllPoints()
-	self.Health:SetPoint("TOPLEFT", self.PVPSpecIcon:GetWidth() + 6, 0)
-	self.Health:SetPoint("TOPRIGHT")
-
-	self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
-	self.Portrait:SetFrameLevel(self.Health:GetFrameLevel())
-	self.Portrait:SetAllPoints()
-	self.Portrait:SetAlpha(0.2)
-
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("TOP", self.Health, 0, 16)
-	self.Name:SetWidth(156 * 0.90)
+	self.Name:SetWidth(124)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
-	self:Tag(self.Name, "[name]")
+	if C["Arena"].HealthbarColor.Value == "Class" then
+		self:Tag(self.Name, "[arenaspec] [name]")
+	else
+		self:Tag(self.Name, "[arenaspec] [color][name]")
+	end
 
+	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
+		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
+		self.Portrait:SetFrameStrata(self:GetFrameStrata())
+		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+		self.Portrait:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
+		self.Portrait:CreateBorder()
+	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
+		self.Portrait = self.Health:CreateTexture("ArenaPortrait", "BACKGROUND", nil, 1)
+		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+		self.Portrait:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
+
+		self.Portrait.Border = CreateFrame("Frame", nil, self)
+		self.Portrait.Border:SetAllPoints(self.Portrait)
+		self.Portrait.Border:CreateBorder()
+
+		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
+			self.Portrait.PostUpdate = Module.UpdateClassPortraits
+		end
+	end
+
+	self.Health:ClearAllPoints()
+	self.Health:SetPoint("TOPLEFT")
+	self.Health:SetPoint("TOPRIGHT", -self.Portrait:GetWidth() - 6, 0)
+
+	local aurasSetWidth = 124
 	self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-	self.Buffs:SetWidth(156)
+	self.Buffs.initialAnchor = "TOPLEFT"
+	self.Buffs["growth-x"] = "RIGHT"
+	self.Buffs["growth-y"] = "DOWN"
 	self.Buffs.num = 6
 	self.Buffs.spacing = 6
-	self.Buffs.size = ((((self.Buffs:GetWidth() - (self.Buffs.spacing * (self.Buffs.num - 1))) / self.Buffs.num)))
-	self.Buffs:SetHeight(self.Buffs.size)
-	self.Buffs.initialAnchor = "TOPLEFT"
-	self.Buffs["growth-y"] = "DOWN"
-	self.Buffs["growth-x"] = "RIGHT"
+	self.Buffs.iconsPerRow = 6
+	self.Buffs.onlyShowPlayer = false
+	self.Buffs.size = Module.auraIconSize(aurasSetWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
+	self.Buffs:SetWidth(aurasSetWidth)
+	self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math_floor(self.Buffs.num / self.Buffs.iconsPerRow + 0.5))
 	self.Buffs.showStealableBuffs = true
 	self.Buffs.PostCreateIcon = Module.PostCreateAura
 	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
+	self.Buffs.CustomFilter = Module.CustomFilter
 
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
-	self.Debuffs:SetWidth(156)
-	self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
-	self.Debuffs.num = 6
 	self.Debuffs.spacing = 6
-	self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num - 1))) / self.Debuffs.num)))
-	self.Debuffs:SetHeight(self.Debuffs.size)
-	self.Debuffs.initialAnchor = "TOPLEFT"
-	self.Debuffs["growth-y"] = "UP"
-	self.Debuffs["growth-x"] = "RIGHT"
+	self.Debuffs.initialAnchor = "RIGHT"
+	self.Debuffs["growth-x"] = "LEFT"
+	self.Debuffs["growth-y"] = "DOWN"
+	self.Debuffs:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
+	self.Debuffs.num = 5
+	self.Debuffs.iconsPerRow = 5
 	self.Debuffs.CustomFilter = Module.CustomFilter
-	self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
+	self.Debuffs.size = Module.auraIconSize(aurasSetWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing + 2.5)
+	self.Debuffs:SetWidth(aurasSetWidth)
+	self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math_floor(self.Debuffs.num/self.Debuffs.iconsPerRow + 0.5))
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 
-	self.Castbar = CreateFrame("StatusBar", "BossCastbar", self)
-	self.Castbar:SetStatusBarTexture(UnitframeTexture)
-	self.Castbar:SetClampedToScreen(true)
-	self.Castbar:CreateBorder()
+	if C["Arena"].Castbars then
+		self.Castbar = CreateFrame("StatusBar", "ArenaCastbar", self)
+		self.Castbar:SetStatusBarTexture(UnitframeTexture)
+		self.Castbar:SetClampedToScreen(true)
+		self.Castbar:CreateBorder()
 
-	self.Castbar:ClearAllPoints()
-	self.Castbar:SetPoint("LEFT", 0, 0)
-	self.Castbar:SetPoint("RIGHT", -24, 0)
-	self.Castbar:SetPoint("TOP", 0, 24)
-	self.Castbar:SetHeight(18)
+		self.Castbar:ClearAllPoints()
+		self.Castbar:SetPoint("LEFT", 0, 0)
+		self.Castbar:SetPoint("RIGHT", -24, 0)
+		self.Castbar:SetPoint("TOP", 0, 22)
+		self.Castbar:SetHeight(16)
 
-	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-	self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
-	self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
-	self.Castbar.Spark:SetBlendMode("ADD")
+		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
+		self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
+		self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
+		self.Castbar.Spark:SetBlendMode("ADD")
 
-	self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
-	self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
-	self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
-	self.Castbar.Time:SetJustifyH("RIGHT")
+		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
+		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
+		self.Castbar.Time:SetJustifyH("RIGHT")
 
-	self.Castbar.decimal = "%.1f"
+		self.Castbar.decimal = "%.1f"
 
-	self.Castbar.OnUpdate = Module.OnCastbarUpdate
-	self.Castbar.PostCastStart = Module.PostCastStart
-	self.Castbar.PostCastStop = Module.PostCastStop
-	self.Castbar.PostCastFail = Module.PostCastFailed
-	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+		self.Castbar.OnUpdate = Module.OnCastbarUpdate
+		self.Castbar.PostCastStart = Module.PostCastStart
+		self.Castbar.PostCastStop = Module.PostCastStop
+		self.Castbar.PostCastFail = Module.PostCastFailed
+		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
-	self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
-	self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
-	self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)
-	self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
-	self.Castbar.Text:SetJustifyH("LEFT")
-	self.Castbar.Text:SetWordWrap(false)
+		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
+		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)
+		self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
+		self.Castbar.Text:SetJustifyH("LEFT")
+		self.Castbar.Text:SetWordWrap(false)
 
-	self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
-	self.Castbar.Button:SetSize(20, 20)
-	self.Castbar.Button:CreateBorder()
+		self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
+		self.Castbar.Button:SetSize(20, 20)
+		self.Castbar.Button:CreateBorder()
 
-	self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
-	self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
-	self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-	self.Castbar.Icon:SetPoint("LEFT", self.Castbar, "RIGHT", 6, 0)
+		self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
+		self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
+		self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+		self.Castbar.Icon:SetPoint("LEFT", self.Castbar, "RIGHT", 6, 0)
 
-	self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
+		self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
+	end
 
-	self.PostUpdate = PostUpdateArenaPreparationSpec
+	self.PvPClassificationIndicator = self:CreateTexture(nil, "ARTWORK")
+	self.PvPClassificationIndicator:SetSize(20, 20)
+	self.PvPClassificationIndicator:SetPoint("LEFT", self, "RIGHT", 4, 0)
+
+	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
+	self.RaidTargetIndicator:SetSize(16, 16)
+
+	local altPower = K.CreateFontString(self, 10, "")
+	altPower:SetPoint("RIGHT", self.Power, "LEFT", -6, 0)
+	self:Tag(altPower, "[altpower]")
+	altPower:Show()
 end

@@ -786,15 +786,15 @@ function Module:CreateUnits()
 	end
 
 	if C["Arena"].Enable then
-		-- oUF:RegisterStyle("Arena", Module.CreateArena)
-		-- oUF:SetActiveStyle("Arena")
+		oUF:RegisterStyle("Arena", Module.CreateArena)
+		oUF:SetActiveStyle("Arena")
 
-		-- local Arena = {}
-		-- for i = 1, 5 do
-		-- 	Arena[i] = oUF:Spawn("arena"..i, "oUF_Arena"..i)
-		-- 	Arena[i]:SetSize(210, 48)
-		-- 	Arena[i]:SetPoint("TOPLEFT", Boss[i].mover)
-		-- end
+		local Arena = {}
+		for i = 1, 5 do
+			Arena[i] = oUF:Spawn("arena"..i, "oUF_Arena"..i)
+			Arena[i]:SetSize(164, 34)
+			Arena[i]:SetPoint("TOPLEFT", Boss[i].mover)
+		end
 	end
 
 	if showPartyFrame then
