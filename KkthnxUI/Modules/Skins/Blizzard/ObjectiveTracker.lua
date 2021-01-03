@@ -122,7 +122,7 @@ local function reskinBarTemplate(bar)
 	end
 
 	bar:StripTextures()
-	bar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUI)
+	bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].QuestTrackerTexture))
 	bar:SetStatusBarColor(r, g, b)
 
 	if bar.Label then
