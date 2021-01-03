@@ -911,7 +911,7 @@ function Module:OnEnable()
 
 		if showNewItem then
 			self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
-			self.glowFrame:SetBackdrop({edgeFile = C["MediaSettings"].BorderGlow, edgeSize = 12})
+			self.glowFrame:SetBackdrop({edgeFile = C["Media"].Borders.Glow, edgeSize = 12})
 			self.glowFrame:SetPoint("TOPLEFT", self, -5, 5)
 			self.glowFrame:SetPoint("BOTTOMRIGHT", self, 5, -5)
 			self.glowFrame:Hide()

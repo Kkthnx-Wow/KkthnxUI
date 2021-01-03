@@ -12,7 +12,7 @@ tinsert(C.defaultThemes, function()
 		local bu = _G["FriendsListFrameScrollFrameButton"..i]
 		local ic = bu.gameIcon
 
-		bu:SetHighlightTexture(C["MediaMisc"].Blank)
+		bu:SetHighlightTexture(C["Media"].Textures.Blank)
 		bu:GetHighlightTexture():SetVertexColor(.24, .56, 1, .2)
 
 		ic:SetSize(22, 22)

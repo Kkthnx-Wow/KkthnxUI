@@ -250,7 +250,7 @@ function Module:MailBox_ContactList()
 
 	local tex = swatch:CreateTexture()
 	tex:SetAllPoints()
-	tex:SetTexture(C["MediaMisc"].Texture)
+	tex:SetTexture(C["Media"].Statusbars.KkthnxUI)
 	tex:SetVertexColor(color.r, color.g, color.b)
 
 	swatch.tex = tex

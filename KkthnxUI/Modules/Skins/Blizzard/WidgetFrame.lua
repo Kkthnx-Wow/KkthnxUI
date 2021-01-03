@@ -18,7 +18,7 @@ table_insert(C.defaultThemes, function()
 
 	local function updateBarTexture(self, atlas)
 		if atlasColors[atlas] then
-			self:SetStatusBarTexture(C.Media.Texture)
+			self:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUI)
 			self:SetStatusBarColor(unpack(atlasColors[atlas]))
 		end
 	end
@@ -42,7 +42,7 @@ table_insert(C.defaultThemes, function()
 						hooksecurefunc(bar, "SetStatusBarAtlas", updateBarTexture)
 
 						bar.newSpark = bar:CreateTexture(nil, "OVERLAY")
-						bar.newSpark:SetTexture(C["MediaMisc"].Spark_16)
+						bar.newSpark:SetTexture(C["Media"].Textures.Spark_16)
 						bar.newSpark:SetHeight(bar:GetHeight())
 						bar.newSpark:SetBlendMode("ADD")
 						bar.newSpark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
@@ -75,9 +75,9 @@ table_insert(C.defaultThemes, function()
 		self.Glow2:SetAlpha(0)
 		self.Glow3:SetAlpha(0)
 
-		self.LeftBar:SetTexture(C.Media.Texture)
-		self.NeutralBar:SetTexture(C.Media.Texture)
-		self.RightBar:SetTexture(C.Media.Texture)
+		self.LeftBar:SetTexture(C["Media"].Statusbars.KkthnxUI)
+		self.NeutralBar:SetTexture(C["Media"].Statusbars.KkthnxUI)
+		self.RightBar:SetTexture(C["Media"].Statusbars.KkthnxUI)
 
 		self.LeftBar:SetVertexColor(.2, .6, 1)
 		self.NeutralBar:SetVertexColor(.8, .8, .8)

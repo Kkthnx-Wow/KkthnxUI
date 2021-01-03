@@ -169,7 +169,7 @@ function K:CreateStatusFrame()
 
 	local titleTexture = StatusFrame.TitleLogoFrame:CreateTexture(nil, "ARTWORK")
 	titleTexture:SetPoint("CENTER", titleLogoFrame, "CENTER")
-	titleTexture:SetTexture(C["MediaMisc"].Logo)
+	titleTexture:SetTexture(C["Media"].Textures.Logo)
 	titleTexture:SetSize(512, 256)
 	titleTexture:SetBlendMode("ADD")
 	titleTexture:SetAlpha(0.06)

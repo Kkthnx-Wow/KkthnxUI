@@ -188,7 +188,7 @@ function Module:CreateFocus()
 		self.Castbar:SetHeight(18)
 
 		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-		self.Castbar.Spark:SetTexture(C["MediaMisc"].Spark_128)
+		self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark_128)
 		self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
 
@@ -300,7 +300,7 @@ function Module:CreateFocus()
 	if C["Unitframe"].DebuffHighlight then
 		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
 		self.DebuffHighlight:SetAllPoints(self.Health)
-		self.DebuffHighlight:SetTexture(C["MediaMisc"].Blank)
+		self.DebuffHighlight:SetTexture(C["Media"].Textures.Blank)
 		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
 		self.DebuffHighlight:SetBlendMode("ADD")
 

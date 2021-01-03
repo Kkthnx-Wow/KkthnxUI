@@ -122,7 +122,7 @@ local function AW_CreateCheckBox(parent, text, x, y, tip)
 	bg:CreateBorder()
 	cb.bg = bg
 
-	cb:SetHighlightTexture(C["MediaMisc"].Blank)
+	cb:SetHighlightTexture(C["Media"].Textures.Blank)
 	local hl = cb:GetHighlightTexture()
 	hl:SetPoint("TOPLEFT", bg, "TOPLEFT", 2, -2)
 	hl:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", -2, 2)
@@ -489,7 +489,7 @@ local function CreatePanel()
 		bg:CreateBorder()
 		bu.bg = bg
 
-		bu:SetHighlightTexture(C.Media.Texture)
+		bu:SetHighlightTexture(C["Media"].Statusbars.KkthnxUI)
 		local hl = bu:GetHighlightTexture()
 		hl:SetPoint("TOPLEFT", bg, "TOPLEFT", 2, -2)
 		hl:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", -2, 2)

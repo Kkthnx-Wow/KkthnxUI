@@ -127,7 +127,7 @@ function Module:CreatePartyPet()
 
 	self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.DebuffHighlight:SetAllPoints(self.Health)
-	self.DebuffHighlight:SetTexture(C["MediaMisc"].Blank)
+	self.DebuffHighlight:SetTexture(C["Media"].Textures.Blank)
 	self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
 	self.DebuffHighlight:SetBlendMode("ADD")
 	self.DebuffHighlightAlpha = 0.45

@@ -222,7 +222,7 @@ function Module:CreateRaid()
 	if C["Raid"].AuraTrack then
 		self.AuraTrack= CreateFrame("Frame", nil, self.Health)
 		self.AuraTrack:SetAllPoints()
-		self.AuraTrack.Texture = C["MediaMisc"].Blank
+		self.AuraTrack.Texture = C["Media"].Textures.Blank
 		self.AuraTrack.Icons = C["Raid"].AuraTrackIcons
 		self.AuraTrack.SpellTextures = C["Raid"].AuraTrackSpellTextures
 		self.AuraTrack.Thickness = C["Raid"].AuraTrackThickness
@@ -283,7 +283,7 @@ function Module:CreateRaid()
 
 	if C["Raid"].TargetHighlight then
 		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
-		self.TargetHighlight:SetBackdrop({edgeFile = C["MediaSettings"].BorderGlow, edgeSize = 12})
+		self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].Borders.Glow, edgeSize = 12})
 		self.TargetHighlight:SetPoint("TOPLEFT", self, -5, 5)
 		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self, 5, -5)
 		self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
@@ -303,7 +303,7 @@ function Module:CreateRaid()
 
 	self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.DebuffHighlight:SetAllPoints(self.Health)
-	self.DebuffHighlight:SetTexture(C["MediaMisc"].Blank)
+	self.DebuffHighlight:SetTexture(C["Media"].Textures.Blank)
 	self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
 	self.DebuffHighlight:SetBlendMode("ADD")
 

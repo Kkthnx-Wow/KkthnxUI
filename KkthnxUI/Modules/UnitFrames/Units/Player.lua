@@ -199,7 +199,7 @@ function Module:CreatePlayer()
 		self.Castbar:CreateBorder()
 
 		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-		self.Castbar.Spark:SetTexture(C["MediaMisc"].Spark_128)
+		self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark_128)
 		self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
 
@@ -401,7 +401,7 @@ function Module:CreatePlayer()
 		end
 
 		self.AdditionalPower.Spark = self.AdditionalPower:CreateTexture(nil, "OVERLAY")
-		self.AdditionalPower.Spark:SetTexture(C["MediaMisc"].Spark_16)
+		self.AdditionalPower.Spark:SetTexture(C["Media"].Textures.Spark_16)
 		self.AdditionalPower.Spark:SetAlpha(0.4)
 		self.AdditionalPower.Spark:SetHeight(5)
 		self.AdditionalPower.Spark:SetBlendMode("ADD")
@@ -463,7 +463,7 @@ function Module:CreatePlayer()
 			self.FloatingCombatFeedback[i] = parentFrame:CreateFontString("$parentText", "OVERLAY")
 		end
 
-		self.FloatingCombatFeedback.font = C["MediaFonts"].KKUI_Damage
+		self.FloatingCombatFeedback.font = C["Media"].Fonts.Damage
 		self.FloatingCombatFeedback.fontFlags = "OUTLINE"
 		self.FloatingCombatFeedback.showPets = C["Unitframe"].PetCombatText
 		self.FloatingCombatFeedback.showHots = C["Unitframe"].HotsDots
@@ -504,7 +504,7 @@ function Module:CreatePlayer()
 		end
 
 		self.Swing.Twohand.Spark = self.Swing.Twohand:CreateTexture(nil, "OVERLAY")
-		self.Swing.Twohand.Spark:SetTexture(C["MediaMisc"].Spark_16)
+		self.Swing.Twohand.Spark:SetTexture(C["Media"].Textures.Spark_16)
 		self.Swing.Twohand.Spark:SetHeight(self.Swing:GetHeight())
 		self.Swing.Twohand.Spark:SetBlendMode("ADD")
 		self.Swing.Twohand.Spark:SetPoint("CENTER", self.Swing.Twohand:GetStatusBarTexture(), "RIGHT", 0, 0)
@@ -529,7 +529,7 @@ function Module:CreatePlayer()
 		end
 
 		self.Swing.Mainhand.Spark = self.Swing.Mainhand:CreateTexture(nil, "OVERLAY")
-		self.Swing.Mainhand.Spark:SetTexture(C["MediaMisc"].Spark_16)
+		self.Swing.Mainhand.Spark:SetTexture(C["Media"].Textures.Spark_16)
 		self.Swing.Mainhand.Spark:SetHeight(self.Swing:GetHeight())
 		self.Swing.Mainhand.Spark:SetBlendMode("ADD")
 		self.Swing.Mainhand.Spark:SetPoint("CENTER", self.Swing.Mainhand:GetStatusBarTexture(), "RIGHT", 0, 0)
@@ -553,7 +553,7 @@ function Module:CreatePlayer()
 		end
 
 		self.Swing.Offhand.Spark = self.Swing.Offhand:CreateTexture(nil, "OVERLAY")
-		self.Swing.Offhand.Spark:SetTexture(C["MediaMisc"].Spark_16)
+		self.Swing.Offhand.Spark:SetTexture(C["Media"].Textures.Spark_16)
 		self.Swing.Offhand.Spark:SetHeight(self.Swing:GetHeight())
 		self.Swing.Offhand.Spark:SetBlendMode("ADD")
 		self.Swing.Offhand.Spark:SetPoint("CENTER", self.Swing.Offhand:GetStatusBarTexture(), "RIGHT", 0, 0)
@@ -623,7 +623,7 @@ function Module:CreatePlayer()
 	if C["Unitframe"].DebuffHighlight then
 		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
 		self.DebuffHighlight:SetAllPoints(self.Health)
-		self.DebuffHighlight:SetTexture(C["MediaMisc"].Blank)
+		self.DebuffHighlight:SetTexture(C["Media"].Textures.Blank)
 		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
 		self.DebuffHighlight:SetBlendMode("ADD")
 

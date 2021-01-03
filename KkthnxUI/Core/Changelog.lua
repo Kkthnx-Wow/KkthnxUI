@@ -42,7 +42,7 @@ local function changelog()
 	kkthnxLogo:SetSize(512, 256)
 	kkthnxLogo:SetBlendMode("ADD")
 	kkthnxLogo:SetAlpha(0.06)
-	kkthnxLogo:SetTexture(C["MediaMisc"].Logo)
+	kkthnxLogo:SetTexture(C["Media"].Textures.Logo)
 	kkthnxLogo:SetPoint("CENTER", changelogFrame, "CENTER", 0, 0)
 
 	local leftLine = CreateFrame("Frame", nil, changelogFrame)

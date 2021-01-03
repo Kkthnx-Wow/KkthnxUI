@@ -61,7 +61,20 @@ BlizzardFontOutline:SetFont(_G.STANDARD_TEXT_FONT, fontSize, "OUTLINE")
 BlizzardFontOutline:SetShadowColor(0, 0, 0, 0)
 BlizzardFontOutline:SetShadowOffset(0, -0)
 
-local TextureTable = C["MediaStatusbars"]
+local TextureTable = {
+	["AltzUI"] = C["Media"].Statusbars.AltzUI,
+	["AsphyxiaUI"] = C["Media"].Statusbars.AsphyxiaUI,
+	["AzeriteUI"] = C["Media"].Statusbars.AzeriteUI,
+	["Blank"] = C["Media"].Statusbars.Blank,
+	["DiabolicUI"] = C["Media"].Statusbars.DiabolicUI,
+	["Flat"] = C["Media"].Statusbars.Flat,
+	["GoldpawUI"] = C["Media"].Statusbars.GoldpawUI,
+	["KkthnxUI"] = C["Media"].Statusbars.KkthnxUI,
+	["Palooza"] = C["Media"].Statusbars.Palooza,
+	["SkullFlowerUI"] = C["Media"].Statusbars.SkullFlowerUI,
+	["Tukui"] = C["Media"].Statusbars.Tukui,
+	["ZorkUI"] = C["Media"].Statusbars.ZorkUI,
+}
 
 local FontTable = {
 	["Blizzard Outline"] = "BlizzardFontOutline",
