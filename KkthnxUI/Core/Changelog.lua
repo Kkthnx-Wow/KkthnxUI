@@ -15,8 +15,10 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Added option to turn off the new maw threat bar",
+	"Added health value decimal to tags",
 	"Added option for main tank frames",
+	"Added option to turn off the new maw threat bar",
+	"Updated inventory upgrade/quest/favorite icon code",
 }
 
 local changelogFrame
