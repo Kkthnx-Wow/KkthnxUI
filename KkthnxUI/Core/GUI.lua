@@ -26,7 +26,7 @@ end
 
 local Font = C["MediaFonts"].KKUI_Normal
 local Texture = C["MediaMisc"].Texture
--- local Blank = C["MedMediaMiscia"].Blank
+-- local Blank = C["MediaMisc"].Blank
 
 local ArrowUp = "Interface\\Buttons\\Arrow-Up-Down"
 local ArrowDown = "Interface\\Buttons\\Arrow-Down-Down"
