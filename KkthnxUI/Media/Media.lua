@@ -38,8 +38,6 @@ C["Media"] = {
 		Blank = [[Interface\AddOns\KkthnxUI\Media\Fonts\Invisible.ttf]],
 		Damage = [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]],
 		KkthnxUI = [[Interface\AddOns\KkthnxUI\Media\Fonts\Normal.ttf]],
-		Size = 12,
-		Style = "OUTLINE",
 	},
 
 	["Statusbars"] = {
