@@ -257,7 +257,7 @@ local function ForceDBMOptions()
 				["EndColorR"] = 1,
 				["EndColorG"] = 0,
 				["EndColorB"] = 0,
-				["Texture"] = C["Media"].Textures.KkthnxUI,
+				["Texture"] = C["Media"].Statusbars.KkthnxUI,
 			},
 		},
 	}

@@ -18,7 +18,11 @@ local changelogData = {
 	"Added health value decimal to tags",
 	"Added option for main tank frames",
 	"Added option to turn off the new maw threat bar",
+	"Fixed overlapping abilities when both zone/extra abilities are shown @AmiraVera",
+	"Fixed quest tracker bar texture setting not working @AmiraVera",
+	"Updated LICENSE for 2021",
 	"Updated inventory upgrade/quest/favorite icon code",
+	"Updated the way we handle media files @AmiraVera",
 }
 
 local changelogFrame
