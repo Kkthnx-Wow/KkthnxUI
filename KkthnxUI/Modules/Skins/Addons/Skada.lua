@@ -40,7 +40,7 @@ function Module:ReskinSkada()
 			if not skada.button.isSkinned then
 				skada.button.Background = skada.button:CreateTexture(nil, "BACKGROUND", -1)
 				skada.button.Background:SetAllPoints(skada.button)
-				skada.button.Background:SetColorTexture(C["Media"].Backdrops.Color[1], C["Media"].Backdrops.Color[2], C["Media"].Backdrops.Color[3], C["Media"].Backdrops.Color[4])
+				skada.button.Background:SetColorTexture(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Media"].Backdrops.ColorBackdrop[4])
 				skada.button.isSkinned = true
 			end
 

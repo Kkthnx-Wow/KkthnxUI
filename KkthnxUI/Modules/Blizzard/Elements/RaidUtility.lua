@@ -576,19 +576,21 @@ function Module:RaidTool_CreateMenu(parent)
 					UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_LEADER)
 				end
 		end},
+
 		{CONVERT_TO_RAID, function()
-			if UnitIsGroupLeader("player") and not HasLFGRestrictions() and GetNumGroupMembers() <= 5 then
-				if IsInRaid() then
-					C_PartyInfo.ConvertToParty()
+				if UnitIsGroupLeader("player") and not HasLFGRestrictions() and GetNumGroupMembers() <= 5 then
+					if IsInRaid() then
+						C_PartyInfo.ConvertToParty()
+					else
+						C_PartyInfo.ConvertToRaid()
+					end
+					frame:Hide()
+					frame:SetScript("OnUpdate", nil)
 				else
-					C_PartyInfo.ConvertToRaid()
+					UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_LEADER)
 				end
-				frame:Hide()
-				frame:SetScript("OnUpdate", nil)
-			else
-				UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_LEADER)
-			end
 		end},
+
 		{ROLE_POLL, function()
 				if IsInGroup() and not HasLFGRestrictions() and (UnitIsGroupLeader("player") or (UnitIsGroupAssistant("player") and IsInRaid())) then
 					_G.InitiateRolePoll()
@@ -596,6 +598,7 @@ function Module:RaidTool_CreateMenu(parent)
 					UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_LEADER)
 				end
 		end},
+
 		{RAID_CONTROL, function()
 				_G.ToggleFriendsFrame(3)
 		end},
@@ -716,7 +719,7 @@ function Module:RaidTool_UpdateGrid()
 		button:ClearAllPoints()
 		if i == 1 then
 			button:SetPoint("TOPLEFT", frame, margin, -margin)
-		elseif mod(i - 1, perRow) ==  0 then
+		elseif mod(i - 1, perRow) == 0 then
 			button:SetPoint("TOP", frame.buttons[i - perRow], "BOTTOM", 0, -margin)
 		else
 			button:SetPoint("LEFT", frame.buttons[i - 1], "RIGHT", margin, 0)

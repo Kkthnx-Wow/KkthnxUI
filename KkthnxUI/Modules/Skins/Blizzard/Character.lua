@@ -191,7 +191,7 @@ tinsert(C.defaultThemes, function()
 				object.text.hooked = true
 
 				hooksecurefunc(object.text, "SetFont", function(txt, font)
-					if font ~= C["Media"].Fonts.KkthnxUI then
+					if font ~= C["Media"].Fonts.KkthnxUIFont then
 						txt:FontTemplate(nil, 11)
 					end
 				end)

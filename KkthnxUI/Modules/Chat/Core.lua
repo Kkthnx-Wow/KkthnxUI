@@ -8,7 +8,6 @@ local string_gsub = _G.string.gsub
 local string_find = _G.string.find
 local string_format = _G.string.format
 
-
 local GetInstanceInfo = _G.GetInstanceInfo
 local InCombatLockdown = _G.InCombatLockdown
 local UnitName = _G.UnitName

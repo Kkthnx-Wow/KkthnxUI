@@ -134,94 +134,94 @@ function Module:CreateFocus()
 	end
 
 	--if C["Unitframe"].FocusDeBuffs then
-		local width = 156
+	local width = 156
 
-		self.Debuffs = CreateFrame("Frame", nil, self)
-		self.Debuffs.spacing = 6
-		self.Debuffs.initialAnchor = "TOPLEFT"
-		self.Debuffs["growth-x"] = "RIGHT"
-		self.Debuffs["growth-y"] = "UP"
-		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 56)
-		self.Debuffs.num = 14
-		self.Debuffs.iconsPerRow = 5
+	self.Debuffs = CreateFrame("Frame", nil, self)
+	self.Debuffs.spacing = 6
+	self.Debuffs.initialAnchor = "TOPLEFT"
+	self.Debuffs["growth-x"] = "RIGHT"
+	self.Debuffs["growth-y"] = "UP"
+	self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 56)
+	self.Debuffs.num = 14
+	self.Debuffs.iconsPerRow = 5
 
-		self.Debuffs.size =  Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
-		self.Debuffs:SetWidth(width)
-		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
+	self.Debuffs.size = Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
+	self.Debuffs:SetWidth(width)
+	self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
 
-		self.Debuffs.PostCreateIcon = Module.PostCreateAura
-		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
+	self.Debuffs.PostCreateIcon = Module.PostCreateAura
+	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 	--end
 
 	--if C["Unitframe"].FocusBuffs then
-		--local width = 156
+	--local width = 156
 
-		self.Buffs = CreateFrame("Frame", nil, self)
-		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		self.Buffs.initialAnchor = "TOPLEFT"
-		self.Buffs["growth-x"] = "RIGHT"
-		self.Buffs["growth-y"] = "DOWN"
-		self.Buffs.num = 6
-		self.Buffs.spacing = 6
-		self.Buffs.iconsPerRow = 6
-		self.Buffs.onlyShowPlayer = false
+	self.Buffs = CreateFrame("Frame", nil, self)
+	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+	self.Buffs.initialAnchor = "TOPLEFT"
+	self.Buffs["growth-x"] = "RIGHT"
+	self.Buffs["growth-y"] = "DOWN"
+	self.Buffs.num = 6
+	self.Buffs.spacing = 6
+	self.Buffs.iconsPerRow = 6
+	self.Buffs.onlyShowPlayer = false
 
-		self.Buffs.size = Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing)
-		self.Buffs:SetWidth(width)
-		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+	self.Buffs.size = Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing)
+	self.Buffs:SetWidth(width)
+	self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
 
-		self.Buffs.showStealableBuffs = true
-		self.Buffs.PostCreateIcon = Module.PostCreateAura
-		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
+	self.Buffs.showStealableBuffs = true
+	self.Buffs.PostCreateIcon = Module.PostCreateAura
+	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
 	--end
 
 	--if C["Unitframe"].Castbars then
-		self.Castbar = CreateFrame("StatusBar", "FocusCastbar", self)
-		self.Castbar:SetStatusBarTexture(UnitframeTexture)
-		self.Castbar:SetClampedToScreen(true)
-		self.Castbar:CreateBorder()
+	self.Castbar = CreateFrame("StatusBar", "FocusCastbar", self)
+	self.Castbar:SetStatusBarTexture(UnitframeTexture)
+	self.Castbar:SetClampedToScreen(true)
+	self.Castbar:CreateBorder()
 
-		self.Castbar:ClearAllPoints()
-		self.Castbar:SetPoint("LEFT", -30, 0)
-		self.Castbar:SetPoint("RIGHT")
-		self.Castbar:SetPoint("TOP", 0, 24)
-		self.Castbar:SetHeight(18)
+	self.Castbar:ClearAllPoints()
+	self.Castbar:SetPoint("LEFT", -30, 0)
+	self.Castbar:SetPoint("RIGHT")
+	self.Castbar:SetPoint("TOP", 0, 24)
+	self.Castbar:SetHeight(18)
 
-		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-		self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark_128)
-		self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
-		self.Castbar.Spark:SetBlendMode("ADD")
+	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
+	self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
+	self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
+	self.Castbar.Spark:SetBlendMode("ADD")
 
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
-		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
-		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
-		self.Castbar.Time:SetJustifyH("RIGHT")
+	self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+	self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
+	self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
+	self.Castbar.Time:SetJustifyH("RIGHT")
 
-		self.Castbar.decimal = "%.2f"
+	self.Castbar.decimal = "%.2f"
 
-		self.Castbar.OnUpdate = Module.OnCastbarUpdate
-		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostCastFail = Module.PostCastFailed
-		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+	self.Castbar.OnUpdate = Module.OnCastbarUpdate
+	self.Castbar.PostCastStart = Module.PostCastStart
+	self.Castbar.PostCastStop = Module.PostCastStop
+	self.Castbar.PostCastFail = Module.PostCastFailed
+	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
-		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
-		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)
-		self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
-		self.Castbar.Text:SetJustifyH("LEFT")
-		self.Castbar.Text:SetWordWrap(false)
+	self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+	self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
+	self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)
+	self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
+	self.Castbar.Text:SetJustifyH("LEFT")
+	self.Castbar.Text:SetWordWrap(false)
 
-		self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
-		self.Castbar.Button:SetSize(20, 20)
-		self.Castbar.Button:CreateBorder()
+	self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
+	self.Castbar.Button:SetSize(20, 20)
+	self.Castbar.Button:CreateBorder()
 
-		self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
-		self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
-		self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-		self.Castbar.Icon:SetPoint("RIGHT", self.Castbar, "LEFT", -6, 0)
+	self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
+	self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
+	self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+	self.Castbar.Icon:SetPoint("RIGHT", self.Castbar, "LEFT", -6, 0)
 
-		self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
+	self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
 	--end
 
 	if C["Unitframe"].ShowHealPrediction then
@@ -300,7 +300,7 @@ function Module:CreateFocus()
 	if C["Unitframe"].DebuffHighlight then
 		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
 		self.DebuffHighlight:SetAllPoints(self.Health)
-		self.DebuffHighlight:SetTexture(C["Media"].Textures.Blank)
+		self.DebuffHighlight:SetTexture(C["Media"].Textures.BlankTexture)
 		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
 		self.DebuffHighlight:SetBlendMode("ADD")
 

@@ -1,12 +1,11 @@
 local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
 
 local _G = _G
 local table_insert = _G.table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
 
-tinsert(C.defaultThemes, function()
+table_insert(C.defaultThemes, function()
 	-- Battlenet toast frame
 	BNToastFrame:SetClampedToScreen(true)
 	BNToastFrame:SetBackdrop(nil)

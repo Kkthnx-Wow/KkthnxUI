@@ -1,7 +1,11 @@
 local K, C = unpack(select(2, ...))
 
 C.themes["Blizzard_TalkingHeadUI"] = function()
-	if K.CheckAddOnState("Immersion") or C["Misc"].NoTalkingHead then
+	if IsAddOnLoaded("Immersion") then
+		return
+	end
+
+	if C["Misc"].NoTalkingHead then
 		return
 	end
 

@@ -257,7 +257,7 @@ local function ForceDBMOptions()
 				["EndColorR"] = 1,
 				["EndColorG"] = 0,
 				["EndColorB"] = 0,
-				["Texture"] = C["Media"].Statusbars.KkthnxUI,
+				["Texture"] = C["Media"].Statusbars.KkthnxUIStatusbar,
 			},
 		},
 	}
@@ -502,7 +502,7 @@ local function YesTutor()
 	tutorLogo:SetSize(512, 256)
 	tutorLogo:SetBlendMode("ADD")
 	tutorLogo:SetAlpha(0.07)
-	tutorLogo:SetTexture(C["Media"].Textures.Logo)
+	tutorLogo:SetTexture(C["Media"].Textures.LogoTexture)
 	tutorLogo:SetPoint("CENTER", tutor, "CENTER", 0, 0)
 
 	K.CreateFontString(tutor, 30, K.Title, "", true, "TOPLEFT", 10, 25)
@@ -631,7 +631,7 @@ local function HelloWorld()
 	welcomeLogo:SetSize(512, 256)
 	welcomeLogo:SetBlendMode("ADD")
 	welcomeLogo:SetAlpha(0.07)
-	welcomeLogo:SetTexture(C["Media"].Textures.Logo)
+	welcomeLogo:SetTexture(C["Media"].Textures.LogoTexture)
 	welcomeLogo:SetPoint("CENTER", welcome, "CENTER", 0, 0)
 
 	local welcomeBoss = welcome:CreateTexture(nil, "OVERLAY")

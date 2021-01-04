@@ -159,7 +159,7 @@ function Module:CreateArena()
 		self.Castbar:SetHeight(16)
 
 		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-		self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark_128)
+		self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
 		self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
 

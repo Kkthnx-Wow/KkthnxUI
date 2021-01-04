@@ -53,33 +53,33 @@ end)
 
 local visibilityState = "[extrabar][petbattle] hide; show"
 local onAttributeChanged = [[
-	if name == "item" then
-		if value and not self:IsShown() and not HasExtraActionBar() then
-			self:Show()
-		elseif not value then
-			self:Hide()
-			self:ClearBindings()
-		end
-	elseif name == "state-visible" then
-		if value == "show" then
-			self:Show()
-			self:CallMethod("Update")
-		else
-			self:Hide()
-			self:ClearBindings()
-		end
-	end
-
-	if self:IsShown() then
+if name == "item" then
+	if value and not self:IsShown() and not HasExtraActionBar() then
+		self:Show()
+	elseif not value then
+		self:Hide()
 		self:ClearBindings()
-		local key1, key2 = GetBindingKey("EXTRAACTIONBUTTON1")
-		if key1 then
-			self:SetBindingClick(1, key1, self, "LeftButton")
-		end
-		if key2 then
-			self:SetBindingClick(2, key2, self, "LeftButton")
-		end
 	end
+elseif name == "state-visible" then
+	if value == "show" then
+		self:Show()
+		self:CallMethod("Update")
+	else
+		self:Hide()
+		self:ClearBindings()
+	end
+end
+
+if self:IsShown() then
+	self:ClearBindings()
+	local key1, key2 = GetBindingKey("EXTRAACTIONBUTTON1")
+	if key1 then
+		self:SetBindingClick(1, key1, self, "LeftButton")
+	end
+	if key2 then
+		self:SetBindingClick(2, key2, self, "LeftButton")
+	end
+end
 ]]
 
 function ExtraQuestButton:BAG_UPDATE_COOLDOWN()

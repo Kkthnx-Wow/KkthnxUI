@@ -1,7 +1,7 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Automation")
 
---	Automatically sets your role (iSpawnAtHome)
+-- Automatically sets your role (iSpawnAtHome)
 
 local _G = _G
 

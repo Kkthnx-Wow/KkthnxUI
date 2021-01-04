@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, _, L = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
@@ -180,12 +180,12 @@ function Module:KeystoneInfo_Create()
 	local iconColor = K.QualityColors[LE_ITEM_QUALITY_EPIC or 4]
 	local button = CreateFrame("Frame", nil, ChallengesFrame.WeeklyInfo, "BackdropTemplate")
 	button:SetPoint("BOTTOMLEFT", 2, 67)
-    button:SetSize(32, 32)
+	button:SetSize(32, 32)
 
 	button.Icon = button:CreateTexture(nil, "ARTWORK")
 	button.Icon:SetAllPoints()
-    button.Icon:SetTexCoord(unpack(K.TexCoords))
-    button.Icon:SetTexture(texture)
+	button.Icon:SetTexCoord(unpack(K.TexCoords))
+	button.Icon:SetTexture(texture)
 
 	button:CreateBorder()
 	button.KKUI_Border:SetVertexColor(iconColor.r, iconColor.g, iconColor.b)

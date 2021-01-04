@@ -206,7 +206,7 @@ local function updateCastBarTicks(bar, numTicks)
 		for i = 1, numTicks do
 			if not castbarTicks[i] then
 				castbarTicks[i] = bar:CreateTexture(nil, "OVERLAY")
-				castbarTicks[i]:SetTexture(C["Media"].Textures.Blank)
+				castbarTicks[i]:SetTexture(C["Media"].Textures.BlankTexture)
 				castbarTicks[i]:SetVertexColor(0, 0, 0, 0.8)
 				castbarTicks[i]:SetWidth(2 * K.Mult)
 				castbarTicks[i]:SetHeight(bar:GetHeight())
@@ -1075,5 +1075,4 @@ function Module:OnEnable()
 			ORD.MatchBySpellName = false
 		end
 	end
-
 end

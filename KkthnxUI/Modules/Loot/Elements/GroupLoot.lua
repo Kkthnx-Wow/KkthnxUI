@@ -206,7 +206,7 @@ function Module:CreateRollFrame()
 
 	local spark = frame:CreateTexture(nil, "OVERLAY")
 	spark:SetSize(128, FRAME_HEIGHT)
-	spark:SetTexture(C["Media"].Textures.Spark_128)
+	spark:SetTexture(C["Media"].Textures.Spark128Texture)
 	spark:SetBlendMode("ADD")
 	status.spark = spark
 

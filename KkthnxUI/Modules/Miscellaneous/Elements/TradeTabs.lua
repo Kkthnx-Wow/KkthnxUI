@@ -13,7 +13,6 @@ local C_TradeSkillUI_GetOnlyShowMakeableRecipes = _G.C_TradeSkillUI.GetOnlyShowM
 local C_TradeSkillUI_GetOnlyShowSkillUpRecipes = _G.C_TradeSkillUI.GetOnlyShowSkillUpRecipes
 local C_TradeSkillUI_SetOnlyShowMakeableRecipes = _G.C_TradeSkillUI.SetOnlyShowMakeableRecipes
 local C_TradeSkillUI_SetOnlyShowSkillUpRecipes = _G.C_TradeSkillUI.SetOnlyShowSkillUpRecipes
-local CastSpell = _G.CastSpell
 local CreateFrame = _G.CreateFrame
 local GetItemCooldown = _G.GetItemCooldown
 local GetItemCount = _G.GetItemCount

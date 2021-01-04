@@ -52,20 +52,21 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	end
 	local BorderTexture = bTexture or "Interface\\AddOns\\KkthnxUI\\Media\\Border\\"..C["General"].BorderStyle.Value.."\\Border.tga"
 	local BorderOffset = bOffset or -4
-	local BorderRed = bRed or C["General"].ColorTextures and C["General"].TexturesColor[1] or C["Media"].Borders.Color[1]
-	local BorderGreen = bGreen or C["General"].ColorTextures and C["General"].TexturesColor[2] or C["Media"].Borders.Color[2]
-	local BorderBlue = bBlue or C["General"].ColorTextures and C["General"].TexturesColor[3] or C["Media"].Borders.Color[3]
+	local BorderRed = bRed or C["General"].ColorTextures and C["General"].TexturesColor[1] or C["Media"].Borders.ColorBorder[1]
+	local BorderGreen = bGreen or C["General"].ColorTextures and C["General"].TexturesColor[2] or C["Media"].Borders.ColorBorder[2]
+	local BorderBlue = bBlue or C["General"].ColorTextures and C["General"].TexturesColor[3] or C["Media"].Borders.ColorBorder[3]
 	local BorderAlpha = bAlpha or 1
 
 	-- Background
-	local BackgroundTexture = bgTexture or C["Media"].Textures.Blank
+	local BackgroundTexture = bgTexture or C["Media"].Textures.BlankTexture
+
 	local BackgroundSubLevel = bgSubLevel or "BACKGROUND"
 	local BackgroundLayer = bgLayer or -1
 	local BackgroundPoint = bgPoint or 0
-	local BackgroundRed = bgRed or C["Media"].Backdrops.Color[1]
-	local BackgroundGreen = bgGreen or C["Media"].Backdrops.Color[2]
-	local BackgroundBlue = bgBlue or C["Media"].Backdrops.Color[3]
-	local BackgroundAlpha = bgAlpha or C["Media"].Backdrops.Color[4]
+	local BackgroundRed = bgRed or C["Media"].Backdrops.ColorBackdrop[1]
+	local BackgroundGreen = bgGreen or C["Media"].Backdrops.ColorBackdrop[2]
+	local BackgroundBlue = bgBlue or C["Media"].Backdrops.ColorBackdrop[3]
+	local BackgroundAlpha = bgAlpha or C["Media"].Backdrops.ColorBackdrop[4]
 	local UseBackground = bgBackground or true
 
 	-- Create Our Border
@@ -131,20 +132,20 @@ local function CreateShadow(f, bd)
 	f.Shadow:SetPoint("BOTTOMRIGHT", f, 3, -3)
 	if bd then
 		f.Shadow:SetBackdrop({
-			bgFile = C["Media"].Textures.Blank,
-			edgeFile = C["Media"].Textures.Glow,
+			bgFile = C["Media"].Textures.BlankTexture,
+			edgeFile = C["Media"].Textures.GlowTexture,
 			edgeSize = 3,
 			insets = {left = 3, right = 3, top = 3, bottom = 3}
 		})
 	else
 		f.Shadow:SetBackdrop({
-			edgeFile = C["Media"].Textures.Glow,
+			edgeFile = C["Media"].Textures.GlowTexture,
 			edgeSize = 3
 		})
 	end
 	f.Shadow:SetFrameLevel(lvl == 0 and 0 or lvl - 1)
 	if bd then
-		f.Shadow:SetBackdropColor(C["Media"].Backdrops.Color[1], C["Media"].Backdrops.Color[2], C["Media"].Backdrops.Color[3], C["Media"].Backdrops.Color[4])
+		f.Shadow:SetBackdropColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Media"].Backdrops.ColorBackdrop[4])
 	end
 	f.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 
@@ -223,7 +224,8 @@ local function FontTemplate(fs, font, fontSize, fontStyle)
 	fs.fontSize = fontSize
 	fs.fontStyle = fontStyle
 
-	font = font or C["Media"].Fonts.KkthnxUI
+	font = font or C["Media"].Fonts.KkthnxUIFont
+
 	fontSize = fontSize or 12
 
 	if fontSize > 12 and not fs.fontSize then
@@ -432,7 +434,8 @@ local arrowDegree = {
 }
 
 local function SetupArrow(self, direction)
-	self:SetTexture(C["Media"].Textures.Arrow)
+	self:SetTexture(C["Media"].Textures.ArrowTexture
+	)
 	self:SetRotation(rad(arrowDegree[direction]))
 end
 

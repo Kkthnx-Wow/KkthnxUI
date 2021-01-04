@@ -7,6 +7,8 @@ local string_gsub = _G.string.gsub
 local string_match = _G.string.match
 local string_trim = _G.string.trim
 
+local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
+
 -- Thanks to ElvUI for providing great textures
 local getEmojiMedia = "Interface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\"
 local setEmojiTexture = {

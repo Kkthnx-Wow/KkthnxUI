@@ -15,7 +15,7 @@ local function SkinIt(bar)
 		if region:GetObjectType() == "Texture" then
 			region:SetTexture(nil)
 		elseif region:GetObjectType() == "FontString" then
-			region:SetFont(C["Media"].Fonts.KkthnxUI, 13, "")
+			region:SetFont(C["Media"].Fonts.KkthnxUIFont, 13, "")
 			region:SetShadowOffset(1.25, -1.25)
 		end
 	end
@@ -28,7 +28,7 @@ local function SkinIt(bar)
 	bar.spark = bar:CreateTexture(nil, "OVERLAY")
 	bar.spark:SetWidth(64)
 	bar.spark:SetHeight(bar:GetHeight())
-	bar.spark:SetTexture(C["Media"].Textures.Spark_128)
+	bar.spark:SetTexture(C["Media"].Textures.Spark128Texture)
 	bar.spark:SetBlendMode("ADD")
 	bar.spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
 end

@@ -41,7 +41,6 @@ local UnitName = _G.UnitName
 local UnitNameplateShowsWidgetsOnly = _G.UnitNameplateShowsWidgetsOnly
 local UnitPlayerControlled = _G.UnitPlayerControlled
 local UnitReaction = _G.UnitReaction
-local UnitSelectionColor = _G.UnitSelectionColor
 local UnitThreatSituation = _G.UnitThreatSituation
 local hooksecurefunc = _G.hooksecurefunc
 
@@ -396,19 +395,19 @@ function Module:AddTargetIndicator(self)
 
 	self.TargetIndicator.TopArrow = self.TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
 	self.TargetIndicator.TopArrow:SetSize(50, 50)
-	self.TargetIndicator.TopArrow:SetTexture(C["Media"].Textures.TargetIndicatorArrow)
+	self.TargetIndicator.TopArrow:SetTexture(C["Media"].Textures.TargetIndicatorTexture)
 	self.TargetIndicator.TopArrow:SetPoint("BOTTOM", self.TargetIndicator, "TOP", 0, 40)
 
 	self.TargetIndicator.RightArrow = self.TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
 	self.TargetIndicator.RightArrow:SetSize(50, 50)
-	self.TargetIndicator.RightArrow:SetTexture(C["Media"].Textures.TargetIndicatorArrow)
+	self.TargetIndicator.RightArrow:SetTexture(C["Media"].Textures.TargetIndicatorTexture)
 	self.TargetIndicator.RightArrow:SetPoint("LEFT", self.TargetIndicator, "RIGHT", 3, 0)
 	self.TargetIndicator.RightArrow:SetRotation(math_rad(-90))
 
 	self.TargetIndicator.Glow = CreateFrame("Frame", nil, self.TargetIndicator, "BackdropTemplate")
 	self.TargetIndicator.Glow:SetPoint("TOPLEFT", self.Health.backdrop, -2, 2)
 	self.TargetIndicator.Glow:SetPoint("BOTTOMRIGHT", self.Health.backdrop, 2, -2)
-	self.TargetIndicator.Glow:SetBackdrop({edgeFile = C["Media"].Textures.Glow, edgeSize = 4})
+	self.TargetIndicator.Glow:SetBackdrop({edgeFile = C["Media"].Textures.GlowTexture, edgeSize = 4})
 	self.TargetIndicator.Glow:SetBackdropBorderColor(unpack(C["Nameplate"].TargetIndicatorColor))
 	self.TargetIndicator.Glow:SetFrameLevel(0)
 
@@ -818,7 +817,7 @@ function Module:CreatePlates()
 	self.Castbar:SetHeight(self:GetHeight())
 
 	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-	self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark_128)
+	self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
 	self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
 	self.Castbar.Spark:SetBlendMode("ADD")
 
@@ -1303,7 +1302,7 @@ function Module:CreateGCDTicker(self)
 	ticker:SetAllPoints()
 
 	local spark = ticker:CreateTexture(nil, "OVERLAY")
-	spark:SetTexture(C["Media"].Textures.Spark_16)
+	spark:SetTexture(C["Media"].Textures.Spark16Texture)
 	spark:SetSize(8, self.Power:GetHeight())
 	spark:SetBlendMode("ADD")
 	spark:SetPoint("CENTER", ticker:GetStatusBarTexture(), "RIGHT", 0, 0)

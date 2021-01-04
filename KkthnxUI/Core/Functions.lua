@@ -136,7 +136,7 @@ function K.CreateGF(self, w, h, o, r, g, b, a1, a2)
 
 	local gradientFrame = self:CreateTexture(nil, "BACKGROUND")
 	gradientFrame:SetAllPoints()
-	gradientFrame:SetTexture(C["Media"].Textures.Blank)
+	gradientFrame:SetTexture(C["Media"].Textures.BlankTexture)
 	gradientFrame:SetGradientAlpha(o, r, g, b, a1, r, g, b, a2)
 end
 
@@ -144,10 +144,10 @@ function K.CreateFontString(self, size, text, textstyle, classcolor, anchor, x, 
 	local fs = self:CreateFontString(nil, "OVERLAY")
 
 	if textstyle == " " or textstyle == "" or textstyle == nil then
-		fs:SetFont(C["Media"].Fonts.KkthnxUI, size, "")
+		fs:SetFont(C["Media"].Fonts.KkthnxUIFont, size, "")
 		fs:SetShadowOffset(1, -1 / 2)
 	else
-		fs:SetFont(C["Media"].Fonts.KkthnxUI, size, "OUTLINE")
+		fs:SetFont(C["Media"].Fonts.KkthnxUIFont, size, "OUTLINE")
 		fs:SetShadowOffset(0, 0)
 	end
 	fs:SetText(text)

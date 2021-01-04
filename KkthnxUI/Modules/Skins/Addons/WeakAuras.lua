@@ -5,7 +5,6 @@ local _G = _G
 local pairs = _G.pairs
 local unpack = _G.unpack
 
-local IsAddOnLoaded = _G.IsAddOnLoaded
 local hooksecurefunc = _G.hooksecurefunc
 
 local function IconBgOnUpdate(self)

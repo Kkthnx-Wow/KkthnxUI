@@ -246,12 +246,12 @@ local function BuildBAR(barWidth, iconSize)
 	frame.Statusbar:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", 6, 0)
 	frame.Statusbar:SetMinMaxValues(0, 1)
 	frame.Statusbar:SetValue(0)
-	frame.Statusbar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUI)
+	frame.Statusbar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
 	frame.Statusbar:SetStatusBarColor(K.r, K.g, K.b)
 	frame.Statusbar:CreateBorder()
 
 	frame.Statusbar.Spark = frame.Statusbar:CreateTexture(nil, "OVERLAY")
-	frame.Statusbar.Spark:SetTexture(C["Media"].Textures.Spark_16)
+	frame.Statusbar.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
 	frame.Statusbar.Spark:SetSize(16, frame.Statusbar:GetHeight())
 	frame.Statusbar.Spark:SetBlendMode("ADD")
 	frame.Statusbar.Spark:SetPoint("CENTER", frame.Statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
@@ -790,7 +790,6 @@ function Module.AuraWatch_OnEvent(event, ...)
 end
 K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.AuraWatch_OnEvent)
 K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.AuraWatch_OnEvent)
-K.AddForProfiling("AuraWatch Events", "AuraWatch_OnEvent",  Module.AuraWatch_OnEvent)
 
 function Module:AuraWatch_OnUpdate(elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed

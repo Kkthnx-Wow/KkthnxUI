@@ -13,7 +13,6 @@ local GetUnitPowerBarStrings = _G.GetUnitPowerBarStrings
 local AltPowerWidth = 250
 local AltPowerHeight = 20
 
-
 local function updateTooltip(self)
 	if _G.GameTooltip:IsForbidden() then
 		return
@@ -87,7 +86,7 @@ function Module:UpdateAltPowerBarSettings()
 	local bar = _G.KKUI_AltPowerBar
 
 	bar:SetSize(AltPowerWidth or 250, AltPowerHeight or 20)
-	bar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUI)
+	bar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
 	bar.text:FontTemplate()
 
 	_G.AltPowerBarHolder:SetSize(bar:GetSize())
@@ -147,7 +146,7 @@ function Module:SkinAltPowerBar()
 	Module:UpdateAltPowerBarSettings()
 	Module:UpdateAltPowerBarColors()
 
-	--Event handling
+	-- Event handling
 	powerbar:RegisterEvent("UNIT_POWER_UPDATE")
 	powerbar:RegisterEvent("UNIT_POWER_BAR_SHOW")
 	powerbar:RegisterEvent("UNIT_POWER_BAR_HIDE")
@@ -157,8 +156,10 @@ end
 
 
 function Module:CreateAltPowerbar()
-	if not IsAddOnLoaded("SimplePowerBar") then
-		self:PositionAltPowerBar()
-		self:SkinAltPowerBar()
+	if IsAddOnLoaded("SimplePowerBar") then
+		return
 	end
+
+	self:PositionAltPowerBar()
+	self:SkinAltPowerBar()
 end

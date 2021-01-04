@@ -11,7 +11,7 @@ local UIParent = _G.UIParent
 local IsAddOnLoaded = _G.IsAddOnLoaded
 
 function Module:ScaleTalkingHeadFrame()
-	local scale = 0.9
+	local scale = 1.0
 	local TalkingHeadFrame = _G.TalkingHeadFrame
 	local width, height = TalkingHeadFrame:GetSize()
 	TalkingHeadFrame.mover:SetSize(width * scale, height * scale)

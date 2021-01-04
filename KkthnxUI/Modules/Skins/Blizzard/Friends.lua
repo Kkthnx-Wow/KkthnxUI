@@ -1,18 +1,17 @@
-local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
+local _, C = unpack(select(2, ...))
 
 local _G = _G
 local table_insert = _G.table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
 
-tinsert(C.defaultThemes, function()
+table_insert(C.defaultThemes, function()
 	-- GameIcons
 	for i = 1, FRIENDS_TO_DISPLAY do
 		local bu = _G["FriendsListFrameScrollFrameButton"..i]
 		local ic = bu.gameIcon
 
-		bu:SetHighlightTexture(C["Media"].Textures.Blank)
+		bu:SetHighlightTexture(C["Media"].Textures.BlankTexture)
 		bu:GetHighlightTexture():SetVertexColor(.24, .56, 1, .2)
 
 		ic:SetSize(22, 22)

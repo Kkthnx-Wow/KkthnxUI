@@ -136,11 +136,11 @@ function Module:ReskinDeadlyBossMods()
 				end
 
 				if not texture.styled then
-					texture:SetTexture(C["Media"].Statusbars.KkthnxUI)
+					texture:SetTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
 					texture.styled = true
 				end
 
-				tbar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUI)
+				tbar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
 				if not tbar.styled then
 					tbar:SetPoint("TOPLEFT", frame, "TOPLEFT")
 					tbar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT")
@@ -148,7 +148,7 @@ function Module:ReskinDeadlyBossMods()
 					tbar.styled = true
 
 					tbar.Spark = tbar:CreateTexture(nil, "OVERLAY")
-					tbar.Spark:SetTexture(C["Media"].Textures.Spark_16)
+					tbar.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
 					tbar.Spark:SetBlendMode("ADD")
 					tbar.Spark:SetAlpha(.8)
 					tbar.Spark:SetPoint("TOPLEFT", tbar:GetStatusBarTexture(), "TOPRIGHT", -16, 0)
@@ -160,7 +160,7 @@ function Module:ReskinDeadlyBossMods()
 					name:SetPoint("LEFT", frame, "LEFT", 2, 8)
 					name:SetPoint("RIGHT", frame, "LEFT", tbar:GetWidth() * 0.85, 8)
 					name.SetPoint = K.Noop
-					name:SetFont(C["Media"].Fonts.KkthnxUI, 12, "OUTLINE")
+					name:SetFont(C["Media"].Fonts.KkthnxUIFont, 12, "OUTLINE")
 					name.SetFont = K.Noop
 					name:SetJustifyH("LEFT")
 					name:SetWordWrap(false)
@@ -172,7 +172,7 @@ function Module:ReskinDeadlyBossMods()
 					timer:ClearAllPoints()
 					timer:SetPoint("RIGHT", frame, "RIGHT", -2, 8)
 					timer.SetPoint = K.Noop
-					timer:SetFont(C["Media"].Fonts.KkthnxUI, 12, "OUTLINE")
+					timer:SetFont(C["Media"].Fonts.KkthnxUIFont, 12, "OUTLINE")
 					timer.SetFont = K.Noop
 					timer:SetJustifyH("RIGHT")
 					timer:SetShadowColor(0, 0, 0, 0)
@@ -225,15 +225,19 @@ function Module:ReskinDeadlyBossMods()
 	if not DBM_AllSavedOptions["Default"] then
 		DBM_AllSavedOptions["Default"] = {}
 	end
+
 	DBM_AllSavedOptions["Default"]["BlockVersionUpdateNotice"] = true
 	DBM_AllSavedOptions["Default"]["EventSoundVictory"] = "None"
+
 	if IsAddOnLoaded("DBM-VPYike") then
 		DBM_AllSavedOptions["Default"]["CountdownVoice"] = "VP:Yike"
 		DBM_AllSavedOptions["Default"]["ChosenVoicePack"] = "Yike"
 	end
+
 	if not DBT_AllPersistentOptions["Default"] then
 		DBT_AllPersistentOptions["Default"] = {}
 	end
+
 	DBT_AllPersistentOptions["Default"]["DBM"].BarYOffset = 20
 	DBT_AllPersistentOptions["Default"]["DBM"].HugeBarYOffset = 20
 	DBT_AllPersistentOptions["Default"]["DBM"].ExpandUpwards = true

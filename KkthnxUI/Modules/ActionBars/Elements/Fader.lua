@@ -72,17 +72,17 @@ local function IsMouseOverFrame(frame)
 		return true
 	end
 
-	 if not SpellFlyout:IsShown() then
+	if not SpellFlyout:IsShown() then
 		return false
-	 end
+	end
 
-	 if not SpellFlyout.__faderParent then
+	if not SpellFlyout.__faderParent then
 		return false
-	 end
+	end
 
-	 if SpellFlyout.__faderParent == frame and MouseIsOver(SpellFlyout) then
+	if SpellFlyout.__faderParent == frame and MouseIsOver(SpellFlyout) then
 		return true
-	 end
+	end
 
 	return false
 end

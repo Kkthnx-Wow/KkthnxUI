@@ -26,7 +26,7 @@ local function RYGColorGradient(perc)
 	end
 end
 
-local fontstrings = setmetatable({}, {
+	local fontstrings = setmetatable({}, {
 	__index = function(t, i)
 		local gslot = _G["Character"..i.."Slot"]
 		local fstr = K.CreateFontString(gslot, 12, "", "OUTLINE")

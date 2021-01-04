@@ -62,18 +62,18 @@ BlizzardFontOutline:SetShadowColor(0, 0, 0, 0)
 BlizzardFontOutline:SetShadowOffset(0, -0)
 
 local TextureTable = {
-	["AltzUI"] = C["Media"].Statusbars.AltzUI,
-	["AsphyxiaUI"] = C["Media"].Statusbars.AsphyxiaUI,
-	["AzeriteUI"] = C["Media"].Statusbars.AzeriteUI,
+	["AltzUI"] = C["Media"].Statusbars.AltzUIStatusbar,
+	["AsphyxiaUI"] = C["Media"].Statusbars.AsphyxiaUIStatusbar,
+	["AzeriteUI"] = C["Media"].Statusbars.AzeriteUIStatusbar,
 	["Blank"] = C["Media"].Statusbars.Blank,
-	["DiabolicUI"] = C["Media"].Statusbars.DiabolicUI,
-	["Flat"] = C["Media"].Statusbars.Flat,
-	["GoldpawUI"] = C["Media"].Statusbars.GoldpawUI,
-	["KkthnxUI"] = C["Media"].Statusbars.KkthnxUI,
-	["Palooza"] = C["Media"].Statusbars.Palooza,
-	["SkullFlowerUI"] = C["Media"].Statusbars.SkullFlowerUI,
-	["Tukui"] = C["Media"].Statusbars.Tukui,
-	["ZorkUI"] = C["Media"].Statusbars.ZorkUI,
+	["DiabolicUI"] = C["Media"].Statusbars.DiabolicUIStatusbar,
+	["Flat"] = C["Media"].Statusbars.FlatStatusbar,
+	["GoldpawUI"] = C["Media"].Statusbars.GoldpawUIStatusbar,
+	["KkthnxUI"] = C["Media"].Statusbars.KkthnxUIStatusbar,
+	["Palooza"] = C["Media"].Statusbars.PaloozaStatusbar,
+	["SkullFlowerUI"] = C["Media"].Statusbars.SkullFlowerUIStatusbar,
+	["Tukui"] = C["Media"].Statusbars.TukuiStatusbar,
+	["ZorkUI"] = C["Media"].Statusbars.ZorkUIStatusbar,
 }
 
 local FontTable = {

@@ -1,10 +1,6 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Tooltip")
 
-if not Module then
-	return
-end
-
 local _G = _G
 local gsub = _G.gsub
 local string_match = _G.string.match

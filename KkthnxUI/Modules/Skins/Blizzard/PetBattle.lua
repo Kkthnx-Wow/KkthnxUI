@@ -38,7 +38,8 @@ table_insert(C.defaultThemes, function()
 		unit.HealthBarBG:Hide()
 		unit.HealthBarFrame:Hide()
 		unit.healthBarWidth = 250
-		unit.ActualHealthBar:SetTexture(C["Media"].Statusbars.KkthnxUI)
+		unit.ActualHealthBar:SetTexture(C["Media"].Statusbars.KkthnxUIStatusbar
+)
 
 		unit.healthBg = CreateFrame("Frame", nil, unit)
 		unit.healthBg:SetFrameLevel(unit:GetFrameLevel())
@@ -130,7 +131,7 @@ table_insert(C.defaultThemes, function()
 		unit.healthBarWidth = 36
 		unit.ActualHealthBar:ClearAllPoints()
 		unit.ActualHealthBar:SetPoint("TOPLEFT", unit.Icon, "BOTTOMLEFT", 1, -8)
-		unit.ActualHealthBar:SetTexture(C["Media"].Statusbars.KkthnxUI)
+		unit.ActualHealthBar:SetTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
 
 		unit.healthBg = CreateFrame("Frame", nil, unit)
 		unit.healthBg:CreateBorder()
@@ -288,7 +289,7 @@ table_insert(C.defaultThemes, function()
 	xpbar:StripTextures()
 	xpbar:SetParent(bar)
 	xpbar:SetWidth(bar:GetWidth())
-	xpbar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUI)
+	xpbar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
 	xpbar:CreateBorder()
 
 	local turnTimer = bottomFrame.TurnTimer
@@ -339,7 +340,7 @@ table_insert(C.defaultThemes, function()
 		unit.Name:SetPoint("TOPLEFT", icon, "TOPRIGHT", 3, -3)
 
 		unit.ActualHealthBar:SetPoint("BOTTOMLEFT", icon, "BOTTOMRIGHT", 7, 1)
-		unit.ActualHealthBar:SetTexture(C["Media"].Statusbars.KkthnxUI)
+		unit.ActualHealthBar:SetTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
 
 		local bg = CreateFrame("Frame", nil, unit)
 		bg:SetPoint("TOPLEFT", unit.ActualHealthBar, -1, 1)

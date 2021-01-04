@@ -22,7 +22,7 @@ local function SetFrameSize(frame, size, num)
 		frame:SetWidth(num * size + (num - 1) * margin + 2 * padding)
 		frame:SetHeight(size + 2 * padding)
 	else
-		frame:SetWidth(size + 2  *  padding)
+		frame:SetWidth(size + 2 * padding)
 		frame:SetHeight(num * size + (num - 1) * margin + 2 * padding)
 	end
 

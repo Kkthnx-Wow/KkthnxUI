@@ -147,7 +147,7 @@ function Module:CreateTarget()
 		self.Debuffs.num = 15
 		self.Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 
-		self.Debuffs.size =  Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
+		self.Debuffs.size = Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
 		self.Debuffs:SetWidth(width)
 		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
 
@@ -193,7 +193,7 @@ function Module:CreateTarget()
 		self.Castbar:CreateBorder()
 
 		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-		self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark_128)
+		self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
 		self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
 
@@ -320,7 +320,8 @@ function Module:CreateTarget()
 			self.FloatingCombatFeedback[i] = parentFrame:CreateFontString("$parentText", "OVERLAY")
 		end
 
-		self.FloatingCombatFeedback.font = C["Media"].Fonts.Damage
+		self.FloatingCombatFeedback.font = C["Media"].Fonts.DamageFont
+
 		self.FloatingCombatFeedback.fontFlags = "OUTLINE"
 		self.FloatingCombatFeedback.showPets = C["Unitframe"].PetCombatText
 		self.FloatingCombatFeedback.showHots = C["Unitframe"].HotsDots
@@ -375,7 +376,7 @@ function Module:CreateTarget()
 	if C["Unitframe"].DebuffHighlight then
 		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
 		self.DebuffHighlight:SetAllPoints(self.Health)
-		self.DebuffHighlight:SetTexture(C["Media"].Textures.Blank)
+		self.DebuffHighlight:SetTexture(C["Media"].Textures.BlankTexture)
 		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
 		self.DebuffHighlight:SetBlendMode("ADD")
 

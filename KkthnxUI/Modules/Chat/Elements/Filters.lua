@@ -7,10 +7,8 @@ local math_max = _G.math.max
 local math_min = _G.math.min
 local pairs = _G.pairs
 local string_find = _G.string.find
-local string_gmatch = _G.string.gmatch
 local string_gsub = _G.string.gsub
 local table_remove = _G.table.remove
-local table_wipe = _G.table.wipe
 local tonumber = _G.tonumber
 
 local Ambiguate = _G.Ambiguate

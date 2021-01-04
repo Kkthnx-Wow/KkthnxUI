@@ -1,12 +1,5 @@
-local K, C = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
-
---[[
-	QuickJoin 优化系统自带的预创建功能
-	1.修复简中语系的一个报错
-	2.双击搜索结果，快速申请
-	3.自动隐藏部分窗口
-]]
 
 local _G = _G
 

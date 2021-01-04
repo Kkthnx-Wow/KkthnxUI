@@ -2,17 +2,28 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
+local pairs = _G.pairs
+local select = _G.select
+local strfind = _G.strfind
+local strsplit = _G.strsplit
+local tonumber = _G.tonumber
+local wipe = _G.wipe
 
-local wipe, select, pairs, tonumber = wipe, select, pairs, tonumber
-local strsplit, strfind = strsplit, strfind
-local InboxItemCanDelete, DeleteInboxItem, TakeInboxMoney, TakeInboxItem = InboxItemCanDelete, DeleteInboxItem, TakeInboxMoney, TakeInboxItem
-local GetInboxNumItems, GetInboxHeaderInfo, GetInboxItem, GetItemInfo = GetInboxNumItems, GetInboxHeaderInfo, GetInboxItem, GetItemInfo
-local C_Timer_After = C_Timer.After
-local C_Mail_HasInboxMoney = C_Mail.HasInboxMoney
-local C_Mail_IsCommandPending = C_Mail.IsCommandPending
-local ATTACHMENTS_MAX_RECEIVE, ERR_MAIL_DELETE_ITEM_ERROR = ATTACHMENTS_MAX_RECEIVE, ERR_MAIL_DELETE_ITEM_ERROR
-local NORMAL_STRING = GUILDCONTROL_OPTION16
-local OPENING_STRING = OPEN_ALL_MAIL_BUTTON_OPENING
+local ATTACHMENTS_MAX_RECEIVE = _G.ATTACHMENTS_MAX_RECEIVE
+local C_Mail_HasInboxMoney = _G.C_Mail.HasInboxMoney
+local C_Mail_IsCommandPending = _G.C_Mail.IsCommandPending
+local C_Timer_After = _G.C_Timer.After
+local DeleteInboxItem = _G.DeleteInboxItem
+local ERR_MAIL_DELETE_ITEM_ERROR = _G.ERR_MAIL_DELETE_ITEM_ERROR
+local GetInboxHeaderInfo = _G.GetInboxHeaderInfo
+local GetInboxItem = _G.GetInboxItem
+local GetInboxNumItems = _G.GetInboxNumItems
+local GetItemInfo = _G.GetItemInfo
+local InboxItemCanDelete = _G.InboxItemCanDelete
+local NORMAL_STRING = _G.NORMAL_STRING
+local OPENING_STRING = _G.OPENING_STRING
+local TakeInboxItem = _G.TakeInboxItem
+local TakeInboxMoney = _G.TakeInboxMoney
 
 local mailIndex, timeToWait, totalCash, inboxItems = 0, .15, 0, {}
 local isGoldCollecting
@@ -250,7 +261,7 @@ function Module:MailBox_ContactList()
 
 	local tex = swatch:CreateTexture()
 	tex:SetAllPoints()
-	tex:SetTexture(C["Media"].Statusbars.KkthnxUI)
+	tex:SetTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
 	tex:SetVertexColor(color.r, color.g, color.b)
 
 	swatch.tex = tex

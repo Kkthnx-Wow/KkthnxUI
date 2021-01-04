@@ -24,10 +24,9 @@ local StyleFont = function(fs, font, size)
 	fs:SetShadowOffset(1, -1)
 end
 
-local Font = C["Media"].Fonts.KkthnxUI
-local Texture = C["Media"].Statusbars.KkthnxUI
--- local Blank = C["Media"].Textures.Blank
-
+local Font = C["Media"].Fonts.KkthnxUIFont
+local Texture = C["Media"].Statusbars.KkthnxUIStatusbar
+-- local Blank = C["Media"].Textures.BlankTexture
 local ArrowUp = "Interface\\Buttons\\Arrow-Up-Down"
 local ArrowDown = "Interface\\Buttons\\Arrow-Down-Down"
 
@@ -306,7 +305,7 @@ local ButtonOnMouseDown = function(self)
 end
 
 local ButtonOnMouseUp = function(self)
-	self.KKUI_Background:SetVertexColor(unpack(C["Media"].Backdrops.Color))
+	self.KKUI_Background:SetVertexColor(unpack(C["Media"].Backdrops.ColorBackdrop))
 end
 
 local CreateButton = function(self, midtext, text, tooltip, func)
@@ -425,7 +424,7 @@ local CreateSwitch = function(self, group, option, text, tooltip, hook)
 
 	Switch.Thumb = CreateFrame("Frame", nil, Switch)
 	Switch.Thumb:SetSize(WidgetHeight, WidgetHeight)
-	Switch.Thumb:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUI, nil, nil, nil, 123/255, 132/255, 137/255)
+	Switch.Thumb:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUIStatusbar, nil, nil, nil, 123/255, 132/255, 137/255)
 
 	Switch.Movement = CreateAnimationGroup(Switch.Thumb):CreateAnimation("Move")
 	Switch.Movement:SetDuration(0.1)
@@ -559,7 +558,7 @@ local SliderEditBoxOnEnter = function(self)
 	self.Highlight:SetAlpha(WidgetHighlightAlpha)
 end
 
-local  SliderEditBoxOnLeave = function(self)
+local SliderEditBoxOnLeave = function(self)
 	self.Highlight:SetAlpha(0)
 end
 
@@ -776,7 +775,7 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 	Thumb.Border = CreateFrame("Frame", nil, Slider)
 	Thumb.Border:SetPoint("TOPLEFT", Slider:GetThumbTexture(), 0, -1)
 	Thumb.Border:SetPoint("BOTTOMRIGHT", Slider:GetThumbTexture(), 0, 1)
-	Thumb.Border:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUI, nil, nil, nil, 123/255, 132/255, 137/255)
+	Thumb.Border:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUIStatusbar, nil, nil, nil, 123/255, 132/255, 137/255)
 
 	Slider.Progress = Slider:CreateTexture(nil, "ARTWORK")
 	Slider.Progress:SetPoint("TOPLEFT", Slider, 1, -1)
@@ -1375,7 +1374,7 @@ local CreateColorSelection = function(self, group, option, text, tooltip)
 	local Swatch = CreateFrame("Frame", nil, Anchor, "BackdropTemplate")
 	Swatch:SetSize(WidgetHeight, WidgetHeight)
 	Swatch:SetPoint("LEFT", Anchor, 0, 0)
-	Swatch:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUI, nil, nil, nil, CurrentR, CurrentG, CurrentB)
+	Swatch:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUIStatusbar, nil, nil, nil, CurrentR, CurrentG, CurrentB)
 
 	Swatch.Select = CreateFrame("Frame", nil, Swatch, "BackdropTemplate")
 	Swatch.Select:SetSize(ColorButtonWidth, WidgetHeight)
@@ -1818,7 +1817,7 @@ local AddContactFrame = function()
 	frameLogo:SetSize(512, 256)
 	frameLogo:SetBlendMode("ADD")
 	frameLogo:SetAlpha(0.07)
-	frameLogo:SetTexture(C["Media"].Textures.Logo)
+	frameLogo:SetTexture(C["Media"].Textures.LogoTexture)
 	frameLogo:SetPoint("CENTER", frame, "CENTER", 0, 0)
 
 	K.CreateFontString(frame, 16, "Contact Me", "", true, "TOP", 0, -10)
@@ -2140,7 +2139,7 @@ GUI.Enable = function(self)
 	CreditLogo:SetSize(512, 256)
 	CreditLogo:SetBlendMode("ADD")
 	CreditLogo:SetAlpha(0.07)
-	CreditLogo:SetTexture(C["Media"].Textures.Logo)
+	CreditLogo:SetTexture(C["Media"].Textures.LogoTexture)
 	CreditLogo:SetPoint("CENTER", CreditFrame, "CENTER", 0, 0)
 
 	local ScrollFrame = CreateFrame("ScrollFrame", nil, CreditFrame)

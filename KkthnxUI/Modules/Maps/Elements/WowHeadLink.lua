@@ -6,7 +6,6 @@ local _G = _G
 local GetAchievementLink = _G.GetAchievementLink
 local GetLocale = _G.GetLocale
 local GetQuestLink = _G.GetQuestLink
-local GetSuperTrackedQuestID = _G.GetSuperTrackedQuestID
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local QuestMapFrame_GetDetailQuestID = _G.QuestMapFrame_GetDetailQuestID
 local hooksecurefunc = _G.hooksecurefunc

@@ -8,58 +8,57 @@ C["Media"] = {
 	},
 
 	["Backdrops"] = {
-		Color = {0.04, 0.04, 0.04, 0.9},
+		ColorBackdrop = {0.04, 0.04, 0.04, 0.9},
 	},
 
 	["Borders"] = {
-		AzeriteUI = [[Interface\AddOns\KkthnxUI\Media\Border\AzeriteUI\Border.tga]],
-		AzeriteUITooltip = [[Interface\AddOns\KkthnxUI\Media\Border\AzeriteUI\Border_Tooltip.tga]],
-		Color = {1, 1, 1},
-		Glow = [[Interface\AddOns\KkthnxUI\Media\Border\Border_Glow_Overlay.tga]],
-		KkthnxUI = [[Interface\AddOns\KkthnxUI\Media\Border\KkthnxUI\Border.tga]],
-		KkthnxUITooltip = [[Interface\AddOns\KkthnxUI\Media\Border\KkthnxUI\Border_Tooltip.tga]],
+		AzeriteUIBorder = [[Interface\AddOns\KkthnxUI\Media\Border\AzeriteUI\Border.tga]],
+		AzeriteUITooltipBorder = [[Interface\AddOns\KkthnxUI\Media\Border\AzeriteUI\Border_Tooltip.tga]],
+		ColorBorder = {1, 1, 1},
+		GlowBorder = [[Interface\AddOns\KkthnxUI\Media\Border\Border_Glow_Overlay.tga]],
+		KkthnxUIBorder = [[Interface\AddOns\KkthnxUI\Media\Border\KkthnxUI\Border.tga]],
+		KkthnxUITooltipBorder = [[Interface\AddOns\KkthnxUI\Media\Border\KkthnxUI\Border_Tooltip.tga]],
 	},
 
 	["Textures"] = {
-		Arrow = [[Interface\AddOns\KkthnxUI\Media\Textures\Arrow.tga]],
-		Blank = [[Interface\BUTTONS\WHITE8X8]],
-		Copy = [[Interface\AddOns\KkthnxUI\Media\Chat\Copy.tga]],
-		Glow = [[Interface\AddOns\KkthnxUI\Media\Textures\GlowTex.tga]],
-		Logo = [[Interface\AddOns\KkthnxUI\Media\Textures\Logo.tga]],
-		Mouseover = [[Interface\AddOns\KkthnxUI\Media\Textures\Mouseover.tga]],
-		NewClassIcons = [[Interface\AddOns\KkthnxUI\Media\Unitframes\NEW-ICONS-CLASSES.blp]],
-		Shader = [[Interface\AddOns\KkthnxUI\Media\Textures\Shader.tga]],
-		Spark_128 = [[Interface\AddOns\KkthnxUI\Media\Textures\Spark_128]],
-		Spark_16 = [[Interface\AddOns\KkthnxUI\Media\Textures\Spark_16]],
-		TargetIndicatorArrow = [[Interface\AddOns\KkthnxUI\Media\Nameplates\TargetIndicatorArrow.blp]],
+		ArrowTexture = [[Interface\AddOns\KkthnxUI\Media\Textures\Arrow.tga]],
+		BlankTexture = [[Interface\BUTTONS\WHITE8X8]],
+		CopyChatTexture = [[Interface\AddOns\KkthnxUI\Media\Chat\Copy.tga]],
+		GlowTexture = [[Interface\AddOns\KkthnxUI\Media\Textures\GlowTex.tga]],
+		LogoTexture = [[Interface\AddOns\KkthnxUI\Media\Textures\Logo.tga]],
+		MouseoverTexture = [[Interface\AddOns\KkthnxUI\Media\Textures\Mouseover.tga]],
+		NewClassIconsTexture = [[Interface\AddOns\KkthnxUI\Media\Unitframes\NEW-ICONS-CLASSES.blp]],
+		Spark128Texture = [[Interface\AddOns\KkthnxUI\Media\Textures\Spark_128]],
+		Spark16Texture = [[Interface\AddOns\KkthnxUI\Media\Textures\Spark_16]],
+		TargetIndicatorTexture = [[Interface\AddOns\KkthnxUI\Media\Nameplates\TargetIndicatorArrow.blp]],
 	},
 
 	["Fonts"] = {
-		Blank = [[Interface\AddOns\KkthnxUI\Media\Fonts\Invisible.ttf]],
-		Damage = [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]],
-		KkthnxUI = [[Interface\AddOns\KkthnxUI\Media\Fonts\Normal.ttf]],
+		BlankFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Invisible.ttf]],
+		DamageFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]],
+		KkthnxUIFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Normal.ttf]],
 	},
 
 	["Statusbars"] = {
-		AltzUI = [[Interface\AddOns\KkthnxUI\Media\Textures\AltzUI.tga]],
-		AsphyxiaUI = [[Interface\AddOns\KkthnxUI\Media\Textures\AsphyxiaUI.tga]],
-		AzeriteUI = [[Interface\AddOns\KkthnxUI\Media\Textures\AzeriteUI.tga]],
-		DiabolicUI = [[Interface\AddOns\KkthnxUI\Media\Textures\DiabolicUI.tga]],
-		Flat = [[Interface\AddOns\KkthnxUI\Media\Textures\Flat.tga]],
-		GoldpawUI = [[Interface\AddOns\KkthnxUI\Media\Textures\GoldpawUI.tga]],
-		KkthnxUI = [[Interface\AddOns\KkthnxUI\Media\Textures\Statusbar]],
-		Palooza = [[Interface\AddOns\KkthnxUI\Media\Textures\Palooza.tga]],
-		SkullFlowerUI = [[Interface\AddOns\KkthnxUI\Media\Textures\SkullFlowerUI.tga]],
-		Tukui = [[Interface\AddOns\KkthnxUI\Media\Textures\ElvTukUI.tga]],
-		ZorkUI = [[Interface\AddOns\KkthnxUI\Media\Textures\ZorkUI.tga]],
+		AltzUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Textures\AltzUI.tga]],
+		AsphyxiaUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Textures\AsphyxiaUI.tga]],
+		AzeriteUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Textures\AzeriteUI.tga]],
+		DiabolicUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Textures\DiabolicUI.tga]],
+		FlatStatusbar = [[Interface\AddOns\KkthnxUI\Media\Textures\Flat.tga]],
+		GoldpawUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Textures\GoldpawUI.tga]],
+		KkthnxUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Textures\Statusbar]],
+		PaloozaStatusbar = [[Interface\AddOns\KkthnxUI\Media\Textures\Palooza.tga]],
+		SkullFlowerUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Textures\SkullFlowerUI.tga]],
+		TukuiStatusbar = [[Interface\AddOns\KkthnxUI\Media\Textures\ElvTukUI.tga]],
+		ZorkUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Textures\ZorkUI.tga]],
 	},
 }
 
 if (K.Client == "koKR" or K.Client == "zhTW" or K.Client == "zhCN") then
-	C["Media"].Fonts.KkthnxUI = STANDARD_TEXT_FONT
-	C["Media"].Fonts.Damage = DAMAGE_TEXT_FONT
+	C["Media"].Fonts.KkthnxUIFont = STANDARD_TEXT_FONT
+	C["Media"].Fonts.DamageFont = DAMAGE_TEXT_FONT
 elseif (K.Client ~= "enUS" and K.Client ~= "frFR" and K.Client ~= "enGB") then
-	C["Media"].Fonts.Damage = DAMAGE_TEXT_FONT
+	C["Media"].Fonts.DamageFont = DAMAGE_TEXT_FONT
 end
 
 if K.LSM == nil then

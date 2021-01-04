@@ -493,7 +493,7 @@ function Module:OnEnable()
 
 	-- Shape and Position
 	Minimap:SetFrameLevel(10)
-	Minimap:SetMaskTexture(C["Media"].Textures.Blank)
+	Minimap:SetMaskTexture(C["Media"].Textures.BlankTexture)
 	DropDownList1:SetClampedToScreen(true)
 
 	local minimapMover = K.Mover(Minimap, "Minimap", "Minimap", {"TOPRIGHT", UIParent, "TOPRIGHT", -4, -4})

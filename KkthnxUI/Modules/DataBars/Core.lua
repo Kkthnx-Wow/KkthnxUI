@@ -55,7 +55,7 @@ function Module:SetupExperience()
 	restbar:SetAllPoints(expbar)
 
 	local espark = expbar:CreateTexture(nil, "OVERLAY")
-	espark:SetTexture(C["Media"].Textures.Spark_16)
+	espark:SetTexture(C["Media"].Textures.Spark16Texture)
 	espark:SetHeight(C["DataBars"].Height)
 	espark:SetBlendMode("ADD")
 	espark:SetPoint("CENTER", expbar:GetStatusBarTexture(), "RIGHT", 0, 0)
@@ -79,7 +79,7 @@ function Module:SetupReputation()
 	reputation:CreateBorder()
 
 	local rspark = reputation:CreateTexture(nil, "OVERLAY")
-	rspark:SetTexture(C["Media"].Textures.Spark_16)
+	rspark:SetTexture(C["Media"].Textures.Spark16Texture)
 	rspark:SetHeight(C["DataBars"].Height)
 	rspark:SetBlendMode("ADD")
 	rspark:SetPoint("CENTER", reputation:GetStatusBarTexture(), "RIGHT", 0, 0)
@@ -104,7 +104,7 @@ function Module:SetupHonor()
 	honor:CreateBorder()
 
 	local hspark = honor:CreateTexture(nil, "OVERLAY")
-	hspark:SetTexture(C["Media"].Textures.Spark_16)
+	hspark:SetTexture(C["Media"].Textures.Spark16Texture)
 	hspark:SetHeight(C["DataBars"].Height)
 	hspark:SetBlendMode("ADD")
 	hspark:SetPoint("CENTER", honor:GetStatusBarTexture(), "RIGHT", 0, 0)
@@ -483,7 +483,7 @@ function Module:OnEnable()
 	end
 
 	if not self.Container.mover then
-		self.Container.mover = K.Mover(self.Container,  "DataBars", "DataBars", {"TOP", "Minimap", "BOTTOM", 0, -6})
+		self.Container.mover = K.Mover(self.Container, "DataBars", "DataBars", {"TOP", "Minimap", "BOTTOM", 0, -6})
 	else
 		self.Container.mover:SetSize(C["DataBars"].Width, self.Container:GetHeight())
 	end

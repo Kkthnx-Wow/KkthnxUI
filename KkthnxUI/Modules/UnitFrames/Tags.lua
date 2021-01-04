@@ -11,7 +11,6 @@ local DEAD = _G.DEAD
 local DND = _G.DND
 local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
 local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
-local GetSpellInfo = _G.GetSpellInfo
 local LEVEL = _G.LEVEL
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local UnitBattlePetLevel = _G.UnitBattlePetLevel
