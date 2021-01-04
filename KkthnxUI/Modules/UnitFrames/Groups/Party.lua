@@ -83,13 +83,13 @@ function Module:CreateParty()
 	end
 
 	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
-		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
+		self.Portrait = CreateFrame("PlayerModel", "KKUI_PartyPortrait", self.Health)
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 		self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
 		self.Portrait:CreateBorder()
 	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
-		self.Portrait = self.Health:CreateTexture("PlayerPortrait", "BACKGROUND", nil, 1)
+		self.Portrait = self.Health:CreateTexture("KKUI_PartyPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 		self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)

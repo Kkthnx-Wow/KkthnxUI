@@ -75,13 +75,13 @@ function Module:CreatePet()
 
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
-			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
+			self.Portrait = CreateFrame("PlayerModel", "KKUI_PetPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetSize(portraitSize, portraitSize)
 			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6 ,0)
 			self.Portrait:CreateBorder()
 		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
-			self.Portrait = self.Health:CreateTexture("PlayerPortrait", "BACKGROUND", nil, 1)
+			self.Portrait = self.Health:CreateTexture("KKUI_PetPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			self.Portrait:SetSize(portraitSize, portraitSize)
 			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6 ,0)

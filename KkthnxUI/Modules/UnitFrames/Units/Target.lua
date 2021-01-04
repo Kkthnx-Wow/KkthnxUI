@@ -114,13 +114,13 @@ function Module:CreateTarget()
 
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
-			self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
+			self.Portrait = CreateFrame("PlayerModel", "KKUI_TargetPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetSize(portraitSize, portraitSize)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
 		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
-			self.Portrait = self.Health:CreateTexture("TargetPortrait", "BACKGROUND", nil, 1)
+			self.Portrait = self.Health:CreateTexture("KKUI_TargetPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			self.Portrait:SetSize(portraitSize, portraitSize)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)

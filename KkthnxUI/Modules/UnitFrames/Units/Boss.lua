@@ -89,13 +89,13 @@ function Module:CreateBoss()
 	end
 
 	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
-		self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
+		self.Portrait = CreateFrame("PlayerModel", "KKUI_BossPortrait", self.Health)
 		self.Portrait:SetFrameStrata(self:GetFrameStrata())
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 		self.Portrait:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
 		self.Portrait:CreateBorder()
 	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
-		self.Portrait = self.Health:CreateTexture("BossPortrait", "BACKGROUND", nil, 1)
+		self.Portrait = self.Health:CreateTexture("KKUI_BossPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 		self.Portrait:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
