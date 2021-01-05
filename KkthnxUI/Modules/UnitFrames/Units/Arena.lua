@@ -203,6 +203,11 @@ function Module:CreateArena()
 	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	self.RaidTargetIndicator:SetSize(16, 16)
 
+	self.Trinket = CreateFrame("Frame", "KKUI_ArenaTrinket", self.Portrait)
+	self.Trinket:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+	self.Trinket:SetPoint("LEFT", self.Portrait, "RIGHT", 6, 0)
+	self.Trinket:CreateBorder()
+
 	local altPower = K.CreateFontString(self, 10, "")
 	altPower:SetPoint("RIGHT", self.Power, "LEFT", -6, 0)
 	self:Tag(altPower, "[altpower]")

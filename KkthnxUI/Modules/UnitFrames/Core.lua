@@ -791,6 +791,8 @@ function Module:CreateUnits()
 			Arena[i]:SetSize(164, 34)
 			Arena[i]:SetPoint("TOPLEFT", Boss[i].mover)
 		end
+
+		SetCVar("showArenaEnemyFrames", 0) -- Why these still load and show is dumb.
 	end
 
 	if showPartyFrame then
