@@ -598,10 +598,6 @@ function Module:CreateClassPower(self)
 	bar:SetSize(barWidth, barHeight)
 	bar:SetPoint(unpack(Module.ClassPowerBarPoint))
 
-	if self.mystyle == "player" and C["Unitframe"].ClassResources and not C["Nameplate"].ShowPlayerPlate then
-		K.Mover(bar, "ClassPower", "ClassPower", {"TOPLEFT", self, 0, 20}, barWidth, barHeight)
-	end
-
 	local bars = {}
 	for i = 1, 6 do
 		bars[i] = CreateFrame("StatusBar", nil, bar)

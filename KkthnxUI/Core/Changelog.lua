@@ -20,8 +20,14 @@ local changelogData = {
 	"Added option to turn off the new maw threat bar",
 	"Fixed overlapping abilities when both zone/extra abilities are shown @AmiraVera",
 	"Fixed quest tracker bar texture setting not working @AmiraVera",
+	"Removed mover for class power",
 	"Updated LICENSE for 2021",
+	"Updated aurawatch auras",
+	"Updated french locale @Lionceaudor",
 	"Updated inventory upgrade/quest/favorite icon code",
+	"Updated nameplate auras",
+	"Updated ouf core",
+	"Updated raidframe auras",
 	"Updated the way we handle media files @AmiraVera",
 }
 

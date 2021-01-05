@@ -376,7 +376,7 @@ function Module:CreatePlayer()
 		if K.Class == "MONK" then
 			self.Stagger = CreateFrame("StatusBar", self:GetName().."Stagger", self)
 			self.Stagger:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
-			self.Stagger:SetSize(playerWidth, 14)
+			self.Stagger:SetSize(playerWidth - portraitSize, 14)
 			self.Stagger:SetStatusBarTexture(UnitframeTexture)
 			self.Stagger:CreateBorder()
 

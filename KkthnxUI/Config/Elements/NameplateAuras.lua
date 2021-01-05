@@ -33,6 +33,7 @@ C.NameplateWhiteList = {
 	[336449] = true,
 	[336451] = true,
 	[339917] = true,
+	[323149] = true,
 	[340357] = true,
 	[343470] = true,
 	[343502] = true,

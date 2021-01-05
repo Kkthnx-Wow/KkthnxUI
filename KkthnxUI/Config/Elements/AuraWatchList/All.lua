@@ -183,7 +183,7 @@ local list = {
 		{AuraID = 345561, UnitID = "target", Value = true},
 		{AuraID = 317936, UnitID = "target"},
 		{AuraID = 327812, UnitID = "target"},
-		{AuraID = 323149, UnitID = "target", Value = true},
+		{AuraID = 323149, UnitID = "target"},
 		{AuraID = 340191, UnitID = "target", Value = true},
 		{AuraID = 323059, UnitID = "target", Flash = true},
 		{AuraID = 336499, UnitID = "target"},
