@@ -680,7 +680,7 @@ local function HelloWorld()
 
 	local goTutor = CreateFrame("Button", nil, welcome)
 	goTutor:SetPoint("BOTTOM", 0, 10)
-	goTutor:SetSize(100, 20)
+	goTutor:SetSize(110, 20)
 	goTutor:SkinButton()
 
 	goTutor.text = goTutor:CreateFontString(nil, "OVERLAY")
@@ -691,6 +691,48 @@ local function HelloWorld()
 	goTutor:SetScript("OnClick", function()
 		welcome:Hide()
 		YesTutor()
+	end)
+
+	local goSteam = CreateFrame("Button", nil, welcome)
+	goSteam:SetPoint("BOTTOM", 0, 50)
+	goSteam:SetSize(110, 20)
+	goSteam:SkinButton()
+
+	goSteam.text = goSteam:CreateFontString(nil, "OVERLAY")
+	goSteam.text:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
+	goSteam.text:SetPoint("CENTER")
+	goSteam.text:SetText(K.SystemColor.."Steam Wishlist|r")
+
+	goSteam:SetScript("OnClick", function()
+		StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, "https://store.steampowered.com/wishlist/id/Kkthnx")
+	end)
+
+	local goPaypal = CreateFrame("Button", nil, welcome)
+	goPaypal:SetPoint("BOTTOM", -120, 50)
+	goPaypal:SetSize(110, 20)
+	goPaypal:SkinButton()
+
+	goPaypal.text = goPaypal:CreateFontString(nil, "OVERLAY")
+	goPaypal.text:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
+	goPaypal.text:SetPoint("CENTER")
+	goPaypal.text:SetText("|CFF0079C1Paypal|r")
+
+	goPaypal:SetScript("OnClick", function()
+		StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, "http://paypal.me/kkthnx")
+	end)
+
+	local goPatreon = CreateFrame("Button", nil, welcome)
+	goPatreon:SetPoint("BOTTOM", 120, 50)
+	goPatreon:SetSize(110, 20)
+	goPatreon:SkinButton()
+
+	goPatreon.text = goPatreon:CreateFontString(nil, "OVERLAY")
+	goPatreon.text:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
+	goPatreon.text:SetPoint("CENTER")
+	goPatreon.text:SetText("|CFFf96854Patreon|r")
+
+	goPatreon:SetScript("OnClick", function()
+		StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, "https://www.patreon.com/kkthnx")
 	end)
 end
 

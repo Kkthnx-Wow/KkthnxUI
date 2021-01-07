@@ -70,8 +70,8 @@ StaticPopupDialogs["QUEST_CHECK_ID"] = {
 	preferredIndex = 3,
 }
 
-StaticPopupDialogs["KKUI_DISCORD_LINK"] = {
-	text = format("|cff669dff%s |r", "KkthnxUI Discord"),
+StaticPopupDialogs["KKUI_POPUP_LINK"] = {
+	text = format("|cff669dff%s |r", "KkthnxUI Popup"),
 	button1 = OKAY,
 	hasEditBox = 1,
 	OnShow = function(self, data)

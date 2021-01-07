@@ -4,7 +4,7 @@ local K, C = unpack(select(2, ...))
 
 local _G = _G
 local math_floor = _G.math.floor
-local fmod = _G.fmod
+local math_fmod = _G.math.fmod
 local string_format = _G.string.format
 
 local GetTime = _G.GetTime
@@ -43,7 +43,7 @@ local function FormatTime(s)
 		return string_format("%dm", math_floor(s/minute + 0.5))
 	end
 
-	return string_format("%d", fmod(s, minute))
+	return string_format("%d", math_fmod(s, minute))
 end
 
 local function AuraTimer(self, elapsed)

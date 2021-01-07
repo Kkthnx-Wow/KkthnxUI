@@ -67,7 +67,7 @@ local menuList = {
 	end},
 
 	{text = L["Discord"], notCheckable = true, func = function()
-			StaticPopup_Show("KKUI_DISCORD_LINK", nil, nil, L["Discord URL"])
+			StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, L["Discord URL"])
 	end},
 	{text = "", notClickable = true, notCheckable = true},
 
