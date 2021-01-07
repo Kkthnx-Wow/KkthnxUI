@@ -444,17 +444,6 @@ function Module:GameTooltip_ComparisonFix(anchorFrame, shoppingTooltip1, shoppin
 end
 
 -- Tooltip skin
-local function __GetBackdrop()
-	return Module.fakeBg:GetBackdrop()
-end
-
-local function __GetBackdropColor()
-	return 0.04, 0.04, 0.04, 0.9
-end
-
-local function __GetBackdropBorderColor()
-	return 1, 1, 1
-end
 
 function Module:ReskinTooltip()
 	if not self then
@@ -466,6 +455,26 @@ function Module:ReskinTooltip()
 
 	if self:IsForbidden() then
 		return
+	end
+
+	local fakeBg = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+	fakeBg:SetBackdrop({
+		bgFile = C["Media"].Textures.BlankTexture,
+		edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\".. C["General"].BorderStyle.Value.."\\Border_Tooltip.tga",
+		edgeSize = 12,
+		insets = {left = 4, right = 4, top = 4, bottom = 4}
+	})
+
+	local function __GetBackdrop()
+		return fakeBg:GetBackdrop()
+	end
+
+	local function __GetBackdropColor()
+		return 0.04, 0.04, 0.04, 0.9
+	end
+
+	local function __GetBackdropBorderColor()
+		return 1, 1, 1
 	end
 
 	if not self.isTipStyled then
@@ -520,14 +529,6 @@ function Module:SharedTooltip_SetBackdropStyle()
 end
 
 function Module:OnEnable()
-	Module.fakeBg = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-	Module.fakeBg:SetBackdrop({
-		bgFile = C["Media"].Textures.BlankTexture,
-		edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\".. C["General"].BorderStyle.Value.."\\Border_Tooltip.tga",
-		edgeSize = 12,
-		insets = {left = 4, right = 4, top = 4, bottom = 4}
-	})
-
 	GameTooltip.StatusBar = GameTooltipStatusBar
 	GameTooltip:HookScript("OnTooltipCleared", Module.OnTooltipCleared)
 	GameTooltip:HookScript("OnTooltipSetUnit", Module.OnTooltipSetUnit)

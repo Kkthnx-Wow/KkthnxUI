@@ -13,6 +13,7 @@
    <Script file="Elements\ExtraQuestButton.lua" />
    <Script file="Elements\MapReveal.lua" />
    <Script file="Elements\NameplateAuras.lua" />
+   <Script file="Elements\PortraitTimers.lua" />
    <Script file="Elements\RaidUtilityBuffs.lua" />
    <Script file="Elements\RangeSpells.lua" />
    <Script file="Elements\SpellReminders.lua" />

@@ -59,7 +59,6 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 
 	-- Background
 	local BackgroundTexture = bgTexture or C["Media"].Textures.BlankTexture
-
 	local BackgroundSubLevel = bgSubLevel or "BACKGROUND"
 	local BackgroundLayer = bgLayer or -1
 	local BackgroundPoint = bgPoint or 0

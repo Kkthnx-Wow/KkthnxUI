@@ -208,6 +208,19 @@ function Module:CreateArena()
 	self.Trinket:SetPoint("LEFT", self.Portrait, "RIGHT", 6, 0)
 	self.Trinket:CreateBorder()
 
+	-- Portrait Timer
+	--if C["Arena"].PortraitTimer and self.Portrait then
+	self.PortraitTimer = CreateFrame('Frame', nil, self.Health)
+
+	self.PortraitTimer.Icon = self.PortraitTimer:CreateTexture(nil, 'OVERLAY')
+	self.PortraitTimer.Icon:SetAllPoints(self.Portrait)
+
+	self.PortraitTimer.Remaining = self.PortraitTimer:CreateFontString(nil, "OVERLAY")
+	self.PortraitTimer.Remaining:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+	self.PortraitTimer.Remaining:SetFont(select(1, self.PortraitTimer.Remaining:GetFont()), 16, select(3, self.PortraitTimer.Remaining:GetFont()))
+	self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
+--end
+
 	local altPower = K.CreateFontString(self, 10, "")
 	altPower:SetPoint("RIGHT", self.Power, "LEFT", -6, 0)
 	self:Tag(altPower, "[altpower]")
