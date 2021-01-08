@@ -10,6 +10,7 @@ local CreateFrame = _G.CreateFrame
 function Module:CreateArena()
 	self.mystyle = "Arena"
 
+	local arenaWidth = C["Arena"].Width
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
@@ -21,6 +22,13 @@ function Module:CreateArena()
 
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetHeight(18)
+
+	self.Health = CreateFrame("StatusBar", nil, self)
+	if C["Arena"].Power then
+		self.Health:SetHeight(C["Arena"].Height * 0.7)
+	else
+		self.Health:SetHeight(C["Arena"].Height + 6)
+	end
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
@@ -57,7 +65,11 @@ function Module:CreateArena()
 	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	self.Power:SetHeight(10)
+	if C["Arena"].Power then
+		self.Power:SetHeight(C["Arena"].Height * 0.3)
+	else
+		self.Power:SetHeight(0)
+	end
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
@@ -88,63 +100,79 @@ function Module:CreateArena()
 		self:Tag(self.Name, "[arenaspec] [color][name]")
 	end
 
-	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
-		self.Portrait = CreateFrame("PlayerModel", "KKUI_ArenaPortrait", self.Health)
-		self.Portrait:SetFrameStrata(self:GetFrameStrata())
-		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-		self.Portrait:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
-		self.Portrait:CreateBorder()
-	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
-		self.Portrait = self.Health:CreateTexture("KKUI_ArenaPortrait", "BACKGROUND", nil, 1)
-		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-		self.Portrait:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
+	local portraitSize
+	if C["Arena"].Power then
+		portraitSize = self.Health:GetHeight() + self.Power:GetHeight() + 6
+	else
+		portraitSize = self.Health:GetHeight() + self.Power:GetHeight()
+	end
 
-		self.Portrait.Border = CreateFrame("Frame", nil, self)
-		self.Portrait.Border:SetAllPoints(self.Portrait)
-		self.Portrait.Border:CreateBorder()
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
+			self.Portrait = CreateFrame("PlayerModel", "KKUI_ArenaPortrait", self.Health)
+			self.Portrait:SetFrameStrata(self:GetFrameStrata())
+			self.Portrait:SetSize(portraitSize, portraitSize)
+			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
+			self.Portrait:CreateBorder()
+		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
+			self.Portrait = self.Health:CreateTexture("KKUI_ArenaPortrait", "BACKGROUND", nil, 1)
+			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+			self.Portrait:SetSize(portraitSize, portraitSize)
+			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
-		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
-			self.Portrait.PostUpdate = Module.UpdateClassPortraits
+			self.Portrait.Border = CreateFrame("Frame", nil, self)
+			self.Portrait.Border:SetAllPoints(self.Portrait)
+			self.Portrait.Border:CreateBorder()
+
+			if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
+				self.Portrait.PostUpdate = Module.UpdateClassPortraits
+			end
 		end
 	end
 
-	self.Health:ClearAllPoints()
-	self.Health:SetPoint("TOPLEFT")
-	self.Health:SetPoint("TOPRIGHT", -self.Portrait:GetWidth() - 6, 0)
+	local width = arenaWidth - portraitSize
 
-	local aurasSetWidth = 124
-	self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
-	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-	self.Buffs.initialAnchor = "TOPLEFT"
-	self.Buffs["growth-x"] = "RIGHT"
-	self.Buffs["growth-y"] = "DOWN"
-	self.Buffs.num = 6
-	self.Buffs.spacing = 6
-	self.Buffs.iconsPerRow = 6
-	self.Buffs.onlyShowPlayer = false
-	self.Buffs.size = Module.auraIconSize(aurasSetWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
-	self.Buffs:SetWidth(aurasSetWidth)
-	self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math_floor(self.Buffs.num / self.Buffs.iconsPerRow + 0.5))
-	self.Buffs.showStealableBuffs = true
-	self.Buffs.PostCreateIcon = Module.PostCreateAura
-	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
-	self.Buffs.CustomFilter = Module.CustomFilter
+	do
+		self.Buffs = CreateFrame("Frame", nil, self)
+		if C["Arena"].Power then
+			self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+		else
+			self.Buffs:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
+		end
+		self.Buffs.initialAnchor = "TOPLEFT"
+		self.Buffs["growth-x"] = "RIGHT"
+		self.Buffs["growth-y"] = "DOWN"
+		self.Buffs.num = 20
+		self.Buffs.spacing = 6
+		self.Buffs.iconsPerRow = 6
+		self.Buffs.onlyShowPlayer = false
 
-	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
-	self.Debuffs.spacing = 6
-	self.Debuffs.initialAnchor = "RIGHT"
-	self.Debuffs["growth-x"] = "LEFT"
-	self.Debuffs["growth-y"] = "DOWN"
-	self.Debuffs:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
-	self.Debuffs.num = 5
-	self.Debuffs.iconsPerRow = 5
-	self.Debuffs.CustomFilter = Module.CustomFilter
-	self.Debuffs.size = Module.auraIconSize(aurasSetWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing + 2.5)
-	self.Debuffs:SetWidth(aurasSetWidth)
-	self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math_floor(self.Debuffs.num/self.Debuffs.iconsPerRow + 0.5))
-	self.Debuffs.PostCreateIcon = Module.PostCreateAura
-	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
+		self.Buffs.size = Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing)
+		self.Buffs:SetWidth(width)
+		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+
+		self.Buffs.showStealableBuffs = true
+		self.Buffs.PostCreateIcon = Module.PostCreateAura
+		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
+		self.Buffs.CustomFilter = Module.CustomFilter
+	end
+
+	do
+		self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
+		self.Debuffs.spacing = 6
+		self.Debuffs.initialAnchor = "RIGHT"
+		self.Debuffs["growth-x"] = "LEFT"
+		self.Debuffs["growth-y"] = "DOWN"
+		self.Debuffs:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
+		self.Debuffs.num = 5
+		self.Debuffs.iconsPerRow = 5
+		self.Debuffs.CustomFilter = Module.CustomFilter
+		self.Debuffs.size = Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing + 2.5)
+		self.Debuffs:SetWidth(width)
+		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math_floor(self.Debuffs.num/self.Debuffs.iconsPerRow + 0.5))
+		self.Debuffs.PostCreateIcon = Module.PostCreateAura
+		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
+	end
 
 	if C["Arena"].Castbars then
 		self.Castbar = CreateFrame("StatusBar", "ArenaCastbar", self)
@@ -206,24 +234,27 @@ function Module:CreateArena()
 	self.Trinket = CreateFrame("Frame", "KKUI_ArenaTrinket", self)
 	self.Trinket:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		self.Trinket:SetPoint("LEFT", self.Health, "RIGHT", 6, 0)
-	else
 		self.Trinket:SetPoint("LEFT", self.Portrait, "RIGHT", 6, 0)
+	else
+		self.Trinket:SetPoint("LEFT", self, "RIGHT", 6, 0)
 	end
 	self.Trinket:CreateBorder()
 
 	-- Portrait Timer
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and self.Portrait then
-		self.PortraitTimer = CreateFrame('Frame', nil, self.Health)
+	self.PortraitTimer = CreateFrame('Frame', nil, self.Health)
 
-		self.PortraitTimer.Icon = self.PortraitTimer:CreateTexture(nil, 'OVERLAY')
+	self.PortraitTimer.Icon = self.PortraitTimer:CreateTexture(nil, 'OVERLAY')
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		self.PortraitTimer.Icon:SetAllPoints(self.Portrait)
-
-		self.PortraitTimer.Remaining = self.PortraitTimer:CreateFontString(nil, "OVERLAY")
-		self.PortraitTimer.Remaining:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-		self.PortraitTimer.Remaining:SetFont(select(1, self.PortraitTimer.Remaining:GetFont()), 16, select(3, self.PortraitTimer.Remaining:GetFont()))
-		self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
+	else
+		self.PortraitTimer.Icon:SetPoint("CENTER", self.Health)
+		self.PortraitTimer:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 	end
+
+	self.PortraitTimer.Remaining = self.PortraitTimer:CreateFontString(nil, "OVERLAY")
+	self.PortraitTimer.Remaining:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+	self.PortraitTimer.Remaining:SetFont(select(1, self.PortraitTimer.Remaining:GetFont()), 16, select(3, self.PortraitTimer.Remaining:GetFont()))
+	self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
 
 	local altPower = K.CreateFontString(self, 10, "")
 	altPower:SetPoint("RIGHT", self.Power, "LEFT", -6, 0)

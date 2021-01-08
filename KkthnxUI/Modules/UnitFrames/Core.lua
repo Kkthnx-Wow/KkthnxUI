@@ -785,11 +785,25 @@ function Module:CreateUnits()
 		oUF:RegisterStyle("Arena", Module.CreateArena)
 		oUF:SetActiveStyle("Arena")
 
+		local ArenaFrameHeight = C["Arena"].Height + 6
+		local ArenaFrameWidth
+		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+			ArenaFrameWidth = C["Arena"].Width
+		else
+			ArenaFrameWidth = C["Arena"].Width - ArenaFrameHeight
+		end
+
 		local Arena = {}
 		for i = 1, 5 do
 			Arena[i] = oUF:Spawn("arena"..i, "oUF_Arena"..i)
-			Arena[i]:SetSize(164, 34)
-			Arena[i]:SetPoint("TOPLEFT", Boss[i].mover)
+			Arena[i]:SetSize(ArenaFrameWidth, ArenaFrameHeight)
+
+			local arenaMoverWidth, arenaMoverHeight = Arena[i]:GetWidth(), Arena[i]:GetHeight()
+			if i == 1 then
+				Arena[i].mover = K.Mover(Arena[i], "ArenaFrame"..i, "Arena1", {"BOTTOMRIGHT", UIParent, "RIGHT", -250, 140}, arenaMoverWidth, arenaMoverHeight)
+			else
+				Arena[i].mover = K.Mover(Arena[i], "ArenaFrame"..i, "Arena"..i, {"TOPLEFT", Arena[i - 1], "BOTTOMLEFT", 0, -56}, arenaMoverWidth, arenaMoverHeight)
+			end
 		end
 
 		SetCVar("showArenaEnemyFrames", 0) -- Why these still load and show is dumb.
