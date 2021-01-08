@@ -203,23 +203,27 @@ function Module:CreateArena()
 	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	self.RaidTargetIndicator:SetSize(16, 16)
 
-	self.Trinket = CreateFrame("Frame", "KKUI_ArenaTrinket", self.Portrait)
+	self.Trinket = CreateFrame("Frame", "KKUI_ArenaTrinket", self)
 	self.Trinket:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-	self.Trinket:SetPoint("LEFT", self.Portrait, "RIGHT", 6, 0)
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		self.Trinket:SetPoint("LEFT", self.Health, "RIGHT", 6, 0)
+	else
+		self.Trinket:SetPoint("LEFT", self.Portrait, "RIGHT", 6, 0)
+	end
 	self.Trinket:CreateBorder()
 
 	-- Portrait Timer
-	--if C["Arena"].PortraitTimer and self.Portrait then
-	self.PortraitTimer = CreateFrame('Frame', nil, self.Health)
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and self.Portrait then
+		self.PortraitTimer = CreateFrame('Frame', nil, self.Health)
 
-	self.PortraitTimer.Icon = self.PortraitTimer:CreateTexture(nil, 'OVERLAY')
-	self.PortraitTimer.Icon:SetAllPoints(self.Portrait)
+		self.PortraitTimer.Icon = self.PortraitTimer:CreateTexture(nil, 'OVERLAY')
+		self.PortraitTimer.Icon:SetAllPoints(self.Portrait)
 
-	self.PortraitTimer.Remaining = self.PortraitTimer:CreateFontString(nil, "OVERLAY")
-	self.PortraitTimer.Remaining:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-	self.PortraitTimer.Remaining:SetFont(select(1, self.PortraitTimer.Remaining:GetFont()), 16, select(3, self.PortraitTimer.Remaining:GetFont()))
-	self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
---end
+		self.PortraitTimer.Remaining = self.PortraitTimer:CreateFontString(nil, "OVERLAY")
+		self.PortraitTimer.Remaining:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+		self.PortraitTimer.Remaining:SetFont(select(1, self.PortraitTimer.Remaining:GetFont()), 16, select(3, self.PortraitTimer.Remaining:GetFont()))
+		self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
+	end
 
 	local altPower = K.CreateFontString(self, 10, "")
 	altPower:SetPoint("RIGHT", self.Power, "LEFT", -6, 0)

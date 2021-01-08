@@ -449,17 +449,17 @@ function Module:CreatePlayer()
 	end
 
 	-- Portrait Timer
-	--if C["Unitframe"].PortraitTimer and self.Portrait then
-	self.PortraitTimer = CreateFrame('Frame', nil, self.Health)
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and self.Portrait then
+		self.PortraitTimer = CreateFrame('Frame', nil, self.Health)
 
-	self.PortraitTimer.Icon = self.PortraitTimer:CreateTexture(nil, 'OVERLAY')
-	self.PortraitTimer.Icon:SetAllPoints(self.Portrait)
+		self.PortraitTimer.Icon = self.PortraitTimer:CreateTexture(nil, 'OVERLAY')
+		self.PortraitTimer.Icon:SetAllPoints(self.Portrait)
 
-	self.PortraitTimer.Remaining = self.PortraitTimer:CreateFontString(nil, "OVERLAY")
-	self.PortraitTimer.Remaining:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-	self.PortraitTimer.Remaining:SetFont(select(1, self.PortraitTimer.Remaining:GetFont()), portraitSize / 2, select(3, self.PortraitTimer.Remaining:GetFont()))
-	self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
---end
+		self.PortraitTimer.Remaining = self.PortraitTimer:CreateFontString(nil, "OVERLAY")
+		self.PortraitTimer.Remaining:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+		self.PortraitTimer.Remaining:SetFont(select(1, self.PortraitTimer.Remaining:GetFont()), portraitSize / 2, select(3, self.PortraitTimer.Remaining:GetFont()))
+		self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
+	end
 
 	if C["Unitframe"].CombatText then
 		if IsAddOnLoaded("MikScrollingBattleText") or IsAddOnLoaded("Parrot") or IsAddOnLoaded("xCT") or IsAddOnLoaded("sct") then
