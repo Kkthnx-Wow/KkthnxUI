@@ -18,6 +18,7 @@ function Module:PostCreateLumos(self)
 	local boom = CreateFrame("Frame", nil, self.Health)
 	boom:SetSize(iconSize, iconSize)
 	boom:SetPoint("BOTTOM", self.Health, "TOP", 0, 5)
+	boom:Hide()
 
 	boom.CD = CreateFrame("Cooldown", nil, boom, "CooldownFrameTemplate")
 	boom.CD:SetAllPoints()

@@ -149,7 +149,7 @@ function Module:UpdateTotemAura(button, texture, spellID, glow)
 end
 
 local function UpdateVisibility(self)
-	if InCombatLockdown() then
+	if InCombatLockdown() or self.lumos.onFire then
 		return
 	end
 
@@ -168,8 +168,13 @@ local function UpdateVisibility(self)
 	end
 end
 
+local lumosUnits = {
+	["player"] = true,
+	["target"] = true,
+}
+
 local function UpdateIcons(self, event, unit)
-	if event == "UNIT_AURA" and unit ~= "player" and unit ~= "target" then
+	if event == "UNIT_AURA" and not lumosUnits[unit] then
 		return
 	end
 
@@ -192,13 +197,24 @@ local function TurnOff(self)
 	UpdateVisibility(self)
 end
 
+local function OnTalentUpdate(self, event)
+	UpdateIcons(self, event)
+	if self.lumos.onFire then
+		if Module.PostUpdateVisibility then
+			Module:PostUpdateVisibility(self)
+		end
+	end
+end
+
 function Module:CreateLumos(self)
 	if not Module.ChantLumos then
 		return
 	end
 
 	self.lumos = {}
+	self.lumos.onFire = C["Nameplate"].PPOnFire
 	local iconSize = self.iconSize
+
 	for i = 1, 5 do
 		local bu = CreateFrame("Frame", nil, self.Health)
 		bu:SetSize(iconSize, iconSize)
@@ -237,7 +253,11 @@ function Module:CreateLumos(self)
 	end
 
 	UpdateIcons(self)
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", TurnOff, true)
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", TurnOn, true)
-	self:RegisterEvent("PLAYER_TALENT_UPDATE", UpdateIcons, true)
+	if self.lumos.onFire then
+		TurnOn(self)
+	else
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", TurnOff, true)
+		self:RegisterEvent("PLAYER_REGEN_DISABLED", TurnOn, true)
+	end
+	self:RegisterEvent("PLAYER_TALENT_UPDATE", OnTalentUpdate, true)
 end
