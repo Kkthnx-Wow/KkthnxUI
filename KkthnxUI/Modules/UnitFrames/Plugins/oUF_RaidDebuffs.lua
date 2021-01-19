@@ -43,8 +43,8 @@ do
 			["Disease"] = true,
 		},
 		["PRIEST"] = {
-			["Magic"] = false,
-			["Disease"] = false,
+			["Magic"] = true,
+			["Disease"] = true,
 		},
 		["SHAMAN"] = {
 			["Magic"] = false,
@@ -76,14 +76,6 @@ local function checkSpecs()
 			DispellFilter.Magic = true
 		else
 			DispellFilter.Magic = false
-		end
-	elseif class == "PRIEST" then
-		if GetSpecialization() == 3 then
-			DispellFilter.Magic = false
-			DispellFilter.Disease = false
-		else
-			DispellFilter.Magic = true
-			DispellFilter.Disease = true
 		end
 	elseif class == "SHAMAN" then
 		if GetSpecialization() == 3 then
@@ -181,8 +173,8 @@ local function Update(self, _, unit)
 
 		if rd.ShowDispellableDebuff and debuffType and (not isCharmed) and (not canAttack) then
 			if rd.FilterDispellableDebuff then
-				prio = DispellFilter[debuffType] and (DispellPriority[debuffType] + 6) or 2
-				if prio == 2 then debuffType = nil end
+				prio = DispellFilter[debuffType] and (DispellPriority[debuffType] + 6) or invalidPrio
+				if prio == invalidPrio then debuffType = nil end
 			else
 				prio = DispellPriority[debuffType]
 			end
