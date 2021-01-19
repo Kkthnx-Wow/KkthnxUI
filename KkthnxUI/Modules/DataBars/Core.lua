@@ -273,7 +273,7 @@ end
 function Module:UpdateHonor(event, unit)
 	local honBar = self.Bars.Honor
 
-	if not C["DataBars"].TrackHonor or not UnitIsPVP("player") or (event == "PLAYER_FLAGS_CHANGED" and unit ~= "player") then
+	if not C["DataBars"].TrackHonor or (event == "PLAYER_FLAGS_CHANGED" and unit ~= "player") then
 		honBar:Hide()
 	else
 		honBar:Show()
@@ -368,7 +368,7 @@ function Module:OnEnter()
 	end
 
 	if C["DataBars"].TrackHonor then
-		if IsPlayerAtEffectiveMaxLevel() and UnitIsPVP("player") then
+		if IsPlayerAtEffectiveMaxLevel() then
 			GameTooltip:AddLine(" ")
 
 			GameTooltip:AddLine(HONOR)
