@@ -182,7 +182,7 @@ function Module:CreateFocus()
 	self.Castbar:CreateBorder()
 
 	self.Castbar:ClearAllPoints()
-	self.Castbar:SetPoint("LEFT", -30, 0)
+	self.Castbar:SetPoint("LEFT", -28, 0)
 	self.Castbar:SetPoint("RIGHT")
 	self.Castbar:SetPoint("TOP", 0, 24)
 	self.Castbar:SetHeight(18)
