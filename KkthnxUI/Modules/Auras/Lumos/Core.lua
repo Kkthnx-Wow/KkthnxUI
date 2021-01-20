@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Auras")
 
 local _G = _G

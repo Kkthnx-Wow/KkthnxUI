@@ -543,12 +543,13 @@ function Module:UpdateClassIcon(self, unit)
 		return
 	end
 
-	local reaction = UnitReaction(unit, "player")
-	if UnitIsPlayer(self.unit) and (reaction and reaction <= 4) then
-		local _, class = UnitClass(unit)
-		local texcoord = CLASS_ICON_TCOORDS[class]
-		self.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
-		self.Class:Show()
+	if UnitIsPlayer(unit) then
+		local class = select(2, UnitClass(unit))
+		if class then
+			local texcoord = CLASS_ICON_TCOORDS[class]
+			self.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
+			self.Class:Show()
+		end
 	else
 		self.Class.Icon:SetTexCoord(0, 0, 0, 0)
 		self.Class:Hide()
@@ -1206,32 +1207,6 @@ function Module:CreatePlayerPlate()
 		self.Stagger.Value:SetPoint("CENTER", self.Stagger, "CENTER", 0, 0)
 		self:Tag(self.Stagger.Value, "[monkstagger]")
 	end
-
-	self.Auras = CreateFrame("Frame", nil, self)
-	self.Auras:SetFrameLevel(self:GetFrameLevel() + 2)
-	self.Auras.spacing = 4
-	self.Auras.initdialAnchor = "BOTTOMLEFT"
-	self.Auras["growth-y"] = "UP"
-	self.Auras:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 5)
-	self.Auras.numTotal = C["Nameplate"].MaxAuras
-	self.Auras.iconsPerRow = C["Nameplate"].MaxAurasPerRow or 6
-	self.Auras.size = C["Nameplate"].AuraSize
-	self.Auras.gap = false
-	self.Auras.disableMouse = true
-
-	local width = self:GetWidth()
-	local maxAuras = self.Auras.numTotal or self.Auras.numBuffs + self.Auras.numDebuffs
-	local maxLines = self.Auras.iconsPerRow and math_floor(maxAuras / self.Auras.iconsPerRow + 0.5) or 2
-	self.Auras.size = self.Auras.iconsPerRow and Module.auraIconSize(width, self.Auras.iconsPerRow, self.Auras.spacing) or self.Auras.size
-	self.Auras:SetWidth(width)
-	self.Auras:SetHeight((self.Auras.size + self.Auras.spacing) * maxLines)
-
-	self.Auras.showStealableBuffs = true
-	self.Auras.CustomFilter = Module.CustomFilter
-	self.Auras.PostCreateIcon = Module.PostCreateAura
-	self.Auras.PostUpdateIcon = Module.PostUpdateAura
-	self.Auras.PreUpdate = Module.bolsterPreUpdate
-	self.Auras.PostUpdate = Module.bolsterPostUpdate
 
 	if C["Nameplate"].ClassAuras then
 		K:GetModule("Auras"):CreateLumos(self)
