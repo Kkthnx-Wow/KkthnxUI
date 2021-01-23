@@ -67,7 +67,7 @@ local classify = {
 function Module:PlateInsideView()
 	if C["Nameplate"].InsideView then
 		SetCVar("nameplateOtherTopInset", 0.05)
-		SetCVar("nameplateOtherBottomInset", 0.08)
+		SetCVar("nameplateOtherBottomInset", 0.05)
 	else
 		SetCVar("nameplateOtherTopInset", -1)
 		SetCVar("nameplateOtherBottomInset", -1)
@@ -198,10 +198,15 @@ function Module:UpdateGroupRoles()
 end
 
 function Module:CheckTankStatus(unit)
-	local index = unit.."target"
-	local unitRole = isInGroup and UnitExists(index) and not UnitIsUnit(index, "player") and groupRoles[UnitName(index)] or "NONE"
+	if not UnitExists(unit) then
+		return
+	end
+
+	local unitTarget = unit.."target"
+	local unitRole = isInGroup and UnitExists(unitTarget) and not UnitIsUnit(unitTarget, "player") and groupRoles[UnitName(unitTarget)] or "NONE"
+
 	if unitRole == "TANK" and K.Role == "Tank" then
-		self.feedbackUnit = index
+		self.feedbackUnit = unitTarget
 		self.isOffTank = true
 	else
 		self.feedbackUnit = "player"
@@ -543,13 +548,12 @@ function Module:UpdateClassIcon(self, unit)
 		return
 	end
 
-	if UnitIsPlayer(unit) then
-		local class = select(2, UnitClass(unit))
-		if class then
-			local texcoord = CLASS_ICON_TCOORDS[class]
-			self.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
-			self.Class:Show()
-		end
+	local reaction = UnitReaction(unit, "player")
+	if UnitIsPlayer(unit) and (reaction and reaction <= 4) then
+		local _, class = UnitClass(unit)
+		local texcoord = CLASS_ICON_TCOORDS[class]
+		self.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
+		self.Class:Show()
 	else
 		self.Class.Icon:SetTexCoord(0, 0, 0, 0)
 		self.Class:Hide()

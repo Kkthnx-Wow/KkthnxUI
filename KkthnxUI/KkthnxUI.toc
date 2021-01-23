@@ -10,4 +10,5 @@
 ## X-WoWI-ID: 24615
 
 # -- Load Core File
+TaintLess.xml
 KkthnxUI.xml
