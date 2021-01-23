@@ -34,7 +34,7 @@ local function ReskinDetails()
 		instance:MenuAnchor(16, 3)
 		instance:ToolbarMenuButtonsSize(1)
 		instance:AttributeMenu(true, 0, 3, "KkthnxUIFont", 12, {1, 1, 1}, 1, false)
-		instance:SetBarSettings(20, KkthnxUIData["ResetDetails"] and "KkthnxUIStatusbar" or nil)
+		instance:SetBarSettings(KkthnxUIData["ResetDetails"] and 20 or nil, KkthnxUIData["ResetDetails"] and "KkthnxUIStatusbar" or nil)
 		instance:SetBarTextSettings(KkthnxUIData["ResetDetails"] and 12 or nil, "KkthnxUIFont", nil, nil, nil, true, true, nil, nil, nil, nil, nil, nil, false, nil, false, nil)
 
 		instance.baseframe:CreateBackdrop()
