@@ -45,5 +45,9 @@ function Module:CreateMouseTrail()
 		Module.Texture:SetAlpha(0.5)
 
 		Module.Frame:SetScript("OnUpdate", OnUpdate)
+	else
+		if Module.Frame then
+			Module.Frame:SetScript("OnUpdate", nil)
+		end
 	end
 end

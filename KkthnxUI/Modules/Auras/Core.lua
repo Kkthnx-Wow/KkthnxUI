@@ -23,6 +23,14 @@ local UIParent = _G.UIParent
 local UnitAura = _G.UnitAura
 
 function Module:OnEnable()
+	-- Elements
+	self:CreateTotems()
+	self:CreateReminder()
+
+	if not C["Auras"].Enable then
+		return
+	end
+
 	-- Config
 	Module.settings = {
 		Buffs = {
@@ -55,10 +63,6 @@ function Module:OnEnable()
 	local debuffAnchor = K.Mover(self.DebuffFrame, "Debuffs", "DebuffAnchor", {"TOPRIGHT", buffAnchor, "BOTTOMRIGHT", 0, -12})
 	self.DebuffFrame:ClearAllPoints()
 	self.DebuffFrame:SetPoint("TOPRIGHT", debuffAnchor)
-
-	-- Elements
-	self:CreateTotems()
-	self:CreateReminder()
 end
 
 local day, hour, minute = 86400, 3600, 60
