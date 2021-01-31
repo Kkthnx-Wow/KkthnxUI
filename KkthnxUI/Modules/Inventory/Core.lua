@@ -8,6 +8,7 @@ local _G = _G
 local ceil = _G.ceil
 local ipairs = _G.ipairs
 local string_match = _G.string.match
+local table_insert = _G.table.insert
 local table_wipe = _G.table.wipe
 local unpack = _G.unpack
 
@@ -61,6 +62,10 @@ function Module:ReverseSort()
 end
 
 function Module:UpdateAnchors(parent, bags)
+	if not parent:IsShown() then
+		return
+	end
+
 	local anchor = parent
 	for _, bag in ipairs(bags) do
 		if bag:GetHeight() > 45 then
@@ -769,84 +774,56 @@ function Module:OnEnable()
 	Module.BagsType[-3] = 0	-- Reagent
 
 	local f = {}
-	local filters = self:GetFilters()
+	local bagGroups = {["bag"] = {}, ["bank"] = {}}
+	local filters = Module:GetFilters()
+	local MyContainer = Backpack:GetContainerClass()
+
+	local function AddNewContainer(parent, bagType, name, filter)
+		local width = bagsWidth
+		if bagType == "bank" then
+			width = bankWidth
+		end
+
+		local newContainer = MyContainer:New(name, {Columns = width, Parent = parent})
+		newContainer:SetFilter(filter, true)
+		table_insert(bagGroups[bagType], newContainer)
+	end
 
 	function Backpack:OnInit()
-		local MyContainer = self:GetContainerClass()
-
 		f.main = MyContainer:New("Main", {Columns = bagsWidth, Bags = "bags"})
 		f.main:SetFilter(filters.onlyBags, true)
 		f.main:SetPoint("BOTTOMRIGHT", -86, 76)
 
-		f.junk = MyContainer:New("Junk", {Columns = bagsWidth, Parent = f.main})
-		f.junk:SetFilter(filters.bagsJunk, true)
-
-		f.bagFavourite = MyContainer:New("BagFavourite", {Columns = bagsWidth, Parent = f.main})
-		f.bagFavourite:SetFilter(filters.bagFavourite, true)
-
-		f.animaItem = MyContainer:New("AnimaItem", {Columns = bagsWidth, Parent = f.main})
-		f.animaItem:SetFilter(filters.bagAnimaItem, true)
-
-		f.bagLegendary = MyContainer:New("BagLegendary", {Columns = bagsWidth, Parent = f.main})
-		f.bagLegendary:SetFilter(filters.bagLegendary, true)
-
-		f.equipment = MyContainer:New("Equipment", {Columns = bagsWidth, Parent = f.main})
-		f.equipment:SetFilter(filters.bagEquipment, true)
-
-		f.equipSet = MyContainer:New("EquipSet", {Columns = bagsWidth, Parent = f.main})
-		f.equipSet:SetFilter(filters.bagEquipSet, true)
-
-		f.consumable = MyContainer:New("Consumable", {Columns = bagsWidth, Parent = f.main})
-		f.consumable:SetFilter(filters.bagConsumable, true)
-
-		f.bagCollection = MyContainer:New("BagCollection", {Columns = bagsWidth, Parent = f.main})
-		f.bagCollection:SetFilter(filters.bagCollection, true)
-
-		f.bagGoods = MyContainer:New("BagGoods", {Columns = bagsWidth, Parent = f.main})
-		f.bagGoods:SetFilter(filters.bagGoods, true)
-
-		f.bagQuest = MyContainer:New("BagQuest", {Columns = bagsWidth, Parent = f.main})
-		f.bagQuest:SetFilter(filters.bagQuest, true)
+		AddNewContainer(f.main, "bag", "AnimaItem", filters.bagAnimaItem)
+		AddNewContainer(f.main, "bag", "BagLegendary", filters.bagLegendary)
+		AddNewContainer(f.main, "bag", "Equipment", filters.bagEquipment)
+		AddNewContainer(f.main, "bag", "EquipSet", filters.bagEquipSet)
+		AddNewContainer(f.main, "bag", "BagCollection", filters.bagCollection)
+		AddNewContainer(f.main, "bag", "BagGoods", filters.bagGoods)
+		AddNewContainer(f.main, "bag", "Consumable", filters.bagConsumable)
+		AddNewContainer(f.main, "bag", "BagQuest", filters.bagQuest)
+		AddNewContainer(f.main, "bag", "BagFavourite", filters.bagFavourite)
+		AddNewContainer(f.main, "bag", "Junk", filters.bagsJunk)
 
 		f.bank = MyContainer:New("Bank", {Columns = bankWidth, Bags = "bank"})
 		f.bank:SetFilter(filters.onlyBank, true)
 		f.bank:SetPoint("BOTTOMRIGHT", f.main, "BOTTOMLEFT", -12, 0)
 		f.bank:Hide()
 
-		f.bankFavourite = MyContainer:New("BankFavourite", {Columns = bankWidth, Parent = f.bank})
-		f.bankFavourite:SetFilter(filters.bankFavourite, true)
-
-		f.bankAnimaItem = MyContainer:New("BankAnimaItem", {Columns = bankWidth, Parent = f.bank})
-		f.bankAnimaItem:SetFilter(filters.bankAnimaItem, true)
-
-		f.bankLegendary = MyContainer:New("BankLegendary", {Columns = bankWidth, Parent = f.bank})
-		f.bankLegendary:SetFilter(filters.bankLegendary, true)
-
-		f.bankEquipment = MyContainer:New("BankEquipment", {Columns = bankWidth, Parent = f.bank})
-		f.bankEquipment:SetFilter(filters.bankEquipment, true)
-
-		f.bankEquipSet = MyContainer:New("BankEquipSet", {Columns = bankWidth, Parent = f.bank})
-		f.bankEquipSet:SetFilter(filters.bankEquipSet, true)
-
-		f.bankConsumable = MyContainer:New("BankConsumable", {Columns = bankWidth, Parent = f.bank})
-		f.bankConsumable:SetFilter(filters.bankConsumable, true)
-
-		f.bankCollection = MyContainer:New("BankCollection", {Columns = bankWidth, Parent = f.bank})
-		f.bankCollection:SetFilter(filters.bankCollection, true)
-
-		f.bankGoods = MyContainer:New("BankGoods", {Columns = bankWidth, Parent = f.bank})
-		f.bankGoods:SetFilter(filters.bankGoods, true)
-
-		f.bankQuest = MyContainer:New("BankQuest", {Columns = bankWidth, Parent = f.bank})
-		f.bankQuest:SetFilter(filters.bankQuest, true)
+		AddNewContainer(f.bank, "bank", "BankAnimaItem", filters.bankAnimaItem)
+		AddNewContainer(f.bank, "bank", "BankEquipment", filters.bankEquipment)
+		AddNewContainer(f.bank, "bank", "BankEquipSet", filters.bankEquipSet)
+		AddNewContainer(f.bank, "bank", "BankLegendary", filters.bankLegendary)
+		AddNewContainer(f.bank, "bank", "BankCollection", filters.bankCollection)
+		AddNewContainer(f.bank, "bank", "BankGoods", filters.bankGoods)
+		AddNewContainer(f.bank, "bank", "BankConsumable", filters.bankConsumable)
+		AddNewContainer(f.bank, "bank", "BankQuest", filters.bankQuest)
+		AddNewContainer(f.bank, "bank", "BankFavourite", filters.bankFavourite)
 
 		f.reagent = MyContainer:New("Reagent", {Columns = bankWidth})
 		f.reagent:SetFilter(filters.onlyReagent, true)
 		f.reagent:SetPoint("BOTTOMLEFT", f.bank)
 		f.reagent:Hide()
-
-		Module.BagGroup = {f.animaItem, f.equipment, f.bagLegendary, f.equipSet, f.bagCollection, f.bagGoods, f.bagQuest, f.consumable, f.bagFavourite, f.junk}
-		Module.BankGroup = {f.bankAnimaItem, f.bankEquipment, f.bankEquipSet, f.bankLegendary, f.bankCollection, f.bankGoods, f.bankQuest, f.bankConsumable, f.bankFavourite}
 	end
 
 	local initBagType
@@ -1108,7 +1085,6 @@ function Module:OnEnable()
 		end
 	end
 
-	local MyContainer = Backpack:GetContainerClass()
 	function MyContainer:OnContentsChanged()
 		self:SortButtons("bagSlot")
 
@@ -1146,8 +1122,8 @@ function Module:OnEnable()
 		end
 		self:SetSize(width + xOffset * 2, height + offset)
 
-		Module:UpdateAnchors(f.main, Module.BagGroup)
-		Module:UpdateAnchors(f.bank, Module.BankGroup)
+		Module:UpdateAnchors(f.main, bagGroups["bag"])
+		Module:UpdateAnchors(f.bank, bagGroups["bank"])
 	end
 
 	function MyContainer:OnCreate(name, settings)

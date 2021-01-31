@@ -203,7 +203,7 @@ function Module:GetFilters()
 	filters.bankAnimaItem = function(item) return isItemInBank(item) and isAnimaItem(item) end
 	filters.bagLegendary = function(item) return isItemInBag(item) and isItemLegendary(item) end
 	filters.bankLegendary = function(item) return isItemInBank(item) and isItemLegendary(item) end
-	filters.bankEquipment = function(item) return isItemInBank(item) and isItemEquipment(item) end
+	filters.bankEquipment = function(item) return isItemInBank(item) and isItemEquipment(item) and not isItemLegendary(item) end
 	filters.bankEquipSet = function(item) return isItemInBank(item) and isItemEquipSet(item) end
 	filters.bankConsumable = function(item) return isItemInBank(item) and isItemConsumable(item) and not isItemCollection(item) end
 	filters.onlyReagent = function(item) return item.bagID == -3 and not isEmptySlot(item) end
