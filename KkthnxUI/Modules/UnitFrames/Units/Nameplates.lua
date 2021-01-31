@@ -2,7 +2,6 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
-local math_floor = _G.math.floor
 local math_rad = _G.math.rad
 local pairs = _G.pairs
 local string_format = _G.string.format
@@ -67,7 +66,7 @@ local classify = {
 function Module:PlateInsideView()
 	if C["Nameplate"].InsideView then
 		SetCVar("nameplateOtherTopInset", 0.05)
-		SetCVar("nameplateOtherBottomInset", 0.05)
+		SetCVar("nameplateOtherBottomInset", 0.08)
 	else
 		SetCVar("nameplateOtherTopInset", -1)
 		SetCVar("nameplateOtherBottomInset", -1)
@@ -229,6 +228,7 @@ function Module:UpdateColor(_, unit)
 	local status = self.feedbackUnit and UnitThreatSituation(self.feedbackUnit, unit) or false -- just in case
 
 	local customColor = C["Nameplate"].CustomColor
+	local targetColor = C["Nameplate"].TargetColor
 	local insecureColor = C["Nameplate"].InsecureColor
 	local offTankColor = C["Nameplate"].OffTankColor
 	local revertThreat = C["Nameplate"].DPSRevertThreat
@@ -242,7 +242,9 @@ function Module:UpdateColor(_, unit)
 	if not UnitIsConnected(unit) then
 		r, g, b = 0.7, 0.7, 0.7
 	else
-		if isCustomUnit then
+		if C["Nameplate"].ColoredTarget and UnitIsUnit(unit, "target") then
+			r, g, b = targetColor[1], targetColor[2], targetColor[3]
+		elseif isCustomUnit then
 			r, g, b = customColor[1], customColor[2], customColor[3]
 		elseif isPlayer and isFriendly then
 			if C["Nameplate"].FriendlyCC then
@@ -328,14 +330,21 @@ end
 -- Target indicator
 function Module:UpdateTargetChange()
 	local element = self.TargetIndicator
+	local unit = self.unit
 	if C["Nameplate"].TargetIndicator.Value == 1 then
 		return
 	end
 
-	if UnitIsUnit(self.unit, "target") and not UnitIsUnit(self.unit, "player") then
-		element:Show()
-	else
-		element:Hide()
+	if C["Nameplate"].TargetIndicator.Value ~= 1 then
+		if UnitIsUnit(unit, "target") and not UnitIsUnit(unit, "player") then
+			element:Show()
+		else
+			element:Hide()
+		end
+	end
+
+	if C["Nameplate"].ColoredTarget then
+		Module.UpdateThreatColor(self, _, unit)
 	end
 end
 
@@ -808,6 +817,13 @@ function Module:CreatePlates()
 	self.npcTitle:Hide()
 	self:Tag(self.npcTitle, "[npctitle]")
 
+	local tarName = K.CreateFontString(self, C["Nameplate"].NameTextSize + 2)
+	tarName:ClearAllPoints()
+	tarName:SetPoint("TOP", self, "BOTTOM", 0, -10)
+	tarName:Hide()
+	self:Tag(tarName, "[tarname]")
+	self.tarName = tarName
+
 	self.healthValue = K.CreateFontString(self.Overlay, C["Nameplate"].HealthTextSize, "", "", false, "CENTER", 0, 0)
 	self.healthValue:SetPoint("CENTER", self.Overlay, 0, 0)
 	self:Tag(self.healthValue, "[nphp]")
@@ -1150,6 +1166,8 @@ function Module:PostUpdatePlates(event, unit)
 		Module.UpdateDungeonProgress(self, unit)
 		Module:UpdateClassIcon(self, unit)
 		Module:UpdateClassPowerAnchor()
+
+		self.tarName:SetShown(self.npcID == 174773)
 	end
 	Module.UpdateExplosives(self, event, unit)
 end

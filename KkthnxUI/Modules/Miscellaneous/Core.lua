@@ -196,7 +196,7 @@ function Module:CreateMawWidgetFrame()
 	local bar = CreateFrame("StatusBar", nil, UIParent)
 	bar:SetPoint("TOP", 0, -50)
 	bar:SetSize(200, 16)
-	bar:SetMinMaxValues(0, 1000)
+	bar:SetMinMaxValues(0, maxValue)
 	bar.text = K.CreateFontString(bar, 12)
 	bar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
 	bar:CreateBorder()
@@ -440,6 +440,46 @@ do
 	K:RegisterEvent("ADDON_LOADED", fixCommunitiesNews)
 end
 
+-- https://www.wowhead.com/quest=59585/well-make-an-aspirant-out-of-you
+function Module:CreateWorldQuestTool()
+	if not C["ActionBar"].Enable then
+		return
+	end
+
+	local hasFound
+	local function resetActionButtons()
+		if not hasFound then
+			return
+		end
+
+		for i = 1, 3 do
+			K.libButtonGlow.HideOverlayGlow(_G["ActionButton"..i])
+		end
+		hasFound = nil
+	end
+
+	K:RegisterEvent("CHAT_MSG_MONSTER_SAY", function(_, msg)
+		if not GetOverrideBarSkin() or not C_QuestLog.GetLogIndexForQuestID(59585) then
+			resetActionButtons()
+			return
+		end
+
+		msg = gsub(msg, "[。%.]", "")
+		for i = 1, 3 do
+			local button = _G["ActionButton"..i]
+			local _, spellID = GetActionInfo(button.action)
+			local name = spellID and GetSpellInfo(spellID)
+			if name and name == msg then
+				K.libButtonGlow.ShowOverlayGlow(button)
+			else
+				K.libButtonGlow.HideOverlayGlow(button)
+			end
+		end
+
+		hasFound = true
+	end)
+end
+
 hooksecurefunc("ChatEdit_InsertLink", function(text) -- shift-clicked
 	-- change from SearchBox:HasFocus to :IsShown again
 	if text and TradeSkillFrame and TradeSkillFrame:IsShown() then
@@ -581,6 +621,7 @@ function Module:OnEnable()
 	self:CreateImprovedMail()
 	self:CreateImprovedStats()
 	self:CreateKillTutorials()
+	self:CreateMawWidgetFrame()
 	self:CreateMerchantItemLevel()
 	self:CreateMouseTrail()
 	self:CreateParagonReputation()
@@ -593,7 +634,7 @@ function Module:OnEnable()
 	self:CreateTradeTabs()
 	self:CreateTradeTargetInfo()
 	self:CreateVehicleSeatMover()
-	self:CreateMawWidgetFrame()
+	self:CreateWorldQuestTool()
 
 	K:RegisterEvent("PLAYER_REGEN_DISABLED", CreateErrorFrameToggle)
 

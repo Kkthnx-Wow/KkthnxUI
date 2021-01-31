@@ -69,8 +69,8 @@ local day, hour, minute = 86400, 3600, 60
 function Module:FormatAuraTime(s)
 	if s >= day then
 		return string_format("%d"..K.MyClassColor.."d", s / day), s % day
-	elseif s >= hour then
-		return string_format("%s"..K.MyClassColor.."h", K.Round(s / hour, 1)), s % hour
+	elseif s >= 2 * hour then
+		return string_format("%d"..K.MyClassColor.."h", s / hour), s % hour
 	elseif s >= 10 * minute then
 		return string_format("%d"..K.MyClassColor.."m", s / minute), s % minute
 	elseif s >= minute then
