@@ -3,7 +3,7 @@ local Module = K:GetModule("Bags")
 
 local _G = _G
 
-local C_Item_IsAnimaItemByID = _G.C_Item.IsAnimaItemByID
+local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = _G.C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
 local C_ToyBox_GetToyInfo = _G.C_ToyBox.GetToyInfo
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
 local LE_ITEM_CLASS_CONSUMABLE = _G.LE_ITEM_CLASS_CONSUMABLE
@@ -21,12 +21,12 @@ local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 
 -- Custom filter
 local CustomFilterList = {
-	[141333] = true, -- Codex of the Tranquil Mind
-	[141446] = true, -- Tome of the Tranquil Mind
-	[153646] = true, -- Codex of the Quiet Mind
-	[153647] = true, -- Tome of the Quiet Mind
-	[161053] = true, -- Salty Dog Crackers
-	[37863] = false, -- Direbrew's Remote
+	[37863] = false,
+	[141333] = true,
+	[141446] = true,
+	[153646] = true,
+	[153647] = true,
+	[161053] = true,
 }
 
 local isPetToy = {
@@ -74,12 +74,12 @@ local function isItemEquipSet(item)
 	return item.isInSet
 end
 
-local function isAnimaItem(item)
+local function isAzeriteArmor(item)
 	if not C["Inventory"].ItemFilter then
 		return
 	end
 
-	if not C["Inventory"].FilterAnima then
+	if not C["Inventory"].FilterAzerite then
 		return
 	end
 
@@ -87,10 +87,10 @@ local function isAnimaItem(item)
 		return
 	end
 
-	return C_Item_IsAnimaItemByID(item.link)
+	return C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID(item.link)
 end
 
-function Module:isArtifactRelic(item)
+function Module:IsArtifactRelic(item)
 	return item.classID == LE_ITEM_CLASS_GEM and item.subClassID == LE_ITEM_GEM_ARTIFACTRELIC
 end
 
@@ -103,7 +103,7 @@ local function isItemEquipment(item)
 		return
 	end
 
-	return item.level and item.rarity > LE_ITEM_QUALITY_COMMON and (Module:isArtifactRelic(item) or item.classID == LE_ITEM_CLASS_WEAPON or item.classID == LE_ITEM_CLASS_ARMOR) and not isItemEquipSet(item)
+	return item.level and item.rarity > LE_ITEM_QUALITY_COMMON and (Module:IsArtifactRelic(item) or item.classID == LE_ITEM_CLASS_WEAPON or item.classID == LE_ITEM_CLASS_ARMOR)
 end
 
 local function isItemConsumable(item)
@@ -178,7 +178,7 @@ local function isTradeGoods(item)
 	return item.classID == LE_ITEM_CLASS_TRADEGOODS
 end
 
-local function isItemQuest(item)
+local function isQuestItem(item)
 	if not C["Inventory"].ItemFilter then
 		return
 	end
@@ -193,28 +193,89 @@ end
 function Module:GetFilters()
 	local filters = {}
 
-	filters.onlyBags = function(item) return isItemInBag(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAnimaItem(item) and not isItemJunk(item) and not isItemCollection(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) and not isItemEquipSet(item) end
-	filters.bagAnimaItem = function(item) return isItemInBag(item) and isAnimaItem(item) end
-	filters.bagEquipment = function(item) return isItemInBag(item) and isItemEquipment(item) end
-	filters.bagEquipSet = function(item) return isItemInBag(item) and isItemEquipSet(item) end
-	filters.bagConsumable = function(item) return isItemInBag(item) and isItemConsumable(item) and not isItemCollection(item) end
-	filters.bagsJunk = function(item) return isItemInBag(item) and isItemJunk(item) end
-	filters.onlyBank = function(item) return isItemInBank(item) and not isItemEquipment(item) and not isItemLegendary(item) and not isItemConsumable(item) and not isAnimaItem(item) and not isItemCollection(item) and not isItemFavourite(item) and not isEmptySlot(item) and not isTradeGoods(item) and not isItemQuest(item) and not isItemEquipSet(item) end
-	filters.bankAnimaItem = function(item) return isItemInBank(item) and isAnimaItem(item) end
-	filters.bagLegendary = function(item) return isItemInBag(item) and isItemLegendary(item) end
-	filters.bankLegendary = function(item) return isItemInBank(item) and isItemLegendary(item) end
-	filters.bankEquipment = function(item) return isItemInBank(item) and isItemEquipment(item) and not isItemLegendary(item) end
-	filters.bankEquipSet = function(item) return isItemInBank(item) and isItemEquipSet(item) end
-	filters.bankConsumable = function(item) return isItemInBank(item) and isItemConsumable(item) and not isItemCollection(item) end
-	filters.onlyReagent = function(item) return item.bagID == -3 and not isEmptySlot(item) end
-	filters.bagCollection = function(item) return isItemInBag(item) and isItemCollection(item) end
-	filters.bankCollection = function(item) return isItemInBank(item) and isItemCollection(item) end
-	filters.bagFavourite = function(item) return isItemInBag(item) and isItemFavourite(item) end
-	filters.bankFavourite = function(item) return isItemInBank(item) and isItemFavourite(item) end
-	filters.bagGoods = function(item) return isItemInBag(item) and isTradeGoods(item) end
-	filters.bankGoods = function(item) return isItemInBank(item) and isTradeGoods(item) end
-	filters.bagQuest = function(item) return isItemInBag(item) and isItemQuest(item) end
-	filters.bankQuest = function(item) return isItemInBank(item) and isItemQuest(item) end
+	filters.onlyBags = function(item)
+		return isItemInBag(item) and not isEmptySlot(item)
+	end
+
+	filters.bagAzeriteItem = function(item)
+		return isItemInBag(item) and isAzeriteArmor(item)
+	end
+
+	filters.bagEquipment = function(item)
+		return isItemInBag(item) and isItemEquipment(item)
+	end
+
+	filters.bagEquipSet = function(item)
+		return isItemInBag(item) and isItemEquipSet(item)
+	end
+
+	filters.bagConsumable = function(item)
+		return isItemInBag(item) and isItemConsumable(item)
+	end
+
+	filters.bagsJunk = function(item)
+		return isItemInBag(item) and isItemJunk(item)
+	end
+
+	filters.onlyBank = function(item)
+		return isItemInBank(item) and not isEmptySlot(item)
+	end
+
+	filters.bankAzeriteItem = function(item)
+		return isItemInBank(item) and isAzeriteArmor(item)
+	end
+
+	filters.bankLegendary = function(item)
+		return isItemInBank(item) and isItemLegendary(item)
+	end
+
+	filters.bankEquipment = function(item)
+		return isItemInBank(item) and isItemEquipment(item)
+	end
+
+	filters.bankEquipSet = function(item)
+		return isItemInBank(item) and isItemEquipSet(item)
+	end
+
+	filters.bankConsumable = function(item)
+		return isItemInBank(item) and isItemConsumable(item)
+	end
+
+	filters.onlyReagent = function(item)
+		return item.bagID == -3 and not isEmptySlot(item)
+	end
+
+	filters.bagCollection = function(item)
+		return isItemInBag(item) and isItemCollection(item)
+	end
+
+	filters.bankCollection = function(item)
+		return isItemInBank(item) and isItemCollection(item)
+	end
+
+	filters.bagFavourite = function(item)
+		return isItemInBag(item) and isItemFavourite(item)
+	end
+
+	filters.bankFavourite = function(item)
+		return isItemInBank(item) and isItemFavourite(item)
+	end
+
+	filters.bagGoods = function(item)
+		return isItemInBag(item) and isTradeGoods(item)
+	end
+
+	filters.bankGoods = function(item)
+		return isItemInBank(item) and isTradeGoods(item)
+	end
+
+	filters.bagQuest = function(item)
+		return isItemInBag(item) and isQuestItem(item)
+	end
+
+	filters.bankQuest = function(item)
+		return isItemInBank(item) and isQuestItem(item)
+	end
 
 	return filters
 end
