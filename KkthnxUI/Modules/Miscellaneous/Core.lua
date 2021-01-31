@@ -6,6 +6,10 @@ local select = _G.select
 local string_match = _G.string.match
 local tonumber = _G.tonumber
 
+
+local GetOverrideBarSkin = _G.GetOverrideBarSkin
+local C_QuestLog_GetLogIndexForQuestID = _G.C_QuestLog.GetLogIndexForQuestID
+local GetActionInfo = _G.GetActionInfo
 local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
 local C_Navigation_GetDistance = _G.C_Navigation.GetDistance
@@ -459,7 +463,7 @@ function Module:CreateWorldQuestTool()
 	end
 
 	K:RegisterEvent("CHAT_MSG_MONSTER_SAY", function(_, msg)
-		if not GetOverrideBarSkin() or not C_QuestLog.GetLogIndexForQuestID(59585) then
+		if not GetOverrideBarSkin() or not C_QuestLog_GetLogIndexForQuestID(59585) then
 			resetActionButtons()
 			return
 		end
