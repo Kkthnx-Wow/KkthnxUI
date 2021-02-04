@@ -196,7 +196,7 @@ function Module:UpdateGroupRoles()
 	K:RegisterEvent("GROUP_LEFT", resetGroupRoles)
 end
 
-function Module:CheckTankStatus(unit)
+function Module:CheckThreatStatus(unit)
 	if not UnitExists(unit) then
 		return
 	end
@@ -204,12 +204,10 @@ function Module:CheckTankStatus(unit)
 	local unitTarget = unit.."target"
 	local unitRole = isInGroup and UnitExists(unitTarget) and not UnitIsUnit(unitTarget, "player") and groupRoles[UnitName(unitTarget)] or "NONE"
 
-	if unitRole == "TANK" and K.Role == "Tank" then
-		self.feedbackUnit = unitTarget
-		self.isOffTank = true
+	if K.Role == "Tank" and unitRole == "TANK" then
+		return true, UnitThreatSituation(unitTarget, unit)
 	else
-		self.feedbackUnit = "player"
-		self.isOffTank = false
+		return false, UnitThreatSituation("player", unit)
 	end
 end
 
@@ -225,7 +223,7 @@ function Module:UpdateColor(_, unit)
 	local isCustomUnit = customUnits[name] or customUnits[npcID]
 	local isPlayer = self.isPlayer
 	local isFriendly = self.isFriendly
-	local status = self.feedbackUnit and UnitThreatSituation(self.feedbackUnit, unit) or false -- just in case
+	local isOffTank, status = Module:CheckThreatStatus(unit)
 
 	local customColor = C["Nameplate"].CustomColor
 	local targetColor = C["Nameplate"].TargetColor
@@ -263,7 +261,7 @@ function Module:UpdateColor(_, unit)
 					if K.Role ~= "Tank" and revertThreat then
 						r, g, b = insecureColor[1], insecureColor[2], insecureColor[3]
 					else
-						if self.isOffTank then
+						if isOffTank then
 							r, g, b = offTankColor[1], offTankColor[2], offTankColor[3]
 						else
 							r, g, b = secureColor[1], secureColor[2], secureColor[3]
@@ -286,18 +284,15 @@ function Module:UpdateColor(_, unit)
 		element:SetStatusBarColor(r, g, b)
 	end
 
-	if isCustomUnit or (not C["Nameplate"].TankMode and K.Role ~= "Tank") then
-		if status and status == 3 then
+	self.ThreatIndicator:Hide()
+	if status and (isCustomUnit or (not C["Nameplate"].TankMode and K.Role ~= "Tank")) then
+		if status == 3 then
 			self.ThreatIndicator:SetBackdropBorderColor(1, 0, 0)
 			self.ThreatIndicator:Show()
-		elseif status and (status == 2 or status == 1) then
+		elseif status == 2 or status == 1 then
 			self.ThreatIndicator:SetBackdropBorderColor(1, 1, 0)
 			self.ThreatIndicator:Show()
-		else
-			self.ThreatIndicator:Hide()
 		end
-	else
-		self.ThreatIndicator:Hide()
 	end
 
 	if executeRatio > 0 and healthPerc <= executeRatio then
@@ -312,7 +307,6 @@ function Module:UpdateThreatColor(_, unit)
 		return
 	end
 
-	Module.CheckTankStatus(self, unit)
 	Module.UpdateColor(self, _, unit)
 end
 
@@ -1144,7 +1138,7 @@ function Module:PostUpdatePlates(event, unit)
 		self.widgetsOnly = UnitNameplateShowsWidgetsOnly(unit)
 
 		local blizzPlate = self:GetParent().UnitFrame
-		self.widgetContainer = blizzPlate.WidgetContainer
+		self.widgetContainer = blizzPlate and blizzPlate.WidgetContainer
 		if self.widgetContainer then
 			self.widgetContainer:SetParent(self)
 			self.widgetContainer:SetScale(1 / C["General"].UIScale)
