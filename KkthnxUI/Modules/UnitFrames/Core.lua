@@ -820,7 +820,7 @@ function Module:CreateUnits()
 
 		local party = oUF:SpawnHeader("oUF_Party", nil, "solo,party",
 		"showPlayer", C["Party"].ShowPlayer,
-		"showSolo", false,
+		"showSolo", C["Party"].ShowPartySolo,
 		"showParty", true,
 		"showRaid", false,
 		"xoffset", partyXOffset,
@@ -886,7 +886,7 @@ function Module:CreateUnits()
 		local function CreateGroup(name, i)
 			local group = oUF:SpawnHeader(name, nil, "solo,party,raid",
 			"showPlayer", true,
-			"showSolo", false,
+			"showSolo", not showPartyFrame and C["Raid"].ShowRaidSolo,
 			"showParty", not showPartyFrame,
 			"showRaid", true,
 			"xoffset", 6,

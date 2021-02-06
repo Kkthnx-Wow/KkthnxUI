@@ -1145,10 +1145,14 @@ function Module:OnEnable()
 		local label
 		if string_match(name, "AzeriteItem$") then
 			label = "Azerite Armor"
+		elseif string_match(name, "AnimaItem$") then
+				label = WORLD_QUEST_REWARD_FILTERS_ANIMA
 		elseif string_match(name, "Equipment$") then
 			label = BAG_FILTER_EQUIPMENT
 		elseif string_match(name, "EquipSet$") then
 			label = L["Equipement Set"]
+		elseif name == "BagLegendary" then
+			label = LOOT_JOURNAL_LEGENDARIES
 		elseif name == "BankLegendary" then
 			label = LOOT_JOURNAL_LEGENDARIES
 		elseif string_match(name, "Consumable$") then
