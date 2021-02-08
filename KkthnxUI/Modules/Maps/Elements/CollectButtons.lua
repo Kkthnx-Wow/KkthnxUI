@@ -53,7 +53,7 @@ function Module:CreateRecycleBin()
 	bin:SetPoint("BOTTOMRIGHT", bu, "BOTTOMLEFT", -3, 7)
 	bin:SetSize(width, height)
 	bin:CreateBorder()
-	bin:SetFrameStrata("HIGH")
+	bin:SetFrameStrata("MEDIUM")
 	bin:Hide()
 
 	local function hideBinButton()

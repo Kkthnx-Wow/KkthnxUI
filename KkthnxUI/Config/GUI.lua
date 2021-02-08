@@ -108,7 +108,7 @@ end
 local function ResetDetails()
 	if IsAddOnLoaded("Details") then
 		_G.KkthnxUIData["ResetDetails"] = true
-		K.StaticPopup_Show("KKUI_CHANGES_RELOAD")
+		StaticPopup_Show("KKUI_CHANGES_RELOAD")
 	else
 		K.Print("Details is not loaded!")
 	end

@@ -93,12 +93,12 @@ local function ReskinDetails()
 		end
 	end
 
-	-- Numberize
-	local current = C["General"].NumberPrefixStyle.Value
-	if current < 3 then
-		Details.numerical_system = current
-		Details:SelectNumericalSystem()
-	end
+	-- Numberize -- Throws an error currently.
+	-- local current = C["General"].NumberPrefixStyle.Value
+	-- if current and current < 3 then
+	-- 	Details.numerical_system = current
+	-- 	Details:SelectNumericalSystem()
+	-- end
 
 	Details.OpenWelcomeWindow = function()
 		if instance1 then
