@@ -1,4 +1,4 @@
-local K, _, L = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
@@ -232,6 +232,10 @@ function Module:KeystoneInfo_Update()
 end
 
 function Module:CreateGuildBest()
+	if not C["Misc"].MDGuildBest then
+		return
+	end
+
 	hasAngryKeystones = IsAddOnLoaded("AngryKeystones")
 	K:RegisterEvent("ADDON_LOADED", Module.GuildBest_OnLoad)
 

@@ -668,7 +668,6 @@ function Module:RaidTool_WorldMarker()
 
 	local frame = CreateFrame("Frame", "KKUI_WorldMarkers", UIParent)
 	frame:SetPoint("RIGHT", -100, 0)
-	frame:SetFrameStrata("HIGH")
 	K.CreateMoverFrame(frame, nil, true)
 	K.RestoreMoverFrame(frame)
 	frame:CreateBorder()

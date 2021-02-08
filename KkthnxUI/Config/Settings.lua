@@ -316,6 +316,7 @@ C["Misc"] = {
 	["HideBossEmote"] = false,
 	["ImprovedStats"] = false,
 	["ItemLevel"] = false,
+	["MDGuildBest"] = false,
 	["MawThreatBar"] = true,
 	["MouseTrail"] = false,
 	["MouseTrailColor"] = {1, 1, 1, 0.6},

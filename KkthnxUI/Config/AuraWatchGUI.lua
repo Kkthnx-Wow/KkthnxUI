@@ -609,7 +609,8 @@ local function CreatePanel()
 						AW_ClearEdit(Option[k])
 					end
 
-					if Option[1].Text:GetText() == "AuraID" then
+					local optionText = Option[1].Text:GetText()
+					if optionText == "AuraID" then
 						for k = 2, 10 do
 							Option[k]:Show()
 						end
@@ -617,11 +618,11 @@ local function CreatePanel()
 						if preSet[i][2] then
 							Option[4].options[1]:Click()
 						end
-					elseif Option[1].Text:GetText() == "SpellID" then
+					elseif optionText  == "SpellID" then
 						Option[2]:Show()
-					elseif Option[1].Text:GetText() == "SlotID" then
+					elseif optionText  == "SlotID" then
 						Option[11]:Show()
-					elseif Option[1].Text:GetText() == "TotemID" then
+					elseif optionText  == "TotemID" then
 						Option[12]:Show()
 					end
 				end)

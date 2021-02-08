@@ -25,11 +25,10 @@ function Module:SetupAutoGoodbye()
 end
 
 function Module:CreateAutoGoodbye()
-	if C["Automation"].AutoGoodbye then
-		K:RegisterEvent("LFG_COMPLETION_REWARD", Module.SetupAutoGoodbye)
-		K:RegisterEvent("CHALLENGE_MODE_COMPLETED", Module.SetupAutoGoodbye)
-	else
-		K:UnregisterEvent("LFG_COMPLETION_REWARD", Module.SetupAutoGoodbye)
-		K:UnregisterEvent("CHALLENGE_MODE_COMPLETED", Module.SetupAutoGoodbye)
+	if not C["Automation"].AutoGoodbye then
+		return
 	end
+
+	K:RegisterEvent("LFG_COMPLETION_REWARD", Module.SetupAutoGoodbye)
+	K:RegisterEvent("CHALLENGE_MODE_COMPLETED", Module.SetupAutoGoodbye)
 end

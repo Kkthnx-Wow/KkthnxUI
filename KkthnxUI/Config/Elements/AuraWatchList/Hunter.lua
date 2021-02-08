@@ -56,6 +56,7 @@ local list = {
 		{AuraID = 328275, UnitID = "target", Caster = "player"},
 		{AuraID = 324149, UnitID = "target", Caster = "player"},
 		{AuraID = 308498, UnitID = "target", Caster = "player"},
+		{AuraID = 333526, UnitID = "target", Caster = "player"},
 	},
 	["Special Aura"] = {
 		{AuraID = 19574, UnitID = "player"},
