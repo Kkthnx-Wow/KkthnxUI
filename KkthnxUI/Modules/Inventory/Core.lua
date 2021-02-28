@@ -789,15 +789,17 @@ function Module:OnEnable()
 	end
 
 	function Backpack:OnInit()
-		AddNewContainer("Bag", 9, "Junk", filters.bagsJunk)
-		AddNewContainer("Bag", 8, "BagFavourite", filters.bagFavourite)
+		AddNewContainer("Bag", 11, "Junk", filters.bagsJunk)
+		AddNewContainer("Bag", 10, "BagFavourite", filters.bagFavourite)
 		AddNewContainer("Bag", 3, "EquipSet", filters.bagEquipSet)
 		AddNewContainer("Bag", 1, "AzeriteItem", filters.bagAzeriteItem)
 		AddNewContainer("Bag", 2, "Equipment", filters.bagEquipment)
 		AddNewContainer("Bag", 4, "BagCollection", filters.bagCollection)
 		AddNewContainer("Bag", 6, "Consumable", filters.bagConsumable)
 		AddNewContainer("Bag", 5, "BagGoods", filters.bagGoods)
-		AddNewContainer("Bag", 7, "BagQuest", filters.bagQuest)
+		AddNewContainer("Bag", 8, "BagQuest", filters.bagQuest)
+		AddNewContainer("Bag", 7, "BagLegendary", filters.bagLegendary)
+		AddNewContainer("Bag", 9, "BagAnima", filters.bagAnima)
 
 		f.main = MyContainer:New("Bag", {Columns = bagsWidth, Bags = "bags"})
 		f.main:SetPoint("BOTTOMRIGHT", -86, 76)
@@ -1011,14 +1013,13 @@ function Module:OnEnable()
 			self.Favourite:Hide()
 		end
 
+		self.iLvl:SetText("")
 		if showItemLevel and isItemNeedsLevel(item) then
 			local level = K.GetItemLevel(item.link, item.bagID, item.slotID) or item.level
 			local color = K.QualityColors[item.rarity]
 
 			self.iLvl:SetText(level)
 			self.iLvl:SetTextColor(color.r, color.g, color.b)
-		else
-			self.iLvl:SetText("")
 		end
 
 		-- Determine if we can use that item or not?
@@ -1145,15 +1146,11 @@ function Module:OnEnable()
 		local label
 		if string_match(name, "AzeriteItem$") then
 			label = "Azerite Armor"
-		elseif string_match(name, "AnimaItem$") then
-				label = WORLD_QUEST_REWARD_FILTERS_ANIMA
 		elseif string_match(name, "Equipment$") then
 			label = BAG_FILTER_EQUIPMENT
 		elseif string_match(name, "EquipSet$") then
 			label = L["Equipement Set"]
-		elseif name == "BagLegendary" then
-			label = LOOT_JOURNAL_LEGENDARIES
-		elseif name == "BankLegendary" then
+		elseif string_match(name, "Legendary$") then
 			label = LOOT_JOURNAL_LEGENDARIES
 		elseif string_match(name, "Consumable$") then
 			label = BAG_FILTER_CONSUMABLES
@@ -1167,6 +1164,8 @@ function Module:OnEnable()
 			label = AUCTION_CATEGORY_TRADE_GOODS
 		elseif string_match(name, "Quest") then
 			label = QUESTS_LABEL
+		elseif string_match(name, "Anima") then
+			label = WORLD_QUEST_REWARD_FILTERS_ANIMA
 		end
 
 		if label then

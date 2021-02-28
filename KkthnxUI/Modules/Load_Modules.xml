@@ -28,8 +28,10 @@
    <Script file="Chat\Elements\Copy.lua" />
    <Script file="Chat\Elements\Emojis.lua" />
    <Script file="Chat\Elements\Filters.lua" />
+   <Script file="Chat\Elements\History.lua" />
    <Script file="Chat\Elements\ILevel.lua" />
    <Script file="Chat\Elements\Rename.lua" />
+   <Script file="Chat\Elements\RoleIcon.lua" />
    <Script file="Chat\Elements\URL.lua" />
    <Script file="Chat\Elements\Voice.lua" />
    <!-- Inventory -->

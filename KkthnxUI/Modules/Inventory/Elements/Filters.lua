@@ -190,6 +190,22 @@ local function isQuestItem(item)
 	return item.questID or item.isQuestItem
 end
 
+local function isAnimaItem(item)
+	if not C["Inventory"].ItemFilter then
+		return
+	end
+
+	if not C["Inventory"].FilterAnima then
+		return
+	end
+
+	if not item.link then
+		return
+	end
+
+	return C_Item.IsAnimaItemByID(item.link)
+end
+
 function Module:GetFilters()
 	local filters = {}
 
@@ -199,6 +215,10 @@ function Module:GetFilters()
 
 	filters.bagAzeriteItem = function(item)
 		return isItemInBag(item) and isAzeriteArmor(item)
+	end
+
+	filters.bagLegendary = function(item)
+		return isItemInBag(item) and isItemLegendary(item)
 	end
 
 	filters.bagEquipment = function(item)
@@ -275,6 +295,10 @@ function Module:GetFilters()
 
 	filters.bankQuest = function(item)
 		return isItemInBank(item) and isQuestItem(item)
+	end
+
+	filters.bagAnima = function(item)
+		return isItemInBag(item) and isAnimaItem(item)
 	end
 
 	return filters

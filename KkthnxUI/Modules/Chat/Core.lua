@@ -492,12 +492,14 @@ function Module:OnEnable()
 	-- Add Elements
 	Module:ChatWhisperSticky()
 	Module:CreateChatFilter()
+	Module:CreateChatHistory()
 	Module:CreateChatItemLevels()
 	Module:CreateChatRename()
+	Module:CreateChatRoleIcon()
 	Module:CreateCopyChat()
 	Module:CreateCopyURL()
-	Module:CreateVoiceActivity()
 	Module:CreateEmojis()
+	Module:CreateVoiceActivity()
 
 	-- Lock chatframe
 	if C["Chat"].Lock then

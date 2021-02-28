@@ -527,23 +527,25 @@ local function YesTutor()
 
 	local pass = CreateFrame("Button", nil, tutor)
 	pass:SetPoint("BOTTOMLEFT", 10, 10)
-	pass:SetSize(50, 20)
+	pass:SetSize(90, 24)
 	pass:SkinButton()
 
 	pass.text = pass:CreateFontString(nil, "OVERLAY")
 	pass.text:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
 	pass.text:SetPoint("CENTER")
-	pass.text:SetText("Skip")
+	pass.text:SetText(DECLINE)
+	pass.text:SetTextColor(1, 0, 0)
 
 	local apply = CreateFrame("Button", nil, tutor)
 	apply:SetPoint("BOTTOMRIGHT", -10, 10)
-	apply:SetSize(50, 20)
+	apply:SetSize(90, 24)
 	apply:SkinButton()
 
 	apply.text = apply:CreateFontString(nil, "OVERLAY")
 	apply.text:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
 	apply.text:SetPoint("CENTER")
 	apply.text:SetText(APPLY)
+	apply.text:SetTextColor(0, 1, 0)
 
 	local titles = {
 		DEFAULT.." "..SETTINGS,

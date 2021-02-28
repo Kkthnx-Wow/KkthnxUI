@@ -20,8 +20,8 @@ local GetInboxItem = _G.GetInboxItem
 local GetInboxNumItems = _G.GetInboxNumItems
 local GetItemInfo = _G.GetItemInfo
 local InboxItemCanDelete = _G.InboxItemCanDelete
-local NORMAL_STRING = _G.NORMAL_STRING
-local OPENING_STRING = _G.OPENING_STRING
+local NORMAL_STRING = _G.GUILDCONTROL_OPTION16
+local OPENING_STRING = _G.OPEN_ALL_MAIL_BUTTON_OPENING
 local TakeInboxItem = _G.TakeInboxItem
 local TakeInboxMoney = _G.TakeInboxMoney
 

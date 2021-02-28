@@ -27,7 +27,6 @@ local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDND = _G.UnitIsDND
 local UnitIsDead = _G.UnitIsDead
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
-local UnitIsFeignDeath = _G.UnitIsFeignDeath
 local UnitIsGhost = _G.UnitIsGhost
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
@@ -74,7 +73,7 @@ local function GetUnitHealthPerc(unit)
 end
 
 oUF.Tags.Methods["hp"] = function(unit)
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or UnitIsFeignDeath(unit) then
+	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
 		return oUF.Tags.Methods["DDG"](unit)
 	else
 		local per = GetUnitHealthPerc(unit) or 0
@@ -182,7 +181,7 @@ oUF.Tags.Events["fulllevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_C
 
 -- RaidFrame tags
 oUF.Tags.Methods["raidhp"] = function(unit)
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or UnitIsFeignDeath(unit) then
+	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
 		return oUF.Tags.Methods["DDG"](unit)
 	elseif C["Raid"].HealthFormat.Value == 2 then
 		local per = GetUnitHealthPerc(unit) or 0

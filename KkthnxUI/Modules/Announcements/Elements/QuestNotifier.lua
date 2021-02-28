@@ -32,7 +32,7 @@ local SendChatMessage = _G.SendChatMessage
 local soundKitID = _G.SOUNDKIT.ALARM_CLOCK_WARNING_3
 
 local debugMode = false
-local completedQuest, initComplete = {}
+local completedQuest, WQcache, initComplete = {}, {}
 
 local function GetQuestLinkOrName(questID)
 	return GetQuestLink(questID) or C_QuestLog_GetTitleForQuestID(questID) or ""
@@ -111,6 +111,15 @@ function Module:FindQuestProgress(_, msg)
 end
 
 function Module:FindQuestAccept(questID)
+	if not questID then
+		return
+	end
+
+	if C_QuestLog_IsWorldQuest(questID) and WQcache[questID] then
+		return
+	end
+	WQcache[questID] = true
+
 	local tagInfo = C_QuestLog_GetQuestTagInfo(questID)
 	if tagInfo and tagInfo.worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION then
 		return

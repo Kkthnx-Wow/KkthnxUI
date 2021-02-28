@@ -719,6 +719,10 @@ function K.CheckSavedVariables()
 		KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {}
 	end
 
+	if not KkthnxUIData[K.Realm][K.Name].MajorSpells then
+		KkthnxUIData[K.Realm][K.Name].MajorSpells = {}
+	end
+
 	if not KkthnxUIData[K.Realm][K.Name].Help then
 		KkthnxUIData[K.Realm][K.Name].Help = {}
 	end

@@ -70,9 +70,9 @@ function Module.SetupAutoResurrect(_, arg1)
 end
 
 function Module:CreateAutoResurrect()
-	if C["Automation"].AutoResurrect then
-		K:RegisterEvent("RESURRECT_REQUEST", Module.SetupAutoResurrect)
-	else
-		K:UnregisterEvent("RESURRECT_REQUEST", Module.SetupAutoResurrect)
+	if not C["Automation"].AutoResurrect then
+		return
 	end
+
+	K:RegisterEvent("RESURRECT_REQUEST", Module.SetupAutoResurrect)
 end

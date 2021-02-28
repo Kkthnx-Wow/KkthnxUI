@@ -863,6 +863,20 @@ function Module:CreatePlates()
 	self.Castbar.timeToHold = .5
 	self.Castbar.decimal = "%.1f"
 
+	self.Castbar.glowFrame = CreateFrame("Frame", nil, self.Castbar, "BackdropTemplate")
+	self.Castbar.glowFrame:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
+	self.Castbar.glowFrame:SetPoint("TOPLEFT", self.Castbar.Button, -5, 5)
+	self.Castbar.glowFrame:SetPoint("BOTTOMRIGHT", self.Castbar.Button, 5, -5)
+	self.Castbar.glowFrame:Hide()
+
+	self.Castbar.glowFrame.Animation = self.Castbar.glowFrame:CreateAnimationGroup()
+	self.Castbar.glowFrame.Animation:SetLooping("BOUNCE")
+	self.Castbar.glowFrame.Animation.Fader = self.Castbar.glowFrame.Animation:CreateAnimation("Alpha")
+	self.Castbar.glowFrame.Animation.Fader:SetFromAlpha(0.8)
+	self.Castbar.glowFrame.Animation.Fader:SetToAlpha(0.2)
+	self.Castbar.glowFrame.Animation.Fader:SetDuration(1)
+	self.Castbar.glowFrame.Animation.Fader:SetSmoothing("OUT")
+
 	self.Castbar.OnUpdate = Module.OnCastbarUpdate
 	self.Castbar.PostCastStart = Module.PostCastStart
 	self.Castbar.PostCastStop = Module.PostCastStop
@@ -1313,4 +1327,25 @@ function Module:ToggleGCDTicker()
 	end
 
 	ticker:SetShown(C["Nameplate"].PPGCDTicker)
+end
+
+Module.MajorSpells = {}
+function Module:RefreshMajorSpells()
+	table_wipe(Module.MajorSpells)
+
+	for spellID in pairs(C.MajorSpells) do
+		local name = GetSpellInfo(spellID)
+		if name then
+			local modValue = KkthnxUIData[K.Realm][K.Name].MajorSpells[spellID]
+			if modValue == nil then
+				Module.MajorSpells[spellID] = true
+			end
+		end
+	end
+
+	for spellID, value in pairs(KkthnxUIData[K.Realm][K.Name].MajorSpells) do
+		if value then
+			Module.MajorSpells[spellID] = true
+		end
+	end
 end

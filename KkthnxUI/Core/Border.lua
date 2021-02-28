@@ -1,14 +1,22 @@
 local K, C = unpack(select(2, ...))
 
--- Lua
 local _G = _G
 local next = _G.next
 local type = _G.type
 local unpack = _G.unpack
 
--- Mine
-local sections = {"TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", "TOP", "BOTTOM", "LEFT", "RIGHT"}
 local objectToWidget = {}
+local border_proto = {}
+local sections = {
+	"TOPLEFT",
+	"TOPRIGHT",
+	"BOTTOMLEFT",
+	"BOTTOMRIGHT",
+	"TOP",
+	"BOTTOM",
+	"LEFT",
+	"RIGHT"
+}
 
 local function onSizeChanged(self, w, h)
 	local border = objectToWidget[self]
@@ -28,8 +36,6 @@ local function onSizeChanged(self, w, h)
 	border.LEFT:SetTexCoord(0, 0.125, 0, tile)
 	border.RIGHT:SetTexCoord(0.125, 0.25, 0, tile)
 end
-
-local border_proto = {}
 
 function border_proto:SetOffset(offset)
 	self.__offset = offset
