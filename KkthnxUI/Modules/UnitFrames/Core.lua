@@ -339,13 +339,13 @@ function Module:PostCastStart(unit)
 		self:SetStatusBarColor(unpack(K.Colors.castbar.notInterruptibleColor))
 	end
 
-	if self.__owner.mystyle == "nameplate" then
-		if C["Nameplate"].CastbarGlow and Module.MajorSpells[self.spellID] then
-			K.libButtonGlow.ShowOverlayGlow(oUF_CastbarNameplate.glowFrame)
-		else
-			K.libButtonGlow.HideOverlayGlow(oUF_CastbarNameplate.glowFrame)
-		end
-	end
+	-- if self.__owner.mystyle == "nameplate" then
+	-- 	if C["Nameplate"].CastbarGlow and Module.MajorSpells[self.spellID] then
+	-- 		K.libButtonGlow.ShowOverlayGlow(oUF_CastbarNameplate.glowFrame)
+	-- 	else
+	-- 		K.libButtonGlow.HideOverlayGlow(oUF_CastbarNameplate.glowFrame)
+	-- 	end
+	-- end
 end
 
 function Module:PostUpdateInterruptible(unit)
@@ -666,7 +666,7 @@ function Module:CreateUnits()
 		Module:UpdateGroupRoles()
 		Module:QuestIconCheck()
 		Module:RefreshPlateOnFactionChanged()
-		Module:RefreshMajorSpells()
+		-- Module:RefreshMajorSpells()
 
 		oUF:RegisterStyle("Nameplates", Module.CreatePlates)
 		oUF:SetActiveStyle("Nameplates")

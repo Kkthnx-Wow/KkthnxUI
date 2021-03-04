@@ -1329,23 +1329,23 @@ function Module:ToggleGCDTicker()
 	ticker:SetShown(C["Nameplate"].PPGCDTicker)
 end
 
-Module.MajorSpells = {}
-function Module:RefreshMajorSpells()
-	table_wipe(Module.MajorSpells)
+-- Module.MajorSpells = {}
+-- function Module:RefreshMajorSpells()
+-- 	table_wipe(Module.MajorSpells)
 
-	for spellID in pairs(C.MajorSpells) do
-		local name = GetSpellInfo(spellID)
-		if name then
-			local modValue = KkthnxUIData[K.Realm][K.Name].MajorSpells[spellID]
-			if modValue == nil then
-				Module.MajorSpells[spellID] = true
-			end
-		end
-	end
+-- 	for spellID in pairs(C.MajorSpells) do
+-- 		local name = GetSpellInfo(spellID)
+-- 		if name then
+-- 			local modValue = KkthnxUIData[K.Realm][K.Name].MajorSpells[spellID]
+-- 			if modValue == nil then
+-- 				Module.MajorSpells[spellID] = true
+-- 			end
+-- 		end
+-- 	end
 
-	for spellID, value in pairs(KkthnxUIData[K.Realm][K.Name].MajorSpells) do
-		if value then
-			Module.MajorSpells[spellID] = true
-		end
-	end
-end
+-- 	for spellID, value in pairs(KkthnxUIData[K.Realm][K.Name].MajorSpells) do
+-- 		if value then
+-- 			Module.MajorSpells[spellID] = true
+-- 		end
+-- 	end
+-- end
