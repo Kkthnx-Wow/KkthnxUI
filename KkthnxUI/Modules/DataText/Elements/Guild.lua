@@ -347,7 +347,7 @@ local function OnEvent(_, event, arg1)
 		if C["DataText"].HideText then
 			Module.GuildDataTextFrame.Text:SetText("")
 		else
-			Module.GuildDataTextFrame.Text:SetText("G"..":"..K.MyClassColor.."0")
+			Module.GuildDataTextFrame.Text:SetText(GUILD..": "..K.MyClassColor..NONE)
 		end
 		return
 	end
@@ -362,7 +362,7 @@ local function OnEvent(_, event, arg1)
 	if C["DataText"].HideText then
 		Module.GuildDataTextFrame.Text:SetText("")
 	else
-		Module.GuildDataTextFrame.Text:SetText("G"..":"..K.MyClassColor..online)
+		Module.GuildDataTextFrame.Text:SetText(GUILD..": "..K.MyClassColor..online)
 	end
 
 	if infoFrame and infoFrame:IsShown() then
@@ -438,7 +438,7 @@ function Module:CreateGuildDataText()
 
 	Module.GuildDataTextFrame.Text = Module.GuildDataTextFrame:CreateFontString(nil, "ARTWORK")
 	Module.GuildDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.GuildDataTextFrame.Text:SetPoint("CENTER", Module.GuildDataTextFrame.Texture, "CENTER", 0, -6)
+	Module.GuildDataTextFrame.Text:SetPoint("LEFT", Module.GuildDataTextFrame.Texture, "RIGHT", 0, 0)
 
 	Module.GuildDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
 	Module.GuildDataTextFrame:RegisterEvent("GUILD_ROSTER_UPDATE", OnEvent)

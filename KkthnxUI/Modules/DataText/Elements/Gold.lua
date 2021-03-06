@@ -87,7 +87,7 @@ local function OnEvent(_, event)
 		if C["DataText"].HideText then
 			Module.GoldDataTextFrame.Text:SetText("")
 		else
-			Module.GoldDataTextFrame.Text:SetText(goldname..silvername..coppername)
+			Module.GoldDataTextFrame.Text:SetText(K.FormatMoney(newMoney))
 		end
 	end
 
@@ -213,7 +213,7 @@ function Module:CreateGoldDataText()
 
 		Module.GoldDataTextFrame.Text = Module.GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
 		Module.GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-		Module.GoldDataTextFrame.Text:SetPoint("CENTER", Module.GoldDataTextFrame.Texture, "CENTER", 0, -6)
+		Module.GoldDataTextFrame.Text:SetPoint("LEFT", Module.GoldDataTextFrame.Texture, "RIGHT", 0, 0)
 	end
 
 	Module.GoldDataTextFrame:RegisterEvent("PLAYER_MONEY", OnEvent)

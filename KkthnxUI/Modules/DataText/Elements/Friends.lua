@@ -579,7 +579,7 @@ local function OnEvent(_, event, arg1)
 	if C["DataText"].HideText then
 		Module.FriendsDataTextFrame.Text:SetText("")
 	else
-		Module.FriendsDataTextFrame.Text:SetText(string_format("%s:"..K.MyClassColor.."%d", "F", Module.totalOnline))
+		Module.FriendsDataTextFrame.Text:SetText(string_format("%s: "..K.MyClassColor.."%d", FRIENDS, Module.totalOnline))
 	end
 
 	updateRequest = false
@@ -640,7 +640,7 @@ function Module:CreateSocialDataText()
 
 	Module.FriendsDataTextFrame.Text = Module.FriendsDataTextFrame:CreateFontString(nil, "ARTWORK")
 	Module.FriendsDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.FriendsDataTextFrame.Text:SetPoint("CENTER", Module.FriendsDataTextFrame.Texture, "CENTER", 0, -6)
+	Module.FriendsDataTextFrame.Text:SetPoint("LEFT", Module.FriendsDataTextFrame.Texture, "RIGHT", 0, 0)
 
 	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE", OnEvent)
 	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE", OnEvent)
