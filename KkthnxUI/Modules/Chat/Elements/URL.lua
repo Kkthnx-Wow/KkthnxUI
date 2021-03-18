@@ -10,12 +10,10 @@ local string_split = _G.string.split
 local string_sub = _G.string.sub
 local tostring = _G.tostring
 
-local BNGetFriendInfoByID = _G.BNGetFriendInfoByID
-local BNGetGameAccountInfo = _G.BNGetGameAccountInfo
 local BNInviteFriend = _G.BNInviteFriend
+local C_BattleNet_GetAccountInfoByID = _G.C_BattleNet.GetAccountInfoByID
 local CanCooperateWithGameAccount = _G.CanCooperateWithGameAccount
 local ChatEdit_ClearChat = _G.ChatEdit_ClearChat
-local hooksecurefunc = _G.hooksecurefunc
 local InviteToGroup = _G.InviteToGroup
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsControlKeyDown = _G.IsControlKeyDown
@@ -24,6 +22,7 @@ local IsModifierKeyDown = _G.IsModifierKeyDown
 local LAST_ACTIVE_CHAT_EDIT_BOX = _G.LAST_ACTIVE_CHAT_EDIT_BOX
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local StaticPopup_Visible = _G.StaticPopup_Visible
+local hooksecurefunc = _G.hooksecurefunc
 
 local foundurl = false
 local function convertLink(text, value)
@@ -79,7 +78,6 @@ end
 function Module:HyperlinkShowHook(link, _, button)
 	local type, value = string_match(link, "(%a+):(.+)")
 	local hide
-
 	if button == "LeftButton" and IsModifierKeyDown() then
 		if type == "player" then
 			local unit = string_match(value, "([^:]+)")
@@ -87,7 +85,7 @@ function Module:HyperlinkShowHook(link, _, button)
 				InviteToGroup(unit)
 				hide = true
 			elseif IsControlKeyDown() then
-				_G.GuildInvite(unit)
+				GuildInvite(unit)
 				hide = true
 			end
 		elseif type == "BNplayer" then
@@ -96,14 +94,21 @@ function Module:HyperlinkShowHook(link, _, button)
 				return
 			end
 
-			local _, _, _, _, _, gameID = BNGetFriendInfoByID(bnID)
-			if gameID and CanCooperateWithGameAccount(gameID) then
+			local accountInfo = C_BattleNet_GetAccountInfoByID(bnID)
+			if not accountInfo then
+				return
+			end
+
+			local gameAccountInfo = accountInfo.gameAccountInfo
+			local gameID = gameAccountInfo.gameAccountID
+			if gameID and CanCooperateWithGameAccount(accountInfo) then
 				if IsAltKeyDown() then
 					BNInviteFriend(gameID)
 					hide = true
 				elseif IsControlKeyDown() then
-					local _, charName, _, realmName = BNGetGameAccountInfo(gameID)
-					_G.GuildInvite(charName.."-"..realmName)
+					local charName = gameAccountInfo.characterName
+					local realmName = gameAccountInfo.realmName
+					GuildInvite(charName.."-"..realmName)
 					hide = true
 				end
 			end
