@@ -1,4 +1,4 @@
-## Interface: 90002
+## Interface: 90005
 ## Name: KkthnxUI
 ## Title: |cff669DFFKkthnxUI|r
 ## Notes: Custom user interface.|n|n|cff669DFFDeveloper|cffffffff:|r |nJosh "|CFF7b8489Kkthnx|r" Russell|n|n|cff009cdePayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/Kkthnx|r|n|n|cfff96854Patreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/Kkthnx|r
