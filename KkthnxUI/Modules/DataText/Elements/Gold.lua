@@ -3,6 +3,7 @@ local Module = K:GetModule("Infobar")
 
 local _G = _G
 local pairs = _G.pairs
+local string_format = _G.string.format
 local table_wipe = _G.table.wipe
 local unpack = _G.unpack
 
@@ -25,6 +26,7 @@ local StaticPopupDialogs = _G.StaticPopupDialogs
 local TOTAL = _G.TOTAL
 local YES = _G.YES
 
+local slotString = "Bags"..": %s%d"
 local ticker
 local profit = 0
 local spent = 0
@@ -57,7 +59,16 @@ local function getClassIcon(class)
 	return classStr or ""
 end
 
-local function OnEvent(_, event)
+local function getSlotString()
+	local num = CalculateTotalNumberOfFreeBagSlots()
+	if num < 10 then
+		return string_format(slotString, "|cffff0000", num)
+	else
+		return string_format(slotString, "|cff00ff00", num)
+	end
+end
+
+local function OnEvent(_, event, arg1)
 	if not IsLoggedIn() then
 		return
 	end
@@ -65,6 +76,10 @@ local function OnEvent(_, event)
 	if event == "PLAYER_ENTERING_WORLD" then
 		oldMoney = GetMoney()
 		Module.GoldDataTextFrame:UnregisterEvent(event)
+	elseif event == "BAG_UPDATE" then
+		if arg1 < 0 or arg1 > 4 then
+			return
+		end
 	end
 
 	if not ticker then
@@ -80,14 +95,15 @@ local function OnEvent(_, event)
 		profit = profit + change
 	end
 
-	local coppername = "|cffeda55fC|r"
-	local silvername = "|cffc7c7cfS|r."
-	local goldname = "|cffffd700G|r."
 	if C["DataText"].Gold then
 		if C["DataText"].HideText then
 			Module.GoldDataTextFrame.Text:SetText("")
 		else
-			Module.GoldDataTextFrame.Text:SetText(K.FormatMoney(newMoney))
+			if KkthnxUIDB.ShowSlots then
+				Module.GoldDataTextFrame.Text:SetText(getSlotString())
+			else
+				Module.GoldDataTextFrame.Text:SetText(K.FormatMoney(newMoney))
+			end
 		end
 	end
 
@@ -173,19 +189,29 @@ local function OnEnter()
 	end
 
 	GameTooltip:AddLine(" ")
+	GameTooltip:AddDoubleLine(" ", K.RightButton.."Switch Mode".." ", 1, 1, 1, 0.6, 0.8, 1)
 	GameTooltip:AddDoubleLine(" ", K.LeftButton.."Currency Panel".." ", 1, 1, 1, 0.6, 0.8, 1)
 	GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.6, 0.8, 1)
 	GameTooltip:Show()
 end
 
 local function OnMouseUp(_, btn)
-	if IsControlKeyDown() and btn == "RightButton" then
-		StaticPopup_Show("RESETGOLD")
+	if btn == "RightButton" then
+		if IsControlKeyDown() then
+			StaticPopup_Show("RESETGOLD")
+		else
+			KkthnxUIDB["ShowSlots"] = not KkthnxUIDB["ShowSlots"]
+			if KkthnxUIDB["ShowSlots"] then
+				Module.GoldDataTextFrame:RegisterEvent("BAG_UPDATE")
+			else
+				Module.GoldDataTextFrame:UnregisterEvent("BAG_UPDATE")
+			end
+			OnEvent()
+		end
 	elseif btn == "MiddleButton" then
 		OnEnter()
 	else
-		if InCombatLockdown() then
-			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+		if InCombatLockdown() then UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
 			return
 		end
 		ToggleCharacter("TokenFrame")

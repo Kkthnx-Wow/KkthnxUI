@@ -38,7 +38,7 @@ local iLvlDB = {}
 local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
 local essenceDescription = _G.GetSpellDescription(277253)
 local essenceTextureID = 2975691
-local itemLevelString = string_gsub(ITEM_LEVEL, "%%d", "")
+local itemLevelString = "^"..string_gsub(ITEM_LEVEL, "%%d", "")
 
 local mapRects = {}
 local tempVec2D = CreateVector2D(0, 0)
@@ -376,6 +376,24 @@ local function CheckRole()
 end
 K:RegisterEvent("PLAYER_LOGIN", CheckRole)
 K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
+
+function K.GetGroupUnit(unit)
+	if UnitIsUnit(unit, 'player') then return end
+	if strfind(unit, 'party') or strfind(unit, 'raid') then
+		return unit
+	end
+
+	-- returns the unit as raid# or party# when grouped
+	if UnitInParty(unit) or UnitInRaid(unit) then
+		local isInRaid = IsInRaid()
+		for i = 1, GetNumGroupMembers() do
+			local groupUnit = (isInRaid and 'raid' or 'party')..i
+			if UnitIsUnit(unit, groupUnit) then
+				return groupUnit
+			end
+		end
+	end
+end
 
 -- Chat channel check
 function K.CheckChat(useRaidWarning)

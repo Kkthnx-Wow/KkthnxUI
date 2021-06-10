@@ -1083,7 +1083,6 @@ end
 function Module:OnEnable()
 	-- Register our units / layout
 	self:CreateUnits()
-	self:UpdateRangeCheckSpells()
 
 	if (C["Raid"].DebuffWatch) then
 		local ORD = K.oUF_RaidDebuffs or oUF_RaidDebuffs

@@ -15,7 +15,6 @@
    <Script file="Elements\NameplateAuras.lua" />
    <Script file="Elements\PortraitTimers.lua" />
    <Script file="Elements\RaidUtilityBuffs.lua" />
-   <Script file="Elements\RangeSpells.lua" />
    <Script file="Elements\SpellReminders.lua" />
    <Script file="Elements\UnitframeAuras.lua" />
 
