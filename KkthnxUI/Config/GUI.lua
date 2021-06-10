@@ -473,6 +473,7 @@ local Misc = function(self)
 	Window:CreateSection("Mouse Trail")
 	Window:CreateSwitch("Misc", "MouseTrail", newFeatureIcon..L["Enable Mouse Trail"])
 	Window:CreateColorSelection("Misc", "MouseTrailColor", L["Mouse Trail Color"])
+	Window:CreateDropdown("Misc", "MouseTrailTexture", "Pick Your Mouse Texture")
 end
 
 local Nameplate = function(self)

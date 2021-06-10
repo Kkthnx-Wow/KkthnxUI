@@ -342,6 +342,13 @@ C["Misc"] = {
 		},
 		["Value"] = 1
 	},
+	["MouseTrailTexture"] = {
+		["Options"] = {
+			["Circle"] = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Aura73",
+			["Star"] = "Interface\\Cooldown\\Star4",
+		},
+		["Value"] = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Aura73"
+	},
 	["ShowMarkerBar"] = {
 		["Options"] = {
 			["Grids"] = 1,

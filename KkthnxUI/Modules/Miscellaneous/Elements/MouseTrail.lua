@@ -27,8 +27,8 @@ local function OnUpdate(_, elapsed)
 		local scale = UIParent:GetEffectiveScale()
 		Module.Texture:SetSize(size, size)
 		Module.Texture:SetPoint("CENTER", UIParent, "BOTTOMLEFT", (x + 0.5 * dX) / scale, (y + 0.5 * dY) / scale)
-		Module.Texture:Show()
 		Module.Texture:SetVertexColor(unpack(C["Misc"].MouseTrailColor))
+		Module.Texture:Show()
 	else
 		Module.Texture:Hide()
 	end
@@ -36,13 +36,12 @@ end
 
 function Module:CreateMouseTrail()
 	if C["Misc"].MouseTrail then
-		Module.Frame = CreateFrame("Frame", nil, UIParent)
+		Module.Frame = Module.Frame or CreateFrame("Frame", nil, UIParent)
 		Module.Frame:SetFrameStrata("TOOLTIP")
 
-		Module.Texture = Module.Frame:CreateTexture()
-		Module.Texture:SetTexture([[Interface\Cooldown\star4]]) -- Create texture picker dropdown in future?
+		Module.Texture = Module.Texture or Module.Frame:CreateTexture()
 		Module.Texture:SetBlendMode("ADD")
-		Module.Texture:SetAlpha(0.5)
+		Module.Texture:SetTexture(C["Misc"].MouseTrailTexture.Value) -- Create texture picker dropdown in future?
 
 		Module.Frame:SetScript("OnUpdate", OnUpdate)
 	else

@@ -170,12 +170,23 @@ function Module:CreateColorPicker()
 
 	-- Skin the default frame, move default buttons into place
 	_G.ColorPickerFrame:SetClampedToScreen(true)
+	_G.ColorPickerFrame:CreateBorder()
+	_G.ColorPickerFrame.Border:Hide()
+
+	_G.ColorPickerFrame.Header:StripTextures()
+	_G.ColorPickerFrame.Header:ClearAllPoints()
+	_G.ColorPickerFrame.Header:SetPoint('TOP', _G.ColorPickerFrame, 0, 8)
+
 	_G.ColorPickerCancelButton:ClearAllPoints()
 	_G.ColorPickerOkayButton:ClearAllPoints()
 	_G.ColorPickerCancelButton:SetPoint("BOTTOMRIGHT", _G.ColorPickerFrame, "BOTTOMRIGHT", -14, 14)
 	_G.ColorPickerCancelButton:SetPoint("BOTTOMLEFT", _G.ColorPickerFrame, "BOTTOM", 0, 14)
 	_G.ColorPickerOkayButton:SetPoint("BOTTOMLEFT", _G.ColorPickerFrame,"BOTTOMLEFT", 14, 14)
-	_G.ColorPickerOkayButton:SetPoint("RIGHT", _G.ColorPickerCancelButton,"LEFT", -4, 0)
+	_G.ColorPickerOkayButton:SetPoint("RIGHT", _G.ColorPickerCancelButton,"LEFT", -6, 0)
+
+	--S:HandleSliderFrame(_G.OpacitySliderFrame)
+	ColorPickerOkayButton:SkinButton()
+	ColorPickerCancelButton:SkinButton()
 
 	_G.ColorPickerFrame:HookScript("OnShow", function(frame)
 		-- get color that will be replaced
@@ -227,11 +238,12 @@ function Module:CreateColorPicker()
 	t:Hide()
 
 	-- add copy button to the _G.ColorPickerFrame
-	local b = CreateFrame("Button", "ColorPPCopy", _G.ColorPickerFrame, "UIPanelButtonTemplate, BackdropTemplate")
+	local b = CreateFrame("Button", "ColorPPCopy", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b:SkinButton()
 	b:SetText(CALENDAR_COPY_EVENT)
-	b:SetWidth(60)
+	b:SetWidth(58)
 	b:SetHeight(22)
-	b:SetPoint("TOPLEFT", "ColorSwatch", "BOTTOMLEFT", -6, -5)
+	b:SetPoint("TOPLEFT", "ColorSwatch", "BOTTOMLEFT", -6, -20)
 
 	-- copy color into buffer on button click
 	b:SetScript("OnClick", function()
@@ -247,26 +259,213 @@ function Module:CreateColorPicker()
 	end)
 
 	--class color button
-	b = CreateFrame("Button", "ColorPPClass", _G.ColorPickerFrame, "UIPanelButtonTemplate, BackdropTemplate")
-	b:SetText(CLASS)
-	b:SetWidth(80)
-	b:SetHeight(22)
-	b:SetPoint("TOP", "ColorPPCopy", "BOTTOMRIGHT", 0, -7)
+	-- b = CreateFrame("Button", "ColorPPClass", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	-- b:SetText(CLASS)
+	-- b:SkinButton()
+	-- b:SetWidth(80)
+	-- b:SetHeight(22)
+	-- b:SetPoint("TOP", "ColorPPCopy", "BOTTOMRIGHT", 0, -7)
+
+	-- b:SetScript("OnClick", function()
+	-- 	_G.ColorPickerFrame:SetColorRGB(K.r, K.g, K.b)
+	-- 	_G.ColorSwatch:SetColorTexture(K.r, K.g, K.b)
+	-- 	if _G.ColorPickerFrame.hasOpacity then
+	-- 		_G.OpacitySliderFrame:SetValue(0)
+	-- 	end
+	-- end)
+
+	-- class color buttons
+	local ClassIconsTexture = "|TInterface\\WorldStateFrame\\Icons-Classes:22:22:0:0:256:256:"
+	local CITS = _G.CLASS_ICON_TCOORDS
+	local ColorPPWidth = _G.ColorPickerFrame:GetWidth()
+
+	b = CreateFrame("Button", "ColorPPHunterClass", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b:SetText(ClassIconsTexture..tostring(CITS["HUNTER"][1]*256)..":"..tostring(CITS["HUNTER"][2]*256)..":"..tostring(CITS["HUNTER"][3]*256)..":"..tostring(CITS["HUNTER"][4]*256).."|t")
+	b:SkinButton()
+	b:SetWidth(ColorPPWidth / 15.7)
+	b:SetHeight(ColorPPWidth / 15.7)
+	b:SetPoint("BOTTOMRIGHT", _G.ColorPickerFrame, "TOPRIGHT", 0, 6)
 
 	b:SetScript("OnClick", function()
-		_G.ColorPickerFrame:SetColorRGB(K.r, K.g, K.b)
-		_G.ColorSwatch:SetColorTexture(K.r, K.g, K.b)
+		_G.ColorPickerFrame:SetColorRGB(0.67, 0.84, 0.45)
+		_G.ColorSwatch:SetColorTexture(0.67, 0.84, 0.45)
+		if _G.ColorPickerFrame.hasOpacity then
+			_G.OpacitySliderFrame:SetValue(0)
+		end
+	end)
+
+	b = CreateFrame("Button", "ColorPPDemonHunterClass", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b:SetText(ClassIconsTexture..tostring(CITS["DEMONHUNTER"][1]*256)..":"..tostring(CITS["DEMONHUNTER"][2]*256)..":"..tostring(CITS["DEMONHUNTER"][3]*256)..":"..tostring(CITS["DEMONHUNTER"][4]*256).."|t")
+	b:SkinButton()
+	b:SetWidth(ColorPPWidth / 15.7)
+	b:SetHeight(ColorPPWidth / 15.7)
+	b:SetPoint("RIGHT", "ColorPPHunterClass", "LEFT", -6, 0)
+
+	b:SetScript("OnClick", function()
+		_G.ColorPickerFrame:SetColorRGB(0.64, 0.19, 0.79)
+		_G.ColorSwatch:SetColorTexture(0.64, 0.19, 0.79)
+		if _G.ColorPickerFrame.hasOpacity then
+			_G.OpacitySliderFrame:SetValue(0)
+		end
+	end)
+
+	b = CreateFrame("Button", "ColorPPMonkClass", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b:SetText(ClassIconsTexture..tostring(CITS["MONK"][1]*256)..":"..tostring(CITS["MONK"][2]*256)..":"..tostring(CITS["MONK"][3]*256)..":"..tostring(CITS["MONK"][4]*256).."|t")
+	b:SkinButton()
+	b:SetWidth(ColorPPWidth / 15.7)
+	b:SetHeight(ColorPPWidth / 15.7)
+	b:SetPoint("RIGHT", "ColorPPDemonHunterClass", "LEFT", -6, 0)
+
+	b:SetScript("OnClick", function()
+		_G.ColorPickerFrame:SetColorRGB(0.00, 1.00, 0.59)
+		_G.ColorSwatch:SetColorTexture(0.00, 1.00, 0.59)
+		if _G.ColorPickerFrame.hasOpacity then
+			_G.OpacitySliderFrame:SetValue(0)
+		end
+	end)
+
+	b = CreateFrame("Button", "ColorPPPriestClass", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b:SetText(ClassIconsTexture..tostring(CITS["PRIEST"][1]*256)..":"..tostring(CITS["PRIEST"][2]*256)..":"..tostring(CITS["PRIEST"][3]*256)..":"..tostring(CITS["PRIEST"][4]*256).."|t")
+	b:SkinButton()
+	b:SetWidth(ColorPPWidth / 15.7)
+	b:SetHeight(ColorPPWidth / 15.7)
+	b:SetPoint("RIGHT", "ColorPPMonkClass", "LEFT", -6, 0)
+
+	b:SetScript("OnClick", function()
+		_G.ColorPickerFrame:SetColorRGB(0.86, 0.92, 0.98)
+		_G.ColorSwatch:SetColorTexture(0.86, 0.92, 0.98)
+		if _G.ColorPickerFrame.hasOpacity then
+			_G.OpacitySliderFrame:SetValue(0)
+		end
+	end)
+
+	b = CreateFrame("Button", "ColorPPWarlockClass", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b:SetText(ClassIconsTexture..tostring(CITS["WARLOCK"][1]*256)..":"..tostring(CITS["WARLOCK"][2]*256)..":"..tostring(CITS["WARLOCK"][3]*256)..":"..tostring(CITS["WARLOCK"][4]*256).."|t")
+	b:SkinButton()
+	b:SetWidth(ColorPPWidth / 15.7)
+	b:SetHeight(ColorPPWidth / 15.7)
+	b:SetPoint("RIGHT", "ColorPPPriestClass", "LEFT", -6, 0)
+
+	b:SetScript("OnClick", function()
+		_G.ColorPickerFrame:SetColorRGB(0.58, 0.51, 0.79)
+		_G.ColorSwatch:SetColorTexture(0.58, 0.51, 0.79)
+		if _G.ColorPickerFrame.hasOpacity then
+			_G.OpacitySliderFrame:SetValue(0)
+		end
+	end)
+
+	b = CreateFrame("Button", "ColorPPDeathknightClass", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b:SetText(ClassIconsTexture..tostring(CITS["DEATHKNIGHT"][1]*256)..":"..tostring(CITS["DEATHKNIGHT"][2]*256)..":"..tostring(CITS["DEATHKNIGHT"][3]*256)..":"..tostring(CITS["DEATHKNIGHT"][4]*256).."|t")
+	b:SkinButton()
+	b:SetWidth(ColorPPWidth / 15.7)
+	b:SetHeight(ColorPPWidth / 15.7)
+	b:SetPoint("RIGHT", "ColorPPWarlockClass", "LEFT", -6, 0)
+
+	b:SetScript("OnClick", function()
+		_G.ColorPickerFrame:SetColorRGB(0.77, 0.12, 0.24)
+		_G.ColorSwatch:SetColorTexture(0.77, 0.12, 0.24)
+		if _G.ColorPickerFrame.hasOpacity then
+			_G.OpacitySliderFrame:SetValue(0)
+		end
+	end)
+
+	b = CreateFrame("Button", "ColorPPDruidClass", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b:SetText(ClassIconsTexture..tostring(CITS["DRUID"][1]*256)..":"..tostring(CITS["DRUID"][2]*256)..":"..tostring(CITS["DRUID"][3]*256)..":"..tostring(CITS["DRUID"][4]*256).."|t")
+	b:SkinButton()
+	b:SetWidth(ColorPPWidth / 15.7)
+	b:SetHeight(ColorPPWidth / 15.7)
+	b:SetPoint("RIGHT", "ColorPPDeathknightClass", "LEFT", -6, 0)
+
+	b:SetScript("OnClick", function()
+		_G.ColorPickerFrame:SetColorRGB(1.00, 0.49, 0.03)
+		_G.ColorSwatch:SetColorTexture(1.00, 0.49, 0.03)
+		if _G.ColorPickerFrame.hasOpacity then
+			_G.OpacitySliderFrame:SetValue(0)
+		end
+	end)
+
+	b = CreateFrame("Button", "ColorPPMageClass", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b:SetText(ClassIconsTexture..tostring(CITS["MAGE"][1]*256)..":"..tostring(CITS["MAGE"][2]*256)..":"..tostring(CITS["MAGE"][3]*256)..":"..tostring(CITS["MAGE"][4]*256).."|t")
+	b:SkinButton()
+	b:SetWidth(ColorPPWidth / 15.7)
+	b:SetHeight(ColorPPWidth / 15.7)
+	b:SetPoint("RIGHT", "ColorPPDruidClass", "LEFT", -6, 0)
+
+	b:SetScript("OnClick", function()
+		_G.ColorPickerFrame:SetColorRGB(0.41, 0.80, 1.00)
+		_G.ColorSwatch:SetColorTexture(0.41, 0.80, 1.00)
+		if _G.ColorPickerFrame.hasOpacity then
+			_G.OpacitySliderFrame:SetValue(0)
+		end
+	end)
+
+	b = CreateFrame("Button", "ColorPPPaladinClass", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b:SetText(ClassIconsTexture..tostring(CITS["PALADIN"][1]*256)..":"..tostring(CITS["PALADIN"][2]*256)..":"..tostring(CITS["PALADIN"][3]*256)..":"..tostring(CITS["PALADIN"][4]*256).."|t")
+	b:SkinButton()
+	b:SetWidth(ColorPPWidth / 15.7)
+	b:SetHeight(ColorPPWidth / 15.7)
+	b:SetPoint("RIGHT", "ColorPPMageClass", "LEFT", -6, 0)
+
+	b:SetScript("OnClick", function()
+		_G.ColorPickerFrame:SetColorRGB(0.96, 0.55, 0.73)
+		_G.ColorSwatch:SetColorTexture(0.96, 0.55, 0.73)
+		if _G.ColorPickerFrame.hasOpacity then
+			_G.OpacitySliderFrame:SetValue(0)
+		end
+	end)
+
+	b = CreateFrame("Button", "ColorPPRogueClass", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b:SetText(ClassIconsTexture..tostring(CITS["ROGUE"][1]*256)..":"..tostring(CITS["ROGUE"][2]*256)..":"..tostring(CITS["ROGUE"][3]*256)..":"..tostring(CITS["ROGUE"][4]*256).."|t")
+	b:SkinButton()
+	b:SetWidth(ColorPPWidth / 15.7)
+	b:SetHeight(ColorPPWidth / 15.7)
+	b:SetPoint("RIGHT", "ColorPPPaladinClass", "LEFT", -6, 0)
+
+	b:SetScript("OnClick", function()
+		_G.ColorPickerFrame:SetColorRGB(1.00, 0.95, 0.32)
+		_G.ColorSwatch:SetColorTexture(1.00, 0.95, 0.32)
+		if _G.ColorPickerFrame.hasOpacity then
+			_G.OpacitySliderFrame:SetValue(0)
+		end
+	end)
+
+	b = CreateFrame("Button", "ColorPPShamanClass", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b:SetText(ClassIconsTexture..tostring(CITS["SHAMAN"][1]*256)..":"..tostring(CITS["SHAMAN"][2]*256)..":"..tostring(CITS["SHAMAN"][3]*256)..":"..tostring(CITS["SHAMAN"][4]*256).."|t")
+	b:SkinButton()
+	b:SetWidth(ColorPPWidth / 15.7)
+	b:SetHeight(ColorPPWidth / 15.7)
+	b:SetPoint("RIGHT", "ColorPPRogueClass", "LEFT", -6, 0)
+
+	b:SetScript("OnClick", function()
+		_G.ColorPickerFrame:SetColorRGB(0.16, 0.31, 0.61)
+		_G.ColorSwatch:SetColorTexture(0.16, 0.31, 0.61)
+		if _G.ColorPickerFrame.hasOpacity then
+			_G.OpacitySliderFrame:SetValue(0)
+		end
+	end)
+
+	b = CreateFrame("Button", "ColorPPWarriorClass", _G.ColorPickerFrame, "UIPanelButtonTemplate")
+	b:SetText(ClassIconsTexture..tostring(CITS["WARRIOR"][1]*256)..":"..tostring(CITS["WARRIOR"][2]*256)..":"..tostring(CITS["WARRIOR"][3]*256)..":"..tostring(CITS["WARRIOR"][4]*256).."|t")
+	b:SkinButton()
+	b:SetWidth(ColorPPWidth / 15.7)
+	b:SetHeight(ColorPPWidth / 15.7)
+	b:SetPoint("RIGHT", "ColorPPShamanClass", "LEFT", -6, 0)
+
+	b:SetScript("OnClick", function()
+		_G.ColorPickerFrame:SetColorRGB(0.78, 0.61, 0.43)
+		_G.ColorSwatch:SetColorTexture(0.78, 0.61, 0.43)
 		if _G.ColorPickerFrame.hasOpacity then
 			_G.OpacitySliderFrame:SetValue(0)
 		end
 	end)
 
 	-- add paste button to the _G.ColorPickerFrame
-	b = CreateFrame("Button", "ColorPPPaste", _G.ColorPickerFrame, "UIPanelButtonTemplate, BackdropTemplate")
+	b = CreateFrame("Button", "ColorPPPaste", _G.ColorPickerFrame, "UIPanelButtonTemplate")
 	b:SetText(CALENDAR_PASTE_EVENT)
-	b:SetWidth(60)
+	b:SkinButton()
+	b:SetWidth(58)
 	b:SetHeight(22)
-	b:SetPoint("TOPLEFT", "ColorPPCopy", "TOPRIGHT", 2, 0)
+	b:SetPoint("TOPLEFT", "ColorPPCopy", "TOPRIGHT", 6, 0)
 	b:Disable() -- enable when something has been copied
 
 	-- paste color on button click, updating frame components
@@ -281,11 +480,12 @@ function Module:CreateColorPicker()
 	end)
 
 	-- add defaults button to the _G.ColorPickerFrame
-	b = CreateFrame("Button", "ColorPPDefault", _G.ColorPickerFrame, "UIPanelButtonTemplate, BackdropTemplate")
+	b = CreateFrame("Button", "ColorPPDefault", _G.ColorPickerFrame, "UIPanelButtonTemplate")
 	b:SetText(DEFAULT)
+	b:SkinButton()
 	b:SetWidth(80)
 	b:SetHeight(22)
-	b:SetPoint("TOPLEFT", "ColorPPClass", "BOTTOMLEFT", 0, -7)
+	b:SetPoint("TOP", "ColorPPCopy", "BOTTOMRIGHT", 0, -10)
 	b:Disable() -- enable when something has been copied
 	b:SetScript("OnHide", function(btn)
 		if btn.colors then
@@ -325,7 +525,7 @@ function Module:CreateColorPicker()
 	local boxes = {"R", "G", "B", "H", "A"}
 	for i = 1, #boxes do
 		local rgb = boxes[i]
-		local box = CreateFrame("EditBox", "ColorPPBox"..rgb, _G.ColorPickerFrame, "InputBoxTemplate, BackdropTemplate")
+		local box = CreateFrame("EditBox", "ColorPPBox"..rgb, _G.ColorPickerFrame, "InputBoxTemplate")
 		box:SetPoint("TOP", "ColorPickerWheel", "BOTTOM", 0, -15)
 		box:SetFrameStrata("DIALOG")
 		box:SetAutoFocus(false)
@@ -333,6 +533,10 @@ function Module:CreateColorPicker()
 		box:SetJustifyH("RIGHT")
 		box:SetHeight(24)
 		box:SetID(i)
+		box:StripTextures(2)
+		box:CreateBackdrop()
+		box.Backdrop:SetPoint("TOPLEFT", box, "TOPLEFT", 4, -4)
+		box.Backdrop:SetPoint("BOTTOMRIGHT", box, "BOTTOMRIGHT", -3, 4)
 
 		-- hex entry box
 		if i == 4 then
@@ -347,7 +551,7 @@ function Module:CreateColorPicker()
 
 		-- label
 		local label = box:CreateFontString("ColorPPBoxLabel"..rgb, "ARTWORK", "GameFontNormalSmall")
-		label:SetPoint("RIGHT", "ColorPPBox"..rgb, "LEFT", -5, 0)
+		label:SetPoint("RIGHT", "ColorPPBox"..rgb, "LEFT", 0, 0)
 		label:SetText(i == 4 and "#" or rgb)
 		label:SetTextColor(1, 1, 1)
 
