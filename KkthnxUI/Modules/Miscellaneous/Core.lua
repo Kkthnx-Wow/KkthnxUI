@@ -457,7 +457,7 @@ function Module:CreateWorldQuestTool()
 		end
 
 		for i = 1, 3 do
-			K.libButtonGlow.HideOverlayGlow(_G["ActionButton"..i])
+			K.HideButtonGlow(_G["ActionButton"..i])
 		end
 		hasFound = nil
 	end
@@ -474,9 +474,9 @@ function Module:CreateWorldQuestTool()
 			local _, spellID = GetActionInfo(button.action)
 			local name = spellID and GetSpellInfo(spellID)
 			if name and name == msg then
-				K.libButtonGlow.ShowOverlayGlow(button)
+				K.ShowButtonGlow(button)
 			else
-				K.libButtonGlow.HideOverlayGlow(button)
+				K.HideButtonGlow(button)
 			end
 		end
 

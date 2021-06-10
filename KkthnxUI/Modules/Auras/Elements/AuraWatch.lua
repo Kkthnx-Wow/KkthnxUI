@@ -493,9 +493,9 @@ function Module:AuraWatch_SetupAura(index, UnitID, name, icon, count, duration, 
 
 	if frame.glowFrame then
 		if flash then
-			K.libButtonGlow.ShowOverlayGlow(frame.glowFrame)
+			K.ShowButtonGlow(frame.glowFrame)
 		else
-			K.libButtonGlow.HideOverlayGlow(frame.glowFrame)
+			K.HideButtonGlow(frame.glowFrame)
 		end
 	end
 
@@ -838,7 +838,7 @@ SlashCmdList.AuraWatch = function(msg)
 				end
 
 				if value[i].glowFrame then
-					K.libButtonGlow.HideOverlayGlow(value[i].glowFrame)
+					K.HideButtonGlow(value[i].glowFrame)
 				end
 			end
 			value[1].MoveHandle:Show()

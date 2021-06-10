@@ -257,13 +257,13 @@ function Module.LOOT_OPENED(_, autoloot)
 			local questTexture = slot.questTexture
 			if (questId and not isActive) then
 				questTexture:Show()
-				K.libButtonGlow.ShowOverlayGlow(slot.iconFrame)
+				K.ShowButtonGlow(slot.iconFrame)
 			elseif (questId or isQuestItem) then
 				questTexture:Hide()
-				K.libButtonGlow.ShowOverlayGlow(slot.iconFrame)
+				K.ShowButtonGlow(slot.iconFrame)
 			else
 				questTexture:Hide()
-				K.libButtonGlow.HideOverlayGlow(slot.iconFrame)
+				K.HideButtonGlow(slot.iconFrame)
 			end
 
 			-- Check for FasterLooting scripts or w/e (if bag is full)

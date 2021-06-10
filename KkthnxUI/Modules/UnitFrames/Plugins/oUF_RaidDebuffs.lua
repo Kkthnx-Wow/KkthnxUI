@@ -131,9 +131,9 @@ local function UpdateDebuffFrame(self, name, icon, count, debuffType, duration, 
 
 		if rd.glowFrame then
 			if rd.priority == 6 then
-				K.libButtonGlow.ShowOverlayGlow(rd.glowFrame)
+				K.ShowButtonGlow(rd.glowFrame)
 			else
-				K.libButtonGlow.HideOverlayGlow(rd.glowFrame)
+				K.HideButtonGlow(rd.glowFrame)
 			end
 		end
 

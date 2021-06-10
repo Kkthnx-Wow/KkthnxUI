@@ -78,7 +78,7 @@ function Module:ChantLumos(self)
 				button.CD:Hide()
 				button.Icon:SetDesaturated(true)
 				button:SetScript("OnUpdate", nil)
-				K.libButtonGlow.HideOverlayGlow(button.glowFrame)
+				K.HideButtonGlow(button.glowFrame)
 			end
 			button.Icon:SetTexture(GetSpellTexture(316099))
 		end

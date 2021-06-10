@@ -341,9 +341,9 @@ function Module:PostCastStart(unit)
 
 	-- if self.__owner.mystyle == "nameplate" then
 	-- 	if C["Nameplate"].CastbarGlow and Module.MajorSpells[self.spellID] then
-	-- 		K.libButtonGlow.ShowOverlayGlow(oUF_CastbarNameplate.glowFrame)
+	-- 		K.ShowButtonGlow(oUF_CastbarNameplate.glowFrame)
 	-- 	else
-	-- 		K.libButtonGlow.HideOverlayGlow(oUF_CastbarNameplate.glowFrame)
+	-- 		K.HideButtonGlow(oUF_CastbarNameplate.glowFrame)
 	-- 	end
 	-- end
 end
