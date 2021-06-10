@@ -499,7 +499,7 @@ end
 function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster, isStealable, _, spellID, _, _, _, nameplateShowAll)
 	local style = element.__owner.mystyle
 	if style == "nameplate" or style == "target" then
-			if name and spellID == 209859 then
+		if name and spellID == 209859 then
 			element.bolster = element.bolster + 1
 			if not element.bolsterIndex then
 				element.bolsterIndex = button
@@ -973,12 +973,12 @@ function Module:CreateUnits()
 		-- 			end
 
 		-- 			local specIndex = GetSpecialization()
-		-- 			if not KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] then
-		-- 				KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = {"TOPLEFT", UIParent, "TOPLEFT", 4, -180}
+		-- 			if not KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] then
+		-- 				KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = {"TOPLEFT", UIParent, "TOPLEFT", 4, -180}
 		-- 			end
 
 		-- 			raidMover:ClearAllPoints()
-		-- 			raidMover:SetPoint(unpack(KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex]))
+		-- 			raidMover:SetPoint(unpack(KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex]))
 		-- 		end
 		-- 	end
 		-- 	K:RegisterEvent("PLAYER_ENTERING_WORLD", UpdateSpecPos)
@@ -990,7 +990,7 @@ function Module:CreateUnits()
 		-- 		end
 
 		-- 		local specIndex = GetSpecialization()
-		-- 		KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = KkthnxUIData[K.Realm][K.Name]["Mover"]["RaidFrame"]
+		-- 		KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidFrame"]
 		-- 	end)
 		-- end
 

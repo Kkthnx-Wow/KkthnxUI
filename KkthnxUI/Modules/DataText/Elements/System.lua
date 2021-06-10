@@ -124,7 +124,7 @@ end
 
 local function setFrameRate()
 	local fps = math_floor(GetFramerate())
-	Module.SystemDataTextFrame.Text:SetText(L["FPS"]..":"..colorFPS(fps))
+	Module.SystemDataTextFrame.Text:SetText(L["FPS"]..": "..colorFPS(fps))
 end
 
 local function OnEnter()
@@ -263,15 +263,22 @@ function Module:CreateSystemDataText()
 	Module.CheckLoginTime = GetTime()
 
 	Module.SystemDataTextFrame = CreateFrame("Frame", "KKUI_SystemDataText", UIParent)
+	Module.SystemDataTextFrame:SetSize(24, 24)
+
+	Module.SystemDataTextFrame.Texture = Module.SystemDataTextFrame:CreateTexture(nil, "BACKGROUND")
+	Module.SystemDataTextFrame.Texture:SetPoint("LEFT", Module.SystemDataTextFrame, "LEFT", 0, 0)
+	Module.SystemDataTextFrame.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\help.blp")
+	Module.SystemDataTextFrame.Texture:SetSize(24, 24)
+	Module.SystemDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 	Module.SystemDataTextFrame.Text = Module.SystemDataTextFrame:CreateFontString("OVERLAY")
 	Module.SystemDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.SystemDataTextFrame.Text:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -4)
-
-	Module.SystemDataTextFrame:SetAllPoints(Module.SystemDataTextFrame.Text)
+	Module.SystemDataTextFrame.Text:SetPoint("LEFT", Module.SystemDataTextFrame.Texture, "RIGHT", 0, 0)
 
 	Module.SystemDataTextFrame:SetScript("OnUpdate", OnUpdate)
 	Module.SystemDataTextFrame:SetScript("OnEnter", OnEnter)
 	Module.SystemDataTextFrame:SetScript("OnLeave", OnLeave)
 	Module.SystemDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
+
+	K.Mover(Module.SystemDataTextFrame, "KKUI_SystemDataText", "KKUI_SystemDataText", {"TOPLEFT", UIParent, "TOPLEFT", 0, 0})
 end

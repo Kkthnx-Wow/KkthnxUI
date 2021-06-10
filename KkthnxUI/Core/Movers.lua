@@ -30,8 +30,6 @@ local MoverList, f = {}
 local updater
 
 function K:Mover(text, value, anchor, width, height, isAuraWatch)
-	K.CheckSavedVariables()
-
 	local key = "Mover"
 	if isAuraWatch then
 		key = "AuraWatchMover"
@@ -50,10 +48,10 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 	mover.text = K.CreateFontString(mover, 12, text, "")
 	mover.text:SetWordWrap(true)
 
-	if not KkthnxUIData[K.Realm][K.Name][key][value] then
+	if not KkthnxUIDB.Variables[K.Realm][K.Name][key][value] then
 		mover:SetPoint(unpack(anchor))
 	else
-		mover:SetPoint(unpack(KkthnxUIData[K.Realm][K.Name][key][value]))
+		mover:SetPoint(unpack(KkthnxUIDB.Variables[K.Realm][K.Name][key][value]))
 	end
 
 	mover:EnableMouse(true)
@@ -137,7 +135,7 @@ function Module:DoTrim(trimX, trimY)
 		f.__y.__current = y
 		mover:ClearAllPoints()
 		mover:SetPoint(point, UIParent, point, x, y)
-		KkthnxUIData[K.Realm][K.Name][mover.__key][mover.__value] = {point, "UIParent", point, x, y}
+		KkthnxUIDB.Variables[K.Realm][K.Name][mover.__key][mover.__value] = {point, "UIParent", point, x, y}
 	end
 end
 
@@ -151,7 +149,7 @@ function Module:Mover_OnClick(btn)
 	elseif IsControlKeyDown() and btn == "RightButton" then
 		self:ClearAllPoints()
 		self:SetPoint(unpack(self.__anchor))
-		KkthnxUIData[K.Realm][K.Name][self.__key][self.__value] = nil
+		KkthnxUIDB.Variables[K.Realm][K.Name][self.__key][self.__value] = nil
 	end
 
 	updater.__owner = self
@@ -183,7 +181,7 @@ function Module:Mover_OnDragStop()
 
 	self:ClearAllPoints()
 	self:SetPoint(orig, "UIParent", tar, x, y)
-	KkthnxUIData[K.Realm][K.Name][self.__key][self.__value] = {orig, "UIParent", tar, x, y}
+	KkthnxUIDB.Variables[K.Realm][K.Name][self.__key][self.__value] = {orig, "UIParent", tar, x, y}
 	Module.UpdateTrimFrame(self)
 	updater:Hide()
 end
@@ -215,8 +213,8 @@ _G.StaticPopupDialogs["RESET_MOVER"] = {
 	button1 = OKAY,
 	button2 = CANCEL,
 	OnAccept = function()
-		table_wipe(KkthnxUIData[K.Realm][K.Name]["Mover"])
-		table_wipe(KkthnxUIData[K.Realm][K.Name]["AuraWatchMover"])
+		table_wipe(KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"])
+		table_wipe(KkthnxUIDB.Variables[K.Realm][K.Name]["AuraWatchMover"])
 		_G.ReloadUI()
 	end,
 }

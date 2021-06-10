@@ -257,8 +257,8 @@ function Module:CreateAuraHeader(filter)
 end
 
 function Module:RemoveSpellFromIgnoreList()
-	if IsAltKeyDown() and IsControlKeyDown() and self.spellID and KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells[self.spellID] then
-		KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells[self.spellID] = nil
+	if IsAltKeyDown() and IsControlKeyDown() and self.spellID and KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells[self.spellID] then
+		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells[self.spellID] = nil
 		K.Print(string.format(L["RemoveFromIgnoreList"], "", self.spellID))
 	end
 end

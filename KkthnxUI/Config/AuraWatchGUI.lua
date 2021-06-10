@@ -333,8 +333,8 @@ local function CreatePanel()
 		button1 = YES,
 		button2 = NO,
 		OnAccept = function()
-			KkthnxUIData[K.Realm][K.Name].AuraWatchList = {}
-			KkthnxUIData[K.Realm][K.Name].InternalCD = {}
+			KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList = {}
+			KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD = {}
 			ReloadUI()
 		end,
 		whileDead = 1,
@@ -347,7 +347,7 @@ local function CreatePanel()
 	local function SortBars(index)
 		local num, onLeft, onRight = 1, 1, 1
 		for k in pairs(barTable[index]) do
-			if (index < 10 and KkthnxUIData[K.Realm][K.Name].AuraWatchList[index][k]) or (index == 10 and KkthnxUIData[K.Realm][K.Name].InternalCD[k]) then
+			if (index < 10 and KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[index][k]) or (index == 10 and KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[k]) then
 				local bar = barTable[index][k]
 				if num == 1 then
 					bar:SetPoint("TOPLEFT", 10, -10)
@@ -411,7 +411,7 @@ local function CreatePanel()
 
 		close:SetScript("OnClick", function()
 			bar:Hide()
-			KkthnxUIData[K.Realm][K.Name].AuraWatchList[index][spellID] = nil
+			KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[index][spellID] = nil
 			barTable[index][spellID] = nil
 			SortBars(index)
 		end)
@@ -458,7 +458,7 @@ local function CreatePanel()
 		K.AddTooltip(icon, "ANCHOR_RIGHT", intID)
 		close:SetScript("OnClick", function()
 			bar:Hide()
-			KkthnxUIData[K.Realm][K.Name].InternalCD[intID] = nil
+			KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[intID] = nil
 			barTable[index][intID] = nil
 			SortBars(index)
 		end)
@@ -473,8 +473,6 @@ local function CreatePanel()
 	end
 
 	local function createGroupSwitcher(parent, index)
-		--K.CheckSavedVariables()
-
 		local bu = CreateFrame("CheckButton", nil, parent, "InterfaceOptionsCheckButtonTemplate")
 		bu:SetSize(20, 20)
 		bu:SetPoint("TOPRIGHT", -36, -138)
@@ -501,9 +499,9 @@ local function CreatePanel()
 		ch:SetDesaturated(true)
 		ch:SetVertexColor(1, 1, 0)
 
-		bu:SetChecked(KkthnxUIData[K.Realm][K.Name].AuraWatchList.Switcher[index])
+		bu:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher[index])
 		bu:SetScript("OnClick", function()
-			KkthnxUIData[K.Realm][K.Name].AuraWatchList.Switcher[index] = bu:GetChecked()
+			KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher[index] = bu:GetChecked()
 		end)
 		K.CreateFontString(bu, 15, "|cffff0000"..L["AuraWatch Switcher"], "", false, "RIGHT", -30, 0)
 	end
@@ -564,8 +562,8 @@ local function CreatePanel()
 	end
 
 	for i, group in pairs(groups) do
-		if not KkthnxUIData[K.Realm][K.Name].AuraWatchList[i] then
-			KkthnxUIData[K.Realm][K.Name].AuraWatchList[i] = {}
+		if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i] then
+			KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i] = {}
 		end
 		barTable[i] = {}
 
@@ -582,7 +580,7 @@ local function CreatePanel()
 
 		local Option = {}
 		if i < 10 then
-			for _, v in pairs(KkthnxUIData[K.Realm][K.Name].AuraWatchList[i]) do
+			for _, v in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i]) do
 				AddAura(tabs[i].List.child, i, v)
 			end
 			Option[1] = AW_CreateDropdown(tabs[i].Page, L["Type*"], 20, -30, {"AuraID", "SpellID", "SlotID", "TotemID"}, L["Type Intro"])
@@ -628,7 +626,7 @@ local function CreatePanel()
 				end)
 			end
 		elseif i == 10 then
-			for _, v in pairs(KkthnxUIData[K.Realm][K.Name].InternalCD) do
+			for _, v in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD) do
 				AddInternal(tabs[i].List.child, i, v)
 			end
 			Option[13] = AW_CreateEditbox(tabs[i].Page, L["IntID*"], 20, -30, L["IntID Intro"])
@@ -694,13 +692,13 @@ local function CreatePanel()
 				end
 
 				local realID = spellID or slotID or totemID
-				if KkthnxUIData[K.Realm][K.Name].AuraWatchList[i][realID] then
+				if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i][realID] then
 					UIErrorsFrame:AddMessage(K.InfoColor..L["Existing ID"])
 					return
 				end
 
-				KkthnxUIData[K.Realm][K.Name].AuraWatchList[i][realID] = {typeID, realID, unitID, Option[4].Text:GetText(), tonumber(Option[5]:GetText()) or false, Option[6]:GetChecked(), Option[7]:GetChecked(), Option[8]:GetChecked(), Option[9]:GetText(), Option[10]:GetChecked()}
-				AddAura(tabs[i].List.child, i, KkthnxUIData[K.Realm][K.Name].AuraWatchList[i][realID])
+				KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i][realID] = {typeID, realID, unitID, Option[4].Text:GetText(), tonumber(Option[5]:GetText()) or false, Option[6]:GetChecked(), Option[7]:GetChecked(), Option[8]:GetChecked(), Option[9]:GetText(), Option[10]:GetChecked()}
+				AddAura(tabs[i].List.child, i, KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i][realID])
 				for i = 2, 12 do
 					AW_ClearEdit(Option[i])
 				end
@@ -716,13 +714,13 @@ local function CreatePanel()
 					return
 				end
 
-				if KkthnxUIData[K.Realm][K.Name].InternalCD[intID] then
+				if KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[intID] then
 					UIErrorsFrame:AddMessage(K.InfoColor..L["Existing ID"])
 					return
 				end
 
-				KkthnxUIData[K.Realm][K.Name].InternalCD[intID] = {intID, duration, trigger, unit, itemID}
-				AddInternal(tabs[i].List.child, i, KkthnxUIData[K.Realm][K.Name].InternalCD[intID])
+				KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[intID] = {intID, duration, trigger, unit, itemID}
+				AddInternal(tabs[i].List.child, i, KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[intID])
 				for i = 13, 17 do
 					AW_ClearEdit(Option[i])
 				end

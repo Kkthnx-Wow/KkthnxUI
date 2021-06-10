@@ -227,6 +227,29 @@ function Module:HookHotKey(button)
 	end
 end
 
+function Module:UpdateEquipItemColor()
+	if not self.KKUI_Border then
+		return
+	end
+
+	if IsEquippedAction(self.action) then
+		self.KKUI_Border:SetVertexColor(0, 0.7, 0.1)
+	else
+		if C["General"].ColorTextures then
+			self.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+		else
+			self.KKUI_Border:SetVertexColor(1, 1, 1)
+		end
+	end
+end
+
+function Module:EquipItemColor(button)
+	if not button.Update then
+		return
+	end
+	hooksecurefunc(button, "Update", Module.UpdateEquipItemColor)
+end
+
 function Module:StyleActionButton(button, cfg)
 	if not button then
 		return
@@ -252,7 +275,7 @@ function Module:StyleActionButton(button, cfg)
 	local highlightTexture = button:GetHighlightTexture()
 
 	-- Normal buttons do not have a checked texture, but checkbuttons do and normal actionbuttons are checkbuttons
-	local checkedTexture = nil
+	local checkedTexture
 	if button.GetCheckedTexture then
 		checkedTexture = button:GetCheckedTexture()
 	end
@@ -270,6 +293,7 @@ function Module:StyleActionButton(button, cfg)
 	-- Backdrop
 	button:CreateBorder()
 	button:StyleButton()
+	Module:EquipItemColor(button)
 
 	-- Textures
 	SetupTexture(icon, cfg.icon, "SetTexture", icon)
@@ -280,7 +304,9 @@ function Module:StyleActionButton(button, cfg)
 	SetupTexture(normalTexture, cfg.normalTexture, "SetNormalTexture", button)
 	SetupTexture(pushedTexture, cfg.pushedTexture, "SetPushedTexture", button)
 	SetupTexture(highlightTexture, cfg.highlightTexture, "SetHighlightTexture", button)
-	SetupTexture(checkedTexture, cfg.checkedTexture, "SetCheckedTexture", button)
+	if checkedTexture then
+		SetupTexture(checkedTexture, cfg.checkedTexture, "SetCheckedTexture", button)
+	end
 
 	-- Cooldown
 	SetupCooldown(cooldown, cfg.cooldown)

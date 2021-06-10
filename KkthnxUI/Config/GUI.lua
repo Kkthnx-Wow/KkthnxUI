@@ -107,7 +107,7 @@ end
 
 local function ResetDetails()
 	if IsAddOnLoaded("Details") then
-		_G.KkthnxUIData["ResetDetails"] = true
+		_G.KkthnxUIDB.Variables["ResetDetails"] = true
 		StaticPopup_Show("KKUI_CHANGES_RELOAD")
 	else
 		K.Print("Details is not loaded!")
@@ -386,6 +386,7 @@ local DataText = function(self)
 	Window:CreateSwitch("DataText", "System", L["Enable System Info"])
 	Window:CreateSwitch("DataText", "Time", L["Enable Minimap Time"])
 	Window:CreateSwitch("DataText", "Coords", newFeatureIcon.."Enable Positon Coords")
+	Window:CreateColorSelection("DataText", "IconColor", "Color The Icons") -- Needs Locale
 
 	Window:CreateSection("DataText Text")
 	Window:CreateSwitch("DataText", "HideText", "Hide 'Friends, Guild and Gold' Icon Text")
@@ -499,6 +500,7 @@ local Nameplate = function(self)
 	Window:CreateSwitch("Nameplate", "TankMode", L["Force TankMode Colored"])
 	Window:CreateDropdown("Nameplate", "AuraFilter", L["Auras Filter Style"])
 	Window:CreateDropdown("Nameplate", "TargetIndicator", L["TargetIndicator Style"])
+	Window:CreateDropdown("Nameplate", "TargetIndicatorTexture", "TargetIndicator Texture") -- Needs Locale
 	Window:CreateEditBox("Nameplate", "CustomUnitList", L["Custom UnitColor List"], L["CustomUnitTip"], updateCustomUnitList)
 	Window:CreateEditBox("Nameplate", "PowerUnitList", L["Custom PowerUnit List"], L["CustomUnitTip"], updatePowerUnitList)
 

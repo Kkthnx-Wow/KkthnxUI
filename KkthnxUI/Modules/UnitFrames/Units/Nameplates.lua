@@ -402,13 +402,13 @@ function Module:AddTargetIndicator(self)
 	self.TargetIndicator:Hide()
 
 	self.TargetIndicator.TopArrow = self.TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
-	self.TargetIndicator.TopArrow:SetSize(50, 50)
-	self.TargetIndicator.TopArrow:SetTexture(C["Media"].Textures.TargetIndicatorTexture)
+	self.TargetIndicator.TopArrow:SetSize(128 / 2, 128 / 2)
+	self.TargetIndicator.TopArrow:SetTexture(C["Nameplate"].TargetIndicatorTexture.Value)
 	self.TargetIndicator.TopArrow:SetPoint("BOTTOM", self.TargetIndicator, "TOP", 0, 40)
 
 	self.TargetIndicator.RightArrow = self.TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
-	self.TargetIndicator.RightArrow:SetSize(50, 50)
-	self.TargetIndicator.RightArrow:SetTexture(C["Media"].Textures.TargetIndicatorTexture)
+	self.TargetIndicator.RightArrow:SetSize(128 / 2, 128 / 2)
+	self.TargetIndicator.RightArrow:SetTexture(C["Nameplate"].TargetIndicatorTexture.Value)
 	self.TargetIndicator.RightArrow:SetPoint("LEFT", self.TargetIndicator, "RIGHT", 3, 0)
 	self.TargetIndicator.RightArrow:SetRotation(math_rad(-90))
 
@@ -1336,14 +1336,14 @@ end
 -- 	for spellID in pairs(C.MajorSpells) do
 -- 		local name = GetSpellInfo(spellID)
 -- 		if name then
--- 			local modValue = KkthnxUIData[K.Realm][K.Name].MajorSpells[spellID]
+-- 			local modValue = KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID]
 -- 			if modValue == nil then
 -- 				Module.MajorSpells[spellID] = true
 -- 			end
 -- 		end
 -- 	end
 
--- 	for spellID, value in pairs(KkthnxUIData[K.Realm][K.Name].MajorSpells) do
+-- 	for spellID, value in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells) do
 -- 		if value then
 -- 			Module.MajorSpells[spellID] = true
 -- 		end

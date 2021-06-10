@@ -162,9 +162,9 @@ function Module:CreateRestoreButton(f)
 	restoreButton.Icon:SetAtlas("transmog-icon-revert")
 
 	restoreButton:SetScript("OnClick", function()
-		KkthnxUIData[K.Realm][K.Name]["TempAnchor"][f.main:GetName()] = nil
-		KkthnxUIData[K.Realm][K.Name]["TempAnchor"][f.bank:GetName()] = nil
-		KkthnxUIData[K.Realm][K.Name]["TempAnchor"][f.reagent:GetName()] = nil
+		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][f.main:GetName()] = nil
+		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][f.bank:GetName()] = nil
+		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][f.reagent:GetName()] = nil
 		f.main:ClearAllPoints()
 		f.main:SetPoint("BOTTOMRIGHT", -86, 76)
 		f.bank:ClearAllPoints()
@@ -427,7 +427,7 @@ end
 
 local function saveSplitCount(self)
 	local count = self:GetText() or ""
-	KkthnxUIData[K.Realm][K.Name].SplitCount = tonumber(count) or 1
+	KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount = tonumber(count) or 1
 end
 
 local function editBoxClearFocus(self)
@@ -487,7 +487,7 @@ function Module:CreateSplitButton()
 			self.Icon:SetDesaturated(true)
 			self.text = enabledText
 			splitFrame:Show()
-			editBox:SetText(KkthnxUIData[K.Realm][K.Name].SplitCount)
+			editBox:SetText(KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount)
 		else
 			self.__turnOff()
 		end
@@ -510,8 +510,8 @@ local function splitOnClick(self)
 	PickupContainerItem(self.bagID, self.slotID)
 
 	local texture, itemCount, locked = GetContainerItemInfo(self.bagID, self.slotID)
-	if texture and not locked and itemCount and itemCount > KkthnxUIData[K.Realm][K.Name].SplitCount then
-		SplitContainerItem(self.bagID, self.slotID, KkthnxUIData[K.Realm][K.Name].SplitCount)
+	if texture and not locked and itemCount and itemCount > KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount then
+		SplitContainerItem(self.bagID, self.slotID, KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount)
 
 		local bagID, slotID = Module:GetEmptySlot("Bag")
 		if slotID then
@@ -573,10 +573,10 @@ local function favouriteOnClick(self)
 
 	local texture, _, _, quality, _, _, _, _, _, itemID = GetContainerItemInfo(self.bagID, self.slotID)
 	if texture and quality > LE_ITEM_QUALITY_POOR then
-		if KkthnxUIData[K.Realm][K.Name].FavouriteItems[itemID] then
-			KkthnxUIData[K.Realm][K.Name].FavouriteItems[itemID] = nil
+		if KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems[itemID] then
+			KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems[itemID] = nil
 		else
-			KkthnxUIData[K.Realm][K.Name].FavouriteItems[itemID] = true
+			KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems[itemID] = true
 		end
 		ClearCursor()
 		Module:UpdateAllBags()
@@ -638,10 +638,10 @@ local function customJunkOnClick(self)
 	local texture, _, _, _, _, _, _, _, _, itemID = GetContainerItemInfo(self.bagID, self.slotID)
 	local price = select(11, GetItemInfo(itemID))
 	if texture and price > 0 then
-		if KkthnxUIData[K.Realm][K.Name].CustomJunkList[itemID] then
-			KkthnxUIData[K.Realm][K.Name].CustomJunkList[itemID] = nil
+		if KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID] then
+			KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID] = nil
 		else
-			KkthnxUIData[K.Realm][K.Name].CustomJunkList[itemID] = true
+			KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID] = true
 		end
 		ClearCursor()
 		Module:UpdateAllBags()
@@ -992,7 +992,7 @@ function Module:OnEnable()
 		local buttonIconTexture = _G[self:GetName().."IconTexture"]
 
 		if self.JunkIcon then
-			if (item.rarity == LE_ITEM_QUALITY_POOR or KkthnxUIData[K.Realm][K.Name].CustomJunkList[item.id]) and item.sellPrice and item.sellPrice > 0 then
+			if (item.rarity == LE_ITEM_QUALITY_POOR or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.sellPrice and item.sellPrice > 0 then
 				self.JunkIcon:Show()
 			else
 				self.JunkIcon:Hide()
@@ -1007,7 +1007,7 @@ function Module:OnEnable()
 			self.IconOverlay:Hide()
 		end
 
-		if KkthnxUIData[K.Realm][K.Name].FavouriteItems[item.id] then
+		if KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems[item.id] then
 			self.Favourite:Show()
 		else
 			self.Favourite:Hide()

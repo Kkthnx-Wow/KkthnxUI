@@ -194,7 +194,7 @@ function Module:KeystoneInfo_Create()
 		GameTooltip:ClearLines()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:AddLine(L["Account Keystones"])
-		for fullName, info in pairs(KkthnxUIData[K.Realm][K.Name]["KeystoneInfo"]) do
+		for fullName, info in pairs(KkthnxUIDB.Variables[K.Realm][K.Name]["KeystoneInfo"]) do
 			local name = Ambiguate(fullName, "none")
 			local mapID, level, class, faction = string_split(":", info)
 			local color = K.RGBToHex(K.ColorClass(class))
@@ -210,7 +210,7 @@ function Module:KeystoneInfo_Create()
 	button:SetScript("OnLeave", K.HideTooltip)
 	button:SetScript("OnMouseUp", function(_, btn)
 		if btn == "MiddleButton" then
-			table_wipe(KkthnxUIData[K.Realm][K.Name]["KeystoneInfo"])
+			table_wipe(KkthnxUIDB.Variables[K.Realm][K.Name]["KeystoneInfo"])
 		end
 	end)
 end
@@ -225,9 +225,9 @@ end
 function Module:KeystoneInfo_Update()
 	local mapID, keystoneLevel = Module:KeystoneInfo_UpdateBag()
 	if mapID then
-		KkthnxUIData[K.Realm][K.Name]["KeystoneInfo"][K.Name.."-"..K.Realm] = mapID..":"..keystoneLevel..":"..K.Class..":"..K.Faction
+		KkthnxUIDB.Variables[K.Realm][K.Name]["KeystoneInfo"][K.Name.."-"..K.Realm] = mapID..":"..keystoneLevel..":"..K.Class..":"..K.Faction
 	else
-		KkthnxUIData[K.Realm][K.Name]["KeystoneInfo"][K.Name.."-"..K.Realm] = nil
+		KkthnxUIDB.Variables[K.Realm][K.Name]["KeystoneInfo"][K.Name.."-"..K.Realm] = nil
 	end
 end
 

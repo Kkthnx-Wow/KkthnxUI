@@ -36,7 +36,7 @@ local function DataAnalyze(v)
 end
 
 local function InsertData(index, target)
-	if KkthnxUIData[K.Realm][K.Name].AuraWatchList.Switcher[index] then
+	if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher[index] then
 		wipe(target)
 	end
 
@@ -53,15 +53,15 @@ local function ConvertTable()
 	for i = 1, 10 do
 		myTable[i] = {}
 		if i < 10 then
-			local value = KkthnxUIData[K.Realm][K.Name].AuraWatchList[i]
+			local value = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i]
 			if value and next(value) then
 				for spellID, v in pairs(value) do
 					myTable[i][spellID] = DataAnalyze(v)
 				end
 			end
 		else
-			if next(KkthnxUIData[K.Realm][K.Name].InternalCD) then
-				for spellID, v in pairs(KkthnxUIData[K.Realm][K.Name].InternalCD) do
+			if next(KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD) then
+				for spellID, v in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD) do
 					myTable[i][spellID] = DataAnalyze(v)
 				end
 			end
@@ -171,7 +171,7 @@ end
 
 function Module:RemoveSpellFromAuraList()
 	if IsAltKeyDown() and IsControlKeyDown() and self.type == 4 and self.spellID then
-		KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells[self.spellID] = true
+		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells[self.spellID] = true
 		K.Print(string.format(L["AddToIgnoreList"], "", self.spellID))
 	end
 end
@@ -509,7 +509,7 @@ function Module:AuraWatch_SetupAura(index, UnitID, name, icon, count, duration, 
 end
 
 function Module:AuraWatch_UpdateAura(spellID, UnitID, index, bool)
-	if KkthnxUIData[K.Realm][K.Name].AuraWatchList.IgnoreSpells[spellID] then -- ignore spells
+	if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells[spellID] then -- ignore spells
 		return
 	end
 

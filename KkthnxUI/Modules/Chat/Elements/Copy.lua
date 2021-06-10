@@ -109,7 +109,7 @@ local menuList = {
 					end
 
 					if IsAddOnLoaded("Details") then
-						_G.KkthnxUIData["ResetDetails"] = true
+						_G.KkthnxUIDB.Variables["ResetDetails"] = true
 						StaticPopup_Show("KKUI_CHANGES_RELOAD")
 					else
 						K.Print("Details is not loaded!")

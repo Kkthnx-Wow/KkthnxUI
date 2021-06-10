@@ -428,13 +428,14 @@ function Module:CreateGuildDataText()
 	end
 
 	Module.GuildDataTextFrame = CreateFrame("Button", nil, UIParent)
-	Module.GuildDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 4, -240)
-	Module.GuildDataTextFrame:SetSize(32, 32)
+	Module.GuildDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -240)
+	Module.GuildDataTextFrame:SetSize(24, 24)
 
 	Module.GuildDataTextFrame.Texture = Module.GuildDataTextFrame:CreateTexture(nil, "BACKGROUND")
 	Module.GuildDataTextFrame.Texture:SetPoint("LEFT", Module.GuildDataTextFrame, "LEFT", 0, 0)
-	Module.GuildDataTextFrame.Texture:SetTexture("Interface\\HELPFRAME\\HelpIcon-AccountSecurity")
-	Module.GuildDataTextFrame.Texture:SetSize(32, 32)
+	Module.GuildDataTextFrame.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\guild.blp")
+	Module.GuildDataTextFrame.Texture:SetSize(24, 24)
+	Module.GuildDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 	Module.GuildDataTextFrame.Text = Module.GuildDataTextFrame:CreateFontString(nil, "ARTWORK")
 	Module.GuildDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))

@@ -151,8 +151,8 @@ StaticPopupDialogs["KKUI_SWITCH_PROFILE"] = {
 	OnAccept = function()
 		local SelectedServer, SelectedNickname = string.split("-", MySelectedProfile)
 
-		KkthnxUIData[K.Realm][K.Name] = KkthnxUIData[SelectedServer][SelectedNickname]
-		KkthnxUISettingsPerCharacter[K.Realm][K.Name] = KkthnxUISettingsPerCharacter[SelectedServer][SelectedNickname]
+		KkthnxUIDB.Variables[K.Realm][K.Name] = KkthnxUIDB.Variables[SelectedServer][SelectedNickname]
+		KkthnxUIDB.Settings[K.Realm][K.Name] = KkthnxUIDB.Settings[SelectedServer][SelectedNickname]
 
 		ReloadUI()
 	end,
@@ -171,25 +171,26 @@ local SetValue = function(group, option, value)
 
 	local Settings
 
-	if (not KkthnxUISettingsPerCharacter) then
-		KkthnxUISettingsPerCharacter = {}
+	if (not KkthnxUIDB.Settings) then
+		KkthnxUIDB.Settings = {}
 	end
 
-	if (not KkthnxUISettingsPerCharacter[K.Realm]) then
-		KkthnxUISettingsPerCharacter[K.Realm] = {}
+	if (not KkthnxUIDB.Settings[K.Realm]) then
+		KkthnxUIDB.Settings[K.Realm] = {}
 	end
 
-	if (not KkthnxUISettingsPerCharacter[K.Realm][K.Name]) then
-		KkthnxUISettingsPerCharacter[K.Realm][K.Name] = {}
+	if (not KkthnxUIDB.Settings[K.Realm][K.Name]) then
+		KkthnxUIDB.Settings[K.Realm][K.Name] = {}
 	end
 
-	Settings = KkthnxUISettingsPerCharacter[K.Realm][K.Name]
+	Settings = KkthnxUIDB.Settings[K.Realm][K.Name]
 
 	if (not Settings[group]) then
 		Settings[group] = {}
 	end
 
 	Settings[group][option] = value
+
 end
 
 local TrimHex = function(s)
@@ -204,7 +205,7 @@ local AnchorOnEnter = function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_NONE")
 		GameTooltip:SetPoint("TOPLEFT", KKUI_GUI, "TOPRIGHT", -3, -5)
 		GameTooltip:AddLine(INFO)
-		GameTooltip:AddLine("|nMost options require a full UI reload|nYou can do this by clicking the |CFF00CC4CApply|r button|n|n", 0.6, 0.8, 1, 1)
+		GameTooltip:AddLine("|nMost options require a full UI reload|nYou can do this by clicking the |CFF00CC4CApply|r button|n|n", 163/255, 211/255, 255/255)
 
 		GameTooltip:AddLine(self.Tooltip, nil, nil, nil, true)
 		GameTooltip:Show()
@@ -1371,7 +1372,7 @@ local CreateColorSelection = function(self, group, option, text, tooltip)
 	Anchor:SetScript("OnLeave", AnchorOnLeave)
 	Anchor.Tooltip = tooltip
 
-	local Swatch = CreateFrame("Frame", nil, Anchor, "BackdropTemplate")
+	local Swatch = CreateFrame("Frame", nil, Anchor)
 	Swatch:SetSize(WidgetHeight, WidgetHeight)
 	Swatch:SetPoint("LEFT", Anchor, 0, 0)
 	Swatch:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUIStatusbar, nil, nil, nil, CurrentR, CurrentG, CurrentB)
@@ -1766,7 +1767,7 @@ local function CreateContactEditBox(parent, width, height)
 	eb:SetTextInsets(5, 5, 0, 0)
 	eb:FontTemplate(nil, nil, "")
 
-	eb.bg = CreateFrame("Frame", nil, eb, "BackdropTemplate")
+	eb.bg = CreateFrame("Frame", nil, eb)
 	eb.bg:SetAllPoints()
 	eb.bg:SetFrameLevel(eb:GetFrameLevel())
 	eb.bg:CreateBorder()
@@ -1835,7 +1836,7 @@ local AddContactFrame = function()
 	CreateContactBox(frame, "|CFFf6f8faGitHub|r", "https://github.com/Kkthnx-Wow/KkthnxUI", 3)
 	CreateContactBox(frame, "|CFF7289DADiscord|r", "https://discord.gg/YUmxqQm", 4)
 
-	local back = CreateFrame("Button", nil, frame, "BackdropTemplate")
+	local back = CreateFrame("Button", nil, frame)
 	back:SetSize(120, 20)
 	back:SetPoint("BOTTOM", 0, 15)
 	back:SkinButton()
@@ -2010,7 +2011,7 @@ GUI.Enable = function(self)
 
 	-- CVars button
 	local ResetCVars = CreateFrame("Frame", nil, self.Footer)
-	ResetCVars:SetSize(self.Footer:GetWidth() / 2 - 4, HeaderHeight)
+	ResetCVars:SetSize(FooterButtonWidth + 3, HeaderHeight)
 	ResetCVars:SetPoint("LEFT", Apply, 0, -28)
 	ResetCVars:CreateBorder()
 	ResetCVars:SetScript("OnMouseDown", ButtonOnMouseDown)
@@ -2036,8 +2037,8 @@ GUI.Enable = function(self)
 
 	-- Chat Button
 	local ResetChat = CreateFrame("Frame", nil, self.Footer)
-	ResetChat:SetSize(self.Footer:GetWidth() / 2 - 3, HeaderHeight)
-	ResetChat:SetPoint("LEFT", Move, 0, -28)
+	ResetChat:SetSize(FooterButtonWidth - 1, HeaderHeight)
+	ResetChat:SetPoint("LEFT", Reset, 0, -28)
 	ResetChat:CreateBorder()
 	ResetChat:SetScript("OnMouseDown", ButtonOnMouseDown)
 	ResetChat:SetScript("OnMouseUp", ButtonOnMouseUp)
@@ -2055,15 +2056,15 @@ GUI.Enable = function(self)
 
 	ResetChat.Middle = ResetChat:CreateFontString(nil, "OVERLAY")
 	ResetChat.Middle:SetPoint("CENTER", ResetChat, 0, 0)
-	ResetChat.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
+	ResetChat.Middle:SetWidth(FooterButtonWidth - (Spacing))
 	StyleFont(ResetChat.Middle, Font, 12)
 	ResetChat.Middle:SetJustifyH("CENTER")
 	ResetChat.Middle:SetText(K.SystemColor.."Reset Chat|r")
 
 	-- Contact Button
 	local ContactMe = CreateFrame("Frame", nil, self.Footer)
-	ContactMe:SetSize(self.Footer:GetWidth(), HeaderHeight)
-	ContactMe:SetPoint("BOTTOM", self.Footer, 0, -56)
+	ContactMe:SetSize(FooterButtonWidth, HeaderHeight)
+	ContactMe:SetPoint("LEFT", Move, 0, -28)
 	ContactMe:CreateBorder()
 	ContactMe:SetScript("OnMouseDown", ButtonOnMouseDown)
 	ContactMe:SetScript("OnMouseUp", ButtonOnMouseUp)
@@ -2087,7 +2088,36 @@ GUI.Enable = function(self)
 	ContactMe.Middle:SetWidth(FooterButtonWidth - (Spacing))
 	StyleFont(ContactMe.Middle, Font, 12)
 	ContactMe.Middle:SetJustifyH("CENTER")
-	ContactMe.Middle:SetText(K.SystemColor.."Need Help? Contact Me!|r")
+	ContactMe.Middle:SetText(K.SystemColor.."Contact Me!|r")
+
+	-- Profiles button
+	local Profiles = CreateFrame("Frame", nil, self.Footer)
+	Profiles:SetSize(FooterButtonWidth + 2, HeaderHeight)
+	Profiles:SetPoint("LEFT", Credits, 0, -28)
+	Profiles:CreateBorder()
+	Profiles:SetScript("OnMouseDown", ButtonOnMouseDown)
+	Profiles:SetScript("OnMouseUp", ButtonOnMouseUp)
+	Profiles:SetScript("OnEnter", ButtonOnEnter)
+	Profiles:SetScript("OnLeave", ButtonOnLeave)
+	Profiles:SetScript("OnMouseUp", function()
+		if GUI:IsShown() then
+			GUI:Toggle()
+		end
+		K.Profiles:Toggle()
+	end)
+
+	Profiles.Highlight = Profiles:CreateTexture(nil, "OVERLAY")
+	Profiles.Highlight:SetAllPoints()
+	Profiles.Highlight:SetTexture(Texture)
+	Profiles.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	Profiles.Highlight:SetAlpha(0)
+
+	Profiles.Middle = Profiles:CreateFontString(nil, "OVERLAY")
+	Profiles.Middle:SetPoint("CENTER", Profiles, 0, 0)
+	Profiles.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
+	StyleFont(Profiles.Middle, Font, 12)
+	Profiles.Middle:SetJustifyH("CENTER")
+	Profiles.Middle:SetText(K.InfoColor.."Profiles|r")
 
 	-- Button list
 	self.ButtonList = CreateFrame("Frame", nil, self)
@@ -2168,33 +2198,6 @@ GUI.Enable = function(self)
 
 	Scrollable:ClearAllPoints()
 	Scrollable:SetPoint("TOP", ScrollFrame, "BOTTOM", 0, 0)
-
-	GameMenuFrame:HookScript("OnShow", function()
-		if GUI:IsShown() then
-			GUI:Toggle()
-		end
-	end)
-
-	local KKUI_GameMenuButton = CreateFrame("Button", "KKUI_GameMenuButton", GameMenuFrame, "GameMenuButtonTemplate")
-	KKUI_GameMenuButton:SetText(K.Title)
-	KKUI_GameMenuButton:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
-	GameMenuFrame:HookScript("OnShow", function(self)
-		GameMenuButtonLogout:SetPoint("TOP", KKUI_GameMenuButton, "BOTTOM", 0, -21)
-		self:SetHeight(self:GetHeight() + KKUI_GameMenuButton:GetHeight() + 26)
-		if GUI:IsShown() then
-			GUI:Toggle()
-		end
-	end)
-
-	KKUI_GameMenuButton:SetScript("OnClick", function()
-		if InCombatLockdown() then
-			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
-			return
-		end
-		GUI:Toggle()
-		HideUIPanel(GameMenuFrame)
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-	end)
 
 	self.Created = true
 end

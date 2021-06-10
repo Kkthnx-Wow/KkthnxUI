@@ -38,15 +38,11 @@ local UIParent = _G.UIParent
 local UI_SCALE = _G.UI_SCALE
 
 function Module:ResetSettings()
-	KkthnxUISettingsPerCharacter[K.Realm][K.Name] = {}
-
-	K.CheckSavedVariables()
+	KkthnxUIDB.Settings[K.Realm][K.Name] = {}
 end
 
 function Module:ResetData()
-	KkthnxUIData[K.Realm][K.Name] = {}
-
-	K.CheckSavedVariables()
+	KkthnxUIDB.Variables[K.Realm][K.Name] = {}
 
 	FCF_ResetChatWindows()
 
@@ -120,9 +116,9 @@ local function ForceRaidFrame()
 end
 
 function Module:ForceChatSettings()
-	if KkthnxUISettingsPerCharacter[K.Realm][K.Name].Chat then
-		KkthnxUISettingsPerCharacter[K.Realm][K.Name].Chat.Width = 392
-		KkthnxUISettingsPerCharacter[K.Realm][K.Name].Chat.Height = 150
+	if KkthnxUIDB.Settings[K.Realm][K.Name].Chat then
+		KkthnxUIDB.Settings[K.Realm][K.Name].Chat.Width = 392
+		KkthnxUIDB.Settings[K.Realm][K.Name].Chat.Height = 150
 	end
 
 	K:GetModule("Chat"):UpdateChatSize()
@@ -217,7 +213,7 @@ local function ForceMaxDPSOptions()
 		},
 	}
 
-	KkthnxUIData["MaxDpsRequest"] = false
+	KkthnxUIDB.Variables["MaxDpsRequest"] = false
 end
 
 -- DBM bars
@@ -275,7 +271,7 @@ local function ForceDBMOptions()
 	_G.DBM_AllSavedOptions["Default"]["WarningFontSize"] = 18
 	_G.DBM_AllSavedOptions["Default"]["SpecialWarningFontSize2"] = 24
 
-	KkthnxUIData["DBMRequest"] = false
+	KkthnxUIDB.Variables["DBMRequest"] = false
 end
 
 -- Skada
@@ -343,7 +339,7 @@ local function ForceSkadaOptions()
 		},
 	}
 
-	KkthnxUIData["SkadaRequest"] = false
+	KkthnxUIDB.Variables["SkadaRequest"] = false
 end
 
 local function ForceCursorTrail()
@@ -368,7 +364,7 @@ local function ForceCursorTrail()
 		["Strata"] = "HIGH",
 	}
 
-	KkthnxUIData["CursorTrailRequest"] = false
+	KkthnxUIDB.Variables["CursorTrailRequest"] = false
 end
 
 -- BigWigs
@@ -458,27 +454,27 @@ local function ForceBigwigs()
 		},
 	}
 
-	KkthnxUIData["BWRequest"] = false
+	KkthnxUIDB.Variables["BWRequest"] = false
 end
 
 local function ForceAddonSkins()
-	if KkthnxUIData["DBMRequest"] then
+	if KkthnxUIDB.Variables["DBMRequest"] then
 		ForceDBMOptions()
 	end
 
-	if KkthnxUIData["SkadaRequest"] then
+	if KkthnxUIDB.Variables["SkadaRequest"] then
 		ForceSkadaOptions()
 	end
 
-	if KkthnxUIData["BWRequest"] then
+	if KkthnxUIDB.Variables["BWRequest"] then
 		ForceBigwigs()
 	end
 
-	if KkthnxUIData["MaxDpsRequest"] then
+	if KkthnxUIDB.Variables["MaxDpsRequest"] then
 		ForceMaxDPSOptions()
 	end
 
-	if KkthnxUIData["CursorTrailRequest"] then
+	if KkthnxUIDB.Variables["CursorTrailRequest"] then
 		ForceCursorTrail()
 	end
 end
@@ -576,7 +572,6 @@ local function YesTutor()
 	apply:SetScript("OnClick", function()
 		pass:Show()
 		if currentPage == 1 then
-			K.CheckSavedVariables()
 			Module:ForceDefaultCVars()
 			ForceRaidFrame()
 			UIErrorsFrame:AddMessage(K.InfoColor.."Default CVars Loaded.")
@@ -588,17 +583,17 @@ local function YesTutor()
 			K.SetupUIScale()
 			UIErrorsFrame:AddMessage(K.InfoColor.."UI Scale Loaded")
 		elseif currentPage == 4 then
-			KkthnxUIData["DBMRequest"] = true
-			KkthnxUIData["SkadaRequest"] = true
-			KkthnxUIData["BWRequest"] = true
-			KkthnxUIData["MaxDpsRequest"] = true
-			KkthnxUIData["CursorTrailRequest"] = true
+			KkthnxUIDB.Variables["DBMRequest"] = true
+			KkthnxUIDB.Variables["SkadaRequest"] = true
+			KkthnxUIDB.Variables["BWRequest"] = true
+			KkthnxUIDB.Variables["MaxDpsRequest"] = true
+			KkthnxUIDB.Variables["CursorTrailRequest"] = true
 			ForceAddonSkins()
-			KkthnxUIData["ResetDetails"] = true
+			KkthnxUIDB.Variables["ResetDetails"] = true
 			UIErrorsFrame:AddMessage(K.InfoColor.."Relevant AddOns Settings Loaded, You need to ReloadUI.")
 			pass:Hide()
 		elseif currentPage == 5 then
-			KkthnxUIData[K.Realm][K.Name].InstallComplete = true
+			KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete = true
 			tutor:Hide()
 			StaticPopup_Show("KKUI_CHANGES_RELOAD")
 			currentPage = 0
@@ -670,7 +665,7 @@ local function HelloWorld()
 	K.CreateFontString(welcome, 13, "If this is your first time using |cff669dffKkthnxUI|r,", "", false, "TOPLEFT", 20, -310)
 	K.CreateFontString(welcome, 13, "Please take a minute to go through the turtoral!", "", false, "TOPLEFT", 20, -330)
 
-	if KkthnxUIData[K.Realm][K.Name].InstallComplete then
+	if KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete then
 		local close = CreateFrame("Button", nil, welcome)
 		close:SetPoint("TOPRIGHT", 4, 4)
 		close:SetSize(32, 32)
@@ -765,15 +760,13 @@ _G.SlashCmdList["KKUI_INSTALLER"] = HelloWorld
 _G.SLASH_KKUI_INSTALLER1 = "/install"
 
 function Module:OnEnable()
-	K.CheckSavedVariables()
-
 	-- Hide options
 	K.HideInterfaceOption(_G.Display_UseUIScale)
 	K.HideInterfaceOption(_G.Display_UIScaleSlider)
 
 	-- Tutorial and settings
 	ForceAddonSkins()
-	if not KkthnxUIData[K.Realm][K.Name].InstallComplete then
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete then
 		HelloWorld()
 	end
 end

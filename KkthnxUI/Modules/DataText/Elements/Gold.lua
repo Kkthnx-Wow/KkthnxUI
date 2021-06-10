@@ -203,13 +203,14 @@ function Module:CreateGoldDataText()
 
 	Module.GoldDataTextFrame = CreateFrame("Button", nil, UIParent)
 	if C["DataText"].Gold then
-		Module.GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 4, -302)
-		Module.GoldDataTextFrame:SetSize(32, 32)
+		Module.GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
+		Module.GoldDataTextFrame:SetSize(24, 24)
 
 		Module.GoldDataTextFrame.Texture = Module.GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
 		Module.GoldDataTextFrame.Texture:SetPoint("LEFT", Module.GoldDataTextFrame, "LEFT", 0, 0)
-		Module.GoldDataTextFrame.Texture:SetTexture([[Interface\HELPFRAME\ReportLagIcon-Loot]])
-		Module.GoldDataTextFrame.Texture:SetSize(32, 32)
+		Module.GoldDataTextFrame.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\bags.blp")
+		Module.GoldDataTextFrame.Texture:SetSize(24, 24)
+		Module.GoldDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 		Module.GoldDataTextFrame.Text = Module.GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
 		Module.GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))

@@ -34,8 +34,8 @@ local function ReskinDetails()
 		instance:MenuAnchor(16, 3)
 		instance:ToolbarMenuButtonsSize(1)
 		instance:AttributeMenu(true, 0, 3, "KkthnxUIFont", 12, {1, 1, 1}, 1, false)
-		instance:SetBarSettings(KkthnxUIData["ResetDetails"] and 20 or nil, KkthnxUIData["ResetDetails"] and "KkthnxUIStatusbar" or nil)
-		instance:SetBarTextSettings(KkthnxUIData["ResetDetails"] and 12 or nil, "KkthnxUIFont", nil, nil, nil, true, true, nil, nil, nil, nil, nil, nil, false, nil, false, nil)
+		instance:SetBarSettings(KkthnxUIDB.Variables["ResetDetails"] and 20 or nil, KkthnxUIDB.Variables["ResetDetails"] and "KkthnxUIStatusbar" or nil)
+		instance:SetBarTextSettings(KkthnxUIDB.Variables["ResetDetails"] and 12 or nil, "KkthnxUIFont", nil, nil, nil, true, true, nil, nil, nil, nil, nil, nil, false, nil, false, nil)
 
 		instance.baseframe:CreateBackdrop()
 		instance.baseframe.Backdrop:SetPoint("TOPLEFT", -1, 18)
@@ -69,7 +69,7 @@ local function ReskinDetails()
 		instance:LockInstance(true)
 	end
 
-	if KkthnxUIData["ResetDetails"] then
+	if KkthnxUIDB.Variables["ResetDetails"] then
 		local height = 126
 		if instance1 then
 			if instance2 then
@@ -108,7 +108,7 @@ local function ReskinDetails()
 		end
 	end
 
-	KkthnxUIData["ResetDetails"] = false
+	KkthnxUIDB.Variables["ResetDetails"] = false
 end
 
 Module:LoadWithAddOn("Details", "Details", ReskinDetails)

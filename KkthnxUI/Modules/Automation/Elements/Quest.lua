@@ -70,9 +70,9 @@ local function setupCheckButton()
 	AutoQuestCheckButton.text:SetText(L["Auto Quest"])
 
 	AutoQuestCheckButton:SetHitRectInsets(0, 0 - AutoQuestCheckButton.text:GetWidth(), 0, 0)
-	AutoQuestCheckButton:SetChecked(KkthnxUIData[K.Realm][K.Name].AutoQuest)
+	AutoQuestCheckButton:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest)
 	AutoQuestCheckButton:SetScript("OnClick", function(self)
-		KkthnxUIData[K.Realm][K.Name].AutoQuest = self:GetChecked()
+		KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest = self:GetChecked()
 	end)
 
 	isCheckButtonCreated = true
@@ -86,7 +86,7 @@ local function setupCheckButton()
 
 		local r, g, b = 0.2, 1.0, 0.2
 
-		if KkthnxUIData[K.Realm][K.Name].AutoQuest == true then
+		if KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest == true then
 			GameTooltip:AddLine(L["Auto Quest Enabled"])
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine(L["Auto Quest Enabled Desc"], r, g, b)
@@ -116,7 +116,7 @@ local function setupCheckButton()
 	end)
 
 	AutoQuestCheckButton:SetScript("OnClick", function(self)
-		KkthnxUIData[K.Realm][K.Name].AutoQuest = self:GetChecked()
+		KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest = self:GetChecked()
 	end)
 end
 WorldMapFrame:HookScript("OnShow", setupCheckButton)
@@ -131,11 +131,11 @@ function QuickQuest:Register(event, func)
 	self:RegisterEvent(event)
 	self[event] = function(...)
 		if IsAddOnLoaded("QuickQuest") or IsAddOnLoaded("AutoTurnIn") or IsAddOnLoaded("AAP-Core") then
-			KkthnxUIData[K.Realm][K.Name].AutoQuest = false
+			KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest = false
 			return
 		end
 
-		if KkthnxUIData[K.Realm][K.Name].AutoQuest and not IsShiftKeyDown() then
+		if KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest and not IsShiftKeyDown() then
 			func(...)
 		end
 	end

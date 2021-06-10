@@ -59,7 +59,7 @@ local function isItemJunk(item)
 		return
 	end
 
-	return (item.rarity == LE_ITEM_QUALITY_POOR or KkthnxUIData[K.Realm][K.Name].CustomJunkList[item.id]) and item.sellPrice and item.sellPrice > 0
+	return (item.rarity == LE_ITEM_QUALITY_POOR or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.sellPrice and item.sellPrice > 0
 end
 
 local function isItemEquipSet(item)
@@ -155,7 +155,7 @@ local function isItemFavourite(item)
 		return
 	end
 
-	return item.id and KkthnxUIData[K.Realm][K.Name].FavouriteItems[item.id]
+	return item.id and KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems[item.id]
 end
 
 local function isEmptySlot(item)

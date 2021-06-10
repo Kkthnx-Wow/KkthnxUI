@@ -630,13 +630,14 @@ function Module:CreateSocialDataText()
 	end
 
 	Module.FriendsDataTextFrame = CreateFrame("Button", nil, UIParent)
-	Module.FriendsDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 4, -270)
-	Module.FriendsDataTextFrame:SetSize(32, 32)
+	Module.FriendsDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -270)
+	Module.FriendsDataTextFrame:SetSize(24, 24)
 
 	Module.FriendsDataTextFrame.Texture = Module.FriendsDataTextFrame:CreateTexture(nil, "BACKGROUND")
 	Module.FriendsDataTextFrame.Texture:SetPoint("LEFT", Module.FriendsDataTextFrame, "LEFT", 0, 0)
-	Module.FriendsDataTextFrame.Texture:SetTexture("Interface\\HELPFRAME\\ReportLagIcon-Chat")
-	Module.FriendsDataTextFrame.Texture:SetSize(32, 32)
+	Module.FriendsDataTextFrame.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\player.blp")
+	Module.FriendsDataTextFrame.Texture:SetSize(24, 24)
+	Module.FriendsDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 	Module.FriendsDataTextFrame.Text = Module.FriendsDataTextFrame:CreateFontString(nil, "ARTWORK")
 	Module.FriendsDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))

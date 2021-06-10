@@ -48,12 +48,12 @@ end
 
 function Module:VersionCheck_Init()
 	if not isVCInit then
-		local status = Module:VersionCheck_Compare(KkthnxUIData[K.Realm][K.Name].DetectVersion, K.Version)
+		local status = Module:VersionCheck_Compare(KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion, K.Version)
 		if status == "IsNew" then
-			local release = string_gsub(KkthnxUIData[K.Realm][K.Name].DetectVersion, "(%d+)$", "0")
+			local release = string_gsub(KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion, "(%d+)$", "0")
 			Module:VersionCheck_Create(string_format("|cff669dffKkthnxUI|r is out of date, the latest release is |cff70C0F5%s|r", release))
 		elseif status == "IsOld" then
-			KkthnxUIData[K.Realm][K.Name].DetectVersion = K.Version
+			KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion = K.Version
 		end
 
 		isVCInit = true
@@ -62,7 +62,7 @@ end
 
 function Module:VersionCheck_Send(channel)
 	if GetTime() - lastVCTime >= 10 then
-		C_ChatInfo_SendAddonMessage("KKUIVersionCheck", KkthnxUIData[K.Realm][K.Name].DetectVersion, channel)
+		C_ChatInfo_SendAddonMessage("KKUIVersionCheck", KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion, channel)
 		lastVCTime = GetTime()
 	end
 end
@@ -77,9 +77,9 @@ function Module:VersionCheck_Update(...)
 		return
 	end
 
-	local status = Module:VersionCheck_Compare(msg, KkthnxUIData[K.Realm][K.Name].DetectVersion)
+	local status = Module:VersionCheck_Compare(msg, KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion)
 	if status == "IsNew" then
-		KkthnxUIData[K.Realm][K.Name].DetectVersion = msg
+		KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion = msg
 	elseif status == "IsOld" then
 		Module:VersionCheck_Send(distType)
 	end

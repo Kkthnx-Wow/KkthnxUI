@@ -96,8 +96,8 @@ end
 -- 	for spellID in pairs(C.MajorSpells) do
 -- 		local name = GetSpellInfo(spellID)
 -- 		if name then
--- 			if KkthnxUIData[K.Realm][K.Name].MajorSpells[spellID] then
--- 				KkthnxUIData[K.Realm][K.Name].MajorSpells[spellID] = nil
+-- 			if KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID] then
+-- 				KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID] = nil
 -- 			end
 -- 		else
 -- 			if K.isDeveloper then
@@ -106,9 +106,9 @@ end
 -- 		end
 -- 	end
 
--- 	for spellID, value in pairs(KkthnxUIData[K.Realm][K.Name].MajorSpells) do
+-- 	for spellID, value in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells) do
 -- 		if value == false and C.MajorSpells[spellID] == nil then
--- 			KkthnxUIData[K.Realm][K.Name].MajorSpells[spellID] = nil
+-- 			KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID] = nil
 -- 		end
 -- 	end
 -- end

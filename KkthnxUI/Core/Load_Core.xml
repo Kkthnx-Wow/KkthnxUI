@@ -14,5 +14,6 @@
    <Script file="Loading.lua"/>
    <Script file="Changelog.lua"/>
    <Script file="CheckVersion.lua"/>
+   <Script file="Profiles.lua"/>
    <Script file="GUI.lua"/>
 </Ui>

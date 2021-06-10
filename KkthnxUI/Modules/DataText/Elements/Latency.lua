@@ -30,7 +30,7 @@ end
 local function setLatency()
 	local _, _, latencyHome, latencyWorld = GetNetStats()
 	local latency = math_max(latencyHome, latencyWorld)
-	Module.LatencyDataTextFrame.Text:SetText("MS"..":"..colorLatency(latency))
+	Module.LatencyDataTextFrame.Text:SetText(L["MS"]..": "..colorLatency(latency))
 end
 
 local function OnEnter()
@@ -86,20 +86,28 @@ function Module:CreateLatencyDataText()
 		return
 	end
 
-	Module.LatencyDataTextFrame = CreateFrame("Button", nil, UIParent)
+	Module.LatencyDataTextFrame = CreateFrame("Button", "KKUI_LatencyDataText", UIParent)
+	Module.LatencyDataTextFrame:SetSize(24, 24)
+
+	Module.LatencyDataTextFrame.Texture = Module.LatencyDataTextFrame:CreateTexture(nil, "BACKGROUND")
+	Module.LatencyDataTextFrame.Texture:SetPoint("LEFT", Module.LatencyDataTextFrame, "LEFT", 0, 0)
+	Module.LatencyDataTextFrame.Texture:SetTexture(("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\LFG.blp"))
+	Module.LatencyDataTextFrame.Texture:SetSize(24, 24)
+	Module.LatencyDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 	Module.LatencyDataTextFrame.Text = Module.LatencyDataTextFrame:CreateFontString("OVERLAY")
 	Module.LatencyDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.LatencyDataTextFrame.Text:ClearAllPoints()
-	if C["DataText"].System then
-		Module.LatencyDataTextFrame.Text:SetPoint("LEFT", _G.KKUI_SystemDataText, "RIGHT", 4, 0)
-	else
-		Module.LatencyDataTextFrame.Text:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -4)
-	end
+	Module.LatencyDataTextFrame.Text:SetPoint("LEFT", Module.LatencyDataTextFrame.Texture, "RIGHT", 0, 0)
 
-	Module.LatencyDataTextFrame:SetAllPoints(Module.LatencyDataTextFrame.Text)
+	if C["DataText"].System then
+		Module.LatencyDataTextFrame.Pos = {"LEFT", _G.KKUI_SystemDataText.Text, "RIGHT", 4, 0}
+	else
+		Module.LatencyDataTextFrame.Pos = {"TOPLEFT", UIParent, "TOPLEFT", 0, 0}
+	end
 
 	Module.LatencyDataTextFrame:SetScript("OnUpdate", OnUpdate)
 	Module.LatencyDataTextFrame:SetScript("OnEnter", OnEnter)
 	Module.LatencyDataTextFrame:SetScript("OnLeave", OnLeave)
+
+	K.Mover(Module.LatencyDataTextFrame, "KKUI_LatencyDataText", "KKUI_LatencyDataText", Module.LatencyDataTextFrame.Pos)
 end

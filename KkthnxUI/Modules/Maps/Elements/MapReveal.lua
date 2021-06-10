@@ -99,7 +99,7 @@ local function MapExplorationPin_RefreshOverlays(pin, fullUpdate)
 					texture:SetTexture(tonumber(fileDataIDs[((j - 1) * numTexturesWide) + k]), nil, nil, "TRILINEAR")
 					texture:SetDrawLayer("ARTWORK", -1)
 
-					if KkthnxUIData[K.Realm][K.Name].RevealWorldMap then
+					if KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap then
 						texture:Show()
 						if fullUpdate then
 							pin.textureLoadGroup:AddTexture(texture)
@@ -137,7 +137,7 @@ function Module:CreateWorldMapReveal()
 	local bu = CreateFrame("CheckButton", nil, _G.WorldMapFrame.BorderFrame, "OptionsCheckButtonTemplate")
 	bu:SetPoint("TOPRIGHT", -260, 0)
 	bu:SetSize(24, 24)
-	bu:SetChecked(KkthnxUIData[K.Realm][K.Name].RevealWorldMap)
+	bu:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap)
 
 	bu.text = bu:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	bu.text:SetPoint("LEFT", 24, 0)
@@ -160,7 +160,7 @@ function Module:CreateWorldMapReveal()
 
 		local r, g, b = 0.2, 1.0, 0.2
 
-		if KkthnxUIData[K.Realm][K.Name].RevealWorldMap == true then
+		if KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap == true then
 			GameTooltip:AddLine(L["Hide Undiscovered Areas"])
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine(L["Disable to hide areas."], r, g, b)
@@ -190,9 +190,9 @@ function Module:CreateWorldMapReveal()
 	end)
 
 	bu:SetScript("OnClick", function(self)
-		KkthnxUIData[K.Realm][K.Name].RevealWorldMap = self:GetChecked()
+		KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap = self:GetChecked()
 		for i = 1, #overlayTextures do
-			overlayTextures[i]:SetShown(KkthnxUIData[K.Realm][K.Name].RevealWorldMap)
+			overlayTextures[i]:SetShown(KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap)
 		end
 	end)
 end

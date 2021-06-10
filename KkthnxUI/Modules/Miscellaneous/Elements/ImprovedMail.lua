@@ -86,7 +86,7 @@ function Module:ContactButton_OnClick()
 end
 
 function Module:ContactButton_Delete()
-	KkthnxUIData[K.Realm][K.Name].ContactList[self.__owner.name:GetText()] = nil
+	KkthnxUIDB.Variables[K.Realm][K.Name].ContactList[self.__owner.name:GetText()] = nil
 	Module:ContactList_Refresh()
 end
 
@@ -123,7 +123,7 @@ function Module:ContactList_Refresh()
 	wipe(contactList)
 
 	local count = 0
-	for name, color in pairs(KkthnxUIData[K.Realm][K.Name].ContactList) do
+	for name, color in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].ContactList) do
 		count = count + 1
 		local r, g, b = strsplit(":", color)
 		if not contactList[count] then contactList[count] = {} end
@@ -283,12 +283,12 @@ function Module:MailBox_ContactList()
 			text = text.."-"..K.Realm
 		end
 
-		if KkthnxUIData[K.Realm][K.Name].ContactList[text] then -- unit exists
+		if KkthnxUIDB.Variables[K.Realm][K.Name].ContactList[text] then -- unit exists
 			return
 		end
 
 		local r, g, b = swatch.tex:GetVertexColor()
-		KkthnxUIData[K.Realm][K.Name].ContactList[text] = r..":"..g..":"..b
+		KkthnxUIDB.Variables[K.Realm][K.Name].ContactList[text] = r..":"..g..":"..b
 		Module:ContactList_Refresh()
 		editbox:SetText("")
 	end)

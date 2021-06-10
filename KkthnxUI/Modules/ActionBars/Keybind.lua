@@ -266,10 +266,10 @@ end
 
 function Module:Bind_Deactivate(save)
 	if save == true then
-		SaveBindings(KkthnxUIData[K.Realm][K.Name].BindType)
+		SaveBindings(KkthnxUIDB.Variables[K.Realm][K.Name].BindType)
 		K.Print(K.SystemColor..L["Save KeyBinds"].."|r")
 	else
-		LoadBindings(KkthnxUIData[K.Realm][K.Name].BindType)
+		LoadBindings(KkthnxUIDB.Variables[K.Realm][K.Name].BindType)
 		K.Print(K.SystemColor..L["Discard KeyBinds"].."|r")
 	end
 
@@ -344,10 +344,10 @@ function Module:Bind_CreateDialog()
 	local checkBox = CreateFrame("CheckButton", nil, frame, "OptionsCheckButtonTemplate")
 	checkBox:SetSize(20, 20)
 	checkBox:SkinCheckBox()
-	checkBox:SetChecked(KkthnxUIData[K.Realm][K.Name].BindType == 2)
+	checkBox:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].BindType == 2)
 	checkBox:SetPoint("RIGHT", frame.bottom, "LEFT", -6, 0)
 	checkBox:SetScript("OnClick", function(self)
-		KkthnxUIData[K.Realm][K.Name].BindType = self:GetChecked() and 2 or 1
+		KkthnxUIDB.Variables[K.Realm][K.Name].BindType = self:GetChecked() and 2 or 1
 	end)
 
 	checkBox.text = frame.bottom:CreateFontString(nil, "OVERLAY", "GameFontNormal")
