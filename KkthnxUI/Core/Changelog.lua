@@ -23,6 +23,7 @@ local changelogData = {
 	"Updated database code from TBC",
 	"Updated swingbar code from TBC",
 	"Updated unitframe code from TBC",
+	"Various settings changed to match TBC values"
 }
 
 local changelogFrame
