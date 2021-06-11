@@ -4,36 +4,37 @@ local Module = K:GetModule("Automation")
 local _G = _G
 local string_lower = string.lower
 
-local BNGetFriendIndex = _G.BNGetFriendIndex
-local BNGetFriendInfo = _G.BNGetFriendInfo
 local BNInviteFriend = _G.BNInviteFriend
-local BNIsFriend = _G.BNIsFriend
-local InviteUnit = _G.InviteUnit
+local C_BattleNet_GetAccountInfoByID = _G.C_BattleNet.GetAccountInfoByID
+local C_PartyInfo_InviteUnit = _G.C_PartyInfo.InviteUnit
+local CanCooperateWithGameAccount = _G.CanCooperateWithGameAccount
 local IsInGroup = _G.IsInGroup
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
-function Module.WhisperInvite(event, ...)
+function Module.SetupWhisperInvite(event, ...)
 	local msg, author, _, _, _, _, _, _, _, _, _, _, presenceID = ...
 	if (not IsInGroup() or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and string_lower(msg) == string_lower(C["Automation"].WhisperInvite) then
 		if event == "CHAT_MSG_WHISPER" then
-			InviteUnit(author)
+			C_PartyInfo_InviteUnit(author)
 		elseif event == "CHAT_MSG_BN_WHISPER" then
-			if presenceID and BNIsFriend(presenceID) then
-				local index = BNGetFriendIndex(presenceID)
-				if index then
-					local _, _, _, _, _, toonID = BNGetFriendInfo(index)
-					if toonID then
-						BNInviteFriend(toonID)
+			local accountInfo = C_BattleNet_GetAccountInfoByID(presenceID)
+			print(accountInfo)
+			if accountInfo then
+				local gameAccountInfo = accountInfo.gameAccountInfo
+				local gameID = gameAccountInfo.gameAccountID
+				print(gameAccountInfo, gameID)
+				if gameID then
+					if CanCooperateWithGameAccount(accountInfo) then
+						BNInviteFriend(gameID)
 					end
 				end
 			end
 		end
 	end
-	return
 end
 
 function Module:CreateAutoWhisperInvite()
-	K:RegisterEvent("CHAT_MSG_WHISPER", self.WhisperInvite)
-	K:RegisterEvent("CHAT_MSG_BN_WHISPER", self.WhisperInvite)
+	K:RegisterEvent("CHAT_MSG_WHISPER", self.SetupWhisperInvite)
+	K:RegisterEvent("CHAT_MSG_BN_WHISPER", self.SetupWhisperInvite)
 end
