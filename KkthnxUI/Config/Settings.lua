@@ -398,7 +398,7 @@ C["Nameplate"] = {
 	["PPPowerText"] = true,
 	["PPWidth"] = 175,
 	["PlateHeight"] = 13,
-	["PlateWidth"] = 170,
+	["PlateWidth"] = 184,
 	["PowerUnitList"] = "",
 	["QuestIndicator"] = true,
 	["SecureColor"] = {1, 0, 1},
@@ -581,7 +581,7 @@ C["Unitframe"] = {
 	["TargetBuffs"] = true,
 	["TargetBuffsPerRow"] = 6,
 	["TargetCastbar"] = true,
-	["TargetCastbarHeight"] = 24,
+	["TargetCastbarHeight"] = 30,
 	["TargetCastbarWidth"] = 260,
 	["TargetDebuffs"] = true,
 	["TargetDebuffsPerRow"] = 5,
@@ -682,23 +682,28 @@ C["Raid"] = {
 	["TargetHighlight"] = false,
 	["Width"] = 66,
 
-	["DebuffWatchScale"] = 1,
 	["DebuffWatch"] = true,
-	["DesaturateNonPlayerBuffs"] = false,
+	["DebuffWatchDefault"] = true,
+	["DesaturateBuffs"] = false,
+	["RaidBuffsStyle"] = {
+		["Options"] = {
+			["Aura Track"] = "Aura Track",
+			["Standard"] = "Standard",
+			["None"] = "None",
+		},
+		["Value"] = "Aura Track",
+	},
 	["RaidBuffs"] = {
 		["Options"] = {
-			["Hide"] = "Hide",
 			["Only my buffs"] = "Self",
 			["Only castable buffs"] = "Castable",
 			["All buffs"] = "All",
 		},
 		["Value"] = "Self",
 	},
-	["AuraTrack"] = true,
 	["AuraTrackIcons"] = true,
 	["AuraTrackSpellTextures"] = true,
 	["AuraTrackThickness"] = 5,
-
 
 	["HealthbarColor"] = {
 		["Options"] = {

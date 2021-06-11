@@ -798,18 +798,22 @@ local Raid = function(self)
 	Window:CreateDropdown("Raid", "HealthbarColor", L["Health Color Format"])
 	Window:CreateDropdown("Raid", "HealthFormat", L["Health Format"])
 
-	Window:CreateSection("Raid Debuffs [BETA/WIP]")
-	Window:CreateSwitch("Raid", "DebuffWatch", "Display dispellable debuffs")
-	Window:CreateSwitch("Raid", "DesaturateNonPlayerBuffs", "Displays other players buffs grayscaled")
-	Window:CreateSlider("Raid", "DebuffWatchScale", "Some DebuffWatch Scaling?", 0.8, 1.6, .1)
-	Window:CreateDropdown("Raid", "RaidBuffs", "Show buff on raid frames")
+	Window:CreateSection("Raid Buffs")
+	Window:CreateDropdown("Raid", "RaidBuffsStyle", "Select the buff style you want to use") -- Needs Locale
 
-	Window:CreateSection("Auras Tracking [BETA/WIP]")
-	Window:CreateSwitch("Raid", "AuraTrack", "Enable auras tracking module for healer")
-	Window:CreateSwitch("Raid", "AuraTrackIcons", "Use squared icons instead of status bars")
-	Window:CreateSwitch("Raid", "AuraTrackSpellTextures", "Display icons texture on aura squares")
-	Window:CreateSlider("Raid", "AuraTrackThickness", "Thickness size of status bars in pixel", 2, 10, 1)
+	if C["Raid"].RaidBuffsStyle.Value == "Standard" then
+		Window:CreateDropdown("Raid", "RaidBuffs", "Enable buffs display & filtering") -- Needs Locale
+		Window:CreateSwitch("Raid", "DesaturateBuffs", "Desaturate buffs that are not by me") -- Needs Locale
+	elseif C["Raid"].RaidBuffsStyle.Value == "Aura Track" then
+		Window:CreateSwitch("Raid", "AuraTrack", "Enable auras tracking module for healer (replace buffs)") -- Needs Locale
+		Window:CreateSwitch("Raid", "AuraTrackIcons", "Use squared icons instead of status bars") -- Needs Locale
+		Window:CreateSwitch("Raid", "AuraTrackSpellTextures", "Display icons texture on aura squares instead of colored squares") -- Needs Locale
+		Window:CreateSlider("Raid", "AuraTrackThickness", "Thickness size of status bars in pixel", 2, 10, 1) -- Needs Locale
+	end
 
+	Window:CreateSection("Raid Debuffs")
+	Window:CreateSwitch("Raid", "DebuffWatch", "Enable debuffs tracking (filtered auto by current gameplay (pvp or pve)") -- Needs Locale
+	Window:CreateSwitch("Raid", "DebuffWatchDefault", "We have already a debuff tracking list for pve and pvp, use it?") -- Needs Locale
 end
 
 local WorldMap = function(self)

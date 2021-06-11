@@ -186,7 +186,7 @@ function Module:CreateTarget()
 
 	if C["Unitframe"].TargetCastbar then
 		self.Castbar = CreateFrame("StatusBar", "TargetCastbar", self)
-		self.Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", 14, 335)
+		self.Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", 14, 340)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
 		self.Castbar:SetSize(C["Unitframe"].TargetCastbarWidth, C["Unitframe"].TargetCastbarHeight)
 		self.Castbar:SetClampedToScreen(true)
@@ -239,7 +239,7 @@ function Module:CreateTarget()
 
 		self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
 
-		K.Mover(self.Castbar, "TargetCastBar", "TargetCastBar", {"BOTTOM", UIParent, "BOTTOM", 14, 335})
+		K.Mover(self.Castbar, "TargetCastBar", "TargetCastBar", {"BOTTOM", UIParent, "BOTTOM", 14, 340})
 	end
 
 	if C["Unitframe"].ShowHealPrediction then

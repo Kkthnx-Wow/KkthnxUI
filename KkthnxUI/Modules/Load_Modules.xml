@@ -83,6 +83,7 @@
    <Script file="UnitFrames\Plugins\oUF_Swing.lua" />
    <Script file="UnitFrames\Plugins\oUF_Trinkets.lua" />
    <Script file="UnitFrames\Core.lua" />
+   <Script file="UnitFrames\Tracking.lua" />
    <Script file="UnitFrames\Tags.lua" />
    <Script file="UnitFrames\Range.lua" />
    <Script file="UnitFrames\Units\Player.lua" />

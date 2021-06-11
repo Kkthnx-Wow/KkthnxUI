@@ -153,11 +153,10 @@ C.DebuffsTracking_PvE = {
 		-- Huntsman Altimor
 		[335304] = Priority(), -- Sinseeker
 		[334971] = Priority(), -- Jagged Claws
-		[335111] = Priority(), -- Huntsman's Mark 3
+		[335111] = Priority(), -- Huntsman's Mark 1
 		[335112] = Priority(), -- Huntsman's Mark 2
-		[335113] = Priority(), -- Huntsman's Mark 1
-		[334945] = Priority(), -- Vicious Lunge
-		[334852] = Priority(), -- Petrifying Howl
+		[335113] = Priority(), -- Huntsman's Mark 3
+		[334945] = Priority(), -- Bloody Thrash
 		-- Hungering Destroyer
 		[334228] = Priority(), -- Volatile Ejection
 		[329298] = Priority(), -- Gluttonous Miasma
@@ -172,18 +171,11 @@ C.DebuffsTracking_PvE = {
 		[333002] = Priority(), -- Vulgar Brand
 		[326078] = Priority(), -- Infuser's Boon
 		[325251] = Priority(), -- Sin of Pride
-		[341475] = Priority(), -- Crimson Flurry
-		[341473] = Priority(), -- Crimson Flurry Teleport
-		[328479] = Priority(), -- Eyes on Target
-		[328889] = Priority(), -- Greater Castigation
 		-- Artificer Xy'mox
 		[327902] = Priority(), -- Fixate
 		[326302] = Priority(), -- Stasis Trap
 		[325236] = Priority(), -- Glyph of Destruction
 		[327414] = Priority(), -- Possession
-		[328468] = Priority(), -- Dimensional Tear 1
-		[328448] = Priority(), -- Dimensional Tear 2
-		[340860] = Priority(), -- Withering Touch
 		-- The Council of Blood
 		[327052] = Priority(), -- Drain Essence 1
 		[327773] = Priority(), -- Drain Essence 2
@@ -199,10 +191,7 @@ C.DebuffsTracking_PvE = {
 		[331209] = Priority(), -- Hateful Gaze
 		[335293] = Priority(), -- Chain Link
 		[335270] = Priority(), -- Chain This One!
-		[342419] = Priority(), -- Chain Them! 1
-		[342420] = Priority(), -- Chain Them! 2
 		[335295] = Priority(), -- Shattering Chain
-		[332572] = Priority(), -- Falling Rubble
 		-- Stone Legion Generals
 		[334498] = Priority(), -- Seismic Upheaval
 		[337643] = Priority(), -- Unstable Footing
@@ -213,7 +202,6 @@ C.DebuffsTracking_PvE = {
 		[339690] = Priority(), -- Crystalize
 		[342655] = Priority(), -- Volatile Anima Infusion
 		[342698] = Priority(), -- Volatile Anima Infection
-		[343881] = Priority(), -- Serrated Tear
 		-- Sire Denathrius
 		[326851] = Priority(), -- Blood Price
 		[327796] = Priority(), -- Night Hunter
@@ -223,8 +211,6 @@ C.DebuffsTracking_PvE = {
 		[329181] = Priority(), -- Wracking Pain
 		[335873] = Priority(), -- Rancor
 		[329951] = Priority(), -- Impale
-		[327039] = Priority(), -- Feeding Time
-		[332794] = Priority(), -- Fatal Finesse
 	},
 }
 
@@ -233,106 +219,20 @@ C.DebuffsTracking_PvP = {
 	["type"] = "Whitelist",
 	["spells"] = {
 		-- Death Knight
-		[204085] = Priority(5), -- Deathchill
-		[233395] = Priority(5), -- Frozen Center
-		-- Demon Hunter
-		[217832] = Priority(5), -- Imprison
-		[179057] = Priority(5), -- Chaos Nova
-		[205630] = Priority(5), -- Illidan's Grasp
-		[208618] = Priority(5), -- Illidan's Grasp (Afterward)
-		-- Druid
-		[102359] = Priority(5), -- Mass Entanglement
-		[339] = Priority(5), -- Entangling Roots
-		[2637] = Priority(5), -- Hibernate
-		-- Hunter
-		[3355] = Priority(5), -- Freezing Trap
-		[203337] = Priority(5), -- Freezing Trap (Survival PvP)
-		[209790] = Priority(5), -- Freezing Arrow
-		[117526] = Priority(5), -- Binding Shot
-		-- Mage
-		[61721] = Priority(5), -- Rabbit (Poly)
-		[61305] = Priority(5), -- Black Cat (Poly)
-		[28272] = Priority(5), -- Pig (Poly)
-		[28271] = Priority(5), -- Turtle (Poly)
-		[126819] = Priority(5), -- Porcupine (Poly)
-		[161354] = Priority(5), -- Monkey (Poly)
-		[161353] = Priority(5), -- Polar bear (Poly)
-		[61780] = Priority(5), -- Turkey (Poly)
-		[161355] = Priority(5), -- Penguin (Poly)
-		[161372] = Priority(5), -- Peacock (Poly)
-		[277787] = Priority(5), -- Direhorn (Poly)
-		[277792] = Priority(5), -- Bumblebee (Poly)
-		[118] = Priority(5), -- Polymorph
-		[82691] = Priority(5), -- Ring of Frost
-		[31661] = Priority(5), -- Dragon's Breath
-		[122] = Priority(5), -- Frost Nova
-		[33395] = Priority(5), -- Freeze
-		[157997] = Priority(5), -- Ice Nova
-		[198121] = Priority(5), -- Forstbite
-		-- Monk
-		[198909] = Priority(5), -- Song of Chi-Ji
-		[202274] = Priority(5), -- Incendiary Brew
-		--[123407] = Priority(5), -- Spinning Fire Blossom
-		-- Paladin
-		[853] = Priority(5), -- Hammer of Justice
-		[20066] = Priority(5), -- Repentance
-		[105421] = Priority(5), -- Blinding Light
-		[31935] = Priority(5), -- Avenger's Shield
-		[217824] = Priority(5), -- Shield of Virtue
-		[205290] = Priority(5), -- Wake of Ashes
-		-- Priest
-		[9484] = Priority(5), -- Shackle Undead
-		[226943] = Priority(5), -- Mind Bomb
-		[605] = Priority(5), -- Mind Control
-		[8122] = Priority(5), -- Psychic Scream
-		[15487] = Priority(5), -- Silence
-		[64044] = Priority(5), -- Psychic Horror
-		-- Rogue
-		-- Nothing to track
-		-- Shaman
-		[51514] = Priority(5), -- Hex
-		[211015] = Priority(5), -- Hex (Cockroach)
-		[211010] = Priority(5), -- Hex (Snake)
-		[211004] = Priority(5), -- Hex (Spider)
-		[210873] = Priority(5), -- Hex (Compy)
-		[196942] = Priority(5), -- Hex (Voodoo Totem)
-		[269352] = Priority(5), -- Hex (Skeletal Hatchling)
-		[277778] = Priority(5), -- Hex (Zandalari Tendonripper)
-		[277784] = Priority(5), -- Hex (Wicker Mongrel)
-		[118905] = Priority(5), -- Static Charge
-		[204399] = Priority(5), -- Earthfury
-		[64695] = Priority(5), -- Earthgrab
-		-- Warlock
-		[710] = Priority(5), -- Banish
-		[6789] = Priority(5), -- Mortal Coil
-		[118699] = Priority(5), -- Fear
-		[6358] = Priority(5), -- Seduction (Succub)
-		[30283] = Priority(5), -- Shadowfury
-		[233582] = Priority(5), -- Entrenched in Flame
-		-- Warrior
-		-- Nothing to track
-	},
-}
-
--- PvP CrowdControl
-C.DebuffsTracking_CrowdControl = {
-	["type"] = "Whitelist",
-	["spells"] = {
-		-- Death Knight
-		[47476]  = Priority(2), -- Strangulate
+		[47476] = Priority(2), -- Strangulate
 		[108194] = Priority(4), -- Asphyxiate UH
 		[221562] = Priority(4), -- Asphyxiate Blood
 		[207171] = Priority(4), -- Winter is Coming
 		[206961] = Priority(3), -- Tremble Before Me
 		[207167] = Priority(4), -- Blinding Sleet
 		[212540] = Priority(1), -- Flesh Hook (Pet)
-		[91807]  = Priority(1), -- Shambling Rush (Pet)
+		[91807] = Priority(1), -- Shambling Rush (Pet)
 		[204085] = Priority(1), -- Deathchill
 		[233395] = Priority(1), -- Frozen Center
 		[212332] = Priority(4), -- Smash (Pet)
 		[212337] = Priority(4), -- Powerful Smash (Pet)
-		[91800]  = Priority(4), -- Gnaw (Pet)
-		[91797]  = Priority(4), -- Monstrous Blow (Pet)
+		[91800] = Priority(4), -- Gnaw (Pet)
+		[91797] = Priority(4), -- Monstrous Blow (Pet)
 		[210141] = Priority(3), -- Zombie Explosion
 		-- Demon Hunter
 		[207685] = Priority(4), -- Sigil of Misery
@@ -346,28 +246,28 @@ C.DebuffsTracking_CrowdControl = {
 		[213491] = Priority(4), -- Demonic Trample (it's this one or the other)
 		[208645] = Priority(4), -- Demonic Trample
 		-- Druid
-		[81261]  = Priority(2), -- Solar Beam
-		[5211]   = Priority(4), -- Mighty Bash
+		[81261] = Priority(2), -- Solar Beam
+		[5211] = Priority(4), -- Mighty Bash
 		[163505] = Priority(4), -- Rake
 		[203123] = Priority(4), -- Maim
 		[202244] = Priority(4), -- Overrun
-		[99]     = Priority(4), -- Incapacitating Roar
-		[33786]  = Priority(5), -- Cyclone
+		[99] = Priority(4), -- Incapacitating Roar
+		[33786] = Priority(5), -- Cyclone
 		[209753] = Priority(5), -- Cyclone Balance
-		[45334]  = Priority(1), -- Immobilized
+		[45334] = Priority(1), -- Immobilized
 		[102359] = Priority(1), -- Mass Entanglement
-		[339]    = Priority(1), -- Entangling Roots
-		[2637]   = Priority(1), -- Hibernate
+		[339] = Priority(1), -- Entangling Roots
+		[2637] = Priority(1), -- Hibernate
 		[102793] = Priority(1), -- Ursol's Vortex
 		-- Hunter
 		[202933] = Priority(2), -- Spider Sting (it's this one or the other)
 		[233022] = Priority(2), -- Spider Sting
 		[213691] = Priority(4), -- Scatter Shot
-		[19386]  = Priority(3), -- Wyvern Sting
-		[3355]   = Priority(3), -- Freezing Trap
+		[19386] = Priority(3), -- Wyvern Sting
+		[3355] = Priority(3), -- Freezing Trap
 		[203337] = Priority(5), -- Freezing Trap (Survival PvPT)
 		[209790] = Priority(3), -- Freezing Arrow
-		[24394]  = Priority(4), -- Intimidation
+		[24394] = Priority(4), -- Intimidation
 		[117526] = Priority(4), -- Binding Shot
 		[190927] = Priority(1), -- Harpoon
 		[201158] = Priority(1), -- Super Sticky Tar
@@ -375,23 +275,23 @@ C.DebuffsTracking_CrowdControl = {
 		[212638] = Priority(1), -- Tracker's Net
 		[200108] = Priority(1), -- Ranger's Net
 		-- Mage
-		[61721]  = Priority(3), -- Rabbit (Poly)
-		[61305]  = Priority(3), -- Black Cat (Poly)
-		[28272]  = Priority(3), -- Pig (Poly)
-		[28271]  = Priority(3), -- Turtle (Poly)
+		[61721] = Priority(3), -- Rabbit (Poly)
+		[61305] = Priority(3), -- Black Cat (Poly)
+		[28272] = Priority(3), -- Pig (Poly)
+		[28271] = Priority(3), -- Turtle (Poly)
 		[126819] = Priority(3), -- Porcupine (Poly)
 		[161354] = Priority(3), -- Monkey (Poly)
 		[161353] = Priority(3), -- Polar bear (Poly)
-		[61780] = Priority(3),  -- Turkey (Poly)
+		[61780] = Priority(3), -- Turkey (Poly)
 		[161355] = Priority(3), -- Penguin (Poly)
 		[161372] = Priority(3), -- Peacock (Poly)
 		[277787] = Priority(3), -- Direhorn (Poly)
 		[277792] = Priority(3), -- Bumblebee (Poly)
-		[118]    = Priority(3), -- Polymorph
-		[82691]  = Priority(3), -- Ring of Frost
-		[31661]  = Priority(3), -- Dragon's Breath
-		[122]    = Priority(1), -- Frost Nova
-		[33395]  = Priority(1), -- Freeze
+		[118] = Priority(3), -- Polymorph
+		[82691] = Priority(3), -- Ring of Frost
+		[31661] = Priority(3), -- Dragon's Breath
+		[122] = Priority(1), -- Frost Nova
+		[33395] = Priority(1), -- Freeze
 		[157997] = Priority(1), -- Ice Nova
 		[228600] = Priority(1), -- Glacial Spike
 		[198121] = Priority(1), -- Forstbite
@@ -406,34 +306,34 @@ C.DebuffsTracking_CrowdControl = {
 		[116706] = Priority(1), -- Disable
 		[232055] = Priority(4), -- Fists of Fury (it's this one or the other)
 		-- Paladin
-		[853]    = Priority(3), -- Hammer of Justice
-		[20066]  = Priority(3), -- Repentance
+		[853] = Priority(3), -- Hammer of Justice
+		[20066] = Priority(3), -- Repentance
 		[105421] = Priority(3), -- Blinding Light
-		[31935]  = Priority(2), -- Avenger's Shield
+		[31935] = Priority(2), -- Avenger's Shield
 		[217824] = Priority(2), -- Shield of Virtue
 		[205290] = Priority(3), -- Wake of Ashes
 		-- Priest
-		[9484]   = Priority(3), -- Shackle Undead
+		[9484] = Priority(3), -- Shackle Undead
 		[200196] = Priority(4), -- Holy Word: Chastise
 		[200200] = Priority(4), -- Holy Word: Chastise
 		[226943] = Priority(3), -- Mind Bomb
-		[605]    = Priority(5), -- Mind Control
-		[8122]   = Priority(3), -- Psychic Scream
-		[15487]  = Priority(2), -- Silence
-		[64044]  = Priority(1), -- Psychic Horror
+		[605] = Priority(5), -- Mind Control
+		[8122] = Priority(3), -- Psychic Scream
+		[15487] = Priority(2), -- Silence
+		[64044] = Priority(1), -- Psychic Horror
 		-- Rogue
-		[2094]   = Priority(4), -- Blind
-		[6770]   = Priority(4), -- Sap
-		[1776]   = Priority(4), -- Gouge
-		[1330]   = Priority(2), -- Garrote - Silence
+		[2094] = Priority(4), -- Blind
+		[6770] = Priority(4), -- Sap
+		[1776] = Priority(4), -- Gouge
+		[1330] = Priority(2), -- Garrote - Silence
 		[207777] = Priority(2), -- Dismantle
 		[199804] = Priority(4), -- Between the Eyes
-		[408]    = Priority(4), -- Kidney Shot
-		[1833]   = Priority(4), -- Cheap Shot
+		[408] = Priority(4), -- Kidney Shot
+		[1833] = Priority(4), -- Cheap Shot
 		[207736] = Priority(5), -- Shadowy Duel (Smoke effect)
 		[212182] = Priority(5), -- Smoke Bomb
 		-- Shaman
-		[51514]  = Priority(3), -- Hex
+		[51514] = Priority(3), -- Hex
 		[211015] = Priority(3), -- Hex (Cockroach)
 		[211010] = Priority(3), -- Hex (Snake)
 		[211004] = Priority(3), -- Hex (Spider)
@@ -443,25 +343,24 @@ C.DebuffsTracking_CrowdControl = {
 		[277778] = Priority(3), -- Hex (Zandalari Tendonripper)
 		[277784] = Priority(3), -- Hex (Wicker Mongrel)
 		[118905] = Priority(3), -- Static Charge
-		[77505]  = Priority(4), -- Earthquake (Knocking down)
+		[77505] = Priority(4), -- Earthquake (Knocking down)
 		[118345] = Priority(4), -- Pulverize (Pet)
 		[204399] = Priority(3), -- Earthfury
 		[204437] = Priority(3), -- Lightning Lasso
 		[157375] = Priority(4), -- Gale Force
-		[64695]  = Priority(1), -- Earthgrab
+		[64695] = Priority(1), -- Earthgrab
 		-- Warlock
-		[710]    = Priority(5), -- Banish
-		[6789]   = Priority(3), -- Mortal Coil
+		[710] = Priority(5), -- Banish
+		[6789] = Priority(3), -- Mortal Coil
 		[118699] = Priority(3), -- Fear
-		[6358]   = Priority(3), -- Seduction (Succub)
+		[6358] = Priority(3), -- Seduction (Succub)
 		[171017] = Priority(4), -- Meteor Strike (Infernal)
-		[22703]  = Priority(4), -- Infernal Awakening (Infernal CD)
-		[30283]  = Priority(3), -- Shadowfury
-		[89766]  = Priority(4), -- Axe Toss
+		[22703] = Priority(4), -- Infernal Awakening (Infernal CD)
+		[30283] = Priority(3), -- Shadowfury
+		[89766] = Priority(4), -- Axe Toss
 		[233582] = Priority(1), -- Entrenched in Flame
 		-- Warrior
-		[5246]   = Priority(4), -- Intimidating Shout
-		[7922]   = Priority(4), -- Warbringer
+		[5246] = Priority(4), -- Intimidating Shout
 		[132169] = Priority(4), -- Storm Bolt
 		[132168] = Priority(4), -- Shockwave
 		[199085] = Priority(4), -- Warpath
@@ -469,8 +368,46 @@ C.DebuffsTracking_CrowdControl = {
 		[199042] = Priority(1), -- Thunderstruck
 		[236077] = Priority(2), -- Disarm
 		-- Racial
-		[20549]  = Priority(4), -- War Stomp
+		[20549] = Priority(4), -- War Stomp
 		[107079] = Priority(4), -- Quaking Palm
+	},
+}
+
+-- Buffs that really we dont need to see
+C.DebuffsTracking_Blacklist = {
+	type = "Blacklist",
+	spells = {
+		[36900] = Priority(), -- Soul Split: Evil!
+		[36901] = Priority(), -- Soul Split: Good
+		[36893] = Priority(), -- Transporter Malfunction
+		[97821] = Priority(), -- Void-Touched
+		[36032] = Priority(), -- Arcane Charge
+		[8733] = Priority(), -- Blessing of Blackfathom
+		[25771] = Priority(), -- Forbearance (pally: divine shield, hand of protection, and lay on hands)
+		[57724] = Priority(), -- Sated (lust debuff)
+		[57723] = Priority(), -- Exhaustion (heroism debuff)
+		[80354] = Priority(), -- Temporal Displacement (timewarp debuff)
+		[95809] = Priority(), -- Insanity debuff (hunter pet heroism: ancient hysteria)
+		[58539] = Priority(), -- Watcher's Corpse
+		[26013] = Priority(), -- Deserter
+		[71041] = Priority(), -- Dungeon Deserter
+		[41425] = Priority(), -- Hypothermia
+		[55711] = Priority(), -- Weakened Heart
+		[8326] = Priority(), -- Ghost
+		[23445] = Priority(), -- Evil Twin
+		[24755] = Priority(), -- Tricked or Treated
+		[25163] = Priority(), -- Oozeling's Disgusting Aura
+		[124275] = Priority(), -- Stagger
+		[124274] = Priority(), -- Stagger
+		[124273] = Priority(), -- Stagger
+		[117870] = Priority(), -- Touch of The Titans
+		[123981] = Priority(), -- Perdition
+		[15007] = Priority(), -- Ress Sickness
+		[113942] = Priority(), -- Demonic: Gateway
+		[89140] = Priority(), -- Demonic Rebirth: Cooldown
+		[287825] = Priority(), -- Lethargy debuff (fight or flight)
+		[206662] = Priority(), -- Experience Eliminated (in range)
+		[306600] = Priority(), -- Experience Eliminated (oor - 5m)
 	},
 }
 

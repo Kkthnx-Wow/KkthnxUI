@@ -479,89 +479,75 @@ function Module:CreatePlayer()
 
 	-- Swing timer
 	if C["Unitframe"].Swingbar then
-		local swingWidth = C["Unitframe"].PlayerCastbarWidth - C["Unitframe"].PlayerCastbarHeight - 5
-
-		self.Swing = CreateFrame("Frame", "KKUI_SwingBar", self)
-		self.Swing:SetSize(swingWidth, 14)
-		-- self.Swing:SetPoint("BOTTOM", self.Castbar.mover, "BOTTOM", 0, -22)
-		self.Swing:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 180)
-
-		self.Swing.Twohand = CreateFrame("Statusbar", nil, self.Swing)
-		self.Swing.Twohand:SetPoint("TOPLEFT")
-		self.Swing.Twohand:SetPoint("BOTTOMRIGHT")
-		self.Swing.Twohand:SetStatusBarTexture(UnitframeTexture)
-		self.Swing.Twohand:SetStatusBarColor(0.8, 0.3, 0.3)
-		self.Swing.Twohand:SetFrameLevel(20)
-		self.Swing.Twohand:SetFrameStrata("LOW")
-		self.Swing.Twohand:Hide()
-		self.Swing.Twohand:CreateBorder()
-
-		if C["Unitframe"].SwingbarTimer then
-			self.Swing.Twohand.Text = self.Swing.Twohand:CreateFontString(nil, "OVERLAY")
-			self.Swing.Twohand.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-			self.Swing.Twohand.Text:SetPoint("LEFT", self.Swing.Twohand, 3, 0)
-			self.Swing.Twohand.Text:SetSize(260 * 0.7, 14)
-			self.Swing.Twohand.Text:SetJustifyH("LEFT")
+		local bar = CreateFrame("Frame", nil, self)
+		local width = C["Unitframe"].PlayerCastbarWidth - C["Unitframe"].PlayerCastbarHeight - 5
+		bar:SetSize(width, 13)
+		if C["Unitframe"].PlayerCastbar then
+			bar:SetPoint("TOP", self.Castbar.mover, "BOTTOM", 0, -6)
+		else
+			bar:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 200)
 		end
 
-		self.Swing.Twohand.Spark = self.Swing.Twohand:CreateTexture(nil, "OVERLAY")
-		self.Swing.Twohand.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
-		self.Swing.Twohand.Spark:SetHeight(self.Swing:GetHeight())
-		self.Swing.Twohand.Spark:SetBlendMode("ADD")
-		self.Swing.Twohand.Spark:SetPoint("CENTER", self.Swing.Twohand:GetStatusBarTexture(), "RIGHT", 0, 0)
+		local two = CreateFrame("StatusBar", nil, bar)
+		two:Hide()
+		two:SetAllPoints()
+		two:SetStatusBarTexture(UnitframeTexture)
+		two:SetStatusBarColor(0.31, 0.45, 0.63)
+		two:CreateBorder()
 
-		self.Swing.Mainhand = CreateFrame("Statusbar", nil, self.Swing)
-		-- self.Swing.Mainhand:SetPoint("BOTTOM", self.Castbar.mover, "BOTTOM", 0, -22)
-		self.Swing.Mainhand:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 180)
-		self.Swing.Mainhand:SetSize(swingWidth, 14)
-		self.Swing.Mainhand:SetStatusBarTexture(UnitframeTexture)
-		self.Swing.Mainhand:SetStatusBarColor(0.8, 0.3, 0.3)
-		self.Swing.Mainhand:SetFrameLevel(20)
-		self.Swing.Mainhand:SetFrameStrata("LOW")
-		self.Swing.Mainhand:Hide()
-		self.Swing.Mainhand:CreateBorder()
+		local twospark = two:CreateTexture(nil, "OVERLAY")
+		twospark:SetTexture(C["Media"].Textures.Spark16Texture)
+		twospark:SetHeight(C["DataBars"].Height)
+		twospark:SetBlendMode("ADD")
+		twospark:SetPoint("CENTER", two:GetStatusBarTexture(), "RIGHT", 0, 0)
+
+		local bg = two:CreateTexture(nil, "BACKGROUND", nil, 1)
+		bg:Hide()
+		bg:SetPoint("TOPRIGHT")
+		bg:SetPoint("BOTTOMRIGHT")
+		bg:SetColorTexture(0.2, 0.2, 0.2, 0.6)
+
+		local main = CreateFrame("StatusBar", nil, bar)
+		main:Hide()
+		main:SetAllPoints()
+		main:SetStatusBarTexture(UnitframeTexture)
+		main:SetStatusBarColor(0.31, 0.45, 0.63)
+		main:CreateBorder()
+
+		local mainspark = main:CreateTexture(nil, "OVERLAY")
+		mainspark:SetTexture(C["Media"].Textures.Spark16Texture)
+		mainspark:SetHeight(C["DataBars"].Height)
+		mainspark:SetBlendMode("ADD")
+		mainspark:SetPoint("CENTER", main:GetStatusBarTexture(), "RIGHT", 0, 0)
+
+		local off = CreateFrame("StatusBar", nil, bar)
+		off:Hide()
+		off:SetPoint("TOPLEFT", bar, "BOTTOMLEFT", 0, -3)
+		off:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 0, -6)
+		off:SetStatusBarTexture(UnitframeTexture)
+		off:SetStatusBarColor(0.78, 0.25, 0.25)
+		off:CreateBorder()
+
+		local offspark = off:CreateTexture(nil, "OVERLAY")
+		offspark:SetTexture(C["Media"].Textures.Spark16Texture)
+		offspark:SetHeight(C["DataBars"].Height)
+		offspark:SetBlendMode("ADD")
+		offspark:SetPoint("CENTER", off:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 		if C["Unitframe"].SwingbarTimer then
-			self.Swing.Mainhand.Text = self.Swing.Mainhand:CreateFontString(nil, "OVERLAY")
-			self.Swing.Mainhand.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-			self.Swing.Mainhand.Text:SetPoint("LEFT", self.Swing.Mainhand, 3, 0)
-			self.Swing.Mainhand.Text:SetSize(260 * 0.7, 12)
-			self.Swing.Mainhand.Text:SetJustifyH("LEFT")
+			bar.Text = K.CreateFontString(bar, 12, "", "")
+			bar.TextMH = K.CreateFontString(main, 12, "", "")
+			bar.TextOH = K.CreateFontString(off, 12, "", "", false, "CENTER", 1, -5)
 		end
 
-		self.Swing.Mainhand.Spark = self.Swing.Mainhand:CreateTexture(nil, "OVERLAY")
-		self.Swing.Mainhand.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
-		self.Swing.Mainhand.Spark:SetHeight(self.Swing:GetHeight())
-		self.Swing.Mainhand.Spark:SetBlendMode("ADD")
-		self.Swing.Mainhand.Spark:SetPoint("CENTER", self.Swing.Mainhand:GetStatusBarTexture(), "RIGHT", 0, 0)
-
-		self.Swing.Offhand = CreateFrame("Statusbar", nil, self.Swing)
-		self.Swing.Offhand:SetPoint("BOTTOM", self.Swing.Mainhand, "TOP", 0, 6)
-		self.Swing.Offhand:SetSize(swingWidth, 14)
-		self.Swing.Offhand:SetStatusBarTexture(UnitframeTexture)
-		self.Swing.Offhand:SetStatusBarColor(0.8, 0.3, 0.3)
-		self.Swing.Offhand:SetFrameLevel(20)
-		self.Swing.Offhand:SetFrameStrata("LOW")
-		self.Swing.Offhand:Hide()
-		self.Swing.Offhand:CreateBorder()
-
-		if C["Unitframe"].SwingbarTimer then
-			self.Swing.Offhand.Text = self.Swing.Offhand:CreateFontString(nil, "OVERLAY")
-			self.Swing.Offhand.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
-			self.Swing.Offhand.Text:SetPoint("LEFT", self.Swing.Offhand, 3, 0)
-			self.Swing.Offhand.Text:SetSize(260 * 0.7, 12)
-			self.Swing.Offhand.Text:SetJustifyH("LEFT")
-		end
-
-		self.Swing.Offhand.Spark = self.Swing.Offhand:CreateTexture(nil, "OVERLAY")
-		self.Swing.Offhand.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
-		self.Swing.Offhand.Spark:SetHeight(self.Swing:GetHeight())
-		self.Swing.Offhand.Spark:SetBlendMode("ADD")
-		self.Swing.Offhand.Spark:SetPoint("CENTER", self.Swing.Offhand:GetStatusBarTexture(), "RIGHT", 0, 0)
-
+		self.Swing = bar
+		self.Swing.Twohand = two
+		self.Swing.Mainhand = main
+		self.Swing.Offhand = off
+		self.Swing.bg = bg
 		self.Swing.hideOoc = true
 
-		K.Mover(self.Swing, "PlayerSwingBar", "PlayerSwingBar", {"BOTTOM", UIParent, "BOTTOM", 0, 180})
+		-- K.Mover(self.Swing, "PlayerSwingBar", "PlayerSwingBar", {"BOTTOM", UIParent, "BOTTOM", 0, 180})
 	end
 
 	if C["Unitframe"].PvPIndicator then

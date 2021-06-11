@@ -498,8 +498,8 @@ end
 
 function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster, isStealable, _, spellID, _, _, _, nameplateShowAll)
 	local style = element.__owner.mystyle
-	if style == "nameplate" or style == "target" then
-		if name and spellID == 209859 then
+	if name and spellID == 209859 then
+		if style == "nameplate" or style == "target" then
 			element.bolster = element.bolster + 1
 			if not element.bolsterIndex then
 				element.bolsterIndex = button
@@ -560,29 +560,28 @@ function Module.PostUpdateRunes(element, runemap)
 	end
 end
 
-Module.ClassPowerBarSize = {160, 14}
-Module.ClassPowerBarPoint = {"TOPLEFT", 0, 20}
-local barWidth, barHeight = unpack(Module.ClassPowerBarSize)
-
 function Module.PostUpdateClassPower(element, cur, max, diff, powerType, chargedIndex)
-	if diff then
-		for i = 1, max do
-			element[i]:SetWidth((barWidth - (max - 1) * 6) / max)
+	if not cur or cur == 0 then
+		element.prevColor = nil
+	else
+		element.thisColor = cur == max and 1 or 2
+		if not element.prevColor or element.prevColor ~= element.thisColor then
+			local r, g, b = 1, 0, 0
+			if element.thisColor == 2 then
+				local color = element.__owner.colors.power[powerType]
+				r, g, b = color[1], color[2], color[3]
+			end
+			for i = 1, #element do
+				element[i]:SetStatusBarColor(r, g, b)
+			end
+			element.prevColor = element.thisColor
 		end
 	end
 
-	element.thisColor = cur == max and 1 or 2
-	if not element.prevColor or element.prevColor ~= element.thisColor then
-		local r, g, b = 1, 0, 0
-		if element.thisColor == 2 then
-			local color = element.__owner.colors.power[powerType]
-			r, g, b = color[1], color[2], color[3]
+	if diff then
+		for i = 1, max do
+			element[i]:SetWidth((Module.barWidth - (max - 1) * 6)/max)
 		end
-
-		for i = 1, #element do
-			element[i]:SetStatusBarColor(r, g, b)
-		end
-		element.prevColor = element.thisColor
 	end
 
 	if chargedIndex and chargedIndex ~= element.thisCharge then
@@ -599,20 +598,20 @@ end
 
 function Module:CreateClassPower(self)
 	if self.mystyle == "PlayerPlate" then
-		barWidth = C["Nameplate"].NameplateClassPower and C["Nameplate"].PlateWidth or C["Nameplate"].PPIconSize * 5 + 2 * 4
-		barHeight = C["Nameplate"].NameplateClassPower and C["Nameplate"].PlateHeight or C["Nameplate"].PPHeight
+		Module.barWidth = C["Nameplate"].NameplateClassPower and C["Nameplate"].PlateWidth or C["Nameplate"].PPIconSize * 5 + 2 * 4
+		Module.barHeight = C["Nameplate"].NameplateClassPower and C["Nameplate"].PlateHeight or C["Nameplate"].PPHeight
 		Module.ClassPowerBarPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 3}
 	end
 
 	local bar = CreateFrame("Frame", "oUF_ClassPowerBar", self.Health)
-	bar:SetSize(barWidth, barHeight)
+	bar:SetSize(Module.barWidth, Module.barHeight)
 	bar:SetPoint(unpack(Module.ClassPowerBarPoint))
 
 	local bars = {}
 	for i = 1, 6 do
 		bars[i] = CreateFrame("StatusBar", nil, bar)
-		bars[i]:SetHeight(barHeight)
-		bars[i]:SetWidth((barWidth - 5 * 6) / 6)
+		bars[i]:SetHeight(Module.barHeight)
+		bars[i]:SetWidth((Module.barWidth - 5 * 6) / 6)
 		bars[i]:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 		bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
 		if self.mystyle == "nameplate" or self.mystyle == "PlayerPlate" then
@@ -1026,18 +1025,21 @@ function Module:UpdateRaidDebuffIndicator()
 
 	if (ORD) then
 		local _, InstanceType = IsInInstance()
+
 		ORD:ResetDebuffData()
 
 		if (InstanceType == "party" or InstanceType == "raid") then
-			ORD:RegisterDebuffs(C.DebuffsTracking_PvE.spells)
-		elseif (InstanceType == "pvp") then
-			if (K.Class == "PRIEST") or (K.Class == "PALADIN" and GetActiveSpecGroup() == 1) or (K.Class == "SHAMAN" and GetActiveSpecGroup() == 3) or (K.Class == "DRUID" and GetActiveSpecGroup() == 4) or (K.Class == "MONK" and GetActiveSpecGroup() == 2) then
-				ORD:RegisterDebuffs(C.DebuffsTracking_PvP.spells)
-			else
-				ORD:RegisterDebuffs(C.DebuffsTracking_CrowdControl.spells)
+			if C.Raid.DebuffWatchDefault then
+				ORD:RegisterDebuffs(C.DebuffsTracking_PvE.spells)
 			end
+
+			ORD:RegisterDebuffs(KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE)
 		else
-			ORD:RegisterDebuffs(C.DebuffsTracking_PvP.spells) -- replace this one later with a new list
+			if C.Raid.DebuffWatchDefault then
+				ORD:RegisterDebuffs(C.DebuffsTracking_PvP.spells)
+			end
+
+			ORD:RegisterDebuffs(KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP)
 		end
 	end
 end
@@ -1081,6 +1083,18 @@ function Module:UNIT_FACTION(unit)
 end
 
 function Module:OnEnable()
+	local whatWidth
+	local whatHeight = C["Unitframe"].PlayerFrameHeight + 6
+	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+		whatWidth = C["Unitframe"].PlayerFrameWidth
+	else
+		whatWidth = C["Unitframe"].PlayerFrameWidth - whatHeight
+	end
+
+	Module.ClassPowerBarSize = {whatWidth, 14}
+	Module.ClassPowerBarPoint = {"TOPLEFT", 0, 20}
+	Module.barWidth, Module.barHeight = unpack(Module.ClassPowerBarSize)
+
 	-- Register our units / layout
 	self:CreateUnits()
 
@@ -1096,5 +1110,7 @@ function Module:OnEnable()
 			ORD.FilterDispellableDebuff = true
 			ORD.MatchBySpellName = false
 		end
+
+		self:CreateTracking()
 	end
 end
