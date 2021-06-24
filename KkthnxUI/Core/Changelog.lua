@@ -15,15 +15,12 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Added mouse cursor code module TBC",
-	"Added new durability info from TBC",
-	"Added new icons for datatext from TBC",
-	"Fixed bolster nil error?",
-	"Updated all aurawatch spells",
-	"Updated database code from TBC",
-	"Updated swingbar code from TBC",
-	"Updated unitframe code from TBC",
-	"Various settings changed to match TBC values"
+	"Added auto open code rewrite from TBC",
+	"Updated character frame skinning to match changes from TBC (Stats)",
+	"Fixed error with tooltip hover missing its locale",
+	"Updated ms/fps icons from TBC",
+	"Updated quest complete sound if using quest notification module",
+	"Updated inventory new item glow code",
 }
 
 local changelogFrame

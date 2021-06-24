@@ -90,14 +90,14 @@ function Module:CreateLatencyDataText()
 	Module.LatencyDataTextFrame:SetSize(24, 24)
 
 	Module.LatencyDataTextFrame.Texture = Module.LatencyDataTextFrame:CreateTexture(nil, "BACKGROUND")
-	Module.LatencyDataTextFrame.Texture:SetPoint("LEFT", Module.LatencyDataTextFrame, "LEFT", 0, 0)
-	Module.LatencyDataTextFrame.Texture:SetTexture(("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\LFG.blp"))
-	Module.LatencyDataTextFrame.Texture:SetSize(24, 24)
+	Module.LatencyDataTextFrame.Texture:SetPoint("LEFT", Module.LatencyDataTextFrame, "LEFT", 2, 0)
+	Module.LatencyDataTextFrame.Texture:SetTexture(("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\ping.blp"))
+	Module.LatencyDataTextFrame.Texture:SetSize(16, 16)
 	Module.LatencyDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 	Module.LatencyDataTextFrame.Text = Module.LatencyDataTextFrame:CreateFontString("OVERLAY")
 	Module.LatencyDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.LatencyDataTextFrame.Text:SetPoint("LEFT", Module.LatencyDataTextFrame.Texture, "RIGHT", 0, 0)
+	Module.LatencyDataTextFrame.Text:SetPoint("LEFT", Module.LatencyDataTextFrame.Texture, "RIGHT", 4, 0)
 
 	if C["DataText"].System then
 		Module.LatencyDataTextFrame.Pos = {"LEFT", _G.KKUI_SystemDataText.Text, "RIGHT", 4, 0}

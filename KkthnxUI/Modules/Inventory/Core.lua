@@ -895,13 +895,13 @@ function Module:OnEnable()
 		self.iLvl:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
 
 		if showNewItem then
-			self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
+			self.glowFrame = self.glowFrame or CreateFrame("Frame", nil, self, "BackdropTemplate")
 			self.glowFrame:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
 			self.glowFrame:SetPoint("TOPLEFT", self, -5, 5)
 			self.glowFrame:SetPoint("BOTTOMRIGHT", self, 5, -5)
 			self.glowFrame:Hide()
 
-			self.glowFrame.Animation = self.glowFrame:CreateAnimationGroup()
+			self.glowFrame.Animation = self.glowFrame.Animation or self.glowFrame:CreateAnimationGroup()
 			self.glowFrame.Animation:SetLooping("BOUNCE")
 			self.glowFrame.Animation.Fader = self.glowFrame.Animation:CreateAnimation("Alpha")
 			self.glowFrame.Animation.Fader:SetFromAlpha(0.8)

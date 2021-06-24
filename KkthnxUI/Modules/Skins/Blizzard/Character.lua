@@ -80,20 +80,6 @@ local function UpdateFactionSkins()
 	end
 end
 
-local function StatsPane(which)
-	CharacterStatsPane[which]:StripTextures()
-	CharacterStatsPane[which].Title:SetFontObject(K.GetFont(C["UIFonts"].SkinFonts))
-	CharacterStatsPane[which].Title:SetFont(select(1, CharacterStatsPane[which].Title:GetFont()), 14, select(3, CharacterStatsPane[which].Title:GetFont()))
-	CharacterStatsPane[which].Title:SetTextColor(255/255, 255/255, 255/255)
-
-	local headerBar = CharacterStatsPane[which]:CreateTexture(nil, "ARTWORK")
-	headerBar:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
-	headerBar:SetTexCoord(0, 0.6640625, 0, 0.3125)
-	headerBar:SetVertexColor(255/255, 204/255, 0/255)
-	headerBar:SetPoint("CENTER", CharacterStatsPane[which])
-	headerBar:SetSize(232, 30)
-end
-
 tinsert(C.defaultThemes, function()
 	if CharacterFrame:IsShown() then
 		HideUIPanel(CharacterFrame)
@@ -203,12 +189,6 @@ tinsert(C.defaultThemes, function()
 	CharacterStatsPane.ClassBackground:SetHeight(CharacterStatsPane.ClassBackground:GetHeight() + 6)
 	CharacterStatsPane.ClassBackground:SetParent(CharacterFrameInsetRight)
 	CharacterStatsPane.ClassBackground:SetPoint("CENTER")
-
-	if not IsAddOnLoaded("DejaCharacterStats") then
-		StatsPane("EnhancementsCategory")
-		StatsPane("ItemLevelCategory")
-		StatsPane("AttributesCategory")
-	end
 
 	-- Buttons used to toggle between equipment manager, titles, and character stats
 	hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", ReskinPaperDollSidebar)

@@ -2,7 +2,6 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Bags")
 
 local _G = _G
-local string_format = _G.string.format
 local table_wipe = _G.table.wipe
 
 local C_Timer_After = _G.C_Timer.After
@@ -14,14 +13,6 @@ local IsShiftKeyDown = _G.IsShiftKeyDown
 
 local sellCount, stop, cache = 0, true, {}
 local errorText = _G.ERR_VENDOR_DOESNT_BUY
-
-local function stopSelling(tell)
-	stop = true
-	if sellCount > 0 and tell then
-		K.Print(string_format("%s%s", K.SystemColor..L["Vendored Items"], K.FormatMoney(sellCount)))
-	end
-	sellCount = 0
-end
 
 local function startSelling()
 	if stop then
@@ -39,7 +30,7 @@ local function startSelling()
 				local price = select(11, GetItemInfo(link))
 				local _, count, _, quality, _, _, _, _, _, itemID = GetContainerItemInfo(bag, slot)
 				if (quality == 0 or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID]) and price and price > 0 and not cache["b"..bag.."s"..slot] then
-					sellCount = sellCount + price*count
+					sellCount = sellCount + price * count
 					cache["b"..bag.."s"..slot] = true
 					_G.UseContainerItem(bag, slot)
 					C_Timer_After(0.15, startSelling)
@@ -65,10 +56,8 @@ local function updateSelling(event, ...)
 		table_wipe(cache)
 		startSelling()
 		K:RegisterEvent("UI_ERROR_MESSAGE", updateSelling)
-	elseif event == "UI_ERROR_MESSAGE" and arg == errorText then
-		stopSelling(false)
-	elseif event == "MERCHANT_CLOSED" then
-		stopSelling(true)
+	elseif event == "UI_ERROR_MESSAGE" and arg == errorText or event == "MERCHANT_CLOSED" then
+		stop = true
 	end
 end
 

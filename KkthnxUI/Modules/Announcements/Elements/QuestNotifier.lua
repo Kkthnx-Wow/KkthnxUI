@@ -29,7 +29,8 @@ local LE_QUEST_TAG_TYPE_PROFESSION = _G.Enum.QuestTagType.Profession
 local PlaySound = _G.PlaySound
 local QUEST_COMPLETE = _G.QUEST_COMPLETE
 local SendChatMessage = _G.SendChatMessage
-local soundKitID = _G.SOUNDKIT.ALARM_CLOCK_WARNING_3
+
+local soundKitID = 6199 -- https://wowhead.com/sound=6199/b-peonbuildingcomplete1
 
 local debugMode = false
 local completedQuest, WQcache, initComplete = {}, {}

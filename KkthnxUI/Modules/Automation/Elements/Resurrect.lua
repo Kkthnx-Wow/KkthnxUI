@@ -60,7 +60,7 @@ function Module.SetupAutoResurrect(_, arg1)
 			return
 		end
 
-		C_Timer_After(2, function() -- Give this more time to say thanks.
+		C_Timer_After(3, function() -- Give this more time to say thanks.
 			if not UnitIsDeadOrGhost("player") then
 				DoEmote("thank", arg1)
 			end
