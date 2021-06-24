@@ -435,6 +435,7 @@ local Minimap = function(self)
 	Window:CreateSwitch("Minimap", "Enable", enableTextColor..L["Enable Minimap"])
 	Window:CreateSwitch("Minimap", "Calendar", L["Show Minimap Calendar"], "If enabled, show minimap calendar icon on minimap.|nYou can simply click mouse middle button on minimap to toggle calendar even without this option.")
 	Window:CreateSwitch("Minimap", "ShowRecycleBin", L["Show Minimap Button Collector"])
+	Window:CreateDropdown("Minimap", "RecycleBinPosition", "Set RecycleBin Positon")
 	Window:CreateDropdown("Minimap", "BlipTexture", L["Blip Icon Styles"], nil, nil, UpdateBlipTextures)
 	Window:CreateDropdown("Minimap", "LocationText", L["Location Text Style"])
 

@@ -289,6 +289,15 @@ C["Minimap"] = {
 	["Enable"] = true,
 	["ShowRecycleBin"] = true,
 	["Size"] = 180,
+	["RecycleBinPosition"] = {
+		["Options"] = {
+			["BottomLeft"] = 1,
+			["BottomRight"] = 2,
+			["TopLeft"] = 3,
+			["TopRight"] = 4,
+		},
+		["Value"] = "BottomLeft"
+	},
 	["LocationText"] = {
 		["Options"] = {
 			["Always Display"] = "SHOW",

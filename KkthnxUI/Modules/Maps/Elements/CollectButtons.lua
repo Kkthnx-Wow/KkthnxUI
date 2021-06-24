@@ -39,7 +39,18 @@ function Module:CreateRecycleBin()
 	local bu = CreateFrame("Button", "RecycleBinToggleButton", Minimap)
 	bu:SetAlpha(0.6)
 	bu:SetSize(16, 16)
-	bu:SetPoint("BOTTOMRIGHT", 7, -7)
+	bu:ClearAllPoints()
+	if C["Minimap"].RecycleBinPosition.Value == 1 then
+		bu:SetPoint("BOTTOMLEFT", -7, -7)
+	elseif C["Minimap"].RecycleBinPosition.Value == 2 then
+		bu:SetPoint("BOTTOMRIGHT", 7, -7)
+	elseif C["Minimap"].RecycleBinPosition.Value == 3 then
+		bu:SetPoint("TOPLEFT", -7, 7)
+	elseif C["Minimap"].RecycleBinPosition.Value == 4 then
+		bu:SetPoint("TOPRIGHT", 7, 7)
+	else
+		bu:SetPoint("BOTTOMLEFT", -7, -7)
+	end
 
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 	bu.Icon:SetAllPoints()
@@ -50,10 +61,15 @@ function Module:CreateRecycleBin()
 
 	local width, height = 220, 30
 	local bin = CreateFrame("Frame", "RecycleBinFrame", UIParent)
-	bin:SetPoint("BOTTOMRIGHT", bu, "BOTTOMLEFT", -3, 7)
+	bin:ClearAllPoints()
+	if C["Minimap"].RecycleBinPosition.Value == 1 or C["Minimap"].RecycleBinPosition.Value == 2 then
+		bin:SetPoint("BOTTOMRIGHT", bu, "BOTTOMLEFT", -3, 7)
+	elseif C["Minimap"].RecycleBinPosition.Value == 3 or C["Minimap"].RecycleBinPosition.Value == 4 then
+		bin:SetPoint("BOTTOMRIGHT", bu, "BOTTOMLEFT", -3, -21)
+	else
+		bin:SetPoint("BOTTOMRIGHT", bu, "BOTTOMLEFT", -3, 7)
+	end
 	bin:SetSize(width, height)
-	bin:CreateBorder()
-	bin:SetFrameStrata("MEDIUM")
 	bin:Hide()
 
 	local function hideBinButton()
@@ -123,9 +139,9 @@ function Module:CreateRecycleBin()
 					child:SetScript("OnDragStart", nil)
 				end
 
-				if child:HasScript("OnClick") then
-					child:HookScript("OnClick", clickFunc)
-				end
+				-- if child:HasScript("OnClick") then
+				-- 	child:HookScript("OnClick", clickFunc)
+				-- end
 
 				if child:IsObjectType("Button") then
 					child:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square") -- prevent nil function
@@ -143,7 +159,7 @@ function Module:CreateRecycleBin()
 					child:SetScript("OnMouseDown", nil)
 					child:SetScript("OnMouseUp", nil)
 				elseif name == "BagSync_MinimapButton" then
-					child:HookScript("OnMouseUp", clickFunc)
+					-- child:HookScript("OnMouseUp", clickFunc)
 				end
 
 				child.styled = true
