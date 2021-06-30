@@ -16,11 +16,15 @@ local CLOSE = _G.CLOSE
 
 local changelogData = {
 	"Added auto open code rewrite from TBC",
-	"Updated character frame skinning to match changes from TBC (Stats)",
+	"Fixed aura watch error when reset",
 	"Fixed error with tooltip hover missing its locale",
+	"Fixed raid utilites missing locale",
+	"Fixed some action bars not able to be key bound with /kb",
+	"Updated character frame skinning to match changes from TBC (Stats)",
+	"Updated install boss image and complete sound",
+	"Updated inventory new item glow code",
 	"Updated ms/fps icons from TBC",
 	"Updated quest complete sound if using quest notification module",
-	"Updated inventory new item glow code",
 }
 
 local changelogFrame

@@ -145,6 +145,7 @@ function Module:CreateTooltipID()
 
 	-- Items
 	GameTooltip:HookScript("OnTooltipSetItem", Module.SetItemID)
+	GameTooltipTooltip:HookScript("OnTooltipSetItem", Module.SetItemID)
 	ItemRefTooltip:HookScript("OnTooltipSetItem", Module.SetItemID)
 	ShoppingTooltip1:HookScript("OnTooltipSetItem", Module.SetItemID)
 	ShoppingTooltip2:HookScript("OnTooltipSetItem", Module.SetItemID)

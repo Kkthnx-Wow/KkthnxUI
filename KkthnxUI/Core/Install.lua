@@ -759,7 +759,7 @@ local function YesTutor()
 			progressBar:Hide()
 			StaticPopup_Show("KKUI_CHANGES_RELOAD")
 			currentPage = 0
-			PlaySound(11466)
+			PlaySound(163017)
 		end
 
 		currentPage = currentPage + 1
@@ -793,7 +793,7 @@ local function HelloWorld()
 
 	local welcomeBoss = welcome:CreateTexture(nil, "OVERLAY")
 	welcomeBoss:SetSize(128, 64)
-	welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-Illidan Stormrage")
+	welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-Sylvanas Windrunner Shadowlands")
 	welcomeBoss:SetPoint("TOPRIGHT", welcome, "TOPRIGHT", 10, 64)
 
 	local ll = CreateFrame("Frame", nil, welcome)

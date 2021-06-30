@@ -1061,7 +1061,7 @@ function Module:OnEnable()
 		end
 
 		-- Hide empty tooltip
-		if not GetContainerItemInfo(item.bagID, item.slotID) then
+		if GameTooltip:GetOwner() == self and not GetContainerItemInfo(item.bagID, item.slotID) then
 			GameTooltip:Hide()
 		end
 
@@ -1165,7 +1165,7 @@ function Module:OnEnable()
 		elseif string_match(name, "Quest") then
 			label = QUESTS_LABEL
 		elseif string_match(name, "Anima") then
-			label = WORLD_QUEST_REWARD_FILTERS_ANIMA
+			label = POWER_TYPE_ANIMA
 		end
 
 		if label then

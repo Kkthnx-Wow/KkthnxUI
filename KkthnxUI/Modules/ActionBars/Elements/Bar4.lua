@@ -65,7 +65,8 @@ function Module:CreateBar4()
 
 	for i = 1, num do
 		local button = _G["MultiBarRightButton"..i]
-		table_insert(buttonList, button) -- Add The Button Object To The List
+		table_insert(buttonList, button)
+		table_insert(Module.buttons, button)
 		button:SetSize(buttonSize, buttonSize)
 		button:ClearAllPoints()
 

@@ -6,6 +6,7 @@ L["AP"] = "AP:"
 L["AddContactTip"] = "|nModify the contact list you need, the input format is 'UnitName-RealmName'.|nYou only need to enter name if unit is in the same realm with you.|nYou can customize text color for classify." -- need translation
 L["AddToIgnoreList"] = "%s SpellID %s is now added to the ignored AuraWatch list. You can hold CTRL+ALT and click unit aura icon to remove from list."
 L["All Buffs Ready"] = "[KkthnxUI] All Buffs Ready!"
+L["Alt Key"] = "Alt Key"
 L["Attach List"] = "Mail Attach List:"
 L["AttackSpeed"] = "AS"
 L["AuraWatch List"] = "Custom List"

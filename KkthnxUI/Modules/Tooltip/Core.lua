@@ -319,11 +319,11 @@ function Module:OnTooltipSetUnit()
 		else
 			self.StatusBar:Hide()
 		end
+
+		Module.InspectUnitSpecAndLevel(self, unit)
 	else
 		self.StatusBar:SetStatusBarColor(0, 0.9, 0)
 	end
-
-	Module.InspectUnitSpecAndLevel(self)
 end
 
 function Module:StatusBar_OnValueChanged(value)
