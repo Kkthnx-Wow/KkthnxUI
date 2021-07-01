@@ -118,6 +118,8 @@ end
 function Module:TabSetAlpha(alpha)
 	if self.glow:IsShown() and alpha ~= 1 then
 		self:SetAlpha(1)
+	elseif alpha < 0 then
+		self:SetAlpha(0)
 	end
 end
 
@@ -237,6 +239,7 @@ function Module:SkinChat()
 	self.buttonFrame:Kill()
 	self.ScrollBar:Kill()
 	self.ScrollToBottomButton:Kill()
+	Module:ToggleChatFrameTextures(self)
 
 	self.oldAlpha = self.oldAlpha or 0 -- fix blizz error
 
@@ -247,8 +250,6 @@ function Module:SkinChat()
 
 	-- Security for font, in case if revert back to WoW default we restore instantly the tukui font default.
 	hooksecurefunc(self, "SetFont", Module.SetChatFont)
-
-	QuickJoinToastButton:Hide()
 
 	self.styled = true
 end
@@ -463,6 +464,8 @@ function Module:OnEnable()
 	if not C["Chat"].Enable then
 		return
 	end
+
+	QuickJoinToastButton:Hide()
 
 	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
 		return

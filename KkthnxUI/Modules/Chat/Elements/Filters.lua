@@ -140,7 +140,7 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 	chatLines[chatLinesSize + 1] = msgTable
 	for i = 1, chatLinesSize do
 		local line = chatLines[i]
-		if line[1] == msgTable[1] and ((event == "CHAT_MSG_CHANNEL" and msgTable[3] - line[3] < 0.6) or module:CompareStrDiff(line[2], msgTable[2]) <= 0.1) then
+		if line[1] == msgTable[1] and ((event == "CHAT_MSG_CHANNEL" and msgTable[3] - line[3] < 0.6) or Module:CompareStrDiff(line[2], msgTable[2]) <= 0.1) then
 			table_remove(chatLines, i)
 			return true
 		end

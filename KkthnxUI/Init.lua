@@ -55,12 +55,14 @@ LE_ITEM_QUALITY_ARTIFACT = Enum.ItemQuality.Artifact
 LE_ITEM_QUALITY_HEIRLOOM = Enum.ItemQuality.Heirloom
 
 do
-	K.Base64 = LibStub("LibBase64-1.0")
-	K.Deflate = LibStub("LibDeflate")
-	K.HideButtonGlow = LibStub("LibButtonGlow-1.0", true).HideOverlayGlow
-	K.Serialize = LibStub("LibSerialize")
-	K.ShowButtonGlow = LibStub("LibButtonGlow-1.0", true).ShowOverlayGlow
-	K.Unfit = LibStub("Unfit-1.0")
+	K.Base64 = LibStub("LibBase64-1.0-KkthnxUI")
+	K.Deflate = LibStub("LibDeflate-KkthnxUI")
+	K.HideButtonGlow = LibStub("LibButtonGlow-1.0-KkthnxUI", true).HideOverlayGlow
+	K.Serialize = LibStub("LibSerialize-KkthnxUI")
+	K.ShowButtonGlow = LibStub("LibButtonGlow-1.0-KkthnxUI", true).ShowOverlayGlow
+	K.Unfit = LibStub("Unfit-1.0-KkthnxUI")
+	K.RangeCheck = LibStub("LibRangeCheck-2.0-KkthnxUI")
+	K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
 	K.cargBags = Engine.cargBags
 	K.oUF = Engine.oUF
 end

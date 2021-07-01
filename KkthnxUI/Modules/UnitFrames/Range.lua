@@ -1,6 +1,5 @@
 local K, C = _G.unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
-local RangeCheck = _G.LibStub("LibRangeCheck-2.0")
 
 local UnitCanAttack = UnitCanAttack
 local UnitInRange = UnitInRange
@@ -31,7 +30,7 @@ local function friendlyIsInRange(realUnit)
 		return false -- blizz checked and said the unit is out of range
 	end
 
-	local _, maxRange = RangeCheck:GetRange(unit, true, true)
+	local _, maxRange = K.RangeCheck:GetRange(unit, true, true)
 	return maxRange
 end
 
@@ -47,7 +46,7 @@ function Module:UpdateRange()
 		alpha = self.Range.outsideAlpha
 	elseif unit then
 		if UnitCanAttack('player', unit) or UnitIsUnit(unit, 'pet') then
-			local _, maxRange = RangeCheck:GetRange(unit, true, true)
+			local _, maxRange = K.RangeCheck:GetRange(unit, true, true)
 			alpha = (maxRange and self.Range.insideAlpha) or self.Range.outsideAlpha
 		else
 			alpha = (UnitIsConnected(unit) and friendlyIsInRange(unit) and self.Range.insideAlpha) or self.Range.outsideAlpha

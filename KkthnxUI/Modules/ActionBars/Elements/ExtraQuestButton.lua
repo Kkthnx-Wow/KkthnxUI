@@ -43,6 +43,7 @@ local onlyCurrentZone = true
 local ExtraQuestButton = CreateFrame("Button", "KKUI_ExtraQuestButton", UIParent, "SecureActionButtonTemplate, SecureHandlerStateTemplate, SecureHandlerAttributeTemplate")
 ExtraQuestButton:SetMovable(true)
 ExtraQuestButton:RegisterEvent("PLAYER_LOGIN")
+ExtraQuestButton:Hide()
 ExtraQuestButton:SetScript("OnEvent", function(self, event, ...)
 	if self[event] then
 		self[event](self, event, ...)
@@ -155,7 +156,6 @@ function ExtraQuestButton:PLAYER_LOGIN()
 
 	self.updateTimer = 0
 	self.rangeTimer = 0
-	self:Hide()
 
 	local Icon = self:CreateTexture("$parentIcon", "ARTWORK")
 	Icon:SetAllPoints()
@@ -406,8 +406,8 @@ local function GetClosestQuestItem()
 	if not closestQuestItemLink then
 		for index = 1, C_QuestLog_GetNumQuestLogEntries() do
 			local info = C_QuestLog_GetInfo(index)
-			local questID = info.questID
-			if info and not info.isHeader and (not info.isHidden or C_QuestLog_IsWorldQuest(questID)) and QuestHasPOIInfo(questID) then
+			local questID = info and info.questID
+			if questID and not info.isHeader and (not info.isHidden or C_QuestLog_IsWorldQuest(questID)) and QuestHasPOIInfo(questID) then
 				local distance, itemLink = GetQuestDistanceWithItem(questID)
 				if distance and distance <= closestDistance then
 					closestDistance = distance

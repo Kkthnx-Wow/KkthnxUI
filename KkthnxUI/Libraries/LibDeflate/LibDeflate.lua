@@ -98,7 +98,7 @@ do
 	local _VERSION = "1.0.2-release"
 
 	-- When MAJOR is changed, I should name it as LibDeflate2
-	local _MAJOR = "LibDeflate"
+	local _MAJOR = "LibDeflate-KkthnxUI"
 
 	-- Update this whenever a new version, for LibStub version registration.
 	-- 0 : v0.x

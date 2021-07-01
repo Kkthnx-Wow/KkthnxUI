@@ -61,26 +61,22 @@ elseif (K.Client ~= "enUS" and K.Client ~= "frFR" and K.Client ~= "enGB") then
 	C["Media"].Fonts.DamageFont = DAMAGE_TEXT_FONT
 end
 
-if K.LSM == nil then
-	return
-end
-
 -- Register Borders
 for name, path in pairs(C["Media"].Borders) do
-	K.LSM:Register("border", name, path)
+	K.LibSharedMedia:Register("border", name, path)
 end
 
 -- Register Statusbars
 for name, path in pairs(C["Media"].Statusbars) do
-	K.LSM:Register("statusbar", name, path)
+	K.LibSharedMedia:Register("statusbar", name, path)
 end
 
 -- Register Sounds
 for name, path in pairs(C["Media"].Sounds) do
-	K.LSM:Register("sound", name, path)
+	K.LibSharedMedia:Register("sound", name, path)
 end
 
 -- Register Fonts
 for name, path in pairs(C["Media"].Fonts) do
-	K.LSM:Register("font", name, path)
+	K.LibSharedMedia:Register("font", name, path)
 end

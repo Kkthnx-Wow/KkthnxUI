@@ -687,6 +687,18 @@ Module:RegisterTooltips("KkthnxUI", function()
 		if NarciGameTooltip then
 			Module.ReskinTooltip(NarciGameTooltip)
 		end
+
+		if AceGUITooltip then
+			Module.ReskinTooltip(AceGUITooltip)
+		end
+
+		if AceConfigDialogTooltip then
+			Module.ReskinTooltip(AceConfigDialogTooltip)
+		end
+
+		if TomCatsVignetteTooltip then
+			Module.ReskinTooltip(TomCatsVignetteTooltip)
+		end
 	end)
 
 	if IsAddOnLoaded("BattlePetBreedID") then
@@ -714,11 +726,11 @@ end)
 
 Module:RegisterTooltips("Blizzard_DebugTools", function()
 	Module.ReskinTooltip(FrameStackTooltip)
-	Module.ReskinTooltip(EventTraceTooltip)
-
 	FrameStackTooltip:SetScale(UIParent:GetScale())
-	EventTraceTooltip:SetParent(UIParent)
-	EventTraceTooltip:SetFrameStrata("TOOLTIP")
+end)
+
+Module:RegisterTooltips("Blizzard_EventTrace", function()
+	Module.ReskinTooltip(EventTraceTooltip)
 end)
 
 Module:RegisterTooltips("Blizzard_Collections", function()

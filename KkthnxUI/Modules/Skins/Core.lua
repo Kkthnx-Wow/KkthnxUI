@@ -46,7 +46,7 @@ function Module:OnEnable()
 
 	-- Add Skins
 	self:ReskinBartender4()
-	-- self:ReskinDeadlyBossMods()
+	self:ReskinDeadlyBossMods()
 	self:ReskinDominos()
 	self:ReskinRareScanner()
 end

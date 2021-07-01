@@ -233,20 +233,47 @@ end
 
 function Module:ReskinRegions()
 	-- Garrison
-	hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function()
-		local button = _G.GarrisonLandingPageMinimapButton
-		if button then
-			button:ClearAllPoints()
-			button:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -6, -6)
-			button:SetScale(0.7)
+	-- hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function()
+	-- 	local button = _G.GarrisonLandingPageMinimapButton
+	-- 	if button then
+	-- 		-- button:ClearAllPoints()
+	-- 		-- button:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -6, -6)
+	-- 		-- button:SetScale(0.7)
 
-			local box = _G.GarrisonLandingPageTutorialBox
-			if box then
-				box:SetScale(1 / 0.8)
-				box:SetClampedToScreen(true)
-			end
-		end
-	end)
+	-- 		local queueIcon = Minimap:CreateTexture(nil, "ARTWORK")
+	-- 		queueIcon:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -6, -6)
+	-- 		queueIcon:SetSize(50, 50)
+	-- 		queueIcon:SetTexture("Interface\\Minimap\\Raid_Icon")
+
+	-- 		button:SetAllPoints(queueIcon)
+	-- 		button:SetTexCoord(unpack(K.TexCoords))
+
+	-- 		local box = _G.GarrisonLandingPageTutorialBox
+	-- 		if box then
+	-- 			box:SetScale(1 / 0.9)
+	-- 			box:SetClampedToScreen(true)
+	-- 		end
+	-- 	end
+	-- end)
+
+	-- GarrisonLandingPageMinimapButton:SetTexCoord(unpack(K.TexCoords))
+	-- GarrisonLandingPageMinimapButton:SetSize(50, 50)
+    hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function(self)
+		self:ClearAllPoints()
+		self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, 0)
+		--self:SetScale(0.7)
+        self:SetSize(30, 30)
+
+		self:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\LFG.blp")
+        self:SetPushedTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\LFG.blp")
+        self:SetHighlightTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\LFG.blp")
+        self.LoopingGlow:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\LFG.blp")
+
+		self:GetNormalTexture():SetVertexColor(unpack(C["DataText"].IconColor))
+		self:GetPushedTexture():SetVertexColor(0.2, 0.2, 0.2)
+		self:GetHighlightTexture():SetVertexColor(0.6, 0.6, 0.6)
+    end)
+    GarrisonLandingPageMinimapButton:SetScript("OnEnter", K.LandingButton_OnEnter)
 
 	-- QueueStatus Button
 	if QueueStatusMinimapButton then

@@ -15,7 +15,7 @@ GNU General Public License for more details.
 This file is part of Unfit.
 --]]
 
-local Lib = LibStub:NewLibrary('Unfit-1.0', 9)
+local Lib = LibStub:NewLibrary('Unfit-1.0-KkthnxUI', 9)
 if not Lib then return end
 
 

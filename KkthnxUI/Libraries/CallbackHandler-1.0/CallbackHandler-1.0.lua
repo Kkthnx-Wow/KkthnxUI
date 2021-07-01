@@ -1,5 +1,5 @@
 --[[ $Id$ ]]
-local MAJOR, MINOR = "CallbackHandler-1.0", 7
+local MAJOR, MINOR = "CallbackHandler-1.0-KkthnxUI", 7
 local CallbackHandler = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not CallbackHandler then return end -- No upgrade needed
