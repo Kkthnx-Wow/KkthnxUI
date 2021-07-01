@@ -151,7 +151,7 @@ C["Auras"] = {
 
 -- Chat
 C["Chat"] = {
-	["AllowFriends"] = true,
+	["BlockSpammer"] = true,
 	["Background"] = true,
 	["BlockAddonAlert"] = false,
 	["BlockStranger"] = false,

@@ -346,7 +346,7 @@ local Chat = function(self)
 
 	Window:CreateSection("Chat Filter")
 	Window:CreateSwitch("Chat", "EnableFilter", enableTextColor..L["Enable Chat Filter"])
-	Window:CreateSwitch("Chat", "AllowFriends", L["Allow Spam From Friends"])
+	Window:CreateSwitch("Chat", "BlockSpammer", "Block Repeated Spammer Messages")
 	Window:CreateSwitch("Chat", "BlockAddonAlert", L["Block 'Some' AddOn Alerts"])
 	Window:CreateSwitch("Chat", "BlockStranger", L["Block Whispers From Strangers"])
 	Window:CreateSlider("Chat", "FilterMatches", L["Filter Matches Number"], 1, 3, 1)

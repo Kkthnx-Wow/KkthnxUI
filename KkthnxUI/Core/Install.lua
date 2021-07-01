@@ -54,29 +54,36 @@ end
 
 -- Tuitorial
 function Module:ForceDefaultCVars()
-	SetCVar("autoLootDefault", 1)
+	SetCVar("ActionButtonUseKeyDown", 1)
 	SetCVar("alwaysCompareItems", 1)
+	SetCVar("autoLootDefault", 1)
+	SetCVar("autoQuestWatch", 1)
 	SetCVar("autoSelfCast", 1)
+	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
+	SetCVar("floatingCombatTextCombatDamage", 1)
+	SetCVar("floatingCombatTextCombatDamageDirectionalOffset", 10)
+	SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
+	SetCVar("floatingCombatTextCombatHealing", 1)
+	SetCVar("floatingCombatTextFloatMode", 1)
+	SetCVar("lockActionBars", 1)
 	SetCVar("lootUnderMouse", 1)
+	SetCVar("overrideArchive", 0)
 	SetCVar("screenshotQuality", 10)
 	SetCVar("showTutorials", 0)
-	SetCVar("ActionButtonUseKeyDown", 1)
-	SetCVar("lockActionBars", 1)
-	SetCVar("autoQuestWatch", 1)
-	SetCVar("overrideArchive", 0)
-	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
+
 	SetActionBarToggles(1, 1, 1, 1)
 
 	if not InCombatLockdown() then
+		SetCVar("alwaysShowActionBars", 1)
 		SetCVar("nameplateMotion", 1)
 		SetCVar("nameplateShowAll", 1)
 		SetCVar("nameplateShowEnemies", 1)
-		SetCVar("alwaysShowActionBars", 1)
 	end
 
 	if K.isDeveloper then
+		SetCVar("SpellQueueWindow", 25)
+		SetCVar("WorldTextScale", 1)
 		SetCVar("ffxGlow", 0)
-		SetCVar("SpellQueueWindow", 17)
 	end
 end
 
@@ -125,21 +132,21 @@ function Module:ForceChatSettings()
 
 	-- Whispers
 	FCF_OpenNewWindow(L["Whisper"])
-	FCF_SetLocked(ChatFrame3, 1)
-	FCF_DockFrame(ChatFrame3)
-	ChatFrame3:Show()
-
-	-- Trade
-	FCF_OpenNewWindow(L["Trade"])
 	FCF_SetLocked(ChatFrame4, 1)
 	FCF_DockFrame(ChatFrame4)
 	ChatFrame4:Show()
 
-	-- Loot
-	FCF_OpenNewWindow(L["Loot"])
+	-- Trade
+	FCF_OpenNewWindow(L["Trade"])
 	FCF_SetLocked(ChatFrame5, 1)
 	FCF_DockFrame(ChatFrame5)
 	ChatFrame5:Show()
+
+	-- Loot
+	FCF_OpenNewWindow(L["Loot"])
+	FCF_SetLocked(ChatFrame6, 1)
+	FCF_DockFrame(ChatFrame6)
+	ChatFrame6:Show()
 
 	for _, name in ipairs(_G.CHAT_FRAMES) do
 		local frame = _G[name]
@@ -159,21 +166,21 @@ function Module:ForceChatSettings()
 
 	-- ChatFrame3
 	chatGroup = {"WHISPER", "BN_WHISPER", "BN_CONVERSATION"}
-	ChatFrame_RemoveAllMessageGroups(ChatFrame3)
+	ChatFrame_RemoveAllMessageGroups(ChatFrame4)
 	for _, v in ipairs(chatGroup) do
-		ChatFrame_AddMessageGroup(_G.ChatFrame3, v)
+		ChatFrame_AddMessageGroup(_G.ChatFrame4, v)
 	end
 
 	-- ChatFrame4
-	ChatFrame_RemoveAllMessageGroups(ChatFrame4)
-	ChatFrame_AddChannel(ChatFrame4, TRADE)
-	ChatFrame_AddChannel(ChatFrame4, GENERAL)
-	ChatFrame_AddChannel(ChatFrame4, "LookingForGroup")
+	ChatFrame_RemoveAllMessageGroups(ChatFrame5)
+	ChatFrame_AddChannel(ChatFrame5, TRADE)
+	ChatFrame_AddChannel(ChatFrame5, GENERAL)
+	ChatFrame_AddChannel(ChatFrame5, "LookingForGroup")
 
 	chatGroup = {"COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "LOOT", "MONEY", "SKILL"}
-	ChatFrame_RemoveAllMessageGroups(ChatFrame5)
+	ChatFrame_RemoveAllMessageGroups(ChatFrame6)
 	for _, v in ipairs(chatGroup) do
-		ChatFrame_AddMessageGroup(_G.ChatFrame5, v)
+		ChatFrame_AddMessageGroup(_G.ChatFrame6, v)
 	end
 
 	-- set the chat groups names in class color to enabled for all chat groups which players names appear

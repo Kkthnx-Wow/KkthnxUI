@@ -253,12 +253,23 @@ function Module:SkinChat()
 	self.styled = true
 end
 
+function Module:ToggleChatFrameTextures(frame)
+	if C["Chat"].Background then
+		frame:DisableDrawLayer("BORDER")
+		frame:DisableDrawLayer("BACKGROUND")
+	else
+		frame:EnableDrawLayer("BORDER")
+		frame:EnableDrawLayer("BACKGROUND")
+	end
+end
+
 function Module:ToggleChatBackground()
 	for _, chatFrameName in ipairs(CHAT_FRAMES) do
 		local frame = _G[chatFrameName]
 		if frame.__background then
 			frame.__background:SetShown(C["Chat"].Background)
 		end
+		Module:ToggleChatFrameTextures(frame)
 	end
 end
 
@@ -435,6 +446,11 @@ local whisperEvents = {
 }
 function Module:PlayWhisperSound(event)
 	if whisperEvents[event] then
+		if Module.MuteThisTime then
+			Module.MuteThisTime = nil
+			return
+		end
+
 		local currentTime = GetTime()
 		if not self.soundTimer or currentTime > self.soundTimer then
 			PlaySound(messageSoundID, "master")
@@ -468,7 +484,7 @@ function Module:OnEnable()
 
 	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
 	hooksecurefunc("FloatingChatFrame_OnEvent", Module.UpdateTabEventColors)
-	hooksecurefunc("ChatFrame_ConfigEventHandler", Module.PlayWhisperSound)
+	hooksecurefunc("ChatFrame_MessageEventHandler", Module.PlayWhisperSound)
 
 	-- Font size
 	for i = 1, 15 do
@@ -479,6 +495,7 @@ function Module:OnEnable()
 	if CHAT_OPTIONS then -- only flash whisper
 		CHAT_OPTIONS.HIDE_FRAME_ALERTS = true
 	end
+	SetCVar("chatStyle", "classic")
 	K.HideInterfaceOption(InterfaceOptionsSocialPanelChatStyle)
 	CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
 

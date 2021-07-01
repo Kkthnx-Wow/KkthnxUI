@@ -16,10 +16,6 @@ table_insert(C.defaultThemes, function()
 	BNToastFrame.CloseButton:SetSize(32, 32)
 	BNToastFrame.CloseButton:SetPoint("TOPRIGHT", 4, 4)
 
-	-- if C["DataTex"].Friends then
-	-- 	return
-	-- end
-
 	local friendTex = "Interface\\HELPFRAME\\ReportLagIcon-Chat"
 	local queueTex = "Interface\\HELPFRAME\\HelpIcon-ItemRestoration"
 	local homeTex = "Interface\\Buttons\\UI-HomeButton"
@@ -27,9 +23,11 @@ table_insert(C.defaultThemes, function()
 	QuickJoinToastButton.FriendsButton:SetTexture(friendTex)
 	QuickJoinToastButton.QueueButton:SetTexture(queueTex)
 	QuickJoinToastButton:SetHighlightTexture("")
+
 	hooksecurefunc(QuickJoinToastButton, "ToastToFriendFinished", function(self)
 		self.FriendsButton:SetShown(not self.displayedToast)
 	end)
+
 	hooksecurefunc(QuickJoinToastButton, "UpdateQueueIcon", function(self)
 		if not self.displayedToast then
 			return
@@ -38,32 +36,31 @@ table_insert(C.defaultThemes, function()
 		self.FlashingLayer:SetTexture(queueTex)
 		self.FriendsButton:SetShown(false)
 	end)
+
 	QuickJoinToastButton:HookScript("OnMouseDown", function(self)
 		self.FriendsButton:SetTexture(friendTex)
 	end)
+
 	QuickJoinToastButton:HookScript("OnMouseUp", function(self)
 		self.FriendsButton:SetTexture(friendTex)
 	end)
 
 	QuickJoinToastButton.Toast.Background:SetTexture("")
 
-	local bg = CreateFrame("Frame", nil, QuickJoinToastButton.Toast)
-	bg:SetFrameLevel(QuickJoinToastButton.Toast:GetFrameLevel())
-	bg:CreateBorder()
-	bg:SetPoint("TOPLEFT", 10, -6)
-	bg:SetPoint("BOTTOMRIGHT", 0, 6)
-	bg:Hide()
+	local QuickJoinToastButton_Toast_Border = CreateFrame("Frame", nil, QuickJoinToastButton.Toast)
+	QuickJoinToastButton_Toast_Border:SetFrameLevel(QuickJoinToastButton.Toast:GetFrameLevel())
+	QuickJoinToastButton_Toast_Border:CreateBorder()
+	QuickJoinToastButton_Toast_Border:SetPoint("TOPLEFT", 10, -6)
+	QuickJoinToastButton_Toast_Border:SetPoint("BOTTOMRIGHT", 0, 6)
+	QuickJoinToastButton_Toast_Border:Hide()
 
 	hooksecurefunc(QuickJoinToastButton, "ShowToast", function()
-		bg:Show()
+		QuickJoinToastButton_Toast_Border:Show()
 	end)
 
 	hooksecurefunc(QuickJoinToastButton, "HideToast", function()
-		bg:Hide()
+		QuickJoinToastButton_Toast_Border:Hide()
 	end)
-
-	-- QuickJoinToastButton:CreateBorder()
-	-- QuickJoinToastButton:StyleButton()
 
 	ChatFrameChannelButton:SkinButton()
 	ChatFrameChannelButton:SetSize(16, 16)
