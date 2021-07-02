@@ -82,3 +82,20 @@ table_insert(C.defaultThemes, function()
 	VoiceChatChannelActivatedNotification.CloseButton:SetSize(32, 32)
 	VoiceChatChannelActivatedNotification.CloseButton:SetPoint("TOPRIGHT", 4, 4)
 end)
+
+-- local function SkinBNToastFrame()
+--     local BNToastFrame = _G.BNToastFrame
+
+--     hooksecurefunc(BNToastFrame, "SetPoint", function(self)
+--         self:ClearAllPoints()
+--         self:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+
+--         -- remove SetPoint after "OnShow" function
+--         self.ClearAllPoints = K.Noop
+--         self.SetPoint = K.Noop
+--     end)
+
+--     K.Mover(BNToastFrame, "BNetFrame", "BNetFrame", {"CENTER", UIParent, "CENTER", 0, 0}, BNToastFrame:GetWidth(), BNToastFrame:GetHeight())
+-- end
+
+-- SkinBNToastFrame()

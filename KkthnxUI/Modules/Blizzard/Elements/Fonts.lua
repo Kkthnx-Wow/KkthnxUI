@@ -124,6 +124,7 @@ local function ForceUpdateBlizzardFonts()
 	SetFont(_G.SubZoneTextString, NORMAL, 25, "OUTLINE") -- 26
 	SetFont(_G.SystemFont_Huge1, NORMAL, 20) -- Garrison Mission XP
 	SetFont(_G.SystemFont_Huge1_Outline, NORMAL, 18, "OUTLINE") -- 20 Garrison Mission Chance
+	SetFont(_G.SystemFont_Huge2, NORMAL, 22)
 	SetFont(_G.SystemFont_Large, NORMAL, 15)
 	SetFont(_G.SystemFont_Med1, NORMAL, size) -- 12
 	SetFont(_G.SystemFont_Med3, NORMAL, medium) -- 14

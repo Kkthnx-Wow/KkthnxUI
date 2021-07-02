@@ -29,7 +29,7 @@ local function startSelling()
 			if link then
 				local price = select(11, GetItemInfo(link))
 				local _, count, _, quality, _, _, _, _, _, itemID = GetContainerItemInfo(bag, slot)
-				if (quality == 0 or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID]) and price and price > 0 and not cache["b"..bag.."s"..slot] then
+				if (quality == 0 or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID]) and (not Module:IsPetTrashCurrency(itemID)) and price > 0 and not cache["b"..bag.."s"..slot] then
 					sellCount = sellCount + price * count
 					cache["b"..bag.."s"..slot] = true
 					_G.UseContainerItem(bag, slot)

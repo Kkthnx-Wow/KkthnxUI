@@ -12,6 +12,8 @@ local unpack = _G.unpack
 
 local AFK = _G.AFK
 local BOSS = _G.BOSS
+local C_ChallengeMode_GetDungeonScoreRarityColor = _G.C_ChallengeMode.GetDungeonScoreRarityColor
+local C_PlayerInfo_GetPlayerMythicPlusRatingSummary = _G.C_PlayerInfo.GetPlayerMythicPlusRatingSummary
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
 local DAMAGE = _G.DAMAGE
@@ -26,6 +28,7 @@ local GetItemInfo = _G.GetItemInfo
 local GetMouseFocus = _G.GetMouseFocus
 local GetRaidTargetIndex = _G.GetRaidTargetIndex
 local HEALER = _G.HEALER
+local HIGHLIGHT_FONT_COLOR = _G.HIGHLIGHT_FONT_COLOR
 local ICON_LIST = _G.ICON_LIST
 local INTERACTIVE_SERVER_LABEL = _G.INTERACTIVE_SERVER_LABEL
 local InCombatLockdown = _G.InCombatLockdown
@@ -162,6 +165,19 @@ function Module:OnTooltipCleared()
 
 	if self.factionFrame and self.factionFrame:GetAlpha() ~= 0 then
 		self.factionFrame:SetAlpha(0)
+	end
+end
+
+function Module:ShowUnitMythicPlusScore(unit)
+	if not C["Tooltip"].MDScore then
+		return
+	end
+
+	local summary = C_PlayerInfo_GetPlayerMythicPlusRatingSummary(unit)
+	local score = summary and summary.currentSeasonScore
+	if score and score > 0 then
+		local color = C_ChallengeMode_GetDungeonScoreRarityColor(score) or HIGHLIGHT_FONT_COLOR
+		GameTooltip:AddLine(string_format(DUNGEON_SCORE_LEADER, color:WrapTextInColorCode(score)))
 	end
 end
 
@@ -321,6 +337,7 @@ function Module:OnTooltipSetUnit()
 		end
 
 		Module.InspectUnitSpecAndLevel(self, unit)
+		Module.ShowUnitMythicPlusScore(self, unit)
 	else
 		self.StatusBar:SetStatusBarColor(0, 0.9, 0)
 	end

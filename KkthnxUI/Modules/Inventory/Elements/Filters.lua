@@ -33,6 +33,18 @@ local isPetToy = {
 	[174925] = true,
 }
 
+local petTrashCurrenies = {
+	[3300] = true,
+	[3670] = true,
+	[6150] = true,
+	[11406] = true,
+	[11944] = true,
+	[25402] = true,
+	[36812] = true,
+	[62072] = true,
+	[67410] = true,
+}
+
 local function isCustomFilter(item)
 	if not C["Inventory"].ItemFilter then
 		return
@@ -59,7 +71,7 @@ local function isItemJunk(item)
 		return
 	end
 
-	return (item.rarity == LE_ITEM_QUALITY_POOR or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.sellPrice and item.sellPrice > 0
+	return (item.rarity == LE_ITEM_QUALITY_POOR or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.sellPrice and item.sellPrice > 0 and not Module:IsPetTrashCurrency(item.id)
 end
 
 local function isItemEquipSet(item)
@@ -134,6 +146,14 @@ local function isItemLegendary(item)
 	return item.rarity == LE_ITEM_QUALITY_LEGENDARY
 end
 
+local function isMountOrPet(item)
+	return (not isPetToy[item.id]) and item.classID == LE_ITEM_CLASS_MISCELLANEOUS and (item.subClassID == LE_ITEM_MISCELLANEOUS_MOUNT or item.subClassID == LE_ITEM_MISCELLANEOUS_COMPANION_PET)
+end
+
+function Module:IsPetTrashCurrency(itemID)
+	return C["Inventory"].PetTrash and petTrashCurrenies[itemID]
+end
+
 local function isItemCollection(item)
 	if not C["Inventory"].ItemFilter then
 		return
@@ -143,7 +163,7 @@ local function isItemCollection(item)
 		return
 	end
 
-	return item.id and C_ToyBox_GetToyInfo(item.id) or (not isPetToy[item.id]) and item.classID == LE_ITEM_CLASS_MISCELLANEOUS and (item.subClassID == LE_ITEM_MISCELLANEOUS_MOUNT or item.subClassID == LE_ITEM_MISCELLANEOUS_COMPANION_PET)
+	return item.id and C_ToyBox_GetToyInfo(item.id) or isMountOrPet(item) or Module:IsPetTrashCurrency(item.id)
 end
 
 local function isItemFavourite(item)
