@@ -4,6 +4,7 @@ local Module = K:GetModule("AurasTable")
 local list = {
 	["Player Aura"] = {		-- 玩家光环组
 		{AuraID = 1784, UnitID = "player"},		-- 潜行
+		{AuraID = 115191, UnitID = "player"},	-- 潜行
 		{AuraID = 2983, UnitID = "player"},		-- 疾跑
 		{AuraID = 36554, UnitID = "player"},	-- 暗影步
 		{AuraID = 197603, UnitID = "player"},	-- 黑暗之拥

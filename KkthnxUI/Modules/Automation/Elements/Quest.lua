@@ -156,7 +156,7 @@ end
 
 QuickQuest:Register("QUEST_GREETING", function()
 	local npcID = GetNPCID()
-	if C.IgnoreQuestNPC[npcID] then
+	if C.AutoQuest.IgnoreQuestNPC[npcID] then
 		return
 	end
 
@@ -184,7 +184,7 @@ end)
 
 QuickQuest:Register("GOSSIP_SHOW", function()
 	local npcID = GetNPCID()
-	if C.IgnoreQuestNPC[npcID] then
+	if C.AutoQuest.IgnoreQuestNPC[npcID] then
 		return
 	end
 
@@ -209,7 +209,7 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 		end
 	end
 
-	if C.RogueClassHallInsignia[npcID] then
+	if C.AutoQuest.RogueClassHallInsignia[npcID] then
 		return C_GossipInfo_SelectOption(1)
 	end
 
@@ -221,14 +221,14 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 			end
 
 			local _, instance, _, _, _, _, _, mapID = GetInstanceInfo()
-			if instance ~= "raid" and not C.IgnoreGossipNPC[npcID] and not (instance == "scenario" and mapID == 1626) then
+			if instance ~= "raid" and not C.AutoQuest.IgnoreGossipNPC[npcID] and not (instance == "scenario" and mapID == 1626) then
 				local gossipInfoTable = C_GossipInfo_GetOptions()
 				if gossipInfoTable[1].type == "gossip" then
 					C_GossipInfo_SelectOption(1)
 					return
 				end
 			end
-		elseif C.FollowerAssignees[npcID] and numOptions > 1 then
+		elseif C.AutoQuest.FollowerAssignees[npcID] and numOptions > 1 then
 			return C_GossipInfo_SelectOption(1)
 		end
 	end
@@ -236,7 +236,7 @@ end)
 
 QuickQuest:Register("GOSSIP_CONFIRM", function(index)
 	local npcID = GetNPCID()
-	if npcID and C.DarkmoonNPC[npcID] then
+	if npcID and C.AutoQuest.DarkmoonNPC[npcID] then
 		C_GossipInfo_SelectOption(index, "", true)
 		StaticPopup_Hide("GOSSIP_CONFIRM")
 	end
@@ -274,7 +274,7 @@ QuickQuest:Register("QUEST_PROGRESS", function()
 		end
 
 		local npcID = GetNPCID()
-		if C.IgnoreProgressNPC[npcID] then
+		if C.AutoQuest.IgnoreProgressNPC[npcID] then
 			return
 		end
 
@@ -284,7 +284,7 @@ QuickQuest:Register("QUEST_PROGRESS", function()
 				local link = GetQuestItemLink("required", index)
 				if link then
 					local id = GetItemInfoFromHyperlink(link)
-					for _, itemID in next, C.ItemBlacklist do
+					for _, itemID in next, C.AutoQuest.ItemBlacklist do
 						if itemID == id then
 							CloseQuest()
 							return
@@ -320,7 +320,7 @@ QuickQuest:Register("QUEST_COMPLETE", function()
 			if link then
 				local value = select(11, GetItemInfo(link))
 				local itemID = GetItemInfoFromHyperlink(link)
-				value = C.CashRewards[itemID] or value
+				value = C.AutoQuest.CashRewards[itemID] or value
 
 				if value > bestValue then
 					bestValue, bestIndex = value, index

@@ -95,13 +95,16 @@ function ExtraQuestButton:BAG_UPDATE_COOLDOWN()
 	end
 end
 
-function ExtraQuestButton:BAG_UPDATE_DELAYED()
-	self:Update()
-
+function ExtraQuestButton:UpdateCount()
 	if self:IsShown() then
 		local count = GetItemCount(self.itemLink)
 		self.Count:SetText(count and count > 1 and count or "")
 	end
+end
+
+function ExtraQuestButton:BAG_UPDATE_DELAYED()
+	self:Update()
+	self:UpdateCount()
 end
 
 function ExtraQuestButton:UpdateAttributes()
@@ -286,7 +289,7 @@ function ExtraQuestButton:SetItem(itemLink)
 		self.itemID = itemID
 		self.itemLink = itemLink
 
-		if C.EQB_Blacklist[itemID] then
+		if C.ExtraQuestButton_Blacklist[itemID] then
 			return
 		end
 	end
@@ -307,6 +310,7 @@ function ExtraQuestButton:SetItem(itemLink)
 		K:GetModule("ActionBar").UpdateHotKey(self)
 
 		self:UpdateAttributes()
+		self:UpdateCount()
 		self.updateRange = hasRange
 	end
 end
@@ -330,7 +334,7 @@ local function GetQuestDistanceWithItem(questID)
 
 	local itemLink, _, _, showWhenComplete = GetQuestLogSpecialItemInfo(questLogIndex)
 	if not itemLink then
-		local fallbackItemID = C.EQB_QuestItems[questID]
+		local fallbackItemID = C.ExtraQuestButton_QuestItems[questID]
 		if fallbackItemID then
 			itemLink = string_format("|Hitem:%d|h", fallbackItemID)
 		end
@@ -354,7 +358,7 @@ local function GetQuestDistanceWithItem(questID)
 		return distanceYd, itemLink
 	end
 
-	local questMapID = C.EQB_InaccurateQuestAreas[questID]
+	local questMapID = C.ExtraQuestButton_InaccurateQuestAreas[questID]
 	if questMapID then
 		local currentMapID = C_Map_GetBestMapForUnit("player")
 		if type(questMapID) == "boolean" then

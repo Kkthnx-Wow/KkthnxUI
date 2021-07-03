@@ -268,6 +268,7 @@ function Module:StyleActionButton(button, cfg)
 	local count = _G[buttonName.."Count"]
 	local name = _G[buttonName.."Name"]
 	local border = _G[buttonName.."Border"]
+	local autoCastable = _G[buttonName.."AutoCastable"]
 	local NewActionTexture = button.NewActionTexture
 	local cooldown = _G[buttonName.."Cooldown"]
 	local normalTexture = button:GetNormalTexture()
@@ -337,6 +338,11 @@ function Module:StyleActionButton(button, cfg)
 		else
 			name:Hide()
 		end
+	end
+
+	if autoCastable then
+		autoCastable:SetTexCoord(.217, .765, .217, .765)
+		autoCastable:SetAllPoints()
 	end
 
 	Module:RegisterButtonRange(button)

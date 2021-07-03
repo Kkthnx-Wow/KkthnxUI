@@ -43,7 +43,7 @@ end
 
 local infoType = {
 	["SPELL_AURA_BROKEN_SPELL"] = L["BrokenSpell"],
-	["SPELL_DISPEL"] = L["Dispel"],
+	-- ["SPELL_DISPEL"] = L["Dispel"],
 	["SPELL_INTERRUPT"] = L["Interrupt"],
 	["SPELL_STOLEN"] = L["Steal"],
 }

@@ -24,7 +24,6 @@ local C_Calendar_OpenCalendar = _G.C_Calendar.OpenCalendar
 local C_Calendar_SetAbsMonth = _G.C_Calendar.SetAbsMonth
 local C_CurrencyInfo_GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo
 local C_DateAndTime_GetCurrentCalendarTime = _G.C_DateAndTime.GetCurrentCalendarTime
-local C_IslandsQueue_GetIslandsWeeklyQuestID = _G.C_IslandsQueue.GetIslandsWeeklyQuestID
 local C_Map_GetMapInfo = _G.C_Map.GetMapInfo
 local C_QuestLog_IsQuestFlaggedCompleted = _G.C_QuestLog.IsQuestFlaggedCompleted
 local C_TaskQuest_GetQuestInfoByQuestID = _G.C_TaskQuest.GetQuestInfoByQuestID
@@ -40,16 +39,10 @@ local GetCVarBool = _G.GetCVarBool
 local GetGameTime = _G.GetGameTime
 local GetNumSavedInstances = _G.GetNumSavedInstances
 local GetNumSavedWorldBosses = _G.GetNumSavedWorldBosses
-local GetQuestObjectiveInfo = _G.GetQuestObjectiveInfo
 local GetSavedInstanceInfo = _G.GetSavedInstanceInfo
 local GetSavedWorldBossInfo = _G.GetSavedWorldBossInfo
-local ISLANDS_HEADER = _G.ISLANDS_HEADER
 local InCombatLockdown = _G.InCombatLockdown
-local IsPlayerAtEffectiveMaxLevel = _G.IsPlayerAtEffectiveMaxLevel
-local LFG_LIST_LOADING = _G.LFG_LIST_LOADING
 local PLAYER_DIFFICULTY_TIMEWALKER = _G.PLAYER_DIFFICULTY_TIMEWALKER
-local PVPGetConquestLevelInfo = _G.PVPGetConquestLevelInfo
-local PVP_CONQUEST = _G.PVP_CONQUEST
 local QUESTS_LABEL = _G.QUESTS_LABEL
 local QUEST_COMPLETE = _G.QUEST_COMPLETE
 local QUEUE_TIME_UNAVAILABLE = _G.QUEUE_TIME_UNAVAILABLE
@@ -58,23 +51,11 @@ local SecondsToTime = _G.SecondsToTime
 local TIMEMANAGER_TICKER_12HOUR = _G.TIMEMANAGER_TICKER_12HOUR
 local TIMEMANAGER_TICKER_24HOUR = _G.TIMEMANAGER_TICKER_24HOUR
 
+local timeTimer = 0
+local timeFrame
+local timeEntered = false
+
 -- Data
-local timeBonusList = {
-	52834, 52838, -- Gold
-	52835, 52839, -- Honor
-	52837, 52840, -- Resources
-}
-
-local timeQuestList = {
-	{name = "Blingtron", id = 34774},
-	{name = "Mean One", id = 6983},
-	{name = "Timewarped", id = 40168, texture = 1129674}, -- TBC
-	{name = "Timewarped", id = 40173, texture = 1129686}, -- WotLK
-	{name = "Timewarped", id = 40786, texture = 1304688}, -- Cata
-	{name = "Timewarped", id = 45563, texture = 1530590}, -- MoP
-	{name = "Timewarped", id = 55499, texture = 1129683}, -- WoD
-}
-
 local region = GetCVar("portal")
 local legionZoneTime = {
 	["EU"] = 1565168400, -- CN-16
@@ -103,6 +84,16 @@ local mapAreaPoiIDs = {
 	[896] = 5964,
 	[942] = 5966,
 	[895] = 5896,
+}
+
+local questlist = {
+	{name = "Blingtron Daily Gift", id = 34774},
+	{name = "Feast of Winter Veil", id = 6983},
+	{name = "500 Timewarped Badges", id = 40168, texture = 1129674}, -- TBC
+	{name = "500 Timewarped Badges", id = 40173, texture = 1129686}, -- WotLK
+	{name = "500 Timewarped Badges", id = 40786, texture = 1304688}, -- Cata
+	{name = "500 Timewarped Badges", id = 45563, texture = 1530590}, -- MoP
+	{name = "500 Timewarped Badges", id = 55499, texture = 1129683}, -- WoD
 }
 
 local lesserVisions = {58151, 58155, 58156, 58167, 58168}
@@ -138,8 +129,8 @@ function Module:updateTimerFormat(color, hour, minute)
 end
 
 function Module:TimeOnUpdate(elapsed)
-	Module.timer = (Module.timer or 3) + elapsed
-	if Module.timer > 5 then
+	timeTimer = (timeTimer or 3) + elapsed
+	if timeTimer > 5 then
 		local color = C_Calendar_GetNumPendingInvites() > 0 and "|cffFF0000" or ""
 
 		local hour, minute
@@ -148,13 +139,12 @@ function Module:TimeOnUpdate(elapsed)
 		else
 			hour, minute = GetGameTime()
 		end
-		Module.TimeFont:SetText(Module:updateTimerFormat(color, hour, minute))
+		timeFrame.Font:SetText(Module:updateTimerFormat(color, hour, minute))
 
-		Module.timer = 0
+		timeTimer = 0
 	end
 end
 
-local bonusName = C_CurrencyInfo_GetCurrencyInfo(1580).name
 local isTimeWalker, walkerTexture
 local function checkTimeWalker(event)
 	local date = C_DateAndTime_GetCurrentCalendarTime()
@@ -180,21 +170,16 @@ end
 K:RegisterEvent("PLAYER_ENTERING_WORLD", checkTimeWalker)
 
 local function checkTexture(texture)
-	if not walkerTexture then
-		return
-	end
-
+	if not walkerTexture then return end
 	if walkerTexture == texture or walkerTexture == texture - 1 then
 		return true
 	end
 end
 
--- Check Invasion Status
 local function getInvasionInfo(mapID)
 	local areaPoiID = mapAreaPoiIDs[mapID]
 	local seconds = C_AreaPoiInfo_GetAreaPOISecondsLeft(areaPoiID)
 	local mapInfo = C_Map_GetMapInfo(mapID)
-
 	return seconds, mapInfo.name
 end
 
@@ -211,7 +196,6 @@ local function GetNextTime(baseTime, index)
 	local currentTime = time()
 	local duration = invIndex[index].duration
 	local elapsed = mod(currentTime - baseTime, duration)
-
 	return duration - elapsed + currentTime
 end
 
@@ -223,11 +207,10 @@ local function GetNextLocation(nextTime, index)
 	end
 
 	local elapsed = nextTime - inv.baseTime
-	local round = mod(math_floor(elapsed / inv.duration) + 1, count)
+	local round = mod(floor(elapsed / inv.duration) + 1, count)
 	if round == 0 then
 		round = count
 	end
-
 	return C_Map_GetMapInfo(inv.maps[inv.timeTable[round]]).name
 end
 
@@ -252,7 +235,7 @@ local TorghastWidgets, TorghastInfo = {
 }
 
 local function CleanupLevelName(text)
-	return gsub(text, "|n", "")
+	return string.gsub(text, "|n", "")
 end
 
 local title
@@ -264,12 +247,20 @@ local function addTitle(text)
 	end
 end
 
+function Module:TimeOnShiftDown()
+	if timeEntered then
+		Module:TimeOnEnter()
+	end
+end
+
 function Module:TimeOnEnter()
+	timeEntered = true
+
 	RequestRaidInfo()
 
 	local r, g, b
-	GameTooltip:SetOwner(self, "ANCHOR_NONE")
-	GameTooltip:SetPoint(K.GetAnchors(self))
+	GameTooltip:SetOwner(timeFrame, "ANCHOR_NONE")
+	GameTooltip:SetPoint(K.GetAnchors(timeFrame))
 	GameTooltip:ClearLines()
 
 	local today = C_DateAndTime_GetCurrentCalendarTime()
@@ -345,109 +336,73 @@ function Module:TimeOnEnter()
 
 	-- Quests
 	title = false
-	local count, maxCoins = 0, 2
-	for _, id in pairs(timeBonusList) do
-		if C_QuestLog_IsQuestFlaggedCompleted(id) then
-			count = count + 1
-		end
-	end
-
-	if count > 0 then
+	local currencyInfo = C_CurrencyInfo_GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_CURRENCY_ID)
+	local totalEarned = currencyInfo.totalEarned
+	if currencyInfo and totalEarned > 0 then
 		addTitle(QUESTS_LABEL)
-		if count == maxCoins then
-			r, g, b = 1, 0, 0
-		else
-			r, g, b = 0, 1, 0
-		end
-
-		GameTooltip:AddDoubleLine(bonusName, count.."/"..maxCoins, 1, 1, 1, r, g, b)
+		local maxProgress = currencyInfo.maxQuantity
+		local progress = min(totalEarned, maxProgress)
+		GameTooltip:AddDoubleLine(currencyInfo.name, progress.."/"..maxProgress, 1, 1, 1, 1, 1, 1)
 	end
 
-	do
-		local currentValue, maxValue, questID = PVPGetConquestLevelInfo()
-		local questDone = questID and questID == 0
-		if IsPlayerAtEffectiveMaxLevel() then
-			if questDone then
-				addTitle(QUESTS_LABEL)
-				GameTooltip:AddDoubleLine(PVP_CONQUEST, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
-			elseif currentValue > 0 then
-				addTitle(QUESTS_LABEL)
-				GameTooltip:AddDoubleLine(PVP_CONQUEST, currentValue.."/"..maxValue, 1, 1, 1, 0, 1, 0)
-			end
-		end
-	end
-
-	for _, v in ipairs(horrificVisions) do
-		if C_QuestLog_IsQuestFlaggedCompleted(v.id) then
-			addTitle(QUESTS_LABEL)
-			GameTooltip:AddDoubleLine(SPLASH_BATTLEFORAZEROTH_8_3_0_FEATURE1_TITLE, v.desc, 1, 1, 1, 0, 1, 0)
-			break
-		end
-	end
-
-	local iwqID = C_IslandsQueue_GetIslandsWeeklyQuestID()
-	if iwqID and K.Level == 120 then
-		addTitle(QUESTS_LABEL)
-		if C_QuestLog_IsQuestFlaggedCompleted(iwqID) then
-			GameTooltip:AddDoubleLine(ISLANDS_HEADER, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
-		else
-			local cur, max = select(4, GetQuestObjectiveInfo(iwqID, 1, false))
-			local stautsText
-			if not cur or not max then
-				stautsText = LFG_LIST_LOADING
-			else
-				stautsText = cur.."/"..max
-			end
-			GameTooltip:AddDoubleLine(ISLANDS_HEADER, stautsText, 1, 1, 1, 0, 1, 0)
-		end
-	end
-
-	for _, id in pairs(lesserVisions) do
-		if C_QuestLog_IsQuestFlaggedCompleted(id) then
-			addTitle(QUESTS_LABEL)
-			GameTooltip:AddDoubleLine("LesserVision", QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
-			break
-		end
-	end
-
-	if not nzothAssaults then
-		nzothAssaults = C_TaskQuest_GetThreatQuests() or {}
-	end
-
-	for _, v in pairs(nzothAssaults) do
-		if C_QuestLog_IsQuestFlaggedCompleted(v) then
-			addTitle(QUESTS_LABEL)
-			GameTooltip:AddDoubleLine(GetNzothThreatName(v), QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
-		end
-	end
-
-	for _, v in pairs(timeQuestList) do
+	for _, v in pairs(questlist) do
 		if v.name and C_QuestLog_IsQuestFlaggedCompleted(v.id) then
-			if v.name == "Timewarped" and isTimeWalker and checkTexture(v.texture) or v.name ~= "Timewarped" then
+			if v.name == "500 Timewarped Badges" and isTimeWalker and checkTexture(v.texture) or v.name ~= "500 Timewarped Badges" then
 				addTitle(QUESTS_LABEL)
 				GameTooltip:AddDoubleLine(v.name, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 			end
 		end
 	end
 
-	-- Invasions
-	for index, value in ipairs(invIndex) do
-		title = false
-		addTitle(value.title)
-		local timeLeft, zoneName = CheckInvasion(index)
-		local nextTime = GetNextTime(value.baseTime, index)
-		if timeLeft then
-			timeLeft = timeLeft/60
-			if timeLeft < 60 then
-				r,g,b = 1, 0, 0
-			else
-				r,g,b = 0, 1, 0
+	if IsShiftKeyDown() then
+		-- Nzoth relavants
+		for _, v in ipairs(horrificVisions) do
+			if C_QuestLog_IsQuestFlaggedCompleted(v.id) then
+				addTitle(QUESTS_LABEL)
+				GameTooltip:AddDoubleLine(SPLASH_BATTLEFORAZEROTH_8_3_0_FEATURE1_TITLE, v.desc, 1, 1, 1, 0, 1, 0)
+				break
 			end
-			GameTooltip:AddDoubleLine(L["Current Invasion"]..zoneName, string_format("%.2d:%.2d", timeLeft / 60, timeLeft % 60), 1, 1, 1, r, g, b)
 		end
 
-		local nextLocation = GetNextLocation(nextTime, index)
-		GameTooltip:AddDoubleLine(L["Next Invasion"]..nextLocation, date("%m/%d %H:%M", nextTime), 1, 1, 1, 192/255, 192/255, 192/255)
+		for _, id in pairs(lesserVisions) do
+			if C_QuestLog_IsQuestFlaggedCompleted(id) then
+				addTitle(QUESTS_LABEL)
+				GameTooltip:AddDoubleLine("Lesser Vision of N'Zoth", QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
+				break
+			end
+		end
+
+		if not nzothAssaults then
+			nzothAssaults = C_TaskQuest_GetThreatQuests() or {}
+		end
+		for _, v in pairs(nzothAssaults) do
+			if C_QuestLog_IsQuestFlaggedCompleted(v) then
+				addTitle(QUESTS_LABEL)
+				GameTooltip:AddDoubleLine(GetNzothThreatName(v), QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
+			end
+		end
+
+		-- Invasions
+		for index, value in ipairs(invIndex) do
+			title = false
+			addTitle(value.title)
+			local timeLeft, zoneName = CheckInvasion(index)
+			local nextTime = GetNextTime(value.baseTime, index)
+			if timeLeft then
+				timeLeft = timeLeft / 60
+				if timeLeft < 60 then
+					r,g,b = 1, 0, 0
+				else
+					r,g,b = 0, 1, 0
+				end
+				GameTooltip:AddDoubleLine(L["Current Invasion"]..zoneName, string_format("%.2d:%.2d", timeLeft / 60, timeLeft % 60), 1, 1, 1, r, g, b)
+			end
+			local nextLocation = GetNextLocation(nextTime, index)
+			GameTooltip:AddDoubleLine(L["Next Invasion"]..nextLocation, date("%m/%d %H:%M", nextTime), 1, 1, 1, 192/255, 192/255, 192/255)
+		end
+	else
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(K.InfoColorTint.."Hold SHIFT for info|r")
 	end
 
 	-- Help Info
@@ -456,10 +411,14 @@ function Module:TimeOnEnter()
 	GameTooltip:AddLine(K.ScrollButton..RATED_PVP_WEEKLY_VAULT)
 	GameTooltip:AddLine(K.RightButton.."Toggle Clock")
 	GameTooltip:Show()
+
+	K:RegisterEvent("MODIFIER_STATE_CHANGED", Module.TimeOnShiftDown)
 end
 
 function Module:TimeOnLeave()
-	GameTooltip:Hide()
+	timeEntered = false
+	K.HideTooltip()
+	K:UnregisterEvent("MODIFIER_STATE_CHANGED", Module.TimeOnShiftDown)
 end
 
 function Module:TimeOnMouseUp(btn)
@@ -493,16 +452,16 @@ function Module:CreateTimeDataText()
 		return
 	end
 
-	Module.TimeFrame = CreateFrame("Frame", "KKUI_TimeDataText", Minimap)
+	timeFrame = timeFrame or CreateFrame("Frame", "KKUI_TimeDataText", Minimap)
 
-	Module.TimeFont = Module.TimeFrame:CreateFontString("OVERLAY")
-	Module.TimeFont:FontTemplate(nil, 13)
-	Module.TimeFont:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 2)
+	timeFrame.Font = timeFrame.Font or timeFrame:CreateFontString("OVERLAY")
+	timeFrame.Font:FontTemplate(nil, 13)
+	timeFrame.Font:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 2)
 
-	Module.TimeFrame:SetAllPoints(Module.TimeFont)
+	timeFrame:SetAllPoints(timeFrame.Font)
 
-	Module.TimeFrame:SetScript("OnUpdate", Module.TimeOnUpdate)
-	Module.TimeFrame:SetScript("OnEnter", Module.TimeOnEnter)
-	Module.TimeFrame:SetScript("OnLeave", Module.TimeOnLeave)
-	Module.TimeFrame:SetScript("OnMouseUp", Module.TimeOnMouseUp)
+	timeFrame:SetScript("OnUpdate", Module.TimeOnUpdate)
+	timeFrame:SetScript("OnEnter", Module.TimeOnEnter)
+	timeFrame:SetScript("OnLeave", Module.TimeOnLeave)
+	timeFrame:SetScript("OnMouseUp", Module.TimeOnMouseUp)
 end

@@ -1,7 +1,7 @@
 local _, C = unpack(select(2, ...))
 
 -- Warlords of Draenor intro quest items which inspired this addon
-C.EQB_Blacklist = {
+C.ExtraQuestButton_Blacklist = {
 	[113191] = true,
 	[110799] = true,
 	[109164] = true,
@@ -9,7 +9,7 @@ C.EQB_Blacklist = {
 
 -- quests that doesn't have a defined area on the map (questID = bool/mapID/{mapID,...})
 -- these have low priority during collision
-C.EQB_InaccurateQuestAreas = {
+C.ExtraQuestButton_InaccurateQuestAreas = {
 	[11731] = {84, 87, 103}, -- alliance capitals (missing Darnassus)
 	[11921] = {84, 87, 103}, -- alliance capitals (missing Darnassus)
 	[11922] = {18, 85, 88, 110}, -- horde capitals
@@ -34,12 +34,12 @@ C.EQB_InaccurateQuestAreas = {
 	[25798] = 64, -- Thousand Needles (TODO: test if we need to associate the item with the zone instead)
 	[25799] = 64, -- Thousand Needles (TODO: test if we need to associate the item with the zone instead)
 	[34461] = 590, -- Horde Garrison
-	[60004] = 118, -- Eve mission: a heroic move
+	[60004] = 118, -- 前夕任务：英勇之举
 }
 
 -- items that should be used for a quest but aren't (questID = itemID)
 -- these have low priority during collision
-C.EQB_QuestItems = {
+C.ExtraQuestButton_QuestItems = {
 	-- (TODO: test if we need to associate any of these items with a zone directly instead)
 	[10129] = 28038, -- Hellfire Peninsula
 	[10146] = 28038, -- Hellfire Peninsula
@@ -77,7 +77,7 @@ C.EQB_QuestItems = {
 	[49402] = 154878, -- Tiragarde Sound
 	[50164] = 154878, -- Tiragarde Sound
 	[51646] = 154878, -- Tiragarde Sound
-	[12925] = 41612, -- Storm Peaks
-	[13425] = 41612, -- Storm Peaks
-	[27384] = 12888, -- Eastern Plaguelands
+	[60649] = 180170, -- Ardenweald
+	[60609] = 180008, -- Ardenweald
+	[60188] = 178464, -- Ardenweald
 }

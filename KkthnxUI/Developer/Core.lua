@@ -46,7 +46,7 @@ local function LandingButton_OnEnter(self)
         end
 
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine( format("|cffFFFFFF%s:|r %s", COVENANT_PREVIEW_SOULBINDS, soulbindData.name), nil, nil, nil, true)
+        GameTooltip:AddLine(format("|cffFFFFFF%s:|r %s", COVENANT_PREVIEW_SOULBINDS, soulbindData.name), nil, nil, nil, true)
 
         local nodes = soulbindData.tree.nodes
         local conduits = {}
@@ -71,7 +71,7 @@ local function LandingButton_OnEnter(self)
                 local conduitQuality = C_Soulbinds.GetConduitQuality(conduits[i].id, conduits[i].rank)
                 local color = ITEM_QUALITY_COLORS[conduitQuality]
 
-                GameTooltip:AddLine(CreateAtlasMarkup(Soulbinds.GetConduitEmblemAtlas(conduits[i].type)) .. " [" .. conduitItemLevel .. "]  " .. AddTexture(icon) .. " " .. K.RGBToHex(color.r, color.g, color.b) .. name .. "|r ")
+                GameTooltip:AddLine(CreateAtlasMarkup(Soulbinds.GetConduitEmblemAtlas(conduits[i].type)).." ["..conduitItemLevel.."]  "..AddTexture(icon).." "..K.RGBToHex(color.r, color.g, color.b)..name.."|r ")
             end
         end
 
@@ -79,7 +79,7 @@ local function LandingButton_OnEnter(self)
             if #conduits > 0 then GameTooltip:AddLine(" ") end
             GameTooltip:AddLine(GARRISON_TRAITS, 1, 0.93, 0.73)
             for i = 1, #traits do
-                GameTooltip:AddLine(AddTexture(traits[i].icon) .. " " .. traits[i].spellName .. "|r ")
+                GameTooltip:AddLine(AddTexture(traits[i].icon).." "..traits[i].spellName.."|r ")
             end
         end
     end

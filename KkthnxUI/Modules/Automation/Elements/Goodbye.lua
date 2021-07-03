@@ -8,18 +8,18 @@ local C_Timer_After = _G.C_Timer.After
 local SendChatMessage = _G.SendChatMessage
 
 local AutoThankList = {
-	"GG!",
-	"GLHF!",
-	"Good run!",
-	"Job well done!",
+	"GG! Thanks for the run",
+	"GLHF! Thanks everyone",
+	"Good run everyone",
 	"Thanks all!",
 	"Thanks everyone!",
 	"Thanks for the group!",
-	"That was fun. Take care everyone!",
+	"Thanks for the run!",
+	"Thanks! Take care everyone!",
 }
 
 function Module:SetupAutoGoodbye()
-	C_Timer_After(4, function()
+	C_Timer_After(5, function()
 		SendChatMessage(AutoThankList[math_random(1, #AutoThankList)], "INSTANCE_CHAT")
 	end)
 end

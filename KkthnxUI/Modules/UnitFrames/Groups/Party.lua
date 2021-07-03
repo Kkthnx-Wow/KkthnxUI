@@ -77,9 +77,9 @@ function Module:CreateParty()
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
 	if C["Party"].HealthbarColor.Value == "Class" then
-		self:Tag(self.Name, "[leadassist][lfdrole][name]")
+		self:Tag(self.Name, "[lfdrole][name]")
 	else
-		self:Tag(self.Name, "[leadassist][lfdrole][color][name]")
+		self:Tag(self.Name, "[lfdrole][color][name]")
 	end
 
 	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
@@ -279,6 +279,14 @@ function Module:CreateParty()
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdatePartyTargetGlow, true)
 		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyTargetGlow, true)
 	end
+
+	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
+	self.LeaderIndicator:SetSize(12, 12)
+
+	self.AssistantIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.AssistantIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
+	self.AssistantIndicator:SetSize(12, 12)
 
 	self.ReadyCheckIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.ReadyCheckIndicator:SetSize(20, 20)

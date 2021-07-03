@@ -207,8 +207,12 @@ function Module:CreateRaid()
 	self.ResurrectIndicator:SetPoint("CENTER", 0, -3)
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.LeaderIndicator:SetPoint("TOPLEFT", self.Health, 0, 8)
 	self.LeaderIndicator:SetSize(12, 12)
-	self.LeaderIndicator:SetPoint("TOPLEFT", -2, 7)
+
+	self.AssistantIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.AssistantIndicator:SetPoint("TOPLEFT", self.Health, 0, 8)
+	self.AssistantIndicator:SetSize(12, 12)
 
 	if C["Raid"].ShowNotHereTimer then
 		self.StatusIndicator = self:CreateFontString(nil, "OVERLAY")

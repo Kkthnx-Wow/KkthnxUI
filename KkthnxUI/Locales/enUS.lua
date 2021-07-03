@@ -3,6 +3,7 @@ local K, _, L = unpack(select(2, ...))
 -- Module Locales
 L["%s players"] = "%s players"
 L["AP"] = "AP:"
+L["Account Keystones"] = "Account Keystone"
 L["AddContactTip"] = "|nModify the contact list you need, the input format is 'UnitName-RealmName'.|nYou only need to enter name if unit is in the same realm with you.|nYou can customize text color for classify." -- need translation
 L["AddToIgnoreList"] = "%s SpellID %s is now added to the ignored AuraWatch list. You can hold CTRL+ALT and click unit aura icon to remove from list."
 L["All Buffs Ready"] = "[KkthnxUI] All Buffs Ready!"
@@ -162,6 +163,7 @@ L["Repaired Failed"] = "You don't have enough money to repair,|r "
 L["Repaired Items Guild"] = "Your items have been repaired using guild bank funds for: "
 L["Repaired Items"] = "Your items have been repaired for:|r "
 L["Replay"] = "Replay"
+L["Reset Data"] = "Reset Data"
 L["Reset Details"] = "Reset Details"
 L["Reset KkthnxUI"] = "Are you sure you want to reset all the settings on this profile?"
 L["Reset your AuraWatch List?"] = "Are you sure to wipe all your groups of custom list?"

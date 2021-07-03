@@ -364,14 +364,6 @@ function Module:CreatePlayer()
 		self:Tag(self.Level, "[fulllevel]")
 	end
 
-	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.LeaderIndicator:SetSize(14, 14)
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		self.LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, "TOPLEFT", 0, 8)
-	else
-		self.LeaderIndicator:SetPoint("TOPLEFT", self.Health, "TOPLEFT", -8, 8)
-	end
-
 	if C["Unitframe"].Stagger then
 		if K.Class == "MONK" then
 			self.Stagger = CreateFrame("StatusBar", self:GetName().."Stagger", self)
@@ -549,6 +541,23 @@ function Module:CreatePlayer()
 
 		-- K.Mover(self.Swing, "PlayerSwingBar", "PlayerSwingBar", {"BOTTOM", UIParent, "BOTTOM", 0, 180})
 	end
+
+	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.LeaderIndicator:SetSize(12, 12)
+	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+		self.LeaderIndicator:SetPoint("TOPLEFT", self.Health, 0, 8)
+	else
+		self.LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
+	end
+
+	self.AssistantIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.AssistantIndicator:SetSize(12, 12)
+	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+		self.AssistantIndicator:SetPoint("TOPLEFT", self.Health, 0, 8)
+	else
+		self.AssistantIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
+	end
+
 
 	if C["Unitframe"].PvPIndicator then
 		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")

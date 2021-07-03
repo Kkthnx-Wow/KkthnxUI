@@ -12,16 +12,40 @@ end
 C.DebuffsTracking_PvE = {
 	["type"] = "Whitelist",
 	["spells"] = {
-		-- Mythic+ Dungeons
-		-- General Affix
+		-- Mythic+ Specific
+		-- General Affixes
 		[209858] = Priority(), -- Necrotic
 		[226512] = Priority(), -- Sanguine
 		[240559] = Priority(), -- Grievous
 		[240443] = Priority(), -- Bursting
-		-- Shadowlands Affix
+		-- Shadowlands Season 1
 		[342494] = Priority(), -- Belligerent Boast (Prideful)
+		-- Shadowlands Season 2
 
 		-- Shadowlands Dungeons
+
+		-- Tazavesh, the Veiled Market
+		[350804] = Priority(), -- Collapsing Energy
+		[350885] = Priority(), -- Hyperlight Jolt
+		[351101] = Priority(), -- Energy Fragmentation
+		[346828] = Priority(), -- Sanitizing Field
+		[355641] = Priority(), -- Scintillate
+		[355451] = Priority(), -- Undertow
+		[355581] = Priority(), -- Crackle
+		[349999] = Priority(), -- Anima Detonation
+		[346961] = Priority(), -- Purging Field
+		[351956] = Priority(), -- High-Value Target
+		[346297] = Priority(), -- Unstable Explosion
+		[347728] = Priority(), -- Flock!
+		[356408] = Priority(), -- Ground Stomp
+		[347744] = Priority(), -- Quickblade
+		[347481] = Priority(), -- Shuri
+		[355915] = Priority(), -- Glyph of Restraint
+		[350134] = Priority(), -- Infinite Breath
+		[350013] = Priority(), -- Gluttonous Feast
+		[355465] = Priority(), -- Boulder Throw
+		[346116] = Priority(), -- Shearing Swings
+		[356011] = Priority(), -- Beam Splicer
 		-- Halls of Atonement
 		[335338] = Priority(), -- Ritual of Woe
 		[326891] = Priority(), -- Anguish
@@ -144,19 +168,121 @@ C.DebuffsTracking_PvE = {
 		[323877] = Priority(), -- Echo Finger Laser X-treme
 		[334535] = Priority(), -- Beak Slice
 
+		-- Sanctum of Domination
+
+		-- The Tarragrue
+		[347283] = Priority(), -- Predator's Howl
+		[347286] = Priority(), -- Unshakeable Dread
+		[346986] = Priority(), -- Crushed Armor
+		[347991] = Priority(), -- Ten of Towers
+		[347269] = Priority(), -- Chains of Eternity
+		[346985] = Priority(), -- Overpower
+		[347274] = Priority(), -- Annihilating Smash
+		-- Eye of the Jailer
+		[350606] = Priority(), -- Hopeless Lethargy
+		[355240] = Priority(), -- Scorn
+		[355245] = Priority(), -- Ire
+		[349979] = Priority(), -- Dragging Chains
+		[348074] = Priority(), -- Assailing Lance
+		[351827] = Priority(), -- Spreading Misery
+		[355143] = Priority(), -- Deathlink
+		[350763] = Priority(), -- Annihilating Glare
+		-- The Nine
+		[350287] = Priority(2), -- Song of Dissolution
+		[350542] = Priority(3), -- Fragments of Destiny
+		[350202] = Priority(3), -- Unending Strike
+		[350475] = Priority(5), -- Pierce Soul
+		[350555] = Priority(6), -- Shard of Destiny
+		[350109] = Priority(6), -- Brynja's Mournful Dirge
+		[350483] = Priority(6), -- Link Essence
+		[350039] = Priority(6), -- Arthura's Crushing Gaze
+		[350184] = Priority(6), -- Daschla's Mighty Impact
+		[350374] = Priority(6), -- Wings of Rage
+		-- Remnant of Ner'zhul
+		[350073] = Priority(2), -- Torment
+		[349890] = Priority(5), -- Suffering
+		[350469] = Priority(6), -- Malevolence
+		[354634] = Priority(6), -- Spite 1
+		[354479] = Priority(6), -- Spite 2
+		[354534] = Priority(6), -- Spite 3
+		-- Soulrender Dormazain
+		[353429] = Priority(2), -- Tormented
+		[353023] = Priority(3), -- Torment
+		[351787] = Priority(5), -- Agonizing Spike
+		[350647] = Priority(5), -- Brand of Torment
+		[350422] = Priority(6), -- Ruinblade
+		[350851] = Priority(6), -- Vessel of Torment
+		[354231] = Priority(6), -- Soul Manacles
+		[348987] = Priority(6), -- Warmonger Shackle 1
+		[350927] = Priority(6), -- Warmonger Shackle 2
+		-- Painsmith Raznal
+		[356472] = Priority(5), -- Lingering Flames
+		[355505] = Priority(6), -- Shadowsteel Chains 1
+		[355506] = Priority(6), -- Shadowsteel Chains 2
+		[348456] = Priority(6), -- Flameclasp Trap
+		[356870] = Priority(2), -- Flameclasp Eruption
+		[355568] = Priority(6), -- Cruciform Axe
+		[355786] = Priority(5), -- Blackened Armor
+		[348255] = Priority(6), -- Spiked
+		-- Guardian of the First Ones
+		[352394] = Priority(5), -- Radiant Energy
+		[350496] = Priority(6), -- Threat Neutralization
+		[347359] = Priority(6), -- Suppression Field
+		[355357] = Priority(6), -- Obliterate
+		[350732] = Priority(5), -- Sunder
+		[352833] = Priority(6), -- Disintegration
+		-- Fatescribe Roh-Kalo
+		[354365] = Priority(5), -- Grim Portent
+		[350568] = Priority(5), -- Call of Eternity
+		[353435] = Priority(6), -- Overwhelming Burden
+		[351680] = Priority(6), -- Invoke Destiny
+		[353432] = Priority(6), -- Burden of Destiny
+		[353693] = Priority(6), -- Unstable Accretion
+		[350355] = Priority(6), -- Fated Conjunction
+		[353931] = Priority(2), -- Twist Fate
+		-- Kel'Thuzad
+		[346530] = Priority(2), -- Frozen Destruction
+		[354289] = Priority(2), -- Sinister Miasma
+		[347454] = Priority(6), -- Oblivion's Echo 1
+		[347518] = Priority(6), -- Oblivion's Echo 2
+		[347292] = Priority(6), -- Oblivion's Echo 3
+		[348978] = Priority(6), -- Soul Exhaustion
+		[355389] = Priority(6), -- Relentless Haunt (Fixate)
+		[357298] = Priority(6), -- Frozen Binds
+		[355137] = Priority(5), -- Shadow Pool
+		[348638] = Priority(4), -- Return of the Damned
+		[348760] = Priority(6), -- Frost Blast
+		-- Sylvanas Windrunner
+		[349458] = Priority(2), -- Domination Chains
+		[347704] = Priority(2), -- Veil of Darkness
+		[347607] = Priority(5), -- Banshee's Mark
+		[347670] = Priority(5), -- Shadow Dagger
+		[351117] = Priority(5), -- Crushing Dread
+		[351870] = Priority(5), -- Haunting Wave
+		[351253] = Priority(5), -- Banshee Wail
+		[351451] = Priority(6), -- Curse of Lethargy
+		[351092] = Priority(6), -- Destabilize 1
+		[351091] = Priority(6), -- Destabilize 2
+		[348064] = Priority(6), -- Wailing Arrow
+
 		-- Castle Nathria
+
 		-- Shriekwing
 		[328897] = Priority(), -- Exsanguinated
 		[330713] = Priority(), -- Reverberating Pain
 		[329370] = Priority(), -- Deadly Descent
 		[336494] = Priority(), -- Echo Screech
+		[346301] = Priority(), -- Bloodlight
+		[342077] = Priority(), -- Echolocation
 		-- Huntsman Altimor
 		[335304] = Priority(), -- Sinseeker
 		[334971] = Priority(), -- Jagged Claws
-		[335111] = Priority(), -- Huntsman's Mark 1
+		[335111] = Priority(), -- Huntsman's Mark 3
 		[335112] = Priority(), -- Huntsman's Mark 2
-		[335113] = Priority(), -- Huntsman's Mark 3
-		[334945] = Priority(), -- Bloody Thrash
+		[335113] = Priority(), -- Huntsman's Mark 1
+		[334945] = Priority(), -- Vicious Lunge
+		[334852] = Priority(), -- Petrifying Howl
+		[334695] = Priority(), -- Destabilize
 		-- Hungering Destroyer
 		[334228] = Priority(), -- Volatile Ejection
 		[329298] = Priority(), -- Gluttonous Miasma
@@ -171,11 +297,18 @@ C.DebuffsTracking_PvE = {
 		[333002] = Priority(), -- Vulgar Brand
 		[326078] = Priority(), -- Infuser's Boon
 		[325251] = Priority(), -- Sin of Pride
+		[341475] = Priority(), -- Crimson Flurry
+		[341473] = Priority(), -- Crimson Flurry Teleport
+		[328479] = Priority(), -- Eyes on Target
+		[328889] = Priority(), -- Greater Castigation
 		-- Artificer Xy'mox
 		[327902] = Priority(), -- Fixate
 		[326302] = Priority(), -- Stasis Trap
 		[325236] = Priority(), -- Glyph of Destruction
 		[327414] = Priority(), -- Possession
+		[328468] = Priority(), -- Dimensional Tear 1
+		[328448] = Priority(), -- Dimensional Tear 2
+		[340860] = Priority(), -- Withering Touch
 		-- The Council of Blood
 		[327052] = Priority(), -- Drain Essence 1
 		[327773] = Priority(), -- Drain Essence 2
@@ -191,17 +324,22 @@ C.DebuffsTracking_PvE = {
 		[331209] = Priority(), -- Hateful Gaze
 		[335293] = Priority(), -- Chain Link
 		[335270] = Priority(), -- Chain This One!
+		[342419] = Priority(), -- Chain Them! 1
+		[342420] = Priority(), -- Chain Them! 2
 		[335295] = Priority(), -- Shattering Chain
+		[332572] = Priority(), -- Falling Rubble
 		-- Stone Legion Generals
 		[334498] = Priority(), -- Seismic Upheaval
 		[337643] = Priority(), -- Unstable Footing
 		[334765] = Priority(), -- Heart Rend
+		[334771] = Priority(), -- Heart Hemorrhage
 		[333377] = Priority(), -- Wicked Mark
 		[334616] = Priority(), -- Petrified
 		[334541] = Priority(), -- Curse of Petrification
 		[339690] = Priority(), -- Crystalize
 		[342655] = Priority(), -- Volatile Anima Infusion
 		[342698] = Priority(), -- Volatile Anima Infection
+		[343881] = Priority(), -- Serrated Tear
 		-- Sire Denathrius
 		[326851] = Priority(), -- Blood Price
 		[327796] = Priority(), -- Night Hunter
@@ -211,6 +349,9 @@ C.DebuffsTracking_PvE = {
 		[329181] = Priority(), -- Wracking Pain
 		[335873] = Priority(), -- Rancor
 		[329951] = Priority(), -- Impale
+		[327039] = Priority(), -- Feeding Time
+		[332794] = Priority(), -- Fatal Finesse
+		[334016] = Priority(), -- Unworthy
 	},
 }
 

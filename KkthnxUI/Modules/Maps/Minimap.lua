@@ -231,20 +231,53 @@ function Module:CreateStyle()
 	end)
 end
 
+-- This is just weird to do this but I hate the default icons for covs
+local function UpdateCovenantTexture(texture)
+	local CovenantID = C_Covenants.GetActiveCovenantID()
+	if not CovenantID then
+		return
+	end
+
+	if CovenantID == 1 then
+		texture = "Interface\\ICONS\\INV_Misc_Sigil_Bastion01"
+	elseif CovenantID == 2 then
+		texture = "Interface\\ICONS\\INV_Misc_Sigil_Revendreth01"
+	elseif CovenantID == 3 then
+		texture = "Interface\\ICONS\\INV_Misc_Sigil_Ardenweald01"
+	elseif CovenantID == 4 then
+		texture = "Interface\\ICONS\\INV_Misc_Sigil_Maldraxxus01"
+	else -- No cov so default to differnt icons?
+		if K.Faction == "Alliance" then
+			texture = "Interface\\ICONS\\UI_Alliance_7LegionMedal"
+		else
+			texture = "Interface\\ICONS\\UI_Horde_HonorboundMedal"
+		end
+	end
+
+	return texture
+end
+
 function Module:ReskinRegions()
+	GarrisonLandingPageMinimapButton:SetSize(22, 22)
     hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function(self)
 		self:ClearAllPoints()
-		self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, 0)
-        self:SetSize(30, 30)
+		self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
+        self:SetSize(22, 22)
+		self.LoopingGlow:SetSize(30, 30)
 
-		self:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\LFG.blp")
-        self:SetPushedTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\LFG.blp")
-        self:SetHighlightTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\LFG.blp")
-        self.LoopingGlow:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\LFG.blp")
+		self:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+		self:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
+		self:GetHighlightTexture():SetTexCoord(unpack(K.TexCoords))
+		self.LoopingGlow:SetTexCoord(unpack(K.TexCoords))
 
-		self:GetNormalTexture():SetVertexColor(unpack(C["DataText"].IconColor))
-		self:GetPushedTexture():SetVertexColor(0.2, 0.2, 0.2)
-		self:GetHighlightTexture():SetVertexColor(0.6, 0.6, 0.6)
+		self:SetNormalTexture(UpdateCovenantTexture(self))
+        self:SetPushedTexture(UpdateCovenantTexture(self))
+        self:SetHighlightTexture(UpdateCovenantTexture(self))
+        self.LoopingGlow:SetTexture(UpdateCovenantTexture(self))
+
+		self:GetPushedTexture():SetVertexColor(1, 1, 0, 0.5)
+
+		self:SetHitRectInsets(0, 0, 0, 0)
     end)
     GarrisonLandingPageMinimapButton:SetScript("OnEnter", K.LandingButton_OnEnter)
 

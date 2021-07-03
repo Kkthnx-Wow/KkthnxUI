@@ -310,7 +310,7 @@ oUF.Tags.Methods["lfdrole"] = function(unit)
 	local Role = UnitGroupRolesAssigned(unit)
 	local isTank = Role == "TANK"
 	local isHealer = Role == "HEALER"
-	local Tank, Healer = isTank and "|cff0099CC[T]|r" or "", isHealer and "|cff00FF00[H]|r" or ""
+	local Tank, Healer = isTank and "|cff0099CC*|r" or "", isHealer and "|cff00FF00*|r" or ""
 
 	return (Tank..Healer)
 end

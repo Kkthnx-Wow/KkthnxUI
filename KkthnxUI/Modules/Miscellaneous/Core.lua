@@ -612,6 +612,12 @@ function Module:CreateDisableNewPlayerExperience() -- disable new player experie
 	end
 end
 
+-- Make it so we can move this
+local function PostBNToastMove()
+	_G.BNToastFrame:ClearAllPoints()
+	_G.BNToastFrame:SetAllPoints(BNToastFrame.mover)
+end
+
 function Module:OnEnable()
 	self:CreateAFKCam()
 	self:CreateBlockStrangerInvites()
@@ -639,6 +645,13 @@ function Module:OnEnable()
 	self:CreateTradeTargetInfo()
 	self:CreateVehicleSeatMover()
 	self:CreateWorldQuestTool()
+
+	if not BNToastFrame.mover then
+		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", {"BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 218})
+	else
+		BNToastFrame.mover:SetSize(BNToastFrame:GetSize())
+	end
+	hooksecurefunc(BNToastFrame, "SetPoint", PostBNToastMove)
 
 	K:RegisterEvent("PLAYER_REGEN_DISABLED", CreateErrorFrameToggle)
 

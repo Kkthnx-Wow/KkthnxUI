@@ -345,6 +345,14 @@ function Module:CreateTarget()
 		self.PvPIndicator.PostUpdate = Module.PostUpdatePvPIndicator
 	end
 
+	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+	self.LeaderIndicator:SetSize(12, 12)
+	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+		self.LeaderIndicator:SetPoint("TOPRIGHT", self.Health, 0, 8)
+	else
+		self.LeaderIndicator:SetPoint("TOPRIGHT", self.Portrait, 0, 8)
+	end
+
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)

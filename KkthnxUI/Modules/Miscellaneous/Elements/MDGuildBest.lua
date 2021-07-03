@@ -2,11 +2,11 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
+local pairs = _G.pairs
 local string_format = _G.string.format
 local string_split = _G.string.split
-local tonumber = _G.tonumber
-local pairs = _G.pairs
 local table_wipe = _G.table.wipe
+local tonumber = _G.tonumber
 
 local Ambiguate = _G.Ambiguate
 local CHALLENGE_MODE_GUILD_BEST_LINE = _G.CHALLENGE_MODE_GUILD_BEST_LINE
@@ -94,7 +94,7 @@ function Module:GuildBest_SetUp(leaderInfo)
 	end
 
 	local classColorStr = K.ClassColors[leaderInfo.classFileName].colorStr
-	self.CharacterName:SetText(format(str, classColorStr, leaderInfo.name))
+	self.CharacterName:SetText(string_format(str, classColorStr, leaderInfo.name))
 	self.Level:SetText(leaderInfo.keystoneLevel)
 end
 
@@ -158,7 +158,7 @@ function Module:KeystoneInfo_WeeklyRuns()
 	local numRuns = runHistory and #runHistory
 	if numRuns > 0 then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, WeeklyRunsThreshold), "("..numRuns..")", 0.6, 0.8, 1)
+		GameTooltip:AddDoubleLine(string_format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, WeeklyRunsThreshold), "("..numRuns..")", 0.6, 0.8, 1)
 		table.sort(runHistory, sortHistory)
 
 		for i = 1, WeeklyRunsThreshold do
@@ -199,11 +199,11 @@ function Module:KeystoneInfo_Create()
 		GameTooltip:AddLine(L["Account Keystones"])
 		for fullName, info in pairs(KkthnxUIDB.Variables[K.Realm][K.Name]["KeystoneInfo"]) do
 			local name = Ambiguate(fullName, "none")
-			local mapID, level, class, faction = strsplit(":", info)
+			local mapID, level, class, faction = string_split(":", info)
 			local color = K.RGBToHex(K.ColorClass(class))
 			local factionColor = faction == "Horde" and "|cffff5040" or "|cff00adf0"
 			local dungeon = C_ChallengeMode_GetMapUIInfo(tonumber(mapID))
-			GameTooltip:AddDoubleLine(format(color.."%s:|r", name), format("%s%s(%s)|r", factionColor, dungeon, level))
+			GameTooltip:AddDoubleLine(string_format(color.."%s:|r", name), string_format("%s%s(%s)|r", factionColor, dungeon, level))
 		end
 
 		GameTooltip:AddLine("")
@@ -215,7 +215,7 @@ function Module:KeystoneInfo_Create()
 
 	button:SetScript("OnMouseUp", function(_, btn)
 		if btn == "MiddleButton" then
-			wipe(KkthnxUIDB.Variables[K.Realm][K.Name]["KeystoneInfo"])
+			table_wipe(KkthnxUIDB.Variables[K.Realm][K.Name]["KeystoneInfo"])
 		end
 	end)
 end
