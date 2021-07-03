@@ -1,0 +1,9 @@
+## Interface: 90100
+## Title: |cff669DFFKkthnxUI|r |cff8fb901TBC|r
+## Notes: Empty toc for Curseforge
+## Author: Josh "Kkthnx" Russell
+## Version: 10.2.6
+## X-Support: SL
+## X-Curse-Project-ID: 95528
+## X-WoWI-ID: 24615
+## X-Wago-ID: lQNlqP6e
