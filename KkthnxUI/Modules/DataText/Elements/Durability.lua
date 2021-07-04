@@ -11,6 +11,7 @@ local GetInventoryItemLink = _G.GetInventoryItemLink
 local GetInventoryItemDurability = _G.GetInventoryItemDurability
 local GetInventoryItemTexture = _G.GetInventoryItemTexture
 
+local DurabilityDataTextFrame
 local repairCostString = string_gsub(REPAIR_COST, HEADER_COLON, ":")
 
 local localSlots = {
@@ -58,28 +59,28 @@ end
 
 local function OnEvent(_, event)
 	if event == "PLAYER_ENTERING_WORLD" then
-		Module.DurabilityDataTextFrame:UnregisterEvent(event)
+		DurabilityDataTextFrame:UnregisterEvent(event)
 	end
 
 	local numSlots = UpdateAllSlots()
 
 	if event == "PLAYER_REGEN_ENABLED" then
-		Module.DurabilityDataTextFrame:UnregisterEvent(event)
-		Module.DurabilityDataTextFrame:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
+		DurabilityDataTextFrame:UnregisterEvent(event)
+		DurabilityDataTextFrame:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
 	else
 		if numSlots > 0 then
 			local r, g, b = getDurabilityColor(math_floor(localSlots[1][3] * 100), 100)
-			Module.DurabilityDataTextFrame.Text:SetFormattedText("%s%%|r".." Dur", K.RGBToHex(r, g, b)..math_floor(localSlots[1][3] * 100))
+			DurabilityDataTextFrame.Text:SetFormattedText("%s%%|r".." "..DURABILITY, K.RGBToHex(r, g, b)..math_floor(localSlots[1][3] * 100))
 		else
-			Module.DurabilityDataTextFrame.Text:SetText("Dur"..": "..K.MyClassColor..NONE)
+			DurabilityDataTextFrame.Text:SetText(DURABILITY..": "..K.MyClassColor..NONE)
 		end
 	end
 end
 
 local function OnEnter()
 	local total, equipped = GetAverageItemLevel()
-	GameTooltip:SetOwner(Module.DurabilityDataTextFrame, "ANCHOR_NONE")
-	GameTooltip:SetPoint("BOTTOMLEFT", Module.DurabilityDataTextFrame, "TOPRIGHT", 0, 0)
+	GameTooltip:SetOwner(DurabilityDataTextFrame, "ANCHOR_NONE")
+	GameTooltip:SetPoint("BOTTOMLEFT", DurabilityDataTextFrame, "TOPRIGHT", 0, 0)
 	GameTooltip:AddDoubleLine(DURABILITY, string_format("%s: %d/%d", STAT_AVERAGE_ITEM_LEVEL, equipped, total), 163/255, 211/255, 255/255, 163/255, 211/255, 255/255)
 	GameTooltip:AddLine(" ")
 
@@ -113,25 +114,25 @@ function Module:CreateDurabilityDataText()
 		return
 	end
 
-	Module.DurabilityDataTextFrame = Module.DurabilityDataTextFrame or CreateFrame("Frame", nil, UIParent)
-	Module.DurabilityDataTextFrame:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
-    Module.DurabilityDataTextFrame:SetParent(PaperDollFrame)
+	DurabilityDataTextFrame = DurabilityDataTextFrame or CreateFrame("Frame", nil, UIParent)
+	DurabilityDataTextFrame:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
+    DurabilityDataTextFrame:SetParent(PaperDollFrame)
 
-	Module.DurabilityDataTextFrame.Tab = Module.DurabilityDataTextFrame:CreateTexture(nil, "BACKGROUND", PaperDollSidebarTab1)
-	Module.DurabilityDataTextFrame.Tab:SetPoint("TOP", PaperDollFrame, "BOTTOM", 208, 2)
-	Module.DurabilityDataTextFrame.Tab:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-ActiveTab")
-	Module.DurabilityDataTextFrame.Tab:SetSize(100, 48)
+	DurabilityDataTextFrame.Tab = DurabilityDataTextFrame.Tab or DurabilityDataTextFrame:CreateTexture(nil, "BACKGROUND", PaperDollSidebarTab1)
+	DurabilityDataTextFrame.Tab:SetPoint("TOP", PaperDollFrame, "BOTTOM", 208, 2)
+	DurabilityDataTextFrame.Tab:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-ActiveTab")
+	DurabilityDataTextFrame.Tab:SetSize(140, 48)
 
-	Module.DurabilityDataTextFrame.Text = Module.DurabilityDataTextFrame.Text or Module.DurabilityDataTextFrame:CreateFontString(nil, "ARTWORK")
-    Module.DurabilityDataTextFrame.Text:SetPoint("CENTER", Module.DurabilityDataTextFrame.Tab, "CENTER", 0, 12)
-	Module.DurabilityDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	DurabilityDataTextFrame.Text = DurabilityDataTextFrame.Text or DurabilityDataTextFrame:CreateFontString(nil, "ARTWORK")
+    DurabilityDataTextFrame.Text:SetPoint("CENTER", DurabilityDataTextFrame.Tab, "CENTER", 0, 12)
+	DurabilityDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 
-    Module.DurabilityDataTextFrame:SetAllPoints(Module.DurabilityDataTextFrame.Text)
+    DurabilityDataTextFrame:SetAllPoints(DurabilityDataTextFrame.Text)
 
-	Module.DurabilityDataTextFrame:RegisterEvent("UPDATE_INVENTORY_DURABILITY", OnEvent)
-	Module.DurabilityDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
+	DurabilityDataTextFrame:RegisterEvent("UPDATE_INVENTORY_DURABILITY", OnEvent)
+	DurabilityDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
 
-	Module.DurabilityDataTextFrame:SetScript("OnEnter", OnEnter)
-	Module.DurabilityDataTextFrame:SetScript("OnLeave", OnLeave)
-	Module.DurabilityDataTextFrame:SetScript("OnEvent", OnEvent)
+	DurabilityDataTextFrame:SetScript("OnEnter", OnEnter)
+	DurabilityDataTextFrame:SetScript("OnLeave", OnLeave)
+	DurabilityDataTextFrame:SetScript("OnEvent", OnEvent)
 end

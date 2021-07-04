@@ -194,31 +194,36 @@ function Module:CreateRecycleBin()
 		end
 	end
 
+	local shownButtons = {}
 	local function SortRubbish()
 		if #buttons == 0 then
 			return
 		end
 
-		local numShown, lastbutton = 0
-		for index, button in pairs(buttons) do
+		table.wipe(shownButtons)
+		for _, button in pairs(buttons) do
 			if next(button) and button:IsShown() then -- fix for fuxking AHDB
-				button:ClearAllPoints()
-				if not lastbutton then
-					button:SetPoint("BOTTOMRIGHT", bin, -4, 0)
-				elseif mod(index, iconsPerRow) == 1 then
-					button:SetPoint("BOTTOM", buttons[index - iconsPerRow], "TOP", 0, 6)
-				else
-					button:SetPoint("RIGHT", lastbutton, "LEFT", -5, 0)
-				end
-				lastbutton = button
-				numShown = numShown + 1
+				table_insert(shownButtons, button)
 			end
 		end
+
+		local lastbutton
+		for index, button in pairs(shownButtons) do
+			button:ClearAllPoints()
+			if not lastbutton then
+				button:SetPoint("BOTTOMRIGHT", bin, -6, 6)
+			elseif mod(index, iconsPerRow) == 1 then
+				button:SetPoint("BOTTOM", shownButtons[index - iconsPerRow], "TOP", 0, 6)
+			else
+				button:SetPoint("RIGHT", lastbutton, "LEFT", -6, 0)
+			end
+			lastbutton = button
+		end
+
+		local numShown = #shownButtons
 		local row = numShown == 0 and 1 or K.Round((numShown + rowMult) / iconsPerRow)
 		local newHeight = row * 37 + 3
 		bin:SetHeight(newHeight)
-		--tex:SetHeight(newHeight)
-		--rightLine:SetHeight(newHeight + 2*C.mult)
 	end
 
 	bu:SetScript("OnClick", function()

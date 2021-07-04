@@ -168,6 +168,7 @@ function ExtraQuestButton:PLAYER_LOGIN()
 	bg:SetFrameLevel(self:GetFrameLevel())
 	bg:CreateBorder()
 	bg:StyleButton()
+	bg.KKUI_Border:SetVertexColor(1, .82, .2)
 
 	self.HL = self:CreateTexture(nil, "HIGHLIGHT")
 	self.HL:SetTexture("Interface\\Buttons\\ButtonHilight-Square")

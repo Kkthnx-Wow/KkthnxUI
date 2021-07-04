@@ -223,7 +223,8 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 			local _, instance, _, _, _, _, _, mapID = GetInstanceInfo()
 			if instance ~= "raid" and not C.AutoQuest.IgnoreGossipNPC[npcID] and not (instance == "scenario" and mapID == 1626) then
 				local gossipInfoTable = C_GossipInfo_GetOptions()
-				if gossipInfoTable[1].type == "gossip" then
+				local gType = gossipInfoTable[1] and gossipInfoTable[1].type
+				if gType and C.AutoQuest.AutoGossipTypes[gType] then
 					C_GossipInfo_SelectOption(1)
 					return
 				end
@@ -274,7 +275,7 @@ QuickQuest:Register("QUEST_PROGRESS", function()
 		end
 
 		local npcID = GetNPCID()
-		if C.AutoQuest.IgnoreProgressNPC[npcID] then
+		if C.AutoQuest.IgnoreQuestNPC[npcID] then
 			return
 		end
 

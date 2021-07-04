@@ -15,21 +15,22 @@ local UnitName = _G.UnitName
 
 local lastTime = 0
 local itemList = {
-	[185709] = true,
-	[226241] = true,
-	[256230] = true,
-	[259409] = true,
-	[259410] = true,
-	[265116] = true,
-	[276972] = true,
-	[286050] = true,
-	[307157] = true,
-	[308458] = true,
-	[308462] = true,
-	[324029] = true,
-	[345130] = true,
-	[54710] = true,
-	[67826] = true,
+	[185709] = true, -- 焦糖鱼宴
+	[226241] = true, -- 宁神圣典
+	[256230] = true, -- 静心圣典
+	[259409] = true, -- 海帆盛宴
+	[259410] = true, -- 船长盛宴
+	[265116] = true, -- 8.0工程战复
+	[276972] = true, -- 秘法药锅
+	[286050] = true, -- 鲜血大餐
+	[54710] = true, -- 随身邮箱
+	[67826] = true, -- 基维斯
+
+	[307157] = true, -- 永恒药锅
+	[308458] = true, -- 惊异怡人大餐
+	[308462] = true, -- 纵情饕餮盛宴
+	[324029] = true, -- 宁心圣典
+	[345130] = true, -- 9.0工程战复
 }
 
 function Module:ItemAlert_Update(unit, _, spellID)

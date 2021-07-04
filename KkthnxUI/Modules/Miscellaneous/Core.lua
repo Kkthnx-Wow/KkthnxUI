@@ -41,6 +41,27 @@ local UnitXPMax = _G.UnitXPMax
 local YES = _G.YES
 local hooksecurefunc = _G.hooksecurefunc
 
+function Module:CreateGUIGameMenuButton()
+	local gui = CreateFrame("Button", "KKUI_GameMenuFrame", GameMenuFrame, "GameMenuButtonTemplate, BackdropTemplate")
+	gui:SetText(K.InfoColor.."KkthnxUI|r")
+	gui:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
+	GameMenuFrame:HookScript("OnShow", function(self)
+		GameMenuButtonLogout:SetPoint("TOP", gui, "BOTTOM", 0, -21)
+		self:SetHeight(self:GetHeight() + gui:GetHeight() + 22)
+	end)
+
+	gui:SetScript("OnClick", function()
+		if InCombatLockdown() then
+			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+			return
+		end
+
+		K["GUI"]:Toggle()
+		HideUIPanel(GameMenuFrame)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+	end)
+end
+
 -- Reanchor Vehicle
 function Module:CreateVehicleSeatMover()
 	local frame = CreateFrame("Frame", "KKUI_VehicleSeatMover", UIParent)
@@ -96,17 +117,21 @@ function Module:CreateBossEmote()
 	end
 end
 
-local function CreateErrorFrameToggle(event)
-	if not C["General"].NoErrorFrame then
-		return
-	end
-
+local function SetupErrorFrameToggle(event)
 	if event == "PLAYER_REGEN_DISABLED" then
 		_G.UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
-		K:RegisterEvent("PLAYER_REGEN_ENABLED", CreateErrorFrameToggle)
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", SetupErrorFrameToggle)
 	else
 		_G.UIErrorsFrame:RegisterEvent("UI_ERROR_MESSAGE")
-		K:UnregisterEvent(event, CreateErrorFrameToggle)
+		K:UnregisterEvent(event, SetupErrorFrameToggle)
+	end
+end
+
+function Module:CreateErrorFrameToggle()
+	if C["General"].NoErrorFrame then
+		K:RegisterEvent("PLAYER_REGEN_DISABLED", SetupErrorFrameToggle)
+	else
+		K:UnregisterEvent("PLAYER_REGEN_DISABLED", SetupErrorFrameToggle)
 	end
 end
 
@@ -591,7 +616,7 @@ function Module:CreateDisableHelpTip() -- auto complete helptips
 	C_Timer_After(1, AcknowledgeTips)
 end
 
-local function ShutdownNPE(event)
+local function ShutdownNewPlayerExperience(event)
 	local NPE = _G.NewPlayerExperience
 	if NPE then
 		if NPE:GetIsActive() then
@@ -599,23 +624,38 @@ local function ShutdownNPE(event)
 		end
 
 		if event then
-			K:UnregisterEvent(event, ShutdownNPE)
+			K:UnregisterEvent(event, ShutdownNewPlayerExperience)
 		end
 	end
 end
 
-function Module:CreateDisableNewPlayerExperience() -- disable new player experience
+function Module:CreateDisableNewPlayerExperience() -- Disable new player experience
 	if _G.NewPlayerExperience then
-		ShutdownNPE()
+		ShutdownNewPlayerExperience()
 	else
-		K:RegisterEvent("ADDON_LOADED", ShutdownNPE)
+		K:RegisterEvent("ADDON_LOADED", ShutdownNewPlayerExperience)
+	end
+end
+
+function Module:CreateUnlimitedPinDistance()
+	if not IsAddOnLoaded("UnlimitedMapPinDistance") then
+		local trackedAlphaBase = _G.SuperTrackedFrame.GetTargetAlphaBaseValue
+		function _G.SuperTrackedFrame:GetTargetAlphaBaseValue()
+			if trackedAlphaBase(self) == 0 and C_Navigation_GetDistance() >= 1000 then
+				return 0.6
+			else
+				return trackedAlphaBase(self)
+			end
+		end
 	end
 end
 
 -- Make it so we can move this
-local function PostBNToastMove()
-	_G.BNToastFrame:ClearAllPoints()
-	_G.BNToastFrame:SetAllPoints(BNToastFrame.mover)
+local function PostBNToastMove(frame, _, anchor)
+	if anchor ~= _G.BNToastFrame.mover then
+		frame:ClearAllPoints()
+		frame:SetPoint("TOPLEFT", _G.BNToastFrame.mover, "TOPLEFT")
+	end
 end
 
 function Module:OnEnable()
@@ -626,7 +666,9 @@ function Module:OnEnable()
 	self:CreateDisableHelpTip()
 	self:CreateDisableNewPlayerExperience()
 	self:CreateDurabilityFrameMove()
+	self:CreateErrorFrameToggle()
 	self:CreateErrorsFrame()
+	self:CreateGUIGameMenuButton()
 	self:CreateGuildBest()
 	self:CreateImprovedMail()
 	self:CreateImprovedStats()
@@ -643,17 +685,17 @@ function Module:OnEnable()
 	self:CreateTicketStatusFrameMove()
 	self:CreateTradeTabs()
 	self:CreateTradeTargetInfo()
+	self:CreateUnlimitedPinDistance()
 	self:CreateVehicleSeatMover()
 	self:CreateWorldQuestTool()
 
+	-- TESTING CMD : /run BNToastFrame:AddToast(BN_TOAST_TYPE_ONLINE, 1)
 	if not BNToastFrame.mover then
 		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", {"BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 218})
 	else
 		BNToastFrame.mover:SetSize(BNToastFrame:GetSize())
 	end
 	hooksecurefunc(BNToastFrame, "SetPoint", PostBNToastMove)
-
-	K:RegisterEvent("PLAYER_REGEN_DISABLED", CreateErrorFrameToggle)
 
 	-- Unregister talent event
 	if PlayerTalentFrame then
@@ -670,17 +712,6 @@ function Module:OnEnable()
 			_G.LFRBrowseFrame.timeToClear = nil
 		end
 	end)
-
-	if not IsAddOnLoaded("UnlimitedMapPinDistance") then
-		local trackedAlphaBase = _G.SuperTrackedFrame.GetTargetAlphaBaseValue
-		function _G.SuperTrackedFrame:GetTargetAlphaBaseValue()
-			if trackedAlphaBase(self) == 0 and C_Navigation_GetDistance() >= 1000 then
-				return 0.6
-			else
-				return trackedAlphaBase(self)
-			end
-		end
-	end
 
 	-- Auto chatBubbles
 	if C["Misc"].AutoBubbles then
@@ -702,9 +733,12 @@ function Module:OnEnable()
 	end
 
 	-- Instant delete
-	hooksecurefunc(StaticPopupDialogs["DELETE_GOOD_ITEM"], "OnShow", function(self)
-		self.editBox:SetText(DELETE_ITEM_CONFIRM_STRING)
-	end)
+	local deleteDialog = StaticPopupDialogs["DELETE_GOOD_ITEM"]
+	if deleteDialog.OnShow then
+		hooksecurefunc(deleteDialog, "OnShow", function(self)
+			self.editBox:SetText(DELETE_ITEM_CONFIRM_STRING)
+		end)
+	end
 
 	-- Fix blizz bug in addon list
 	local _AddonTooltip_Update = AddonTooltip_Update

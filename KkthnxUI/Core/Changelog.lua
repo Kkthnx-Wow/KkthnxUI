@@ -16,25 +16,6 @@ local CLOSE = _G.CLOSE
 
 local changelogData = {
 	"Added auto open code rewrite from TBC",
-	"Added mover for bnet toast frame",
-	"Added mythic+ rating in tooltip",
-	"Added new covenant minimap icons and mouse over feature <3",
-	"Added tooltip skins for Acegui, aceconfig and tomcats vig tooltips",
-	"Fixed aura watch error when reset",
-	"Fixed chat being weird because blizz forced TTS chat tab on us",
-	"Fixed deadly boss mods skinning",
-	"Fixed error with tooltip hover missing its locale",
-	"Fixed libs conflicting with other addons like voodoo or whatever that addon is?",
-	"Fixed raid utilites missing locale",
-	"Fixed some action bars not able to be key bound with /kb",
-	"Updated auto open module list",
-	"Updated character frame skinning to match changes from TBC (Stats)",
-	"Updated extra question button module code",
-	"Updated install boss image and complete sound",
-	"Updated interrupt announce module",
-	"Updated inventory new item glow code",
-	"Updated ms/fps icons from TBC",
-	"Updated quest complete sound if using quest notification module",
 }
 
 local changelogFrame

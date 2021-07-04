@@ -24,7 +24,7 @@ local isIgnoredZone = {
 local function isUsefulAtlas(info)
 	local atlas = info.atlasName
 	if atlas then
-		return string_find(atlas, "[Vv]ignette")
+		return string_find(atlas, "[Vv]ignette") or (atlas == "nazjatar-nagaevent")
 	end
 end
 
@@ -54,11 +54,11 @@ function Module:RareAlert_Update(id)
 		end
 
 		if Module.RareInstType == "none" then
-			PlaySound(23404, "master")
+			PlaySound(37881, "master")
 		end
 
 		if not C["Announcements"].AlertInWild or Module.RareInstType == "none" then
-			PlaySound(23404, "master")
+			PlaySound(37881, "master")
 		end
 
 		RareAlertCache[id] = true

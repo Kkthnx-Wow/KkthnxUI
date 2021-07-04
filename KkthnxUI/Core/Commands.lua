@@ -2,6 +2,7 @@ local K, _, L = unpack(select(2, ...))
 
 local _G = _G
 local print = _G.print
+local string_format = _G.string.format
 local string_lower = _G.string.lower
 local string_trim = _G.string.trim
 local tonumber = _G.tonumber
@@ -29,6 +30,25 @@ local UIErrorsFrame = _G.UIErrorsFrame
 local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
+
+SlashCmdList["KKUI_VOLUME"] = function(val)
+	local new = tonumber(val)
+	local old = tonumber(GetCVar("Sound_MasterVolume"))
+	if new == old then
+		K.Print(string_format("Volume is already set to |cffa0f6aa%s|r.", old))
+	elseif new and 0 <= new and new <= 1 then
+		if InCombatLockdown() then
+			_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+			return
+		end
+		SetCVar("Sound_MasterVolume", new)
+		K.Print(string_format("Volume is now set to |cffa0f6aa%.2f|r, was |cffa0f6aa%.2f|r.", new, old))
+	else
+		K.Print(string_format("Volume is currently set to |cffa0f6aa%.2f|r.", old))
+	end
+end
+_G.SLASH_KKUI_VOLUME1 = "/vol"
+_G.SLASH_KKUI_VOLUME2 = "/volume"
 
 -- Profiles data/listings
 SlashCmdList["KKUI_UIPROFILES"] = function(msg)
