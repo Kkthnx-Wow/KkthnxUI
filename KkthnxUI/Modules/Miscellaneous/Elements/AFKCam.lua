@@ -180,18 +180,20 @@ local function createDate(self)
 end
 
 local function UpdateLogOff(self)
-	local timePassed = GetTime() - self.startTime
-	local minutes = math_floor(timePassed/60)
-	local neg_seconds = -timePassed % 60
+    local timePassed = GetTime() - self.startTime
 
-	self.top.Status:SetValue(math_floor(timePassed))
+    local timeLeft = 30 * 60 - timePassed
+    local minutes = math_floor(timeLeft / 60)
+    local seconds = math_floor(timeLeft % 60)
 
-	if minutes - 29 == 0 and math_floor(neg_seconds) == 0 then
-		self.logoffTimer:Cancel()
-		self.countd.text:SetFormattedText("%s: |cfff0ff0000:00|r", "Logout Timer")
-	else
-		self.countd.text:SetFormattedText("%s: |cfff0ff00%02d:%02d|r", "Logout Timer", minutes -29, neg_seconds)
-	end
+	self.top.Status:SetValue(math_floor(timeLeft))
+
+    if minutes == 0 and seconds == 0 then
+        self.logoffTimer:Cancel()
+        self.countd.text:SetFormattedText("%s: |cfff0ff0000:00|r", "Logout Timer")
+    else
+        self.countd.text:SetFormattedText("%s: |cfff0ff00-%02d:%02d|r", "Logout Timer", minutes, seconds)
+    end
 end
 
 local function UpdateTimer(self)
@@ -244,15 +246,21 @@ local function SetAFK(self, status)
 		self.bottom.modelPet:SetAnimation(0)
 
 		self.startTime = GetTime()
-		self.timer = C_Timer_NewTicker(1, function()
-			UpdateTimer(self)
-		end)
-		self.statsTimer = C_Timer_NewTicker(6, function()
-			UpdateStatMessage(self)
-		end)
-		self.logoffTimer = C_Timer_NewTicker(1, function()
-			UpdateLogOff(self)
-		end)
+
+		if (self.timer) then self.timer:Cancel() end
+        self.timer = C_Timer_NewTicker(1, function()
+            UpdateTimer(self)
+        end)
+
+        if (self.statsTimer) then self.statsTimer:Cancel() end
+        self.statsTimer = C_Timer_NewTicker(5, function()
+            UpdateStatMessage(self)
+        end)
+
+        if (self.logoffTimer) then self.logoffTimer:Cancel() end
+        self.logoffTimer = C_Timer_NewTicker(1, function()
+            UpdateLogOff(self)
+        end)
 
 		self.chat:RegisterEvent("CHAT_MSG_WHISPER")
 		self.chat:RegisterEvent("CHAT_MSG_BN_WHISPER")
@@ -266,9 +274,22 @@ local function SetAFK(self, status)
 		self:Hide()
 		MoveViewLeftStop()
 
-		self.timer:Cancel()
-		self.statsTimer:Cancel()
-		self.logoffTimer:Cancel()
+		if self.startTime then
+			self.startTime = nil
+		end
+
+		if self.timer then
+			self.timer:Cancel()
+		end
+
+		if self.statsTimer then
+			self.statsTimer:Cancel()
+		end
+
+		if self.logoffTimer then
+			self.logoffTimer:Cancel()
+		end
+
 		if self.animTimer then
 			self.animTimer:Cancel()
 		end
@@ -445,7 +466,7 @@ function Module:CreateAFKCam()
 
 	AFKMode.top = CreateFrame("Frame", nil, AFKMode)
 	AFKMode.top:SetFrameLevel(0)
-	AFKMode.top:CreateBorder()
+	AFKMode.top:CreateBorder(nil, nil, 32, nil, -10)
 	AFKMode.top:SetPoint("TOP", AFKMode, "TOP", 0, 6)
 	AFKMode.top:SetSize(UIParent:GetWidth() + 12, 54)
 
@@ -453,7 +474,7 @@ function Module:CreateAFKCam()
 
 	AFKMode.bottom = CreateFrame("Frame", nil, AFKMode)
 	AFKMode.bottom:SetFrameLevel(0)
-	AFKMode.bottom:CreateBorder()
+	AFKMode.bottom:CreateBorder(nil, nil, 32, nil, -10)
 	AFKMode.bottom:SetPoint("BOTTOM", AFKMode, "BOTTOM", 0, -6)
 	AFKMode.bottom:SetSize(UIParent:GetWidth() + 12, 120)
 

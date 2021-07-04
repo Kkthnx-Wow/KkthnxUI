@@ -262,6 +262,7 @@ C["General"] = {
 		["Options"] = {
 			["KkthnxUI"] = "KkthnxUI",
 			["AzeriteUI"] = "AzeriteUI",
+			["KkthnxUI_Pixel"] = "KkthnxUI_Pixel",
 		},
 		["Value"] = "KkthnxUI"
 	},
