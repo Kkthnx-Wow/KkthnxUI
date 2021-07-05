@@ -15,7 +15,18 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Added auto open code rewrite from TBC",
+	"Added `/vol 0.1 - 1 or /volume 0.1 - 1' command to control your volume on the fly",
+	"Added hacky fix for minimap border background overlaying torgast map",
+	"Added mover for bntoast frame",
+	"Added pixel border option choice",
+	"Fixed afk module text speeding up because of timers",
+	"Fixed paragon rep module throwing an error and update rep list",
+	"Updated and cleaned up some mic code",
+	"Updated auto quest module code and lists",
+	"Updated code placement for game menu code",
+	"Updated extra quest button border color to match quest border colors",
+	"Updated quick join module code",
+	"Updated rare alert module code and sound",
 }
 
 local changelogFrame
