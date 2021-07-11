@@ -50,6 +50,7 @@ local gRank
 local infoFrame
 local prevTime
 local r, g, b = K.r, K.g, K.b
+local GuildDataText
 
 local function rosterButtonOnClick(self, btn)
 	local name = guildTable[self.index][3]
@@ -203,9 +204,9 @@ local function GuildPanel_Init()
 		return
 	end
 
-	infoFrame = CreateFrame("Frame", "KKUI_GuildInfoFrame", Module.GuildDataTextFrame)
+	infoFrame = CreateFrame("Frame", "KKUI_GuildInfoFrame", GuildDataText)
 	infoFrame:SetSize(335, 495)
-	infoFrame:SetPoint(K.GetAnchors(Module.GuildDataTextFrame))
+	infoFrame:SetPoint(K.GetAnchors(GuildDataText))
 	infoFrame:SetClampedToScreen(true)
 	infoFrame:SetFrameStrata("TOOLTIP")
 	infoFrame:CreateBorder()
@@ -345,9 +346,9 @@ end
 local function OnEvent(_, event, arg1)
 	if not IsInGuild() then
 		if C["DataText"].HideText then
-			Module.GuildDataTextFrame.Text:SetText("")
+			GuildDataText.Text:SetText("")
 		else
-			Module.GuildDataTextFrame.Text:SetText(GUILD..": "..K.MyClassColor..NONE)
+			GuildDataText.Text:SetText(GUILD..": "..K.MyClassColor..NONE)
 		end
 		return
 	end
@@ -360,9 +361,9 @@ local function OnEvent(_, event, arg1)
 
 	local online = select(3, GetNumGuildMembers())
 	if C["DataText"].HideText then
-		Module.GuildDataTextFrame.Text:SetText("")
+		GuildDataText.Text:SetText("")
 	else
-		Module.GuildDataTextFrame.Text:SetText(GUILD..": "..K.MyClassColor..online)
+		GuildDataText.Text:SetText(GUILD..": "..K.MyClassColor..online)
 	end
 
 	if infoFrame and infoFrame:IsShown() then
@@ -400,11 +401,6 @@ local function OnLeave()
 end
 
 local function OnMouseUp(_, btn)
-	if InCombatLockdown() then
-		UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
-		return
-	end
-
 	if not IsInGuild() then
 		return
 	end
@@ -427,28 +423,28 @@ function Module:CreateGuildDataText()
 		return
 	end
 
-	Module.GuildDataTextFrame = CreateFrame("Button", nil, UIParent)
-	Module.GuildDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -240)
-	Module.GuildDataTextFrame:SetSize(24, 24)
+	GuildDataText = GuildDataText or CreateFrame("Button", nil, UIParent)
+	GuildDataText:SetPoint("LEFT", UIParent, "LEFT", 0, -240)
+	GuildDataText:SetSize(24, 24)
 
-	Module.GuildDataTextFrame.Texture = Module.GuildDataTextFrame:CreateTexture(nil, "BACKGROUND")
-	Module.GuildDataTextFrame.Texture:SetPoint("LEFT", Module.GuildDataTextFrame, "LEFT", 0, 0)
-	Module.GuildDataTextFrame.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\guild.blp")
-	Module.GuildDataTextFrame.Texture:SetSize(24, 24)
-	Module.GuildDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
+	GuildDataText.Texture = GuildDataText:CreateTexture(nil, "BACKGROUND")
+	GuildDataText.Texture:SetPoint("LEFT", GuildDataText, "LEFT", 0, 0)
+	GuildDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\guild.blp")
+	GuildDataText.Texture:SetSize(24, 24)
+	GuildDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
-	Module.GuildDataTextFrame.Text = Module.GuildDataTextFrame:CreateFontString(nil, "ARTWORK")
-	Module.GuildDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.GuildDataTextFrame.Text:SetPoint("LEFT", Module.GuildDataTextFrame.Texture, "RIGHT", 0, 0)
+	GuildDataText.Text = GuildDataText:CreateFontString(nil, "ARTWORK")
+	GuildDataText.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	GuildDataText.Text:SetPoint("LEFT", GuildDataText.Texture, "RIGHT", 0, 0)
 
-	Module.GuildDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
-	Module.GuildDataTextFrame:RegisterEvent("GUILD_ROSTER_UPDATE", OnEvent)
-	Module.GuildDataTextFrame:RegisterEvent("PLAYER_GUILD_UPDATE", OnEvent)
+	GuildDataText:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
+	GuildDataText:RegisterEvent("GUILD_ROSTER_UPDATE", OnEvent)
+	GuildDataText:RegisterEvent("PLAYER_GUILD_UPDATE", OnEvent)
 
-	Module.GuildDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
-	Module.GuildDataTextFrame:SetScript("OnEnter", OnEnter)
-	Module.GuildDataTextFrame:SetScript("OnLeave", OnLeave)
-	Module.GuildDataTextFrame:SetScript("OnEvent", OnEvent)
+	GuildDataText:SetScript("OnMouseUp", OnMouseUp)
+	GuildDataText:SetScript("OnEnter", OnEnter)
+	GuildDataText:SetScript("OnLeave", OnLeave)
+	GuildDataText:SetScript("OnEvent", OnEvent)
 
-	K.Mover(Module.GuildDataTextFrame, "GuildDataText", "GuildDataText", {"LEFT", UIParent, "LEFT", 4, -240})
+	K.Mover(GuildDataText, "GuildDataText", "GuildDataText", {"LEFT", UIParent, "LEFT", 4, -240})
 end

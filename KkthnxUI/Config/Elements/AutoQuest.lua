@@ -7,34 +7,84 @@ C.AutoQuest = {
 		[103792] = true, -- 格里伏塔
 		[105387] = true, -- 安杜斯
 		[108868] = true, -- Hunter's order hall
-		[111243] = true, -- Archmage Lan'dalock
-		[114719] = true, -- 商人塞林
-		[119388] = true, -- 酋长哈顿
+		[109227] = true, -- Meliah Grayfeather (Tradewind Roost, Highmountain)
+		[111243] = true, -- Archmage Lan'dalock (Seal quest, Dalaran)
+		[114719] = true, -- Trader Caelen (Obliterum Forge, Dalaran, Broken Isles)
+		[119388] = true, -- Chieftain Hatuun (Krokul Hovel, Krokuun)
 		[121263] = true, -- 大技师罗姆尔
 		[124312] = true, -- 图拉扬
 		[126954] = true, -- 图拉扬
 		[127037] = true, -- 纳毕鲁
 		[135690] = true, -- 亡灵舰长
-		[141584] = true, -- 祖尔温
-		[142063] = true, -- 特兹兰
+		[141584] = true, -- Zurvan (Seal quest, Dazar'alor, Horde)
+		[142063] = true, -- Tezran (Seal quest, Boralus Harbor, Alliance)
+		[142157] = true, -- Paymaster Grintooth (Dazar'alor)
+		[142158] = true, -- Quartermaster Rauka (Dazar'alor)
+		[142159] = true, -- Zen'kin (Dazar'alor)
+		[142685] = true, -- Paymaster Vauldren (Boralus)
+		[142700] = true, -- Quartermaster Peregrin (Boralus)
+		[142969] = true, -- Logarr (Dazar'alor)
+		[142970] = true, -- Kuma Longhoof (Dazar'alor)
+		[142973] = true, -- Mai-Lu (Dazar'alor)
+		[142975] = true, -- Seamstress Vessa (Dazar'alor)
+		[142977] = true, -- Meredith Swane (Dazar'alor)
+		[142981] = true, -- Merill Redgrave (Dazar'alor)
+		[142983] = true, -- Swizzle Fizzcrank (Dazar'alor)
+		[142992] = true, -- Uma'wi (Dazar'alor)
+		[142993] = true, -- Chelsea Strand (Boralus)
+		[142994] = true, -- Brandal Darkbeard (Boralus)
+		[142995] = true, -- Charlane (Boralus)
+		[142997] = true, -- Senedras (Boralus)
+		[142998] = true, -- Faella (Boralus)
+		[143004] = true, -- Larold Kyne (Boralus)
+		[143005] = true, -- Liao (Boralus)
+		[143007] = true, -- Mae Wagglewand (Boralus)
+		[143008] = true, -- Norber Togglesprocket (Boralus)
 		[143388] = true, -- 德鲁扎
 		[143555] = true, -- 山德·希尔伯曼，祖达萨PVP军需官
 		[14847] = true, -- DarkMoon
 		[150563] = true, -- 斯卡基特，麦卡贡订单日常
 		[150987] = true, -- 肖恩·维克斯，斯坦索姆
+		[15192] = true, -- Anachronos (Caverns of Time)
 		[154534] = true, -- 大杂院阿畅
 		[160248] = true, -- 档案员费安，罪魂碎片
 		[168430] = true, -- 戴克泰丽丝，格里恩挑战
+		[18166] = true, -- Khadgar (Allegiance to Aldor/Scryer, Shattrath)
 		[326027] = true, -- 运输站回收生成器DX-82
 		[43929] = true, -- 4000
-		[87391] = true, -- Fate-Twister Seress
-		[88570] = true, -- Fate-Twister Tiklal
+		[45400] = true, -- Fiona's Caravan (Eastern Plaguelands)
+		[55402] = true, -- Korgol Crushskull (Darkmoon Faire, Pit Master)
+		[6294] = true, -- Krom Stoutarm (Heirloom Curator, Ironforge)
+		[6566] = true, -- Estelle Gendry (Heirloom Curator, Undercity)
+		[87391] = true, -- Fate-Twister Seress (Seal quest, Stormshield)
+		[88570] = true, -- Fate-Twister Tiklal (Seal quest, Horde)
 		[93538] = true, -- 达瑞妮斯
 		[98489] = true, -- 海难俘虏
+		[99183] = true,	-- Renegade Ironworker (Tanaan Jungle, repeatable quest)
 	},
 
 	IgnoreGossipNPC = {
-		-- Bodyguards
+		[10307] = true, -- Witch Doctor Mau'ari (E'Ko quests, Winterspring)
+		[117871] = true, -- War Councilor Victoria (Class Challenges @ Broken Shore)
+		[12944] = true, -- Lokhtos Darkbargainer (Thorium Brotherhood, Blackrock Depths)
+		[150122] = true, -- 荣耀堡法师
+		[150131] = true, -- 萨尔玛法师
+		[155101] = true, -- 元素精华融合器
+		[155261] = true, -- 肖恩·维克斯，斯坦索姆
+		[171589] = true, -- 德莱文将军
+		[171787] = true, -- 文官阿得赖斯提斯
+		[171795] = true, -- 月莓女勋爵
+		[171821] = true, -- 德拉卡女男爵
+		[172558] = true, -- 艾拉·引路者（导师）
+		[172572] = true, -- 瑟蕾丝特·贝利文科（导师）
+		[173021] = true, -- 刻符牛头人
+		[175513] = true, -- 纳斯利亚审判官，傲慢
+		[70022] = true, -- Ku'ma (Isle of Giants, Pandaria)
+		[79740] = true, -- Warmaster Zog (Horde)
+		[79953] = true, -- Lieutenant Thorn (Alliance)
+		[84268] = true, -- Lieutenant Thorn (Alliance)
+		[84511] = true, -- Lieutenant Thorn (Alliance)
+		[84684] = true, -- Lieutenant Thorn (Alliance)
 		[86682] = true, -- Tormmok
 		[86927] = true, -- Delvar Ironfist (Alliance)
 		[86933] = true, -- Vivianne (Horde)
@@ -42,8 +92,8 @@ C.AutoQuest = {
 		[86945] = true, -- Aeda Brightdawn (Horde)
 		[86946] = true, -- Talonpriest Ishaal
 		[86964] = true, -- Leorajh
-
-		-- Sassy Imps
+		[87393] = true, -- Sallee Silverclamp (Reputation quests, Nagrand, Draenor)
+		[87706] = true, -- Gazmolf Futzwangler (Reputation quests, Nagrand, Draenor)
 		[95139] = true,
 		[95141] = true,
 		[95142] = true,
@@ -53,27 +103,6 @@ C.AutoQuest = {
 		[95146] = true,
 		[95200] = true,
 		[95201] = true,
-
-		-- Misc NPCs
-		[117871] = true, -- War Councilor Victoria (Class Challenges @ Broken Shore)
-		[150122] = true, -- 荣耀堡法师
-		[150131] = true, -- 萨尔玛法师
-		[155101] = true, -- 元素精华融合器
-		[155261] = true, -- 肖恩·维克斯，斯坦索姆
-		[79740] = true, -- Warmaster Zog (Horde)
-		[79953] = true, -- Lieutenant Thorn (Alliance)
-		[84268] = true, -- Lieutenant Thorn (Alliance)
-		[84511] = true, -- Lieutenant Thorn (Alliance)
-		[84684] = true, -- Lieutenant Thorn (Alliance)
-
-		[171589] = true, -- 德莱文将军
-		[171787] = true, -- 文官阿得赖斯提斯
-		[171795] = true, -- 月莓女勋爵
-		[171821] = true, -- 德拉卡女男爵
-		[172558] = true, -- 艾拉·引路者（导师）
-		[172572] = true, -- 瑟蕾丝特·贝利文科（导师）
-		[173021] = true, -- 刻符牛头人
-		[175513] = true, -- 纳斯利亚审判官，傲慢
 	},
 
 	AutoGossipTypes = {
@@ -102,30 +131,6 @@ C.AutoQuest = {
 	},
 
 	ItemBlacklist = {
-		-- Inscription weapons
-		[31690] = 79343, -- Inscribed Tiger Staff
-		[31691] = 79340, -- Inscribed Crane Staff
-		[31692] = 79341, -- Inscribed Serpent Staff
-
-		-- Darkmoon Faire artifacts
-		[29443] = 71635, -- Imbued Crystal
-		[29444] = 71636, -- Monstrous Egg
-		[29445] = 71637, -- Mysterious Grimoire
-		[29446] = 71638, -- Ornate Weapon
-		[29451] = 71715, -- A Treatise on Strategy
-		[29456] = 71951, -- Banner of the Fallen
-		[29457] = 71952, -- Captured Insignia
-		[29458] = 71953, -- Fallen Adventurer's Journal
-		[29464] = 71716, -- Soothsayer's Runes
-
-		-- Tiller Gifts
-		["progress_79264"] = 79264, -- Ruby Shard
-		["progress_79265"] = 79265, -- Blue Feather
-		["progress_79266"] = 79266, -- Jade Cat
-		["progress_79267"] = 79267, -- Lovely Apple
-		["progress_79268"] = 79268, -- Marsh Lily
-
-		-- Garrison scouting missives
 		["38176"] = 122405, -- Scouting Missive: Stonefury Cliffs
 		["38177"] = 122403, -- Scouting Missive: Magnarok
 		["38178"] = 122402, -- Scouting Missive: Iron Siegeworks
@@ -152,21 +157,34 @@ C.AutoQuest = {
 		["38200"] = 122407, -- Scouting Missive: Skettis
 		["38201"] = 122410, -- Scouting Missive: Shattrath Harbor
 		["38202"] = 122419, -- Scouting Missive: Gorian Proving Grounds
-
-		-- Misc
+		["progress_79264"] = 79264, -- Ruby Shard
+		["progress_79265"] = 79265, -- Blue Feather
+		["progress_79266"] = 79266, -- Jade Cat
+		["progress_79267"] = 79267, -- Lovely Apple
+		["progress_79268"] = 79268, -- Marsh Lily
+		[29443] = 71635, -- Imbued Crystal
+		[29444] = 71636, -- Monstrous Egg
+		[29445] = 71637, -- Mysterious Grimoire
+		[29446] = 71638, -- Ornate Weapon
+		[29451] = 71715, -- A Treatise on Strategy
+		[29456] = 71951, -- Banner of the Fallen
+		[29457] = 71952, -- Captured Insignia
+		[29458] = 71953, -- Fallen Adventurer's Journal
+		[29464] = 71716, -- Soothsayer's Runes
 		[31664] = 88604, -- Nat's Fishing Journal
+		[31690] = 79343, -- Inscribed Tiger Staff
+		[31691] = 79340, -- Inscribed Crane Staff
+		[31692] = 79341, -- Inscribed Serpent Staff
 	},
 
 	CashRewards = {
-		[45724] = 1e5, -- Champion's Purse
-		[64491] = 2e6, -- Royal Reward
-
-		-- Items from the Sixtrigger brothers quest chain in Stormheim
 		[138123] = 15, -- Shiny Gold Nugget, 15 copper
 		[138125] = 16, -- Crystal Clear Gemstone, 16 copper
 		[138127] = 15, -- Mysterious Coin, 15 copper
 		[138129] = 11, -- Swatch of Priceless Silk, 11 copper
 		[138131] = 24, -- Magical Sprouting Beans, 24 copper
 		[138133] = 27, -- Elixir of Endless Wonder, 27 copper
+		[45724] = 1e5, -- Champion's Purse
+		[64491] = 2e6, -- Royal Reward
 	},
 }

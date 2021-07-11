@@ -125,6 +125,7 @@
    <Script file="Miscellaneous\Elements\QuickJoin.lua" />
    <Script file="Miscellaneous\Elements\SlotDurability.lua" />
    <Script file="Miscellaneous\Elements\SlotItemLevel.lua" />
+   <Script file="Miscellaneous\Elements\StatPriority.lua" />
    <Script file="Miscellaneous\Elements\StatusReport.lua" />
    <Script file="Miscellaneous\Elements\TradeTabs.lua" />
    <Script file="Miscellaneous\Elements\yClassColors.lua" />
@@ -176,12 +177,11 @@
    <Include file="Skins\Blizzard\ChatFrame.lua" />
    <Include file="Skins\Blizzard\Collectables.lua" />
    <Include file="Skins\Blizzard\DeathRecap.lua" />
+   <Include file="Skins\Blizzard\GameMenu.lua" />
    <Include file="Skins\Blizzard\Inspect.lua" />
    <Include file="Skins\Blizzard\LossControl.lua" />
-   <Include file="Skins\Blizzard\MailFrame.lua" />
    <Include file="Skins\Blizzard\Miscellaneous.lua" />
    <Include file="Skins\Blizzard\ObjectiveTracker.lua" />
-   <Include file="Skins\Blizzard\PetBattle.lua" />
    <Include file="Skins\Blizzard\SpellBook.lua" />
    <Include file="Skins\Blizzard\StaticPopup.lua" />
    <Include file="Skins\Blizzard\Talent.lua" />

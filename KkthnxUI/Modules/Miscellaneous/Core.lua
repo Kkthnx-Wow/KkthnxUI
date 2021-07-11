@@ -6,23 +6,22 @@ local select = _G.select
 local string_match = _G.string.match
 local tonumber = _G.tonumber
 
-
-local GetOverrideBarSkin = _G.GetOverrideBarSkin
-local C_QuestLog_GetLogIndexForQuestID = _G.C_QuestLog.GetLogIndexForQuestID
-local GetActionInfo = _G.GetActionInfo
 local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
 local C_Navigation_GetDistance = _G.C_Navigation.GetDistance
+local C_QuestLog_GetLogIndexForQuestID = _G.C_QuestLog.GetLogIndexForQuestID
 local C_QuestLog_GetSelectedQuest = _G.C_QuestLog.GetSelectedQuest
 local C_QuestLog_ShouldShowQuestRewards = _G.C_QuestLog.ShouldShowQuestRewards
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
 local FRIEND = _G.FRIEND
 local GUILD = _G.GUILD
+local GetActionInfo = _G.GetActionInfo
 local GetItemInfo = _G.GetItemInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local GetMerchantItemLink = _G.GetMerchantItemLink
 local GetMerchantItemMaxStack = _G.GetMerchantItemMaxStack
+local GetOverrideBarSkin = _G.GetOverrideBarSkin
 local GetQuestLogRewardXP = _G.GetQuestLogRewardXP
 local GetRewardXP = _G.GetRewardXP
 local GetSpellInfo = _G.GetSpellInfo
@@ -42,15 +41,48 @@ local YES = _G.YES
 local hooksecurefunc = _G.hooksecurefunc
 
 function Module:CreateGUIGameMenuButton()
-	local gui = CreateFrame("Button", "KKUI_GameMenuFrame", GameMenuFrame, "GameMenuButtonTemplate, BackdropTemplate")
-	gui:SetText(K.InfoColor.."KkthnxUI|r")
-	gui:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
+	local KKUI_GUIButton = CreateFrame("Button", "KKUI_GameMenuButton", GameMenuFrame, "GameMenuButtonTemplate, BackdropTemplate")
+	KKUI_GUIButton:SetText(K.InfoColor.."KkthnxUI|r")
+	KKUI_GUIButton:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
+	KKUI_GUIButton:SkinButton()
+
 	GameMenuFrame:HookScript("OnShow", function(self)
-		GameMenuButtonLogout:SetPoint("TOP", gui, "BOTTOM", 0, -21)
-		self:SetHeight(self:GetHeight() + gui:GetHeight() + 22)
+		local plusHeight = 54
+		GameMenuButtonLogout:SetPoint("TOP", KKUI_GUIButton, "BOTTOM", 0, -21)
+
+		_G.GameMenuButtonStore:ClearAllPoints()
+		_G.GameMenuButtonStore:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -6)
+
+		_G.GameMenuButtonWhatsNew:ClearAllPoints()
+		_G.GameMenuButtonWhatsNew:SetPoint("TOP", _G.GameMenuButtonStore, "BOTTOM", 0, -6)
+
+		_G.GameMenuButtonUIOptions:ClearAllPoints()
+		_G.GameMenuButtonUIOptions:SetPoint("TOP", _G.GameMenuButtonOptions, "BOTTOM", 0, -6)
+
+		_G.GameMenuButtonKeybindings:ClearAllPoints()
+		_G.GameMenuButtonKeybindings:SetPoint("TOP", _G.GameMenuButtonUIOptions, "BOTTOM", 0, -6)
+
+		_G.GameMenuButtonMacros:ClearAllPoints()
+		_G.GameMenuButtonMacros:SetPoint("TOP", _G.GameMenuButtonKeybindings, "BOTTOM", 0, -6)
+
+		_G.GameMenuButtonAddons:ClearAllPoints()
+		_G.GameMenuButtonAddons:SetPoint("TOP", _G.GameMenuButtonMacros, "BOTTOM", 0, -6)
+
+		_G.GameMenuButtonQuit:ClearAllPoints()
+		_G.GameMenuButtonQuit:SetPoint("TOP", _G.GameMenuButtonLogout, "BOTTOM", 0, -6)
+
+		if IsCharacterNewlyBoosted() or not C_SplashScreen.CanViewSplashScreen() then
+			plusHeight = plusHeight - 4
+		elseif (C_StorePublic.IsEnabled()) then
+			plusHeight = plusHeight + 6
+		elseif (GameMenuButtonRatings:IsShown()) then
+			plusHeight = plusHeight + 6
+		end
+
+		self:SetHeight(self:GetHeight() + KKUI_GUIButton:GetHeight() + plusHeight)
 	end)
 
-	gui:SetScript("OnClick", function()
+	KKUI_GUIButton:SetScript("OnClick", function()
 		if InCombatLockdown() then
 			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
 			return
@@ -186,7 +218,7 @@ local function GetMawBarValue()
 end
 
 local MawRankColor = {
-	[0] = {.6, .8, 1},
+	[0] = {0.5, 0.7, 1},
 	[1] = {0, .7, .3},
 	[2] = {0, 1, 0},
 	[3] = {1, .8, 0},

@@ -811,6 +811,13 @@ function Module:CreatePlates()
 	self.npcTitle:Hide()
 	self:Tag(self.npcTitle, "[npctitle]")
 
+	self.guildName = K.CreateFontString(self, C["Nameplate"].NameTextSize - 1)
+	self.guildName:SetTextColor(211/255, 211/255, 211/255)
+	self.guildName:ClearAllPoints()
+	self.guildName:SetPoint("TOP", self, "BOTTOM", 0, -10)
+	self.guildName:Hide()
+	self:Tag(self.guildName, "[guildname]")
+
 	local tarName = K.CreateFontString(self, C["Nameplate"].NameTextSize + 2)
 	tarName:ClearAllPoints()
 	tarName:SetPoint("TOP", self, "BOTTOM", 0, -10)
@@ -854,11 +861,9 @@ function Module:CreatePlates()
 	self.Castbar.Time:SetPoint("RIGHT", self.Castbar, 0, -5)
 
 	self.Castbar.Shield = self.Castbar:CreateTexture(nil, "OVERLAY")
-	self.Castbar.Shield:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CastBorderShield")
-	self.Castbar.Shield:SetTexCoord(0, 0.84375, 0, 1)
-	self.Castbar.Shield:SetSize(16 * 0.84375, 16)
+	self.Castbar.Shield:SetAtlas("Soulbinds_Portrait_Lock")
+	self.Castbar.Shield:SetSize(self:GetHeight() + 14, self:GetHeight() + 14)
 	self.Castbar.Shield:SetPoint("CENTER", 0, -5)
-	self.Castbar.Shield:SetVertexColor(0.5, 0.5, 0.7)
 
 	self.Castbar.timeToHold = .5
 	self.Castbar.decimal = "%.1f"
@@ -1044,6 +1049,7 @@ function Module:UpdatePlateByType()
 	local level = self.levelText
 	local hpval = self.healthValue
 	local title = self.npcTitle
+	local guild = self.guildName
 	local raidtarget = self.RaidTargetIndicator
 	local classify = self.ClassifyIndicator
 	local questIcon = self.questIcon
@@ -1067,6 +1073,7 @@ function Module:UpdatePlateByType()
 		level:Hide()
 		hpval:Hide()
 		title:Show()
+		guild:Show()
 
 		raidtarget:SetPoint("TOP", title, "BOTTOM", 0, -5)
 		raidtarget:SetParent(self)
@@ -1095,6 +1102,7 @@ function Module:UpdatePlateByType()
 		level:Show()
 		hpval:Show()
 		title:Hide()
+		guild:Hide()
 
 		raidtarget:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)
 		raidtarget:SetParent(self.Health)

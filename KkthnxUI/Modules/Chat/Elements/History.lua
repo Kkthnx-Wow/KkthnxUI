@@ -31,8 +31,8 @@ function History:Print()
 
 	History.IsPrinting = true
 
-	for i = #KkthnxUIChatHistory, 1, -1 do
-		Temp = KkthnxUIChatHistory[i]
+	for i = #KkthnxUIDB.ChatHistory, 1, -1 do
+		Temp = KkthnxUIDB.ChatHistory[i]
 
 		ChatFrame_MessageEventHandler(ChatFrame1, Temp[EntryEvent], unpack(Temp))
 	end
@@ -48,10 +48,10 @@ function History:Save(event, ...)
 		Temp[EntryEvent] = event
 		Temp[EntryTime] = time()
 
-		table.insert(KkthnxUIChatHistory, 1, Temp)
+		table.insert(KkthnxUIDB.ChatHistory, 1, Temp)
 
-		for i = LogMax, #KkthnxUIChatHistory do
-			table.remove(KkthnxUIChatHistory, LogMax)
+		for i = LogMax, #KkthnxUIDB.ChatHistory do
+			table.remove(KkthnxUIDB.ChatHistory, LogMax)
 		end
 	end
 end
@@ -72,7 +72,7 @@ function Module:CreateChatHistory()
 	end
 
 	-- This is the global table where we save chat
-	KkthnxUIChatHistory = type(KkthnxUIChatHistory) == "table" and KkthnxUIChatHistory or {}
+	KkthnxUIDB.ChatHistory = type(KkthnxUIDB.ChatHistory) == "table" and KkthnxUIDB.ChatHistory or {}
 
 	-- Max number of entries logged
 	LogMax = C["Chat"].LogMax

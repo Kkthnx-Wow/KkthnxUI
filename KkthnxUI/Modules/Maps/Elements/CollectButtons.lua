@@ -97,9 +97,10 @@ function Module:CreateRecycleBin()
 
 	local isGoodLookingIcon = {
 		["Narci_MinimapButton"] = true,
+		["ZygorGuidesViewerMapIcon"] = true,
 	}
 
-	local iconsPerRow = 10
+	local iconsPerRow = 6
 	local rowMult = iconsPerRow / 2 - 1
 	local currentIndex, pendingTime, timeThreshold = 0, 5, 12
 	local buttons, numMinimapChildren = {}, 0
@@ -177,7 +178,7 @@ function Module:CreateRecycleBin()
 				local name = child and child.GetName and child:GetName()
 				if name and not child.isExamed and not blackList[name] then
 					if (child:IsObjectType("Button") or string_match(string_upper(name), "BUTTON")) and not isButtonIgnored(name) then
-						ReskinMinimapButton(child)
+						ReskinMinimapButton(child, name)
 					end
 					child.isExamed = true
 				end
@@ -213,7 +214,7 @@ function Module:CreateRecycleBin()
 			if not lastbutton then
 				button:SetPoint("BOTTOMRIGHT", bin, -6, 6)
 			elseif mod(index, iconsPerRow) == 1 then
-				button:SetPoint("BOTTOM", shownButtons[index - iconsPerRow], "TOP", 0, 6)
+				button:SetPoint("TOP", shownButtons[index - iconsPerRow], "BOTTOM", 0, -6)
 			else
 				button:SetPoint("RIGHT", lastbutton, "LEFT", -6, 0)
 			end

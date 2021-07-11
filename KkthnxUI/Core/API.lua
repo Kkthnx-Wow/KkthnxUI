@@ -293,11 +293,15 @@ local function SetModifiedBackdrop(self)
 		return
 	end
 
-	self.KKUI_Border:SetVertexColor(102/255, 157/255, 255/255, 1)
+	self.KKUI_Border:SetVertexColor(102/255, 157/255, 255/255)
 end
 
 local function SetOriginalBackdrop(self)
-	self.KKUI_Border:SetVertexColor(1, 1, 1)
+	if C["General"].ColorTextures then
+		self.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+	else
+		self.KKUI_Border:SetVertexColor(1, 1, 1)
+	end
 end
 
 local blizzButtonRegions = {
@@ -433,8 +437,7 @@ local arrowDegree = {
 }
 
 local function SetupArrow(self, direction)
-	self:SetTexture(C["Media"].Textures.ArrowTexture
-	)
+	self:SetTexture(C["Media"].Textures.ArrowTexture)
 	self:SetRotation(rad(arrowDegree[direction]))
 end
 

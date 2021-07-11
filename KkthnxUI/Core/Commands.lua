@@ -31,6 +31,32 @@ local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
+local EventTraceEnabled = true
+local EventTrace = CreateFrame("Frame")
+EventTrace:SetScript("OnEvent", function(self, event)
+	if (event ~= "GET_ITEM_INFO_RECEIVED" and event ~= "COMBAT_LOG_EVENT_UNFILTERED") then
+		K.Print(event)
+	end
+end)
+
+SlashCmdList["KKUI_EVENTTRACE"] = function()
+	if EventTraceEnabled then
+		EventTrace:UnregisterAllEvents()
+		EventTraceEnabled = false
+	else
+		EventTrace:RegisterAllEvents()
+		EventTraceEnabled = true
+	end
+end
+_G.SLASH_KKUI_EVENTTRACE1 = "/kkevent"
+_G.SLASH_KKUI_EVENTTRACE2 = "/kkevents"
+
+SlashCmdList["KKUI_GUI"] = function()
+	K.GUI:Toggle()
+end
+_G.SLASH_KKUI_GUI1 = "/kkgui"
+_G.SLASH_KKUI_GUI2 = "/kkconfig"
+
 SlashCmdList["KKUI_VOLUME"] = function(val)
 	local new = tonumber(val)
 	local old = tonumber(GetCVar("Sound_MasterVolume"))
@@ -47,8 +73,10 @@ SlashCmdList["KKUI_VOLUME"] = function(val)
 		K.Print(string_format("Volume is currently set to |cffa0f6aa%.2f|r.", old))
 	end
 end
-_G.SLASH_KKUI_VOLUME1 = "/vol"
-_G.SLASH_KKUI_VOLUME2 = "/volume"
+_G.SLASH_KKUI_VOLUME1 = "/kkvol"
+_G.SLASH_KKUI_VOLUME2 = "/kkvolume"
+_G.SLASH_KKUI_VOLUME3 = "/vol"
+_G.SLASH_KKUI_VOLUME4 = "/volume"
 
 -- Profiles data/listings
 SlashCmdList["KKUI_UIPROFILES"] = function(msg)
@@ -56,14 +84,14 @@ SlashCmdList["KKUI_UIPROFILES"] = function(msg)
 		K.Print("This command no longer has purpose. Please open KkthnxUI GUI and go to General and use the profile dropdown to pick the profile you want!")
 	end
 end
-_G.SLASH_KKUI_UIPROFILES1 = "/profile"
-_G.SLASH_KKUI_UIPROFILES2 = "/profiles"
+_G.SLASH_KKUI_UIPROFILES1 = "/kkprofile"
+_G.SLASH_KKUI_UIPROFILES2 = "/kkprofiles"
 
 -- Ready check
 SlashCmdList["KKUI_READYCHECK"] = function()
 	DoReadyCheck()
 end
-_G.SLASH_KKUI_READYCHECK1 = "/rc"
+_G.SLASH_KKUI_READYCHECK1 = "/kkrc"
 
 local QuestCheckSubDomain = (setmetatable({
 	ruRU = "ru",
@@ -99,8 +127,10 @@ SlashCmdList["KKUI_CHECKQUESTSTATUS"] = function(questid)
 		K.Print(WoWHeadLoc..questid)
 	end
 end
-_G.SLASH_KKUI_CHECKQUESTSTATUS1 = "/checkquest"
-_G.SLASH_KKUI_CHECKQUESTSTATUS2 = "/questcheck"
+_G.SLASH_KKUI_CHECKQUESTSTATUS1 = "/kkqc"
+_G.SLASH_KKUI_CHECKQUESTSTATUS1 = "/kkcq"
+_G.SLASH_KKUI_CHECKQUESTSTATUS1 = "/kkcheckquest"
+_G.SLASH_KKUI_CHECKQUESTSTATUS2 = "/kkquestcheck"
 
 -- Help frame.
 SlashCmdList["KKUI_GMTICKET"] = function()

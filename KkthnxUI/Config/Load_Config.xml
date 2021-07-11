@@ -17,6 +17,7 @@
    <Script file="Elements\PortraitTimers.lua" />
    <Script file="Elements\RaidUtilityBuffs.lua" />
    <Script file="Elements\SpellReminders.lua" />
+   <Script file="Elements\StatPriorities.lua" />
    <Script file="Elements\UnitframeAuras.lua" />
 
    <Include file="Elements\AuraWatchList\AuraWatchList.xml"/>

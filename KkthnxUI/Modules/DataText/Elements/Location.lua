@@ -15,7 +15,8 @@ local GetZonePVPInfo = _G.GetZonePVPInfo
 local GetZoneText = _G.GetZoneText
 local SANCTUARY_TERRITORY = _G.SANCTUARY_TERRITORY
 
-local zone, pvpType
+local zone, pvpType, subZone
+local LocationDataText
 
 local zoneInfo = {
 	arena = {FREE_FOR_ALL_TERRITORY, {0.84, 0.03, 0.03}},
@@ -58,7 +59,7 @@ function Module:CreateLocationDataText()
 			return
 		end
 
-		Module.LocationFrame:Show()
+		LocationDataText:Show()
 	end)
 
 	Minimap:HookScript("OnLeave", function()
@@ -66,26 +67,26 @@ function Module:CreateLocationDataText()
 			return
 		end
 
-		Module.LocationFrame:Hide()
+		LocationDataText:Hide()
 	end)
 
-	Module.LocationFrame = CreateFrame("Frame", "KKUI_LocationDataText", UIParent)
-	Module.LocationFrame:SetPoint("TOP", Minimap, "TOP", 0, -4)
-	Module.LocationFrame:SetSize(Minimap:GetWidth(), 13)
-	Module.LocationFrame:SetFrameLevel(Minimap:GetFrameLevel() + 2)
+	LocationDataText = LocationDataText or CreateFrame("Frame", "KKUI_LocationDataText", UIParent)
+	LocationDataText:SetPoint("TOP", Minimap, "TOP", 0, -4)
+	LocationDataText:SetSize(Minimap:GetWidth(), 13)
+	LocationDataText:SetFrameLevel(Minimap:GetFrameLevel() + 2)
 	if C["Minimap"].LocationText.Value ~= "SHOW" or not C["Minimap"].Enable then
-		Module.LocationFrame:Hide()
+		LocationDataText:Hide()
 	end
 
-	Module.MainZoneFont = Module.LocationFrame:CreateFontString("OVERLAY")
+	Module.MainZoneFont = LocationDataText:CreateFontString("OVERLAY")
 	Module.MainZoneFont:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 	Module.MainZoneFont:SetFont(select(1, Module.MainZoneFont:GetFont()), 13, select(3, Module.MainZoneFont:GetFont()))
-	Module.MainZoneFont:SetAllPoints(Module.LocationFrame)
+	Module.MainZoneFont:SetAllPoints(LocationDataText)
 	Module.MainZoneFont:SetWordWrap(true)
 	Module.MainZoneFont:SetNonSpaceWrap(true)
 	Module.MainZoneFont:SetMaxLines(2)
 
-	Module.SubZoneFont = Module.LocationFrame:CreateFontString("OVERLAY")
+	Module.SubZoneFont = LocationDataText:CreateFontString("OVERLAY")
 	Module.SubZoneFont:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 	Module.SubZoneFont:SetFont(select(1, Module.SubZoneFont:GetFont()), 11, select(3, Module.SubZoneFont:GetFont()))
 	Module.SubZoneFont:SetPoint("TOP", Module.MainZoneFont, "BOTTOM", 0, -1)
@@ -97,5 +98,5 @@ function Module:CreateLocationDataText()
 	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", Module.LocationOnEvent)
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.LocationOnEvent)
 
-	Module.LocationFrame:SetScript("OnEvent", Module.LocationOnUpdate)
+	LocationDataText:SetScript("OnEvent", Module.LocationOnUpdate)
 end

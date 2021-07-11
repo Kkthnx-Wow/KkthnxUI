@@ -10,15 +10,15 @@ local HasAction = _G.HasAction
 local IsActionInRange = _G.IsActionInRange
 local IsUsableAction = _G.IsUsableAction
 
-local UPDATE_DELAY = .2
+local UPDATE_DELAY = 0.2
 local buttonColors, buttonsToUpdate = {}, {}
 local updater = CreateFrame("Frame")
 
 local colors = {
 	["normal"] = {1, 1, 1},
-	["oor"] = {.8, .1, .1},
-	["oom"] = {.5, .5, 1},
-	["unusable"] = {.3, .3, .3}
+	["oor"] = {0.8, 0.1, 0.1},
+	["oom"] = {0.5, 0.5, 1},
+	["unusable"] = {0.3, 0.3, 0.3}
 }
 
 function Module:OnUpdateRange(elapsed)

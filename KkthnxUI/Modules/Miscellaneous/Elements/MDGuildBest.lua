@@ -158,7 +158,7 @@ function Module:KeystoneInfo_WeeklyRuns()
 	local numRuns = runHistory and #runHistory
 	if numRuns > 0 then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(string_format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, WeeklyRunsThreshold), "("..numRuns..")", 0.6, 0.8, 1)
+		GameTooltip:AddDoubleLine(string_format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, WeeklyRunsThreshold), "("..numRuns..")", 0.5, 0.7, 1)
 		table.sort(runHistory, sortHistory)
 
 		for i = 1, WeeklyRunsThreshold do
@@ -207,7 +207,7 @@ function Module:KeystoneInfo_Create()
 		end
 
 		GameTooltip:AddLine("")
-		GameTooltip:AddDoubleLine(" ", K.ScrollButton..L["Reset Data"].." ", 1, 1, 1, 0.6, 0.8, 1)
+		GameTooltip:AddDoubleLine(" ", K.ScrollButton..L["Reset Data"].." ", 1, 1, 1, 0.5, 0.7, 1)
 		GameTooltip:Show()
 	end)
 

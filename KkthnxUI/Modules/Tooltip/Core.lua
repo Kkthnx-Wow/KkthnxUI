@@ -263,7 +263,7 @@ function Module:OnTooltipSetUnit()
 				if IsInGuild() and guildName == myGuild and guildRealm == myGuildRealm then
 					GameTooltipTextLeft2:SetTextColor(0.25, 1, 0.25)
 				else
-					GameTooltipTextLeft2:SetTextColor(0.6, 0.8, 1)
+					GameTooltipTextLeft2:SetTextColor(0.5, 0.7, 1)
 				end
 
 				rankIndex = rankIndex + 1

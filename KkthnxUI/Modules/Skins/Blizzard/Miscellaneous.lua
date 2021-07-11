@@ -16,4 +16,18 @@ table_insert(C.defaultThemes, function()
 	FrameIconBorderFrame:CreateBorder()
 
 	GhostFrame:SkinButton()
+
+	local NPCFriendshipStatusBar = _G.NPCFriendshipStatusBar
+
+	NPCFriendshipStatusBar:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
+
+	if not NPCFriendshipStatusBar.Spark then
+		NPCFriendshipStatusBar.Spark = NPCFriendshipStatusBar:CreateTexture(nil, "OVERLAY")
+		NPCFriendshipStatusBar.Spark:SetWidth(64)
+		NPCFriendshipStatusBar.Spark:SetHeight(NPCFriendshipStatusBar:GetHeight())
+		NPCFriendshipStatusBar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
+		NPCFriendshipStatusBar.Spark:SetBlendMode("ADD")
+		NPCFriendshipStatusBar.Spark:SetPoint("CENTER", NPCFriendshipStatusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
+		NPCFriendshipStatusBar.Spark:SetAlpha(0.5)
+	end
 end)

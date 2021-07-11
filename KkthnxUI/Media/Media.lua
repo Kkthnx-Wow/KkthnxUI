@@ -2,9 +2,7 @@ local K, C = unpack(select(2, ...))
 
 C["Media"] = {
 	["Sounds"] = {
-		ProcSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Proc.ogg]],
-		WarningSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Warning.ogg]],
-		WhisperSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Whisper.ogg]],
+		KillingBlow = [[Interface\AddOns\KkthnxUI\Media\Sounds\KillingBlow.ogg]],
 	},
 
 	["Backdrops"] = {

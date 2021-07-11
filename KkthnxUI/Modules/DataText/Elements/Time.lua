@@ -4,10 +4,8 @@ local Module = K:GetModule("Infobar")
 local _G = _G
 local date = _G.date
 local ipairs = _G.ipairs
-local math_floor = _G.math.floor
 local mod = _G.mod
 local pairs = _G.pairs
-local select = _G.select
 local string_find = _G.string.find
 local string_format = _G.string.format
 local time = _G.time
@@ -51,9 +49,8 @@ local SecondsToTime = _G.SecondsToTime
 local TIMEMANAGER_TICKER_12HOUR = _G.TIMEMANAGER_TICKER_12HOUR
 local TIMEMANAGER_TICKER_24HOUR = _G.TIMEMANAGER_TICKER_24HOUR
 
-local timeTimer = 0
-local timeFrame
-local timeEntered = false
+local TimeDataText
+local TimeDataTextEntered
 
 -- Data
 local region = GetCVar("portal")
@@ -108,11 +105,11 @@ local horrificVisions = {
 	[8] = {id = 57841, desc = "420 (1+0)"},
 }
 
-function Module:updateTimerFormat(color, hour, minute)
+local function updateTimerFormat(color, hour, minute)
 	if GetCVarBool("timeMgrUseMilitaryTime") then
 		return string_format(color..TIMEMANAGER_TICKER_24HOUR, hour, minute)
 	else
-		local timerUnit = K.MyClassColor..(hour < 12 and "am" or "pm")
+		local timerUnit = K.MyClassColor..(hour < 12 and "AM" or "PM")
 
 		if hour >= 12 then
 			if hour > 12 then
@@ -129,19 +126,18 @@ function Module:updateTimerFormat(color, hour, minute)
 end
 
 function Module:TimeOnUpdate(elapsed)
-	timeTimer = (timeTimer or 3) + elapsed
-	if timeTimer > 5 then
+	self.timer = (self.timer or 3) + elapsed
+	if self.timer > 5 then
 		local color = C_Calendar_GetNumPendingInvites() > 0 and "|cffFF0000" or ""
-
 		local hour, minute
 		if GetCVarBool("timeMgrUseLocalTime") then
 			hour, minute = tonumber(date("%H")), tonumber(date("%M"))
 		else
 			hour, minute = GetGameTime()
 		end
-		timeFrame.Font:SetText(Module:updateTimerFormat(color, hour, minute))
+		TimeDataText.Font:SetText(updateTimerFormat(color, hour, minute))
 
-		timeTimer = 0
+		self.timer = 0
 	end
 end
 
@@ -248,19 +244,19 @@ local function addTitle(text)
 end
 
 function Module:TimeOnShiftDown()
-	if timeEntered then
+	if TimeDataTextEntered then
 		Module:TimeOnEnter()
 	end
 end
 
 function Module:TimeOnEnter()
-	timeEntered = true
+	TimeDataTextEntered = true
 
 	RequestRaidInfo()
 
 	local r, g, b
-	GameTooltip:SetOwner(timeFrame, "ANCHOR_NONE")
-	GameTooltip:SetPoint(K.GetAnchors(timeFrame))
+	GameTooltip:SetOwner(TimeDataText, "ANCHOR_NONE")
+	GameTooltip:SetPoint(K.GetAnchors(TimeDataText))
 	GameTooltip:ClearLines()
 
 	local today = C_DateAndTime_GetCurrentCalendarTime()
@@ -416,7 +412,7 @@ function Module:TimeOnEnter()
 end
 
 function Module:TimeOnLeave()
-	timeEntered = false
+	TimeDataTextEntered = false
 	K.HideTooltip()
 	K:UnregisterEvent("MODIFIER_STATE_CHANGED", Module.TimeOnShiftDown)
 end
@@ -434,11 +430,6 @@ function Module:TimeOnMouseUp(btn)
 			ToggleFrame(WeeklyRewardsFrame)
 		end
 	else
-		if InCombatLockdown() then
-			_G.UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
-			return
-		end
-
 		_G.ToggleCalendar()
 	end
 end
@@ -452,16 +443,16 @@ function Module:CreateTimeDataText()
 		return
 	end
 
-	timeFrame = timeFrame or CreateFrame("Frame", "KKUI_TimeDataText", Minimap)
+	TimeDataText = TimeDataText or CreateFrame("Frame", "KKUI_TimeDataText", Minimap)
 
-	timeFrame.Font = timeFrame.Font or timeFrame:CreateFontString("OVERLAY")
-	timeFrame.Font:FontTemplate(nil, 13)
-	timeFrame.Font:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 2)
+	TimeDataText.Font = TimeDataText.Font or TimeDataText:CreateFontString("OVERLAY")
+	TimeDataText.Font:FontTemplate(nil, 13)
+	TimeDataText.Font:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 2)
 
-	timeFrame:SetAllPoints(timeFrame.Font)
+	TimeDataText:SetAllPoints(TimeDataText.Font)
 
-	timeFrame:SetScript("OnUpdate", Module.TimeOnUpdate)
-	timeFrame:SetScript("OnEnter", Module.TimeOnEnter)
-	timeFrame:SetScript("OnLeave", Module.TimeOnLeave)
-	timeFrame:SetScript("OnMouseUp", Module.TimeOnMouseUp)
+	TimeDataText:SetScript("OnUpdate", Module.TimeOnUpdate)
+	TimeDataText:SetScript("OnEnter", Module.TimeOnEnter)
+	TimeDataText:SetScript("OnLeave", Module.TimeOnLeave)
+	TimeDataText:SetScript("OnMouseUp", Module.TimeOnMouseUp)
 end

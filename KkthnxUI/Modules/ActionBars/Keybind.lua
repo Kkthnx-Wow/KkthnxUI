@@ -75,7 +75,7 @@ function Module:Bind_Create()
 	frame:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(frame, "ANCHOR_NONE")
 		GameTooltip:SetPoint("BOTTOM", frame, "TOP", 0, 2)
-		GameTooltip:AddLine(frame.tipName or frame.name, 0.6, 0.8, 1)
+		GameTooltip:AddLine(frame.tipName or frame.name, 0.5, 0.7, 1)
 
 		if #frame.bindings == 0 then
 			GameTooltip:AddLine(NOT_BOUND, 1, 0, 0)

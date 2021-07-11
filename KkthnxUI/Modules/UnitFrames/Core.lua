@@ -118,6 +118,10 @@ function Module:UpdateThreat(_, unit)
 
 	local status = UnitThreatSituation(unit)
 	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
+		if not self then
+			return
+		end
+
 		if not self.Portrait then
 			return
 		end
@@ -137,6 +141,10 @@ function Module:UpdateThreat(_, unit)
 			end
 		end
 	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
+		if not self then
+			return
+		end
+
 		if not self.Portrait.Border then
 			return
 		end

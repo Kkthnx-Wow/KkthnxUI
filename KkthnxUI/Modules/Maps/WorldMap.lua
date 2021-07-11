@@ -268,8 +268,6 @@ function Module:OnEnable()
 	-- This lets us control the maps fading function
 	hooksecurefunc(PlayerMovementFrameFader, "AddDeferredFrame", self.UpdateMapFade)
 
-	QuestMapFrame:SetScript("OnHide", nil) -- fix map toggle taint
-
 	-- Enable/Disable map fading when moving
 	-- currently we dont need to touch this cvar because we have our own control for this currently
 	-- see the comment in `M:UpdateMapFade` about `durationSec` for more information

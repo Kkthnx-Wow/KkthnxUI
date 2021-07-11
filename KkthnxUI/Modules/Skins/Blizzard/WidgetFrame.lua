@@ -2,18 +2,22 @@ local K, C = unpack(select(2, ...))
 
 -- Sourced: ShestakUI
 
+local _G = _G
+
+local hooksecurefunc = _G.hooksecurefunc
+
 local Type_StatusBar = _G.Enum.UIWidgetVisualizationType.StatusBar
 local Type_CaptureBar = _G.Enum.UIWidgetVisualizationType.CaptureBar
 local Type_SpellDisplay = _G.Enum.UIWidgetVisualizationType.SpellDisplay
 local Type_DoubleStatusBar = _G.Enum.UIWidgetVisualizationType.DoubleStatusBar
 
 local atlasColors = {
-	["UI-Frame-Bar-Fill-Blue"] = {.2, .6, 1},
-	["UI-Frame-Bar-Fill-Red"] = {.9, .2, .2},
-	["UI-Frame-Bar-Fill-Yellow"] = {1, .6, 0},
-	["objectivewidget-bar-fill-left"] = {.2, .6, 1},
-	["objectivewidget-bar-fill-right"] = {.9, .2, .2},
-	["EmberCourtScenario-Tracker-barfill"] = {.9, .2, .2},
+	["UI-Frame-Bar-Fill-Blue"] = {0.2, 0.6, 1},
+	["UI-Frame-Bar-Fill-Red"] = {0.9, 0.2, 0.2},
+	["UI-Frame-Bar-Fill-Yellow"] = {1, 0.6, 0},
+	["objectivewidget-bar-fill-left"] = {0.2, 0.6, 1},
+	["objectivewidget-bar-fill-right"] = {0.9, 0.2, 0.2},
+	["EmberCourtScenario-Tracker-barfill"] = {0.9, 0.2, 0.2},
 }
 
 function K:ReplaceWidgetBarTexture(atlas)
@@ -25,20 +29,49 @@ end
 
 local function ReskinWidgetStatusBar(bar)
 	if bar and not bar.styled then
-		if bar.BG then bar.BG:SetAlpha(0) end
-		if bar.BGLeft then bar.BGLeft:SetAlpha(0) end
-		if bar.BGRight then bar.BGRight:SetAlpha(0) end
-		if bar.BGCenter then bar.BGCenter:SetAlpha(0) end
-		if bar.BorderLeft then bar.BorderLeft:SetAlpha(0) end
-		if bar.BorderRight then bar.BorderRight:SetAlpha(0) end
-		if bar.BorderCenter then bar.BorderCenter:SetAlpha(0) end
-		if bar.Spark then bar.Spark:SetAlpha(0) end
-		if bar.SparkGlow then bar.SparkGlow:SetAlpha(0) end
-		if bar.BorderGlow then bar.BorderGlow:SetAlpha(0) end
+		if bar.BG then
+			bar.BG:SetAlpha(0)
+		end
+
+		if bar.BGLeft then
+			bar.BGLeft:SetAlpha(0)
+		end
+
+		if bar.BGRight then
+			bar.BGRight:SetAlpha(0)
+		end
+
+		if bar.BGCenter then
+			bar.BGCenter:SetAlpha(0)
+		end
+
+		if bar.BorderLeft then
+			bar.BorderLeft:SetAlpha(0)
+		end
+
+		if bar.BorderRight then
+			bar.BorderRight:SetAlpha(0)
+		end
+
+		if bar.BorderCenter then
+			bar.BorderCenter:SetAlpha(0)
+		end
+
+		if bar.Spark then
+			bar.Spark:SetAlpha(0)
+		end
+
+		if bar.SparkGlow then
+			bar.SparkGlow:SetAlpha(0)
+		end
+
+		if bar.BorderGlow then
+			bar.BorderGlow:SetAlpha(0)
+		end
+
 		if bar.Label then
 			bar.Label:SetPoint("CENTER", 0, -5)
-			bar.Label:SetFontObject(Game12Font)
-			bar.Label:SetDrawLayer("ARTWORK")
+			bar.Label:SetFontObject(KkthnxUIFont)
 		end
 		bar:CreateShadow(true)
 		K.ReplaceWidgetBarTexture(bar, bar:GetStatusBarAtlas())
@@ -88,18 +121,13 @@ local function ReskinSpellDisplayWidget(self)
 		widgetSpell.IconMask:Hide()
 		widgetSpell.Border:SetTexture(nil)
 		widgetSpell.DebuffBorder:SetTexture(nil)
-		widgetSpell.Icon:SetTexCoord(unpack(K.SetTexCoords))
+		widgetSpell.Icon:SetTexCoord(unpack(K.TexCoords))
 
 		self.styled = true
 	end
 end
 
-local ignoredWidgetIDs = {
-	[3246] = true, -- Torghast progressbar
-	[3273] = true, -- Torghast progressbar
-}
-
-tinsert(C.defaultThemes, function()
+table.insert(C.defaultThemes, function()
 	hooksecurefunc(_G.UIWidgetTopCenterContainerFrame, "UpdateWidgetLayout", function(self)
 		for _, widgetFrame in pairs(self.widgetFrames) do
 			local widgetType = widgetFrame.widgetType
@@ -129,9 +157,24 @@ tinsert(C.defaultThemes, function()
 		end
 	end)
 
+	hooksecurefunc(_G.TopScenarioWidgetContainerBlock.WidgetContainer, "UpdateWidgetLayout", function(self)
+		for _, widgetFrame in pairs(self.widgetFrames) do
+			if widgetFrame.widgetType == Type_StatusBar then
+				ReskinWidgetStatusBar(widgetFrame.Bar)
+			end
+		end
+	end)
+
+	hooksecurefunc(_G.BottomScenarioWidgetContainerBlock.WidgetContainer, "UpdateWidgetLayout", function(self)
+		for _, widgetFrame in pairs(self.widgetFrames) do
+			if widgetFrame.widgetType == Type_SpellDisplay then
+				ReskinSpellDisplayWidget(widgetFrame)
+			end
+		end
+	end)
+
 	-- needs review, might remove this in the future
 	hooksecurefunc(_G.UIWidgetTemplateStatusBarMixin, "Setup", function(self)
-		if ignoredWidgetIDs[self.widgetID] then return end
 		ReskinWidgetStatusBar(self.Bar)
 	end)
 end)

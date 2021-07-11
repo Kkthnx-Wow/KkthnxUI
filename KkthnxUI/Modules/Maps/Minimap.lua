@@ -240,23 +240,23 @@ end
 -- This is just weird to do this but I hate the default icons for covs
 local function UpdateCovenantTexture(texture)
 	local CovenantID = C_Covenants.GetActiveCovenantID()
-	if not CovenantID then
-		return
-	end
+	local TexturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\"
 
-	if CovenantID == 1 then
-		texture = "Interface\\ICONS\\INV_Misc_Sigil_Bastion01"
-	elseif CovenantID == 2 then
-		texture = "Interface\\ICONS\\INV_Misc_Sigil_Revendreth01"
-	elseif CovenantID == 3 then
-		texture = "Interface\\ICONS\\INV_Misc_Sigil_Ardenweald01"
-	elseif CovenantID == 4 then
-		texture = "Interface\\ICONS\\INV_Misc_Sigil_Maldraxxus01"
+	if CovenantID and CovenantID ~= 0 then
+		if CovenantID == 1 then
+			texture = TexturePath.."Kyrian"
+		elseif CovenantID == 2 then
+			texture = TexturePath.."Venthyr"
+		elseif CovenantID == 3 then
+			texture = TexturePath.."NightFae"
+		elseif CovenantID == 4 then
+			texture = TexturePath.."Necrolords"
+		end
 	else -- No cov so default to differnt icons?
 		if K.Faction == "Alliance" then
-			texture = "Interface\\ICONS\\UI_Alliance_7LegionMedal"
+			texture = TexturePath.."Alliance"
 		else
-			texture = "Interface\\ICONS\\UI_Horde_HonorboundMedal"
+			texture = TexturePath.."Horde"
 		end
 	end
 
@@ -371,7 +371,7 @@ function Module:ReskinRegions()
 	inviteNotification:SetScript("OnClick", function(_, btn)
 		inviteNotification:Hide()
 
-		if btn == "LeftButton" and not InCombatLockdown() then
+		if btn == "LeftButton" then
 			ToggleCalendar()
 		end
 

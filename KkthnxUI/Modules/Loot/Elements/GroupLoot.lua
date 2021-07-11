@@ -1,6 +1,5 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Loot")
-K.GroupLoot = Module
 
 local _G = _G
 local ipairs = _G.ipairs
@@ -8,30 +7,29 @@ local next = _G.next
 local pairs = _G.pairs
 local tonumber = _G.tonumber
 
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local C_LootHistoryGetItem = _G.C_LootHistory.GetItem
 local C_LootHistoryGetPlayerInfo = _G.C_LootHistory.GetPlayerInfo
 local ChatEdit_InsertLink = _G.ChatEdit_InsertLink
 local CreateFrame = _G.CreateFrame
 local CursorOnUpdate = _G.CursorOnUpdate
-local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local DressUpItemLink = _G.DressUpItemLink
+local GREED = _G.GREED
 local GameTooltip = _G.GameTooltip
 local GameTooltip_ShowCompareItem = _G.GameTooltip_ShowCompareItem
 local GetLootRollItemInfo = _G.GetLootRollItemInfo
 local GetLootRollItemLink = _G.GetLootRollItemLink
 local GetLootRollTimeLeft = _G.GetLootRollTimeLeft
-local GREED = _G.GREED
+local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsModifiedClick = _G.IsModifiedClick
 local IsShiftKeyDown = _G.IsShiftKeyDown
-local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
 local NEED = _G.NEED
 local PASS = _G.PASS
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
-local ResetCursor = _G.ResetCursor
 local ROLL_DISENCHANT = _G.ROLL_DISENCHANT
+local ResetCursor = _G.ResetCursor
 local RollOnLoot = _G.RollOnLoot
-local SetDesaturation = _G.SetDesaturation
 local ShowInspectCursor = _G.ShowInspectCursor
 
 local pos = "TOP"
@@ -245,9 +243,9 @@ local function GetFrame()
 
 	local f = Module:CreateRollFrame()
 	if pos == "TOP" then
-		f:SetPoint("TOP", next(Module.RollBars) and Module.RollBars[#Module.RollBars] or AlertFrameHolder, "BOTTOM", 0, -4)
+		f:SetPoint("TOP", next(Module.RollBars) and Module.RollBars[#Module.RollBars] or _G.AlertFrameHolder, "BOTTOM", 0, -6)
 	else
-		f:SetPoint("BOTTOM", next(Module.RollBars) and Module.RollBars[#Module.RollBars] or AlertFrameHolder, "TOP", 0, 4)
+		f:SetPoint("BOTTOM", next(Module.RollBars) and Module.RollBars[#Module.RollBars] or _G.AlertFrameHolder, "TOP", 0, 6)
 	end
 
 	table.insert(Module.RollBars, f)
@@ -296,9 +294,12 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 		f.disenchantbutt:Disable()
 	end
 
-	SetDesaturation(f.needbutt:GetNormalTexture(), not canNeed)
-	SetDesaturation(f.greedbutt:GetNormalTexture(), not canGreed)
-	SetDesaturation(f.disenchantbutt:GetNormalTexture(), not canDisenchant)
+	local needTexture = f.needbutt:GetNormalTexture()
+	local greenTexture = f.greedbutt:GetNormalTexture()
+	local disenchantTexture = f.disenchantbutt:GetNormalTexture()
+	needTexture:SetDesaturation(not canNeed)
+	greenTexture:SetDesaturation(not canGreed)
+	disenchantTexture:SetDesaturation(not canDisenchant)
 
 	if canNeed then
 		f.needbutt:SetAlpha(1)
@@ -318,7 +319,7 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 		f.disenchantbutt:SetAlpha(0.2)
 	end
 
-	f.fsbind:SetText(bop and "BoP" or "BoE")
+	f.fsbind:SetText(bop and L["BoP"] or L["BoE"])
 	f.fsbind:SetVertexColor(bop and 1 or 0.3, bop and 0.3 or 1, bop and 0.1 or 0.3)
 
 	local color = ITEM_QUALITY_COLORS[quality]
@@ -395,3 +396,36 @@ function Module:CreateGroupLoot()
 	UIParent:UnregisterEvent("START_LOOT_ROLL")
 	UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
 end
+
+SlashCmdList.TESTROLL = function()
+	local f = GetFrame()
+	local items = {32837, 34196, 33820}
+	if f:IsShown() then
+		f:Hide()
+	else
+		local item = items[math.random(1, #items)]
+		local _, _, quality, _, _, _, _, _, _, texture = GetItemInfo(item)
+		local r, g, b = GetItemQualityColor(quality or 1)
+
+		f.button.icon:SetTexture(texture)
+		f.button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+
+		f.fsloot:SetText(GetItemInfo(item))
+		f.fsloot:SetVertexColor(r, g, b)
+
+		f.status:SetMinMaxValues(0, 100)
+		f.status:SetValue(math.random(50, 90))
+		f.status:SetStatusBarColor(r, g, b, 0.7)
+
+		f.KKUI_Border:SetVertexColor(r, g, b)
+		f.button.KKUI_Border:SetVertexColor(r, g, b)
+
+		f.need:SetText(0)
+		f.greed:SetText(0)
+		f.pass:SetText(0)
+
+		f.button.link = "item:"..item..":0:0:0:0:0:0:0"
+		f:Show()
+	end
+end
+SLASH_TESTROLL1 = "/kkroll"

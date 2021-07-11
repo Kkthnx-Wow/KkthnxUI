@@ -202,11 +202,9 @@ function Module:CreateTarget()
 		self.ShieldOverlay:SetFrameLevel(5)
 
 		self.Castbar.Shield = self.ShieldOverlay:CreateTexture(nil, "OVERLAY")
-		self.Castbar.Shield:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CastBorderShield")
-		self.Castbar.Shield:SetTexCoord(0, 0.84375, 0, 1)
-		self.Castbar.Shield:SetSize(C["Unitframe"].TargetCastbarHeight * 0.84375, C["Unitframe"].TargetCastbarHeight)
+		self.Castbar.Shield:SetAtlas("Soulbinds_Portrait_Lock")
+		self.Castbar.Shield:SetSize(C["Unitframe"].TargetCastbarHeight + 10, C["Unitframe"].TargetCastbarHeight + 10)
 		self.Castbar.Shield:SetPoint("CENTER", 0, -14)
-		self.Castbar.Shield:SetVertexColor(0.5, 0.5, 0.7)
 
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)

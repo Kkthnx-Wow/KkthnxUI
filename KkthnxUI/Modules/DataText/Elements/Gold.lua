@@ -32,6 +32,7 @@ local profit = 0
 local spent = 0
 local oldMoney = 0
 local crossRealms = GetAutoCompleteRealms()
+local GoldDataText
 
 if not crossRealms or #crossRealms == 0 then
 	crossRealms = {[1] = K.Realm}
@@ -43,11 +44,11 @@ StaticPopupDialogs["RESETGOLD"] = {
 	button2 = NO,
 	OnAccept = function()
 		for _, realm in pairs(crossRealms) do
-			if KkthnxUIGold.totalGold[realm] then
-				table_wipe(KkthnxUIGold.totalGold[realm])
+			if KkthnxUIDB.Gold.totalGold[realm] then
+				table_wipe(KkthnxUIDB.Gold.totalGold[realm])
 			end
 		end
-		KkthnxUIGold.totalGold[K.Realm][K.Name] = {GetMoney(), K.Class}
+		KkthnxUIDB.Gold.totalGold[K.Realm][K.Name] = {GetMoney(), K.Class}
 	end,
 	whileDead = 1,
 }
@@ -75,7 +76,7 @@ local function OnEvent(_, event, arg1)
 
 	if event == "PLAYER_ENTERING_WORLD" then
 		oldMoney = GetMoney()
-		Module.GoldDataTextFrame:UnregisterEvent(event)
+		GoldDataText:UnregisterEvent(event)
 	elseif event == "BAG_UPDATE" then
 		if arg1 < 0 or arg1 > 4 then
 			return
@@ -97,46 +98,46 @@ local function OnEvent(_, event, arg1)
 
 	if C["DataText"].Gold then
 		if C["DataText"].HideText then
-			Module.GoldDataTextFrame.Text:SetText("")
+			GoldDataText.Text:SetText("")
 		else
 			if KkthnxUIDB.ShowSlots then
-				Module.GoldDataTextFrame.Text:SetText(getSlotString())
+				GoldDataText.Text:SetText(getSlotString())
 			else
-				Module.GoldDataTextFrame.Text:SetText(K.FormatMoney(newMoney))
+				GoldDataText.Text:SetText(K.FormatMoney(newMoney))
 			end
 		end
 	end
 
-	KkthnxUIGold = KkthnxUIGold or {}
-	KkthnxUIGold.totalGold = KkthnxUIGold.totalGold or {}
+	KkthnxUIDB.Gold = KkthnxUIDB.Gold or {}
+	KkthnxUIDB.Gold.totalGold = KkthnxUIDB.Gold.totalGold or {}
 
-	if not KkthnxUIGold.totalGold[K.Realm] then
-		KkthnxUIGold.totalGold[K.Realm] = {}
+	if not KkthnxUIDB.Gold.totalGold[K.Realm] then
+		KkthnxUIDB.Gold.totalGold[K.Realm] = {}
 	end
 
-	if not KkthnxUIGold.totalGold[K.Realm][K.Name] then
-		KkthnxUIGold.totalGold[K.Realm][K.Name] = {}
+	if not KkthnxUIDB.Gold.totalGold[K.Realm][K.Name] then
+		KkthnxUIDB.Gold.totalGold[K.Realm][K.Name] = {}
 	end
 
-	KkthnxUIGold.ServerID = KkthnxUIGold.ServerID or {}
-	KkthnxUIGold.ServerID[K.ServerID] = KkthnxUIGold.ServerID[K.ServerID] or {}
-	KkthnxUIGold.ServerID[K.ServerID][K.Realm] = true
+	KkthnxUIDB.Gold.ServerID = KkthnxUIDB.Gold.ServerID or {}
+	KkthnxUIDB.Gold.ServerID[K.ServerID] = KkthnxUIDB.Gold.ServerID[K.ServerID] or {}
+	KkthnxUIDB.Gold.ServerID[K.ServerID][K.Realm] = true
 
-	KkthnxUIGold.totalGold[K.Realm][K.Name][1] = GetMoney()
-	KkthnxUIGold.totalGold[K.Realm][K.Name][2] = K.Class
+	KkthnxUIDB.Gold.totalGold[K.Realm][K.Name][1] = GetMoney()
+	KkthnxUIDB.Gold.totalGold[K.Realm][K.Name][2] = K.Class
 
 	oldMoney = newMoney
 end
 
-local function OnEnter()
-	GameTooltip:SetOwner(Module.GoldDataTextFrame, "ANCHOR_NONE")
-	GameTooltip:SetPoint(K.GetAnchors(Module.GoldDataTextFrame))
+local function OnEnter(self)
+	GameTooltip:SetOwner(GoldDataText, "ANCHOR_NONE")
+	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
 
 	GameTooltip:AddLine(K.InfoColor..CURRENCY)
 	GameTooltip:AddLine(" ")
 
-	GameTooltip:AddLine(L["Session"], 0.6, 0.8, 1)
+	GameTooltip:AddLine(L["Session"], 0.5, 0.7, 1)
 	GameTooltip:AddDoubleLine(L["Earned"], K.FormatMoney(profit), 1, 1, 1, 1, 1, 1)
 	GameTooltip:AddDoubleLine(L["Spent"], K.FormatMoney(spent), 1, 1, 1, 1, 1, 1)
 	if profit < spent then
@@ -147,9 +148,9 @@ local function OnEnter()
 	GameTooltip:AddLine(" ")
 
 	local totalGold = 0
-	GameTooltip:AddLine(L["RealmCharacter"], 0.6, 0.8, 1)
-	for realm in pairs(KkthnxUIGold.ServerID[K.ServerID]) do
-		local thisRealmList = KkthnxUIGold.totalGold[realm]
+	GameTooltip:AddLine(L["RealmCharacter"], 0.5, 0.7, 1)
+	for realm in pairs(KkthnxUIDB.Gold.ServerID[K.ServerID]) do
+		local thisRealmList = KkthnxUIDB.Gold.totalGold[realm]
 		if thisRealmList then
 			for k, v in pairs(thisRealmList) do
 				local name = Ambiguate(k.."-"..realm, "none")
@@ -163,7 +164,7 @@ local function OnEnter()
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(TOTAL..":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t ".."Token:", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.6, 0.8, 1, 1, 1, 1)
+	GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t ".."Token:", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
 
 	for i = 1, GetNumWatchedTokens() do
 		local currencyInfo = C_CurrencyInfo_GetBackpackCurrencyInfo(i)
@@ -174,7 +175,7 @@ local function OnEnter()
 		local name, count, icon, currencyID = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID, currencyInfo.currencyTypesID
 		if name and i == 1 then
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(CURRENCY..":", 0.6, 0.8, 1)
+			GameTooltip:AddLine(CURRENCY..":", 0.5, 0.7, 1)
 		end
 
 		if name and count then
@@ -188,32 +189,32 @@ local function OnEnter()
 		end
 	end
 
-	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(" ", K.RightButton.."Switch Mode".." ", 1, 1, 1, 0.6, 0.8, 1)
-	GameTooltip:AddDoubleLine(" ", K.LeftButton.."Currency Panel".." ", 1, 1, 1, 0.6, 0.8, 1)
-	GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.6, 0.8, 1)
+	if self == GoldDataText then
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddDoubleLine(" ", K.RightButton.."Switch Mode".." ", 1, 1, 1, 0.5, 0.7, 1)
+		GameTooltip:AddDoubleLine(" ", K.LeftButton.."Currency Panel".." ", 1, 1, 1, 0.5, 0.7, 1)
+		GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.5, 0.7, 1)
+	end
 	GameTooltip:Show()
 end
+K.GoldButton_OnEnter = OnEnter
 
-local function OnMouseUp(_, btn)
+local function OnMouseUp(self, btn)
 	if btn == "RightButton" then
 		if IsControlKeyDown() then
 			StaticPopup_Show("RESETGOLD")
 		else
 			KkthnxUIDB["ShowSlots"] = not KkthnxUIDB["ShowSlots"]
 			if KkthnxUIDB["ShowSlots"] then
-				Module.GoldDataTextFrame:RegisterEvent("BAG_UPDATE")
+				GoldDataText:RegisterEvent("BAG_UPDATE")
 			else
-				Module.GoldDataTextFrame:UnregisterEvent("BAG_UPDATE")
+				GoldDataText:UnregisterEvent("BAG_UPDATE")
 			end
 			OnEvent()
 		end
 	elseif btn == "MiddleButton" then
-		OnEnter()
+		OnEnter(self)
 	else
-		if InCombatLockdown() then UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
-			return
-		end
 		ToggleCharacter("TokenFrame")
 	end
 end
@@ -221,41 +222,38 @@ end
 local function OnLeave()
 	K.HideTooltip()
 end
+K.GoldButton_OnLeave = OnLeave
 
 function Module:CreateGoldDataText()
-	if not C["DataText"].Gold then
-		return
+	GoldDataText = GoldDataText or CreateFrame("Button", nil, UIParent)
+	if C["DataText"].Gold then
+		GoldDataText:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
+		GoldDataText:SetSize(24, 24)
+
+		GoldDataText.Texture = GoldDataText:CreateTexture(nil, "BACKGROUND")
+		GoldDataText.Texture:SetPoint("LEFT", GoldDataText, "LEFT", 0, 0)
+		GoldDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\bags.blp")
+		GoldDataText.Texture:SetSize(24, 24)
+		GoldDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
+
+		GoldDataText.Text = GoldDataText:CreateFontString(nil, "ARTWORK")
+		GoldDataText.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+		GoldDataText.Text:SetPoint("LEFT", GoldDataText.Texture, "RIGHT", 0, 0)
 	end
 
-	Module.GoldDataTextFrame = CreateFrame("Button", nil, UIParent)
+	GoldDataText:RegisterEvent("PLAYER_MONEY", OnEvent)
+	GoldDataText:RegisterEvent("SEND_MAIL_MONEY_CHANGED", OnEvent)
+	GoldDataText:RegisterEvent("SEND_MAIL_COD_CHANGED", OnEvent)
+	GoldDataText:RegisterEvent("PLAYER_TRADE_MONEY", OnEvent)
+	GoldDataText:RegisterEvent("TRADE_MONEY_CHANGED", OnEvent)
+	GoldDataText:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
+
+	GoldDataText:SetScript("OnEvent", OnEvent)
+	GoldDataText:SetScript("OnEnter", OnEnter)
+	GoldDataText:SetScript("OnLeave", OnLeave)
 	if C["DataText"].Gold then
-		Module.GoldDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
-		Module.GoldDataTextFrame:SetSize(24, 24)
+		GoldDataText:SetScript("OnMouseUp", OnMouseUp)
 
-		Module.GoldDataTextFrame.Texture = Module.GoldDataTextFrame:CreateTexture(nil, "BACKGROUND")
-		Module.GoldDataTextFrame.Texture:SetPoint("LEFT", Module.GoldDataTextFrame, "LEFT", 0, 0)
-		Module.GoldDataTextFrame.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\bags.blp")
-		Module.GoldDataTextFrame.Texture:SetSize(24, 24)
-		Module.GoldDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
-
-		Module.GoldDataTextFrame.Text = Module.GoldDataTextFrame:CreateFontString(nil, "ARTWORK")
-		Module.GoldDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-		Module.GoldDataTextFrame.Text:SetPoint("LEFT", Module.GoldDataTextFrame.Texture, "RIGHT", 0, 0)
-	end
-
-	Module.GoldDataTextFrame:RegisterEvent("PLAYER_MONEY", OnEvent)
-	Module.GoldDataTextFrame:RegisterEvent("SEND_MAIL_MONEY_CHANGED", OnEvent)
-	Module.GoldDataTextFrame:RegisterEvent("SEND_MAIL_COD_CHANGED", OnEvent)
-	Module.GoldDataTextFrame:RegisterEvent("PLAYER_TRADE_MONEY", OnEvent)
-	Module.GoldDataTextFrame:RegisterEvent("TRADE_MONEY_CHANGED", OnEvent)
-	Module.GoldDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
-
-	Module.GoldDataTextFrame:SetScript("OnEvent", OnEvent)
-	if C["DataText"].Gold then
-		Module.GoldDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
-		Module.GoldDataTextFrame:SetScript("OnEnter", OnEnter)
-		Module.GoldDataTextFrame:SetScript("OnLeave", OnLeave)
-
-		K.Mover(Module.GoldDataTextFrame, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 4, -302})
+		K.Mover(GoldDataText, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 4, -302})
 	end
 end

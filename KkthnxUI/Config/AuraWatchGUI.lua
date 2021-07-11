@@ -63,7 +63,7 @@ local function labelOnEnter(self)
 	GameTooltip:ClearLines()
 	GameTooltip:SetOwner(self:GetParent(), "ANCHOR_RIGHT", 0, 3)
 	GameTooltip:AddLine(self.text)
-	GameTooltip:AddLine(self.tip, .6,.8,1, 1)
+	GameTooltip:AddLine(self.tip, 0.5, 0.7, 1, 1)
 	GameTooltip:Show()
 end
 
@@ -206,14 +206,14 @@ local function AW_ClearEdit(element)
 end
 
 local function createPage(name)
-	local p = CreateFrame("Frame", nil, f, "BackdropTemplate")
-	p:SetPoint("TOPLEFT", 160, -70)
-	p:SetSize(620, 380)
-	p:CreateBorder()
-	K.CreateFontString(p, 15, name, "", false, "TOPLEFT", 5, 20)
-	p:Hide()
+	local page = CreateFrame("Frame", nil, f, "BackdropTemplate")
+	page:SetPoint("TOPLEFT", 160, -70)
+	page:SetSize(620, 380)
+	page:CreateBorder()
+	K.CreateFontString(page, 15, name, "", false, "TOPLEFT", 5, 20)
+	page:Hide()
 
-	return p
+	return page
 end
 
 local function AW_CreateScroll(parent, width, height, text)

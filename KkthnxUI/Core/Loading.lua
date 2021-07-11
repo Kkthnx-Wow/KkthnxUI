@@ -196,11 +196,15 @@ local function KKUI_VerifyDatabase()
 	end
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher then
-		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher = {}
+		if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList then
+			KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher = {}
+		end
 	end
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells then
-		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {}
+		if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList then
+			KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {}
+		end
 	end
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].KeystoneInfo then
@@ -232,6 +236,17 @@ local function KKUI_VerifyDatabase()
 
 	if KkthnxUIDB.ShowSlots == nil then
 		KkthnxUIDB.ShowSlots = false
+	end
+
+	-- StatPriority
+	if not KkthnxUIDB.StatPriority then
+		KkthnxUIDB.StatPriority = {}
+	end
+
+	if not KkthnxUIDB.StatPriority.Custom then
+		if KkthnxUIDB.StatPriority then
+			KkthnxUIDB.StatPriority.Custom = {}
+		end
 	end
 end
 

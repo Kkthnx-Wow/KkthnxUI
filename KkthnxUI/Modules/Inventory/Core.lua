@@ -113,6 +113,12 @@ function Module:CreateInfoFrame()
 	moneyTag:SetFont(select(1, moneyTag:GetFont()), 13, select(3, moneyTag:GetFont()))
 	moneyTag:SetPoint("LEFT", icon, "RIGHT", 5, 0)
 
+	local moneyTagFrame = CreateFrame("Frame", nil, UIParent)
+	moneyTagFrame:SetParent(infoFrame)
+	moneyTagFrame:SetAllPoints(moneyTag)
+	moneyTagFrame:SetScript("OnEnter", K.GoldButton_OnEnter)
+	moneyTagFrame:SetScript("OnLeave", K.GoldButton_OnLeave)
+
 	local currencyTag = self:SpawnPlugin("TagDisplay", "[currencies]", infoFrame)
 	currencyTag:SetFontObject(bagsFont)
 	currencyTag:SetFont(select(1, currencyTag:GetFont()), 13, select(3, currencyTag:GetFont()))
@@ -1272,22 +1278,5 @@ function Module:OnEnable()
 	K:RegisterEvent("BANKFRAME_OPENED", Module.AutoDeposit)
 
 	-- Fixes
-	BankFrame.GetRight = function()
-		return f.bank:GetRight()
-	end
 	BankFrameItemButton_Update = K.Noop
-
-	-- Shift key alert
-	local function OnShiftUpdate(self, elapsed)
-		if IsShiftKeyDown() then
-			self.elapsed = (self.elapsed or 0) + elapsed
-			if self.elapsed > 5 then
-				UIErrorsFrame:AddMessage(K.InfoColor.."Your SHIFT key may be stuck!")
-				self.elapsed = 0
-			end
-		end
-	end
-
-	local ShiftUpdaterFrame = CreateFrame("Frame", nil, f.main)
-	ShiftUpdaterFrame:SetScript("OnUpdate", OnShiftUpdate)
 end

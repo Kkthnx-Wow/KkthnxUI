@@ -115,6 +115,10 @@ function Module:CalculateMoverPoints(mover, trimX, trimY)
 end
 
 function Module:UpdateTrimFrame()
+	if not f then
+		return
+	end
+
 	local x, y = Module:CalculateMoverPoints(self)
 	x, y = K.Round(x), K.Round(y)
 	f.__x:SetText(x)

@@ -265,6 +265,18 @@ oUF.Tags.Methods["npctitle"] = function(unit)
 end
 oUF.Tags.Events["npctitle"] = "UNIT_NAME_UPDATE"
 
+oUF.Tags.Methods["guildname"] = function(unit)
+	if not UnitIsPlayer(unit) then
+		return
+	end
+
+	local guildName = GetGuildInfo(unit)
+	if guildName then
+		return string_format("<%s>", guildName)
+	end
+end
+oUF.Tags.Events["guildname"] = "UNIT_NAME_UPDATE PLAYER_GUILD_UPDATE"
+
 oUF.Tags.Methods["tarname"] = function(unit)
 	local tarUnit = unit.."target"
 	if UnitExists(tarUnit) then

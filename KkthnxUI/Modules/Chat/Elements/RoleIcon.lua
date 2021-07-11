@@ -1,5 +1,10 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Chat")
+
+local _G = _G
+
+local GetRealmName = _G.GetRealmName
+local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 
 -- Role icons
 local chats = {
@@ -11,9 +16,9 @@ local chats = {
 }
 
 local role_tex = {
-	TANK = "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Tank.tga]]..":12:12:0:0:64:64:5:59:5:59\124t",
-	HEALER	= "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Healer.tga]]..":12:12:0:0:64:64:5:59:5:59\124t",
-	DAMAGER = "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Damager.tga]]..":12:12:0:0:64:64:5:59:5:59\124t",
+	TANK = "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Tank.blp]]..":11:11\124t",
+	HEALER	= "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Healer.blp]]..":11:11\124t",
+	DAMAGER = "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Damage.blp]]..":11:11\124t",
 }
 
 local GetColoredName_orig = _G.GetColoredName
@@ -29,6 +34,7 @@ local function GetColoredName_hook(event, arg1, arg2, ...)
 			ret = role_tex[role]..""..ret
 		end
 	end
+
 	return ret
 end
 

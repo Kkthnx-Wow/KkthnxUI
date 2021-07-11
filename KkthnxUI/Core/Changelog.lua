@@ -16,17 +16,30 @@ local CLOSE = _G.CLOSE
 
 local changelogData = {
 	"Added `/vol 0.1 - 1 or /volume 0.1 - 1' command to control your volume on the fly",
+	"Added guild name to name only for nameplates",
 	"Added hacky fix for minimap border background overlaying torgast map",
 	"Added mover for bntoast frame",
+	"Added new castbar shield icon (LOOKS SO SICK DOOODE!)",
+	"Added new stat priority module",
 	"Added pixel border option choice",
+	"Added skinning to the gamemenu frame",
 	"Fixed afk module text speeding up because of timers",
+	"Fixed colored borders when hovering over skinned buttons",
+	"Fixed gold data text not showing other characters on the same realm",
+	"Fixed killing blow module pointing to the wrong config settings",
 	"Fixed paragon rep module throwing an error and update rep list",
+	"Fixed saved variables for aurawatch when being reset",
 	"Updated and cleaned up some mic code",
 	"Updated auto quest module code and lists",
+	"Updated auto quest npc filter lists",
+	"Updated bags gold text to show currency info on mouseover",
 	"Updated code placement for game menu code",
+	"Updated coords data text code",
 	"Updated extra quest button border color to match quest border colors",
+	"Updated minimap icons for covenants and such (They look better honestly)",
 	"Updated quick join module code",
 	"Updated rare alert module code and sound",
+	"Various locales cleaned up (Round 1)",
 }
 
 local changelogFrame
@@ -42,7 +55,7 @@ local function changelog()
 	changelogFrame:CreateBorder()
 
 	K.CreateFontString(changelogFrame, 30, K.Title, "", true, "TOPLEFT", 10, 28)
-	K.CreateFontString(changelogFrame, 14, K.Version, "", true, "TOPLEFT", 140, 16)
+	K.CreateFontString(changelogFrame, 14, K.Version, "", true, "TOPLEFT", 146, 16)
 	K.CreateFontString(changelogFrame, 16, "Changelog", "", true, "TOP", 0, -10)
 	K.CreateMoverFrame(changelogFrame)
 
@@ -64,8 +77,8 @@ local function changelog()
 	rightLine:SetFrameStrata("HIGH")
 
 	local offset = 0
-	for n, t in pairs(changelogData) do
-		K.CreateFontString(changelogFrame, 12, K.InfoColor..n..": |r"..t, "", false, "TOPLEFT", 15, -(50 + offset))
+	for _, t in pairs(changelogData) do
+		K.CreateFontString(changelogFrame, 12, K.InfoColor.."• |r"..t, "", false, "TOPLEFT", 14, -(50 + offset))
 		offset = offset + 20
 	end
 	changelogFrame:SetSize(520, 60 + offset)

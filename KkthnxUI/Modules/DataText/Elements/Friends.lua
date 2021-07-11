@@ -55,6 +55,7 @@ local noteString = "|TInterface\\Buttons\\UI-GuildButton-PublicNote-Up:16|t %s"
 local broadcastString = "|TInterface\\FriendsFrame\\BroadcastIcon:12|t %s (%s)"
 local onlineString = gsub(ERR_FRIEND_ONLINE_SS, ".+h", "")
 local offlineString = gsub(ERR_FRIEND_OFFLINE_S, "%%s", "")
+local FriendsDataText
 
 local menuList = {
 	[1] = {
@@ -409,7 +410,7 @@ local function buttonOnEnter(self)
 
 		if broadcastText and broadcastText ~= "" then
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(string_format(broadcastString, broadcastText, FriendsFrame_GetLastOnline(broadcastTime)), 0.3, 0.6, 0.8, 1)
+			GameTooltip:AddLine(string_format(broadcastString, broadcastText, FriendsFrame_GetLastOnline(broadcastTime)), 0.3, 0.5, 0.7, 1)
 		end
 	else
 		GameTooltip:AddLine(L["WoW"], 1, 0.8, 0)
@@ -469,9 +470,9 @@ local function FriendsPanel_Init()
 		return
 	end
 
-	infoFrame = CreateFrame("Frame", "KKUI_FriendsInfoFrame", Module.FriendsDataTextFrame)
+	infoFrame = CreateFrame("Frame", "KKUI_FriendsInfoFrame", FriendsDataText)
 	infoFrame:SetSize(400, 495)
-	infoFrame:SetPoint(K.GetAnchors(Module.FriendsDataTextFrame))
+	infoFrame:SetPoint(K.GetAnchors(FriendsDataText))
 	infoFrame:SetClampedToScreen(true)
 	infoFrame:SetFrameStrata("DIALOG")
 	infoFrame:CreateBorder()
@@ -594,9 +595,9 @@ local function OnEvent(_, event, arg1)
 	FriendsPanel_Refresh()
 
 	if C["DataText"].HideText then
-		Module.FriendsDataTextFrame.Text:SetText("")
+		FriendsDataText.Text:SetText("")
 	else
-		Module.FriendsDataTextFrame.Text:SetText(string_format("%s: "..K.MyClassColor.."%d", FRIENDS, Module.totalOnline))
+		FriendsDataText.Text:SetText(string_format("%s: "..K.MyClassColor.."%d", FRIENDS, Module.totalOnline))
 	end
 
 	updateRequest = false
@@ -614,7 +615,6 @@ local function delayLeave()
 end
 
 local function OnLeave()
-	--UIFrameFadeOut(Module.FriendsDataTextFrame.Text, 1, Module.FriendsDataTextFrame.Text:GetAlpha(), 0)
 	GameTooltip:Hide()
 
 	if not infoFrame then
@@ -625,11 +625,6 @@ local function OnLeave()
 end
 
 local function OnMouseUp(_, btn)
-	if InCombatLockdown() then
-		UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
-		return
-	end
-
 	if btn ~= "LeftButton" then
 		return
 	end
@@ -646,31 +641,31 @@ function Module:CreateSocialDataText()
 		return
 	end
 
-	Module.FriendsDataTextFrame = CreateFrame("Button", nil, UIParent)
-	Module.FriendsDataTextFrame:SetPoint("LEFT", UIParent, "LEFT", 0, -270)
-	Module.FriendsDataTextFrame:SetSize(24, 24)
+	FriendsDataText = FriendsDataText or CreateFrame("Button", nil, UIParent)
+	FriendsDataText:SetPoint("LEFT", UIParent, "LEFT", 0, -270)
+	FriendsDataText:SetSize(24, 24)
 
-	Module.FriendsDataTextFrame.Texture = Module.FriendsDataTextFrame:CreateTexture(nil, "BACKGROUND")
-	Module.FriendsDataTextFrame.Texture:SetPoint("LEFT", Module.FriendsDataTextFrame, "LEFT", 0, 0)
-	Module.FriendsDataTextFrame.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\player.blp")
-	Module.FriendsDataTextFrame.Texture:SetSize(24, 24)
-	Module.FriendsDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
+	FriendsDataText.Texture = FriendsDataText:CreateTexture(nil, "BACKGROUND")
+	FriendsDataText.Texture:SetPoint("LEFT", FriendsDataText, "LEFT", 0, 0)
+	FriendsDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\player.blp")
+	FriendsDataText.Texture:SetSize(24, 24)
+	FriendsDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
-	Module.FriendsDataTextFrame.Text = Module.FriendsDataTextFrame:CreateFontString(nil, "ARTWORK")
-	Module.FriendsDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.FriendsDataTextFrame.Text:SetPoint("LEFT", Module.FriendsDataTextFrame.Texture, "RIGHT", 0, 0)
+	FriendsDataText.Text = FriendsDataText:CreateFontString(nil, "ARTWORK")
+	FriendsDataText.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	FriendsDataText.Text:SetPoint("LEFT", FriendsDataText.Texture, "RIGHT", 0, 0)
 
-	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE", OnEvent)
-	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE", OnEvent)
-	Module.FriendsDataTextFrame:RegisterEvent("BN_FRIEND_INFO_CHANGED", OnEvent)
-	Module.FriendsDataTextFrame:RegisterEvent("FRIENDLIST_UPDATE", OnEvent)
-	Module.FriendsDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
-	Module.FriendsDataTextFrame:RegisterEvent("CHAT_MSG_SYSTEM", OnEvent)
+	FriendsDataText:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE", OnEvent)
+	FriendsDataText:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE", OnEvent)
+	FriendsDataText:RegisterEvent("BN_FRIEND_INFO_CHANGED", OnEvent)
+	FriendsDataText:RegisterEvent("FRIENDLIST_UPDATE", OnEvent)
+	FriendsDataText:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
+	FriendsDataText:RegisterEvent("CHAT_MSG_SYSTEM", OnEvent)
 
-	Module.FriendsDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
-	Module.FriendsDataTextFrame:SetScript("OnEnter", OnEnter)
-	Module.FriendsDataTextFrame:SetScript("OnLeave", OnLeave)
-	Module.FriendsDataTextFrame:SetScript("OnEvent", OnEvent)
+	FriendsDataText:SetScript("OnMouseUp", OnMouseUp)
+	FriendsDataText:SetScript("OnEnter", OnEnter)
+	FriendsDataText:SetScript("OnLeave", OnLeave)
+	FriendsDataText:SetScript("OnEvent", OnEvent)
 
-	K.Mover(Module.FriendsDataTextFrame, "FriendsDataText", "FriendsDataText", {"LEFT", UIParent, "LEFT", 4, -270})
+	K.Mover(FriendsDataText, "FriendsDataText", "FriendsDataText", {"LEFT", UIParent, "LEFT", 4, -270})
 end

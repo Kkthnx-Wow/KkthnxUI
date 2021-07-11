@@ -2,34 +2,27 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
 local _G = _G
-local pairs = _G.pairs
-local select = _G.select
-local strfind = _G.strfind
-local strsplit = _G.strsplit
-local tonumber = _G.tonumber
-local wipe = _G.wipe
 
-local ATTACHMENTS_MAX_RECEIVE = _G.ATTACHMENTS_MAX_RECEIVE
+local wipe, select, pairs, tonumber = _G.wipe, _G.select, _G.pairs, _G.tonumber
+local strsplit, strfind = _G.strsplit, _G.strfind
+
+local ATTACHMENTS_MAX_RECEIVE, ERR_MAIL_DELETE_ITEM_ERROR = _G.ATTACHMENTS_MAX_RECEIVE, _G.ERR_MAIL_DELETE_ITEM_ERROR
 local C_Mail_HasInboxMoney = _G.C_Mail.HasInboxMoney
 local C_Mail_IsCommandPending = _G.C_Mail.IsCommandPending
 local C_Timer_After = _G.C_Timer.After
-local DeleteInboxItem = _G.DeleteInboxItem
-local ERR_MAIL_DELETE_ITEM_ERROR = _G.ERR_MAIL_DELETE_ITEM_ERROR
-local GetInboxHeaderInfo = _G.GetInboxHeaderInfo
-local GetInboxItem = _G.GetInboxItem
-local GetInboxNumItems = _G.GetInboxNumItems
-local GetItemInfo = _G.GetItemInfo
-local InboxItemCanDelete = _G.InboxItemCanDelete
+local GetInboxNumItems, GetInboxHeaderInfo, GetInboxItem, GetItemInfo = _G.GetInboxNumItems, _G.GetInboxHeaderInfo, _G.GetInboxItem, _G.GetItemInfo
+local GetSendMailPrice, GetMoney = _G.GetSendMailPrice, _G.GetMoney
+local InboxItemCanDelete, DeleteInboxItem, TakeInboxMoney, TakeInboxItem = _G.InboxItemCanDelete, _G.DeleteInboxItem, _G.TakeInboxMoney, _G.TakeInboxItem
 local NORMAL_STRING = _G.GUILDCONTROL_OPTION16
 local OPENING_STRING = _G.OPEN_ALL_MAIL_BUTTON_OPENING
-local TakeInboxItem = _G.TakeInboxItem
-local TakeInboxMoney = _G.TakeInboxMoney
 
 local mailIndex, timeToWait, totalCash, inboxItems = 0, .15, 0, {}
 local isGoldCollecting
+local contactList = {}
+local contactListByRealm = {}
 
 function Module:MailBox_DelectClick()
-	local selectedID = self.id + (InboxFrame.pageNum-1)*7
+	local selectedID = self.id + (InboxFrame.pageNum - 1) * 7
 	if InboxItemCanDelete(selectedID) then
 		DeleteInboxItem(selectedID)
 	else
@@ -41,12 +34,6 @@ function Module:MailItem_AddDelete(i)
 	local bu = CreateFrame("Button", nil, self)
 	bu:SetPoint("BOTTOMRIGHT", self:GetParent(), "BOTTOMRIGHT", -10, 5)
 	bu:SetSize(16, 16)
-
-	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
-	bu.Icon:SetAllPoints()
-	bu.Icon:SetTexCoord(unpack(K.TexCoords))
-	bu.Icon:SetTexture(136813)
-
 	bu.id = i
 	bu:SetScript("OnClick", Module.MailBox_DelectClick)
 	K.AddTooltip(bu, "ANCHOR_RIGHT", DELETE, "system")
@@ -78,11 +65,10 @@ function Module:InboxItem_OnEnter()
 	end
 end
 
-local contactList = {}
-
 function Module:ContactButton_OnClick()
 	local text = self.name:GetText() or ""
 	SendMailNameEditBox:SetText(text)
+	SendMailNameEditBox:SetCursorPosition(0)
 end
 
 function Module:ContactButton_Delete()
@@ -92,15 +78,26 @@ end
 
 function Module:ContactButton_Create(parent, index)
 	local button = CreateFrame("Button", nil, parent)
-	button:SetSize(150, 20)
+	button:SetSize(170, 20)
 	button:SetPoint("TOPLEFT", 2, -2 - (index - 1) * 20)
+
 	button.HL = button:CreateTexture(nil, "HIGHLIGHT")
-	button.HL:SetAllPoints()
-	button.HL:SetColorTexture(1, 1, 1, .25)
+	button.HL:SetPoint("TOPLEFT", button ,"TOPLEFT", 0, -2)
+	button.HL:SetPoint("BOTTOMRIGHT", button ,"BOTTOMRIGHT", 0, 2)
+	button.HL:SetTexture("Interface\\Buttons\\UI-Listbox-Highlight")
+	button.HL:SetBlendMode("ADD")
+	button.HL:SetAlpha(0.6)
 
 	button.name = K.CreateFontString(button, 13, "Name", "", false, "LEFT", 0, 0)
 	button.name:SetPoint("RIGHT", button, "LEFT", 155, 0)
 	button.name:SetJustifyH("LEFT")
+
+	button.name.Background = button:CreateTexture(nil)
+	button.name.Background:SetPoint("TOPLEFT", button.name, "TOPLEFT", 0, 2)
+	button.name.Background:SetPoint("BOTTOMRIGHT", button.name, "BOTTOMRIGHT", 14, -2)
+	button.name.Background:SetTexture("Interface\\Buttons\\UI-Listbox-Highlight")
+	button.name.Background:SetBlendMode("ADD")
+	button.name.Background:SetAlpha(0.2)
 
 	button:RegisterForClicks("AnyUp")
 	button:SetScript("OnClick", Module.ContactButton_OnClick)
@@ -119,18 +116,31 @@ function Module:ContactButton_Create(parent, index)
 	return button
 end
 
+local function GenerateDataByRealm(realm)
+	if contactListByRealm[realm] then
+		for name, color in pairs(contactListByRealm[realm]) do
+			local r, g, b = strsplit(":", color)
+			table.insert(contactList, {name = name.."-"..realm, r = r, g = g, b = b})
+		end
+	end
+end
+
 function Module:ContactList_Refresh()
 	wipe(contactList)
+	wipe(contactListByRealm)
 
-	local count = 0
-	for name, color in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].ContactList) do
-		count = count + 1
-		local r, g, b = strsplit(":", color)
-		if not contactList[count] then contactList[count] = {} end
-		contactList[count].name = name
-		contactList[count].r = r
-		contactList[count].g = g
-		contactList[count].b = b
+	for fullname, color in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].ContactList) do
+		local name, realm = strsplit("-", fullname)
+		if not contactListByRealm[realm] then contactListByRealm[realm] = {} end
+		contactListByRealm[realm][name] = color
+	end
+
+	GenerateDataByRealm(K.Realm)
+
+	for realm in pairs(contactListByRealm) do
+		if realm ~= K.Realm then
+			GenerateDataByRealm(realm)
+		end
 	end
 
 	Module:ContactList_Update()
@@ -166,21 +176,17 @@ function Module:ContactList_Update()
 		end
 	end
 
-	HybridScrollFrame_Update(scrollFrame, numFriendButtons*height, usedHeight)
+	HybridScrollFrame_Update(scrollFrame, numFriendButtons * height, usedHeight)
 end
 
 function Module:ContactList_OnMouseWheel(delta)
 	local scrollBar = self.scrollBar
-	local step = delta * self.buttonHeight
+	local step = delta*self.buttonHeight
 	if IsShiftKeyDown() then
-		step = step * 18
+		step = step*18
 	end
 	scrollBar:SetValue(scrollBar:GetValue() - step)
 	Module:ContactList_Update()
-end
-
-local function editBoxClearFocus(self)
-	self:ClearFocus()
 end
 
 local function updatePicker()
@@ -208,12 +214,9 @@ local function openColorPicker(self)
 end
 
 function Module:MailBox_ContactList()
-	local bars = {}
-	local barIndex = 0
-
 	local bu = CreateFrame("Button", nil, SendMailFrame)
 	bu:SetSize(24, 24)
-	bu:SetPoint("LEFT", SendMailNameEditBox, "RIGHT", 3, 0)
+	bu:SetPoint("LEFT", SendMailNameEditBox, "RIGHT", 20, 0)
 
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 	bu.Icon:SetAllPoints()
@@ -222,64 +225,52 @@ function Module:MailBox_ContactList()
 	bu:SetHighlightTexture("Interface\\WorldMap\\Gear_64")
 	bu:GetHighlightTexture():SetTexCoord(0, .5, 0, .5)
 
-	local list = CreateFrame("Frame", nil, bu)
-	list:SetSize(200, 424)
-	list:SetPoint("LEFT", MailFrame, "RIGHT", 6, 0)
+	local list = CreateFrame("Frame", nil, bu, "BasicFrameTemplateWithInset")
+	list:SetSize(232, 424)
+	list:SetPoint("TOPLEFT", MailFrame, "TOPRIGHT", 3, 0)
 	list:SetFrameStrata("Tooltip")
-	list:CreateBorder()
 	K.CreateFontString(list, 14, L["ContactList"], "", "system", "TOP", 0, -5)
 
 	bu:SetScript("OnClick", function()
 		K.TogglePanel(list)
 	end)
 
-	local editbox = CreateFrame("EditBox", nil, list)
-	editbox:SetSize(120, 18)
-	editbox:SetPoint("TOPLEFT", 5, -25)
+	local editbox = CreateFrame("EditBox", nil, list, "InputBoxTemplate")
+	editbox:SetSize(126, 18)
+	editbox:SetPoint("TOPLEFT", 14, -29)
 	editbox:SetAutoFocus(false)
 	editbox:SetTextInsets(5, 5, 0, 0)
-	editbox:FontTemplate(nil, nil, "")
 	editbox:SetMaxLetters(255)
-
-	editbox.bg = CreateFrame("Frame", nil, editbox, "BackdropTemplate")
-	editbox.bg:SetAllPoints(editbox)
-	editbox.bg:SetFrameLevel(editbox:GetFrameLevel())
-	editbox.bg:CreateBorder()
-
 	editbox.title = L["Tips"]
 	K.AddTooltip(editbox, "ANCHOR_BOTTOMRIGHT", K.InfoColor..L["AddContactTip"])
-	editbox:SetScript("OnEscapePressed", editBoxClearFocus)
-	editbox:SetScript("OnEnterPressed", editBoxClearFocus)
+
+	local swatch = CreateFrame("Button", nil, editbox)
+	swatch:SetSize(16, 16)
+	swatch:SetPoint("LEFT", editbox, "RIGHT", 6, 0)
+	K.AddTooltip(swatch, "ANCHOR_TOPRIGHT", K.SystemColor.."Contact name color")
 
 	local color = {r = 1, g = 1, b = 1}
+	swatch.texture = swatch:CreateTexture(nil, "ARTWORK")
+	swatch.texture:SetAllPoints()
+	swatch.texture:SetTexture("Interface\\OPTIONSFRAME\\VoiceChat-Record")
+	swatch.texture:SetVertexColor(color.r, color.g, color.b)
+	swatch:SetHighlightTexture("Interface\\OPTIONSFRAME\\VoiceChat-Record")
 
-	local swatch = CreateFrame("Button", nil, editbox, "BackdropTemplate")
-	swatch:SetSize(18, 18)
-	swatch:SetPoint("LEFT", editbox, "RIGHT", 5, 0)
-	swatch:CreateBorder()
-	swatch.text = K.CreateFontString(swatch, 14, list, "", false, "LEFT", 26, 0)
-
-	local tex = swatch:CreateTexture()
-	tex:SetAllPoints()
-	tex:SetTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
-	tex:SetVertexColor(color.r, color.g, color.b)
-
-	swatch.tex = tex
+	swatch.tex = swatch.texture
 	swatch.color = color
 	swatch:SetScript("OnClick", openColorPicker)
 
-	local add = CreateFrame("Button", nil, list, "BackdropTemplate")
-	add:SetSize(42, 18)
+	local add = CreateFrame("Button", nil, list, "UIPanelButtonTemplate")
+	add:SetSize(54, 22)
 	add:SetPoint("LEFT", swatch, "RIGHT", 5, 0)
-	add:SkinButton()
-	add.text = K.CreateFontString(add, 12, ADD, "", true)
+	add.text = K.CreateFontString(add, 12, ADD, "", "system")
 	add:SetScript("OnClick", function()
 		local text = editbox:GetText()
 		if text == "" or tonumber(text) then -- incorrect input
 			return
 		end
 
-		if not strfind(text, "-") then -- complete player realm name
+		if not strfind(text, "-") then -- complete player realm name (We cant send money to other realms in classic)
 			text = text.."-"..K.Realm
 		end
 
@@ -294,14 +285,12 @@ function Module:MailBox_ContactList()
 	end)
 
 	local scrollFrame = CreateFrame("ScrollFrame", "KKUI_MailBoxScrollFrame", list, "HybridScrollFrameTemplate")
-	scrollFrame:SetSize(175, 370)
-	scrollFrame:SetPoint("BOTTOMLEFT", 2, 5)
-	scrollFrame:CreateBorder()
+	scrollFrame:SetSize(198, 370)
+	scrollFrame:SetPoint("BOTTOMLEFT", 8, 5)
 	list.scrollFrame = scrollFrame
 
 	local scrollBar = CreateFrame("Slider", "$parentScrollBar", scrollFrame, "HybridScrollBarTemplate")
 	scrollBar.doNotHide = true
-	scrollBar:SkinScrollBar()
 	scrollFrame.scrollBar = scrollBar
 
 	local scrollChild = scrollFrame.scrollChild
@@ -357,7 +346,9 @@ end
 
 function Module:TotalCash_OnEnter()
 	local numItems = GetInboxNumItems()
-	if numItems == 0 then return end
+	if numItems == 0 then
+		return
+	end
 
 	for i = 1, numItems do
 		totalCash = totalCash + select(5, GetInboxHeaderInfo(i))
@@ -365,9 +356,9 @@ function Module:TotalCash_OnEnter()
 
 	if totalCash > 0 then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:AddLine("Total Gold")
+		GameTooltip:AddLine(L["Total Gold"])
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(K.FormatMoney(totalCash), 1, 1, 1)
+		GameTooltip:AddLine(K.FormatMoney(totalCash, true), 1, 1, 1)
 		GameTooltip:Show()
 	end
 end
@@ -396,7 +387,7 @@ end
 
 function Module:CollectGoldButton()
 	OpenAllMail:ClearAllPoints()
-	OpenAllMail:SetPoint("TOPLEFT", InboxFrame, "TOPLEFT", 66, -30)
+	OpenAllMail:SetPoint("TOPLEFT", InboxFrame, "TOPLEFT", 70, -28)
 
 	local button = Module:MailBox_CreatButton(InboxFrame, 120, 24, "", {"LEFT", OpenAllMail, "RIGHT", 3, 0})
 	button:SetScript("OnClick", Module.MailBox_CollectAllGold)
@@ -420,7 +411,7 @@ end
 
 function Module:MailBox_CollectCurrent()
 	if OpenMailFrame.cod then
-		UIErrorsFrame:AddMessage(K.InfoColor.."You can't auto collect Cash on Delivery")
+		UIErrorsFrame:AddMessage(K.InfoColor..L["Mail Is COD"])
 		return
 	end
 
@@ -432,12 +423,74 @@ function Module:MailBox_CollectCurrent()
 end
 
 function Module:CollectCurrentButton()
-	local button = Module:MailBox_CreatButton(OpenMailFrame, 82, 22, "Take all", {"RIGHT", "OpenMailReplyButton", "LEFT", -1, 0})
+	local button = Module:MailBox_CreatButton(OpenMailFrame, 82, 22, L["Take All"], {"RIGHT", "OpenMailReplyButton", "LEFT", -1, 0})
 	button:SetScript("OnClick", Module.MailBox_CollectCurrent)
 end
 
+function Module:LastMailSaver()
+	local mailSaver = CreateFrame("CheckButton", nil, SendMailFrame, "OptionsCheckButtonTemplate")
+	mailSaver:SetHitRectInsets(0, 0, 0, 0)
+	mailSaver:SetPoint("LEFT", SendMailNameEditBox, "RIGHT", 0, 0)
+	mailSaver:SetSize(24, 24)
+	mailSaver:SetChecked(C["Misc"].MailSaver)
+	mailSaver:SetScript("OnClick", function(self)
+		C["Misc"].MailSaver = self:GetChecked()
+	end)
+	K.AddTooltip(mailSaver, "ANCHOR_TOP", L["Save Mail Target"])
+
+	local resetPending
+	hooksecurefunc("SendMailFrame_SendMail", function()
+		if C["Misc"].MailSaver then
+			C["Misc"].MailTarget = SendMailNameEditBox:GetText()
+			resetPending = true
+		else
+			resetPending = nil
+		end
+	end)
+
+	hooksecurefunc(SendMailNameEditBox, "SetText", function(self, text)
+		if resetPending and text == "" then
+			resetPending = nil
+			self:SetText(C["Misc"].MailTarget)
+		end
+	end)
+
+	SendMailFrame:HookScript("OnShow", function()
+		if C["Misc"].MailSaver then
+			SendMailNameEditBox:SetText(C["Misc"].MailTarget)
+		end
+	end)
+end
+
+function Module:ArrangeDefaultElements()
+	InboxTooMuchMail:ClearAllPoints()
+	InboxTooMuchMail:SetPoint("BOTTOM", MailFrame, "TOP", 0, 5)
+
+	SendMailNameEditBox:SetWidth(155)
+	SendMailNameEditBoxMiddle:SetWidth(146)
+	SendMailCostMoneyFrame:SetAlpha(0)
+
+	SendMailMailButton:HookScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_TOP")
+		GameTooltip:ClearLines()
+		local sendPrice = GetSendMailPrice()
+		local colorStr = "|cffffffff"
+		if sendPrice > GetMoney() then
+			colorStr = "|cffff0000"
+		end
+
+		GameTooltip:AddLine(SEND_MAIL_COST..colorStr..K.FormatMoney(sendPrice, true))
+		GameTooltip:Show()
+	end)
+
+	SendMailMailButton:HookScript("OnLeave", K.HideTooltip)
+end
+
 function Module:CreateImprovedMail()
-	--if not NDuiDB["Misc"]["Mail"] then return end
+	if not C["Misc"].EnhancedMail then
+		return
+	end
+
 	if IsAddOnLoaded("Postal") then
 		return
 	end
@@ -454,12 +507,9 @@ function Module:CreateImprovedMail()
 	-- Custom contact list
 	Module:MailBox_ContactList()
 
-	-- Replace the alert frame
-	if InboxTooMuchMail then
-		InboxTooMuchMail:ClearAllPoints()
-		InboxTooMuchMail:SetPoint("BOTTOM", MailFrame, "TOP", 0, 5)
-	end
-
+	-- Elements
+	Module:ArrangeDefaultElements()
 	Module:CollectGoldButton()
 	Module:CollectCurrentButton()
+	Module:LastMailSaver()
 end

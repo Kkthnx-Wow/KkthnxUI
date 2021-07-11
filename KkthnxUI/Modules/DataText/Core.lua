@@ -2,6 +2,8 @@ local K = unpack(select(2, ...))
 local Module = K:NewModule("Infobar")
 
 function Module:OnEnable()
+	self.CheckLoginTime = GetTime()
+
 	self:CreateDurabilityDataText()
 	self:CreateGoldDataText()
 	self:CreateGuildDataText()

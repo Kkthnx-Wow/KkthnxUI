@@ -51,11 +51,11 @@ function Module:SetupKillingBlow()
 				TargetName = TargetName
 			end
 
-			if C["Misc"].KillingBlow then
+			if C["Announcements"].KillingBlow then
 				TopBannerManager_Show(_G["BossBanner"], {name = TargetName, mode = "PVPKILL"})
 			end
 
-			if C["Misc"].PvPEmote then
+			if C["Announcements"].PvPEmote then
 				if select(4, GetAchievementInfo(247)) then
 					-- Fire off a random emote, to keep it interesting.
 					DoEmote(pvpEmoteList[math_random(1, #pvpEmoteList)], TargetName)
@@ -68,10 +68,6 @@ function Module:SetupKillingBlow()
 end
 
 function Module:CreateKillingBlow()
-	if not C["Announcements"].KillingBlow and not C["Announcements"].PvPEmote then
-		return
-	end
-
 	hooksecurefunc(_G["BossBanner"], "PlayBanner", function(self, data)
 		if (data) then
 			if (data.mode == "PVPKILL") then
