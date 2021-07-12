@@ -1,6 +1,5 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("ActionBar")
-local FilterConfig = C.ActionBars.actionBar1
 
 local _G = _G
 local next = _G.next
@@ -12,7 +11,8 @@ local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
-local padding, margin = 0, 6
+local cfg = C.Bars.Bar1
+local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
 local function SetFrameSize(frame, size, num)
 	size = size or frame.buttonSize
@@ -46,7 +46,6 @@ function Module:CreateBar1()
 	local layout = C["ActionBar"].Layout.Value
 	local buttonSize = C["ActionBar"].DefaultButtonSize
 
-	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KKUI_ActionBar1", UIParent, "SecureHandlerStateTemplate")
 
 	if layout == "3x4 Boxed arrangement" then
@@ -95,15 +94,13 @@ function Module:CreateBar1()
 	frame.buttonList = buttonList
 	SetFrameSize(frame, buttonSize, num)
 
-	-- Show/hide The Frame On A Given State Driver
 	frame.frameVisibility = "[petbattle] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
-	if FilterConfig.fader then
-		Module.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
+	if cfg.fader then
+		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
 
-	-- _onstate-page state driver
 	local actionPage = "[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[overridebar]14;[shapeshift]13;[vehicleui]12;[possessbar]12;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
 	local buttonName = "ActionButton"
 	for i, button in next, buttonList do
@@ -124,7 +121,6 @@ function Module:CreateBar1()
 	]])
 	RegisterStateDriver(frame, "page", actionPage)
 
-	-- Fix button texture, need reviewed
 	local function FixActionBarTexture()
 		for _, button in next, buttonList do
 			local action = button.action

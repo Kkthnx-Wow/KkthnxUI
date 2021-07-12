@@ -315,6 +315,14 @@ function Module:UpdateEditBoxColor()
 	local chatType = editBox:GetAttribute("chatType")
 	local editBoxBorder = editBox.KKUI_Border
 
+	if not chatType then
+		return
+	end
+
+	-- Increase inset on right side to make room for character count text
+	local insetLeft, insetRight, insetTop, insetBottom = editBox:GetTextInsets()
+	editBox:SetTextInsets(insetLeft, insetRight + 18, insetTop, insetBottom)
+
 	if editBoxBorder then
 		if (chatType == "CHANNEL") then
 			local id = GetChannelName(editBox:GetAttribute("channelTarget"))

@@ -1,6 +1,5 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
-local FilterConfig = C.ActionBars.stanceBar
 
 local _G = _G
 local table_insert = _G.table.insert
@@ -10,7 +9,8 @@ local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
-local padding, margin = 0, 6
+local cfg = C.Bars.BarStance
+local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
 local function SetFrameSize(frame, size, num)
 	size = size or frame.buttonSize
@@ -44,7 +44,7 @@ function Module:CreateStancebar()
 	elseif layout == "3x4 Boxed arrangement" then
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -60, 44}
 	else
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -60, 124}
+		frame.Pos = {"BOTTOMLEFT", KKUI_ActionBar3, "TOPLEFT", 0, 6}
 	end
 
 	-- Stance Bar
@@ -94,7 +94,7 @@ function Module:CreateStancebar()
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
 	-- Create the mouseover functionality
-	if C["ActionBar"].FadeStanceBar and FilterConfig.fader then
-		Module.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
+	if cfg.fader then
+		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
 end

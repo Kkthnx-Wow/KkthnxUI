@@ -6,8 +6,8 @@ local math_min = _G.math.min
 local math_ceil = _G.math.ceil
 local table_insert = _G.table.insert
 
-local FilterConfig = C.ActionBars.actionBarCustom
-local padding, margin = 0, 6
+local cfg = C.Bars.Bar4
+local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
 function Module:SetupCustomBar(anchor)
 	local size = C["ActionBar"].CustomBarButtonSize
@@ -38,8 +38,8 @@ function Module:SetupCustomBar(anchor)
 		table_insert(Module.buttons, button)
 	end
 
-	if C["ActionBar"].FadeCustomBar and FilterConfig.fader then
-		Module.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
+	if C["ActionBar"].FadeCustomBar and cfg.fader then
+		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
 
 	Module:UpdateCustomBar()

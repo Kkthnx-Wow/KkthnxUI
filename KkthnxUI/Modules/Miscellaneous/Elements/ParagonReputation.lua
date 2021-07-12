@@ -37,23 +37,19 @@ local UIFrameFadeOut = _G.UIFrameFadeOut
 local ACTIVE_TOAST = false
 local WAITING_TOAST = {}
 
-function Module:ColorWatchbar(bar)
+local function ColorWatchbar(self)
 	if not C["Misc"].ParagonEnable then
 		return
 	end
 
 	local factionID = select(6, GetWatchedFactionInfo())
 	if factionID and C_Reputation_IsFactionParagon(factionID) then
-		bar:SetBarColor(unpack(C["Misc"].ParagonColor))
+		self:SetBarColor(unpack(C["Misc"].ParagonColor))
 	end
 end
 
-function Module:SetupParagonTooltip(tt)
-	if not C["Misc"].ParagonEnable then
-		return
-	end
-
-	local _, _, rewardQuestID, hasRewardPending = C_Reputation_GetFactionParagonInfo(tt.factionID)
+local function SetupParagonTooltip(self)
+	local _, _, rewardQuestID, hasRewardPending = C_Reputation_GetFactionParagonInfo(self.factionID)
 	if hasRewardPending then
 		local questIndex = C_QuestLog_GetLogIndexForQuestID(rewardQuestID)
 		local description = GetQuestLogCompletionText(questIndex) or ""
@@ -85,7 +81,7 @@ function Module:Tooltip(bar, event)
 	end
 end
 
-function Module:HookReputationBars()
+local function HookReputationBars(self)
 	for n = 1, NUM_FACTIONS_DISPLAYED do
 		if _G["ReputationBar"..n] then
 			_G["ReputationBar"..n]:HookScript("OnEnter",function(self)
@@ -140,7 +136,7 @@ function Module:WaitToast()
 	Module:ShowToast(name, text)
 end
 
-function Module:CreateToast()
+local function CreateToast()
 	local toast = CreateFrame("FRAME", "KKUI_ParagonReputation_Toast", UIParent, "BackdropTemplate")
 	toast:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 250)
 	toast:SetSize(302, 70)
@@ -202,11 +198,7 @@ function Module:CreateBarOverlay(factionBar)
 	factionBar.ParagonOverlay = overlay
 end
 
-function Module:ChangeReputationBars()
-	if not C["Misc"].ParagonEnable then
-		return
-	end
-
+local function ChangeReputationBars()
 	local ReputationFrame = _G.ReputationFrame
 	ReputationFrame.paragonFramesPool:ReleaseAll()
 	local factionOffset = FauxScrollFrame_GetOffset(_G.ReputationListScrollFrame)
@@ -233,7 +225,7 @@ function Module:ChangeReputationBars()
 						-- If value is 0 we force it to 1 so we don't get 0 as result, math...
 						local over = ((value <= 0 and 1) or value) / threshold
 						if not factionBar.ParagonOverlay then
-							PR:CreateBarOverlay(factionBar)
+							Module:CreateBarOverlay(factionBar)
 						end
 						factionBar.ParagonOverlay:Show()
 						factionBar.ParagonOverlay.bar:SetWidth(factionBar.ParagonOverlay:GetWidth() * over)
@@ -315,11 +307,11 @@ function Module:CreateParagonReputation()
 
 	K:RegisterEvent("QUEST_ACCEPTED", Module.QUEST_ACCEPTED)
 
-	hooksecurefunc(_G.ReputationBarMixin, "Update", Module.ColorWatchbar)
-	hooksecurefunc("ReputationParagonFrame_SetupParagonTooltip", Module.SetupParagonTooltip)
-	hooksecurefunc("ReputationFrame_Update", Module.ChangeReputationBars)
+	hooksecurefunc(_G.ReputationBarMixin, "Update", ColorWatchbar)
+	hooksecurefunc("ReputationParagonFrame_SetupParagonTooltip", SetupParagonTooltip)
+	hooksecurefunc("ReputationFrame_Update", ChangeReputationBars)
 
-	Module:HookReputationBars()
-	Module:CreateToast()
+	HookReputationBars()
+	CreateToast()
 	K.Mover(Module.toast, "ParagonToastMover", "ParagonToastMover", {"TOP", UIParent, "TOP", 0, -196}, 302, 70)
 end

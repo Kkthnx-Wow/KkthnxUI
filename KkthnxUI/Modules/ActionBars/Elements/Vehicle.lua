@@ -1,6 +1,5 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
-local FilterConfig = C.ActionBars.leaveVehicle
 
 local _G = _G
 local table_insert = _G.table.insert
@@ -14,7 +13,8 @@ local UIParent = _G.UIParent
 local UnitOnTaxi = _G.UnitOnTaxi
 local VehicleExit = _G.VehicleExit
 
-local padding, margin = 0, 5
+local cfg = C.Bars.BarVehicle
+local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
 local function SetFrameSize(frame, size, num)
 	size = size or frame.buttonSize
@@ -82,7 +82,7 @@ function Module:CreateLeaveVehicle()
 	end
 
 	-- create the mouseover functionality
-	if FilterConfig.fader then
-		K.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
+	if cfg.fader then
+		K.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
 end

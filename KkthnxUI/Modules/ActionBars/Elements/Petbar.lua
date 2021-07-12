@@ -1,6 +1,5 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
-local FilterConfig = C.ActionBars.petBar
 
 local _G = _G
 local table_insert = _G.table.insert
@@ -10,7 +9,8 @@ local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
-local padding, margin = 0, 6
+local cfg = C.Bars.BarPet
+local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
 local function SetFrameSize(frame, size, num)
 	size = size or frame.buttonSize
@@ -44,7 +44,7 @@ function Module:CreatePetbar()
 	elseif layout == "3x4 Boxed arrangement" then
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 44}
 	else
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 123}
+		frame.Pos = {"BOTTOM", KKUI_ActionBar3, "TOP", 0, 6}
 	end
 
 	-- Move The Buttons Into Position And Reparent Them
@@ -76,7 +76,7 @@ function Module:CreatePetbar()
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
 	-- Create the mouseover functionality
-	if C["ActionBar"].FadePetBar and FilterConfig.fader then
-		Module.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
+	if cfg.fader then
+		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
 end

@@ -1,6 +1,5 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
-local FilterConfig = C.ActionBars.actionBar4
 
 local _G = _G
 local table_insert = _G.table.insert
@@ -11,7 +10,8 @@ local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
-local padding, margin = 0, 6
+local cfg = C.Bars.Bar4
+local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
 local function SetFrameSize(frame, size, num)
 	size = size or frame.buttonSize
@@ -54,11 +54,9 @@ function Module:CreateBar4()
 	local buttonList = {}
 	local buttonSize = C["ActionBar"].RightButtonSize
 
-	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KKUI_ActionBar4", UIParent, "SecureHandlerStateTemplate")
 	frame.Pos = {"RIGHT", UIParent, "RIGHT", -4, 0}
 
-	-- Move The Buttons Into Position And Reparent Them
 	_G.MultiBarRight:SetParent(frame)
 	_G.MultiBarRight:EnableMouse(false)
 	_G.MultiBarRight.QuickKeybindGlow:SetTexture("")
@@ -84,8 +82,8 @@ function Module:CreateBar4()
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
-	if C["ActionBar"].FadeRightBar and FilterConfig.fader then
-		Module.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
+	if C["ActionBar"].FadeRightBar and cfg.fader then
+		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
 
 	-- Fix visibility when leaving vehicle or petbattle

@@ -50,7 +50,7 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	else
 		BorderSize = bSize or 10
 	end
-	local BorderTexture = bTexture or "Interface\\AddOns\\KkthnxUI\\Media\\Border\\"..C["General"].BorderStyle.Value.."\\Border.tga"
+	local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\"..C["General"].BorderStyle.Value.."\\Border.tga")
 	local BorderOffset = bOffset or -4
 	local BorderRed = bRed or C["General"].ColorTextures and C["General"].TexturesColor[1] or C["Media"].Borders.ColorBorder[1]
 	local BorderGreen = bGreen or C["General"].ColorTextures and C["General"].TexturesColor[2] or C["Media"].Borders.ColorBorder[2]
@@ -60,7 +60,7 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	-- Background
 	local BackgroundTexture = bgTexture or C["Media"].Textures.BlankTexture
 	local BackgroundSubLevel = bgSubLevel or "BACKGROUND"
-	local BackgroundLayer = bgLayer or -1
+	local BackgroundLayer = bgLayer or -2
 	local BackgroundPoint = bgPoint or 0
 	local BackgroundRed = bgRed or C["Media"].Backdrops.ColorBackdrop[1]
 	local BackgroundGreen = bgGreen or C["Media"].Backdrops.ColorBackdrop[2]

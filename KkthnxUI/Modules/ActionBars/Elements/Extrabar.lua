@@ -1,6 +1,5 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
-local FilterConfig = C.ActionBars.extraBar
 
 local _G = _G
 local table_insert = _G.table.insert
@@ -10,13 +9,13 @@ local hooksecurefunc = _G.hooksecurefunc
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
-local padding = C.ActionBars.padding
+local cfg = C.Bars.BarExtra
+local padding = C.Bars.BarPadding
 
 function Module:CreateExtrabar()
 	local buttonList = {}
-	local size = FilterConfig.size
+	local size = cfg.size
 
-	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KKUI_ExtraActionBar", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(size + 2 * padding)
 	frame:SetHeight(size + 2 * padding)
@@ -34,16 +33,13 @@ function Module:CreateExtrabar()
 	table_insert(Module.buttons, button)
 	button:SetSize(size, size)
 
-	-- Show/hide The Frame On A Given State Driver
 	frame.frameVisibility = "[extrabar] show; hide"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
-	-- create the mouseover functionality
-	if FilterConfig.fader then
-		K.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
+	if cfg.fader then
+		K.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
 
-	-- ZoneAbility
 	local zoneFrame = CreateFrame("Frame", "KKUI_ActionBarZone", UIParent)
 	zoneFrame:SetWidth(size + 2 * padding)
 	zoneFrame:SetHeight(size + 2 * padding)
@@ -76,7 +72,6 @@ function Module:CreateExtrabar()
 		end
 	end)
 
-	-- Fix button visibility
 	hooksecurefunc(ZoneAbilityFrame, "SetParent", function(self, parent)
 		if parent == ExtraAbilityContainer then
 			self:SetParent(zoneFrame)

@@ -1,6 +1,5 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
-local FilterConfig = C.ActionBars.actionBar2
 
 local _G = _G
 local table_insert = _G.table.insert
@@ -11,7 +10,8 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local SHOW_MULTIBAR1_TEXT = _G.SHOW_MULTIBAR1_TEXT
 local UIParent = _G.UIParent
 
-local padding, margin = 0, 6
+local cfg = C.Bars.Bar2
+local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
 local function SetFrameSize(frame, size, num)
 	size = size or frame.buttonSize
@@ -97,7 +97,7 @@ function Module:CreateBar2()
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
-	if FilterConfig.fader then
-		Module.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
+	if cfg.fader then
+		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
 end

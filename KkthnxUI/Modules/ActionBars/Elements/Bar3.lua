@@ -1,6 +1,5 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("ActionBar")
-local FilterConfig = C.ActionBars.actionBar3
 
 local _G = _G
 local table_insert = _G.table.insert
@@ -11,7 +10,8 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local SHOW_MULTIBAR2_TEXT = _G.SHOW_MULTIBAR2_TEXT
 local UIParent = _G.UIParent
 
-local padding, margin = 0, 6
+local cfg = C.Bars.Bar3
+local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
 local function SetFrameSize(frame, size, num)
 	size = size or frame.buttonSize
@@ -45,7 +45,6 @@ function Module:CreateBar3()
 	local layout = C["ActionBar"].Layout.Value
 	local buttonSize = C["ActionBar"].DefaultButtonSize
 
-	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KKUI_ActionBar3", UIParent, "SecureHandlerStateTemplate")
 	if layout == "3x4 Boxed arrangement" then
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 4}
@@ -53,7 +52,6 @@ function Module:CreateBar3()
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 84}
 	end
 
-	-- Move The Buttons Into Position And Reparent Them
 	_G.MultiBarBottomRight:SetParent(frame)
 	_G.MultiBarBottomRight:EnableMouse(false)
 	_G.MultiBarBottomRight.QuickKeybindGlow:SetTexture("")
@@ -75,11 +73,10 @@ function Module:CreateBar3()
 	frame.buttonList = buttonList
 	SetFrameSize(frame, buttonSize, num)
 
-	-- Show/hide The Frame On A Given State Driver
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
-	if C["ActionBar"].FadeBottomBar3 then
-		Module.CreateButtonFrameFader(frame, buttonList, FilterConfig.fader)
+	if C.Bars.Bar3.fader then
+		Module.CreateButtonFrameFader(frame, buttonList, C.Bars.Bar3.fader)
 	end
 end

@@ -207,7 +207,7 @@ function Module:OnEnable()
 			Module.RegisterActionButton(frame)
 		end
 	end
-	--hooksecurefunc("ActionBarButtonEventsFrame_RegisterFrame", Module.RegisterActionButton)
+	hooksecurefunc(ActionBarButtonEventsFrameMixin, "RegisterFrame", Module.RegisterActionButton)
 
 	-- Hide Default Cooldown
 	if not InCombatLockdown() then

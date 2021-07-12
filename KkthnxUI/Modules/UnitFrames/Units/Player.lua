@@ -243,7 +243,6 @@ function Module:CreatePlayer()
 		self.Castbar.Text:SetWordWrap(false)
 
 		self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
-		self.Castbar.Button:SetSize(20, 20)
 		self.Castbar.Button:CreateBorder()
 
 		self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")

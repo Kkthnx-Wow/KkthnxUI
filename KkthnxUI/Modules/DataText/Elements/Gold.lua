@@ -130,7 +130,7 @@ local function OnEvent(_, event, arg1)
 end
 
 local function OnEnter(self)
-	GameTooltip:SetOwner(GoldDataText, "ANCHOR_NONE")
+	GameTooltip:SetOwner(self, "ANCHOR_NONE")
 	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
 

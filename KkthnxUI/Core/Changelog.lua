@@ -15,31 +15,9 @@ local CLOSE = _G.CLOSE
 -- Updated, Fixed, Added, Removed, Various.
 
 local changelogData = {
-	"Added `/vol 0.1 - 1 or /volume 0.1 - 1' command to control your volume on the fly",
-	"Added guild name to name only for nameplates",
-	"Added hacky fix for minimap border background overlaying torgast map",
-	"Added mover for bntoast frame",
-	"Added new castbar shield icon (LOOKS SO SICK DOOODE!)",
-	"Added new stat priority module",
-	"Added pixel border option choice",
-	"Added skinning to the gamemenu frame",
-	"Fixed afk module text speeding up because of timers",
-	"Fixed colored borders when hovering over skinned buttons",
-	"Fixed gold data text not showing other characters on the same realm",
-	"Fixed killing blow module pointing to the wrong config settings",
-	"Fixed paragon rep module throwing an error and update rep list",
-	"Fixed saved variables for aurawatch when being reset",
-	"Updated and cleaned up some mic code",
-	"Updated auto quest module code and lists",
-	"Updated auto quest npc filter lists",
-	"Updated bags gold text to show currency info on mouseover",
-	"Updated code placement for game menu code",
-	"Updated coords data text code",
-	"Updated extra quest button border color to match quest border colors",
-	"Updated minimap icons for covenants and such (They look better honestly)",
-	"Updated quick join module code",
-	"Updated rare alert module code and sound",
-	"Various locales cleaned up (Round 1)",
+	"Added check to ignore pixel border option if we are sizing the border",
+	"Fixed chat ebitbox inset so it will not overlap character count",
+	"Fixed gold datatext throwing nil error for tooltip on bags",
 }
 
 local changelogFrame
