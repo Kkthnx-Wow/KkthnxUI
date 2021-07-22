@@ -107,7 +107,7 @@ oUF.Tags.Methods["color"] = function(unit)
 	local reaction = UnitReaction(unit, "player")
 
 	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
-		return "|cffA0A0A0"
+		return "|cffA0A0A0|r"
 	elseif UnitIsTapDenied(unit) then
 		return K.RGBToHex(oUF.colors.tapped)
 	elseif UnitIsPlayer(unit) then
@@ -309,26 +309,14 @@ oUF.Tags.Methods["monkstagger"] = function(unit)
 end
 oUF.Tags.Events["monkstagger"] = "UNIT_MAXHEALTH UNIT_AURA"
 
-oUF.Tags.Methods["leadassist"] = function(unit)
-	local isLeader = UnitIsGroupLeader(unit)
-	local isAssistant = UnitIsGroupAssistant(unit) or UnitIsRaidOfficer(unit)
-	local Assist, Lead = isAssistant and "|cffffd100[A]|r " or "", isLeader and "|cffffd100[L]|r" or ""
-
-	return (Lead..Assist)
-end
-oUF.Tags.Events["leadassist"] = "UNIT_NAME_UPDATE PARTY_LEADER_CHANGED GROUP_ROSTER_UPDATE"
-
-oUF.Tags.Events["lfdrole"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"
 oUF.Tags.Methods["lfdrole"] = function(unit)
-	local Role = UnitGroupRolesAssigned(unit)
-	local String = ""
-
-	if Role == "TANK" then
-		String = "|TInterface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Tank:12:12:-3|t"
-	elseif Role == "HEALER" then
-		String = "|TInterface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Healer:12:12:-3|t"
+	local role = UnitGroupRolesAssigned(unit)
+	if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE" or role ~= "DAMAGER") then
+		if role == "HEALER" then
+			return "|TInterface\\LFGFrame\\LFGRole:12:12:0:0:64:16:48:64:0:16|t"
+		elseif role == "TANK" then
+			return "|TInterface\\LFGFrame\\LFGRole:12:12:0:0:64:16:32:48:0:16|t"
+		end
 	end
-
-	return String
 end
 oUF.Tags.Events["lfdrole"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"

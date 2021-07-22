@@ -15,10 +15,6 @@ function Module:CreateTarget()
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 	local HealPredictionTexture = K.GetTexture(C["UITextures"].HealPredictionTextures)
 
-	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
-	self.Overlay:SetAllPoints()
-	self.Overlay:SetFrameLevel(5)
-
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
@@ -27,6 +23,10 @@ function Module:CreateTarget()
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
+
+	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	self.Overlay:SetAllPoints(self.Health)
+	self.Overlay:SetFrameLevel(5)
 
 	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.colorTapping = true
@@ -77,13 +77,6 @@ function Module:CreateTarget()
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
 	self:Tag(self.Power.Value, "[power]")
 
-	local nameTestFrame = CreateFrame("Frame", nil, self)
-	nameTestFrame:SetWidth(targetWidth)
-	nameTestFrame:SetHeight(8)
-	nameTestFrame:CreateBorder()
-	nameTestFrame:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
-	nameTestFrame:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
-
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("TOP", self.Health, 0, 16)
 	self.Name:SetWidth(targetWidth)
@@ -127,13 +120,20 @@ function Module:CreateTarget()
 		end
 	end
 
+	local debuffsHolder = CreateFrame("Frame", nil, self)
+	debuffsHolder:SetWidth(targetWidth)
+	debuffsHolder:SetHeight(8)
+	debuffsHolder:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
+	debuffsHolder:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
+	debuffsHolder:EnableMouse(false)
+
 	if C["Unitframe"].TargetDebuffs then
 		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
-		self.Debuffs.initialAnchor = "TOPLEFT"
+		self.Debuffs.initialAnchor = "BOTTOMLEFT"
 		self.Debuffs["growth-x"] = "RIGHT"
 		self.Debuffs["growth-y"] = "UP"
-		self.Debuffs:SetPoint("BOTTOM", nameTestFrame, "TOP", 0, 6)
+		self.Debuffs:SetPoint("BOTTOMLEFT", debuffsHolder, "TOPLEFT", 0, 6)
 		self.Debuffs.num = 15
 		self.Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 

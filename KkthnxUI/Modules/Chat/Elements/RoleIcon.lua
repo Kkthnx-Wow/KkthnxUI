@@ -16,9 +16,9 @@ local chats = {
 }
 
 local role_tex = {
-	TANK = "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Tank.blp]]..":11:11\124t",
-	HEALER	= "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Healer.blp]]..":11:11\124t",
-	DAMAGER = "\124T"..[[Interface\AddOns\KkthnxUI\Media\Chat\Roles\Damage.blp]]..":11:11\124t",
+	TANK = "|TInterface\\LFGFrame\\LFGRole:12:12:0:0:64:16:32:48:0:16|t",
+	HEALER	= "|TInterface\\LFGFrame\\LFGRole:12:12:0:0:64:16:48:64:0:16|t",
+	DAMAGER = "|TInterface\\LFGFrame\\LFGRole:12:12:0:0:64:16:16:32:0:16|t",
 }
 
 local GetColoredName_orig = _G.GetColoredName
@@ -27,7 +27,7 @@ local function GetColoredName_hook(event, arg1, arg2, ...)
 	if chats[event] then
 		local role = UnitGroupRolesAssigned(arg2)
 		if role == "NONE" and arg2:match(" *- *"..GetRealmName().."$") then
-			role = UnitGroupRolesAssigned(arg2:gsub(" *-[^-]+$",""))
+			role = UnitGroupRolesAssigned(arg2:gsub(" *-[^-]+$", ""))
 		end
 
 		if role and role ~= "NONE" then
