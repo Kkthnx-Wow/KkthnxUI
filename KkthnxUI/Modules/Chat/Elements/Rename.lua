@@ -8,6 +8,7 @@ local string_gsub = _G.string.gsub
 
 local BetterDate = _G.BetterDate
 local INTERFACE_ACTION_BLOCKED = _G.INTERFACE_ACTION_BLOCKED
+local CHAT_TIMESTAMP_FORMAT = _G.CHAT_TIMESTAMP_FORMAT
 local time = _G.time
 
 local timestampFormat = {
@@ -27,16 +28,10 @@ function Module:SetupChannelNames(text, ...)
 		r, g, b = r * 0.7, g * 0.7, b * 0.7
 	end
 
-	-- Dev logo -- Need to make a better logo
-	-- local unitName = string_match(text, "|Hplayer:([^|:]+)")
-	-- if unitName and K.Devs[unitName] then
-	-- 	text = string_gsub(text, "(|Hplayer.+)", "|T".."Interface\\AddOns\\KkthnxUI\\Media\\Chat\\KKUI"..":12:24|t%1")
-	-- end
-
 	-- Timestamp
 	if C["Chat"].TimestampFormat.Value > 1 then
 		local currentTime = time()
-		local oldTimeStamp = _G.CHAT_TIMESTAMP_FORMAT and string_gsub(BetterDate(_G.CHAT_TIMESTAMP_FORMAT, currentTime), "%[([^]]*)%]", "%%[%1%%]")
+		local oldTimeStamp = CHAT_TIMESTAMP_FORMAT and string_gsub(BetterDate(CHAT_TIMESTAMP_FORMAT, currentTime), "%[([^]]*)%]", "%%[%1%%]")
 		if oldTimeStamp then
 			text = string_gsub(text, oldTimeStamp, "")
 		end
@@ -46,8 +41,6 @@ function Module:SetupChannelNames(text, ...)
 	end
 
 	if C["Chat"].OldChatNames then
-		text = string_gsub(text, "|h%[(%d+)%. 大脚世界频道%]|h", "|h%[%1%. 世界%]|h")
-		text = string_gsub(text, "|h%[(%d+)%. 大腳世界頻道%]|h", "|h%[%1%. 世界%]|h")
 		return self.oldAddMsg(self, text, r, g, b)
 	else
 		return self.oldAddMsg(self, string_gsub(text, "|h%[(%d+)%..-%]|h", "|h[%1]|h"), r, g, b)

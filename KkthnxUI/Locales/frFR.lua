@@ -268,6 +268,14 @@ L["UITextures"] = "Textures"
 L["Unitframe"] = "Cadre d'unité"
 L["WorldMap"] = "Carte du monde"
 
+-- GUI Sub Options
+L["Fading"] = "Fading"
+L["Layouts"] = "Layouts"
+L["Scaling"] = "Scaling"
+L["Sizes"] = "Sizes"
+L["Toggles"] = "Toggles"
+L["Rare Alert"] = "Rare Alert"
+
 -- GUI Group Options Description Locals
 L["Choose Your Layout"] = "Choisissez votre disposition"
 L["Enable ActionBar"] = "Activer les barres d'action"
@@ -316,7 +324,6 @@ L["Auto Select Quest Rewards Best Value"] = "Sélectionner automatiquement la r�
 L["Auto Set Your Role In Groups"] = "Définir auto. votre rôle dans les groupes"
 L["Auto Skip All Cinematic/Movies"] = "Passer auto. les cinématiques"
 L["Automatically Remove Annoying Buffs"] = "Retirer auto. les améliorations inutiles"
-L["Automatically Track Newly Created Map Pins"] = "Suivi automatique des derniers répères créés."
 L["Blocks Invites From Strangers"] = "Bloquez les invitations des joueurs inconnus"
 L["Decline Pet Duels"] = "Refuser les duels de mascottes"
 L["Decline PvP Duels"] = "Refuser les duels JcJ"
@@ -521,6 +528,7 @@ L["Play Sound On Pulse"] = "Jouer un son sur Pulse"
 
 L["Bartender4 Skin"] = "Habillage de Bartender4"
 L["BigWigs Skin"] = "Habillage de BigWigs"
+L["ButtonForge Skin"] = "ButtonForge Skin"
 L["ChatBubbles Background Alpha"] = "Alpha du fond des bulles de Chat"
 L["ChatBubbles Skin"] = "Habillage des bulles de Chat"
 L["ChocolateBar Skin"] = "Habillage de ChocolateBar"

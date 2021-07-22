@@ -43,17 +43,7 @@ local UnitName = _G.UnitName
 -- /kt, get gametooltip names
 
 K.Devs = {
-	["Iamnsfw-Sargeras"] = true,
-	["Kkthnx-Sargeras"] = true,
-	["Kkthnx-Thrall"] = true,
-	["Kkthnxbye-Sargeras"] = true,
-	["Kkthnxtv-Sargeras"] = true,
-	["Kkthnxui-Sargeras"] = true,
-	["Kkthnxx-Sargeras"] = true,
-	["Littledots-Sargeras"] = true,
-	["Superfreaky-Sargeras"] = true,
-	["Tattoofreak-Sargeras"] = true,
-	["Toxicfreak-Sargeras"] = true,
+	["Kthnx-Arena 52"] = true,
 }
 
 local function isDeveloper()

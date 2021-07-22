@@ -43,14 +43,17 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 
 	-- Border
 	local BorderSubLevel = bSubLevel or "OVERLAY"
-	local BorderLayer = bLayer or 1
+	local BorderLayer = bLayer or 2
+	local BorderValue = C["General"].BorderStyle.Value
 	local BorderSize
-	if C["General"].BorderStyle.Value == "KkthnxUI" then
+
+	if BorderValue == "KkthnxUI" then
 		BorderSize = bSize or 12
 	else
 		BorderSize = bSize or 10
 	end
-	local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\"..C["General"].BorderStyle.Value.."\\Border.tga")
+
+	local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\"..BorderValue.."\\Border.tga")
 	local BorderOffset = bOffset or -4
 	local BorderRed = bRed or C["General"].ColorTextures and C["General"].TexturesColor[1] or C["Media"].Borders.ColorBorder[1]
 	local BorderGreen = bGreen or C["General"].ColorTextures and C["General"].TexturesColor[2] or C["Media"].Borders.ColorBorder[2]
@@ -214,31 +217,6 @@ local function StripTextures(object, kill)
 				end
 			end
 		end
-	end
-end
-
--- Font Template.
-local function FontTemplate(fs, font, fontSize, fontStyle)
-	fs.font = font
-	fs.fontSize = fontSize
-	fs.fontStyle = fontStyle
-
-	font = font or C["Media"].Fonts.KkthnxUIFont
-
-	fontSize = fontSize or 12
-
-	if fontSize > 12 and not fs.fontSize then
-		fontSize = 12
-	end
-
-	fs:SetFont(font, fontSize, fontStyle)
-	if fontStyle and (fontStyle ~= "NONE") then
-		fs:SetShadowOffset(0, 0)
-		fs:SetShadowColor(0, 0, 0, 0)
-	else
-		local s = K.Mult or 1
-		fs:SetShadowOffset(s, -s / 2)
-		fs:SetShadowColor(0, 0, 0, 1)
 	end
 end
 
@@ -497,10 +475,6 @@ local function addapi(object)
 
 	if not object.CreateShadow then
 		mt.CreateShadow = CreateShadow
-	end
-
-	if not object.FontTemplate then
-		mt.FontTemplate = FontTemplate
 	end
 
 	if not object.Kill then

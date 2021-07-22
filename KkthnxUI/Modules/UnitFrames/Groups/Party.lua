@@ -22,7 +22,7 @@ function Module:CreateParty()
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	self.Health:SetHeight(18)
+	self.Health:SetHeight(C["Party"].HealthHeight)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
@@ -31,6 +31,10 @@ function Module:CreateParty()
 	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
+
+	if C["Party"].Smooth then
+		K:SmoothBar(self.Health)
+	end
 
 	if C["Party"].HealthbarColor.Value == "Value" then
 		self.Health.colorSmooth = true
@@ -47,10 +51,6 @@ function Module:CreateParty()
 		self.Health.colorReaction = true
 	end
 
-	if C["Party"].Smooth then
-		K:SmoothBar(self.Health)
-	end
-
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	self.Health.Value:SetFontObject(UnitframeFont)
@@ -58,7 +58,7 @@ function Module:CreateParty()
 	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	self.Power:SetHeight(10)
+	self.Power:SetHeight(C["Party"].PowerHeight)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
@@ -73,7 +73,7 @@ function Module:CreateParty()
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("TOP", self.Health, 0, 16)
-	self.Name:SetWidth(124)
+	self.Name:SetWidth(C["Party"].HealthWidth)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
 	if C["Party"].HealthbarColor.Value == "Class" then
@@ -82,39 +82,37 @@ function Module:CreateParty()
 		self:Tag(self.Name, "[lfdrole][color][name]")
 	end
 
-	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
-		self.Portrait = CreateFrame("PlayerModel", "KKUI_PartyPortrait", self.Health)
-		self.Portrait:SetFrameStrata(self:GetFrameStrata())
-		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-		self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
-		self.Portrait:CreateBorder()
-	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
-		self.Portrait = self.Health:CreateTexture("KKUI_PartyPortrait", "BACKGROUND", nil, 1)
-		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-		self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-		self.Portrait:SetPoint("TOPLEFT", self, "TOPLEFT", 0 ,0)
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
+			self.Portrait = CreateFrame("PlayerModel", "KKUI_PartyPortrait", self.Health)
+			self.Portrait:SetFrameStrata(self:GetFrameStrata())
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
+			self.Portrait:CreateBorder()
+		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
+			self.Portrait = self.Health:CreateTexture("KKUI_PartyPortrait", "BACKGROUND", nil, 1)
+			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 
-		self.Portrait.Border = CreateFrame("Frame", nil, self)
-		self.Portrait.Border:SetAllPoints(self.Portrait)
-		self.Portrait.Border:CreateBorder()
+			self.Portrait.Border = CreateFrame("Frame", nil, self)
+			self.Portrait.Border:SetAllPoints(self.Portrait)
+			self.Portrait.Border:CreateBorder()
 
-		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
-			self.Portrait.PostUpdate = Module.UpdateClassPortraits
+			if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
+				self.Portrait.PostUpdate = Module.UpdateClassPortraits
+			end
 		end
 	end
-
-	self.Health:ClearAllPoints()
-	self.Health:SetPoint("TOPLEFT", self.Portrait:GetWidth() + 6, 0)
-	self.Health:SetPoint("TOPRIGHT")
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
 	self.Level:SetPoint("TOP", self.Portrait, 0, 15)
 	self.Level:SetFontObject(UnitframeFont)
 	self:Tag(self.Level, "[nplevel]")
 
-	local aurasSetWidth = 124
+	local aurasSetWidth = C["Party"].HealthWidth
 	if C["Party"].ShowBuffs then
-		self.Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
+		self.Buffs = CreateFrame("Frame", nil, self)
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
 		self.Buffs["growth-x"] = "RIGHT"
@@ -123,9 +121,11 @@ function Module:CreateParty()
 		self.Buffs.spacing = 6
 		self.Buffs.iconsPerRow = 6
 		self.Buffs.onlyShowPlayer = false
+
 		self.Buffs.size = Module.auraIconSize(aurasSetWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
 		self.Buffs:SetWidth(aurasSetWidth)
-		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math_floor(self.Buffs.num / self.Buffs.iconsPerRow + 0.5))
+		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+
 		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
 		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
@@ -147,15 +147,20 @@ function Module:CreateParty()
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 
-	if (C["Party"].Castbars) then
+	if C["Party"].Castbars then
 		self.Castbar = CreateFrame("StatusBar", "PartyCastbar", self)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
 		self.Castbar:SetClampedToScreen(true)
 		self.Castbar:CreateBorder()
 
 		self.Castbar:ClearAllPoints()
-		self.Castbar:SetPoint("TOPLEFT", 24, 22)
-		self.Castbar:SetPoint("TOPRIGHT", 0, 22)
+		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+			self.Castbar:SetPoint("TOPLEFT", C["Party"].CastbarIcon and 22 or 0, 22)
+			self.Castbar:SetPoint("TOPRIGHT", 0, 22)
+		else
+			self.Castbar:SetPoint("TOPLEFT", self.Portrait, C["Party"].CastbarIcon and 22 or 0, 22)
+			self.Castbar:SetPoint("TOPRIGHT", 0, 22)
+		end
 		self.Castbar:SetHeight(16)
 
 		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
@@ -185,16 +190,18 @@ function Module:CreateParty()
 		self.Castbar.Text:SetJustifyH("LEFT")
 		self.Castbar.Text:SetWordWrap(false)
 
-		self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
-		self.Castbar.Button:SetSize(16, 16)
-		self.Castbar.Button:CreateBorder()
+		if C["Party"].CastbarIcon then
+			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
+			self.Castbar.Button:SetSize(16, 16)
+			self.Castbar.Button:CreateBorder()
 
-		self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
-		self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
-		self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-		self.Castbar.Icon:SetPoint("RIGHT", self.Castbar, "LEFT", -6, 0)
+			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
+			self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
+			self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+			self.Castbar.Icon:SetPoint("RIGHT", self.Castbar, "LEFT", -6, 0)
 
-		self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
+			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
+		end
 	end
 
 	if C["Party"].ShowHealPrediction then
@@ -263,8 +270,16 @@ function Module:CreateParty()
 	if (C["Party"].TargetHighlight) then
 		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
 		self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
-		self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -5, 5)
-		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 5, -5)
+
+		local relativeTo
+		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+			relativeTo = self.Health
+		else
+			relativeTo = self.Portrait
+		end
+
+		self.TargetHighlight:SetPoint("TOPLEFT", relativeTo, -5, 5)
+		self.TargetHighlight:SetPoint("BOTTOMRIGHT", relativeTo, 5, -5)
 		self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
 		self.TargetHighlight:Hide()
 
@@ -281,12 +296,20 @@ function Module:CreateParty()
 	end
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
 	self.LeaderIndicator:SetSize(12, 12)
+	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+		self.LeaderIndicator:SetPoint("TOPLEFT", self.Health, 0, 8)
+	else
+		self.LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
+	end
 
 	self.AssistantIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.AssistantIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
 	self.AssistantIndicator:SetSize(12, 12)
+	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+		self.AssistantIndicator:SetPoint("TOPLEFT", self.Health, 0, 8)
+	else
+		self.AssistantIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
+	end
 
 	self.ReadyCheckIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.ReadyCheckIndicator:SetSize(20, 20)
@@ -303,12 +326,20 @@ function Module:CreateParty()
 	self.SummonIndicator:SetPoint("LEFT", 2, 0)
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
+	else
+		self.RaidTargetIndicator:SetPoint("TOP", self.Health, "TOP", 0, 8)
+	end
 	self.RaidTargetIndicator:SetSize(14, 14)
 
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(28, 28)
-	self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
+	else
+		self.ResurrectIndicator:SetPoint("CENTER", self.Health)
+	end
 
 	if C["Unitframe"].DebuffHighlight then
 		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")

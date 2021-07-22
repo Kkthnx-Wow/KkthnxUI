@@ -40,6 +40,15 @@ local UnitXPMax = _G.UnitXPMax
 local YES = _G.YES
 local hooksecurefunc = _G.hooksecurefunc
 
+local MawRankColor = {
+	[0] = {0.5, 0.7, 1},
+	[1] = {0, 0.7, 0.3},
+	[2] = {0, 1, 0},
+	[3] = {1, 0.8, 0},
+	[4] = {1, 0.5, 0},
+	[5] = {1, 0, 0}
+}
+
 function Module:CreateGUIGameMenuButton()
 	local KKUI_GUIButton = CreateFrame("Button", "KKUI_GameMenuButton", GameMenuFrame, "GameMenuButtonTemplate, BackdropTemplate")
 	KKUI_GUIButton:SetText(K.InfoColor.."KkthnxUI|r")
@@ -195,7 +204,10 @@ function Module:CreateTradeTargetInfo()
 		TradeFrameRecipientNameText:SetTextColor(r, g, b)
 
 		local guid = UnitGUID("NPC")
-		if not guid then return end
+		if not guid then
+			return
+		end
+
 		local text = "|cffff0000"..L["Stranger"]
 		if C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) then
 			text = "|cffffff00"..FRIEND
@@ -217,14 +229,6 @@ local function GetMawBarValue()
 	end
 end
 
-local MawRankColor = {
-	[0] = {0.5, 0.7, 1},
-	[1] = {0, .7, .3},
-	[2] = {0, 1, 0},
-	[3] = {1, .8, 0},
-	[4] = {1, .5, 0},
-	[5] = {1, 0, 0}
-}
 function Module:UpdateMawBarLayout()
 	local bar = Module.mawbar
 	local rank, value = GetMawBarValue()
@@ -519,18 +523,26 @@ function Module:CreateWorldQuestTool()
 		hasFound = nil
 	end
 
+	local fixedStrings = {
+		["横扫"] = "低扫",
+		["突刺"] = "突袭",
+	}
+
+	local function isActionMatch(msg, text)
+		return text and string.find(msg, text)
+	end
+
 	K:RegisterEvent("CHAT_MSG_MONSTER_SAY", function(_, msg)
-		if not GetOverrideBarSkin() or not C_QuestLog_GetLogIndexForQuestID(59585) then
+		if not GetOverrideBarSkin() or (not C_QuestLog_GetLogIndexForQuestID(59585) and not C_QuestLog_GetLogIndexForQuestID(64271)) then
 			resetActionButtons()
 			return
 		end
 
-		msg = gsub(msg, "[。%.]", "")
 		for i = 1, 3 do
 			local button = _G["ActionButton"..i]
 			local _, spellID = GetActionInfo(button.action)
 			local name = spellID and GetSpellInfo(spellID)
-			if name and name == msg then
+			if isActionMatch(msg, fixedStrings[name]) or isActionMatch(msg, name) then
 				K.ShowButtonGlow(button)
 			else
 				K.HideButtonGlow(button)
@@ -539,6 +551,8 @@ function Module:CreateWorldQuestTool()
 
 		hasFound = true
 	end)
+
+	K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", resetActionButtons)
 end
 
 hooksecurefunc("ChatEdit_InsertLink", function(text) -- shift-clicked
@@ -561,10 +575,10 @@ hooksecurefunc("ChatEdit_InsertLink", function(text) -- shift-clicked
 				TradeSkillFrame:SelectRecipe(tonumber(spellId))
 			end
 		elseif item then
-			C_Timer_After(.1, function() -- wait a bit or we cant select the recipe yet
+			C_Timer_After(0.1, function() -- wait a bit or we cant select the recipe yet
 				for _, v in pairs(TradeSkillFrame.RecipeList.dataList) do
 					if v.name == item then
-						--TradeSkillFrame.RecipeList:RefreshDisplay() -- didnt seem to help
+						-- TradeSkillFrame.RecipeList:RefreshDisplay() -- didnt seem to help
 						TradeSkillFrame:SelectRecipe(v.recipeID)
 						return
 					end
@@ -669,25 +683,67 @@ function Module:CreateDisableNewPlayerExperience() -- Disable new player experie
 	end
 end
 
-function Module:CreateUnlimitedPinDistance()
-	if not IsAddOnLoaded("UnlimitedMapPinDistance") then
-		local trackedAlphaBase = _G.SuperTrackedFrame.GetTargetAlphaBaseValue
-		function _G.SuperTrackedFrame:GetTargetAlphaBaseValue()
-			if trackedAlphaBase(self) == 0 and C_Navigation_GetDistance() >= 1000 then
-				return 0.6
-			else
-				return trackedAlphaBase(self)
-			end
-		end
-	end
-end
-
 -- Make it so we can move this
 local function PostBNToastMove(frame, _, anchor)
 	if anchor ~= _G.BNToastFrame.mover then
 		frame:ClearAllPoints()
 		frame:SetPoint("TOPLEFT", _G.BNToastFrame.mover, "TOPLEFT")
 	end
+end
+
+-- Reanchor MawBuffsBelowMinimapFrame
+function Module:MoveMawBuffsFrame()
+	local frame = CreateFrame("Frame", "KKUI_MawBuffsMover", UIParent)
+	frame:SetSize(235, 28)
+	local mover = K.Mover(frame, MAW_POWER_DESCRIPTION, "MawBuffs", {"TOPRIGHT", UIParent, -80, -225})
+	frame:SetPoint("TOPLEFT", mover, 4, 12)
+
+	hooksecurefunc(MawBuffsBelowMinimapFrame, "SetPoint", function(self, _, parent)
+		if parent == "MinimapCluster" or parent == MinimapCluster then
+			self:ClearAllPoints()
+			self:SetPoint("TOPRIGHT", frame)
+		end
+	end)
+end
+
+function Module:CreateDomiExtractor()
+	local EXTRACTOR_ID = 187532
+
+	local function CreateExtractButton()
+		if not ItemSocketingFrame then
+			return
+		end
+
+		if Module.DomiExtButton then
+			return
+		end
+
+		if GetItemCount(EXTRACTOR_ID) == 0 then
+			return
+		end
+
+		ItemSocketingSocketButton:SetWidth(83)
+		if InCombatLockdown() then
+			return
+		end
+
+		local button = CreateFrame("Button", nil, ItemSocketingFrame, "UIPanelButtonTemplate, SecureActionButtonTemplate")
+		button:SetSize(80, 22)
+		button:SetText("Drop")
+		button:SetPoint("RIGHT", ItemSocketingSocketButton, "LEFT", 1, 0)
+		button:SetAttribute("type", "macro")
+		button:SetAttribute("macrotext", "/use item:"..EXTRACTOR_ID.."\n/click ItemSocketingSocket1")
+
+		Module.DomiExtButton = button
+	end
+
+	hooksecurefunc("ItemSocketingFrame_LoadUI", function()
+		CreateExtractButton()
+
+		if Module.DomiExtButton then
+			Module.DomiExtButton:SetAlpha(GetSocketTypes(1) == "Domination" and GetExistingSocketInfo(1) and 1 or 0)
+		end
+	end)
 end
 
 function Module:OnEnable()
@@ -697,6 +753,7 @@ function Module:OnEnable()
 	self:CreateBossEmote()
 	self:CreateDisableHelpTip()
 	self:CreateDisableNewPlayerExperience()
+	self:CreateDomiExtractor()
 	self:CreateDurabilityFrameMove()
 	self:CreateErrorFrameToggle()
 	self:CreateErrorsFrame()
@@ -717,9 +774,9 @@ function Module:OnEnable()
 	self:CreateTicketStatusFrameMove()
 	self:CreateTradeTabs()
 	self:CreateTradeTargetInfo()
-	self:CreateUnlimitedPinDistance()
 	self:CreateVehicleSeatMover()
 	self:CreateWorldQuestTool()
+	self:MoveMawBuffsFrame()
 
 	-- TESTING CMD : /run BNToastFrame:AddToast(BN_TOAST_TYPE_ONLINE, 1)
 	if not BNToastFrame.mover then
@@ -821,7 +878,7 @@ function Module:OnEnable()
 
 			TalentMicroButtonAlert.Text:ClearAllPoints()
 			TalentMicroButtonAlert.Text:SetPoint("CENTER", TalentMicroButtonAlert, "CENTER", 0, -10)
-			TalentMicroButtonAlert.Text:FontTemplate()
+			TalentMicroButtonAlert.Text:SetFontObject(KkthnxUIFont)
 
 			TalentMicroButtonAlert.CloseButton:ClearAllPoints()
 			TalentMicroButtonAlert.CloseButton:SetPoint("TOPRIGHT", TalentMicroButtonAlert, "TOPRIGHT", 3, 3)

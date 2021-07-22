@@ -4,23 +4,7 @@ local Module = K:GetModule("Unitframes")
 local _G = _G
 
 local CreateFrame = _G.CreateFrame
-local GetThreatStatusColor = _G.GetThreatStatusColor
 local UnitIsUnit = _G.UnitIsUnit
-local UnitThreatSituation = _G.UnitThreatSituation
-
-local function UpdatePartyPetThreat(self, _, unit)
-	if unit ~= self.unit then
-		return
-	end
-
-	local situation = UnitThreatSituation(unit)
-	if (situation and situation > 0) then
-		local r, g, b = GetThreatStatusColor(situation)
-		self.KKUI_Border:SetVertexColor(r, g, b)
-	else
-		self.KKUI_Border:SetVertexColor(1, 1, 1)
-	end
-end
 
 local function UpdatePartyPetPower(self, _, unit)
 	if self.unit ~= unit then

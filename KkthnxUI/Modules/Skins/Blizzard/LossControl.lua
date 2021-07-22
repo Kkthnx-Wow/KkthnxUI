@@ -1,4 +1,4 @@
-local _, C = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 
 -- Sourced: ElvUI (Elvz)
 -- Edited: KkthnxUI (Kkthnx)
@@ -11,40 +11,44 @@ local hooksecurefunc = _G.hooksecurefunc
 
 table_insert(C.defaultThemes, function()
 	local LossOfControlFrame = _G.LossOfControlFrame
+	local LossOfControlFont = K.GetFont(C["UIFonts"].SkinFonts)
 
 	local IconBackdrop = CreateFrame("Frame", nil, LossOfControlFrame)
-	IconBackdrop:CreateBorder()
-	IconBackdrop.KKUI_Border:SetVertexColor(1, 0, 0)
 	IconBackdrop:SetAllPoints(LossOfControlFrame.Icon)
 	IconBackdrop:SetFrameLevel(LossOfControlFrame:GetFrameLevel())
+	IconBackdrop:CreateBorder()
+	IconBackdrop.KKUI_Border:SetVertexColor(1, 0, 0)
 
-	LossOfControlFrame.Icon:SetTexCoord(.1, .9, .1, .9)
+	LossOfControlFrame.Icon:SetTexCoord(unpack(K.TexCoords))
 	LossOfControlFrame:StripTextures()
 	LossOfControlFrame.AbilityName:ClearAllPoints()
 	LossOfControlFrame:SetSize(LossOfControlFrame.Icon:GetWidth() + 50, LossOfControlFrame.Icon:GetWidth() + 50)
 
-	hooksecurefunc("LossOfControlFrame_SetUpDisplay", function(s)
-		s.Icon:ClearAllPoints()
-		s.Icon:SetPoint("CENTER", s, "CENTER", 0, 0)
+	hooksecurefunc("LossOfControlFrame_SetUpDisplay", function(self)
+		self.Icon:ClearAllPoints()
+		self.Icon:SetPoint("CENTER", self, "CENTER", 0, 0)
 
-		s.AbilityName:ClearAllPoints()
-		s.AbilityName:SetPoint("BOTTOM", s, 0, -8)
-		s.AbilityName.scrollTime = nil
-		s.AbilityName:FontTemplate(nil, 20, "OUTLINE")
+		self.AbilityName:ClearAllPoints()
+		self.AbilityName:SetPoint("BOTTOM", self, 0, -8)
+		self.AbilityName.scrollTime = nil
+		self.AbilityName:SetFontObject(LossOfControlFont)
+		self.AbilityName:SetFont(select(1, self.AbilityName:GetFont()), 20, select(3, self.AbilityName:GetFont()))
 
-		s.TimeLeft.NumberText:ClearAllPoints()
-		s.TimeLeft.NumberText:SetPoint("BOTTOM", s, 4, -38)
-		s.TimeLeft.NumberText.scrollTime = nil
-		s.TimeLeft.NumberText:FontTemplate(nil, 20, "OUTLINE")
+		self.TimeLeft.NumberText:ClearAllPoints()
+		self.TimeLeft.NumberText:SetPoint("BOTTOM", self, 4, -38)
+		self.TimeLeft.NumberText.scrollTime = nil
+		self.TimeLeft.NumberText:SetFontObject(LossOfControlFont)
+		self.TimeLeft.NumberText:SetFont(select(1, self.AbilityName:GetFont()), 20, select(3, self.AbilityName:GetFont()))
 
-		s.TimeLeft.SecondsText:ClearAllPoints()
-		s.TimeLeft.SecondsText:SetPoint("BOTTOM", s, 0, -60)
-		s.TimeLeft.SecondsText.scrollTime = nil
-		s.TimeLeft.SecondsText:FontTemplate(nil, 20, "OUTLINE")
+		self.TimeLeft.SecondsText:ClearAllPoints()
+		self.TimeLeft.SecondsText:SetPoint("BOTTOM", self, 0, -60)
+		self.TimeLeft.SecondsText.scrollTime = nil
+		self.TimeLeft.SecondsText:SetFontObject(LossOfControlFont)
+		self.TimeLeft.SecondsText:SetFont(select(1, self.AbilityName:GetFont()), 20, select(3, self.AbilityName:GetFont()))
 
 		-- always stop shake animation on start
-		if s.Anim:IsPlaying() then
-			s.Anim:Stop()
+		if self.Anim:IsPlaying() then
+			self.Anim:Stop()
 		end
 	end)
 end)

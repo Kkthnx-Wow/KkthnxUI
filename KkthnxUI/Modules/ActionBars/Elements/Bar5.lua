@@ -18,7 +18,7 @@ local function SetFrameSize(frame, size, num)
 	num = num or frame.numButtons
 
 	local layout = C["ActionBar"].Layout.Value
-	if layout == "Four Stacked" then
+	if layout == 2 then
 		frame:SetWidth(num * size + (num - 1) * margin + 2 * padding)
 		frame:SetHeight(size + 2 * padding)
 	else
@@ -43,10 +43,9 @@ function Module:CreateBar5()
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
 	local layout = C["ActionBar"].Layout.Value
-	local buttonSize = C["ActionBar"].RightButtonSize
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBar5", UIParent, "SecureHandlerStateTemplate")
-	if layout == "Four Stacked" then
+	if layout == 2 then
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 124}
 	else
 		frame.Pos = {"RIGHT", _G.KKUI_ActionBar4, "LEFT", margin - 12, 0}
@@ -60,9 +59,9 @@ function Module:CreateBar5()
 		local button = _G["MultiBarLeftButton"..i]
 		table_insert(buttonList, button)
 		table_insert(Module.buttons, button)
-		button:SetSize(buttonSize, buttonSize)
 		button:ClearAllPoints()
-		if layout == "Four Stacked" then
+
+		if layout == 2 then
 			if i == 1 then
 				button:SetPoint("LEFT", frame, padding, 0)
 			else
@@ -80,7 +79,7 @@ function Module:CreateBar5()
 	end
 
 	frame.buttonList = buttonList
-	SetFrameSize(frame, buttonSize, num)
+	SetFrameSize(frame, cfg.size, num)
 
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)

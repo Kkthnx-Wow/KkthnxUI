@@ -318,12 +318,17 @@ oUF.Tags.Methods["leadassist"] = function(unit)
 end
 oUF.Tags.Events["leadassist"] = "UNIT_NAME_UPDATE PARTY_LEADER_CHANGED GROUP_ROSTER_UPDATE"
 
+oUF.Tags.Events["lfdrole"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"
 oUF.Tags.Methods["lfdrole"] = function(unit)
 	local Role = UnitGroupRolesAssigned(unit)
-	local isTank = Role == "TANK"
-	local isHealer = Role == "HEALER"
-	local Tank, Healer = isTank and "|cff0099CC*|r" or "", isHealer and "|cff00FF00*|r" or ""
+	local String = ""
 
-	return (Tank..Healer)
+	if Role == "TANK" then
+		String = "|TInterface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Tank:12:12:-3|t"
+	elseif Role == "HEALER" then
+		String = "|TInterface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Healer:12:12:-3|t"
+	end
+
+	return String
 end
 oUF.Tags.Events["lfdrole"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"

@@ -18,7 +18,7 @@ local function SetFrameSize(frame, size, num)
 	num = num or frame.numButtons
 
 	local layout = C["ActionBar"].Layout.Value
-	if layout == "3x4 Boxed arrangement" then
+	if layout == 3 then
 		frame:SetWidth(3 * size + (3 - 1) * margin + 2 * padding)
 		frame:SetHeight(4 * size + (4 - 1) * margin + 2 * padding)
 	else
@@ -43,27 +43,25 @@ function Module:CreateBar2()
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
 	local layout = C["ActionBar"].Layout.Value
-	local buttonSize = C["ActionBar"].DefaultButtonSize
 
-	-- Create The Frame To Hold The Buttons
 	local frame = CreateFrame("Frame", "KKUI_ActionBar2", UIParent, "SecureHandlerStateTemplate")
-	if layout == "3x4 Boxed arrangement" then
+	if layout == 3 then
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 305, 124}
 	else
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 44}
 	end
 
-	-- Move The Buttons Into Position And Reparent Them
 	_G.MultiBarBottomLeft:SetParent(frame)
 	_G.MultiBarBottomLeft:EnableMouse(false)
 	_G.MultiBarBottomLeft.QuickKeybindGlow:SetTexture("")
 
-	if layout == "3x4 Boxed arrangement" then
-		for i = 1, num do
-			local button = _G["MultiBarBottomLeftButton"..i]
-			table_insert(buttonList, button) -- Add The Button Object To The List
-			button:SetSize(buttonSize, buttonSize)
-			button:ClearAllPoints()
+	for i = 1, num do
+		local button = _G["MultiBarBottomLeftButton"..i]
+		table_insert(buttonList, button)
+		table_insert(Module.buttons, button)
+		button:ClearAllPoints()
+
+		if layout == 3 then
 			if i == 1 then
 				button:SetPoint("TOPLEFT", frame, padding, padding)
 			elseif (i - 1) % 3 == 0 then
@@ -73,14 +71,7 @@ function Module:CreateBar2()
 				local previous = _G["MultiBarBottomLeftButton"..i - 1]
 				button:SetPoint("LEFT", previous, "RIGHT", margin, 0)
 			end
-		end
-	else
-		for i = 1, num do
-			local button = _G["MultiBarBottomLeftButton"..i]
-			table_insert(buttonList, button) -- Add The Button Object To The List
-			table_insert(Module.buttons, button)
-			button:SetSize(buttonSize, buttonSize)
-			button:ClearAllPoints()
+		else
 			if i == 1 then
 				button:SetPoint("BOTTOMLEFT", frame, padding, padding)
 			else
@@ -91,9 +82,8 @@ function Module:CreateBar2()
 	end
 
 	frame.buttonList = buttonList
-	SetFrameSize(frame, buttonSize, num)
+	SetFrameSize(frame, cfg.size, num)
 
-	-- Show/hide The Frame On A Given State Driver
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 

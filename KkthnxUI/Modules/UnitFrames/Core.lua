@@ -14,7 +14,7 @@ local CreateFrame = _G.CreateFrame
 local GetRuneCooldown = _G.GetRuneCooldown
 -- local GetSpecialization = _G.GetSpecialization
 local GetTime = _G.GetTime
-local GetActiveSpecGroup = _G.GetActiveSpecGroup
+-- local GetActiveSpecGroup = _G.GetActiveSpecGroup
 local IsInInstance = _G.IsInInstance
 local IsReplacingUnit = _G.IsReplacingUnit
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
@@ -112,7 +112,7 @@ function Module:PostUpdatePvPIndicator(unit, status)
 end
 
 function Module:UpdateThreat(_, unit)
-	if unit ~= self.unit or C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+	if unit ~= self.unit then
 		return
 	end
 
@@ -140,7 +140,7 @@ function Module:UpdateThreat(_, unit)
 				self.Portrait.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
 		end
-	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
+	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		if not self then
 			return
 		end
@@ -161,6 +161,25 @@ function Module:UpdateThreat(_, unit)
 				self.Portrait.Border.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
 			else
 				self.Portrait.Border.KKUI_Border:SetVertexColor(1, 1, 1)
+			end
+		end
+	elseif C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+		if not self then
+			return
+		end
+
+		if not self.Health.KKUI_Border then
+			return
+		end
+
+		if status and status > 1 then
+			local r, g, b = unpack(oUF.colors.threat[status])
+			self.Health.KKUI_Border:SetVertexColor(r, g, b)
+		else
+			if C["General"].ColorTextures then
+				self.Health.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			else
+				self.Health.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
 		end
 	end
@@ -230,6 +249,38 @@ local function updateCastBarTicks(bar, numTicks)
 	end
 end
 
+function Module:GetInterruptColor(unit)
+	local colors = K.Colors
+	local r, g, b
+
+	if self.casting then
+		r, g, b = colors.castbar.CastingColor[1], colors.castbar.CastingColor[2], colors.castbar.CastingColor[3]
+	elseif self.channeling then
+		r, g, b = colors.castbar.ChannelingColor[1], colors.castbar.ChannelingColor[2], colors.castbar.ChannelingColor[3]
+	else
+		r, g, b = colors.castbar.CastingColor[1], colors.castbar.CastingColor[2], colors.castbar.CastingColor[3]
+	end
+
+	if self.notInterruptible and (UnitIsPlayer(unit) or (unit ~= 'player' and UnitCanAttack('player', unit))) then
+		return colors.castbar.notInterruptibleColor[1], colors.castbar.notInterruptibleColor[2], colors.castbar.notInterruptibleColor[3]
+	elseif (C["Unitframe"].CastClassColor) and UnitIsPlayer(unit) then
+		local _, Class = UnitClass(unit)
+		local t = Class and colors.class[Class]
+		if t then return
+			t[1], t[2], t[3]
+		end
+	elseif (C["Unitframe"].CastReactionColor) then
+		local Reaction = UnitReaction(unit, 'player')
+		local t = Reaction and colors.reaction[Reaction]
+		if t then
+			return t[1], t[2], t[3]
+		end
+	end
+
+	return r, g, b
+end
+
+
 function Module:OnCastbarUpdate(elapsed)
 	if self.casting or self.channeling then
 		local decimal = self.decimal
@@ -297,23 +348,7 @@ function Module:PostCastStart(unit)
 		self.Spark:Show()
 	end
 
-	local colors = K.Colors.castbar
-	local r, g, b = unpack(self.casting and colors.CastingColor or colors.ChannelingColor)
-
-	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
-		local _, Class = UnitClass(unit)
-		local t = Class and K.Colors.class[Class]
-		if t then
-			r, g, b = t[1], t[2], t[3]
-		end
-	elseif C["Unitframe"].CastReactionColor then
-		local Reaction = UnitReaction(unit, "player")
-		local t = Reaction and K.Colors.reaction[Reaction]
-		if t then
-			r, g, b = t[1], t[2], t[3]
-		end
-	end
-	self:SetStatusBarColor(r, g, b)
+	self:SetStatusBarColor(Module.GetInterruptColor(self, unit))
 
 	if unit == "vehicle" or UnitInVehicle("player") then
 		if self.SafeZone then
@@ -346,41 +381,10 @@ function Module:PostCastStart(unit)
 	elseif not UnitIsUnit(unit, "player") and self.notInterruptible then
 		self:SetStatusBarColor(unpack(K.Colors.castbar.notInterruptibleColor))
 	end
-
-	-- if self.__owner.mystyle == "nameplate" then
-	-- 	if C["Nameplate"].CastbarGlow and Module.MajorSpells[self.spellID] then
-	-- 		K.ShowButtonGlow(oUF_CastbarNameplate.glowFrame)
-	-- 	else
-	-- 		K.HideButtonGlow(oUF_CastbarNameplate.glowFrame)
-	-- 	end
-	-- end
 end
 
 function Module:PostUpdateInterruptible(unit)
-	if unit == "vehicle" or unit == "player" then
-		return
-	end
-
-	local colors = K.Colors.castbar
-	local r, g, b = unpack(self.casting and colors.CastingColor or colors.ChannelingColor)
-
-	if self.notInterruptible and UnitCanAttack("player", unit) then
-		r, g, b = colors.notInterruptibleColor[1], colors.notInterruptibleColor[2], colors.notInterruptibleColor[3]
-	elseif C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
-		local _, Class = UnitClass(unit)
-		local t = Class and K.Colors.class[Class]
-		if t then
-			r, g, b = t[1], t[2], t[3]
-		end
-	elseif C["Unitframe"].CastReactionColor then
-		local Reaction = UnitReaction(unit, "player")
-		local t = Reaction and K.Colors.reaction[Reaction]
-		if t then
-			r, g, b = t[1], t[2], t[3]
-		end
-	end
-
-	self:SetStatusBarColor(r, g, b)
+	self:SetStatusBarColor(Module.GetInterruptColor(self, unit))
 end
 
 function Module:PostCastStop()
@@ -675,7 +679,6 @@ function Module:CreateUnits()
 		Module:UpdateGroupRoles()
 		Module:QuestIconCheck()
 		Module:RefreshPlateOnFactionChanged()
-		-- Module:RefreshMajorSpells()
 
 		oUF:RegisterStyle("Nameplates", Module.CreatePlates)
 		oUF:SetActiveStyle("Nameplates")
@@ -699,26 +702,16 @@ function Module:CreateUnits()
 
 		oUF:SetActiveStyle("Player")
 		local Player = oUF:Spawn("player", "oUF_Player")
-		local PlayerFrameHeight = C["Unitframe"].PlayerFrameHeight + 6
-		local PlayerFrameWidth
-		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-			PlayerFrameWidth = C["Unitframe"].PlayerFrameWidth
-		else
-			PlayerFrameWidth = C["Unitframe"].PlayerFrameWidth - PlayerFrameHeight
-		end
+		local PlayerFrameHeight = C["Unitframe"].PlayerHealthHeight + C["Unitframe"].PlayerPowerHeight + 6
+		local PlayerFrameWidth = C["Unitframe"].PlayerHealthWidth
 
 		Player:SetSize(PlayerFrameWidth, PlayerFrameHeight)
 		K.Mover(Player, "PlayerUF", "PlayerUF", {"BOTTOM", UIParent, "BOTTOM", -250, 320}, PlayerFrameWidth, PlayerFrameHeight)
 
 		oUF:SetActiveStyle("Target")
 		local Target = oUF:Spawn("target", "oUF_Target")
-		local TargetFrameHeight = C["Unitframe"].TargetFrameHeight + 6
-		local TargetFrameWidth
-		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-			TargetFrameWidth = C["Unitframe"].TargetFrameWidth
-		else
-			TargetFrameWidth = C["Unitframe"].TargetFrameWidth - TargetFrameHeight
-		end
+		local TargetFrameHeight = C["Unitframe"].TargetHealthHeight + C["Unitframe"].TargetPowerHeight + 6
+		local TargetFrameWidth = C["Unitframe"].TargetHealthWidth
 		Target:SetSize(TargetFrameWidth, TargetFrameHeight)
 		K.Mover(Target, "TargetUF", "TargetUF", {"BOTTOM", UIParent, "BOTTOM", 250, 320}, TargetFrameWidth, TargetFrameHeight)
 
@@ -827,13 +820,14 @@ function Module:CreateUnits()
 		SetCVar("showArenaEnemyFrames", 0) -- Why these still load and show is dumb.
 	end
 
+	local partyMover
 	if showPartyFrame then
 		oUF:RegisterStyle("Party", Module.CreateParty)
 		oUF:SetActiveStyle("Party")
 
 		local partyXOffset, partyYOffset = 6, C["Party"].ShowBuffs and 54 or 18
-		local partyMoverWidth = 164
-		local partyMoverHeight = 34 * 5 + partyYOffset * 4
+		local partyMoverWidth = C["Party"].HealthWidth
+		local partyMoverHeight = C["Party"].HealthHeight * 5 + partyYOffset * 4
 		local partyGroupingOrder = "NONE,DAMAGER,HEALER,TANK"
 
 		local party = oUF:SpawnHeader("oUF_Party", nil, "solo,party",
@@ -852,9 +846,9 @@ function Module:CreateUnits()
 		"oUF-initialConfigFunction", ([[
 		self:SetWidth(%d)
 		self:SetHeight(%d)
-		]]):format(164, 34))
+		]]):format(C["Party"].HealthWidth, C["Party"].HealthHeight + C["Party"].PowerHeight + 6))
 
-		local partyMover = K.Mover(party, "PartyFrame", "PartyFrame", {"TOPLEFT", UIParent, "TOPLEFT", 4, -180}, partyMoverWidth, partyMoverHeight)
+		partyMover = K.Mover(party, "PartyFrame", "PartyFrame", {"TOPLEFT", UIParent, "TOPLEFT", 48, -180}, partyMoverWidth, partyMoverHeight)
 		party:ClearAllPoints()
 		party:SetPoint("TOPLEFT", partyMover)
 
@@ -926,9 +920,23 @@ function Module:CreateUnits()
 			return group
 		end
 
+		local function CreateTeamIndex(header)
+			local parent = _G[header:GetName().."UnitButton1"]
+			if parent and not parent.teamIndex then
+				local teamIndex = K.CreateFontString(parent, 11, string_format(GROUP_NUMBER, header.index), "")
+				teamIndex:ClearAllPoints()
+				teamIndex:SetPoint("BOTTOM", parent, "TOP", 0, 3)
+				teamIndex:SetTextColor(255/255, 204/255, 102/255)
+
+				parent.teamIndex = teamIndex
+			end
+		end
+
 		local groups = {}
 		for i = 1, numGroups do
 			groups[i] = CreateGroup("oUF_Raid"..i, i)
+			groups[i].index = i
+
 			if i == 1 then
 				if horizonRaid then
 					raidMover = K.Mover(groups[i], "RaidFrame", "RaidFrame", {"TOPLEFT", UIParent, "TOPLEFT", 4, -180}, (raidWidth + 5) * 5, (raidHeight + (showTeamIndex and 21 or 15)) * numGroups)
@@ -960,10 +968,62 @@ function Module:CreateUnits()
 			end
 
 			if showTeamIndex then
-				local parent = _G["oUF_Raid"..i.."UnitButton1"]
-				local teamIndex = K.CreateFontString(parent, 12, string_format(GROUP_NUMBER, i), "")
-				teamIndex:ClearAllPoints()
-				teamIndex:SetPoint("BOTTOM", parent, "TOP", 0, 5)
+				CreateTeamIndex(groups[i])
+				groups[i]:HookScript("OnShow", CreateTeamIndex)
+			end
+		end
+
+		if C["Raid"].SpecRaidPos then
+			local function UpdateSpecPos(event, ...)
+				local unit, _, spellID = ...
+				if (event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player" and spellID == 200749) or event == "ON_LOGIN" then
+					local specIndex = GetSpecialization()
+					if not specIndex then
+						return
+					end
+
+					if not KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] then
+						KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = {"TOPLEFT", "UIParent", "TOPLEFT", 4, -180}
+					end
+
+					if raidMover then
+						raidMover:ClearAllPoints()
+						raidMover:SetPoint(unpack(KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex]))
+					end
+
+					if not KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["PartyPos"..specIndex] then
+						KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["PartyPos"..specIndex] = {"TOPLEFT", "UIParent", "TOPLEFT", 4, -180}
+					end
+
+					if partyMover then
+						partyMover:ClearAllPoints()
+						partyMover:SetPoint(unpack(KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["PartyPos"..specIndex]))
+					end
+				end
+			end
+			UpdateSpecPos("ON_LOGIN")
+			K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", UpdateSpecPos)
+
+			if raidMover then
+				raidMover:HookScript("OnDragStop", function()
+					local specIndex = GetSpecialization()
+					if not specIndex then
+						return
+					end
+
+					KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidFrame"]
+				end)
+			end
+
+			if partyMover then
+				partyMover:HookScript("OnDragStop", function()
+					local specIndex = GetSpecialization()
+					if not specIndex then
+						return
+					end
+
+					KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["PartyPos"..specIndex] = KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["PartyFrame"]
+				end)
 			end
 		end
 
@@ -1092,11 +1152,11 @@ end
 
 function Module:OnEnable()
 	local whatWidth
-	local whatHeight = C["Unitframe"].PlayerFrameHeight + 6
+	local whatHeight = C["Unitframe"].PlayerHealthHeight + 6
 	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-		whatWidth = C["Unitframe"].PlayerFrameWidth
+		whatWidth = C["Unitframe"].PlayerHealthWidth
 	else
-		whatWidth = C["Unitframe"].PlayerFrameWidth - whatHeight
+		whatWidth = C["Unitframe"].PlayerHealthWidth - whatHeight
 	end
 
 	Module.ClassPowerBarSize = {whatWidth, 14}

@@ -561,6 +561,7 @@ function Module:OnEnable()
 	self:CreateTargetedInfo()
 	self:CreateTooltipID()
 	self:CreateTooltipIcons()
+	self:CreateDominationRank()
 end
 
 -- Tooltip Skin Registration

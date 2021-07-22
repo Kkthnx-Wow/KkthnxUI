@@ -226,21 +226,25 @@ function Module:OnEnable()
 
 		-- Create cursor coordinates frame
 		cursorCoords = WorldMapFrame.ScrollContainer:CreateFontString(nil, "OVERLAY")
-		cursorCoords:FontTemplate(nil, 13, "OUTLINE")
+		cursorCoords:SetFontObject(KkthnxUIFontOutline)
+		cursorCoords:SetFont(select(1, cursorCoords:GetFont()), 13, select(3, cursorCoords:GetFont()))
 		cursorCoords:SetSize(200, 16)
 		cursorCoords:SetParent(coordsFrame)
 		cursorCoords:ClearAllPoints()
 		cursorCoords:SetPoint("BOTTOMLEFT", 152, 1)
 		cursorCoords:SetTextColor(255/255, 204/255, 102/255)
+		cursorCoords:SetAlpha(0.9)
 
 		-- Create player coordinates frame
 		playerCoords = WorldMapFrame.ScrollContainer:CreateFontString(nil, "OVERLAY")
-		playerCoords:FontTemplate(nil, 13, "OUTLINE")
+		playerCoords:SetFontObject(KkthnxUIFontOutline)
+		playerCoords:SetFont(select(1, playerCoords:GetFont()), 13, select(3, playerCoords:GetFont()))
 		playerCoords:SetSize(200, 16)
 		playerCoords:SetParent(coordsFrame)
 		playerCoords:ClearAllPoints()
 		playerCoords:SetPoint("BOTTOMRIGHT", -132, 1)
 		playerCoords:SetTextColor(255/255, 204/255, 102/255)
+		playerCoords:SetAlpha(0.9)
 
 		hooksecurefunc(WorldMapFrame, "OnFrameSizeChanged", self.UpdateMapID)
 		hooksecurefunc(WorldMapFrame, "OnMapChanged", self.UpdateMapID)

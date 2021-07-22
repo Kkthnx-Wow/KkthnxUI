@@ -49,6 +49,8 @@ function Module:OnEnable()
 	self:ReskinDeadlyBossMods()
 	self:ReskinDominos()
 	self:ReskinRareScanner()
+	self:ReskinButtonForge()
+	self:ReskinSimulationcraft()
 end
 
 function Module:LoadWithAddOn(addonName, value, func)

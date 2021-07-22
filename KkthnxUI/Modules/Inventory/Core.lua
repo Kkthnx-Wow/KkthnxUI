@@ -948,7 +948,7 @@ function Module:OnEnable()
 	}
 
 	local function isItemNeedsLevel(item)
-		return item.link and item.level and item.rarity > 1 and (Module:IsArtifactRelic(item) or item.classID == LE_ITEM_CLASS_WEAPON or item.classID == LE_ITEM_CLASS_ARMOR)
+		return item.link and item.quality > 1 and Module:IsItemHasLevel(item)
 	end
 
 	local function GetIconOverlayAtlas(item)
@@ -998,19 +998,28 @@ function Module:OnEnable()
 		local buttonIconTexture = _G[self:GetName().."IconTexture"]
 
 		if self.JunkIcon then
-			if (item.rarity == LE_ITEM_QUALITY_POOR or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.sellPrice and item.sellPrice > 0 then
+			if (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.hasPrice then
 				self.JunkIcon:Show()
 			else
 				self.JunkIcon:Hide()
 			end
 		end
 
-		local atlas = GetIconOverlayAtlas(item)
+		self.IconOverlay:SetVertexColor(1, 1, 1)
+		self.IconOverlay:Hide()
+		self.IconOverlay2:Hide()
+
+		local atlas, secondAtlas = GetIconOverlayAtlas(item)
 		if atlas then
 			self.IconOverlay:SetAtlas(atlas)
 			self.IconOverlay:Show()
-		else
-			self.IconOverlay:Hide()
+
+			if secondAtlas then
+				local color = K.QualityColors[item.quality or 1]
+				self.IconOverlay:SetVertexColor(color.r, color.g, color.b)
+				self.IconOverlay2:SetAtlas(secondAtlas)
+				self.IconOverlay2:Show()
+			end
 		end
 
 		if KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems[item.id] then
@@ -1020,12 +1029,20 @@ function Module:OnEnable()
 		end
 
 		self.iLvl:SetText("")
-		if showItemLevel and isItemNeedsLevel(item) then
-			local level = K.GetItemLevel(item.link, item.bagID, item.slotID) or item.level
-			local color = K.QualityColors[item.rarity]
+		if showItemLevel then
+			local level = item.level -- ilvl for keystone and battlepet
+			if not level and isItemNeedsLevel(item) then
+				local ilvl = K.GetItemLevel(item.link, item.bagID, item.slotID)
+				if ilvl and ilvl > 1 then
+					level = ilvl
+				end
+			end
 
-			self.iLvl:SetText(level)
-			self.iLvl:SetTextColor(color.r, color.g, color.b)
+			if level then
+				local color = K.QualityColors[item.quality]
+				self.iLvl:SetText(level)
+				self.iLvl:SetTextColor(color.r, color.g, color.b)
+			end
 		end
 
 		-- Determine if we can use that item or not?
@@ -1037,10 +1054,10 @@ function Module:OnEnable()
 
 		if self.glowFrame then
 			if C_NewItems_IsNewItem(item.bagID, item.slotID) then
-				local color = K.QualityColors[item.rarity]
+				local color = K.QualityColors[item.quality]
 				if item.questID or item.isQuestItem then
 					self.glowFrame:SetBackdropBorderColor(1, .82, .2)
-				elseif color and item.rarity and item.rarity > -1 then
+				elseif color and item.quality and item.quality > -1 then
 					self.glowFrame:SetBackdropBorderColor(color.r, color.g, color.b)
 				else
 					self.glowFrame:SetBackdropBorderColor(1, 1, 1)
@@ -1073,6 +1090,7 @@ function Module:OnEnable()
 
 		-- Support CanIMogIt
 		UpdateCanIMogIt(self, item)
+
 		-- Support Pawn
 		UpdatePawnArrow(self, item)
 	end
@@ -1086,8 +1104,8 @@ function Module:OnEnable()
 
 		if item.questID or item.isQuestItem then
 			self.KKUI_Border:SetVertexColor(1, .82, .2)
-		elseif item.rarity and item.rarity > -1 then
-			local color = K.QualityColors[item.rarity]
+		elseif item.quality and item.quality > -1 then
+			local color = K.QualityColors[item.quality]
 			self.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 		else
 			if C["General"].ColorTextures then
@@ -1278,5 +1296,8 @@ function Module:OnEnable()
 	K:RegisterEvent("BANKFRAME_OPENED", Module.AutoDeposit)
 
 	-- Fixes
+	BankFrame.GetRight = function()
+		return f.bank:GetRight()
+	end
 	BankFrameItemButton_Update = K.Noop
 end

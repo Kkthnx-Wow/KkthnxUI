@@ -40,6 +40,9 @@ function Module:MailItem_AddDelete(i)
 end
 
 function Module:InboxItem_OnEnter()
+	if not self.index then -- may receive fake mails from Narcissus
+		return
+	end
 	wipe(inboxItems)
 
 	local itemAttached = select(8, GetInboxHeaderInfo(self.index))

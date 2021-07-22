@@ -115,16 +115,18 @@ local function ReskinPVPCaptureBar(self)
 	end
 end
 
-local function ReskinSpellDisplayWidget(self)
-	if not self.styled then
-		local widgetSpell = self.Spell
-		widgetSpell.IconMask:Hide()
-		widgetSpell.Border:SetTexture(nil)
-		widgetSpell.DebuffBorder:SetTexture(nil)
-		widgetSpell.Icon:SetTexCoord(unpack(K.TexCoords))
+local function ReskinSpellDisplayWidget(spell)
+	if not spell.bg then
+		spell.Border:SetAlpha(0)
+		spell.DebuffBorder:SetAlpha(0)
+		spell.Icon:SetTexCoord(unpack(K.TexCoords))
 
-		self.styled = true
+		spell.bg = CreateFrame("Frame", nil, spell)
+		spell.bg:SetAllPoints(spell.Icon)
+		spell.bg:SetFrameLevel(spell:GetFrameLevel())
+		spell.bg:CreateShadow(true)
 	end
+	spell.IconMask:Hide()
 end
 
 table.insert(C.defaultThemes, function()
@@ -134,7 +136,7 @@ table.insert(C.defaultThemes, function()
 			if widgetType == Type_DoubleStatusBar then
 				ReskinDoubleStatusBarWidget(widgetFrame)
 			elseif widgetType == Type_SpellDisplay then
-				ReskinSpellDisplayWidget(widgetFrame)
+				ReskinSpellDisplayWidget(widgetFrame.Spell)
 			elseif widgetType == Type_StatusBar then
 				ReskinWidgetStatusBar(widgetFrame.Bar)
 			end
@@ -168,7 +170,7 @@ table.insert(C.defaultThemes, function()
 	hooksecurefunc(_G.BottomScenarioWidgetContainerBlock.WidgetContainer, "UpdateWidgetLayout", function(self)
 		for _, widgetFrame in pairs(self.widgetFrames) do
 			if widgetFrame.widgetType == Type_SpellDisplay then
-				ReskinSpellDisplayWidget(widgetFrame)
+				ReskinSpellDisplayWidget(widgetFrame.Spell)
 			end
 		end
 	end)

@@ -45,6 +45,17 @@ local petTrashCurrenies = {
 	[67410] = true,
 }
 
+local iLvlClassIDs = {
+	[LE_ITEM_CLASS_GEM] = LE_ITEM_GEM_ARTIFACTRELIC,
+	[LE_ITEM_CLASS_ARMOR] = 0,
+	[LE_ITEM_CLASS_WEAPON] = 0,
+}
+
+local collectionIDs = {
+	[LE_ITEM_MISCELLANEOUS_MOUNT] = LE_ITEM_CLASS_MISCELLANEOUS,
+	[LE_ITEM_MISCELLANEOUS_COMPANION_PET] = LE_ITEM_CLASS_MISCELLANEOUS,
+}
+
 local function isCustomFilter(item)
 	if not C["Inventory"].ItemFilter then
 		return
@@ -71,7 +82,7 @@ local function isItemJunk(item)
 		return
 	end
 
-	return (item.rarity == LE_ITEM_QUALITY_POOR or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.sellPrice and item.sellPrice > 0 and not Module:IsPetTrashCurrency(item.id)
+	return (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.hasPrice and not Module:IsPetTrashCurrency(item.id)
 end
 
 local function isItemEquipSet(item)
@@ -102,8 +113,9 @@ local function isAzeriteArmor(item)
 	return C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID(item.link)
 end
 
-function Module:IsArtifactRelic(item)
-	return item.classID == LE_ITEM_CLASS_GEM and item.subClassID == LE_ITEM_GEM_ARTIFACTRELIC
+function Module:IsItemHasLevel(item)
+	local index = iLvlClassIDs[item.classID]
+	return index and (index == 0 or index == item.subClassID)
 end
 
 local function isItemEquipment(item)
@@ -115,7 +127,7 @@ local function isItemEquipment(item)
 		return
 	end
 
-	return item.level and item.rarity > LE_ITEM_QUALITY_COMMON and (Module:IsArtifactRelic(item) or item.classID == LE_ITEM_CLASS_WEAPON or item.classID == LE_ITEM_CLASS_ARMOR)
+	return item.link and item.quality > LE_ITEM_QUALITY_COMMON and Module:IsItemHasLevel(item)
 end
 
 local function isItemConsumable(item)
@@ -143,11 +155,11 @@ local function isItemLegendary(item)
 		return
 	end
 
-	return item.rarity == LE_ITEM_QUALITY_LEGENDARY
+	return item.quality == LE_ITEM_QUALITY_LEGENDARY
 end
 
 local function isMountOrPet(item)
-	return (not isPetToy[item.id]) and item.classID == LE_ITEM_CLASS_MISCELLANEOUS and (item.subClassID == LE_ITEM_MISCELLANEOUS_MOUNT or item.subClassID == LE_ITEM_MISCELLANEOUS_COMPANION_PET)
+	return not isPetToy[item.id] and item.subClassID and collectionIDs[item.subClassID] == item.classID
 end
 
 function Module:IsPetTrashCurrency(itemID)

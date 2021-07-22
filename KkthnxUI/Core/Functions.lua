@@ -141,6 +141,10 @@ function K.CreateGF(self, w, h, o, r, g, b, a1, a2)
 end
 
 function K.CreateFontString(self, size, text, textstyle, classcolor, anchor, x, y)
+	if not self then
+		return
+	end
+
 	local fs = self:CreateFontString(nil, "OVERLAY")
 
 	if textstyle == " " or textstyle == "" or textstyle == nil then

@@ -14,12 +14,42 @@ local UIParent = _G.UIParent
 local cfg = C.Bars.Bar1
 local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
+local function UpdateActionbarScale(bar)
+	local frame = _G["KKUI_Action"..bar]
+	if not frame then return end
+
+	local size = frame.buttonSize * C["ActionBar"].Scale
+	frame:SetFrameSize(size)
+	for _, button in pairs(frame.buttonList) do
+		button:SetSize(size, size)
+		button.Name:SetScale(C["ActionBar"].Scale)
+		button.Count:SetScale(C["ActionBar"].Scale)
+		button.HotKey:SetScale(C["ActionBar"].Scale)
+	end
+end
+
+function Module:UpdateAllScale()
+	if not C["ActionBar"].Enable then
+		return
+	end
+
+	UpdateActionbarScale("Bar1")
+	UpdateActionbarScale("Bar2")
+	UpdateActionbarScale("Bar3")
+	UpdateActionbarScale("Bar4")
+	UpdateActionbarScale("Bar5")
+
+	UpdateActionbarScale("BarExit")
+	UpdateActionbarScale("BarPet")
+	UpdateActionbarScale("BarStance")
+end
+
 local function SetFrameSize(frame, size, num)
 	size = size or frame.buttonSize
 	num = num or frame.numButtons
 
 	local layout = C["ActionBar"].Layout.Value
-	if layout == "3x4 Boxed arrangement" then
+	if layout == 3 then
 		frame:SetWidth(3 * size + (3 - 1) * margin + 2 * padding)
 		frame:SetHeight(4 * size + (4 - 1) * margin + 2 * padding)
 	else
@@ -44,25 +74,23 @@ function Module:CreateBar1()
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
 	local layout = C["ActionBar"].Layout.Value
-	local buttonSize = C["ActionBar"].DefaultButtonSize
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBar1", UIParent, "SecureHandlerStateTemplate")
 
-	if layout == "3x4 Boxed arrangement" then
+	if layout == 3 then
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -305, 124}
 	else
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 4}
 	end
 
-	if layout == "3x4 Boxed arrangement" then
-		for i = 1, num do
-			local button = _G["ActionButton"..i]
-			table_insert(buttonList, button) -- Add The Button Object To The List
-			table_insert(Module.buttons, button)
-			button:SetParent(frame)
-			button:SetSize(buttonSize, buttonSize)
-			button:ClearAllPoints()
+	for i = 1, num do
+		local button = _G["ActionButton"..i]
+		table_insert(buttonList, button)
+		table_insert(Module.buttons, button)
+		button:SetParent(frame)
+		button:ClearAllPoints()
 
+		if layout == 3 then
 			if i == 1 then
 				button:SetPoint("TOPLEFT", frame, padding, padding)
 			elseif (i - 1) % 3 == 0 then
@@ -72,16 +100,7 @@ function Module:CreateBar1()
 				local previous = _G["ActionButton"..i - 1]
 				button:SetPoint("LEFT", previous, "RIGHT", margin, 0)
 			end
-		end
-	else
-		for i = 1, num do
-			local button = _G["ActionButton"..i]
-			table_insert(buttonList, button) -- Add The Button Object To The List
-			table_insert(Module.buttons, button)
-			button:SetParent(frame)
-			button:SetSize(buttonSize, buttonSize)
-			button:ClearAllPoints()
-
+		else
 			if i == 1 then
 				button:SetPoint("BOTTOMLEFT", frame, padding, padding)
 			else
@@ -92,7 +111,7 @@ function Module:CreateBar1()
 	end
 
 	frame.buttonList = buttonList
-	SetFrameSize(frame, buttonSize, num)
+	SetFrameSize(frame, cfg.size, num)
 
 	frame.frameVisibility = "[petbattle] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
@@ -157,7 +176,6 @@ function Module:OnEnable()
 		return
 	end
 
-	-- Add Elements
 	self:CreateBar1()
 	self:CreateBar2()
 	self:CreateBar3()
@@ -170,4 +188,5 @@ function Module:OnEnable()
 	self:CreateStancebar()
 	self:HideBlizz()
 	self:CreateBarSkin()
+	self:UpdateAllScale()
 end

@@ -12,12 +12,12 @@ local fontSize = 12
 
 -- Create our own fonts
 local KkthnxUIFont = CreateFont("KkthnxUIFont")
-KkthnxUIFont:SetFont([[Interface\AddOns\KkthnxUI\Media\Fonts\Normal.ttf]], fontSize, "")
+KkthnxUIFont:SetFont(C["Media"].Fonts.KkthnxUIFont, fontSize, "")
 KkthnxUIFont:SetShadowColor(0, 0, 0, 1)
 KkthnxUIFont:SetShadowOffset(shadowOffset, -shadowOffset / 2)
 
 local KkthnxUIFontOutline = CreateFont("KkthnxUIFontOutline")
-KkthnxUIFontOutline:SetFont([[Interface\AddOns\KkthnxUI\Media\Fonts\Normal.ttf]], fontSize, "OUTLINE")
+KkthnxUIFontOutline:SetFont(C["Media"].Fonts.KkthnxUIFont, fontSize, "OUTLINE")
 KkthnxUIFontOutline:SetShadowColor(0, 0, 0, 0)
 KkthnxUIFontOutline:SetShadowOffset(0, -0)
 

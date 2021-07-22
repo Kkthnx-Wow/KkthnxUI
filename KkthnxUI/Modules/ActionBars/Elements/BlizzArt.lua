@@ -21,7 +21,6 @@ local OverrideActionBarHealthBar = _G.OverrideActionBarHealthBar
 local OverrideActionBarPitchFrame = _G.OverrideActionBarPitchFrame
 local OverrideActionBarPowerBar = _G.OverrideActionBarPowerBar
 local StatusTrackingBarManager = _G.StatusTrackingBarManager
-local StreamingIcon = _G.StreamingIcon
 local TokenFrame_LoadUI = _G.TokenFrame_LoadUI
 local TokenFrame_Update = _G.TokenFrame_Update
 local hooksecurefunc = _G.hooksecurefunc
@@ -44,22 +43,14 @@ local scripts = {
 local framesToHide = {
 	MainMenuBar,
 	OverrideActionBar,
-	StreamingIcon,
 }
 
 local framesToDisable = {
-	ActionBarDownButton,
-	ActionBarUpButton,
 	MainMenuBar,
-	MainMenuBarArtFrame,
-	MainMenuBarVehicleLeaveButton,
-	MicroButtonAndBagsBar,
+	MicroButtonAndBagsBar, MainMenuBarArtFrame, StatusTrackingBarManager,
+	ActionBarDownButton, ActionBarUpButton, MainMenuBarVehicleLeaveButton,
 	OverrideActionBar,
-	OverrideActionBarExpBar,
-	OverrideActionBarHealthBar,
-	OverrideActionBarPitchFrame,
-	OverrideActionBarPowerBar,
-	StatusTrackingBarManager,
+	OverrideActionBarExpBar, OverrideActionBarHealthBar, OverrideActionBarPowerBar, OverrideActionBarPitchFrame,
 }
 
 local function DisableAllScripts(frame)
@@ -96,13 +87,6 @@ local function toggleButtonGrid()
 	end
 end
 
-local function hideFakeExtraBar(event, addon)
-	if addon == "Blizzard_BindingUI" then
-		QuickKeybindFrame.phantomExtraActionButton:Kill()
-		K:UnregisterEvent(event, hideFakeExtraBar)
-	end
-end
-
 local function updateTokenVisibility()
 	TokenFrame_LoadUI()
 	TokenFrame_Update()
@@ -124,10 +108,10 @@ function Module:HideBlizz()
 		DisableAllScripts(frame)
 	end
 
+	-- Fix maw block anchor
+	MainMenuBarVehicleLeaveButton:RegisterEvent("PLAYER_ENTERING_WORLD")
 	-- Update button grid
 	hooksecurefunc("MultiActionBar_UpdateGridVisibility", toggleButtonGrid)
 	-- Update token panel
 	K:RegisterEvent("CURRENCY_DISPLAY_UPDATE", updateTokenVisibility)
-	-- Fake ExtraActionButton
-	K:RegisterEvent("ADDON_LOADED", hideFakeExtraBar)
 end

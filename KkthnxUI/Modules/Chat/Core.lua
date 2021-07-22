@@ -228,7 +228,7 @@ function Module:SkinChat()
 
 	-- Character count
 	local charCount = eb:CreateFontString(nil, "ARTWORK")
-	charCount:FontTemplate()
+	charCount:SetFontObject(KkthnxUIFont)
 	charCount:SetTextColor(190, 190, 190, 0.4)
 	charCount:SetPoint("TOPRIGHT", eb, "TOPRIGHT", 4, 0)
 	charCount:SetPoint("BOTTOMRIGHT", eb, "BOTTOMRIGHT", 4, 0)

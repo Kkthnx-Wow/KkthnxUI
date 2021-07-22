@@ -87,7 +87,7 @@ function Module:UpdateAltPowerBarSettings()
 
 	bar:SetSize(AltPowerWidth or 250, AltPowerHeight or 20)
 	bar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
-	bar.text:FontTemplate()
+	bar.text:SetFontObject(KkthnxUIFont)
 
 	_G.AltPowerBarHolder:SetSize(bar:GetSize())
 

@@ -195,14 +195,13 @@ local function OnUpdate(_, update)
 	end
 end
 
-function frame:ADDON_LOADED(addon)
+function frame:ADDON_LOADED()
 	for _, v in pairs(K.PulseIgnoredSpells) do
 		K.PulseIgnoredSpells[v] = true
 	end
 
 	self:UnregisterEvent("ADDON_LOADED")
 end
-frame:RegisterEvent("ADDON_LOADED")
 
 function frame:SPELL_UPDATE_COOLDOWN()
 	for _, getCooldownDetails in pairs(cooldowns) do
@@ -249,10 +248,11 @@ function Module:CreatePulseCooldown()
 		return
 	end
 
-	bg = CreateFrame("Frame", nil, frame)
+	bg = bg or CreateFrame("Frame", nil, frame)
 	bg:SetAllPoints(icon)
 	bg:SetFrameLevel(frame:GetFrameLevel())
 	bg:CreateBorder()
+
 	icon:SetTexCoord(unpack(K.TexCoords))
 
 	local mover = K.Mover(anchor, "PulseCooldown", "PulseCooldown", {"CENTER", UIParent, 0, 100}, C["PulseCooldown"].Size, C["PulseCooldown"].Size)
@@ -262,6 +262,7 @@ function Module:CreatePulseCooldown()
 	frame:SetScript("OnEvent", function(self, event, ...)
 		self[event](self, ...)
 	end)
+	frame:RegisterEvent("ADDON_LOADED")
 	frame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
@@ -293,6 +294,10 @@ function Module:CreatePulseCooldown()
 end
 
 _G.SlashCmdList.PULSECD = function()
+	if not C["PulseCooldown"].Enable then
+		return
+	end
+
 	table_insert(animating, {GetSpellTexture(87214)})
 	if C["PulseCooldown"].Sound == true then
 		PlaySound(18192, "Master")

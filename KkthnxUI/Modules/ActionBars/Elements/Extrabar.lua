@@ -16,7 +16,7 @@ function Module:CreateExtrabar()
 	local buttonList = {}
 	local size = cfg.size
 
-	local frame = CreateFrame("Frame", "KKUI_ExtraActionBar", UIParent, "SecureHandlerStateTemplate")
+	local frame = CreateFrame("Frame", "KKUI_ActionBarExtra", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(size + 2 * padding)
 	frame:SetHeight(size + 2 * padding)
 	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 270, 42}

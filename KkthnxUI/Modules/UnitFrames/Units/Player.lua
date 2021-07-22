@@ -47,18 +47,13 @@ function Module:CreatePlayer()
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	if C["Unitframe"].PlayerPower then
-		self.Health:SetHeight(C["Unitframe"].PlayerFrameHeight * 0.7)
-	else
-		self.Health:SetHeight(C["Unitframe"].PlayerFrameHeight + 6)
-	end
+	self.Health:SetHeight(C["Unitframe"].PlayerHealthHeight)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
 	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
-	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 
@@ -87,11 +82,7 @@ function Module:CreatePlayer()
 	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	if C["Unitframe"].PlayerPower then
-		self.Power:SetHeight(C["Unitframe"].PlayerFrameHeight * 0.3)
-	else
-		self.Power:SetHeight(0)
-	end
+	self.Power:SetHeight(C["Unitframe"].PlayerPowerHeight)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
@@ -110,24 +101,17 @@ function Module:CreatePlayer()
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
 	self:Tag(self.Power.Value, "[power]")
 
-	local portraitSize
-	if C["Unitframe"].PlayerPower and C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		portraitSize = self.Health:GetHeight() + self.Power:GetHeight() + 6
-	else
-		portraitSize = self.Health:GetHeight() + self.Power:GetHeight()
-	end
-
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_PlayerPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetSize(portraitSize, portraitSize)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 			self.Portrait:CreateBorder()
 		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 			self.Portrait = self.Health:CreateTexture("KKUI_PlayerPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			self.Portrait:SetSize(portraitSize, portraitSize)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 
 			self.Portrait.Border = CreateFrame("Frame", nil, self)
@@ -144,9 +128,8 @@ function Module:CreatePlayer()
 		Module:CreateClassPower(self)
 	end
 
+	local aurasSetWidth = C["Unitframe"].PlayerHealthWidth
 	if C["Unitframe"].PlayerDeBuffs then
-		local width = playerWidth - portraitSize
-
 		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
 		self.Debuffs.initialAnchor = "TOPLEFT"
@@ -156,8 +139,8 @@ function Module:CreatePlayer()
 		self.Debuffs.num = 14
 		self.Debuffs.iconsPerRow = 5
 
-		self.Debuffs.size = Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
-		self.Debuffs:SetWidth(width)
+		self.Debuffs.size = Module.auraIconSize(aurasSetWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
+		self.Debuffs:SetWidth(aurasSetWidth)
 		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
 
 		self.Debuffs.PostCreateIcon = Module.PostCreateAura
@@ -165,14 +148,8 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].PlayerBuffs then
-		local width = playerWidth - portraitSize
-
 		self.Buffs = CreateFrame("Frame", nil, self)
-		if C["Unitframe"].PlayerPower then
-			self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		else
-			self.Buffs:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
-		end
+		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
 		self.Buffs["growth-x"] = "RIGHT"
 		self.Buffs["growth-y"] = "DOWN"
@@ -181,8 +158,8 @@ function Module:CreatePlayer()
 		self.Buffs.iconsPerRow = 6
 		self.Buffs.onlyShowPlayer = false
 
-		self.Buffs.size = Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing)
-		self.Buffs:SetWidth(width)
+		self.Buffs.size = Module.auraIconSize(aurasSetWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
+		self.Buffs:SetWidth(aurasSetWidth)
 		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
 
 		self.Buffs.showStealableBuffs = true
@@ -192,7 +169,7 @@ function Module:CreatePlayer()
 
 	if C["Unitframe"].PlayerCastbar then
 		self.Castbar = CreateFrame("StatusBar", "PlayerCastbar", self)
-		self.Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", 14, 200)
+		self.Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", C["Unitframe"].PlayerCastbarIcon and 14 or 0, 200)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
 		self.Castbar:SetSize(C["Unitframe"].PlayerCastbarWidth, C["Unitframe"].PlayerCastbarHeight)
 		self.Castbar:SetClampedToScreen(true)
@@ -242,17 +219,19 @@ function Module:CreatePlayer()
 		self.Castbar.Text:SetJustifyH("LEFT")
 		self.Castbar.Text:SetWordWrap(false)
 
-		self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
-		self.Castbar.Button:CreateBorder()
+		if C["Unitframe"].PlayerCastbarIcon then
+			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
+			self.Castbar.Button:CreateBorder()
 
-		self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
-		self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
-		self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-		self.Castbar.Icon:SetPoint("BOTTOMRIGHT", self.Castbar, "BOTTOMLEFT", -6, 0)
+			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
+			self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
+			self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+			self.Castbar.Icon:SetPoint("BOTTOMRIGHT", self.Castbar, "BOTTOMLEFT", -6, 0)
 
-		self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
+			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
+		end
 
-		local mover = K.Mover(self.Castbar, "Player Castbar", "PlayerCB", {"BOTTOM", UIParent, "BOTTOM", 14, 200})
+		local mover = K.Mover(self.Castbar, "Player Castbar", "PlayerCB", {"BOTTOM", UIParent, "BOTTOM", C["Unitframe"].PlayerCastbarIcon and 14 or 0, 200})
 		self.Castbar:ClearAllPoints()
 		self.Castbar:SetPoint("RIGHT", mover)
 		self.Castbar.mover = mover
@@ -323,7 +302,7 @@ function Module:CreatePlayer()
 		mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT", -1, 0)
 		mainBar:SetStatusBarTexture(HealPredictionTexture)
 		mainBar:SetStatusBarColor(0.8, 0.1, 0.1, 0.6)
-		mainBar:SetWidth(playerWidth)
+		mainBar:SetWidth(C["Unitframe"].PlayerHealthWidth)
 
 		self.PowerPrediction = {
 			mainBar = mainBar
@@ -333,7 +312,7 @@ function Module:CreatePlayer()
 	if C["Unitframe"].ShowPlayerName then
 		self.Name = self:CreateFontString(nil, "OVERLAY")
 		self.Name:SetPoint("TOP", self.Health, 0, 16)
-		self.Name:SetWidth(playerWidth)
+		self.Name:SetWidth(C["Unitframe"].PlayerHealthWidth)
 		self.Name:SetFontObject(UnitframeFont)
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 			if C["Unitframe"].HealthbarColor.Value == "Class" then
@@ -367,7 +346,7 @@ function Module:CreatePlayer()
 		if K.Class == "MONK" then
 			self.Stagger = CreateFrame("StatusBar", self:GetName().."Stagger", self)
 			self.Stagger:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
-			self.Stagger:SetSize(playerWidth - portraitSize, 14)
+			self.Stagger:SetSize(C["Unitframe"].PlayerHealthWidth, 14)
 			self.Stagger:SetStatusBarTexture(UnitframeTexture)
 			self.Stagger:CreateBorder()
 
@@ -429,7 +408,7 @@ function Module:CreatePlayer()
 	-- GCD spark
 	if C["Unitframe"].GlobalCooldown then
 		self.GCD = CreateFrame("Frame", self:GetName().."_GlobalCooldown", self)
-		self.GCD:SetWidth(playerWidth - portraitSize)
+		self.GCD:SetWidth(C["Unitframe"].PlayerHealthWidth)
 		self.GCD:SetHeight(self.Health:GetHeight())
 		self.GCD:SetFrameStrata("HIGH")
 		self.GCD:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
@@ -462,10 +441,6 @@ function Module:CreatePlayer()
 		self.FloatingCombatFeedback.showAutoAttack = C["Unitframe"].AutoAttack
 		self.FloatingCombatFeedback.showOverHealing = C["Unitframe"].FCTOverHealing
 		self.FloatingCombatFeedback.abbreviateNumbers = true
-
-		-- Default CombatText
-		SetCVar("enableFloatingCombatText", 0)
-		K.HideInterfaceOption(InterfaceOptionsCombatPanelEnableFloatingCombatText)
 	end
 
 	-- Swing timer
@@ -557,7 +532,6 @@ function Module:CreatePlayer()
 		self.AssistantIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
 	end
 
-
 	if C["Unitframe"].PvPIndicator then
 		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.PvPIndicator:SetSize(30, 33)
@@ -587,7 +561,7 @@ function Module:CreatePlayer()
 	else
 		self.ReadyCheckIndicator:SetPoint("CENTER", self.Health)
 	end
-	self.ReadyCheckIndicator:SetSize(C["Unitframe"].PlayerFrameHeight - 4, C["Unitframe"].PlayerFrameHeight - 4)
+	self.ReadyCheckIndicator:SetSize(C["Unitframe"].PlayerHealthHeight - 4, C["Unitframe"].PlayerHealthHeight - 4)
 
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(44, 44)
@@ -628,7 +602,7 @@ function Module:CreatePlayer()
 
 	if C["Unitframe"].GlobalCooldown then
 		self.GlobalCooldown = CreateFrame("Frame", nil, self.Health)
-		self.GlobalCooldown:SetWidth(playerWidth)
+		self.GlobalCooldown:SetWidth(C["Unitframe"].PlayerHealthWidth)
 		self.GlobalCooldown:SetHeight(28)
 		self.GlobalCooldown:SetFrameStrata("HIGH")
 		self.GlobalCooldown:SetPoint("LEFT", self.Health, "LEFT", 0, 0)

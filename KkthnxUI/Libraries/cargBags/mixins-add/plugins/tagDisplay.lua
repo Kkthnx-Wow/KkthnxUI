@@ -1,43 +1,43 @@
 --[[
 LICENSE
-cargBags: An inventory framework addon for World of Warcraft
+	cargBags: An inventory framework addon for World of Warcraft
 
-Copyright (C) 2010 Constantin "Cargor" Schomburg <xconstruct@gmail.com>
+	Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
 
-cargBags is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+	cargBags is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
 
-cargBags is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+	cargBags is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with cargBags; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with cargBags; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 DESCRIPTION
-An infotext-module which can display several things based on tags.
+	An infotext-module which can display several things based on tags.
 
-Supported tags:
-space - specify a formatstring as arg #1, using "free" / "max" / "used"
-item - count of the item in arg #1 (itemID, itemLink, itemName)
-shards - "sub-tag" of item, displays soul shard info
-ammo - count of ammo slot
-currency - displays the currency with id arg #1
-currencies - displays all tracked currencies
-money - formatted money display
+	Supported tags:
+		space - specify a formatstring as arg #1, using "free" / "max" / "used"
+		item - count of the item in arg #1 (itemID, itemLink, itemName)
+			shards - "sub-tag" of item, displays soul shard info
+		ammo - count of ammo slot
+		currency - displays the currency with id arg #1
+			currencies - displays all tracked currencies
+		money - formatted money display
 
-The space-tag still needs .bags defined in the plugin!
-e.g. tagDisplay.bags = cargBags:ParseBags("backpack+bags")
+	The space-tag still needs .bags defined in the plugin!
+	e.g. tagDisplay.bags = cargBags:ParseBags("backpack+bags")
 
 DEPENDENCIES
-mixins/api-common.lua
+	mixins/api-common.lua
 
 CALLBACKS
-:OnTagUpdate(event) - When the tag is updated
+	:OnTagUpdate(event) - When the tag is updated
 ]]
 local _, ns = ...
 local cargBags = ns.cargBags
@@ -89,7 +89,6 @@ local function createIcon(icon, iconValues)
 	return ("|T%s:%s|t"):format(icon, iconValues)
 end
 
-
 -- Tags
 local function GetNumFreeSlots(name)
 	if name == "Bag" then
@@ -121,14 +120,12 @@ tagPool["item"] = function(self, item)
 end
 
 tagPool["currency"] = function(self, id)
-	local currencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo(id)
-	if not currencyInfo then
+	local info = C_CurrencyInfo.GetBackpackCurrencyInfo(id)
+	if not info then
 		return
 	end
 
-	if currencyInfo.quantity then
-		return createIcon(currencyInfo.iconFileID, self.iconValues)..BreakUpLargeNumbers(currencyInfo.quantity)
-	end
+	return BreakUpLargeNumbers(info.quantity) .. createIcon(info.iconFileID, self.iconValues)
 end
 tagEvents["currency"] = { "CURRENCY_DISPLAY_UPDATE" }
 
@@ -144,30 +141,23 @@ tagPool["currencies"] = function(self)
 end
 tagEvents["currencies"] = tagEvents["currency"]
 
-tagPool["money"] = function(self)
-	local moneyamount = GetMoney() or 0
+tagPool["money"] = function()
 	local coppername = "|cffeda55fc|r"
-	local silvername = "|cffc7c7cfs|r"
 	local goldname = "|cffffd700g|r"
+	local silvername = "|cffc7c7cfs|r"
 
-	local value = math.abs(moneyamount)
-	local gold = math.floor(value / 10000)
-	local silver = math.floor(mod(value / 100, 100))
-	local copper = math.floor(mod(value, 100))
+	local amount = GetMoney() or 0
+	local value = abs(amount)
+	local gold = floor(value / 10000)
+	local silver = floor(mod(value / 100, 100))
+	local copper = floor(mod(value, 100))
 
-	local str = ""
 	if gold > 0 then
-		str = format("%d%s%s", gold, goldname, (silver > 0 or copper > 0) and " " or "")
+		return format("%s%s %02d%s %02d%s", BreakUpLargeNumbers(gold), goldname, silver, silvername, copper, coppername)
+	elseif silver > 0 then
+		return format("%d%s %02d%s", silver, silvername, copper, coppername)
+	else
+		return format("%d%s", copper, coppername)
 	end
-
-	if silver > 0 then
-		str = format("%s%d%s%s", str, silver, silvername, copper > 0 and " " or "")
-	end
-
-	if copper > 0 or value == 0 then
-		str = format("%s%d%s", str, copper, coppername)
-	end
-
-	return str
 end
 tagEvents["money"] = { "PLAYER_MONEY" }

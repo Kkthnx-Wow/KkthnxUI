@@ -6,12 +6,10 @@ local table_wipe = _G.table.wipe
 
 local C_Timer_After = _G.C_Timer.After
 local GetContainerItemInfo = _G.GetContainerItemInfo
-local GetContainerItemLink = _G.GetContainerItemLink
 local GetContainerNumSlots = _G.GetContainerNumSlots
-local GetItemInfo = _G.GetItemInfo
 local IsShiftKeyDown = _G.IsShiftKeyDown
 
-local sellCount, stop, cache = 0, true, {}
+local stop, cache = true, {}
 local errorText = _G.ERR_VENDOR_DOESNT_BUY
 
 local function startSelling()
@@ -25,17 +23,12 @@ local function startSelling()
 				return
 			end
 
-			local link = GetContainerItemLink(bag, slot)
-			if link then
-				local price = select(11, GetItemInfo(link))
-				local _, count, _, quality, _, _, _, _, _, itemID = GetContainerItemInfo(bag, slot)
-				if (quality == 0 or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID]) and (not Module:IsPetTrashCurrency(itemID)) and price > 0 and not cache["b"..bag.."s"..slot] then
-					sellCount = sellCount + price * count
-					cache["b"..bag.."s"..slot] = true
-					_G.UseContainerItem(bag, slot)
-					C_Timer_After(0.15, startSelling)
-					return
-				end
+			local _, _, _, quality, _, _, link, _, noValue, itemID = GetContainerItemInfo(bag, slot)
+			if link and not noValue and not Module:IsPetTrashCurrency(itemID) and (quality == 0 or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID]) and not cache["b"..bag.."s"..slot] then
+				cache["b"..bag.."s"..slot] = true
+				UseContainerItem(bag, slot)
+				C_Timer_After(0.15, startSelling)
+				return
 			end
 		end
 	end

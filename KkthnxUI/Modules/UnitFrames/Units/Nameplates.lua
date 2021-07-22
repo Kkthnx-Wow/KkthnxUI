@@ -5,7 +5,6 @@ local _G = _G
 local math_rad = _G.math.rad
 local pairs = _G.pairs
 local string_format = _G.string.format
-local string_match = _G.string.match
 local table_wipe = _G.table.wipe
 local tonumber = _G.tonumber
 local unpack = _G.unpack
@@ -45,14 +44,16 @@ local hooksecurefunc = _G.hooksecurefunc
 
 local aksCacheData = {}
 local customUnits = {}
-local explosivesID = 120651
 local groupRoles = {}
 local guidToPlate = {}
+local showPowerList = {}
+
 local hasExplosives
 local isInGroup
 local isInInstance
 local isTargetClassPower
-local showPowerList = {}
+
+local explosivesID = 120651
 
 -- Unit classification
 local classify = {
@@ -136,7 +137,6 @@ function Module:BlockAddons()
 			C.NameplateWhiteList[spellID] = true
 		end
 	end
-
 	hooksecurefunc(_G.DBM.Nameplate, "Show", showAurasForDBM)
 end
 
@@ -325,9 +325,6 @@ end
 function Module:UpdateTargetChange()
 	local element = self.TargetIndicator
 	local unit = self.unit
-	if C["Nameplate"].TargetIndicator.Value == 1 then
-		return
-	end
 
 	if C["Nameplate"].TargetIndicator.Value ~= 1 then
 		if UnitIsUnit(unit, "target") and not UnitIsUnit(unit, "player") then
@@ -344,9 +341,9 @@ end
 
 function Module:UpdateTargetIndicator()
 	local style = C["Nameplate"].TargetIndicator.Value
-
 	local element = self.TargetIndicator
 	local isNameOnly = self.isNameOnly
+
 	if style == 1 then
 		element:Hide()
 	else
@@ -443,6 +440,13 @@ function Module:QuestIconCheck()
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", CheckInstanceStatus)
 end
 
+local function isQuestTitle(textLine)
+	local r, g, b = textLine:GetTextColor()
+	if r > 0.99 and g > 0.82 and b == 0 then
+		return true
+	end
+end
+
 function Module:UpdateQuestUnit(_, unit)
 	if not C["Nameplate"].QuestIndicator then
 		return
@@ -456,43 +460,33 @@ function Module:UpdateQuestUnit(_, unit)
 
 	unit = unit or self.unit
 
-	local isLootQuest, questProgress
+	local startLooking, isLootQuest, questProgress
 	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	K.ScanTooltip:SetUnit(unit)
 
 	for i = 2, K.ScanTooltip:NumLines() do
-		local textLine = _G[K.ScanTooltip:GetName().."TextLeft"..i]
-		local text = textLine:GetText()
-		if textLine and text then
-			local r, g, b = textLine:GetTextColor()
-			if r > 0.99 and g > 0.82 and b == 0 then
-				if isInGroup and text == K.Name or not isInGroup then
-					isLootQuest = true
+		local textLine = _G["KKUI_ScanTooltipTextLeft"..i]
+		local text = textLine and textLine:GetText()
+		if not text then break end
 
-					local questLine = _G["KKUI_ScanTooltipTextLeft"..(i+1)]
-					local questText = questLine:GetText()
-					if questLine and questText then
-						local current, goal = string_match(questText, "(%d+)/(%d+)")
-						local progress = string_match(questText, "(%d+)%%")
-						if current and goal then
-							current = tonumber(current)
-							goal = tonumber(goal)
-							if current == goal then
-								isLootQuest = nil
-							elseif current < goal then
-								questProgress = goal - current
-								break
-							end
-						elseif progress then
-							progress = tonumber(progress)
-							if progress == 100 then
-								isLootQuest = nil
-							elseif progress < 100 then
-								questProgress = progress.."%"
-								--break -- lower priority on progress
-							end
-						end
+		if text ~= "" then
+			if isInGroup and text == K.Name or (not isInGroup and isQuestTitle(textLine)) then
+				startLooking = true
+			elseif startLooking then
+				local current, goal = strmatch(text, "(%d+)/(%d+)")
+				local progress = strmatch(text, "(%d+)%%")
+				if current and goal then
+					local diff = floor(goal - current)
+					if diff > 0 then
+						questProgress = diff
+						break
 					end
+				elseif progress and not strmatch(text, THREAT_TOOLTIP) then
+					if floor(100 - progress) > 0 then
+						questProgress = progress.."%" -- lower priority on progress, keep looking
+					end
+				else
+					break
 				end
 			end
 		end
@@ -500,7 +494,7 @@ function Module:UpdateQuestUnit(_, unit)
 
 	if questProgress then
 		self.questCount:SetText(questProgress)
-		self.questIcon:SetTexture("Interface\\WorldMap\\Skull_64Grey")
+		self.questIcon:SetAtlas("tormentors-event")
 		self.questIcon:Show()
 	else
 		self.questCount:SetText("")
@@ -520,7 +514,7 @@ function Module:AddQuestIcon(self)
 
 	self.questIcon = self:CreateTexture(nil, "OVERLAY", nil, 2)
 	self.questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0)
-	self.questIcon:SetSize(25, 25)
+	self.questIcon:SetSize(26, 26)
 	self.questIcon:SetAtlas("QuestNormal")
 	self.questIcon:Hide()
 
@@ -868,19 +862,10 @@ function Module:CreatePlates()
 	self.Castbar.timeToHold = .5
 	self.Castbar.decimal = "%.1f"
 
-	self.Castbar.glowFrame = CreateFrame("Frame", nil, self.Castbar, "BackdropTemplate")
-	self.Castbar.glowFrame:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
-	self.Castbar.glowFrame:SetPoint("TOPLEFT", self.Castbar.Button, -5, 5)
-	self.Castbar.glowFrame:SetPoint("BOTTOMRIGHT", self.Castbar.Button, 5, -5)
-	self.Castbar.glowFrame:Hide()
-
-	self.Castbar.glowFrame.Animation = self.Castbar.glowFrame:CreateAnimationGroup()
-	self.Castbar.glowFrame.Animation:SetLooping("BOUNCE")
-	self.Castbar.glowFrame.Animation.Fader = self.Castbar.glowFrame.Animation:CreateAnimation("Alpha")
-	self.Castbar.glowFrame.Animation.Fader:SetFromAlpha(0.8)
-	self.Castbar.glowFrame.Animation.Fader:SetToAlpha(0.2)
-	self.Castbar.glowFrame.Animation.Fader:SetDuration(1)
-	self.Castbar.glowFrame.Animation.Fader:SetSmoothing("OUT")
+	self.Castbar.spellTarget = K.CreateFontString(self.Castbar, C["Nameplate"].NameTextSize + 3)
+	self.Castbar.spellTarget:ClearAllPoints()
+	self.Castbar.spellTarget:SetJustifyH("LEFT")
+	self.Castbar.spellTarget:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -6)
 
 	self.Castbar.OnUpdate = Module.OnCastbarUpdate
 	self.Castbar.PostCastStart = Module.PostCastStart
@@ -965,10 +950,8 @@ function Module:CreatePlates()
 	self.Auras.gap = false
 	self.Auras.disableMouse = true
 
-	local width = self:GetWidth()
-	local maxLines = 2
-	self.Auras:SetWidth(width)
-	self.Auras:SetHeight((self.Auras.size + self.Auras.spacing) * maxLines)
+	self.Auras:SetWidth(self:GetWidth())
+	self.Auras:SetHeight((self.Auras.size + self.Auras.spacing) * 2)
 
 	self.Auras.showStealableBuffs = true
 	self.Auras.CustomFilter = Module.CustomFilter
@@ -1039,6 +1022,60 @@ function Module:UpdateTargetClassPower()
 		bar:SetPoint("BOTTOMLEFT", playerPlate.Health, "TOPLEFT", 0, 3)
 		bar:Show()
 	end
+end
+
+function Module:UpdateNameplateAuras()
+	local element = self.Auras
+	if C["Nameplate"].ShowPlayerPlate and C["Nameplate"].NameplateClassPower then
+		element:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 6 + _G.oUF_ClassPowerBar:GetHeight())
+	else
+		element:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 5)
+	end
+
+	element.numTotal = C["Nameplate"].MaxAuras
+	element.size = C["Nameplate"].AuraSize
+	element.showDebuffType = true
+	element:SetWidth(self:GetWidth())
+	element:SetHeight((element.size + element.spacing) * 2)
+
+	element:ForceUpdate()
+end
+
+function Module:RefreshNameplates()
+	local plateHeight = C["Nameplate"].PlateHeight
+	local nameTextSize = C["Nameplate"].NameTextSize
+	local iconSize = plateHeight * 2 + 3
+
+	for nameplate in pairs(platesList) do
+		nameplate:SetSize(C["Nameplate"].PlateWidth, plateHeight)
+
+		nameplate.nameText:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
+		nameplate.npcTitle:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize - 1, "")
+		nameplate.tarName:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize + 4, "")
+
+		nameplate.Castbar.Icon:SetSize(iconSize, iconSize)
+		nameplate.Castbar:SetHeight(plateHeight)
+		nameplate.Castbar.Time:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
+		nameplate.Castbar.Text:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
+		nameplate.Castbar.spellTarget:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize + 3, "")
+
+		nameplate.healthValue:SetFont(C["Media"].Fonts.KkthnxUIFont, C["Nameplate"].HealthTextSize, "")
+		nameplate.healthValue:UpdateTag()
+
+		Module.UpdateNameplateAuras(nameplate)
+		Module.UpdateTargetIndicator(nameplate)
+		Module.UpdateTargetChange(nameplate)
+	end
+
+	Module:UpdateClickableSize()
+end
+
+function Module:RefreshAllPlates()
+	if C["Nameplate"].ShowPlayerPlate then
+		Module:ResizePlayerPlate()
+	end
+
+	Module:RefreshNameplates()
 end
 
 local DisabledElements = {
@@ -1336,24 +1373,3 @@ function Module:ToggleGCDTicker()
 
 	ticker:SetShown(C["Nameplate"].PPGCDTicker)
 end
-
--- Module.MajorSpells = {}
--- function Module:RefreshMajorSpells()
--- 	table_wipe(Module.MajorSpells)
-
--- 	for spellID in pairs(C.MajorSpells) do
--- 		local name = GetSpellInfo(spellID)
--- 		if name then
--- 			local modValue = KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID]
--- 			if modValue == nil then
--- 				Module.MajorSpells[spellID] = true
--- 			end
--- 		end
--- 	end
-
--- 	for spellID, value in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells) do
--- 		if value then
--- 			Module.MajorSpells[spellID] = true
--- 		end
--- 	end
--- end

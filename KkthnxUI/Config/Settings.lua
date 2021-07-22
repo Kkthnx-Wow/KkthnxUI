@@ -15,44 +15,42 @@ C["ActionBar"] = {
 	["CustomBarNumButtons"] = 12,
 	["CustomBarNumPerRow"] = 12,
 	["DecimalCD"] = true,
-	["DefaultButtonSize"] = 34,
+	["Scale"] = 1,
 	["Enable"] = true,
-	["FadeBottomBar3"] = false,
 	["FadeCustomBar"] = false,
 	["FadeMicroBar"] = false,
-	["FadePetBar"] = false,
 	["FadeRightBar"] = false,
 	["FadeRightBar2"] = false,
-	["FadeStanceBar"] = false,
 	["Hotkey"] = true,
 	["Macro"] = true,
 	["MicroBar"] = true,
 	["OverrideWA"] = false,
 	["PetBar"] = true,
-	["RightButtonSize"] = 34,
 	["StanceBar"] = true,
-	["StancePetSize"] = 30,
 	["Layout"] = {
 		["Options"] = {
-			["Mainbar 2x3x4"] = "3x4 Boxed arrangement",
-			["Mainbar 3x12"] = "Default Style",
-			["Mainbar 4x12"] = "Four Stacked",
+			["Layout 1 (Default)"] = 1,
+			["Layout 2"] = 2,
+			["Layout 3"] = 3,
+			["Layout 4"] = 4,
 		},
-		["Value"] = "Default Style"
+		["Value"] = 1
 	},
 }
 
 -- Announcements
 C["Announcements"] = {
 	["AlertInChat"] = false,
-	["AlertInInstance"] = true,
 	["AlertInWild"] = false,
-	["BrokenSpell"] = false,
+	["BrokenAlert"] = false,
+	["DispellAlert"] = false,
 	["HealthAlert"] = false,
-	["Interrupt"] = false,
+	["InstAlertOnly"] = true,
+	["InterruptAlert"] = false,
 	["ItemAlert"] = false,
 	["KillingBlow"] = false,
 	["OnlyCompleteRing"] = false,
+	["OwnDispell"] = true,
 	["OwnInterrupt"] = true,
 	["PullCountdown"] = true,
 	["PvPEmote"] = false,
@@ -61,7 +59,7 @@ C["Announcements"] = {
 	["RareAlert"] = false,
 	["ResetInstance"] = true,
 	["SaySapped"] = false,
-	["InterruptChannel"] = {
+	["AlertChannel"] = {
 		["Options"] = {
 			[EMOTE] = 6,
 			[PARTY.." / "..RAID] = 2,
@@ -95,7 +93,6 @@ C["Automation"] = {
 	["AutoSkipCinematic"] = false,
 	["AutoSummon"] = false,
 	["AutoTabBinder"] = false,
-	["AutoTrackPin"] = false,
 	["NoBadBuffs"] = false,
 	["WhisperInvite"] = "inv+",
 }
@@ -479,6 +476,7 @@ C["Skins"] = {
 	["Bartender4"] = false,
 	["BigWigs"] = false,
 	["BlizzardFrames"] = true,
+	["ButtonForge"] = false,
 	["ChatBubbleAlpha"] = 0.9,
 	["ChatBubbles"] = true,
 	["ChocolateBar"] = false,
@@ -497,6 +495,7 @@ C["Skins"] = {
 
 -- Tooltip
 C["Tooltip"] = {
+	["DominationRank"] = false,
 	["ClassColor"] = false,
 	["CombatHide"] = false,
 	["ConduitInfo"] = false,
@@ -581,12 +580,15 @@ C["Unitframe"] = {
 	["PetPower"] = true,
 	["PlayerBuffs"] = false,
 	["PlayerCastbar"] = true,
+	["PlayerCastbarIcon"] = true,
 	["PlayerCastbarHeight"] = 24,
 	["PlayerCastbarWidth"] = 260,
 	["PlayerDeBuffs"] = false,
-	["PlayerFrameHeight"] = 44,
-	["PlayerFrameWidth"] = 218,
-	["PlayerPower"] = true,
+
+	["PlayerHealthHeight"] = 44,
+	["PlayerHealthWidth"] = 218,
+	["PlayerPowerHeight"] = 14,
+
 	["PlayerPowerPrediction"] = true,
 	["PvPIndicator"] = true,
 	["ResurrectSound"] = false,
@@ -600,13 +602,16 @@ C["Unitframe"] = {
 	["TargetBuffs"] = true,
 	["TargetBuffsPerRow"] = 6,
 	["TargetCastbar"] = true,
+	["TargetCastbarIcon"] = true,
 	["TargetCastbarHeight"] = 30,
 	["TargetCastbarWidth"] = 260,
 	["TargetDebuffs"] = true,
 	["TargetDebuffsPerRow"] = 5,
-	["TargetFrameHeight"] = 44,
-	["TargetFrameWidth"] = 218,
-	["TargetPower"] = true,
+
+	["TargetHealthHeight"] = 44,
+	["TargetHealthWidth"] = 218,
+	["TargetPowerHeight"] = 14,
+
 	["TargetTargetFrameHeight"] = 20,
 	["TargetTargetFrameWidth"] = 110,
 	["TargetTargetPower"] = true,
@@ -631,9 +636,13 @@ C["Unitframe"] = {
 }
 
 C["Party"] = {
+	["CastbarIcon"] = false,
 	["Castbars"] = false,
 	["Enable"] = true,
+	["HealthHeight"] =  20,
+	["HealthWidth"] = 134,
 	["PortraitTimers"] = false,
+	["PowerHeight"] = 10,
 	["ShowBuffs"] = true,
 	["ShowHealPrediction"] = true,
 	["ShowPartySolo"] = false,
@@ -652,6 +661,7 @@ C["Party"] = {
 }
 
 C["Boss"] = {
+	["CastbarIcon"] = true,
 	["Castbars"] = true,
 	["Enable"] = true,
 	["Smooth"] = false,
@@ -666,6 +676,7 @@ C["Boss"] = {
 }
 
 C["Arena"] = {
+	["CastbarIcon"] = true,
 	["Castbars"] = true,
 	["Enable"] = true,
 	["Height"] = 34,
@@ -684,9 +695,12 @@ C["Arena"] = {
 
 -- Raidframe
 C["Raid"] = {
-	-- ["SpecRaidPos"] = false,
+	["SpecRaidPos"] = false,
+	["DebuffWatch"] = true,
+	["DebuffWatchDefault"] = true,
+	["DesaturateBuffs"] = false,
 	["Enable"] = true,
-	["Height"] = 40,
+	["Height"] = 44,
 	["HorizonRaid"] = false,
 	["MainTankFrames"] = true,
 	["ManabarShow"] = false,
@@ -699,11 +713,7 @@ C["Raid"] = {
 	["ShowTeamIndex"] = false,
 	["Smooth"] = false,
 	["TargetHighlight"] = false,
-	["Width"] = 66,
-
-	["DebuffWatch"] = true,
-	["DebuffWatchDefault"] = true,
-	["DesaturateBuffs"] = false,
+	["Width"] = 70,
 	["RaidBuffsStyle"] = {
 		["Options"] = {
 			["Aura Track"] = "Aura Track",
@@ -720,6 +730,7 @@ C["Raid"] = {
 		},
 		["Value"] = "Self",
 	},
+	["AuraTrack"] = true,
 	["AuraTrackIcons"] = true,
 	["AuraTrackSpellTextures"] = true,
 	["AuraTrackThickness"] = 5,

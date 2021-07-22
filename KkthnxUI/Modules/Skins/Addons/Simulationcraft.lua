@@ -6,12 +6,15 @@ function Module:ReskinSimulationcraft()
 		return
 	end
 
-	if not SimcCopyFrame then
-		return
-	end
-
-	SimcCopyFrame:StripTextures()
-	SimcCopyFrame:CreateBorder()
-	SimcCopyFrameButton:SkinButton()
-	SimcCopyFrameScrollScrollBar:SetAlpha(0)
+	local Simulationcraft = LibStub("AceAddon-3.0"):GetAddon("Simulationcraft")
+	hooksecurefunc(Simulationcraft, 'GetMainFrame', function()
+		if not SimcFrame.isSkinned then
+			SimcFrame:StripTextures()
+			SimcFrame:CreateBorder()
+			SimcFrameButton:SetHeight(22)
+			SimcFrameButton:SkinButton()
+			SimcScrollFrameScrollBar:SkinScrollBar()
+			SimcFrame.isSkinned = true
+		end
+	end)
 end

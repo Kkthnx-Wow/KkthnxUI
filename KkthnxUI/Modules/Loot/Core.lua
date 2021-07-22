@@ -133,7 +133,7 @@ local function createSlot(id)
 	local count = iconFrame:CreateFontString(nil, "OVERLAY")
 	count:SetJustifyH("RIGHT")
 	count:SetPoint("BOTTOMRIGHT", iconFrame, -2, 2)
-	count:FontTemplate(nil, nil, "OUTLINE")
+	count:SetFontObject(KkthnxUIFontOutline)
 	count:SetText(1)
 	frame.count = count
 
@@ -142,7 +142,7 @@ local function createSlot(id)
 	name:SetPoint("LEFT", frame)
 	name:SetPoint("RIGHT", icon, "LEFT")
 	name:SetNonSpaceWrap(true)
-	name:FontTemplate(nil, nil, "OUTLINE")
+	name:SetFontObject(KkthnxUIFontOutline)
 	frame.name = name
 
 	local drop = frame:CreateTexture(nil, "ARTWORK")
@@ -322,7 +322,7 @@ function Module:OnEnable()
 	lootFrame:SetFrameStrata(LootFrame:GetFrameStrata())
 	lootFrame:SetToplevel(true)
 	lootFrame.title = lootFrame:CreateFontString(nil, "OVERLAY")
-	lootFrame.title:FontTemplate(nil, nil, "OUTLINE")
+	lootFrame.title:SetFontObject(KkthnxUIFontOutline)
 	lootFrame.title:SetPoint("BOTTOMLEFT", lootFrame, "TOPLEFT", 0, 4)
 	lootFrame.slots = {}
 	lootFrame:SetScript("OnHide", function()

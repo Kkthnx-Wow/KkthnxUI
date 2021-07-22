@@ -110,6 +110,7 @@
    <Script file="Tooltip\Elements\Pet.lua" />
    <Script file="Tooltip\Elements\SpecLevel.lua" />
    <Script file="Tooltip\Elements\Targeted.lua" />
+   <Script file="Tooltip\Elements\DominationRank.lua" />
    <!-- Miscellaneous -->
    <Script file="Miscellaneous\Core.lua" />
    <Script file="Miscellaneous\Elements\AFKCam.lua" />
@@ -149,7 +150,6 @@
    <Script file="Automation\Elements\Disenchant.lua" />
    <Script file="Automation\Elements\Goodbye.lua" />
    <Script file="Automation\Elements\Invite.lua" />
-   <Script file="Automation\Elements\MapPin.lua" />
    <Script file="Automation\Elements\PartySync.lua" />
    <Script file="Automation\Elements\Quest.lua" />
    <Script file="Automation\Elements\Release.lua" />
@@ -179,6 +179,7 @@
    <Include file="Skins\Blizzard\DeathRecap.lua" />
    <Include file="Skins\Blizzard\GameMenu.lua" />
    <Include file="Skins\Blizzard\Inspect.lua" />
+   <Include file="Skins\Blizzard\LootFrame.lua" />
    <Include file="Skins\Blizzard\LossControl.lua" />
    <Include file="Skins\Blizzard\Miscellaneous.lua" />
    <Include file="Skins\Blizzard\ObjectiveTracker.lua" />
@@ -190,11 +191,13 @@
    <Include file="Skins\Blizzard\WidgetFrame.lua" />
    <!-- Skins AddOns -->
    <Include file="Skins\Addons\Bartender4.lua" />
+   <Include file="Skins\Addons\ButtonForge.lua" />
    <Include file="Skins\Addons\Dominos.lua" />
    <Include file="Skins\Addons\DeadlyBossMods.lua" />
    <Include file="Skins\Addons\Details.lua" />
    <Include file="Skins\Addons\RareScanner.lua" />
    <Include file="Skins\Addons\WeakAuras.lua" />
+   <Include file="Skins\Addons\Simulationcraft.lua" />
    <!-- Disabled/Broken/WIP AddOns -->
    <!-- <Include file="Skins\Addons\BigWigs.lua" />
    <Include file="Skins\Addons\BugSack.lua" />
@@ -202,7 +205,6 @@
    <Include file="Skins\Addons\Immersion.lua" />
    <Include file="Skins\Addons\OPie.lua" />
    <Include file="Skins\Addons\RaiderIO.lua" />
-   <Include file="Skins\Addons\Simulationcraft.lua" />
    <Include file="Skins\Addons\Skada.lua" />
    <Include file="Skins\Addons\Spy.lua" />
    <Include file="Skins\Addons\Hekili.lua" />

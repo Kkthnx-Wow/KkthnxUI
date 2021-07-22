@@ -48,7 +48,7 @@ function Module:CreateMirrorBars()
 		text:Hide()
 
 		local TimerText = mirrorTimer:CreateFontString(nil, "OVERLAY")
-		TimerText:FontTemplate()
+		TimerText:SetFontObject(KkthnxUIFont)
 		TimerText:SetPoint("CENTER", statusBar, "CENTER", 0, 0)
 		mirrorTimer.TimerText = TimerText
 

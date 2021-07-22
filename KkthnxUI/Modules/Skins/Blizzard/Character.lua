@@ -24,7 +24,8 @@ local function UpdateAzeriteItem(self)
 		self.RankFrame.Texture:SetTexture()
 		self.RankFrame.Label:SetPoint("TOPLEFT", self, 2, -1)
 		self.RankFrame.Label:SetTextColor(1, 0.5, 0)
-		self.RankFrame.Label:FontTemplate(nil, nil, "OUTLINE")
+		self.RankFrame.Label:SetFontObject(KkthnxUIFontOutline)
+		self.RankFrame.Label:SetFont(select(1, self.RankFrame.Label:GetFont()), 13, select(3, self.RankFrame.Label:GetFont()))
 	end
 end
 
@@ -162,8 +163,11 @@ tinsert(C.defaultThemes, function()
 		CharacterFrame.Inset.Bg:SetVertTile(true)
 	end)
 
-	CharacterLevelText:FontTemplate()
-	CharacterStatsPane.ItemLevelFrame.Value:FontTemplate(nil, 20)
+	CharacterLevelText:SetFontObject(KkthnxUIFont)
+
+	local CharItemLvLValue = CharacterStatsPane.ItemLevelFrame.Value
+	CharItemLvLValue:SetFontObject(KkthnxUIFont)
+	CharItemLvLValue:SetFont(select(1, CharItemLvLValue:GetFont()), 18, select(3, CharItemLvLValue:GetFont()))
 
 	-- Titles
 	_G.PaperDollTitlesPane:HookScript('OnShow', function()
@@ -171,14 +175,16 @@ tinsert(C.defaultThemes, function()
 			object.BgTop:SetTexture()
 			object.BgBottom:SetTexture()
 			object.BgMiddle:SetTexture()
-			object.text:FontTemplate(nil, 11)
+			object.text:SetFontObject(KkthnxUIFont)
+			object.text:SetFont(select(1, object.text:GetFont()), 11, select(3, object.text:GetFont()))
 
 			if not object.text.hooked then
 				object.text.hooked = true
 
 				hooksecurefunc(object.text, "SetFont", function(txt, font)
-					if font ~= C["Media"].Fonts.KkthnxUIFont then
-						txt:FontTemplate(nil, 11)
+					if font ~= KkthnxUIFont then
+						txt:SetFontObject(KkthnxUIFont)
+						txt:SetFont(select(1, txt:GetFont()), 11, select(3, txt:GetFont()))
 					end
 				end)
 			end

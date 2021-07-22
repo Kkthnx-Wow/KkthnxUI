@@ -128,9 +128,9 @@ SlashCmdList["KKUI_CHECKQUESTSTATUS"] = function(questid)
 	end
 end
 _G.SLASH_KKUI_CHECKQUESTSTATUS1 = "/kkqc"
-_G.SLASH_KKUI_CHECKQUESTSTATUS1 = "/kkcq"
-_G.SLASH_KKUI_CHECKQUESTSTATUS1 = "/kkcheckquest"
-_G.SLASH_KKUI_CHECKQUESTSTATUS2 = "/kkquestcheck"
+_G.SLASH_KKUI_CHECKQUESTSTATUS2 = "/kkcq"
+_G.SLASH_KKUI_CHECKQUESTSTATUS3 = "/kkcheckquest"
+_G.SLASH_KKUI_CHECKQUESTSTATUS4 = "/kkquestcheck"
 
 -- Help frame.
 SlashCmdList["KKUI_GMTICKET"] = function()

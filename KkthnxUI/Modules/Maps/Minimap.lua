@@ -269,7 +269,7 @@ function Module:ReskinRegions()
 		self:ClearAllPoints()
 		self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
         self:SetSize(22, 22)
-		self.LoopingGlow:SetSize(30, 30)
+		self.LoopingGlow:SetSize(24, 24)
 
 		self:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
 		self:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
@@ -382,13 +382,14 @@ end
 
 function Module:CreatePing()
 	local pingFrame = CreateFrame("Frame", nil, Minimap)
-	pingFrame:SetAllPoints()
-	pingFrame.text = K.CreateFontString(pingFrame, 18, "", "OUTLINE", false, "CENTER")
+	pingFrame:SetSize(Minimap:GetWidth(), 13)
+	pingFrame:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 30)
+	pingFrame.text = K.CreateFontString(pingFrame, 13, "", "OUTLINE", false, "CENTER")
 
 	local pingAnimation = pingFrame:CreateAnimationGroup()
 
 	pingAnimation:SetScript("OnPlay", function()
-		pingFrame:SetAlpha(1)
+		pingFrame:SetAlpha(0.8)
 	end)
 
 	pingAnimation:SetScript("OnFinished", function()
@@ -403,7 +404,11 @@ function Module:CreatePing()
 	pingAnimation.fader:SetStartDelay(3)
 
 	K:RegisterEvent("MINIMAP_PING", function(_, unit)
-		if unit == "player" then -- Do show ourself. -.-
+		if not unit then
+			return
+		end
+
+		if unit == "player" then
 			return
 		end
 
@@ -446,7 +451,8 @@ function Module:ShowCalendar()
 			local fs = GameTimeFrame:GetFontString()
 			fs:ClearAllPoints()
 			fs:SetPoint("CENTER", 0, -5)
-			fs:FontTemplate(nil, 20)
+			fs:SetFontObject(KkthnxUIFont)
+			fs:SetFont(select(1, fs:GetFont()), 20, select(3, fs:GetFont()))
 			fs:SetAlpha(0.9)
 			fs:SetShadowOffset(0, 0)
 

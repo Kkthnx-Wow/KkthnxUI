@@ -349,6 +349,10 @@ local function GetQuestDistanceWithItem(questID)
 		return
 	end
 
+	if C.ExtraQuestButton_Blacklist[GetItemInfoFromHyperlink(itemLink)] then
+		return
+	end
+
 	if C_QuestLog_IsComplete(questID) and not showWhenComplete then
 		return
 	end

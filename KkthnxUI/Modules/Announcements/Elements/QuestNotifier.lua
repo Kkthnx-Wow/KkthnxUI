@@ -27,10 +27,13 @@ local IsPartyLFG = _G.IsPartyLFG
 local LE_QUEST_FREQUENCY_DAILY = _G.Enum.QuestFrequency.Daily
 local LE_QUEST_TAG_TYPE_PROFESSION = _G.Enum.QuestTagType.Profession
 local PlaySound = _G.PlaySound
-local QUEST_COMPLETE = _G.QUEST_COMPLETE
 local SendChatMessage = _G.SendChatMessage
 
 local soundKitID = 6199 -- https://wowhead.com/sound=6199/b-peonbuildingcomplete1
+
+--[[
+	26905 -- https://www.wowhead.com/sound=26905/ui-questobjectivescomplete
+]]
 
 local debugMode = false
 local completedQuest, WQcache, initComplete = {}, {}
@@ -42,15 +45,15 @@ end
 local function acceptText(questID, daily)
 	local title = GetQuestLinkOrName(questID)
 	if daily then
-		return string_format("%s [%s]%s", "Accept Quest", DAILY, title)
+		return string_format("%s [%s]%s", "Accepted", DAILY, title)
 	else
-		return string_format("%s %s", "Accept Quest", title)
+		return string_format("%s %s", "Accepted", title)
 	end
 end
 
 local function completeText(questID)
 	PlaySound(soundKitID, "Master")
-	return string_format("%s %s", GetQuestLinkOrName(questID), QUEST_COMPLETE)
+	return string_format("%s %s", "Completed", GetQuestLinkOrName(questID))
 end
 
 local function sendQuestMsg(msg)

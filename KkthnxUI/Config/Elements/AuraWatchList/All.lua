@@ -183,6 +183,7 @@ local list = {
 		{AuraID = 322681, UnitID = "player"},	-- 通灵战潮，肉钩
 		{AuraID = 335161, UnitID = "player"},	-- 通灵战潮，残存心能
 		{AuraID = 345323, UnitID = "player", Flash = true},	-- 通灵战潮，勇士之赐
+		{AuraID = 320366, UnitID = "player", Flash = true},	-- 通灵战潮，防腐剂
 		{AuraID = 322746, UnitID = "player"},	-- 彼界，堕落之血
 		{AuraID = 323692, UnitID = "player"},	-- 彼界，奥术易伤
 		{AuraID = 331379, UnitID = "player"},	-- 彼界，润滑剂
@@ -264,6 +265,7 @@ local list = {
 		{AuraID = 340191, UnitID = "target", Value = true},	-- 仙林，再生辐光
 		{AuraID = 323059, UnitID = "target", Flash = true},	-- 仙林，宗主之怒
 		{AuraID = 336499, UnitID = "target"},	-- 仙林，猜谜游戏
+		{AuraID = 322569, UnitID = "target"},	-- 仙林，兹洛斯之手
 		{AuraID = 326771, UnitID = "target"},	-- 赎罪大厅，岩石监视者
 		{AuraID = 326450, UnitID = "target"},	-- 赎罪大厅，忠心的野兽
 		{AuraID = 322433, UnitID = "target"},	-- 赤红深渊，石肤术

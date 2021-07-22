@@ -35,19 +35,16 @@ function Module:CreatePetbar()
 	local num = NUM_PET_ACTION_SLOTS
 	local buttonList = {}
 	local layout = C["ActionBar"].Layout.Value
-	local buttonSize = C["ActionBar"].StancePetSize
 
-	-- Create The Frame To Hold The Buttons
-	local frame = CreateFrame("Frame", "KKUI_PetActionBar", UIParent, "SecureHandlerStateTemplate")
-	if layout == "Four Stacked" then
+	local frame = CreateFrame("Frame", "KKUI_ActionBarPet", UIParent, "SecureHandlerStateTemplate")
+	if layout == 2 then
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 164}
-	elseif layout == "3x4 Boxed arrangement" then
+	elseif layout == 3 then
 		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 44}
 	else
 		frame.Pos = {"BOTTOM", KKUI_ActionBar3, "TOP", 0, 6}
 	end
 
-	-- Move The Buttons Into Position And Reparent Them
 	if C["ActionBar"].PetBar then
 		_G.PetActionBarFrame:SetParent(frame)
 		_G.PetActionBarFrame:EnableMouse(false)
@@ -70,12 +67,11 @@ function Module:CreatePetbar()
 	end
 
 	frame.buttonList = buttonList
-	SetFrameSize(frame, buttonSize, num)
+	SetFrameSize(frame, cfg.size, num)
 
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; [pet] show; hide"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
-	-- Create the mouseover functionality
 	if cfg.fader then
 		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end

@@ -1765,7 +1765,7 @@ local function CreateContactEditBox(parent, width, height)
 	eb:SetSize(width, height)
 	eb:SetAutoFocus(false)
 	eb:SetTextInsets(5, 5, 0, 0)
-	eb:FontTemplate(nil, nil, "")
+	eb:SetFontObject(KkthnxUIFont)
 
 	eb.bg = CreateFrame("Frame", nil, eb)
 	eb.bg:SetAllPoints()

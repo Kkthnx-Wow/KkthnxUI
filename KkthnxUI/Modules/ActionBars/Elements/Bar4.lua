@@ -52,7 +52,6 @@ end
 function Module:CreateBar4()
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
-	local buttonSize = C["ActionBar"].RightButtonSize
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBar4", UIParent, "SecureHandlerStateTemplate")
 	frame.Pos = {"RIGHT", UIParent, "RIGHT", -4, 0}
@@ -65,7 +64,6 @@ function Module:CreateBar4()
 		local button = _G["MultiBarRightButton"..i]
 		table_insert(buttonList, button)
 		table_insert(Module.buttons, button)
-		button:SetSize(buttonSize, buttonSize)
 		button:ClearAllPoints()
 
 		if i == 1 then
@@ -77,7 +75,7 @@ function Module:CreateBar4()
 	end
 
 	frame.buttonList = buttonList
-	SetFrameSize(frame, buttonSize, num)
+	SetFrameSize(frame, cfg.size, num)
 
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
@@ -86,6 +84,5 @@ function Module:CreateBar4()
 		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
 
-	-- Fix visibility when leaving vehicle or petbattle
 	Module:FixSizebarVisibility()
 end

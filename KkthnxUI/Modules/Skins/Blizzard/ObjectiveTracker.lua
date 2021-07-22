@@ -81,11 +81,13 @@ local function reskinQuestIcon(button)
 		local icon = button.icon or button.Icon
 		if icon then
 			icon:SetTexCoord(unpack(K.TexCoords))
+
 			button.bg = CreateFrame("Frame", nil, button)
 			button.bg:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
 			button.bg:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
 			button.bg:SetFrameLevel(button:GetFrameLevel())
 			button.bg:CreateBorder()
+
 			icon:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
 			icon:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
 		end
@@ -104,16 +106,10 @@ local function reskinQuestIcons(_, block)
 end
 
 local function reskinHeader(header)
-	header.Text:SetTextColor(r, g, b)
 	header.Background:SetTexture(nil)
-
-	local bg = header:CreateTexture(nil, "ARTWORK")
-	bg:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
-	bg:SetTexCoord(0, .66, 0, .31)
-	bg:SetVertexColor(r, g, b, .8)
-	bg:SetPoint("BOTTOMLEFT", 0, -4)
-	bg:SetSize(250, 30)
-	header.bg = bg -- accessable for other addons
+	header.Text:SetTextColor(255/255, 204/255, 102/255)
+	header.Text:SetFontObject(K.GetFont(C["UIFonts"].QuestTrackerFonts))
+	header.Text:SetFont(select(1, header.Text:GetFont()), 15, select(3, header.Text:GetFont()))
 end
 
 local function reskinBarTemplate(bar)
@@ -122,17 +118,17 @@ local function reskinBarTemplate(bar)
 	end
 
 	bar:StripTextures()
+	bar:SetSize(182, 18)
 	bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].QuestTrackerTexture))
-	bar:SetStatusBarColor(r, g, b)
 
 	if bar.Label then
 		bar.Label:SetPoint("CENTER", 0, 0)
-		bar.Label:FontTemplate(nil, 12)
+		bar.Label:SetFontObject(K.GetFont(C["UIFonts"].QuestTrackerFonts))
 	end
 
 	if not bar.Spark then
 		bar.Spark = bar:CreateTexture(nil, "OVERLAY")
-		bar.Spark:SetWidth(64)
+		bar.Spark:SetWidth(128)
 		bar.Spark:SetHeight(bar:GetHeight())
 		bar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
 		bar.Spark:SetBlendMode("ADD")
@@ -165,17 +161,18 @@ local function reskinProgressbarWithIcon(_, _, line)
 	if not bar.bg then
 		bar:SetPoint("LEFT", 22, 0)
 		reskinBarTemplate(bar)
-		BonusObjectiveTrackerProgressBar_PlayFlareAnim = K.Noop
 
 		icon:SetMask(nil)
+
 		icon.bg = CreateFrame("Frame", nil, bar)
 		icon.bg:SetAllPoints(icon)
 		icon.bg:SetFrameLevel(bar:GetFrameLevel())
 		icon.bg:CreateBorder()
+
 		icon:SetTexCoord(unpack(K.TexCoords))
 		icon:ClearAllPoints()
 		icon:SetPoint("TOPLEFT", bar, "TOPRIGHT", 6, 0)
-		icon:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 25, 0)
+		icon:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 24, 0)
 	end
 
 	if icon.bg then
@@ -200,7 +197,9 @@ local function reskinMinimizeButton(button)
 	Module.ReskinCollapse(button)
 	button:GetNormalTexture():SetAlpha(0)
 	button:GetPushedTexture():SetAlpha(0)
+
 	button.__texture:DoCollapse(false)
+
 	hooksecurefunc(button, "SetCollapsed", updateMinimizeButton)
 end
 
@@ -239,6 +238,8 @@ table_insert(C.defaultThemes, function()
 	hooksecurefunc(BONUS_OBJECTIVE_TRACKER_MODULE, "AddObjective", reskinQuestIcons)
 
 	-- Reskin Progressbars
+	BonusObjectiveTrackerProgressBar_PlayFlareAnim = K.Noop
+
 	hooksecurefunc(QUEST_TRACKER_MODULE, "AddProgressBar", reskinProgressbar)
 	hooksecurefunc(CAMPAIGN_QUEST_TRACKER_MODULE, "AddProgressBar", reskinProgressbar)
 

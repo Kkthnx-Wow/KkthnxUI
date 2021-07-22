@@ -6,10 +6,10 @@ local select = select
 
 local CreateFrame = _G.CreateFrame
 
-local targetWidth = C["Unitframe"].TargetFrameWidth
-
 function Module:CreateTarget()
 	self.mystyle = "target"
+
+	local targetWidth = C["Unitframe"].TargetHealthWidth
 
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
@@ -22,11 +22,7 @@ function Module:CreateTarget()
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	if C["Unitframe"].TargetPower then
-		self.Health:SetHeight(C["Unitframe"].TargetFrameHeight * 0.7)
-	else
-		self.Health:SetHeight(C["Unitframe"].TargetFrameHeight + 6)
-	end
+	self.Health:SetHeight(C["Unitframe"].TargetHealthHeight)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
@@ -36,6 +32,10 @@ function Module:CreateTarget()
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
+
+	if C["Unitframe"].Smooth then
+		K:SmoothBar(self.Health)
+	end
 
 	if C["Unitframe"].HealthbarColor.Value == "Value" then
 		self.Health.colorSmooth = true
@@ -52,21 +52,13 @@ function Module:CreateTarget()
 		self.Health.colorReaction = true
 	end
 
-	if C["Unitframe"].Smooth then
-		K:SmoothBar(self.Health)
-	end
-
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	self.Health.Value:SetFontObject(UnitframeFont)
 	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	if C["Unitframe"].TargetPower then
-		self.Power:SetHeight(C["Unitframe"].TargetFrameHeight * 0.3)
-	else
-		self.Power:SetHeight(0)
-	end
+	self.Power:SetHeight(C["Unitframe"].TargetPowerHeight)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
@@ -87,7 +79,7 @@ function Module:CreateTarget()
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("TOP", self.Health, 0, 16)
-	self.Name:SetWidth(targetWidth * 0.90)
+	self.Name:SetWidth(targetWidth)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
 
@@ -105,24 +97,17 @@ function Module:CreateTarget()
 		end
 	end
 
-	local portraitSize
-	if C["Unitframe"].TargetPower then
-		portraitSize = self.Health:GetHeight() + self.Power:GetHeight() + 6
-	else
-		portraitSize = self.Health:GetHeight() + self.Power:GetHeight()
-	end
-
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_TargetPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetSize(portraitSize, portraitSize)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
 		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 			self.Portrait = self.Health:CreateTexture("KKUI_TargetPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			self.Portrait:SetSize(portraitSize, portraitSize)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
 			self.Portrait.Border = CreateFrame("Frame", nil, self)
@@ -136,8 +121,6 @@ function Module:CreateTarget()
 	end
 
 	if C["Unitframe"].TargetDebuffs then
-		local width = targetWidth - portraitSize
-
 		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
 		self.Debuffs.initialAnchor = "TOPLEFT"
@@ -147,8 +130,8 @@ function Module:CreateTarget()
 		self.Debuffs.num = 15
 		self.Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 
-		self.Debuffs.size = Module.auraIconSize(width, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
-		self.Debuffs:SetWidth(width)
+		self.Debuffs.size = Module.auraIconSize(targetWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
+		self.Debuffs:SetWidth(targetWidth)
 		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
 
 		self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
@@ -157,14 +140,8 @@ function Module:CreateTarget()
 	end
 
 	if C["Unitframe"].TargetBuffs then
-		local width = targetWidth - portraitSize
-
 		self.Buffs = CreateFrame("Frame", nil, self)
-		if C["Unitframe"].TargetPower then
-			self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		else
-			self.Buffs:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
-		end
+		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
 		self.Buffs["growth-x"] = "RIGHT"
 		self.Buffs["growth-y"] = "DOWN"
@@ -173,8 +150,8 @@ function Module:CreateTarget()
 		self.Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
 		self.Buffs.onlyShowPlayer = false
 
-		self.Buffs.size = Module.auraIconSize(width, self.Buffs.iconsPerRow, self.Buffs.spacing)
-		self.Buffs:SetWidth(width)
+		self.Buffs.size = Module.auraIconSize(targetWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
+		self.Buffs:SetWidth(targetWidth)
 		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
 
 		self.Buffs.showStealableBuffs = true
@@ -186,7 +163,7 @@ function Module:CreateTarget()
 
 	if C["Unitframe"].TargetCastbar then
 		self.Castbar = CreateFrame("StatusBar", "TargetCastbar", self)
-		self.Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", 14, 340)
+		self.Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", C["Unitframe"].TargetCastbarIcon and 18 or 0, 340)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
 		self.Castbar:SetSize(C["Unitframe"].TargetCastbarWidth, C["Unitframe"].TargetCastbarHeight)
 		self.Castbar:SetClampedToScreen(true)
@@ -226,18 +203,20 @@ function Module:CreateTarget()
 		self.Castbar.Text:SetJustifyH("LEFT")
 		self.Castbar.Text:SetWordWrap(false)
 
-		self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
-		self.Castbar.Button:SetSize(20, 20)
-		self.Castbar.Button:CreateBorder()
+		if C["Unitframe"].TargetCastbarIcon then
+			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
+			self.Castbar.Button:SetSize(20, 20)
+			self.Castbar.Button:CreateBorder()
 
-		self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
-		self.Castbar.Icon:SetSize(C["Unitframe"].TargetCastbarHeight, C["Unitframe"].TargetCastbarHeight)
-		self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-		self.Castbar.Icon:SetPoint("BOTTOMRIGHT", self.Castbar, "BOTTOMLEFT", -6, 0)
+			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
+			self.Castbar.Icon:SetSize(C["Unitframe"].TargetCastbarHeight, C["Unitframe"].TargetCastbarHeight)
+			self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+			self.Castbar.Icon:SetPoint("BOTTOMRIGHT", self.Castbar, "BOTTOMLEFT", -6, 0)
 
-		self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
+			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
+		end
 
-		K.Mover(self.Castbar, "TargetCastBar", "TargetCastBar", {"BOTTOM", UIParent, "BOTTOM", 14, 340})
+		K.Mover(self.Castbar, "TargetCastBar", "TargetCastBar", {"BOTTOM", UIParent, "BOTTOM", C["Unitframe"].TargetCastbarIcon and 18 or 0, 340})
 	end
 
 	if C["Unitframe"].ShowHealPrediction then
@@ -365,7 +344,7 @@ function Module:CreateTarget()
 	else
 		self.ReadyCheckIndicator:SetPoint("CENTER", self.Health)
 	end
-	self.ReadyCheckIndicator:SetSize(C["Unitframe"].PlayerFrameHeight - 4, C["Unitframe"].PlayerFrameHeight - 4)
+	self.ReadyCheckIndicator:SetSize(C["Unitframe"].TargetHealthHeight - 4, C["Unitframe"].TargetHealthHeight - 4)
 
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(44, 44)

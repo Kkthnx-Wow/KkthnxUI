@@ -38,18 +38,14 @@ end
 function Module:CreateLeaveVehicle()
 	local num = 1
 	local buttonList = {}
-	local buttonSize = C["ActionBar"].DefaultButtonSize
 
-	-- Create The Frame To Hold The Buttons
-	local frame = CreateFrame("Frame", "KKUI_LeaveVehicleBar", UIParent, "SecureHandlerStateTemplate")
+	local frame = CreateFrame("Frame", "KKUI_ActionBarExit", UIParent, "SecureHandlerStateTemplate")
 	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 260, 4}
 
-	-- The Button
 	local button = CreateFrame("CheckButton", "KKUI_LeaveVehicleButton", frame, "ActionButtonTemplate, SecureHandlerClickTemplate")
-	table_insert(buttonList, button) -- Add The Button Object To The List
-	button:SetSize(buttonSize, buttonSize)
+	table_insert(buttonList, button)
 	button:SetPoint("BOTTOMLEFT", frame, padding, padding)
-	button:StyleButton()
+	-- button:StyleButton()
 	button:RegisterForClicks("AnyUp")
 	button.icon:SetTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
 	button.icon:SetTexCoord(0.216, 0.784, 0.216, 0.784)
@@ -71,7 +67,7 @@ function Module:CreateLeaveVehicle()
 	end)
 
 	frame.buttonList = buttonList
-	SetFrameSize(frame, buttonSize, num)
+	SetFrameSize(frame, cfg.size, num)
 
 	frame.frameVisibility = "[canexitvehicle]c;[mounted]m;n"
 	RegisterStateDriver(frame, "exit", frame.frameVisibility)
@@ -81,7 +77,6 @@ function Module:CreateLeaveVehicle()
 		frame:Hide()
 	end
 
-	-- create the mouseover functionality
 	if cfg.fader then
 		K.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
