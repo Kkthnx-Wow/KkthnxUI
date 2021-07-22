@@ -77,6 +77,13 @@ function Module:CreateTarget()
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
 	self:Tag(self.Power.Value, "[power]")
 
+	local nameTestFrame = CreateFrame("Frame", nil, self)
+	nameTestFrame:SetWidth(targetWidth)
+	nameTestFrame:SetHeight(8)
+	nameTestFrame:CreateBorder()
+	nameTestFrame:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
+	nameTestFrame:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
+
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("TOP", self.Health, 0, 16)
 	self.Name:SetWidth(targetWidth)
@@ -126,7 +133,7 @@ function Module:CreateTarget()
 		self.Debuffs.initialAnchor = "TOPLEFT"
 		self.Debuffs["growth-x"] = "RIGHT"
 		self.Debuffs["growth-y"] = "UP"
-		self.Debuffs:SetPoint("TOPLEFT", self.Health, 0, 48)
+		self.Debuffs:SetPoint("BOTTOM", nameTestFrame, "TOP", 0, 6)
 		self.Debuffs.num = 15
 		self.Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 

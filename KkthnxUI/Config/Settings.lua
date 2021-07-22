@@ -585,8 +585,8 @@ C["Unitframe"] = {
 	["PlayerCastbarWidth"] = 260,
 	["PlayerDeBuffs"] = false,
 
-	["PlayerHealthHeight"] = 44,
-	["PlayerHealthWidth"] = 218,
+	["PlayerHealthHeight"] = 32,
+	["PlayerHealthWidth"] = 180,
 	["PlayerPowerHeight"] = 14,
 
 	["PlayerPowerPrediction"] = true,
@@ -608,8 +608,8 @@ C["Unitframe"] = {
 	["TargetDebuffs"] = true,
 	["TargetDebuffsPerRow"] = 5,
 
-	["TargetHealthHeight"] = 44,
-	["TargetHealthWidth"] = 218,
+	["TargetHealthHeight"] = 32,
+	["TargetHealthWidth"] = 180,
 	["TargetPowerHeight"] = 14,
 
 	["TargetTargetFrameHeight"] = 20,
