@@ -715,6 +715,10 @@ local UITextures = function(self)
 	Window:CreateDropdown("UITextures", "UnitframeTextures", L["Set Unitframe Texture"], "Texture")
 end
 
+local function updateUFTextScale()
+	K:GetModule("Unitframes"):UpdateTextScale()
+end
+
 local Unitframe = function(self)
 	local Window = self:CreateWindow(L["Unitframe"])
 
@@ -730,6 +734,8 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "ShowHealPrediction", L["Show HealPrediction Statusbars"])
 	Window:CreateSwitch("Unitframe", "Smooth", L["Smooth Bars"])
 	Window:CreateSwitch("Unitframe", "Stagger", L["Show |CFF00FF96Monk|r Stagger Bar"])
+
+	Window:CreateSlider("Unitframe", "AllTextScale", "(TEST) Scale All Unitframe Texts", .8, 1.5, .05, nil, updateUFTextScale)
 
 	Window:CreateSection("Combat Text")
 	Window:CreateSwitch("Unitframe", "CombatText", enableTextColor..L["Enable Simple CombatText"])

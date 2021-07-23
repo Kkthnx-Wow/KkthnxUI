@@ -661,6 +661,49 @@ function Module:CreateClassPower(self)
 	end
 end
 
+local textScaleFrames = {
+	["player"] = true,
+	["target"] = true,
+	-- These will be enabled once we finish the sizing elements for them
+	-- ["focus"] = true,
+	-- ["pet"] = true,
+	-- ["tot"] = true,
+	-- ["focustarget"] = true,
+	-- ["boss"] = true,
+	-- ["arena"] = true,
+}
+
+function Module:UpdateTextScale()
+	local scale = C["Unitframe"].AllTextScale
+	for _, frame in pairs(oUF.objects) do
+		local style = frame.mystyle
+		if style and textScaleFrames[style] then
+			if frame.Name then
+				frame.Name:SetScale(scale)
+			end
+
+			if frame.Level then
+				frame.Level:SetScale(scale)
+			end
+
+			frame.Health.Value:SetScale(scale)
+
+			if frame.Power.Value then
+				frame.Power.Value:SetScale(scale)
+			end
+
+			local castbar = frame.Castbar
+			if castbar then
+				castbar.Text:SetScale(scale)
+				castbar.Time:SetScale(scale)
+				if castbar.Lag then
+					castbar.Lag:SetScale(scale)
+				end
+			end
+		end
+	end
+end
+
 function Module:CreateUnits()
 	local horizonRaid = C["Raid"].HorizonRaid
 	local numGroups = C["Raid"].NumGroups
@@ -774,6 +817,8 @@ function Module:CreateUnits()
 		K:RegisterEvent("PLAYER_TARGET_CHANGED", Module.PLAYER_TARGET_CHANGED)
 		K:RegisterEvent("PLAYER_FOCUS_CHANGED", Module.PLAYER_FOCUS_CHANGED)
 		K:RegisterEvent("UNIT_FACTION", Module.UNIT_FACTION)
+
+		Module:UpdateTextScale()
 	end
 
 	oUF:RegisterStyle("Boss", Module.CreateBoss)
@@ -1151,15 +1196,7 @@ function Module:UNIT_FACTION(unit)
 end
 
 function Module:OnEnable()
-	local whatWidth
-	local whatHeight = C["Unitframe"].PlayerHealthHeight + 6
-	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-		whatWidth = C["Unitframe"].PlayerHealthWidth
-	else
-		whatWidth = C["Unitframe"].PlayerHealthWidth - whatHeight
-	end
-
-	Module.ClassPowerBarSize = {whatWidth, 14}
+	Module.ClassPowerBarSize = {C["Unitframe"].PlayerHealthWidth, 14}
 	Module.ClassPowerBarPoint = {"TOPLEFT", 0, 20}
 	Module.barWidth, Module.barHeight = unpack(Module.ClassPowerBarSize)
 

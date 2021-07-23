@@ -549,6 +549,9 @@ C["UITextures"] = {
 
 -- Unitframe
 C["Unitframe"] = {
+	AllTextScale = 1,
+
+
 	["AdditionalPower"] = false,
 	["AutoAttack"] = true,
 	["CastClassColor"] = false,

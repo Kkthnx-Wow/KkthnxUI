@@ -78,8 +78,8 @@ function Module:CreateTarget()
 	self:Tag(self.Power.Value, "[power]")
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("TOP", self.Health, 0, 16)
-	self.Name:SetWidth(targetWidth)
+	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
+	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
 
@@ -133,7 +133,9 @@ function Module:CreateTarget()
 		self.Debuffs.initialAnchor = "BOTTOMLEFT"
 		self.Debuffs["growth-x"] = "RIGHT"
 		self.Debuffs["growth-y"] = "UP"
-		self.Debuffs:SetPoint("BOTTOMLEFT", debuffsHolder, "TOPLEFT", 0, 6)
+		-- self.Debuffs:SetPoint("BOTTOMLEFT", debuffsHolder, "TOPLEFT", 0, 6)
+		self.Debuffs:SetPoint("BOTTOMLEFT", self.Name, "TOPLEFT", 0, 6)
+		self.Debuffs:SetPoint("BOTTOMRIGHT", self.Name, "TOPRIGHT", 0, 6)
 		self.Debuffs.num = 15
 		self.Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 
@@ -287,7 +289,8 @@ function Module:CreateTarget()
 	self.Level = self:CreateFontString(nil, "OVERLAY")
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		self.Level:Show()
-		self.Level:SetPoint("TOP", self.Portrait, 0, 15)
+		self.Level:SetPoint("BOTTOMLEFT", self.Portrait, "TOPLEFT", 0, 4)
+		self.Level:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPRIGHT", 0, 4)
 	else
 		self.Level:Hide()
 	end
