@@ -9,6 +9,8 @@ function Module:CreateTargetOfTarget()
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
+	local targetOfTargetWidth = C["Unitframe"].TargetTargetHealthWidth
+
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()
 	self.Overlay:SetFrameLevel(5)
@@ -16,11 +18,7 @@ function Module:CreateTargetOfTarget()
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	if C["Unitframe"].TargetTargetPower then
-		self.Health:SetHeight(C["Unitframe"].TargetTargetFrameHeight * 0.7)
-	else
-		self.Health:SetHeight(C["Unitframe"].TargetTargetFrameHeight + 6)
-	end
+	self.Health:SetHeight(C["Unitframe"].TargetTargetHealthHeight)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
@@ -53,11 +51,7 @@ function Module:CreateTargetOfTarget()
 	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	if C["Unitframe"].TargetTargetPower then
-		self.Power:SetHeight(C["Unitframe"].TargetTargetFrameHeight * 0.4)
-	else
-		self.Power:SetHeight(0)
-	end
+	self.Power:SetHeight(C["Unitframe"].TargetTargetPowerHeight)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
@@ -67,11 +61,7 @@ function Module:CreateTargetOfTarget()
 	self.Power.frequentUpdates = false
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
-	if C["Unitframe"].TargetTargetPower then
-		self.Name:SetPoint("BOTTOM", self.Power, 0, -16)
-	else
-		self.Name:SetPoint("BOTTOM", self.Health, 0, -16)
-	end
+	self.Name:SetPoint("BOTTOM", self.Power, 0, -16)
 	self.Name:SetWidth(81 * 0.96)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
@@ -82,24 +72,17 @@ function Module:CreateTargetOfTarget()
 	end
 	self.Name:SetShown(not C["Unitframe"].HideTargetOfTargetName)
 
-	local portraitSize
-	if C["Unitframe"].TargetTargetPower and C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		portraitSize = self.Health:GetHeight() + self.Power:GetHeight() + 6
-	else
-		portraitSize = self.Health:GetHeight() + self.Power:GetHeight()
-	end
-
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_TargetTargetPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetSize(portraitSize, portraitSize)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
 		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 			self.Portrait = self.Health:CreateTexture("KKUI_TargetTargetPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			self.Portrait:SetSize(portraitSize, portraitSize)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
 			self.Portrait.Border = CreateFrame("Frame", nil, self)
@@ -114,11 +97,7 @@ function Module:CreateTargetOfTarget()
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
 	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-		if C["Unitframe"].TargetTargetPower then
-			self.Level:SetPoint("BOTTOMRIGHT", self.Power, 0, -16)
-		else
-			self.Level:SetPoint("BOTTOMRIGHT", self.Health, 0, -16)
-		end
+		self.Level:SetPoint("BOTTOMRIGHT", self.Power, 0, -16)
 	else
 		self.Level:SetPoint("BOTTOM", self.Portrait, 0, -16)
 	end

@@ -12,7 +12,9 @@ end
 C.DebuffsTracking_PvE = {
 	["type"] = "Whitelist",
 	["spells"] = {
-		-- Mythic+ Specific
+		----------------------------------------------------------
+		-------------------- Mythic+ Specific --------------------
+		----------------------------------------------------------
 		-- General Affixes
 		[209858] = Priority(), -- Necrotic
 		[226512] = Priority(), -- Sanguine
@@ -21,9 +23,14 @@ C.DebuffsTracking_PvE = {
 		-- Shadowlands Season 1
 		[342494] = Priority(), -- Belligerent Boast (Prideful)
 		-- Shadowlands Season 2
-
-		-- Shadowlands Dungeons
-
+		[356667] = Priority(6), -- Biting Cold 1
+		[356666] = Priority(6), -- Biting Cold 2
+		[355732] = Priority(6), -- Melt Soul
+		[356925] = Priority(6), -- Carnage
+		[358777] = Priority(6), -- Bindings of Misery
+		----------------------------------------------------------
+		------------------ Shadowlands Dungeons ------------------
+		----------------------------------------------------------
 		-- Tazavesh, the Veiled Market
 		[350804] = Priority(), -- Collapsing Energy
 		[350885] = Priority(), -- Hyperlight Jolt
@@ -104,7 +111,7 @@ C.DebuffsTracking_PvE = {
 		[324381] = Priority(), -- Chill Scythe
 		[320573] = Priority(), -- Shadow Well
 		[333492] = Priority(), -- Necrotic Ichor
-		[334748] = Priority(), -- Drain FLuids
+		[334748] = Priority(), -- Drain Fluids
 		[333489] = Priority(), -- Necrotic Breath
 		[320717] = Priority(), -- Blood Hunger
 		-- Theater of Pain
@@ -167,37 +174,35 @@ C.DebuffsTracking_PvE = {
 		[323687] = Priority(), -- Arcane Lightning
 		[323877] = Priority(), -- Echo Finger Laser X-treme
 		[334535] = Priority(), -- Beak Slice
-
-		-- Sanctum of Domination
-
+		--------------------------------------------------------
+		---------------- Sanctum of Domination -----------------
+		--------------------------------------------------------
 		-- The Tarragrue
-		[347283] = Priority(), -- Predator's Howl
-		[347286] = Priority(), -- Unshakeable Dread
-		[346986] = Priority(), -- Crushed Armor
-		[347991] = Priority(), -- Ten of Towers
-		[347269] = Priority(), -- Chains of Eternity
-		[346985] = Priority(), -- Overpower
-		[347274] = Priority(), -- Annihilating Smash
+		[347283] = Priority(5), -- Predator's Howl
+		[347286] = Priority(5), -- Unshakeable Dread
+		[346986] = Priority(3), -- Crushed Armor
+		[347269] = Priority(6), -- Chains of Eternity
+		[346985] = Priority(3), -- Overpower
 		-- Eye of the Jailer
-		[350606] = Priority(), -- Hopeless Lethargy
-		[355240] = Priority(), -- Scorn
-		[355245] = Priority(), -- Ire
-		[349979] = Priority(), -- Dragging Chains
-		[348074] = Priority(), -- Assailing Lance
-		[351827] = Priority(), -- Spreading Misery
-		[355143] = Priority(), -- Deathlink
-		[350763] = Priority(), -- Annihilating Glare
+		[350606] = Priority(4), -- Hopeless Lethargy
+		[355240] = Priority(5), -- Scorn
+		[355245] = Priority(5), -- Ire
+		[349979] = Priority(2), -- Dragging Chains
+		[348074] = Priority(3), -- Assailing Lance
+		[351827] = Priority(6), -- Spreading Misery
+		[355143] = Priority(6), -- Deathlink
+		[350763] = Priority(6), -- Annihilating Glare
 		-- The Nine
 		[350287] = Priority(2), -- Song of Dissolution
-		[350542] = Priority(3), -- Fragments of Destiny
+		[350542] = Priority(6), -- Fragments of Destiny
 		[350202] = Priority(3), -- Unending Strike
 		[350475] = Priority(5), -- Pierce Soul
-		[350555] = Priority(6), -- Shard of Destiny
-		[350109] = Priority(6), -- Brynja's Mournful Dirge
+		[350555] = Priority(3), -- Shard of Destiny
+		[350109] = Priority(5), -- Brynja's Mournful Dirge
 		[350483] = Priority(6), -- Link Essence
-		[350039] = Priority(6), -- Arthura's Crushing Gaze
-		[350184] = Priority(6), -- Daschla's Mighty Impact
-		[350374] = Priority(6), -- Wings of Rage
+		[350039] = Priority(5), -- Arthura's Crushing Gaze
+		[350184] = Priority(5), -- Daschla's Mighty Impact
+		[350374] = Priority(5), -- Wings of Rage
 		-- Remnant of Ner'zhul
 		[350073] = Priority(2), -- Torment
 		[349890] = Priority(5), -- Suffering
@@ -264,9 +269,9 @@ C.DebuffsTracking_PvE = {
 		[351092] = Priority(6), -- Destabilize 1
 		[351091] = Priority(6), -- Destabilize 2
 		[348064] = Priority(6), -- Wailing Arrow
-
-		-- Castle Nathria
-
+		--------------------------------------------------------
+		-------------------- Castle Nathria --------------------
+		--------------------------------------------------------
 		-- Shriekwing
 		[328897] = Priority(), -- Exsanguinated
 		[330713] = Priority(), -- Reverberating Pain
@@ -354,6 +359,7 @@ C.DebuffsTracking_PvE = {
 		[334016] = Priority(), -- Unworthy
 	},
 }
+
 
 -- Dispell Debuffs
 C.DebuffsTracking_PvP = {
@@ -502,6 +508,7 @@ C.DebuffsTracking_PvP = {
 		[233582] = Priority(1), -- Entrenched in Flame
 		-- Warrior
 		[5246] = Priority(4), -- Intimidating Shout
+		[7922] = Priority(4), -- Warbringer
 		[132169] = Priority(4), -- Storm Bolt
 		[132168] = Priority(4), -- Shockwave
 		[199085] = Priority(4), -- Warpath
@@ -524,7 +531,7 @@ C.DebuffsTracking_Blacklist = {
 		[97821] = Priority(), -- Void-Touched
 		[36032] = Priority(), -- Arcane Charge
 		[8733] = Priority(), -- Blessing of Blackfathom
-		[25771] = Priority(), -- Forbearance (pally: divine shield, hand of protection, and lay on hands)
+		[25771] = Priority(), -- Forbearance (Pally: Divine Shield, Blessing of Protection, and Lay on Hands)
 		[57724] = Priority(), -- Sated (lust debuff)
 		[57723] = Priority(), -- Exhaustion (heroism debuff)
 		[80354] = Priority(), -- Temporal Displacement (timewarp debuff)
@@ -549,6 +556,9 @@ C.DebuffsTracking_Blacklist = {
 		[287825] = Priority(), -- Lethargy debuff (fight or flight)
 		[206662] = Priority(), -- Experience Eliminated (in range)
 		[306600] = Priority(), -- Experience Eliminated (oor - 5m)
+		[348443] = Priority(), -- Experience Eliminated
+		[206151] = Priority(), -- Challenger's Burden
+		[322695] = Priority(), -- Drained
 	},
 }
 
@@ -574,6 +584,7 @@ C.ChannelingTicks = {
 	[64843] = 4, -- Holy hymn
 	[740] = 4, -- peaceful
 	[755] = 5, -- Life channel
+	[64902] = 5, -- Symbol of Hope (Mana Hymn)
 }
 
 if K.Class == "PRIEST" then

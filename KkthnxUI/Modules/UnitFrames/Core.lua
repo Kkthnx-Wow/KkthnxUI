@@ -747,7 +747,6 @@ function Module:CreateUnits()
 		local Player = oUF:Spawn("player", "oUF_Player")
 		local PlayerFrameHeight = C["Unitframe"].PlayerHealthHeight + C["Unitframe"].PlayerPowerHeight + 6
 		local PlayerFrameWidth = C["Unitframe"].PlayerHealthWidth
-
 		Player:SetSize(PlayerFrameWidth, PlayerFrameHeight)
 		K.Mover(Player, "PlayerUF", "PlayerUF", {"BOTTOM", UIParent, "BOTTOM", -250, 320}, PlayerFrameWidth, PlayerFrameHeight)
 
@@ -761,13 +760,8 @@ function Module:CreateUnits()
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("ToT")
 			local TargetOfTarget = oUF:Spawn("targettarget", "oUF_ToT")
-			local TargetOfTargetFrameHeight = C["Unitframe"].TargetTargetFrameHeight + 6
-			local TargetOfTargetFrameWidth
-			if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-				TargetOfTargetFrameWidth = C["Unitframe"].TargetTargetFrameWidth
-			else
-				TargetOfTargetFrameWidth = C["Unitframe"].TargetTargetFrameWidth - TargetOfTargetFrameHeight
-			end
+			local TargetOfTargetFrameHeight = C["Unitframe"].TargetTargetHealthHeight + C["Unitframe"].TargetTargetPowerHeight + 6
+			local TargetOfTargetFrameWidth = C["Unitframe"].TargetTargetHealthWidth
 			TargetOfTarget:SetSize(TargetOfTargetFrameWidth, TargetOfTargetFrameHeight)
 			K.Mover(TargetOfTarget, "TotUF", "TotUF", {"TOPLEFT", Target, "BOTTOMRIGHT", 6, -6}, TargetOfTargetFrameWidth, TargetOfTargetFrameHeight)
 		end
@@ -777,40 +771,25 @@ function Module:CreateUnits()
 		if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
 			Pet:SetParent(Player)
 		end
-		local PetFrameHeight = C["Unitframe"].PetFrameHeight + 6
-		local PetFrameWidth
-		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-			PetFrameWidth = C["Unitframe"].PetFrameWidth
-		else
-			PetFrameWidth = C["Unitframe"].PetFrameWidth - PetFrameHeight
-		end
+		local PetFrameHeight = C["Unitframe"].PetHealthHeight + C["Unitframe"].PetPowerHeight + 6
+		local PetFrameWidth = C["Unitframe"].PetHealthWidth
 		Pet:SetSize(PetFrameWidth, PetFrameHeight)
 		K.Mover(Pet, "Pet", "Pet", {"TOPRIGHT", Player, "BOTTOMLEFT", -6, -6}, PetFrameWidth, PetFrameHeight)
 
 		oUF:SetActiveStyle("Focus")
 		local Focus = oUF:Spawn("focus", "oUF_Focus")
-		local FocusFrameHeight = C["Unitframe"].FocusFrameHeight + 6
-		local FocusFrameWidth
-		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-			FocusFrameWidth = C["Unitframe"].FocusFrameWidth
-		else
-			FocusFrameWidth = C["Unitframe"].FocusFrameWidth - FocusFrameHeight
-		end
+		local FocusFrameHeight = C["Unitframe"].FocusHealthHeight + C["Unitframe"].FocusPowerHeight + 6
+		local FocusFrameWidth = C["Unitframe"].FocusHealthWidth
 		Focus:SetSize(FocusFrameWidth, FocusFrameHeight)
 		K.Mover(Focus, "FocusUF", "FocusUF", {"BOTTOMRIGHT", Player, "TOPLEFT", -60, 30}, FocusFrameWidth, FocusFrameHeight)
 
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("FocusTarget")
 			local FocusTarget = oUF:Spawn("focustarget", "oUF_FocusTarget")
-			local FocusTargetFrameHeight = C["Unitframe"].FocusTargetFrameHeight + 6
-			local FocusTargetFrameWidth
-			if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-				FocusTargetFrameWidth = C["Unitframe"].FocusTargetFrameWidth
-			else
-				FocusTargetFrameWidth = C["Unitframe"].FocusTargetFrameWidth - FocusTargetFrameHeight
-			end
-			FocusTarget:SetSize(FocusTargetFrameWidth, FocusTargetFrameHeight)
-			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", {"TOPRIGHT", Focus, "BOTTOMLEFT", -6, -6}, FocusTargetFrameWidth, FocusTargetFrameHeight)
+			local FocusTargetFrameHeight = C["Unitframe"].FocusTargetHealthHeight + C["Unitframe"].FocusTargetPowerHeight + 6
+			local FoucsTargetFrameWidth = C["Unitframe"].FocusTargetHealthWidth
+			FocusTarget:SetSize(FoucsTargetFrameWidth, FocusTargetFrameHeight)
+			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", {"TOPLEFT", Focus, "BOTTOMRIGHT", 6, -6}, FoucsTargetFrameWidth, FocusTargetFrameHeight)
 		end
 
 		K.HideInterfaceOption(InterfaceOptionsCombatPanelTargetOfTarget)
@@ -1142,13 +1121,13 @@ function Module:UpdateRaidDebuffIndicator()
 		ORD:ResetDebuffData()
 
 		if (InstanceType == "party" or InstanceType == "raid") then
-			if C.Raid.DebuffWatchDefault then
+			if C["Raid"].DebuffWatchDefault then
 				ORD:RegisterDebuffs(C.DebuffsTracking_PvE.spells)
 			end
 
 			ORD:RegisterDebuffs(KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE)
 		else
-			if C.Raid.DebuffWatchDefault then
+			if C["Raid"].DebuffWatchDefault then
 				ORD:RegisterDebuffs(C.DebuffsTracking_PvP.spells)
 			end
 

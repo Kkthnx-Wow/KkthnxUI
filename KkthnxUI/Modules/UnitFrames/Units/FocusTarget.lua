@@ -9,6 +9,8 @@ function Module:CreateFocusTarget()
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
+	local focusTargetWidth = C["Unitframe"].FocusTargetHealthWidth
+
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()
 	self.Overlay:SetFrameLevel(5)
@@ -16,7 +18,7 @@ function Module:CreateFocusTarget()
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	self.Health:SetHeight(14)
+	self.Health:SetHeight(C["Unitframe"].FocusTargetHealthHeight)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
@@ -49,11 +51,7 @@ function Module:CreateFocusTarget()
 	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	if C["Unitframe"].FocusTargetPower then
-		self.Power:SetHeight(C["Unitframe"].PetFrameHeight * 0.4)
-	else
-		self.Power:SetHeight(0)
-	end
+	self.Power:SetHeight(C["Unitframe"].FocusTargetPowerHeight)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
@@ -63,11 +61,7 @@ function Module:CreateFocusTarget()
 	self.Power.frequentUpdates = false
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
-	if C["Unitframe"].FocusTargetPower then
-		self.Name:SetPoint("BOTTOM", self.Power, 0, -16)
-	else
-		self.Name:SetPoint("BOTTOM", self.Health, 0, -16)
-	end
+	self.Name:SetPoint("BOTTOM", self.Power, 0, -16)
 	self.Name:SetWidth(81 * 0.96)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
@@ -76,26 +70,20 @@ function Module:CreateFocusTarget()
 	else
 		self:Tag(self.Name, "[color][name]")
 	end
-
-	local portraitSize
-	if C["Unitframe"].FocusTargetPower and C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		portraitSize = self.Health:GetHeight() + self.Power:GetHeight() + 6
-	else
-		portraitSize = self.Health:GetHeight() + self.Power:GetHeight()
-	end
+	self.Name:SetShown(not C["Unitframe"].HideTargetOfTargetName)
 
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_FocusTargetPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetSize(portraitSize, portraitSize)
-			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
 		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 			self.Portrait = self.Health:CreateTexture("KKUI_FocusTargetPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			self.Portrait:SetSize(portraitSize, portraitSize)
-			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
+			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
 			self.Portrait.Border = CreateFrame("Frame", nil, self)
 			self.Portrait.Border:SetAllPoints(self.Portrait)
@@ -109,16 +97,26 @@ function Module:CreateFocusTarget()
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
 	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-		if C["Unitframe"].FocusTargetPower then
-			self.Level:SetPoint("BOTTOMLEFT", self.Power, 0, -16)
-		else
-			self.Level:SetPoint("BOTTOMLEFT", self.Health, 0, -16)
-		end
+		self.Level:SetPoint("BOTTOMRIGHT", self.Power, 0, -16)
 	else
 		self.Level:SetPoint("BOTTOM", self.Portrait, 0, -16)
 	end
 	self.Level:SetFontObject(UnitframeFont)
 	self:Tag(self.Level, "[fulllevel]")
+	self.Level:SetShown(not C["Unitframe"].HideTargetOfTargetLevel)
+
+	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
+	self.Debuffs:SetWidth(82)
+	self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, C["Unitframe"].HideTargetOfTargetName and C["Unitframe"].HideTargetOfTargetLevel and -6 or -20)
+	self.Debuffs.num = 4 * 4
+	self.Debuffs.spacing = 6
+	self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num / 4 - 1))) / self.Debuffs.num)) * 4)
+	self.Debuffs:SetHeight(self.Debuffs.size * 4)
+	self.Debuffs.initialAnchor = "TOPLEFT"
+	self.Debuffs["growth-y"] = "DOWN"
+	self.Debuffs["growth-x"] = "RIGHT"
+	self.Debuffs.PostCreateIcon = Module.PostCreateAura
+	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
@@ -137,7 +135,7 @@ function Module:CreateFocusTarget()
 	self.Highlight:Hide()
 
 	self.ThreatIndicator = {
-		IsObjectType = function() end,
+		IsObjectType = K.Noop,
 		Override = Module.UpdateThreat,
 	}
 

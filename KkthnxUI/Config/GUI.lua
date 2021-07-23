@@ -197,6 +197,27 @@ local function setUnitTargetSize()
 	end
 end
 
+local function setUnitFocusSize()
+	local width = C["Unitframe"].FocusHealthWidth
+	local healthHeight = C["Unitframe"].FocusHealthHeight
+	local powerHeight = C["Unitframe"].FocusPowerHeight
+	local height = healthHeight + powerHeight + 6
+
+	if not oUF_Focus then
+		return
+	end
+
+	_G.oUF_Focus:SetSize(width, height)
+	_G.oUF_Focus.Health:SetHeight(healthHeight)
+	_G.oUF_Focus.Power:SetHeight(powerHeight)
+
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		if _G.KKUI_FocusPortrait then
+			_G.KKUI_FocusPortrait:SetSize(healthHeight + powerHeight + 6, healthHeight + powerHeight + 6)
+		end
+	end
+end
+
 local function setUnitPartySize()
 	local width = C["Party"].HealthWidth
 	local healthHeight = C["Party"].HealthHeight
@@ -762,6 +783,8 @@ local Unitframe = function(self)
 	Window:CreateSlider("Unitframe", "PlayerPowerHeight", "Player Power Bar Height", 10, 40, 1, nil, setUnitPlayerSize)
 	Window:CreateSlider("Unitframe", "PlayerHealthHeight", L["Player Frame Height"], 20, 75, 1, nil, setUnitPlayerSize)
 	Window:CreateSlider("Unitframe", "PlayerHealthWidth", L["Player Frame Width"], 100, 300, 1, nil, setUnitPlayerSize)
+	Window:CreateSlider("Unitframe", "PlayerCastbarHeight", L["Player Castbar Height"], 20, 40, 1)
+	Window:CreateSlider("Unitframe", "PlayerCastbarWidth", L["Player Castbar Width"], 100, 300, 1)
 
 	Window:CreateSection(TARGET)
 	Window:CreateSwitch("Unitframe", "OnlyShowPlayerDebuff", L["Only Show Your Debuffs"])
@@ -774,37 +797,37 @@ local Unitframe = function(self)
 	Window:CreateSlider("Unitframe", "TargetPowerHeight", "Target Power Bar Height", 10, 40, 1, nil, setUnitTargetSize)
 	Window:CreateSlider("Unitframe", "TargetHealthHeight", L["Target Frame Height"], 20, 75, 1, nil, setUnitTargetSize)
 	Window:CreateSlider("Unitframe", "TargetHealthWidth", L["Target Frame Width"], 100, 300, 1, nil, setUnitTargetSize)
+	Window:CreateSlider("Unitframe", "TargetCastbarHeight", L["Target Castbar Height"], 20, 40, 1)
+	Window:CreateSlider("Unitframe", "TargetCastbarWidth", L["Target Castbar Width"], 100, 300, 1)
 
 	Window:CreateSection(PET)
-	Window:CreateSwitch("Unitframe", "PetPower", L["Pet Power Bar"])
 	Window:CreateSwitch("Unitframe", "HidePetLevel", L["Hide Pet Level"])
 	Window:CreateSwitch("Unitframe", "HidePetName", L["Hide Pet Name"])
-	Window:CreateSlider("Unitframe", "PetFrameHeight", L["Pet Frame Height"], 10, 50, 1)
-	Window:CreateSlider("Unitframe", "PetFrameWidth", L["Pet Frame Width"], 100, 300, 1)
+	Window:CreateSlider("Unitframe", "PetHealthHeight", L["Pet Frame Height"], 10, 50, 1)
+	Window:CreateSlider("Unitframe", "PetHealthWidth", L["Pet Frame Width"], 100, 300, 1)
+	Window:CreateSlider("Unitframe", "PetPowerHeight", L["Pet Power Bar"], 10, 50, 1)
 
 	Window:CreateSection("Target Of Target")
-	Window:CreateSwitch("Unitframe", "TargetTargetPower", L["Target of Target Power Bar"])
 	Window:CreateSwitch("Unitframe", "HideTargetofTarget", L["Hide TargetofTarget Frame"])
 	Window:CreateSwitch("Unitframe", "HideTargetOfTargetLevel", L["Hide TargetofTarget Level"])
 	Window:CreateSwitch("Unitframe", "HideTargetOfTargetName", L["Hide TargetofTarget Name"])
-	Window:CreateSlider("Unitframe", "TargetTargetFrameHeight", L["Target of Target Frame Height"], 10, 50, 1)
-	Window:CreateSlider("Unitframe", "TargetTargetFrameWidth", L["Target of Target Frame Width"], 100, 300, 1)
+	Window:CreateSlider("Unitframe", "TargetTargetHealthHeight", L["Target of Target Frame Height"], 10, 50, 1)
+	Window:CreateSlider("Unitframe", "TargetTargetHealthWidth", L["Target of Target Frame Width"], 100, 300, 1)
+	Window:CreateSlider("Unitframe", "TargetTargetPowerHeight", L["Target of Target Frame Height"], 10, 50, 1)
 
 	Window:CreateSection(FOCUS)
-	Window:CreateSwitch("Unitframe", "FocusPower", L["Focus Power Bar"])
-	Window:CreateSlider("Unitframe", "FocusFrameHeight", L["Focus Frame Height"], 20, 75, 1)
-	Window:CreateSlider("Unitframe", "FocusFrameWidth", L["Focus Frame Width"], 100, 300, 1)
+	Window:CreateSlider("Unitframe", "FocusPowerHeight", "Focus Power Bar Height", 10, 40, 1, nil, setUnitFocusSize)
+	Window:CreateSlider("Unitframe", "FocusHealthHeight", L["Focus Frame Height"], 20, 75, 1, nil, setUnitFocusSize)
+	Window:CreateSlider("Unitframe", "FocusHealthWidth", L["Focus Frame Width"], 100, 300, 1, nil, setUnitFocusSize)
+	Window:CreateSwitch("Unitframe", "FocusBuffs", L["Show Target Frame Buffs"])
+	Window:CreateSwitch("Unitframe", "FocusCastbar", L["Enable Target CastBar"])
+	Window:CreateSwitch("Unitframe", "FocusCastbarIcon", L["Enable Target CastBar"].." Icon")
+	Window:CreateSwitch("Unitframe", "FocusDebuffs", L["Show Target Frame Debuffs"])
 
 	Window:CreateSection("Focus Target")
-	Window:CreateSwitch("Unitframe", "FocusTargetPower", L["Target of Focus Power Bar"])
-	Window:CreateSlider("Unitframe", "FocusTargetFrameHeight", L["Target of Focus Frame Height"], 10, 50, 1)
-	Window:CreateSlider("Unitframe", "FocusTargetFrameWidth", L["Target of Focus Frame Width"], 100, 300, 1)
-
-	Window:CreateSection(L["Sizes"])
-	Window:CreateSlider("Unitframe", "PlayerCastbarHeight", L["Player Castbar Height"], 20, 40, 1)
-	Window:CreateSlider("Unitframe", "PlayerCastbarWidth", L["Player Castbar Width"], 100, 300, 1)
-	Window:CreateSlider("Unitframe", "TargetCastbarHeight", L["Target Castbar Height"], 20, 40, 1)
-	Window:CreateSlider("Unitframe", "TargetCastbarWidth", L["Target Castbar Width"], 100, 300, 1)
+	Window:CreateSlider("Unitframe", "FocusTargetPowerHeight", "Focus Target Power Height", 10, 40, 1, nil, setUnitFocusTargetSize)
+	Window:CreateSlider("Unitframe", "FocusTargetHealthHeight", "Focus Target Health Height", 20, 75, 1, nil, setUnitFocusTargetSize)
+	Window:CreateSlider("Unitframe", "FocusTargetHealthWidth", "Focus Target Health Width", 100, 300, 1, nil, setUnitFocusTargetSize)
 
 	Window:CreateSection("Unitframe Misc")
 	Window:CreateDropdown("Unitframe", "HealthbarColor", L["Health Color Format"])

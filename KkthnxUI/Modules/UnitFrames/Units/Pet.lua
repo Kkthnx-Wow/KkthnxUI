@@ -9,6 +9,8 @@ function Module:CreatePet()
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
+	local petWidth = C["Unitframe"].PetHealthWidth
+
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()
 	self.Overlay:SetFrameLevel(5)
@@ -16,11 +18,7 @@ function Module:CreatePet()
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	if C["Unitframe"].PetPower then
-		self.Health:SetHeight(C["Unitframe"].PetFrameHeight * 0.7)
-	else
-		self.Health:SetHeight(C["Unitframe"].PetFrameHeight + 6)
-	end
+	self.Health:SetHeight(C["Unitframe"].PetHealthHeight)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
@@ -53,11 +51,7 @@ function Module:CreatePet()
 	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	if C["Unitframe"].PetPower then
-		self.Power:SetHeight(C["Unitframe"].PetFrameHeight * 0.4)
-	else
-		self.Power:SetHeight(0)
-	end
+	self.Power:SetHeight(C["Unitframe"].PetPowerHeight)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
@@ -66,24 +60,17 @@ function Module:CreatePet()
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
 
-	local portraitSize
-	if C["Unitframe"].PetPower and C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		portraitSize = self.Health:GetHeight() + self.Power:GetHeight() + 6
-	else
-		portraitSize = self.Health:GetHeight() + self.Power:GetHeight()
-	end
-
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_PetPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
-			self.Portrait:SetSize(portraitSize, portraitSize)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6 ,0)
 			self.Portrait:CreateBorder()
 		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
 			self.Portrait = self.Health:CreateTexture("KKUI_PetPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-			self.Portrait:SetSize(portraitSize, portraitSize)
+			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6 ,0)
 
 			self.Portrait.Border = CreateFrame("Frame", nil, self)
@@ -97,11 +84,7 @@ function Module:CreatePet()
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
-	if C["Unitframe"].PetPower then
-		self.Name:SetPoint("BOTTOM", self.Power, 0, -16)
-	else
-		self.Name:SetPoint("BOTTOM", self.Health, 0, -16)
-	end
+	self.Name:SetPoint("BOTTOM", self.Power, 0, -16)
 	self.Name:SetWidth(81 * 0.96)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
@@ -114,11 +97,7 @@ function Module:CreatePet()
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
 	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-		if C["Unitframe"].PetPower then
-			self.Level:SetPoint("BOTTOMLEFT", self.Power, 0, -16)
-		else
-			self.Level:SetPoint("BOTTOMLEFT", self.Health, 0, -16)
-		end
+		self.Level:SetPoint("BOTTOMLEFT", self.Power, 0, -16)
 	else
 		self.Level:SetPoint("BOTTOM", self.Portrait, 0, -16)
 	end

@@ -549,8 +549,7 @@ C["UITextures"] = {
 
 -- Unitframe
 C["Unitframe"] = {
-	AllTextScale = 1,
-
+	["AllTextScale"] = 1, -- Testing
 
 	["AdditionalPower"] = false,
 	["AutoAttack"] = true,
@@ -563,12 +562,6 @@ C["Unitframe"] = {
 	["DebuffHighlight"] = true,
 	["Enable"] = true,
 	["FCTOverHealing"] = false,
-	["FocusFrameHeight"] = 40,
-	["FocusFrameWidth"] = 210,
-	["FocusPower"] = true,
-	["FocusTargetFrameHeight"] = 20,
-	["FocusTargetFrameWidth"] = 110,
-	["FocusTargetPower"] = true,
 	["GlobalCooldown"] = true,
 	["HidePetLevel"] = true,
 	["HidePetName"] = true,
@@ -577,22 +570,19 @@ C["Unitframe"] = {
 	["HideTargetofTarget"] = false,
 	["HotsDots"] = true,
 	["OnlyShowPlayerDebuff"] = false,
-	["PetCombatText"] = true,
-	["PetFrameHeight"] = 20,
-	["PetFrameWidth"] = 110,
-	["PetPower"] = true,
+
+	-- Player
 	["PlayerBuffs"] = false,
 	["PlayerCastbar"] = true,
 	["PlayerCastbarIcon"] = true,
 	["PlayerCastbarHeight"] = 24,
 	["PlayerCastbarWidth"] = 260,
 	["PlayerDeBuffs"] = false,
-
 	["PlayerHealthHeight"] = 32,
 	["PlayerHealthWidth"] = 180,
 	["PlayerPowerHeight"] = 14,
-
 	["PlayerPowerPrediction"] = true,
+
 	["PvPIndicator"] = true,
 	["ResurrectSound"] = false,
 	["ShowHealPrediction"] = true,
@@ -602,6 +592,11 @@ C["Unitframe"] = {
 	["Stagger"] = true,
 	["Swingbar"] = false,
 	["SwingbarTimer"] = false,
+
+	-- Target
+	["TargetHealthHeight"] = 32,
+	["TargetHealthWidth"] = 180,
+	["TargetPowerHeight"] = 14,
 	["TargetBuffs"] = true,
 	["TargetBuffsPerRow"] = 6,
 	["TargetCastbar"] = true,
@@ -611,13 +606,32 @@ C["Unitframe"] = {
 	["TargetDebuffs"] = true,
 	["TargetDebuffsPerRow"] = 5,
 
-	["TargetHealthHeight"] = 32,
-	["TargetHealthWidth"] = 180,
-	["TargetPowerHeight"] = 14,
+	-- Focus
+	["FocusBuffs"] = true,
+	["FocusCastbar"] = true,
+	["FocusCastbarHeight"] = 24,
+	["FocusCastbarIcon"] = true,
+	["FocusCastbarWidth"] = 208,
+	["FocusDebuffs"] = true,
+	["FocusHealthHeight"] = 32,
+	["FocusHealthWidth"] = 180,
+	["FocusPowerHeight"] = 14,
 
-	["TargetTargetFrameHeight"] = 20,
-	["TargetTargetFrameWidth"] = 110,
-	["TargetTargetPower"] = true,
+	-- TargetOfTarget
+	["TargetTargetHealthHeight"] = 20,
+	["TargetTargetHealthWidth"] = 110,
+	["TargetTargetPowerHeight"] = 10,
+
+	-- Pet
+	["PetHealthHeight"] = 20,
+	["PetHealthWidth"] = 110,
+	["PetPowerHeight"] = 10,
+
+	-- TargetOfTarget
+	["FocusTargetHealthHeight"] = 20,
+	["FocusTargetHealthWidth"] = 110,
+	["FocusTargetPowerHeight"] = 10,
+
 	["HealthbarColor"] = {
 		["Options"] = {
 			["Dark"] = "Dark",
@@ -668,6 +682,9 @@ C["Boss"] = {
 	["Castbars"] = true,
 	["Enable"] = true,
 	["Smooth"] = false,
+	["BossHealthHeight"] = 20,
+	["BossHealthWidth"] = 110,
+	["BossPowerHeight"] = 10,
 	["HealthbarColor"] = {
 		["Options"] = {
 			["Dark"] = "Dark",
@@ -686,6 +703,9 @@ C["Arena"] = {
 	["Power"] = true,
 	["Smooth"] = false,
 	["Width"] = 174,
+	["ArenaHealthHeight"] = 20,
+	["ArenaHealthWidth"] = 174,
+	["ArenaPowerHeight"] = 10,
 	["HealthbarColor"] = {
 		["Options"] = {
 			["Dark"] = "Dark",

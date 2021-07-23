@@ -12,7 +12,7 @@ StaticPopupDialogs["TRACKING_ADD_PVE"] = {
 	OnAccept = function(self)
 		local SpellID = tonumber(self.editBox:GetText())
 		local Table = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE
-		local Name, Rank, Icon, CastTime, MinRange, MaxRange, ID = GetSpellInfo(SpellID)
+		local Name, _, Icon = GetSpellInfo(SpellID)
 		local Values = {["enable"] = true, ["priority"] = 1, ["stackThreshold"] = 0}
 		local TrackingTitle = "|CFF00FF00[DEBUFF TRACKING] |r"
 		local PVETitle = "|CFF567AFF[PVE] |r"
@@ -45,7 +45,7 @@ StaticPopupDialogs["TRACKING_ADD_PVP"] = {
 	OnAccept = function(self)
 		local SpellID = tonumber(self.editBox:GetText())
 		local Table = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP
-		local Name, Rank, Icon, CastTime, MinRange, MaxRange, ID = GetSpellInfo(SpellID)
+		local Name, _, Icon = GetSpellInfo(SpellID)
 		local Values = {["enable"] = true, ["priority"] = 1, ["stackThreshold"] = 0}
 		local TrackingTitle = "|CFF00FF00[DEBUFF TRACKING] |r"
 		local PVPTitle = "|CFFFF5252[PVP] |r"
@@ -76,11 +76,11 @@ function Tracking:GetSpell(button, cat)
 	local ID = button.ID
 	local Table = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking[cat]
 
-	for SpellID, Values in pairs(Table) do
+	for SpellID in pairs(Table) do
 		Count = Count + 1
 
 		if Count == ID then
-			local Name, Rank, IconPath, CastTime, MinRange, MaxRange, ID = GetSpellInfo(SpellID)
+			local Name, _, IconPath = GetSpellInfo(SpellID)
 
 			return SpellID, Name, IconPath
 		end
@@ -111,9 +111,9 @@ function Tracking:Update()
 	local Text = Button.Text
 
 	if Texture == ArrowDown then
-		Button.ID = Button.ID + 1
+		ID = ID + 1
 	else
-		Button.ID = Button.ID - 1
+		ID = ID - 1
 	end
 
 	local SpellID, Name, IconPath = Tracking:GetSpell(Button, Cat)
@@ -124,10 +124,10 @@ function Tracking:Update()
 
 		Button.SpellID = SpellID
 	else
-		Button.ID = Texture == ArrowDown and Button.ID - 1 or Button.ID + 1
+		ID = Texture == ArrowDown and ID - 1 or ID + 1
 	end
 
-	if Button.ID == 0 then
+	if ID == 0 then
 		Icon:SetTexture([[Interface\Icons\Inv_misc_questionmark]])
 		Text:SetText("|cffff8800This list is currently empty!|r")
 	end
