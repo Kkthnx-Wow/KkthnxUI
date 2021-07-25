@@ -240,6 +240,22 @@ local function setUnitPartySize()
 	end
 end
 
+local function setUnitRaidSize()
+	local width = C["Raid"].Width
+	local healthHeight = C["Raid"].Height
+	-- local powerHeight = C["Party"].PowerHeight
+	local height = healthHeight
+
+	for i = 1, MAX_RAID_MEMBERS do
+		local bu = _G["oUF_Raid"..i.."UnitButton"..i]
+		if bu then
+			bu:SetSize(width, height)
+			bu.Health:SetHeight(healthHeight)
+			-- bu.Power:SetHeight(powerHeight)
+		end
+	end
+end
+
 -- Translate Below Before Shadowlands
 local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
@@ -903,9 +919,9 @@ local Raid = function(self)
 	Window:CreateSwitch("Raid", "TargetHighlight", L["Show Highlighted Target"])
 
 	Window:CreateSection(L["Sizes"])
-	Window:CreateSlider("Raid", "Height", L["Raidframe Height"], 20, 100, 1)
+	Window:CreateSlider("Raid", "Height", L["Raidframe Height"], 20, 100, 1, nil, setUnitRaidSize)
 	Window:CreateSlider("Raid", "NumGroups", L["Number Of Groups to Show"], 1, 8, 1)
-	Window:CreateSlider("Raid", "Width", L["Raidframe Width"], 20, 100, 1)
+	Window:CreateSlider("Raid", "Width", L["Raidframe Width"], 20, 100, 1, nil, setUnitRaidSize)
 
 	Window:CreateSection(COLOR)
 	Window:CreateDropdown("Raid", "HealthbarColor", L["Health Color Format"])

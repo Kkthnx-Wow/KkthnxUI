@@ -61,7 +61,8 @@ function Module:CreateTargetOfTarget()
 	self.Power.frequentUpdates = false
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOM", self.Power, 0, -16)
+	self.Name:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -4)
+	self.Name:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -4)
 	self.Name:SetWidth(81 * 0.96)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
@@ -99,22 +100,27 @@ function Module:CreateTargetOfTarget()
 	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 		self.Level:SetPoint("BOTTOMRIGHT", self.Power, 0, -16)
 	else
-		self.Level:SetPoint("BOTTOM", self.Portrait, 0, -16)
+		self.Level:SetPoint("TOPLEFT", self.Portrait, "BOTTOMLEFT", 0, -4)
+		self.Level:SetPoint("TOPRIGHT", self.Portrait, "BOTTOMRIGHT", 0, -4)
 	end
 	self.Level:SetFontObject(UnitframeFont)
 	self:Tag(self.Level, "[fulllevel]")
 	self.Level:SetShown(not C["Unitframe"].HideTargetOfTargetLevel)
 
-	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
-	self.Debuffs:SetWidth(82)
-	self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, C["Unitframe"].HideTargetOfTargetName and C["Unitframe"].HideTargetOfTargetLevel and -6 or -20)
-	self.Debuffs.num = 4 * 4
+	self.Debuffs = CreateFrame("Frame", nil, self)
 	self.Debuffs.spacing = 6
-	self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num / 4 - 1))) / self.Debuffs.num)) * 4)
-	self.Debuffs:SetHeight(self.Debuffs.size * 4)
-	self.Debuffs.initialAnchor = "TOPLEFT"
-	self.Debuffs["growth-y"] = "DOWN"
+	self.Debuffs.initialAnchor = "BOTTOMLEFT"
 	self.Debuffs["growth-x"] = "RIGHT"
+	self.Debuffs["growth-y"] = "DOWN"
+	self.Debuffs:SetPoint("TOPLEFT", self.Name, "BOTTOMLEFT", 0, 6)
+	self.Debuffs:SetPoint("TOPRIGHT", self.Name, "BOTTOMRIGHT", 0, 6)
+	self.Debuffs.num = 15
+	self.Debuffs.iconsPerRow = 5
+
+	self.Debuffs.size = Module.auraIconSize(targetOfTargetWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
+	self.Debuffs:SetWidth(targetOfTargetWidth)
+	self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
+
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 

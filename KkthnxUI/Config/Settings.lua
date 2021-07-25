@@ -618,19 +618,19 @@ C["Unitframe"] = {
 	["FocusPowerHeight"] = 14,
 
 	-- TargetOfTarget
-	["TargetTargetHealthHeight"] = 20,
-	["TargetTargetHealthWidth"] = 110,
-	["TargetTargetPowerHeight"] = 10,
+	["TargetTargetHealthHeight"] = 16,
+	["TargetTargetHealthWidth"] = 90,
+	["TargetTargetPowerHeight"] = 8,
 
 	-- Pet
-	["PetHealthHeight"] = 20,
-	["PetHealthWidth"] = 110,
-	["PetPowerHeight"] = 10,
+	["PetHealthHeight"] = 16,
+	["PetHealthWidth"] = 90,
+	["PetPowerHeight"] = 8,
 
 	-- TargetOfTarget
-	["FocusTargetHealthHeight"] = 20,
-	["FocusTargetHealthWidth"] = 110,
-	["FocusTargetPowerHeight"] = 10,
+	["FocusTargetHealthHeight"] = 16,
+	["FocusTargetHealthWidth"] = 90,
+	["FocusTargetPowerHeight"] = 8,
 
 	["HealthbarColor"] = {
 		["Options"] = {

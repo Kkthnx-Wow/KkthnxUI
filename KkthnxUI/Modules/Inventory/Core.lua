@@ -877,6 +877,9 @@ function Module:OnEnable()
 		self.IconOverlay:SetPoint("TOPLEFT", 1, -1)
 		self.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
 
+		self.IconOverlay2:SetPoint("TOPLEFT", 1, -1)
+		self.IconOverlay2:SetPoint("BOTTOMRIGHT", -1, 1)
+
 		self:CreateBorder()
 		self:StyleButton()
 

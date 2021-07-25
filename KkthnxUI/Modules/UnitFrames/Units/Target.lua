@@ -120,20 +120,12 @@ function Module:CreateTarget()
 		end
 	end
 
-	local debuffsHolder = CreateFrame("Frame", nil, self)
-	debuffsHolder:SetWidth(targetWidth)
-	debuffsHolder:SetHeight(8)
-	debuffsHolder:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
-	debuffsHolder:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
-	debuffsHolder:EnableMouse(false)
-
 	if C["Unitframe"].TargetDebuffs then
 		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
 		self.Debuffs.initialAnchor = "BOTTOMLEFT"
 		self.Debuffs["growth-x"] = "RIGHT"
 		self.Debuffs["growth-y"] = "UP"
-		-- self.Debuffs:SetPoint("BOTTOMLEFT", debuffsHolder, "TOPLEFT", 0, 6)
 		self.Debuffs:SetPoint("BOTTOMLEFT", self.Name, "TOPLEFT", 0, 6)
 		self.Debuffs:SetPoint("BOTTOMRIGHT", self.Name, "TOPRIGHT", 0, 6)
 		self.Debuffs.num = 15
@@ -151,6 +143,7 @@ function Module:CreateTarget()
 	if C["Unitframe"].TargetBuffs then
 		self.Buffs = CreateFrame("Frame", nil, self)
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+		self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
 		self.Buffs["growth-x"] = "RIGHT"
 		self.Buffs["growth-y"] = "DOWN"
