@@ -359,50 +359,30 @@ function Module:CreatePlayer()
 
 	if C["Unitframe"].AdditionalPower then
 		self.AdditionalPower = CreateFrame("StatusBar", self:GetName().."AdditionalPower", self.Health)
-		self.AdditionalPower:SetHeight(5)
-		self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Health, 2, 2)
-		self.AdditionalPower:SetPoint("BOTTOMRIGHT", self.Health, -2, 2)
+		self.AdditionalPower.frequentUpdates = true
+		self.AdditionalPower:SetWidth(12)
+		self.AdditionalPower:SetOrientation("VERTICAL")
+		if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+			self.AdditionalPower:SetPoint("TOPLEFT", self.Portrait, -18, 0)
+			self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Portrait, -18, 0)
+		else
+			self.AdditionalPower:SetPoint("TOPLEFT", self, -18, 0)
+			self.AdditionalPower:SetPoint("BOTTOMLEFT", self, -18, 0)
+		end
 		self.AdditionalPower:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
 		self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
-		self.AdditionalPower.frequentUpdates = true
+		self.AdditionalPower:CreateBorder()
 
 		if C["Unitframe"].Smooth then
 			K:SmoothBar(self.AdditionalPower)
 		end
 
-		self.AdditionalPower.Spark = self.AdditionalPower:CreateTexture(nil, "OVERLAY")
-		self.AdditionalPower.Spark:SetTexture(C["Media"].Textures.Spark16Texture)
-		self.AdditionalPower.Spark:SetAlpha(0.4)
-		self.AdditionalPower.Spark:SetHeight(5)
-		self.AdditionalPower.Spark:SetBlendMode("ADD")
-		self.AdditionalPower.Spark:SetPoint("CENTER", self.AdditionalPower:GetStatusBarTexture(), "RIGHT", 0, 0)
-
-		self.AdditionalPower.Background = self.AdditionalPower:CreateTexture(nil, "BORDER")
-		self.AdditionalPower.Background:SetAllPoints(self.AdditionalPower)
-		self.AdditionalPower.Background:SetColorTexture(0.2, 0.2, 0.2)
-		self.AdditionalPower.Background.multiplier = 0.3
-
 		self.AdditionalPower.Text = self.AdditionalPower:CreateFontString(nil, "OVERLAY")
 		self.AdditionalPower.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
 		self.AdditionalPower.Text:SetFont(select(1, self.AdditionalPower.Text:GetFont()), 9, select(3, self.AdditionalPower.Text:GetFont()))
-		self.AdditionalPower.Text:SetPoint("LEFT", self.AdditionalPower, "LEFT", 1, 1)
+		self.AdditionalPower.Text:SetPoint("CENTER", self.AdditionalPower, 2, 0)
 
 		self.AdditionalPower.PostUpdate = Module.PostUpdateAddPower
-		self.AdditionalPower.displayPairs = {
-			["DRUID"] = {
-				[1] = true,
-				[3] = true,
-				[8] = true,
-			},
-
-			["SHAMAN"] = {
-				[11] = true,
-			},
-
-			["PRIEST"] = {
-				[13] = true,
-			}
-		}
 	end
 
 	-- GCD spark

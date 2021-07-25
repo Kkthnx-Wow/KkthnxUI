@@ -72,8 +72,8 @@ function Module:CreateParty()
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("TOP", self.Health, 0, 16)
-	self.Name:SetWidth(C["Party"].HealthWidth)
+	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
+	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
 	if C["Party"].HealthbarColor.Value == "Class" then
@@ -106,7 +106,13 @@ function Module:CreateParty()
 	end
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
-	self.Level:SetPoint("TOP", self.Portrait, 0, 15)
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		self.Level:Show()
+		self.Level:SetPoint("BOTTOMLEFT", self.Portrait, "TOPLEFT", 0, 4)
+		self.Level:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPRIGHT", 0, 4)
+	else
+		self.Level:Hide()
+	end
 	self.Level:SetFontObject(UnitframeFont)
 	self:Tag(self.Level, "[nplevel]")
 
@@ -114,6 +120,7 @@ function Module:CreateParty()
 	if C["Party"].ShowBuffs then
 		self.Buffs = CreateFrame("Frame", nil, self)
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+		self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
 		self.Buffs["growth-x"] = "RIGHT"
 		self.Buffs["growth-y"] = "DOWN"
@@ -136,7 +143,6 @@ function Module:CreateParty()
 	self.Debuffs.spacing = 6
 	self.Debuffs.initialAnchor = "LEFT"
 	self.Debuffs["growth-x"] = "RIGHT"
-	self.Debuffs["growth-y"] = "DOWN"
 	self.Debuffs:SetPoint("LEFT", self.Health, "RIGHT", 6, 0)
 	self.Debuffs.num = 5
 	self.Debuffs.iconsPerRow = 5

@@ -789,14 +789,17 @@ function Module:CreatePlates()
 	self.levelText = K.CreateFontString(self, C["Nameplate"].NameTextSize, "", "", false)
 	self.levelText:SetJustifyH("RIGHT")
 	self.levelText:ClearAllPoints()
-	self.levelText:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 3)
+	self.levelText:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
+	self.levelText:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
 	self:Tag(self.levelText, "[nplevel]")
 
 	self.nameText = K.CreateFontString(self, C["Nameplate"].NameTextSize, "", "", false)
 	self.nameText:SetJustifyH("LEFT")
 	self.nameText:SetWidth(self:GetWidth() * 0.85)
 	self.nameText:ClearAllPoints()
-	self.nameText:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 3)
+	self.nameText:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
+	self.nameText:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
+
 	self:Tag(self.nameText, "[name]")
 
 	self.npcTitle = K.CreateFontString(self, C["Nameplate"].NameTextSize - 1)
@@ -942,8 +945,10 @@ function Module:CreatePlates()
 	self.Auras["growth-y"] = "UP"
 	if C["Nameplate"].ShowPlayerPlate and C["Nameplate"].NameplateClassPower then
 		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 6 + _G.oUF_ClassPowerBar:GetHeight())
+		self.Auras:SetPoint("BOTTOMRIGHT", self.nameText, "TOPRIGHT", 0, 6 + _G.oUF_ClassPowerBar:GetHeight())
 	else
-		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 5)
+		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 6)
+		self.Auras:SetPoint("BOTTOMRIGHT", self.nameText, "TOPRIGHT", 0, 6)
 	end
 	self.Auras.numTotal = C["Nameplate"].MaxAuras
 	self.Auras.size = C["Nameplate"].AuraSize

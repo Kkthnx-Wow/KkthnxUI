@@ -109,13 +109,13 @@ function Module:CreateTargetOfTarget()
 
 	self.Debuffs = CreateFrame("Frame", nil, self)
 	self.Debuffs.spacing = 6
-	self.Debuffs.initialAnchor = "BOTTOMLEFT"
+	self.Debuffs.initialAnchor = "TOPLEFT"
 	self.Debuffs["growth-x"] = "RIGHT"
 	self.Debuffs["growth-y"] = "DOWN"
-	self.Debuffs:SetPoint("TOPLEFT", self.Name, "BOTTOMLEFT", 0, 6)
-	self.Debuffs:SetPoint("TOPRIGHT", self.Name, "BOTTOMRIGHT", 0, 6)
-	self.Debuffs.num = 15
-	self.Debuffs.iconsPerRow = 5
+	self.Debuffs:SetPoint("TOPLEFT", self.Name, "BOTTOMLEFT", 0, -6)
+	self.Debuffs:SetPoint("TOPRIGHT", self.Name, "BOTTOMRIGHT", 0, -6)
+	self.Debuffs.num = 8
+	self.Debuffs.iconsPerRow = 4
 
 	self.Debuffs.size = Module.auraIconSize(targetOfTargetWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
 	self.Debuffs:SetWidth(targetOfTargetWidth)

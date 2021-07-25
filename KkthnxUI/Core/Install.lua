@@ -55,21 +55,40 @@ end
 -- Tuitorial
 function Module:ForceDefaultCVars()
 	SetCVar("ActionButtonUseKeyDown", 1)
+	SetCVar("RotateMinimap", 0)
+	SetCVar("UberTooltips", 1)
 	SetCVar("alwaysCompareItems", 1)
 	SetCVar("autoLootDefault", 1)
+	SetCVar("autoOpenLootHistory", 0)
+	SetCVar("autoQuestProgress", 1)
 	SetCVar("autoQuestWatch", 1)
 	SetCVar("autoSelfCast", 1)
+	SetCVar("buffDurations", 1)
 	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
+	SetCVar("chatMouseScroll", 1)
+	SetCVar("chatStyle", "classic")
 	SetCVar("floatingCombatTextCombatDamage", 1)
 	SetCVar("floatingCombatTextCombatDamageDirectionalOffset", 10)
 	SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
 	SetCVar("floatingCombatTextCombatHealing", 1)
 	SetCVar("floatingCombatTextFloatMode", 1)
+	SetCVar("fstack_preferParentKeys", 0)
 	SetCVar("lockActionBars", 1)
 	SetCVar("lootUnderMouse", 1)
 	SetCVar("overrideArchive", 0)
 	SetCVar("screenshotQuality", 10)
+	SetCVar("showNPETutorials", 0)
+	SetCVar("showQuestTrackingTooltips", 1)
 	SetCVar("showTutorials", 0)
+	SetCVar("spamFilter", 0)
+	SetCVar("statusTextDisplay", "BOTH")
+	SetCVar("taintLog", 0)
+	SetCVar("threatWarning", 3)
+	SetCVar("whisperMode", "inline")
+	SetCVar("wholeChatWindowClickable", 0)
+	SetCVar("speechToText", 0)
+	SetCVar("textToSpeech", 0)
+	SetCVar("remoteTextToSpeech", 0)
 
 	SetActionBarToggles(1, 1, 1, 1)
 
@@ -186,7 +205,7 @@ function Module:ForceChatSettings()
 	-- set the chat groups names in class color to enabled for all chat groups which players names appear
 	chatGroup = {"SAY", "YELL", "GUILD", "OFFICER", "WHISPER", "WHISPER_INFORM", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "EMOTE", "CHANNEL1", "CHANNEL2", "CHANNEL3", "CHANNEL4", "CHANNEL5", "CHANNEL6", "CHANNEL7", "CHANNEL8", "CHANNEL9", "CHANNEL10", "CHANNEL11", "CHANNEL12", "CHANNEL13", "CHANNEL14", "CHANNEL15", "CHANNEL16", "CHANNEL17", "CHANNEL18", "CHANNEL19", "CHANNEL20"}
 	for i = 1, _G.MAX_WOW_CHAT_CHANNELS do
-		table.insert(chatGroup, 'CHANNEL'..i)
+		table.insert(chatGroup, "CHANNEL"..i)
 	end
 
 	for _, v in ipairs(chatGroup) do
@@ -654,11 +673,11 @@ local function YesTutor()
 	body:SetJustifyH("LEFT")
 	body:SetWordWrap(true)
 
-	local progressBar = CreateFrame('StatusBar', nil, tutor)
+	local progressBar = CreateFrame("StatusBar", nil, tutor)
 	progressBar:SetMinMaxValues(0, 500)
 	progressBar:SetValue(0)
 	progressBar:CreateBorder()
-	progressBar:SetPoint('TOP', tutor, 'BOTTOM', 0, -6)
+	progressBar:SetPoint("TOP", tutor, "BOTTOM", 0, -6)
 	progressBar:SetSize(480, 22)
 	progressBar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
 
