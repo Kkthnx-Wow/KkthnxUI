@@ -35,6 +35,7 @@ local KKUI_ChangeLog = {
 					"Fixed gold datatext throwing nil error for tooltip on bags",
 					"Fixed left over code in actionbar code that was causing an error in hardmode",
 					"Fixed nil error with raid index group numbers",
+					"Fixed raid debuffs not working at all"
 				},
 			},
 
@@ -49,16 +50,17 @@ local KKUI_ChangeLog = {
 			{
 				Header = "Updated",
 				Entries = {
-					"Updated announcements for interrupts, dispells and more",
-					"Updated pulse cooldown code to prevent error if trying to use it when it is off",
 					"Updated all actionbar code and added global scaling for them",
+					"Updated announcements for interrupts, dispells and more",
 					"Updated aurawatch auras list",
 					"Updated cargbags library code",
 					"Updated extra quest button lists and fixed ignore list",
 					"Updated gui headers names to better flow",
 					"Updated minimap ping code to not be in the middle of minimap",
+					"Updated pulse cooldown code to prevent error if trying to use it when it is off",
 					"Updated quest icon code for nameplates",
 					"Updated quest notifier to be less intrusive when announcing",
+					"Updated raid debuffs lib to use our cooldown timer",
 					"Updated sim craft addon skin code and renabled it",
 					"Updated skip cinematic code to be less intrusive (spacebar)",
 					"Updated sort minimap button code",

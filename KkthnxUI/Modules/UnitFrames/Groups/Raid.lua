@@ -264,6 +264,7 @@ function Module:CreateRaid()
 		self.RaidDebuffs:SetPoint("CENTER", self.Health)
 		self.RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 10)
 		self.RaidDebuffs:CreateBorder()
+		self.RaidDebuffs:Hide()
 
 		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "ARTWORK")
 		self.RaidDebuffs.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
@@ -280,16 +281,20 @@ function Module:CreateRaid()
 		self.RaidDebuffs.onlyMatchSpellID = true
 		self.RaidDebuffs.showDispellableDebuff = true
 
-		self.RaidDebuffs.time = self.RaidDebuffs:CreateFontString(nil, "OVERLAY")
-		self.RaidDebuffs.time:SetFont(C["Media"].Fonts.KkthnxUIFont, 12, "OUTLINE")
-		self.RaidDebuffs.time:SetPoint("CENTER", self.RaidDebuffs, 1, 0)
+		local parentFrame = CreateFrame("Frame", nil, self.RaidDebuffs)
+		parentFrame:SetAllPoints()
+		parentFrame:SetFrameLevel(self.RaidDebuffs:GetFrameLevel() + 6)
 
-		self.RaidDebuffs.count = self.RaidDebuffs:CreateFontString(nil, "OVERLAY")
-		self.RaidDebuffs.count:SetFont(C["Media"].Fonts.KkthnxUIFont, 12, "OUTLINE")
+		self.RaidDebuffs.timer = parentFrame:CreateFontString(nil, "OVERLAY")
+		self.RaidDebuffs.timer:SetFont(C["Media"].Fonts.KkthnxUIFont, 12, "OUTLINE")
+		self.RaidDebuffs.timer:SetPoint("CENTER", self.RaidDebuffs, 1, 0)
+
+		self.RaidDebuffs.count = parentFrame:CreateFontString(nil, "OVERLAY")
+		self.RaidDebuffs.count:SetFont(C["Media"].Fonts.KkthnxUIFont, 11, "OUTLINE")
 		self.RaidDebuffs.count:SetPoint("BOTTOMRIGHT", self.RaidDebuffs, "BOTTOMRIGHT", 2, 0)
 		self.RaidDebuffs.count:SetTextColor(1, 0.9, 0)
 
-		-- RaidDebuffs.forceShow = true
+		-- self.RaidDebuffs.forceShow = true
 	end
 
 	if C["Raid"].TargetHighlight then
