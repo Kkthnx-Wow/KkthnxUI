@@ -260,6 +260,7 @@ C["General"] = {
 			["KkthnxUI"] = "KkthnxUI",
 			["AzeriteUI"] = "AzeriteUI",
 			["KkthnxUI_Pixel"] = "KkthnxUI_Pixel",
+			["KkthnxUI_Blank"] = "KkthnxUI_Blank",
 		},
 		["Value"] = "KkthnxUI"
 	},
@@ -642,6 +643,7 @@ C["Unitframe"] = {
 	},
 	["PortraitStyle"] = {
 		["Options"] = {
+			["Overlay Portrait"] = "OverlayPortrait",
 			["3D Portraits"] = "ThreeDPortraits",
 			["Class Portraits"] = "ClassPortraits",
 			["New Class Portraits"] = "NewClassPortraits",
@@ -682,9 +684,10 @@ C["Boss"] = {
 	["Castbars"] = true,
 	["Enable"] = true,
 	["Smooth"] = false,
-	["BossHealthHeight"] = 20,
-	["BossHealthWidth"] = 110,
-	["BossPowerHeight"] = 10,
+	["HealthHeight"] =  20,
+	["HealthWidth"] = 134,
+	["PowerHeight"] = 10,
+	["YOffset"] = 54,
 	["HealthbarColor"] = {
 		["Options"] = {
 			["Dark"] = "Dark",

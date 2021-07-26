@@ -1,6 +1,6 @@
 local K = unpack(select(2,...))
 
-local changelog = {
+local KKUI_ChangeLog = {
 	{
 		Version = "10.2.8.Beta",
 		General = "10.2.8 is not officially released yet so anything you see below could change between now and release. There is no release date as of right now so do not ask!",
@@ -14,6 +14,8 @@ local changelog = {
 					"Added code to scale the script errors frame",
 					"Added default loot frame skin (people love the default loot frame i guess)",
 					"Added domination rank module for tooltips",
+					"Added domination remove button on item socketing frame to easly remove domination socketed sockets",
+					"Added domination shards frame on item socketing frame to easly add shards you have",
 					"Added maw buffs mover in raid, blizz loves this BelowMinimap shit",
 					"Added new actionbar layout 4",
 					"Added no portaits support for party frames",
@@ -27,6 +29,7 @@ local changelog = {
 				Header = "Fixed",
 				Entries = {
 					"Fixed and updated talking head frame skin",
+					"Fixed boss frames mover size being bigger than the frame itself",
 					"Fixed chat ebitbox inset so it will not overlap character count",
 					"Fixed checkquest slash command",
 					"Fixed gold datatext throwing nil error for tooltip on bags",
@@ -76,7 +79,7 @@ local function onevent(_, event, addon)
 			KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog = {}
 		end
 
-		K.ChangeLog:Register(K.Title, changelog, KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog, "lastReadVersion", "onlyShowWhenNewVersion")
+		K.ChangeLog:Register(K.Title, KKUI_ChangeLog, KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog, "lastReadVersion", "onlyShowWhenNewVersion")
 		K.ChangeLog:ShowChangelog(K.Title)
 	end
 end

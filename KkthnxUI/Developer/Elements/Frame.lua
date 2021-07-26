@@ -158,8 +158,10 @@ do
 		local channel
 		if IsInRaid() then
 			channel = "RAID"
-		elseif IsInGuild() then
+		elseif IsInGuild() and not IsInGroup() then
 			channel = "GUILD"
+		elseif IsInGroup() then
+			channel = "PARTY"
 		end
 
 		if msg ~= "" then
@@ -298,20 +300,28 @@ _G.SLASH_KKUI_TOGGLEGRID3 = "/grid"
 -- Test UnitFrames (ShestakUI)
 local moving = false
 SlashCmdList.TEST_UF = function()
-	if InCombatLockdown() then
-		print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
-		return
-	end
-
+	if InCombatLockdown() then print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
 	if not moving then
-		if C["Arena"].Enable then
-			for i = 1, 5 do
-				_G["oUF_Arena"..i].oldunit = _G["oUF_Arena"..i].unit
-				_G["oUF_Arena"..i].Trinket.Hide = K.Noop
-				_G["oUF_Arena"..i].Trinket.Icon:SetTexture("Interface\\Icons\\INV_Jewelry_Necklace_37")
-				_G["oUF_Arena"..i]:SetAttribute("unit", "player")
+		for _, frames in pairs({"oUF_Target", "oUF_TargetTarget", "oUF_Pet", "oUF_Focus", "oUF_FocusTarget"}) do
+			if _G[frames] then
+				_G[frames].oldunit = _G[frames].unit
+				_G[frames]:SetAttribute("unit", "player")
 			end
 		end
+
+		-- if C["Arena"].Enable then
+			-- for i = 1, 5 do
+				-- _G["oUF_Arena"..i].oldunit = _G["oUF_Arena"..i].unit
+				-- _G["oUF_Arena"..i].Trinket.Hide = K.Noop
+				-- _G["oUF_Arena"..i].Trinket.Icon:SetTexture("Interface\\Icons\\INV_Jewelry_Necklace_37")
+				-- _G["oUF_Arena"..i]:SetAttribute("unit", "player")
+
+				-- _G["oUF_Arena"..i.."Target"].oldunit = _G["oUF_Arena"..i.."Target"].unit
+				-- _G["oUF_Arena"..i.."Target"]:SetAttribute("unit", "player")
+
+				-- _G["oUF_Arena"..i].EnemySpec:SetText(SPECIALIZATION)
+			-- end
+		-- end
 
 		if C["Boss"].Enable then
 			for i = 1, MAX_BOSS_FRAMES do
@@ -321,21 +331,28 @@ SlashCmdList.TEST_UF = function()
 		end
 		moving = true
 	else
-		if C["Arena"].Enable then
-			for i = 1, 5 do
-				_G["oUF_Arena"..i].Trinket.Hide = nil
-				_G["oUF_Arena"..i]:SetAttribute("unit", _G["oUF_Arena"..i].oldunit)
-				_G["oUF_Arena"..i.."Target"]:SetAttribute("unit", _G["oUF_Arena"..i.."Target"].oldunit)
+		for _, frames in pairs({"oUF_Target", "oUF_TargetTarget", "oUF_Pet", "oUF_Focus", "oUF_FocusTarget"}) do
+			if _G[frames] then
+				_G[frames].unit = _G[frames].oldunit
+				_G[frames]:SetAttribute("unit", _G[frames].unit)
 			end
 		end
 
+		-- if C["Arena"].Enable then
+		-- 	for i = 1, 5 do
+		-- 		_G["oUF_Arena"..i].Trinket.Hide = nil
+		-- 		_G["oUF_Arena"..i]:SetAttribute("unit", _G["oUF_Arena"..i].oldunit)
+		-- 		_G["oUF_Arena"..i.."Target"]:SetAttribute("unit", _G["oUF_Arena"..i.."Target"].oldunit)
+		-- 	end
+		-- end
+
 		if C["Boss"].Enable then
 			for i = 1, MAX_BOSS_FRAMES do
-				_G["oUF_Boss"..i]:SetAttribute("unit", _G["oUF_Boss"..i].oldunit)
+				_G["oUF_Boss"..i].unit = _G["oUF_Boss"..i].oldunit
+				_G["oUF_Boss"..i]:SetAttribute("unit", _G["oUF_Boss"..i].unit)
 			end
 		end
 		moving = false
 	end
 end
 SLASH_TEST_UF1 = "/testui"
-SLASH_TEST_UF2 = "/uitest"

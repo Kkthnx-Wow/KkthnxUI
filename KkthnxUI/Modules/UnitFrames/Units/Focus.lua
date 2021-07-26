@@ -98,13 +98,19 @@ function Module:CreateFocus()
 	end
 
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
+		if C["Unitframe"].PortraitStyle.Value == "OverlayPortrait" then
+			self.Portrait = CreateFrame("PlayerModel", "KKUI_FocusPortrait", self)
+			self.Portrait:SetFrameStrata(self:GetFrameStrata())
+			self.Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
+			self.Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
+			self.Portrait:SetAlpha(0.6)
+		elseif C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_FocusPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
-		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
+		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and C["Unitframe"].PortraitStyle.Value ~= "OverlayPortrait" then
 			self.Portrait = self.Health:CreateTexture("KKUI_FocusPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
@@ -279,7 +285,7 @@ function Module:CreateFocus()
 
 	-- Level
 	self.Level = self:CreateFontString(nil, "OVERLAY")
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and C["Unitframe"].PortraitStyle.Value ~= "OverlayPortrait" then
 		self.Level:Show()
 		self.Level:SetPoint("BOTTOMLEFT", self.Portrait, "TOPLEFT", 0, 4)
 		self.Level:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPRIGHT", 0, 4)
@@ -292,7 +298,7 @@ function Module:CreateFocus()
 	if C["Unitframe"].PvPIndicator then
 		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.PvPIndicator:SetSize(30, 33)
-		if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and C["Unitframe"].PortraitStyle.Value ~= "OverlayPortrait" then
 			self.PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", 2, 0)
 		else
 			self.PvPIndicator:SetPoint("LEFT", self.Health, "RIGHT", 2, 0)
@@ -309,7 +315,7 @@ function Module:CreateFocus()
 	end
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and C["Unitframe"].PortraitStyle.Value ~= "OverlayPortrait" then
 		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	else
 		self.RaidTargetIndicator:SetPoint("TOP", self.Health, "TOP", 0, 8)
@@ -317,7 +323,7 @@ function Module:CreateFocus()
 	self.RaidTargetIndicator:SetSize(16, 16)
 
 	self.ReadyCheckIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and C["Unitframe"].PortraitStyle.Value ~= "OverlayPortrait" then
 		self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
 	else
 		self.ReadyCheckIndicator:SetPoint("CENTER", self.Health)
@@ -326,7 +332,7 @@ function Module:CreateFocus()
 
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(44, 44)
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and C["Unitframe"].PortraitStyle.Value ~= "OverlayPortrait" then
 		self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
 	else
 		self.ResurrectIndicator:SetPoint("CENTER", self.Health)

@@ -708,6 +708,97 @@ end
 
 function Module:CreateDomiExtractor()
 	local EXTRACTOR_ID = 187532
+	local Module_Tooltip = K:GetModule("Tooltip")
+
+	local function TryOnShard(self)
+		if not self.itemLink then
+			return
+		end
+
+		PickupContainerItem(self.bagID, self.slotID)
+		ClickSocketButton(1)
+		ClearCursor()
+	end
+
+	local function ShowShardTooltip(self)
+		if not self.itemLink then
+			return
+		end
+
+		GameTooltip:ClearLines()
+		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+		GameTooltip:SetHyperlink(self.itemLink)
+		GameTooltip:Show()
+	end
+
+	local foundShards = {}
+	local function RefreshShardsList()
+		wipe(foundShards)
+
+		for bagID = 0, 4 do
+			for slotID = 1, GetContainerNumSlots(bagID) do
+				local _, _, _, _, _, _, itemLink, _, _, itemID = GetContainerItemInfo(bagID, slotID)
+				local rank = itemID and Module_Tooltip.DomiRankData[itemID]
+				if rank then
+					local index = Module_Tooltip.DomiIndexData[itemID]
+					if not index then break end
+
+					local button = Module.DomiShardsFrame.icons[index]
+					button.bagID = bagID
+					button.slotID = slotID
+					button.itemLink = itemLink
+					button.count:SetText(rank)
+					button.Icon:SetDesaturated(false)
+
+					foundShards[index] = true
+				end
+			end
+		end
+
+		for index, button in pairs(Module.DomiShardsFrame.icons) do
+			if not foundShards[index] then
+				button.itemLink = nil
+				button.count:SetText("")
+				button.Icon:SetDesaturated(true)
+			end
+		end
+	end
+
+	local function CreateDomiShards()
+		local frame = CreateFrame("Frame", "KKUI_DomiShards", ItemSocketingFrame)
+		frame:SetSize(96, 96)
+		frame:SetPoint("RIGHT", -36, 36)
+		frame.icons = {}
+
+		Module.DomiShardsFrame = frame
+
+		for index, value in pairs(Module_Tooltip.DomiDataByGroup) do
+			for itemID in pairs(value) do
+				local button = CreateFrame("Button", nil, frame)
+				button:SetSize(26, 26)
+				button:SetPoint("TOPLEFT", 3 + mod(index - 1, 3) * 32, -3 - floor((index - 1) / 3) * 32)
+
+				button.Icon = button:CreateTexture(nil, "ARTWORK")
+				button.Icon:SetTexture(GetItemIcon(itemID))
+				button.Icon:SetAllPoints()
+				button.Icon:SetTexCoord(unpack(K.TexCoords))
+
+				button:CreateBorder()
+
+				button:SetScript("OnClick", TryOnShard)
+				button:SetScript("OnLeave", K.HideTooltip)
+				button:SetScript("OnEnter", ShowShardTooltip)
+
+				button.count = K.CreateFontString(button, 12, "", "OUTLINE", "system", "BOTTOMRIGHT", 0, -0)
+
+				frame.icons[index] = button
+				break
+			end
+		end
+
+		RefreshShardsList()
+		K:RegisterEvent("BAG_UPDATE", RefreshShardsList)
+	end
 
 	local function CreateExtractButton()
 		if not ItemSocketingFrame then
@@ -722,17 +813,20 @@ function Module:CreateDomiExtractor()
 			return
 		end
 
-		ItemSocketingSocketButton:SetWidth(83)
+		ItemSocketingSocketButton:SetWidth(80)
+
 		if InCombatLockdown() then
 			return
 		end
 
-		local button = CreateFrame("Button", nil, ItemSocketingFrame, "UIPanelButtonTemplate, SecureActionButtonTemplate")
+		local button = CreateFrame("Button", "KKUI_ExtractorButton", ItemSocketingFrame, "UIPanelButtonTemplate, SecureActionButtonTemplate")
 		button:SetSize(80, 22)
-		button:SetText("Drop")
-		button:SetPoint("RIGHT", ItemSocketingSocketButton, "LEFT", 1, 0)
+		button:SetText(REMOVE)
+		button:SetPoint("RIGHT", ItemSocketingSocketButton, "LEFT", -2, 0)
 		button:SetAttribute("type", "macro")
 		button:SetAttribute("macrotext", "/use item:"..EXTRACTOR_ID.."\n/click ItemSocketingSocket1")
+
+		CreateDomiShards()
 
 		Module.DomiExtButton = button
 	end
@@ -742,6 +836,10 @@ function Module:CreateDomiExtractor()
 
 		if Module.DomiExtButton then
 			Module.DomiExtButton:SetAlpha(GetSocketTypes(1) == "Domination" and GetExistingSocketInfo(1) and 1 or 0)
+		end
+
+		if Module.DomiShardsFrame then
+			Module.DomiShardsFrame:SetShown(GetSocketTypes(1) == "Domination" and not GetExistingSocketInfo(1))
 		end
 	end)
 end

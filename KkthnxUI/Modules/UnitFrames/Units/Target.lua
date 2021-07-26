@@ -10,6 +10,8 @@ function Module:CreateTarget()
 	self.mystyle = "target"
 
 	local targetWidth = C["Unitframe"].TargetHealthWidth
+	local targetHeight = C["Unitframe"].TargetHealthHeight
+	local targetPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
@@ -18,7 +20,7 @@ function Module:CreateTarget()
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	self.Health:SetHeight(C["Unitframe"].TargetHealthHeight)
+	self.Health:SetHeight(targetHeight)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
@@ -28,7 +30,7 @@ function Module:CreateTarget()
 	self.Overlay:SetAllPoints(self.Health)
 	self.Overlay:SetFrameLevel(5)
 
-	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
+	self.Health.PostUpdate = targetPortraitStyle ~= "NoPortraits" and targetPortraitStyle ~= "OverlayPortrait" and Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
@@ -83,7 +85,7 @@ function Module:CreateTarget()
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetWordWrap(false)
 
-	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+	if targetPortraitStyle == "NoPortraits" or targetPortraitStyle == "OverlayPortrait" then
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
 			self:Tag(self.Name, "[name] [fulllevel][afkdnd]")
 		else
@@ -97,14 +99,20 @@ function Module:CreateTarget()
 		end
 	end
 
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
+	if targetPortraitStyle ~= "NoPortraits" then
+		if targetPortraitStyle == "OverlayPortrait" then
+			self.Portrait = CreateFrame("PlayerModel", "KKUI_TargetPortrait", self)
+			self.Portrait:SetFrameStrata(self:GetFrameStrata())
+			self.Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
+			self.Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
+			self.Portrait:SetAlpha(0.6)
+		elseif targetPortraitStyle == "ThreeDPortraits" then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_TargetPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
-		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
+		elseif targetPortraitStyle ~= "ThreeDPortraits" and targetPortraitStyle ~= "OverlayPortrait" then
 			self.Portrait = self.Health:CreateTexture("KKUI_TargetPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
@@ -114,7 +122,7 @@ function Module:CreateTarget()
 			self.Portrait.Border:SetAllPoints(self.Portrait)
 			self.Portrait.Border:CreateBorder()
 
-			if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
+			if (targetPortraitStyle == "ClassPortraits" or targetPortraitStyle == "NewClassPortraits") then
 				self.Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
@@ -280,7 +288,7 @@ function Module:CreateTarget()
 
 	-- Level
 	self.Level = self:CreateFontString(nil, "OVERLAY")
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+	if targetPortraitStyle ~= "NoPortraits" and targetPortraitStyle ~= "OverlayPortrait" then
 		self.Level:Show()
 		self.Level:SetPoint("BOTTOMLEFT", self.Portrait, "TOPLEFT", 0, 4)
 		self.Level:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPRIGHT", 0, 4)
@@ -311,13 +319,13 @@ function Module:CreateTarget()
 
 		-- Default CombatText
 		SetCVar("enableFloatingCombatText", 0)
-		K.HideInterfaceOption(InterfaceOptionsCombatPanelEnableFloatingCombatText)
+		K.HideInterfaceOption(_G.InterfaceOptionsCombatPanelEnableFloatingCombatText)
 	end
 
 	if C["Unitframe"].PvPIndicator then
 		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.PvPIndicator:SetSize(30, 33)
-		if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		if targetPortraitStyle ~= "NoPortraits" and targetPortraitStyle ~= "OverlayPortrait" then
 			self.PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", 2, 0)
 		else
 			self.PvPIndicator:SetPoint("LEFT", self.Health, "RIGHT", 2, 0)
@@ -327,14 +335,14 @@ function Module:CreateTarget()
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.LeaderIndicator:SetSize(12, 12)
-	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-		self.LeaderIndicator:SetPoint("TOPRIGHT", self.Health, 0, 8)
-	else
+	if targetPortraitStyle ~= "NoPortraits" and targetPortraitStyle ~= "OverlayPortrait" then
 		self.LeaderIndicator:SetPoint("TOPRIGHT", self.Portrait, 0, 8)
+	else
+		self.LeaderIndicator:SetPoint("TOPRIGHT", self.Health, 0, 8)
 	end
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+	if targetPortraitStyle ~= "NoPortraits" and targetPortraitStyle ~= "OverlayPortrait" then
 		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	else
 		self.RaidTargetIndicator:SetPoint("TOP", self.Health, "TOP", 0, 8)
@@ -342,16 +350,16 @@ function Module:CreateTarget()
 	self.RaidTargetIndicator:SetSize(16, 16)
 
 	self.ReadyCheckIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+	if targetPortraitStyle ~= "NoPortraits" and targetPortraitStyle ~= "OverlayPortrait" then
 		self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
 	else
 		self.ReadyCheckIndicator:SetPoint("CENTER", self.Health)
 	end
-	self.ReadyCheckIndicator:SetSize(C["Unitframe"].TargetHealthHeight - 4, C["Unitframe"].TargetHealthHeight - 4)
+	self.ReadyCheckIndicator:SetSize(targetHeight - 4, targetHeight - 4)
 
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(44, 44)
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+	if targetPortraitStyle ~= "NoPortraits" and targetPortraitStyle ~= "OverlayPortrait" then
 		self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
 	else
 		self.ResurrectIndicator:SetPoint("CENTER", self.Health)

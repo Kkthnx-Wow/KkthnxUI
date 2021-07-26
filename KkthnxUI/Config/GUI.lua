@@ -884,6 +884,12 @@ local Boss = function(self)
 	Window:CreateSwitch("Boss", "Castbars", L["Show Castbars"])
 	Window:CreateSwitch("Boss", "Smooth", L["Smooth Bar Transition"])
 
+	Window:CreateSection(L["Sizes"])
+	Window:CreateSlider("Boss", "HealthHeight", "Health Height", 20, 50, 1)
+	Window:CreateSlider("Boss", "HealthWidth", "Health Width", 120, 180, 1)
+	Window:CreateSlider("Boss", "PowerHeight", "Power Height", 10, 30, 1)
+	Window:CreateSlider("Boss", "YOffset", "Vertical Offset From One Another"..K.GreyColor.."(54)|r", 40, 60, 1)
+
 	Window:CreateSection(COLOR)
 	Window:CreateDropdown("Boss", "HealthbarColor", L["Health Color Format"])
 end

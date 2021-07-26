@@ -7,7 +7,7 @@ local UIParent = _G.UIParent
 local POSITION, ANCHOR_POINT, YOFFSET = "TOP", "BOTTOM", -10
 
 function Module:PostAlertMove()
-	local AlertFrameMover = _G.AlertFrameHolder
+	local AlertFrameMover = _G.AlertFrameHolder.AlertFrameMover
 	local AlertFrameHolder = _G.AlertFrameHolder
 
 	local _, y = AlertFrameMover:GetCenter()
@@ -147,7 +147,12 @@ function Module:CreateAlertFrames()
 
 	_G.GroupLootContainer:EnableMouse(false) -- Prevent this weird non-clickable area stuff since 8.1; Monitor this, as it may cause addon compatibility.
 	_G.UIPARENT_MANAGED_FRAME_POSITIONS.GroupLootContainer = nil
-	K.Mover(AlertFrameHolder, "AlertFrameMover", "Loot / Alert Frames", {"TOP", UIParent, "TOP", -1, -18})
+
+	if not AlertFrameHolder.AlertFrameMover then
+		AlertFrameHolder.AlertFrameMover = K.Mover(AlertFrameHolder, "AlertFrameMover", "Loot / Alert Frames", {"TOP", UIParent, "TOP", -1, -18})
+	else
+		AlertFrameHolder.AlertFrameMover:SetSize(AlertFrameHolder:GetSize())
+	end
 
 	-- Replace AdjustAnchors functions to allow alerts to grow down if needed.
 	-- We will need to keep an eye on this in case it taints. It shouldn"t, but you never know.

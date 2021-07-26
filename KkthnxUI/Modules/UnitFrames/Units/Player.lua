@@ -7,8 +7,6 @@ local string_format = _G.string.format
 
 local CreateFrame = _G.CreateFrame
 
-local playerWidth = C["Unitframe"].PlayerFrameWidth
-
 function Module.PostUpdateAddPower(element, cur, max)
 	if element.Text and max > 0 then
 		local perc = cur / max * 100
@@ -36,6 +34,10 @@ end
 function Module:CreatePlayer()
 	self.mystyle = "player"
 
+	local playerWidth = C["Unitframe"].PlayerHealthWidth
+	local playerHeight = C["Unitframe"].PlayerHealthHeight
+	local playerPortraitStyle = C["Unitframe"].PortraitStyle.Value
+
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
 	local HealPredictionTexture = K.GetTexture(C["UITextures"].HealPredictionTextures)
@@ -47,13 +49,13 @@ function Module:CreatePlayer()
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	self.Health:SetHeight(C["Unitframe"].PlayerHealthHeight)
+	self.Health:SetHeight(playerHeight)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
+	self.Health.PostUpdate = playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" and Module.UpdateHealth
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 
@@ -101,14 +103,20 @@ function Module:CreatePlayer()
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
 	self:Tag(self.Power.Value, "[power]")
 
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
+	if playerPortraitStyle ~= "NoPortraits" then
+		if playerPortraitStyle == "OverlayPortrait" then
+			self.Portrait = CreateFrame("PlayerModel", "KKUI_PlayerPortrait", self)
+			self.Portrait:SetFrameStrata(self:GetFrameStrata())
+			self.Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
+			self.Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
+			self.Portrait:SetAlpha(0.6)
+		elseif playerPortraitStyle == "ThreeDPortraits" then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_PlayerPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 			self.Portrait:CreateBorder()
-		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
+		elseif playerPortraitStyle ~= "ThreeDPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
 			self.Portrait = self.Health:CreateTexture("KKUI_PlayerPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
@@ -118,7 +126,7 @@ function Module:CreatePlayer()
 			self.Portrait.Border:SetAllPoints(self.Portrait)
 			self.Portrait.Border:CreateBorder()
 
-			if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
+			if (playerPortraitStyle == "ClassPortraits" or playerPortraitStyle == "NewClassPortraits") then
 				self.Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
@@ -128,7 +136,7 @@ function Module:CreatePlayer()
 		Module:CreateClassPower(self)
 	end
 
-	local aurasSetWidth = C["Unitframe"].PlayerHealthWidth
+	local aurasSetWidth = playerWidth
 	if C["Unitframe"].PlayerDeBuffs then
 		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
@@ -302,7 +310,7 @@ function Module:CreatePlayer()
 		mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT", -1, 0)
 		mainBar:SetStatusBarTexture(HealPredictionTexture)
 		mainBar:SetStatusBarColor(0.8, 0.1, 0.1, 0.6)
-		mainBar:SetWidth(C["Unitframe"].PlayerHealthWidth)
+		mainBar:SetWidth(playerWidth)
 
 		self.PowerPrediction = {
 			mainBar = mainBar
@@ -311,10 +319,10 @@ function Module:CreatePlayer()
 
 	if C["Unitframe"].ShowPlayerName then
 		self.Name = self:CreateFontString(nil, "OVERLAY")
-		self.Name:SetPoint("TOP", self.Health, 0, 16)
-		self.Name:SetWidth(C["Unitframe"].PlayerHealthWidth)
+		self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
+		self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
 		self.Name:SetFontObject(UnitframeFont)
-		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+		if playerPortraitStyle == "NoPortraits" then
 			if C["Unitframe"].HealthbarColor.Value == "Class" then
 				self:Tag(self.Name, "[name] [fulllevel][afkdnd]")
 			else
@@ -332,7 +340,7 @@ function Module:CreatePlayer()
 	-- Level
 	if C["Unitframe"].ShowPlayerLevel then
 		self.Level = self:CreateFontString(nil, "OVERLAY")
-		if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
 			self.Level:Show()
 			self.Level:SetPoint("TOP", self.Portrait, 0, 15)
 		else
@@ -346,7 +354,7 @@ function Module:CreatePlayer()
 		if K.Class == "MONK" then
 			self.Stagger = CreateFrame("StatusBar", self:GetName().."Stagger", self)
 			self.Stagger:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 6)
-			self.Stagger:SetSize(C["Unitframe"].PlayerHealthWidth, 14)
+			self.Stagger:SetSize(playerWidth, 14)
 			self.Stagger:SetStatusBarTexture(UnitframeTexture)
 			self.Stagger:CreateBorder()
 
@@ -362,7 +370,7 @@ function Module:CreatePlayer()
 		self.AdditionalPower.frequentUpdates = true
 		self.AdditionalPower:SetWidth(12)
 		self.AdditionalPower:SetOrientation("VERTICAL")
-		if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
 			self.AdditionalPower:SetPoint("TOPLEFT", self.Portrait, -18, 0)
 			self.AdditionalPower:SetPoint("BOTTOMLEFT", self.Portrait, -18, 0)
 		else
@@ -388,7 +396,7 @@ function Module:CreatePlayer()
 	-- GCD spark
 	if C["Unitframe"].GlobalCooldown then
 		self.GCD = CreateFrame("Frame", self:GetName().."_GlobalCooldown", self)
-		self.GCD:SetWidth(C["Unitframe"].PlayerHealthWidth)
+		self.GCD:SetWidth(playerWidth)
 		self.GCD:SetHeight(self.Health:GetHeight())
 		self.GCD:SetFrameStrata("HIGH")
 		self.GCD:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
@@ -492,30 +500,28 @@ function Module:CreatePlayer()
 		self.Swing.Offhand = off
 		self.Swing.bg = bg
 		self.Swing.hideOoc = true
-
-		-- K.Mover(self.Swing, "PlayerSwingBar", "PlayerSwingBar", {"BOTTOM", UIParent, "BOTTOM", 0, 180})
 	end
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.LeaderIndicator:SetSize(12, 12)
-	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-		self.LeaderIndicator:SetPoint("TOPLEFT", self.Health, 0, 8)
-	else
+	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
 		self.LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
+	else
+		self.LeaderIndicator:SetPoint("TOPLEFT", self.Health, 0, 8)
 	end
 
 	self.AssistantIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.AssistantIndicator:SetSize(12, 12)
-	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-		self.AssistantIndicator:SetPoint("TOPLEFT", self.Health, 0, 8)
-	else
+	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
 		self.AssistantIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
+	else
+		self.AssistantIndicator:SetPoint("TOPLEFT", self.Health, 0, 8)
 	end
 
 	if C["Unitframe"].PvPIndicator then
 		self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.PvPIndicator:SetSize(30, 33)
-		if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+		if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
 			self.PvPIndicator:SetPoint("RIGHT", self.Portrait, "LEFT", -2, 0)
 		else
 			self.PvPIndicator:SetPoint("RIGHT", self.Health, "LEFT", -2, 0)
@@ -528,7 +534,7 @@ function Module:CreatePlayer()
 	self.CombatIndicator:SetPoint("LEFT", 2, 0)
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
 		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	else
 		self.RaidTargetIndicator:SetPoint("TOP", self.Health, "TOP", 0, 8)
@@ -536,16 +542,16 @@ function Module:CreatePlayer()
 	self.RaidTargetIndicator:SetSize(16, 16)
 
 	self.ReadyCheckIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
 		self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
 	else
 		self.ReadyCheckIndicator:SetPoint("CENTER", self.Health)
 	end
-	self.ReadyCheckIndicator:SetSize(C["Unitframe"].PlayerHealthHeight - 4, C["Unitframe"].PlayerHealthHeight - 4)
+	self.ReadyCheckIndicator:SetSize(playerHeight - 4, playerHeight - 4)
 
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(44, 44)
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
 		self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
 	else
 		self.ResurrectIndicator:SetPoint("CENTER", self.Health)
@@ -556,7 +562,7 @@ function Module:CreatePlayer()
 	self.RestingIndicator:SetSize(22, 22)
 
 	self.QuestSyncIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
 		self.QuestSyncIndicator:SetPoint("BOTTOM", self.Portrait, "BOTTOM", 0, -13)
 	else
 		self.QuestSyncIndicator:SetPoint("BOTTOM", self.Health, "BOTTOM", 0, -13)
@@ -582,7 +588,7 @@ function Module:CreatePlayer()
 
 	if C["Unitframe"].GlobalCooldown then
 		self.GlobalCooldown = CreateFrame("Frame", nil, self.Health)
-		self.GlobalCooldown:SetWidth(C["Unitframe"].PlayerHealthWidth)
+		self.GlobalCooldown:SetWidth(playerWidth)
 		self.GlobalCooldown:SetHeight(28)
 		self.GlobalCooldown:SetFrameStrata("HIGH")
 		self.GlobalCooldown:SetPoint("LEFT", self.Health, "LEFT", 0, 0)

@@ -107,14 +107,20 @@ function Module:CreateArena()
 		portraitSize = self.Health:GetHeight() + self.Power:GetHeight()
 	end
 
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and C["Unitframe"].PortraitStyle.Value ~= "OverlayPortrait" then
+		if C["Unitframe"].PortraitStyle.Value == "OverlayPortrait" then
+			self.Portrait = CreateFrame("PlayerModel", "KKUI_ArenaPortrait", self)
+			self.Portrait:SetFrameStrata(self:GetFrameStrata())
+			self.Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
+			self.Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
+			self.Portrait:SetAlpha(0.6)
+		elseif C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_ArenaPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetSize(portraitSize, portraitSize)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
-		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
+		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and C["Unitframe"].PortraitStyle.Value ~= "OverlayPortrait" then
 			self.Portrait = self.Health:CreateTexture("KKUI_ArenaPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			self.Portrait:SetSize(portraitSize, portraitSize)
@@ -233,7 +239,7 @@ function Module:CreateArena()
 
 	self.Trinket = CreateFrame("Frame", "KKUI_ArenaTrinket", self)
 	self.Trinket:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and C["Unitframe"].PortraitStyle.Value ~= "OverlayPortrait" then
 		self.Trinket:SetPoint("LEFT", self.Portrait, "RIGHT", 6, 0)
 	else
 		self.Trinket:SetPoint("LEFT", self, "RIGHT", 6, 0)
