@@ -27,7 +27,6 @@ local C_QuestLog_IsQuestFlaggedCompleted = _G.C_QuestLog.IsQuestFlaggedCompleted
 local C_TaskQuest_GetQuestInfoByQuestID = _G.C_TaskQuest.GetQuestInfoByQuestID
 local C_TaskQuest_GetThreatQuests = _G.C_TaskQuest.GetThreatQuests
 local C_UIWidgetManager_GetTextWithStateWidgetVisualizationInfo = _G.C_UIWidgetManager.GetTextWithStateWidgetVisualizationInfo
-local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local FULLDATE = _G.FULLDATE
 local GameTime_GetGameTime = _G.GameTime_GetGameTime
 local GameTime_GetLocalTime = _G.GameTime_GetLocalTime

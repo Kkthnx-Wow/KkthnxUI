@@ -300,7 +300,11 @@ _G.SLASH_KKUI_TOGGLEGRID3 = "/grid"
 -- Test UnitFrames (ShestakUI)
 local moving = false
 SlashCmdList.TEST_UF = function()
-	if InCombatLockdown() then print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
+	if InCombatLockdown() then
+		print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
+		return
+	end
+
 	if not moving then
 		for _, frames in pairs({"oUF_Target", "oUF_TargetTarget", "oUF_Pet", "oUF_Focus", "oUF_FocusTarget"}) do
 			if _G[frames] then
@@ -309,19 +313,14 @@ SlashCmdList.TEST_UF = function()
 			end
 		end
 
-		-- if C["Arena"].Enable then
-			-- for i = 1, 5 do
-				-- _G["oUF_Arena"..i].oldunit = _G["oUF_Arena"..i].unit
-				-- _G["oUF_Arena"..i].Trinket.Hide = K.Noop
-				-- _G["oUF_Arena"..i].Trinket.Icon:SetTexture("Interface\\Icons\\INV_Jewelry_Necklace_37")
-				-- _G["oUF_Arena"..i]:SetAttribute("unit", "player")
-
-				-- _G["oUF_Arena"..i.."Target"].oldunit = _G["oUF_Arena"..i.."Target"].unit
-				-- _G["oUF_Arena"..i.."Target"]:SetAttribute("unit", "player")
-
-				-- _G["oUF_Arena"..i].EnemySpec:SetText(SPECIALIZATION)
-			-- end
-		-- end
+		if C["Arena"].Enable then
+			for i = 1, 5 do
+				_G["oUF_Arena"..i].oldunit = _G["oUF_Arena"..i].unit
+				_G["oUF_Arena"..i].Trinket.Hide = K.Noop
+				_G["oUF_Arena"..i].Trinket.Icon:SetTexture("Interface\\Icons\\INV_Jewelry_Necklace_37")
+				_G["oUF_Arena"..i]:SetAttribute("unit", "player")
+			end
+		end
 
 		if C["Boss"].Enable then
 			for i = 1, MAX_BOSS_FRAMES do
@@ -338,13 +337,13 @@ SlashCmdList.TEST_UF = function()
 			end
 		end
 
-		-- if C["Arena"].Enable then
-		-- 	for i = 1, 5 do
-		-- 		_G["oUF_Arena"..i].Trinket.Hide = nil
-		-- 		_G["oUF_Arena"..i]:SetAttribute("unit", _G["oUF_Arena"..i].oldunit)
-		-- 		_G["oUF_Arena"..i.."Target"]:SetAttribute("unit", _G["oUF_Arena"..i.."Target"].oldunit)
-		-- 	end
-		-- end
+		if C["Arena"].Enable then
+			for i = 1, 5 do
+				_G["oUF_Arena"..i].Trinket.Hide = nil
+				_G["oUF_Arena"..i].unit = _G["oUF_Arena"..i].oldunit
+				_G["oUF_Arena"..i]:SetAttribute("unit", _G["oUF_Arena"..i].unit)
+			end
+		end
 
 		if C["Boss"].Enable then
 			for i = 1, MAX_BOSS_FRAMES do

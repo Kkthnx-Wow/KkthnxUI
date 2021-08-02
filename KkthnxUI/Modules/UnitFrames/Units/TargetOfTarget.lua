@@ -64,6 +64,7 @@ function Module:CreateTargetOfTarget()
 	self.Name:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -4)
 	self.Name:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -4)
 	self.Name:SetFontObject(UnitframeFont)
+	self.Name:SetWordWrap(false)
 
 	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" or C["Unitframe"].PortraitStyle.Value == "OverlayPortrait" then
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
@@ -125,14 +126,12 @@ function Module:CreateTargetOfTarget()
 	self.Debuffs.initialAnchor = "TOPLEFT"
 	self.Debuffs["growth-x"] = "RIGHT"
 	self.Debuffs["growth-y"] = "DOWN"
-	self.Debuffs:SetPoint("TOPLEFT", self.Name, "BOTTOMLEFT", 0, -6)
-	self.Debuffs:SetPoint("TOPRIGHT", self.Name, "BOTTOMRIGHT", 0, -6)
+	self.Debuffs:SetPoint("TOPLEFT", C["Unitframe"].HideTargetOfTargetName and self.Power or self.Name, "BOTTOMLEFT", 0, -6)
+	self.Debuffs:SetPoint("TOPRIGHT", C["Unitframe"].HideTargetOfTargetName and self.Power or self.Name, "BOTTOMRIGHT", 0, -6)
 	self.Debuffs.num = 8
 	self.Debuffs.iconsPerRow = 4
 
-	self.Debuffs.size = Module.auraIconSize(targetOfTargetWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
-	self.Debuffs:SetWidth(targetOfTargetWidth)
-	self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
+	Module:UpdateAuraContainer(targetOfTargetWidth, self.Debuffs, self.Debuffs.num)
 
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura

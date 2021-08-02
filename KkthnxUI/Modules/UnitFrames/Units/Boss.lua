@@ -2,7 +2,6 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
-local math_floor = _G.math.floor
 local select = _G.select
 
 local CreateFrame = _G.CreateFrame
@@ -144,9 +143,7 @@ function Module:CreateBoss()
 		self.Buffs.iconsPerRow = 6
 		self.Buffs.onlyShowPlayer = false
 
-		self.Buffs.size = Module.auraIconSize(bossWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
-		self.Buffs:SetWidth(bossWidth)
-		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+		Module:UpdateAuraContainer(bossWidth, self.Buffs, self.Buffs.num)
 
 		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
@@ -162,9 +159,9 @@ function Module:CreateBoss()
 	self.Debuffs.num = 5
 	self.Debuffs.iconsPerRow = 5
 	self.Debuffs.CustomFilter = Module.CustomFilter
-	self.Debuffs.size = Module.auraIconSize(bossWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing + 2.5)
-	self.Debuffs:SetWidth(bossWidth)
-	self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math_floor(self.Debuffs.num/self.Debuffs.iconsPerRow + 0.5))
+
+	Module:UpdateAuraContainer(bossWidth, self.Debuffs, self.Debuffs.num)
+
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 
@@ -225,39 +222,33 @@ function Module:CreateBoss()
 		end
 	end
 
-	-- if C["Boss"].TargetHighlight then
-	-- 	self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
-	-- 	self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
+	if C["Boss"].TargetHighlight then
+		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
+		self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
 
-	-- 	local relativeTo
-	-- 	if bossPortraitStyle == "NoPortraits" or bossPortraitStyle == "OverlayPortrait" then
-	-- 		relativeTo = self.Health
-	-- 	else
-	-- 		relativeTo = self.Portrait
-	-- 	end
+		local relativeTo
+		if bossPortraitStyle == "NoPortraits" or bossPortraitStyle == "OverlayPortrait" then
+			relativeTo = self.Health
+		else
+			relativeTo = self.Portrait
+		end
 
-	-- 	self.TargetHighlight:SetPoint("TOPLEFT", relativeTo, -5, 5)
-	-- 	self.TargetHighlight:SetPoint("BOTTOMRIGHT", relativeTo, 5, -5)
-	-- 	self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
-	-- 	self.TargetHighlight:Hide()
+		self.TargetHighlight:SetPoint("TOPLEFT", relativeTo, -5, 5)
+		self.TargetHighlight:SetPoint("BOTTOMRIGHT", relativeTo, 5, -5)
+		self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
+		self.TargetHighlight:Hide()
 
-	-- 	local function UpdateBossTargetGlow()
-	-- 		if UnitIsUnit("target", self.unit) then
-	-- 			self.TargetHighlight:Show()
-	-- 		else
-	-- 			self.TargetHighlight:Hide()
-	-- 		end
-	-- 	end
+		local function UpdateBossTargetGlow()
+			if UnitIsUnit("target", self.unit) then
+				self.TargetHighlight:Show()
+			else
+				self.TargetHighlight:Hide()
+			end
+		end
 
-	-- 	self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateBossTargetGlow, true)
-	-- 	self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateBossTargetGlow, true)
-	-- end
-
-	self.PhaseIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.PhaseIndicator:SetSize(20, 20)
-	self.PhaseIndicator:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
-	self.PhaseIndicator:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\PhaseIcons.tga]])
-	self.PhaseIndicator.PostUpdate = Module.UpdatePhaseIcon
+		-- Unsure as to what is needed here currently, needs testing.
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateBossTargetGlow, true)
+	end
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	if bossPortraitStyle ~= "NoPortraits" and bossPortraitStyle ~= "OverlayPortrait" then

@@ -137,9 +137,7 @@ function Module:CreateFocus()
 		self.Debuffs.num = 15
 		self.Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 
-		self.Debuffs.size = Module.auraIconSize(focusWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
-		self.Debuffs:SetWidth(focusWidth)
-		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow))
+		Module:UpdateAuraContainer(focusWidth, self.Debuffs, self.Debuffs.num)
 
 		self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 		self.Debuffs.PostCreateIcon = Module.PostCreateAura
@@ -158,9 +156,7 @@ function Module:CreateFocus()
 		self.Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
 		self.Buffs.onlyShowPlayer = false
 
-		self.Buffs.size = Module.auraIconSize(focusWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
-		self.Buffs:SetWidth(focusWidth)
-		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+		Module:UpdateAuraContainer(focusWidth, self.Buffs, self.Buffs.num)
 
 		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura

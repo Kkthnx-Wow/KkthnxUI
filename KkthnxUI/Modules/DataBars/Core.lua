@@ -23,7 +23,6 @@ local STANDING = _G.STANDING
 local UnitHonor = _G.UnitHonor
 local UnitHonorLevel = _G.UnitHonorLevel
 local UnitHonorMax = _G.UnitHonorMax
-local UnitIsPVP = _G.UnitIsPVP
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
 
@@ -432,7 +431,7 @@ function Module:UpdateDataBarsSize()
 	end
 
 	Module.Container:SetSize(C["DataBars"].Width, num_bars * (C["DataBars"].Height + 6) - 6)
-	self.Container.mover:SetSize(C["DataBars"].Width, self.Container:GetHeight())
+	self.Container.mover:SetSize(C["DataBars"].Width, num_bars * (C["DataBars"].Height + 6) - 6)
 end
 
 function Module:OnEnable()
@@ -447,7 +446,7 @@ function Module:OnEnable()
 
 	self.Container = CreateFrame("button", "KKUI_Databars", K.PetBattleHider)
 	self.Container:SetWidth(C["DataBars"].Width)
-	self.Container:SetPoint("TOP", "Minimap", "BOTTOM", 0, -6)
+	self.Container:SetPoint("TOP", _G.Minimap, "BOTTOM", 0, -6)
 	self.Container:HookScript("OnEnter", self.OnEnter)
 	self.Container:HookScript("OnLeave", self.OnLeave)
 
@@ -483,8 +482,6 @@ function Module:OnEnable()
 	end
 
 	if not self.Container.mover then
-		self.Container.mover = K.Mover(self.Container, "DataBars", "DataBars", {"TOP", "Minimap", "BOTTOM", 0, -6})
-	else
-		self.Container.mover:SetSize(C["DataBars"].Width, self.Container:GetHeight())
+		self.Container.mover = K.Mover(self.Container, "DataBars", "DataBars", {"TOP", _G.Minimap, "BOTTOM", 0, -6})
 	end
 end

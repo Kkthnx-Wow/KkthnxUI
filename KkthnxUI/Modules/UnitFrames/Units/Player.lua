@@ -136,7 +136,6 @@ function Module:CreatePlayer()
 		Module:CreateClassPower(self)
 	end
 
-	local aurasSetWidth = playerWidth
 	if C["Unitframe"].PlayerDeBuffs then
 		self.Debuffs = CreateFrame("Frame", nil, self)
 		self.Debuffs.spacing = 6
@@ -147,9 +146,7 @@ function Module:CreatePlayer()
 		self.Debuffs.num = 14
 		self.Debuffs.iconsPerRow = 5
 
-		self.Debuffs.size = Module.auraIconSize(aurasSetWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
-		self.Debuffs:SetWidth(aurasSetWidth)
-		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
+		Module:UpdateAuraContainer(playerWidth, self.Debuffs, self.Debuffs.num)
 
 		self.Debuffs.PostCreateIcon = Module.PostCreateAura
 		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
@@ -166,9 +163,7 @@ function Module:CreatePlayer()
 		self.Buffs.iconsPerRow = 6
 		self.Buffs.onlyShowPlayer = false
 
-		self.Buffs.size = Module.auraIconSize(aurasSetWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
-		self.Buffs:SetWidth(aurasSetWidth)
-		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+		Module:UpdateAuraContainer(playerWidth, self.Buffs, self.Buffs.num)
 
 		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura

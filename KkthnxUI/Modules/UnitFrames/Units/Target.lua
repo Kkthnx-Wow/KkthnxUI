@@ -136,12 +136,10 @@ function Module:CreateTarget()
 		self.Debuffs["growth-y"] = "UP"
 		self.Debuffs:SetPoint("BOTTOMLEFT", self.Name, "TOPLEFT", 0, 6)
 		self.Debuffs:SetPoint("BOTTOMRIGHT", self.Name, "TOPRIGHT", 0, 6)
-		self.Debuffs.num = 15
+		self.Debuffs.num = 14
 		self.Debuffs.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 
-		self.Debuffs.size = Module.auraIconSize(targetWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing)
-		self.Debuffs:SetWidth(targetWidth)
-		self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math.floor(self.Debuffs.num / self.Debuffs.iconsPerRow + .5))
+		Module:UpdateAuraContainer(targetWidth, self.Debuffs, self.Debuffs.num)
 
 		self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 		self.Debuffs.PostCreateIcon = Module.PostCreateAura
@@ -160,9 +158,7 @@ function Module:CreateTarget()
 		self.Buffs.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
 		self.Buffs.onlyShowPlayer = false
 
-		self.Buffs.size = Module.auraIconSize(targetWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
-		self.Buffs:SetWidth(targetWidth)
-		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+		Module:UpdateAuraContainer(targetWidth, self.Buffs, self.Buffs.num)
 
 		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
@@ -173,7 +169,7 @@ function Module:CreateTarget()
 
 	if C["Unitframe"].TargetCastbar then
 		self.Castbar = CreateFrame("StatusBar", "TargetCastbar", self)
-		self.Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", C["Unitframe"].TargetCastbarIcon and 18 or 0, 340)
+		self.Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", C["Unitframe"].TargetCastbarIcon and 18 or 0, 342)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
 		self.Castbar:SetSize(C["Unitframe"].TargetCastbarWidth, C["Unitframe"].TargetCastbarHeight)
 		self.Castbar:SetClampedToScreen(true)
@@ -226,7 +222,7 @@ function Module:CreateTarget()
 			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
 		end
 
-		K.Mover(self.Castbar, "TargetCastBar", "TargetCastBar", {"BOTTOM", UIParent, "BOTTOM", C["Unitframe"].TargetCastbarIcon and 18 or 0, 340})
+		K.Mover(self.Castbar, "TargetCastBar", "TargetCastBar", {"BOTTOM", UIParent, "BOTTOM", C["Unitframe"].TargetCastbarIcon and 18 or 0, 342})
 	end
 
 	if C["Unitframe"].ShowHealPrediction then

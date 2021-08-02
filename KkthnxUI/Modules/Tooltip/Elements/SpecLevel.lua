@@ -202,14 +202,14 @@ function Module:GetUnitItemLevel(unit)
 		else
 			if hasArtifact or twohand == 2 then
 				local higher = max(weapon[1], weapon[2])
-				total = total + higher*2
+				total = total + higher * 2
 			elseif twohand == 1 and haveWeapon == 1 then
-				total = total + weapon[1]*2 + weapon[2]*2
+				total = total + weapon[1] * 2 + weapon[2] * 2
 			elseif twohand == 1 and haveWeapon == 2 then
 				if mainhand and weapon[1] >= weapon[2] then
-					total = total + weapon[1]*2
+					total = total + weapon[1] * 2
 				elseif offhand and weapon[2] >= weapon[1] then
-					total = total + weapon[2]*2
+					total = total + weapon[2] * 2
 				else
 					total = total + weapon[1] + weapon[2]
 				end

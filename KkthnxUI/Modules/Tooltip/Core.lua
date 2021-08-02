@@ -344,6 +344,7 @@ function Module:OnTooltipSetUnit()
 
 		Module.InspectUnitSpecAndLevel(self, unit)
 		Module.ShowUnitMythicPlusScore(self, unit)
+		Module.AddProgression(self, unit)
 	else
 		self.StatusBar:SetStatusBarColor(0, 0.9, 0)
 	end
@@ -563,11 +564,11 @@ function Module:OnEnable()
 
 	-- Elements
 	self:CreateConduitCollectionData()
+	self:CreateDominationRank()
 	self:CreateMountSource()
 	self:CreateTargetedInfo()
 	self:CreateTooltipID()
 	self:CreateTooltipIcons()
-	self:CreateDominationRank()
 end
 
 -- Tooltip Skin Registration

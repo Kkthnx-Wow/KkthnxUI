@@ -40,9 +40,9 @@ local UnitSex = _G.UnitSex
 -- Engine
 Engine[1] = {} -- K, Main
 Engine[2] = {} -- C, Config
-Engine[3] = {} -- L, Locales
+Engine[3] = {} -- L, Locale
 
-local K, C, L = unpack(Engine)
+local K, C = unpack(Engine)
 
 -- Deprecated
 LE_ITEM_QUALITY_POOR = Enum.ItemQuality.Poor

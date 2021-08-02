@@ -17,6 +17,10 @@ local function UpdateBagStatus()
 	K:GetModule("Bags"):UpdateAllBags()
 end
 
+local function updateBagAnchor()
+	K:GetModule("Bags"):UpdateAllAnchors()
+end
+
 local function UpdateTargetBuffs()
 	local frame = _G.oUF_Target
 	if not frame then
@@ -139,23 +143,23 @@ local function UpdateQuestFontSize()
 	K:GetModule("Miscellaneous"):CreateQuestSizeUpdate()
 end
 
-local function updateCustomUnitList()
+local function UpdateCustomUnitList()
 	K:GetModule("Unitframes"):CreateUnitTable()
 end
 
-local function updatePowerUnitList()
+local function UpdatePowerUnitList()
 	K:GetModule("Unitframes"):CreatePowerUnitTable()
 end
 
-local function updateInterruptAlert()
+local function UpdateInterruptAlert()
 	K:GetModule("Announcements"):CreateInterruptAnnounce()
 end
 
-local function refreshNameplates()
+local function UpdateNameplates()
 	K:GetModule("Unitframes"):RefreshAllPlates()
 end
 
-local function setUnitPlayerSize()
+local function UpdateUnitPlayerSize()
 	local width = C["Unitframe"].PlayerHealthWidth
 	local healthHeight = C["Unitframe"].PlayerHealthHeight
 	local powerHeight = C["Unitframe"].PlayerPowerHeight
@@ -176,7 +180,7 @@ local function setUnitPlayerSize()
 	end
 end
 
-local function setUnitTargetSize()
+local function UpdateUnitTargetSize()
 	local width = C["Unitframe"].TargetHealthWidth
 	local healthHeight = C["Unitframe"].TargetHealthHeight
 	local powerHeight = C["Unitframe"].TargetPowerHeight
@@ -197,7 +201,7 @@ local function setUnitTargetSize()
 	end
 end
 
-local function setUnitFocusSize()
+local function UpdateUnitFocusSize()
 	local width = C["Unitframe"].FocusHealthWidth
 	local healthHeight = C["Unitframe"].FocusHealthHeight
 	local powerHeight = C["Unitframe"].FocusPowerHeight
@@ -218,7 +222,7 @@ local function setUnitFocusSize()
 	end
 end
 
-local function setUnitPartySize()
+local function UpdateUnitPartySize()
 	local width = C["Party"].HealthWidth
 	local healthHeight = C["Party"].HealthHeight
 	local powerHeight = C["Party"].PowerHeight
@@ -240,13 +244,17 @@ local function setUnitPartySize()
 	end
 end
 
-local function setUnitRaidSize()
+local function UpdateUnitRaidSize()
 	local width = C["Raid"].Width
 	local healthHeight = C["Raid"].Height
 	-- local powerHeight = C["Party"].PowerHeight
 	local height = healthHeight
 
 	for i = 1, MAX_RAID_MEMBERS do
+		if InCombatLockdown() then
+			return
+		end
+
 		local bu = _G["oUF_Raid"..i.."UnitButton"..i]
 		if bu then
 			bu:SetSize(width, height)
@@ -280,7 +288,7 @@ local ActionBar = function(self)
 	Window:CreateSlider("ActionBar", "CustomBarNumPerRow", L["Set CustomBar Num PerRow"], 1, 12, 1, nil, UpdateCustomBar)
 
 	Window:CreateSection(L["Sizes"])
-	Window:CreateSlider("ActionBar", "Scale", "Set Actionbars Scale", 0.6, 1.6, 0.1, nil, UpdateActionbarScale)
+	Window:CreateSlider("ActionBar", "Scale", L["Set Actionbars Scale"], 0.6, 1.6, 0.1, nil, UpdateActionbarScale)
 
 	Window:CreateSection(L["Fading"])
 	Window:CreateSwitch("ActionBar", "FadeMicroBar", L["Mouseover MicroBar"])
@@ -304,12 +312,12 @@ local Announcements = function(self)
 	Window:CreateSwitch("Announcements", "HealthAlert", L["Announce When Low On Health"])
 
 	Window:CreateSection(INTERRUPT)
-	Window:CreateSwitch("Announcements", "InterruptAlert", enableTextColor.."Announce Interrupts", nil, updateInterruptAlert)
-	Window:CreateSwitch("Announcements", "DispellAlert", enableTextColor.."Announce Dispells", nil, updateInterruptAlert)
-	Window:CreateSwitch("Announcements", "BrokenAlert", enableTextColor.."Announce Broken Spells", nil, updateInterruptAlert)
-	Window:CreateSwitch("Announcements", "OwnInterrupt", "Own Interrupts Announced Only")
-	Window:CreateSwitch("Announcements", "OwnDispell", "Own Dispells Announced Only")
-	Window:CreateSwitch("Announcements", "InstAlertOnly", "Announce Only In Instances", nil, updateInterruptAlert)
+	Window:CreateSwitch("Announcements", "InterruptAlert", enableTextColor..L["Announce Interrupts"], nil, UpdateInterruptAlert)
+	Window:CreateSwitch("Announcements", "DispellAlert", enableTextColor..L["Announce Dispells"], nil, UpdateInterruptAlert)
+	Window:CreateSwitch("Announcements", "BrokenAlert", enableTextColor..L["Announce Broken Spells"], nil, UpdateInterruptAlert)
+	Window:CreateSwitch("Announcements", "OwnInterrupt", L["Own Interrupts Announced Only"])
+	Window:CreateSwitch("Announcements", "OwnDispell", L["Own Dispells Announced Only"])
+	Window:CreateSwitch("Announcements", "InstAlertOnly", L["Announce Only In Instances"], nil, UpdateInterruptAlert)
 	Window:CreateDropdown("Announcements", "AlertChannel", L["Announce Interrupts To Specified Chat Channel"])
 
 	Window:CreateSection(L["QuestNotifier"])
@@ -359,13 +367,15 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "BagBarMouseover", L["Fade Bagbar"])
 	Window:CreateSwitch("Inventory", "BagsItemLevel", L["Display Item Level"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "DeleteButton", L["Bags Delete Button"])
-	Window:CreateSwitch("Inventory", "PetTrash", "Pet Trash Currencies", "In patch 9.1, you can buy 3 battle pets by using specific trash items. Keep this enabled, will sort these items into Collection Filter, and won't be sold by auto junk")
+	Window:CreateSwitch("Inventory", "MutliRows", L["Anchor Every Five Rows Into One Row"], nil, updateBagAnchor)
+	Window:CreateSwitch("Inventory", "PetTrash", L["Pet Trash Currencies"], "In patch 9.1, you can buy 3 battle pets by using specific trash items. Keep this enabled, will sort these items into Collection Filter, and won't be sold by auto junk")
 	Window:CreateSwitch("Inventory", "ReverseSort", L["Umm Reverse The Sorting"], nil, UpdateBagSortOrder)
 	Window:CreateSwitch("Inventory", "ShowNewItem", L["Show New Item Glow"])
 	Window:CreateSwitch("Inventory", "UpgradeIcon", L["Show Upgrade Icon"])
 	Window:CreateDropdown("Inventory", "AutoRepair", L["Auto Repair Gear"])
 
 	Window:CreateSection(FILTERS)
+	Window:CreateSwitch("Inventory", "ItemFilter", L["Filter Items Into Categories"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterAnima", L["Filter Anima Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterAzerite", "Filter Azerite Items", nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterCollection", L["Filter Collection Items"], nil, UpdateBagStatus)
@@ -377,8 +387,8 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "FilterJunk", L["Filter Junk Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterLegendary", L["Filter Legendary Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterQuest", L["Filter Quest Items"], nil, UpdateBagStatus)
+	Window:CreateSwitch("Inventory", "FilterRelic", L["Filter Korthia Relic Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "GatherEmpty", L["Gather Empty Slots Into One Button"], nil, UpdateBagStatus)
-	Window:CreateSwitch("Inventory", "ItemFilter", L["Filter Items Into Categories"], nil, UpdateBagStatus)
 
 	Window:CreateSection(L["Sizes"])
 	Window:CreateSlider("Inventory", "BagsWidth", L["Bags Width"], 8, 16, 1)
@@ -427,12 +437,12 @@ local Chat = function(self)
 	Window:CreateSwitch("Chat", "Background", L["Show Chat Background"], nil, ToggleChatBackground)
 	Window:CreateSwitch("Chat", "ChatItemLevel", L["Show ItemLevel on ChatFrames"])
 	Window:CreateSwitch("Chat", "ChatMenu", L["Show Chat Menu Buttons"])
-	Window:CreateSwitch("Chat", "Emojis", "Show Emojis In Chat"..emojiExample)
+	Window:CreateSwitch("Chat", "Emojis", L["Show Emojis In Chat"]..emojiExample)
 	Window:CreateSwitch("Chat", "Freedom", L["Disable Chat Language Filter"])
 	Window:CreateSwitch("Chat", "Lock", L["Lock Chat"])
 	Window:CreateSwitch("Chat", "LootIcons", L["Show Chat Loot Icons"])
 	Window:CreateSwitch("Chat", "OldChatNames", L["Use Default Channel Names"])
-	Window:CreateSwitch("Chat", "RoleIcons", "Show Role Icons In Chat")
+	Window:CreateSwitch("Chat", "RoleIcons", L["Show Role Icons In Chat"])
 	Window:CreateSwitch("Chat", "Sticky", L["Stick On Channel If Whispering"], nil, UpdateChatSticky)
 	Window:CreateSwitch("Chat", "WhisperColor", L["Differ Whipser Colors"])
 	Window:CreateDropdown("Chat", "TimestampFormat", L["Custom Chat Timestamps"])
@@ -440,7 +450,7 @@ local Chat = function(self)
 	Window:CreateSection(L["Sizes"])
 	Window:CreateSlider("Chat", "Height", L["Lock Chat Height"], 100, 500, 1, nil, UpdateChatSize)
 	Window:CreateSlider("Chat", "Width", L["Lock Chat Width"], 200, 600, 1, nil, UpdateChatSize)
-	Window:CreateSlider("Chat", "LogMax", "Chat History Lines To Save", 10, 500, 10)
+	Window:CreateSlider("Chat", "LogMax", L["Chat History Lines To Save"], 10, 500, 10)
 
 	Window:CreateSection(L["Fading"])
 	Window:CreateSwitch("Chat", "Fading", L["Fade Chat Text"])
@@ -448,7 +458,7 @@ local Chat = function(self)
 
 	Window:CreateSection(FILTERS)
 	Window:CreateSwitch("Chat", "EnableFilter", enableTextColor..L["Enable Chat Filter"])
-	Window:CreateSwitch("Chat", "BlockSpammer", "Block Repeated Spammer Messages")
+	Window:CreateSwitch("Chat", "BlockSpammer", L["Block Repeated Spammer Messages"])
 	Window:CreateSwitch("Chat", "BlockAddonAlert", L["Block 'Some' AddOn Alerts"])
 	Window:CreateSwitch("Chat", "BlockStranger", L["Block Whispers From Strangers"])
 	Window:CreateSlider("Chat", "FilterMatches", L["Filter Matches Number"], 1, 3, 1)
@@ -487,11 +497,11 @@ local DataText = function(self)
 	Window:CreateSwitch("DataText", "Location", L["Enable Minimap Location"])
 	Window:CreateSwitch("DataText", "System", L["Enable System Info"])
 	Window:CreateSwitch("DataText", "Time", L["Enable Minimap Time"])
-	Window:CreateSwitch("DataText", "Coords", "Enable Positon Coords")
-	Window:CreateColorSelection("DataText", "IconColor", "Color The Icons") -- Needs Locale
+	Window:CreateSwitch("DataText", "Coords", L["Enable Positon Coords"])
+	Window:CreateColorSelection("DataText", "IconColor", L["Color The Icons"]) -- Needs Locale
 
 	Window:CreateSection(L["Text"])
-	Window:CreateSwitch("DataText", "HideText", "Hide 'Friends, Guild and Gold' Icon Text")
+	Window:CreateSwitch("DataText", "HideText", L["Hide Icon Text"])
 end
 
 local General = function(self)
@@ -537,7 +547,7 @@ local Minimap = function(self)
 	Window:CreateSwitch("Minimap", "Enable", enableTextColor..L["Enable Minimap"])
 	Window:CreateSwitch("Minimap", "Calendar", L["Show Minimap Calendar"], "If enabled, show minimap calendar icon on minimap.|nYou can simply click mouse middle button on minimap to toggle calendar even without this option.")
 	Window:CreateSwitch("Minimap", "ShowRecycleBin", L["Show Minimap Button Collector"])
-	Window:CreateDropdown("Minimap", "RecycleBinPosition", "Set RecycleBin Positon")
+	Window:CreateDropdown("Minimap", "RecycleBinPosition", L["Set RecycleBin Positon"])
 	Window:CreateDropdown("Minimap", "BlipTexture", L["Blip Icon Styles"], nil, nil, UpdateBlipTextures)
 	Window:CreateDropdown("Minimap", "LocationText", L["Location Text Style"])
 
@@ -558,7 +568,7 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "HideBossEmote", L["Hide BossBanner"])
 	Window:CreateSwitch("Misc", "ImprovedStats", L["Display Character Frame Full Stats"])
 	Window:CreateSwitch("Misc", "ItemLevel", L["Show Character/Inspect ItemLevel Info"])
-	Window:CreateSwitch("Misc", "MDGuildBest", "Show Mythic+ GuildBest")
+	Window:CreateSwitch("Misc", "MDGuildBest", L["Show Mythic+ GuildBest"])
 	Window:CreateSwitch("Misc", "MawThreatBar", L["Replace Default Maw Threat Status"])
 	Window:CreateSwitch("Misc", "NoTalkingHead", L["Remove And Hide The TalkingHead Frame"])
 	Window:CreateSwitch("Misc", "PriorityStats", newFeatureIcon.."Show Stat Priority Above Character Frame")
@@ -598,7 +608,7 @@ local Nameplate = function(self)
 	Window:CreateSwitch("Nameplate", "DPSRevertThreat", L["Revert Threat Color If Not Tank"])
 	Window:CreateSwitch("Nameplate", "ExplosivesScale", L["Scale Nameplates for Explosives"])
 	Window:CreateSwitch("Nameplate", "FriendlyCC", L["Show Friendly ClassColor"])
-	Window:CreateSwitch("Nameplate", "FullHealth", L["Show Health Value"], nil, refreshNameplates)
+	Window:CreateSwitch("Nameplate", "FullHealth", L["Show Health Value"], nil, UpdateNameplates)
 	Window:CreateSwitch("Nameplate", "HostileCC", L["Show Hostile ClassColor"])
 	Window:CreateSwitch("Nameplate", "InsideView", L["Interacted Nameplate Stay Inside"])
 	Window:CreateSwitch("Nameplate", "NameOnly", L["Show Only Names For Friendly"])
@@ -606,23 +616,23 @@ local Nameplate = function(self)
 	Window:CreateSwitch("Nameplate", "QuestIndicator", L["Quest Progress Indicator"])
 	Window:CreateSwitch("Nameplate", "Smooth", L["Smooth Bars Transition"])
 	Window:CreateSwitch("Nameplate", "TankMode", L["Force TankMode Colored"])
-	Window:CreateDropdown("Nameplate", "AuraFilter", L["Auras Filter Style"], nil, nil, refreshNameplates)
-	Window:CreateDropdown("Nameplate", "TargetIndicator", L["TargetIndicator Style"], nil, nil, refreshNameplates)
+	Window:CreateDropdown("Nameplate", "AuraFilter", L["Auras Filter Style"], nil, nil, UpdateNameplates)
+	Window:CreateDropdown("Nameplate", "TargetIndicator", L["TargetIndicator Style"], nil, nil, UpdateNameplates)
 	Window:CreateDropdown("Nameplate", "TargetIndicatorTexture", "TargetIndicator Texture") -- Needs Locale
-	Window:CreateEditBox("Nameplate", "CustomUnitList", L["Custom UnitColor List"], L["CustomUnitTip"], updateCustomUnitList)
-	Window:CreateEditBox("Nameplate", "PowerUnitList", L["Custom PowerUnit List"], L["CustomUnitTip"], updatePowerUnitList)
+	Window:CreateEditBox("Nameplate", "CustomUnitList", L["Custom UnitColor List"], L["CustomUnitTip"], UpdateCustomUnitList)
+	Window:CreateEditBox("Nameplate", "PowerUnitList", L["Custom PowerUnit List"], L["CustomUnitTip"], UpdatePowerUnitList)
 
 	Window:CreateSection(L["Sizes"])
-	Window:CreateSlider("Nameplate", "AuraSize", L["Auras Size"], 18, 40, 1, nil, refreshNameplates)
+	Window:CreateSlider("Nameplate", "AuraSize", L["Auras Size"], 18, 40, 1, nil, UpdateNameplates)
 	Window:CreateSlider("Nameplate", "Distance", L["Nameplete MaxDistance"], 10, 100, 1)
 	Window:CreateSlider("Nameplate", "ExecuteRatio", L["Unit Execute Ratio"], 0, 90, 1, L["ExecuteRatioTip"])
-	Window:CreateSlider("Nameplate", "HealthTextSize", L["HealthText FontSize"], 8, 16, 1, nil, refreshNameplates)
-	Window:CreateSlider("Nameplate", "MaxAuras", L["Max Auras"], 4, 8, 1, nil, refreshNameplates)
+	Window:CreateSlider("Nameplate", "HealthTextSize", L["HealthText FontSize"], 8, 16, 1, nil, UpdateNameplates)
+	Window:CreateSlider("Nameplate", "MaxAuras", L["Max Auras"], 4, 8, 1, nil, UpdateNameplates)
 	Window:CreateSlider("Nameplate", "MinAlpha", L["Non-Target Nameplate Alpha"], 0.1, 1, 0.1)
 	Window:CreateSlider("Nameplate", "MinScale", L["Non-Target Nameplate Scale"], 0.1, 3, 0.1)
-	Window:CreateSlider("Nameplate", "NameTextSize", L["NameText FontSize"], 8, 16, 1, nil, refreshNameplates)
-	Window:CreateSlider("Nameplate", "PlateHeight", L["Nameplate Height"], 6, 28, 1, nil, refreshNameplates)
-	Window:CreateSlider("Nameplate", "PlateWidth", L["Nameplate Width"], 80, 240, 1, nil, refreshNameplates)
+	Window:CreateSlider("Nameplate", "NameTextSize", L["NameText FontSize"], 8, 16, 1, nil, UpdateNameplates)
+	Window:CreateSlider("Nameplate", "PlateHeight", L["Nameplate Height"], 6, 28, 1, nil, UpdateNameplates)
+	Window:CreateSlider("Nameplate", "PlateWidth", L["Nameplate Width"], 80, 240, 1, nil, UpdateNameplates)
 	Window:CreateSlider("Nameplate", "VerticalSpacing", L["Nameplate Vertical Spacing"], 0.1, 1, 1)
 
 	Window:CreateSection("Player Nameplate Toggles")
@@ -634,9 +644,9 @@ local Nameplate = function(self)
 	Window:CreateSwitch("Nameplate", "PPPowerText", L["Show Power Value"])
 
 	Window:CreateSection("Player Nameplate Values")
-	Window:CreateSlider("Nameplate", "PPHeight", L["Classpower/Healthbar Height"], 4, 10, 1, nil, refreshNameplates)
+	Window:CreateSlider("Nameplate", "PPHeight", L["Classpower/Healthbar Height"], 4, 10, 1, nil, UpdateNameplates)
 	Window:CreateSlider("Nameplate", "PPIconSize", L["PlayerPlate IconSize"], 20, 40, 1)
-	Window:CreateSlider("Nameplate", "PPPHeight", L["PlayerPlate Powerbar Height"], 4, 10, 1, nil, refreshNameplates)
+	Window:CreateSlider("Nameplate", "PPPHeight", L["PlayerPlate Powerbar Height"], 4, 10, 1, nil, UpdateNameplates)
 
 	Window:CreateSection(COLORS)
 	Window:CreateColorSelection("Nameplate", "CustomColor", L["Custom Color"])
@@ -711,6 +721,28 @@ local Tooltip = function(self)
 	Window:CreateSwitch("Tooltip", "ShowIDs", L["Show Tooltip IDs"])
 	Window:CreateSwitch("Tooltip", "SpecLevelByShift", L["Show Spec/ItemLevel by SHIFT"])
 	Window:CreateSwitch("Tooltip", "TargetBy", L["Show Player Targeted By"])
+
+	Window:CreateSection("Raid Progression")
+	Window:CreateSwitch("Tooltip", "Raids", enableTextColor.."Enable Raid Progression")
+	Window:CreateSwitch("Tooltip", "Castle Nathria", "Castle Nathria")
+	Window:CreateSwitch("Tooltip", "Sanctum of Domination", "Sanctum of Domination")
+
+	Window:CreateSection("Mythic Progression")
+	Window:CreateSwitch("Tooltip", "Mythics", enableTextColor.."Enable Mythics Progression")
+	Window:CreateSwitch("Tooltip", "De Other Side", "De Other Side")
+	Window:CreateSwitch("Tooltip", "Halls of Atonement", "Halls of Atonement")
+	Window:CreateSwitch("Tooltip", "Mists of Tirna Scithe", "Mists of Tirna Scithe")
+	Window:CreateSwitch("Tooltip", "Plaguefall", "Plaguefall Progression")
+	Window:CreateSwitch("Tooltip", "Sanguine Depths", "Sanguine Depths")
+	Window:CreateSwitch("Tooltip", "Spires of Ascension", "Spires of Ascension")
+	Window:CreateSwitch("Tooltip", "Tazavesh, the Veiled Market", "Tazavesh, the Veiled Market")
+	Window:CreateSwitch("Tooltip", "The Necrotic Wake", "The Necrotic Wake")
+	Window:CreateSwitch("Tooltip", "Theater of Pain", "Theater of Pain")
+
+	Window:CreateSection("Special Progression")
+	Window:CreateSwitch("Tooltip", "Special", enableTextColor.."Enable Special Progression")
+	Window:CreateSwitch("Tooltip", "Shadowlands Keystone Master: Season One", "Keystone Master: Season One")
+	Window:CreateSwitch("Tooltip", "Shadowlands Keystone Master: Season Two", "Keystone Master: Season Two")
 end
 
 local UIFonts = function(self)
@@ -796,9 +828,9 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "ShowPlayerName", L["Show Player Frame Name"])
 	Window:CreateSwitch("Unitframe", "Swingbar", L["Unitframe Swingbar"])
 	Window:CreateSwitch("Unitframe", "SwingbarTimer", L["Unitframe Swingbar Timer"])
-	Window:CreateSlider("Unitframe", "PlayerPowerHeight", "Player Power Bar Height", 10, 40, 1, nil, setUnitPlayerSize)
-	Window:CreateSlider("Unitframe", "PlayerHealthHeight", L["Player Frame Height"], 20, 75, 1, nil, setUnitPlayerSize)
-	Window:CreateSlider("Unitframe", "PlayerHealthWidth", L["Player Frame Width"], 100, 300, 1, nil, setUnitPlayerSize)
+	Window:CreateSlider("Unitframe", "PlayerPowerHeight", "Player Power Bar Height", 10, 40, 1, nil, UpdateUnitPlayerSize)
+	Window:CreateSlider("Unitframe", "PlayerHealthHeight", L["Player Frame Height"], 20, 75, 1, nil, UpdateUnitPlayerSize)
+	Window:CreateSlider("Unitframe", "PlayerHealthWidth", L["Player Frame Width"], 100, 300, 1, nil, UpdateUnitPlayerSize)
 	Window:CreateSlider("Unitframe", "PlayerCastbarHeight", L["Player Castbar Height"], 20, 40, 1)
 	Window:CreateSlider("Unitframe", "PlayerCastbarWidth", L["Player Castbar Width"], 100, 300, 1)
 
@@ -810,9 +842,9 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "TargetDebuffs", L["Show Target Frame Debuffs"])
 	Window:CreateSlider("Unitframe", "TargetBuffsPerRow", L["Number of Buffs Per Row"], 4, 10, 1, nil, UpdateTargetBuffs)
 	Window:CreateSlider("Unitframe", "TargetDebuffsPerRow", L["Number of Debuffs Per Row"], 4, 10, 1, nil, UpdateTargetDebuffs)
-	Window:CreateSlider("Unitframe", "TargetPowerHeight", "Target Power Bar Height", 10, 40, 1, nil, setUnitTargetSize)
-	Window:CreateSlider("Unitframe", "TargetHealthHeight", L["Target Frame Height"], 20, 75, 1, nil, setUnitTargetSize)
-	Window:CreateSlider("Unitframe", "TargetHealthWidth", L["Target Frame Width"], 100, 300, 1, nil, setUnitTargetSize)
+	Window:CreateSlider("Unitframe", "TargetPowerHeight", "Target Power Bar Height", 10, 40, 1, nil, UpdateUnitTargetSize)
+	Window:CreateSlider("Unitframe", "TargetHealthHeight", L["Target Frame Height"], 20, 75, 1, nil, UpdateUnitTargetSize)
+	Window:CreateSlider("Unitframe", "TargetHealthWidth", L["Target Frame Width"], 100, 300, 1, nil, UpdateUnitTargetSize)
 	Window:CreateSlider("Unitframe", "TargetCastbarHeight", L["Target Castbar Height"], 20, 40, 1)
 	Window:CreateSlider("Unitframe", "TargetCastbarWidth", L["Target Castbar Width"], 100, 300, 1)
 
@@ -832,9 +864,9 @@ local Unitframe = function(self)
 	Window:CreateSlider("Unitframe", "TargetTargetPowerHeight", L["Target of Target Frame Height"], 10, 50, 1)
 
 	Window:CreateSection(FOCUS)
-	Window:CreateSlider("Unitframe", "FocusPowerHeight", "Focus Power Bar Height", 10, 40, 1, nil, setUnitFocusSize)
-	Window:CreateSlider("Unitframe", "FocusHealthHeight", L["Focus Frame Height"], 20, 75, 1, nil, setUnitFocusSize)
-	Window:CreateSlider("Unitframe", "FocusHealthWidth", L["Focus Frame Width"], 100, 300, 1, nil, setUnitFocusSize)
+	Window:CreateSlider("Unitframe", "FocusPowerHeight", "Focus Power Bar Height", 10, 40, 1, nil, UpdateUnitFocusSize)
+	Window:CreateSlider("Unitframe", "FocusHealthHeight", L["Focus Frame Height"], 20, 75, 1, nil, UpdateUnitFocusSize)
+	Window:CreateSlider("Unitframe", "FocusHealthWidth", L["Focus Frame Width"], 100, 300, 1, nil, UpdateUnitFocusSize)
 	Window:CreateSwitch("Unitframe", "FocusBuffs", L["Show Target Frame Buffs"])
 	Window:CreateSwitch("Unitframe", "FocusCastbar", L["Enable Target CastBar"])
 	Window:CreateSwitch("Unitframe", "FocusCastbarIcon", L["Enable Target CastBar"].." Icon")
@@ -868,9 +900,9 @@ local Party = function(self)
 	Window:CreateSwitch("Party", "CastbarIcon", L["Show Castbars"].." Icon")
 
 	Window:CreateSection(L["Sizes"])
-	Window:CreateSlider("Party", "HealthHeight", "Party Frame Health Height", 20, 50, 1, nil, setUnitPartySize)
-	Window:CreateSlider("Party", "HealthWidth", "Party Frame Health Width", 120, 180, 1, nil, setUnitPartySize)
-	Window:CreateSlider("Party", "PowerHeight", "Party Frame Power Height", 10, 30, 1, nil, setUnitPartySize)
+	Window:CreateSlider("Party", "HealthHeight", "Party Frame Health Height", 20, 50, 1, nil, UpdateUnitPartySize)
+	Window:CreateSlider("Party", "HealthWidth", "Party Frame Health Width", 120, 180, 1, nil, UpdateUnitPartySize)
+	Window:CreateSlider("Party", "PowerHeight", "Party Frame Power Height", 10, 30, 1, nil, UpdateUnitPartySize)
 
 	Window:CreateSection(COLOR)
 	Window:CreateDropdown("Party", "HealthbarColor", L["Health Color Format"])
@@ -882,6 +914,7 @@ local Boss = function(self)
 	Window:CreateSection(L["Toggles"])
 	Window:CreateSwitch("Boss", "Enable", enableTextColor..L["Enable Boss"], "Toggle Boss Module On/Off")
 	Window:CreateSwitch("Boss", "Castbars", L["Show Castbars"])
+	Window:CreateSwitch("Boss", "CastbarIcon", "Show Castbars Icon")
 	Window:CreateSwitch("Boss", "Smooth", L["Smooth Bar Transition"])
 
 	Window:CreateSection(L["Sizes"])
@@ -898,9 +931,16 @@ local Arena = function(self)
 	local Window = self:CreateWindow(L["Arena"])
 
 	Window:CreateSection(L["Toggles"])
-	Window:CreateSwitch("Arena", "Enable", enableTextColor..L["Enable Arena"])
+	Window:CreateSwitch("Arena", "Enable", enableTextColor..L["Enable Arena"], "Toggle Arena Module On/Off")
 	Window:CreateSwitch("Arena", "Castbars", L["Show Castbars"])
+	Window:CreateSwitch("Arena", "CastbarIcon", "Show Castbars Icon")
 	Window:CreateSwitch("Arena", "Smooth", L["Smooth Bar Transition"])
+
+	Window:CreateSection(L["Sizes"])
+	Window:CreateSlider("Arena", "HealthHeight", "Health Height", 20, 50, 1)
+	Window:CreateSlider("Arena", "HealthWidth", "Health Width", 120, 180, 1)
+	Window:CreateSlider("Arena", "PowerHeight", "Power Height", 10, 30, 1)
+	Window:CreateSlider("Arena", "YOffset", "Vertical Offset From One Another"..K.GreyColor.."(54)|r", 40, 60, 1)
 
 	Window:CreateSection(COLOR)
 	Window:CreateDropdown("Arena", "HealthbarColor", L["Health Color Format"])
@@ -925,9 +965,9 @@ local Raid = function(self)
 	Window:CreateSwitch("Raid", "TargetHighlight", L["Show Highlighted Target"])
 
 	Window:CreateSection(L["Sizes"])
-	Window:CreateSlider("Raid", "Height", L["Raidframe Height"], 20, 100, 1, nil, setUnitRaidSize)
+	Window:CreateSlider("Raid", "Height", L["Raidframe Height"], 20, 100, 1, nil, UpdateUnitRaidSize)
 	Window:CreateSlider("Raid", "NumGroups", L["Number Of Groups to Show"], 1, 8, 1)
-	Window:CreateSlider("Raid", "Width", L["Raidframe Width"], 20, 100, 1, nil, setUnitRaidSize)
+	Window:CreateSlider("Raid", "Width", L["Raidframe Width"], 20, 100, 1, nil, UpdateUnitRaidSize)
 
 	Window:CreateSection(COLOR)
 	Window:CreateDropdown("Raid", "HealthbarColor", L["Health Color Format"])

@@ -225,25 +225,33 @@ function Module:CreateRaid()
 
 	if C["Raid"].RaidBuffsStyle.Value == "Aura Track" then
 		self.AuraTrack = self.AuraTrack or CreateFrame("Frame", nil, self.Health)
-		self.AuraTrack:SetPoint("TOPLEFT", self.Health ,"TOPLEFT", -4, -6)
-		self.AuraTrack:SetPoint("BOTTOMRIGHT", self.Health ,"BOTTOMRIGHT", 4, 6)
 		self.AuraTrack.Texture = RaidframeTexture
 		self.AuraTrack.Icons = C["Raid"].AuraTrackIcons
 		self.AuraTrack.SpellTextures = C["Raid"].AuraTrackSpellTextures
 		self.AuraTrack.Thickness = C["Raid"].AuraTrackThickness
 		self.AuraTrack.Font = C["Media"].Fonts.KkthnxUIFont
+
+		self.AuraTrack:ClearAllPoints()
+		if self.AuraTrack.Icons ~= true then
+			self.AuraTrack:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 2, -2)
+			self.AuraTrack:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -2, 2)
+		else
+			self.AuraTrack:SetPoint("TOPLEFT", self.Health, "TOPLEFT", -4, -6)
+			self.AuraTrack:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 4, 6)
+		end
 	elseif C["Raid"].RaidBuffsStyle.Value == "Standard" then
 		local filter = C["Raid"].RaidBuffs.Value == "All" and "HELPFUL" or "HELPFUL|RAID"
 		local onlyShowPlayer = C["Raid"].RaidBuffs.Value == "Self"
 
 		self.Buffs = self.Buffs or CreateFrame("Frame", self:GetName().."Buffs", self.Health)
-		self.Buffs:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 0, 0)
+		self.Buffs:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 2, -2)
+		self.Buffs:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -2, 2)
 		self.Buffs:SetHeight(16)
 		self.Buffs:SetWidth(79)
 		self.Buffs.size = 16
 		self.Buffs.num = 5
 		self.Buffs.numRow = 1
-		self.Buffs.spacing = 0
+		self.Buffs.spacing = 6
 		self.Buffs.initialAnchor = "TOPLEFT"
 		self.Buffs.disableCooldown = true
 		self.Buffs.disableMouse = true

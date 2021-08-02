@@ -80,8 +80,8 @@ local function GetSectionInfo(id)
 end
 
 C.NameplateCustomUnits = {
-	[179823] = true,	-- 圣物收集者
-	[180501] = true,	-- 无辜的灵魂，低语威能碎片
+	[179823] = true,	-- 圣物收集者，刻希亚
+	[179565] = true,	-- 圣物饕餮者，刻希亚
 	-- Nzoth vision
 	[153401] = true, 	-- 克熙尔支配者
 	[157610] = true, 	-- 克熙尔支配者

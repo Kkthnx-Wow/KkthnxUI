@@ -110,7 +110,7 @@ local UpdateIcon = function(self, _, spellID, texture, id, expiration, duration,
 
 		AuraTrack.Auras[id].Texture = AuraTrack.Auras[id]:CreateTexture(nil, "ARTWORK")
 		AuraTrack.Auras[id].Texture:SetAllPoints()
-		AuraTrack.Auras[id].Texture:SetTexCoord(.1, .9, .1, .9)
+		AuraTrack.Auras[id].Texture:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 
 		AuraTrack.Auras[id].Cooldown = CreateFrame("Cooldown", nil, AuraTrack.Auras[id], "CooldownFrameTemplate")
 		AuraTrack.Auras[id].Cooldown:SetAllPoints()

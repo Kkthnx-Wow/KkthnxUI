@@ -128,6 +128,7 @@ local function OnEvent(_, event, arg1)
 
 	oldMoney = newMoney
 end
+K.GoldButton_OnEvent = OnEvent
 
 local function OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_NONE")
@@ -225,7 +226,7 @@ end
 K.GoldButton_OnLeave = OnLeave
 
 function Module:CreateGoldDataText()
-	GoldDataText = GoldDataText or CreateFrame("Button", nil, UIParent)
+	GoldDataText = GoldDataText or CreateFrame("Button", "KKUI_GoldDataText", UIParent)
 	if C["DataText"].Gold then
 		GoldDataText:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
 		GoldDataText:SetSize(24, 24)

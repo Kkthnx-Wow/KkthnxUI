@@ -102,8 +102,8 @@ C["Inventory"] = {
 	["BagBar"] = true,
 	["BagBarMouseover"] = false,
 	["BagsItemLevel"] = false,
-	["BagsWidth"] = 12,
-	["BankWidth"] = 14,
+	["BagsWidth"] = 10,
+	["BankWidth"] = 12,
 	["DeleteButton"] = true,
 	["Enable"] = true,
 	["FilterAnima"] = true,
@@ -117,9 +117,11 @@ C["Inventory"] = {
 	["FilterJunk"] = true,
 	["FilterLegendary"] = true,
 	["FilterQuest"] = true,
+	["FilterRelic"] = false,
 	["GatherEmpty"] = false,
 	["IconSize"] = 34,
 	["ItemFilter"] = true,
+	["MutliRows"] = true,
 	["PetTrash"] = true,
 	["ReverseSort"] = false,
 	["ShowNewItem"] = true,
@@ -197,7 +199,7 @@ C["DataBars"] = {
 	["MouseOver"] = false,
 	["RestedColor"] = {1, 0, 1, 0.2},
 	["TrackHonor"] = false,
-	["Width"] = 180,
+	["Width"] = 190,
 	["Text"] = {
 		["Options"] = {
 			["NONE"] = 0,
@@ -287,11 +289,12 @@ C["Loot"] = {
 }
 
 -- Minimap
+local BlipMedia = "Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\"
 C["Minimap"] = {
 	["Calendar"] = true,
 	["Enable"] = true,
 	["ShowRecycleBin"] = true,
-	["Size"] = 180,
+	["Size"] = 190,
 	["RecycleBinPosition"] = {
 		["Options"] = {
 			["BottomLeft"] = 1,
@@ -311,9 +314,15 @@ C["Minimap"] = {
 	},
 	["BlipTexture"] = {
 		["Options"] = {
-			["Blizzard"] = "Interface\\MiniMap\\ObjectIconsAtlas",
-			["Charmed"] = "Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\Blip-Charmed",
-			["Nandini"] = "Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\Blip-Nandini-New",
+			["Default"] = "Interface\\MiniMap\\ObjectIconsAtlas",
+			["Blank"] =  BlipMedia.."Blip-Blank",
+			["Blizzard Big R"] =  BlipMedia.."Blip-BlizzardBigR",
+			["Blizzard Big"] = BlipMedia.."Blip-BlizzardBig",
+			["Charmed"] =  BlipMedia.."Blip-Charmed",
+			["Glass Spheres"] =  BlipMedia.."Blip-GlassSpheres",
+			["Nandini New"] =  BlipMedia.."Blip-Nandini-New",
+			["Nandini"] =  BlipMedia.."Blip-Nandini",
+			["SolidSpheres"] =  BlipMedia.."Blip-SolidSpheres",
 		},
 		["Value"] = "Interface\\MiniMap\\ObjectIconsAtlas"
 	},
@@ -512,6 +521,26 @@ C["Tooltip"] = {
 	["ShowIDs"] = false,
 	["SpecLevelByShift"] = true,
 	["TargetBy"] = true,
+
+	-- Testing
+	["Raids"] = true,
+	["Castle Nathria"] = true,
+	["Sanctum of Domination"] = true,
+
+	["Special"] = false,
+	["Shadowlands Keystone Master: Season One"] = false,
+	["Shadowlands Keystone Master: Season Two"] = true,
+
+	["Mythics"] = false,
+	["The Necrotic Wake"] = true,
+	["Plaguefall"] = true,
+	["Mists of Tirna Scithe"] = true,
+	["Halls of Atonement"] = true,
+	["Theater of Pain"] = true,
+	["De Other Side"] = true,
+	["Spires of Ascension"] = true,
+	["Sanguine Depths"] = true,
+	["Tazavesh, the Veiled Market"] = true
 }
 
 -- Fonts
@@ -566,9 +595,6 @@ C["Unitframe"] = {
 	["GlobalCooldown"] = true,
 	["HidePetLevel"] = true,
 	["HidePetName"] = true,
-	["HideTargetOfTargetLevel"] = false,
-	["HideTargetOfTargetName"] = false,
-	["HideTargetofTarget"] = false,
 	["HotsDots"] = true,
 	["OnlyShowPlayerDebuff"] = false,
 
@@ -576,7 +602,7 @@ C["Unitframe"] = {
 	["PlayerBuffs"] = false,
 	["PlayerCastbar"] = true,
 	["PlayerCastbarIcon"] = true,
-	["PlayerCastbarHeight"] = 24,
+	["PlayerCastbarHeight"] = 26,
 	["PlayerCastbarWidth"] = 260,
 	["PlayerDeBuffs"] = false,
 	["PlayerHealthHeight"] = 32,
@@ -622,6 +648,9 @@ C["Unitframe"] = {
 	["TargetTargetHealthHeight"] = 16,
 	["TargetTargetHealthWidth"] = 90,
 	["TargetTargetPowerHeight"] = 8,
+	["HideTargetOfTargetLevel"] = false,
+	["HideTargetOfTargetName"] = false,
+	["HideTargetofTarget"] = false,
 
 	-- Pet
 	["PetHealthHeight"] = 16,
@@ -702,13 +731,11 @@ C["Arena"] = {
 	["CastbarIcon"] = true,
 	["Castbars"] = true,
 	["Enable"] = true,
-	["Height"] = 34,
-	["Power"] = true,
 	["Smooth"] = false,
-	["Width"] = 174,
-	["ArenaHealthHeight"] = 20,
-	["ArenaHealthWidth"] = 174,
-	["ArenaPowerHeight"] = 10,
+	["HealthHeight"] =  20,
+	["HealthWidth"] = 134,
+	["PowerHeight"] = 10,
+	["YOffset"] = 54,
 	["HealthbarColor"] = {
 		["Options"] = {
 			["Dark"] = "Dark",

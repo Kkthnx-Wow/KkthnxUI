@@ -56,6 +56,18 @@ local collectionIDs = {
 	[LE_ITEM_MISCELLANEOUS_COMPANION_PET] = LE_ITEM_CLASS_MISCELLANEOUS,
 }
 
+local relicSpellIDs = {
+	[356931] = true,
+	[356933] = true,
+	[356934] = true,
+	[356935] = true,
+	[356936] = true,
+	[356937] = true,
+	[356938] = true,
+	[356939] = true,
+	[356940] = true,
+}
+
 local function isCustomFilter(item)
 	if not C["Inventory"].ItemFilter then
 		return
@@ -238,6 +250,23 @@ local function isAnimaItem(item)
 	return C_Item.IsAnimaItemByID(item.link)
 end
 
+local function isKorthiaRelicByID(itemID)
+	local _, spellID = GetItemSpell(itemID)
+	return spellID and relicSpellIDs[spellID]
+end
+
+local function isKorthiaRelic(item)
+	if not C["Inventory"].ItemFilter then
+		return
+	end
+
+	if not C["Inventory"].FilterRelic then
+		return
+	end
+
+	return item.id and isKorthiaRelicByID(item.id)
+end
+
 function Module:GetFilters()
 	local filters = {}
 
@@ -331,6 +360,14 @@ function Module:GetFilters()
 
 	filters.bagAnima = function(item)
 		return isItemInBag(item) and isAnimaItem(item)
+	end
+
+	filters.bankAnima = function(item)
+		return isItemInBank(item) and isAnimaItem(item)
+	end
+
+	filters.bagRelic = function(item)
+		return isItemInBag(item) and isKorthiaRelic(item)
 	end
 
 	return filters

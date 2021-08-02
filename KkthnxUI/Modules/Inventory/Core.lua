@@ -58,58 +58,109 @@ function Module:ReverseSort()
 	Module:UpdateAllBags()
 end
 
+local anchorCache = {}
 function Module:UpdateAnchors(parent, bags)
 	if not parent:IsShown() then
 		return
 	end
 
-	local anchor = parent
+	wipe(anchorCache)
+
+	local index = 1
+	anchorCache[index] = parent
+
 	for _, bag in ipairs(bags) do
 		if bag:GetHeight() > 45 then
 			bag:Show()
+			index = index + 1
+
+			bag:ClearAllPoints()
+			if (index - 1) % 5 == 0 and C["Inventory"].MutliRows then
+				bag:SetPoint("BOTTOMRIGHT", anchorCache[index - 5], "BOTTOMLEFT", -6, 0)
+			else
+				bag:SetPoint("BOTTOMLEFT", anchorCache[index - 1], "TOPLEFT", 0, 6)
+			end
+			anchorCache[index] = bag
 		else
 			bag:Hide()
-		end
-
-		if bag:IsShown() then
-			bag:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 6)
-			anchor = bag
 		end
 	end
 end
 
 local function highlightFunction(button, match)
-	button:SetAlpha(match and 1 or 0.25)
+	button.searchOverlay:SetShown(not match)
+end
+
+local function IsItemMatched(type, text)
+	if not type or type == "" then
+		return
+	end
+
+	return string_match(type, text)
+end
+
+local BagSmartFilter = {
+	default = function(item, text)
+		text = strlower(text)
+		if text == "boe" then
+			return item.bindOn == "equip"
+		else
+			return IsItemMatched(item.subType, text) or IsItemMatched(item.equipLoc, text) or IsItemMatched(item.name, text)
+		end
+	end,
+
+	_default = "default",
+}
+
+local function ShowWidgetButtons(self)
+	for index, button in pairs(self.__owner.widgetButtons) do
+		if index ~= 1 then
+			button:Show()
+		end
+	end
+end
+
+local function HideWidgetButtons(self)
+	for index, button in pairs(self.__owner.widgetButtons) do
+		if index ~= 1 then
+			button:Hide()
+		end
+	end
 end
 
 function Module:CreateInfoFrame()
 	local infoFrame = CreateFrame("Button", nil, self)
-	infoFrame:SetPoint("TOPLEFT", 10, 0)
-	infoFrame:SetSize(160, 32)
+	infoFrame:SetPoint("TOPLEFT", 6, -8)
+	infoFrame:SetSize(160, 18)
 
-	local icon = CreateFrame("Button", nil, infoFrame)
-	icon:SetSize(18, 18)
-	icon:SetPoint("LEFT")
-	icon:EnableMouse(false)
+	local icon = infoFrame:CreateTexture(nil, "ARTWORK")
+	icon:SetSize(20, 20)
+	icon:SetPoint("LEFT", 0, 2)
+	icon:SetTexture("Interface\\Minimap\\Tracking\\None")
 
-	icon.Icon = icon:CreateTexture(nil, "ARTWORK")
-	icon.Icon:SetAllPoints()
-	icon.Icon:SetTexCoord(unpack(K.TexCoords))
-	icon.Icon:SetTexture("Interface\\Minimap\\Tracking\\None")
+	local hl = infoFrame:CreateTexture(nil, "HIGHLIGHT")
+	hl:SetSize(20, 20)
+	hl:SetPoint("LEFT", 0, 2)
+	hl:SetTexture("Interface\\Minimap\\Tracking\\None")
 
 	local search = self:SpawnPlugin("SearchBar", infoFrame)
 	search.highlightFunction = highlightFunction
 	search.isGlobal = true
-	search:SetPoint("LEFT", 0, 5)
+	search:SetPoint("LEFT", 0, 6)
 	search:DisableDrawLayer("BACKGROUND")
 	search:CreateBackdrop()
-	search.Backdrop:SetPoint("TOPLEFT", -5, -7)
-	search.Backdrop:SetPoint("BOTTOMRIGHT", 5, 7)
+	search.Backdrop:SetPoint("TOPLEFT", 0, 0)
+	search.Backdrop:SetPoint("BOTTOMRIGHT", 0, 0)
+	search.textFilters = BagSmartFilter
+
+	search.__owner = self
+	search:HookScript("OnShow", HideWidgetButtons)
+	search:HookScript("OnHide", ShowWidgetButtons)
 
 	local moneyTag = self:SpawnPlugin("TagDisplay", "[money]", infoFrame)
 	moneyTag:SetFontObject(bagsFont)
 	moneyTag:SetFont(select(1, moneyTag:GetFont()), 13, select(3, moneyTag:GetFont()))
-	moneyTag:SetPoint("LEFT", icon, "RIGHT", 5, 0)
+	moneyTag:SetPoint("LEFT", icon, "RIGHT", 6, 0)
 
 	local moneyTagFrame = CreateFrame("Frame", nil, UIParent)
 	moneyTagFrame:SetParent(infoFrame)
@@ -121,12 +172,18 @@ function Module:CreateInfoFrame()
 	currencyTag:SetFontObject(bagsFont)
 	currencyTag:SetFont(select(1, currencyTag:GetFont()), 13, select(3, currencyTag:GetFont()))
 	currencyTag:SetPoint("TOP", self, "BOTTOM", 0, -6)
+
+	infoFrame.title = SEARCH
+	K.AddTooltip(infoFrame, "ANCHOR_TOPLEFT", K.InfoColorTint.."|nClick to search your bag items.|nYou can type in item names or item equip locations.|n|n'boe' for items that bind on equip and 'quest' for quest items.")
 end
 
 function Module:CreateBagBar(settings, columns)
 	local bagBar = self:SpawnPlugin("BagBar", settings.Bags)
-	local width, height = bagBar:LayoutButtons("grid", columns, 6, 5, -5)
-	bagBar:SetSize(width + 10, height + 10)
+	local spacing = 6
+	local offset = 6
+	local _, height = bagBar:LayoutButtons("grid", columns, spacing, offset, -offset)
+	local width = columns * (self.iconSize + spacing) - spacing
+	bagBar:SetSize(width + offset * 2, height + offset * 2)
 	bagBar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -6)
 	bagBar:CreateBorder()
 	bagBar.highlightFunction = highlightFunction
@@ -793,23 +850,24 @@ function Module:OnEnable()
 	end
 
 	function Backpack:OnInit()
-		AddNewContainer("Bag", 11, "Junk", filters.bagsJunk)
-		AddNewContainer("Bag", 10, "BagFavourite", filters.bagFavourite)
+		AddNewContainer("Bag", 12, "Junk", filters.bagsJunk)
+		AddNewContainer("Bag", 11, "BagFavourite", filters.bagFavourite)
 		AddNewContainer("Bag", 3, "EquipSet", filters.bagEquipSet)
 		AddNewContainer("Bag", 1, "AzeriteItem", filters.bagAzeriteItem)
 		AddNewContainer("Bag", 2, "Equipment", filters.bagEquipment)
 		AddNewContainer("Bag", 4, "BagCollection", filters.bagCollection)
-		AddNewContainer("Bag", 6, "Consumable", filters.bagConsumable)
+		AddNewContainer("Bag", 8, "Consumable", filters.bagConsumable)
 		AddNewContainer("Bag", 5, "BagGoods", filters.bagGoods)
-		AddNewContainer("Bag", 8, "BagQuest", filters.bagQuest)
-		AddNewContainer("Bag", 7, "BagLegendary", filters.bagLegendary)
-		AddNewContainer("Bag", 9, "BagAnima", filters.bagAnima)
+		AddNewContainer("Bag", 9, "BagQuest", filters.bagQuest)
+		AddNewContainer("Bag", 10, "BagLegendary", filters.bagLegendary)
+		AddNewContainer("Bag", 6, "BagAnima", filters.bagAnima)
+		AddNewContainer("Bag", 7, "BagRelic", filters.bagRelic)
 
 		f.main = MyContainer:New("Bag", {Columns = bagsWidth, Bags = "bags"})
 		f.main:SetPoint("BOTTOMRIGHT", -86, 76)
 		f.main:SetFilter(filters.onlyBags, true)
 
-		AddNewContainer("Bank", 9, "BankFavourite", filters.bankFavourite)
+		AddNewContainer("Bank", 10, "BankFavourite", filters.bankFavourite)
 		AddNewContainer("Bank", 3, "BankEquipSet", filters.bankEquipSet)
 		AddNewContainer("Bank", 1, "BankAzeriteItem", filters.bankAzeriteItem)
 		AddNewContainer("Bank", 4, "BankLegendary", filters.bankLegendary)
@@ -817,7 +875,8 @@ function Module:OnEnable()
 		AddNewContainer("Bank", 5, "BankCollection", filters.bankCollection)
 		AddNewContainer("Bank", 7, "BankConsumable", filters.bankConsumable)
 		AddNewContainer("Bank", 6, "BankGoods", filters.bankGoods)
-		AddNewContainer("Bank", 8, "BankQuest", filters.bankQuest)
+		AddNewContainer("Bank", 8, "BankAnima", filters.bankAnima)
+		AddNewContainer("Bank", 9, "BankQuest", filters.bankQuest)
 
 		f.bank = MyContainer:New("Bank", {Columns = bankWidth, Bags = "bank"})
 		f.bank:SetPoint("BOTTOMRIGHT", f.main, "BOTTOMLEFT", -12, 0)
@@ -1117,6 +1176,11 @@ function Module:OnEnable()
 		end
 	end
 
+	function Module:UpdateAllAnchors()
+		Module:UpdateAnchors(f.main, ContainerGroups["Bag"])
+		Module:UpdateAnchors(f.bank, ContainerGroups["Bank"])
+	end
+
 	function MyContainer:OnContentsChanged()
 		self:SortButtons("bagSlot")
 
@@ -1154,8 +1218,7 @@ function Module:OnEnable()
 		end
 		self:SetSize(width + xOffset * 2, height + offset)
 
-		Module:UpdateAnchors(f.main, ContainerGroups["Bag"])
-		Module:UpdateAnchors(f.bank, ContainerGroups["Bank"])
+		Module:UpdateAllAnchors()
 	end
 
 	function MyContainer:OnCreate(name, settings)
@@ -1191,14 +1254,18 @@ function Module:OnEnable()
 			label = QUESTS_LABEL
 		elseif string_match(name, "Anima") then
 			label = POWER_TYPE_ANIMA
+		elseif name == "BagRelic" then
+			label = "Korthia Relics"
 		end
 
 		if label then
-			self.label = K.CreateFontString(self, 13, label, "OUTLINE", true, "TOPLEFT", 5, -8)
+			self.label = K.CreateFontString(self, 13, label, "OUTLINE", true, "TOPLEFT", 6, -8)
 			return
 		end
 
+		self.iconSize = iconSize
 		Module.CreateInfoFrame(self)
+		Module.CreateFreeSlots(self)
 
 		local buttons = {}
 		buttons[1] = Module.CreateCloseButton(self)
@@ -1231,14 +1298,12 @@ function Module:OnEnable()
 			if i == 1 then
 				bu:SetPoint("TOPRIGHT", -6, -6)
 			else
-				bu:SetPoint("RIGHT", buttons[i - 1], "LEFT", -5, 0)
+				bu:SetPoint("RIGHT", buttons[i - 1], "LEFT", -6, 0)
 			end
 		end
+		self.widgetButtons = buttons
 
 		self:HookScript("OnShow", K.RestoreMoverFrame)
-
-		self.iconSize = iconSize
-		Module.CreateFreeSlots(self)
 	end
 
 	local BagButton = Backpack:GetClass("BagButton", true, "BagButton")
@@ -1295,6 +1360,17 @@ function Module:OnEnable()
 	K:RegisterEvent("TRADE_SHOW", Module.OpenBags)
 	K:RegisterEvent("TRADE_CLOSED", Module.CloseBags)
 	K:RegisterEvent("BANKFRAME_OPENED", Module.AutoDeposit)
+
+	-- Update infobar slots
+	--local INFO = K:GetModule("Infobar")
+	if _G.KKUI_GoldDataText then
+		Backpack.OnOpen = function()
+			if not KkthnxUIDB.ShowSlots then
+				return
+			end
+			K.GoldButton_OnEvent()
+		end
+	end
 
 	-- Fixes
 	BankFrame.GetRight = function()

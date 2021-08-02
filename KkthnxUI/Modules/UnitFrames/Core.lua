@@ -407,6 +407,14 @@ function Module.auraIconSize(w, n, s)
 	return (w - (n - 1) * s) / n
 end
 
+function Module:UpdateAuraContainer(width, element, maxAuras)
+	local iconsPerRow = element.iconsPerRow
+	local maxLines = iconsPerRow and K.Round(maxAuras / iconsPerRow) or 2
+	element.size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, element.spacing) or element.size
+	element:SetWidth(width)
+	element:SetHeight((element.size + element.spacing) * maxLines)
+end
+
 function Module.PostCreateAura(element, button)
 	local fontSize = element.fontSize or element.size * 0.52
 	local parentFrame = CreateFrame("Frame", nil, button)
@@ -713,6 +721,7 @@ function Module:CreateUnits()
 	local showTeamIndex = C["Raid"].ShowTeamIndex
 
 	if C["Nameplate"].Enable then
+		Module:PlateCVarReset()
 		Module:SetupCVars()
 		Module:BlockAddons()
 		Module:CreateUnitTable()
@@ -800,19 +809,21 @@ function Module:CreateUnits()
 		Module:UpdateTextScale()
 	end
 
-	oUF:RegisterStyle("Boss", Module.CreateBoss)
-	oUF:SetActiveStyle("Boss")
+	if C["Boss"].Enable then
+		oUF:RegisterStyle("Boss", Module.CreateBoss)
+		oUF:SetActiveStyle("Boss")
 
-	local Boss = {}
-	for i = 1, MAX_BOSS_FRAMES do
-		Boss[i] = oUF:Spawn("boss"..i, "oUF_Boss"..i)
-		Boss[i]:SetSize(C["Boss"].HealthWidth, C["Boss"].HealthHeight + C["Boss"].PowerHeight + 6)
+		local Boss = {}
+		for i = 1, MAX_BOSS_FRAMES do
+			Boss[i] = oUF:Spawn("boss"..i, "oUF_Boss"..i)
+			Boss[i]:SetSize(C["Boss"].HealthWidth, C["Boss"].HealthHeight + C["Boss"].PowerHeight + 6)
 
-		local moverWidth, moverHeight = C["Boss"].HealthWidth, C["Boss"].HealthHeight + C["Boss"].PowerHeight + 6
-		if i == 1 then
-			Boss[i].mover = K.Mover(Boss[i], "BossFrame"..i, "Boss1", {"BOTTOMRIGHT", UIParent, "RIGHT", -250, 140}, moverWidth, moverHeight)
-		else
-			Boss[i].mover = K.Mover(Boss[i], "BossFrame"..i, "Boss"..i, {"TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -C["Boss"].YOffset}, moverWidth, moverHeight)
+			local bossMoverWidth, bossMoverHeight = C["Boss"].HealthWidth, C["Boss"].HealthHeight + C["Boss"].PowerHeight + 6
+			if i == 1 then
+				Boss[i].mover = K.Mover(Boss[i], "BossFrame"..i, "Boss1", {"BOTTOMRIGHT", UIParent, "RIGHT", -250, 140}, bossMoverWidth, bossMoverHeight)
+			else
+				Boss[i].mover = K.Mover(Boss[i], "BossFrame"..i, "Boss"..i, {"TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -C["Boss"].YOffset}, bossMoverWidth, bossMoverHeight)
+			end
 		end
 	end
 
@@ -820,24 +831,16 @@ function Module:CreateUnits()
 		oUF:RegisterStyle("Arena", Module.CreateArena)
 		oUF:SetActiveStyle("Arena")
 
-		local ArenaFrameHeight = C["Arena"].Height + 6
-		local ArenaFrameWidth
-		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-			ArenaFrameWidth = C["Arena"].Width
-		else
-			ArenaFrameWidth = C["Arena"].Width - ArenaFrameHeight
-		end
-
 		local Arena = {}
 		for i = 1, 5 do
 			Arena[i] = oUF:Spawn("arena"..i, "oUF_Arena"..i)
-			Arena[i]:SetSize(ArenaFrameWidth, ArenaFrameHeight)
+			Arena[i]:SetSize(C["Arena"].HealthWidth, C["Arena"].HealthHeight + C["Arena"].PowerHeight + 6)
 
-			local arenaMoverWidth, arenaMoverHeight = Arena[i]:GetWidth(), Arena[i]:GetHeight()
+			local arenaMoverWidth, arenaMoverHeight = C["Arena"].HealthWidth, C["Arena"].HealthHeight + C["Arena"].PowerHeight + 6
 			if i == 1 then
 				Arena[i].mover = K.Mover(Arena[i], "ArenaFrame"..i, "Arena1", {"BOTTOMRIGHT", UIParent, "RIGHT", -250, 140}, arenaMoverWidth, arenaMoverHeight)
 			else
-				Arena[i].mover = K.Mover(Arena[i], "ArenaFrame"..i, "Arena"..i, {"TOPLEFT", Arena[i - 1], "BOTTOMLEFT", 0, -56}, arenaMoverWidth, arenaMoverHeight)
+				Arena[i].mover = K.Mover(Arena[i], "ArenaFrame"..i, "Arena"..i, {"TOPLEFT", Arena[i - 1], "BOTTOMLEFT", 0, -C["Arena"].YOffset}, arenaMoverWidth, arenaMoverHeight)
 			end
 		end
 

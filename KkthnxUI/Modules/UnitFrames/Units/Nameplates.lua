@@ -63,29 +63,65 @@ local classify = {
 	worldboss = {0, 1, 0},
 }
 
+function Module:PlateSetCVar(cvar, value)
+	if GetCVar(cvar) ~= tostring(value) then
+		SetCVar(cvar, value)
+	end
+end
+
+function Module:PlateCVarReset()
+	Module:PlateSetCVar("nameplateMinAlpha", 1)
+	Module:PlateSetCVar("nameplateMaxAlpha", 1)
+	Module:PlateSetCVar("nameplateClassResourceTopInset", GetCVarDefault("nameplateClassResourceTopInset"))
+	Module:PlateSetCVar("nameplateGlobalScale", 1)
+	Module:PlateSetCVar("NamePlateHorizontalScale", 1)
+	Module:PlateSetCVar("nameplateLargeBottomInset", GetCVarDefault("nameplateLargeBottomInset"))
+	Module:PlateSetCVar("nameplateLargerScale", 1)
+	Module:PlateSetCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
+	Module:PlateSetCVar("nameplateMaxAlphaDistance", GetCVarDefault("nameplateMaxAlphaDistance"))
+	Module:PlateSetCVar("nameplateMaxScale", 1)
+	Module:PlateSetCVar("nameplateMaxScaleDistance", 40)
+	Module:PlateSetCVar("nameplateMinAlphaDistance", GetCVarDefault("nameplateMinAlphaDistance"))
+	Module:PlateSetCVar("nameplateMinScale", 1)
+	Module:PlateSetCVar("nameplateMinScaleDistance", 0)
+	Module:PlateSetCVar("nameplateMotionSpeed", GetCVarDefault("nameplateMotionSpeed"))
+	Module:PlateSetCVar("nameplateOccludedAlphaMult", GetCVarDefault("nameplateOccludedAlphaMult"))
+	Module:PlateSetCVar("nameplateOtherAtBase", GetCVarDefault("nameplateOtherAtBase"))
+	Module:PlateSetCVar("nameplateOverlapH", GetCVarDefault("nameplateOverlapH"))
+	Module:PlateSetCVar("nameplateOverlapV", GetCVarDefault("nameplateOverlapV"))
+	Module:PlateSetCVar("nameplateResourceOnTarget", GetCVarDefault("nameplateResourceOnTarget"))
+	Module:PlateSetCVar("nameplateSelectedAlpha", 1)
+	Module:PlateSetCVar("nameplateSelectedScale", 1)
+	Module:PlateSetCVar("nameplateSelfAlpha", 1)
+	Module:PlateSetCVar("nameplateSelfBottomInset", GetCVarDefault("nameplateSelfBottomInset"))
+	Module:PlateSetCVar("nameplateSelfScale", 1)
+	Module:PlateSetCVar("nameplateSelfTopInset", GetCVarDefault("nameplateSelfTopInset"))
+	Module:PlateSetCVar("nameplateTargetBehindMaxDistance", 40)
+end
+
 -- Init
 function Module:PlateInsideView()
 	if C["Nameplate"].InsideView then
-		SetCVar("nameplateOtherTopInset", 0.05)
-		SetCVar("nameplateOtherBottomInset", 0.08)
+		Module:PlateSetCVar("nameplateOtherTopInset", 0.05)
+		Module:PlateSetCVar("nameplateOtherBottomInset", 0.08)
 	else
-		SetCVar("nameplateOtherTopInset", -1)
-		SetCVar("nameplateOtherBottomInset", -1)
+		Module:PlateSetCVar("nameplateOtherTopInset", -1)
+		Module:PlateSetCVar("nameplateOtherBottomInset", -1)
 	end
 end
 
 function Module:UpdatePlateScale()
-	SetCVar("namePlateMinScale", C["Nameplate"].MinScale)
-	SetCVar("namePlateMaxScale", C["Nameplate"].MinScale)
+	Module:PlateSetCVar("namePlateMinScale", C["Nameplate"].MinScale)
+	Module:PlateSetCVar("namePlateMaxScale", C["Nameplate"].MinScale)
 end
 
 function Module:UpdatePlateAlpha()
-	SetCVar("nameplateMinAlpha", C["Nameplate"].MinAlpha)
-	SetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
+	Module:PlateSetCVar("nameplateMinAlpha", C["Nameplate"].MinAlpha)
+	Module:PlateSetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
 end
 
 function Module:UpdatePlateSpacing()
-	SetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
+	Module:PlateSetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
 end
 
 function Module:UpdateClickableSize()
@@ -99,19 +135,19 @@ end
 
 function Module:SetupCVars()
 	Module:PlateInsideView()
-	SetCVar("nameplateOverlapH", 0.8)
+	Module:PlateSetCVar("nameplateOverlapH", 0.8)
 	Module:UpdatePlateSpacing()
 	Module:UpdatePlateAlpha()
-	SetCVar("nameplateSelectedAlpha", 1)
-	SetCVar("showQuestTrackingTooltips", 1)
+	Module:PlateSetCVar("nameplateSelectedAlpha", 1)
+	Module:PlateSetCVar("showQuestTrackingTooltips", 1)
 
 	Module:UpdatePlateScale()
-	SetCVar("nameplateSelectedScale", 1)
-	SetCVar("nameplateLargerScale", 1)
-	SetCVar("nameplateGlobalScale", 1)
+	Module:PlateSetCVar("nameplateSelectedScale", 1)
+	Module:PlateSetCVar("nameplateLargerScale", 1)
+	Module:PlateSetCVar("nameplateGlobalScale", 1)
 
-	SetCVar("nameplateShowSelf", 0)
-	SetCVar("nameplateResourceOnTarget", 0)
+	Module:PlateSetCVar("nameplateShowSelf", 0)
+	Module:PlateSetCVar("nameplateResourceOnTarget", 0)
 	K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesPersonalResource)
 	K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy)
 
@@ -955,8 +991,7 @@ function Module:CreatePlates()
 	self.Auras.gap = false
 	self.Auras.disableMouse = true
 
-	self.Auras:SetWidth(self:GetWidth())
-	self.Auras:SetHeight((self.Auras.size + self.Auras.spacing) * 2)
+	Module:UpdateAuraContainer(self:GetWidth(), self.Auras, self.Auras.numTotal)
 
 	self.Auras.showStealableBuffs = true
 	self.Auras.CustomFilter = Module.CustomFilter

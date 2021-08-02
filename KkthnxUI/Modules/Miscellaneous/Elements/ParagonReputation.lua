@@ -62,16 +62,16 @@ local function SetupParagonTooltip(self)
 	end
 end
 
-function Module:Tooltip(bar, event)
-	if not bar.questID or not C.ParagonQuestID[bar.questID] then
+function Module:Tooltip(self, event)
+	if not self.questID or not C.ParagonQuestID[self.questID] then
 		return
 	end
 
 	if event == "OnEnter" then
-		local _, link = GetItemInfo(C.ParagonQuestID[bar.questID].cache)
+		local _, link = GetItemInfo(C.ParagonQuestID[self.questID].cache)
 		if link then
-			_G.GameTooltip:SetOwner(bar, "ANCHOR_NONE")
-			_G.GameTooltip:SetPoint("LEFT", bar, "RIGHT", 10, 0)
+			_G.GameTooltip:SetOwner(self, "ANCHOR_NONE")
+			_G.GameTooltip:SetPoint("LEFT", self, "RIGHT", 10, 0)
 			_G.GameTooltip:SetHyperlink(link)
 			_G.GameTooltip:Show()
 		end
@@ -81,7 +81,7 @@ function Module:Tooltip(bar, event)
 	end
 end
 
-local function HookReputationBars(self)
+local function HookReputationBars()
 	for n = 1, NUM_FACTIONS_DISPLAYED do
 		if _G["ReputationBar"..n] then
 			_G["ReputationBar"..n]:HookScript("OnEnter",function(self)

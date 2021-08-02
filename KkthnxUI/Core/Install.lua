@@ -218,6 +218,18 @@ function Module:ForceChatSettings()
 	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- Local Defense
 end
 
+local function ForceZygorOptions()
+	if not IsAddOnLoaded("Hekili") then
+		return
+	end
+
+	local isWiped = false
+	if HekiliDB and not isWiped then
+		table.wipe(HekiliDB)
+		isWiped = true
+	end
+end
+
 local function ForceHekiliOptions()
 	if not IsAddOnLoaded("Hekili") then
 		return
@@ -356,10 +368,14 @@ local function ForceMaxDPSOptions()
 
 	MaxDpsOptions = {
 		["global"] = {
-			["texture"] = "Interface\\Cooldown\\star4",
 			["customRotations"] = {
 			},
+			["customTexture"] = "Interface\\BUTTONS\\CheckButtonHilight-Blue",
+			["debugMode"] = false,
+			["disableButtonGlow"] = true,
 			["disabledInfo"] = true,
+			["sizeMult"] = 1.8,
+			["texture"] = "Interface\\Cooldown\\star4",
 		},
 	}
 

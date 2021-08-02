@@ -103,14 +103,15 @@
    <!-- Tooltip -->
    <Script file="Tooltip\Core.lua" />
    <Script file="Tooltip\Elements\Conduit.lua" />
+   <Script file="Tooltip\Elements\DominationRank.lua" />
    <Script file="Tooltip\Elements\Hover.lua" />
    <Script file="Tooltip\Elements\ID.lua" />
    <Script file="Tooltip\Elements\Icons.lua" />
    <Script file="Tooltip\Elements\Mount.lua" />
    <Script file="Tooltip\Elements\Pet.lua" />
+   <Script file="Tooltip\Elements\Progress.lua" />
    <Script file="Tooltip\Elements\SpecLevel.lua" />
    <Script file="Tooltip\Elements\Targeted.lua" />
-   <Script file="Tooltip\Elements\DominationRank.lua" />
    <!-- Miscellaneous -->
    <Script file="Miscellaneous\Core.lua" />
    <Script file="Miscellaneous\Elements\AFKCam.lua" />

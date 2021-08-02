@@ -111,16 +111,18 @@ function Module:CreateFocusTarget()
 	self:Tag(self.Level, "[fulllevel]")
 	self.Level:SetShown(not C["Unitframe"].HideTargetOfTargetLevel)
 
-	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
-	self.Debuffs:SetWidth(82)
-	self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, C["Unitframe"].HideTargetOfTargetName and C["Unitframe"].HideTargetOfTargetLevel and -6 or -20)
-	self.Debuffs.num = 4 * 4
+	self.Debuffs = CreateFrame("Frame", nil, self)
 	self.Debuffs.spacing = 6
-	self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num / 4 - 1))) / self.Debuffs.num)) * 4)
-	self.Debuffs:SetHeight(self.Debuffs.size * 4)
 	self.Debuffs.initialAnchor = "TOPLEFT"
-	self.Debuffs["growth-y"] = "DOWN"
 	self.Debuffs["growth-x"] = "RIGHT"
+	self.Debuffs["growth-y"] = "DOWN"
+	self.Debuffs:SetPoint("TOPLEFT", self.Name, "BOTTOMLEFT", 0, -6)
+	self.Debuffs:SetPoint("TOPRIGHT", self.Name, "BOTTOMRIGHT", 0, -6)
+	self.Debuffs.num = 8
+	self.Debuffs.iconsPerRow = 4
+
+	Module:UpdateAuraContainer(focusTargetWidth, self.Debuffs, self.Debuffs.num)
+
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 
