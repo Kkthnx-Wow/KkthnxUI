@@ -8,8 +8,8 @@ local CreateFrame = _G.CreateFrame
 function Module:CreatePet()
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
-
 	local petWidth = C["Unitframe"].PetHealthWidth
+	local petPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()
@@ -24,7 +24,7 @@ function Module:CreatePet()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and Module.UpdateHealth
+	self.Health.PostUpdate = petPortraitStyle ~= "ThreeDPortraits" and Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
@@ -60,20 +60,41 @@ function Module:CreatePet()
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
 
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		if C["Unitframe"].PortraitStyle.Value == "OverlayPortrait" then
+	self.Name = self:CreateFontString(nil, "OVERLAY")
+	self.Name:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -4)
+	self.Name:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -4)
+	self.Name:SetFontObject(UnitframeFont)
+	self.Name:SetWordWrap(false)
+
+	if petPortraitStyle == "NoPortraits" or petPortraitStyle == "OverlayPortrait" then
+		if C["Unitframe"].HealthbarColor.Value == "Class" then
+			self:Tag(self.Name, "[name] [fulllevel]")
+		else
+			self:Tag(self.Name, "[color][name] [fulllevel]")
+		end
+	else
+		if C["Unitframe"].HealthbarColor.Value == "Class" then
+			self:Tag(self.Name, "[name]")
+		else
+			self:Tag(self.Name, "[color][name]")
+		end
+	end
+	self.Name:SetShown(not C["Unitframe"].HidePetName)
+
+	if petPortraitStyle ~= "NoPortraits" then
+		if petPortraitStyle == "OverlayPortrait" then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_PetPortrait", self)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 1, -1)
 			self.Portrait:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -1, 1)
 			self.Portrait:SetAlpha(0.6)
-		elseif C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
+		elseif petPortraitStyle == "ThreeDPortraits" then
 			self.Portrait = CreateFrame("PlayerModel", "KKUI_PetPortrait", self.Health)
 			self.Portrait:SetFrameStrata(self:GetFrameStrata())
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6 ,0)
 			self.Portrait:CreateBorder()
-		elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and C["Unitframe"].PortraitStyle.Value ~= "OverlayPortrait" then
+		elseif petPortraitStyle ~= "ThreeDPortraits" and petPortraitStyle ~= "OverlayPortrait" then
 			self.Portrait = self.Health:CreateTexture("KKUI_PetPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
@@ -83,49 +104,35 @@ function Module:CreatePet()
 			self.Portrait.Border:SetAllPoints(self.Portrait)
 			self.Portrait.Border:CreateBorder()
 
-			if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
+			if (petPortraitStyle == "ClassPortraits" or petPortraitStyle == "NewClassPortraits") then
 				self.Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
 	end
 
-	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOM", self.Power, 0, -16)
-	self.Name:SetWidth(81 * 0.96)
-	self.Name:SetFontObject(UnitframeFont)
-	self.Name:SetWordWrap(false)
-	if C["Unitframe"].HealthbarColor.Value == "Class" then
-		self:Tag(self.Name, "[name]")
-	else
-		self:Tag(self.Name, "[color][name]")
-	end
-	self.Name:SetShown(not C["Unitframe"].HidePetName)
-
 	self.Level = self:CreateFontString(nil, "OVERLAY")
-	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-		self.Level:SetPoint("BOTTOMLEFT", self.Power, 0, -16)
-	else
-		self.Level:SetPoint("BOTTOM", self.Portrait, 0, -16)
-	end
 	self.Level:SetFontObject(UnitframeFont)
+	if petPortraitStyle ~= "NoPortraits" and petPortraitStyle ~= "OverlayPortrait" and not C["Unitframe"].HidePetLevel then
+		self.Level:Show()
+	else
+		self.Level:Hide()
+	end
+	self.Level:SetPoint("TOPLEFT", self.Portrait, "BOTTOMLEFT", 0, -4)
+	self.Level:SetPoint("TOPRIGHT", self.Portrait, "BOTTOMRIGHT", 0, -4)
 	self:Tag(self.Level, "[fulllevel]")
-	self.Level:SetShown(not C["Unitframe"].HidePetLevel)
 
-	-- self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
-	-- self.Debuffs:SetWidth(82)
-	-- self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-	-- self.Debuffs.num = 4 * 4
-	-- self.Debuffs.spacing = 6
-	-- self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num / 4 - 1))) / self.Debuffs.num)) * 4)
-	-- self.Debuffs:SetHeight(self.Debuffs.size * 4)
-	-- self.Debuffs.initialAnchor = "TOPLEFT"
-	-- self.Debuffs["growth-y"] = "DOWN"
-	-- self.Debuffs["growth-x"] = "RIGHT"
-	-- self.Debuffs.PostCreateIcon = Module.PostCreateAura
-	-- self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
+	self.Debuffs = CreateFrame("Frame", nil, self)
+	self.Debuffs.spacing = 6
+	self.Debuffs.initialAnchor = "TOPLEFT"
+	self.Debuffs["growth-x"] = "RIGHT"
+	self.Debuffs["growth-y"] = "DOWN"
+	self.Debuffs:SetPoint("TOPLEFT", C["Unitframe"].HidePetName and self.Power or self.Name, "BOTTOMLEFT", 0, -6)
+	self.Debuffs:SetPoint("TOPRIGHT", C["Unitframe"].HidePetName and self.Power or self.Name, "BOTTOMRIGHT", 0, -6)
+	self.Debuffs.num = 8
+	self.Debuffs.iconsPerRow = 4
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and C["Unitframe"].PortraitStyle.Value ~= "OverlayPortrait" then
+	if petPortraitStyle ~= "NoPortraits" and petPortraitStyle ~= "OverlayPortrait" then
 		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 8)
 	else
 		self.RaidTargetIndicator:SetPoint("TOP", self.Health, "TOP", 0, 8)

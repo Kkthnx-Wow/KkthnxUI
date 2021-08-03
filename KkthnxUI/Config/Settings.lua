@@ -594,8 +594,6 @@ C["Unitframe"] = {
 	["Enable"] = true,
 	["FCTOverHealing"] = false,
 	["GlobalCooldown"] = true,
-	["HidePetLevel"] = true,
-	["HidePetName"] = true,
 	["HotsDots"] = true,
 	["OnlyShowPlayerDebuff"] = false,
 
@@ -657,11 +655,17 @@ C["Unitframe"] = {
 	["PetHealthHeight"] = 16,
 	["PetHealthWidth"] = 90,
 	["PetPowerHeight"] = 8,
+	["HidePetLevel"] = false,
+	["HidePetName"] = false,
+	["HidePet"] = false,
 
-	-- TargetOfTarget
+	-- FocusTarget
 	["FocusTargetHealthHeight"] = 16,
 	["FocusTargetHealthWidth"] = 90,
 	["FocusTargetPowerHeight"] = 8,
+	["HideFocusTargetLevel"] = false,
+	["HideFocusTargetName"] = false,
+	["HideFocusTarget"] = false,
 
 	["HealthbarColor"] = {
 		["Options"] = {
