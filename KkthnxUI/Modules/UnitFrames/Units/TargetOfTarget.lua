@@ -112,13 +112,13 @@ function Module:CreateTargetOfTarget()
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
 	self.Level:SetFontObject(UnitframeFont)
-	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and C["Unitframe"].PortraitStyle.Value ~= "OverlayPortrait" then
+	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" and C["Unitframe"].PortraitStyle.Value ~= "OverlayPortrait" and not C["Unitframe"].HideTargetOfTargetLevel then
 		self.Level:Show()
-		self.Level:SetPoint("TOPLEFT", self.Portrait, "BOTTOMLEFT", 0, -4)
-		self.Level:SetPoint("TOPRIGHT", self.Portrait, "BOTTOMRIGHT", 0, -4)
 	else
 		self.Level:Hide()
 	end
+	self.Level:SetPoint("TOPLEFT", self.Portrait, "BOTTOMLEFT", 0, -4)
+	self.Level:SetPoint("TOPRIGHT", self.Portrait, "BOTTOMRIGHT", 0, -4)
 	self:Tag(self.Level, "[fulllevel]")
 
 	self.Debuffs = CreateFrame("Frame", nil, self)

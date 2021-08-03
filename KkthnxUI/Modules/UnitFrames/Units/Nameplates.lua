@@ -1111,9 +1111,9 @@ function Module:RefreshNameplates()
 end
 
 function Module:RefreshAllPlates()
-	if C["Nameplate"].ShowPlayerPlate then
-		Module:ResizePlayerPlate()
-	end
+	-- if C["Nameplate"].ShowPlayerPlate then
+	-- 	Module:ResizePlayerPlate() -- Not implemented yet...
+	-- end
 
 	Module:RefreshNameplates()
 end

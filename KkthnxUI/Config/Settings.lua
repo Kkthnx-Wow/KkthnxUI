@@ -505,11 +505,12 @@ C["Skins"] = {
 
 -- Tooltip
 C["Tooltip"] = {
-	["DominationRank"] = false,
 	["ClassColor"] = false,
 	["CombatHide"] = false,
 	["ConduitInfo"] = false,
 	["Cursor"] = false,
+	["DominationRank"] = false,
+	["Enable"] = true,
 	["FactionIcon"] = false,
 	["HideJunkGuild"] = true,
 	["HideRank"] = true,

@@ -552,6 +552,10 @@ function Module:SharedTooltip_SetBackdropStyle()
 end
 
 function Module:OnEnable()
+	if not C["Tooltip"].Enable then
+		return
+	end
+
 	GameTooltip.StatusBar = GameTooltipStatusBar
 	GameTooltip:HookScript("OnTooltipCleared", Module.OnTooltipCleared)
 	GameTooltip:HookScript("OnTooltipSetUnit", Module.OnTooltipSetUnit)
@@ -573,10 +577,18 @@ end
 
 -- Tooltip Skin Registration
 function Module:RegisterTooltips(addon, func)
+	if not C["Tooltip"].Enable then
+		return
+	end
+
 	tipTable[addon] = func
 end
 
 local function addonStyled(_, addon)
+	if not C["Tooltip"].Enable then
+		return
+	end
+
 	if tipTable[addon] then
 		tipTable[addon]()
 		tipTable[addon] = nil
@@ -585,6 +597,10 @@ end
 K:RegisterEvent("ADDON_LOADED", addonStyled)
 
 Module:RegisterTooltips("KkthnxUI", function()
+	if not C["Tooltip"].Enable then
+		return
+	end
+
 	local tooltips = {
 		AutoCompleteBox,
 		BattlePetTooltip,

@@ -705,6 +705,7 @@ local Tooltip = function(self)
 	local Window = self:CreateWindow(L["Tooltip"])
 
 	Window:CreateSection(L["Toggles"])
+	Window:CreateSwitch("Tooltip", "Enable", enableTextColor.."Enable Tooltip")
 	Window:CreateSwitch("Tooltip", "ClassColor", L["Quality Color Border"])
 	Window:CreateSwitch("Tooltip", "DominationRank", "Show Rank On Domination Shards/Armor")
 	Window:CreateSwitch("Tooltip", "CombatHide", L["Hide Tooltip in Combat"])

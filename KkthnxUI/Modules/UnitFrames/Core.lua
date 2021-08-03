@@ -249,38 +249,6 @@ local function updateCastBarTicks(bar, numTicks)
 	end
 end
 
-function Module:GetInterruptColor(unit)
-	local colors = K.Colors
-	local r, g, b
-
-	if self.casting then
-		r, g, b = colors.castbar.CastingColor[1], colors.castbar.CastingColor[2], colors.castbar.CastingColor[3]
-	elseif self.channeling then
-		r, g, b = colors.castbar.ChannelingColor[1], colors.castbar.ChannelingColor[2], colors.castbar.ChannelingColor[3]
-	else
-		r, g, b = colors.castbar.CastingColor[1], colors.castbar.CastingColor[2], colors.castbar.CastingColor[3]
-	end
-
-	if self.notInterruptible and (UnitIsPlayer(unit) or (unit ~= 'player' and UnitCanAttack('player', unit))) then
-		return colors.castbar.notInterruptibleColor[1], colors.castbar.notInterruptibleColor[2], colors.castbar.notInterruptibleColor[3]
-	elseif (C["Unitframe"].CastClassColor) and UnitIsPlayer(unit) then
-		local _, Class = UnitClass(unit)
-		local t = Class and colors.class[Class]
-		if t then return
-			t[1], t[2], t[3]
-		end
-	elseif (C["Unitframe"].CastReactionColor) then
-		local Reaction = UnitReaction(unit, 'player')
-		local t = Reaction and colors.reaction[Reaction]
-		if t then
-			return t[1], t[2], t[3]
-		end
-	end
-
-	return r, g, b
-end
-
-
 function Module:OnCastbarUpdate(elapsed)
 	if self.casting or self.channeling then
 		local decimal = self.decimal
@@ -348,7 +316,21 @@ function Module:PostCastStart(unit)
 		self.Spark:Show()
 	end
 
-	self:SetStatusBarColor(Module.GetInterruptColor(self, unit))
+	local color = K.Colors.castbar.CastingColor
+	if (C["Unitframe"].CastClassColor) and UnitIsPlayer(unit) then
+		local _, Class = UnitClass(unit)
+		local t = Class and K.Colors.class[Class]
+		if t then
+			color = K.Colors.class[Class]
+		end
+	elseif (C["Unitframe"].CastReactionColor) then
+		local Reaction = UnitReaction(unit, 'player')
+		local t = Reaction and K.Colors.reaction[Reaction]
+		if t then
+			color = K.Colors.reaction[Reaction]
+		end
+	end
+	self:SetStatusBarColor(color[1], color[2], color[3])
 
 	if unit == "vehicle" or UnitInVehicle("player") then
 		if self.SafeZone then
@@ -379,12 +361,17 @@ function Module:PostCastStart(unit)
 		end
 		updateCastBarTicks(self, numTicks)
 	elseif not UnitIsUnit(unit, "player") and self.notInterruptible then
-		self:SetStatusBarColor(unpack(K.Colors.castbar.notInterruptibleColor))
+		color = K.Colors.castbar.notInterruptibleColor
+		self:SetStatusBarColor(color[1], color[2], color[3])
 	end
 end
 
 function Module:PostUpdateInterruptible(unit)
-	self:SetStatusBarColor(Module.GetInterruptColor(self, unit))
+	local color = K.Colors.castbar.CastingColor
+	if not UnitIsUnit(unit, "player") and self.notInterruptible then
+		color = K.Colors.castbar.notInterruptibleColor
+	end
+	self:SetStatusBarColor(color[1], color[2], color[3])
 end
 
 function Module:PostCastStop()
