@@ -96,17 +96,17 @@ function Module:CreateCoordsDataText()
 
 	Module.CoordsDataTextFrame = CreateFrame("Button", nil, UIParent)
 	Module.CoordsDataTextFrame:SetPoint("TOP", UIParent, "TOP", 0, -40)
-	Module.CoordsDataTextFrame:SetSize(24, 24)
+	Module.CoordsDataTextFrame:SetSize(20, 20)
 
 	Module.CoordsDataTextFrame.Texture = Module.CoordsDataTextFrame:CreateTexture(nil, "BACKGROUND")
 	Module.CoordsDataTextFrame.Texture:SetPoint("CENTER", Module.CoordsDataTextFrame, "CENTER", 0, 0)
-	--Module.CoordsDataTextFrame.Texture:SetTexture(("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\coords.blp"))
-	Module.CoordsDataTextFrame.Texture:SetSize(24, 24)
-	Module.CoordsDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
+	Module.CoordsDataTextFrame.Texture:SetAtlas("Navigation-Tracked-Icon")
+	Module.CoordsDataTextFrame.Texture:SetSize(15, 20)
+	Module.CoordsDataTextFrame.Texture:SetAlpha(0.8)
 
 	Module.CoordsDataTextFrame.Text = Module.CoordsDataTextFrame:CreateFontString(nil, "ARTWORK")
 	Module.CoordsDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.CoordsDataTextFrame.Text:SetPoint("CENTER", Module.CoordsDataTextFrame.Texture, "CENTER", 0, -12)
+	Module.CoordsDataTextFrame.Text:SetPoint("CENTER", Module.CoordsDataTextFrame.Texture, "CENTER", 0, -14)
 
 	Module.CoordsDataTextFrame:RegisterEvent("ZONE_CHANGED", OnEvent)
 	Module.CoordsDataTextFrame:RegisterEvent("ZONE_CHANGED_INDOORS", OnEvent)
