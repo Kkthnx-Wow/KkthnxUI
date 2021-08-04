@@ -12,16 +12,13 @@ local unpack = _G.unpack
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
 local GetRuneCooldown = _G.GetRuneCooldown
--- local GetSpecialization = _G.GetSpecialization
 local GetTime = _G.GetTime
--- local GetActiveSpecGroup = _G.GetActiveSpecGroup
 local IsInInstance = _G.IsInInstance
 local IsReplacingUnit = _G.IsReplacingUnit
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
 local PlaySound = _G.PlaySound
 local SOUNDKIT = _G.SOUNDKIT
 local UIParent = _G.UIParent
-local UnitCanAttack = _G.UnitCanAttack
 local UnitClass = _G.UnitClass
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
@@ -567,7 +564,7 @@ function Module.PostUpdateRunes(element, runemap)
 	end
 end
 
-function Module.PostUpdateClassPower(element, cur, max, diff, powerType, chargedIndex)
+function Module.PostUpdateClassPower(element, cur, max, diff, powerType, chargedPowerPoints)
 	if not cur or cur == 0 then
 		element.prevColor = nil
 	else
@@ -587,19 +584,17 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 
 	if diff then
 		for i = 1, max do
-			element[i]:SetWidth((Module.barWidth - (max - 1) * 6)/max)
+			element[i]:SetWidth((Module.barWidth - (max - 1) * 6) / max)
 		end
 	end
 
-	if chargedIndex and chargedIndex ~= element.thisCharge then
-		local bar = element[chargedIndex]
-		element.chargeStar:SetParent(bar)
-		element.chargeStar:SetPoint("CENTER", bar)
-		element.chargeStar:Show()
-		element.thisCharge = chargedIndex
-	else
-		element.chargeStar:Hide()
-		element.thisCharge = nil
+	for i = 1, 6 do
+		local bar = element[i]
+		if not bar.chargeStar then
+			break
+		end
+
+		bar.chargeStar:SetShown(chargedPowerPoints and tContains(chargedPowerPoints, i))
 	end
 end
 
@@ -635,6 +630,14 @@ function Module:CreateClassPower(self)
 
 		if K.Class == "DEATHKNIGHT" then
 			bars[i].timer = K.CreateFontString(bars[i], 10, "")
+		elseif K.Class == "ROGUE" then
+			local chargeStar = bars[i]:CreateTexture()
+			chargeStar:SetAtlas("VignetteKill")
+			chargeStar:SetDesaturated(true)
+			chargeStar:SetSize(22, 22)
+			chargeStar:SetPoint("CENTER")
+			chargeStar:Hide()
+			bars[i].chargeStar = chargeStar
 		end
 	end
 
@@ -645,12 +648,6 @@ function Module:CreateClassPower(self)
 		bars.__max = 6
 		self.Runes = bars
 	else
-		local chargeStar = bar:CreateTexture()
-		chargeStar:SetAtlas("VignetteKill")
-		chargeStar:SetSize(24, 24)
-		chargeStar:Hide()
-		bars.chargeStar = chargeStar
-
 		bars.PostUpdate = Module.PostUpdateClassPower
 		self.ClassPower = bars
 	end

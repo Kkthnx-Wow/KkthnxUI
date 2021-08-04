@@ -71,20 +71,18 @@ local KKUI_ChangeLog = {
 	},
 }
 
-local changeLogEventFrame = CreateFrame("Frame")
-local function onevent(_, event, addon)
-	if ((event == "ADDON_LOADED" and addon == "KkthnxUI") or (event == "PLAYER_LOGIN")) then
-		changeLogEventFrame:UnregisterEvent("ADDON_LOADED")
-		changeLogEventFrame:UnregisterEvent("PLAYER_LOGIN")
-
-		if not KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog then
-			KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog = {}
-		end
-
-		K.ChangeLog:Register(K.Title, KKUI_ChangeLog, KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog, "lastReadVersion", "onlyShowWhenNewVersion")
-		K.ChangeLog:ShowChangelog(K.Title)
+local function CreateChangeLog(event)
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete then -- Do not show this unless we have installed the UI
+		return
 	end
+
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog then
+		KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog = {}
+	end
+
+	K.ChangeLog:Register(K.Title, KKUI_ChangeLog, KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog, "lastReadVersion", "onlyShowWhenNewVersion")
+	K.ChangeLog:ShowChangelog(K.Title)
+
+	K:UnregisterEvent(event, CreateChangeLog)
 end
-changeLogEventFrame:RegisterEvent("ADDON_LOADED")
-changeLogEventFrame:RegisterEvent("PLAYER_LOGIN")
-changeLogEventFrame:SetScript("OnEvent", onevent)
+K:RegisterEvent("PLAYER_ENTERING_WORLD", CreateChangeLog)
