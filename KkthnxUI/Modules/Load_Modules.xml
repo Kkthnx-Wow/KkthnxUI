@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-   <Script file="Blizzard\Elements\Fonts.lua" />
    <!-- DataText -->
    <Script file="DataText\Core.lua" />
    <Script file="DataText\Elements\Coords.lua" />
@@ -182,6 +181,7 @@
    <Include file="Skins\Blizzard\Inspect.lua" />
    <Include file="Skins\Blizzard\LootFrame.lua" />
    <Include file="Skins\Blizzard\LossControl.lua" />
+   <Include file="Skins\Blizzard\Fonts.lua" />
    <Include file="Skins\Blizzard\Miscellaneous.lua" />
    <Include file="Skins\Blizzard\ObjectiveTracker.lua" />
    <Include file="Skins\Blizzard\SpellBook.lua" />

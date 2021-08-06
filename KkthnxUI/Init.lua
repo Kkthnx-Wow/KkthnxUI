@@ -114,15 +114,6 @@ K.RaidPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_RAID, COMBATLOG_OBJECT_REA
 
 K.CodeDebug = false
 
-K.QualityColors = {}
-local qualityColors = BAG_ITEM_QUALITY_COLORS
-for index, value in pairs(qualityColors) do
-	K.QualityColors[index] = {r = value.r, g = value.g, b = value.b}
-end
-K.QualityColors[-1] = {r = 1, g = 1, b = 1}
-K.QualityColors[LE_ITEM_QUALITY_POOR] = {r = 0.61, g = 0.61, b = 0.61}
-K.QualityColors[LE_ITEM_QUALITY_COMMON] = {r = 1, g = 1, b = 1}
-
 K.ClassList = {}
 for k, v in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 	K.ClassList[v] = k
@@ -137,8 +128,18 @@ for class, value in pairs(colors) do
 	K.ClassColors[class].b = value.b
 	K.ClassColors[class].colorStr = value.colorStr
 end
+
 K.r, K.g, K.b = K.ClassColors[K.Class].r, K.ClassColors[K.Class].g, K.ClassColors[K.Class].b
 K.MyClassColor = string_format("|cff%02x%02x%02x", K.r * 255, K.g * 255, K.b * 255)
+
+K.QualityColors = {}
+local qualityColors = BAG_ITEM_QUALITY_COLORS
+for index, value in pairs(qualityColors) do
+	K.QualityColors[index] = {r = value.r, g = value.g, b = value.b}
+end
+K.QualityColors[-1] = {r = 1, g = 1, b = 1}
+K.QualityColors[LE_ITEM_QUALITY_POOR] = {r = .61, g = .61, b = .61}
+K.QualityColors[LE_ITEM_QUALITY_COMMON] = {r = 1, g = 1, b = 1}
 
 local events = {}
 local host = CreateFrame("Frame")

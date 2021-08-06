@@ -256,7 +256,6 @@ C["General"] = {
 	["UIScale"] = 0.71111,
 	["UseGlobal"] = false,
 	["VersionCheck"] = true,
-	["Welcome"] = true,
 	["BorderStyle"] = {
 		["Options"] = {
 			["KkthnxUI"] = "KkthnxUI",

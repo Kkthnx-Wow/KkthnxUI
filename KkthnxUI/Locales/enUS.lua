@@ -441,7 +441,6 @@ L["Import Profiles From Other Characters"] = "Import Profiles From Other Charact
 L["Move Blizzard Frames"] = "Move Blizzard Frames"
 L["Number Prefix Style"] = "Number Prefix Style"
 L["Set UI scale"] = "Set UI scale"
-L["Show Welcome Message"] = "Show Welcome Message"
 L["Textures Color"] = "Textures Color"
 
 L["Auto Confirm Loot Dialogs"] = "Auto Confirm Loot Dialogs"

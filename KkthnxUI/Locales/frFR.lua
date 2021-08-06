@@ -451,7 +451,6 @@ L["Import Profiles From Other Characters"] = "Importer les profils à partir d'a
 L["Move Blizzard Frames"] = "Bouger les fenêtres Blizzard"
 L["Number Prefix Style"] = "Style du numéro de préfixe"
 L["Set UI scale"] = "Echelle de l'interface"
-L["Show Welcome Message"] = "Afficher le message de bienvenue"
 L["Textures Color"] = "Couleur des Textures"
 
 L["Auto Confirm Loot Dialogs"] = "Confirmer automatique les fenêtres de butin"
