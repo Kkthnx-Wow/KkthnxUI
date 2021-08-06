@@ -65,13 +65,13 @@ C.themes["Blizzard_InspectUI"] = function()
 	local OnInspectSwitchTabs = function(newID)
 		local tabID = newID or PanelTemplates_GetSelectedTab(InspectFrame)
 		if tabID == 1 then
-			InspectFrame:SetSize(438, 431) -- 540 + 100, 424 + 7
+			InspectFrame:SetSize(438, 431) -- 338 + 100, 424 + 7
 			InspectFrame.Inset:SetPoint("BOTTOMRIGHT", InspectFrame, "BOTTOMLEFT", 432, 4)
 
 			local _, targetClass = UnitClass("target")
 			if targetClass then
 				InspectFrame.Inset.Bg:SetTexture("Interface\\DressUpFrame\\DressingRoom"..targetClass)
-				InspectFrame.Inset.Bg:SetTexCoord(1 / 512, 479 / 512, 46 / 512, 455 / 512)
+				InspectFrame.Inset.Bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
 				InspectFrame.Inset.Bg:SetHorizTile(false)
 				InspectFrame.Inset.Bg:SetVertTile(false)
 			end

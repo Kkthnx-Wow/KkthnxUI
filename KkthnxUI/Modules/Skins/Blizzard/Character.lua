@@ -147,8 +147,8 @@ tinsert(C.defaultThemes, function()
 		CharacterFrame:SetSize(640, 431) -- 540 + 100, 424 + 7
 		CharacterFrame.Inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 432, 4)
 
-		CharacterFrame.Inset.Bg:SetTexture("Interface\\DressUpFrame\\DressingRoom" .. K.Class)
-		CharacterFrame.Inset.Bg:SetTexCoord(1 / 512, 479 / 512, 46 / 512, 455 / 512)
+		CharacterFrame.Inset.Bg:SetTexture("Interface\\DressUpFrame\\DressingRoom"..K.Class)
+		CharacterFrame.Inset.Bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
 		CharacterFrame.Inset.Bg:SetHorizTile(false)
 		CharacterFrame.Inset.Bg:SetVertTile(false)
 	end)

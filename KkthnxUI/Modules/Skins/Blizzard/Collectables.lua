@@ -17,10 +17,9 @@ C.themes["Blizzard_Collections"] = function()
 
 	-- Insert better BG
 	WardrobeTransmogFrame.Inset.BG:SetTexture("Interface\\DressUpFrame\\DressingRoom"..K.Class)
-	WardrobeTransmogFrame.Inset.BG:SetTexCoord(1 / 512, 479 / 512, 46 / 512, 455 / 512)
+	WardrobeTransmogFrame.Inset.BG:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
 	WardrobeTransmogFrame.Inset.BG:SetHorizTile(false)
 	WardrobeTransmogFrame.Inset.BG:SetVertTile(false)
-	WardrobeTransmogFrame.Inset.BG:SetVertexColor(0.9, 0.9, 0.9, 0.9)
 
     -- These frames are built using absolute sizes instead of relative points for some reason. Let's stick with that..
     local insetWidth = K.Round(initialTransmogFrameWidth - WardrobeTransmogFrame.ModelScene:GetWidth(), 0)
