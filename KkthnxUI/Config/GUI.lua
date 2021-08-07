@@ -165,7 +165,7 @@ local function UpdateUnitPlayerSize()
 	local powerHeight = C["Unitframe"].PlayerPowerHeight
 	local height = healthHeight + powerHeight + 6
 
-	if not oUF_Player then
+	if not _G.oUF_Player then
 		return
 	end
 
@@ -186,7 +186,7 @@ local function UpdateUnitTargetSize()
 	local powerHeight = C["Unitframe"].TargetPowerHeight
 	local height = healthHeight + powerHeight + 6
 
-	if not oUF_Target then
+	if not _G.oUF_Target then
 		return
 	end
 
@@ -207,7 +207,7 @@ local function UpdateUnitFocusSize()
 	local powerHeight = C["Unitframe"].FocusPowerHeight
 	local height = healthHeight + powerHeight + 6
 
-	if not oUF_Focus then
+	if not _G.oUF_Focus then
 		return
 	end
 
@@ -228,7 +228,7 @@ local function UpdateUnitPartySize()
 	local powerHeight = C["Party"].PowerHeight
 	local height = healthHeight + powerHeight + 6
 
-	for i = 1, MAX_PARTY_MEMBERS do
+	for i = 1, _G.MAX_PARTY_MEMBERS do
 		local bu = _G["oUF_PartyUnitButton"..i]
 		if bu then
 			bu:SetSize(width, height)
@@ -250,7 +250,7 @@ local function UpdateUnitRaidSize()
 	-- local powerHeight = C["Party"].PowerHeight
 	local height = healthHeight
 
-	for i = 1, MAX_RAID_MEMBERS do
+	for i = 1, _G.MAX_RAID_MEMBERS do
 		if InCombatLockdown() then
 			return
 		end

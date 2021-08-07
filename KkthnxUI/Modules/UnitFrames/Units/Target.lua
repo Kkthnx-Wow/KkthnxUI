@@ -30,7 +30,7 @@ function Module:CreateTarget()
 	self.Overlay:SetAllPoints(self.Health)
 	self.Overlay:SetFrameLevel(5)
 
-	self.Health.PostUpdate = targetPortraitStyle ~= "NoPortraits" and targetPortraitStyle ~= "OverlayPortrait" and Module.UpdateHealth
+	self.Health.PostUpdate = Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true

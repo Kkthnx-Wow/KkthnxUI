@@ -6,10 +6,13 @@ local _G = _G
 local CreateFrame = _G.CreateFrame
 
 function Module:CreatePet()
+	self.mystyle = "pet"
+
+	local petHeight = C["Unitframe"].PetHealthHeight
+	local petPortraitStyle = C["Unitframe"].PortraitStyle.Value
+
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
-	local petWidth = C["Unitframe"].PetHealthWidth
-	local petPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()
@@ -18,13 +21,13 @@ function Module:CreatePet()
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	self.Health:SetHeight(C["Unitframe"].PetHealthHeight)
+	self.Health:SetHeight(petHeight)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = petPortraitStyle ~= "ThreeDPortraits" and Module.UpdateHealth
+	self.Health.PostUpdate = Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true

@@ -30,7 +30,7 @@ function Module:CreateBoss()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = bossPortraitStyle ~= "NoPortraits" and bossPortraitStyle ~= "OverlayPortrait" and Module.UpdateHealth
+	self.Health.PostUpdate = Module.UpdateHealth
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 

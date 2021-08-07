@@ -68,9 +68,6 @@ do
 	K.oUF = Engine.oUF
 end
 
-K.AddOns = {}
-K.AddOnVersion = {}
-
 K.Title = GetAddOnMetadata(AddOnName, "Title")
 K.Version = GetAddOnMetadata(AddOnName, "Version")
 K.Credits = GetAddOnMetadata(AddOnName, "X-Credits")
@@ -270,103 +267,12 @@ K:RegisterEvent("PLAYER_LEVEL_UP", function(_, level)
 	K.Level = level
 end)
 
+K.AddOns = {}
+K.AddOnVersion = {}
 for i = 1, GetNumAddOns() do
-	local Name = GetAddOnInfo(i)
-	K.AddOns[string_lower(Name)] = GetAddOnEnableState(K.Name, Name) == 2
+	local Name, _, _, _, Reason = GetAddOnInfo(i)
+	K.AddOns[string_lower(Name)] = GetAddOnEnableState(K.Name, Name) == 2 and (not Reason or Reason ~= "DEMAND_LOADED")
 	K.AddOnVersion[string_lower(Name)] = GetAddOnMetadata(Name, "Version")
-end
-
--- Debugging
--- Sourced: GW2_UI
-
--- AddOns Needed
--- !Stragglers
--- _DebugLog
-
--- If you wanna debug, you need to add your name-realm to dev
--- Go to 'Interface\AddOns\KkthnxUI\Developer\Elements\Frame.lua'
--- Go to line 45 and add your name and realm as the others are added.
--- Reload your UI and add any debugging you wanna check.
-
--- Examples
--- K.Debug("Level Thing:", K.Level)
--- K.AddForProfiling("Something", "Function Name", Function)
--- if K.inDebug then
--- 	GetBestScale()
--- end
-
-local function AddForProfiling(unit, name, ...)
-	if not K.IsDeveloper then
-		return
-	end
-
-	local gName = "KKUI_Profiling_"..unit
-	if not _G[gName] then
-		_G[gName] = {}
-	end
-	_G[gName][name] = ...
-end
-
-local function Debug(...)
-	if not K.IsDeveloper then
-		return
-	end
-
-	if DLAPI then
-		local msg = ""
-		for i = 1, select("#", ...) do
-			local arg = select(i, ...)
-			msg = msg..tostring(arg).." "
-		end
-		DLAPI.DebugLog("KkthnxUI", "%s", msg)
-	end
-end
-
-local function Trace()
-	if not K.IsDeveloper then
-		return
-	end
-
-	if DLAPI then
-		DLAPI.DebugLog("KkthnxUITrace", "%s", "------------------------- Trace -------------------------")
-		for i, v in ipairs({("\n"):split(debugstack(2))}) do
-			if v ~= "" then
-				DLAPI.DebugLog("KkthnxUITrace", "%d: %s", i, v)
-			end
-		end
-		DLAPI.DebugLog("KkthnxUITrace", "%s", "---------------------------------------------------------")
-	end
-end
-
-local function DebugOff()
-	return
-end
-
-local function AddForProfilingOff()
-	return
-end
-
-local function TraceOff()
-	return
-end
-
-K.inDebug = nil
-if DLAPI then
-	K.Debug = Debug
-	K.Trace = Trace
-	K.inDebug = K.IsDeveloper and true or false
-	SetCVar("fstack_preferParentKeys", 0)
-	Debug("debug log initialized")
-else
-	K.Debug = DebugOff
-	K.Trace = TraceOff
-	K.inDebug = false
-end
-
-if Profiler then
-	K.AddForProfiling = AddForProfiling
-else
-	K.AddForProfiling = AddForProfilingOff
 end
 
 _G[AddOnName] = Engine

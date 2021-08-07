@@ -32,7 +32,7 @@ function Module:CreateParty()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = partyPortraitStyle ~= "NoPortraits" and partyPortraitStyle ~= "OverlayPortrait" and Module.UpdateHealth
+	self.Health.PostUpdate = Module.UpdateHealth
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 

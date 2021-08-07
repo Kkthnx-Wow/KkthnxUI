@@ -6,10 +6,14 @@ local _G = _G
 local CreateFrame = _G.CreateFrame
 
 function Module:CreateFocusTarget()
+	self.mystyle = "focustarget"
+
+	local focusTargetWidth = C["Unitframe"].FocusTargetHealthWidth
+	local focusTargetHeight = C["Unitframe"].FocusTargetHealthHeight
+	local focusTargetPortraitStyle = C["Unitframe"].PortraitStyle.Value
+
 	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
-	local focusTargetWidth = C["Unitframe"].FocusTargetHealthWidth
-	local focusTargetPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()
@@ -18,13 +22,13 @@ function Module:CreateFocusTarget()
 	Module.CreateHeader(self)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	self.Health:SetHeight(C["Unitframe"].FocusTargetHealthHeight)
+	self.Health:SetHeight(focusTargetHeight)
 	self.Health:SetPoint("TOPLEFT")
 	self.Health:SetPoint("TOPRIGHT")
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = focusTargetPortraitStyle ~= "ThreeDPortraits" and Module.UpdateHealth
+	self.Health.PostUpdate = Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true

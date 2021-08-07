@@ -24,7 +24,7 @@ end
 
 local function updatePartySync(self)
 	local hasJoined = C_QuestSession.HasJoined()
-	if(hasJoined) then
+	if (hasJoined) then
 		self.QuestSyncIndicator:Show()
 	else
 		self.QuestSyncIndicator:Hide()
@@ -55,7 +55,7 @@ function Module:CreatePlayer()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" and Module.UpdateHealth
+	self.Health.PostUpdate = Module.UpdateHealth
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 

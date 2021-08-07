@@ -70,7 +70,8 @@ function Module:UpdateClassPortraits(unit)
 end
 
 function Module:UpdatePortraitColor(unit, min, max)
-	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+	local portraitStyle = C["Unitframe"].PortraitStyle.Value
+	if portraitStyle == "ThreeDPortraits" or portraitStyle == "OverlayPortrait" or portraitStyle == "NoPortraits" then
 		return
 	end
 
@@ -183,10 +184,6 @@ function Module:UpdateThreat(_, unit)
 end
 
 function Module:UpdateHealth(unit, cur, max)
-	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" or "NoPortraits" then
-		return
-	end
-
 	local parent = self.__owner
 	Module.UpdatePortraitColor(parent, unit, cur, max)
 end
