@@ -1,7 +1,10 @@
-local K, C = unpack(select(2, ...))
+local _, C = unpack(select(2, ...))
 
 local _G = _G
 local table_insert = _G.table.insert
+
+local dropdownFontHeight = 12
+local chatFontHeights = {12, 13, 14, 15, 16}
 
 local function SetFont(obj, font, size, style, sr, sg, sb, sa, sox, soy, r, g, b)
 	if not obj then
@@ -25,25 +28,22 @@ local function SetFont(obj, font, size, style, sr, sg, sb, sa, sox, soy, r, g, b
 	end
 end
 
-local dropdownFontHeight = 12
-local chatFontHeights = {12, 13, 14, 15, 16, 17, 18, 19, 20}
+-- Set these asap, or they will not get applied
+_G.UNIT_NAME_FONT = C["Media"].Fonts.KkthnxUIFont
+_G.DAMAGE_TEXT_FONT = C["Media"].Fonts.DamageFont
+_G.STANDARD_TEXT_FONT = C["Media"].Fonts.KkthnxUIFont
+
 table_insert(C.defaultThemes, function()
 	local NORMAL = C["Media"].Fonts.KkthnxUIFont
 	local NUMBER = C["Media"].Fonts.KkthnxUIFont
-	local COMBAT = C["Media"].Fonts.DamageFont
-	local NAMEFONT = C["Media"].Fonts.KkthnxUIFont
 	local BUBBLE = C["Media"].Fonts.KkthnxUIFont
-
-	_G.UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = dropdownFontHeight
-	_G.CHAT_FONT_HEIGHTS = chatFontHeights
-
-	_G.UNIT_NAME_FONT = NAMEFONT
-	_G.DAMAGE_TEXT_FONT = COMBAT
-	_G.STANDARD_TEXT_FONT	= NORMAL
 
 	local size = 12
 	local medium = size * 1.1
 	local small = size * 0.9
+
+	_G.UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = dropdownFontHeight
+	_G.CHAT_FONT_HEIGHTS = chatFontHeights
 
 	SetFont(_G.ChatBubbleFont, BUBBLE, 11)	-- 13
 	SetFont(_G.AchievementFont_Small, NORMAL, size)	-- 10 Achiev dates

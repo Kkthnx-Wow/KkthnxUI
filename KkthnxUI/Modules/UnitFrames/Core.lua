@@ -39,9 +39,23 @@ local UnitThreatSituation = _G.UnitThreatSituation
 local oUF_RaidDebuffs = _G.oUF_RaidDebuffs
 
 local castbarTicks = {}
+local phaseIconTexCoords = {
+	[1] = {1 / 128, 33 / 128, 1 / 64, 33 / 64},
+	[2] = {34 / 128, 66 / 128, 1 / 64, 33 / 64},
+}
+local filteredStyle = {
+	["arena"] = true,
+	["boss"] = true,
+	["nameplate"] = true,
+	["target"] = true,
+}
 
 function Module:UpdateClassPortraits(unit)
-	if not unit or C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
+		return
+	end
+
+	if not unit then
 		return
 	end
 
@@ -114,16 +128,9 @@ function Module:UpdateThreat(_, unit)
 		return
 	end
 
+	local portraitStyle = C["Unitframe"].PortraitStyle.Value
 	local status = UnitThreatSituation(unit)
-	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
-		if not self then
-			return
-		end
-
-		if not self.Portrait then
-			return
-		end
-
+	if portraitStyle == "ThreeDPortraits" then
 		if not self.Portrait.KKUI_Border then
 			return
 		end
@@ -138,15 +145,7 @@ function Module:UpdateThreat(_, unit)
 				self.Portrait.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
 		end
-	elseif C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
-		if not self then
-			return
-		end
-
-		if not self.Portrait.Border then
-			return
-		end
-
+	elseif portraitStyle ~= "ThreeDPortraits" and portraitStyle ~= "NoPortraits" and portraitStyle ~= "OverlayPortrait" then
 		if not self.Portrait.Border.KKUI_Border then
 			return
 		end
@@ -161,11 +160,7 @@ function Module:UpdateThreat(_, unit)
 				self.Portrait.Border.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
 		end
-	elseif C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-		if not self then
-			return
-		end
-
+	elseif portraitStyle == "NoPortraits" then
 		if not self.Health.KKUI_Border then
 			return
 		end
@@ -188,13 +183,8 @@ function Module:UpdateHealth(unit, cur, max)
 	Module.UpdatePortraitColor(parent, unit, cur, max)
 end
 
-local PhaseIconTexCoords = {
-	[1] = {1 / 128, 33 / 128, 1 / 64, 33 / 64},
-	[2] = {34 / 128, 66 / 128, 1 / 64, 33 / 64},
-}
-
 function Module:UpdatePhaseIcon(isPhased)
-	self:SetTexCoord(unpack(PhaseIconTexCoords[isPhased == 2 and 2 or 1]))
+	self:SetTexCoord(unpack(phaseIconTexCoords[isPhased == 2 and 2 or 1]))
 end
 
 function Module:CreateHeader()
@@ -426,13 +416,6 @@ function Module.PostCreateAura(element, button)
 
 	button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
 end
-
-local filteredStyle = {
-	["arena"] = true,
-	["boss"] = true,
-	["nameplate"] = true,
-	["target"] = true,
-}
 
 function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, debuffType)
 	local style = element.__owner.mystyle
@@ -980,94 +963,6 @@ function Module:CreateUnits()
 				groups[i]:HookScript("OnShow", CreateTeamIndex)
 			end
 		end
-
-		if C["Raid"].SpecRaidPos then
-			local function UpdateSpecPos(event, ...)
-				local unit, _, spellID = ...
-				if (event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player" and spellID == 200749) or event == "ON_LOGIN" then
-					local specIndex = GetSpecialization()
-					if not specIndex then
-						return
-					end
-
-					if not KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] then
-						KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = {"TOPLEFT", "UIParent", "TOPLEFT", 4, -180}
-					end
-
-					if raidMover then
-						raidMover:ClearAllPoints()
-						raidMover:SetPoint(unpack(KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex]))
-					end
-
-					if not KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["PartyPos"..specIndex] then
-						KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["PartyPos"..specIndex] = {"TOPLEFT", "UIParent", "TOPLEFT", 4, -180}
-					end
-
-					if partyMover then
-						partyMover:ClearAllPoints()
-						partyMover:SetPoint(unpack(KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["PartyPos"..specIndex]))
-					end
-				end
-			end
-			UpdateSpecPos("ON_LOGIN")
-			K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", UpdateSpecPos)
-
-			if raidMover then
-				raidMover:HookScript("OnDragStop", function()
-					local specIndex = GetSpecialization()
-					if not specIndex then
-						return
-					end
-
-					KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidFrame"]
-				end)
-			end
-
-			if partyMover then
-				partyMover:HookScript("OnDragStop", function()
-					local specIndex = GetSpecialization()
-					if not specIndex then
-						return
-					end
-
-					KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["PartyPos"..specIndex] = KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["PartyFrame"]
-				end)
-			end
-		end
-
-		-- if raidMover then
-		-- 	if not C["Raid"].SpecRaidPos then
-		-- 		return
-		-- 	end
-
-		-- 	local function UpdateSpecPos(event, ...)
-		-- 		local unit, _, spellID = ...
-		-- 		if (event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player" and spellID == 200749) or event == "PLAYER_ENTERING_WORLD" then
-		-- 			if not GetSpecialization() then
-		-- 				return
-		-- 			end
-
-		-- 			local specIndex = GetSpecialization()
-		-- 			if not KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] then
-		-- 				KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = {"TOPLEFT", UIParent, "TOPLEFT", 4, -180}
-		-- 			end
-
-		-- 			raidMover:ClearAllPoints()
-		-- 			raidMover:SetPoint(unpack(KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex]))
-		-- 		end
-		-- 	end
-		-- 	K:RegisterEvent("PLAYER_ENTERING_WORLD", UpdateSpecPos)
-		-- 	K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", UpdateSpecPos)
-
-		-- 	raidMover:HookScript("OnDragStop", function()
-		-- 		if not GetSpecialization() then
-		-- 			return
-		-- 		end
-
-		-- 		local specIndex = GetSpecialization()
-		-- 		KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidPos"..specIndex] = KkthnxUIDB.Variables[K.Realm][K.Name]["Mover"]["RaidFrame"]
-		-- 	end)
-		-- end
 
 		if C["Raid"].MainTankFrames then
 			oUF:RegisterStyle("MainTank", Module.CreateRaid)

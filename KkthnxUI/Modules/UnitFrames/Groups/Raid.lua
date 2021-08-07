@@ -15,6 +15,10 @@ local function UpdateRaidThreat(self, _, unit)
 		return
 	end
 
+	if not self.KKUI_Border then
+		return
+	end
+
 	local situation = UnitThreatSituation(unit)
 	if (situation and situation > 0) then
 		local r, g, b = GetThreatStatusColor(situation)
@@ -30,7 +34,6 @@ local function UpdateRaidPower(self, _, unit)
 	end
 
 	local _, powerToken = UnitPowerType(unit)
-
 	if powerToken == "MANA" and C["Raid"].ManabarShow then
 		if not self.Power:IsVisible() then
 			self.Health:ClearAllPoints()
@@ -43,6 +46,7 @@ local function UpdateRaidPower(self, _, unit)
 		if self.Power:IsVisible() then
 			self.Health:ClearAllPoints()
 			self.Health:SetAllPoints(self)
+
 			self.Power:Hide()
 		end
 	end
@@ -94,9 +98,9 @@ function Module:CreateRaid()
 		self.Power = CreateFrame("StatusBar", nil, self)
 		self.Power:SetFrameStrata("LOW")
 		self.Power:SetFrameLevel(self:GetFrameLevel())
-		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
-		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
-		self.Power:SetHeight(5.5)
+		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, 1)
+		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, 1)
+		self.Power:SetHeight(6)
 		self.Power:SetStatusBarTexture(RaidframeTexture)
 
 		self.Power.colorPower = true
@@ -106,14 +110,11 @@ function Module:CreateRaid()
 			K:SmoothBar(self.Power)
 		end
 
-		self.Power.Background = self.Power:CreateTexture(nil, "BORDER")
-		self.Power.Background:SetAllPoints(self.Power)
-		self.Power.Background:SetColorTexture(.2, .2, .2)
-		self.Power.Background.multiplier = 0.3
-
 		table.insert(self.__elements, UpdateRaidPower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
-		UpdateRaidPower(self)
+		-- self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidPower)
+		-- self:RegisterEvent("UNIT_POWER_UPDATE", UpdateRaidPower)
+		-- UpdateRaidPower(self, _, self.unit)
 	end
 
 	if C["Raid"].ShowHealPrediction then

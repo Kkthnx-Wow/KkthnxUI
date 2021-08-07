@@ -6,18 +6,6 @@ local _G = _G
 local CreateFrame = _G.CreateFrame
 local UnitIsUnit = _G.UnitIsUnit
 
-local function UpdatePartyPetPower(self, _, unit)
-	if self.unit ~= unit then
-		return
-	end
-
-	if not self.Power:IsVisible() then
-		self.Health:ClearAllPoints()
-		self.Health:SetPoint("BOTTOMLEFT", self, 0, 6)
-		self.Health:SetPoint("TOPRIGHT", self)
-	end
-end
-
 function Module:CreatePartyPet()
 	local PartyPetframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
 	local PartyPetframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
@@ -68,10 +56,6 @@ function Module:CreatePartyPet()
 	self.Power.Background:SetAllPoints(self.Power)
 	self.Power.Background:SetColorTexture(.2, .2, .2)
 	self.Power.Background.multiplier = 0.3
-
-	table.insert(self.__elements, UpdatePartyPetPower)
-	self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePartyPetPower)
-	UpdatePartyPetPower(self, _, unit)
 
 	self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
 	self.Portrait:SetFrameLevel(self.Health:GetFrameLevel())
