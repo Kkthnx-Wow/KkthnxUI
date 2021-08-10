@@ -169,7 +169,7 @@ function Module:CreateFocus()
 		self.Castbar:SetPoint("TOP", self.Buffs, "BOTTOM", 0, -6)
 		self.Castbar:SetPoint("CENTER", self.Buffs)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
-		self.Castbar:SetSize(self.Buffs:GetWidth(), C["Unitframe"].FocusCastbarHeight)
+		self.Castbar:SetSize(focusWidth, C["Unitframe"].FocusCastbarHeight)
 		self.Castbar:SetClampedToScreen(true)
 		self.Castbar:CreateBorder()
 
@@ -220,7 +220,14 @@ function Module:CreateFocus()
 			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
 		end
 
-		K.Mover(self.Castbar, "FocusCastbar", "FocusCastbar", {"TOP", self.Buffs, "BOTTOM", 0, -6}, self.Buffs:GetWidth(), C["Unitframe"].FocusCastbarHeight)
+		local FocusCastbarPoint
+		if C["Unitframe"].FocusBuffs then
+			FocusCastbarPoint = self.Buffs
+		else
+			FocusCastbarPoint = self.Power
+		end
+
+		K.Mover(self.Castbar, "FocusCastbar", "FocusCastbar", {"TOP", FocusCastbarPoint, "BOTTOM", 0, -6}, focusWidth, C["Unitframe"].FocusCastbarHeight)
 	end
 
 	if C["Unitframe"].ShowHealPrediction then

@@ -103,4 +103,4 @@ local function ReskinWeakAuras()
 	end
 end
 
-Module:LoadWithAddOn("WeakAuras", "WeakAuras", ReskinWeakAuras)
+Module:RegisterSkin("WeakAuras", ReskinWeakAuras)

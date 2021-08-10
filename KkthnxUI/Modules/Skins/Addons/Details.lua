@@ -111,4 +111,4 @@ local function ReskinDetails()
 	KkthnxUIDB.Variables["ResetDetails"] = false
 end
 
-Module:LoadWithAddOn("Details", "Details", ReskinDetails)
+Module:RegisterSkin("Details", ReskinDetails)

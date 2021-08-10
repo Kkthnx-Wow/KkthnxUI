@@ -14,3 +14,5 @@ local K, C, L = unpack(select(2, ...))
 -- 	end
 -- end
 -- GameTooltip:HookScript("OnTooltipSetItem", HideMadeByName)
+
+-- KkthnxUIDB.Settings.Realm.Name

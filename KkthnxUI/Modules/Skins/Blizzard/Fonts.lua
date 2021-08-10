@@ -3,9 +3,6 @@ local _, C = unpack(select(2, ...))
 local _G = _G
 local table_insert = _G.table.insert
 
-local dropdownFontHeight = 12
-local chatFontHeights = {12, 13, 14, 15, 16}
-
 local function SetFont(obj, font, size, style, sr, sg, sb, sa, sox, soy, r, g, b)
 	if not obj then
 		return
@@ -28,11 +25,6 @@ local function SetFont(obj, font, size, style, sr, sg, sb, sa, sox, soy, r, g, b
 	end
 end
 
--- Set these asap, or they will not get applied
-_G.UNIT_NAME_FONT = C["Media"].Fonts.KkthnxUIFont
-_G.DAMAGE_TEXT_FONT = C["Media"].Fonts.DamageFont
-_G.STANDARD_TEXT_FONT = C["Media"].Fonts.KkthnxUIFont
-
 table_insert(C.defaultThemes, function()
 	local NORMAL = C["Media"].Fonts.KkthnxUIFont
 	local NUMBER = C["Media"].Fonts.KkthnxUIFont
@@ -41,9 +33,6 @@ table_insert(C.defaultThemes, function()
 	local size = 12
 	local medium = size * 1.1
 	local small = size * 0.9
-
-	_G.UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = dropdownFontHeight
-	_G.CHAT_FONT_HEIGHTS = chatFontHeights
 
 	SetFont(_G.ChatBubbleFont, BUBBLE, 11)	-- 13
 	SetFont(_G.AchievementFont_Small, NORMAL, size)	-- 10 Achiev dates
@@ -113,7 +102,7 @@ table_insert(C.defaultThemes, function()
 	SetFont(_G.PVPArenaTextString, NORMAL, 22, "OUTLINE")
 	SetFont(_G.PVPInfoTextString, NORMAL, 22, "OUTLINE")
 	SetFont(_G.PriceFont, NORMAL, 13)
-	SetFont(_G.QuestFont, NORMAL, size) -- 13
+	-- SetFont(_G.QuestFont, NORMAL, size) -- 13
 	SetFont(_G.QuestFont_Enormous, NORMAL, 24) -- 30 Garrison Titles
 	SetFont(_G.QuestFont_Huge, NORMAL, 15) -- 18 Quest rewards title(Rewards)
 	SetFont(_G.QuestFont_Large, NORMAL, 14) -- 14
@@ -164,3 +153,16 @@ table_insert(C.defaultThemes, function()
 		end
 	end)
 end)
+
+-- This need to be set asap
+UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = 12
+CHAT_FONT_HEIGHTS = {12, 13, 14, 15, 16, 17, 18, 19, 20}
+UNIT_NAME_FONT = C["Media"].Fonts.KkthnxUIFont
+STANDARD_TEXT_FONT = C["Media"].Fonts.KkthnxUIFont
+DAMAGE_TEXT_FONT = C["Media"].Fonts.DamageFont
+
+if (Locale == "koKR" or Locale == "zhTW" or Locale == "zhCN") then
+	C["Media"].Fonts.KkthnxUIFont = STANDARD_TEXT_FONT
+	C["Media"].Fonts.KkthnxUIFont = UNIT_NAME_FONT
+	C["Media"].Fonts.DamageFont = DAMAGE_TEXT_FONT
+end

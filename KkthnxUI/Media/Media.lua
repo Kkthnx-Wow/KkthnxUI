@@ -52,13 +52,6 @@ C["Media"] = {
 	},
 }
 
-if (K.Client == "koKR" or K.Client == "zhTW" or K.Client == "zhCN") then
-	C["Media"].Fonts.KkthnxUIFont = STANDARD_TEXT_FONT
-	C["Media"].Fonts.DamageFont = DAMAGE_TEXT_FONT
-elseif (K.Client ~= "enUS" and K.Client ~= "frFR" and K.Client ~= "enGB") then
-	C["Media"].Fonts.DamageFont = DAMAGE_TEXT_FONT
-end
-
 -- Register Borders
 for name, path in pairs(C["Media"].Borders) do
 	K.LibSharedMedia:Register("border", name, path)

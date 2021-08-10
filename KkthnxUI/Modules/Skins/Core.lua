@@ -8,6 +8,25 @@ local IsAddOnLoaded = _G.IsAddOnLoaded
 
 C.defaultThemes = {}
 C.themes = {}
+C.otherSkins = {}
+
+function Module:RegisterSkin(addonName, func)
+	C.otherSkins[addonName] = func
+end
+
+function Module:LoadSkins(list)
+	if not next(list) then
+		return
+	end
+
+	for addonName, func in pairs(list) do
+		local isLoaded, isFinished = IsAddOnLoaded(addonName)
+		if isLoaded and isFinished then
+			func()
+			list[addonName] = nil
+		end
+	end
+end
 
 function Module:LoadDefaultSkins()
 	if IsAddOnLoaded("AuroraClassic") or IsAddOnLoaded("Aurora") then
@@ -21,16 +40,11 @@ function Module:LoadDefaultSkins()
 	table_wipe(C.defaultThemes)
 
 	if not C["Skins"].BlizzardFrames then
-		return
+		table_wipe(C.themes)
 	end
 
-	for addonName, func in pairs(C.themes) do
-		local isLoaded, isFinished = IsAddOnLoaded(addonName)
-		if isLoaded and isFinished then
-			func()
-			C.themes[addonName] = nil
-		end
-	end
+	Module:LoadSkins(C.themes) -- blizzard ui
+	Module:LoadSkins(C.otherSkins) -- other addons
 
 	K:RegisterEvent("ADDON_LOADED", function(_, addonName)
 		local func = C.themes[addonName]
@@ -38,11 +52,17 @@ function Module:LoadDefaultSkins()
 			func()
 			C.themes[addonName] = nil
 		end
+
+		local func = C.otherSkins[addonName]
+		if func then
+			func()
+			C.otherSkins[addonName] = nil
+		end
 	end)
 end
 
 function Module:OnEnable()
-	Module:LoadDefaultSkins()
+	self:LoadDefaultSkins()
 
 	-- Add Skins
 	self:ReskinBartender4()
@@ -51,26 +71,4 @@ function Module:OnEnable()
 	self:ReskinRareScanner()
 	self:ReskinButtonForge()
 	self:ReskinSimulationcraft()
-end
-
-function Module:LoadWithAddOn(addonName, value, func)
-	local function loadFunc(event, addon)
-		if not C["Skins"][value] then
-			return
-		end
-
-		if event == "PLAYER_ENTERING_WORLD" then
-			K:UnregisterEvent(event, loadFunc)
-			if IsAddOnLoaded(addonName) then
-				func()
-				K:UnregisterEvent("ADDON_LOADED", loadFunc)
-			end
-		elseif event == "ADDON_LOADED" and addon == addonName then
-			func()
-			K:UnregisterEvent(event, loadFunc)
-		end
-	end
-
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", loadFunc)
-	K:RegisterEvent("ADDON_LOADED", loadFunc)
 end

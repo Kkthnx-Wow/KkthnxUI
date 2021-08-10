@@ -2,7 +2,6 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
-local math_floor = _G.math.floor
 local select = _G.select
 
 local CreateFrame = _G.CreateFrame

@@ -112,22 +112,6 @@ local BagSmartFilter = {
 	_default = "default",
 }
 
-local function ShowWidgetButtons(self)
-	for index, button in pairs(self.__owner.widgetButtons) do
-		if index ~= 1 then
-			button:Show()
-		end
-	end
-end
-
-local function HideWidgetButtons(self)
-	for index, button in pairs(self.__owner.widgetButtons) do
-		if index ~= 1 then
-			button:Hide()
-		end
-	end
-end
-
 function Module:CreateInfoFrame()
 	local infoFrame = CreateFrame("Button", nil, self)
 	infoFrame:SetPoint("TOPLEFT", 6, -8)
@@ -153,21 +137,6 @@ function Module:CreateInfoFrame()
 	search.Backdrop:SetPoint("BOTTOMRIGHT", 0, 0)
 	search.textFilters = BagSmartFilter
 
-	search.__owner = self
-	search:HookScript("OnShow", HideWidgetButtons)
-	search:HookScript("OnHide", ShowWidgetButtons)
-
-	local moneyTag = self:SpawnPlugin("TagDisplay", "[money]", infoFrame)
-	moneyTag:SetFontObject(bagsFont)
-	moneyTag:SetFont(select(1, moneyTag:GetFont()), 13, select(3, moneyTag:GetFont()))
-	moneyTag:SetPoint("LEFT", icon, "RIGHT", 6, 0)
-
-	local moneyTagFrame = CreateFrame("Frame", nil, UIParent)
-	moneyTagFrame:SetParent(infoFrame)
-	moneyTagFrame:SetAllPoints(moneyTag)
-	moneyTagFrame:SetScript("OnEnter", K.GoldButton_OnEnter)
-	moneyTagFrame:SetScript("OnLeave", K.GoldButton_OnLeave)
-
 	local currencyTag = self:SpawnPlugin("TagDisplay", "[currencies]", infoFrame)
 	currencyTag:SetFontObject(bagsFont)
 	currencyTag:SetFont(select(1, currencyTag:GetFont()), 13, select(3, currencyTag:GetFont()))
@@ -175,6 +144,61 @@ function Module:CreateInfoFrame()
 
 	infoFrame.title = SEARCH
 	K.AddTooltip(infoFrame, "ANCHOR_TOPLEFT", K.InfoColorTint.."|nClick to search your bag items.|nYou can type in item names or item equip locations.|n|n'boe' for items that bind on equip and 'quest' for quest items.")
+end
+
+local HideWidgets = true
+local function ToggleWidgetButtons(self)
+	HideWidgets = not HideWidgets
+
+	local buttons = self.__owner.widgetButtons
+
+	for index, button in pairs(buttons) do
+		if index > 2 then
+			button:SetShown(not HideWidgets)
+		end
+	end
+
+	if HideWidgets then
+		self:SetPoint("RIGHT", buttons[2], "LEFT", -1, 0)
+		K.SetupArrow(self.__texture, "left")
+		self.moneyTag:Show()
+	else
+		self:SetPoint("RIGHT", buttons[#buttons], "LEFT", -1, 0)
+		K.SetupArrow(self.__texture, "right")
+		self.moneyTag:Hide()
+	end
+
+	self:Show()
+end
+
+function Module:CreateCollapseArrow()
+	local collapseArrow = CreateFrame("Button", nil, self)
+	collapseArrow:SetSize(18, 18)
+
+	collapseArrow.Icon = collapseArrow:CreateTexture()
+	collapseArrow.Icon:SetAllPoints()
+	K.SetupArrow(collapseArrow.Icon, "right")
+	collapseArrow.__texture = collapseArrow.Icon
+
+	local moneyTag = self:SpawnPlugin("TagDisplay", "[money]", self)
+	moneyTag:SetFontObject(bagsFont)
+	moneyTag:SetFont(select(1, moneyTag:GetFont()), 13, select(3, moneyTag:GetFont()))
+	moneyTag:SetPoint("RIGHT", collapseArrow, "LEFT", -12, 0)
+
+	local moneyTagFrame = CreateFrame("Frame", nil, UIParent)
+	moneyTagFrame:SetParent(self)
+	moneyTagFrame:SetAllPoints(moneyTag)
+	moneyTagFrame:SetScript("OnEnter", K.GoldButton_OnEnter)
+	moneyTagFrame:SetScript("OnLeave", K.GoldButton_OnLeave)
+
+	collapseArrow.moneyTag = moneyTag
+
+	collapseArrow.__owner = self
+	ToggleWidgetButtons(collapseArrow)
+	collapseArrow:SetScript("OnClick", ToggleWidgetButtons)
+
+	collapseArrow.title = "Widgets Toggle"
+	K.AddTooltip(collapseArrow, "ANCHOR_TOP")
 end
 
 function Module:CreateBagBar(settings, columns)
@@ -193,51 +217,40 @@ function Module:CreateBagBar(settings, columns)
 	self.BagBar = bagBar
 end
 
-function Module:CreateCloseButton()
+local function CloseOrRestoreBags(self, btn)
+	if btn == "RightButton" then
+		local bag = self.__owner.main
+		local bank = self.__owner.bank
+		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][bag:GetName()] = nil
+		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][bank:GetName()] = nil
+		bag:ClearAllPoints()
+		bag:SetPoint("BOTTOMRIGHT", -86, 76)
+		bank:ClearAllPoints()
+		bank:SetPoint("BOTTOMRIGHT", bag, "BOTTOMLEFT", -12, 0)
+		PlaySound(SOUNDKIT.IG_MINIMAP_OPEN)
+	else
+		CloseAllBags()
+	end
+end
+
+function Module:CreateCloseButton(f)
 	local closeButton = CreateFrame("Button", nil, self)
+	closeButton:RegisterForClicks("AnyUp")
 	closeButton:SetSize(18, 18)
 	closeButton:CreateBorder()
 	closeButton:StyleButton()
+	closeButton.__owner = f
 
 	closeButton.Icon = closeButton:CreateTexture(nil, "ARTWORK")
 	closeButton.Icon:SetAllPoints()
 	closeButton.Icon:SetTexCoord(unpack(K.TexCoords))
 	closeButton.Icon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32")
 
-	closeButton:SetScript("OnClick", _G.CloseAllBags)
-	closeButton.title = _G.CLOSE
+	closeButton:SetScript("OnClick", CloseOrRestoreBags)
+	closeButton.title = _G.CLOSE.."/".._G.RESET
 	K.AddTooltip(closeButton, "ANCHOR_TOP")
 
 	return closeButton
-end
-
-function Module:CreateRestoreButton(f)
-	local restoreButton = CreateFrame("Button", nil, self)
-	restoreButton:SetSize(18, 18)
-	restoreButton:CreateBorder()
-	restoreButton:StyleButton()
-
-	restoreButton.Icon = restoreButton:CreateTexture(nil, "ARTWORK")
-	restoreButton.Icon:SetAllPoints()
-	restoreButton.Icon:SetTexCoord(unpack(K.TexCoords))
-	restoreButton.Icon:SetAtlas("transmog-icon-revert")
-
-	restoreButton:SetScript("OnClick", function()
-		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][f.main:GetName()] = nil
-		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][f.bank:GetName()] = nil
-		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][f.reagent:GetName()] = nil
-		f.main:ClearAllPoints()
-		f.main:SetPoint("BOTTOMRIGHT", -86, 76)
-		f.bank:ClearAllPoints()
-		f.bank:SetPoint("BOTTOMRIGHT", f.main, "BOTTOMLEFT", -12, 0)
-		f.reagent:ClearAllPoints()
-		f.reagent:SetPoint("BOTTOMLEFT", f.bank)
-		PlaySound(SOUNDKIT.IG_MINIMAP_OPEN)
-	end)
-	restoreButton.title = _G.RESET
-	K.AddTooltip(restoreButton, "ANCHOR_TOP")
-
-	return restoreButton
 end
 
 function Module:CreateReagentButton(f)
@@ -810,7 +823,6 @@ function Module:OnEnable()
 	local bankWidth = C["Inventory"].BankWidth
 	local iconSize = C["Inventory"].IconSize
 	local showItemLevel = C["Inventory"].BagsItemLevel
-	local deleteButton = C["Inventory"].DeleteButton
 	local showNewItem = C["Inventory"].ShowNewItem
 	local hasCanIMogIt = IsAddOnLoaded("CanIMogIt")
 	local hasPawn = IsAddOnLoaded("Pawn")
@@ -1268,26 +1280,23 @@ function Module:OnEnable()
 		Module.CreateFreeSlots(self)
 
 		local buttons = {}
-		buttons[1] = Module.CreateCloseButton(self)
+		buttons[1] = Module.CreateCloseButton(self, f)
+		buttons[2] = Module.CreateSortButton(self, name)
 		if name == "Bag" then
 			Module.CreateBagBar(self, settings, 4)
-			buttons[2] = Module.CreateRestoreButton(self, f)
 			buttons[3] = Module.CreateBagToggle(self)
-			buttons[5] = Module.CreateSplitButton(self)
-			buttons[6] = Module.CreateFavouriteButton(self)
-			buttons[7] = Module.CreateJunkButton(self)
-			if deleteButton then
-				buttons[8] = Module.CreateDeleteButton(self)
-			end
+			buttons[4] = Module.CreateSplitButton(self)
+			buttons[5] = Module.CreateFavouriteButton(self)
+			buttons[6] = Module.CreateJunkButton(self)
+			buttons[7] = Module.CreateDeleteButton(self)
 		elseif name == "Bank" then
 			Module.CreateBagBar(self, settings, 7)
-			buttons[2] = Module.CreateReagentButton(self, f)
 			buttons[3] = Module.CreateBagToggle(self)
+			buttons[4] = Module.CreateReagentButton(self, f)
 		elseif name == "Reagent" then
-			buttons[2] = Module.CreateBankButton(self, f)
 			buttons[3] = Module.CreateDepositButton(self)
+			buttons[4] = Module.CreateBankButton(self, f)
 		end
-		buttons[4] = Module.CreateSortButton(self, name)
 
 		for i = 1, #buttons do
 			local bu = buttons[i]
@@ -1302,6 +1311,10 @@ function Module:OnEnable()
 			end
 		end
 		self.widgetButtons = buttons
+
+		if name == "Bag" then
+			Module.CreateCollapseArrow(self)
+		end
 
 		self:HookScript("OnShow", K.RestoreMoverFrame)
 	end
