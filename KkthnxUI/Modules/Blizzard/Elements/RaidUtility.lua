@@ -308,6 +308,7 @@ function Module:RaidTool_ReadyCheck(parent)
 					end
 				end
 			end
+
 			rc:SetText(count.." / "..total)
 			if count == total then
 				rc:SetTextColor(0, 1, 0)
@@ -371,11 +372,11 @@ function Module:RaidTool_BuffChecker(parent)
 		local count = #NoBuff[i]
 		if count > 0 then
 			if count >= numPlayer then
-				sendMsg(L["Lack"]..BuffName[i]..": "..ALL..PLAYER)
+				sendMsg(BuffName[i]..": ".."Everyone")
 			elseif count >= 5 and i > 2 then
-				sendMsg(L["Lack"]..BuffName[i]..": "..string_format(L["%s players"], count))
+				sendMsg(BuffName[i]..": "..string_format(L["%s players"], count))
 			else
-				local str = L["Lack"]..BuffName[i]..": "
+				local str = BuffName[i]..": "
 				for j = 1, count do
 					str = str..NoBuff[i][j]..(j < #NoBuff[i] and ", " or "")
 					if #str > 230 then
@@ -620,17 +621,30 @@ end
 
 function Module:RaidTool_EasyMarker()
 	local menuFrame = CreateFrame("Frame", "KKUI_EasyMarking", UIParent, "UIDropDownMenuTemplate")
-	local menuList = {
-		{text = RAID_TARGET_NONE, func = function() SetRaidTarget("target", 0) end},
-		{text = K.RGBToHex(1, .92, 0)..RAID_TARGET_1.." "..ICON_LIST[1].."12|t", func = function() SetRaidTarget("target", 1) end},
-		{text = K.RGBToHex(.98, .57, 0)..RAID_TARGET_2.." "..ICON_LIST[2].."12|t", func = function() SetRaidTarget("target", 2) end},
-		{text = K.RGBToHex(.83, .22, .9)..RAID_TARGET_3.." "..ICON_LIST[3].."12|t", func = function() SetRaidTarget("target", 3) end},
-		{text = K.RGBToHex(.04, .95, 0)..RAID_TARGET_4.." "..ICON_LIST[4].."12|t", func = function() SetRaidTarget("target", 4) end},
-		{text = K.RGBToHex(.7, .82, .875)..RAID_TARGET_5.." "..ICON_LIST[5].."12|t", func = function() SetRaidTarget("target", 5) end},
-		{text = K.RGBToHex(0, .71, 1)..RAID_TARGET_6.." "..ICON_LIST[6].."12|t", func = function() SetRaidTarget("target", 6) end},
-		{text = K.RGBToHex(1, .24, .168)..RAID_TARGET_7.." "..ICON_LIST[7].."12|t", func = function() SetRaidTarget("target", 7) end},
-		{text = K.RGBToHex(.98, .98, .98)..RAID_TARGET_8.." "..ICON_LIST[8].."12|t", func = function() SetRaidTarget("target", 8) end},
-	}
+	local order = {"8", "7", "6", "5", "4", "3", "2", "1", "NONE"}
+	local menuList = {}
+
+	local function GetMenuTitle(color, text)
+		return (color and K.RGBToHex(color) or "")..text
+	end
+
+	local function SetRaidTargetByIndex(_, arg1)
+		SetRaidTarget("target", arg1)
+	end
+
+	for index, value in pairs(order) do
+		local blizz = _G.UnitPopupButtons["RAID_TARGET_"..value]
+		menuList[index] = {
+			text = GetMenuTitle(blizz.color, blizz.text),
+			icon = blizz.icon,
+			tCoordLeft = blizz.tCoordLeft,
+			tCoordRight = blizz.tCoordRight,
+			tCoordTop = blizz.tCoordTop,
+			tCoordBottom = blizz.tCoordBottom,
+			arg1 = 9 - index,
+			func = SetRaidTargetByIndex,
+		}
+	end
 
 	WorldFrame:HookScript("OnMouseDown", function(_, btn)
 		if not C["Misc"].EasyMarking then
@@ -639,12 +653,13 @@ function Module:RaidTool_EasyMarker()
 
 		if btn == "LeftButton" and IsControlKeyDown() and UnitExists("mouseover") then
 			if not IsInGroup() or (IsInGroup() and not IsInRaid()) or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
-				local ricon = GetRaidTargetIndex("mouseover")
+				local index = GetRaidTargetIndex("mouseover")
 				for i = 1, 8 do
-					if ricon == i then
-						menuList[i + 1].checked = true
+					local menu = menuList[i]
+					if menu.arg1 == index then
+						menu.checked = true
 					else
-						menuList[i + 1].checked = false
+						menu.checked = false
 					end
 				end
 				EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 1)

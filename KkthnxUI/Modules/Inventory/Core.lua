@@ -194,11 +194,14 @@ function Module:CreateCollapseArrow()
 	collapseArrow.moneyTag = moneyTag
 
 	collapseArrow.__owner = self
+	HideWidgets = not HideWidgets -- reset before toggle
 	ToggleWidgetButtons(collapseArrow)
 	collapseArrow:SetScript("OnClick", ToggleWidgetButtons)
 
 	collapseArrow.title = "Widgets Toggle"
 	K.AddTooltip(collapseArrow, "ANCHOR_TOP")
+
+	self.widgetArrow = collapseArrow
 end
 
 function Module:CreateBagBar(settings, columns)
@@ -221,12 +224,16 @@ local function CloseOrRestoreBags(self, btn)
 	if btn == "RightButton" then
 		local bag = self.__owner.main
 		local bank = self.__owner.bank
+		local reagent = self.__owner.reagent
 		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][bag:GetName()] = nil
 		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][bank:GetName()] = nil
+		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][reagent:GetName()] = nil
 		bag:ClearAllPoints()
 		bag:SetPoint("BOTTOMRIGHT", -86, 76)
 		bank:ClearAllPoints()
 		bank:SetPoint("BOTTOMRIGHT", bag, "BOTTOMLEFT", -12, 0)
+		reagent:ClearAllPoints()
+		reagent:SetPoint("BOTTOMLEFT", bank)
 		PlaySound(SOUNDKIT.IG_MINIMAP_OPEN)
 	else
 		CloseAllBags()
@@ -351,6 +358,21 @@ function Module:CreateDepositButton()
 	return DepositButton
 end
 
+local function ToggleBackpacks(self)
+	local parent = self.__owner
+	K.TogglePanel(parent.BagBar)
+	if parent.BagBar:IsShown() then
+		self.KKUI_Border:SetVertexColor(1, .8, 0)
+		PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
+	elseif C["General"].ColorTextures then
+		self.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+		PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
+	else
+		self.KKUI_Border:SetVertexColor(1, 1, 1)
+		PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
+	end
+end
+
 function Module:CreateBagToggle()
 	local bagToggleButton = CreateFrame("Button", nil, self)
 	bagToggleButton:SetSize(18, 18)
@@ -362,19 +384,8 @@ function Module:CreateBagToggle()
 	bagToggleButton.Icon:SetTexCoord(unpack(K.TexCoords))
 	bagToggleButton.Icon:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
 
-	bagToggleButton:SetScript("OnClick", function()
-		K.TogglePanel(self.BagBar)
-		if self.BagBar:IsShown() then
-			bagToggleButton.KKUI_Border:SetVertexColor(1, .8, 0)
-			PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
-		elseif C["General"].ColorTextures then
-			bagToggleButton.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
-			PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
-		else
-			bagToggleButton.KKUI_Border:SetVertexColor(1, 1, 1)
-			PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
-		end
-	end)
+	bagToggleButton.__owner = self
+	bagToggleButton:SetScript("OnClick", ToggleBackpacks)
 	bagToggleButton.title = _G.BACKPACK_TOOLTIP
 	K.AddTooltip(bagToggleButton, "ANCHOR_TOP")
 

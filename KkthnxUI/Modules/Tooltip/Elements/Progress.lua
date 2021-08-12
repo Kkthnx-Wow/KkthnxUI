@@ -457,6 +457,10 @@ local function SetProgressionInfo(guid)
 end
 
 function Module:AddProgression(unit)
+	if K.CheckAddOnState("RaiderIO") then
+		return
+	end
+
     if (not C["Tooltip"].Raids and not C["Tooltip"].Mythics and not C["Tooltip"].Special) then
         return
     end

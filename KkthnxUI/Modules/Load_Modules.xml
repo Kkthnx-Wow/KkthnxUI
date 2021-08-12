@@ -181,7 +181,6 @@
    <Include file="Skins\Blizzard\Inspect.lua" />
    <Include file="Skins\Blizzard\LootFrame.lua" />
    <Include file="Skins\Blizzard\LossControl.lua" />
-   <Include file="Skins\Blizzard\Fonts.lua" />
    <Include file="Skins\Blizzard\Miscellaneous.lua" />
    <Include file="Skins\Blizzard\ObjectiveTracker.lua" />
    <Include file="Skins\Blizzard\SpellBook.lua" />

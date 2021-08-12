@@ -175,6 +175,10 @@ function Module:OnTooltipCleared()
 end
 
 function Module:ShowUnitMythicPlusScore(unit)
+	if K.CheckAddOnState("RaiderIO") then
+		return
+	end
+
 	if not C["Tooltip"].MDScore then
 		return
 	end
