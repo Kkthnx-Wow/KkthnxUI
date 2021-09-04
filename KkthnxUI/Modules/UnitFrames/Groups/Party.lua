@@ -134,7 +134,7 @@ function Module:CreateParty()
 	self:Tag(self.Level, "[nplevel]")
 
 	if C["Party"].ShowBuffs then
-		self.Buffs = CreateFrame("Frame", nil, self)
+		self.Buffs = CreateFrame("Frame", "KKUI_PartyBuffs", self)
 		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
 		self.Buffs.initialAnchor = "TOPLEFT"
@@ -145,9 +145,7 @@ function Module:CreateParty()
 		self.Buffs.iconsPerRow = 6
 		self.Buffs.onlyShowPlayer = false
 
-		self.Buffs.size = Module.auraIconSize(partyWidth, self.Buffs.iconsPerRow, self.Buffs.spacing)
-		self.Buffs:SetWidth(partyWidth)
-		self.Buffs:SetHeight((self.Buffs.size + self.Buffs.spacing) * math.floor(self.Buffs.num/self.Buffs.iconsPerRow + .5))
+		Module:UpdateAuraContainer(partyWidth, self.Buffs, self.Buffs.num)
 
 		self.Buffs.showStealableBuffs = true
 		self.Buffs.PostCreateIcon = Module.PostCreateAura
@@ -163,9 +161,9 @@ function Module:CreateParty()
 	self.Debuffs.num = 5
 	self.Debuffs.iconsPerRow = 5
 	self.Debuffs.CustomFilter = Module.CustomFilter
-	self.Debuffs.size = Module.auraIconSize(partyWidth, self.Debuffs.iconsPerRow, self.Debuffs.spacing + 2.5)
-	self.Debuffs:SetWidth(partyWidth)
-	self.Debuffs:SetHeight((self.Debuffs.size + self.Debuffs.spacing) * math_floor(self.Debuffs.num/self.Debuffs.iconsPerRow + 0.5))
+
+	Module:UpdateAuraContainer(partyWidth, self.Debuffs, self.Debuffs.num)
+
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 

@@ -334,7 +334,7 @@ function Module:OnTooltipSetUnit()
 
 		if not isPlayer and isShiftKeyDown then
 			local guid = UnitGUID(unit)
-			local npcID = K.GetNPCID(guid)
+			local npcID = guid and K.GetNPCID(guid)
 			if npcID then
 				self:AddLine(string_format(npcIDstring, npcID))
 			end
@@ -505,8 +505,14 @@ function Module:ReskinTooltip()
 	end
 
 	if not self.isTipStyled then
-		if self.SetBackdrop then
-			self:SetBackdrop(nil)
+		if K.IsNewPatch then
+			if self.NineSlice then
+				self.NineSlice:SetAlpha(0)
+			end
+		else
+			if self.SetBackdrop then
+				self:SetBackdrop(nil)
+			end
 		end
 		self:DisableDrawLayer("BACKGROUND")
 
@@ -567,7 +573,9 @@ function Module:OnEnable()
 	hooksecurefunc("GameTooltip_ShowStatusBar", Module.GameTooltip_ShowStatusBar)
 	hooksecurefunc("GameTooltip_ShowProgressBar", Module.GameTooltip_ShowProgressBar)
 	hooksecurefunc("GameTooltip_SetDefaultAnchor", Module.GameTooltip_SetDefaultAnchor)
-	hooksecurefunc("SharedTooltip_SetBackdropStyle", Module.SharedTooltip_SetBackdropStyle)
+	if not K.IsNewPatch then
+		hooksecurefunc("SharedTooltip_SetBackdropStyle", Module.SharedTooltip_SetBackdropStyle)
+	end
 	hooksecurefunc("GameTooltip_AnchorComparisonTooltips", Module.GameTooltip_ComparisonFix)
 
 	-- Elements

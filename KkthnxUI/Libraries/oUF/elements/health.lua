@@ -287,6 +287,7 @@ local function onUpdateHealth(self, elapsed)
 end
 
 local function SetHealthUpdateSpeed(self, state)
+	if state < .1 then state = .1 end
 	onUpdateWait = state
 end
 
@@ -306,7 +307,7 @@ local function SetHealthUpdateMethod(self, state, force)
 	end
 end
 
-local function Enable(self, unit)
+local function Enable(self)
 	local element = self.Health
 	if(element) then
 		element.__owner = self

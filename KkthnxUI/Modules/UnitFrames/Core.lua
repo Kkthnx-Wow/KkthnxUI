@@ -816,9 +816,9 @@ function Module:CreateUnits()
 		oUF:RegisterStyle("Party", Module.CreateParty)
 		oUF:SetActiveStyle("Party")
 
-		local partyXOffset, partyYOffset = 6, C["Party"].ShowBuffs and 54 or 18
+		local partyXOffset, partyYOffset = 6, 66
 		local partyMoverWidth = C["Party"].HealthWidth
-		local partyMoverHeight = C["Party"].HealthHeight * 5 + partyYOffset * 4
+		local partyMoverHeight = C["Party"].HealthHeight + C["Party"].PowerHeight + 6 + partyYOffset * 5
 		local partyGroupingOrder = "NONE,DAMAGER,HEALER,TANK"
 
 		local party = oUF:SpawnHeader("oUF_Party", nil, "solo,party",

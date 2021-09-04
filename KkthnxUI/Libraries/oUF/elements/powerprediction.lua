@@ -44,8 +44,8 @@ local _, ns = ...
 local oUF = ns.oUF
 
 -- sourced from FrameXML/AlternatePowerBar.lua
-local ADDITIONAL_POWER_BAR_INDEX = ADDITIONAL_POWER_BAR_INDEX or 0
-local ALT_MANA_BAR_PAIR_DISPLAY_INFO = ALT_MANA_BAR_PAIR_DISPLAY_INFO
+local ADDITIONAL_POWER_BAR_INDEX = _G.ADDITIONAL_POWER_BAR_INDEX or 0
+local ALT_MANA_BAR_PAIR_DISPLAY_INFO = _G.ALT_MANA_BAR_PAIR_DISPLAY_INFO
 
 local _, playerClass = UnitClass('player')
 
@@ -64,30 +64,30 @@ local function Update(self, event, unit)
 		element:PreUpdate(unit)
 	end
 
-	local mainCost, altCost = 0, 0
-	local mainType = UnitPowerType(unit)
-	local mainMax = UnitPowerMax(unit, mainType)
-	local isPlayer = UnitIsUnit('player', unit)
-	local altManaInfo = isPlayer and ALT_MANA_BAR_PAIR_DISPLAY_INFO[playerClass]
-	local hasAltManaBar = altManaInfo and altManaInfo[mainType]
 	local _, _, _, startTime, endTime, _, _, _, spellID = UnitCastingInfo(unit)
+	local mainPowerType = UnitPowerType(unit)
+	local hasAltManaBar = ALT_MANA_BAR_PAIR_DISPLAY_INFO[playerClass]
+		and ALT_MANA_BAR_PAIR_DISPLAY_INFO[playerClass][mainPowerType]
+	local mainCost, altCost = 0, 0
 
 	if(event == 'UNIT_SPELLCAST_START' and startTime ~= endTime) then
 		local costTable = GetSpellPowerCost(spellID)
-		local checkRequiredAura = isPlayer and #costTable > 1
+		-- hasRequiredAura is always false if there's only 1 subtable
+		local checkRequiredAura = #costTable > 1
+
 		for _, costInfo in next, costTable do
-			local cost, ctype, cperc = costInfo.cost, costInfo.type, costInfo.costPercent
-			local checkSpec = not checkRequiredAura or costInfo.hasRequiredAura
-			if checkSpec and ctype == mainType then
-				mainCost = ((isPlayer or cost < mainMax) and cost) or (mainMax * cperc) / 100
-				element.mainCost = mainCost
+			if(not checkRequiredAura or costInfo.hasRequiredAura) then
+				if(costInfo.type == mainPowerType) then
+					mainCost = costInfo.cost
+					element.mainCost = mainCost
 
-				break
-			elseif hasAltManaBar and checkSpec and ctype == ADDITIONAL_POWER_BAR_INDEX then
-				altCost = cost
-				element.altCost = altCost
+					break
+				elseif(costInfo.type == ADDITIONAL_POWER_BAR_INDEX) then
+					altCost = costInfo.cost
+					element.altCost = altCost
 
-				break
+					break
+				end
 			end
 		end
 	elseif(spellID) then
@@ -101,7 +101,7 @@ local function Update(self, event, unit)
 	end
 
 	if(element.mainBar) then
-		element.mainBar:SetMinMaxValues(0, mainMax)
+		element.mainBar:SetMinMaxValues(0, UnitPowerMax(unit, mainPowerType))
 		element.mainBar:SetValue(mainCost)
 		element.mainBar:Show()
 	end
@@ -142,9 +142,9 @@ local function ForceUpdate(element)
 	return Path(element.__owner, 'ForceUpdate', element.__owner.unit)
 end
 
-local function Enable(self)
+local function Enable(self, unit)
 	local element = self.PowerPrediction
-	if(element) then
+	if(element and UnitIsUnit(unit, 'player')) then
 		element.__owner = self
 		element.ForceUpdate = ForceUpdate
 

@@ -51,6 +51,7 @@ C.AutoQuest = {
 		[168430] = true, -- 戴克泰丽丝，格里恩挑战
 		[18166] = true, -- Khadgar (Allegiance to Aldor/Scryer, Shattrath)
 		[326027] = true, -- 运输站回收生成器DX-82
+		[162804] = true, -- 威娜莉
 		[43929] = true, -- 4000
 		[45400] = true, -- Fiona's Caravan (Eastern Plaguelands)
 		[55402] = true, -- Korgol Crushskull (Darkmoon Faire, Pit Master)

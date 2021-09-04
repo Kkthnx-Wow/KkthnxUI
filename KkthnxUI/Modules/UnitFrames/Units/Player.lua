@@ -390,15 +390,15 @@ function Module:CreatePlayer()
 
 	-- GCD spark
 	if C["Unitframe"].GlobalCooldown then
-		self.GCD = CreateFrame("Frame", self:GetName().."_GlobalCooldown", self)
-		self.GCD:SetWidth(playerWidth)
-		self.GCD:SetHeight(self.Health:GetHeight())
-		self.GCD:SetFrameStrata("HIGH")
-		self.GCD:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
+		-- self.GCD = CreateFrame("Frame", self:GetName().."_GlobalCooldown", self)
+		-- self.GCD:SetWidth(playerWidth)
+		-- self.GCD:SetHeight(self.Health:GetHeight())
+		-- self.GCD:SetFrameStrata("HIGH")
+		-- self.GCD:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
 
-		self.GCD.Color = {1, 1, 1}
-		self.GCD.Height = 26
-		self.GCD.Width = 128
+		-- self.GCD.Color = {1, 1, 1}
+		-- self.GCD.Height = 26
+		-- self.GCD.Width = 128
 	end
 
 	if C["Unitframe"].CombatText then
@@ -417,12 +417,7 @@ function Module:CreatePlayer()
 		end
 
 		self.FloatingCombatFeedback.font = C["Media"].Fonts.DamageFont
-
 		self.FloatingCombatFeedback.fontFlags = "OUTLINE"
-		self.FloatingCombatFeedback.showPets = C["Unitframe"].PetCombatText
-		self.FloatingCombatFeedback.showHots = C["Unitframe"].HotsDots
-		self.FloatingCombatFeedback.showAutoAttack = C["Unitframe"].AutoAttack
-		self.FloatingCombatFeedback.showOverHealing = C["Unitframe"].FCTOverHealing
 		self.FloatingCombatFeedback.abbreviateNumbers = true
 	end
 

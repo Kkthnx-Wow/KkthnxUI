@@ -34,9 +34,10 @@ function Module:SkinBag(bag)
 	bag:StripTextures()
 	bag:CreateBorder()
 	bag:StyleButton(true)
+	bag.IconBorder:Kill()
 
-	icon:SetTexture(bag.oldTex)
 	icon:SetAllPoints()
+	icon:SetTexture(bag.oldTex)
 	icon:SetTexCoord(unpack(K.TexCoords))
 end
 
@@ -99,7 +100,6 @@ function Module:CreateInventoryBar()
 	Module.BagBar:SetScript("OnLeave", OnLeave)
 
 	_G.MainMenuBarBackpackButton:SetParent(Module.BagBar)
-	_G.MainMenuBarBackpackButton.SetParent = K.Noop
 	_G.MainMenuBarBackpackButton:ClearAllPoints()
 	_G.MainMenuBarBackpackButtonCount:SetFontObject(KkthnxUIFontOutline)
 	_G.MainMenuBarBackpackButtonCount:ClearAllPoints()
@@ -113,7 +113,6 @@ function Module:CreateInventoryBar()
 	for i = 0, NUM_BAG_FRAMES - 1 do
 		local b = _G["CharacterBag"..i.."Slot"]
 		b:SetParent(Module.BagBar)
-		b.SetParent = K.Noop
 		b:HookScript("OnEnter", OnEnter)
 		b:HookScript("OnLeave", OnLeave)
 

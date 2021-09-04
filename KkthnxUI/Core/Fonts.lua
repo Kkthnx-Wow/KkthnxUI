@@ -50,7 +50,7 @@ local function UpdateBlizzardFonts()
 
 	if replaceBubbleFont then
 		local BUBBLE = C["Media"].Fonts.KkthnxUIFont
-		SetFont(_G.ChatBubbleFont, BUBBLE, 12, "NONE")	-- 13
+		SetFont(_G.ChatBubbleFont, BUBBLE, 10, "NONE")	-- 13
 	end
 
 	if replaceNameplateFont then

@@ -305,12 +305,7 @@ function Module:CreateTarget()
 		end
 
 		self.FloatingCombatFeedback.font = C["Media"].Fonts.DamageFont
-
 		self.FloatingCombatFeedback.fontFlags = "OUTLINE"
-		self.FloatingCombatFeedback.showPets = C["Unitframe"].PetCombatText
-		self.FloatingCombatFeedback.showHots = C["Unitframe"].HotsDots
-		self.FloatingCombatFeedback.showAutoAttack = C["Unitframe"].AutoAttack
-		self.FloatingCombatFeedback.showOverHealing = C["Unitframe"].FCTOverHealing
 		self.FloatingCombatFeedback.abbreviateNumbers = true
 
 		-- Default CombatText

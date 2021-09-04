@@ -102,6 +102,7 @@ K.ScrollButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:
 K.AFKTex = "|T"..FRIENDS_TEXTURE_AFK..":14:14:0:0:16:16:1:15:1:15|t"
 K.DNDTex = "|T"..FRIENDS_TEXTURE_DND..":14:14:0:0:16:16:1:15:1:15|t"
 K.KkthnxUIString = "[KkthnxUI]: "
+K.IsNewPatch = select(4, GetBuildInfo()) >= 90105 -- 9.1.0
 
 function K.IsMyPet(flags)
 	return bit_band(flags, COMBATLOG_OBJECT_AFFILIATION_MINE) > 0
