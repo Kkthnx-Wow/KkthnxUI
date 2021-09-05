@@ -8,7 +8,6 @@ local tonumber = _G.tonumber
 
 local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
-local C_Navigation_GetDistance = _G.C_Navigation.GetDistance
 local C_QuestLog_GetLogIndexForQuestID = _G.C_QuestLog.GetLogIndexForQuestID
 local C_QuestLog_GetSelectedQuest = _G.C_QuestLog.GetSelectedQuest
 local C_QuestLog_ShouldShowQuestRewards = _G.C_QuestLog.ShouldShowQuestRewards
@@ -40,6 +39,109 @@ local UnitXPMax = _G.UnitXPMax
 local YES = _G.YES
 local hooksecurefunc = _G.hooksecurefunc
 
+local KKUI_MISC_LIST = {}
+
+function Module:RegisterMisc(name, func)
+	if not KKUI_MISC_LIST[name] then
+		KKUI_MISC_LIST[name] = func
+	end
+end
+
+function Module:OnEnable()
+	for name, func in next, KKUI_MISC_LIST do
+		if name and type(func) == "function" then
+			func()
+		end
+	end
+
+	self:CreateBlockStrangerInvites()
+	self:CreateBossBanner()
+	self:CreateBossEmote()
+	self:CreateDisableHelpTip()
+	self:CreateDisableNewPlayerExperience()
+	self:CreateDomiExtractor()
+	self:CreateDurabilityFrameMove()
+	self:CreateErrorFrameToggle()
+	self:CreateErrorsFrame()
+	self:CreateGUIGameMenuButton()
+	self:CreateJerryWay()
+	self:CreateKillTutorials()
+	self:CreateMawWidgetFrame()
+	self:CreateQuestSizeUpdate()
+	self:CreateTicketStatusFrameMove()
+	self:CreateTradeTargetInfo()
+	self:CreateVehicleSeatMover()
+	self:MoveMawBuffsFrame()
+
+	hooksecurefunc("QuestInfo_Display", Module.CreateQuestXPPercent)
+
+	-- TESTING CMD : /run BNToastFrame:AddToast(BN_TOAST_TYPE_ONLINE, 1)
+	if not BNToastFrame.mover then
+		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", {"BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 218})
+	else
+		BNToastFrame.mover:SetSize(BNToastFrame:GetSize())
+	end
+	hooksecurefunc(BNToastFrame, "SetPoint", Module.PostBNToastMove)
+
+	-- Unregister talent event
+	if PlayerTalentFrame then
+		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	else
+		hooksecurefunc("TalentFrame_LoadUI", function()
+			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		end)
+	end
+
+	-- Auto chatBubbles
+	if C["Misc"].AutoBubbles then
+		local function updateBubble()
+			local name, instType = GetInstanceInfo()
+			if name and instType == "raid" then
+				SetCVar("chatBubbles", 1)
+			else
+				SetCVar("chatBubbles", 0)
+			end
+		end
+		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
+	end
+
+	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
+		NoTalkingHeads()
+	else
+		K:RegisterEvent("ADDON_LOADED", Module.TalkingHeadOnLoad)
+	end
+
+	-- Instant delete
+	local deleteDialog = StaticPopupDialogs["DELETE_GOOD_ITEM"]
+	if deleteDialog.OnShow then
+		hooksecurefunc(deleteDialog, "OnShow", function(self)
+			self.editBox:SetText(DELETE_ITEM_CONFIRM_STRING)
+		end)
+	end
+
+	-- Fix blizz bug in addon list
+	local _AddonTooltip_Update = AddonTooltip_Update
+	function AddonTooltip_Update(owner)
+		if not owner then
+			return
+		end
+
+		if owner:GetID() < 1 then
+			return
+		end
+		_AddonTooltip_Update(owner)
+	end
+
+	-- MicroButton Talent Alert
+	local TalentMicroButtonAlert = _G.TalentMicroButtonAlert
+	if TalentMicroButtonAlert then -- why do we need to check this?
+		if C["General"].NoTutorialButtons then
+			TalentMicroButtonAlert:Kill() -- Kill it, because then the blizz default will show
+		end
+	end
+end
+
+local maxMawValue = 1000
 local MawRankColor = {
 	[0] = {0.5, 0.7, 1},
 	[1] = {0, 0.7, 0.3},
@@ -102,6 +204,31 @@ function Module:CreateGUIGameMenuButton()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
 	end)
 end
+
+function Module:CreateQuestXPPercent()
+	local unitXP, unitXPMax = UnitXP("player"), UnitXPMax("player")
+	if _G.QuestInfoFrame.questLog then
+		local selectedQuest = C_QuestLog_GetSelectedQuest()
+		if C_QuestLog_ShouldShowQuestRewards(selectedQuest) then
+			local xp = GetQuestLogRewardXP()
+			if xp and xp > 0 then
+				local text = _G.MapQuestInfoRewardsFrame.XPFrame.Name:GetText()
+				if text then
+					_G.MapQuestInfoRewardsFrame.XPFrame.Name:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100)
+				end
+			end
+		end
+	else
+		local xp = GetRewardXP()
+		if xp and xp > 0 then
+			local text = _G.QuestInfoXPFrame.ValueText:GetText()
+			if text then
+				_G.QuestInfoXPFrame.ValueText:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100)
+			end
+		end
+	end
+end
+
 
 -- Reanchor Vehicle
 function Module:CreateVehicleSeatMover()
@@ -220,12 +347,11 @@ function Module:CreateTradeTargetInfo()
 end
 
 -- Maw widget frame
-local maxValue = 1000
 local function GetMawBarValue()
 	local widgetInfo = C_UIWidgetManager.GetDiscreteProgressStepsVisualizationInfo(2885)
 	if widgetInfo and widgetInfo.shownState == 1 then
 		local value = widgetInfo.progressVal
-		return floor(value / maxValue), value % maxValue
+		return floor(value / maxMawValue), value % maxMawValue
 	end
 end
 
@@ -236,9 +362,9 @@ function Module:UpdateMawBarLayout()
 		bar:SetStatusBarColor(unpack(MawRankColor[rank]))
 		if rank == 5 then
 			bar.text:SetText("Lv"..rank)
-			bar:SetValue(maxValue)
+			bar:SetValue(maxMawValue)
 		else
-			bar.text:SetText("Lv"..rank.." - "..value.."/"..maxValue)
+			bar.text:SetText("Lv"..rank.." - "..value.."/"..maxMawValue)
 			bar:SetValue(value)
 		end
 		bar:Show()
@@ -261,7 +387,7 @@ function Module:CreateMawWidgetFrame()
 	local bar = CreateFrame("StatusBar", nil, UIParent)
 	bar:SetPoint("TOP", 0, -50)
 	bar:SetSize(200, 16)
-	bar:SetMinMaxValues(0, maxValue)
+	bar:SetMinMaxValues(0, maxMawValue)
 	bar.text = K.CreateFontString(bar, 12)
 	bar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
 	bar:CreateBorder()
@@ -505,56 +631,6 @@ do
 	K:RegisterEvent("ADDON_LOADED", fixCommunitiesNews)
 end
 
--- https://www.wowhead.com/quest=59585/well-make-an-aspirant-out-of-you
-function Module:CreateWorldQuestTool()
-	if not C["ActionBar"].Enable then
-		return
-	end
-
-	local hasFound
-	local function resetActionButtons()
-		if not hasFound then
-			return
-		end
-
-		for i = 1, 3 do
-			K.HideButtonGlow(_G["ActionButton"..i])
-		end
-		hasFound = nil
-	end
-
-	local fixedStrings = {
-		["横扫"] = "低扫",
-		["突刺"] = "突袭",
-	}
-
-	local function isActionMatch(msg, text)
-		return text and string.find(msg, text)
-	end
-
-	K:RegisterEvent("CHAT_MSG_MONSTER_SAY", function(_, msg)
-		if not GetOverrideBarSkin() or (not C_QuestLog_GetLogIndexForQuestID(59585) and not C_QuestLog_GetLogIndexForQuestID(64271)) then
-			resetActionButtons()
-			return
-		end
-
-		for i = 1, 3 do
-			local button = _G["ActionButton"..i]
-			local _, spellID = GetActionInfo(button.action)
-			local name = spellID and GetSpellInfo(spellID)
-			if isActionMatch(msg, fixedStrings[name]) or isActionMatch(msg, name) then
-				K.ShowButtonGlow(button)
-			else
-				K.HideButtonGlow(button)
-			end
-		end
-
-		hasFound = true
-	end)
-
-	K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", resetActionButtons)
-end
-
 hooksecurefunc("ChatEdit_InsertLink", function(text) -- shift-clicked
 	-- change from SearchBox:HasFocus to :IsShown again
 	if text and TradeSkillFrame and TradeSkillFrame:IsShown() then
@@ -629,10 +705,10 @@ local function NoTalkingHeads()
 	end)
 end
 
-local function TalkingHeadOnLoad(event, addon)
+function Module:TalkingHeadOnLoad(event, addon)
 	if addon == "Blizzard_TalkingHeadUI" then
 		NoTalkingHeads()
-		K:UnregisterEvent(event, TalkingHeadOnLoad)
+		K:UnregisterEvent(event, Module.TalkingHeadOnLoad)
 	end
 end
 
@@ -684,10 +760,10 @@ function Module:CreateDisableNewPlayerExperience() -- Disable new player experie
 end
 
 -- Make it so we can move this
-local function PostBNToastMove(frame, _, anchor)
+function Module:PostBNToastMove(_, anchor)
 	if anchor ~= _G.BNToastFrame.mover then
-		frame:ClearAllPoints()
-		frame:SetPoint("TOPLEFT", _G.BNToastFrame.mover, "TOPLEFT")
+		self:ClearAllPoints()
+		self:SetPoint("TOPLEFT", _G.BNToastFrame.mover, "TOPLEFT")
 	end
 end
 
@@ -844,158 +920,45 @@ function Module:CreateDomiExtractor()
 	end)
 end
 
-function Module:OnEnable()
-	self:CreateAFKCam()
-	self:CreateBlockStrangerInvites()
-	self:CreateBossBanner()
-	self:CreateBossEmote()
-	self:CreateDisableHelpTip()
-	self:CreateDisableNewPlayerExperience()
-	self:CreateDomiExtractor()
-	self:CreateDurabilityFrameMove()
-	self:CreateErrorFrameToggle()
-	self:CreateErrorsFrame()
-	self:CreateGUIGameMenuButton()
-	self:CreateGuildBest()
-	self:CreateImprovedMail()
-	self:CreateImprovedStats()
-	self:CreateKillTutorials()
-	self:CreateMawWidgetFrame()
-	self:CreateMerchantItemLevel()
-	self:CreateMouseTrail()
-	self:CreateParagonReputation()
-	self:CreatePulseCooldown()
-	self:CreateQuestSizeUpdate()
-	self:CreateQuickJoin()
-	self:CreateSlotDurability()
-	self:CreateSlotItemLevel()
-	self:CreateTicketStatusFrameMove()
-	self:CreateTradeTabs()
-	self:CreateTradeTargetInfo()
-	self:CreateVehicleSeatMover()
-	self:CreateWorldQuestTool()
-	self:MoveMawBuffsFrame()
-
-	-- TESTING CMD : /run BNToastFrame:AddToast(BN_TOAST_TYPE_ONLINE, 1)
-	if not BNToastFrame.mover then
-		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", {"BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 218})
-	else
-		BNToastFrame.mover:SetSize(BNToastFrame:GetSize())
-	end
-	hooksecurefunc(BNToastFrame, "SetPoint", PostBNToastMove)
-
-	-- Unregister talent event
-	if PlayerTalentFrame then
-		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	else
-		hooksecurefunc("TalentFrame_LoadUI", function()
-			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-		end)
+function Module:CreateJerryWay()
+	if IsAddOnLoaded("TomTom") then
+		return
 	end
 
-	-- Quick Join Bug
-	CreateFrame("Frame"):SetScript("OnUpdate", function()
-		if _G.LFRBrowseFrame.timeToClear then
-			_G.LFRBrowseFrame.timeToClear = nil
-		end
-	end)
+	local pointString = K.InfoColor.."|Hworldmap:%d+:%d+:%d+|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%s, %s)]|h|r"
 
-	-- Auto chatBubbles
-	if C["Misc"].AutoBubbles then
-		local function updateBubble()
-			local name, instType = GetInstanceInfo()
-			if name and instType == "raid" then
-				SetCVar("chatBubbles", 1)
-			else
-				SetCVar("chatBubbles", 0)
+	local function GetCorrectCoord(x)
+		x = tonumber(x)
+		if x then
+			if x > 100 then
+				return 100
+			elseif x < 0 then
+				return 0
 			end
+			return x
 		end
-		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
 	end
 
-	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
-		NoTalkingHeads()
-	else
-		K:RegisterEvent("ADDON_LOADED", TalkingHeadOnLoad)
-	end
-
-	-- Instant delete
-	local deleteDialog = StaticPopupDialogs["DELETE_GOOD_ITEM"]
-	if deleteDialog.OnShow then
-		hooksecurefunc(deleteDialog, "OnShow", function(self)
-			self.editBox:SetText(DELETE_ITEM_CONFIRM_STRING)
-		end)
-	end
-
-	-- Fix blizz bug in addon list
-	local _AddonTooltip_Update = AddonTooltip_Update
-	function AddonTooltip_Update(owner)
-		if not owner then
+	SlashCmdList["KKUI_JERRY_WAY"] = function(msg)
+		if not msg or msg == nil or msg == "" or msg == " " then
+			K.Print(K.SystemColor.."WARNING:|r Use a proper format for coords. Example: '/way 51.7, 65.2'")
 			return
 		end
 
-		if owner:GetID() < 1 then
-			return
-		end
-		_AddonTooltip_Update(owner)
-	end
-
-	-- Add (+X%) to quest rewards experience text
-	hooksecurefunc("QuestInfo_Display", function()
-		local unitXP, unitXPMax = UnitXP("player"), UnitXPMax("player")
-		if _G.QuestInfoFrame.questLog then
-			local selectedQuest = C_QuestLog_GetSelectedQuest()
-			if C_QuestLog_ShouldShowQuestRewards(selectedQuest) then
-				local xp = GetQuestLogRewardXP()
-				if xp and xp > 0 then
-					local text = _G.MapQuestInfoRewardsFrame.XPFrame.Name:GetText()
-					if text then
-						_G.MapQuestInfoRewardsFrame.XPFrame.Name:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100)
-					end
-				end
-			end
-		else
-			local xp = GetRewardXP()
-			if xp and xp > 0 then
-				local text = _G.QuestInfoXPFrame.ValueText:GetText()
-				if text then
-					_G.QuestInfoXPFrame.ValueText:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100)
+		msg = gsub(msg, "(%d)[%.,] (%d)", "%1 %2")
+		local x, y = string.split(" ", msg)
+		if x and y then
+			local mapID = C_Map.GetBestMapForUnit("player")
+			if mapID then
+				local mapInfo = C_Map.GetMapInfo(mapID)
+				local mapName = mapInfo and mapInfo.name
+				if mapName then
+					x = GetCorrectCoord(x)
+					y = GetCorrectCoord(y)
+					K.Print(string.format(pointString, mapID, x * 100, y * 100, mapName, x, y))
 				end
 			end
 		end
-	end)
-
-	-- MicroButton Talent Alert
-	local TalentMicroButtonAlert = _G.TalentMicroButtonAlert
-	if TalentMicroButtonAlert then -- why do we need to check this?
-		if not C["General"].NoTutorialButtons then
-			TalentMicroButtonAlert:StripTextures()
-			TalentMicroButtonAlert:CreateBorder()
-
-			TalentMicroButtonAlert.Arrow:Hide()
-
-			TalentMicroButtonAlert.Text:ClearAllPoints()
-			TalentMicroButtonAlert.Text:SetPoint("CENTER", TalentMicroButtonAlert, "CENTER", 0, -10)
-			TalentMicroButtonAlert.Text:SetFontObject(KkthnxUIFont)
-
-			TalentMicroButtonAlert.CloseButton:ClearAllPoints()
-			TalentMicroButtonAlert.CloseButton:SetPoint("TOPRIGHT", TalentMicroButtonAlert, "TOPRIGHT", 3, 3)
-			TalentMicroButtonAlert.CloseButton:SkinCloseButton()
-
-			TalentMicroButtonAlert.arrow = TalentMicroButtonAlert:CreateTexture(nil, "OVERLAY")
-			TalentMicroButtonAlert.arrow:SetPoint("CENTER", TalentMicroButtonAlert.Arrow, -1, -2)
-			TalentMicroButtonAlert.arrow:SetTexture(C["Media"].Arrow)
-			TalentMicroButtonAlert.arrow:SetRotation(rad(180))
-			TalentMicroButtonAlert.arrow:SetSize(16, 16)
-			TalentMicroButtonAlert.arrow:SetAlpha(0.8)
-
-			TalentMicroButtonAlert.tex = TalentMicroButtonAlert:CreateTexture(nil, "OVERLAY")
-			TalentMicroButtonAlert.tex:SetPoint("TOP", 0, -4)
-			TalentMicroButtonAlert.tex:SetTexture([[Interface\DialogFrame\UI-Dialog-Icon-AlertNew]])
-			TalentMicroButtonAlert.tex:SetSize(26, 26)
-			TalentMicroButtonAlert.tex:SetAlpha(0.8)
-		else
-			TalentMicroButtonAlert:Kill() -- Kill it, because then the blizz default will show
-		end
 	end
+	SLASH_KKUI_JERRY_WAY1 = "/way"
 end

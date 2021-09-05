@@ -173,7 +173,7 @@ end
 
 function Module:CreateCollapseArrow()
 	local collapseArrow = CreateFrame("Button", nil, self)
-	collapseArrow:SetSize(18, 18)
+	collapseArrow:SetSize(16, 16)
 
 	collapseArrow.Icon = collapseArrow:CreateTexture()
 	collapseArrow.Icon:SetAllPoints()

@@ -66,3 +66,5 @@ function Module:CreateSlotDurability()
 	K:RegisterEvent("ADDON_LOADED", Module.SetupSlotDurability)
 	K:RegisterEvent("UPDATE_INVENTORY_DURABILITY", Module.SetupSlotDurability)
 end
+
+Module:RegisterMisc("SlotDurability", Module.CreateSlotDurability)

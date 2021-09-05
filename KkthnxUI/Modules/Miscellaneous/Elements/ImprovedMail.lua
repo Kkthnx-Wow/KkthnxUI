@@ -516,3 +516,5 @@ function Module:CreateImprovedMail()
 	Module:CollectCurrentButton()
 	Module:LastMailSaver()
 end
+
+Module:RegisterMisc("ImprovedMail", Module.CreateImprovedMail)

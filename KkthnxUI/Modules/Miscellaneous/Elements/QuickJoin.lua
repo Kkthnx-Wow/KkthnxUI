@@ -177,3 +177,5 @@ function Module:CreateQuickJoin()
 	hooksecurefunc("LFGListInviteDialog_Show", Module.HookDialogOnShow)
 	hooksecurefunc("LFGListGroupDataDisplayEnumerate_Update", Module.ReplaceGroupRoles)
 end
+
+Module:RegisterMisc("QuickJoin", Module.CreateQuickJoin)

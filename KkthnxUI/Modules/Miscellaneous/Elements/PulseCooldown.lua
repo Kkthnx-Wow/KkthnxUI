@@ -306,3 +306,5 @@ _G.SlashCmdList.PULSECD = function()
 end
 SLASH_PULSECD1 = "/pulse"
 SLASH_PULSECD2 = "/pulsecd"
+
+Module:RegisterMisc("PulseCooldown", Module.CreatePulseCooldown)

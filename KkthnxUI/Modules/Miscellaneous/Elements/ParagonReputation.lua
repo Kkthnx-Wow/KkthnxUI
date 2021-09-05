@@ -315,3 +315,5 @@ function Module:CreateParagonReputation()
 	CreateToast()
 	K.Mover(Module.toast, "ParagonToastMover", "ParagonToastMover", {"TOP", UIParent, "TOP", 0, -196}, 302, 70)
 end
+
+Module:RegisterMisc("ParagonReputation", Module.CreateParagonReputation)

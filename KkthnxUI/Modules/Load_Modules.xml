@@ -123,6 +123,7 @@
    <Script file="Miscellaneous\Elements\MovableFrames.lua" />
    <Script file="Miscellaneous\Elements\ParagonReputation.lua" />
    <Script file="Miscellaneous\Elements\PulseCooldown.lua" />
+   <Script file="Miscellaneous\Elements\QuestTool.lua" />
    <Script file="Miscellaneous\Elements\QuickJoin.lua" />
    <Script file="Miscellaneous\Elements\SlotDurability.lua" />
    <Script file="Miscellaneous\Elements\SlotItemLevel.lua" />

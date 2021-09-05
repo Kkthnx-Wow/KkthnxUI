@@ -700,3 +700,5 @@ function Module:CreateAFKCam()
 		printKeys[KEY_PRINTSCREEN_MAC] = true
 	end
 end
+
+Module:RegisterMisc("AFKCam", Module.CreateAFKCam)

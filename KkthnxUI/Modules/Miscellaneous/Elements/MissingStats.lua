@@ -144,3 +144,5 @@ function Module:CreateImprovedStats()
 		PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, displayItemLevel, false, displayItemLevel)
 	end)
 end
+
+Module:RegisterMisc("ImprovedStats", Module.CreateImprovedStats)

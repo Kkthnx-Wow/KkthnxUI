@@ -46,3 +46,5 @@ end
 function Module:CreateMerchantItemLevel()
 	hooksecurefunc("MerchantFrame_UpdateMerchantInfo", Module.MerchantItemlevel)
 end
+
+Module:RegisterMisc("MerchantItemLevel", Module.CreateMerchantItemLevel)

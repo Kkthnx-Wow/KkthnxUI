@@ -327,20 +327,36 @@ function Module:ItemLevel_FlyoutSetup()
 	end
 
 	local location = self.location
-	if not location or location >= EQUIPMENTFLYOUT_FIRST_SPECIAL_LOCATION then
+	if not location then
 		return
 	end
 
-	local _, _, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(location)
-	if voidStorage then
-		return
-	end
+	if tonumber(location) then
+		if location >= EQUIPMENTFLYOUT_FIRST_SPECIAL_LOCATION then
+			return
+		end
 
-	local quality = select(13, EquipmentManager_GetItemInfoByLocation(location))
-	if bags then
-		Module.ItemLevel_FlyoutUpdate(self, bag, slot, quality)
+		local _, _, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(location)
+		if voidStorage then
+			return
+		end
+
+		local quality = select(13, EquipmentManager_GetItemInfoByLocation(location))
+		if bags then
+			Module.ItemLevel_FlyoutUpdate(self, bag, slot, quality)
+		else
+			Module.ItemLevel_FlyoutUpdate(self, nil, slot, quality)
+		end
 	else
-		Module.ItemLevel_FlyoutUpdate(self, nil, slot, quality)
+		local itemLocation = self:GetItemLocation()
+		local quality = itemLocation and C_Item.GetItemQuality(itemLocation)
+		if itemLocation:IsBagAndSlot() then
+			local bag, slot = itemLocation:GetBagAndSlot()
+			Module.ItemLevel_FlyoutUpdate(self, bag, slot, quality)
+		elseif itemLocation:IsEquipmentSlot() then
+			local slot = itemLocation:GetEquipmentSlot()
+			Module.ItemLevel_FlyoutUpdate(self, nil, slot, quality)
+		end
 	end
 end
 
@@ -388,8 +404,16 @@ function Module:CreateSlotItemLevel()
 	K:RegisterEvent("INSPECT_READY", Module.ItemLevel_UpdateInspect)
 
 	-- iLvl on FlyoutButtons
-	hooksecurefunc("EquipmentFlyout_DisplayButton", Module.ItemLevel_FlyoutSetup)
+	hooksecurefunc("EquipmentFlyout_UpdateItems", function()
+		for _, button in pairs(EquipmentFlyoutFrame.buttons) do
+			if button:IsShown() then
+				Module.ItemLevel_FlyoutSetup(button)
+			end
+		end
+	end)
 
 	-- iLvl on ScrappingMachineFrame
 	K:RegisterEvent("ADDON_LOADED", Module.ItemLevel_ScrappingShow)
 end
+
+Module:RegisterMisc("SlotItemLevel", Module.CreateSlotItemLevel)

@@ -50,3 +50,5 @@ function Module:CreateMouseTrail()
 		end
 	end
 end
+
+Module:RegisterMisc("MouseTrail", Module.CreateMouseTrail)

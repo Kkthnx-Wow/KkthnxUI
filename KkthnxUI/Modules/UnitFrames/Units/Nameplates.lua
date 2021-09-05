@@ -45,7 +45,6 @@ local hooksecurefunc = _G.hooksecurefunc
 local aksCacheData = {}
 local customUnits = {}
 local groupRoles = {}
-local guidToPlate = {}
 local showPowerList = {}
 
 local hasExplosives
@@ -61,6 +60,11 @@ local classify = {
 	rare = {1, 1, 1, true},
 	rareelite = {1, 0.1, 0.1},
 	worldboss = {0, 1, 0},
+}
+
+local ShowTargetNPCs = {
+	[165251] = true, -- 仙林狐狸
+	[174773] = true, -- 怨毒怪
 }
 
 function Module:PlateSetCVar(cvar, value)
@@ -774,23 +778,23 @@ function Module:MouseoverIndicator(self)
 end
 
 -- Interrupt info on castbars
-function Module:UpdateCastbarInterrupt(...)
-	local _, eventType, _, sourceGUID, sourceName, _, _, destGUID = ...
-	if eventType == "SPELL_INTERRUPT" and destGUID and sourceName and sourceName ~= "" then
-		local nameplate = guidToPlate[destGUID]
-		if nameplate and nameplate.Castbar then
-			local _, class = GetPlayerInfoByGUID(sourceGUID)
-			local r, g, b = K.ColorClass(class)
-			local color = K.RGBToHex(r, g, b)
-			local sourceName = Ambiguate(sourceName, "short")
-			nameplate.Castbar.Text:SetText(INTERRUPTED.." > "..color..sourceName)
-			nameplate.Castbar.Time:SetText("")
-		end
+function Module:UpdateSpellInterruptor(...)
+	local _, _, sourceGUID, sourceName, _, _, destGUID = ...
+	if destGUID == self.unitGUID and sourceGUID and sourceName and sourceName ~= "" then
+		local _, class = GetPlayerInfoByGUID(sourceGUID)
+		local r, g, b = K.ColorClass(class)
+		local color = K.RGBToHex(r, g, b)
+		local sourceName = Ambiguate(sourceName, "short")
+		self.Castbar.Text:SetText(INTERRUPTED.." > "..color..sourceName)
+		self.Castbar.Time:SetText("")
 	end
 end
 
-function Module:AddInterruptInfo()
-	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self.UpdateCastbarInterrupt)
+function Module:SpellInterruptor(self)
+	if not self.Castbar then
+		return
+	end
+	self:RegisterCombatEvent("SPELL_INTERRUPT", Module.UpdateSpellInterruptor)
 end
 
 -- Create Nameplates
@@ -1021,6 +1025,7 @@ function Module:CreatePlates()
 	Module:AddCreatureIcon(self)
 	Module:AddQuestIcon(self)
 	Module:AddDungeonProgress(self)
+	Module:SpellInterruptor(self)
 	Module:AddClassIcon(self)
 
 	platesList[self] = self:GetName()
@@ -1228,10 +1233,6 @@ function Module:PostUpdatePlates(event, unit)
 	if event == "NAME_PLATE_UNIT_ADDED" then
 		self.unitName = UnitName(unit)
 		self.unitGUID = UnitGUID(unit)
-		if self.unitGUID then
-			guidToPlate[self.unitGUID] = self
-		end
-
 		self.isPlayer = UnitIsPlayer(unit)
 		self.npcID = K.GetNPCID(self.unitGUID)
 		self.widgetsOnly = UnitNameplateShowsWidgetsOnly(unit)
@@ -1245,9 +1246,6 @@ function Module:PostUpdatePlates(event, unit)
 
 		Module.RefreshPlateType(self, unit)
 	elseif event == "NAME_PLATE_UNIT_REMOVED" then
-		if self.unitGUID then
-			guidToPlate[self.unitGUID] = nil
-		end
 		self.npcID = nil
 	end
 
@@ -1260,7 +1258,7 @@ function Module:PostUpdatePlates(event, unit)
 		Module:UpdateClassIcon(self, unit)
 		Module:UpdateClassPowerAnchor()
 
-		self.tarName:SetShown(self.npcID == 174773)
+		self.tarName:SetShown(ShowTargetNPCs[self.npcID])
 	end
 	Module.UpdateExplosives(self, event, unit)
 end
