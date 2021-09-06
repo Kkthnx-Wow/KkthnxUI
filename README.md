@@ -1,4 +1,4 @@
-![0](https://user-images.githubusercontent.com/40672673/132156354-1457af4b-65ed-4a32-8063-80f0629427bf.png)
+![Logo](https://user-images.githubusercontent.com/40672673/132156524-36db3d22-9dfb-4593-bb25-959851462f03.png)
 
 [![Support me on Patreon](https://i.imgur.com/FzTLsYV.png) ](https://www.patreon.com/kkthnx)[![Donate through Paypal](https://i.imgur.com/IkPCLeh.png)](https://www.paypal.me/kkthnx) [![Say Thanks](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/Kkthnx)
 
