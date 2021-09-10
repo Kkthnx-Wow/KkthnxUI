@@ -1815,10 +1815,10 @@ local AddContactFrame = function()
 	frame:CreateBorder()
 
 	local frameLogo = frame:CreateTexture(nil, "OVERLAY")
-	frameLogo:SetSize(512, 256)
+	frameLogo:SetSize(256, 128)
 	frameLogo:SetBlendMode("ADD")
 	frameLogo:SetAlpha(0.07)
-	frameLogo:SetTexture(C["Media"].Textures.LogoTexture)
+	frameLogo:SetTexture(C["Media"].Textures.LogoSmallTexture)
 	frameLogo:SetPoint("CENTER", frame, "CENTER", 0, 0)
 
 	K.CreateFontString(frame, 16, "Contact Me", "", true, "TOP", 0, -10)

@@ -479,7 +479,7 @@ function Module:CreateAFKCam()
 	AFKMode.bottom:SetSize(UIParent:GetWidth() + 12, 120)
 
 	AFKMode.bottom.logo = AFKMode:CreateTexture(nil, "OVERLAY")
-	AFKMode.bottom.logo:SetSize(320, 150)
+	AFKMode.bottom.logo:SetSize(512 / 1.6, 256 / 1.6)
 	AFKMode.bottom.logo:SetPoint("CENTER", AFKMode.bottom, "CENTER", 0, 60)
 	AFKMode.bottom.logo:SetTexture(C["Media"].Textures.LogoTexture)
 

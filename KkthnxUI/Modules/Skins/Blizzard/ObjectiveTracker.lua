@@ -10,8 +10,6 @@ local unpack = _G.unpack
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
 
-local r, g, b = K.r, K.g, K.b
-
 -- Handle collapse
 local function updateCollapseTexture(texture, collapsed)
 	local atlas = collapsed and "Soulbinds_Collection_CategoryHeader_Expand" or "Soulbinds_Collection_CategoryHeader_Collapse"

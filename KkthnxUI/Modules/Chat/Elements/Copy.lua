@@ -330,11 +330,7 @@ function Module:ChatCopy_Create()
 	kkuiconfig:SkinButton()
 	kkuiconfig:SetSize(16, 16)
 	kkuiconfig:SetAlpha(0.25)
-
-	kkuiconfig.Texture = kkuiconfig:CreateTexture(nil, "ARTWORK")
-	kkuiconfig.Texture:SetPoint("CENTER", kkuiconfig, "CENTER", 0, 0)
-	kkuiconfig.Texture:SetSize(32, 16)
-	kkuiconfig.Texture:SetTexture(C["Media"].Textures.LogoTexture)
+	K.CreateFontString(kkuiconfig, 14, "K", "", "system", "CENTER", 0, 0)
 	kkuiconfig:RegisterForClicks("AnyUp")
 	kkuiconfig:SetScript("OnClick", function(_, btn)
 		if btn == "LeftButton" then

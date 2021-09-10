@@ -161,6 +161,7 @@ function K.CreateFontString(self, size, text, textstyle, classcolor, anchor, x, 
 		fs:SetTextColor(K.r, K.g, K.b)
 	elseif classcolor == "system" then
 		fs:SetTextColor(1, .8, 0)
+	elseif classcolor == "system" then
 	end
 
 	if anchor and x and y then

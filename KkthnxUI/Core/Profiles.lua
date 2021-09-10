@@ -87,10 +87,10 @@ function Profiles:Enable()
 	K.CreateMoverFrame(self)
 
 	self.Logo = self:CreateTexture(nil, "OVERLAY")
-	self.Logo:SetSize(320, 150)
+	self.Logo:SetSize(256/1.2, 128/1.2)
 	self.Logo:SetScale(0.8)
-	self.Logo:SetTexture(C["Media"].Textures.LogoTexture)
-	self.Logo:SetPoint("TOP", self, "TOP", 0, 20)
+	self.Logo:SetTexture(C["Media"].Textures.LogoSmallTexture)
+	self.Logo:SetPoint("TOP", self, "TOP", 0, 2)
 
 	self.Title = self:CreateFontString(nil, "OVERLAY")
 	self.Title:SetFontObject(KkthnxUIFont)

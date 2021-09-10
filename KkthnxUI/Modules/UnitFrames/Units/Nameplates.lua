@@ -108,7 +108,7 @@ function Module:PlateInsideView()
 	if C["Nameplate"].InsideView then
 		Module:PlateSetCVar("nameplateOtherTopInset", 0.05)
 		Module:PlateSetCVar("nameplateOtherBottomInset", 0.08)
-	else
+	elseif GetCVar("nameplateOtherTopInset") == "0.05" and GetCVar("nameplateOtherBottomInset") == "0.08" then
 		Module:PlateSetCVar("nameplateOtherTopInset", -1)
 		Module:PlateSetCVar("nameplateOtherBottomInset", -1)
 	end

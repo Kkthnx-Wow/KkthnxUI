@@ -24,6 +24,7 @@ C["Media"] = {
 		CopyChatTexture = [[Interface\AddOns\KkthnxUI\Media\Chat\Copy.tga]],
 		GlowTexture = [[Interface\AddOns\KkthnxUI\Media\Textures\GlowTex.tga]],
 		LogoTexture = [[Interface\AddOns\KkthnxUI\Media\Textures\Logo.tga]],
+		LogoSmallTexture = [[Interface\AddOns\KkthnxUI\Media\Textures\LogoSmall.tga]],
 		MouseoverTexture = [[Interface\AddOns\KkthnxUI\Media\Textures\Mouseover.tga]],
 		NewClassIconsTexture = [[Interface\AddOns\KkthnxUI\Media\Unitframes\NEW-ICONS-CLASSES.blp]],
 		Spark128Texture = [[Interface\AddOns\KkthnxUI\Media\Textures\Spark_128]],

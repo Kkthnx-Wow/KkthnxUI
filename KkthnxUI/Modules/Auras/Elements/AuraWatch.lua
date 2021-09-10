@@ -1,13 +1,47 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:GetModule("Auras")
 
+local _G = _G
+local pairs = _G.pairs
+local select = _G.select
+local string_find = _G.string.find
+local table_insert = _G.table.insert
+local table_remove = _G.table.remove
+local table_wipe = _G.table.wipe
+
+local CreateFrame = _G.CreateFrame
+local GameTooltip = _G.GameTooltip
+local GetInventoryItemCooldown = _G.GetInventoryItemCooldown
+local GetInventoryItemLink = _G.GetInventoryItemLink
+local GetItemCooldown = _G.GetItemCooldown
+local GetItemInfo = _G.GetItemInfo
+local GetPlayerInfoByGUID = _G.GetPlayerInfoByGUID
+local GetSpellCharges = _G.GetSpellCharges
+local GetSpellCooldown = _G.GetSpellCooldown
+local GetSpellInfo = _G.GetSpellInfo
+local GetTime = _G.GetTime
+local GetTotemInfo = _G.GetTotemInfo
+local InCombatLockdown = _G.InCombatLockdown
+local IsAltKeyDown = _G.IsAltKeyDown
+local IsControlKeyDown = _G.IsControlKeyDown
+local IsPlayerSpell = _G.IsPlayerSpell
+local PlaySound = _G.PlaySound
+local UnitAura = _G.UnitAura
+local UnitGUID = _G.UnitGUID
+local UnitInParty = _G.UnitInParty
+local UnitInRaid = _G.UnitInRaid
+local UnitName = _G.UnitName
+
 local maxFrames = 12 -- Max Tracked Auras
-local updater = CreateFrame("Frame")
-local AuraList, FrameList, UnitIDTable, IntTable, IntCD, myTable, cooldownTable = {}, {}, {}, {}, {}, {}, {}
-local pairs, select, tinsert, tremove, wipe = _G.pairs, _G.select, _G.table.insert, _G.table.remove, _G.table.wipe
-local InCombatLockdown, UnitBuff, UnitDebuff, GetPlayerInfoByGUID, UnitInRaid, UnitInParty = _G.InCombatLockdown, _G.UnitBuff, _G.UnitDebuff, _G.GetPlayerInfoByGUID, _G.UnitInRaid, _G.UnitInParty
-local GetTime, GetSpellInfo, GetSpellCooldown, GetSpellCharges, GetTotemInfo = _G.GetTime, _G.GetSpellInfo, _G.GetSpellCooldown, _G.GetSpellCharges, _G.GetTotemInfo
-local GetItemCooldown, GetItemInfo, GetInventoryItemLink, GetInventoryItemCooldown = _G.GetItemCooldown, _G.GetItemInfo, _G.GetInventoryItemLink, _G.GetInventoryItemCooldown
+local auraWatchUpdater = CreateFrame("Frame")
+
+local AuraList = {}
+local FrameList = {}
+local UnitIDTable = {}
+local IntTable = {}
+local IntCD = {}
+local myTable = {}
+local cooldownTable = {}
 
 -- DataConvert
 local function DataAnalyze(v)
@@ -39,7 +73,7 @@ end
 
 local function InsertData(index, target)
 	if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher[index] then
-		wipe(target)
+		table_wipe(target)
 	end
 
 	for spellID, v in pairs(myTable[index]) do
@@ -96,7 +130,7 @@ local function ConvertTable()
 		elseif v.Name == "InternalCD" then
 			InsertData(10, v.List)
 			IntCD = v
-			tremove(C.AuraWatchList["ALL"], i)
+			table_remove(C.AuraWatchList["ALL"], i)
 		end
 	end
 end
@@ -106,11 +140,11 @@ local function BuildAuraList()
 	for class in pairs(C.AuraWatchList) do
 		if class == K.Class then
 			for _, value in pairs(C.AuraWatchList[class]) do
-				tinsert(AuraList, value)
+				table_insert(AuraList, value)
 			end
 		end
 	end
-	wipe(C.AuraWatchList)
+	table_wipe(C.AuraWatchList)
 end
 
 local function BuildUnitIDTable()
@@ -124,14 +158,14 @@ local function BuildUnitIDTable()
 			end
 
 			if flag then
-				tinsert(UnitIDTable, value.UnitID)
+				table_insert(UnitIDTable, value.UnitID)
 			end
 		end
 	end
 end
 
 local function BuildCooldownTable()
-	wipe(cooldownTable)
+	table_wipe(cooldownTable)
 
 	for KEY, VALUE in pairs(AuraList) do
 		for spellID, value in pairs(VALUE.List) do
@@ -282,17 +316,17 @@ local function BuildAura()
 				if i == 1 then
 					frame.MoveHandle = MakeMoveHandle(frame, L[value.Name], key, value.Pos)
 				end
-				tinsert(frameTable, frame)
+				table_insert(frameTable, frame)
 			elseif value.Mode == "BAR" then
 				local frame = BuildBAR(value.BarWidth, value.IconSize)
 				if i == 1 then
 					frame.MoveHandle = MakeMoveHandle(frame, L[value.Name], key, value.Pos)
 				end
-				tinsert(frameTable, frame)
+				table_insert(frameTable, frame)
 			end
 		end
 		frameTable.Index = 1
-		tinsert(FrameList, frameTable)
+		table_insert(FrameList, frameTable)
 	end
 end
 
@@ -597,7 +631,7 @@ function Module:AuraWatch_IntTimer(elapsed)
 	if timer < 0 then
 		self:SetScript("OnUpdate", nil)
 		self:Hide()
-		tremove(IntTable, self.ID)
+		table_remove(IntTable, self.ID)
 		Module:AuraWatch_SortBars()
 	elseif timer < 60 then
 		if self.Time then
@@ -622,7 +656,7 @@ function Module:AuraWatch_SetupInt(intID, itemID, duration, unitID, guid, source
 	local frame = BuildBAR(IntCD.BarWidth, IntCD.IconSize)
 	if frame then
 		frame:Show()
-		tinsert(IntTable, frame)
+		table_insert(IntTable, frame)
 		Module:AuraWatch_SortBars()
 	end
 
@@ -719,7 +753,7 @@ function Module:AuraWatch_UpdateInt(event, ...)
 			local unitID = value.UnitID:lower()
 			local guid = UnitGUID(unit)
 			local isPassed
-			if unitID == "all" and (unit == "player" or strfind(unit, "pet") or UnitInRaid(unit) or UnitInParty(unit) or not GetPlayerInfoByGUID(guid)) then
+			if unitID == "all" and (unit == "player" or string_find(unit, "pet") or UnitInRaid(unit) or UnitInParty(unit) or not GetPlayerInfoByGUID(guid)) then
 				isPassed = true
 			elseif unitID == "player" and (unit == "player" or unit == "pet") then
 				isPassed = true
@@ -747,7 +781,7 @@ function Module:AuraWatch_UpdateInt(event, ...)
 		end
 
 		if #cache > 666 then
-			wipe(cache)
+			table_wipe(cache)
 		end
 	end
 end
@@ -819,12 +853,12 @@ function Module:AuraWatch_OnUpdate(elapsed)
 		end
 	end
 end
-updater:SetScript("OnUpdate", Module.AuraWatch_OnUpdate)
+auraWatchUpdater:SetScript("OnUpdate", Module.AuraWatch_OnUpdate)
 
 -- Mover
 SlashCmdList.AuraWatch = function(msg)
 	if msg:lower() == "move" then
-		updater:SetScript("OnUpdate", nil)
+		auraWatchUpdater:SetScript("OnUpdate", nil)
 		for _, value in pairs(FrameList) do
 			for i = 1, 6 do
 				if value[i] then
@@ -866,7 +900,7 @@ SlashCmdList.AuraWatch = function(msg)
 					IntTable[i]:Hide()
 				end
 			end
-			wipe(IntTable)
+			table_wipe(IntTable)
 
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
 			Module:AuraWatch_SetupInt(2825, nil, 0, "player")
@@ -890,7 +924,7 @@ SlashCmdList.AuraWatch = function(msg)
 		for _, value in pairs(FrameList) do
 			value[1].MoveHandle:Hide()
 		end
-		updater:SetScript("OnUpdate", Module.AuraWatch_OnUpdate)
+		auraWatchUpdater:SetScript("OnUpdate", Module.AuraWatch_OnUpdate)
 
 		if IntCD.MoveHandle then
 			IntCD.MoveHandle:Hide()
@@ -899,7 +933,7 @@ SlashCmdList.AuraWatch = function(msg)
 					IntTable[i]:Hide()
 				end
 			end
-			wipe(IntTable)
+			table_wipe(IntTable)
 		end
 	end
 end
