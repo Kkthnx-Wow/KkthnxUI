@@ -293,6 +293,31 @@ function Module:OnCastSent()
 	element.SafeZone.castSent = true
 end
 
+local function ResetSpellTarget(self)
+	if self.spellTarget then
+		self.spellTarget:SetText("")
+	end
+end
+
+local function UpdateSpellTarget(self, unit)
+	if not self.spellTarget then
+		return
+	end
+
+	local unitTarget = unit and unit.."target"
+	if unitTarget and UnitExists(unitTarget) then
+		local nameString
+		if UnitIsUnit(unitTarget, "player") then
+			nameString = string_format("|cffff0000%s|r", ">"..strupper(YOU).."<")
+		else
+			nameString = K.RGBToHex(K.UnitColor(unitTarget))..UnitName(unitTarget)
+		end
+		self.spellTarget:SetText(nameString)
+	else
+		ResetSpellTarget(self) -- when unit loses target
+	end
+end
+
 function Module:PostCastStart(unit)
 	self:SetAlpha(1)
 
@@ -348,6 +373,15 @@ function Module:PostCastStart(unit)
 		color = K.Colors.castbar.notInterruptibleColor
 		self:SetStatusBarColor(color[1], color[2], color[3])
 	end
+
+	if self.__owner.mystyle == "nameplate" then
+		-- Spell target
+		UpdateSpellTarget(self, unit)
+	end
+end
+
+function Module:PostCastUpdate(unit)
+	UpdateSpellTarget(self, unit)
 end
 
 function Module:PostUpdateInterruptible(unit)

@@ -912,6 +912,7 @@ function Module:CreatePlates()
 
 	self.Castbar.OnUpdate = Module.OnCastbarUpdate
 	self.Castbar.PostCastStart = Module.PostCastStart
+	self.Castbar.PostCastUpdate = Module.PostCastUpdate
 	self.Castbar.PostCastStop = Module.PostCastStop
 	self.Castbar.PostCastFail = Module.PostCastFailed
 	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
