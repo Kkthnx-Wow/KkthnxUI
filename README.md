@@ -7,7 +7,7 @@ KkthnxUI is a simplistic user interface that holds onto the information and func
 ## Join the community
 There are thousands of users, but most are content to simply download and use the interface without further ado. If you wish to get more involved though, have some questions you can't find answers to anywhere else or simply just wish to stop by and say hello, we have both a [discord](https://discordapp.com/) server and a facebook page.
 
-* [Discord](https://discord.gg/YUmxqQm)
+* [Discord](https://discord.gg/Rc9wcK9cAB)
 * [Facebook](https://www.facebook.com/kkthnxui)
 * [Twitter](https://twitter.com/KkthnxUI)
 
