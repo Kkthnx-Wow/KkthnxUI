@@ -1834,7 +1834,7 @@ local AddContactFrame = function()
 	CreateContactBox(frame, "|CFFee653aCurse|r", "https://www.curseforge.com/members/kkthnxtv", 1)
 	CreateContactBox(frame, "|CFF666aa7WowInterface|r", "https://www.wowinterface.com/forums/member.php?action=getinfo&userid=303422", 2)
 	CreateContactBox(frame, "|CFFf6f8faGitHub|r", "https://github.com/Kkthnx-Wow/KkthnxUI", 3)
-	CreateContactBox(frame, "|CFF7289DADiscord|r", "https://discord.gg/YUmxqQm", 4)
+	CreateContactBox(frame, "|CFF7289DADiscord|r", "https://discord.gg/Rc9wcK9cAB", 4)
 
 	local back = CreateFrame("Button", nil, frame)
 	back:SetSize(120, 20)

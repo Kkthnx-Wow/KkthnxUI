@@ -4,19 +4,38 @@ local Module = K:GetModule("Infobar")
 local _G = _G
 local string_format = _G.string.format
 
+local COMBAT_ZONE = _G.COMBAT_ZONE
+local CONTESTED_TERRITORY = _G.CONTESTED_TERRITORY
 local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
+local FACTION_CONTROLLED_TERRITORY = _G.FACTION_CONTROLLED_TERRITORY
+local FACTION_STANDING_LABEL4 = _G.FACTION_STANDING_LABEL4
+local FREE_FOR_ALL_TERRITORY = _G.FREE_FOR_ALL_TERRITORY
+local GameTooltip = _G.GameTooltip
+local GetSubZoneText = _G.GetSubZoneText
+local GetZonePVPInfo = _G.GetZonePVPInfo
+local GetZoneText = _G.GetZoneText
+local IsInInstance = _G.IsInInstance
+local SANCTUARY_TERRITORY = _G.SANCTUARY_TERRITORY
+local UnitExists = _G.UnitExists
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitName = _G.UnitName
+local ZONE = _G.ZONE
 
-local coordX, coordY = 0, 0
-local subzone, zone, pvpType, faction
+local coordX = 0
+local coordY = 0
+local faction
+local pvpType
+local subzone
+local zone
 
 local zoneInfo = {
-	sanctuary = {SANCTUARY_TERRITORY, {0.035, 0.58, 0.84}},
 	arena = {FREE_FOR_ALL_TERRITORY, {0.84, 0.03, 0.03}},
+	combat = {COMBAT_ZONE, {0.84, 0.03, 0.03}},
+	contested = {CONTESTED_TERRITORY, {0.9, 0.85, 0.05}},
 	friendly = {FACTION_CONTROLLED_TERRITORY, {0.05, 0.85, 0.03}},
 	hostile = {FACTION_CONTROLLED_TERRITORY, {0.84, 0.03, 0.03}},
-	contested = {CONTESTED_TERRITORY, {0.9, 0.85, 0.05}},
-	combat = {COMBAT_ZONE, {0.84, 0.03, 0.03}},
-	neutral = {string_format(FACTION_CONTROLLED_TERRITORY, FACTION_STANDING_LABEL4), {0.9, 0.85, 0.05}}
+	neutral = {string_format(FACTION_CONTROLLED_TERRITORY, FACTION_STANDING_LABEL4), {0.9, 0.85, 0.05}},
+	sanctuary = {SANCTUARY_TERRITORY, {0.035, 0.58, 0.84}}
 }
 
 local function formatCoords()

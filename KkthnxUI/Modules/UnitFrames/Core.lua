@@ -300,8 +300,9 @@ local function ResetSpellTarget(self)
 end
 
 local function UpdateSpellTarget(self, unit)
-	if not self.spellTarget then
-		return
+	-- if not C.db["Nameplate"]["CastTarget"] then return end
+	if not self.spellTarget then 
+		return 
 	end
 
 	local unitTarget = unit and unit.."target"

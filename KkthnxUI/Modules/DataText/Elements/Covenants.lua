@@ -12,6 +12,7 @@ local C_Soulbinds_GetConduitQuality = _G.C_Soulbinds.GetConduitQuality
 local C_Soulbinds_GetConduitSpellID = _G.C_Soulbinds.GetConduitSpellID
 local C_Soulbinds_GetSoulbindData = _G.C_Soulbinds.GetSoulbindData
 local CreateAtlasMarkup = _G.CreateAtlasMarkup
+local GameTooltip = _G.GameTooltip
 local GetSpellInfo = _G.GetSpellInfo
 
 local function AddTexture(texture)

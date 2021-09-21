@@ -36,7 +36,9 @@ local soundKitID = 6199 -- https://wowhead.com/sound=6199/b-peonbuildingcomplete
 ]]
 
 local debugMode = false
-local completedQuest, WQcache, initComplete = {}, {}
+local WQcache = {}
+local completedQuest = {}
+local initComplete
 
 local function GetQuestLinkOrName(questID)
 	return GetQuestLink(questID) or C_QuestLog_GetTitleForQuestID(questID) or ""

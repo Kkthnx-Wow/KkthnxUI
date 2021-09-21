@@ -2,9 +2,13 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Blizzard")
 
 local _G = _G
-local UIParent = _G.UIParent
 
-local POSITION, ANCHOR_POINT, YOFFSET = "TOP", "BOTTOM", -10
+local UIParent = _G.UIParent
+local hooksecurefunc = _G.hooksecurefunc
+
+local ANCHOR_POINT = "BOTTOM"
+local POSITION = "TOP"
+local YOFFSET = -10
 
 function Module:PostAlertMove()
 	local AlertFrameMover = _G.AlertFrameHolder.AlertFrameMover

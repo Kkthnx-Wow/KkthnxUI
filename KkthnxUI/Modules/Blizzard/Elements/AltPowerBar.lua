@@ -9,34 +9,35 @@ local UnitPowerMax = _G.UnitPowerMax
 local UnitPower = _G.UnitPower
 local GetUnitPowerBarInfo = _G.GetUnitPowerBarInfo
 local GetUnitPowerBarStrings = _G.GetUnitPowerBarStrings
+local GameTooltip = _G.GameTooltip
 
 local AltPowerWidth = 250
 local AltPowerHeight = 20
 
 local function updateTooltip(self)
-	if _G.GameTooltip:IsForbidden() then
+	if GameTooltip:IsForbidden() then
 		return
 	end
 
 	if self.powerName and self.powerTooltip then
-		_G.GameTooltip:SetText(self.powerName, 1, 1, 1)
-		_G.GameTooltip:AddLine(self.powerTooltip, nil, nil, nil, 1)
-		_G.GameTooltip:Show()
+		GameTooltip:SetText(self.powerName, 1, 1, 1)
+		GameTooltip:AddLine(self.powerTooltip, nil, nil, nil, 1)
+		GameTooltip:Show()
 	end
 end
 
 local function onEnter(self)
-	if (not self:IsVisible()) or _G.GameTooltip:IsForbidden() then
+	if (not self:IsVisible()) or GameTooltip:IsForbidden() then
 		return
 	end
 
-	_G.GameTooltip:ClearAllPoints()
-	_G.GameTooltip_SetDefaultAnchor(_G.GameTooltip, self)
+	GameTooltip:ClearAllPoints()
+	GameTooltip_SetDefaultAnchor(GameTooltip, self)
 	updateTooltip(self)
 end
 
 local function onLeave()
-	_G.GameTooltip:Hide()
+	GameTooltip:Hide()
 end
 
 function Module:SetAltPowerBarText(text, name, value, max, percent)

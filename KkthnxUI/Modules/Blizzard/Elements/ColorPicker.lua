@@ -12,7 +12,6 @@ local wipe = _G.wipe
 
 local CALENDAR_COPY_EVENT = _G.CALENDAR_COPY_EVENT
 local CALENDAR_PASTE_EVENT = _G.CALENDAR_PASTE_EVENT
-local CLASS = _G.CLASS
 local CreateFrame = _G.CreateFrame
 local DEFAULT = _G.DEFAULT
 local IsAddOnLoaded = _G.IsAddOnLoaded

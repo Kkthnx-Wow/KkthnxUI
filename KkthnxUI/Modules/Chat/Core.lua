@@ -8,13 +8,14 @@ local string_gsub = _G.string.gsub
 local string_find = _G.string.find
 local string_format = _G.string.format
 
-local GetInstanceInfo = _G.GetInstanceInfo
-local InCombatLockdown = _G.InCombatLockdown
-local UnitName = _G.UnitName
+local ChatFrame1 = _G.ChatFrame1
 local ChatTypeInfo = _G.ChatTypeInfo
 local ConsoleExec = _G.ConsoleExec
 local GetCVar = _G.GetCVar
 local GetChannelName = _G.GetChannelName
+local GetInstanceInfo = _G.GetInstanceInfo
+local InCombatLockdown = _G.InCombatLockdown
+local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsInGroup = _G.IsInGroup
 local IsInGuild = _G.IsInGuild
@@ -22,6 +23,7 @@ local IsInRaid = _G.IsInRaid
 local IsPartyLFG = _G.IsPartyLFG
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local SetCVar = _G.SetCVar
+local UnitName = _G.UnitName
 local hooksecurefunc = _G.hooksecurefunc
 
 local messageSoundID = SOUNDKIT.TELL_MESSAGE
