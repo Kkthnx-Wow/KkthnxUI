@@ -1,4 +1,4 @@
-## Interface: 90100
+## Interface: 90105
 ## Title: |cff669DFFKkthnxUI|r
 ## Notes: Empty toc for Curseforge
 ## Author: Josh "Kkthnx" Russell

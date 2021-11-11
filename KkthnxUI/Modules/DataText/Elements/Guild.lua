@@ -19,7 +19,7 @@ local ChatFrame_OpenChat = _G.ChatFrame_OpenChat
 local GUILDINFOTAB_APPLICANTS = _G.GUILDINFOTAB_APPLICANTS
 local GetGuildInfo = _G.GetGuildInfo
 local GetGuildRosterInfo = _G.GetGuildRosterInfo
-local GetNumGuildApplicants = _G.GetNumGuildApplicants
+-- local GetNumGuildApplicants = _G.GetNumGuildApplicants
 local GetNumGuildMembers = _G.GetNumGuildMembers
 local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
 local GetRealZoneText = _G.GetRealZoneText
@@ -299,7 +299,7 @@ local function GuildPanel_Refresh()
 
 	gName:SetText("|cff0099ff<"..(guildName or "")..">")
 	gOnline:SetText(string_format(K.InfoColor.."%s:".." %d/%d", GUILD_ONLINE_LABEL, online, total))
-	gApps:SetText(string_format(K.InfoColor..GUILDINFOTAB_APPLICANTS, GetNumGuildApplicants()))
+	-- gApps:SetText(string_format(K.InfoColor..GUILDINFOTAB_APPLICANTS, GetNumGuildApplicants()))
 	gRank:SetText(K.InfoColor..RANK..": "..(guildRank or ""))
 
 	for i = 1, total do

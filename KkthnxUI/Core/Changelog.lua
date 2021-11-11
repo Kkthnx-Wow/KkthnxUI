@@ -35,6 +35,7 @@ local KKUI_ChangeLog = {
 				Header = "Fixed",
 				Entries = {
 					"BNet anchor mover throwing nil error",
+					"Guild datatext error",
 				},
 			},
 
