@@ -8,8 +8,13 @@ local hooksecurefunc = _G.hooksecurefunc
 table_insert(C.defaultThemes, function()
 	-- Battlenet toast frame
 	BNToastFrame:SetClampedToScreen(true)
+	BNToastFrame:SetBackdrop(nil)
 	BNToastFrame:CreateBorder()
-	BNToastFrame.TooltipFrame.NineSlice:SetAlpha(0)
+	if K.IsNewPatch then
+		BNToastFrame.TooltipFrame.NineSlice:SetAlpha(0)
+	else
+		BNToastFrame.TooltipFrame:SetBackdrop(nil)
+	end
 	BNToastFrame.TooltipFrame:CreateBorder()
 	BNToastFrame.CloseButton:SkinCloseButton()
 	BNToastFrame.CloseButton:SetSize(32, 32)

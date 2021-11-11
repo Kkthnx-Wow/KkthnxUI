@@ -558,6 +558,7 @@ function Module:SharedTooltip_SetBackdropStyle()
 		return
 	end
 
+	self:SetBackdrop(nil)
 end
 
 function Module:OnEnable()
