@@ -37,7 +37,7 @@ function Module:SkinBag(bag)
 	bag.IconBorder:Kill()
 
 	icon:SetAllPoints()
-	icon:SetTexture(bag.oldTex)
+	icon:SetTexture(bag.oldTex == 1721259 and "Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\Backpack.tga" or bag.oldTex)
 	icon:SetTexCoord(unpack(K.TexCoords))
 end
 

@@ -400,10 +400,11 @@ function Module:CreateMawWidgetFrame()
 			GameTooltip:SetOwner(self, "ANCHOR_BOTTOM", 0, -10)
 			local header, nonHeader = SplitTextIntoHeaderAndNonHeader(widgetInfo.tooltip)
 			if header then
-				GameTooltip:AddLine(header, nil,nil,nil, 1)
+				GameTooltip:AddLine(header, nil, nil, nil, 1)
 			end
+
 			if nonHeader then
-				GameTooltip:AddLine(nonHeader, nil,nil,nil, 1)
+				GameTooltip:AddLine(nonHeader, nil, nil, nil, 1)
 			end
 			GameTooltip:Show()
 		end
@@ -700,8 +701,8 @@ function Module:MoveTalkingHead()
 end
 
 function Module:NoTalkingHeads()
-	if not C["Misc"].NoTalkingHead then 
-		return 
+	if not C["Misc"].NoTalkingHead then
+		return
 	end
 
 	hooksecurefunc(TalkingHeadFrame, "Show", function(self)
@@ -951,7 +952,7 @@ function Module:CreateJerryWay()
 		end
 
 		msg = gsub(msg, "(%d)[%.,] (%d)", "%1 %2")
-		local x, y = string.split(" ", msg)
+		local x, y, z = string_match(msg, "(%S+)%s(%S+)(.*)")
 		if x and y then
 			local mapID = C_Map.GetBestMapForUnit("player")
 			if mapID then
@@ -960,7 +961,9 @@ function Module:CreateJerryWay()
 				if mapName then
 					x = GetCorrectCoord(x)
 					y = GetCorrectCoord(y)
-					K.Print(string.format(pointString, mapID, x * 100, y * 100, mapName, x, y))
+					if x and y then
+						K.Print(format(pointString, mapID, x*100, y*100, mapName, x, y, z or ""))
+					end
 				end
 			end
 		end

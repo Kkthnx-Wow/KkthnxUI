@@ -163,30 +163,29 @@ tinsert(C.defaultThemes, function()
 		CharacterFrame.Inset.Bg:SetVertTile(true)
 	end)
 
-	CharacterLevelText:SetFontObject(KkthnxUIFont)
+	if CharacterLevelText then
+		CharacterLevelText:SetFontObject(KkthnxUIFont)
+	end
 
 	local CharItemLvLValue = CharacterStatsPane.ItemLevelFrame.Value
 	CharItemLvLValue:SetFontObject(KkthnxUIFont)
 	CharItemLvLValue:SetFont(select(1, CharItemLvLValue:GetFont()), 18, select(3, CharItemLvLValue:GetFont()))
 
 	-- Titles
-	_G.PaperDollTitlesPane:HookScript('OnShow', function()
-		for _, object in pairs(_G.PaperDollTitlesPane.buttons) do
-			object.BgTop:SetTexture()
-			object.BgBottom:SetTexture()
-			object.BgMiddle:SetTexture()
-			object.text:SetFontObject(KkthnxUIFont)
-			object.text:SetFont(select(1, object.text:GetFont()), 11, select(3, object.text:GetFont()))
+	hooksecurefunc("PaperDollTitlesPane_UpdateScrollFrame", function()
+		local bu = PaperDollTitlesPane.buttons
+		for i = 1, #bu do
+			if not bu[i].textureKilled then
+				bu[i].BgTop:SetTexture()
+				bu[i].BgBottom:SetTexture()
+				bu[i].BgMiddle:SetTexture()
+				bu[i].textureKilled = true
+			end
 
-			if not object.text.hooked then
-				object.text.hooked = true
-
-				hooksecurefunc(object.text, "SetFont", function(txt, font)
-					if font ~= KkthnxUIFont then
-						txt:SetFontObject(KkthnxUIFont)
-						txt:SetFont(select(1, txt:GetFont()), 11, select(3, txt:GetFont()))
-					end
-				end)
+			if not bu[i].fontStyled then
+				bu[i].text:SetFontObject(KkthnxUIFont)
+				bu[i].text:SetFont(select(1, bu[i].text:GetFont()), 11, select(3, bu[i].text:GetFont()))
+				bu[i].fontStyled = true
 			end
 		end
 	end)

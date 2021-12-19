@@ -40,7 +40,9 @@ local KKUI_ChangeLog = {
 				Header = "Fixed",
 				Entries = {
 					"BNet anchor mover throwing nil error",
+					"Bag bar icon for main backpack display issue",
 					"Guild datatext error",
+					"Titles pane throwing c stack overflow :|",
 				},
 			},
 
