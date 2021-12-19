@@ -9,6 +9,10 @@ local enableTextColor = "|cff00cc4c"
 local newFeatureIcon = "|TInterface\\GossipFrame\\CampaignAvailableQuestIcon:16:16:-2|t"
 local emojiExample = "|TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t"
 
+local function updateBagSize()
+	K:GetModule("Bags"):UpdateBagSize()
+end
+
 local function UpdateBagSortOrder()
 	SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
 end
@@ -367,11 +371,12 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "BagBarMouseover", L["Fade Bagbar"])
 	Window:CreateSwitch("Inventory", "BagsItemLevel", L["Display Item Level"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "DeleteButton", L["Bags Delete Button"])
-	Window:CreateSwitch("Inventory", "MutliRows", L["Anchor Every Five Rows Into One Row"], nil, updateBagAnchor)
 	Window:CreateSwitch("Inventory", "PetTrash", L["Pet Trash Currencies"], "In patch 9.1, you can buy 3 battle pets by using specific trash items. Keep this enabled, will sort these items into Collection Filter, and won't be sold by auto junk")
 	Window:CreateSwitch("Inventory", "ReverseSort", L["Umm Reverse The Sorting"], nil, UpdateBagSortOrder)
 	Window:CreateSwitch("Inventory", "ShowNewItem", L["Show New Item Glow"])
 	Window:CreateSwitch("Inventory", "UpgradeIcon", L["Show Upgrade Icon"])
+	Window:CreateSlider("Inventory", "BagsPerRow", L["Bags Per Row"], 1, 20, 1, nil, updateBagAnchor)
+	Window:CreateSlider("Inventory", "BankPerRow", L["Bank Bags Per Row"], 1, 20, 1, nil, updateBagAnchor)
 	Window:CreateDropdown("Inventory", "AutoRepair", L["Auto Repair Gear"])
 
 	Window:CreateSection(FILTERS)
@@ -391,9 +396,9 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "GatherEmpty", L["Gather Empty Slots Into One Button"], nil, UpdateBagStatus)
 
 	Window:CreateSection(L["Sizes"])
-	Window:CreateSlider("Inventory", "BagsWidth", L["Bags Width"], 8, 16, 1)
-	Window:CreateSlider("Inventory", "BankWidth", L["Bank Width"], 10, 18, 1)
-	Window:CreateSlider("Inventory", "IconSize", L["Slot Icon Size"], 28, 40, 1)
+	Window:CreateSlider("Inventory", "BagsWidth", L["Bags Width"], 8, 16, 1, nil, updateBagSize)
+	Window:CreateSlider("Inventory", "BankWidth", L["Bank Width"], 10, 18, 1, nil, updateBagSize)
+	Window:CreateSlider("Inventory", "IconSize", L["Slot Icon Size"], 28, 40, 1, nil, updateBagSize)
 end
 
 local Auras = function(self)

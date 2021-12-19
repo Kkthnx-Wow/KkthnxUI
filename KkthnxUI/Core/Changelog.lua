@@ -27,7 +27,12 @@ local KKUI_ChangeLog = {
 				Header = "Added",
 				Entries = {
 					"New arrow texture",
+					"New bags per row options for bank and bags",
+					"New bags size updates live now",
+					"New map reveal data for 9.1",
+					"New map reveal data for Zereth Mortis",
 					"New quest tool for adding helpful tips for some quests and world quests",
+					"New support added for LibDBIcon",
 				},
 			},
 
@@ -48,6 +53,7 @@ local KKUI_ChangeLog = {
 			{
 				Header = "Changed",
 				Entries = {
+					"oUF core files",
 				}
 			}
 		}

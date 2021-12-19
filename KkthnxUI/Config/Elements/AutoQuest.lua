@@ -72,6 +72,7 @@ C.AutoQuest = {
 		[150131] = true, -- 萨尔玛法师
 		[155101] = true, -- 元素精华融合器
 		[155261] = true, -- 肖恩·维克斯，斯坦索姆
+		[165196] = true, -- 灰烬王庭，西塔尔
 		[171589] = true, -- 德莱文将军
 		[171787] = true, -- 文官阿得赖斯提斯
 		[171795] = true, -- 月莓女勋爵
@@ -80,6 +81,7 @@ C.AutoQuest = {
 		[172572] = true, -- 瑟蕾丝特·贝利文科（导师）
 		[173021] = true, -- 刻符牛头人
 		[175513] = true, -- 纳斯利亚审判官，傲慢
+		[180458] = true, -- 灰烬王庭，大帝幻象
 		[70022] = true, -- Ku'ma (Isle of Giants, Pandaria)
 		[79740] = true, -- Warmaster Zog (Horde)
 		[79953] = true, -- Lieutenant Thorn (Alliance)
@@ -115,6 +117,7 @@ C.AutoQuest = {
 	},
 
 	RogueClassHallInsignia = {
+		[107486] = true, -- CoS rumors
 		[93188] = true, -- Mongar
 		[96782] = true, -- Lucian Trias
 		[97004] = true, -- "Red" Jack Findle
@@ -188,4 +191,9 @@ C.AutoQuest = {
 		[45724] = 1e5, -- Champion's Purse
 		[64491] = 2e6, -- Royal Reward
 	},
+
+	IgnoreInstances = {
+		[1571] = true, -- 枯法者
+		[1626] = true, -- 群星庭院
+	}
 }

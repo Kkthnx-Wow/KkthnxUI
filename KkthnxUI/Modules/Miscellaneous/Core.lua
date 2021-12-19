@@ -103,7 +103,8 @@ function Module:OnEnable()
 	end
 
 	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
-		NoTalkingHeads()
+		Module.MoveTalkingHead()
+		Module.NoTalkingHeads()
 	else
 		K:RegisterEvent("ADDON_LOADED", Module.TalkingHeadOnLoad)
 	end
@@ -155,8 +156,8 @@ function Module:CreateGUIGameMenuButton()
 	KKUI_GUIButton:SkinButton()
 
 	GameMenuFrame:HookScript("OnShow", function(self)
-		local plusHeight = 54
-		GameMenuButtonLogout:SetPoint("TOP", KKUI_GUIButton, "BOTTOM", 0, -21)
+		_G.GameMenuButtonLogout:ClearAllPoints()
+		_G.GameMenuButtonLogout:SetPoint("TOP", KKUI_GUIButton, "BOTTOM", 0, -21)
 
 		_G.GameMenuButtonStore:ClearAllPoints()
 		_G.GameMenuButtonStore:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -6)
@@ -179,15 +180,7 @@ function Module:CreateGUIGameMenuButton()
 		_G.GameMenuButtonQuit:ClearAllPoints()
 		_G.GameMenuButtonQuit:SetPoint("TOP", _G.GameMenuButtonLogout, "BOTTOM", 0, -6)
 
-		if IsCharacterNewlyBoosted() or not C_SplashScreen.CanViewSplashScreen() then
-			plusHeight = plusHeight - 4
-		elseif (C_StorePublic.IsEnabled()) then
-			plusHeight = plusHeight + 6
-		elseif (GameMenuButtonRatings:IsShown()) then
-			plusHeight = plusHeight + 6
-		end
-
-		self:SetHeight(self:GetHeight() + KKUI_GUIButton:GetHeight() + plusHeight)
+		self:SetHeight(self:GetHeight() + KKUI_GUIButton:GetHeight() + 84) -- 6 x 7 + 21 + 21?
 	end)
 
 	KKUI_GUIButton:SetScript("OnClick", function()
@@ -692,9 +685,23 @@ function Module:CreateBlockStrangerInvites()
 	end)
 end
 
-local function NoTalkingHeads()
-	if not C["Misc"].NoTalkingHead then
-		return
+function Module:MoveTalkingHead()
+	local TalkingHeadFrame = _G.TalkingHeadFrame
+
+	TalkingHeadFrame.ignoreFramePositionManager = true
+	TalkingHeadFrame:ClearAllPoints()
+	TalkingHeadFrame:SetPoint("BOTTOM", 0, 220)
+
+	-- for index, alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
+	-- 	if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == TalkingHeadFrame then
+	-- 		table.remove(AlertFrame.alertFrameSubSystems, index)
+	-- 	end
+	-- end
+end
+
+function Module:NoTalkingHeads()
+	if not C["Misc"].NoTalkingHead then 
+		return 
 	end
 
 	hooksecurefunc(TalkingHeadFrame, "Show", function(self)
@@ -704,7 +711,8 @@ end
 
 function Module:TalkingHeadOnLoad(event, addon)
 	if addon == "Blizzard_TalkingHeadUI" then
-		NoTalkingHeads()
+		Module.MoveTalkingHead()
+		Module.NoTalkingHeads()
 		K:UnregisterEvent(event, Module.TalkingHeadOnLoad)
 	end
 end

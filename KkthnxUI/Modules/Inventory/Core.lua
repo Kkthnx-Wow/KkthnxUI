@@ -59,26 +59,54 @@ function Module:ReverseSort()
 end
 
 local anchorCache = {}
-function Module:UpdateAnchors(parent, bags)
-	if not parent:IsShown() then
-		return
-	end
-
-	wipe(anchorCache)
+function Module:UpdateBagsAnchor(parent, bags)
+	table_wipe(anchorCache)
 
 	local index = 1
+	local perRow = C["Inventory"].BagsPerRow
 	anchorCache[index] = parent
 
-	for _, bag in ipairs(bags) do
+	for i = 1, #bags do
+		local bag = bags[i]
 		if bag:GetHeight() > 45 then
 			bag:Show()
 			index = index + 1
 
 			bag:ClearAllPoints()
-			if (index - 1) % 5 == 0 and C["Inventory"].MutliRows then
-				bag:SetPoint("BOTTOMRIGHT", anchorCache[index - 5], "BOTTOMLEFT", -6, 0)
+			if (index-1) % perRow == 0 then
+				bag:SetPoint("BOTTOMRIGHT", anchorCache[index - perRow], "BOTTOMLEFT", -6, 0)
 			else
 				bag:SetPoint("BOTTOMLEFT", anchorCache[index - 1], "TOPLEFT", 0, 6)
+			end
+			anchorCache[index] = bag
+		else
+			bag:Hide()
+		end
+	end
+end
+
+function Module:UpdateBankAnchor(parent, bags)
+	table_wipe(anchorCache)
+
+	local index = 1
+	local perRow = C["Inventory"].BankPerRow
+	anchorCache[index] = parent
+
+	for i = 1, #bags do
+		local bag = bags[i]
+		if bag:GetHeight() > 45 then
+			bag:Show()
+			index = index + 1
+
+			bag:ClearAllPoints()
+			if index <= perRow then
+				bag:SetPoint("BOTTOMLEFT", anchorCache[index - 1], "TOPLEFT", 0, 6)
+			elseif index == perRow + 1 then
+				bag:SetPoint("TOPLEFT", anchorCache[index - 1], "TOPRIGHT", 6, 0)
+			elseif (index - 1) % perRow == 0 then
+				bag:SetPoint("TOPLEFT", anchorCache[index - perRow], "TOPRIGHT", 6, 0)
+			else
+				bag:SetPoint("TOPLEFT", anchorCache[index - 1], "BOTTOMLEFT", 0, -6)
 			end
 			anchorCache[index] = bag
 		else
@@ -204,6 +232,13 @@ function Module:CreateCollapseArrow()
 	self.widgetArrow = collapseArrow
 end
 
+local function updateBagBar(bar)
+	local spacing = 6
+	local offset = 6
+	local width, height = bar:LayoutButtons("grid", bar.columns, spacing, offset, -offset)
+	bar:SetSize(width + offset*2, height + offset*2)
+end
+
 function Module:CreateBagBar(settings, columns)
 	local bagBar = self:SpawnPlugin("BagBar", settings.Bags)
 	local spacing = 6
@@ -216,6 +251,9 @@ function Module:CreateBagBar(settings, columns)
 	bagBar.highlightFunction = highlightFunction
 	bagBar.isGlobal = true
 	bagBar:Hide()
+	bagBar.columns = columns
+	bagBar.UpdateAnchor = updateBagBar
+	bagBar:UpdateAnchor()
 
 	self.BagBar = bagBar
 end
@@ -229,11 +267,11 @@ local function CloseOrRestoreBags(self, btn)
 		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][bank:GetName()] = nil
 		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][reagent:GetName()] = nil
 		bag:ClearAllPoints()
-		bag:SetPoint("BOTTOMRIGHT", -86, 76)
+		bag:SetPoint(unpack(bag.__anchor))
 		bank:ClearAllPoints()
-		bank:SetPoint("BOTTOMRIGHT", bag, "BOTTOMLEFT", -12, 0)
+		bank:SetPoint(unpack(bank.__anchor))
 		reagent:ClearAllPoints()
-		reagent:SetPoint("BOTTOMLEFT", bank)
+		reagent:SetPoint(unpack(reagent.__anchor))
 		PlaySound(SOUNDKIT.IG_MINIMAP_OPEN)
 	else
 		CloseAllBags()
@@ -327,7 +365,7 @@ local function updateDepositButtonStatus(bu)
 end
 
 function Module:AutoDeposit()
-	if C["Inventory"].AutoDeposit then
+	if C["Inventory"].AutoDeposit and not IsShiftKeyDown() then
 		DepositReagentBank()
 	end
 end
@@ -524,7 +562,7 @@ function Module:CreateSplitButton()
 
 	local splitFrame = CreateFrame("Frame", nil, self)
 	splitFrame:SetSize(100, 50)
-	splitFrame:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
+	splitFrame:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -6)
 	K.CreateFontString(splitFrame, 14, L["Split Count"], "", "system", "TOP", 1, -5)
 	splitFrame:CreateBorder()
 	splitFrame:Hide()
@@ -614,8 +652,8 @@ function Module:CreateFavouriteButton()
 	favouriteButton:StyleButton()
 
 	favouriteButton.Icon = favouriteButton:CreateTexture(nil, "ARTWORK")
-	favouriteButton.Icon:SetPoint("TOPLEFT", -3, -1)
-	favouriteButton.Icon:SetPoint("BOTTOMRIGHT", 3, -4)
+	favouriteButton.Icon:SetPoint("TOPLEFT", -3, 2.5)
+	favouriteButton.Icon:SetPoint("BOTTOMRIGHT", 3, -1.5)
 	favouriteButton.Icon:SetTexCoord(unpack(K.TexCoords))
 	favouriteButton.Icon:SetTexture("Interface\\Common\\friendship-heart")
 
@@ -830,8 +868,6 @@ function Module:OnEnable()
 	end
 
 	-- Settings
-	local bagsWidth = C["Inventory"].BagsWidth
-	local bankWidth = C["Inventory"].BankWidth
 	local iconSize = C["Inventory"].IconSize
 	local showItemLevel = C["Inventory"].BagsItemLevel
 	local showNewItem = C["Inventory"].ShowNewItem
@@ -862,12 +898,7 @@ function Module:OnEnable()
 	local ContainerGroups = {["Bag"] = {}, ["Bank"] = {}}
 
 	local function AddNewContainer(bagType, index, name, filter)
-		local width = bagsWidth
-		if bagType == "Bank" then
-			width = bankWidth
-		end
-
-		local newContainer = MyContainer:New(name, {Columns = width, BagType = bagType})
+		local newContainer = MyContainer:New(name, {BagType = bagType})
 		newContainer:SetFilter(filter, true)
 		ContainerGroups[bagType][index] = newContainer
 	end
@@ -886,8 +917,9 @@ function Module:OnEnable()
 		AddNewContainer("Bag", 6, "BagAnima", filters.bagAnima)
 		AddNewContainer("Bag", 7, "BagRelic", filters.bagRelic)
 
-		f.main = MyContainer:New("Bag", {Columns = bagsWidth, Bags = "bags"})
-		f.main:SetPoint("BOTTOMRIGHT", -86, 76)
+		f.main = MyContainer:New("Bag", {Bags = "bags", BagType = "Bag"})
+		f.main.__anchor = {"BOTTOMRIGHT", -50, 100}
+		f.main:SetPoint(unpack(f.main.__anchor))
 		f.main:SetFilter(filters.onlyBags, true)
 
 		AddNewContainer("Bank", 10, "BankFavourite", filters.bankFavourite)
@@ -901,14 +933,16 @@ function Module:OnEnable()
 		AddNewContainer("Bank", 8, "BankAnima", filters.bankAnima)
 		AddNewContainer("Bank", 9, "BankQuest", filters.bankQuest)
 
-		f.bank = MyContainer:New("Bank", {Columns = bankWidth, Bags = "bank"})
-		f.bank:SetPoint("BOTTOMRIGHT", f.main, "BOTTOMLEFT", -12, 0)
+		f.bank = MyContainer:New("Bank", {Bags = "bank", BagType = "Bank"})
+		f.bank.__anchor = {"BOTTOMLEFT", 25, 50}
+		f.bank:SetPoint(unpack(f.bank.__anchor))
 		f.bank:SetFilter(filters.onlyBank, true)
 		f.bank:Hide()
 
-		f.reagent = MyContainer:New("Reagent", {Columns = bankWidth, Bags = "bankreagent"})
+		f.reagent = MyContainer:New("Reagent", {Bags = "bankreagent", BagType = "Bank"})
 		f.reagent:SetFilter(filters.onlyReagent, true)
-		f.reagent:SetPoint("BOTTOMLEFT", f.bank)
+		f.reagent.__anchor = {"BOTTOMLEFT", f.bank}
+		f.reagent:SetPoint(unpack(f.reagent.__anchor))
 		f.reagent:Hide()
 
 		for bagType, groups in pairs(ContainerGroups) do
@@ -927,6 +961,7 @@ function Module:OnEnable()
 
 		if not initBagType then
 			Module:UpdateAllBags() -- Initialize bagType
+			Module:UpdateBagSize()
 			initBagType = true
 		end
 	end
@@ -1115,7 +1150,7 @@ function Module:OnEnable()
 		if showItemLevel then
 			local level = item.level -- ilvl for keystone and battlepet
 			if not level and isItemNeedsLevel(item) then
-				local ilvl = K.GetItemLevel(item.link, item.bagID, item.slotID)
+				local ilvl = K.GetItemLevel(item.link, item.bagID ~= -1 and item.bagID, item.slotID) -- SetBagItem return nil for default bank slots
 				if ilvl and ilvl > 1 then
 					level = ilvl
 				end
@@ -1200,20 +1235,28 @@ function Module:OnEnable()
 	end
 
 	function Module:UpdateAllAnchors()
-		Module:UpdateAnchors(f.main, ContainerGroups["Bag"])
-		Module:UpdateAnchors(f.bank, ContainerGroups["Bank"])
+		Module:UpdateBagsAnchor(f.main, ContainerGroups["Bag"])
+		Module:UpdateBankAnchor(f.bank, ContainerGroups["Bank"])
 	end
 
-	function MyContainer:OnContentsChanged()
+	function Module:GetContainerColumns(bagType)
+		if bagType == "Bag" then
+			return C["Inventory"].BagsWidth
+		elseif bagType == "Bank" then
+			return C["Inventory"].BankWidth
+		end
+	end
+
+	function MyContainer:OnContentsChanged(gridOnly)
 		self:SortButtons("bagSlot")
 
-		local columns = self.Settings.Columns
+		local columns = Module:GetContainerColumns(self.Settings.BagType)
 		local offset = 38
 		local spacing = 6
 		local xOffset = 6
 		local yOffset = -offset + xOffset
 		local _, height = self:LayoutButtons("grid", columns, spacing, xOffset, yOffset)
-		local width = columns * (iconSize + spacing) - spacing
+		local width = columns * (iconSize+spacing) - spacing
 		if self.freeSlot then
 			if C["Inventory"].GatherEmpty then
 				local numSlots = #self.buttons + 1
@@ -1241,7 +1284,9 @@ function Module:OnEnable()
 		end
 		self:SetSize(width + xOffset * 2, height + offset)
 
-		Module:UpdateAllAnchors()
+		if not gridOnly then
+			Module:UpdateAllAnchors()
+		end
 	end
 
 	function MyContainer:OnCreate(name, settings)
@@ -1328,6 +1373,31 @@ function Module:OnEnable()
 		end
 
 		self:HookScript("OnShow", K.RestoreMoverFrame)
+	end
+
+	local function updateBagSize(button)
+		button:SetSize(iconSize, iconSize)
+		if button.glowFrame then
+			button.glowFrame:SetPoint("TOPLEFT", button, -5, 5)
+			button.glowFrame:SetPoint("BOTTOMRIGHT", button, 5, -5)
+		end
+	end
+
+	function Module:UpdateBagSize()
+		iconSize = C["Inventory"].IconSize
+		for _, container in pairs(Backpack.contByName) do
+			container:ApplyToButtons(updateBagSize)
+			if container.freeSlot then
+				container.freeSlot:SetSize(iconSize, iconSize)
+			end
+			if container.BagBar then
+				for _, bagButton in pairs(container.BagBar.buttons) do
+					bagButton:SetSize(iconSize, iconSize)
+				end
+				container.BagBar:UpdateAnchor()
+			end
+			container:OnContentsChanged(true)
+		end
 	end
 
 	local BagButton = Backpack:GetClass("BagButton", true, "BagButton")

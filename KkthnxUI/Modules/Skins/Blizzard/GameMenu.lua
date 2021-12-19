@@ -32,6 +32,5 @@ table_insert(C.defaultThemes, function()
 	GameMenuButtonQuitText:SetTextColor(1, 0, 0)
 	GameMenuButtonContinueText:SetTextColor(0, 1, 0)
 
-
 	ScriptErrorsFrame:SetScale(UIParent:GetScale())
 end)

@@ -184,21 +184,20 @@ function Module:CreatePlayer()
 		self.Castbar.Spark:SetBlendMode("ADD")
 
 		if C["Unitframe"].CastbarLatency then
-			self.Castbar.SafeZone = self.Castbar:CreateTexture(nil, "ARTWORK")
+			self.Castbar.SafeZone = self.Castbar:CreateTexture(nil, "OVERLAY")
 			self.Castbar.SafeZone:SetTexture(UnitframeTexture)
-			self.Castbar.SafeZone:SetPoint("RIGHT")
-			self.Castbar.SafeZone:SetPoint("TOP")
-			self.Castbar.SafeZone:SetPoint("BOTTOM")
 			self.Castbar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
+			self.Castbar.SafeZone:SetPoint("TOPRIGHT")
+			self.Castbar.SafeZone:SetPoint("BOTTOMRIGHT")
+			self.Castbar:SetFrameLevel(10)
 
-			self.Castbar.Lag = self.Castbar:CreateFontString(nil, "OVERLAY")
-			self.Castbar.Lag:SetPoint("TOPRIGHT", self.Castbar, "BOTTOMRIGHT", -3.5, -3)
-			self.Castbar.Lag:SetFontObject(UnitframeFont)
-			self.Castbar.Lag:SetFont(select(1, self.Castbar.Lag:GetFont()), 11, select(3, self.Castbar.Lag:GetFont()))
-			self.Castbar.Lag:SetTextColor(0.84, 0.75, 0.65)
-			self.Castbar.Lag:SetJustifyH("RIGHT")
-			self:RegisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent, true) -- Fix quests with WorldFrame interaction
-			self:RegisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent, true)
+			self.Castbar.LagString = self.Castbar:CreateFontString(nil, "OVERLAY")
+			self.Castbar.LagString:SetFontObject(UnitframeFont)
+			self.Castbar.LagString:SetFont(select(1, self.Castbar.LagString:GetFont()), 11, select(3, self.Castbar.LagString:GetFont()))
+			self.Castbar.LagString:SetTextColor(0.84, 0.75, 0.65)
+			self.Castbar.LagString:ClearAllPoints()
+			self.Castbar.LagString:SetPoint("TOPRIGHT", self.Castbar, "BOTTOMRIGHT", -3.5, -3)
+
 			self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent, true)
 		end
 

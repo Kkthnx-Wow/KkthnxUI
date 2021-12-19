@@ -23,6 +23,7 @@ local IsInRaid = _G.IsInRaid
 local IsPartyLFG = _G.IsPartyLFG
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local SetCVar = _G.SetCVar
+local C_GuildInfo_IsGuildOfficer = _G.C_GuildInfo.IsGuildOfficer
 local UnitName = _G.UnitName
 local hooksecurefunc = _G.hooksecurefunc
 
@@ -278,28 +279,39 @@ end
 
 -- Swith channels by Tab
 local cycles = {
-	{chatType = "SAY", use = function()
-			return 1
+	{chatType = "SAY", IsActive = function() 
+		return true 
 	end},
 
-	{chatType = "PARTY", use = function()
-			return IsInGroup()
+	{chatType = "PARTY", IsActive = function() 
+		return IsInGroup() 
 	end},
 
-	{chatType = "RAID", use = function()
-			return IsInRaid()
+	{chatType = "RAID", IsActive = function() 
+		return IsInRaid() 
 	end},
 
-	{chatType = "INSTANCE_CHAT", use = function()
-			return IsPartyLFG()
+	{chatType = "INSTANCE_CHAT", IsActive = function() 
+		return IsPartyLFG() 
 	end},
 
-	{chatType = "GUILD", use = function()
-			return IsInGuild()
+	{chatType = "GUILD", IsActive = function() 
+		return IsInGuild() 
 	end},
 
-	{chatType = "SAY", use = function()
-			return 1
+	{chatType = "OFFICER", IsActive = function() 
+		return C_GuildInfo_IsGuildOfficer() 
+	end},
+
+	{chatType = "CHANNEL", IsActive = function(_, editbox)
+		if Module.InWorldChannel and Module.WorldChannelID then
+			editbox:SetAttribute("channelTarget", Module.WorldChannelID)
+			return true
+		end
+	end},
+
+	{chatType = "SAY", IsActive = function() 
+		return true 
 	end},
 }
 
@@ -349,6 +361,11 @@ function Module:UpdateEditBoxColor()
 end
 hooksecurefunc("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
 
+function Module:SwitchToChannel(chatType)
+	self:SetAttribute("chatType", chatType)
+	ChatEdit_UpdateHeader(self)
+end
+
 function Module:UpdateTabChannelSwitch()
 	if not C["Chat"].Enable then
 		return
@@ -358,22 +375,29 @@ function Module:UpdateTabChannelSwitch()
 		return
 	end
 
-	if string_sub(tostring(self:GetText()), 1, 1) == "/" then
+	if string_sub(self:GetText(), 1, 1) == "/" then 
+		return 
+	end
+
+	local isShiftKeyDown = IsShiftKeyDown()
+	local currentType = self:GetAttribute("chatType")
+	if isShiftKeyDown and (currentType == "WHISPER" or currentType == "BN_WHISPER") then
+		Module.SwitchToChannel(self, "SAY")
 		return
 	end
 
-	local currChatType = self:GetAttribute("chatType")
-	for i, curr in ipairs(cycles) do
-		if curr.chatType == currChatType then
-			local h, r, step = i + 1, #cycles, 1
-			if IsShiftKeyDown() then
-				h, r, step = i - 1, 1, -1
+	local numCycles = #cycles
+	for i = 1, numCycles do
+		local cycle = cycles[i]
+		if currentType == cycle.chatType then
+			local from, to, step = i+1, numCycles, 1
+			if isShiftKeyDown then
+				from, to, step = i-1, 1, -1
 			end
-
-			for j = h, r, step do
-				if cycles[j]:use(self, currChatType) then
-					self:SetAttribute("chatType", cycles[j].chatType)
-					ChatEdit_UpdateHeader(self)
+			for j = from, to, step do
+				local nextCycle = cycles[j]
+				if nextCycle:IsActive(self) then
+					Module.SwitchToChannel(self, nextCycle.chatType)
 					return
 				end
 			end
@@ -509,6 +533,7 @@ function Module:OnEnable()
 		CHAT_OPTIONS.HIDE_FRAME_ALERTS = true
 	end
 	SetCVar("chatStyle", "classic")
+	SetCVar("chatMouseScroll", 1) -- Enable mousescroll
 	K.HideInterfaceOption(InterfaceOptionsSocialPanelChatStyle)
 	CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
 

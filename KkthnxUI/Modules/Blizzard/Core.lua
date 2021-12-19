@@ -9,7 +9,6 @@ function Module:OnEnable()
 	self:CreateObjectiveFrame()
 	self:CreateOrderHallIcon()
 	self:CreateRaidUtility()
-	self:CreateTalkingHeadFrame()
 	self:CreateTimerTracker()
 	self:CreateUIWidgets()
 end

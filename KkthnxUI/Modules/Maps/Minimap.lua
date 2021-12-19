@@ -426,7 +426,18 @@ end
 function Module:UpdateMinimapScale()
 	local size = C["Minimap"].Size
 	Minimap:SetSize(size, size)
-	Minimap.mover:SetSize(size, size)
+	if Minimap.mover then
+		Minimap.mover:SetSize(size, size)
+	end
+end
+
+function GetMinimapShape() -- LibDBIcon
+	if not Module.Initialized then
+		Module:UpdateMinimapScale()
+		Module.Initialized = true
+	end
+
+	return "SQUARE"
 end
 
 function Module:HideMinimapClock()
