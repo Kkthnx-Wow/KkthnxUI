@@ -8,9 +8,9 @@ local _G = _G
 local string_trim = _G.string.trim
 
 local GetSpecializationInfoForClassID = _G.GetSpecializationInfoForClassID
-local SlashCmdList = _G.SlashCmdList
 local UnitClass = _G.UnitClass
 local CreateFrame = _G.CreateFrame
+local GetSpecialization = _G.GetSpecialization
 
 local currentSpecID
 local items = {}
@@ -70,7 +70,7 @@ local function ShowCustomFrame(sp, desc, k, isSelected)
 			for _, item in pairs(items) do
 				if item.del then
 					item.del:SetEnabled(true)
-					item.del.KKUI_Background:SetVertexColor(.6, .1, .1, 1)
+					item.del.KKUI_Background:SetVertexColor(0.6, 0.1, 0.1, 1)
 				end
 			end
 		end)
@@ -79,7 +79,7 @@ local function ShowCustomFrame(sp, desc, k, isSelected)
 			for _, item in pairs(items) do
 				if item.del then
 					item.del:SetEnabled(false)
-					item.del.KKUI_Background:SetVertexColor(.4, .4, .4, 1)
+					item.del.KKUI_Background:SetVertexColor(0.4, 0.4, 0.4, 1)
 				end
 			end
 		end)
@@ -139,7 +139,7 @@ local function ShowCustomFrame(sp, desc, k, isSelected)
 
 		customFrame.eb2:SetPoint("TOPLEFT", customFrame.eb1, "BOTTOMLEFT", 0, -6)
 
-		customFrame.cancelBtn = CreateButton(customFrame, height - 2, height - 2, "×")
+		customFrame.cancelBtn = CreateButton(customFrame, height - 2, height - 2, "U+0078")
 		customFrame.cancelBtn:SetPoint("TOPRIGHT", customFrame.eb1, "BOTTOMRIGHT", 0, -6)
 		customFrame.cancelBtn:SetScript("OnClick", function() customFrame:Hide() end)
 

@@ -22,7 +22,6 @@ local GetQuestLogRewardXP = _G.GetQuestLogRewardXP
 local GetRewardXP = _G.GetRewardXP
 local GetSpellInfo = _G.GetSpellInfo
 local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsGuildMember = _G.IsGuildMember
 local NO = _G.NO
@@ -102,9 +101,8 @@ function Module:OnEnable()
 		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
 	end
 
-	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
-		Module.MoveTalkingHead()
-		Module.NoTalkingHeads()
+	if K.CheckAddOnState("Blizzard_TalkingHeadUI") then
+		self.NoTalkingHeads()
 	else
 		K:RegisterEvent("ADDON_LOADED", Module.TalkingHeadOnLoad)
 	end
@@ -686,21 +684,7 @@ function Module:CreateBlockStrangerInvites()
 	end)
 end
 
-function Module:MoveTalkingHead()
-	local TalkingHeadFrame = _G.TalkingHeadFrame
-
-	TalkingHeadFrame.ignoreFramePositionManager = true
-	TalkingHeadFrame:ClearAllPoints()
-	TalkingHeadFrame:SetPoint("BOTTOM", 0, 220)
-
-	-- for index, alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
-	-- 	if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == TalkingHeadFrame then
-	-- 		table.remove(AlertFrame.alertFrameSubSystems, index)
-	-- 	end
-	-- end
-end
-
-function Module:NoTalkingHeads()
+function Module.NoTalkingHeads()
 	if not C["Misc"].NoTalkingHead then
 		return
 	end
@@ -710,9 +694,8 @@ function Module:NoTalkingHeads()
 	end)
 end
 
-function Module:TalkingHeadOnLoad(event, addon)
+function Module.TalkingHeadOnLoad(event, addon)
 	if addon == "Blizzard_TalkingHeadUI" then
-		Module.MoveTalkingHead()
 		Module.NoTalkingHeads()
 		K:UnregisterEvent(event, Module.TalkingHeadOnLoad)
 	end
@@ -927,7 +910,7 @@ function Module:CreateDomiExtractor()
 end
 
 function Module:CreateJerryWay()
-	if IsAddOnLoaded("TomTom") then
+	if K.CheckAddOnState("TomTom") then
 		return
 	end
 

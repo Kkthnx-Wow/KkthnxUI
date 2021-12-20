@@ -26,6 +26,7 @@ local KKUI_ChangeLog = {
 			{
 				Header = "Added",
 				Entries = {
+					"New API to handle new backdrops in 9.1",
 					"New arrow texture",
 					"New bags per row options for bank and bags",
 					"New bags size updates live now",
@@ -43,12 +44,14 @@ local KKUI_ChangeLog = {
 					"Bag bar icon for main backpack display issue",
 					"Guild datatext error",
 					"Titles pane throwing c stack overflow :|",
+					"Cooldowns now obey parent",
 				},
 			},
 
 			{
 				Header = "Removed",
 				Entries = {
+					"Compatibility for old patches before 9.1 hit",
 				},
 			},
 
@@ -56,6 +59,8 @@ local KKUI_ChangeLog = {
 				Header = "Changed",
 				Entries = {
 					"oUF core files",
+					"New extra quest button filters",
+					"Bags now show timwarped keystones level",
 				}
 			}
 		}

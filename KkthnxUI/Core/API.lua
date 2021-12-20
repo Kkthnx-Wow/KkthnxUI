@@ -462,6 +462,16 @@ local function SkinScrollBar(self)
 	K.ReskinArrow(down, "down")
 end
 
+local function HideBackdrop(self)
+	if self.NineSlice then
+		self.NineSlice:SetAlpha(0)
+	end
+
+	if self.SetBackdrop then
+		self:SetBackdrop(nil)
+	end
+end
+
 local function addapi(object)
 	local mt = getmetatable(object).__index
 
@@ -503,6 +513,10 @@ local function addapi(object)
 
 	if not object.SkinScrollBar then
 		mt.SkinScrollBar = SkinScrollBar
+	end
+
+	if not object.HideBackdrop then
+		mt.HideBackdrop = HideBackdrop
 	end
 end
 

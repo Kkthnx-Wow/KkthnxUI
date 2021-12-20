@@ -5,8 +5,6 @@ local _G = _G
 C.themes["Blizzard_TalkingHeadUI"] = function()
 	local TalkingHeadFrame = _G.TalkingHeadFrame
 
-	TalkingHeadFrame:SetScale(0.9)
-
 	local portraitFrame = TalkingHeadFrame.PortraitFrame
 	portraitFrame:StripTextures()
 	portraitFrame.Portrait:SetAtlas(nil)
@@ -17,7 +15,7 @@ C.themes["Blizzard_TalkingHeadUI"] = function()
 	model:SetSize(100, 100)
 	model.PortraitBg:SetAtlas(nil)
 	model.PortraitBg.SetAtlas = K.Noop
-	model:CreateBorder()
+	model:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 32 or nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -10 or nil)
 
 	local name = TalkingHeadFrame.NameFrame.Name
 	name:SetTextColor(1, 0.8, 0)

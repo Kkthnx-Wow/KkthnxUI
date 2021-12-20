@@ -191,40 +191,14 @@ local function GuildBankFrame_Update(self)
 	local tab = GetCurrentGuildBankTab()
 	for i = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
 		index = mod(i, NUM_SLOTS_PER_GUILDBANK_GROUP)
-		if index == 0 then 
-			index = NUM_SLOTS_PER_GUILDBANK_GROUP 
+		if index == 0 then
+			index = NUM_SLOTS_PER_GUILDBANK_GROUP
 		end
 
 		column = math_ceil((i - 0.5) / NUM_SLOTS_PER_GUILDBANK_GROUP)
 		button = self.Columns[column].Buttons[index]
 		if button and button:IsShown() then
 			texture, _, locked = GetGuildBankItemInfo(tab, i)
-			if texture and not locked then
-				if IsAlreadyKnown(GetGuildBankItemLink(tab, i), i) then
-					SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
-				else
-					SetItemButtonTextureVertexColor(button, 1, 1, 1)
-				end
-			end
-		end
-	end
-end
-
-local function Hook_GuildBankUpdate()
-	if GuildBankFrame.mode ~= "bank" then
-		return
-	end
-
-	local tab = GetCurrentGuildBankTab()
-	for i = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-		local index = mod(i, NUM_SLOTS_PER_GUILDBANK_GROUP)
-		if index == 0 then
-			index = NUM_SLOTS_PER_GUILDBANK_GROUP
-		end
-
-		local button = _G["GuildBankColumn"..math_ceil((i - 0.5) / NUM_SLOTS_PER_GUILDBANK_GROUP).."Button"..index]
-		if button and button:IsShown() then
-			local texture, _, locked = GetGuildBankItemInfo(tab, i)
 			if texture and not locked then
 				if IsAlreadyKnown(GetGuildBankItemLink(tab, i), i) then
 					SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
@@ -244,11 +218,7 @@ eventFrame:SetScript("OnEvent", function(_, event, addon)
 		hooksecurefunc(AuctionHouseFrame.BrowseResultsFrame.ItemList, "RefreshScrollFrame", Hook_UpdateAuctionHouse)
 		hookCount = hookCount + 1
 	elseif addon == "Blizzard_GuildBankUI" then
-		if K.IsNewPatch then
-			hooksecurefunc(GuildBankFrame, "Update", GuildBankFrame_Update)
-		else
-			hooksecurefunc("GuildBankFrame_Update", Hook_GuildBankUpdate)
-		end
+		hooksecurefunc(GuildBankFrame, "Update", GuildBankFrame_Update)
 		hookCount = hookCount + 1
 	end
 

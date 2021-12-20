@@ -22,11 +22,25 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 local UnitAura = _G.UnitAura
 
-function Module:OnEnable()
-	-- Elements
-	self:CreateTotems()
-	self:CreateReminder()
+local day, hour, minute = 86400, 3600, 60
 
+function Module:OnEnable()
+	Module:HideBlizBuff()
+	Module:BuildBuffFrame()
+	Module:CreateTotems()
+	Module:CreateReminder()
+end
+
+function Module:HideBlizBuff()
+	-- if not C["Auras"].Enable and not C["Auras"].HideBlizBuff then
+	-- 	return
+	-- end
+
+	K.HideInterfaceOption(_G.BuffFrame)
+	K.HideInterfaceOption(_G.TemporaryEnchantFrame)
+end
+
+function Module:BuildBuffFrame()
 	if not C["Auras"].Enable then
 		return
 	end
@@ -49,10 +63,6 @@ function Module:OnEnable()
 		},
 	}
 
-	-- HideBlizz
-	K.HideInterfaceOption(_G.BuffFrame)
-	K.HideInterfaceOption(_G.TemporaryEnchantFrame)
-
 	-- Movers
 	self.BuffFrame = self:CreateAuraHeader("HELPFUL")
 	local buffAnchor = K.Mover(self.BuffFrame, "Buffs", "BuffAnchor", {"TOPRIGHT", _G.Minimap, "TOPLEFT", -6, 0})
@@ -65,7 +75,6 @@ function Module:OnEnable()
 	self.DebuffFrame:SetPoint("TOPRIGHT", debuffAnchor)
 end
 
-local day, hour, minute = 86400, 3600, 60
 function Module:FormatAuraTime(s)
 	if s >= day then
 		return string_format("%d"..K.MyClassColor.."d", s / day), s % day
@@ -85,6 +94,13 @@ function Module:FormatAuraTime(s)
 end
 
 function Module:UpdateTimer(elapsed)
+	local onTooltip = GameTooltip:IsOwned(self)
+
+	if not self.timeLeft and not onTooltip then
+		self:SetScript("OnUpdate", nil)
+		return
+	end
+
 	if self.offset then
 		local expiration = select(self.offset, GetWeaponEnchantInfo())
 		if expiration then
@@ -92,7 +108,7 @@ function Module:UpdateTimer(elapsed)
 		else
 			self.timeLeft = 0
 		end
-	else
+	elseif self.timeLeft then
 		self.timeLeft = self.timeLeft - elapsed
 	end
 
@@ -101,58 +117,60 @@ function Module:UpdateTimer(elapsed)
 		return
 	end
 
-	if self.timeLeft >= 0 then
+	if self.timeLeft and self.timeLeft >= 0 then
 		local timer, nextUpdate = Module:FormatAuraTime(self.timeLeft)
 		self.nextUpdate = nextUpdate
 		self.timer:SetText(timer)
 	end
+
+	if onTooltip then
+		Module:Button_SetTooltip(self)
+	end
 end
 
 function Module:UpdateAuras(button, index)
-	local filter = button:GetParent():GetAttribute("filter")
-	local unit = button:GetParent():GetAttribute("unit")
+	local unit, filter = button.header:GetAttribute("unit"), button.filter
 	local name, texture, count, debuffType, duration, expirationTime, _, _, _, spellID = UnitAura(unit, index, filter)
-
-	if name then
-		if duration > 0 and expirationTime then
-			local timeLeft = expirationTime - GetTime()
-			if not button.timeLeft then
-				button.nextUpdate = -1
-				button.timeLeft = timeLeft
-				button:SetScript("OnUpdate", Module.UpdateTimer)
-			else
-				button.timeLeft = timeLeft
-			end
-			-- Need Reviewed
-			button.nextUpdate = -1
-			Module.UpdateTimer(button, 0)
-		else
-			button.timeLeft = nil
-			button.timer:SetText("")
-			button:SetScript("OnUpdate", nil)
-		end
-
-		if count and count > 1 then
-			button.count:SetText(count)
-		else
-			button.count:SetText("")
-		end
-
-		if filter == "HARMFUL" then
-			local color = DebuffTypeColor[debuffType or "none"]
-			button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
-		else
-			if C["General"].ColorTextures then
-				button.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
-			else
-				button.KKUI_Border:SetVertexColor(1, 1, 1)
-			end
-		end
-
-		button.spellID = spellID
-		button.icon:SetTexture(texture)
-		button.offset = nil
+	if not name then
+		return
 	end
+
+	if duration > 0 and expirationTime then
+		local timeLeft = expirationTime - GetTime()
+		if not button.timeLeft then
+			button.nextUpdate = -1
+			button.timeLeft = timeLeft
+			button:SetScript("OnUpdate", Module.UpdateTimer)
+		else
+			button.timeLeft = timeLeft
+		end
+		button.nextUpdate = -1
+		Module.UpdateTimer(button, 0)
+	else
+		button.timeLeft = nil
+		button.timer:SetText("")
+	end
+
+	if count and count > 1 then
+		button.count:SetText(count)
+	else
+		button.count:SetText("")
+	end
+
+	if filter == "HARMFUL" then
+		local color = DebuffTypeColor[debuffType or "none"]
+		button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+	else
+		if C["General"].ColorTextures then
+			button.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+		else
+			button.KKUI_Border:SetVertexColor(1, 1, 1)
+		end
+	end
+
+	button.spellID = spellID
+	button.icon:SetTexture(texture)
+	button.offset = nil
 end
 
 function Module:UpdateTempEnchant(button, index)
@@ -178,7 +196,6 @@ function Module:UpdateTempEnchant(button, index)
 	else
 		button.offset = nil
 		button.timeLeft = nil
-		button:SetScript("OnUpdate", nil)
 		button.timer:SetText("")
 	end
 end
@@ -193,7 +210,7 @@ end
 
 function Module:UpdateHeader(header)
 	local cfg = Module.settings.Debuffs
-	if header:GetAttribute("filter") == "HELPFUL" then
+	if header.filter == "HELPFUL" then
 		cfg = Module.settings.Buffs
 		header:SetAttribute("consolidateTo", 0)
 		header:SetAttribute("weaponTemplate", string_format("KKUI_AuraTemplate%d", cfg.size))
@@ -242,6 +259,7 @@ function Module:CreateAuraHeader(filter)
 	header:SetClampedToScreen(true)
 	header:SetAttribute("unit", "player")
 	header:SetAttribute("filter", filter)
+	header.filter = filter
 	RegisterStateDriver(header, "visibility", "[petbattle] hide; show")
 	RegisterAttributeDriver(header, "unit", "[vehicleui] vehicle; player")
 
@@ -263,10 +281,26 @@ function Module:RemoveSpellFromIgnoreList()
 	end
 end
 
+function Module:Button_SetTooltip(button)
+	if button:GetAttribute("index") then
+		GameTooltip:SetUnitAura(button.header:GetAttribute("unit"), button:GetID(), button.filter)
+	elseif button:GetAttribute("target-slot") then
+		GameTooltip:SetInventoryItem("player", button:GetID())
+	end
+end
+
+function Module:Button_OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -5, -5)
+	-- Update tooltip
+	self.nextUpdate = -1
+	self:SetScript("OnUpdate", Module.UpdateTimer)
+end
+
 function Module:CreateAuraIcon(button)
-	local header = button:GetParent()
+	button.header = button:GetParent()
+	button.filter = button.header.filter
 	local cfg = Module.settings.Debuffs
-	if header:GetAttribute("filter") == "HELPFUL" then
+	if button.filter == "HELPFUL" then
 		cfg = Module.settings.Buffs
 	end
 	local fontSize = math_floor(cfg.size / 30 * 12 + 0.5)
@@ -288,6 +322,9 @@ function Module:CreateAuraIcon(button)
 	button:StyleButton()
 	button:CreateBorder()
 
+	button:RegisterForClicks("RightButtonUp")
 	button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
 	button:HookScript("OnMouseDown", Module.RemoveSpellFromIgnoreList)
+	button:SetScript("OnEnter", Module.Button_OnEnter)
+	button:SetScript("OnLeave", K.HideTooltip)
 end

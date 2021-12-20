@@ -163,15 +163,19 @@ function Module:OnTooltipCleared()
 		return
 	end
 
-	-- This code is to reset stuck widgets.
+	if self.factionFrame and self.factionFrame:GetAlpha() ~= 0 then
+		self.factionFrame:SetAlpha(0)
+	end
+
 	GameTooltip_ClearMoney(self)
 	GameTooltip_ClearStatusBars(self)
 	GameTooltip_ClearProgressBars(self)
 	GameTooltip_ClearWidgetSet(self)
+end
 
-	if self.factionFrame and self.factionFrame:GetAlpha() ~= 0 then
-		self.factionFrame:SetAlpha(0)
-	end
+function Module.GetDungeonScore(score)
+	local color = C_ChallengeMode_GetDungeonScoreRarityColor(score) or HIGHLIGHT_FONT_COLOR
+	return color:WrapTextInColorCode(score)
 end
 
 function Module:ShowUnitMythicPlusScore(unit)
@@ -186,8 +190,7 @@ function Module:ShowUnitMythicPlusScore(unit)
 	local summary = C_PlayerInfo_GetPlayerMythicPlusRatingSummary(unit)
 	local score = summary and summary.currentSeasonScore
 	if score and score > 0 then
-		local color = C_ChallengeMode_GetDungeonScoreRarityColor(score) or HIGHLIGHT_FONT_COLOR
-		GameTooltip:AddLine(string_format(DUNGEON_SCORE_LEADER, color:WrapTextInColorCode(score)))
+		GameTooltip:AddLine(string_format(DUNGEON_SCORE_LEADER, Module.GetDungeonScore(score)))
 	end
 end
 
@@ -206,7 +209,8 @@ function Module:OnTooltipSetUnit()
 	local unit = Module.GetUnit(self)
 	local isShiftKeyDown = IsShiftKeyDown()
 	if UnitExists(unit) then
-		local hexColor = K.RGBToHex(K.UnitColor(unit))
+		local r, g, b = K.UnitColor(unit)
+		local hexColor = K.RGBToHex(r, g, b)
 		local ricon = GetRaidTargetIndex(unit)
 		local text = GameTooltipTextLeft1:GetText()
 
@@ -340,11 +344,7 @@ function Module:OnTooltipSetUnit()
 			end
 		end
 
-		if alive then
-			self.StatusBar:SetStatusBarColor(K.UnitColor(unit))
-		else
-			self.StatusBar:Hide()
-		end
+		self.StatusBar:SetStatusBarColor(r, g, b)
 
 		Module.InspectUnitSpecAndLevel(self, unit)
 		Module.ShowUnitMythicPlusScore(self, unit)
@@ -505,15 +505,7 @@ function Module:ReskinTooltip()
 	end
 
 	if not self.isTipStyled then
-		if K.IsNewPatch then
-			if self.NineSlice then
-				self.NineSlice:SetAlpha(0)
-			end
-		else
-			if self.SetBackdrop then
-				self:SetBackdrop(nil)
-			end
-		end
+		self:HideBackdrop()
 		self:DisableDrawLayer("BACKGROUND")
 
 		self.tooltipStyle = CreateFrame("Frame", nil, self)
@@ -553,12 +545,10 @@ function Module:ReskinTooltip()
 	end
 end
 
-function Module:SharedTooltip_SetBackdropStyle()
-	if not self.isTipStyled then
-		return
+function Module:ResetUnit(btn)
+	if btn == "LSHIFT" and UnitExists("mouseover") then
+		GameTooltip:SetUnit("mouseover")
 	end
-
-	self:SetBackdrop(nil)
 end
 
 function Module:OnEnable()
@@ -573,9 +563,6 @@ function Module:OnEnable()
 	hooksecurefunc("GameTooltip_ShowStatusBar", Module.GameTooltip_ShowStatusBar)
 	hooksecurefunc("GameTooltip_ShowProgressBar", Module.GameTooltip_ShowProgressBar)
 	hooksecurefunc("GameTooltip_SetDefaultAnchor", Module.GameTooltip_SetDefaultAnchor)
-	if not K.IsNewPatch then
-		hooksecurefunc("SharedTooltip_SetBackdropStyle", Module.SharedTooltip_SetBackdropStyle)
-	end
 	hooksecurefunc("GameTooltip_AnchorComparisonTooltips", Module.GameTooltip_ComparisonFix)
 
 	-- Elements
@@ -585,6 +572,7 @@ function Module:OnEnable()
 	self:CreateTargetedInfo()
 	self:CreateTooltipID()
 	self:CreateTooltipIcons()
+	K:RegisterEvent("MODIFIER_STATE_CHANGED", Module.ResetUnit)
 end
 
 -- Tooltip Skin Registration
@@ -626,6 +614,7 @@ Module:RegisterTooltips("KkthnxUI", function()
 		FloatingGarrisonShipyardFollowerTooltip,
 		FloatingPetBattleAbilityTooltip,
 		FriendsTooltip,
+		GameSmallHeaderTooltip,
 		GameTooltip,
 		GarrisonFollowerAbilityTooltip,
 		GarrisonFollowerTooltip,
@@ -647,7 +636,7 @@ Module:RegisterTooltips("KkthnxUI", function()
 		ShoppingTooltip1,
 		ShoppingTooltip2,
 		VoiceMacroMenu,
-		WarCampaignTooltip
+		WarCampaignTooltip,
 	}
 
 	for _, f in pairs(tooltips) do

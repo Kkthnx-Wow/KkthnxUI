@@ -20,7 +20,6 @@ local C_Calendar_GetNumDayEvents = _G.C_Calendar.GetNumDayEvents
 local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
 local C_Calendar_OpenCalendar = _G.C_Calendar.OpenCalendar
 local C_Calendar_SetAbsMonth = _G.C_Calendar.SetAbsMonth
-local C_CurrencyInfo_GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo
 local C_DateAndTime_GetCurrentCalendarTime = _G.C_DateAndTime.GetCurrentCalendarTime
 local C_Map_GetMapInfo = _G.C_Map.GetMapInfo
 local C_QuestLog_IsQuestFlaggedCompleted = _G.C_QuestLog.IsQuestFlaggedCompleted
@@ -83,13 +82,15 @@ local mapAreaPoiIDs = {
 }
 
 local questlist = {
-	{name = "Blingtron Daily Gift", id = 34774},
-	{name = "Feast of Winter Veil", id = 6983},
-	{name = "500 Timewarped Badges", id = 40168, texture = 1129674}, -- TBC
-	{name = "500 Timewarped Badges", id = 40173, texture = 1129686}, -- WotLK
-	{name = "500 Timewarped Badges", id = 40786, texture = 1304688}, -- Cata
-	{name = "500 Timewarped Badges", id = 45563, texture = 1530590}, -- MoP
-	{name = "500 Timewarped Badges", id = 55499, texture = 1129683}, -- WoD
+	{name = "Mean One", id = 6983},
+	{name = "Blingtron", id = 34774},
+	{name = "Tormentors of Torghast", id = 63854},
+	{name = "Timewarped", id = 40168, texture = 1129674}, -- TBC
+	{name = "Timewarped", id = 40173, texture = 1129686}, -- WotLK
+	{name = "Timewarped", id = 40786, texture = 1304688}, -- Cata
+	{name = "Timewarped", id = 45563, texture = 1530590}, -- MoP
+	{name = "Timewarped", id = 55499, texture = 1129683}, -- WoD
+	{name = "Timewarped", id = 64710, texture = 1467047}, -- Legion
 }
 
 local lesserVisions = {58151, 58155, 58156, 58167, 58168}
@@ -331,14 +332,6 @@ function Module:TimeOnEnter()
 
 	-- Quests
 	title = false
-	local currencyInfo = C_CurrencyInfo_GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_CURRENCY_ID)
-	local totalEarned = currencyInfo.totalEarned
-	if currencyInfo and totalEarned > 0 then
-		addTitle(QUESTS_LABEL)
-		local maxProgress = currencyInfo.maxQuantity
-		local progress = min(totalEarned, maxProgress)
-		GameTooltip:AddDoubleLine(currencyInfo.name, progress.."/"..maxProgress, 1, 1, 1, 1, 1, 1)
-	end
 
 	for _, v in pairs(questlist) do
 		if v.name and C_QuestLog_IsQuestFlaggedCompleted(v.id) then

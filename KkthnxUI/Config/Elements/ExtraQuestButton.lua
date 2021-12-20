@@ -86,3 +86,20 @@ C.ExtraQuestButton_QuestItems = {
 	[60649] = 180170, -- Ardenweald
 	[60609] = 180008, -- Ardenweald
 }
+
+-- items that need to be shown, but not. (itemID = bool/mapID)
+C.Complete_ShownItems = {
+	[177904] = true,
+	[35797] = 116, -- Grizzly Hills
+	[41058] = 120, -- Storm Peaks
+	[52853] = true, -- Mount Hyjal
+	[60273] = 50, -- Northern Stranglethorn Vale
+}
+
+-- items that need to be hidden, but not. (itemID = bool/mapID)
+C.Complete_HiddenItems = {
+	[180899] = true, -- Riding Hook
+	[184876] = true, -- Cohesion Crystal
+	[186199] = true, -- Lady Moonberry's Wand
+	[187012] = true, -- Unbalanced Riftstone
+}

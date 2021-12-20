@@ -55,30 +55,39 @@ local function isItemHasGem(link)
 end
 
 local function convertItemLevel(link)
+	if not link then
+		return
+	end
+
 	if itemCache[link] then
 		return itemCache[link]
 	end
 
-	local itemLink = string_match(link, "|Hitem:.-|h")
-	if itemLink then
-		local name, itemLevel = isItemHasLevel(itemLink)
-		if name and itemLevel then
-			link = string_gsub(link, "|h%[(.-)%]|h", "|h["..name.."("..itemLevel..")]|h"..isItemHasGem(itemLink))
-			itemCache[link] = link
-		end
+	local name, itemLevel = isItemHasLevel(link)
+	if name and itemLevel then
+		link = string_gsub(link, "|h%[(.-)%]|h", "|h["..name.."("..itemLevel..")]|h"..isItemHasGem(link))
+		itemCache[link] = link
 	end
 
 	return link
 end
 
+local GetDungeonScoreInColor
+local function formatDungeonScore(link, score)
+	return score and string_gsub(link, "|h%[(.-)%]|h", "|h["..string.format(DUNGEON_SCORE_LEADER, GetDungeonScoreInColor(score)).."]|h")
+end
+
 function Module:UpdateChatItemLevel(_, msg, ...)
 	msg = string_gsub(msg, "(|Hitem:%d+:.-|h.-|h)", convertItemLevel)
+	msg = string_gsub(msg, "(|HdungeonScore:(%d+):.-|h.-|h)", formatDungeonScore)
 
 	return false, msg, ...
 end
 
 function Module:CreateChatItemLevels()
 	if C["Chat"].ChatItemLevel then
+		GetDungeonScoreInColor = K:GetModule("Tooltip").GetDungeonScore
+
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_LOOT", self.UpdateChatItemLevel)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateChatItemLevel)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateChatItemLevel)

@@ -28,6 +28,7 @@ local hooksecurefunc = _G.hooksecurefunc
 local msgSymbols = {"`", "～", "＠", "＃", "^", "＊", "！", "？", "。", "|", " ", "—", "——", "￥", "’", "‘", "“", "”", "【", "】", "『", "』", "《", "》", "〈", "〉", "（", "）", "〔", "〕", "、", "，", "：", ",", "_", "/", "~"}
 local addonBlockList = {"%(Task completed%)", "%*%*.+%*%*", "%[Accept task%]", ":.+>", "<Bigfoot", "<iLvl>", "<LFG>", "<Team Item Level:.+>", "Attribute Notification", "EUI[:_]", "Interrupt:. +|Hspell", "Progress:", "PS death: .+>", "Task progress prompt", "wow.+Redemption Code", "wow.+Verification Code", "Xihan", "|Hspell.+=>", "【Love is not easy】", "【Love Plugin]", ("%-"):rep(20)}
 local trashClubs = {"Let's Play Games Together", "Salute Us", "Small Uplift", "Stand up", "Tribe Chowder"}
+local autoBroadcasts = {"%-(.*)%|T(.*)|t(.*)|c(.*)%|r", "%[(.*)ARENA ANNOUNCER(.*)%]", "%[(.*)Announce by(.*)%]", "%[(.*)Autobroadcast(.*)%]", "%[(.*)BG Queue Announcer(.*)%]"}
 
 C.BadBoys = {} -- debug
 local FilterList = {}
@@ -217,6 +218,16 @@ function Module:BlockTrashClub()
 	end
 end
 
+function Module:AutoBroadcasts(_, msg, ...)
+	for _, filter in ipairs(autoBroadcasts) do
+		if string.match(msg, filter) then
+			return true
+		end
+	end
+
+	return false, msg, ...
+end
+
 function Module:CreateChatFilter()
 	hooksecurefunc(BNToastFrame, "ShowToast", self.BlockTrashClub)
 
@@ -248,4 +259,9 @@ function Module:CreateChatFilter()
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", self.UpdateAddOnBlocker)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateAddOnBlocker)
 	end
+
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.AutoBroadcasts)
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_BOSS_EMOTE", self.AutoBroadcasts)
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.AutoBroadcasts)
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.AutoBroadcasts)
 end

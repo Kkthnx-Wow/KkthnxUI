@@ -108,6 +108,7 @@ function Module:StartTimer(start, duration)
 		return
 	end
 
+	local parent = self:GetParent()
 	if start > 0 and duration > MIN_DURATION then
 		local timer = self.timer or Module.OnCreate(self)
 		timer.start = start
@@ -116,7 +117,6 @@ function Module:StartTimer(start, duration)
 		timer.nextUpdate = 0
 
 		-- Wait For Blizz To Fix Itself
-		local parent = self:GetParent()
 		local charge = parent and parent.chargeCooldown
 		local chargeTimer = charge and charge.timer
 		if chargeTimer and chargeTimer ~= timer then
@@ -131,7 +131,7 @@ function Module:StartTimer(start, duration)
 	end
 
 	-- Hide Cooldown Flash If Barfader Enabled
-	if self:GetParent().__faderParent then
+	if parent and parent.__faderParent then
 		if self:GetEffectiveAlpha() > 0 then
 			self:Show()
 		else

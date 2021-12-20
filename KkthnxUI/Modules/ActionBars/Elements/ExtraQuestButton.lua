@@ -37,7 +37,7 @@ local QuestHasPOIInfo =_G.QuestHasPOIInfo
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
-local MAX_DISTANCE_YARDS = 1e5
+local MAX_DISTANCE_YARDS = 1e4 -- needs review
 local onlyCurrentZone = true
 
 local ExtraQuestButton = CreateFrame("Button", "KKUI_ExtraQuestButton", UIParent, "SecureActionButtonTemplate, SecureHandlerStateTemplate, SecureHandlerAttributeTemplate")
@@ -349,12 +349,19 @@ local function GetQuestDistanceWithItem(questID)
 		return
 	end
 
-	if C.ExtraQuestButton_Blacklist[GetItemInfoFromHyperlink(itemLink)] then
+	local itemID = GetItemInfoFromHyperlink(itemLink)
+	if C.ExtraQuestButton_Blacklist[itemID] then
 		return
 	end
 
-	if C_QuestLog_IsComplete(questID) and not showWhenComplete then
-		return
+	if C_QuestLog_IsComplete(questID) then
+		if showWhenComplete and C.Complete_HiddenItems[itemID] then -- Hide item when quest completed
+			return
+		end
+
+		if not showWhenComplete and not C.Complete_ShownItems[itemID] then -- Show item even quest completed
+			return
+		end
 	end
 
 	local distanceSq = C_QuestLog_GetDistanceSqToQuest(questID)
