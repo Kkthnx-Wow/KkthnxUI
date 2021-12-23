@@ -379,8 +379,11 @@ K:RegisterEvent("PLAYER_LOGIN", CheckRole)
 K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
 
 function K.GetGroupUnit(unit)
-	if UnitIsUnit(unit, 'player') then return end
-	if strfind(unit, 'party') or strfind(unit, 'raid') then
+	if UnitIsUnit(unit, 'player') then
+		return
+	end
+
+	if string_find(unit, 'party') or string_find(unit, 'raid') then
 		return unit
 	end
 
@@ -607,6 +610,10 @@ function K.CooldownOnUpdate(self, elapsed, raw)
 end
 
 function K.GetPlayerMapPos(mapID)
+	if not mapID then
+		return
+	end
+
 	tempVec2D.x, tempVec2D.y = _G.UnitPosition("player")
 	if not tempVec2D.x then
 		return

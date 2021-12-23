@@ -119,17 +119,17 @@ local function highlightFunction(button, match)
 	button.searchOverlay:SetShown(not match)
 end
 
-local function IsItemMatched(type, text)
-	if not type or type == "" then
+local function IsItemMatched(str, text)
+	if not str or str == "" then
 		return
 	end
 
-	return string_match(type, text)
+	return string_match(string.lower(str), text)
 end
 
 local BagSmartFilter = {
 	default = function(item, text)
-		text = strlower(text)
+		text = string.lower(text)
 		if text == "boe" then
 			return item.bindOn == "equip"
 		else

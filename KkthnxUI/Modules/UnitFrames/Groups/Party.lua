@@ -162,7 +162,7 @@ function Module:CreateParty()
 	self.Debuffs.iconsPerRow = 5
 	self.Debuffs.CustomFilter = Module.CustomFilter
 
-	Module:UpdateAuraContainer(partyWidth, self.Debuffs, self.Debuffs.num)
+	Module:UpdateAuraContainer(partyWidth - 10, self.Debuffs, self.Debuffs.num)
 
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura

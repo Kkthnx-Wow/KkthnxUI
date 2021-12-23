@@ -4,28 +4,6 @@ local Module = K:GetModule("Blizzard")
 local _G = _G
 local ipairs, tremove = ipairs, tremove
 
-function Module:ScaleTalkingHeadFrame()
-	local scale = 1
-	local TalkingHeadFrame = _G.TalkingHeadFrame
-	local width, height = TalkingHeadFrame:GetSize()
-    if TalkingHeadFrame.Mover then
-	    TalkingHeadFrame.Mover:SetSize(width * scale, height * scale)
-    end
-	TalkingHeadFrame:SetScale(scale)
-
-	-- Reset Model Camera
-	local model = TalkingHeadFrame.MainFrame.Model
-	if model.uiCameraID then
-		model:RefreshCamera()
-		_G.Model_ApplyUICamera(model, model.uiCameraID)
-	end
-
-	-- Use this to prevent the frame from auto closing, so you have time to test things.
-	-- TalkingHeadFrame:UnregisterEvent('SOUNDKIT_FINISHED')
-	-- TalkingHeadFrame:UnregisterEvent('TALKINGHEAD_CLOSE')
-	-- TalkingHeadFrame:UnregisterEvent('LOADING_SCREEN_ENABLED')
-end
-
 local function InitializeTalkingHead()
 	local TalkingHeadFrame = _G.TalkingHeadFrame
 
@@ -43,7 +21,13 @@ local function InitializeTalkingHead()
 	else
 		TalkingHeadFrame.Mover:SetSize(width * scale, height * scale)
 	end
-	print(TalkingHeadFrame:GetSize())
+
+	-- Reset Model Camera
+	local model = TalkingHeadFrame.MainFrame.Model
+	if model.uiCameraID then
+		model:RefreshCamera()
+		_G.Model_ApplyUICamera(model, model.uiCameraID)
+	end
 
 	-- Iterate through all alert subsystems in order to find the one created for TalkingHeadFrame, and then remove it.
 	-- We do this to prevent alerts from anchoring to this frame when it is shown.
@@ -60,18 +44,31 @@ local function LoadTalkingHead()
 	end
 
 	InitializeTalkingHead()
-	Module:ScaleTalkingHeadFrame()
 end
 
-function Module:CreateTalkingHeadPosition()
-    if C["Misc"].NoTalkingHead then
+local function ADDON_LOADED(_, addon)
+	if C["Misc"].NoTalkingHead then
         return
     end
 
-	if not K.CheckAddOnState("Blizzard_TalkingHeadUI") then
+    if addon == "Blizzard_TalkingHeadUI" then
+        C_Timer.After(1, LoadTalkingHead)
+    else
+        local waitFrame = CreateFrame("FRAME")
+        waitFrame:RegisterEvent("ADDON_LOADED")
+        waitFrame:SetScript("OnEvent", function(_, _, arg1)
+            if arg1 == "Blizzard_TalkingHeadUI" then
+                C_Timer.After(1, LoadTalkingHead)
+                waitFrame:UnregisterAllEvents()
+            end
+        end)
+    end
+end
+
+function Module:CreateTalkingHeadPosition(event)
+	if C["Misc"].NoTalkingHead then
         return
     end
 
-	-- wait until first frame, then load talking head (if it isnt yet) and spawn the mover
-	C_Timer.After(1, LoadTalkingHead)
+	K:RegisterEvent("ADDON_LOADED", ADDON_LOADED)
 end

@@ -89,6 +89,7 @@ local function createIcon(icon, iconValues)
 	return ("|T%s:%s|t"):format(icon, iconValues)
 end
 
+
 -- Tags
 local function GetNumFreeSlots(name)
 	if name == "Bag" then

@@ -48,6 +48,7 @@ local COMBATLOG_OBJECT_TYPE_PET = _G.COMBATLOG_OBJECT_TYPE_PET
 Engine[1] = {} -- K, Main
 Engine[2] = {} -- C, Config
 Engine[3] = {} -- L, Locale
+_G.KkthnxUI = Engine
 
 local K, C, L = unpack(Engine)
 
@@ -282,5 +283,3 @@ for i = 1, GetNumAddOns() do
 	K.AddOns[string_lower(Name)] = GetAddOnEnableState(K.Name, Name) == 2 and (not Reason or Reason ~= "DEMAND_LOADED")
 	K.AddOnVersion[string_lower(Name)] = GetAddOnMetadata(Name, "Version")
 end
-
-_G[AddOnName] = Engine

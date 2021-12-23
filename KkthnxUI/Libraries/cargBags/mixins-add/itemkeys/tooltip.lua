@@ -31,20 +31,23 @@ local bindTypeToString = {
 }
 
 cargBags.itemKeys["bindOn"] = function(i)
-	if not i.link then return end
+	if not i.link then
+		return
+	end
 
-	local tip = KkthnxUI[1].ScanTooltip or CreateFrame("GameTooltip", "tipScanTooltip", nil, "GameTooltipTemplate")
-	if not tip then return end
+	local K = unpack(KkthnxUI)
+	local tip = K.ScanTooltip
+	if not tip then
+		return
+	end
 
 	tip:SetOwner(UIParent, "ANCHOR_NONE")
 	tip:SetBagItem(i.bagID, i.slotID)
 
-	for j = 2, 5 do
-		local line = KkthnxUI[1].ScanTooltip and _G["KKUI_ScanTooltipTextLeft"..j] or _G["tipScanTooltipTextLeft"..j]
+	for j = 2, 4 do
+		local line = _G["KKUI_ScanTooltipTextLeft"..j]
 		local lineText = line and line:GetText()
-		if not lineText then break end
-
-		local bindOn = bindTypeToString[lineText]
+		local bindOn = lineText and bindTypeToString[lineText]
 		if bindOn then
 			i.bindOn = bindOn
 			return bindOn

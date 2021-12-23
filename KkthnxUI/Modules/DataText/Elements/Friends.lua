@@ -346,7 +346,7 @@ local function buttonOnClick(self, btn)
 end
 
 local function buttonOnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_NONE")
+	GameTooltip:SetOwner(FriendsDataText.Texture, "ANCHOR_NONE")
 	GameTooltip:SetPoint("TOPLEFT", infoFrame, "TOPRIGHT", 5, 0)
 	GameTooltip:ClearLines()
 
@@ -554,7 +554,7 @@ local function OnEnter(self)
 	local totalFriends = Module.totalFriends
 
 	if totalOnline == 0 then
-		GameTooltip:SetOwner(self, "ANCHOR_NONE")
+		GameTooltip:SetOwner(FriendsDataText.Texture, "ANCHOR_NONE")
 		GameTooltip:SetPoint("TOPLEFT", UIParent, 15, -30)
 		GameTooltip:ClearLines()
 		GameTooltip:AddDoubleLine(FRIENDS_LIST, string_format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends), 0, 0.6, 1, 0, 0.6, 1)

@@ -411,7 +411,7 @@ end
 
 function Module:UpdateAuraContainer(width, element, maxAuras)
 	local iconsPerRow = element.iconsPerRow
-	local maxLines = iconsPerRow and K.Round(maxAuras / iconsPerRow) or 2
+	local maxLines = iconsPerRow and K.Round(maxAuras/iconsPerRow) or 2
 	element.size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, element.spacing) or element.size
 	element:SetWidth(width)
 	element:SetHeight((element.size + element.spacing) * maxLines)

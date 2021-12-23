@@ -20,7 +20,7 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_ChangeLog = {
 	{
-		Version = "[10.2.9] - TBA",
+		Version = "[10.2.9] - 2021-12-23",
 		General = "All notable changes to this project will be documented in this file. The format is based on "..K.SystemColor.."[Keep a Changelog]|r and this project adheres to "..K.SystemColor.."[Semantic Versioning]|r",
 		Sections = {
 			{
@@ -42,9 +42,11 @@ local KKUI_ChangeLog = {
 				Entries = {
 					"BNet anchor mover throwing nil error",
 					"Bag bar icon for main backpack display issue",
-					"Guild datatext error",
-					"Titles pane throwing c stack overflow :|",
 					"Cooldowns now obey parent",
+					"Guild datatext error",
+					"Search in bags should properly work now",
+					"TalkingHead backdrop covering the screen",
+					"Titles pane throwing c stack overflow :|",
 				},
 			},
 
