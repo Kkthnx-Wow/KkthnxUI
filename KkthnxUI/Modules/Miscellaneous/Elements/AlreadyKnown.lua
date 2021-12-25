@@ -147,7 +147,7 @@ hooksecurefunc("MerchantFrame_UpdateBuybackInfo", Hook_UpdateBuybackInfo)
 local function Hook_UpdateAuctionHouse(self)
 	local numResults = self.getNumEntries()
 	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame)
-	local buttonCount = #buttons
+	local buttonCount = buttons and #buttons or 0
 	local offset = self:GetScrollOffset()
 	for i = 1, buttonCount do
 		local visible = i + offset <= numResults
