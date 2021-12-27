@@ -1,4 +1,4 @@
-local _, C = unpack(select(2, ...))
+local _, C = unpack(KkthnxUI)
 
 local _G = _G
 

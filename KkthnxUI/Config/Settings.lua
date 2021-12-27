@@ -1,4 +1,4 @@
-local _, C = unpack(select(2, ...))
+local _, C = unpack(KkthnxUI)
 
 local _G = _G
 
@@ -78,7 +78,6 @@ C["Automation"] = {
 	["AutoCollapse"] = false,
 	["AutoDeclineDuels"] = false,
 	["AutoDeclinePetDuels"] = false,
-	["AutoDisenchant"] = false,
 	["AutoGoodbye"] = false,
 	["AutoInvite"] = false,
 	["AutoOpenItems"] = false,
@@ -342,32 +341,15 @@ C["Misc"] = {
 	["ImprovedStats"] = false,
 	["ItemLevel"] = false,
 	["MDGuildBest"] = false,
-	["MailSaver"] = false,
-	["MailTarget"] = "",
 	["MawThreatBar"] = true,
 	["MouseTrail"] = false,
 	["MouseTrailColor"] = {1, 1, 1, 0.6},
 	["NoTalkingHead"] = false,
-	["ParagonColor"] = {0, .5, .9},
 	["ParagonEnable"] = false,
-	["ParagonToast"] = false,
-	["ParagonToastFade"] = 5,
-	["ParagonToastSound"] = false,
 	["PriorityStats"] = false,
 	["ShowWowHeadLinks"] = false,
 	["SlotDurability"] = false,
 	["TradeTabs"] = false,
-	["ParagonText"] = {
-		["Options"] = {
-			["Paragon".." (100/10000)"] = 1,
-			["Exalted".." (100/10000)"] = 2,
-			["Paragon".." x 1".." (100/10000)"] = 3,
-			["100 (100/10000)"] = 4,
-			["100/10000"] = 5,
-			["9900"] = 6,
-		},
-		["Value"] = 1
-	},
 	["MouseTrailTexture"] = {
 		["Options"] = {
 			["Circle"] = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Aura73",
@@ -470,15 +452,6 @@ C["Nameplate"] = {
 		},
 		["Value"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonBlueArrow]]
 	},
-}
-
-C["PulseCooldown"] = {
-	["AnimScale"] = 1.5,
-	["Enable"] = false,
-	["HoldTime"] = 0.5,
-	["Size"] = 75,
-	["Sound"] = false,
-	["Threshold"] = 3,
 }
 
 -- Skins

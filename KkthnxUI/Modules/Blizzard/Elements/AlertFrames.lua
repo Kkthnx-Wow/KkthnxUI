@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Blizzard")
 
 local _G = _G
@@ -11,7 +11,7 @@ local POSITION = "TOP"
 local YOFFSET = -10
 
 function Module:PostAlertMove()
-	local AlertFrameMover = _G.AlertFrameHolder.AlertFrameMover
+	local AlertFrameMover = _G.AlertFrameHolder.Mover
 	local AlertFrameHolder = _G.AlertFrameHolder
 
 	local _, y = AlertFrameMover:GetCenter()
@@ -144,6 +144,46 @@ local function AlertSubSystem_AdjustPosition(alertFrameSubSystem)
 	end
 end
 
+local function MoveTalkingHead()
+	local TalkingHeadFrame = _G.TalkingHeadFrame
+	local AlertFrameHolder = _G.AlertFrameHolder
+
+	TalkingHeadFrame.ignoreFramePositionManager = true
+	TalkingHeadFrame:ClearAllPoints()
+	TalkingHeadFrame:SetPoint("TOP", AlertFrameHolder, "BOTTOM", 0, 0)
+
+	-- Reset Model Camera
+	local model = TalkingHeadFrame.MainFrame.Model
+	if model.uiCameraID then
+		model:RefreshCamera()
+		_G.Model_ApplyUICamera(model, model.uiCameraID)
+	end
+
+	for index, alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
+		if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == TalkingHeadFrame then
+			tremove(AlertFrame.alertFrameSubSystems, index)
+		end
+	end
+end
+
+local function NoTalkingHeads()
+	if not C["Misc"].NoTalkingHead then
+		return
+	end
+
+	hooksecurefunc(TalkingHeadFrame, "Show", function(self)
+		self:Hide()
+	end)
+end
+
+local function TalkingHeadOnLoad(event, addon)
+	if addon == "Blizzard_TalkingHeadUI" then
+		MoveTalkingHead()
+		NoTalkingHeads()
+		K:UnregisterEvent(event, TalkingHeadOnLoad)
+	end
+end
+
 function Module:CreateAlertFrames()
 	local AlertFrameHolder = CreateFrame("Frame", "AlertFrameHolder", UIParent)
 	AlertFrameHolder:SetSize(180, 20)
@@ -152,10 +192,10 @@ function Module:CreateAlertFrames()
 	_G.GroupLootContainer:EnableMouse(false) -- Prevent this weird non-clickable area stuff since 8.1; Monitor this, as it may cause addon compatibility.
 	_G.UIPARENT_MANAGED_FRAME_POSITIONS.GroupLootContainer = nil
 
-	if not AlertFrameHolder.AlertFrameMover then
-		AlertFrameHolder.AlertFrameMover = K.Mover(AlertFrameHolder, "AlertFrameMover", "Loot / Alert Frames", {"TOP", UIParent, "TOP", -1, -18})
+	if not AlertFrameHolder.Mover then
+		AlertFrameHolder.Mover = K.Mover(AlertFrameHolder, "AlertFrameMover", "Loot / Alert Frames", {"TOP", UIParent, "TOP", -1, -18})
 	else
-		AlertFrameHolder.AlertFrameMover:SetSize(AlertFrameHolder:GetSize())
+		AlertFrameHolder.Mover:SetSize(AlertFrameHolder:GetSize())
 	end
 
 	-- Replace AdjustAnchors functions to allow alerts to grow down if needed.
@@ -171,4 +211,11 @@ function Module:CreateAlertFrames()
 
 	hooksecurefunc(_G.AlertFrame, "UpdateAnchors", Module.PostAlertMove)
 	hooksecurefunc("GroupLootContainer_Update", Module.GroupLootContainer_Update)
+
+	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
+		MoveTalkingHead()
+		NoTalkingHeads()
+	else
+		K:RegisterEvent("ADDON_LOADED", TalkingHeadOnLoad)
+	end
 end

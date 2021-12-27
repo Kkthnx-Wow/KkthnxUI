@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C = unpack(KkthnxUI)
 
 local function KKUI_CreateDefaults()
 	K.Defaults = {}
@@ -177,10 +177,6 @@ local function KKUI_VerifyDatabase()
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount then
 		KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount = 1
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].ContactList then
-		KkthnxUIDB.Variables[K.Realm][K.Name].ContactList = {}
 	end
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].TempAnchor then

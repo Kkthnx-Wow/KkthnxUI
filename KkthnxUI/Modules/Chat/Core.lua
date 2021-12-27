@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Chat")
 
 local _G = _G
@@ -279,28 +279,28 @@ end
 
 -- Swith channels by Tab
 local cycles = {
-	{chatType = "SAY", IsActive = function() 
-		return true 
+	{chatType = "SAY", IsActive = function()
+		return true
 	end},
 
-	{chatType = "PARTY", IsActive = function() 
-		return IsInGroup() 
+	{chatType = "PARTY", IsActive = function()
+		return IsInGroup()
 	end},
 
-	{chatType = "RAID", IsActive = function() 
-		return IsInRaid() 
+	{chatType = "RAID", IsActive = function()
+		return IsInRaid()
 	end},
 
-	{chatType = "INSTANCE_CHAT", IsActive = function() 
-		return IsPartyLFG() 
+	{chatType = "INSTANCE_CHAT", IsActive = function()
+		return IsPartyLFG()
 	end},
 
-	{chatType = "GUILD", IsActive = function() 
-		return IsInGuild() 
+	{chatType = "GUILD", IsActive = function()
+		return IsInGuild()
 	end},
 
-	{chatType = "OFFICER", IsActive = function() 
-		return C_GuildInfo_IsGuildOfficer() 
+	{chatType = "OFFICER", IsActive = function()
+		return C_GuildInfo_IsGuildOfficer()
 	end},
 
 	{chatType = "CHANNEL", IsActive = function(_, editbox)
@@ -310,8 +310,8 @@ local cycles = {
 		end
 	end},
 
-	{chatType = "SAY", IsActive = function() 
-		return true 
+	{chatType = "SAY", IsActive = function()
+		return true
 	end},
 }
 
@@ -375,8 +375,8 @@ function Module:UpdateTabChannelSwitch()
 		return
 	end
 
-	if string_sub(self:GetText(), 1, 1) == "/" then 
-		return 
+	if string_sub(self:GetText(), 1, 1) == "/" then
+		return
 	end
 
 	local isShiftKeyDown = IsShiftKeyDown()

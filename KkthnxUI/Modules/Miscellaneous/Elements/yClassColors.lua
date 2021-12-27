@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C = unpack(KkthnxUI)
 
 local oUF = oUF or K.oUF
 assert(oUF, "KkthnxUI was unable to locate oUF.")

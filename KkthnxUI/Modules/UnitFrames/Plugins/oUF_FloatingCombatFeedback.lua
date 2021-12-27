@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C = unpack(KkthnxUI)
 local oUF = K.oUF
 assert(oUF, "oUF FloatingCombatFeedback was unable to locate oUF install")
 

@@ -1,4 +1,4 @@
-local _, C = unpack(select(2, ...))
+local _, C = unpack(KkthnxUI)
 
 -- Warlords of Draenor intro quest items which inspired this addon
 C.ExtraQuestButton_Blacklist = {

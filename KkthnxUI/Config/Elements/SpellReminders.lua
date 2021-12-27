@@ -1,4 +1,4 @@
-local _, C = unpack(select(2, ...))
+local _, C = unpack(KkthnxUI)
 
 -- Reminder Buffs Checklist
 C.SpellReminderBuffs = {

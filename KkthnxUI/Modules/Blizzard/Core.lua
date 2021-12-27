@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K = unpack(KkthnxUI)
 local Module = K:NewModule("Blizzard")
 
 function Module:OnEnable()
@@ -9,7 +9,6 @@ function Module:OnEnable()
 	self:CreateObjectiveFrame()
 	self:CreateOrderHallIcon()
 	self:CreateRaidUtility()
-	self:CreateTalkingHeadPosition()
 	self:CreateTimerTracker()
 	self:CreateUIWidgets()
 end

@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C = unpack(KkthnxUI)
 
 local _G = _G
 local math_abs = _G.math.abs
@@ -377,27 +377,6 @@ local function CheckRole()
 end
 K:RegisterEvent("PLAYER_LOGIN", CheckRole)
 K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
-
-function K.GetGroupUnit(unit)
-	if UnitIsUnit(unit, 'player') then
-		return
-	end
-
-	if string_find(unit, 'party') or string_find(unit, 'raid') then
-		return unit
-	end
-
-	-- returns the unit as raid# or party# when grouped
-	if UnitInParty(unit) or UnitInRaid(unit) then
-		local isInRaid = IsInRaid()
-		for i = 1, GetNumGroupMembers() do
-			local groupUnit = (isInRaid and 'raid' or 'party')..i
-			if UnitIsUnit(unit, groupUnit) then
-				return groupUnit
-			end
-		end
-	end
-end
 
 -- Chat channel check
 function K.CheckChat(useRaidWarning)

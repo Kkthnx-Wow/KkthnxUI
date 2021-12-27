@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K = unpack(KkthnxUI)
 local oUF = K.oUF or oUF
 
 local _G = _G

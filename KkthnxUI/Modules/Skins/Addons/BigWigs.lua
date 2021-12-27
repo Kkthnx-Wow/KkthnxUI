@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
 local BigWigsFont = K.GetFont(C["UIFonts"].SkinFonts)

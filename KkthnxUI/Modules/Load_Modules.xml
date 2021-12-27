@@ -21,7 +21,6 @@
    <Script file="Blizzard\Elements\ObjectiveFrame.lua" />
    <Script file="Blizzard\Elements\OrderHall.lua" />
    <Script file="Blizzard\Elements\RaidUtility.lua" />
-   <Script file="Blizzard\Elements\TalkingHeadFrame.lua" />
    <Script file="Blizzard\Elements\TimerTracker.lua" />
    <Script file="Blizzard\Elements\UIWidgets.lua" />
    <!-- Chat -->
@@ -121,8 +120,6 @@
    <Script file="Miscellaneous\Elements\MissingStats.lua" />
    <Script file="Miscellaneous\Elements\MouseTrail.lua" />
    <Script file="Miscellaneous\Elements\MovableFrames.lua" />
-   <Script file="Miscellaneous\Elements\ParagonReputation.lua" />
-   <Script file="Miscellaneous\Elements\PulseCooldown.lua" />
    <Script file="Miscellaneous\Elements\QuestTool.lua" />
    <Script file="Miscellaneous\Elements\QuickJoin.lua" />
    <Script file="Miscellaneous\Elements\SlotDurability.lua" />
@@ -148,7 +145,6 @@
    <Script file="Automation\Elements\BadBuffs.lua" />
    <Script file="Automation\Elements\BestReward.lua" />
    <Script file="Automation\Elements\DeclineDuel.lua" />
-   <Script file="Automation\Elements\Disenchant.lua" />
    <Script file="Automation\Elements\Goodbye.lua" />
    <Script file="Automation\Elements\Invite.lua" />
    <Script file="Automation\Elements\PartySync.lua" />

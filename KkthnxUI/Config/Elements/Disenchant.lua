@@ -1,4 +1,4 @@
-local _, C = unpack(select(2, ...))
+local _, C = unpack(KkthnxUI)
 
 C.MPDHerbs = {
 	-- http://www.wowhead.com/spell=51005/milling#milled-from:0+1+17-20

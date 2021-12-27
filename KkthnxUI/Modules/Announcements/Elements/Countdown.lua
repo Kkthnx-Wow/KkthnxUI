@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C, L = unpack(KkthnxUI)
 if C["Announcements"].PullCountdown ~= true then
 	return
 end

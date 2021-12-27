@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C = unpack(KkthnxUI)
 local Module = K:NewModule("Unitframes")
 local AuraModule = K:GetModule("Auras")
 local oUF = oUF or K.oUF

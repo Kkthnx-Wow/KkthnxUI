@@ -1,4 +1,4 @@
-local K, _, L = unpack(select(2, ...))
+local K, _, L = unpack(KkthnxUI)
 if (not L) then
 	return
 end
@@ -10,8 +10,6 @@ L["AddContactTip"] = "|nModify the contact list you need, the input format is 'U
 L["AddToIgnoreList"] = "%s SpellID %s is now added to the ignored AuraWatch list. You can hold CTRL+ALT and click unit aura icon to remove from list."
 L["All Buffs Ready"] = "[KkthnxUI] All Buffs Ready!"
 L["Alt Key"] = "Alt Key"
-L["Attach List"] = "Mail Attach List:"
-L["Attach List"] = "Mail Attach List:"
 L["AttackSpeed"] = "AS"
 L["AuraWatch List"] = "Custom List"
 L["AuraWatch Switcher"] = "Block preset auras"
@@ -168,7 +166,6 @@ L["Right Click"] = "Right Click"
 L["Sapped"] = "Sapped"
 L["SappedBy"] = "Sapped by: "
 L["Save KeyBinds"] = "Keybinds saved."
-L["Save Mail Target"] = "Save mail recipient"
 L["Saved Raid(s)"] = "Saved Raid(s)"
 L["Section"] = "Section"
 L["Session"] = "Session:"
@@ -326,7 +323,6 @@ L["Decline Pet Duels"] = "Decline Pet Duels"
 L["Decline PvP Duels"] = "Decline PvP Duels"
 L["Don't Alert In instances"] = "Don't Alert In Instances"
 L["Enable Event & Rare Alerts"] = "Enable Event & Rare Alerts"
-L["Milling, Prospecting & Disenchanting by Alt + Click"] = "Milling, Prospecting & Disenchanting by Alt + Click"
 L["Only Tab Target Enemy Players"] = "Only Tab Target Enemy Players"
 L["Own Dispells Announced Only"] = "Own Dispells Announced Only"
 L["Own Interrupts Announced Only"] = "Own Interrupts Announced Only"
@@ -529,13 +525,6 @@ L["TargetIndicator Style"] = "TargetIndicator Style"
 L["Track Personal Class Auras"] = "Track Personal Class Auras"
 L["Transition Color"] = "Transition Color"
 L["Unit Execute Ratio"] = "Unit Execute Ratio"
-
-L["Animation Scale"] = "Animation Scale"
-L["Enable PulseCooldown"] = "Enable PulseCooldown"
-L["How Long To Display"] = "How Long To Display"
-L["Icon Size"] = "Icon Size"
-L["Minimal Threshold Time"] = "Minimal Threshold Time"
-L["Play Sound On Pulse"] = "Play Sound On Pulse"
 
 L["Bartender4 Skin"] = "Bartender4 Skin"
 L["BigWigs Skin"] = "BigWigs Skin"

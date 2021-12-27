@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C, L = unpack(KkthnxUI)
 
 if IsAddOnLoaded("StatPriority") or IsAddOnLoaded("IcyVeinsStatPriority") or IsAddOnLoaded("ClassSpecStats") then
 	return

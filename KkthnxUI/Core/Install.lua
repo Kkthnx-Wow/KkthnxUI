@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Installer")
 
 -- Sourced: NDui (siweia)
@@ -23,7 +23,6 @@ local FCF_SetLocked = _G.FCF_SetLocked
 local FCF_SetWindowName = _G.FCF_SetWindowName
 local GENERAL = _G.GENERAL
 local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.IsAddOnLoaded
 local PlaySound = _G.PlaySound
 local SETTINGS = _G.SETTINGS
 local SetCVar = _G.SetCVar

@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C, L = unpack(KkthnxUI)
 
 tinsert(C.defaultThemes, function()
 	local LootFrame = _G.LootFrame

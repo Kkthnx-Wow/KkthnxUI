@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Miscellaneous")
 
 local _G = _G
@@ -63,6 +63,7 @@ function Module:OnEnable()
 	self:CreateJerryWay()
 	self:CreateKillTutorials()
 	self:CreateMawWidgetFrame()
+	self:CreateParagonReputation()
 	self:CreateQuestSizeUpdate()
 	self:CreateTicketStatusFrameMove()
 	self:CreateTradeTargetInfo()
@@ -99,12 +100,6 @@ function Module:OnEnable()
 			end
 		end
 		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
-	end
-
-	if K.CheckAddOnState("Blizzard_TalkingHeadUI") then
-		self.NoTalkingHeads()
-	else
-		K:RegisterEvent("ADDON_LOADED", Module.TalkingHeadOnLoad)
 	end
 
 	-- Instant delete
@@ -684,23 +679,6 @@ function Module:CreateBlockStrangerInvites()
 	end)
 end
 
-function Module.NoTalkingHeads()
-	if not C["Misc"].NoTalkingHead then
-		return
-	end
-
-	hooksecurefunc(TalkingHeadFrame, "Show", function(self)
-		self:Hide()
-	end)
-end
-
-function Module.TalkingHeadOnLoad(event, addon)
-	if addon == "Blizzard_TalkingHeadUI" then
-		Module.NoTalkingHeads()
-		K:UnregisterEvent(event, Module.TalkingHeadOnLoad)
-	end
-end
-
 function Module:CreateKillTutorials()
 	if not C["General"].NoTutorialButtons then
 		return
@@ -952,4 +930,41 @@ function Module:CreateJerryWay()
 		end
 	end
 	SLASH_KKUI_JERRY_WAY1 = "/way"
+end
+
+-- Paragon reputation info
+local function SetupParagonRepHook()
+	local numFactions = GetNumFactions()
+	local factionOffset = FauxScrollFrame_GetOffset(ReputationListScrollFrame)
+	for i = 1, NUM_FACTIONS_DISPLAYED, 1 do
+		local factionIndex = factionOffset + i
+		local factionRow = _G["ReputationBar"..i]
+		local factionBar = _G["ReputationBar"..i.."ReputationBar"]
+		local factionStanding = _G["ReputationBar"..i.."ReputationBarFactionStanding"]
+
+		if factionIndex <= numFactions then
+			local factionID = select(14, GetFactionInfo(factionIndex))
+			if factionID and C_Reputation.IsFactionParagon(factionID) then
+				local currentValue, threshold = C_Reputation.GetFactionParagonInfo(factionID)
+				if currentValue then
+					local barValue = mod(currentValue, threshold)
+					local factionStandingtext = L["Paragon"]..math.floor(currentValue/threshold)
+
+					factionBar:SetMinMaxValues(0, threshold)
+					factionBar:SetValue(barValue)
+					factionStanding:SetText(factionStandingtext)
+					factionRow.standingText = factionStandingtext
+					factionRow.rolloverText = string.format(REPUTATION_PROGRESS_FORMAT, BreakUpLargeNumbers(barValue), BreakUpLargeNumbers(threshold))
+				end
+			end
+		end
+	end
+end
+
+function Module:CreateParagonReputation()
+	if not C["Misc"].ParagonEnable then
+		return
+	end
+
+	hooksecurefunc("ReputationFrame_Update", SetupParagonRepHook)
 end

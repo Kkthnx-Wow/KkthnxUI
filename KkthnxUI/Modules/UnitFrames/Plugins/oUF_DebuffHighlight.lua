@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K = unpack(KkthnxUI)
 local _, ns = ...
 local oUF = ns.oUF or K.oUF
 

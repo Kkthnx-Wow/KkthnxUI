@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K = unpack(KkthnxUI)
 
 local _G = _G
 local string_format = _G.string.format

@@ -1,4 +1,4 @@
-local _, C, L = unpack(select(2, ...))
+local _, C, L = unpack(KkthnxUI)
 
 C.DeprecatedAuras = {
 	["Enchant Aura"] = {	-- 附魔及饰品组

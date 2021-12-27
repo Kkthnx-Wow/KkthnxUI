@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C, L = unpack(KkthnxUI)
 local GUI = K["GUI"]
 
 local _G = _G
@@ -343,7 +343,6 @@ local Automation = function(self)
 	Window:CreateSwitch("Automation", "AutoCollapse", L["Auto Collapse Objective Tracker"])
 	Window:CreateSwitch("Automation", "AutoDeclineDuels", L["Decline PvP Duels"])
 	Window:CreateSwitch("Automation", "AutoDeclinePetDuels", L["Decline Pet Duels"])
-	Window:CreateSwitch("Automation", "AutoDisenchant", L["Milling, Prospecting & Disenchanting by Alt + Click"])
 	Window:CreateSwitch("Automation", "AutoGoodbye", L["Say Goodbye After Dungeon Completion."])
 	Window:CreateSwitch("Automation", "AutoInvite", L["Accept Invites From Friends & Guild Members"])
 	Window:CreateSwitch("Automation", "AutoOpenItems", L["Auto Open Items In Your Inventory"])
@@ -567,6 +566,7 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "ColorPicker", L["Enhanced Color Picker"])
 	Window:CreateSwitch("Misc", "EasyMarking", L["EasyMarking by Ctrl + LeftClick"])
 	Window:CreateSwitch("Misc", "EnhancedFriends", L["Enhanced Colors (Friends/Guild +)"])
+	Window:CreateSwitch("Misc", "EnhancedMail", "Enhance Mail Frame With Many Useful Features")
 	Window:CreateSwitch("Misc", "GemEnchantInfo", L["Character/Inspect Gem/Enchant Info"])
 	Window:CreateSwitch("Misc", "HideBanner", L["Hide RaidBoss EmoteFrame"])
 	Window:CreateSwitch("Misc", "HideBossEmote", L["Hide BossBanner"])
@@ -575,23 +575,12 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "MDGuildBest", L["Show Mythic+ GuildBest"])
 	Window:CreateSwitch("Misc", "MawThreatBar", L["Replace Default Maw Threat Status"])
 	Window:CreateSwitch("Misc", "NoTalkingHead", L["Remove And Hide The TalkingHead Frame"])
+	Window:CreateSwitch("Misc", "ParagonEnable", L["Paragon Enable"], L["ParagonReputationTip"])
 	Window:CreateSwitch("Misc", "PriorityStats", newFeatureIcon.."Show Stat Priority Above Character Frame")
 	Window:CreateSwitch("Misc", "ShowWowHeadLinks", L["Show Wowhead Links Above Questlog Frame"])
 	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
 	Window:CreateSwitch("Misc", "TradeTabs", L["Add Spellbook-Like Tabs On TradeSkillFrame"])
 	Window:CreateDropdown("Misc", "ShowMarkerBar", L["World Markers Bar"], nil, nil, UpdateMarkerGrid)
-
-	Window:CreateSection(BUTTON_LAG_MAIL)
-	Window:CreateSwitch("Misc", "EnhancedMail", "Enhance Mail Frame With Many Useful Features")
-	Window:CreateSwitch("Misc", "MailSaver", "Mail Saver")
-
-	Window:CreateSection("Paragon Reputation")
-	Window:CreateSwitch("Misc", "ParagonEnable", L["Paragon Enable"], L["ParagonReputationTip"])
-	Window:CreateSwitch("Misc", "ParagonToast", L["Paragon Toast"])
-	Window:CreateSwitch("Misc", "ParagonToastSound", L["Paragon Toast Sound"])
-	Window:CreateColorSelection("Misc", "ParagonColor", L["Paragon Color"])
-	Window:CreateSlider("Misc", "ParagonToastFade", L["Paragon Toast Fade"], 1, 15, 1)
-	Window:CreateDropdown("Misc", "ParagonText", L["Paragon Text Format"])
 
 	Window:CreateSection(MOUSE_LABEL)
 	Window:CreateSwitch("Misc", "MouseTrail", L["Enable Mouse Trail"])
@@ -660,20 +649,6 @@ local Nameplate = function(self)
 	Window:CreateColorSelection("Nameplate", "TargetColor", "Selected Target Coloring")
 	Window:CreateColorSelection("Nameplate", "TargetIndicatorColor", L["TargetIndicator Color"])
 	Window:CreateColorSelection("Nameplate", "TransColor", L["Transition Color"])
-end
-
-local PulseCooldown = function(self)
-	local Window = self:CreateWindow(L["PulseCooldown"])
-
-	Window:CreateSection(L["Toggles"])
-	Window:CreateSwitch("PulseCooldown", "Enable", enableTextColor..L["Enable PulseCooldown"])
-	Window:CreateSwitch("PulseCooldown", "Sound", L["Play Sound On Pulse"])
-
-	Window:CreateSection(L["Sizes"])
-	Window:CreateSlider("PulseCooldown", "AnimScale", L["Animation Scale"], 0.5, 2, 0.1)
-	Window:CreateSlider("PulseCooldown", "HoldTime", L["How Long To Display"], 0.1, 1, 0.1)
-	Window:CreateSlider("PulseCooldown", "Size", L["Icon Size"], 60, 85, 1)
-	Window:CreateSlider("PulseCooldown", "Threshold", L["Minimal Threshold Time"], 1, 5, 1)
 end
 
 local Skins = function(self)

@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C = unpack(KkthnxUI)
 
 -- Sourced: ElvUI (Elvz)
 
@@ -36,7 +36,7 @@ local function FadeFramesInOut(fade, unit)
 			end
 		else
 			if frame:GetAlpha() ~= 0 then
-				UIFrameFadeOut(frame, 0.2, frame:GetAlpha(), C["General"].GlobalFade)
+				UIFrameFadeOut(frame, 0.2, frame:GetAlpha(), 0)
 				frame.fadeInfo.finishedFunc = CheckForReset
 			else
 				showStatus = false

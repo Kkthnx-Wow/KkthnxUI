@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K = unpack(KkthnxUI)
 local oUF = oUF or K.oUF
 
 if (not oUF) then

@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C = unpack(KkthnxUI)
 
 local _G = _G
 local pairs = _G.pairs
@@ -75,7 +75,7 @@ local lodFrames = {
 	Blizzard_BlackMarketUI = {["BlackMarketFrame"] = false},
 	Blizzard_Calendar = {["CalendarFrame"] = false, ["CalendarCreateEventFrame"] = true, ["CalendarEventPickerFrame"] = false},
 	Blizzard_ChallengesUI = {["ChallengesKeystoneFrame"] = false},
-	Blizzard_Collections = {["WardrobeFrame"] = false, ["WardrobeOutfitEditFrame"] = false},
+	-- Blizzard_Collections = { ["WardrobeFrame"] = false, ["WardrobeOutfitEditFrame"] = false }, -- FIXME: blizz bug in collection mover
 	Blizzard_CovenantSanctum = {["CovenantSanctumFrame"] = false},
 	Blizzard_Communities = {["CommunitiesFrame"] = false, ["CommunitiesSettingsDialog"] = false, ["CommunitiesGuildLogFrame"] = false, ["CommunitiesTicketManagerDialog"] = false, ["CommunitiesAvatarPickerDialog"] = false, ["CommunitiesFrame.NotificationSettingsDialog"] = false, ["ClubFinderCommunityAndGuildFinderFrame.RequestToJoinFrame"] = false},
 	Blizzard_FlightMap = {["FlightMapFrame"] = false},

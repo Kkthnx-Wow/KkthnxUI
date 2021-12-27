@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C, L = unpack(KkthnxUI)
 
 -- Currenly Being Voted on @ KkthnxUI Discord
 -- 8 = Yes | 8 = No

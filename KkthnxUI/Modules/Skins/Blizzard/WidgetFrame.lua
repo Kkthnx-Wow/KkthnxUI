@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C = unpack(KkthnxUI)
 
 -- Sourced: ShestakUI
 
@@ -173,6 +173,11 @@ table.insert(C.defaultThemes, function()
 				ReskinSpellDisplayWidget(widgetFrame.Spell)
 			end
 		end
+	end)
+
+	-- if font outline enabled in tooltip, fix text shows in two lines on Torghast info
+	hooksecurefunc(_G.UIWidgetTemplateTextWithStateMixin, "Setup", function(self)
+		self.Text:SetWidth(self.Text:GetStringWidth() + 2)
 	end)
 
 	-- needs review, might remove this in the future
