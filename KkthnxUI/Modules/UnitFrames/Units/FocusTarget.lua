@@ -28,7 +28,6 @@ function Module:CreateFocusTarget()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true

@@ -5,6 +5,8 @@ local _G = _G
 local pairs = _G.pairs
 local string_find = _G.string.find
 
+local C_GossipInfo_GetNumOptions = _G.C_GossipInfo.GetNumOptions
+local C_GossipInfo_SelectOption = _G.C_GossipInfo.SelectOption
 local C_QuestLog_GetDistanceSqToQuest = _G.C_QuestLog.GetDistanceSqToQuest
 local C_QuestLog_GetLogIndexForQuestID = _G.C_QuestLog.GetLogIndexForQuestID
 local ClearOverrideBindings = _G.ClearOverrideBindings
@@ -15,8 +17,6 @@ local InCombatLockdown = _G.InCombatLockdown
 local SetBinding = _G.SetBinding
 local SetOverrideBindingClick = _G.SetOverrideBindingClick
 local UnitGUID = _G.UnitGUID
-local C_GossipInfo_SelectOption = _G.C_GossipInfo.SelectOption
-local C_GossipInfo_GetNumOptions = _G.C_GossipInfo.GetNumOptions
 
 C["Misc"].QuestTool = true
 

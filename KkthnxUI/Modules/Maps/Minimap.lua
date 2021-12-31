@@ -16,166 +16,56 @@ local Minimap = _G.Minimap
 local UnitClass = _G.UnitClass
 local hooksecurefunc = _G.hooksecurefunc
 
--- Create the new minimap tracking dropdown frame and initialize it
-local KKUI_MiniMapTrackingDropDown = CreateFrame("Frame", "KKUI_MiniMapTrackingDropDown", _G.UIParent, "UIDropDownMenuTemplate")
-KKUI_MiniMapTrackingDropDown:SetID(1)
-KKUI_MiniMapTrackingDropDown:SetClampedToScreen(true)
-KKUI_MiniMapTrackingDropDown:Hide()
-_G.UIDropDownMenu_Initialize(KKUI_MiniMapTrackingDropDown, _G.MiniMapTrackingDropDown_Initialize, "MENU")
-KKUI_MiniMapTrackingDropDown.noResize = true
-
 local checkMinLevel = 10 -- Previous Constants were removed but all these are unlocked at 10.
 
--- Create the minimap micro menu
-local menuFrame = CreateFrame("Frame", "KKUI_MinimapRightClickMenu", UIParent, "UIDropDownMenuTemplate")
-local guildText = IsInGuild() and ACHIEVEMENTS_GUILD_TAB or LOOKINGFORGUILD
-local micromenu = {
-	{text = K.SystemColor.."Micro Menu", notClickable = true, notCheckable = true},
-	{text = "", notClickable = true, notCheckable = true},
+--Create the minimap micro menu
+local menuFrame = CreateFrame('Frame', 'MinimapRightClickMenu', UIParent)
+local menuList = {
+	{ text = _G.CHARACTER_BUTTON, notCheckable = 1, func = function() ToggleCharacter('PaperDollFrame') end },
+	{ text = _G.SPELLBOOK_ABILITIES_BUTTON, notCheckable = 1, func = function() ToggleFrame(_G.SpellBookFrame) end },
+	{ text = _G.CHAT_CHANNELS, notCheckable = 1, func = _G.ToggleChannelFrame },
+	{ text = _G.TIMEMANAGER_TITLE, notCheckable = 1, func = function() ToggleFrame(_G.TimeManagerFrame) end },
+	{ text = _G.SOCIAL_BUTTON, notCheckable = 1, func = ToggleFriendsFrame },
+	{ text = _G.GUILD, notCheckable = 1, func = ToggleGuildFrame },
+	{ text = _G.TALENTS_BUTTON, notCheckable = 1, func = ToggleTalentFrame },
+	{ text = L["Calendar"], notCheckable = 1, func = function() _G.GameTimeFrame:Click() end },
+	{ text = _G.COLLECTIONS, notCheckable = 1, func = ToggleCollectionsJournal },
+	{ text = _G.BLIZZARD_STORE, notCheckable = 1, func = function() _G.StoreMicroButton:Click() end },
+	{ text = _G.ACHIEVEMENT_BUTTON, notCheckable = 1, func = ToggleAchievementFrame },
+	{ text = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE, notCheckable = 1, func = function() GarrisonLandingPageMinimapButton_OnClick(_G.GarrisonLandingPageMinimapButton) end },
+	{ text = _G.ENCOUNTER_JOURNAL, notCheckable = 1, func = function() if not IsAddOnLoaded('Blizzard_EncounterJournal') then _G.EncounterJournal_LoadUI() end ToggleFrame(_G.EncounterJournal) end },
+	{ text = _G.LFG_TITLE, notCheckable = 1, func = ToggleLFGParentFrame or ToggleLFDParentFrame },
+	{ text = _G.GREAT_VAULT_REWARDS, notCheckable = 1, func = function() if UIParentLoadAddOn("Blizzard_WeeklyRewards") then if WeeklyRewardsFrame:IsShown() then WeeklyRewardsFrame:Hide() else WeeklyRewardsFrame:Show() end else LoadAddOn("Blizzard_WeeklyRewards") WeeklyRewardsFrame:Show() end end},
 
-	{text = CHARACTER_BUTTON, notCheckable = 1, func = function()
-			ToggleCharacter("PaperDollFrame")
-	end},
-
-	{text = SPELLBOOK_ABILITIES_BUTTON, notCheckable = 1, func = function()
-			ToggleFrame(SpellBookFrame)
-	end},
-
-	{text = TALENTS_BUTTON, notCheckable = 1, func = function()
-			if not PlayerTalentFrame then
-				TalentFrame_LoadUI()
-			end
-			if K.Level >= 10 then
-				ShowUIPanel(PlayerTalentFrame)
-			else
-				K.Print(K.InfoColor..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, checkMinLevel).."|r")
-			end
-	end},
-
-	{text = ACHIEVEMENT_BUTTON, notCheckable = 1, func = function()
-			ToggleAchievementFrame()
-	end},
-
-	{text = QUESTLOG_BUTTON, notCheckable = 1, func = function()
-			ToggleQuestLog()
-	end},
-
-	{text = guildText, notCheckable = 1, func = function()
-			ToggleGuildFrame()
-	end},
-
-	{text = SOCIAL_BUTTON, notCheckable = 1, func = function()
-			ToggleFriendsFrame(1)
-	end},
-
-	{text = RAID, notCheckable = 1, func = function()
-			ToggleFriendsFrame(3)
-	end},
-
-	{text = CHAT_CHANNELS, notCheckable = 1, func = function()
-			ToggleChannelFrame()
-	end},
-
-	{text = PLAYER_V_PLAYER, notCheckable = 1, func = function()
-			if K.Level >= checkMinLevel then
-				TogglePVPUI()
-			else
-				K.Print(K.InfoColor..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, checkMinLevel).."|r")
-			end
-	end},
-
-	{text = DUNGEONS_BUTTON, notCheckable = 1, func = function()
-			if K.Level >= checkMinLevel then
-				PVEFrame_ToggleFrame("GroupFinderFrame", nil)
-			else
-				K.Print(K.InfoColor..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, checkMinLevel).."|r")
-			end
-	end},
-
-	{text = ADVENTURE_JOURNAL, notCheckable = 1, func = function()
-			if C_AdventureJournal.CanBeShown() then
-				ToggleEncounterJournal()
-			else
-				K.Print(K.InfoColor..FEATURE_NOT_YET_AVAILABLE.."|r")
-			end
-	end},
-
-	{text = QUESTLOG_BUTTON, notCheckable = 1, func = function()
-			OpenQuestLog()
-	end},
-
-	{text = MOUNTS, notCheckable = 1, func = function()
-			ToggleCollectionsJournal(1)
-	end},
-
-	{text = PETS, notCheckable = 1, func = function()
-			ToggleCollectionsJournal(2)
-	end},
-
-	{text = TOY_BOX, notCheckable = 1, func = function()
-			ToggleCollectionsJournal(3)
-	end},
-
-	{text = HEIRLOOMS, notCheckable = 1, func = function()
-			ToggleCollectionsJournal(4)
-	end},
-
-	{text = WARDROBE, notCheckable = 1, func = function()
-			if InCombatLockdown() then
-				K.Print(K.InfoColor..ERR_NOT_IN_COMBAT.."|r") return
-			end
-			ToggleCollectionsJournal(5)
-	end},
-
-	{text = GREAT_VAULT_REWARDS, notCheckable = 1, func = function()
-			if InCombatLockdown() then
-				K.Print(K.InfoColor..ERR_NOT_IN_COMBAT.."|r") return
-			end
-
-			if UIParentLoadAddOn("Blizzard_WeeklyRewards") then
-				if WeeklyRewardsFrame:IsShown() then
-					WeeklyRewardsFrame:Hide()
-				else
-					WeeklyRewardsFrame:Show()
-				end
-			else
-				LoadAddOn("Blizzard_WeeklyRewards")
-				WeeklyRewardsFrame:Show()
-			end
-	end},
-
-	{text = HELP_BUTTON, notCheckable = 1, func = function()
-			ToggleHelpFrame()
-	end},
-
-	{text = EVENTS_LABEL, notCheckable = 1, func = function()
-			ToggleCalendar()
-	end},
-
-	{text = BATTLEFIELD_MINIMAP, notCheckable = 1, func = function()
-			ToggleBattlefieldMap()
-	end},
-
-	{text = LOOT_ROLLS, notCheckable = 1, func = function()
-			ToggleFrame(LootHistoryFrame)
-	end},
 }
 
-if not IsTrialAccount() and not C_StorePublic.IsDisabledByParentalControls() then
-	table_insert(micromenu, {text = BLIZZARD_STORE, notCheckable = 1, func = function()
-			StoreMicroButton:Click()
-	end})
-end
+sort(menuList, function(a, b) if a and b and a.text and b.text then return a.text < b.text end end)
 
-if K.Level > 99 then
-	table_insert(micromenu, {text = ORDER_HALL_LANDING_PAGE_TITLE, notCheckable = 1, func = function()
-			GarrisonLandingPage_Toggle()
-	end})
-elseif K.Level > 89 then
-	table_insert(micromenu, {text = GARRISON_LANDING_PAGE_TITLE, notCheckable = 1, func = function()
-			GarrisonLandingPage_Toggle()
-	end})
-end
+-- want these two on the bottom
+tinsert(menuList, { text = _G.MAINMENU_BUTTON, notCheckable = 1,
+	func = function()
+		if not _G.GameMenuFrame:IsShown() then
+			if _G.VideoOptionsFrame:IsShown() then
+				_G.VideoOptionsFrameCancel:Click()
+			elseif _G.AudioOptionsFrame:IsShown() then
+				_G.AudioOptionsFrameCancel:Click()
+			elseif _G.InterfaceOptionsFrame:IsShown() then
+				_G.InterfaceOptionsFrameCancel:Click()
+			end
+
+			CloseMenus()
+			CloseAllWindows()
+			PlaySound(850) --IG_MAINMENU_OPEN
+			ShowUIPanel(_G.GameMenuFrame)
+		else
+			PlaySound(854) --IG_MAINMENU_QUIT
+			HideUIPanel(_G.GameMenuFrame)
+			MainMenuMicroButton_SetNormal()
+		end
+	end
+})
+
+tinsert(menuList, { text = _G.HELP_BUTTON, notCheckable = 1, bottom = true, func = ToggleHelpFrame })
 
 function Module:CreateStyle()
 	local minimapBorder = CreateFrame("Frame", "KKUI_MinimapBorder", Minimap)
@@ -240,23 +130,26 @@ end
 -- This is just weird to do this but I hate the default icons for covs
 local function UpdateCovenantTexture(texture)
 	local CovenantID = C_Covenants.GetActiveCovenantID()
+	local CovenantType = Enum.CovenantType
 	local TexturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\"
 
-	if CovenantID and CovenantID ~= 0 then
-		if CovenantID == 1 then
+	if CovenantID ~= CovenantType.None then
+		if CovenantID == CovenantType.Kyrian then
 			texture = TexturePath.."Kyrian"
-		elseif CovenantID == 2 then
+		elseif CovenantID == CovenantType.Venthyr then
 			texture = TexturePath.."Venthyr"
-		elseif CovenantID == 3 then
+		elseif CovenantID == CovenantType.NightFae then
 			texture = TexturePath.."NightFae"
-		elseif CovenantID == 4 then
+		elseif CovenantID == CovenantType.Necrolord then
 			texture = TexturePath.."Necrolords"
 		end
-	else -- No cov so default to differnt icons?
-		if K.Faction == "Alliance" then
-			texture = TexturePath.."Alliance"
-		else
-			texture = TexturePath.."Horde"
+	else
+		if CovenantID == CovenantType.None then -- No cov so default to differnt icons?
+			if K.Faction == "Alliance" then
+				texture = TexturePath.."Alliance"
+			else
+				texture = TexturePath.."Horde"
+			end
 		end
 	end
 
@@ -316,6 +209,17 @@ function Module:ReskinRegions()
 		hooksecurefunc("EyeTemplate_StopAnimating", function()
 			queueIconAnimation:Stop()
 		end)
+
+		local queueStatusDisplay = Module.QueueStatusDisplay
+		if queueStatusDisplay then
+			queueStatusDisplay.text:ClearAllPoints()
+			queueStatusDisplay.text:SetPoint("CENTER", queueIcon)
+			queueStatusDisplay.text:SetFontObject(KkthnxUIFont)
+
+			if queueStatusDisplay.title then
+				Module:ClearQueueStatus()
+			end
+		end
 	end
 
 	-- Difficulty Flags
@@ -483,9 +387,24 @@ function Module:Minimap_OnMouseWheel(zoom)
 	end
 end
 
+function Module:Minimap_TrackingDropdown()
+	local dropdown = CreateFrame('Frame', 'KKUI_MiniMapTrackingDropDown', _G.UIParent, 'UIDropDownMenuTemplate')
+	dropdown:SetID(1)
+	dropdown:SetClampedToScreen(true)
+	dropdown:Hide()
+
+	_G.UIDropDownMenu_Initialize(dropdown, _G.MiniMapTrackingDropDown_Initialize, 'MENU')
+	dropdown.noResize = true
+
+	return dropdown
+end
+
 function Module:Minimap_OnMouseUp(btn)
-	_G.HideDropDownMenu(1, nil, KKUI_MiniMapTrackingDropDown)
 	menuFrame:Hide()
+
+	if Module.TrackingDropdown then
+		_G.HideDropDownMenu(1, nil, Module.TrackingDropdown)
+	end
 
 	local position = Minimap.mover:GetPoint()
 	if btn == "MiddleButton" or (btn == "RightButton" and IsShiftKeyDown()) then
@@ -495,15 +414,15 @@ function Module:Minimap_OnMouseUp(btn)
 		end
 
 		if position:match("LEFT") then
-			EasyMenu(micromenu, menuFrame, "cursor", 0, 0, "MENU")
+			EasyMenu(menuList, menuFrame, "cursor", 0, 0)
 		else
-			EasyMenu(micromenu, menuFrame, "cursor", -160, 0, "MENU")
+			EasyMenu(menuList, menuFrame, "cursor", -160, 0)
 		end
-	elseif btn == "RightButton" then
+	elseif btn == "RightButton"and Module.TrackingDropdown then
 		if position:match("LEFT") then
-			ToggleDropDownMenu(1, nil, KKUI_MiniMapTrackingDropDown, "cursor", 0, 0, "MENU", 2)
+			ToggleDropDownMenu(1, nil, Module.TrackingDropdown, "cursor", 0, 0)
 		else
-			ToggleDropDownMenu(1, nil, KKUI_MiniMapTrackingDropDown, "cursor", -160, 0, "MENU", 2)
+			ToggleDropDownMenu(1, nil, Module.TrackingDropdown, "cursor", -160, 0)
 		end
 	else
 		_G.Minimap_OnClick(self)
@@ -525,6 +444,88 @@ function Module:UpdateBlipTexture()
 	Minimap:SetBlipTexture(C["Minimap"].BlipTexture.Value)
 end
 
+
+
+function Module:QueueStatusTimeFormat(seconds)
+	local hours = floor(mod(seconds, 86400) / 3600)
+	if hours > 0 then
+		return Module.QueueStatusDisplay.text:SetFormattedText("%dh", hours)
+	end
+
+	local mins = floor(mod(seconds, 3600) / 60)
+	if mins > 0 then
+		return Module.QueueStatusDisplay.text:SetFormattedText("%dm", mins)
+	end
+
+	local secs = mod(seconds, 60)
+	if secs > 0 then
+		return Module.QueueStatusDisplay.text:SetFormattedText("%ds", secs)
+	end
+end
+
+function Module:QueueStatusSetTime(seconds)
+	local timeInQueue = GetTime() - seconds
+	Module:QueueStatusTimeFormat(timeInQueue)
+
+	local wait = Module.QueueStatusDisplay.averageWait
+	local waitTime = wait and wait > 0 and (timeInQueue / wait)
+	if not waitTime or waitTime >= 1 then
+		Module.QueueStatusDisplay.text:SetTextColor(1, 1, 1)
+	else
+		Module.QueueStatusDisplay.text:SetTextColor(K.ColorGradient(waitTime, 1, 0.1, 0.1, 1, 1, 0.1, 0.1, 1, 0.1))
+	end
+end
+
+function Module:QueueStatusOnUpdate(elapsed)
+	-- Replicate QueueStatusEntry_OnUpdate throttle
+	self.updateThrottle = self.updateThrottle - elapsed
+	if self.updateThrottle <= 0 then
+		Module:QueueStatusSetTime(self.queuedTime)
+		self.updateThrottle = 0.1
+	end
+end
+
+function Module:SetFullQueueStatus(title, queuedTime, averageWait)
+	local display = Module.QueueStatusDisplay
+	if not display.title or display.title == title then
+		if queuedTime then
+			display.title = title
+			display.updateThrottle = 0
+			display.queuedTime = queuedTime
+			display.averageWait = averageWait
+			display:SetScript("OnUpdate", Module.QueueStatusOnUpdate)
+		else
+			Module:ClearQueueStatus()
+		end
+	end
+end
+
+function Module:SetMinimalQueueStatus(title)
+	if Module.QueueStatusDisplay.title == title then
+		Module:ClearQueueStatus()
+	end
+end
+
+function Module:ClearQueueStatus()
+	local display = Module.QueueStatusDisplay
+	display.text:SetText("")
+	display.title = nil
+	display.queuedTime = nil
+	display.averageWait = nil
+	display:SetScript('OnUpdate', nil)
+end
+
+function Module:CreateQueueStatusText()
+	local display = CreateFrame("Frame", "KKUI_QueueStatusDisplay", _G.QueueStatusMinimapButton)
+	display.text = display:CreateFontString(nil, "OVERLAY")
+
+	Module.QueueStatusDisplay = display
+
+	_G.QueueStatusMinimapButton:HookScript("OnHide", Module.ClearQueueStatus)
+	hooksecurefunc('QueueStatusEntry_SetMinimalDisplay', Module.SetMinimalQueueStatus)
+	hooksecurefunc('QueueStatusEntry_SetFullDisplay', Module.SetFullQueueStatus)
+end
+
 function Module:OnEnable()
 	if not C["Minimap"].Enable then
 		return
@@ -535,6 +536,9 @@ function Module:OnEnable()
 	Minimap:SetMaskTexture(C["Media"].Textures.BlankTexture)
 	DropDownList1:SetClampedToScreen(true)
 
+	--Create the new minimap tracking dropdown frame and initialize it
+	Module.TrackingDropdown = Module:Minimap_TrackingDropdown()
+
 	local minimapMover = K.Mover(Minimap, "Minimap", "Minimap", {"TOPRIGHT", UIParent, "TOPRIGHT", -4, -4})
 	Minimap:ClearAllPoints()
 	Minimap:SetPoint("TOPRIGHT", minimapMover)
@@ -544,6 +548,9 @@ function Module:OnEnable()
 	self:ShowCalendar()
 	self:UpdateBlipTexture()
 	self:UpdateMinimapScale()
+	if _G.QueueStatusMinimapButton then
+		Module:CreateQueueStatusText()
+	end
 
 	Minimap:EnableMouseWheel(true)
 	Minimap:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)

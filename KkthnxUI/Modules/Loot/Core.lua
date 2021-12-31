@@ -73,7 +73,7 @@ local function OnClick(self)
 	LootFrame.selectedTexture = self.icon:GetTexture()
 
 	if IsModifiedClick() then
-		HandleModifiedItemClick(GetLootSlotLink(self:GetID()))
+		_G.HandleModifiedItemClick(GetLootSlotLink(self:GetID()))
 	else
 		StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION")
 		LootSlot(self:GetID())

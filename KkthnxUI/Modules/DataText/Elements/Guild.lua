@@ -16,7 +16,7 @@ local ChatEdit_ActivateChat = _G.ChatEdit_ActivateChat
 local ChatEdit_ChooseBoxForSend = _G.ChatEdit_ChooseBoxForSend
 local ChatFrame_GetMobileEmbeddedTexture = _G.ChatFrame_GetMobileEmbeddedTexture
 local ChatFrame_OpenChat = _G.ChatFrame_OpenChat
-local GUILDINFOTAB_APPLICANTS = _G.GUILDINFOTAB_APPLICANTS
+-- local GUILDINFOTAB_APPLICANTS = _G.GUILDINFOTAB_APPLICANTS
 local GetGuildInfo = _G.GetGuildInfo
 local GetGuildRosterInfo = _G.GetGuildRosterInfo
 -- local GetNumGuildApplicants = _G.GetNumGuildApplicants
@@ -43,7 +43,7 @@ local UnitInRaid = _G.UnitInRaid
 local ZONE = _G.ZONE
 
 local guildTable = {}
-local gApps
+-- local gApps
 local gName
 local gOnline
 local gRank

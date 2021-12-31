@@ -29,7 +29,6 @@ function Module:CreateFocus()
 	self.Overlay:SetAllPoints(self.Health)
 	self.Overlay:SetFrameLevel(5)
 
-	self.Health.PostUpdate = Module.UpdateHealth
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true

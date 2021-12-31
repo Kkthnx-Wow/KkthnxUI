@@ -190,31 +190,6 @@ C["Chat"] = {
 	},
 }
 
--- DataBars
-C["DataBars"] = {
-	["Enable"] = true,
-	["ExperienceColor"] = {0, 0.4, 1, .8},
-	["Height"] = 14,
-	["HonorColor"] = {240/255, 114/255, 65/255},
-	["MouseOver"] = false,
-	["RestedColor"] = {1, 0, 1, 0.2},
-	["TrackHonor"] = false,
-	["Width"] = 190,
-	["Text"] = {
-		["Options"] = {
-			["NONE"] = 0,
-			["PERCENT"] = 1,
-			["CURMAX"] = 2,
-			["CURPERC"] = 3,
-			["CUR"] = 4,
-			["REM"] = 5,
-			["CURREM"] = 6,
-			["CURPERCREM"] = 7,
-		},
-		["Value"] = 1
-	},
-}
-
 -- Datatext
 C["DataText"] = {
 	["Coords"] = false,
@@ -335,6 +310,7 @@ C["Misc"] = {
 	["EasyMarking"] = false,
 	["EnhancedFriends"] = false,
 	["EnhancedMail"] = false,
+	["ExpRep"] = true,
 	["GemEnchantInfo"] = false,
 	["HideBanner"] = false,
 	["HideBossEmote"] = false,
@@ -346,7 +322,6 @@ C["Misc"] = {
 	["MouseTrailColor"] = {1, 1, 1, 0.6},
 	["NoTalkingHead"] = false,
 	["ParagonEnable"] = false,
-	["PriorityStats"] = false,
 	["ShowWowHeadLinks"] = false,
 	["SlotDurability"] = false,
 	["TradeTabs"] = false,
@@ -495,26 +470,6 @@ C["Tooltip"] = {
 	["ShowIDs"] = false,
 	["SpecLevelByShift"] = true,
 	["TargetBy"] = true,
-
-	-- Testing
-	["Raids"] = true,
-	["Castle Nathria"] = true,
-	["Sanctum of Domination"] = true,
-
-	["Special"] = false,
-	["Shadowlands Keystone Master: Season One"] = false,
-	["Shadowlands Keystone Master: Season Two"] = true,
-
-	["Mythics"] = false,
-	["The Necrotic Wake"] = true,
-	["Plaguefall"] = true,
-	["Mists of Tirna Scithe"] = true,
-	["Halls of Atonement"] = true,
-	["Theater of Pain"] = true,
-	["De Other Side"] = true,
-	["Spires of Ascension"] = true,
-	["Sanguine Depths"] = true,
-	["Tazavesh, the Veiled Market"] = true
 }
 
 -- Fonts

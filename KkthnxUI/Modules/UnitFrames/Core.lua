@@ -25,11 +25,8 @@ local UnitFactionGroup = _G.UnitFactionGroup
 local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
 local UnitInVehicle = _G.UnitInVehicle
-local UnitIsConnected = _G.UnitIsConnected
-local UnitIsDead = _G.UnitIsDead
 local UnitIsEnemy = _G.UnitIsEnemy
 local UnitIsFriend = _G.UnitIsFriend
-local UnitIsGhost = _G.UnitIsGhost
 local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
 local UnitIsPlayer = _G.UnitIsPlayer
@@ -83,29 +80,6 @@ function Module:UpdateClassPortraits(unit)
 	end
 end
 
-function Module:UpdatePortraitColor(unit, min, max)
-	local portraitStyle = C["Unitframe"].PortraitStyle.Value
-	if portraitStyle == "ThreeDPortraits" or portraitStyle == "OverlayPortrait" or portraitStyle == "NoPortraits" then
-		return
-	end
-
-	if not UnitIsConnected(unit) then
-		self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
-	elseif UnitIsDead(unit) then
-		self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
-	elseif UnitIsGhost(unit) then
-		self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
-	elseif max == 0 or min/max * 100 < 25 then
-		if UnitIsPlayer(unit) then
-			if unit ~= "player" then
-				self.Portrait:SetVertexColor(1, 0, 0, 0.7)
-			end
-		end
-	else
-		self.Portrait:SetVertexColor(1, 1, 1, 1)
-	end
-end
-
 function Module:PostUpdatePvPIndicator(unit, status)
 	local factionGroup = UnitFactionGroup(unit)
 
@@ -130,57 +104,55 @@ function Module:UpdateThreat(_, unit)
 
 	local portraitStyle = C["Unitframe"].PortraitStyle.Value
 	local status = UnitThreatSituation(unit)
+	local health = self.Health
+	local portrait = self.Portrait
+
 	if portraitStyle == "ThreeDPortraits" then
-		if not self.Portrait.KKUI_Border then
+		if not portrait.KKUI_Border then
 			return
 		end
 
 		if status and status > 1 then
 			local r, g, b = unpack(oUF.colors.threat[status])
-			self.Portrait.KKUI_Border:SetVertexColor(r, g, b)
+			portrait.KKUI_Border:SetVertexColor(r, g, b)
 		else
 			if C["General"].ColorTextures then
-				self.Portrait.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+				portrait.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
 			else
-				self.Portrait.KKUI_Border:SetVertexColor(1, 1, 1)
+				portrait.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
 		end
 	elseif portraitStyle ~= "ThreeDPortraits" and portraitStyle ~= "NoPortraits" and portraitStyle ~= "OverlayPortrait" then
-		if not self.Portrait.Border.KKUI_Border then
+		if not portrait.Border.KKUI_Border then
 			return
 		end
 
 		if status and status > 1 then
 			local r, g, b = unpack(oUF.colors.threat[status])
-			self.Portrait.Border.KKUI_Border:SetVertexColor(r, g, b)
+			portrait.Border.KKUI_Border:SetVertexColor(r, g, b)
 		else
 			if C["General"].ColorTextures then
-				self.Portrait.Border.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+				portrait.Border.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
 			else
-				self.Portrait.Border.KKUI_Border:SetVertexColor(1, 1, 1)
+				portrait.Border.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
 		end
 	elseif portraitStyle == "NoPortraits" then
-		if not self.Health.KKUI_Border then
+		if not health.KKUI_Border then
 			return
 		end
 
 		if status and status > 1 then
 			local r, g, b = unpack(oUF.colors.threat[status])
-			self.Health.KKUI_Border:SetVertexColor(r, g, b)
+			health.KKUI_Border:SetVertexColor(r, g, b)
 		else
 			if C["General"].ColorTextures then
-				self.Health.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+				health.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
 			else
-				self.Health.KKUI_Border:SetVertexColor(1, 1, 1)
+				health.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
 		end
 	end
-end
-
-function Module:UpdateHealth(unit, cur, max)
-	local parent = self.__owner
-	Module.UpdatePortraitColor(parent, unit, cur, max)
 end
 
 function Module:UpdatePhaseIcon(isPhased)
@@ -188,25 +160,27 @@ function Module:UpdatePhaseIcon(isPhased)
 end
 
 function Module:CreateHeader()
+	local highlight = self.Highlight
+
 	self:RegisterForClicks("AnyUp")
 	self:HookScript("OnEnter", function()
 		UnitFrame_OnEnter(self)
 
-		if not self.Highlight then
+		if not highlight then
 			return
 		end
 
-		self.Highlight:Show()
+		highlight:Show()
 	end)
 
 	self:HookScript("OnLeave", function()
 		UnitFrame_OnLeave(self)
 
-		if not self.Highlight then
+		if not highlight then
 			return
 		end
 
-		self.Highlight:Hide()
+		highlight:Hide()
 	end)
 end
 
@@ -296,7 +270,10 @@ local function ResetSpellTarget(self)
 end
 
 local function UpdateSpellTarget(self, unit)
-	-- if not C.db["Nameplate"]["CastTarget"] then return end
+	-- if not C["Nameplate"].CastTarget then
+	-- 	return
+	-- end
+
 	if not self.spellTarget then
 		return
 	end

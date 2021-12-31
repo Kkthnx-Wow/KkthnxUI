@@ -261,7 +261,7 @@ function Module:TimeOnEnter()
 
 	local today = C_DateAndTime_GetCurrentCalendarTime()
 	local w, m, d, y = today.weekday, today.month, today.monthDay, today.year
-	GameTooltip:AddLine(string_format(FULLDATE, CALENDAR_WEEKDAY_NAMES[w], CALENDAR_FULLDATE_MONTH_NAMES[m], d, y), 0, 0.6, 1)
+	GameTooltip:AddLine(string_format(FULLDATE, CALENDAR_WEEKDAY_NAMES[w], CALENDAR_FULLDATE_MONTH_NAMES[m], d, y), 0.4, 0.6, 1)
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(L["Local Time"], GameTime_GetLocalTime(true), nil, nil, nil, 192/255, 192/255, 192/255)
 	GameTooltip:AddDoubleLine(L["Realm Time"], GameTime_GetGameTime(true), nil, nil, nil, 192/255, 192/255, 192/255)
@@ -390,7 +390,7 @@ function Module:TimeOnEnter()
 		end
 	else
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(K.InfoColorTint.."Hold SHIFT for info|r")
+		GameTooltip:AddLine(K.InfoColor.."Hold SHIFT for info|r")
 	end
 
 	-- Help Info

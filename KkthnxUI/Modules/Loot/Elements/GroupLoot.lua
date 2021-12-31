@@ -120,18 +120,16 @@ local function OnEvent(frame, _, rollID)
 	frame:Hide()
 end
 
-local function StatusUpdate(frame)
+local function StatusUpdate(frame, elapsed)
 	if not frame.parent.rollID then
 		return
 	end
 
-	local t = GetLootRollTimeLeft(frame.parent.rollID)
-	local perc = t / frame.parent.time
-	frame.spark:SetPoint("CENTER", frame, "LEFT", perc * frame:GetWidth(), 0)
-	frame:SetValue(t)
-
-	if t > 1000000000 then
-		frame:GetParent():Hide()
+	if frame.elapsed and frame.elapsed > 0.5 then
+		frame:SetValue(GetLootRollTimeLeft(frame.parent.rollID))
+		frame.elapsed = 0
+	else
+		frame.elapsed = (frame.elapsed or 0) + elapsed
 	end
 end
 
@@ -162,7 +160,7 @@ local function CreateRollButton(parent, ntex, ptex, htex, rolltype, tiptext, ...
 end
 
 function Module:CreateRollFrame()
-	local frame = CreateFrame("Frame", nil, UIParent)
+	local frame = CreateFrame("Frame", "KKUI_LootRollFrame", UIParent)
 	frame:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
 	frame:CreateBorder()
 	frame:SetScript("OnEvent", OnEvent)

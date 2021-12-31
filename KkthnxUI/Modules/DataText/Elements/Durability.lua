@@ -13,6 +13,7 @@ local GetInventoryItemTexture = _G.GetInventoryItemTexture
 
 local DurabilityDataText
 local repairCostString = string_gsub(REPAIR_COST, HEADER_COLON, ":")
+local lowDurabilityCap = .25
 
 local localSlots = {
 	[1] = {1, INVTYPE_HEAD, 1000},
@@ -25,6 +26,21 @@ local localSlots = {
 	[8] = {8, INVTYPE_FEET, 1000},
 	[9] = {16, INVTYPE_WEAPONMAINHAND, 1000},
 	[10] = {17, INVTYPE_WEAPONOFFHAND, 1000},
+}
+
+local function hideAlertWhileCombat()
+	if InCombatLockdown() then
+		DurabilityDataText:RegisterEvent("PLAYER_REGEN_ENABLED")
+		DurabilityDataText:UnregisterEvent("UPDATE_INVENTORY_DURABILITY")
+	end
+end
+
+local lowDurabilityInfo = {
+	text = "You have slots in low durability! Repair soon!",
+	buttonStyle = HelpTip.ButtonStyle.Okay,
+	targetPoint = HelpTip.Point.TopEdgeCenter,
+	onAcknowledgeCallback = hideAlertWhileCombat,
+	offsetY = 10,
 }
 
 local function sortSlots(a, b)
@@ -52,6 +68,14 @@ local function UpdateAllSlots()
 	return numSlots
 end
 
+local function isLowDurability()
+	for i = 1, 10 do
+		if localSlots[i][3] < lowDurabilityCap then
+			return true
+		end
+	end
+end
+
 local function getDurabilityColor(cur, max)
 	local r, g, b = K.oUF:RGBColorGradient(cur, max, 1, 0, 0, 1, 1, 0, 0, 1, 0)
 	return r, g, b
@@ -63,6 +87,7 @@ local function OnEvent(_, event)
 	end
 
 	local numSlots = UpdateAllSlots()
+	local isLow = isLowDurability()
 
 	if event == "PLAYER_REGEN_ENABLED" then
 		DurabilityDataText:UnregisterEvent(event)
@@ -75,13 +100,19 @@ local function OnEvent(_, event)
 			DurabilityDataText.Text:SetText(DURABILITY..": "..K.MyClassColor..NONE)
 		end
 	end
+
+	if isLow then
+		HelpTip:Show(DurabilityDataText, lowDurabilityInfo)
+	else
+		HelpTip:Hide(DurabilityDataText, "You have slots in low durability! Repair soon!")
+	end
 end
 
 local function OnEnter()
 	local total, equipped = GetAverageItemLevel()
 	GameTooltip:SetOwner(DurabilityDataText, "ANCHOR_NONE")
 	GameTooltip:SetPoint("BOTTOMLEFT", DurabilityDataText, "TOPRIGHT", 0, 0)
-	GameTooltip:AddDoubleLine(DURABILITY, string_format("%s: %d/%d", STAT_AVERAGE_ITEM_LEVEL, equipped, total), 163/255, 211/255, 255/255, 163/255, 211/255, 255/255)
+	GameTooltip:AddDoubleLine(DURABILITY, string_format("%s: %d/%d", STAT_AVERAGE_ITEM_LEVEL, equipped, total), 0.4, 0.6, 1, 0.4, 0.6, 1)
 	GameTooltip:AddLine(" ")
 
 	local totalCost = 0
@@ -99,7 +130,7 @@ local function OnEnter()
 
 	if totalCost > 0 then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(repairCostString, K.FormatMoney(totalCost), 163/255, 211/255, 255/255, 1, 1, 1)
+		GameTooltip:AddDoubleLine(repairCostString, K.FormatMoney(totalCost), 0.4, 0.6, 1, 1, 1, 1)
 	end
 
 	GameTooltip:Show()

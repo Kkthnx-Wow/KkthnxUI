@@ -233,17 +233,6 @@ local function KKUI_VerifyDatabase()
 	if KkthnxUIDB.ShowSlots == nil then
 		KkthnxUIDB.ShowSlots = false
 	end
-
-	-- StatPriority
-	if not KkthnxUIDB.StatPriority then
-		KkthnxUIDB.StatPriority = {}
-	end
-
-	if not KkthnxUIDB.StatPriority.Custom then
-		if KkthnxUIDB.StatPriority then
-			KkthnxUIDB.StatPriority.Custom = {}
-		end
-	end
 end
 
 local addonLoader = CreateFrame("Frame")

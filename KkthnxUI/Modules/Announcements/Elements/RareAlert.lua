@@ -10,6 +10,8 @@ local C_Texture_GetAtlasInfo = _G.C_Texture.GetAtlasInfo
 local C_VignetteInfo_GetVignetteInfo = _G.C_VignetteInfo.GetVignetteInfo
 local GetInstanceInfo = _G.GetInstanceInfo
 local date = _G.date
+local C_VignetteInfo_GetVignettePosition = _G.C_VignetteInfo.GetVignettePosition
+local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
 
 local RareAlertCache = {}
 local isIgnoredZone = {
@@ -28,6 +30,18 @@ local function isUsefulAtlas(info)
 	end
 end
 
+-- Atlas info
+local function GetTextureStrByAtlas(info, sizeX, sizeY)
+	local file = info and info.file
+	if not file then return end
+
+	local width, height, txLeft, txRight, txTop, txBottom = info.width, info.height, info.leftTexCoord, info.rightTexCoord, info.topTexCoord, info.bottomTexCoord
+	local atlasWidth = width / (txRight-txLeft)
+	local atlasHeight = height / (txBottom-txTop)
+
+	return string_format("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t", file, (sizeX or 0), (sizeY or 0), atlasWidth, atlasHeight, atlasWidth*txLeft, atlasWidth*txRight, atlasHeight*txTop, atlasHeight*txBottom)
+end
+
 function Module:RareAlert_Update(id)
 	if id and not RareAlertCache[id] then
 		local info = C_VignetteInfo_GetVignetteInfo(id)
@@ -36,21 +50,27 @@ function Module:RareAlert_Update(id)
 		end
 
 		local atlasInfo = C_Texture_GetAtlasInfo(info.atlasName)
-		if not atlasInfo then return end
-
-		local file, width, height, txLeft, txRight, txTop, txBottom = atlasInfo.file, atlasInfo.width, atlasInfo.height, atlasInfo.leftTexCoord, atlasInfo.rightTexCoord, atlasInfo.topTexCoord, atlasInfo.bottomTexCoord
-		if not file then
+		if not atlasInfo then
 			return
 		end
 
-		local atlasWidth = width / (txRight-txLeft)
-		local atlasHeight = height / (txBottom-txTop)
-		local tex = string_format("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t", file, 0, 0, atlasWidth, atlasHeight, atlasWidth * txLeft, atlasWidth * txRight, atlasHeight * txTop, atlasHeight * txBottom)
+		local tex = GetTextureStrByAtlas(atlasInfo)
+		if not tex then
+			return
+		end
 
 		UIErrorsFrame:AddMessage(K.SystemColor..tex..L["Rare Spotted"]..K.InfoColor.."["..(info.name or "").."]"..K.SystemColor.."!")
+
 		if C["Announcements"].AlertInChat then
 			local currrentTime = C["Chat"].TimestampFormat.Value == 1 and K.GreyColor.."["..date("%H:%M:%S").."]" or ""
-			K.Print(currrentTime..K.SystemColor..tex..L["Rare Spotted"]..K.InfoColor.."["..(info.name or "").."]"..K.SystemColor.."!")
+			local nameString
+			local mapID = C_Map_GetBestMapForUnit("player")
+			local position = mapID and C_VignetteInfo_GetVignettePosition(info.vignetteGUID, mapID)
+			if position then
+				local x, y = position:GetXY()
+				nameString = string_format(Module.RareString, mapID, x * 10000, y * 10000, info.name, x * 100, y * 100, "")
+			end
+			K.Print(currrentTime..K.SystemColor..tex..L["Rare Spotted"]..K.InfoColor..(nameString or info.name or "")..K.SystemColor.."!")
 		end
 
 		if Module.RareInstType == "none" then
@@ -80,6 +100,8 @@ function Module:RareAlert_CheckInstance()
 end
 
 function Module:CreateRareAnnounce()
+	Module.RareString = "|Hworldmap:%d+:%d+:%d+|h[%s (%.1f, %.1f)%s]|h|r"
+
 	if C["Announcements"].RareAlert then
 		Module:RareAlert_CheckInstance()
 		K:RegisterEvent("UPDATE_INSTANCE_INFO", Module.RareAlert_CheckInstance)

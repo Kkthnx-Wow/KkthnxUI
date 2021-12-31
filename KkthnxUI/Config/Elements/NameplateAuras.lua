@@ -4,6 +4,10 @@ local _G = _G
 
 local C_EncounterJournal_GetSectionInfo = _G.C_EncounterJournal.GetSectionInfo
 
+local function GetSectionInfo(id)
+	return C_EncounterJournal_GetSectionInfo(id).title
+end
+
 C.NameplateWhiteList = {
 	-- Buffs
 	[642] = true,	-- 圣盾术
@@ -75,10 +79,6 @@ C.NameplateBlackList = {
 	[206930] = true, -- 心脏打击
 }
 
-local function GetSectionInfo(id)
-	return C_EncounterJournal_GetSectionInfo(id).title
-end
-
 C.NameplateCustomUnits = {
 	[179823] = true,	-- 圣物收集者，刻希亚
 	[179565] = true,	-- 圣物饕餮者，刻希亚
@@ -98,12 +98,34 @@ C.NameplateCustomUnits = {
 	[171341] = true,	-- 彼界，幼鹤
 	[175576] = true,	-- 集市，监禁
 	[179733] = true,	-- 集市，鱼串
+	[104251] = true, 	-- 群星庭院，哨兵
+	[101008] = true, 	-- 黑鸦堡垒，针刺虫群
 	-- Raids
 	[175992] = true,	-- 猩红议会，忠实的侍从
 	[GetSectionInfo(21953)] = true,	-- 凯子，灵能灌注者
+
+	-- Condemned Demon
+	[169430] = true,
+	[169428] = true,
+	[168932] = true,
+	[169425] = true,
+	[169429] = true,
+	[169421] = true,
+	[169426] = true,
 }
 
 C.NameplateShowPowerList = {
 	[165556] = true,
 	[GetSectionInfo(22339)] = true,
+}
+
+-- 显示姓名板单位的目标
+C.NameplateTargetNPCs = {
+	[165251] = true,	-- 仙林狐狸
+	[174773] = true,	-- 怨毒怪
+}
+
+-- 无效目标
+C.NameplateTrashUnits = {
+	[166589] = true,	-- 活化武器，赤红
 }

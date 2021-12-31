@@ -107,24 +107,22 @@
    <Script file="Tooltip\Elements\Icons.lua" />
    <Script file="Tooltip\Elements\Mount.lua" />
    <Script file="Tooltip\Elements\Pet.lua" />
-   <Script file="Tooltip\Elements\Progress.lua" />
    <Script file="Tooltip\Elements\SpecLevel.lua" />
    <Script file="Tooltip\Elements\Targeted.lua" />
    <!-- Miscellaneous -->
    <Script file="Miscellaneous\Core.lua" />
    <Script file="Miscellaneous\Elements\AFKCam.lua" />
    <Script file="Miscellaneous\Elements\AlreadyKnown.lua" />
+   <Script file="Miscellaneous\Elements\ExpRep.lua" />
    <Script file="Miscellaneous\Elements\ImprovedMail.lua" />
    <Script file="Miscellaneous\Elements\MDGuildBest.lua" />
    <Script file="Miscellaneous\Elements\MerchantItemlevel.lua" />
    <Script file="Miscellaneous\Elements\MissingStats.lua" />
-   <Script file="Miscellaneous\Elements\MouseTrail.lua" />
    <Script file="Miscellaneous\Elements\MovableFrames.lua" />
    <Script file="Miscellaneous\Elements\QuestTool.lua" />
    <Script file="Miscellaneous\Elements\QuickJoin.lua" />
    <Script file="Miscellaneous\Elements\SlotDurability.lua" />
    <Script file="Miscellaneous\Elements\SlotItemLevel.lua" />
-   <Script file="Miscellaneous\Elements\StatPriority.lua" />
    <Script file="Miscellaneous\Elements\StatusReport.lua" />
    <Script file="Miscellaneous\Elements\TradeTabs.lua" />
    <Script file="Miscellaneous\Elements\yClassColors.lua" />
@@ -157,8 +155,6 @@
    <Script file="Automation\Elements\Summon.lua" />
    <Script file="Automation\Elements\TabBinder.lua" />
    <Script file="Automation\Elements\WhisperInvite.lua" />
-   <!-- DataBars -->
-   <Script file="DataBars\Core.lua" />
    <!-- Loot -->
    <Script file="Loot\Core.lua" />
    <Script file="Loot\Elements\GroupLoot.lua" />
@@ -185,6 +181,7 @@
    <Include file="Skins\Blizzard\Talent.lua" />
    <Include file="Skins\Blizzard\TalkingHead.lua" />
    <Include file="Skins\Blizzard\TradeSkill.lua" />
+   <Include file="Skins\Blizzard\UIDropDownMenu.lua" />
    <Include file="Skins\Blizzard\WidgetFrame.lua" />
    <!-- Skins AddOns -->
    <Include file="Skins\Addons\Bartender4.lua" />

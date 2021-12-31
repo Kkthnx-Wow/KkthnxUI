@@ -124,10 +124,6 @@ local function UpdateFilterWhiteList()
 	K:GetModule("Chat"):UpdateFilterWhiteList()
 end
 
-local function UpdateDataBarsSize()
-	K:GetModule("DataBars"):UpdateDataBarsSize()
-end
-
 local function UpdateTotemBar()
 	if not C["Auras"].Totems then
 		return
@@ -470,26 +466,6 @@ local Chat = function(self)
 	Window:CreateEditBox("Chat", "ChatFilterWhiteList", L["ChatFilter WhiteList"], "Enter words you want whitelisted|n|nUse SPACES between each word|n|nPress enter when you are done", UpdateFilterWhiteList)
 end
 
-local DataBars = function(self)
-	local Window = self:CreateWindow(L["DataBars"])
-
-	Window:CreateSection(L["Toggles"])
-	Window:CreateSwitch("DataBars", "Enable", enableTextColor..L["Enable DataBars"])
-	Window:CreateSwitch("DataBars", "MouseOver", L["Fade DataBars"])
-	Window:CreateSwitch("DataBars", "Text", L["Show Text"])
-	Window:CreateSwitch("DataBars", "TrackHonor", L["Track Honor"])
-	Window:CreateDropdown("DataBars", "Text", L["Pick Text Formatting"])
-
-	Window:CreateSection(L["Sizes"])
-	Window:CreateSlider("DataBars", "Height", L["DataBars Height"], 14, 20, 1, nil, UpdateDataBarsSize)
-	Window:CreateSlider("DataBars", "Width", L["DataBars Width"], 20, 300, 1, nil, UpdateDataBarsSize)
-
-	Window:CreateSection(COLORS)
-	Window:CreateColorSelection("DataBars", "ExperienceColor", L["Experience Bar Color"])
-	Window:CreateColorSelection("DataBars", "HonorColor", L["Honor Bar Color"])
-	Window:CreateColorSelection("DataBars", "RestedColor", L["Rested Bar Color"])
-end
-
 local DataText = function(self)
 	local Window = self:CreateWindow(L["DataText"])
 
@@ -566,26 +542,21 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "ColorPicker", L["Enhanced Color Picker"])
 	Window:CreateSwitch("Misc", "EasyMarking", L["EasyMarking by Ctrl + LeftClick"])
 	Window:CreateSwitch("Misc", "EnhancedFriends", L["Enhanced Colors (Friends/Guild +)"])
-	Window:CreateSwitch("Misc", "EnhancedMail", "Enhance Mail Frame With Many Useful Features")
+	Window:CreateSwitch("Misc", "EnhancedMail", "Add 'Postal' Like Feaures To The Mailbox")
 	Window:CreateSwitch("Misc", "GemEnchantInfo", L["Character/Inspect Gem/Enchant Info"])
 	Window:CreateSwitch("Misc", "HideBanner", L["Hide RaidBoss EmoteFrame"])
 	Window:CreateSwitch("Misc", "HideBossEmote", L["Hide BossBanner"])
+	Window:CreateSwitch("Misc", "ExpRep", "Display Exp/Rep Bar (Minimap)")
 	Window:CreateSwitch("Misc", "ImprovedStats", L["Display Character Frame Full Stats"])
 	Window:CreateSwitch("Misc", "ItemLevel", L["Show Character/Inspect ItemLevel Info"])
 	Window:CreateSwitch("Misc", "MDGuildBest", L["Show Mythic+ GuildBest"])
 	Window:CreateSwitch("Misc", "MawThreatBar", L["Replace Default Maw Threat Status"])
 	Window:CreateSwitch("Misc", "NoTalkingHead", L["Remove And Hide The TalkingHead Frame"])
-	Window:CreateSwitch("Misc", "ParagonEnable", L["Paragon Enable"], L["ParagonReputationTip"])
-	Window:CreateSwitch("Misc", "PriorityStats", newFeatureIcon.."Show Stat Priority Above Character Frame")
+	Window:CreateSwitch("Misc", "ParagonEnable", L["Add Paragon Info on ReputationFrame"], L["ParagonReputationTip"])
 	Window:CreateSwitch("Misc", "ShowWowHeadLinks", L["Show Wowhead Links Above Questlog Frame"])
 	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
 	Window:CreateSwitch("Misc", "TradeTabs", L["Add Spellbook-Like Tabs On TradeSkillFrame"])
 	Window:CreateDropdown("Misc", "ShowMarkerBar", L["World Markers Bar"], nil, nil, UpdateMarkerGrid)
-
-	Window:CreateSection(MOUSE_LABEL)
-	Window:CreateSwitch("Misc", "MouseTrail", L["Enable Mouse Trail"])
-	Window:CreateColorSelection("Misc", "MouseTrailColor", L["Mouse Trail Color"])
-	Window:CreateDropdown("Misc", "MouseTrailTexture", "Pick Your Mouse Texture")
 end
 
 local Nameplate = function(self)
@@ -703,30 +674,6 @@ local Tooltip = function(self)
 	Window:CreateSwitch("Tooltip", "ShowIDs", L["Show Tooltip IDs"])
 	Window:CreateSwitch("Tooltip", "SpecLevelByShift", L["Show Spec/ItemLevel by SHIFT"])
 	Window:CreateSwitch("Tooltip", "TargetBy", L["Show Player Targeted By"])
-
-	if not K.CheckAddOnState("RaiderIO") then
-		Window:CreateSection("Raid Progression")
-		Window:CreateSwitch("Tooltip", "Raids", enableTextColor.."Enable Raid Progression")
-		Window:CreateSwitch("Tooltip", "Castle Nathria", "Castle Nathria")
-		Window:CreateSwitch("Tooltip", "Sanctum of Domination", "Sanctum of Domination")
-
-		Window:CreateSection("Mythic Progression")
-		Window:CreateSwitch("Tooltip", "Mythics", enableTextColor.."Enable Mythics Progression")
-		Window:CreateSwitch("Tooltip", "De Other Side", "De Other Side")
-		Window:CreateSwitch("Tooltip", "Halls of Atonement", "Halls of Atonement")
-		Window:CreateSwitch("Tooltip", "Mists of Tirna Scithe", "Mists of Tirna Scithe")
-		Window:CreateSwitch("Tooltip", "Plaguefall", "Plaguefall Progression")
-		Window:CreateSwitch("Tooltip", "Sanguine Depths", "Sanguine Depths")
-		Window:CreateSwitch("Tooltip", "Spires of Ascension", "Spires of Ascension")
-		Window:CreateSwitch("Tooltip", "Tazavesh, the Veiled Market", "Tazavesh, the Veiled Market")
-		Window:CreateSwitch("Tooltip", "The Necrotic Wake", "The Necrotic Wake")
-		Window:CreateSwitch("Tooltip", "Theater of Pain", "Theater of Pain")
-
-		Window:CreateSection("Special Progression")
-		Window:CreateSwitch("Tooltip", "Special", enableTextColor.."Enable Special Progression")
-		Window:CreateSwitch("Tooltip", "Shadowlands Keystone Master: Season One", "Keystone Master: Season One")
-		Window:CreateSwitch("Tooltip", "Shadowlands Keystone Master: Season Two", "Keystone Master: Season Two")
-	end
 end
 
 local UIFonts = function(self)
@@ -1003,7 +950,6 @@ GUI:AddWidgets(Auras)
 GUI:AddWidgets(Automation)
 GUI:AddWidgets(Boss)
 GUI:AddWidgets(Chat)
-GUI:AddWidgets(DataBars)
 GUI:AddWidgets(DataText)
 GUI:AddWidgets(General)
 GUI:AddWidgets(Inventory)
@@ -1012,7 +958,6 @@ GUI:AddWidgets(Minimap)
 GUI:AddWidgets(Misc)
 GUI:AddWidgets(Nameplate)
 GUI:AddWidgets(Party)
-GUI:AddWidgets(PulseCooldown)
 GUI:AddWidgets(Raid)
 GUI:AddWidgets(Skins)
 GUI:AddWidgets(Tooltip)

@@ -41,7 +41,7 @@ local function OnEnter()
 	GameTooltip:SetPoint(K.GetAnchors(LatencyDataText))
 	GameTooltip:ClearLines()
 
-	GameTooltip:AddLine(L["Latency"], 0, 0.6, 1)
+	GameTooltip:AddLine(L["Latency"], 0.4, 0.6, 1)
 	GameTooltip:AddLine(" ")
 
 	local _, _, latencyHome, latencyWorld = GetNetStats()

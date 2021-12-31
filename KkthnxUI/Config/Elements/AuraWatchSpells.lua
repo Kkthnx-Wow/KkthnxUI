@@ -12,15 +12,15 @@ local UIParent = _G.UIParent
 local AuraWatchList = {}
 local groups = {
 	-- groups name = direction, interval, mode, iconsize, position, barwidth
-	["Player Aura"] = {"LEFT", 6, "ICON", 22, {"BOTTOMRIGHT", UIParent, "BOTTOM", -170, 440}},
-	["Target Aura"] = {"RIGHT", 6, "ICON", 36, {"BOTTOMLEFT", UIParent, "BOTTOM", 170, 468}},
-	["Special Aura"] = {"LEFT", 6, "ICON", 36, {"BOTTOMRIGHT", UIParent, "BOTTOM", -170, 468}},
+	["Player Aura"] = {"LEFT", 6, "ICON", 30, {"BOTTOMRIGHT", UIParent, "BOTTOM", -160, 432}},
+	["Target Aura"] = {"RIGHT", 6, "ICON", 36, {"BOTTOMLEFT", UIParent, "BOTTOM", 160, 468}},
+	["Special Aura"] = {"LEFT", 6, "ICON", 36, {"BOTTOMRIGHT", UIParent, "BOTTOM", -160, 468}},
 	["Focus Aura"] = {"RIGHT", 6, "ICON", 35, {"BOTTOMLEFT", UIParent, "LEFT", 5, -230}},
 	["Spell Cooldown"] = {"UP", 6, "BAR", 18, {"BOTTOMRIGHT", UIParent, "BOTTOM", -366, 150}, 150},
-	["Enchant Aura"] = {"LEFT", 6, "ICON", 36, {"BOTTOMRIGHT", UIParent, "BOTTOM", -170, 510}},
+	["Enchant Aura"] = {"LEFT", 6, "ICON", 36, {"BOTTOMRIGHT", UIParent, "BOTTOM", -160, 510}},
 	["Raid Buff"] = {"LEFT", 6, "ICON", 42, {"CENTER", UIParent, "CENTER", -220, 300}},
 	["Raid Debuff"] = {"RIGHT", 6, "ICON", 42, {"CENTER", UIParent, "CENTER", 220, 300}},
-	["Warning"] = {"RIGHT", 6, "ICON", 42, {"BOTTOMLEFT", UIParent, "BOTTOM", 170, 510}},
+	["Warning"] = {"RIGHT", 6, "ICON", 42, {"BOTTOMLEFT", UIParent, "BOTTOM", 160, 510}},
 	["InternalCD"] = {"UP", 6, "BAR", 18, {"BOTTOMRIGHT", UIParent, "BOTTOM", -425, 600}, 150},
 }
 

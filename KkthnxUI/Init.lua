@@ -102,7 +102,8 @@ K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
 K.GreyColor = "|CFF7b8489"
 K.InfoColor = "|CFF669DFF"
-K.InfoColorTint = "|CFF84B0FF" -- 0.5, 0.7, 1
+K.InfoColorRGB = {0.4, 0.6, 1}
+K.InfoColorTint = "|CFF3ba1c5" -- 30% Tint
 K.SystemColor = "|CFFFFCC66"
 K.LeftButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:230:307|t "
 K.RightButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:333:410|t "
@@ -282,4 +283,37 @@ for i = 1, GetNumAddOns() do
 	local Name, _, _, _, Reason = GetAddOnInfo(i)
 	K.AddOns[string_lower(Name)] = GetAddOnEnableState(K.Name, Name) == 2 and (not Reason or Reason ~= "DEMAND_LOADED")
 	K.AddOnVersion[string_lower(Name)] = GetAddOnMetadata(Name, "Version")
+end
+
+---------------
+-- PROFILING --
+---------------
+
+do
+	local info = {}
+
+	function K:LogDebugInfo(name, time, mem)
+		info[name] = info[name] or {timeLog = {}, memLog = {}, calls = 0}
+
+		if #info[name].timeLog > 1000 then
+			table.remove(info[name].timeLog, 1)
+		end
+
+		table.insert(info[name].timeLog, time)
+
+		if #info[name].memLog > 1000 then
+			table.remove(info[name].memLog, 1)
+		end
+
+		table.insert(info[name].memLog, mem)
+
+		info[name].calls = info[name].calls + 1
+
+		K.Print("|cffffd200" .. name .. "|r")
+		K.Print("time:", info[name].timeLog[#info[name].timeLog])
+		K.Print("mem:", info[name].memLog[#info[name].memLog])
+		K.Print("calls:", info[name].calls)
+	end
+
+	K.isProfiling = true
 end

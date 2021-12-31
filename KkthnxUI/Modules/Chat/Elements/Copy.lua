@@ -40,14 +40,6 @@ local menuList = {
 			SlashCmdList["KKUI_MOVEUI"]()
 	end},
 
-	{text = L["Profiles"], notCheckable = true, func = function()
-			SlashCmdList["KKUI_UIPROFILES"]("list")
-	end},
-
-	{text = L["Changelog"], notCheckable = true, func = function()
-			SlashCmdList["KKUI_CHANGELOG"]()
-	end},
-
 	{text = RELOADUI, notCheckable = true, func = function()
 			if InCombatLockdown() then
 				_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
@@ -330,7 +322,10 @@ function Module:ChatCopy_Create()
 	kkuiconfig:SkinButton()
 	kkuiconfig:SetSize(16, 16)
 	kkuiconfig:SetAlpha(0.25)
-	K.CreateFontString(kkuiconfig, 14, "|cff669DFFK|r", "", "", "CENTER", 0, 0)
+
+	kkuiconfig.Texture = kkuiconfig:CreateTexture(nil, "ARTWORK")
+	kkuiconfig.Texture:SetAllPoints()
+	kkuiconfig.Texture:SetTexture("Interface\\Buttons\\UI-OptionsButton")
 	kkuiconfig:RegisterForClicks("AnyUp")
 	kkuiconfig:SetScript("OnClick", function(_, btn)
 		if btn == "LeftButton" then

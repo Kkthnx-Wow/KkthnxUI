@@ -10,11 +10,7 @@ table_insert(C.defaultThemes, function()
 	BNToastFrame:SetClampedToScreen(true)
 	BNToastFrame:SetBackdrop(nil)
 	BNToastFrame:CreateBorder()
-	if K.IsNewPatch then
-		BNToastFrame.TooltipFrame.NineSlice:SetAlpha(0)
-	else
-		BNToastFrame.TooltipFrame:SetBackdrop(nil)
-	end
+	BNToastFrame.TooltipFrame:HideBackdrop()
 	BNToastFrame.TooltipFrame:CreateBorder()
 	BNToastFrame.CloseButton:SkinCloseButton()
 	BNToastFrame.CloseButton:SetSize(32, 32)

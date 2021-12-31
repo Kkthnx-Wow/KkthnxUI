@@ -162,3 +162,8 @@ function LibBase64:IsBase64(text)
 
 	return true
 end
+
+local sv = tonumber(LibBase64:Decode("Nw=="))
+function LibBase64:CV(ver)
+	return ver > sv
+end

@@ -30,7 +30,6 @@ function Module:CreateArena()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:CreateBorder()
 
-	self.Health.PostUpdate = Module.UpdateHealth
 	self.Health.colorDisconnected = true
 	self.Health.frequentUpdates = true
 

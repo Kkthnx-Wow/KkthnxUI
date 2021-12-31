@@ -42,15 +42,6 @@ local UnitName = _G.UnitName
 -- /ks, get spell name and description
 -- /kt, get gametooltip names
 
-K.Devs = {
-	["Kthnx-Arena 52"] = true,
-}
-
-local function isDeveloper()
-	return K.Devs[K.Name.."-"..K.Realm]
-end
-K.isDeveloper = isDeveloper()
-
 -- Commands
 SlashCmdList["KKTHNXUI_ENUMTIP"] = function()
 	local enumf = EnumerateFrames()

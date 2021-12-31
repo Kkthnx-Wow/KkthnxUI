@@ -292,7 +292,7 @@ function Module:UpdateColor(_, unit)
 			end
 		elseif isPlayer and (not isFriendly) and C["Nameplate"].HostileCC then
 			r, g, b = K.UnitColor(unit)
-		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) then
+		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) or C.NameplateTrashUnits[npcID] then
 			r, g, b = .6, .6, .6
 		else
 			r, g, b = K.UnitColor(unit)
@@ -507,9 +507,11 @@ function Module:UpdateQuestUnit(_, unit)
 	for i = 2, K.ScanTooltip:NumLines() do
 		local textLine = _G["KKUI_ScanTooltipTextLeft"..i]
 		local text = textLine and textLine:GetText()
-		if not text then break end
+		if not text then
+			break
+		end
 
-		if text ~= "" then
+		if text ~= " " then
 			if isInGroup and text == K.Name or (not isInGroup and isQuestTitle(textLine)) then
 				startLooking = true
 			elseif startLooking then

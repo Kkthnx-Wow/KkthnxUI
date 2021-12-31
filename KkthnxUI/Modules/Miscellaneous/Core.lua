@@ -63,7 +63,6 @@ function Module:OnEnable()
 	self:CreateJerryWay()
 	self:CreateKillTutorials()
 	self:CreateMawWidgetFrame()
-	self:CreateParagonReputation()
 	self:CreateQuestSizeUpdate()
 	self:CreateTicketStatusFrameMove()
 	self:CreateTradeTargetInfo()
@@ -378,7 +377,7 @@ function Module:CreateMawWidgetFrame()
 
 	bar.spark = bar:CreateTexture(nil, "OVERLAY")
 	bar.spark:SetTexture(C["Media"].Textures.Spark16Texture)
-	bar.spark:SetHeight(C["DataBars"].Height)
+	bar.spark:SetHeight(14)
 	bar.spark:SetBlendMode("ADD")
 	bar.spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
@@ -932,39 +931,22 @@ function Module:CreateJerryWay()
 	SLASH_KKUI_JERRY_WAY1 = "/way"
 end
 
--- Paragon reputation info
-local function SetupParagonRepHook()
-	local numFactions = GetNumFactions()
-	local factionOffset = FauxScrollFrame_GetOffset(ReputationListScrollFrame)
-	for i = 1, NUM_FACTIONS_DISPLAYED, 1 do
-		local factionIndex = factionOffset + i
-		local factionRow = _G["ReputationBar"..i]
-		local factionBar = _G["ReputationBar"..i.."ReputationBar"]
-		local factionStanding = _G["ReputationBar"..i.."ReputationBarFactionStanding"]
+do -- Firestorm has a bug where UI_ERROR_MESSAGES that should trigger a dismount DO NOT trigger a dismount so it is basically acting like Classic Wow.
+	local dismountStrings = {
+		[SPELL_FAILED_NOT_MOUNTED] = true,
+	}
 
-		if factionIndex <= numFactions then
-			local factionID = select(14, GetFactionInfo(factionIndex))
-			if factionID and C_Reputation.IsFactionParagon(factionID) then
-				local currentValue, threshold = C_Reputation.GetFactionParagonInfo(factionID)
-				if currentValue then
-					local barValue = mod(currentValue, threshold)
-					local factionStandingtext = L["Paragon"]..math.floor(currentValue/threshold)
+	local function FixFSAutoDismount(_, _, msg)
+		if K.Realm ~= "Oribos" then
+			return
+		end
 
-					factionBar:SetMinMaxValues(0, threshold)
-					factionBar:SetValue(barValue)
-					factionStanding:SetText(factionStandingtext)
-					factionRow.standingText = factionStandingtext
-					factionRow.rolloverText = string.format(REPUTATION_PROGRESS_FORMAT, BreakUpLargeNumbers(barValue), BreakUpLargeNumbers(threshold))
-				end
+		if dismountStrings[msg] then -- There could be other ones FS has issues with but we will only apply the ones we run into.
+			if IsMounted() then
+				Dismount()
+				UIErrorsFrame:Clear()
 			end
 		end
 	end
-end
-
-function Module:CreateParagonReputation()
-	if not C["Misc"].ParagonEnable then
-		return
-	end
-
-	hooksecurefunc("ReputationFrame_Update", SetupParagonRepHook)
+	K:RegisterEvent("UI_ERROR_MESSAGE", FixFSAutoDismount)
 end

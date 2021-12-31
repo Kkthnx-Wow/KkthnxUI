@@ -16,16 +16,24 @@ local GetTime = _G.GetTime
 local IsInGroup = _G.IsInGroup
 local IsInGuild = _G.IsInGuild
 
-local isVCInit
-local lastVCTime = 0
+local lastVCTime, isVCInit = 0
+local tn = tonumber
 
-function Module:VersionCheck_Compare(new, old)
-	local new1, new2 = string_split(".", new)
-	new1, new2 = tonumber(new1), tonumber(new2)
+local function HandleVersonTag(version)
+	local major, minor = string_split(".", version)
+	major, minor = tn(major), tn(minor)
+	if K.Base64:CV(major) then
+		major, minor = 0, 0
+		if K.isDeveloper and author then
+			print("Moron: "..author)
+		end
+	end
+	return major, minor
+end
 
-	local old1, old2 = string_split(".", old)
-	old1, old2 = tonumber(old1), tonumber(old2)
-
+function Module:VersionCheck_Compare(new, old, author)
+	local new1, new2 = HandleVersonTag(new, author)
+	local old1, old2 = HandleVersonTag(old)
 	if new1 > old1 or (new1 == old1 and new2 > old2) then
 		return "IsNew"
 	elseif new1 < old1 or (new1 == old1 and new2 < old2) then
@@ -50,7 +58,7 @@ function Module:VersionCheck_Init()
 	if not isVCInit then
 		local status = Module:VersionCheck_Compare(KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion, K.Version)
 		if status == "IsNew" then
-			local release = string_gsub(KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion, "(%d+)$", "0")
+			local release = gsub(KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion, "(%d+)$", "0")
 			Module:VersionCheck_Create(string_format("|cff669dffKkthnxUI|r is out of date, the latest release is |cff70C0F5%s|r", release))
 		elseif status == "IsOld" then
 			KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion = K.Version
@@ -77,7 +85,7 @@ function Module:VersionCheck_Update(...)
 		return
 	end
 
-	local status = Module:VersionCheck_Compare(msg, KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion)
+	local status = Module:VersionCheck_Compare(msg, KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion, author)
 	if status == "IsNew" then
 		KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion = msg
 	elseif status == "IsOld" then
@@ -104,7 +112,6 @@ function Module:OnEnable()
 		C_ChatInfo_SendAddonMessage("KKUIVersionCheck", K.Version, "GUILD")
 		lastVCTime = GetTime()
 	end
-
 	Module:VersionCheck_UpdateGroup()
 	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.VersionCheck_UpdateGroup)
 end

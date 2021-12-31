@@ -44,8 +44,10 @@ local function onEnter(button)
 	if button.backdrop and button:IsEnabled() then
 		if C["General"].ColorTextures then
 			button.backdrop.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			button.backdropGlow:Show()
 		else
 			button.backdrop.KKUI_Border:SetVertexColor(102/255, 157/255, 255/255)
+			button.backdropGlow:Show()
 		end
 	end
 
@@ -60,8 +62,10 @@ local function onLeave(button)
 	if button.backdrop and button:IsEnabled() then
 		if C["General"].ColorTextures then
 			button.backdrop.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			button.backdropGlow:Hide()
 		else
 			button.backdrop.KKUI_Border:SetVertexColor(1, 1, 1)
+			button.backdropGlow:Hide()
 		end
 	end
 end
@@ -78,6 +82,14 @@ function Module.HandleMicroButton(button)
 	f:CreateBorder()
 	f:SetAllPoints(button)
 	button.backdrop = f
+
+	local backdropGlow = CreateFrame("Frame", nil, f, "BackdropTemplate")
+	backdropGlow:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
+	backdropGlow:SetPoint("TOPLEFT", f, -4, 4)
+	backdropGlow:SetPoint("BOTTOMRIGHT", f, 4, -4)
+	backdropGlow:SetBackdropBorderColor(1, 1, 0)
+	backdropGlow:Hide()
+	button.backdropGlow = backdropGlow
 
 	button:SetParent(Module.MicroBar)
 	button:GetHighlightTexture():Kill()

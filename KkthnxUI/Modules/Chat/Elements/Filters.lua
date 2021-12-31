@@ -28,7 +28,7 @@ local hooksecurefunc = _G.hooksecurefunc
 local msgSymbols = {"`", "～", "＠", "＃", "^", "＊", "！", "？", "。", "|", " ", "—", "——", "￥", "’", "‘", "“", "”", "【", "】", "『", "』", "《", "》", "〈", "〉", "（", "）", "〔", "〕", "、", "，", "：", ",", "_", "/", "~"}
 local addonBlockList = {"%(Task completed%)", "%*%*.+%*%*", "%[Accept task%]", ":.+>", "<Bigfoot", "<iLvl>", "<LFG>", "<Team Item Level:.+>", "Attribute Notification", "EUI[:_]", "Interrupt:. +|Hspell", "Progress:", "PS death: .+>", "Task progress prompt", "wow.+Redemption Code", "wow.+Verification Code", "Xihan", "|Hspell.+=>", "【Love is not easy】", "【Love Plugin]", ("%-"):rep(20)}
 local trashClubs = {"Let's Play Games Together", "Salute Us", "Small Uplift", "Stand up", "Tribe Chowder"}
-local autoBroadcasts = {"%-(.*)%|T(.*)|t(.*)|c(.*)%|r", "%[(.*)ARENA ANNOUNCER(.*)%]", "%[(.*)Announce by(.*)%]", "%[(.*)Autobroadcast(.*)%]", "%[(.*)BG Queue Announcer(.*)%]"}
+local autoBroadcasts = {"%-(.*)%|T(.*)|t(.*)|c(.*)%|r", "%[(.*)ARENA ANNOUNCER(.*)%]", "%[(.*)Announce by(.*)%]", "%[(.*)Autobroadcast(.*)%]", "%[(.*)BG Queue Announcer(.*)%]", "You are not mounted so you can't dismount."}
 
 C.BadBoys = {} -- debug
 local FilterList = {}
@@ -141,7 +141,7 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 	chatLines[chatLinesSize + 1] = msgTable
 	for i = 1, chatLinesSize do
 		local line = chatLines[i]
-		if line[1] == msgTable[1] and ((event == "CHAT_MSG_CHANNEL" and msgTable[3] - line[3] < 0.6) or Module:CompareStrDiff(line[2], msgTable[2]) <= 0.1) then
+		if line[1] == msgTable[1] and ((event == "CHAT_MSG_CHANNEL" or event == "CHAT_MSG_MONSTER_SAY" and msgTable[3] - line[3] < 0.6) or Module:CompareStrDiff(line[2], msgTable[2]) <= 0.1) then
 			table_remove(chatLines, i)
 			return true
 		end

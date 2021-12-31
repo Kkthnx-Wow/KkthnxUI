@@ -351,7 +351,7 @@ local function buttonOnEnter(self)
 	GameTooltip:ClearLines()
 
 	if self.isBNet then
-		GameTooltip:AddLine(L["BN"], 0, 0.6, 1)
+		GameTooltip:AddLine(L["BN"], 0.4, 0.6, 1)
 		GameTooltip:AddLine(" ")
 
 		local index, accountName, _, _, _, _, _, _, _, note, broadcastText, broadcastTime = unpack(self.data)
@@ -555,9 +555,9 @@ local function OnEnter(self)
 
 	if totalOnline == 0 then
 		GameTooltip:SetOwner(FriendsDataText.Texture, "ANCHOR_NONE")
-		GameTooltip:SetPoint("TOPLEFT", UIParent, 15, -30)
+		GameTooltip:SetPoint(K.GetAnchors(FriendsDataText.Texture))
 		GameTooltip:ClearLines()
-		GameTooltip:AddDoubleLine(FRIENDS_LIST, string_format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends), 0, 0.6, 1, 0, 0.6, 1)
+		GameTooltip:AddDoubleLine(FRIENDS_LIST, string_format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends), 0.4, 0.6, 1, 0.4, 0.6, 1)
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(L["No Online"], 1, 1, 1)
 		GameTooltip:Show()

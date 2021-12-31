@@ -760,4 +760,4 @@ SlashCmdList["KKUI_AWCONFIG"] = function()
 
 	CreatePanel()
 end
-SLASH_KKUI_AWCONFIG1 = "/kaw"
+SLASH_KKUI_AWCONFIG1 = "/kkaurawatch"

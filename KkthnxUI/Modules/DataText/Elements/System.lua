@@ -144,7 +144,7 @@ local function OnEnter()
 
 	if Module.ShowMemory or not scriptProfileStatus then
 		local totalMemory = UpdateMemory()
-		GameTooltip:AddDoubleLine("System", formatMemory(totalMemory), 0, 0.6, 1, 0.5, 0.7, 1)
+		GameTooltip:AddDoubleLine("System", formatMemory(totalMemory), 0.4, 0.6, 1, 0.5, 0.7, 1)
 		GameTooltip:AddLine(" ")
 
 		local numEnabled = 0
@@ -168,7 +168,7 @@ local function OnEnter()
 	else
 		local totalCPU = UpdateCPU()
 		local passedTime = math_max(1, GetTime() - Module.CheckLoginTime)
-		GameTooltip:AddDoubleLine(L["System"], string_format(usageString, totalCPU / passedTime, 0, 0.6, 1, 0.5, 0.7, 1))
+		GameTooltip:AddDoubleLine(L["System"], string_format(usageString, totalCPU / passedTime, 0.4, 0.6, 1, 0.5, 0.7, 1))
 		GameTooltip:AddLine(" ")
 
 		local numEnabled = 0
