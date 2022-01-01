@@ -72,29 +72,25 @@ local function reskinQuestIcon(button)
 	end
 
 	if not button.styled then
-		button:SetSize(24, 24)
+		--button:SetSize(28, 28)
 		button:SetNormalTexture("")
 		button:SetPushedTexture("")
 
 		local icon = button.icon or button.Icon
 		if icon then
 			icon:SetTexCoord(unpack(K.TexCoords))
+			icon:SetAllPoints(button)
 
 			button.bg = CreateFrame("Frame", nil, button)
-			button.bg:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
-			button.bg:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
-			button.bg:SetFrameLevel(button:GetFrameLevel())
+			button.bg:SetAllPoints(button)
 			button.bg:CreateBorder()
-
-			icon:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
-			icon:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
 		end
 
 		button.styled = true
 	end
 
 	if button.bg then
-		button.bg:SetFrameLevel(0)
+		button.bg:SetFrameLevel(button:GetFrameLevel())
 	end
 end
 
