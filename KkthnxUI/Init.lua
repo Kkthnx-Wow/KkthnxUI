@@ -48,7 +48,14 @@ local COMBATLOG_OBJECT_TYPE_PET = _G.COMBATLOG_OBJECT_TYPE_PET
 Engine[1] = {} -- K, Main
 Engine[2] = {} -- C, Config
 Engine[3] = {} -- L, Locale
-_G.KkthnxUI = Engine
+
+KkthnxUIDB = {}
+KkthnxUIDB.Variables = {}
+KkthnxUIDB.Variables[GetRealmName()] = {}
+KkthnxUIDB.Variables[GetRealmName()][UnitName("player")] = {}
+KkthnxUIDB.Settings = {}
+KkthnxUIDB.Settings[GetRealmName()] = {}
+KkthnxUIDB.Settings[GetRealmName()][UnitName("player")] = {}
 
 local K, C, L = unpack(Engine)
 
@@ -317,3 +324,5 @@ do
 
 	K.isProfiling = true
 end
+
+_G.KkthnxUI = Engine

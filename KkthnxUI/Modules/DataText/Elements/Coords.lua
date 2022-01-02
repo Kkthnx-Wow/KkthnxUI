@@ -21,6 +21,7 @@ local UnitIsPlayer = _G.UnitIsPlayer
 local UnitName = _G.UnitName
 local ZONE = _G.ZONE
 
+local CoordsDataTextFrame
 local coordX = 0
 local coordY = 0
 local faction
@@ -48,19 +49,26 @@ local function OnUpdate(self, elapsed)
 		local x, y = K.GetPlayerMapPos(C_Map_GetBestMapForUnit("player"))
 		if x then
 			coordX, coordY = x, y
-			Module.CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()))
-			Module.CoordsDataTextFrame:SetScript("OnUpdate", OnUpdate)
-			Module.CoordsDataTextFrame:Show()
+			CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()))
+			CoordsDataTextFrame:SetScript("OnUpdate", OnUpdate)
+			CoordsDataTextFrame:Show()
 		else
 			coordX, coordY = 0, 0
-			Module.CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()))
-			Module.CoordsDataTextFrame:SetScript("OnUpdate", nil)
-			Module.CoordsDataTextFrame:Hide()
+			CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()))
+			CoordsDataTextFrame:SetScript("OnUpdate", nil)
+			CoordsDataTextFrame:Hide()
 		end
 
 		self.elapsed = 0
 	end
 end
+
+local eventList = {
+	"ZONE_CHANGED",
+	"ZONE_CHANGED_INDOORS",
+	"ZONE_CHANGED_NEW_AREA",
+	"PLAYER_ENTERING_WORLD",
+}
 
 local function OnEvent()
 	subzone = GetSubZoneText()
@@ -70,7 +78,7 @@ local function OnEvent()
 end
 
 local function OnEnter()
-	GameTooltip:SetOwner(Module.CoordsDataTextFrame, "ANCHOR_BOTTOM", 0, -15)
+	GameTooltip:SetOwner(CoordsDataTextFrame, "ANCHOR_BOTTOM", 0, -15)
 	GameTooltip:ClearLines()
 
 	if pvpType and not IsInInstance() then
@@ -113,30 +121,29 @@ function Module:CreateCoordsDataText()
 		return
 	end
 
-	Module.CoordsDataTextFrame = CreateFrame("Button", nil, UIParent)
-	Module.CoordsDataTextFrame:SetPoint("TOP", UIParent, "TOP", 0, -40)
-	Module.CoordsDataTextFrame:SetSize(20, 20)
+	CoordsDataTextFrame = CoordsDataTextFrame or CreateFrame("Button", nil, UIParent)
+	CoordsDataTextFrame:SetPoint("TOP", UIParent, "TOP", 0, -40)
+	CoordsDataTextFrame:SetSize(20, 20)
 
-	Module.CoordsDataTextFrame.Texture = Module.CoordsDataTextFrame:CreateTexture(nil, "BACKGROUND")
-	Module.CoordsDataTextFrame.Texture:SetPoint("CENTER", Module.CoordsDataTextFrame, "CENTER", 0, 0)
-	Module.CoordsDataTextFrame.Texture:SetAtlas("Navigation-Tracked-Icon")
-	Module.CoordsDataTextFrame.Texture:SetSize(15, 20)
-	Module.CoordsDataTextFrame.Texture:SetAlpha(0.8)
+	CoordsDataTextFrame.Texture = CoordsDataTextFrame:CreateTexture(nil, "BACKGROUND")
+	CoordsDataTextFrame.Texture:SetPoint("CENTER", CoordsDataTextFrame, "CENTER", 0, 0)
+	CoordsDataTextFrame.Texture:SetAtlas("Navigation-Tracked-Icon")
+	CoordsDataTextFrame.Texture:SetSize(15, 20)
+	CoordsDataTextFrame.Texture:SetAlpha(0.8)
 
-	Module.CoordsDataTextFrame.Text = Module.CoordsDataTextFrame:CreateFontString(nil, "ARTWORK")
-	Module.CoordsDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.CoordsDataTextFrame.Text:SetPoint("CENTER", Module.CoordsDataTextFrame.Texture, "CENTER", 0, -14)
+	CoordsDataTextFrame.Text = CoordsDataTextFrame:CreateFontString(nil, "ARTWORK")
+	CoordsDataTextFrame.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	CoordsDataTextFrame.Text:SetPoint("CENTER", CoordsDataTextFrame.Texture, "CENTER", 0, -14)
 
-	Module.CoordsDataTextFrame:RegisterEvent("ZONE_CHANGED", OnEvent)
-	Module.CoordsDataTextFrame:RegisterEvent("ZONE_CHANGED_INDOORS", OnEvent)
-	Module.CoordsDataTextFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA", OnEvent)
-	Module.CoordsDataTextFrame:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
+	for _, event in pairs(eventList) do
+		CoordsDataTextFrame:RegisterEvent(event)
+	end
 
-	Module.CoordsDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
-	Module.CoordsDataTextFrame:SetScript("OnUpdate", OnUpdate)
-	Module.CoordsDataTextFrame:SetScript("OnLeave", OnLeave)
-	Module.CoordsDataTextFrame:SetScript("OnEnter", OnEnter)
-	Module.CoordsDataTextFrame:SetScript("OnEvent", OnEvent)
+	CoordsDataTextFrame:SetScript("OnEvent", OnEvent)
+	CoordsDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
+	CoordsDataTextFrame:SetScript("OnUpdate", OnUpdate)
+	CoordsDataTextFrame:SetScript("OnLeave", OnLeave)
+	CoordsDataTextFrame:SetScript("OnEnter", OnEnter)
 
-	K.Mover(Module.CoordsDataTextFrame, "CoordsDataText", "CoordsDataText", {"TOP", UIParent, "TOP", 0, -40})
+	K.Mover(CoordsDataTextFrame, "CoordsDataText", "CoordsDataText", {"TOP", UIParent, "TOP", 0, -40})
 end

@@ -67,6 +67,15 @@ local function getSlotString()
 	end
 end
 
+local eventList = {
+	"BN_FRIEND_ACCOUNT_ONLINE",
+	"BN_FRIEND_ACCOUNT_OFFLINE",
+	"BN_FRIEND_INFO_CHANGED",
+	"FRIENDLIST_UPDATE",
+	"PLAYER_ENTERING_WORLD",
+	"CHAT_MSG_SYSTEM",
+}
+
 local function OnEvent(_, event, arg1)
 	if not IsLoggedIn() then
 		return
@@ -162,8 +171,10 @@ local function OnEnter(self)
 	end
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(TOTAL..":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
-	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t ".."Token:", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
+	if K.Realm ~= "Oribos" then
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t ".."Token:", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
+	end
 
 	for i = 1, GetNumWatchedTokens() do
 		local currencyInfo = C_CurrencyInfo_GetBackpackCurrencyInfo(i)
@@ -240,12 +251,9 @@ function Module:CreateGoldDataText()
 		GoldDataText.Text:SetPoint("LEFT", GoldDataText.Texture, "RIGHT", 0, 0)
 	end
 
-	GoldDataText:RegisterEvent("PLAYER_MONEY", OnEvent)
-	GoldDataText:RegisterEvent("SEND_MAIL_MONEY_CHANGED", OnEvent)
-	GoldDataText:RegisterEvent("SEND_MAIL_COD_CHANGED", OnEvent)
-	GoldDataText:RegisterEvent("PLAYER_TRADE_MONEY", OnEvent)
-	GoldDataText:RegisterEvent("TRADE_MONEY_CHANGED", OnEvent)
-	GoldDataText:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
+	for _, event in pairs(eventList) do
+		GoldDataText:RegisterEvent(event)
+	end
 
 	GoldDataText:SetScript("OnEvent", OnEvent)
 	GoldDataText:SetScript("OnEnter", OnEnter)

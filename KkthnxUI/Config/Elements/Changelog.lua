@@ -2,31 +2,36 @@ local K = unpack(KkthnxUI)
 
 local KKUI_Changelog = {
 	{
-		Version = "[10.3.0 B6] - Work In Progess - TBA",
+		Version = "[10.3.0 B8] - Work In Progess - TBA",
 		General = "All notable changes to this project will be documented in this file. The format is based on "..K.SystemColor.."[Keep a Changelog]|r and this project adheres to "..K.SystemColor.."[Semantic Versioning]|r",
 		Sections = {
 			{
 				Header = "Added",
 				Entries = {
 					"Dev code to test new features that might or might not come in the future",
+					"Major spells casted will be notified to the player by a highlight glow on the castbar icon",
+					"Quest navigation now should show estimated time of arrival",
 				},
 			},
 
 			{
 				Header = "Fixed",
 				Entries = {
-					"Talkinghead is now working as intended",
 					"Couple locales updated to relfect its proper module",
+					"Talkinghead is now working as intended",
+					"Tooltip IDs and such info was not being shown",
+					"Left over file trying to load and throwing an error"
 				},
 			},
 
 			{
 				Header = "Removed",
 				Entries = {
-					"Mouse cursor module",
 					"Mail enhanced contacts module",
+					"Mouse cursor module",
 					"Pulse cooldown module",
 					"Raid and dungeon progression tooltip module",
+					"Profession disenchant module"
 				},
 			},
 
@@ -34,6 +39,7 @@ local KKUI_Changelog = {
 				Header = "Changed",
 				Entries = {
 					"Completely refactored the databars",
+					"Datatext modules events handling updated",
 					"Unitframes code updated to be faster (small impact)",
 				}
 			}

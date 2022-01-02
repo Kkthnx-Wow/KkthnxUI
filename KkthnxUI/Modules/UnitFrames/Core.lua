@@ -349,6 +349,17 @@ function Module:PostCastStart(unit)
 	end
 
 	if self.__owner.mystyle == "nameplate" then
+		-- Major spells
+		if not Module then
+			Module = K:GetModule("Unitframes")
+		end
+
+		if Module.MajorSpells[self.spellID] then
+			K.ShowButtonGlow(self.glowFrame)
+		else
+			K.HideButtonGlow(self.glowFrame)
+		end
+
 		-- Spell target
 		UpdateSpellTarget(self, unit)
 	end
@@ -702,6 +713,7 @@ function Module:CreateUnits()
 		Module:UpdateGroupRoles()
 		Module:QuestIconCheck()
 		Module:RefreshPlateOnFactionChanged()
+		Module:RefreshMajorSpells()
 
 		oUF:RegisterStyle("Nameplates", Module.CreatePlates)
 		oUF:SetActiveStyle("Nameplates")

@@ -584,6 +584,14 @@ local function OnEnter(self)
 	infoFrame.friendCountText:SetText(string_format("%s: %s/%s", GUILD_ONLINE_LABEL, totalOnline, totalFriends))
 end
 
+local eventList = {
+	"BN_FRIEND_ACCOUNT_ONLINE",
+	"BN_FRIEND_ACCOUNT_OFFLINE",
+	"BN_FRIEND_INFO_CHANGED",
+	"FRIENDLIST_UPDATE",
+	"PLAYER_ENTERING_WORLD",
+	"CHAT_MSG_SYSTEM",
+}
 
 local function OnEvent(_, event, arg1)
 	if event == "CHAT_MSG_SYSTEM" then
@@ -655,17 +663,14 @@ function Module:CreateSocialDataText()
 	FriendsDataText.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 	FriendsDataText.Text:SetPoint("LEFT", FriendsDataText.Texture, "RIGHT", 0, 0)
 
-	FriendsDataText:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE", OnEvent)
-	FriendsDataText:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE", OnEvent)
-	FriendsDataText:RegisterEvent("BN_FRIEND_INFO_CHANGED", OnEvent)
-	FriendsDataText:RegisterEvent("FRIENDLIST_UPDATE", OnEvent)
-	FriendsDataText:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
-	FriendsDataText:RegisterEvent("CHAT_MSG_SYSTEM", OnEvent)
+	for _, event in pairs(eventList) do
+		FriendsDataText:RegisterEvent(event)
+	end
 
+	FriendsDataText:SetScript("OnEvent", OnEvent)
 	FriendsDataText:SetScript("OnMouseUp", OnMouseUp)
 	FriendsDataText:SetScript("OnEnter", OnEnter)
 	FriendsDataText:SetScript("OnLeave", OnLeave)
-	FriendsDataText:SetScript("OnEvent", OnEvent)
 
 	K.Mover(FriendsDataText, "FriendsDataText", "FriendsDataText", {"LEFT", UIParent, "LEFT", 4, -270})
 end

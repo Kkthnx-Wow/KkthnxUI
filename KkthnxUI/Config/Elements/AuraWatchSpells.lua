@@ -92,30 +92,29 @@ function Module:AddDeprecatedGroup()
 	table_wipe(C.DeprecatedAuras)
 end
 
--- function Module:CheckMajorSpells()
--- 	for spellID in pairs(C.MajorSpells) do
--- 		local name = GetSpellInfo(spellID)
--- 		if name then
--- 			if KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID] then
--- 				KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID] = nil
--- 			end
--- 		else
--- 			if K.isDeveloper then
--- 				K.Print("Invalid majorspell ID: "..spellID)
--- 			end
--- 		end
--- 	end
+function Module:CheckMajorSpells()
+	for spellID in pairs(C.MajorSpells) do
+		local name = GetSpellInfo(spellID)
+		if name then
+			if KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID] then
+				KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID] = nil
+			end
+		else
+			if K.isDeveloper then
+				K.Print("Invalid majorspells ID: "..spellID)
+			end
+		end
+	end
 
--- 	for spellID, value in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells) do
--- 		if value == false and C.MajorSpells[spellID] == nil then
--- 			KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID] = nil
--- 		end
--- 	end
--- end
+	for spellID, value in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells) do
+		if value == false and C.MajorSpells[spellID] == nil then
+			KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID] = nil
+		end
+	end
+end
 
 function Module:OnEnable()
 	Module:AddDeprecatedGroup()
 	C.AuraWatchList = AuraWatchList
-
-	-- Module:CheckMajorSpells()
+	Module:CheckMajorSpells()
 end

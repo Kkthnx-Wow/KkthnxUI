@@ -81,6 +81,11 @@ local function getDurabilityColor(cur, max)
 	return r, g, b
 end
 
+local eventList = {
+	"UPDATE_INVENTORY_DURABILITY",
+	"PLAYER_ENTERING_WORLD",
+}
+
 local function OnEvent(_, event)
 	if event == "PLAYER_ENTERING_WORLD" then
 		DurabilityDataText:UnregisterEvent(event)
@@ -149,21 +154,22 @@ function Module:CreateDurabilityDataText()
 	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
     DurabilityDataText:SetParent(PaperDollFrame)
 
-	DurabilityDataText.Tab = DurabilityDataText.Tab or DurabilityDataText:CreateTexture(nil, "BACKGROUND", PaperDollSidebarTab1)
-	DurabilityDataText.Tab:SetPoint("TOP", PaperDollFrame, "BOTTOM", 208, 2)
-	DurabilityDataText.Tab:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-ActiveTab")
-	DurabilityDataText.Tab:SetSize(140, 48)
+	DurabilityDataText.Texture = DurabilityDataText.Texture or DurabilityDataText:CreateTexture(nil, "BACKGROUND", PaperDollSidebarTab1)
+	DurabilityDataText.Texture:SetPoint("TOP", PaperDollFrame, "BOTTOM", 208, 2)
+	DurabilityDataText.Texture:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-ActiveTab")
+	DurabilityDataText.Texture:SetSize(140, 48)
 
 	DurabilityDataText.Text = DurabilityDataText.Text or DurabilityDataText:CreateFontString(nil, "ARTWORK")
-    DurabilityDataText.Text:SetPoint("CENTER", DurabilityDataText.Tab, "CENTER", 0, 12)
+    DurabilityDataText.Text:SetPoint("CENTER", DurabilityDataText.Texture, "CENTER", 0, 13)
 	DurabilityDataText.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 
     DurabilityDataText:SetAllPoints(DurabilityDataText.Text)
 
-	DurabilityDataText:RegisterEvent("UPDATE_INVENTORY_DURABILITY", OnEvent)
-	DurabilityDataText:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
+	for _, event in pairs(eventList) do
+		DurabilityDataText:RegisterEvent(event)
+	end
 
+	DurabilityDataText:SetScript("OnEvent", OnEvent)
 	DurabilityDataText:SetScript("OnEnter", OnEnter)
 	DurabilityDataText:SetScript("OnLeave", OnLeave)
-	DurabilityDataText:SetScript("OnEvent", OnEvent)
 end

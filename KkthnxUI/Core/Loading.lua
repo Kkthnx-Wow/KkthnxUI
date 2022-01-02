@@ -207,6 +207,10 @@ local function KKUI_VerifyDatabase()
 		KkthnxUIDB.Variables[K.Realm][K.Name].KeystoneInfo = {}
 	end
 
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells then
+		KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells = {}
+	end
+
 	-- Settings
 	if (not KkthnxUIDB.Settings) then
 		KkthnxUIDB.Settings = {}

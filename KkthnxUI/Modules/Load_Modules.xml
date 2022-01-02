@@ -51,6 +51,7 @@
    <Script file="ActionBars\Elements\Petbar.lua" />
    <Script file="ActionBars\Elements\Extrabar.lua" />
    <Script file="ActionBars\Elements\Vehicle.lua" />
+   <Script file="ActionBars\Elements\ExtraQuestButton.lua" />
    <Script file="ActionBars\Elements\BlizzArt.lua" />
    <Script file="ActionBars\Elements\Fader.lua" />
    <Script file="ActionBars\ButtonRange.lua" />
@@ -58,7 +59,6 @@
    <Script file="ActionBars\ButtonStyle.lua" />
    <Script file="ActionBars\Cooldowns.lua" />
    <Script file="ActionBars\MicroMenu.lua" />
-   <Script file="ActionBars\Elements\ExtraQuestButton.lua" />
    <!-- Auras -->
    <Include file="Auras\AuraTemplate.xml" />
    <Script file="Auras\Core.lua" />
@@ -176,6 +176,7 @@
    <Include file="Skins\Blizzard\LossControl.lua" />
    <Include file="Skins\Blizzard\Miscellaneous.lua" />
    <Include file="Skins\Blizzard\ObjectiveTracker.lua" />
+   <Include file="Skins\Blizzard\QuestNavigation.lua" />
    <Include file="Skins\Blizzard\SpellBook.lua" />
    <Include file="Skins\Blizzard\StaticPopup.lua" />
    <Include file="Skins\Blizzard\Talent.lua" />

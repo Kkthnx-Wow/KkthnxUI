@@ -217,8 +217,8 @@ local function GuildPanel_Init()
 
 	gName = K.CreateFontString(infoFrame, 14, "Guild", "", true, "TOPLEFT", 15, -10)
 	gOnline = K.CreateFontString(infoFrame, 12, "Online", "", false, "TOPLEFT", 15, -35)
-	gApps = K.CreateFontString(infoFrame, 12, "Applications", "", false, "TOPRIGHT", -15, -35)
-	gRank = K.CreateFontString(infoFrame, 12, "Rank", "", false, "TOPLEFT", 15, -51)
+	-- gApps = K.CreateFontString(infoFrame, 12, "Applications", "", false, "TOPRIGHT", -15, -35)
+	gRank = K.CreateFontString(infoFrame, 12, "Rank", "", false, "TOPLEFT", 15, -35) -- -51
 
 	local bu = {}
 	local width = {30, 35, 126, 126}
@@ -323,6 +323,7 @@ local function GuildPanel_Refresh()
 					status = " "
 				end
 			end
+
 			if not zone then
 				zone = UNKNOWN
 			end
@@ -342,6 +343,12 @@ local function GuildPanel_Refresh()
 
 	infoFrame.numMembers = count
 end
+
+local eventList = {
+	"PLAYER_ENTERING_WORLD",
+	"GUILD_ROSTER_UPDATE",
+	"PLAYER_GUILD_UPDATE",
+}
 
 local function OnEvent(_, event, arg1)
 	if not IsInGuild() then
@@ -437,14 +444,14 @@ function Module:CreateGuildDataText()
 	GuildDataText.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 	GuildDataText.Text:SetPoint("LEFT", GuildDataText.Texture, "RIGHT", 0, 0)
 
-	GuildDataText:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent)
-	GuildDataText:RegisterEvent("GUILD_ROSTER_UPDATE", OnEvent)
-	GuildDataText:RegisterEvent("PLAYER_GUILD_UPDATE", OnEvent)
+	for _, event in pairs(eventList) do
+		GuildDataText:RegisterEvent(event)
+	end
 
+	GuildDataText:SetScript("OnEvent", OnEvent)
 	GuildDataText:SetScript("OnMouseUp", OnMouseUp)
 	GuildDataText:SetScript("OnEnter", OnEnter)
 	GuildDataText:SetScript("OnLeave", OnLeave)
-	GuildDataText:SetScript("OnEvent", OnEvent)
 
 	K.Mover(GuildDataText, "GuildDataText", "GuildDataText", {"LEFT", UIParent, "LEFT", 4, -240})
 end

@@ -896,6 +896,11 @@ function Module:CreatePlates()
 	self.Castbar.Icon:SetAllPoints()
 	self.Castbar.Icon:SetTexCoord(unpack(K.TexCoords))
 
+	self.Castbar.glowFrame = CreateFrame("Frame", nil, self.Castbar)
+	self.Castbar.glowFrame:SetPoint("CENTER", self.Castbar.Button)
+	self.Castbar.glowFrame:SetSize(self:GetHeight() * 2 + 3, self:GetHeight() * 2 + 3)
+	--self.Castbar.glowFrame:Hide()
+
 	self.Castbar.Text:SetPoint("LEFT", self.Castbar, 0, -5)
 	self.Castbar.Time:SetPoint("RIGHT", self.Castbar, 0, -5)
 
@@ -1413,4 +1418,25 @@ function Module:ToggleGCDTicker()
 	end
 
 	ticker:SetShown(C["Nameplate"].PPGCDTicker)
+end
+
+Module.MajorSpells = {}
+function Module:RefreshMajorSpells()
+	wipe(Module.MajorSpells)
+
+	for spellID in pairs(C.MajorSpells) do
+		local name = GetSpellInfo(spellID)
+		if name then
+			local modValue = KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID]
+			if modValue == nil then
+				Module.MajorSpells[spellID] = true
+			end
+		end
+	end
+
+	for spellID, value in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells) do
+		if value then
+			Module.MajorSpells[spellID] = true
+		end
+	end
 end

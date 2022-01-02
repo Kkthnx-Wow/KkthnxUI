@@ -2,21 +2,24 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Infobar")
 
 local _G = _G
-local unpack = _G.unpack
-local string_format = _G.string.format
 local select = _G.select
+local string_format = _G.string.format
+local unpack = _G.unpack
 
 local COMBAT_ZONE = _G.COMBAT_ZONE
 local CONTESTED_TERRITORY = _G.CONTESTED_TERRITORY
 local FACTION_CONTROLLED_TERRITORY = _G.FACTION_CONTROLLED_TERRITORY
 local FACTION_STANDING_LABEL4 = _G.FACTION_STANDING_LABEL4
 local FREE_FOR_ALL_TERRITORY = _G.FREE_FOR_ALL_TERRITORY
+local GetSubZoneText = _G.GetSubZoneText
 local GetZonePVPInfo = _G.GetZonePVPInfo
 local GetZoneText = _G.GetZoneText
 local SANCTUARY_TERRITORY = _G.SANCTUARY_TERRITORY
 
-local zone, pvpType, subZone
 local LocationDataText
+local pvpType
+local subZone
+local zone
 
 local zoneInfo = {
 	arena = {FREE_FOR_ALL_TERRITORY, {0.84, 0.03, 0.03}},
@@ -28,7 +31,14 @@ local zoneInfo = {
 	sanctuary = {SANCTUARY_TERRITORY, {0.035, 0.58, 0.84}},
 }
 
-function Module:LocationOnEvent()
+local eventList = {
+	"ZONE_CHANGED",
+	"ZONE_CHANGED_INDOORS",
+	"ZONE_CHANGED_NEW_AREA",
+	"PLAYER_ENTERING_WORLD",
+}
+
+local function OnEvent()
 	if C["Minimap"].LocationText.Value == "HIDE" or not C["Minimap"].Enable then
 		return
 	end
@@ -39,10 +49,10 @@ function Module:LocationOnEvent()
 	pvpType = pvpType or "neutral"
 
 	local r, g, b = unpack(zoneInfo[pvpType][2])
-	Module.MainZoneFont:SetText(zone)
-	Module.MainZoneFont:SetTextColor(r, g, b)
-	Module.SubZoneFont:SetText(subZone)
-	Module.SubZoneFont:SetTextColor(r, g, b)
+	LocationDataText.MainZoneText:SetText(zone)
+	LocationDataText.MainZoneText:SetTextColor(r, g, b)
+	LocationDataText.SubZoneText:SetText(subZone)
+	LocationDataText.SubZoneText:SetTextColor(r, g, b)
 end
 
 function Module:CreateLocationDataText()
@@ -78,25 +88,24 @@ function Module:CreateLocationDataText()
 		LocationDataText:Hide()
 	end
 
-	Module.MainZoneFont = LocationDataText:CreateFontString("OVERLAY")
-	Module.MainZoneFont:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.MainZoneFont:SetFont(select(1, Module.MainZoneFont:GetFont()), 13, select(3, Module.MainZoneFont:GetFont()))
-	Module.MainZoneFont:SetAllPoints(LocationDataText)
-	Module.MainZoneFont:SetWordWrap(true)
-	Module.MainZoneFont:SetNonSpaceWrap(true)
-	Module.MainZoneFont:SetMaxLines(2)
+	LocationDataText.MainZoneText = LocationDataText:CreateFontString("OVERLAY")
+	LocationDataText.MainZoneText:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	LocationDataText.MainZoneText:SetFont(select(1, LocationDataText.MainZoneText:GetFont()), 13, select(3, LocationDataText.MainZoneText:GetFont()))
+	LocationDataText.MainZoneText:SetAllPoints(LocationDataText)
+	LocationDataText.MainZoneText:SetWordWrap(true)
+	LocationDataText.MainZoneText:SetNonSpaceWrap(true)
+	LocationDataText.MainZoneText:SetMaxLines(2)
 
-	Module.SubZoneFont = LocationDataText:CreateFontString("OVERLAY")
-	Module.SubZoneFont:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-	Module.SubZoneFont:SetFont(select(1, Module.SubZoneFont:GetFont()), 11, select(3, Module.SubZoneFont:GetFont()))
-	Module.SubZoneFont:SetPoint("TOP", Module.MainZoneFont, "BOTTOM", 0, -1)
-	Module.SubZoneFont:SetNonSpaceWrap(true)
-	Module.SubZoneFont:SetMaxLines(2)
+	LocationDataText.SubZoneText = LocationDataText:CreateFontString("OVERLAY")
+	LocationDataText.SubZoneText:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	LocationDataText.SubZoneText:SetFont(select(1, LocationDataText.SubZoneText:GetFont()), 11, select(3, LocationDataText.SubZoneText:GetFont()))
+	LocationDataText.SubZoneText:SetPoint("TOP", LocationDataText.MainZoneText, "BOTTOM", 0, -1)
+	LocationDataText.SubZoneText:SetNonSpaceWrap(true)
+	LocationDataText.SubZoneText:SetMaxLines(2)
 
-	K:RegisterEvent("ZONE_CHANGED", Module.LocationOnEvent)
-	K:RegisterEvent("ZONE_CHANGED_INDOORS", Module.LocationOnEvent)
-	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", Module.LocationOnEvent)
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.LocationOnEvent)
+	for _, event in pairs(eventList) do
+		LocationDataText:RegisterEvent(event)
+	end
 
-	LocationDataText:SetScript("OnEvent", Module.LocationOnUpdate)
+	LocationDataText:SetScript("OnEvent", OnEvent)
 end

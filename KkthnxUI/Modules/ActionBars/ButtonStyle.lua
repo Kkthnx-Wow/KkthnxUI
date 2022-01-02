@@ -281,6 +281,12 @@ function Module:StyleActionButton(button, cfg)
 		checkedTexture = button:GetCheckedTexture()
 	end
 
+	-- Pet stuff
+	local petShine = _G[buttonName.."Shine"]
+	if petShine then
+		petShine:SetAllPoints()
+	end
+
 	-- Hide stuff
 	local floatingBG = _G[buttonName.."FloatingBG"]
 	if floatingBG then
