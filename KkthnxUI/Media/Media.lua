@@ -34,8 +34,8 @@ C["Media"] = {
 
 	["Fonts"] = {
 		BlankFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Invisible.ttf]],
-		DamageFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Roboto-Bold.ttf]],
-		KkthnxUIFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Roboto-Medium.ttf]],
+		DamageFont = DAMAGE_TEXT_FONT,
+		KkthnxUIFont = STANDARD_TEXT_FONT,
 	},
 
 	["Statusbars"] = {

@@ -11,6 +11,7 @@ local KKUI_Changelog = {
 					"Dev code to test new features that might or might not come in the future",
 					"Major spells casted will be notified to the player by a highlight glow on the castbar icon",
 					"Quest navigation now should show estimated time of arrival",
+					"Nameplates code updated and missing functions added",
 				},
 			},
 
@@ -18,9 +19,11 @@ local KKUI_Changelog = {
 				Header = "Fixed",
 				Entries = {
 					"Couple locales updated to relfect its proper module",
+					"Left over file trying to load and throwing an error",
+					"Nameplates class power returns",
 					"Talkinghead is now working as intended",
 					"Tooltip IDs and such info was not being shown",
-					"Left over file trying to load and throwing an error"
+					"Unitframe class power returns",
 				},
 			},
 

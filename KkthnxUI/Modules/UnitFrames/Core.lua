@@ -510,7 +510,7 @@ function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster,
 			end
 		end
 	elseif style == "nameplate" or style == "boss" or style == "arena" then
-		if element.__owner.isNameOnly then
+		if element.__owner.plateType == "NameOnly" then
 			return C.NameplateWhiteList[spellID]
 		elseif C.NameplateBlackList[spellID] then
 			return false
@@ -583,7 +583,7 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 
 	if diff then
 		for i = 1, max do
-			element[i]:SetWidth((Module.barWidth - (max - 1) * 6) / max)
+			element[i]:SetWidth((element.__owner.ClassPowerBar:GetWidth() - (max - 1) * 6) / max)
 		end
 	end
 
@@ -598,24 +598,31 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 end
 
 function Module:CreateClassPower(self)
+	local barWidth = C["Unitframe"].PlayerHealthWidth
+	local barHeight = 14
+	local barPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 6}
 	if self.mystyle == "PlayerPlate" then
-		Module.barWidth = C["Nameplate"].NameplateClassPower and C["Nameplate"].PlateWidth or C["Nameplate"].PPIconSize * 5 + 2 * 4
-		Module.barHeight = C["Nameplate"].NameplateClassPower and C["Nameplate"].PlateHeight or C["Nameplate"].PPHeight
-		Module.ClassPowerBarPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 3}
+		barWidth = C["Nameplate"].PlateWidth
+		barHeight = C["Nameplate"].PlateHeight
+		barPoint = {"BOTTOMLEFT", self, "TOPLEFT", 0, 6}
+	elseif self.mystyle == "targetplate" then
+		barWidth = C["Nameplate"].PlateWidth
+		barHeight = C["Nameplate"].PlateHeight
+		barPoint = {"CENTER", self}
 	end
 
-	local bar = CreateFrame("Frame", "oUF_ClassPowerBar", self.Health)
-	bar:SetSize(Module.barWidth, Module.barHeight)
-	bar:SetPoint(unpack(Module.ClassPowerBarPoint))
+	local bar = CreateFrame("Frame", "$parentClassPowerBar", self)
+	bar:SetSize(barWidth, barHeight)
+	bar:SetPoint(unpack(barPoint))
 
 	local bars = {}
 	for i = 1, 6 do
 		bars[i] = CreateFrame("StatusBar", nil, bar)
-		bars[i]:SetHeight(Module.barHeight)
-		bars[i]:SetWidth((Module.barWidth - 5 * 6) / 6)
+		bars[i]:SetHeight(barHeight)
+		bars[i]:SetWidth((barWidth - 5 * 6) / 6)
 		bars[i]:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
 		bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
-		if self.mystyle == "nameplate" or self.mystyle == "PlayerPlate" then
+		if self.mystyle == "PlayerPlate" or self.mystyle == "targetplate" then
 			bars[i]:CreateShadow(true)
 		else
 			bars[i]:CreateBorder()
@@ -650,6 +657,8 @@ function Module:CreateClassPower(self)
 		bars.PostUpdate = Module.PostUpdateClassPower
 		self.ClassPower = bars
 	end
+
+	self.ClassPowerBar = bar
 end
 
 local textScaleFrames = {
@@ -720,11 +729,19 @@ function Module:CreateUnits()
 		oUF:SpawnNamePlates("oUF_NPs", Module.PostUpdatePlates)
 	end
 
-	if C["Nameplate"].ShowPlayerPlate then
+	do -- Playerplate-like PlayerFrame
 		oUF:RegisterStyle("PlayerPlate", Module.CreatePlayerPlate)
 		oUF:SetActiveStyle("PlayerPlate")
 		local plate = oUF:Spawn("player", "oUF_PlayerPlate", true)
-		K.Mover(plate, "PlayerNP", "PlayerPlate", {"BOTTOM", UIParent, "BOTTOM", 0, 300}, plate:GetWidth(), plate:GetHeight())
+		plate.mover = K.Mover(plate, "PlayerPlate", "PlayerPlate", {"BOTTOM", UIParent, "BOTTOM", 0, 300})
+		Module:TogglePlayerPlate()
+	end
+
+	do	-- Fake nameplate for target class power
+		oUF:RegisterStyle("TargetPlate", Module.CreateTargetPlate)
+		oUF:SetActiveStyle("TargetPlate")
+		oUF:Spawn("player", "oUF_TargetPlate", true)
+		Module:ToggleTargetClassPower()
 	end
 
 	if C["Unitframe"].Enable then
@@ -1073,9 +1090,9 @@ function Module:UNIT_FACTION(unit)
 end
 
 function Module:OnEnable()
-	Module.ClassPowerBarSize = {C["Unitframe"].PlayerHealthWidth, 14}
-	Module.ClassPowerBarPoint = {"TOPLEFT", 0, 20}
-	Module.barWidth, Module.barHeight = unpack(Module.ClassPowerBarSize)
+	-- Module.ClassPowerBarSize = {C["Unitframe"].PlayerHealthWidth, 14}
+	-- Module.ClassPowerBarPoint = {"TOPLEFT", 0, 20}
+	-- Module.barWidth, Module.barHeight = unpack(Module.ClassPowerBarSize)
 
 	-- Register our units / layout
 	self:CreateUnits()

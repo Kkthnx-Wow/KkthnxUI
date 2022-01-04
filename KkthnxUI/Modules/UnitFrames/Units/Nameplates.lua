@@ -55,7 +55,7 @@ local isTargetClassPower
 local explosivesID = 120651
 
 -- Unit classification
-local classify = {
+local NPClassifies = {
 	elite = {1, 1, 1},
 	rare = {1, 1, 1, true},
 	rareelite = {1, 0.1, 0.1},
@@ -382,7 +382,7 @@ end
 function Module:UpdateTargetIndicator()
 	local style = C["Nameplate"].TargetIndicator.Value
 	local element = self.TargetIndicator
-	local isNameOnly = self.isNameOnly
+	local isNameOnly = self.plateType == "NameOnly"
 
 	if style == 1 then
 		element:Hide()
@@ -433,36 +433,37 @@ function Module:UpdateTargetIndicator()
 end
 
 function Module:AddTargetIndicator(self)
-	self.TargetIndicator = CreateFrame("Frame", nil, self)
-	self.TargetIndicator:SetAllPoints()
-	self.TargetIndicator:SetFrameLevel(0)
-	self.TargetIndicator:Hide()
+	TargetIndicator = CreateFrame("Frame", nil, self)
+	TargetIndicator:SetAllPoints()
+	TargetIndicator:SetFrameLevel(0)
+	TargetIndicator:Hide()
 
-	self.TargetIndicator.TopArrow = self.TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
-	self.TargetIndicator.TopArrow:SetSize(128 / 2, 128 / 2)
-	self.TargetIndicator.TopArrow:SetTexture(C["Nameplate"].TargetIndicatorTexture.Value)
-	self.TargetIndicator.TopArrow:SetPoint("BOTTOM", self.TargetIndicator, "TOP", 0, 40)
+	TargetIndicator.TopArrow = TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
+	TargetIndicator.TopArrow:SetSize(128 / 2, 128 / 2)
+	TargetIndicator.TopArrow:SetTexture(C["Nameplate"].TargetIndicatorTexture.Value)
+	TargetIndicator.TopArrow:SetPoint("BOTTOM", TargetIndicator, "TOP", 0, 40)
 
-	self.TargetIndicator.RightArrow = self.TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
-	self.TargetIndicator.RightArrow:SetSize(128 / 2, 128 / 2)
-	self.TargetIndicator.RightArrow:SetTexture(C["Nameplate"].TargetIndicatorTexture.Value)
-	self.TargetIndicator.RightArrow:SetPoint("LEFT", self.TargetIndicator, "RIGHT", 3, 0)
-	self.TargetIndicator.RightArrow:SetRotation(math_rad(-90))
+	TargetIndicator.RightArrow = TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
+	TargetIndicator.RightArrow:SetSize(128 / 2, 128 / 2)
+	TargetIndicator.RightArrow:SetTexture(C["Nameplate"].TargetIndicatorTexture.Value)
+	TargetIndicator.RightArrow:SetPoint("LEFT", TargetIndicator, "RIGHT", 3, 0)
+	TargetIndicator.RightArrow:SetRotation(math_rad(-90))
 
-	self.TargetIndicator.Glow = CreateFrame("Frame", nil, self.TargetIndicator, "BackdropTemplate")
-	self.TargetIndicator.Glow:SetPoint("TOPLEFT", self.Health.backdrop, -2, 2)
-	self.TargetIndicator.Glow:SetPoint("BOTTOMRIGHT", self.Health.backdrop, 2, -2)
-	self.TargetIndicator.Glow:SetBackdrop({edgeFile = C["Media"].Textures.GlowTexture, edgeSize = 4})
-	self.TargetIndicator.Glow:SetBackdropBorderColor(unpack(C["Nameplate"].TargetIndicatorColor))
-	self.TargetIndicator.Glow:SetFrameLevel(0)
+	TargetIndicator.Glow = CreateFrame("Frame", nil, TargetIndicator, "BackdropTemplate")
+	TargetIndicator.Glow:SetPoint("TOPLEFT", self.Health.backdrop, -2, 2)
+	TargetIndicator.Glow:SetPoint("BOTTOMRIGHT", self.Health.backdrop, 2, -2)
+	TargetIndicator.Glow:SetBackdrop({edgeFile = C["Media"].Textures.GlowTexture, edgeSize = 4})
+	TargetIndicator.Glow:SetBackdropBorderColor(unpack(C["Nameplate"].TargetIndicatorColor))
+	TargetIndicator.Glow:SetFrameLevel(0)
 
-	self.TargetIndicator.nameGlow = self.TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
-	self.TargetIndicator.nameGlow:SetSize(150, 80)
-	self.TargetIndicator.nameGlow:SetTexture("Interface\\GLUES\\Models\\UI_Draenei\\GenericGlow64")
-	self.TargetIndicator.nameGlow:SetVertexColor(102/255, 157/255, 255/255)
-	self.TargetIndicator.nameGlow:SetBlendMode("ADD")
-	self.TargetIndicator.nameGlow:SetPoint("CENTER", self, "BOTTOM")
+	TargetIndicator.nameGlow = TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
+	TargetIndicator.nameGlow:SetSize(150, 80)
+	TargetIndicator.nameGlow:SetTexture("Interface\\GLUES\\Models\\UI_Draenei\\GenericGlow64")
+	TargetIndicator.nameGlow:SetVertexColor(102/255, 157/255, 255/255)
+	TargetIndicator.nameGlow:SetBlendMode("ADD")
+	TargetIndicator.nameGlow:SetPoint("CENTER", self, "BOTTOM")
 
+	self.TargetIndicator = TargetIndicator
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateTargetChange, true)
 	Module.UpdateTargetIndicator(self)
 end
@@ -654,28 +655,37 @@ function Module:UpdateDungeonProgress(unit)
 end
 
 function Module:AddCreatureIcon(self)
-	local iconFrame = CreateFrame("Frame", nil, self)
-	iconFrame:SetAllPoints()
-	iconFrame:SetFrameLevel(self:GetFrameLevel() + 2)
+	local ClassifyOverlay = CreateFrame("Frame", nil, self)
+	ClassifyOverlay:SetAllPoints()
+	ClassifyOverlay:SetFrameLevel(5)
 
-	self.ClassifyIndicator = iconFrame:CreateTexture(nil, "ARTWORK")
-	self.ClassifyIndicator:SetAtlas("VignetteKill")
-	self.ClassifyIndicator:SetPoint("BOTTOMLEFT", self, "LEFT", 0, -4)
-	self.ClassifyIndicator:SetSize(19, 19)
-	self.ClassifyIndicator:Hide()
+	ClassifyIndicator = ClassifyOverlay:CreateTexture(nil, "ARTWORK")
+	ClassifyIndicator:SetAtlas("VignetteKill")
+	ClassifyIndicator:SetPoint("BOTTOMLEFT", self, "LEFT", 0, -4)
+	ClassifyIndicator:SetSize(19, 19)
+	ClassifyIndicator:Hide()
+
+	self.ClassifyIndicator = ClassifyIndicator
 end
 
 function Module:UpdateUnitClassify(unit)
-	if self.ClassifyIndicator then
-		local class = UnitClassification(unit)
-		if (not self.isNameOnly) and class and classify[class] then
-			local r, g, b, desature = unpack(classify[class])
-			self.ClassifyIndicator:SetVertexColor(r, g, b)
-			self.ClassifyIndicator:SetDesaturated(desature)
-			self.ClassifyIndicator:Show()
-		else
-			self.ClassifyIndicator:Hide()
-		end
+	if not self.ClassifyIndicator then
+		return
+	end
+
+	if not unit then
+		unit = self.unit
+	end
+
+	self.ClassifyIndicator:Hide()
+
+	local class = UnitClassification(unit)
+	local classify = class and NPClassifies[class]
+	if classify then
+		local r, g, b, desature = unpack(classify)
+		self.ClassifyIndicator:SetVertexColor(r, g, b)
+		self.ClassifyIndicator:SetDesaturated(desature)
+		self.ClassifyIndicator:Show()
 	end
 end
 
@@ -693,28 +703,13 @@ function Module:UpdateExplosives(event, unit)
 	end
 end
 
-local function checkInstance()
-	local name, _, instID = GetInstanceInfo()
-	if name and instID == 8 then
+local function checkAffixes(event)
+	local _, affixes = C_ChallengeMode.GetActiveKeystoneInfo()
+	if affixes[3] and affixes[3] == 13 then
 		hasExplosives = true
 	else
 		hasExplosives = false
 	end
-end
-
-local function checkAffixes(event)
-	local affixes = C_MythicPlus_GetCurrentAffixes()
-	if not affixes then
-		return
-	end
-
-	if affixes[3] and affixes[3].id == 13 then
-		checkInstance()
-		K:RegisterEvent(event, checkInstance)
-		K:RegisterEvent("CHALLENGE_MODE_START", checkInstance)
-	end
-
-	K:UnregisterEvent(event, checkAffixes)
 end
 
 function Module:CheckExplosives()
@@ -722,7 +717,9 @@ function Module:CheckExplosives()
 		return
 	end
 
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", checkAffixes)
+	checkAffixes()
+	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", checkAffixes)
+	K:RegisterEvent("CHALLENGE_MODE_START", checkAffixes)
 end
 
 -- Mouseover indicator
@@ -751,32 +748,38 @@ function Module:UpdateMouseoverShown()
 	end
 end
 
-function Module:MouseoverIndicator(self)
-	self.HighlightIndicator = CreateFrame("Frame", nil, self.Health)
-	self.HighlightIndicator:SetAllPoints(self)
-	self.HighlightIndicator:Hide()
+function Module:HighlightOnUpdate(elapsed)
+	self.elapsed = (self.elapsed or 0) + elapsed
+	if self.elapsed > 0.1 then
+		if not Module.IsMouseoverUnit(self.__owner) then
+			self:Hide()
+		end
+		self.elapsed = 0
+	end
+end
 
-	self.HighlightIndicator.Texture = self.HighlightIndicator:CreateTexture(nil, "ARTWORK")
-	self.HighlightIndicator.Texture:SetAllPoints()
-	self.HighlightIndicator.Texture:SetColorTexture(1, 1, 1, .25)
+function Module:HighlightOnHide()
+	self.__owner.HighlightIndicator:Hide()
+end
+
+function Module:MouseoverIndicator(self)
+	local highlight = CreateFrame("Frame", nil, self.Health)
+	highlight:SetAllPoints(self)
+	highlight:Hide()
+
+	local texture = highlight:CreateTexture(nil, "ARTWORK")
+	texture:SetAllPoints()
+	texture:SetColorTexture(1, 1, 1, .25)
 
 	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT", Module.UpdateMouseoverShown, true)
 
-	self.HighlightUpdater = CreateFrame("Frame", nil, self)
-	self.HighlightUpdater:SetScript("OnUpdate", function(_, elapsed)
-		self.HighlightUpdater.elapsed = (self.HighlightUpdater.elapsed or 0) + elapsed
-		if self.HighlightUpdater.elapsed > .1 then
-			if not Module.IsMouseoverUnit(self) then
-				self.HighlightUpdater:Hide()
-			end
+	local updater = CreateFrame("Frame", nil, self)
+	updater.__owner = self
+	updater:SetScript("OnUpdate", Module.HighlightOnUpdate)
+	updater:HookScript("OnHide", Module.HighlightOnHide)
 
-			self.HighlightUpdater.elapsed = 0
-		end
-	end)
-
-	self.HighlightUpdater:HookScript("OnHide", function()
-		self.HighlightIndicator:Hide()
-	end)
+	self.HighlightIndicator = highlight
+	self.HighlightUpdater = updater
 end
 
 -- Interrupt info on castbars
@@ -796,6 +799,7 @@ function Module:SpellInterruptor(self)
 	if not self.Castbar then
 		return
 	end
+
 	self:RegisterCombatEvent("SPELL_INTERRUPT", Module.UpdateSpellInterruptor)
 end
 
@@ -899,7 +903,6 @@ function Module:CreatePlates()
 	self.Castbar.glowFrame = CreateFrame("Frame", nil, self.Castbar)
 	self.Castbar.glowFrame:SetPoint("CENTER", self.Castbar.Button)
 	self.Castbar.glowFrame:SetSize(self:GetHeight() * 2 + 3, self:GetHeight() * 2 + 3)
-	--self.Castbar.glowFrame:Hide()
 
 	self.Castbar.Text:SetPoint("LEFT", self.Castbar, 0, -5)
 	self.Castbar.Time:SetPoint("RIGHT", self.Castbar, 0, -5)
@@ -991,9 +994,9 @@ function Module:CreatePlates()
 	self.Auras.spacing = 4
 	self.Auras.initdialAnchor = "BOTTOMLEFT"
 	self.Auras["growth-y"] = "UP"
-	if C["Nameplate"].ShowPlayerPlate and C["Nameplate"].NameplateClassPower then
-		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 6 + _G.oUF_ClassPowerBar:GetHeight())
-		self.Auras:SetPoint("BOTTOMRIGHT", self.nameText, "TOPRIGHT", 0, 6 + _G.oUF_ClassPowerBar:GetHeight())
+	if C["Nameplate"].NameplateClassPower then
+		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 12 + C["Nameplate"].PlateHeight)
+		self.Auras:SetPoint("BOTTOMRIGHT", self.nameText, "TOPRIGHT", 0, 12 + C["Nameplate"].PlateHeight)
 	else
 		self.Auras:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 6)
 		self.Auras:SetPoint("BOTTOMRIGHT", self.nameText, "TOPRIGHT", 0, 6)
@@ -1039,48 +1042,28 @@ function Module:CreatePlates()
 	platesList[self] = self:GetName()
 end
 
--- Classpower on target nameplate
-function Module:UpdateClassPowerAnchor()
-	if not isTargetClassPower then
-		return
-	end
-
-	local bar = _G.oUF_ClassPowerBar
-	local nameplate = C_NamePlate_GetNamePlateForUnit("target")
-	if nameplate then
-		bar:SetParent(nameplate.unitFrame)
-		bar:ClearAllPoints()
-		bar:SetPoint("BOTTOM", nameplate.unitFrame, "TOP", 0, 18)
-		bar:Show()
+function Module:ToggleNameplateAuras()
+	if C["Nameplate"].PlateAuras then
+		if not self:IsElementEnabled("Auras") then
+			self:EnableElement("Auras")
+		end
 	else
-		bar:Hide()
-	end
-end
-
-function Module:UpdateTargetClassPower()
-	local bar = _G.oUF_ClassPowerBar
-	local playerPlate = _G.oUF_PlayerPlate
-
-	if not bar or not playerPlate then
-		return
-	end
-
-	if C["Nameplate"].NameplateClassPower then
-		isTargetClassPower = true
-		Module:UpdateClassPowerAnchor()
-	else
-		isTargetClassPower = false
-		bar:SetParent(playerPlate.Health)
-		bar:ClearAllPoints()
-		bar:SetPoint("BOTTOMLEFT", playerPlate.Health, "TOPLEFT", 0, 3)
-		bar:Show()
+		if self:IsElementEnabled("Auras") then
+			self:DisableElement("Auras")
+		end
 	end
 end
 
 function Module:UpdateNameplateAuras()
+	Module.ToggleNameplateAuras(self)
+
+	if not C["Nameplate"].PlateAuras then
+		return
+	end
+
 	local element = self.Auras
-	if C["Nameplate"].ShowPlayerPlate and C["Nameplate"].NameplateClassPower then
-		element:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 6 + _G.oUF_ClassPowerBar:GetHeight())
+	if C["Nameplate"].NameplateClassPower then
+		element:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 6 + C["Nameplate"].PlateHeight)
 	else
 		element:SetPoint("BOTTOMLEFT", self.nameText, "TOPLEFT", 0, 5)
 	end
@@ -1094,41 +1077,47 @@ function Module:UpdateNameplateAuras()
 	element:ForceUpdate()
 end
 
-function Module:RefreshNameplates()
+function Module:UpdateNameplateSize()
 	local plateHeight = C["Nameplate"].PlateHeight
 	local nameTextSize = C["Nameplate"].NameTextSize
 	local iconSize = plateHeight * 2 + 3
 
+	self:SetSize(C["Nameplate"].PlateWidth, plateHeight)
+
+	self.nameText:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
+	if self.plateType ~= "NameOnly" then
+		self:Tag(self.nameText, "[name]")
+		self.nameText:UpdateTag()
+	end
+
+	self.npcTitle:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize - 1, "")
+	self.tarName:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize + 4, "")
+
+	self.Castbar.Icon:SetSize(iconSize, iconSize)
+	self.Castbar:SetHeight(plateHeight)
+	self.Castbar.Time:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
+	self.Castbar.Text:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
+	self.Castbar.spellTarget:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize + 3, "")
+
+	self.healthValue:SetFont(C["Media"].Fonts.KkthnxUIFont, C["Nameplate"].HealthTextSize, "")
+	self.healthValue:UpdateTag()
+end
+
+function Module:RefreshNameplats()
 	for nameplate in pairs(platesList) do
-		nameplate:SetSize(C["Nameplate"].PlateWidth, plateHeight)
-
-		nameplate.nameText:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
-		nameplate.npcTitle:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize - 1, "")
-		nameplate.tarName:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize + 4, "")
-
-		nameplate.Castbar.Icon:SetSize(iconSize, iconSize)
-		nameplate.Castbar:SetHeight(plateHeight)
-		nameplate.Castbar.Time:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
-		nameplate.Castbar.Text:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
-		nameplate.Castbar.spellTarget:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize + 3, "")
-
-		nameplate.healthValue:SetFont(C["Media"].Fonts.KkthnxUIFont, C["Nameplate"].HealthTextSize, "")
-		nameplate.healthValue:UpdateTag()
-
+		Module.UpdateNameplateSize(nameplate)
+		Module.UpdateUnitClassify(nameplate)
 		Module.UpdateNameplateAuras(nameplate)
 		Module.UpdateTargetIndicator(nameplate)
 		Module.UpdateTargetChange(nameplate)
 	end
-
 	Module:UpdateClickableSize()
 end
 
 function Module:RefreshAllPlates()
-	-- if C["Nameplate"].ShowPlayerPlate then
-	-- 	Module:ResizePlayerPlate() -- Not implemented yet...
-	-- end
-
-	Module:RefreshNameplates()
+	-- Module:ResizePlayerPlate()
+	Module:RefreshNameplats()
+	Module:ResizeTargetPower()
 end
 
 local DisabledElements = {
@@ -1141,14 +1130,15 @@ function Module:UpdatePlateByType()
 	local title = self.npcTitle
 	local guild = self.guildName
 	local raidtarget = self.RaidTargetIndicator
-	local classify = self.ClassifyIndicator
 	local questIcon = self.questIcon
+	local classifyIcon = self.ClassifyIndicator
 
 	name:SetShown(not self.widgetsOnly)
 	name:ClearAllPoints()
 	raidtarget:ClearAllPoints()
+	classifyIcon:ClearAllPoints()
 
-	if self.isNameOnly then
+	if self.plateType == "NameOnly" then
 		for _, element in pairs(DisabledElements) do
 			if self:IsElementEnabled(element) then
 				self:DisableElement(element)
@@ -1166,10 +1156,13 @@ function Module:UpdatePlateByType()
 		guild:Show()
 
 		raidtarget:SetPoint("TOP", title, "BOTTOM", 0, -5)
-		raidtarget:SetParent(self)
-		classify:Hide()
+
 		if questIcon then
 			questIcon:SetPoint("LEFT", name, "RIGHT", 0, 0)
+		end
+
+		if classifyIcon then
+			classifyIcon:SetPoint("RIGHT", name, "LEFT", 0, -1)
 		end
 
 		if self.widgetContainer then
@@ -1184,8 +1177,8 @@ function Module:UpdatePlateByType()
 		end
 
 		name:SetJustifyH("LEFT")
-		self:Tag(name, "[name]")
-		name:UpdateTag()
+		-- self:Tag(name, "[name]")
+		-- name:UpdateTag()
 		name:SetWidth(self:GetWidth() * 0.85)
 		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 3)
 
@@ -1195,29 +1188,41 @@ function Module:UpdatePlateByType()
 		guild:Hide()
 
 		raidtarget:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)
-		raidtarget:SetParent(self.Health)
-		classify:Show()
+
 		if questIcon then
 			questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0)
+		end
+
+		if classifyIcon then
+			classifyIcon:SetPoint("BOTTOMLEFT", self, "LEFT", 0, -4)
 		end
 
 		if self.widgetContainer then
 			self.widgetContainer:ClearAllPoints()
 			self.widgetContainer:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -5)
 		end
+
+		Module.UpdateNameplateSize(self)
 	end
 
 	Module.UpdateTargetIndicator(self)
+	Module.ToggleNameplateAuras(self)
 end
 
 function Module:RefreshPlateType(unit)
 	self.reaction = UnitReaction(unit, "player")
 	self.isFriendly = self.reaction and self.reaction >= 5
-	self.isNameOnly = C["Nameplate"].NameOnly and self.isFriendly or self.widgetsOnly or false
+	if C["Nameplate"].NameOnly and self.isFriendly or self.widgetsOnly then
+		self.plateType = "NameOnly"
+	elseif C["Nameplate"].FriendPlate and self.isFriendly then
+		self.plateType = "FriendPlate"
+	else
+		self.plateType = "None"
+	end
 
-	if self.previousType == nil or self.previousType ~= self.isNameOnly then
+	if self.previousType == nil or self.previousType ~= self.plateType then
 		Module.UpdatePlateByType(self)
-		self.previousType = self.isNameOnly
+		self.previousType = self.plateType
 	end
 end
 
@@ -1264,7 +1269,7 @@ function Module:PostUpdatePlates(event, unit)
 		Module.UpdateUnitClassify(self, unit)
 		Module.UpdateDungeonProgress(self, unit)
 		Module:UpdateClassIcon(self, unit)
-		Module:UpdateClassPowerAnchor()
+		Module:UpdateTargetClassPower()
 
 		self.tarName:SetShown(ShowTargetNPCs[self.npcID])
 	end
@@ -1344,6 +1349,19 @@ function Module:CreatePlayerPlate()
 	Module:TogglePlateVisibility()
 end
 
+function Module:TogglePlayerPlate()
+	local plate = _G.oUF_PlayerPlate
+	if not plate then
+		return
+	end
+
+	if C["Nameplate"].ShowPlayerPlate then
+		plate:Enable()
+	else
+		plate:Disable()
+	end
+end
+
 function Module:TogglePlatePower()
 	local plate = _G.oUF_PlayerPlate
 	if not plate then
@@ -1373,6 +1391,111 @@ function Module:TogglePlateVisibility()
 		plate:UnregisterEvent("PLAYER_REGEN_DISABLED", Module.PlateVisibility)
 		plate:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.PlateVisibility)
 		Module.PlateVisibility(plate, "PLAYER_REGEN_DISABLED")
+	end
+end
+
+-- Target nameplate
+function Module:CreateTargetPlate()
+	self.mystyle = "targetplate"
+	self:EnableMouse(false)
+	self:SetSize(10, 10)
+
+	Module:CreateClassPower(self)
+end
+
+function Module:UpdateTargetClassPower()
+	local plate = _G.oUF_TargetPlate
+	if not plate then
+		return
+	end
+
+	local bar = plate.ClassPowerBar
+	local nameplate = C_NamePlate_GetNamePlateForUnit("target")
+	if nameplate then
+		bar:SetParent(nameplate.unitFrame)
+		bar:ClearAllPoints()
+		bar:SetPoint("BOTTOM", nameplate.unitFrame, "TOP", 0, 20)
+		bar:Show()
+	else
+		bar:Hide()
+	end
+end
+
+function Module:ToggleTargetClassPower()
+	local plate = _G.oUF_TargetPlate
+	if not plate then
+		return
+	end
+
+	local playerPlate = _G.oUF_PlayerPlate
+	if C["Nameplate"].NameplateClassPower then
+		plate:Enable()
+		if plate.ClassPower then
+			if not plate:IsElementEnabled("ClassPower") then
+				plate:EnableElement("ClassPower")
+				plate.ClassPower:ForceUpdate()
+			end
+			if playerPlate then
+				if playerPlate:IsElementEnabled("ClassPower") then
+					playerPlate:DisableElement("ClassPower")
+				end
+			end
+		end
+
+		if plate.Runes then
+			if not plate:IsElementEnabled("Runes") then
+				plate:EnableElement("Runes")
+				plate.Runes:ForceUpdate()
+			end
+			if playerPlate then
+				if playerPlate:IsElementEnabled("Runes") then
+					playerPlate:DisableElement("Runes")
+				end
+			end
+		end
+	else
+		plate:Disable()
+		if plate.ClassPower then
+			if plate:IsElementEnabled("ClassPower") then
+				plate:DisableElement("ClassPower")
+			end
+			if playerPlate then
+				if not playerPlate:IsElementEnabled("ClassPower") then
+					playerPlate:EnableElement("ClassPower")
+					playerPlate.ClassPower:ForceUpdate()
+				end
+			end
+		end
+		if plate.Runes then
+			if plate:IsElementEnabled("Runes") then
+				plate:DisableElement("Runes")
+			end
+			if playerPlate then
+				if not playerPlate:IsElementEnabled("Runes") then
+					playerPlate:EnableElement("Runes")
+					playerPlate.Runes:ForceUpdate()
+				end
+			end
+		end
+	end
+end
+
+function Module:ResizeTargetPower()
+	local plate = _G.oUF_TargetPlate
+	if not plate then
+		return
+	end
+
+	local barWidth = C["Nameplate"].PlateWidth
+	local barHeight = C["Nameplate"].PlateHeight
+	local bars = plate.ClassPower or plate.Runes
+	if bars then
+		plate.ClassPowerBar:SetSize(barWidth, barHeight)
+		local max = bars.__max
+		for i = 1, max do
+			bars[i]:SetHeight(barHeight)
+			bars[i]:SetWidth((barWidth - (max-1) * 6) / max)
+		end
 	end
 end
 

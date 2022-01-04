@@ -344,6 +344,7 @@ C["Misc"] = {
 }
 
 C["Nameplate"] = {
+	["PlateAuras"] = true,
 	["AKSProgress"] = false,
 	["AuraSize"] = 26,
 	["CastbarGlow"] = true,

@@ -4,13 +4,17 @@ local Module = K:GetModule("Miscellaneous")
 local _G = _G
 local pairs = _G.pairs
 local select = _G.select
+local string_format = _G.string.format
 local table_insert = _G.table.insert
 local unpack = _G.unpack
 
+local BOOKTYPE_PROFESSION = _G.BOOKTYPE_PROFESSION
 local C_ToyBox_GetToyInfo = _G.C_ToyBox.GetToyInfo
 local C_ToyBox_IsToyUsable = _G.C_ToyBox.IsToyUsable
 local C_TradeSkillUI_GetOnlyShowMakeableRecipes = _G.C_TradeSkillUI.GetOnlyShowMakeableRecipes
 local C_TradeSkillUI_GetOnlyShowSkillUpRecipes = _G.C_TradeSkillUI.GetOnlyShowSkillUpRecipes
+local C_TradeSkillUI_GetRecipeInfo = _G.C_TradeSkillUI.GetRecipeInfo
+local C_TradeSkillUI_GetTradeSkillLine = _G.C_TradeSkillUI.GetTradeSkillLine
 local C_TradeSkillUI_SetOnlyShowMakeableRecipes = _G.C_TradeSkillUI.SetOnlyShowMakeableRecipes
 local C_TradeSkillUI_SetOnlyShowSkillUpRecipes = _G.C_TradeSkillUI.SetOnlyShowSkillUpRecipes
 local CreateFrame = _G.CreateFrame
@@ -28,12 +32,15 @@ local IsPassiveSpell = _G.IsPassiveSpell
 local IsPlayerSpell = _G.IsPlayerSpell
 local PlayerHasToy = _G.PlayerHasToy
 
-local BOOKTYPE_PROFESSION = _G.BOOKTYPE_PROFESSION
-local RUNEFORGING_ID = 53428
-local PICK_LOCK = 1804
 local CHEF_HAT = 134020
+local ENCHANTING_VELLUM = 38682
+local PICK_LOCK = 1804
+local RUNEFORGING_ID = 53428
 local THERMAL_ANVIL = 87216
+local index = 1
+local isEnchanting
 local tabList = {}
+local tooltipString = "|cffffffff%s(%d)"
 
 local onlyPrimary = {
 	[171] = true, -- Alchemy
@@ -120,7 +127,6 @@ function Module:TradeTabs_Reskin()
 	end
 end
 
-local index = 1
 function Module:TradeTabs_Create(spellID, toyID, itemID)
 	local name, _, texture
 	if toyID then
@@ -136,8 +142,13 @@ function Module:TradeTabs_Create(spellID, toyID, itemID)
 	tab.spellID = spellID
 	tab.itemID = toyID or itemID
 	tab.type = (toyID and "toy") or (itemID and "item") or "spell"
-	tab:SetAttribute("type", tab.type)
-	tab:SetAttribute(tab.type, spellID or name)
+	if spellID == 818 then -- cooking fire
+		tab:SetAttribute("type", "macro")
+		tab:SetAttribute("macrotext", "/cast [@player]"..name)
+	else
+		tab:SetAttribute("type", tab.type)
+		tab:SetAttribute(tab.type, spellID or name)
+	end
 	tab:SetNormalTexture(texture)
 	tab:Show()
 
@@ -166,7 +177,7 @@ function Module:TradeTabs_FilterIcons()
 			self.KKUI_Border:SetVertexColor(1, 1, 1)
 		else
 			value[4](true)
-			self.KKUI_Border:SetVertexColor(1, .8, 0)
+			self.KKUI_Border:SetVertexColor(1, 0.8, 0)
 		end
 	end
 
@@ -198,7 +209,7 @@ function Module:TradeTabs_FilterIcons()
 	local function updateFilterStatus()
 		for index, value in pairs(buttonList) do
 			if value[3]() then
-				buttons[index].KKUI_Border:SetVertexColor(1, .8, 0)
+				buttons[index].KKUI_Border:SetVertexColor(1, 0.8, 0)
 			else
 				buttons[index].KKUI_Border:SetVertexColor(1, 1, 1)
 			end
@@ -218,6 +229,7 @@ function Module:TradeTabs_OnLoad()
 	K:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.TradeTabs_Update)
 
 	Module:TradeTabs_FilterIcons()
+	Module:TradeTabs_QuickEnchanting()
 end
 
 function Module.TradeTabs_OnEvent(event, addon)
@@ -233,6 +245,37 @@ function Module.TradeTabs_OnEvent(event, addon)
 		K:UnregisterEvent(event, Module.TradeTabs_OnEvent)
 		Module:TradeTabs_OnLoad()
 	end
+end
+
+local function IsRecipeEnchanting(self)
+	isEnchanting = nil
+
+	local recipeID = self.selectedRecipeID
+	local recipeInfo = recipeID and C_TradeSkillUI_GetRecipeInfo(recipeID)
+	if recipeInfo and recipeInfo.alternateVerb then
+		local parentSkillLineID = select(6, C_TradeSkillUI_GetTradeSkillLine())
+		if parentSkillLineID == 333 then
+			isEnchanting = true
+			self.CreateButton.tooltip = string_format(tooltipString, "Right click to use vellum", GetItemCount(ENCHANTING_VELLUM))
+		end
+	end
+end
+
+function Module:TradeTabs_QuickEnchanting()
+	if not TradeSkillFrame then
+		return
+	end
+
+	local detailsFrame = TradeSkillFrame.DetailsFrame
+	hooksecurefunc(detailsFrame, "RefreshDisplay", IsRecipeEnchanting)
+
+	local createButton = detailsFrame.CreateButton
+	createButton:RegisterForClicks("AnyUp")
+	createButton:HookScript("OnClick", function(_, btn)
+		if btn == "RightButton" and isEnchanting then
+			UseItemByName(ENCHANTING_VELLUM)
+		end
+	end)
 end
 
 function Module:CreateTradeTabs()

@@ -141,9 +141,9 @@ function Module:CreatePlayer()
 		end
 	end
 
-	if C["Unitframe"].ClassResources and not C["Nameplate"].ShowPlayerPlate then
+	-- if C["Unitframe"].ClassResources and not C["Nameplate"].ShowPlayerPlate then
 		Module:CreateClassPower(self)
-	end
+	-- end
 
 	if C["Unitframe"].PlayerDeBuffs then
 		local Debuffs = CreateFrame("Frame", nil, self)

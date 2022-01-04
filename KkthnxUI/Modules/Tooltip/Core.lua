@@ -84,10 +84,10 @@ local classification = {
 local npcIDstring = "ID: "..K.InfoColor.."%s"
 
 function Module:GetUnit()
-	local _, unit = self and self:GetUnit()
+	local _, unit = self:GetUnit()
 	if not unit then
 		local mFocus = GetMouseFocus()
-		unit = mFocus and (mFocus.unit or (mFocus.GetAttribute and mFocus:GetAttribute("unit"))) or "mouseover"
+		unit = mFocus and (mFocus.unit or (mFocus.GetAttribute and mFocus:GetAttribute("unit")))
 	end
 
 	return unit
@@ -158,6 +158,21 @@ function Module:InsertFactionFrame(faction)
 	self.factionFrame:SetAlpha(0.3)
 end
 
+function Module:InsertRoleFrame(unit)
+	local role = UnitGroupRolesAssigned(unit)
+	if role ~= "NONE" then
+		if role == "HEALER" then
+			role = "|CFF00FF96"..HEALER.."|r"
+		elseif role == "TANK" then
+			role = "|CFF294F9C"..TANK.."|r"
+		elseif role == "DAMAGER" then
+			role = "|CFFC41F3D"..DAMAGE.."|r"
+		end
+
+		self:AddLine(string_format("%s: %s", _G.ROLE, role))
+	end
+end
+
 function Module:OnTooltipCleared()
 	if self:IsForbidden() then
 		return
@@ -165,6 +180,10 @@ function Module:OnTooltipCleared()
 
 	if self.factionFrame and self.factionFrame:GetAlpha() ~= 0 then
 		self.factionFrame:SetAlpha(0)
+	end
+
+	if self.ItemTooltip then
+		self.ItemTooltip:Hide()
 	end
 
 	GameTooltip_ClearMoney(self)
@@ -207,150 +226,141 @@ function Module:OnTooltipSetUnit()
 	Module.HideLines(self)
 
 	local unit = Module.GetUnit(self)
-	local isShiftKeyDown = IsShiftKeyDown()
-	if UnitExists(unit) then
-		local r, g, b = K.UnitColor(unit)
-		local hexColor = K.RGBToHex(r, g, b)
-		local ricon = GetRaidTargetIndex(unit)
-		local text = GameTooltipTextLeft1:GetText()
-
-		if ricon and ricon > 8 then
-			ricon = nil
-		end
-
-		if ricon and text then
-			GameTooltipTextLeft1:SetFormattedText(("%s %s"), ICON_LIST[ricon].."18|t", text)
-		end
-
-		local isPlayer = UnitIsPlayer(unit)
-		if isPlayer then
-			local name, realm = UnitName(unit)
-			local pvpName = UnitPVPName(unit)
-			local relationship = UnitRealmRelationship(unit)
-
-			if not C["Tooltip"].HideTitle and pvpName then
-				name = pvpName
-			end
-
-			if realm and realm ~= "" then
-				if isShiftKeyDown or not C["Tooltip"].HideRealm then
-					name = name.."-"..realm
-				elseif relationship == LE_REALM_RELATION_COALESCED then
-					name = name..FOREIGN_SERVER_LABEL
-				elseif relationship == LE_REALM_RELATION_VIRTUAL then
-					name = name..INTERACTIVE_SERVER_LABEL
-				end
-			end
-
-			local status = (UnitIsAFK(unit) and AFK) or (UnitIsDND(unit) and DND) or (not UnitIsConnected(unit) and PLAYER_OFFLINE)
-			if status then
-				status = string_format(" |cffffcc00[%s]|r", status)
-			end
-			GameTooltipTextLeft1:SetFormattedText("%s", name..(status or ""))
-
-			if C["Tooltip"].FactionIcon then
-				local faction = UnitFactionGroup(unit)
-				if faction and faction ~= "Neutral" then
-					Module.InsertFactionFrame(self, faction)
-				end
-			end
-
-			if C["Tooltip"].LFDRole then
-				local role = UnitGroupRolesAssigned(unit) or K.Role(unit)
-				if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE") then
-					if role == "HEALER" then
-						role = "|CFF00FF96"..HEALER.."|r"
-					elseif role == "TANK" then
-						role = "|CFF294F9C"..TANK.."|r"
-					elseif role == "DAMAGER" then
-						role = "|CFFC41F3D"..DAMAGE.."|r"
-					end
-
-					GameTooltip:AddLine(string_format("%s: %s", _G.ROLE, role))
-				end
-			end
-
-			local guildName, rank, rankIndex, guildRealm = GetGuildInfo(unit)
-			local hasText = GameTooltipTextLeft2:GetText()
-			if guildName and hasText then
-				local myGuild, _, _, myGuildRealm = GetGuildInfo("player")
-				if IsInGuild() and guildName == myGuild and guildRealm == myGuildRealm then
-					GameTooltipTextLeft2:SetTextColor(0.25, 1, 0.25)
-				else
-					GameTooltipTextLeft2:SetTextColor(0.5, 0.7, 1)
-				end
-
-				rankIndex = rankIndex + 1
-				if C["Tooltip"].HideRank then
-					rank = ""
-				end
-
-				if guildRealm and isShiftKeyDown then
-					guildName = guildName.."-"..guildRealm
-				end
-
-				if C["Tooltip"].HideJunkGuild and not isShiftKeyDown then
-					if string_len(guildName) > 31 then
-						guildName = "..."
-					end
-				end
-				GameTooltipTextLeft2:SetText("<"..guildName.."> "..rank.."("..rankIndex..")")
-			end
-		end
-
-		local line1 = GameTooltipTextLeft1:GetText()
-		GameTooltipTextLeft1:SetFormattedText("%s", hexColor..line1)
-
-		local alive = not UnitIsDeadOrGhost(unit)
-		local level
-		if UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) then
-			level = UnitBattlePetLevel(unit)
-		else
-			level = UnitLevel(unit)
-		end
-
-		if level then
-			local boss
-			if level == -1 then
-				boss = "|cffff0000??|r"
-			end
-
-			local diff = GetCreatureDifficultyColor(level)
-			local classify = UnitClassification(unit)
-			local textLevel = string_format("%s%s%s|r", K.RGBToHex(diff), boss or string_format("%d", level), classification[classify] or "")
-			local tiptextLevel = Module.GetLevelLine(self)
-			if tiptextLevel then
-				local pvpFlag = isPlayer and UnitIsPVP(unit) and string_format(" |cffff0000%s|r", PVP) or ""
-				local unitClass = isPlayer and string_format("%s %s", UnitRace(unit) or "", hexColor..(UnitClass(unit) or "").."|r") or UnitCreatureType(unit) or ""
-				tiptextLevel:SetFormattedText(("%s%s %s %s"), textLevel, pvpFlag, unitClass, (not alive and "|cffCCCCCC"..DEAD.."|r" or ""))
-			end
-		end
-
-		if UnitExists(unit.."target") then
-			local tarRicon = GetRaidTargetIndex(unit.."target")
-			if tarRicon and tarRicon > 8 then
-				tarRicon = nil
-			end
-
-			local tar = string_format("%s%s", (tarRicon and ICON_LIST[tarRicon].."10|t") or "", Module:GetTarget(unit.."target"))
-			self:AddLine(TARGET..": "..tar)
-		end
-
-		if not isPlayer and isShiftKeyDown then
-			local guid = UnitGUID(unit)
-			local npcID = guid and K.GetNPCID(guid)
-			if npcID then
-				self:AddLine(string_format(npcIDstring, npcID))
-			end
-		end
-
-		self.StatusBar:SetStatusBarColor(r, g, b)
-
-		Module.InspectUnitSpecAndLevel(self, unit)
-		Module.ShowUnitMythicPlusScore(self, unit)
-	else
-		self.StatusBar:SetStatusBarColor(0, 0.9, 0)
+	if not unit or not UnitExists(unit) then
+		return
 	end
+
+	local isShiftKeyDown = IsShiftKeyDown()
+	local r, g, b = K.UnitColor(unit)
+	local hexColor = K.RGBToHex(r, g, b)
+	local ricon = GetRaidTargetIndex(unit)
+	local text = GameTooltipTextLeft1:GetText()
+	if ricon and ricon > 8 then
+		ricon = nil
+	end
+
+	if ricon and text then
+		GameTooltipTextLeft1:SetFormattedText(("%s %s"), ICON_LIST[ricon].."18|t", text)
+	end
+
+	local isPlayer = UnitIsPlayer(unit)
+	if isPlayer then
+		local name, realm = UnitName(unit)
+		local pvpName = UnitPVPName(unit)
+		local relationship = UnitRealmRelationship(unit)
+		if not C["Tooltip"].HideTitle and pvpName then
+			name = pvpName
+		end
+
+		if realm and realm ~= "" then
+			if isShiftKeyDown or not C["Tooltip"].HideRealm then
+				name = name.."-"..realm
+			elseif relationship == LE_REALM_RELATION_COALESCED then
+				name = name..FOREIGN_SERVER_LABEL
+			elseif relationship == LE_REALM_RELATION_VIRTUAL then
+				name = name..INTERACTIVE_SERVER_LABEL
+			end
+		end
+
+		local status = (UnitIsAFK(unit) and AFK) or (UnitIsDND(unit) and DND) or (not UnitIsConnected(unit) and PLAYER_OFFLINE)
+		if status then
+			status = string_format(" |cffffcc00[%s]|r", status)
+		end
+		GameTooltipTextLeft1:SetFormattedText("%s", name..(status or ""))
+
+		if C["Tooltip"].FactionIcon then
+			local faction = UnitFactionGroup(unit)
+			if faction and faction ~= "Neutral" then
+				Module.InsertFactionFrame(self, faction)
+			end
+		end
+
+		if C["Tooltip"].LFDRole then
+			local role = UnitGroupRolesAssigned(unit)
+			if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE") then
+				Module.InsertRoleFrame(self, role)
+			end
+		end
+
+		local guildName, rank, rankIndex, guildRealm = GetGuildInfo(unit)
+		local hasText = GameTooltipTextLeft2:GetText()
+		if guildName and hasText then
+			local myGuild, _, _, myGuildRealm = GetGuildInfo("player")
+			if IsInGuild() and guildName == myGuild and guildRealm == myGuildRealm then
+				GameTooltipTextLeft2:SetTextColor(0.25, 1, 0.25)
+			else
+				GameTooltipTextLeft2:SetTextColor(0.5, 0.7, 1)
+			end
+
+			rankIndex = rankIndex + 1
+			if C["Tooltip"].HideRank then
+				rank = ""
+			end
+
+			if guildRealm and isShiftKeyDown then
+				guildName = guildName.."-"..guildRealm
+			end
+
+			if C["Tooltip"].HideJunkGuild and not isShiftKeyDown then
+				if string_len(guildName) > 31 then
+					guildName = "..."
+				end
+			end
+			GameTooltipTextLeft2:SetText("<"..guildName.."> "..rank.."("..rankIndex..")")
+		end
+	end
+
+	local line1 = GameTooltipTextLeft1:GetText()
+	GameTooltipTextLeft1:SetFormattedText("%s", hexColor..line1)
+
+	local alive = not UnitIsDeadOrGhost(unit)
+	local level
+	if UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) then
+		level = UnitBattlePetLevel(unit)
+	else
+		level = UnitLevel(unit)
+	end
+
+	if level then
+		local boss
+		if level == -1 then
+			boss = "|cffff0000??|r"
+		end
+
+		local diff = GetCreatureDifficultyColor(level)
+		local classify = UnitClassification(unit)
+		local textLevel = string_format("%s%s%s|r", K.RGBToHex(diff), boss or string_format("%d", level), classification[classify] or "")
+		local tiptextLevel = Module.GetLevelLine(self)
+		if tiptextLevel then
+			local pvpFlag = isPlayer and UnitIsPVP(unit) and string_format(" |cffff0000%s|r", PVP) or ""
+			local unitClass = isPlayer and string_format("%s %s", UnitRace(unit) or "", hexColor..(UnitClass(unit) or "").."|r") or UnitCreatureType(unit) or ""
+			tiptextLevel:SetFormattedText(("%s%s %s %s"), textLevel, pvpFlag, unitClass, (not alive and "|cffCCCCCC"..DEAD.."|r" or ""))
+		end
+	end
+
+	if UnitExists(unit.."target") then
+		local tarRicon = GetRaidTargetIndex(unit.."target")
+		if tarRicon and tarRicon > 8 then
+			tarRicon = nil
+		end
+		local tar = string_format("%s%s", (tarRicon and ICON_LIST[tarRicon].."10|t") or "", Module:GetTarget(unit.."target"))
+		self:AddLine(TARGET..": "..tar)
+	end
+
+	if not isPlayer and isShiftKeyDown then
+		local guid = UnitGUID(unit)
+		local npcID = guid and K.GetNPCID(guid)
+		if npcID then
+			local reaction = UnitReaction(unit, "player")
+			local standingText = reaction and hexColor.._G["FACTION_STANDING_LABEL"..reaction]
+			self:AddLine(string_format(npcIDstring, standingText or "", npcID))
+		end
+	end
+
+	self.StatusBar:SetStatusBarColor(r, g, b)
+
+	Module.InspectUnitSpecAndLevel(self, unit)
+	Module.ShowUnitMythicPlusScore(self, unit)
 end
 
 function Module:StatusBar_OnValueChanged(value)
@@ -369,6 +379,7 @@ function Module:StatusBar_OnValueChanged(value)
 
 	if value > 0 and max == 1 then
 		self.text:SetFormattedText("%d%%", value * 100)
+		self:SetStatusBarColor(0.6, 0.6, 0.6) -- Wintergrasp building
 	else
 		self.text:SetText(K.ShortValue(value).." - "..K.ShortValue(max))
 	end
@@ -470,27 +481,6 @@ function Module:GameTooltip_ComparisonFix(anchorFrame, shoppingTooltip1, shoppin
 	end
 end
 
--- Tooltip skin
-local fakeBg = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-fakeBg:SetBackdrop({
-	bgFile = C["Media"].Textures.BlankTexture,
-	edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\"..C["General"].BorderStyle.Value.."\\Border_Tooltip.tga",
-	edgeSize = 12,
-	insets = {left = 4, right = 4, top = 4, bottom = 4}
-})
-
-local function __GetBackdrop()
-	return fakeBg:GetBackdrop()
-end
-
-local function __GetBackdropColor()
-	return 0.04, 0.04, 0.04, 0.9
-end
-
-local function __GetBackdropBorderColor()
-	return 1, 1, 1
-end
-
 function Module:ReskinTooltip()
 	if not self then
 		if K.isDeveloper then
@@ -515,12 +505,6 @@ function Module:ReskinTooltip()
 
 		if self.StatusBar then
 			Module.ReskinStatusBar(self)
-		end
-
-		if self.GetBackdrop then
-			self.GetBackdrop = __GetBackdrop
-			self.GetBackdropColor = __GetBackdropColor
-			self.GetBackdropBorderColor = __GetBackdropBorderColor
 		end
 
 		self.isTipStyled = true

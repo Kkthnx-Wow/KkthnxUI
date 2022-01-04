@@ -25,6 +25,28 @@ local function updateBagAnchor()
 	K:GetModule("Bags"):UpdateAllAnchors()
 end
 
+local function refreshNameplates()
+	K:GetModule("Unitframes"):RefreshAllPlates()
+end
+
+local function togglePlatePower()
+	K:GetModule("Unitframes"):TogglePlatePower()
+end
+
+local function togglePlateVisibility()
+	K:GetModule("Unitframes"):TogglePlateVisibility()
+end
+
+local function togglePlayerPlate()
+	refreshNameplates()
+	K:GetModule("Unitframes"):TogglePlayerPlate()
+end
+
+local function toggleTargetClassPower()
+	refreshNameplates()
+	K:GetModule("Unitframes"):ToggleTargetClassPower()
+end
+
 local function UpdateTargetBuffs()
 	local frame = _G.oUF_Target
 	if not frame then
@@ -153,10 +175,6 @@ end
 
 local function UpdateInterruptAlert()
 	K:GetModule("Announcements"):CreateInterruptAnnounce()
-end
-
-local function UpdateNameplates()
-	K:GetModule("Unitframes"):RefreshAllPlates()
 end
 
 local function UpdateUnitPlayerSize()
@@ -572,45 +590,46 @@ local Nameplate = function(self)
 	Window:CreateSwitch("Nameplate", "DPSRevertThreat", L["Revert Threat Color If Not Tank"])
 	Window:CreateSwitch("Nameplate", "ExplosivesScale", L["Scale Nameplates for Explosives"])
 	Window:CreateSwitch("Nameplate", "FriendlyCC", L["Show Friendly ClassColor"])
-	Window:CreateSwitch("Nameplate", "FullHealth", L["Show Health Value"], nil, UpdateNameplates)
+	Window:CreateSwitch("Nameplate", "FullHealth", L["Show Health Value"], nil, refreshNameplates)
 	Window:CreateSwitch("Nameplate", "HostileCC", L["Show Hostile ClassColor"])
 	Window:CreateSwitch("Nameplate", "InsideView", L["Interacted Nameplate Stay Inside"])
 	Window:CreateSwitch("Nameplate", "NameOnly", L["Show Only Names For Friendly"])
 	Window:CreateSwitch("Nameplate", "NameplateClassPower", L["Target Nameplate ClassPower"])
+	Window:CreateSwitch("Nameplate", "PlateAuras", "Target Nameplate Auras", nil, refreshNameplates)
 	Window:CreateSwitch("Nameplate", "QuestIndicator", L["Quest Progress Indicator"])
 	Window:CreateSwitch("Nameplate", "Smooth", L["Smooth Bars Transition"])
 	Window:CreateSwitch("Nameplate", "TankMode", L["Force TankMode Colored"])
-	Window:CreateDropdown("Nameplate", "AuraFilter", L["Auras Filter Style"], nil, nil, UpdateNameplates)
-	Window:CreateDropdown("Nameplate", "TargetIndicator", L["TargetIndicator Style"], nil, nil, UpdateNameplates)
+	Window:CreateDropdown("Nameplate", "AuraFilter", L["Auras Filter Style"], nil, nil, refreshNameplates)
+	Window:CreateDropdown("Nameplate", "TargetIndicator", L["TargetIndicator Style"], nil, nil, refreshNameplates)
 	Window:CreateDropdown("Nameplate", "TargetIndicatorTexture", "TargetIndicator Texture") -- Needs Locale
 	Window:CreateEditBox("Nameplate", "CustomUnitList", L["Custom UnitColor List"], L["CustomUnitTip"], UpdateCustomUnitList)
 	Window:CreateEditBox("Nameplate", "PowerUnitList", L["Custom PowerUnit List"], L["CustomUnitTip"], UpdatePowerUnitList)
 
 	Window:CreateSection(L["Sizes"])
-	Window:CreateSlider("Nameplate", "AuraSize", L["Auras Size"], 18, 40, 1, nil, UpdateNameplates)
+	Window:CreateSlider("Nameplate", "AuraSize", L["Auras Size"], 18, 40, 1, nil, refreshNameplates)
 	Window:CreateSlider("Nameplate", "Distance", L["Nameplete MaxDistance"], 10, 100, 1)
 	Window:CreateSlider("Nameplate", "ExecuteRatio", L["Unit Execute Ratio"], 0, 90, 1, L["ExecuteRatioTip"])
-	Window:CreateSlider("Nameplate", "HealthTextSize", L["HealthText FontSize"], 8, 16, 1, nil, UpdateNameplates)
-	Window:CreateSlider("Nameplate", "MaxAuras", L["Max Auras"], 4, 8, 1, nil, UpdateNameplates)
+	Window:CreateSlider("Nameplate", "HealthTextSize", L["HealthText FontSize"], 8, 16, 1, nil, refreshNameplates)
+	Window:CreateSlider("Nameplate", "MaxAuras", L["Max Auras"], 4, 8, 1, nil, refreshNameplates)
 	Window:CreateSlider("Nameplate", "MinAlpha", L["Non-Target Nameplate Alpha"], 0.1, 1, 0.1)
 	Window:CreateSlider("Nameplate", "MinScale", L["Non-Target Nameplate Scale"], 0.1, 3, 0.1)
-	Window:CreateSlider("Nameplate", "NameTextSize", L["NameText FontSize"], 8, 16, 1, nil, UpdateNameplates)
-	Window:CreateSlider("Nameplate", "PlateHeight", L["Nameplate Height"], 6, 28, 1, nil, UpdateNameplates)
-	Window:CreateSlider("Nameplate", "PlateWidth", L["Nameplate Width"], 80, 240, 1, nil, UpdateNameplates)
+	Window:CreateSlider("Nameplate", "NameTextSize", L["NameText FontSize"], 8, 16, 1, nil, refreshNameplates)
+	Window:CreateSlider("Nameplate", "PlateHeight", L["Nameplate Height"], 6, 28, 1, nil, refreshNameplates)
+	Window:CreateSlider("Nameplate", "PlateWidth", L["Nameplate Width"], 80, 240, 1, nil, refreshNameplates)
 	Window:CreateSlider("Nameplate", "VerticalSpacing", L["Nameplate Vertical Spacing"], 0.1, 1, 1)
 
 	Window:CreateSection("Player Nameplate Toggles")
-	Window:CreateSwitch("Nameplate", "ShowPlayerPlate", enableTextColor..L["Enable Personal Resource"])
+	Window:CreateSwitch("Nameplate", "ShowPlayerPlate", enableTextColor..L["Enable Personal Resource"], nil, togglePlayerPlate)
 	Window:CreateSwitch("Nameplate", "ClassAuras", L["Track Personal Class Auras"])
 	Window:CreateSwitch("Nameplate", "PPGCDTicker", L["Enable GCD Ticker"])
 	Window:CreateSwitch("Nameplate", "PPHideOOC", L["Only Visible in Combat"])
 	Window:CreateSwitch("Nameplate", "PPOnFire", "Always Refresh PlayerPlate Auras")
-	Window:CreateSwitch("Nameplate", "PPPowerText", L["Show Power Value"])
+	Window:CreateSwitch("Nameplate", "PPPowerText", L["Show Power Value"], nil, togglePlatePower)
 
 	Window:CreateSection("Player Nameplate Values")
-	Window:CreateSlider("Nameplate", "PPHeight", L["Classpower/Healthbar Height"], 4, 10, 1, nil, UpdateNameplates)
+	Window:CreateSlider("Nameplate", "PPHeight", L["Classpower/Healthbar Height"], 4, 10, 1, nil, refreshNameplates)
 	Window:CreateSlider("Nameplate", "PPIconSize", L["PlayerPlate IconSize"], 20, 40, 1)
-	Window:CreateSlider("Nameplate", "PPPHeight", L["PlayerPlate Powerbar Height"], 4, 10, 1, nil, UpdateNameplates)
+	Window:CreateSlider("Nameplate", "PPPHeight", L["PlayerPlate Powerbar Height"], 4, 10, 1, nil, refreshNameplates)
 
 	Window:CreateSection(COLORS)
 	Window:CreateColorSelection("Nameplate", "CustomColor", L["Custom Color"])
