@@ -7,7 +7,7 @@ local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
 local SendChatMessage = _G.SendChatMessage
 local UNKNOWN = _G.UNKNOWN
 
-function Module:SetupSaySapped()
+local function SetupSaySapped()
 	local _, event, _, _, sourceName, _, _, _, destName, _, _, spellID = CombatLogGetCurrentEventInfo()
 
 	if ((spellID == 6770) and (destName == K.Name) and (event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REFRESH")) then
@@ -17,9 +17,9 @@ function Module:SetupSaySapped()
 end
 
 function Module:CreateSaySappedAnnounce()
-	if C["Announcements"].SaySapped then
-		K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.SetupSaySapped)
-	else
-		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.SetupSaySapped)
+	if not C["Announcements"].SaySapped then
+		return
 	end
+
+	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", SetupSaySapped)
 end

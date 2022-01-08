@@ -23,11 +23,11 @@ local function CreateChangeLog(event)
 		return
 	end
 
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog then
-		KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog = {}
-	end
+	-- if not KkthnxUIDB.ChangeLog then
+	-- 	KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog = {}
+	-- end
 
-	K.ChangeLog:Register(K.Title, K.Changelog, KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog, "lastReadVersion", "onlyShowWhenNewVersion")
+	K.ChangeLog:Register(K.Title, K.Changelog, KkthnxUIDB.ChangeLog, "lastReadVersion", "onlyShowWhenNewVersion")
 	K.ChangeLog:ShowChangelog(K.Title)
 
 	K:UnregisterEvent(event, CreateChangeLog)

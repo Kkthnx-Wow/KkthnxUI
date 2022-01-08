@@ -211,7 +211,6 @@ function Module:CreateQuestXPPercent()
 	end
 end
 
-
 -- Reanchor Vehicle
 function Module:CreateVehicleSeatMover()
 	local frame = CreateFrame("Frame", "KKUI_VehicleSeatMover", UIParent)
@@ -297,9 +296,9 @@ function Module:CreateErrorsFrame()
 
 	UIErrorsFrame:SetFont(Path, 15, Flag)
 	UIErrorsFrame:ClearAllPoints()
-	UIErrorsFrame:SetPoint("TOP", 0, -300)
+	UIErrorsFrame:SetPoint("TOP", 0, -200)
 
-	K.Mover(UIErrorsFrame, "UIErrorsFrame", "UIErrorsFrame", {"TOP", 0, -300})
+	K.Mover(UIErrorsFrame, "UIErrorsFrame", "UIErrorsFrame", {"TOP", 0, -200})
 end
 
 -- TradeFrame hook

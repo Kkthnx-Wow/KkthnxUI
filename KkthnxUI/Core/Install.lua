@@ -74,19 +74,21 @@ function Module:ForceDefaultCVars()
 	SetCVar("lockActionBars", 1)
 	SetCVar("lootUnderMouse", 1)
 	SetCVar("overrideArchive", 0)
+	SetCVar("predictedHealth", 1)
 	SetCVar("screenshotQuality", 10)
 	SetCVar("showNPETutorials", 0)
 	SetCVar("showQuestTrackingTooltips", 1)
 	SetCVar("showTutorials", 0)
 	SetCVar("spamFilter", 0)
+	SetCVar("speechToText", 0)
 	SetCVar("statusTextDisplay", "BOTH")
 	SetCVar("taintLog", 0)
+	SetCVar("textToSpeech", 0)
 	SetCVar("threatWarning", 3)
 	SetCVar("whisperMode", "inline")
 	SetCVar("wholeChatWindowClickable", 0)
-	SetCVar("speechToText", 0)
-	SetCVar("textToSpeech", 0)
-	SetCVar("remoteTextToSpeech", 0)
+	-- SetCVar("remoteTextToSpeech", 1) -- Set to 1 then 0 so we can close the chat tab
+	-- SetCVar("remoteTextToSpeech", 0)
 
 	SetActionBarToggles(1, 1, 1, 1)
 
@@ -98,7 +100,7 @@ function Module:ForceDefaultCVars()
 	end
 
 	if K.isDeveloper then
-		SetCVar("SpellQueueWindow", 25)
+		SetCVar("SpellQueueWindow", K.Realm == "Oribos" and 120 or 25)
 		SetCVar("WorldTextScale", 1)
 		SetCVar("ffxGlow", 0)
 	end
@@ -123,20 +125,29 @@ local function ForceRaidFrame()
 end
 
 function Module:ForceChatSettings()
-	if KkthnxUIDB.Settings[K.Realm][K.Name].Chat then
-		if KkthnxUIDB.Settings[K.Realm][K.Name].Chat.Width ~= C["Chat"].Width then
-			KkthnxUIDB.Settings[K.Realm][K.Name].Chat.Width = C["Chat"].Width
+	FCF_ResetChatWindows()
+
+	for _, name in ipairs(_G.CHAT_FRAMES) do
+		local frame = _G[name]
+		local id = frame:GetID()
+
+		if id == 1 then
+			frame:ClearAllPoints()
+			frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 7, 11)
+			frame:SetWidth(C["Chat"].Width)
+			frame:SetHeight(C["Chat"].Height)
+		elseif id == 3 then
+			VoiceTranscriptionFrame_UpdateVisibility(frame)
+			VoiceTranscriptionFrame_UpdateVoiceTab(frame)
+			VoiceTranscriptionFrame_UpdateEditBox(frame)
 		end
 
-		if KkthnxUIDB.Settings[K.Realm][K.Name].Chat.Height ~= C["Chat"].Height then
-			KkthnxUIDB.Settings[K.Realm][K.Name].Chat.Height = C["Chat"].Height
-		end
+		FCF_SetChatWindowFontSize(nil, frame, 12)
+		FCF_SavePositionAndDimensions(frame)
+		FCF_StopDragging(frame)
 	end
 
-	K:GetModule("Chat"):UpdateChatSize()
-
 	-- General
-	FCF_ResetChatWindows()
 	FCF_SetLocked(ChatFrame1, 1)
 	FCF_SetWindowName(ChatFrame1, L["General"])
 	ChatFrame1:Show()
@@ -165,12 +176,7 @@ function Module:ForceChatSettings()
 	FCF_DockFrame(ChatFrame6)
 	ChatFrame6:Show()
 
-	for _, name in ipairs(_G.CHAT_FRAMES) do
-		local frame = _G[name]
-		FCF_SetChatWindowFontSize(nil, frame, 12)
-	end
-
-	-- ChatFrame1
+	-- ChatFrame 1
 	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
 	ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
 	ChatFrame_RemoveChannel(ChatFrame1, "GuildRecruitment")
@@ -181,14 +187,14 @@ function Module:ForceChatSettings()
 		ChatFrame_AddMessageGroup(_G.ChatFrame1, v)
 	end
 
-	-- ChatFrame3
+	-- ChatFrame 4
 	chatGroup = {"WHISPER", "BN_WHISPER", "BN_CONVERSATION"}
 	ChatFrame_RemoveAllMessageGroups(ChatFrame4)
 	for _, v in ipairs(chatGroup) do
 		ChatFrame_AddMessageGroup(_G.ChatFrame4, v)
 	end
 
-	-- ChatFrame4
+	-- ChatFrame 5
 	ChatFrame_RemoveAllMessageGroups(ChatFrame5)
 	ChatFrame_AddChannel(ChatFrame5, TRADE)
 	ChatFrame_AddChannel(ChatFrame5, GENERAL)
@@ -360,13 +366,14 @@ local function YesTutor()
 			pass:Hide()
 			PlaySound(21968)
 		elseif currentPage == 5 then
+			Module:ForceDefaultCVars() -- Set these one more time
 			StopSound(21968)
 			StopSound(140268)
 			KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete = true
 			tutor:Hide()
 			progressBar:Hide()
-			StaticPopup_Show("KKUI_CHANGES_RELOAD")
 			currentPage = 0
+			StaticPopup_Show("KKUI_CHANGES_RELOAD")
 			PlaySound(163017)
 		end
 

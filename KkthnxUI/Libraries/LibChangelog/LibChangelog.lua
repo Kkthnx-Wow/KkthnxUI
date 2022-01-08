@@ -1,8 +1,6 @@
 --- LibChangelog
 -- Provides an way to create a simple ingame frame to show a changelog
 
-
-
 local _, Data = ...
 local L = Data.L
 
@@ -14,7 +12,7 @@ if not LibChangelog then
 end
 
 -- Lua APIs
-local pcall, error, type, pairs = pcall, error, type, pairs
+local error = error
 
 local NEW_MESSAGE_FONTS = {
     version = GameFontNormalHuge,
@@ -29,7 +27,6 @@ local VIEWED_MESSAGE_FONTS = {
 }
 
 function LibChangelog:Register(addonName, changelogTable, savedVariablesTable, lastReadVersionKey, onlyShowWhenNewVersionKey, texts)
-
     if self[addonName] then
         return error("LibChangelog: '"..addonName.."' already registered", 2)
     end
@@ -67,10 +64,8 @@ function LibChangelog:CreateString(frame, text, font, offset)
 end
 
 -- Did this just to get nice alignment on the bulleted entries (otherwise the text wrapped below the bulle
-
 function LibChangelog:CreateBulletedListEntry(frame, text, font, offset)
     local bullet = self:CreateString(frame, "-", font, offset)
-
     local bulletWidth = 6
 
     bullet:SetWidth(bulletWidth)
@@ -88,14 +83,13 @@ end
 
 function LibChangelog:ShowChangelog(addonName)
     local fonts = NEW_MESSAGE_FONTS
-
     local addonData = self[addonName]
 
     if not addonData then
         return error("LibChangelog: '"..addonName.. "' was not registered. Please use :Register() first", 2)
     end
 
-    local firstEntry = addonData.changelogTable[1]  -- firstEntry contains the newest Version
+    local firstEntry = addonData.changelogTable[1] -- firstEntry contains the newest Version
     local addonSavedVariablesTable = addonData.savedVariablesTable
 
     if addonData.lastReadVersionKey and addonSavedVariablesTable[addonData.lastReadVersionKey] and firstEntry.Version <= addonSavedVariablesTable[addonData.lastReadVersionKey] and addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey] then
@@ -107,9 +101,6 @@ function LibChangelog:ShowChangelog(addonName)
         ButtonFrameTemplate_HidePortrait(frame)
         if frame.SetTitle then
             frame:SetTitle(addonData.texts.title or addonName.." ChangeLog")
-        else
-            -- Workaround for TBCC
-            frame.TitleText:SetText(addonData.texts.title or addonName.." ChangeLog")
         end
         frame.Inset:SetPoint("TOPLEFT", 4, -25)
 
@@ -150,7 +141,6 @@ function LibChangelog:ShowChangelog(addonName)
 
         addonData.frame = frame
     end
-
 
     for i = 1, #addonData.changelogTable do
         local versionEntry = addonData.changelogTable[i]

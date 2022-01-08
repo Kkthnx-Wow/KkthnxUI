@@ -13,21 +13,21 @@ local msgList = {
 	INSTANCE_RESET_SUCCESS = "%s has been reset",
 }
 
-function Module:SetupResetInstance(text)
+local function SetupResetInstance(_, text)
 	for systemMessage, friendlyMessage in pairs(msgList) do
 		systemMessage = _G[systemMessage]
 		if (string_match(text, string_gsub(systemMessage, "%%s", ".+"))) then
 			local instance = string_match(text, string_gsub(systemMessage, "%%s", "(.+)"))
-			SendChatMessage(string_format("KkthnxUI: " .. friendlyMessage, instance), K.CheckChat())
+			SendChatMessage(string_format(friendlyMessage, instance), K.CheckChat())
 			return
 		end
 	end
 end
 
 function Module:CreateResetInstance()
-	if C["Announcements"].ResetInstance then
-		K:RegisterEvent("CHAT_MSG_SYSTEM", Module.SetupResetInstance)
-	else
-		K:UnregisterEvent("CHAT_MSG_SYSTEM", Module.SetupResetInstance)
+	if not C["Announcements"].ResetInstance then
+		return
 	end
+
+	K:RegisterEvent("CHAT_MSG_SYSTEM", SetupResetInstance)
 end

@@ -127,11 +127,18 @@ table_insert(C.defaultThemes, function()
 	for i = 1, 2 do
 		local bu = _G["PrimaryProfession"..i]
 		_G["PrimaryProfession"..i.."IconBorder"]:Hide()
+
 		bu.professionName:ClearAllPoints()
 		bu.professionName:SetPoint("TOPLEFT", 100, -4)
-		bu.icon:SetAlpha(0.6)
+
+		--bu.icon:SetAlpha(1)
 		bu.icon:SetDesaturated(false)
 		bu.icon:SetTexCoord(unpack(K.TexCoords))
+
+		local bg = CreateFrame("Frame", nil, bu)
+		bg:SetAllPoints(bu.icon)
+		bg:SetFrameLevel(bu:GetFrameLevel())
+		bg:CreateBorder()
 	end
 
 	hooksecurefunc("FormatProfession", function(frame, index)

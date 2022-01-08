@@ -31,7 +31,7 @@ local pvpEmoteList = {
 }
 
 local BG_Opponents = {}
-function Module:OpponentsTable()
+local function SetupOpponentsTable()
 	table_wipe(BG_Opponents)
 	for index = 1, GetNumBattlefieldScores() do
 		local name, _, _, _, _, faction, _, _, classToken = GetBattlefieldScore(index)
@@ -41,7 +41,7 @@ function Module:OpponentsTable()
 	end
 end
 
-function Module:SetupKillingBlow()
+local function SetupKillingBlow()
 	local _, subevent, sourceGUID, _, Caster, _, _, _, TargetName, TargetFlags = CombatLogGetCurrentEventInfo()
 	if subevent == "PARTY_KILL" and sourceGUID == UnitGUID("player") then
 		local mask = bit_band(TargetFlags, COMBATLOG_OBJECT_TYPE_PLAYER)
@@ -81,6 +81,6 @@ function Module:CreateKillingBlow()
 		end
 	end)
 
-	K:RegisterEvent("UPDATE_BATTLEFIELD_SCORE", self.OpponentsTable)
-	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", self.SetupKillingBlow)
+	K:RegisterEvent("UPDATE_BATTLEFIELD_SCORE", SetupOpponentsTable)
+	K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", SetupKillingBlow)
 end

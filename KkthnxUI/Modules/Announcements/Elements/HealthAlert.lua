@@ -16,6 +16,7 @@ function Module:SetupHealthAnnounce()
 
 		lastTimePet = GetTime()
 	end
+
 	if (UnitAffectingCombat("player") and (UnitHealth("player") / UnitHealthMax("player") * 100) <= healthPercent) and lastTimePlayer ~= GetTime() then
 		PlaySound(23404, "master")
 		UIErrorsFrame:AddMessage(K.InfoColor..string_format(L["The health for %s is low!"], UnitName("player")))

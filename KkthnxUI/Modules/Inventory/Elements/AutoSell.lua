@@ -5,6 +5,7 @@ local _G = _G
 local table_wipe = _G.table.wipe
 
 local C_Timer_After = _G.C_Timer.After
+local GetContainerItemEquipmentSetInfo = _G.GetContainerItemEquipmentSetInfo
 local GetContainerItemInfo = _G.GetContainerItemInfo
 local GetContainerNumSlots = _G.GetContainerNumSlots
 local IsShiftKeyDown = _G.IsShiftKeyDown
@@ -24,7 +25,8 @@ local function startSelling()
 			end
 
 			local _, _, _, quality, _, _, link, _, noValue, itemID = GetContainerItemInfo(bag, slot)
-			if link and not noValue and not Module:IsPetTrashCurrency(itemID) and (quality == 0 or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID]) and not cache["b"..bag.."s"..slot] then
+			local isInSet = GetContainerItemEquipmentSetInfo(bag, slot)
+			if link and not noValue and not isInSet and not Module:IsPetTrashCurrency(itemID) and (quality == 0 or KkthnxUIDB.CustomJunkList[itemID]) and not cache["b"..bag.."s"..slot] then
 				cache["b"..bag.."s"..slot] = true
 				UseContainerItem(bag, slot)
 				C_Timer_After(0.15, startSelling)

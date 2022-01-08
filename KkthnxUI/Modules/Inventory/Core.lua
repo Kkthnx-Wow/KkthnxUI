@@ -761,10 +761,10 @@ local function customJunkOnClick(self)
 	local texture, _, _, _, _, _, _, _, _, itemID = GetContainerItemInfo(self.bagID, self.slotID)
 	local price = select(11, GetItemInfo(itemID))
 	if texture and price > 0 then
-		if KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID] then
-			KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID] = nil
+		if KkthnxUIDB.CustomJunkList[itemID] then
+			KkthnxUIDB.CustomJunkList[itemID] = nil
 		else
-			KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID] = true
+			KkthnxUIDB.CustomJunkList[itemID] = true
 		end
 		ClearCursor()
 		Module:UpdateAllBags()
@@ -1116,7 +1116,7 @@ function Module:OnEnable()
 		local buttonIconTexture = _G[self:GetName().."IconTexture"]
 
 		if self.JunkIcon then
-			if (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.hasPrice then
+			if (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.CustomJunkList[item.id]) and item.hasPrice then
 				self.JunkIcon:Show()
 			else
 				self.JunkIcon:Hide()

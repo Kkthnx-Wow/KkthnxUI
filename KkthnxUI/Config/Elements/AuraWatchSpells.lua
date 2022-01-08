@@ -16,7 +16,7 @@ local groups = {
 	["Target Aura"] = {"RIGHT", 6, "ICON", 36, {"BOTTOMLEFT", UIParent, "BOTTOM", 160, 468}},
 	["Special Aura"] = {"LEFT", 6, "ICON", 36, {"BOTTOMRIGHT", UIParent, "BOTTOM", -160, 468}},
 	["Focus Aura"] = {"RIGHT", 6, "ICON", 35, {"BOTTOMLEFT", UIParent, "LEFT", 5, -230}},
-	["Spell Cooldown"] = {"UP", 6, "BAR", 18, {"BOTTOMRIGHT", UIParent, "BOTTOM", -366, 150}, 150},
+	["Spell Cooldown"] = {"UP", 6, "BAR", 18, {"BOTTOMRIGHT", UIParent, "BOTTOM", -380, 140}, 150},
 	["Enchant Aura"] = {"LEFT", 6, "ICON", 36, {"BOTTOMRIGHT", UIParent, "BOTTOM", -160, 510}},
 	["Raid Buff"] = {"LEFT", 6, "ICON", 42, {"CENTER", UIParent, "CENTER", -220, 300}},
 	["Raid Debuff"] = {"RIGHT", 6, "ICON", 42, {"CENTER", UIParent, "CENTER", 220, 300}},
@@ -96,8 +96,8 @@ function Module:CheckMajorSpells()
 	for spellID in pairs(C.MajorSpells) do
 		local name = GetSpellInfo(spellID)
 		if name then
-			if KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID] then
-				KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID] = nil
+			if KkthnxUIDB.MajorSpells[spellID] then
+				KkthnxUIDB.MajorSpells[spellID] = nil
 			end
 		else
 			if K.isDeveloper then
@@ -106,9 +106,9 @@ function Module:CheckMajorSpells()
 		end
 	end
 
-	for spellID, value in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells) do
+	for spellID, value in pairs(KkthnxUIDB.MajorSpells) do
 		if value == false and C.MajorSpells[spellID] == nil then
-			KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells[spellID] = nil
+			KkthnxUIDB.MajorSpells[spellID] = nil
 		end
 	end
 end

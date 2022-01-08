@@ -379,20 +379,8 @@ K:RegisterEvent("PLAYER_LOGIN", CheckRole)
 K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
 
 -- Chat channel check
-function K.CheckChat(useRaidWarning)
-	if IsPartyLFG() then
-		return "INSTANCE_CHAT"
-	elseif IsInRaid() then
-		if useRaidWarning and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or IsEveryoneAssistant()) then
-			return "RAID_WARNING"
-		else
-			return "RAID"
-		end
-	elseif IsInGroup() then
-		return "PARTY"
-	end
-
-	return "SAY"
+function K.CheckChat()
+	return IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY"
 end
 
 -- Tooltip code ripped from StatBlockCore by Funkydude
@@ -619,26 +607,19 @@ end
 -- Money text formatting, code taken from Scrooge by thelibrarian (http://www.wowace.com/addons/scrooge)
 function K.FormatMoney(amount)
 	local coppername = "|cffeda55fc|r"
-	local silvername = "|cffc7c7cfs|r"
 	local goldname = "|cffffd700g|r"
+	local silvername = "|cffc7c7cfs|r"
 
 	local value = math_abs(amount)
 	local gold = math_floor(value / 10000)
 	local silver = math_floor(mod(value / 100, 100))
 	local copper = math_floor(mod(value, 100))
 
-	local str = ""
 	if gold > 0 then
-		str = string_format("%d%s%s", gold, goldname, (silver > 0 or copper > 0) and " " or "")
+		return string_format("%s%s %02d%s %02d%s", BreakUpLargeNumbers(gold), goldname, silver, silvername, copper, coppername)
+	elseif silver > 0 then
+		return string_format("%d%s %02d%s", silver, silvername, copper, coppername)
+	else
+		return string_format("%d%s", copper, coppername)
 	end
-
-	if silver > 0 then
-		str = string_format("%s%d%s%s", str, silver, silvername, copper > 0 and " " or "")
-	end
-
-	if copper > 0 or value == 0 then
-		str = string_format("%s%d%s", str, copper, coppername)
-	end
-
-	return str
 end

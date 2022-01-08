@@ -2,7 +2,7 @@ local K = unpack(KkthnxUI)
 
 local KKUI_Changelog = {
 	{
-		Version = "[10.3.0 B8] - Work In Progess - TBA",
+		Version = "[10.3.0 B9] - Work In Progess - TBA",
 		General = "All notable changes to this project will be documented in this file. The format is based on "..K.SystemColor.."[Keep a Changelog]|r and this project adheres to "..K.SystemColor.."[Semantic Versioning]|r",
 		Sections = {
 			{

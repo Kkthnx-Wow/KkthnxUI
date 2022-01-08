@@ -9,10 +9,6 @@ local select = _G.select
 local math_floor = _G.math.floor
 
 local ARTIFACT_POWER = _G.ARTIFACT_POWER
-local ARTIFACT_RETIRED = _G.ARTIFACT_RETIRED
-local ArtifactBarGetNumArtifactTraitsPurchasableFromXP = _G.ArtifactBarGetNumArtifactTraitsPurchasableFromXP
-local C_ArtifactUI_GetEquippedArtifactInfo = _G.C_ArtifactUI.GetEquippedArtifactInfo
-local C_ArtifactUI_IsEquippedArtifactDisabled = _G.C_ArtifactUI.IsEquippedArtifactDisabled
 local C_AzeriteItem_FindActiveAzeriteItem = _G.C_AzeriteItem.FindActiveAzeriteItem
 local C_AzeriteItem_GetAzeriteItemXPInfo = _G.C_AzeriteItem.GetAzeriteItemXPInfo
 local C_AzeriteItem_GetPowerLevel = _G.C_AzeriteItem.GetPowerLevel
@@ -26,7 +22,6 @@ local GetNumFactions = _G.GetNumFactions
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local GetXPExhaustion = _G.GetXPExhaustion
 local HONOR = _G.HONOR
-local HasArtifactEquipped = _G.HasArtifactEquipped
 local IsLevelAtEffectiveMaxLevel = _G.IsLevelAtEffectiveMaxLevel
 local IsPlayerAtEffectiveMaxLevel = _G.IsPlayerAtEffectiveMaxLevel
 local IsTrialAccount = _G.IsTrialAccount
@@ -36,12 +31,15 @@ local IsXPUserDisabled = _G.IsXPUserDisabled
 local LEVEL = _G.LEVEL
 local NUM_FACTIONS_DISPLAYED = _G.NUM_FACTIONS_DISPLAYED
 local REPUTATION_PROGRESS_FORMAT = _G.REPUTATION_PROGRESS_FORMAT
-local SPELLBOOK_AVAILABLE_AT = _G.SPELLBOOK_AVAILABLE_AT
 local UnitHonor = _G.UnitHonor
 local UnitHonorLevel = _G.UnitHonorLevel
 local UnitHonorMax = _G.UnitHonorMax
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
+
+local CurrentXP, XPToLevel, RestedXP, PercentRested
+local PercentXP, RemainXP, RemainTotal, RemainBars
+local QuestLogXP = 0
 
 local function IsAzeriteAvailable()
 	local itemLocation = C_AzeriteItem_FindActiveAzeriteItem()
@@ -65,12 +63,15 @@ end
 
 function Module:ExpBar_Update(event, unit)
 	if not IsPlayerAtEffectiveMaxLevel() then
-		local CurrentXP, XPToLevel, RestedXP = UnitXP("player"), UnitXPMax("player"), GetXPExhaustion()
+		CurrentXP, XPToLevel, RestedXP = UnitXP("player"), UnitXPMax("player"), GetXPExhaustion()
 		if XPToLevel <= 0 then
 			XPToLevel = 1
 		end
 
-		local PercentXP = (CurrentXP / XPToLevel) * 100
+		local remainXP = XPToLevel - CurrentXP
+		local remainPercent = remainXP / XPToLevel
+		RemainTotal, RemainBars = remainPercent * 100, remainPercent * 20
+		PercentXP, RemainXP = (CurrentXP / XPToLevel) * 100, K.ShortValue(remainXP)
 
 		self:SetStatusBarColor(0, .4, 1, .8)
 		self.restBar:SetStatusBarColor(1, 0, 1, .4)
@@ -86,7 +87,7 @@ function Module:ExpBar_Update(event, unit)
 		local isRested = RestedXP and RestedXP > 0
 		if isRested then
 			self.restBar:SetMinMaxValues(0, XPToLevel)
-			self.restBar:SetValue(min(CurrentXP + RestedXP, XPToLevel))
+			self.restBar:SetValue(math_min(CurrentXP + RestedXP, XPToLevel))
 
 			PercentRested = (RestedXP / XPToLevel) * 100
 			displayString = string_format("%s R:%s [%.2f%%]", displayString, K.ShortValue(RestedXP), PercentRested)
@@ -98,7 +99,7 @@ function Module:ExpBar_Update(event, unit)
 			self:SetValue(1)
 			self:Show()
 
-			displayString = IsXPUserDisabled() and L["Disabled"] or L["Max Level"]
+			displayString = IsXPUserDisabled() and "Disabled" or "Max Level"
 		end
 
 		self.text:SetText(displayString)
@@ -183,11 +184,6 @@ function Module:ExpBar_Update(event, unit)
 	end
 end
 
-local function addIcon(texture)
-	texture = texture and "|T"..texture..":12:12:0:0:50:50:4:46:4:46|t" or ""
-	return texture
-end
-
 function Module:ExpBar_UpdateTooltip()
 	if GameTooltip:IsForbidden() then
 		return
@@ -205,15 +201,15 @@ function Module:ExpBar_UpdateTooltip()
 	end
 
 	if not IsPlayerAtEffectiveMaxLevel() then
-		local CurrentXP, XPToLevel, RestedXP = UnitXP("player"), UnitXPMax("player"), GetXPExhaustion()
+		CurrentXP, XPToLevel, RestedXP = UnitXP("player"), UnitXPMax("player"), GetXPExhaustion()
 		if XPToLevel <= 0 then
 			XPToLevel = 1
 		end
 
 		local remainXP = XPToLevel - CurrentXP
 		local remainPercent = remainXP / XPToLevel
-		local RemainTotal, RemainBars = remainPercent * 100, remainPercent * 20
-		local PercentXP, RemainXP = (CurrentXP / XPToLevel) * 100, K.ShortValue(remainXP)
+		RemainTotal, RemainBars = remainPercent * 100, remainPercent * 20
+		PercentXP, RemainXP = (CurrentXP / XPToLevel) * 100, K.ShortValue(remainXP)
 
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine("Experience", 0, .4, 1)
@@ -343,10 +339,9 @@ function Module:CreateExpbar()
 		return
 	end
 
-	local bar = CreateFrame("StatusBar", nil, MinimapCluster)
-	bar:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", 0, -6)
-	bar:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 0, -6)
-	bar:SetHeight(14)
+	local bar = CreateFrame("StatusBar", "KKUI_ExpRepBar", MinimapCluster)
+	bar:SetPoint("TOP", Minimap, "BOTTOM", 0, -6)
+	bar:SetSize(Minimap:GetWidth() or 190, 14)
 	bar:SetHitRectInsets(0, 0, 0, -10)
 	bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].DataBarsTexture))
 
@@ -383,6 +378,12 @@ function Module:CreateExpbar()
 	bar.text = text
 
 	Module:SetupExpRepScript(bar)
+
+	if not bar.mover then
+		bar.mover = K.Mover(bar, "bar", "bar", {"TOP", Minimap, "BOTTOM", 0, -6})
+	else
+		bar.mover:SetSize(Minimap:GetWidth() or 190, 14)
+	end
 end
 Module:RegisterMisc("ExpRep", Module.CreateExpbar)
 

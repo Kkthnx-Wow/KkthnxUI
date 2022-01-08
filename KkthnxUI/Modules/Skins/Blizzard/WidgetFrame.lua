@@ -20,7 +20,7 @@ local atlasColors = {
 	["EmberCourtScenario-Tracker-barfill"] = {0.9, 0.2, 0.2},
 }
 
-function K:ReplaceWidgetBarTexture(atlas)
+local function ReplaceWidgetBarTexture(self, atlas)
 	if atlasColors[atlas] then
 		self:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
 		self:SetStatusBarColor(unpack(atlasColors[atlas]))
@@ -70,12 +70,14 @@ local function ReskinWidgetStatusBar(bar)
 		end
 
 		if bar.Label then
-			bar.Label:SetPoint("CENTER", 0, -5)
+			bar.Label:SetDrawLayer("OVERLAY")
+			bar.Label:SetPoint("CENTER", 0, -6)
 			bar.Label:SetFontObject(KkthnxUIFont)
 		end
-		bar:CreateShadow(true)
-		K.ReplaceWidgetBarTexture(bar, bar:GetStatusBarAtlas())
-		hooksecurefunc(bar, "SetStatusBarAtlas", K.ReplaceWidgetBarTexture)
+
+		bar:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 16 or nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -5 or nil)
+		ReplaceWidgetBarTexture(bar, bar:GetStatusBarAtlas())
+		hooksecurefunc(bar, "SetStatusBarAtlas", ReplaceWidgetBarTexture)
 
 		bar.styled = true
 	end

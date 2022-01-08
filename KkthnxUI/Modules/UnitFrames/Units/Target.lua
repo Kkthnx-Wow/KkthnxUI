@@ -237,47 +237,50 @@ function Module:CreateTarget()
 	end
 
 	if C["Unitframe"].ShowHealPrediction then
-		local mhpb = Health:CreateTexture(nil, "BORDER", nil, 5)
+		local frame = CreateFrame("Frame", nil, self)
+		frame:SetAllPoints()
+
+		local mhpb = frame:CreateTexture(nil, "BORDER", nil, 5)
 		mhpb:SetWidth(1)
 		mhpb:SetTexture(HealPredictionTexture)
 		mhpb:SetVertexColor(0, 1, 0.5, 0.25)
 
-		local ohpb = Health:CreateTexture(nil, "BORDER", nil, 5)
+		local ohpb = frame:CreateTexture(nil, "BORDER", nil, 5)
 		ohpb:SetWidth(1)
 		ohpb:SetTexture(HealPredictionTexture)
 		ohpb:SetVertexColor(0, 1, 0, 0.25)
 
-		local abb = Health:CreateTexture(nil, "BORDER", nil, 5)
+		local abb = frame:CreateTexture(nil, "BORDER", nil, 5)
 		abb:SetWidth(1)
 		abb:SetTexture(HealPredictionTexture)
 		abb:SetVertexColor(1, 1, 0, 0.25)
 
-		local abbo = Health:CreateTexture(nil, "ARTWORK", nil, 1)
+		local abbo = frame:CreateTexture(nil, "ARTWORK", nil, 1)
 		abbo:SetAllPoints(abb)
 		abbo:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
 		abbo.tileSize = 32
 
-		local oag = Health:CreateTexture(nil, "ARTWORK", nil, 1)
+		local oag = frame:CreateTexture(nil, "ARTWORK", nil, 1)
 		oag:SetWidth(15)
 		oag:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
 		oag:SetBlendMode("ADD")
-		oag:SetAlpha(0.25)
+		oag:SetAlpha(0.7)
 		oag:SetPoint("TOPLEFT", Health, "TOPRIGHT", -5, 2)
 		oag:SetPoint("BOTTOMLEFT", Health, "BOTTOMRIGHT", -5, -2)
 
-		local hab = CreateFrame("StatusBar", nil, Health)
-		hab:SetPoint("TOP")
-		hab:SetPoint("BOTTOM")
-		hab:SetPoint("RIGHT", Health:GetStatusBarTexture())
-		hab:SetWidth(targetWidth)
+		local hab = CreateFrame("StatusBar", nil, frame)
+		hab:SetPoint("TOPLEFT", Health)
+		hab:SetPoint("BOTTOMRIGHT", Health:GetStatusBarTexture())
 		hab:SetReverseFill(true)
 		hab:SetStatusBarTexture(HealPredictionTexture)
 		hab:SetStatusBarColor(1, 0, 0, 0.25)
+		hab:SetFrameLevel(frame:GetFrameLevel())
 
-		local ohg = Health:CreateTexture(nil, "ARTWORK", nil, 1)
+		local ohg = frame:CreateTexture(nil, "ARTWORK", nil, 1)
 		ohg:SetWidth(15)
 		ohg:SetTexture("Interface\\RaidFrame\\Absorb-Overabsorb")
 		ohg:SetBlendMode("ADD")
+		ohg:SetAlpha(0.5)
 		ohg:SetPoint("TOPRIGHT", Health, "TOPLEFT", 5, 2)
 		ohg:SetPoint("BOTTOMRIGHT", Health, "BOTTOMLEFT", 5, -2)
 
@@ -291,6 +294,7 @@ function Module:CreateTarget()
 			overHealAbsorbGlow = ohg,
 			maxOverflow = 1,
 		}
+		self.predicFrame = frame
 	end
 
 	-- Level

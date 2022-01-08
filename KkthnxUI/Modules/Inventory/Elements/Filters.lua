@@ -95,7 +95,7 @@ local function isItemJunk(item)
 		return
 	end
 
-	return (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.hasPrice and not Module:IsPetTrashCurrency(item.id)
+	return (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.CustomJunkList[item.id]) and item.hasPrice and not Module:IsPetTrashCurrency(item.id)
 end
 
 local function isItemEquipSet(item)
