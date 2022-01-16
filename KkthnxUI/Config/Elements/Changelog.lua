@@ -20,7 +20,7 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
-		Version = "[10.3.0] - 2022-1-9",
+		Version = "[10.3.0] - 2022-1-16",
 		General = "All notable changes to this project will be documented in this file. The format is based on "..K.SystemColor.."[Keep a Changelog]|r and this project adheres to "..K.SystemColor.."[Semantic Versioning]|r",
 		Sections = {
 			{
@@ -59,8 +59,10 @@ local KKUI_Changelog = {
 			{
 				Header = "Changed",
 				Entries = {
+					"Actionbars completely refactored to support customization",
 					"Completely refactored the databars",
 					"Datatext modules events handling updated",
+					"Mount source collected info move to ID module",
 					"Unitframes code updated to be faster (small impact)",
 				}
 			}

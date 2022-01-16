@@ -574,13 +574,13 @@ C["Unitframe"] = {
 	["TargetHealthWidth"] = 180,
 	["TargetPowerHeight"] = 14,
 	["TargetBuffs"] = true,
-	["TargetBuffsPerRow"] = 6,
+	["TargetBuffsPerRow"] = 7,
 	["TargetCastbar"] = true,
 	["TargetCastbarIcon"] = true,
 	["TargetCastbarHeight"] = 30,
 	["TargetCastbarWidth"] = 260,
 	["TargetDebuffs"] = true,
-	["TargetDebuffsPerRow"] = 5,
+	["TargetDebuffsPerRow"] = 6,
 
 	-- Focus
 	["FocusBuffs"] = true,

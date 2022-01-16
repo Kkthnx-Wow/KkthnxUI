@@ -11,14 +11,18 @@ local BAGSLOT = _G.BAGSLOT
 local BANK = _G.BANK
 local CURRENCY = _G.CURRENCY
 local C_CurrencyInfo_GetCurrencyListLink = _G.C_CurrencyInfo.GetCurrencyListLink
+local C_MountJournal_GetMountFromSpell = _G.C_MountJournal.GetMountFromSpell
 local C_TradeSkillUI_GetRecipeReagentItemLink = _G.C_TradeSkillUI.GetRecipeReagentItemLink
 local GetItemCount = _G.GetItemCount
 local GetItemInfo = _G.GetItemInfo
 local GetItemInfoFromHyperlink = _G.GetItemInfoFromHyperlink
 local GetUnitName = _G.GetUnitName
+local IsPlayerSpell = _G.IsPlayerSpell
 local TALENT = _G.TALENT
 local UnitAura = _G.UnitAura
 local hooksecurefunc = _G.hooksecurefunc
+
+local LEARNT_STRING = "|cffff0000"..ALREADY_LEARNED.."|r"
 
 local types = {
 	spell = SPELLS.."ID:",
@@ -41,6 +45,10 @@ function Module:AddLineForID(id, linkType, noadd)
 		if text and text == linkType then
 			return
 		end
+	end
+
+	if linkType == types.spell and IsPlayerSpell(id) and C_MountJournal_GetMountFromSpell(id) then
+		self:AddLine(LEARNT_STRING)
 	end
 
 	if not noadd then

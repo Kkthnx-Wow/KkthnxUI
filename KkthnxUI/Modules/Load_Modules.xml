@@ -104,7 +104,6 @@
    <Script file="Tooltip\Elements\Hover.lua" />
    <Script file="Tooltip\Elements\ID.lua" />
    <Script file="Tooltip\Elements\Icons.lua" />
-   <Script file="Tooltip\Elements\Mount.lua" />
    <Script file="Tooltip\Elements\Pet.lua" />
    <Script file="Tooltip\Elements\SpecLevel.lua" />
    <Script file="Tooltip\Elements\Targeted.lua" />

@@ -551,7 +551,6 @@ function Module:OnEnable()
 	-- Elements
 	self:CreateConduitCollectionData()
 	self:CreateDominationRank()
-	self:CreateMountSource()
 	self:CreateTargetedInfo()
 	self:CreateTooltipID()
 	self:CreateTooltipIcons()
