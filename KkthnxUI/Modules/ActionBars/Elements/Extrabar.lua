@@ -19,8 +19,7 @@ function Module:CreateExtrabar()
 	local frame = CreateFrame("Frame", "KKUI_ActionBarExtra", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(size + 2 * padding)
 	frame:SetHeight(size + 2 * padding)
-	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 270, 48}
-	frame.mover = K.Mover(frame, "Extrabar", "Extrabar", frame.Pos)
+	frame.mover = K.Mover(frame, "Extrabar", "Extrabar", {"BOTTOM", UIParent, "BOTTOM", 274, 88})
 
 	ExtraActionBarFrame:EnableMouse(false)
 	ExtraAbilityContainer:SetParent(frame)
@@ -37,14 +36,13 @@ function Module:CreateExtrabar()
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
 	if cfg.fader then
-		K.CreateButtonFrameFader(frame, buttonList, cfg.fader)
+		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
 
 	local zoneFrame = CreateFrame("Frame", "KKUI_ActionBarZone", UIParent)
 	zoneFrame:SetWidth(size + 2 * padding)
 	zoneFrame:SetHeight(size + 2 * padding)
-	zoneFrame.Pos = {"BOTTOM", UIParent, "BOTTOM", -270, 44}
-	zoneFrame.mover = K.Mover(zoneFrame, "Zone Ability", "Zone Ability", zoneFrame.Pos)
+	zoneFrame.mover = K.Mover(zoneFrame, "Zone Ability", "Zone Ability", {"BOTTOM", UIParent, "BOTTOM", -274, 88})
 
 	ZoneAbilityFrame:SetParent(zoneFrame)
 	ZoneAbilityFrame:ClearAllPoints()
@@ -61,11 +59,12 @@ function Module:CreateExtrabar()
 			if spellButton and not spellButton.styled then
 				spellButton.NormalTexture:SetAlpha(0)
 				spellButton:StyleButton()
+				spellButton.Icon:SetAllPoints()
 				spellButton.Icon:SetTexCoord(unpack(K.TexCoords))
-				local bg = CreateFrame("Frame", nil, spellButton)
-				bg:SetAllPoints(spellButton.Icon)
-				bg:SetFrameLevel(spellButton:GetFrameLevel())
-				bg:CreateBorder()
+				-- local bg = CreateFrame("Frame", nil, spellButton)
+				-- bg:SetAllPoints(spellButton.Icon)
+				-- bg:SetFrameLevel(spellButton:GetFrameLevel())
+				-- bg:CreateBorder()
 
 				spellButton.styled = true
 			end

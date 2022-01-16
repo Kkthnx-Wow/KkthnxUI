@@ -77,7 +77,6 @@
    <Script file="UnitFrames\Plugins\oUF_CombatFader.lua" />
    <Script file="UnitFrames\Plugins\oUF_DebuffHighlight.lua" />
    <Script file="UnitFrames\Plugins\oUF_FloatingCombatFeedback.lua" />
-   <!-- <Script file="UnitFrames\Plugins\oUF_GCD.lua" /> -->
    <Script file="UnitFrames\Plugins\oUF_RaidDebuffs.lua" />
    <Script file="UnitFrames\Plugins\oUF_Swing.lua" />
    <Script file="UnitFrames\Plugins\oUF_Trinkets.lua" />

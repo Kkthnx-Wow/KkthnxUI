@@ -116,8 +116,36 @@ local function UpdateActionbarScale()
 	K:GetModule("ActionBar"):UpdateAllScale()
 end
 
+local function UpdateActionbar1()
+	K:GetModule("ActionBar"):UpdateActionSize("Bar1")
+end
+
+local function UpdateActionbar2()
+	K:GetModule("ActionBar"):UpdateActionSize("Bar2")
+end
+
+local function UpdateActionbar3()
+	K:GetModule("ActionBar"):UpdateActionSize("Bar3")
+end
+
+local function UpdateActionbar4()
+	K:GetModule("ActionBar"):UpdateActionSize("Bar4")
+end
+
+local function UpdateActionbar5()
+	K:GetModule("ActionBar"):UpdateActionSize("Bar5")
+end
+
+local function UpdateActionbarPet()
+	K:GetModule("ActionBar"):UpdateActionSize("BarPet")
+end
+
 local function UpdateCustomBar()
 	K:GetModule("ActionBar"):UpdateCustomBar()
+end
+
+local function UpdateStanceBar()
+	K:GetModule("ActionBar"):UpdateStanceBar()
 end
 
 local function SetupAuraWatch()
@@ -282,7 +310,7 @@ local function UpdateUnitRaidSize()
 	end
 end
 
--- Translate Below Before Shadowlands
+-- Sliders > minvalue, maxvalue, stepvalue
 local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
 
@@ -295,26 +323,59 @@ local ActionBar = function(self)
 	Window:CreateSwitch("ActionBar", "Macro", L["Enable Macro"])
 	Window:CreateSwitch("ActionBar", "MicroBar", L["Enable MicroBar"])
 	Window:CreateSwitch("ActionBar", "OverrideWA", L["Enable OverrideWA"])
-	Window:CreateSwitch("ActionBar", "PetBar", L["Show PetBar"])
-	Window:CreateSwitch("ActionBar", "StanceBar", L["Show StanceBar"])
+	Window:CreateSwitch("ActionBar", "FadeMicroBar", L["Mouseover MicroBar"])
 
-	Window:CreateSection(L["KKUI_CustomBar"])
+	Window:CreateSection("Actionbar 1")
+	Window:CreateSlider("ActionBar", "Bar1PerRow", "Bar 1 Per Row", 1, 12, 1, nil, UpdateActionbar1)
+	Window:CreateSlider("ActionBar", "Bar1Size", "Bar 1 Size", 20, 80, 1, nil, UpdateActionbar1)
+	Window:CreateSlider("ActionBar", "Bar1Num", "Bar 1 Num", 6, 12, 1, nil, UpdateActionbar1)
+	Window:CreateSlider("ActionBar", "Bar1Font", "Bar 1 Font", 8, 20, 1, nil, UpdateActionbar1)
+
+	Window:CreateSection("Actionbar 2")
+	Window:CreateSlider("ActionBar", "Bar2PerRow", "Bar 2 Per Row", 1, 12, 1, nil, UpdateActionbar2)
+	Window:CreateSlider("ActionBar", "Bar2Size", "Bar 2 Size", 20, 80, 1, nil, UpdateActionbar2)
+	Window:CreateSlider("ActionBar", "Bar2Num", "Bar 2 Num", 1, 12, 1, nil, UpdateActionbar2)
+	Window:CreateSlider("ActionBar", "Bar2Font", "Bar 2 Font", 8, 20, 1, nil, UpdateActionbar2)
+
+	Window:CreateSection("Actionbar 3")
+	Window:CreateSlider("ActionBar", "Bar3PerRow", "Bar 3 Per Row", 1, 12, 1, nil, UpdateActionbar3)
+	Window:CreateSlider("ActionBar", "Bar3Size", "Bar 3 Size", 20, 80, 1, nil, UpdateActionbar3)
+	Window:CreateSlider("ActionBar", "Bar3Num", "Bar 3 Num", 0, 12, 1, nil, UpdateActionbar3)
+	Window:CreateSlider("ActionBar", "Bar3Font", "Bar 3 Font", 8, 20, 1, nil, UpdateActionbar3)
+
+	Window:CreateSection("Actionbar 4")
+	Window:CreateSwitch("ActionBar", "Bar4Fader", L["Mouseover RightBar 1"])
+	Window:CreateSlider("ActionBar", "Bar4PerRow", "Bar 4 Per Row", 1, 12, 1, nil, UpdateActionbar4)
+	Window:CreateSlider("ActionBar", "Bar4Size", "Bar 4 Size", 20, 80, 1, nil, UpdateActionbar4)
+	Window:CreateSlider("ActionBar", "Bar4Num", "Bar 4 Num", 1, 12, 1, nil, UpdateActionbar4)
+	Window:CreateSlider("ActionBar", "Bar4Font", "Bar 4 Font", 8, 20, 1, nil, UpdateActionbar4)
+
+	Window:CreateSection("Actionbar 5")
+	Window:CreateSwitch("ActionBar", "Bar5Fader", L["Mouseover RightBar 2"])
+	Window:CreateSlider("ActionBar", "Bar5PerRow", "Bar 5 Per Row", 1, 1, 1, nil, UpdateActionbar5)
+	Window:CreateSlider("ActionBar", "Bar5Size", "Bar 5 Size", 20, 80, 1, nil, UpdateActionbar5)
+	Window:CreateSlider("ActionBar", "Bar5Num", "Bar 5 Num", 1, 12, 1, nil, UpdateActionbar5)
+	Window:CreateSlider("ActionBar", "Bar5Font", "Bar 5 Font", 8, 20, 1, nil, UpdateActionbar5)
+
+	Window:CreateSection("PetBar")
+	Window:CreateSwitch("ActionBar", "PetBar", L["Show PetBar"])
+	Window:CreateSlider("ActionBar", "BarPetPerRow", "Bar Pet Per Row", 1, 10, 1, nil, UpdateActionbarPet)
+	Window:CreateSlider("ActionBar", "BarPetSize", "Bar Pet Size", 20, 80, 1, nil, UpdateActionbarPet)
+	Window:CreateSlider("ActionBar", "BarPetNum", "Bar Pet Num", 1, 10, 1, nil, UpdateActionbarPet)
+	Window:CreateSlider("ActionBar", "BarPetFont", "Bar Pet Font", 8, 20, 1, nil, UpdateActionbarPet)
+
+	Window:CreateSection("StanceBar")
+	Window:CreateSwitch("ActionBar", "StanceBar", L["Show StanceBar"])
+	Window:CreateSlider("ActionBar", "BarStancePerRow", "Bar Pet Per Row", 1, 10, 1, nil, UpdateStanceBar)
+	Window:CreateSlider("ActionBar", "BarStanceSize", "Bar Pet Size", 20, 80, 1, nil, UpdateStanceBar)
+	Window:CreateSlider("ActionBar", "BarStanceFont", "Bar Pet Font", 8, 20, 1, nil, UpdateStanceBar)
+
+	Window:CreateSection(L["KKUI_ActionBarX"])
 	Window:CreateSwitch("ActionBar", "CustomBar", enableTextColor..L["Enable CustomBar"])
-	Window:CreateSwitch("ActionBar", "FadeCustomBar", L["Mouseover CustomBar"])
+	Window:CreateSwitch("ActionBar", "BarXFader", L["Mouseover CustomBar"])
 	Window:CreateSlider("ActionBar", "CustomBarButtonSize", L["Set CustomBar Button Size"], 24, 60, 1, nil, UpdateCustomBar)
 	Window:CreateSlider("ActionBar", "CustomBarNumButtons", L["Set CustomBar Num Buttons"], 1, 12, 1, nil, UpdateCustomBar)
 	Window:CreateSlider("ActionBar", "CustomBarNumPerRow", L["Set CustomBar Num PerRow"], 1, 12, 1, nil, UpdateCustomBar)
-
-	Window:CreateSection(L["Sizes"])
-	Window:CreateSlider("ActionBar", "Scale", L["Set Actionbars Scale"], 0.6, 1.6, 0.1, nil, UpdateActionbarScale)
-
-	Window:CreateSection(L["Fading"])
-	Window:CreateSwitch("ActionBar", "FadeMicroBar", L["Mouseover MicroBar"])
-	Window:CreateSwitch("ActionBar", "FadeRightBar", L["Mouseover RightBar 1"])
-	Window:CreateSwitch("ActionBar", "FadeRightBar2", L["Mouseover RightBar 2"])
-
-	Window:CreateSection(L["Layouts"])
-	Window:CreateDropdown("ActionBar", "Layout", L["Choose Your Layout"])
 end
 
 local Announcements = function(self)
@@ -419,6 +480,7 @@ local Auras = function(self)
 
 	Window:CreateSection(L["Toggles"])
 	Window:CreateSwitch("Auras", "Enable", enableTextColor..L["Enable Auras"])
+	Window:CreateSwitch("Auras", "HideBlizBuff", "Hide The Default BuffFrame")
 	Window:CreateSwitch("Auras", "Reminder", L["Auras Reminder (Shout/Intellect/Poison)"])
 	Window:CreateSwitch("Auras", "ReverseBuffs", L["Buffs Grow Right"])
 	Window:CreateSwitch("Auras", "ReverseDebuffs", L["Debuffs Grow Right"])

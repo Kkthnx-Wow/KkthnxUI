@@ -32,9 +32,9 @@ function Module:OnEnable()
 end
 
 function Module:HideBlizBuff()
-	-- if not C["Auras"].Enable and not C["Auras"].HideBlizBuff then
-	-- 	return
-	-- end
+	if not C["Auras"].Enable and not C["Auras"].HideBlizBuff then
+		return
+	end
 
 	K.HideInterfaceOption(_G.BuffFrame)
 	K.HideInterfaceOption(_G.TemporaryEnchantFrame)
@@ -64,15 +64,15 @@ function Module:BuildBuffFrame()
 	}
 
 	-- Movers
-	self.BuffFrame = self:CreateAuraHeader("HELPFUL")
-	local buffAnchor = K.Mover(self.BuffFrame, "Buffs", "BuffAnchor", {"TOPRIGHT", _G.Minimap, "TOPLEFT", -6, 0})
-	self.BuffFrame:ClearAllPoints()
-	self.BuffFrame:SetPoint("TOPRIGHT", buffAnchor)
+	Module.BuffFrame = Module:CreateAuraHeader("HELPFUL")
+	Module.BuffFrame.mover = K.Mover(Module.BuffFrame, "Buffs", "BuffAnchor", {"TOPRIGHT", _G.Minimap, "TOPLEFT", -6, 0})
+	Module.BuffFrame:ClearAllPoints()
+	Module.BuffFrame:SetPoint("TOPRIGHT", Module.BuffFrame.mover)
 
-	self.DebuffFrame = self:CreateAuraHeader("HARMFUL")
-	local debuffAnchor = K.Mover(self.DebuffFrame, "Debuffs", "DebuffAnchor", {"TOPRIGHT", buffAnchor, "BOTTOMRIGHT", 0, -12})
-	self.DebuffFrame:ClearAllPoints()
-	self.DebuffFrame:SetPoint("TOPRIGHT", debuffAnchor)
+	Module.DebuffFrame = Module:CreateAuraHeader("HARMFUL")
+	Module.DebuffFrame.mover = K.Mover(Module.DebuffFrame, "Debuffs", "DebuffAnchor", {"TOPRIGHT", Module.BuffFrame.mover, "BOTTOMRIGHT", 0, -12})
+	Module.DebuffFrame:ClearAllPoints()
+	Module.DebuffFrame:SetPoint("TOPRIGHT", Module.DebuffFrame.mover)
 end
 
 function Module:FormatAuraTime(s)
@@ -96,7 +96,7 @@ end
 function Module:UpdateTimer(elapsed)
 	local onTooltip = GameTooltip:IsOwned(self)
 
-	if not self.timeLeft and not onTooltip then
+	if not (self.timeLeft or self.offset or onTooltip) then
 		self:SetScript("OnUpdate", nil)
 		return
 	end
@@ -232,12 +232,19 @@ function Module:UpdateHeader(header)
 	header:SetAttribute("wrapYOffset", -(cfg.size + cfg.offset))
 	header:SetAttribute("template", string_format("KKUI_AuraTemplate%d", cfg.size))
 
+	local fontSize = math_floor(cfg.size / 30 * 12 + .5)
 	local index = 1
 	local child = select(index, header:GetChildren())
 	while child do
 		if (math_floor(child:GetWidth() * 100 + 0.5) / 100) ~= cfg.size then
 			child:SetSize(cfg.size, cfg.size)
 		end
+
+		child.count:SetFontObject(K.GetFont(C["UIFonts"].AuraFonts))
+		child.count:SetFont(select(1, child.count:GetFont()), fontSize, select(3, child.count:GetFont()))
+
+		child.timer:SetFontObject(K.GetFont(C["UIFonts"].AuraFonts))
+		child.timer:SetFont(select(1, child.timer:GetFont()), fontSize, select(3, child.timer:GetFont()))
 
 		-- Blizzard bug fix, icons arent being hidden when you reduce the amount of maximum buttons
 		if index > (cfg.maxWraps * cfg.wrapAfter) and child:IsShown() then
@@ -299,6 +306,7 @@ end
 function Module:CreateAuraIcon(button)
 	button.header = button:GetParent()
 	button.filter = button.header.filter
+
 	local cfg = Module.settings.Debuffs
 	if button.filter == "HELPFUL" then
 		cfg = Module.settings.Buffs

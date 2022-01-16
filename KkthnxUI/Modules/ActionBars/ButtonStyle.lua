@@ -426,7 +426,7 @@ function Module:StyleAllActionButtons(cfg)
 		Module:StyleActionButton(_G["MultiBarBottomRightButton"..i], cfg)
 		Module:StyleActionButton(_G["MultiBarRightButton"..i], cfg)
 		Module:StyleActionButton(_G["MultiBarLeftButton"..i], cfg)
-		Module:StyleActionButton(_G["KKUI_CustomBarButton"..i], cfg)
+		Module:StyleActionButton(_G["KKUI_ActionBarXButton"..i], cfg)
 	end
 
 	for i = 1, 6 do

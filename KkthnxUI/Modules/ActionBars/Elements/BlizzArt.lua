@@ -79,7 +79,7 @@ local function toggleButtonGrid()
 		local showgrid = tonumber(GetCVar("alwaysShowActionBars"))
 		buttonShowGrid("ActionButton", showgrid)
 		buttonShowGrid("MultiBarBottomRightButton", showgrid)
-		buttonShowGrid("KKUI_CustomBarButton", showgrid)
+		buttonShowGrid("KKUI_ActionBarXButton", showgrid)
 		if updateAfterCombat then
 			K:UnregisterEvent("PLAYER_REGEN_ENABLED", toggleButtonGrid)
 			updateAfterCombat = false

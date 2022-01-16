@@ -60,14 +60,14 @@ KkthnxUIDB.Settings[GetRealmName()][UnitName("player")] = {}
 local K, C, L = unpack(Engine)
 
 -- Deprecated
-LE_ITEM_QUALITY_POOR = Enum.ItemQuality.Poor
-LE_ITEM_QUALITY_COMMON = Enum.ItemQuality.Common
-LE_ITEM_QUALITY_UNCOMMON = Enum.ItemQuality.Uncommon
-LE_ITEM_QUALITY_RARE = Enum.ItemQuality.Rare
-LE_ITEM_QUALITY_EPIC = Enum.ItemQuality.Epic
-LE_ITEM_QUALITY_LEGENDARY = Enum.ItemQuality.Legendary
 LE_ITEM_QUALITY_ARTIFACT = Enum.ItemQuality.Artifact
+LE_ITEM_QUALITY_COMMON = Enum.ItemQuality.Common
+LE_ITEM_QUALITY_EPIC = Enum.ItemQuality.Epic
 LE_ITEM_QUALITY_HEIRLOOM = Enum.ItemQuality.Heirloom
+LE_ITEM_QUALITY_LEGENDARY = Enum.ItemQuality.Legendary
+LE_ITEM_QUALITY_POOR = Enum.ItemQuality.Poor
+LE_ITEM_QUALITY_RARE = Enum.ItemQuality.Rare
+LE_ITEM_QUALITY_UNCOMMON = Enum.ItemQuality.Uncommon
 
 do
 	K.Base64 = LibStub("LibBase64-1.0-KkthnxUI")

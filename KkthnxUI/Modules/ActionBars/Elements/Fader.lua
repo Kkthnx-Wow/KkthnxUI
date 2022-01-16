@@ -33,7 +33,7 @@ local function CreateFaderAnimation(frame)
 	frame.fader:HookScript("OnUpdate", FaderOnUpdate)
 end
 
-local function StartFadeIn(frame)
+function Module:StartFadeIn(frame)
 	if frame.fader.direction == "in" then
 		return
 	end
@@ -50,7 +50,7 @@ local function StartFadeIn(frame)
 	frame.fader:Play()
 end
 
-local function StartFadeOut(frame)
+function Module:StartFadeOut(frame)
 	if frame.fader.direction == "out" then
 		return
 	end
@@ -88,10 +88,12 @@ local function IsMouseOverFrame(frame)
 end
 
 local function FrameHandler(frame)
+	if frame.isDisable then return end
+
 	if IsMouseOverFrame(frame) then
-		StartFadeIn(frame)
+		Module:StartFadeIn(frame)
 	else
-		StartFadeOut(frame)
+		Module:StartFadeOut(frame)
 	end
 end
 
@@ -124,7 +126,6 @@ local function SpellFlyoutOnShow(self)
 		end
 
 		button.__faderParent = frame
-
 		if not button.__faderHook then
 			button:HookScript("OnEnter", OffFrameHandler)
 			button:HookScript("OnLeave", OffFrameHandler)

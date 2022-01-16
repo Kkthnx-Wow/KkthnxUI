@@ -14,104 +14,109 @@ local UIParent = _G.UIParent
 local cfg = C.Bars.Bar1
 local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
-local function UpdateActionbarScale(bar)
-	local frame = _G["KKUI_Action"..bar]
-	if not frame then return end
-
-	local size = frame.buttonSize * C["ActionBar"].Scale
-	frame:SetFrameSize(size)
-	for _, button in pairs(frame.buttonList) do
-		button:SetSize(size, size)
-		button.Name:SetScale(C["ActionBar"].Scale)
-		button.Count:SetScale(C["ActionBar"].Scale)
-		button.HotKey:SetScale(C["ActionBar"].Scale)
-	end
-end
-
 function Module:UpdateAllScale()
 	if not C["ActionBar"].Enable then
 		return
 	end
 
-	UpdateActionbarScale("Bar1")
-	UpdateActionbarScale("Bar2")
-	UpdateActionbarScale("Bar3")
-	UpdateActionbarScale("Bar4")
-	UpdateActionbarScale("Bar5")
-
-	UpdateActionbarScale("BarExit")
-	UpdateActionbarScale("BarPet")
-	UpdateActionbarScale("BarStance")
+	Module:UpdateActionSize("Bar1")
+	Module:UpdateActionSize("Bar2")
+	Module:UpdateActionSize("Bar3")
+	Module:UpdateActionSize("Bar4")
+	Module:UpdateActionSize("Bar5")
+	Module:UpdateActionSize("BarPet")
+	Module:UpdateStanceBar()
+	Module:UpdateVehicleButton()
 end
 
-local function SetFrameSize(frame, size, num)
-	size = size or frame.buttonSize
-	num = num or frame.numButtons
+function Module:UpdateFontSize(button, fontSize)
+	local font = K.GetFont(C["UIFonts"].ActionBarsFonts) -- Add Font Size
+	button.Name:SetFontObject(font)
+	button.Name:SetFont(select(1, button.Name:GetFont()), fontSize, select(3, button.Name:GetFont()))
+	button.Count:SetFontObject(font)
+	button.Count:SetFont(select(1, button.Count:GetFont()), fontSize, select(3, button.Count:GetFont()))
+	button.HotKey:SetFontObject(font)
+	button.HotKey:SetFont(select(1, button.HotKey:GetFont()), fontSize, select(3, button.HotKey:GetFont()))
+end
 
-	local layout = C["ActionBar"].Layout.Value
-	if layout == 3 then
-		frame:SetWidth(3 * size + (3 - 1) * margin + 2 * padding)
-		frame:SetHeight(4 * size + (4 - 1) * margin + 2 * padding)
-	else
-		frame:SetWidth(num * size + (num - 1) * margin + 2 * padding)
-		frame:SetHeight(size + 2 * padding)
-	end
+function Module:UpdateActionSize(name)
+	local frame = _G["KKUI_Action"..name]
+	if not frame then return end
 
-	if not frame.mover then
-		frame.mover = K.Mover(frame, L["Main Actionbar"], "Bar1", frame.Pos)
+	local size = C["ActionBar"][name.."Size"]
+	local fontSize = C["ActionBar"][name.."Font"]
+	local num = C["ActionBar"][name.."Num"]
+	local perRow = C["ActionBar"][name.."PerRow"]
+
+	if num == 0 then
+		local column = 3
+		local rows = 2
+		frame:SetWidth(3*size + (column - 1) * margin + 2*padding)
+		frame:SetHeight(size*rows + (rows-1)*margin + 2*padding)
+		frame.mover:SetSize(frame:GetSize())
+		for i = 1, 12 do
+			local button = frame.buttons[i]
+			button:SetSize(size, size)
+			button:ClearAllPoints()
+			if i == 1 then
+				button:SetPoint("TOPLEFT", frame, padding, -padding)
+			elseif mod(i-1, 3) ==  0 then
+				button:SetPoint("TOP", frame.buttons[i-3], "BOTTOM", 0, -margin)
+			else
+				button:SetPoint("LEFT", frame.buttons[i-1], "RIGHT", margin, 0)
+			end
+			button:SetAttribute("statehidden", false)
+			button:Show()
+			Module:UpdateFontSize(button, fontSize)
+		end
 	else
+		for i = 1, num do
+			local button = frame.buttons[i]
+			button:SetSize(size, size)
+			button:ClearAllPoints()
+			if i == 1 then
+				button:SetPoint("TOPLEFT", frame, padding, -padding)
+			elseif mod(i-1, perRow) ==  0 then
+				button:SetPoint("TOP", frame.buttons[i-perRow], "BOTTOM", 0, -margin)
+			else
+				button:SetPoint("LEFT", frame.buttons[i-1], "RIGHT", margin, 0)
+			end
+			button:SetAttribute("statehidden", false)
+			button:Show()
+			Module:UpdateFontSize(button, fontSize)
+		end
+
+		for i = num+1, 12 do
+			local button = frame.buttons[i]
+			if not button then break end
+			button:SetAttribute("statehidden", true)
+			button:Hide()
+		end
+
+		local column = min(num, perRow)
+		local rows = ceil(num/perRow)
+		frame:SetWidth(column*size + (column-1)*margin + 2*padding)
+		frame:SetHeight(size*rows + (rows-1)*margin + 2*padding)
 		frame.mover:SetSize(frame:GetSize())
 	end
-
-	if not frame.SetFrameSize then
-		frame.buttonSize = size
-		frame.numButtons = num
-		frame.SetFrameSize = SetFrameSize
-	end
 end
+
 
 function Module:CreateBar1()
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
-	local layout = C["ActionBar"].Layout.Value
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBar1", UIParent, "SecureHandlerStateTemplate")
-
-	if layout == 3 then
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", -305, 124}
-	else
-		frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 0, 4}
-	end
+	frame.mover = K.Mover(frame, "Actionbar".."1", "Bar1", {"BOTTOM", UIParent, "BOTTOM", 0, 4})
+	Module.movers[1] = frame.mover
 
 	for i = 1, num do
 		local button = _G["ActionButton"..i]
 		table_insert(buttonList, button)
 		table_insert(Module.buttons, button)
 		button:SetParent(frame)
-		button:ClearAllPoints()
-
-		if layout == 3 then
-			if i == 1 then
-				button:SetPoint("TOPLEFT", frame, padding, padding)
-			elseif (i - 1) % 3 == 0 then
-				local previous = _G["ActionButton"..i - 3]
-				button:SetPoint("TOPLEFT", previous, "BOTTOMLEFT", 0, margin * (-1))
-			else
-				local previous = _G["ActionButton"..i - 1]
-				button:SetPoint("LEFT", previous, "RIGHT", margin, 0)
-			end
-		else
-			if i == 1 then
-				button:SetPoint("BOTTOMLEFT", frame, padding, padding)
-			else
-				local previous = _G["ActionButton"..i - 1]
-				button:SetPoint("LEFT", previous, "RIGHT", margin, 0)
-			end
-		end
 	end
-
-	frame.buttonList = buttonList
-	SetFrameSize(frame, cfg.size, num)
+	frame.buttons = buttonList
 
 	frame.frameVisibility = "[petbattle] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
@@ -127,25 +132,24 @@ function Module:CreateBar1()
 	end
 
 	frame:Execute(([[
-	buttons = table.new()
-	for i = 1, %d do
-		table.insert(buttons, self:GetFrameRef("%s"..i))
-	end
+		buttons = table.new()
+		for i = 1, %d do
+			tinsert(buttons, self:GetFrameRef("%s"..i))
+		end
 	]]):format(num, buttonName))
 
 	frame:SetAttribute("_onstate-page", [[
-	for _, button in next, buttons do
-		button:SetAttribute("actionpage", newstate)
-	end
+		for _, button in next, buttons do
+			button:SetAttribute("actionpage", newstate)
+		end
 	]])
 	RegisterStateDriver(frame, "page", actionPage)
 
+	-- Fix button texture
 	local function FixActionBarTexture()
 		for _, button in next, buttonList do
 			local action = button.action
-			if action < 120 then
-				break
-			end
+			if action < 120 then break end
 
 			local icon = button.icon
 			local texture = GetActionTexture(action)
@@ -165,7 +169,7 @@ end
 
 function Module:OnEnable()
 	Module.buttons = {}
-	self:CreateMicroMenu()
+	Module:CreateMicroMenu()
 
 	if not C["ActionBar"].Enable then
 		return
@@ -176,17 +180,17 @@ function Module:OnEnable()
 	end
 
 	Module.movers = {}
-	self:CreateBar1()
-	self:CreateBar2()
-	self:CreateBar3()
-	self:CreateBar4()
-	self:CreateBar5()
-	self:CreateCustomBar()
-	self:CreateExtrabar()
-	self:CreateLeaveVehicle()
-	self:CreatePetbar()
-	self:CreateStancebar()
-	self:HideBlizz()
-	self:CreateBarSkin()
-	self:UpdateAllScale()
+	Module:CreateBar1()
+	Module:CreateBar2()
+	Module:CreateBar3()
+	Module:CreateBar4()
+	Module:CreateBar5()
+	Module:CreateCustomBar()
+	Module:CreateExtrabar()
+	Module:CreateLeaveVehicle()
+	Module:CreatePetbar()
+	Module:CreateStancebar()
+	Module:HideBlizz()
+	Module:CreateBarSkin()
+	Module:UpdateAllScale()
 end

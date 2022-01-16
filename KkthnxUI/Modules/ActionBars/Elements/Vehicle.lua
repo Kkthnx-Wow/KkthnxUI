@@ -16,38 +16,30 @@ local VehicleExit = _G.VehicleExit
 local cfg = C.Bars.BarVehicle
 local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
-local function SetFrameSize(frame, size, num)
-	size = size or frame.buttonSize
-	num = num or frame.numButtons
+function Module:UpdateVehicleButton()
+	local frame = _G["KKUI_ActionBarExit"]
+	if not frame then return end
 
-	frame:SetWidth(num * size + (num - 1) * margin + 2 * padding)
-	frame:SetHeight(size + 2 * padding)
-	if not frame.mover then
-		frame.mover = K.Mover(frame, "LeaveVehicle", "LeaveVehicle", frame.Pos)
-	else
-		frame.mover:SetSize(frame:GetSize())
-	end
-
-	if not frame.SetFrameSize then
-		frame.buttonSize = size
-		frame.numButtons = num
-		frame.SetFrameSize = SetFrameSize
-	end
+	local size = C["ActionBar"].VehButtonSize
+	local framSize = size + 2*padding
+	frame.buttons[1]:SetSize(size, size)
+	frame:SetSize(framSize, framSize)
+	frame.mover:SetSize(framSize, framSize)
 end
 
 function Module:CreateLeaveVehicle()
-	local num = 1
 	local buttonList = {}
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBarExit", UIParent, "SecureHandlerStateTemplate")
-	frame.Pos = {"BOTTOM", UIParent, "BOTTOM", 260, 4}
+	frame.mover = K.Mover(frame, "Leave Vehicle Button", "LeaveVehicle", {"BOTTOM", UIParent, "BOTTOM", 320, 100})
 
 	local button = CreateFrame("CheckButton", "KKUI_LeaveVehicleButton", frame, "ActionButtonTemplate, SecureHandlerClickTemplate")
 	table_insert(buttonList, button)
 	button:SetPoint("BOTTOMLEFT", frame, padding, padding)
 	button:RegisterForClicks("AnyUp")
-	button.icon:SetTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
-	button.icon:SetTexCoord(0.216, 0.784, 0.216, 0.784)
+	button.icon:SetTexture("INTERFACE\\VEHICLES\\UI-Vehicles-Button-Exit-Up")
+	button.icon:SetTexCoord(.216, .784, .216, .784)
+	button.icon:SetDrawLayer("ARTWORK")
 	button.icon.__lockdown = true
 
 	button:SetScript("OnEnter", MainMenuBarVehicleLeaveButton_OnEnter)
@@ -60,23 +52,19 @@ function Module:CreateLeaveVehicle()
 		end
 		self:SetChecked(true)
 	end)
-
 	button:SetScript("OnShow", function(self)
 		self:SetChecked(false)
 	end)
 
-	frame.buttonList = buttonList
-	SetFrameSize(frame, cfg.size, num)
+	frame.buttons = buttonList
 
 	frame.frameVisibility = "[canexitvehicle]c;[mounted]m;n"
 	RegisterStateDriver(frame, "exit", frame.frameVisibility)
 
 	frame:SetAttribute("_onstate-exit", [[ if CanExitVehicle() then self:Show() else self:Hide() end ]])
-	if not CanExitVehicle() then
-		frame:Hide()
-	end
+	if not CanExitVehicle() then frame:Hide() end
 
 	if cfg.fader then
-		K.CreateButtonFrameFader(frame, buttonList, cfg.fader)
+		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
 end

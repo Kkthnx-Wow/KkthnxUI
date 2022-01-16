@@ -13,26 +13,6 @@ local UIParent = _G.UIParent
 local cfg = C.Bars.Bar4
 local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
-local function SetFrameSize(frame, size, num)
-	size = size or frame.buttonSize
-	num = num or frame.numButtons
-
-	frame:SetWidth(size + 2 * padding)
-	frame:SetHeight(num * size + (num-1) * margin + 2 * padding)
-
-	if not frame.mover then
-		frame.mover = K.Mover(frame, SHOW_MULTIBAR3_TEXT, "Bar4", frame.Pos)
-	else
-		frame.mover:SetSize(frame:GetSize())
-	end
-
-	if not frame.SetFrameSize then
-		frame.buttonSize = size
-		frame.numButtons = num
-		frame.SetFrameSize = SetFrameSize
-	end
-end
-
 local function updateVisibility(event)
 	if InCombatLockdown() then
 		K:RegisterEvent("PLAYER_REGEN_ENABLED", updateVisibility)
@@ -49,40 +29,65 @@ function Module:FixSizebarVisibility()
 	K:RegisterEvent("UNIT_EXITING_VEHICLE", updateVisibility)
 end
 
+function Module:ToggleBarFader(name)
+	local frame = _G["KKUI_Action"..name]
+	if not frame then return end
+
+	frame.isDisable = not C["ActionBar"][name.."Fader"]
+	if frame.isDisable then
+		Module:StartFadeIn(frame)
+	else
+		Module:StartFadeOut(frame)
+	end
+end
+
+function Module:UpdateFrameClickThru()
+	local showBar4, showBar5
+
+	local function updateClickThru()
+		_G.KKUI_ActionBar4:EnableMouse(showBar4)
+		_G.KKUI_ActionBar5:EnableMouse((not showBar4 and showBar4) or (showBar4 and showBar5))
+	end
+
+	hooksecurefunc("SetActionBarToggles", function(_, _, bar3, bar4)
+		showBar4 = not not bar3
+		showBar5 = not not bar4
+		if InCombatLockdown() then
+			K:RegisterEvent("PLAYER_REGEN_ENABLED", updateClickThru)
+		else
+			updateClickThru()
+		end
+	end)
+end
+
 function Module:CreateBar4()
 	local num = NUM_ACTIONBAR_BUTTONS
 	local buttonList = {}
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBar4", UIParent, "SecureHandlerStateTemplate")
-	frame.Pos = {"RIGHT", UIParent, "RIGHT", -4, 0}
+	frame.mover = K.Mover(frame, "Actionbar".."4", "Bar4", {"RIGHT", UIParent, "RIGHT", -4, 0})
+	Module.movers[5] = frame.mover
 
-	_G.MultiBarRight:SetParent(frame)
-	_G.MultiBarRight:EnableMouse(false)
-	_G.MultiBarRight.QuickKeybindGlow:SetTexture("")
+	MultiBarRight:SetParent(frame)
+	MultiBarRight:EnableMouse(false)
+	MultiBarRight.QuickKeybindGlow:SetTexture("")
 
 	for i = 1, num do
 		local button = _G["MultiBarRightButton"..i]
 		table_insert(buttonList, button)
 		table_insert(Module.buttons, button)
-		button:ClearAllPoints()
-
-		if i == 1 then
-			button:SetPoint("TOPRIGHT", frame, -padding, -padding)
-		else
-			local previous = _G["MultiBarRightButton"..i - 1]
-			button:SetPoint("TOP", previous, "BOTTOM", 0, -margin)
-		end
 	end
-
-	frame.buttonList = buttonList
-	SetFrameSize(frame, cfg.size, num)
+	frame.buttons = buttonList
 
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
-	if C["ActionBar"].FadeRightBar and cfg.fader then
+	if cfg.fader then
+		frame.isDisable = not C["ActionBar"].Bar4Fader
 		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
 
+	-- Fix visibility when leaving vehicle or petbattle
 	Module:FixSizebarVisibility()
+	Module:UpdateFrameClickThru()
 end

@@ -660,9 +660,9 @@ function Module:AddCreatureIcon(self)
 	ClassifyOverlay:SetFrameLevel(5)
 
 	ClassifyIndicator = ClassifyOverlay:CreateTexture(nil, "ARTWORK")
-	ClassifyIndicator:SetAtlas("VignetteKill")
+	ClassifyIndicator:SetAtlas("vignettekill")
 	ClassifyIndicator:SetPoint("BOTTOMLEFT", self, "LEFT", 0, -4)
-	ClassifyIndicator:SetSize(19, 19)
+	ClassifyIndicator:SetSize(20, 20)
 	ClassifyIndicator:Hide()
 
 	self.ClassifyIndicator = ClassifyIndicator
@@ -1131,12 +1131,10 @@ function Module:UpdatePlateByType()
 	local guild = self.guildName
 	local raidtarget = self.RaidTargetIndicator
 	local questIcon = self.questIcon
-	local classifyIcon = self.ClassifyIndicator
 
 	name:SetShown(not self.widgetsOnly)
 	name:ClearAllPoints()
 	raidtarget:ClearAllPoints()
-	classifyIcon:ClearAllPoints()
 
 	if self.plateType == "NameOnly" then
 		for _, element in pairs(DisabledElements) do
@@ -1146,7 +1144,7 @@ function Module:UpdatePlateByType()
 		end
 
 		name:SetJustifyH("CENTER")
-		self:Tag(name, "[color][name] [nplevel]")
+		self:Tag(name, "[nprare] [color][name] [nplevel]")
 		name:UpdateTag()
 		name:SetPoint("CENTER", self, "BOTTOM")
 
@@ -1161,10 +1159,6 @@ function Module:UpdatePlateByType()
 			questIcon:SetPoint("LEFT", name, "RIGHT", 0, 0)
 		end
 
-		if classifyIcon then
-			classifyIcon:SetPoint("RIGHT", name, "LEFT", 0, -1)
-		end
-
 		if self.widgetContainer then
 			self.widgetContainer:ClearAllPoints()
 			self.widgetContainer:SetPoint("TOP", title, "BOTTOM", 0, -5)
@@ -1177,10 +1171,8 @@ function Module:UpdatePlateByType()
 		end
 
 		name:SetJustifyH("LEFT")
-		-- self:Tag(name, "[name]")
-		-- name:UpdateTag()
-		name:SetWidth(self:GetWidth() * 0.85)
 		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 3)
+		name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 3)
 
 		level:Show()
 		hpval:Show()
@@ -1191,10 +1183,6 @@ function Module:UpdatePlateByType()
 
 		if questIcon then
 			questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0)
-		end
-
-		if classifyIcon then
-			classifyIcon:SetPoint("BOTTOMLEFT", self, "LEFT", 0, -4)
 		end
 
 		if self.widgetContainer then
@@ -1344,7 +1332,7 @@ function Module:CreatePlayerPlate()
 	self:Tag(self.powerText, "[pppower]")
 	Module:TogglePlatePower()
 
-	Module:CreateGCDTicker(self)
+	Module:CreatePlateGCDTicker(self)
 	Module:UpdateTargetClassPower()
 	Module:TogglePlateVisibility()
 end
@@ -1499,7 +1487,7 @@ function Module:ResizeTargetPower()
 	end
 end
 
-function Module:UpdateGCDTicker()
+function Module:UpdatePlateGCDTicker()
 	local start, duration = GetSpellCooldown(61304)
 	if start > 0 and duration > 0 then
 		if self.duration ~= duration then
@@ -1513,7 +1501,7 @@ function Module:UpdateGCDTicker()
 	end
 end
 
-function Module:CreateGCDTicker(self)
+function Module:CreatePlateGCDTicker(self)
 	local ticker = CreateFrame("StatusBar", nil, self.Power)
 	ticker:SetFrameLevel(self:GetFrameLevel() + 3)
 	ticker:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
@@ -1527,13 +1515,13 @@ function Module:CreateGCDTicker(self)
 	spark:SetPoint("CENTER", ticker:GetStatusBarTexture(), "RIGHT", 0, 0)
 	ticker.spark = spark
 
-	ticker:SetScript("OnUpdate", Module.UpdateGCDTicker)
-	self.GCDTicker = ticker
+	ticker:SetScript("OnUpdate", Module.UpdatePlateGCDTicker)
+	self.GCDPlateTicker = ticker
 
-	Module:ToggleGCDTicker()
+	Module:TogglePlateGCDTicker()
 end
 
-function Module:ToggleGCDTicker()
+function Module:TogglePlateGCDTicker()
 	local plate = _G.oUF_PlayerPlate
 	local ticker = plate and plate.GCDTicker
 	if not ticker then

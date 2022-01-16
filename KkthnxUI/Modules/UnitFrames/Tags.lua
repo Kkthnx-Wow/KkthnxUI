@@ -28,10 +28,7 @@ local UnitIsDND = _G.UnitIsDND
 local UnitIsDead = _G.UnitIsDead
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsGhost = _G.UnitIsGhost
-local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
-local UnitIsGroupLeader = _G.UnitIsGroupLeader
 local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsRaidOfficer = _G.UnitIsRaidOfficer
 local UnitIsTapDenied = _G.UnitIsTapDenied
 local UnitIsWildBattlePet = _G.UnitIsWildBattlePet
 local UnitLevel = _G.UnitLevel
@@ -239,6 +236,18 @@ oUF.Tags.Methods["nplevel"] = function(unit)
 	return level
 end
 oUF.Tags.Events["nplevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED"
+
+local NPClassifies = {
+	rare = "  ",
+	elite = "  ",
+	rareelite = "  ",
+	worldboss = "  ",
+}
+oUF.Tags.Methods["nprare"] = function(unit)
+	local class = UnitClassification(unit)
+	return class and NPClassifies[class]
+end
+oUF.Tags.Events["nprare"] = "UNIT_CLASSIFICATION_CHANGED"
 
 oUF.Tags.Methods["pppower"] = function(unit)
 	local cur = UnitPower(unit)

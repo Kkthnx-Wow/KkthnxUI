@@ -31,6 +31,30 @@ local function updatePartySync(self)
 	end
 end
 
+function Module:UpdatePlayerGCDTicker()
+	local start, duration = GetSpellCooldown(61304)
+	if start > 0 and duration > 0 then
+		if self.duration ~= duration then
+			self:SetMinMaxValues(0, duration)
+			self.duration = duration
+		end
+		self:SetValue(GetTime() - start)
+		self.spark:Show()
+	else
+		self.spark:Hide()
+	end
+end
+
+function Module:TogglePlayerGCDTicker()
+	local player = _G.oUF_Player
+	local ticker = player and player.GCDPlayerTicker
+	if not ticker then
+		return
+	end
+
+	ticker:SetShown(C["Unitframe"].GlobalCooldown)
+end
+
 function Module:CreatePlayer()
 	-- local timeStart, memStart = 0, 0
 	-- if K.isProfiling then
@@ -414,17 +438,24 @@ function Module:CreatePlayer()
 		self.AdditionalPower = AdditionalPower
 	end
 
-	-- GCD spark
 	if C["Unitframe"].GlobalCooldown then
-		-- self.GCD = CreateFrame("Frame", self:GetName().."_GlobalCooldown", self)
-		-- self.GCD:SetWidth(playerWidth)
-		-- self.GCD:SetHeight(Health:GetHeight())
-		-- self.GCD:SetFrameStrata("HIGH")
-		-- self.GCD:SetPoint("LEFT", Health, "LEFT", 0, 0)
+		local ticker = CreateFrame("StatusBar", nil, Power)
+		ticker:SetFrameLevel(self:GetFrameLevel() + 3)
+		ticker:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
+		ticker:GetStatusBarTexture():SetAlpha(0)
+		ticker:SetAllPoints()
 
-		-- self.GCD.Color = {1, 1, 1}
-		-- self.GCD.Height = 26
-		-- self.GCD.Width = 128
+		local spark = ticker:CreateTexture(nil, "OVERLAY")
+		spark:SetTexture(C["Media"].Textures.Spark128Texture)
+		spark:SetBlendMode("ADD")
+		spark:SetAlpha(0.6)
+		spark:SetPoint("TOPLEFT", ticker:GetStatusBarTexture(), "TOPRIGHT", -64, -1)
+		spark:SetPoint("BOTTOMRIGHT", ticker:GetStatusBarTexture(), "BOTTOMRIGHT", 64, 1)
+		ticker.spark = spark
+
+		ticker:SetScript("OnUpdate", Module.UpdatePlayerGCDTicker)
+		ticker:SetShown(C["Unitframe"].GlobalCooldown)
+		self.GCDPlayerTicker = ticker
 	end
 
 	if C["Unitframe"].CombatText then
@@ -606,16 +637,6 @@ function Module:CreatePlayer()
 
 		self.DebuffHighlightAlpha = 0.45
 		self.DebuffHighlightFilter = true
-	end
-
-	if C["Unitframe"].GlobalCooldown then
-		local GlobalCooldown = CreateFrame("Frame", nil, Health)
-		GlobalCooldown:SetWidth(playerWidth)
-		GlobalCooldown:SetHeight(28)
-		GlobalCooldown:SetFrameStrata("HIGH")
-		GlobalCooldown:SetPoint("LEFT", Health, "LEFT", 0, 0)
-
-		self.GlobalCooldown = GlobalCooldown
 	end
 
 	local CombatFade = C["Unitframe"].CombatFade

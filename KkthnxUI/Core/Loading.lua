@@ -87,28 +87,6 @@ local function KKUI_LoadProfiles()
 	end
 end
 
-local function KKUI_MergeDatabase()
-	if KkthnxUIData then
-		KkthnxUIDB["Variables"] = KkthnxUIData
-		KkthnxUIData = nil
-	end
-
-	if KkthnxUISettingsPerCharacter then
-		KkthnxUIDB["Settings"] = KkthnxUISettingsPerCharacter
-		KkthnxUISettingsPerCharacter = nil
-	end
-
-	if KkthnxUIGold then
-		KkthnxUIDB["Gold"] = KkthnxUIGold
-		KkthnxUIGold = nil
-	end
-
-	if KkthnxUIChatHistory then
-		KkthnxUIDB["ChatHistory"] = KkthnxUIChatHistory
-		KkthnxUIChatHistory = nil
-	end
-end
-
 local function KKUI_VerifyDatabase()
 	if not KkthnxUIDB then
 		KkthnxUIDB = {}
@@ -134,18 +112,6 @@ local function KKUI_VerifyDatabase()
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].BindType then
 		KkthnxUIDB.Variables[K.Realm][K.Name].BindType = 1
 	end
-
-	-- if not KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog then
-	-- 	KkthnxUIDB.Variables[K.Realm][K.Name].ChangeLog = {}
-	-- end
-
-	-- if not KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList then
-	-- 	KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList = {}
-	-- end
-
-	-- if KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion == nil then
-	-- 	KkthnxUIDB.Variables[K.Realm][K.Name].DetectVersion = K.Version
-	-- end
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems then
 		KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems = {}
@@ -203,14 +169,6 @@ local function KKUI_VerifyDatabase()
 		end
 	end
 
-	-- if not KkthnxUIDB.Variables[K.Realm][K.Name].KeystoneInfo then
-	-- 	KkthnxUIDB.Variables[K.Realm][K.Name].KeystoneInfo = {}
-	-- end
-
-	-- if not KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells then
-	-- 	KkthnxUIDB.Variables[K.Realm][K.Name].MajorSpells = {}
-	-- end
-
 	-- Settings
 	if (not KkthnxUIDB.Settings) then
 		KkthnxUIDB.Settings = {}
@@ -266,11 +224,7 @@ addonLoader:SetScript("OnEvent", function(self, _, addon)
 		return
 	end
 
-	-- We verify everything is ok with our savedvariables
 	KKUI_VerifyDatabase()
-	-- KkthnxUI was using different table to save settings, when players will hit this version, we need to move their settings into our new table
-	KKUI_MergeDatabase()
-
 	KKUI_CreateDefaults()
 	KKUI_LoadProfiles()
 	KKUI_LoadCustomSettings()

@@ -249,7 +249,7 @@ function Module:CreateMicroMenu()
 	Module.MainMenuMicroButton_SetNormal()
 	Module.UpdateMicroPositionDimensions()
 
-	-- With this method we might don't taint anything. Instead of using :Kill()
+	-- With this method we might not taint anything. Instead of using :Kill()
 	MainMenuBarPerformanceBar:SetAlpha(0)
 	MainMenuBarPerformanceBar:SetScale(0.00001)
 
