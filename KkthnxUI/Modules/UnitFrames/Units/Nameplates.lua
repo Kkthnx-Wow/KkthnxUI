@@ -841,11 +841,9 @@ function Module:CreatePlates()
 
 	self.nameText = K.CreateFontString(self, C["Nameplate"].NameTextSize, "", "", false)
 	self.nameText:SetJustifyH("LEFT")
-	self.nameText:SetWidth(self:GetWidth() * 0.85)
 	self.nameText:ClearAllPoints()
-	self.nameText:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
-	self.nameText:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
-
+	self.nameText:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
+	self.nameText:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 4)
 	self:Tag(self.nameText, "[name]")
 
 	self.npcTitle = K.CreateFontString(self, C["Nameplate"].NameTextSize - 1)
@@ -1171,8 +1169,8 @@ function Module:UpdatePlateByType()
 		end
 
 		name:SetJustifyH("LEFT")
-		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 3)
-		name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 3)
+		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
+		name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 4)
 
 		level:Show()
 		hpval:Show()

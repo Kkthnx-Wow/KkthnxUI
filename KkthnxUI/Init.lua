@@ -49,14 +49,6 @@ Engine[1] = {} -- K, Main
 Engine[2] = {} -- C, Config
 Engine[3] = {} -- L, Locale
 
-KkthnxUIDB = {}
-KkthnxUIDB.Variables = {}
-KkthnxUIDB.Variables[GetRealmName()] = {}
-KkthnxUIDB.Variables[GetRealmName()][UnitName("player")] = {}
-KkthnxUIDB.Settings = {}
-KkthnxUIDB.Settings[GetRealmName()] = {}
-KkthnxUIDB.Settings[GetRealmName()][UnitName("player")] = {}
-
 local K, C, L = unpack(Engine)
 
 -- Deprecated
@@ -71,6 +63,8 @@ LE_ITEM_QUALITY_UNCOMMON = Enum.ItemQuality.Uncommon
 
 do
 	K.Base64 = LibStub("LibBase64-1.0-KkthnxUI")
+	K.DBIcon = LibStub("LibDBIcon-1.0-KkthnxUI")
+	K.DataBroker = LibStub("LibDataBroker-1.1-KkthnxUI")
 	K.ChangeLog = LibStub("LibChangelog-KkthnxUI")
 	K.Deflate = LibStub("LibDeflate-KkthnxUI")
 	K.HideButtonGlow = LibStub("LibButtonGlow-1.0-KkthnxUI", true).HideOverlayGlow

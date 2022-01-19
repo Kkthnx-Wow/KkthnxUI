@@ -217,8 +217,7 @@ local function GuildPanel_Init()
 
 	gName = K.CreateFontString(infoFrame, 14, "Guild", "", true, "TOPLEFT", 15, -10)
 	gOnline = K.CreateFontString(infoFrame, 12, "Online", "", false, "TOPLEFT", 15, -35)
-	-- gApps = K.CreateFontString(infoFrame, 12, "Applications", "", false, "TOPRIGHT", -15, -35)
-	gRank = K.CreateFontString(infoFrame, 12, "Rank", "", false, "TOPLEFT", 15, -35) -- -51
+	gRank = K.CreateFontString(infoFrame, 12, "Rank", "", false, "TOPLEFT", 15, -51)
 
 	local bu = {}
 	local width = {30, 35, 126, 126}

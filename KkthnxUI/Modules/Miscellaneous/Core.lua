@@ -131,6 +131,49 @@ function Module:OnEnable()
 	end
 end
 
+do
+	-- Minimap button click function
+	local function KKUI_MinimapButton_OnClick()
+		-- Prevent options panel from showing if Blizzard options panel is showing
+		if InterfaceOptionsFrame:IsShown() or VideoOptionsFrame:IsShown() or ChatConfigFrame:IsShown() then
+			return
+		end
+
+		-- No modifier key toggles the options panel
+		if InCombatLockdown() then
+			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+			return
+		end
+
+		K["GUI"]:Toggle()
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+	end
+
+	-- Create minimap button using LibDBIcon
+	local KKUI_MinimapButton = K.DataBroker:NewDataObject("KkthnxUI", {type = "data source", text = "KkthnxUI", icon = "Interface\\ICONS\\Ability_Monk_CounteractMagic",
+		OnClick = function()
+			KKUI_MinimapButton_OnClick()
+		end,
+
+		OnTooltipShow = function(self)
+			self:AddLine("KkthnxUI")
+		end,
+	})
+
+	K.DBIcon:Register("KkthnxUI", KKUI_MinimapButton, KkthnxUIDB)
+
+	-- Function to toggle LibDBIcon
+	function Module:ToggleMinimapIcon()
+		if C["General"].MinimapIcon then
+			KkthnxUIDB.MinimapButton = true
+			K.DBIcon:Show("KkthnxUI")
+		else
+			KkthnxUIDB.MinimapButton = false
+			K.DBIcon:Hide("KkthnxUI")
+		end
+	end
+end
+
 local maxMawValue = 1000
 local MawRankColor = {
 	[0] = {0.5, 0.7, 1},

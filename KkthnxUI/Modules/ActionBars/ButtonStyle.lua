@@ -264,6 +264,7 @@ function Module:StyleActionButton(button, cfg)
 	local flash = _G[buttonName.."Flash"]
 	local flyoutBorder = _G[buttonName.."FlyoutBorder"]
 	local flyoutBorderShadow = _G[buttonName.."FlyoutBorderShadow"]
+	local flyoutArrow = _G[buttonName.."FlyoutArrow"]
 	local hotkey = _G[buttonName.."HotKey"]
 	local count = _G[buttonName.."Count"]
 	local name = _G[buttonName.."Name"]
@@ -295,6 +296,10 @@ function Module:StyleActionButton(button, cfg)
 
 	if NewActionTexture then
 		NewActionTexture:SetTexture(nil)
+	end
+
+	if flyoutArrow then
+		flyoutArrow:SetDrawLayer("OVERLAY", 5)
 	end
 
 	-- Backdrop
@@ -349,6 +354,7 @@ function Module:StyleActionButton(button, cfg)
 	if autoCastable then
 		autoCastable:SetTexCoord(.217, .765, .217, .765)
 		autoCastable:SetAllPoints()
+		autoCastable:SetDrawLayer("OVERLAY", 5)
 	end
 
 	Module:RegisterButtonRange(button)

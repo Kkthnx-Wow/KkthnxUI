@@ -117,6 +117,7 @@
    <Script file="Miscellaneous\Elements\MerchantItemlevel.lua" />
    <Script file="Miscellaneous\Elements\MissingStats.lua" />
    <Script file="Miscellaneous\Elements\MovableFrames.lua" />
+   <Script file="Miscellaneous\Elements\MuteSounds.lua" />
    <Script file="Miscellaneous\Elements\QuestTool.lua" />
    <Script file="Miscellaneous\Elements\QuickJoin.lua" />
    <Script file="Miscellaneous\Elements\SlotDurability.lua" />

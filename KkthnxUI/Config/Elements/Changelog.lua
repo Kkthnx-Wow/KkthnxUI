@@ -36,6 +36,7 @@ local KKUI_Changelog = {
 			{
 				Header = "Fixed",
 				Entries = {
+					"Actionbar drawlayers for flyoutarrow and autocastable",
 					"Couple locales updated to relfect its proper module",
 					"Left over file trying to load and throwing an error",
 					"Nameplates class power returns",
