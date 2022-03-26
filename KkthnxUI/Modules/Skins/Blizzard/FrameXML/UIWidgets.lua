@@ -27,6 +27,12 @@ local function ReplaceWidgetBarTexture(self, atlas)
 	end
 end
 
+local function ResetLabelColor(text, _, _, _, force)
+	if not force then
+		text:SetTextColor(1, 1, 1, true)
+	end
+end
+
 local function ReskinWidgetStatusBar(bar)
 	if bar and not bar.styled then
 		if bar.BG then
@@ -73,6 +79,9 @@ local function ReskinWidgetStatusBar(bar)
 			bar.Label:SetDrawLayer("OVERLAY")
 			bar.Label:SetPoint("CENTER", 0, -6)
 			bar.Label:SetFontObject(KkthnxUIFont)
+
+			ResetLabelColor(bar.Label)
+			hooksecurefunc(bar.Label, "SetTextColor", ResetLabelColor)
 		end
 
 		bar:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 16 or nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -5 or nil)
@@ -134,13 +143,15 @@ end
 table.insert(C.defaultThemes, function()
 	hooksecurefunc(_G.UIWidgetTopCenterContainerFrame, "UpdateWidgetLayout", function(self)
 		for _, widgetFrame in pairs(self.widgetFrames) do
-			local widgetType = widgetFrame.widgetType
-			if widgetType == Type_DoubleStatusBar then
-				ReskinDoubleStatusBarWidget(widgetFrame)
-			elseif widgetType == Type_SpellDisplay then
-				ReskinSpellDisplayWidget(widgetFrame.Spell)
-			elseif widgetType == Type_StatusBar then
-				ReskinWidgetStatusBar(widgetFrame.Bar)
+			if not widgetFrame:IsForbidden() then
+				local widgetType = widgetFrame.widgetType
+				if widgetType == Type_DoubleStatusBar then
+					ReskinDoubleStatusBarWidget(widgetFrame)
+				elseif widgetType == Type_SpellDisplay then
+					ReskinSpellDisplayWidget(widgetFrame.Spell)
+				elseif widgetType == Type_StatusBar then
+					ReskinWidgetStatusBar(widgetFrame.Bar)
+				end
 			end
 		end
 	end)
@@ -148,7 +159,9 @@ table.insert(C.defaultThemes, function()
 	hooksecurefunc(_G.UIWidgetBelowMinimapContainerFrame, "UpdateWidgetLayout", function(self)
 		for _, widgetFrame in pairs(self.widgetFrames) do
 			if widgetFrame.widgetType == Type_CaptureBar then
-				ReskinPVPCaptureBar(widgetFrame)
+				if not widgetFrame:IsForbidden() then
+					ReskinPVPCaptureBar(widgetFrame)
+				end
 			end
 		end
 	end)
@@ -156,7 +169,9 @@ table.insert(C.defaultThemes, function()
 	hooksecurefunc(_G.UIWidgetPowerBarContainerFrame, "UpdateWidgetLayout", function(self)
 		for _, widgetFrame in pairs(self.widgetFrames) do
 			if widgetFrame.widgetType == Type_StatusBar then
-				ReskinWidgetStatusBar(widgetFrame.Bar)
+				if not widgetFrame:IsForbidden() then
+					ReskinWidgetStatusBar(widgetFrame.Bar)
+				end
 			end
 		end
 	end)
@@ -164,7 +179,9 @@ table.insert(C.defaultThemes, function()
 	hooksecurefunc(_G.TopScenarioWidgetContainerBlock.WidgetContainer, "UpdateWidgetLayout", function(self)
 		for _, widgetFrame in pairs(self.widgetFrames) do
 			if widgetFrame.widgetType == Type_StatusBar then
-				ReskinWidgetStatusBar(widgetFrame.Bar)
+				if not widgetFrame:IsForbidden() then
+					ReskinWidgetStatusBar(widgetFrame.Bar)
+				end
 			end
 		end
 	end)
@@ -172,7 +189,9 @@ table.insert(C.defaultThemes, function()
 	hooksecurefunc(_G.BottomScenarioWidgetContainerBlock.WidgetContainer, "UpdateWidgetLayout", function(self)
 		for _, widgetFrame in pairs(self.widgetFrames) do
 			if widgetFrame.widgetType == Type_SpellDisplay then
-				ReskinSpellDisplayWidget(widgetFrame.Spell)
+				if not widgetFrame:IsForbidden() then
+					ReskinSpellDisplayWidget(widgetFrame.Spell)
+				end
 			end
 		end
 	end)
@@ -184,6 +203,10 @@ table.insert(C.defaultThemes, function()
 
 	-- needs review, might remove this in the future
 	hooksecurefunc(_G.UIWidgetTemplateStatusBarMixin, "Setup", function(self)
+		if self:IsForbidden() then 
+			return 
+		end
+
 		ReskinWidgetStatusBar(self.Bar)
 	end)
 end)

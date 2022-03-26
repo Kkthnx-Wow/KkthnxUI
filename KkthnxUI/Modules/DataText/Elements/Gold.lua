@@ -238,17 +238,17 @@ function Module:CreateGoldDataText()
 	GoldDataText = GoldDataText or CreateFrame("Button", "KKUI_GoldDataText", UIParent)
 	if C["DataText"].Gold then
 		GoldDataText:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
-		GoldDataText:SetSize(24, 24)
+		GoldDataText:SetSize(16, 16)
 
 		GoldDataText.Texture = GoldDataText:CreateTexture(nil, "BACKGROUND")
-		GoldDataText.Texture:SetPoint("LEFT", GoldDataText, "LEFT", 0, 0)
-		GoldDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\bags.blp")
-		GoldDataText.Texture:SetSize(24, 24)
-		GoldDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
+		GoldDataText.Texture:SetPoint("LEFT", GoldDataText, "LEFT", 4, 0)
+		GoldDataText.Texture:SetTexture("Interface\\GossipFrame\\auctioneerGossipIcon")
+		GoldDataText.Texture:SetSize(16, 16)
+		-- GoldDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 		GoldDataText.Text = GoldDataText:CreateFontString(nil, "ARTWORK")
 		GoldDataText.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-		GoldDataText.Text:SetPoint("LEFT", GoldDataText.Texture, "RIGHT", 0, 0)
+		GoldDataText.Text:SetPoint("LEFT", GoldDataText.Texture, "RIGHT", 4, 0)
 	end
 
 	for _, event in pairs(eventList) do

@@ -51,8 +51,8 @@ function Module:UpdateActionSize(name)
 	if num == 0 then
 		local column = 3
 		local rows = 2
-		frame:SetWidth(3*size + (column - 1) * margin + 2*padding)
-		frame:SetHeight(size*rows + (rows-1)*margin + 2*padding)
+		frame:SetWidth(3 * size + (column - 1) * margin + 2 * padding)
+		frame:SetHeight(size * rows + (rows-1) * margin + 2 * padding)
 		frame.mover:SetSize(frame:GetSize())
 		for i = 1, 12 do
 			local button = frame.buttons[i]

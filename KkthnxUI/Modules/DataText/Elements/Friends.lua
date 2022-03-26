@@ -655,7 +655,7 @@ function Module:CreateSocialDataText()
 
 	FriendsDataText.Texture = FriendsDataText:CreateTexture(nil, "BACKGROUND")
 	FriendsDataText.Texture:SetPoint("LEFT", FriendsDataText, "LEFT", 0, 0)
-	FriendsDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\player.blp")
+	FriendsDataText.Texture:SetTexture("Interface\\FriendsFrame\\UI-Toast-FriendOnlineIcon")
 	FriendsDataText.Texture:SetSize(24, 24)
 	FriendsDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 

@@ -28,12 +28,12 @@ C.Bars = {
 	},
 
 	Bar4 = {
-		size = 34,
+		size = 32,
 		fader = BAR_FADER
 	},
 
 	Bar5 = {
-		size = 34,
+		size = 32,
 		fader = BAR_FADER
 	},
 
@@ -43,7 +43,7 @@ C.Bars = {
 	},
 
 	BarVehicle = {
-		size = 34,
+		size = 40,
 		fader = nil
 	},
 

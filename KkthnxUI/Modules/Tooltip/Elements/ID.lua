@@ -47,7 +47,7 @@ function Module:AddLineForID(id, linkType, noadd)
 		end
 	end
 
-	if linkType == types.spell and IsPlayerSpell(id) and C_MountJournal_GetMountFromSpell(id) then
+	if self.__isHoverTip and linkType == types.spell and IsPlayerSpell(id) and C_MountJournal_GetMountFromSpell(id) then
 		self:AddLine(LEARNT_STRING)
 	end
 

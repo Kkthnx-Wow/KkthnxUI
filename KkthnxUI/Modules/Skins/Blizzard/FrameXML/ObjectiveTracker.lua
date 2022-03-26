@@ -72,7 +72,7 @@ local function reskinQuestIcon(button)
 	end
 
 	if not button.styled then
-		--button:SetSize(28, 28)
+		button:SetSize(24, 24)
 		button:SetNormalTexture("")
 		button:SetPushedTexture("")
 
@@ -225,6 +225,10 @@ local function AddQuestNumString()
 end
 
 table_insert(C.defaultThemes, function()
+	if IsAddOnLoaded("!KalielsTracker") then
+		return
+	end
+
 	-- QuestIcons
 	hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", reskinQuestIcons)
 	hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", reskinQuestIcons)
@@ -244,6 +248,8 @@ table_insert(C.defaultThemes, function()
 	hooksecurefunc(QUEST_TRACKER_MODULE, "AddTimerBar", reskinTimerBar)
 	hooksecurefunc(SCENARIO_TRACKER_MODULE, "AddTimerBar", reskinTimerBar)
 	hooksecurefunc(ACHIEVEMENT_TRACKER_MODULE, "AddTimerBar", reskinTimerBar)
+
+	hooksecurefunc("ObjectiveTracker_Update", AddQuestNumString)
 
 	-- Reskin Headers
 	local headers = {
@@ -270,6 +276,4 @@ table_insert(C.defaultThemes, function()
 			reskinMinimizeButton(minimize)
 		end
 	end
-
-	hooksecurefunc("ObjectiveTracker_Update", AddQuestNumString)
 end)

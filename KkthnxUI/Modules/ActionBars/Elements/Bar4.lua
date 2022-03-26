@@ -11,7 +11,6 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
 local cfg = C.Bars.Bar4
-local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
 local function updateVisibility(event)
 	if InCombatLockdown() then
@@ -71,6 +70,12 @@ function Module:CreateBar4()
 	MultiBarRight:SetParent(frame)
 	MultiBarRight:EnableMouse(false)
 	MultiBarRight.QuickKeybindGlow:SetTexture("")
+	
+	hooksecurefunc(MultiBarRight, "SetScale", function(self, scale, force)
+		if not force and scale ~= 1 then
+			self:SetScale(1, true)
+		end
+	end)
 
 	for i = 1, num do
 		local button = _G["MultiBarRightButton"..i]

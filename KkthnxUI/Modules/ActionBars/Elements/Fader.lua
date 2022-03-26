@@ -4,8 +4,8 @@ local Module = K:GetModule("ActionBar")
 local _G = _G
 local next = _G.next
 
-local MouseIsOver = _G.MouseIsOver
-local SpellFlyout = _G.SpellFlyout
+-- local MouseIsOver = _G.MouseIsOver
+-- local SpellFlyout = _G.SpellFlyout
 local CreateFrame = _G.CreateFrame
 
 local function FaderOnFinished(self)

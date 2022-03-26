@@ -156,13 +156,11 @@ local function isMessageProtected(msg)
 	return msg and (msg ~= string_gsub(msg, "(:?|?)|K(.-)|k", canChangeMessage))
 end
 
-local function colorReplace(msg, r, g, b)
+local function replaceMessage(msg, r, g, b)
 	local hexRGB = K.RGBToHex(r, g, b)
-	local hexReplace = sring_format("|r%s", hexRGB)
-	msg = string_gsub(msg, "|r", hexReplace)
-	msg = sring_format("%s%s|r", hexRGB, msg)
+	msg = string_gsub(msg, "(|TInterface(.*)|t)", "")
 
-	return msg
+	return string.format("%s%s|r", hexRGB, msg)
 end
 
 function Module:GetChatLines()
@@ -171,8 +169,7 @@ function Module:GetChatLines()
 		local msg, r, g, b = self:GetMessageInfo(i)
 		if msg and not isMessageProtected(msg) then
 			r, g, b = r or 1, g or 1, b or 1
-			msg = colorReplace(msg, r, g, b)
-
+			msg = replaceMessage(msg, r, g, b)
 			lines[index] = tostring(msg)
 			index = index + 1
 		end
@@ -191,7 +188,7 @@ function Module:ChatCopy_OnClick(btn)
 			frame:Show()
 
 			local lineCt = Module.GetChatLines(chatframe)
-			local text = table_concat(lines, " \n", 1, lineCt)
+			local text = table_concat(lines, "\n", 1, lineCt)
 			FCF_SetChatWindowFontSize(chatframe, chatframe, fontSize)
 			editBox:SetText(text)
 		else

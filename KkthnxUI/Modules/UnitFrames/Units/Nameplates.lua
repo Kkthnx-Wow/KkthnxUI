@@ -50,8 +50,6 @@ local showPowerList = {}
 local hasExplosives
 local isInGroup
 local isInInstance
-local isTargetClassPower
-
 local explosivesID = 120651
 
 -- Unit classification
@@ -660,14 +658,15 @@ function Module:AddCreatureIcon(self)
 	ClassifyOverlay:SetFrameLevel(5)
 
 	ClassifyIndicator = ClassifyOverlay:CreateTexture(nil, "ARTWORK")
-	ClassifyIndicator:SetAtlas("vignettekill")
-	ClassifyIndicator:SetPoint("BOTTOMLEFT", self, "LEFT", 0, -4)
-	ClassifyIndicator:SetSize(20, 20)
+	ClassifyIndicator:SetAtlas("auctionhouse-icon-favorite")
+	ClassifyIndicator:SetPoint("RIGHT", self.nameText, "LEFT", 10, 0)
+	ClassifyIndicator:SetSize(16, 16)
 	ClassifyIndicator:Hide()
 
 	self.ClassifyIndicator = ClassifyIndicator
 end
 
+local testHide = 0
 function Module:UpdateUnitClassify(unit)
 	if not self.ClassifyIndicator then
 		return
@@ -679,13 +678,15 @@ function Module:UpdateUnitClassify(unit)
 
 	self.ClassifyIndicator:Hide()
 
-	local class = UnitClassification(unit)
-	local classify = class and NPClassifies[class]
-	if classify then
-		local r, g, b, desature = unpack(classify)
-		self.ClassifyIndicator:SetVertexColor(r, g, b)
-		self.ClassifyIndicator:SetDesaturated(desature)
-		self.ClassifyIndicator:Show()
+	if testHide and testHide > 3 then
+		local class = UnitClassification(unit)
+		local classify = class and NPClassifies[class]
+		if classify then
+			local r, g, b, desature = unpack(classify)
+			self.ClassifyIndicator:SetVertexColor(r, g, b)
+			self.ClassifyIndicator:SetDesaturated(desature)
+			self.ClassifyIndicator:Show()
+		end
 	end
 end
 
@@ -812,13 +813,13 @@ function Module:CreatePlates()
 	self:SetPoint("CENTER")
 	self:SetScale(C["General"].UIScale)
 
-	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
-	self.Overlay:SetAllPoints()
-	self.Overlay:SetFrameLevel(4)
-
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetAllPoints()
 	self.Health:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
+
+	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	self.Overlay:SetAllPoints(self.Health)
+	self.Overlay:SetFrameLevel(4)
 
 	self.Health.backdrop = self.Health:CreateShadow(true) -- don't mess up with libs
 	self.Health.backdrop:SetPoint("TOPLEFT", self.Health, "TOPLEFT", -3, 3)
@@ -835,8 +836,8 @@ function Module:CreatePlates()
 	self.levelText = K.CreateFontString(self, C["Nameplate"].NameTextSize, "", "", false)
 	self.levelText:SetJustifyH("RIGHT")
 	self.levelText:ClearAllPoints()
-	self.levelText:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
-	self.levelText:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
+	self.levelText:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 6, 4)
+	self.levelText:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 6, 4)
 	self:Tag(self.levelText, "[nplevel]")
 
 	self.nameText = K.CreateFontString(self, C["Nameplate"].NameTextSize, "", "", false)
@@ -1143,6 +1144,7 @@ function Module:UpdatePlateByType()
 
 		name:SetJustifyH("CENTER")
 		self:Tag(name, "[nprare] [color][name] [nplevel]")
+		testHide = 6
 		name:UpdateTag()
 		name:SetPoint("CENTER", self, "BOTTOM")
 

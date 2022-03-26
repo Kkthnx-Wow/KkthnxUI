@@ -154,12 +154,7 @@ local function SetupAuraWatch()
 end
 
 local function ResetDetails()
-	if IsAddOnLoaded("Details") then
-		_G.KkthnxUIDB.Variables["ResetDetails"] = true
-		StaticPopup_Show("KKUI_CHANGES_RELOAD")
-	else
-		K.Print("Details is not loaded!")
-	end
+	K:GetModule("Skins"):ResetDetailsAnchor(true)
 end
 
 local function UpdateBlipTextures()

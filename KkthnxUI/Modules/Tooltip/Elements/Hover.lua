@@ -80,6 +80,7 @@ function Module:HyperLink_SetJournal(link)
 end
 
 function Module:HyperLink_SetTypes(link)
+	GameTooltip.__isHoverTip = true
 	GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", -3, 5)
 	GameTooltip:SetHyperlink(link)
 	GameTooltip:Show()
@@ -105,6 +106,7 @@ end
 function Module:HyperLink_OnLeave(_, ...)
 	BattlePetTooltip:Hide()
 	GameTooltip:Hide()
+	GameTooltip.__isHoverTip = nil
 
 	if orig2[self] then
 		return orig2[self](self, ...)

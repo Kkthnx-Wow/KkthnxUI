@@ -361,7 +361,6 @@ local function YesTutor()
 			KkthnxUIDB.Variables["CursorTrailRequest"] = true
 			KkthnxUIDB.Variables["HekiliRequest"] = true
 			Module.ForceAddonSkins()
-			KkthnxUIDB.Variables["ResetDetails"] = true
 			UIErrorsFrame:AddMessage(K.InfoColor.."Relevant AddOns Settings Loaded, You need to ReloadUI.")
 			pass:Hide()
 			PlaySound(21968)

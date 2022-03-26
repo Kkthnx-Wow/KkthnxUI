@@ -7,11 +7,10 @@ local table_insert = _G.table.insert
 local CreateFrame = _G.CreateFrame
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
-local SHOW_MULTIBAR1_TEXT = _G.SHOW_MULTIBAR1_TEXT
 local UIParent = _G.UIParent
 
 local cfg = C.Bars.Bar2
-local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
+local margin = C.Bars.BarMargin
 
 function Module:CreateBar2()
 	local num = NUM_ACTIONBAR_BUTTONS

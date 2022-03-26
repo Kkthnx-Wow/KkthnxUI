@@ -40,7 +40,7 @@ local UnitOnTaxi = _G.UnitOnTaxi
 local specPrefix = SPECIALIZATION..": "..K.InfoColor
 local levelPrefix = STAT_AVERAGE_ITEM_LEVEL..": "..K.InfoColor
 local isPending = LFG_LIST_LOADING
-local resetTime, frequency = 900, .5
+local resetTime, frequency, lastTime = 900, .5, 0
 local cache, weapon, currentUNIT, currentGUID = {}, {}
 
 function Module:InspectOnUpdate(elapsed)
@@ -63,9 +63,14 @@ updater:Hide()
 
 function Module:GetInspectInfo(...)
 	if self == "UNIT_INVENTORY_CHANGED" then
-		local unit = ...
-		if UnitGUID(unit) == currentGUID then
-			Module:InspectUnit(unit, true)
+		local thisTime = GetTime()
+		if thisTime - lastTime > 0.1 then
+			lastTime = thisTime
+
+			local unit = ...
+			if UnitGUID(unit) == currentGUID then
+				Module:InspectUnit(unit, true)
+			end
 		end
 	elseif self == "INSPECT_READY" then
 		local guid = ...

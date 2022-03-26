@@ -9,7 +9,7 @@ local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
-local cfg = C.Bars.Bar4
+local cfg = C.Bars.Bar5
 local margin = C.Bars.BarMargin
 
 function Module:CreateBar5()
@@ -23,6 +23,12 @@ function Module:CreateBar5()
 	MultiBarLeft:SetParent(frame)
 	MultiBarLeft:EnableMouse(false)
 	MultiBarLeft.QuickKeybindGlow:SetTexture("")
+
+	hooksecurefunc(MultiBarLeft, "SetScale", function(self, scale, force)
+		if not force and scale ~= 1 then
+			self:SetScale(1, true)
+		end
+	end)
 
 	for i = 1, num do
 		local button = _G["MultiBarLeftButton"..i]

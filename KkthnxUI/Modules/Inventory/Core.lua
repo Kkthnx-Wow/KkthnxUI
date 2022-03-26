@@ -1005,9 +1005,9 @@ function Module:OnEnable()
 		parentFrame:SetFrameLevel(5)
 
 		self.Favourite = parentFrame:CreateTexture(nil, "OVERLAY")
-		self.Favourite:SetAtlas("collections-icon-favorites")
-		self.Favourite:SetSize(24, 24)
-		self.Favourite:SetPoint("TOPRIGHT", 3, 2)
+		self.Favourite:SetAtlas("auctionhouse-icon-favorite")
+		self.Favourite:SetSize(14, 14)
+		self.Favourite:SetPoint("TOPRIGHT", 0, 0)
 
 		self.Quest = parentFrame:CreateTexture(nil, "OVERLAY")
 		self.Quest:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")

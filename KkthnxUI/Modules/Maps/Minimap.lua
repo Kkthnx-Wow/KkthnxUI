@@ -336,12 +336,8 @@ function Module:CreatePing()
 	pingAnimation.fader:SetStartDelay(3)
 
 	K:RegisterEvent("MINIMAP_PING", function(_, unit)
-		if not unit then
-			return
-		end
-
-		if unit == "player" then
-			return
+		if UnitIsUnit(unit, "player") then -- ignore player ping
+			return 
 		end
 
 		local class = select(2, UnitClass(unit))

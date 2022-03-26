@@ -10,7 +10,7 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
 local cfg = C.Bars.BarPet
-local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
+local margin = C.Bars.BarMargin
 
 function Module:CreatePetbar()
 	local num = NUM_PET_ACTION_SLOTS
