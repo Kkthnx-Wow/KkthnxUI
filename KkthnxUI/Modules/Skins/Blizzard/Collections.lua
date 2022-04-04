@@ -7,8 +7,6 @@ C.themes["Blizzard_Collections"] = function()
         return
     end
 
-    print(123)
-
 	local WardrobeFrame = _G["WardrobeFrame"]
 	local WardrobeTransmogFrame = _G["WardrobeTransmogFrame"]
 	local initialParentFrameWidth = WardrobeFrame:GetWidth() -- Expecting 965

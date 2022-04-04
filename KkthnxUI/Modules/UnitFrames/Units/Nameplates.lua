@@ -653,20 +653,20 @@ function Module:UpdateDungeonProgress(unit)
 end
 
 function Module:AddCreatureIcon(self)
-	local ClassifyOverlay = CreateFrame("Frame", nil, self)
-	ClassifyOverlay:SetAllPoints()
-	ClassifyOverlay:SetFrameLevel(5)
+	-- local ClassifyOverlay = CreateFrame("Frame", nil, self)
+	-- ClassifyOverlay:SetAllPoints(self)
+	-- ClassifyOverlay:SetFrameLevel(5)
 
-	ClassifyIndicator = ClassifyOverlay:CreateTexture(nil, "ARTWORK")
+	local ClassifyIndicator = self:CreateTexture(nil, "ARTWORK")
 	ClassifyIndicator:SetAtlas("auctionhouse-icon-favorite")
-	ClassifyIndicator:SetPoint("RIGHT", self.nameText, "LEFT", 10, 0)
+	ClassifyIndicator:SetPoint("RIGHT", self.nameText, "LEFT", -1, 0)
 	ClassifyIndicator:SetSize(16, 16)
 	ClassifyIndicator:Hide()
 
 	self.ClassifyIndicator = ClassifyIndicator
 end
 
-local testHide = 0
+local testHide = 4
 function Module:UpdateUnitClassify(unit)
 	if not self.ClassifyIndicator then
 		return
@@ -704,7 +704,7 @@ function Module:UpdateExplosives(event, unit)
 	end
 end
 
-local function checkAffixes(event)
+local function checkAffixes()
 	local _, affixes = C_ChallengeMode.GetActiveKeystoneInfo()
 	if affixes[3] and affixes[3] == 13 then
 		hasExplosives = true

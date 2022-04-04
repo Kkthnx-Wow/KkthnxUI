@@ -31,7 +31,7 @@ function Module:CreateLeaveVehicle()
 	local buttonList = {}
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBarExit", UIParent, "SecureHandlerStateTemplate")
-	frame.mover = K.Mover(frame, "Leave Vehicle Button", "LeaveVehicle", {"BOTTOM", UIParent, "BOTTOM", 320, 100})
+	frame.mover = K.Mover(frame, "Leave Vehicle Button", "LeaveVehicle", {"BOTTOM", UIParent, "BOTTOM", 260, 4})
 
 	local button = CreateFrame("CheckButton", "KKUI_LeaveVehicleButton", frame, "ActionButtonTemplate, SecureHandlerClickTemplate")
 	table_insert(buttonList, button)

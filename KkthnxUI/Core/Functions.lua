@@ -525,38 +525,36 @@ function K.HideInterfaceOption(self)
 end
 
 -- Timer Format
-local day, hour, minute = 86400, 3600, 60
+local day, hour, minute, pointFive = 86400, 3600, 60, 0.5
 function K.FormatTime(s)
 	if s >= day then
-		return string_format("%d"..K.MyClassColor.."d", s / day), s % day
+		return string_format("%d"..K.MyClassColor.."d", s / day + pointFive), s % day
 	elseif s >= hour then
-		return string_format("%d"..K.MyClassColor.."h", s / hour), s % hour
+		return string_format("%d"..K.MyClassColor.."h", s / hour + pointFive), s % hour
 	elseif s >= minute then
-		return string_format("%d"..K.MyClassColor.."m", s / minute), s % minute
+		return string_format("%d"..K.MyClassColor.."m", s / minute + pointFive), s % minute
 	elseif s > 10 then
-		return string_format("|cffcccc33%d|r", s), s - math_floor(s)
+		return string_format("|cffcccc33%d|r", s + pointFive), s - math_floor(s)
 	elseif s > 3 then
-		return string_format("|cffffff00%d|r", s), s - math_floor(s)
+		return string_format("|cffffff00%d|r", s + pointFive), s - math_floor(s)
 	else
 		if C["ActionBar"].DecimalCD then
 			return string_format("|cffff0000%.1f|r", s), s - string_format("%.1f", s)
 		else
-			return string_format("|cffff0000%d|r", s + .5), s - math_floor(s)
+			return string_format("|cffff0000%d|r", s + pointFive), s - math_floor(s)
 		end
 	end
 end
 
 function K.FormatTimeRaw(s)
 	if s >= day then
-		return string_format("%dd", s / day)
+		return string_format("%dd", s / day + pointFive)
 	elseif s >= hour then
-		return string_format("%dh", s / hour)
+		return string_format("%dh", s / hour + pointFive)
 	elseif s >= minute then
-		return string_format("%dm", s / minute)
-	elseif s >= 3 then
-		return math_floor(s)
+		return string_format("%dm", s/minute + pointFive)
 	else
-		return string_format("%d", s)
+		return string_format("%d", s + pointFive)
 	end
 end
 

@@ -102,4 +102,5 @@ C.Complete_HiddenItems = {
 	[184876] = true, -- Cohesion Crystal
 	[186199] = true, -- Lady Moonberry's Wand
 	[187012] = true, -- Unbalanced Riftstone
+	[187516] = true, -- 菲历姆的锻炉阀门
 }

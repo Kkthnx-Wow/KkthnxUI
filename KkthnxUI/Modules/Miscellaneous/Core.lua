@@ -215,7 +215,7 @@ function Module:CreateGUIGameMenuButton()
 		_G.GameMenuButtonQuit:ClearAllPoints()
 		_G.GameMenuButtonQuit:SetPoint("TOP", _G.GameMenuButtonLogout, "BOTTOM", 0, -6)
 
-		self:SetHeight(self:GetHeight() + KKUI_GUIButton:GetHeight() + 84) -- 6 x 7 + 21 + 21?
+		self:SetHeight(self:GetHeight() + KKUI_GUIButton:GetHeight() + 63) -- 6 x 7 + 21?
 	end)
 
 	KKUI_GUIButton:SetScript("OnClick", function()
@@ -584,7 +584,7 @@ do
 		end
 	end
 
-	K:RegisterEvent("ADDON_LOADED", setupMisc)
+	-- K:RegisterEvent("ADDON_LOADED", setupMisc)
 end
 
 -- Select target when click on raid units

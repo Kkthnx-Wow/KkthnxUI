@@ -82,6 +82,9 @@ C.AutoQuest = {
 		[173021] = true, -- 刻符牛头人
 		[175513] = true, -- 纳斯利亚审判官，傲慢
 		[180458] = true, -- 灰烬王庭，大帝幻象
+		[182681] = true, -- 扎雷殁提斯，强化控制台
+		[183262] = true, -- 扎雷殁提斯，回声机若源生体
+		[184587] = true, -- 集市，塔皮克斯
 		[70022] = true, -- Ku'ma (Isle of Giants, Pandaria)
 		[79740] = true, -- Warmaster Zog (Horde)
 		[79953] = true, -- Lieutenant Thorn (Alliance)
@@ -118,6 +121,7 @@ C.AutoQuest = {
 
 	RogueClassHallInsignia = {
 		[107486] = true, -- CoS rumors
+		[167839] = true, -- 灵魂残渣，爬塔
 		[93188] = true, -- Mongar
 		[96782] = true, -- Lucian Trias
 		[97004] = true, -- "Red" Jack Findle
