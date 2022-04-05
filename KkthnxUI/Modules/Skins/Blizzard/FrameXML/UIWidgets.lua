@@ -77,14 +77,14 @@ local function ReskinWidgetStatusBar(bar)
 
 		if bar.Label then
 			bar.Label:SetDrawLayer("OVERLAY")
-			bar.Label:SetPoint("CENTER", 0, -6)
-			bar.Label:SetFontObject(KkthnxUIFont)
+			bar.Label:SetPoint("CENTER", 0, -3)
+			bar.Label:SetFontObject(Game12Font)
 
 			ResetLabelColor(bar.Label)
 			hooksecurefunc(bar.Label, "SetTextColor", ResetLabelColor)
 		end
 
-		bar:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 16 or nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -5 or nil)
+		bar:CreateBorder()
 		ReplaceWidgetBarTexture(bar, bar:GetStatusBarAtlas())
 		hooksecurefunc(bar, "SetStatusBarAtlas", ReplaceWidgetBarTexture)
 
@@ -140,21 +140,34 @@ local function ReskinSpellDisplayWidget(spell)
 	spell.IconMask:Hide()
 end
 
-table.insert(C.defaultThemes, function()
-	hooksecurefunc(_G.UIWidgetTopCenterContainerFrame, "UpdateWidgetLayout", function(self)
-		for _, widgetFrame in pairs(self.widgetFrames) do
+local function ReskinPowerBarWidget(self)
+	for _, widgetFrame in pairs(self.widgetFrames) do
+		if widgetFrame.widgetType == Type_StatusBar then
 			if not widgetFrame:IsForbidden() then
-				local widgetType = widgetFrame.widgetType
-				if widgetType == Type_DoubleStatusBar then
-					ReskinDoubleStatusBarWidget(widgetFrame)
-				elseif widgetType == Type_SpellDisplay then
-					ReskinSpellDisplayWidget(widgetFrame.Spell)
-				elseif widgetType == Type_StatusBar then
-					ReskinWidgetStatusBar(widgetFrame.Bar)
-				end
+				ReskinWidgetStatusBar(widgetFrame.Bar)
 			end
 		end
-	end)
+	end
+end
+
+local function ReskinWidgetGroups(self)
+	for _, widgetFrame in pairs(self.widgetFrames) do
+		if not widgetFrame:IsForbidden() then
+			local widgetType = widgetFrame.widgetType
+			if widgetType == Type_DoubleStatusBar then
+				ReskinDoubleStatusBarWidget(widgetFrame)
+			elseif widgetType == Type_SpellDisplay then
+				ReskinSpellDisplayWidget(widgetFrame.Spell)
+			elseif widgetType == Type_StatusBar then
+				ReskinWidgetStatusBar(widgetFrame.Bar)
+			end
+		end
+	end
+end
+
+table.insert(C.defaultThemes, function()
+	hooksecurefunc(_G.UIWidgetTopCenterContainerFrame, "UpdateWidgetLayout", ReskinWidgetGroups)
+	ReskinWidgetGroups(_G.UIWidgetTopCenterContainerFrame)
 
 	hooksecurefunc(_G.UIWidgetBelowMinimapContainerFrame, "UpdateWidgetLayout", function(self)
 		for _, widgetFrame in pairs(self.widgetFrames) do
@@ -166,25 +179,10 @@ table.insert(C.defaultThemes, function()
 		end
 	end)
 
-	hooksecurefunc(_G.UIWidgetPowerBarContainerFrame, "UpdateWidgetLayout", function(self)
-		for _, widgetFrame in pairs(self.widgetFrames) do
-			if widgetFrame.widgetType == Type_StatusBar then
-				if not widgetFrame:IsForbidden() then
-					ReskinWidgetStatusBar(widgetFrame.Bar)
-				end
-			end
-		end
-	end)
+	hooksecurefunc(_G.UIWidgetPowerBarContainerFrame, "UpdateWidgetLayout", ReskinPowerBarWidget)
+	ReskinPowerBarWidget(_G.UIWidgetPowerBarContainerFrame)
 
-	hooksecurefunc(_G.TopScenarioWidgetContainerBlock.WidgetContainer, "UpdateWidgetLayout", function(self)
-		for _, widgetFrame in pairs(self.widgetFrames) do
-			if widgetFrame.widgetType == Type_StatusBar then
-				if not widgetFrame:IsForbidden() then
-					ReskinWidgetStatusBar(widgetFrame.Bar)
-				end
-			end
-		end
-	end)
+	hooksecurefunc(_G.TopScenarioWidgetContainerBlock.WidgetContainer, "UpdateWidgetLayout", ReskinPowerBarWidget)
 
 	hooksecurefunc(_G.BottomScenarioWidgetContainerBlock.WidgetContainer, "UpdateWidgetLayout", function(self)
 		for _, widgetFrame in pairs(self.widgetFrames) do
@@ -203,8 +201,8 @@ table.insert(C.defaultThemes, function()
 
 	-- needs review, might remove this in the future
 	hooksecurefunc(_G.UIWidgetTemplateStatusBarMixin, "Setup", function(self)
-		if self:IsForbidden() then 
-			return 
+		if self:IsForbidden() then
+			return
 		end
 
 		ReskinWidgetStatusBar(self.Bar)

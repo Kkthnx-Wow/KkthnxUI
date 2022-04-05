@@ -1,23 +1,14 @@
 --[[
 # Element: Power Prediction Bar
-
 Handles the visibility and updating of power cost prediction.
-
 ## Widget
-
 PowerPrediction - A `table` containing the sub-widgets.
-
 ## Sub-Widgets
-
 mainBar - A `StatusBar` used to represent power cost of spells on top of the Power element.
 altBar  - A `StatusBar` used to represent power cost of spells on top of the AdditionalPower element.
-
 ## Notes
-
 A default texture will be applied if the widget is a StatusBar and doesn't have a texture set.
-
 ## Examples
-
     -- Position and size
     local mainBar = CreateFrame('StatusBar', nil, self.Power)
     mainBar:SetReverseFill(true)
@@ -25,14 +16,12 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
     mainBar:SetPoint('BOTTOM')
     mainBar:SetPoint('RIGHT', self.Power:GetStatusBarTexture(), 'RIGHT')
     mainBar:SetWidth(200)
-
     local altBar = CreateFrame('StatusBar', nil, self.AdditionalPower)
     altBar:SetReverseFill(true)
     altBar:SetPoint('TOP')
     altBar:SetPoint('BOTTOM')
     altBar:SetPoint('RIGHT', self.AdditionalPower:GetStatusBarTexture(), 'RIGHT')
     altBar:SetWidth(200)
-
     -- Register with oUF
     self.PowerPrediction = {
         mainBar = mainBar,
@@ -56,7 +45,6 @@ local function Update(self, event, unit)
 
 	--[[ Callback: PowerPrediction:PreUpdate(unit)
 	Called before the element has been updated.
-
 	* self - the PowerPrediction element
 	* unit - the unit for which the update has been triggered (string)
 	--]]
@@ -118,7 +106,6 @@ local function Update(self, event, unit)
 
 	--[[ Callback: PowerPrediction:PostUpdate(unit, mainCost, altCost, hasAltManaBar)
 	Called after the element has been updated.
-
 	* self          - the PowerPrediction element
 	* unit          - the unit for which the update has been triggered (string)
 	* mainCost      - the main power type cost of the cast ability (number)
@@ -133,7 +120,6 @@ end
 local function Path(self, ...)
 	--[[ Override: PowerPrediction.Override(self, event, unit, ...)
 	Used to completely override the internal update function.
-
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* unit  - the unit accompanying the event (string)
@@ -152,11 +138,11 @@ local function Enable(self)
 		element.__owner = self
 		element.ForceUpdate = ForceUpdate
 
-		oUF:RegisterEvent(self, 'UNIT_SPELLCAST_START', Path)
-		oUF:RegisterEvent(self, 'UNIT_SPELLCAST_STOP', Path)
-		oUF:RegisterEvent(self, 'UNIT_SPELLCAST_FAILED', Path)
-		oUF:RegisterEvent(self, 'UNIT_SPELLCAST_SUCCEEDED', Path)
-		oUF:RegisterEvent(self, 'UNIT_DISPLAYPOWER', Path)
+		self:RegisterEvent('UNIT_SPELLCAST_START', Path)
+		self:RegisterEvent('UNIT_SPELLCAST_STOP', Path)
+		self:RegisterEvent('UNIT_SPELLCAST_FAILED', Path)
+		self:RegisterEvent('UNIT_SPELLCAST_SUCCEEDED', Path)
+		self:RegisterEvent('UNIT_DISPLAYPOWER', Path)
 
 		if(element.mainBar) then
 			if(element.mainBar:IsObjectType('StatusBar')
@@ -187,11 +173,11 @@ local function Disable(self)
 			element.altBar:Hide()
 		end
 
-		oUF:UnregisterEvent(self, 'UNIT_SPELLCAST_START', Path)
-		oUF:UnregisterEvent(self, 'UNIT_SPELLCAST_STOP', Path)
-		oUF:UnregisterEvent(self, 'UNIT_SPELLCAST_FAILED', Path)
-		oUF:UnregisterEvent(self, 'UNIT_SPELLCAST_SUCCEEDED', Path)
-		oUF:UnregisterEvent(self, 'UNIT_DISPLAYPOWER', Path)
+		self:UnregisterEvent('UNIT_SPELLCAST_START', Path)
+		self:UnregisterEvent('UNIT_SPELLCAST_STOP', Path)
+		self:UnregisterEvent('UNIT_SPELLCAST_FAILED', Path)
+		self:UnregisterEvent('UNIT_SPELLCAST_SUCCEEDED', Path)
+		self:UnregisterEvent('UNIT_DISPLAYPOWER', Path)
 	end
 end
 

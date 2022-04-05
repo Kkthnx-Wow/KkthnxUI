@@ -13,7 +13,6 @@ local hooksecurefunc = _G.hooksecurefunc
 
 local currentMapID, playerCoords, cursorCoords
 local smallerMapScale = 0.8
-local updateThrottle = 1 / 20
 
 function Module:SetLargeWorldMap()
 	WorldMapFrame:SetParent(UIParent)
@@ -98,32 +97,29 @@ local function CoordsFormat(owner, none)
 end
 
 function Module:UpdateCoords(elapsed)
-	-- Throttle the updates, to increase the performance.
 	self.elapsed = (self.elapsed or 0) + elapsed
 
-	if self.elapsed < updateThrottle then
-		return
-	end
+	if self.elapsed > 0.2 then
+		local cursorX, cursorY = Module:GetCursorCoords()
+		if cursorX and cursorY then
+			cursorCoords:SetFormattedText(CoordsFormat("Mouse"), 100 * cursorX, 100 * cursorY)
+		else
+			cursorCoords:SetText(CoordsFormat("Mouse", true))
+		end
 
-	local cursorX, cursorY = Module:GetCursorCoords()
-	if cursorX and cursorY then
-		cursorCoords:SetFormattedText(CoordsFormat("Mouse"), 100 * cursorX, 100 * cursorY)
-	else
-		cursorCoords:SetText(CoordsFormat("Mouse", true))
-	end
-
-	if not currentMapID then
-		playerCoords:SetText(CoordsFormat(PLAYER, true))
-	else
-		local x, y = K.GetPlayerMapPos(currentMapID)
-		if not x or (x == 0 and y == 0) then
+		if not currentMapID then
 			playerCoords:SetText(CoordsFormat(PLAYER, true))
 		else
-			playerCoords:SetFormattedText(CoordsFormat(PLAYER), 100 * x, 100 * y)
+			local x, y = K.GetPlayerMapPos(currentMapID)
+			if not x or (x == 0 and y == 0) then
+				playerCoords:SetText(CoordsFormat(PLAYER, true))
+			else
+				playerCoords:SetFormattedText(CoordsFormat(PLAYER), 100 * x, 100 * y)
+			end
 		end
-	end
 
-	self.elapsed = 0
+		self.elapsed = 0
+	end
 end
 
 function Module:UpdateMapID()
@@ -141,32 +137,31 @@ end
 
 function Module:MapFadeOnUpdate(elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
-	if self.elapsed < updateThrottle then
-		return
+
+	if self.elapsed > 0.2 then
+		local object = self.FadeObject
+		local settings = object and object.FadeSettings
+		if not settings then
+			return
+		end
+
+		local fadeOut = IsPlayerMoving() and (not settings.fadePredicate or settings.fadePredicate())
+		local endAlpha = (fadeOut and (settings.minAlpha or 0.5)) or settings.maxAlpha or 1
+		local startAlpha = _G.WorldMapFrame:GetAlpha()
+
+		object.timeToFade = settings.durationSec or 0.5
+		object.startAlpha = startAlpha
+		object.endAlpha = endAlpha
+		object.diffAlpha = endAlpha - startAlpha
+
+		if object.fadeTimer then
+			object.fadeTimer = nil
+		end
+
+		UIFrameFade(_G.WorldMapFrame, object)
+
+		self.elapsed = 0
 	end
-
-	local object = self.FadeObject
-	local settings = object and object.FadeSettings
-	if not settings then
-		return
-	end
-
-	local fadeOut = IsPlayerMoving() and (not settings.fadePredicate or settings.fadePredicate())
-	local endAlpha = (fadeOut and (settings.minAlpha or 0.5)) or settings.maxAlpha or 1
-	local startAlpha = _G.WorldMapFrame:GetAlpha()
-
-	object.timeToFade = settings.durationSec or 0.5
-	object.startAlpha = startAlpha
-	object.endAlpha = endAlpha
-	object.diffAlpha = endAlpha - startAlpha
-
-	if object.fadeTimer then
-		object.fadeTimer = nil
-	end
-
-	UIFrameFade(_G.WorldMapFrame, object)
-
-	self.elapsed = 0
 end
 
 local fadeFrame

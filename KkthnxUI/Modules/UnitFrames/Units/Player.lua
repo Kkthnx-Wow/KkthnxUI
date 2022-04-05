@@ -340,18 +340,18 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].PlayerPowerPrediction then
-		local mainBar = CreateFrame("StatusBar", self:GetName().."PowerPrediction", Power)
-		mainBar:SetReverseFill(true)
-		mainBar:SetPoint("TOP", 0, -1)
-		mainBar:SetPoint("BOTTOM", 0, 1)
-		mainBar:SetPoint("RIGHT", Power:GetStatusBarTexture(), "RIGHT", -1, 0)
-		mainBar:SetStatusBarTexture(HealPredictionTexture)
-		mainBar:SetStatusBarColor(0.8, 0.1, 0.1, 0.6)
-		mainBar:SetWidth(playerWidth)
+		-- local mainBar = CreateFrame("StatusBar", self:GetName().."PowerPrediction", Power)
+		-- mainBar:SetReverseFill(true)
+		-- mainBar:SetPoint("TOP", 0, -1)
+		-- mainBar:SetPoint("BOTTOM", 0, 1)
+		-- mainBar:SetPoint("RIGHT", Power:GetStatusBarTexture(), "RIGHT", -1, 0)
+		-- mainBar:SetStatusBarTexture(HealPredictionTexture)
+		-- mainBar:SetStatusBarColor(0.8, 0.1, 0.1, 0.6)
+		-- mainBar:SetWidth(playerWidth)
 
-		self.PowerPrediction = {
-			mainBar = mainBar
-		}
+		-- self.PowerPrediction = {
+		-- 	mainBar = mainBar
+		-- }
 	end
 
 	if C["Unitframe"].ShowPlayerName then
@@ -568,16 +568,16 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].PvPIndicator then
-		local PvPIndicator = self:CreateTexture(nil, "OVERLAY")
-		PvPIndicator:SetSize(30, 33)
-		if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
-			PvPIndicator:SetPoint("RIGHT", self.Portrait, "LEFT", -2, 0)
-		else
-			PvPIndicator:SetPoint("RIGHT", Health, "LEFT", -2, 0)
-		end
-		PvPIndicator.PostUpdate = Module.PostUpdatePvPIndicator
+		-- local PvPIndicator = self:CreateTexture(nil, "OVERLAY")
+		-- PvPIndicator:SetSize(30, 33)
+		-- if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
+		-- 	PvPIndicator:SetPoint("RIGHT", self.Portrait, "LEFT", -2, 0)
+		-- else
+		-- 	PvPIndicator:SetPoint("RIGHT", Health, "LEFT", -2, 0)
+		-- end
+		-- PvPIndicator.PostUpdate = Module.PostUpdatePvPIndicator
 
-		self.PvPIndicator = PvPIndicator
+		-- self.PvPIndicator = PvPIndicator
 	end
 
 	local CombatIndicator = Health:CreateTexture(nil, "OVERLAY")

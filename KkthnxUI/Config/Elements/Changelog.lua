@@ -20,7 +20,7 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
-		Version = "[10.3.0] - 2022-1-16",
+		Version = "[10.3.0] - 2022-4-5",
 		General = "All notable changes to this project will be documented in this file. The format is based on "..K.SystemColor.."[Keep a Changelog]|r and this project adheres to "..K.SystemColor.."[Semantic Versioning]|r",
 		Sections = {
 			{
@@ -28,8 +28,8 @@ local KKUI_Changelog = {
 				Entries = {
 					"Dev code to test new features that might or might not come in the future",
 					"Major spells casted will be notified to the player by a highlight glow on the castbar icon",
-					"Quest navigation now should show estimated time of arrival",
 					"Nameplates code updated and missing functions added",
+					"Quest navigation now should show estimated time of arrival",
 				},
 			},
 
@@ -38,6 +38,7 @@ local KKUI_Changelog = {
 				Entries = {
 					"Actionbar drawlayers for flyoutarrow and autocastable",
 					"Couple locales updated to relfect its proper module",
+					"Leak in world map cords",
 					"Left over file trying to load and throwing an error",
 					"Nameplates class power returns",
 					"Talkinghead is now working as intended",
@@ -51,9 +52,9 @@ local KKUI_Changelog = {
 				Entries = {
 					"Mail enhanced contacts module",
 					"Mouse cursor module",
+					"Profession disenchant module",
 					"Pulse cooldown module",
 					"Raid and dungeon progression tooltip module",
-					"Profession disenchant module"
 				},
 			},
 
@@ -63,8 +64,10 @@ local KKUI_Changelog = {
 					"Actionbars completely refactored to support customization",
 					"Completely refactored the databars",
 					"Datatext modules events handling updated",
+					"Fog of war has been revamped",
 					"Mount source collected info move to ID module",
 					"Unitframes code updated to be faster (small impact)",
+					"oUF lib updated",
 				}
 			}
 		}

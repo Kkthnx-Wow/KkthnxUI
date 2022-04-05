@@ -46,22 +46,22 @@ local function updateArenaPreparationElements(self, event, elementName, specID)
 			element:UpdateColorArenaPreparation(specID)
 		else
 			-- this section just replicates the color options available to the Health and Power elements
-			local r, g, b, color, _
+			local r, g, b, t, _
 			-- if(element.colorPower and elementName == 'Power') then
 				-- FIXME: no idea if we can get power type here without the unit
 			if(element.colorClass) then
 				local _, _, _, _, _, class = GetSpecializationInfoByID(specID)
-				color = self.colors.class[class]
+				t = self.colors.class[class]
 			elseif(element.colorReaction) then
-				color = self.colors.reaction[2]
+				t = self.colors.reaction[2]
 			elseif(element.colorSmooth) then
 				_, _, _, _, _, _, r, g, b = unpack(element.smoothGradient or self.colors.smooth)
 			elseif(element.colorHealth and elementName == 'Health') then
-				color = self.colors.health
+				t = self.colors.health
 			end
 
-			if(color) then
-				r, g, b = color[1], color[2], color[3]
+			if(t) then
+				r, g, b = t[1], t[2], t[3]
 			end
 
 			if(r or g or b) then
@@ -119,12 +119,6 @@ local function updateArenaPreparation(self, event)
 		-- semi-recursive call for when the player zones into an arena
 		updateArenaPreparation(self, 'ARENA_PREP_OPPONENT_SPECIALIZATIONS')
 	elseif(event == 'ARENA_PREP_OPPONENT_SPECIALIZATIONS') then
-		if(InCombatLockdown()) then
-			-- prevent calling protected functions if entering arena while in combat
-			self:RegisterEvent('PLAYER_REGEN_ENABLED', updateArenaPreparation, true)
-			return
-		end
-
 		if(self.PreUpdate) then
 			self:PreUpdate(event)
 		end
@@ -165,9 +159,6 @@ local function updateArenaPreparation(self, event)
 		if(self.PostUpdate) then
 			self:PostUpdate(event)
 		end
-	elseif(event == 'PLAYER_REGEN_ENABLED') then
-		self:UnregisterEvent(event, updateArenaPreparation)
-		updateArenaPreparation(self, 'ARENA_PREP_OPPONENT_SPECIALIZATIONS')
 	end
 end
 
