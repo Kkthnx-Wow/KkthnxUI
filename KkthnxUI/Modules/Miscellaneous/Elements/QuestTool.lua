@@ -7,15 +7,10 @@ local string_find = _G.string.find
 
 local C_GossipInfo_GetNumOptions = _G.C_GossipInfo.GetNumOptions
 local C_GossipInfo_SelectOption = _G.C_GossipInfo.SelectOption
-local C_QuestLog_GetDistanceSqToQuest = _G.C_QuestLog.GetDistanceSqToQuest
 local C_QuestLog_GetLogIndexForQuestID = _G.C_QuestLog.GetLogIndexForQuestID
-local ClearOverrideBindings = _G.ClearOverrideBindings
 local GetActionInfo = _G.GetActionInfo
 local GetOverrideBarSkin = _G.GetOverrideBarSkin
 local GetSpellInfo = _G.GetSpellInfo
-local InCombatLockdown = _G.InCombatLockdown
-local SetBinding = _G.SetBinding
-local SetOverrideBindingClick = _G.SetOverrideBindingClick
 local UnitGUID = _G.UnitGUID
 
 C["Misc"].QuestTool = true
@@ -35,11 +30,6 @@ local watchQuests = {
 	-- glow
 	[59585] = true, -- https://www.wowhead.com/quest=59585/well-make-an-aspirant-out-of-you
 	[64271] = true, -- https://www.wowhead.com/quest=64271/a-more-civilized-way
-	-- mousewheel
-	[60657] = 333960, -- https://www.wowhead.com/quest=60657/aid-from-above
-	[64018] = 356464, -- https://www.wowhead.com/quest=64018/the-weight-of-stone
-	-- others
-	[62459] = true, -- https://www.wowhead.com/quest=62459/go-beyond -- questItem = 183725
 }
 local activeQuests = {}
 
@@ -52,24 +42,6 @@ local fixedStrings = {
 	["横扫"] = "低扫",
 	["突刺"] = "突袭",
 }
-
-function Module:GetOverrideIndex(spellID)
-	if spellID == 356464 then
-		return 1, 2
-	elseif spellID == 356151 or spellID == 333960 then
-		return 1
-	end
-end
-
-local function GetActionSpell(index)
-	local button = _G["ActionButton"..index]
-	local _, spellID = GetActionInfo(button.action)
-	return spellID
-end
-
-local function GetOverrideButton(index)
-	return "OverrideActionBarButton"..index
-end
 
 function Module:QuestTool_Init()
 	for questID, value in pairs(watchQuests) do
@@ -88,46 +60,6 @@ end
 function Module:QuestTool_Remove(questID)
 	if watchQuests[questID] then
 		activeQuests[questID] = nil
-	end
-end
-
-function Module:QuestTool_IsMatch(questID, spellID)
-	return activeQuests[questID] == spellID
-end
-
-function Module:QuestTool_SetAction()
-	local spellID = GetActionSpell(1)
-	if Module:QuestTool_IsMatch(60657, spellID) or Module:QuestTool_IsMatch(64018, spellID) or spellID == 356151 then
-		if InCombatLockdown() then
-			K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.QuestTool_SetAction)
-			Module.isDelay = true
-		else
-			local index1, index2 = Module:GetOverrideIndex(spellID)
-			if index1 then
-				ClearOverrideBindings(Module.QuestHandler)
-				SetOverrideBindingClick(Module.QuestHandler, true, "MOUSEWHEELUP", GetOverrideButton(index1))
-				if index2 then
-					SetOverrideBindingClick(Module.QuestHandler, true, "MOUSEWHEELDOWN", GetOverrideButton(index2))
-				end
-
-				Module.QuestTip:SetText("KkthnxUI: ".." "..L["SpellTip"..spellID])
-				Module.QuestTip:Show()
-				Module.isHandling = true
-
-				if Module.isDelay then
-					K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.QuestTool_SetAction)
-					Module.isDelay = nil
-				end
-			end
-		end
-	end
-end
-
-function Module:QuestTool_ClearAction()
-	if Module.isHandling then
-		Module.isHandling = nil
-		ClearOverrideBindings(Module.QuestHandler)
-		Module.QuestTip:Hide()
 	end
 end
 
@@ -174,19 +106,6 @@ function Module:QuestTool_SetQuestUnit()
 	end
 end
 
-function Module:QuestTool_UpdateBinding()
-	if activeQuests[62459] and not IsResting() and C_QuestLog_GetDistanceSqToQuest(62459) < 35000 then
-		SetBinding("MOUSEWHEELUP", "EXTRAACTIONBUTTON1")
-		Module.isBinding = true
-		Module.QuestTip:SetText("KKthnxUI: "..L["CatchButterfly"])
-		Module.QuestTip:Show()
-	elseif Module.isBinding then
-		SetBinding("MOUSEWHEELUP", Module.SavedKey)
-		Module.isBinding = nil
-		Module.QuestTip:Hide()
-	end
-end
-
 function Module:CreateQuestTool()
 	if not C["Misc"].QuestTool then
 		return
@@ -208,11 +127,6 @@ function Module:CreateQuestTool()
 	K:RegisterEvent("QUEST_ACCEPTED", Module.QuestTool_Accept)
 	K:RegisterEvent("QUEST_REMOVED", Module.QuestTool_Remove)
 
-	-- Vehicle button quests
-	C_Timer.After(10, Module.QuestTool_SetAction) -- may need this for ui reload
-	K:RegisterEvent("UNIT_ENTERED_VEHICLE", Module.QuestTool_SetAction)
-	K:RegisterEvent("UNIT_EXITED_VEHICLE", Module.QuestTool_ClearAction)
-
 	-- Override button quests
 	if C["ActionBar"].Enable then
 		K:RegisterEvent("CHAT_MSG_MONSTER_SAY", Module.QuestTool_SetGlow)
@@ -221,12 +135,6 @@ function Module:CreateQuestTool()
 
 	-- Check npc in quests
 	GameTooltip:HookScript("OnTooltipSetUnit", Module.QuestTool_SetQuestUnit)
-
-	-- Quest items
-	Module.SavedKey = GetBindingFromClick("MOUSEWHEELUP")
-	Module:QuestTool_UpdateBinding()
-	K:RegisterEvent("ZONE_CHANGED", Module.QuestTool_UpdateBinding)
-	K:RegisterEvent("ZONE_CHANGED_INDOORS", Module.QuestTool_UpdateBinding)
 
 	-- Auto gossip
 	local firstStep

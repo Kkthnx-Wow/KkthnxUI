@@ -1,6 +1,10 @@
 local K = unpack(KkthnxUI)
 local Module = K:GetModule("AurasTable")
 
+if K.Class ~= "WARLOCK" then
+	return
+end
+
 local list = {
 	["Player Aura"] = {		-- 玩家光环组
 		{AuraID = 5697, UnitID = "player"},		-- 无尽呼吸

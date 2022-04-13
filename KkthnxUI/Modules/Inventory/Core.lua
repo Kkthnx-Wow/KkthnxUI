@@ -1202,7 +1202,7 @@ function Module:OnEnable()
 		end
 
 		-- Hide empty tooltip
-		if GameTooltip:GetOwner() == self and not GetContainerItemInfo(item.bagID, item.slotID) then
+		if not item.texture and GameTooltip:GetOwner() == self then
 			GameTooltip:Hide()
 		end
 

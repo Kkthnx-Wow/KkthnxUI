@@ -84,6 +84,10 @@ local function OnEvent(_, event, arg1)
 	if event == "PLAYER_ENTERING_WORLD" then
 		oldMoney = GetMoney()
 		GoldDataText:UnregisterEvent(event)
+
+		if KkthnxUIDB.ShowSlots then
+			GoldDataText:RegisterEvent("BAG_UPDATE")
+		end
 	elseif event == "BAG_UPDATE" then
 		if arg1 < 0 or arg1 > 4 then
 			return

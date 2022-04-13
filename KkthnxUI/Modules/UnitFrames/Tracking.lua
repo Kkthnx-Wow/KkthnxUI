@@ -109,11 +109,12 @@ function Tracking:Update()
 	local Texture = self.Texture:GetTexture()
 	local Icon = Button.Icon.Texture
 	local Text = Button.Text
+	local CurrentID = ID
 
-	if Texture == ArrowDown then
-		ID = ID + 1
-	else
+	if self.Decrease then
 		ID = ID - 1
+	else
+		Button.ID = Button.ID + 1
 	end
 
 	local SpellID, Name, IconPath = Tracking:GetSpell(Button, Cat)
@@ -124,7 +125,7 @@ function Tracking:Update()
 
 		Button.SpellID = SpellID
 	else
-		ID = Texture == ArrowDown and ID - 1 or ID + 1
+		Button.ID = CurrentID
 	end
 
 	if ID == 0 then
@@ -194,6 +195,7 @@ function Tracking:Setup()
 	self.PVE.Previous.Texture:SetSize(16, 16)
 	self.PVE.Previous.Texture:SetPoint("CENTER", -3, 0)
 	self.PVE.Previous.Texture:SetTexture(ArrowUp)
+	self.PVE.Previous.Decrease = true
 	SetClampedTextureRotation(self.PVE.Previous.Texture, 270)
 
 	self.PVE.Next = CreateFrame("Button", nil, self.PVE)
@@ -256,6 +258,7 @@ function Tracking:Setup()
 	self.PVP.Previous.Texture:SetSize(16, 16)
 	self.PVP.Previous.Texture:SetPoint("CENTER", -3, 0)
 	self.PVP.Previous.Texture:SetTexture(ArrowUp)
+	self.PVP.Previous.Decrease = true
 	SetClampedTextureRotation(self.PVP.Previous.Texture, 270)
 
 	self.PVP.Next = CreateFrame("Button", nil, self.PVP)

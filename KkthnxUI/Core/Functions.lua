@@ -77,13 +77,10 @@ function K.ShortValue(n)
 end
 
 -- Return rounded number
-function K.Round(num, idp)
-	if (idp and idp > 0) then
-		local mult = 10 ^ idp
-		return math_floor(num * mult + 0.5) / mult
-	end
-
-	return math_floor(num + 0.5)
+function K.Round(number, idp)
+	idp = idp or 0
+	local mult = 10 ^ idp
+	return math_floor(number * mult + .5) / mult
 end
 
 -- RGBToHex
@@ -97,7 +94,7 @@ function K.RGBToHex(r, g, b)
 			end
 		end
 
-		return string_format("|cff%02x%02x%02x", r*255, g*255, b*255)
+		return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 	end
 end
 
@@ -528,21 +525,17 @@ end
 local day, hour, minute, pointFive = 86400, 3600, 60, 0.5
 function K.FormatTime(s)
 	if s >= day then
-		return string_format("%d"..K.MyClassColor.."d", s / day + pointFive), s % day
+		return string_format("%d"..K.MyClassColor.."d", s/day + pointFive), s%day
 	elseif s >= hour then
-		return string_format("%d"..K.MyClassColor.."h", s / hour + pointFive), s % hour
+		return string_format("%d"..K.MyClassColor.."h", s/hour + pointFive), s%hour
 	elseif s >= minute then
-		return string_format("%d"..K.MyClassColor.."m", s / minute + pointFive), s % minute
+		return string_format("%d"..K.MyClassColor.."m", s/minute + pointFive), s%minute
 	elseif s > 10 then
-		return string_format("|cffcccc33%d|r", s + pointFive), s - math_floor(s)
+		return string_format("|cffcccc33%d|r", s + .5), s - math_floor(s)
 	elseif s > 3 then
-		return string_format("|cffffff00%d|r", s + pointFive), s - math_floor(s)
+		return string_format("|cffffff00%d|r", s + .5), s - math_floor(s)
 	else
-		if C["ActionBar"].DecimalCD then
-			return string_format("|cffff0000%.1f|r", s), s - string_format("%.1f", s)
-		else
-			return string_format("|cffff0000%d|r", s + pointFive), s - math_floor(s)
-		end
+		return string_format("|cffff0000%.1f|r", s), s - string_format("%.1f", s)
 	end
 end
 
@@ -552,7 +545,7 @@ function K.FormatTimeRaw(s)
 	elseif s >= hour then
 		return string_format("%dh", s / hour + pointFive)
 	elseif s >= minute then
-		return string_format("%dm", s/minute + pointFive)
+		return string_format("%dm", s / minute + pointFive)
 	else
 		return string_format("%d", s + pointFive)
 	end

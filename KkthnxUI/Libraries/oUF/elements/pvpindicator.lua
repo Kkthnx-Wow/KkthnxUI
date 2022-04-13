@@ -1,32 +1,21 @@
 --[[
 # Element: PvP and Honor Level Icons
-
 Handles the visibility and updating of an indicator based on the unit's PvP status and honor level.
-
 ## Widget
-
 PvPIndicator - A `Texture` used to display faction, FFA PvP status or honor level icon.
-
 ## Sub-Widgets
-
 Badge - A `Texture` used to display the honor badge background image.
-
 ## Notes
-
 This element updates by changing the texture.
 The `Badge` sub-widget has to be on a lower sub-layer than the `PvP` texture.
-
 ## Examples
-
     -- Position and size
     local PvPIndicator = self:CreateTexture(nil, 'ARTWORK', nil, 1)
     PvPIndicator:SetSize(30, 30)
     PvPIndicator:SetPoint('RIGHT', self, 'LEFT')
-
     local Badge = self:CreateTexture(nil, 'ARTWORK')
     Badge:SetSize(50, 52)
     Badge:SetPoint('CENTER', PvPIndicator, 'CENTER')
-
     -- Register it with oUF
     PvPIndicator.Badge = Badge
     self.PvPIndicator = PvPIndicator
@@ -43,7 +32,6 @@ local function Update(self, event, unit)
 
 	--[[ Callback: PvPIndicator:PreUpdate(unit)
 	Called before the element has been updated.
-
 	* self - the PvPIndicator element
 	* unit - the unit for which the update has been triggered (string)
 	--]]
@@ -53,12 +41,12 @@ local function Update(self, event, unit)
 
 	local status
 	local factionGroup = UnitFactionGroup(unit) or 'Neutral'
-	local honorRewardInfo = oUF.isRetail and C_PvP.GetHonorRewardInfo(UnitHonorLevel(unit))
+	local honorRewardInfo = C_PvP.GetHonorRewardInfo(UnitHonorLevel(unit))
 
 	if(UnitIsPVPFreeForAll(unit)) then
 		status = 'FFA'
 	elseif(factionGroup ~= 'Neutral' and UnitIsPVP(unit)) then
-		if oUF.isRetail and (unit == 'player' and UnitIsMercenary(unit)) then
+		if(unit == 'player' and UnitIsMercenary(unit)) then
 			if(factionGroup == 'Horde') then
 				factionGroup = 'Alliance'
 			elseif(factionGroup == 'Alliance') then
@@ -95,7 +83,6 @@ local function Update(self, event, unit)
 
 	--[[ Callback: PvPIndicator:PostUpdate(unit, status)
 	Called after the element has been updated.
-
 	* self   - the PvPIndicator element
 	* unit   - the unit for which the update has been triggered (string)
 	* status - the unit's current PvP status or faction accounting for mercenary mode (string)['FFA', 'Alliance',
@@ -109,7 +96,6 @@ end
 local function Path(self, ...)
 	--[[Override: PvPIndicator.Override(self, event, ...)
 	Used to completely override the internal update function.
-
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* ...   - the arguments accompanying the event
@@ -128,10 +114,7 @@ local function Enable(self)
 		element.ForceUpdate = ForceUpdate
 
 		self:RegisterEvent('UNIT_FACTION', Path)
-
-		if oUF.isRetail then
-			self:RegisterEvent('HONOR_LEVEL_UPDATE', Path, true)
-		end
+		self:RegisterEvent('HONOR_LEVEL_UPDATE', Path, true)
 
 		return true
 	end
@@ -147,10 +130,7 @@ local function Disable(self)
 		end
 
 		self:UnregisterEvent('UNIT_FACTION', Path)
-
-		if oUF.isRetail then
-			self:UnregisterEvent('HONOR_LEVEL_UPDATE', Path)
-		end
+		self:UnregisterEvent('HONOR_LEVEL_UPDATE', Path)
 	end
 end
 

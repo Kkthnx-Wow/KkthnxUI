@@ -2,7 +2,7 @@ local _, ns = ...
 local oUF = ns.oUF
 local Private = oUF.Private
 
-local enableTargetUpdate = Private.enableTargetUpdate
+local unitExists = Private.unitExists
 
 local function updateArenaPreparationElements(self, event, elementName, specID)
 	local element = self[elementName]
@@ -10,14 +10,12 @@ local function updateArenaPreparationElements(self, event, elementName, specID)
 		if(element.OverrideArenaPreparation) then
 			--[[ Override: Health.OverrideArenaPreparation(self, event, specID)
 			Used to completely override the internal update function for arena preparation.
-
 			* self   - the parent object
 			* event  - the event triggering the update (string)
 			* specID - the specialization ID for the opponent (number)
 			--]]
 			--[[ Override: Power.OverrideArenaPreparation(self, event, specID)
 			Used to completely override the internal update function for arena preparation.
-
 			* self   - the parent object
 			* event  - the event triggering the update (string)
 			* specID - the specialization ID for the opponent (number)
@@ -32,14 +30,12 @@ local function updateArenaPreparationElements(self, event, elementName, specID)
 			--[[ Override: Health:UpdateColor(specID)
 			Used to completely override the internal function for updating the widget's colors
 			during arena preparation.
-
 			* self   - the Health element
 			* specID - the specialization ID for the opponent (number)
 			--]]
 			--[[ Override: Power:UpdateColor(specID)
 			Used to completely override the internal function for updating the widget's colors
 			during arena preparation.
-
 			* self   - the Power element
 			* specID - the specialization ID for the opponent (number)
 			--]]
@@ -78,14 +74,12 @@ local function updateArenaPreparationElements(self, event, elementName, specID)
 		if(element.PostUpdateArenaPreparation) then
 			--[[ Callback: Health:PostUpdateArenaPreparation(event, specID)
 			Called after the element has been updated during arena preparation.
-
 			* self   - the Health element
 			* event  - the event triggering the update (string)
 			* specID - the specialization ID for the opponent (number)
 			--]]
 			--[[ Callback: Power:PostUpdateArenaPreparation(event, specID)
 			Called after the element has been updated during arena preparation.
-
 			* self   - the Power element
 			* event  - the event triggering the update (string)
 			* specID - the specialization ID for the opponent (number)
@@ -189,7 +183,57 @@ function oUF:HandleUnit(object, unit)
 		object:SetAttribute('oUF-enableArenaPrep', true)
 		-- the event handler only fires for visible frames, so we have to hook it for arena prep
 		object:HookScript('OnEvent', updateArenaPreparation)
-	elseif(unit:match('%w+target')) then
-		enableTargetUpdate(object)
 	end
+end
+
+local eventlessObjects = {}
+local onUpdates = {}
+
+local function createOnUpdate(timer)
+	if(not onUpdates[timer]) then
+		local frame = CreateFrame('Frame')
+		local objects = eventlessObjects[timer]
+
+		frame:SetScript('OnUpdate', function(self, elapsed)
+			self.elapsed = (self.elapsed or 0) + elapsed
+			if(self.elapsed > timer) then
+				for _, object in next, objects do
+					if(object.unit and unitExists(object.unit)) then
+						object:UpdateAllElements('OnUpdate')
+					end
+				end
+
+				self.elapsed = 0
+			end
+		end)
+
+		onUpdates[timer] = frame
+	end
+end
+
+function oUF:HandleEventlessUnit(object)
+	object.__eventless = true
+
+	-- It's impossible to set onUpdateFrequency before the frame is created, so
+	-- by default all eventless frames are created with the 0.5s timer.
+	-- To change it you'll need to call oUF:HandleEventlessUnit(frame) one more
+	-- time from the layout code after oUF:Spawn(unit) returns the frame.
+	local timer = object.onUpdateFrequency or 0.5
+
+	-- Remove it, in case it's registered with another timer previously
+	for t, objects in next, eventlessObjects do
+		if(t ~= timer) then
+			for i, obj in next, objects do
+				if(obj == object) then
+					table.remove(objects, i)
+					break
+				end
+			end
+		end
+	end
+
+	if(not eventlessObjects[timer]) then eventlessObjects[timer] = {} end
+	table.insert(eventlessObjects[timer], object)
+
+	createOnUpdate(timer)
 end

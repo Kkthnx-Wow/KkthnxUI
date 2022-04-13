@@ -1,6 +1,10 @@
 local K = unpack(KkthnxUI)
 local Module = K:GetModule("AurasTable")
 
+if K.Class ~= "DEMONHUNTER" then
+	return
+end
+
 -- DH的法术监控
 local list = {
 	["Player Aura"] = {		-- 玩家光环组
