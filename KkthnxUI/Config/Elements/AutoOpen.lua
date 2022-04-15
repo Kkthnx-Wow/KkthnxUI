@@ -1,7 +1,6 @@
 local _, C = unpack(KkthnxUI)
 
 C.AutoOpenItems = {
-	[183702] = true, -- Natures Splendor
 	[5335] = true, -- A Sack of Coins
 	[6307] = true, -- Message in a Bottle
 	[6351] = true, -- Dented Crate

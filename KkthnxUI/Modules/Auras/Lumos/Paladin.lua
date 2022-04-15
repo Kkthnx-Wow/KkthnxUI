@@ -7,6 +7,7 @@ end
 
 local _G = _G
 
+local GetCurrentGlyphNameForSpell = _G.GetCurrentGlyphNameForSpell
 local GetSpecialization = _G.GetSpecialization
 local GetSpellTexture = _G.GetSpellTexture
 local IsPlayerSpell = _G.IsPlayerSpell
@@ -31,6 +32,16 @@ local function UpdateSpellStatus(button, spellID)
 	else
 		button.Icon:SetDesaturated(true)
 	end
+end
+
+local function checkQueenGlyph()
+	local name, spellID = GetCurrentGlyphNameForSpell(86659)
+	Module.hasQueenGlyph = name and spellID == 212642
+end
+
+function Module:PostCreateLumos()
+	checkQueenGlyph()
+	K:RegisterEvent("SPELLS_CHANGED", checkQueenGlyph)
 end
 
 function Module:ChantLumos(self)
@@ -65,7 +76,15 @@ function Module:ChantLumos(self)
 		UpdateBuff(self.lumos[2], 53600, 132403, true, "END")
 		UpdateBuff(self.lumos[3], 31884, 31884, true, true)
 		UpdateBuff(self.lumos[4], 31850, 31850, true, true)
-		UpdateBuff(self.lumos[5], 86659, 86659, true, true)
+
+		do
+			local button = self.lumos[5]
+			if Module.hasQueenGlyph then
+				UpdateBuff(button, 212641, 212641, true, true)
+			else
+				UpdateBuff(button, 86659, 86659, true, true)
+			end
+		end
 	elseif spec == 3 then
 		do
 			local button = self.lumos[1]

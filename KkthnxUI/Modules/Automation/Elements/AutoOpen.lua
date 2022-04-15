@@ -10,7 +10,9 @@ local GetContainerItemInfo = _G.GetContainerItemInfo
 local OPENING = _G.OPENING
 local GetContainerItemLink = _G.GetContainerItemLink
 
-local atBank, atMail, atMerchant
+local atBank
+local atMail
+local atMerchant
 
 local function BankOpened()
 	atBank = true

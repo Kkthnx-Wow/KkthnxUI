@@ -128,9 +128,13 @@ function Module:UpdateTimer(elapsed)
 	end
 end
 
+function Module:GetSpellStat(arg16, arg17, arg18)
+	return (arg16 > 0 and L["Versa"]) or (arg17 > 0 and L["Mastery"]) or (arg18 > 0 and L["Haste"]) or L["Crit"]
+end
+
 function Module:UpdateAuras(button, index)
 	local unit, filter = button.header:GetAttribute("unit"), button.filter
-	local name, texture, count, debuffType, duration, expirationTime, _, _, _, spellID = UnitAura(unit, index, filter)
+	local name, texture, count, debuffType, duration, expirationTime, _, _, _, spellID, _, _, _, _, _, arg16, arg17, arg18 = UnitAura(unit, index, filter)
 	if not name then
 		return
 	end
@@ -166,6 +170,11 @@ function Module:UpdateAuras(button, index)
 		else
 			button.KKUI_Border:SetVertexColor(1, 1, 1)
 		end
+	end
+
+	-- Show spell stat for 'Soleahs Secret Technique'
+	if spellID == 368512 then
+		button.count:SetText(Module:GetSpellStat(arg16, arg17, arg18))
 	end
 
 	button.spellID = spellID

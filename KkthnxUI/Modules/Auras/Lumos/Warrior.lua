@@ -58,7 +58,9 @@ function Module:ChantLumos(self)
 		do
 			local button = self.lumos[2]
 			UpdateCooldown(button, 163201)
-			if IsPlayerSpell(281001) then
+			if IsPlayerSpell(330325) then
+				UpdateSpellStatus(button, 330325)
+			elseif IsPlayerSpell(281001) then
 				UpdateSpellStatus(button, 281000)
 			else
 				UpdateSpellStatus(button, 163201)
@@ -90,10 +92,11 @@ function Module:ChantLumos(self)
 
 		do
 			local button = self.lumos[3]
-			UpdateCooldown(button, 5308)
 			if IsPlayerSpell(206315) then
+				UpdateCooldown(button, 280735)
 				UpdateSpellStatus(button, 280735)
 			else
+				UpdateCooldown(button, 5308)
 				UpdateSpellStatus(button, 5308)
 			end
 		end
