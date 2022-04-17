@@ -126,7 +126,7 @@ local function AW_CreateCheckBox(parent, text, x, y, tip)
 	local hl = cb:GetHighlightTexture()
 	hl:SetPoint("TOPLEFT", bg, "TOPLEFT", 2, -2)
 	hl:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", -2, 2)
-	hl:SetVertexColor(0, 1, 0, .25)
+	hl:SetVertexColor(0, 1, 0, 0.25)
 
 	local ch = cb:GetCheckedTexture()
 	ch:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check")
@@ -347,12 +347,15 @@ local function CreatePanel()
 	local function SortBars(index)
 		local num, onLeft, onRight = 1, 1, 1
 		for k in pairs(barTable[index]) do
-			if (index < 10 and KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[index][k]) or (index == 10 and KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[k]) then
+			if
+				(index < 10 and KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[index][k])
+				or (index == 10 and KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[k])
+			then
 				local bar = barTable[index][k]
 				if num == 1 then
 					bar:SetPoint("TOPLEFT", 10, -10)
 				elseif num > 1 and num / 2 ~= math_floor(num / 2) then
-					bar:SetPoint("TOPLEFT", 10, -10 - 35*onLeft)
+					bar:SetPoint("TOPLEFT", 10, -10 - 35 * onLeft)
 					onLeft = onLeft + 1
 				elseif num == 2 then
 					bar:SetPoint("TOPLEFT", 295, -10)
@@ -367,10 +370,10 @@ local function CreatePanel()
 
 	local slotIndex = {
 		[6] = INVTYPE_WAIST,
-		[11] = INVTYPE_FINGER.."1",
-		[12] = INVTYPE_FINGER.."2",
-		[13] = INVTYPE_TRINKET.."1",
-		[14] = INVTYPE_TRINKET.."2",
+		[11] = INVTYPE_FINGER .. "1",
+		[12] = INVTYPE_FINGER .. "2",
+		[13] = INVTYPE_TRINKET .. "1",
+		[14] = INVTYPE_TRINKET .. "2",
 		[15] = INVTYPE_CLOAK,
 	}
 
@@ -393,7 +396,7 @@ local function CreatePanel()
 			name = slotIndex[spellID]
 		elseif typeID == "TotemID" then
 			texture = "Interface\\ICONS\\Spell_Shaman_TotemRecall"
-			name = L["TotemSlot"]..spellID
+			name = L["TotemSlot"] .. spellID
 		end
 
 		local bar = CreateFrame("Frame", nil, parent, "BackdropTemplate")
@@ -420,22 +423,32 @@ local function CreatePanel()
 		spellName:SetWidth(180)
 		spellName:SetJustifyH("LEFT")
 		K.CreateFontString(bar, 14, text, "", false, "RIGHT", -30, 0)
-		K.AddTooltip(bar, "ANCHOR_TOP", L["Type*"].." "..typeID, "system")
+		K.AddTooltip(bar, "ANCHOR_TOP", L["Type*"] .. " " .. typeID, "system")
 
-		typeID = typeID.." = "..spellID
-		unitID = unitID and ", UnitID = \""..unitID.."\"" or ""
-		caster = caster and ", Caster = \""..caster.."\"" or ""
-		stack = stack and ", Stack = "..stack or ""
+		typeID = typeID .. " = " .. spellID
+		unitID = unitID and ', UnitID = "' .. unitID .. '"' or ""
+		caster = caster and ', Caster = "' .. caster .. '"' or ""
+		stack = stack and ", Stack = " .. stack or ""
 		amount = amount and ", Value = true" or ""
 		timeless = timeless and ", Timeless = true" or ""
 		combat = combat and ", Combat = true" or ""
 		flash = flash and ", Flash = true" or ""
-		text = text and text ~= "" and ", Text = \""..text.."\"" or ""
-		local output = "{"..typeID..unitID..caster..stack..amount..timeless..combat..flash..text.."}"
+		text = text and text ~= "" and ', Text = "' .. text .. '"' or ""
+		local output = "{"
+			.. typeID
+			.. unitID
+			.. caster
+			.. stack
+			.. amount
+			.. timeless
+			.. combat
+			.. flash
+			.. text
+			.. "}"
 		bar:SetScript("OnMouseUp", function()
 			local editBox = ChatEdit_ChooseBoxForSend()
 			ChatEdit_ActivateChat(editBox)
-			editBox:SetText(output..",")
+			editBox:SetText(output .. ",")
 			editBox:HighlightText()
 		end)
 
@@ -467,7 +480,7 @@ local function CreatePanel()
 		spellName:SetWidth(180)
 		spellName:SetJustifyH("LEFT")
 		K.CreateFontString(bar, 14, duration, "", false, "RIGHT", -30, 0)
-		K.AddTooltip(bar, "ANCHOR_TOP", L["Trigger"]..trigger.." - "..unit, "system")
+		K.AddTooltip(bar, "ANCHOR_TOP", L["Trigger"] .. trigger .. " - " .. unit, "system")
 
 		SortBars(index)
 	end
@@ -491,7 +504,7 @@ local function CreatePanel()
 		local hl = bu:GetHighlightTexture()
 		hl:SetPoint("TOPLEFT", bg, "TOPLEFT", 2, -2)
 		hl:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", -2, 2)
-		hl:SetVertexColor(0, 1, 0, .25)
+		hl:SetVertexColor(0, 1, 0, 0.25)
 
 		local ch = bu:GetCheckedTexture()
 		ch:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check")
@@ -503,7 +516,7 @@ local function CreatePanel()
 		bu:SetScript("OnClick", function()
 			KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher[index] = bu:GetChecked()
 		end)
-		K.CreateFontString(bu, 15, "|cffff0000"..L["AuraWatch Switcher"], "", false, "RIGHT", -30, 0)
+		K.CreateFontString(bu, 15, "|cffff0000" .. L["AuraWatch Switcher"], "", false, "RIGHT", -30, 0)
 	end
 
 	-- Main
@@ -521,15 +534,15 @@ local function CreatePanel()
 	}
 
 	local preSet = {
-		[1] = {1, false},
-		[2] = {1, true},
-		[3] = {2, true},
-		[4] = {2, false},
-		[5] = {3, false},
-		[6] = {1, false},
-		[7] = {1, false},
-		[8] = {1, false},
-		[9] = {1, false},
+		[1] = { 1, false },
+		[2] = { 1, true },
+		[3] = { 2, true },
+		[4] = { 2, false },
+		[5] = { 3, false },
+		[6] = { 1, false },
+		[7] = { 1, false },
+		[8] = { 1, false },
+		[9] = { 1, false },
 	}
 
 	local tabs = {}
@@ -537,7 +550,7 @@ local function CreatePanel()
 		for i = 1, #tabs do
 			if self == tabs[i] then
 				tabs[i].Page:Show()
-				tabs[i].KKUI_Background:SetVertexColor(r, g, b, .3)
+				tabs[i].KKUI_Background:SetVertexColor(r, g, b, 0.3)
 				tabs[i].selected = true
 			else
 				tabs[i].Page:Hide()
@@ -551,7 +564,7 @@ local function CreatePanel()
 		if self.selected then
 			return
 		end
-		self.KKUI_Background:SetVertexColor(r, g, b, .3)
+		self.KKUI_Background:SetVertexColor(r, g, b, 0.3)
 	end
 
 	local function tabOnLeave(self)
@@ -567,13 +580,13 @@ local function CreatePanel()
 		end
 		barTable[i] = {}
 
-		tabs[i] = CreateFrame("Button", "$parentTab"..i, f, "BackdropTemplate")
+		tabs[i] = CreateFrame("Button", "$parentTab" .. i, f, "BackdropTemplate")
 		tabs[i]:SetPoint("TOPLEFT", 20, -40 - i * 34)
 		tabs[i]:SetSize(130, 28)
 		tabs[i]:CreateBorder()
 		local label = K.CreateFontString(tabs[i], 15, group, "", "system", "LEFT", 10, 0)
 		if i == 10 then
-			label:SetTextColor(0, .8, .3)
+			label:SetTextColor(0, 0.8, 0.3)
 		end
 		tabs[i].Page = createPage(group)
 		tabs[i].List = AW_CreateScroll(tabs[i].Page, 575, 200, L["AuraWatch List"])
@@ -583,18 +596,53 @@ local function CreatePanel()
 			for _, v in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i]) do
 				AddAura(tabs[i].List.child, i, v)
 			end
-			Option[1] = AW_CreateDropdown(tabs[i].Page, L["Type*"], 20, -30, {"AuraID", "SpellID", "SlotID", "TotemID"}, L["Type Intro"])
+			Option[1] = AW_CreateDropdown(
+				tabs[i].Page,
+				L["Type*"],
+				20,
+				-30,
+				{ "AuraID", "SpellID", "SlotID", "TotemID" },
+				L["Type Intro"]
+			)
 			Option[2] = AW_CreateEditbox(tabs[i].Page, "ID*", 140, -30, L["ID Intro"])
-			Option[3] = AW_CreateDropdown(tabs[i].Page, L["Unit*"], 260, -30, {"player", "target", "focus", "pet"}, L["Unit Intro"])
-			Option[4] = AW_CreateDropdown(tabs[i].Page, L["Caster"], 380, -30, {"player", "target", "pet"}, L["Caster Intro"])
+			Option[3] = AW_CreateDropdown(
+				tabs[i].Page,
+				L["Unit*"],
+				260,
+				-30,
+				{ "player", "target", "focus", "pet" },
+				L["Unit Intro"]
+			)
+			Option[4] = AW_CreateDropdown(
+				tabs[i].Page,
+				L["Caster"],
+				380,
+				-30,
+				{ "player", "target", "pet" },
+				L["Caster Intro"]
+			)
 			Option[5] = AW_CreateEditbox(tabs[i].Page, L["Stack"], 500, -30, L["Stack Intro"])
 			Option[6] = AW_CreateCheckBox(tabs[i].Page, L["Value"], 40, -95, L["Value Intro"])
 			Option[7] = AW_CreateCheckBox(tabs[i].Page, L["Timeless"], 120, -95, L["Timeless Intro"])
 			Option[8] = AW_CreateCheckBox(tabs[i].Page, L["Combat"], 200, -95, L["Combat Intro"])
 			Option[9] = AW_CreateEditbox(tabs[i].Page, L["Text"], 340, -90, L["Text Intro"])
 			Option[10] = AW_CreateCheckBox(tabs[i].Page, L["Flash"], 280, -95, L["Flash Intro"])
-			Option[11] = AW_CreateDropdown(tabs[i].Page, L["Slot*"], 140, -30, {slotIndex[6], slotIndex[11], slotIndex[12], slotIndex[13], slotIndex[14], slotIndex[15]}, L["Slot Intro"])
-			Option[12] = AW_CreateDropdown(tabs[i].Page, L["Totem*"], 140, -30, {L["TotemSlot"].."1", L["TotemSlot"].."2", L["TotemSlot"].."3", L["TotemSlot"].."4"}, L["Totem Intro"])
+			Option[11] = AW_CreateDropdown(
+				tabs[i].Page,
+				L["Slot*"],
+				140,
+				-30,
+				{ slotIndex[6], slotIndex[11], slotIndex[12], slotIndex[13], slotIndex[14], slotIndex[15] },
+				L["Slot Intro"]
+			)
+			Option[12] = AW_CreateDropdown(
+				tabs[i].Page,
+				L["Totem*"],
+				140,
+				-30,
+				{ L["TotemSlot"] .. "1", L["TotemSlot"] .. "2", L["TotemSlot"] .. "3", L["TotemSlot"] .. "4" },
+				L["Totem Intro"]
+			)
 
 			for j = 2, 12 do
 				Option[j]:Hide()
@@ -616,11 +664,11 @@ local function CreatePanel()
 						if preSet[i][2] then
 							Option[4].options[1]:Click()
 						end
-					elseif optionText  == "SpellID" then
+					elseif optionText == "SpellID" then
 						Option[2]:Show()
-					elseif optionText  == "SlotID" then
+					elseif optionText == "SlotID" then
 						Option[11]:Show()
-					elseif optionText  == "TotemID" then
+					elseif optionText == "TotemID" then
 						Option[12]:Show()
 					end
 				end)
@@ -631,8 +679,23 @@ local function CreatePanel()
 			end
 			Option[13] = AW_CreateEditbox(tabs[i].Page, L["IntID*"], 20, -30, L["IntID Intro"])
 			Option[14] = AW_CreateEditbox(tabs[i].Page, L["Duration*"], 140, -30, L["Duration Intro"])
-			Option[15] = AW_CreateDropdown(tabs[i].Page, L["Trigger"].."*", 260, -30, {"OnAuraGain", "OnCastSuccess"}, L["Trigger Intro"], 130)
-			Option[16] = AW_CreateDropdown(tabs[i].Page, L["Unit*"], 420, -30, {"Player", "All"}, L["Trigger Unit Intro"])
+			Option[15] = AW_CreateDropdown(
+				tabs[i].Page,
+				L["Trigger"] .. "*",
+				260,
+				-30,
+				{ "OnAuraGain", "OnCastSuccess" },
+				L["Trigger Intro"],
+				130
+			)
+			Option[16] = AW_CreateDropdown(
+				tabs[i].Page,
+				L["Unit*"],
+				420,
+				-30,
+				{ "Player", "All" },
+				L["Trigger Unit Intro"]
+			)
 			Option[17] = AW_CreateEditbox(tabs[i].Page, L["ItemID"], 20, -95, L["ItemID Intro"])
 		end
 
@@ -653,7 +716,7 @@ local function CreatePanel()
 			end
 		end)
 
-		local slotTable = {6, 11, 12, 13, 14, 15}
+		local slotTable = { 6, 11, 12, 13, 14, 15 }
 		local add = CreateFrame("Button", nil, tabs[i].Page, "BackdropTemplate")
 		add:SetSize(60, 25)
 		add:SkinButton()
@@ -661,7 +724,8 @@ local function CreatePanel()
 		add:SetPoint("TOPRIGHT", -30, -90)
 		add:SetScript("OnClick", function()
 			if i < 10 then
-				local typeID, spellID, unitID, slotID, totemID = Option[1].Text:GetText(), tonumber(Option[2]:GetText()), Option[3].Text:GetText()
+				local typeID, spellID, unitID, slotID, totemID =
+					Option[1].Text:GetText(), tonumber(Option[2]:GetText()), Option[3].Text:GetText()
 				for i = 1, #Option[11].options do
 					if Option[11].options[i].selected then
 						slotID = slotTable[i]
@@ -677,49 +741,70 @@ local function CreatePanel()
 				end
 
 				if not typeID then
-					UIErrorsFrame:AddMessage(K.InfoColor..L["Choose a Type"])
+					UIErrorsFrame:AddMessage(K.InfoColor .. L["Choose a Type"])
 					return
 				end
 
-				if (typeID == "AuraID" and (not spellID or not unitID)) or (typeID == "SpellID" and not spellID) or (typeID == "SlotID" and not slotID) or (typeID == "TotemID" and not totemID) then
-					UIErrorsFrame:AddMessage(K.InfoColor..L["Incomplete Input"])
+				if
+					(typeID == "AuraID" and (not spellID or not unitID))
+					or (typeID == "SpellID" and not spellID)
+					or (typeID == "SlotID" and not slotID)
+					or (typeID == "TotemID" and not totemID)
+				then
+					UIErrorsFrame:AddMessage(K.InfoColor .. L["Incomplete Input"])
 					return
 				end
 
 				if (typeID == "AuraID" or typeID == "SpellID") and not GetSpellInfo(spellID) then
-					UIErrorsFrame:AddMessage(K.InfoColor..L["Incorrect SpellID"])
+					UIErrorsFrame:AddMessage(K.InfoColor .. L["Incorrect SpellID"])
 					return
 				end
 
 				local realID = spellID or slotID or totemID
 				if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i][realID] then
-					UIErrorsFrame:AddMessage(K.InfoColor..L["Existing ID"])
+					UIErrorsFrame:AddMessage(K.InfoColor .. L["Existing ID"])
 					return
 				end
 
-				KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i][realID] = {typeID, realID, unitID, Option[4].Text:GetText(), tonumber(Option[5]:GetText()) or false, Option[6]:GetChecked(), Option[7]:GetChecked(), Option[8]:GetChecked(), Option[9]:GetText(), Option[10]:GetChecked()}
+				KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i][realID] = {
+					typeID,
+					realID,
+					unitID,
+					Option[4].Text:GetText(),
+					tonumber(Option[5]:GetText()) or false,
+					Option[6]:GetChecked(),
+					Option[7]:GetChecked(),
+					Option[8]:GetChecked(),
+					Option[9]:GetText(),
+					Option[10]:GetChecked(),
+				}
 				AddAura(tabs[i].List.child, i, KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i][realID])
 				for i = 2, 12 do
 					AW_ClearEdit(Option[i])
 				end
 			elseif i == 10 then
-				local intID, duration, trigger, unit, itemID = tonumber(Option[13]:GetText()), tonumber(Option[14]:GetText()), Option[15].Text:GetText(), Option[16].Text:GetText(), tonumber(Option[17]:GetText())
+				local intID, duration, trigger, unit, itemID =
+					tonumber(Option[13]:GetText()),
+					tonumber(Option[14]:GetText()),
+					Option[15].Text:GetText(),
+					Option[16].Text:GetText(),
+					tonumber(Option[17]:GetText())
 				if not intID or not duration or not trigger or not unit then
-					UIErrorsFrame:AddMessage(K.InfoColor..L["Incomplete Input"])
+					UIErrorsFrame:AddMessage(K.InfoColor .. L["Incomplete Input"])
 					return
 				end
 
 				if intID and not GetSpellInfo(intID) then
-					UIErrorsFrame:AddMessage(K.InfoColor..L["Incorrect SpellID"])
+					UIErrorsFrame:AddMessage(K.InfoColor .. L["Incorrect SpellID"])
 					return
 				end
 
 				if KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[intID] then
-					UIErrorsFrame:AddMessage(K.InfoColor..L["Existing ID"])
+					UIErrorsFrame:AddMessage(K.InfoColor .. L["Existing ID"])
 					return
 				end
 
-				KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[intID] = {intID, duration, trigger, unit, itemID}
+				KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[intID] = { intID, duration, trigger, unit, itemID }
 				AddInternal(tabs[i].List.child, i, KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[intID])
 				for i = 13, 17 do
 					AW_ClearEdit(Option[i])
@@ -754,7 +839,7 @@ end
 
 SlashCmdList["KKUI_AWCONFIG"] = function()
 	if InCombatLockdown() then
-		UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 		return
 	end
 

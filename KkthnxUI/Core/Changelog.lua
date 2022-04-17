@@ -1,4 +1,4 @@
-local K = unpack(select(2,...))
+local K = unpack(select(2, ...))
 
 local function CreateChangeLog(event)
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete then -- Do not show this unless we have installed the UI

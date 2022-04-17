@@ -61,7 +61,7 @@ C.AutoQuest = {
 		[88570] = true, -- Fate-Twister Tiklal (Seal quest, Horde)
 		[93538] = true, -- 达瑞妮斯
 		[98489] = true, -- 海难俘虏
-		[99183] = true,	-- Renegade Ironworker (Tanaan Jungle, repeatable quest)
+		[99183] = true, -- Renegade Ironworker (Tanaan Jungle, repeatable quest)
 	},
 
 	IgnoreGossipNPC = {
@@ -199,5 +199,5 @@ C.AutoQuest = {
 	IgnoreInstances = {
 		[1571] = true, -- 枯法者
 		[1626] = true, -- 群星庭院
-	}
+	},
 }

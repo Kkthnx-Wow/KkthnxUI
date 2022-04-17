@@ -38,7 +38,7 @@ local iLvlDB = {}
 local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
 local essenceDescription = _G.GetSpellDescription(277253)
 local essenceTextureID = 2975691
-local itemLevelString = "^"..string_gsub(ITEM_LEVEL, "%%d", "")
+local itemLevelString = "^" .. string_gsub(ITEM_LEVEL, "%%d", "")
 
 local mapRects = {}
 local tempVec2D = CreateVector2D(0, 0)
@@ -63,11 +63,11 @@ function K.ShortValue(n)
 		end
 	elseif C["General"].NumberPrefixStyle.Value == 2 then
 		if n >= 1e12 then
-			return string_format("%.2f".."z", n / 1e12)
+			return string_format("%.2f" .. "z", n / 1e12)
 		elseif n >= 1e8 then
-			return string_format("%.2f".."y", n / 1e8)
+			return string_format("%.2f" .. "y", n / 1e8)
 		elseif n >= 1e4 then
-			return string_format("%.1f".."w", n / 1e4)
+			return string_format("%.1f" .. "w", n / 1e4)
 		else
 			return string_format("%.0f", n)
 		end
@@ -80,7 +80,7 @@ end
 function K.Round(number, idp)
 	idp = idp or 0
 	local mult = 10 ^ idp
-	return math_floor(number * mult + .5) / mult
+	return math_floor(number * mult + 0.5) / mult
 end
 
 -- RGBToHex
@@ -157,7 +157,7 @@ function K.CreateFontString(self, size, text, textstyle, classcolor, anchor, x, 
 	if classcolor and type(classcolor) == "boolean" then
 		fs:SetTextColor(K.r, K.g, K.b)
 	elseif classcolor == "system" then
-		fs:SetTextColor(1, .8, 0)
+		fs:SetTextColor(1, 0.8, 0)
 	elseif classcolor == "system" then
 	end
 
@@ -241,11 +241,11 @@ function K.InspectItemTextures()
 
 	local step = 1
 	for i = 1, 10 do
-		local tex = _G[K.ScanTooltip:GetName().."Texture"..i]
+		local tex = _G[K.ScanTooltip:GetName() .. "Texture" .. i]
 		local texture = tex and tex:IsShown() and tex:GetTexture()
 		if texture then
 			if texture == essenceTextureID then
-				local selected = (K.ScanTooltip.gems[i-1] ~= essenceTextureID and K.ScanTooltip.gems[i-1]) or nil
+				local selected = (K.ScanTooltip.gems[i - 1] ~= essenceTextureID and K.ScanTooltip.gems[i - 1]) or nil
 				if not K.ScanTooltip.essences[step] then
 					K.ScanTooltip.essences[step] = {}
 				end
@@ -254,7 +254,9 @@ function K.InspectItemTextures()
 				K.ScanTooltip.essences[step][3] = texture -- border texture placed by the atlas
 
 				step = step + 1
-				if selected then K.ScanTooltip.gems[i-1] = nil end
+				if selected then
+					K.ScanTooltip.gems[i - 1] = nil
+				end
 			else
 				K.ScanTooltip.gems[i] = texture
 			end
@@ -279,9 +281,10 @@ end
 function K.CollectEssenceInfo(index, lineText, slotInfo)
 	local step = 1
 	local essence = slotInfo.essences[step]
+	-- stylua: ignore
 	if essence and next(essence) and (string_find(lineText, ITEM_SPELL_TRIGGER_ONEQUIP, nil, true) and string_find(lineText, essenceDescription, nil, true)) then
 		for i = 4, 2, -1 do
-			local line = _G[K.ScanTooltip:GetName().."TextLeft"..index - i]
+			local line = _G[K.ScanTooltip:GetName() .. "TextLeft" .. index - i]
 			local text = line and line:GetText()
 
 			if text and (not string_match(text, "^[ +]")) and essence and next(essence) then
@@ -312,7 +315,7 @@ function K.GetItemLevel(link, arg1, arg2, fullScan)
 		slotInfo.gems, slotInfo.essences = K.InspectItemTextures()
 
 		for i = 1, K.ScanTooltip:NumLines() do
-			local line = _G[K.ScanTooltip:GetName().."TextLeft"..i]
+			local line = _G[K.ScanTooltip:GetName() .. "TextLeft" .. i]
 			if line then
 				local text = line:GetText() or ""
 				K.InspectItemInfo(text, slotInfo)
@@ -336,7 +339,7 @@ function K.GetItemLevel(link, arg1, arg2, fullScan)
 		end
 
 		for i = 2, 5 do
-			local line = _G[K.ScanTooltip:GetName().."TextLeft"..i]
+			local line = _G[K.ScanTooltip:GetName() .. "TextLeft" .. i]
 			if line then
 				local text = line:GetText() or ""
 				local found = string_find(text, itemLevelString)
@@ -365,7 +368,7 @@ local function CheckRole()
 	elseif role == "HEALER" then
 		K.Role = "Healer"
 	elseif role == "DAMAGER" then
-		if stat == 4 then	-- 1 Strength, 2 Agility, 4 Intellect
+		if stat == 4 then -- 1 Strength, 2 Agility, 4 Intellect
 			K.Role = "Caster"
 		else
 			K.Role = "Melee"
@@ -391,7 +394,7 @@ function K.GetAnchors(frame)
 	local hhalf = (x > UIParent:GetWidth() * 2 / 3) and "RIGHT" or (x < UIParent:GetWidth() / 3) and "LEFT" or ""
 	local vhalf = (y > UIParent:GetHeight() / 2) and "TOP" or "BOTTOM"
 
-	return vhalf..hhalf, frame, (vhalf == "TOP" and "BOTTOM" or "TOP")..hhalf
+	return vhalf .. hhalf, frame, (vhalf == "TOP" and "BOTTOM" or "TOP") .. hhalf
 end
 
 function K.HideTooltip()
@@ -424,7 +427,7 @@ local function tooltipOnEnter(self)
 		if self.color == "class" then
 			r, g, b = K.r, K.g, K.b
 		elseif self.color == "system" then
-			r, g, b = 1, .8, 0
+			r, g, b = 1, 0.8, 0
 		elseif self.color == "info" then
 			r, g, b = 0.5, 0.7, 1
 		end
@@ -468,7 +471,7 @@ function K.CreateMoverFrame(self, parent, saved)
 		end
 
 		local orig, _, tar, x, y = frame:GetPoint()
-		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][frame:GetName()] = {orig, "UIParent", tar, x, y}
+		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][frame:GetName()] = { orig, "UIParent", tar, x, y }
 	end)
 end
 
@@ -482,30 +485,30 @@ end
 
 function K.ShortenString(string, numChars, dots)
 	local bytes = string:len()
-	if (bytes <= numChars) then
+	if bytes <= numChars then
 		return string
 	else
 		local len, pos = 0, 1
-		while (pos <= bytes) do
+		while pos <= bytes do
 			len = len + 1
 			local c = string:byte(pos)
-			if (c > 0 and c <= 127) then
+			if c > 0 and c <= 127 then
 				pos = pos + 1
-			elseif (c >= 192 and c <= 223) then
+			elseif c >= 192 and c <= 223 then
 				pos = pos + 2
-			elseif (c >= 224 and c <= 239) then
+			elseif c >= 224 and c <= 239 then
 				pos = pos + 3
-			elseif (c >= 240 and c <= 247) then
+			elseif c >= 240 and c <= 247 then
 				pos = pos + 4
 			end
 
-			if (len == numChars) then
+			if len == numChars then
 				break
 			end
 		end
 
-		if (len == numChars and pos <= bytes) then
-			return string:sub(1, pos - 1)..(dots and "..." or "")
+		if len == numChars and pos <= bytes then
+			return string:sub(1, pos - 1) .. (dots and "..." or "")
 		else
 			return string
 		end
@@ -525,15 +528,15 @@ end
 local day, hour, minute, pointFive = 86400, 3600, 60, 0.5
 function K.FormatTime(s)
 	if s >= day then
-		return string_format("%d"..K.MyClassColor.."d", s/day + pointFive), s%day
+		return string_format("%d" .. K.MyClassColor .. "d", s / day + pointFive), s % day
 	elseif s >= hour then
-		return string_format("%d"..K.MyClassColor.."h", s/hour + pointFive), s%hour
+		return string_format("%d" .. K.MyClassColor .. "h", s / hour + pointFive), s % hour
 	elseif s >= minute then
-		return string_format("%d"..K.MyClassColor.."m", s/minute + pointFive), s%minute
+		return string_format("%d" .. K.MyClassColor .. "m", s / minute + pointFive), s % minute
 	elseif s > 10 then
-		return string_format("|cffcccc33%d|r", s + .5), s - math_floor(s)
+		return string_format("|cffcccc33%d|r", s + 0.5), s - math_floor(s)
 	elseif s > 3 then
-		return string_format("|cffffff00%d|r", s + .5), s - math_floor(s)
+		return string_format("|cffffff00%d|r", s + 0.5), s - math_floor(s)
 	else
 		return string_format("|cffff0000%.1f|r", s), s - string_format("%.1f", s)
 	end
@@ -585,7 +588,7 @@ function K.GetPlayerMapPos(mapID)
 			return
 		end
 
-		mapRect = {pos1, pos2}
+		mapRect = { pos1, pos2 }
 		mapRect[2]:Subtract(mapRect[1])
 
 		mapRects[mapID] = mapRect
@@ -607,6 +610,7 @@ function K.FormatMoney(amount)
 	local copper = math_floor(mod(value, 100))
 
 	if gold > 0 then
+		-- stylua: ignore
 		return string_format("%s%s %02d%s %02d%s", BreakUpLargeNumbers(gold), goldname, silver, silvername, copper, coppername)
 	elseif silver > 0 then
 		return string_format("%d%s %02d%s", silver, silvername, copper, coppername)

@@ -15,7 +15,7 @@ local sections = {
 	"TOP",
 	"BOTTOM",
 	"LEFT",
-	"RIGHT"
+	"RIGHT",
 }
 
 local function onSizeChanged(self, w, h)
@@ -114,7 +114,7 @@ function border_proto:IsObjectType(t)
 end
 
 function K.CreateBorder(parent, drawLayer, drawSubLevel)
-	local border = Mixin({__parent = parent}, border_proto)
+	local border = Mixin({ __parent = parent }, border_proto)
 
 	for _, v in next, sections do
 		border[v] = parent:CreateTexture(nil, drawLayer or "OVERLAY", nil, drawSubLevel or 1)

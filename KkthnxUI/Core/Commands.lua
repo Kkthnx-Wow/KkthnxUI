@@ -34,7 +34,7 @@ local UnitIsGroupLeader = _G.UnitIsGroupLeader
 local EventTraceEnabled = true
 local EventTrace = CreateFrame("Frame")
 EventTrace:SetScript("OnEvent", function(self, event)
-	if (event ~= "GET_ITEM_INFO_RECEIVED" and event ~= "COMBAT_LOG_EVENT_UNFILTERED") then
+	if event ~= "GET_ITEM_INFO_RECEIVED" and event ~= "COMBAT_LOG_EVENT_UNFILTERED" then
 		K.Print(event)
 	end
 end)
@@ -64,7 +64,7 @@ SlashCmdList["KKUI_VOLUME"] = function(val)
 		K.Print(string_format("Volume is already set to |cffa0f6aa%s|r.", old))
 	elseif new and 0 <= new and new <= 1 then
 		if InCombatLockdown() then
-			_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+			_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 			return
 		end
 		SetCVar("Sound_MasterVolume", new)
@@ -81,7 +81,9 @@ _G.SLASH_KKUI_VOLUME4 = "/volume"
 -- Profiles data/listings
 SlashCmdList["KKUI_UIPROFILES"] = function(msg)
 	if msg == "" or msg == "list" or msg == "l" then
-		K.Print("This command no longer has purpose. Please open KkthnxUI GUI and go to General and use the profile dropdown to pick the profile you want!")
+		K.Print(
+			"This command no longer has purpose. Please open KkthnxUI GUI and go to General and use the profile dropdown to pick the profile you want!"
+		)
 	end
 end
 _G.SLASH_KKUI_UIPROFILES1 = "/kkprofile"
@@ -95,13 +97,23 @@ _G.SLASH_KKUI_READYCHECK1 = "/kkrc"
 
 local QuestCheckSubDomain = (setmetatable({
 	ruRU = "ru",
-	frFR = "fr", deDE = "de",
-	esES = "es", esMX = "es",
-	ptBR = "pt", ptPT = "pt", itIT = "it",
-	koKR = "ko", zhTW = "cn", zhCN = "cn"
-}, { __index = function() return "www" end }))[GetLocale()]
+	frFR = "fr",
+	deDE = "de",
+	esES = "es",
+	esMX = "es",
+	ptBR = "pt",
+	ptPT = "pt",
+	itIT = "it",
+	koKR = "ko",
+	zhTW = "cn",
+	zhCN = "cn",
+}, {
+	__index = function()
+		return "www"
+	end,
+}))[GetLocale()]
 
-local WoWHeadLoc = QuestCheckSubDomain..".wowhead.com/quest="
+local WoWHeadLoc = QuestCheckSubDomain .. ".wowhead.com/quest="
 local QuestCheckComplete = [[|TInterface\RaidFrame\ReadyCheck-Ready:14:14:-1:-1|t]]
 local QuestCheckIncomplete = [[|TInterface\RaidFrame\ReadyCheck-NotReady:14:14:-1:-1|t]]
 SlashCmdList["KKUI_CHECKQUESTSTATUS"] = function(questid)
@@ -117,14 +129,18 @@ SlashCmdList["KKUI_CHECKQUESTSTATUS"] = function(questid)
 		return
 	end
 
-	if (C_QuestLog_IsQuestFlaggedCompleted(questid) == true) then
-		UIErrorsFrame:AddMessage(QuestCheckComplete.."Quest ".. "|CFFFFFF00["..questid.."]|r"..L["CheckQuestComplete"])
+	if C_QuestLog_IsQuestFlaggedCompleted(questid) == true then
+		UIErrorsFrame:AddMessage(
+			QuestCheckComplete .. "Quest " .. "|CFFFFFF00[" .. questid .. "]|r" .. L["CheckQuestComplete"]
+		)
 		PlaySound("878")
-		K.Print(WoWHeadLoc..questid)
+		K.Print(WoWHeadLoc .. questid)
 	else
-		UIErrorsFrame:AddMessage(QuestCheckIncomplete.."Quest ".. "|CFFFFFF00["..questid.."]|r"..L["CheckQuestNotComplete"])
+		UIErrorsFrame:AddMessage(
+			QuestCheckIncomplete .. "Quest " .. "|CFFFFFF00[" .. questid .. "]|r" .. L["CheckQuestNotComplete"]
+		)
 		PlaySound("847")
-		K.Print(WoWHeadLoc..questid)
+		K.Print(WoWHeadLoc .. questid)
 	end
 end
 _G.SLASH_KKUI_CHECKQUESTSTATUS1 = "/kkqc"
@@ -145,7 +161,8 @@ SlashCmdList["KKUI_DELETEQUESTITEMS"] = function()
 			local itemLink = GetContainerItemLink(bag, slot)
 			if itemLink and select(12, GetItemInfo(itemLink)) == _G.LE_ITEM_CLASS_QUESTITEM then
 				_G.print(itemLink)
-				_G.PickupContainerItem(bag, slot) _G.DeleteCursorItem()
+				_G.PickupContainerItem(bag, slot)
+				_G.DeleteCursorItem()
 			end
 		end
 	end
@@ -156,10 +173,10 @@ _G.SLASH_KKUI_DELETEQUESTITEMS2 = "/dqi"
 SlashCmdList["KKUI_DELETEHEIRLOOMS"] = function()
 	for bag = 0, 4 do
 		for slot = 1, GetContainerNumSlots(bag) do
-			local name = GetContainerItemLink(bag,slot)
-			if name and string.find(name,"00ccff") then
+			local name = GetContainerItemLink(bag, slot)
+			if name and string.find(name, "00ccff") then
 				print(name)
-				_G.PickupContainerItem(bag,slot)
+				_G.PickupContainerItem(bag, slot)
 				_G.DeleteCursorItem()
 			end
 		end
@@ -200,7 +217,7 @@ SlashCmdList["KKUI_ABANDONQUESTS"] = function()
 		local questID = info.questID
 		local isHeader = info.isHeader
 
-		if (not isHeader) then
+		if not isHeader then
 			C_QuestLog_SetSelectedQuest(questID)
 			C_QuestLog_SetAbandonQuest()
 			C_QuestLog_AbandonQuest()
@@ -220,7 +237,7 @@ SlashCmdList["PARTYTORAID"] = function()
 			ConvertToRaid()
 		end
 	else
-		print("|cffff0000"..ERR_NOT_IN_GROUP.."|r")
+		print("|cffff0000" .. ERR_NOT_IN_GROUP .. "|r")
 	end
 end
 _G.SLASH_PARTYTORAID1 = "/toraid"
@@ -239,7 +256,7 @@ _G.SLASH_DBMTEST1 = "/dbmtest"
 SlashCmdList["CLEARCHAT"] = function(cmd)
 	cmd = cmd and string_trim(string_lower(cmd))
 	for i = 1, NUM_CHAT_WINDOWS do
-		local f = _G["ChatFrame"..i]
+		local f = _G["ChatFrame" .. i]
 		if f:IsVisible() or cmd == "all" then
 			f:Clear()
 		end

@@ -10,6 +10,7 @@
    <Script file="Elements\AutoQuest.lua" />
    <Script file="Elements\BadBuffs.lua" />
    <Script file="Elements\Changelog.lua" />
+   <Script file="Elements\Emojis.lua" />
    <Script file="Elements\ExtraQuestButton.lua" />
    <Script file="Elements\MapReveal.lua" />
    <Script file="Elements\NameplateAuras.lua" />

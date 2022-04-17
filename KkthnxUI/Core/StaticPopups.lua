@@ -96,7 +96,7 @@ StaticPopupDialogs["KKUI_POPUP_LINK"] = {
 		self:GetParent():Hide()
 	end,
 	EditBoxOnTextChanged = function(self)
-		if(self:GetText() ~= self.temptxt) then
+		if self:GetText() ~= self.temptxt then
 			self:SetText(self.temptxt)
 		end
 		self:HighlightText()
@@ -118,7 +118,7 @@ StaticPopupDialogs["KKUI_CHANGES_RELOAD"] = {
 	end,
 	hideOnEscape = false,
 	whileDead = 1,
-	preferredIndex = 3
+	preferredIndex = 3,
 }
 
 StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {

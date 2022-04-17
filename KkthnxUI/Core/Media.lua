@@ -44,7 +44,7 @@ ExpresswayFontOutline:SetShadowOffset(0, -0)
 local FuturaFont = CreateFont("FuturaFont")
 FuturaFont:SetFont([[Interface\AddOns\KkthnxUI\Media\Fonts\Futura_Medium_BT.ttf]], fontSize, "")
 FuturaFont:SetShadowColor(0, 0, 0, 1)
-FuturaFont:SetShadowOffset(shadowOffset, -shadowOffset/2)
+FuturaFont:SetShadowOffset(shadowOffset, -shadowOffset / 2)
 
 local FuturaFontOutline = CreateFont("FuturaFontOutline")
 FuturaFontOutline:SetFont([[Interface\AddOns\KkthnxUI\Media\Fonts\Futura_Medium_BT.ttf]], fontSize, "OUTLINE")
@@ -54,7 +54,7 @@ FuturaFontOutline:SetShadowOffset(0, -0)
 local BlizzardFont = CreateFont("BlizzardFont")
 BlizzardFont:SetFont(_G.STANDARD_TEXT_FONT, fontSize, "")
 BlizzardFont:SetShadowColor(0, 0, 0, 1)
-BlizzardFont:SetShadowOffset(shadowOffset, -shadowOffset/2)
+BlizzardFont:SetShadowOffset(shadowOffset, -shadowOffset / 2)
 
 local BlizzardFontOutline = CreateFont("BlizzardFontOutline")
 BlizzardFontOutline:SetFont(_G.STANDARD_TEXT_FONT, fontSize, "OUTLINE")
@@ -106,13 +106,13 @@ function K.GetTexture(texture)
 end
 
 function KkthnxUIMedia:RegisterTexture(name, path)
-	if (not TextureTable[name]) then
+	if not TextureTable[name] then
 		TextureTable[name] = path
 	end
 end
 
 function KkthnxUIMedia:RegisterFont(name, path)
-	if (not FontTable[name]) then
+	if not FontTable[name] then
 		FontTable[name] = path
 	end
 end

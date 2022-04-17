@@ -96,29 +96,39 @@ K.Sex = UnitSex("player")
 K.Media = "Interface\\AddOns\\KkthnxUI\\Media\\"
 K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
 K.Resolution = string_format("%dx%d", K.ScreenWidth, K.ScreenHeight)
-K.TexCoords = {0.08, 0.92, 0.08, 0.92}
+K.TexCoords = { 0.08, 0.92, 0.08, 0.92 }
 K.ScanTooltip = CreateFrame("GameTooltip", "KKUI_ScanTooltip", nil, "GameTooltipTemplate")
 K.EasyMenu = CreateFrame("Frame", "KKUI_EasyMenu", UIParent, "UIDropDownMenuTemplate")
 K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
 K.GreyColor = "|CFF7b8489"
 K.InfoColor = "|CFF669DFF"
-K.InfoColorRGB = {0.4, 0.6, 1}
+K.InfoColorRGB = { 0.4, 0.6, 1 }
 K.InfoColorTint = "|CFF3ba1c5" -- 30% Tint
 K.SystemColor = "|CFFFFCC66"
 K.LeftButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:230:307|t "
 K.RightButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:333:410|t "
 K.ScrollButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t "
-K.AFKTex = "|T"..FRIENDS_TEXTURE_AFK..":14:14:0:0:16:16:1:15:1:15|t"
-K.DNDTex = "|T"..FRIENDS_TEXTURE_DND..":14:14:0:0:16:16:1:15:1:15|t"
+K.AFKTex = "|T" .. FRIENDS_TEXTURE_AFK .. ":14:14:0:0:16:16:1:15:1:15|t"
+K.DNDTex = "|T" .. FRIENDS_TEXTURE_DND .. ":14:14:0:0:16:16:1:15:1:15|t"
 K.KkthnxUIString = "[KkthnxUI]: "
 K.IsNewPatch = select(4, GetBuildInfo()) >= 90105 -- 9.1.0
 
 function K.IsMyPet(flags)
 	return bit_band(flags, COMBATLOG_OBJECT_AFFILIATION_MINE) > 0
 end
-K.PartyPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_PARTY, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
-K.RaidPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_RAID, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
+K.PartyPetFlags = bit_bor(
+	COMBATLOG_OBJECT_AFFILIATION_PARTY,
+	COMBATLOG_OBJECT_REACTION_FRIENDLY,
+	COMBATLOG_OBJECT_CONTROL_PLAYER,
+	COMBATLOG_OBJECT_TYPE_PET
+)
+K.RaidPetFlags = bit_bor(
+	COMBATLOG_OBJECT_AFFILIATION_RAID,
+	COMBATLOG_OBJECT_REACTION_FRIENDLY,
+	COMBATLOG_OBJECT_CONTROL_PLAYER,
+	COMBATLOG_OBJECT_TYPE_PET
+)
 
 K.CodeDebug = false
 
@@ -143,11 +153,11 @@ K.MyClassColor = string_format("|cff%02x%02x%02x", K.r * 255, K.g * 255, K.b * 2
 K.QualityColors = {}
 local qualityColors = BAG_ITEM_QUALITY_COLORS
 for index, value in pairs(qualityColors) do
-	K.QualityColors[index] = {r = value.r, g = value.g, b = value.b}
+	K.QualityColors[index] = { r = value.r, g = value.g, b = value.b }
 end
-K.QualityColors[-1] = {r = 1, g = 1, b = 1}
-K.QualityColors[LE_ITEM_QUALITY_POOR] = {r = .61, g = .61, b = .61}
-K.QualityColors[LE_ITEM_QUALITY_COMMON] = {r = 1, g = 1, b = 1}
+K.QualityColors[-1] = { r = 1, g = 1, b = 1 }
+K.QualityColors[LE_ITEM_QUALITY_POOR] = { r = 0.61, g = 0.61, b = 0.61 }
+K.QualityColors[LE_ITEM_QUALITY_COMMON] = { r = 1, g = 1, b = 1 }
 
 local events = {}
 local host = CreateFrame("Frame")
@@ -184,7 +194,7 @@ function K:UnregisterEvent(event, func)
 	if event == "CLEU" then
 		event = "COMBAT_LOG_EVENT_UNFILTERED"
 	end
-	
+
 	local funcs = events[event]
 	if funcs and funcs[func] then
 		funcs[func] = nil
@@ -198,7 +208,7 @@ end
 -- Modules
 function K:NewModule(name)
 	if modules[name] then
-		K.Print("Module ["..name.."] has already been registered.")
+		K.Print("Module [" .. name .. "] has already been registered.")
 		return
 	end
 
@@ -213,7 +223,7 @@ end
 
 function K:GetModule(name)
 	if not modules[name] then
-		K.Print("Module <"..name.."> does not exist.")
+		K.Print("Module <" .. name .. "> does not exist.")
 		return
 	end
 
@@ -270,7 +280,7 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 		if module.OnEnable then
 			module:OnEnable()
 		else
-			K.Print("Module ["..module.name.."] failed to load!")
+			K.Print("Module [" .. module.name .. "] failed to load!")
 		end
 	end
 
@@ -302,7 +312,7 @@ do
 	local info = {}
 
 	function K:LogDebugInfo(name, time, mem)
-		info[name] = info[name] or {timeLog = {}, memLog = {}, calls = 0}
+		info[name] = info[name] or { timeLog = {}, memLog = {}, calls = 0 }
 
 		if #info[name].timeLog > 1000 then
 			table.remove(info[name].timeLog, 1)

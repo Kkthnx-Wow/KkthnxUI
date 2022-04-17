@@ -73,7 +73,12 @@ function Module:OnEnable()
 
 	-- TESTING CMD : /run BNToastFrame:AddToast(BN_TOAST_TYPE_ONLINE, 1)
 	if not BNToastFrame.mover then
-		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", {"BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 218})
+		BNToastFrame.mover = K.Mover(
+			BNToastFrame,
+			"BNToastFrame",
+			"BNToastFrame",
+			{ "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 218 }
+		)
 	else
 		BNToastFrame.mover:SetSize(BNToastFrame:GetSize())
 	end
@@ -141,7 +146,7 @@ do
 
 		-- No modifier key toggles the options panel
 		if InCombatLockdown() then
-			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 			return
 		end
 
@@ -150,7 +155,10 @@ do
 	end
 
 	-- Create minimap button using LibDBIcon
-	local KKUI_MinimapButton = K.DataBroker:NewDataObject("KkthnxUI", {type = "data source", text = "KkthnxUI", icon = "Interface\\ICONS\\Ability_Monk_CounteractMagic",
+	local KKUI_MinimapButton = K.DataBroker:NewDataObject("KkthnxUI", {
+		type = "data source",
+		text = "KkthnxUI",
+		icon = "Interface\\ICONS\\Ability_Monk_CounteractMagic",
 		OnClick = function()
 			KKUI_MinimapButton_OnClick()
 		end,
@@ -176,17 +184,22 @@ end
 
 local maxMawValue = 1000
 local MawRankColor = {
-	[0] = {0.5, 0.7, 1},
-	[1] = {0, 0.7, 0.3},
-	[2] = {0, 1, 0},
-	[3] = {1, 0.8, 0},
-	[4] = {1, 0.5, 0},
-	[5] = {1, 0, 0}
+	[0] = { 0.5, 0.7, 1 },
+	[1] = { 0, 0.7, 0.3 },
+	[2] = { 0, 1, 0 },
+	[3] = { 1, 0.8, 0 },
+	[4] = { 1, 0.5, 0 },
+	[5] = { 1, 0, 0 },
 }
 
 function Module:CreateGUIGameMenuButton()
-	local KKUI_GUIButton = CreateFrame("Button", "KKUI_GameMenuButton", GameMenuFrame, "GameMenuButtonTemplate, BackdropTemplate")
-	KKUI_GUIButton:SetText(K.InfoColor.."KkthnxUI|r")
+	local KKUI_GUIButton = CreateFrame(
+		"Button",
+		"KKUI_GameMenuButton",
+		GameMenuFrame,
+		"GameMenuButtonTemplate, BackdropTemplate"
+	)
+	KKUI_GUIButton:SetText(K.InfoColor .. "KkthnxUI|r")
 	KKUI_GUIButton:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
 	KKUI_GUIButton:SkinButton()
 
@@ -220,7 +233,7 @@ function Module:CreateGUIGameMenuButton()
 
 	KKUI_GUIButton:SetScript("OnClick", function()
 		if InCombatLockdown() then
-			UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 			return
 		end
 
@@ -239,7 +252,11 @@ function Module:CreateQuestXPPercent()
 			if xp and xp > 0 then
 				local text = _G.MapQuestInfoRewardsFrame.XPFrame.Name:GetText()
 				if text then
-					_G.MapQuestInfoRewardsFrame.XPFrame.Name:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100)
+					_G.MapQuestInfoRewardsFrame.XPFrame.Name:SetFormattedText(
+						"%s (|cff4beb2c+%.2f%%|r)",
+						text,
+						(((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100
+					)
 				end
 			end
 		end
@@ -248,7 +265,11 @@ function Module:CreateQuestXPPercent()
 		if xp and xp > 0 then
 			local text = _G.QuestInfoXPFrame.ValueText:GetText()
 			if text then
-				_G.QuestInfoXPFrame.ValueText:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100)
+				_G.QuestInfoXPFrame.ValueText:SetFormattedText(
+					"%s (|cff4beb2c+%.2f%%|r)",
+					text,
+					(((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100
+				)
 			end
 		end
 	end
@@ -258,7 +279,7 @@ end
 function Module:CreateVehicleSeatMover()
 	local frame = CreateFrame("Frame", "KKUI_VehicleSeatMover", UIParent)
 	frame:SetSize(125, 125)
-	K.Mover(frame, "VehicleSeat", "VehicleSeat", {"BOTTOM", UIParent, -364, 4})
+	K.Mover(frame, "VehicleSeat", "VehicleSeat", { "BOTTOM", UIParent, -364, 4 })
 
 	hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(self, _, parent)
 		if parent == "MinimapCluster" or parent == MinimapCluster then
@@ -341,7 +362,7 @@ function Module:CreateErrorsFrame()
 	UIErrorsFrame:ClearAllPoints()
 	UIErrorsFrame:SetPoint("TOP", 0, -200)
 
-	K.Mover(UIErrorsFrame, "UIErrorsFrame", "UIErrorsFrame", {"TOP", 0, -200})
+	K.Mover(UIErrorsFrame, "UIErrorsFrame", "UIErrorsFrame", { "TOP", 0, -200 })
 end
 
 -- TradeFrame hook
@@ -359,11 +380,11 @@ function Module:CreateTradeTargetInfo()
 			return
 		end
 
-		local text = "|cffff0000"..L["Stranger"]
+		local text = "|cffff0000" .. L["Stranger"]
 		if C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) then
-			text = "|cffffff00"..FRIEND
+			text = "|cffffff00" .. FRIEND
 		elseif IsGuildMember(guid) then
-			text = "|cff00ff00"..GUILD
+			text = "|cff00ff00" .. GUILD
 		end
 		infoText:SetText(text)
 	end
@@ -385,10 +406,10 @@ function Module:UpdateMawBarLayout()
 	if rank then
 		bar:SetStatusBarColor(unpack(MawRankColor[rank]))
 		if rank == 5 then
-			bar.text:SetText("Lv"..rank)
+			bar.text:SetText("Lv" .. rank)
 			bar:SetValue(maxMawValue)
 		else
-			bar.text:SetText("Lv"..rank.." - "..value.."/"..maxMawValue)
+			bar.text:SetText("Lv" .. rank .. " - " .. value .. "/" .. maxMawValue)
 			bar:SetValue(value)
 		end
 		bar:Show()
@@ -425,7 +446,7 @@ function Module:CreateMawWidgetFrame()
 
 	Module.mawbar = bar
 
-	K.Mover(bar, "MawThreatBar", "MawThreatBar", {"TOP", UIParent, 0, -50})
+	K.Mover(bar, "MawThreatBar", "MawThreatBar", { "TOP", UIParent, 0, -50 })
 
 	bar:SetScript("OnEnter", function(self)
 		local rank = GetMawBarValue()
@@ -455,7 +476,7 @@ do
 	local function CalculateArches(self)
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
 		GameTooltip:ClearLines()
-		GameTooltip:AddLine("|c0000FF00".."Arch Count"..":")
+		GameTooltip:AddLine("|c0000FF00" .. "Arch Count" .. ":")
 		GameTooltip:AddLine(" ")
 
 		local total = 0
@@ -468,13 +489,13 @@ do
 			end
 			local name = GetArchaeologyRaceInfo(i)
 			if numArtifacts > 1 then
-				GameTooltip:AddDoubleLine(name..":", K.InfoColor..count)
+				GameTooltip:AddDoubleLine(name .. ":", K.InfoColor .. count)
 				total = total + count
 			end
 		end
 
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine("|c0000ff00"..TOTAL..":", "|cffff0000"..total)
+		GameTooltip:AddDoubleLine("|c0000ff00" .. TOTAL .. ":", "|cffff0000" .. total)
 		GameTooltip:Show()
 	end
 
@@ -506,7 +527,7 @@ do
 	end
 	K:RegisterEvent("ADDON_LOADED", MakeMoverArchaeology)
 
-	local newTitleString = ARCHAEOLOGY_DIGSITE_PROGRESS_BAR_TITLE.." - %s/%s"
+	local newTitleString = ARCHAEOLOGY_DIGSITE_PROGRESS_BAR_TITLE .. " - %s/%s"
 	local function updateArcTitle(_, ...)
 		local numFindsCompleted, totalFinds = ...
 		if ArcheologyDigsiteProgressBar then
@@ -551,7 +572,19 @@ do
 			if maxStack and maxStack > 1 then
 				if not cache[itemLink] then
 					local r, g, b = GetItemQualityColor(quality or 1)
-					StaticPopup_Show("BUY_STACK", " ", " ", {["texture"] = texture, ["name"] = name, ["color"] = {r, g, b, 1}, ["link"] = itemLink, ["index"] = id, ["count"] = maxStack})
+					StaticPopup_Show(
+						"BUY_STACK",
+						" ",
+						" ",
+						{
+							["texture"] = texture,
+							["name"] = name,
+							["color"] = { r, g, b, 1 },
+							["link"] = itemLink,
+							["index"] = id,
+							["count"] = maxStack,
+						}
+					)
 				else
 					BuyMerchantItem(id, GetMerchantItemMaxStack(id))
 				end
@@ -591,7 +624,7 @@ end
 do
 	local function fixRaidGroupButton()
 		for i = 1, 40 do
-			local bu = _G["RaidGroupButton"..i]
+			local bu = _G["RaidGroupButton" .. i]
 			if bu and bu.unit and not bu.clickFixed then
 				bu:SetAttribute("type", "target")
 				bu:SetAttribute("unit", bu.unit)
@@ -645,7 +678,9 @@ do
 
 		local _CommunitiesGuildNewsButton_OnEnter = CommunitiesGuildNewsButton_OnEnter
 		function CommunitiesGuildNewsButton_OnEnter(self)
-			if not (self.newsInfo and self.newsInfo.whatText) then return end
+			if not (self.newsInfo and self.newsInfo.whatText) then
+				return
+			end
 			_CommunitiesGuildNewsButton_OnEnter(self)
 		end
 
@@ -712,7 +747,10 @@ end
 
 function Module:CreateBlockStrangerInvites()
 	K:RegisterEvent("PARTY_INVITE_REQUEST", function(a, b, c, d, e, f, g, guid)
-		if C["Automation"].AutoBlockStrangerInvites and not (C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or IsGuildMember(guid)) then
+		if
+			C["Automation"].AutoBlockStrangerInvites
+			and not (C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or IsGuildMember(guid))
+		then
 			_G.DeclineGroup()
 			_G.StaticPopup_Hide("PARTY_INVITE")
 			K.Print("Blocked invite request from a stranger!", a, b, c, d, e, f, g, guid)
@@ -779,7 +817,7 @@ end
 function Module:MoveMawBuffsFrame()
 	local frame = CreateFrame("Frame", "KKUI_MawBuffsMover", UIParent)
 	frame:SetSize(235, 28)
-	local mover = K.Mover(frame, MAW_POWER_DESCRIPTION, "MawBuffs", {"TOPRIGHT", UIParent, -80, -225})
+	local mover = K.Mover(frame, MAW_POWER_DESCRIPTION, "MawBuffs", { "TOPRIGHT", UIParent, -80, -225 })
 	frame:SetPoint("TOPLEFT", mover, 4, 12)
 
 	hooksecurefunc(MawBuffsBelowMinimapFrame, "SetPoint", function(self, _, parent)
@@ -825,7 +863,9 @@ function Module:CreateDomiExtractor()
 				local rank = itemID and Module_Tooltip.DomiRankData[itemID]
 				if rank then
 					local index = Module_Tooltip.DomiIndexData[itemID]
-					if not index then break end
+					if not index then
+						break
+					end
 
 					local button = Module.DomiShardsFrame.icons[index]
 					button.bagID = bagID
@@ -903,12 +943,17 @@ function Module:CreateDomiExtractor()
 			return
 		end
 
-		local button = CreateFrame("Button", "KKUI_ExtractorButton", ItemSocketingFrame, "UIPanelButtonTemplate, SecureActionButtonTemplate")
+		local button = CreateFrame(
+			"Button",
+			"KKUI_ExtractorButton",
+			ItemSocketingFrame,
+			"UIPanelButtonTemplate, SecureActionButtonTemplate"
+		)
 		button:SetSize(80, 22)
 		button:SetText(REMOVE)
 		button:SetPoint("RIGHT", ItemSocketingSocketButton, "LEFT", -2, 0)
 		button:SetAttribute("type", "macro")
-		button:SetAttribute("macrotext", "/use item:"..EXTRACTOR_ID.."\n/click ItemSocketingSocket1")
+		button:SetAttribute("macrotext", "/use item:" .. EXTRACTOR_ID .. "\n/click ItemSocketingSocket1")
 
 		CreateDomiShards()
 
@@ -933,7 +978,8 @@ function Module:CreateJerryWay()
 		return
 	end
 
-	local pointString = K.InfoColor.."|Hworldmap:%d+:%d+:%d+|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%s, %s)]|h|r"
+	local pointString = K.InfoColor
+		.. "|Hworldmap:%d+:%d+:%d+|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%s, %s)]|h|r"
 
 	local function GetCorrectCoord(x)
 		x = tonumber(x)
@@ -949,7 +995,7 @@ function Module:CreateJerryWay()
 
 	SlashCmdList["KKUI_JERRY_WAY"] = function(msg)
 		if not msg or msg == nil or msg == "" or msg == " " then
-			K.Print(K.SystemColor.."WARNING:|r Use a proper format for coords. Example: '/way 51.7, 65.2'")
+			K.Print(K.SystemColor .. "WARNING:|r Use a proper format for coords. Example: '/way 51.7, 65.2'")
 			return
 		end
 
@@ -964,7 +1010,7 @@ function Module:CreateJerryWay()
 					x = GetCorrectCoord(x)
 					y = GetCorrectCoord(y)
 					if x and y then
-						K.Print(format(pointString, mapID, x*100, y*100, mapName, x, y, z or ""))
+						K.Print(format(pointString, mapID, x * 100, y * 100, mapName, x, y, z or ""))
 					end
 				end
 			end

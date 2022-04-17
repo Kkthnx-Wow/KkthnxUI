@@ -14,46 +14,46 @@ C.Bars = {
 
 	Bar1 = {
 		size = 34,
-		fader = nil
+		fader = nil,
 	},
 
 	Bar2 = {
 		size = 34,
-		fader = nil
+		fader = nil,
 	},
 
 	Bar3 = {
 		size = 34,
-		fader = nil
+		fader = nil,
 	},
 
 	Bar4 = {
 		size = 32,
-		fader = BAR_FADER
+		fader = BAR_FADER,
 	},
 
 	Bar5 = {
 		size = 32,
-		fader = BAR_FADER
+		fader = BAR_FADER,
 	},
 
 	BarExtra = {
 		size = 52,
-		fader = nil
+		fader = nil,
 	},
 
 	BarVehicle = {
 		size = 40,
-		fader = nil
+		fader = nil,
 	},
 
 	BarPet = {
 		size = 30,
-		fader = nil
+		fader = nil,
 	},
 
 	BarStance = {
 		size = 30,
-		fader = nil
+		fader = nil,
 	},
 }

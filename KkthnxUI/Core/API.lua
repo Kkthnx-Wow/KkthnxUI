@@ -32,6 +32,7 @@ do
 end
 
 -- This is a lot...
+-- stylua: ignore
 local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha, bgBackground)
 	if bFrame.KKUI_Border then
 		return
@@ -53,11 +54,17 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 		BorderSize = bSize or 10
 	end
 
-	local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\"..BorderValue.."\\Border.tga")
+	local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga")
 	local BorderOffset = bOffset or -4
-	local BorderRed = bRed or C["General"].ColorTextures and C["General"].TexturesColor[1] or C["Media"].Borders.ColorBorder[1]
-	local BorderGreen = bGreen or C["General"].ColorTextures and C["General"].TexturesColor[2] or C["Media"].Borders.ColorBorder[2]
-	local BorderBlue = bBlue or C["General"].ColorTextures and C["General"].TexturesColor[3] or C["Media"].Borders.ColorBorder[3]
+	local BorderRed = bRed
+		or C["General"].ColorTextures and C["General"].TexturesColor[1]
+		or C["Media"].Borders.ColorBorder[1]
+	local BorderGreen = bGreen
+		or C["General"].ColorTextures and C["General"].TexturesColor[2]
+		or C["Media"].Borders.ColorBorder[2]
+	local BorderBlue = bBlue
+		or C["General"].ColorTextures and C["General"].TexturesColor[3]
+		or C["Media"].Borders.ColorBorder[3]
 	local BorderAlpha = bAlpha or 1
 
 	-- Background
@@ -88,8 +95,8 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 			local kkui_background = bFrame:CreateTexture()
 			kkui_background:SetDrawLayer(BackgroundSubLevel, BackgroundLayer)
 			kkui_background:SetTexture(BackgroundTexture)
-			kkui_background:SetPoint("TOPLEFT", bFrame ,"TOPLEFT", BackgroundPoint, -BackgroundPoint)
-			kkui_background:SetPoint("BOTTOMRIGHT", bFrame ,"BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint)
+			kkui_background:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BackgroundPoint, -BackgroundPoint)
+			kkui_background:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint)
 			kkui_background:SetVertexColor(BackgroundRed, BackgroundGreen, BackgroundBlue, BackgroundAlpha)
 			bFrame.KKUI_Background = true
 			bFrame.KKUI_Background = kkui_background
@@ -137,17 +144,22 @@ local function CreateShadow(f, bd)
 			bgFile = C["Media"].Textures.BlankTexture,
 			edgeFile = C["Media"].Textures.GlowTexture,
 			edgeSize = 3,
-			insets = {left = 3, right = 3, top = 3, bottom = 3}
+			insets = { left = 3, right = 3, top = 3, bottom = 3 },
 		})
 	else
 		f.Shadow:SetBackdrop({
 			edgeFile = C["Media"].Textures.GlowTexture,
-			edgeSize = 3
+			edgeSize = 3,
 		})
 	end
 	f.Shadow:SetFrameLevel(lvl == 0 and 0 or lvl - 1)
 	if bd then
-		f.Shadow:SetBackdropColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Media"].Backdrops.ColorBackdrop[4])
+		f.Shadow:SetBackdropColor(
+			C["Media"].Backdrops.ColorBackdrop[1],
+			C["Media"].Backdrops.ColorBackdrop[2],
+			C["Media"].Backdrops.ColorBackdrop[3],
+			C["Media"].Backdrops.ColorBackdrop[4]
+		)
 	end
 	f.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 
@@ -194,7 +206,7 @@ local blizzTextures = {
 local function StripTextures(object, kill)
 	local frameName = object.GetName and object:GetName()
 	for _, texture in pairs(blizzTextures) do
-		local blizzFrame = object[texture] or (frameName and _G[frameName..texture])
+		local blizzFrame = object[texture] or (frameName and _G[frameName .. texture])
 		if blizzFrame then
 			StripTextures(blizzFrame, kill)
 		end
@@ -237,7 +249,7 @@ local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
 		local pushed = button:CreateTexture()
 		pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
 		pushed:SetDesaturated(true)
-		pushed:SetVertexColor(246/255, 196/255, 66/255)
+		pushed:SetVertexColor(246 / 255, 196 / 255, 66 / 255)
 		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", pointsSet, -pointsSet)
 		pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -pointsSet, pointsSet)
 		pushed:SetBlendMode("ADD")
@@ -256,7 +268,7 @@ local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
 	end
 
 	local name = button.GetName and button:GetName()
-	local cooldown = name and _G[name.."Cooldown"]
+	local cooldown = name and _G[name .. "Cooldown"]
 	if cooldown then
 		cooldown:ClearAllPoints()
 		cooldown:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
@@ -271,7 +283,7 @@ local function SetModifiedBackdrop(self)
 		return
 	end
 
-	self.KKUI_Border:SetVertexColor(102/255, 157/255, 255/255)
+	self.KKUI_Border:SetVertexColor(102 / 255, 157 / 255, 255 / 255)
 end
 
 local function SetOriginalBackdrop(self)
@@ -337,7 +349,7 @@ local function SkinButton(f, forceStrip)
 
 	local buttonName = f.GetName and f:GetName()
 	for _, region in pairs(blizzButtonRegions) do
-		region = buttonName and _G[buttonName..region] or f[region]
+		region = buttonName and _G[buttonName .. region] or f[region]
 		if region then
 			region:SetAlpha(0)
 		end
@@ -425,7 +437,7 @@ function K.ReskinArrow(self, direction)
 
 	self:SetDisabledTexture("Interface\\ChatFrame\\ChatFrameBackground")
 	local dis = self:GetDisabledTexture()
-	dis:SetVertexColor(0, 0, 0, .3)
+	dis:SetVertexColor(0, 0, 0, 0.3)
 	dis:SetDrawLayer("OVERLAY")
 	dis:SetAllPoints()
 
@@ -437,14 +449,16 @@ end
 
 local function GrabScrollBarElement(frame, element)
 	local frameName = frame:GetDebugName()
-	return frame[element] or frameName and (_G[frameName..element] or string.find(frameName, element)) or nil
+	return frame[element] or frameName and (_G[frameName .. element] or string.find(frameName, element)) or nil
 end
 
 local function SkinScrollBar(self)
 	self:GetParent():StripTextures()
 	self:StripTextures()
 
-	local thumb = GrabScrollBarElement(self, "ThumbTexture") or GrabScrollBarElement(self, "thumbTexture") or self.GetThumbTexture and self:GetThumbTexture()
+	local thumb = GrabScrollBarElement(self, "ThumbTexture")
+		or GrabScrollBarElement(self, "thumbTexture")
+		or self.GetThumbTexture and self:GetThumbTexture()
 	if thumb then
 		thumb:SetAlpha(0)
 		thumb:SetWidth(16)
@@ -520,8 +534,8 @@ local function addapi(object)
 	end
 end
 
-local handled = {Frame = true}
-local object = CreateFrame('Frame')
+local handled = { Frame = true }
+local object = CreateFrame("Frame")
 addapi(object)
 addapi(object:CreateTexture())
 addapi(object:CreateFontString())
@@ -538,4 +552,4 @@ while object do
 end
 
 addapi(_G.GameFontNormal) -- Add API to `CreateFont` objects without actually creating one
-addapi(CreateFrame('ScrollFrame')) -- Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the 'Frame' widget
+addapi(CreateFrame("ScrollFrame")) -- Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the 'Frame' widget

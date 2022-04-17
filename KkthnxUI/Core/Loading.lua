@@ -4,14 +4,14 @@ local function KKUI_CreateDefaults()
 	K.Defaults = {}
 
 	for group, options in pairs(C) do
-		if (not K.Defaults[group]) then
+		if not K.Defaults[group] then
 			K.Defaults[group] = {}
 		end
 
 		for option, value in pairs(options) do
 			K.Defaults[group][option] = value
 
-			if (type(C[group][option]) == "table") then
+			if type(C[group][option]) == "table" then
 				if C[group][option].Options then
 					K.Defaults[group][option] = value.Value
 				else
@@ -32,13 +32,13 @@ local function KKUI_LoadCustomSettings()
 			local Count = 0
 
 			for option, value in pairs(options) do
-				if (C[group][option] ~= nil) then
-					if (C[group][option] == value) then
+				if C[group][option] ~= nil then
+					if C[group][option] == value then
 						Settings[group][option] = nil
 					else
 						Count = Count + 1
 
-						if (type(C[group][option]) == "table") then
+						if type(C[group][option]) == "table" then
 							if C[group][option].Options then
 								C[group][option].Value = value
 							else
@@ -52,7 +52,7 @@ local function KKUI_LoadCustomSettings()
 			end
 
 			-- Keeps settings clean and small
-			if (Count == 0) then
+			if Count == 0 then
 				Settings[group] = nil
 			end
 		else
@@ -77,8 +77,8 @@ local function KKUI_LoadProfiles()
 		local Server = Index
 
 		for Nickname, Settings in pairs(Table) do
-			local ProfileName = Server.."-"..Nickname
-			local MyProfileName = K.Realm.."-"..K.Name
+			local ProfileName = Server .. "-" .. Nickname
+			local MyProfileName = K.Realm .. "-" .. K.Name
 
 			if MyProfileName ~= ProfileName then
 				Menu[ProfileName] = ProfileName
@@ -170,7 +170,7 @@ local function KKUI_VerifyDatabase()
 	end
 
 	-- Settings
-	if (not KkthnxUIDB.Settings) then
+	if not KkthnxUIDB.Settings then
 		KkthnxUIDB.Settings = {}
 	end
 

@@ -1,37 +1,37 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-function Module:CreateSkipCinematic()
+local function skipOnKeyDown(self, key)
 	if not C["Automation"].AutoSkipCinematic then
 		return
 	end
 
-	-- Allow space bar, escape key and enter key to cancel cinematic without confirmation
-	if CinematicFrame.closeDialog and not CinematicFrame.closeDialog.confirmButton then
-		CinematicFrame.closeDialog.confirmButton = CinematicFrameCloseDialogConfirmButton
+	if key == "ESCAPE" then
+		if self:IsShown() and self.closeDialog and self.closeDialog.confirmButton then
+			self.closeDialog:Hide()
+		end
+	end
+end
+
+local function skipOnKeyUp(self, key)
+	if not C["Automation"].AutoSkipCinematic then
+		return
 	end
 
-	CinematicFrame:HookScript("OnKeyDown", function(self, key)
-		if key == "ESCAPE" then
-			if self:IsShown() and self.closeDialog and self.closeDialog.confirmButton then
-				self.closeDialog:Hide()
-			end
+	if key == "SPACE" or key == "ESCAPE" or key == "ENTER" then
+		if self:IsShown() and self.closeDialog and self.closeDialog.confirmButton then
+			self.closeDialog.confirmButton:Click()
 		end
-	end)
+	end
+end
 
-	CinematicFrame:HookScript("OnKeyUp", function(self, key)
-		if key == "SPACE" or key == "ESCAPE" or key == "ENTER" then
-			if self:IsShown() and self.closeDialog and self.closeDialog.confirmButton then
-				self.closeDialog.confirmButton:Click()
-			end
-		end
-	end)
+function Module:CreateSkipCinematic()
+	MovieFrame.closeDialog = MovieFrame.CloseDialog
+	MovieFrame.closeDialog.confirmButton = MovieFrame.CloseDialog.ConfirmButton
+	CinematicFrame.closeDialog.confirmButton = CinematicFrameCloseDialogConfirmButton
 
-	MovieFrame:HookScript("OnKeyUp", function(self, key)
-		if key == "SPACE" or key == "ESCAPE" or key == "ENTER" then
-			if self:IsShown() and self.CloseDialog and self.CloseDialog.ConfirmButton then
-				self.CloseDialog.ConfirmButton:Click()
-			end
-		end
-	end)
+	MovieFrame:HookScript("OnKeyDown", skipOnKeyDown)
+	MovieFrame:HookScript("OnKeyUp", skipOnKeyUp)
+	CinematicFrame:HookScript("OnKeyDown", skipOnKeyDown)
+	CinematicFrame:HookScript("OnKeyUp", skipOnKeyUp)
 end

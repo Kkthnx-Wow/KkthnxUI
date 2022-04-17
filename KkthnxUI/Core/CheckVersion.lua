@@ -6,7 +6,7 @@ local Module = K:NewModule("VersionCheck")
 
 local _G = _G
 local string_format = _G.string.format
-local string_gsub = _G.string.gsub
+-- local string_gsub = _G.string.gsub
 local string_split = _G.string.split
 
 local Ambiguate = _G.Ambiguate
@@ -25,7 +25,7 @@ local function HandleVersonTag(version)
 	if K.Base64:CV(major) then
 		major, minor = 0, 0
 		if K.isDeveloper and author then
-			print("Moron: "..author)
+			print("Moron: " .. author)
 		end
 	end
 	return major, minor
@@ -59,7 +59,9 @@ function Module:VersionCheck_Init()
 		local status = Module:VersionCheck_Compare(KkthnxUIDB.DetectVersion, K.Version)
 		if status == "IsNew" then
 			local release = gsub(KkthnxUIDB.DetectVersion, "(%d+)$", "0")
-			Module:VersionCheck_Create(string_format("|cff669dffKkthnxUI|r is out of date, the latest release is |cff70C0F5%s|r", release))
+			Module:VersionCheck_Create(
+				string_format("|cff669dffKkthnxUI|r is out of date, the latest release is |cff70C0F5%s|r", release)
+			)
 		elseif status == "IsOld" then
 			KkthnxUIDB.DetectVersion = K.Version
 		end

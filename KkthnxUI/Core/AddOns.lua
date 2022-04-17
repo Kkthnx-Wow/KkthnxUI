@@ -148,8 +148,7 @@ local function ForceMaxDPSOptions()
 
 	MaxDpsOptions = {
 		["global"] = {
-			["customRotations"] = {
-			},
+			["customRotations"] = {},
 			["customTexture"] = "Interface\\BUTTONS\\CheckButtonHilight-Blue",
 			["debugMode"] = false,
 			["disableButtonGlow"] = true,
@@ -194,7 +193,7 @@ local function ForceDBMOptions()
 				["HugeTimerY"] = -42,
 				["FontSize"] = 10,
 				["StartColorR"] = 1,
-				["StartColorG"] = .7,
+				["StartColorG"] = 0.7,
 				["StartColorB"] = 0,
 				["EndColorR"] = 1,
 				["EndColorG"] = 0,
@@ -235,7 +234,8 @@ local function ForceSkadaOptions()
 		["profiles"] = {
 			["Default"] = {
 				["windows"] = {
-					{	["barheight"] = 18,
+					{
+						["barheight"] = 18,
 						["classicons"] = false,
 						["barslocked"] = true,
 						["y"] = 28,

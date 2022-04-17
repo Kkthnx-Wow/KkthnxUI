@@ -20,8 +20,15 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
+		-- stylua: ignore
 		Version = "[10.3.0] - 2022-4-5",
-		General = "All notable changes to this project will be documented in this file. The format is based on "..K.SystemColor.."[Keep a Changelog]|r and this project adheres to "..K.SystemColor.."[Semantic Versioning]|r",
+		-- stylua: ignore
+		General = "All notable changes to this project will be documented in this file. The format is based on "
+			.. K.SystemColor
+			.. "[Keep a Changelog]|r and this project adheres to "
+			.. K.SystemColor
+			.. "[Semantic Versioning]|r",
+		-- stylua: ignore
 		Sections = {
 			{
 				Header = "Added",
@@ -68,9 +75,9 @@ local KKUI_Changelog = {
 					"Mount source collected info move to ID module",
 					"Unitframes code updated to be faster (small impact)",
 					"oUF lib updated",
-				}
-			}
-		}
+				},
+			},
+		},
 	},
 
 	{
@@ -116,9 +123,9 @@ local KKUI_Changelog = {
 					"oUF core files",
 					"New extra quest button filters",
 					"Bags now show timwarped keystones level",
-				}
-			}
-		}
+				},
+			},
+		},
 	},
 
 	{
@@ -154,7 +161,7 @@ local KKUI_Changelog = {
 					"Gold datatext throwing nil error for tooltip on bags",
 					"Left over code in actionbar code that was causing an error in hardmode",
 					"Nil error with raid index group numbers",
-					"Raid debuffs not working at all"
+					"Raid debuffs not working at all",
 				},
 			},
 
@@ -184,9 +191,9 @@ local KKUI_Changelog = {
 					"Skip cinematic code to be less intrusive (spacebar)",
 					"Sort minimap button code",
 					"Unitframe code for sizing health/power properly (player, target, tot, pet, focus, focustarget, party and raid)",
-				}
-			}
-		}
+				},
+			},
+		},
 	},
 }
 

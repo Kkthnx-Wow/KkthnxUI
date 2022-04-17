@@ -181,6 +181,7 @@ function Module:ForceChatSettings()
 	ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
 	ChatFrame_RemoveChannel(ChatFrame1, "GuildRecruitment")
 	ChatFrame_RemoveChannel(ChatFrame1, "LookingForGroup")
+	-- stylua: ignore
 	local chatGroup = {"SYSTEM", "CHANNEL", "SAY", "EMOTE", "YELL", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "MONSTER_SAY", "MONSTER_YELL", "MONSTER_EMOTE", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "ERRORS", "AFK", "DND", "IGNORED", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "BN_INLINE_TOAST_ALERT"}
 	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
 	for _, v in ipairs(chatGroup) do
@@ -188,7 +189,7 @@ function Module:ForceChatSettings()
 	end
 
 	-- ChatFrame 4
-	chatGroup = {"WHISPER", "BN_WHISPER", "BN_CONVERSATION"}
+	chatGroup = { "WHISPER", "BN_WHISPER", "BN_CONVERSATION" }
 	ChatFrame_RemoveAllMessageGroups(ChatFrame4)
 	for _, v in ipairs(chatGroup) do
 		ChatFrame_AddMessageGroup(_G.ChatFrame4, v)
@@ -200,16 +201,17 @@ function Module:ForceChatSettings()
 	ChatFrame_AddChannel(ChatFrame5, GENERAL)
 	ChatFrame_AddChannel(ChatFrame5, "LookingForGroup")
 
-	chatGroup = {"COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "SKILL", "LOOT", "CURRENCY", "MONEY"}
+	chatGroup = { "COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "SKILL", "LOOT", "CURRENCY", "MONEY" }
 	ChatFrame_RemoveAllMessageGroups(ChatFrame6)
 	for _, v in ipairs(chatGroup) do
 		ChatFrame_AddMessageGroup(_G.ChatFrame6, v)
 	end
 
 	-- set the chat groups names in class color to enabled for all chat groups which players names appear
+	-- stylua: ignore
 	chatGroup = {"SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL"}
 	for i = 1, _G.MAX_WOW_CHAT_CHANNELS do
-		table.insert(chatGroup, "CHANNEL"..i)
+		table.insert(chatGroup, "CHANNEL" .. i)
 	end
 
 	for _, v in ipairs(chatGroup) do
@@ -217,9 +219,9 @@ function Module:ForceChatSettings()
 	end
 
 	-- Adjust Chat Colors
-	ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255) -- General
-	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255) -- Trade
-	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- Local Defense
+	ChangeChatColor("CHANNEL1", 195 / 255, 230 / 255, 232 / 255) -- General
+	ChangeChatColor("CHANNEL2", 232 / 255, 158 / 255, 121 / 255) -- Trade
+	ChangeChatColor("CHANNEL3", 232 / 255, 228 / 255, 121 / 255) -- Local Defense
 end
 
 -- Tutorial
@@ -246,11 +248,11 @@ local function YesTutor()
 
 	local ll = CreateFrame("Frame", nil, tutor)
 	ll:SetPoint("TOP", -40, -32)
-	K.CreateGF(ll, 80, 1, "Horizontal", .7, .7, .7, 0, .7)
+	K.CreateGF(ll, 80, 1, "Horizontal", 0.7, 0.7, 0.7, 0, 0.7)
 	ll:SetFrameStrata("HIGH")
 	local lr = CreateFrame("Frame", nil, tutor)
 	lr:SetPoint("TOP", 40, -32)
-	K.CreateGF(lr, 80, 1, "Horizontal", .7, .7, .7, .7, 0)
+	K.CreateGF(lr, 80, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
 	lr:SetFrameStrata("HIGH")
 
 	local title = K.CreateFontString(tutor, 13, "", "", true, "TOP", 0, -10)
@@ -302,21 +304,21 @@ local function YesTutor()
 	apply.text:SetTextColor(0, 1, 0)
 
 	local titles = {
-		DEFAULT.." "..SETTINGS,
+		DEFAULT .. " " .. SETTINGS,
 		CHAT,
 		UI_SCALE,
 		"Skins",
-		"Tips"
+		"Tips",
 	}
 
 	local function RefreshText(page)
 		title:SetText(titles[page])
-		body:SetText(L["Tutorial Page"..page])
+		body:SetText(L["Tutorial Page" .. page])
 
 		if progressBar then
-			progressBar:SetValue(page.."00")
+			progressBar:SetValue(page .. "00")
 			progressBar:SetStatusBarColor(K.r, K.g, K.b)
-			progressBar.text:SetText(page.."/5")
+			progressBar.text:SetText(page .. "/5")
 		end
 	end
 	RefreshText(1)
@@ -339,18 +341,18 @@ local function YesTutor()
 		if currentPage == 1 then
 			Module:ForceDefaultCVars()
 			ForceRaidFrame()
-			UIErrorsFrame:AddMessage(K.InfoColor.."Default CVars Loaded.")
+			UIErrorsFrame:AddMessage(K.InfoColor .. "Default CVars Loaded.")
 			PlaySound(21968)
 		elseif currentPage == 2 then
 			StopSound(21968)
 			Module:ForceChatSettings()
-			UIErrorsFrame:AddMessage(K.InfoColor.."Chat Frame Settings Loaded")
+			UIErrorsFrame:AddMessage(K.InfoColor .. "Chat Frame Settings Loaded")
 			PlaySound(21968)
 		elseif currentPage == 3 then
 			StopSound(21968)
 			C["General"].AutoScale = true
 			K.SetupUIScale()
-			UIErrorsFrame:AddMessage(K.InfoColor.."UI Scale Loaded")
+			UIErrorsFrame:AddMessage(K.InfoColor .. "UI Scale Loaded")
 			PlaySound(21968)
 		elseif currentPage == 4 then
 			StopSound(21968)
@@ -361,7 +363,7 @@ local function YesTutor()
 			KkthnxUIDB.Variables["CursorTrailRequest"] = true
 			KkthnxUIDB.Variables["HekiliRequest"] = true
 			Module.ForceAddonSkins()
-			UIErrorsFrame:AddMessage(K.InfoColor.."Relevant AddOns Settings Loaded, You need to ReloadUI.")
+			UIErrorsFrame:AddMessage(K.InfoColor .. "Relevant AddOns Settings Loaded, You need to ReloadUI.")
 			pass:Hide()
 			PlaySound(21968)
 		elseif currentPage == 5 then
@@ -412,20 +414,23 @@ local function HelloWorld()
 
 	local ll = CreateFrame("Frame", nil, welcome)
 	ll:SetPoint("TOP", -50, -35)
-	K.CreateGF(ll, 100, 1, "Horizontal", .7, .7, .7, 0, .7)
+	K.CreateGF(ll, 100, 1, "Horizontal", 0.7, 0.7, 0.7, 0, 0.7)
 	ll:SetFrameStrata("HIGH")
 
 	local lr = CreateFrame("Frame", nil, welcome)
 	lr:SetPoint("TOP", 50, -35)
-	K.CreateGF(lr, 100, 1, "Horizontal", .7, .7, .7, .7, 0)
+	K.CreateGF(lr, 100, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
 	lr:SetFrameStrata("HIGH")
-	K.CreateFontString(welcome, 14, "Thank you for choosing |cff669dffKkthnxUI|r, v"..K.SystemColor..K.Version.."|r!", "", false, "TOP", 0, -50)
+	-- stylua: ignore start
+	K.CreateFontString(welcome, 14, "Thank you for choosing |cff669dffKkthnxUI|r, v" .. K.SystemColor .. K.Version .. "|r!", "", false, "TOP", 0, -50)
 	K.CreateFontString(welcome, 13, "|cff669dffKkthnxUI|r is a simplistic user interface that holds", "", false, "TOP", 0, -86)
 	K.CreateFontString(welcome, 13, "onto the information and functionality, while still keeping", "", false, "TOP", 0, -106)
 	K.CreateFontString(welcome, 13, "most of the good looks. It can be used for any class or role.", "", false, "TOP", 0, -126)
+	-- stylua: ignore end
 
 	K.CreateFontString(welcome, 16, "|cff669dffJoin The Community!|r", "", false, "TOP", 0, -160)
 	K.CreateFontString(welcome, 13, "There are thousands of users, but most are content", "", false, "TOP", 0, -180)
+	-- stylua: ignore
 	K.CreateFontString(welcome, 13, "to simply download and use the interface without further", "", false, "TOP", 0, -200)
 	K.CreateFontString(welcome, 13, "ado. If you wish to get more involved though,", "", false, "TOP", 0, -220)
 	K.CreateFontString(welcome, 13, "have some questions you can't find answers to", "", false, "TOP", 0, -240)
@@ -434,13 +439,14 @@ local function HelloWorld()
 
 	local ll = CreateFrame("Frame", nil, welcome)
 	ll:SetPoint("TOP", welcome, -90, -326)
-	K.CreateGF(ll, 180, 1, "Horizontal", .7, .7, .7, 0, .7)
+	K.CreateGF(ll, 180, 1, "Horizontal", 0.7, 0.7, 0.7, 0, 0.7)
 	ll:SetFrameStrata("HIGH")
 	local lr = CreateFrame("Frame", nil, welcome)
 	lr:SetPoint("TOP", welcome, 90, -326)
-	K.CreateGF(lr, 180, 1, "Horizontal", .7, .7, .7, .7, 0)
+	K.CreateGF(lr, 180, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
 	lr:SetFrameStrata("HIGH")
 
+	-- stylua: ignore
 	K.CreateFontString(welcome, 13, "If this is your first time using |cff669dffKkthnxUI|r,", "", false, "BOTTOM", 0, 130)
 	K.CreateFontString(welcome, 13, "please take a minute to go through the turtoral!", "", false, "BOTTOM", 0, 110)
 	K.CreateFontString(welcome, 13, "if you need help for commands type /khelp", "", false, "BOTTOM", 0, 90)
@@ -466,7 +472,7 @@ local function HelloWorld()
 	goTutor.text:SetText("Install")
 
 	goTutor.glowFrame = CreateFrame("Frame", nil, goTutor, "BackdropTemplate")
-	goTutor.glowFrame:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
+	goTutor.glowFrame:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
 	goTutor.glowFrame:SetPoint("TOPLEFT", goTutor, -5, 5)
 	goTutor.glowFrame:SetPoint("BOTTOMRIGHT", goTutor, 5, -5)
 	goTutor.glowFrame:SetBackdropBorderColor(K.r, K.g, K.b)

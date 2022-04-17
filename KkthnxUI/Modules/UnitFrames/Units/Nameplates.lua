@@ -142,6 +142,7 @@ function Module:SetupCVars()
 	Module:UpdatePlateAlpha()
 	Module:PlateSetCVar("nameplateSelectedAlpha", 1)
 	Module:PlateSetCVar("showQuestTrackingTooltips", 1)
+	Module:PlateSetCVar("predictedHealth", 1)
 
 	Module:UpdatePlateScale()
 	Module:PlateSetCVar("nameplateSelectedScale", 1)
@@ -367,8 +368,14 @@ function Module:UpdateTargetChange()
 	if C["Nameplate"].TargetIndicator.Value ~= 1 then
 		if UnitIsUnit(unit, "target") and not UnitIsUnit(unit, "player") then
 			element:Show()
+			if element.TopArrow:IsShown() and not element.TopArrowAnim:IsPlaying() then
+				element.TopArrowAnim:Play()
+			end
 		else
 			element:Hide()
+			if element.TopArrowAnim:IsPlaying() then
+				element.TopArrowAnim:Stop()
+			end
 		end
 	end
 
@@ -430,6 +437,7 @@ function Module:UpdateTargetIndicator()
 	end
 end
 
+local points = {-15, -5, 0, 5, 0}
 function Module:AddTargetIndicator(self)
 	TargetIndicator = CreateFrame("Frame", nil, self)
 	TargetIndicator:SetAllPoints()
@@ -440,6 +448,17 @@ function Module:AddTargetIndicator(self)
 	TargetIndicator.TopArrow:SetSize(128 / 2, 128 / 2)
 	TargetIndicator.TopArrow:SetTexture(C["Nameplate"].TargetIndicatorTexture.Value)
 	TargetIndicator.TopArrow:SetPoint("BOTTOM", TargetIndicator, "TOP", 0, 40)
+
+	local animGroup = TargetIndicator.TopArrow:CreateAnimationGroup()
+	animGroup:SetLooping("REPEAT")
+	local anim = animGroup:CreateAnimation("Path")
+	anim:SetDuration(1)
+	for i = 1, #points do
+		local point = anim:CreateControlPoint()
+		point:SetOrder(i)
+		point:SetOffset(0, points[i])
+	end
+	TargetIndicator.TopArrowAnim = animGroup
 
 	TargetIndicator.RightArrow = TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
 	TargetIndicator.RightArrow:SetSize(128 / 2, 128 / 2)
@@ -1199,7 +1218,7 @@ end
 
 function Module:RefreshPlateType(unit)
 	self.reaction = UnitReaction(unit, "player")
-	self.isFriendly = self.reaction and self.reaction >= 5
+	self.isFriendly = self.reaction and self.reaction >= 4 and not UnitCanAttack("player", unit)
 	if C["Nameplate"].NameOnly and self.isFriendly or self.widgetsOnly then
 		self.plateType = "NameOnly"
 	elseif C["Nameplate"].FriendPlate and self.isFriendly then

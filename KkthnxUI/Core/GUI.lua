@@ -30,25 +30,27 @@ local Texture = C["Media"].Statusbars.KkthnxUIStatusbar
 local ArrowUp = "Interface\\Buttons\\Arrow-Up-Down"
 local ArrowDown = "Interface\\Buttons\\Arrow-Down-Down"
 
-local DeathKnightIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:128:196|t".."|CFFC41F3B"
-local DemonHunterIconColor = "".."|CFFA330C9"
-local DruidIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:196:256:0:64|t".."|CFFFF7D0A"
-local HunterIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:64:128|t".."|CFFA9D271"
-local MageIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:0:64|t".."|CFF40C7EB"
-local MonkIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:128:196|t".."|CFF00FF96"
-local PaladinIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:128:196|t".."|CFFF58CBA"
-local PriestIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:64:128|t".."|CFFFFFFFF"
-local RogueIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:0:64|t".."|CFFFFF569"
-local ShamanIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:64:128|t".."|CFF0070DE"
-local WarlockIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:196:256:64:128|t".."|CFF8787ED"
-local WarriorIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:0:64|t".."|CFFC79C6E"
+-- stylua: ignore
+local DeathKnightIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:128:196|t".. "|CFFC41F3B"
+local DemonHunterIconColor = "" .. "|CFFA330C9"
+local DruidIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:196:256:0:64|t" .. "|CFFFF7D0A"
+local HunterIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:64:128|t" .. "|CFFA9D271"
+-- local MageIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:0:64|t" .. "|CFF40C7EB"
+-- local MonkIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:128:196|t" .. "|CFF00FF96"
+local PaladinIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:128:196|t" .. "|CFFF58CBA"
+local PriestIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:64:128|t" .. "|CFFFFFFFF"
+local RogueIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:0:64|t" .. "|CFFFFF569"
+local ShamanIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:64:128|t" .. "|CFF0070DE"
+-- stylua: ignore
+local WarlockIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:196:256:64:128|t".. "|CFF8787ED"
+local WarriorIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:0:64|t" .. "|CFFC79C6E"
 
-local BGColor = {0.2, 0.2, 0.2}
-local BrightColor = {0.35, 0.35, 0.35}
+local BGColor = { 0.2, 0.2, 0.2 }
+local BrightColor = { 0.35, 0.35, 0.35 }
 
 local R, G, B = K.r, K.g, K.b
 
-local HeaderText = K.Title..K.SystemColor.." GUI|r"
+local HeaderText = K.Title .. K.SystemColor .. " GUI|r"
 
 local WindowWidth = 620
 -- local WindowHeight = 360
@@ -71,11 +73,11 @@ local WidgetHighlightAlpha = 0.25
 
 local LastActiveWindow
 
-local MySelectedProfile = K.Realm.."-"..K.Name
+local MySelectedProfile = K.Realm .. "-" .. K.Name
 
 -- Do not add class color/icon string unless they ask for it or agree apon it :D
 local CreditLines = {
-	K.GreyColor.."~~~~|r |CFFfa6a56Patreons|r "..K.GreyColor.."~~~~",
+	K.GreyColor .. "~~~~|r |CFFfa6a56Patreons|r " .. K.GreyColor .. "~~~~",
 	-- Tier 1
 	"|CFFfa6a56Tier 1|r",
 	"Shale",
@@ -89,27 +91,28 @@ local CreditLines = {
 	"",
 	-- Tier 3
 	"|CFFfa6a56Tier 3|r",
-	PaladinIconColor.."Chirs|r",
-	HunterIconColor.."SnerkDevil",
+	PaladinIconColor .. "Chirs|r",
+	HunterIconColor .. "SnerkDevil",
 	"thondr",
 	"",
 	-- Tier 4
 	"|CFFfa6a56Tier 4|r",
-	ShamanIconColor.."Rokalm|r",
+	ShamanIconColor .. "Rokalm|r",
 	"",
-	K.GreyColor.."~~~~|r |CFFFFCC66Credits|r "..K.GreyColor.."~~~~",
+	K.GreyColor .. "~~~~|r |CFFFFCC66Credits|r " .. K.GreyColor .. "~~~~",
 	"Aftermathh",
-	RogueIconColor.."Alteredcross|r",
+	RogueIconColor .. "Alteredcross|r",
 	"Alza",
-	ShamanIconColor.."Azilroka",
+	ShamanIconColor .. "Azilroka",
 	"|cff00c0faBenik|r",
 	"Blazeflack",
 	"Caellian",
 	"Caith",
-	HunterIconColor.."Cassamarra|r",
+	HunterIconColor .. "Cassamarra|r",
 	"Darth Predator",
 	"Elv - (|cff1784d1ElvUI|r)",
-	DruidIconColor.."Goldpaw|r - (|c00000002|r|cff7284abA|r|cff6a7a9ez|r|cff617092e|r|cff596785r|r|cff505d78i|r|cff48536bt|r|cff3f495fe|r|cffffffffUI|r)",
+	DruidIconColor
+		.. "Goldpaw|r - (|c00000002|r|cff7284abA|r|cff6a7a9ez|r|cff617092e|r|cff596785r|r|cff505d78i|r|cff48536bt|r|cff3f495fe|r|cffffffffUI|r)",
 	"Haleth",
 	"Haste",
 	"Hungtar",
@@ -118,16 +121,16 @@ local CreditLines = {
 	"KkthnxUI Community",
 	"LightSpark",
 	"Magicnachos",
-	DruidIconColor.."Merathilis",
+	DruidIconColor .. "Merathilis",
 	"Nightcracker",
 	"P3lim",
-	PriestIconColor.."Palooza|r",
-	DemonHunterIconColor.."Rav99",
+	PriestIconColor .. "Palooza|r",
+	DemonHunterIconColor .. "Rav99",
 	"Roth",
 	"Shestak - (ShestakUI)",
 	"Simpy",
 	"siweia - (|cff0080ffNDui|r)",
-	DeathKnightIconColor.."Sophia|r",
+	DeathKnightIconColor .. "Sophia|r",
 	"Sticklord",
 	"Tekkub",
 	"Tohveli",
@@ -159,7 +162,7 @@ StaticPopupDialogs["KKUI_SWITCH_PROFILE"] = {
 }
 
 local SetValue = function(group, option, value)
-	if (type(C[group][option]) == "table") then
+	if type(C[group][option]) == "table" then
 		if C[group][option].Value then
 			C[group][option].Value = value
 		else
@@ -171,26 +174,25 @@ local SetValue = function(group, option, value)
 
 	local Settings
 
-	if (not KkthnxUIDB.Settings) then
+	if not KkthnxUIDB.Settings then
 		KkthnxUIDB.Settings = {}
 	end
 
-	if (not KkthnxUIDB.Settings[K.Realm]) then
+	if not KkthnxUIDB.Settings[K.Realm] then
 		KkthnxUIDB.Settings[K.Realm] = {}
 	end
 
-	if (not KkthnxUIDB.Settings[K.Realm][K.Name]) then
+	if not KkthnxUIDB.Settings[K.Realm][K.Name] then
 		KkthnxUIDB.Settings[K.Realm][K.Name] = {}
 	end
 
 	Settings = KkthnxUIDB.Settings[K.Realm][K.Name]
 
-	if (not Settings[group]) then
+	if not Settings[group] then
 		Settings[group] = {}
 	end
 
 	Settings[group][option] = value
-
 end
 
 local TrimHex = function(s)
@@ -200,13 +202,13 @@ local TrimHex = function(s)
 end
 
 local AnchorOnEnter = function(self)
-	if (self.Tooltip and match(self.Tooltip, "%S")) then
+	if self.Tooltip and match(self.Tooltip, "%S") then
 		GameTooltip:ClearLines()
 		GameTooltip:SetOwner(self, "ANCHOR_NONE")
 		GameTooltip:SetPoint("TOPLEFT", KKUI_GUI, "TOPRIGHT", -3, -5)
 		GameTooltip:AddLine(INFO)
-		GameTooltip:AddLine("|nMost options require a full UI reload|nYou can do this by clicking the |CFF00CC4CApply|r button|n|n", 163/255, 211/255, 255/255)
-
+		-- stylua: ignore
+		GameTooltip:AddLine("|nMost options require a full UI reload|nYou can do this by clicking the |CFF00CC4CApply|r button|n|n", 163 / 255, 211 / 255, 255 / 255)
 		GameTooltip:AddLine(self.Tooltip, nil, nil, nil, true)
 		GameTooltip:Show()
 	end
@@ -234,14 +236,14 @@ local OrderedNext = function(t, state)
 	local OrderedIndex = GetOrderedIndex(t)
 	local Key
 
-	if (state == nil) then
+	if state == nil then
 		Key = OrderedIndex[1]
 
 		return Key, t[Key]
 	end
 
 	for i = 1, #OrderedIndex do
-		if (OrderedIndex[i] == state) then
+		if OrderedIndex[i] == state then
 			Key = OrderedIndex[i + 1]
 		end
 	end
@@ -258,7 +260,7 @@ local PairsByKeys = function(t)
 end
 
 local Reverse = function(value)
-	if (value == true) then
+	if value == true then
 		return false
 	else
 		return true
@@ -281,7 +283,7 @@ local CreateSection = function(self, text)
 	Section.Label:SetWidth(WidgetListWidth - (Spacing * 4))
 	StyleFont(Section.Label, Font, 12)
 	Section.Label:SetJustifyH("CENTER")
-	Section.Label:SetText("|CFFFFCC66"..text.."|r")
+	Section.Label:SetText("|CFFFFCC66" .. text .. "|r")
 
 	tinsert(self.Widgets, Anchor)
 
@@ -329,7 +331,7 @@ local CreateButton = function(self, midtext, text, tooltip, func)
 	Button.Highlight = Button:CreateTexture(nil, "OVERLAY")
 	Button.Highlight:SetAllPoints()
 	Button.Highlight:SetTexture(Texture)
-	Button.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	Button.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Button.Highlight:SetAlpha(0)
 
 	Button.Middle = Button:CreateFontString(nil, "OVERLAY")
@@ -363,13 +365,13 @@ local SwitchOnMouseUp = function(self, button)
 
 	self.Thumb:ClearAllPoints()
 
-	if (button == "RightButton") then
+	if button == "RightButton" then
 		self.Value = Reverse(K.Defaults[self.Group][self.Option])
 	end
 
 	if self.Value then
 		self.Thumb:SetPoint("RIGHT", self, 0, 0)
-		self.Label:SetTextColor(123/255, 132/255, 137/255)
+		self.Label:SetTextColor(123 / 255, 132 / 255, 137 / 255)
 		self.Movement:SetOffset(-26, 0)
 		self.Value = false
 	else
@@ -420,12 +422,13 @@ local CreateSwitch = function(self, group, option, text, tooltip, hook)
 	Switch.Highlight = Switch:CreateTexture(nil, "OVERLAY")
 	Switch.Highlight:SetAllPoints()
 	Switch.Highlight:SetTexture(Texture)
-	Switch.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	Switch.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Switch.Highlight:SetAlpha(0)
 
 	Switch.Thumb = CreateFrame("Frame", nil, Switch)
 	Switch.Thumb:SetSize(WidgetHeight, WidgetHeight)
-	Switch.Thumb:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUIStatusbar, nil, nil, nil, 123/255, 132/255, 137/255)
+	-- stylua: ignore
+	Switch.Thumb:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUIStatusbar, nil, nil, nil, 123 / 255, 132 / 255, 137 / 255)
 
 	Switch.Movement = CreateAnimationGroup(Switch.Thumb):CreateAnimation("Move")
 	Switch.Movement:SetDuration(0.1)
@@ -449,7 +452,7 @@ local CreateSwitch = function(self, group, option, text, tooltip, hook)
 		Switch.Label:SetTextColor(1, 1, 1)
 	else
 		Switch.Thumb:SetPoint("LEFT", Switch, 0, 0)
-		Switch.Label:SetTextColor(123/255, 132/255, 137/255)
+		Switch.Label:SetTextColor(123 / 255, 132 / 255, 137 / 255)
 	end
 
 	tinsert(self.Widgets, Anchor)
@@ -505,7 +508,7 @@ local CreateEditBox = function(self, group, option, text, tooltip, hook)
 	EditBox.Highlight = EditBox:CreateTexture(nil, "OVERLAY")
 	EditBox.Highlight:SetAllPoints()
 	EditBox.Highlight:SetTexture(Texture)
-	EditBox.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	EditBox.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	EditBox.Highlight:SetAlpha(0)
 
 	EditBox.Label = EditBox:CreateFontString(nil, "OVERLAY")
@@ -575,10 +578,10 @@ local SliderOnValueChanged = function(self)
 	local Value = self:GetValue()
 	local Step = self.EditBox.StepValue
 
-	if (Step >= 1) then
+	if Step >= 1 then
 		Value = floor(Value)
 	else
-		if (Step <= 0.01) then
+		if Step <= 0.01 then
 			Value = Round(Value, 2)
 		else
 			Value = Round(Value, 1)
@@ -599,25 +602,25 @@ local SliderOnMouseWheel = function(self, delta)
 	local Value = self.EditBox.Value
 	local Step = self.EditBox.StepValue
 
-	if (delta < 0) then
+	if delta < 0 then
 		Value = Value - Step
 	else
 		Value = Value + Step
 	end
 
-	if (Step >= 1) then
+	if Step >= 1 then
 		Value = floor(Value)
 	else
-		if (Step <= 0.01) then
+		if Step <= 0.01 then
 			Value = Round(Value, 2)
 		else
 			Value = Round(Value, 1)
 		end
 	end
 
-	if (Value < self.EditBox.MinValue) then
+	if Value < self.EditBox.MinValue then
 		Value = self.EditBox.MinValue
-	elseif (Value > self.EditBox.MaxValue) then
+	elseif Value > self.EditBox.MaxValue then
 		Value = self.EditBox.MaxValue
 	end
 
@@ -630,11 +633,11 @@ end
 local SliderEditBoxOnEnterPressed = function(self)
 	local Value = tonumber(self:GetText())
 
-	if (type(Value) ~= "number") then
+	if type(Value) ~= "number" then
 		return
 	end
 
-	if (Value ~= self.Value) then
+	if Value ~= self.Value then
 		self.Slider:SetValue(Value)
 		SliderOnValueChanged(self.Slider)
 	end
@@ -646,7 +649,7 @@ end
 local SliderEditBoxOnChar = function(self)
 	local Value = tonumber(self:GetText())
 
-	if (type(Value) ~= "number") then
+	if type(Value) ~= "number" then
 		self:SetText(self.Value)
 	end
 end
@@ -657,9 +660,9 @@ local SliderEditBoxOnMouseDown = function(self)
 end
 
 local SliderEditBoxOnEditFocusLost = function(self)
-	if (self.Value > self.MaxValue) then
+	if self.Value > self.MaxValue then
 		self.Value = self.MaxValue
-	elseif (self.Value < self.MinValue) then
+	elseif self.Value < self.MinValue then
 		self.Value = self.MinValue
 	end
 
@@ -672,16 +675,16 @@ local SliderEditBoxOnMouseWheel = function(self, delta)
 		self:ClearFocus()
 	end
 
-	if (delta > 0) then
+	if delta > 0 then
 		self.Value = self.Value + self.StepValue
 
-		if (self.Value > self.MaxValue) then
+		if self.Value > self.MaxValue then
 			self.Value = self.MaxValue
 		end
 	else
 		self.Value = self.Value - self.StepValue
 
-		if (self.Value < self.MinValue) then
+		if self.Value < self.MinValue then
 			self.Value = self.MinValue
 		end
 	end
@@ -707,7 +710,7 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 	EditBox.Highlight = EditBox:CreateTexture(nil, "OVERLAY")
 	EditBox.Highlight:SetAllPoints()
 	EditBox.Highlight:SetTexture(Texture)
-	EditBox.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	EditBox.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	EditBox.Highlight:SetAlpha(0)
 
 	EditBox.Box = CreateFrame("EditBox", nil, EditBox)
@@ -758,7 +761,7 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 	Slider.Highlight = Slider:CreateTexture(nil, "OVERLAY")
 	Slider.Highlight:SetAllPoints()
 	Slider.Highlight:SetTexture(Texture)
-	Slider.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	Slider.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Slider.Highlight:SetAlpha(0)
 
 	Slider.Label = Slider:CreateFontString(nil, "OVERLAY")
@@ -771,12 +774,13 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 	local Thumb = Slider:GetThumbTexture()
 	Thumb:SetSize(8, WidgetHeight)
 	Thumb:SetTexture(Texture)
-	Thumb:SetVertexColor(123/255, 132/255, 137/255)
+	Thumb:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 
 	Thumb.Border = CreateFrame("Frame", nil, Slider)
 	Thumb.Border:SetPoint("TOPLEFT", Slider:GetThumbTexture(), 0, -1)
 	Thumb.Border:SetPoint("BOTTOMRIGHT", Slider:GetThumbTexture(), 0, 1)
-	Thumb.Border:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUIStatusbar, nil, nil, nil, 123/255, 132/255, 137/255)
+	-- stylua: ignore
+	Thumb.Border:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUIStatusbar, nil, nil, nil, 123 / 255, 132 / 255, 137 / 255)
 
 	Slider.Progress = Slider:CreateTexture(nil, "ARTWORK")
 	Slider.Progress:SetPoint("TOPLEFT", Slider, 1, -1)
@@ -823,8 +827,8 @@ local SetArrowDown = function(self)
 end
 
 local CloseLastDropdown = function(compare)
-	if (LastActiveDropdown and LastActiveDropdown.Menu:IsShown() and (LastActiveDropdown ~= compare)) then
-		if (not LastActiveDropdown.Menu.FadeOut:IsPlaying()) then
+	if LastActiveDropdown and LastActiveDropdown.Menu:IsShown() and (LastActiveDropdown ~= compare) then
+		if not LastActiveDropdown.Menu.FadeOut:IsPlaying() then
 			LastActiveDropdown.Menu.FadeOut:Play()
 			SetArrowDown(LastActiveDropdown)
 		end
@@ -834,24 +838,24 @@ end
 local DropdownButtonOnMouseUp = function(self, button)
 	self.Parent.Texture:SetVertexColor(unpack(BrightColor))
 
-	if (button == "LeftButton") then
+	if button == "LeftButton" then
 		if self.Menu:IsVisible() then
 			self.Menu.FadeOut:Play()
 			SetArrowDown(self)
 		else
 			for i = 1, #self.Menu do
 				if self.Parent.Type then
-					if (self.Menu[i].Key == self.Parent.Value) then
+					if self.Menu[i].Key == self.Parent.Value then
 						self.Menu[i].Selected:Show()
 
-						if (self.Parent.Type == "Texture") then
+						if self.Parent.Type == "Texture" then
 							self.Menu[i].Selected:SetTexture(K.GetTexture(self.Parent.Value))
 						end
 					else
 						self.Menu[i].Selected:Hide()
 					end
 				else
-					if (self.Menu[i].Value == self.Parent.Value) then
+					if self.Menu[i].Value == self.Parent.Value then
 						self.Menu[i].Selected:Show()
 					else
 						self.Menu[i].Selected:Hide()
@@ -871,9 +875,9 @@ local DropdownButtonOnMouseUp = function(self, button)
 
 		self.Parent.Value = Value
 
-		if (self.Parent.Type == "Texture") then
+		if self.Parent.Type == "Texture" then
 			self.Parent.Texture:SetTexture(K.GetTexture(Value))
-		elseif (self.Parent.Type == "Font") then
+		elseif self.Parent.Type == "Font" then
 			self.Parent.Current:SetFontObject(K.GetFont(Value))
 		end
 
@@ -913,9 +917,9 @@ local MenuItemOnMouseUp = function(self)
 		end
 	end
 
-	if (self.GrandParent.Type == "Texture") then
+	if self.GrandParent.Type == "Texture" then
 		self.GrandParent.Texture:SetTexture(K.GetTexture(self.Key))
-	elseif (self.GrandParent.Type == "Font") then
+	elseif self.GrandParent.Type == "Font" then
 		self.GrandParent.Current:SetFontObject(K.GetFont(self.Key))
 	end
 
@@ -943,7 +947,7 @@ local ScrollMenu = function(self)
 
 	for i = 1, #self do
 		if (i >= self.Offset) and (i <= self.Offset + ListItemsToShow - 1) then
-			if (not First) then
+			if not First then
 				self[i]:SetPoint("TOPLEFT", self, 3, -3)
 				First = true
 			else
@@ -958,16 +962,16 @@ local ScrollMenu = function(self)
 end
 
 local SetDropdownOffsetByDelta = function(self, delta)
-	if (delta == 1) then -- up
+	if delta == 1 then -- up
 		self.Offset = self.Offset - 1
 
-		if (self.Offset <= 1) then
+		if self.Offset <= 1 then
 			self.Offset = 1
 		end
 	else -- down
 		self.Offset = self.Offset + 1
 
-		if (self.Offset > (#self - (ListItemsToShow - 1))) then
+		if self.Offset > (#self - (ListItemsToShow - 1)) then
 			self.Offset = self.Offset - 1
 		end
 	end
@@ -982,9 +986,9 @@ end
 local SetDropdownOffset = function(self, offset)
 	self.Offset = offset
 
-	if (self.Offset <= 1) then
+	if self.Offset <= 1 then
 		self.Offset = 1
-	elseif (self.Offset > (#self - ListItemsToShow - 1)) then
+	elseif self.Offset > (#self - ListItemsToShow - 1) then
 		self.Offset = self.Offset - 1
 	end
 
@@ -1066,7 +1070,7 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 	if custom then
 		Value = C[group][option]
 
-		if (custom == "Texture") then
+		if custom == "Texture" then
 			Selections = K.TextureTable
 		else
 			Selections = K.FontTable
@@ -1109,7 +1113,7 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 	Dropdown.Button.Highlight = Dropdown:CreateTexture(nil, "ARTWORK")
 	Dropdown.Button.Highlight:SetAllPoints()
 	Dropdown.Button.Highlight:SetTexture(Texture)
-	Dropdown.Button.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	Dropdown.Button.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Dropdown.Button.Highlight:SetAlpha(0)
 
 	Dropdown.Current = Dropdown:CreateFontString(nil, "ARTWORK")
@@ -1200,7 +1204,7 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 		MenuItem.Highlight = MenuItem:CreateTexture(nil, "OVERLAY")
 		MenuItem.Highlight:SetAllPoints()
 		MenuItem.Highlight:SetTexture(Texture)
-		MenuItem.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+		MenuItem.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 		MenuItem.Highlight:SetAlpha(0)
 
 		MenuItem.Texture = MenuItem:CreateTexture(nil, "ARTWORK")
@@ -1220,22 +1224,22 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 		MenuItem.Text:SetJustifyH("LEFT")
 		MenuItem.Text:SetText(k)
 
-		if (custom == "Texture") then
+		if custom == "Texture" then
 			MenuItem.Texture:SetTexture(K.GetTexture(k))
 			MenuItem.Selected:SetTexture(K.GetTexture(k))
-		elseif (custom == "Font") then
+		elseif custom == "Font" then
 			MenuItem.Text:SetFontObject(K.GetFont(k))
 		end
 
 		if custom then
-			if (MenuItem.Key == MenuItem.GrandParent.Value) then
+			if MenuItem.Key == MenuItem.GrandParent.Value then
 				MenuItem.Selected:Show()
 				MenuItem.GrandParent.Current:SetText(k)
 			else
 				MenuItem.Selected:Hide()
 			end
 		else
-			if (MenuItem.Value == MenuItem.GrandParent.Value) then
+			if MenuItem.Value == MenuItem.GrandParent.Value then
 				MenuItem.Selected:Show()
 				MenuItem.GrandParent.Current:SetText(k)
 			else
@@ -1251,23 +1255,23 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 			MenuItem:SetPoint("TOP", Dropdown.Menu, 0, -3)
 		end
 
-		if (Count > ListItemsToShow) then
+		if Count > ListItemsToShow then
 			MenuItem:Hide()
 		end
 
 		LastMenuItem = MenuItem
 	end
 
-	if (custom == "Texture") then
+	if custom == "Texture" then
 		Dropdown.Texture:SetTexture(K.GetTexture(Value))
-	elseif (custom == "Font") then
+	elseif custom == "Font" then
 		Dropdown.Texture:SetTexture(Texture)
 		Dropdown.Current:SetFontObject(K.GetFont(Value))
 	else
 		Dropdown.Texture:SetTexture(Texture)
 	end
 
-	if (#Dropdown.Menu > ListItemsToShow) then
+	if #Dropdown.Menu > ListItemsToShow then
 		AddDropdownScrollBar(Dropdown.Menu)
 	else
 		Dropdown.Menu:SetHeight(((WidgetHeight + 6) * Count) + 0)
@@ -1285,9 +1289,7 @@ GUI.Widgets.CreateDropdown = CreateDropdown
 -- Color selection
 local ColorButtonWidth = 110
 
-local ColorPickerFrameCancel = function()
-
-end
+local ColorPickerFrameCancel = function() end
 
 local ColorOnMouseUp = function(self, button)
 	local CPF = ColorPickerFrame
@@ -1300,7 +1302,7 @@ local ColorOnMouseUp = function(self, button)
 
 	local CurrentR, CurrentG, CurrentB = unpack(self.Value)
 
-	if (button == "LeftButton") then
+	if button == "LeftButton" then
 		local ShowColorPickerFrame = function(r, g, b, func, cancel)
 			HideUIPanel(CPF)
 			CPF.Button = self
@@ -1321,7 +1323,7 @@ local ColorOnMouseUp = function(self, button)
 		end
 
 		local ColorPickerFunction = function(restore)
-			if (restore ~= nil or self ~= CPF.Button) then
+			if restore ~= nil or self ~= CPF.Button then
 				return
 			end
 
@@ -1331,7 +1333,7 @@ local ColorOnMouseUp = function(self, button)
 			NewG = Round(NewG, 3)
 			NewB = Round(NewB, 3)
 
-			local NewValue = {NewR, NewG, NewB}
+			local NewValue = { NewR, NewG, NewB }
 
 			CPF.Button:GetParent().KKUI_Background:SetVertexColor(NewR, NewG, NewB)
 			CPF.Button.Value = NewValue
@@ -1375,6 +1377,7 @@ local CreateColorSelection = function(self, group, option, text, tooltip)
 	local Swatch = CreateFrame("Frame", nil, Anchor)
 	Swatch:SetSize(WidgetHeight, WidgetHeight)
 	Swatch:SetPoint("LEFT", Anchor, 0, 0)
+	-- stylua: ignore
 	Swatch:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUIStatusbar, nil, nil, nil, CurrentR, CurrentG, CurrentB)
 
 	Swatch.Select = CreateFrame("Frame", nil, Swatch, "BackdropTemplate")
@@ -1392,7 +1395,7 @@ local CreateColorSelection = function(self, group, option, text, tooltip)
 	Swatch.Select.Highlight = Swatch.Select:CreateTexture(nil, "OVERLAY")
 	Swatch.Select.Highlight:SetAllPoints()
 	Swatch.Select.Highlight:SetTexture(Texture)
-	Swatch.Select.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	Swatch.Select.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Swatch.Select.Highlight:SetAlpha(0)
 
 	Swatch.Select.Label = Swatch.Select:CreateFontString(nil, "OVERLAY")
@@ -1420,7 +1423,7 @@ GUI.Widgets.CreateColorSelection = CreateColorSelection
 
 -- GUI functions
 GUI.AddWidgets = function(self, func)
-	if (type(func) ~= "function") then
+	if type(func) ~= "function" then
 		return
 	end
 
@@ -1445,20 +1448,20 @@ GUI.SortMenuButtons = function(self)
 	for i = 1, #self.Buttons do
 		self.Buttons[i]:ClearAllPoints()
 
-		if (i == 1) then
+		if i == 1 then
 			self.Buttons[i]:SetPoint("TOPLEFT", self.ButtonList, Spacing, -Spacing)
 		else
-			self.Buttons[i]:SetPoint("TOP", self.Buttons[i-1], "BOTTOM", 0, -(Spacing - 1))
+			self.Buttons[i]:SetPoint("TOP", self.Buttons[i - 1], "BOTTOM", 0, -(Spacing - 1))
 		end
 	end
 end
 
 local SortWidgets = function(self)
 	for i = 1, #self.Widgets do
-		if (i == 1) then
+		if i == 1 then
 			self.Widgets[i]:SetPoint("TOPLEFT", self, Spacing, -Spacing)
 		else
-			self.Widgets[i]:SetPoint("TOPLEFT", self.Widgets[i-1], "BOTTOMLEFT", 0, -(Spacing - 1))
+			self.Widgets[i]:SetPoint("TOPLEFT", self.Widgets[i - 1], "BOTTOMLEFT", 0, -(Spacing - 1))
 		end
 	end
 
@@ -1470,11 +1473,11 @@ local Scroll = function(self)
 
 	for i = 1, #self.Widgets do
 		if (i >= self.Offset) and (i <= self.Offset + self:GetParent().WindowCount - 1) then
-			if (not First) then
+			if not First then
 				self.Widgets[i]:SetPoint("TOPLEFT", self, Spacing, -Spacing)
 				First = true
 			else
-				self.Widgets[i]:SetPoint("TOPLEFT", self.Widgets[i-1], "BOTTOMLEFT", 0, -(Spacing - 1))
+				self.Widgets[i]:SetPoint("TOPLEFT", self.Widgets[i - 1], "BOTTOMLEFT", 0, -(Spacing - 1))
 			end
 
 			self.Widgets[i]:Show()
@@ -1485,16 +1488,16 @@ local Scroll = function(self)
 end
 
 local SetOffsetByDelta = function(self, delta)
-	if (delta == 1) then -- up
+	if delta == 1 then -- up
 		self.Offset = self.Offset - 1
 
-		if (self.Offset <= 1) then
+		if self.Offset <= 1 then
 			self.Offset = 1
 		end
 	else -- down
 		self.Offset = self.Offset + 1
 
-		if (self.Offset > (#self.Widgets - (self:GetParent().WindowCount - 1))) then
+		if self.Offset > (#self.Widgets - (self:GetParent().WindowCount - 1)) then
 			self.Offset = self.Offset - 1
 		end
 	end
@@ -1509,9 +1512,9 @@ end
 local SetOffset = function(self, offset)
 	self.Offset = offset
 
-	if (self.Offset <= 1) then
+	if self.Offset <= 1 then
 		self.Offset = 1
-	elseif (self.Offset > (#self.Widgets - self:GetParent().WindowCount - 1)) then
+	elseif self.Offset > (#self.Widgets - self:GetParent().WindowCount - 1) then
 		self.Offset = self.Offset - 1
 	end
 
@@ -1552,7 +1555,7 @@ local AddScrollBar = function(self)
 	local Thumb = ScrollBar:GetThumbTexture()
 	Thumb:SetSize(WidgetHeight, WidgetHeight)
 	Thumb:SetTexture(Texture)
-	Thumb:SetVertexColor(123/255, 132/255, 137/255)
+	Thumb:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 
 	self:EnableMouseWheel(true)
 	self:SetScript("OnMouseWheel", WindowOnMouseWheel)
@@ -1574,7 +1577,7 @@ local AddScrollBar = function(self)
 end
 
 GUI.DisplayWindow = function(self, name)
-	if (KKUI_Credits and KKUI_Credits:IsShown()) then
+	if KKUI_Credits and KKUI_Credits:IsShown() then
 		KKUI_Credits:Hide()
 		KKUI_Credits.Move:Stop()
 
@@ -1587,17 +1590,17 @@ GUI.DisplayWindow = function(self, name)
 	end
 
 	for WindowName, Window in pairs(self.Windows) do
-		if (WindowName ~= name) then
+		if WindowName ~= name then
 			Window:Hide()
 
 			if Window.Button.Selected:IsShown() then
 				Window.Button.Selected:Hide()
 			end
 		else
-			if (not Window.Sorted) then
+			if not Window.Sorted then
 				SortWidgets(Window)
 
-				if (#Window.Widgets > self.WindowCount) then
+				if #Window.Widgets > self.WindowCount then
 					AddScrollBar(Window)
 				end
 			end
@@ -1721,10 +1724,10 @@ local SetUpCredits = function(frame)
 		Line.Text:SetJustifyH("CENTER")
 		Line.Text:SetText(CreditLines[i])
 
-		if (i == 1) then
+		if i == 1 then
 			Line:SetPoint("TOP", frame, 0, -1)
 		else
-			Line:SetPoint("TOP", frame.Lines[i-1], "BOTTOM", 0, 0)
+			Line:SetPoint("TOP", frame.Lines[i - 1], "BOTTOM", 0, 0)
 		end
 
 		tinsert(frame.Lines, Line)
@@ -1824,14 +1827,15 @@ local AddContactFrame = function()
 	K.CreateFontString(frame, 16, "Contact Me", "", true, "TOP", 0, -10)
 	local ll = CreateFrame("Frame", nil, frame)
 	ll:SetPoint("TOP", -40, -32)
-	K.CreateGF(ll, 80, 1, "Horizontal", .7, .7, .7, 0, .7)
+	K.CreateGF(ll, 80, 1, "Horizontal", 0.7, 0.7, 0.7, 0, 0.7)
 	ll:SetFrameStrata("HIGH")
 	local lr = CreateFrame("Frame", nil, frame)
 	lr:SetPoint("TOP", 40, -32)
-	K.CreateGF(lr, 80, 1, "Horizontal", .7, .7, .7, .7, 0)
+	K.CreateGF(lr, 80, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
 	lr:SetFrameStrata("HIGH")
 
 	CreateContactBox(frame, "|CFFee653aCurse|r", "https://www.curseforge.com/members/kkthnxtv", 1)
+	-- stylua: ignore
 	CreateContactBox(frame, "|CFF666aa7WowInterface|r", "https://www.wowinterface.com/forums/member.php?action=getinfo&userid=303422", 2)
 	CreateContactBox(frame, "|CFFf6f8faGitHub|r", "https://github.com/Kkthnx-Wow/KkthnxUI", 3)
 	CreateContactBox(frame, "|CFF7289DADiscord|r", "https://discord.gg/Rc9wcK9cAB", 4)
@@ -1918,7 +1922,7 @@ GUI.Enable = function(self)
 	Apply.Highlight = Apply:CreateTexture(nil, "OVERLAY")
 	Apply.Highlight:SetAllPoints()
 	Apply.Highlight:SetTexture(Texture)
-	Apply.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	Apply.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Apply.Highlight:SetAlpha(0)
 
 	Apply.Middle = Apply:CreateFontString(nil, "OVERLAY")
@@ -1944,7 +1948,7 @@ GUI.Enable = function(self)
 	Reset.Highlight = Reset:CreateTexture(nil, "OVERLAY")
 	Reset.Highlight:SetAllPoints()
 	Reset.Highlight:SetTexture(Texture)
-	Reset.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	Reset.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Reset.Highlight:SetAlpha(0)
 
 	Reset.Middle = Reset:CreateFontString(nil, "OVERLAY")
@@ -1952,7 +1956,7 @@ GUI.Enable = function(self)
 	Reset.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
 	StyleFont(Reset.Middle, Font, 12)
 	Reset.Middle:SetJustifyH("CENTER")
-	Reset.Middle:SetText(K.SystemColor.."Reset UI|r")
+	Reset.Middle:SetText(K.SystemColor .. "Reset UI|r")
 
 	-- Move button
 	local Move = CreateFrame("Frame", nil, self.Footer)
@@ -1975,7 +1979,7 @@ GUI.Enable = function(self)
 	Move.Highlight = Move:CreateTexture(nil, "OVERLAY")
 	Move.Highlight:SetAllPoints()
 	Move.Highlight:SetTexture(Texture)
-	Move.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	Move.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Move.Highlight:SetAlpha(0)
 
 	Move.Middle = Move:CreateFontString(nil, "OVERLAY")
@@ -1983,7 +1987,7 @@ GUI.Enable = function(self)
 	Move.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
 	StyleFont(Move.Middle, Font, 12)
 	Move.Middle:SetJustifyH("CENTER")
-	Move.Middle:SetText(K.SystemColor.."Toggle UI|r")
+	Move.Middle:SetText(K.SystemColor .. "Toggle UI|r")
 
 	-- Credits button
 	local Credits = CreateFrame("Frame", nil, self.Footer)
@@ -1999,7 +2003,7 @@ GUI.Enable = function(self)
 	Credits.Highlight = Credits:CreateTexture(nil, "OVERLAY")
 	Credits.Highlight:SetAllPoints()
 	Credits.Highlight:SetTexture(Texture)
-	Credits.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	Credits.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Credits.Highlight:SetAlpha(0)
 
 	Credits.Middle = Credits:CreateFontString(nil, "OVERLAY")
@@ -2007,7 +2011,7 @@ GUI.Enable = function(self)
 	Credits.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
 	StyleFont(Credits.Middle, Font, 12)
 	Credits.Middle:SetJustifyH("CENTER")
-	Credits.Middle:SetText(K.InfoColor.."Credits|r")
+	Credits.Middle:SetText(K.InfoColor .. "Credits|r")
 
 	-- CVars button
 	local ResetCVars = CreateFrame("Frame", nil, self.Footer)
@@ -2025,7 +2029,7 @@ GUI.Enable = function(self)
 	ResetCVars.Highlight = ResetCVars:CreateTexture(nil, "OVERLAY")
 	ResetCVars.Highlight:SetAllPoints()
 	ResetCVars.Highlight:SetTexture(Texture)
-	ResetCVars.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	ResetCVars.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	ResetCVars.Highlight:SetAlpha(0)
 
 	ResetCVars.Middle = ResetCVars:CreateFontString(nil, "OVERLAY")
@@ -2033,7 +2037,7 @@ GUI.Enable = function(self)
 	ResetCVars.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
 	StyleFont(ResetCVars.Middle, Font, 12)
 	ResetCVars.Middle:SetJustifyH("CENTER")
-	ResetCVars.Middle:SetText(K.SystemColor.."Reset CVars|r")
+	ResetCVars.Middle:SetText(K.SystemColor .. "Reset CVars|r")
 
 	-- Chat Button
 	local ResetChat = CreateFrame("Frame", nil, self.Footer)
@@ -2051,15 +2055,15 @@ GUI.Enable = function(self)
 	ResetChat.Highlight = ResetChat:CreateTexture(nil, "OVERLAY")
 	ResetChat.Highlight:SetAllPoints()
 	ResetChat.Highlight:SetTexture(Texture)
-	ResetChat.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	ResetChat.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	ResetChat.Highlight:SetAlpha(0)
 
 	ResetChat.Middle = ResetChat:CreateFontString(nil, "OVERLAY")
 	ResetChat.Middle:SetPoint("CENTER", ResetChat, 0, 0)
-	ResetChat.Middle:SetWidth(FooterButtonWidth - (Spacing))
+	ResetChat.Middle:SetWidth(FooterButtonWidth - Spacing)
 	StyleFont(ResetChat.Middle, Font, 12)
 	ResetChat.Middle:SetJustifyH("CENTER")
-	ResetChat.Middle:SetText(K.SystemColor.."Reset Chat|r")
+	ResetChat.Middle:SetText(K.SystemColor .. "Reset Chat|r")
 
 	-- Contact Button
 	local ContactMe = CreateFrame("Frame", nil, self.Footer)
@@ -2080,15 +2084,15 @@ GUI.Enable = function(self)
 	ContactMe.Highlight = ContactMe:CreateTexture(nil, "OVERLAY")
 	ContactMe.Highlight:SetAllPoints()
 	ContactMe.Highlight:SetTexture(Texture)
-	ContactMe.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	ContactMe.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	ContactMe.Highlight:SetAlpha(0)
 
 	ContactMe.Middle = ContactMe:CreateFontString(nil, "OVERLAY")
 	ContactMe.Middle:SetPoint("CENTER", ContactMe, 0, 0)
-	ContactMe.Middle:SetWidth(FooterButtonWidth - (Spacing))
+	ContactMe.Middle:SetWidth(FooterButtonWidth - Spacing)
 	StyleFont(ContactMe.Middle, Font, 12)
 	ContactMe.Middle:SetJustifyH("CENTER")
-	ContactMe.Middle:SetText(K.SystemColor.."Contact Me!|r")
+	ContactMe.Middle:SetText(K.SystemColor .. "Contact Me!|r")
 
 	-- Profiles button
 	local Profiles = CreateFrame("Frame", nil, self.Footer)
@@ -2109,7 +2113,7 @@ GUI.Enable = function(self)
 	Profiles.Highlight = Profiles:CreateTexture(nil, "OVERLAY")
 	Profiles.Highlight:SetAllPoints()
 	Profiles.Highlight:SetTexture(Texture)
-	Profiles.Highlight:SetVertexColor(123/255, 132/255, 137/255)
+	Profiles.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Profiles.Highlight:SetAlpha(0)
 
 	Profiles.Middle = Profiles:CreateFontString(nil, "OVERLAY")
@@ -2117,7 +2121,7 @@ GUI.Enable = function(self)
 	Profiles.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
 	StyleFont(Profiles.Middle, Font, 12)
 	Profiles.Middle:SetJustifyH("CENTER")
-	Profiles.Middle:SetText(K.InfoColor.."Profiles|r")
+	Profiles.Middle:SetText(K.InfoColor .. "Profiles|r")
 
 	-- Button list
 	self.ButtonList = CreateFrame("Frame", nil, self)
@@ -2143,7 +2147,8 @@ GUI.Enable = function(self)
 	self:UnpackQueue()
 
 	-- Set the frame height
-	local Height = (HeaderHeight * 2) + (Spacing + 2) + (self.WindowCount * MenuButtonHeight) + ((self.WindowCount) * Spacing)
+	-- stylua: ignore
+	local Height = (HeaderHeight * 2) + (Spacing + 2) + (self.WindowCount * MenuButtonHeight) + (self.WindowCount * Spacing)
 
 	self:SetHeight(Height)
 
@@ -2234,9 +2239,9 @@ end
 GUI.SetProfile = function(self)
 	local Dropdown = self:GetParent()
 	local Profile = Dropdown.Current:GetText()
-	local MyProfileName = K.Realm.."-"..K.Name
+	-- local MyProfileName = K.Realm .. "-" .. K.Name
 
-	if Profile and Profile ~= K.Realm.."-"..K.Name then
+	if Profile and Profile ~= K.Realm .. "-" .. K.Name then
 		MySelectedProfile = Profile
 
 		GUI:Toggle()

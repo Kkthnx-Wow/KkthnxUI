@@ -3,9 +3,9 @@ local _, C = unpack(KkthnxUI)
 -- Raidbuff Checklist
 C.RaidUtilityBuffCheckList = {
 	[1] = { -- 合剂
-		307166,	-- 大锅
-		307185,	-- 通用合剂
-		307187,	-- 耐力合剂
+		307166, -- 大锅
+		307185, -- 通用合剂
+		307187, -- 耐力合剂
 	},
 
 	[2] = { -- 进食充分

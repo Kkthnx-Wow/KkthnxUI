@@ -95,10 +95,10 @@ do
 				if Name then
 					_G.ChatFrame_SendTell(Name, self.chatFrame)
 				else
-					_G.UIErrorsFrame:AddMessage(K.InfoColor..L["Invalid Target"])
+					_G.UIErrorsFrame:AddMessage(K.InfoColor .. L["Invalid Target"])
 				end
 			elseif text == "/gr " then
-				self:SetText(GetGroupDistribution()..string_sub(text, 5))
+				self:SetText(GetGroupDistribution() .. string_sub(text, 5))
 				_G.ChatEdit_ParseText(self, 0)
 			end
 		end
@@ -171,7 +171,7 @@ function Module:SetChatFont()
 	local Path, _, Flag = _G[Font]:GetFont()
 	local CurrentFont, CurrentSize, CurrentFlag = self:GetFont()
 
-	if (CurrentFont == Path and CurrentFlag == Flag) then
+	if CurrentFont == Path and CurrentFlag == Flag then
 		return
 	end
 
@@ -201,7 +201,7 @@ function Module:SkinChat()
 
 	self.__background = CreateBackground(self)
 
-	local eb = _G[name.."EditBox"]
+	local eb = _G[name .. "EditBox"]
 	eb:SetAltArrowKeyMode(false)
 	eb:ClearAllPoints()
 	eb:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, 25)
@@ -211,13 +211,13 @@ function Module:SkinChat()
 	eb:Hide()
 	eb:HookScript("OnTextChanged", Module.EditBoxOnTextChanged)
 
-	local lang = _G[name.."EditBoxLanguage"]
+	local lang = _G[name .. "EditBoxLanguage"]
 	lang:GetRegions():SetAlpha(0)
 	lang:SetPoint("TOPLEFT", eb, "TOPRIGHT", 5, 0)
 	lang:SetPoint("BOTTOMRIGHT", eb, "BOTTOMRIGHT", 29, 0)
 	lang:CreateBorder()
 
-	local tab = _G[name.."Tab"]
+	local tab = _G[name .. "Tab"]
 	tab:SetAlpha(1)
 	tab.Text:SetFont(tabFont, tabFontSize + 1, tabFontFlags)
 	tab.Text.SetFont = K.Noop
@@ -247,7 +247,7 @@ function Module:SkinChat()
 	self.oldAlpha = self.oldAlpha or 0 -- fix blizz error
 
 	-- Temp Chats
-	if (id > 10) then
+	if id > 10 then
 		Module.SetChatFont(self)
 	end
 
@@ -279,40 +279,64 @@ end
 
 -- Swith channels by Tab
 local cycles = {
-	{chatType = "SAY", IsActive = function()
-		return true
-	end},
-
-	{chatType = "PARTY", IsActive = function()
-		return IsInGroup()
-	end},
-
-	{chatType = "RAID", IsActive = function()
-		return IsInRaid()
-	end},
-
-	{chatType = "INSTANCE_CHAT", IsActive = function()
-		return IsPartyLFG()
-	end},
-
-	{chatType = "GUILD", IsActive = function()
-		return IsInGuild()
-	end},
-
-	{chatType = "OFFICER", IsActive = function()
-		return C_GuildInfo_IsGuildOfficer()
-	end},
-
-	{chatType = "CHANNEL", IsActive = function(_, editbox)
-		if Module.InWorldChannel and Module.WorldChannelID then
-			editbox:SetAttribute("channelTarget", Module.WorldChannelID)
+	{
+		chatType = "SAY",
+		IsActive = function()
 			return true
-		end
-	end},
+		end,
+	},
 
-	{chatType = "SAY", IsActive = function()
-		return true
-	end},
+	{
+		chatType = "PARTY",
+		IsActive = function()
+			return IsInGroup()
+		end,
+	},
+
+	{
+		chatType = "RAID",
+		IsActive = function()
+			return IsInRaid()
+		end,
+	},
+
+	{
+		chatType = "INSTANCE_CHAT",
+		IsActive = function()
+			return IsPartyLFG()
+		end,
+	},
+
+	{
+		chatType = "GUILD",
+		IsActive = function()
+			return IsInGuild()
+		end,
+	},
+
+	{
+		chatType = "OFFICER",
+		IsActive = function()
+			return C_GuildInfo_IsGuildOfficer()
+		end,
+	},
+
+	{
+		chatType = "CHANNEL",
+		IsActive = function(_, editbox)
+			if Module.InWorldChannel and Module.WorldChannelID then
+				editbox:SetAttribute("channelTarget", Module.WorldChannelID)
+				return true
+			end
+		end,
+	},
+
+	{
+		chatType = "SAY",
+		IsActive = function()
+			return true
+		end,
+	},
 }
 
 -- Update editbox border color
@@ -321,7 +345,12 @@ function Module:UpdateEditBoxColor()
 		return
 	end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
+	if
+		IsAddOnLoaded("Prat-3.0")
+		or IsAddOnLoaded("Chatter")
+		or IsAddOnLoaded("BasicChatMods")
+		or IsAddOnLoaded("Glass")
+	then
 		return
 	end
 
@@ -338,10 +367,10 @@ function Module:UpdateEditBoxColor()
 	editBox:SetTextInsets(insetLeft, insetRight + 18, insetTop, insetBottom)
 
 	if editBoxBorder then
-		if (chatType == "CHANNEL") then
+		if chatType == "CHANNEL" then
 			local id = GetChannelName(editBox:GetAttribute("channelTarget"))
 
-			if (id == 0) then
+			if id == 0 then
 				local r, g, b
 				if C["General"].ColorTextures then
 					r, g, b = unpack(C["General"].TexturesColor)
@@ -350,7 +379,8 @@ function Module:UpdateEditBoxColor()
 				end
 				editBoxBorder:SetVertexColor(r, g, b)
 			else
-				local r, g, b = ChatTypeInfo[chatType..id].r, ChatTypeInfo[chatType..id].g, ChatTypeInfo[chatType..id].b
+				local r, g, b =
+					ChatTypeInfo[chatType .. id].r, ChatTypeInfo[chatType .. id].g, ChatTypeInfo[chatType .. id].b
 				editBoxBorder:SetVertexColor(r, g, b)
 			end
 		else
@@ -371,7 +401,12 @@ function Module:UpdateTabChannelSwitch()
 		return
 	end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
+	if
+		IsAddOnLoaded("Prat-3.0")
+		or IsAddOnLoaded("Chatter")
+		or IsAddOnLoaded("BasicChatMods")
+		or IsAddOnLoaded("Glass")
+	then
 		return
 	end
 
@@ -390,9 +425,9 @@ function Module:UpdateTabChannelSwitch()
 	for i = 1, numCycles do
 		local cycle = cycles[i]
 		if currentType == cycle.chatType then
-			local from, to, step = i+1, numCycles, 1
+			local from, to, step = i + 1, numCycles, 1
 			if isShiftKeyDown then
-				from, to, step = i-1, 1, -1
+				from, to, step = i - 1, 1, -1
 			end
 			for j = from, to, step do
 				local nextCycle = cycles[j]
@@ -412,7 +447,12 @@ function Module:QuickMouseScroll(dir)
 		return
 	end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
+	if
+		IsAddOnLoaded("Prat-3.0")
+		or IsAddOnLoaded("Chatter")
+		or IsAddOnLoaded("BasicChatMods")
+		or IsAddOnLoaded("Glass")
+	then
 		return
 	end
 
@@ -464,7 +504,7 @@ function Module:UpdateTabColors(selected)
 end
 
 function Module:UpdateTabEventColors(event)
-	local tab = _G[self:GetName().."Tab"]
+	local tab = _G[self:GetName() .. "Tab"]
 	local selected = GeneralDockManager.selected:GetID() == tab:GetID()
 	if event == "CHAT_MSG_WHISPER" then
 		tab.whisperIndex = 1
@@ -501,13 +541,18 @@ function Module:OnEnable()
 
 	QuickJoinToastButton:Hide()
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
+	if
+		IsAddOnLoaded("Prat-3.0")
+		or IsAddOnLoaded("Chatter")
+		or IsAddOnLoaded("BasicChatMods")
+		or IsAddOnLoaded("Glass")
+	then
 		return
 	end
 
 	for i = 1, NUM_CHAT_WINDOWS do
-		Module.SkinChat(_G["ChatFrame"..i])
-		Module.SetChatFont(_G["ChatFrame"..i])
+		Module.SkinChat(_G["ChatFrame" .. i])
+		Module.SetChatFont(_G["ChatFrame" .. i])
 	end
 
 	hooksecurefunc("FCF_OpenTemporaryWindow", function()

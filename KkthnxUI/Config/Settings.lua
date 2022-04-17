@@ -82,13 +82,13 @@ C["Announcements"] = {
 	["AlertChannel"] = {
 		["Options"] = {
 			[EMOTE] = 6,
-			[PARTY.." / "..RAID] = 2,
+			[PARTY .. " / " .. RAID] = 2,
 			[PARTY] = 1,
 			[RAID] = 3,
 			[SAY] = 4,
 			[YELL] = 5,
 		},
-		["Value"] = 2
+		["Value"] = 2,
 	},
 }
 
@@ -153,7 +153,7 @@ C["Inventory"] = {
 			[GUILD] = 1,
 			[PLAYER] = 2,
 		},
-		["Value"] = 2
+		["Value"] = 2,
 	},
 }
 
@@ -207,7 +207,7 @@ C["Chat"] = {
 			["15:27"] = 4,
 			["15:27:32"] = 5,
 		},
-		["Value"] = 1
+		["Value"] = 1,
 	},
 }
 
@@ -220,7 +220,7 @@ C["DataText"] = {
 	["GuildSortBy"] = 1,
 	["GuildSortOrder"] = true,
 	["HideText"] = true,
-	["IconColor"] = {102/255, 157/255, 255/255},
+	["IconColor"] = { 102 / 255, 157 / 255, 255 / 255 },
 	["Latency"] = true,
 	["Location"] = true,
 	["System"] = true,
@@ -249,7 +249,7 @@ C["General"] = {
 	["MoveBlizzardFrames"] = false,
 	["NoErrorFrame"] = false,
 	["NoTutorialButtons"] = false,
-	["TexturesColor"] = {1, 1, 1},
+	["TexturesColor"] = { 1, 1, 1 },
 	["UIScale"] = 0.71111,
 	["UseGlobal"] = false,
 	["VersionCheck"] = true,
@@ -260,7 +260,7 @@ C["General"] = {
 			["KkthnxUI_Pixel"] = "KkthnxUI_Pixel",
 			["KkthnxUI_Blank"] = "KkthnxUI_Blank",
 		},
-		["Value"] = "KkthnxUI"
+		["Value"] = "KkthnxUI",
 	},
 	["NumberPrefixStyle"] = {
 		["Options"] = {
@@ -268,7 +268,7 @@ C["General"] = {
 			["Asian: y/w"] = 2,
 			["Full Digits"] = 3,
 		},
-		["Value"] = 1
+		["Value"] = 1,
 	},
 	["Profiles"] = {
 		["Options"] = {},
@@ -298,7 +298,7 @@ C["Minimap"] = {
 			["TopLeft"] = 3,
 			["TopRight"] = 4,
 		},
-		["Value"] = "BottomLeft"
+		["Value"] = "BottomLeft",
 	},
 	["LocationText"] = {
 		["Options"] = {
@@ -306,21 +306,21 @@ C["Minimap"] = {
 			["Hide"] = "Hide",
 			["Minimap Mouseover"] = "MOUSEOVER",
 		},
-		["Value"] = "MOUSEOVER"
+		["Value"] = "MOUSEOVER",
 	},
 	["BlipTexture"] = {
 		["Options"] = {
 			["Default"] = "Interface\\MiniMap\\ObjectIconsAtlas",
-			["Blank"] =  BlipMedia.."Blip-Blank",
-			["Blizzard Big R"] =  BlipMedia.."Blip-BlizzardBigR",
-			["Blizzard Big"] = BlipMedia.."Blip-BlizzardBig",
-			["Charmed"] =  BlipMedia.."Blip-Charmed",
-			["Glass Spheres"] =  BlipMedia.."Blip-GlassSpheres",
-			["Nandini New"] =  BlipMedia.."Blip-Nandini-New",
-			["Nandini"] =  BlipMedia.."Blip-Nandini",
-			["SolidSpheres"] =  BlipMedia.."Blip-SolidSpheres",
+			["Blank"] = BlipMedia .. "Blip-Blank",
+			["Blizzard Big R"] = BlipMedia .. "Blip-BlizzardBigR",
+			["Blizzard Big"] = BlipMedia .. "Blip-BlizzardBig",
+			["Charmed"] = BlipMedia .. "Blip-Charmed",
+			["Glass Spheres"] = BlipMedia .. "Blip-GlassSpheres",
+			["Nandini New"] = BlipMedia .. "Blip-Nandini-New",
+			["Nandini"] = BlipMedia .. "Blip-Nandini",
+			["SolidSpheres"] = BlipMedia .. "Blip-SolidSpheres",
 		},
-		["Value"] = "Interface\\MiniMap\\ObjectIconsAtlas"
+		["Value"] = "Interface\\MiniMap\\ObjectIconsAtlas",
 	},
 }
 
@@ -351,7 +351,7 @@ C["Misc"] = {
 			["Circle"] = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Aura73",
 			["Star"] = "Interface\\Cooldown\\Star4",
 		},
-		["Value"] = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Aura73"
+		["Value"] = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Aura73",
 	},
 	["ShowMarkerBar"] = {
 		["Options"] = {
@@ -360,7 +360,7 @@ C["Misc"] = {
 			["Vertical"] = 3,
 			[DISABLE] = 4,
 		},
-		["Value"] = 4
+		["Value"] = 4,
 	},
 }
 
@@ -372,7 +372,7 @@ C["Nameplate"] = {
 	["ClassAuras"] = true,
 	["ClassIcon"] = false,
 	["ColoredTarget"] = true,
-	["CustomColor"] = {0, 0.8, 0.3},
+	["CustomColor"] = { 0, 0.8, 0.3 },
 	["CustomUnitColor"] = true,
 	["CustomUnitList"] = "",
 	["DPSRevertThreat"] = false,
@@ -384,7 +384,7 @@ C["Nameplate"] = {
 	["FullHealth"] = false,
 	["HealthTextSize"] = 13,
 	["HostileCC"] = true,
-	["InsecureColor"] = {1, 0, 0},
+	["InsecureColor"] = { 1, 0, 0 },
 	["InsideView"] = true,
 	["MaxAuras"] = 5,
 	["MinAlpha"] = 1,
@@ -392,7 +392,7 @@ C["Nameplate"] = {
 	["NameOnly"] = true,
 	["NameTextSize"] = 13,
 	["NameplateClassPower"] = true,
-	["OffTankColor"] = {0.2, 0.7, 0.5},
+	["OffTankColor"] = { 0.2, 0.7, 0.5 },
 	["PPGCDTicker"] = true,
 	["PPHeight"] = 5,
 	["PPHideOOC"] = true,
@@ -405,13 +405,13 @@ C["Nameplate"] = {
 	["PlateWidth"] = 184,
 	["PowerUnitList"] = "",
 	["QuestIndicator"] = true,
-	["SecureColor"] = {1, 0, 1},
+	["SecureColor"] = { 1, 0, 1 },
 	["ShowPlayerPlate"] = false,
 	["Smooth"] = false,
 	["TankMode"] = false,
-	["TargetColor"] = {0, 0.6, 1},
-	["TargetIndicatorColor"] = {1, 1, 0},
-	["TransColor"] = {1, 0.8, 0},
+	["TargetColor"] = { 0, 0.6, 1 },
+	["TargetIndicatorColor"] = { 1, 1, 0 },
+	["TransColor"] = { 1, 0.8, 0 },
 	["VerticalSpacing"] = 0.7,
 	["AuraFilter"] = {
 		["Options"] = {
@@ -419,7 +419,7 @@ C["Nameplate"] = {
 			["List & Player"] = 2,
 			["List & Player & CCs"] = 3,
 		},
-		["Value"] = 3
+		["Value"] = 3,
 	},
 	["TargetIndicator"] = {
 		["Options"] = {
@@ -430,24 +430,24 @@ C["Nameplate"] = {
 			["Top Arrow + Glow"] = 5,
 			["Right Arrow + Glow"] = 6,
 		},
-		["Value"] = 4
+		["Value"] = 4,
 	},
 	["TargetIndicatorTexture"] = {
 		["Options"] = {
-			["Blue Arrow 2".."|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\BlueArrow2:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\BlueArrow2]],
-			["Blue Arrow".."|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\BlueArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\BlueArrow]],
-			["Neon Blue Arrow".."|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonBlueArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonBlueArrow]],
-			["Neon Green Arrow".."|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonGreenArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonGreenArrow]],
-			["Neon Pink Arrow".."|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonPinkArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonPinkArrow]],
-			["Neon Red Arrow".."|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonRedArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonRedArrow]],
-			["Neon Purple Arrow".."|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonPurpleArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonPurpleArrow]],
-			["Purple Arrow".."|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\PurpleArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\PurpleArrow]],
-			["Red Arrow 2".."|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedArrow2.tga:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedArrow2]],
-			["Red Arrow".."|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedArrow]],
-			["Red Chevron Arrow".."|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedChevronArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedChevronArrow]],
-			["Red Chevron Arrow2".."|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedChevronArrow2:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedChevronArrow2]],
+			["Blue Arrow 2" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\BlueArrow2:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\BlueArrow2]],
+			["Blue Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\BlueArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\BlueArrow]],
+			["Neon Blue Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonBlueArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonBlueArrow]],
+			["Neon Green Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonGreenArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonGreenArrow]],
+			["Neon Pink Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonPinkArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonPinkArrow]],
+			["Neon Red Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonRedArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonRedArrow]],
+			["Neon Purple Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\NeonPurpleArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonPurpleArrow]],
+			["Purple Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\PurpleArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\PurpleArrow]],
+			["Red Arrow 2" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedArrow2.tga:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedArrow2]],
+			["Red Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedArrow]],
+			["Red Chevron Arrow" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedChevronArrow:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedChevronArrow]],
+			["Red Chevron Arrow2" .. "|TInterface\\Addons\\KkthnxUI\\Media\\Nameplates\\RedChevronArrow2:0|t"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\RedChevronArrow2]],
 		},
-		["Value"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonBlueArrow]]
+		["Value"] = [[Interface\AddOns\KkthnxUI\Media\Nameplates\NeonBlueArrow]],
 	},
 }
 
@@ -623,7 +623,7 @@ C["Unitframe"] = {
 			["Value"] = "Value",
 			["Class"] = "Class",
 		},
-		["Value"] = "Class"
+		["Value"] = "Class",
 	},
 	["PortraitStyle"] = {
 		["Options"] = {
@@ -632,9 +632,9 @@ C["Unitframe"] = {
 			["Class Portraits"] = "ClassPortraits",
 			["New Class Portraits"] = "NewClassPortraits",
 			["Default Portraits"] = "DefaultPortraits",
-			["No Portraits"] = "NoPortraits"
+			["No Portraits"] = "NoPortraits",
 		},
-		["Value"] = "DefaultPortraits"
+		["Value"] = "DefaultPortraits",
 	},
 }
 
@@ -642,7 +642,7 @@ C["Party"] = {
 	["CastbarIcon"] = false,
 	["Castbars"] = false,
 	["Enable"] = true,
-	["HealthHeight"] =  20,
+	["HealthHeight"] = 20,
 	["HealthWidth"] = 134,
 	["PortraitTimers"] = false,
 	["PowerHeight"] = 10,
@@ -659,7 +659,7 @@ C["Party"] = {
 			["Value"] = "Value",
 			["Class"] = "Class",
 		},
-		["Value"] = "Class"
+		["Value"] = "Class",
 	},
 }
 
@@ -668,7 +668,7 @@ C["Boss"] = {
 	["Castbars"] = true,
 	["Enable"] = true,
 	["Smooth"] = false,
-	["HealthHeight"] =  20,
+	["HealthHeight"] = 20,
 	["HealthWidth"] = 134,
 	["PowerHeight"] = 10,
 	["YOffset"] = 54,
@@ -678,7 +678,7 @@ C["Boss"] = {
 			["Value"] = "Value",
 			["Class"] = "Class",
 		},
-		["Value"] = "Class"
+		["Value"] = "Class",
 	},
 }
 
@@ -687,7 +687,7 @@ C["Arena"] = {
 	["Castbars"] = true,
 	["Enable"] = true,
 	["Smooth"] = false,
-	["HealthHeight"] =  20,
+	["HealthHeight"] = 20,
 	["HealthWidth"] = 134,
 	["PowerHeight"] = 10,
 	["YOffset"] = 54,
@@ -697,7 +697,7 @@ C["Arena"] = {
 			["Value"] = "Value",
 			["Class"] = "Class",
 		},
-		["Value"] = "Class"
+		["Value"] = "Class",
 	},
 }
 
@@ -749,7 +749,7 @@ C["Raid"] = {
 			["Value"] = "Value",
 			["Class"] = "Class",
 		},
-		["Value"] = "Class"
+		["Value"] = "Class",
 	},
 	["HealthFormat"] = {
 		["Options"] = {
@@ -758,7 +758,7 @@ C["Raid"] = {
 			["Health Remaining"] = 3,
 			["Health Lost"] = 4,
 		},
-		["Value"] = 1
+		["Value"] = 1,
 	},
 }
 
@@ -768,6 +768,6 @@ C["WorldMap"] = {
 	["Coordinates"] = true,
 	["FadeWhenMoving"] = true,
 	["MapRevealGlow"] = true,
-	["MapRevealGlowColor"] = {0.7, 0.7, 0.7},
+	["MapRevealGlowColor"] = { 0.7, 0.7, 0.7 },
 	["SmallWorldMap"] = true,
 }

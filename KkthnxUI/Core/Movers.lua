@@ -40,7 +40,7 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 	mover:SetHeight(height or self:GetHeight())
 
 	mover.bg = mover:CreateTexture(nil, "BACKGROUND", nil, 0)
-	mover.bg:SetColorTexture(38/255, 125/255, 206/255, 90/255)
+	mover.bg:SetColorTexture(38 / 255, 125 / 255, 206 / 255, 90 / 255)
 	mover.bg:SetPoint("TOPLEFT", mover, "TOPLEFT", 1, -1)
 	mover.bg:SetPoint("BOTTOMRIGHT", mover, "BOTTOMRIGHT", -1, 1)
 	mover:Hide()
@@ -99,10 +99,10 @@ function Module:CalculateMoverPoints(mover, trimX, trimY)
 	end
 
 	if x >= RIGHT then
-		point = point.."RIGHT"
+		point = point .. "RIGHT"
 		x = mover:GetRight() - screenWidth
 	elseif x <= LEFT then
-		point = point.."LEFT"
+		point = point .. "LEFT"
 		x = mover:GetLeft()
 	else
 		x = x - screenCenter
@@ -138,14 +138,14 @@ function Module:DoTrim(trimX, trimY)
 		f.__y.__current = y
 		mover:ClearAllPoints()
 		mover:SetPoint(point, UIParent, point, x, y)
-		KkthnxUIDB.Variables[K.Realm][K.Name][mover.__key][mover.__value] = {point, "UIParent", point, x, y}
+		KkthnxUIDB.Variables[K.Realm][K.Name][mover.__key][mover.__value] = { point, "UIParent", point, x, y }
 	end
 end
 
 function Module:Mover_OnClick(btn)
 	if IsShiftKeyDown() and btn == "RightButton" then
 		if self.isAuraWatch then
-			UIErrorsFrame:AddMessage(K.InfoColor.."You can't hide AuraWatch mover by that.")
+			UIErrorsFrame:AddMessage(K.InfoColor .. "You can't hide AuraWatch mover by that.")
 		else
 			self:Hide()
 		end
@@ -161,11 +161,11 @@ end
 
 function Module:Mover_OnEnter()
 	self.bg:SetColorTexture(K.r, K.g, K.b, 0.9)
-	self.text:SetTextColor(1, .8, 0)
+	self.text:SetTextColor(1, 0.8, 0)
 end
 
 function Module:Mover_OnLeave()
-	self.bg:SetColorTexture(38/255, 125/255, 206/255, 90/255)
+	self.bg:SetColorTexture(38 / 255, 125 / 255, 206 / 255, 90 / 255)
 	self.text:SetTextColor(1, 1, 1)
 end
 
@@ -184,7 +184,7 @@ function Module:Mover_OnDragStop()
 
 	self:ClearAllPoints()
 	self:SetPoint(orig, "UIParent", tar, x, y)
-	KkthnxUIDB.Variables[K.Realm][K.Name][self.__key][self.__value] = {orig, "UIParent", tar, x, y}
+	KkthnxUIDB.Variables[K.Realm][K.Name][self.__key][self.__value] = { orig, "UIParent", tar, x, y }
 	Module.UpdateTrimFrame(self)
 	updater:Hide()
 end
@@ -236,10 +236,10 @@ local function CreateConsole()
 	f.text = f:CreateFontString(nil, "OVERLAY")
 	f.text:SetPoint("TOP", 0, -10)
 	f.text:SetFontObject(KkthnxUIFont)
-	f.text:SetText(K.Title.." Movers Config")
+	f.text:SetText(K.Title .. " Movers Config")
 	f.text:SetWordWrap(false)
 
-	local bu, text = {}, {LOCK, "Grids", "AuraWatch", RESET}
+	local bu, text = {}, { LOCK, "Grids", "AuraWatch", RESET }
 	for i = 1, 4 do
 		bu[i] = CreateFrame("Button", nil, f)
 		bu[i]:SetSize(100, 24)
@@ -256,7 +256,7 @@ local function CreateConsole()
 		elseif i == 3 then
 			bu[i]:SetPoint("TOP", bu[1], "BOTTOM", 0, -6)
 		else
-			bu[i]:SetPoint("LEFT", bu[i-1], "RIGHT", 6, 0)
+			bu[i]:SetPoint("LEFT", bu[i - 1], "RIGHT", 6, 0)
 		end
 	end
 
@@ -285,7 +285,8 @@ local function CreateConsole()
 	header:SetPoint("TOP")
 	K.CreateMoverFrame(header, f)
 
-	local tips = K.InfoColor.."|nCTRL + "..L["Right Click"]..K.SystemColor.." = Reset Mover"..K.InfoColor.."|nSHIFT + "..L["Right Click"]..K.SystemColor.." = Hide Panel"
+	-- stylua: ignore
+	local tips = K.InfoColor .. "|nCTRL + " .. L["Right Click"] .. K.SystemColor .. " = Reset Mover" .. K.InfoColor .. "|nSHIFT + " .. L["Right Click"] .. K.SystemColor .. " = Hide Panel"
 	header.title = "Mover Tips"
 	K.AddTooltip(header, "ANCHOR_TOP", tips)
 
@@ -348,10 +349,10 @@ local function CreateConsole()
 
 	local arrows = {}
 	local arrowIndex = {
-		[1] = {degree = 180, offset = -1, x = 28, y = 9},
-		[2] = {degree = 0, offset = 1, x = 72, y = 9},
-		[3] = {degree = 90, offset = 1, x = 50, y = 22},
-		[4] = {degree = -90, offset = -1, x = 50, y = -4},
+		[1] = { degree = 180, offset = -1, x = 28, y = 9 },
+		[2] = { degree = 0, offset = 1, x = 72, y = 9 },
+		[3] = { degree = 90, offset = 1, x = 50, y = 22 },
+		[4] = { degree = -90, offset = -1, x = 50, y = -4 },
 	}
 	local function arrowOnClick(self)
 		local modKey = IsModifierKeyDown()
