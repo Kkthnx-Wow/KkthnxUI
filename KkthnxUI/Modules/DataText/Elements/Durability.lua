@@ -13,19 +13,19 @@ local GetInventoryItemTexture = _G.GetInventoryItemTexture
 
 local DurabilityDataText
 local repairCostString = string_gsub(REPAIR_COST, HEADER_COLON, ":")
-local lowDurabilityCap = .25
+local lowDurabilityCap = 0.25
 
 local localSlots = {
-	[1] = {1, INVTYPE_HEAD, 1000},
-	[2] = {3, INVTYPE_SHOULDER, 1000},
-	[3] = {5, INVTYPE_CHEST, 1000},
-	[4] = {6, INVTYPE_WAIST, 1000},
-	[5] = {9, INVTYPE_WRIST, 1000},
-	[6] = {10, INVTYPE_HAND, 1000},
-	[7] = {7, INVTYPE_LEGS, 1000},
-	[8] = {8, INVTYPE_FEET, 1000},
-	[9] = {16, INVTYPE_WEAPONMAINHAND, 1000},
-	[10] = {17, INVTYPE_WEAPONOFFHAND, 1000},
+	[1] = { 1, INVTYPE_HEAD, 1000 },
+	[2] = { 3, INVTYPE_SHOULDER, 1000 },
+	[3] = { 5, INVTYPE_CHEST, 1000 },
+	[4] = { 6, INVTYPE_WAIST, 1000 },
+	[5] = { 9, INVTYPE_WRIST, 1000 },
+	[6] = { 10, INVTYPE_HAND, 1000 },
+	[7] = { 7, INVTYPE_LEGS, 1000 },
+	[8] = { 8, INVTYPE_FEET, 1000 },
+	[9] = { 16, INVTYPE_WEAPONMAINHAND, 1000 },
+	[10] = { 17, INVTYPE_WEAPONOFFHAND, 1000 },
 }
 
 local function hideAlertWhileCombat()
@@ -60,7 +60,7 @@ local function UpdateAllSlots()
 				localSlots[i][3] = current / max
 				numSlots = numSlots + 1
 			end
-			localSlots[i][4] = "|T"..GetInventoryItemTexture("player", index)..":13:15:0:0:50:50:4:46:4:46|t " or ""
+			localSlots[i][4] = "|T" .. GetInventoryItemTexture("player", index) .. ":13:15:0:0:50:50:4:46:4:46|t " or ""
 		end
 	end
 	table_sort(localSlots, sortSlots)
@@ -100,9 +100,9 @@ local function OnEvent(_, event)
 	else
 		if numSlots > 0 then
 			local r, g, b = getDurabilityColor(math_floor(localSlots[1][3] * 100), 100)
-			DurabilityDataText.Text:SetFormattedText("%s%%|r".." "..DURABILITY, K.RGBToHex(r, g, b)..math_floor(localSlots[1][3] * 100))
+			DurabilityDataText.Text:SetFormattedText("%s%%|r" .. " " .. DURABILITY, K.RGBToHex(r, g, b) .. math_floor(localSlots[1][3] * 100))
 		else
-			DurabilityDataText.Text:SetText(DURABILITY..": "..K.MyClassColor..NONE)
+			DurabilityDataText.Text:SetText(DURABILITY .. ": " .. K.MyClassColor .. NONE)
 		end
 	end
 
@@ -126,7 +126,7 @@ local function OnEnter()
 			local slot = localSlots[i][1]
 			local cur = math_floor(localSlots[i][3] * 100)
 			local slotIcon = localSlots[i][4]
-			GameTooltip:AddDoubleLine(slotIcon..localSlots[i][2], cur.."%", 1, 1, 1, getDurabilityColor(cur, 100))
+			GameTooltip:AddDoubleLine(slotIcon .. localSlots[i][2], cur .. "%", 1, 1, 1, getDurabilityColor(cur, 100))
 
 			K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 			totalCost = totalCost + select(3, K.ScanTooltip:SetInventoryItem("player", slot))
@@ -152,7 +152,7 @@ function Module:CreateDurabilityDataText()
 
 	DurabilityDataText = DurabilityDataText or CreateFrame("Frame", nil, UIParent)
 	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
-    DurabilityDataText:SetParent(PaperDollFrame)
+	DurabilityDataText:SetParent(PaperDollFrame)
 
 	DurabilityDataText.Texture = DurabilityDataText.Texture or DurabilityDataText:CreateTexture(nil, "BACKGROUND", PaperDollSidebarTab1)
 	DurabilityDataText.Texture:SetPoint("TOP", PaperDollFrame, "BOTTOM", 208, 2)
@@ -160,10 +160,10 @@ function Module:CreateDurabilityDataText()
 	DurabilityDataText.Texture:SetSize(140, 48)
 
 	DurabilityDataText.Text = DurabilityDataText.Text or DurabilityDataText:CreateFontString(nil, "ARTWORK")
-    DurabilityDataText.Text:SetPoint("CENTER", DurabilityDataText.Texture, "CENTER", 0, 13)
+	DurabilityDataText.Text:SetPoint("CENTER", DurabilityDataText.Texture, "CENTER", 0, 13)
 	DurabilityDataText.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 
-    DurabilityDataText:SetAllPoints(DurabilityDataText.Text)
+	DurabilityDataText:SetAllPoints(DurabilityDataText.Text)
 
 	for _, event in pairs(eventList) do
 		DurabilityDataText:RegisterEvent(event)

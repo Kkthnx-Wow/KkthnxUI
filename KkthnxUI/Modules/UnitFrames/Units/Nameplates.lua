@@ -54,10 +54,10 @@ local explosivesID = 120651
 
 -- Unit classification
 local NPClassifies = {
-	elite = {1, 1, 1},
-	rare = {1, 1, 1, true},
-	rareelite = {1, 0.1, 0.1},
-	worldboss = {0, 1, 0},
+	elite = { 1, 1, 1 },
+	rare = { 1, 1, 1, true },
+	rareelite = { 1, 0.1, 0.1 },
+	worldboss = { 0, 1, 0 },
 }
 
 local ShowTargetNPCs = {
@@ -216,7 +216,7 @@ local function refreshGroupRoles()
 		local numPlayers = (isInRaid and GetNumGroupMembers()) or GetNumSubgroupMembers()
 		local unit = (isInRaid and "raid") or "party"
 		for i = 1, numPlayers do
-			local index = unit..i
+			local index = unit .. i
 			if UnitExists(index) then
 				groupRoles[UnitName(index)] = UnitGroupRolesAssigned(index)
 			end
@@ -240,7 +240,7 @@ function Module:CheckThreatStatus(unit)
 		return
 	end
 
-	local unitTarget = unit.."target"
+	local unitTarget = unit .. "target"
 	local unitRole = isInGroup and UnitExists(unitTarget) and not UnitIsUnit(unitTarget, "player") and groupRoles[UnitName(unitTarget)] or "NONE"
 
 	if K.Role == "Tank" and unitRole == "TANK" then
@@ -273,7 +273,7 @@ function Module:UpdateColor(_, unit)
 	local transColor = C["Nameplate"].TransColor
 
 	local executeRatio = C["Nameplate"].ExecuteRatio
-	local healthPerc = UnitHealth(unit) / (UnitHealthMax(unit) + .0001) * 100
+	local healthPerc = UnitHealth(unit) / (UnitHealthMax(unit) + 0.0001) * 100
 
 	local r, g, b
 	if not UnitIsConnected(unit) then
@@ -289,10 +289,10 @@ function Module:UpdateColor(_, unit)
 			else
 				r, g, b = unpack(K.Colors.power["MANA"])
 			end
-		elseif isPlayer and (not isFriendly) and C["Nameplate"].HostileCC then
+		elseif isPlayer and not isFriendly and C["Nameplate"].HostileCC then
 			r, g, b = K.UnitColor(unit)
 		elseif UnitIsTapDenied(unit) and not UnitPlayerControlled(unit) or C.NameplateTrashUnits[npcID] then
-			r, g, b = .6, .6, .6
+			r, g, b = 0.6, 0.6, 0.6
 		else
 			r, g, b = K.UnitColor(unit)
 			if status and (C["Nameplate"].TankMode or K.Role == "Tank") then
@@ -437,7 +437,7 @@ function Module:UpdateTargetIndicator()
 	end
 end
 
-local points = {-15, -5, 0, 5, 0}
+local points = { -15, -5, 0, 5, 0 }
 function Module:AddTargetIndicator(self)
 	TargetIndicator = CreateFrame("Frame", nil, self)
 	TargetIndicator:SetAllPoints()
@@ -469,14 +469,14 @@ function Module:AddTargetIndicator(self)
 	TargetIndicator.Glow = CreateFrame("Frame", nil, TargetIndicator, "BackdropTemplate")
 	TargetIndicator.Glow:SetPoint("TOPLEFT", self.Health.backdrop, -2, 2)
 	TargetIndicator.Glow:SetPoint("BOTTOMRIGHT", self.Health.backdrop, 2, -2)
-	TargetIndicator.Glow:SetBackdrop({edgeFile = C["Media"].Textures.GlowTexture, edgeSize = 4})
+	TargetIndicator.Glow:SetBackdrop({ edgeFile = C["Media"].Textures.GlowTexture, edgeSize = 4 })
 	TargetIndicator.Glow:SetBackdropBorderColor(unpack(C["Nameplate"].TargetIndicatorColor))
 	TargetIndicator.Glow:SetFrameLevel(0)
 
 	TargetIndicator.nameGlow = TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
 	TargetIndicator.nameGlow:SetSize(150, 80)
 	TargetIndicator.nameGlow:SetTexture("Interface\\GLUES\\Models\\UI_Draenei\\GenericGlow64")
-	TargetIndicator.nameGlow:SetVertexColor(102/255, 157/255, 255/255)
+	TargetIndicator.nameGlow:SetVertexColor(102 / 255, 157 / 255, 255 / 255)
 	TargetIndicator.nameGlow:SetBlendMode("ADD")
 	TargetIndicator.nameGlow:SetPoint("CENTER", self, "BOTTOM")
 
@@ -523,7 +523,7 @@ function Module:UpdateQuestUnit(_, unit)
 	K.ScanTooltip:SetUnit(unit)
 
 	for i = 2, K.ScanTooltip:NumLines() do
-		local textLine = _G["KKUI_ScanTooltipTextLeft"..i]
+		local textLine = _G["KKUI_ScanTooltipTextLeft" .. i]
 		local text = textLine and textLine:GetText()
 		if not text then
 			break
@@ -543,7 +543,7 @@ function Module:UpdateQuestUnit(_, unit)
 					end
 				elseif progress and not strmatch(text, THREAT_TOOLTIP) then
 					if floor(100 - progress) > 0 then
-						questProgress = progress.."%" -- lower priority on progress, keep looking
+						questProgress = progress .. "%" -- lower priority on progress, keep looking
 					end
 				else
 					break
@@ -789,7 +789,7 @@ function Module:MouseoverIndicator(self)
 
 	local texture = highlight:CreateTexture(nil, "ARTWORK")
 	texture:SetAllPoints()
-	texture:SetColorTexture(1, 1, 1, .25)
+	texture:SetColorTexture(1, 1, 1, 0.25)
 
 	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT", Module.UpdateMouseoverShown, true)
 
@@ -810,7 +810,7 @@ function Module:UpdateSpellInterruptor(...)
 		local r, g, b = K.ColorClass(class)
 		local color = K.RGBToHex(r, g, b)
 		local sourceName = Ambiguate(sourceName, "short")
-		self.Castbar.Text:SetText(INTERRUPTED.." > "..color..sourceName)
+		self.Castbar.Text:SetText(INTERRUPTED .. " > " .. color .. sourceName)
 		self.Castbar.Time:SetText("")
 	end
 end
@@ -873,7 +873,7 @@ function Module:CreatePlates()
 	self:Tag(self.npcTitle, "[npctitle]")
 
 	self.guildName = K.CreateFontString(self, C["Nameplate"].NameTextSize - 1)
-	self.guildName:SetTextColor(211/255, 211/255, 211/255)
+	self.guildName:SetTextColor(211 / 255, 211 / 255, 211 / 255)
 	self.guildName:ClearAllPoints()
 	self.guildName:SetPoint("TOP", self, "BOTTOM", 0, -10)
 	self.guildName:Hide()
@@ -930,7 +930,7 @@ function Module:CreatePlates()
 	self.Castbar.Shield:SetSize(self:GetHeight() + 14, self:GetHeight() + 14)
 	self.Castbar.Shield:SetPoint("CENTER", 0, -5)
 
-	self.Castbar.timeToHold = .5
+	self.Castbar.timeToHold = 0.5
 	self.Castbar.decimal = "%.1f"
 
 	self.Castbar.spellTarget = K.CreateFontString(self.Castbar, C["Nameplate"].NameTextSize + 3)
@@ -975,7 +975,7 @@ function Module:CreatePlates()
 		oag:SetWidth(15)
 		oag:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
 		oag:SetBlendMode("ADD")
-		oag:SetAlpha(.25)
+		oag:SetAlpha(0.25)
 		oag:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 2)
 		oag:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -2)
 
@@ -1139,7 +1139,11 @@ function Module:RefreshAllPlates()
 end
 
 local DisabledElements = {
-	"Health", "Castbar", "HealPredictionAndAbsorb", "PvPClassificationIndicator", "ThreatIndicator"
+	"Health",
+	"Castbar",
+	"HealPredictionAndAbsorb",
+	"PvPClassificationIndicator",
+	"ThreatIndicator",
 }
 function Module:UpdatePlateByType()
 	local name = self.nameText
@@ -1329,7 +1333,7 @@ function Module:CreatePlayerPlate()
 	Module:CreateClassPower(self)
 
 	if K.Class == "MONK" then
-		self.Stagger = CreateFrame("StatusBar", self:GetName().."Stagger", self)
+		self.Stagger = CreateFrame("StatusBar", self:GetName() .. "Stagger", self)
 		self.Stagger:SetPoint("TOPLEFT", self.Health, 0, 8)
 		self.Stagger:SetSize(self:GetWidth(), self:GetHeight())
 		self.Stagger:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
@@ -1501,7 +1505,7 @@ function Module:ResizeTargetPower()
 		local max = bars.__max
 		for i = 1, max do
 			bars[i]:SetHeight(barHeight)
-			bars[i]:SetWidth((barWidth - (max-1) * 6) / max)
+			bars[i]:SetWidth((barWidth - (max - 1) * 6) / max)
 		end
 	end
 end

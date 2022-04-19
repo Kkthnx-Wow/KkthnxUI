@@ -20,7 +20,7 @@ local function UpdateRaidThreat(self, _, unit)
 	end
 
 	local situation = UnitThreatSituation(unit)
-	if (situation and situation > 0) then
+	if situation and situation > 0 then
 		local r, g, b = GetThreatStatusColor(situation)
 		self.KKUI_Border:SetVertexColor(r, g, b)
 	else
@@ -244,7 +244,7 @@ function Module:CreateRaid()
 		local filter = C["Raid"].RaidBuffs.Value == "All" and "HELPFUL" or "HELPFUL|RAID"
 		local onlyShowPlayer = C["Raid"].RaidBuffs.Value == "Self"
 
-		self.Buffs = self.Buffs or CreateFrame("Frame", self:GetName().."Buffs", self.Health)
+		self.Buffs = self.Buffs or CreateFrame("Frame", self:GetName() .. "Buffs", self.Health)
 		self.Buffs:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 2, -2)
 		self.Buffs:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", -2, 2)
 		self.Buffs:SetHeight(16)
@@ -308,7 +308,7 @@ function Module:CreateRaid()
 
 	if C["Raid"].TargetHighlight then
 		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
-		self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
+		self.TargetHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
 		self.TargetHighlight:SetPoint("TOPLEFT", self, -5, 5)
 		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self, 5, -5)
 		self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
@@ -338,8 +338,8 @@ function Module:CreateRaid()
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()
 	self.Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
-	self.Highlight:SetTexCoord(0, 1, .5, 1)
-	self.Highlight:SetVertexColor(.6, .6, .6)
+	self.Highlight:SetTexCoord(0, 1, 0.5, 1)
+	self.Highlight:SetVertexColor(0.6, 0.6, 0.6)
 	self.Highlight:SetBlendMode("ADD")
 	self.Highlight:Hide()
 

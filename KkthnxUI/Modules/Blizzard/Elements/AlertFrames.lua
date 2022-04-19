@@ -193,7 +193,7 @@ function Module:CreateAlertFrames()
 	_G.UIPARENT_MANAGED_FRAME_POSITIONS.GroupLootContainer = nil
 
 	if not AlertFrameHolder.Mover then
-		AlertFrameHolder.Mover = K.Mover(AlertFrameHolder, "AlertFrameMover", "Loot / Alert Frames", {"TOP", UIParent, "TOP", -1, -18})
+		AlertFrameHolder.Mover = K.Mover(AlertFrameHolder, "AlertFrameMover", "Loot / Alert Frames", { "TOP", UIParent, "TOP", -1, -18 })
 	else
 		AlertFrameHolder.Mover:SetSize(AlertFrameHolder:GetSize())
 	end

@@ -70,7 +70,7 @@ end
 function Module:QuestTool_SetGlow(msg)
 	if GetOverrideBarSkin() and (activeQuests[59585] or activeQuests[64271]) then
 		for i = 1, 3 do
-			local button = _G["ActionButton"..i]
+			local button = _G["ActionButton" .. i]
 			local _, spellID = GetActionInfo(button.action)
 			local name = spellID and GetSpellInfo(spellID)
 			if fixedStrings[name] and isActionMatch(msg, fixedStrings[name]) or isActionMatch(msg, name) then
@@ -89,7 +89,7 @@ function Module:QuestTool_ClearGlow()
 	if Module.isGlowing then
 		Module.isGlowing = nil
 		for i = 1, 3 do
-			K.HideOverlayGlow(_G["ActionButton"..i])
+			K.HideOverlayGlow(_G["ActionButton" .. i])
 		end
 	end
 end

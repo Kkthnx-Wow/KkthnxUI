@@ -15,13 +15,13 @@ function Module:ReskinBartender4()
 		end
 
 		local button = self
-		local icon = _G[name.."Icon"]
-		local count = _G[name.."Count"]
-		local flash = _G[name.."Flash"]
-		local hotkey = _G[name.."HotKey"]
-		local border = _G[name.."Border"]
-		local btname = _G[name.."Name"]
-		local normal = _G[name.."NormalTexture"]
+		local icon = _G[name .. "Icon"]
+		local count = _G[name .. "Count"]
+		local flash = _G[name .. "Flash"]
+		local hotkey = _G[name .. "HotKey"]
+		local border = _G[name .. "Border"]
+		local btname = _G[name .. "Name"]
+		local normal = _G[name .. "NormalTexture"]
 
 		flash:SetTexture("")
 		button:SetNormalTexture("")
@@ -69,7 +69,7 @@ function Module:ReskinBartender4()
 			return
 		end
 
-		local flash = _G[name.."Flash"]
+		local flash = _G[name .. "Flash"]
 		button:StyleButton()
 		button:SetNormalTexture("")
 
@@ -99,15 +99,15 @@ function Module:ReskinBartender4()
 			icon:SetAllPoints()
 
 			if pet then
-				local autocast = _G[name.."AutoCastable"]
+				local autocast = _G[name .. "AutoCastable"]
 				autocast:SetSize((button:GetWidth() * 2) - 10, (button:GetWidth() * 2) - 10)
 				autocast:ClearAllPoints()
 				autocast:SetPoint("CENTER", button, 0, 0)
 
-				local shine = _G[name.."Shine"]
+				local shine = _G[name .. "Shine"]
 				shine:SetSize(button:GetWidth(), button:GetWidth())
 
-				local cooldown = _G[name.."Cooldown"]
+				local cooldown = _G[name .. "Cooldown"]
 				cooldown:SetSize(button:GetWidth() - 2, button:GetWidth() - 2)
 			end
 
@@ -117,25 +117,25 @@ function Module:ReskinBartender4()
 
 	do
 		for i = 1, 120 do
-			if _G["BT4Button"..i] then
-				_G["BT4Button"..i]:StyleButton()
-				StyleNormalBartender4Button(_G["BT4Button"..i])
+			if _G["BT4Button" .. i] then
+				_G["BT4Button" .. i]:StyleButton()
+				StyleNormalBartender4Button(_G["BT4Button" .. i])
 			end
 		end
 
 		for i = 1, NUM_STANCE_SLOTS do
-			local name = "BT4StanceButton"..i
+			local name = "BT4StanceButton" .. i
 			local button = _G[name]
-			local icon = _G[name.."Icon"]
-			local hotkey = _G[name.."HotKey"]
+			local icon = _G[name .. "Icon"]
+			local hotkey = _G[name .. "HotKey"]
 			StyleSmallBartender4Button(button, icon, name, hotkey)
 		end
 
 		for i = 1, NUM_PET_ACTION_SLOTS do
-			local name = "BT4PetButton"..i
+			local name = "BT4PetButton" .. i
 			local button = _G[name]
-			local icon = _G[name.."Icon"]
-			local hotkey = _G[name.."HotKey"]
+			local icon = _G[name .. "Icon"]
+			local hotkey = _G[name .. "HotKey"]
 			StyleSmallBartender4Button(button, icon, name, hotkey, true)
 		end
 	end

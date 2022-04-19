@@ -154,7 +154,7 @@ end
 local id = 0
 local function CreateIndicator(name, parent, size)
 	id = id + 1
-	name = name or "OPieSliceButton"..id
+	name = name or "OPieSliceButton" .. id
 	parent = parent or UIParent
 	size = size or 36
 
@@ -162,13 +162,13 @@ local function CreateIndicator(name, parent, size)
 	button:SetSize(size, size)
 	button:EnableMouse(false)
 
-	button.Border = _G[name.."Border"] -- highlight
-	button.Cooldown = _G[name.."Cooldown"]
-	button.Count = _G[name.."Count"]
-	button.Flash = _G[name.."Flash"] -- inner glow / checked
-	button.HotKey = _G[name.."HotKey"]
-	button.Icon = _G[name.."Icon"]
-	button.NormalTexture = _G[name.."NormalTexture"] -- border
+	button.Border = _G[name .. "Border"] -- highlight
+	button.Cooldown = _G[name .. "Cooldown"]
+	button.Count = _G[name .. "Count"]
+	button.Flash = _G[name .. "Flash"] -- inner glow / checked
+	button.HotKey = _G[name .. "HotKey"]
+	button.Icon = _G[name .. "Icon"]
+	button.NormalTexture = _G[name .. "NormalTexture"] -- border
 
 	-- Overlay icon (???)
 	button.OverlayIcon = button:CreateTexture(nil, "BACKGROUND", 1)
@@ -197,15 +197,15 @@ local function CreateIndicator(name, parent, size)
 
 		button.Cooldown:SetSize(size, size)
 		button.Cooldown:ClearAllPoints()
-		button.Cooldown:SetPoint("CENTER",0,0)
+		button.Cooldown:SetPoint("CENTER", 0, 0)
 
 		button.Flash:SetSize(size, size)
 		button.Flash:ClearAllPoints()
-		button.Flash:SetPoint("CENTER",0,0)
+		button.Flash:SetPoint("CENTER", 0, 0)
 
 		button.checked:SetSize(size, size)
 		button.checked:ClearAllPoints()
-		button.checked:SetPoint("CENTER",0,0)
+		button.checked:SetPoint("CENTER", 0, 0)
 
 		button.isSkinned = true
 	end

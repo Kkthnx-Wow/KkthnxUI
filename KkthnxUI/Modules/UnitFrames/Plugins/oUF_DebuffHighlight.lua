@@ -3,12 +3,12 @@ local _, ns = ...
 local oUF = ns.oUF or K.oUF
 
 local CanDispel = {
-	DRUID = {Magic = false, Curse = true, Poison = true},
-	MAGE = {Curse = true},
-	MONK = {Magic = false, Poison = true, Disease = true},
-	PALADIN = {Magic = false, Poison = true, Disease = true},
-	PRIEST = {Magic = false, Disease = true},
-	SHAMAN = {Magic = false, Curse = true}
+	DRUID = { Magic = false, Curse = true, Poison = true },
+	MAGE = { Curse = true },
+	MONK = { Magic = false, Poison = true, Disease = true },
+	PALADIN = { Magic = false, Poison = true, Disease = true },
+	PRIEST = { Magic = false, Disease = true },
+	SHAMAN = { Magic = false, Curse = true },
 }
 
 local dispellist = CanDispel[K.Class] or {}
@@ -131,12 +131,12 @@ local function Enable(object)
 
 	if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder then
 		local r, g, b, a = object:GetBackdropColor()
-		origColors[object] = {r = r, g = g, b = b, a = a}
+		origColors[object] = { r = r, g = g, b = b, a = a }
 		r, g, b, a = object:GetBackdropBorderColor()
-		origBorderColors[object] = {r = r, g = g, b = b, a = a}
+		origBorderColors[object] = { r = r, g = g, b = b, a = a }
 	elseif not object.DebuffHighlightUseTexture then
 		local r, g, b, a = object.DebuffHighlight:GetVertexColor()
-		origColors[object] = {r = r, g = g, b = b, a = a}
+		origColors[object] = { r = r, g = g, b = b, a = a }
 	end
 
 	return true

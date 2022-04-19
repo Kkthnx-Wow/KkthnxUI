@@ -21,7 +21,7 @@ table_insert(C.defaultThemes, function()
 		GameMenuButtonAddons,
 		GameMenuButtonLogout,
 		GameMenuButtonQuit,
-		GameMenuButtonContinue
+		GameMenuButtonContinue,
 	}
 
 	for _, button in next, buttons do

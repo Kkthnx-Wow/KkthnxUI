@@ -29,11 +29,11 @@ local VIDEO_OPTIONS_ENABLED = _G.VIDEO_OPTIONS_ENABLED
 local collectgarbage = _G.collectgarbage
 local gcinfo = _G.gcinfo
 
-local disableString = "|cffff5555"..VIDEO_OPTIONS_DISABLED
-local enableString = "|cff55ff55"..VIDEO_OPTIONS_ENABLED
+local disableString = "|cffff5555" .. VIDEO_OPTIONS_DISABLED
+local enableString = "|cff55ff55" .. VIDEO_OPTIONS_ENABLED
 local scriptProfileStatus = GetCVarBool("scriptProfile")
 local showMoreString = "%d %s (%s)"
-local usageColor = {0, 1, 0, 1, 1, 0, 1, 0, 0}
+local usageColor = { 0, 1, 0, 1, 1, 0, 1, 0, 0 }
 local usageString = "%.3f ms"
 
 local maxAddOns = 12
@@ -77,7 +77,7 @@ local function BuildAddonList()
 	for i = 1, numAddons do
 		local _, title, _, loadable = GetAddOnInfo(i)
 		if loadable then
-			table_insert(infoTable, {i, title, 0, 0})
+			table_insert(infoTable, { i, title, 0, 0 })
 		end
 	end
 end
@@ -116,17 +116,17 @@ end
 
 local function colorFPS(fps)
 	if fps < 15 then
-		return "|cffD80909"..fps
+		return "|cffD80909" .. fps
 	elseif fps < 30 then
-		return "|cffE8DA0F"..fps
+		return "|cffE8DA0F" .. fps
 	else
-		return "|cff0CD809"..fps
+		return "|cff0CD809" .. fps
 	end
 end
 
 local function setFrameRate()
 	local fps = math_floor(GetFramerate())
-	SystemDataText.Text:SetText(L["FPS"]..": "..colorFPS(fps))
+	SystemDataText.Text:SetText(L["FPS"] .. ": " .. colorFPS(fps))
 end
 
 local function OnEnter()
@@ -192,11 +192,20 @@ local function OnEnter()
 	end
 
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(" ", "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:230:307|t "..L["Collect Memory"].." ", 1, 1, 1, 0.5, 0.7, 1)
+	GameTooltip:AddDoubleLine(" ", "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:230:307|t " .. L["Collect Memory"] .. " ", 1, 1, 1, 0.5, 0.7, 1)
 	if scriptProfileStatus then
-		GameTooltip:AddDoubleLine(" ", "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:333:411|t "..L["SwitchMode"].." ", 1, 1, 1, 0.5, 0.7, 1)
+		GameTooltip:AddDoubleLine(" ", "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:333:411|t " .. L["SwitchMode"] .. " ", 1, 1, 1, 0.5, 0.7, 1)
 	end
-	GameTooltip:AddDoubleLine(" ", "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t "..L["CPU Usage"]..": "..(GetCVarBool("scriptProfile") and enableString or disableString).." ", 1, 1, 1, 0.5, 0.7, 1)
+	GameTooltip:AddDoubleLine(
+		" ",
+		"|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t " .. L["CPU Usage"] .. ": " .. (GetCVarBool("scriptProfile") and enableString or disableString) .. " ",
+		1,
+		1,
+		1,
+		0.5,
+		0.7,
+		1
+	)
 	GameTooltip:Show()
 end
 
@@ -280,5 +289,5 @@ function Module:CreateSystemDataText()
 	SystemDataText:SetScript("OnLeave", OnLeave)
 	SystemDataText:SetScript("OnMouseUp", OnMouseUp)
 
-	K.Mover(SystemDataText, "KKUI_SystemDataText", "KKUI_SystemDataText", {"TOPLEFT", UIParent, "TOPLEFT", 0, 0})
+	K.Mover(SystemDataText, "KKUI_SystemDataText", "KKUI_SystemDataText", { "TOPLEFT", UIParent, "TOPLEFT", 0, 0 })
 end

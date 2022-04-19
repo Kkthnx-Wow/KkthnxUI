@@ -120,7 +120,7 @@ function Module:CreateFocus()
 			self.Portrait.Border:SetAllPoints(self.Portrait)
 			self.Portrait.Border:CreateBorder()
 
-			if (focusPortraitStyle == "ClassPortraits" or focusPortraitStyle == "NewClassPortraits") then
+			if focusPortraitStyle == "ClassPortraits" or focusPortraitStyle == "NewClassPortraits" then
 				self.Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
@@ -226,7 +226,7 @@ function Module:CreateFocus()
 			FocusCastbarPoint = self.Power
 		end
 
-		K.Mover(self.Castbar, "FocusCastbar", "FocusCastbar", {"TOP", FocusCastbarPoint, "BOTTOM", 0, -6}, focusWidth, C["Unitframe"].FocusCastbarHeight)
+		K.Mover(self.Castbar, "FocusCastbar", "FocusCastbar", { "TOP", FocusCastbarPoint, "BOTTOM", 0, -6 }, focusWidth, C["Unitframe"].FocusCastbarHeight)
 	end
 
 	if C["Unitframe"].ShowHealPrediction then
@@ -355,8 +355,8 @@ function Module:CreateFocus()
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()
 	self.Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
-	self.Highlight:SetTexCoord(0, 1, .5, 1)
-	self.Highlight:SetVertexColor(.6, .6, .6)
+	self.Highlight:SetTexCoord(0, 1, 0.5, 1)
+	self.Highlight:SetVertexColor(0.6, 0.6, 0.6)
 	self.Highlight:SetBlendMode("ADD")
 	self.Highlight:Hide()
 

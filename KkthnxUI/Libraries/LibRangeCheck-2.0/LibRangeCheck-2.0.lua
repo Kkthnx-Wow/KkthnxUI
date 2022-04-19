@@ -44,7 +44,9 @@ local MAJOR_VERSION = "LibRangeCheck-2.0-KkthnxUI"
 local MINOR_VERSION = 100206
 
 local lib, oldminor = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
-if not lib then return end
+if not lib then
+	return
+end
 
 local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local isClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
@@ -85,27 +87,27 @@ local UnitIsVisible = UnitIsVisible
 
 -- << STATIC CONFIG
 
-local UpdateDelay = .5
+local UpdateDelay = 0.5
 local ItemRequestTimeout = 10.0
 
 -- interact distance based checks. ranges are based on my own measurements (thanks for all the folks who helped me with this)
 local DefaultInteractList = {
---  [1] = 28, -- Compare Achievements
---  [2] = 9,  -- Trade
-	[3] = 8,  -- Duel
+	--  [1] = 28, -- Compare Achievements
+	--  [2] = 9,  -- Trade
+	[3] = 8, -- Duel
 	[4] = 28, -- Follow
---  [5] = 7,  -- unknown
+	--  [5] = 7,  -- unknown
 }
 
 -- interact list overrides for races
 local InteractLists = {
 	Tauren = {
-	--  [2] = 7,
+		--  [2] = 7,
 		[3] = 6,
 		[4] = 25,
 	},
 	Scourge = {
-	--  [2] = 8,
+		--  [2] = 8,
 		[3] = 7,
 		[4] = 27,
 	},
@@ -114,185 +116,185 @@ local InteractLists = {
 local MeleeRange = 2
 local FriendSpells, HarmSpells, ResSpells, PetSpells = {}, {}, {}, {}
 
-for _, n in next, { 'DEATHKNIGHT', 'DEMONHUNTER', 'DRUID', 'HUNTER', 'SHAMAN', 'MAGE', 'PALADIN', 'PRIEST', 'WARLOCK', 'WARRIOR', 'MONK', 'ROGUE' } do
+for _, n in next, { "DEATHKNIGHT", "DEMONHUNTER", "DRUID", "HUNTER", "SHAMAN", "MAGE", "PALADIN", "PRIEST", "WARLOCK", "WARRIOR", "MONK", "ROGUE" } do
 	FriendSpells[n], HarmSpells[n], ResSpells[n], PetSpells[n] = {}, {}, {}, {}
 end
 
 -- Death Knights
-tinsert(HarmSpells.DEATHKNIGHT, 49576)	-- Death Grip (30 yards)
-tinsert(HarmSpells.DEATHKNIGHT, 47541)	-- Death Coil (Unholy) (40 yards)
+tinsert(HarmSpells.DEATHKNIGHT, 49576) -- Death Grip (30 yards)
+tinsert(HarmSpells.DEATHKNIGHT, 47541) -- Death Coil (Unholy) (40 yards)
 
-tinsert(ResSpells.DEATHKNIGHT, 61999)	-- Raise Ally (40 yards)
+tinsert(ResSpells.DEATHKNIGHT, 61999) -- Raise Ally (40 yards)
 
 -- Demon Hunters
-tinsert(HarmSpells.DEMONHUNTER, 185123)	-- Throw Glaive (Havoc) (30 yards)
-tinsert(HarmSpells.DEMONHUNTER, 183752)	-- Consume Magic (20 yards)
-tinsert(HarmSpells.DEMONHUNTER, 204021)	-- Fiery Brand (Vengeance) (30 yards)
+tinsert(HarmSpells.DEMONHUNTER, 185123) -- Throw Glaive (Havoc) (30 yards)
+tinsert(HarmSpells.DEMONHUNTER, 183752) -- Consume Magic (20 yards)
+tinsert(HarmSpells.DEMONHUNTER, 204021) -- Fiery Brand (Vengeance) (30 yards)
 
 -- Druids
-tinsert(FriendSpells.DRUID, 8936)	-- Regrowth (40 yards, level 3)
-tinsert(FriendSpells.DRUID, 774)	-- Rejuvenation (Restoration) (40 yards, level 10)
-tinsert(FriendSpells.DRUID, 2782)	-- Remove Corruption (Restoration) (40 yards, level 19)
-tinsert(FriendSpells.DRUID, 88423)	-- Natures Cure (Restoration) (40 yards, level 19)
+tinsert(FriendSpells.DRUID, 8936) -- Regrowth (40 yards, level 3)
+tinsert(FriendSpells.DRUID, 774) -- Rejuvenation (Restoration) (40 yards, level 10)
+tinsert(FriendSpells.DRUID, 2782) -- Remove Corruption (Restoration) (40 yards, level 19)
+tinsert(FriendSpells.DRUID, 88423) -- Natures Cure (Restoration) (40 yards, level 19)
 
 if not isRetail then
 	tinsert(FriendSpells.DRUID, 5185) -- Healing Touch (40 yards, level 1, rank 1)
 end
 
-tinsert(HarmSpells.DRUID, 5176)		-- Wrath (40 yards)
-tinsert(HarmSpells.DRUID, 339)		-- Entangling Roots (35 yards)
-tinsert(HarmSpells.DRUID, 6795)		-- Growl (30 yards)
-tinsert(HarmSpells.DRUID, 33786)	-- Cyclone (20 yards)
-tinsert(HarmSpells.DRUID, 22568)	-- Ferocious Bite (Melee Range)
-tinsert(HarmSpells.DRUID, 8921)		-- Moonfire (40 yards, level 2)
+tinsert(HarmSpells.DRUID, 5176) -- Wrath (40 yards)
+tinsert(HarmSpells.DRUID, 339) -- Entangling Roots (35 yards)
+tinsert(HarmSpells.DRUID, 6795) -- Growl (30 yards)
+tinsert(HarmSpells.DRUID, 33786) -- Cyclone (20 yards)
+tinsert(HarmSpells.DRUID, 22568) -- Ferocious Bite (Melee Range)
+tinsert(HarmSpells.DRUID, 8921) -- Moonfire (40 yards, level 2)
 
-tinsert(ResSpells.DRUID, 50769)		-- Revive (40 yards, level 14)
-tinsert(ResSpells.DRUID, 20484)		-- Rebirth (40 yards, level 29)
+tinsert(ResSpells.DRUID, 50769) -- Revive (40 yards, level 14)
+tinsert(ResSpells.DRUID, 20484) -- Rebirth (40 yards, level 29)
 
 -- Hunters
-tinsert(HarmSpells.HUNTER, 75)		-- Auto Shot (40 yards)
+tinsert(HarmSpells.HUNTER, 75) -- Auto Shot (40 yards)
 
 if not isRetail then
 	tinsert(HarmSpells.HUNTER, 2764) -- Throw (30 yards, level 1)
 end
 
-tinsert(PetSpells.HUNTER, 136)		-- Mend Pet (45 yards)
+tinsert(PetSpells.HUNTER, 136) -- Mend Pet (45 yards)
 
 -- Mages
-tinsert(FriendSpells.MAGE, 1459)	-- Arcane Intellect (40 yards, level 8)
-tinsert(FriendSpells.MAGE, 475)		-- Remove Curse (40 yards, level 28)
+tinsert(FriendSpells.MAGE, 1459) -- Arcane Intellect (40 yards, level 8)
+tinsert(FriendSpells.MAGE, 475) -- Remove Curse (40 yards, level 28)
 
 if not isRetail then
 	tinsert(FriendSpells.MAGE, 130) -- Slow Fall (40 yards, level 12)
 end
 
-tinsert(HarmSpells.MAGE, 44614)		-- Flurry (40 yards)
-tinsert(HarmSpells.MAGE, 5019)		-- Shoot (30 yards)
-tinsert(HarmSpells.MAGE, 118)		-- Polymorph (30 yards)
-tinsert(HarmSpells.MAGE, 116)		-- Frostbolt (40 yards)
-tinsert(HarmSpells.MAGE, 133)		-- Fireball (40 yards)
-tinsert(HarmSpells.MAGE, 44425)		-- Arcane Barrage (40 yards)
+tinsert(HarmSpells.MAGE, 44614) -- Flurry (40 yards)
+tinsert(HarmSpells.MAGE, 5019) -- Shoot (30 yards)
+tinsert(HarmSpells.MAGE, 118) -- Polymorph (30 yards)
+tinsert(HarmSpells.MAGE, 116) -- Frostbolt (40 yards)
+tinsert(HarmSpells.MAGE, 133) -- Fireball (40 yards)
+tinsert(HarmSpells.MAGE, 44425) -- Arcane Barrage (40 yards)
 
 -- Monks
-tinsert(FriendSpells.MONK, 115450)	-- Detox (40 yards)
-tinsert(FriendSpells.MONK, 115546)	-- Provoke (30 yards)
-tinsert(FriendSpells.MONK, 116670)	-- Vivify (40 yards)
+tinsert(FriendSpells.MONK, 115450) -- Detox (40 yards)
+tinsert(FriendSpells.MONK, 115546) -- Provoke (30 yards)
+tinsert(FriendSpells.MONK, 116670) -- Vivify (40 yards)
 
-tinsert(HarmSpells.MONK, 115546)	-- Provoke (30 yards)
-tinsert(HarmSpells.MONK, 115078)	-- Paralysis (20 yards)
-tinsert(HarmSpells.MONK, 100780)	-- Tiger Palm (Melee Range)
-tinsert(HarmSpells.MONK, 117952)	-- Crackling Jade Lightning (40 yards)
+tinsert(HarmSpells.MONK, 115546) -- Provoke (30 yards)
+tinsert(HarmSpells.MONK, 115078) -- Paralysis (20 yards)
+tinsert(HarmSpells.MONK, 100780) -- Tiger Palm (Melee Range)
+tinsert(HarmSpells.MONK, 117952) -- Crackling Jade Lightning (40 yards)
 
-tinsert(ResSpells.MONK, 115178)		-- Resuscitate (40 yards, level 13)
+tinsert(ResSpells.MONK, 115178) -- Resuscitate (40 yards, level 13)
 
 -- Paladins
-tinsert(FriendSpells.PALADIN, 19750)	-- Flash of Light (40 yards, level 4)
-tinsert(FriendSpells.PALADIN, 85673)	-- Word of Glory (40 yards, level 7)
-tinsert(FriendSpells.PALADIN, 4987)		-- Cleanse (Holy) (40 yards, level 12)
-tinsert(FriendSpells.PALADIN, 213644)	-- Cleanse Toxins (Protection, Retribution) (40 yards, level 12)
+tinsert(FriendSpells.PALADIN, 19750) -- Flash of Light (40 yards, level 4)
+tinsert(FriendSpells.PALADIN, 85673) -- Word of Glory (40 yards, level 7)
+tinsert(FriendSpells.PALADIN, 4987) -- Cleanse (Holy) (40 yards, level 12)
+tinsert(FriendSpells.PALADIN, 213644) -- Cleanse Toxins (Protection, Retribution) (40 yards, level 12)
 
 if not isRetail then
-	tinsert(FriendSpells.PALADIN, 635)	-- Holy Light (40 yards, level 1, rank 1)
+	tinsert(FriendSpells.PALADIN, 635) -- Holy Light (40 yards, level 1, rank 1)
 end
 
-tinsert(HarmSpells.PALADIN, 853)	-- Hammer of Justice (10 yards)
-tinsert(HarmSpells.PALADIN, 35395)	-- Crusader Strike (Melee Range)
-tinsert(HarmSpells.PALADIN, 62124)	-- Hand of Reckoning (30 yards)
-tinsert(HarmSpells.PALADIN, 183218)	-- Hand of Hindrance (30 yards)
-tinsert(HarmSpells.PALADIN, 20271)	-- Judgement (30 yards)
-tinsert(HarmSpells.PALADIN, 20473)	-- Holy Shock (40 yards)
+tinsert(HarmSpells.PALADIN, 853) -- Hammer of Justice (10 yards)
+tinsert(HarmSpells.PALADIN, 35395) -- Crusader Strike (Melee Range)
+tinsert(HarmSpells.PALADIN, 62124) -- Hand of Reckoning (30 yards)
+tinsert(HarmSpells.PALADIN, 183218) -- Hand of Hindrance (30 yards)
+tinsert(HarmSpells.PALADIN, 20271) -- Judgement (30 yards)
+tinsert(HarmSpells.PALADIN, 20473) -- Holy Shock (40 yards)
 
-tinsert(ResSpells.PALADIN, 7328)	-- Redemption (40 yards)
+tinsert(ResSpells.PALADIN, 7328) -- Redemption (40 yards)
 
 -- Priests
-tinsert(FriendSpells.PRIEST, 2061)	-- Flash Heal (40 yards, level 3)
-tinsert(FriendSpells.PRIEST, 17)	-- Power Word: Shield (40 yards, level 4)
-tinsert(FriendSpells.PRIEST, 527)	-- Purify / Dispel Magic (40 yards retail, 30 yards tbc, level 18, rank 1)
+tinsert(FriendSpells.PRIEST, 2061) -- Flash Heal (40 yards, level 3)
+tinsert(FriendSpells.PRIEST, 17) -- Power Word: Shield (40 yards, level 4)
+tinsert(FriendSpells.PRIEST, 527) -- Purify / Dispel Magic (40 yards retail, 30 yards tbc, level 18, rank 1)
 
 if not isRetail then
 	tinsert(FriendSpells.PRIEST, 2050) -- Lesser Heal (40 yards, level 1, rank 1)
 end
 
-tinsert(HarmSpells.PRIEST, 589)		-- Shadow Word: Pain (40 yards)
-tinsert(HarmSpells.PRIEST, 585)		-- Smite (40 yards)
-tinsert(HarmSpells.PRIEST, 5019)	-- Shoot (30 yards)
+tinsert(HarmSpells.PRIEST, 589) -- Shadow Word: Pain (40 yards)
+tinsert(HarmSpells.PRIEST, 585) -- Smite (40 yards)
+tinsert(HarmSpells.PRIEST, 5019) -- Shoot (30 yards)
 
 if not isRetail then
 	tinsert(HarmSpells.PRIEST, 8092) -- Mindblast (30 yards, level 10)
 end
 
-tinsert(ResSpells.PRIEST, 2006)		-- Resurrection (40 yards, level 10)
+tinsert(ResSpells.PRIEST, 2006) -- Resurrection (40 yards, level 10)
 
 -- Rogues
 if isRetail then
-	tinsert(FriendSpells.ROGUE, 36554)	-- Shadowstep (Assassination, Subtlety) (25 yards, level 18) -- works on friendly in retail
-	tinsert(FriendSpells.ROGUE, 921)	-- Pick Pocket (10 yards, level 24) -- this works for range, keep it in friendly aswell for retail but on classic this is melee range and will return min 0 range 0
+	tinsert(FriendSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18) -- works on friendly in retail
+	tinsert(FriendSpells.ROGUE, 921) -- Pick Pocket (10 yards, level 24) -- this works for range, keep it in friendly aswell for retail but on classic this is melee range and will return min 0 range 0
 end
 
-tinsert(HarmSpells.ROGUE, 2764)		-- Throw (30 yards)
-tinsert(HarmSpells.ROGUE, 36554)	-- Shadowstep (Assassination, Subtlety) (25 yards, level 18)
-tinsert(HarmSpells.ROGUE, 185763)	-- Pistol Shot (Outlaw) (20 yards)
-tinsert(HarmSpells.ROGUE, 2094)		-- Blind (15 yards)
-tinsert(HarmSpells.ROGUE, 921)		-- Pick Pocket (10 yards, level 24)
+tinsert(HarmSpells.ROGUE, 2764) -- Throw (30 yards)
+tinsert(HarmSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18)
+tinsert(HarmSpells.ROGUE, 185763) -- Pistol Shot (Outlaw) (20 yards)
+tinsert(HarmSpells.ROGUE, 2094) -- Blind (15 yards)
+tinsert(HarmSpells.ROGUE, 921) -- Pick Pocket (10 yards, level 24)
 
 -- Shamans
-tinsert(FriendSpells.SHAMAN, 546)		-- Water Walking (30 yards)
-tinsert(FriendSpells.SHAMAN, 8004)		-- Healing Surge (Resto, Elemental) (40 yards)
-tinsert(FriendSpells.SHAMAN, 188070)	-- Healing Surge (Enhancement) (40 yards)
+tinsert(FriendSpells.SHAMAN, 546) -- Water Walking (30 yards)
+tinsert(FriendSpells.SHAMAN, 8004) -- Healing Surge (Resto, Elemental) (40 yards)
+tinsert(FriendSpells.SHAMAN, 188070) -- Healing Surge (Enhancement) (40 yards)
 
 if not isRetail then
-	tinsert(FriendSpells.SHAMAN, 331)	-- Healing Wave (40 yards, level 1, rank 1)
-	tinsert(FriendSpells.SHAMAN, 526)	-- Cure Poison (40 yards, level 16)
-	tinsert(FriendSpells.SHAMAN, 2870)	-- Cure Disease (40 yards, level 22)
+	tinsert(FriendSpells.SHAMAN, 331) -- Healing Wave (40 yards, level 1, rank 1)
+	tinsert(FriendSpells.SHAMAN, 526) -- Cure Poison (40 yards, level 16)
+	tinsert(FriendSpells.SHAMAN, 2870) -- Cure Disease (40 yards, level 22)
 end
 
-tinsert(HarmSpells.SHAMAN, 370)		-- Purge (30 yards)
-tinsert(HarmSpells.SHAMAN, 188196)	-- Lightning Bolt (40 yards)
-tinsert(HarmSpells.SHAMAN, 73899)	-- Primal Strike (Melee Range)
+tinsert(HarmSpells.SHAMAN, 370) -- Purge (30 yards)
+tinsert(HarmSpells.SHAMAN, 188196) -- Lightning Bolt (40 yards)
+tinsert(HarmSpells.SHAMAN, 73899) -- Primal Strike (Melee Range)
 
 if not isRetail then
-	tinsert(HarmSpells.SHAMAN, 403)		-- Lightning Bolt (30 yards, level 1, rank 1)
-	tinsert(HarmSpells.SHAMAN, 8042)	-- Earth Shock (20 yards, level 4, rank 1)
+	tinsert(HarmSpells.SHAMAN, 403) -- Lightning Bolt (30 yards, level 1, rank 1)
+	tinsert(HarmSpells.SHAMAN, 8042) -- Earth Shock (20 yards, level 4, rank 1)
 end
 
-tinsert(ResSpells.SHAMAN, 2008)		-- Ancestral Spirit (40 yards, level 13)
+tinsert(ResSpells.SHAMAN, 2008) -- Ancestral Spirit (40 yards, level 13)
 
 -- Warriors
-tinsert(HarmSpells.WARRIOR, 355)	-- Taunt (30 yards)
-tinsert(HarmSpells.WARRIOR, 5246)	-- Intimidating Shout (Arms, Fury) (8 yards)
-tinsert(HarmSpells.WARRIOR, 100)	-- Charge (Arms, Fury) (8-25 yards)
+tinsert(HarmSpells.WARRIOR, 355) -- Taunt (30 yards)
+tinsert(HarmSpells.WARRIOR, 5246) -- Intimidating Shout (Arms, Fury) (8 yards)
+tinsert(HarmSpells.WARRIOR, 100) -- Charge (Arms, Fury) (8-25 yards)
 
 if not isRetail then
 	tinsert(HarmSpells.WARRIOR, 2764) -- Throw (30 yards, level 1, 5-30 range)
 end
 
 -- Warlocks
-tinsert(FriendSpells.WARLOCK, 5697)		-- Unending Breath (30 yards)
-tinsert(FriendSpells.WARLOCK, 20707)	-- Soulstone (40 yards) ~ this can be precasted so leave it in friendly aswell as res
+tinsert(FriendSpells.WARLOCK, 5697) -- Unending Breath (30 yards)
+tinsert(FriendSpells.WARLOCK, 20707) -- Soulstone (40 yards) ~ this can be precasted so leave it in friendly aswell as res
 
 if isRetail then
-	tinsert(FriendSpells.WARLOCK, 132)	-- Detect Invisibility (30 yards, level 26)
+	tinsert(FriendSpells.WARLOCK, 132) -- Detect Invisibility (30 yards, level 26)
 end
 
-tinsert(HarmSpells.WARLOCK, 5019)		-- Shoot (30 yards)
-tinsert(HarmSpells.WARLOCK, 234153)		-- Drain Life (40 yards, level 9)
-tinsert(HarmSpells.WARLOCK, 198590)		-- Drain Soul (40 yards, level 15)
-tinsert(HarmSpells.WARLOCK, 686)		-- Shadow Bolt (Demonology, Affliction) (40 yards)
-tinsert(HarmSpells.WARLOCK, 232670)		-- Shadow Bolt (40 yards)
-tinsert(HarmSpells.WARLOCK, 5782)		-- Fear (30 yards)
+tinsert(HarmSpells.WARLOCK, 5019) -- Shoot (30 yards)
+tinsert(HarmSpells.WARLOCK, 234153) -- Drain Life (40 yards, level 9)
+tinsert(HarmSpells.WARLOCK, 198590) -- Drain Soul (40 yards, level 15)
+tinsert(HarmSpells.WARLOCK, 686) -- Shadow Bolt (Demonology, Affliction) (40 yards)
+tinsert(HarmSpells.WARLOCK, 232670) -- Shadow Bolt (40 yards)
+tinsert(HarmSpells.WARLOCK, 5782) -- Fear (30 yards)
 
 if not isRetail then
-	tinsert(HarmSpells.WARLOCK, 172)	-- Corruption (30 yards, level 4, rank 1)
-	tinsert(HarmSpells.WARLOCK, 348)	-- Immolate (30 yards, level 1, rank 1)
+	tinsert(HarmSpells.WARLOCK, 172) -- Corruption (30 yards, level 4, rank 1)
+	tinsert(HarmSpells.WARLOCK, 348) -- Immolate (30 yards, level 1, rank 1)
 end
 
-tinsert(ResSpells.WARLOCK, 20707)	-- Soulstone (40 yards)
+tinsert(ResSpells.WARLOCK, 20707) -- Soulstone (40 yards)
 
-tinsert(PetSpells.WARLOCK, 755)		-- Health Funnel (45 yards)
+tinsert(PetSpells.WARLOCK, 755) -- Health Funnel (45 yards)
 
 -- Items [Special thanks to Maldivia for the nice list]
 
-local FriendItems  = {
+local FriendItems = {
 	[1] = {
 		90175, -- Gin-Ji Knife Set -- doesn't seem to work for pets (always returns nil)
 	},
@@ -398,8 +400,7 @@ local FriendItems  = {
 }
 
 local HarmItems = {
-	[1] = {
-	},
+	[1] = {},
 	[2] = {
 		37727, -- Ruby Acorn
 	},
@@ -504,18 +505,20 @@ local harmItemRequests
 local lastUpdate = 0
 
 -- minRangeCheck is a function to check if spells with minimum range are really out of range, or fail due to range < minRange. See :init() for its setup
-local minRangeCheck = function(unit) return CheckInteractDistance(unit, 2) end
+local minRangeCheck = function(unit)
+	return CheckInteractDistance(unit, 2)
+end
 
 local checkers_Spell = setmetatable({}, {
 	__index = function(t, spellIdx)
 		local func = function(unit)
 			if IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
-				 return true
+				return true
 			end
 		end
 		t[spellIdx] = func
 		return func
-	end
+	end,
 })
 local checkers_SpellWithMin = setmetatable({}, {
 	__index = function(t, spellIdx)
@@ -528,7 +531,7 @@ local checkers_SpellWithMin = setmetatable({}, {
 		end
 		t[spellIdx] = func
 		return func
-	end
+	end,
 })
 local checkers_Item = setmetatable({}, {
 	__index = function(t, item)
@@ -537,7 +540,7 @@ local checkers_Item = setmetatable({}, {
 		end
 		t[item] = func
 		return func
-	end
+	end,
 })
 local checkers_Interact = setmetatable({}, {
 	__index = function(t, index)
@@ -548,12 +551,14 @@ local checkers_Interact = setmetatable({}, {
 		end
 		t[index] = func
 		return func
-	end
+	end,
 })
 
 -- helper functions
 local function copyTable(src, dst)
-	if type(dst) ~= "table" then dst = {} end
+	if type(dst) ~= "table" then
+		dst = {}
+	end
 	if type(src) == "table" then
 		for k, v in pairs(src) do
 			if type(v) == "table" then
@@ -595,7 +600,9 @@ end
 local function addChecker(t, range, minRange, checker, info)
 	local rc = { ["range"] = range, ["minRange"] = minRange, ["checker"] = checker, ["info"] = info }
 	for i, v in next, t do
-		if rc.range == v.range then return end
+		if rc.range == v.range then
+			return
+		end
 		if rc.range > v.range then
 			tinsert(t, i, rc)
 			return
@@ -646,7 +653,7 @@ local function createCheckerList(spellList, itemList, interactList)
 
 	if interactList and not next(res) then
 		for index, range in pairs(interactList) do
-			addChecker(res, range, nil,  checkers_Interact[index], "interact:" .. index)
+			addChecker(res, range, nil, checkers_Interact[index], "interact:" .. index)
 		end
 	end
 
@@ -694,7 +701,7 @@ local function rcIterator(checkerList)
 	return function()
 		local rc = checkerList[curr]
 		if not rc then
-			 return nil
+			return nil
 		end
 		curr = curr - 1
 		return rc.range, rc.checker
@@ -728,8 +735,7 @@ local function getChecker(checkerList, range)
 	end
 end
 
-local function null()
-end
+local function null() end
 
 local function createSmartChecker(friendChecker, harmChecker, miscChecker)
 	miscChecker = miscChecker or null
@@ -789,7 +795,7 @@ lib.CHECKERS_CHANGED = "CHECKERS_CHANGED"
 lib.MeleeRange = MeleeRange
 
 function lib:findSpellIndex(spell)
-	if type(spell) == 'number' then
+	if type(spell) == "number" then
 		spell = GetSpellInfo(spell)
 	end
 	return findSpellIdx(spell)
@@ -800,7 +806,9 @@ end
 -- @param checkVisible if set to true, then a UnitIsVisible check is made, and **nil** is returned if the unit is not visible
 function lib:getRangeAsString(unit, checkVisible, showOutOfRange)
 	local minRange, maxRange = self:getRange(unit, checkVisible)
-	if not minRange then return nil end
+	if not minRange then
+		return nil
+	end
 	if not maxRange then
 		return showOutOfRange and minRange .. " +" or nil
 	end
@@ -809,7 +817,7 @@ end
 
 -- initialize RangeCheck if not yet initialized or if "forced"
 function lib:init(forced)
-	if self.initialized and (not forced) then
+	if self.initialized and not forced then
 		return
 	end
 	self.initialized = true
@@ -951,20 +959,14 @@ end
 -- @param range the range to check for.
 -- @return **checker** function.
 function lib:GetSmartMinChecker(range)
-	return createSmartChecker(
-		getMinChecker(self.friendRC, range),
-		getMinChecker(self.harmRC, range),
-		getMinChecker(self.miscRC, range))
+	return createSmartChecker(getMinChecker(self.friendRC, range), getMinChecker(self.harmRC, range), getMinChecker(self.miscRC, range))
 end
 
 --- Return a checker suitable for in-range checking that checks the unit type and calls the appropriate checker (friend/harm/misc).
 -- @param range the range to check for.
 -- @return **checker** function.
 function lib:GetSmartMaxChecker(range)
-	return createSmartChecker(
-		getMaxChecker(self.friendRC, range),
-		getMaxChecker(self.harmRC, range),
-		getMaxChecker(self.miscRC, range))
+	return createSmartChecker(getMaxChecker(self.friendRC, range), getMaxChecker(self.harmRC, range), getMaxChecker(self.miscRC, range))
 end
 
 --- Return a checker for the given range that checks the unit type and calls the appropriate checker (friend/harm/misc).
@@ -972,10 +974,7 @@ end
 -- @param fallback optional fallback function that gets called as fallback(unit) if a checker is not available for the given type (friend/harm/misc) at the requested range. The default fallback function return nil.
 -- @return **checker** function.
 function lib:GetSmartChecker(range, fallback)
-	return createSmartChecker(
-		getChecker(self.friendRC, range) or fallback,
-		getChecker(self.harmRC, range) or fallback,
-		getChecker(self.miscRC, range) or fallback)
+	return createSmartChecker(getChecker(self.friendRC, range) or fallback, getChecker(self.harmRC, range) or fallback, getChecker(self.miscRC, range) or fallback)
 end
 
 --- Get a range estimate as **minRange**, **maxRange**.
@@ -1027,7 +1026,7 @@ lib.getRange = lib.GetRange
 -- >> Public API
 
 function lib:OnEvent(event, ...)
-	if type(self[event]) == 'function' then
+	if type(self[event]) == "function" then
 		self[event](self, event, ...)
 	end
 end
@@ -1074,7 +1073,9 @@ end
 function lib:processItemRequests(itemRequests)
 	while true do
 		local range, items = next(itemRequests)
-		if not range then return end
+		if not range then
+			return
+		end
 		while true do
 			local i, item = next(items)
 			if not i then
@@ -1084,7 +1085,7 @@ function lib:processItemRequests(itemRequests)
 				-- print("### processItemRequests: failed: " .. tostring(item))
 				tremove(items, i)
 			elseif item == pendingItemRequest and GetTime() < itemRequestTimeoutAt then
-				return true; -- still waiting for server response
+				return true -- still waiting for server response
 			elseif GetItemInfo(item) then
 				-- print("### processItemRequests: found: " .. tostring(item))
 				if itemRequestTimeoutAt then
@@ -1125,11 +1126,15 @@ end
 function lib:initialOnUpdate()
 	self:init()
 	if friendItemRequests then
-		if self:processItemRequests(friendItemRequests) then return end
+		if self:processItemRequests(friendItemRequests) then
+			return
+		end
 		friendItemRequests = nil
 	end
 	if harmItemRequests then
-		if self:processItemRequests(harmItemRequests) then return end
+		if self:processItemRequests(harmItemRequests) then
+			return
+		end
 		harmItemRequests = nil
 	end
 	if foundNewItems then
@@ -1179,7 +1184,9 @@ function lib:activate()
 
 	initItemRequests()
 
-	self.frame:SetScript("OnEvent", function(_, ...) self:OnEvent(...) end)
+	self.frame:SetScript("OnEvent", function(_, ...)
+		self:OnEvent(...)
+	end)
 	self.frame:SetScript("OnUpdate", function(_, elapsed)
 		lastUpdate = lastUpdate + elapsed
 		if lastUpdate < UpdateDelay then
@@ -1203,13 +1210,14 @@ do
 	-- -- or
 	-- rc.RegisterCallback(self, "CHECKERS_CHANGED", someCallbackFunction)
 	-- @see CallbackHandler-1.0 documentation for more details
-	lib.RegisterCallback = lib.RegisterCallback or function(...)
-		local CBH = LibStub("CallbackHandler-1.0")
-		lib.RegisterCallback = nil -- extra safety, we shouldn't get this far if CBH is not found, but better an error later than an infinite recursion now
-		lib.callbacks = CBH:New(lib)
-		-- ok, CBH hopefully injected or new shiny RegisterCallback
-		return lib.RegisterCallback(...)
-	end
+	lib.RegisterCallback = lib.RegisterCallback
+		or function(...)
+			local CBH = LibStub("CallbackHandler-1.0")
+			lib.RegisterCallback = nil -- extra safety, we shouldn't get this far if CBH is not found, but better an error later than an infinite recursion now
+			lib.callbacks = CBH:New(lib)
+			-- ok, CBH hopefully injected or new shiny RegisterCallback
+			return lib.RegisterCallback(...)
+		end
 end
 
 --- END CallbackHandler stuff

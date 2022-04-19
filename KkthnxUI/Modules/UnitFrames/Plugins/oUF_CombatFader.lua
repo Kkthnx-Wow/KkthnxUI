@@ -125,7 +125,7 @@ local function Enable(self, unit)
 end
 
 local function Disable(self)
-	if (self.CombatFade) then
+	if self.CombatFade then
 		frames[self] = nil
 		Update(self)
 

@@ -33,8 +33,8 @@ function Module:ReskinBugSack()
 		BugSackPrevButton:SkinButton()
 		BugSackScrollScrollBar:SkinScrollBar()
 
-		for _, child in pairs({BugSackFrame:GetChildren()}) do
-			if (child:IsObjectType("Button") and child:GetScript("OnClick") == BugSack.CloseSack) then
+		for _, child in pairs({ BugSackFrame:GetChildren() }) do
+			if child:IsObjectType("Button") and child:GetScript("OnClick") == BugSack.CloseSack then
 				child:SkinCloseButton()
 			end
 		end

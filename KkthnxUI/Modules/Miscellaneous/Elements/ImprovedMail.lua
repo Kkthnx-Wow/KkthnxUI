@@ -15,7 +15,7 @@ local InboxItemCanDelete, DeleteInboxItem, TakeInboxMoney, TakeInboxItem = _G.In
 local NORMAL_STRING = _G.GUILDCONTROL_OPTION16
 local OPENING_STRING = _G.OPEN_ALL_MAIL_BUTTON_OPENING
 
-local mailIndex, timeToWait, totalCash, inboxItems = 0, .15, 0, {}
+local mailIndex, timeToWait, totalCash, inboxItems = 0, 0.15, 0, {}
 local isGoldCollecting
 
 function Module:MailBox_DelectClick()
@@ -23,7 +23,7 @@ function Module:MailBox_DelectClick()
 	if InboxItemCanDelete(selectedID) then
 		DeleteInboxItem(selectedID)
 	else
-		UIErrorsFrame:AddMessage(K.InfoColor..ERR_MAIL_DELETE_ITEM_ERROR)
+		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_MAIL_DELETE_ITEM_ERROR)
 	end
 end
 
@@ -57,7 +57,7 @@ function Module:InboxItem_OnEnter()
 				local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture = GetItemInfo(itemID)
 				if itemName then
 					local r, g, b = GetItemQualityColor(itemQuality)
-					GameTooltip:AddDoubleLine(" |T"..itemTexture..":12:12:0:0:50:50:4:46:4:46|t "..itemName, count, r, g, b)
+					GameTooltip:AddDoubleLine(" |T" .. itemTexture .. ":12:12:0:0:50:50:4:46:4:46|t " .. itemName, count, r, g, b)
 				end
 			end
 			GameTooltip:Show()
@@ -140,7 +140,7 @@ function Module:CollectGoldButton()
 	OpenAllMail:ClearAllPoints()
 	OpenAllMail:SetPoint("TOPLEFT", InboxFrame, "TOPLEFT", 70, -28)
 
-	local button = Module:MailBox_CreatButton(InboxFrame, 120, 24, "", {"LEFT", OpenAllMail, "RIGHT", 3, 0})
+	local button = Module:MailBox_CreatButton(InboxFrame, 120, 24, "", { "LEFT", OpenAllMail, "RIGHT", 3, 0 })
 	button:SetScript("OnClick", Module.MailBox_CollectAllGold)
 	button:SetScript("OnEnter", Module.TotalCash_OnEnter)
 	button:SetScript("OnLeave", Module.TotalCash_OnLeave)
@@ -162,7 +162,7 @@ end
 
 function Module:MailBox_CollectCurrent()
 	if OpenMailFrame.cod then
-		UIErrorsFrame:AddMessage(K.InfoColor..L["Mail Is COD"])
+		UIErrorsFrame:AddMessage(K.InfoColor .. L["Mail Is COD"])
 		return
 	end
 
@@ -174,7 +174,7 @@ function Module:MailBox_CollectCurrent()
 end
 
 function Module:CollectCurrentButton()
-	local button = Module:MailBox_CreatButton(OpenMailFrame, 82, 22, L["Take All"], {"RIGHT", "OpenMailReplyButton", "LEFT", -1, 0})
+	local button = Module:MailBox_CreatButton(OpenMailFrame, 82, 22, L["Take All"], { "RIGHT", "OpenMailReplyButton", "LEFT", -1, 0 })
 	button:SetScript("OnClick", Module.MailBox_CollectCurrent)
 end
 
@@ -195,7 +195,7 @@ function Module:ArrangeDefaultElements()
 			colorStr = "|cffff0000"
 		end
 
-		GameTooltip:AddLine(SEND_MAIL_COST..colorStr..K.FormatMoney(sendPrice, true))
+		GameTooltip:AddLine(SEND_MAIL_COST .. colorStr .. K.FormatMoney(sendPrice, true))
 		GameTooltip:Show()
 	end)
 
@@ -213,7 +213,7 @@ function Module:CreateImprovedMail()
 
 	-- Delete buttons
 	for i = 1, 7 do
-		local itemButton = _G["MailItem"..i.."Button"]
+		local itemButton = _G["MailItem" .. i .. "Button"]
 		Module.MailItem_AddDelete(itemButton, i)
 	end
 

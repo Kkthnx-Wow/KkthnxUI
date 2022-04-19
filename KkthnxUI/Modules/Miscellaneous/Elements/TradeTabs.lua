@@ -52,7 +52,7 @@ local onlyPrimary = {
 
 function Module:UpdateProfessions()
 	local prof1, prof2, _, fish, cook = GetProfessions()
-	local profs = {prof1, prof2, fish, cook}
+	local profs = { prof1, prof2, fish, cook }
 
 	if K.Class == "DEATHKNIGHT" then
 		Module:TradeTabs_Create(RUNEFORGING_ID)
@@ -63,7 +63,9 @@ function Module:UpdateProfessions()
 	local isCook
 	for _, prof in pairs(profs) do
 		local _, _, _, _, numSpells, spelloffset, skillLine = GetProfessionInfo(prof)
-		if skillLine == 185 then isCook = true end
+		if skillLine == 185 then
+			isCook = true
+		end
 
 		numSpells = onlyPrimary[skillLine] and 1 or numSpells
 		if numSpells > 0 then
@@ -144,7 +146,7 @@ function Module:TradeTabs_Create(spellID, toyID, itemID)
 	tab.type = (toyID and "toy") or (itemID and "item") or "spell"
 	if spellID == 818 then -- cooking fire
 		tab:SetAttribute("type", "macro")
-		tab:SetAttribute("macrotext", "/cast [@player]"..name)
+		tab:SetAttribute("macrotext", "/cast [@player]" .. name)
 	else
 		tab:SetAttribute("type", tab.type)
 		tab:SetAttribute(tab.type, spellID or name)
@@ -166,8 +168,8 @@ end
 
 function Module:TradeTabs_FilterIcons()
 	local buttonList = {
-		[1] = {"Atlas:bags-greenarrow", TRADESKILL_FILTER_HAS_SKILL_UP, C_TradeSkillUI_GetOnlyShowSkillUpRecipes, C_TradeSkillUI_SetOnlyShowSkillUpRecipes},
-		[2] = {"Interface\\RAIDFRAME\\ReadyCheck-Ready", CRAFT_IS_MAKEABLE, C_TradeSkillUI_GetOnlyShowMakeableRecipes, C_TradeSkillUI_SetOnlyShowMakeableRecipes},
+		[1] = { "Atlas:bags-greenarrow", TRADESKILL_FILTER_HAS_SKILL_UP, C_TradeSkillUI_GetOnlyShowSkillUpRecipes, C_TradeSkillUI_SetOnlyShowSkillUpRecipes },
+		[2] = { "Interface\\RAIDFRAME\\ReadyCheck-Ready", CRAFT_IS_MAKEABLE, C_TradeSkillUI_GetOnlyShowMakeableRecipes, C_TradeSkillUI_SetOnlyShowMakeableRecipes },
 	}
 
 	local function filterClick(self)

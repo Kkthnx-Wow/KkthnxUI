@@ -24,7 +24,7 @@ end
 
 local function updatePartySync(self)
 	local hasJoined = C_QuestSession.HasJoined()
-	if (hasJoined) then
+	if hasJoined then
 		self.QuestSyncIndicator:Show()
 	else
 		self.QuestSyncIndicator:Hide()
@@ -159,14 +159,14 @@ function Module:CreatePlayer()
 
 			self.Portrait = Portrait
 
-			if (playerPortraitStyle == "ClassPortraits" or playerPortraitStyle == "NewClassPortraits") then
+			if playerPortraitStyle == "ClassPortraits" or playerPortraitStyle == "NewClassPortraits" then
 				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
 	end
 
 	-- if C["Unitframe"].ClassResources and not C["Nameplate"].ShowPlayerPlate then
-		Module:CreateClassPower(self)
+	Module:CreateClassPower(self)
 	-- end
 
 	if C["Unitframe"].PlayerDeBuffs then
@@ -270,7 +270,7 @@ function Module:CreatePlayer()
 			Castbar.Button:SetAllPoints(Castbar.Icon)
 		end
 
-		local mover = K.Mover(Castbar, "Player Castbar", "PlayerCB", {"BOTTOM", UIParent, "BOTTOM", C["Unitframe"].PlayerCastbarIcon and 14 or 0, 200})
+		local mover = K.Mover(Castbar, "Player Castbar", "PlayerCB", { "BOTTOM", UIParent, "BOTTOM", C["Unitframe"].PlayerCastbarIcon and 14 or 0, 200 })
 		Castbar:ClearAllPoints()
 		Castbar:SetPoint("RIGHT", mover)
 		Castbar.mover = mover
@@ -340,7 +340,7 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].PlayerPowerPrediction then
-		local mainBar = CreateFrame("StatusBar", self:GetName().."PowerPrediction", Power)
+		local mainBar = CreateFrame("StatusBar", self:GetName() .. "PowerPrediction", Power)
 		mainBar:SetReverseFill(true)
 		mainBar:SetPoint("TOP", 0, -1)
 		mainBar:SetPoint("BOTTOM", 0, 1)
@@ -350,7 +350,7 @@ function Module:CreatePlayer()
 		mainBar:SetWidth(playerWidth)
 
 		self.PowerPrediction = {
-			mainBar = mainBar
+			mainBar = mainBar,
 		}
 	end
 
@@ -393,7 +393,7 @@ function Module:CreatePlayer()
 
 	if C["Unitframe"].Stagger then
 		if K.Class == "MONK" then
-			local Stagger = CreateFrame("StatusBar", self:GetName().."Stagger", self)
+			local Stagger = CreateFrame("StatusBar", self:GetName() .. "Stagger", self)
 			Stagger:SetPoint("BOTTOMLEFT", Health, "TOPLEFT", 0, 6)
 			Stagger:SetSize(playerWidth, 14)
 			Stagger:SetStatusBarTexture(UnitframeTexture)
@@ -409,7 +409,7 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].AdditionalPower then
-		local AdditionalPower = CreateFrame("StatusBar", self:GetName().."AdditionalPower", Health)
+		local AdditionalPower = CreateFrame("StatusBar", self:GetName() .. "AdditionalPower", Health)
 		AdditionalPower.frequentUpdates = true
 		AdditionalPower:SetWidth(12)
 		AdditionalPower:SetOrientation("VERTICAL")
@@ -467,7 +467,7 @@ function Module:CreatePlayer()
 		local parentFrame = CreateFrame("Frame", nil, UIParent)
 		local FloatingCombatFeedback = CreateFrame("Frame", "oUF_Player_CombatTextFrame", parentFrame)
 		FloatingCombatFeedback:SetSize(32, 32)
-		K.Mover(FloatingCombatFeedback, "CombatText", "PlayerCombatText", {"BOTTOM", self, "TOPLEFT", 0, 120})
+		K.Mover(FloatingCombatFeedback, "CombatText", "PlayerCombatText", { "BOTTOM", self, "TOPLEFT", 0, 120 })
 
 		for i = 1, 36 do
 			FloatingCombatFeedback[i] = parentFrame:CreateFontString("$parentText", "OVERLAY")
@@ -644,8 +644,8 @@ function Module:CreatePlayer()
 	local Highlight = Health:CreateTexture(nil, "OVERLAY")
 	Highlight:SetAllPoints()
 	Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
-	Highlight:SetTexCoord(0, 1, .5, 1)
-	Highlight:SetVertexColor(.6, .6, .6)
+	Highlight:SetTexCoord(0, 1, 0.5, 1)
+	Highlight:SetVertexColor(0.6, 0.6, 0.6)
 	Highlight:SetBlendMode("ADD")
 	Highlight:Hide()
 

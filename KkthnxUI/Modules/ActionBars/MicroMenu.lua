@@ -46,7 +46,7 @@ local function onEnter(button)
 			button.backdrop.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
 			button.backdropGlow:Show()
 		else
-			button.backdrop.KKUI_Border:SetVertexColor(102/255, 157/255, 255/255)
+			button.backdrop.KKUI_Border:SetVertexColor(102 / 255, 157 / 255, 255 / 255)
 			button.backdropGlow:Show()
 		end
 	end
@@ -84,7 +84,7 @@ function Module.HandleMicroButton(button)
 	button.backdrop = f
 
 	local backdropGlow = CreateFrame("Frame", nil, f, "BackdropTemplate")
-	backdropGlow:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
+	backdropGlow:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
 	backdropGlow:SetPoint("TOPLEFT", f, -4, 4)
 	backdropGlow:SetPoint("BOTTOMRIGHT", f, 4, -4)
 	backdropGlow:SetBackdropBorderColor(1, 1, 0)
@@ -133,11 +133,12 @@ function Module.UpdateMicroButtonsParent()
 end
 
 -- We use this table to sort the micro buttons on our bar to match Blizzard's button placements.
+-- stylua: ignore
 local __buttonIndex = {
 	[8] = "CollectionsMicroButton",
 	[9] = "EJMicroButton",
 	[10] = (not C_StorePublic_IsEnabled() and GetCurrentRegionName() == "CN") and "HelpMicroButton" or "StoreMicroButton",
-	[11] = "MainMenuMicroButton"
+	[11] = "MainMenuMicroButton",
 }
 
 function Module:PLAYER_REGEN_ENABLED()
@@ -158,7 +159,7 @@ function Module.UpdateMicroBarVisibility()
 
 	local visibility = "show"
 	if visibility and visibility:match("[\n\r]") then
-		visibility = visibility:gsub("[\n\r]","")
+		visibility = visibility:gsub("[\n\r]", "")
 	end
 
 	RegisterStateDriver(Module.MicroBar.visibility, "visibility", (C["ActionBar"].MicroBar and visibility) or "hide")
@@ -253,5 +254,6 @@ function Module:CreateMicroMenu()
 	MainMenuBarPerformanceBar:SetAlpha(0)
 	MainMenuBarPerformanceBar:SetScale(0.00001)
 
-	K.Mover(Module.MicroBar, "MicroBar", "MicroBar", {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0}, Module.MicroWidth, Module.MicroHeight)
+	-- stylua: ignore
+	K.Mover(Module.MicroBar, "MicroBar", "MicroBar", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", 0, 0 }, Module.MicroWidth, Module.MicroHeight)
 end

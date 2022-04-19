@@ -73,12 +73,7 @@ function Module:OnEnable()
 
 	-- TESTING CMD : /run BNToastFrame:AddToast(BN_TOAST_TYPE_ONLINE, 1)
 	if not BNToastFrame.mover then
-		BNToastFrame.mover = K.Mover(
-			BNToastFrame,
-			"BNToastFrame",
-			"BNToastFrame",
-			{ "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 218 }
-		)
+		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 218 })
 	else
 		BNToastFrame.mover:SetSize(BNToastFrame:GetSize())
 	end
@@ -193,12 +188,7 @@ local MawRankColor = {
 }
 
 function Module:CreateGUIGameMenuButton()
-	local KKUI_GUIButton = CreateFrame(
-		"Button",
-		"KKUI_GameMenuButton",
-		GameMenuFrame,
-		"GameMenuButtonTemplate, BackdropTemplate"
-	)
+	local KKUI_GUIButton = CreateFrame("Button", "KKUI_GameMenuButton", GameMenuFrame, "GameMenuButtonTemplate, BackdropTemplate")
 	KKUI_GUIButton:SetText(K.InfoColor .. "KkthnxUI|r")
 	KKUI_GUIButton:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
 	KKUI_GUIButton:SkinButton()
@@ -252,11 +242,7 @@ function Module:CreateQuestXPPercent()
 			if xp and xp > 0 then
 				local text = _G.MapQuestInfoRewardsFrame.XPFrame.Name:GetText()
 				if text then
-					_G.MapQuestInfoRewardsFrame.XPFrame.Name:SetFormattedText(
-						"%s (|cff4beb2c+%.2f%%|r)",
-						text,
-						(((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100
-					)
+					_G.MapQuestInfoRewardsFrame.XPFrame.Name:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100)
 				end
 			end
 		end
@@ -265,11 +251,7 @@ function Module:CreateQuestXPPercent()
 		if xp and xp > 0 then
 			local text = _G.QuestInfoXPFrame.ValueText:GetText()
 			if text then
-				_G.QuestInfoXPFrame.ValueText:SetFormattedText(
-					"%s (|cff4beb2c+%.2f%%|r)",
-					text,
-					(((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100
-				)
+				_G.QuestInfoXPFrame.ValueText:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100)
 			end
 		end
 	end
@@ -572,19 +554,14 @@ do
 			if maxStack and maxStack > 1 then
 				if not cache[itemLink] then
 					local r, g, b = GetItemQualityColor(quality or 1)
-					StaticPopup_Show(
-						"BUY_STACK",
-						" ",
-						" ",
-						{
-							["texture"] = texture,
-							["name"] = name,
-							["color"] = { r, g, b, 1 },
-							["link"] = itemLink,
-							["index"] = id,
-							["count"] = maxStack,
-						}
-					)
+					StaticPopup_Show("BUY_STACK", " ", " ", {
+						["texture"] = texture,
+						["name"] = name,
+						["color"] = { r, g, b, 1 },
+						["link"] = itemLink,
+						["index"] = id,
+						["count"] = maxStack,
+					})
 				else
 					BuyMerchantItem(id, GetMerchantItemMaxStack(id))
 				end
@@ -747,10 +724,7 @@ end
 
 function Module:CreateBlockStrangerInvites()
 	K:RegisterEvent("PARTY_INVITE_REQUEST", function(a, b, c, d, e, f, g, guid)
-		if
-			C["Automation"].AutoBlockStrangerInvites
-			and not (C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or IsGuildMember(guid))
-		then
+		if C["Automation"].AutoBlockStrangerInvites and not (C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or IsGuildMember(guid)) then
 			_G.DeclineGroup()
 			_G.StaticPopup_Hide("PARTY_INVITE")
 			K.Print("Blocked invite request from a stranger!", a, b, c, d, e, f, g, guid)
@@ -943,12 +917,7 @@ function Module:CreateDomiExtractor()
 			return
 		end
 
-		local button = CreateFrame(
-			"Button",
-			"KKUI_ExtractorButton",
-			ItemSocketingFrame,
-			"UIPanelButtonTemplate, SecureActionButtonTemplate"
-		)
+		local button = CreateFrame("Button", "KKUI_ExtractorButton", ItemSocketingFrame, "UIPanelButtonTemplate, SecureActionButtonTemplate")
 		button:SetSize(80, 22)
 		button:SetText(REMOVE)
 		button:SetPoint("RIGHT", ItemSocketingSocketButton, "LEFT", -2, 0)
@@ -978,8 +947,7 @@ function Module:CreateJerryWay()
 		return
 	end
 
-	local pointString = K.InfoColor
-		.. "|Hworldmap:%d+:%d+:%d+|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%s, %s)]|h|r"
+	local pointString = K.InfoColor .. "|Hworldmap:%d+:%d+:%d+|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%s, %s)]|h|r"
 
 	local function GetCorrectCoord(x)
 		x = tonumber(x)

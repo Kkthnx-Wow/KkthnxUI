@@ -57,7 +57,7 @@ function Module:ChantLumos(self)
 		do
 			local button = self.lumos[3]
 			UpdateSpellStatus(button, 78674)
-			button.Count:SetText(math_floor(currentPower/30))
+			button.Count:SetText(math_floor(currentPower / 30))
 		end
 
 		do

@@ -47,10 +47,17 @@ local framesToHide = {
 
 local framesToDisable = {
 	MainMenuBar,
-	MicroButtonAndBagsBar, MainMenuBarArtFrame, StatusTrackingBarManager,
-	ActionBarDownButton, ActionBarUpButton, MainMenuBarVehicleLeaveButton,
+	MicroButtonAndBagsBar,
+	MainMenuBarArtFrame,
+	StatusTrackingBarManager,
+	ActionBarDownButton,
+	ActionBarUpButton,
+	MainMenuBarVehicleLeaveButton,
 	OverrideActionBar,
-	OverrideActionBarExpBar, OverrideActionBarHealthBar, OverrideActionBarPowerBar, OverrideActionBarPitchFrame,
+	OverrideActionBarExpBar,
+	OverrideActionBarHealthBar,
+	OverrideActionBarPowerBar,
+	OverrideActionBarPitchFrame,
 }
 
 local function DisableAllScripts(frame)
@@ -63,7 +70,7 @@ end
 
 local function buttonShowGrid(name, showgrid)
 	for i = 1, 12 do
-		local button = _G[name..i]
+		local button = _G[name .. i]
 		if button then
 			button:SetAttribute("showgrid", showgrid)
 			button:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_CVAR)

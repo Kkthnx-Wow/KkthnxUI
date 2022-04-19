@@ -49,12 +49,12 @@ local function ColorPercent(value)
 		r, g, b = 1, 1, 1
 	end
 
-	return K.RGBToHex(r, g, b)..value
+	return K.RGBToHex(r, g, b) .. value
 end
 
 local function ValueAndPercent(cur, per)
 	if per < 100 then
-		return K.ShortValue(cur).." - "..ColorPercent(per)
+		return K.ShortValue(cur) .. " - " .. ColorPercent(per)
 	else
 		return K.ShortValue(cur)
 	end
@@ -85,11 +85,11 @@ oUF.Tags.Events["hp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNEC
 
 oUF.Tags.Methods["power"] = function(unit)
 	local cur, maxPower = UnitPower(unit), UnitPowerMax(unit)
-	local per = maxPower == 0 and 0 or K.Round(cur/maxPower * 100)
+	local per = maxPower == 0 and 0 or K.Round(cur / maxPower * 100)
 
 	if (unit == "player" and not UnitHasVehicleUI(unit)) or unit == "target" or unit == "focus" then
 		if per < 100 and UnitPowerType(unit) == 0 and maxPower ~= 0 then
-			return K.ShortValue(cur).." - "..per
+			return K.ShortValue(cur) .. " - " .. per
 		else
 			return K.ShortValue(cur)
 		end
@@ -119,9 +119,9 @@ oUF.Tags.Events["color"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_FAC
 
 oUF.Tags.Methods["afkdnd"] = function(unit)
 	if UnitIsAFK(unit) then
-		return "|cffCFCFCF <"..CHAT_MSG_AFK..">|r"
+		return "|cffCFCFCF <" .. CHAT_MSG_AFK .. ">|r"
 	elseif UnitIsDND(unit) then
-		return "|cffCFCFCF <"..DND..">|r"
+		return "|cffCFCFCF <" .. DND .. ">|r"
 	else
 		return ""
 	end
@@ -130,11 +130,11 @@ oUF.Tags.Events["afkdnd"] = "PLAYER_FLAGS_CHANGED"
 
 oUF.Tags.Methods["DDG"] = function(unit)
 	if UnitIsDead(unit) then
-		return "|cffCFCFCF"..DEAD.."|r"
+		return "|cffCFCFCF" .. DEAD .. "|r"
 	elseif UnitIsGhost(unit) then
-		return "|cffCFCFCF"..L["Ghost"].."|r"
+		return "|cffCFCFCF" .. L["Ghost"] .. "|r"
 	elseif not UnitIsConnected(unit) and GetNumArenaOpponentSpecs() == 0 then
-		return "|cffCFCFCF"..PLAYER_OFFLINE.."|r"
+		return "|cffCFCFCF" .. PLAYER_OFFLINE .. "|r"
 	end
 end
 oUF.Tags.Events["DDG"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
@@ -156,7 +156,7 @@ oUF.Tags.Methods["fulllevel"] = function(unit)
 	local str
 	if level > 0 then
 		local realTag = level ~= realLevel and "*" or ""
-		str = color..level..realTag.."|r"
+		str = color .. level .. realTag .. "|r"
 	else
 		str = "|cffff0000??|r"
 	end
@@ -165,11 +165,11 @@ oUF.Tags.Methods["fulllevel"] = function(unit)
 	if class == "worldboss" then
 		str = "|cffAF5050Boss|r"
 	elseif class == "rareelite" then
-		str = str.."|cffAF5050R|r+"
+		str = str .. "|cffAF5050R|r+"
 	elseif class == "elite" then
-		str = str.."|cffAF5050+|r"
+		str = str .. "|cffAF5050+|r"
 	elseif class == "rare" then
-		str = str.."|cffAF5050R|r"
+		str = str .. "|cffAF5050R|r"
 	end
 
 	return str
@@ -188,7 +188,9 @@ oUF.Tags.Methods["raidhp"] = function(unit)
 		return K.ShortValue(cur)
 	elseif C["Raid"].HealthFormat.Value == 4 then
 		local loss = UnitHealthMax(unit) - UnitHealth(unit)
-		if loss == 0 then return end
+		if loss == 0 then
+			return
+		end
 		return K.ShortValue(loss)
 	end
 end
@@ -209,13 +211,13 @@ oUF.Tags.Methods["nppp"] = function(unit)
 	local per = oUF.Tags.Methods["perpp"](unit)
 	local color
 	if per > 85 then
-		color = K.RGBToHex(1, .1, .1)
+		color = K.RGBToHex(1, 0.1, 0.1)
 	elseif per > 50 then
-		color = K.RGBToHex(1, 1, .1)
+		color = K.RGBToHex(1, 1, 0.1)
 	else
-		color = K.RGBToHex(.8, .8, 1)
+		color = K.RGBToHex(0.8, 0.8, 1)
 	end
-	per = color..per.."|r"
+	per = color .. per .. "|r"
 
 	return per
 end
@@ -225,7 +227,7 @@ oUF.Tags.Methods["nplevel"] = function(unit)
 	local level = UnitLevel(unit)
 	if level and level ~= UnitLevel("player") then
 		if level > 0 then
-			level = K.RGBToHex(GetCreatureDifficultyColor(level))..level.."|r "
+			level = K.RGBToHex(GetCreatureDifficultyColor(level)) .. level .. "|r "
 		else
 			level = "|cffff0000??|r "
 		end
@@ -261,13 +263,15 @@ end
 oUF.Tags.Events["pppower"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER"
 
 oUF.Tags.Methods["npctitle"] = function(unit)
-	if UnitIsPlayer(unit) then return end
+	if UnitIsPlayer(unit) then
+		return
+	end
 
 	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 	K.ScanTooltip:SetUnit(unit)
 
 	local title = _G[string_format("KKUI_ScanTooltipTextLeft%d", GetCVarBool("colorblindmode") and 3 or 2)]:GetText()
-	if title and not string_find(title, "^"..LEVEL) then
+	if title and not string_find(title, "^" .. LEVEL) then
 		return title
 	end
 end
@@ -286,10 +290,10 @@ end
 oUF.Tags.Events["guildname"] = "UNIT_NAME_UPDATE PLAYER_GUILD_UPDATE"
 
 oUF.Tags.Methods["tarname"] = function(unit)
-	local tarUnit = unit.."target"
+	local tarUnit = unit .. "target"
 	if UnitExists(tarUnit) then
 		local tarClass = select(2, UnitClass(tarUnit))
-		return K.RGBToHex(K.Colors.class[tarClass])..UnitName(tarUnit)
+		return K.RGBToHex(K.Colors.class[tarClass]) .. UnitName(tarUnit)
 	end
 end
 oUF.Tags.Events["tarname"] = "UNIT_NAME_UPDATE UNIT_THREAT_SITUATION_UPDATE UNIT_HEALTH"
@@ -313,7 +317,7 @@ oUF.Tags.Methods["monkstagger"] = function(unit)
 		return
 	end
 
-	return K.ShortValue(cur).." - "..K.MyClassColor..K.Round(perc * 100).."%"
+	return K.ShortValue(cur) .. " - " .. K.MyClassColor .. K.Round(perc * 100) .. "%"
 end
 oUF.Tags.Events["monkstagger"] = "UNIT_MAXHEALTH UNIT_AURA"
 

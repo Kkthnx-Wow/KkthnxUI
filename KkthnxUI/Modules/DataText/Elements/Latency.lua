@@ -14,24 +14,24 @@ local GetNetIpTypes = _G.GetNetIpTypes
 local GetNetStats = _G.GetNetStats
 local UNKNOWN = _G.UNKNOWN
 
-local ipTypes = {"IPv4", "IPv6"}
+local ipTypes = { "IPv4", "IPv6" }
 local LatencyDataText
 local LatencyDataTextEntered
 
 local function colorLatency(latency)
 	if latency < 250 then
-		return "|cff0CD809"..latency
+		return "|cff0CD809" .. latency
 	elseif latency < 500 then
-		return "|cffE8DA0F"..latency
+		return "|cffE8DA0F" .. latency
 	else
-		return "|cffD80909"..latency
+		return "|cffD80909" .. latency
 	end
 end
 
 local function setLatency()
 	local _, _, latencyHome, latencyWorld = GetNetStats()
 	local latency = math_max(latencyHome, latencyWorld)
-	LatencyDataText.Text:SetText(L["MS"]..": "..colorLatency(latency))
+	LatencyDataText.Text:SetText(L["MS"] .. ": " .. colorLatency(latency))
 end
 
 local function OnEnter()
@@ -45,8 +45,8 @@ local function OnEnter()
 	GameTooltip:AddLine(" ")
 
 	local _, _, latencyHome, latencyWorld = GetNetStats()
-	GameTooltip:AddDoubleLine(L["Home Latency"], colorLatency(latencyHome).."|r ms", 0.5, 0.7, 1, 1, 1, 1)
-	GameTooltip:AddDoubleLine(L["World Latency"], colorLatency(latencyWorld).."|r ms", 0.5, 0.7, 1, 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Home Latency"], colorLatency(latencyHome) .. "|r ms", 0.5, 0.7, 1, 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["World Latency"], colorLatency(latencyWorld) .. "|r ms", 0.5, 0.7, 1, 1, 1, 1)
 
 	if GetCVarBool("useIPv6") then
 		local ipTypeHome, ipTypeWorld = GetNetIpTypes()
@@ -92,7 +92,7 @@ function Module:CreateLatencyDataText()
 
 	LatencyDataText.Texture = LatencyDataText:CreateTexture(nil, "BACKGROUND")
 	LatencyDataText.Texture:SetPoint("LEFT", LatencyDataText, "LEFT", 2, 0)
-	LatencyDataText.Texture:SetTexture(("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\ping.blp"))
+	LatencyDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\ping.blp")
 	LatencyDataText.Texture:SetSize(16, 16)
 	LatencyDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
@@ -101,9 +101,9 @@ function Module:CreateLatencyDataText()
 	LatencyDataText.Text:SetPoint("LEFT", LatencyDataText.Texture, "RIGHT", 4, 0)
 
 	if C["DataText"].System then
-		LatencyDataText.Pos = {"LEFT", _G.KKUI_SystemDataText.Text, "RIGHT", 4, 0}
+		LatencyDataText.Pos = { "LEFT", _G.KKUI_SystemDataText.Text, "RIGHT", 4, 0 }
 	else
-		LatencyDataText.Pos = {"TOPLEFT", UIParent, "TOPLEFT", 0, 0}
+		LatencyDataText.Pos = { "TOPLEFT", UIParent, "TOPLEFT", 0, 0 }
 	end
 
 	LatencyDataText:SetScript("OnUpdate", OnUpdate)

@@ -79,7 +79,7 @@ function Module:UpdateAura(button, unit, auraID, filter, spellID, cooldown, glow
 			button.Count:SetText(count)
 		end
 
-		button.CD:SetCooldown(expire-duration, duration)
+		button.CD:SetCooldown(expire - duration, duration)
 		button.CD:Show()
 		button.Icon:SetDesaturated(false)
 
@@ -242,7 +242,7 @@ function Module:CreateLumos(self)
 		if i == 1 then
 			bu:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -5)
 		else
-			bu:SetPoint("LEFT", self.lumos[i-1], "RIGHT", 2, 0)
+			bu:SetPoint("LEFT", self.lumos[i - 1], "RIGHT", 2, 0)
 		end
 
 		self.lumos[i] = bu

@@ -16,7 +16,7 @@ local msgList = {
 local function SetupResetInstance(_, text)
 	for systemMessage, friendlyMessage in pairs(msgList) do
 		systemMessage = _G[systemMessage]
-		if (string_match(text, string_gsub(systemMessage, "%%s", ".+"))) then
+		if string_match(text, string_gsub(systemMessage, "%%s", ".+")) then
 			local instance = string_match(text, string_gsub(systemMessage, "%%s", "(.+)"))
 			SendChatMessage(string_format(friendlyMessage, instance), K.CheckChat())
 			return

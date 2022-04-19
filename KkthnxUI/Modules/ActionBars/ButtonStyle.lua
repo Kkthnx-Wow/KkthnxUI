@@ -177,28 +177,28 @@ end
 local keyButton = string_gsub(KEY_BUTTON4, "%d", "")
 local keyNumpad = string_gsub(KEY_NUMPAD1, "%d", "")
 local replaces = {
-	{"("..keyButton..")", "M"},
-	{"("..keyNumpad..")", "N"},
-	{"(a%-)", "a"},
-	{"(c%-)", "c"},
-	{"(s%-)", "s"},
-	{KEY_BUTTON3, "M3"},
-	{KEY_MOUSEWHEELUP, "MU"},
-	{KEY_MOUSEWHEELDOWN, "MD"},
-	{KEY_SPACE, "Sp"},
-	{CAPSLOCK_KEY_TEXT, "CL"},
-	{"BUTTON", "M"},
-	{"NUMPAD", "N"},
-	{"(ALT%-)", "a"},
-	{"(CTRL%-)", "c"},
-	{"(SHIFT%-)", "s"},
-	{"MOUSEWHEELUP", "MU"},
-	{"MOUSEWHEELDOWN", "MD"},
-	{"SPACE", "Sp"},
+	{ "(" .. keyButton .. ")", "M" },
+	{ "(" .. keyNumpad .. ")", "N" },
+	{ "(a%-)", "a" },
+	{ "(c%-)", "c" },
+	{ "(s%-)", "s" },
+	{ KEY_BUTTON3, "M3" },
+	{ KEY_MOUSEWHEELUP, "MU" },
+	{ KEY_MOUSEWHEELDOWN, "MD" },
+	{ KEY_SPACE, "Sp" },
+	{ CAPSLOCK_KEY_TEXT, "CL" },
+	{ "BUTTON", "M" },
+	{ "NUMPAD", "N" },
+	{ "(ALT%-)", "a" },
+	{ "(CTRL%-)", "c" },
+	{ "(SHIFT%-)", "s" },
+	{ "MOUSEWHEELUP", "MU" },
+	{ "MOUSEWHEELDOWN", "MD" },
+	{ "SPACE", "Sp" },
 }
 
 function Module:UpdateHotKey()
-	local hotkey = _G[self:GetName().."HotKey"]
+	local hotkey = _G[self:GetName() .. "HotKey"]
 	if hotkey and hotkey:IsShown() and not C["ActionBar"].Hotkey then
 		hotkey:Hide()
 		return
@@ -260,18 +260,18 @@ function Module:StyleActionButton(button, cfg)
 	end
 
 	local buttonName = button:GetName()
-	local icon = _G[buttonName.."Icon"]
-	local flash = _G[buttonName.."Flash"]
-	local flyoutBorder = _G[buttonName.."FlyoutBorder"]
-	local flyoutBorderShadow = _G[buttonName.."FlyoutBorderShadow"]
-	local flyoutArrow = _G[buttonName.."FlyoutArrow"]
-	local hotkey = _G[buttonName.."HotKey"]
-	local count = _G[buttonName.."Count"]
-	local name = _G[buttonName.."Name"]
-	local border = _G[buttonName.."Border"]
-	local autoCastable = _G[buttonName.."AutoCastable"]
+	local icon = _G[buttonName .. "Icon"]
+	local flash = _G[buttonName .. "Flash"]
+	local flyoutBorder = _G[buttonName .. "FlyoutBorder"]
+	local flyoutBorderShadow = _G[buttonName .. "FlyoutBorderShadow"]
+	local flyoutArrow = _G[buttonName .. "FlyoutArrow"]
+	local hotkey = _G[buttonName .. "HotKey"]
+	local count = _G[buttonName .. "Count"]
+	local name = _G[buttonName .. "Name"]
+	local border = _G[buttonName .. "Border"]
+	local autoCastable = _G[buttonName .. "AutoCastable"]
 	local NewActionTexture = button.NewActionTexture
-	local cooldown = _G[buttonName.."Cooldown"]
+	local cooldown = _G[buttonName .. "Cooldown"]
 	local normalTexture = button:GetNormalTexture()
 	local pushedTexture = button:GetPushedTexture()
 	local highlightTexture = button:GetHighlightTexture()
@@ -283,13 +283,13 @@ function Module:StyleActionButton(button, cfg)
 	end
 
 	-- Pet stuff
-	local petShine = _G[buttonName.."Shine"]
+	local petShine = _G[buttonName .. "Shine"]
 	if petShine then
 		petShine:SetAllPoints()
 	end
 
 	-- Hide stuff
-	local floatingBG = _G[buttonName.."FloatingBG"]
+	local floatingBG = _G[buttonName .. "FloatingBG"]
 	if floatingBG then
 		floatingBG:Hide()
 	end
@@ -352,7 +352,7 @@ function Module:StyleActionButton(button, cfg)
 	end
 
 	if autoCastable then
-		autoCastable:SetTexCoord(.217, .765, .217, .765)
+		autoCastable:SetTexCoord(0.217, 0.765, 0.217, 0.765)
 		autoCastable:SetAllPoints()
 		autoCastable:SetDrawLayer("OVERLAY", 5)
 	end
@@ -369,11 +369,11 @@ function Module:StyleExtraActionButton(cfg)
 	end
 
 	local buttonName = button:GetName()
-	local icon = _G[buttonName.."Icon"]
-	local hotkey = _G[buttonName.."HotKey"]
-	local count = _G[buttonName.."Count"]
+	local icon = _G[buttonName .. "Icon"]
+	local hotkey = _G[buttonName .. "HotKey"]
+	local count = _G[buttonName .. "Count"]
 	local buttonstyle = button.style -- Artwork around the button
-	local cooldown = _G[buttonName.."Cooldown"]
+	local cooldown = _G[buttonName .. "Cooldown"]
 
 	local normalTexture = button:GetNormalTexture()
 	local pushedTexture = button:GetPushedTexture()
@@ -420,38 +420,38 @@ end
 
 function Module:UpdateStanceHotKey()
 	for i = 1, NUM_STANCE_SLOTS do
-		_G["StanceButton"..i.."HotKey"]:SetText(GetBindingKey("SHAPESHIFTBUTTON"..i))
-		Module:HookHotKey(_G["StanceButton"..i])
+		_G["StanceButton" .. i .. "HotKey"]:SetText(GetBindingKey("SHAPESHIFTBUTTON" .. i))
+		Module:HookHotKey(_G["StanceButton" .. i])
 	end
 end
 
 function Module:StyleAllActionButtons(cfg)
 	for i = 1, NUM_ACTIONBAR_BUTTONS do
-		Module:StyleActionButton(_G["ActionButton"..i], cfg)
-		Module:StyleActionButton(_G["MultiBarBottomLeftButton"..i], cfg)
-		Module:StyleActionButton(_G["MultiBarBottomRightButton"..i], cfg)
-		Module:StyleActionButton(_G["MultiBarRightButton"..i], cfg)
-		Module:StyleActionButton(_G["MultiBarLeftButton"..i], cfg)
-		Module:StyleActionButton(_G["KKUI_ActionBarXButton"..i], cfg)
+		Module:StyleActionButton(_G["ActionButton" .. i], cfg)
+		Module:StyleActionButton(_G["MultiBarBottomLeftButton" .. i], cfg)
+		Module:StyleActionButton(_G["MultiBarBottomRightButton" .. i], cfg)
+		Module:StyleActionButton(_G["MultiBarRightButton" .. i], cfg)
+		Module:StyleActionButton(_G["MultiBarLeftButton" .. i], cfg)
+		Module:StyleActionButton(_G["KKUI_ActionBarXButton" .. i], cfg)
 	end
 
 	for i = 1, 6 do
-		Module:StyleActionButton(_G["OverrideActionBarButton"..i], cfg)
+		Module:StyleActionButton(_G["OverrideActionBarButton" .. i], cfg)
 	end
 
 	-- Petbar buttons
 	for i = 1, NUM_PET_ACTION_SLOTS do
-		Module:StyleActionButton(_G["PetActionButton"..i], cfg)
+		Module:StyleActionButton(_G["PetActionButton" .. i], cfg)
 	end
 
 	-- Stancebar buttons
 	for i = 1, NUM_STANCE_SLOTS do
-		Module:StyleActionButton(_G["StanceButton"..i], cfg)
+		Module:StyleActionButton(_G["StanceButton" .. i], cfg)
 	end
 
 	-- Possess buttons
 	for i = 1, NUM_POSSESS_SLOTS do
-		Module:StyleActionButton(_G["PossessButton"..i], cfg)
+		Module:StyleActionButton(_G["PossessButton" .. i], cfg)
 	end
 
 	-- Leave Vehicle
@@ -466,11 +466,11 @@ function Module:StyleAllActionButtons(cfg)
 	SpellFlyoutVerticalBackground:SetTexture(nil)
 	local function checkForFlyoutButtons()
 		local i = 1
-		local button = _G["SpellFlyoutButton"..i]
+		local button = _G["SpellFlyoutButton" .. i]
 		while button and button:IsShown() do
 			Module:StyleActionButton(button, cfg)
 			i = i + 1
-			button = _G["SpellFlyoutButton"..i]
+			button = _G["SpellFlyoutButton" .. i]
 		end
 	end
 
@@ -485,15 +485,15 @@ function Module:CreateBarSkin()
 		},
 
 		flyoutBorder = {
-			file = ""
+			file = "",
 		},
 
 		flyoutBorderShadow = {
-			file = ""
+			file = "",
 		},
 
 		border = {
-			file = ""
+			file = "",
 		},
 
 		normalTexture = {
@@ -501,7 +501,7 @@ function Module:CreateBarSkin()
 		},
 
 		flash = {
-			file = ""
+			file = "",
 		},
 
 		pushedTexture = {
@@ -518,36 +518,36 @@ function Module:CreateBarSkin()
 
 		cooldown = {
 			points = {
-				{"TOPLEFT", 1, -1},
-				{"BOTTOMRIGHT", -1, 1},
+				{ "TOPLEFT", 1, -1 },
+				{ "BOTTOMRIGHT", -1, 1 },
 			},
 		},
 
 		name = {
 			font = cfgFont,
 			points = {
-				{"BOTTOMLEFT", 0, 0},
-				{"BOTTOMRIGHT", 0, 0},
+				{ "BOTTOMLEFT", 0, 0 },
+				{ "BOTTOMRIGHT", 0, 0 },
 			},
 		},
 
 		hotkey = {
 			font = cfgFont,
 			points = {
-				{"TOPRIGHT", 0, -3},
-				{"TOPLEFT", 0, -3},
+				{ "TOPRIGHT", 0, -3 },
+				{ "TOPLEFT", 0, -3 },
 			},
 		},
 
 		count = {
 			font = cfgFont,
 			points = {
-				{"BOTTOMRIGHT", 2, 0},
+				{ "BOTTOMRIGHT", 2, 0 },
 			},
 		},
 
 		buttonstyle = {
-			file = ""
+			file = "",
 		},
 	}
 

@@ -17,15 +17,16 @@ function Module:SetupCustomBar(anchor)
 	local frame = CreateFrame("Frame", name, UIParent, "SecureHandlerStateTemplate")
 	frame.mover = K.Mover(frame, L[name], "CustomBar", anchor)
 
+	-- stylua: ignore
 	RegisterStateDriver(frame, "visibility", "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show")
 	RegisterStateDriver(frame, "page", page)
 
 	local buttonList = {}
 	for i = 1, num do
-		local button = CreateFrame("CheckButton", "$parentButton"..i, frame, "ActionBarButtonTemplate")
-		button.id = (page-1)*12 + i
+		local button = CreateFrame("CheckButton", "$parentButton" .. i, frame, "ActionBarButtonTemplate")
+		button.id = (page - 1) * 12 + i
 		button.isCustomButton = true
-		button.commandName = L[name]..i
+		button.commandName = L[name] .. i
 		button:SetAttribute("action", button.id)
 		tinsert(buttonList, button)
 		tinsert(Module.buttons, button)
@@ -42,10 +43,12 @@ end
 
 function Module:UpdateCustomBar()
 	local frame = _G.KKUI_ActionBarX
-	if not frame then return end
+	if not frame then
+		return
+	end
 
 	local size = C["ActionBar"].CustomBarButtonSize
-	local scale = size/34
+	local scale = size / 34
 	local num = C["ActionBar"].CustomBarNumButtons
 	local perRow = C["ActionBar"].CustomBarNumPerRow
 	for i = 1, num do
@@ -57,30 +60,30 @@ function Module:UpdateCustomBar()
 		button:ClearAllPoints()
 		if i == 1 then
 			button:SetPoint("TOPLEFT", frame, padding, -padding)
-		elseif mod(i-1, perRow) ==  0 then
-			button:SetPoint("TOP", frame.buttons[i-perRow], "BOTTOM", 0, -margin)
+		elseif mod(i - 1, perRow) == 0 then
+			button:SetPoint("TOP", frame.buttons[i - perRow], "BOTTOM", 0, -margin)
 		else
-			button:SetPoint("LEFT", frame.buttons[i-1], "RIGHT", margin, 0)
+			button:SetPoint("LEFT", frame.buttons[i - 1], "RIGHT", margin, 0)
 		end
 		button:SetAttribute("statehidden", false)
 		button:Show()
 	end
 
-	for i = num+1, 12 do
+	for i = num + 1, 12 do
 		local button = frame.buttons[i]
 		button:SetAttribute("statehidden", true)
 		button:Hide()
 	end
 
 	local column = min(num, perRow)
-	local rows = ceil(num/perRow)
-	frame:SetWidth(column*size + (column-1)*margin + 2*padding)
-	frame:SetHeight(size*rows + (rows-1)*margin + 2*padding)
+	local rows = ceil(num / perRow)
+	frame:SetWidth(column * size + (column - 1) * margin + 2 * padding)
+	frame:SetHeight(size * rows + (rows - 1) * margin + 2 * padding)
 	frame.mover:SetSize(frame:GetSize())
 end
 
 function Module:CreateCustomBar()
 	if C["ActionBar"].CustomBar then
-		Module:SetupCustomBar({"BOTTOM", UIParent, "BOTTOM", 0, 140})
+		Module:SetupCustomBar({ "BOTTOM", UIParent, "BOTTOM", 0, 140 })
 	end
 end

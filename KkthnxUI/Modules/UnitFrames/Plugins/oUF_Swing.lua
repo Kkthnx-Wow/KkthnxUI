@@ -66,7 +66,7 @@ do
 		local now = GetTime()
 
 		if meleeing then
-			if checkelapsed > .02 then
+			if checkelapsed > 0.02 then
 				-- little hack for detecting melee stop
 				-- improve... dw sucks at this point -.-
 				if lasthit + self.speed + slamtime < now then
@@ -179,7 +179,7 @@ local function MeleeChange(self, _, unit)
 	else
 		if ohspeed then
 			if swingMH.speed and swingMH.speed ~= mhspeed then
-				local percentage = ((swingMH.max or 10) - now) / (swingMH.speed)
+				local percentage = ((swingMH.max or 10) - now) / swingMH.speed
 				swingMH.min = now - mhspeed * (1 - percentage)
 				swingMH.max = now + mhspeed * percentage
 				UpdateBarMinMaxValues(swingMH)
@@ -187,7 +187,7 @@ local function MeleeChange(self, _, unit)
 			end
 
 			if swingOH.speed and swingOH.speed ~= ohspeed then
-				local percentage = ((swingOH.max or 10)- now) / (swingOH.speed)
+				local percentage = ((swingOH.max or 10) - now) / swingOH.speed
 				swingOH.min = now - ohspeed * (1 - percentage)
 				swingOH.max = now + ohspeed * percentage
 				UpdateBarMinMaxValues(swingOH)
@@ -195,7 +195,7 @@ local function MeleeChange(self, _, unit)
 			end
 		else
 			if swing.max and swing.speed ~= mhspeed then
-				local percentage = (swing.max - now) / (swing.speed)
+				local percentage = (swing.max - now) / swing.speed
 				swing.min = now - mhspeed * (1 - percentage)
 				swing.max = now + mhspeed * percentage
 				UpdateBarMinMaxValues(swing)
@@ -229,7 +229,7 @@ local function RangedChange(self, _, unit)
 		swing:SetScript("OnUpdate", OnDurationUpdate)
 	else
 		if swing.speed ~= speed then
-			local percentage = (swing.max - now) / (swing.speed)
+			local percentage = (swing.max - now) / swing.speed
 			swing.min = now - speed * (1 - percentage)
 			swing.max = now + speed * percentage
 			swing.speed = speed

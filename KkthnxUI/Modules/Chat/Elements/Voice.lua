@@ -25,7 +25,7 @@ local function VoiceColorGradient(_, perc, ...)
 	end
 
 	local num = select("#", ...) / 3
-	local segment, relperc = math_modf(perc*(num-1))
+	local segment, relperc = math_modf(perc * (num - 1))
 	local r1, g1, b1, r2, g2, b2 = select((segment * 3) + 1, ...)
 
 	return r1 + (r2 - r1) * relperc, g1 + (g2 - g1) * relperc, b1 + (b2 - b1) * relperc
@@ -116,12 +116,12 @@ function Module:CreateVoiceActivity()
 	Module.ChatHeadFrame = CreateFrame("Frame", "KKUI_ChatHeadFrame", UIParent)
 	Module.ChatHeadFrame:SetPoint("LEFT", UIParent, "LEFT", 18, -280)
 	Module.ChatHeadFrame:SetSize(200, 20)
-	K.Mover(Module.ChatHeadFrame, "Voice Overlay", "Voice Overlay", {"LEFT", UIParent, "LEFT", 18, -280}, 200, 20)
+	K.Mover(Module.ChatHeadFrame, "Voice Overlay", "Voice Overlay", { "LEFT", UIParent, "LEFT", 18, -280 }, 200, 20)
 
 	local CHAT_MAX_HEADS = 5
 	local CHAT_HEAD_HEIGHT = 20
 	for i = 1, CHAT_MAX_HEADS do
-		local chatHead = CreateFrame("Frame", "KKUI_ChatHeadFrame"..i, Module.ChatHeadFrame)
+		local chatHead = CreateFrame("Frame", "KKUI_ChatHeadFrame" .. i, Module.ChatHeadFrame)
 		chatHead:SetSize(200, CHAT_HEAD_HEIGHT)
 
 		chatHead.Portrait = CreateFrame("Frame", nil, chatHead)
@@ -151,7 +151,7 @@ function Module:CreateVoiceActivity()
 		chatHead.StatusBar.anim = _G.CreateAnimationGroup(chatHead.StatusBar)
 		chatHead.StatusBar.anim.progress = chatHead.StatusBar.anim:CreateAnimation("Progress")
 		chatHead.StatusBar.anim.progress:SetEasing("Out")
-		chatHead.StatusBar.anim.progress:SetDuration(.3)
+		chatHead.StatusBar.anim.progress:SetDuration(0.3)
 
 		chatHead:Hide()
 		Module.ChatHeadFrame[i] = chatHead

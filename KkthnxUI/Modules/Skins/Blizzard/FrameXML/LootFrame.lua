@@ -12,7 +12,7 @@ tinsert(C.defaultThemes, function()
 
 	LootFramePortraitOverlay:SetParent(K.UIFrameHider)
 
-	for i=1, LootFrame:GetNumRegions() do
+	for i = 1, LootFrame:GetNumRegions() do
 		local region = select(i, LootFrame:GetRegions())
 		if region:IsObjectType("FontString") then
 			if region:GetText() == ITEMS then
@@ -26,9 +26,9 @@ tinsert(C.defaultThemes, function()
 	LootFrame.Title:SetJustifyH("LEFT")
 
 	for i = 1, _G.LOOTFRAME_NUMBUTTONS do
-		local button = _G["LootButton"..i]
-		_G["LootButton"..i.."NameFrame"]:Hide()
-		_G["LootButton"..i.."IconQuestTexture"]:SetParent(K.UIFrameHider)
+		local button = _G["LootButton" .. i]
+		_G["LootButton" .. i .. "NameFrame"]:Hide()
+		_G["LootButton" .. i .. "IconQuestTexture"]:SetParent(K.UIFrameHider)
 
 		button:StripTextures()
 		button:CreateBorder()
@@ -56,7 +56,7 @@ tinsert(C.defaultThemes, function()
 			numLootToShow = numLootToShow - 1 -- make space for the page buttons
 		end
 
-		local button = _G["LootButton"..index]
+		local button = _G["LootButton" .. index]
 		local slot = (numLootToShow * (LootFrame.page - 1)) + index
 		local quality = select(5, GetLootSlotInfo(slot))
 		local color = K.QualityColors[quality or 1]

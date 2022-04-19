@@ -18,10 +18,12 @@ local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
 function Module:UpdateVehicleButton()
 	local frame = _G["KKUI_ActionBarExit"]
-	if not frame then return end
+	if not frame then
+		return
+	end
 
 	local size = C["ActionBar"].VehButtonSize
-	local framSize = size + 2*padding
+	local framSize = size + 2 * padding
 	frame.buttons[1]:SetSize(size, size)
 	frame:SetSize(framSize, framSize)
 	frame.mover:SetSize(framSize, framSize)
@@ -31,14 +33,14 @@ function Module:CreateLeaveVehicle()
 	local buttonList = {}
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBarExit", UIParent, "SecureHandlerStateTemplate")
-	frame.mover = K.Mover(frame, "Leave Vehicle Button", "LeaveVehicle", {"BOTTOM", UIParent, "BOTTOM", 260, 4})
-
+	frame.mover = K.Mover(frame, "Leave Vehicle Button", "LeaveVehicle", { "BOTTOM", UIParent, "BOTTOM", 260, 4 })
+	-- stylua: ignore
 	local button = CreateFrame("CheckButton", "KKUI_LeaveVehicleButton", frame, "ActionButtonTemplate, SecureHandlerClickTemplate")
 	table_insert(buttonList, button)
 	button:SetPoint("BOTTOMLEFT", frame, padding, padding)
 	button:RegisterForClicks("AnyUp")
 	button.icon:SetTexture("INTERFACE\\VEHICLES\\UI-Vehicles-Button-Exit-Up")
-	button.icon:SetTexCoord(.216, .784, .216, .784)
+	button.icon:SetTexCoord(0.216, 0.784, 0.216, 0.784)
 	button.icon:SetDrawLayer("ARTWORK")
 	button.icon.__lockdown = true
 
@@ -52,6 +54,7 @@ function Module:CreateLeaveVehicle()
 		end
 		self:SetChecked(true)
 	end)
+
 	button:SetScript("OnShow", function(self)
 		self:SetChecked(false)
 	end)
@@ -62,7 +65,9 @@ function Module:CreateLeaveVehicle()
 	RegisterStateDriver(frame, "exit", frame.frameVisibility)
 
 	frame:SetAttribute("_onstate-exit", [[ if CanExitVehicle() then self:Show() else self:Hide() end ]])
-	if not CanExitVehicle() then frame:Hide() end
+	if not CanExitVehicle() then
+		frame:Hide()
+	end
 
 	if cfg.fader then
 		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)

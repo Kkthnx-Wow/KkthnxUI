@@ -25,10 +25,70 @@ local SetCVar = _G.SetCVar
 local UnitIsUnit = _G.UnitIsUnit
 local hooksecurefunc = _G.hooksecurefunc
 
-local msgSymbols = {"`", "～", "＠", "＃", "^", "＊", "！", "？", "。", "|", " ", "—", "——", "￥", "’", "‘", "“", "”", "【", "】", "『", "』", "《", "》", "〈", "〉", "（", "）", "〔", "〕", "、", "，", "：", ",", "_", "/", "~"}
-local addonBlockList = {"%(Task completed%)", "%*%*.+%*%*", "%[Accept task%]", ":.+>", "<Bigfoot", "<iLvl>", "<LFG>", "<Team Item Level:.+>", "Attribute Notification", "EUI[:_]", "Interrupt:. +|Hspell", "Progress:", "PS death: .+>", "Task progress prompt", "wow.+Redemption Code", "wow.+Verification Code", "Xihan", "|Hspell.+=>", "【Love is not easy】", "【Love Plugin]", ("%-"):rep(20)}
-local trashClubs = {"Let's Play Games Together", "Salute Us", "Small Uplift", "Stand up", "Tribe Chowder"}
-local autoBroadcasts = {"%-(.*)%|T(.*)|t(.*)|c(.*)%|r", "%[(.*)ARENA ANNOUNCER(.*)%]", "%[(.*)Announce by(.*)%]", "%[(.*)Autobroadcast(.*)%]", "%[(.*)BG Queue Announcer(.*)%]", "You are not mounted so you can't dismount."}
+local msgSymbols = {
+	"`",
+	"～",
+	"＠",
+	"＃",
+	"^",
+	"＊",
+	"！",
+	"？",
+	"。",
+	"|",
+	" ",
+	"—",
+	"——",
+	"￥",
+	"’",
+	"‘",
+	"“",
+	"”",
+	"【",
+	"】",
+	"『",
+	"』",
+	"《",
+	"》",
+	"〈",
+	"〉",
+	"（",
+	"）",
+	"〔",
+	"〕",
+	"、",
+	"，",
+	"：",
+	",",
+	"_",
+	"/",
+	"~",
+}
+local addonBlockList = {
+	"%(Task completed%)",
+	"%*%*.+%*%*",
+	"%[Accept task%]",
+	":.+>",
+	"<Bigfoot",
+	"<iLvl>",
+	"<LFG>",
+	"<Team Item Level:.+>",
+	"Attribute Notification",
+	"EUI[:_]",
+	"Interrupt:. +|Hspell",
+	"Progress:",
+	"PS death: .+>",
+	"Task progress prompt",
+	"wow.+Redemption Code",
+	"wow.+Verification Code",
+	"Xihan",
+	"|Hspell.+=>",
+	"【Love is not easy】",
+	"【Love Plugin]",
+	("%-"):rep(20),
+}
+local trashClubs = { "Let's Play Games Together", "Salute Us", "Small Uplift", "Stand up", "Tribe Chowder" }
+local autoBroadcasts = { "%-(.*)%|T(.*)|t(.*)|c(.*)%|r", "%[(.*)ARENA ANNOUNCER(.*)%]", "%[(.*)Announce by(.*)%]", "%[(.*)Autobroadcast(.*)%]", "%[(.*)BG Queue Announcer(.*)%]", "You are not mounted so you can't dismount." }
 
 C.BadBoys = {} -- debug
 local FilterList = {}
@@ -75,7 +135,6 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 	elseif guid and (IsGuildMember(guid) or C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or IsGUIDInGroup(guid)) then
 		return
 	end
-
 
 	if C["Chat"].BlockStranger and event == "CHAT_MSG_WHISPER" then -- Block strangers
 		Module.MuteThisTime = true
@@ -128,7 +187,7 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 	end
 
 	-- ECF Repeat Filter
-	local msgTable = {name, {}, GetTime()}
+	local msgTable = { name, {}, GetTime() }
 	if filterMsg == "" then
 		filterMsg = msg
 	end
@@ -177,7 +236,7 @@ local function toggleCVar(value)
 end
 
 function Module:ToggleChatBubble(party)
-	cvar = "chatBubbles"..(party and "Party" or "")
+	cvar = "chatBubbles" .. (party and "Party" or "")
 	if not GetCVarBool(cvar) then
 		return
 	end

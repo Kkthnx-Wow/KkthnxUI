@@ -33,13 +33,16 @@ end
 -- Atlas info
 local function GetTextureStrByAtlas(info, sizeX, sizeY)
 	local file = info and info.file
-	if not file then return end
-
+	if not file then
+		return
+	end
+	-- stylua: ignore
 	local width, height, txLeft, txRight, txTop, txBottom = info.width, info.height, info.leftTexCoord, info.rightTexCoord, info.topTexCoord, info.bottomTexCoord
-	local atlasWidth = width / (txRight-txLeft)
-	local atlasHeight = height / (txBottom-txTop)
+	local atlasWidth = width / (txRight - txLeft)
+	local atlasHeight = height / (txBottom - txTop)
 
-	return string_format("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t", file, (sizeX or 0), (sizeY or 0), atlasWidth, atlasHeight, atlasWidth*txLeft, atlasWidth*txRight, atlasHeight*txTop, atlasHeight*txBottom)
+	-- stylua: ignore
+	return string_format("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t", file, (sizeX or 0), (sizeY or 0), atlasWidth, atlasHeight, atlasWidth * txLeft, atlasWidth * txRight, atlasHeight * txTop, atlasHeight * txBottom)
 end
 
 function Module:RareAlert_Update(id)
@@ -59,18 +62,21 @@ function Module:RareAlert_Update(id)
 			return
 		end
 
-		UIErrorsFrame:AddMessage(K.SystemColor..tex..L["Rare Spotted"]..K.InfoColor.."["..(info.name or "").."]"..K.SystemColor.."!")
+		-- stylua: ignore
+		UIErrorsFrame:AddMessage(K.SystemColor .. tex .. L["Rare Spotted"] .. K.InfoColor .. "[" .. (info.name or "") .. "]" .. K.SystemColor .. "!")
 
 		if C["Announcements"].AlertInChat then
-			local currrentTime = C["Chat"].TimestampFormat.Value == 1 and K.GreyColor.."["..date("%H:%M:%S").."]" or ""
+			local currrentTime = C["Chat"].TimestampFormat.Value == 1 and K.GreyColor .. "[" .. date("%H:%M:%S") .. "]" or ""
 			local nameString
 			local mapID = C_Map_GetBestMapForUnit("player")
 			local position = mapID and C_VignetteInfo_GetVignettePosition(info.vignetteGUID, mapID)
 			if position then
 				local x, y = position:GetXY()
+				-- stylua: ignore
 				nameString = string_format(Module.RareString, mapID, x * 10000, y * 10000, info.name, x * 100, y * 100, "")
 			end
-			K.Print(currrentTime..K.SystemColor..tex..L["Rare Spotted"]..K.InfoColor..(nameString or info.name or "")..K.SystemColor.."!")
+			-- stylua: ignore
+			K.Print(currrentTime .. K.SystemColor .. tex .. L["Rare Spotted"] .. K.InfoColor .. (nameString or info.name or "") .. K.SystemColor .. "!")
 		end
 
 		if Module.RareInstType == "none" then

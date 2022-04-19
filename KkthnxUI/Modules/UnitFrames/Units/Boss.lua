@@ -113,7 +113,7 @@ function Module:CreateBoss()
 			self.Portrait.Border:SetAllPoints(self.Portrait)
 			self.Portrait.Border:CreateBorder()
 
-			if (bossPortraitStyle == "ClassPortraits" or bossPortraitStyle == "NewClassPortraits") then
+			if bossPortraitStyle == "ClassPortraits" or bossPortraitStyle == "NewClassPortraits" then
 				self.Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
@@ -131,26 +131,26 @@ function Module:CreateBoss()
 	self:Tag(self.Level, "[nplevel]")
 
 	--if C["Boss"].ShowBuffs then
-		self.Buffs = CreateFrame("Frame", nil, self)
-		self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
-		self.Buffs.initialAnchor = "TOPLEFT"
-		self.Buffs["growth-x"] = "RIGHT"
-		self.Buffs["growth-y"] = "DOWN"
-		self.Buffs.num = 6
-		self.Buffs.spacing = 6
-		self.Buffs.iconsPerRow = 6
-		self.Buffs.onlyShowPlayer = false
+	self.Buffs = CreateFrame("Frame", nil, self)
+	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+	self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -6)
+	self.Buffs.initialAnchor = "TOPLEFT"
+	self.Buffs["growth-x"] = "RIGHT"
+	self.Buffs["growth-y"] = "DOWN"
+	self.Buffs.num = 6
+	self.Buffs.spacing = 6
+	self.Buffs.iconsPerRow = 6
+	self.Buffs.onlyShowPlayer = false
 
-		Module:UpdateAuraContainer(bossWidth, self.Buffs, self.Buffs.num)
+	Module:UpdateAuraContainer(bossWidth, self.Buffs, self.Buffs.num)
 
-		self.Buffs.showStealableBuffs = true
-		self.Buffs.PostCreateIcon = Module.PostCreateAura
-		self.Buffs.PostUpdateIcon = Module.PostUpdateAura
-		self.Buffs.CustomFilter = Module.CustomFilter
+	self.Buffs.showStealableBuffs = true
+	self.Buffs.PostCreateIcon = Module.PostCreateAura
+	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
+	self.Buffs.CustomFilter = Module.CustomFilter
 	--end
 
-	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
+	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	self.Debuffs.spacing = 6
 	self.Debuffs.initialAnchor = "RIGHT"
 	self.Debuffs["growth-x"] = "LEFT"
@@ -223,7 +223,7 @@ function Module:CreateBoss()
 
 	if C["Boss"].TargetHighlight then
 		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
-		self.TargetHighlight:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
+		self.TargetHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
 
 		local relativeTo
 		if bossPortraitStyle == "NoPortraits" or bossPortraitStyle == "OverlayPortrait" then
@@ -268,13 +268,13 @@ function Module:CreateBoss()
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()
 	self.Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
-	self.Highlight:SetTexCoord(0, 1, .5, 1)
-	self.Highlight:SetVertexColor(.6, .6, .6)
+	self.Highlight:SetTexCoord(0, 1, 0.5, 1)
+	self.Highlight:SetVertexColor(0.6, 0.6, 0.6)
 	self.Highlight:SetBlendMode("ADD")
 	self.Highlight:Hide()
 
 	local altPower = K.CreateFontString(self, 10, "")
-	altPower:SetPoint("RIGHT", self.Power, "LEFT", - 6, 0)
+	altPower:SetPoint("RIGHT", self.Power, "LEFT", -6, 0)
 	self:Tag(altPower, "[altpower]")
 
 	self.ThreatIndicator = {

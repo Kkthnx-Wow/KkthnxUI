@@ -154,12 +154,7 @@ local function CreateShadow(f, bd)
 	end
 	f.Shadow:SetFrameLevel(lvl == 0 and 0 or lvl - 1)
 	if bd then
-		f.Shadow:SetBackdropColor(
-			C["Media"].Backdrops.ColorBackdrop[1],
-			C["Media"].Backdrops.ColorBackdrop[2],
-			C["Media"].Backdrops.ColorBackdrop[3],
-			C["Media"].Backdrops.ColorBackdrop[4]
-		)
+		f.Shadow:SetBackdropColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Media"].Backdrops.ColorBackdrop[4])
 	end
 	f.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 
@@ -456,9 +451,7 @@ local function SkinScrollBar(self)
 	self:GetParent():StripTextures()
 	self:StripTextures()
 
-	local thumb = GrabScrollBarElement(self, "ThumbTexture")
-		or GrabScrollBarElement(self, "thumbTexture")
-		or self.GetThumbTexture and self:GetThumbTexture()
+	local thumb = GrabScrollBarElement(self, "ThumbTexture") or GrabScrollBarElement(self, "thumbTexture") or self.GetThumbTexture and self:GetThumbTexture()
 	if thumb then
 		thumb:SetAlpha(0)
 		thumb:SetWidth(16)

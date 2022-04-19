@@ -26,8 +26,8 @@ local function startSelling()
 
 			local _, _, _, quality, _, _, link, _, noValue, itemID = GetContainerItemInfo(bag, slot)
 			local isInSet = GetContainerItemEquipmentSetInfo(bag, slot)
-			if link and not noValue and not isInSet and not Module:IsPetTrashCurrency(itemID) and (quality == 0 or KkthnxUIDB.CustomJunkList[itemID]) and not cache["b"..bag.."s"..slot] then
-				cache["b"..bag.."s"..slot] = true
+			if link and not noValue and not isInSet and not Module:IsPetTrashCurrency(itemID) and (quality == 0 or KkthnxUIDB.CustomJunkList[itemID]) and not cache["b" .. bag .. "s" .. slot] then
+				cache["b" .. bag .. "s" .. slot] = true
 				UseContainerItem(bag, slot)
 				C_Timer_After(0.15, startSelling)
 				return

@@ -73,13 +73,13 @@ function Module:PositionAltPowerBar()
 	_G.PlayerPowerBarAlt:SetUserPlaced(true)
 	_G.UIPARENT_MANAGED_FRAME_POSITIONS.PlayerPowerBarAlt = nil
 
-	K.Mover(holder, "PlayerPowerBarAlt", "Alternative Power", {"TOP", UIParent, "TOP", -1, -108}, AltPowerWidth or 250, AltPowerHeight or 20)
+	K.Mover(holder, "PlayerPowerBarAlt", "Alternative Power", { "TOP", UIParent, "TOP", -1, -108 }, AltPowerWidth or 250, AltPowerHeight or 20)
 end
 
 function Module:UpdateAltPowerBarColors()
 	local bar = _G.KKUI_AltPowerBar
 
-	local color = {r = 0.2, g = 0.4, b = 0.8}
+	local color = { r = 0.2, g = 0.4, b = 0.8 }
 	bar:SetStatusBarColor(color.r, color.g, color.b)
 end
 
@@ -154,7 +154,6 @@ function Module:SkinAltPowerBar()
 	powerbar:RegisterEvent("PLAYER_ENTERING_WORLD")
 	powerbar:SetScript("OnEvent", Module.UpdateAltPowerBar)
 end
-
 
 function Module:CreateAltPowerbar()
 	if IsAddOnLoaded("SimplePowerBar") then

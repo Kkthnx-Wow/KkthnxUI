@@ -22,13 +22,13 @@ local subZone
 local zone
 
 local zoneInfo = {
-	arena = {FREE_FOR_ALL_TERRITORY, {0.84, 0.03, 0.03}},
-	combat = {COMBAT_ZONE, {0.84, 0.03, 0.03}},
-	contested = {CONTESTED_TERRITORY, {0.9, 0.85, 0.05}},
-	friendly = {FACTION_CONTROLLED_TERRITORY, {0.05, 0.85, 0.03}},
-	hostile = {FACTION_CONTROLLED_TERRITORY, {0.84, 0.03, 0.03}},
-	neutral = {string_format(FACTION_CONTROLLED_TERRITORY, FACTION_STANDING_LABEL4), {0.9, 0.85, 0.05}},
-	sanctuary = {SANCTUARY_TERRITORY, {0.035, 0.58, 0.84}},
+	arena = { FREE_FOR_ALL_TERRITORY, { 0.84, 0.03, 0.03 } },
+	combat = { COMBAT_ZONE, { 0.84, 0.03, 0.03 } },
+	contested = { CONTESTED_TERRITORY, { 0.9, 0.85, 0.05 } },
+	friendly = { FACTION_CONTROLLED_TERRITORY, { 0.05, 0.85, 0.03 } },
+	hostile = { FACTION_CONTROLLED_TERRITORY, { 0.84, 0.03, 0.03 } },
+	neutral = { string_format(FACTION_CONTROLLED_TERRITORY, FACTION_STANDING_LABEL4), { 0.9, 0.85, 0.05 } },
+	sanctuary = { SANCTUARY_TERRITORY, { 0.035, 0.58, 0.84 } },
 }
 
 local eventList = {

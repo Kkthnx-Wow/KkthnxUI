@@ -19,38 +19,69 @@ local hooksecurefunc = _G.hooksecurefunc
 --Create the minimap micro menu
 local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent)
 local menuList = {
-	{text = _G.CHARACTER_BUTTON, notCheckable = 1, func = function()
+	{
+		text = _G.CHARACTER_BUTTON,
+		notCheckable = 1,
+		func = function()
 			ToggleCharacter("PaperDollFrame")
-	end},
-	{text = _G.SPELLBOOK_ABILITIES_BUTTON, notCheckable = 1, func = function()
+		end,
+	},
+	{
+		text = _G.SPELLBOOK_ABILITIES_BUTTON,
+		notCheckable = 1,
+		func = function()
 			ToggleFrame(_G.SpellBookFrame)
-	end},
-	{text = _G.CHAT_CHANNELS, notCheckable = 1, func = _G.ToggleChannelFrame},
-	{text = _G.TIMEMANAGER_TITLE, notCheckable = 1, func = function()
+		end,
+	},
+	{ text = _G.CHAT_CHANNELS, notCheckable = 1, func = _G.ToggleChannelFrame },
+	{
+		text = _G.TIMEMANAGER_TITLE,
+		notCheckable = 1,
+		func = function()
 			ToggleFrame(_G.TimeManagerFrame)
-	end},
-	{text = _G.SOCIAL_BUTTON, notCheckable = 1, func = ToggleFriendsFrame},
-	{text = _G.GUILD, notCheckable = 1, func = ToggleGuildFrame},
-	{text = _G.TALENTS_BUTTON, notCheckable = 1, func = ToggleTalentFrame},
-	{text = L["Calendar"], notCheckable = 1, func = function()
+		end,
+	},
+	{ text = _G.SOCIAL_BUTTON, notCheckable = 1, func = ToggleFriendsFrame },
+	{ text = _G.GUILD, notCheckable = 1, func = ToggleGuildFrame },
+	{ text = _G.TALENTS_BUTTON, notCheckable = 1, func = ToggleTalentFrame },
+	{
+		text = L["Calendar"],
+		notCheckable = 1,
+		func = function()
 			_G.GameTimeFrame:Click()
-	end},
-	{text = _G.COLLECTIONS, notCheckable = 1, func = ToggleCollectionsJournal},
-	{text = _G.BLIZZARD_STORE, notCheckable = 1, func = function()
+		end,
+	},
+	{ text = _G.COLLECTIONS, notCheckable = 1, func = ToggleCollectionsJournal },
+	{
+		text = _G.BLIZZARD_STORE,
+		notCheckable = 1,
+		func = function()
 			_G.StoreMicroButton:Click()
-	end},
-	{text = _G.ACHIEVEMENT_BUTTON, notCheckable = 1, func = ToggleAchievementFrame},
-	{text = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE, notCheckable = 1, func = function()
+		end,
+	},
+	{ text = _G.ACHIEVEMENT_BUTTON, notCheckable = 1, func = ToggleAchievementFrame },
+	{
+		text = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE,
+		notCheckable = 1,
+		func = function()
 			GarrisonLandingPageMinimapButton_OnClick(_G.GarrisonLandingPageMinimapButton)
-	end},
-	{text = _G.ENCOUNTER_JOURNAL, notCheckable = 1, func = function()
+		end,
+	},
+	{
+		text = _G.ENCOUNTER_JOURNAL,
+		notCheckable = 1,
+		func = function()
 			if not IsAddOnLoaded("Blizzard_EncounterJournal") then
 				_G.EncounterJournal_LoadUI()
 			end
 			ToggleFrame(_G.EncounterJournal)
-	end},
-	{text = _G.LFG_TITLE, notCheckable = 1, func = ToggleLFGParentFrame or ToggleLFDParentFrame},
-	{text = _G.GREAT_VAULT_REWARDS, notCheckable = 1, func = function()
+		end,
+	},
+	{ text = _G.LFG_TITLE, notCheckable = 1, func = ToggleLFGParentFrame or ToggleLFDParentFrame },
+	{
+		text = _G.GREAT_VAULT_REWARDS,
+		notCheckable = 1,
+		func = function()
 			if UIParentLoadAddOn("Blizzard_WeeklyRewards") then
 				if WeeklyRewardsFrame:IsShown() then
 					WeeklyRewardsFrame:Hide()
@@ -61,7 +92,8 @@ local menuList = {
 				LoadAddOn("Blizzard_WeeklyRewards")
 				WeeklyRewardsFrame:Show()
 			end
-	end},
+		end,
+	},
 }
 
 table_sort(menuList, function(a, b)
@@ -71,7 +103,10 @@ table_sort(menuList, function(a, b)
 end)
 
 -- want these two on the bottom
-table_insert(menuList, {text = _G.MAINMENU_BUTTON, notCheckable = 1, func = function()
+table_insert(menuList, {
+	text = _G.MAINMENU_BUTTON,
+	notCheckable = 1,
+	func = function()
 		if not _G.GameMenuFrame:IsShown() then
 			if _G.VideoOptionsFrame:IsShown() then
 				_G.VideoOptionsFrameCancel:Click()
@@ -90,10 +125,10 @@ table_insert(menuList, {text = _G.MAINMENU_BUTTON, notCheckable = 1, func = func
 			HideUIPanel(_G.GameMenuFrame)
 			MainMenuMicroButton_SetNormal()
 		end
-	end
+	end,
 })
 
-table_insert(menuList, {text = _G.HELP_BUTTON, notCheckable = 1, bottom = true, func = ToggleHelpFrame})
+table_insert(menuList, { text = _G.HELP_BUTTON, notCheckable = 1, bottom = true, func = ToggleHelpFrame })
 
 function Module:CreateStyle()
 	local minimapBorder = CreateFrame("Frame", "KKUI_MinimapBorder", Minimap)
@@ -109,7 +144,7 @@ function Module:CreateStyle()
 	minimapBackground:CreateBorder(nil, nil, nil, "", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, "BackdropTemplate")
-	minimapMailPulse:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
+	minimapMailPulse:SetBackdrop({ edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12 })
 	minimapMailPulse:SetPoint("TOPLEFT", minimapBorder, -5, 5)
 	minimapMailPulse:SetPoint("BOTTOMRIGHT", minimapBorder, 5, -5)
 	minimapMailPulse:SetBackdropBorderColor(1, 1, 0, 0.8)
@@ -163,20 +198,20 @@ local function UpdateCovenantTexture(texture)
 
 	if CovenantID ~= CovenantType.None then
 		if CovenantID == CovenantType.Kyrian then
-			texture = TexturePath.."Kyrian"
+			texture = TexturePath .. "Kyrian"
 		elseif CovenantID == CovenantType.Venthyr then
-			texture = TexturePath.."Venthyr"
+			texture = TexturePath .. "Venthyr"
 		elseif CovenantID == CovenantType.NightFae then
-			texture = TexturePath.."NightFae"
+			texture = TexturePath .. "NightFae"
 		elseif CovenantID == CovenantType.Necrolord then
-			texture = TexturePath.."Necrolords"
+			texture = TexturePath .. "Necrolords"
 		end
 	else
 		if CovenantID == CovenantType.None then -- No cov so default to differnt icons?
 			if K.Faction == "Alliance" then
-				texture = TexturePath.."Alliance"
+				texture = TexturePath .. "Alliance"
 			else
-				texture = TexturePath.."Horde"
+				texture = TexturePath .. "Horde"
 			end
 		end
 	end
@@ -254,7 +289,7 @@ function Module:ReskinRegions()
 	local difficultyFlags = {
 		"MiniMapInstanceDifficulty",
 		"GuildInstanceDifficulty",
-		"MiniMapChallengeMode"
+		"MiniMapChallengeMode",
 	}
 
 	for _, v in pairs(difficultyFlags) do
@@ -286,13 +321,13 @@ function Module:ReskinRegions()
 	end
 
 	local inviteNotification = CreateFrame("Button", nil, UIParent, "BackdropTemplate")
-	inviteNotification:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
+	inviteNotification:SetBackdrop({ edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12 })
 	inviteNotification:SetPoint("TOPLEFT", Minimap, -5, 5)
 	inviteNotification:SetPoint("BOTTOMRIGHT", Minimap, 5, -5)
 	inviteNotification:SetBackdropBorderColor(1, 1, 0, 0.8)
 	inviteNotification:Hide()
 
-	K.CreateFontString(inviteNotification, 12, K.InfoColor.."Pending Calendar Invite(s)!", "")
+	K.CreateFontString(inviteNotification, 12, K.InfoColor .. "Pending Calendar Invite(s)!", "")
 
 	local function updateInviteVisibility()
 		inviteNotification:SetShown(C_Calendar_GetNumPendingInvites() > 0)
@@ -337,7 +372,7 @@ function Module:CreatePing()
 
 	K:RegisterEvent("MINIMAP_PING", function(_, unit)
 		if UnitIsUnit(unit, "player") then -- ignore player ping
-			return 
+			return
 		end
 
 		local class = select(2, UnitClass(unit))
@@ -433,7 +468,7 @@ function Module:Minimap_OnMouseUp(btn)
 	local position = Minimap.mover:GetPoint()
 	if btn == "MiddleButton" or (btn == "RightButton" and IsShiftKeyDown()) then
 		if InCombatLockdown() then
-			_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+			_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 			return
 		end
 
@@ -442,7 +477,7 @@ function Module:Minimap_OnMouseUp(btn)
 		else
 			EasyMenu(menuList, menuFrame, "cursor", -160, 0)
 		end
-	elseif btn == "RightButton"and Module.TrackingDropdown then
+	elseif btn == "RightButton" and Module.TrackingDropdown then
 		if position:match("LEFT") then
 			ToggleDropDownMenu(1, nil, Module.TrackingDropdown, "cursor", 0, 0)
 		else
@@ -561,7 +596,7 @@ function Module:OnEnable()
 	-- Create the new minimap tracking dropdown frame and initialize it
 	Module.TrackingDropdown = Module:Minimap_TrackingDropdown()
 
-	local minimapMover = K.Mover(Minimap, "Minimap", "Minimap", {"TOPRIGHT", UIParent, "TOPRIGHT", -4, -4})
+	local minimapMover = K.Mover(Minimap, "Minimap", "Minimap", { "TOPRIGHT", UIParent, "TOPRIGHT", -4, -4 })
 	Minimap:ClearAllPoints()
 	Minimap:SetPoint("TOPRIGHT", minimapMover)
 	Minimap.mover = minimapMover

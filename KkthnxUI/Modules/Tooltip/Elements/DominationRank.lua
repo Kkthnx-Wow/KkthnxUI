@@ -106,13 +106,13 @@ function Module:GetDomiName(itemID)
 end
 
 function Module:Domination_UpdateText(name, rank)
-	local tex = _G[self:GetName().."Texture1"]
+	local tex = _G[self:GetName() .. "Texture1"]
 	local texture = tex and tex:IsShown() and tex:GetTexture()
 	if texture and domiTextureIDs[texture] then
 		local textLine = select(2, tex:GetPoint())
 		local text = textLine and textLine:GetText()
 		if text then
-			textLine:SetText(text.."|n"..string_format(DOMI_RANK_STRING, name, rank))
+			textLine:SetText(text .. "|n" .. string_format(DOMI_RANK_STRING, name, rank))
 		end
 	end
 end
@@ -128,7 +128,7 @@ function Module:Domination_CheckStatus()
 
 	if rank then
 		-- Domi rank on gems
-		local textLine = _G[self:GetName().."TextLeft2"]
+		local textLine = _G[self:GetName() .. "TextLeft2"]
 		local text = textLine and textLine:GetText()
 		if text and string_find(text, "|cFF66BBFF") then
 			textLine:SetFormattedText(DOMI_RANK_STRING, text, rank)
@@ -147,8 +147,8 @@ end
 
 function Module:CreateDominationRank()
 	if not C["Tooltip"].DominationRank then
-        return
-    end
+		return
+	end
 
 	GameTooltip:HookScript("OnTooltipSetItem", Module.Domination_CheckStatus)
 	ItemRefTooltip:HookScript("OnTooltipSetItem", Module.Domination_CheckStatus)

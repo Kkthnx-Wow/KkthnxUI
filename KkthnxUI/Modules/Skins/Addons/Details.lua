@@ -23,7 +23,7 @@ local function SetupInstance(instance)
 	instance:SetBackdropTexture("None") -- if block window from resizing, then back to "Details Ground", needs review
 	instance:MenuAnchor(16, 3)
 	instance:ToolbarMenuButtonsSize(1)
-	instance:AttributeMenu(true, 0, 3, "KkthnxUIFont", 12, {1, 1, 1}, 1, true)
+	instance:AttributeMenu(true, 0, 3, "KkthnxUIFont", 12, { 1, 1, 1 }, 1, true)
 	instance:SetBarSettings(needReset and 20, needReset and "KkthnxUIStatusbar")
 	instance:SetBarTextSettings(needReset and 12, "KkthnxUIFont", nil, nil, nil, true, true)
 

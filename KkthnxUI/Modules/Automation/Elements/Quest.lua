@@ -78,7 +78,7 @@ local function setupCheckButton()
 	isCheckButtonCreated = true
 
 	function AutoQuestCheckButton.UpdateTooltip(self)
-		if (GameTooltip:IsForbidden()) then
+		if GameTooltip:IsForbidden() then
 			return
 		end
 
@@ -100,7 +100,7 @@ local function setupCheckButton()
 	end
 
 	AutoQuestCheckButton:HookScript("OnEnter", function(self)
-		if (GameTooltip:IsForbidden()) then
+		if GameTooltip:IsForbidden() then
 			return
 		end
 
@@ -108,7 +108,7 @@ local function setupCheckButton()
 	end)
 
 	AutoQuestCheckButton:HookScript("OnLeave", function()
-		if (GameTooltip:IsForbidden()) then
+		if GameTooltip:IsForbidden() then
 			return
 		end
 

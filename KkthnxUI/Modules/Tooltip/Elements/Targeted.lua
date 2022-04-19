@@ -32,16 +32,16 @@ function Module:ScanTargets()
 	table_wipe(targetTable)
 
 	for i = 1, GetNumGroupMembers() do
-		local member = (IsInRaid() and "raid"..i or "party"..i)
-		if UnitIsUnit(unit, member.."target") and not UnitIsUnit("player", member) and not UnitIsDeadOrGhost(member) then
+		local member = (IsInRaid() and "raid" .. i or "party" .. i)
+		if UnitIsUnit(unit, member .. "target") and not UnitIsUnit("player", member) and not UnitIsDeadOrGhost(member) then
 			local color = K.RGBToHex(K.UnitColor(member))
-			local name = color..UnitName(member).."|r"
+			local name = color .. UnitName(member) .. "|r"
 			table_insert(targetTable, name)
 		end
 	end
 
 	if #targetTable > 0 then
-		GameTooltip:AddLine(L["Targeted By"]..K.InfoColor.."("..#targetTable..")|r "..table_concat(targetTable, ", "), nil, nil, nil, 1)
+		GameTooltip:AddLine(L["Targeted By"] .. K.InfoColor .. "(" .. #targetTable .. ")|r " .. table_concat(targetTable, ", "), nil, nil, nil, 1)
 	end
 end
 

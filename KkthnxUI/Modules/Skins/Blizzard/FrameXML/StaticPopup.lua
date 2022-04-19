@@ -46,7 +46,7 @@ local blizzRegions = {
 local function ReskinEditBox(self, height, width)
 	local frameName = self.GetName and self:GetName()
 	for _, region in pairs(blizzRegions) do
-		region = frameName and _G[frameName..region] or self[region]
+		region = frameName and _G[frameName .. region] or self[region]
 		if region then
 			region:SetAlpha(0)
 		end
@@ -70,16 +70,16 @@ end
 
 table_insert(C.defaultThemes, function()
 	for i = 1, 4 do
-		local frame = _G["StaticPopup"..i]
-		local bu = _G["StaticPopup"..i.."ItemFrame"]
-		local icon = _G["StaticPopup"..i.."ItemFrameIconTexture"]
-		local close = _G["StaticPopup"..i.."CloseButton"]
+		local frame = _G["StaticPopup" .. i]
+		local bu = _G["StaticPopup" .. i .. "ItemFrame"]
+		local icon = _G["StaticPopup" .. i .. "ItemFrameIconTexture"]
+		local close = _G["StaticPopup" .. i .. "CloseButton"]
 
-		local gold = _G["StaticPopup"..i.."MoneyInputFrameGold"]
-		local silver = _G["StaticPopup"..i.."MoneyInputFrameSilver"]
-		local copper = _G["StaticPopup"..i.."MoneyInputFrameCopper"]
+		local gold = _G["StaticPopup" .. i .. "MoneyInputFrameGold"]
+		local silver = _G["StaticPopup" .. i .. "MoneyInputFrameSilver"]
+		local copper = _G["StaticPopup" .. i .. "MoneyInputFrameCopper"]
 
-		_G["StaticPopup"..i.."ItemFrameNameFrame"]:Hide()
+		_G["StaticPopup" .. i .. "ItemFrameNameFrame"]:Hide()
 
 		bu:SetNormalTexture("")
 		bu:SetHighlightTexture("")
@@ -93,12 +93,12 @@ table_insert(C.defaultThemes, function()
 		frame.Border:Hide()
 		frame:CreateBorder()
 		for j = 1, 4 do
-			frame["button"..j]:SkinButton()
+			frame["button" .. j]:SkinButton()
 		end
 		frame.extraButton:SkinButton()
 		close:SkinCloseButton()
 
-		ReskinEditBox(_G["StaticPopup"..i.."EditBox"], 20)
+		ReskinEditBox(_G["StaticPopup" .. i .. "EditBox"], 20)
 		ReskinEditBox(gold)
 		ReskinEditBox(silver)
 		ReskinEditBox(copper)
@@ -121,7 +121,7 @@ hooksecurefunc("StaticPopup_Show", function(which, _, _, data)
 			index = info.preferredIndex
 		end
 		for i = index, STATICPOPUP_NUMDIALOGS do
-			local frame = _G["StaticPopup"..i]
+			local frame = _G["StaticPopup" .. i]
 			if not frame:IsShown() then
 				dialog = frame
 				break
@@ -130,7 +130,7 @@ hooksecurefunc("StaticPopup_Show", function(which, _, _, data)
 
 		if not dialog and info.preferredIndex then
 			for i = 1, info.preferredIndex do
-				local frame = _G["StaticPopup"..i]
+				local frame = _G["StaticPopup" .. i]
 				if not frame:IsShown() then
 					dialog = frame
 					break
@@ -144,7 +144,7 @@ hooksecurefunc("StaticPopup_Show", function(which, _, _, data)
 	end
 
 	if info.closeButton then
-		local closeButton = _G[dialog:GetName().."CloseButton"]
+		local closeButton = _G[dialog:GetName() .. "CloseButton"]
 
 		closeButton:SetNormalTexture("")
 		closeButton:SetPushedTexture("")

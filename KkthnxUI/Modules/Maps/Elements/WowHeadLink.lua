@@ -21,13 +21,23 @@ function Module:CreateWowHeadLinks()
 	-- Add wowhead link by Goldpaw "Lars" Norberg
 	local subDomain = (setmetatable({
 		ruRU = "ru",
-		frFR = "fr", deDE = "de",
-		esES = "es", esMX = "es",
-		ptBR = "pt", ptPT = "pt", itIT = "it",
-		koKR = "ko", zhTW = "cn", zhCN = "cn"
-	}, { __index = function(t, v) return "www" end }))[GameLocale]
+		frFR = "fr",
+		deDE = "de",
+		esES = "es",
+		esMX = "es",
+		ptBR = "pt",
+		ptPT = "pt",
+		itIT = "it",
+		koKR = "ko",
+		zhTW = "cn",
+		zhCN = "cn",
+	}, {
+		__index = function(t, v)
+			return "www"
+		end,
+	}))[GameLocale]
 
-	local wowheadLoc = subDomain..".wowhead.com"
+	local wowheadLoc = subDomain .. ".wowhead.com"
 	local urlQuestIcon = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:0:0:0:0|t]]
 
 	-- Achievements frame
@@ -65,7 +75,7 @@ function Module:CreateWowHeadLinks()
 			local achievementID = self.id or nil
 			if achievementID then
 				-- Set editbox text
-				aEB:SetText(urlQuestIcon.."https://"..wowheadLoc.."/achievement="..achievementID)
+				aEB:SetText(urlQuestIcon .. "https://" .. wowheadLoc .. "/achievement=" .. achievementID)
 				lastAchievementLink = aEB:GetText()
 				-- Set hidden fontstring then resize editbox to match
 				aEB.z:SetText(aEB:GetText())
@@ -73,7 +83,7 @@ function Module:CreateWowHeadLinks()
 				-- Get achievement title for tooltip
 				local achievementLink = GetAchievementLink(self.id)
 				if achievementLink then
-					aEB.tiptext = achievementLink:match("%[(.-)%]").."|n"..L["Press To Copy"]
+					aEB.tiptext = achievementLink:match("%[(.-)%]") .. "|n" .. L["Press To Copy"]
 				end
 				-- Show the editbox
 				aEB:Show()
@@ -91,7 +101,9 @@ function Module:CreateWowHeadLinks()
 
 		aEB:HookScript("OnLeave", function()
 			-- Set link text again if it"s changed since it was set
-			if aEB:GetText() ~= lastAchievementLink then aEB:SetText(lastAchievementLink) end
+			if aEB:GetText() ~= lastAchievementLink then
+				aEB:SetText(lastAchievementLink)
+			end
 			aEB:HighlightText(0, 0)
 			aEB:ClearFocus()
 			GameTooltip:Hide()
@@ -160,16 +172,20 @@ function Module:CreateWowHeadLinks()
 		end
 		if questID then
 			-- Hide editbox if quest ID is invalid
-			if questID == 0 then mEB:Hide() else mEB:Show() end
+			if questID == 0 then
+				mEB:Hide()
+			else
+				mEB:Show()
+			end
 			-- Set editbox text
-			mEB:SetText(urlQuestIcon.."https://"..wowheadLoc.."/quest="..questID)
+			mEB:SetText(urlQuestIcon .. "https://" .. wowheadLoc .. "/quest=" .. questID)
 			-- Set hidden fontstring then resize editbox to match
 			mEB.z:SetText(mEB:GetText())
 			mEB:SetWidth(mEB.z:GetStringWidth() + 90)
 			-- Get quest title for tooltip
 			local questLink = GetQuestLink(questID) or nil
 			if questLink then
-				mEB.tiptext = questLink:match("%[(.-)%]").."|n"..L["Press To Copy"]
+				mEB.tiptext = questLink:match("%[(.-)%]") .. "|n" .. L["Press To Copy"]
 			else
 				mEB.tiptext = ""
 				if mEB:IsMouseOver() and GameTooltip:IsShown() then

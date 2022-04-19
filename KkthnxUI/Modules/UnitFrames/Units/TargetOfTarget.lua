@@ -109,7 +109,7 @@ function Module:CreateTargetOfTarget()
 
 			self.Portrait = Portrait
 
-			if (targetOfTargetPortraitStyle == "ClassPortraits" or targetOfTargetPortraitStyle == "NewClassPortraits") then
+			if targetOfTargetPortraitStyle == "ClassPortraits" or targetOfTargetPortraitStyle == "NewClassPortraits" then
 				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
@@ -152,8 +152,8 @@ function Module:CreateTargetOfTarget()
 	local Highlight = Health:CreateTexture(nil, "OVERLAY")
 	Highlight:SetAllPoints()
 	Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
-	Highlight:SetTexCoord(0, 1, .5, 1)
-	Highlight:SetVertexColor(.6, .6, .6)
+	Highlight:SetTexCoord(0, 1, 0.5, 1)
+	Highlight:SetVertexColor(0.6, 0.6, 0.6)
 	Highlight:SetBlendMode("ADD")
 	Highlight:Hide()
 

@@ -20,14 +20,59 @@ local UnitGUID = _G.UnitGUID
 local hooksecurefunc = _G.hooksecurefunc
 
 local pvpEmoteList = {
-	"ANGRY", "BARK", "BECKON", "BITE", "BONK", "BURP", "BYE", "CACKLE",
-	"CALM", "CHUCKLE", "COMFORT", "CRACK", "CUDDLE", "CURTSEY", "FLEX",
-	"GIGGLE", "GLOAT", "GRIN", "GROWL", "GUFFAW", "INSULT",
-	"LAUGH", "LICK", "MOCK", "MOO", "MOON", "MOURN",
-	"NO", "NOSEPICK", "PITY", "RASP", "ROAR", "ROFL", "RUDE",
-	"SCRATCH", "SHOO", "SIGH", "SLAP", "SMIRK", "SNARL",
-	"SNICKER", "SNIFF", "SNUB", "SOOTHE", "TAP", "TAUNT",
-	"TEASE", "THANK", "THREATEN", "TICKLE", "VETO", "VIOLIN", "YAWN"
+	"ANGRY",
+	"BARK",
+	"BECKON",
+	"BITE",
+	"BONK",
+	"BURP",
+	"BYE",
+	"CACKLE",
+	"CALM",
+	"CHUCKLE",
+	"COMFORT",
+	"CRACK",
+	"CUDDLE",
+	"CURTSEY",
+	"FLEX",
+	"GIGGLE",
+	"GLOAT",
+	"GRIN",
+	"GROWL",
+	"GUFFAW",
+	"INSULT",
+	"LAUGH",
+	"LICK",
+	"MOCK",
+	"MOO",
+	"MOON",
+	"MOURN",
+	"NO",
+	"NOSEPICK",
+	"PITY",
+	"RASP",
+	"ROAR",
+	"ROFL",
+	"RUDE",
+	"SCRATCH",
+	"SHOO",
+	"SIGH",
+	"SLAP",
+	"SMIRK",
+	"SNARL",
+	"SNICKER",
+	"SNIFF",
+	"SNUB",
+	"SOOTHE",
+	"TAP",
+	"TAUNT",
+	"TEASE",
+	"THANK",
+	"THREATEN",
+	"TICKLE",
+	"VETO",
+	"VIOLIN",
+	"YAWN",
 }
 
 local BG_Opponents = {}
@@ -47,12 +92,12 @@ local function SetupKillingBlow()
 		local mask = bit_band(TargetFlags, COMBATLOG_OBJECT_TYPE_PLAYER)
 		if Caster == K.Name and (BG_Opponents[TargetName] or mask > 0) then
 			if mask > 0 and BG_Opponents[TargetName] then
-				TargetName = "|c"..RAID_CLASS_COLORS[BG_Opponents[TargetName]].colorStr..TargetName.."|r" or TargetName
+				TargetName = "|c" .. RAID_CLASS_COLORS[BG_Opponents[TargetName]].colorStr .. TargetName .. "|r" or TargetName
 				TargetName = TargetName
 			end
 
 			if C["Announcements"].KillingBlow then
-				TopBannerManager_Show(_G["BossBanner"], {name = TargetName, mode = "PVPKILL"})
+				TopBannerManager_Show(_G["BossBanner"], { name = TargetName, mode = "PVPKILL" })
 			end
 
 			if C["Announcements"].PvPEmote then
@@ -69,8 +114,8 @@ end
 
 function Module:CreateKillingBlow()
 	hooksecurefunc(_G["BossBanner"], "PlayBanner", function(self, data)
-		if (data) then
-			if (data.mode == "PVPKILL") then
+		if data then
+			if data.mode == "PVPKILL" then
 				self.Title:SetText(data.name)
 				self.Title:Show()
 				self.SubTitle:Hide()

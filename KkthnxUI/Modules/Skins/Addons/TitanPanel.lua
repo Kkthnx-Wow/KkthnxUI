@@ -22,7 +22,7 @@ function Module:ReskinTitanPanel()
 		Titan_Bar__Display_AuxBar2:CreateBorder()
 
 		if RaidUtility_ShowButton then
-			RaidUtility_ShowButton:SetFrameStrata('TOOLTIP')
+			RaidUtility_ShowButton:SetFrameStrata("TOOLTIP")
 		end
 	end)
 end

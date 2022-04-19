@@ -35,7 +35,7 @@ function Module:SetupAutoBestReward()
 	end
 
 	if bestItem then
-		local btn = _G["QuestInfoRewardsFrameQuestInfoItem"..bestItem]
+		local btn = _G["QuestInfoRewardsFrameQuestInfoItem" .. bestItem]
 		if btn and btn.type == "choice" then
 			Module.QuestRewardGoldIconFrame:ClearAllPoints()
 			Module.QuestRewardGoldIconFrame:SetPoint("TOPRIGHT", btn, "TOPRIGHT", -2, -2)
@@ -51,7 +51,7 @@ function Module:CreateAutoBestReward()
 
 	K:RegisterEvent("QUEST_COMPLETE", self.SetupAutoBestReward)
 
-	do	-- questRewardMostValueIcon
+	do -- questRewardMostValueIcon
 		local MostValue = CreateFrame("Frame", "KKUI_QuestRewardGoldIconFrame", _G.UIParent)
 		MostValue:SetFrameStrata("HIGH")
 		MostValue:SetSize(20, 20)

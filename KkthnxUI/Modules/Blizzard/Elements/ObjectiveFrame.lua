@@ -49,7 +49,7 @@ function Module:MoveObjectiveFrame()
 	ObjectiveFrameHolder:SetSize(130, 22)
 	ObjectiveFrameHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -200, -300)
 
-	K.Mover(ObjectiveFrameHolder, "ObjectiveFrameMover", "Objective Frame", {"TOPRIGHT", UIParent, "TOPRIGHT", -200, -300})
+	K.Mover(ObjectiveFrameHolder, "ObjectiveFrameMover", "Objective Frame", { "TOPRIGHT", UIParent, "TOPRIGHT", -200, -300 })
 
 	local ObjectiveTrackerFrame = _G.ObjectiveTrackerFrame
 	ObjectiveTrackerFrame:ClearAllPoints()
@@ -67,7 +67,7 @@ function Module:MoveObjectiveFrame()
 	ObjectiveTrackerFrame:SetPoint("TOP", ObjectiveFrameHolder, "TOP")
 
 	local function RewardsFrame_SetPosition(block)
-		local rewardsFrame = _G.ObjectiveTrackerBonusRewardsFrame;
+		local rewardsFrame = _G.ObjectiveTrackerBonusRewardsFrame
 		rewardsFrame:ClearAllPoints()
 		if IsFramePositionedLeft(ObjectiveTrackerFrame) then
 			rewardsFrame:SetPoint("TOPLEFT", block, "TOPRIGHT", -10, -4)

@@ -18,61 +18,60 @@ self.AuraTrack = AuraTrack
 
 local Tracker = {
 	-- Priest
-	[194384]  = {1, 1, 0.66}, -- Atonement
-	[214206]  = {1, 1, 0.66}, -- Atonement (PvP)
-	[41635]   = {0.2, 0.7, 0.2}, -- Prayer of Mending
-	[193065]  = {0.54, 0.21, 0.78}, -- Masochism
-	[139]     = {0.4, 0.7, 0.2}, -- Renew
-	[17]      = {0.89, 0.1, 0.1}, -- Power Word: Shield
-	[47788]   = {0.86, 0.45, 0}, -- Guardian Spirit
-	[33206]   = {0, 0, 0.74}, -- Pain Suppression
-	[10060]   = {0, 0, 0.74}, -- Power Infusion
+	[194384] = { 1, 1, 0.66 }, -- Atonement
+	[214206] = { 1, 1, 0.66 }, -- Atonement (PvP)
+	[41635] = { 0.2, 0.7, 0.2 }, -- Prayer of Mending
+	[193065] = { 0.54, 0.21, 0.78 }, -- Masochism
+	[139] = { 0.4, 0.7, 0.2 }, -- Renew
+	[17] = { 0.89, 0.1, 0.1 }, -- Power Word: Shield
+	[47788] = { 0.86, 0.45, 0 }, -- Guardian Spirit
+	[33206] = { 0, 0, 0.74 }, -- Pain Suppression
+	[10060] = { 0, 0, 0.74 }, -- Power Infusion
 
 	-- Druid
-	[774]     = {0.8, 0.4, 0.8}, -- Rejuvenation
-	[155777]  = {0.8, 0.4, 0.8}, -- Germination
-	[8936]    = {1, 1, 0}, -- Regrowth
-	[33763]   = {0.4, 0.8, 0.2}, -- Lifebloom (Normal version)
-	[188550]  = {0.4, 0.8, 0.2}, -- Lifebloom (Legendary version)
-	[48438]   = {0.8, 0.4, 0}, -- Wild Growth
-	[207386]  = {0.4, 0.2, 0.8}, -- Spring Blossoms
-	[102351]  = {0.2, 0.8, 0.8}, -- Cenarion Ward (Initial Buff)
-	[102352]  = {0.2, 0.8, 0.8}, -- Cenarion Ward (HoT)
-	[200389]  = {1, 1, 0.4}, -- Cultivation
+	[774] = { 0.8, 0.4, 0.8 }, -- Rejuvenation
+	[155777] = { 0.8, 0.4, 0.8 }, -- Germination
+	[8936] = { 1, 1, 0 }, -- Regrowth
+	[33763] = { 0.4, 0.8, 0.2 }, -- Lifebloom (Normal version)
+	[188550] = { 0.4, 0.8, 0.2 }, -- Lifebloom (Legendary version)
+	[48438] = { 0.8, 0.4, 0 }, -- Wild Growth
+	[207386] = { 0.4, 0.2, 0.8 }, -- Spring Blossoms
+	[102351] = { 0.2, 0.8, 0.8 }, -- Cenarion Ward (Initial Buff)
+	[102352] = { 0.2, 0.8, 0.8 }, -- Cenarion Ward (HoT)
+	[200389] = { 1, 1, 0.4 }, -- Cultivation
 
 	-- Paladin
-	[53563]   = {0.7, 0.3, 0.7}, -- Beacon of Light
-	[156910]  = {0.7, 0.3, 0.7}, -- Beacon of Faith
-	[200025]  = {0.7, 0.3, 0.7}, -- Beacon of Virtue
-	[1022]    = {0.2, 0.2, 1}, -- Hand of Protection
-	[1044]    = {0.89, 0.45, 0}, -- Hand of Freedom
-	[6940]    = {0.89, 0.1, 0.1}, -- Hand of Sacrifice
-	[223306]  = {0.7, 0.7, 0.3}, -- Bestow Faith
-	[287280]  = {0.2, 0.8, 0.2}, -- Glimmer of Light (Artifact HoT)
+	[53563] = { 0.7, 0.3, 0.7 }, -- Beacon of Light
+	[156910] = { 0.7, 0.3, 0.7 }, -- Beacon of Faith
+	[200025] = { 0.7, 0.3, 0.7 }, -- Beacon of Virtue
+	[1022] = { 0.2, 0.2, 1 }, -- Hand of Protection
+	[1044] = { 0.89, 0.45, 0 }, -- Hand of Freedom
+	[6940] = { 0.89, 0.1, 0.1 }, -- Hand of Sacrifice
+	[223306] = { 0.7, 0.7, 0.3 }, -- Bestow Faith
+	[287280] = { 0.2, 0.8, 0.2 }, -- Glimmer of Light (Artifact HoT)
 
 	-- Shaman
-	[61295]   = {0.7, 0.3, 0.7}, -- Riptide
-	[974]     = {0.2, 0.2, 1}, -- Earth Shield
+	[61295] = { 0.7, 0.3, 0.7 }, -- Riptide
+	[974] = { 0.2, 0.2, 1 }, -- Earth Shield
 
 	-- Monk
-	[119611]  = {0.3, 0.8, 0.6}, -- Renewing Mist
-	[116849]  = {0.2, 0.8, 0.2}, -- Life Cocoon
-	[124682]  = {0.8, 0.8, 0.25}, -- Enveloping Mist
-	[191840]  = {0.27, 0.62, 0.7}, -- Essence Font
+	[119611] = { 0.3, 0.8, 0.6 }, -- Renewing Mist
+	[116849] = { 0.2, 0.8, 0.2 }, -- Life Cocoon
+	[124682] = { 0.8, 0.8, 0.25 }, -- Enveloping Mist
+	[191840] = { 0.27, 0.62, 0.7 }, -- Essence Font
 
 	-- Rogue
-	[57934]   = {0.89, 0.09, 0.05}, -- Tricks of the Trade
+	[57934] = { 0.89, 0.09, 0.05 }, -- Tricks of the Trade
 
 	-- Warrior
-	[114030]  = {0.2, 0.2, 1}, -- Vigilance
-	[3411]    = {0.89, 0.09, 0.05}, -- Intervene
+	[114030] = { 0.2, 0.2, 1 }, -- Vigilance
+	[3411] = { 0.89, 0.09, 0.05 }, -- Intervene
 
 	-- Others
-	[193396]  = {0.6, 0.2, 0.8}, -- Demonic Empowerment
-	[272790]  = {0.89, 0.09, 0.05}, -- Frenzy
-	[136]     = {0.2, 0.8, 0.2}, -- Mend Pet
+	[193396] = { 0.6, 0.2, 0.8 }, -- Demonic Empowerment
+	[272790] = { 0.89, 0.09, 0.05 }, -- Frenzy
+	[136] = { 0.2, 0.8, 0.2 }, -- Mend Pet
 }
-
 
 local OnUpdate = function(self)
 	local Time = GetTime()
@@ -92,7 +91,7 @@ local UpdateIcon = function(self, _, spellID, texture, id, expiration, duration,
 		return
 	end
 
-	local PositionX = (id * AuraTrack.IconSize) - (AuraTrack.IconSize) + (AuraTrack.Spacing * id)
+	local PositionX = (id * AuraTrack.IconSize) - AuraTrack.IconSize + (AuraTrack.Spacing * id)
 	local r, g, b = unpack(Tracker[spellID])
 
 	if not AuraTrack.Auras[id] then
@@ -146,7 +145,7 @@ local UpdateBar = function(self, _, spellID, _, id, expiration, duration)
 	local Orientation = self.Health:GetOrientation()
 	local Size = Orientation == "HORIZONTAL" and AuraTrack:GetHeight() or AuraTrack:GetWidth()
 
-	AuraTrack.MaxAuras = AuraTrack.MaxAuras or floor(Size / (AuraTrack.Thickness))
+	AuraTrack.MaxAuras = AuraTrack.MaxAuras or floor(Size / AuraTrack.Thickness)
 
 	if id > AuraTrack.MaxAuras then
 		return
@@ -203,12 +202,12 @@ local Update = function(self, _, unit)
 
 	self.AuraTrack.MaxAuras = self.AuraTrack.MaxAuras or 4
 	self.AuraTrack.Spacing = self.AuraTrack.Spacing or 6
-	self.AuraTrack.IconSize = (self.AuraTrack:GetWidth() / self.AuraTrack.MaxAuras) - (self.AuraTrack.Spacing) - (self.AuraTrack.Spacing / (self.AuraTrack.MaxAuras))
+	self.AuraTrack.IconSize = (self.AuraTrack:GetWidth() / self.AuraTrack.MaxAuras) - self.AuraTrack.Spacing - (self.AuraTrack.Spacing / self.AuraTrack.MaxAuras)
 
 	for i = 1, 40 do
 		local _, texture, count, _, duration, expiration, caster, _, _, spellID = UnitAura(unit, i, "HELPFUL")
 
-		if (self.AuraTrack.Tracker[spellID]) and (caster == "player" or caster == "pet") then
+		if self.AuraTrack.Tracker[spellID] and (caster == "player" or caster == "pet") then
 			ID = ID + 1
 
 			if self.AuraTrack.Icons then
@@ -227,7 +226,7 @@ local Update = function(self, _, unit)
 end
 
 local Path = function(self, ...)
-	return (self.AuraTrack.Override or Update) (self, ...)
+	return (self.AuraTrack.Override or Update)(self, ...)
 end
 
 local ForceUpdate = function(element)
@@ -237,7 +236,7 @@ end
 local function Enable(self)
 	local AuraTrack = self.AuraTrack
 
-	if (AuraTrack) then
+	if AuraTrack then
 		AuraTrack.__owner = self
 		AuraTrack.ForceUpdate = ForceUpdate
 
@@ -257,7 +256,7 @@ end
 local function Disable(self)
 	local AuraTrack = self.AuraTrack
 
-	if (AuraTrack) then
+	if AuraTrack then
 		self:UnregisterEvent("UNIT_AURA", Path)
 	end
 end

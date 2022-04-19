@@ -18,7 +18,7 @@ local UnitPhaseReason = _G.UnitPhaseReason
 function Module:CreateRangeIndicator()
 	local Range = {
 		insideAlpha = 1,
-		outsideAlpha = 0.35
+		outsideAlpha = 0.35,
 	}
 	Range.Override = Module.UpdateRange
 
@@ -38,7 +38,7 @@ local function GetGroupUnit(unit)
 	if UnitInParty(unit) or UnitInRaid(unit) then
 		local isInRaid = IsInRaid()
 		for i = 1, GetNumGroupMembers() do
-			local groupUnit = (isInRaid and "raid" or "party")..i
+			local groupUnit = (isInRaid and "raid" or "party") .. i
 			if UnitIsUnit(unit, groupUnit) then
 				return groupUnit
 			end

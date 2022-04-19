@@ -64,10 +64,10 @@ local function utf8charbytes(s, i)
 
 	-- argument checking
 	if type(s) ~= "string" then
-		error("bad argument #1 to 'utf8charbytes' (string expected, got ".. type(s).. ")")
+		error("bad argument #1 to 'utf8charbytes' (string expected, got " .. type(s) .. ")")
 	end
 	if type(i) ~= "number" then
-		error("bad argument #2 to 'utf8charbytes' (number expected, got ".. type(i).. ")")
+		error("bad argument #2 to 'utf8charbytes' (number expected, got " .. type(i) .. ")")
 	end
 
 	local c = strbyte(s, i)
@@ -77,7 +77,6 @@ local function utf8charbytes(s, i)
 	if c > 0 and c <= 127 then
 		-- UTF8-1
 		return 1
-
 	elseif c >= 194 and c <= 223 then
 		-- UTF8-2
 		local c2 = strbyte(s, i + 1)
@@ -92,7 +91,6 @@ local function utf8charbytes(s, i)
 		end
 
 		return 2
-
 	elseif c >= 224 and c <= 239 then
 		-- UTF8-3
 		local c2 = strbyte(s, i + 1)
@@ -117,7 +115,6 @@ local function utf8charbytes(s, i)
 		end
 
 		return 3
-
 	elseif c >= 240 and c <= 244 then
 		-- UTF8-4
 		local c2 = strbyte(s, i + 1)
@@ -148,7 +145,6 @@ local function utf8charbytes(s, i)
 		end
 
 		return 4
-
 	else
 		error("Invalid UTF-8 character")
 	end
@@ -158,7 +154,7 @@ end
 local function utf8len(s)
 	-- argument checking
 	if type(s) ~= "string" then
-		error("bad argument #1 to 'utf8len' (string expected, got ".. type(s).. ")")
+		error("bad argument #1 to 'utf8len' (string expected, got " .. type(s) .. ")")
 	end
 
 	local pos = 1
@@ -186,13 +182,13 @@ local function utf8sub(s, i, j)
 
 	-- argument checking
 	if type(s) ~= "string" then
-		error("bad argument #1 to 'utf8sub' (string expected, got ".. type(s).. ")")
+		error("bad argument #1 to 'utf8sub' (string expected, got " .. type(s) .. ")")
 	end
 	if type(i) ~= "number" then
-		error("bad argument #2 to 'utf8sub' (number expected, got ".. type(i).. ")")
+		error("bad argument #2 to 'utf8sub' (number expected, got " .. type(i) .. ")")
 	end
 	if type(j) ~= "number" then
-		error("bad argument #3 to 'utf8sub' (number expected, got ".. type(j).. ")")
+		error("bad argument #3 to 'utf8sub' (number expected, got " .. type(j) .. ")")
 	end
 
 	local pos = 1
@@ -202,7 +198,7 @@ local function utf8sub(s, i, j)
 	-- only set l if i or j is negative
 	local l = (i >= 0 and j >= 0) or utf8len(s)
 	local startChar = (i >= 0) and i or l + i + 1
-	local endChar   = (j >= 0) and j or l + j + 1
+	local endChar = (j >= 0) and j or l + j + 1
 
 	-- can't have start before end!
 	if startChar > endChar then
@@ -239,10 +235,10 @@ end
 local function utf8replace(s, mapping)
 	-- argument checking
 	if type(s) ~= "string" then
-		error("bad argument #1 to 'utf8replace' (string expected, got ".. type(s).. ")")
+		error("bad argument #1 to 'utf8replace' (string expected, got " .. type(s) .. ")")
 	end
 	if type(mapping) ~= "table" then
-		error("bad argument #2 to 'utf8replace' (table expected, got ".. type(mapping).. ")")
+		error("bad argument #2 to 'utf8replace' (table expected, got " .. type(mapping) .. ")")
 	end
 
 	local pos = 1
@@ -286,7 +282,7 @@ end
 local function utf8reverse(s)
 	-- argument checking
 	if type(s) ~= "string" then
-		error("bad argument #1 to 'utf8reverse' (string expected, got ".. type(s).. ")")
+		error("bad argument #1 to 'utf8reverse' (string expected, got " .. type(s) .. ")")
 	end
 
 	local bytes = strlen(s)

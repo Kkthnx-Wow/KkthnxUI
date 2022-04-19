@@ -32,31 +32,31 @@ local function clamp(v)
 end
 
 local colors = {
-	ABSORB		= {r = 1.00, g = 1.00, b = 1.00},
-	BLOCK		= {r = 1.00, g = 1.00, b = 1.00},
-	DEFLECT		= {r = 1.00, g = 1.00, b = 1.00},
-	DODGE		= {r = 1.00, g = 1.00, b = 1.00},
-	ENERGIZE	= {r = 0.41, g = 0.80, b = 0.94},
-	EVADE		= {r = 1.00, g = 1.00, b = 1.00},
-	HEAL		= {r = 0.10, g = 0.80, b = 0.10},
-	IMMUNE		= {r = 1.00, g = 1.00, b = 1.00},
-	INTERRUPT	= {r = 1.00, g = 1.00, b = 1.00},
-	MISS		= {r = 1.00, g = 1.00, b = 1.00},
-	PARRY		= {r = 1.00, g = 1.00, b = 1.00},
-	REFLECT		= {r = 1.00, g = 1.00, b = 1.00},
-	RESIST		= {r = 1.00, g = 1.00, b = 1.00},
-	WOUND		= {r = 0.80, g = 0.10, b = 0.10},
+	ABSORB = { r = 1.00, g = 1.00, b = 1.00 },
+	BLOCK = { r = 1.00, g = 1.00, b = 1.00 },
+	DEFLECT = { r = 1.00, g = 1.00, b = 1.00 },
+	DODGE = { r = 1.00, g = 1.00, b = 1.00 },
+	ENERGIZE = { r = 0.41, g = 0.80, b = 0.94 },
+	EVADE = { r = 1.00, g = 1.00, b = 1.00 },
+	HEAL = { r = 0.10, g = 0.80, b = 0.10 },
+	IMMUNE = { r = 1.00, g = 1.00, b = 1.00 },
+	INTERRUPT = { r = 1.00, g = 1.00, b = 1.00 },
+	MISS = { r = 1.00, g = 1.00, b = 1.00 },
+	PARRY = { r = 1.00, g = 1.00, b = 1.00 },
+	REFLECT = { r = 1.00, g = 1.00, b = 1.00 },
+	RESIST = { r = 1.00, g = 1.00, b = 1.00 },
+	WOUND = { r = 0.80, g = 0.10, b = 0.10 },
 }
 
 local schoolColors = {
-	[SCHOOL_MASK_NONE]		= {r = 1.00, g = 1.00, b = 1.00},	-- 0x00 or 0
-	[SCHOOL_MASK_PHYSICAL]	= {r = 1.00, g = 1.00, b = 0.00},	-- 0x01 or 1
-	[SCHOOL_MASK_HOLY]		= {r = 1.00, g = 0.90, b = 0.50},	-- 0x02 or 2
-	[SCHOOL_MASK_FIRE]		= {r = 1.00, g = 0.50, b = 0.00},	-- 0x04 or 4
-	[SCHOOL_MASK_NATURE]	= {r = 0.30, g = 1.00, b = 0.30},	-- 0x08 or 8
-	[SCHOOL_MASK_FROST]		= {r = 0.50, g = 1.00, b = 1.00},	-- 0x10 or 16
-	[SCHOOL_MASK_SHADOW]	= {r = 0.50, g = 0.50, b = 1.00},	-- 0x20 or 32
-	[SCHOOL_MASK_ARCANE]	= {r = 1.00, g = 0.50, b = 1.00},	-- 0x40 or 64
+	[SCHOOL_MASK_NONE] = { r = 1.00, g = 1.00, b = 1.00 }, -- 0x00 or 0
+	[SCHOOL_MASK_PHYSICAL] = { r = 1.00, g = 1.00, b = 0.00 }, -- 0x01 or 1
+	[SCHOOL_MASK_HOLY] = { r = 1.00, g = 0.90, b = 0.50 }, -- 0x02 or 2
+	[SCHOOL_MASK_FIRE] = { r = 1.00, g = 0.50, b = 0.00 }, -- 0x04 or 4
+	[SCHOOL_MASK_NATURE] = { r = 0.30, g = 1.00, b = 0.30 }, -- 0x08 or 8
+	[SCHOOL_MASK_FROST] = { r = 0.50, g = 1.00, b = 1.00 }, -- 0x10 or 16
+	[SCHOOL_MASK_SHADOW] = { r = 0.50, g = 0.50, b = 1.00 }, -- 0x20 or 32
+	[SCHOOL_MASK_ARCANE] = { r = 1.00, g = 0.50, b = 1.00 }, -- 0x40 or 64
 }
 
 local function removeString(self, i, string)
@@ -80,8 +80,7 @@ end
 
 local animations = {
 	["fountain"] = function(self)
-		return self.x + self.xDirection * self.radius * (1 - m_cos(m_pi / 2 * self.progress)),
-		self.y + self.yDirection * self.radius * m_sin(m_pi / 2 * self.progress)
+		return self.x + self.xDirection * self.radius * (1 - m_cos(m_pi / 2 * self.progress)), self.y + self.yDirection * self.radius * m_sin(m_pi / 2 * self.progress)
 	end,
 	["vertical"] = function(self)
 		return self.x, self.y + self.yDirection * self.radius * self.progress
@@ -90,8 +89,7 @@ local animations = {
 		return self.x + self.xDirection * self.radius * self.progress, self.y
 	end,
 	["diagonal"] = function(self)
-		return self.x + self.xDirection * self.radius * self.progress,
-		self.y + self.yDirection * self.radius * self.progress
+		return self.x + self.xDirection * self.radius * self.progress, self.y + self.yDirection * self.radius * self.progress
 	end,
 	["static"] = function(self)
 		return self.x, self.y
@@ -106,21 +104,21 @@ local animations = {
 }
 
 local xOffsetsByAnimation = {
-	["diagonal" ] = 24,
-	["fountain" ] = 24,
+	["diagonal"] = 24,
+	["fountain"] = 24,
 	["horizontal"] = 8,
-	["random" ] = 0,
-	["static" ] = 0,
-	["vertical" ] = 50,
+	["random"] = 0,
+	["static"] = 0,
+	["vertical"] = 50,
 }
 
 local yOffsetsByAnimation = {
-	["diagonal" ] = 8,
-	["fountain" ] = 8,
+	["diagonal"] = 8,
+	["fountain"] = 8,
 	["horizontal"] = 8,
-	["random" ] = 0,
-	["static" ] = 0,
-	["vertical" ] = 8,
+	["random"] = 0,
+	["static"] = 0,
+	["vertical"] = 8,
 }
 
 local function onUpdate(self, elapsed)
@@ -152,22 +150,22 @@ local function flush(self)
 end
 
 local eventFilter = {
-	["SWING_DAMAGE"] = {suffix = "DAMAGE", index = 10, iconType = "swing", autoAttack = true},
-	["RANGE_DAMAGE"] = {suffix = "DAMAGE", index = 13, iconType = "range", autoAttack = true},
-	["SPELL_DAMAGE"] = {suffix = "DAMAGE", index = 13, iconType = "spell"},
-	["SPELL_PERIODIC_DAMAGE"] = {suffix = "DAMAGE", index = 13, iconType = "spell", isPeriod = true},
-	["SPELL_BUILDING_DAMAGE"] = {suffix = "DAMAGE", index = 13, iconType = "spell"},
+	["SWING_DAMAGE"] = { suffix = "DAMAGE", index = 10, iconType = "swing", autoAttack = true },
+	["RANGE_DAMAGE"] = { suffix = "DAMAGE", index = 13, iconType = "range", autoAttack = true },
+	["SPELL_DAMAGE"] = { suffix = "DAMAGE", index = 13, iconType = "spell" },
+	["SPELL_PERIODIC_DAMAGE"] = { suffix = "DAMAGE", index = 13, iconType = "spell", isPeriod = true },
+	["SPELL_BUILDING_DAMAGE"] = { suffix = "DAMAGE", index = 13, iconType = "spell" },
 
-	["SPELL_HEAL"] = {suffix = "HEAL", index = 13, iconType = "spell"},
-	["SPELL_PERIODIC_HEAL"] = {suffix = "HEAL", index = 13, iconType = "spell", isPeriod = true},
-	["SPELL_BUILDING_HEAL"] = {suffix = "HEAL", index = 13, iconType = "spell"},
+	["SPELL_HEAL"] = { suffix = "HEAL", index = 13, iconType = "spell" },
+	["SPELL_PERIODIC_HEAL"] = { suffix = "HEAL", index = 13, iconType = "spell", isPeriod = true },
+	["SPELL_BUILDING_HEAL"] = { suffix = "HEAL", index = 13, iconType = "spell" },
 
-	["SWING_MISSED"] = {suffix = "MISS", index = 10, iconType = "swing", autoAttack = true},
-	["RANGE_MISSED"] = {suffix = "MISS", index = 13, iconType = "range", autoAttack = true},
-	["SPELL_MISSED"] = {suffix = "MISS", index = 13, iconType = "spell"},
-	["SPELL_PERIODIC_MISSED"] = {suffix = "MISS", index = 13, iconType = "spell", isPeriod = true},
+	["SWING_MISSED"] = { suffix = "MISS", index = 10, iconType = "swing", autoAttack = true },
+	["RANGE_MISSED"] = { suffix = "MISS", index = 13, iconType = "range", autoAttack = true },
+	["SPELL_MISSED"] = { suffix = "MISS", index = 13, iconType = "spell" },
+	["SPELL_PERIODIC_MISSED"] = { suffix = "MISS", index = 13, iconType = "spell", isPeriod = true },
 
-	["ENVIRONMENTAL_DAMAGE"] = {suffix = "ENVIRONMENT", index = 10, iconType = "env"},
+	["ENVIRONMENTAL_DAMAGE"] = { suffix = "ENVIRONMENT", index = 10, iconType = "env" },
 }
 
 local envTexture = {
@@ -202,7 +200,7 @@ local function getFloatingIconTexture(iconType, spellID, isPet)
 		texture = getTexture(75)
 	elseif iconType == "env" then
 		texture = envTexture[spellID] or "ability_creature_cursed_05"
-		texture = "Interface\\Icons\\"..texture
+		texture = "Interface\\Icons\\" .. texture
 	end
 
 	return texture
@@ -211,7 +209,7 @@ end
 local missCache = {}
 local function getMissText(missType)
 	if missType and not missCache[missType] then
-		missCache[missType] = _G["COMBAT_TEXT_"..missType]
+		missCache[missType] = _G["COMBAT_TEXT_" .. missType]
 	end
 	return missCache[missType]
 end
@@ -248,32 +246,42 @@ local function Update(self, event, ...)
 
 		if isRightUnit and (unit == "target" and (isPlayer or isPet) or unit == "player") then
 			local value = eventFilter[event]
-			if not value then return end
+			if not value then
+				return
+			end
 
 			if value.suffix == "DAMAGE" then
-				if value.autoAttack and not C["Unitframe"].AutoAttack then return end
-				if value.isPeriod and not C["Unitframe"].HotsDots then return end
+				if value.autoAttack and not C["Unitframe"].AutoAttack then
+					return
+				end
+				if value.isPeriod and not C["Unitframe"].HotsDots then
+					return
+				end
 
 				local amount, _, _, _, _, _, critical, _, crushing = select(value.index, ...)
 				texture = getFloatingIconTexture(value.iconType, spellID, (isPet and not isPlayer))
-				text = "-"..formatNumber(self, amount)
+				text = "-" .. formatNumber(self, amount)
 
 				if critical or crushing then
 					multiplier = 1.25
 					critMark = true
 				end
 			elseif value.suffix == "HEAL" then
-				if value.isPeriod and not C["Unitframe"].HotsDots then return end
+				if value.isPeriod and not C["Unitframe"].HotsDots then
+					return
+				end
 
 				local amount, overhealing, _, critical = select(value.index, ...)
 				texture = getFloatingIconTexture(value.iconType, spellID)
 				local overhealText = ""
 				if overhealing > 0 then
 					amount = amount - overhealing
-					overhealText = " ("..formatNumber(self, overhealing)..")"
+					overhealText = " (" .. formatNumber(self, overhealing) .. ")"
 				end
-				if amount == 0 and not C["Unitframe"].FCTOverHealing then return end
-				text = "+"..formatNumber(self, amount)..overhealText
+				if amount == 0 and not C["Unitframe"].FCTOverHealing then
+					return
+				end
+				text = "+" .. formatNumber(self, amount) .. overhealText
 
 				if critical then
 					multiplier = 1.25
@@ -286,7 +294,7 @@ local function Update(self, event, ...)
 			elseif value.suffix == "ENVIRONMENT" then
 				local envType, amount = select(value.index, ...)
 				texture = getFloatingIconTexture(value.iconType, envType)
-				text = "-"..formatNumber(self, amount)
+				text = "-" .. formatNumber(self, amount)
 			end
 
 			color = schoolColors[school] or schoolColors[0]
@@ -310,7 +318,7 @@ local function Update(self, event, ...)
 		local string = getAvailableString(element)
 
 		string:SetFont(element.font, 18 * multiplier, element.fontFlags)
-		string:SetFormattedText(element.format, texture, (critMark and "*" or "")..text)
+		string:SetFormattedText(element.format, texture, (critMark and "*" or "") .. text)
 		string:SetTextColor(color.r, color.g, color.b)
 		string.elapsed = 0
 		string.GetXY = animations[animation]
@@ -333,7 +341,7 @@ local function Update(self, event, ...)
 end
 
 local function Path(self, ...)
-	return (self.FloatingCombatFeedback.Override or Update) (self, ...)
+	return (self.FloatingCombatFeedback.Override or Update)(self, ...)
 end
 
 local function ForceUpdate(element)
@@ -342,7 +350,9 @@ end
 
 local function Enable(self, unit)
 	local element = self.FloatingCombatFeedback
-	if not element then return end
+	if not element then
+		return
+	end
 
 	element.__owner = self
 	element.ForceUpdate = ForceUpdate

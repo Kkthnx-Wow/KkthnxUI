@@ -88,7 +88,9 @@ local function IsMouseOverFrame(frame)
 end
 
 local function FrameHandler(frame)
-	if frame.isDisable then return end
+	if frame.isDisable then
+		return
+	end
 
 	if IsMouseOverFrame(frame) then
 		Module:StartFadeIn(frame)
@@ -120,7 +122,7 @@ local function SpellFlyoutOnShow(self)
 	end
 
 	for i = 1, 13 do
-		local button = _G["SpellFlyoutButton"..i]
+		local button = _G["SpellFlyoutButton" .. i]
 		if not button then
 			break
 		end

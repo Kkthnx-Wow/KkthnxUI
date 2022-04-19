@@ -37,10 +37,10 @@ local UnitIsUnit = _G.UnitIsUnit
 local UnitIsVisible = _G.UnitIsVisible
 local UnitOnTaxi = _G.UnitOnTaxi
 
-local specPrefix = SPECIALIZATION..": "..K.InfoColor
-local levelPrefix = STAT_AVERAGE_ITEM_LEVEL..": "..K.InfoColor
+local specPrefix = SPECIALIZATION .. ": " .. K.InfoColor
+local levelPrefix = STAT_AVERAGE_ITEM_LEVEL .. ": " .. K.InfoColor
 local isPending = LFG_LIST_LOADING
-local resetTime, frequency, lastTime = 900, .5, 0
+local resetTime, frequency, lastTime = 900, 0.5, 0
 local cache, weapon, currentUNIT, currentGUID = {}, {}
 
 function Module:InspectOnUpdate(elapsed)
@@ -100,7 +100,7 @@ function Module:SetupSpecLevel(spec, level)
 
 	local specLine, levelLine
 	for i = 2, GameTooltip:NumLines() do
-		local line = _G["GameTooltipTextLeft"..i]
+		local line = _G["GameTooltipTextLeft" .. i]
 		local text = line:GetText()
 		if text and string_find(text, specPrefix) then
 			specLine = line
@@ -109,14 +109,14 @@ function Module:SetupSpecLevel(spec, level)
 		end
 	end
 
-	spec = specPrefix..(spec or isPending)
+	spec = specPrefix .. (spec or isPending)
 	if specLine then
 		specLine:SetText(spec)
 	else
 		GameTooltip:AddLine(spec)
 	end
 
-	level = levelPrefix..(level or isPending)
+	level = levelPrefix .. (level or isPending)
 	if levelLine then
 		levelLine:SetText(level)
 	else
@@ -145,7 +145,7 @@ function Module:GetUnitItemLevel(unit)
 					delay = true
 				else
 					local _, _, quality, level, _, _, _, _, slot = GetItemInfo(itemLink)
-					if (not quality) or (not level) then
+					if not quality or not level then
 						delay = true
 					else
 						if quality == LE_ITEM_QUALITY_HEIRLOOM then
@@ -157,7 +157,7 @@ function Module:GetUnitItemLevel(unit)
 							if i < 16 then
 								total = total + level
 							elseif i > 15 and quality == LE_ITEM_QUALITY_ARTIFACT then
-								local relics = {select(4, string_split(":", itemLink))}
+								local relics = { select(4, string_split(":", itemLink)) }
 								for i = 1, 3 do
 									local relicID = relics[i] ~= "" and relics[i]
 									local relicLink = select(2, GetItemGem(itemLink, i))
@@ -222,7 +222,7 @@ function Module:GetUnitItemLevel(unit)
 		end
 
 		if boa > 0 then
-			ilvl = ilvl.." |cff00ccff("..boa..HEIRLOOMS..")"
+			ilvl = ilvl .. " |cff00ccff(" .. boa .. HEIRLOOMS .. ")"
 		end
 	else
 		ilvl = nil

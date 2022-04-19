@@ -345,12 +345,7 @@ function Module:UpdateEditBoxColor()
 		return
 	end
 
-	if
-		IsAddOnLoaded("Prat-3.0")
-		or IsAddOnLoaded("Chatter")
-		or IsAddOnLoaded("BasicChatMods")
-		or IsAddOnLoaded("Glass")
-	then
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
 		return
 	end
 
@@ -379,8 +374,7 @@ function Module:UpdateEditBoxColor()
 				end
 				editBoxBorder:SetVertexColor(r, g, b)
 			else
-				local r, g, b =
-					ChatTypeInfo[chatType .. id].r, ChatTypeInfo[chatType .. id].g, ChatTypeInfo[chatType .. id].b
+				local r, g, b = ChatTypeInfo[chatType .. id].r, ChatTypeInfo[chatType .. id].g, ChatTypeInfo[chatType .. id].b
 				editBoxBorder:SetVertexColor(r, g, b)
 			end
 		else
@@ -401,12 +395,7 @@ function Module:UpdateTabChannelSwitch()
 		return
 	end
 
-	if
-		IsAddOnLoaded("Prat-3.0")
-		or IsAddOnLoaded("Chatter")
-		or IsAddOnLoaded("BasicChatMods")
-		or IsAddOnLoaded("Glass")
-	then
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
 		return
 	end
 
@@ -447,12 +436,7 @@ function Module:QuickMouseScroll(dir)
 		return
 	end
 
-	if
-		IsAddOnLoaded("Prat-3.0")
-		or IsAddOnLoaded("Chatter")
-		or IsAddOnLoaded("BasicChatMods")
-		or IsAddOnLoaded("Glass")
-	then
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
 		return
 	end
 
@@ -541,12 +525,7 @@ function Module:OnEnable()
 
 	QuickJoinToastButton:Hide()
 
-	if
-		IsAddOnLoaded("Prat-3.0")
-		or IsAddOnLoaded("Chatter")
-		or IsAddOnLoaded("BasicChatMods")
-		or IsAddOnLoaded("Glass")
-	then
+	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
 		return
 	end
 

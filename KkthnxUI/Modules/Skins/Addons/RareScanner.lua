@@ -20,7 +20,7 @@ function Module:ReskinRareScanner()
 	close:SetHitRectInsets(0, 0, 0, 0)
 	close:SetScale(1)
 	close:ClearAllPoints()
-	close:SetPoint("BOTTOMRIGHT",-5, 5)
+	close:SetPoint("BOTTOMRIGHT", -5, 5)
 
 	K.ReskinArrow(button.FilterDisabledButton, "up")
 	K.ReskinArrow(button.FilterEnabledButton, "down")
@@ -39,7 +39,7 @@ function Module:ReskinRareScanner()
 				itemFrame.Icon.bg:CreateBorder()
 
 				itemFrame.HL = itemFrame:CreateTexture(nil, "HIGHLIGHT")
-				itemFrame.HL:SetColorTexture(1, 1, 1, .25)
+				itemFrame.HL:SetColorTexture(1, 1, 1, 0.25)
 				itemFrame.HL:SetAllPoints(itemFrame.Icon)
 
 				itemFrame.styled = true

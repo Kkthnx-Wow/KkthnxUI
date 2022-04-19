@@ -60,7 +60,6 @@ function Module:ReskinSkada()
 				skada.Borders:SetPoint("TOPLEFT", skada, "TOPLEFT", -1, 1)
 				skada.Borders:SetPoint("BOTTOMRIGHT", win.db.enabletitle and skada.button or skada, "BOTTOMRIGHT", 1, -1)
 			else
-
 				skada.Borders:SetPoint("TOPLEFT", win.db.enabletitle and skada.button or skada, "TOPLEFT", -1, 1)
 				skada.Borders:SetPoint("BOTTOMRIGHT", skada, "BOTTOMRIGHT", 1, -1)
 			end

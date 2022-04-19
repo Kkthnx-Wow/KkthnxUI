@@ -22,21 +22,21 @@ local TALENT = _G.TALENT
 local UnitAura = _G.UnitAura
 local hooksecurefunc = _G.hooksecurefunc
 
-local LEARNT_STRING = "|cffff0000"..ALREADY_LEARNED.."|r"
+local LEARNT_STRING = "|cffff0000" .. ALREADY_LEARNED .. "|r"
 
 local types = {
-	spell = SPELLS.."ID:",
-	item = ITEMS.."ID:",
-	quest = QUESTS_LABEL.."ID:",
-	talent = TALENT.."ID:",
-	achievement = ACHIEVEMENTS.."ID:",
-	currency = CURRENCY.."ID:",
-	azerite = L["Trait"].."ID:",
+	spell = SPELLS .. "ID:",
+	item = ITEMS .. "ID:",
+	quest = QUESTS_LABEL .. "ID:",
+	talent = TALENT .. "ID:",
+	achievement = ACHIEVEMENTS .. "ID:",
+	currency = CURRENCY .. "ID:",
+	azerite = L["Trait"] .. "ID:",
 }
 
 function Module:AddLineForID(id, linkType, noadd)
 	for i = 1, self:NumLines() do
-		local line = _G[self:GetName().."TextLeft"..i]
+		local line = _G[self:GetName() .. "TextLeft" .. i]
 		if not line then
 			break
 		end
@@ -60,17 +60,17 @@ function Module:AddLineForID(id, linkType, noadd)
 		local bankCount = GetItemCount(id, true) - bagCount
 		local itemStackCount = select(8, GetItemInfo(id))
 		if bankCount > 0 then
-			self:AddDoubleLine(BAGSLOT.."/"..BANK..":", K.InfoColor..bagCount.."/"..bankCount)
+			self:AddDoubleLine(BAGSLOT .. "/" .. BANK .. ":", K.InfoColor .. bagCount .. "/" .. bankCount)
 		elseif bagCount > 0 then
-			self:AddDoubleLine(BAGSLOT..":", K.InfoColor..bagCount)
+			self:AddDoubleLine(BAGSLOT .. ":", K.InfoColor .. bagCount)
 		end
 
 		if itemStackCount and itemStackCount > 1 then
-			self:AddDoubleLine(L["Stack Cap"]..":", K.InfoColor..itemStackCount)
+			self:AddDoubleLine(L["Stack Cap"] .. ":", K.InfoColor .. itemStackCount)
 		end
 	end
 
-	self:AddDoubleLine(linkType, string_format(K.InfoColor.."%s|r", id))
+	self:AddDoubleLine(linkType, string_format(K.InfoColor .. "%s|r", id))
 	self:Show()
 end
 
@@ -115,7 +115,7 @@ function Module:UpdateSpellCaster(...)
 	if unitCaster then
 		local name = GetUnitName(unitCaster, true)
 		local hexColor = K.RGBToHex(K.UnitColor(unitCaster))
-		self:AddDoubleLine(L["From"]..":", hexColor..name)
+		self:AddDoubleLine(L["From"] .. ":", hexColor .. name)
 		self:Show()
 	end
 end

@@ -54,20 +54,20 @@ function Module:SetSmallWorldMap()
 end
 
 function Module:WorldMapOnShow(event)
-	if (Module.mapSized) then
+	if Module.mapSized then
 		return
 	end
 
 	-- Don't do this in combat, there are secure elements here.
-	if (InCombatLockdown()) then
+	if InCombatLockdown() then
 		K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.WorldMapOnShow)
 		return
 		-- Only ever need this event once.
-	elseif (event == "PLAYER_REGEN_ENABLED") then
+	elseif event == "PLAYER_REGEN_ENABLED" then
 		K:UnregisterEvent(event, Module.WorldMapOnShow)
 	end
 
-	if (WorldMapFrame:IsMaximized()) then
+	if WorldMapFrame:IsMaximized() then
 		WorldMapFrame:UpdateMaximizedSize()
 		Module:SetLargeWorldMap()
 	else
@@ -93,7 +93,7 @@ end
 
 local function CoordsFormat(owner, none)
 	local text = none and ": --, --" or ": %.1f, %.1f"
-	return owner..K.MyClassColor..text
+	return owner .. K.MyClassColor .. text
 end
 
 function Module:UpdateCoords(elapsed)
@@ -227,7 +227,7 @@ function Module:OnEnable()
 		cursorCoords:SetParent(coordsFrame)
 		cursorCoords:ClearAllPoints()
 		cursorCoords:SetPoint("BOTTOMLEFT", 152, 1)
-		cursorCoords:SetTextColor(255/255, 204/255, 102/255)
+		cursorCoords:SetTextColor(255 / 255, 204 / 255, 102 / 255)
 		cursorCoords:SetAlpha(0.9)
 
 		-- Create player coordinates frame
@@ -238,7 +238,7 @@ function Module:OnEnable()
 		playerCoords:SetParent(coordsFrame)
 		playerCoords:ClearAllPoints()
 		playerCoords:SetPoint("BOTTOMRIGHT", -132, 1)
-		playerCoords:SetTextColor(255/255, 204/255, 102/255)
+		playerCoords:SetTextColor(255 / 255, 204 / 255, 102 / 255)
 		playerCoords:SetAlpha(0.9)
 
 		hooksecurefunc(WorldMapFrame, "OnFrameSizeChanged", self.UpdateMapID)

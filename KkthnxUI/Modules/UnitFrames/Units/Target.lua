@@ -127,7 +127,7 @@ function Module:CreateTarget()
 
 			self.Portrait = Portrait
 
-			if (targetPortraitStyle == "ClassPortraits" or targetPortraitStyle == "NewClassPortraits") then
+			if targetPortraitStyle == "ClassPortraits" or targetPortraitStyle == "NewClassPortraits" then
 				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
@@ -233,7 +233,7 @@ function Module:CreateTarget()
 
 		self.Castbar = Castbar
 
-		K.Mover(Castbar, "TargetCastBar", "TargetCastBar", {"BOTTOM", UIParent, "BOTTOM", C["Unitframe"].TargetCastbarIcon and 18 or 0, 342})
+		K.Mover(Castbar, "TargetCastBar", "TargetCastBar", { "BOTTOM", UIParent, "BOTTOM", C["Unitframe"].TargetCastbarIcon and 18 or 0, 342 })
 	end
 
 	if C["Unitframe"].ShowHealPrediction then
@@ -313,7 +313,7 @@ function Module:CreateTarget()
 		local parentFrame = CreateFrame("Frame", nil, UIParent)
 		local FloatingCombatFeedback = CreateFrame("Frame", "oUF_Target_CombatTextFrame", parentFrame)
 		FloatingCombatFeedback:SetSize(32, 32)
-		K.Mover(FloatingCombatFeedback, "CombatText", "TargetCombatText", {"BOTTOM", self, "TOPRIGHT", 0, 120})
+		K.Mover(FloatingCombatFeedback, "CombatText", "TargetCombatText", { "BOTTOM", self, "TOPRIGHT", 0, 120 })
 
 		for i = 1, 36 do
 			FloatingCombatFeedback[i] = parentFrame:CreateFontString("$parentText", "OVERLAY")
@@ -395,8 +395,8 @@ function Module:CreateTarget()
 	local Highlight = Health:CreateTexture(nil, "OVERLAY")
 	Highlight:SetAllPoints()
 	Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
-	Highlight:SetTexCoord(0, 1, .5, 1)
-	Highlight:SetVertexColor(.6, .6, .6)
+	Highlight:SetTexCoord(0, 1, 0.5, 1)
+	Highlight:SetVertexColor(0.6, 0.6, 0.6)
 	Highlight:SetBlendMode("ADD")
 	Highlight:Hide()
 

@@ -1,5 +1,5 @@
 local K, _, L = unpack(KkthnxUI)
-if (not L) then
+if not L then
 	return
 end
 
@@ -13,7 +13,8 @@ L["Alt Key"] = "Alt Key"
 L["AttackSpeed"] = "AS"
 L["AuraWatch List"] = "Custom List"
 L["AuraWatch Switcher"] = "Block preset auras"
-L["AuraWatchGUI Tips"] = "|nGet more tips by mouseover each option header.|n|nYou need to reload UI after setting changed.|n|nYou can hold CTRL+ALT, and click AuraWatch icon to add spell into ignore list, or click UnitAura icon to remove spell from ignore list."
+L["AuraWatchGUI Tips"] =
+	"|nGet more tips by mouseover each option header.|n|nYou need to reload UI after setting changed.|n|nYou can hold CTRL+ALT, and click AuraWatch icon to add spell into ignore list, or click UnitAura icon to remove spell from ignore list."
 L["AuraWatchGUI Title"] = "KkthnxUI AuraWatch GUI"
 L["Auto Quest Disabled Desc"] = "Enable to use auto questing. |n|nHolding SHIFT will temporarily disable the auto accept/turnin"
 L["Auto Quest Disabled"] = "Status: |CFFFF0000Disabled|r"
@@ -211,11 +212,14 @@ L["TotemSlot"] = "TotemSlot"
 L["Trade"] = "Trade"
 L["Trait"] = "Trait"
 L["Trigger"] = "Trigger"
-L["Tutorial Page1"] = "Welcome to the install tutorial!|n|nClick the apply button (bottom right) to apply some default settings. This includes (not limited to) Nameplates, Actionbars, Unitframes and more.|n|n|cffff0000These are always recommended.|r"
-L["Tutorial Page2"] = "You made it to the next step!|n|nHere we are going to load some relevant settings for the ChatFrame! These are important as these settings are tailored for KkthnxUI|n|n|cffff0000CAUTIONS:|r|n|n|cff00ccffYou can scroll to top or bottom of the chat by holding key SHIFT on the Chatframe.|r"
+L["Tutorial Page1"] =
+	"Welcome to the install tutorial!|n|nClick the apply button (bottom right) to apply some default settings. This includes (not limited to) Nameplates, Actionbars, Unitframes and more.|n|n|cffff0000These are always recommended.|r"
+L["Tutorial Page2"] =
+	"You made it to the next step!|n|nHere we are going to load some relevant settings for the ChatFrame! These are important as these settings are tailored for KkthnxUI|n|n|cffff0000CAUTIONS:|r|n|n|cff00ccffYou can scroll to top or bottom of the chat by holding key SHIFT on the Chatframe.|r"
 L["Tutorial Page3"] = "Still here? Good!|n|nThis is the section to apply recommended scale based on your current resolution.|n|nYou can change the UIScale in |cffffcc00KkthnxUI Config Settings (General Tab)|r later."
 L["Tutorial Page4"] = "At the end, profile settings for Skada/DBM/BigWigs and a few other addOns will be imported if they are loaded/enabled right now.|n|nYou can switch their skins off in |cffffcc00KkthnxUI Config (Skins Tab)|r."
-L["Tutorial Page5"] = "Well you made it to the end! You have completed the tutorial.|n|n|cffff0000CAUTIONS:|r|n|nYou can easily set focus by holding SHIFT and LEFT click on the unit;|n|nMost of the settings can be changed in |cffffcc00KkthnxUI Config|r.|r Good luck and have fun "..K.Name
+L["Tutorial Page5"] = "Well you made it to the end! You have completed the tutorial.|n|n|cffff0000CAUTIONS:|r|n|nYou can easily set focus by holding SHIFT and LEFT click on the unit;|n|nMost of the settings can be changed in |cffffcc00KkthnxUI Config|r.|r Good luck and have fun "
+	.. K.Name
 L["Type Intro"] = "|nAuraID: monitor the Buff/Debuff status.|n|nSpellID: monitor spell cooldown.|n|nSlotID: monitor itemslot cooldown.|n|nTotemID: monitor activated totem duration."
 L["Type*"] = "Type*"
 L["Unit Intro"] = "|nThe spell's unit info.|n|nplayer: unit is player.|n|ntarget: unit is target.|n|nfocus: unit is focus.|n|npet: unit is pet."

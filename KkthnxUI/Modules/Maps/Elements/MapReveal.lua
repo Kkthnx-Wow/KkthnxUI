@@ -72,8 +72,8 @@ function Module:MapData_RefreshOverlays(fullUpdate)
 		if not exploredCache[i] then
 			local width, height, offsetX, offsetY = GetShapesFromString(i)
 			RefreshFileIDsByString(exploredInfoString)
-			local numTexturesWide = math_ceil(width/TILE_SIZE_WIDTH)
-			local numTexturesTall = math_ceil(height/TILE_SIZE_HEIGHT)
+			local numTexturesWide = math_ceil(width / TILE_SIZE_WIDTH)
+			local numTexturesTall = math_ceil(height / TILE_SIZE_HEIGHT)
 			local texturePixelWidth, textureFileWidth, texturePixelHeight, textureFileHeight
 
 			for j = 1, numTexturesTall do
@@ -98,7 +98,7 @@ function Module:MapData_RefreshOverlays(fullUpdate)
 						texturePixelWidth = TILE_SIZE_WIDTH
 						textureFileWidth = TILE_SIZE_WIDTH
 					else
-						texturePixelWidth = width %TILE_SIZE_WIDTH
+						texturePixelWidth = width % TILE_SIZE_WIDTH
 						if texturePixelWidth == 0 then
 							texturePixelWidth = TILE_SIZE_WIDTH
 						end
@@ -116,7 +116,7 @@ function Module:MapData_RefreshOverlays(fullUpdate)
 
 					if KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap then
 						if C["WorldMap"].MapRevealGlow then
-							texture:SetVertexColor(.7, .7, .7)
+							texture:SetVertexColor(0.7, 0.7, 0.7)
 						else
 							texture:SetVertexColor(1, 1, 1)
 						end

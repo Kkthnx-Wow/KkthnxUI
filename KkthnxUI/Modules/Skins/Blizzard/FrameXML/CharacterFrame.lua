@@ -43,7 +43,7 @@ end
 
 local function ReskinPaperDollSidebar()
 	for i = 1, #PAPERDOLL_SIDEBARS do
-		local tab = _G["PaperDollSidebarTab"..i]
+		local tab = _G["PaperDollSidebarTab" .. i]
 
 		if tab and not tab.styled then
 			if i == 1 then
@@ -57,14 +57,14 @@ local function ReskinPaperDollSidebar()
 			tab.bg = CreateFrame("Frame", nil, tab)
 			tab.bg:SetFrameLevel(tab:GetFrameLevel())
 			tab.bg:SetAllPoints(tab)
-			tab.bg:CreateBorder(nil, nil, nil, nil, nil, 255/255, 223/255, 0/255, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			tab.bg:CreateBorder(nil, nil, nil, nil, nil, 255 / 255, 223 / 255, 0 / 255, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
 			tab.Icon:SetAllPoints(tab.bg)
 			tab.Hider:SetAllPoints(tab.bg)
 			tab.Highlight:SetPoint("TOPLEFT", tab.bg, "TOPLEFT", 1, -1)
 			tab.Highlight:SetPoint("BOTTOMRIGHT", tab.bg, "BOTTOMRIGHT", -1, 1)
-			tab.Highlight:SetColorTexture(1, 1, 1, .25)
-			tab.Hider:SetColorTexture(.3, .3, .3, .4)
+			tab.Highlight:SetColorTexture(1, 1, 1, 0.25)
+			tab.Hider:SetColorTexture(0.3, 0.3, 0.3, 0.4)
 			tab.TabBg:SetAlpha(0)
 
 			tab.styled = true
@@ -74,7 +74,7 @@ end
 
 local function UpdateFactionSkins()
 	for i = 1, NUM_FACTIONS_DISPLAYED, 1 do
-		local statusbar = _G["ReputationBar"..i.."ReputationBar"]
+		local statusbar = _G["ReputationBar" .. i .. "ReputationBar"]
 		if statusbar then
 			statusbar:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
 		end
@@ -88,7 +88,7 @@ tinsert(C.defaultThemes, function()
 
 	CharacterModelFrame:StripTextures(true)
 
-	for _, slot in pairs({PaperDollItemsFrame:GetChildren()}) do
+	for _, slot in pairs({ PaperDollItemsFrame:GetChildren() }) do
 		if slot:IsObjectType("Button") or slot:IsObjectType("ItemButton") then
 			slot:StripTextures()
 			slot:CreateBorder()
@@ -147,7 +147,7 @@ tinsert(C.defaultThemes, function()
 		CharacterFrame:SetSize(640, 431) -- 540 + 100, 424 + 7
 		CharacterFrame.Inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 432, 4)
 
-		CharacterFrame.Inset.Bg:SetTexture("Interface\\DressUpFrame\\DressingRoom"..K.Class)
+		CharacterFrame.Inset.Bg:SetTexture("Interface\\DressUpFrame\\DressingRoom" .. K.Class)
 		CharacterFrame.Inset.Bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
 		CharacterFrame.Inset.Bg:SetHorizTile(false)
 		CharacterFrame.Inset.Bg:SetVertTile(false)

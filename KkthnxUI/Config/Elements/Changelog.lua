@@ -20,15 +20,8 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
-		-- stylua: ignore
 		Version = "[10.3.0] - 2022-4-5",
-		-- stylua: ignore
-		General = "All notable changes to this project will be documented in this file. The format is based on "
-			.. K.SystemColor
-			.. "[Keep a Changelog]|r and this project adheres to "
-			.. K.SystemColor
-			.. "[Semantic Versioning]|r",
-		-- stylua: ignore
+		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {
 			{
 				Header = "Added",

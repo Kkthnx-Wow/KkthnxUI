@@ -29,10 +29,12 @@ function Module:FixSizebarVisibility()
 end
 
 function Module:ToggleBarFader(name)
-	local frame = _G["KKUI_Action"..name]
-	if not frame then return end
+	local frame = _G["KKUI_Action" .. name]
+	if not frame then
+		return
+	end
 
-	frame.isDisable = not C["ActionBar"][name.."Fader"]
+	frame.isDisable = not C["ActionBar"][name .. "Fader"]
 	if frame.isDisable then
 		Module:StartFadeIn(frame)
 	else
@@ -64,13 +66,13 @@ function Module:CreateBar4()
 	local buttonList = {}
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBar4", UIParent, "SecureHandlerStateTemplate")
-	frame.mover = K.Mover(frame, "Actionbar".."4", "Bar4", {"RIGHT", UIParent, "RIGHT", -4, 0})
+	frame.mover = K.Mover(frame, "Actionbar" .. "4", "Bar4", { "RIGHT", UIParent, "RIGHT", -4, 0 })
 	Module.movers[5] = frame.mover
 
 	MultiBarRight:SetParent(frame)
 	MultiBarRight:EnableMouse(false)
 	MultiBarRight.QuickKeybindGlow:SetTexture("")
-	
+
 	hooksecurefunc(MultiBarRight, "SetScale", function(self, scale, force)
 		if not force and scale ~= 1 then
 			self:SetScale(1, true)
@@ -78,7 +80,7 @@ function Module:CreateBar4()
 	end)
 
 	for i = 1, num do
-		local button = _G["MultiBarRightButton"..i]
+		local button = _G["MultiBarRightButton" .. i]
 		table_insert(buttonList, button)
 		table_insert(Module.buttons, button)
 	end

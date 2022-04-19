@@ -7,7 +7,7 @@ function Module:ReskinSimulationcraft()
 	end
 
 	local Simulationcraft = LibStub("AceAddon-3.0"):GetAddon("Simulationcraft")
-	hooksecurefunc(Simulationcraft, 'GetMainFrame', function()
+	hooksecurefunc(Simulationcraft, "GetMainFrame", function()
 		if not SimcFrame.isSkinned then
 			SimcFrame:StripTextures()
 			SimcFrame:CreateBorder()

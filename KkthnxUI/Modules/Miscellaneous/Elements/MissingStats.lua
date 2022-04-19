@@ -42,7 +42,7 @@ function Module:CreateImprovedStats()
 	CharacterStatsPane:SetAllPoints(stat)
 
 	hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", function()
-		if (not _G[PAPERDOLL_SIDEBARS[1].frame]:IsShown()) then
+		if not _G[PAPERDOLL_SIDEBARS[1].frame]:IsShown() then
 			statPanel:Hide()
 		else
 			statPanel:Show()
@@ -54,40 +54,40 @@ function Module:CreateImprovedStats()
 		[1] = {
 			categoryFrame = "AttributesCategory",
 			stats = {
-				[1] = {stat = "STRENGTH", primary = LE_UNIT_STAT_STRENGTH},
-				[2] = {stat = "AGILITY", primary = LE_UNIT_STAT_AGILITY},
-				[3] = {stat = "INTELLECT", primary = LE_UNIT_STAT_INTELLECT},
-				[4] = {stat = "STAMINA"},
-				[5] = {stat = "ARMOR"},
-				[6] = {stat = "STAGGER", hideAt = 0, roles = {"TANK" }},
-				[7] = {stat = "ATTACK_DAMAGE", primary = LE_UNIT_STAT_STRENGTH, roles = { "TANK", "DAMAGER" }},
-				[8] = {stat = "ATTACK_AP", hideAt = 0, primary = LE_UNIT_STAT_STRENGTH, roles = { "TANK", "DAMAGER" }},
-				[9] = {stat = "ATTACK_ATTACKSPEED", primary = LE_UNIT_STAT_STRENGTH, roles = { "TANK", "DAMAGER" }},
-				[10] = {stat = "ATTACK_DAMAGE", primary = LE_UNIT_STAT_AGILITY, roles = { "TANK", "DAMAGER" }},
-				[11] = {stat = "ATTACK_AP", hideAt = 0, primary = LE_UNIT_STAT_AGILITY, roles = { "TANK", "DAMAGER" }},
-				[12] = {stat = "ATTACK_ATTACKSPEED", primary = LE_UNIT_STAT_AGILITY, roles = { "TANK", "DAMAGER" }},
-				[13] = {stat = "SPELLPOWER", hideAt = 0, primary = LE_UNIT_STAT_INTELLECT},
-				[14] = {stat = "MANAREGEN", hideAt = 0, primary = LE_UNIT_STAT_INTELLECT},
-				[15] = {stat = "ENERGY_REGEN", hideAt = 0, primary = LE_UNIT_STAT_AGILITY},
-				[16] = {stat = "RUNE_REGEN", hideAt = 0, primary = LE_UNIT_STAT_STRENGTH},
-				[17] = {stat = "FOCUS_REGEN", hideAt = 0, primary = LE_UNIT_STAT_AGILITY},
-				[18] = {stat = "MOVESPEED"},
+				[1] = { stat = "STRENGTH", primary = LE_UNIT_STAT_STRENGTH },
+				[2] = { stat = "AGILITY", primary = LE_UNIT_STAT_AGILITY },
+				[3] = { stat = "INTELLECT", primary = LE_UNIT_STAT_INTELLECT },
+				[4] = { stat = "STAMINA" },
+				[5] = { stat = "ARMOR" },
+				[6] = { stat = "STAGGER", hideAt = 0, roles = { "TANK" } },
+				[7] = { stat = "ATTACK_DAMAGE", primary = LE_UNIT_STAT_STRENGTH, roles = { "TANK", "DAMAGER" } },
+				[8] = { stat = "ATTACK_AP", hideAt = 0, primary = LE_UNIT_STAT_STRENGTH, roles = { "TANK", "DAMAGER" } },
+				[9] = { stat = "ATTACK_ATTACKSPEED", primary = LE_UNIT_STAT_STRENGTH, roles = { "TANK", "DAMAGER" } },
+				[10] = { stat = "ATTACK_DAMAGE", primary = LE_UNIT_STAT_AGILITY, roles = { "TANK", "DAMAGER" } },
+				[11] = { stat = "ATTACK_AP", hideAt = 0, primary = LE_UNIT_STAT_AGILITY, roles = { "TANK", "DAMAGER" } },
+				[12] = { stat = "ATTACK_ATTACKSPEED", primary = LE_UNIT_STAT_AGILITY, roles = { "TANK", "DAMAGER" } },
+				[13] = { stat = "SPELLPOWER", hideAt = 0, primary = LE_UNIT_STAT_INTELLECT },
+				[14] = { stat = "MANAREGEN", hideAt = 0, primary = LE_UNIT_STAT_INTELLECT },
+				[15] = { stat = "ENERGY_REGEN", hideAt = 0, primary = LE_UNIT_STAT_AGILITY },
+				[16] = { stat = "RUNE_REGEN", hideAt = 0, primary = LE_UNIT_STAT_STRENGTH },
+				[17] = { stat = "FOCUS_REGEN", hideAt = 0, primary = LE_UNIT_STAT_AGILITY },
+				[18] = { stat = "MOVESPEED" },
 			},
 		},
 
 		[2] = {
 			categoryFrame = "EnhancementsCategory",
 			stats = {
-				{stat = "CRITCHANCE", hideAt = 0},
-				{stat = "HASTE", hideAt = 0},
-				{stat = "MASTERY", hideAt = 0},
-				{stat = "VERSATILITY", hideAt = 0},
-				{stat = "LIFESTEAL", hideAt = 0},
-				{stat = "AVOIDANCE", hideAt = 0},
-				{stat = "SPEED", hideAt = 0},
-				{stat = "DODGE", roles = {"TANK"}},
-				{stat = "PARRY", hideAt = 0, roles = {"TANK"}},
-				{stat = "BLOCK", hideAt = 0, showFunc = C_PaperDollInfo.OffhandHasShield},
+				{ stat = "CRITCHANCE", hideAt = 0 },
+				{ stat = "HASTE", hideAt = 0 },
+				{ stat = "MASTERY", hideAt = 0 },
+				{ stat = "VERSATILITY", hideAt = 0 },
+				{ stat = "LIFESTEAL", hideAt = 0 },
+				{ stat = "AVOIDANCE", hideAt = 0 },
+				{ stat = "SPEED", hideAt = 0 },
+				{ stat = "DODGE", roles = { "TANK" } },
+				{ stat = "PARRY", hideAt = 0, roles = { "TANK" } },
+				{ stat = "BLOCK", hideAt = 0, showFunc = C_PaperDollInfo.OffhandHasShield },
 			},
 		},
 	}
@@ -115,13 +115,13 @@ function Module:CreateImprovedStats()
 			offhandSpeed = string_format("%.2f", offhandSpeed)
 		end
 		if offhandSpeed then
-			displaySpeed = BreakUpLargeNumbers(displaySpeed).." / "..offhandSpeed
+			displaySpeed = BreakUpLargeNumbers(displaySpeed) .. " / " .. offhandSpeed
 		else
 			displaySpeed = BreakUpLargeNumbers(displaySpeed)
 		end
 		PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, displaySpeed, false, speed)
 
-		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..string_format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ATTACK_SPEED).." "..displaySpeed..FONT_COLOR_CODE_CLOSE
+		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. string_format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ATTACK_SPEED) .. " " .. displaySpeed .. FONT_COLOR_CODE_CLOSE
 		statFrame.tooltip2 = string_format(STAT_ATTACK_SPEED_BASE_TOOLTIP, BreakUpLargeNumbers(meleeHaste))
 		statFrame:Show()
 	end
@@ -138,7 +138,7 @@ function Module:CreateImprovedStats()
 		avgItemLevel = string_format("%.1f", avgItemLevel)
 
 		if displayItemLevel ~= avgItemLevel then
-			displayItemLevel = displayItemLevel.." / "..avgItemLevel
+			displayItemLevel = displayItemLevel .. " / " .. avgItemLevel
 		end
 
 		PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, displayItemLevel, false, displayItemLevel)

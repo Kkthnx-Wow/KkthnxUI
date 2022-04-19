@@ -15,13 +15,13 @@ function Module:ReskinDominos()
 		end
 
 		local button = self
-		local icon = _G[name.."Icon"]
-		local count = _G[name.."Count"]
-		local flash = _G[name.."Flash"]
-		local hotkey = _G[name.."HotKey"]
-		local border = _G[name.."Border"]
-		local btname = _G[name.."Name"]
-		local normal = _G[name.."NormalTexture"]
+		local icon = _G[name .. "Icon"]
+		local count = _G[name .. "Count"]
+		local flash = _G[name .. "Flash"]
+		local hotkey = _G[name .. "HotKey"]
+		local border = _G[name .. "Border"]
+		local btname = _G[name .. "Name"]
+		local normal = _G[name .. "NormalTexture"]
 
 		flash:SetTexture("")
 		button:SetNormalTexture("")
@@ -65,8 +65,10 @@ function Module:ReskinDominos()
 	end
 
 	local function StyleSmallDominosButton(button, icon, name, hotkey, pet)
-		if not button then return end
-		local flash = _G[name.."Flash"]
+		if not button then
+			return
+		end
+		local flash = _G[name .. "Flash"]
 		button:StyleButton()
 		button:SetNormalTexture("")
 
@@ -96,15 +98,15 @@ function Module:ReskinDominos()
 			icon:SetAllPoints()
 
 			if pet then
-				local autocast = _G[name.."AutoCastable"]
+				local autocast = _G[name .. "AutoCastable"]
 				autocast:SetSize((button:GetWidth() * 2) - 10, (button:GetWidth() * 2) - 10)
 				autocast:ClearAllPoints()
 				autocast:SetPoint("CENTER", button, 0, 0)
 
-				local shine = _G[name.."Shine"]
+				local shine = _G[name .. "Shine"]
 				shine:SetSize(button:GetWidth(), button:GetWidth())
 
-				local cooldown = _G[name.."Cooldown"]
+				local cooldown = _G[name .. "Cooldown"]
 				cooldown:SetSize(button:GetWidth() - 2, button:GetWidth() - 2)
 			end
 
@@ -114,38 +116,38 @@ function Module:ReskinDominos()
 
 	do
 		for i = 1, 60 do
-			if _G["DominosActionButton"..i] then
-				_G["DominosActionButton"..i]:StyleButton()
-				StyleNormalDominosButton(_G["DominosActionButton"..i])
+			if _G["DominosActionButton" .. i] then
+				_G["DominosActionButton" .. i]:StyleButton()
+				StyleNormalDominosButton(_G["DominosActionButton" .. i])
 			end
 		end
 
 		for i = 1, 12 do
-			_G["ActionButton"..i]:StyleButton()
-			_G["MultiBarBottomLeftButton"..i]:StyleButton()
-			_G["MultiBarBottomRightButton"..i]:StyleButton()
-			_G["MultiBarLeftButton"..i]:StyleButton()
-			_G["MultiBarRightButton"..i]:StyleButton()
-			StyleNormalDominosButton(_G["ActionButton"..i])
-			StyleNormalDominosButton(_G["MultiBarBottomLeftButton"..i])
-			StyleNormalDominosButton(_G["MultiBarBottomRightButton"..i])
-			StyleNormalDominosButton(_G["MultiBarLeftButton"..i])
-			StyleNormalDominosButton(_G["MultiBarRightButton"..i])
+			_G["ActionButton" .. i]:StyleButton()
+			_G["MultiBarBottomLeftButton" .. i]:StyleButton()
+			_G["MultiBarBottomRightButton" .. i]:StyleButton()
+			_G["MultiBarLeftButton" .. i]:StyleButton()
+			_G["MultiBarRightButton" .. i]:StyleButton()
+			StyleNormalDominosButton(_G["ActionButton" .. i])
+			StyleNormalDominosButton(_G["MultiBarBottomLeftButton" .. i])
+			StyleNormalDominosButton(_G["MultiBarBottomRightButton" .. i])
+			StyleNormalDominosButton(_G["MultiBarLeftButton" .. i])
+			StyleNormalDominosButton(_G["MultiBarRightButton" .. i])
 		end
 
 		for i = 1, NUM_STANCE_SLOTS do
-			local name = "StanceButton"..i
+			local name = "StanceButton" .. i
 			local button = _G[name]
-			local icon = _G[name.."Icon"]
-			local hotkey = _G[name.."HotKey"]
+			local icon = _G[name .. "Icon"]
+			local hotkey = _G[name .. "HotKey"]
 			StyleSmallDominosButton(button, icon, name, hotkey)
 		end
 
 		for i = 1, NUM_PET_ACTION_SLOTS do
-			local name = "PetActionButton"..i
+			local name = "PetActionButton" .. i
 			local button = _G[name]
-			local icon = _G[name.."Icon"]
-			local hotkey = _G[name.."HotKey"]
+			local icon = _G[name .. "Icon"]
+			local hotkey = _G[name .. "HotKey"]
 			StyleSmallDominosButton(button, icon, name, hotkey, true)
 		end
 

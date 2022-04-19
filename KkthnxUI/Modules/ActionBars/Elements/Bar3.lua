@@ -17,7 +17,7 @@ function Module:CreateBar3()
 	local buttonList = {}
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBar3", UIParent, "SecureHandlerStateTemplate")
-	frame.mover = K.Mover(frame, "Actionbar".."3", "Bar3", {"BOTTOM", _G.KKUI_ActionBar2, "TOP", 0, margin})
+	frame.mover = K.Mover(frame, "Actionbar" .. "3", "Bar3", { "BOTTOM", _G.KKUI_ActionBar2, "TOP", 0, margin })
 	Module.movers[3] = frame.mover
 
 	MultiBarBottomRight:SetParent(frame)
@@ -25,7 +25,7 @@ function Module:CreateBar3()
 	MultiBarBottomRight.QuickKeybindGlow:SetTexture("")
 
 	for i = 1, num do
-		local button = _G["MultiBarBottomRightButton"..i]
+		local button = _G["MultiBarBottomRightButton" .. i]
 		table_insert(buttonList, button)
 		table_insert(Module.buttons, button)
 	end

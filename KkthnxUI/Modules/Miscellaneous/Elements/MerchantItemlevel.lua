@@ -22,7 +22,7 @@ function Module:MerchantItemlevel()
 			return
 		end
 
-		local button = _G["MerchantItem"..i.."ItemButton"]
+		local button = _G["MerchantItem" .. i .. "ItemButton"]
 		if button and button:IsShown() then
 			if not button.text then
 				button.text = button:CreateFontString(nil, "OVERLAY", "SystemFont_Outline_Small")

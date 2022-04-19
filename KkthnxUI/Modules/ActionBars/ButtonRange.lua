@@ -15,10 +15,10 @@ local buttonColors, buttonsToUpdate = {}, {}
 local updater = CreateFrame("Frame")
 
 local colors = {
-	["normal"] = {1, 1, 1},
-	["oor"] = {0.8, 0.1, 0.1},
-	["oom"] = {0.5, 0.5, 1},
-	["unusable"] = {0.3, 0.3, 0.3}
+	["normal"] = { 1, 1, 1 },
+	["oor"] = { 0.8, 0.1, 0.1 },
+	["oom"] = { 0.5, 0.5, 1 },
+	["unusable"] = { 0.3, 0.3, 0.3 },
 }
 
 function Module:OnUpdateRange(elapsed)

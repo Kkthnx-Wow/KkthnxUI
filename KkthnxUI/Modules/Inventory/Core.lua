@@ -46,10 +46,10 @@ function Module:ReverseSort()
 		local numSlots = GetContainerNumSlots(bag)
 		for slot = 1, numSlots do
 			local texture, _, locked = GetContainerItemInfo(bag, slot)
-			if (slot <= numSlots / 2) and texture and not locked and not sortCache["b"..bag.."s"..slot] then
+			if (slot <= numSlots / 2) and texture and not locked and not sortCache["b" .. bag .. "s" .. slot] then
 				PickupContainerItem(bag, slot)
-				PickupContainerItem(bag, numSlots+1 - slot)
-				sortCache["b"..bag.."s"..slot] = true
+				PickupContainerItem(bag, numSlots + 1 - slot)
+				sortCache["b" .. bag .. "s" .. slot] = true
 			end
 		end
 	end
@@ -73,7 +73,7 @@ function Module:UpdateBagsAnchor(parent, bags)
 			index = index + 1
 
 			bag:ClearAllPoints()
-			if (index-1) % perRow == 0 then
+			if (index - 1) % perRow == 0 then
 				bag:SetPoint("BOTTOMRIGHT", anchorCache[index - perRow], "BOTTOMLEFT", -6, 0)
 			else
 				bag:SetPoint("BOTTOMLEFT", anchorCache[index - 1], "TOPLEFT", 0, 6)
@@ -171,7 +171,7 @@ function Module:CreateInfoFrame()
 	currencyTag:SetPoint("TOP", self, "BOTTOM", 0, -6)
 
 	infoFrame.title = SEARCH
-	K.AddTooltip(infoFrame, "ANCHOR_TOPLEFT", K.InfoColorTint.."|nClick to search your bag items.|nYou can type in item names or item equip locations.|n|n'boe' for items that bind on equip and 'quest' for quest items.")
+	K.AddTooltip(infoFrame, "ANCHOR_TOPLEFT", K.InfoColorTint .. "|nClick to search your bag items.|nYou can type in item names or item equip locations.|n|n'boe' for items that bind on equip and 'quest' for quest items.")
 end
 
 local HideWidgets = true
@@ -236,7 +236,7 @@ local function updateBagBar(bar)
 	local spacing = 6
 	local offset = 6
 	local width, height = bar:LayoutButtons("grid", bar.columns, spacing, offset, -offset)
-	bar:SetSize(width + offset*2, height + offset*2)
+	bar:SetSize(width + offset * 2, height + offset * 2)
 end
 
 function Module:CreateBagBar(settings, columns)
@@ -292,7 +292,7 @@ function Module:CreateCloseButton(f)
 	closeButton.Icon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32")
 
 	closeButton:SetScript("OnClick", CloseOrRestoreBags)
-	closeButton.title = _G.CLOSE.."/".._G.RESET
+	closeButton.title = _G.CLOSE .. "/" .. _G.RESET
 	K.AddTooltip(closeButton, "ANCHOR_TOP")
 
 	return closeButton
@@ -391,7 +391,7 @@ function Module:CreateDepositButton()
 	end)
 
 	DepositButton.title = _G.REAGENTBANK_DEPOSIT
-	K.AddTooltip(DepositButton, "ANCHOR_TOP", K.InfoColor..L["AutoDepositTip"])
+	K.AddTooltip(DepositButton, "ANCHOR_TOP", K.InfoColor .. L["AutoDepositTip"])
 
 	return DepositButton
 end
@@ -400,7 +400,7 @@ local function ToggleBackpacks(self)
 	local parent = self.__owner
 	K.TogglePanel(parent.BagBar)
 	if parent.BagBar:IsShown() then
-		self.KKUI_Border:SetVertexColor(1, .8, 0)
+		self.KKUI_Border:SetVertexColor(1, 0.8, 0)
 		PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
 	elseif C["General"].ColorTextures then
 		self.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
@@ -449,12 +449,12 @@ function Module:CreateSortButton(name)
 		else
 			if C["Inventory"].ReverseSort then
 				if InCombatLockdown() then
-					_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+					_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 				else
 					SortBags()
 					table_wipe(sortCache)
 					Module.Bags.isSorting = true
-					C_Timer_After(.5, Module.ReverseSort)
+					C_Timer_After(0.5, Module.ReverseSort)
 				end
 			else
 				SortBags()
@@ -522,7 +522,7 @@ function Module:CreateFreeSlots()
 		return
 	end
 
-	local slot = CreateFrame("Button", name.."FreeSlot", self)
+	local slot = CreateFrame("Button", name .. "FreeSlot", self)
 	slot:SetSize(self.iconSize, self.iconSize)
 	slot:CreateBorder()
 	slot:StyleButton()
@@ -558,7 +558,7 @@ local function editBoxClearFocus(self)
 end
 
 function Module:CreateSplitButton()
-	local enabledText = K.SystemColor..L["StackSplitEnable"]
+	local enabledText = K.SystemColor .. L["StackSplitEnable"]
 
 	local splitFrame = CreateFrame("Frame", nil, self)
 	splitFrame:SetSize(100, 50)
@@ -644,7 +644,7 @@ local function splitOnClick(self)
 end
 
 function Module:CreateFavouriteButton()
-	local enabledText = K.SystemColor..L["Favourite Mode Enabled"]
+	local enabledText = K.SystemColor .. L["Favourite Mode Enabled"]
 
 	local favouriteButton = CreateFrame("Button", nil, self)
 	favouriteButton:SetSize(18, 18)
@@ -707,7 +707,7 @@ local function favouriteOnClick(self)
 end
 
 function Module:CreateJunkButton()
-	local enabledText = K.InfoColor.."|nClick an item to tag it as junk.|n|nIf 'Module Autosell' is enabled, these items will be sold as well.|n|nThe list is saved account-wide."
+	local enabledText = K.InfoColor .. "|nClick an item to tag it as junk.|n|nIf 'Module Autosell' is enabled, these items will be sold as well.|n|nThe list is saved account-wide."
 
 	local JunkButton = CreateFrame("Button", nil, self)
 	JunkButton:SetSize(18, 18)
@@ -772,7 +772,7 @@ local function customJunkOnClick(self)
 end
 
 function Module:CreateDeleteButton()
-	local enabledText = K.SystemColor..L["Delete Mode Enabled"]
+	local enabledText = K.SystemColor .. L["Delete Mode Enabled"]
 
 	local deleteButton = CreateFrame("Button", nil, self)
 	deleteButton:SetSize(18, 18)
@@ -863,7 +863,16 @@ function Module:OnEnable()
 		return
 	end
 
-	if IsAddOnLoaded("AdiBags") or IsAddOnLoaded("ArkInventory") or IsAddOnLoaded("cargBags_Nivaya") or IsAddOnLoaded("cargBags") or IsAddOnLoaded("Bagnon") or IsAddOnLoaded("Combuctor") or IsAddOnLoaded("TBag") or IsAddOnLoaded("BaudBag") then
+	if
+		IsAddOnLoaded("AdiBags")
+		or IsAddOnLoaded("ArkInventory")
+		or IsAddOnLoaded("cargBags_Nivaya")
+		or IsAddOnLoaded("cargBags")
+		or IsAddOnLoaded("Bagnon")
+		or IsAddOnLoaded("Combuctor")
+		or IsAddOnLoaded("TBag")
+		or IsAddOnLoaded("BaudBag")
+	then
 		return
 	end
 
@@ -888,17 +897,17 @@ function Module:OnEnable()
 
 	Module.Bags = Backpack
 	Module.BagsType = {}
-	Module.BagsType[0] = 0	-- Backpack
-	Module.BagsType[-1] = 0	-- Bank
-	Module.BagsType[-3] = 0	-- Reagent
+	Module.BagsType[0] = 0 -- Backpack
+	Module.BagsType[-1] = 0 -- Bank
+	Module.BagsType[-3] = 0 -- Reagent
 
 	local f = {}
 	local filters = Module:GetFilters()
 	local MyContainer = Backpack:GetContainerClass()
-	local ContainerGroups = {["Bag"] = {}, ["Bank"] = {}}
+	local ContainerGroups = { ["Bag"] = {}, ["Bank"] = {} }
 
 	local function AddNewContainer(bagType, index, name, filter)
-		local newContainer = MyContainer:New(name, {BagType = bagType})
+		local newContainer = MyContainer:New(name, { BagType = bagType })
 		newContainer:SetFilter(filter, true)
 		ContainerGroups[bagType][index] = newContainer
 	end
@@ -917,8 +926,8 @@ function Module:OnEnable()
 		AddNewContainer("Bag", 6, "BagAnima", filters.bagAnima)
 		AddNewContainer("Bag", 7, "BagRelic", filters.bagRelic)
 
-		f.main = MyContainer:New("Bag", {Bags = "bags", BagType = "Bag"})
-		f.main.__anchor = {"BOTTOMRIGHT", -50, 100}
+		f.main = MyContainer:New("Bag", { Bags = "bags", BagType = "Bag" })
+		f.main.__anchor = { "BOTTOMRIGHT", -50, 100 }
 		f.main:SetPoint(unpack(f.main.__anchor))
 		f.main:SetFilter(filters.onlyBags, true)
 
@@ -933,15 +942,15 @@ function Module:OnEnable()
 		AddNewContainer("Bank", 8, "BankAnima", filters.bankAnima)
 		AddNewContainer("Bank", 9, "BankQuest", filters.bankQuest)
 
-		f.bank = MyContainer:New("Bank", {Bags = "bank", BagType = "Bank"})
-		f.bank.__anchor = {"BOTTOMLEFT", 25, 50}
+		f.bank = MyContainer:New("Bank", { Bags = "bank", BagType = "Bank" })
+		f.bank.__anchor = { "BOTTOMLEFT", 25, 50 }
 		f.bank:SetPoint(unpack(f.bank.__anchor))
 		f.bank:SetFilter(filters.onlyBank, true)
 		f.bank:Hide()
 
-		f.reagent = MyContainer:New("Reagent", {Bags = "bankreagent", BagType = "Bank"})
+		f.reagent = MyContainer:New("Reagent", { Bags = "bankreagent", BagType = "Bank" })
 		f.reagent:SetFilter(filters.onlyReagent, true)
-		f.reagent.__anchor = {"BOTTOMLEFT", f.bank}
+		f.reagent.__anchor = { "BOTTOMLEFT", f.bank }
 		f.reagent:SetPoint(unpack(f.reagent.__anchor))
 		f.reagent:Hide()
 
@@ -1020,7 +1029,7 @@ function Module:OnEnable()
 
 		if showNewItem then
 			self.glowFrame = self.glowFrame or CreateFrame("Frame", nil, self, "BackdropTemplate")
-			self.glowFrame:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
+			self.glowFrame:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
 			self.glowFrame:SetPoint("TOPLEFT", self, -5, 5)
 			self.glowFrame:SetPoint("BOTTOMRIGHT", self, 5, -5)
 			self.glowFrame:Hide()
@@ -1052,17 +1061,17 @@ function Module:OnEnable()
 	end
 
 	local bagTypeColor = {
-		[0] = {0, 0, 0, .25}, -- container
+		[0] = { 0, 0, 0, 0.25 }, -- container
 		[1] = false, -- Ammunition bag
-		[2] = {0, .5, 0, .25}, -- Herbal bag
-		[3] = {.8, 0, .8, .25}, -- Enchant bag
-		[4] = {1, .8, 0, .25}, -- Engineering bag
-		[5] = {0, .8, .8, .25}, -- Gem bag
-		[6] = {.5, .4, 0, .25}, -- Ore bag
-		[7] = {.8, .5, .5, .25}, -- Leather bag
-		[8] = {.8, .8, .8, .25}, -- Inscription bag
-		[9] = {.4, .6, 1, .25}, -- Toolbox
-		[10] = {.8, 0, 0, .25}, -- Cooking bag
+		[2] = { 0, 0.5, 0, 0.25 }, -- Herbal bag
+		[3] = { 0.8, 0, 0.8, 0.25 }, -- Enchant bag
+		[4] = { 1, 0.8, 0, 0.25 }, -- Engineering bag
+		[5] = { 0, 0.8, 0.8, 0.25 }, -- Gem bag
+		[6] = { 0.5, 0.4, 0, 0.25 }, -- Ore bag
+		[7] = { 0.8, 0.5, 0.5, 0.25 }, -- Leather bag
+		[8] = { 0.8, 0.8, 0.8, 0.25 }, -- Inscription bag
+		[9] = { 0.4, 0.6, 1, 0.25 }, -- Toolbox
+		[10] = { 0.8, 0, 0, 0.25 }, -- Cooking bag
 	}
 
 	local function isItemNeedsLevel(item)
@@ -1113,7 +1122,7 @@ function Module:OnEnable()
 	end
 
 	function MyButton:OnUpdate(item)
-		local buttonIconTexture = _G[self:GetName().."IconTexture"]
+		local buttonIconTexture = _G[self:GetName() .. "IconTexture"]
 
 		if self.JunkIcon then
 			if (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.CustomJunkList[item.id]) and item.hasPrice then
@@ -1174,7 +1183,7 @@ function Module:OnEnable()
 			if C_NewItems_IsNewItem(item.bagID, item.slotID) then
 				local color = K.QualityColors[item.quality]
 				if item.questID or item.isQuestItem then
-					self.glowFrame:SetBackdropBorderColor(1, .82, .2)
+					self.glowFrame:SetBackdropBorderColor(1, 0.82, 0.2)
 				elseif color and item.quality and item.quality > -1 then
 					self.glowFrame:SetBackdropBorderColor(color.r, color.g, color.b)
 				else
@@ -1198,7 +1207,7 @@ function Module:OnEnable()
 			local color = bagTypeColor[bagType] or bagTypeColor[0]
 			self:SetBackdropColor(unpack(color))
 		else
-			self:SetBackdropColor(.04, .04, .04, 0.9)
+			self:SetBackdropColor(0.04, 0.04, 0.04, 0.9)
 		end
 
 		-- Hide empty tooltip
@@ -1221,7 +1230,7 @@ function Module:OnEnable()
 		end
 
 		if item.questID or item.isQuestItem then
-			self.KKUI_Border:SetVertexColor(1, .82, .2)
+			self.KKUI_Border:SetVertexColor(1, 0.82, 0.2)
 		elseif item.quality and item.quality > -1 then
 			local color = K.QualityColors[item.quality]
 			self.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
@@ -1256,7 +1265,7 @@ function Module:OnEnable()
 		local xOffset = 6
 		local yOffset = -offset + xOffset
 		local _, height = self:LayoutButtons("grid", columns, spacing, xOffset, yOffset)
-		local width = columns * (iconSize+spacing) - spacing
+		local width = columns * (iconSize + spacing) - spacing
 		if self.freeSlot then
 			if C["Inventory"].GatherEmpty then
 				local numSlots = #self.buttons + 1
@@ -1266,11 +1275,11 @@ function Module:OnEnable()
 					col = columns
 				end
 
-				local xPos = (col-1) * (iconSize + spacing)
-				local yPos = -1 * (row-1) * (iconSize + spacing)
+				local xPos = (col - 1) * (iconSize + spacing)
+				local yPos = -1 * (row - 1) * (iconSize + spacing)
 
 				self.freeSlot:ClearAllPoints()
-				self.freeSlot:SetPoint("TOPLEFT", self, "TOPLEFT", xPos+xOffset, yPos + yOffset)
+				self.freeSlot:SetPoint("TOPLEFT", self, "TOPLEFT", xPos + xOffset, yPos + yOffset)
 				self.freeSlot:Show()
 
 				if height < 0 then

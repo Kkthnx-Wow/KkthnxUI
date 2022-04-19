@@ -46,6 +46,7 @@ local UnitName = _G.UnitName
 SlashCmdList["KKTHNXUI_ENUMTIP"] = function()
 	local enumf = EnumerateFrames()
 	while enumf do
+		-- stylua: ignore
 		if (enumf:GetObjectType() == "GameTooltip" or string_find((enumf:GetName() or ""):lower(), "tip")) and enumf:IsVisible() and enumf:GetPoint() then
 			print(enumf:GetName())
 		end
@@ -60,8 +61,8 @@ SlashCmdList["KKTHNXUI_ENUMFRAME"] = function()
 	local frame = EnumerateFrames()
 	local chatModule = K:GetModule("Chat")
 	while frame do
-		if (frame:IsVisible() and MouseIsOver(frame)) then
-			print(frame:GetName() or string_format(UNKNOWN..": [%s]", tostring(frame)))
+		if frame:IsVisible() and MouseIsOver(frame) then
+			print(frame:GetName() or string_format(UNKNOWN .. ": [%s]", tostring(frame)))
 			chatModule:ChatCopy_OnClick("LeftButton")
 		end
 
@@ -78,11 +79,11 @@ SlashCmdList["KKTHNXUI_DUMPSPELL"] = function(arg)
 	end
 
 	local des = GetSpellDescription(arg)
-	print(K.InfoColor.."------------------------")
-	print(" \124T"..GetSpellTexture(arg)..":16:16:::64:64:5:59:5:59\124t", K.InfoColor..arg)
-	print(NAME, K.InfoColor..(name or "nil"))
-	print(DESCRIPTION, K.InfoColor..(des or "nil"))
-	print(K.InfoColor.."------------------------")
+	print(K.InfoColor .. "------------------------")
+	print(" \124T" .. GetSpellTexture(arg) .. ":16:16:::64:64:5:59:5:59\124t", K.InfoColor .. arg)
+	print(NAME, K.InfoColor .. (name or "nil"))
+	print(DESCRIPTION, K.InfoColor .. (des or "nil"))
+	print(K.InfoColor .. "------------------------")
 end
 _G.SLASH_KKTHNXUI_DUMPSPELL1 = "/getspell"
 
@@ -97,7 +98,7 @@ SlashCmdList["KKTHNXUI_NPCID"] = function()
 	local guid = UnitGUID("target")
 	if name and guid then
 		local npcID = K.GetNPCID(guid)
-		print(name, K.InfoColor..(npcID or "nil"))
+		print(name, K.InfoColor .. (npcID or "nil"))
 	end
 end
 _G.SLASH_KKTHNXUI_NPCID1 = "/getnpc"
@@ -110,7 +111,7 @@ SlashCmdList["KKTHNXUI_GETFONT"] = function(msg)
 	end
 
 	local a, b, c = font:GetFont()
-	print(msg,a,b,c)
+	print(msg, a, b, c)
 end
 _G.SLASH_KKTHNXUI_GETFONT1 = "/getfont"
 
@@ -121,7 +122,7 @@ do
 	local function PrintVerCheck()
 		print("------------------------")
 		for name, version in pairs(versionList) do
-			print(name.." "..version)
+			print(name .. " " .. version)
 		end
 	end
 
@@ -136,10 +137,10 @@ do
 
 		if prefix == "KKUI_VersonCheck" then
 			if msg == "VersionCheck" then
-				C_ChatInfo_SendAddonMessage("KKUI_VersonCheck", "MyVer-"..K.Version, distType)
+				C_ChatInfo_SendAddonMessage("KKUI_VersonCheck", "MyVer-" .. K.Version, distType)
 			elseif string_find(msg, "MyVer") then
 				local _, version = string_split("-", msg)
-				versionList[sender] = version.." - "..distType
+				versionList[sender] = version .. " - " .. distType
 			end
 		end
 	end
@@ -177,8 +178,8 @@ SlashCmdList["KKTHNXUI_GET_ENCOUNTERS"] = function()
 	EJ_SelectInstance(instID)
 	local instName = EJ_GetInstanceInfo()
 	print(" ")
-	print("TIER = "..tierID)
-	print("INSTANCE = "..instID.." -- "..instName)
+	print("TIER = " .. tierID)
+	print("INSTANCE = " .. instID .. " -- " .. instName)
 	print("BOSS")
 	print(" ")
 
@@ -190,18 +191,18 @@ SlashCmdList["KKTHNXUI_GET_ENCOUNTERS"] = function()
 			return
 		end
 
-		print("BOSS = "..boss.." -- "..name)
+		print("BOSS = " .. boss .. " -- " .. name)
 	end
 end
 _G.SLASH_KKTHNXUI_GET_ENCOUNTERS1 = "/getencounter"
 
 -- Inform us of the patch info we play on.
 SlashCmdList["WOWVERSION"] = function()
-	print(K.InfoColor.."------------------------")
+	print(K.InfoColor .. "------------------------")
 	K.Print("Build: ", K.WowBuild)
 	K.Print("Released: ", K.WowRelease)
 	K.Print("Interface: ", K.TocVersion)
-	print(K.InfoColor.."------------------------")
+	print(K.InfoColor .. "------------------------")
 end
 _G.SLASH_WOWVERSION1 = "/getpatch"
 _G.SLASH_WOWVERSION2 = "/getbuild"
@@ -226,9 +227,9 @@ local function Grid_Create()
 	for i = 0, boxSize do
 		local tx = grid:CreateTexture(nil, "BACKGROUND")
 		if i == boxSize / 2 then
-			tx:SetColorTexture(1, 0, 0, .5)
+			tx:SetColorTexture(1, 0, 0, 0.5)
 		else
-			tx:SetColorTexture(0, 0, 0, .5)
+			tx:SetColorTexture(0, 0, 0, 0.5)
 		end
 		tx:SetPoint("TOPLEFT", grid, "TOPLEFT", i * wStep - (size / 2), 0)
 		tx:SetPoint("BOTTOMRIGHT", grid, "BOTTOMLEFT", i * wStep + (size / 2), 0)
@@ -237,20 +238,20 @@ local function Grid_Create()
 
 	do
 		local tx = grid:CreateTexture(nil, "BACKGROUND")
-		tx:SetColorTexture(1, 0, 0, .5)
+		tx:SetColorTexture(1, 0, 0, 0.5)
 		tx:SetPoint("TOPLEFT", grid, "TOPLEFT", 0, -(height / 2) + (size / 2))
 		tx:SetPoint("BOTTOMRIGHT", grid, "TOPRIGHT", 0, -(height / 2 + size / 2))
 	end
 
 	for i = 1, math_floor((height / 2) / hStep) do
 		local tx = grid:CreateTexture(nil, "BACKGROUND")
-		tx:SetColorTexture(0, 0, 0, .5)
+		tx:SetColorTexture(0, 0, 0, 0.5)
 
 		tx:SetPoint("TOPLEFT", grid, "TOPLEFT", 0, -(height / 2 + i * hStep) + (size / 2))
 		tx:SetPoint("BOTTOMRIGHT", grid, "TOPRIGHT", 0, -(height / 2 + i * hStep + size / 2))
 
 		tx = grid:CreateTexture(nil, "BACKGROUND")
-		tx:SetColorTexture(0, 0, 0, .5)
+		tx:SetColorTexture(0, 0, 0, 0.5)
 
 		tx:SetPoint("TOPLEFT", grid, "TOPLEFT", 0, -(height / 2 - i * hStep) + (size / 2))
 		tx:SetPoint("BOTTOMRIGHT", grid, "TOPRIGHT", 0, -(height / 2 - i * hStep + size / 2))
@@ -292,12 +293,12 @@ _G.SLASH_KKUI_TOGGLEGRID3 = "/grid"
 local moving = false
 SlashCmdList.TEST_UF = function()
 	if InCombatLockdown() then
-		print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
+		print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
 		return
 	end
 
 	if not moving then
-		for _, frames in pairs({"oUF_Target", "oUF_TargetTarget", "oUF_Pet", "oUF_Focus", "oUF_FocusTarget"}) do
+		for _, frames in pairs({ "oUF_Target", "oUF_TargetTarget", "oUF_Pet", "oUF_Focus", "oUF_FocusTarget" }) do
 			if _G[frames] then
 				_G[frames].oldunit = _G[frames].unit
 				_G[frames]:SetAttribute("unit", "player")
@@ -306,22 +307,22 @@ SlashCmdList.TEST_UF = function()
 
 		if C["Arena"].Enable then
 			for i = 1, 5 do
-				_G["oUF_Arena"..i].oldunit = _G["oUF_Arena"..i].unit
-				_G["oUF_Arena"..i].Trinket.Hide = K.Noop
-				_G["oUF_Arena"..i].Trinket.Icon:SetTexture("Interface\\Icons\\INV_Jewelry_Necklace_37")
-				_G["oUF_Arena"..i]:SetAttribute("unit", "player")
+				_G["oUF_Arena" .. i].oldunit = _G["oUF_Arena" .. i].unit
+				_G["oUF_Arena" .. i].Trinket.Hide = K.Noop
+				_G["oUF_Arena" .. i].Trinket.Icon:SetTexture("Interface\\Icons\\INV_Jewelry_Necklace_37")
+				_G["oUF_Arena" .. i]:SetAttribute("unit", "player")
 			end
 		end
 
 		if C["Boss"].Enable then
 			for i = 1, MAX_BOSS_FRAMES do
-				_G["oUF_Boss"..i].oldunit = _G["oUF_Boss"..i].unit
-				_G["oUF_Boss"..i]:SetAttribute("unit", "player")
+				_G["oUF_Boss" .. i].oldunit = _G["oUF_Boss" .. i].unit
+				_G["oUF_Boss" .. i]:SetAttribute("unit", "player")
 			end
 		end
 		moving = true
 	else
-		for _, frames in pairs({"oUF_Target", "oUF_TargetTarget", "oUF_Pet", "oUF_Focus", "oUF_FocusTarget"}) do
+		for _, frames in pairs({ "oUF_Target", "oUF_TargetTarget", "oUF_Pet", "oUF_Focus", "oUF_FocusTarget" }) do
 			if _G[frames] then
 				_G[frames].unit = _G[frames].oldunit
 				_G[frames]:SetAttribute("unit", _G[frames].unit)
@@ -330,16 +331,16 @@ SlashCmdList.TEST_UF = function()
 
 		if C["Arena"].Enable then
 			for i = 1, 5 do
-				_G["oUF_Arena"..i].Trinket.Hide = nil
-				_G["oUF_Arena"..i].unit = _G["oUF_Arena"..i].oldunit
-				_G["oUF_Arena"..i]:SetAttribute("unit", _G["oUF_Arena"..i].unit)
+				_G["oUF_Arena" .. i].Trinket.Hide = nil
+				_G["oUF_Arena" .. i].unit = _G["oUF_Arena" .. i].oldunit
+				_G["oUF_Arena" .. i]:SetAttribute("unit", _G["oUF_Arena" .. i].unit)
 			end
 		end
 
 		if C["Boss"].Enable then
 			for i = 1, MAX_BOSS_FRAMES do
-				_G["oUF_Boss"..i].unit = _G["oUF_Boss"..i].oldunit
-				_G["oUF_Boss"..i]:SetAttribute("unit", _G["oUF_Boss"..i].unit)
+				_G["oUF_Boss" .. i].unit = _G["oUF_Boss" .. i].oldunit
+				_G["oUF_Boss" .. i]:SetAttribute("unit", _G["oUF_Boss" .. i].unit)
 			end
 		end
 		moving = false

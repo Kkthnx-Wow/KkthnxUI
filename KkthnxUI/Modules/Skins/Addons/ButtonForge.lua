@@ -10,15 +10,15 @@ local cfg = {
 	},
 
 	flyoutBorder = {
-		file = ""
+		file = "",
 	},
 
 	flyoutBorderShadow = {
-		file = ""
+		file = "",
 	},
 
 	border = {
-		file = ""
+		file = "",
 	},
 
 	normalTexture = {
@@ -26,41 +26,41 @@ local cfg = {
 	},
 
 	flash = {
-		file = ""
+		file = "",
 	},
 
 	cooldown = {
 		points = {
-			{"TOPLEFT", 1, -1},
-			{"BOTTOMRIGHT", -1, 1},
+			{ "TOPLEFT", 1, -1 },
+			{ "BOTTOMRIGHT", -1, 1 },
 		},
 	},
 
 	name = {
 		font = cfgFont,
 		points = {
-			{"BOTTOMLEFT", 0, 0},
-			{"BOTTOMRIGHT", 0, 0},
+			{ "BOTTOMLEFT", 0, 0 },
+			{ "BOTTOMRIGHT", 0, 0 },
 		},
 	},
 
 	hotkey = {
 		font = cfgFont,
 		points = {
-			{"TOPRIGHT", 0, -3},
-			{"TOPLEFT", 0, -3},
+			{ "TOPRIGHT", 0, -3 },
+			{ "TOPLEFT", 0, -3 },
 		},
 	},
 
 	count = {
 		font = cfgFont,
 		points = {
-			{"BOTTOMRIGHT", 2, 0},
+			{ "BOTTOMRIGHT", 2, 0 },
 		},
 	},
 
 	buttonstyle = {
-		file = ""
+		file = "",
 	},
 }
 
@@ -70,15 +70,15 @@ function Module:ReskinButtonForge()
 	end
 
 	if not IsAddOnLoaded("ButtonForge") then
-        return
-    end
+		return
+	end
 
 	local ActionBar = K:GetModule("ActionBar")
 
 	local function callback(_, event, button)
 		if event == "BUTTON_ALLOCATED" then
 			local bu = _G[button]
-			local icon = _G[button.."Icon"]
+			local icon = _G[button .. "Icon"]
 			ActionBar:StyleActionButton(bu, cfg)
 			icon:SetTexCoord(unpack(K.TexCoords))
 			icon.SetTexCoord = K.Noop
@@ -92,7 +92,7 @@ function Module:ReskinButtonForge()
 		"BFToolbarDestroyBar",
 		"BFToolbarAdvanced",
 		"BFToolbarConfigureAction",
-		"BFToolbarRightClickSelfCast"
+		"BFToolbarRightClickSelfCast",
 	}
 
 	for _, button in next, buttons do
@@ -106,7 +106,7 @@ function Module:ReskinButtonForge()
 	BFToolbar:CreateBorder()
 	BFToolbarToggle:SkinCloseButton()
 
-    BFBindingDialog:StripTextures()
+	BFBindingDialog:StripTextures()
 	BFBindingDialog:CreateBorder()
 	BFBindingDialogBinding:SkinButton()
 	BFBindingDialogUnbind:SkinButton()
@@ -119,7 +119,7 @@ function Module:ReskinButtonForge()
 		for i = 1, BFConfigureLayer:GetNumChildren() do
 			local child = select(i, BFConfigureLayer:GetChildren())
 			if child:GetObjectType() == "EditBox" and not child.styled then
-                child:StripTextures(2)
+				child:StripTextures(2)
 				child:CreateBorder()
 				child.styled = true
 			end

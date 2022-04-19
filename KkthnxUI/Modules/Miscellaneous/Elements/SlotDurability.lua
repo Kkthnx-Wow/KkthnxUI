@@ -7,8 +7,8 @@ local GetInventorySlotInfo = _G.GetInventorySlotInfo
 local GetInventoryItemDurability = _G.GetInventoryItemDurability
 
 local SLOTIDS = {}
-for _, slot in pairs({"Head", "Shoulder", "Chest", "Waist", "Legs", "Feet", "Wrist", "Hands", "MainHand", "SecondaryHand"}) do
-	SLOTIDS[slot] = GetInventorySlotInfo(slot.."Slot")
+for _, slot in pairs({ "Head", "Shoulder", "Chest", "Waist", "Legs", "Feet", "Wrist", "Hands", "MainHand", "SecondaryHand" }) do
+	SLOTIDS[slot] = GetInventorySlotInfo(slot .. "Slot")
 end
 
 local function RYGColorGradient(perc)
@@ -26,9 +26,9 @@ local function RYGColorGradient(perc)
 	end
 end
 
-	local fontstrings = setmetatable({}, {
+local fontstrings = setmetatable({}, {
 	__index = function(t, i)
-		local gslot = _G["Character"..i.."Slot"]
+		local gslot = _G["Character" .. i .. "Slot"]
 		local fstr = K.CreateFontString(gslot, 12, "", "OUTLINE")
 		fstr:SetPoint("TOPRIGHT", gslot, 1, -1)
 		t[i] = fstr
@@ -52,7 +52,9 @@ function Module:SetupSlotDurability()
 			end
 		else
 			local str = rawget(fontstrings, slot)
-			if str then str:SetText(nil) end
+			if str then
+				str:SetText(nil)
+			end
 		end
 	end
 end

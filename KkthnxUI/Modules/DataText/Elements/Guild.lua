@@ -73,14 +73,14 @@ local function rosterButtonOnClick(self, btn)
 			end
 		end
 	else
-		ChatFrame_OpenChat("/w "..name.." ", SELECTED_DOCK_FRAME)
+		ChatFrame_OpenChat("/w " .. name .. " ", SELECTED_DOCK_FRAME)
 	end
 end
 
 local function GuildPanel_CreateButton(parent, index)
 	local button = CreateFrame("Button", nil, parent)
 	button:SetSize(305, 20)
-	button:SetPoint("TOPLEFT", 0, - (index - 1) * 20)
+	button:SetPoint("TOPLEFT", 0, -(index - 1) * 20)
 
 	button.HL = button:CreateTexture(nil, "HIGHLIGHT")
 	button.HL:SetAllPoints()
@@ -113,13 +113,13 @@ local function GuildPanel_UpdateButton(button)
 	local level, class, name, zone, status = unpack(guildTable[index])
 
 	local levelcolor = K.RGBToHex(GetQuestDifficultyColor(level))
-	button.level:SetText(levelcolor..level)
+	button.level:SetText(levelcolor .. level)
 
 	local tcoords = CLASS_ICON_TCOORDS[class]
 	button.class:SetTexCoord(tcoords[1] + 0.022, tcoords[2] - 0.025, tcoords[3] + 0.022, tcoords[4] - 0.025)
 
 	local namecolor = K.RGBToHex(K.ColorClass(class))
-	button.name:SetText(namecolor..name..status)
+	button.name:SetText(namecolor .. name .. status)
 
 	local zonecolor = K.GreyColor
 	if UnitInRaid(name) or UnitInParty(name) then
@@ -127,7 +127,7 @@ local function GuildPanel_UpdateButton(button)
 	elseif GetRealZoneText() == zone then
 		zonecolor = "|cff4cff4c"
 	end
-	button.zone:SetText(zonecolor..zone)
+	button.zone:SetText(zonecolor .. zone)
 end
 
 local function GuildPanel_Update()
@@ -152,7 +152,7 @@ local function GuildPanel_Update()
 		end
 	end
 
-	HybridScrollFrame_Update(scrollFrame, numMemberButtons*height, usedHeight)
+	HybridScrollFrame_Update(scrollFrame, numMemberButtons * height, usedHeight)
 end
 
 local function GuildPanel_OnMouseWheel(self, delta)
@@ -220,7 +220,7 @@ local function GuildPanel_Init()
 	gRank = K.CreateFontString(infoFrame, 12, "Rank", "", false, "TOPLEFT", 15, -51)
 
 	local bu = {}
-	local width = {30, 35, 126, 126}
+	local width = { 30, 35, 126, 126 }
 	for i = 1, 4 do
 		bu[i] = CreateFrame("Button", nil, infoFrame)
 		bu[i]:SetSize(width[i], 22)
@@ -232,7 +232,7 @@ local function GuildPanel_Init()
 		end
 		bu[i].HL = bu[i]:CreateTexture(nil, "HIGHLIGHT")
 		bu[i].HL:SetAllPoints(bu[i])
-		bu[i].HL:SetColorTexture(r, g, b, .2)
+		bu[i].HL:SetColorTexture(r, g, b, 0.2)
 		bu[i].index = i
 		bu[i]:SetScript("OnClick", sortHeaderOnClick)
 	end
@@ -242,11 +242,11 @@ local function GuildPanel_Init()
 	K.CreateFontString(bu[4], 12, ZONE, "", false, "RIGHT", -5, 0)
 
 	K.CreateFontString(infoFrame, 12, Module.LineString, "", false, "BOTTOMRIGHT", -12, 58)
-	local whspInfo = K.InfoColor..K.RightButton..L["Whisper"]
+	local whspInfo = K.InfoColor .. K.RightButton .. L["Whisper"]
 	K.CreateFontString(infoFrame, 12, whspInfo, "", false, "BOTTOMRIGHT", -15, 42)
-	local invtInfo = K.InfoColor.."ALT +"..K.LeftButton..L["Invite"]
+	local invtInfo = K.InfoColor .. "ALT +" .. K.LeftButton .. L["Invite"]
 	K.CreateFontString(infoFrame, 12, invtInfo, "", false, "BOTTOMRIGHT", -15, 26)
-	local copyInfo = K.InfoColor.."SHIFT +"..K.LeftButton..L["Copy Name"]
+	local copyInfo = K.InfoColor .. "SHIFT +" .. K.LeftButton .. L["Copy Name"]
 	K.CreateFontString(infoFrame, 12, copyInfo, "", false, "BOTTOMRIGHT", -15, 10)
 
 	local scrollFrame = CreateFrame("ScrollFrame", "KKUI_GuildInfobarScrollFrame", infoFrame, "HybridScrollFrameTemplate")
@@ -296,10 +296,10 @@ local function GuildPanel_Refresh()
 	local total, _, online = GetNumGuildMembers()
 	local guildName, guildRank = GetGuildInfo("player")
 
-	gName:SetText("|cff0099ff<"..(guildName or "")..">")
-	gOnline:SetText(string_format(K.InfoColor.."%s:".." %d/%d", GUILD_ONLINE_LABEL, online, total))
+	gName:SetText("|cff0099ff<" .. (guildName or "") .. ">")
+	gOnline:SetText(string_format(K.InfoColor .. "%s:" .. " %d/%d", GUILD_ONLINE_LABEL, online, total))
 	-- gApps:SetText(string_format(K.InfoColor..GUILDINFOTAB_APPLICANTS, GetNumGuildApplicants()))
-	gRank:SetText(K.InfoColor..RANK..": "..(guildRank or ""))
+	gRank:SetText(K.InfoColor .. RANK .. ": " .. (guildRank or ""))
 
 	for i = 1, total do
 		local name, _, _, level, _, zone, _, _, connected, status, class, _, _, mobile = GetGuildRosterInfo(i)
@@ -311,7 +311,7 @@ local function GuildPanel_Refresh()
 				elseif status == 2 then
 					status = "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-BusyMobile:14:14:0:0:16:16:0:16:0:16|t"
 				else
-					status = ChatFrame_GetMobileEmbeddedTexture(73/255, 177/255, 73/255)
+					status = ChatFrame_GetMobileEmbeddedTexture(73 / 255, 177 / 255, 73 / 255)
 				end
 			else
 				if status == 1 then
@@ -354,7 +354,7 @@ local function OnEvent(_, event, arg1)
 		if C["DataText"].HideText then
 			GuildDataText.Text:SetText("")
 		else
-			GuildDataText.Text:SetText(GUILD..": "..K.MyClassColor..NONE)
+			GuildDataText.Text:SetText(GUILD .. ": " .. K.MyClassColor .. NONE)
 		end
 		return
 	end
@@ -369,7 +369,7 @@ local function OnEvent(_, event, arg1)
 	if C["DataText"].HideText then
 		GuildDataText.Text:SetText("")
 	else
-		GuildDataText.Text:SetText(GUILD..": "..K.MyClassColor..online)
+		GuildDataText.Text:SetText(GUILD .. ": " .. K.MyClassColor .. online)
 	end
 
 	if infoFrame and infoFrame:IsShown() then
@@ -452,5 +452,5 @@ function Module:CreateGuildDataText()
 	GuildDataText:SetScript("OnEnter", OnEnter)
 	GuildDataText:SetScript("OnLeave", OnLeave)
 
-	K.Mover(GuildDataText, "GuildDataText", "GuildDataText", {"LEFT", UIParent, "LEFT", 4, -240})
+	K.Mover(GuildDataText, "GuildDataText", "GuildDataText", { "LEFT", UIParent, "LEFT", 4, -240 })
 end

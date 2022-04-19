@@ -40,7 +40,7 @@ function Module:GuildBest_UpdateTooltip()
 
 	for i = 1, #leaderInfo.members do
 		local classColorStr = K.ClassColors[leaderInfo.members[i].classFileName].colorStr
-		GameTooltip:AddLine(format(CHALLENGE_MODE_GUILD_BEST_LINE, classColorStr,leaderInfo.members[i].name))
+		GameTooltip:AddLine(format(CHALLENGE_MODE_GUILD_BEST_LINE, classColorStr, leaderInfo.members[i].name))
 	end
 
 	GameTooltip:Show()
@@ -167,7 +167,7 @@ function Module:KeystoneInfo_WeeklyRuns()
 	local numRuns = runHistory and #runHistory
 	if numRuns > 0 then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(string_format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, WeeklyRunsThreshold), "("..numRuns..")", 0.5, 0.7, 1)
+		GameTooltip:AddDoubleLine(string_format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, WeeklyRunsThreshold), "(" .. numRuns .. ")", 0.5, 0.7, 1)
 		table.sort(runHistory, sortHistory)
 
 		for i = 1, WeeklyRunsThreshold do
@@ -177,11 +177,11 @@ function Module:KeystoneInfo_WeeklyRuns()
 			end
 
 			local name = C_ChallengeMode_GetMapUIInfo(runInfo.mapChallengeModeID)
-			local r,g,b = 0, 1, 0
+			local r, g, b = 0, 1, 0
 			if not runInfo.completed then
 				r, g, b = 1, 0, 0
 			end
-			GameTooltip:AddDoubleLine(name, "Lv."..runInfo.level, 1, 1, 1, r, g, b)
+			GameTooltip:AddDoubleLine(name, "Lv." .. runInfo.level, 1, 1, 1, r, g, b)
 		end
 		GameTooltip:Show()
 	end
@@ -212,11 +212,11 @@ function Module:KeystoneInfo_Create()
 			local color = K.RGBToHex(K.ColorClass(class))
 			local factionColor = faction == "Horde" and "|cffff5040" or "|cff00adf0"
 			local dungeon = C_ChallengeMode_GetMapUIInfo(tonumber(mapID))
-			GameTooltip:AddDoubleLine(string_format(color.."%s:|r", name), string_format("%s%s(%s)|r", factionColor, dungeon, level))
+			GameTooltip:AddDoubleLine(string_format(color .. "%s:|r", name), string_format("%s%s(%s)|r", factionColor, dungeon, level))
 		end
 
 		GameTooltip:AddLine("")
-		GameTooltip:AddDoubleLine(" ", K.ScrollButton..L["Reset Data"].." ", 1, 1, 1, 0.5, 0.7, 1)
+		GameTooltip:AddDoubleLine(" ", K.ScrollButton .. L["Reset Data"] .. " ", 1, 1, 1, 0.5, 0.7, 1)
 		GameTooltip:Show()
 	end)
 
@@ -239,9 +239,9 @@ end
 function Module:KeystoneInfo_Update()
 	local mapID, keystoneLevel = Module:KeystoneInfo_UpdateBag()
 	if mapID then
-		KkthnxUIDB.KeystoneInfo[K.Name.."-"..K.Realm] = mapID..":"..keystoneLevel..":"..K.Class..":"..K.Faction
+		KkthnxUIDB.KeystoneInfo[K.Name .. "-" .. K.Realm] = mapID .. ":" .. keystoneLevel .. ":" .. K.Class .. ":" .. K.Faction
 	else
-		KkthnxUIDB.KeystoneInfo[K.Name.."-"..K.Realm] = nil
+		KkthnxUIDB.KeystoneInfo[K.Name .. "-" .. K.Realm] = nil
 	end
 end
 

@@ -27,7 +27,7 @@ local function OnLeave()
 end
 
 function Module:SkinBag(bag)
-	local icon = _G[bag:GetName().."IconTexture"]
+	local icon = _G[bag:GetName() .. "IconTexture"]
 	bag.oldTex = icon:GetTexture()
 	bag.IconBorder:SetAlpha(0)
 
@@ -74,7 +74,7 @@ function Module:SizeAndPositionBagBar()
 		end
 	end
 
-	Module.BagBar:SetWidth(bagBarSize * (NUM_BAG_FRAMES + 1) + buttonSpacing * (NUM_BAG_FRAMES) + buttonPadding * 2)
+	Module.BagBar:SetWidth(bagBarSize * (NUM_BAG_FRAMES + 1) + buttonSpacing * NUM_BAG_FRAMES + buttonPadding * 2)
 	Module.BagBar:SetHeight(bagBarSize + buttonPadding * 2)
 end
 
@@ -90,9 +90,9 @@ function Module:CreateInventoryBar()
 	local setPosition
 	Module.BagBar = CreateFrame("Frame", "KKUI_BagBar", UIParent)
 	if C["ActionBar"].MicroBar then
-		setPosition = {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 38}
+		setPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 38 }
 	else
-		setPosition = {"BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4}
+		setPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 }
 	end
 	Module.BagBar.buttons = {}
 	Module.BagBar:EnableMouse(true)
@@ -111,7 +111,7 @@ function Module:CreateInventoryBar()
 	self:SkinBag(_G.MainMenuBarBackpackButton)
 
 	for i = 0, NUM_BAG_FRAMES - 1 do
-		local b = _G["CharacterBag"..i.."Slot"]
+		local b = _G["CharacterBag" .. i .. "Slot"]
 		b:SetParent(Module.BagBar)
 		b:HookScript("OnEnter", OnEnter)
 		b:HookScript("OnLeave", OnLeave)

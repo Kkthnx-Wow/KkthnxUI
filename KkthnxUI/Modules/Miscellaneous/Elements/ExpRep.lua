@@ -73,8 +73,8 @@ function Module:ExpBar_Update(event, unit)
 		RemainTotal, RemainBars = remainPercent * 100, remainPercent * 20
 		PercentXP, RemainXP = (CurrentXP / XPToLevel) * 100, K.ShortValue(remainXP)
 
-		self:SetStatusBarColor(0, .4, 1, .8)
-		self.restBar:SetStatusBarColor(1, 0, 1, .4)
+		self:SetStatusBarColor(0, 0.4, 1, 0.8)
+		self.restBar:SetStatusBarColor(1, 0, 1, 0.4)
 
 		local displayString = ""
 
@@ -128,10 +128,10 @@ function Module:ExpBar_Update(event, unit)
 		end
 
 		if not label then
-			label = _G["FACTION_STANDING_LABEL"..reaction] or UNKNOWN
+			label = _G["FACTION_STANDING_LABEL" .. reaction] or UNKNOWN
 		end
 
-		local color = (reaction == 9 and {r = 0, g = 0.5, b = 0.9}) or _G.FACTION_BAR_COLORS[reaction] -- reaction 9 is Paragon
+		local color = (reaction == 9 and { r = 0, g = 0.5, b = 0.9 }) or _G.FACTION_BAR_COLORS[reaction] -- reaction 9 is Paragon
 		self:SetStatusBarColor(color.r, color.g, color.b)
 		self:SetMinMaxValues(minValue, maxValue)
 		self:SetValue(curValue)
@@ -161,7 +161,7 @@ function Module:ExpBar_Update(event, unit)
 
 		self:SetMinMaxValues(0, MaxHonor)
 		self:SetValue(CurrentHonor)
-		self:SetStatusBarColor(.94, .45, .25)
+		self:SetStatusBarColor(0.94, 0.45, 0.25)
 		self:Show()
 		self.text:SetText(string_format("%s - %d%% - [%s]", K.ShortValue(CurrentHonor), PercentHonor, CurrentLevel))
 		self.text:Show()
@@ -172,7 +172,7 @@ function Module:ExpBar_Update(event, unit)
 		local item = C_AzeriteItem_FindActiveAzeriteItem()
 		local cur, max = C_AzeriteItem_GetAzeriteItemXPInfo(item)
 		local currentLevel = C_AzeriteItem_GetPowerLevel(item)
-		self:SetStatusBarColor(.901, .8, .601, 1)
+		self:SetStatusBarColor(0.901, 0.8, 0.601, 1)
 		self:SetMinMaxValues(0, max)
 		self:SetValue(cur)
 		self:Show()
@@ -191,7 +191,7 @@ function Module:ExpBar_UpdateTooltip()
 	GameTooltip:ClearLines()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT")
 
-	GameTooltip:AddLine(K.MyClassColor..K.Name)
+	GameTooltip:AddLine(K.MyClassColor .. K.Name)
 	local specIndex = GetSpecialization()
 	if specIndex or specIndex == 5 then
 		local _, specName = GetSpecializationInfo(specIndex)
@@ -212,10 +212,10 @@ function Module:ExpBar_UpdateTooltip()
 		PercentXP, RemainXP = (CurrentXP / XPToLevel) * 100, K.ShortValue(remainXP)
 
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine("Experience", 0, .4, 1)
+		GameTooltip:AddLine("Experience", 0, 0.4, 1)
 		GameTooltip:AddDoubleLine(LEVEL, K.Level, 1, 1, 1)
 		GameTooltip:AddDoubleLine("XP:", string_format(" %d / %d (%.2f%%)", CurrentXP, XPToLevel, PercentXP), 1, 1, 1)
-		GameTooltip:AddDoubleLine("Remaining:", string_format(" %s (%.2f%% - %d "..L["Bars"]..")", RemainXP, RemainTotal, RemainBars), 1, 1, 1)
+		GameTooltip:AddDoubleLine("Remaining:", string_format(" %s (%.2f%% - %d " .. L["Bars"] .. ")", RemainXP, RemainTotal, RemainBars), 1, 1, 1)
 
 		if RestedXP and RestedXP > 0 then
 			GameTooltip:AddDoubleLine("Rested:", string_format("%d (%.2f%%)", RestedXP, PercentRested), 1, 1, 1)
@@ -224,7 +224,7 @@ function Module:ExpBar_UpdateTooltip()
 
 	if GetWatchedFactionInfo() then
 		local name, reaction, minValue, maxValue, curValue, factionID = GetWatchedFactionInfo()
-		local standing = _G["FACTION_STANDING_LABEL"..reaction] or UNKNOWN
+		local standing = _G["FACTION_STANDING_LABEL" .. reaction] or UNKNOWN
 		local isParagon = C_Reputation_IsFactionParagon(factionID)
 
 		if factionID and isParagon then
@@ -243,11 +243,11 @@ function Module:ExpBar_UpdateTooltip()
 				friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(factionID)
 			end
 
-			GameTooltip:AddDoubleLine(STANDING..":", (friendID and friendTextLevel) or standing, 1, 1, 1)
+			GameTooltip:AddDoubleLine(STANDING .. ":", (friendID and friendTextLevel) or standing, 1, 1, 1)
 
 			if reaction ~= _G.MAX_REPUTATION_REACTION or isParagon then
 				local current, maximum, percent = GetValues(curValue, minValue, maxValue)
-				GameTooltip:AddDoubleLine(REPUTATION..":", string_format("%d / %d (%d%%)", current, maximum, percent), 1, 1, 1)
+				GameTooltip:AddDoubleLine(REPUTATION .. ":", string_format("%d / %d (%d%%)", current, maximum, percent), 1, 1, 1)
 			end
 		end
 
@@ -267,10 +267,10 @@ function Module:ExpBar_UpdateTooltip()
 		local CurrentHonor, MaxHonor, CurrentLevel = UnitHonor("player"), UnitHonorMax("player"), UnitHonorLevel("player")
 		local PercentHonor, RemainingHonor = (CurrentHonor / MaxHonor) * 100, MaxHonor - CurrentHonor
 		GameTooltip:AddLine(" ")
-		_G.GameTooltip:AddLine(HONOR, .94, .45, .25)
+		_G.GameTooltip:AddLine(HONOR, 0.94, 0.45, 0.25)
 		_G.GameTooltip:AddDoubleLine("Level:", CurrentLevel, 1, 1, 1)
 		_G.GameTooltip:AddDoubleLine("XP:", string_format(" %d / %d (%d%%)", CurrentHonor, MaxHonor, PercentHonor), 1, 1, 1)
-		_G.GameTooltip:AddDoubleLine("Remaining:", string_format(" %d (%d%% - %d "..L["Bars"]..")", RemainingHonor, (RemainingHonor) / MaxHonor * 100, 20 * (RemainingHonor) / MaxHonor), 1, 1, 1)
+		_G.GameTooltip:AddDoubleLine("Remaining:", string_format(" %d (%d%% - %d " .. L["Bars"] .. ")", RemainingHonor, RemainingHonor / MaxHonor * 100, 20 * RemainingHonor / MaxHonor), 1, 1, 1)
 	end
 
 	if IsAzeriteAvailable() then
@@ -280,7 +280,7 @@ function Module:ExpBar_UpdateTooltip()
 			_G.GameTooltip:AddLine(ARTIFACT_POWER, 0.90, 0.80, 0.50)
 			_G.GameTooltip:AddDoubleLine("Level:", currentLevel, 1, 1, 1)
 			_G.GameTooltip:AddDoubleLine("AP:", string_format(" %d / %d (%d%%)", curXP, maxXP, curXP / maxXP * 100), 1, 1, 1)
-			_G.GameTooltip:AddDoubleLine("Remaining:", string_format(" %d (%d%% - %d "..L["Bars"]..")", maxXP - curXP, (maxXP - curXP) / maxXP * 100, 10 * (maxXP - curXP) / maxXP), 1, 1, 1)
+			_G.GameTooltip:AddDoubleLine("Remaining:", string_format(" %d (%d%% - %d " .. L["Bars"] .. ")", maxXP - curXP, (maxXP - curXP) / maxXP * 100, 10 * (maxXP - curXP) / maxXP), 1, 1, 1)
 		end
 
 		local item = C_AzeriteItem_FindActiveAzeriteItem()
@@ -359,7 +359,7 @@ function Module:CreateExpbar()
 	local rest = CreateFrame("StatusBar", nil, bar)
 	rest:SetAllPoints()
 	rest:SetStatusBarTexture(K.GetTexture(C["UITextures"].DataBarsTexture))
-	rest:SetStatusBarColor(1, 0, 1, .4)
+	rest:SetStatusBarColor(1, 0, 1, 0.4)
 	rest:SetFrameLevel(bar:GetFrameLevel() - 1)
 	bar.restBar = rest
 
@@ -380,7 +380,7 @@ function Module:CreateExpbar()
 	Module:SetupExpRepScript(bar)
 
 	if not bar.mover then
-		bar.mover = K.Mover(bar, "bar", "bar", {"TOP", Minimap, "BOTTOM", 0, -6})
+		bar.mover = K.Mover(bar, "bar", "bar", { "TOP", Minimap, "BOTTOM", 0, -6 })
 	else
 		bar.mover:SetSize(Minimap:GetWidth() or 190, 14)
 	end
@@ -393,9 +393,9 @@ function Module:SetupParagonRepHook()
 	local factionOffset = FauxScrollFrame_GetOffset(ReputationListScrollFrame)
 	for i = 1, NUM_FACTIONS_DISPLAYED, 1 do
 		local factionIndex = factionOffset + i
-		local factionRow = _G["ReputationBar"..i]
-		local factionBar = _G["ReputationBar"..i.."ReputationBar"]
-		local factionStanding = _G["ReputationBar"..i.."ReputationBarFactionStanding"]
+		local factionRow = _G["ReputationBar" .. i]
+		local factionBar = _G["ReputationBar" .. i .. "ReputationBar"]
+		local factionStanding = _G["ReputationBar" .. i .. "ReputationBarFactionStanding"]
 
 		if factionIndex <= numFactions then
 			local factionID = select(14, GetFactionInfo(factionIndex))
@@ -403,7 +403,7 @@ function Module:SetupParagonRepHook()
 				local currentValue, threshold = C_Reputation_GetFactionParagonInfo(factionID)
 				if currentValue then
 					local barValue = mod(currentValue, threshold)
-					local factionStandingtext = L["Paragon"]..math_floor(currentValue / threshold)
+					local factionStandingtext = L["Paragon"] .. math_floor(currentValue / threshold)
 
 					factionBar:SetMinMaxValues(0, threshold)
 					factionBar:SetValue(barValue)

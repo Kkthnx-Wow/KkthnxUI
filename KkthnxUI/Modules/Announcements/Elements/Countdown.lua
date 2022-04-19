@@ -40,7 +40,7 @@ do -- Sourced: Pull Countdown (Dridzt)
 		if lastupdate >= interval then
 			lastupdate = 0
 			if delay > 0 then
-				SendChatMessage(tostring(delay).."..", K.CheckChat(true))
+				SendChatMessage(tostring(delay) .. "..", K.CheckChat(true))
 				delay = delay - 1
 			else
 				SendChatMessage(L["Leeeeeroy!"], K.CheckChat(true))
@@ -62,7 +62,7 @@ do -- Sourced: Pull Countdown (Dridzt)
 	_G.SLASH_PULLCOUNTDOWN1 = "/jenkins"
 	_G.SLASH_PULLCOUNTDOWN2 = "/pc"
 	_G.SlashCmdList["PULLCOUNTDOWN"] = function(msg)
-		if(tonumber(msg) ~= nil) then
+		if tonumber(msg) ~= nil then
 			PullCountdown.Pull(msg)
 		else
 			PullCountdown.Pull()

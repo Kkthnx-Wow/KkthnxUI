@@ -4,7 +4,7 @@ local Module = K:GetModule("Chat")
 -- Sourced: NDui (siweia)
 
 local _G = _G
-local sring_format = _G.string.format
+-- local sring_format = _G.string.format
 local string_gsub = _G.string.gsub
 local table_concat = _G.table.concat
 local tostring = _G.tostring
@@ -26,77 +26,121 @@ local leftButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:
 local rightButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "
 
 local menuList = {
-	{text = K.SystemColor..OPTIONS_MENU.."|r", isTitle = true, notCheckable = true},
-	{text = "", notClickable = true, notCheckable = true},
-	{text = STATUS, notCheckable = true, func = function()
+	{ text = K.SystemColor .. OPTIONS_MENU .. "|r", isTitle = true, notCheckable = true },
+	{ text = "", notClickable = true, notCheckable = true },
+	{
+		text = STATUS,
+		notCheckable = true,
+		func = function()
 			SlashCmdList["KKUI_STATUSREPORT"]()
-	end},
+		end,
+	},
 
-	{text = L["Install"], notCheckable = true, func = function()
+	{
+		text = L["Install"],
+		notCheckable = true,
+		func = function()
 			SlashCmdList["KKUI_INSTALLER"]()
-	end},
+		end,
+	},
 
-	{text = L["MoveUI"], notCheckable = true, func = function()
+	{
+		text = L["MoveUI"],
+		notCheckable = true,
+		func = function()
 			SlashCmdList["KKUI_MOVEUI"]()
-	end},
+		end,
+	},
 
-	{text = RELOADUI, notCheckable = true, func = function()
+	{
+		text = RELOADUI,
+		notCheckable = true,
+		func = function()
 			if InCombatLockdown() then
-				_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+				_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 				return
 			end
 			ReloadUI()
-	end},
+		end,
+	},
 
-	{text = BINDING_NAME_TOGGLECOMBATLOG, notCheckable = true, func = function()
+	{
+		text = BINDING_NAME_TOGGLECOMBATLOG,
+		notCheckable = true,
+		func = function()
 			if not LoggingCombat() then
 				LoggingCombat(true)
-				K.Print("|cffffff00"..COMBATLOGENABLED.."|r")
+				K.Print("|cffffff00" .. COMBATLOGENABLED .. "|r")
 			elseif LoggingCombat() then
 				LoggingCombat(false)
-				K.Print("|cffffff00"..COMBATLOGDISABLED.."|r")
+				K.Print("|cffffff00" .. COMBATLOGDISABLED .. "|r")
 			end
-	end},
+		end,
+	},
 
-	{text = L["Discord"], notCheckable = true, func = function()
+	{
+		text = L["Discord"],
+		notCheckable = true,
+		func = function()
 			StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, L["Discord URL"])
-	end},
-	{text = "", notClickable = true, notCheckable = true},
+		end,
+	},
+	{ text = "", notClickable = true, notCheckable = true },
 
-	{text = TASKS_COLON, hasArrow = true, notCheckable = true,
+	{
+		text = TASKS_COLON,
+		hasArrow = true,
+		notCheckable = true,
 		menuList = {
-			{text = "Delete "..QUESTS_LABEL.." From Tracker", notCheckable = true, func = function()
+			{
+				text = "Delete " .. QUESTS_LABEL .. " From Tracker",
+				notCheckable = true,
+				func = function()
 					if InCombatLockdown() then
-						_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+						_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 						return
 					end
 					SlashCmdList["KKUI_ABANDONQUESTS"]()
-			end},
+				end,
+			},
 
-			{text = "Delete |ccf00ccff"..HEIRLOOMS.."|r From Bags", notCheckable = true, func = function()
+			{
+				text = "Delete |ccf00ccff" .. HEIRLOOMS .. "|r From Bags",
+				notCheckable = true,
+				func = function()
 					if InCombatLockdown() then
-						_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+						_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 						return
 					end
 					SlashCmdList["KKUI_DELETEHEIRLOOMS"]()
-			end},
+				end,
+			},
 
-			{text = "Delete |cffffd200"..AUCTION_CATEGORY_QUEST_ITEMS.."|r From Bags", notCheckable = true, func = function()
+			{
+				text = "Delete |cffffd200" .. AUCTION_CATEGORY_QUEST_ITEMS .. "|r From Bags",
+				notCheckable = true,
+				func = function()
 					if InCombatLockdown() then
-						_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+						_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 						return
 					end
 					SlashCmdList["KKUI_DELETEQUESTITEMS"]()
-			end},
-
+				end,
+			},
 		},
 	},
 
-	{text = "Details", hasArrow = true, notCheckable = true,
+	{
+		text = "Details",
+		hasArrow = true,
+		notCheckable = true,
 		menuList = {
-			{text = "Reset Details", notCheckable = true, func = function()
+			{
+				text = "Reset Details",
+				notCheckable = true,
+				func = function()
 					if InCombatLockdown() then
-						_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+						_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 						return
 					end
 
@@ -106,11 +150,15 @@ local menuList = {
 					else
 						K.Print("Details is not loaded!")
 					end
-			end},
+				end,
+			},
 
-			{text = "Toggle Details", notCheckable = true, func = function()
+			{
+				text = "Toggle Details",
+				notCheckable = true,
+				func = function()
 					if InCombatLockdown() then
-						_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+						_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 						return
 					end
 
@@ -120,15 +168,22 @@ local menuList = {
 					else
 						K.Print("Details is not loaded!")
 					end
-			end},
+				end,
+			},
 		},
 	},
 
-	{text = "Skada", hasArrow = true, notCheckable = true,
+	{
+		text = "Skada",
+		hasArrow = true,
+		notCheckable = true,
 		menuList = {
-			{text = "Toggle Skada", notCheckable = true, func = function()
+			{
+				text = "Toggle Skada",
+				notCheckable = true,
+				func = function()
 					if InCombatLockdown() then
-						_G.UIErrorsFrame:AddMessage(K.InfoColor.._G.ERR_NOT_IN_COMBAT)
+						_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 						return
 					end
 
@@ -138,12 +193,13 @@ local menuList = {
 					else
 						K.Print("Skada is not loaded!")
 					end
-			end},
+				end,
+			},
 		},
 	},
 
-	{text = "", notClickable = true, notCheckable = true},
-	{text = "|CFFFF3333"..CLOSE.."|r", notCheckable = true, func = function() end},
+	{ text = "", notClickable = true, notCheckable = true },
+	{ text = "|CFFFF3333" .. CLOSE .. "|r", notCheckable = true, func = function() end },
 }
 
 local function canChangeMessage(arg1, id)
@@ -183,7 +239,7 @@ function Module:ChatCopy_OnClick(btn)
 		if not frame:IsShown() then
 			local chatframe = _G.SELECTED_DOCK_FRAME
 			local _, fontSize = chatframe:GetFont()
-			FCF_SetChatWindowFontSize(chatframe, chatframe, .01)
+			FCF_SetChatWindowFontSize(chatframe, chatframe, 0.01)
 			PlaySound(21968)
 			frame:Show()
 
@@ -299,8 +355,8 @@ function Module:ChatCopy_Create()
 		local anchor, _, xoff, yoff = "ANCHOR_RIGHT", self:GetParent(), 10, 5
 		GameTooltip:SetOwner(self, anchor, xoff, yoff)
 		GameTooltip:ClearLines()
-		GameTooltip:AddDoubleLine(leftButtonString..L["Left Click"], "Copy Chat", 1, 1, 1)
-		GameTooltip:AddDoubleLine(rightButtonString..L["Right Click"], "Chat Menu", 1, 1, 1)
+		GameTooltip:AddDoubleLine(leftButtonString .. L["Left Click"], "Copy Chat", 1, 1, 1)
+		GameTooltip:AddDoubleLine(rightButtonString .. L["Right Click"], "Chat Menu", 1, 1, 1)
 
 		GameTooltip:Show()
 	end)
@@ -339,8 +395,8 @@ function Module:ChatCopy_Create()
 		local anchor, _, xoff, yoff = "ANCHOR_RIGHT", self:GetParent(), 10, 5
 		GameTooltip:SetOwner(self, anchor, xoff, yoff)
 		GameTooltip:ClearLines()
-		GameTooltip:AddDoubleLine(leftButtonString..L["Left Click"], L["Toggle Quick Menu"], 1, 1, 1)
-		GameTooltip:AddDoubleLine(rightButtonString..L["Right Click"], L["Toggle KkthnxUI Config"], 1, 1, 1)
+		GameTooltip:AddDoubleLine(leftButtonString .. L["Left Click"], L["Toggle Quick Menu"], 1, 1, 1)
+		GameTooltip:AddDoubleLine(rightButtonString .. L["Right Click"], L["Toggle KkthnxUI Config"], 1, 1, 1)
 		GameTooltip:Show()
 	end)
 

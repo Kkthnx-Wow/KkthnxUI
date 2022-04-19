@@ -24,7 +24,7 @@ local searchPanel = _G.LFGListFrame.SearchPanel
 local categorySelection = _G.LFGListFrame.CategorySelection
 local C_ChallengeMode_GetMapUIInfo = _G.C_ChallengeMode.GetMapUIInfo
 
-local scoreFormat = K.GreyColor.."(%s) |r%s"
+local scoreFormat = K.GreyColor .. "(%s) |r%s"
 local pendingFrame
 local roleCache = {}
 local roleOrder = {
@@ -77,7 +77,7 @@ end
 local function GetPartyMemberInfo(index)
 	local unit = "player"
 	if index > 1 then
-		unit = "party"..(index - 1)
+		unit = "party" .. (index - 1)
 	end
 
 	local class = select(2, UnitClass(unit))
@@ -146,7 +146,7 @@ function Module:ReplaceGroupRoles(numPlayers, _, disabled)
 
 			icon.leader = self:CreateTexture(nil, "OVERLAY", nil, 1)
 			icon.leader:SetSize(14, 14)
-			icon.leader:SetPoint("TOP", icon, 3 , 7)
+			icon.leader:SetPoint("TOP", icon, 3, 7)
 			icon.leader:SetTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon")
 			icon.leader:SetRotation(rad(-15))
 		end
@@ -159,7 +159,7 @@ function Module:ReplaceGroupRoles(numPlayers, _, disabled)
 			icon.role:SetAlpha(disabled and 0.5 or 1)
 
 			icon.leader:SetDesaturated(disabled)
-			icon.leader:SetAlpha(disabled and .5 or 1)
+			icon.leader:SetAlpha(disabled and 0.5 or 1)
 		end
 		icon.leader:Hide()
 	end
@@ -227,11 +227,10 @@ function Module:ShowLeaderOverallScore()
 	if searchResultInfo then
 		local activityInfo = C_LFGList_GetActivityInfoTable(searchResultInfo.activityID, nil, searchResultInfo.isWarMode)
 		if activityInfo then
-			local showScore = activityInfo.isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore
-				or activityInfo.isRatedPvpActivity and searchResultInfo.leaderPvpRatingInfo and searchResultInfo.leaderPvpRatingInfo.rating
+			local showScore = activityInfo.isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore or activityInfo.isRatedPvpActivity and searchResultInfo.leaderPvpRatingInfo and searchResultInfo.leaderPvpRatingInfo.rating
 			if showScore then
 				local oldName = self.ActivityName:GetText()
-				oldName = gsub(oldName, ".-"..HEADER_COLON, "") -- Tazavesh
+				oldName = gsub(oldName, ".-" .. HEADER_COLON, "") -- Tazavesh
 				self.ActivityName:SetFormattedText(scoreFormat, TT.GetDungeonScore(showScore), oldName)
 			end
 		end
@@ -271,16 +270,16 @@ end
 
 function Module:AddDungeonsFilter()
 	local mapData = {
-		[0] = {mapID = 375, aID = 703}, -- 仙林
-		[1] = {mapID = 376, aID = 713}, -- 通灵
-		[2] = {mapID = 377, aID = 695}, -- 彼界
-		[3] = {mapID = 378, aID = 699}, -- 赎罪
-		[4] = {mapID = 379, aID = 691}, -- 凋魂
-		[5] = {mapID = 380, aID = 705}, -- 赤红
-		[6] = {mapID = 381, aID = 709}, -- 晋升
-		[7] = {mapID = 382, aID = 717}, -- 剧场
-		[8] = {mapID = 391, aID = 1016}, -- 街道
-		[9] = {mapID = 392, aID = 1017}, -- 宏图
+		[0] = { mapID = 375, aID = 703 }, -- 仙林
+		[1] = { mapID = 376, aID = 713 }, -- 通灵
+		[2] = { mapID = 377, aID = 695 }, -- 彼界
+		[3] = { mapID = 378, aID = 699 }, -- 赎罪
+		[4] = { mapID = 379, aID = 691 }, -- 凋魂
+		[5] = { mapID = 380, aID = 705 }, -- 赤红
+		[6] = { mapID = 381, aID = 709 }, -- 晋升
+		[7] = { mapID = 382, aID = 717 }, -- 剧场
+		[8] = { mapID = 391, aID = 1016 }, -- 街道
+		[9] = { mapID = 392, aID = 1017 }, -- 宏图
 	}
 
 	local function GetDungeonNameByID(mapID)
@@ -303,8 +302,8 @@ function Module:AddDungeonsFilter()
 	end
 
 	local menuList = {
-		[1] = {text = _G.SPECIFIC_DUNGEONS, isTitle = true, notCheckable = true},
-		[2] = {text = _G.CHECK_ALL, notCheckable = true, keepShownOnClick = true, func = toggleAll},
+		[1] = { text = _G.SPECIFIC_DUNGEONS, isTitle = true, notCheckable = true },
+		[2] = { text = _G.CHECK_ALL, notCheckable = true, keepShownOnClick = true, func = toggleAll },
 	}
 
 	local function onClick(self, index, aID)
@@ -340,7 +339,7 @@ function Module:AddDungeonsFilter()
 	end)
 
 	searchPanel.RefreshButton:HookScript("OnEnter", function()
-		GameTooltip:AddLine(K.RightButton.._G.SPECIFIC_DUNGEONS)
+		GameTooltip:AddLine(K.RightButton .. _G.SPECIFIC_DUNGEONS)
 		GameTooltip:Show()
 	end)
 
@@ -401,14 +400,14 @@ function Module:AddPGFSortingExpression()
 		if i == 1 then
 			bu:SetPoint("BOTTOMLEFT", PGFDialog, "BOTTOMRIGHT", 3, 0)
 		else
-			bu:SetPoint("BOTTOM", PGFDialog.__sortBu[i-1], "TOP", 0, 3)
+			bu:SetPoint("BOTTOM", PGFDialog.__sortBu[i - 1], "TOP", 0, 3)
 		end
 	end
 end
 
 function Module:CreateQuickJoin()
 	for i = 1, 10 do
-		local bu = _G["LFGListSearchPanelScrollFrameButton"..i]
+		local bu = _G["LFGListSearchPanelScrollFrameButton" .. i]
 		if bu then
 			bu.Name:SetFontObject(Game14Font)
 			bu.ActivityName:SetFontObject(Game12Font)

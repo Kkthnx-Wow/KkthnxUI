@@ -107,7 +107,7 @@ function Module:CreateFocusTarget()
 			self.Portrait.Border:SetAllPoints(self.Portrait)
 			self.Portrait.Border:CreateBorder()
 
-			if (focusTargetPortraitStyle == "ClassPortraits" or focusTargetPortraitStyle == "NewClassPortraits") then
+			if focusTargetPortraitStyle == "ClassPortraits" or focusTargetPortraitStyle == "NewClassPortraits" then
 				self.Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
@@ -150,8 +150,8 @@ function Module:CreateFocusTarget()
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()
 	self.Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
-	self.Highlight:SetTexCoord(0, 1, .5, 1)
-	self.Highlight:SetVertexColor(.6, .6, .6)
+	self.Highlight:SetTexCoord(0, 1, 0.5, 1)
+	self.Highlight:SetVertexColor(0.6, 0.6, 0.6)
 	self.Highlight:SetBlendMode("ADD")
 	self.Highlight:Hide()
 

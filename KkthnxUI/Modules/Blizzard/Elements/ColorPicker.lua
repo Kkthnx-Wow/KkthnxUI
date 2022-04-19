@@ -7,8 +7,10 @@ local string_match = _G.string.match
 
 -- Enhanced ColorPickerFrame
 local function translateColor(r)
-	if not r then r = "ff" end
-	return tonumber(r, 16)/255
+	if not r then
+		r = "ff"
+	end
+	return tonumber(r, 16) / 255
 end
 
 function Module:EnhancedPicker_UpdateColor()
@@ -109,7 +111,7 @@ function Module:CreateColorPicker()
 
 			bu.colorStr = value.colorStr
 			bu:SetScript("OnClick", Module.EnhancedPicker_UpdateColor)
-			K.AddTooltip(bu, "ANCHOR_TOP", "|c"..value.colorStr..name)
+			K.AddTooltip(bu, "ANCHOR_TOP", "|c" .. value.colorStr .. name)
 
 			count = count + 1
 		end

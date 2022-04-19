@@ -13,8 +13,8 @@ local GetSpellTexture = _G.GetSpellTexture
 local IsEquippedItem = _G.IsEquippedItem
 
 local GetSpellCost = {
-	[53351]  = 10, -- 杀戮射击
-	[19434]  = 35, -- 瞄准射击
+	[53351] = 10, -- 杀戮射击
+	[19434] = 35, -- 瞄准射击
 	[185358] = 20, -- 奥术射击
 	[257620] = 20, -- 多重射击
 	[271788] = 10, -- 毒蛇钉刺
@@ -28,7 +28,9 @@ local GetSpellCost = {
 }
 
 function Module:UpdateFocusCost(unit, _, spellID)
-	if unit ~= "player" then return end
+	if unit ~= "player" then
+		return
+	end
 
 	local focusCal = Module.MMFocus
 	local cost = GetSpellCost[spellID]
@@ -42,12 +44,12 @@ function Module:UpdateFocusCost(unit, _, spellID)
 			--print("此时重置集中值为35")
 		end
 	end
-	focusCal:SetFormattedText("%d/40", focusCal.cost%40)
+	focusCal:SetFormattedText("%d/40", focusCal.cost % 40)
 end
 
 function Module:ResetFocusCost()
 	Module.MMFocus.cost = 0
-	Module.MMFocus:SetFormattedText("%d/40", Module.MMFocus.cost%40)
+	Module.MMFocus:SetFormattedText("%d/40", Module.MMFocus.cost % 40)
 end
 
 function Module:ResetOnRaidEncounter(_, _, _, groupSize)
@@ -70,13 +72,15 @@ function Module:CheckTrickState(...)
 end
 
 function Module:StartAimedShot(unit, _, spellID)
-	if unit ~= "player" then return end
+	if unit ~= "player" then
+		return
+	end
 	if spellID == 19434 then
 		Module.MMFocus.isTrickCast = Module.MMFocus.trickActive ~= 0
 	end
 end
 
-local hunterSets = {188856, 188858, 188859, 188860, 188861}
+local hunterSets = { 188856, 188858, 188859, 188860, 188861 }
 
 function Module:CheckSetsCount()
 	local count = 0
@@ -249,7 +253,7 @@ function Module:ChantLumos(self)
 
 				if name and caster == "player" then
 					boom.Icon:SetTexture(GetSpellTexture(boomGroups[spellID]))
-					boom.CD:SetCooldown(expire-duration, duration)
+					boom.CD:SetCooldown(expire - duration, duration)
 					boom.CD:Show()
 					boom.Icon:SetDesaturated(false)
 				else
@@ -259,7 +263,7 @@ function Module:ChantLumos(self)
 					elseif texture == GetSpellTexture(271045) then
 						boom.Icon:SetTexture(GetSpellTexture(259491))
 					else
-						boom.Icon:SetTexture(GetSpellTexture(186270))	-- 270335
+						boom.Icon:SetTexture(GetSpellTexture(186270)) -- 270335
 					end
 					boom.Icon:SetDesaturated(true)
 				end

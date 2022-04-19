@@ -26,13 +26,13 @@ local hooksecurefunc = _G.hooksecurefunc
 
 local foundurl = false
 local function convertLink(text, value)
-	return "|Hurl:"..tostring(value).."|h"..K.InfoColor..text.."|r|h"
+	return "|Hurl:" .. tostring(value) .. "|h" .. K.InfoColor .. text .. "|r|h"
 end
 
 local function highlightURL(_, url)
 	foundurl = true
 
-	return " "..convertLink("["..url.."]", url).." "
+	return " " .. convertLink("[" .. url .. "]", url) .. " "
 end
 
 function Module:SearchForURL(text, ...)
@@ -108,13 +108,13 @@ function Module:HyperlinkShowHook(link, _, button)
 				elseif IsControlKeyDown() then
 					local charName = gameAccountInfo.characterName
 					local realmName = gameAccountInfo.realmName
-					GuildInvite(charName.."-"..realmName)
+					GuildInvite(charName .. "-" .. realmName)
 					hide = true
 				end
 			end
 		end
 	elseif type == "url" then
-		local eb = LAST_ACTIVE_CHAT_EDIT_BOX or _G[self:GetName().."EditBox"]
+		local eb = LAST_ACTIVE_CHAT_EDIT_BOX or _G[self:GetName() .. "EditBox"]
 		if eb then
 			eb:Show()
 			eb:SetText(value)
@@ -130,7 +130,14 @@ end
 
 function Module.SetItemRefHook(link, _, button)
 	if string_sub(link, 1, 6) == "player" and button == "LeftButton" and IsModifiedClick("CHATLINK") then
-		if not StaticPopup_Visible("ADD_IGNORE") and not StaticPopup_Visible("ADD_FRIEND") and not StaticPopup_Visible("ADD_GUILDMEMBER") and not StaticPopup_Visible("ADD_RAIDMEMBER") and not StaticPopup_Visible("CHANNEL_INVITE") and not ChatEdit_GetActiveWindow() then
+		if
+			not StaticPopup_Visible("ADD_IGNORE")
+			and not StaticPopup_Visible("ADD_FRIEND")
+			and not StaticPopup_Visible("ADD_GUILDMEMBER")
+			and not StaticPopup_Visible("ADD_RAIDMEMBER")
+			and not StaticPopup_Visible("CHANNEL_INVITE")
+			and not ChatEdit_GetActiveWindow()
+		then
 			local namelink, fullname
 			if string_sub(link, 7, 8) == "GM" then
 				namelink = string_sub(link, 10)
@@ -173,7 +180,7 @@ end
 function Module:CreateCopyURL()
 	for i = 1, NUM_CHAT_WINDOWS do
 		if i ~= 2 then
-			local chatFrame = _G["ChatFrame"..i]
+			local chatFrame = _G["ChatFrame" .. i]
 			chatFrame.am = chatFrame.AddMessage
 			chatFrame.AddMessage = self.SearchForURL
 		end

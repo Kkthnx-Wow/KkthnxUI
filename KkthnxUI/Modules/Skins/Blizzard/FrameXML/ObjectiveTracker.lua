@@ -101,7 +101,7 @@ end
 
 local function reskinHeader(header)
 	header.Background:SetTexture(nil)
-	header.Text:SetTextColor(255/255, 204/255, 102/255)
+	header.Text:SetTextColor(255 / 255, 204 / 255, 102 / 255)
 	header.Text:SetFontObject(K.GetFont(C["UIFonts"].QuestTrackerFonts))
 	header.Text:SetFont(select(1, header.Text:GetFont()), 15, select(3, header.Text:GetFont()))
 end
@@ -259,7 +259,7 @@ table_insert(C.defaultThemes, function()
 		ObjectiveTrackerBlocksFrame.CampaignQuestHeader,
 		BONUS_OBJECTIVE_TRACKER_MODULE.Header,
 		WORLD_QUEST_TRACKER_MODULE.Header,
-		ObjectiveTrackerFrame.BlocksFrame.UIWidgetsHeader
+		ObjectiveTrackerFrame.BlocksFrame.UIWidgetsHeader,
 	}
 	for _, header in pairs(headers) do
 		reskinHeader(header)
@@ -268,7 +268,7 @@ table_insert(C.defaultThemes, function()
 	-- Minimize Button
 	local mainMinimize = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
 	reskinMinimizeButton(mainMinimize)
-	mainMinimize.bg.KKUI_Border:SetVertexColor(1, .8, 0)
+	mainMinimize.bg.KKUI_Border:SetVertexColor(1, 0.8, 0)
 
 	for _, header in pairs(headers) do
 		local minimize = header.MinimizeButton

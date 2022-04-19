@@ -121,7 +121,7 @@ function Module:CreateParty()
 
 			self.Portrait = Portrait
 
-			if (partyPortraitStyle == "ClassPortraits" or partyPortraitStyle == "NewClassPortraits") then
+			if partyPortraitStyle == "ClassPortraits" or partyPortraitStyle == "NewClassPortraits" then
 				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
@@ -160,7 +160,7 @@ function Module:CreateParty()
 		self.Buffs = Buffs
 	end
 
-	local Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
+	local Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	Debuffs.spacing = 6
 	Debuffs.initialAnchor = "LEFT"
 	Debuffs["growth-x"] = "RIGHT"
@@ -298,7 +298,7 @@ function Module:CreateParty()
 
 	if C["Party"].TargetHighlight then
 		local TargetHighlight = CreateFrame("Frame", nil, Overlay, "BackdropTemplate")
-		TargetHighlight:SetBackdrop({edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12})
+		TargetHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
 
 		local relativeTo
 		if partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait" then
@@ -388,8 +388,8 @@ function Module:CreateParty()
 	local Highlight = Health:CreateTexture(nil, "OVERLAY")
 	Highlight:SetAllPoints()
 	Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
-	Highlight:SetTexCoord(0, 1, .5, 1)
-	Highlight:SetVertexColor(.6, .6, .6)
+	Highlight:SetTexCoord(0, 1, 0.5, 1)
+	Highlight:SetVertexColor(0.6, 0.6, 0.6)
 	Highlight:SetBlendMode("ADD")
 	Highlight:Hide()
 

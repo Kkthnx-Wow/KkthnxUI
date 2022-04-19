@@ -3,7 +3,7 @@
 -- @Link : https://dengsir.github.io
 -- @Date : 6/15/2021, 11:20:01 PM
 --
-local MAJOR, MINOR = 'LibShowUIPanel-1.0-KkthnxUI', 5
+local MAJOR, MINOR = "LibShowUIPanel-1.0-KkthnxUI", 5
 
 ---@class LibShowUIPanel-1.0
 local Lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
@@ -29,7 +29,7 @@ local InCombatLockdown = InCombatLockdown
 Lib.Delegate = Lib.Delegate or (function()
 	local frame = EnumerateFrames()
 	while frame do
-		if frame.SetUIPanel and issecurevariable(frame, 'SetUIPanel') then
+		if frame.SetUIPanel and issecurevariable(frame, "SetUIPanel") then
 			return frame
 		end
 		frame = EnumerateFrames(frame)
@@ -39,17 +39,17 @@ end)()
 local Delegate = Lib.Delegate
 
 local function GetUIPanelWindowInfo(frame, name)
-	if not frame:GetAttribute('UIPanelLayout-defined') then
+	if not frame:GetAttribute("UIPanelLayout-defined") then
 		local info = UIPanelWindows[frame:GetName()]
 		if not info then
 			return
 		end
-		frame:SetAttribute('UIPanelLayout-defined', true)
+		frame:SetAttribute("UIPanelLayout-defined", true)
 		for k, v in pairs(info) do
-			frame:SetAttribute('UIPanelLayout-' .. k, v)
+			frame:SetAttribute("UIPanelLayout-" .. k, v)
 		end
 	end
-	return frame:GetAttribute('UIPanelLayout-' .. name)
+	return frame:GetAttribute("UIPanelLayout-" .. name)
 end
 
 local function ShowPanel(frame, force)
@@ -57,14 +57,14 @@ local function ShowPanel(frame, force)
 		return
 	end
 
-	if not GetUIPanelWindowInfo(frame, 'area') then
+	if not GetUIPanelWindowInfo(frame, "area") then
 		frame:Show()
 		return
 	end
 
-	Delegate:SetAttribute('panel-force', force)
-	Delegate:SetAttribute('panel-frame', frame)
-	Delegate:SetAttribute('panel-show', true)
+	Delegate:SetAttribute("panel-force", force)
+	Delegate:SetAttribute("panel-frame", frame)
+	Delegate:SetAttribute("panel-show", true)
 end
 
 local function HidePanel(frame, skipSetPoint)
@@ -72,14 +72,14 @@ local function HidePanel(frame, skipSetPoint)
 		return
 	end
 
-	if not GetUIPanelWindowInfo(frame, 'area') then
+	if not GetUIPanelWindowInfo(frame, "area") then
 		frame:Hide()
 		return
 	end
 
-	Delegate:SetAttribute('panel-frame', frame)
-	Delegate:SetAttribute('panel-skipSetPoint', skipSetPoint)
-	Delegate:SetAttribute('panel-hide', true)
+	Delegate:SetAttribute("panel-frame", frame)
+	Delegate:SetAttribute("panel-skipSetPoint", skipSetPoint)
+	Delegate:SetAttribute("panel-hide", true)
 end
 
 function Lib.Show(frame, force)
@@ -124,13 +124,13 @@ end
 ---- hooks
 
 if not Lib.OnCallShowUIPanel then
-	hooksecurefunc('ShowUIPanel', function(...)
+	hooksecurefunc("ShowUIPanel", function(...)
 		return Lib.OnCallShowUIPanel(...)
 	end)
 end
 
 if not Lib.OnCallHideUIPanel then
-	hooksecurefunc('HideUIPanel', function(...)
+	hooksecurefunc("HideUIPanel", function(...)
 		return Lib.OnCallHideUIPanel(...)
 	end)
 end

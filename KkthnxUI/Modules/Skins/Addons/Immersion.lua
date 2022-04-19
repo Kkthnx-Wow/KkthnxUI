@@ -14,10 +14,10 @@ function Module:ReskinImmersion()
 	ImmersionFrame.TalkBox.PortraitFrame:StripTextures()
 	ImmersionFrame.TalkBox.MainFrame.CloseButton:SkinCloseButton()
 
-	ImmersionFrame.TalkBox.Hilite:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
+	ImmersionFrame.TalkBox.Hilite:SetBackdrop({ edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12 })
 	ImmersionFrame.TalkBox.Hilite:SetPoint("TOPLEFT", ImmersionFrame.TalkBox, 8, -8)
 	ImmersionFrame.TalkBox.Hilite:SetPoint("BOTTOMRIGHT", ImmersionFrame.TalkBox, -8, 8)
-	ImmersionFrame.TalkBox.Hilite:SetBackdropBorderColor(0, 0.44, .87, 1)
+	ImmersionFrame.TalkBox.Hilite:SetBackdropBorderColor(0, 0.44, 0.87, 1)
 
 	ImmersionFrame.TalkBox.MainFrame.Model.ModelShadow:Kill()
 	ImmersionFrame.TalkBox.MainFrame.Model.PortraitBG:Hide()
@@ -81,8 +81,8 @@ function Module:ReskinImmersion()
 
 			Button:SetScript("OnUpdate", function(self)
 				if ImmersionFrame.TalkBox.Elements.chooseItems and ImmersionFrame.TalkBox.Elements.itemChoice == self:GetID() then
-					AutoCastShine_AutoCastStart(self.AutoCastShine, 0, .44, .87 )
-					self.Backdrop:SetBackdropBorderColor(0, 0.44, .87, 1)
+					AutoCastShine_AutoCastStart(self.AutoCastShine, 0, 0.44, 0.87)
+					self.Backdrop:SetBackdropBorderColor(0, 0.44, 0.87, 1)
 				else
 					self.Backdrop:SetBackdropBorderColor(1, 1, 1)
 					AutoCastShine_AutoCastStop(self.AutoCastShine)
@@ -95,7 +95,8 @@ function Module:ReskinImmersion()
 			Button.CircleBackgroundGlow:SetTexture()
 
 			hooksecurefunc(Button.ValueText, "SetText", function(self, text)
-				Button.Count:SetText("+"..text) self:Hide()
+				Button.Count:SetText("+" .. text)
+				self:Hide()
 			end)
 		end
 	end
@@ -116,10 +117,10 @@ function Module:ReskinImmersion()
 				Button.Backdrop:SetPoint("TOPLEFT", Button, 3, -3)
 				Button.Backdrop:SetPoint("BOTTOMRIGHT", Button, -3, 3)
 
-				Button.Hilite:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
+				Button.Hilite:SetBackdrop({ edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12 })
 				Button.Hilite:SetPoint("TOPLEFT", Button, 0, 0)
 				Button.Hilite:SetPoint("BOTTOMRIGHT", Button, 0, 0)
-				Button.Hilite:SetBackdropBorderColor(0, 0.44, .87, 1)
+				Button.Hilite:SetBackdropBorderColor(0, 0.44, 0.87, 1)
 
 				Button:SetHighlightTexture("")
 			end

@@ -54,13 +54,13 @@ local function HideTip2()
 	ResetCursor()
 end
 
-local rolltypes = {[1] = "need", [2] = "greed", [3] = "disenchant", [0] = "pass"}
+local rolltypes = { [1] = "need", [2] = "greed", [3] = "disenchant", [0] = "pass" }
 local function SetTip(frame)
 	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT")
 	GameTooltip:SetText(frame.tiptext)
 
 	if frame:IsEnabled() == 0 then
-		GameTooltip:AddLine("|cffff3333".."Can't Roll")
+		GameTooltip:AddLine("|cffff3333" .. "Can't Roll")
 	end
 
 	for name, tbl in pairs(frame.parent.rolls) do
@@ -337,7 +337,7 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 		if f.rollID == rollid then -- rollid matches cached rollid
 			for rollerName, rollerInfo in pairs(rollTable) do
 				local rollType, class = rollerInfo[1], rollerInfo[2]
-				f.rolls[rollerName] = {rollType, class}
+				f.rolls[rollerName] = { rollType, class }
 				f[rolltypes[rollType]]:SetText(tonumber(f[rolltypes[rollType]]:GetText()) + 1)
 			end
 
@@ -355,7 +355,7 @@ function Module.LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
 	if name and rollType then
 		for _, f in ipairs(Module.RollBars) do
 			if f.rollID == rollID then
-				f.rolls[name] = {rollType, class}
+				f.rolls[name] = { rollType, class }
 				f[rolltypes[rollType]]:SetText(tonumber(f[rolltypes[rollType]]:GetText()) + 1)
 				rollIsHidden = false
 				break
@@ -366,7 +366,7 @@ function Module.LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
 		if rollIsHidden then
 			cachedRolls[rollID] = cachedRolls[rollID] or {}
 			if not cachedRolls[rollID][name] then
-				cachedRolls[rollID][name] = {rollType, class}
+				cachedRolls[rollID][name] = { rollType, class }
 			end
 		end
 	end
@@ -397,7 +397,7 @@ end
 
 SlashCmdList.TESTROLL = function()
 	local f = GetFrame()
-	local items = {32837, 34196, 33820}
+	local items = { 32837, 34196, 33820 }
 	if f:IsShown() then
 		f:Hide()
 	else
@@ -422,7 +422,7 @@ SlashCmdList.TESTROLL = function()
 		f.greed:SetText(0)
 		f.pass:SetText(0)
 
-		f.button.link = "item:"..item..":0:0:0:0:0:0:0"
+		f.button.link = "item:" .. item .. ":0:0:0:0:0:0:0"
 		f:Show()
 	end
 end

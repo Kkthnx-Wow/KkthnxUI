@@ -21,7 +21,7 @@ local UnitGUID = _G.UnitGUID
 local UnitName = _G.UnitName
 local hooksecurefunc = _G.hooksecurefunc
 
-local partyUnitsList = {"player", "party1", "party2", "party3", "party4"}
+local partyUnitsList = { "player", "party1", "party2", "party3", "party4" }
 
 -- Check if a name is in your friends list or guild (does not check realm as realm is unknown for some checks)
 local function IsFriendCheck(friendName)
@@ -83,7 +83,7 @@ local function SetupAutoPartySyncAccept(self)
 				local requesterName = UnitName(unit)
 				if requesterName and IsFriendCheck(requesterName) then
 					self.ButtonContainer.Confirm:Click()
-					K.Print("You have auto accepted a Party Sync from "..requesterName)
+					K.Print("You have auto accepted a Party Sync from " .. requesterName)
 					K.Print("If you do not want to auto accept these. You can turn it off in KkthnxUI Config")
 				end
 				return

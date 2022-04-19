@@ -8,17 +8,17 @@ local sqrt = _G.sqrt
 local string_format = _G.string.format
 local type = _G.type
 
-local C_Map_GetBestMapForUnit =_G.C_Map.GetBestMapForUnit
-local C_QuestLog_GetDistanceSqToQuest =_G.C_QuestLog.GetDistanceSqToQuest
-local C_QuestLog_GetInfo =_G.C_QuestLog.GetInfo
-local C_QuestLog_GetLogIndexForQuestID =_G.C_QuestLog.GetLogIndexForQuestID
-local C_QuestLog_GetNumQuestLogEntries =_G.C_QuestLog.GetNumQuestLogEntries
-local C_QuestLog_GetNumQuestWatches =_G.C_QuestLog.GetNumQuestWatches
+local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
+local C_QuestLog_GetDistanceSqToQuest = _G.C_QuestLog.GetDistanceSqToQuest
+local C_QuestLog_GetInfo = _G.C_QuestLog.GetInfo
+local C_QuestLog_GetLogIndexForQuestID = _G.C_QuestLog.GetLogIndexForQuestID
+local C_QuestLog_GetNumQuestLogEntries = _G.C_QuestLog.GetNumQuestLogEntries
+local C_QuestLog_GetNumQuestWatches = _G.C_QuestLog.GetNumQuestWatches
 local C_QuestLog_GetNumWorldQuestWatches = _G.C_QuestLog.GetNumWorldQuestWatches
-local C_QuestLog_GetQuestIDForQuestWatchIndex =_G.C_QuestLog.GetQuestIDForQuestWatchIndex
+local C_QuestLog_GetQuestIDForQuestWatchIndex = _G.C_QuestLog.GetQuestIDForQuestWatchIndex
 local C_QuestLog_GetQuestIDForWorldQuestWatchIndex = _G.C_QuestLog.GetQuestIDForWorldQuestWatchIndex
-local C_QuestLog_IsComplete =_G.C_QuestLog.IsComplete
-local C_QuestLog_IsWorldQuest =_G.C_QuestLog.IsWorldQuest
+local C_QuestLog_IsComplete = _G.C_QuestLog.IsComplete
+local C_QuestLog_IsWorldQuest = _G.C_QuestLog.IsWorldQuest
 local C_QuestLog_IsOnMap = _G.C_QuestLog.IsOnMap
 local CreateFrame = _G.CreateFrame
 local GetBindingKey = _G.GetBindingKey
@@ -26,20 +26,20 @@ local GetBindingText = _G.GetBindingText
 local GetItemCooldown = _G.GetItemCooldown
 local GetItemCount = _G.GetItemCount
 local GetItemIcon = _G.GetItemIcon
-local GetItemInfoFromHyperlink =_G.GetItemInfoFromHyperlink
+local GetItemInfoFromHyperlink = _G.GetItemInfoFromHyperlink
 local GetQuestLogSpecialItemInfo = _G.GetQuestLogSpecialItemInfo
 local GetTime = _G.GetTime
 local HasExtraActionBar = _G.HasExtraActionBar
 local InCombatLockdown = _G.InCombatLockdown
 local IsItemInRange = _G.IsItemInRange
 local ItemHasRange = _G.ItemHasRange
-local QuestHasPOIInfo =_G.QuestHasPOIInfo
+local QuestHasPOIInfo = _G.QuestHasPOIInfo
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
 local MAX_DISTANCE_YARDS = 1e4 -- needs review
 local onlyCurrentZone = true
-
+-- stylua: ignore
 local ExtraQuestButton = CreateFrame("Button", "KKUI_ExtraQuestButton", UIParent, "SecureActionButtonTemplate, SecureHandlerStateTemplate, SecureHandlerAttributeTemplate")
 ExtraQuestButton:SetMovable(true)
 ExtraQuestButton:RegisterEvent("PLAYER_LOGIN")
@@ -119,7 +119,7 @@ function ExtraQuestButton:UpdateAttributes()
 	end
 
 	if self.itemID then
-		self:SetAttribute("item", "item:"..self.itemID)
+		self:SetAttribute("item", "item:" .. self.itemID)
 		self:BAG_UPDATE_COOLDOWN()
 	else
 		self:SetAttribute("item", nil)
@@ -153,7 +153,7 @@ function ExtraQuestButton:PLAYER_LOGIN()
 		if _G.KKUI_ActionBarZone then
 			self:SetPoint("CENTER", _G.KKUI_ActionBarZone)
 		else
-			K.Mover(self, "ExtraQuestButton", "Extrabar", {"BOTTOM", UIParent, "BOTTOM", 270, 44})
+			K.Mover(self, "ExtraQuestButton", "Extrabar", { "BOTTOM", UIParent, "BOTTOM", 270, 44 })
 		end
 	end
 
@@ -168,7 +168,7 @@ function ExtraQuestButton:PLAYER_LOGIN()
 	bg:SetFrameLevel(self:GetFrameLevel())
 	bg:CreateBorder()
 	bg:StyleButton()
-	bg.KKUI_Border:SetVertexColor(1, .82, .2)
+	bg.KKUI_Border:SetVertexColor(1, 0.82, 0.2)
 
 	self.HL = self:CreateTexture(nil, "HIGHLIGHT")
 	self.HL:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
@@ -315,7 +315,6 @@ function ExtraQuestButton:SetItem(itemLink)
 		self.updateRange = hasRange
 	end
 end
-
 
 function ExtraQuestButton:RemoveItem()
 	self.itemID = nil

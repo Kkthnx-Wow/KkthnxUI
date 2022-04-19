@@ -52,7 +52,7 @@ function Module:Bind_RegisterMacro()
 	end
 
 	for i = 1, MAX_ACCOUNT_MACROS do
-		local button = _G["MacroButton"..i]
+		local button = _G["MacroButton" .. i]
 		button:HookScript("OnEnter", hookMacroButton)
 	end
 end
@@ -113,7 +113,7 @@ function Module:Bind_Create()
 	end
 
 	for i = 1, 12 do
-		local button = _G["SpellButton"..i]
+		local button = _G["SpellButton" .. i]
 		button:HookScript("OnEnter", hookSpellButton)
 	end
 
@@ -141,7 +141,7 @@ function Module:Bind_Update(button, spellmacro)
 	if spellmacro == "SPELL" then
 		frame.id = SpellBook_GetSpellBookSlot(frame.button)
 		frame.name = GetSpellBookItemName(frame.id, SpellBookFrame.bookType)
-		frame.bindings = {GetBindingKey(spellmacro.." "..frame.name)}
+		frame.bindings = { GetBindingKey(spellmacro .. " " .. frame.name) }
 	elseif spellmacro == "MACRO" then
 		frame.id = frame.button:GetID()
 		local colorIndex = K.Round(select(2, MacroFrameTab1Text:GetTextColor()), 1)
@@ -149,7 +149,7 @@ function Module:Bind_Update(button, spellmacro)
 			frame.id = frame.id + MAX_ACCOUNT_MACROS
 		end
 		frame.name = GetMacroInfo(frame.id)
-		frame.bindings = {GetBindingKey(spellmacro.." "..frame.name)}
+		frame.bindings = { GetBindingKey(spellmacro .. " " .. frame.name) }
 	elseif spellmacro == "STANCE" or spellmacro == "PET" then
 		frame.name = button:GetName()
 		if not frame.name then
@@ -159,11 +159,11 @@ function Module:Bind_Update(button, spellmacro)
 
 		frame.id = tonumber(button:GetID())
 		if not frame.id or frame.id < 1 or frame.id > (spellmacro == "STANCE" and 10 or 12) then
-			frame.bindstring = "CLICK "..frame.name..":LeftButton"
+			frame.bindstring = "CLICK " .. frame.name .. ":LeftButton"
 		else
-			frame.bindstring = (spellmacro=="STANCE" and "SHAPESHIFTBUTTON" or "BONUSACTIONBUTTON")..frame.id
+			frame.bindstring = (spellmacro == "STANCE" and "SHAPESHIFTBUTTON" or "BONUSACTIONBUTTON") .. frame.id
 		end
-		frame.bindings = {GetBindingKey(frame.bindstring)}
+		frame.bindings = { GetBindingKey(frame.bindstring) }
 	else
 		frame.name = button:GetName()
 		if not frame.name then
@@ -173,24 +173,24 @@ function Module:Bind_Update(button, spellmacro)
 
 		frame.action = tonumber(button.action)
 		if button.isCustomButton or not frame.action or frame.action < 1 or frame.action > 168 then
-			frame.bindstring = "CLICK "..frame.name..":LeftButton"
+			frame.bindstring = "CLICK " .. frame.name .. ":LeftButton"
 		else
-			local modact = 1+(frame.action-1)%12
+			local modact = 1 + (frame.action - 1) % 12
 			if frame.name == "ExtraActionButton1" then
 				frame.bindstring = "EXTRAACTIONBUTTON1"
 			elseif frame.action < 25 or frame.action > 72 then
-				frame.bindstring = "ACTIONBUTTON"..modact
+				frame.bindstring = "ACTIONBUTTON" .. modact
 			elseif frame.action < 73 and frame.action > 60 then
-				frame.bindstring = "MULTIACTIONBAR1BUTTON"..modact
+				frame.bindstring = "MULTIACTIONBAR1BUTTON" .. modact
 			elseif frame.action < 61 and frame.action > 48 then
-				frame.bindstring = "MULTIACTIONBAR2BUTTON"..modact
+				frame.bindstring = "MULTIACTIONBAR2BUTTON" .. modact
 			elseif frame.action < 49 and frame.action > 36 then
-				frame.bindstring = "MULTIACTIONBAR4BUTTON"..modact
+				frame.bindstring = "MULTIACTIONBAR4BUTTON" .. modact
 			elseif frame.action < 37 and frame.action > 24 then
-				frame.bindstring = "MULTIACTIONBAR3BUTTON"..modact
+				frame.bindstring = "MULTIACTIONBAR3BUTTON" .. modact
 			end
 		end
-		frame.bindings = {GetBindingKey(frame.bindstring)}
+		frame.bindings = { GetBindingKey(frame.bindstring) }
 	end
 
 	-- Refresh tooltip
@@ -240,11 +240,11 @@ function Module:Bind_Listener(key)
 	local shift = IsShiftKeyDown() and "SHIFT-" or ""
 
 	if not frame.spellmacro or frame.spellmacro == "PET" or frame.spellmacro == "STANCE" then
-		SetBinding(alt..ctrl..shift..key, frame.bindstring)
+		SetBinding(alt .. ctrl .. shift .. key, frame.bindstring)
 	else
-		SetBinding(alt..ctrl..shift..key, frame.spellmacro.." "..frame.name)
+		SetBinding(alt .. ctrl .. shift .. key, frame.spellmacro .. " " .. frame.name)
 	end
-	K.Print((frame.tipName or frame.name).." |cff00ff00"..L["Key Bound To"].."|r "..alt..ctrl..shift..key)
+	K.Print((frame.tipName or frame.name) .. " |cff00ff00" .. L["Key Bound To"] .. "|r " .. alt .. ctrl .. shift .. key)
 
 	Module:Bind_Update(frame.button, frame.spellmacro)
 end
@@ -267,10 +267,10 @@ end
 function Module:Bind_Deactivate(save)
 	if save == true then
 		SaveBindings(KkthnxUIDB.Variables[K.Realm][K.Name].BindType)
-		K.Print(K.SystemColor..L["Save KeyBinds"].."|r")
+		K.Print(K.SystemColor .. L["Save KeyBinds"] .. "|r")
 	else
 		LoadBindings(KkthnxUIDB.Variables[K.Realm][K.Name].BindType)
-		K.Print(K.SystemColor..L["Discard KeyBinds"].."|r")
+		K.Print(K.SystemColor .. L["Discard KeyBinds"] .. "|r")
 	end
 
 	Module:Bind_HideFrame()
@@ -296,7 +296,7 @@ function Module:Bind_CreateDialog()
 	frame.top:SetPoint("TOP", 0, 26)
 	frame.top:CreateBorder()
 
-	K.CreateFontString(frame.top, 14, K.Title.." "..K.SystemColor..KEY_BINDING, "", false, "CENTER", 0, 0)
+	K.CreateFontString(frame.top, 14, K.Title .. " " .. K.SystemColor .. KEY_BINDING, "", false, "CENTER", 0, 0)
 
 	frame.bottom = CreateFrame("Frame", nil, frame)
 	frame.bottom:SetSize(294, 20)
@@ -306,10 +306,10 @@ function Module:Bind_CreateDialog()
 	frame.text = frame:CreateFontString(nil, "OVERLAY")
 	frame.text:SetFont(C["Media"].Fonts.KkthnxUIFont, 12)
 	frame.text:SetWidth(314)
-	frame.text:SetTextColor(1, .8, 0)
+	frame.text:SetTextColor(1, 0.8, 0)
 	frame.text:SetShadowOffset(1, -1)
 	frame.text:SetPoint("TOP", 0, -15)
-	frame.text:SetText(K.SystemColor..L["Keybind Mode"].."|r")
+	frame.text:SetText(K.SystemColor .. L["Keybind Mode"] .. "|r")
 
 	local button1 = CreateFrame("Button", nil, frame, "OptionsButtonTemplate")
 	button1:SetSize(118, 20)
@@ -352,7 +352,8 @@ function Module:Bind_CreateDialog()
 
 	checkBox.text = frame.bottom:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	checkBox.text:SetPoint("CENTER", 0, 0)
-	checkBox.text:SetText(checkBox:GetChecked() and K.SystemColor..CHARACTER_SPECIFIC_KEYBINDINGS.."|r" or K.GreyColor..CHARACTER_SPECIFIC_KEYBINDINGS.."|r")
+	-- stylua: ignore
+	checkBox.text:SetText(checkBox:GetChecked() and K.SystemColor .. CHARACTER_SPECIFIC_KEYBINDINGS .. "|r" or K.GreyColor .. CHARACTER_SPECIFIC_KEYBINDINGS .. "|r")
 	checkBox:SetHitRectInsets(0, 0 - checkBox.text:GetWidth(), 0, 0)
 
 	Module.keybindDialog = frame
@@ -360,7 +361,7 @@ end
 
 SlashCmdList["KKUI_KEYBINDS"] = function()
 	if InCombatLockdown() then
-		UIErrorsFrame:AddMessage(K.InfoColor..ERR_NOT_IN_COMBAT)
+		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 		return
 	end
 

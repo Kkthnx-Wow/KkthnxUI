@@ -65,27 +65,27 @@ function Module:BuildBuffFrame()
 
 	-- Movers
 	Module.BuffFrame = Module:CreateAuraHeader("HELPFUL")
-	Module.BuffFrame.mover = K.Mover(Module.BuffFrame, "Buffs", "BuffAnchor", {"TOPRIGHT", _G.Minimap, "TOPLEFT", -6, 0})
+	Module.BuffFrame.mover = K.Mover(Module.BuffFrame, "Buffs", "BuffAnchor", { "TOPRIGHT", _G.Minimap, "TOPLEFT", -6, 0 })
 	Module.BuffFrame:ClearAllPoints()
 	Module.BuffFrame:SetPoint("TOPRIGHT", Module.BuffFrame.mover)
 
 	Module.DebuffFrame = Module:CreateAuraHeader("HARMFUL")
-	Module.DebuffFrame.mover = K.Mover(Module.DebuffFrame, "Debuffs", "DebuffAnchor", {"TOPRIGHT", Module.BuffFrame.mover, "BOTTOMRIGHT", 0, -12})
+	Module.DebuffFrame.mover = K.Mover(Module.DebuffFrame, "Debuffs", "DebuffAnchor", { "TOPRIGHT", Module.BuffFrame.mover, "BOTTOMRIGHT", 0, -12 })
 	Module.DebuffFrame:ClearAllPoints()
 	Module.DebuffFrame:SetPoint("TOPRIGHT", Module.DebuffFrame.mover)
 end
 
 function Module:FormatAuraTime(s)
 	if s >= day then
-		return string_format("%d"..K.MyClassColor.."d", s / day), s % day
+		return string_format("%d" .. K.MyClassColor .. "d", s / day), s % day
 	elseif s >= 2 * hour then
-		return string_format("%d"..K.MyClassColor.."h", s / hour), s % hour
+		return string_format("%d" .. K.MyClassColor .. "h", s / hour), s % hour
 	elseif s >= 10 * minute then
-		return string_format("%d"..K.MyClassColor.."m", s / minute), s % minute
+		return string_format("%d" .. K.MyClassColor .. "m", s / minute), s % minute
 	elseif s >= minute then
 		return string_format("%d:%.2d", s / minute, s % minute), s - math_floor(s)
 	elseif s > 10 then
-		return string_format("%d"..K.MyClassColor.."s", s), s - math_floor(s)
+		return string_format("%d" .. K.MyClassColor .. "s", s), s - math_floor(s)
 	elseif s > 5 then
 		return string_format("|cffffff00%.1f|r", s), s - string_format("%.1f", s)
 	else
@@ -241,7 +241,7 @@ function Module:UpdateHeader(header)
 	header:SetAttribute("wrapYOffset", -(cfg.size + cfg.offset))
 	header:SetAttribute("template", string_format("KKUI_AuraTemplate%d", cfg.size))
 
-	local fontSize = math_floor(cfg.size / 30 * 12 + .5)
+	local fontSize = math_floor(cfg.size / 30 * 12 + 0.5)
 	local index = 1
 	local child = select(index, header:GetChildren())
 	while child do

@@ -11,7 +11,7 @@ function Module:ReskinChocolateBar()
 	end
 
 	for i = 1, 20 do
-		local chocolateFrame = _G["ChocolateBar"..i]
+		local chocolateFrame = _G["ChocolateBar" .. i]
 		if chocolateFrame then
 			chocolateFrame:StripTextures()
 			chocolateFrame:CreateBorder()

@@ -12,15 +12,17 @@ local function IconBgOnUpdate(self)
 end
 
 local function UpdateIconTexCoord(icon)
-	if icon.isCutting then return end
+	if icon.isCutting then
+		return
+	end
 	icon.isCutting = true
 
 	local width, height = icon:GetSize()
 	if width ~= 0 and height ~= 0 then
 		local left, right, top, bottom = unpack(K.TexCoords) -- normal icon
-		local ratio = width/height
+		local ratio = width / height
 		if ratio > 1 then -- fat icon
-			local offset = (1 - 1/ratio) / 2
+			local offset = (1 - 1 / ratio) / 2
 			top = top + offset
 			bottom = bottom - offset
 		elseif ratio < 1 then -- thin icon

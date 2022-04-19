@@ -19,7 +19,7 @@ function Module:PetInfoUpdate(petType)
 		self.petIcon:SetBlendMode("ADD")
 		self.petIcon:SetTexCoord(0.188, 0.883, 0, 0.348)
 	end
-	self.petIcon:SetTexture("Interface\\PetBattles\\PetIcon-"..PET_TYPE_SUFFIX[petType])
+	self.petIcon:SetTexture("Interface\\PetBattles\\PetIcon-" .. PET_TYPE_SUFFIX[petType])
 	self.petIcon:SetAlpha(1)
 end
 
@@ -45,6 +45,6 @@ function Module:PetInfoSetup()
 
 	-- Pet ID
 	local speciesID = UnitBattlePetSpeciesID(unit)
-	self:AddDoubleLine(PET..ID..":", speciesID and (K.InfoColor..speciesID.."|r") or (K.GreyColor..UNKNOWN.."|r"))
+	self:AddDoubleLine(PET .. ID .. ":", speciesID and (K.InfoColor .. speciesID .. "|r") or (K.GreyColor .. UNKNOWN .. "|r"))
 end
 GameTooltip:HookScript("OnTooltipSetUnit", Module.PetInfoSetup)

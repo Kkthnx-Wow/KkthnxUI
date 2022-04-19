@@ -16,10 +16,10 @@ function Module:SetupEmojis(_, msg)
 		local pattern = string_gsub(word, "([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1")
 		local emoji = C.SetEmojiTexture[pattern]
 
-		if emoji and string_match(msg, "[%s%p]-"..pattern.."[%s%p]*") then
-			emoji = "|T"..emoji..":14:14|t"
+		if emoji and string_match(msg, "[%s%p]-" .. pattern .. "[%s%p]*") then
+			emoji = "|T" .. emoji .. ":14:14|t"
 			local base64 = K.Base64:Encode(word)
-			msg = string_gsub(msg, "([%s%p]-)"..pattern.."([%s%p]*)", (base64 and ("%1|Helvmoji:%%"..base64.."|h|cFFffffff|r|h") or "%1")..emoji.."%2")
+			msg = string_gsub(msg, "([%s%p]-)" .. pattern .. "([%s%p]*)", (base64 and ("%1|Helvmoji:%%" .. base64 .. "|h|cFFffffff|r|h") or "%1") .. emoji .. "%2")
 		end
 	end
 	return msg

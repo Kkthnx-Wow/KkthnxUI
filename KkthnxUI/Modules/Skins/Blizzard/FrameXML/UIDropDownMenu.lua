@@ -7,12 +7,12 @@ local hooksecurefunc = _G.hooksecurefunc
 
 table_insert(C.defaultThemes, function()
 	local r, g, b = K.r, K.g, K.b
-	local dropdowns = {"DropDownList", "L_DropDownList", "Lib_DropDownList"}
+	local dropdowns = { "DropDownList", "L_DropDownList", "Lib_DropDownList" }
 
 	hooksecurefunc("UIDropDownMenu_CreateFrames", function()
 		for _, name in next, dropdowns do
 			for i = 1, UIDROPDOWNMENU_MAXLEVELS do
-				local backdrop = _G[name..i.."Backdrop"]
+				local backdrop = _G[name .. i .. "Backdrop"]
 				if backdrop and not backdrop.styled then
 					backdrop:StripTextures()
 					backdrop:CreateBorder()
@@ -25,18 +25,18 @@ table_insert(C.defaultThemes, function()
 
 	hooksecurefunc("ToggleDropDownMenu", function(level)
 		if not level then
-            level = 1
-        end
+			level = 1
+		end
 
-		local listFrame = _G["DropDownList"..level]
+		local listFrame = _G["DropDownList" .. level]
 		for i = 1, UIDROPDOWNMENU_MAXBUTTONS do
-			local bu = _G["DropDownList"..level.."Button"..i]
+			local bu = _G["DropDownList" .. level .. "Button" .. i]
 			local _, _, _, x = bu:GetPoint()
 			if bu:IsShown() and x then
-				local check = _G["DropDownList"..level.."Button"..i.."Check"]
-				local uncheck = _G["DropDownList"..level.."Button"..i.."UnCheck"]
-				local hl = _G["DropDownList"..level.."Button"..i.."Highlight"]
-				local arrow = _G["DropDownList"..level.."Button"..i.."ExpandArrow"]
+				local check = _G["DropDownList" .. level .. "Button" .. i .. "Check"]
+				local uncheck = _G["DropDownList" .. level .. "Button" .. i .. "UnCheck"]
+				local hl = _G["DropDownList" .. level .. "Button" .. i .. "Highlight"]
+				local arrow = _G["DropDownList" .. level .. "Button" .. i .. "ExpandArrow"]
 
 				if not bu.bg then
 					bu.bg = CreateFrame("Frame", nil, bu)
@@ -45,7 +45,7 @@ table_insert(C.defaultThemes, function()
 					bu.bg:ClearAllPoints()
 					bu.bg:SetPoint("CENTER", check)
 					bu.bg:SetSize(12, 12)
-					hl:SetColorTexture(r, g, b, .25)
+					hl:SetColorTexture(r, g, b, 0.25)
 
 					if arrow then
 						K.SetupArrow(arrow:GetNormalTexture(), "right")

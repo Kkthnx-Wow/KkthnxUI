@@ -90,7 +90,7 @@ end
 local function CreateContentLines(num, parent, anchorTo)
 	local content = CreateFrame("Frame", nil, parent)
 	content:SetSize(260, (num * 20) + ((num - 1) * 5)) -- 20 height and 5 spacing
-	content:SetPoint("TOP", anchorTo, "BOTTOM",0 , -5)
+	content:SetPoint("TOP", anchorTo, "BOTTOM", 0, -5)
 
 	for i = 1, num do
 		local line = CreateFrame("Frame", nil, content)
@@ -106,10 +106,10 @@ local function CreateContentLines(num, parent, anchorTo)
 		if i == 1 then
 			numLine:SetPoint("TOP", content, "TOP")
 		else
-			numLine:SetPoint("TOP", content["Line"..(i - 1)], "BOTTOM", 0, -5)
+			numLine:SetPoint("TOP", content["Line" .. (i - 1)], "BOTTOM", 0, -5)
 		end
 
-		content["Line"..i] = numLine
+		content["Line" .. i] = numLine
 	end
 
 	return content
@@ -182,9 +182,9 @@ function K:CreateStatusFrame()
 	-- StatusFrame.Section4 = CreateSection(306, 60, StatusFrame, "TOP", StatusFrame.Section3, "BOTTOM", 0)
 
 	--Section headers
-	StatusFrame.Section1.Header.Text:SetText(K.SystemColor.."AddOn Info|r")
-	StatusFrame.Section2.Header.Text:SetText(K.SystemColor.."WoW Info|r")
-	StatusFrame.Section3.Header.Text:SetText(K.SystemColor.."Character Info|r")
+	StatusFrame.Section1.Header.Text:SetText(K.SystemColor .. "AddOn Info|r")
+	StatusFrame.Section2.Header.Text:SetText(K.SystemColor .. "WoW Info|r")
+	StatusFrame.Section3.Header.Text:SetText(K.SystemColor .. "Character Info|r")
 	--StatusFrame.Section4.Header.Text:SetText("|cff1784d1Export To|r")
 
 	--Section content

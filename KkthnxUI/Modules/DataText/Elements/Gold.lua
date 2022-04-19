@@ -24,7 +24,7 @@ local StaticPopupDialogs = _G.StaticPopupDialogs
 local TOTAL = _G.TOTAL
 local YES = _G.YES
 
-local slotString = "Bags"..": %s%d"
+local slotString = "Bags" .. ": %s%d"
 local ticker
 local profit = 0
 local spent = 0
@@ -33,7 +33,7 @@ local crossRealms = GetAutoCompleteRealms()
 local GoldDataText
 
 if not crossRealms or #crossRealms == 0 then
-	crossRealms = {[1] = K.Realm}
+	crossRealms = { [1] = K.Realm }
 end
 
 StaticPopupDialogs["RESETGOLD"] = {
@@ -46,7 +46,7 @@ StaticPopupDialogs["RESETGOLD"] = {
 				table_wipe(KkthnxUIDB.Gold.totalGold[realm])
 			end
 		end
-		KkthnxUIDB.Gold.totalGold[K.Realm][K.Name] = {GetMoney(), K.Class}
+		KkthnxUIDB.Gold.totalGold[K.Realm][K.Name] = { GetMoney(), K.Class }
 	end,
 	whileDead = 1,
 }
@@ -54,7 +54,7 @@ StaticPopupDialogs["RESETGOLD"] = {
 local function getClassIcon(class)
 	local c1, c2, c3, c4 = unpack(CLASS_ICON_TCOORDS[class])
 	c1, c2, c3, c4 = (c1 + 0.03) * 50, (c2 - 0.03) * 50, (c3 + 0.03) * 50, (c4 - 0.03) * 50
-	local classStr = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:12:12:0:0:50:50:"..c1..":"..c2..":"..c3..":"..c4.."|t "
+	local classStr = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:12:12:0:0:50:50:" .. c1 .. ":" .. c2 .. ":" .. c3 .. ":" .. c4 .. "|t "
 	return classStr or ""
 end
 
@@ -146,7 +146,7 @@ local function OnEnter(self)
 	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
 
-	GameTooltip:AddLine(K.InfoColor..CURRENCY)
+	GameTooltip:AddLine(K.InfoColor .. CURRENCY)
 	GameTooltip:AddLine(" ")
 
 	GameTooltip:AddLine(L["Session"], 0.5, 0.7, 1)
@@ -165,19 +165,19 @@ local function OnEnter(self)
 		local thisRealmList = KkthnxUIDB.Gold.totalGold[realm]
 		if thisRealmList then
 			for k, v in pairs(thisRealmList) do
-				local name = Ambiguate(k.."-"..realm, "none")
+				local name = Ambiguate(k .. "-" .. realm, "none")
 				local gold, class = unpack(v)
 				local r, g, b = K.ColorClass(class)
-				GameTooltip:AddDoubleLine(getClassIcon(class)..name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
+				GameTooltip:AddDoubleLine(getClassIcon(class) .. name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
 				totalGold = totalGold + gold
 			end
 		end
 	end
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(TOTAL..":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
+	GameTooltip:AddDoubleLine(TOTAL .. ":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
 	if K.Realm ~= "Oribos" then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t ".."Token:", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
+		GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t " .. "Token:", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
 	end
 
 	for i = 1, GetNumWatchedTokens() do
@@ -189,25 +189,25 @@ local function OnEnter(self)
 		local name, count, icon, currencyID = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID, currencyInfo.currencyTypesID
 		if name and i == 1 then
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(CURRENCY..":", 0.5, 0.7, 1)
+			GameTooltip:AddLine(CURRENCY .. ":", 0.5, 0.7, 1)
 		end
 
 		if name and count then
 			local total = C_CurrencyInfo_GetCurrencyInfo(currencyID).maxQuantity
-			local iconTexture = " |T"..icon..":12:12:0:0:50:50:4:46:4:46|t"
+			local iconTexture = " |T" .. icon .. ":12:12:0:0:50:50:4:46:4:46|t"
 			if total > 0 then
-				GameTooltip:AddDoubleLine(name, count.."/"..total..iconTexture, 1, 1, 1, 1, 1, 1)
+				GameTooltip:AddDoubleLine(name, count .. "/" .. total .. iconTexture, 1, 1, 1, 1, 1, 1)
 			else
-				GameTooltip:AddDoubleLine(name, count..iconTexture, 1, 1, 1, 1, 1, 1)
+				GameTooltip:AddDoubleLine(name, count .. iconTexture, 1, 1, 1, 1, 1, 1)
 			end
 		end
 	end
 
 	if self == GoldDataText then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(" ", K.RightButton.."Switch Mode".." ", 1, 1, 1, 0.5, 0.7, 1)
-		GameTooltip:AddDoubleLine(" ", K.LeftButton.."Currency Panel".." ", 1, 1, 1, 0.5, 0.7, 1)
-		GameTooltip:AddDoubleLine(" ", L["Ctrl Key"]..K.RightButton.."Reset Gold".." ", 1, 1, 1, 0.5, 0.7, 1)
+		GameTooltip:AddDoubleLine(" ", K.RightButton .. "Switch Mode" .. " ", 1, 1, 1, 0.5, 0.7, 1)
+		GameTooltip:AddDoubleLine(" ", K.LeftButton .. "Currency Panel" .. " ", 1, 1, 1, 0.5, 0.7, 1)
+		GameTooltip:AddDoubleLine(" ", L["Ctrl Key"] .. K.RightButton .. "Reset Gold" .. " ", 1, 1, 1, 0.5, 0.7, 1)
 	end
 	GameTooltip:Show()
 end
@@ -265,6 +265,6 @@ function Module:CreateGoldDataText()
 	if C["DataText"].Gold then
 		GoldDataText:SetScript("OnMouseUp", OnMouseUp)
 
-		K.Mover(GoldDataText, "GoldDataText", "GoldDataText", {"LEFT", UIParent, "LEFT", 4, -302})
+		K.Mover(GoldDataText, "GoldDataText", "GoldDataText", { "LEFT", UIParent, "LEFT", 4, -302 })
 	end
 end

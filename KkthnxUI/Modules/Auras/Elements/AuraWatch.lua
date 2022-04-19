@@ -297,7 +297,7 @@ local function BuildBAR(barWidth, iconSize)
 	frame.Count = K.CreateFontString(frame, 12, "", "", false, "BOTTOMRIGHT", 3, -1)
 	frame.Time = K.CreateFontString(frame.Statusbar, 12, "", "", false, "RIGHT", 0, 8)
 	frame.Spellname = K.CreateFontString(frame.Statusbar, 12, "", "", false, "LEFT", 2, 8)
-	frame.Spellname:SetWidth(frame.Statusbar:GetWidth()* 0.6)
+	frame.Spellname:SetWidth(frame.Statusbar:GetWidth() * 0.6)
 	frame.Spellname:SetJustifyH("LEFT")
 
 	if not C["AuraWatch"].ClickThrough then
@@ -530,7 +530,7 @@ function Module:AuraWatch_SetupAura(KEY, unit, index, filter, name, icon, count,
 
 	if frame.Cooldown then
 		frame.Cooldown:SetReverse(true)
-		frame.Cooldown:SetCooldown(expires-duration, duration)
+		frame.Cooldown:SetCooldown(expires - duration, duration)
 	end
 
 	if frame.Spellname then
@@ -569,15 +569,21 @@ function Module:AuraWatch_UpdateAura(unit, index, filter, name, icon, count, dur
 	for KEY, VALUE in pairs(AuraList) do
 		local value = VALUE.List[spellID]
 		if value and value.AuraID and value.UnitID == unit then
-			if value.Combat and not inCombat then return end
-			if value.Caster and value.Caster ~= caster then return end
-			if value.Stack and count and value.Stack > count then return end
+			if value.Combat and not inCombat then
+				return
+			end
+			if value.Caster and value.Caster ~= caster then
+				return
+			end
+			if value.Stack and count and value.Stack > count then
+				return
+			end
 
 			if value.Value and number then
 				if VALUE.Mode == "ICON" then
 					name = K.ShortValue(number)
 				elseif VALUE.Mode == "BAR" then
-					name = name..":"..K.ShortValue(number)
+					name = name .. ":" .. K.ShortValue(number)
 				end
 			else
 				if VALUE.Mode == "ICON" then
@@ -688,7 +694,7 @@ function Module:AuraWatch_SetupInt(intID, itemID, duration, unitID, guid, source
 
 	if unitID:lower() == "all" then
 		class = select(2, GetPlayerInfoByGUID(guid))
-		name = "*"..sourceName
+		name = "*" .. sourceName
 	else
 		class = K.Class
 	end
@@ -867,7 +873,7 @@ function Module:AuraWatch_Centralize(force)
 			local width = frame1.__width
 			local interval = frame1.__interval
 			frame1:ClearAllPoints()
-			frame1:SetPoint("CENTER", frame1.MoveHandle, "CENTER",  - (width+interval) / 2 * (numIndex - 2), 0)
+			frame1:SetPoint("CENTER", frame1.MoveHandle, "CENTER", -(width + interval) / 2 * (numIndex - 2), 0)
 		end
 	end
 end
@@ -902,7 +908,7 @@ SlashCmdList.AuraWatch = function(msg)
 				end
 
 				if value[i].Icon then
-					value[i].Icon:SetColorTexture(0, 0, 0, .25)
+					value[i].Icon:SetColorTexture(0, 0, 0, 0.25)
 				end
 
 				if value[i].Count then
@@ -952,7 +958,7 @@ SlashCmdList.AuraWatch = function(msg)
 				IntTable[i].Time:SetText("59")
 				IntTable[i].Statusbar:SetMinMaxValues(0, 1)
 				IntTable[i].Statusbar:SetValue(1)
-				IntTable[i].Icon:SetColorTexture(0, 0, 0, .25)
+				IntTable[i].Icon:SetColorTexture(0, 0, 0, 0.25)
 			end
 		end
 	elseif msg:lower() == "lock" then

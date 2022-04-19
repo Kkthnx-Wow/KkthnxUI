@@ -12,12 +12,12 @@ local GetSpecialization = _G.GetSpecialization
 local IsPlayerSpell = _G.IsPlayerSpell
 
 local diceSpells = {
-	[1] = {id = 193356, text = L["Combo"]},
-	[2] = {id = 193357, text = L["Crit"]},
-	[3] = {id = 193358, text = L["AttackSpeed"]},
-	[4] = {id = 193359, text = L["CD"]},
-	[5] = {id = 199603, text = L["Strike"]},
-	[6] = {id = 199600, text = L["Power"]},
+	[1] = { id = 193356, text = L["Combo"] },
+	[2] = { id = 193357, text = L["Crit"] },
+	[3] = { id = 193358, text = L["AttackSpeed"] },
+	[4] = { id = 193359, text = L["CD"] },
+	[5] = { id = 199603, text = L["Strike"] },
+	[6] = { id = 199600, text = L["Power"] },
 }
 
 function Module:PostCreateLumos(self)
@@ -45,7 +45,7 @@ function Module:PostCreateLumos(self)
 		if i == 1 then
 			bu:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, offset)
 		else
-			bu:SetPoint("LEFT", buttons[i-1], "RIGHT", 2, 0)
+			bu:SetPoint("LEFT", buttons[i - 1], "RIGHT", 2, 0)
 		end
 		buttons[i] = bu
 	end

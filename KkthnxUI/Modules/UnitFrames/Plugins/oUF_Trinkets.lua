@@ -1,11 +1,11 @@
 local _, ns = ...
 local oUF = ns.oUF or oUF
-assert(oUF, 'oUF not loaded')
+assert(oUF, "oUF not loaded")
 
 local Update = function(self, event, ...)
 	local _, instanceType = IsInInstance()
 
-	if instanceType ~= 'arena' then
+	if instanceType ~= "arena" then
 		self.Trinket.Icon:SetTexture("Interface\\Icons\\Ability_pvp_gladiatormedallion")
 		self.Trinket:Hide()
 
@@ -14,7 +14,9 @@ local Update = function(self, event, ...)
 		self.Trinket:Show()
 	end
 
-	if(self.Trinket.PreUpdate) then self.Trinket:PreUpdate(event, ...) end
+	if self.Trinket.PreUpdate then
+		self.Trinket:PreUpdate(event, ...)
+	end
 
 	if event == "ARENA_COOLDOWNS_UPDATE" then
 		local unit = ...
@@ -37,11 +39,13 @@ local Update = function(self, event, ...)
 
 			self.Trinket.Icon:SetTexture(spellTexture)
 		end
-	elseif event == 'PLAYER_ENTERING_WORLD' then
+	elseif event == "PLAYER_ENTERING_WORLD" then
 		CooldownFrame_Set(self.Trinket.cooldownFrame, 1, 1, 1)
 	end
 
-	if(self.Trinket.PostUpdate) then self.Trinket:PostUpdate(event, ...) end
+	if self.Trinket.PostUpdate then
+		self.Trinket:PostUpdate(event, ...)
+	end
 end
 
 local Enable = function(self)
@@ -75,4 +79,4 @@ local Disable = function(self)
 	end
 end
 
-oUF:AddElement('Trinket', Update, Enable, Disable)
+oUF:AddElement("Trinket", Update, Enable, Disable)

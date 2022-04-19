@@ -63,7 +63,7 @@ local function ReskinDBMBar(bar, frame)
 end
 
 local function HideDBMSpark(self)
-	local spark = _G[self.frame:GetName().."BarSpark"]
+	local spark = _G[self.frame:GetName() .. "BarSpark"]
 	spark:SetAlpha(0)
 	spark:SetTexture(nil)
 end
@@ -71,12 +71,12 @@ end
 local function ApplyDBMStyle(self)
 	local frame = self.frame
 	local frame_name = frame:GetName()
-	local tbar = _G[frame_name.."Bar"]
-	local texture = _G[frame_name.."BarTexture"]
-	local icon1 = _G[frame_name.."BarIcon1"]
-	local icon2 = _G[frame_name.."BarIcon2"]
-	local name = _G[frame_name.."BarName"]
-	local timer = _G[frame_name.."BarTimer"]
+	local tbar = _G[frame_name .. "Bar"]
+	local texture = _G[frame_name .. "BarTexture"]
+	local icon1 = _G[frame_name .. "BarIcon1"]
+	local icon2 = _G[frame_name .. "BarIcon2"]
+	local name = _G[frame_name .. "BarName"]
+	local timer = _G[frame_name .. "BarTimer"]
 
 	if self.enlarged then
 		frame:SetWidth(self.owner.Options.HugeWidth)
@@ -120,11 +120,11 @@ function Module:ReskinDeadlyBossMods()
 			if string_match(textString, ":(%d+):(%d+)") then
 				local size1, size2 = string_match(textString, ":(%d+):(%d+)")
 				size1, size2 = size1 + 3, size2 + 3
-				textString = string_gsub(textString,":(%d+):(%d+)", ":"..size1..":"..size2..":0:0:64:64:5:59:5:59")
+				textString = string_gsub(textString, ":(%d+):(%d+)", ":" .. size1 .. ":" .. size2 .. ":0:0:64:64:5:59:5:59")
 			elseif string_match(textString, ":(%d+)|t") then
 				local size = string_match(textString, ":(%d+)|t")
 				size = size + 3
-				textString = string_gsub(textString,":(%d+)|t", ":"..size..":"..size..":0:0:64:64:5:59:5:59|t")
+				textString = string_gsub(textString, ":(%d+)|t", ":" .. size .. ":" .. size .. ":0:0:64:64:5:59:5:59|t")
 			end
 		end
 

@@ -22,7 +22,7 @@ local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 -- Custom filter
 local CustomFilterList = {
 	[37863] = false,
-	[187532] = false,	-- 魂焰凿石器 @TradeGoods
+	[187532] = false, -- 魂焰凿石器 @TradeGoods
 	[141333] = true,
 	[141446] = true,
 	[153646] = true,

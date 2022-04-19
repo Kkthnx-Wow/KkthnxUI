@@ -38,7 +38,7 @@ local function isItemHasLevel(link)
 end
 
 local function GetSocketTexture(socket, count)
-	return string_rep("|TInterface\\ItemSocketingFrame\\UI-EmptySocket-"..socket..":0|t", count)
+	return string_rep("|TInterface\\ItemSocketingFrame\\UI-EmptySocket-" .. socket .. ":0|t", count)
 end
 
 local function isItemHasGem(link)
@@ -47,7 +47,7 @@ local function isItemHasGem(link)
 	for stat, count in pairs(stats) do
 		local socket = string_match(stat, "EMPTY_SOCKET_(%S+)")
 		if socket and socketWatchList[socket] then
-			text = text..GetSocketTexture(socket, count)
+			text = text .. GetSocketTexture(socket, count)
 		end
 	end
 
@@ -65,7 +65,7 @@ local function convertItemLevel(link)
 
 	local name, itemLevel = isItemHasLevel(link)
 	if name and itemLevel then
-		link = string_gsub(link, "|h%[(.-)%]|h", "|h["..name.."("..itemLevel..")]|h"..isItemHasGem(link))
+		link = string_gsub(link, "|h%[(.-)%]|h", "|h[" .. name .. "(" .. itemLevel .. ")]|h" .. isItemHasGem(link))
 		itemCache[link] = link
 	end
 
@@ -74,7 +74,7 @@ end
 
 local GetDungeonScoreInColor
 local function formatDungeonScore(link, score)
-	return score and string_gsub(link, "|h%[(.-)%]|h", "|h["..string.format(DUNGEON_SCORE_LEADER, GetDungeonScoreInColor(score)).."]|h")
+	return score and string_gsub(link, "|h%[(.-)%]|h", "|h[" .. string.format(DUNGEON_SCORE_LEADER, GetDungeonScoreInColor(score)) .. "]|h")
 end
 
 function Module:UpdateChatItemLevel(_, msg, ...)

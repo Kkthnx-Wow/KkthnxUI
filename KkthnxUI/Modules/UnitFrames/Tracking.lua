@@ -6,22 +6,22 @@ local ArrowUp = "Interface\\Buttons\\Arrow-Up-Down"
 local ArrowDown = "Interface\\Buttons\\Arrow-Down-Down"
 
 StaticPopupDialogs["TRACKING_ADD_PVE"] = {
-	text =  "Which spell id would you like to add?",
+	text = "Which spell id would you like to add?",
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
 		local SpellID = tonumber(self.editBox:GetText())
 		local Table = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE
 		local Name, _, Icon = GetSpellInfo(SpellID)
-		local Values = {["enable"] = true, ["priority"] = 1, ["stackThreshold"] = 0}
+		local Values = { ["enable"] = true, ["priority"] = 1, ["stackThreshold"] = 0 }
 		local TrackingTitle = "|CFF00FF00[DEBUFF TRACKING] |r"
 		local PVETitle = "|CFF567AFF[PVE] |r"
 
 		if Name then
 			if Table[SpellID] then
-				K.Print(TrackingTitle..PVETitle.."Sorry, |CFFFFFF00"..Name.."|r is already tracked")
+				K.Print(TrackingTitle .. PVETitle .. "Sorry, |CFFFFFF00" .. Name .. "|r is already tracked")
 			else
-				K.Print(TrackingTitle..PVETitle.."You have added |CFFFFFF00"..Name.."|r")
+				K.Print(TrackingTitle .. PVETitle .. "You have added |CFFFFFF00" .. Name .. "|r")
 
 				Table[SpellID] = Values
 
@@ -32,29 +32,29 @@ StaticPopupDialogs["TRACKING_ADD_PVE"] = {
 				Module:UpdateRaidDebuffIndicator()
 			end
 		else
-			K.Print(TrackingTitle..PVETitle.."Sorry, this spell id doesn't exist")
+			K.Print(TrackingTitle .. PVETitle .. "Sorry, this spell id doesn't exist")
 		end
 	end,
 	hasEditBox = true,
 }
 
 StaticPopupDialogs["TRACKING_ADD_PVP"] = {
-	text =  "Which spell id would you like to add?",
+	text = "Which spell id would you like to add?",
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self)
 		local SpellID = tonumber(self.editBox:GetText())
 		local Table = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP
 		local Name, _, Icon = GetSpellInfo(SpellID)
-		local Values = {["enable"] = true, ["priority"] = 1, ["stackThreshold"] = 0}
+		local Values = { ["enable"] = true, ["priority"] = 1, ["stackThreshold"] = 0 }
 		local TrackingTitle = "|CFF00FF00[DEBUFF TRACKING] |r"
 		local PVPTitle = "|CFFFF5252[PVP] |r"
 
 		if Name then
 			if Table[SpellID] then
-				K.Print(TrackingTitle..PVPTitle.."Sorry, |CFFFFFF00"..Name.."|r is already tracked")
+				K.Print(TrackingTitle .. PVPTitle .. "Sorry, |CFFFFFF00" .. Name .. "|r is already tracked")
 			else
-				K.Print(TrackingTitle..PVPTitle.."You have added |CFFFFFF00"..Name.."|r")
+				K.Print(TrackingTitle .. PVPTitle .. "You have added |CFFFFFF00" .. Name .. "|r")
 
 				Table[SpellID] = Values
 
@@ -65,7 +65,7 @@ StaticPopupDialogs["TRACKING_ADD_PVP"] = {
 				Module:UpdateRaidDebuffIndicator()
 			end
 		else
-			K.Print(TrackingTitle..PVPTitle.."Sorry, this spell id doesn't exist")
+			K.Print(TrackingTitle .. PVPTitle .. "Sorry, this spell id doesn't exist")
 		end
 	end,
 	hasEditBox = true,
@@ -148,15 +148,15 @@ function Tracking:Setup()
 	self:CreateBorder()
 
 	K.CreateFontString(self, 24, K.Title, "", false, "TOP", 0, -12)
-    K.CreateFontString(self, 14, "Debuff Tracking", "", true, "TOP", 0, -40)
+	K.CreateFontString(self, 14, "Debuff Tracking", "", true, "TOP", 0, -40)
 
-    local ll = CreateFrame("Frame", nil, self)
+	local ll = CreateFrame("Frame", nil, self)
 	ll:SetPoint("TOP", self, -100, -70)
-	K.CreateGF(ll, 200, 1, "Horizontal", .7, .7, .7, 0, .7)
+	K.CreateGF(ll, 200, 1, "Horizontal", 0.7, 0.7, 0.7, 0, 0.7)
 	ll:SetFrameStrata("HIGH")
 	local lr = CreateFrame("Frame", nil, self)
 	lr:SetPoint("TOP", self, 100, -70)
-	K.CreateGF(lr, 200, 1, "Horizontal", .7, .7, .7, .7, 0)
+	K.CreateGF(lr, 200, 1, "Horizontal", 0.7, 0.7, 0.7, 0.7, 0)
 	lr:SetFrameStrata("HIGH")
 
 	self.TitlePVE = self:CreateFontString(nil, "OVERLAY")
@@ -214,7 +214,9 @@ function Tracking:Setup()
 	self.PVE.Add:SetSize(self:GetWidth() / 2 - 3, 26)
 	self.PVE.Add:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -6)
 	self.PVE.Add:SkinButton()
-	self.PVE.Add:SetScript("OnClick", function() StaticPopup_Show("TRACKING_ADD_PVE") end)
+	self.PVE.Add:SetScript("OnClick", function()
+		StaticPopup_Show("TRACKING_ADD_PVE")
+	end)
 
 	self.PVE.Add.Text = self.PVE.Add:CreateFontString(nil, "OVERLAY")
 	self.PVE.Add.Text:SetFont(C["Media"].Fonts.KkthnxUIFont, 12, "THINOUTLINE")
@@ -277,7 +279,9 @@ function Tracking:Setup()
 	self.PVP.Add:SetSize(self:GetWidth() / 2 - 3, 26)
 	self.PVP.Add:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -6)
 	self.PVP.Add:SkinButton()
-	self.PVP.Add:SetScript("OnClick", function() StaticPopup_Show("TRACKING_ADD_PVP") end)
+	self.PVP.Add:SetScript("OnClick", function()
+		StaticPopup_Show("TRACKING_ADD_PVP")
+	end)
 
 	self.PVP.Add.Text = self.PVP.Add:CreateFontString(nil, "OVERLAY")
 	self.PVP.Add.Text:SetFont(C["Media"].Fonts.KkthnxUIFont, 12, "THINOUTLINE")
@@ -288,7 +292,9 @@ function Tracking:Setup()
 	self.Close:SetSize(32, 32)
 	self.Close:SetPoint("TOPRIGHT", self, "TOPRIGHT", 2, 2)
 	self.Close:SkinCloseButton()
-	self.Close:SetScript("OnClick", function(self) self:GetParent():Hide() end)
+	self.Close:SetScript("OnClick", function(self)
+		self:GetParent():Hide()
+	end)
 
 	self.Footer = self:CreateFontString(nil, "OVERLAY")
 	self.Footer:SetFont(C["Media"].Fonts.KkthnxUIFont, 12, "THINOUTLINE")
@@ -302,11 +308,11 @@ function Tracking:Setup()
 end
 
 function Module:CreateTracking()
-    Tracking:Setup()
+	Tracking:Setup()
 end
 
 SlashCmdList["KKUI_TRACKING"] = function()
-	if (C.Unitframe.Enable) and (C.Raid.Enable) then
+	if C.Unitframe.Enable and C.Raid.Enable then
 		Tracking:Toggle()
 	else
 		K.Print("Sorry, our raid module is currently disabled")

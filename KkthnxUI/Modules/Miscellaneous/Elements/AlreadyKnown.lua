@@ -39,7 +39,7 @@ local SetItemButtonTextureVertexColor = _G.SetItemButtonTextureVertexColor
 local UIParent = _G.UIParent
 local hooksecurefunc = _G.hooksecurefunc
 
-local COLOR = {r = .1, g = 1, b = .1}
+local COLOR = { r = 0.1, g = 1, b = 0.1 }
 local knowables = {
 	[LE_ITEM_CLASS_CONSUMABLE] = true,
 	[LE_ITEM_CLASS_ITEM_ENHANCEMENT] = true,
@@ -92,7 +92,7 @@ local function IsAlreadyKnown(link, index)
 			K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 			K.ScanTooltip:SetHyperlink(link)
 			for i = 1, K.ScanTooltip:NumLines() do
-				local text = _G["KKUI_ScanTooltipTextLeft"..i]:GetText() or ""
+				local text = _G["KKUI_ScanTooltipTextLeft" .. i]:GetText() or ""
 				if string_find(text, COLLECTED) or text == ITEM_SPELL_KNOWN then
 					knowns[link] = true
 					return true
@@ -111,7 +111,7 @@ local function Hook_UpdateMerchantInfo()
 			return
 		end
 
-		local button = _G["MerchantItem"..i.."ItemButton"]
+		local button = _G["MerchantItem" .. i .. "ItemButton"]
 		if button and button:IsShown() then
 			local _, _, _, _, numAvailable, isUsable = GetMerchantItemInfo(index)
 			if isUsable and IsAlreadyKnown(GetMerchantItemLink(index)) then
@@ -133,7 +133,7 @@ local function Hook_UpdateBuybackInfo()
 			return
 		end
 
-		local button = _G["MerchantItem"..index.."ItemButton"]
+		local button = _G["MerchantItem" .. index .. "ItemButton"]
 		if button and button:IsShown() then
 			local _, _, _, _, _, isUsable = GetBuybackItemInfo(index)
 			if isUsable and IsAlreadyKnown(GetBuybackItemLink(index)) then

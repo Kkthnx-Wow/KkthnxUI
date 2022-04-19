@@ -42,7 +42,7 @@ function History:Print()
 end
 
 function History:Save(event, ...)
-	local Temp = {...}
+	local Temp = { ... }
 
 	if Temp[1] then
 		Temp[EntryEvent] = event

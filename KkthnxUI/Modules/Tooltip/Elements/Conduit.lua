@@ -7,7 +7,7 @@ local pairs, select = pairs, select
 local GetItemInfo, GetItemInfoFromHyperlink = GetItemInfo, GetItemInfoFromHyperlink
 local C_Soulbinds_GetConduitCollection = C_Soulbinds.GetConduitCollection
 local C_Soulbinds_IsItemConduitByItemInfo = C_Soulbinds.IsItemConduitByItemInfo
-local COLLECTED_STRING = " |cffff0000("..COLLECTED..")|r"
+local COLLECTED_STRING = " |cffff0000(" .. COLLECTED .. ")|r"
 
 Module.ConduitData = {}
 
@@ -35,10 +35,10 @@ function Module:Conduit_CheckStatus()
 	local knownLevel = itemID and Module.ConduitData[itemID]
 
 	if knownLevel and level and knownLevel >= level then
-		local textLine = _G[self:GetName().."TextLeft1"]
+		local textLine = _G[self:GetName() .. "TextLeft1"]
 		local text = textLine and textLine:GetText()
 		if text and text ~= "" then
-			textLine:SetText(text..COLLECTED_STRING)
+			textLine:SetText(text .. COLLECTED_STRING)
 		end
 	end
 end

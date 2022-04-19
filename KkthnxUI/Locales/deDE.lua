@@ -5,5 +5,5 @@ local _G = _G
 local GetLocale = _G.GetLocale
 
 if GetLocale() ~= "deDE" then
-    return
+	return
 end

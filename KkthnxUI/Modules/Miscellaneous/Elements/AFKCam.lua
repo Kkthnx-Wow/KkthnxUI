@@ -74,57 +74,57 @@ local daysAbr = {
 
 -- Source wowhead.com
 local stats = {
-	60,		-- Total deaths
-	94,		-- Quests abandoned
-	97,		-- Daily quests completed
-	98,		-- Quests completed
-	107,	-- Creatures killed
-	112,	-- Deaths from drowning
-	114,	-- Deaths from falling
-	115,	-- Deaths from fire and lava
-	319,	-- Duels won
-	320,	-- Duels lost
-	326,	-- Gold from quest rewards
-	328,	-- Total gold acquired
-	329,	-- Auctions posted
-	331,	-- Most expensive bid on auction
-	332,	-- Most expensive auction sold
-	333,	-- Gold looted
-	334,	-- Most gold ever owned
-	338,	-- Vanity pets owned
-	345,	-- Health potions consumed
-	349,	-- Flight paths taken
-	353,	-- Number of times hearthed
-	588,	-- Total Honorable Kills
-	812,	-- Healthstones used
-	837,	-- Arenas won
-	838,	-- Arenas played
-	839,	-- Battlegrounds played
-	840,	-- Battlegrounds won
-	919,	-- Gold earned from auctions
-	932,	-- Total 5-player dungeons entered
-	933,	-- Total 10-player raids entered
-	934,	-- Total 25-player raids entered
-	1042,	-- Number of hugs
-	1045,	-- Total cheers
-	1047,	-- Total facepalms
-	1065,	-- Total waves
-	1066,	-- Total times LOL"d
-	1197,	-- Total kills
-	1198,	-- Total kills that grant experience or honor
-	1336,	-- Creature type killed the most
-	1339,	-- Mage portal taken most
-	1487,	-- Total Killing Blows
-	1491,	-- Battleground Killing Blows
-	1518,	-- Fish caught
-	1776,	-- Food eaten most
-	2277,	-- Summons accepted
-	5692,	-- Rated battlegrounds played
-	5693,	-- Rated battleground played the most
-	5695,	-- Rated battleground won the most
-	5694,	-- Rated battlegrounds won
-	7399,	-- Challenge mode dungeons completed
-	8278,	-- Pet Battles won at max level
+	60, -- Total deaths
+	94, -- Quests abandoned
+	97, -- Daily quests completed
+	98, -- Quests completed
+	107, -- Creatures killed
+	112, -- Deaths from drowning
+	114, -- Deaths from falling
+	115, -- Deaths from fire and lava
+	319, -- Duels won
+	320, -- Duels lost
+	326, -- Gold from quest rewards
+	328, -- Total gold acquired
+	329, -- Auctions posted
+	331, -- Most expensive bid on auction
+	332, -- Most expensive auction sold
+	333, -- Gold looted
+	334, -- Most gold ever owned
+	338, -- Vanity pets owned
+	345, -- Health potions consumed
+	349, -- Flight paths taken
+	353, -- Number of times hearthed
+	588, -- Total Honorable Kills
+	812, -- Healthstones used
+	837, -- Arenas won
+	838, -- Arenas played
+	839, -- Battlegrounds played
+	840, -- Battlegrounds won
+	919, -- Gold earned from auctions
+	932, -- Total 5-player dungeons entered
+	933, -- Total 10-player raids entered
+	934, -- Total 25-player raids entered
+	1042, -- Number of hugs
+	1045, -- Total cheers
+	1047, -- Total facepalms
+	1065, -- Total waves
+	1066, -- Total times LOL"d
+	1197, -- Total kills
+	1198, -- Total kills that grant experience or honor
+	1336, -- Creature type killed the most
+	1339, -- Mage portal taken most
+	1487, -- Total Killing Blows
+	1491, -- Battleground Killing Blows
+	1518, -- Fish caught
+	1776, -- Food eaten most
+	2277, -- Summons accepted
+	5692, -- Rated battlegrounds played
+	5693, -- Rated battleground played the most
+	5695, -- Rated battleground won the most
+	5694, -- Rated battlegrounds won
+	7399, -- Challenge mode dungeons completed
+	8278, -- Pet Battles won at max level
 }
 
 local function IsIn(val, ...)
@@ -138,9 +138,9 @@ end
 
 local function setupTime(color, hour, minute)
 	if GetCVarBool("timeMgrUseMilitaryTime") then
-		return string_format(color..TIMEMANAGER_TICKER_24HOUR, hour, minute)
+		return string_format(color .. TIMEMANAGER_TICKER_24HOUR, hour, minute)
 	else
-		local timerUnit = K.MyClassColor..(hour < 12 and " AM" or " PM")
+		local timerUnit = K.MyClassColor .. (hour < 12 and " AM" or " PM")
 
 		if hour >= 12 then
 			if hour > 12 then
@@ -152,7 +152,7 @@ local function setupTime(color, hour, minute)
 			end
 		end
 
-		return string_format(color..TIMEMANAGER_TICKER_12HOUR..timerUnit, hour, minute)
+		return string_format(color .. TIMEMANAGER_TICKER_12HOUR .. timerUnit, hour, minute)
 	end
 end
 
@@ -180,20 +180,20 @@ local function createDate(self)
 end
 
 local function UpdateLogOff(self)
-    local timePassed = GetTime() - self.startTime
+	local timePassed = GetTime() - self.startTime
 
-    local timeLeft = 30 * 60 - timePassed
-    local minutes = math_floor(timeLeft / 60)
-    local seconds = math_floor(timeLeft % 60)
+	local timeLeft = 30 * 60 - timePassed
+	local minutes = math_floor(timeLeft / 60)
+	local seconds = math_floor(timeLeft % 60)
 
 	self.top.Status:SetValue(math_floor(timeLeft))
 
-    if minutes == 0 and seconds == 0 then
-        self.logoffTimer:Cancel()
-        self.countd.text:SetFormattedText("%s: |cfff0ff0000:00|r", "Logout Timer")
-    else
-        self.countd.text:SetFormattedText("%s: |cfff0ff00-%02d:%02d|r", "Logout Timer", minutes, seconds)
-    end
+	if minutes == 0 and seconds == 0 then
+		self.logoffTimer:Cancel()
+		self.countd.text:SetFormattedText("%s: |cfff0ff0000:00|r", "Logout Timer")
+	else
+		self.countd.text:SetFormattedText("%s: |cfff0ff00-%02d:%02d|r", "Logout Timer", minutes, seconds)
+	end
 end
 
 local function UpdateTimer(self)
@@ -247,20 +247,26 @@ local function SetAFK(self, status)
 
 		self.startTime = GetTime()
 
-		if (self.timer) then self.timer:Cancel() end
-        self.timer = C_Timer_NewTicker(1, function()
-            UpdateTimer(self)
-        end)
+		if self.timer then
+			self.timer:Cancel()
+		end
+		self.timer = C_Timer_NewTicker(1, function()
+			UpdateTimer(self)
+		end)
 
-        if (self.statsTimer) then self.statsTimer:Cancel() end
-        self.statsTimer = C_Timer_NewTicker(5, function()
-            UpdateStatMessage(self)
-        end)
+		if self.statsTimer then
+			self.statsTimer:Cancel()
+		end
+		self.statsTimer = C_Timer_NewTicker(5, function()
+			UpdateStatMessage(self)
+		end)
 
-        if (self.logoffTimer) then self.logoffTimer:Cancel() end
-        self.logoffTimer = C_Timer_NewTicker(1, function()
-            UpdateLogOff(self)
-        end)
+		if self.logoffTimer then
+			self.logoffTimer:Cancel()
+		end
+		self.logoffTimer = C_Timer_NewTicker(1, function()
+			UpdateLogOff(self)
+		end)
 
 		self.chat:RegisterEvent("CHAT_MSG_WHISPER")
 		self.chat:RegisterEvent("CHAT_MSG_BN_WHISPER")
@@ -392,7 +398,7 @@ local function Chat_OnEvent(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg
 	if chatGroup == "BN_CONVERSATION" then
 		chatTarget = tostring(arg8)
 	elseif chatGroup == "WHISPER" or chatGroup == "BN_WHISPER" then
-		if not(string_sub(arg2, 1, 2) == "|K") then
+		if not (string_sub(arg2, 1, 2) == "|K") then
 			chatTarget = arg2:upper()
 		else
 			chatTarget = arg2
@@ -401,20 +407,20 @@ local function Chat_OnEvent(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg
 
 	local playerLink
 	if type ~= "BN_WHISPER" and type ~= "BN_CONVERSATION" then
-		playerLink = "|Hplayer:"..arg2..":"..arg11..":"..chatGroup..(chatTarget and ":"..chatTarget or "").."|h"
+		playerLink = "|Hplayer:" .. arg2 .. ":" .. arg11 .. ":" .. chatGroup .. (chatTarget and ":" .. chatTarget or "") .. "|h"
 	else
-		playerLink = "|HBNplayer:"..arg2..":"..arg13..":"..arg11..":"..chatGroup..(chatTarget and ":"..chatTarget or "").."|h"
+		playerLink = "|HBNplayer:" .. arg2 .. ":" .. arg13 .. ":" .. arg11 .. ":" .. chatGroup .. (chatTarget and ":" .. chatTarget or "") .. "|h"
 	end
 
 	local message = arg1
 	if arg14 then -- isMobile
-		message = ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b)..message
+		message = ChatFrame_GetMobileEmbeddedTexture(info.r, info.g, info.b) .. message
 	end
 
 	-- Escape any % characters, as it may otherwise cause an "invalid option in format" error in the next step
 	message = string_gsub(message, "%%", "%%%%")
 
-	_, body = pcall(string_format, _G["CHAT_"..type.."_GET"]..message, playerLink.."["..coloredName.."]".."|h")
+	_, body = pcall(string_format, _G["CHAT_" .. type .. "_GET"] .. message, playerLink .. "[" .. coloredName .. "]" .. "|h")
 
 	local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget)
 	local typeID = ChatHistory_GetAccessID(type, chatTarget, arg12 == "" and arg13 or arg12)
@@ -497,8 +503,8 @@ function Module:CreateAFKCam()
 	AFKMode.top.wowlogo:SetFrameStrata("MEDIUM")
 	AFKMode.top.wowlogo:SetSize(300, 150)
 	AFKMode.top.wowlogo.tex = AFKMode.top.wowlogo:CreateTexture(nil, "OVERLAY")
-	local currentExpansionLevel = GetClampedCurrentExpansionLevel();
-	local expansionDisplayInfo = GetExpansionDisplayInfo(currentExpansionLevel);
+	local currentExpansionLevel = GetClampedCurrentExpansionLevel()
+	local expansionDisplayInfo = GetExpansionDisplayInfo(currentExpansionLevel)
 	if expansionDisplayInfo then
 		AFKMode.top.wowlogo.tex:SetTexture(expansionDisplayInfo.logo)
 	end
@@ -514,13 +520,13 @@ function Module:CreateAFKCam()
 	AFKMode.top.date:SetTextColor(0.7, 0.7, 0.7)
 
 	-- Statusbar on Top frame decor showing time to log off (30mins)
-	AFKMode.top.Status = CreateFrame('StatusBar', nil, AFKMode.top)
+	AFKMode.top.Status = CreateFrame("StatusBar", nil, AFKMode.top)
 	AFKMode.top.Status:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
 	AFKMode.top.Status:SetMinMaxValues(0, 1800)
 	AFKMode.top.Status:SetStatusBarColor(K.r, K.g, K.b, 1)
 	AFKMode.top.Status:SetFrameLevel(2)
-	AFKMode.top.Status:SetPoint('TOPRIGHT', AFKMode.top, 'BOTTOMRIGHT', 0, 6)
-	AFKMode.top.Status:SetPoint('BOTTOMLEFT', AFKMode.top, 'BOTTOMLEFT', 0, 1)
+	AFKMode.top.Status:SetPoint("TOPRIGHT", AFKMode.top, "BOTTOMRIGHT", 0, 6)
+	AFKMode.top.Status:SetPoint("BOTTOMLEFT", AFKMode.top, "BOTTOMLEFT", 0, 1)
 	AFKMode.top.Status:SetValue(0)
 
 	local factionGroup, size, offsetX, offsetY, nameOffsetX, nameOffsetY = K.Faction, 140, -20, -8, -10, -36
@@ -573,7 +579,7 @@ function Module:CreateAFKCam()
 
 	AFKMode.bottom.faction = AFKMode.bottom:CreateTexture(nil, "OVERLAY")
 	AFKMode.bottom.faction:SetPoint("BOTTOMLEFT", AFKMode.bottom, "BOTTOMLEFT", offsetX, offsetY)
-	AFKMode.bottom.faction:SetTexture("Interface/Timer/"..factionGroup.."-Logo")
+	AFKMode.bottom.faction:SetTexture("Interface/Timer/" .. factionGroup .. "-Logo")
 	AFKMode.bottom.faction:SetSize(size, size)
 
 	AFKMode.bottom.name = AFKMode.bottom:CreateFontString(nil, "OVERLAY")
@@ -586,7 +592,7 @@ function Module:CreateAFKCam()
 	AFKMode.bottom.playerInfo = AFKMode.bottom:CreateFontString(nil, "OVERLAY")
 	AFKMode.bottom.playerInfo:SetFontObject(KkthnxUIFont)
 	AFKMode.bottom.playerInfo:SetFont(select(1, AFKMode.bottom.playerInfo:GetFont()), 20, select(3, AFKMode.bottom.playerInfo:GetFont()))
-	AFKMode.bottom.playerInfo:SetText(K.SystemColor..LEVEL.." "..K.Level.."|r "..K.GreyColor..K.Race.."|r "..K.MyClassColor..UnitClass("player").."|r")
+	AFKMode.bottom.playerInfo:SetText(K.SystemColor .. LEVEL .. " " .. K.Level .. "|r " .. K.GreyColor .. K.Race .. "|r " .. K.MyClassColor .. UnitClass("player") .. "|r")
 	AFKMode.bottom.playerInfo:SetPoint("TOPLEFT", AFKMode.bottom.name, "BOTTOMLEFT", 0, -6)
 
 	AFKMode.bottom.guild = AFKMode.bottom:CreateFontString(nil, "OVERLAY")
@@ -636,22 +642,22 @@ function Module:CreateAFKCam()
 	AFKMode.countd:SetSize(418, 36)
 	AFKMode.countd:SetPoint("TOP", AFKMode.statMsg.lineBottom, "BOTTOM")
 
-	AFKMode.countd.bg = AFKMode.countd:CreateTexture(nil, 'BACKGROUND')
+	AFKMode.countd.bg = AFKMode.countd:CreateTexture(nil, "BACKGROUND")
 	AFKMode.countd.bg:SetTexture([[Interface\LevelUp\LevelUpTex]])
-	AFKMode.countd.bg:SetPoint('BOTTOM')
+	AFKMode.countd.bg:SetPoint("BOTTOM")
 	AFKMode.countd.bg:SetSize(326, 56)
 	AFKMode.countd.bg:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
 	AFKMode.countd.bg:SetVertexColor(1, 1, 1, 0.7)
 
-	AFKMode.countd.lineBottom = AFKMode.countd:CreateTexture(nil, 'BACKGROUND')
-	AFKMode.countd.lineBottom:SetDrawLayer('BACKGROUND', 2)
+	AFKMode.countd.lineBottom = AFKMode.countd:CreateTexture(nil, "BACKGROUND")
+	AFKMode.countd.lineBottom:SetDrawLayer("BACKGROUND", 2)
 	AFKMode.countd.lineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
-	AFKMode.countd.lineBottom:SetPoint('BOTTOM')
+	AFKMode.countd.lineBottom:SetPoint("BOTTOM")
 	AFKMode.countd.lineBottom:SetSize(418, 7)
 	AFKMode.countd.lineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
 
 	-- 30 mins countdown text
-	AFKMode.countd.text = AFKMode.countd:CreateFontString(nil, 'OVERLAY')
+	AFKMode.countd.text = AFKMode.countd:CreateFontString(nil, "OVERLAY")
 	AFKMode.countd.text:SetFontObject(KkthnxUIFont)
 	AFKMode.countd.text:SetPoint("CENTER", AFKMode.countd, "CENTER")
 	AFKMode.countd.text:SetJustifyH("CENTER")

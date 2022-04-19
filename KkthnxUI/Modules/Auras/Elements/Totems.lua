@@ -22,7 +22,7 @@ function Module:TotemBar_Init()
 	totemBar:SetSize(width, height)
 
 	if not totemBar.mover then
-		totemBar.mover = K.Mover(totemBar, "Totembar", "Totems", {"BOTTOMRIGHT", UIParent, "BOTTOM", -450, 20})
+		totemBar.mover = K.Mover(totemBar, "Totembar", "Totems", { "BOTTOMRIGHT", UIParent, "BOTTOM", -450, 20 })
 	end
 	totemBar.mover:SetSize(width, height)
 
@@ -43,7 +43,7 @@ function Module:TotemBar_Init()
 			totem:SetAlpha(0)
 			totems[i] = totem
 
-			local blizzTotem = _G["TotemFrameTotem"..i]
+			local blizzTotem = _G["TotemFrameTotem" .. i]
 			blizzTotem:SetParent(totem)
 			blizzTotem:SetAllPoints()
 			blizzTotem:SetAlpha(0)
@@ -55,9 +55,9 @@ function Module:TotemBar_Init()
 		if i == 1 then
 			totem:SetPoint("BOTTOMLEFT", margin, margin)
 		elseif vertical then
-			totem:SetPoint("BOTTOM", totems[i-1], "TOP", 0, margin)
+			totem:SetPoint("BOTTOM", totems[i - 1], "TOP", 0, margin)
 		else
-			totem:SetPoint("LEFT", totems[i-1], "RIGHT", margin, 0)
+			totem:SetPoint("LEFT", totems[i - 1], "RIGHT", margin, 0)
 		end
 	end
 end

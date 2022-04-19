@@ -6,12 +6,14 @@ Description: A library to encode and decode Base64 strings
 License: MIT
 ]]
 
-local MAJOR, MINOR = 'LibBase64-1.0-KkthnxUI', 2
+local MAJOR, MINOR = "LibBase64-1.0-KkthnxUI", 2
 local LibBase64 = LibStub:NewLibrary(MAJOR, MINOR)
-if not LibBase64 then return end
+if not LibBase64 then
+	return
+end
 
 local wipe, type, error, format, strsub, strchar, strbyte, tconcat = wipe, type, error, format, strsub, strchar, strbyte, table.concat
-local _chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+local _chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 local byteToNum, numToChar = {}, {}
 for i = 1, #_chars do
 	numToChar[i - 1] = strsub(_chars, i, i)
@@ -56,7 +58,7 @@ function LibBase64:Encode(text, maxLineLength, lineEnding)
 
 	local currentLength = 0
 	for i = 1, #text, 3 do
-		local a, b, c = strbyte(text, i, i+2)
+		local a, b, c = strbyte(text, i, i + 2)
 		local nilNum = 0
 		if not b then
 			nilNum, b, c = 2, 0, 0
@@ -64,20 +66,23 @@ function LibBase64:Encode(text, maxLineLength, lineEnding)
 			nilNum, c = 1, 0
 		end
 
-		local num = a * 2^16 + b * 2^8 + c
-		local d = num % 2^6;num = (num - d) / 2^6
-		c = num % 2^6;num = (num - c) / 2^6
-		b = num % 2^6;num = (num - b) / 2^6
-		a = num % 2^6
+		local num = a * 2 ^ 16 + b * 2 ^ 8 + c
+		local d = num % 2 ^ 6
+		num = (num - d) / 2 ^ 6
+		c = num % 2 ^ 6
+		num = (num - c) / 2 ^ 6
+		b = num % 2 ^ 6
+		num = (num - b) / 2 ^ 6
+		a = num % 2 ^ 6
 
-		t[#t+1] = numToChar[a]
-		t[#t+1] = numToChar[b]
-		t[#t+1] = (nilNum >= 2) and "=" or numToChar[c]
-		t[#t+1] = (nilNum >= 1) and "=" or numToChar[d]
+		t[#t + 1] = numToChar[a]
+		t[#t + 1] = numToChar[b]
+		t[#t + 1] = (nilNum >= 2) and "=" or numToChar[c]
+		t[#t + 1] = (nilNum >= 1) and "=" or numToChar[d]
 
 		currentLength = currentLength + 4
 		if maxLineLength and (currentLength % maxLineLength) == 0 then
-			t[#t+1] = lineEnding
+			t[#t + 1] = lineEnding
 		end
 	end
 
@@ -110,12 +115,12 @@ function LibBase64:Decode(text)
 				error(format("Bad argument #1 to `Decode'. Received an invalid char: %q", strsub(text, i, i)), 2)
 			end
 
-			t2[#t2+1] = num
+			t2[#t2 + 1] = num
 		end
 	end
 
 	for i = 1, #t2, 4 do
-		local a, b, c, d = t2[i], t2[i+1], t2[i+2], t2[i+3]
+		local a, b, c, d = t2[i], t2[i + 1], t2[i + 2], t2[i + 3]
 		local nilNum = 0
 		if not c then
 			nilNum, c, d = 2, 0, 0
@@ -123,14 +128,20 @@ function LibBase64:Decode(text)
 			nilNum, d = 1, 0
 		end
 
-		local num = a * 2^18 + b * 2^12 + c * 2^6 + d
-		c = num % 2^8;num = (num - c) / 2^8
-		b = num % 2^8;num = (num - b) / 2^8
-		a = num % 2^8
+		local num = a * 2 ^ 18 + b * 2 ^ 12 + c * 2 ^ 6 + d
+		c = num % 2 ^ 8
+		num = (num - c) / 2 ^ 8
+		b = num % 2 ^ 8
+		num = (num - b) / 2 ^ 8
+		a = num % 2 ^ 8
 
-		t[#t+1] = strchar(a)
-		if nilNum < 2 then t[#t+1] = strchar(b) end
-		if nilNum < 1 then t[#t+1] = strchar(c) end
+		t[#t + 1] = strchar(a)
+		if nilNum < 2 then
+			t[#t + 1] = strchar(b)
+		end
+		if nilNum < 1 then
+			t[#t + 1] = strchar(c)
+		end
 	end
 
 	wipe(t2)

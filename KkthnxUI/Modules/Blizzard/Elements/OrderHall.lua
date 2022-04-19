@@ -84,9 +84,9 @@ function Module:OrderHall_OnEnter()
 
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 5, -5)
 	GameTooltip:ClearLines()
-	GameTooltip:AddLine(K.MyClassColor.._G["ORDER_HALL_"..K.Class])
+	GameTooltip:AddLine(K.MyClassColor .. _G["ORDER_HALL_" .. K.Class])
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(getIconString(self.texture)..self.name, self.amount, 1, 1, 1, 1, 1, 1)
+	GameTooltip:AddDoubleLine(getIconString(self.texture) .. self.name, self.amount, 1, 1, 1, 1, 1, 1)
 
 	local blank
 	for i = 1, self.numCategory do
@@ -97,7 +97,7 @@ function Module:OrderHall_OnEnter()
 
 		local category = self.Category[i]
 		if category then
-			GameTooltip:AddDoubleLine(getIconString(category.icon)..category.name, category.count.."/"..category.limit, 1, 1, 1, 1, 1, 1)
+			GameTooltip:AddDoubleLine(getIconString(category.icon) .. category.name, category.count .. "/" .. category.limit, 1, 1, 1, 1, 1, 1)
 			if IsShiftKeyDown() then
 				GameTooltip:AddLine(category.description, 0.5, 0.7, 1, 1)
 			end

@@ -44,7 +44,7 @@ function addon:RegisterDebuffs(t)
 	for spell in pairs(t) do
 		if type(t[spell]) == "boolean" then
 			local oldValue = t[spell]
-			t[spell] = {enable = oldValue, priority = 0, stackThreshold = 0}
+			t[spell] = { enable = oldValue, priority = 0, stackThreshold = 0 }
 		else
 			if t[spell].enable then
 				add(spell, t[spell].priority or 0, t[spell].stackThreshold or 0)
@@ -58,18 +58,18 @@ function addon:ResetDebuffData()
 end
 
 local DispellColor = {
-	["Magic"]	= {0.2, 0.6, 1},
-	["Curse"]	= {0.6, 0, 1},
-	["Disease"]	= {0.6, 0.4, 0},
-	["Poison"]	= {0, 0.6, 0},
-	["none"] = {1, 1, 1},
+	["Magic"] = { 0.2, 0.6, 1 },
+	["Curse"] = { 0.6, 0, 1 },
+	["Disease"] = { 0.6, 0.4, 0 },
+	["Poison"] = { 0, 0.6, 0 },
+	["none"] = { 1, 1, 1 },
 }
 
 local DispellPriority = {
-	["Magic"]	= 4,
-	["Curse"]	= 3,
-	["Disease"]	= 2,
-	["Poison"]	= 1,
+	["Magic"] = 4,
+	["Curse"] = 3,
+	["Disease"] = 2,
+	["Poison"] = 1,
 }
 
 local DispellFilter
@@ -207,7 +207,9 @@ local function UpdateDebuff(self, name, icon, count, debuffType, duration, expir
 end
 
 local function Update(self, _, unit)
-	if unit ~= self.unit then return end
+	if unit ~= self.unit then
+		return
+	end
 	local _name, _icon, _count, _dtype, _duration, _expiration, _spellId, _
 	local _priority, priority = 0, 0
 	local _stackThreshold = 0
@@ -217,12 +219,12 @@ local function Update(self, _, unit)
 
 	for i = 1, 40 do
 		local name, icon, count, debuffType, duration, expirationTime, _, _, _, spellId = UnitAura(unit, i, "HARMFUL")
-		if (not name) then
+		if not name then
 			break
 		end
 
 		-- we coudln"t dispell if the unit its charmed, or its not friendly
-		if addon.ShowDispellableDebuff and (self.RaidDebuffs.showDispellableDebuff ~= false) and debuffType and (not isCharmed) and (not canAttack) then
+		if addon.ShowDispellableDebuff and (self.RaidDebuffs.showDispellableDebuff ~= false) and debuffType and not isCharmed and not canAttack then
 			if addon.FilterDispellableDebuff then
 				DispellPriority[debuffType] = (DispellPriority[debuffType] or 0) + addon.priority -- Make Dispell buffs on top of Boss Debuffs
 				priority = DispellFilter[debuffType] and DispellPriority[debuffType] or 0
@@ -259,7 +261,7 @@ local function Update(self, _, unit)
 		priority = 6
 		_spellId = 356667
 		_name, _, _icon = GetSpellInfo(_spellId)
-		_count, _dtype, _duration, _expiration, _stackThreshold = 2, "Magic", 10, GetTime()+10, 0
+		_count, _dtype, _duration, _expiration, _stackThreshold = 2, "Magic", 10, GetTime() + 10, 0
 	end
 
 	if _name then
@@ -282,11 +284,11 @@ local function Enable(self)
 		self:RegisterEvent("UNIT_AURA", Update)
 
 		self.RaidDebuffs.BlackList = self.RaidDebuffs.BlackList or {
-			[105171] = true, -- Deep Corruption
-			[108220] = true, -- Deep Corruption
-			[116095] = true, -- Disable, Slow
-			[137637] = true, -- Warbringer, Slow
-		}
+				[105171] = true, -- Deep Corruption
+				[108220] = true, -- Deep Corruption
+				[116095] = true, -- Disable, Slow
+				[137637] = true, -- Warbringer, Slow
+			}
 
 		return true
 	end

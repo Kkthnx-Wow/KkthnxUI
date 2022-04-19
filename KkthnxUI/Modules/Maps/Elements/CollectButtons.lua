@@ -153,7 +153,7 @@ function Module:CreateRecycleBin()
 					child.highlight = child:CreateTexture(nil, "HIGHLIGHT")
 					child.highlight:SetPoint("TOPLEFT", child, "TOPLEFT", 2, -2)
 					child.highlight:SetPoint("BOTTOMRIGHT", child, "BOTTOMRIGHT", -2, 2)
-					child.highlight:SetColorTexture(1, 1, 1, .25)
+					child.highlight:SetColorTexture(1, 1, 1, 0.25)
 				end
 
 				-- Naughty Addons

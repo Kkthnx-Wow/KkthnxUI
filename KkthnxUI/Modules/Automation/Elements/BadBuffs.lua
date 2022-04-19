@@ -17,7 +17,7 @@ local function SetupAutoBadBuffs(_, unit)
 
 			if C.CheckBadBuffs[name] then
 				CancelSpellByName(name)
-				K.Print(K.SystemColor..ACTION_SPELL_AURA_REMOVED.." ["..name.."].|r")
+				K.Print(K.SystemColor .. ACTION_SPELL_AURA_REMOVED .. " [" .. name .. "].|r")
 			end
 
 			i = i + 1

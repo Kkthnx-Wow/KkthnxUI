@@ -49,7 +49,7 @@ local function UpdateBuffValue(button, spellID)
 	local name, _, duration, expire, _, _, value = GetUnitAura("player", spellID, "HELPFUL")
 	if name then
 		button.Count:SetText(K.ShortValue(value))
-		button.CD:SetCooldown(expire-duration, duration)
+		button.CD:SetCooldown(expire - duration, duration)
 		button.CD:Show()
 		button.Icon:SetDesaturated(false)
 	else
@@ -77,7 +77,7 @@ function Module:ChantLumos(self)
 			local name, _, dur, exp, _, _, value = GetUnitAura("player", 77535, "HELPFUL")
 			if name then
 				self.shield:SetText(K.ShortValue(value))
-				button.CD:SetCooldown(exp-dur, dur)
+				button.CD:SetCooldown(exp - dur, dur)
 				button.CD:Show()
 			else
 				self.shield:SetText("")
@@ -120,13 +120,13 @@ function Module:ChantLumos(self)
 			local button = self.lumos[1]
 			local name, _, duration, expire = GetUnitAura("player", 51460, "HELPFUL")
 			if name then
-				button.CD:SetCooldown(expire-duration, duration)
+				button.CD:SetCooldown(expire - duration, duration)
 				button.CD:Show()
 				button.Icon:SetDesaturated(false)
 				button.Count:SetText("")
 				button.Icon:SetTexture(GetSpellTexture(51460))
 			else
-				local count = math_floor(UnitPower("player")/40)
+				local count = math_floor(UnitPower("player") / 40)
 				if count == 0 then
 					button.Icon:SetDesaturated(true)
 				else

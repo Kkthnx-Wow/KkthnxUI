@@ -81,9 +81,7 @@ _G.SLASH_KKUI_VOLUME4 = "/volume"
 -- Profiles data/listings
 SlashCmdList["KKUI_UIPROFILES"] = function(msg)
 	if msg == "" or msg == "list" or msg == "l" then
-		K.Print(
-			"This command no longer has purpose. Please open KkthnxUI GUI and go to General and use the profile dropdown to pick the profile you want!"
-		)
+		K.Print("This command no longer has purpose. Please open KkthnxUI GUI and go to General and use the profile dropdown to pick the profile you want!")
 	end
 end
 _G.SLASH_KKUI_UIPROFILES1 = "/kkprofile"
@@ -130,15 +128,11 @@ SlashCmdList["KKUI_CHECKQUESTSTATUS"] = function(questid)
 	end
 
 	if C_QuestLog_IsQuestFlaggedCompleted(questid) == true then
-		UIErrorsFrame:AddMessage(
-			QuestCheckComplete .. "Quest " .. "|CFFFFFF00[" .. questid .. "]|r" .. L["CheckQuestComplete"]
-		)
+		UIErrorsFrame:AddMessage(QuestCheckComplete .. "Quest " .. "|CFFFFFF00[" .. questid .. "]|r" .. L["CheckQuestComplete"])
 		PlaySound("878")
 		K.Print(WoWHeadLoc .. questid)
 	else
-		UIErrorsFrame:AddMessage(
-			QuestCheckIncomplete .. "Quest " .. "|CFFFFFF00[" .. questid .. "]|r" .. L["CheckQuestNotComplete"]
-		)
+		UIErrorsFrame:AddMessage(QuestCheckIncomplete .. "Quest " .. "|CFFFFFF00[" .. questid .. "]|r" .. L["CheckQuestNotComplete"])
 		PlaySound("847")
 		K.Print(WoWHeadLoc .. questid)
 	end

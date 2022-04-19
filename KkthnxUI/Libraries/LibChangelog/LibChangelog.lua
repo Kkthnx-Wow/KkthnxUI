@@ -8,165 +8,170 @@ local MAJOR, MINOR = "LibChangelog-KkthnxUI", 0
 local LibChangelog = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not LibChangelog then
-    return
+	return
 end
 
 -- Lua APIs
 local error = error
 
 local NEW_MESSAGE_FONTS = {
-    version = GameFontNormalHuge,
-    title = GameFontNormal,
-    text = GameFontHighlight
+	version = GameFontNormalHuge,
+	title = GameFontNormal,
+	text = GameFontHighlight,
 }
 
 local VIEWED_MESSAGE_FONTS = {
-    version = GameFontDisableHuge,
-    title = GameFontDisable,
-    text = GameFontDisable
+	version = GameFontDisableHuge,
+	title = GameFontDisable,
+	text = GameFontDisable,
 }
 
 function LibChangelog:Register(addonName, changelogTable, savedVariablesTable, lastReadVersionKey, onlyShowWhenNewVersionKey, texts)
-    if self[addonName] then
-        return error("LibChangelog: '"..addonName.."' already registered", 2)
-    end
+	if self[addonName] then
+		return error("LibChangelog: '" .. addonName .. "' already registered", 2)
+	end
 
-    self[addonName] = {
-        changelogTable = changelogTable,
-        savedVariablesTable = savedVariablesTable,
-        lastReadVersionKey = lastReadVersionKey,
-        onlyShowWhenNewVersionKey = onlyShowWhenNewVersionKey,
-        texts = texts or {}
-    }
+	self[addonName] = {
+		changelogTable = changelogTable,
+		savedVariablesTable = savedVariablesTable,
+		lastReadVersionKey = lastReadVersionKey,
+		onlyShowWhenNewVersionKey = onlyShowWhenNewVersionKey,
+		texts = texts or {},
+	}
 end
 
 function LibChangelog:CreateString(frame, text, font, offset)
-    local entry = frame.scrollChild:CreateFontString(nil, "ARTWORK")
+	local entry = frame.scrollChild:CreateFontString(nil, "ARTWORK")
 
-    if offset == nil then
-      offset = -5
-    end
+	if offset == nil then
+		offset = -5
+	end
 
-    entry:SetFontObject(font or "GameFontNormal")
-    entry:SetText(text)
-    entry:SetJustifyH("LEFT")
-    entry:SetWidth(frame.scrollBar:GetWidth())
+	entry:SetFontObject(font or "GameFontNormal")
+	entry:SetText(text)
+	entry:SetJustifyH("LEFT")
+	entry:SetWidth(frame.scrollBar:GetWidth())
 
-    if frame.previous then
-      entry:SetPoint("TOPLEFT", frame.previous, "BOTTOMLEFT", 0, offset)
-    else
-      entry:SetPoint("TOPLEFT", frame.scrollChild, "TOPLEFT", -5)
-    end
+	if frame.previous then
+		entry:SetPoint("TOPLEFT", frame.previous, "BOTTOMLEFT", 0, offset)
+	else
+		entry:SetPoint("TOPLEFT", frame.scrollChild, "TOPLEFT", -5)
+	end
 
-    frame.previous = entry
+	frame.previous = entry
 
-    return entry
+	return entry
 end
 
 -- Did this just to get nice alignment on the bulleted entries (otherwise the text wrapped below the bulle
 function LibChangelog:CreateBulletedListEntry(frame, text, font, offset)
-    local bullet = self:CreateString(frame, "-", font, offset)
-    local bulletWidth = 6
+	local bullet = self:CreateString(frame, "-", font, offset)
+	local bulletWidth = 6
 
-    bullet:SetWidth(bulletWidth)
-    bullet:SetJustifyV("TOP")
+	bullet:SetWidth(bulletWidth)
+	bullet:SetJustifyV("TOP")
 
-    local entry = self:CreateString(frame, text, font, offset)
-    entry:SetPoint("TOPLEFT", bullet, "TOPRIGHT")
-    entry:SetWidth(frame.scrollBar:GetWidth() - bulletWidth)
+	local entry = self:CreateString(frame, text, font, offset)
+	entry:SetPoint("TOPLEFT", bullet, "TOPRIGHT")
+	entry:SetWidth(frame.scrollBar:GetWidth() - bulletWidth)
 
-    bullet:SetHeight(entry:GetStringHeight())
+	bullet:SetHeight(entry:GetStringHeight())
 
-    frame.previous = bullet
-    return bullet
+	frame.previous = bullet
+	return bullet
 end
 
 function LibChangelog:ShowChangelog(addonName)
-    local fonts = NEW_MESSAGE_FONTS
-    local addonData = self[addonName]
+	local fonts = NEW_MESSAGE_FONTS
+	local addonData = self[addonName]
 
-    if not addonData then
-        return error("LibChangelog: '"..addonName.. "' was not registered. Please use :Register() first", 2)
-    end
+	if not addonData then
+		return error("LibChangelog: '" .. addonName .. "' was not registered. Please use :Register() first", 2)
+	end
 
-    local firstEntry = addonData.changelogTable[1] -- firstEntry contains the newest Version
-    local addonSavedVariablesTable = addonData.savedVariablesTable
+	local firstEntry = addonData.changelogTable[1] -- firstEntry contains the newest Version
+	local addonSavedVariablesTable = addonData.savedVariablesTable
 
-    if addonData.lastReadVersionKey and addonSavedVariablesTable[addonData.lastReadVersionKey] and firstEntry.Version <= addonSavedVariablesTable[addonData.lastReadVersionKey] and addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey] then
-        return
-    end
+	if
+		addonData.lastReadVersionKey
+		and addonSavedVariablesTable[addonData.lastReadVersionKey]
+		and firstEntry.Version <= addonSavedVariablesTable[addonData.lastReadVersionKey]
+		and addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey]
+	then
+		return
+	end
 
-    if not addonData.frame then
-        local frame = CreateFrame("Frame", nil, UIParent, "ButtonFrameTemplate")
-        ButtonFrameTemplate_HidePortrait(frame)
-        if frame.SetTitle then
-            frame:SetTitle(addonData.texts.title or addonName.." ChangeLog")
-        end
-        frame.Inset:SetPoint("TOPLEFT", 4, -25)
+	if not addonData.frame then
+		local frame = CreateFrame("Frame", nil, UIParent, "ButtonFrameTemplate")
+		ButtonFrameTemplate_HidePortrait(frame)
+		if frame.SetTitle then
+			frame:SetTitle(addonData.texts.title or addonName .. " ChangeLog")
+		end
+		frame.Inset:SetPoint("TOPLEFT", 4, -25)
 
-        frame:SetSize(500, 500)
-        frame:SetPoint("CENTER")
-        frame:StripTextures()
-        frame:CreateBorder()
+		frame:SetSize(500, 500)
+		frame:SetPoint("CENTER")
+		frame:StripTextures()
+		frame:CreateBorder()
 
-        frame.scrollBar = CreateFrame("ScrollFrame", nil, frame.Inset, "UIPanelScrollFrameTemplate")
-        frame.scrollBar:SetPoint("TOPLEFT", 10, -6)
-        frame.scrollBar:SetPoint("BOTTOMRIGHT", -22, 6)
+		frame.scrollBar = CreateFrame("ScrollFrame", nil, frame.Inset, "UIPanelScrollFrameTemplate")
+		frame.scrollBar:SetPoint("TOPLEFT", 10, -6)
+		frame.scrollBar:SetPoint("BOTTOMRIGHT", -22, 6)
 
-        frame.scrollChild = CreateFrame("Frame")
-        frame.scrollChild:SetSize(1, 1) -- It doesnt seem to matter how big it is, the only thing that not works is setting the height to really high number, then you can scroll forever
+		frame.scrollChild = CreateFrame("Frame")
+		frame.scrollChild:SetSize(1, 1) -- It doesnt seem to matter how big it is, the only thing that not works is setting the height to really high number, then you can scroll forever
 
-        frame.scrollBar:SetScrollChild(frame.scrollChild)
-        UIParentInsetScrollBar:SkinScrollBar()
+		frame.scrollBar:SetScrollChild(frame.scrollChild)
+		UIParentInsetScrollBar:SkinScrollBar()
 
-        frame.CloseButton:SkinCloseButton()
-        frame.CloseButton:ClearAllPoints()
-        frame.CloseButton:SetPoint("RIGHT", frame, "TOPRIGHT", 3, -13)
+		frame.CloseButton:SkinCloseButton()
+		frame.CloseButton:ClearAllPoints()
+		frame.CloseButton:SetPoint("RIGHT", frame, "TOPRIGHT", 3, -13)
 
-        frame.CheckButton = CreateFrame("CheckButton", nil, frame, "UICheckButtonTemplate")
-        frame.CheckButton:SetChecked(addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey])
-        frame.CheckButton:SetFrameStrata("HIGH")
-        frame.CheckButton:SetSize(14, 14)
-        frame.CheckButton:SetScript("OnClick", function(self)
-            local isChecked = self:GetChecked()
-            addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey] = isChecked
-            frame.CheckButton:SetChecked(isChecked)
-        end)
-        frame.CheckButton:SetPoint("LEFT", frame, "BOTTOMLEFT", 10, 13)
-        frame.CheckButton:SkinCheckBox()
+		frame.CheckButton = CreateFrame("CheckButton", nil, frame, "UICheckButtonTemplate")
+		frame.CheckButton:SetChecked(addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey])
+		frame.CheckButton:SetFrameStrata("HIGH")
+		frame.CheckButton:SetSize(14, 14)
+		frame.CheckButton:SetScript("OnClick", function(self)
+			local isChecked = self:GetChecked()
+			addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey] = isChecked
+			frame.CheckButton:SetChecked(isChecked)
+		end)
+		frame.CheckButton:SetPoint("LEFT", frame, "BOTTOMLEFT", 10, 13)
+		frame.CheckButton:SkinCheckBox()
 
-        frame.CheckButton.text:ClearAllPoints()
-        frame.CheckButton.text:SetPoint("LEFT", frame.CheckButton, "RIGHT", 4, 0)
-        frame.CheckButton.text:SetText(addonData.texts.onlyShowWhenNewVersion or " Only Show after next update")
+		frame.CheckButton.text:ClearAllPoints()
+		frame.CheckButton.text:SetPoint("LEFT", frame.CheckButton, "RIGHT", 4, 0)
+		frame.CheckButton.text:SetText(addonData.texts.onlyShowWhenNewVersion or " Only Show after next update")
 
-        addonData.frame = frame
-    end
+		addonData.frame = frame
+	end
 
-    for i = 1, #addonData.changelogTable do
-        local versionEntry = addonData.changelogTable[i]
+	for i = 1, #addonData.changelogTable do
+		local versionEntry = addonData.changelogTable[i]
 
-        if addonData.lastReadVersionKey and addonSavedVariablesTable[addonData.lastReadVersionKey] and addonSavedVariablesTable[addonData.lastReadVersionKey] >= versionEntry.Version then
-            fonts = VIEWED_MESSAGE_FONTS
-        end
+		if addonData.lastReadVersionKey and addonSavedVariablesTable[addonData.lastReadVersionKey] and addonSavedVariablesTable[addonData.lastReadVersionKey] >= versionEntry.Version then
+			fonts = VIEWED_MESSAGE_FONTS
+		end
 
-        -- Add version string
-        self:CreateString(addonData.frame, "## "..versionEntry.Version, fonts.version, -30) -- Add a nice spacing between the version header and the previous text
+		-- Add version string
+		self:CreateString(addonData.frame, "## " .. versionEntry.Version, fonts.version, -30) -- Add a nice spacing between the version header and the previous text
 
-        if versionEntry.General then
-            self:CreateString(addonData.frame, versionEntry.General, fonts.text)
-        end
+		if versionEntry.General then
+			self:CreateString(addonData.frame, versionEntry.General, fonts.text)
+		end
 
-        if versionEntry.Sections then
-            for i = 1, #versionEntry.Sections do
-                local section = versionEntry.Sections[i]
-                self:CreateString(addonData.frame, "### "..section.Header, fonts.title, -8)
-                local entries = section.Entries
-                for j = 1, #entries do
-                    self:CreateBulletedListEntry(addonData.frame, entries[j], fonts.text)
-                end
-            end
-        end
-    end
+		if versionEntry.Sections then
+			for i = 1, #versionEntry.Sections do
+				local section = versionEntry.Sections[i]
+				self:CreateString(addonData.frame, "### " .. section.Header, fonts.title, -8)
+				local entries = section.Entries
+				for j = 1, #entries do
+					self:CreateBulletedListEntry(addonData.frame, entries[j], fonts.text)
+				end
+			end
+		end
+	end
 
-    addonSavedVariablesTable[addonData.lastReadVersionKey] = firstEntry.Version
+	addonSavedVariablesTable[addonData.lastReadVersionKey] = firstEntry.Version
 end

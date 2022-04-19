@@ -44,9 +44,11 @@ function Module:ChantLumos(self)
 			local button = self.lumos[1]
 			local name, count, duration, expire = GetUnitAura("player", 7384, "HELPFUL")
 			if name then
-				if count == 0 then count = "" end
+				if count == 0 then
+					count = ""
+				end
 				button.Count:SetText(count)
-				button.CD:SetCooldown(expire-duration, duration)
+				button.CD:SetCooldown(expire - duration, duration)
 				button.CD:Show()
 				button.Icon:SetDesaturated(false)
 				button.Icon:SetTexture(GetSpellTexture(12294))
@@ -111,7 +113,7 @@ function Module:ChantLumos(self)
 			local name, _, duration, expire = GetUnitAura("player", 132404, "HELPFUL")
 			if name then
 				button.Count:SetText("")
-				button.CD:SetCooldown(expire-duration, duration)
+				button.CD:SetCooldown(expire - duration, duration)
 				button.CD:Show()
 				button.Icon:SetDesaturated(false)
 			else

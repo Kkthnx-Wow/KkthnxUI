@@ -96,7 +96,7 @@ function Module:CreatePet()
 			local Portrait = CreateFrame("PlayerModel", "KKUI_PetPortrait", Health)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
-			Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6 ,0)
+			Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 			Portrait:CreateBorder()
 
 			self.Portrait = Portrait
@@ -104,7 +104,7 @@ function Module:CreatePet()
 			local Portrait = Health:CreateTexture("KKUI_PetPortrait", "BACKGROUND", nil, 1)
 			Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
-			Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6 ,0)
+			Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 
 			Portrait.Border = CreateFrame("Frame", nil, self)
 			Portrait.Border:SetAllPoints(Portrait)
@@ -112,7 +112,7 @@ function Module:CreatePet()
 
 			self.Portrait = Portrait
 
-			if (petPortraitStyle == "ClassPortraits" or petPortraitStyle == "NewClassPortraits") then
+			if petPortraitStyle == "ClassPortraits" or petPortraitStyle == "NewClassPortraits" then
 				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
@@ -163,8 +163,8 @@ function Module:CreatePet()
 	local Highlight = Health:CreateTexture(nil, "OVERLAY")
 	Highlight:SetAllPoints()
 	Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
-	Highlight:SetTexCoord(0, 1, .5, 1)
-	Highlight:SetVertexColor(.6, .6, .6)
+	Highlight:SetTexCoord(0, 1, 0.5, 1)
+	Highlight:SetVertexColor(0.6, 0.6, 0.6)
 	Highlight:SetBlendMode("ADD")
 	Highlight:Hide()
 

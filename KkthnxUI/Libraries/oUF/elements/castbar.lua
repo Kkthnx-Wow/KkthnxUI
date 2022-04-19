@@ -90,8 +90,8 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local FALLBACK_ICON = 136243 -- Interface\ICONS\Trade_Engineering
-local FAILED = _G.FAILED or 'Failed'
-local INTERRUPTED = _G.INTERRUPTED or 'Interrupted'
+local FAILED = _G.FAILED or "Failed"
+local INTERRUPTED = _G.INTERRUPTED or "Interrupted"
 
 local function resetAttributes(self)
 	self.castID = nil
@@ -102,18 +102,20 @@ local function resetAttributes(self)
 end
 
 local function CastStart(self, event, unit)
-	if(self.unit ~= unit) then return end
+	if self.unit ~= unit then
+		return
+	end
 
 	local element = self.Castbar
 
 	local name, _, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(unit)
-	event = 'UNIT_SPELLCAST_START'
-	if(not name) then
+	event = "UNIT_SPELLCAST_START"
+	if not name then
 		name, _, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID = UnitChannelInfo(unit)
-		event = 'UNIT_SPELLCAST_CHANNEL_START'
+		event = "UNIT_SPELLCAST_CHANNEL_START"
 	end
 
-	if(not name or (isTradeSkill and element.hideTradeSkills)) then
+	if not name or (isTradeSkill and element.hideTradeSkills) then
 		resetAttributes(element)
 		element:Hide()
 
@@ -126,14 +128,14 @@ local function CastStart(self, event, unit)
 	element.max = endTime - startTime
 	element.startTime = startTime
 	element.delay = 0
-	element.casting = event == 'UNIT_SPELLCAST_START'
-	element.channeling = event == 'UNIT_SPELLCAST_CHANNEL_START'
+	element.casting = event == "UNIT_SPELLCAST_START"
+	element.channeling = event == "UNIT_SPELLCAST_CHANNEL_START"
 	element.notInterruptible = notInterruptible
 	element.holdTime = 0
 	element.castID = castID
 	element.spellID = spellID
 
-	if(element.casting) then
+	if element.casting then
 		element.duration = GetTime() - startTime
 	else
 		element.duration = endTime - GetTime()
@@ -142,32 +144,42 @@ local function CastStart(self, event, unit)
 	element:SetMinMaxValues(0, element.max)
 	element:SetValue(element.duration)
 
-	if(element.Icon) then element.Icon:SetTexture(texture or FALLBACK_ICON) end
-	if(element.Shield) then element.Shield:SetShown(notInterruptible) end
-	if(element.Spark) then element.Spark:Show() end
-	if(element.Text) then element.Text:SetText(name) end
-	if(element.Time) then element.Time:SetText() end
+	if element.Icon then
+		element.Icon:SetTexture(texture or FALLBACK_ICON)
+	end
+	if element.Shield then
+		element.Shield:SetShown(notInterruptible)
+	end
+	if element.Spark then
+		element.Spark:Show()
+	end
+	if element.Text then
+		element.Text:SetText(name)
+	end
+	if element.Time then
+		element.Time:SetText()
+	end
 
 	local safeZone = element.SafeZone
-	if(safeZone) then
-		local isHoriz = element:GetOrientation() == 'HORIZONTAL'
+	if safeZone then
+		local isHoriz = element:GetOrientation() == "HORIZONTAL"
 
 		safeZone:ClearAllPoints()
-		safeZone:SetPoint(isHoriz and 'TOP' or 'LEFT')
-		safeZone:SetPoint(isHoriz and 'BOTTOM' or 'RIGHT')
+		safeZone:SetPoint(isHoriz and "TOP" or "LEFT")
+		safeZone:SetPoint(isHoriz and "BOTTOM" or "RIGHT")
 
-		if(element.casting) then
-			safeZone:SetPoint(element:GetReverseFill() and (isHoriz and 'LEFT' or 'BOTTOM') or (isHoriz and 'RIGHT' or 'TOP'))
+		if element.casting then
+			safeZone:SetPoint(element:GetReverseFill() and (isHoriz and "LEFT" or "BOTTOM") or (isHoriz and "RIGHT" or "TOP"))
 		else
-			safeZone:SetPoint(element:GetReverseFill() and (isHoriz and 'RIGHT' or 'TOP') or (isHoriz and 'LEFT' or 'BOTTOM'))
+			safeZone:SetPoint(element:GetReverseFill() and (isHoriz and "RIGHT" or "TOP") or (isHoriz and "LEFT" or "BOTTOM"))
 		end
 
 		local ratio = (select(4, GetNetStats()) / 1000) / element.max
-		if(ratio > 1) then
+		if ratio > 1 then
 			ratio = 1
 		end
 
-		safeZone[isHoriz and 'SetWidth' or 'SetHeight'](safeZone, element[isHoriz and 'GetWidth' or 'GetHeight'](element) * ratio)
+		safeZone[isHoriz and "SetWidth" or "SetHeight"](safeZone, element[isHoriz and "GetWidth" or "GetHeight"](element) * ratio)
 	end
 
 	--[[ Callback: Castbar:PostCastStart(unit)
@@ -176,7 +188,7 @@ local function CastStart(self, event, unit)
 	* self - the Castbar widget
 	* unit - the unit for which the update has been triggered (string)
 	--]]
-	if(element.PostCastStart) then
+	if element.PostCastStart then
 		element:PostCastStart(unit)
 	end
 
@@ -184,27 +196,31 @@ local function CastStart(self, event, unit)
 end
 
 local function CastUpdate(self, event, unit, castID, spellID)
-	if(self.unit ~= unit) then return end
+	if self.unit ~= unit then
+		return
+	end
 
 	local element = self.Castbar
-	if(not element:IsShown() or element.castID ~= castID or element.spellID ~= spellID) then
+	if not element:IsShown() or element.castID ~= castID or element.spellID ~= spellID then
 		return
 	end
 
 	local name, startTime, endTime, _
-	if(event == 'UNIT_SPELLCAST_DELAYED') then
+	if event == "UNIT_SPELLCAST_DELAYED" then
 		name, _, _, startTime, endTime = UnitCastingInfo(unit)
 	else
 		name, _, _, startTime, endTime = UnitChannelInfo(unit)
 	end
 
-	if(not name) then return end
+	if not name then
+		return
+	end
 
 	endTime = endTime / 1000
 	startTime = startTime / 1000
 
 	local delta
-	if(element.casting) then
+	if element.casting then
 		delta = startTime - element.startTime
 
 		element.duration = GetTime() - startTime
@@ -214,7 +230,7 @@ local function CastUpdate(self, event, unit, castID, spellID)
 		element.duration = endTime - GetTime()
 	end
 
-	if(delta < 0) then
+	if delta < 0 then
 		delta = 0
 	end
 
@@ -231,16 +247,18 @@ local function CastUpdate(self, event, unit, castID, spellID)
 	* self - the Castbar widget
 	* unit - the unit that the update has been triggered (string)
 	--]]
-	if(element.PostCastUpdate) then
+	if element.PostCastUpdate then
 		return element:PostCastUpdate(unit)
 	end
 end
 
 local function CastStop(self, event, unit, castID, spellID)
-	if(self.unit ~= unit) then return end
+	if self.unit ~= unit then
+		return
+	end
 
 	local element = self.Castbar
-	if(not element:IsShown() or element.castID ~= castID or element.spellID ~= spellID) then
+	if not element:IsShown() or element.castID ~= castID or element.spellID ~= spellID then
 		return
 	end
 
@@ -253,24 +271,28 @@ local function CastStop(self, event, unit, castID, spellID)
 	* unit    - the unit for which the update has been triggered (string)
 	* spellID - the ID of the spell (number)
 	--]]
-	if(element.PostCastStop) then
+	if element.PostCastStop then
 		return element:PostCastStop(unit, spellID)
 	end
 end
 
 local function CastFail(self, event, unit, castID, spellID)
-	if(self.unit ~= unit) then return end
-
-	local element = self.Castbar
-	if(not element:IsShown() or element.castID ~= castID or element.spellID ~= spellID) then
+	if self.unit ~= unit then
 		return
 	end
 
-	if(element.Text) then
-		element.Text:SetText(event == 'UNIT_SPELLCAST_FAILED' and FAILED or INTERRUPTED)
+	local element = self.Castbar
+	if not element:IsShown() or element.castID ~= castID or element.spellID ~= spellID then
+		return
 	end
 
-	if(element.Spark) then element.Spark:Hide() end
+	if element.Text then
+		element.Text:SetText(event == "UNIT_SPELLCAST_FAILED" and FAILED or INTERRUPTED)
+	end
+
+	if element.Spark then
+		element.Spark:Hide()
+	end
 
 	element.holdTime = element.timeToHold or 0
 
@@ -284,20 +306,26 @@ local function CastFail(self, event, unit, castID, spellID)
 	* unit    - the unit for which the update has been triggered (string)
 	* spellID - the ID of the spell (number)
 	--]]
-	if(element.PostCastFail) then
+	if element.PostCastFail then
 		return element:PostCastFail(unit, spellID)
 	end
 end
 
 local function CastInterruptible(self, event, unit)
-	if(self.unit ~= unit) then return end
+	if self.unit ~= unit then
+		return
+	end
 
 	local element = self.Castbar
-	if(not element:IsShown()) then return end
+	if not element:IsShown() then
+		return
+	end
 
-	element.notInterruptible = event == 'UNIT_SPELLCAST_NOT_INTERRUPTIBLE'
+	element.notInterruptible = event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE"
 
-	if(element.Shield) then element.Shield:SetShown(element.notInterruptible) end
+	if element.Shield then
+		element.Shield:SetShown(element.notInterruptible)
+	end
 
 	--[[ Callback: Castbar:PostCastInterruptible(unit)
 	Called after the element has been updated when a spell cast has become interruptible or uninterruptible.
@@ -305,23 +333,23 @@ local function CastInterruptible(self, event, unit)
 	* self - the Castbar widget
 	* unit - the unit for which the update has been triggered (string)
 	--]]
-	if(element.PostCastInterruptible) then
+	if element.PostCastInterruptible then
 		return element:PostCastInterruptible(unit)
 	end
 end
 
 local function onUpdate(self, elapsed)
-	if(self.casting or self.channeling) then
+	if self.casting or self.channeling then
 		local isCasting = self.casting
-		if(isCasting) then
+		if isCasting then
 			self.duration = self.duration + elapsed
-			if(self.duration >= self.max) then
+			if self.duration >= self.max then
 				local spellID = self.spellID
 
 				resetAttributes(self)
 				self:Hide()
 
-				if(self.PostCastStop) then
+				if self.PostCastStop then
 					self:PostCastStop(self.__owner.unit, spellID)
 				end
 
@@ -329,13 +357,13 @@ local function onUpdate(self, elapsed)
 			end
 		else
 			self.duration = self.duration - elapsed
-			if(self.duration <= 0) then
+			if self.duration <= 0 then
 				local spellID = self.spellID
 
 				resetAttributes(self)
 				self:Hide()
 
-				if(self.PostCastStop) then
+				if self.PostCastStop then
 					self:PostCastStop(self.__owner.unit, spellID)
 				end
 
@@ -343,24 +371,24 @@ local function onUpdate(self, elapsed)
 			end
 		end
 
-		if(self.Time) then
-			if(self.delay ~= 0) then
-				if(self.CustomDelayText) then
+		if self.Time then
+			if self.delay ~= 0 then
+				if self.CustomDelayText then
 					self:CustomDelayText(self.duration)
 				else
-					self.Time:SetFormattedText('%.1f|cffff0000%s%.2f|r', self.duration, isCasting and '+' or '-', self.delay)
+					self.Time:SetFormattedText("%.1f|cffff0000%s%.2f|r", self.duration, isCasting and "+" or "-", self.delay)
 				end
 			else
-				if(self.CustomTimeText) then
+				if self.CustomTimeText then
 					self:CustomTimeText(self.duration)
 				else
-					self.Time:SetFormattedText('%.1f', self.duration)
+					self.Time:SetFormattedText("%.1f", self.duration)
 				end
 			end
 		end
 
 		self:SetValue(self.duration)
-	elseif(self.holdTime > 0) then
+	elseif self.holdTime > 0 then
 		self.holdTime = self.holdTime - elapsed
 	else
 		resetAttributes(self)
@@ -373,51 +401,51 @@ local function Update(...)
 end
 
 local function ForceUpdate(element)
-	return Update(element.__owner, 'ForceUpdate', element.__owner.unit)
+	return Update(element.__owner, "ForceUpdate", element.__owner.unit)
 end
 
 local function Enable(self, unit)
 	local element = self.Castbar
-	if(element and unit and not unit:match('%wtarget$')) then
+	if element and unit and not unit:match("%wtarget$") then
 		element.__owner = self
 		element.ForceUpdate = ForceUpdate
 
-		self:RegisterEvent('UNIT_SPELLCAST_START', CastStart)
-		self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_START', CastStart)
-		self:RegisterEvent('UNIT_SPELLCAST_STOP', CastStop)
-		self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_STOP', CastStop)
-		self:RegisterEvent('UNIT_SPELLCAST_DELAYED', CastUpdate)
-		self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_UPDATE', CastUpdate)
-		self:RegisterEvent('UNIT_SPELLCAST_FAILED', CastFail)
-		self:RegisterEvent('UNIT_SPELLCAST_INTERRUPTED', CastFail)
-		self:RegisterEvent('UNIT_SPELLCAST_INTERRUPTIBLE', CastInterruptible)
-		self:RegisterEvent('UNIT_SPELLCAST_NOT_INTERRUPTIBLE', CastInterruptible)
+		self:RegisterEvent("UNIT_SPELLCAST_START", CastStart)
+		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", CastStart)
+		self:RegisterEvent("UNIT_SPELLCAST_STOP", CastStop)
+		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", CastStop)
+		self:RegisterEvent("UNIT_SPELLCAST_DELAYED", CastUpdate)
+		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", CastUpdate)
+		self:RegisterEvent("UNIT_SPELLCAST_FAILED", CastFail)
+		self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", CastFail)
+		self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE", CastInterruptible)
+		self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", CastInterruptible)
 
 		element.holdTime = 0
 
-		element:SetScript('OnUpdate', element.OnUpdate or onUpdate)
+		element:SetScript("OnUpdate", element.OnUpdate or onUpdate)
 
-		if(self.unit == 'player' and not (self.hasChildren or self.isChild or self.isNamePlate)) then
+		if self.unit == "player" and not (self.hasChildren or self.isChild or self.isNamePlate) then
 			CastingBarFrame_SetUnit(CastingBarFrame, nil)
 			CastingBarFrame_SetUnit(PetCastingBarFrame, nil)
 		end
 
-		if(element:IsObjectType('StatusBar') and not element:GetStatusBarTexture()) then
+		if element:IsObjectType("StatusBar") and not element:GetStatusBarTexture() then
 			element:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
 		end
 
 		local spark = element.Spark
-		if(spark and spark:IsObjectType('Texture') and not spark:GetTexture()) then
+		if spark and spark:IsObjectType("Texture") and not spark:GetTexture() then
 			spark:SetTexture([[Interface\CastingBar\UI-CastingBar-Spark]])
 		end
 
 		local shield = element.Shield
-		if(shield and shield:IsObjectType('Texture') and not shield:GetTexture()) then
+		if shield and shield:IsObjectType("Texture") and not shield:GetTexture() then
 			shield:SetTexture([[Interface\CastingBar\UI-CastingBar-Small-Shield]])
 		end
 
 		local safeZone = element.SafeZone
-		if(safeZone and safeZone:IsObjectType('Texture') and not safeZone:GetTexture()) then
+		if safeZone and safeZone:IsObjectType("Texture") and not safeZone:GetTexture() then
 			safeZone:SetColorTexture(1, 0, 0)
 		end
 
@@ -429,27 +457,27 @@ end
 
 local function Disable(self)
 	local element = self.Castbar
-	if(element) then
+	if element then
 		element:Hide()
 
-		self:UnregisterEvent('UNIT_SPELLCAST_START', CastStart)
-		self:UnregisterEvent('UNIT_SPELLCAST_CHANNEL_START', CastStart)
-		self:UnregisterEvent('UNIT_SPELLCAST_DELAYED', CastUpdate)
-		self:UnregisterEvent('UNIT_SPELLCAST_CHANNEL_UPDATE', CastUpdate)
-		self:UnregisterEvent('UNIT_SPELLCAST_STOP', CastStop)
-		self:UnregisterEvent('UNIT_SPELLCAST_CHANNEL_STOP', CastStop)
-		self:UnregisterEvent('UNIT_SPELLCAST_FAILED', CastFail)
-		self:UnregisterEvent('UNIT_SPELLCAST_INTERRUPTED', CastFail)
-		self:UnregisterEvent('UNIT_SPELLCAST_INTERRUPTIBLE', CastInterruptible)
-		self:UnregisterEvent('UNIT_SPELLCAST_NOT_INTERRUPTIBLE', CastInterruptible)
+		self:UnregisterEvent("UNIT_SPELLCAST_START", CastStart)
+		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START", CastStart)
+		self:UnregisterEvent("UNIT_SPELLCAST_DELAYED", CastUpdate)
+		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", CastUpdate)
+		self:UnregisterEvent("UNIT_SPELLCAST_STOP", CastStop)
+		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", CastStop)
+		self:UnregisterEvent("UNIT_SPELLCAST_FAILED", CastFail)
+		self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED", CastFail)
+		self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE", CastInterruptible)
+		self:UnregisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", CastInterruptible)
 
-		element:SetScript('OnUpdate', nil)
+		element:SetScript("OnUpdate", nil)
 
-		if(self.unit == 'player' and not (self.hasChildren or self.isChild or self.isNamePlate)) then
-			CastingBarFrame_OnLoad(CastingBarFrame, 'player', true, false)
+		if self.unit == "player" and not (self.hasChildren or self.isChild or self.isNamePlate) then
+			CastingBarFrame_OnLoad(CastingBarFrame, "player", true, false)
 			PetCastingBarFrame_OnLoad(PetCastingBarFrame)
 		end
 	end
 end
 
-oUF:AddElement('Castbar', Update, Enable, Disable)
+oUF:AddElement("Castbar", Update, Enable, Disable)

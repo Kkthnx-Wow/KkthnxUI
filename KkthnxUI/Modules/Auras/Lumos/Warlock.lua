@@ -33,7 +33,9 @@ function Module:PostCreateLumos(self)
 end
 
 function Module:PostUpdateVisibility(self)
-	if self.dotUpdater then self.dotUpdater:Hide() end
+	if self.dotUpdater then
+		self.dotUpdater:Hide()
+	end
 end
 
 local function GetUnitAura(unit, spell, filter)
@@ -69,7 +71,7 @@ function Module:ChantLumos(self)
 			end
 
 			if name and caster == "player" then
-				button.CD:SetCooldown(expire-duration, duration)
+				button.CD:SetCooldown(expire - duration, duration)
 				button.CD:Show()
 				button.Icon:SetDesaturated(false)
 				button.expire = expire

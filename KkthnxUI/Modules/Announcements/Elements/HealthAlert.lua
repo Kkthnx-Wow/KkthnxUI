@@ -10,16 +10,18 @@ local lastTimePlayer = 0
 local healthPercent = 35
 
 function Module:SetupHealthAnnounce()
+	-- stylua: ignore
 	if (UnitAffectingCombat("pet") and (UnitHealth("pet") / UnitHealthMax("pet") * 100) <= healthPercent) and lastTimePet ~= GetTime() then
 		PlaySound(23404, "master")
-		UIErrorsFrame:AddMessage(K.InfoColor..string_format(L["The health for %s is low!"], UnitName("pet")))
+		UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], UnitName("pet")))
 
 		lastTimePet = GetTime()
 	end
 
+	-- stylua: ignore
 	if (UnitAffectingCombat("player") and (UnitHealth("player") / UnitHealthMax("player") * 100) <= healthPercent) and lastTimePlayer ~= GetTime() then
 		PlaySound(23404, "master")
-		UIErrorsFrame:AddMessage(K.InfoColor..string_format(L["The health for %s is low!"], UnitName("player")))
+		UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], UnitName("player")))
 
 		lastTimePlayer = GetTime()
 	end

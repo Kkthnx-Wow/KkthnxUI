@@ -17,7 +17,7 @@ function Module:CreateBar5()
 	local buttonList = {}
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBar5", UIParent, "SecureHandlerStateTemplate")
-	frame.mover = K.Mover(frame, "Actionbar".."5", "Bar5", {"RIGHT", _G.KKUI_ActionBar4, "LEFT", -margin, 0})
+	frame.mover = K.Mover(frame, "Actionbar" .. "5", "Bar5", { "RIGHT", _G.KKUI_ActionBar4, "LEFT", -margin, 0 })
 	Module.movers[6] = frame.mover
 
 	MultiBarLeft:SetParent(frame)
@@ -31,7 +31,7 @@ function Module:CreateBar5()
 	end)
 
 	for i = 1, num do
-		local button = _G["MultiBarLeftButton"..i]
+		local button = _G["MultiBarLeftButton" .. i]
 		table_insert(buttonList, button)
 		table_insert(Module.buttons, button)
 	end

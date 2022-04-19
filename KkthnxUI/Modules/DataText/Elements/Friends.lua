@@ -61,8 +61,8 @@ local menuList = {
 	[1] = {
 		text = L["Join or Invite"],
 		isTitle = true,
-		notCheckable = true
-	}
+		notCheckable = true,
+	},
 }
 
 local function sortFriends(a, b)
@@ -85,7 +85,7 @@ local function buildFriendTable(num)
 			end
 
 			local class = K.ClassList[info.className]
-			table_insert(friendTable, {info.name, info.level, class, info.area, status})
+			table_insert(friendTable, { info.name, info.level, class, info.area, status })
 		end
 	end
 
@@ -178,7 +178,7 @@ local function buildBNetTable(num)
 					client = CLIENT_WOW_DIFF
 				end
 
-				table_insert(bnetTable, {i, accountName, charName, canCooperate, client, status, class, level, infoText, note, broadcastText, broadcastTime})
+				table_insert(bnetTable, { i, accountName, charName, canCooperate, client, status, class, level, infoText, note, broadcastText, broadcastTime })
 			end
 		end
 	end
@@ -188,7 +188,7 @@ end
 
 local function isPanelCanHide(self, elapsed)
 	self.timer = (self.timer or 0) + elapsed
-	if self.timer > .1 then
+	if self.timer > 0.1 then
 		if not infoFrame:IsMouseOver() then
 			self:Hide()
 			self:SetScript("OnUpdate", nil)
@@ -220,11 +220,11 @@ local function FriendsPanel_UpdateButton(button)
 
 		button.status:SetTexture(status)
 		local zoneColor = inactiveZone
-		local name = inactiveZone..charName
+		local name = inactiveZone .. charName
 		if client == BNET_CLIENT_WOW then
 			if canCooperate then
 				local color = K.ClassColors[class] or GetQuestDifficultyColor(1)
-				name = K.RGBToHex(color)..charName
+				name = K.RGBToHex(color) .. charName
 			end
 			zoneColor = GetRealZoneText() == infoText and activeZone or inactiveZone
 		end
@@ -232,7 +232,7 @@ local function FriendsPanel_UpdateButton(button)
 		button.zone:SetText(string_format("%s%s", zoneColor, infoText))
 		if client == CLIENT_WOW_DIFF then
 			button.gameIcon:SetTexture(BNet_GetClientTexture(BNET_CLIENT_WOW))
-			button.gameIcon:SetVertexColor(.3, .3, .3)
+			button.gameIcon:SetVertexColor(0.3, 0.3, 0.3)
 		else
 			button.gameIcon:SetTexture(BNet_GetClientTexture(client))
 			button.gameIcon:SetVertexColor(1, 1, 1)
@@ -310,7 +310,7 @@ local function buttonOnClick(self, btn)
 								menuList[index] = {}
 							end
 
-							menuList[index].text = K.RGBToHex(K.ColorClass(K.ClassList[class]))..charName
+							menuList[index].text = K.RGBToHex(K.ColorClass(K.ClassList[class])) .. charName
 							menuList[index].notCheckable = true
 							menuList[index].arg1 = bnetIDGameAccount
 							menuList[index].arg2 = guid
@@ -371,13 +371,13 @@ local function buttonOnEnter(self)
 
 			if client == BNET_CLIENT_WOW then
 				if charName ~= "" then -- fix for weird account
-					realmName = (K.Realm == realmName or realmName == "") and "" or "-"..realmName
+					realmName = (K.Realm == realmName or realmName == "") and "" or "-" .. realmName
 
 					-- Get TBC realm name from richPresence
 					if wowProjectID == WOW_PROJECT_TBC then
 						local realm, count = gsub(gameText, "^.-%-%s", "")
 						if count > 0 then
-							realmName = "-"..realm
+							realmName = "-" .. realm
 						end
 					end
 
@@ -391,7 +391,7 @@ local function buttonOnEnter(self)
 					GameTooltip:AddLine(string_format("%s%s %s%s%s", clientString, level, classColor, charName, realmName))
 
 					if wowProjectID ~= WOW_PROJECT_ID then
-						zoneName = "*"..zoneName
+						zoneName = "*" .. zoneName
 					end
 					GameTooltip:AddLine(string_format("%s%s", inactiveZone, zoneName))
 				end
@@ -427,7 +427,7 @@ end
 local function FriendsPanel_CreateButton(parent, index)
 	local button = CreateFrame("Button", nil, parent)
 	button:SetSize(370, 20)
-	button:SetPoint("TOPLEFT", 0, - (index - 1) * 20)
+	button:SetPoint("TOPLEFT", 0, -(index - 1) * 20)
 
 	button.HL = button:CreateTexture(nil, "HIGHLIGHT")
 	button.HL:SetAllPoints()
@@ -440,7 +440,7 @@ local function FriendsPanel_CreateButton(parent, index)
 	button.name = K.CreateFontString(button, 12, "Tag (name)", "", false, "LEFT", 25, 0)
 	button.name:SetPoint("RIGHT", button, "LEFT", 230, 0)
 	button.name:SetJustifyH("LEFT")
-	button.name:SetTextColor(.5, .7, 1)
+	button.name:SetTextColor(0.5, 0.7, 1)
 
 	button.zone = K.CreateFontString(button, 12, "Zone", "", false, "RIGHT", -28, 0)
 	button.zone:SetPoint("LEFT", button, "RIGHT", -130, 0)
@@ -449,7 +449,7 @@ local function FriendsPanel_CreateButton(parent, index)
 	button.gameIcon = button:CreateTexture(nil, "ARTWORK")
 	button.gameIcon:SetPoint("RIGHT", button, -8, 0)
 	button.gameIcon:SetSize(16, 16)
-	button.gameIcon:SetTexCoord(.17, .83, .17, .83)
+	button.gameIcon:SetTexCoord(0.17, 0.83, 0.17, 0.83)
 
 	local gameIconBorder = CreateFrame("Frame", nil, button)
 	gameIconBorder:SetFrameLevel(button:GetFrameLevel())
@@ -487,9 +487,9 @@ local function FriendsPanel_Init()
 		end
 	end)
 
-	K.CreateFontString(infoFrame, 14, "|cff0099ff"..FRIENDS_LIST, "", nil, "TOPLEFT", 15, -10)
+	K.CreateFontString(infoFrame, 14, "|cff0099ff" .. FRIENDS_LIST, "", nil, "TOPLEFT", 15, -10)
 	infoFrame.friendCountText = K.CreateFontString(infoFrame, 13, "-/-", "", nil, "TOPRIGHT", -15, -12)
-	infoFrame.friendCountText:SetTextColor(0, .6, 1)
+	infoFrame.friendCountText:SetTextColor(0, 0.6, 1)
 
 	local scrollFrame = CreateFrame("ScrollFrame", "KKUI_FriendsInfobarScrollFrame", infoFrame, "HybridScrollFrameTemplate")
 	scrollFrame:SetSize(370, 400)
@@ -520,9 +520,9 @@ local function FriendsPanel_Init()
 	scrollBar:SetValue(0)
 
 	K.CreateFontString(infoFrame, 12, Module.LineString, "", false, "BOTTOMRIGHT", -12, 42)
-	local whspInfo = K.InfoColor..K.RightButton..L["Whisper"]
+	local whspInfo = K.InfoColor .. K.RightButton .. L["Whisper"]
 	K.CreateFontString(infoFrame, 12, whspInfo, "", false, "BOTTOMRIGHT", -15, 26)
-	local invtInfo = K.InfoColor.."ALT +"..K.LeftButton..L["Invite"]
+	local invtInfo = K.InfoColor .. "ALT +" .. K.LeftButton .. L["Invite"]
 	K.CreateFontString(infoFrame, 12, invtInfo, "", false, "BOTTOMRIGHT", -15, 10)
 end
 
@@ -543,7 +543,7 @@ end
 
 local function OnEnter(self)
 	local thisTime = GetTime()
-	if not prevTime or (thisTime-prevTime > 5) then
+	if not prevTime or (thisTime - prevTime > 5) then
 		FriendsPanel_Refresh()
 		prevTime = thisTime
 	end
@@ -605,7 +605,7 @@ local function OnEvent(_, event, arg1)
 	if C["DataText"].HideText then
 		FriendsDataText.Text:SetText("")
 	else
-		FriendsDataText.Text:SetText(string_format("%s: "..K.MyClassColor.."%d", FRIENDS, Module.totalOnline))
+		FriendsDataText.Text:SetText(string_format("%s: " .. K.MyClassColor .. "%d", FRIENDS, Module.totalOnline))
 	end
 
 	updateRequest = false
@@ -672,5 +672,5 @@ function Module:CreateSocialDataText()
 	FriendsDataText:SetScript("OnEnter", OnEnter)
 	FriendsDataText:SetScript("OnLeave", OnLeave)
 
-	K.Mover(FriendsDataText, "FriendsDataText", "FriendsDataText", {"LEFT", UIParent, "LEFT", 4, -270})
+	K.Mover(FriendsDataText, "FriendsDataText", "FriendsDataText", { "LEFT", UIParent, "LEFT", 4, -270 })
 end

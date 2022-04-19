@@ -44,9 +44,9 @@ local function LandingButton_OnEnter(self)
 		for _, node in ipairs(nodes) do
 			if node.state == Enum.SoulbindNodeState.Selected then
 				if node.conduitID and node.conduitID > 0 and node.conduitRank and node.conduitType then
-					table_insert(conduits, {id = node.conduitID, rank = node.conduitRank, type = node.conduitType})
+					table_insert(conduits, { id = node.conduitID, rank = node.conduitRank, type = node.conduitType })
 				elseif node.icon and node.spellID and select(1, GetSpellInfo(node.spellID)) then
-					table_insert(traits, {icon = node.icon, spellName = select(1, GetSpellInfo(node.spellID))})
+					table_insert(traits, { icon = node.icon, spellName = select(1, GetSpellInfo(node.spellID)) })
 				end
 			end
 		end
@@ -60,15 +60,17 @@ local function LandingButton_OnEnter(self)
 				local conduitQuality = C_Soulbinds_GetConduitQuality(conduits[i].id, conduits[i].rank)
 				local color = K.QualityColors[conduitQuality]
 
-				GameTooltip:AddLine(CreateAtlasMarkup(_G.Soulbinds.GetConduitEmblemAtlas(conduits[i].type)).." ["..conduitItemLevel.."] "..AddTexture(icon).." "..K.RGBToHex(color.r, color.g, color.b)..name.."|r ")
+				GameTooltip:AddLine(CreateAtlasMarkup(_G.Soulbinds.GetConduitEmblemAtlas(conduits[i].type)) .. " [" .. conduitItemLevel .. "] " .. AddTexture(icon) .. " " .. K.RGBToHex(color.r, color.g, color.b) .. name .. "|r ")
 			end
 		end
 
 		if next(traits) then
-			if #conduits > 0 then GameTooltip:AddLine(" ") end
+			if #conduits > 0 then
+				GameTooltip:AddLine(" ")
+			end
 			GameTooltip:AddLine(GARRISON_TRAITS, 1, 0.93, 0.73)
 			for i = 1, #traits do
-				GameTooltip:AddLine(AddTexture(traits[i].icon).." "..traits[i].spellName.."|r ")
+				GameTooltip:AddLine(AddTexture(traits[i].icon) .. " " .. traits[i].spellName .. "|r ")
 			end
 		end
 	end

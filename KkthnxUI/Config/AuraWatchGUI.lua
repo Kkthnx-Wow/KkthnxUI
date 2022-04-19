@@ -347,10 +347,7 @@ local function CreatePanel()
 	local function SortBars(index)
 		local num, onLeft, onRight = 1, 1, 1
 		for k in pairs(barTable[index]) do
-			if
-				(index < 10 and KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[index][k])
-				or (index == 10 and KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[k])
-			then
+			if (index < 10 and KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[index][k]) or (index == 10 and KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD[k]) then
 				local bar = barTable[index][k]
 				if num == 1 then
 					bar:SetPoint("TOPLEFT", 10, -10)
@@ -434,17 +431,7 @@ local function CreatePanel()
 		combat = combat and ", Combat = true" or ""
 		flash = flash and ", Flash = true" or ""
 		text = text and text ~= "" and ', Text = "' .. text .. '"' or ""
-		local output = "{"
-			.. typeID
-			.. unitID
-			.. caster
-			.. stack
-			.. amount
-			.. timeless
-			.. combat
-			.. flash
-			.. text
-			.. "}"
+		local output = "{" .. typeID .. unitID .. caster .. stack .. amount .. timeless .. combat .. flash .. text .. "}"
 		bar:SetScript("OnMouseUp", function()
 			local editBox = ChatEdit_ChooseBoxForSend()
 			ChatEdit_ActivateChat(editBox)
@@ -596,53 +583,18 @@ local function CreatePanel()
 			for _, v in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i]) do
 				AddAura(tabs[i].List.child, i, v)
 			end
-			Option[1] = AW_CreateDropdown(
-				tabs[i].Page,
-				L["Type*"],
-				20,
-				-30,
-				{ "AuraID", "SpellID", "SlotID", "TotemID" },
-				L["Type Intro"]
-			)
+			Option[1] = AW_CreateDropdown(tabs[i].Page, L["Type*"], 20, -30, { "AuraID", "SpellID", "SlotID", "TotemID" }, L["Type Intro"])
 			Option[2] = AW_CreateEditbox(tabs[i].Page, "ID*", 140, -30, L["ID Intro"])
-			Option[3] = AW_CreateDropdown(
-				tabs[i].Page,
-				L["Unit*"],
-				260,
-				-30,
-				{ "player", "target", "focus", "pet" },
-				L["Unit Intro"]
-			)
-			Option[4] = AW_CreateDropdown(
-				tabs[i].Page,
-				L["Caster"],
-				380,
-				-30,
-				{ "player", "target", "pet" },
-				L["Caster Intro"]
-			)
+			Option[3] = AW_CreateDropdown(tabs[i].Page, L["Unit*"], 260, -30, { "player", "target", "focus", "pet" }, L["Unit Intro"])
+			Option[4] = AW_CreateDropdown(tabs[i].Page, L["Caster"], 380, -30, { "player", "target", "pet" }, L["Caster Intro"])
 			Option[5] = AW_CreateEditbox(tabs[i].Page, L["Stack"], 500, -30, L["Stack Intro"])
 			Option[6] = AW_CreateCheckBox(tabs[i].Page, L["Value"], 40, -95, L["Value Intro"])
 			Option[7] = AW_CreateCheckBox(tabs[i].Page, L["Timeless"], 120, -95, L["Timeless Intro"])
 			Option[8] = AW_CreateCheckBox(tabs[i].Page, L["Combat"], 200, -95, L["Combat Intro"])
 			Option[9] = AW_CreateEditbox(tabs[i].Page, L["Text"], 340, -90, L["Text Intro"])
 			Option[10] = AW_CreateCheckBox(tabs[i].Page, L["Flash"], 280, -95, L["Flash Intro"])
-			Option[11] = AW_CreateDropdown(
-				tabs[i].Page,
-				L["Slot*"],
-				140,
-				-30,
-				{ slotIndex[6], slotIndex[11], slotIndex[12], slotIndex[13], slotIndex[14], slotIndex[15] },
-				L["Slot Intro"]
-			)
-			Option[12] = AW_CreateDropdown(
-				tabs[i].Page,
-				L["Totem*"],
-				140,
-				-30,
-				{ L["TotemSlot"] .. "1", L["TotemSlot"] .. "2", L["TotemSlot"] .. "3", L["TotemSlot"] .. "4" },
-				L["Totem Intro"]
-			)
+			Option[11] = AW_CreateDropdown(tabs[i].Page, L["Slot*"], 140, -30, { slotIndex[6], slotIndex[11], slotIndex[12], slotIndex[13], slotIndex[14], slotIndex[15] }, L["Slot Intro"])
+			Option[12] = AW_CreateDropdown(tabs[i].Page, L["Totem*"], 140, -30, { L["TotemSlot"] .. "1", L["TotemSlot"] .. "2", L["TotemSlot"] .. "3", L["TotemSlot"] .. "4" }, L["Totem Intro"])
 
 			for j = 2, 12 do
 				Option[j]:Hide()
@@ -679,23 +631,8 @@ local function CreatePanel()
 			end
 			Option[13] = AW_CreateEditbox(tabs[i].Page, L["IntID*"], 20, -30, L["IntID Intro"])
 			Option[14] = AW_CreateEditbox(tabs[i].Page, L["Duration*"], 140, -30, L["Duration Intro"])
-			Option[15] = AW_CreateDropdown(
-				tabs[i].Page,
-				L["Trigger"] .. "*",
-				260,
-				-30,
-				{ "OnAuraGain", "OnCastSuccess" },
-				L["Trigger Intro"],
-				130
-			)
-			Option[16] = AW_CreateDropdown(
-				tabs[i].Page,
-				L["Unit*"],
-				420,
-				-30,
-				{ "Player", "All" },
-				L["Trigger Unit Intro"]
-			)
+			Option[15] = AW_CreateDropdown(tabs[i].Page, L["Trigger"] .. "*", 260, -30, { "OnAuraGain", "OnCastSuccess" }, L["Trigger Intro"], 130)
+			Option[16] = AW_CreateDropdown(tabs[i].Page, L["Unit*"], 420, -30, { "Player", "All" }, L["Trigger Unit Intro"])
 			Option[17] = AW_CreateEditbox(tabs[i].Page, L["ItemID"], 20, -95, L["ItemID Intro"])
 		end
 
@@ -724,8 +661,7 @@ local function CreatePanel()
 		add:SetPoint("TOPRIGHT", -30, -90)
 		add:SetScript("OnClick", function()
 			if i < 10 then
-				local typeID, spellID, unitID, slotID, totemID =
-					Option[1].Text:GetText(), tonumber(Option[2]:GetText()), Option[3].Text:GetText()
+				local typeID, spellID, unitID, slotID, totemID = Option[1].Text:GetText(), tonumber(Option[2]:GetText()), Option[3].Text:GetText()
 				for i = 1, #Option[11].options do
 					if Option[11].options[i].selected then
 						slotID = slotTable[i]
@@ -745,12 +681,7 @@ local function CreatePanel()
 					return
 				end
 
-				if
-					(typeID == "AuraID" and (not spellID or not unitID))
-					or (typeID == "SpellID" and not spellID)
-					or (typeID == "SlotID" and not slotID)
-					or (typeID == "TotemID" and not totemID)
-				then
+				if (typeID == "AuraID" and (not spellID or not unitID)) or (typeID == "SpellID" and not spellID) or (typeID == "SlotID" and not slotID) or (typeID == "TotemID" and not totemID) then
 					UIErrorsFrame:AddMessage(K.InfoColor .. L["Incomplete Input"])
 					return
 				end
@@ -783,12 +714,7 @@ local function CreatePanel()
 					AW_ClearEdit(Option[i])
 				end
 			elseif i == 10 then
-				local intID, duration, trigger, unit, itemID =
-					tonumber(Option[13]:GetText()),
-					tonumber(Option[14]:GetText()),
-					Option[15].Text:GetText(),
-					Option[16].Text:GetText(),
-					tonumber(Option[17]:GetText())
+				local intID, duration, trigger, unit, itemID = tonumber(Option[13]:GetText()), tonumber(Option[14]:GetText()), Option[15].Text:GetText(), Option[16].Text:GetText(), tonumber(Option[17]:GetText())
 				if not intID or not duration or not trigger or not unit then
 					UIErrorsFrame:AddMessage(K.InfoColor .. L["Incomplete Input"])
 					return

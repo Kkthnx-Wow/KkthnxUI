@@ -25,7 +25,7 @@ C.themes["Blizzard_InspectUI"] = function()
 
 	InspectModelFrame:StripTextures(true)
 
-	for _, slot in pairs({InspectPaperDollItemsFrame:GetChildren()}) do
+	for _, slot in pairs({ InspectPaperDollItemsFrame:GetChildren() }) do
 		if slot:IsObjectType("Button") or slot:IsObjectType("ItemButton") then
 			slot:StripTextures()
 			slot:CreateBorder()
@@ -70,7 +70,7 @@ C.themes["Blizzard_InspectUI"] = function()
 
 			local _, targetClass = UnitClass("target")
 			if targetClass then
-				InspectFrame.Inset.Bg:SetTexture("Interface\\DressUpFrame\\DressingRoom"..targetClass)
+				InspectFrame.Inset.Bg:SetTexture("Interface\\DressUpFrame\\DressingRoom" .. targetClass)
 				InspectFrame.Inset.Bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
 				InspectFrame.Inset.Bg:SetHorizTile(false)
 				InspectFrame.Inset.Bg:SetVertTile(false)

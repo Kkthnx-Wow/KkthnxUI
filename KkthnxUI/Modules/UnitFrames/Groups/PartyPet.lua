@@ -54,7 +54,7 @@ function Module:CreatePartyPet()
 
 	self.Power.Background = self.Power:CreateTexture(nil, "BORDER")
 	self.Power.Background:SetAllPoints(self.Power)
-	self.Power.Background:SetColorTexture(.2, .2, .2)
+	self.Power.Background:SetColorTexture(0.2, 0.2, 0.2)
 	self.Power.Background.multiplier = 0.3
 
 	self.Portrait = CreateFrame("PlayerModel", nil, self.Health)
@@ -75,7 +75,7 @@ function Module:CreatePartyPet()
 
 	if C["Party"].TargetHighlight then
 		self.PartyPetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
-		self.PartyPetHighlight:SetBackdrop({edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12})
+		self.PartyPetHighlight:SetBackdrop({ edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12 })
 		self.PartyPetHighlight:SetPoint("TOPLEFT", self, -6, 6)
 		self.PartyPetHighlight:SetPoint("BOTTOMRIGHT", self, 6, -6)
 		self.PartyPetHighlight:SetBackdropBorderColor(1, 1, 0)
@@ -104,8 +104,8 @@ function Module:CreatePartyPet()
 	self.Highlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()
 	self.Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
-	self.Highlight:SetTexCoord(0, 1, .5, 1)
-	self.Highlight:SetVertexColor(.6, .6, .6)
+	self.Highlight:SetTexCoord(0, 1, 0.5, 1)
+	self.Highlight:SetVertexColor(0.6, 0.6, 0.6)
 	self.Highlight:SetBlendMode("ADD")
 	self.Highlight:Hide()
 

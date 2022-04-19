@@ -30,13 +30,13 @@ local subzone
 local zone
 
 local zoneInfo = {
-	arena = {FREE_FOR_ALL_TERRITORY, {0.84, 0.03, 0.03}},
-	combat = {COMBAT_ZONE, {0.84, 0.03, 0.03}},
-	contested = {CONTESTED_TERRITORY, {0.9, 0.85, 0.05}},
-	friendly = {FACTION_CONTROLLED_TERRITORY, {0.05, 0.85, 0.03}},
-	hostile = {FACTION_CONTROLLED_TERRITORY, {0.84, 0.03, 0.03}},
-	neutral = {string_format(FACTION_CONTROLLED_TERRITORY, FACTION_STANDING_LABEL4), {0.9, 0.85, 0.05}},
-	sanctuary = {SANCTUARY_TERRITORY, {0.035, 0.58, 0.84}}
+	arena = { FREE_FOR_ALL_TERRITORY, { 0.84, 0.03, 0.03 } },
+	combat = { COMBAT_ZONE, { 0.84, 0.03, 0.03 } },
+	contested = { CONTESTED_TERRITORY, { 0.9, 0.85, 0.05 } },
+	friendly = { FACTION_CONTROLLED_TERRITORY, { 0.05, 0.85, 0.03 } },
+	hostile = { FACTION_CONTROLLED_TERRITORY, { 0.84, 0.03, 0.03 } },
+	neutral = { string_format(FACTION_CONTROLLED_TERRITORY, FACTION_STANDING_LABEL4), { 0.9, 0.85, 0.05 } },
+	sanctuary = { SANCTUARY_TERRITORY, { 0.035, 0.58, 0.84 } },
 }
 
 local function formatCoords()
@@ -84,17 +84,17 @@ local function OnEnter()
 	if pvpType and not IsInInstance() then
 		local r, g, b = unpack(zoneInfo[pvpType][2])
 		if zone and subzone and subzone ~= "" then
-			GameTooltip:AddLine(K.GreyColor..ZONE..":|r "..zone, r, g, b)
-			GameTooltip:AddLine(K.GreyColor.."SubZone"..":|r "..subzone, r, g, b)
+			GameTooltip:AddLine(K.GreyColor .. ZONE .. ":|r " .. zone, r, g, b)
+			GameTooltip:AddLine(K.GreyColor .. "SubZone" .. ":|r " .. subzone, r, g, b)
 		else
-			GameTooltip:AddLine(K.GreyColor..ZONE..":|r "..zone, r, g, b)
+			GameTooltip:AddLine(K.GreyColor .. ZONE .. ":|r " .. zone, r, g, b)
 		end
-		GameTooltip:AddLine(string_format(K.GreyColor.."PvPType"..":|r "..zoneInfo[pvpType][1], faction or ""), r, g, b)
+		GameTooltip:AddLine(string_format(K.GreyColor .. "PvPType" .. ":|r " .. zoneInfo[pvpType][1], faction or ""), r, g, b)
 	end
 
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine(K.LeftButton..L["WorldMap"], 0.6, 0.8, 1)
-	GameTooltip:AddLine(K.RightButton.."Send My Pos", 0.6, 0.8, 1)
+	GameTooltip:AddLine(K.LeftButton .. L["WorldMap"], 0.6, 0.8, 1)
+	GameTooltip:AddLine(K.RightButton .. "Send My Pos", 0.6, 0.8, 1)
 	GameTooltip:Show()
 end
 
@@ -145,5 +145,5 @@ function Module:CreateCoordsDataText()
 	CoordsDataTextFrame:SetScript("OnLeave", OnLeave)
 	CoordsDataTextFrame:SetScript("OnEnter", OnEnter)
 
-	K.Mover(CoordsDataTextFrame, "CoordsDataText", "CoordsDataText", {"TOP", UIParent, "TOP", 0, -40})
+	K.Mover(CoordsDataTextFrame, "CoordsDataText", "CoordsDataText", { "TOP", UIParent, "TOP", 0, -40 })
 end

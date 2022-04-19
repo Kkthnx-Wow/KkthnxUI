@@ -24,7 +24,7 @@ function Module:SetupChannelNames(text, ...)
 	end
 
 	local r, g, b = ...
-	if C["Chat"].WhisperColor and string_find(text, L["To"].." |H[BN]*player.+%]") then
+	if C["Chat"].WhisperColor and string_find(text, L["To"] .. " |H[BN]*player.+%]") then
 		r, g, b = r * 0.7, g * 0.7, b * 0.7
 	end
 
@@ -36,8 +36,8 @@ function Module:SetupChannelNames(text, ...)
 			text = string_gsub(text, oldTimeStamp, "")
 		end
 
-		local timeStamp = BetterDate(K.GreyColor..timestampFormat[C["Chat"].TimestampFormat.Value].."|r", currentTime)
-		text = timeStamp..text
+		local timeStamp = BetterDate(K.GreyColor .. timestampFormat[C["Chat"].TimestampFormat.Value] .. "|r", currentTime)
+		text = timeStamp .. text
 	end
 
 	if C["Chat"].OldChatNames then
@@ -50,7 +50,7 @@ end
 function Module:CreateChatRename()
 	for i = 1, _G.NUM_CHAT_WINDOWS do
 		if i ~= 2 then
-			local chatFrame = _G["ChatFrame"..i]
+			local chatFrame = _G["ChatFrame" .. i]
 			chatFrame.oldAddMsg = chatFrame.AddMessage
 			chatFrame.AddMessage = Module.SetupChannelNames
 		end
@@ -61,10 +61,10 @@ function Module:CreateChatRename()
 	_G.ERR_FRIEND_OFFLINE_S = string_gsub(_G.ERR_FRIEND_OFFLINE_S, "%%s", "%%s|cffff7f50")
 
 	-- Whisper
-	_G.CHAT_WHISPER_INFORM_GET = L["To"].." %s "
-	_G.CHAT_WHISPER_GET = L["From"].." %s "
-	_G.CHAT_BN_WHISPER_INFORM_GET = L["To"].." %s "
-	_G.CHAT_BN_WHISPER_GET = L["From"].." %s "
+	_G.CHAT_WHISPER_INFORM_GET = L["To"] .. " %s "
+	_G.CHAT_WHISPER_GET = L["From"] .. " %s "
+	_G.CHAT_BN_WHISPER_INFORM_GET = L["To"] .. " %s "
+	_G.CHAT_BN_WHISPER_GET = L["From"] .. " %s "
 
 	-- Say/Yell
 	_G.CHAT_SAY_GET = "%s "

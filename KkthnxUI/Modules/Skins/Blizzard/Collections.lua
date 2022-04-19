@@ -3,9 +3,9 @@ local K, C = unpack(KkthnxUI)
 local _G = _G
 
 C.themes["Blizzard_Collections"] = function()
-    if K.CheckAddOnState("BetterWardrobe") then
-        return
-    end
+	if K.CheckAddOnState("BetterWardrobe") then
+		return
+	end
 
 	local WardrobeFrame = _G["WardrobeFrame"]
 	local WardrobeTransmogFrame = _G["WardrobeTransmogFrame"]
@@ -20,7 +20,7 @@ C.themes["Blizzard_Collections"] = function()
 	WardrobeTransmogFrame:SetWidth(desiredTransmogFrameWidth)
 
 	-- Insert better BG
-	WardrobeTransmogFrame.Inset.BG:SetTexture("Interface\\DressUpFrame\\DressingRoom"..K.Class)
+	WardrobeTransmogFrame.Inset.BG:SetTexture("Interface\\DressUpFrame\\DressingRoom" .. K.Class)
 	WardrobeTransmogFrame.Inset.BG:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
 	WardrobeTransmogFrame.Inset.BG:SetHorizTile(false)
 	WardrobeTransmogFrame.Inset.BG:SetVertTile(false)

@@ -111,8 +111,7 @@ local CreditLines = {
 	HunterIconColor .. "Cassamarra|r",
 	"Darth Predator",
 	"Elv - (|cff1784d1ElvUI|r)",
-	DruidIconColor
-		.. "Goldpaw|r - (|c00000002|r|cff7284abA|r|cff6a7a9ez|r|cff617092e|r|cff596785r|r|cff505d78i|r|cff48536bt|r|cff3f495fe|r|cffffffffUI|r)",
+	DruidIconColor .. "Goldpaw|r - (|c00000002|r|cff7284abA|r|cff6a7a9ez|r|cff617092e|r|cff596785r|r|cff505d78i|r|cff48536bt|r|cff3f495fe|r|cffffffffUI|r)",
 	"Haleth",
 	"Haste",
 	"Hungtar",

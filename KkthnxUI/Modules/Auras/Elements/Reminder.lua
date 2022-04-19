@@ -46,7 +46,7 @@ function Module:Reminder_Update(cfg)
 			isEquipped = false
 		end
 
-		if GetItemCount(itemID) == 0 or (not isEquipped) or GetItemCooldown(itemID) > 0 then -- Check item cooldown
+		if GetItemCount(itemID) == 0 or not isEquipped or GetItemCooldown(itemID) > 0 then -- Check item cooldown
 			frame:Hide()
 			return
 		end

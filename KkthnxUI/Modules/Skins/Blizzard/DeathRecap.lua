@@ -11,14 +11,14 @@ C.themes["Blizzard_DeathRecap"] = function()
 	DeathRecapFrame:CreateBorder()
 
 	for i = 1, 5 do
-		local iconBorder = DeathRecapFrame["Recap"..i].SpellInfo.IconBorder
-		local icon = DeathRecapFrame["Recap"..i].SpellInfo.Icon
+		local iconBorder = DeathRecapFrame["Recap" .. i].SpellInfo.IconBorder
+		local icon = DeathRecapFrame["Recap" .. i].SpellInfo.Icon
 
 		iconBorder:SetAlpha(0)
 		icon:SetTexCoord(unpack(K.TexCoords))
-		DeathRecapFrame["Recap"..i].SpellInfo:CreateBackdrop()
-		DeathRecapFrame["Recap"..i].SpellInfo.Backdrop:SetAllPoints(icon)
-		icon:SetParent(DeathRecapFrame["Recap"..i].SpellInfo.Backdrop)
+		DeathRecapFrame["Recap" .. i].SpellInfo:CreateBackdrop()
+		DeathRecapFrame["Recap" .. i].SpellInfo.Backdrop:SetAllPoints(icon)
+		icon:SetParent(DeathRecapFrame["Recap" .. i].SpellInfo.Backdrop)
 	end
 
 	for i = 1, DeathRecapFrame:GetNumChildren() do

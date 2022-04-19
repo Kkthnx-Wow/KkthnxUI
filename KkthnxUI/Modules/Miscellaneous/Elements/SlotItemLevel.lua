@@ -91,7 +91,7 @@ function Module:CreateItemString(frame, strType)
 
 	for index, slot in pairs(inspectSlots) do
 		if index ~= 4 then
-			local slotFrame = _G[strType..slot.."Slot"]
+			local slotFrame = _G[strType .. slot .. "Slot"]
 			slotFrame.iLvlText = K.CreateFontString(slotFrame, 12, "", "OUTLINE")
 			slotFrame.iLvlText:ClearAllPoints()
 			slotFrame.iLvlText:SetPoint("BOTTOMLEFT", slotFrame, 1, 1)
@@ -106,7 +106,7 @@ function Module:CreateItemString(frame, strType)
 				local offset = (i - 1) * 20 + 5
 				local iconX = x > 0 and x + offset or x - offset
 				local iconY = index > 15 and 20 or 2
-				slotFrame["textureIcon"..i] = Module:CreateItemTexture(slotFrame, relF, iconX, iconY)
+				slotFrame["textureIcon" .. i] = Module:CreateItemTexture(slotFrame, relF, iconX, iconY)
 			end
 		end
 	end
@@ -176,7 +176,7 @@ function Module:ItemLevel_UpdateTraits(button, id, link)
 			if selected then
 				local spellID = Module:Azerite_PowerToSpell(powerID)
 				local name, _, icon = GetSpellInfo(spellID)
-				local texture = button["textureIcon"..i]
+				local texture = button["textureIcon" .. i]
 				if name and texture then
 					texture:SetTexture(icon)
 					texture.bg:Show()
@@ -209,7 +209,7 @@ function Module:ItemLevel_UpdateInfo(slotFrame, info, quality)
 
 		local gemStep, essenceStep = 1, 1
 		for i = 1, 10 do
-			local texture = slotFrame["textureIcon"..i]
+			local texture = slotFrame["textureIcon" .. i]
 			local bg = texture.bg
 			local gem = info.gems and info.gems[gemStep]
 			local essence = not gem and (info.essences and info.essences[essenceStep])
@@ -260,11 +260,11 @@ function Module:ItemLevel_SetupLevel(frame, strType, unit)
 
 	for index, slot in pairs(inspectSlots) do
 		if index ~= 4 then
-			local slotFrame = _G[strType..slot.."Slot"]
+			local slotFrame = _G[strType .. slot .. "Slot"]
 			slotFrame.iLvlText:SetText("")
 			slotFrame.enchantText:SetText("")
 			for i = 1, 10 do
-				local texture = slotFrame["textureIcon"..i]
+				local texture = slotFrame["textureIcon" .. i]
 				texture:SetTexture(nil)
 				texture.bg:Hide()
 			end

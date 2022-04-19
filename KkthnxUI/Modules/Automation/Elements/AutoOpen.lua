@@ -55,7 +55,7 @@ local function BagDelayedUpdate()
 		for slot = 0, GetContainerNumSlots(bag) do
 			local _, _, locked, _, _, lootable, _, _, _, id = GetContainerItemInfo(bag, slot)
 			if lootable and not locked and id and C.AutoOpenItems[id] then
-				K.Print(K.SystemColor..OPENING..":|r "..GetContainerItemLink(bag, slot))
+				K.Print(K.SystemColor .. OPENING .. ":|r " .. GetContainerItemLink(bag, slot))
 				UseContainerItem(bag, slot)
 				return
 			end
