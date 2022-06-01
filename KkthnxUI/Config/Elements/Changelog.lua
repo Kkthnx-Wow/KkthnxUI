@@ -20,6 +20,39 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.3.1] - 2022-6-1",
+		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
+		Sections = {
+			-- {
+			-- 	Header = "Added",
+			-- 	Entries = {
+			-- 	},
+			-- },
+
+			{
+				Header = "Fixed",
+				Entries = {
+					"Player report frame changes",
+					"Raid utility module",
+				},
+			},
+
+			-- {
+			-- 	Header = "Removed",
+			-- 	Entries = {
+			-- 	},
+			-- },
+
+			{
+				Header = "Changed",
+				Entries = {
+					"TOC to 90205",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.3.0] - 2022-4-5",
 		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {

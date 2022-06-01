@@ -65,8 +65,8 @@ end
 
 -- Did this just to get nice alignment on the bulleted entries (otherwise the text wrapped below the bulle
 function LibChangelog:CreateBulletedListEntry(frame, text, font, offset)
-	local bullet = self:CreateString(frame, "-", font, offset)
-	local bulletWidth = 6
+	local bullet = self:CreateString(frame, " ", font, offset)
+	local bulletWidth = 4
 
 	bullet:SetWidth(bulletWidth)
 	bullet:SetJustifyV("TOP")
