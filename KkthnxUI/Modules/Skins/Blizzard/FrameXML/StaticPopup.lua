@@ -168,15 +168,15 @@ PetBattleQueueReadyFrame.AcceptButton:SkinButton()
 PetBattleQueueReadyFrame.DeclineButton:SkinButton()
 
 -- PlayerReportFrame
-PlayerReportFrame:HookScript("OnShow", function(self)
-	if not self.styled then
-		self:StripTextures()
-		self:CreateBorder()
-		self.Comment:StripTextures()
-		ReskinEditBox(self.Comment)
-		self.ReportButton:SkinButton()
-		self.CancelButton:SkinButton()
+-- PlayerReportFrame:HookScript("OnShow", function(self)
+-- 	if not self.styled then
+-- 		self:StripTextures()
+-- 		self:CreateBorder()
+-- 		self.Comment:StripTextures()
+-- 		ReskinEditBox(self.Comment)
+-- 		self.ReportButton:SkinButton()
+-- 		self.CancelButton:SkinButton()
 
-		self.styled = true
-	end
-end)
+-- 		self.styled = true
+-- 	end
+-- end)
