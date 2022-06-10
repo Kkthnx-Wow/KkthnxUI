@@ -347,7 +347,7 @@ local ActionBar = function(self)
 
 	Window:CreateSection("Actionbar 5")
 	Window:CreateSwitch("ActionBar", "Bar5Fader", L["Mouseover RightBar 2"])
-	Window:CreateSlider("ActionBar", "Bar5PerRow", "Bar 5 Per Row", 1, 1, 1, nil, UpdateActionbar5)
+	Window:CreateSlider("ActionBar", "Bar5PerRow", "Bar 5 Per Row", 1, 12, 1, nil, UpdateActionbar5)
 	Window:CreateSlider("ActionBar", "Bar5Size", "Bar 5 Size", 20, 80, 1, nil, UpdateActionbar5)
 	Window:CreateSlider("ActionBar", "Bar5Num", "Bar 5 Num", 1, 12, 1, nil, UpdateActionbar5)
 	Window:CreateSlider("ActionBar", "Bar5Font", "Bar 5 Font", 8, 20, 1, nil, UpdateActionbar5)
