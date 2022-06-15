@@ -648,24 +648,7 @@ do
 		K:UnregisterEvent(event, fixGuildNews)
 	end
 
-	local function fixCommunitiesNews(event, addon)
-		if addon ~= "Blizzard_Communities" then
-			return
-		end
-
-		local _CommunitiesGuildNewsButton_OnEnter = CommunitiesGuildNewsButton_OnEnter
-		function CommunitiesGuildNewsButton_OnEnter(self)
-			if not (self.newsInfo and self.newsInfo.whatText) then
-				return
-			end
-			_CommunitiesGuildNewsButton_OnEnter(self)
-		end
-
-		K:UnregisterEvent(event, fixCommunitiesNews)
-	end
-
 	K:RegisterEvent("ADDON_LOADED", fixGuildNews)
-	K:RegisterEvent("ADDON_LOADED", fixCommunitiesNews)
 end
 
 hooksecurefunc("ChatEdit_InsertLink", function(text) -- shift-clicked

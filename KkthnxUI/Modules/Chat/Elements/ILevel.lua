@@ -41,13 +41,15 @@ local function GetSocketTexture(socket, count)
 	return string_rep("|TInterface\\ItemSocketingFrame\\UI-EmptySocket-" .. socket .. ":0|t", count)
 end
 
-local function isItemHasGem(link)
+function Module.IsItemHasGem(link)
 	local text = ""
 	local stats = GetItemStats(link)
-	for stat, count in pairs(stats) do
-		local socket = string_match(stat, "EMPTY_SOCKET_(%S+)")
-		if socket and socketWatchList[socket] then
-			text = text .. GetSocketTexture(socket, count)
+	if stats then
+		for stat, count in pairs(stats) do
+			local socket = strmatch(stat, "EMPTY_SOCKET_(%S+)")
+			if socket and socketWatchList[socket] then
+				text = text .. GetSocketTexture(socket, count)
+			end
 		end
 	end
 
@@ -65,7 +67,7 @@ local function convertItemLevel(link)
 
 	local name, itemLevel = isItemHasLevel(link)
 	if name and itemLevel then
-		link = string_gsub(link, "|h%[(.-)%]|h", "|h[" .. name .. "(" .. itemLevel .. ")]|h" .. isItemHasGem(link))
+		link = string_gsub(link, "|h%[(.-)%]|h", "|h[" .. name .. "(" .. itemLevel .. ")]|h" .. Module.IsItemHasGem(link))
 		itemCache[link] = link
 	end
 

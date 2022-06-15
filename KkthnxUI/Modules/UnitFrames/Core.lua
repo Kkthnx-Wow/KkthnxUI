@@ -840,7 +840,14 @@ function Module:CreateUnits()
 			if i == 1 then
 				Arena[i].mover = K.Mover(Arena[i], "ArenaFrame" .. i, "Arena1", { "BOTTOMRIGHT", UIParent, "RIGHT", -250, 140 }, arenaMoverWidth, arenaMoverHeight)
 			else
-				Arena[i].mover = K.Mover(Arena[i], "ArenaFrame" .. i, "Arena" .. i, { "TOPLEFT", Arena[i - 1], "BOTTOMLEFT", 0, -C["Arena"].YOffset }, arenaMoverWidth, arenaMoverHeight)
+				Arena[i].mover = K.Mover(
+					Arena[i],
+					"ArenaFrame" .. i,
+					"Arena" .. i,
+					{ "TOPLEFT", Arena[i - 1], "BOTTOMLEFT", 0, -C["Arena"].YOffset },
+					arenaMoverWidth,
+					arenaMoverHeight
+				)
 			end
 		end
 
@@ -1016,7 +1023,14 @@ function Module:CreateUnits()
 
 			if i == 1 then
 				if horizonRaid then
-					raidMover = K.Mover(groups[i], "RaidFrame", "RaidFrame", { "TOPLEFT", UIParent, "TOPLEFT", 4, -180 }, (raidWidth + 5) * 5, (raidHeight + (showTeamIndex and 21 or 15)) * numGroups)
+					raidMover = K.Mover(
+						groups[i],
+						"RaidFrame",
+						"RaidFrame",
+						{ "TOPLEFT", UIParent, "TOPLEFT", 4, -180 },
+						(raidWidth + 5) * 5,
+						(raidHeight + (showTeamIndex and 21 or 15)) * numGroups
+					)
 					if reverse then
 						groups[i]:ClearAllPoints()
 						groups[i]:SetPoint("BOTTOMLEFT", raidMover)

@@ -391,6 +391,33 @@ function Module.ItemLevel_ScrappingShow(event, addon)
 	end
 end
 
+local itemCache = {}
+local CHAT = K:GetModule("Chat")
+
+function Module.ItemLevel_ReplaceItemLink(link, name)
+	if not link then 
+		return 
+	end
+
+	local modLink = itemCache[link]
+	if not modLink then
+		local itemLevel = K.GetItemLevel(link)
+		if itemLevel then
+			modLink = gsub(link, "|h%[(.-)%]|h", "|h(" .. itemLevel .. CHAT.IsItemHasGem(link)..")"..name.."|h")
+			itemCache[link] = modLink
+		end
+	end
+
+	return modLink
+end
+
+function Module:ItemLevel_ReplaceGuildNews()
+	local newText = gsub(self.text:GetText(), "(|Hitem:%d+:.-|h%[(.-)%]|h)", Module.ItemLevel_ReplaceItemLink)
+	if newText then
+		self.text:SetText(newText)
+	end
+end
+
 function Module:CreateSlotItemLevel()
 	if not C["Misc"].ItemLevel then
 		return
@@ -414,6 +441,9 @@ function Module:CreateSlotItemLevel()
 
 	-- iLvl on ScrappingMachineFrame
 	K:RegisterEvent("ADDON_LOADED", Module.ItemLevel_ScrappingShow)
+
+	-- iLvl on GuildNews
+	hooksecurefunc("GuildNewsButton_SetText", Module.ItemLevel_ReplaceGuildNews)
 end
 
 Module:RegisterMisc("SlotItemLevel", Module.CreateSlotItemLevel)

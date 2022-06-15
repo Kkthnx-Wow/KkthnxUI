@@ -68,7 +68,7 @@ local function ConfigureHead(memberID, channelID)
 	frame:Show()
 end
 
-local function DeconfigureHead(memberID) -- memberID, channelID
+local function DeconfigureHead(memberID, channelID) -- memberID, channelID
 	local frame = GetHeadByID(memberID)
 	if not frame then
 		return

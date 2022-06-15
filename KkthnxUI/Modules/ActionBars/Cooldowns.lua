@@ -56,7 +56,7 @@ function Module:TimerOnUpdate(elapsed)
 	if self.nextUpdate > 0 then
 		self.nextUpdate = self.nextUpdate - elapsed
 	else
-		local remain = self.duration - (GetTime() - self.start)
+		local remain = (self.duration - (GetTime() - self.start)) / self.modRate
 		if remain > 0 then
 			local getTime, nextUpdate = K.FormatTime(remain)
 			self.text:SetText(getTime)
@@ -93,7 +93,7 @@ function Module:OnCreate()
 	return timer
 end
 
-function Module:StartTimer(start, duration)
+function Module:StartTimer(start, duration, modRate)
 	if self:IsForbidden() then
 		return
 	end
@@ -109,10 +109,15 @@ function Module:StartTimer(start, duration)
 	end
 
 	local parent = self:GetParent()
+	start = tonumber(start) or 0
+	duration = tonumber(duration) or 0
+	modRate = tonumber(modRate) or 1
+	
 	if start > 0 and duration > MIN_DURATION then
 		local timer = self.timer or Module.OnCreate(self)
 		timer.start = start
 		timer.duration = duration
+		timer.modRate = modRate
 		timer.enabled = true
 		timer.nextUpdate = 0
 
