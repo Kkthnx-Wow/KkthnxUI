@@ -122,7 +122,11 @@ function Module:UpdateThreat(_, unit)
 				portrait.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
 		end
-	elseif portraitStyle ~= "ThreeDPortraits" and portraitStyle ~= "NoPortraits" and portraitStyle ~= "OverlayPortrait" then
+	elseif
+		portraitStyle ~= "ThreeDPortraits"
+		and portraitStyle ~= "NoPortraits"
+		and portraitStyle ~= "OverlayPortrait"
+	then
 		if not portrait.Border.KKUI_Border then
 			return
 		end
@@ -220,7 +224,11 @@ function Module:OnCastbarUpdate(elapsed)
 
 		if self.__owner.unit == "player" then
 			if self.delay ~= 0 then
-				self.Time:SetFormattedText(decimal .. " - |cffff0000" .. decimal, duration, self.casting and self.max + self.delay or self.max - self.delay)
+				self.Time:SetFormattedText(
+					decimal .. " - |cffff0000" .. decimal,
+					duration,
+					self.casting and self.max + self.delay or self.max - self.delay
+				)
 			else
 				self.Time:SetFormattedText(decimal .. " - " .. decimal, duration, self.max)
 			end
@@ -228,7 +236,11 @@ function Module:OnCastbarUpdate(elapsed)
 			if duration > 1e4 then
 				self.Time:SetText("∞ - ∞")
 			else
-				self.Time:SetFormattedText(decimal .. " - " .. decimal, duration, self.casting and self.max + self.delay or self.max - self.delay)
+				self.Time:SetFormattedText(
+					decimal .. " - " .. decimal,
+					duration,
+					self.casting and self.max + self.delay or self.max - self.delay
+				)
 			end
 		end
 		self.duration = duration
@@ -379,7 +391,11 @@ end
 
 function Module:PostCastStop()
 	if not self.fadeOut then
-		self:SetStatusBarColor(K.Colors.castbar.CompleteColor[1], K.Colors.castbar.CompleteColor[2], K.Colors.castbar.CompleteColor[3])
+		self:SetStatusBarColor(
+			K.Colors.castbar.CompleteColor[1],
+			K.Colors.castbar.CompleteColor[2],
+			K.Colors.castbar.CompleteColor[3]
+		)
 		self.fadeOut = true
 	end
 
@@ -499,7 +515,25 @@ function Module.bolsterPostUpdate(element)
 	end
 end
 
-function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster, isStealable, _, spellID, _, _, _, nameplateShowAll)
+function Module.CustomFilter(
+	element,
+	unit,
+	button,
+	name,
+	_,
+	_,
+	_,
+	_,
+	_,
+	caster,
+	isStealable,
+	_,
+	spellID,
+	_,
+	_,
+	_,
+	nameplateShowAll
+)
 	local style = element.__owner.mystyle
 	if name and spellID == 209859 then
 		if style == "nameplate" or style == "target" then
@@ -520,7 +554,8 @@ function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster,
 			return true
 		else
 			local auraFilter = C["Nameplate"].AuraFilter.Value
-			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and (caster == "player" or caster == "pet" or caster == "vehicle"))
+			return (auraFilter == 3 and nameplateShowAll)
+				or (auraFilter ~= 1 and (caster == "player" or caster == "pet" or caster == "vehicle"))
 		end
 	elseif (element.onlyShowPlayer and button.isPlayer) or (not element.onlyShowPlayer and name) then
 		return true
@@ -637,11 +672,16 @@ function Module:CreateClassPower(self)
 		if K.Class == "DEATHKNIGHT" then
 			bars[i].timer = K.CreateFontString(bars[i], 10, "")
 		elseif K.Class == "ROGUE" then
-			local chargeStar = bars[i]:CreateTexture()
+			if not bar.chargeParent then
+				bar.chargeParent = CreateFrame("Frame", nil, bar)
+				bar.chargeParent:SetAllPoints()
+				bar.chargeParent:SetFrameLevel(8)
+			end
+			local chargeStar = bar.chargeParent:CreateTexture()
 			chargeStar:SetAtlas("VignetteKill")
 			chargeStar:SetDesaturated(true)
 			chargeStar:SetSize(22, 22)
-			chargeStar:SetPoint("CENTER")
+			chargeStar:SetPoint("CENTER", bars[i])
 			chargeStar:Hide()
 			bars[i].chargeStar = chargeStar
 		end
@@ -757,22 +797,45 @@ function Module:CreateUnits()
 		local PlayerFrameHeight = C["Unitframe"].PlayerHealthHeight + C["Unitframe"].PlayerPowerHeight + 6
 		local PlayerFrameWidth = C["Unitframe"].PlayerHealthWidth
 		Player:SetSize(PlayerFrameWidth, PlayerFrameHeight)
-		K.Mover(Player, "PlayerUF", "PlayerUF", { "BOTTOM", UIParent, "BOTTOM", -250, 320 }, PlayerFrameWidth, PlayerFrameHeight)
+		K.Mover(
+			Player,
+			"PlayerUF",
+			"PlayerUF",
+			{ "BOTTOM", UIParent, "BOTTOM", -250, 320 },
+			PlayerFrameWidth,
+			PlayerFrameHeight
+		)
 
 		oUF:SetActiveStyle("Target")
 		local Target = oUF:Spawn("target", "oUF_Target")
 		local TargetFrameHeight = C["Unitframe"].TargetHealthHeight + C["Unitframe"].TargetPowerHeight + 6
 		local TargetFrameWidth = C["Unitframe"].TargetHealthWidth
 		Target:SetSize(TargetFrameWidth, TargetFrameHeight)
-		K.Mover(Target, "TargetUF", "TargetUF", { "BOTTOM", UIParent, "BOTTOM", 250, 320 }, TargetFrameWidth, TargetFrameHeight)
+		K.Mover(
+			Target,
+			"TargetUF",
+			"TargetUF",
+			{ "BOTTOM", UIParent, "BOTTOM", 250, 320 },
+			TargetFrameWidth,
+			TargetFrameHeight
+		)
 
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("ToT")
 			local TargetOfTarget = oUF:Spawn("targettarget", "oUF_ToT")
-			local TargetOfTargetFrameHeight = C["Unitframe"].TargetTargetHealthHeight + C["Unitframe"].TargetTargetPowerHeight + 6
+			local TargetOfTargetFrameHeight = C["Unitframe"].TargetTargetHealthHeight
+				+ C["Unitframe"].TargetTargetPowerHeight
+				+ 6
 			local TargetOfTargetFrameWidth = C["Unitframe"].TargetTargetHealthWidth
 			TargetOfTarget:SetSize(TargetOfTargetFrameWidth, TargetOfTargetFrameHeight)
-			K.Mover(TargetOfTarget, "TotUF", "TotUF", { "TOPLEFT", Target, "BOTTOMRIGHT", 6, -6 }, TargetOfTargetFrameWidth, TargetOfTargetFrameHeight)
+			K.Mover(
+				TargetOfTarget,
+				"TotUF",
+				"TotUF",
+				{ "TOPLEFT", Target, "BOTTOMRIGHT", 6, -6 },
+				TargetOfTargetFrameWidth,
+				TargetOfTargetFrameHeight
+			)
 		end
 
 		oUF:SetActiveStyle("Pet")
@@ -790,15 +853,31 @@ function Module:CreateUnits()
 		local FocusFrameHeight = C["Unitframe"].FocusHealthHeight + C["Unitframe"].FocusPowerHeight + 6
 		local FocusFrameWidth = C["Unitframe"].FocusHealthWidth
 		Focus:SetSize(FocusFrameWidth, FocusFrameHeight)
-		K.Mover(Focus, "FocusUF", "FocusUF", { "BOTTOMRIGHT", Player, "TOPLEFT", -60, 30 }, FocusFrameWidth, FocusFrameHeight)
+		K.Mover(
+			Focus,
+			"FocusUF",
+			"FocusUF",
+			{ "BOTTOMRIGHT", Player, "TOPLEFT", -60, 30 },
+			FocusFrameWidth,
+			FocusFrameHeight
+		)
 
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("FocusTarget")
 			local FocusTarget = oUF:Spawn("focustarget", "oUF_FocusTarget")
-			local FocusTargetFrameHeight = C["Unitframe"].FocusTargetHealthHeight + C["Unitframe"].FocusTargetPowerHeight + 6
+			local FocusTargetFrameHeight = C["Unitframe"].FocusTargetHealthHeight
+				+ C["Unitframe"].FocusTargetPowerHeight
+				+ 6
 			local FoucsTargetFrameWidth = C["Unitframe"].FocusTargetHealthWidth
 			FocusTarget:SetSize(FoucsTargetFrameWidth, FocusTargetFrameHeight)
-			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", { "TOPLEFT", Focus, "BOTTOMRIGHT", 6, -6 }, FoucsTargetFrameWidth, FocusTargetFrameHeight)
+			K.Mover(
+				FocusTarget,
+				"FocusTarget",
+				"FocusTarget",
+				{ "TOPLEFT", Focus, "BOTTOMRIGHT", 6, -6 },
+				FoucsTargetFrameWidth,
+				FocusTargetFrameHeight
+			)
 		end
 
 		K.HideInterfaceOption(InterfaceOptionsCombatPanelTargetOfTarget)
@@ -818,11 +897,26 @@ function Module:CreateUnits()
 			Boss[i] = oUF:Spawn("boss" .. i, "oUF_Boss" .. i)
 			Boss[i]:SetSize(C["Boss"].HealthWidth, C["Boss"].HealthHeight + C["Boss"].PowerHeight + 6)
 
-			local bossMoverWidth, bossMoverHeight = C["Boss"].HealthWidth, C["Boss"].HealthHeight + C["Boss"].PowerHeight + 6
+			local bossMoverWidth, bossMoverHeight =
+				C["Boss"].HealthWidth, C["Boss"].HealthHeight + C["Boss"].PowerHeight + 6
 			if i == 1 then
-				Boss[i].mover = K.Mover(Boss[i], "BossFrame" .. i, "Boss1", { "BOTTOMRIGHT", UIParent, "RIGHT", -250, 140 }, bossMoverWidth, bossMoverHeight)
+				Boss[i].mover = K.Mover(
+					Boss[i],
+					"BossFrame" .. i,
+					"Boss1",
+					{ "BOTTOMRIGHT", UIParent, "RIGHT", -250, 140 },
+					bossMoverWidth,
+					bossMoverHeight
+				)
 			else
-				Boss[i].mover = K.Mover(Boss[i], "BossFrame" .. i, "Boss" .. i, { "TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -C["Boss"].YOffset }, bossMoverWidth, bossMoverHeight)
+				Boss[i].mover = K.Mover(
+					Boss[i],
+					"BossFrame" .. i,
+					"Boss" .. i,
+					{ "TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -C["Boss"].YOffset },
+					bossMoverWidth,
+					bossMoverHeight
+				)
 			end
 		end
 	end
@@ -836,9 +930,17 @@ function Module:CreateUnits()
 			Arena[i] = oUF:Spawn("arena" .. i, "oUF_Arena" .. i)
 			Arena[i]:SetSize(C["Arena"].HealthWidth, C["Arena"].HealthHeight + C["Arena"].PowerHeight + 6)
 
-			local arenaMoverWidth, arenaMoverHeight = C["Arena"].HealthWidth, C["Arena"].HealthHeight + C["Arena"].PowerHeight + 6
+			local arenaMoverWidth, arenaMoverHeight =
+				C["Arena"].HealthWidth, C["Arena"].HealthHeight + C["Arena"].PowerHeight + 6
 			if i == 1 then
-				Arena[i].mover = K.Mover(Arena[i], "ArenaFrame" .. i, "Arena1", { "BOTTOMRIGHT", UIParent, "RIGHT", -250, 140 }, arenaMoverWidth, arenaMoverHeight)
+				Arena[i].mover = K.Mover(
+					Arena[i],
+					"ArenaFrame" .. i,
+					"Arena1",
+					{ "BOTTOMRIGHT", UIParent, "RIGHT", -250, 140 },
+					arenaMoverWidth,
+					arenaMoverHeight
+				)
 			else
 				Arena[i].mover = K.Mover(
 					Arena[i],
@@ -899,7 +1001,14 @@ function Module:CreateUnits()
 		]]):format(C["Party"].HealthWidth, C["Party"].HealthHeight + C["Party"].PowerHeight + 6)
 		)
 
-		partyMover = K.Mover(party, "PartyFrame", "PartyFrame", { "TOPLEFT", UIParent, "TOPLEFT", 46, -180 }, partyMoverWidth, partyMoverHeight)
+		partyMover = K.Mover(
+			party,
+			"PartyFrame",
+			"PartyFrame",
+			{ "TOPLEFT", UIParent, "TOPLEFT", 46, -180 },
+			partyMoverWidth,
+			partyMoverHeight
+		)
 		party:ClearAllPoints()
 		party:SetPoint("TOPLEFT", partyMover)
 
@@ -940,7 +1049,8 @@ function Module:CreateUnits()
 			)
 
 			local moverAnchor = { "TOPLEFT", partyMover, "TOPRIGHT", 6, -40 }
-			local petMover = K.Mover(partyPet, "PartyPetFrame", "PartyPetFrame", moverAnchor, partpetMoverWidth, partpetMoverHeight)
+			local petMover =
+				K.Mover(partyPet, "PartyPetFrame", "PartyPetFrame", moverAnchor, partpetMoverWidth, partpetMoverHeight)
 			partyPet:ClearAllPoints()
 			partyPet:SetPoint("TOPLEFT", petMover)
 		end
@@ -1036,7 +1146,14 @@ function Module:CreateUnits()
 						groups[i]:SetPoint("BOTTOMLEFT", raidMover)
 					end
 				else
-					raidMover = K.Mover(groups[i], "RaidFrame", "RaidFrame", { "TOPLEFT", UIParent, "TOPLEFT", 4, -180 }, (raidWidth + 5) * numGroups, (raidHeight + 10) * 5)
+					raidMover = K.Mover(
+						groups[i],
+						"RaidFrame",
+						"RaidFrame",
+						{ "TOPLEFT", UIParent, "TOPLEFT", 4, -180 },
+						(raidWidth + 5) * numGroups,
+						(raidHeight + 10) * 5
+					)
 					if reverse then
 						groups[i]:ClearAllPoints()
 						groups[i]:SetPoint("TOPRIGHT", raidMover)
@@ -1096,7 +1213,14 @@ function Module:CreateUnits()
 			]]):format(raidTankWidth, raidTankHeight)
 			)
 
-			local raidtankMover = K.Mover(raidtank, "MainTankFrame", "MainTankFrame", { "TOPLEFT", UIParent, "TOPLEFT", 4, -50 }, raidTankWidth, raidTankHeight)
+			local raidtankMover = K.Mover(
+				raidtank,
+				"MainTankFrame",
+				"MainTankFrame",
+				{ "TOPLEFT", UIParent, "TOPLEFT", 4, -50 },
+				raidTankWidth,
+				raidTankHeight
+			)
 			raidtank:ClearAllPoints()
 			raidtank:SetPoint("TOPLEFT", raidtankMover)
 		end

@@ -435,7 +435,7 @@ function Module:CreateGuildDataText()
 
 	GuildDataText.Texture = GuildDataText:CreateTexture(nil, "BACKGROUND")
 	GuildDataText.Texture:SetPoint("LEFT", GuildDataText, "LEFT", 0, 0)
-	GuildDataText.Texture:SetTexture("Interface\\FriendsFrame\\UI-Toast-ChatInviteIcon")
+	GuildDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\guild.blp")
 	GuildDataText.Texture:SetSize(24, 24)
 	GuildDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 

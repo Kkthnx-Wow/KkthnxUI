@@ -68,6 +68,7 @@ function Module:OnEnable()
 	self:CreateTradeTargetInfo()
 	self:CreateVehicleSeatMover()
 	self:MoveMawBuffsFrame()
+	self:CreateMinimapButtonToggle()
 
 	hooksecurefunc("QuestInfo_Display", Module.CreateQuestXPPercent)
 
@@ -131,7 +132,7 @@ function Module:OnEnable()
 	end
 end
 
-do
+function Module:CreateMinimapButtonToggle()
 	-- Minimap button click function
 	local function KKUI_MinimapButton_OnClick()
 		-- Prevent options panel from showing if Blizzard options panel is showing
@@ -151,15 +152,19 @@ do
 
 	-- Create minimap button using LibDBIcon
 	local KKUI_MinimapButton = K.DataBroker:NewDataObject("KkthnxUI", {
-		type = "data source",
-		text = "KkthnxUI",
-		icon = "Interface\\ICONS\\Ability_Monk_CounteractMagic",
+		type = "KthnxUI Config",
+		text = "KkthnxUI Config",
+		icon = "Interface\\HELPFRAME\\HelpIcon-Bug",
+
 		OnClick = function()
 			KKUI_MinimapButton_OnClick()
 		end,
 
 		OnTooltipShow = function(self)
-			self:AddLine("KkthnxUI")
+			if not self or not self.AddLine then
+				return
+			end
+			self:AddLine("KkthnxUI Config")
 		end,
 	})
 
@@ -168,13 +173,16 @@ do
 	-- Function to toggle LibDBIcon
 	function Module:ToggleMinimapIcon()
 		if C["General"].MinimapIcon then
-			KkthnxUIDB.MinimapButton = true
+			KkthnxUIDB.MinimapButton = false
 			K.DBIcon:Show("KkthnxUI")
 		else
-			KkthnxUIDB.MinimapButton = false
+			KkthnxUIDB.MinimapButton = true
 			K.DBIcon:Hide("KkthnxUI")
 		end
 	end
+
+	-- Set LibDBIcon when option is clicked and on startup
+	Module:ToggleMinimapIcon()
 end
 
 local maxMawValue = 1000

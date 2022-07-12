@@ -32,7 +32,6 @@ local function PLAYER_DEAD()
 		RepopMe()
 		return
 	end
-	return
 end
 
 function Module:CreateAutoRelease()

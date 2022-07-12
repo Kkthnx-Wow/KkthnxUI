@@ -16,85 +16,185 @@ local Minimap = _G.Minimap
 local UnitClass = _G.UnitClass
 local hooksecurefunc = _G.hooksecurefunc
 
---Create the minimap micro menu
+-- Create the minimap micro menu
 local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent)
+local guildText = IsInGuild() and ACHIEVEMENTS_GUILD_TAB or LOOKINGFORGUILD
+local journalText = K.Client == "ruRU" and ENCOUNTER_JOURNAL or ADVENTURE_JOURNAL
 local menuList = {
 	{
-		text = _G.CHARACTER_BUTTON,
+		text = CHARACTER_BUTTON,
 		notCheckable = 1,
 		func = function()
 			ToggleCharacter("PaperDollFrame")
 		end,
 	},
 	{
-		text = _G.SPELLBOOK_ABILITIES_BUTTON,
+		text = SPELLBOOK_ABILITIES_BUTTON,
 		notCheckable = 1,
 		func = function()
-			ToggleFrame(_G.SpellBookFrame)
-		end,
-	},
-	{ text = _G.CHAT_CHANNELS, notCheckable = 1, func = _G.ToggleChannelFrame },
-	{
-		text = _G.TIMEMANAGER_TITLE,
-		notCheckable = 1,
-		func = function()
-			ToggleFrame(_G.TimeManagerFrame)
-		end,
-	},
-	{ text = _G.SOCIAL_BUTTON, notCheckable = 1, func = ToggleFriendsFrame },
-	{ text = _G.GUILD, notCheckable = 1, func = ToggleGuildFrame },
-	{ text = _G.TALENTS_BUTTON, notCheckable = 1, func = ToggleTalentFrame },
-	{
-		text = L["Calendar"],
-		notCheckable = 1,
-		func = function()
-			_G.GameTimeFrame:Click()
-		end,
-	},
-	{ text = _G.COLLECTIONS, notCheckable = 1, func = ToggleCollectionsJournal },
-	{
-		text = _G.BLIZZARD_STORE,
-		notCheckable = 1,
-		func = function()
-			_G.StoreMicroButton:Click()
-		end,
-	},
-	{ text = _G.ACHIEVEMENT_BUTTON, notCheckable = 1, func = ToggleAchievementFrame },
-	{
-		text = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE,
-		notCheckable = 1,
-		func = function()
-			GarrisonLandingPageMinimapButton_OnClick(_G.GarrisonLandingPageMinimapButton)
-		end,
-	},
-	{
-		text = _G.ENCOUNTER_JOURNAL,
-		notCheckable = 1,
-		func = function()
-			if not IsAddOnLoaded("Blizzard_EncounterJournal") then
-				_G.EncounterJournal_LoadUI()
+			if InCombatLockdown() then
+				K.Print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
+				return
 			end
-			ToggleFrame(_G.EncounterJournal)
+			ToggleFrame(SpellBookFrame)
 		end,
 	},
-	{ text = _G.LFG_TITLE, notCheckable = 1, func = ToggleLFGParentFrame or ToggleLFDParentFrame },
 	{
-		text = _G.GREAT_VAULT_REWARDS,
+		text = TALENTS_BUTTON,
 		notCheckable = 1,
 		func = function()
-			if UIParentLoadAddOn("Blizzard_WeeklyRewards") then
-				if WeeklyRewardsFrame:IsShown() then
-					WeeklyRewardsFrame:Hide()
-				else
-					WeeklyRewardsFrame:Show()
-				end
+			if not PlayerTalentFrame then
+				TalentFrame_LoadUI()
+			end
+			if K.Level >= 10 then
+				ShowUIPanel(PlayerTalentFrame)
 			else
-				LoadAddOn("Blizzard_WeeklyRewards")
-				WeeklyRewardsFrame:Show()
+				UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10), 1, 0.1, 0.1)
+				K.Print("|cffffff00" .. format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10) .. "|r")
 			end
+		end,
+	},
+	{
+		text = ACHIEVEMENT_BUTTON,
+		notCheckable = 1,
+		func = function()
+			ToggleAchievementFrame()
+		end,
+	},
+	{
+		text = QUESTLOG_BUTTON,
+		notCheckable = 1,
+		func = function()
+			ToggleQuestLog()
+		end,
+	},
+	{
+		text = guildText,
+		notCheckable = 1,
+		func = function()
+			ToggleGuildFrame()
+		end,
+	},
+	{
+		text = SOCIAL_BUTTON,
+		notCheckable = 1,
+		func = function()
+			ToggleFriendsFrame()
+		end,
+	},
+	{
+		text = CHAT_CHANNELS,
+		notCheckable = 1,
+		func = function()
+			ToggleChannelFrame()
+		end,
+	},
+	{
+		text = PLAYER_V_PLAYER,
+		notCheckable = 1,
+		func = function()
+			if K.Level >= 10 then
+				TogglePVPUI()
+			else
+				UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10), 1, 0.1, 0.1)
+				K.Print("|cffffff00" .. format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10) .. "|r")
+			end
+		end,
+	},
+	{
+		text = GROUP_FINDER,
+		notCheckable = 1,
+		func = function()
+			if K.Level >= 10 then
+				PVEFrame_ToggleFrame("GroupFinderFrame", nil)
+			else
+				UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10), 1, 0.1, 0.1)
+				K.Print("|cffffff00" .. format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10) .. "|r")
+			end
+		end,
+	},
+	{
+		text = journalText,
+		notCheckable = 1,
+		func = function()
+			if C_AdventureJournal.CanBeShown() then
+				ToggleEncounterJournal()
+			else
+				UIErrorsFrame:AddMessage(FEATURE_NOT_YET_AVAILABLE, 1, 0.1, 0.1)
+				K.Print("|cffffff00" .. FEATURE_NOT_YET_AVAILABLE .. "|r")
+			end
+		end,
+	},
+	{
+		text = COLLECTIONS,
+		notCheckable = 1,
+		func = function()
+			if InCombatLockdown() then
+				K.Print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
+				return
+			end
+			ToggleCollectionsJournal()
+		end,
+	},
+	{
+		text = "Calendar",
+		notCheckable = 1,
+		func = function()
+			ToggleCalendar()
+		end,
+	},
+	{
+		text = BATTLEFIELD_MINIMAP,
+		notCheckable = 1,
+		func = function()
+			ToggleBattlefieldMap()
 		end,
 	},
 }
+
+if not IsTrialAccount() and not C_StorePublic.IsDisabledByParentalControls() then
+	table_insert(menuList, {
+		text = BLIZZARD_STORE,
+		notCheckable = 1,
+		func = function()
+			StoreMicroButton:Click()
+		end,
+	})
+end
+
+if K.Level == MAX_PLAYER_LEVEL then
+	table_insert(menuList, {
+		text = RATED_PVP_WEEKLY_VAULT,
+		notCheckable = 1,
+		func = function()
+			if not WeeklyRewardsFrame then
+				WeeklyRewards_LoadUI()
+			end
+			ToggleFrame(WeeklyRewardsFrame)
+		end,
+	})
+end
+
+table_insert(menuList, {
+	text = K.Title,
+	notCheckable = 1,
+	bottom = true,
+	func = function()
+		-- Prevent options panel from showing if Blizzard options panel is showing
+		if InterfaceOptionsFrame:IsShown() or VideoOptionsFrame:IsShown() or ChatConfigFrame:IsShown() then
+			return
+		end
+
+		-- No modifier key toggles the options panel
+		if InCombatLockdown() then
+			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
+			return
+		end
+
+		K["GUI"]:Toggle()
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+	end,
+})
 
 table_sort(menuList, function(a, b)
 	if a and b and a.text and b.text then
@@ -102,7 +202,7 @@ table_sort(menuList, function(a, b)
 	end
 end)
 
--- want these two on the bottom
+-- We want these two on the bottom
 table_insert(menuList, {
 	text = _G.MAINMENU_BUTTON,
 	notCheckable = 1,
@@ -118,17 +218,17 @@ table_insert(menuList, {
 
 			CloseMenus()
 			CloseAllWindows()
-			PlaySound(850) --IG_MAINMENU_OPEN
+			PlaySound(850) -- IG_MAINMENU_OPEN
 			ShowUIPanel(_G.GameMenuFrame)
 		else
-			PlaySound(854) --IG_MAINMENU_QUIT
+			PlaySound(854) -- IG_MAINMENU_QUIT
 			HideUIPanel(_G.GameMenuFrame)
 			MainMenuMicroButton_SetNormal()
 		end
 	end,
 })
 
-table_insert(menuList, { text = _G.HELP_BUTTON, notCheckable = 1, bottom = true, func = ToggleHelpFrame })
+table_insert(menuList, { text = _G.HELP_BUTTON, notCheckable = 1, func = ToggleHelpFrame })
 
 function Module:CreateStyle()
 	local minimapBorder = CreateFrame("Frame", "KKUI_MinimapBorder", Minimap)
@@ -318,6 +418,16 @@ function Module:ReskinRegions()
 		GameTimeCalendarInvitesTexture:ClearAllPoints()
 		GameTimeCalendarInvitesTexture:SetParent("Minimap")
 		GameTimeCalendarInvitesTexture:SetPoint("TOPRIGHT")
+	end
+
+	-- Streaming icon
+	if StreamingIcon then
+		StreamingIcon:ClearAllPoints()
+		StreamingIcon:SetParent("Minimap")
+		StreamingIcon:SetPoint("LEFT", -6, 0)
+		StreamingIcon:SetAlpha(0.5)
+		StreamingIcon:SetScale(0.8)
+		StreamingIcon:SetFrameStrata("LOW")
 	end
 
 	local inviteNotification = CreateFrame("Button", nil, UIParent, "BackdropTemplate")

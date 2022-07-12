@@ -283,7 +283,8 @@ local function Enable(self)
 		self:RegisterEvent("CHARACTER_POINTS_CHANGED", CheckSpec, true)
 		self:RegisterEvent("UNIT_AURA", Update)
 
-		self.RaidDebuffs.BlackList = self.RaidDebuffs.BlackList or {
+		self.RaidDebuffs.BlackList = self.RaidDebuffs.BlackList
+			or {
 				[105171] = true, -- Deep Corruption
 				[108220] = true, -- Deep Corruption
 				[116095] = true, -- Disable, Slow

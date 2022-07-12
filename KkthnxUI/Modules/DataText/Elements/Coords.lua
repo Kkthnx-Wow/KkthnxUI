@@ -123,12 +123,13 @@ function Module:CreateCoordsDataText()
 
 	CoordsDataTextFrame = CoordsDataTextFrame or CreateFrame("Button", nil, UIParent)
 	CoordsDataTextFrame:SetPoint("TOP", UIParent, "TOP", 0, -40)
-	CoordsDataTextFrame:SetSize(20, 20)
+	CoordsDataTextFrame:SetSize(24, 24)
 
 	CoordsDataTextFrame.Texture = CoordsDataTextFrame:CreateTexture(nil, "BACKGROUND")
 	CoordsDataTextFrame.Texture:SetPoint("CENTER", CoordsDataTextFrame, "CENTER", 0, 0)
-	CoordsDataTextFrame.Texture:SetAtlas("Navigation-Tracked-Icon")
-	CoordsDataTextFrame.Texture:SetSize(15, 20)
+	CoordsDataTextFrame.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\coords.blp")
+	CoordsDataTextFrame.Texture:SetSize(24, 24)
+	CoordsDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 	CoordsDataTextFrame.Texture:SetAlpha(0.8)
 
 	CoordsDataTextFrame.Text = CoordsDataTextFrame:CreateFontString(nil, "ARTWORK")

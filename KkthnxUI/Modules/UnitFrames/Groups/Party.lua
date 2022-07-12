@@ -299,6 +299,7 @@ function Module:CreateParty()
 	if C["Party"].TargetHighlight then
 		local TargetHighlight = CreateFrame("Frame", nil, Overlay, "BackdropTemplate")
 		TargetHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
+		TargetHighlight:SetFrameLevel(6)
 
 		local relativeTo
 		if partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait" then

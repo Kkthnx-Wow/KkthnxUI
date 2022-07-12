@@ -196,16 +196,7 @@ local function OnEnter()
 	if scriptProfileStatus then
 		GameTooltip:AddDoubleLine(" ", "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:12:10:0:-1:512:512:12:66:333:411|t " .. L["SwitchMode"] .. " ", 1, 1, 1, 0.5, 0.7, 1)
 	end
-	GameTooltip:AddDoubleLine(
-		" ",
-		"|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t " .. L["CPU Usage"] .. ": " .. (GetCVarBool("scriptProfile") and enableString or disableString) .. " ",
-		1,
-		1,
-		1,
-		0.5,
-		0.7,
-		1
-	)
+	GameTooltip:AddDoubleLine(" ", "|TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t " .. L["CPU Usage"] .. ": " .. (GetCVarBool("scriptProfile") and enableString or disableString) .. " ", 1, 1, 1, 0.5, 0.7, 1)
 	GameTooltip:Show()
 end
 

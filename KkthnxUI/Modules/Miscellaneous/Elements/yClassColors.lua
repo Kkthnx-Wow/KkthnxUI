@@ -159,7 +159,10 @@ local function friendsFrame()
 			if button.buttonType == FRIENDS_BUTTON_TYPE_WOW then
 				local info = C_FriendList_GetFriendInfoByIndex(button.id)
 				if info and info.connected then
-					nameText = classColor(info.className) .. info.name .. "|r, " .. string_format(FRIENDS_LEVEL_TEMPLATE, diffColor(info.level) .. info.level .. "|r", info.className)
+					nameText = classColor(info.className)
+						.. info.name
+						.. "|r, "
+						.. string_format(FRIENDS_LEVEL_TEMPLATE, diffColor(info.level) .. info.level .. "|r", info.className)
 					if info.area == playerArea then
 						infoText = string_format("|cff00ff00%s|r", info.area)
 					end

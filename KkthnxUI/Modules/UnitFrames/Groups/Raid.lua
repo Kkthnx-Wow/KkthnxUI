@@ -98,9 +98,9 @@ function Module:CreateRaid()
 		self.Power = CreateFrame("StatusBar", nil, self)
 		self.Power:SetFrameStrata("LOW")
 		self.Power:SetFrameLevel(self:GetFrameLevel())
-		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, 1)
-		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, 1)
-		self.Power:SetHeight(6)
+		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
+		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
+		self.Power:SetHeight(4)
 		self.Power:SetStatusBarTexture(RaidframeTexture)
 
 		self.Power.colorPower = true
@@ -307,20 +307,23 @@ function Module:CreateRaid()
 	end
 
 	if C["Raid"].TargetHighlight then
-		self.TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
-		self.TargetHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
-		self.TargetHighlight:SetPoint("TOPLEFT", self, -5, 5)
-		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self, 5, -5)
-		self.TargetHighlight:SetBackdropBorderColor(1, 1, 0)
-		self.TargetHighlight:Hide()
+		local TargetHighlight = CreateFrame("Frame", nil, self.Overlay, "BackdropTemplate")
+		TargetHighlight:SetFrameLevel(6)
+		TargetHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 12 })
+		TargetHighlight:SetPoint("TOPLEFT", self, -5, 5)
+		TargetHighlight:SetPoint("BOTTOMRIGHT", self, 5, -5)
+		TargetHighlight:SetBackdropBorderColor(1, 1, 0)
+		TargetHighlight:Hide()
 
 		local function UpdateRaidTargetGlow()
 			if UnitIsUnit("target", self.unit) then
-				self.TargetHighlight:Show()
+				TargetHighlight:Show()
 			else
-				self.TargetHighlight:Hide()
+				TargetHighlight:Hide()
 			end
 		end
+
+		self.TargetHighlight = TargetHighlight
 
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateRaidTargetGlow, true)
 		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidTargetGlow, true)

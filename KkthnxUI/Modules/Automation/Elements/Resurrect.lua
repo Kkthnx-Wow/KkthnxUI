@@ -86,7 +86,6 @@ function Module.SetupAutoResurrect(_, arg1)
 			end
 		end)
 	end
-	return
 end
 
 function Module:CreateAutoResurrect()

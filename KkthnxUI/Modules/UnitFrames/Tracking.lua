@@ -106,7 +106,7 @@ function Tracking:Update()
 	local Button = self:GetParent()
 	local Cat = Button.Cat
 	local ID = Button.ID
-	local Texture = self.Texture:GetTexture()
+	-- local Texture = self.Texture:GetTexture()
 	local Icon = Button.Icon.Texture
 	local Text = Button.Text
 	local CurrentID = ID

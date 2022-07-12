@@ -25,7 +25,6 @@ local function SetupAutoAcceptSummon()
 			end
 		end)
 	end
-	return
 end
 
 function Module:CreateAutoAcceptSummon()

@@ -44,7 +44,11 @@ function Module:HookApplicationClick()
 		LFGListFrame.SearchPanel.SignUpButton:Click()
 	end
 
-	if (not IsAltKeyDown()) and LFGListApplicationDialog:IsShown() and LFGListApplicationDialog.SignUpButton:IsEnabled() then
+	if
+		(not IsAltKeyDown())
+		and LFGListApplicationDialog:IsShown()
+		and LFGListApplicationDialog.SignUpButton:IsEnabled()
+	then
 		LFGListApplicationDialog.SignUpButton:Click()
 	end
 end
@@ -90,7 +94,7 @@ local function GetPartyMemberInfo(index)
 		role = "DAMAGER"
 	end
 
-	return role, class
+	return role, class, (UnitIsGroupLeader(unit) and 1)
 end
 
 local function GetCorrectRoleInfo(frame, i)
@@ -110,7 +114,7 @@ local function UpdateGroupRoles(self)
 
 	local count = 0
 	for i = 1, 5 do
-		local role, class = GetCorrectRoleInfo(self.__owner, i)
+		local role, class, isLeader = GetCorrectRoleInfo(self.__owner, i)
 		local roleIndex = role and roleOrder[role]
 		if roleIndex then
 			count = count + 1
@@ -119,7 +123,7 @@ local function UpdateGroupRoles(self)
 			end
 			roleCache[count][1] = roleIndex
 			roleCache[count][2] = class
-			roleCache[count][3] = i == 1
+			roleCache[count][3] = isLeader == 1 or i == 1
 		end
 	end
 
@@ -225,9 +229,13 @@ function Module:ShowLeaderOverallScore()
 	local resultID = self.resultID
 	local searchResultInfo = resultID and C_LFGList_GetSearchResultInfo(resultID)
 	if searchResultInfo then
-		local activityInfo = C_LFGList_GetActivityInfoTable(searchResultInfo.activityID, nil, searchResultInfo.isWarMode)
+		local activityInfo =
+			C_LFGList_GetActivityInfoTable(searchResultInfo.activityID, nil, searchResultInfo.isWarMode)
 		if activityInfo then
-			local showScore = activityInfo.isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore or activityInfo.isRatedPvpActivity and searchResultInfo.leaderPvpRatingInfo and searchResultInfo.leaderPvpRatingInfo.rating
+			local showScore = activityInfo.isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore
+				or activityInfo.isRatedPvpActivity
+					and searchResultInfo.leaderPvpRatingInfo
+					and searchResultInfo.leaderPvpRatingInfo.rating
 			if showScore then
 				local oldName = self.ActivityName:GetText()
 				oldName = gsub(oldName, ".-" .. HEADER_COLON, "") -- Tazavesh
@@ -260,7 +268,12 @@ function Module:ReplaceFindGroupButton()
 			categorySelection.FindGroupButton:Click()
 		else
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-			LFGListSearchPanel_SetCategory(searchPanel, selectedCategory, categorySelection.selectedFilters, LFGListFrame.baseFilters)
+			LFGListSearchPanel_SetCategory(
+				searchPanel,
+				selectedCategory,
+				categorySelection.selectedFilters,
+				LFGListFrame.baseFilters
+			)
 			LFGListSearchPanel_DoSearch(searchPanel)
 			LFGListFrame_SetActivePanel(LFGListFrame, searchPanel)
 		end

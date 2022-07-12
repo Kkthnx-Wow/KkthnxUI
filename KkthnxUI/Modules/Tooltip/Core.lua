@@ -81,7 +81,7 @@ local classification = {
 	elite = "|cffAF5050+|r",
 	rare = string_format("|cffAF5050 %s|r", ITEM_QUALITY3_DESC),
 }
-local npcIDstring = "ID: " .. K.InfoColor .. "%s"
+local npcIDstring = "%s " .. K.InfoColor .. "%s"
 
 function Module:GetUnit()
 	local _, unit = self:GetUnit()
@@ -231,18 +231,6 @@ function Module:OnTooltipSetUnit()
 	end
 
 	local isShiftKeyDown = IsShiftKeyDown()
-	local r, g, b = K.UnitColor(unit)
-	local hexColor = K.RGBToHex(r, g, b)
-	local ricon = GetRaidTargetIndex(unit)
-	local text = GameTooltipTextLeft1:GetText()
-	if ricon and ricon > 8 then
-		ricon = nil
-	end
-
-	if ricon and text then
-		GameTooltipTextLeft1:SetFormattedText("%s %s", ICON_LIST[ricon] .. "18|t", text)
-	end
-
 	local isPlayer = UnitIsPlayer(unit)
 	if isPlayer then
 		local name, realm = UnitName(unit)
@@ -310,8 +298,17 @@ function Module:OnTooltipSetUnit()
 		end
 	end
 
-	local line1 = GameTooltipTextLeft1:GetText()
-	GameTooltipTextLeft1:SetFormattedText("%s", hexColor .. line1)
+	local r, g, b = K.UnitColor(unit)
+	local hexColor = K.RGBToHex(r, g, b)
+	local text = GameTooltipTextLeft1:GetText()
+	if text then
+		local ricon = GetRaidTargetIndex(unit)
+		if ricon and ricon > 8 then
+			ricon = nil
+		end
+		ricon = ricon and ICON_LIST[ricon] .. "18|t " or ""
+		GameTooltipTextLeft1:SetFormattedText("%s%s%s", ricon, hexColor, text)
+	end
 
 	local alive = not UnitIsDeadOrGhost(unit)
 	local level
@@ -353,7 +350,7 @@ function Module:OnTooltipSetUnit()
 		if npcID then
 			local reaction = UnitReaction(unit, "player")
 			local standingText = reaction and hexColor .. _G["FACTION_STANDING_LABEL" .. reaction]
-			self:AddLine(string_format(npcIDstring, standingText or "", npcID))
+			self:AddDoubleLine(string_format(npcIDstring, standingText or "", npcID))
 		end
 	end
 
@@ -528,10 +525,31 @@ function Module:ReskinTooltip()
 	end
 end
 
+function Module:FixRecipeItemNameWidth()
+	local name = self:GetName()
+	for i = 1, self:NumLines() do
+		local line = _G[name .. "TextLeft" .. i]
+		if line:GetHeight() > 40 then
+			line:SetWidth(line:GetWidth() + 1)
+		end
+	end
+end
+
 function Module:ResetUnit(btn)
 	if btn == "LSHIFT" and UnitExists("mouseover") then
 		GameTooltip:SetUnit("mouseover")
 	end
+end
+
+function Module:FixStoneSoupError()
+	local blockTooltips = {
+		[556] = true, -- Stone Soup
+	}
+	hooksecurefunc(_G.UIWidgetTemplateStatusBarMixin, "Setup", function(self)
+		if self:IsForbidden() and blockTooltips[self.widgetSetID] and self.Bar then
+			self.Bar.tooltip = nil
+		end
+	end)
 end
 
 function Module:OnEnable()
@@ -547,6 +565,10 @@ function Module:OnEnable()
 	hooksecurefunc("GameTooltip_ShowProgressBar", Module.GameTooltip_ShowProgressBar)
 	hooksecurefunc("GameTooltip_SetDefaultAnchor", Module.GameTooltip_SetDefaultAnchor)
 	hooksecurefunc("GameTooltip_AnchorComparisonTooltips", Module.GameTooltip_ComparisonFix)
+	GameTooltip:HookScript("OnTooltipSetItem", Module.FixRecipeItemNameWidth)
+	ItemRefTooltip:HookScript("OnTooltipSetItem", Module.FixRecipeItemNameWidth)
+	EmbeddedItemTooltip:HookScript("OnTooltipSetItem", Module.FixRecipeItemNameWidth)
+	Module:FixStoneSoupError()
 
 	-- Elements
 	self:CreateConduitCollectionData()
@@ -682,7 +704,7 @@ Module:RegisterTooltips("KkthnxUI", function()
 	end)
 
 	-- Others
-	C_Timer_After(5, function()
+	C_Timer_After(6, function()
 		-- BagSync
 		if BSYC_EventAlertTooltip then
 			Module.ReskinTooltip(BSYC_EventAlertTooltip)

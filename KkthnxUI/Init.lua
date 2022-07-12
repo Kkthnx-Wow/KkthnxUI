@@ -63,7 +63,7 @@ LE_ITEM_QUALITY_UNCOMMON = Enum.ItemQuality.Uncommon
 
 do
 	K.Base64 = LibStub("LibBase64-1.0-KkthnxUI")
-	K.DBIcon = LibStub("LibDBIcon-1.0-KkthnxUI")
+	K.DBIcon = LibStub("LibDBIcon-1.0-KkthnxUI", true)
 	K.DataBroker = LibStub("LibDataBroker-1.1-KkthnxUI")
 	K.ChangeLog = LibStub("LibChangelog-KkthnxUI")
 	K.Deflate = LibStub("LibDeflate-KkthnxUI")
@@ -117,18 +117,8 @@ K.IsNewPatch = select(4, GetBuildInfo()) >= 90105 -- 9.1.0
 function K.IsMyPet(flags)
 	return bit_band(flags, COMBATLOG_OBJECT_AFFILIATION_MINE) > 0
 end
-K.PartyPetFlags = bit_bor(
-	COMBATLOG_OBJECT_AFFILIATION_PARTY,
-	COMBATLOG_OBJECT_REACTION_FRIENDLY,
-	COMBATLOG_OBJECT_CONTROL_PLAYER,
-	COMBATLOG_OBJECT_TYPE_PET
-)
-K.RaidPetFlags = bit_bor(
-	COMBATLOG_OBJECT_AFFILIATION_RAID,
-	COMBATLOG_OBJECT_REACTION_FRIENDLY,
-	COMBATLOG_OBJECT_CONTROL_PLAYER,
-	COMBATLOG_OBJECT_TYPE_PET
-)
+K.PartyPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_PARTY, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
+K.RaidPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_RAID, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
 
 K.CodeDebug = false
 
@@ -304,10 +294,7 @@ for i = 1, GetNumAddOns() do
 	K.AddOnVersion[string_lower(Name)] = GetAddOnMetadata(Name, "Version")
 end
 
----------------
--- PROFILING --
----------------
-
+-- Profiling
 do
 	local info = {}
 	function K:LogDebugInfo(name, time, mem)

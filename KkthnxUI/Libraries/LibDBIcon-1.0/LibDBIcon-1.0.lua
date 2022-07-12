@@ -1,4 +1,3 @@
------------------------------------------------------------------------
 -- LibDBIcon-1.0
 --
 -- Allows addons to easily create a lightweight minimap icon as an alternative to heavier LDB displays.

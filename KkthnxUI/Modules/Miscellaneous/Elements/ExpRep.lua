@@ -270,7 +270,13 @@ function Module:ExpBar_UpdateTooltip()
 		_G.GameTooltip:AddLine(HONOR, 0.94, 0.45, 0.25)
 		_G.GameTooltip:AddDoubleLine("Level:", CurrentLevel, 1, 1, 1)
 		_G.GameTooltip:AddDoubleLine("XP:", string_format(" %d / %d (%d%%)", CurrentHonor, MaxHonor, PercentHonor), 1, 1, 1)
-		_G.GameTooltip:AddDoubleLine("Remaining:", string_format(" %d (%d%% - %d " .. L["Bars"] .. ")", RemainingHonor, RemainingHonor / MaxHonor * 100, 20 * RemainingHonor / MaxHonor), 1, 1, 1)
+		_G.GameTooltip:AddDoubleLine(
+			"Remaining:",
+			string_format(" %d (%d%% - %d " .. L["Bars"] .. ")", RemainingHonor, RemainingHonor / MaxHonor * 100, 20 * RemainingHonor / MaxHonor),
+			1,
+			1,
+			1
+		)
 	end
 
 	if IsAzeriteAvailable() then
@@ -280,7 +286,13 @@ function Module:ExpBar_UpdateTooltip()
 			_G.GameTooltip:AddLine(ARTIFACT_POWER, 0.90, 0.80, 0.50)
 			_G.GameTooltip:AddDoubleLine("Level:", currentLevel, 1, 1, 1)
 			_G.GameTooltip:AddDoubleLine("AP:", string_format(" %d / %d (%d%%)", curXP, maxXP, curXP / maxXP * 100), 1, 1, 1)
-			_G.GameTooltip:AddDoubleLine("Remaining:", string_format(" %d (%d%% - %d " .. L["Bars"] .. ")", maxXP - curXP, (maxXP - curXP) / maxXP * 100, 10 * (maxXP - curXP) / maxXP), 1, 1, 1)
+			_G.GameTooltip:AddDoubleLine(
+				"Remaining:",
+				string_format(" %d (%d%% - %d " .. L["Bars"] .. ")", maxXP - curXP, (maxXP - curXP) / maxXP * 100, 10 * (maxXP - curXP) / maxXP),
+				1,
+				1,
+				1
+			)
 		end
 
 		local item = C_AzeriteItem_FindActiveAzeriteItem()

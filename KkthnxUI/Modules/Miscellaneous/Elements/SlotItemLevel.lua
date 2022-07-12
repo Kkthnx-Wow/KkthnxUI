@@ -395,15 +395,15 @@ local itemCache = {}
 local CHAT = K:GetModule("Chat")
 
 function Module.ItemLevel_ReplaceItemLink(link, name)
-	if not link then 
-		return 
+	if not link then
+		return
 	end
 
 	local modLink = itemCache[link]
 	if not modLink then
 		local itemLevel = K.GetItemLevel(link)
 		if itemLevel then
-			modLink = gsub(link, "|h%[(.-)%]|h", "|h(" .. itemLevel .. CHAT.IsItemHasGem(link)..")"..name.."|h")
+			modLink = gsub(link, "|h%[(.-)%]|h", "|h(" .. itemLevel .. CHAT.IsItemHasGem(link) .. ")" .. name .. "|h")
 			itemCache[link] = modLink
 		end
 	end

@@ -10,7 +10,6 @@ local tonumber = _G.tonumber
 local unpack = _G.unpack
 
 local Ambiguate = _G.Ambiguate
-local C_MythicPlus_GetCurrentAffixes = _G.C_MythicPlus.GetCurrentAffixes
 local C_NamePlate_GetNamePlateForUnit = _G.C_NamePlate.GetNamePlateForUnit
 local C_NamePlate_SetNamePlateEnemySize = _G.C_NamePlate.SetNamePlateEnemySize
 local C_NamePlate_SetNamePlateFriendlySize = _G.C_NamePlate.SetNamePlateFriendlySize
@@ -18,7 +17,6 @@ local C_Scenario_GetCriteriaInfo = _G.C_Scenario.GetCriteriaInfo
 local C_Scenario_GetInfo = _G.C_Scenario.GetInfo
 local C_Scenario_GetStepInfo = _G.C_Scenario.GetStepInfo
 local CreateFrame = _G.CreateFrame
-local GetInstanceInfo = _G.GetInstanceInfo
 local GetNumGroupMembers = _G.GetNumGroupMembers
 local GetNumSubgroupMembers = _G.GetNumSubgroupMembers
 local GetPlayerInfoByGUID = _G.GetPlayerInfoByGUID
@@ -131,8 +129,14 @@ function Module:UpdateClickableSize()
 		return
 	end
 
-	C_NamePlate_SetNamePlateEnemySize(C["Nameplate"].PlateWidth * C["General"].UIScale, C["Nameplate"].PlateHeight * C["General"].UIScale + 40)
-	C_NamePlate_SetNamePlateFriendlySize(C["Nameplate"].PlateWidth * C["General"].UIScale, C["Nameplate"].PlateHeight * C["General"].UIScale + 40)
+	C_NamePlate_SetNamePlateEnemySize(
+		C["Nameplate"].PlateWidth * C["General"].UIScale,
+		C["Nameplate"].PlateHeight * C["General"].UIScale + 40
+	)
+	C_NamePlate_SetNamePlateFriendlySize(
+		C["Nameplate"].PlateWidth * C["General"].UIScale,
+		C["Nameplate"].PlateHeight * C["General"].UIScale + 40
+	)
 end
 
 function Module:SetupCVars()
@@ -241,7 +245,11 @@ function Module:CheckThreatStatus(unit)
 	end
 
 	local unitTarget = unit .. "target"
-	local unitRole = isInGroup and UnitExists(unitTarget) and not UnitIsUnit(unitTarget, "player") and groupRoles[UnitName(unitTarget)] or "NONE"
+	local unitRole = isInGroup
+			and UnitExists(unitTarget)
+			and not UnitIsUnit(unitTarget, "player")
+			and groupRoles[UnitName(unitTarget)]
+		or "NONE"
 
 	if K.Role == "Tank" and unitRole == "TANK" then
 		return true, UnitThreatSituation(unitTarget, unit)
@@ -647,7 +655,8 @@ function Module:UpdateDungeonProgress(unit)
 			local total = aksCacheData[name]
 			if not total then
 				for criteriaIndex = 1, numCriteria do
-					local _, _, _, _, totalQuantity, _, _, _, _, _, _, _, isWeightedProgress = C_Scenario_GetCriteriaInfo(criteriaIndex)
+					local _, _, _, _, totalQuantity, _, _, _, _, _, _, _, isWeightedProgress =
+						C_Scenario_GetCriteriaInfo(criteriaIndex)
 					if isWeightedProgress then
 						aksCacheData[name] = totalQuantity
 						total = aksCacheData[name]
@@ -863,7 +872,7 @@ function Module:CreatePlates()
 	self.nameText:SetJustifyH("LEFT")
 	self.nameText:ClearAllPoints()
 	self.nameText:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
-	self.nameText:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 4)
+	self.nameText:SetPoint("BOTTOMRIGHT", self.levelText, "TOPRIGHT", -12, 4)
 	self:Tag(self.nameText, "[name]")
 
 	self.npcTitle = K.CreateFontString(self, C["Nameplate"].NameTextSize - 1)
@@ -1195,7 +1204,7 @@ function Module:UpdatePlateByType()
 
 		name:SetJustifyH("LEFT")
 		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
-		name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 4)
+		name:SetPoint("BOTTOMRIGHT", level, "TOPRIGHT", -12, 4)
 
 		level:Show()
 		hpval:Show()

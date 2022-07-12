@@ -62,7 +62,12 @@ end
 -- Frames provided by load on demand addons, hooked when the addon is loaded.
 local lodFrames = {
 	-- AddonName = {list of frames, same syntax as above}
-	Blizzard_AchievementUI = { ["AchievementFrame"] = false, ["AchievementFrameHeader"] = true, ["AchievementFrameCategoriesContainer"] = "AchievementFrame", ["AchievementFrame.searchResults"] = false },
+	Blizzard_AchievementUI = {
+		["AchievementFrame"] = false,
+		["AchievementFrameHeader"] = true,
+		["AchievementFrameCategoriesContainer"] = "AchievementFrame",
+		["AchievementFrame.searchResults"] = false,
+	},
 	Blizzard_AdventureMap = { ["AdventureMapQuestChoiceDialog"] = false },
 	Blizzard_AlliedRacesUI = { ["AlliedRacesFrame"] = false },
 	Blizzard_ArchaeologyUI = { ["ArchaeologyFrame"] = false },

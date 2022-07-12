@@ -202,7 +202,9 @@ local Update = function(self, _, unit)
 
 	self.AuraTrack.MaxAuras = self.AuraTrack.MaxAuras or 4
 	self.AuraTrack.Spacing = self.AuraTrack.Spacing or 6
-	self.AuraTrack.IconSize = (self.AuraTrack:GetWidth() / self.AuraTrack.MaxAuras) - self.AuraTrack.Spacing - (self.AuraTrack.Spacing / self.AuraTrack.MaxAuras)
+	self.AuraTrack.IconSize = (self.AuraTrack:GetWidth() / self.AuraTrack.MaxAuras)
+		- self.AuraTrack.Spacing
+		- (self.AuraTrack.Spacing / self.AuraTrack.MaxAuras)
 
 	for i = 1, 40 do
 		local _, texture, count, _, duration, expiration, caster, _, _, spellID = UnitAura(unit, i, "HELPFUL")

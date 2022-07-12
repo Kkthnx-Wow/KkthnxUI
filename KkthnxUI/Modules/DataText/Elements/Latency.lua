@@ -92,7 +92,7 @@ function Module:CreateLatencyDataText()
 
 	LatencyDataText.Texture = LatencyDataText:CreateTexture(nil, "BACKGROUND")
 	LatencyDataText.Texture:SetPoint("LEFT", LatencyDataText, "LEFT", 2, 0)
-	LatencyDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\ping.blp")
+	LatencyDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\ping.tga")
 	LatencyDataText.Texture:SetSize(16, 16)
 	LatencyDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 

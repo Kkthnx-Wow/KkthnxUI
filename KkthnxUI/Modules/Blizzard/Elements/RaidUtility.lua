@@ -651,12 +651,12 @@ function Module:RaidTool_EasyMarker()
 		UnitPopupRaidTarget8ButtonMixin,
 		UnitPopupRaidTarget7ButtonMixin,
 		UnitPopupRaidTarget6ButtonMixin,
-		UnitPopupRaidTarget5ButtonMixin, 
+		UnitPopupRaidTarget5ButtonMixin,
 		UnitPopupRaidTarget4ButtonMixin,
 		UnitPopupRaidTarget3ButtonMixin,
 		UnitPopupRaidTarget2ButtonMixin,
 		UnitPopupRaidTarget1ButtonMixin,
-		UnitPopupRaidTargetNoneButtonMixin
+		UnitPopupRaidTargetNoneButtonMixin,
 	}
 
 	for index, mixin in pairs(mixins) do

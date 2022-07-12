@@ -43,12 +43,22 @@ StaticPopupDialogs["RESETGOLD"] = {
 	OnAccept = function()
 		for _, realm in pairs(crossRealms) do
 			if KkthnxUIDB.Gold.totalGold[realm] then
-				table_wipe(KkthnxUIDB.Gold.totalGold[realm])
+				wipe(KkthnxUIDB.Gold.totalGold[realm])
 			end
 		end
 		KkthnxUIDB.Gold.totalGold[K.Realm][K.Name] = { GetMoney(), K.Class }
 	end,
 	whileDead = 1,
+}
+
+local menuList = {
+	{
+		text = K.RGBToHex(1, 0.8, 0) .. REMOVE_WORLD_MARKERS .. "!!!",
+		notCheckable = true,
+		func = function()
+			StaticPopup_Show("RESETGOLD")
+		end,
+	},
 }
 
 local function getClassIcon(class)
@@ -213,10 +223,49 @@ local function OnEnter(self)
 end
 K.GoldButton_OnEnter = OnEnter
 
+local RebuildCharList
+
+local function clearCharGold(_, realm, name)
+	KkthnxUIDB.Gold.totalGold[realm][name] = nil
+	DropDownList1:Hide()
+	RebuildCharList()
+end
+
+function RebuildCharList()
+	for i = 2, #menuList do
+		if menuList[i] then
+			wipe(menuList[i])
+		end
+	end
+
+	local index = 1
+	for _, realm in pairs(crossRealms) do
+		if KkthnxUIDB.Gold.totalGold[realm] then
+			for name, value in pairs(KkthnxUIDB.Gold.totalGold[realm]) do
+				if not (realm == K.Realm and name == K.Name) then
+					index = index + 1
+					if not menuList[index] then
+						menuList[index] = {}
+					end
+					menuList[index].text = K.RGBToHex(K.ColorClass(value[2])) .. Ambiguate(name .. "-" .. realm, "none")
+					menuList[index].notCheckable = true
+					menuList[index].arg1 = realm
+					menuList[index].arg2 = name
+					menuList[index].func = clearCharGold
+				end
+			end
+		end
+	end
+end
+
 local function OnMouseUp(self, btn)
 	if btn == "RightButton" then
 		if IsControlKeyDown() then
-			StaticPopup_Show("RESETGOLD")
+			if not menuList[1].created then
+				RebuildCharList()
+				menuList[1].created = true
+			end
+			EasyMenu(menuList, K.EasyMenu, self, -80, 100, "MENU", 1)
 		else
 			KkthnxUIDB["ShowSlots"] = not KkthnxUIDB["ShowSlots"]
 			if KkthnxUIDB["ShowSlots"] then
@@ -242,17 +291,17 @@ function Module:CreateGoldDataText()
 	GoldDataText = GoldDataText or CreateFrame("Button", "KKUI_GoldDataText", UIParent)
 	if C["DataText"].Gold then
 		GoldDataText:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
-		GoldDataText:SetSize(16, 16)
+		GoldDataText:SetSize(24, 24)
 
 		GoldDataText.Texture = GoldDataText:CreateTexture(nil, "BACKGROUND")
-		GoldDataText.Texture:SetPoint("LEFT", GoldDataText, "LEFT", 4, 0)
-		GoldDataText.Texture:SetTexture("Interface\\GossipFrame\\auctioneerGossipIcon")
-		GoldDataText.Texture:SetSize(16, 16)
-		-- GoldDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
+		GoldDataText.Texture:SetPoint("LEFT", GoldDataText, "LEFT", 3, 0)
+		GoldDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\bags.blp")
+		GoldDataText.Texture:SetSize(24, 24)
+		GoldDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 		GoldDataText.Text = GoldDataText:CreateFontString(nil, "ARTWORK")
 		GoldDataText.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
-		GoldDataText.Text:SetPoint("LEFT", GoldDataText.Texture, "RIGHT", 4, 0)
+		GoldDataText.Text:SetPoint("LEFT", GoldDataText.Texture, "RIGHT", -2, 0)
 	end
 
 	for _, event in pairs(eventList) do
@@ -265,6 +314,6 @@ function Module:CreateGoldDataText()
 	if C["DataText"].Gold then
 		GoldDataText:SetScript("OnMouseUp", OnMouseUp)
 
-		K.Mover(GoldDataText, "GoldDataText", "GoldDataText", { "LEFT", UIParent, "LEFT", 4, -302 })
+		K.Mover(GoldDataText, "GoldDataText", "GoldDataText", { "LEFT", UIParent, "LEFT", 0, -302 })
 	end
 end
