@@ -60,17 +60,7 @@ local function LandingButton_OnEnter(self)
 				local conduitQuality = C_Soulbinds_GetConduitQuality(conduits[i].id, conduits[i].rank)
 				local color = K.QualityColors[conduitQuality]
 
-				GameTooltip:AddLine(
-					CreateAtlasMarkup(_G.Soulbinds.GetConduitEmblemAtlas(conduits[i].type))
-						.. " ["
-						.. conduitItemLevel
-						.. "] "
-						.. AddTexture(icon)
-						.. " "
-						.. K.RGBToHex(color.r, color.g, color.b)
-						.. name
-						.. "|r "
-				)
+				GameTooltip:AddLine(CreateAtlasMarkup(_G.Soulbinds.GetConduitEmblemAtlas(conduits[i].type)) .. " [" .. conduitItemLevel .. "] " .. AddTexture(icon) .. " " .. K.RGBToHex(color.r, color.g, color.b) .. name .. "|r ")
 			end
 		end
 

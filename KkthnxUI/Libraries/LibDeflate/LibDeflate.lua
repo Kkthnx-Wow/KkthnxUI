@@ -552,12 +552,7 @@ function LibDeflate:CreateDictionary(str, strlen, adler32)
 		error(("Usage: LibDeflate:CreateDictionary(str, strlen, adler32):" .. " 'adler32' - number expected got '%s'."):format(type(adler32)), 2)
 	end
 	if strlen ~= #str then
-		error(
-			("Usage: LibDeflate:CreateDictionary(str, strlen, adler32):" .. " 'strlen' does not match the actual length of 'str'." .. " 'strlen': %u, '#str': %u ." .. " Please check if 'str' is modified unintentionally."):format(
-				strlen,
-				#str
-			)
-		)
+		error(("Usage: LibDeflate:CreateDictionary(str, strlen, adler32):" .. " 'strlen' does not match the actual length of 'str'." .. " 'strlen': %u, '#str': %u ." .. " Please check if 'str' is modified unintentionally."):format(strlen, #str))
 	end
 	if strlen == 0 then
 		error(("Usage: LibDeflate:CreateDictionary(str, strlen, adler32):" .. " 'str' - Empty string is not allowed."), 2)
@@ -567,12 +562,7 @@ function LibDeflate:CreateDictionary(str, strlen, adler32)
 	end
 	local actual_adler32 = self:Adler32(str)
 	if not IsEqualAdler32(adler32, actual_adler32) then
-		error(
-			("Usage: LibDeflate:CreateDictionary(str, strlen, adler32):" .. " 'adler32' does not match the actual adler32 of 'str'." .. " 'adler32': %u, 'Adler32(str)': %u ." .. " Please check if 'str' is modified unintentionally."):format(
-				adler32,
-				actual_adler32
-			)
-		)
+		error(("Usage: LibDeflate:CreateDictionary(str, strlen, adler32):" .. " 'adler32' does not match the actual adler32 of 'str'." .. " 'adler32': %u, 'Adler32(str)': %u ." .. " Please check if 'str' is modified unintentionally."):format(adler32, actual_adler32))
 	end
 
 	local dictionary = {}
@@ -650,15 +640,7 @@ local function IsValidDictionary(dictionary)
 	if type(dictionary) ~= "table" then
 		return false, ("'dictionary' - table expected got '%s'."):format(type(dictionary))
 	end
-	if
-		type(dictionary.adler32) ~= "number"
-		or type(dictionary.string_table) ~= "table"
-		or type(dictionary.strlen) ~= "number"
-		or dictionary.strlen <= 0
-		or dictionary.strlen > 32768
-		or dictionary.strlen ~= #dictionary.string_table
-		or type(dictionary.hash_tables) ~= "table"
-	then
+	if type(dictionary.adler32) ~= "number" or type(dictionary.string_table) ~= "table" or type(dictionary.strlen) ~= "number" or dictionary.strlen <= 0 or dictionary.strlen > 32768 or dictionary.strlen ~= #dictionary.string_table or type(dictionary.hash_tables) ~= "table" then
 		return false, ("'dictionary' - corrupted dictionary."):format(type(dictionary))
 	end
 	return true, ""
@@ -1579,25 +1561,7 @@ end
 
 -- Write dynamic block.
 -- @param ... Read the source code of GetBlockDynamicHuffmanHeader()
-local function CompressDynamicHuffmanBlock(
-	WriteBits,
-	is_last_block,
-	lcodes,
-	lextra_bits,
-	dcodes,
-	dextra_bits,
-	HLIT,
-	HDIST,
-	HCLEN,
-	rle_codes_huffman_bitlens,
-	rle_codes_huffman_codes,
-	rle_deflate_codes,
-	rle_extra_bits,
-	lcodes_huffman_bitlens,
-	lcodes_huffman_codes,
-	dcodes_huffman_bitlens,
-	dcodes_huffman_codes
-)
+local function CompressDynamicHuffmanBlock(WriteBits, is_last_block, lcodes, lextra_bits, dcodes, dextra_bits, HLIT, HDIST, HCLEN, rle_codes_huffman_bitlens, rle_codes_huffman_codes, rle_deflate_codes, rle_extra_bits, lcodes_huffman_bitlens, lcodes_huffman_codes, dcodes_huffman_bitlens, dcodes_huffman_codes)
 	WriteBits(is_last_block and 1 or 0, 1) -- Last block identifier
 	WriteBits(2, 2) -- Dynamic Huffman block identifier
 
@@ -1883,11 +1847,7 @@ local function Deflate(configs, WriteBits, WriteString, FlushWriter, str, dictio
 				lcodes, lextra_bits, lcodes_counts, dcodes, dextra_bits, dcodes_counts = GetBlockLZ77Result(level, string_table, hash_tables, block_start, block_end, offset, dictionary)
 			end
 
-			HLIT, HDIST, HCLEN, rle_codes_huffman_bitlens, rle_codes_huffman_codes, rle_deflate_codes, rle_extra_bits, lcodes_huffman_bitlens, lcodes_huffman_codes, dcodes_huffman_bitlens, dcodes_huffman_codes =
-				GetBlockDynamicHuffmanHeader(
-					lcodes_counts,
-					dcodes_counts
-				)
+			HLIT, HDIST, HCLEN, rle_codes_huffman_bitlens, rle_codes_huffman_codes, rle_deflate_codes, rle_extra_bits, lcodes_huffman_bitlens, lcodes_huffman_codes, dcodes_huffman_bitlens, dcodes_huffman_codes = GetBlockDynamicHuffmanHeader(lcodes_counts, dcodes_counts)
 			dynamic_block_bitlen = GetDynamicHuffmanBlockSize(lcodes, dcodes, HCLEN, rle_codes_huffman_bitlens, rle_deflate_codes, lcodes_huffman_bitlens, dcodes_huffman_bitlens)
 			fixed_block_bitlen = GetFixedHuffmanBlockSize(lcodes, dcodes)
 		end
@@ -1905,25 +1865,7 @@ local function Deflate(configs, WriteBits, WriteString, FlushWriter, str, dictio
 			CompressFixedHuffmanBlock(WriteBits, is_last_block, lcodes, lextra_bits, dcodes, dextra_bits)
 			total_bitlen = total_bitlen + fixed_block_bitlen
 		elseif strategy == "dynamic" or dynamic_block_bitlen == min_bitlen then
-			CompressDynamicHuffmanBlock(
-				WriteBits,
-				is_last_block,
-				lcodes,
-				lextra_bits,
-				dcodes,
-				dextra_bits,
-				HLIT,
-				HDIST,
-				HCLEN,
-				rle_codes_huffman_bitlens,
-				rle_codes_huffman_codes,
-				rle_deflate_codes,
-				rle_extra_bits,
-				lcodes_huffman_bitlens,
-				lcodes_huffman_codes,
-				dcodes_huffman_bitlens,
-				dcodes_huffman_codes
-			)
+			CompressDynamicHuffmanBlock(WriteBits, is_last_block, lcodes, lextra_bits, dcodes, dextra_bits, HLIT, HDIST, HCLEN, rle_codes_huffman_bitlens, rle_codes_huffman_codes, rle_deflate_codes, rle_extra_bits, lcodes_huffman_bitlens, lcodes_huffman_codes, dcodes_huffman_bitlens, dcodes_huffman_codes)
 			total_bitlen = total_bitlen + dynamic_block_bitlen
 		end
 
@@ -2531,8 +2473,7 @@ end
 -- @param state decompression state that will be modified by this function.
 -- @return 0 if succeeds, other value if fails.
 local function DecompressStoreBlock(state)
-	local buffer, buffer_size, ReadBits, ReadBytes, ReaderBitlenLeft, SkipToByteBoundary, result_buffer =
-		state.buffer, state.buffer_size, state.ReadBits, state.ReadBytes, state.ReaderBitlenLeft, state.SkipToByteBoundary, state.result_buffer
+	local buffer, buffer_size, ReadBits, ReadBytes, ReaderBitlenLeft, SkipToByteBoundary, result_buffer = state.buffer, state.buffer_size, state.ReadBits, state.ReadBytes, state.ReaderBitlenLeft, state.SkipToByteBoundary, state.result_buffer
 
 	SkipToByteBoundary()
 	local bytelen = ReadBits(16)
@@ -3633,21 +3574,7 @@ if io and os and debug and _G.arg then
 		while arg[i] do
 			local a = arg[i]
 			if a == "-h" then
-				print(
-					LibDeflate._COPYRIGHT
-						.. "\nUsage: lua LibDeflate.lua [OPTION] [INPUT] [OUTPUT]\n"
-						.. "  -0    store only. no compression.\n"
-						.. "  -1    fastest compression.\n"
-						.. "  -9    slowest and best compression.\n"
-						.. "  -d    do decompression instead of compression.\n"
-						.. "  --dict <filename> specify the file that contains"
-						.. " the entire preset dictionary.\n"
-						.. "  -h    give this help.\n"
-						.. "  --strategy <fixed/huffman_only/dynamic>"
-						.. " specify a special compression strategy.\n"
-						.. "  -v    print the version and copyright info.\n"
-						.. "  --zlib  use zlib format instead of raw deflate.\n"
-				)
+				print(LibDeflate._COPYRIGHT .. "\nUsage: lua LibDeflate.lua [OPTION] [INPUT] [OUTPUT]\n" .. "  -0    store only. no compression.\n" .. "  -1    fastest compression.\n" .. "  -9    slowest and best compression.\n" .. "  -d    do decompression instead of compression.\n" .. "  --dict <filename> specify the file that contains" .. " the entire preset dictionary.\n" .. "  -h    give this help.\n" .. "  --strategy <fixed/huffman_only/dynamic>" .. " specify a special compression strategy.\n" .. "  -v    print the version and copyright info.\n" .. "  --zlib  use zlib format instead of raw deflate.\n")
 				os.exit(0)
 			elseif a == "-v" then
 				print(LibDeflate._COPYRIGHT)

@@ -44,11 +44,7 @@ function Module:HookApplicationClick()
 		LFGListFrame.SearchPanel.SignUpButton:Click()
 	end
 
-	if
-		(not IsAltKeyDown())
-		and LFGListApplicationDialog:IsShown()
-		and LFGListApplicationDialog.SignUpButton:IsEnabled()
-	then
+	if (not IsAltKeyDown()) and LFGListApplicationDialog:IsShown() and LFGListApplicationDialog.SignUpButton:IsEnabled() then
 		LFGListApplicationDialog.SignUpButton:Click()
 	end
 end
@@ -229,13 +225,9 @@ function Module:ShowLeaderOverallScore()
 	local resultID = self.resultID
 	local searchResultInfo = resultID and C_LFGList_GetSearchResultInfo(resultID)
 	if searchResultInfo then
-		local activityInfo =
-			C_LFGList_GetActivityInfoTable(searchResultInfo.activityID, nil, searchResultInfo.isWarMode)
+		local activityInfo = C_LFGList_GetActivityInfoTable(searchResultInfo.activityID, nil, searchResultInfo.isWarMode)
 		if activityInfo then
-			local showScore = activityInfo.isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore
-				or activityInfo.isRatedPvpActivity
-					and searchResultInfo.leaderPvpRatingInfo
-					and searchResultInfo.leaderPvpRatingInfo.rating
+			local showScore = activityInfo.isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore or activityInfo.isRatedPvpActivity and searchResultInfo.leaderPvpRatingInfo and searchResultInfo.leaderPvpRatingInfo.rating
 			if showScore then
 				local oldName = self.ActivityName:GetText()
 				oldName = gsub(oldName, ".-" .. HEADER_COLON, "") -- Tazavesh
@@ -268,12 +260,7 @@ function Module:ReplaceFindGroupButton()
 			categorySelection.FindGroupButton:Click()
 		else
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-			LFGListSearchPanel_SetCategory(
-				searchPanel,
-				selectedCategory,
-				categorySelection.selectedFilters,
-				LFGListFrame.baseFilters
-			)
+			LFGListSearchPanel_SetCategory(searchPanel, selectedCategory, categorySelection.selectedFilters, LFGListFrame.baseFilters)
 			LFGListSearchPanel_DoSearch(searchPanel)
 			LFGListFrame_SetActivePanel(LFGListFrame, searchPanel)
 		end

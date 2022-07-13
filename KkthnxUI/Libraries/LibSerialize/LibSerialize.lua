@@ -631,16 +631,7 @@ local function FloatToString(n)
 	else
 		expo = expo + 0x3FE
 		mant = floor((mant * 2.0 - 1.0) * ldexp(0.5, 53))
-		return string_char(
-			sign + floor(expo / 0x10),
-			(expo % 0x10) * 0x10 + floor(mant / 281474976710656),
-			floor(mant / 1099511627776) % 256,
-			floor(mant / 4294967296) % 256,
-			floor(mant / 16777216) % 256,
-			floor(mant / 65536) % 256,
-			floor(mant / 256) % 256,
-			mant % 256
-		)
+		return string_char(sign + floor(expo / 0x10), (expo % 0x10) * 0x10 + floor(mant / 281474976710656), floor(mant / 1099511627776) % 256, floor(mant / 4294967296) % 256, floor(mant / 16777216) % 256, floor(mant / 65536) % 256, floor(mant / 256) % 256, mant % 256)
 	end
 end
 

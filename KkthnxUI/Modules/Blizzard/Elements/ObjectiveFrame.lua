@@ -38,11 +38,7 @@ function Module:SetObjectiveFrameAutoHide()
 	end
 
 	if C["Automation"].AutoCollapse then
-		RegisterStateDriver(
-			_G.ObjectiveTrackerFrame.AutoHider,
-			"objectiveHider",
-			"[@arena1,exists][@arena2,exists][@arena3,exists][@arena4,exists][@arena5,exists][@boss1,exists][@boss2,exists][@boss3,exists][@boss4,exists] 1;0"
-		)
+		RegisterStateDriver(_G.ObjectiveTrackerFrame.AutoHider, "objectiveHider", "[@arena1,exists][@arena2,exists][@arena3,exists][@arena4,exists][@arena5,exists][@boss1,exists][@boss2,exists][@boss3,exists][@boss4,exists] 1;0")
 	else
 		UnregisterStateDriver(_G.ObjectiveTrackerFrame.AutoHider, "objectiveHider")
 	end

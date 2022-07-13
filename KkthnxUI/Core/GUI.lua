@@ -77,29 +77,19 @@ local MySelectedProfile = K.Realm .. "-" .. K.Name
 
 -- Do not add class color/icon string unless they ask for it or agree apon it :D
 local CreditLines = {
-	K.GreyColor .. "~~~~|r |CFFfa6a56Patreons|r " .. K.GreyColor .. "~~~~",
-	-- Tier 1
-	"|CFFfa6a56Tier 1|r",
-	"Shale",
-	"Tr0uBl3Sh00t3R",
-	"Bbobz",
-	"Roflmao",
-	"",
-	-- Tier 2
-	"|CFFfa6a56Tier 2|r",
-	"Big Balkan Wolf",
-	"",
-	-- Tier 3
-	"|CFFfa6a56Tier 3|r",
-	PaladinIconColor .. "Chirs|r",
-	HunterIconColor .. "SnerkDevil",
-	"thondr",
-	"",
-	-- Tier 4
-	"|CFFfa6a56Tier 4|r",
-	ShamanIconColor .. "Rokalm|r",
-	"",
-	K.GreyColor .. "~~~~|r |CFFFFCC66Credits|r " .. K.GreyColor .. "~~~~",
+	-- K.GreyColor .. "~~~~|r |CFFfa6a56Patreons|r " .. K.GreyColor .. "~~~~",
+	-- -- Tier 1
+	-- "",
+	-- -- Tier 2
+	-- "",
+	-- -- Tier 3
+	-- "",
+	-- -- Tier 4
+	-- "",
+	K.GreyColor
+		.. "~~~~|r |CFFFFCC66Credits|r "
+		.. K.GreyColor
+		.. "~~~~",
 	"Aftermathh",
 	RogueIconColor .. "Alteredcross|r",
 	"Alza",

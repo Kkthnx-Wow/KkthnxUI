@@ -863,16 +863,7 @@ function Module:OnEnable()
 		return
 	end
 
-	if
-		IsAddOnLoaded("AdiBags")
-		or IsAddOnLoaded("ArkInventory")
-		or IsAddOnLoaded("cargBags_Nivaya")
-		or IsAddOnLoaded("cargBags")
-		or IsAddOnLoaded("Bagnon")
-		or IsAddOnLoaded("Combuctor")
-		or IsAddOnLoaded("TBag")
-		or IsAddOnLoaded("BaudBag")
-	then
+	if IsAddOnLoaded("AdiBags") or IsAddOnLoaded("ArkInventory") or IsAddOnLoaded("cargBags_Nivaya") or IsAddOnLoaded("cargBags") or IsAddOnLoaded("Bagnon") or IsAddOnLoaded("Combuctor") or IsAddOnLoaded("TBag") or IsAddOnLoaded("BaudBag") then
 		return
 	end
 

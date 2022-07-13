@@ -33,7 +33,9 @@ local setItems
 local function initUpdater()
 	local function updateSets()
 		setItems = setItems or {}
-		for k in pairs(setItems) do setItems[k] = nil end
+		for k in pairs(setItems) do
+			setItems[k] = nil
+		end
 
 		for setID = 1, GetNumEquipmentSets() do
 			local name = GetEquipmentSetInfo(setID)
@@ -57,7 +59,9 @@ local function initUpdater()
 end
 
 ItemKeys["setID"] = function(i)
-	if(not setItems) then initUpdater() end
+	if not setItems then
+		initUpdater()
+	end
 	return setItems[i.id]
 end
 

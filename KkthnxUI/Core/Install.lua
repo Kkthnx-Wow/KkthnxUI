@@ -87,8 +87,6 @@ function Module:ForceDefaultCVars()
 	SetCVar("threatWarning", 3)
 	SetCVar("whisperMode", "inline")
 	SetCVar("wholeChatWindowClickable", 0)
-	-- SetCVar("remoteTextToSpeech", 1) -- Set to 1 then 0 so we can close the chat tab
-	-- SetCVar("remoteTextToSpeech", 0)
 
 	SetActionBarToggles(1, 1, 1, 1)
 

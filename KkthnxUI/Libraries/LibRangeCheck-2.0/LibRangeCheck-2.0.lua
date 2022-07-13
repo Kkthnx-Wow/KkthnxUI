@@ -1210,8 +1210,7 @@ do
 	-- -- or
 	-- rc.RegisterCallback(self, "CHECKERS_CHANGED", someCallbackFunction)
 	-- @see CallbackHandler-1.0 documentation for more details
-	lib.RegisterCallback = lib.RegisterCallback
-		or function(...)
+	lib.RegisterCallback = lib.RegisterCallback or function(...)
 			local CBH = LibStub("CallbackHandler-1.0")
 			lib.RegisterCallback = nil -- extra safety, we shouldn't get this far if CBH is not found, but better an error later than an infinite recursion now
 			lib.callbacks = CBH:New(lib)

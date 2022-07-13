@@ -30,7 +30,7 @@ local _, ns = ...
 local cargBags = ns.cargBags
 
 local function apply(self, container, text)
-	if(text == "" or not text) then
+	if text == "" or not text then
 		container:ApplyToButtons(self.highlightFunction, true)
 	else
 		container:FilterForFunction(self.highlightFunction, self.currFilters)
@@ -38,19 +38,19 @@ local function apply(self, container, text)
 end
 
 local function doSearch(self, text)
-	if(type(text) == "string") then
+	if type(text) == "string" then
 		self:SetText(text)
 	else
 		text = self:GetText()
 	end
 
-	if(self.currFilters) then
+	if self.currFilters then
 		self.currFilters:Empty()
 	end
 
 	self.currFilters = self.parent.implementation:ParseTextFilter(text, self.currFilters, self.textFilters)
 
-	if(self.isGlobal) then
+	if self.isGlobal then
 		for _, container in pairs(self.parent.implementation.contByName) do
 			apply(self, container, text)
 		end
@@ -74,12 +74,16 @@ end
 local function onEscape(search)
 	doSearch(search, "")
 	search:ClearFocus()
-	if(search.OnEscapePressed) then search:OnEscapePressed() end
+	if search.OnEscapePressed then
+		search:OnEscapePressed()
+	end
 end
 
 local function onEnter(search)
 	search:ClearFocus()
-	if(search.OnEnterPressed) then search:OnEnterPressed() end
+	if search.OnEnterPressed then
+		search:OnEnterPressed()
+	end
 end
 
 local function onHide(self)
@@ -123,7 +127,7 @@ cargBags:RegisterPlugin("SearchBar", function(self, target)
 	search:SetScript("OnEnterPressed", onEnter)
 	self:HookScript("OnHide", onHide)
 
-	if(target) then
+	if target then
 		search:SetAutoFocus(true)
 		search:SetAllPoints(target)
 		search:Hide()

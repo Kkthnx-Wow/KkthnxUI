@@ -130,14 +130,7 @@ end
 
 function Module.SetItemRefHook(link, _, button)
 	if string_sub(link, 1, 6) == "player" and button == "LeftButton" and IsModifiedClick("CHATLINK") then
-		if
-			not StaticPopup_Visible("ADD_IGNORE")
-			and not StaticPopup_Visible("ADD_FRIEND")
-			and not StaticPopup_Visible("ADD_GUILDMEMBER")
-			and not StaticPopup_Visible("ADD_RAIDMEMBER")
-			and not StaticPopup_Visible("CHANNEL_INVITE")
-			and not ChatEdit_GetActiveWindow()
-		then
+		if not StaticPopup_Visible("ADD_IGNORE") and not StaticPopup_Visible("ADD_FRIEND") and not StaticPopup_Visible("ADD_GUILDMEMBER") and not StaticPopup_Visible("ADD_RAIDMEMBER") and not StaticPopup_Visible("CHANNEL_INVITE") and not ChatEdit_GetActiveWindow() then
 			local namelink, fullname
 			if string_sub(link, 7, 8) == "GM" then
 				namelink = string_sub(link, 10)

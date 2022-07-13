@@ -112,7 +112,7 @@ function Module:StartTimer(start, duration, modRate)
 	start = tonumber(start) or 0
 	duration = tonumber(duration) or 0
 	modRate = tonumber(modRate) or 1
-	
+
 	if start > 0 and duration > MIN_DURATION then
 		local timer = self.timer or Module.OnCreate(self)
 		timer.start = start

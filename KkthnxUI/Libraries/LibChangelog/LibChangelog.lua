@@ -92,12 +92,7 @@ function LibChangelog:ShowChangelog(addonName)
 	local firstEntry = addonData.changelogTable[1] -- firstEntry contains the newest Version
 	local addonSavedVariablesTable = addonData.savedVariablesTable
 
-	if
-		addonData.lastReadVersionKey
-		and addonSavedVariablesTable[addonData.lastReadVersionKey]
-		and firstEntry.Version <= addonSavedVariablesTable[addonData.lastReadVersionKey]
-		and addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey]
-	then
+	if addonData.lastReadVersionKey and addonSavedVariablesTable[addonData.lastReadVersionKey] and firstEntry.Version <= addonSavedVariablesTable[addonData.lastReadVersionKey] and addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey] then
 		return
 	end
 
@@ -150,11 +145,7 @@ function LibChangelog:ShowChangelog(addonName)
 	for i = 1, #addonData.changelogTable do
 		local versionEntry = addonData.changelogTable[i]
 
-		if
-			addonData.lastReadVersionKey
-			and addonSavedVariablesTable[addonData.lastReadVersionKey]
-			and addonSavedVariablesTable[addonData.lastReadVersionKey] >= versionEntry.Version
-		then
+		if addonData.lastReadVersionKey and addonSavedVariablesTable[addonData.lastReadVersionKey] and addonSavedVariablesTable[addonData.lastReadVersionKey] >= versionEntry.Version then
 			fonts = VIEWED_MESSAGE_FONTS
 		end
 

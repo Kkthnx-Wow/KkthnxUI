@@ -45,7 +45,7 @@ cargBags.itemKeys["bindOn"] = function(i)
 	tip:SetBagItem(i.bagID, i.slotID)
 
 	for j = 2, 4 do
-		local line = _G["KKUI_ScanTooltipTextLeft"..j]
+		local line = _G["KKUI_ScanTooltipTextLeft" .. j]
 		local lineText = line and line:GetText()
 		local bindOn = lineText and bindTypeToString[lineText]
 		if bindOn then

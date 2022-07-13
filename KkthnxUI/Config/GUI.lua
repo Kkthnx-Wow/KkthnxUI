@@ -440,12 +440,7 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "BagBarMouseover", L["Fade Bagbar"])
 	Window:CreateSwitch("Inventory", "BagsItemLevel", L["Display Item Level"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "DeleteButton", L["Bags Delete Button"])
-	Window:CreateSwitch(
-		"Inventory",
-		"PetTrash",
-		L["Pet Trash Currencies"],
-		"In patch 9.1, you can buy 3 battle pets by using specific trash items. Keep this enabled, will sort these items into Collection Filter, and won't be sold by auto junk"
-	)
+	Window:CreateSwitch("Inventory", "PetTrash", L["Pet Trash Currencies"], "In patch 9.1, you can buy 3 battle pets by using specific trash items. Keep this enabled, will sort these items into Collection Filter, and won't be sold by auto junk")
 	Window:CreateSwitch("Inventory", "ReverseSort", L["Umm Reverse The Sorting"], nil, UpdateBagSortOrder)
 	Window:CreateSwitch("Inventory", "ShowNewItem", L["Show New Item Glow"])
 	Window:CreateSwitch("Inventory", "UpgradeIcon", L["Show Upgrade Icon"])
