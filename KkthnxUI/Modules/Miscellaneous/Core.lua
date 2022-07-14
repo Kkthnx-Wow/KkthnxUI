@@ -62,7 +62,6 @@ function Module:OnEnable()
 	self:CreateGUIGameMenuButton()
 	self:CreateJerryWay()
 	self:CreateKillTutorials()
-	self:CreateMawWidgetFrame()
 	self:CreateQuestSizeUpdate()
 	self:CreateTicketStatusFrameMove()
 	self:CreateTradeTargetInfo()
@@ -235,17 +234,9 @@ function Module:CreateMinimapButtonToggle()
 			mmb:Hide()
 		end
 	end
-end
 
-local maxMawValue = 1000
-local MawRankColor = {
-	[0] = { 0.5, 0.7, 1 },
-	[1] = { 0, 0.7, 0.3 },
-	[2] = { 0, 1, 0 },
-	[3] = { 1, 0.8, 0 },
-	[4] = { 1, 0.5, 0 },
-	[5] = { 1, 0, 0 },
-}
+	Module:ToggleMinimapIcon()
+end
 
 function Module:CreateGUIGameMenuButton()
 	local KKUI_GUIButton = CreateFrame("Button", "KKUI_GameMenuButton", GameMenuFrame, "GameMenuButtonTemplate, BackdropTemplate")
@@ -435,86 +426,6 @@ function Module:CreateTradeTargetInfo()
 		infoText:SetText(text)
 	end
 	hooksecurefunc("TradeFrame_Update", updateColor)
-end
-
--- Maw widget frame
-local function GetMawBarValue()
-	local widgetInfo = C_UIWidgetManager.GetDiscreteProgressStepsVisualizationInfo(2885)
-	if widgetInfo and widgetInfo.shownState == 1 then
-		local value = widgetInfo.progressVal
-		return floor(value / maxMawValue), value % maxMawValue
-	end
-end
-
-function Module:UpdateMawBarLayout()
-	local bar = Module.mawbar
-	local rank, value = GetMawBarValue()
-	if rank then
-		bar:SetStatusBarColor(unpack(MawRankColor[rank]))
-		if rank == 5 then
-			bar.text:SetText("Lv" .. rank)
-			bar:SetValue(maxMawValue)
-		else
-			bar.text:SetText("Lv" .. rank .. " - " .. value .. "/" .. maxMawValue)
-			bar:SetValue(value)
-		end
-		bar:Show()
-		UIWidgetTopCenterContainerFrame:Hide()
-	else
-		bar:Hide()
-		UIWidgetTopCenterContainerFrame:Show()
-	end
-end
-
-function Module:CreateMawWidgetFrame()
-	if not C["Misc"].MawThreatBar then
-		return
-	end
-
-	if Module.mawbar then
-		return
-	end
-
-	local bar = CreateFrame("StatusBar", nil, UIParent)
-	bar:SetPoint("TOP", 0, -50)
-	bar:SetSize(200, 16)
-	bar:SetMinMaxValues(0, maxMawValue)
-	bar.text = K.CreateFontString(bar, 12)
-	bar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
-	bar:CreateBorder()
-	K:SmoothBar(bar)
-
-	bar.spark = bar:CreateTexture(nil, "OVERLAY")
-	bar.spark:SetTexture(C["Media"].Textures.Spark16Texture)
-	bar.spark:SetHeight(14)
-	bar.spark:SetBlendMode("ADD")
-	bar.spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
-
-	Module.mawbar = bar
-
-	K.Mover(bar, "MawThreatBar", "MawThreatBar", { "TOP", UIParent, 0, -50 })
-
-	bar:SetScript("OnEnter", function(self)
-		local rank = GetMawBarValue()
-		local widgetInfo = rank and C_UIWidgetManager.GetTextureWithAnimationVisualizationInfo(2873 + rank)
-		if widgetInfo and widgetInfo.shownState == 1 then
-			GameTooltip:SetOwner(self, "ANCHOR_BOTTOM", 0, -10)
-			local header, nonHeader = SplitTextIntoHeaderAndNonHeader(widgetInfo.tooltip)
-			if header then
-				GameTooltip:AddLine(header, nil, nil, nil, 1)
-			end
-
-			if nonHeader then
-				GameTooltip:AddLine(nonHeader, nil, nil, nil, 1)
-			end
-			GameTooltip:Show()
-		end
-	end)
-	bar:SetScript("OnLeave", K.HideTooltip)
-
-	Module:UpdateMawBarLayout()
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.UpdateMawBarLayout)
-	K:RegisterEvent("UPDATE_UI_WIDGET", Module.UpdateMawBarLayout)
 end
 
 -- Archaeology counts

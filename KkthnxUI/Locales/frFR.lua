@@ -1,5 +1,5 @@
 local K, _, L = unpack(KkthnxUI)
-if (not L) then
+if not L then
 	return
 end
 
@@ -223,7 +223,7 @@ L["Tutorial Page1"] = "Bienvenue au tutoriel d'installation !|n|nCliquez sur le 
 L["Tutorial Page2"] = "Vous êtes passé à l'étape suivante !|n|nNous allons ici charger quelques paramètres utiles pour le Chat ! Ces paramètres sont importants et conçus pour KkthnxUI|n|n|cffff0000ATTENTION:|r|n|n|cff00ccffVous pouvez défiler vers le haut ou le bas du chat en maintenant la touche MAJ enfoncée sur la fenêtre de chat.|r"
 L["Tutorial Page3"] = "Toujours là ? Bien !|n|nIl s'agit de la section permettant d'appliquer l'échelle d'interface recommandée en fonction de votre résolution actuelle.|n|nVous pouvez changer cette échelle dans |cffffcc00 les options de configuration de KkthnxUI (Onglet Général)|r plus tard."
 L["Tutorial Page4"] = "Enfin, les paramètres de profil de Skada/DBM/BigWigs et quelques autres addOns seront importés si ces addOns sont chargés/activés actuellement.|n|nVous pouvez désactiver les skins dans |cffffcc00les options de configuration de KkthnxUI (Onglet Skins)|r."
-L["Tutorial Page5"] = "Eh bien, vous avez réussi à aller jusqu'au bout ! Vous avez terminé le tutoriel.|n|n|cffff0000ATTENTION:|r|n|nVous pouvez facilement définir la focalisation en maintenant les touches SHIFT et clic gauche sur l'unité désirée ;|n|nLa plupart des paramètres peuvent être modifiés dans |cffffcc00les options de configuration de KkthnxUI|r.|r Bonne chance et amusez-vous bien "..K.Name
+L["Tutorial Page5"] = "Eh bien, vous avez réussi à aller jusqu'au bout ! Vous avez terminé le tutoriel.|n|n|cffff0000ATTENTION:|r|n|nVous pouvez facilement définir la focalisation en maintenant les touches SHIFT et clic gauche sur l'unité désirée ;|n|nLa plupart des paramètres peuvent être modifiés dans |cffffcc00les options de configuration de KkthnxUI|r.|r Bonne chance et amusez-vous bien " .. K.Name
 L["Type Intro"] = "|nAuraID: surveiller le statut des Buff/Debuff.|n|nSpellID: surveiller le cooldown des sorts.|n|nSlotID: surveiller le cooldown des objets.|n|nTotemID: surveiller la durée du totem activé."
 L["Type*"] = "Type*"
 L["Unit Intro"] = "|nLes informations sur les de l'unité.|n|njoueur: unité est le joueur.|n|ncible: unité est la cible.|n|nfocalisation: unité est la cible focalisée.|n|nfamilier: unité est le familier."
@@ -481,7 +481,6 @@ L["Paragon Toast Fade"] = "Fondu notification Parangon"
 L["Paragon Toast Sound"] = "Son notification Parangon"
 L["Paragon Toast"] = "Notification Parangon"
 L["Remove And Hide The TalkingHead Frame"] = "Désactiver et cacher la fenêtre parlante des PNJ"
-L["Replace Default Maw Threat Status"] = "Remplacer l'affichage de menace de l'Antre"
 L["Show Character/Inspect ItemLevel Info"] = "Afficher Personnage/Inspecter niveau d'objet"
 L["Show Mythic+ GuildBest"] = "Show Mythic Plus Guild Best"
 L["Show Slot Durability %"] = "Afficher la durabilité des objets %"

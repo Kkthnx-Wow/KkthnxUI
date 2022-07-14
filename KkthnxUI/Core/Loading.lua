@@ -215,10 +215,6 @@ local function KKUI_VerifyDatabase()
 	if not KkthnxUIDB.MajorSpells then
 		KkthnxUIDB.MajorSpells = {}
 	end
-
-	if not KkthnxUIDB.MinimapButton then
-		KkthnxUIDB.MinimapButton = {}
-	end
 end
 
 local addonLoader = CreateFrame("Frame")
