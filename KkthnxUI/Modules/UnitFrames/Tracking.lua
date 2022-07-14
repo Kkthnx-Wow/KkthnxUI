@@ -106,7 +106,6 @@ function Tracking:Update()
 	local Button = self:GetParent()
 	local Cat = Button.Cat
 	local ID = Button.ID
-	-- local Texture = self.Texture:GetTexture()
 	local Icon = Button.Icon.Texture
 	local Text = Button.Text
 	local CurrentID = ID
@@ -200,7 +199,7 @@ function Tracking:Setup()
 
 	self.PVE.Next = CreateFrame("Button", nil, self.PVE)
 	self.PVE.Next:SetSize(26, 26)
-	self.PVE.Next:SetPoint("LEFT", self.PVE, "RIGHT", 4, 0)
+	self.PVE.Next:SetPoint("LEFT", self.PVE, "RIGHT", 6, 0)
 	self.PVE.Next:SkinButton()
 	self.PVE.Next:SetScript("OnClick", self.Update)
 

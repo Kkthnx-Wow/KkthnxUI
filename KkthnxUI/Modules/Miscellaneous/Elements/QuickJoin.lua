@@ -90,12 +90,13 @@ local function GetPartyMemberInfo(index)
 		role = "DAMAGER"
 	end
 
-	return role, class, (UnitIsGroupLeader(unit) and 1)
+	return role, class, UnitIsGroupLeader(unit)
 end
 
 local function GetCorrectRoleInfo(frame, i)
 	if frame.resultID then
-		return C_LFGList_GetSearchResultMemberInfo(frame.resultID, i)
+		local role, class = C_LFGList_GetSearchResultMemberInfo(frame.resultID, i)
+		return role, class, i == 1
 	elseif frame == ApplicationViewerFrame then
 		return GetPartyMemberInfo(i)
 	end
@@ -119,7 +120,7 @@ local function UpdateGroupRoles(self)
 			end
 			roleCache[count][1] = roleIndex
 			roleCache[count][2] = class
-			roleCache[count][3] = isLeader == 1 or i == 1
+			roleCache[count][3] = isLeader
 		end
 	end
 
@@ -221,6 +222,11 @@ function Module:AddAutoAcceptButton()
 	end)
 end
 
+local factionStr = {
+	[0] = "Horde",
+	[1] = "Alliance",
+}
+
 function Module:ShowLeaderOverallScore()
 	local resultID = self.resultID
 	local searchResultInfo = resultID and C_LFGList_GetSearchResultInfo(resultID)
@@ -230,8 +236,23 @@ function Module:ShowLeaderOverallScore()
 			local showScore = activityInfo.isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore or activityInfo.isRatedPvpActivity and searchResultInfo.leaderPvpRatingInfo and searchResultInfo.leaderPvpRatingInfo.rating
 			if showScore then
 				local oldName = self.ActivityName:GetText()
-				oldName = gsub(oldName, ".-" .. HEADER_COLON, "") -- Tazavesh
+				--oldName = gsub(oldName, ".-" .. HEADER_COLON, "") -- Tazavesh
 				self.ActivityName:SetFormattedText(scoreFormat, TT.GetDungeonScore(showScore), oldName)
+				if not self.crossFactionLogo then
+					local logo = self:CreateTexture(nil, "OVERLAY")
+					logo:SetPoint("TOPLEFT", -6, 5)
+					logo:SetSize(24, 24)
+					self.crossFactionLogo = logo
+				end
+			end
+		end
+
+		if self.crossFactionLogo then
+			if searchResultInfo.crossFactionListing then
+				self.crossFactionLogo:Hide()
+			else
+				--self.crossFactionLogo:SetTexture("Interface\\Timer\\" .. factionStr[searchResultInfo.leaderFactionGroup] .. "-Logo")
+				self.crossFactionLogo:Show()
 			end
 		end
 	end
@@ -284,7 +305,7 @@ function Module:AddDungeonsFilter()
 
 	local function GetDungeonNameByID(mapID)
 		local name = C_ChallengeMode_GetMapUIInfo(mapID)
-		--name = gsub(name, ".-"..HEADER_COLON, "") -- abbr Tazavesh
+		-- name = gsub(name, ".-" .. HEADER_COLON, "") -- abbr Tazavesh
 		return name
 	end
 
@@ -306,7 +327,7 @@ function Module:AddDungeonsFilter()
 		[2] = { text = _G.CHECK_ALL, notCheckable = true, keepShownOnClick = true, func = toggleAll },
 	}
 
-	local function onClick(self, index, aID)
+	local function onClick(_, index, aID)
 		allOn = true
 		mapData[index].isOn = not mapData[index].isOn
 		filterIDs[aID] = mapData[index].isOn
@@ -374,7 +395,7 @@ end
 local function createSortButton(parent, texture, sortStr)
 	local bu = CreateFrame("Button", nil, parent, "BackdropTemplate")
 	bu:SetSize(24, 24)
-	--bu:SetTexture(texture) --- FIX ME
+	bu:SetTexture(texture) -- FIX ME
 	bu.sortStr = sortStr
 	bu.__owner = parent
 	bu:SetScript("OnClick", clickSortButton)

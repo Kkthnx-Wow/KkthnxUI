@@ -697,18 +697,8 @@ local function CreatePanel()
 					return
 				end
 
-				KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i][realID] = {
-					typeID,
-					realID,
-					unitID,
-					Option[4].Text:GetText(),
-					tonumber(Option[5]:GetText()) or false,
-					Option[6]:GetChecked(),
-					Option[7]:GetChecked(),
-					Option[8]:GetChecked(),
-					Option[9]:GetText(),
-					Option[10]:GetChecked(),
-				}
+				-- stylua: ignore
+				KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i][realID] = {typeID, realID, unitID, Option[4].Text:GetText(), tonumber(Option[5]:GetText()) or false, Option[6]:GetChecked(), Option[7]:GetChecked(), Option[8]:GetChecked(), Option[9]:GetText(), Option[10]:GetChecked()}
 				AddAura(tabs[i].List.child, i, KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList[i][realID])
 				for i = 2, 12 do
 					AW_ClearEdit(Option[i])
@@ -772,3 +762,4 @@ SlashCmdList["KKUI_AWCONFIG"] = function()
 	CreatePanel()
 end
 SLASH_KKUI_AWCONFIG1 = "/kkaurawatch"
+SLASH_KKUI_AWCONFIG1 = "/kkaw"

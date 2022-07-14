@@ -112,9 +112,9 @@ local function UpdateMarkerGrid()
 	K:GetModule("Blizzard"):RaidTool_UpdateGrid()
 end
 
-local function UpdateActionbarScale()
-	K:GetModule("ActionBar"):UpdateAllScale()
-end
+-- local function UpdateActionbarScale()
+-- 	K:GetModule("ActionBar"):UpdateAllScale()
+-- end
 
 local function UpdateActionbar1()
 	K:GetModule("ActionBar"):UpdateActionSize("Bar1")

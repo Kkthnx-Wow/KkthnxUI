@@ -129,14 +129,8 @@ function Module:UpdateClickableSize()
 		return
 	end
 
-	C_NamePlate_SetNamePlateEnemySize(
-		C["Nameplate"].PlateWidth * C["General"].UIScale,
-		C["Nameplate"].PlateHeight * C["General"].UIScale + 40
-	)
-	C_NamePlate_SetNamePlateFriendlySize(
-		C["Nameplate"].PlateWidth * C["General"].UIScale,
-		C["Nameplate"].PlateHeight * C["General"].UIScale + 40
-	)
+	C_NamePlate_SetNamePlateEnemySize(C["Nameplate"].PlateWidth * C["General"].UIScale, C["Nameplate"].PlateHeight * C["General"].UIScale + 40)
+	C_NamePlate_SetNamePlateFriendlySize(C["Nameplate"].PlateWidth * C["General"].UIScale, C["Nameplate"].PlateHeight * C["General"].UIScale + 40)
 end
 
 function Module:SetupCVars()
@@ -245,11 +239,7 @@ function Module:CheckThreatStatus(unit)
 	end
 
 	local unitTarget = unit .. "target"
-	local unitRole = isInGroup
-			and UnitExists(unitTarget)
-			and not UnitIsUnit(unitTarget, "player")
-			and groupRoles[UnitName(unitTarget)]
-		or "NONE"
+	local unitRole = isInGroup and UnitExists(unitTarget) and not UnitIsUnit(unitTarget, "player") and groupRoles[UnitName(unitTarget)] or "NONE"
 
 	if K.Role == "Tank" and unitRole == "TANK" then
 		return true, UnitThreatSituation(unitTarget, unit)
@@ -655,8 +645,7 @@ function Module:UpdateDungeonProgress(unit)
 			local total = aksCacheData[name]
 			if not total then
 				for criteriaIndex = 1, numCriteria do
-					local _, _, _, _, totalQuantity, _, _, _, _, _, _, _, isWeightedProgress =
-						C_Scenario_GetCriteriaInfo(criteriaIndex)
+					local _, _, _, _, totalQuantity, _, _, _, _, _, _, _, isWeightedProgress = C_Scenario_GetCriteriaInfo(criteriaIndex)
 					if isWeightedProgress then
 						aksCacheData[name] = totalQuantity
 						total = aksCacheData[name]
@@ -1323,7 +1312,7 @@ function Module:CreatePlayerPlate()
 	self.Health:SetStatusBarColor(0.1, 0.1, 0.1)
 	self.Health:CreateShadow(true)
 
-	self.Health.colorHealth = true
+	self.Health.colorClass = true
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
@@ -1333,10 +1322,7 @@ function Module:CreatePlayerPlate()
 	self.Power:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -3)
 	self.Power:CreateShadow(true)
 
-	self.Power.colorClass = true
-	self.Power.colorTapping = true
-	self.Power.colorDisconnected = true
-	self.Power.colorReaction = true
+	self.Power.colorPower = true
 	self.Power.frequentUpdates = true
 
 	Module:CreateClassPower(self)
@@ -1360,11 +1346,11 @@ function Module:CreatePlayerPlate()
 
 	local textFrame = CreateFrame("Frame", nil, self.Power)
 	textFrame:SetAllPoints()
-	self.powerText = K.CreateFontString(textFrame, 14, "")
+	self.powerText = K.CreateFontString(textFrame, 12, "")
 	self:Tag(self.powerText, "[pppower]")
 	Module:TogglePlatePower()
 
-	Module:CreatePlateGCDTicker(self)
+	Module:CreateGCDTicker(self)
 	Module:UpdateTargetClassPower()
 	Module:TogglePlateVisibility()
 end
@@ -1519,7 +1505,7 @@ function Module:ResizeTargetPower()
 	end
 end
 
-function Module:UpdatePlateGCDTicker()
+function Module:UpdateGCDTicker()
 	local start, duration = GetSpellCooldown(61304)
 	if start > 0 and duration > 0 then
 		if self.duration ~= duration then
@@ -1533,7 +1519,7 @@ function Module:UpdatePlateGCDTicker()
 	end
 end
 
-function Module:CreatePlateGCDTicker(self)
+function Module:CreateGCDTicker(self)
 	local ticker = CreateFrame("StatusBar", nil, self.Power)
 	ticker:SetFrameLevel(self:GetFrameLevel() + 3)
 	ticker:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
@@ -1541,19 +1527,20 @@ function Module:CreatePlateGCDTicker(self)
 	ticker:SetAllPoints()
 
 	local spark = ticker:CreateTexture(nil, "OVERLAY")
-	spark:SetTexture(C["Media"].Textures.Spark16Texture)
-	spark:SetSize(8, self.Power:GetHeight())
+	spark:SetTexture(C["Media"].Textures.Spark128Texture)
 	spark:SetBlendMode("ADD")
-	spark:SetPoint("CENTER", ticker:GetStatusBarTexture(), "RIGHT", 0, 0)
+	spark:SetAlpha(0.6)
+	spark:SetPoint("TOPLEFT", ticker:GetStatusBarTexture(), "TOPRIGHT", -64, -1)
+	spark:SetPoint("BOTTOMRIGHT", ticker:GetStatusBarTexture(), "BOTTOMRIGHT", 64, 1)
 	ticker.spark = spark
 
-	ticker:SetScript("OnUpdate", Module.UpdatePlateGCDTicker)
-	self.GCDPlateTicker = ticker
+	ticker:SetScript("OnUpdate", Module.UpdateGCDTicker)
+	self.GCDTicker = ticker
 
-	Module:TogglePlateGCDTicker()
+	Module:ToggleGCDTicker()
 end
 
-function Module:TogglePlateGCDTicker()
+function Module:ToggleGCDTicker()
 	local plate = _G.oUF_PlayerPlate
 	local ticker = plate and plate.GCDTicker
 	if not ticker then

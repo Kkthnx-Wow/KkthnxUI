@@ -132,9 +132,34 @@ function Module:OnEnable()
 	end
 end
 
-function Module:CreateMinimapButtonToggle()
-	-- Minimap button click function
-	local function KKUI_MinimapButton_OnClick()
+local function KKUI_UpdateDragCursor(self)
+	local mx, my = Minimap:GetCenter()
+	local px, py = GetCursorPosition()
+	local scale = Minimap:GetEffectiveScale()
+	px, py = px / scale, py / scale
+
+	local angle = atan2(py - my, px - mx)
+	local x, y, q = cos(angle), sin(angle), 1
+	if x < 0 then
+		q = q + 1
+	end
+	if y > 0 then
+		q = q + 2
+	end
+
+	local w = (Minimap:GetWidth() / 2) + 5
+	local h = (Minimap:GetHeight() / 2) + 5
+	local diagRadiusW = sqrt(2 * w ^ 2) - 10
+	local diagRadiusH = sqrt(2 * h ^ 2) - 10
+	x = max(-w, min(x * diagRadiusW, w))
+	y = max(-h, min(y * diagRadiusH, h))
+
+	self:ClearAllPoints()
+	self:SetPoint("CENTER", Minimap, "CENTER", x, y)
+end
+
+local function KKUI_ClickMinimapButton(_, btn)
+	if btn == "LeftButton" then
 		-- Prevent options panel from showing if Blizzard options panel is showing
 		if InterfaceOptionsFrame:IsShown() or VideoOptionsFrame:IsShown() or ChatConfigFrame:IsShown() then
 			return
@@ -148,41 +173,68 @@ function Module:CreateMinimapButtonToggle()
 
 		K["GUI"]:Toggle()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+	elseif btn == "RightButton" then
+		K.Print("Help info needs to be wrote")
 	end
+end
 
-	-- Create minimap button using LibDBIcon
-	local KKUI_MinimapButton = K.DataBroker:NewDataObject("KkthnxUI", {
-		type = "KthnxUI Config",
-		text = "KkthnxUI Config",
-		icon = "Interface\\HELPFRAME\\HelpIcon-Bug",
+function Module:CreateMinimapButtonToggle()
+	local mmb = CreateFrame("Button", "KKUI_MinimapButton", Minimap)
+	mmb:SetPoint("BOTTOMLEFT", -15, 20)
+	mmb:SetSize(32, 32)
+	mmb:SetMovable(true)
+	mmb:SetUserPlaced(true)
+	mmb:RegisterForDrag("LeftButton")
+	mmb:SetHighlightTexture(C["Media"].Textures.LogoSmallTexture)
+	mmb:GetHighlightTexture():SetSize(18, 9)
+	mmb:GetHighlightTexture():ClearAllPoints()
+	mmb:GetHighlightTexture():SetPoint("CENTER")
 
-		OnClick = function()
-			KKUI_MinimapButton_OnClick()
-		end,
+	local overlay = mmb:CreateTexture(nil, "OVERLAY")
+	overlay:SetSize(53, 53)
+	overlay:SetTexture(136430) --"Interface\\Minimap\\MiniMap-TrackingBorder"
+	overlay:SetPoint("TOPLEFT")
 
-		OnTooltipShow = function(self)
-			if not self or not self.AddLine then
-				return
-			end
-			self:AddLine("KkthnxUI Config")
-		end,
-	})
+	local background = mmb:CreateTexture(nil, "BACKGROUND")
+	background:SetSize(20, 20)
+	background:SetTexture(136467) --"Interface\\Minimap\\UI-Minimap-Background"
+	background:SetPoint("TOPLEFT", 7, -5)
 
-	K.DBIcon:Register("KkthnxUI", KKUI_MinimapButton, KkthnxUIDB)
+	local icon = mmb:CreateTexture(nil, "ARTWORK")
+	icon:SetSize(22, 11)
+	icon:SetPoint("CENTER")
+	icon:SetTexture(C["Media"].Textures.LogoSmallTexture)
+	icon.__ignored = true -- ignore KkthnxUI recycle bin
+
+	mmb:SetScript("OnEnter", function()
+		GameTooltip:ClearLines()
+		GameTooltip:Hide()
+		GameTooltip:SetOwner(mmb, "ANCHOR_LEFT")
+		GameTooltip:ClearLines()
+		GameTooltip:AddLine("KkthnxUI", 1, 1, 1)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine("LeftButton: Toggle Config", 0.6, 0.8, 1)
+		GameTooltip:AddLine("RightButton: Toggle MoveUI", 0.6, 0.8, 1)
+		GameTooltip:Show()
+	end)
+	mmb:SetScript("OnLeave", GameTooltip_Hide)
+	mmb:RegisterForClicks("AnyUp")
+	mmb:SetScript("OnClick", KKUI_ClickMinimapButton)
+	mmb:SetScript("OnDragStart", function(self)
+		self:SetScript("OnUpdate", KKUI_UpdateDragCursor)
+	end)
+	mmb:SetScript("OnDragStop", function(self)
+		self:SetScript("OnUpdate", nil)
+	end)
 
 	-- Function to toggle LibDBIcon
 	function Module:ToggleMinimapIcon()
 		if C["General"].MinimapIcon then
-			KkthnxUIDB.MinimapButton = false
-			K.DBIcon:Show("KkthnxUI")
+			mmb:Show()
 		else
-			KkthnxUIDB.MinimapButton = true
-			K.DBIcon:Hide("KkthnxUI")
+			mmb:Hide()
 		end
 	end
-
-	-- Set LibDBIcon when option is clicked and on startup
-	Module:ToggleMinimapIcon()
 end
 
 local maxMawValue = 1000
@@ -226,7 +278,11 @@ function Module:CreateGUIGameMenuButton()
 		_G.GameMenuButtonQuit:ClearAllPoints()
 		_G.GameMenuButtonQuit:SetPoint("TOP", _G.GameMenuButtonLogout, "BOTTOM", 0, -6)
 
-		self:SetHeight(self:GetHeight() + KKUI_GUIButton:GetHeight() + 63) -- 6 x 7 + 21?
+		if K.Realm == "Oribos" then
+			self:SetHeight(self:GetHeight() + KKUI_GUIButton:GetHeight() + 74)
+		else
+			self:SetHeight(self:GetHeight() + KKUI_GUIButton:GetHeight() + 64)
+		end
 	end)
 
 	KKUI_GUIButton:SetScript("OnClick", function()
