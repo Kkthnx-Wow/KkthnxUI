@@ -50,35 +50,8 @@ local function diffColor(level)
 	return K.RGBToHex(GetQuestDifficultyColor(level))
 end
 
-local rankColor = {
-	1,
-	0,
-	0,
-	1,
-	1,
-	0,
-	0,
-	1,
-	0,
-}
-
-local repColor = {
-	1,
-	0,
-	0,
-	1,
-	1,
-	0,
-	0,
-	1,
-	0,
-	0,
-	1,
-	1,
-	0,
-	0,
-	1,
-}
+local rankColor = { 1, 0, 0, 1, 1, 0, 0, 1, 0 }
+local repColor = { 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1 }
 
 local function smoothColor(cur, max, color)
 	local r, g, b = oUF:RGBColorGradient(cur, max, unpack(color))

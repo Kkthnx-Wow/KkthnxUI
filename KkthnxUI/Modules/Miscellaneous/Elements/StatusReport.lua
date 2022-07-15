@@ -255,4 +255,4 @@ _G.SlashCmdList["KKUI_STATUSREPORT"] = function()
 		K.StatusFrame:Hide()
 	end
 end
-_G.SLASH_KKUI_STATUSREPORT1 = "/kstatus"
+_G.SLASH_KKUI_STATUSREPORT1 = "/kkstatus"

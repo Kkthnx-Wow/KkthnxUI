@@ -15,22 +15,33 @@ local UnitName = _G.UnitName
 
 local lastTime = 0
 local itemList = {
-	[185709] = true, -- 焦糖鱼宴
-	[226241] = true, -- 宁神圣典
-	[256230] = true, -- 静心圣典
-	[259409] = true, -- 海帆盛宴
-	[259410] = true, -- 船长盛宴
-	[265116] = true, -- 8.0工程战复
-	[276972] = true, -- 秘法药锅
-	[286050] = true, -- 鲜血大餐
-	[54710] = true, -- 随身邮箱
-	[67826] = true, -- 基维斯
+	[54710] = true, -- Portable mailbox
+	[67826] = true, -- Kevis
+	[226241] = true, -- Tranquility
+	[256230] = true, -- Meditation scriptures
+	[185709] = true, -- Caramel Fish Feast
+	[259409] = true, -- Feast of sails
+	[259410] = true, -- Captain's Feast
+	[276972] = true, -- Arcane Cauldron
+	[286050] = true, -- blood meal
+	[265116] = true, -- 8.0 Engineering Battle
+	[308458] = true, -- Amazing meal
+	[308462] = true, -- Indulge in a gluttonous feast
+	[345130] = true, -- 9.0 Engineering Battle
+	[307157] = true, -- Eternal Cauldron
+	[359336] = true, -- stone soup pot
+	[324029] = true, -- Code of Peace of Mind
 
-	[307157] = true, -- 永恒药锅
-	[308458] = true, -- 惊异怡人大餐
-	[308462] = true, -- 纵情饕餮盛宴
-	[324029] = true, -- 宁心圣典
-	[345130] = true, -- 9.0工程战复
+	[2825] = true, -- bloodthirsty
+	[32182] = true, -- heroic
+	[80353] = true, -- time warp
+	[264667] = true, -- Primal Rage, pet
+	[272678] = true, -- Primal Rage, Pet Mastery
+	[178207] = true, -- Drums of Fury
+	[230935] = true, -- Alpine War Drums
+	[256740] = true, -- Vortex Drums
+	[292686] = true, -- Thunderskin's Hammer
+	[309658] = true, -- Death Brutal War Drum
 }
 
 function Module:ItemAlert_Update(unit, _, spellID)

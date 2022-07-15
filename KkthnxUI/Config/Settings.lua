@@ -342,6 +342,7 @@ C["Misc"] = {
 	["MuteSounds"] = true,
 	["NoTalkingHead"] = false,
 	["ParagonEnable"] = false,
+	["QuestTool"] = false,
 	["ShowWowHeadLinks"] = false,
 	["SlotDurability"] = false,
 	["TradeTabs"] = false,

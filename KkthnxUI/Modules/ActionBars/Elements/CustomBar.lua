@@ -28,8 +28,8 @@ function Module:SetupCustomBar(anchor)
 		button.isCustomButton = true
 		button.commandName = L[name] .. i
 		button:SetAttribute("action", button.id)
-		tinsert(buttonList, button)
-		tinsert(Module.buttons, button)
+		table_insert(buttonList, button)
+		table_insert(Module.buttons, button)
 	end
 	frame.buttons = buttonList
 
@@ -75,8 +75,8 @@ function Module:UpdateCustomBar()
 		button:Hide()
 	end
 
-	local column = min(num, perRow)
-	local rows = ceil(num / perRow)
+	local column = math_min(num, perRow)
+	local rows = math_ceil(num / perRow)
 	frame:SetWidth(column * size + (column - 1) * margin + 2 * padding)
 	frame:SetHeight(size * rows + (rows - 1) * margin + 2 * padding)
 	frame.mover:SetSize(frame:GetSize())

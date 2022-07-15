@@ -62,28 +62,28 @@ function Module:InterruptAlert_IsEnabled()
 end
 
 local blackList = {
-	[102359] = true, -- 群体缠绕
-	[105421] = true, -- 盲目之光
-	[115191] = true, -- 潜行
-	[122] = true, -- 冰霜新星
-	[157997] = true, -- 寒冰新星
-	[1776] = true, -- 凿击
-	[1784] = true, -- 潜行
-	[197214] = true, -- 裂地术
-	[198121] = true, -- 冰霜撕咬
-	[207167] = true, -- 致盲冰雨
-	[207685] = true, -- 悲苦咒符
-	[226943] = true, -- 心灵炸弹
-	[228600] = true, -- 冰川尖刺
-	[31661] = true, -- 龙息术
-	[331866] = true, -- 混沌代理人
-	[33395] = true, -- 冰冻术
-	[5246] = true, -- 破胆怒吼
-	[64695] = true, -- 陷地
-	[8122] = true, -- 心灵尖啸
-	[82691] = true, -- 冰霜之环
-	[91807] = true, -- 蹒跚冲锋
-	[99] = true, -- 夺魂咆哮
+	[102359] = true, -- group entanglement
+	[105421] = true, -- Blind Light
+	[115191] = true, -- sneak
+	[122] = true, -- Frost Nova
+	[157997] = true, -- Ice Nova
+	[1776] = true, -- gouge
+	[1784] = true, -- sneak
+	[197214] = true, -- Earthshatter
+	[198121] = true, -- Frost Bite
+	[207167] = true, -- blinding freezing rain
+	[207685] = true, -- Sorrow Charm
+	[226943] = true, -- mind bomb
+	[228600] = true, -- Glacial Spike
+	[31661] = true, -- Dragon Breath
+	[331866] = true, -- Chaos Agent
+	[33395] = true, -- Freeze
+	[5246] = true, -- Intimidating Roar
+	[64695] = true, -- sink
+	[8122] = true, -- mind scream
+	[82691] = true, -- Ring of Frost
+	[91807] = true, -- Stagger charge
+	[99] = true, -- Reaper Roar
 }
 
 function Module:IsAllyPet(sourceFlags)

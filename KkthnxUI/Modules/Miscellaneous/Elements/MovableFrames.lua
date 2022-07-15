@@ -62,12 +62,8 @@ end
 -- Frames provided by load on demand addons, hooked when the addon is loaded.
 local lodFrames = {
 	-- AddonName = {list of frames, same syntax as above}
-	Blizzard_AchievementUI = {
-		["AchievementFrame"] = false,
-		["AchievementFrameHeader"] = true,
-		["AchievementFrameCategoriesContainer"] = "AchievementFrame",
-		["AchievementFrame.searchResults"] = false,
-	},
+	-- stylua: ignore
+	Blizzard_AchievementUI = {["AchievementFrame"] = false, ["AchievementFrameHeader"] = true, ["AchievementFrameCategoriesContainer"] = "AchievementFrame", ["AchievementFrame.searchResults"] = false},
 	Blizzard_AdventureMap = { ["AdventureMapQuestChoiceDialog"] = false },
 	Blizzard_AlliedRacesUI = { ["AlliedRacesFrame"] = false },
 	Blizzard_ArchaeologyUI = { ["ArchaeologyFrame"] = false },
@@ -80,17 +76,10 @@ local lodFrames = {
 	Blizzard_BlackMarketUI = { ["BlackMarketFrame"] = false },
 	Blizzard_Calendar = { ["CalendarFrame"] = false, ["CalendarCreateEventFrame"] = true, ["CalendarEventPickerFrame"] = false },
 	Blizzard_ChallengesUI = { ["ChallengesKeystoneFrame"] = false },
-	-- Blizzard_Collections = { ["WardrobeFrame"] = false, ["WardrobeOutfitEditFrame"] = false }, -- FIXME: blizz bug in collection mover
+	Blizzard_Collections = { ["WardrobeFrame"] = false, ["WardrobeOutfitEditFrame"] = false }, -- FIXME: blizz bug in collection mover
 	Blizzard_CovenantSanctum = { ["CovenantSanctumFrame"] = false },
-	Blizzard_Communities = {
-		["CommunitiesFrame"] = false,
-		["CommunitiesSettingsDialog"] = false,
-		["CommunitiesGuildLogFrame"] = false,
-		["CommunitiesTicketManagerDialog"] = false,
-		["CommunitiesAvatarPickerDialog"] = false,
-		["CommunitiesFrame.NotificationSettingsDialog"] = false,
-		["ClubFinderCommunityAndGuildFinderFrame.RequestToJoinFrame"] = false,
-	},
+	-- stylua: ignore
+	Blizzard_Communities = {["CommunitiesFrame"] = false, ["CommunitiesSettingsDialog"] = false, ["CommunitiesGuildLogFrame"] = false, ["CommunitiesTicketManagerDialog"] = false, ["CommunitiesAvatarPickerDialog"] = false, ["CommunitiesFrame.NotificationSettingsDialog"] = false, ["ClubFinderCommunityAndGuildFinderFrame.RequestToJoinFrame"] = false},
 	Blizzard_FlightMap = { ["FlightMapFrame"] = false },
 	Blizzard_GMSurveyUI = { ["GMSurveyFrame"] = false },
 	Blizzard_GuildBankUI = { ["GuildBankFrame"] = false, ["GuildBankEmblemFrame"] = true },

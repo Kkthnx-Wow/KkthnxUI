@@ -13,13 +13,6 @@ local GetOverrideBarSkin = _G.GetOverrideBarSkin
 local GetSpellInfo = _G.GetSpellInfo
 local UnitGUID = _G.UnitGUID
 
-C["Misc"].QuestTool = true
-
-L["NPCisTrue"] = "This is |cffff0000T|cffff7f00R|cffffff00U|cff00ff00E"
-L["QuestTool"] = "Quests Tool"
-L["QuestToolTip"] = "|nIf enabled, add tips for some quests and world quests."
-L["CatchButterfly"] = "Get close to butterflies and mouse scroll up."
-
 local watchQuests = {
 	-- check npc
 	[60739] = true, -- https://www.wowhead.com/quest=60739/tough-crowd
@@ -99,7 +92,7 @@ function Module:QuestTool_SetQuestUnit()
 	local guid = UnitGUID("mouseover")
 	local npcID = guid and K.GetNPCID(guid)
 	if questNPCs[npcID] then
-		self:AddLine(L["NPCisTrue"])
+		self:AddLine(L["QuestTool NPCisTrue"])
 	end
 end
 

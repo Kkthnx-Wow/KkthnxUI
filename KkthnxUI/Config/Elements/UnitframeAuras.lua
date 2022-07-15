@@ -34,34 +34,6 @@ C.DebuffsTracking_PvE = {
 		[366297] = Priority(6), -- Deconstruct (Tank Debuff)
 		[366288] = Priority(6), -- Force Slam (Stun)
 		----------------------------------------------------------
-		---------------- Old Dungeons (for 9.2.5) ----------------
-		----------------------------------------------------------
-		-- Operation Mechagon
-		[291928] = Priority(), -- Giga-Zap
-		[292267] = Priority(), -- Giga-Zap
-		[302274] = Priority(), -- Fulminating Zap
-		[298669] = Priority(), -- Taze
-		[295445] = Priority(), -- Wreck
-		[294929] = Priority(), -- Blazing Chomp
-		[297257] = Priority(), -- Electrical Charge
-		[294855] = Priority(), -- Blossom Blast
-		[291972] = Priority(), -- Explosive Leap
-		[285443] = Priority(), -- 'Hidden' Flame Cannon
-		[291974] = Priority(), -- Obnoxious Monologue
-		[296150] = Priority(), -- Vent Blast
-		[298602] = Priority(), -- Smoke Cloud
-		[296560] = Priority(), -- Clinging Static
-		[297283] = Priority(), -- Cave In
-		[291914] = Priority(), -- Cutting Beam
-		[302384] = Priority(), -- Static Discharge
-		[294195] = Priority(), -- Arcing Zap
-		[299572] = Priority(), -- Shrink
-		[300659] = Priority(), -- Consuming Slime
-		[300650] = Priority(), -- Suffocating Smog
-		[301712] = Priority(), -- Pounce
-		[299475] = Priority(), -- B.O.R.K
-		[293670] = Priority(), -- Chain Blade
-		----------------------------------------------------------
 		------------------ Shadowlands Dungeons ------------------
 		----------------------------------------------------------
 		-- Tazavesh, the Veiled Market
@@ -208,94 +180,6 @@ C.DebuffsTracking_PvE = {
 		[323877] = Priority(), -- Echo Finger Laser X-treme
 		[334535] = Priority(), -- Beak Slice
 		--------------------------------------------------------
-		-------------------- Castle Nathria --------------------
-		--------------------------------------------------------
-		-- Shriekwing
-		[328897] = Priority(), -- Exsanguinated
-		[330713] = Priority(), -- Reverberating Pain
-		[329370] = Priority(), -- Deadly Descent
-		[336494] = Priority(), -- Echo Screech
-		[346301] = Priority(), -- Bloodlight
-		[342077] = Priority(), -- Echolocation
-		-- Huntsman Altimor
-		[335304] = Priority(), -- Sinseeker
-		[334971] = Priority(), -- Jagged Claws
-		[335111] = Priority(), -- Huntsman's Mark 3
-		[335112] = Priority(), -- Huntsman's Mark 2
-		[335113] = Priority(), -- Huntsman's Mark 1
-		[334945] = Priority(), -- Vicious Lunge
-		[334852] = Priority(), -- Petrifying Howl
-		[334695] = Priority(), -- Destabilize
-		-- Hungering Destroyer
-		[334228] = Priority(), -- Volatile Ejection
-		[329298] = Priority(), -- Gluttonous Miasma
-		-- Lady Inerva Darkvein
-		[325936] = Priority(), -- Shared Cognition
-		[335396] = Priority(), -- Hidden Desire
-		[324983] = Priority(), -- Shared Suffering
-		[324982] = Priority(), -- Shared Suffering (Partner)
-		[332664] = Priority(), -- Concentrate Anima
-		[325382] = Priority(), -- Warped Desires
-		-- Sun King's Salvation
-		[333002] = Priority(), -- Vulgar Brand
-		[326078] = Priority(), -- Infuser's Boon
-		[325251] = Priority(), -- Sin of Pride
-		[341475] = Priority(), -- Crimson Flurry
-		[341473] = Priority(), -- Crimson Flurry Teleport
-		[328479] = Priority(), -- Eyes on Target
-		[328889] = Priority(), -- Greater Castigation
-		-- Artificer Xy'mox
-		[327902] = Priority(), -- Fixate
-		[326302] = Priority(), -- Stasis Trap
-		[325236] = Priority(), -- Glyph of Destruction
-		[327414] = Priority(), -- Possession
-		[328468] = Priority(), -- Dimensional Tear 1
-		[328448] = Priority(), -- Dimensional Tear 2
-		[340860] = Priority(), -- Withering Touch
-		-- The Council of Blood
-		[327052] = Priority(), -- Drain Essence 1
-		[327773] = Priority(), -- Drain Essence 2
-		[346651] = Priority(), -- Drain Essence Mythic
-		[328334] = Priority(), -- Tactical Advance
-		[330848] = Priority(), -- Wrong Moves
-		[331706] = Priority(), -- Scarlet Letter
-		[331636] = Priority(), -- Dark Recital 1
-		[331637] = Priority(), -- Dark Recital 2
-		-- Sludgefist
-		[335470] = Priority(), -- Chain Slam
-		[339181] = Priority(), -- Chain Slam (Root)
-		[331209] = Priority(), -- Hateful Gaze
-		[335293] = Priority(), -- Chain Link
-		[335270] = Priority(), -- Chain This One!
-		[342419] = Priority(), -- Chain Them! 1
-		[342420] = Priority(), -- Chain Them! 2
-		[335295] = Priority(), -- Shattering Chain
-		[332572] = Priority(), -- Falling Rubble
-		-- Stone Legion Generals
-		[334498] = Priority(), -- Seismic Upheaval
-		[337643] = Priority(), -- Unstable Footing
-		[334765] = Priority(), -- Heart Rend
-		[334771] = Priority(), -- Heart Hemorrhage
-		[333377] = Priority(), -- Wicked Mark
-		[334616] = Priority(), -- Petrified
-		[334541] = Priority(), -- Curse of Petrification
-		[339690] = Priority(), -- Crystalize
-		[342655] = Priority(), -- Volatile Anima Infusion
-		[342698] = Priority(), -- Volatile Anima Infection
-		[343881] = Priority(), -- Serrated Tear
-		-- Sire Denathrius
-		[326851] = Priority(), -- Blood Price
-		[327796] = Priority(), -- Night Hunter
-		[327992] = Priority(), -- Desolation
-		[328276] = Priority(), -- March of the Penitent
-		[326699] = Priority(), -- Burden of Sin
-		[329181] = Priority(), -- Wracking Pain
-		[335873] = Priority(), -- Rancor
-		[329951] = Priority(), -- Impale
-		[327039] = Priority(), -- Feeding Time
-		[332794] = Priority(), -- Fatal Finesse
-		[334016] = Priority(), -- Unworthy
-		--------------------------------------------------------
 		---------------- Sanctum of Domination -----------------
 		--------------------------------------------------------
 		-- The Tarragrue
@@ -428,7 +312,6 @@ C.DebuffsTracking_PvE = {
 		[364839] = Priority(2), -- Sinful Projection
 		[360259] = Priority(5), -- Gloom Bolt
 		[362383] = Priority(5), -- Anima Bolt
-		[362352] = Priority(6), -- Pinned
 		-- Lihuvim, Principle Architect
 		[360159] = Priority(5), -- Unstable Protoform Energy
 		[363681] = Priority(3), -- Deconstructing Blast
@@ -506,7 +389,6 @@ C.DebuffsTracking_PvP = {
 		[202244] = Priority(4), -- Overrun
 		[99] = Priority(4), -- Incapacitating Roar
 		[33786] = Priority(5), -- Cyclone
-		[209753] = Priority(5), -- Cyclone Balance
 		[45334] = Priority(1), -- Immobilized
 		[102359] = Priority(1), -- Mass Entanglement
 		[339] = Priority(1), -- Entangling Roots
@@ -574,6 +456,7 @@ C.DebuffsTracking_PvP = {
 		[8122] = Priority(3), -- Psychic Scream
 		[15487] = Priority(2), -- Silence
 		[64044] = Priority(1), -- Psychic Horror
+		[453] = Priority(5), -- Mind Soothe
 		-- Rogue
 		[2094] = Priority(4), -- Blind
 		[6770] = Priority(4), -- Sap
@@ -614,7 +497,6 @@ C.DebuffsTracking_PvP = {
 		[233582] = Priority(1), -- Entrenched in Flame
 		-- Warrior
 		[5246] = Priority(4), -- Intimidating Shout
-		[7922] = Priority(4), -- Warbringer
 		[132169] = Priority(4), -- Storm Bolt
 		[132168] = Priority(4), -- Shockwave
 		[199085] = Priority(4), -- Warpath

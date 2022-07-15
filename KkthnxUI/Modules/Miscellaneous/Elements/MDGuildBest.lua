@@ -5,6 +5,7 @@ local _G = _G
 local pairs = _G.pairs
 local string_format = _G.string.format
 local string_split = _G.string.split
+local table_sort = _G.table.sort
 local table_wipe = _G.table.wipe
 local tonumber = _G.tonumber
 
@@ -18,13 +19,14 @@ local C_MythicPlus_GetOwnedKeystoneChallengeMapID = _G.C_MythicPlus.GetOwnedKeys
 local C_MythicPlus_GetOwnedKeystoneLevel = _G.C_MythicPlus.GetOwnedKeystoneLevel
 local C_MythicPlus_GetRunHistory = _G.C_MythicPlus.GetRunHistory
 local GetItemInfo = _G.GetItemInfo
+local CHALLENGE_MODE_THIS_WEEK = _G.CHALLENGE_MODE_THIS_WEEK
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local WEEKLY_REWARDS_MYTHIC_TOP_RUNS = _G.WEEKLY_REWARDS_MYTHIC_TOP_RUNS
 local hooksecurefunc = _G.hooksecurefunc
 
 local hasAngryKeystones
 local frame
-local WeeklyRunsThreshold = 10
+local WeeklyRunsThreshold = 8
 
 function Module:GuildBest_UpdateTooltip()
 	local leaderInfo = self.leaderInfo
@@ -166,11 +168,12 @@ function Module:KeystoneInfo_WeeklyRuns()
 	local runHistory = C_MythicPlus_GetRunHistory(false, true)
 	local numRuns = runHistory and #runHistory
 	if numRuns > 0 then
+		local isShiftKeyDown = IsShiftKeyDown()
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(string_format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, WeeklyRunsThreshold), "(" .. numRuns .. ")", 0.5, 0.7, 1)
-		table.sort(runHistory, sortHistory)
+		GameTooltip:AddDoubleLine(isShiftKeyDown and CHALLENGE_MODE_THIS_WEEK or string_format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, WeeklyRunsThreshold), "(" .. numRuns .. ")", 0.5, 0.7, 1)
+		table_sort(runHistory, sortHistory)
 
-		for i = 1, WeeklyRunsThreshold do
+		for i = 1, isShiftKeyDown and numRuns or WeeklyRunsThreshold do
 			local runInfo = runHistory[i]
 			if not runInfo then
 				break
@@ -182,6 +185,10 @@ function Module:KeystoneInfo_WeeklyRuns()
 				r, g, b = 1, 0, 0
 			end
 			GameTooltip:AddDoubleLine(name, "Lv." .. runInfo.level, 1, 1, 1, r, g, b)
+		end
+
+		if not isShiftKeyDown then
+			GameTooltip:AddLine(L["Hold Shift"], 0.6, 0.8, 1)
 		end
 		GameTooltip:Show()
 	end
@@ -225,6 +232,7 @@ function Module:KeystoneInfo_Create()
 	button:SetScript("OnMouseUp", function(_, btn)
 		if btn == "MiddleButton" then
 			table_wipe(KkthnxUIDB.KeystoneInfo)
+			Module:KeystoneInfo_Update() -- Update own keystone info after reset
 		end
 	end)
 end

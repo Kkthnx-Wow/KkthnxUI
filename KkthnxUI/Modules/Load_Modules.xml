@@ -172,7 +172,6 @@
    <Include file="Skins\Blizzard\TalkingHeadUI.lua" />
    <Include file="Skins\Blizzard\TradeSkillUI.lua" />
    <!-- Skins FrameXML -->
-   <Include file="Skins\Blizzard\FrameXML\AlertFrames.lua" />
    <Include file="Skins\Blizzard\FrameXML\CharacterFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\ChatBubbles.lua" />
    <Include file="Skins\Blizzard\FrameXML\ChatFrame.lua" />
