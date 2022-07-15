@@ -395,7 +395,11 @@ end
 local function createSortButton(parent, texture, sortStr)
 	local bu = CreateFrame("Button", nil, parent, "BackdropTemplate")
 	bu:SetSize(24, 24)
-	bu:SetTexture(texture) -- FIX ME
+	bu.texture = bu:CreateTexture(nil, "ARTWORK")
+	bu.texture:SetTexture(texture)
+	bu.texture:SetAllPoints()
+	bu.texture:SetTexCoord(unpack(K.TexCoords))
+	bu:CreateBorder()
 	bu.sortStr = sortStr
 	bu.__owner = parent
 	bu:SetScript("OnClick", clickSortButton)
@@ -419,9 +423,9 @@ function Module:AddPGFSortingExpression()
 	for i = 1, #PGFDialog.__sortBu do
 		local bu = PGFDialog.__sortBu[i]
 		if i == 1 then
-			bu:SetPoint("BOTTOMLEFT", PGFDialog, "BOTTOMRIGHT", 3, 0)
+			bu:SetPoint("BOTTOMLEFT", PGFDialog, "BOTTOMRIGHT", 4, 1)
 		else
-			bu:SetPoint("BOTTOM", PGFDialog.__sortBu[i - 1], "TOP", 0, 3)
+			bu:SetPoint("BOTTOM", PGFDialog.__sortBu[i - 1], "TOP", 0, 6)
 		end
 	end
 end
