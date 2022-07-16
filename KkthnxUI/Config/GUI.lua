@@ -378,7 +378,7 @@ local Announcements = function(self)
 	local Window = self:CreateWindow(L["Announcements"])
 
 	Window:CreateSection(L["Toggles"])
-	Window:CreateSwitch("Announcements", "ItemAlert", L["Announce Items Being Placed"])
+	Window:CreateSwitch("Announcements", "ItemAlert", L["Announce Spells And Items"], L["SpellItemAlertTip"])
 	Window:CreateSwitch("Announcements", "PullCountdown", L["Announce Pull Countdown (/pc #)"])
 	Window:CreateSwitch("Announcements", "ResetInstance", L["Alert Group After Instance Resetting"])
 	Window:CreateSwitch("Announcements", "SaySapped", L["Announce When Sapped"])
