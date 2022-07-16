@@ -2,12 +2,6 @@ local _, C = unpack(KkthnxUI)
 
 local _G = _G
 
-local C_EncounterJournal_GetSectionInfo = _G.C_EncounterJournal.GetSectionInfo
-
-local function GetSectionInfo(id)
-	return C_EncounterJournal_GetSectionInfo(id).title
-end
-
 C.NameplateWhiteList = {
 	-- Buffs
 	[642] = true, -- 圣盾术
@@ -102,7 +96,7 @@ C.NameplateCustomUnits = {
 	[101008] = true, -- 黑鸦堡垒，针刺虫群
 	-- Raids
 	[175992] = true, -- 猩红议会，忠实的侍从
-	[GetSectionInfo(21953)] = true, -- 凯子，灵能灌注者
+	[165762] = true, -- 凯子，灵能灌注者
 
 	-- Condemned Demon
 	[169430] = true,
@@ -116,7 +110,7 @@ C.NameplateCustomUnits = {
 
 C.NameplateShowPowerList = {
 	[165556] = true,
-	[GetSectionInfo(22339)] = true,
+	[171557] = true, -- 猎手阿尔迪莫，巴加斯特之影
 }
 
 -- 显示姓名板单位的目标
@@ -156,6 +150,7 @@ C.MajorSpells = {
 	[320596] = true, -- 通灵战潮，深重呕吐
 	[326827] = true, -- 赤红深渊，恐惧之缚
 	[326831] = true, -- 赤红深渊，恐惧之缚
-	[324667] = true, -- 凋魂，潜行幼蛛
-	[328400] = true, -- 凋魂，软泥浪潮
+	[327233] = true, -- 凋魂，喷射魔药
+	[324667] = true, -- 凋魂，软泥浪潮
+	[328400] = true, -- 凋魂，潜行幼蛛
 }

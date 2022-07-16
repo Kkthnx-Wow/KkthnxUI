@@ -54,7 +54,7 @@ function Module:CreateMirrorBars()
 		TimerText:SetPoint("CENTER", statusBar, "CENTER", 0, 0)
 		mirrorTimer.TimerText = TimerText
 
-		mirrorTimer.timeSinceUpdate = 0.3 --Make sure timer value updates right away on first show
+		mirrorTimer.timeSinceUpdate = 0.3 -- Make sure timer value updates right away on first show
 		mirrorTimer:HookScript("OnUpdate", MirrorTimer_OnUpdate)
 
 		K.Mover(mirrorTimer, "MirrorTimer" .. i .. "Mover", "MirrorTimer" .. i .. "Mover", { mirrorTimer:GetPoint() }) -- ??

@@ -643,8 +643,73 @@ local function splitOnClick(self)
 	end
 end
 
+local function GetCustomGroupTitle(index)
+	return KkthnxUIDB.Variables[K.Realm][K.Name].CustomNames[index] or (CUSTOM .. " " .. FILTER .. " " .. index)
+end
+
+StaticPopupDialogs["KKUI_RENAMECUSTOMGROUP"] = {
+	text = BATTLE_PET_RENAME,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(self)
+		local index = Module.selectGroupIndex
+		local text = self.editBox:GetText()
+		KkthnxUIDB.Variables[K.Realm][K.Name].CustomNames[index] = text ~= "" and text or nil
+
+		Module.CustomMenu[index + 2].text = GetCustomGroupTitle(index)
+		Module.ContainerGroups["Bag"][index].label:SetText(GetCustomGroupTitle(index))
+		Module.ContainerGroups["Bank"][index].label:SetText(GetCustomGroupTitle(index))
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide()
+	end,
+	whileDead = 1,
+	showAlert = 1,
+	hasEditBox = 1,
+	editBoxWidth = 250,
+}
+
+function Module:RenameCustomGroup(index)
+	Module.selectGroupIndex = index
+	StaticPopup_Show("KKUI_RENAMECUSTOMGROUP")
+end
+
+function Module:MoveItemToCustomBag(index)
+	local itemID = Module.selectItemID
+	if index == 0 then
+		if KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[itemID] then
+			KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[itemID] = nil
+		end
+	else
+		KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[itemID] = index
+	end
+	Module:UpdateAllBags()
+end
+
+function Module:IsItemInCustomBag()
+	local index = self.arg1
+	local itemID = Module.selectItemID
+	return (index == 0 and not KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[itemID]) or (KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[itemID] == index)
+end
+
 function Module:CreateFavouriteButton()
-	local enabledText = K.SystemColor .. L["Favourite Mode Enabled"]
+	local menuList = {
+		{ text = "", icon = 134400, isTitle = true, notCheckable = true, tCoordLeft = 0.08, tCoordRight = 0.92, tCoordTop = 0.08, tCoordBottom = 0.92 },
+		{ text = NONE, arg1 = 0, func = Module.MoveItemToCustomBag, checked = Module.IsItemInCustomBag },
+	}
+	for i = 1, 5 do
+		tinsert(menuList, {
+			text = GetCustomGroupTitle(i),
+			arg1 = i,
+			func = Module.MoveItemToCustomBag,
+			checked = Module.IsItemInCustomBag,
+			hasArrow = true,
+			menuList = { { text = BATTLE_PET_RENAME, arg1 = i, func = Module.RenameCustomGroup } },
+		})
+	end
+	Module.CustomMenu = menuList
+
+	local enabledText = K.SystemColor .. L["Custom Filter Mode Enabled"]
 
 	local favouriteButton = CreateFrame("Button", nil, self)
 	favouriteButton:SetSize(18, 18)
@@ -652,10 +717,10 @@ function Module:CreateFavouriteButton()
 	favouriteButton:StyleButton()
 
 	favouriteButton.Icon = favouriteButton:CreateTexture(nil, "ARTWORK")
-	favouriteButton.Icon:SetPoint("TOPLEFT", -3, 2.5)
-	favouriteButton.Icon:SetPoint("BOTTOMRIGHT", 3, -1.5)
+	favouriteButton.Icon:SetPoint("TOPLEFT", -4, 3.5)
+	favouriteButton.Icon:SetPoint("BOTTOMRIGHT", 4, -2.5)
 	favouriteButton.Icon:SetTexCoord(unpack(K.TexCoords))
-	favouriteButton.Icon:SetTexture("Interface\\Common\\friendship-heart")
+	favouriteButton.Icon:SetTexture("Interface\\ICONS\\UI_JailersTower_Defense")
 
 	favouriteButton.__turnOff = function()
 		if C["General"].ColorTextures then
@@ -681,7 +746,7 @@ function Module:CreateFavouriteButton()
 		self:GetScript("OnEnter")(self)
 	end)
 	favouriteButton:SetScript("OnHide", favouriteButton.__turnOff)
-	favouriteButton.title = L["Favourite Mode"]
+	favouriteButton.title = L["Custom Filter Mode"]
 	K.AddTooltip(favouriteButton, "ANCHOR_TOP")
 
 	toggleButtons[2] = favouriteButton
@@ -694,15 +759,13 @@ local function favouriteOnClick(self)
 		return
 	end
 
-	local texture, _, _, quality, _, _, _, _, _, itemID = GetContainerItemInfo(self.bagID, self.slotID)
+	local texture, _, _, quality, _, _, link, _, _, itemID = GetContainerItemInfo(self.bagID, self.slotID)
 	if texture and quality > LE_ITEM_QUALITY_POOR then
-		if KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems[itemID] then
-			KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems[itemID] = nil
-		else
-			KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems[itemID] = true
-		end
 		ClearCursor()
-		Module:UpdateAllBags()
+		Module.selectItemID = itemID
+		Module.CustomMenu[1].text = link
+		Module.CustomMenu[1].icon = texture
+		EasyMenu(Module.CustomMenu, K.EasyMenu, self, 0, 0, "MENU")
 	end
 end
 
@@ -895,43 +958,46 @@ function Module:OnEnable()
 	local f = {}
 	local filters = Module:GetFilters()
 	local MyContainer = Backpack:GetContainerClass()
-	local ContainerGroups = { ["Bag"] = {}, ["Bank"] = {} }
+	Module.ContainerGroups = { ["Bag"] = {}, ["Bank"] = {} }
 
 	local function AddNewContainer(bagType, index, name, filter)
-		local newContainer = MyContainer:New(name, { BagType = bagType })
+		local newContainer = MyContainer:New(name, { BagType = bagType, Index = index })
 		newContainer:SetFilter(filter, true)
-		ContainerGroups[bagType][index] = newContainer
+		Module.ContainerGroups[bagType][index] = newContainer
 	end
 
 	function Backpack:OnInit()
-		AddNewContainer("Bag", 12, "Junk", filters.bagsJunk)
-		AddNewContainer("Bag", 11, "BagFavourite", filters.bagFavourite)
-		AddNewContainer("Bag", 3, "EquipSet", filters.bagEquipSet)
-		AddNewContainer("Bag", 1, "AzeriteItem", filters.bagAzeriteItem)
-		AddNewContainer("Bag", 2, "Equipment", filters.bagEquipment)
-		AddNewContainer("Bag", 4, "BagCollection", filters.bagCollection)
-		AddNewContainer("Bag", 8, "Consumable", filters.bagConsumable)
-		AddNewContainer("Bag", 5, "BagGoods", filters.bagGoods)
-		AddNewContainer("Bag", 9, "BagQuest", filters.bagQuest)
-		AddNewContainer("Bag", 10, "BagLegendary", filters.bagLegendary)
-		AddNewContainer("Bag", 6, "BagAnima", filters.bagAnima)
-		AddNewContainer("Bag", 7, "BagRelic", filters.bagRelic)
+		AddNewContainer("Bag", 15, "Junk", filters.bagsJunk)
+		for i = 1, 5 do
+			AddNewContainer("Bag", i, "BagCustom" .. i, filters["bagCustom" .. i])
+		end
+		AddNewContainer("Bag", 8, "EquipSet", filters.bagEquipSet)
+		AddNewContainer("Bag", 6, "AzeriteItem", filters.bagAzeriteItem)
+		AddNewContainer("Bag", 7, "Equipment", filters.bagEquipment)
+		AddNewContainer("Bag", 9, "BagCollection", filters.bagCollection)
+		AddNewContainer("Bag", 13, "Consumable", filters.bagConsumable)
+		AddNewContainer("Bag", 10, "BagGoods", filters.bagGoods)
+		AddNewContainer("Bag", 14, "BagQuest", filters.bagQuest)
+		AddNewContainer("Bag", 11, "BagAnima", filters.bagAnima)
+		AddNewContainer("Bag", 12, "BagRelic", filters.bagRelic)
 
 		f.main = MyContainer:New("Bag", { Bags = "bags", BagType = "Bag" })
 		f.main.__anchor = { "BOTTOMRIGHT", -50, 100 }
 		f.main:SetPoint(unpack(f.main.__anchor))
 		f.main:SetFilter(filters.onlyBags, true)
 
-		AddNewContainer("Bank", 10, "BankFavourite", filters.bankFavourite)
-		AddNewContainer("Bank", 3, "BankEquipSet", filters.bankEquipSet)
-		AddNewContainer("Bank", 1, "BankAzeriteItem", filters.bankAzeriteItem)
-		AddNewContainer("Bank", 4, "BankLegendary", filters.bankLegendary)
-		AddNewContainer("Bank", 2, "BankEquipment", filters.bankEquipment)
-		AddNewContainer("Bank", 5, "BankCollection", filters.bankCollection)
-		AddNewContainer("Bank", 7, "BankConsumable", filters.bankConsumable)
-		AddNewContainer("Bank", 6, "BankGoods", filters.bankGoods)
-		AddNewContainer("Bank", 8, "BankAnima", filters.bankAnima)
-		AddNewContainer("Bank", 9, "BankQuest", filters.bankQuest)
+		for i = 1, 5 do
+			AddNewContainer("Bank", i, "BankCustom" .. i, filters["bankCustom" .. i])
+		end
+		AddNewContainer("Bank", 8, "BankEquipSet", filters.bankEquipSet)
+		AddNewContainer("Bank", 6, "BankAzeriteItem", filters.bankAzeriteItem)
+		AddNewContainer("Bank", 9, "BankLegendary", filters.bankLegendary)
+		AddNewContainer("Bank", 7, "BankEquipment", filters.bankEquipment)
+		AddNewContainer("Bank", 10, "BankCollection", filters.bankCollection)
+		AddNewContainer("Bank", 13, "BankConsumable", filters.bankConsumable)
+		AddNewContainer("Bank", 11, "BankGoods", filters.bankGoods)
+		AddNewContainer("Bank", 14, "BankQuest", filters.bankQuest)
+		AddNewContainer("Bank", 12, "BankAnima", filters.bankAnima)
 
 		f.bank = MyContainer:New("Bank", { Bags = "bank", BagType = "Bank" })
 		f.bank.__anchor = { "BOTTOMLEFT", 25, 50 }
@@ -945,7 +1011,7 @@ function Module:OnEnable()
 		f.reagent:SetPoint(unpack(f.reagent.__anchor))
 		f.reagent:Hide()
 
-		for bagType, groups in pairs(ContainerGroups) do
+		for bagType, groups in pairs(Module.ContainerGroups) do
 			for _, container in ipairs(groups) do
 				local parent = Backpack.contByName[bagType]
 				container:SetParent(parent)
@@ -1140,7 +1206,7 @@ function Module:OnEnable()
 			end
 		end
 
-		if KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems[item.id] then
+		if KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[item.id] and not C["Inventory"].ItemFilter then
 			self.Favourite:Show()
 		else
 			self.Favourite:Hide()
@@ -1235,8 +1301,8 @@ function Module:OnEnable()
 	end
 
 	function Module:UpdateAllAnchors()
-		Module:UpdateBagsAnchor(f.main, ContainerGroups["Bag"])
-		Module:UpdateBankAnchor(f.bank, ContainerGroups["Bank"])
+		Module:UpdateBagsAnchor(f.main, Module.ContainerGroups["Bag"])
+		Module:UpdateBankAnchor(f.bank, Module.ContainerGroups["Bank"])
 	end
 
 	function Module:GetContainerColumns(bagType)
@@ -1314,8 +1380,6 @@ function Module:OnEnable()
 			label = BAG_FILTER_JUNK
 		elseif string_match(name, "Collection") then
 			label = COLLECTIONS
-		elseif string_match(name, "Favourite") then
-			label = PREFERENCES
 		elseif string_match(name, "Goods") then
 			label = AUCTION_CATEGORY_TRADE_GOODS
 		elseif string_match(name, "Quest") then
@@ -1324,6 +1388,8 @@ function Module:OnEnable()
 			label = POWER_TYPE_ANIMA
 		elseif name == "BagRelic" then
 			label = "Korthia Relics"
+		elseif strmatch(name, "Custom%d") then
+			label = GetCustomGroupTitle(settings.Index)
 		end
 
 		if label then

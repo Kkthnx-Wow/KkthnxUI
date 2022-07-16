@@ -14,11 +14,17 @@ local table_insert = _G.table.insert
 local tonumber = _G.tonumber
 local unpack = _G.unpack
 
-local Enum = _G.Enum
 local BAG_ITEM_QUALITY_COLORS = _G.BAG_ITEM_QUALITY_COLORS
+local COMBATLOG_OBJECT_AFFILIATION_MINE = _G.COMBATLOG_OBJECT_AFFILIATION_MINE
+local COMBATLOG_OBJECT_AFFILIATION_PARTY = _G.COMBATLOG_OBJECT_AFFILIATION_PARTY
+local COMBATLOG_OBJECT_AFFILIATION_RAID = _G.COMBATLOG_OBJECT_AFFILIATION_RAID
+local COMBATLOG_OBJECT_CONTROL_PLAYER = _G.COMBATLOG_OBJECT_CONTROL_PLAYER
+local COMBATLOG_OBJECT_REACTION_FRIENDLY = _G.COMBATLOG_OBJECT_REACTION_FRIENDLY
+local COMBATLOG_OBJECT_TYPE_PET = _G.COMBATLOG_OBJECT_TYPE_PET
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
 local CreateFrame = _G.CreateFrame
+local Enum = _G.Enum
 local GetAddOnEnableState = _G.GetAddOnEnableState
 local GetAddOnInfo = _G.GetAddOnInfo
 local GetAddOnMetadata = _G.GetAddOnMetadata
@@ -27,6 +33,7 @@ local GetLocale = _G.GetLocale
 local GetNumAddOns = _G.GetNumAddOns
 local GetPhysicalScreenSize = _G.GetPhysicalScreenSize
 local GetRealmName = _G.GetRealmName
+local LOCALIZED_CLASS_NAMES_FEMALE = _G.LOCALIZED_CLASS_NAMES_FEMALE
 local LOCALIZED_CLASS_NAMES_MALE = _G.LOCALIZED_CLASS_NAMES_MALE
 local LibStub = _G.LibStub
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
@@ -37,12 +44,6 @@ local UnitLevel = _G.UnitLevel
 local UnitName = _G.UnitName
 local UnitRace = _G.UnitRace
 local UnitSex = _G.UnitSex
-local COMBATLOG_OBJECT_AFFILIATION_MINE = _G.COMBATLOG_OBJECT_AFFILIATION_MINE
-local COMBATLOG_OBJECT_AFFILIATION_PARTY = _G.COMBATLOG_OBJECT_AFFILIATION_PARTY
-local COMBATLOG_OBJECT_AFFILIATION_RAID = _G.COMBATLOG_OBJECT_AFFILIATION_RAID
-local COMBATLOG_OBJECT_REACTION_FRIENDLY = _G.COMBATLOG_OBJECT_REACTION_FRIENDLY
-local COMBATLOG_OBJECT_CONTROL_PLAYER = _G.COMBATLOG_OBJECT_CONTROL_PLAYER
-local COMBATLOG_OBJECT_TYPE_PET = _G.COMBATLOG_OBJECT_TYPE_PET
 
 -- Engine
 Engine[1] = {} -- K, Main
@@ -124,7 +125,9 @@ K.ClassList = {}
 for k, v in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 	K.ClassList[v] = k
 end
-
+for k, v in pairs(LOCALIZED_CLASS_NAMES_FEMALE) do
+	K.ClassList[v] = k
+end
 K.ClassColors = {}
 local colors = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
 for class, value in pairs(colors) do

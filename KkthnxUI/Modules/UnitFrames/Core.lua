@@ -185,7 +185,11 @@ function Module:CreateHeader()
 end
 
 -- Castbar Functions
-local function updateCastBarTicks(bar, numTicks)
+local function updateCastBarTicks(bar, castbarTicks, numTicks)
+	for i = 1, #castbarTicks do
+		castbarTicks[i]:Hide()
+	end
+
 	if numTicks and numTicks > 0 then
 		local delta = bar:GetWidth() / numTicks
 		for i = 1, numTicks do
@@ -199,10 +203,6 @@ local function updateCastBarTicks(bar, numTicks)
 			castbarTicks[i]:ClearAllPoints()
 			castbarTicks[i]:SetPoint("CENTER", bar, "LEFT", delta * i, 0)
 			castbarTicks[i]:Show()
-		end
-	else
-		for _, tick in pairs(castbarTicks) do
-			tick:Hide()
 		end
 	end
 end
@@ -322,7 +322,7 @@ function Module:PostCastStart(unit)
 			safeZone:Hide()
 			lagString:Hide()
 		end
-	elseif unit == "player" then
+	elseif unit == "player" and self.__owner.mystyle ~= "party" then
 		if safeZone then
 			local sendTime = safeZone.sendTime
 			local timeDiff = sendTime and min((GetTime() - sendTime), self.max)
@@ -342,7 +342,7 @@ function Module:PostCastStart(unit)
 		if self.channeling then
 			numTicks = C.ChannelingTicks[self.spellID] or 0
 		end
-		updateCastBarTicks(self, numTicks)
+		updateCastBarTicks(self, castbarTicks, numTicks)
 	elseif not UnitIsUnit(unit, "player") and self.notInterruptible then
 		color = K.Colors.castbar.notInterruptibleColor
 		self:SetStatusBarColor(color[1], color[2], color[3])

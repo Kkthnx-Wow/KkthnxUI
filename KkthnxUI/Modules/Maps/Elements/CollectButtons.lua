@@ -116,9 +116,12 @@ function Module:CreateRecycleBin()
 				local texture = region:GetTexture() or ""
 				if removedTextures[texture] or string_find(texture, "Interface\\CharacterFrame") or string_find(texture, "Interface\\Minimap") then
 					region:SetTexture(nil)
+					region:Hide() -- hide CircleMask
 				end
-				region:ClearAllPoints()
-				region:SetAllPoints()
+				if not region.__ignored then
+					region:ClearAllPoints()
+					region:SetAllPoints()
+				end
 				if not isGoodLookingIcon[name] then
 					region:SetTexCoord(unpack(K.TexCoords))
 				end

@@ -191,16 +191,15 @@ local function isItemCollection(item)
 	return item.id and C_ToyBox_GetToyInfo(item.id) or isMountOrPet(item) or Module:IsPetTrashCurrency(item.id)
 end
 
-local function isItemFavourite(item)
+local function isItemCustom(item, index)
 	if not C["Inventory"].ItemFilter then
 		return
 	end
-
 	if not C["Inventory"].FilterFavourite then
 		return
 	end
-
-	return item.id and KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems[item.id]
+	local customIndex = item.id and KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[item.id]
+	return customIndex and customIndex == index
 end
 
 local function isEmptySlot(item)
@@ -339,14 +338,6 @@ function Module:GetFilters()
 		return isItemInBank(item) and isItemCollection(item)
 	end
 
-	filters.bagFavourite = function(item)
-		return isItemInBag(item) and isItemFavourite(item)
-	end
-
-	filters.bankFavourite = function(item)
-		return isItemInBank(item) and isItemFavourite(item)
-	end
-
 	filters.bagGoods = function(item)
 		return isItemInBag(item) and isTradeGoods(item)
 	end
@@ -373,6 +364,16 @@ function Module:GetFilters()
 
 	filters.bagRelic = function(item)
 		return isItemInBag(item) and isKorthiaRelic(item)
+	end
+
+	for i = 1, 5 do
+		filters["bagCustom" .. i] = function(item)
+			return isItemInBag(item) and isItemCustom(item, i)
+		end
+
+		filters["bankCustom" .. i] = function(item)
+			return isItemInBank(item) and isItemCustom(item, i)
+		end
 	end
 
 	return filters

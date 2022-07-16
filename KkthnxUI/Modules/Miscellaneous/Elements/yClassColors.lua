@@ -147,7 +147,7 @@ local function friendsFrame()
 						local faction = gameAccountInfo.factionName
 						local class = gameAccountInfo.className or UNKNOWN
 						local zoneName = gameAccountInfo.areaName or UNKNOWN
-						if accountName and charName and class and faction == K.Faction then
+						if accountName and charName and class then
 							nameText = accountName .. " " .. FRIENDS_WOW_NAME_COLOR_CODE .. "(" .. classColor(class) .. charName .. FRIENDS_WOW_NAME_COLOR_CODE .. ")"
 							if zoneName == playerArea then
 								infoText = string_format("|cff00ff00%s|r", zoneName)

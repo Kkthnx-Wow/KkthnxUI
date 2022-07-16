@@ -20,12 +20,6 @@ C.DebuffsTracking_PvE = {
 		[226512] = Priority(), -- Sanguine
 		[240559] = Priority(), -- Grievous
 		[240443] = Priority(), -- Bursting
-		-- Shadowlands Season 2
-		[356667] = Priority(6), -- Biting Cold 1
-		[356666] = Priority(6), -- Biting Cold 2
-		[355732] = Priority(6), -- Melt Soul
-		[356925] = Priority(6), -- Carnage
-		[358777] = Priority(6), -- Bindings of Misery
 		-- Shadowlands Season 3
 		[368241] = Priority(3), -- Decrypted Urh Cypher
 		[368244] = Priority(4), -- Urh Cloaking Field
@@ -33,6 +27,105 @@ C.DebuffsTracking_PvE = {
 		[368239] = Priority(3), -- Decrypted Vy Cypher
 		[366297] = Priority(6), -- Deconstruct (Tank Debuff)
 		[366288] = Priority(6), -- Force Slam (Stun)
+		-- Shadowlands Season 4
+		[373364] = Priority(), -- Vampiric Claws
+		[373429] = Priority(), -- Carrion Swarm
+		[373370] = Priority(), -- Nightmare Cloud
+		[373391] = Priority(), -- Nightmare
+		[373570] = Priority(), -- Hypnosis
+		[373607] = Priority(), -- Shadowy Barrier (Hypnosis)
+		[373509] = Priority(), -- Shadow Claws (Stacking)
+		----------------------------------------------------------
+		---------------- Old Dungeons (Season 4) -----------------
+		----------------------------------------------------------
+		-- Grimrail Depot
+		[162057] = Priority(), -- Spinning Spear
+		[156357] = Priority(), -- Blackrock Shrapnel
+		[160702] = Priority(), -- Blackrock Mortar Shells
+		[160681] = Priority(), -- Suppressive Fire
+		[166570] = Priority(), -- Slag Blast (Stacking)
+		[164218] = Priority(), -- Double Slash
+		[162491] = Priority(), -- Acquiring Targets 1
+		[162507] = Priority(), -- Acquiring Targets 2
+		[161588] = Priority(), -- Diffused Energy
+		[162065] = Priority(), -- Freezing Snare
+		-- Iron Docks
+		[163276] = Priority(), -- Shredded Tendons
+		[162415] = Priority(), -- Time to Feed
+		[168398] = Priority(), -- Rapid Fire Targeting
+		[172889] = Priority(), -- Charging Slash
+		[164504] = Priority(), -- Intimidated
+		[172631] = Priority(), -- Knocked Down
+		[172636] = Priority(), -- Slippery Grease
+		[158341] = Priority(), -- Gushing Wounds
+		[167240] = Priority(), -- Leg Shot
+		[173105] = Priority(), -- Whirling Chains
+		[173324] = Priority(), -- Jagged Caltrops
+		[172771] = Priority(), -- Incendiary Slug
+		[173307] = Priority(), -- Serrated Spear
+		[169341] = Priority(), -- Demoralizing Roar
+		-- Return to Karazhan: Upper
+		[229248] = Priority(), -- Fel Beam
+		[227592] = Priority(6), -- Frostbite
+		[228252] = Priority(), -- Shadow Rend
+		[227502] = Priority(), -- Unstable Mana
+		[228261] = Priority(6), -- Flame Wreath
+		[229241] = Priority(), -- Acquiring Target
+		[230083] = Priority(6), -- Nullification
+		[230221] = Priority(), -- Absorbed Mana
+		[228249] = Priority(5), -- Inferno Bolt 1
+		[228958] = Priority(5), -- Inferno Bolt 2
+		[229159] = Priority(), -- Chaotic Shadows
+		[227465] = Priority(), -- Power Discharge
+		[229083] = Priority(), -- Burning Blast (Stacking)
+		-- Return to Karazhan: Lower
+		[227917] = Priority(), -- Poetry Slam
+		[228164] = Priority(), -- Hammer Down
+		[228215] = Priority(), -- Severe Dusting 1
+		[228221] = Priority(), -- Severe Dusting 2
+		[29690] = Priority(), -- Drunken Skull Crack
+		[227493] = Priority(), -- Mortal Strike
+		[228280] = Priority(), -- Oath of Fealty
+		[29574] = Priority(), -- Rend
+		[230297] = Priority(), -- Brittle Bones
+		[228526] = Priority(), -- Flirt
+		[227851] = Priority(), -- Coat Check 1
+		[227832] = Priority(), -- Coat Check 2
+		[32752] = Priority(), -- Summoning Disorientation
+		[228559] = Priority(), -- Charming Perfume
+		[227508] = Priority(), -- Mass Repentance
+		[241774] = Priority(), -- Shield Smash
+		[227742] = Priority(), -- Garrote (Stacking)
+		[238606] = Priority(), -- Arcane Eruption
+		[227848] = Priority(), -- Sacred Ground (Stacking)
+		[227404] = Priority(6), -- Intangible Presence
+		[228610] = Priority(), -- Burning Brand
+		[228576] = Priority(), -- Allured
+		-- Operation Mechagon
+		[291928] = Priority(), -- Giga-Zap
+		[292267] = Priority(), -- Giga-Zap
+		[302274] = Priority(), -- Fulminating Zap
+		[298669] = Priority(), -- Taze
+		[295445] = Priority(), -- Wreck
+		[294929] = Priority(), -- Blazing Chomp
+		[297257] = Priority(), -- Electrical Charge
+		[294855] = Priority(), -- Blossom Blast
+		[291972] = Priority(), -- Explosive Leap
+		[285443] = Priority(), -- 'Hidden' Flame Cannon
+		[291974] = Priority(), -- Obnoxious Monologue
+		[296150] = Priority(), -- Vent Blast
+		[298602] = Priority(), -- Smoke Cloud
+		[296560] = Priority(), -- Clinging Static
+		[297283] = Priority(), -- Cave In
+		[291914] = Priority(), -- Cutting Beam
+		[302384] = Priority(), -- Static Discharge
+		[294195] = Priority(), -- Arcing Zap
+		[299572] = Priority(), -- Shrink
+		[300659] = Priority(), -- Consuming Slime
+		[300650] = Priority(), -- Suffocating Smog
+		[301712] = Priority(), -- Pounce
+		[299475] = Priority(), -- B.O.R.K
+		[293670] = Priority(), -- Chain Blade
 		----------------------------------------------------------
 		------------------ Shadowlands Dungeons ------------------
 		----------------------------------------------------------
@@ -180,6 +273,94 @@ C.DebuffsTracking_PvE = {
 		[323877] = Priority(), -- Echo Finger Laser X-treme
 		[334535] = Priority(), -- Beak Slice
 		--------------------------------------------------------
+		-------------------- Castle Nathria --------------------
+		--------------------------------------------------------
+		-- Shriekwing
+		[328897] = Priority(), -- Exsanguinated
+		[330713] = Priority(), -- Reverberating Pain
+		[329370] = Priority(), -- Deadly Descent
+		[336494] = Priority(), -- Echo Screech
+		[346301] = Priority(), -- Bloodlight
+		[342077] = Priority(), -- Echolocation
+		-- Huntsman Altimor
+		[335304] = Priority(), -- Sinseeker
+		[334971] = Priority(), -- Jagged Claws
+		[335111] = Priority(), -- Huntsman's Mark 3
+		[335112] = Priority(), -- Huntsman's Mark 2
+		[335113] = Priority(), -- Huntsman's Mark 1
+		[334945] = Priority(), -- Vicious Lunge
+		[334852] = Priority(), -- Petrifying Howl
+		[334695] = Priority(), -- Destabilize
+		-- Hungering Destroyer
+		[334228] = Priority(), -- Volatile Ejection
+		[329298] = Priority(), -- Gluttonous Miasma
+		-- Lady Inerva Darkvein
+		[325936] = Priority(), -- Shared Cognition
+		[335396] = Priority(), -- Hidden Desire
+		[324983] = Priority(), -- Shared Suffering
+		[324982] = Priority(), -- Shared Suffering (Partner)
+		[332664] = Priority(), -- Concentrate Anima
+		[325382] = Priority(), -- Warped Desires
+		-- Sun King's Salvation
+		[333002] = Priority(), -- Vulgar Brand
+		[326078] = Priority(), -- Infuser's Boon
+		[325251] = Priority(), -- Sin of Pride
+		[341475] = Priority(), -- Crimson Flurry
+		[341473] = Priority(), -- Crimson Flurry Teleport
+		[328479] = Priority(), -- Eyes on Target
+		[328889] = Priority(), -- Greater Castigation
+		-- Artificer Xy'mox
+		[327902] = Priority(), -- Fixate
+		[326302] = Priority(), -- Stasis Trap
+		[325236] = Priority(), -- Glyph of Destruction
+		[327414] = Priority(), -- Possession
+		[328468] = Priority(), -- Dimensional Tear 1
+		[328448] = Priority(), -- Dimensional Tear 2
+		[340860] = Priority(), -- Withering Touch
+		-- The Council of Blood
+		[327052] = Priority(), -- Drain Essence 1
+		[327773] = Priority(), -- Drain Essence 2
+		[346651] = Priority(), -- Drain Essence Mythic
+		[328334] = Priority(), -- Tactical Advance
+		[330848] = Priority(), -- Wrong Moves
+		[331706] = Priority(), -- Scarlet Letter
+		[331636] = Priority(), -- Dark Recital 1
+		[331637] = Priority(), -- Dark Recital 2
+		-- Sludgefist
+		[335470] = Priority(), -- Chain Slam
+		[339181] = Priority(), -- Chain Slam (Root)
+		[331209] = Priority(), -- Hateful Gaze
+		[335293] = Priority(), -- Chain Link
+		[335270] = Priority(), -- Chain This One!
+		[342419] = Priority(), -- Chain Them! 1
+		[342420] = Priority(), -- Chain Them! 2
+		[335295] = Priority(), -- Shattering Chain
+		[332572] = Priority(), -- Falling Rubble
+		-- Stone Legion Generals
+		[334498] = Priority(), -- Seismic Upheaval
+		[337643] = Priority(), -- Unstable Footing
+		[334765] = Priority(), -- Heart Rend
+		[334771] = Priority(), -- Heart Hemorrhage
+		[333377] = Priority(), -- Wicked Mark
+		[334616] = Priority(), -- Petrified
+		[334541] = Priority(), -- Curse of Petrification
+		[339690] = Priority(), -- Crystalize
+		[342655] = Priority(), -- Volatile Anima Infusion
+		[342698] = Priority(), -- Volatile Anima Infection
+		[343881] = Priority(), -- Serrated Tear
+		-- Sire Denathrius
+		[326851] = Priority(), -- Blood Price
+		[327796] = Priority(), -- Night Hunter
+		[327992] = Priority(), -- Desolation
+		[328276] = Priority(), -- March of the Penitent
+		[326699] = Priority(), -- Burden of Sin
+		[329181] = Priority(), -- Wracking Pain
+		[335873] = Priority(), -- Rancor
+		[329951] = Priority(), -- Impale
+		[327039] = Priority(), -- Feeding Time
+		[332794] = Priority(), -- Fatal Finesse
+		[334016] = Priority(), -- Unworthy
+		--------------------------------------------------------
 		---------------- Sanctum of Domination -----------------
 		--------------------------------------------------------
 		-- The Tarragrue
@@ -312,6 +493,7 @@ C.DebuffsTracking_PvE = {
 		[364839] = Priority(2), -- Sinful Projection
 		[360259] = Priority(5), -- Gloom Bolt
 		[362383] = Priority(5), -- Anima Bolt
+		[362352] = Priority(6), -- Pinned
 		-- Lihuvim, Principle Architect
 		[360159] = Priority(5), -- Unstable Protoform Energy
 		[363681] = Priority(3), -- Deconstructing Blast
@@ -338,6 +520,7 @@ C.DebuffsTracking_PvE = {
 		-- Rygelon
 		[362206] = Priority(6), -- Event Horizon
 		[362137] = Priority(4), -- Corrupted Wound
+		[362172] = Priority(4), -- Corrupted Wound
 		[361548] = Priority(5), -- Dark Eclipse
 		-- The Jailer
 		[362075] = Priority(6), -- Domination
@@ -551,28 +734,27 @@ C.DebuffsTracking_Blacklist = {
 }
 
 C.ChannelingTicks = {
-	[120360] = 15, -- Barrage shooting
+	[120360] = 15, -- barrage
 	[12051] = 6, -- wake
-	[15407] = 6, -- Mental Flay
-	[198013] = 10, -- Eye rim
-	[198590] = 5, -- Draw soul
+	[15407] = 6, -- mental flogging
+	[198013] = 10, -- eye rib
+	[198590] = 5, -- suck the soul
 	[205021] = 5, -- Frost Ray
 	[205065] = 6, -- Void Torrent
-	[206931] = 3, -- Blood drinker
-	[212084] = 10, -- Fel Destroy
-	[234153] = 5, -- Draw life
-	[257044] = 7, -- Rapid fire
-	[291944] = 6, -- Rebirth, Zandalari troll
-	[314791] = 4, -- Changeable phantom energy
-	[324631] = 8, -- Forging of flesh and blood, covenant
-	[47757] = 3, -- Penance
-	[47758] = 3, -- Penance
-	[48045] = 6, -- Mental burn
+	[206931] = 3, -- blood drinker
+	[212084] = 10, -- Fel Destruction
+	[234153] = 5, -- suck life
+	[257044] = 7, -- rapid fire
+	[291944] = 6, -- Reborn, Zandalari Troll
+	[314791] = 4, -- Variation Phantom
+	[324631] = 8, -- Flesh Forge, Covenant
+	[47757] = 3, -- penance
+	[47758] = 3, -- penance
+	[48045] = 6, -- mind burn
 	[5143] = 4, -- Arcane Missile
-	[64843] = 4, -- Holy hymn
+	[64843] = 4, -- sacred hymn
 	[740] = 4, -- peaceful
-	[755] = 5, -- Life channel
-	[64902] = 5, -- Symbol of Hope (Mana Hymn)
+	[755] = 5, -- life channel
 }
 
 if K.Class == "PRIEST" then

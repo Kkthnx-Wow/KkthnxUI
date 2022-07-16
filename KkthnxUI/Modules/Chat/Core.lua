@@ -28,7 +28,7 @@ local UnitName = _G.UnitName
 local hooksecurefunc = _G.hooksecurefunc
 
 local messageSoundID = SOUNDKIT.TELL_MESSAGE
-local maxLines = 1024
+local maxLines = 2048
 
 local function GetGroupDistribution()
 	local _, instanceType = GetInstanceInfo()
