@@ -20,6 +20,28 @@ local ICON_SIZE = 36
 
 local hideNumbers, active, hooked = {}, {}, {}
 
+local day, hour, minute = 86400, 3600, 60
+function Module.FormattedTimer(s, modRate)
+	if s >= day then
+		return format("%d" .. K.MyClassColor .. "d", s / day + 0.5), s % day
+	elseif s > hour then
+		return format("%d" .. K.MyClassColor .. "h", s / hour + 0.5), s % hour
+	elseif s >= minute then
+		if s < C["ActionBar"].MMSSTH then
+			return format("%d:%.2d", s / minute, s % minute), s - floor(s)
+		else
+			return format("%d" .. K.MyClassColor .. "m", s / minute + 0.5), s % minute
+		end
+	else
+		local colorStr = (s < 3 and "|cffff0000") or (s < 10 and "|cffffff00") or "|cffcccc33"
+		if s < C["ActionBar"].TenthTH then
+			return format(colorStr .. "%.1f|r", s), (s - format("%.1f", s)) / modRate
+		else
+			return format(colorStr .. "%d|r", s + 0.5), (s - floor(s)) / modRate
+		end
+	end
+end
+
 function Module:StopTimer()
 	self.enabled = nil
 	self:Hide()
@@ -58,7 +80,7 @@ function Module:TimerOnUpdate(elapsed)
 	else
 		local remain = (self.duration - (GetTime() - self.start)) / self.modRate
 		if remain > 0 then
-			local getTime, nextUpdate = K.FormatTime(remain)
+			local getTime, nextUpdate = Module.FormattedTimer(remain, self.modRate)
 			self.text:SetText(getTime)
 			self.nextUpdate = nextUpdate
 		else

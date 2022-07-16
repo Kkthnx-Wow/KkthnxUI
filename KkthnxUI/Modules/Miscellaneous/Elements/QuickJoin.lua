@@ -1,4 +1,4 @@
-local K = unpack(KkthnxUI)
+local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Miscellaneous")
 local TT = K:GetModule("Tooltip")
 
@@ -37,6 +37,11 @@ local roleTexes = {
 	"Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Tank",
 	"Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Healer",
 	"Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Damage",
+}
+
+local factionStr = {
+	[0] = "Horde",
+	[1] = "Alliance",
 }
 
 function Module:HookApplicationClick()
@@ -222,11 +227,6 @@ function Module:AddAutoAcceptButton()
 	end)
 end
 
-local factionStr = {
-	[0] = "Horde",
-	[1] = "Alliance",
-}
-
 function Module:ShowLeaderOverallScore()
 	local resultID = self.resultID
 	local searchResultInfo = resultID and C_LFGList_GetSearchResultInfo(resultID)
@@ -236,7 +236,7 @@ function Module:ShowLeaderOverallScore()
 			local showScore = activityInfo.isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore or activityInfo.isRatedPvpActivity and searchResultInfo.leaderPvpRatingInfo and searchResultInfo.leaderPvpRatingInfo.rating
 			if showScore then
 				local oldName = self.ActivityName:GetText()
-				--oldName = gsub(oldName, ".-" .. HEADER_COLON, "") -- Tazavesh
+				oldName = gsub(oldName, ".-" .. HEADER_COLON, "") -- Tazavesh
 				self.ActivityName:SetFormattedText(scoreFormat, TT.GetDungeonScore(showScore), oldName)
 				if not self.crossFactionLogo then
 					local logo = self:CreateTexture(nil, "OVERLAY")
@@ -251,7 +251,9 @@ function Module:ShowLeaderOverallScore()
 			if searchResultInfo.crossFactionListing then
 				self.crossFactionLogo:Hide()
 			else
-				--self.crossFactionLogo:SetTexture("Interface\\Timer\\" .. factionStr[searchResultInfo.leaderFactionGroup] .. "-Logo")
+				if K.Realm ~= "Oribos" then
+					self.crossFactionLogo:SetTexture("Interface\\Timer\\" .. factionStr[searchResultInfo.leaderFactionGroup] .. "-Logo")
+				end
 				self.crossFactionLogo:Show()
 			end
 		end
@@ -291,21 +293,23 @@ end
 
 function Module:AddDungeonsFilter()
 	local mapData = {
-		[0] = { mapID = 375, aID = 703 }, -- 仙林
-		[1] = { mapID = 376, aID = 713 }, -- 通灵
-		[2] = { mapID = 377, aID = 695 }, -- 彼界
-		[3] = { mapID = 378, aID = 699 }, -- 赎罪
-		[4] = { mapID = 379, aID = 691 }, -- 凋魂
-		[5] = { mapID = 380, aID = 705 }, -- 赤红
-		[6] = { mapID = 381, aID = 709 }, -- 晋升
-		[7] = { mapID = 382, aID = 717 }, -- 剧场
-		[8] = { mapID = 391, aID = 1016 }, -- 街道
-		[9] = { mapID = 392, aID = 1017 }, -- 宏图
+		[0] = { mapID = 375, aID = 703 }, -- Xianlin
+		[1] = { mapID = 376, aID = 713 }, -- psychic
+		[2] = { mapID = 377, aID = 695 }, -- His world
+		[3] = { mapID = 378, aID = 699 }, -- Atonement
+		[4] = { mapID = 379, aID = 691 }, -- Soul
+		[5] = { mapID = 380, aID = 705 }, -- crimson
+		[6] = { mapID = 381, aID = 709 }, -- promotion
+		[7] = { mapID = 382, aID = 717 }, -- theater
+		[8] = { mapID = 391, aID = 1016 }, -- street
+		[9] = { mapID = 392, aID = 1017 }, -- grand plan
 	}
 
 	local function GetDungeonNameByID(mapID)
 		local name = C_ChallengeMode_GetMapUIInfo(mapID)
-		-- name = gsub(name, ".-" .. HEADER_COLON, "") -- abbr Tazavesh
+		if K.Realm ~= "Oribos" then
+			name = gsub(name, ".-" .. HEADER_COLON, "") -- abbr Tazavesh
+		end
 		return name
 	end
 
@@ -431,6 +435,10 @@ function Module:AddPGFSortingExpression()
 end
 
 function Module:CreateQuickJoin()
+	if not C["Misc"].QuickJoin then
+		return
+	end
+
 	for i = 1, 10 do
 		local bu = _G["LFGListSearchPanelScrollFrameButton" .. i]
 		if bu then

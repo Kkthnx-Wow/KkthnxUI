@@ -195,7 +195,7 @@ local function isItemCustom(item, index)
 	if not C["Inventory"].ItemFilter then
 		return
 	end
-	if not C["Inventory"].FilterFavourite then
+	if not C["Inventory"].FilterCustom then
 		return
 	end
 	local customIndex = item.id and KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[item.id]

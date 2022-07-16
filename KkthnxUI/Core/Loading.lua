@@ -117,7 +117,7 @@ local function KKUI_VerifyDatabase()
 		KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems = {}
 	end
 
-	-- Transfer favourite items START
+	-- Transfer favourite items since we made a custom filter
 	if KkthnxUIDB and KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems and next(KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems) then
 		for itemID in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems) do
 			if not KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems then
@@ -125,10 +125,9 @@ local function KKUI_VerifyDatabase()
 			end
 			KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[itemID] = 1
 		end
-		print(1)
+		-- print(1)
 		KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems = nil
 	end
-	-- Transfer favourite items END
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems then
 		KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems = {}

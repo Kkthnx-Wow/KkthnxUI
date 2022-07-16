@@ -720,7 +720,7 @@ function Module:CreateFavouriteButton()
 	favouriteButton.Icon:SetPoint("TOPLEFT", -4, 3.5)
 	favouriteButton.Icon:SetPoint("BOTTOMRIGHT", 4, -2.5)
 	favouriteButton.Icon:SetTexCoord(unpack(K.TexCoords))
-	favouriteButton.Icon:SetTexture("Interface\\ICONS\\UI_JailersTower_Defense")
+	favouriteButton.Icon:SetTexture("Interface\\Common\\friendship-heart")
 
 	favouriteButton.__turnOff = function()
 		if C["General"].ColorTextures then

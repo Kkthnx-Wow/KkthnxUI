@@ -35,7 +35,7 @@ local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
 local essenceDescription = _G.GetSpellDescription(277253)
 local essenceTextureID = 2975691
 local itemLevelString = "^" .. string_gsub(ITEM_LEVEL, "%%d", "")
-
+local day, hour, minute, pointFive = 86400, 3600, 60, 0.5
 local mapRects = {}
 local tempVec2D = CreateVector2D(0, 0)
 
@@ -521,7 +521,6 @@ function K.HideInterfaceOption(self)
 end
 
 -- Timer Format
-local day, hour, minute, pointFive = 86400, 3600, 60, 0.5
 function K.FormatTime(s)
 	if s >= day then
 		return string_format("%d" .. K.MyClassColor .. "d", s / day + pointFive), s % day
