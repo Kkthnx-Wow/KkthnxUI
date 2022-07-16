@@ -20,6 +20,49 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.3.2] - 2022-7-16",
+		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
+		Sections = {
+			{
+				Header = "Added",
+				Entries = {
+					"Custom bags filtering max 5 custom filters",
+					"Threshold for cooldown formatting",
+					"Option to toggle quickjoin module",
+					"Unitframe auras updated for latest patch",
+					"Gold datatext now supports deleting characters",
+					"KkthnxUI minimap button",
+				},
+			},
+
+			{
+				Header = "Fixed",
+				Entries = {
+					"Prevent party player castbar showing ticks",
+					"Details addon styling and height",
+					"Raidframe mana bars",
+					"Collections frame moving",
+				},
+			},
+
+			{
+				Header = "Removed",
+				Entries = {
+					"Custom maw status bar",
+					"Community news fix",
+				},
+			},
+
+			{
+				Header = "Changed",
+				Entries = {
+					"Bags count will show * if over 1000",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.3.1] - 2022-6-1",
 		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {
