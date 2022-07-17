@@ -214,7 +214,7 @@ end
 
 local function replaceMessage(msg, r, g, b)
 	local hexRGB = K.RGBToHex(r, g, b)
-	msg = string_gsub(msg, "(|TInterface(.*)|t)", "")
+	msg = string_gsub(msg, "|T(.-):.-|t", "%1") -- accept texture path or id
 
 	return string.format("%s%s|r", hexRGB, msg)
 end

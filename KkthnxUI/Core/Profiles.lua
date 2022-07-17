@@ -31,8 +31,9 @@ function Profiles:Import()
 	local Code = EditBox:GetText()
 	local LibCode = string.gsub(Code, Prefix, "")
 	local Decoded = K.Deflate:DecodeForPrint(LibCode)
+	local CurrentCode = self:GetParent():Export()
 
-	if Code == EditBox.Code then
+	if Code == CurrentCode then
 		Status:SetText("|cffff0000Sorry, You Are Currently Using This Profile Already|r")
 	elseif Decoded then
 		local Decompressed = K.Deflate:DecompressDeflate(Decoded)
@@ -56,7 +57,7 @@ function Profiles:Toggle()
 		self:Hide()
 	else
 		self:Show()
-		self.EditBox:SetText(self.EditBox.Code)
+		self.EditBox:SetText(self:Export())
 	end
 end
 
@@ -65,8 +66,9 @@ local texcoord = CLASS_ICON_TCOORDS[class]
 function Profiles:OnTextChanged()
 	local Code = self:GetText()
 	local Status = self:GetParent().Status
+	local CurrentCode = self:GetParent():Export()
 
-	if Code ~= self.Code then
+	if Code ~= CurrentCode then
 		Status:SetText("You Are Currently Trying To Apply A New Profile Code")
 	else
 		-- stylua: ignore
@@ -88,10 +90,10 @@ function Profiles:Enable()
 	K.CreateMoverFrame(self)
 
 	self.Logo = self:CreateTexture(nil, "OVERLAY")
-	self.Logo:SetSize(256 / 1.2, 128 / 1.2)
-	self.Logo:SetScale(0.8)
-	self.Logo:SetTexture(C["Media"].Textures.LogoSmallTexture)
-	self.Logo:SetPoint("TOP", self, "TOP", 0, 2)
+	self.Logo:SetSize(256, 128)
+	self.Logo:SetScale(0.9)
+	self.Logo:SetTexture(C["Media"].Textures.LogoTexture)
+	self.Logo:SetPoint("TOP", self, "TOP", 0, 14)
 
 	self.Title = self:CreateFontString(nil, "OVERLAY")
 	self.Title:SetFontObject(KkthnxUIFont)

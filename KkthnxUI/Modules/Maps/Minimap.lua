@@ -342,6 +342,7 @@ function Module:ReskinRegions()
 		self:SetHitRectInsets(0, 0, 0, 0)
 	end)
 	GarrisonLandingPageMinimapButton:SetScript("OnEnter", K.LandingButton_OnEnter)
+	GarrisonLandingPageMinimapButton:SetFrameLevel(999)
 
 	-- QueueStatus Button
 	if QueueStatusMinimapButton then
@@ -349,6 +350,7 @@ function Module:ReskinRegions()
 		QueueStatusMinimapButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
 		QueueStatusMinimapButtonBorder:Hide()
 		QueueStatusMinimapButtonIconTexture:SetTexture(nil)
+		QueueStatusMinimapButton:SetFrameLevel(999)
 
 		local queueIcon = Minimap:CreateTexture(nil, "ARTWORK")
 		queueIcon:SetPoint("CENTER", QueueStatusMinimapButton)
@@ -548,11 +550,65 @@ function Module:ShowCalendar()
 	end
 end
 
+local function GetVolumeColor(cur)
+	local r, g, b = K.oUF:RGBColorGradient(cur, 100, 1, 1, 1, 1, 0.8, 0, 1, 0, 0)
+	return r, g, b
+end
+
+local function GetCurrentVolume()
+	return K.Round(GetCVar("Sound_MasterVolume") * 100)
+end
+
+function Module:CreateSoundVolume()
+	if not C["Minimap"].EasyVolume then
+		return
+	end
+
+	local f = CreateFrame("Frame", nil, Minimap)
+	f:SetAllPoints()
+	local text = K.CreateFontString(f, 30)
+
+	local anim = f:CreateAnimationGroup()
+	anim:SetScript("OnPlay", function()
+		f:SetAlpha(1)
+	end)
+	anim:SetScript("OnFinished", function()
+		f:SetAlpha(0)
+	end)
+	anim.fader = anim:CreateAnimation("Alpha")
+	anim.fader:SetFromAlpha(1)
+	anim.fader:SetToAlpha(0)
+	anim.fader:SetDuration(3)
+	anim.fader:SetSmoothing("OUT")
+	anim.fader:SetStartDelay(1)
+
+	Module.VolumeText = text
+	Module.VolumeAnim = anim
+end
+
 function Module:Minimap_OnMouseWheel(zoom)
-	if zoom > 0 then
-		Minimap_ZoomIn()
+	if IsControlKeyDown() and Module.VolumeText then
+		local value = GetCurrentVolume()
+		local mult = IsAltKeyDown() and 100 or 2
+		value = value + zoom * mult
+		if value > 100 then
+			value = 100
+		end
+		if value < 0 then
+			value = 0
+		end
+
+		SetCVar("Sound_MasterVolume", tostring(value / 100))
+		Module.VolumeText:SetText(value .. "%")
+		Module.VolumeText:SetTextColor(GetVolumeColor(value))
+		Module.VolumeAnim:Stop()
+		Module.VolumeAnim:Play()
 	else
-		Minimap_ZoomOut()
+		if zoom > 0 then
+			Minimap_ZoomIn()
+		else
+			Minimap_ZoomOut()
+		end
 	end
 end
 
@@ -683,6 +739,10 @@ function Module:ClearQueueStatus()
 end
 
 function Module:CreateQueueStatusText()
+	if not C["Minimap"].QueueStatusText then
+		return
+	end
+
 	local display = CreateFrame("Frame", "KKUI_QueueStatusDisplay", _G.QueueStatusMinimapButton)
 	display.text = display:CreateFontString(nil, "OVERLAY")
 
@@ -749,6 +809,7 @@ function Module:OnEnable()
 	self:CreateStyle()
 	self:CreateRecycleBin()
 	self:ReskinRegions()
+	self:CreateSoundVolume()
 
 	-- HybridMinimap
 	K:RegisterEvent("ADDON_LOADED", Module.HybridMinimapOnLoad)

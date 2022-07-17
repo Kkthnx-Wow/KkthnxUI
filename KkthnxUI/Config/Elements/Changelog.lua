@@ -27,29 +27,31 @@ local KKUI_Changelog = {
 				Header = "Added",
 				Entries = {
 					"Custom bags filtering max 5 custom filters",
-					"Threshold for cooldown formatting",
-					"Option to toggle quickjoin module",
-					"Unitframe auras updated for latest patch",
 					"Gold datatext now supports deleting characters",
 					"KkthnxUI minimap button",
+					"New minimap volume module",
+					"Option to toggle minimap queue text status",
+					"Option to toggle quickjoin module",
+					"Threshold for cooldown formatting",
+					"Unitframe auras updated for latest patch",
 				},
 			},
 
 			{
 				Header = "Fixed",
 				Entries = {
-					"Prevent party player castbar showing ticks",
-					"Details addon styling and height",
-					"Raidframe mana bars",
 					"Collections frame moving",
+					"Details addon styling and height",
+					"Prevent party player castbar showing ticks",
+					"Raidframe mana bars",
 				},
 			},
 
 			{
 				Header = "Removed",
 				Entries = {
-					"Custom maw status bar",
 					"Community news fix",
+					"Custom maw status bar",
 				},
 			},
 
