@@ -66,9 +66,10 @@ function Module:OnEnable()
 
 	-- Add Skins
 	self:ReskinBartender4()
+	self:ReskinButtonForge()
+	self:ReskinChocolateBar()
 	self:ReskinDeadlyBossMods()
 	self:ReskinDominos()
 	self:ReskinRareScanner()
-	self:ReskinButtonForge()
 	self:ReskinSimulationcraft()
 end

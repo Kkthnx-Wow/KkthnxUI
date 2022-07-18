@@ -173,7 +173,7 @@ local function KKUI_ClickMinimapButton(_, btn)
 		K["GUI"]:Toggle()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
 	elseif btn == "RightButton" then
-		K.Print("Help info needs to be wrote")
+		--K.Print("Help info needs to be wrote")
 	end
 end
 
@@ -191,19 +191,19 @@ function Module:CreateMinimapButtonToggle()
 
 	local overlay = mmb:CreateTexture(nil, "OVERLAY")
 	overlay:SetSize(53, 53)
-	overlay:SetTexture(136430) --"Interface\\Minimap\\MiniMap-TrackingBorder"
+	overlay:SetTexture(136430) -- "Interface\\Minimap\\MiniMap-TrackingBorder"
 	overlay:SetPoint("TOPLEFT")
 
 	local background = mmb:CreateTexture(nil, "BACKGROUND")
 	background:SetSize(20, 20)
-	background:SetTexture(136467) --"Interface\\Minimap\\UI-Minimap-Background"
+	background:SetTexture(136467) -- "Interface\\Minimap\\UI-Minimap-Background"
 	background:SetPoint("TOPLEFT", 7, -5)
 
 	local icon = mmb:CreateTexture(nil, "ARTWORK")
 	icon:SetSize(22, 11)
 	icon:SetPoint("CENTER")
 	icon:SetTexture(C["Media"].Textures.LogoSmallTexture)
-	icon.__ignored = true -- ignore KkthnxUI recycle bin
+	--icon.__ignored = false -- ignore KkthnxUI recycle bin
 
 	mmb:SetScript("OnEnter", function()
 		GameTooltip:ClearLines()
@@ -213,7 +213,7 @@ function Module:CreateMinimapButtonToggle()
 		GameTooltip:AddLine("KkthnxUI", 1, 1, 1)
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine("LeftButton: Toggle Config", 0.6, 0.8, 1)
-		GameTooltip:AddLine("RightButton: Toggle MoveUI", 0.6, 0.8, 1)
+		-- GameTooltip:AddLine("RightButton: Toggle MoveUI", 0.6, 0.8, 1)
 		GameTooltip:Show()
 	end)
 	mmb:SetScript("OnLeave", GameTooltip_Hide)

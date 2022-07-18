@@ -187,12 +187,13 @@
    <!-- Skins AddOns -->
    <Include file="Skins\Addons\Bartender4.lua" />
    <Include file="Skins\Addons\ButtonForge.lua" />
-   <Include file="Skins\Addons\Dominos.lua" />
+   <Include file="Skins\Addons\ChocolateBar.lua" />
    <Include file="Skins\Addons\DeadlyBossMods.lua" />
    <Include file="Skins\Addons\Details.lua" />
+   <Include file="Skins\Addons\Dominos.lua" />
    <Include file="Skins\Addons\RareScanner.lua" />
-   <Include file="Skins\Addons\WeakAuras.lua" />
    <Include file="Skins\Addons\Simulationcraft.lua" />
+   <Include file="Skins\Addons\WeakAuras.lua" />
    <!-- Disabled/Broken/WIP AddOns -->
    <!-- <Include file="Skins\Addons\BigWigs.lua" />
    <Include file="Skins\Addons\BugSack.lua" />

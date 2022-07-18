@@ -26,6 +26,7 @@ local KKUI_Changelog = {
 			{
 				Header = "Added",
 				Entries = {
+					"Chocolatebar skinning",
 					"Custom bags filtering max 5 custom filters",
 					"Gold datatext now supports deleting characters",
 					"KkthnxUI minimap button",
@@ -44,6 +45,7 @@ local KKUI_Changelog = {
 					"Details addon styling and height",
 					"Prevent party player castbar showing ticks",
 					"Raidframe mana bars",
+					"Rarescanner skinning",
 				},
 			},
 
