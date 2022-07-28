@@ -92,8 +92,8 @@ function Module:CheckSetsCount()
 
 	if count < 4 then
 		Module.MMFocus:Hide()
-		K:UnregisterEvent("UNIT_SPELLCAST_START", Module.StartAimedShot)
-		K:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UpdateFocusCost)
+		K:UnregisterEvent("UNIT_SPELLCAST_START", Module.StartAimedShot, "player")
+		K:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UpdateFocusCost, "player")
 		K:UnregisterEvent("PLAYER_DEAD", Module.ResetFocusCost)
 		K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.ResetFocusCost)
 		K:UnregisterEvent("ENCOUNTER_START", Module.ResetOnRaidEncounter)

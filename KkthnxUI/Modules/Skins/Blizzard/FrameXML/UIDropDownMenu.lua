@@ -64,9 +64,9 @@ table_insert(C.defaultThemes, function()
 					-- only reliable way to see if button is radio or or check...
 					local _, co = check:GetTexCoord()
 					if co == 0 then
-						check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
+						check:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check")
 						check:SetVertexColor(r, g, b, 1)
-						check:SetSize(20, 20)
+						check:SetSize(16, 16)
 						check:SetDesaturated(true)
 					else
 						check:SetColorTexture(r, g, b, 0.6)

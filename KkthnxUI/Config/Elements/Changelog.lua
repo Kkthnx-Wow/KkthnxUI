@@ -20,6 +20,43 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.3.3] - 2022-7-28",
+		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
+		Sections = {
+			{
+				Header = "Added",
+				Entries = {
+					"Filtering for new spells learned",
+					"Thank you button in trade (WIP) no release",
+				},
+			},
+
+			{
+				Header = "Fixed",
+				Entries = {
+					"Gold mail button",
+					"Legendaries not filtering in bags",
+					"Filtering chat causing bug",
+				},
+			},
+
+			{
+				Header = "Removed",
+				Entries = {},
+			},
+
+			{
+				Header = "Changed",
+				Entries = {
+					"Player and pet low health alert",
+					"oUF portaits",
+					"Minimap Queue Status Text",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.3.2] - 2022-7-16",
 		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {

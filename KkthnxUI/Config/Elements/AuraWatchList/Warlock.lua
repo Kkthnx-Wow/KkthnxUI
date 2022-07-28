@@ -5,6 +5,7 @@ if K.Class ~= "WARLOCK" then
 	return
 end
 
+-- 术士的法术监控
 local list = {
 	["Player Aura"] = { -- 玩家光环组
 		{ AuraID = 5697, UnitID = "player" }, -- 无尽呼吸

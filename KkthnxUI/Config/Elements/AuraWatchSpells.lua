@@ -75,14 +75,12 @@ function Module:AddNewAuraWatch(class, list)
 end
 
 function Module:AddDeprecatedGroup()
-	if C["AuraWatch"].DeprecatedAuras then
-		for name, value in pairs(C.DeprecatedAuras) do
-			for _, list in pairs(AuraWatchList["ALL"]) do
-				if list.Name == name then
-					local newTable = newAuraFormat(value)
-					for spellID, v in pairs(newTable) do
-						list.List[spellID] = v
-					end
+	for name, value in pairs(C.DeprecatedAuras) do
+		for _, list in pairs(AuraWatchList["ALL"]) do
+			if list.Name == name then
+				local newTable = newAuraFormat(value)
+				for spellID, v in pairs(newTable) do
+					list.List[spellID] = v
 				end
 			end
 		end

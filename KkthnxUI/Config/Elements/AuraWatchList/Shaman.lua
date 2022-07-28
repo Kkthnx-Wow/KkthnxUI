@@ -5,6 +5,7 @@ if K.Class ~= "SHAMAN" then
 	return
 end
 
+-- 萨满的法术监控
 local list = {
 	["Player Aura"] = { -- 玩家光环组
 		{ AuraID = 546, UnitID = "player" }, -- 水上行走

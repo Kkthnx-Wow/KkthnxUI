@@ -160,7 +160,7 @@ function Module:CreateDurabilityDataText()
 	DurabilityDataText.Texture:SetSize(140, 48)
 
 	DurabilityDataText.Text = DurabilityDataText.Text or DurabilityDataText:CreateFontString(nil, "ARTWORK")
-	DurabilityDataText.Text:SetPoint("CENTER", DurabilityDataText.Texture, "CENTER", 0, 13)
+	DurabilityDataText.Text:SetPoint("CENTER", DurabilityDataText.Texture, "CENTER", 0, 12)
 	DurabilityDataText.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
 
 	DurabilityDataText:SetAllPoints(DurabilityDataText.Text)

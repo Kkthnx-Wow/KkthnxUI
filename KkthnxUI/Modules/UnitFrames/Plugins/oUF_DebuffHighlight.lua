@@ -36,34 +36,26 @@ local function GetDebuffType(unit, filter)
 end
 
 local function CheckSpec()
-	local spec = GetSpecialization()
-
 	if K.Class == "DRUID" then
-		if spec == 4 then
+		if GetSpecialization() == 4 then
 			dispellist.Magic = true
 		else
 			dispellist.Magic = false
 		end
 	elseif K.Class == "MONK" then
-		if spec == 2 then
+		if GetSpecialization() == 2 then
 			dispellist.Magic = true
 		else
 			dispellist.Magic = false
 		end
 	elseif K.Class == "PALADIN" then
-		if spec == 1 then
+		if GetSpecialization() == 1 then
 			dispellist.Magic = true
 		else
 			dispellist.Magic = false
-		end
-	elseif K.Class == "PRIEST" then
-		if spec == 3 then
-			dispellist.Magic = false
-		else
-			dispellist.Magic = true
 		end
 	elseif K.Class == "SHAMAN" then
-		if spec == 3 then
+		if GetSpecialization() == 3 then
 			dispellist.Magic = true
 		else
 			dispellist.Magic = false

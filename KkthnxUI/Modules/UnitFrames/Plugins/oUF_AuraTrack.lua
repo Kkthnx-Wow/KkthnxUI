@@ -73,7 +73,7 @@ local Tracker = {
 	[136] = { 0.2, 0.8, 0.2 }, -- Mend Pet
 }
 
-local OnUpdate = function(self)
+local function OnUpdate(self)
 	local Time = GetTime()
 	local Timeleft = self.Expiration - Time
 	local Duration = self.Duration
@@ -84,7 +84,7 @@ local OnUpdate = function(self)
 	end
 end
 
-local UpdateIcon = function(self, _, spellID, texture, id, expiration, duration, count)
+local function UpdateIcon(self, _, spellID, texture, id, expiration, duration, count)
 	local AuraTrack = self.AuraTrack
 
 	if id > AuraTrack.MaxAuras then
@@ -117,7 +117,7 @@ local UpdateIcon = function(self, _, spellID, texture, id, expiration, duration,
 		AuraTrack.Auras[id].Cooldown:SetHideCountdownNumbers(true)
 
 		AuraTrack.Auras[id].Count = AuraTrack.Auras[id]:CreateFontString(nil, "OVERLAY")
-		AuraTrack.Auras[id].Count:SetFont(AuraTrack.Font, 12, "THINOUTLINE")
+		AuraTrack.Auras[id].Count:SetFont(AuraTrack.Font, 12, "OUTLINE")
 		AuraTrack.Auras[id].Count:SetPoint("CENTER", 1, 0)
 	end
 
@@ -140,7 +140,7 @@ local UpdateIcon = function(self, _, spellID, texture, id, expiration, duration,
 	end
 end
 
-local UpdateBar = function(self, _, spellID, _, id, expiration, duration)
+local function UpdateBar(self, _, spellID, _, id, expiration, duration)
 	local AuraTrack = self.AuraTrack
 	local Orientation = self.Health:GetOrientation()
 	local Size = Orientation == "HORIZONTAL" and AuraTrack:GetHeight() or AuraTrack:GetWidth()
@@ -189,7 +189,7 @@ local UpdateBar = function(self, _, spellID, _, id, expiration, duration)
 	AuraTrack.Auras[id]:Show()
 end
 
-local Update = function(self, _, unit)
+local function Update(self, _, unit)
 	if self.unit ~= unit then
 		return
 	end
@@ -213,7 +213,7 @@ local Update = function(self, _, unit)
 			if self.AuraTrack.Icons then
 				UpdateIcon(self, unit, spellID, texture, ID, expiration, duration, count)
 			else
-				UpdateBar(self, unit, spellID, texture, ID, expiration, duration, count)
+				UpdateBar(self, unit, spellID, texture, ID, expiration, duration)
 			end
 		end
 	end
@@ -225,11 +225,11 @@ local Update = function(self, _, unit)
 	end
 end
 
-local Path = function(self, ...)
+local function Path(self, ...)
 	return (self.AuraTrack.Override or Update)(self, ...)
 end
 
-local ForceUpdate = function(element)
+local function ForceUpdate(element)
 	return Path(element.__owner, "ForceUpdate", element.__owner.unit)
 end
 

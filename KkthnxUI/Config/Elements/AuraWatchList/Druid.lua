@@ -5,6 +5,7 @@ if K.Class ~= "DRUID" then
 	return
 end
 
+-- 德鲁伊的法术监控
 local list = {
 	["Player Aura"] = { -- 玩家光环组
 		{ AuraID = 5215, UnitID = "player" }, -- 潜行

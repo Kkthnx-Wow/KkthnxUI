@@ -523,7 +523,12 @@ function Module:OnEnable()
 		return
 	end
 
-	QuickJoinToastButton:Hide()
+	-- Hide Quick Join button
+	if QuickJoinToastButton then
+		QuickJoinToastButton:SetAlpha(0)
+		QuickJoinToastButton:EnableMouse(false)
+		QuickJoinToastButton:UnregisterAllEvents()
+	end
 
 	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
 		return

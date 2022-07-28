@@ -267,43 +267,46 @@ function Module:CreateRaid()
 		local Height = C["Raid"].Height
 		local DebuffSize = Height >= 32 and Height - 20 or Height
 
-		self.RaidDebuffs = self.RaidDebuffs or CreateFrame("Frame", nil, self.Health)
-		self.RaidDebuffs:SetHeight(DebuffSize)
-		self.RaidDebuffs:SetWidth(DebuffSize)
-		self.RaidDebuffs:SetPoint("CENTER", self.Health)
-		self.RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 10)
-		self.RaidDebuffs:CreateBorder()
-		self.RaidDebuffs:Hide()
+		local RaidDebuffs = CreateFrame("Frame", nil, self.Health)
+		RaidDebuffs:SetHeight(DebuffSize)
+		RaidDebuffs:SetWidth(DebuffSize)
+		RaidDebuffs:SetPoint("CENTER", self.Health)
+		RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 10)
+		RaidDebuffs:CreateBorder()
+		RaidDebuffs:Hide()
 
-		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "ARTWORK")
-		self.RaidDebuffs.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-		self.RaidDebuffs.icon:SetAllPoints(self.RaidDebuffs)
+		RaidDebuffs.icon = RaidDebuffs:CreateTexture(nil, "ARTWORK")
+		RaidDebuffs.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+		RaidDebuffs.icon:SetAllPoints(RaidDebuffs)
 
-		self.RaidDebuffs.cd = CreateFrame("Cooldown", nil, self.RaidDebuffs, "CooldownFrameTemplate")
-		self.RaidDebuffs.cd:SetAllPoints(self.RaidDebuffs)
-		self.RaidDebuffs.cd:SetReverse(true)
-		self.RaidDebuffs.cd.noOCC = true
-		self.RaidDebuffs.cd.noCooldownCount = true
-		self.RaidDebuffs.cd:SetHideCountdownNumbers(true)
-		self.RaidDebuffs.cd:SetAlpha(0.7)
+		RaidDebuffs.cd = CreateFrame("Cooldown", nil, RaidDebuffs, "CooldownFrameTemplate")
+		RaidDebuffs.cd:SetAllPoints(RaidDebuffs)
+		RaidDebuffs.cd:SetReverse(true)
+		RaidDebuffs.cd.noOCC = true
+		RaidDebuffs.cd.noCooldownCount = true
+		RaidDebuffs.cd:SetHideCountdownNumbers(true)
+		RaidDebuffs.cd:SetAlpha(0.7)
 
-		self.RaidDebuffs.onlyMatchSpellID = true
-		self.RaidDebuffs.showDispellableDebuff = true
+		RaidDebuffs.onlyMatchSpellID = true
+		RaidDebuffs.showDispellableDebuff = true
 
-		local parentFrame = CreateFrame("Frame", nil, self.RaidDebuffs)
+		local parentFrame = CreateFrame("Frame", nil, RaidDebuffs)
 		parentFrame:SetAllPoints()
-		parentFrame:SetFrameLevel(self.RaidDebuffs:GetFrameLevel() + 6)
+		parentFrame:SetFrameLevel(RaidDebuffs:GetFrameLevel() + 6)
 
-		self.RaidDebuffs.timer = parentFrame:CreateFontString(nil, "OVERLAY")
-		self.RaidDebuffs.timer:SetFont(C["Media"].Fonts.KkthnxUIFont, 12, "OUTLINE")
-		self.RaidDebuffs.timer:SetPoint("CENTER", self.RaidDebuffs, 1, 0)
+		RaidDebuffs.timer = parentFrame:CreateFontString(nil, "OVERLAY")
+		RaidDebuffs.timer:SetFont(C["Media"].Fonts.KkthnxUIFont, 12, "OUTLINE")
+		RaidDebuffs.timer:SetPoint("CENTER", RaidDebuffs, 1, 0)
 
-		self.RaidDebuffs.count = parentFrame:CreateFontString(nil, "OVERLAY")
-		self.RaidDebuffs.count:SetFont(C["Media"].Fonts.KkthnxUIFont, 11, "OUTLINE")
-		self.RaidDebuffs.count:SetPoint("BOTTOMRIGHT", self.RaidDebuffs, "BOTTOMRIGHT", 2, 0)
-		self.RaidDebuffs.count:SetTextColor(1, 0.9, 0)
+		RaidDebuffs.count = parentFrame:CreateFontString(nil, "OVERLAY")
+		RaidDebuffs.count:SetFont(C["Media"].Fonts.KkthnxUIFont, 11, "OUTLINE")
+		RaidDebuffs.count:SetPoint("BOTTOMRIGHT", RaidDebuffs, "BOTTOMRIGHT", 2, 0)
+		RaidDebuffs.count:SetTextColor(1, 0.9, 0)
 
-		-- self.RaidDebuffs.forceShow = true
+		RaidDebuffs.forceShow = false
+		RaidDebuffs.ShowDispellableDebuff = true
+
+		self.RaidDebuffs = RaidDebuffs
 	end
 
 	if C["Raid"].TargetHighlight then

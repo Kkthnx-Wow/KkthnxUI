@@ -4,26 +4,40 @@ local Module = K:GetModule("Announcements")
 local _G = _G
 local string_format = _G.string.format
 
-local GetTime = _G.GetTime
-local lastTimePet = 0
-local lastTimePlayer = 0
-local healthPercent = 35
+local UIErrorsFrame = _G.UIErrorsFrame
+
+local playerNearDeath = false
+local petNearDeath = false
 
 function Module:SetupHealthAnnounce()
-	-- stylua: ignore
-	if (UnitAffectingCombat("pet") and (UnitHealth("pet") / UnitHealthMax("pet") * 100) <= healthPercent) and lastTimePet ~= GetTime() then
-		PlaySound(23404, "master")
-		UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], UnitName("pet")))
+	local playerHealth = UnitHealth("player")
+	local playerHealthMax = UnitHealthMax("player")
+	local playerHealthPercent = K.Round(playerHealth / playerHealthMax * 100, 1)
 
-		lastTimePet = GetTime()
+	if not UnitIsDead("player") then
+		if playerHealthPercent <= 30 and not playerNearDeath then
+			playerNearDeath = true
+			UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], UnitName("player")))
+		elseif playerHealthPercent > 30 + 20 and playerNearDeath then
+			playerNearDeath = false
+		end
 	end
 
-	-- stylua: ignore
-	if (UnitAffectingCombat("player") and (UnitHealth("player") / UnitHealthMax("player") * 100) <= healthPercent) and lastTimePlayer ~= GetTime() then
-		PlaySound(23404, "master")
-		UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], UnitName("player")))
+	local petHealth = UnitHealth("pet")
+	local petHealthMax = UnitHealthMax("pet")
+	local petHealthPercent = K.Round(petHealth / petHealthMax * 100, 1)
 
-		lastTimePlayer = GetTime()
+	if not UnitIsDead("pet") then
+		if K.Class ~= "HUNTER" or K.Class ~= "WARLOCK" then
+			return
+		end
+
+		if petHealthPercent <= 30 and not petNearDeath then
+			petNearDeath = true
+			UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], UnitName("pet")))
+		elseif petHealthPercent > 30 + 20 and petNearDeath then
+			petNearDeath = false
+		end
 	end
 end
 
@@ -32,5 +46,5 @@ function Module:CreateHealthAnnounce()
 		return
 	end
 
-	K:RegisterEvent("UNIT_HEALTH", Module.SetupHealthAnnounce)
+	C_Timer.NewTicker(1, Module.SetupHealthAnnounce)
 end

@@ -5,6 +5,7 @@ if K.Class ~= "MONK" then
 	return
 end
 
+-- 武僧的法术监控
 local list = {
 	["Player Aura"] = { -- 玩家光环组
 		{ AuraID = 119085, UnitID = "player" }, -- 真气突

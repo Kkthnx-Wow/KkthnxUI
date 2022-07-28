@@ -5,6 +5,7 @@ if K.Class ~= "WARRIOR" then
 	return
 end
 
+-- 战士的法术监控
 local list = {
 	["Player Aura"] = { -- 玩家光环组
 		{ AuraID = 32216, UnitID = "player" }, -- 胜利

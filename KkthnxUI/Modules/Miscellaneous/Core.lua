@@ -238,54 +238,60 @@ function Module:CreateMinimapButtonToggle()
 	Module:ToggleMinimapIcon()
 end
 
+local plusSize
+local function MainMenu_OnShow(self)
+	if K.IsFirestorm then -- No idea why Firestorm has to mess with the GameMenu buttons -.-
+		plusSize = 48
+	else
+		plusSize = 20
+	end
+
+	_G.GameMenuButtonLogout:SetPoint("TOP", Module.GameMenuButton, "BOTTOM", 0, -14)
+	self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 15 + plusSize)
+
+	_G.GameMenuButtonStore:ClearAllPoints()
+	_G.GameMenuButtonStore:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -6)
+
+	_G.GameMenuButtonWhatsNew:ClearAllPoints()
+	_G.GameMenuButtonWhatsNew:SetPoint("TOP", _G.GameMenuButtonStore, "BOTTOM", 0, -6)
+
+	_G.GameMenuButtonUIOptions:ClearAllPoints()
+	_G.GameMenuButtonUIOptions:SetPoint("TOP", _G.GameMenuButtonOptions, "BOTTOM", 0, -6)
+
+	_G.GameMenuButtonKeybindings:ClearAllPoints()
+	_G.GameMenuButtonKeybindings:SetPoint("TOP", _G.GameMenuButtonUIOptions, "BOTTOM", 0, -6)
+
+	_G.GameMenuButtonMacros:ClearAllPoints()
+	_G.GameMenuButtonMacros:SetPoint("TOP", _G.GameMenuButtonKeybindings, "BOTTOM", 0, -6)
+
+	_G.GameMenuButtonAddons:ClearAllPoints()
+	_G.GameMenuButtonAddons:SetPoint("TOP", _G.GameMenuButtonMacros, "BOTTOM", 0, -6)
+
+	_G.GameMenuButtonQuit:ClearAllPoints()
+	_G.GameMenuButtonQuit:SetPoint("TOP", _G.GameMenuButtonLogout, "BOTTOM", 0, -6)
+end
+
+local function Button_OnClick()
+	if InCombatLockdown() then
+		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
+		return
+	end
+
+	K["GUI"]:Toggle()
+	HideUIPanel(_G.GameMenuFrame)
+	PlaySound(_G.SOUNDKIT.IG_MAINMENU_OPTION)
+end
+
 function Module:CreateGUIGameMenuButton()
-	local KKUI_GUIButton = CreateFrame("Button", "KKUI_GameMenuButton", GameMenuFrame, "GameMenuButtonTemplate, BackdropTemplate")
-	KKUI_GUIButton:SetText(K.InfoColor .. "KkthnxUI|r")
-	KKUI_GUIButton:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -21)
-	KKUI_GUIButton:SkinButton()
+	local bu = CreateFrame("Button", "KKUI_GameMenuButton", _G.GameMenuFrame, "GameMenuButtonTemplate")
+	bu:SetText(K.Title)
+	bu:SetPoint("TOP", _G.GameMenuButtonAddons, "BOTTOM", 0, -14)
+	bu:SetScript("OnClick", Button_OnClick)
+	bu:SkinButton()
 
-	GameMenuFrame:HookScript("OnShow", function(self)
-		_G.GameMenuButtonLogout:ClearAllPoints()
-		_G.GameMenuButtonLogout:SetPoint("TOP", KKUI_GUIButton, "BOTTOM", 0, -21)
+	Module.GameMenuButton = bu
 
-		_G.GameMenuButtonStore:ClearAllPoints()
-		_G.GameMenuButtonStore:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -6)
-
-		_G.GameMenuButtonWhatsNew:ClearAllPoints()
-		_G.GameMenuButtonWhatsNew:SetPoint("TOP", _G.GameMenuButtonStore, "BOTTOM", 0, -6)
-
-		_G.GameMenuButtonUIOptions:ClearAllPoints()
-		_G.GameMenuButtonUIOptions:SetPoint("TOP", _G.GameMenuButtonOptions, "BOTTOM", 0, -6)
-
-		_G.GameMenuButtonKeybindings:ClearAllPoints()
-		_G.GameMenuButtonKeybindings:SetPoint("TOP", _G.GameMenuButtonUIOptions, "BOTTOM", 0, -6)
-
-		_G.GameMenuButtonMacros:ClearAllPoints()
-		_G.GameMenuButtonMacros:SetPoint("TOP", _G.GameMenuButtonKeybindings, "BOTTOM", 0, -6)
-
-		_G.GameMenuButtonAddons:ClearAllPoints()
-		_G.GameMenuButtonAddons:SetPoint("TOP", _G.GameMenuButtonMacros, "BOTTOM", 0, -6)
-
-		_G.GameMenuButtonQuit:ClearAllPoints()
-		_G.GameMenuButtonQuit:SetPoint("TOP", _G.GameMenuButtonLogout, "BOTTOM", 0, -6)
-
-		if K.Realm == "Oribos" then
-			self:SetHeight(self:GetHeight() + KKUI_GUIButton:GetHeight() + 74)
-		else
-			self:SetHeight(self:GetHeight() + KKUI_GUIButton:GetHeight() + 64)
-		end
-	end)
-
-	KKUI_GUIButton:SetScript("OnClick", function()
-		if InCombatLockdown() then
-			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
-			return
-		end
-
-		K["GUI"]:Toggle()
-		HideUIPanel(GameMenuFrame)
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-	end)
+	_G.GameMenuFrame:HookScript("OnShow", MainMenu_OnShow)
 end
 
 function Module:CreateQuestXPPercent()
@@ -957,7 +963,7 @@ do -- Firestorm has a bug where UI_ERROR_MESSAGES that should trigger a dismount
 	}
 
 	local function FixFSAutoDismount(_, _, msg)
-		if K.Realm ~= "Oribos" then
+		if not K.IsFirestorm then
 			return
 		end
 

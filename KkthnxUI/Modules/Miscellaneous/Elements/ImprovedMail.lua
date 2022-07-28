@@ -142,8 +142,8 @@ function Module:CollectGoldButton()
 
 	local button = Module:MailBox_CreatButton(InboxFrame, 120, 24, "", { "LEFT", OpenAllMail, "RIGHT", 3, 0 })
 	button:SetScript("OnClick", Module.MailBox_CollectAllGold)
-	button:SetScript("OnEnter", Module.TotalCash_OnEnter)
-	button:SetScript("OnLeave", Module.TotalCash_OnLeave)
+	button:HookScript("OnEnter", Module.TotalCash_OnEnter)
+	button:HookScript("OnLeave", Module.TotalCash_OnLeave)
 
 	Module.GoldButton = button
 	Module:UpdateOpeningText()

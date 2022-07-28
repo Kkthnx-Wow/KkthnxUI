@@ -5,6 +5,7 @@ if K.Class ~= "ROGUE" then
 	return
 end
 
+-- 盗贼的法术监控
 local list = {
 	["Player Aura"] = { -- 玩家光环组
 		{ AuraID = 1784, UnitID = "player" }, -- 潜行

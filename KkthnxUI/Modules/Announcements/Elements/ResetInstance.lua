@@ -6,7 +6,7 @@ local string_match = _G.string.match
 local string_gsub = _G.string.gsub
 local string_format = _G.string.format
 
-local msgList = {
+local resetMessageList = {
 	INSTANCE_RESET_FAILED = "Cannot reset %s (There are players still inside the instance.)",
 	INSTANCE_RESET_FAILED_OFFLINE = "Cannot reset %s (There are players offline in your party.)",
 	INSTANCE_RESET_FAILED_ZONING = "Cannot reset %s (There are players in your party attempting to zone into an instance.)",
@@ -14,7 +14,7 @@ local msgList = {
 }
 
 local function SetupResetInstance(_, text)
-	for systemMessage, friendlyMessage in pairs(msgList) do
+	for systemMessage, friendlyMessage in pairs(resetMessageList) do
 		systemMessage = _G[systemMessage]
 		if string_match(text, string_gsub(systemMessage, "%%s", ".+")) then
 			local instance = string_match(text, string_gsub(systemMessage, "%%s", "(.+)"))

@@ -5,6 +5,7 @@ if K.Class ~= "PRIEST" then
 	return
 end
 
+-- 牧师的法术监控
 local list = {
 	["Player Aura"] = { -- 玩家光环组
 		{ AuraID = 586, UnitID = "player" }, -- 渐隐术

@@ -251,7 +251,7 @@ function Module:ShowLeaderOverallScore()
 			if searchResultInfo.crossFactionListing then
 				self.crossFactionLogo:Hide()
 			else
-				if K.Realm ~= "Oribos" then
+				if not K.IsFirestorm then
 					self.crossFactionLogo:SetTexture("Interface\\Timer\\" .. factionStr[searchResultInfo.leaderFactionGroup] .. "-Logo")
 				end
 				self.crossFactionLogo:Show()
@@ -307,7 +307,7 @@ function Module:AddDungeonsFilter()
 
 	local function GetDungeonNameByID(mapID)
 		local name = C_ChallengeMode_GetMapUIInfo(mapID)
-		if K.Realm ~= "Oribos" then
+		if not K.IsFirestorm then
 			name = gsub(name, ".-" .. HEADER_COLON, "") -- abbr Tazavesh
 		end
 		return name

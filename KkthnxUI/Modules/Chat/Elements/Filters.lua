@@ -26,43 +26,43 @@ local UnitIsUnit = _G.UnitIsUnit
 local hooksecurefunc = _G.hooksecurefunc
 
 local msgSymbols = {
-	"`",
-	"～",
-	"＠",
-	"＃",
-	"^",
-	"＊",
-	"！",
-	"？",
-	"。",
-	"|",
 	" ",
+	",",
+	"/",
+	"^",
+	"_",
+	"`",
+	"|",
+	"~",
 	"—",
 	"——",
-	"￥",
-	"’",
 	"‘",
+	"’",
 	"“",
 	"”",
-	"【",
-	"】",
-	"『",
-	"』",
-	"《",
-	"》",
+	"、",
+	"。",
 	"〈",
 	"〉",
-	"（",
-	"）",
+	"《",
+	"》",
+	"『",
+	"』",
+	"【",
+	"】",
 	"〔",
 	"〕",
-	"、",
+	"！",
+	"＃",
+	"（",
+	"）",
+	"＊",
 	"，",
 	"：",
-	",",
-	"_",
-	"/",
-	"~",
+	"？",
+	"＠",
+	"～",
+	"￥",
 }
 local addonBlockList = {
 	"%(Task completed%)",
@@ -70,24 +70,32 @@ local addonBlockList = {
 	"%[Accept task%]",
 	":.+>",
 	"<Bigfoot",
-	"<iLvl>",
 	"<LFG>",
 	"<Team Item Level:.+>",
+	"<iLvl>",
 	"Attribute Notification",
 	"EUI[:_]",
 	"Interrupt:. +|Hspell",
-	"Progress:",
 	"PS death: .+>",
+	"Progress:",
 	"Task progress prompt",
+	"Xihan",
 	"wow.+Redemption Code",
 	"wow.+Verification Code",
-	"Xihan",
 	"|Hspell.+=>",
-	"【Love is not easy】",
 	"【Love Plugin]",
+	"【Love is not easy】",
 	("%-"):rep(20),
 }
-local trashClubs = { "Let's Play Games Together", "Salute Us", "Small Uplift", "Stand up", "Tribe Chowder" }
+
+local trashClubs = {
+	"Let's Play Games Together",
+	"Salute Us",
+	"Small Uplift",
+	"Stand up",
+	"Tribe Chowder",
+}
+
 local autoBroadcasts = {
 	"%-(.*)%|T(.*)|t(.*)|c(.*)%|r",
 	"%[(.*)ARENA ANNOUNCER(.*)%]",
@@ -95,6 +103,18 @@ local autoBroadcasts = {
 	"%[(.*)Autobroadcast(.*)%]",
 	"%[(.*)BG Queue Announcer(.*)%]",
 	"You are not mounted so you can't dismount.",
+}
+
+local spamAbilitySpellList = {
+	-- Player
+	"^" .. ERR_LEARN_ABILITY_S:gsub("%%s", "(.+)"),
+	"^" .. ERR_LEARN_PASSIVE_S:gsub("%%s", "(.+)"),
+	"^" .. ERR_LEARN_SPELL_S:gsub("%%s", "(.+)"),
+	"^" .. ERR_SPELL_UNLEARNED_S:gsub("%%s", "(.+)"),
+	-- Pet
+	"^" .. ERR_PET_LEARN_ABILITY_S:gsub("%%s", "(.+)"),
+	"^" .. ERR_PET_LEARN_SPELL_S:gsub("%%s", "(.+)"),
+	"^" .. ERR_PET_SPELL_UNLEARNED_S:gsub("%%s", "(.+)"),
 }
 
 C.BadBoys = {} -- debug
@@ -294,6 +314,16 @@ function Module:AutoBroadcasts(_, msg, ...)
 	return false, msg, ...
 end
 
+function Module:UpdateAbilitySpellSpam(_, msg, ...)
+	for _, filter in ipairs(spamAbilitySpellList) do
+		if string.match(msg, filter) then
+			return true
+		end
+	end
+
+	return false, msg, ...
+end
+
 function Module:CreateChatFilter()
 	hooksecurefunc(BNToastFrame, "ShowToast", self.BlockTrashClub)
 
@@ -330,4 +360,8 @@ function Module:CreateChatFilter()
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_BOSS_EMOTE", self.AutoBroadcasts)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.AutoBroadcasts)
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.AutoBroadcasts)
+
+	if K.IsFirestorm then
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.UpdateAbilitySpellSpam)
+	end
 end

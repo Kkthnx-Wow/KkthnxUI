@@ -32,16 +32,7 @@ do
 end
 
 -- This is a lot...
--- stylua: ignore
 local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha, bgBackground)
-	if bFrame.KKUI_Border then
-		return
-	end
-
-	if bFrame:IsObjectType("Texture") then
-		bFrame = bFrame:GetParent()
-	end
-
 	-- Border
 	local BorderSubLevel = bSubLevel or "OVERLAY"
 	local BorderLayer = bLayer or 2
@@ -61,6 +52,21 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	local BorderBlue = bBlue or C["General"].ColorTextures and C["General"].TexturesColor[3] or C["Media"].Borders.ColorBorder[3]
 	local BorderAlpha = bAlpha or 1
 
+	if bFrame and not bFrame.KKUI_Border then -- Do not keep creating it!
+		if bFrame:IsObjectType("Texture") then
+			bFrame = bFrame:GetParent()
+		end
+
+		-- Create Our Border
+		local kkui_border = K.CreateBorder(bFrame, BorderSubLevel, BorderLayer)
+		kkui_border:SetSize(BorderSize)
+		kkui_border:SetTexture(BorderTexture)
+		kkui_border:SetOffset(BorderOffset)
+		kkui_border:SetVertexColor(BorderRed, BorderGreen, BorderBlue, BorderAlpha)
+		bFrame.KKUI_Border = true
+		bFrame.KKUI_Border = kkui_border
+	end
+
 	-- Background
 	local BackgroundTexture = bgTexture or C["Media"].Textures.BlankTexture
 	local BackgroundSubLevel = bgSubLevel or "BACKGROUND"
@@ -72,20 +78,9 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	local BackgroundAlpha = bgAlpha or C["Media"].Backdrops.ColorBackdrop[4]
 	local UseBackground = bgBackground or true
 
-	-- Create Our Border
-	if not bFrame.KKUI_Border then
-		local kkui_border = K.CreateBorder(bFrame, BorderSubLevel, BorderLayer)
-		kkui_border:SetSize(BorderSize)
-		kkui_border:SetTexture(BorderTexture)
-		kkui_border:SetOffset(BorderOffset)
-		kkui_border:SetVertexColor(BorderRed, BorderGreen, BorderBlue, BorderAlpha)
-		bFrame.KKUI_Border = true
-		bFrame.KKUI_Border = kkui_border
-	end
-
-	-- Create Our Background (true/false)
-	if UseBackground then
-		if not bFrame.KKUI_Background then
+	if bFrame and not bFrame.KKUI_Background then -- Do not keep creating it!
+		-- Create Our Background (true/false)
+		if UseBackground then
 			local kkui_background = bFrame:CreateTexture()
 			kkui_background:SetDrawLayer(BackgroundSubLevel, BackgroundLayer)
 			kkui_background:SetTexture(BackgroundTexture)

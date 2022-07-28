@@ -5,6 +5,7 @@ if K.Class ~= "DEATHKNIGHT" then
 	return
 end
 
+-- DK的法术监控
 local list = {
 	["Player Aura"] = { -- 玩家光环组
 		{ AuraID = 3714, UnitID = "player" }, -- 冰霜之路

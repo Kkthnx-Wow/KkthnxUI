@@ -378,7 +378,7 @@ function Module:ReskinRegions()
 		local queueStatusDisplay = Module.QueueStatusDisplay
 		if queueStatusDisplay then
 			queueStatusDisplay.text:ClearAllPoints()
-			queueStatusDisplay.text:SetPoint("CENTER", queueIcon, 0, -3)
+			queueStatusDisplay.text:SetPoint("CENTER", queueIcon, 0, -5)
 			queueStatusDisplay.text:SetFontObject(KkthnxUIFont)
 
 			if queueStatusDisplay.title then
@@ -672,17 +672,17 @@ end
 function Module:QueueStatusTimeFormat(seconds)
 	local hours = math_floor(mod(seconds, 86400) / 3600)
 	if hours > 0 then
-		return Module.QueueStatusDisplay.text:SetFormattedText("%dh", hours)
+		return Module.QueueStatusDisplay.text:SetFormattedText("%d" .. K.MyClassColor .. "h", hours)
 	end
 
 	local mins = math_floor(mod(seconds, 3600) / 60)
 	if mins > 0 then
-		return Module.QueueStatusDisplay.text:SetFormattedText("%dm", mins)
+		return Module.QueueStatusDisplay.text:SetFormattedText("%d" .. K.MyClassColor .. "m", mins)
 	end
 
 	local secs = math_floor(seconds, 60)
 	if secs > 0 then
-		return Module.QueueStatusDisplay.text:SetFormattedText("%ds", secs)
+		return Module.QueueStatusDisplay.text:SetFormattedText("%d" .. K.MyClassColor .. "s", secs)
 	end
 end
 
@@ -690,13 +690,9 @@ function Module:QueueStatusSetTime(seconds)
 	local timeInQueue = GetTime() - seconds
 	Module:QueueStatusTimeFormat(timeInQueue)
 
-	local wait = Module.QueueStatusDisplay.averageWait
-	local waitTime = wait and wait > 0 and (timeInQueue / wait)
-	if not waitTime or waitTime >= 1 then
-		Module.QueueStatusDisplay.text:SetTextColor(1, 1, 1)
-	else
-		Module.QueueStatusDisplay.text:SetTextColor(K.oUF:RGBColorGradient(waitTime, timeInQueue, 1, 0.1, 0.1, 1, 1, 0.1, 0.1, 1, 0.1))
-	end
+	-- local wait = Module.QueueStatusDisplay.averageWait
+	-- local waitTime = wait and wait > 0 and (timeInQueue / wait)
+	Module.QueueStatusDisplay.text:SetTextColor(1, 1, 1)
 end
 
 function Module:QueueStatusOnUpdate(elapsed)
@@ -709,6 +705,10 @@ function Module:QueueStatusOnUpdate(elapsed)
 end
 
 function Module:SetFullQueueStatus(title, queuedTime, averageWait)
+	if not C["Minimap"].QueueStatusText then
+		return
+	end
+
 	local display = Module.QueueStatusDisplay
 	if not display.title or display.title == title then
 		if queuedTime then
@@ -739,10 +739,6 @@ function Module:ClearQueueStatus()
 end
 
 function Module:CreateQueueStatusText()
-	if not C["Minimap"].QueueStatusText then
-		return
-	end
-
 	local display = CreateFrame("Frame", "KKUI_QueueStatusDisplay", _G.QueueStatusMinimapButton)
 	display.text = display:CreateFontString(nil, "OVERLAY")
 

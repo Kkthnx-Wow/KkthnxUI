@@ -1,5 +1,6 @@
 local _, C, L = unpack(KkthnxUI)
 
+-- 旧资料片数据 Auras for old expansions
 C.DeprecatedAuras = {
 	["Enchant Aura"] = { -- 附魔及饰品组
 		-- 8.0

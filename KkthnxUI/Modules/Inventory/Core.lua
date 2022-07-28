@@ -967,19 +967,20 @@ function Module:OnEnable()
 	end
 
 	function Backpack:OnInit()
-		AddNewContainer("Bag", 15, "Junk", filters.bagsJunk)
+		AddNewContainer("Bag", 16, "Junk", filters.bagsJunk)
 		for i = 1, 5 do
 			AddNewContainer("Bag", i, "BagCustom" .. i, filters["bagCustom" .. i])
 		end
-		AddNewContainer("Bag", 8, "EquipSet", filters.bagEquipSet)
+		AddNewContainer("Bag", 9, "EquipSet", filters.bagEquipSet)
 		AddNewContainer("Bag", 6, "AzeriteItem", filters.bagAzeriteItem)
+		AddNewContainer("Bag", 8, "BagLegendary", filters.bagLegendary)
 		AddNewContainer("Bag", 7, "Equipment", filters.bagEquipment)
-		AddNewContainer("Bag", 9, "BagCollection", filters.bagCollection)
-		AddNewContainer("Bag", 13, "Consumable", filters.bagConsumable)
-		AddNewContainer("Bag", 10, "BagGoods", filters.bagGoods)
-		AddNewContainer("Bag", 14, "BagQuest", filters.bagQuest)
-		AddNewContainer("Bag", 11, "BagAnima", filters.bagAnima)
-		AddNewContainer("Bag", 12, "BagRelic", filters.bagRelic)
+		AddNewContainer("Bag", 10, "BagCollection", filters.bagCollection)
+		AddNewContainer("Bag", 14, "Consumable", filters.bagConsumable)
+		AddNewContainer("Bag", 11, "BagGoods", filters.bagGoods)
+		AddNewContainer("Bag", 15, "BagQuest", filters.bagQuest)
+		AddNewContainer("Bag", 12, "BagAnima", filters.bagAnima)
+		AddNewContainer("Bag", 13, "BagRelic", filters.bagRelic)
 
 		f.main = MyContainer:New("Bag", { Bags = "bags", BagType = "Bag" })
 		f.main.__anchor = { "BOTTOMRIGHT", -50, 100 }

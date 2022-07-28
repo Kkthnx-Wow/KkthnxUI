@@ -1,8 +1,10 @@
 local K, _, L = unpack(KkthnxUI)
 local Module = K:GetModule("AurasTable")
 
+-- 全职业的相关监控
 local list = {
 	["Enchant Aura"] = { -- 附魔及饰品组
+		{ AuraID = 341260, UnitID = "player", Flash = true }, -- 学识爆发，传家宝套装
 		{ AuraID = 354808, UnitID = "player" }, -- 棱彩之光，1万币的小宠物
 		-- 种族天赋
 		{ AuraID = 26297, UnitID = "player" }, -- 狂暴 巨魔
@@ -45,6 +47,12 @@ local list = {
 		{ AuraID = 355333, UnitID = "player" }, -- 回收的聚变增幅器
 		{ AuraID = 357185, UnitID = "player" }, -- 忠诚的力量，低语威能碎片
 		{ AuraID = 357773, UnitID = "player" }, -- 神圣使命，九武神长柄
+
+		{ AuraID = 367241, UnitID = "player" }, -- 原初印记
+		{ AuraID = 363522, UnitID = "player" }, -- 角斗士的永恒结界
+		{ AuraID = 362699, UnitID = "player" }, -- 角斗士的决心
+		{ AuraID = 345231, UnitID = "player" }, -- 角斗士的纹章
+		{ AuraID = 368641, UnitID = "player" }, -- 最终符文
 		-- 盟约
 		{ AuraID = 331937, UnitID = "player", Flash = true }, -- 沉醉
 		{ AuraID = 354053, UnitID = "player", Flash = true, Text = L["Crit"] }, -- 致命缺陷，暴击
@@ -80,16 +88,23 @@ local list = {
 		{ AuraID = 345499, UnitID = "player" }, -- 执政官的祝福
 		{ AuraID = 339461, UnitID = "player" }, -- 猎手坚韧
 		{ AuraID = 325381, UnitID = "player", Flash = true }, -- 争先打击
+		{ AuraID = 351414, UnitID = "player", Flash = true }, -- 切肉者之眼
 		{ AuraID = 342774, UnitID = "player" }, -- 繁华原野
 		{ AuraID = 333218, UnitID = "player" }, -- 废土礼节
 		{ AuraID = 336885, UnitID = "player" }, -- 抚慰阴影
 		{ AuraID = 324156, UnitID = "player", Flash = true }, -- 劫掠射击
-		{ AuraID = 328900, UnitID = "player" }, -- 放下过去
+		--{AuraID = 328900, UnitID = "player"},	-- 放下过去
 		{ AuraID = 333961, UnitID = "player" }, -- 行动的召唤：布隆
 		{ AuraID = 333943, UnitID = "player" }, -- 源生重槌
+		{ AuraID = 339928, UnitID = "player", Flash = true }, -- 残酷投射
+		{ AuraID = 358404, UnitID = "player", Flash = true }, -- 疑虑试炼
+		{ AuraID = 352917, UnitID = "player" }, -- 崭新决心
+		{ AuraID = 356263, UnitID = "player" }, -- 灵魂追踪者之契
+		{ AuraID = 352875, UnitID = "player", Flash = true }, -- 虔敬者之路
 		-- S2，心能/统御碎片
 		{ AuraID = 357852, UnitID = "player" }, -- 激励
 		{ AuraID = 356364, UnitID = "player" }, -- 冰冷的心
+		{ AuraID = 356043, UnitID = "player" }, -- 森罗万象
 		-- 炼金石
 		{ AuraID = 60233, UnitID = "player" }, -- 敏捷
 		{ AuraID = 60229, UnitID = "player" }, -- 力量
@@ -157,6 +172,11 @@ local list = {
 		{ AuraID = 306583, UnitID = "player" }, -- 灌铅脚步
 		{ AuraID = 313698, UnitID = "player", Flash = true }, -- 泰坦之赐
 		-- 常驻词缀
+		{ AuraID = 366288, UnitID = "player" }, -- 解构
+		{ AuraID = 368239, UnitID = "player", Flash = true, Text = "CD" }, -- 减CD密文
+		{ AuraID = 368240, UnitID = "player", Flash = true, Text = L["Haste"] }, -- 急速密文
+		{ AuraID = 368241, UnitID = "player", Flash = true, Text = L["Speed"] }, -- 移速密文
+		{ AuraID = 358777, UnitID = "player" }, -- 痛苦之链
 		{ AuraID = 355732, UnitID = "player" }, -- 融化灵魂
 		{ AuraID = 356667, UnitID = "player" }, -- 刺骨之寒
 		{ AuraID = 356925, UnitID = "player" }, -- 屠戮
@@ -196,7 +216,7 @@ local list = {
 		{ AuraID = 327893, UnitID = "player", Flash = true }, -- 彼界，邦桑迪的热情
 		{ AuraID = 339978, UnitID = "player", Flash = true }, -- 彼界，安抚迷雾
 		{ AuraID = 323569, UnitID = "player", Flash = true }, -- 彼界，溅洒精魂
-		{ AuraID = 334496, UnitID = "player" }, -- 彼界，催眠光粉
+		{ AuraID = 334496, UnitID = "player", Stack = 7, Flash = true }, -- 彼界，催眠光粉
 		{ AuraID = 328453, UnitID = "player" }, -- 晋升高塔，压迫
 		{ AuraID = 335805, UnitID = "player", Flash = true }, -- 晋升高塔，执政官的壁垒
 		{ AuraID = 325027, UnitID = "player", Flash = true }, -- 仙林，荆棘爆发
@@ -231,9 +251,10 @@ local list = {
 		{ AuraID = 344655, UnitID = "player" }, -- 震荡易伤，干将
 		{ AuraID = 327089, UnitID = "player" }, -- 喂食时间，德纳修斯
 		{ AuraID = 327796, UnitID = "player" }, -- 午夜猎手，德纳修斯
-
 		{ AuraID = 347283, UnitID = "player" }, -- 捕食者之嚎，塔拉格鲁
 		{ AuraID = 347286, UnitID = "player" }, -- 不散之惧，塔拉格鲁
+		{ AuraID = 360403, UnitID = "player" }, -- 力场，警戒卫士
+		{ AuraID = 361751, UnitID = "player", Flash = true }, -- 衰变光环，道茜歌妮
 	},
 	["Warning"] = { -- 目标重要光环组
 		{ AuraID = 355596, UnitID = "target", Flash = true }, -- 橙弓，哀痛箭
@@ -281,6 +302,8 @@ local list = {
 		{ AuraID = 347992, UnitID = "target" }, -- 集市，回旋防弹衣
 		{ AuraID = 347840, UnitID = "target" }, -- 集市，野性
 		{ AuraID = 347015, UnitID = "target", Flash = true }, -- 集市，强化防御
+		{ AuraID = 355934, UnitID = "target", Value = true }, -- 集市，强光屏障
+		{ AuraID = 349933, UnitID = "target", Flash = true, Value = true }, -- 集市，狂热鞭笞协议
 		-- 团本
 		{ AuraID = 345902, UnitID = "target" }, -- 破裂的联结，猎手
 		{ AuraID = 334695, UnitID = "target" }, -- 动荡的能量，猎手
@@ -289,53 +312,60 @@ local list = {
 		{ AuraID = 341250, UnitID = "target" }, -- 恐怖暴怒，泥拳
 		{ AuraID = 329636, UnitID = "target", Flash = true }, -- 坚岩形态，干将
 		{ AuraID = 329808, UnitID = "target", Flash = true }, -- 坚岩形态，干将
+		{ AuraID = 367573, UnitID = "target", Flash = true }, -- 源生壁垒，圣物匠
+		{ AuraID = 368684, UnitID = "target", Value = true }, -- 回收，黑伦度斯
+		{ AuraID = 361651, UnitID = "target", Value = true }, -- 虹吸屏障，道茜歌妮
+		{ AuraID = 362505, UnitID = "target", Flash = true }, -- 统御之握，安度因
 		-- PVP
 		{ AuraID = 498, UnitID = "target" }, -- 圣佑术
 		{ AuraID = 642, UnitID = "target" }, -- 圣盾术
 		{ AuraID = 871, UnitID = "target" }, -- 盾墙
 		{ AuraID = 5277, UnitID = "target" }, -- 闪避
-		{ AuraID = 1044, UnitID = "target" }, -- Free blessing
-		{ AuraID = 6940, UnitID = "target" }, -- Sacrifice blessing
-		{ AuraID = 1022, UnitID = "target" }, -- Protection blessing
-		{ AuraID = 19574, UnitID = "target" }, -- Wild rage
-		{ AuraID = 23920, UnitID = "target" }, -- Spell reflection
-		{ AuraID = 31884, UnitID = "target" }, -- Vengeful rage
-		{ AuraID = 33206, UnitID = "target" }, -- Pain suppression
-		{ AuraID = 45438, UnitID = "target" }, -- Ice barrier
-		{ AuraID = 47585, UnitID = "target" }, -- dissipate
-		{ AuraID = 47788, UnitID = "target" }, -- Guardian Soul
-		{ AuraID = 48792, UnitID = "target" }, -- Frozen Toughness
-		{ AuraID = 48707, UnitID = "target" }, -- Anti-magic shield
-		{ AuraID = 61336, UnitID = "target" }, -- Survival instinct
-		{ AuraID = 197690, UnitID = "target" }, -- Defensive posture
-		{ AuraID = 147833, UnitID = "target" }, -- Aid
-		{ AuraID = 186265, UnitID = "target" }, -- Guardian of the Turtle
-		{ AuraID = 113862, UnitID = "target" }, -- Enhanced invisibility
-		{ AuraID = 118038, UnitID = "target" }, -- The sword is here
-		{ AuraID = 114050, UnitID = "target" }, -- Rise 元素
-		{ AuraID = 114051, UnitID = "target" }, -- Rise 增强
-		{ AuraID = 114052, UnitID = "target" }, -- Rise 恢复
-		{ AuraID = 204018, UnitID = "target" }, -- Curse Breaking Blessing
-		{ AuraID = 205191, UnitID = "target" }, -- Eye for an Eye 惩戒
-		{ AuraID = 104773, UnitID = "target" }, -- Unbreakable determination
-		{ AuraID = 199754, UnitID = "target" }, -- fight back
-		{ AuraID = 120954, UnitID = "target" }, -- Courage wine
-		{ AuraID = 122278, UnitID = "target" }, -- Not bad
-		{ AuraID = 122783, UnitID = "target" }, -- Demon Skill
-		{ AuraID = 188499, UnitID = "target" }, -- Blade Dance
-		{ AuraID = 210152, UnitID = "target" }, -- Blade Dance
-		{ AuraID = 247938, UnitID = "target" }, -- Chaos Blade
-		{ AuraID = 212800, UnitID = "target" }, -- Ill shadow
-		{ AuraID = 162264, UnitID = "target" }, -- Metamorphosis
-		{ AuraID = 187827, UnitID = "target" }, -- Metamorphosis
-		{ AuraID = 125174, UnitID = "target" }, -- Karma Touch
-		{ AuraID = 171607, UnitID = "target" }, -- Love ray
+		{ AuraID = 1044, UnitID = "target" }, -- 自由祝福
+		{ AuraID = 6940, UnitID = "target" }, -- 牺牲祝福
+		{ AuraID = 1022, UnitID = "target" }, -- 保护祝福
+		{ AuraID = 19574, UnitID = "target" }, -- 狂野怒火
+		{ AuraID = 23920, UnitID = "target" }, -- 法术反射
+		{ AuraID = 31884, UnitID = "target" }, -- 复仇之怒
+		{ AuraID = 33206, UnitID = "target" }, -- 痛苦压制
+		{ AuraID = 45438, UnitID = "target" }, -- 寒冰屏障
+		{ AuraID = 47585, UnitID = "target" }, -- 消散
+		{ AuraID = 47788, UnitID = "target" }, -- 守护之魂
+		{ AuraID = 48792, UnitID = "target" }, -- 冰封之韧
+		{ AuraID = 48707, UnitID = "target" }, -- 反魔法护罩
+		{ AuraID = 61336, UnitID = "target" }, -- 生存本能
+		{ AuraID = 197690, UnitID = "target" }, -- 防御姿态
+		{ AuraID = 147833, UnitID = "target" }, -- 援护
+		{ AuraID = 186265, UnitID = "target" }, -- 灵龟守护
+		{ AuraID = 113862, UnitID = "target" }, -- 强化隐形术
+		{ AuraID = 118038, UnitID = "target" }, -- 剑在人在
+		{ AuraID = 114050, UnitID = "target" }, -- 升腾 元素
+		{ AuraID = 114051, UnitID = "target" }, -- 升腾 增强
+		{ AuraID = 114052, UnitID = "target" }, -- 升腾 恢复
+		{ AuraID = 204018, UnitID = "target" }, -- 破咒祝福
+		{ AuraID = 205191, UnitID = "target" }, -- 以眼还眼 惩戒
+		{ AuraID = 104773, UnitID = "target" }, -- 不灭决心
+		{ AuraID = 199754, UnitID = "target" }, -- 还击
+		{ AuraID = 120954, UnitID = "target" }, -- 壮胆酒
+		{ AuraID = 122278, UnitID = "target" }, -- 躯不坏
+		{ AuraID = 122783, UnitID = "target" }, -- 散魔功
+		{ AuraID = 188499, UnitID = "target" }, -- 刃舞
+		{ AuraID = 210152, UnitID = "target" }, -- 刃舞
+		{ AuraID = 247938, UnitID = "target" }, -- 混乱之刃
+		{ AuraID = 212800, UnitID = "target" }, -- 疾影
+		{ AuraID = 162264, UnitID = "target" }, -- 恶魔变形
+		{ AuraID = 187827, UnitID = "target" }, -- 恶魔变形
+		{ AuraID = 125174, UnitID = "target" }, -- 业报之触
+		{ AuraID = 171607, UnitID = "target" }, -- 爱情光线
 		{ AuraID = 228323, UnitID = "target", Value = true }, -- 克罗塔的护盾
 	},
 	["InternalCD"] = { -- 自定义内置冷却组
 		{ IntID = 240447, Duration = 20 }, -- 大米，践踏
+		{ IntID = 352875, Duration = 30 }, -- 格里恩，虔敬者之路
 		{ IntID = 114018, Duration = 15, OnSuccess = true, UnitID = "all" }, -- 帷幕
 		{ IntID = 316958, Duration = 30, OnSuccess = true, UnitID = "all" }, -- 红土
+		{ IntID = 327811, Duration = 19, OnSuccess = true, UnitID = "all" }, -- 赤红走廊闪步
+		{ IntID = 353635, Duration = 27.5, OnSuccess = true, UnitID = "all" }, -- 坍缩之星自爆时间
 	},
 }
 

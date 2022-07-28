@@ -98,7 +98,7 @@ function Module:ForceDefaultCVars()
 	end
 
 	if K.isDeveloper then
-		SetCVar("SpellQueueWindow", K.Realm == "Oribos" and 120 or 25)
+		SetCVar("SpellQueueWindow", K.IsFirestorm and 125 or 25)
 		SetCVar("WorldTextScale", 1)
 		SetCVar("ffxGlow", 0)
 	end
@@ -394,8 +394,8 @@ local function HelloWorld()
 	welcome:SetFrameStrata("HIGH")
 	K.CreateMoverFrame(welcome)
 	welcome:CreateBorder()
-	K.CreateFontString(welcome, 30, K.Title, "", true, "TOPLEFT", 10, 28)
-	K.CreateFontString(welcome, 14, K.Version, "", true, "TOPLEFT", 140, 16)
+	K.CreateFontString(welcome, 30, K.Title, "", false, "TOPLEFT", 10, 28)
+	K.CreateFontString(welcome, 14, K.Version, "", true, "TOPLEFT", 154, 16)
 	K.CreateFontString(welcome, 16, "Help Info", "", true, "TOP", 0, -10)
 
 	local welcomeLogo = welcome:CreateTexture(nil, "OVERLAY")
