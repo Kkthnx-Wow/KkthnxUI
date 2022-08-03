@@ -25,45 +25,7 @@ local SetCVar = _G.SetCVar
 local UnitIsUnit = _G.UnitIsUnit
 local hooksecurefunc = _G.hooksecurefunc
 
-local msgSymbols = {
-	" ",
-	",",
-	"/",
-	"^",
-	"_",
-	"`",
-	"|",
-	"~",
-	"—",
-	"——",
-	"‘",
-	"’",
-	"“",
-	"”",
-	"、",
-	"。",
-	"〈",
-	"〉",
-	"《",
-	"》",
-	"『",
-	"』",
-	"【",
-	"】",
-	"〔",
-	"〕",
-	"！",
-	"＃",
-	"（",
-	"）",
-	"＊",
-	"，",
-	"：",
-	"？",
-	"＠",
-	"～",
-	"￥",
-}
+local msgSymbols = { " ", ",", "/", "^", "_", "`", "|", "~", "—", "——", "‘", "’", "“", "”", "、", "。", "〈", "〉", "《", "》", "『", "』", "【", "】", "〔", "〕", "！", "＃", "（", "）", "＊", "，", "：", "？", "＠", "～", "￥" }
 local addonBlockList = {
 	"%(Task completed%)",
 	"%*%*.+%*%*",
@@ -102,19 +64,19 @@ local autoBroadcasts = {
 	"%[(.*)Announce by(.*)%]",
 	"%[(.*)Autobroadcast(.*)%]",
 	"%[(.*)BG Queue Announcer(.*)%]",
-	"You are not mounted so you can't dismount.",
+	"^You are not mounted so you can't dismount(.*)",
 }
 
 local spamAbilitySpellList = {
 	-- Player
-	"^" .. ERR_LEARN_ABILITY_S:gsub("%%s", "(.+)"),
-	"^" .. ERR_LEARN_PASSIVE_S:gsub("%%s", "(.+)"),
-	"^" .. ERR_LEARN_SPELL_S:gsub("%%s", "(.+)"),
-	"^" .. ERR_SPELL_UNLEARNED_S:gsub("%%s", "(.+)"),
+	"^" .. ERR_LEARN_ABILITY_S:gsub("%%s", "(.*)"),
+	"^" .. ERR_LEARN_PASSIVE_S:gsub("%%s", "(.*)"),
+	"^" .. ERR_LEARN_SPELL_S:gsub("%%s", "(.*)"),
+	"^" .. ERR_SPELL_UNLEARNED_S:gsub("%%s", "(.*)"),
 	-- Pet
-	"^" .. ERR_PET_LEARN_ABILITY_S:gsub("%%s", "(.+)"),
-	"^" .. ERR_PET_LEARN_SPELL_S:gsub("%%s", "(.+)"),
-	"^" .. ERR_PET_SPELL_UNLEARNED_S:gsub("%%s", "(.+)"),
+	"^" .. ERR_PET_LEARN_ABILITY_S:gsub("%%s", "(.*)"),
+	"^" .. ERR_PET_LEARN_SPELL_S:gsub("%%s", "(.*)"),
+	"^" .. ERR_PET_SPELL_UNLEARNED_S:gsub("%%s", "(.*)"),
 }
 
 C.BadBoys = {} -- debug
@@ -304,7 +266,7 @@ function Module:BlockTrashClub()
 	end
 end
 
-function Module:AutoBroadcasts(_, msg, ...)
+function Module:UpdateBroadcastSpam(_, msg, ...)
 	for _, filter in ipairs(autoBroadcasts) do
 		if string.match(msg, filter) then
 			return true
@@ -336,32 +298,29 @@ function Module:CreateChatFilter()
 		self:UpdateFilterWhiteList()
 
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateChatFilter)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateChatFilter)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.UpdateChatFilter)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateChatFilter)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", self.UpdateChatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateChatFilter)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", self.UpdateChatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateChatFilter)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.UpdateChatFilter)
+
+		if K.IsFirestorm then
+			ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateBroadcastSpam)
+			ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.UpdateAbilitySpellSpam)
+			ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.UpdateBroadcastSpam)
+		end
 	end
 
 	if C["Chat"].BlockAddonAlert then
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateAddOnBlocker)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", self.UpdateAddOnBlocker)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", self.UpdateAddOnBlocker)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", self.UpdateAddOnBlocker)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", self.UpdateAddOnBlocker)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateAddOnBlocker)
-	end
-
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.AutoBroadcasts)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_BOSS_EMOTE", self.AutoBroadcasts)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.AutoBroadcasts)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.AutoBroadcasts)
-
-	if K.IsFirestorm then
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.UpdateAbilitySpellSpam)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateAddOnBlocker)
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateAddOnBlocker)
 	end
 end

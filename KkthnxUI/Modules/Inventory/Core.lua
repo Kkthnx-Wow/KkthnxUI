@@ -694,7 +694,16 @@ end
 
 function Module:CreateFavouriteButton()
 	local menuList = {
-		{ text = "", icon = 134400, isTitle = true, notCheckable = true, tCoordLeft = 0.08, tCoordRight = 0.92, tCoordTop = 0.08, tCoordBottom = 0.92 },
+		{
+			text = "",
+			icon = 134400,
+			isTitle = true,
+			notCheckable = true,
+			tCoordLeft = 0.08,
+			tCoordRight = 0.92,
+			tCoordTop = 0.08,
+			tCoordBottom = 0.92,
+		},
 		{ text = NONE, arg1 = 0, func = Module.MoveItemToCustomBag, checked = Module.IsItemInCustomBag },
 	}
 	for i = 1, 5 do
@@ -933,6 +942,7 @@ function Module:OnEnable()
 	-- Settings
 	local iconSize = C["Inventory"].IconSize
 	local showItemLevel = C["Inventory"].BagsItemLevel
+	local showBindOnEquip = C["Inventory"].BagsItemLevel
 	local showNewItem = C["Inventory"].ShowNewItem
 	local hasCanIMogIt = IsAddOnLoaded("CanIMogIt")
 	local hasPawn = IsAddOnLoaded("Pawn")
@@ -1081,9 +1091,13 @@ function Module:OnEnable()
 		self.Quest:SetSize(26, 26)
 		self.Quest:SetPoint("LEFT", 0, 1)
 
-		self.iLvl = K.CreateFontString(self, 12, "", "OUTLINE", false, "BOTTOMLEFT", 1, 1)
+		self.iLvl = K.CreateFontString(self, 12, "", "OUTLINE", false, "BOTTOMLEFT", 1, 0)
 		self.iLvl:SetFontObject(bagsFont)
 		self.iLvl:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
+
+		self.bindType = K.CreateFontString(self, 12, "", "OUTLINE", false, "TOPLEFT", 1, -2)
+		self.bindType:SetFontObject(bagsFont)
+		self.bindType:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
 
 		if showNewItem then
 			self.glowFrame = self.glowFrame or CreateFrame("Frame", nil, self, "BackdropTemplate")
@@ -1111,7 +1125,7 @@ function Module:OnEnable()
 	end
 
 	function MyButton:ItemOnEnter()
-		if self.glowFrame.Animation and self.glowFrame.Animation:IsPlaying() then
+		if self.glowFrame.Animation:IsPlaying() then
 			self.glowFrame.Animation:Stop()
 			self.glowFrame:Hide()
 			C_NewItems_RemoveNewItem(self.bagID, self.slotID)
@@ -1180,14 +1194,19 @@ function Module:OnEnable()
 	end
 
 	function MyButton:OnUpdate(item)
-		local buttonIconTexture = _G[self:GetName() .. "IconTexture"]
-
 		if self.JunkIcon then
-			if (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.CustomJunkList[item.id]) and item.hasPrice then
+			if (MerchantFrame:IsShown() or customJunkEnable) and (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.CustomJunkList[item.id]) and item.hasPrice then
 				self.JunkIcon:Show()
 			else
 				self.JunkIcon:Hide()
 			end
+		end
+
+		-- Determine if we can use that item or not?
+		if (Unfit:IsItemUnusable(item.link) or item.minLevel and item.minLevel > K.Level) and not item.locked then
+			self.Icon:SetVertexColor(1, 0.1, 0.1)
+		else
+			self.Icon:SetVertexColor(1, 1, 1)
 		end
 
 		self.IconOverlay:SetVertexColor(1, 1, 1)
@@ -1230,11 +1249,14 @@ function Module:OnEnable()
 			end
 		end
 
-		-- Determine if we can use that item or not?
-		if (Unfit:IsItemUnusable(item.id) or item.minLevel and item.minLevel > K.Level) and not item.locked then
-			buttonIconTexture:SetVertexColor(1, 0.1, 0.1)
-		else
-			buttonIconTexture:SetVertexColor(1, 1, 1)
+		self.bindType:SetText("")
+		if showBindOnEquip then
+			local BoE, BoU = item.bindType == 2, item.bindType == 3
+			if not item.bound and (BoE or BoU) and (item.quality and item.quality > LE_ITEM_QUALITY_COMMON) then
+				local color = K.QualityColors[item.quality]
+				self.bindType:SetText(BoE and "BoE" or "BoU") -- Local these asap
+				self.bindType:SetTextColor(color.r, color.g, color.b)
+			end
 		end
 
 		if self.glowFrame then
@@ -1253,7 +1275,7 @@ function Module:OnEnable()
 					self.glowFrame:Show()
 				end
 			else
-				if self.glowFrame.Animation and self.glowFrame.Animation:IsPlaying() then
+				if self.glowFrame.Animation:IsPlaying() then
 					self.glowFrame.Animation:Stop()
 					self.glowFrame:Hide()
 				end

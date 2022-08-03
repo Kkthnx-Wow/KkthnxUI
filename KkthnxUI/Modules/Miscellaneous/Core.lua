@@ -53,15 +53,13 @@ function Module:OnEnable()
 	self:CreateBlockStrangerInvites()
 	self:CreateBossBanner()
 	self:CreateBossEmote()
-	self:CreateDisableHelpTip()
-	self:CreateDisableNewPlayerExperience()
 	self:CreateDomiExtractor()
 	self:CreateDurabilityFrameMove()
 	self:CreateErrorFrameToggle()
 	self:CreateErrorsFrame()
 	self:CreateGUIGameMenuButton()
 	self:CreateJerryWay()
-	self:CreateKillTutorials()
+	-- self:CreateKillTutorials()
 	self:CreateQuestSizeUpdate()
 	self:CreateTicketStatusFrameMove()
 	self:CreateTradeTargetInfo()
@@ -73,7 +71,7 @@ function Module:OnEnable()
 
 	-- TESTING CMD : /run BNToastFrame:AddToast(BN_TOAST_TYPE_ONLINE, 1)
 	if not BNToastFrame.mover then
-		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 218 })
+		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 171 })
 	else
 		BNToastFrame.mover:SetSize(BNToastFrame:GetSize())
 	end
@@ -240,7 +238,7 @@ end
 
 local plusSize
 local function MainMenu_OnShow(self)
-	if K.IsFirestorm then -- No idea why Firestorm has to mess with the GameMenu buttons -.-
+	if K.IsFirestorm or K.IsWoWFreakz then -- No idea why Firestorm has to mess with the GameMenu buttons -.-
 		plusSize = 48
 	else
 		plusSize = 20
@@ -673,15 +671,17 @@ end)
 
 -- make it only split stacks with shift-rightclick if the TradeSkillFrame is open
 -- shift-leftclick should be reserved for the search box
-local function hideSplitFrame(_, button)
-	if TradeSkillFrame and TradeSkillFrame:IsShown() then
-		if button == "LeftButton" then
-			StackSplitFrame:Hide()
+do
+	local function hideSplitFrame(_, button)
+		if TradeSkillFrame and TradeSkillFrame:IsShown() then
+			if button == "LeftButton" then
+				StackSplitFrame:Hide()
+			end
 		end
 	end
+	hooksecurefunc("ContainerFrameItemButton_OnModifiedClick", hideSplitFrame)
+	hooksecurefunc("MerchantItemButton_OnModifiedClick", hideSplitFrame)
 end
-hooksecurefunc("ContainerFrameItemButton_OnModifiedClick", hideSplitFrame)
-hooksecurefunc("MerchantItemButton_OnModifiedClick", hideSplitFrame)
 
 do
 	local function soundOnResurrect()
@@ -700,53 +700,6 @@ function Module:CreateBlockStrangerInvites()
 			K.Print("Blocked invite request from a stranger!", a, b, c, d, e, f, g, guid)
 		end
 	end)
-end
-
-function Module:CreateKillTutorials()
-	if not C["General"].NoTutorialButtons then
-		return
-	end
-
-	_G.HelpPlate:Kill()
-	_G.HelpPlateTooltip:Kill()
-	_G.SpellBookFrameTutorialButton:Kill()
-	_G.WorldMapFrame.BorderFrame.Tutorial:Kill()
-end
-
-local function AcknowledgeTips()
-	for frame in _G.HelpTip.framePool:EnumerateActive() do
-		frame:Acknowledge()
-	end
-end
-
-function Module:CreateDisableHelpTip() -- auto complete helptips
-	if not C["General"].NoTutorialButtons then
-		return
-	end
-
-	hooksecurefunc(_G.HelpTip, "Show", AcknowledgeTips)
-	C_Timer_After(1, AcknowledgeTips)
-end
-
-local function ShutdownNewPlayerExperience(event)
-	local NPE = _G.NewPlayerExperience
-	if NPE then
-		if NPE:GetIsActive() then
-			NPE:Shutdown()
-		end
-
-		if event then
-			K:UnregisterEvent(event, ShutdownNewPlayerExperience)
-		end
-	end
-end
-
-function Module:CreateDisableNewPlayerExperience() -- Disable new player experience
-	if _G.NewPlayerExperience then
-		ShutdownNewPlayerExperience()
-	else
-		K:RegisterEvent("ADDON_LOADED", ShutdownNewPlayerExperience)
-	end
 end
 
 -- Make it so we can move this

@@ -1,5 +1,4 @@
 local K, C, L = unpack(KkthnxUI)
-local Module = K:NewModule("Dev")
 
 K.Devs = {
 	["Ashanarra-Oribos"] = true,
@@ -17,6 +16,8 @@ K.isDeveloper = isDeveloper()
 if not K.isDeveloper then
 	return
 end
+
+local Module = K:NewModule("Dev")
 
 local _G = _G
 local CreateFrame = _G.CreateFrame

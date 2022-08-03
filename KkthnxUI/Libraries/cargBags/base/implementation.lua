@@ -331,15 +331,15 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 	i.bagID = bagID
 	i.slotID = slotID
 
-	local texture, count, locked, quality, _, _, itemLink, _, noValue, itemID = GetContainerItemInfo(bagID, slotID)
+	local texture, count, locked, quality, _, _, itemLink, _, noValue, itemID, itemBound = GetContainerItemInfo(bagID, slotID)
 
 	if itemLink then
-		i.texture, i.count, i.locked, i.quality, i.link, i.id = texture, count, locked, quality, itemLink, itemID
+		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.bound = texture, count, locked, quality, itemLink, itemID, itemBound
 		i.hasPrice = not noValue
 		i.isInSet, i.setName = GetContainerItemEquipmentSetInfo(bagID, slotID)
 		i.cdStart, i.cdFinish, i.cdEnable = GetContainerItemCooldown(bagID, slotID)
 		i.isQuestItem, i.questID, i.questActive = GetContainerItemQuestInfo(bagID, slotID)
-		i.name, _, _, _, i.minLevel, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID = GetItemInfo(itemLink)
+		i.name, _, _, _, i.minLevel, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID, i.bindType = GetItemInfo(itemLink)
 		i.equipLoc = _G[i.equipLoc] -- INVTYPE to localized string
 
 		if itemID == PET_CAGE then
