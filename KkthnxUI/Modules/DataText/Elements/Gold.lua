@@ -185,7 +185,7 @@ local function OnEnter(self)
 	end
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(TOTAL .. ":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
-	if not K.IsFirestorm then
+	if not K.IsFirestorm or not K.IsWoWFreakz then
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t " .. "Token:", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
 	end

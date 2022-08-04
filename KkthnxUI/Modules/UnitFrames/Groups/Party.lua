@@ -77,6 +77,8 @@ function Module:CreateParty()
 	local Name = self:CreateFontString(nil, "OVERLAY")
 	Name:SetPoint("BOTTOMLEFT", Health, "TOPLEFT", 0, 4)
 	Name:SetPoint("BOTTOMRIGHT", Health, "TOPRIGHT", 0, 4)
+	Name:SetWidth(partyWidth)
+	Name:SetWordWrap(false)
 	Name:SetFontObject(UnitframeFont)
 	if partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait" then
 		if C["Unitframe"].HealthbarColor.Value == "Class" then

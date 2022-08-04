@@ -121,6 +121,7 @@ C["Inventory"] = {
 	["AutoSell"] = true,
 	["BagBar"] = true,
 	["BagBarMouseover"] = false,
+	["BagsBindOnEquip"] = false,
 	["BagsItemLevel"] = false,
 	["BagsPerRow"] = 6,
 	["BagsWidth"] = 10,

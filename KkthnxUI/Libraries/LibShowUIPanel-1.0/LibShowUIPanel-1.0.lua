@@ -2,8 +2,10 @@
 -- @Author : Dencer (tdaddon@163.com)
 -- @Link   : https://dengsir.github.io
 -- @Date   : 6/15/2021, 11:20:01 PM
+--
+local MAJOR, MINOR = "LibShowUIPanel-1.0-KkthnxUI", 6
 
-local MAJOR, MINOR = "LibShowUIPanel-1.0-KkthnxUI", 5
+---@class LibShowUIPanel-1.0
 local Lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 if not Lib then
 	return

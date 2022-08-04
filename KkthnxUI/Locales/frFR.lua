@@ -346,6 +346,7 @@ L["Auto Vendor Grays"] = "Vendre la camelote auto."
 L["Bags Delete Button"] = "Bags Delete Button"
 L["Bags Width"] = "Largeur des sacs"
 L["Bank Width"] = "Largeur de la banque"
+L["Display Bind Status"] = "Display Bind Status" -- Needs Translation
 L["Display Item Level"] = "Afficher le niveau d'objet"
 L["Enable Bagbar"] = "Activer la barre des sacs"
 L["Enable Inventory"] = "Activer inventaire"

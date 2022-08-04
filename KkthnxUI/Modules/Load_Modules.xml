@@ -72,14 +72,16 @@
    <Script file="Maps\Elements\CollectButtons.lua" />
    <Script file="Maps\Elements\MapReveal.lua" />
    <Script file="Maps\Elements\WowHeadLink.lua" />
-   <!-- Unitframes -->
+   <!-- Unitframes Plugins -->
    <Script file="UnitFrames\Plugins\oUF_AuraTrack.lua" />
    <Script file="UnitFrames\Plugins\oUF_CombatFader.lua" />
    <Script file="UnitFrames\Plugins\oUF_DebuffHighlight.lua" />
    <Script file="UnitFrames\Plugins\oUF_FloatingCombatFeedback.lua" />
+   <Script file="UnitFrames\Plugins\oUF_GCD.lua" />
    <Script file="UnitFrames\Plugins\oUF_RaidDebuffs.lua" />
    <Script file="UnitFrames\Plugins\oUF_Swing.lua" />
    <Script file="UnitFrames\Plugins\oUF_Trinkets.lua" />
+   <!-- Unitframes -->
    <Script file="UnitFrames\Core.lua" />
    <Script file="UnitFrames\Tracking.lua" />
    <Script file="UnitFrames\Tags.lua" />
@@ -111,6 +113,7 @@
    <Script file="Miscellaneous\Core.lua" />
    <Script file="Miscellaneous\Elements\AFKCam.lua" />
    <Script file="Miscellaneous\Elements\AlreadyKnown.lua" />
+   <Script file="Miscellaneous\Elements\DominationShards.lua" />
    <Script file="Miscellaneous\Elements\ExpRep.lua" />
    <Script file="Miscellaneous\Elements\ImprovedMail.lua" />
    <Script file="Miscellaneous\Elements\MDGuildBest.lua" />

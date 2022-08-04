@@ -76,6 +76,8 @@ function Module:CreateBoss()
 	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
 	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
 	self.Name:SetFontObject(UnitframeFont)
+	self.Name:SetWidth(bossWidth)
+	self.Name:SetWordWrap(false)
 	if bossPortraitStyle == "NoPortraits" or bossPortraitStyle == "OverlayPortrait" then
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
 			self:Tag(self.Name, "[name] [nplevel][afkdnd]")

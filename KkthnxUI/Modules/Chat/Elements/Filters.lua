@@ -304,7 +304,7 @@ function Module:CreateChatFilter()
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateChatFilter)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.UpdateChatFilter)
 
-		if K.IsFirestorm then
+		if K.IsFirestorm or K.IsWoWFreakz then
 			ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateBroadcastSpam)
 			ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.UpdateAbilitySpellSpam)
 			ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.UpdateBroadcastSpam)

@@ -942,7 +942,7 @@ function Module:OnEnable()
 	-- Settings
 	local iconSize = C["Inventory"].IconSize
 	local showItemLevel = C["Inventory"].BagsItemLevel
-	local showBindOnEquip = C["Inventory"].BagsItemLevel
+	local showBindOnEquip = C["Inventory"].BagsBindOnEquip
 	local showNewItem = C["Inventory"].ShowNewItem
 	local hasCanIMogIt = IsAddOnLoaded("CanIMogIt")
 	local hasPawn = IsAddOnLoaded("Pawn")

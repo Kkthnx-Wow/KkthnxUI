@@ -98,7 +98,7 @@ function Module:ForceDefaultCVars()
 	end
 
 	if K.isDeveloper then
-		SetCVar("SpellQueueWindow", K.IsFirestorm and 125 or 25)
+		SetCVar("SpellQueueWindow", K.IsFirestorm or K.IsWoWFreakz and 125 or 25)
 		SetCVar("WorldTextScale", 1)
 		SetCVar("ffxGlow", 0)
 	end

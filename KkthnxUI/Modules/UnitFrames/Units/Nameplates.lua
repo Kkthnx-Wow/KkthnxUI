@@ -1505,49 +1505,22 @@ function Module:ResizeTargetPower()
 	end
 end
 
-function Module:UpdateGCDTicker()
-	local start, duration = GetSpellCooldown(61304)
-	if start > 0 and duration > 0 then
-		if self.duration ~= duration then
-			self:SetMinMaxValues(0, duration)
-			self.duration = duration
-		end
-		self:SetValue(GetTime() - start)
-		self.spark:Show()
-	else
-		self.spark:Hide()
-	end
-end
-
 function Module:CreateGCDTicker(self)
-	local ticker = CreateFrame("StatusBar", nil, self.Power)
-	ticker:SetFrameLevel(self:GetFrameLevel() + 3)
-	ticker:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
-	ticker:GetStatusBarTexture():SetAlpha(0)
-	ticker:SetAllPoints()
-
-	local spark = ticker:CreateTexture(nil, "OVERLAY")
-	spark:SetTexture(C["Media"].Textures.Spark128Texture)
-	spark:SetBlendMode("ADD")
-	spark:SetAlpha(0.6)
-	spark:SetPoint("TOPLEFT", ticker:GetStatusBarTexture(), "TOPRIGHT", -64, -1)
-	spark:SetPoint("BOTTOMRIGHT", ticker:GetStatusBarTexture(), "BOTTOMRIGHT", 64, 1)
-	ticker.spark = spark
-
-	ticker:SetScript("OnUpdate", Module.UpdateGCDTicker)
-	self.GCDTicker = ticker
-
-	Module:ToggleGCDTicker()
-end
-
-function Module:ToggleGCDTicker()
-	local plate = _G.oUF_PlayerPlate
-	local ticker = plate and plate.GCDTicker
-	if not ticker then
+	if not C["Nameplate"].PPGCDTicker then
 		return
 	end
 
-	ticker:SetShown(C["Nameplate"].PPGCDTicker)
+	local GCD = CreateFrame("Frame", "oUF_PlateGCD", self.Power)
+	GCD:SetWidth(self:GetWidth())
+	GCD:SetHeight(C["Nameplate"].PPPHeight)
+	GCD:SetPoint("LEFT", self.Power, "LEFT", 0, 0)
+
+	GCD.Color = { 1, 1, 1, 0.6 }
+	GCD.Texture = C["Media"].Textures.Spark128Texture
+	GCD.Height = C["Nameplate"].PPPHeight
+	GCD.Width = 128 / 2
+
+	self.GCD = GCD
 end
 
 Module.MajorSpells = {}
