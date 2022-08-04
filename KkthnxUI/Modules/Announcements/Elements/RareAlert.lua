@@ -79,10 +79,11 @@ function Module:RareAlert_Update(id)
 			K.Print(currrentTime .. K.SystemColor .. tex .. L["Rare Spotted"] .. K.InfoColor .. (nameString or info.name or "") .. K.SystemColor .. "!")
 		end
 
+		-- Add a choice in sounds the user can pick from. Have the community vote on 5 sounds???
 		if Module.RareInstType == "none" then
 			PlaySound(37881, "master")
 		end
-
+		-- Add a choice in sounds the user can pick from. Have the community vote on 5 sounds???
 		if not C["Announcements"].AlertInWild or Module.RareInstType == "none" then
 			PlaySound(37881, "master")
 		end

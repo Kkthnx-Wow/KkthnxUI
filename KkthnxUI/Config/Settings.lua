@@ -557,7 +557,7 @@ C["Unitframe"] = {
 	["PlayerCastbar"] = true,
 	["PlayerCastbarIcon"] = true,
 	["PlayerCastbarHeight"] = 26,
-	["PlayerCastbarWidth"] = 260,
+	["PlayerCastbarWidth"] = 268,
 	["PlayerDeBuffs"] = false,
 	["PlayerHealthHeight"] = 32,
 	["PlayerHealthWidth"] = 180,
@@ -583,7 +583,7 @@ C["Unitframe"] = {
 	["TargetCastbar"] = true,
 	["TargetCastbarIcon"] = true,
 	["TargetCastbarHeight"] = 30,
-	["TargetCastbarWidth"] = 260,
+	["TargetCastbarWidth"] = 268,
 	["TargetDebuffs"] = true,
 	["TargetDebuffsPerRow"] = 6,
 

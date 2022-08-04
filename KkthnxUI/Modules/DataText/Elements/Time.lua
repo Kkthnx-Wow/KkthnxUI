@@ -444,6 +444,7 @@ function Module:CreateTimeDataText()
 	end
 
 	TimeDataText = TimeDataText or CreateFrame("Frame", "KKUI_TimeDataText", Minimap)
+	TimeDataText:SetFrameLevel(8)
 
 	TimeDataText.Font = TimeDataText.Font or TimeDataText:CreateFontString("OVERLAY")
 	TimeDataText.Font:SetFontObject(KkthnxUIFont)

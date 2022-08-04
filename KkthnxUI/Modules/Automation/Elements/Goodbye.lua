@@ -18,9 +18,13 @@ local AutoThankList = {
 	"Thanks! Take care everyone!",
 }
 
+function Module:SendAutoGoodbye()
+	SendChatMessage(AutoThankList[math_random(1, #AutoThankList)], "INSTANCE_CHAT")
+end
+
 function Module:SetupAutoGoodbye()
-	C_Timer_After(5, function()
-		SendChatMessage(AutoThankList[math_random(1, #AutoThankList)], "INSTANCE_CHAT")
+	C_Timer_After(4, function()
+		Module:SendAutoGoodbye()
 	end)
 end
 

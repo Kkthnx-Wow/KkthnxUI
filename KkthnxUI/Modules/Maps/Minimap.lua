@@ -525,6 +525,7 @@ function Module:ShowCalendar()
 	if C["Minimap"].Calendar then
 		if not GameTimeFrame.styled then
 			GameTimeFrame:SetParent(Minimap)
+			GameTimeFrame:SetFrameLevel(16)
 			GameTimeFrame:SetScale(0.54)
 			GameTimeFrame:ClearAllPoints()
 			GameTimeFrame:SetPoint("TOPRIGHT", Minimap, -4, -4)

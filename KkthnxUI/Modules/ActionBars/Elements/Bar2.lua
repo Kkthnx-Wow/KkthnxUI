@@ -30,7 +30,7 @@ function Module:CreateBar2()
 		table_insert(Module.buttons, button)
 	end
 	frame.buttons = buttonList
-
+	-- Add [combat]show; hide[@target,exists] show; hide as a choice here.
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
