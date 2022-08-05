@@ -42,10 +42,10 @@ local function togglePlayerPlate()
 	K:GetModule("Unitframes"):TogglePlayerPlate()
 end
 
-local function toggleTargetClassPower()
-	refreshNameplates()
-	K:GetModule("Unitframes"):ToggleTargetClassPower()
-end
+-- local function toggleTargetClassPower()
+-- 	refreshNameplates()
+-- 	K:GetModule("Unitframes"):ToggleTargetClassPower()
+-- end
 
 local function UpdateTargetBuffs()
 	local frame = _G.oUF_Target
@@ -649,7 +649,7 @@ local Nameplate = function(self)
 	Window:CreateSwitch("Nameplate", "AKSProgress", L["Show AngryKeystones Progress"])
 	Window:CreateSwitch("Nameplate", "CastbarGlow", "Force Marjor Spells To Glow")
 	Window:CreateSwitch("Nameplate", "ClassIcon", L["Show Enemy Class Icons"])
-	Window:CreateSwitch("Nameplate", "ColoredTarget", "Colored Target Something Thing")
+	Window:CreateSwitch("Nameplate", "ColoredTarget", "Colored Targeted Nameplate", "If enabled, this will color your targeted nameplate|nIts priority is higher than custom/threat colors")
 	Window:CreateSwitch("Nameplate", "CustomUnitColor", L["Colored Custom Units"])
 	Window:CreateSwitch("Nameplate", "DPSRevertThreat", L["Revert Threat Color If Not Tank"])
 	Window:CreateSwitch("Nameplate", "ExplosivesScale", L["Scale Nameplates for Explosives"])

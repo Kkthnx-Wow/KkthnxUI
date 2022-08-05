@@ -797,7 +797,7 @@ function Module:CreateUnits()
 		Focus:SetSize(FocusFrameWidth, FocusFrameHeight)
 		K.Mover(Focus, "FocusUF", "FocusUF", { "BOTTOMRIGHT", Player, "TOPLEFT", -60, 30 }, FocusFrameWidth, FocusFrameHeight)
 
-		if not C["Unitframe"].HideTargetofTarget then
+		if not C["Unitframe"].HideFocusTarget then
 			oUF:SetActiveStyle("FocusTarget")
 			local FocusTarget = oUF:Spawn("focustarget", "oUF_FocusTarget")
 			local FocusTargetFrameHeight = C["Unitframe"].FocusTargetHealthHeight + C["Unitframe"].FocusTargetPowerHeight + 6
