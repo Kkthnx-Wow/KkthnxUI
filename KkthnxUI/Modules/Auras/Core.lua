@@ -166,7 +166,7 @@ function Module:UpdateAuras(button, index)
 		button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 	else
 		if C["General"].ColorTextures then
-			button.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			button.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		else
 			button.KKUI_Border:SetVertexColor(1, 1, 1)
 		end
@@ -324,7 +324,7 @@ function Module:CreateAuraIcon(button)
 
 	button.icon = button:CreateTexture(nil, "BORDER")
 	button.icon:SetAllPoints()
-	button.icon:SetTexCoord(unpack(K.TexCoords))
+	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	button.count = button:CreateFontString(nil, "OVERLAY")
 	button.count:SetPoint("TOPRIGHT", -1, -3)

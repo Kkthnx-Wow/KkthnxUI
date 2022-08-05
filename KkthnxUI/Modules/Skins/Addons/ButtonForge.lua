@@ -80,7 +80,7 @@ function Module:ReskinButtonForge()
 			local bu = _G[button]
 			local icon = _G[button .. "Icon"]
 			ActionBar:StyleActionButton(bu, cfg)
-			icon:SetTexCoord(unpack(K.TexCoords))
+			icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			icon.SetTexCoord = K.Noop
 		end
 	end

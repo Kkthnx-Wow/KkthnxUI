@@ -182,7 +182,7 @@ function Tracking:Setup()
 
 	self.PVE.Icon.Texture = self.PVE.Icon:CreateTexture(nil, "OVERLAY")
 	self.PVE.Icon.Texture:SetAllPoints()
-	self.PVE.Icon.Texture:SetTexCoord(unpack(K.TexCoords))
+	self.PVE.Icon.Texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	self.PVE.Previous = CreateFrame("Button", nil, self.PVE)
 	self.PVE.Previous:SetSize(26, 26)
@@ -246,7 +246,7 @@ function Tracking:Setup()
 
 	self.PVP.Icon.Texture = self.PVP.Icon:CreateTexture(nil, "OVERLAY")
 	self.PVP.Icon.Texture:SetAllPoints()
-	self.PVP.Icon.Texture:SetTexCoord(unpack(K.TexCoords))
+	self.PVP.Icon.Texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	self.PVP.Icon.Texture:SetTexture([[Interface\Icons\Inv_misc_questionmark]])
 
 	self.PVP.Previous = CreateFrame("Button", nil, self.PVP)

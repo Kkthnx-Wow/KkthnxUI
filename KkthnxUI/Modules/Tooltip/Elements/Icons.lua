@@ -77,7 +77,7 @@ local function resetBackdropColor(self)
 end
 
 function Module:ReskinRewardIcon()
-	self.Icon:SetTexCoord(unpack(K.TexCoords))
+	self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	self.Count:ClearAllPoints()
 	self.Count:SetPoint("BOTTOMRIGHT", self.Icon, "BOTTOMRIGHT", 1, 1)

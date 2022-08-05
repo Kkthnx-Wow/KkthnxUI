@@ -78,7 +78,7 @@ local function reskinQuestIcon(button)
 
 		local icon = button.icon or button.Icon
 		if icon then
-			icon:SetTexCoord(unpack(K.TexCoords))
+			icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			icon:SetAllPoints(button)
 
 			button.bg = CreateFrame("Frame", nil, button)
@@ -163,7 +163,7 @@ local function reskinProgressbarWithIcon(_, _, line)
 		icon.bg:SetFrameLevel(bar:GetFrameLevel())
 		icon.bg:CreateBorder()
 
-		icon:SetTexCoord(unpack(K.TexCoords))
+		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		icon:ClearAllPoints()
 		icon:SetPoint("TOPLEFT", bar, "TOPRIGHT", 6, 0)
 		icon:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 24, 0)

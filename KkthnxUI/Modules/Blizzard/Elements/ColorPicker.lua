@@ -103,7 +103,7 @@ function Module:CreateColorPicker()
 
 			bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 			bu.Icon:SetAllPoints()
-			bu.Icon:SetTexCoord(unpack(K.TexCoords))
+			bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			bu.Icon:SetColorTexture(value.r, value.g, value.b)
 
 			bu:SetPoint("LEFT", count * 25, 0)

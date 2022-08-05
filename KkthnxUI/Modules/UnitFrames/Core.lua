@@ -117,7 +117,7 @@ function Module:UpdateThreat(_, unit)
 			portrait.KKUI_Border:SetVertexColor(r, g, b)
 		else
 			if C["General"].ColorTextures then
-				portrait.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+				portrait.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 			else
 				portrait.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
@@ -132,7 +132,7 @@ function Module:UpdateThreat(_, unit)
 			portrait.Border.KKUI_Border:SetVertexColor(r, g, b)
 		else
 			if C["General"].ColorTextures then
-				portrait.Border.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+				portrait.Border.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 			else
 				portrait.Border.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
@@ -147,7 +147,7 @@ function Module:UpdateThreat(_, unit)
 			health.KKUI_Border:SetVertexColor(r, g, b)
 		else
 			if C["General"].ColorTextures then
-				health.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+				health.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 			else
 				health.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
@@ -416,7 +416,7 @@ function Module.PostCreateAura(element, button)
 	button.cd:SetReverse(true)
 	button.cd:SetHideCountdownNumbers(true)
 	button.icon:SetAllPoints()
-	button.icon:SetTexCoord(unpack(K.TexCoords))
+	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	button.cd:ClearAllPoints()
 
 	if element.__owner.mystyle == "nameplate" then
@@ -456,7 +456,7 @@ function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, d
 			button.Shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.8)
 		else
 			if C["General"].ColorTextures then
-				button.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+				button.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 			else
 				button.KKUI_Border:SetVertexColor(color[1], color[2], color[3])
 			end
@@ -465,7 +465,7 @@ function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, d
 		if style == "nameplate" and button.Shadow then
 			button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 		elseif C["General"].ColorTextures then
-			button.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			button.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		else
 			button.KKUI_Border:SetVertexColor(1, 1, 1)
 		end

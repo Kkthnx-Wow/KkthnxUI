@@ -37,7 +37,7 @@ function Module:TotemBar_Init()
 
 			totem.Icon = totem:CreateTexture(nil, "ARTWORK")
 			totem.Icon:SetAllPoints()
-			totem.Icon:SetTexCoord(unpack(K.TexCoords))
+			totem.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 			totem:CreateBorder()
 			totem:SetAlpha(0)

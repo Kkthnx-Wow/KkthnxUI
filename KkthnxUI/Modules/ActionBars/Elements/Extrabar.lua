@@ -56,7 +56,7 @@ function Module:CreateExtrabar()
 				spellButton.NormalTexture:SetAlpha(0)
 				spellButton:StyleButton()
 				spellButton.Icon:SetAllPoints()
-				spellButton.Icon:SetTexCoord(unpack(K.TexCoords))
+				spellButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 				local Border = CreateFrame("Frame", nil, spellButton)
 				Border:SetAllPoints(spellButton.Icon)

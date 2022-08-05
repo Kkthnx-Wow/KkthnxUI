@@ -20,6 +20,6 @@ function Module:ReskinTellMeWhen()
 	end)
 
 	TMW.Classes.IconModule_Texture:PostHookMethod("OnNewInstance", function(self)
-		self.texture:SetTexCoord(unpack(K.TexCoords))
+		self.texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	end)
 end

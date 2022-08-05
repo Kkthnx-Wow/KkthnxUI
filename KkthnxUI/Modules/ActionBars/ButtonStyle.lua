@@ -236,7 +236,7 @@ function Module:UpdateEquipItemColor()
 		self.KKUI_Border:SetVertexColor(0, 0.7, 0.1)
 	else
 		if C["General"].ColorTextures then
-			self.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			self.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		else
 			self.KKUI_Border:SetVertexColor(1, 1, 1)
 		end

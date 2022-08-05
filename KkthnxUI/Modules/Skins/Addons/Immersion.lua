@@ -64,7 +64,7 @@ function Module:ReskinImmersion()
 			Button.Backdrop:SetPoint("BOTTOMLEFT", Button.Icon, "BOTTOMRIGHT", -6, 0)
 			Button.Backdrop:SetPoint("RIGHT", Button, "RIGHT", -6, 0)
 
-			Button.Icon:SetTexCoord(unpack(K.TexCoords))
+			Button.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			Button.Icon:SetDrawLayer("ARTWORK")
 			Button.Icon.Backdrop = CreateFrame("Frame", nil, Button)
 			Button.Icon.Backdrop:SetFrameLevel(Button:GetFrameLevel())
@@ -135,7 +135,7 @@ function Module:ReskinImmersion()
 		for _, Button in ipairs(self.TalkBox.Elements.Progress.Buttons) do
 			if Button and not Button.Backdrop then
 				Button:CreateBackdrop()
-				Button.Icon:SetTexCoord(unpack(K.TexCoords))
+				Button.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 				Button.Icon:SetDrawLayer("ARTWORK")
 
 				Button.NameFrame:Hide()

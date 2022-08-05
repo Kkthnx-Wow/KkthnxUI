@@ -18,7 +18,7 @@ table_insert(C.defaultThemes, function()
 	IconBorder:CreateBorder(nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 32 or nil, nil, C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -10 or nil)
 	IconBorder.KKUI_Border:SetVertexColor(1, 0, 0)
 
-	LossOfControlFrame.Icon:SetTexCoord(unpack(K.TexCoords))
+	LossOfControlFrame.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	LossOfControlFrame:StripTextures()
 	LossOfControlFrame.AbilityName:ClearAllPoints()
 	LossOfControlFrame:SetSize(LossOfControlFrame.Icon:GetWidth() + 50, LossOfControlFrame.Icon:GetWidth() + 50)

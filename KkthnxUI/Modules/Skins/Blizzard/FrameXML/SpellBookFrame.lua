@@ -23,7 +23,7 @@ table_insert(C.defaultThemes, function()
 		bu:SetCheckedTexture("")
 		bu:SetPushedTexture("")
 
-		ic:SetTexCoord(unpack(K.TexCoords))
+		ic:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		ic.bg = ic:CreateBorder()
 
 		local NewBorder = CreateFrame("Frame", nil, bu, "BackdropTemplate")
@@ -111,7 +111,7 @@ table_insert(C.defaultThemes, function()
 		icon:ClearAllPoints()
 		icon:SetPoint("TOPLEFT", 2, -2)
 		icon:SetPoint("BOTTOMRIGHT", -2, 2)
-		icon:SetTexCoord(unpack(K.TexCoords))
+		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 		icon.bg = CreateFrame("Frame", nil, bu)
 		icon.bg:SetAllPoints(icon)
@@ -133,7 +133,7 @@ table_insert(C.defaultThemes, function()
 
 		--bu.icon:SetAlpha(1)
 		bu.icon:SetDesaturated(false)
-		bu.icon:SetTexCoord(unpack(K.TexCoords))
+		bu.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 		local bg = CreateFrame("Frame", nil, bu)
 		bg:SetAllPoints(bu.icon)

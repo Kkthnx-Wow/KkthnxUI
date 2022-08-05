@@ -162,7 +162,7 @@ function ExtraQuestButton:PLAYER_LOGIN()
 
 	local Icon = self:CreateTexture("$parentIcon", "ARTWORK")
 	Icon:SetAllPoints()
-	Icon:SetTexCoord(unpack(K.TexCoords))
+	Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	local bg = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	bg:SetAllPoints(Icon)
 	bg:SetFrameLevel(self:GetFrameLevel())

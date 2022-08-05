@@ -288,7 +288,7 @@ function Module:CreateCloseButton(f)
 
 	closeButton.Icon = closeButton:CreateTexture(nil, "ARTWORK")
 	closeButton.Icon:SetAllPoints()
-	closeButton.Icon:SetTexCoord(unpack(K.TexCoords))
+	closeButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	closeButton.Icon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32")
 
 	closeButton:SetScript("OnClick", CloseOrRestoreBags)
@@ -306,7 +306,7 @@ function Module:CreateReagentButton(f)
 
 	reagentButton.Icon = reagentButton:CreateTexture(nil, "ARTWORK")
 	reagentButton.Icon:SetAllPoints()
-	reagentButton.Icon:SetTexCoord(unpack(K.TexCoords))
+	reagentButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	reagentButton.Icon:SetTexture("Interface\\ICONS\\INV_Enchant_DustArcane")
 
 	reagentButton:RegisterForClicks("AnyUp")
@@ -339,7 +339,7 @@ function Module:CreateBankButton(f)
 
 	BankButton.Icon = BankButton:CreateTexture(nil, "ARTWORK")
 	BankButton.Icon:SetAllPoints()
-	BankButton.Icon:SetTexCoord(unpack(K.TexCoords))
+	BankButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	BankButton.Icon:SetAtlas("Banker")
 
 	BankButton:SetScript("OnClick", function()
@@ -378,7 +378,7 @@ function Module:CreateDepositButton()
 
 	DepositButton.Icon = DepositButton:CreateTexture(nil, "ARTWORK")
 	DepositButton.Icon:SetAllPoints()
-	DepositButton.Icon:SetTexCoord(unpack(K.TexCoords))
+	DepositButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	DepositButton.Icon:SetTexture("Interface\\ICONS\\misc_arrowdown")
 
 	DepositButton:SetScript("OnClick", function(_, btn)
@@ -403,7 +403,7 @@ local function ToggleBackpacks(self)
 		self.KKUI_Border:SetVertexColor(1, 0.8, 0)
 		PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
 	elseif C["General"].ColorTextures then
-		self.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+		self.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
 	else
 		self.KKUI_Border:SetVertexColor(1, 1, 1)
@@ -419,7 +419,7 @@ function Module:CreateBagToggle()
 
 	bagToggleButton.Icon = bagToggleButton:CreateTexture(nil, "ARTWORK")
 	bagToggleButton.Icon:SetAllPoints()
-	bagToggleButton.Icon:SetTexCoord(unpack(K.TexCoords))
+	bagToggleButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	bagToggleButton.Icon:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
 
 	bagToggleButton.__owner = self
@@ -438,7 +438,7 @@ function Module:CreateSortButton(name)
 
 	sortButton.Icon = sortButton:CreateTexture(nil, "ARTWORK")
 	sortButton.Icon:SetAllPoints()
-	sortButton.Icon:SetTexCoord(unpack(K.TexCoords))
+	sortButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	sortButton.Icon:SetTexture("Interface\\Icons\\INV_Pet_Broom")
 
 	sortButton:SetScript("OnClick", function()
@@ -587,12 +587,12 @@ function Module:CreateSplitButton()
 	splitButton.Icon = splitButton:CreateTexture(nil, "ARTWORK")
 	splitButton.Icon:SetPoint("TOPLEFT", -1, 3)
 	splitButton.Icon:SetPoint("BOTTOMRIGHT", 1, -3)
-	splitButton.Icon:SetTexCoord(unpack(K.TexCoords))
+	splitButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	splitButton.Icon:SetTexture("Interface\\HELPFRAME\\ReportLagIcon-AuctionHouse")
 
 	splitButton.__turnOff = function()
 		if C["General"].ColorTextures then
-			splitButton.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			splitButton.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		else
 			splitButton.KKUI_Border:SetVertexColor(1, 1, 1)
 		end
@@ -728,12 +728,12 @@ function Module:CreateFavouriteButton()
 	favouriteButton.Icon = favouriteButton:CreateTexture(nil, "ARTWORK")
 	favouriteButton.Icon:SetPoint("TOPLEFT", -4, 3.5)
 	favouriteButton.Icon:SetPoint("BOTTOMRIGHT", 4, -2.5)
-	favouriteButton.Icon:SetTexCoord(unpack(K.TexCoords))
+	favouriteButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	favouriteButton.Icon:SetTexture("Interface\\Common\\friendship-heart")
 
 	favouriteButton.__turnOff = function()
 		if C["General"].ColorTextures then
-			favouriteButton.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			favouriteButton.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		else
 			favouriteButton.KKUI_Border:SetVertexColor(1, 1, 1)
 		end
@@ -789,12 +789,12 @@ function Module:CreateJunkButton()
 	JunkButton.Icon = JunkButton:CreateTexture(nil, "ARTWORK")
 	JunkButton.Icon:SetPoint("TOPLEFT", 1, -2)
 	JunkButton.Icon:SetPoint("BOTTOMRIGHT", -1, -2)
-	JunkButton.Icon:SetTexCoord(unpack(K.TexCoords))
+	JunkButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	JunkButton.Icon:SetTexture("Interface\\BUTTONS\\UI-GroupLoot-Coin-Up")
 
 	JunkButton.__turnOff = function()
 		if C["General"].ColorTextures then
-			JunkButton.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			JunkButton.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		else
 			JunkButton.KKUI_Border:SetVertexColor(1, 1, 1)
 		end
@@ -854,12 +854,12 @@ function Module:CreateDeleteButton()
 	deleteButton.Icon = deleteButton:CreateTexture(nil, "ARTWORK")
 	deleteButton.Icon:SetPoint("TOPLEFT", 3, -2)
 	deleteButton.Icon:SetPoint("BOTTOMRIGHT", -1, 2)
-	deleteButton.Icon:SetTexCoord(unpack(K.TexCoords))
+	deleteButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	deleteButton.Icon:SetTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up")
 
 	deleteButton.__turnOff = function()
 		if C["General"].ColorTextures then
-			deleteButton.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			deleteButton.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		else
 			deleteButton.KKUI_Border:SetVertexColor(1, 1, 1)
 		end
@@ -1060,7 +1060,7 @@ function Module:OnEnable()
 		self:SetSize(iconSize, iconSize)
 
 		self.Icon:SetAllPoints()
-		self.Icon:SetTexCoord(unpack(K.TexCoords))
+		self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 		self.Count:SetPoint("BOTTOMRIGHT", 1, 1)
 		self.Count:SetFontObject(bagsFont)
@@ -1316,7 +1316,7 @@ function Module:OnEnable()
 			self.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 		else
 			if C["General"].ColorTextures then
-				self.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+				self.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 			else
 				self.KKUI_Border:SetVertexColor(1, 1, 1)
 			end
@@ -1499,7 +1499,7 @@ function Module:OnEnable()
 		self:StyleButton()
 
 		self.Icon:SetAllPoints()
-		self.Icon:SetTexCoord(unpack(K.TexCoords))
+		self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	end
 
 	function BagButton:OnUpdate()
@@ -1518,7 +1518,7 @@ function Module:OnEnable()
 			self.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 		else
 			if C["General"].ColorTextures then
-				self.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+				self.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 			else
 				self.KKUI_Border:SetVertexColor(1, 1, 1)
 			end

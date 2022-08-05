@@ -30,7 +30,7 @@ local function ReskinDBMIcon(icon, frame)
 		bg.icon = bg:CreateTexture(nil, "ARTWORK")
 		bg.icon:SetAllPoints()
 		bg.icon:SetTexture(icon:GetTexture())
-		bg.icon:SetTexCoord(unpack(K.TexCoords))
+		bg.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 		icon.styled = true
 	end

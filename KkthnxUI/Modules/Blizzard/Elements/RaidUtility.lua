@@ -245,7 +245,7 @@ function Module:RaidTool_CombatRes(parent)
 	res.Icon = res:CreateTexture(nil, "ARTWORK")
 	res.Icon:SetTexture(GetSpellTexture(20484))
 	res.Icon:SetAllPoints()
-	res.Icon:SetTexCoord(unpack(K.TexCoords))
+	res.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	res.__owner = parent
 
@@ -720,7 +720,7 @@ function Module:RaidTool_WorldMarker()
 		button:SetSize(24, 24)
 		button.Icon = button:CreateTexture(nil, "ARTWORK")
 		button.Icon:SetAllPoints()
-		button.Icon:SetTexCoord(unpack(K.TexCoords))
+		button.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		button.Icon:SetTexture(iconTexture[i])
 		button:SetHighlightTexture(iconTexture[i])
 		button:SetPushedTexture(iconTexture[i])

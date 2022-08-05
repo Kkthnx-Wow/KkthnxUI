@@ -107,7 +107,7 @@ function Module:Reminder_Create(cfg)
 
 	frame.Icon = frame:CreateTexture(nil, "ARTWORK")
 	frame.Icon:SetAllPoints()
-	frame.Icon:SetTexCoord(unpack(K.TexCoords))
+	frame.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	local texture = cfg.texture
 	if not texture then

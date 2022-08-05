@@ -124,7 +124,7 @@ function Module:TradeTabs_Reskin()
 
 		local texture = tab:GetNormalTexture()
 		if texture then
-			texture:SetTexCoord(unpack(K.TexCoords))
+			texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		end
 	end
 end
@@ -192,7 +192,7 @@ function Module:TradeTabs_FilterIcons()
 
 		bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 		bu.Icon:SetAllPoints()
-		bu.Icon:SetTexCoord(unpack(K.TexCoords))
+		bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 		local atlas = string.match(value[1], "Atlas:(.+)$")
 		if atlas then

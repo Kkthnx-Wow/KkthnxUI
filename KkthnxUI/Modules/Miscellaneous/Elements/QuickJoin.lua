@@ -400,7 +400,7 @@ local function createSortButton(parent, texture, sortStr)
 	bu.texture = bu:CreateTexture(nil, "ARTWORK")
 	bu.texture:SetTexture(texture)
 	bu.texture:SetAllPoints()
-	bu.texture:SetTexCoord(unpack(K.TexCoords))
+	bu.texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	bu:CreateBorder()
 	bu.sortStr = sortStr
 	bu.__owner = parent

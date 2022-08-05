@@ -508,7 +508,7 @@ function Module:ReskinTooltip()
 	end
 
 	if C["General"].ColorTextures then
-		self.tooltipStyle.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+		self.tooltipStyle.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 	else
 		self.tooltipStyle.KKUI_Border:SetVertexColor(1, 1, 1)
 	end
@@ -677,7 +677,7 @@ Module:RegisterTooltips("KkthnxUI", function()
 				self.glow:Hide()
 			end
 
-			self.Icon:SetTexCoord(unpack(K.TexCoords))
+			self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			self.isIconStyled = true
 		end
 	end)
@@ -689,14 +689,14 @@ Module:RegisterTooltips("KkthnxUI", function()
 			if isBuff and self.Buffs then
 				local frame = self.Buffs.frames[nextBuff]
 				if frame and frame.Icon then
-					frame.Icon:SetTexCoord(unpack(K.TexCoords))
+					frame.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 				end
 				nextBuff = nextBuff + 1
 			elseif not isBuff and self.Debuffs then
 				local frame = self.Debuffs.frames[nextDebuff]
 				if frame and frame.Icon then
 					frame.DebuffBorder:Hide()
-					frame.Icon:SetTexCoord(unpack(K.TexCoords))
+					frame.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 				end
 				nextDebuff = nextDebuff + 1
 			end
@@ -810,15 +810,15 @@ end)
 
 Module:RegisterTooltips("Blizzard_Contribution", function()
 	ContributionBuffTooltip:HookScript("OnShow", Module.ReskinTooltip)
-	ContributionBuffTooltip.Icon:SetTexCoord(unpack(K.TexCoords))
+	ContributionBuffTooltip.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	ContributionBuffTooltip.Border:SetAlpha(0)
 end)
 
 Module:RegisterTooltips("Blizzard_EncounterJournal", function()
 	EncounterJournalTooltip:HookScript("OnShow", Module.ReskinTooltip)
-	EncounterJournalTooltip.Item1.icon:SetTexCoord(unpack(K.TexCoords))
+	EncounterJournalTooltip.Item1.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	EncounterJournalTooltip.Item1.IconBorder:SetAlpha(0)
-	EncounterJournalTooltip.Item2.icon:SetTexCoord(unpack(K.TexCoords))
+	EncounterJournalTooltip.Item2.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	EncounterJournalTooltip.Item2.IconBorder:SetAlpha(0)
 end)
 

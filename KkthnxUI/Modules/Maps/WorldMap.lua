@@ -131,7 +131,7 @@ function Module:UpdateMapID()
 end
 
 function Module:MapShouldFade()
-	-- normally we would check GetCVarBool('mapFade') here instead of the setting
+	-- normally we would check GetCVarBool("mapFade") here instead of the setting
 	return C["WorldMap"].FadeWhenMoving and not _G.WorldMapFrame:IsMouseOver()
 end
 
@@ -269,8 +269,8 @@ function Module:OnEnable()
 
 	-- Enable/Disable map fading when moving
 	-- currently we dont need to touch this cvar because we have our own control for this currently
-	-- see the comment in `M:UpdateMapFade` about `durationSec` for more information
-	-- SetCVar("mapFade", E.global.general.fadeMapWhenMoving and 1 or 0)
+	-- see the comment in "Module:UpdateMapFade" about "durationSec" for more information
+	-- SetCVar("mapFade", C["WorldMap"].AlphaWhenMoving and 1 or 0)
 	self:CreateWorldMapReveal()
 	self:CreateWowHeadLinks()
 end

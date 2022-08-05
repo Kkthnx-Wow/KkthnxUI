@@ -250,7 +250,7 @@ local function AW_CreateBarWidgets(parent, texture)
 
 	icon.Icon = icon:CreateTexture(nil, "ARTWORK")
 	icon.Icon:SetAllPoints()
-	icon.Icon:SetTexCoord(unpack(K.TexCoords))
+	icon.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	icon.Icon:SetTexture(texture)
 
 	local close = CreateFrame("Button", nil, parent)

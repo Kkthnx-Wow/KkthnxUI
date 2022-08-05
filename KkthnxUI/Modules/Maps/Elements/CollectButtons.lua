@@ -123,7 +123,7 @@ function Module:CreateRecycleBin()
 					region:SetAllPoints()
 				end
 				if not isGoodLookingIcon[name] then
-					region:SetTexCoord(unpack(K.TexCoords))
+					region:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 				end
 			end
 			child:SetSize(22, 22)

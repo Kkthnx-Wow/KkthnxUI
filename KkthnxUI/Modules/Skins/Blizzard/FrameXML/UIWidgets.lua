@@ -130,7 +130,7 @@ local function ReskinSpellDisplayWidget(spell)
 	if not spell.bg then
 		spell.Border:SetAlpha(0)
 		spell.DebuffBorder:SetAlpha(0)
-		spell.Icon:SetTexCoord(unpack(K.TexCoords))
+		spell.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 		spell.bg = CreateFrame("Frame", nil, spell)
 		spell.bg:SetAllPoints(spell.Icon)

@@ -452,7 +452,7 @@ do
 		bu:SetSize(35, 35)
 		bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 		bu.Icon:SetAllPoints()
-		bu.Icon:SetTexCoord(unpack(K.TexCoords))
+		bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		bu.Icon:SetTexture("Interface\\ICONS\\Ability_Iyyokuk_Calculate")
 		bu:CreateBorder()
 		bu:StyleButton()

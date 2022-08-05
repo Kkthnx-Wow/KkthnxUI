@@ -32,7 +32,7 @@ end
 local function UpdateAzeriteEmpoweredItem(self)
 	self.AzeriteTexture:SetAtlas("AzeriteIconFrame")
 	self.AzeriteTexture:SetAllPoints()
-	self.AzeriteTexture:SetTexCoord(unpack(K.TexCoords))
+	self.AzeriteTexture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	self.AzeriteTexture:SetDrawLayer("BORDER", 1)
 end
 
@@ -93,7 +93,7 @@ tinsert(C.defaultThemes, function()
 			slot:StripTextures()
 			slot:CreateBorder()
 			slot:StyleButton(slot)
-			slot.icon:SetTexCoord(unpack(K.TexCoords))
+			slot.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			slot:SetSize(36, 36)
 
 			if slot.popoutButton:GetPoint() == "TOP" then

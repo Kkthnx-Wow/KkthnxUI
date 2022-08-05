@@ -142,7 +142,7 @@ function Module:PostCreateLumos(self)
 
 	boom.Icon = boom:CreateTexture(nil, "ARTWORK")
 	boom.Icon:SetAllPoints()
-	boom.Icon:SetTexCoord(unpack(K.TexCoords))
+	boom.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	boom:CreateShadow()
 

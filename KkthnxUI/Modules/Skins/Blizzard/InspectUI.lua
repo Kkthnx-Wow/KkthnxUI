@@ -30,7 +30,7 @@ C.themes["Blizzard_InspectUI"] = function()
 			slot:StripTextures()
 			slot:CreateBorder()
 			slot:StyleButton()
-			slot.icon:SetTexCoord(unpack(K.TexCoords))
+			slot.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			slot:SetSize(36, 36)
 
 			slot.IconBorder:SetAlpha(0)

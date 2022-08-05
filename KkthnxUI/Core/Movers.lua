@@ -372,7 +372,7 @@ local function CreateConsole()
 		arrows[i].Icon = arrows[i]:CreateTexture(nil, "ARTWORK")
 		arrows[i].Icon:SetTexture("Interface\\OPTIONSFRAME\\VoiceChat-Play")
 		arrows[i].Icon:SetAllPoints()
-		arrows[i].Icon:SetTexCoord(unpack(K.TexCoords))
+		arrows[i].Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 		local arrowData = arrowIndex[i]
 		arrows[i].__index = i

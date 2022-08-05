@@ -43,7 +43,7 @@ end
 local function onEnter(button)
 	if button.backdrop and button:IsEnabled() then
 		if C["General"].ColorTextures then
-			button.backdrop.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			button.backdrop.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 			button.backdropGlow:Show()
 		else
 			button.backdrop.KKUI_Border:SetVertexColor(102 / 255, 157 / 255, 255 / 255)
@@ -61,7 +61,7 @@ end
 local function onLeave(button)
 	if button.backdrop and button:IsEnabled() then
 		if C["General"].ColorTextures then
-			button.backdrop.KKUI_Border:SetVertexColor(unpack(C["General"].TexturesColor))
+			button.backdrop.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 			button.backdropGlow:Hide()
 		else
 			button.backdrop.KKUI_Border:SetVertexColor(1, 1, 1)

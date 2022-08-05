@@ -914,7 +914,7 @@ function Module:CreatePlates()
 
 	self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
 	self.Castbar.Icon:SetAllPoints()
-	self.Castbar.Icon:SetTexCoord(unpack(K.TexCoords))
+	self.Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	self.Castbar.glowFrame = CreateFrame("Frame", nil, self.Castbar)
 	self.Castbar.glowFrame:SetPoint("CENTER", self.Castbar.Button)

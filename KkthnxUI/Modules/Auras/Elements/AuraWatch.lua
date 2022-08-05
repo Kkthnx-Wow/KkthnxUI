@@ -242,7 +242,7 @@ local function BuildICON(iconSize)
 
 	frame.Icon = frame:CreateTexture(nil, "ARTWORK")
 	frame.Icon:SetAllPoints(frame.bg)
-	frame.Icon:SetTexCoord(unpack(K.TexCoords))
+	frame.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	frame.Cooldown = CreateFrame("Cooldown", nil, frame, "CooldownFrameTemplate")
 	frame.Cooldown:SetAllPoints(frame.bg)
@@ -277,7 +277,7 @@ local function BuildBAR(barWidth, iconSize)
 
 	frame.Icon = frame:CreateTexture(nil, "ARTWORK")
 	frame.Icon:SetAllPoints()
-	frame.Icon:SetTexCoord(unpack(K.TexCoords))
+	frame.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	frame.Statusbar = CreateFrame("StatusBar", nil, frame)
 	frame.Statusbar:SetSize(barWidth, iconSize / 1.6)

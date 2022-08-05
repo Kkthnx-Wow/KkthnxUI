@@ -203,7 +203,7 @@ function Module:KeystoneInfo_Create()
 
 	button.Icon = button:CreateTexture(nil, "ARTWORK")
 	button.Icon:SetAllPoints()
-	button.Icon:SetTexCoord(unpack(K.TexCoords))
+	button.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	button.Icon:SetTexture(texture)
 
 	button:CreateBorder()

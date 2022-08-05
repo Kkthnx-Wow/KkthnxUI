@@ -34,7 +34,7 @@ tinsert(C.defaultThemes, function()
 		button:CreateBorder()
 		button:StyleButton()
 
-		button.icon:SetTexCoord(unpack(K.TexCoords))
+		button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 		button.IconBorder:SetAlpha(0)
 

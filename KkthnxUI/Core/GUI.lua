@@ -26,28 +26,22 @@ end
 
 local Font = C["Media"].Fonts.KkthnxUIFont
 local Texture = C["Media"].Statusbars.KkthnxUIStatusbar
--- local Blank = C["Media"].Textures.BlankTexture
-local ArrowUp = "Interface\\Buttons\\Arrow-Up-Down"
-local ArrowDown = "Interface\\Buttons\\Arrow-Down-Down"
 
--- stylua: ignore
-local DeathKnightIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:128:196|t".. "|CFFC41F3B"
-local DemonHunterIconColor = "" .. "|CFFA330C9"
+local DeathKnightIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:128:196|t" .. "|CFFC41F3B"
+local DemonHunterIconColor = "" .. "|CFFA330C9" -- Fix Me
 local DruidIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:196:256:0:64|t" .. "|CFFFF7D0A"
 local HunterIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:64:128|t" .. "|CFFA9D271"
 -- local MageIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:0:64|t" .. "|CFF40C7EB"
 -- local MonkIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:128:196|t" .. "|CFF00FF96"
-local PaladinIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:128:196|t" .. "|CFFF58CBA"
+-- local PaladinIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:128:196|t" .. "|CFFF58CBA"
 local PriestIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:64:128|t" .. "|CFFFFFFFF"
 local RogueIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:0:64|t" .. "|CFFFFF569"
 local ShamanIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:64:128|t" .. "|CFF0070DE"
--- stylua: ignore
-local WarlockIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:196:256:64:128|t".. "|CFF8787ED"
-local WarriorIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:0:64|t" .. "|CFFC79C6E"
+-- local WarlockIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:196:256:64:128|t" .. "|CFF8787ED"
+-- local WarriorIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:0:64|t" .. "|CFFC79C6E"
 
 local BGColor = { 0.2, 0.2, 0.2 }
 local BrightColor = { 0.35, 0.35, 0.35 }
-
 local R, G, B = K.r, K.g, K.b
 
 local HeaderText = K.Title .. K.SystemColor .. " GUI|r"
@@ -67,12 +61,10 @@ local MenuButtonWidth = ButtonListWidth - (Spacing * 2)
 local MenuButtonHeight = 20
 
 local WidgetListWidth = (WindowWidth - ButtonListWidth) - (Spacing * 3) + 1
-
 local WidgetHeight = 20 -- All widgets are the same height
 local WidgetHighlightAlpha = 0.25
 
 local LastActiveWindow
-
 local MySelectedProfile = K.Realm .. "-" .. K.Name
 
 -- Do not add class color/icon string unless they ask for it or agree apon it :D
@@ -86,10 +78,8 @@ local CreditLines = {
 	-- "",
 	-- -- Tier 4
 	-- "",
-	K.GreyColor
-		.. "~~~~|r |CFFFFCC66Credits|r "
-		.. K.GreyColor
-		.. "~~~~",
+	-- stylua: ignore
+	K.GreyColor.. "~~~~|r |CFFFFCC66Credits|r ".. K.GreyColor.. "~~~~",
 	"Aftermathh",
 	RogueIconColor .. "Alteredcross|r",
 	"Alza",
@@ -241,7 +231,7 @@ local OrderedNext = function(t, state)
 		return Key, t[Key]
 	end
 
-	return
+	-- return
 end
 
 local PairsByKeys = function(t)
@@ -293,11 +283,11 @@ local ButtonOnLeave = function(self)
 end
 
 local ButtonOnMouseDown = function(self)
-	self.KKUI_Background:SetVertexColor(unpack(BGColor))
+	self.KKUI_Background:SetVertexColor(BGColor[1], BGColor[2], BGColor[3])
 end
 
 local ButtonOnMouseUp = function(self)
-	self.KKUI_Background:SetVertexColor(unpack(C["Media"].Backdrops.ColorBackdrop))
+	self.KKUI_Background:SetVertexColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Media"].Backdrops.ColorBackdrop[4])
 end
 
 local CreateButton = function(self, midtext, text, tooltip, func)
@@ -541,12 +531,6 @@ GUI.Widgets.CreateEditBox = CreateEditBox
 local SliderWidth = 84
 local SliderEditBoxWidth = 46
 
-local Round = function(num, dec)
-	local Mult = 10 ^ (dec or 0)
-
-	return floor(num * Mult + 0.5) / Mult
-end
-
 local SliderEditBoxOnEnter = function(self)
 	self.Highlight:SetAlpha(WidgetHighlightAlpha)
 end
@@ -571,9 +555,9 @@ local SliderOnValueChanged = function(self)
 		Value = floor(Value)
 	else
 		if Step <= 0.01 then
-			Value = Round(Value, 2)
+			Value = K.Round(Value, 2)
 		else
-			Value = Round(Value, 1)
+			Value = K.Round(Value, 1)
 		end
 	end
 
@@ -601,9 +585,9 @@ local SliderOnMouseWheel = function(self, delta)
 		Value = floor(Value)
 	else
 		if Step <= 0.01 then
-			Value = Round(Value, 2)
+			Value = K.Round(Value, 2)
 		else
-			Value = Round(Value, 1)
+			Value = K.Round(Value, 1)
 		end
 	end
 
@@ -825,7 +809,7 @@ local CloseLastDropdown = function(compare)
 end
 
 local DropdownButtonOnMouseUp = function(self, button)
-	self.Parent.Texture:SetVertexColor(unpack(BrightColor))
+	self.Parent.Texture:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
 
 	if button == "LeftButton" then
 		if self.Menu:IsVisible() then
@@ -877,9 +861,9 @@ local DropdownButtonOnMouseUp = function(self, button)
 end
 
 local DropdownButtonOnMouseDown = function(self)
-	local R, G, B = unpack(BrightColor)
+	local Red, Green, Blue = unpack(BrightColor)
 
-	self.Parent.Texture:SetVertexColor(R * 0.85, G * 0.85, B * 0.85)
+	self.Parent.Texture:SetVertexColor(Red * 0.85, Green * 0.85, Blue * 0.85)
 end
 
 local MenuItemOnMouseUp = function(self)
@@ -985,7 +969,7 @@ local SetDropdownOffset = function(self, offset)
 end
 
 local DropdownScrollBarOnValueChanged = function(self)
-	local Value = Round(self:GetValue())
+	local Value = K.Round(self:GetValue())
 	local Parent = self:GetParent()
 	Parent.Offset = Value
 
@@ -1031,7 +1015,7 @@ local AddDropdownScrollBar = function(self)
 	ScrollBar.NewTexture2:SetPoint("TOPLEFT", ScrollBar.NewTexture, 1, -1)
 	ScrollBar.NewTexture2:SetPoint("BOTTOMRIGHT", ScrollBar.NewTexture, -1, 1)
 	ScrollBar.NewTexture2:SetTexture(Texture)
-	ScrollBar.NewTexture2:SetVertexColor(unpack(BrightColor))
+	ScrollBar.NewTexture2:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
 
 	self:EnableMouseWheel(true)
 	self:SetScript("OnMouseWheel", DropdownOnMouseWheel)
@@ -1089,7 +1073,7 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 
 	Dropdown.Texture = Dropdown:CreateTexture(nil, "ARTWORK")
 	Dropdown.Texture:SetAllPoints()
-	Dropdown.Texture:SetVertexColor(unpack(BrightColor))
+	Dropdown.Texture:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
 
 	Dropdown.Button = CreateFrame("Frame", nil, Dropdown)
 	Dropdown.Button:SetSize(DropdownWidth, WidgetHeight)
@@ -1199,7 +1183,7 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 		MenuItem.Texture = MenuItem:CreateTexture(nil, "ARTWORK")
 		MenuItem.Texture:SetAllPoints()
 		MenuItem.Texture:SetTexture(Texture)
-		MenuItem.Texture:SetVertexColor(unpack(BrightColor))
+		MenuItem.Texture:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
 
 		MenuItem.Selected = MenuItem:CreateTexture(nil, "OVERLAY")
 		MenuItem.Selected:SetAllPoints()
@@ -1287,7 +1271,7 @@ local ColorOnMouseUp = function(self, button)
 		return
 	end
 
-	self:SetBackdropColor(unpack(BrightColor))
+	self:SetBackdropColor(BrightColor[1], BrightColor[2], BrightColor[3])
 
 	local CurrentR, CurrentG, CurrentB = unpack(self.Value)
 
@@ -1318,9 +1302,9 @@ local ColorOnMouseUp = function(self, button)
 
 			local NewR, NewG, NewB = CPF:GetColorRGB()
 
-			NewR = Round(NewR, 3)
-			NewG = Round(NewG, 3)
-			NewB = Round(NewB, 3)
+			NewR = K.Round(NewR, 3)
+			NewG = K.Round(NewG, 3)
+			NewB = K.Round(NewB, 3)
 
 			local NewValue = { NewR, NewG, NewB }
 
@@ -1342,7 +1326,7 @@ local ColorOnMouseUp = function(self, button)
 end
 
 local ColorOnMouseDown = function(self)
-	self.KKUI_Background:SetVertexColor(unpack(BGColor))
+	self.KKUI_Background:SetVertexColor(BGColor[1], BGColor[2], BGColor[3])
 end
 
 local ColorOnEnter = function(self)
@@ -1511,7 +1495,7 @@ local SetOffset = function(self, offset)
 end
 
 local WindowScrollBarOnValueChanged = function(self)
-	local Value = Round(self:GetValue())
+	local Value = K.Round(self:GetValue())
 	local Parent = self:GetParent()
 	Parent.Offset = Value
 
@@ -1802,15 +1786,15 @@ local AddContactFrame = function()
 	end
 
 	local frame = CreateFrame("Frame", nil, UIParent)
-	frame:SetSize(300, 340)
+	frame:SetSize(300, 390)
 	frame:SetPoint("CENTER")
 	frame:CreateBorder()
 
 	local frameLogo = frame:CreateTexture(nil, "OVERLAY")
-	frameLogo:SetSize(256, 128)
+	frameLogo:SetSize(512, 256)
 	frameLogo:SetBlendMode("ADD")
 	frameLogo:SetAlpha(0.07)
-	frameLogo:SetTexture(C["Media"].Textures.LogoSmallTexture)
+	frameLogo:SetTexture(C["Media"].Textures.LogoTexture)
 	frameLogo:SetPoint("CENTER", frame, "CENTER", 0, 0)
 
 	K.CreateFontString(frame, 16, "Contact Me", "", true, "TOP", 0, -10)
@@ -1824,10 +1808,10 @@ local AddContactFrame = function()
 	lr:SetFrameStrata("HIGH")
 
 	CreateContactBox(frame, "|CFFee653aCurse|r", "https://www.curseforge.com/members/kkthnxtv", 1)
-	-- stylua: ignore
 	CreateContactBox(frame, "|CFF666aa7WowInterface|r", "https://www.wowinterface.com/forums/member.php?action=getinfo&userid=303422", 2)
 	CreateContactBox(frame, "|CFFf6f8faGitHub|r", "https://github.com/Kkthnx-Wow/KkthnxUI", 3)
 	CreateContactBox(frame, "|CFF7289DADiscord|r", "https://discord.gg/Rc9wcK9cAB", 4)
+	CreateContactBox(frame, "|CFF6441A4Twitch|r", "https://www.twitch.tv/kkthnxtv", 5)
 
 	local back = CreateFrame("Button", nil, frame)
 	back:SetSize(120, 20)
@@ -2136,9 +2120,7 @@ GUI.Enable = function(self)
 	self:UnpackQueue()
 
 	-- Set the frame height
-	-- stylua: ignore
 	local Height = (HeaderHeight * 2) + (Spacing + 2) + (self.WindowCount * MenuButtonHeight) + (self.WindowCount * Spacing)
-
 	self:SetHeight(Height)
 
 	if self.DefaultWindow then
@@ -2228,7 +2210,6 @@ end
 GUI.SetProfile = function(self)
 	local Dropdown = self:GetParent()
 	local Profile = Dropdown.Current:GetText()
-	-- local MyProfileName = K.Realm .. "-" .. K.Name
 
 	if Profile and Profile ~= K.Realm .. "-" .. K.Name then
 		MySelectedProfile = Profile
