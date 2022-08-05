@@ -23,9 +23,7 @@ function Module:SendAutoGoodbye()
 end
 
 function Module:SetupAutoGoodbye()
-	C_Timer_After(4, function()
-		Module:SendAutoGoodbye()
-	end)
+	C_Timer_After(4, Module.SendAutoGoodbye)
 end
 
 function Module:CreateAutoGoodbye()

@@ -123,9 +123,7 @@
    <Script file="Miscellaneous\Elements\MuteSounds.lua" />
    <Script file="Miscellaneous\Elements\QuestTool.lua" />
    <Script file="Miscellaneous\Elements\QuickJoin.lua" />
-   <Script file="Miscellaneous\Elements\SlotDurability.lua" />
    <Script file="Miscellaneous\Elements\SlotItemLevel.lua" />
-   <Script file="Miscellaneous\Elements\StatusReport.lua" />
    <Script file="Miscellaneous\Elements\TradeTabs.lua" />
    <Script file="Miscellaneous\Elements\yClassColors.lua" />
    <!-- Announcements -->

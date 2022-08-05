@@ -102,7 +102,7 @@ function Module:FindQuestProgress(_, msg)
 
 	for _, pattern in pairs(questMatches) do
 		if string_match(msg, pattern) then
-			local _, _, _, cur, max = string_find(msg, "(.*)[:：]%s*([-%d]+)%s*/%s*([-%d]+)%s*$")
+			local _, _, _, cur, max = string_find(msg, "(.*)[:]%s*([-%d]+)%s*/%s*([-%d]+)%s*$")
 			cur, max = tonumber(cur), tonumber(max)
 			if cur and max and max >= 10 then
 				if mod(cur, math_floor(max / 5)) == 0 then

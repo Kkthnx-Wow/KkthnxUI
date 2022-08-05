@@ -17,7 +17,7 @@ function Module:SetupHealthAnnounce()
 	if not UnitIsDead("player") then
 		if playerHealthPercent <= 30 and not playerNearDeath then
 			playerNearDeath = true
-			UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], UnitName("player")))
+			UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], K.Name))
 		elseif playerHealthPercent > 30 + 20 and playerNearDeath then
 			playerNearDeath = false
 		end

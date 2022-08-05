@@ -293,16 +293,14 @@ end
 
 function Module:AddDungeonsFilter()
 	local mapData = {
-		[0] = { mapID = 375, aID = 703 }, -- Xianlin
-		[1] = { mapID = 376, aID = 713 }, -- psychic
-		[2] = { mapID = 377, aID = 695 }, -- His world
-		[3] = { mapID = 378, aID = 699 }, -- Atonement
-		[4] = { mapID = 379, aID = 691 }, -- Soul
-		[5] = { mapID = 380, aID = 705 }, -- crimson
-		[6] = { mapID = 381, aID = 709 }, -- promotion
-		[7] = { mapID = 382, aID = 717 }, -- theater
-		[8] = { mapID = 391, aID = 1016 }, -- street
-		[9] = { mapID = 392, aID = 1017 }, -- grand plan
+		[0] = { mapID = 166, aID = 183 }, --
+		[1] = { mapID = 169, aID = 180 }, --
+		[2] = { mapID = 234, aID = 473 }, --
+		[3] = { mapID = 227, aID = 471 }, --
+		[4] = { mapID = 369, aID = 679 }, --
+		[5] = { mapID = 370, aID = 683 }, --
+		[6] = { mapID = 391, aID = 1016 }, --
+		[7] = { mapID = 392, aID = 1017 }, --
 	}
 
 	local function GetDungeonNameByID(mapID)
@@ -318,7 +316,7 @@ function Module:AddDungeonsFilter()
 
 	local function toggleAll()
 		allOn = not allOn
-		for i = 0, 9 do
+		for i = 0, 7 do
 			mapData[i].isOn = allOn
 			filterIDs[mapData[i].aID] = allOn
 		end
@@ -342,7 +340,7 @@ function Module:AddDungeonsFilter()
 		return mapData[self.arg1].isOn
 	end
 
-	for i = 0, 9 do
+	for i = 0, 7 do
 		local value = mapData[i]
 		menuList[i + 3] = {
 			text = GetDungeonNameByID(value.mapID),

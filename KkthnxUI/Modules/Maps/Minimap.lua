@@ -352,7 +352,7 @@ function Module:ReskinRegions()
 		QueueStatusMinimapButtonIconTexture:SetTexture(nil)
 		QueueStatusMinimapButton:SetFrameLevel(999)
 
-		local queueIcon = Minimap:CreateTexture(nil, "ARTWORK")
+		local queueIcon = Minimap:CreateTexture(nil, "OVERLAY")
 		queueIcon:SetPoint("CENTER", QueueStatusMinimapButton)
 		queueIcon:SetSize(50, 50)
 		queueIcon:SetTexture("Interface\\Minimap\\Dungeon_Icon")

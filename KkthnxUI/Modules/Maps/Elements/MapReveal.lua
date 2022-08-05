@@ -153,13 +153,10 @@ function Module:CreateWorldMapReveal()
 	bu:SetPoint("TOPRIGHT", -260, 0)
 	bu:SetSize(24, 24)
 	bu:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap)
-	-- bu.text = B.CreateFS(bu, 14, L["Map Reveal"], false, "LEFT", 25, 0)
 
 	bu.text = bu:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	bu.text:SetPoint("LEFT", 24, 0)
 	bu.text:SetText("Map Reveal")
-	--bu:SetHitRectInsets(0, 0 - bu.text:GetWidth(), 0, 0)
-	--bu.text:Show()
 
 	for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
 		hooksecurefunc(pin, "RefreshOverlays", Module.MapData_RefreshOverlays)

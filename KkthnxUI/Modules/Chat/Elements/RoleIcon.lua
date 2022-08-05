@@ -32,7 +32,7 @@ local function GetColoredName_hook(event, arg1, arg2, ...)
 	local ret = GetColoredName_orig(event, arg1, arg2, ...)
 	if chats[event] then
 		local role = UnitGroupRolesAssigned(arg2)
-		if role == "NONE" and arg2:match(" *- *" .. GetRealmName() .. "$") then
+		if role == "NONE" and arg2:match(" *- *" .. K.Realm .. "$") then
 			role = UnitGroupRolesAssigned(arg2:gsub(" *-[^-]+$", ""))
 		end
 

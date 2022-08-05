@@ -225,7 +225,7 @@ function Module:CreateTarget()
 
 			Castbar.Icon = Castbar.Button:CreateTexture(nil, "ARTWORK")
 			Castbar.Icon:SetSize(C["Unitframe"].TargetCastbarHeight, C["Unitframe"].TargetCastbarHeight)
-			Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+			Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -6, 0)
 
 			Castbar.Button:SetAllPoints(Castbar.Icon)
@@ -331,16 +331,16 @@ function Module:CreateTarget()
 	end
 
 	if C["Unitframe"].PvPIndicator then
-		-- local PvPIndicator = self:CreateTexture(nil, "OVERLAY")
-		-- PvPIndicator:SetSize(30, 33)
-		-- if targetPortraitStyle ~= "NoPortraits" and targetPortraitStyle ~= "OverlayPortrait" then
-		-- 	PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", 2, 0)
-		-- else
-		-- 	PvPIndicator:SetPoint("LEFT", Health, "RIGHT", 2, 0)
-		-- end
-		-- PvPIndicator.PostUpdate = Module.PostUpdatePvPIndicator
+		local PvPIndicator = self:CreateTexture(nil, "OVERLAY")
+		PvPIndicator:SetSize(30, 33)
+		if targetPortraitStyle ~= "NoPortraits" and targetPortraitStyle ~= "OverlayPortrait" then
+			PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", 2, 0)
+		else
+			PvPIndicator:SetPoint("LEFT", Health, "RIGHT", 2, 0)
+		end
+		PvPIndicator.PostUpdate = Module.PostUpdatePvPIndicator
 
-		-- self.PvPIndicator = PvPIndicator
+		self.PvPIndicator = PvPIndicator
 	end
 
 	local LeaderIndicator = Overlay:CreateTexture(nil, "OVERLAY")

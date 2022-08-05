@@ -61,8 +61,7 @@ function Profiles:Toggle()
 	end
 end
 
-local class = select(2, UnitClass("player"))
-local texcoord = CLASS_ICON_TCOORDS[class]
+local texcoord = CLASS_ICON_TCOORDS[K.Class]
 function Profiles:OnTextChanged()
 	local Code = self:GetText()
 	local Status = self:GetParent().Status

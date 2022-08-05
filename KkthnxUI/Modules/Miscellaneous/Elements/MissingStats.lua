@@ -149,17 +149,6 @@ function Module:CreateImprovedStats()
 			statFrame.Value:SetFormattedText("%.2f%%", statFrame.numericValue)
 		end
 	end)
-
-	-- hooksecurefunc("PaperDollFrame_UpdateStats", function()
-	-- 	for statFrame in CharacterStatsPane.statsFramePool:EnumerateActive() do
-	-- 		if not statFrame.styled then
-	-- 			statFrame.Label:SetFontObject(Game11Font)
-	-- 			statFrame.Value:SetFontObject(Game11Font)
-
-	-- 			statFrame.styled = true
-	-- 		end
-	-- 	end
-	-- end)
 end
 
 Module:RegisterMisc("ImprovedStats", Module.CreateImprovedStats)

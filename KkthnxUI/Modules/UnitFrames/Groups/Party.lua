@@ -226,7 +226,7 @@ function Module:CreateParty()
 
 			Castbar.Icon = Castbar.Button:CreateTexture(nil, "ARTWORK")
 			Castbar.Icon:SetSize(Castbar:GetHeight(), Castbar:GetHeight())
-			Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+			Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			Castbar.Icon:SetPoint("RIGHT", Castbar, "LEFT", -6, 0)
 
 			Castbar.Button:SetAllPoints(Castbar.Icon)

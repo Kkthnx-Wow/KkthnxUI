@@ -12,9 +12,7 @@ end
 C.DebuffsTracking_PvE = {
 	["type"] = "Whitelist",
 	["spells"] = {
-		----------------------------------------------------------
-		-------------------- Mythic+ Specific --------------------
-		----------------------------------------------------------
+		-- Mythic+ Specific
 		-- General Affixes
 		[209858] = Priority(), -- Necrotic
 		[226512] = Priority(), -- Sanguine
@@ -35,9 +33,8 @@ C.DebuffsTracking_PvE = {
 		[373570] = Priority(), -- Hypnosis
 		[373607] = Priority(), -- Shadowy Barrier (Hypnosis)
 		[373509] = Priority(), -- Shadow Claws (Stacking)
-		----------------------------------------------------------
-		---------------- Old Dungeons (Season 4) -----------------
-		----------------------------------------------------------
+
+		-- Old Dungeons (Season 4)
 		-- Grimrail Depot
 		[162057] = Priority(), -- Spinning Spear
 		[156357] = Priority(), -- Blackrock Shrapnel
@@ -126,9 +123,8 @@ C.DebuffsTracking_PvE = {
 		[301712] = Priority(), -- Pounce
 		[299475] = Priority(), -- B.O.R.K
 		[293670] = Priority(), -- Chain Blade
-		----------------------------------------------------------
-		------------------ Shadowlands Dungeons ------------------
-		----------------------------------------------------------
+
+		-- Shadowlands Dungeons
 		-- Tazavesh, the Veiled Market
 		[350804] = Priority(), -- Collapsing Energy
 		[350885] = Priority(), -- Hyperlight Jolt
@@ -272,9 +268,8 @@ C.DebuffsTracking_PvE = {
 		[323687] = Priority(), -- Arcane Lightning
 		[323877] = Priority(), -- Echo Finger Laser X-treme
 		[334535] = Priority(), -- Beak Slice
-		--------------------------------------------------------
-		-------------------- Castle Nathria --------------------
-		--------------------------------------------------------
+
+		-- Castle Nathria
 		-- Shriekwing
 		[328897] = Priority(), -- Exsanguinated
 		[330713] = Priority(), -- Reverberating Pain
@@ -360,9 +355,8 @@ C.DebuffsTracking_PvE = {
 		[327039] = Priority(), -- Feeding Time
 		[332794] = Priority(), -- Fatal Finesse
 		[334016] = Priority(), -- Unworthy
-		--------------------------------------------------------
-		---------------- Sanctum of Domination -----------------
-		--------------------------------------------------------
+
+		-- Sanctum of Domination
 		-- The Tarragrue
 		[347283] = Priority(5), -- Predator's Howl
 		[347286] = Priority(5), -- Unshakeable Dread
@@ -455,9 +449,8 @@ C.DebuffsTracking_PvE = {
 		[351092] = Priority(6), -- Destabilize 1
 		[351091] = Priority(6), -- Destabilize 2
 		[348064] = Priority(6), -- Wailing Arrow
-		----------------------------------------------------------
-		-------------- Sepulcher of the First Ones ---------------
-		----------------------------------------------------------
+
+		-- Sepulcher of the First Ones
 		-- Vigilant Guardian
 		[364447] = Priority(3), -- Dissonance
 		[364904] = Priority(6), -- Anti-Matter
@@ -612,7 +605,7 @@ C.DebuffsTracking_PvP = {
 		[33395] = Priority(1), -- Freeze
 		[157997] = Priority(1), -- Ice Nova
 		[228600] = Priority(1), -- Glacial Spike
-		[198121] = Priority(1), -- Forstbite
+		[198121] = Priority(1), -- Frostbite
 		-- Monk
 		[119381] = Priority(4), -- Leg Sweep
 		[202346] = Priority(4), -- Double Barrel

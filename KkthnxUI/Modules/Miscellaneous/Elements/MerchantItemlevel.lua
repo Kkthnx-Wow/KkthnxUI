@@ -25,8 +25,8 @@ function Module:MerchantItemlevel()
 		local button = _G["MerchantItem" .. i .. "ItemButton"]
 		if button and button:IsShown() then
 			if not button.text then
-				button.text = button:CreateFontString(nil, "OVERLAY", "SystemFont_Outline_Small")
-				button.text:SetPoint("TOPLEFT", 2, -2)
+				button.text = K.CreateFontString(button, 12, "", "OUTLINE")
+				button.text:SetPoint("TOPLEFT", 1, -1)
 			else
 				button.text:SetText("")
 			end

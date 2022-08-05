@@ -109,7 +109,7 @@ local QuestCheckSubDomain = (setmetatable({
 	__index = function()
 		return "www"
 	end,
-}))[GetLocale()]
+}))[K.Client]
 
 local WoWHeadLoc = QuestCheckSubDomain .. ".wowhead.com/quest="
 local QuestCheckComplete = [[|TInterface\RaidFrame\ReadyCheck-Ready:14:14:-1:-1|t]]

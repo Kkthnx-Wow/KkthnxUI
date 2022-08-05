@@ -38,7 +38,7 @@ function Module:CreateAutoSetRole()
 		return
 	end
 
-	K:RegisterEvent("PLAYER_TALENT_UPDATE", SetupAutoSetRole)
+	-- K:RegisterEvent("PLAYER_TALENT_UPDATE", SetupAutoSetRole)
 	K:RegisterEvent("GROUP_ROSTER_UPDATE", SetupAutoSetRole)
 	RolePollPopup:UnregisterEvent("ROLE_POLL_BEGIN")
 end

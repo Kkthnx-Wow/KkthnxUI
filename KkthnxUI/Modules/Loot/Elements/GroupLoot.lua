@@ -409,7 +409,7 @@ SlashCmdList.TESTROLL = function()
 		f.button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 
 		f.fsloot:SetText(GetItemInfo(item))
-		f.fsloot:SetVertexColor(r, g, b)
+		f.fsloot:SetVertexColor(1, 1, 1)
 
 		f.status:SetMinMaxValues(0, 100)
 		f.status:SetValue(math.random(50, 90))

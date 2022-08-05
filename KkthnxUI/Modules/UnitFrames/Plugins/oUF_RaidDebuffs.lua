@@ -103,7 +103,7 @@ do
 		},
 	}
 
-	DispellFilter = dispellClasses[select(2, UnitClass("player"))] or {}
+	DispellFilter = dispellClasses[K.Class] or {}
 end
 
 local function CheckSpec()

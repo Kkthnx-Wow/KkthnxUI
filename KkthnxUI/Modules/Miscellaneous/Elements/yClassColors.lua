@@ -185,7 +185,6 @@ local function updateWhoList()
 
 	local playerZone = GetRealZoneText()
 	local playerGuild = GetGuildInfo("player")
-	local playerRace = UnitRace("player")
 
 	for i = 1, numButtons do
 		local button = buttons[i]
@@ -205,7 +204,7 @@ local function updateWhoList()
 				guild = "|cff00ff00" .. guild
 			end
 
-			if race == playerRace then
+			if race == K.Race then
 				race = "|cff00ff00" .. race
 			end
 

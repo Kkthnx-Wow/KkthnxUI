@@ -213,7 +213,7 @@ function Module:CreateFocus()
 
 			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
 			self.Castbar.Icon:SetSize(C["Unitframe"].FocusCastbarHeight, C["Unitframe"].FocusCastbarHeight)
-			self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+			self.Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			self.Castbar.Icon:SetPoint("BOTTOMRIGHT", self.Castbar, "BOTTOMLEFT", -6, 0)
 
 			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)

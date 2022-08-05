@@ -857,7 +857,7 @@ function Module:CreateUnits()
 		oUF:RegisterStyle("Party", Module.CreateParty)
 		oUF:SetActiveStyle("Party")
 
-		local partyXOffset, partyYOffset = 6, 66
+		local partyXOffset, partyYOffset = 6, C["Party"].ShowBuffs and 66 or 46
 		local partyMoverWidth = C["Party"].HealthWidth
 		local partyMoverHeight = C["Party"].HealthHeight + C["Party"].PowerHeight + 6 + partyYOffset * 5
 		local partyGroupingOrder = "NONE,DAMAGER,HEALER,TANK"
@@ -945,6 +945,7 @@ function Module:CreateUnits()
 	end
 
 	if C["Raid"].Enable then
+		SetCVar("predictedHealth", 1)
 		oUF:RegisterStyle("Raid", Module.CreateRaid)
 		oUF:SetActiveStyle("Raid")
 
@@ -1157,10 +1158,6 @@ function Module:UNIT_FACTION(unit)
 end
 
 function Module:OnEnable()
-	-- Module.ClassPowerBarSize = {C["Unitframe"].PlayerHealthWidth, 14}
-	-- Module.ClassPowerBarPoint = {"TOPLEFT", 0, 20}
-	-- Module.barWidth, Module.barHeight = unpack(Module.ClassPowerBarSize)
-
 	-- Register our units / layout
 	self:CreateUnits()
 
