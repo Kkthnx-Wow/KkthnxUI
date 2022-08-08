@@ -7,23 +7,25 @@ local math_random = _G.math.random
 local C_Timer_After = _G.C_Timer.After
 local SendChatMessage = _G.SendChatMessage
 
-local AutoThankList = {
-	"GG! Thanks for the run",
-	"GLHF! Thanks everyone",
-	"Good run everyone",
-	"Thanks all!",
+local AutoThanksList = {
+	"GG! Thanks for the run.",
+	"GLHF! Thanks everyone.",
+	"Good run everyone.",
+	"Much appreciated.",
 	"Thanks everyone!",
-	"Thanks for the group!",
-	"Thanks for the run!",
-	"Thanks! Take care everyone!",
+	"Thanks for the group.",
+	"Thanks for the run.",
+	"Thanks! Take care everyone.",
 }
 
-function Module:SendAutoGoodbye()
-	SendChatMessage(AutoThankList[math_random(1, #AutoThankList)], "INSTANCE_CHAT")
-end
-
 function Module:SetupAutoGoodbye()
-	C_Timer_After(4, Module.SendAutoGoodbye)
+	if not IsPartyLFG() or not IsInRaid() then
+		return
+	end
+
+	C_Timer_After(4, function() -- Give this more time to say thanks.
+		SendChatMessage(AutoThanksList[math_random(1, #AutoThanksList)], IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID")
+	end)
 end
 
 function Module:CreateAutoGoodbye()

@@ -97,7 +97,14 @@ function Module:DomiShards_ListFrame()
 			local button = CreateFrame("Button", nil, frame)
 			button:SetSize(iconSize, iconSize)
 			button:SetPoint("TOPLEFT", mod(index - 1, 3) * iconSize, -math_floor((index - 1) / 3) * iconSize)
-			--B.PixelIcon(button, GetItemIcon(itemID), true)
+
+			button.Icon = button:CreateTexture(nil, "ARTWORK")
+			button.Icon:SetTexture(GetItemIcon(itemID))
+			button.Icon:SetAllPoints()
+			button.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+
+			button:CreateBorder()
+
 			button:SetScript("OnClick", Module.DomiShard_Equip)
 			button:SetScript("OnEnter", Module.DomiShard_ShowTooltip)
 			button:SetScript("OnLeave", K.HideTooltip)

@@ -34,10 +34,6 @@ function Module.LoadAutoKeystone(event, addon)
 end
 
 function Module:CreateAutoKeystone()
-	if IsAddOnLoaded("AutoKeystone") or IsAddOnLoaded("QuickKeystone") then
-		K.Print("already provides an auomation module for keystone. You can find this module in Automation > AutoKeystone")
-	end
-
 	if not C["Automation"].AutoKeystone or IsAddOnLoaded("AngryKeystones") then
 		return
 	end
