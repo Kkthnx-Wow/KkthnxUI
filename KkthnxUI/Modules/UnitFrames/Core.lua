@@ -1022,13 +1022,13 @@ function Module:CreateUnits()
 
 			if i == 1 then
 				if horizonRaid then
-					raidMover = K.Mover(groups[i], "RaidFrame", "RaidFrame", { "TOPLEFT", UIParent, "TOPLEFT", 4, -180 }, (raidWidth + 5) * 5, (raidHeight + (showTeamIndex and 21 or 15)) * numGroups)
+					raidMover = K.Mover(groups[i], "RaidFrame", "RaidFrame", { "TOPLEFT", UIParent, "TOPLEFT", 4, -180 }, (raidWidth + 5) * 5, (raidHeight + (showTeamIndex and 15 or 5)) * numGroups)
 					if reverse then
 						groups[i]:ClearAllPoints()
 						groups[i]:SetPoint("BOTTOMLEFT", raidMover)
 					end
 				else
-					raidMover = K.Mover(groups[i], "RaidFrame", "RaidFrame", { "TOPLEFT", UIParent, "TOPLEFT", 4, -180 }, (raidWidth + 5) * numGroups, (raidHeight + 10) * 5)
+					raidMover = K.Mover(groups[i], "RaidFrame", "RaidFrame", { "TOPLEFT", UIParent, "TOPLEFT", 4, -180 }, (raidWidth + 5) * numGroups, (raidHeight + 5) * 5)
 					if reverse then
 						groups[i]:ClearAllPoints()
 						groups[i]:SetPoint("TOPRIGHT", raidMover)
@@ -1037,9 +1037,9 @@ function Module:CreateUnits()
 			else
 				if horizonRaid then
 					if reverse then
-						groups[i]:SetPoint("BOTTOMLEFT", groups[i - 1], "TOPLEFT", 0, showTeamIndex and 21 or 15)
+						groups[i]:SetPoint("BOTTOMLEFT", groups[i - 1], "TOPLEFT", 0, showTeamIndex and 18 or 6)
 					else
-						groups[i]:SetPoint("TOPLEFT", groups[i - 1], "BOTTOMLEFT", 0, showTeamIndex and -21 or -15)
+						groups[i]:SetPoint("TOPLEFT", groups[i - 1], "BOTTOMLEFT", 0, showTeamIndex and -18 or -6)
 					end
 				else
 					if reverse then
