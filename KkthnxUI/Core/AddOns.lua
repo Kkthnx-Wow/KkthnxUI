@@ -47,85 +47,92 @@ local function ForceHekiliOptions()
 					},
 				},
 				["displays"] = {
-					["AOE"] = {
-						["rel"] = "CENTER",
-						["delays"] = {
+					["Interrupts"] = {
+						["keybindings"] = {
 							["font"] = "KkthnxUIFont",
-							["fontSize"] = 16,
 						},
 						["captions"] = {
-							["fontSize"] = 16,
 							["font"] = "KkthnxUIFont",
 						},
-						["y"] = -231,
 						["targets"] = {
 							["font"] = "KkthnxUIFont",
-							["fontSize"] = 16,
 						},
+						["delays"] = {
+							["font"] = "KkthnxUIFont",
+						},
+					},
+					["Cooldowns"] = {
 						["keybindings"] = {
-							["fontSize"] = 16,
+							["font"] = "KkthnxUIFont",
+						},
+						["captions"] = {
+							["font"] = "KkthnxUIFont",
+						},
+						["targets"] = {
+							["font"] = "KkthnxUIFont",
+						},
+						["delays"] = {
 							["font"] = "KkthnxUIFont",
 						},
 					},
 					["Primary"] = {
-						["rel"] = "CENTER",
-						["delays"] = {
-							["font"] = "KkthnxUIFont",
-							["fontSize"] = 16,
+						["flash"] = {
+							["enabled"] = true,
+							["color"] = {
+								nil, -- [1]
+								1, -- [2]
+								1, -- [3]
+							},
+							["suppress"] = true,
+						},
+						["border"] = {
+							["enabled"] = false,
 						},
 						["captions"] = {
-							["fontSize"] = 16,
 							["font"] = "KkthnxUIFont",
 						},
-						["y"] = -286,
 						["targets"] = {
 							["font"] = "KkthnxUIFont",
-							["fontSize"] = 16,
 						},
 						["keybindings"] = {
-							["fontSize"] = 16,
+							["font"] = "KkthnxUIFont",
+						},
+						["delays"] = {
+							["font"] = "KkthnxUIFont",
+						},
+					},
+					["AOE"] = {
+						["delays"] = {
+							["font"] = "KkthnxUIFont",
+						},
+						["flash"] = {
+							["enabled"] = true,
+							["suppress"] = true,
+						},
+						["keybindings"] = {
+							["font"] = "KkthnxUIFont",
+						},
+						["border"] = {
+							["enabled"] = false,
+						},
+						["captions"] = {
+							["font"] = "KkthnxUIFont",
+						},
+						["targets"] = {
 							["font"] = "KkthnxUIFont",
 						},
 					},
 					["Defensives"] = {
-						["rel"] = "CENTER",
-						["delays"] = {
+						["keybindings"] = {
 							["font"] = "KkthnxUIFont",
-							["fontSize"] = 16,
 						},
 						["captions"] = {
-							["fontSize"] = 16,
 							["font"] = "KkthnxUIFont",
 						},
-						["y"] = -48,
-						["x"] = -244,
 						["targets"] = {
 							["font"] = "KkthnxUIFont",
-							["fontSize"] = 16,
 						},
-						["keybindings"] = {
-							["fontSize"] = 16,
-							["font"] = "KkthnxUIFont",
-						},
-					},
-					["Interrupts"] = {
-						["rel"] = "CENTER",
 						["delays"] = {
-							["font"] = "KkthnxUIFont",
-							["fontSize"] = 16,
-						},
-						["captions"] = {
-							["fontSize"] = 16,
-							["font"] = "KkthnxUIFont",
-						},
-						["y"] = -48,
-						["x"] = 244,
-						["targets"] = {
-							["font"] = "KkthnxUIFont",
-							["fontSize"] = 16,
-						},
-						["keybindings"] = {
-							["fontSize"] = 16,
 							["font"] = "KkthnxUIFont",
 						},
 					},
@@ -179,18 +186,18 @@ local function ForceDBMOptions()
 				["ExpandUpwards"] = true,
 				["ExpandUpwardsLarge"] = true,
 				["BarXOffset"] = 0,
-				["BarYOffset"] = 15,
+				["BarYOffset"] = 100,
 				["TimerPoint"] = "LEFT",
 				["TimerX"] = 122,
 				["TimerY"] = -300,
 				["Width"] = 174,
 				["Height"] = 20,
-				["HugeWidth"] = 210,
+				["HugeWidth"] = 194,
 				["HugeBarXOffset"] = 0,
-				["HugeBarYOffset"] = 15,
+				["HugeBarYOffset"] = 10,
 				["HugeTimerPoint"] = "CENTER",
-				["HugeTimerX"] = 330,
-				["HugeTimerY"] = -42,
+				["HugeTimerX"] = 290,
+				["HugeTimerY"] = 20,
 				["FontSize"] = 10,
 				["StartColorR"] = 1,
 				["StartColorG"] = 0.7,

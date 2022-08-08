@@ -12,5 +12,5 @@
 ## X-Wago-ID: lQNlqP6e
 
 # -- Load Core File
-TaintLess.xml
+Taintless.xml
 KkthnxUI.xml

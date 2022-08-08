@@ -78,7 +78,6 @@ end
 
 K.Title = GetAddOnMetadata(AddOnName, "Title")
 K.Version = GetAddOnMetadata(AddOnName, "Version")
-K.Credits = GetAddOnMetadata(AddOnName, "X-Credits")
 
 K.Noop = function()
 	return
@@ -92,7 +91,6 @@ K.Level = UnitLevel("player")
 K.Client = GetLocale()
 K.Realm = GetRealmName()
 K.Sex = UnitSex("player")
-K.Media = "Interface\\AddOns\\KkthnxUI\\Media\\"
 K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
 K.Resolution = string_format("%dx%d", K.ScreenWidth, K.ScreenHeight)
 K.TexCoords = { 0.08, 0.92, 0.08, 0.92 }
@@ -110,7 +108,6 @@ K.RightButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:5
 K.ScrollButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t "
 K.AFKTex = "|T" .. FRIENDS_TEXTURE_AFK .. ":14:14:0:0:16:16:1:15:1:15|t"
 K.DNDTex = "|T" .. FRIENDS_TEXTURE_DND .. ":14:14:0:0:16:16:1:15:1:15|t"
-K.KkthnxUIString = "[KkthnxUI]: "
 K.IsNewPatch = select(4, GetBuildInfo()) >= 90205
 K.IsFirestorm = select(4, GetBuildInfo()) >= 90105 and K.Realm == "Oribos"
 K.IsWoWFreakz = select(4, GetBuildInfo()) >= 90105 and K.Realm == "Shadowsong"
@@ -120,8 +117,6 @@ function K.IsMyPet(flags)
 end
 K.PartyPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_PARTY, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
 K.RaidPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_RAID, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
-
-K.CodeDebug = false
 
 K.ClassList = {}
 for k, v in pairs(LOCALIZED_CLASS_NAMES_MALE) do

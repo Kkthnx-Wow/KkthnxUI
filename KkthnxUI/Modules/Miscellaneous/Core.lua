@@ -238,7 +238,7 @@ local function MainMenu_OnShow(self)
 	if K.IsFirestorm or K.IsWoWFreakz then -- No idea why Firestorm has to mess with the GameMenu buttons -.-
 		plusSize = 48
 	else
-		plusSize = 20
+		plusSize = 24
 	end
 
 	_G.GameMenuButtonLogout:SetPoint("TOP", Module.GameMenuButton, "BOTTOM", 0, -14)

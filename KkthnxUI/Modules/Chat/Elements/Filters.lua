@@ -286,6 +286,15 @@ function Module:UpdateAbilitySpellSpam(_, msg, ...)
 	return false, msg, ...
 end
 
+function Module:UpdateRaidInstanceQuestSpam(_, msg, ...)
+	if (msg == ERR_NOT_IN_INSTANCE_GROUP) or (msg == ERR_NOT_IN_RAID) or (msg == ERR_QUEST_ALREADY_ON) then
+		print(msg) -- Debug
+		return true
+	end
+
+	return false, msg, ...
+end
+
 function Module:CreateChatFilter()
 	hooksecurefunc(BNToastFrame, "ShowToast", self.BlockTrashClub)
 
@@ -303,6 +312,8 @@ function Module:CreateChatFilter()
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", self.UpdateChatFilter)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateChatFilter)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.UpdateChatFilter)
+
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.UpdateRaidInstanceQuestSpam)
 
 		if K.IsFirestorm or K.IsWoWFreakz then
 			ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateBroadcastSpam)

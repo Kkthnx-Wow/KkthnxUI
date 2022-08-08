@@ -6,13 +6,13 @@ C["Media"] = {
 	},
 
 	["Backdrops"] = {
-		ColorBackdrop = {0.04, 0.04, 0.04, 0.9},
+		ColorBackdrop = { 0.04, 0.04, 0.04, 0.9 },
 	},
 
 	["Borders"] = {
 		AzeriteUIBorder = [[Interface\AddOns\KkthnxUI\Media\Border\AzeriteUI\Border.tga]],
 		AzeriteUITooltipBorder = [[Interface\AddOns\KkthnxUI\Media\Border\AzeriteUI\Border_Tooltip.tga]],
-		ColorBorder = {1, 1, 1},
+		ColorBorder = { 1, 1, 1 },
 		GlowBorder = [[Interface\AddOns\KkthnxUI\Media\Border\Border_Glow_Overlay.tga]],
 		KkthnxUIBorder = [[Interface\AddOns\KkthnxUI\Media\Border\KkthnxUI\Border.tga]],
 		KkthnxUITooltipBorder = [[Interface\AddOns\KkthnxUI\Media\Border\KkthnxUI\Border_Tooltip.tga]],

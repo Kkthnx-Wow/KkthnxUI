@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
 local _G = _G

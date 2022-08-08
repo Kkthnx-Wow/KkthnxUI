@@ -183,8 +183,8 @@ function Module:ReskinDeadlyBossMods()
 	if not DBT_AllPersistentOptions["Default"] then
 		DBT_AllPersistentOptions["Default"] = {}
 	end
-	DBT_AllPersistentOptions["Default"]["DBM"].BarYOffset = 20
-	DBT_AllPersistentOptions["Default"]["DBM"].HugeBarYOffset = 20
+	DBT_AllPersistentOptions["Default"]["DBM"].BarYOffset = 10
+	DBT_AllPersistentOptions["Default"]["DBM"].HugeBarYOffset = 10
 	DBT_AllPersistentOptions["Default"]["DBM"].ExpandUpwards = true
 	DBT_AllPersistentOptions["Default"]["DBM"].ExpandUpwardsLarge = true
 end

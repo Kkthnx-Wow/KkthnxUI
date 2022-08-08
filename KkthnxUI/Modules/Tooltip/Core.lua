@@ -8,7 +8,6 @@ local string_find = _G.string.find
 local string_format = _G.string.format
 local string_len = _G.string.len
 local string_upper = _G.string.upper
-local unpack = _G.unpack
 
 local AFK = _G.AFK
 local BOSS = _G.BOSS

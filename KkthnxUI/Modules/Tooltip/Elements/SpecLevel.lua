@@ -4,10 +4,10 @@ local Module = K:GetModule("Tooltip")
 -- Sourced: Cloudy Unit Info (Cloudyfa)
 
 local _G = _G
+local select = _G.select
 local string_find = _G.string.find
 local string_format = _G.string.format
 local string_split = _G.string.split
-local select = _G.select
 
 local CreateFrame = _G.CreateFrame
 local GameTooltip = _G.GameTooltip

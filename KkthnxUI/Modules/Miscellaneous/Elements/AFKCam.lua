@@ -2,6 +2,7 @@ local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Miscellaneous")
 
 -- Sourced: ElvUI (Elv)
+-- Edited: KkthnxUI (Kkthnx)
 
 local _G = _G
 local C_PetBattles_IsInBattle = _G.C_PetBattles.IsInBattle

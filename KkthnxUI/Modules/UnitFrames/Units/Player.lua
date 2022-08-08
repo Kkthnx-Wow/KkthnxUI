@@ -145,15 +145,16 @@ function Module:CreatePlayer()
 	Module:CreateClassPower(self)
 	-- end
 
-	if C["Unitframe"].PlayerDeBuffs then
+	if C["Unitframe"].PlayerDebuffs then -- and C["Unitframe"].TargetDebuffsTop
 		local Debuffs = CreateFrame("Frame", nil, self)
 		Debuffs.spacing = 6
-		Debuffs.initialAnchor = "TOPLEFT"
+		Debuffs.initialAnchor = "BOTTOMLEFT"
 		Debuffs["growth-x"] = "RIGHT"
 		Debuffs["growth-y"] = "UP"
-		Debuffs:SetPoint("TOPLEFT", Health, 0, 48)
+		Debuffs:SetPoint("BOTTOMLEFT", Health, "TOPLEFT", 0, 6)
+		Debuffs:SetPoint("BOTTOMRIGHT", Health, "TOPRIGHT", 0, 6)
 		Debuffs.num = 14
-		Debuffs.iconsPerRow = 5
+		Debuffs.iconsPerRow = C["Unitframe"].PlayerDebuffsPerRow
 
 		Module:UpdateAuraContainer(playerWidth, Debuffs, Debuffs.num)
 
@@ -163,20 +164,20 @@ function Module:CreatePlayer()
 		self.Debuffs = Debuffs
 	end
 
-	if C["Unitframe"].PlayerBuffs then
+	if C["Unitframe"].PlayerBuffs then -- and C["Unitframe"].TargetDebuffsTop
 		local Buffs = CreateFrame("Frame", nil, self)
 		Buffs:SetPoint("TOPLEFT", Power, "BOTTOMLEFT", 0, -6)
+		Buffs:SetPoint("TOPRIGHT", Power, "BOTTOMRIGHT", 0, -6)
 		Buffs.initialAnchor = "TOPLEFT"
 		Buffs["growth-x"] = "RIGHT"
 		Buffs["growth-y"] = "DOWN"
-		Buffs.num = 6
+		Buffs.num = 20
 		Buffs.spacing = 6
-		Buffs.iconsPerRow = 6
+		Buffs.iconsPerRow = C["Unitframe"].PlayerBuffsPerRow
 		Buffs.onlyShowPlayer = false
 
 		Module:UpdateAuraContainer(playerWidth, Buffs, Buffs.num)
 
-		Buffs.showStealableBuffs = true
 		Buffs.PostCreateIcon = Module.PostCreateAura
 		Buffs.PostUpdateIcon = Module.PostUpdateAura
 

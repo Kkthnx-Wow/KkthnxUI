@@ -47,6 +47,41 @@ end
 -- 	K:GetModule("Unitframes"):ToggleTargetClassPower()
 -- end
 
+local function UpdatePlayerBuffs()
+	local frame = _G.oUF_Player
+	if not frame then
+		return
+	end
+
+	local element = frame.Buffs
+	element.iconsPerRow = C["Unitframe"].PlayerBuffsPerRow
+
+	local width = C["Unitframe"].PlayerHealthWidth
+	local maxLines = element.iconsPerRow and K.Round(element.num / element.iconsPerRow)
+	element.size = K:GetModule("Unitframes").auraIconSize(width, element.iconsPerRow, element.spacing)
+	element:SetWidth(width)
+	element:SetHeight((element.size + element.spacing) * maxLines)
+	element:ForceUpdate()
+end
+
+local function UpdatePlayerDebuffs()
+	local frame = _G.oUF_Player
+	if not frame then
+		return
+	end
+
+	local element = frame.Debuffs
+	element.iconsPerRow = C["Unitframe"].PlayerDebuffsPerRow
+	print(element.iconsPerRow)
+
+	local width = C["Unitframe"].PlayerHealthWidth
+	local maxLines = element.iconsPerRow and K.Round(element.num / element.iconsPerRow)
+	element.size = K:GetModule("Unitframes").auraIconSize(width, element.iconsPerRow, element.spacing)
+	element:SetWidth(width)
+	element:SetHeight((element.size + element.spacing) * maxLines)
+	element:ForceUpdate()
+end
+
 local function UpdateTargetBuffs()
 	local frame = _G.oUF_Target
 	if not frame then
@@ -416,6 +451,7 @@ local Automation = function(self)
 	Window:CreateSwitch("Automation", "AutoDeclinePetDuels", L["Decline Pet Duels"])
 	Window:CreateSwitch("Automation", "AutoGoodbye", L["Say Goodbye After Dungeon Completion."])
 	Window:CreateSwitch("Automation", "AutoInvite", L["Accept Invites From Friends & Guild Members"])
+	Window:CreateSwitch("Automation", "AutoKeystone", L["Auto Place Mythic Keystones"])
 	Window:CreateSwitch("Automation", "AutoOpenItems", L["Auto Open Items In Your Inventory"])
 	Window:CreateSwitch("Automation", "AutoPartySync", L["Accept PartySync From Friends & Guild Members"])
 	Window:CreateSwitch("Automation", "AutoRelease", L["Auto Release in Battlegrounds & Arenas"])
@@ -604,6 +640,7 @@ local Minimap = function(self)
 	Window:CreateSwitch("Minimap", "Enable", enableTextColor .. L["Enable Minimap"])
 	Window:CreateSwitch("Minimap", "Calendar", L["Show Minimap Calendar"], "If enabled, show minimap calendar icon on minimap.|nYou can simply click mouse middle button on minimap to toggle calendar even without this option.")
 	Window:CreateSwitch("Minimap", "EasyVolume", L["EasyVolume"], L["EasyVolumeTip"])
+	Window:CreateSwitch("Minimap", "MailPulse", L["Pulse Minimap Mail"])
 	Window:CreateSwitch("Minimap", "QueueStatusText", L["QueueStatus"])
 	Window:CreateSwitch("Minimap", "ShowRecycleBin", L["Show Minimap Button Collector"])
 	Window:CreateDropdown("Minimap", "RecycleBinPosition", L["Set RecycleBin Positon"])
@@ -835,7 +872,7 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "PlayerBuffs", L["Show Player Frame Buffs"])
 	Window:CreateSwitch("Unitframe", "PlayerCastbar", L["Enable Player CastBar"])
 	Window:CreateSwitch("Unitframe", "PlayerCastbarIcon", L["Enable Player CastBar"] .. " Icon")
-	Window:CreateSwitch("Unitframe", "PlayerDeBuffs", L["Show Player Frame Debuffs"])
+	Window:CreateSwitch("Unitframe", "PlayerDebuffs", L["Show Player Frame Debuffs"])
 	Window:CreateSwitch("Unitframe", "PlayerPowerPrediction", L["Show Player Power Prediction"])
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		Window:CreateSwitch("Unitframe", "ShowPlayerLevel", L["Show Player Frame Level"])
@@ -843,6 +880,8 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "ShowPlayerName", L["Show Player Frame Name"])
 	Window:CreateSwitch("Unitframe", "Swingbar", L["Unitframe Swingbar"])
 	Window:CreateSwitch("Unitframe", "SwingbarTimer", L["Unitframe Swingbar Timer"])
+	Window:CreateSlider("Unitframe", "PlayerBuffsPerRow", L["Number of Buffs Per Row"], 4, 10, 1, nil, UpdatePlayerBuffs)
+	Window:CreateSlider("Unitframe", "PlayerDebuffsPerRow", L["Number of Debuffs Per Row"], 4, 10, 1, nil, UpdatePlayerDebuffs)
 	Window:CreateSlider("Unitframe", "PlayerPowerHeight", "Player Power Bar Height", 10, 40, 1, nil, UpdateUnitPlayerSize)
 	Window:CreateSlider("Unitframe", "PlayerHealthHeight", L["Player Frame Height"], 20, 75, 1, nil, UpdateUnitPlayerSize)
 	Window:CreateSlider("Unitframe", "PlayerHealthWidth", L["Player Frame Width"], 100, 300, 1, nil, UpdateUnitPlayerSize)

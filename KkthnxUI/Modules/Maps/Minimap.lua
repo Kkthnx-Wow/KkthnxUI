@@ -243,6 +243,10 @@ function Module:CreateStyle()
 	minimapBackground:SetFrameStrata("BACKGROUND")
 	minimapBackground:CreateBorder(nil, nil, nil, "", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
 
+	if not C["Minimap"].MailPulse then
+		return
+	end
+
 	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, "BackdropTemplate")
 	minimapMailPulse:SetBackdrop({ edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12 })
 	minimapMailPulse:SetPoint("TOPLEFT", minimapBorder, -5, 5)

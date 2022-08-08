@@ -406,7 +406,7 @@ local function HelloWorld()
 
 	local welcomeBoss = welcome:CreateTexture(nil, "OVERLAY")
 	welcomeBoss:SetSize(128, 64)
-	welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-Sylvanas Windrunner Shadowlands")
+	welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-Jailer")
 	welcomeBoss:SetPoint("TOPRIGHT", welcome, "TOPRIGHT", 10, 64)
 
 	local ll = CreateFrame("Frame", nil, welcome)

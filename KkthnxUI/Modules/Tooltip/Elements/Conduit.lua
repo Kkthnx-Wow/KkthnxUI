@@ -2,12 +2,15 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Tooltip")
 
 local _G = _G
+local pairs = _G.pairs
+local select = _G.select
 
-local pairs, select = pairs, select
-local GetItemInfo, GetItemInfoFromHyperlink = GetItemInfo, GetItemInfoFromHyperlink
-local C_Soulbinds_GetConduitCollection = C_Soulbinds.GetConduitCollection
-local C_Soulbinds_IsItemConduitByItemInfo = C_Soulbinds.IsItemConduitByItemInfo
-local COLLECTED_STRING = " |cffff0000(" .. COLLECTED .. ")|r"
+local C_Soulbinds_GetConduitCollection = _G.C_Soulbinds.GetConduitCollection
+local C_Soulbinds_IsItemConduitByItemInfo = _G.C_Soulbinds.IsItemConduitByItemInfo
+local GetItemInfo = _G.GetItemInfo
+local GetItemInfoFromHyperlink = _G.GetItemInfoFromHyperlink
+
+local COLLECTED_STRING = " |cffff0000(" .. _G.COLLECTED .. ")|r"
 
 Module.ConduitData = {}
 

@@ -133,7 +133,7 @@ function Module:CreateTarget()
 		end
 	end
 
-	if C["Unitframe"].TargetDebuffs then
+	if C["Unitframe"].TargetDebuffs then -- and C["Unitframe"].TargetDebuffsTop
 		local Debuffs = CreateFrame("Frame", nil, self)
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "BOTTOMLEFT"
@@ -153,7 +153,7 @@ function Module:CreateTarget()
 		self.Debuffs = Debuffs
 	end
 
-	if C["Unitframe"].TargetBuffs then
+	if C["Unitframe"].TargetBuffs then -- and C["Unitframe"].TargetDebuffsTop
 		local Buffs = CreateFrame("Frame", nil, self)
 		Buffs:SetPoint("TOPLEFT", Power, "BOTTOMLEFT", 0, -6)
 		Buffs:SetPoint("TOPRIGHT", Power, "BOTTOMRIGHT", 0, -6)
@@ -175,6 +175,29 @@ function Module:CreateTarget()
 
 		self.Buffs = Buffs
 	end
+
+	-- if not C["Unitframe"].TargetDebuffsTop then
+	-- 	local Auras = CreateFrame("Frame", nil, self)
+	-- 	Auras:SetPoint("TOPLEFT", Power, "BOTTOMLEFT", 0, -6)
+	-- 	Auras:SetPoint("TOPRIGHT", Power, "BOTTOMRIGHT", 0, -6)
+	-- 	Auras.initialAnchor = "TOPLEFT"
+	-- 	Auras["growth-x"] = "RIGHT"
+	-- 	Auras["growth-y"] = "DOWN"
+	-- 	Auras.num = 20
+	-- 	Auras.spacing = 6
+	-- 	Auras.iconsPerRow = C["Unitframe"].TargetAurasPerRow
+	-- 	Auras.onlyShowPlayer = false
+
+	-- 	Module:UpdateAuraContainer(targetWidth, Auras, Auras.num)
+
+	-- 	Auras.showStealableBuffs = true
+	-- 	Auras.PostCreateIcon = Module.PostCreateAura
+	-- 	Auras.PostUpdateIcon = Module.PostUpdateAura
+	-- 	Auras.PreUpdate = Module.bolsterPreUpdate
+	-- 	Auras.PostUpdate = Module.bolsterPostUpdate
+
+	-- 	self.Auras = Auras
+	-- end
 
 	if C["Unitframe"].TargetCastbar then
 		local Castbar = CreateFrame("StatusBar", "TargetCastbar", self)

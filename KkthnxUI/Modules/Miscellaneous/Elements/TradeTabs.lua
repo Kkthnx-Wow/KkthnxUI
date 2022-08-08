@@ -6,7 +6,6 @@ local pairs = _G.pairs
 local select = _G.select
 local string_format = _G.string.format
 local table_insert = _G.table.insert
-local unpack = _G.unpack
 
 local BOOKTYPE_PROFESSION = _G.BOOKTYPE_PROFESSION
 local C_ToyBox_GetToyInfo = _G.C_ToyBox.GetToyInfo

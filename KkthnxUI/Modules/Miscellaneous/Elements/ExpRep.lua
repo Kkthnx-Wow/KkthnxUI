@@ -39,7 +39,6 @@ local UnitXPMax = _G.UnitXPMax
 
 local CurrentXP, XPToLevel, RestedXP, PercentRested
 local PercentXP, RemainXP, RemainTotal, RemainBars
-local QuestLogXP = 0
 
 local function IsAzeriteAvailable()
 	local itemLocation = C_AzeriteItem_FindActiveAzeriteItem()

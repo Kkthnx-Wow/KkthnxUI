@@ -5,7 +5,7 @@ local _G = _G
 local CreateFont = _G.CreateFont
 local CreateFrame = _G.CreateFrame
 
-local KkthnxUIMedia = CreateFrame("Frame", "KKUI_Fonts")
+local KkthnxUIMedia = CreateFrame("Frame", "KKUI_FontStyles")
 
 local shadowOffset = K.Mult or 1
 local fontSize = 12

@@ -95,6 +95,7 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
+	["AutoKeystone"] = true,
 	["AutoBlockStrangerInvites"] = false,
 	["AutoCollapse"] = false,
 	["AutoDeclineDuels"] = false,
@@ -292,6 +293,7 @@ C["Minimap"] = {
 	["Calendar"] = true,
 	["EasyVolume"] = false,
 	["Enable"] = true,
+	["MailPulse"] = true,
 	["QueueStatusText"] = false,
 	["ShowRecycleBin"] = true,
 	["Size"] = 190,
@@ -554,11 +556,13 @@ C["Unitframe"] = {
 
 	-- Player
 	["PlayerBuffs"] = false,
+	["PlayerBuffsPerRow"] = 7,
 	["PlayerCastbar"] = true,
-	["PlayerCastbarIcon"] = true,
 	["PlayerCastbarHeight"] = 26,
+	["PlayerCastbarIcon"] = true,
 	["PlayerCastbarWidth"] = 268,
-	["PlayerDeBuffs"] = false,
+	["PlayerDebuffs"] = false,
+	["PlayerDebuffsPerRow"] = 6,
 	["PlayerHealthHeight"] = 32,
 	["PlayerHealthWidth"] = 180,
 	["PlayerPowerHeight"] = 14,

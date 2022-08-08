@@ -3,7 +3,6 @@ local Module = K:GetModule("Tooltip")
 
 local _G = _G
 local gsub = _G.gsub
-local string_match = _G.string.match
 
 local CreateFrame = _G.CreateFrame
 local GetItemIcon = _G.GetItemIcon

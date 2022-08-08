@@ -20,7 +20,6 @@ local SlashCmdList = _G.SlashCmdList
 local UIParent = _G.UIParent
 
 local lines, menu, frame, editBox = {}
-local CopyChatFont = K.GetFont(C["UIFonts"].ChatFonts)
 local menuFrame = CreateFrame("Frame", "KKUI_QuickMenu", UIParent, "UIDropDownMenuTemplate")
 local leftButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "
 local rightButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "
@@ -314,7 +313,7 @@ function Module:ChatCopy_Create()
 	editBox:SetMaxLetters(99999)
 	editBox:EnableMouse(true)
 	editBox:SetAutoFocus(false)
-	editBox:SetFontObject(CopyChatFont)
+	editBox:SetFontObject(K.GetFont(C["UIFonts"].ChatFonts))
 	editBox:SetWidth(scrollArea:GetWidth())
 	editBox:SetHeight(400)
 	editBox:SetScript("OnEscapePressed", function()

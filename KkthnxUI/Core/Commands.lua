@@ -21,7 +21,6 @@ local ERR_NOT_IN_GROUP = _G.ERR_NOT_IN_GROUP
 local GetContainerItemLink = _G.GetContainerItemLink
 local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetItemInfo = _G.GetItemInfo
-local GetLocale = _G.GetLocale
 local GetNumGroupMembers = _G.GetNumGroupMembers
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlaySound = _G.PlaySound
