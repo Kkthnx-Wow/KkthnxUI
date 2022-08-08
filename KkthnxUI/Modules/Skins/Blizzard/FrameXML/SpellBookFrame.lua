@@ -33,14 +33,28 @@ table_insert(C.defaultThemes, function()
 		NewBorder:SetBackdropBorderColor(1, 1, 0)
 		NewBorder:Hide()
 
+		local anim = NewBorder:CreateAnimationGroup()
+		anim:SetLooping("BOUNCE")
+		anim.fader = anim:CreateAnimation("Alpha")
+		anim.fader:SetFromAlpha(1)
+		anim.fader:SetToAlpha(0.5)
+		anim.fader:SetDuration(1)
+		anim.fader:SetSmoothing("OUT")
+
 		hooksecurefunc(bu.SpellHighlightTexture, "SetShown", function(_, value)
 			if value == true then
-				NewBorder:Show()
+				if not anim:IsPlaying() then
+					NewBorder:Show()
+					anim:Play()
+				end
 			end
 		end)
 
 		hooksecurefunc(bu.SpellHighlightTexture, "Hide", function()
-			NewBorder:Hide()
+			if anim and anim:IsPlaying() then
+				anim:Stop()
+				NewBorder:Hide()
+			end
 		end)
 	end
 
@@ -131,7 +145,6 @@ table_insert(C.defaultThemes, function()
 		bu.professionName:ClearAllPoints()
 		bu.professionName:SetPoint("TOPLEFT", 100, -4)
 
-		--bu.icon:SetAlpha(1)
 		bu.icon:SetDesaturated(false)
 		bu.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
