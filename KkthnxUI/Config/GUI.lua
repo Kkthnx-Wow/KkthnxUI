@@ -340,6 +340,10 @@ local function UpdateUnitRaidSize()
 	end
 end
 
+local function UpdateMaxZoomLevel()
+	K:GetModule("Miscellaneous"):UpdateMaxCameraZoom()
+end
+
 -- Sliders > minvalue, maxvalue, stepvalue
 local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
@@ -675,6 +679,7 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "ShowWowHeadLinks", L["Show Wowhead Links Above Questlog Frame"])
 	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
 	Window:CreateSwitch("Misc", "TradeTabs", L["Add Spellbook-Like Tabs On TradeSkillFrame"])
+	Window:CreateSlider("Misc", "MaxCameraZoom", "Max Camera Zoom Level", 1, 2.6, 0.1, nil, UpdateMaxZoomLevel)
 	Window:CreateDropdown("Misc", "ShowMarkerBar", L["World Markers Bar"], nil, nil, UpdateMarkerGrid)
 end
 

@@ -345,6 +345,7 @@ C["Misc"] = {
 	["ImprovedStats"] = false,
 	["ItemLevel"] = false,
 	["MDGuildBest"] = false,
+	["MaxCameraZoom"] = 2.6,
 	["MuteSounds"] = true,
 	["NoTalkingHead"] = false,
 	["ParagonEnable"] = false,
@@ -353,13 +354,6 @@ C["Misc"] = {
 	["ShowWowHeadLinks"] = false,
 	["SlotDurability"] = false,
 	["TradeTabs"] = false,
-	["MouseTrailTexture"] = {
-		["Options"] = {
-			["Circle"] = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Aura73",
-			["Star"] = "Interface\\Cooldown\\Star4",
-		},
-		["Value"] = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Aura73",
-	},
 	["ShowMarkerBar"] = {
 		["Options"] = {
 			["Grids"] = 1,

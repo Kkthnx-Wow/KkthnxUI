@@ -57,12 +57,13 @@ function Module:OnEnable()
 	self:CreateErrorFrameToggle()
 	self:CreateGUIGameMenuButton()
 	self:CreateJerryWay()
+	self:CreateMinimapButtonToggle()
 	self:CreateQuestSizeUpdate()
 	self:CreateTicketStatusFrameMove()
 	self:CreateTradeTargetInfo()
 	self:CreateVehicleSeatMover()
 	self:MoveMawBuffsFrame()
-	self:CreateMinimapButtonToggle()
+	self:UpdateMaxCameraZoom()
 
 	hooksecurefunc("QuestInfo_Display", Module.CreateQuestXPPercent)
 
@@ -774,4 +775,8 @@ do -- Firestorm has a bug where UI_ERROR_MESSAGES that should trigger a dismount
 		end
 	end
 	K:RegisterEvent("UI_ERROR_MESSAGE", FixFSAutoDismount)
+end
+
+function Module:UpdateMaxCameraZoom()
+	SetCVar("cameraDistanceMaxZoomFactor", C["Misc"].MaxCameraZoom)
 end
