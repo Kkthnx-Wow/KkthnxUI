@@ -2039,7 +2039,7 @@ GUI.Enable = function(self)
 	ResetChat.Middle:SetText(K.SystemColor .. "Reset Chat|r")
 
 	-- Contact Button
-	local ContactMe = CreateFrame("Frame", nil, self.Footer)
+	local ContactMe = CreateFrame("Frame", "KKUI_ContactMe", self.Footer)
 	ContactMe:SetSize(FooterButtonWidth, HeaderHeight)
 	ContactMe:SetPoint("LEFT", Move, 0, -28)
 	ContactMe:CreateBorder()
@@ -2178,6 +2178,21 @@ GUI.Enable = function(self)
 	self.Created = true
 end
 
+local ContactMeInfo = {
+	text = "Need Help? Click Above To Contact Me!",
+	buttonStyle = HelpTip.ButtonStyle.GotIt,
+	targetPoint = HelpTip.Point.BottomEdgeCenter,
+	offsetY = -6,
+	onAcknowledgeCallback = K.HelpInfoAcknowledge,
+	callbackArg = "ContactMe",
+}
+
+GUI.HelpTip = function()
+	if not KkthnxUIDB["Helper"]["ContactMe"] then
+		HelpTip:Show("KKUI_ContactMe", ContactMeInfo)
+	end
+end
+
 GUI.Toggle = function(self)
 	if InCombatLockdown() then
 		return
@@ -2185,9 +2200,11 @@ GUI.Toggle = function(self)
 
 	if self:IsShown() then
 		self.FadeOut:Play()
+		self.HelpTip()
 	else
 		self:Show()
 		self.FadeIn:Play()
+		self.HelpTip()
 	end
 end
 

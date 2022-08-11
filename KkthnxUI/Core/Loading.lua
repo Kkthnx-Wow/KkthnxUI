@@ -113,10 +113,6 @@ local function KKUI_VerifyDatabase()
 		KkthnxUIDB.Variables[K.Realm][K.Name].BindType = 1
 	end
 
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems then
-		KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems = {}
-	end
-
 	-- Transfer favourite items since we made a custom filter
 	if KkthnxUIDB and KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems and next(KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems) then
 		for itemID in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems) do
@@ -125,7 +121,6 @@ local function KKUI_VerifyDatabase()
 			end
 			KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[itemID] = 1
 		end
-		-- print(1)
 		KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems = nil
 	end
 
@@ -234,6 +229,10 @@ local function KKUI_VerifyDatabase()
 
 	if not KkthnxUIDB.MajorSpells then
 		KkthnxUIDB.MajorSpells = {}
+	end
+
+	if not KkthnxUIDB.Helper then
+		KkthnxUIDB.Helper = {}
 	end
 end
 

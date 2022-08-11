@@ -187,6 +187,21 @@ function Module:ReplaceGroupRoles(numPlayers, _, disabled)
 	end
 end
 
+function Module:QuickJoin_ShowTips()
+	local quickJoinInfo = {
+		text = "Quickly apply to a group by double clicking. Leave a comment by holding 'ALT' and double clicking.",
+		buttonStyle = HelpTip.ButtonStyle.GotIt,
+		targetPoint = HelpTip.Point.RightEdgeCenter,
+		onAcknowledgeCallback = K.HelpInfoAcknowledge,
+		callbackArg = "QuickJoin",
+	}
+	LFGListFrame.SearchPanel.SignUpButton:HookScript("OnShow", function()
+		if not KkthnxUIDB["Helper"]["QuickJoin"] then
+			HelpTip:Show(PVEFrame, quickJoinInfo)
+		end
+	end)
+end
+
 function Module:AddAutoAcceptButton()
 	local bu = CreateFrame("CheckButton", nil, LFGListFrame.ApplicationViewer, "InterfaceOptionsCheckButtonTemplate")
 	bu:SetScript("OnClick", nil) -- reset onclick handler
@@ -445,6 +460,8 @@ function Module:CreateQuickJoin()
 			bu:HookScript("OnDoubleClick", Module.HookApplicationClick)
 		end
 	end
+
+	Module:QuickJoin_ShowTips()
 
 	hooksecurefunc("LFGListInviteDialog_Accept", function()
 		if PVEFrame:IsShown() then

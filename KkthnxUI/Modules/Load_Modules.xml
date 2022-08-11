@@ -180,6 +180,7 @@
    <Include file="Skins\Blizzard\FrameXML\ChatFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\GameMenuFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\GhostFrame.lua" />
+   <Include file="Skins\Blizzard\FrameXML\HelpTipTemplate.lua" />
    <Include file="Skins\Blizzard\FrameXML\LootFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\LossOfControlFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\ObjectiveTracker.lua" />

@@ -205,6 +205,11 @@ do
 end
 
 do
+	-- HelpTip
+	function K.HelpInfoAcknowledge(callbackArg)
+		KkthnxUIDB["Helper"][callbackArg] = true
+	end
+
 	function K.TogglePanel(frame)
 		if frame:IsShown() then
 			frame:Hide()
