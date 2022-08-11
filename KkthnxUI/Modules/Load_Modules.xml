@@ -17,6 +17,7 @@
    <Script file="Blizzard\Elements\AlertFrames.lua" />
    <Script file="Blizzard\Elements\AltPowerBar.lua" />
    <Script file="Blizzard\Elements\ColorPicker.lua" />
+   <Script file="Blizzard\Elements\DisableTutorials.lua" />
    <Script file="Blizzard\Elements\MirrorBars.lua" />
    <Script file="Blizzard\Elements\ObjectiveFrame.lua" />
    <Script file="Blizzard\Elements\OrderHall.lua" />
@@ -132,6 +133,7 @@
    <Script file="Announcements\Elements\HealthAlert.lua" />
    <Script file="Announcements\Elements\Interrupt.lua" />
    <Script file="Announcements\Elements\ItemAlert.lua" />
+   <Script file="Announcements\Elements\Keystone.lua" />
    <Script file="Announcements\Elements\KillingBlow.lua" />
    <Script file="Announcements\Elements\QuestNotifier.lua" />
    <Script file="Announcements\Elements\RareAlert.lua" />
@@ -170,7 +172,6 @@
    <Include file="Skins\Blizzard\DeathRecap.lua" />
    <Include file="Skins\Blizzard\InspectUI.lua" />
    <Include file="Skins\Blizzard\QuestNavigation.lua" />
-   <Include file="Skins\Blizzard\TalentUI.lua" />
    <Include file="Skins\Blizzard\TalkingHeadUI.lua" />
    <Include file="Skins\Blizzard\TradeSkillUI.lua" />
    <!-- Skins FrameXML -->

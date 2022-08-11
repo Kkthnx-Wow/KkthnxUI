@@ -5,45 +5,32 @@ local Module = K:GetModule("Automation")
 
 local _G = _G
 
+local GetSpecialization = _G.GetSpecialization
+local GetSpecializationRole = _G.GetSpecializationRole
+local GetTime = _G.GetTime
 local InCombatLockdown = _G.InCombatLockdown
 local IsInGroup = _G.IsInGroup
 local IsPartyLFG = _G.IsPartyLFG
-local GetSpecialization = _G.GetSpecialization
-local GetSpecializationRole = _G.GetSpecializationRole
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
-local GetTime = _G.GetTime
 local UnitSetRole = _G.UnitSetRole
 
-local PreviousAutoRole = 0
-
-function Module:CombatAutoSetRole()
-	K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.CombatAutoSetRole)
-	Module:SetupAutoSetRole() -- Force role check
-end
-
-function Module:SetupAutoSetRole()
-	if IsInGroup() then
-		if IsPartyLFG() then
-			return
-		end
-
+local prev = 0
+function Module:SetupAutoRole()
+	if K.Level >= 10 and not InCombatLockdown() and IsInGroup() and not IsPartyLFG() then
 		local spec = GetSpecialization()
-		if not spec then -- No spec selected
+		if spec then
+			local role = GetSpecializationRole(spec)
+			if UnitGroupRolesAssigned("player") ~= role then
+				local t = GetTime()
+				if t - prev > 2 then
+					prev = t
+					UnitSetRole("player", role)
+					return
+				end
+			end
+		else
+			UnitSetRole("player", "No Role")
 			return
-		end
-
-		local role = GetSpecializationRole(spec)
-		if role and UnitGroupRolesAssigned("player") ~= role then
-			if InCombatLockdown() or UnitAffectingCombat("player") then
-				K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.CombatAutoSetRole)
-				return
-			end
-
-			local t = GetTime()
-			if t - PreviousAutoRole > 2 then
-				PreviousAutoRole = t
-				UnitSetRole("player", role)
-			end
 		end
 	end
 end
@@ -53,6 +40,7 @@ function Module:CreateAutoSetRole()
 		return
 	end
 
-	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.SetupAutoSetRole)
+	K:RegisterEvent("PLAYER_TALENT_UPDATE", Module.SetupAutoRole)
+	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.SetupAutoRole)
 	RolePollPopup:UnregisterEvent("ROLE_POLL_BEGIN")
 end

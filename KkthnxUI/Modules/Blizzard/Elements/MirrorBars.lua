@@ -1,62 +1,39 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Blizzard")
 
--- Sourced: ElvUI
+-- Sourced: NDui
 
-local function MirrorTimer_OnUpdate(frame, elapsed)
-	if frame.paused then
-		return
-	end
-	if frame.timeSinceUpdate >= 0.3 then
-		local minutes = frame.value / 60
-		local seconds = frame.value % 60
-		local text = frame.label:GetText()
+local function SetupMirrorBars(bar)
+	local statusbar = _G[bar:GetName() .. "StatusBar"]
+	local text = _G[bar:GetName() .. "Text"]
+	local texture = K.GetTexture(C["UITextures"].UnitframeTextures)
 
-		if frame.value > 0 then
-			frame.TimerText:SetFormattedText("%s (%d:%02d)", text, minutes, seconds)
-		else
-			frame.TimerText:SetFormattedText("%s (0:00)", text)
-		end
+	bar:SetSize(222, 22)
+	bar:StripTextures()
 
-		frame.timeSinceUpdate = 0
-	else
-		frame.timeSinceUpdate = frame.timeSinceUpdate + elapsed
-	end
+	statusbar:SetAllPoints()
+	statusbar:SetStatusBarTexture(texture)
+	text:SetAllPoints()
+
+	bar.spark = bar:CreateTexture(nil, "OVERLAY")
+	bar.spark:SetWidth(64)
+	bar.spark:SetHeight(bar:GetHeight())
+	bar.spark:SetTexture(C["Media"].Textures.Spark128Texture)
+	bar.spark:SetBlendMode("ADD")
+	bar.spark:SetPoint("CENTER", statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
+
+	bar:CreateBorder()
 end
 
 function Module:CreateMirrorBars()
-	-- Mirror Timers (Underwater Breath etc.), credit to Azilroka
-	for i = 1, _G.MIRRORTIMER_NUMTIMERS do
-		local mirrorTimer = _G["MirrorTimer" .. i]
-		local statusBar = _G["MirrorTimer" .. i .. "StatusBar"]
-		local text = _G["MirrorTimer" .. i .. "Text"]
+	local previous
+	for i = 1, 3 do
+		local bar = _G["MirrorTimer" .. i]
+		SetupMirrorBars(bar)
 
-		mirrorTimer:StripTextures()
-		mirrorTimer:SetSize(222, 22)
-		mirrorTimer.label = text
-
-		statusBar:SetStatusBarTexture(K.GetTexture(C["UITextures"].GeneralTextures))
-		statusBar:CreateBorder()
-		statusBar:SetSize(222, 22)
-
-		statusBar.Spark = statusBar:CreateTexture(nil, "OVERLAY")
-		statusBar.Spark:SetWidth(64)
-		statusBar.Spark:SetHeight(statusBar:GetHeight())
-		statusBar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
-		statusBar.Spark:SetBlendMode("ADD")
-		statusBar.Spark:SetPoint("CENTER", statusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
-		statusBar.Spark:SetAlpha(0.9)
-
-		text:Hide()
-
-		local TimerText = mirrorTimer:CreateFontString(nil, "OVERLAY")
-		TimerText:SetFontObject(KkthnxUIFont)
-		TimerText:SetPoint("CENTER", statusBar, "CENTER", 0, 0)
-		mirrorTimer.TimerText = TimerText
-
-		mirrorTimer.timeSinceUpdate = 0.3 -- Make sure timer value updates right away on first show
-		mirrorTimer:HookScript("OnUpdate", MirrorTimer_OnUpdate)
-
-		K.Mover(mirrorTimer, "MirrorTimer" .. i .. "Mover", "MirrorTimer" .. i .. "Mover", { mirrorTimer:GetPoint() }) -- ??
+		if previous then
+			bar:SetPoint("TOP", previous, "BOTTOM", 0, -6)
+		end
+		previous = bar
 	end
 end

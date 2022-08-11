@@ -20,6 +20,57 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.3.4] - 2022-8-10",
+		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
+		Sections = {
+			{
+				Header = "Added",
+				Entries = {
+					"Announce When You Obtain New Mythic Key",
+					"Auto Keystone Module",
+					"Bags BoE & BoU Status Text",
+					"Control For Player Buffs & Debuffs",
+					"New Max CameraZoom Module",
+					"Objective Tracker Adjustable Size",
+					"Objective Tracker Now Follows Its Options UIFont Font",
+					"Option To Disabled Minimap Mail Pulse",
+				},
+			},
+
+			{
+				Header = "Fixed",
+				Entries = {
+					"Dev Trying To Load",
+					"DominationShards Module",
+					"Filtering chat causing bug",
+					"HideFocusTarget Options",
+					"Raid Frames Mover Not Being The Right Size",
+					"Some Minimap Blip Choices",
+				},
+			},
+
+			{
+				Header = "Removed",
+				Entries = {
+					"No Longer Copy A Name When Shift Clicking",
+				},
+			},
+
+			{
+				Header = "Changed",
+				Entries = {
+					"Auras Header (Needs Testing)",
+					"Castbar Max Settings Width (800)",
+					"Disable Tutorals To Its Own File",
+					"Filters For Raid Groups",
+					"Minimap Queue Status Text",
+					"Some GUI Titles and Desc",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.3.3] - 2022-7-28",
 		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {

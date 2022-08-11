@@ -287,9 +287,8 @@ function Module:UpdateAbilitySpellSpam(_, msg, ...)
 end
 
 function Module:UpdateRaidInstanceQuestSpam(_, msg, ...)
-	if IsInRaid() and msg == ERR_NOT_IN_RAID then
-		return true
-	elseif IsInInstance() and msg == ERR_NOT_IN_INSTANCE_GROUP then
+	if (msg == ERR_NOT_IN_RAID) or (msg == ERR_NOT_IN_INSTANCE_GROUP) then
+		print(msg)
 		return true
 	end
 

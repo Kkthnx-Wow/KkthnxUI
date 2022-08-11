@@ -162,8 +162,4 @@ table_insert(C.defaultThemes, function()
 			end
 		end
 	end)
-
-	if C["General"].NoTutorialButtons then
-		_G.SpellBookFrameTutorialButton:Kill()
-	end
 end)

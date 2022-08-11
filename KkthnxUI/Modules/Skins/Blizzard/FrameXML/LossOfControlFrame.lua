@@ -44,7 +44,7 @@ table_insert(C.defaultThemes, function()
 		TimeLeftSecondsText:Kill()
 
 		-- Always stop shake animation on start
-		if Anim:IsPlaying() then
+		if Anim and Anim:IsPlaying() then
 			Anim:Stop()
 		end
 	end)

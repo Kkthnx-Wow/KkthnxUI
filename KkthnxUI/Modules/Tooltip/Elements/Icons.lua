@@ -8,7 +8,6 @@ local CreateFrame = _G.CreateFrame
 local GetItemIcon = _G.GetItemIcon
 local GetSpellTexture = _G.GetSpellTexture
 local hooksecurefunc = _G.hooksecurefunc
-local unpack = _G.unpack
 
 local newString = "0:0:64:64:5:59:5:59"
 

@@ -63,6 +63,7 @@ C["ActionBar"] = {
 C["Announcements"] = {
 	["AlertInChat"] = false,
 	["AlertInWild"] = false,
+	["KeystoneAlert"] = false,
 	["BrokenAlert"] = false,
 	["DispellAlert"] = false,
 	["HealthAlert"] = false,
@@ -512,6 +513,7 @@ C["UIFonts"] = {
 	["TooltipFonts"] = "KkthnxUI",
 	["UnitframeFonts"] = "KkthnxUI",
 	-- Font Sizes Will Go Here (Not Sure How Much I Care About Improving This)
+	["ObjectiveFontSize"] = 12,
 	["QuestFontSize"] = 11,
 }
 

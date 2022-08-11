@@ -222,7 +222,7 @@ eventFrame:SetScript("OnEvent", function(_, event, addon)
 		hookCount = hookCount + 1
 	end
 
-	if hookCount >= 2 then
+	if hookCount == 2 then
 		eventFrame:UnregisterEvent(event)
 	end
 end)

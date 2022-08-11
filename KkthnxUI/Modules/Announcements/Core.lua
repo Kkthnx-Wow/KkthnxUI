@@ -10,4 +10,5 @@ function Module:OnEnable()
 	Module:CreateRareAnnounce()
 	Module:CreateResetInstance()
 	Module:CreateSaySappedAnnounce()
+	Module:CreateKeystoneAnnounce()
 end

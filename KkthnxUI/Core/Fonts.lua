@@ -182,6 +182,7 @@ local function UpdateBlizzardFonts()
 		SetFont(_G.Tooltip_Med, NORMAL, size) -- 12
 		SetFont(_G.Tooltip_Small, NORMAL, s and small or size) -- 10
 		SetFont(_G.ZoneTextString, NORMAL, s and enormous or 32, outline) -- 32
+		-- SetFont(_G.ObjectiveFont, NORMAL, size, outline)
 
 		-- Text that does not follow our fonts fixed below
 		WorldMapFrame.NavBar.homeButton.text:SetFontObject(_G.KkthnxUIFont)

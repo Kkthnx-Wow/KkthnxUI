@@ -101,7 +101,7 @@ end
 
 local function reskinHeader(header)
 	header.Background:SetTexture(nil)
-	header.Text:SetTextColor(255 / 255, 204 / 255, 102 / 255)
+	header.Text:SetTextColor(0.75, 0.61, 0)
 	header.Text:SetFontObject(K.GetFont(C["UIFonts"].QuestTrackerFonts))
 	header.Text:SetFont(select(1, header.Text:GetFont()), 15, select(3, header.Text:GetFont()))
 end

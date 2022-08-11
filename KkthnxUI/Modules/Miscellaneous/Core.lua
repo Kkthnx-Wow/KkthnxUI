@@ -59,6 +59,7 @@ function Module:OnEnable()
 	self:CreateJerryWay()
 	self:CreateMinimapButtonToggle()
 	self:CreateQuestSizeUpdate()
+	self:CreateObjectiveSizeUpdate()
 	self:CreateTicketStatusFrameMove()
 	self:CreateTradeTargetInfo()
 	self:CreateVehicleSeatMover()
@@ -116,14 +117,6 @@ function Module:OnEnable()
 			return
 		end
 		_AddonTooltip_Update(owner)
-	end
-
-	-- MicroButton Talent Alert
-	local TalentMicroButtonAlert = _G.TalentMicroButtonAlert
-	if TalentMicroButtonAlert then -- why do we need to check this?
-		if C["General"].NoTutorialButtons then
-			TalentMicroButtonAlert:Kill() -- Kill it, because then the blizz default will show
-		end
 	end
 end
 
@@ -388,9 +381,14 @@ function Module:CreateErrorFrameToggle()
 end
 
 function Module:CreateQuestSizeUpdate()
-	QuestTitleFont:SetFont(QuestFont:GetFont(), C["UIFonts"].QuestFontSize + 3, nil)
+	QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["UIFonts"].QuestFontSize + 3, nil)
 	QuestFont:SetFont(QuestFont:GetFont(), C["UIFonts"].QuestFontSize + 1, nil)
 	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["UIFonts"].QuestFontSize, nil)
+end
+
+function Module:CreateObjectiveSizeUpdate()
+	ObjectiveFont:SetFontObject(K.GetFont(C["UIFonts"].QuestTrackerFonts))
+	ObjectiveFont:SetFont(ObjectiveFont:GetFont(), C["UIFonts"].ObjectiveFontSize, select(3, ObjectiveFont:GetFont()))
 end
 
 -- TradeFrame hook

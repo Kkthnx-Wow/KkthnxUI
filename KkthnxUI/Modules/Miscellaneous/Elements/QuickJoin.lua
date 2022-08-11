@@ -7,22 +7,22 @@ local select = _G.select
 local table_sort = _G.table.sort
 local table_wipe = _G.table.wipe
 
+local ApplicationViewerFrame = _G.LFGListFrame.ApplicationViewer
+local C_ChallengeMode_GetMapUIInfo = _G.C_ChallengeMode.GetMapUIInfo
+local C_LFGList_GetActivityInfoTable = _G.C_LFGList.GetActivityInfoTable
+local C_LFGList_GetSearchResultInfo = _G.C_LFGList.GetSearchResultInfo
 local C_LFGList_GetSearchResultMemberInfo = _G.C_LFGList.GetSearchResultMemberInfo
 local C_Timer_After = _G.C_Timer.After
+local GetTime = _G.GetTime
 local HideUIPanel = _G.HideUIPanel
+local LFGListFrame = _G.LFGListFrame
 local LFG_LIST_GROUP_DATA_ATLASES = _G.LFG_LIST_GROUP_DATA_ATLASES
 local StaticPopup_Hide = _G.StaticPopup_Hide
-local GetTime = _G.GetTime
-local UnitIsGroupLeader = _G.UnitIsGroupLeader
 local UnitClass = _G.UnitClass
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
-local C_LFGList_GetSearchResultInfo = _G.C_LFGList.GetSearchResultInfo
-local C_LFGList_GetActivityInfoTable = _G.C_LFGList.GetActivityInfoTable
-local LFGListFrame = _G.LFGListFrame
-local ApplicationViewerFrame = _G.LFGListFrame.ApplicationViewer
-local searchPanel = _G.LFGListFrame.SearchPanel
+local UnitIsGroupLeader = _G.UnitIsGroupLeader
 local categorySelection = _G.LFGListFrame.CategorySelection
-local C_ChallengeMode_GetMapUIInfo = _G.C_ChallengeMode.GetMapUIInfo
+local searchPanel = _G.LFGListFrame.SearchPanel
 
 local scoreFormat = K.GreyColor .. "(%s) |r%s"
 local pendingFrame

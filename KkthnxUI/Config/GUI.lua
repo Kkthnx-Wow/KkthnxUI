@@ -223,6 +223,10 @@ local function UpdateQuestFontSize()
 	K:GetModule("Miscellaneous"):CreateQuestSizeUpdate()
 end
 
+local function UpdateObjectiveFontSize()
+	K:GetModule("Miscellaneous"):CreateObjectiveSizeUpdate()
+end
+
 local function UpdateCustomUnitList()
 	K:GetModule("Unitframes"):CreateUnitTable()
 end
@@ -424,6 +428,7 @@ local Announcements = function(self)
 	Window:CreateSwitch("Announcements", "KillingBlow", L["Show Your Killing Blow Info"])
 	Window:CreateSwitch("Announcements", "PvPEmote", L["Auto Emote On Your Killing Blow"])
 	Window:CreateSwitch("Announcements", "HealthAlert", L["Announce When Low On Health"])
+	Window:CreateSwitch("Announcements", "KeystoneAlert", "Announce When New Mythic Key Is Obtained")
 
 	Window:CreateSection(INTERRUPT)
 	Window:CreateSwitch("Announcements", "InterruptAlert", enableTextColor .. L["Announce Interrupts"], nil, UpdateInterruptAlert)
@@ -823,6 +828,7 @@ local UIFonts = function(self)
 
 	Window:CreateSection("Font Tweaks")
 	Window:CreateSlider("UIFonts", "QuestFontSize", L["Adjust QuestFont Size"], 10, 30, 1, nil, UpdateQuestFontSize)
+	Window:CreateSlider("UIFonts", "ObjectiveFontSize", "Adjust ObjectiveFont Size", 10, 30, 1, nil, UpdateObjectiveFontSize)
 end
 
 local UITextures = function(self)
