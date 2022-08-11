@@ -696,6 +696,14 @@ L["Map Reveal Shadow"] = "Map Reveal Shadow"
 L["Show Player/Mouse Coordinates"] = "Show Player/Mouse Coordinates"
 L["Show Smaller Worldmap"] = "Show Smaller Worldmap"
 
+-- HelpTip Locales
+L["BEFHelpTip"] = "There is an ERROR! Click the 'red' number to the right and report it to Kkthnx."
+L["ChatHelpTip"] = "Scroll multi-lines by holding Ctrl key, and scroll to top or bottom by holding Shift key."
+L["ContactMeHelpTip"] = "Need help with the UI? Have a question? Contact me!"
+L["DurabilityHelpTip"] = "You have low durability slots! Repair soon!"
+L["MinimapHelpTip"] = "Scroll minimap to zoom in or out, middle click to toggle micro menu, right click to toggle track menu."
+L["QuickJoinHelpTip"] = "Quickly apply to a group by double clicking. Leave a comment by holding 'ALT' and double clicking."
+
 -- GUI Config Tooltip Locales
 L["AutoScaleTip"] = "Auto Scale the UI to pixel perfect based on your resolution.|n|nIf you wanna manaually scale the UI. You need to turn off 'Auto Scale' then apply the scale by using the slider"
 L["CustomUnitTip"] = "Enter unit name or npc ID.You can see unit npc ID in GameTooltip by holding KEY SHIFT."

@@ -14,7 +14,6 @@ local GetInventoryItemLink = _G.GetInventoryItemLink
 local HideUIPanel = _G.HideUIPanel
 local IsCosmeticItem = _G.IsCosmeticItem
 local hooksecurefunc = _G.hooksecurefunc
-local unpack = _G.unpack
 
 local function UpdateAzeriteItem(self)
 	if not self.styled then

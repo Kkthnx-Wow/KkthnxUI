@@ -5,92 +5,92 @@ if K.Class ~= "SHAMAN" then
 	return
 end
 
--- 萨满的法术监控
+-- Shaman's spell monitoring
 local list = {
-	["Player Aura"] = { -- 玩家光环组
-		{ AuraID = 546, UnitID = "player" }, -- 水上行走
-		{ AuraID = 195222, UnitID = "player" }, -- 风暴之鞭
-		{ AuraID = 198293, UnitID = "player" }, -- 疾风
-		{ AuraID = 197211, UnitID = "player" }, -- 空气之怒
-		{ AuraID = 260881, UnitID = "player" }, -- 幽灵狼
-		{ AuraID = 192106, UnitID = "player", Timeless = true }, -- 闪电护盾
+	["Player Aura"] = { -- Player Aura group
+		{ AuraID = 546, UnitID = "player" }, -- walk on water
+		{ AuraID = 195222, UnitID = "player" }, -- Stormwhip
+		{ AuraID = 198293, UnitID = "player" }, -- Gale
+		{ AuraID = 197211, UnitID = "player" }, -- Air Fury
+		{ AuraID = 260881, UnitID = "player" }, -- ghost wolf
+		{ AuraID = 192106, UnitID = "player", Timeless = true }, -- Lightning Shield
 	},
-	["Target Aura"] = { -- 目标光环组
-		{ AuraID = 61295, UnitID = "target", Caster = "player" }, -- 激流
-		{ AuraID = 51514, UnitID = "target", Caster = "player" }, -- 妖术
-		{ AuraID = 210873, UnitID = "target", Caster = "player" }, -- 妖术
-		{ AuraID = 211004, UnitID = "target", Caster = "player" }, -- 妖术
-		{ AuraID = 211010, UnitID = "target", Caster = "player" }, -- 妖术
-		{ AuraID = 211015, UnitID = "target", Caster = "player" }, -- 妖术
-		{ AuraID = 188389, UnitID = "target", Caster = "player" }, -- 烈焰震击
-		{ AuraID = 118905, UnitID = "target", Caster = "player" }, -- 闪电奔涌图腾
-		{ AuraID = 188089, UnitID = "target", Caster = "player" }, -- 大地之刺
-		{ AuraID = 197209, UnitID = "target", Caster = "player" }, -- 避雷针
-		{ AuraID = 207778, UnitID = "target", Caster = "player" }, -- 蒺藜
-		{ AuraID = 207400, UnitID = "target", Caster = "player" }, -- 先祖活力
-		{ AuraID = 269808, UnitID = "target", Caster = "player" }, -- 元素外露
-		{ AuraID = 334168, UnitID = "target", Caster = "player" }, -- 鞭笞烈焰
+	["Target Aura"] = { -- target aura group
+		{ AuraID = 61295, UnitID = "target", Caster = "player" }, -- torrent
+		{ AuraID = 51514, UnitID = "target", Caster = "player" }, -- Hex
+		{ AuraID = 210873, UnitID = "target", Caster = "player" }, -- Hex
+		{ AuraID = 211004, UnitID = "target", Caster = "player" }, -- Hex
+		{ AuraID = 211010, UnitID = "target", Caster = "player" }, -- Hex
+		{ AuraID = 211015, UnitID = "target", Caster = "player" }, -- Hex
+		{ AuraID = 188389, UnitID = "target", Caster = "player" }, -- Flame Shock
+		{ AuraID = 118905, UnitID = "target", Caster = "player" }, -- Lightning Surge Totem
+		{ AuraID = 188089, UnitID = "target", Caster = "player" }, -- Earth Spike
+		{ AuraID = 197209, UnitID = "target", Caster = "player" }, -- Lightning Rod
+		{ AuraID = 207778, UnitID = "target", Caster = "player" }, -- Tribulus
+		{ AuraID = 207400, UnitID = "target", Caster = "player" }, -- ancestral vitality
+		{ AuraID = 269808, UnitID = "target", Caster = "player" }, -- element exposed
+		{ AuraID = 334168, UnitID = "target", Caster = "player" }, -- Lashing Flame
 	},
-	["Special Aura"] = { -- 玩家重要光环组
-		{ AuraID = 73920, UnitID = "player" }, -- 治疗之雨
-		{ AuraID = 53390, UnitID = "player" }, -- 潮汐奔涌
-		{ AuraID = 79206, UnitID = "player" }, -- 灵魂行者的恩赐
-		{ AuraID = 73685, UnitID = "player" }, -- 生命释放
-		{ AuraID = 58875, UnitID = "player" }, -- 幽魂步
-		{ AuraID = 77762, UnitID = "player" }, -- 熔岩奔腾
-		{ AuraID = 208416, UnitID = "player" }, -- 十万火急
-		{ AuraID = 207527, UnitID = "player" }, -- 迷雾幽灵
-		{ AuraID = 207288, UnitID = "player" }, -- 女王的祝福
-		{ AuraID = 216251, UnitID = "player" }, -- 波动
-		{ AuraID = 108281, UnitID = "player" }, -- 先祖指引
-		{ AuraID = 114050, UnitID = "player" }, -- 升腾 元素
-		{ AuraID = 114051, UnitID = "player" }, -- 升腾 增强
-		{ AuraID = 114052, UnitID = "player" }, -- 升腾 恢复
-		{ AuraID = 108271, UnitID = "player" }, -- 星界转移
-		{ AuraID = 204945, UnitID = "player" }, -- 毁灭之风
-		{ AuraID = 201846, UnitID = "player" }, -- 风暴使者
-		{ AuraID = 199055, UnitID = "player" }, -- 毁灭释放
-		{ AuraID = 201898, UnitID = "player" }, -- 风歌
-		{ AuraID = 215785, UnitID = "player" }, -- 灼热之手
-		{ AuraID = 191877, UnitID = "player" }, -- 漩涡之力
-		{ AuraID = 205495, UnitID = "player" }, -- 风暴守护者
-		{ AuraID = 118522, UnitID = "player" }, -- 元素冲击 爆击
-		{ AuraID = 173183, UnitID = "player" }, -- 元素冲击 急速
-		{ AuraID = 173184, UnitID = "player" }, -- 元素冲击 精通
-		{ AuraID = 210714, UnitID = "player" }, -- 冰怒
-		{ AuraID = 157504, UnitID = "player", Value = true }, -- 暴雨图腾
-		{ AuraID = 280615, UnitID = "player" }, -- 迅捷洪流
-		{ AuraID = 273323, UnitID = "player" }, -- 闪电护盾超载
-		{ AuraID = 272737, UnitID = "player" }, -- 无穷力量
-		{ AuraID = 263806, UnitID = "player" }, -- 呼啸狂风
-		{ AuraID = 191634, UnitID = "player" }, -- 风暴守护者
-		{ AuraID = 202004, UnitID = "player" }, -- 山崩
-		{ AuraID = 262652, UnitID = "player" }, -- 强风
-		{ AuraID = 224125, UnitID = "player" }, -- 火
-		{ AuraID = 224126, UnitID = "player" }, -- 冰
-		{ AuraID = 224127, UnitID = "player" }, -- 电
-		{ AuraID = 187878, UnitID = "player" }, -- 毁灭闪电
-		{ AuraID = 288675, UnitID = "player" }, -- 浪潮汹涌
-		{ AuraID = 320125, UnitID = "player" }, -- 回响震击
-		{ AuraID = 344179, UnitID = "player", Combat = true }, -- 漩涡武器
+	["Special Aura"] = { -- Player important aura group
+		{ AuraID = 73920, UnitID = "player" }, -- Healing Rain
+		{ AuraID = 53390, UnitID = "player" }, -- tidal surge
+		{ AuraID = 79206, UnitID = "player" }, -- Spirit Walker's Gift
+		{ AuraID = 73685, UnitID = "player" }, -- life release
+		{ AuraID = 58875, UnitID = "player" }, -- ghost step
+		{ AuraID = 77762, UnitID = "player" }, -- lava surge
+		{ AuraID = 208416, UnitID = "player" }, -- 100,000 Fire
+		{ AuraID = 207527, UnitID = "player" }, -- Mist Ghost
+		{ AuraID = 207288, UnitID = "player" }, -- Queen's Blessing
+		{ AuraID = 216251, UnitID = "player" }, -- volatility
+		{ AuraID = 108281, UnitID = "player" }, -- ancestral guide
+		{ AuraID = 114050, UnitID = "player" }, -- Ascension element
+		{ AuraID = 114051, UnitID = "player" }, -- Ascension enhancement
+		{ AuraID = 114052, UnitID = "player" }, -- Ascension recovery
+		{ AuraID = 108271, UnitID = "player" }, -- astral transfer
+		{ AuraID = 204945, UnitID = "player" }, -- Wind of Destruction
+		{ AuraID = 201846, UnitID = "player" }, -- Stormbringer
+		{ AuraID = 199055, UnitID = "player" }, -- Destruction Release
+		{ AuraID = 201898, UnitID = "player" }, -- wind song
+		{ AuraID = 215785, UnitID = "player" }, -- Searing Hand
+		{ AuraID = 191877, UnitID = "player" }, -- vortex force
+		{ AuraID = 205495, UnitID = "player" }, -- Storm Guardian
+		{ AuraID = 118522, UnitID = "player" }, -- Elemental Blast critical strike
+		{ AuraID = 173183, UnitID = "player" }, -- Elemental Impact Haste
+		{ AuraID = 173184, UnitID = "player" }, -- Elemental Blast Mastery
+		{ AuraID = 210714, UnitID = "player" }, -- Icefury
+		{ AuraID = 157504, UnitID = "player", Value = true }, -- Rainstorm Totem
+		{ AuraID = 280615, UnitID = "player" }, -- Swift Torrent
+		{ AuraID = 273323, UnitID = "player" }, -- Lightning Shield Overload
+		{ AuraID = 272737, UnitID = "player" }, -- infinite power
+		{ AuraID = 263806, UnitID = "player" }, -- howling wind
+		{ AuraID = 191634, UnitID = "player" }, -- Guardian of the Storm
+		{ AuraID = 202004, UnitID = "player" }, -- landslide
+		{ AuraID = 262652, UnitID = "player" }, -- strong wind
+		{ AuraID = 224125, UnitID = "player" }, -- fire
+		{ AuraID = 224126, UnitID = "player" }, -- ice
+		{ AuraID = 224127, UnitID = "player" }, -- electricity
+		{ AuraID = 187878, UnitID = "player" }, -- Destruction Lightning
+		{ AuraID = 288675, UnitID = "player" }, -- surging waves
+		{ AuraID = 320125, UnitID = "player" }, -- Echo Shock
+		{ AuraID = 344179, UnitID = "player", Combat = true }, -- Maelstrom weapon
 	},
-	["Focus Aura"] = { -- 焦点光环组
-		{ AuraID = 51514, UnitID = "focus", Caster = "player" }, -- 妖术
-		{ AuraID = 210873, UnitID = "focus", Caster = "player" }, -- 妖术
-		{ AuraID = 211004, UnitID = "focus", Caster = "player" }, -- 妖术
-		{ AuraID = 211010, UnitID = "focus", Caster = "player" }, -- 妖术
-		{ AuraID = 211015, UnitID = "focus", Caster = "player" }, -- 妖术
+	["Focus Aura"] = { -- focus aura group
+		{ AuraID = 51514, UnitID = "focus", Caster = "player" }, -- Hex
+		{ AuraID = 210873, UnitID = "focus", Caster = "player" }, -- Hex
+		{ AuraID = 211004, UnitID = "focus", Caster = "player" }, -- Hex
+		{ AuraID = 211010, UnitID = "focus", Caster = "player" }, -- Hex
+		{ AuraID = 211015, UnitID = "focus", Caster = "player" }, -- Hex
 	},
-	["Spell Cooldown"] = { -- 冷却计时组
-		{ SlotID = 13 }, -- 饰品1
-		{ SlotID = 14 }, -- 饰品2
-		{ SpellID = 20608 }, -- 复生
-		{ SpellID = 98008 }, -- 灵魂链接
-		{ SpellID = 114050 }, -- 升腾 元素
-		{ SpellID = 114051 }, -- 升腾 增强
-		{ SpellID = 114052 }, -- 升腾 恢复
-		{ SpellID = 108280 }, -- 治疗之潮
-		{ SpellID = 198506 }, -- 野性狼魂
+	["Spell Cooldown"] = { -- Cooldown timer group
+		{ SlotID = 13 }, -- trinket 1
+		{ SlotID = 14 }, -- trinket 2
+		{ SpellID = 20608 }, -- respawn
+		{ SpellID = 98008 }, -- soul link
+		{ SpellID = 114050 }, -- Ascension element
+		{ SpellID = 114051 }, -- Ascension enhancement
+		{ SpellID = 114052 }, -- Ascension recovery
+		{ SpellID = 108280 }, -- Tide of Healing
+		{ SpellID = 198506 }, -- feral wolf spirit
 	},
 }
 

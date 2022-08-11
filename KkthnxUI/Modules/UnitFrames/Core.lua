@@ -436,6 +436,14 @@ function Module.PostCreateAura(element, button)
 	button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
 end
 
+Module.ReplacedSpellIcons = {
+	[368078] = 348567, -- 移速
+	[368079] = 348567, -- 移速
+	[368103] = 648208, -- 急速
+	[368243] = 237538, -- CD
+	[373785] = 236293, -- S4，大魔王伪装
+}
+
 function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, debuffType)
 	local style = element.__owner.mystyle
 	if style == "nameplate" then
@@ -479,6 +487,11 @@ function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, d
 		button:SetScript("OnUpdate", nil)
 		button.timer:Hide()
 	end
+
+	local newTexture = Module.ReplacedSpellIcons[button.spellID]
+	if newTexture then
+		button.icon:SetTexture(newTexture)
+	end
 end
 
 function Module.bolsterPreUpdate(element)
@@ -498,6 +511,12 @@ function Module.bolsterPostUpdate(element)
 		end
 	end
 end
+
+local isCasterPlayer = {
+	["player"] = true,
+	["pet"] = true,
+	["vehicle"] = true,
+}
 
 function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster, isStealable, _, spellID, _, _, _, nameplateShowAll)
 	local style = element.__owner.mystyle
@@ -520,7 +539,7 @@ function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster,
 			return true
 		else
 			local auraFilter = C["Nameplate"].AuraFilter.Value
-			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and (caster == "player" or caster == "pet" or caster == "vehicle"))
+			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and isCasterPlayer[caster])
 		end
 	elseif (element.onlyShowPlayer and button.isPlayer) or (not element.onlyShowPlayer and name) then
 		return true

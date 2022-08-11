@@ -767,7 +767,7 @@ function Module:CreateBaudErrorHelpTip()
 	end
 
 	local errorInfo = {
-		text = "There is an ERROR! Click the 'red' number to the right and report it to Kkthnx.",
+		text = L["BEFHelpTip"],
 		buttonStyle = HelpTip.ButtonStyle.GotIt,
 		targetPoint = HelpTip.Point.LeftEdgeCenter,
 		alignment = HelpTip.Alignment.Left,

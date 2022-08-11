@@ -3,117 +3,117 @@ local _, C = unpack(KkthnxUI)
 local _G = _G
 
 C.NameplateWhiteList = {
-	-- Buffs
-	[642] = true, -- 圣盾术
-	[1022] = true, -- 保护之手
-	[23920] = true, -- 法术反射
-	[45438] = true, -- 寒冰屏障
-	[186265] = true, -- 灵龟守护
-	-- Debuffs
-	[2094] = true, -- 致盲
-	[10326] = true, -- 超度邪恶
-	[20549] = true, -- 战争践踏
-	[107079] = true, -- 震山掌
-	[117405] = true, -- 束缚射击
-	[127797] = true, -- 乌索尔旋风
-	[272295] = true, -- 悬赏
+	--Buffs
+	[642] = true, -- Divine Shield
+	[1022] = true, -- Hand of Protection
+	[23920] = true, -- Spell Reflection
+	[45438] = true, -- Ice Barrier
+	[186265] = true, -- Guardian of the tortoise
+	--Debuffs
+	[2094] = true, -- blind
+	[10326] = true, -- over evil
+	[20549] = true, -- war trample
+	[107079] = true, -- Shaking Mountain Palm
+	[117405] = true, -- restraint shot
+	[127797] = true, -- Ursol Whirlwind
+	[272295] = true, -- bounty
 	-- Mythic+
-	[228318] = true, -- 激怒
-	[226510] = true, -- 血池
-	[343553] = true, -- 万噬之怨
-	[343502] = true, -- 鼓舞光环
+	[228318] = true, -- enrage
+	[226510] = true, -- blood pool
+	[343553] = true, -- The Grudge
+	[343502] = true, -- Aura of Inspiration
 	-- Dungeons
-	[320293] = true, -- 伤逝剧场，融入死亡
-	[331510] = true, -- 伤逝剧场，死亡之愿
-	[333241] = true, -- 伤逝剧场，暴脾气
-	[336449] = true, -- 凋魂之殇，玛卓克萨斯之墓
-	[336451] = true, -- 凋魂之殇，玛卓克萨斯之壁
-	[333737] = true, -- 凋魂之殇，凝结之疾
-	[328175] = true, -- 凋魂之殇，凝结之疾
-	[340357] = true, -- 凋魂之殇，急速感染
-	[228626] = true, -- 彼界，怨灵之瓮
-	[344739] = true, -- 彼界，幽灵
-	[333227] = true, -- 彼界，不死之怒
-	[326450] = true, -- 赎罪大厅，忠心的野兽
-	[343558] = true, -- 通灵战潮，病态凝视
-	[343470] = true, -- 通灵战潮，碎骨之盾
-	[328351] = true, -- 通灵战潮，染血长枪
-	[322433] = true, -- 赤红深渊，石肤术
-	[321402] = true, -- 赤红深渊，饱餐
-	[327416] = true, -- 晋升高塔，心能回灌
-	[317936] = true, -- 晋升高塔，弃誓信条
-	[327812] = true, -- 晋升高塔，振奋英气
-	[339917] = true, -- 晋升高塔，命运之矛
-	[323149] = true, -- 仙林，黑暗之拥
-	[322569] = true, -- 仙林，兹洛斯之手
-	[355147] = true, -- 集市，鱼群鼓舞
-	[355057] = true, -- 集市，鱼人战吼
-	[351088] = true, -- 集市，圣物联结
-	[355640] = true, -- 集市，重装方阵
-	[355783] = true, -- 集市，力量增幅
-	[347840] = true, -- 集市，野性
-	[347015] = true, -- 集市，强化防御
-	[355934] = true, -- 集市，强光屏障
-	[349933] = true, -- 集市，狂热鞭笞协议
-	[350931] = true, -- 爬塔软泥免疫
-	[164504] = true, -- 钢铁码头，威吓
-	[163689] = true, -- 钢铁码头，血红之球
-	[227548] = true, -- 卡上，烧蚀护盾
-	-- S3, Encrypted
-	[368078] = true, -- 飘移力场
-	[368103] = true, -- 加速力场
-	[368243] = true, -- 能量弹幕
-	-- S4
-	[373724] = true, -- 鲜血屏障
-	[373011] = true, -- 伪装
-	[373785] = true, -- 大魔王伪装
+	[320293] = true, -- Sadness Theater, merge into death
+	[331510] = true, -- The Theater of Sadness, Death Wish
+	[333241] = true, -- Sad Theater, Grumpy
+	[336449] = true, -- Death of the Wither, Tomb of Maldraxxus
+	[336451] = true, -- Wither's Wrath, Wall of Maldraxxus
+	[333737] = true, -- Death of the Wither, Sickness of Congealing
+	[328175] = true, -- Death of the Wither, Sickness of Congealing
+	[340357] = true, -- Death of the Wither, rapid infection
+	[228626] = true, -- the other world, the urn of resentful spirits
+	[344739] = true, -- the other world, the ghost
+	[333227] = true, -- the other world, the wrath of the undead
+	[326450] = true, -- Hall of Atonement, Faithful Beast
+	[343558] = true, -- psychic wave, morbid gaze
+	[343470] = true, -- Psychic Tide, Bone Shattering Shield
+	[328351] = true, -- psychic war tide, blood-stained spear
+	[322433] = true, -- Crimson Abyss, Stoneskin
+	[321402] = true, -- red abyss, full meal
+	[327416] = true, -- Promote the tower, recharge the heart
+	[317936] = true, -- Promoted to the Tower, Abandoned Creed
+	[327812] = true, -- Promote the tower and boost the heroic spirit
+	[339917] = true, -- Promote the Tower, the Spear of Destiny
+	[323149] = true, -- Immortal Forest, Embrace of Darkness
+	[322569] = true, -- Fairy Forest, Hand of Zlos
+	[355147] = true, -- market, fish encouragement
+	[355057] = true, -- Bazaar, Murloc Battle Cry
+	[351088] = true, -- Bazaar, Relic Link
+	[355640] = true, -- fair, reload square
+	[355783] = true, -- bazaar, power boost
+	[347840] = true, -- fair, wild
+	[347015] = true, -- market, fortified defense
+	[355934] = true, -- fair, glare barrier
+	[349933] = true, -- bazaar, fanatical flogging protocol
+	[350931] = true, -- tower ooze immunity
+	[164504] = true, -- Steel Dock, Intimidate
+	[163689] = true, -- Iron Dock, Blood Red Orb
+	[227548] = true, -- on card, ablative shield
+	--S3, Encrypted
+	[368078] = true, -- Drift Field
+	[368103] = true, -- acceleration field
+	[368243] = true, -- energy barrage
+	--S4
+	[373724] = true, -- blood barrier
+	[373011] = true, -- disguise
+	[373785] = true, -- Great Demon King disguise
 	-- Raids
-	[334695] = true, -- 动荡能量，猎手
-	[345902] = true, -- 破裂的联结，猎手
-	[346792] = true, -- 罪触之刃，猩红议会
+	[334695] = true, -- turbulent energy, hunter
+	[345902] = true, -- Broken Link, Hunter
+	[346792] = true, -- Sintouched Blade, Crimson Council
 }
 
 C.NameplateBlackList = {
-	[15407] = true, -- 精神鞭笞
-	[51714] = true, -- 锋锐之霜
-	[199721] = true, -- 腐烂光环
-	[214968] = true, -- 死灵光环
-	[214975] = true, -- 抑心光环
-	[273977] = true, -- 亡者之握
-	[276919] = true, -- 承受压力
-	[206930] = true, -- 心脏打击
+	[15407] = true, -- Mind Flay
+	[51714] = true, -- Frost of Sharpness
+	[199721] = true, -- Rot Aura
+	[214968] = true, -- Necronomicon Aura
+	[214975] = true, -- Heart Suppression Aura
+	[273977] = true, -- Grip of the Dead
+	[276919] = true, -- under pressure
+	[206930] = true, -- Heart Strike
 }
 
 C.NameplateCustomUnits = {
-	[179823] = true, -- 圣物收集者，刻希亚
-	[179565] = true, -- 圣物饕餮者，刻希亚
-	[180501] = true, -- 无辜的灵魂，低语威能碎片
+	[179823] = true, -- Relic Collector, Keshia
+	[179565] = true, -- Relic glutton, Keshia
+	[180501] = true, -- Innocent Soul, Fragment of Whispering Power
 	-- Nzoth vision
-	[153401] = true, -- 克熙尔支配者
-	[157610] = true, -- 克熙尔支配者
-	[156795] = true, -- 军情七处线人
+	[153401] = true, -- K'thir Dominator
+	[157610] = true, -- K'thir Dominator
+	[156795] = true, -- MI7 informant
 	-- Dungeons
-	[120651] = true, -- 大米，爆炸物
-	[174773] = true, -- 大米，怨毒影魔
-	[184908] = true, -- 大米，维型拆解者
-	[184910] = true, -- 大米，沃型拆解者
-	[184911] = true, -- 大米，尤型拆解者
-	[190128] = true, -- 大米，祖尔加玛斯
-	[169498] = true, -- 凋魂之殇，魔药炸弹
-	[170851] = true, -- 凋魂之殇，易爆魔药炸弹
-	[165556] = true, -- 赤红深渊，瞬息具象
-	[170234] = true, -- 伤逝剧场，压制战旗
-	[164464] = true, -- 伤逝剧场，卑劣的席拉
-	[165251] = true, -- 仙林，幻影仙狐
-	[171341] = true, -- 彼界，幼鹤
-	[175576] = true, -- 集市，监禁
-	[179733] = true, -- 集市，鱼串
-	[180433] = true, -- 集市，流浪的脉冲星
-	[104251] = true, -- 群星庭院，哨兵
-	[101008] = true, -- 黑鸦堡垒，针刺虫群
+	[120651] = true, -- rice, explosives
+	[174773] = true, -- Rice, Maleficent Shadowfiend
+	[184908] = true, -- rice, dimension dismantler
+	[184910] = true, -- rice, wo-type dismantler
+	[184911] = true, -- rice, the special type dismantler
+	[190128] = true, -- Rice, Zulgamas
+	[169498] = true, -- Wither's Death, Potion Bomb
+	[170851] = true, -- Wither's Mourning, Explosive Potion Bomb
+	[165556] = true, -- red abyss, instant representation
+	[170234] = true, -- Theater of Sadness, suppressing the battle flag
+	[164464] = true, -- Theater of Sadness, Despicable Sheila
+	[165251] = true, -- Fairy Forest, Phantom Fairy Fox
+	[171341] = true, -- other world, young crane
+	[175576] = true, -- fair, jail
+	[179733] = true, -- market, fish skewers
+	[180433] = true, -- Bazaar, Wandering Pulsar
+	[104251] = true, -- Court of the Stars, Sentinel
+	[101008] = true, -- Black Rook Fortress, Needle Swarm
 	-- Raids
-	[175992] = true, -- 猩红议会，忠实的侍从
-	[165762] = true, -- 凯子，灵能灌注者
+	[175992] = true, -- Crimson Council, loyal servant
+	[165762] = true, -- Kaizi, Psionic Infuser
 	-- Condemned Demon
 	[169430] = true,
 	[169428] = true,
@@ -125,62 +125,62 @@ C.NameplateCustomUnits = {
 }
 
 C.NameplateShowPowerList = {
-	[171557] = true, -- 猎手阿尔迪莫，巴加斯特之影
-	[165556] = true, -- 赤红深渊，瞬息具象
-	[163746] = true, -- 垃圾场，步行震击者X1型
-	[114247] = true, -- 卡上，馆长
+	[171557] = true, -- Hunter Aldymore, Shadow of Bagastre
+	[165556] = true, -- red abyss, instant representation
+	[163746] = true, -- Junkyard, Walking Shocker X1
+	[114247] = true, -- on card, curator
 }
 
--- 显示姓名板单位的目标
+-- Display the target of the name board unit
 C.NameplateTargetNPCs = {
-	[165251] = true, -- 仙林狐狸
-	[174773] = true, -- 怨毒怪
+	[165251] = true, -- fairy forest fox
+	[174773] = true, -- Malice
 }
 
--- 无效目标
+-- invalid target
 C.NameplateTrashUnits = {
-	[166589] = true, -- 活化武器，赤红
-	[169753] = true, -- 饥饿的虱子，赤红
-	[175677] = true, -- 走私来的生物，集市
-	[190174] = true, -- 催眠蝙蝠，S4
+	[166589] = true, -- Living Weapon, Crimson
+	[169753] = true, -- Hungry lice, red
+	[175677] = true, -- smuggled creature, fair
+	[190174] = true, -- Hypnotic Bat, S4
 }
 
--- 重要读条高亮
+-- Important readings highlighted
 C.MajorSpells = {
-	[373513] = true, -- S4，暗影爆发
-	[294324] = true, -- 车间，超级电钻
-	[297128] = true, -- 车间，短路
-	[291613] = true, -- 车间，发射升空
-	[300129] = true, -- 垃圾场，自毁协议
-	[300424] = true, -- 垃圾场，震荡波
-	[300436] = true, -- 垃圾场，纠缠妖术
-	[301667] = true, -- 垃圾场，急速射击
-	[358967] = true, -- S2，地狱烈火
-	[373429] = true, -- S4，腐臭虫群
-	[334664] = true, -- 彼界，惊恐嚎哭
-	[332612] = true, -- 彼界，治疗波
-	[332706] = true, -- 彼界，治疗
-	[334051] = true, -- 彼界，喷涌黑暗
-	[332084] = true, -- 彼界，自清洁循环
-	[321828] = true, -- 仙林，肉饼蛋糕
-	[326046] = true, -- 仙林，模拟抗性
-	[326450] = true, -- 赎罪大厅，忠心的野兽
-	[325700] = true, -- 赎罪大厅，收集罪恶
-	[323552] = true, -- 赎罪大厅，能量箭雨
-	[341969] = true, -- 伤势剧场，凋零释放
-	[330586] = true, -- 伤势剧场，吞噬血肉
-	[333294] = true, -- 伤势剧场，死亡之风
-	[330868] = true, -- 伤势剧场，通灵箭雨
-	[327413] = true, -- 晋升高塔，反抗之拳
-	[317936] = true, -- 晋升高塔，弃誓信条
-	[324293] = true, -- 通灵战潮，刺耳尖啸
-	[334748] = true, -- 通灵战潮，排干体液
-	[334749] = true, -- 通灵战潮，排干体液
-	[338357] = true, -- 通灵战潮，暴捶
-	[320596] = true, -- 通灵战潮，深重呕吐
-	[326827] = true, -- 赤红深渊，恐惧之缚
-	[326831] = true, -- 赤红深渊，恐惧之缚
-	[327233] = true, -- 凋魂，喷射魔药
-	[324667] = true, -- 凋魂，软泥浪潮
-	[328400] = true, -- 凋魂，潜行幼蛛
+	[373513] = true, -- S4, Shadow Burst
+	[294324] = true, -- workshop, super drill
+	[297128] = true, -- workshop, short circuit
+	[291613] = true, -- workshop, launch into space
+	[300129] = true, -- junkyard, self-destruct protocol
+	[300424] = true, -- junkyard, shockwave
+	[300436] = true, -- Junkyard, Entanglement
+	[301667] = true, -- junkyard, rapid fire
+	[358967] = true, -- S2, Hellfire
+	[373429] = true, -- S4, Carrion Swarm
+	[334664] = true, -- the other world, howling in terror
+	[332612] = true, -- Otherworld, Healing Wave
+	[332706] = true, -- the other world, healing
+	[334051] = true, -- the other world, spewing darkness
+	[332084] = true, -- the other world, self-cleaning cycle
+	[321828] = true, -- Xianlin, meatloaf cake
+	[326046] = true, -- fairy forest, simulate resistance
+	[326450] = true, -- Hall of Atonement, Faithful Beast
+	[325700] = true, -- Hall of Atonement, collect sins
+	[323552] = true, -- Hall of Atonement, Rain of Energy Arrows
+	[341969] = true, -- Injury Theater, Wither Release
+	[330586] = true, -- Injury Theater, Devouring Flesh
+	[333294] = true, -- Theater of Injury, Wind of Death
+	[330868] = true, -- wounded theater, psychic arrow rain
+	[327413] = true, -- Promote the tower, the fist of resistance
+	[317936] = true, -- Promoted to the Tower, Abandoned Creed
+	[324293] = true, -- psychic war tide, ear-piercing scream
+	[334748] = true, -- psychic war tide, draining body fluids
+	[334749] = true, -- psychic war tide, draining body fluids
+	[338357] = true, -- psychic war tide, violent beating
+	[320596] = true, -- psychic war tide, heavy vomiting
+	[326827] = true, -- Crimson Abyss, Binding of Fear
+	[326831] = true, -- Crimson Abyss, Binding of Fear
+	[327233] = true, -- wither, spray potion
+	[324667] = true, -- wither, ooze tide
+	[328400] = true, -- wither, stealth spiderling
 }

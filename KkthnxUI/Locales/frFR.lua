@@ -718,6 +718,14 @@ L["Map Reveal Shadow"] = "Ombre de révalation de la carte"
 L["Show Player/Mouse Coordinates"] = "Afficher les coordonnées du joueur/souris"
 L["Show Smaller Worldmap"] = "Afficher une carte du monde plus petite"
 
+-- HelpTip Locales
+L["BEFHelpTip"] = "There is an ERROR! Click the 'red' number to the right and report it to Kkthnx."
+L["ChatHelpTip"] = "Scroll multi-lines by holding Ctrl key, and scroll to top or bottom by holding Shift key."
+L["ContactMeHelpTip"] = "Need help with the UI? Have a question? Contact me!"
+L["DurabilityHelpTip"] = "You have low durability slots! Repair soon!"
+L["MinimapHelpTip"] = "Scroll minimap to zoom in or out, middle click to toggle micro menu, right click to toggle track menu."
+L["QuickJoinHelpTip"] = "Quickly apply to a group by double clicking. Leave a comment by holding 'ALT' and double clicking."
+
 -- GUI Config Tooltip Locales
 L["AutoScaleTip"] = "Mise à l'échelle automatique de l'IU au pixel près en fonction de votre résolution.|n|nSi vous voulez changer l'échelle manuellement, vous devez désactiver 'Echelle automatique' puis appliquer l'échelle en utilisant le curseur"
 L["CustomUnitTip"] = "Entrez le nom de l'unité ou l'ID du PNJ. Vous pouvez voir l'ID du PNJ dans l'info-bulle en maintenant la touche MAJ enfoncée."

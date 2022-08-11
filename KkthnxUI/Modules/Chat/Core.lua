@@ -432,7 +432,7 @@ hooksecurefunc("ChatEdit_CustomTabPressed", Module.UpdateTabChannelSwitch)
 
 -- Quick Scroll
 local chatScrollInfo = {
-	text = "Scroll multi-lines by holding Ctrl key, and scroll to top or bottom by holding Shift key.",
+	text = L["ChatHelpTip"],
 	buttonStyle = HelpTip.ButtonStyle.GotIt,
 	targetPoint = HelpTip.Point.RightEdgeCenter,
 	onAcknowledgeCallback = K.HelpInfoAcknowledge,

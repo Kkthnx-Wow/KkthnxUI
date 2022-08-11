@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local K, L, C = unpack(KkthnxUI)
 local Module = K:GetModule("Miscellaneous")
 local TT = K:GetModule("Tooltip")
 
@@ -189,7 +189,7 @@ end
 
 function Module:QuickJoin_ShowTips()
 	local quickJoinInfo = {
-		text = "Quickly apply to a group by double clicking. Leave a comment by holding 'ALT' and double clicking.",
+		text = L["QuickJoinHelpTip"],
 		buttonStyle = HelpTip.ButtonStyle.GotIt,
 		targetPoint = HelpTip.Point.RightEdgeCenter,
 		onAcknowledgeCallback = K.HelpInfoAcknowledge,

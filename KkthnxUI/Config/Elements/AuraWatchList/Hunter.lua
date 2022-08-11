@@ -5,125 +5,125 @@ if K.Class ~= "HUNTER" then
 	return
 end
 
--- 猎人的法术监控
+-- Hunter's spell monitoring
 local list = {
-	["Player Aura"] = { -- 玩家光环组
-		{ AuraID = 136, UnitID = "pet" }, -- 治疗宠物
-		{ AuraID = 19577, UnitID = "pet" }, -- 胁迫
-		{ AuraID = 160058, UnitID = "pet" }, -- 厚皮
-		{ AuraID = 90361, UnitID = "player" }, -- 灵魂治愈
-		{ AuraID = 35079, UnitID = "player" }, -- 误导
-		{ AuraID = 61648, UnitID = "player" }, -- 变色龙守护
-		{ AuraID = 199483, UnitID = "player" }, -- 伪装
-		{ AuraID = 118922, UnitID = "player" }, -- 迅疾如风
-		{ AuraID = 164857, UnitID = "player" }, -- 生存专家
-		{ AuraID = 186258, UnitID = "player" }, -- 猎豹守护
-		{ AuraID = 246152, UnitID = "player" }, -- 倒刺射击
-		{ AuraID = 246851, UnitID = "player" }, -- 倒刺射击
-		{ AuraID = 246852, UnitID = "player" }, -- 倒刺射击
-		{ AuraID = 246853, UnitID = "player" }, -- 倒刺射击
-		{ AuraID = 246854, UnitID = "player" }, -- 倒刺射击
-		{ AuraID = 203924, UnitID = "player" }, -- 守护屏障
-		{ AuraID = 197161, UnitID = "player" }, -- 灵龟守护回血
-		{ AuraID = 160007, UnitID = "player" }, -- 上升气流（双头龙）
-		{ AuraID = 260249, UnitID = "player" }, -- 掠食者
-		{ AuraID = 231390, UnitID = "player", Combat = true }, -- 开拓者
-		{ AuraID = 164273, UnitID = "player", Combat = true }, -- 独来独往
-		{ AuraID = 209997, UnitID = "pet", Flash = true }, -- 装死
+	["Player Aura"] = { -- Player Aura group
+		{ AuraID = 136, UnitID = "pet" }, -- heal pet
+		{ AuraID = 19577, UnitID = "pet" }, -- coercion
+		{ AuraID = 160058, UnitID = "pet" }, -- thick skin
+		{ AuraID = 90361, UnitID = "player" }, -- soul healing
+		{ AuraID = 35079, UnitID = "player" }, -- misleading
+		{ AuraID = 61648, UnitID = "player" }, -- chameleon guardian
+		{ AuraID = 199483, UnitID = "player" }, -- disguise
+		{ AuraID = 118922, UnitID = "player" }, -- swift as the wind
+		{ AuraID = 164857, UnitID = "player" }, -- Survival Expert
+		{ AuraID = 186258, UnitID = "player" }, -- Guardian of the Cheetah
+		{ AuraID = 246152, UnitID = "player" }, -- barb shot
+		{ AuraID = 246851, UnitID = "player" }, -- barb shot
+		{ AuraID = 246852, UnitID = "player" }, -- barb shot
+		{ AuraID = 246853, UnitID = "player" }, -- barb shot
+		{ AuraID = 246854, UnitID = "player" }, -- barb shot
+		{ AuraID = 203924, UnitID = "player" }, -- Guardian Barrier
+		{ AuraID = 197161, UnitID = "player" }, -- Turtle's guardian restores blood
+		{ AuraID = 160007, UnitID = "player" }, -- updraft (two-headed dragon)
+		{ AuraID = 260249, UnitID = "player" }, -- predator
+		{ AuraID = 231390, UnitID = "player", Combat = true }, -- Trailblazer
+		{ AuraID = 164273, UnitID = "player", Combat = true }, -- loner
+		{ AuraID = 209997, UnitID = "pet", Flash = true }, -- play dead
 	},
-	["Target Aura"] = { -- 目标光环组
-		{ AuraID = 3355, UnitID = "target", Caster = "player" }, -- 冰冻陷阱
-		{ AuraID = 5116, UnitID = "target", Caster = "player" }, -- 震荡射击
-		{ AuraID = 19386, UnitID = "target", Caster = "player" }, -- 翼龙钉刺
-		{ AuraID = 24394, UnitID = "target", Caster = "pet" }, -- 胁迫
-		{ AuraID = 321538, UnitID = "target", Caster = "pet" }, -- 血溅十方
-		{ AuraID = 117526, UnitID = "target" }, -- 束缚射击
-		{ AuraID = 257284, UnitID = "target", Caster = "player" }, -- 猎人印记
-		{ AuraID = 131894, UnitID = "target", Caster = "player" }, -- 夺命黑鸦
-		{ AuraID = 199803, UnitID = "target", Caster = "player" }, -- 精确瞄准
-		{ AuraID = 195645, UnitID = "target", Caster = "player" }, -- 摔绊
-		{ AuraID = 202797, UnitID = "target", Caster = "player" }, -- 蝰蛇钉刺
-		{ AuraID = 202900, UnitID = "target", Caster = "player" }, -- 毒蝎钉刺
-		{ AuraID = 224729, UnitID = "target", Caster = "player" }, -- 爆裂射击
-		{ AuraID = 213691, UnitID = "target", Caster = "player" }, -- 驱散射击
-		{ AuraID = 162480, UnitID = "target", Caster = "player" }, -- 精钢陷阱
-		{ AuraID = 162487, UnitID = "target", Caster = "player" }, -- 精钢陷阱
-		{ AuraID = 259491, UnitID = "target", Caster = "player" }, -- 毒蛇钉刺
-		{ AuraID = 271788, UnitID = "target", Caster = "player" }, -- 毒蛇钉刺
-		{ AuraID = 269747, UnitID = "target", Caster = "player" }, -- 野火炸弹
-		{ AuraID = 270339, UnitID = "target", Caster = "player" }, -- 散射炸弹
-		{ AuraID = 270343, UnitID = "target", Caster = "player" }, -- 内出血
-		{ AuraID = 271049, UnitID = "target", Caster = "player" }, -- 动荡炸弹
-		{ AuraID = 270332, UnitID = "target", Caster = "player", Flash = true }, -- 信息素炸弹
-		--{AuraID = 259277, UnitID = "target", Caster = "pet"},		-- 杀戮命令
-		{ AuraID = 277959, UnitID = "target", Caster = "player" }, -- 稳固瞄准
-		{ AuraID = 217200, UnitID = "target", Caster = "player" }, -- 倒刺射击
-		{ AuraID = 336746, UnitID = "target", Caster = "player" }, -- 魂铸余烬，橙装
-		{ AuraID = 328275, UnitID = "target", Caster = "player" }, -- 野性印记
-		{ AuraID = 324149, UnitID = "target", Caster = "player" }, -- 劫掠射击
-		{ AuraID = 308498, UnitID = "target", Caster = "player" }, -- 共鸣箭
-		{ AuraID = 333526, UnitID = "target", Caster = "player" }, -- 尖刺果实
+	["Target Aura"] = { -- target aura group
+		{ AuraID = 3355, UnitID = "target", Caster = "player" }, -- Freeze Trap
+		{ AuraID = 5116, UnitID = "target", Caster = "player" }, -- Concussive Shot
+		{ AuraID = 19386, UnitID = "target", Caster = "player" }, -- Pterodactyl Sting
+		{ AuraID = 24394, UnitID = "target", Caster = "pet" }, -- coercion
+		{ AuraID = 321538, UnitID = "target", Caster = "pet" }, -- blood splattered in ten directions
+		{ AuraID = 117526, UnitID = "target" }, -- restraint shot
+		{ AuraID = 257284, UnitID = "target", Caster = "player" }, -- Hunter's Mark
+		{ AuraID = 131894, UnitID = "target", Caster = "player" }, -- Deadly Crow
+		{ AuraID = 199803, UnitID = "target", Caster = "player" }, -- precise aiming
+		{ AuraID = 195645, UnitID = "target", Caster = "player" }, -- tripping
+		{ AuraID = 202797, UnitID = "target", Caster = "player" }, -- Viper Sting
+		{ AuraID = 202900, UnitID = "target", Caster = "player" }, -- Scorpion Sting
+		{ AuraID = 224729, UnitID = "target", Caster = "player" }, -- burst shot
+		{ AuraID = 213691, UnitID = "target", Caster = "player" }, -- dispel shot
+		{ AuraID = 162480, UnitID = "target", Caster = "player" }, -- Steel Trap
+		{ AuraID = 162487, UnitID = "target", Caster = "player" }, -- Steel Trap
+		{ AuraID = 259491, UnitID = "target", Caster = "player" }, -- Serpent Sting
+		{ AuraID = 271788, UnitID = "target", Caster = "player" }, -- Serpent Sting
+		{ AuraID = 269747, UnitID = "target", Caster = "player" }, -- wildfire bomb
+		{ AuraID = 270339, UnitID = "target", Caster = "player" }, -- Scatter bomb
+		{ AuraID = 270343, UnitID = "target", Caster = "player" }, -- internal bleeding
+		{ AuraID = 271049, UnitID = "target", Caster = "player" }, -- Unrest Bomb
+		{ AuraID = 270332, UnitID = "target", Caster = "player", Flash = true }, -- pheromone bomb
+		-- {AuraID = 259277, UnitID = "target", Caster = "pet"}, -- Kill command
+		{ AuraID = 277959, UnitID = "target", Caster = "player" }, -- steady aim
+		{ AuraID = 217200, UnitID = "target", Caster = "player" }, -- barb shot
+		{ AuraID = 336746, UnitID = "target", Caster = "player" }, -- Soulcast Embers, Orange
+		{ AuraID = 328275, UnitID = "target", Caster = "player" }, -- Mark of the Wild
+		{ AuraID = 324149, UnitID = "target", Caster = "player" }, -- Plunder Shot
+		{ AuraID = 308498, UnitID = "target", Caster = "player" }, -- Resonating Arrow
+		{ AuraID = 333526, UnitID = "target", Caster = "player" }, -- Spike Fruit
 	},
-	["Special Aura"] = { -- 玩家重要光环组
-		{ AuraID = 19574, UnitID = "player" }, -- 狂野怒火
-		{ AuraID = 54216, UnitID = "player" }, -- 主人的召唤
-		{ AuraID = 186257, UnitID = "player" }, -- 猎豹守护
-		{ AuraID = 186265, UnitID = "player" }, -- 灵龟守护
-		{ AuraID = 190515, UnitID = "player" }, -- 适者生存
-		{ AuraID = 193534, UnitID = "player" }, -- 稳固集中
-		{ AuraID = 194594, UnitID = "player", Flash = true }, -- 荷枪实弹
-		{ AuraID = 118455, UnitID = "pet" }, -- 野兽瞬劈斩
-		{ AuraID = 207094, UnitID = "pet" }, -- 泰坦之雷
-		{ AuraID = 217200, UnitID = "pet" }, -- 凶猛狂暴
-		{ AuraID = 272790, UnitID = "pet" }, -- 狂暴
-		{ AuraID = 193530, UnitID = "player" }, -- 野性守护
-		{ AuraID = 185791, UnitID = "player" }, -- 荒野呼唤
-		{ AuraID = 259388, UnitID = "player" }, -- 猫鼬之怒
-		{ AuraID = 186289, UnitID = "player" }, -- 雄鹰守护
-		{ AuraID = 201081, UnitID = "player" }, -- 莫克纳萨战术
-		{ AuraID = 194407, UnitID = "player" }, -- 喷毒眼镜蛇
-		{ AuraID = 208888, UnitID = "player" }, -- 暗影猎手的回复，橙装头
-		{ AuraID = 204090, UnitID = "player" }, -- 正中靶心
-		{ AuraID = 208913, UnitID = "player" }, -- 哨兵视野，橙腰
-		{ AuraID = 248085, UnitID = "player" }, -- 蛇语者之舌，橙胸
-		{ AuraID = 242243, UnitID = "player" }, -- 致命瞄准，射击2T20
-		{ AuraID = 246153, UnitID = "player" }, -- 精准，射击4T20
-		{ AuraID = 203155, UnitID = "player" }, -- 狙击
-		{ AuraID = 235712, UnitID = "player", Combat = true }, -- 回转稳定，橙手
-		{ AuraID = 264735, UnitID = "player" }, -- 优胜劣汰
-		{ AuraID = 281195, UnitID = "player" }, -- 优胜劣汰
-		{ AuraID = 260242, UnitID = "player" }, -- 弹无虚发
-		{ AuraID = 260395, UnitID = "player" }, -- 致命射击
-		{ AuraID = 269502, UnitID = "player" }, -- 致命射击
-		{ AuraID = 281036, UnitID = "player" }, -- 凶暴野兽
-		{ AuraID = 260402, UnitID = "player" }, -- 二连发
-		{ AuraID = 266779, UnitID = "player" }, -- 协调进攻
-		{ AuraID = 260286, UnitID = "player" }, -- 利刃之矛
-		{ AuraID = 265898, UnitID = "player" }, -- 接战协定
-		{ AuraID = 268552, UnitID = "player" }, -- 蝰蛇毒液
-		{ AuraID = 257622, UnitID = "player", Text = "AoE" }, -- 技巧射击
-		{ AuraID = 288613, UnitID = "player" }, -- 百发百中
-		{ AuraID = 274447, UnitID = "player" }, -- 千里之目
-		{ AuraID = 260243, UnitID = "player" }, -- 乱射
-		{ AuraID = 342076, UnitID = "player" }, -- 行云流水
-		{ AuraID = 336892, UnitID = "player", Flash = true }, -- 无懈警戒之秘
+	["Special Aura"] = { -- Player important aura group
+		{ AuraID = 19574, UnitID = "player" }, -- Wild Fury
+		{ AuraID = 54216, UnitID = "player" }, -- the master's call
+		{ AuraID = 186257, UnitID = "player" }, -- Cheetah Guardian
+		{ AuraID = 186265, UnitID = "player" }, -- Guardian of the tortoise
+		{ AuraID = 190515, UnitID = "player" }, -- survival of the fittest
+		{ AuraID = 193534, UnitID = "player" }, -- solid focus
+		{ AuraID = 194594, UnitID = "player", Flash = true }, -- loaded with live ammunition
+		{ AuraID = 118455, UnitID = "pet" }, -- Beast Slash
+		{ AuraID = 207094, UnitID = "pet" }, -- Titan Thunder
+		{ AuraID = 217200, UnitID = "pet" }, -- ferocious fury
+		{ AuraID = 272790, UnitID = "pet" }, -- Rampage
+		{ AuraID = 193530, UnitID = "player" }, -- Guardian of the Wild
+		{ AuraID = 185791, UnitID = "player" }, -- Call of the Wild
+		{ AuraID = 259388, UnitID = "player" }, -- Mongoose Fury
+		{ AuraID = 186289, UnitID = "player" }, -- Guardian of the Eagle
+		{ AuraID = 201081, UnitID = "player" }, -- Mok'Nathal tactics
+		{ AuraID = 194407, UnitID = "player" }, -- spray cobra
+		{ AuraID = 208888, UnitID = "player" }, -- Reply from Shadow Hunter, orange head
+		{ AuraID = 204090, UnitID = "player" }, -- center the bullseye
+		{ AuraID = 208913, UnitID = "player" }, -- Sentinel vision, orange waist
+		{ AuraID = 248085, UnitID = "player" }, -- Snake Whisperer's Tongue, Orange Breast
+		{ AuraID = 242243, UnitID = "player" }, -- lethal aim, shoot 2T20
+		{ AuraID = 246153, UnitID = "player" }, -- precision, fire 4T20
+		{ AuraID = 203155, UnitID = "player" }, -- sniper
+		{ AuraID = 235712, UnitID = "player", Combat = true }, -- gyro stabilization, orange hand
+		{ AuraID = 264735, UnitID = "player" }, -- Survival of the fittest
+		{ AuraID = 281195, UnitID = "player" }, -- Survival of the fittest
+		{ AuraID = 260242, UnitID = "player" }, -- no missed shots
+		{ AuraID = 260395, UnitID = "player" }, -- lethal shot
+		{ AuraID = 269502, UnitID = "player" }, -- lethal shot
+		{ AuraID = 281036, UnitID = "player" }, -- Dire Beast
+		{ AuraID = 260402, UnitID = "player" }, -- two bursts
+		{ AuraID = 266779, UnitID = "player" }, -- coordinated attack
+		{ AuraID = 260286, UnitID = "player" }, -- Bladed Spear
+		{ AuraID = 265898, UnitID = "player" }, -- engagement agreement
+		{ AuraID = 268552, UnitID = "player" }, -- Viper Venom
+		{ AuraID = 257622, UnitID = "player", Text = "AoE" }, -- skill shot
+		{ AuraID = 288613, UnitID = "player" }, -- all hits
+		{ AuraID = 274447, UnitID = "player" }, -- A Thousand Miles Eye
+		{ AuraID = 260243, UnitID = "player" }, -- shooter
+		{ AuraID = 342076, UnitID = "player" }, -- flow
+		{ AuraID = 336892, UnitID = "player", Flash = true }, -- The Secret of Unbreakable Vigilance
 
-		{ AuraID = 363760, UnitID = "player", Flash = true }, -- 杀戮狂乱，兽王4T
-		{ AuraID = 363805, UnitID = "player", Flash = true }, -- 疯狂掷弹兵，生存2T
+		{ AuraID = 363760, UnitID = "player", Flash = true }, -- Killing Madness, Beastmaster 4T
+		{ AuraID = 363805, UnitID = "player", Flash = true }, -- Crazy Grenadier, Survival 2T
 	},
-	["Focus Aura"] = { -- 焦点光环组
-		{ AuraID = 3355, UnitID = "focus", Caster = "player" }, -- 冰冻陷阱
-		{ AuraID = 19386, UnitID = "focus", Caster = "player" }, -- 翼龙钉刺
-		{ AuraID = 118253, UnitID = "focus", Caster = "player" }, -- 毒蛇钉刺
-		{ AuraID = 194599, UnitID = "focus", Caster = "player" }, -- 黑箭
-		{ AuraID = 131894, UnitID = "focus", Caster = "player" }, -- 夺命黑鸦
-		{ AuraID = 199803, UnitID = "focus", Caster = "player" }, -- 精确瞄准
+	["Focus Aura"] = { -- focus aura group
+		{ AuraID = 3355, UnitID = "focus", Caster = "player" }, -- Freeze Trap
+		{ AuraID = 19386, UnitID = "focus", Caster = "player" }, -- pterosaur spike
+		{ AuraID = 118253, UnitID = "focus", Caster = "player" }, -- Serpent Sting
+		{ AuraID = 194599, UnitID = "focus", Caster = "player" }, -- black arrow
+		{ AuraID = 131894, UnitID = "focus", Caster = "player" }, -- Deadly Crow
+		{ AuraID = 199803, UnitID = "focus", Caster = "player" }, -- precise aiming
 	},
-	["Spell Cooldown"] = { -- 冷却计时组
-		{ SlotID = 13 }, -- 饰品1
-		{ SlotID = 14 }, -- 饰品2
-		{ SpellID = 186265 }, -- 灵龟守护
-		{ SpellID = 147362 }, -- 反制射击
+	["Spell Cooldown"] = { -- Cooldown timer group
+		{ SlotID = 13 }, -- trinket 1
+		{ SlotID = 14 }, -- trinket 2
+		{ SpellID = 186265 }, -- Guardian of the tortoise
+		{ SpellID = 147362 }, -- counter shot
 	},
 }
 

@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local K, C, L = unpack(KkthnxUI)
 
 -- Sourced: Tukui (Tukz & Hydra)
 -- Edited: KkthnxUI (Kkthnx)
@@ -2179,7 +2179,7 @@ GUI.Enable = function(self)
 end
 
 local ContactMeInfo = {
-	text = "Need Help? Click Above To Contact Me!",
+	text = L["ContactMeHelpTip"],
 	buttonStyle = HelpTip.ButtonStyle.GotIt,
 	targetPoint = HelpTip.Point.BottomEdgeCenter,
 	offsetY = -6,

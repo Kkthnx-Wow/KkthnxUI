@@ -36,7 +36,7 @@ local function hideAlertWhileCombat()
 end
 
 local lowDurabilityInfo = {
-	text = "You have slots in low durability! Repair soon!",
+	text = L["DurabilityHelpTip"],
 	buttonStyle = HelpTip.ButtonStyle.Okay,
 	targetPoint = HelpTip.Point.TopEdgeCenter,
 	onAcknowledgeCallback = hideAlertWhileCombat,
@@ -109,7 +109,7 @@ local function OnEvent(_, event)
 	if isLow then
 		HelpTip:Show(DurabilityDataText, lowDurabilityInfo)
 	else
-		HelpTip:Hide(DurabilityDataText, "You have slots in low durability! Repair soon!")
+		HelpTip:Hide(DurabilityDataText, L["DurabilityHelpTip"])
 	end
 end
 

@@ -2,32 +2,32 @@ local _, C = unpack(KkthnxUI)
 
 -- Raidbuff Checklist
 C.RaidUtilityBuffCheckList = {
-	[1] = { -- 合剂
-		307166, -- 大锅
-		307185, -- 通用合剂
-		307187, -- 耐力合剂
+	[1] = { -- Flask
+		307166, -- Cauldron
+		307185, -- Universal Flask
+		307187, -- Flask of Stamina
 	},
 
-	[2] = { -- 进食充分
-		104273, -- 250敏捷，BUFF名一致
+	[2] = { -- well fed
+		104273, -- 250 Agility, same buff name
 	},
 
-	[3] = { -- 10%智力
+	[3] = { -- 10% intelligence
 		1459,
 		264760,
 	},
 
-	[4] = { -- 10%耐力
+	[4] = { -- 10% Stamina
 		21562,
 		264764,
 	},
 
-	[5] = { -- 10%攻强
+	[5] = { -- 10% attack power
 		6673,
 		264761,
 	},
 
-	[6] = { -- 符文
+	[6] = { -- rune
 		270058,
 	},
 }

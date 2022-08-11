@@ -5,85 +5,85 @@ if K.Class ~= "WARLOCK" then
 	return
 end
 
--- 术士的法术监控
+-- Warlock's spell monitoring
 local list = {
-	["Player Aura"] = { -- 玩家光环组
-		{ AuraID = 5697, UnitID = "player" }, -- 无尽呼吸
-		{ AuraID = 48018, UnitID = "player" }, -- 恶魔法阵
-		{ AuraID = 108366, UnitID = "player" }, -- 灵魂榨取
-		{ AuraID = 119899, UnitID = "player" }, -- 灼烧主人
-		{ AuraID = 196099, UnitID = "player" }, -- 牺牲魔典
+	["Player Aura"] = { -- Player Aura group
+		{ AuraID = 5697, UnitID = "player" }, -- Endless Breath
+		{ AuraID = 48018, UnitID = "player" }, -- Demonic Circle
+		{ AuraID = 108366, UnitID = "player" }, -- soul extraction
+		{ AuraID = 119899, UnitID = "player" }, -- burn the master
+		{ AuraID = 196099, UnitID = "player" }, -- tome of sacrifice
 	},
-	["Target Aura"] = { -- 目标光环组
-		{ AuraID = 603, UnitID = "target", Caster = "player" }, -- 末日降临
-		{ AuraID = 980, UnitID = "target", Caster = "player" }, -- 痛楚
-		{ AuraID = 710, UnitID = "target", Caster = "player" }, -- 放逐术
-		{ AuraID = 6358, UnitID = "target", Caster = "pet" }, -- 魅惑
-		{ AuraID = 89766, UnitID = "target", Caster = "pet" }, -- 巨斧投掷
-		{ AuraID = 6789, UnitID = "target", Caster = "player" }, -- 死亡缠绕
-		{ AuraID = 5484, UnitID = "target", Caster = "player" }, -- 恐惧嚎叫
-		{ AuraID = 27243, UnitID = "target", Caster = "player" }, -- 腐蚀之种
-		{ AuraID = 17877, UnitID = "target", Caster = "player" }, -- 暗影灼烧
-		{ AuraID = 48181, UnitID = "target", Caster = "player" }, -- 鬼影缠身
-		{ AuraID = 63106, UnitID = "target", Caster = "player" }, -- 生命虹吸
-		{ AuraID = 30283, UnitID = "target", Caster = "player" }, -- 暗影之怒
-		{ AuraID = 32390, UnitID = "target", Caster = "player" }, -- 暗影之拥
-		{ AuraID = 80240, UnitID = "target", Caster = "player" }, -- 浩劫
-		{ AuraID = 146739, UnitID = "target", Caster = "player" }, -- 腐蚀术
-		{ AuraID = 316099, UnitID = "target", Caster = "player" }, -- 痛苦无常
-		{ AuraID = 342938, UnitID = "target", Caster = "player" }, -- 痛苦无常(PVP蔓延痛苦)
-		{ AuraID = 118699, UnitID = "target", Caster = "player" }, -- 恐惧
-		{ AuraID = 205181, UnitID = "target", Caster = "player" }, -- 暗影烈焰
-		{ AuraID = 157736, UnitID = "target", Caster = "player" }, -- 献祭
-		{ AuraID = 196414, UnitID = "target", Caster = "player" }, -- 根除
-		{ AuraID = 199890, UnitID = "target", Caster = "player" }, -- 语言诅咒
-		{ AuraID = 199892, UnitID = "target", Caster = "player" }, -- 虚弱诅咒
-		{ AuraID = 270569, UnitID = "target", Caster = "player" }, -- 来自阴影
-		{ AuraID = 278350, UnitID = "target", Caster = "player" }, -- 邪恶污染
-		{ AuraID = 205179, UnitID = "target", Caster = "player" }, -- 诡异魅影
-		{ AuraID = 265931, UnitID = "target", Caster = "player" }, -- 燃烧
-		{ AuraID = 312321, UnitID = "target", Caster = "player" }, -- 碎魂奉纳
-		{ AuraID = 325640, UnitID = "target", Caster = "player" }, -- 灵魂腐化
-		{ AuraID = 322170, UnitID = "target", Caster = "player" }, -- 灾祸降临
+	["Target Aura"] = { -- target aura group
+		{ AuraID = 603, UnitID = "target", Caster = "player" }, -- Doomsday
+		{ AuraID = 980, UnitID = "target", Caster = "player" }, -- pain
+		{ AuraID = 710, UnitID = "target", Caster = "player" }, -- Banish
+		{ AuraID = 6358, UnitID = "target", Caster = "pet" }, -- charm
+		{ AuraID = 89766, UnitID = "target", Caster = "pet" }, -- great axe throw
+		{ AuraID = 6789, UnitID = "target", Caster = "player" }, -- Death Coil
+		{ AuraID = 5484, UnitID = "target", Caster = "player" }, -- howl of terror
+		{ AuraID = 27243, UnitID = "target", Caster = "player" }, -- Seed of Corruption
+		{ AuraID = 17877, UnitID = "target", Caster = "player" }, -- Shadowburn
+		{ AuraID = 48181, UnitID = "target", Caster = "player" }, -- haunted
+		{ AuraID = 63106, UnitID = "target", Caster = "player" }, -- Life Siphon
+		{ AuraID = 30283, UnitID = "target", Caster = "player" }, -- Shadowfury
+		{ AuraID = 32390, UnitID = "target", Caster = "player" }, -- Shadow Embrace
+		{ AuraID = 80240, UnitID = "target", Caster = "player" }, -- Havoc
+		{ AuraID = 146739, UnitID = "target", Caster = "player" }, -- Corruption
+		{ AuraID = 316099, UnitID = "target", Caster = "player" }, -- misery
+		{ AuraID = 342938, UnitID = "target", Caster = "player" }, -- Unstable Pain (PVP Spread Pain)
+		{ AuraID = 118699, UnitID = "target", Caster = "player" }, -- fear
+		{ AuraID = 205181, UnitID = "target", Caster = "player" }, -- Shadowflame
+		{ AuraID = 157736, UnitID = "target", Caster = "player" }, -- sacrifice
+		{ AuraID = 196414, UnitID = "target", Caster = "player" }, -- eradicate
+		{ AuraID = 199890, UnitID = "target", Caster = "player" }, -- language curse
+		{ AuraID = 199892, UnitID = "target", Caster = "player" }, -- Curse of Weakness
+		{ AuraID = 270569, UnitID = "target", Caster = "player" }, -- from shadow
+		{ AuraID = 278350, UnitID = "target", Caster = "player" }, -- evil pollution
+		{ AuraID = 205179, UnitID = "target", Caster = "player" }, -- spooky ghost
+		{ AuraID = 265931, UnitID = "target", Caster = "player" }, -- burn
+		{ AuraID = 312321, UnitID = "target", Caster = "player" }, -- Consecrated Souls
+		{ AuraID = 325640, UnitID = "target", Caster = "player" }, -- Soul Corruption
+		{ AuraID = 322170, UnitID = "target", Caster = "player" }, -- disaster strikes
 	},
-	["Special Aura"] = { -- 玩家重要光环组
-		{ AuraID = 89751, UnitID = "pet" }, -- 魔刃风暴
-		{ AuraID = 216695, UnitID = "player" }, -- 被折磨的灵魂
-		{ AuraID = 104773, UnitID = "player" }, -- 不灭决心
-		{ AuraID = 199281, UnitID = "player" }, -- 痛上加痛
-		{ AuraID = 196606, UnitID = "player" }, -- 暗影启迪
-		{ AuraID = 111400, UnitID = "player" }, -- 爆燃冲刺
-		{ AuraID = 115831, UnitID = "pet" }, -- 愤怒风暴
-		{ AuraID = 193396, UnitID = "pet" }, -- 恶魔增效
-		{ AuraID = 117828, UnitID = "player" }, -- 爆燃
-		{ AuraID = 196098, UnitID = "player" }, -- 灵魂收割
-		{ AuraID = 205146, UnitID = "player" }, -- 魔性征兆
-		{ AuraID = 216708, UnitID = "player" }, -- 逆风收割者
-		{ AuraID = 235156, UnitID = "player" }, -- 强化生命分流
-		{ AuraID = 108416, UnitID = "player", Value = true }, -- 黑暗契约
-		{ AuraID = 264173, UnitID = "player" }, -- 恶魔之核
-		{ AuraID = 265273, UnitID = "player" }, -- 恶魔之力
-		{ AuraID = 212295, UnitID = "player" }, -- 虚空守卫
-		{ AuraID = 267218, UnitID = "player" }, -- 虚空传送门
-		{ AuraID = 113858, UnitID = "player" }, -- 黑暗灵魂：动荡
-		{ AuraID = 113860, UnitID = "player" }, -- 黑暗灵魂：哀难
-		{ AuraID = 264571, UnitID = "player" }, -- 夜幕
-		{ AuraID = 266030, UnitID = "player" }, -- 熵能返转
+	["Special Aura"] = { -- Player important aura group
+		{ AuraID = 89751, UnitID = "pet" }, -- Felstorm
+		{ AuraID = 216695, UnitID = "player" }, -- Tormented Soul
+		{ AuraID = 104773, UnitID = "player" }, -- Undying Resolve
+		{ AuraID = 199281, UnitID = "player" }, -- pain after pain
+		{ AuraID = 196606, UnitID = "player" }, -- Inspired by Shadows
+		{ AuraID = 111400, UnitID = "player" }, -- explosive dash
+		{ AuraID = 115831, UnitID = "pet" }, -- Storm of Fury
+		{ AuraID = 193396, UnitID = "pet" }, -- Demon Amplification
+		{ AuraID = 117828, UnitID = "player" }, -- detonation
+		{ AuraID = 196098, UnitID = "player" }, -- Soul Harvest
+		{ AuraID = 205146, UnitID = "player" }, -- Demonic Omen
+		{ AuraID = 216708, UnitID = "player" }, -- Headwind Reaper
+		{ AuraID = 235156, UnitID = "player" }, -- Enhanced life splitting
+		{ AuraID = 108416, UnitID = "player", Value = true }, -- Dark Pact
+		{ AuraID = 264173, UnitID = "player" }, -- Demon Core
+		{ AuraID = 265273, UnitID = "player" }, -- Demon Power
+		{ AuraID = 212295, UnitID = "player" }, -- Void Guard
+		{ AuraID = 267218, UnitID = "player" }, -- Void Portal
+		{ AuraID = 113858, UnitID = "player" }, -- Dark Souls: Unrest
+		{ AuraID = 113860, UnitID = "player" }, -- Dark Souls: Lamentation
+		{ AuraID = 264571, UnitID = "player" }, -- Nightfall
+		{ AuraID = 266030, UnitID = "player" }, -- entropy can be reversed
 	},
-	["Focus Aura"] = { -- 焦点光环组
-		{ AuraID = 980, UnitID = "focus", Caster = "player" }, -- 痛楚
-		{ AuraID = 146739, UnitID = "focus", Caster = "player" }, -- 腐蚀术
-		{ AuraID = 233490, UnitID = "focus", Caster = "player" }, -- 痛苦无常
-		{ AuraID = 233496, UnitID = "focus", Caster = "player" }, -- 痛苦无常
-		{ AuraID = 233497, UnitID = "focus", Caster = "player" }, -- 痛苦无常
-		{ AuraID = 233498, UnitID = "focus", Caster = "player" }, -- 痛苦无常
-		{ AuraID = 233499, UnitID = "focus", Caster = "player" }, -- 痛苦无常
-		{ AuraID = 157736, UnitID = "focus", Caster = "player" }, -- 献祭
-		{ AuraID = 265412, UnitID = "focus", Caster = "player" }, -- 厄运
+	["Focus Aura"] = { -- focus aura group
+		{ AuraID = 980, UnitID = "focus", Caster = "player" }, -- pain
+		{ AuraID = 146739, UnitID = "focus", Caster = "player" }, -- Corruption
+		{ AuraID = 233490, UnitID = "focus", Caster = "player" }, -- misery
+		{ AuraID = 233496, UnitID = "focus", Caster = "player" }, -- misery
+		{ AuraID = 233497, UnitID = "focus", Caster = "player" }, -- misery
+		{ AuraID = 233498, UnitID = "focus", Caster = "player" }, -- misery
+		{ AuraID = 233499, UnitID = "focus", Caster = "player" }, -- misery
+		{ AuraID = 157736, UnitID = "focus", Caster = "player" }, -- sacrifice
+		{ AuraID = 265412, UnitID = "focus", Caster = "player" }, -- doom
 	},
-	["Spell Cooldown"] = { -- 冷却计时组
-		{ SlotID = 13 }, -- 饰品1
-		{ SlotID = 14 }, -- 饰品2
+	["Spell Cooldown"] = { -- Cooldown timer group
+		{ SlotID = 13 }, -- trinket 1
+		{ SlotID = 14 }, -- trinket 2
 	},
 }
 

@@ -5,89 +5,89 @@ if K.Class ~= "MAGE" then
 	return
 end
 
--- 法师的法术监控
+-- Mage's spell monitoring
 local list = {
-	["Player Aura"] = { -- 玩家光环组
-		{ AuraID = 130, UnitID = "player" }, -- 缓落
-		{ AuraID = 32612, UnitID = "player" }, -- 隐形术
-		{ AuraID = 87023, UnitID = "player" }, -- 灸灼
-		{ AuraID = 11426, UnitID = "player" }, -- 寒冰护体
-		{ AuraID = 235313, UnitID = "player" }, -- 烈焰护体
-		{ AuraID = 235450, UnitID = "player" }, -- 棱光屏障
-		{ AuraID = 110960, UnitID = "player" }, -- 强化隐形术
-		{ AuraID = 157644, UnitID = "player" }, -- 强化烟火之术
+	["Player Aura"] = { -- Player Aura group
+		{ AuraID = 130, UnitID = "player" }, -- slow down
+		{ AuraID = 32612, UnitID = "player" }, -- invisibility
+		{ AuraID = 87023, UnitID = "player" }, -- cautery
+		{ AuraID = 11426, UnitID = "player" }, -- Frost Armor
+		{ AuraID = 235313, UnitID = "player" }, -- Flame Shield
+		{ AuraID = 235450, UnitID = "player" }, -- Prismatic Barrier
+		{ AuraID = 110960, UnitID = "player" }, -- Enhanced Invisibility
+		{ AuraID = 157644, UnitID = "player" }, -- Enhanced Fireworks
 	},
-	["Target Aura"] = { -- 目标光环组
-		{ AuraID = 118, UnitID = "target", Caster = "player" }, -- 变形术
-		{ AuraID = 122, UnitID = "target", Caster = "player" }, -- 冰霜新星
-		{ AuraID = 12654, UnitID = "target", Caster = "player" }, -- 点燃
-		{ AuraID = 11366, UnitID = "target", Caster = "player" }, -- 炎爆术
-		{ AuraID = 31661, UnitID = "target", Caster = "player" }, -- 龙息术
-		{ AuraID = 82691, UnitID = "target", Caster = "player" }, -- 冰霜之环
-		{ AuraID = 31589, UnitID = "target", Caster = "player" }, -- 减速
-		{ AuraID = 33395, UnitID = "target", Caster = "pet" }, -- 冰冻术
-		{ AuraID = 28271, UnitID = "target", Caster = "player" }, -- 变形术
-		{ AuraID = 28272, UnitID = "target", Caster = "player" }, -- 变形术
-		{ AuraID = 61305, UnitID = "target", Caster = "player" }, -- 变形术
-		{ AuraID = 61721, UnitID = "target", Caster = "player" }, -- 变形术
-		{ AuraID = 61780, UnitID = "target", Caster = "player" }, -- 变形术
-		{ AuraID = 126819, UnitID = "target", Caster = "player" }, -- 变形术
-		{ AuraID = 161353, UnitID = "target", Caster = "player" }, -- 变形术
-		{ AuraID = 161354, UnitID = "target", Caster = "player" }, -- 变形术
-		{ AuraID = 161355, UnitID = "target", Caster = "player" }, -- 变形术
-		{ AuraID = 161372, UnitID = "target", Caster = "player" }, -- 变形术
-		{ AuraID = 157981, UnitID = "target", Caster = "player" }, -- 冲击波
-		{ AuraID = 217694, UnitID = "target", Caster = "player" }, -- 活动炸弹
-		{ AuraID = 114923, UnitID = "target", Caster = "player" }, -- 虚空风暴
-		{ AuraID = 205708, UnitID = "target", Caster = "player" }, -- 寒冰箭
-		{ AuraID = 212792, UnitID = "target", Caster = "player" }, -- 冰锥术
-		{ AuraID = 157997, UnitID = "target", Caster = "player" }, -- 寒冰新星
-		{ AuraID = 210134, UnitID = "target", Caster = "player" }, -- 奥术侵蚀
-		{ AuraID = 199786, UnitID = "target", Caster = "player" }, -- 冰川尖刺
-		{ AuraID = 210824, UnitID = "target", Caster = "player" }, -- 大法师之触
-		{ AuraID = 307443, UnitID = "target", Caster = "player" }, -- 摧残火花
-		{ AuraID = 314793, UnitID = "target", Caster = "player" }, -- 折磨之镜
+	["Target Aura"] = { -- target aura group
+		{ AuraID = 118, UnitID = "target", Caster = "player" }, -- Polymorph
+		{ AuraID = 122, UnitID = "target", Caster = "player" }, -- Frost Nova
+		{ AuraID = 12654, UnitID = "target", Caster = "player" }, -- Ignite
+		{ AuraID = 11366, UnitID = "target", Caster = "player" }, -- Pyroblast
+		{ AuraID = 31661, UnitID = "target", Caster = "player" }, -- Dragon's Breath
+		{ AuraID = 82691, UnitID = "target", Caster = "player" }, -- Ring of Frost
+		{ AuraID = 31589, UnitID = "target", Caster = "player" }, -- slow down
+		{ AuraID = 33395, UnitID = "target", Caster = "pet" }, -- Freeze
+		{ AuraID = 28271, UnitID = "target", Caster = "player" }, -- Polymorph
+		{ AuraID = 28272, UnitID = "target", Caster = "player" }, -- Polymorph
+		{ AuraID = 61305, UnitID = "target", Caster = "player" }, -- Polymorph
+		{ AuraID = 61721, UnitID = "target", Caster = "player" }, -- Polymorph
+		{ AuraID = 61780, UnitID = "target", Caster = "player" }, -- Polymorph
+		{ AuraID = 126819, UnitID = "target", Caster = "player" }, -- Polymorph
+		{ AuraID = 161353, UnitID = "target", Caster = "player" }, -- Polymorph
+		{ AuraID = 161354, UnitID = "target", Caster = "player" }, -- Polymorph
+		{ AuraID = 161355, UnitID = "target", Caster = "player" }, -- Polymorph
+		{ AuraID = 161372, UnitID = "target", Caster = "player" }, -- Polymorph
+		{ AuraID = 157981, UnitID = "target", Caster = "player" }, -- shockwave
+		{ AuraID = 217694, UnitID = "target", Caster = "player" }, -- active bomb
+		{ AuraID = 114923, UnitID = "target", Caster = "player" }, -- Netherstorm
+		{ AuraID = 205708, UnitID = "target", Caster = "player" }, -- Frostbolt
+		{ AuraID = 212792, UnitID = "target", Caster = "player" }, -- pick of ice
+		{ AuraID = 157997, UnitID = "target", Caster = "player" }, -- Ice Nova
+		{ AuraID = 210134, UnitID = "target", Caster = "player" }, -- Arcane Corruption
+		{ AuraID = 199786, UnitID = "target", Caster = "player" }, -- Glacial Spike
+		{ AuraID = 210824, UnitID = "target", Caster = "player" }, -- Touch of the Archmage
+		{ AuraID = 307443, UnitID = "target", Caster = "player" }, -- Destruction Spark
+		{ AuraID = 314793, UnitID = "target", Caster = "player" }, -- Mirror of Torment
 	},
-	["Special Aura"] = { -- 玩家重要光环组
-		{ AuraID = 66, UnitID = "player" }, -- 隐形术
-		{ AuraID = 45438, UnitID = "player" }, -- 寒冰屏障
-		{ AuraID = 36032, UnitID = "player" }, -- 奥术充能
-		{ AuraID = 12042, UnitID = "player" }, -- 奥术强化
-		{ AuraID = 12472, UnitID = "player" }, -- 冰冷血脉
-		{ AuraID = 44544, UnitID = "player" }, -- 寒冰指
-		{ AuraID = 48108, UnitID = "player" }, -- 炎爆术！
-		{ AuraID = 48107, UnitID = "player" }, -- 热力迸发
-		{ AuraID = 108843, UnitID = "player" }, -- 炽热疾速
-		{ AuraID = 116267, UnitID = "player" }, -- 咒术洪流
-		{ AuraID = 116014, UnitID = "player" }, -- 能量符文
-		{ AuraID = 108839, UnitID = "player" }, -- 浮冰
-		{ AuraID = 205025, UnitID = "player" }, -- 气定神闲
-		{ AuraID = 113862, UnitID = "player" }, -- 强化隐形术
-		{ AuraID = 194329, UnitID = "player" }, -- 炽烈之咒
-		{ AuraID = 190319, UnitID = "player" }, -- 燃烧
-		{ AuraID = 212799, UnitID = "player" }, -- 置换
-		{ AuraID = 198924, UnitID = "player" }, -- 加速
-		{ AuraID = 205473, UnitID = "player" }, -- 冰刺
-		{ AuraID = 205766, UnitID = "player" }, -- 刺骨冰寒
-		{ AuraID = 209455, UnitID = "player" }, -- 凯尔萨斯的绝招，抱歉护腕
-		{ AuraID = 263725, UnitID = "player" }, -- 节能施法
-		{ AuraID = 264774, UnitID = "player" }, -- 三之准则
-		{ AuraID = 269651, UnitID = "player" }, -- 火焰冲撞
-		{ AuraID = 190446, UnitID = "player" }, -- 冰冷智慧
-		{ AuraID = 321363, UnitID = "player" }, -- 专注魔法
-		{ AuraID = 324220, UnitID = "player" }, -- 死神之躯
+	["Special Aura"] = { -- Player important aura group
+		{ AuraID = 66, UnitID = "player" }, -- invisibility
+		{ AuraID = 45438, UnitID = "player" }, -- Ice Barrier
+		{ AuraID = 36032, UnitID = "player" }, -- Arcane Charge
+		{ AuraID = 12042, UnitID = "player" }, -- Arcane Augment
+		{ AuraID = 12472, UnitID = "player" }, -- icy blood
+		{ AuraID = 44544, UnitID = "player" }, -- Fingers of Frost
+		{ AuraID = 48108, UnitID = "player" }, -- Pyroblast!
+		{ AuraID = 48107, UnitID = "player" }, -- heat burst
+		{ AuraID = 108843, UnitID = "player" }, -- Fiery Speed
+		{ AuraID = 116267, UnitID = "player" }, -- torrent of conjuration
+		{ AuraID = 116014, UnitID = "player" }, -- energy rune
+		{ AuraID = 108839, UnitID = "player" }, -- ice floes
+		{ AuraID = 205025, UnitID = "player" }, -- calm down
+		{ AuraID = 113862, UnitID = "player" }, -- Enhanced Invisibility
+		{ AuraID = 194329, UnitID = "player" }, -- Blazing Curse
+		{ AuraID = 190319, UnitID = "player" }, -- burn
+		{ AuraID = 212799, UnitID = "player" }, -- permutation
+		{ AuraID = 198924, UnitID = "player" }, -- speed up
+		{ AuraID = 205473, UnitID = "player" }, -- Ice Spike
+		{ AuraID = 205766, UnitID = "player" }, -- Biting Chill
+		{ AuraID = 209455, UnitID = "player" }, -- Kael'thas' trick, sorry bracers
+		{ AuraID = 263725, UnitID = "player" }, -- energy saving spellcasting
+		{ AuraID = 264774, UnitID = "player" }, -- Rule of Three
+		{ AuraID = 269651, UnitID = "player" }, -- Fire Crash
+		{ AuraID = 190446, UnitID = "player" }, -- Cold Wisdom
+		{ AuraID = 321363, UnitID = "player" }, -- focus magic
+		{ AuraID = 324220, UnitID = "player" }, -- body of death
 	},
-	["Focus Aura"] = { -- 焦点光环组
-		{ AuraID = 44457, UnitID = "focus", Caster = "player" }, -- 活动炸弹
-		{ AuraID = 114923, UnitID = "focus", Caster = "player" }, -- 虚空风暴
+	["Focus Aura"] = { -- focus aura group
+		{ AuraID = 44457, UnitID = "focus", Caster = "player" }, -- active bomb
+		{ AuraID = 114923, UnitID = "focus", Caster = "player" }, -- Netherstorm
 	},
-	["Spell Cooldown"] = { -- 冷却计时组
-		{ SlotID = 13 }, -- 饰品1
-		{ SlotID = 14 }, -- 饰品2
-		{ TotemID = 1 }, -- 能量符文
-		{ SpellID = 12472 }, -- 冰冷血脉
-		{ SpellID = 12042 }, -- 奥术强化
-		{ SpellID = 190319 }, -- 燃烧
+	["Spell Cooldown"] = { -- Cooldown timer group
+		{ SlotID = 13 }, -- trinket 1
+		{ SlotID = 14 }, -- trinket 2
+		{ TotemID = 1 }, -- energy rune
+		{ SpellID = 12472 }, -- icy blood
+		{ SpellID = 12042 }, -- Arcane Enhancement
+		{ SpellID = 190319 }, -- burn
 	},
 }
 
