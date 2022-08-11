@@ -21,7 +21,7 @@ local ChatMSG = {
 }
 
 local IconTex = {
-	DAMAGER = "|TInterface\\LFGFrame\\LFGRole:12:12:0:0:64:16:16:32:0:16|t",
+	DAMAGER = "",
 	HEALER = "|TInterface\\LFGFrame\\LFGRole:12:12:0:0:64:16:48:64:0:16|t",
 	TANK = "|TInterface\\LFGFrame\\LFGRole:12:12:0:0:64:16:32:48:0:16|t",
 }

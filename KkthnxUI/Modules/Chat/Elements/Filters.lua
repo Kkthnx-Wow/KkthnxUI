@@ -288,7 +288,6 @@ end
 
 function Module:UpdateRaidInstanceQuestSpam(_, msg, ...)
 	if (msg == ERR_NOT_IN_RAID) or (msg == ERR_NOT_IN_INSTANCE_GROUP) then
-		print(msg)
 		return true
 	end
 

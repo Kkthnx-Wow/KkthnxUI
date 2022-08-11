@@ -80,7 +80,7 @@ K.Title = GetAddOnMetadata(AddOnName, "Title")
 K.Version = GetAddOnMetadata(AddOnName, "Version")
 
 K.Noop = function()
-	return
+	-- return
 end
 
 K.Name = UnitName("player")
