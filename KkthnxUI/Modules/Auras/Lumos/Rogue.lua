@@ -27,7 +27,7 @@ function Module:PostCreateLumos(self)
 
 	local iconSize = (self:GetWidth() - 10) / 6
 	local buttons = {}
-	local offset = C["Nameplate"].NameplateClassPower and 8 or (8 * 2 + C["Nameplate"].PPBarHeight)
+	local offset = C["Nameplate"].NameplateClassPower and 8 or (8 * 2 + C["Nameplate"].PPHeight)
 	for i = 1, 6 do
 		local bu = CreateFrame("Frame", nil, self.Health)
 		bu:SetSize(iconSize, iconSize / 2)
