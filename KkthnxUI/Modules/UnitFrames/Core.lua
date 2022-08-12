@@ -66,13 +66,15 @@ function Module:UpdateClassPortraits(unit)
 
 		for _, value in pairs({ PortraitValue }) do
 			if value and value == defaultCPs and UnitIsPlayer(unit) then
-				self:SetTexture("Interface\\WorldStateFrame\\ICONS-CLASSES")
+				self:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\OLD-ICONS-CLASSES")
 				if ClassTCoords then
 					self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
 				end
 			elseif value and value == newCPs and UnitIsPlayer(unit) then
-				local betterClassIcons = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\BetterClassIcons\\%s.tga"
-				self:SetTexture(betterClassIcons:format(unitClass))
+				self:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES")
+				if ClassTCoords then
+					self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
+				end
 			else
 				self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			end
@@ -160,27 +162,23 @@ function Module:UpdatePhaseIcon(isPhased)
 end
 
 function Module:CreateHeader()
-	local highlight = self.Highlight
-
 	self:RegisterForClicks("AnyUp")
 	self:HookScript("OnEnter", function()
 		UnitFrame_OnEnter(self)
-
-		if not highlight then
+		if not self.Highlight then
 			return
 		end
 
-		highlight:Show()
+		self.Highlight:Show()
 	end)
 
 	self:HookScript("OnLeave", function()
 		UnitFrame_OnLeave(self)
-
-		if not highlight then
+		if not self.Highlight then
 			return
 		end
 
-		highlight:Hide()
+		self.Highlight:Hide()
 	end)
 end
 
@@ -626,7 +624,7 @@ function Module:CreateClassPower(self)
 		barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 6 }
 	elseif self.mystyle == "targetplate" then
 		barWidth = C["Nameplate"].PlateWidth
-		barHeight = C["Nameplate"].PlateHeight
+		barHeight = C["Nameplate"].PlateHeight - 2
 		barPoint = { "CENTER", self }
 	end
 

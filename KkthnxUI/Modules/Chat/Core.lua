@@ -431,22 +431,9 @@ end
 hooksecurefunc("ChatEdit_CustomTabPressed", Module.UpdateTabChannelSwitch)
 
 -- Quick Scroll
-local chatScrollInfo = {
-	text = L["ChatHelpTip"],
-	buttonStyle = HelpTip.ButtonStyle.GotIt,
-	targetPoint = HelpTip.Point.RightEdgeCenter,
-	onAcknowledgeCallback = K.HelpInfoAcknowledge,
-	callbackArg = "ChatScroll",
-}
-
--- Quick Scroll
 function Module:QuickMouseScroll(dir)
 	if not C["Chat"].Enable then
 		return
-	end
-
-	if not KkthnxUIDB["Helper"]["ChatScroll"] then
-		HelpTip:Show(ChatFrame1, chatScrollInfo)
 	end
 
 	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then

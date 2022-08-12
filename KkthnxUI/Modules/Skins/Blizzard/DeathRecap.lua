@@ -2,7 +2,6 @@ local K, C = unpack(KkthnxUI)
 
 local _G = _G
 local select = _G.select
-local unpack = _G.unpack
 
 C.themes["Blizzard_DeathRecap"] = function()
 	local DeathRecapFrame = _G.DeathRecapFrame

@@ -50,7 +50,6 @@ function Module:OnEnable()
 		end
 	end
 
-	self:CreateBaudErrorHelpTip()
 	self:CreateBlockStrangerInvites()
 	self:CreateBossBanner()
 	self:CreateBossEmote()
@@ -64,6 +63,7 @@ function Module:OnEnable()
 	self:CreateTicketStatusFrameMove()
 	self:CreateTradeTargetInfo()
 	self:CreateVehicleSeatMover()
+	self:DisableHelpTips()
 	self:MoveMawBuffsFrame()
 	self:UpdateMaxCameraZoom()
 
@@ -73,7 +73,7 @@ function Module:OnEnable()
 	if not BNToastFrame.mover then
 		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 171 })
 	else
-		BNToastFrame.mover:SetSize(BNToastFrame:GetSize())
+		BNToastFrame.mover:SetSize(250, 49) -- 49 -- Rounded default size?
 	end
 	hooksecurefunc(BNToastFrame, "SetPoint", Module.PostBNToastMove)
 
@@ -756,33 +756,19 @@ function Module:CreateJerryWay()
 	SLASH_KKUI_JERRY_WAY1 = "/way"
 end
 
-function Module:CreateBaudErrorHelpTip()
-	if not IsAddOnLoaded("!BaudErrorFrame") then
+local function AcknowledgeTips()
+	for frame in _G.HelpTip.framePool:EnumerateActive() do
+		frame:Acknowledge()
+	end
+end
+
+function Module:DisableHelpTips() -- Auto complete helptips
+	if not C["General"].NoTutorialButtons then
 		return
 	end
 
-	local button, count = _G.BaudErrorFrameMinimapButton, _G.BaudErrorFrameMinimapCount
-	if not button then
-		return
-	end
-
-	local errorInfo = {
-		text = L["BEFHelpTip"],
-		buttonStyle = HelpTip.ButtonStyle.GotIt,
-		targetPoint = HelpTip.Point.LeftEdgeCenter,
-		alignment = HelpTip.Alignment.Left,
-		offsetX = -6,
-		onAcknowledgeCallback = K.HelpInfoAcknowledge,
-		callbackArg = "BaudError",
-	}
-	hooksecurefunc(count, "SetText", function(_, text)
-		if not KkthnxUIDB["Helper"]["BaudError"] then
-			text = tonumber(text)
-			if text and text > 0 then
-				HelpTip:Show(button, errorInfo)
-			end
-		end
-	end)
+	hooksecurefunc(_G.HelpTip, "Show", AcknowledgeTips)
+	C_Timer.After(1, AcknowledgeTips)
 end
 
 do -- Firestorm has a bug where UI_ERROR_MESSAGES that should trigger a dismount DO NOT trigger a dismount so it is basically acting like Classic Wow.

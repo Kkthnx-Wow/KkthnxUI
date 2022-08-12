@@ -49,4 +49,8 @@ C.themes["Blizzard_Collections"] = function()
 
 	WardrobeTransmogFrame.ModelScene.ControlFrame:SetAlpha(0)
 	WardrobeTransmogFrame.ModelScene.ControlFrame:SetScale(0.00001)
+
+	if C["General"].NoTutorialButtons then
+		_G.PetJournalTutorialButton:Kill()
+	end
 end

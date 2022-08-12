@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C = unpack(KkthnxUI)
 
 -- Sourced: Tukui (Tukz & Hydra)
 -- Edited: KkthnxUI (Kkthnx)
@@ -27,18 +27,18 @@ end
 local Font = C["Media"].Fonts.KkthnxUIFont
 local Texture = C["Media"].Statusbars.KkthnxUIStatusbar
 
-local DeathKnightIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:128:196|t" .. "|CFFC41F3B"
-local DemonHunterIconColor = "" .. "|CFFA330C9" -- Fix Me
-local DruidIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:196:256:0:64|t" .. "|CFFFF7D0A"
-local HunterIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:64:128|t" .. "|CFFA9D271"
--- local MageIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:0:64|t" .. "|CFF40C7EB"
--- local MonkIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:128:196|t" .. "|CFF00FF96"
--- local PaladinIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:128:196|t" .. "|CFFF58CBA"
-local PriestIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:64:128|t" .. "|CFFFFFFFF"
-local RogueIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:128:196:0:64|t" .. "|CFFFFF569"
-local ShamanIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:64:128:64:128|t" .. "|CFF0070DE"
--- local WarlockIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:196:256:64:128|t" .. "|CFF8787ED"
--- local WarriorIconColor = "|TInterface\\WorldStateFrame\\ICONS-CLASSES:14:14:0:0:256:256:0:64:0:64|t" .. "|CFFC79C6E"
+local DeathKnightIconColor = K.AddClassIconToColor("DEATHKNIGHT", "|CFFC41F3B", 16)
+local DemonHunterIconColor = K.AddClassIconToColor("DEMONHUNTER", "|CFFA330C9", 16)
+local DruidIconColor = K.AddClassIconToColor("DRUID", "|CFFFF7D0A", 16)
+local HunterIconColor = K.AddClassIconToColor("HUNTER", "|CFFA9D271", 16)
+local MageIconColor = K.AddClassIconToColor("MAGE", "|CFF40C7EB", 16)
+local MonkIconColor = K.AddClassIconToColor("MONK", "|CFF00FF96", 16)
+local PaladinIconColor = K.AddClassIconToColor("PALADIN", "|CFFF58CBA", 16)
+local PriestIconColor = K.AddClassIconToColor("PRIEST", "|CFFFFFFFF", 16)
+local RogueIconColor = K.AddClassIconToColor("ROGUE", "|CFFFFF569", 16)
+local ShamanIconColor = K.AddClassIconToColor("SHAMAN", "|CFF0070DE", 16)
+local WarlockIconColor = K.AddClassIconToColor("WARLOCK", "|CFF8787ED", 16)
+local WarriorIconColor = K.AddClassIconToColor("WARRIOR", "|CFFC79C6E", 16)
 
 local BGColor = { 0.2, 0.2, 0.2 }
 local BrightColor = { 0.35, 0.35, 0.35 }
@@ -64,22 +64,43 @@ local WidgetListWidth = (WindowWidth - ButtonListWidth) - (Spacing * 3) + 1
 local WidgetHeight = 20 -- All widgets are the same height
 local WidgetHighlightAlpha = 0.25
 
+local SwitchWidth = 46
+local EditBoxWidth = 134
+local ButtonWidth = 138
+local SliderWidth = 84
+local SliderEditBoxWidth = 46
+local DropdownWidth = 180
+local ListItemsToShow = 8
+local ColorButtonWidth = 110
+
+local ColorPickerFrameCancel = K.Noop
+local LastActiveDropdown
 local LastActiveWindow
 local MySelectedProfile = K.Realm .. "-" .. K.Name
 
 -- Do not add class color/icon string unless they ask for it or agree apon it :D
 local CreditLines = {
-	-- K.GreyColor .. "~~~~|r |CFFfa6a56Patreons|r " .. K.GreyColor .. "~~~~",
-	-- -- Tier 1
-	-- "",
-	-- -- Tier 2
-	-- "",
-	-- -- Tier 3
-	-- "",
-	-- -- Tier 4
-	-- "",
 	-- stylua: ignore
-	K.GreyColor.. "~~~~|r |CFFFFCC66Credits|r ".. K.GreyColor.. "~~~~",
+	K.GreyColor.. "[|r|CFFFFCC66PATREONS|r".. K.GreyColor.. "]",
+	" ",
+	-- -- Tier 1
+	-- stylua: ignore
+	K.GreyColor.. "[|r|CFFFFCC66Tier 1|r".. K.GreyColor.. "]",
+	"",
+	-- stylua: ignore
+	K.GreyColor.. "[|r|CFFFFCC66Tier 2|r".. K.GreyColor.. "]",
+	"",
+	-- stylua: ignore
+	K.GreyColor.. "[|r|CFFFFCC66Tier 3|r".. K.GreyColor.. "]",
+	"Shovil",
+	"",
+	-- stylua: ignore
+	K.GreyColor.. "[|r|CFFFFCC66Tier 4|r".. K.GreyColor.. "]",
+	"",
+	-- stylua: ignore
+	"",
+	K.GreyColor .. "[|r|CFFFFCC66CREDITS|r" .. K.GreyColor .. "]",
+	"",
 	"Aftermathh",
 	RogueIconColor .. "Alteredcross|r",
 	"Alza",
@@ -99,7 +120,7 @@ local CreditLines = {
 	"Ishtara",
 	"KkthnxUI Community",
 	"LightSpark",
-	"Magicnachos",
+	PriestIconColor .. "Magicnachos",
 	DruidIconColor .. "Merathilis",
 	"Nightcracker",
 	"P3lim",
@@ -182,11 +203,14 @@ end
 
 local AnchorOnEnter = function(self)
 	if self.Tooltip and match(self.Tooltip, "%S") then
+		if GameTooltip:IsForbidden() then
+			return
+		end
+
 		GameTooltip:ClearLines()
 		GameTooltip:SetOwner(self, "ANCHOR_NONE")
 		GameTooltip:SetPoint("TOPLEFT", KKUI_GUI, "TOPRIGHT", -3, -5)
 		GameTooltip:AddLine(INFO)
-		-- stylua: ignore
 		GameTooltip:AddLine("|nMost options require a full UI reload|nYou can do this by clicking the |CFF00CC4CApply|r button|n|n", 163 / 255, 211 / 255, 255 / 255)
 		GameTooltip:AddLine(self.Tooltip, nil, nil, nil, true)
 		GameTooltip:Show()
@@ -194,6 +218,10 @@ local AnchorOnEnter = function(self)
 end
 
 local AnchorOnLeave = function()
+	if GameTooltip:IsForbidden() then
+		return
+	end
+
 	GameTooltip:Hide()
 end
 
@@ -272,8 +300,6 @@ end
 GUI.Widgets.CreateSection = CreateSection
 
 -- Buttons
-local ButtonWidth = 138
-
 local ButtonOnEnter = function(self)
 	self.Highlight:SetAlpha(WidgetHighlightAlpha)
 end
@@ -335,8 +361,6 @@ end
 GUI.Widgets.CreateButton = CreateButton
 
 -- Switches
-local SwitchWidth = 46
-
 local SwitchOnMouseUp = function(self, button)
 	if self.Movement:IsPlaying() then
 		return
@@ -381,7 +405,7 @@ local CreateSwitch = function(self, group, option, text, tooltip, hook)
 	local Value = C[group][option]
 
 	local Anchor = CreateFrame("Frame", nil, self)
-	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
+	Anchor:SetSize(WidgetListWidth - SwitchWidth - Spacing, WidgetHeight)
 	Anchor:SetScript("OnEnter", AnchorOnEnter)
 	Anchor:SetScript("OnLeave", AnchorOnLeave)
 	Anchor.Tooltip = tooltip
@@ -406,7 +430,6 @@ local CreateSwitch = function(self, group, option, text, tooltip, hook)
 
 	Switch.Thumb = CreateFrame("Frame", nil, Switch)
 	Switch.Thumb:SetSize(WidgetHeight, WidgetHeight)
-	-- stylua: ignore
 	Switch.Thumb:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUIStatusbar, nil, nil, nil, 123 / 255, 132 / 255, 137 / 255)
 
 	Switch.Movement = CreateAnimationGroup(Switch.Thumb):CreateAnimation("Move")
@@ -469,12 +492,11 @@ local EditBoxOnEscapePressed = function(self)
 	self:ClearFocus()
 end
 
-local EditBoxWidth = 134
 local CreateEditBox = function(self, group, option, text, tooltip, hook)
 	local Value = C[group][option]
 
 	local Anchor = CreateFrame("Frame", nil, self)
-	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
+	Anchor:SetSize(WidgetListWidth - EditBoxWidth - Spacing, WidgetHeight)
 	Anchor:SetScript("OnEnter", AnchorOnEnter)
 	Anchor:SetScript("OnLeave", AnchorOnLeave)
 	Anchor.Tooltip = tooltip
@@ -528,9 +550,6 @@ end
 GUI.Widgets.CreateEditBox = CreateEditBox
 
 -- Sliders
-local SliderWidth = 84
-local SliderEditBoxWidth = 46
-
 local SliderEditBoxOnEnter = function(self)
 	self.Highlight:SetAlpha(WidgetHighlightAlpha)
 end
@@ -773,10 +792,6 @@ end
 GUI.Widgets.CreateSlider = CreateSlider
 
 -- Dropdown Menu
-local DropdownWidth = 180
-local ListItemsToShow = 8
-local LastActiveDropdown
-
 local SetArrowUp = function(self)
 	self.ArrowDown.Fade:SetChange(0)
 	self.ArrowDown.Fade:SetEasing("out-sinusoidal")
@@ -1260,10 +1275,6 @@ end
 GUI.Widgets.CreateDropdown = CreateDropdown
 
 -- Color selection
-local ColorButtonWidth = 110
-
-local ColorPickerFrameCancel = function() end
-
 local ColorOnMouseUp = function(self, button)
 	local CPF = ColorPickerFrame
 
@@ -2039,7 +2050,7 @@ GUI.Enable = function(self)
 	ResetChat.Middle:SetText(K.SystemColor .. "Reset Chat|r")
 
 	-- Contact Button
-	local ContactMe = CreateFrame("Frame", "KKUI_ContactMe", self.Footer)
+	local ContactMe = CreateFrame("Frame", nil, self.Footer)
 	ContactMe:SetSize(FooterButtonWidth, HeaderHeight)
 	ContactMe:SetPoint("LEFT", Move, 0, -28)
 	ContactMe:CreateBorder()
@@ -2076,7 +2087,7 @@ GUI.Enable = function(self)
 	Profiles:SetScript("OnMouseUp", ButtonOnMouseUp)
 	Profiles:SetScript("OnEnter", ButtonOnEnter)
 	Profiles:SetScript("OnLeave", ButtonOnLeave)
-	Profiles:SetScript("OnMouseUp", function()
+	Profiles:HookScript("OnMouseUp", function()
 		if GUI:IsShown() then
 			GUI:Toggle()
 		end
@@ -2178,21 +2189,6 @@ GUI.Enable = function(self)
 	self.Created = true
 end
 
-local ContactMeInfo = {
-	text = L["ContactMeHelpTip"],
-	buttonStyle = HelpTip.ButtonStyle.GotIt,
-	targetPoint = HelpTip.Point.BottomEdgeCenter,
-	offsetY = -6,
-	onAcknowledgeCallback = K.HelpInfoAcknowledge,
-	callbackArg = "ContactMe",
-}
-
-GUI.HelpTip = function()
-	if not KkthnxUIDB["Helper"]["ContactMe"] then
-		HelpTip:Show("KKUI_ContactMe", ContactMeInfo)
-	end
-end
-
 GUI.Toggle = function(self)
 	if InCombatLockdown() then
 		return
@@ -2200,11 +2196,9 @@ GUI.Toggle = function(self)
 
 	if self:IsShown() then
 		self.FadeOut:Play()
-		self.HelpTip()
 	else
 		self:Show()
 		self.FadeIn:Play()
-		self.HelpTip()
 	end
 end
 

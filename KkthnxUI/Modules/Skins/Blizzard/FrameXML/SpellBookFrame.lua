@@ -4,9 +4,7 @@ local _G = _G
 local pairs = pairs
 local table_insert = table.insert
 
-local BOOKTYPE_PROFESSION = _G.BOOKTYPE_PROFESSION
 local GetProfessionInfo = _G.GetProfessionInfo
-local IsPassiveSpell = _G.IsPassiveSpell
 local SPELLS_PER_PAGE = _G.SPELLS_PER_PAGE
 local hooksecurefunc = _G.hooksecurefunc
 
@@ -24,69 +22,29 @@ table_insert(C.defaultThemes, function()
 		bu:SetPushedTexture("")
 
 		ic:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		ic.bg = ic:CreateBorder()
 
-		local NewBorder = CreateFrame("Frame", nil, bu, "BackdropTemplate")
-		NewBorder:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 16 })
-		NewBorder:SetPoint("TOPLEFT", bu, -7, 7)
-		NewBorder:SetPoint("BOTTOMRIGHT", bu, 7, -7)
-		NewBorder:SetBackdropBorderColor(1, 1, 0)
-		NewBorder:Hide()
+		bu.bg = CreateFrame("Frame", nil, bu)
+		bu.bg:SetFrameLevel(bu:GetFrameLevel())
+		bu.bg:SetAllPoints(ic)
+		bu.bg:CreateBorder()
 
-		local anim = NewBorder:CreateAnimationGroup()
-		anim:SetLooping("BOUNCE")
-		anim.fader = anim:CreateAnimation("Alpha")
-		anim.fader:SetFromAlpha(1)
-		anim.fader:SetToAlpha(0.5)
-		anim.fader:SetDuration(1)
-		anim.fader:SetSmoothing("OUT")
+		local newHighlight = CreateFrame("Frame", nil, bu, "BackdropTemplate")
+		newHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 16 })
+		newHighlight:SetPoint("TOPLEFT", bu, -7, 7)
+		newHighlight:SetPoint("BOTTOMRIGHT", bu, 7, -7)
+		newHighlight:SetBackdropBorderColor(1, 1, 0)
+		newHighlight:Hide()
 
 		hooksecurefunc(bu.SpellHighlightTexture, "SetShown", function(_, value)
 			if value == true then
-				if not anim:IsPlaying() then
-					NewBorder:Show()
-					anim:Play()
-				end
+				newHighlight:Show()
 			end
 		end)
 
 		hooksecurefunc(bu.SpellHighlightTexture, "Hide", function()
-			if anim and anim:IsPlaying() then
-				anim:Stop()
-				NewBorder:Hide()
-			end
+			newHighlight:Hide()
 		end)
 	end
-
-	hooksecurefunc("SpellButton_UpdateButton", function(self)
-		if SpellBookFrame.bookType == BOOKTYPE_PROFESSION then
-			return
-		end
-
-		for i = 1, SPELLS_PER_PAGE do
-			local button = _G["SpellButton" .. i]
-			if button.SpellHighlightTexture then
-				button.SpellHighlightTexture:SetTexture("")
-			end
-		end
-
-		local slot = SpellBook_GetSpellBookSlot(self)
-		local isPassive = IsPassiveSpell(slot, SpellBookFrame.bookType)
-		local name = self:GetName()
-		local highlightTexture = _G[name .. "Highlight"]
-		highlightTexture:SetPoint("TOPLEFT", 2, -2)
-		highlightTexture:SetPoint("BOTTOMRIGHT", -2, 2)
-		if isPassive then
-			highlightTexture:SetColorTexture(1, 1, 1, 0)
-		else
-			highlightTexture:SetColorTexture(1, 1, 1, 0.25)
-		end
-
-		local ic = _G[name .. "IconTexture"]
-		if ic.bg then
-			ic.bg:SetShown(ic:IsShown())
-		end
-	end)
 
 	-- Professions
 	local professions = { "PrimaryProfession1", "PrimaryProfession2", "SecondaryProfession1", "SecondaryProfession2", "SecondaryProfession3" }
@@ -162,4 +120,8 @@ table_insert(C.defaultThemes, function()
 			end
 		end
 	end)
+
+	if C["General"].NoTutorialButtons then
+		_G.SpellBookFrameTutorialButton:Kill()
+	end
 end)

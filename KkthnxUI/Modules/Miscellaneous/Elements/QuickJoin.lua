@@ -1,4 +1,4 @@
-local K, L, C = unpack(KkthnxUI)
+local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Miscellaneous")
 local TT = K:GetModule("Tooltip")
 
@@ -185,21 +185,6 @@ function Module:ReplaceGroupRoles(numPlayers, _, disabled)
 	for i = 1, iconIndex do
 		self.Icons[i].role:SetAtlas(nil)
 	end
-end
-
-function Module:QuickJoin_ShowTips()
-	local quickJoinInfo = {
-		text = L["QuickJoinHelpTip"],
-		buttonStyle = HelpTip.ButtonStyle.GotIt,
-		targetPoint = HelpTip.Point.RightEdgeCenter,
-		onAcknowledgeCallback = K.HelpInfoAcknowledge,
-		callbackArg = "QuickJoin",
-	}
-	LFGListFrame.SearchPanel.SignUpButton:HookScript("OnShow", function()
-		if not KkthnxUIDB["Helper"]["QuickJoin"] then
-			HelpTip:Show(PVEFrame, quickJoinInfo)
-		end
-	end)
 end
 
 function Module:AddAutoAcceptButton()
@@ -461,8 +446,6 @@ function Module:CreateQuickJoin()
 		end
 	end
 
-	Module:QuickJoin_ShowTips()
-
 	hooksecurefunc("LFGListInviteDialog_Accept", function()
 		if PVEFrame:IsShown() then
 			HideUIPanel(PVEFrame)
@@ -475,9 +458,9 @@ function Module:CreateQuickJoin()
 	hooksecurefunc("LFGListSearchEntry_Update", Module.ShowLeaderOverallScore)
 
 	Module:AddAutoAcceptButton()
-	Module:ReplaceFindGroupButton()
 	Module:AddDungeonsFilter()
 	Module:AddPGFSortingExpression()
+	Module:ReplaceFindGroupButton()
 end
 
 Module:RegisterMisc("QuickJoin", Module.CreateQuickJoin)

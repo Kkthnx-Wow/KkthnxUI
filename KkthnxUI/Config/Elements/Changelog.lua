@@ -44,6 +44,7 @@ local KKUI_Changelog = {
 					"DominationShards Module",
 					"Filtering chat causing bug",
 					"HideFocusTarget Options",
+					"Highlight On Unitframes",
 					"Raid Frames Mover Not Being The Right Size",
 					"Some Minimap Blip Choices",
 				},

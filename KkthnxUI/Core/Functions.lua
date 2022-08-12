@@ -122,6 +122,21 @@ do
 			list[word] = true
 		end
 	end
+
+	function K.AddClassIconToColor(class, textColor, iconSize)
+		local size = iconSize or 16
+		local color = textColor or "|CFFFFFFFF"
+
+		if class then
+			local classString = ""
+			local L, R, T, B = unpack(CLASS_ICON_TCOORDS[class])
+			if L then
+				local imageSize = 128
+				classString = "|TInterface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES:" .. size .. ":" .. size .. ":0:0:" .. imageSize .. ":" .. imageSize .. ":" .. (L * imageSize) .. ":" .. (R * imageSize) .. ":" .. (T * imageSize) .. ":" .. (B * imageSize) .. "|t" .. color
+				return classString
+			end
+		end
+	end
 end
 
 do
@@ -205,11 +220,6 @@ do
 end
 
 do
-	-- HelpTip
-	function K.HelpInfoAcknowledge(callbackArg)
-		KkthnxUIDB["Helper"][callbackArg] = true
-	end
-
 	function K.TogglePanel(frame)
 		if frame:IsShown() then
 			frame:Hide()
