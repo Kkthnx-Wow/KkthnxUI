@@ -190,15 +190,6 @@ function Module:ExpBar_UpdateTooltip()
 	GameTooltip:ClearLines()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT")
 
-	GameTooltip:AddLine(K.MyClassColor .. K.Name)
-	local specIndex = GetSpecialization()
-	if specIndex or specIndex == 5 then
-		local _, specName = GetSpecializationInfo(specIndex)
-		GameTooltip:AddDoubleLine("Specialization:", specName, 1, 1, 1)
-	else
-		GameTooltip:AddDoubleLine("Specialization:", UNKNOWN, 1, 1, 1)
-	end
-
 	if not IsPlayerAtEffectiveMaxLevel() then
 		CurrentXP, XPToLevel, RestedXP = UnitXP("player"), UnitXPMax("player"), GetXPExhaustion()
 		if XPToLevel <= 0 then
@@ -210,7 +201,6 @@ function Module:ExpBar_UpdateTooltip()
 		RemainTotal, RemainBars = remainPercent * 100, remainPercent * 20
 		PercentXP, RemainXP = (CurrentXP / XPToLevel) * 100, K.ShortValue(remainXP)
 
-		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine("Experience", 0, 0.4, 1)
 		GameTooltip:AddDoubleLine(LEVEL, K.Level, 1, 1, 1)
 		GameTooltip:AddDoubleLine("XP:", string_format(" %d / %d (%.2f%%)", CurrentXP, XPToLevel, PercentXP), 1, 1, 1)
@@ -250,16 +240,16 @@ function Module:ExpBar_UpdateTooltip()
 			end
 		end
 
-		-- if factionID == 2465 then -- Hunting
-		-- 	local _, rep, _, name, _, _, reaction, threshold, nextThreshold = GetFriendshipReputation(2463) -- 玛拉斯缪斯
-		-- 	if nextThreshold and rep > 0 then
-		-- 		local current = rep - threshold
-		-- 		local currentMax = nextThreshold - threshold
-		-- 		GameTooltip:AddLine(" ")
-		-- 		GameTooltip:AddLine(name, 0.4, 0.6, 1)
-		-- 		GameTooltip:AddDoubleLine(reaction, current.." - "..currentMax.." ("..math_floor(current / currentMax * 100).."%)", 0.4, 0.6, 1, 1, 1, 1)
-		-- 	end
-		-- end
+		if factionID == 2465 then -- Hunting
+			local _, rep, _, name, _, _, reaction, threshold, nextThreshold = GetFriendshipReputation(2463) -- 玛拉斯缪斯
+			if nextThreshold and rep > 0 then
+				local current = rep - threshold
+				local currentMax = nextThreshold - threshold
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine(name, 0.4, 0.6, 1)
+				GameTooltip:AddDoubleLine(reaction, current .. " - " .. currentMax .. " (" .. math_floor(current / currentMax * 100) .. "%)", 0.4, 0.6, 1, 1, 1, 1)
+			end
+		end
 	end
 
 	if IsWatchingHonorAsXP() then
@@ -316,17 +306,6 @@ function Module:SetupExpRepScript(bar)
 	bar:SetScript("OnEvent", Module.ExpBar_Update)
 	bar:SetScript("OnEnter", Module.ExpBar_UpdateTooltip)
 	bar:SetScript("OnLeave", K.HideTooltip)
-	-- bar:SetScript("OnMouseUp", function(_, btn)
-	-- 	if not HasArtifactEquipped() or btn ~= "LeftButton" then
-	-- 		return
-	-- 	end
-
-	-- 	if not ArtifactFrame or not ArtifactFrame:IsShown() then
-	-- 		SocketInventoryItem(16)
-	-- 	else
-	-- 		K:TogglePanel(ArtifactFrame)
-	-- 	end
-	-- end)
 
 	hooksecurefunc(StatusTrackingBarManager, "UpdateBarsShown", function()
 		Module.ExpBar_Update(bar)

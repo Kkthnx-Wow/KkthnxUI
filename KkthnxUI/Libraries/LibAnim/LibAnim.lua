@@ -344,11 +344,11 @@ local AnimMethods = {
 	All = {
 		Play = function(self)
 			if not self.Paused then
-				Initialize[self.Type](self)
 				self:Callback("OnPlay")
+				Initialize[self.Type](self)
 			else
-				self:StartUpdating()
 				self:Callback("OnResume")
+				self:StartUpdating()
 			end
 
 			self.Playing = true
@@ -787,6 +787,8 @@ local AnimMethods = {
 
 local GroupMethods = {
 	Play = function(self)
+		self:Callback("OnPlay")
+
 		for i = 1, #self.Animations do
 			if self.Animations[i].Order == self.Order then
 				self.Animations[i]:Play()
@@ -796,8 +798,6 @@ local GroupMethods = {
 		self.Playing = true
 		self.Paused = false
 		self.Stopped = false
-
-		self:Callback("OnPlay")
 	end,
 
 	IsPlaying = function(self)

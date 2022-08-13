@@ -15,7 +15,6 @@ function Module:OnEnable()
 	self:CreateAutoResurrect()
 	self:CreateAutoScreenShot()
 	self:CreateAutoSetRole()
-	self:CreateAutoTabBinder()
 	self:CreateAutoWhisperInvite()
 	self:CreateSkipCinematic()
 end

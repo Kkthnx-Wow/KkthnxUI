@@ -96,7 +96,7 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
-	["AutoKeystone"] = true,
+	["AutoKeystone"] = false,
 	["AutoBlockStrangerInvites"] = false,
 	["AutoCollapse"] = false,
 	["AutoDeclineDuels"] = false,
@@ -114,7 +114,6 @@ C["Automation"] = {
 	["AutoSetRole"] = false,
 	["AutoSkipCinematic"] = false,
 	["AutoSummon"] = false,
-	["AutoTabBinder"] = false,
 	["NoBadBuffs"] = false,
 	["WhisperInvite"] = "inv+",
 }
@@ -174,7 +173,7 @@ C["Auras"] = {
 	["ReverseDebuffs"] = false,
 	["TotemSize"] = 32,
 	["Totems"] = true,
-	["VerticalTotems"] = true,
+	["VerticalTotems"] = false,
 }
 
 -- Chat
@@ -197,7 +196,6 @@ C["Chat"] = {
 	["Height"] = 150,
 	["Lock"] = true,
 	["LogMax"] = 0,
-	["LootIcons"] = false,
 	["OldChatNames"] = false,
 	["RoleIcons"] = false,
 	["Sticky"] = false,
@@ -223,7 +221,7 @@ C["DataText"] = {
 	["Guild"] = false,
 	["GuildSortBy"] = 1,
 	["GuildSortOrder"] = true,
-	["HideText"] = true,
+	["HideText"] = false,
 	["IconColor"] = { 102 / 255, 157 / 255, 255 / 255 },
 	["Latency"] = true,
 	["Location"] = true,
@@ -492,6 +490,7 @@ C["Tooltip"] = {
 	["LFDRole"] = false,
 	["MDScore"] = true,
 	["ShowIDs"] = false,
+	["ShowMount"] = false,
 	["SpecLevelByShift"] = true,
 	["TargetBy"] = true,
 }
@@ -708,7 +707,6 @@ C["Arena"] = {
 
 -- Raidframe
 C["Raid"] = {
-	["SpecRaidPos"] = false,
 	["DebuffWatch"] = true,
 	["DebuffWatchDefault"] = true,
 	["DesaturateBuffs"] = false,

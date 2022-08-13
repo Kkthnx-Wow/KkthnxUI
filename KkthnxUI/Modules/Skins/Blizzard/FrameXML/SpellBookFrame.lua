@@ -30,8 +30,8 @@ table_insert(C.defaultThemes, function()
 
 		local newHighlight = CreateFrame("Frame", nil, bu, "BackdropTemplate")
 		newHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 16 })
-		newHighlight:SetPoint("TOPLEFT", bu, -7, 7)
-		newHighlight:SetPoint("BOTTOMRIGHT", bu, 7, -7)
+		newHighlight:SetPoint("TOPLEFT", bu, -6, 6)
+		newHighlight:SetPoint("BOTTOMRIGHT", bu, 6, -6)
 		newHighlight:SetBackdropBorderColor(1, 1, 0)
 		newHighlight:Hide()
 

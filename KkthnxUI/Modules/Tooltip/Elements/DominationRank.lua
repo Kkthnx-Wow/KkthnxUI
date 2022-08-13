@@ -18,67 +18,67 @@ Module.DomiRankData = {}
 Module.DomiIndexData = {}
 Module.DomiDataByGroup = {
 	[1] = {
-		[187079] = 1, -- 泽德碎片
-		[187292] = 2, -- 不祥泽德碎片
-		[187301] = 3, -- 荒芜泽德碎片
-		[187310] = 4, -- 预感泽德碎片
-		[187320] = 5, -- 征兆泽德碎片
+		[187079] = 1, -- Zed Shard
+		[187292] = 2, -- Shard of Ominous Zed
+		[187301] = 3, -- Desolate Zed Shard
+		[187310] = 4, -- Premonition Zed Shard
+		[187320] = 5, -- Omen Zed Shard
 	},
 	[2] = {
-		[187076] = 1, -- 欧兹碎片
-		[187291] = 2, -- 不祥欧兹碎片
-		[187300] = 3, -- 荒芜欧兹碎片
-		[187309] = 4, -- 预感欧兹碎片
-		[187319] = 5, -- 征兆欧兹碎片
+		[187076] = 1, -- Fragment of Oz
+		[187291] = 2, -- Ominous Oz Shard
+		[187300] = 3, -- Fragment of Desolate Oz
+		[187309] = 4, -- Premonition Oz Shard
+		[187319] = 5, -- Omen Shards
 	},
 	[3] = {
-		[187073] = 1, -- 迪兹碎片
-		[187290] = 2, -- 不祥迪兹碎片
-		[187299] = 3, -- 荒芜迪兹碎片
-		[187308] = 4, -- 预感迪兹碎片
-		[187318] = 5, -- 征兆迪兹碎片
+		[187073] = 1, -- Deeds Shard
+		[187290] = 2, -- Ominous Dizzy Shard
+		[187299] = 3, -- Desolate Dizzy Shard
+		[187308] = 4, -- Premonition Deeds Fragment
+		[187318] = 5, -- Omen Dizzy Fragment
 	},
 	[4] = {
-		[187071] = 1, -- 泰尔碎片
-		[187289] = 2, -- 不祥泰尔碎片
-		[187298] = 3, -- 荒芜泰尔碎片
-		[187307] = 4, -- 预感泰尔碎片
-		[187317] = 5, -- 征兆泰尔碎片
+		[187071] = 1, -- shard of Tyre
+		[187289] = 2, -- Ominous Tyr Shard
+		[187298] = 3, -- Desolate Tyr Fragment
+		[187307] = 4, -- Premonition Tyre Fragment
+		[187317] = 5, -- Omen Tell Shard
 	},
 	[5] = {
-		[187065] = 1, -- 基尔碎片
-		[187288] = 2, -- 不祥基尔碎片
-		[187297] = 3, -- 荒芜基尔碎片
-		[187306] = 4, -- 预感基尔碎片
-		[187316] = 5, -- 征兆基尔碎片
+		[187065] = 1, -- Kiel Fragment
+		[187288] = 2, -- Ominous Kiel Fragment
+		[187297] = 3, -- Desolate Kiel Fragment
+		[187306] = 4, -- Premonition Kiel Fragment
+		[187316] = 5, -- Omen Kiel Fragment
 	},
 	[6] = {
-		[187063] = 1, -- 克尔碎片
-		[187287] = 2, -- 不祥克尔碎片
-		[187296] = 3, -- 荒芜克尔碎片
-		[187305] = 4, -- 预感克尔碎片
-		[187315] = 5, -- 征兆克尔碎片
+		[187063] = 1, -- Kerr fragment
+		[187287] = 2, -- Ominous Kerr Fragment
+		[187296] = 3, -- Desolate Kerr Shard
+		[187305] = 4, -- Premonition Kerr Fragment
+		[187315] = 5, -- Omen Kerr Fragment
 	},
 	[7] = {
-		[187061] = 1, -- 雷弗碎片
-		[187286] = 2, -- 不祥雷弗碎片
-		[187295] = 3, -- 荒芜雷弗碎片
-		[187304] = 4, -- 预感雷弗碎片
-		[187314] = 5, -- 征兆雷弗碎片
+		[187061] = 1, -- Rever Fragment
+		[187286] = 2, -- Ominous Rever Fragment
+		[187295] = 3, -- Desolate Rever Fragment
+		[187304] = 4, -- Premonition Rever Fragment
+		[187314] = 5, -- Omen Rever Fragment
 	},
 	[8] = {
-		[187059] = 1, -- 亚斯碎片
-		[187285] = 2, -- 不祥亚斯碎片
-		[187294] = 3, -- 荒芜亚斯碎片
-		[187303] = 4, -- 预感亚斯碎片
-		[187313] = 5, -- 征兆亚斯碎片
+		[187059] = 1, -- Yas Fragment
+		[187285] = 2, -- Shard of Ominous Yass
+		[187294] = 3, -- Desolate Yass Fragment
+		[187303] = 4, -- Premonition Yas Fragment
+		[187313] = 5, -- Omen Yas Fragment
 	},
 	[9] = {
-		[187057] = 1, -- 贝克碎片
-		[187284] = 2, -- 不祥贝克碎片
-		[187293] = 3, -- 荒芜贝克碎片
-		[187302] = 4, -- 预感贝克碎片
-		[187312] = 5, -- 征兆贝克碎片
+		[187057] = 1, -- Baker Fragment
+		[187284] = 2, -- Ominous Baker Fragment
+		[187293] = 3, -- Desolate Baker Shard
+		[187302] = 4, -- Premonition Baker Fragment
+		[187312] = 5, -- Omen Baker Fragment
 	},
 }
 

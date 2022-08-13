@@ -1189,6 +1189,8 @@ function Module:OnEnable()
 		end
 
 		if self.UpgradeIcon then
+			self.UpgradeIcon:ClearAllPoints()
+			self.UpgradeIcon:SetPoint("TOPRIGHT", 3, 3)
 			self.UpgradeIcon:SetShown(PawnIsContainerItemAnUpgrade(item.bagID, item.slotID))
 		end
 	end

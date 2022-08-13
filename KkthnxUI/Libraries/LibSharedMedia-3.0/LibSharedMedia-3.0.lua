@@ -1,6 +1,6 @@
 --[[
 Name: LibSharedMedia-3.0
-Revision: $Revision: 107 $
+Revision: $Revision: 114 $
 Author: Elkano (elkano@gmx.de)
 Inspired By: SurfaceLib by Haste/Otravi (troeks@gmail.com)
 Website: http://www.wowace.com/projects/libsharedmedia-3-0/
@@ -9,7 +9,7 @@ Dependencies: LibStub, CallbackHandler-1.0
 License: LGPL v2.1
 ]]
 
-local MAJOR, MINOR = "LibSharedMedia-3.0", 6010003 -- Increase manually on changes
+local MAJOR, MINOR = "LibSharedMedia-3.0-KkthnxUI", 8020003 -- 8.2.0 v3 / increase manually on changes
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not lib then
@@ -23,6 +23,8 @@ local type = _G.type
 
 local band = _G.bit.band
 local table_sort = _G.table.sort
+
+local RESTRICTED_FILE_ACCESS = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE -- starting with 8.2, some rules for file access have changed; classic still uses the old way
 
 local locale = GetLocale()
 local locale_is_western
@@ -136,7 +138,7 @@ if locale == "koKR" then
 	SML_MT_font["퀘스트 글꼴"] = [[Fonts\K_Pagetext.TTF]]
 	--
 	lib.DefaultMedia["font"] = "기본 글꼴" -- someone from koKR please adjust if needed
-	--
+--
 elseif locale == "zhCN" then
 	LOCALE_MASK = lib.LOCALE_BIT_zhCN
 	--
@@ -145,7 +147,7 @@ elseif locale == "zhCN" then
 	SML_MT_font["聊天"] = [[Fonts\ARHei.ttf]]
 	--
 	lib.DefaultMedia["font"] = "默认" -- someone from zhCN please adjust if needed
-	--
+--
 elseif locale == "zhTW" then
 	LOCALE_MASK = lib.LOCALE_BIT_zhTW
 	--
@@ -171,7 +173,7 @@ elseif locale == "ruRU" then
 	SML_MT_font["Skurri"] = [[Fonts\SKURRI_CYR.TTF]]
 	--
 	lib.DefaultMedia.font = "Friz Quadrata TT"
-	--
+--
 else
 	LOCALE_MASK = lib.LOCALE_BIT_western
 	locale_is_western = true
@@ -199,13 +201,14 @@ end
 lib.MediaTable.statusbar["Blizzard"] = [[Interface\TargetingFrame\UI-StatusBar]]
 lib.MediaTable.statusbar["Blizzard Character Skills Bar"] = [[Interface\PaperDollInfoFrame\UI-Character-Skills-Bar]]
 lib.MediaTable.statusbar["Blizzard Raid Bar"] = [[Interface\RaidFrame\Raid-Bar-Hp-Fill]]
+lib.MediaTable.statusbar["Solid"] = [[Interface\Buttons\WHITE8X8]]
 lib.DefaultMedia.statusbar = "Blizzard"
 
 -- SOUND
 if not lib.MediaTable.sound then
 	lib.MediaTable.sound = {}
 end
-lib.MediaTable.sound["None"] = C_RaidLocks and 1 or [[Interface\Quiet.ogg]] -- Relies on the fact that PlaySound[File] doesn't error on non-existing input.
+lib.MediaTable.sound["None"] = RESTRICTED_FILE_ACCESS and 1 or [[Interface\Quiet.ogg]] -- Relies on the fact that PlaySound[File] doesn't error on these values.
 lib.DefaultMedia.sound = "None"
 
 local function rebuildMediaList(mediatype)
@@ -235,12 +238,17 @@ function lib:Register(mediatype, key, data, langmask)
 	end
 	mediatype = mediatype:lower()
 	if mediatype == lib.MediaType.FONT and ((langmask and band(langmask, LOCALE_MASK) == 0) or not (langmask or locale_is_western)) then
+		-- ignore fonts that aren't flagged as supporting local glyphs on non-western clients
 		return false
 	end
-	if mediatype == lib.MediaType.SOUND and type(data) == "string" then
+	if type(data) == "string" and (mediatype == lib.MediaType.BACKGROUND or mediatype == lib.MediaType.BORDER or mediatype == lib.MediaType.STATUSBAR or mediatype == lib.MediaType.SOUND) then
 		local path = data:lower()
-		-- Only ogg and mp3 are valid sounds.
-		if not path:find(".ogg", nil, true) and not path:find(".mp3", nil, true) then
+		if RESTRICTED_FILE_ACCESS and not path:find("^interface") then
+			-- files accessed via path only allowed from interface folder
+			return false
+		end
+		if mediatype == lib.MediaType.SOUND and not (path:find(".ogg", nil, true) or path:find(".mp3", nil, true)) then
+			-- Only ogg and mp3 are valid sounds.
 			return false
 		end
 	end

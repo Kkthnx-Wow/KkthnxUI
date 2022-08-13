@@ -77,15 +77,6 @@ _G.SLASH_KKUI_VOLUME2 = "/kkvolume"
 _G.SLASH_KKUI_VOLUME3 = "/vol"
 _G.SLASH_KKUI_VOLUME4 = "/volume"
 
--- Profiles data/listings
-SlashCmdList["KKUI_UIPROFILES"] = function(msg)
-	if msg == "" or msg == "list" or msg == "l" then
-		K.Print("This command no longer has purpose. Please open KkthnxUI GUI and go to General and use the profile dropdown to pick the profile you want!")
-	end
-end
-_G.SLASH_KKUI_UIPROFILES1 = "/kkprofile"
-_G.SLASH_KKUI_UIPROFILES2 = "/kkprofiles"
-
 -- Ready check
 SlashCmdList["KKUI_READYCHECK"] = function()
 	DoReadyCheck()
@@ -166,11 +157,12 @@ _G.SLASH_KKUI_DELETEQUESTITEMS2 = "/dqi"
 SlashCmdList["KKUI_DELETEHEIRLOOMS"] = function()
 	for bag = 0, 4 do
 		for slot = 1, GetContainerNumSlots(bag) do
-			local name = GetContainerItemLink(bag, slot)
-			if name and string.find(name, "00ccff") then
-				print(name)
+			local item = GetContainerItemLink(bag, slot)
+			if item and item:find("00ccff") then
+				--UseContainerItem(bag, slot)
 				_G.PickupContainerItem(bag, slot)
-				_G.DeleteCursorItem()
+				_G.DeleteCursorItem() -- Protected, FIX ME
+				-- break
 			end
 		end
 	end

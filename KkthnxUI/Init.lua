@@ -67,7 +67,7 @@ do
 	K.ChangeLog = LibStub("LibChangelog-KkthnxUI")
 	K.Deflate = LibStub("LibDeflate-KkthnxUI")
 	K.HideButtonGlow = LibStub("LibButtonGlow-1.0-KkthnxUI", true).HideOverlayGlow
-	K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+	K.LibSharedMedia = LibStub("LibSharedMedia-3.0-KkthnxUI", true)
 	K.RangeCheck = LibStub("LibRangeCheck-2.0-KkthnxUI")
 	K.Serialize = LibStub("LibSerialize-KkthnxUI")
 	K.ShowButtonGlow = LibStub("LibButtonGlow-1.0-KkthnxUI", true).ShowOverlayGlow

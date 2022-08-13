@@ -47,6 +47,7 @@ function Module:AddLineForID(id, linkType, noadd)
 		end
 	end
 
+	-- Revert this back to OLD KkthnxUI Mount Source
 	if self.__isHoverTip and linkType == types.spell and IsPlayerSpell(id) and C_MountJournal_GetMountFromSpell(id) then
 		self:AddLine(LEARNT_STRING)
 	end

@@ -155,7 +155,6 @@
    <Script file="Automation\Elements\SetRole.lua" />
    <Script file="Automation\Elements\SkipCinematic.lua" />
    <Script file="Automation\Elements\Summon.lua" />
-   <Script file="Automation\Elements\TabBinder.lua" />
    <Script file="Automation\Elements\WhisperInvite.lua" />
    <!-- Loot -->
    <Script file="Loot\Core.lua" />

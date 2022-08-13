@@ -2,7 +2,6 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Auras")
 
 local _G = _G
-local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
 local GetTotemInfo = _G.GetTotemInfo
@@ -22,7 +21,7 @@ function Module:TotemBar_Init()
 	totemBar:SetSize(width, height)
 
 	if not totemBar.mover then
-		totemBar.mover = K.Mover(totemBar, "Totembar", "Totems", { "BOTTOMRIGHT", UIParent, "BOTTOM", -450, 20 })
+		totemBar.mover = K.Mover(totemBar, "Totembar", "Totems", { "BOTTOM", UIParent, "BOTTOM", 0, 378 })
 	end
 	totemBar.mover:SetSize(width, height)
 

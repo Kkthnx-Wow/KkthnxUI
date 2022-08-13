@@ -12,6 +12,9 @@ local string_upper = _G.string.upper
 local AFK = _G.AFK
 local BOSS = _G.BOSS
 local C_ChallengeMode_GetDungeonScoreRarityColor = _G.C_ChallengeMode.GetDungeonScoreRarityColor
+local C_MountJournal_GetMountIDs = _G.C_MountJournal.GetMountIDs
+local C_MountJournal_GetMountInfoByID = _G.C_MountJournal.GetMountInfoByID
+local C_MountJournal_GetMountInfoExtraByID = _G.C_MountJournal.GetMountInfoExtraByID
 local C_PlayerInfo_GetPlayerMythicPlusRatingSummary = _G.C_PlayerInfo.GetPlayerMythicPlusRatingSummary
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
@@ -81,6 +84,7 @@ local classification = {
 	rare = string_format("|cffAF5050 %s|r", ITEM_QUALITY3_DESC),
 }
 local npcIDstring = "%s " .. K.InfoColor .. "%s"
+local blanchyFix = "|n%s*|n" -- thanks blizz -x- lol
 
 function Module:GetUnit()
 	local _, unit = self:GetUnit()
@@ -325,11 +329,11 @@ function Module:OnTooltipSetUnit()
 
 		local diff = GetCreatureDifficultyColor(level)
 		local classify = UnitClassification(unit)
-		local textLevel = string_format("%s%s%s|r", K.RGBToHex(diff), boss or string_format("%d", level), classification[classify] or "")
+		local textLevel = format("%s%s%s|r", K.RGBToHex(diff), boss or format("%d", level), classification[classify] or "")
 		local tiptextLevel = Module.GetLevelLine(self)
 		if tiptextLevel then
-			local pvpFlag = isPlayer and UnitIsPVP(unit) and string_format(" |cffff0000%s|r", PVP) or ""
-			local unitClass = isPlayer and string_format("%s %s", UnitRace(unit) or "", hexColor .. (UnitClass(unit) or "") .. "|r") or UnitCreatureType(unit) or ""
+			local pvpFlag = isPlayer and UnitIsPVP(unit) and format(" |cffff0000%s|r", PVP) or ""
+			local unitClass = isPlayer and format("%s %s", UnitRace(unit) or "", hexColor .. (UnitClass(unit) or "") .. "|r") or UnitCreatureType(unit) or ""
 			tiptextLevel:SetFormattedText("%s%s %s %s", textLevel, pvpFlag, unitClass, (not alive and "|cffCCCCCC" .. DEAD .. "|r" or ""))
 		end
 	end
@@ -540,6 +544,32 @@ function Module:ResetUnit(btn)
 	end
 end
 
+function Module:AddMountSource(unit, index, filter)
+	if not self or self:IsForbidden() or not C["Tooltip"].ShowMount then
+		return
+	end
+
+	if UnitIsUnit(unit, "player") then
+		return
+	end
+
+	local _, _, _, _, _, _, _, _, _, spellID = UnitAura(unit, index, filter)
+	if not spellID then
+		return
+	end
+
+	local mountID = Module.MountIDs[spellID]
+	if mountID and IsControlKeyDown() then
+		local _, _, sourceText = C_MountJournal_GetMountInfoExtraByID(mountID)
+		local mountText = sourceText and gsub(sourceText, blanchyFix, "|n")
+
+		if mountText then
+			self:AddLine(" ")
+			self:AddLine(mountText, 1, 1, 1)
+		end
+	end
+end
+
 function Module:FixStoneSoupError()
 	local blockTooltips = {
 		[556] = true, -- Stone Soup
@@ -556,6 +586,13 @@ function Module:OnEnable()
 		return
 	end
 
+	Module.MountIDs = {}
+	local mountIDs = C_MountJournal_GetMountIDs()
+	for _, mountID in ipairs(mountIDs) do
+		local _, spellID = C_MountJournal_GetMountInfoByID(mountID)
+		Module.MountIDs[spellID] = mountID
+	end
+
 	GameTooltip.StatusBar = GameTooltipStatusBar
 	GameTooltip:HookScript("OnTooltipCleared", Module.OnTooltipCleared)
 	GameTooltip:HookScript("OnTooltipSetUnit", Module.OnTooltipSetUnit)
@@ -567,6 +604,7 @@ function Module:OnEnable()
 	GameTooltip:HookScript("OnTooltipSetItem", Module.FixRecipeItemNameWidth)
 	ItemRefTooltip:HookScript("OnTooltipSetItem", Module.FixRecipeItemNameWidth)
 	EmbeddedItemTooltip:HookScript("OnTooltipSetItem", Module.FixRecipeItemNameWidth)
+	hooksecurefunc(GameTooltip, "SetUnitAura", Module.AddMountSource)
 	Module:FixStoneSoupError()
 
 	-- Elements
