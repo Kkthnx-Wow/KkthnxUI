@@ -19,7 +19,7 @@ local AutoThanksList = {
 }
 
 function Module:SetupAutoGoodbye()
-	C_Timer_After(4, function() -- Give this more time to say thanks.
+	C_Timer_After(6, function() -- Give this more time to say thanks.
 		SendChatMessage(AutoThanksList[math_random(1, #AutoThanksList)], IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID")
 	end)
 end

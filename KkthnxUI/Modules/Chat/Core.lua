@@ -29,6 +29,7 @@ local hooksecurefunc = _G.hooksecurefunc
 
 local messageSoundID = SOUNDKIT.TELL_MESSAGE
 local maxLines = 2048
+Module.MuteCache = {}
 
 local function GetGroupDistribution()
 	local _, instanceType = GetInstanceInfo()
@@ -503,14 +504,15 @@ local whisperEvents = {
 	["CHAT_MSG_WHISPER"] = true,
 	["CHAT_MSG_BN_WHISPER"] = true,
 }
-function Module:PlayWhisperSound(event)
+function Module:PlayWhisperSound(event, _, author)
 	if whisperEvents[event] then
-		if Module.MuteThisTime then
-			Module.MuteThisTime = nil
+		local name = Ambiguate(author, "none")
+		local currentTime = GetTime()
+
+		if Module.MuteCache[name] == currentTime then
 			return
 		end
 
-		local currentTime = GetTime()
 		if not self.soundTimer or currentTime > self.soundTimer then
 			PlaySound(messageSoundID, "master")
 		end

@@ -17,6 +17,7 @@ local C_FriendList_ShowFriends = _G.C_FriendList.ShowFriends
 local C_QuestSession_GetSessionBeginDetails = _G.C_QuestSession.GetSessionBeginDetails
 local GetGuildRosterInfo = _G.GetGuildRosterInfo
 local GetNumGuildMembers = _G.GetNumGuildMembers
+local QuestSessionManager = _G.QuestSessionManager
 local UnitGUID = _G.UnitGUID
 local UnitName = _G.UnitName
 local hooksecurefunc = _G.hooksecurefunc

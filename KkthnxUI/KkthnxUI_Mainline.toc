@@ -6,7 +6,6 @@
 ## Version: 10.3.4
 ## X-Support: SL
 ## SavedVariables: KkthnxUIDB
-## OptionalDeps: ViragDevTool, _DebugLog, !Stragglers
 ## X-Curse-Project-ID: 95528
 ## X-WoWI-ID: 24615
 ## X-Wago-ID: lQNlqP6e

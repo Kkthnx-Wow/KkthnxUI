@@ -12,11 +12,21 @@ local table_remove = _G.table.remove
 local tonumber = _G.tonumber
 
 local Ambiguate = _G.Ambiguate
+local BNToastFrame = _G.BNToastFrame
 local BN_TOAST_TYPE_CLUB_INVITATION = _G.BN_TOAST_TYPE_CLUB_INVITATION or 6
 local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
 local C_Timer_After = _G.C_Timer.After
 local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
+local ERR_LEARN_ABILITY_S = _G.ERR_LEARN_ABILITY_S
+local ERR_LEARN_PASSIVE_S = _G.ERR_LEARN_PASSIVE_S
+local ERR_LEARN_SPELL_S = _G.ERR_LEARN_SPELL_S
+local ERR_NOT_IN_INSTANCE_GROUP = _G.ERR_NOT_IN_INSTANCE_GROUP
+local ERR_NOT_IN_RAID = _G.ERR_NOT_IN_RAID
+local ERR_PET_LEARN_ABILITY_S = _G.ERR_PET_LEARN_ABILITY_S
+local ERR_PET_LEARN_SPELL_S = _G.ERR_PET_LEARN_SPELL_S
+local ERR_PET_SPELL_UNLEARNED_S = _G.ERR_PET_SPELL_UNLEARNED_S
+local ERR_SPELL_UNLEARNED_S = _G.ERR_SPELL_UNLEARNED_S
 local GetCVarBool = _G.GetCVarBool
 local GetTime = _G.GetTime
 local IsGUIDInGroup = _G.IsGUIDInGroup
@@ -126,7 +136,7 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 	end
 
 	if C["Chat"].BlockStranger and event == "CHAT_MSG_WHISPER" then -- Block strangers
-		Module.MuteThisTime = true
+		Module.MuteCache[name] = GetTime()
 		return true
 	end
 
@@ -247,7 +257,8 @@ function Module:UpdateAddOnBlocker(event, msg, author)
 			elseif event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER" then
 				Module:ToggleChatBubble(true)
 			elseif event == "CHAT_MSG_WHISPER" then
-				Module.MuteThisTime = true
+				print("UpdateAddOnBlocker", Module.MuteCache[name])
+				Module.MuteCache[name] = GetTime()
 			end
 			return true
 		end

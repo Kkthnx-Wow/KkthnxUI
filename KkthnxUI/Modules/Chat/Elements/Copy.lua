@@ -4,22 +4,40 @@ local Module = K:GetModule("Chat")
 -- Sourced: NDui (siweia)
 
 local _G = _G
--- local sring_format = _G.string.format
+local string_format = _G.string.format
 local string_gsub = _G.string.gsub
 local table_concat = _G.table.concat
 local tostring = _G.tostring
 
+local AUCTION_CATEGORY_QUEST_ITEMS = _G.AUCTION_CATEGORY_QUEST_ITEMS
+local BINDING_NAME_TOGGLECOMBATLOG = _G.BINDING_NAME_TOGGLECOMBATLOG
+local CLOSE = _G.CLOSE
+local COMBATLOGDISABLED = _G.COMBATLOGDISABLED
+local COMBATLOGENABLED = _G.COMBATLOGENABLED
 local CreateFrame = _G.CreateFrame
 local FCF_SetChatWindowFontSize = _G.FCF_SetChatWindowFontSize
+local GameTooltip = _G.GameTooltip
+local HEIRLOOMS = _G.HEIRLOOMS
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
+local OPTIONS_MENU = _G.OPTIONS_MENU
 local PlaySound = _G.PlaySound
+local QUESTS_LABEL = _G.QUESTS_LABEL
+local RELOADUI = _G.RELOADUI
+local ReloadUI = _G.ReloadUI
 local STATUS = _G.STATUS
 local ScrollFrameTemplate_OnMouseWheel = _G.ScrollFrameTemplate_OnMouseWheel
 local SlashCmdList = _G.SlashCmdList
+local StaticPopup_Show = _G.StaticPopup_Show
+local TASKS_COLON = _G.TASKS_COLON
+local UIErrorsFrame = _G.UIErrorsFrame
 local UIParent = _G.UIParent
 
-local lines, menu, frame, editBox = {}
+local lines = {}
+local editBox
+local frame
+local menu
+
 local menuFrame = CreateFrame("Frame", "KKUI_QuickMenu", UIParent, "UIDropDownMenuTemplate")
 local leftButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "
 local rightButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "
@@ -56,7 +74,7 @@ local menuList = {
 		notCheckable = true,
 		func = function()
 			if InCombatLockdown() then
-				_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
+				UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 				return
 			end
 			ReloadUI()
@@ -96,7 +114,7 @@ local menuList = {
 				notCheckable = true,
 				func = function()
 					if InCombatLockdown() then
-						_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
+						UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 						return
 					end
 					SlashCmdList["KKUI_ABANDONQUESTS"]()
@@ -108,7 +126,7 @@ local menuList = {
 				notCheckable = true,
 				func = function()
 					if InCombatLockdown() then
-						_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
+						UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 						return
 					end
 					SlashCmdList["KKUI_DELETEHEIRLOOMS"]()
@@ -120,7 +138,7 @@ local menuList = {
 				notCheckable = true,
 				func = function()
 					if InCombatLockdown() then
-						_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
+						UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 						return
 					end
 					SlashCmdList["KKUI_DELETEQUESTITEMS"]()
@@ -139,7 +157,7 @@ local menuList = {
 				notCheckable = true,
 				func = function()
 					if InCombatLockdown() then
-						_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
+						UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 						return
 					end
 
@@ -157,7 +175,7 @@ local menuList = {
 				notCheckable = true,
 				func = function()
 					if InCombatLockdown() then
-						_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
+						UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 						return
 					end
 
@@ -182,7 +200,7 @@ local menuList = {
 				notCheckable = true,
 				func = function()
 					if InCombatLockdown() then
-						_G.UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
+						UIErrorsFrame:AddMessage(K.InfoColor .. _G.ERR_NOT_IN_COMBAT)
 						return
 					end
 
@@ -215,7 +233,7 @@ local function replaceMessage(msg, r, g, b)
 	local hexRGB = K.RGBToHex(r, g, b)
 	msg = string_gsub(msg, "|T(.-):.-|t", "%1") -- accept texture path or id
 
-	return string.format("%s%s|r", hexRGB, msg)
+	return string_format("%s%s|r", hexRGB, msg)
 end
 
 function Module:GetChatLines()
@@ -306,7 +324,7 @@ function Module:ChatCopy_Create()
 	local scrollArea = CreateFrame("ScrollFrame", "KKUI_CopyChatScrollFrame", frame, "UIPanelScrollFrameTemplate")
 	scrollArea:SetPoint("TOPLEFT", 12, -40)
 	scrollArea:SetPoint("BOTTOMRIGHT", -30, 20)
-	KKUI_CopyChatScrollFrameScrollBar:SkinScrollBar()
+	_G.KKUI_CopyChatScrollFrameScrollBar:SkinScrollBar()
 
 	editBox = CreateFrame("EditBox", nil, frame)
 	editBox:SetMultiLine(true)

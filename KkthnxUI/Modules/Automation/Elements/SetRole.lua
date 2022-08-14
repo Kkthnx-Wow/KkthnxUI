@@ -11,6 +11,7 @@ local GetTime = _G.GetTime
 local InCombatLockdown = _G.InCombatLockdown
 local IsInGroup = _G.IsInGroup
 local IsPartyLFG = _G.IsPartyLFG
+local RolePollPopup = _G.RolePollPopup
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitSetRole = _G.UnitSetRole
 

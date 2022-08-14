@@ -2,6 +2,11 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 local History = CreateFrame("Frame")
 
+local _G = _G
+
+loal ChatFrame_MessageEventHandler = _G.ChatFrame_MessageEventHandler
+loal ChatFrame1 = _G.ChatFrame1
+
 local LogMax
 local EntryEvent = 30
 local EntryTime = 31
@@ -21,9 +26,6 @@ local Events = {
 	"CHAT_MSG_WHISPER",
 	"CHAT_MSG_WHISPER_INFORM",
 	"CHAT_MSG_YELL",
-
-	-- Not sure if I should add this one, it's pretty much always just spam
-	-- "CHAT_MSG_CHANNEL",
 }
 
 function History:Print()

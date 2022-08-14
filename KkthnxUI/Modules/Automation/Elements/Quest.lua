@@ -20,6 +20,8 @@ local C_QuestLog_IsQuestTrivial = _G.C_QuestLog.IsQuestTrivial
 local C_QuestLog_IsWorldQuest = _G.C_QuestLog.IsWorldQuest
 local CloseQuest = _G.CloseQuest
 local CompleteQuest = _G.CompleteQuest
+local GameTooltip = _G.GameTooltip
+local QuestFrame = _G.QuestFrame
 local GetActiveQuestID = _G.GetActiveQuestID
 local GetActiveTitle = _G.GetActiveTitle
 local GetAutoQuestPopUp = _G.GetAutoQuestPopUp
@@ -51,6 +53,9 @@ local ShowQuestOffer = _G.ShowQuestOffer
 local StaticPopup_Hide = _G.StaticPopup_Hide
 local UnitGUID = _G.UnitGUID
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
+local WorldMapFrame = _G.WorldMapFrame
+local QuestInfoRewardsFrame = _G.QuestInfoRewardsFrame
+local QuestInfoItem_OnClick = _G.QuestInfoItem_OnClick
 
 local choiceQueue
 
@@ -156,7 +161,7 @@ end
 
 QuickQuest:Register("QUEST_GREETING", function()
 	local npcID = GetNPCID()
-	if C.AutoQuest.IgnoreQuestNPC[npcID] then
+	if C["AutoQuest"].IgnoreQuestNPC[npcID] then
 		return
 	end
 
@@ -184,7 +189,7 @@ end)
 
 QuickQuest:Register("GOSSIP_SHOW", function()
 	local npcID = GetNPCID()
-	if C.AutoQuest.IgnoreQuestNPC[npcID] then
+	if C["AutoQuest"].IgnoreQuestNPC[npcID] then
 		return
 	end
 
@@ -209,7 +214,7 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 		end
 	end
 
-	if C.AutoQuest.RogueClassHallInsignia[npcID] then
+	if C["AutoQuest"].RogueClassHallInsignia[npcID] then
 		return C_GossipInfo_SelectOption(1)
 	end
 
@@ -221,15 +226,15 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 			end
 
 			local _, instance, _, _, _, _, _, mapID = GetInstanceInfo()
-			if instance ~= "raid" and not C.AutoQuest.IgnoreGossipNPC[npcID] and not C.AutoQuest.IgnoreInstances[mapID] then
+			if instance ~= "raid" and not C["AutoQuest"].IgnoreGossipNPC[npcID] and not C["AutoQuest"].IgnoreInstances[mapID] then
 				local gossipInfoTable = C_GossipInfo_GetOptions()
 				local gType = gossipInfoTable[1] and gossipInfoTable[1].type
-				if gType and C.AutoQuest.AutoGossipTypes[gType] then
+				if gType and C["AutoQuest"].AutoGossipTypes[gType] then
 					C_GossipInfo_SelectOption(1)
 					return
 				end
 			end
-		elseif C.AutoQuest.FollowerAssignees[npcID] and numOptions > 1 then
+		elseif C["AutoQuest"].FollowerAssignees[npcID] and numOptions > 1 then
 			return C_GossipInfo_SelectOption(1)
 		end
 	end
@@ -237,7 +242,7 @@ end)
 
 QuickQuest:Register("GOSSIP_CONFIRM", function(index)
 	local npcID = GetNPCID()
-	if npcID and C.AutoQuest.DarkmoonNPC[npcID] then
+	if npcID and C["AutoQuest"].DarkmoonNPC[npcID] then
 		C_GossipInfo_SelectOption(index, "", true)
 		StaticPopup_Hide("GOSSIP_CONFIRM")
 	end
@@ -249,7 +254,7 @@ QuickQuest:Register("QUEST_DETAIL", function()
 	elseif QuestGetAutoAccept() then
 		AcknowledgeAutoAcceptQuest()
 	elseif not C_QuestLog_IsQuestTrivial(GetQuestID()) or IsTrackingHidden() then
-		if not C.AutoQuest.IgnoreQuestNPC[GetNPCID()] then
+		if not C["AutoQuest"].IgnoreQuestNPC[GetNPCID()] then
 			AcceptQuest()
 		end
 	end
@@ -277,7 +282,7 @@ QuickQuest:Register("QUEST_PROGRESS", function()
 		end
 
 		local npcID = GetNPCID()
-		if C.AutoQuest.IgnoreQuestNPC[npcID] then
+		if C["AutoQuest"].IgnoreQuestNPC[npcID] then
 			return
 		end
 
@@ -287,7 +292,7 @@ QuickQuest:Register("QUEST_PROGRESS", function()
 				local link = GetQuestItemLink("required", index)
 				if link then
 					local id = GetItemInfoFromHyperlink(link)
-					for _, itemID in next, C.AutoQuest.ItemBlacklist do
+					for _, itemID in next, C["AutoQuest"].ItemBlacklist do
 						if itemID == id then
 							CloseQuest()
 							return
@@ -316,14 +321,15 @@ QuickQuest:Register("QUEST_COMPLETE", function()
 	if choices <= 1 then
 		GetQuestReward(1)
 	elseif choices > 1 then
-		local bestValue, bestIndex = 0
+		local bestValue = 0
+		local bestIndex
 
 		for index = 1, choices do
 			local link = GetQuestItemLink("choice", index)
 			if link then
 				local value = select(11, GetItemInfo(link))
 				local itemID = GetItemInfoFromHyperlink(link)
-				value = C.AutoQuest.CashRewards[itemID] or value
+				value = C["AutoQuest"].CashRewards[itemID] or value
 
 				if value > bestValue then
 					bestValue, bestIndex = value, index

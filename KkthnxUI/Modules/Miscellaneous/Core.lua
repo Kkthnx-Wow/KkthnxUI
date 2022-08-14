@@ -73,7 +73,7 @@ function Module:OnEnable()
 	if not BNToastFrame.mover then
 		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 171 })
 	else
-		BNToastFrame.mover:SetSize(250, 49) -- 49 -- Rounded default size?
+		BNToastFrame.mover:SetSize(250, 63) -- 49 -- Rounded default size?
 	end
 	hooksecurefunc(BNToastFrame, "SetPoint", Module.PostBNToastMove)
 

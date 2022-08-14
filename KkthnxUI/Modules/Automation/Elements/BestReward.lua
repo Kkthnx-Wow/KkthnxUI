@@ -21,7 +21,8 @@ function Module:SetupAutoBestReward()
 		return
 	end
 
-	local bestValue, bestItem = 0
+	local bestValue = 0
+	local bestItem
 	for i = 1, numQuests do
 		local questLink = GetQuestItemLink("choice", i)
 		local _, _, amount = GetQuestItemInfo("choice", i)

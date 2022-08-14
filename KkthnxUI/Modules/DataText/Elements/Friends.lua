@@ -28,6 +28,7 @@ local HybridScrollFrame_Update = _G.HybridScrollFrame_Update
 local InviteToGroup = _G.C_PartyInfo.InviteUnit
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsShiftKeyDown = _G.IsShiftKeyDown
+local MouseIsOver = _G.MouseIsOver
 
 local BNET_CLIENT_WOW = _G.BNET_CLIENT_WOW
 local FRIENDS_TEXTURE_AFK = _G.FRIENDS_TEXTURE_AFK
