@@ -4,8 +4,8 @@ local History = CreateFrame("Frame")
 
 local _G = _G
 
-loal ChatFrame_MessageEventHandler = _G.ChatFrame_MessageEventHandler
-loal ChatFrame1 = _G.ChatFrame1
+local ChatFrame_MessageEventHandler = _G.ChatFrame_MessageEventHandler
+local ChatFrame1 = _G.ChatFrame1
 
 local LogMax
 local EntryEvent = 30

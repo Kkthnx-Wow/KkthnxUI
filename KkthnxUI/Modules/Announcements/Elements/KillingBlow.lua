@@ -8,6 +8,7 @@ local bit_band = _G.bit.band
 local math_random = _G.math.random
 local table_wipe = _G.table.wipe
 
+local BossBanner_BeginAnims = _G.BossBanner_BeginAnims
 local COMBATLOG_OBJECT_TYPE_PLAYER = _G.COMBATLOG_OBJECT_TYPE_PLAYER
 local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
 local DoEmote = _G.DoEmote
@@ -16,6 +17,7 @@ local GetBattlefieldScore = _G.GetBattlefieldScore
 local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
 local PlaySoundFile = _G.PlaySoundFile
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local TopBannerManager_Show = _G.TopBannerManager_Show
 local UnitGUID = _G.UnitGUID
 local hooksecurefunc = _G.hooksecurefunc
 

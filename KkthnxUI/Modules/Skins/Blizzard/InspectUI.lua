@@ -10,14 +10,6 @@ local PanelTemplates_GetSelectedTab = _G.PanelTemplates_GetSelectedTab
 local UnitClass = _G.UnitClass
 local hooksecurefunc = _G.hooksecurefunc
 
-local function UpdateCosmetic(self)
-	local unit = InspectFrame.unit
-	local itemLink = unit and GetInventoryItemLink(unit, self:GetID())
-	self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
-	self.IconOverlay:SetPoint("TOPLEFT", 1, -1)
-	self.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
-end
-
 C.themes["Blizzard_InspectUI"] = function()
 	if InspectFrame:IsShown() then
 		HideUIPanel(InspectFrame)
@@ -25,41 +17,70 @@ C.themes["Blizzard_InspectUI"] = function()
 
 	InspectModelFrame:StripTextures(true)
 
-	for _, slot in pairs({ InspectPaperDollItemsFrame:GetChildren() }) do
-		if slot:IsObjectType("Button") or slot:IsObjectType("ItemButton") then
-			slot:StripTextures()
-			slot:CreateBorder()
-			slot:StyleButton()
-			slot.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			slot:SetSize(36, 36)
+	local slots = {
+		"Head",
+		"Neck",
+		"Shoulder",
+		"Shirt",
+		"Chest",
+		"Waist",
+		"Legs",
+		"Feet",
+		"Wrist",
+		"Hands",
+		"Finger0",
+		"Finger1",
+		"Trinket0",
+		"Trinket1",
+		"Back",
+		"MainHand",
+		"SecondaryHand",
+		"Tabard",
+	}
 
-			slot.IconBorder:SetAlpha(0)
-			hooksecurefunc(slot.IconBorder, "SetVertexColor", function(_, r, g, b)
-				slot.KKUI_Border:SetVertexColor(r, g, b)
-			end)
+	for i = 1, #slots do
+		local slot = _G["Inspect" .. slots[i] .. "Slot"]
+		slot:StripTextures()
+		slot:SetSize(36, 36)
+		slot.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		slot:CreateBorder()
+		slot.IconBorder:SetAlpha(0)
+		slot.IconOverlay:SetAtlas("CosmeticIconFrame")
+		slot.IconOverlay:SetPoint("TOPLEFT", 1, -1)
+		slot.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
 
-			hooksecurefunc(slot.IconBorder, "Hide", function()
-				slot.KKUI_Border:SetVertexColor(1, 1, 1)
-			end)
-		end
+		hooksecurefunc(slot.IconBorder, "SetVertexColor", function(_, r, g, b)
+			slot.KKUI_Border:SetVertexColor(r, g, b)
+		end)
+
+		hooksecurefunc(slot.IconBorder, "Hide", function()
+			slot.KKUI_Border:SetVertexColor(1, 1, 1)
+		end)
+	end
+
+	local function UpdateCosmetic(self)
+		local unit = InspectFrame.unit
+		local itemLink = unit and GetInventoryItemLink(unit, self:GetID())
+		self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
 	end
 
 	hooksecurefunc("InspectPaperDollItemSlotButton_Update", function(button)
-		button.icon:SetShown(button.hasItem)
 		UpdateCosmetic(button)
 	end)
 
-	InspectHeadSlot:SetPoint("TOPLEFT", InspectFrame.Inset, "TOPLEFT", 6, -6)
-	InspectHandsSlot:SetPoint("TOPRIGHT", InspectFrame.Inset, "TOPRIGHT", -6, -6)
-	InspectMainHandSlot:SetPoint("BOTTOMLEFT", InspectFrame.Inset, "BOTTOMLEFT", 176, 5)
-	InspectSecondaryHandSlot:ClearAllPoints()
-	InspectSecondaryHandSlot:SetPoint("BOTTOMRIGHT", InspectFrame.Inset, "BOTTOMRIGHT", -176, 5)
+	do
+		InspectHeadSlot:SetPoint("TOPLEFT", InspectFrame.Inset, "TOPLEFT", 6, -6)
+		InspectHandsSlot:SetPoint("TOPRIGHT", InspectFrame.Inset, "TOPRIGHT", -6, -6)
+		InspectMainHandSlot:SetPoint("BOTTOMLEFT", InspectFrame.Inset, "BOTTOMLEFT", 176, 5)
+		InspectSecondaryHandSlot:ClearAllPoints()
+		InspectSecondaryHandSlot:SetPoint("BOTTOMRIGHT", InspectFrame.Inset, "BOTTOMRIGHT", -176, 5)
 
-	InspectModelFrame:SetSize(0, 0)
-	InspectModelFrame:ClearAllPoints()
-	InspectModelFrame:SetPoint("TOPLEFT", InspectFrame.Inset, 0, 0)
-	InspectModelFrame:SetPoint("BOTTOMRIGHT", InspectFrame.Inset, 0, 30)
-	InspectModelFrame:SetCamDistanceScale(1.1)
+		InspectModelFrame:SetSize(0, 0)
+		InspectModelFrame:ClearAllPoints()
+		InspectModelFrame:SetPoint("TOPLEFT", InspectFrame.Inset, 0, 0)
+		InspectModelFrame:SetPoint("BOTTOMRIGHT", InspectFrame.Inset, 0, 30)
+		InspectModelFrame:SetCamDistanceScale(1.1)
+	end
 
 	-- Adjust the inset based on tabs
 	local OnInspectSwitchTabs = function(newID)

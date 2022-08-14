@@ -139,7 +139,7 @@ end
 _G.SLASH_KKUI_GMTICKET1 = "/gm"
 _G.SLASH_KKUI_GMTICKET2 = "/ticket"
 
-SlashCmdList["KKUI_DELETEQUESTITEMS"] = function()
+SlashCmdList["KKUI_DELETEQUESTITEMS"] = function() -- FIX ME DeleteCursorItem() is protected!!!!!
 	for bag = 0, 4 do
 		for slot = 1, _G.GetContainerNumSlots(bag) do
 			local itemLink = GetContainerItemLink(bag, slot)
@@ -154,15 +154,13 @@ end
 _G.SLASH_KKUI_DELETEQUESTITEMS1 = "/deletequestitems"
 _G.SLASH_KKUI_DELETEQUESTITEMS2 = "/dqi"
 
-SlashCmdList["KKUI_DELETEHEIRLOOMS"] = function()
+SlashCmdList["KKUI_DELETEHEIRLOOMS"] = function() -- FIX ME DeleteCursorItem() is protected!!!!!
 	for bag = 0, 4 do
 		for slot = 1, GetContainerNumSlots(bag) do
 			local item = GetContainerItemLink(bag, slot)
 			if item and item:find("00ccff") then
-				--UseContainerItem(bag, slot)
 				_G.PickupContainerItem(bag, slot)
 				_G.DeleteCursorItem() -- Protected, FIX ME
-				-- break
 			end
 		end
 	end

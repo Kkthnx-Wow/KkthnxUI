@@ -26,6 +26,7 @@ local IsAltKeyDown = _G.IsAltKeyDown
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsPlayerSpell = _G.IsPlayerSpell
 local PlaySound = _G.PlaySound
+local SlashCmdList = _G.SlashCmdList
 local UnitAura = _G.UnitAura
 local UnitGUID = _G.UnitGUID
 local UnitInParty = _G.UnitInParty

@@ -26,7 +26,8 @@ local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 
 local groups = C.SpellReminderBuffs[K.Class]
 local iconSize = C["Auras"].DebuffSize + 4
-local frames, parentFrame = {}
+local frames = {}
+local parentFrame
 
 function Module:Reminder_Update(cfg)
 	local frame = cfg.frame
@@ -37,7 +38,10 @@ function Module:Reminder_Update(cfg)
 	local pvp = cfg.pvp
 	local itemID = cfg.itemID
 	local equip = cfg.equip
-	local isPlayerSpell, isRightSpec, isEquipped, isInCombat, isInInst, isInPVP = true, true, true
+	local isPlayerSpell, isRightSpec, isEquipped = true, true, true
+	local isInCombat
+	local isInInst
+	local isInPVP
 	local inInst, instType = IsInInstance()
 	local weaponIndex = cfg.weaponIndex
 

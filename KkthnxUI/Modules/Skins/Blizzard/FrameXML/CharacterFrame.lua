@@ -15,31 +15,6 @@ local HideUIPanel = _G.HideUIPanel
 local IsCosmeticItem = _G.IsCosmeticItem
 local hooksecurefunc = _G.hooksecurefunc
 
-local function UpdateAzeriteItem(self)
-	if not self.styled then
-		self.styled = true
-
-		self.AzeriteTexture:SetAlpha(0)
-		self.RankFrame.Texture:SetTexture()
-		self.RankFrame.Label:SetPoint("TOPLEFT", self, 2, -1)
-		self.RankFrame.Label:SetTextColor(1, 0.5, 0)
-		self.RankFrame.Label:SetFontObject(KkthnxUIFontOutline)
-		self.RankFrame.Label:SetFont(select(1, self.RankFrame.Label:GetFont()), 13, select(3, self.RankFrame.Label:GetFont()))
-	end
-end
-
-local function UpdateAzeriteEmpoweredItem(self)
-	self.AzeriteTexture:SetAtlas("AzeriteIconFrame")
-	self.AzeriteTexture:SetAllPoints()
-	self.AzeriteTexture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	self.AzeriteTexture:SetDrawLayer("BORDER", 1)
-end
-
-local function UpdateCosmetic(self)
-	local itemLink = GetInventoryItemLink("player", self:GetID())
-	self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
-end
-
 local function ReskinPaperDollSidebar()
 	for i = 1, #PAPERDOLL_SIDEBARS do
 		local tab = _G["PaperDollSidebarTab" .. i]
@@ -85,62 +60,151 @@ tinsert(C.defaultThemes, function()
 		HideUIPanel(CharacterFrame)
 	end
 
-	CharacterModelFrame:StripTextures(true)
+	CharacterModelFrame:DisableDrawLayer("BACKGROUND")
+	CharacterModelFrame:DisableDrawLayer("BORDER")
+	CharacterModelFrame:DisableDrawLayer("OVERLAY")
 
-	for _, slot in pairs({ PaperDollItemsFrame:GetChildren() }) do
-		if slot:IsObjectType("Button") or slot:IsObjectType("ItemButton") then
-			slot:StripTextures()
-			slot:CreateBorder()
-			slot:StyleButton(slot)
-			slot.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			slot:SetSize(36, 36)
+	local function colourPopout(self)
+		local aR, aG, aB
+		local glow = self:GetParent().IconBorder
 
-			if slot.popoutButton:GetPoint() == "TOP" then
-				slot.popoutButton:SetPoint("TOP", slot, "BOTTOM", 0, 2)
-			else
-				slot.popoutButton:SetPoint("LEFT", slot, "RIGHT", -2, 0)
-			end
+		if glow:IsShown() then
+			aR, aG, aB = glow:GetVertexColor()
+		else
+			aR, aG, aB = K.r, K.g, K.b
+		end
 
-			slot.ignoreTexture:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Transparent")
-			slot.IconOverlay:SetAtlas("CosmeticIconFrame")
-			slot.IconOverlay:SetPoint("TOPLEFT", 1, -1)
-			slot.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
+		self.arrow:SetVertexColor(aR, aG, aB)
+	end
 
-			slot.IconBorder:SetAlpha(0)
+	local function clearPopout(self)
+		self.arrow:SetVertexColor(1, 1, 1)
+	end
 
-			hooksecurefunc(slot.IconBorder, "SetVertexColor", function(_, r, g, b)
-				slot.KKUI_Border:SetVertexColor(r, g, b)
-			end)
+	local function UpdateAzeriteItem(self)
+		if not self.styled then
+			self.AzeriteTexture:SetAlpha(0)
+			self.RankFrame.Texture:SetTexture("")
+			self.RankFrame.Label:ClearAllPoints()
+			self.RankFrame.Label:SetPoint("TOPLEFT", self, 2, -1)
+			self.RankFrame.Label:SetTextColor(1, 0.5, 0)
+			self.RankFrame.Label:SetFontObject(KkthnxUIFontOutline)
+			self.RankFrame.Label:SetFont(select(1, self.RankFrame.Label:GetFont()), 13, select(3, self.RankFrame.Label:GetFont()))
 
-			hooksecurefunc(slot.IconBorder, "Hide", function()
-				slot.KKUI_Border:SetVertexColor(1, 1, 1)
-			end)
-
-			hooksecurefunc(slot, "DisplayAsAzeriteItem", UpdateAzeriteItem)
-			hooksecurefunc(slot, "DisplayAsAzeriteEmpoweredItem", UpdateAzeriteEmpoweredItem)
+			self.styled = true
 		end
 	end
 
-	hooksecurefunc("PaperDollItemSlotButton_Update", function(slot)
-		local highlight = slot:GetHighlightTexture()
+	local function UpdateAzeriteEmpoweredItem(self)
+		self.AzeriteTexture:SetAtlas("AzeriteIconFrame")
+		self.AzeriteTexture:SetAllPoints()
+		self.AzeriteTexture:SetDrawLayer("BORDER", 1)
+	end
+
+	local function UpdateHighlight(self)
+		local highlight = self:GetHighlightTexture()
 		highlight:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
 		highlight:SetBlendMode("ADD")
 		highlight:SetAllPoints()
+	end
 
-		UpdateCosmetic(slot)
+	local function UpdateCosmetic(self)
+		local itemLink = GetInventoryItemLink("player", self:GetID())
+		self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
+	end
+
+	CharacterModelFrame:StripTextures(true)
+
+	local slots = {
+		"Head",
+		"Neck",
+		"Shoulder",
+		"Shirt",
+		"Chest",
+		"Waist",
+		"Legs",
+		"Feet",
+		"Wrist",
+		"Hands",
+		"Finger0",
+		"Finger1",
+		"Trinket0",
+		"Trinket1",
+		"Back",
+		"MainHand",
+		"SecondaryHand",
+		"Tabard",
+	}
+
+	for i = 1, #slots do
+		local slot = _G["Character" .. slots[i] .. "Slot"]
+		local cooldown = _G["Character" .. slots[i] .. "SlotCooldown"]
+
+		slot:StripTextures()
+		slot:SetSize(36, 36)
+		slot.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		slot.IconBorder:SetAlpha(0)
+		slot:CreateBorder()
+		cooldown:SetAllPoints()
+
+		slot.ignoreTexture:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Transparent")
+		slot.IconOverlay:SetAtlas("CosmeticIconFrame")
+		slot.IconOverlay:SetPoint("TOPLEFT", 1, -1)
+		slot.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
+		slot.IconBorder:SetAlpha(0)
+
+		hooksecurefunc(slot.IconBorder, "SetVertexColor", function(_, r, g, b)
+			slot.KKUI_Border:SetVertexColor(r, g, b)
+		end)
+
+		hooksecurefunc(slot.IconBorder, "Hide", function()
+			slot.KKUI_Border:SetVertexColor(1, 1, 1)
+		end)
+
+		local popout = slot.popoutButton
+		popout:SetNormalTexture("")
+		popout:SetHighlightTexture("")
+
+		local arrow = popout:CreateTexture(nil, "OVERLAY")
+		arrow:SetSize(16, 16)
+		if slot.verticalFlyout then
+			K.SetupArrow(arrow, "down")
+			arrow:SetPoint("TOP", slot, "BOTTOM", 0, 1)
+		else
+			K.SetupArrow(arrow, "right")
+			arrow:SetPoint("LEFT", slot, "RIGHT", -1, 0)
+		end
+		popout.arrow = arrow
+
+		popout:HookScript("OnEnter", clearPopout)
+		popout:HookScript("OnLeave", colourPopout)
+
+		hooksecurefunc(slot, "DisplayAsAzeriteItem", UpdateAzeriteItem)
+		hooksecurefunc(slot, "DisplayAsAzeriteEmpoweredItem", UpdateAzeriteEmpoweredItem)
+	end
+
+	hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
+		-- also fires for bag slots, we don't want that
+		if button.popoutButton then
+			colourPopout(button.popoutButton)
+		end
+		UpdateCosmetic(button)
+		UpdateHighlight(button)
 	end)
 
-	CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)
-	CharacterHandsSlot:SetPoint("TOPRIGHT", CharacterFrame.Inset, "TOPRIGHT", -6, -6)
-	CharacterMainHandSlot:SetPoint("BOTTOMLEFT", CharacterFrame.Inset, "BOTTOMLEFT", 176, 5)
-	CharacterSecondaryHandSlot:ClearAllPoints()
-	CharacterSecondaryHandSlot:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -176, 5)
+	do
+		CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)
+		CharacterHandsSlot:SetPoint("TOPRIGHT", CharacterFrame.Inset, "TOPRIGHT", -6, -6)
+		CharacterMainHandSlot:SetPoint("BOTTOMLEFT", CharacterFrame.Inset, "BOTTOMLEFT", 176, 5)
+		CharacterSecondaryHandSlot:ClearAllPoints()
+		CharacterSecondaryHandSlot:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -176, 5)
 
-	CharacterModelFrame:SetSize(0, 0)
-	CharacterModelFrame:ClearAllPoints()
-	CharacterModelFrame:SetPoint("TOPLEFT", CharacterFrame.Inset, 0, 0)
-	CharacterModelFrame:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, 0, 20)
-	CharacterModelFrame:SetCamDistanceScale(1.1)
+		CharacterModelFrame:SetSize(0, 0)
+		CharacterModelFrame:ClearAllPoints()
+		CharacterModelFrame:SetPoint("TOPLEFT", CharacterFrame.Inset, 0, 0)
+		CharacterModelFrame:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, 0, 20)
+		CharacterModelFrame:SetCamDistanceScale(1.1)
+	end
 
 	hooksecurefunc("CharacterFrame_Expand", function()
 		CharacterFrame:SetSize(640, 431) -- 540 + 100, 424 + 7
@@ -189,10 +253,12 @@ tinsert(C.defaultThemes, function()
 		end
 	end)
 
-	CharacterStatsPane.ClassBackground:ClearAllPoints()
-	CharacterStatsPane.ClassBackground:SetHeight(CharacterStatsPane.ClassBackground:GetHeight() + 6)
-	CharacterStatsPane.ClassBackground:SetParent(CharacterFrameInsetRight)
-	CharacterStatsPane.ClassBackground:SetPoint("CENTER")
+	do
+		CharacterStatsPane.ClassBackground:ClearAllPoints()
+		CharacterStatsPane.ClassBackground:SetHeight(CharacterStatsPane.ClassBackground:GetHeight() + 6)
+		CharacterStatsPane.ClassBackground:SetParent(CharacterFrameInsetRight)
+		CharacterStatsPane.ClassBackground:SetPoint("CENTER")
+	end
 
 	-- Buttons used to toggle between equipment manager, titles, and character stats
 	hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", ReskinPaperDollSidebar)

@@ -1,19 +1,18 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local gsub = gsub
+local _G = _G
+local gsub = _G.gsub
 
-local GetContainerItemID = GetContainerItemID
-local GetContainerItemLink = GetContainerItemLink
-local GetContainerNumSlots = GetContainerNumSlots
+local C_Item_IsItemKeystoneByID = _G.C_Item.IsItemKeystoneByID
+local C_MythicPlus_GetOwnedKeystoneChallengeMapID = _G.C_MythicPlus.GetOwnedKeystoneChallengeMapID
+local C_MythicPlus_GetOwnedKeystoneLevel = _G.C_MythicPlus.GetOwnedKeystoneLevel
+local GetContainerItemID = _G.GetContainerItemID
+local GetContainerItemLink = _G.GetContainerItemLink
+local GetContainerNumSlots = _G.GetContainerNumSlots
+local NUM_BAG_SLOTS = _G.NUM_BAG_SLOTS or 4
 
-local C_Item_IsItemKeystoneByID = C_Item.IsItemKeystoneByID
-local C_MythicPlus_GetOwnedKeystoneChallengeMapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID
-local C_MythicPlus_GetOwnedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel
-
-local NUM_BAG_SLOTS = NUM_BAG_SLOTS
-
-local cache = {}
+local keystoneCache = {}
 
 function Module:SetupKeystoneAnnounce(event)
 	local mapID = C_MythicPlus_GetOwnedKeystoneChallengeMapID()
@@ -21,13 +20,13 @@ function Module:SetupKeystoneAnnounce(event)
 
 	if event == "PLAYER_ENTERING_WORLD" then
 		print(event)
-		cache.mapID = mapID
-		cache.keystoneLevel = keystoneLevel
+		keystoneCache.mapID = mapID
+		keystoneCache.keystoneLevel = keystoneLevel
 	elseif event == "CHALLENGE_MODE_COMPLETED" then
 		print(event)
-		if cache.mapID ~= mapID or cache.keystoneLevel ~= keystoneLevel then
-			cache.mapID = mapID
-			cache.keystoneLevel = keystoneLevel
+		if keystoneCache.mapID ~= mapID or keystoneCache.keystoneLevel ~= keystoneLevel then
+			keystoneCache.mapID = mapID
+			keystoneCache.keystoneLevel = keystoneLevel
 			for bagIndex = 0, NUM_BAG_SLOTS do
 				for slotIndex = 1, GetContainerNumSlots(bagIndex) do
 					local itemID = GetContainerItemID(bagIndex, slotIndex)

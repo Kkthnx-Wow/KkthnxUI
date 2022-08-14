@@ -19,6 +19,7 @@ local GetTime = _G.GetTime
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
 local RegisterAttributeDriver = _G.RegisterAttributeDriver
 local RegisterStateDriver = _G.RegisterStateDriver
+local SecureHandlerSetFrameRef = _G.SecureHandlerSetFrameRef
 local UIParent = _G.UIParent
 local UnitAura = _G.UnitAura
 
