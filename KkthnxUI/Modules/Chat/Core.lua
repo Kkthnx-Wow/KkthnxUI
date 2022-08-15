@@ -8,13 +8,21 @@ local string_gsub = _G.string.gsub
 local string_find = _G.string.find
 local string_format = _G.string.format
 
+local CHAT_FRAMES = _G.CHAT_FRAMES
+local CHAT_OPTIONS = _G.CHAT_OPTIONS
+local C_GuildInfo_IsGuildOfficer = _G.C_GuildInfo.IsGuildOfficer
+local ChatEdit_ChooseBoxForSend = _G.ChatEdit_ChooseBoxForSend
+local ChatEdit_UpdateHeader = _G.ChatEdit_UpdateHeader
 local ChatFrame1 = _G.ChatFrame1
 local ChatTypeInfo = _G.ChatTypeInfo
 local ConsoleExec = _G.ConsoleExec
+local FCF_SavePositionAndDimensions = _G.FCF_SavePositionAndDimensions
+local GeneralDockManager = _G.GeneralDockManager
 local GetCVar = _G.GetCVar
 local GetChannelName = _G.GetChannelName
 local GetInstanceInfo = _G.GetInstanceInfo
 local InCombatLockdown = _G.InCombatLockdown
+local InterfaceOptionsSocialPanelChatStyle = _G.InterfaceOptionsSocialPanelChatStyle
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsInGroup = _G.IsInGroup
@@ -22,8 +30,9 @@ local IsInGuild = _G.IsInGuild
 local IsInRaid = _G.IsInRaid
 local IsPartyLFG = _G.IsPartyLFG
 local IsShiftKeyDown = _G.IsShiftKeyDown
+local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
+local QuickJoinToastButton = _G.QuickJoinToastButton
 local SetCVar = _G.SetCVar
-local C_GuildInfo_IsGuildOfficer = _G.C_GuildInfo.IsGuildOfficer
 local UnitName = _G.UnitName
 local hooksecurefunc = _G.hooksecurefunc
 
@@ -52,11 +61,6 @@ do
 	local charCount
 	local function CountLinkCharacters(self)
 		charCount = charCount + (string_len(self) + 4) -- 4 is ending "|h|r"
-	end
-
-	local a1, a2 = "", "[%s%-]"
-	local function ShortenRealm(realm)
-		return string_gsub(realm, a2, a1)
 	end
 
 	local repeatedText
@@ -89,7 +93,7 @@ do
 				if Name then
 					Name = string_gsub(Name, "%s", "")
 					if Realm and Realm ~= "" then
-						Name = string_format("%s-%s", Name, ShortenRealm(Realm))
+						Name = string_format("%s-%s", Name, string_gsub(Realm, "[%s%-]", ""))
 					end
 				end
 
@@ -106,12 +110,12 @@ do
 
 		-- recalculate the character count correctly with hyperlinks in it, using gsub so it matches multiple without gmatch
 		charCount = 0
-		string_gsub(text, "(|cff%x%x%x%x%x%x|H.-|h).-|h|r", CountLinkCharacters)
+		string_gsub(text, "(|c%x-|H.-|h).-|h|r", CountLinkCharacters)
 		if charCount ~= 0 then
 			len = len - charCount
 		end
 
-		self.__characterCount:SetText(len > 0 and (255 - len) or "")
+		self.characterCount:SetText(len > 0 and (255 - len) or "")
 
 		if repeatedText then
 			repeatedText = nil
@@ -232,13 +236,13 @@ function Module:SkinChat()
 
 	-- Character count
 	local charCount = eb:CreateFontString(nil, "ARTWORK")
-	charCount:SetFontObject(KkthnxUIFont)
+	charCount:SetFontObject(_G.KkthnxUIFont)
 	charCount:SetTextColor(190, 190, 190, 0.4)
 	charCount:SetPoint("TOPRIGHT", eb, "TOPRIGHT", 4, 0)
 	charCount:SetPoint("BOTTOMRIGHT", eb, "BOTTOMRIGHT", 4, 0)
 	charCount:SetJustifyH("CENTER")
 	charCount:SetWidth(40)
-	eb.__characterCount = charCount
+	eb.characterCount = charCount
 
 	self.buttonFrame:Kill()
 	self.ScrollBar:Kill()
@@ -566,7 +570,7 @@ function Module:OnEnable()
 	SetCVar("chatStyle", "classic")
 	SetCVar("chatMouseScroll", 1) -- Enable mousescroll
 	K.HideInterfaceOption(InterfaceOptionsSocialPanelChatStyle)
-	CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
+	_G.CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
 
 	-- Add Elements
 	Module:ChatWhisperSticky()

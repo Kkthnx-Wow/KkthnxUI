@@ -154,11 +154,11 @@ end
 _G.SLASH_KKUI_DELETEQUESTITEMS1 = "/deletequestitems"
 _G.SLASH_KKUI_DELETEQUESTITEMS2 = "/dqi"
 
-SlashCmdList["KKUI_DELETEHEIRLOOMS"] = function() -- FIX ME DeleteCursorItem() is protected!!!!!
+SlashCmdList["KKUI_DELETEHEIRLOOMS"] = function(self, event, arg) -- FIX ME DeleteCursorItem() is protected!!!!!
 	for bag = 0, 4 do
 		for slot = 1, GetContainerNumSlots(bag) do
-			local item = GetContainerItemLink(bag, slot)
-			if item and item:find("00ccff") then
+			local item = { GetContainerItemInfo(bag, slot) }
+			if item[4] == 7 then
 				_G.PickupContainerItem(bag, slot)
 				_G.DeleteCursorItem() -- Protected, FIX ME
 			end

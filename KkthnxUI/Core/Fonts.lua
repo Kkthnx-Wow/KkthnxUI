@@ -57,10 +57,11 @@ local function UpdateBlizzardFonts()
 		local PLATE = C["Media"].Fonts.KkthnxUIFont
 		local LARGE = C["Media"].Fonts.KkthnxUIFont
 
-		SetFont(_G.SystemFont_NamePlate, PLATE, 9, "OUTLINE") -- 9
-		SetFont(_G.SystemFont_NamePlateFixed, PLATE, 9, "OUTLINE") -- 9
-		SetFont(_G.SystemFont_LargeNamePlate, LARGE, 11, "OUTLINE") -- 12
-		SetFont(_G.SystemFont_LargeNamePlateFixed, LARGE, 11, "OUTLINE") -- 12
+		SetFont(_G.SystemFont_NamePlate, PLATE, 9, "NONE", 0, 0, 0, 1, 1, -1) -- 9
+		SetFont(_G.SystemFont_NamePlateFixed, PLATE, 9, "NONE", 0, 0, 0, 1, 1, -1) -- 9
+		SetFont(_G.SystemFont_LargeNamePlate, LARGE, 11, "NONE", 0, 0, 0, 1, 1, -1) -- 12
+		SetFont(_G.SystemFont_LargeNamePlateFixed, LARGE, 11, "NONE", 0, 0, 0, 1, 1, -1) -- 12
+		SetFont(_G.SystemFont_NamePlateCastBar, LARGE, 11, "NONE", 0, 0, 0, 1, 1, -1) -- 12
 	end
 
 	if replaceBlizzFonts then
@@ -182,7 +183,6 @@ local function UpdateBlizzardFonts()
 		SetFont(_G.Tooltip_Med, NORMAL, size) -- 12
 		SetFont(_G.Tooltip_Small, NORMAL, s and small or size) -- 10
 		SetFont(_G.ZoneTextString, NORMAL, s and enormous or 32, outline) -- 32
-		-- SetFont(_G.ObjectiveFont, NORMAL, size, outline)
 
 		-- Text that does not follow our fonts fixed below
 		WorldMapFrame.NavBar.homeButton.text:SetFontObject(_G.KkthnxUIFont)

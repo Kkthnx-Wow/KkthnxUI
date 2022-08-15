@@ -1561,9 +1561,9 @@ local AddScrollBar = function(self)
 end
 
 GUI.DisplayWindow = function(self, name)
-	if KKUI_Credits and KKUI_Credits:IsShown() then
-		KKUI_Credits:Hide()
-		KKUI_Credits.Move:Stop()
+	if _G.KKUI_Credits and _G.KKUI_Credits:IsShown() then
+		_G.KKUI_Credits:Hide()
+		_G.KKUI_Credits.Move:Stop()
 
 		local Window = GUI:GetWindow(LastActiveWindow)
 
@@ -1725,13 +1725,13 @@ local ShowCreditFrame = function()
 
 	Window:Hide()
 
-	KKUI_Credits:Show()
-	KKUI_Credits.Move:Play()
+	_G.KKUI_Credits:Show()
+	_G.KKUI_Credits.Move:Play()
 end
 
 local HideCreditFrame = function()
-	KKUI_Credits:Hide()
-	KKUI_Credits.Move:Stop()
+	_G.KKUI_Credits:Hide()
+	_G.KKUI_Credits.Move:Stop()
 
 	local Window = GUI:GetWindow(LastActiveWindow)
 
@@ -1740,7 +1740,7 @@ local HideCreditFrame = function()
 end
 
 local ToggleCreditsFrame = function()
-	if KKUI_Credits:IsShown() then
+	if _G.KKUI_Credits:IsShown() then
 		HideCreditFrame()
 	else
 		ShowCreditFrame()
@@ -1752,7 +1752,7 @@ local function CreateContactEditBox(parent, width, height)
 	eb:SetSize(width, height)
 	eb:SetAutoFocus(false)
 	eb:SetTextInsets(5, 5, 0, 0)
-	eb:SetFontObject(KkthnxUIFont)
+	eb:SetFontObject(_G.KkthnxUIFont)
 
 	eb.bg = CreateFrame("Frame", nil, eb)
 	eb.bg:SetAllPoints()
@@ -1867,7 +1867,7 @@ GUI.Enable = function(self)
 	self.FadeOut:SetScript("OnFinished", function(self)
 		self:GetParent():Hide()
 
-		if KKUI_Credits:IsShown() then
+		if _G.KKUI_Credits:IsShown() then
 			HideCreditFrame()
 		end
 	end)

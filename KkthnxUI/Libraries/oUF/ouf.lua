@@ -10,10 +10,10 @@ local Private = oUF.Private
 
 local argcheck = Private.argcheck
 local error = Private.error
-local print = Private.print --luacheck: no unused
 local unitExists = Private.unitExists
 
-local styles, style = {}
+local styles = {}
+local style
 local callback, objects, headers = {}, {}, {}
 
 local elements = {}

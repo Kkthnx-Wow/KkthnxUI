@@ -4,13 +4,28 @@ local _G = _G
 local math_floor = _G.math.floor
 local table_insert = _G.table.insert
 
+local CLOSE = _G.CLOSE
 local CreateFrame = _G.CreateFrame
+local GameTooltip = _G.GameTooltip
 local GetInventoryItemTexture = _G.GetInventoryItemTexture
 local GetItemInfo = _G.GetItemInfo
 local GetSpellInfo = _G.GetSpellInfo
+local INVTYPE_CLOAK = _G.INVTYPE_CLOAK
+local INVTYPE_FINGER = _G.INVTYPE_FINGER
+local INVTYPE_TRINKET = _G.INVTYPE_TRINKET
+local INVTYPE_WAIST = _G.INVTYPE_WAIST
+local NO = _G.NO
+local OKAY = _G.OKAY
 local PlaySound = _G.PlaySound
+local RESET = _G.RESET
+local ReloadUI = _G.ReloadUI
 local SOUNDKIT = _G.SOUNDKIT
+local SlashCmdList = _G.SlashCmdList
+local StaticPopupDialogs = _G.StaticPopupDialogs
+local StaticPopup_Show = _G.StaticPopup_Show
 local UIErrorsFrame = _G.UIErrorsFrame
+local UISpecialFrames = _G.UISpecialFrames
+local YES = _G.YES
 
 local r, g, b = K.r, K.g, K.b
 local f
@@ -90,7 +105,7 @@ local function AW_CreateEditbox(parent, text, x, y, tip, width, height)
 	eb:SetPoint("TOPLEFT", x, y)
 	eb:SetAutoFocus(false)
 	eb:SetTextInsets(5, 5, 0, 0)
-	eb:SetFontObject(KkthnxUIFont)
+	eb:SetFontObject(_G.KkthnxUIFont)
 	eb:SetMaxLetters(255)
 	createLabel(eb, text, tip)
 

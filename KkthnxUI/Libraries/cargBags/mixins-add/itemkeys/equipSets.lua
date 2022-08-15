@@ -26,8 +26,13 @@ DEPENDENCIES
 local _, ns = ...
 local cargBags = ns.cargBags
 
-local ItemKeys = cargBags.itemKeys
+local _G = _G
 
+local GetEquipmentSetInfo = _G.GetEquipmentSetInfo
+local GetEquipmentSetItemIDs = _G.GetEquipmentSetItemIDs
+local GetNumEquipmentSets = _G.GetNumEquipmentSets
+
+local ItemKeys = cargBags.itemKeys
 local setItems
 
 local function initUpdater()

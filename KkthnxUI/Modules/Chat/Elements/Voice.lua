@@ -14,7 +14,7 @@ local CreateFrame = _G.CreateFrame
 local UIParent = _G.UIParent
 local Voice_GetVoiceChannelNotificationColor = _G.Voice_GetVoiceChannelNotificationColor
 
-local voiceTalkingList = {}
+Module.voiceTalkingList = {}
 
 -- http://www.wowwiki.com/ColorGradient
 local function VoiceColorGradient(_, perc, ...)
@@ -84,10 +84,10 @@ VoiceActivityEventFrame:SetScript("OnEvent", function(_, event, ...)
 		local memberID, channelID, isTalking = ...
 
 		if isTalking then
-			voiceTalkingList[memberID] = channelID
+			Module.voiceTalkingList[memberID] = channelID
 			ConfigureHead(memberID, channelID)
 		else
-			voiceTalkingList[memberID] = nil
+			Module.voiceTalkingList[memberID] = nil
 			DeconfigureHead(memberID, channelID)
 		end
 	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED" then
@@ -135,7 +135,7 @@ function Module:CreateVoiceActivity()
 		chatHead.Portrait.texture:SetAllPoints(chatHead.Portrait)
 
 		chatHead.Name = chatHead:CreateFontString(nil, "OVERLAY")
-		chatHead.Name:SetFontObject(KkthnxUIFont)
+		chatHead.Name:SetFontObject(_G.KkthnxUIFont)
 		chatHead.Name:SetFont(select(1, chatHead.Name:GetFont()), 14, select(3, chatHead.Name:GetFont()))
 		chatHead.Name:SetPoint("LEFT", chatHead.Portrait, "RIGHT", 6, 0)
 

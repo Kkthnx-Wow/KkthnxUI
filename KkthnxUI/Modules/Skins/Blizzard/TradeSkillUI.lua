@@ -11,7 +11,7 @@ C.themes["Blizzard_TradeSkillUI"] = function()
 	rankFrame.BorderLeft:Hide()
 	rankFrame.BorderRight:Hide()
 	rankFrame:CreateBorder()
-	rankFrame.RankText:SetFontObject(KkthnxUIFont)
+	rankFrame.RankText:SetFontObject(_G.KkthnxUIFont)
 
 	-- Fixes trade tabs overlapping 'OptionalReagentList'
 	local reagentList = TradeSkillFrame.OptionalReagentList

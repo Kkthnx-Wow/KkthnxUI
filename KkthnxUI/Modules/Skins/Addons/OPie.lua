@@ -154,7 +154,7 @@ end
 local id = 0
 local function CreateIndicator(name, parent, size)
 	id = id + 1
-	name = name or "OPieSliceButton" .. id
+	name = name or ("OPieSliceButton" .. id)
 	parent = parent or UIParent
 	size = size or 36
 

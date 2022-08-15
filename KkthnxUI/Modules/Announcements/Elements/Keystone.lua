@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
 local _G = _G
@@ -14,16 +14,16 @@ local NUM_BAG_SLOTS = _G.NUM_BAG_SLOTS or 4
 
 local keystoneCache = {}
 
-function Module:SetupKeystoneAnnounce(event)
+function Module.SetupKeystoneAnnounce(event)
 	local mapID = C_MythicPlus_GetOwnedKeystoneChallengeMapID()
 	local keystoneLevel = C_MythicPlus_GetOwnedKeystoneLevel()
 
 	if event == "PLAYER_ENTERING_WORLD" then
-		print(event)
+		K.Print("SetupKeystoneAnnounce", event)
 		keystoneCache.mapID = mapID
 		keystoneCache.keystoneLevel = keystoneLevel
 	elseif event == "CHALLENGE_MODE_COMPLETED" then
-		print(event)
+		K.Print("SetupKeystoneAnnounce", event)
 		if keystoneCache.mapID ~= mapID or keystoneCache.keystoneLevel ~= keystoneLevel then
 			keystoneCache.mapID = mapID
 			keystoneCache.keystoneLevel = keystoneLevel
@@ -40,16 +40,19 @@ function Module:SetupKeystoneAnnounce(event)
 	end
 end
 
+function Module.PEWKeystoneAnnounce()
+	C_Timer.After(2, Module.SetupKeystoneAnnounce)
+end
+
+function Module.CMCKeystoneAnnounce()
+	C_Timer.After(2, Module.SetupKeystoneAnnounce)
+end
+
 function Module:CreateKeystoneAnnounce()
 	if not C["Announcements"].KeystoneAlert then
 		return
 	end
 
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", function()
-		C_Timer.After(2, Module.SetupKeystoneAnnounce)
-	end)
-
-	K:RegisterEvent("CHALLENGE_MODE_COMPLETED", function()
-		C_Timer.After(2, Module.SetupKeystoneAnnounce)
-	end)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.PEWKeystoneAnnounce)
+	K:RegisterEvent("CHALLENGE_MODE_COMPLETED", Module.CMCKeystoneAnnounce)
 end

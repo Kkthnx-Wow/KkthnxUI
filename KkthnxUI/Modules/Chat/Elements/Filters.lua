@@ -136,6 +136,7 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 	end
 
 	if C["Chat"].BlockStranger and event == "CHAT_MSG_WHISPER" then -- Block strangers
+		K.Print("DEBUG: GetFilterResult", name)
 		Module.MuteCache[name] = GetTime()
 		return true
 	end
@@ -257,7 +258,7 @@ function Module:UpdateAddOnBlocker(event, msg, author)
 			elseif event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER" then
 				Module:ToggleChatBubble(true)
 			elseif event == "CHAT_MSG_WHISPER" then
-				print("UpdateAddOnBlocker", Module.MuteCache[name])
+				K.Print("DEBUG: UpdateAddOnBlocker", name)
 				Module.MuteCache[name] = GetTime()
 			end
 			return true

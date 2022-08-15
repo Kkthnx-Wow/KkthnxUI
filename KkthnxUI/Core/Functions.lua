@@ -15,6 +15,7 @@ local tonumber = _G.tonumber
 local type = _G.type
 local unpack = _G.unpack
 
+local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local C_Map_GetWorldPosFromMapPos = _G.C_Map.GetWorldPosFromMapPos
 local CreateVector2D = _G.CreateVector2D
 local ENCHANTED_TOOLTIP_LINE = _G.ENCHANTED_TOOLTIP_LINE
@@ -23,6 +24,7 @@ local GetSpecialization = _G.GetSpecialization
 local GetSpecializationInfo = _G.GetSpecializationInfo
 local GetTime = _G.GetTime
 local ITEM_LEVEL = _G.ITEM_LEVEL
+local ITEM_SPELL_TRIGGER_ONEQUIP = _G.ITEM_SPELL_TRIGGER_ONEQUIP
 local IsInRaid = _G.IsInRaid
 local UIParent = _G.UIParent
 local UnitClass = _G.UnitClass

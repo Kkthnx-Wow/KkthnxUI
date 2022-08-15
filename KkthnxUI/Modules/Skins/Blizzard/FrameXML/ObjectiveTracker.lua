@@ -5,7 +5,6 @@ local _G = _G
 local pairs = _G.pairs
 local string_find = _G.string.find
 local table_insert = _G.table.insert
-local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc

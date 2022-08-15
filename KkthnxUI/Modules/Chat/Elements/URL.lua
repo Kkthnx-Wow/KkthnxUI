@@ -9,6 +9,8 @@ local string_sub = _G.string.sub
 local tostring = _G.tostring
 
 local ChatEdit_ClearChat = _G.ChatEdit_ClearChat
+local ChatFrame1 = _G.ChatFrame1
+local ItemRefTooltip = _G.ItemRefTooltip
 local LAST_ACTIVE_CHAT_EDIT_BOX = _G.LAST_ACTIVE_CHAT_EDIT_BOX
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local hooksecurefunc = _G.hooksecurefunc

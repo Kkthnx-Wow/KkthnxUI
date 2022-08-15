@@ -347,7 +347,7 @@ function Module:CreateExpbar()
 	bar.reward = reward
 
 	local text = bar:CreateFontString(nil, "OVERLAY")
-	text:SetFontObject(KkthnxUIFont)
+	text:SetFontObject(_G.KkthnxUIFont)
 	text:SetFont(select(1, text:GetFont()), 11, select(3, text:GetFont()))
 	text:SetWidth(bar:GetWidth() - 6)
 	text:SetWordWrap(false)

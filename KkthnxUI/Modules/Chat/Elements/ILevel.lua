@@ -3,11 +3,13 @@ local Module = K:GetModule("Chat")
 
 local _G = _G
 local pairs = _G.pairs
+local string_format = _G.string.format
 local string_gsub = _G.string.gsub
 local string_match = _G.string.match
 local string_rep = _G.string.rep
 
 local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
+local DUNGEON_SCORE_LEADER = _G.DUNGEON_SCORE_LEADER
 local GetItemInfo = _G.GetItemInfo
 local GetItemStats = _G.GetItemStats
 local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
@@ -46,7 +48,7 @@ function Module.IsItemHasGem(link)
 	local stats = GetItemStats(link)
 	if stats then
 		for stat, count in pairs(stats) do
-			local socket = strmatch(stat, "EMPTY_SOCKET_(%S+)")
+			local socket = string_match(stat, "EMPTY_SOCKET_(%S+)")
 			if socket and socketWatchList[socket] then
 				text = text .. GetSocketTexture(socket, count)
 			end
@@ -76,7 +78,7 @@ end
 
 local GetDungeonScoreInColor
 local function formatDungeonScore(link, score)
-	return score and string_gsub(link, "|h%[(.-)%]|h", "|h[" .. string.format(DUNGEON_SCORE_LEADER, GetDungeonScoreInColor(score)) .. "]|h")
+	return score and string_gsub(link, "|h%[(.-)%]|h", "|h[" .. string_format(DUNGEON_SCORE_LEADER, GetDungeonScoreInColor(score)) .. "]|h")
 end
 
 function Module:UpdateChatItemLevel(_, msg, ...)

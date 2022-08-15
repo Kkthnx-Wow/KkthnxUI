@@ -58,7 +58,7 @@ local function createCodeBox(width, index, text)
 	box:SetMaxLetters(index == 4 and 6 or 3)
 	box:SetTextInsets(0, 0, 0, 0)
 	box:SetPoint("TOPLEFT", _G.ColorSwatch, "BOTTOMLEFT", 0, -index * 26)
-	box:SetFontObject(KkthnxUIFont)
+	box:SetFontObject(_G.KkthnxUIFont)
 
 	box.bg = CreateFrame("Button", nil, box)
 	box.bg:SetAllPoints()

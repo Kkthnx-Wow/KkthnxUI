@@ -44,6 +44,7 @@ lib.unusedOverlays = lib.unusedOverlays or {}
 lib.numOverlays = lib.numOverlays or 0
 
 local tinsert, tremove, tostring = table.insert, table.remove, tostring
+local AnimateTexCoords = AnimateTexCoords
 
 local function OverlayGlowAnimOutFinished(animGroup)
 	local overlay = animGroup:GetParent()

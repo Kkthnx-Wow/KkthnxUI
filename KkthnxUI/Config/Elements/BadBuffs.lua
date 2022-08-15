@@ -35,6 +35,8 @@ C.CheckBadBuffs = {
 	[SpellName(61734)] = true, -- Noblegarden Bunny
 	[SpellName(61781)] = true, -- Turkey Feathers
 	[SpellName(261477)] = true, -- Dervish
+	[SpellName(354550)] = true, -- Impressive Size
+	[SpellName(354481)] = true, -- Inner Child
 
 	-- [SpellName(308078)] = true, -- Debug
 }

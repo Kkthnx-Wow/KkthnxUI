@@ -39,7 +39,9 @@ local coinTextureIDs = {
 }
 
 -- Credit Haste
-local iconSize, lootFrame, lootFrameHolder = 30
+local iconSize = 30
+local lootFrame
+local lootFrameHolder
 
 local function OnEnter(self)
 	local slot = self:GetID()
@@ -133,7 +135,7 @@ local function createSlot(id)
 	local count = iconFrame:CreateFontString(nil, "OVERLAY")
 	count:SetJustifyH("RIGHT")
 	count:SetPoint("BOTTOMRIGHT", iconFrame, -2, 2)
-	count:SetFontObject(KkthnxUIFontOutline)
+	count:SetFontObject(_G.KkthnxUIFontOutline)
 	count:SetText(1)
 	frame.count = count
 
@@ -142,7 +144,7 @@ local function createSlot(id)
 	name:SetPoint("LEFT", frame)
 	name:SetPoint("RIGHT", icon, "LEFT")
 	name:SetNonSpaceWrap(true)
-	name:SetFontObject(KkthnxUIFontOutline)
+	name:SetFontObject(_G.KkthnxUIFontOutline)
 	frame.name = name
 
 	local drop = frame:CreateTexture(nil, "ARTWORK")
@@ -322,7 +324,7 @@ function Module:OnEnable()
 	lootFrame:SetFrameStrata(LootFrame:GetFrameStrata())
 	lootFrame:SetToplevel(true)
 	lootFrame.title = lootFrame:CreateFontString(nil, "OVERLAY")
-	lootFrame.title:SetFontObject(KkthnxUIFontOutline)
+	lootFrame.title:SetFontObject(_G.KkthnxUIFontOutline)
 	lootFrame.title:SetPoint("BOTTOMLEFT", lootFrame, "TOPLEFT", 0, 4)
 	lootFrame.slots = {}
 	lootFrame:SetScript("OnHide", function()

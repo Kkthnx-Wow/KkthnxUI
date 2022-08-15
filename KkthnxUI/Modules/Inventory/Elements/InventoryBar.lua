@@ -101,7 +101,7 @@ function Module:CreateInventoryBar()
 
 	_G.MainMenuBarBackpackButton:SetParent(Module.BagBar)
 	_G.MainMenuBarBackpackButton:ClearAllPoints()
-	_G.MainMenuBarBackpackButtonCount:SetFontObject(KkthnxUIFontOutline)
+	_G.MainMenuBarBackpackButtonCount:SetFontObject(_G.KkthnxUIFontOutline)
 	_G.MainMenuBarBackpackButtonCount:ClearAllPoints()
 	_G.MainMenuBarBackpackButtonCount:SetPoint("BOTTOMRIGHT", _G.MainMenuBarBackpackButton, "BOTTOMRIGHT", 2, 2)
 	_G.MainMenuBarBackpackButton:HookScript("OnEnter", OnEnter)

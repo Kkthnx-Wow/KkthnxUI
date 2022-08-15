@@ -40,7 +40,9 @@ local specPrefix = SPECIALIZATION .. ": " .. K.InfoColor
 local levelPrefix = STAT_AVERAGE_ITEM_LEVEL .. ": " .. K.InfoColor
 local isPending = LFG_LIST_LOADING
 local resetTime, frequency, lastTime = 900, 0.5, 0
-local cache, weapon, currentUNIT, currentGUID = {}, {}
+local cache, weapon = {}, {}
+local currentUNIT
+local currentGUID
 
 local T29Sets = {
 	-- HUNTER

@@ -88,7 +88,7 @@ tinsert(C.defaultThemes, function()
 			self.RankFrame.Label:ClearAllPoints()
 			self.RankFrame.Label:SetPoint("TOPLEFT", self, 2, -1)
 			self.RankFrame.Label:SetTextColor(1, 0.5, 0)
-			self.RankFrame.Label:SetFontObject(KkthnxUIFontOutline)
+			self.RankFrame.Label:SetFontObject(_G.KkthnxUIFontOutline)
 			self.RankFrame.Label:SetFont(select(1, self.RankFrame.Label:GetFont()), 13, select(3, self.RankFrame.Label:GetFont()))
 
 			self.styled = true
@@ -227,11 +227,11 @@ tinsert(C.defaultThemes, function()
 	end)
 
 	if CharacterLevelText then
-		CharacterLevelText:SetFontObject(KkthnxUIFont)
+		CharacterLevelText:SetFontObject(_G.KkthnxUIFont)
 	end
 
 	local CharItemLvLValue = CharacterStatsPane.ItemLevelFrame.Value
-	CharItemLvLValue:SetFontObject(KkthnxUIFont)
+	CharItemLvLValue:SetFontObject(_G.KkthnxUIFont)
 	CharItemLvLValue:SetFont(select(1, CharItemLvLValue:GetFont()), 18, select(3, CharItemLvLValue:GetFont()))
 
 	-- Titles
@@ -246,7 +246,7 @@ tinsert(C.defaultThemes, function()
 			end
 
 			if not bu[i].fontStyled then
-				bu[i].text:SetFontObject(KkthnxUIFont)
+				bu[i].text:SetFontObject(_G.KkthnxUIFont)
 				bu[i].text:SetFont(select(1, bu[i].text:GetFont()), 11, select(3, bu[i].text:GetFont()))
 				bu[i].fontStyled = true
 			end

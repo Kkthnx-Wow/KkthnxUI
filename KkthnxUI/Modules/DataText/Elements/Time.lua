@@ -218,7 +218,8 @@ local function GetNextLocation(nextTime, index)
 	return C_Map_GetMapInfo(inv.maps[inv.timeTable[round]]).name
 end
 
-local cache, nzothAssaults = {}
+local cache = {}
+local nzothAssaults
 local function GetNzothThreatName(questID)
 	local name = cache[questID]
 	if not name then
@@ -447,7 +448,7 @@ function Module:CreateTimeDataText()
 	TimeDataText:SetFrameLevel(8)
 
 	TimeDataText.Font = TimeDataText.Font or TimeDataText:CreateFontString("OVERLAY")
-	TimeDataText.Font:SetFontObject(KkthnxUIFont)
+	TimeDataText.Font:SetFontObject(_G.KkthnxUIFont)
 	TimeDataText.Font:SetFont(select(1, TimeDataText.Font:GetFont()), 13, select(3, TimeDataText.Font:GetFont()))
 	TimeDataText.Font:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 2)
 

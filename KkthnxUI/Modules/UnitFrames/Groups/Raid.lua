@@ -37,8 +37,7 @@ local function UpdateRaidPower(self, _, unit)
 		return
 	end
 
-	local _, powerToken = UnitPowerType(unit)
-	if powerToken == "MANA" and C["Raid"].ManabarShow then
+	if UnitGroupRolesAssigned(unit) == "HEALER" and UnitGroupRolesAssigned(unit) ~= "NONE" then
 		if not self.Power:IsVisible() then
 			self.Health:ClearAllPoints()
 			self.Health:SetPoint("BOTTOMLEFT", self, 0, 6)
@@ -116,9 +115,9 @@ function Module:CreateRaid()
 
 		table.insert(self.__elements, UpdateRaidPower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
-		-- self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidPower)
-		-- self:RegisterEvent("UNIT_POWER_UPDATE", UpdateRaidPower)
-		-- UpdateRaidPower(self, _, self.unit)
+		self:RegisterEvent("UNIT_POWER_UPDATE", UpdateRaidPower)
+		self:RegisterEvent("UNIT_MAXPOWER", UpdateRaidPower)
+		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
 	end
 
 	if C["Raid"].ShowHealPrediction then
