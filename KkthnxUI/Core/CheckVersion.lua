@@ -21,7 +21,7 @@ local lastVCTime = 0
 local isVCInit
 local tn = tonumber
 
-local function HandleVersonTag(version, author)
+local function HandleVersonTag(version)
 	local major, minor = string_split(".", version)
 	major, minor = tn(major), tn(minor)
 	if K.Base64:CV(major) then

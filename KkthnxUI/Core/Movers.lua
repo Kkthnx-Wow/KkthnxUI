@@ -26,7 +26,8 @@ local UIErrorsFrame = _G.UIErrorsFrame
 local UIParent = _G.UIParent
 
 -- Frame Mover
-local MoverList, f = {}
+local MoverList = {}
+local f
 local updater
 
 function K:Mover(text, value, anchor, width, height, isAuraWatch)
