@@ -159,7 +159,7 @@ function Module:CreateBoss()
 	self.Debuffs.num = 5
 	self.Debuffs.iconsPerRow = 5
 
-	Module:UpdateAuraContainer(bossWidth - 20, self.Debuffs, self.Debuffs.num)
+	Module:UpdateAuraContainer(bossWidth - 12, self.Debuffs, self.Debuffs.num)
 
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura

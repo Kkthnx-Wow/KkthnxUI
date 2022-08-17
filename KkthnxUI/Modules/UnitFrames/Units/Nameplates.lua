@@ -677,7 +677,7 @@ function Module:AddCreatureIcon(self)
 	local ClassifyIndicator = self:CreateTexture(nil, "ARTWORK")
 	ClassifyIndicator:SetAtlas("auctionhouse-icon-favorite")
 	ClassifyIndicator:SetPoint("RIGHT", self.nameText, "LEFT", -1, 0)
-	ClassifyIndicator:SetSize(16, 16)
+	ClassifyIndicator:SetSize(12, 12)
 	ClassifyIndicator:Hide()
 
 	self.ClassifyIndicator = ClassifyIndicator
