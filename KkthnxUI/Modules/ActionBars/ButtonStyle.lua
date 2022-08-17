@@ -307,7 +307,7 @@ function Module:StyleActionButton(button, cfg)
 	-- end
 
 	-- Backdrop
-	button:CreateBorder(_, _, _, _, _, _, _, _, _, K.MediaFolder .. "Skins\\UI-Slot-Background", _, _, -7, 1, 1, 1)
+	button:CreateBorder(_, _, _, _, _, _, _, _, _, K.MediaFolder .. "Skins\\UI-Slot-Background", _, _, _, 1, 1, 1)
 	button:StyleButton()
 	Module:EquipItemColor(button)
 

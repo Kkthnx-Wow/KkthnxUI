@@ -1074,7 +1074,7 @@ function Module:OnEnable()
 		self.IconOverlay2:SetPoint("TOPLEFT", 1, -1)
 		self.IconOverlay2:SetPoint("BOTTOMRIGHT", -1, 1)
 
-		self:CreateBorder(_, _, _, _, _, _, _, _, _, K.MediaFolder .. "Skins\\UI-Slot-Background", _, _, -7, 1, 1, 1)
+		self:CreateBorder(_, _, _, _, _, _, _, _, _, K.MediaFolder .. "Skins\\UI-Slot-Background", _, _, _, 1, 1, 1)
 		self:StyleButton()
 
 		local parentFrame = CreateFrame("Frame", nil, self)
