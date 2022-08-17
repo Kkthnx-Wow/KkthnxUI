@@ -325,9 +325,9 @@ oUF.Tags.Methods["lfdrole"] = function(unit)
 	local role = UnitGroupRolesAssigned(unit)
 	if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE" or role ~= "DAMAGER") then
 		if role == "HEALER" then
-			return "|TInterface\\LFGFrame\\LFGRole:12:12:0:0:64:16:48:64:0:16|t"
+			return "|TInterface\\LFGFrame\\LFGRole:12:12:-1:1:64:16:48:64:0:16|t"
 		elseif role == "TANK" then
-			return "|TInterface\\LFGFrame\\LFGRole:12:12:0:0:64:16:32:48:0:16|t"
+			return "|TInterface\\LFGFrame\\LFGRole:12:12:-1:0.5:64:16:32:48:0:16|t"
 		end
 	end
 end
