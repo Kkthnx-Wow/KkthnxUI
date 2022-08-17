@@ -84,6 +84,7 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 			local kkui_background = bFrame:CreateTexture()
 			kkui_background:SetDrawLayer(BackgroundSubLevel, BackgroundLayer)
 			kkui_background:SetTexture(BackgroundTexture)
+			kkui_background:SetTexCoord(unpack(K.TexCoords))
 			kkui_background:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BackgroundPoint, -BackgroundPoint)
 			kkui_background:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint)
 			kkui_background:SetVertexColor(BackgroundRed, BackgroundGreen, BackgroundBlue, BackgroundAlpha)

@@ -675,7 +675,9 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "EnhancedFriends", L["Enhanced Colors (Friends/Guild +)"])
 	Window:CreateSwitch("Misc", "EnhancedMail", "Add 'Postal' Like Feaures To The Mailbox")
 	Window:CreateSwitch("Misc", "ExpRep", "Display Exp/Rep Bar (Minimap)")
-	Window:CreateSwitch("Misc", "GemEnchantInfo", L["Character/Inspect Gem/Enchant Info"])
+	if C["Misc"].ItemLevel then
+		Window:CreateSwitch("Misc", "GemEnchantInfo", L["Character/Inspect Gem/Enchant Info"])
+	end
 	Window:CreateSwitch("Misc", "HideBanner", L["Hide RaidBoss EmoteFrame"])
 	Window:CreateSwitch("Misc", "HideBossEmote", L["Hide BossBanner"])
 	Window:CreateSwitch("Misc", "ImprovedStats", L["Display Character Frame Full Stats"])

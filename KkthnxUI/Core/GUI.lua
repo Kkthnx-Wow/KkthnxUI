@@ -27,6 +27,7 @@ end
 local Font = C["Media"].Fonts.KkthnxUIFont
 local Texture = C["Media"].Statusbars.KkthnxUIStatusbar
 
+-- Rewrite AddClassIconToColor so we can have 2 functions. 1 for class icon and 1 for class color :D
 local DeathKnightIconColor = K.AddClassIconToColor("DEATHKNIGHT", "|CFFC41F3B", 16)
 local DemonHunterIconColor = K.AddClassIconToColor("DEMONHUNTER", "|CFFA330C9", 16)
 local DruidIconColor = K.AddClassIconToColor("DRUID", "|CFFFF7D0A", 16)
@@ -112,6 +113,7 @@ local CreditLines = {
 	HunterIconColor .. "Cassamarra|r",
 	"Darth Predator",
 	"Elv - (|cff1784d1ElvUI|r)",
+	PriestIconColor .. "|cffe31c73Faffi|r|cfffc4796GS|r",
 	DruidIconColor .. "Goldpaw|r - (|c00000002|r|cff7284abA|r|cff6a7a9ez|r|cff617092e|r|cff596785r|r|cff505d78i|r|cff48536bt|r|cff3f495fe|r|cffffffffUI|r)",
 	"Haleth",
 	"Haste",

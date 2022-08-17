@@ -302,8 +302,12 @@ function Module:StyleActionButton(button, cfg)
 		flyoutArrow:SetDrawLayer("OVERLAY", 5)
 	end
 
+	-- if icon then
+	-- 	icon:SetDrawLayer("OVERLAY", 1)
+	-- end
+
 	-- Backdrop
-	button:CreateBorder()
+	button:CreateBorder(_, _, _, _, _, _, _, _, _, K.MediaFolder .. "Skins\\UI-Slot-Background", _, _, -7, 1, 1, 1)
 	button:StyleButton()
 	Module:EquipItemColor(button)
 
@@ -485,15 +489,15 @@ function Module:CreateBarSkin()
 		},
 
 		flyoutBorder = {
-			file = "",
+			-- file = "",
 		},
 
 		flyoutBorderShadow = {
-			file = "",
+			-- file = "",
 		},
 
 		border = {
-			file = "",
+			-- file = "",
 		},
 
 		normalTexture = {
@@ -501,19 +505,19 @@ function Module:CreateBarSkin()
 		},
 
 		flash = {
-			file = "",
+			-- file = "",
 		},
 
 		pushedTexture = {
-			-- file = ""
+			-- file = "",
 		},
 
 		checkedTexture = {
-			-- file = ""
+			-- file = "",
 		},
 
 		highlightTexture = {
-			-- file = ""
+			-- file = "",
 		},
 
 		cooldown = {
@@ -547,7 +551,7 @@ function Module:CreateBarSkin()
 		},
 
 		buttonstyle = {
-			file = "",
+			-- file = "",
 		},
 	}
 
