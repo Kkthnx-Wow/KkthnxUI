@@ -20,11 +20,11 @@ function Module:CreateBar5()
 	frame.mover = K.Mover(frame, "Actionbar" .. "5", "Bar5", { "RIGHT", _G.KKUI_ActionBar4, "LEFT", -margin, 0 })
 	Module.movers[6] = frame.mover
 
-	MultiBarLeft:SetParent(frame)
-	MultiBarLeft:EnableMouse(false)
-	MultiBarLeft.QuickKeybindGlow:SetTexture("")
+	_G.MultiBarLeft:SetParent(frame)
+	_G.MultiBarLeft:EnableMouse(false)
+	_G.MultiBarLeft.QuickKeybindGlow:SetTexture("")
 
-	hooksecurefunc(MultiBarLeft, "SetScale", function(self, scale, force)
+	hooksecurefunc(_G.MultiBarLeft, "SetScale", function(self, scale, force)
 		if not force and scale ~= 1 then
 			self:SetScale(1, true)
 		end

@@ -17,6 +17,32 @@ local UnitInRaid = _G.UnitInRaid
 
 local infoType = {}
 
+local spellBlackList = {
+	[102359] = true, -- group entanglement
+	[105421] = true, -- Blind Light
+	[115191] = true, -- sneak
+	[122] = true, -- Frost Nova
+	[157997] = true, -- Ice Nova
+	[1776] = true, -- gouge
+	[1784] = true, -- sneak
+	[197214] = true, -- Earthshatter
+	[198121] = true, -- Frost Bite
+	[207167] = true, -- blinding freezing rain
+	[207685] = true, -- Sorrow Charm
+	[226943] = true, -- mind bomb
+	[228600] = true, -- Glacial Spike
+	[31661] = true, -- Dragon Breath
+	[31935] = true, -- Avenger's Shield
+	[331866] = true, -- Chaos Agent
+	[33395] = true, -- Freeze
+	[5246] = true, -- Intimidating Roar
+	[64695] = true, -- sink
+	[8122] = true, -- mind scream
+	[82691] = true, -- Ring of Frost
+	[91807] = true, -- Stagger charge
+	[99] = true, -- Reaper Roar
+}
+
 local function msgChannel()
 	local inRaid, inPartyLFG = IsInRaid(), IsPartyLFG()
 
@@ -61,32 +87,6 @@ function Module:InterruptAlert_IsEnabled()
 	end
 end
 
-local blackList = {
-	[102359] = true, -- group entanglement
-	[105421] = true, -- Blind Light
-	[115191] = true, -- sneak
-	[122] = true, -- Frost Nova
-	[157997] = true, -- Ice Nova
-	[1776] = true, -- gouge
-	[1784] = true, -- sneak
-	[197214] = true, -- Earthshatter
-	[198121] = true, -- Frost Bite
-	[207167] = true, -- blinding freezing rain
-	[207685] = true, -- Sorrow Charm
-	[226943] = true, -- mind bomb
-	[228600] = true, -- Glacial Spike
-	[31661] = true, -- Dragon Breath
-	[31935] = true, -- Avenger's Shield
-	[331866] = true, -- Chaos Agent
-	[33395] = true, -- Freeze
-	[5246] = true, -- Intimidating Roar
-	[64695] = true, -- sink
-	[8122] = true, -- mind scream
-	[82691] = true, -- Ring of Frost
-	[91807] = true, -- Stagger charge
-	[99] = true, -- Reaper Roar
-}
-
 function Module:IsAllyPet(sourceFlags)
 	if K.IsMyPet(sourceFlags) or sourceFlags == K.PartyPetFlags or sourceFlags == K.RaidPetFlags then
 		return true
@@ -104,7 +104,7 @@ function Module:InterruptAlert_Update(...)
 		if infoText then
 			local sourceSpellID, destSpellID
 			if infoText == L["BrokenSpell"] then
-				if auraType and auraType == AURA_TYPE_BUFF or blackList[spellID] then
+				if auraType and auraType == AURA_TYPE_BUFF or spellBlackList[spellID] then
 					return
 				end
 				sourceSpellID, destSpellID = extraskillID, spellID

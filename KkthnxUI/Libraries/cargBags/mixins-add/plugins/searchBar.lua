@@ -92,7 +92,7 @@ end
 
 cargBags:RegisterPlugin("SearchBar", function(self, target)
 	local search = CreateFrame("EditBox", nil, self)
-	search:SetFontObject(GameFontHighlight)
+	search:SetFontObject(_G.GameFontHighlight)
 	self.Search = search
 
 	search.Clear = onEscape

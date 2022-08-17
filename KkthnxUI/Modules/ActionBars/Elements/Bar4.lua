@@ -16,7 +16,7 @@ local function updateVisibility(event)
 	if InCombatLockdown() then
 		K:RegisterEvent("PLAYER_REGEN_ENABLED", updateVisibility)
 	else
-		InterfaceOptions_UpdateMultiActionBars()
+		_G.InterfaceOptions_UpdateMultiActionBars()
 		K:UnregisterEvent(event, updateVisibility)
 	end
 end
@@ -69,11 +69,11 @@ function Module:CreateBar4()
 	frame.mover = K.Mover(frame, "Actionbar" .. "4", "Bar4", { "RIGHT", UIParent, "RIGHT", -4, 0 })
 	Module.movers[5] = frame.mover
 
-	MultiBarRight:SetParent(frame)
-	MultiBarRight:EnableMouse(false)
-	MultiBarRight.QuickKeybindGlow:SetTexture("")
+	_G.MultiBarRight:SetParent(frame)
+	_G.MultiBarRight:EnableMouse(false)
+	_G.MultiBarRight.QuickKeybindGlow:SetTexture("")
 
-	hooksecurefunc(MultiBarRight, "SetScale", function(self, scale, force)
+	hooksecurefunc(_G.MultiBarRight, "SetScale", function(self, scale, force)
 		if not force and scale ~= 1 then
 			self:SetScale(1, true)
 		end

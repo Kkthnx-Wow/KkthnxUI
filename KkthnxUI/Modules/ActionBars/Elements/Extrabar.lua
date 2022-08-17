@@ -15,19 +15,21 @@ local padding = C.Bars.BarPadding
 function Module:CreateExtrabar()
 	local buttonList = {}
 	local size = cfg.size
+	local ZoneAbilityFrame = _G.ZoneAbilityFrame
+	local ExtraAbilityContainer = _G.ExtraAbilityContainer
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBarExtra", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(size + 2 * padding)
 	frame:SetHeight(size + 2 * padding)
 	frame.mover = K.Mover(frame, "Extrabar", "Extrabar", { "BOTTOM", UIParent, "BOTTOM", 270, 48 })
 
-	ExtraActionBarFrame:EnableMouse(false)
-	ExtraAbilityContainer:SetParent(frame)
-	ExtraAbilityContainer:ClearAllPoints()
-	ExtraAbilityContainer:SetPoint("CENTER", frame, 0, 2 * padding)
-	ExtraAbilityContainer.ignoreFramePositionManager = true
+	_G.ExtraActionBarFrame:EnableMouse(false)
+	_G.ExtraAbilityContainer:SetParent(frame)
+	_G.ExtraAbilityContainer:ClearAllPoints()
+	_G.ExtraAbilityContainer:SetPoint("CENTER", frame, 0, 2 * padding)
+	_G.ExtraAbilityContainer.ignoreFramePositionManager = true
 
-	local button = ExtraActionButton1
+	local button = _G.ExtraActionButton1
 	table_insert(buttonList, button)
 	table_insert(Module.buttons, button)
 	button:SetSize(size, size)

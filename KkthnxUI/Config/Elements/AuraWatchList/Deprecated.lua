@@ -1,5 +1,15 @@
 local _, C, L = unpack(KkthnxUI)
 
+local _G = _G
+
+local SPELL_SCHOOL0_NAME = _G.SPELL_SCHOOL0_NAME
+local SPELL_SCHOOL1_NAME = _G.SPELL_SCHOOL1_NAME
+local SPELL_SCHOOL2_NAME = _G.SPELL_SCHOOL2_NAME
+local SPELL_SCHOOL3_NAME = _G.SPELL_SCHOOL3_NAME
+local SPELL_SCHOOL4_NAME = _G.SPELL_SCHOOL4_NAME
+local SPELL_SCHOOL5_NAME = _G.SPELL_SCHOOL5_NAME
+local SPELL_SCHOOL6_NAME = _G.SPELL_SCHOOL6_NAME
+
 -- Auras for old expansions
 C.DeprecatedAuras = {
 	["Enchant Aura"] = { -- enchantment and trinket set

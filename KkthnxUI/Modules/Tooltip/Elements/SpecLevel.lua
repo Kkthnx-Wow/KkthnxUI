@@ -311,7 +311,7 @@ function Module:GetUnitItemLevel(unit)
 		end
 
 		if boa > 0 then
-			ilvl = ilvl .. " |cff00ccff(" .. boa .. HEIRLOOMS .. ")"
+			ilvl = ilvl .. " |cff00ccff(" .. boa .. "/12" .. ")"
 		end
 
 		if sets > 0 then

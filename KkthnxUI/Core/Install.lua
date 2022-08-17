@@ -175,6 +175,7 @@ function Module:ForceChatSettings()
 
 	-- ChatFrame 1
 	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
+	ChatFrame_RemoveChannel(ChatFrame1, L["Services"]) -- New channel 9.2.7
 	ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
 	ChatFrame_RemoveChannel(ChatFrame1, "GuildRecruitment")
 	ChatFrame_RemoveChannel(ChatFrame1, "LookingForGroup")

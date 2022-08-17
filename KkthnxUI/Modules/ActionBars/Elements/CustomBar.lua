@@ -6,6 +6,8 @@ local math_min = _G.math.min
 local math_ceil = _G.math.ceil
 local table_insert = _G.table.insert
 
+local RegisterStateDriver = _G.RegisterStateDriver
+
 local cfg = C.Bars.Bar4
 local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 

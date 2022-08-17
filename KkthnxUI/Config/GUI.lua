@@ -3,11 +3,20 @@ local GUI = K["GUI"]
 
 local _G = _G
 
+local COLORS = _G.COLORS
+local FILTERS = _G.FILTERS
+local FOCUS = _G.FOCUS
+local INTERRUPT = _G.INTERRUPT
+local PET = _G.PET
+local PLAYER = _G.PLAYER
 local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
+local SlashCmdList = _G.SlashCmdList
+local TARGET = _G.TARGET
+local TUTORIAL_TITLE47 = _G.TUTORIAL_TITLE47
 
+local emojiExampleIcon = "|TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t"
 local enableTextColor = "|cff00cc4c"
 local newFeatureIcon = "|TInterface\\GossipFrame\\CampaignAvailableQuestIcon:16:16:-2|t"
-local emojiExample = "|TInterface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\StuckOutTongueClosedEyes:0:0:4|t"
 
 local function updateBagSize()
 	K:GetModule("Bags"):UpdateBagSize()
@@ -213,9 +222,9 @@ local function UpdateTotemBar()
 end
 
 local function UIScaleNotice()
-	if C["General"].AutoScale and not K.setNotice then
+	if C["General"].AutoScale and not K.IsPrinted then
 		K.Print("Turn off AutoScale before using UIScale slider!")
-		K.setNotice = true
+		K.IsPrinted = true
 	end
 end
 
@@ -327,7 +336,6 @@ end
 local function UpdateUnitRaidSize()
 	local width = C["Raid"].Width
 	local healthHeight = C["Raid"].Height
-	-- local powerHeight = C["Party"].PowerHeight
 	local height = healthHeight
 
 	for i = 1, _G.MAX_RAID_MEMBERS do
@@ -339,7 +347,6 @@ local function UpdateUnitRaidSize()
 		if bu then
 			bu:SetSize(width, height)
 			bu.Health:SetHeight(healthHeight)
-			-- bu.Power:SetHeight(powerHeight)
 		end
 	end
 end
@@ -428,7 +435,7 @@ local Announcements = function(self)
 	Window:CreateSwitch("Announcements", "KillingBlow", L["Show Your Killing Blow Info"])
 	Window:CreateSwitch("Announcements", "PvPEmote", L["Auto Emote On Your Killing Blow"])
 	Window:CreateSwitch("Announcements", "HealthAlert", L["Announce When Low On Health"])
-	Window:CreateSwitch("Announcements", "KeystoneAlert", "Announce When New Mythic Key Is Obtained")
+	Window:CreateSwitch("Announcements", "KeystoneAlert", newFeatureIcon .. "Announce When New Mythic Key Is Obtained")
 
 	Window:CreateSection(INTERRUPT)
 	Window:CreateSwitch("Announcements", "InterruptAlert", enableTextColor .. L["Announce Interrupts"], nil, UpdateInterruptAlert)
@@ -460,7 +467,7 @@ local Automation = function(self)
 	Window:CreateSwitch("Automation", "AutoDeclinePetDuels", L["Decline Pet Duels"])
 	Window:CreateSwitch("Automation", "AutoGoodbye", L["Say Goodbye After Dungeon Completion."])
 	Window:CreateSwitch("Automation", "AutoInvite", L["Accept Invites From Friends & Guild Members"])
-	Window:CreateSwitch("Automation", "AutoKeystone", L["Auto Place Mythic Keystones"])
+	Window:CreateSwitch("Automation", "AutoKeystone", newFeatureIcon .. L["Auto Place Mythic Keystones"])
 	Window:CreateSwitch("Automation", "AutoOpenItems", L["Auto Open Items In Your Inventory"])
 	Window:CreateSwitch("Automation", "AutoPartySync", L["Accept PartySync From Friends & Guild Members"])
 	Window:CreateSwitch("Automation", "AutoRelease", L["Auto Release in Battlegrounds & Arenas"])
@@ -483,7 +490,7 @@ local Inventory = function(self)
 	Window:CreateSwitch("Inventory", "AutoSell", L["Auto Vendor Grays"])
 	Window:CreateSwitch("Inventory", "BagBar", L["Enable Bagbar"])
 	Window:CreateSwitch("Inventory", "BagBarMouseover", L["Fade Bagbar"])
-	Window:CreateSwitch("Inventory", "BagsBindOnEquip", L["Display Bind Status"], nil, UpdateBagStatus)
+	Window:CreateSwitch("Inventory", "BagsBindOnEquip", newFeatureIcon .. L["Display Bind Status"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "BagsItemLevel", L["Display Item Level"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "DeleteButton", L["Bags Delete Button"])
 	Window:CreateSwitch("Inventory", "PetTrash", L["Pet Trash Currencies"], "In patch 9.1, you can buy 3 battle pets by using specific trash items. Keep this enabled, will sort these items into Collection Filter, and won't be sold by auto junk")
@@ -558,7 +565,7 @@ local Chat = function(self)
 	Window:CreateSwitch("Chat", "Background", L["Show Chat Background"], nil, ToggleChatBackground)
 	Window:CreateSwitch("Chat", "ChatItemLevel", L["Show ItemLevel on ChatFrames"])
 	Window:CreateSwitch("Chat", "ChatMenu", L["Show Chat Menu Buttons"])
-	Window:CreateSwitch("Chat", "Emojis", L["Show Emojis In Chat"] .. emojiExample)
+	Window:CreateSwitch("Chat", "Emojis", L["Show Emojis In Chat"] .. emojiExampleIcon)
 	Window:CreateSwitch("Chat", "Freedom", L["Disable Chat Language Filter"])
 	Window:CreateSwitch("Chat", "Lock", L["Lock Chat"])
 	Window:CreateSwitch("Chat", "OldChatNames", L["Use Default Channel Names"])
@@ -646,9 +653,9 @@ local Minimap = function(self)
 	Window:CreateSection(L["Toggles"])
 	Window:CreateSwitch("Minimap", "Enable", enableTextColor .. L["Enable Minimap"])
 	Window:CreateSwitch("Minimap", "Calendar", L["Show Minimap Calendar"], "If enabled, show minimap calendar icon on minimap.|nYou can simply click mouse middle button on minimap to toggle calendar even without this option.")
-	Window:CreateSwitch("Minimap", "EasyVolume", L["EasyVolume"], L["EasyVolumeTip"])
-	Window:CreateSwitch("Minimap", "MailPulse", L["Pulse Minimap Mail"])
-	Window:CreateSwitch("Minimap", "QueueStatusText", L["QueueStatus"])
+	Window:CreateSwitch("Minimap", "EasyVolume", newFeatureIcon .. L["EasyVolume"], L["EasyVolumeTip"])
+	Window:CreateSwitch("Minimap", "MailPulse", newFeatureIcon .. L["Pulse Minimap Mail"])
+	Window:CreateSwitch("Minimap", "QueueStatusText", newFeatureIcon .. L["QueueStatus"])
 	Window:CreateSwitch("Minimap", "ShowRecycleBin", L["Show Minimap Button Collector"])
 	Window:CreateDropdown("Minimap", "RecycleBinPosition", L["Set RecycleBin Positon"])
 	Window:CreateDropdown("Minimap", "BlipTexture", L["Blip Icon Styles"], nil, nil, UpdateBlipTextures)
@@ -663,7 +670,6 @@ local Misc = function(self)
 
 	Window:CreateSection(L["Toggles"])
 	Window:CreateSwitch("Misc", "AFKCamera", L["AFK Camera"])
-	Window:CreateSwitch("Misc", "QuickJoin", L["QuickJoin"], L["QuickJoinTip"])
 	Window:CreateSwitch("Misc", "ColorPicker", L["Enhanced Color Picker"])
 	Window:CreateSwitch("Misc", "EasyMarking", L["EasyMarking by Ctrl + LeftClick"])
 	Window:CreateSwitch("Misc", "EnhancedFriends", L["Enhanced Colors (Friends/Guild +)"])
@@ -679,10 +685,12 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "NoTalkingHead", L["Remove And Hide The TalkingHead Frame"])
 	Window:CreateSwitch("Misc", "ParagonEnable", L["Add Paragon Info on ReputationFrame"], L["ParagonReputationTip"])
 	Window:CreateSwitch("Misc", "QuestTool", "Add Tips For Some Quests And World Quests")
+	Window:CreateSwitch("Misc", "QueueTimers", newFeatureIcon .. "Display 'Queue Time Left' Before It Expires", "This will display a 'Safe Queue' style timer to inform you as to how long you have left to accept said queue")
+	Window:CreateSwitch("Misc", "QuickJoin", newFeatureIcon .. L["QuickJoin"], L["QuickJoinTip"])
 	Window:CreateSwitch("Misc", "ShowWowHeadLinks", L["Show Wowhead Links Above Questlog Frame"])
 	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
 	Window:CreateSwitch("Misc", "TradeTabs", L["Add Spellbook-Like Tabs On TradeSkillFrame"])
-	Window:CreateSlider("Misc", "MaxCameraZoom", "Max Camera Zoom Level", 1, 2.6, 0.1, nil, UpdateMaxZoomLevel)
+	Window:CreateSlider("Misc", "MaxCameraZoom", newFeatureIcon .. "Max Camera Zoom Level", 1, 2.6, 0.1, nil, UpdateMaxZoomLevel)
 	Window:CreateDropdown("Misc", "ShowMarkerBar", L["World Markers Bar"], nil, nil, UpdateMarkerGrid)
 end
 
@@ -761,6 +769,7 @@ local Skins = function(self)
 
 	Window:CreateSection("AddOn Skins")
 	Window:CreateSwitch("Skins", "Bartender4", L["Bartender4 Skin"])
+	Window:CreateSwitch("Skins", "BigWigs", L["BigWigs Skin"])
 	Window:CreateSwitch("Skins", "ButtonForge", L["ButtonForge Skin"])
 	Window:CreateSwitch("Skins", "ChocolateBar", L["ChocolateBar Skin"])
 	Window:CreateSwitch("Skins", "DeadlyBossMods", L["Deadly Boss Mods Skin"])
@@ -797,7 +806,7 @@ local Tooltip = function(self)
 	Window:CreateSwitch("Tooltip", "HideTitle", L["Hide Player Title"])
 	Window:CreateSwitch("Tooltip", "Icons", L["Item Icons"])
 	Window:CreateSwitch("Tooltip", "LFDRole", L["Show Roles Assigned Icon"])
-	Window:CreateSwitch("Tooltip", "ShowMount", L["Show Player Mount Source Info By CTRL"])
+	Window:CreateSwitch("Tooltip", "ShowMount", newFeatureIcon .. L["Show Player Mount Source Info By CTRL"])
 	if not K.CheckAddOnState("RaiderIO") then
 		Window:CreateSwitch("Tooltip", "MDScore", "Show Mythic+ Rating")
 	end
@@ -827,7 +836,7 @@ local UIFonts = function(self)
 
 	Window:CreateSection("Font Tweaks")
 	Window:CreateSlider("UIFonts", "QuestFontSize", L["Adjust QuestFont Size"], 10, 30, 1, nil, UpdateQuestFontSize)
-	Window:CreateSlider("UIFonts", "ObjectiveFontSize", "Adjust ObjectiveFont Size", 10, 30, 1, nil, UpdateObjectiveFontSize)
+	Window:CreateSlider("UIFonts", "ObjectiveFontSize", newFeatureIcon .. "Adjust ObjectiveFont Size", 10, 30, 1, nil, UpdateObjectiveFontSize)
 end
 
 local UITextures = function(self)
@@ -904,8 +913,8 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "TargetCastbar", L["Enable Target CastBar"])
 	Window:CreateSwitch("Unitframe", "TargetCastbarIcon", L["Enable Target CastBar"] .. " Icon")
 	Window:CreateSwitch("Unitframe", "TargetDebuffs", L["Show Target Frame Debuffs"])
-	Window:CreateSlider("Unitframe", "TargetBuffsPerRow", L["Number of Buffs Per Row"], 4, 10, 1, nil, UpdateTargetBuffs)
-	Window:CreateSlider("Unitframe", "TargetDebuffsPerRow", L["Number of Debuffs Per Row"], 4, 10, 1, nil, UpdateTargetDebuffs)
+	Window:CreateSlider("Unitframe", "TargetBuffsPerRow", newFeatureIcon .. L["Number of Buffs Per Row"], 4, 10, 1, nil, UpdateTargetBuffs)
+	Window:CreateSlider("Unitframe", "TargetDebuffsPerRow", newFeatureIcon .. L["Number of Debuffs Per Row"], 4, 10, 1, nil, UpdateTargetDebuffs)
 	Window:CreateSlider("Unitframe", "TargetPowerHeight", "Target Power Bar Height", 10, 40, 1, nil, UpdateUnitTargetSize)
 	Window:CreateSlider("Unitframe", "TargetHealthHeight", L["Target Frame Height"], 20, 75, 1, nil, UpdateUnitTargetSize)
 	Window:CreateSlider("Unitframe", "TargetHealthWidth", L["Target Frame Width"], 100, 300, 1, nil, UpdateUnitTargetSize)
@@ -972,7 +981,7 @@ local Party = function(self)
 	Window:CreateSlider("Party", "HealthWidth", "Party Frame Health Width", 120, 180, 1, nil, UpdateUnitPartySize)
 	Window:CreateSlider("Party", "PowerHeight", "Party Frame Power Height", 10, 30, 1, nil, UpdateUnitPartySize)
 
-	Window:CreateSection(COLOR)
+	Window:CreateSection(COLORS)
 	Window:CreateDropdown("Party", "HealthbarColor", L["Health Color Format"])
 end
 
@@ -991,7 +1000,7 @@ local Boss = function(self)
 	Window:CreateSlider("Boss", "PowerHeight", "Power Height", 10, 30, 1)
 	Window:CreateSlider("Boss", "YOffset", "Vertical Offset From One Another" .. K.GreyColor .. "(54)|r", 40, 60, 1)
 
-	Window:CreateSection(COLOR)
+	Window:CreateSection(COLORS)
 	Window:CreateDropdown("Boss", "HealthbarColor", L["Health Color Format"])
 end
 
@@ -1010,7 +1019,7 @@ local Arena = function(self)
 	Window:CreateSlider("Arena", "PowerHeight", "Power Height", 10, 30, 1)
 	Window:CreateSlider("Arena", "YOffset", "Vertical Offset From One Another" .. K.GreyColor .. "(54)|r", 40, 60, 1)
 
-	Window:CreateSection(COLOR)
+	Window:CreateSection(COLORS)
 	Window:CreateDropdown("Arena", "HealthbarColor", L["Health Color Format"])
 end
 
@@ -1036,7 +1045,7 @@ local Raid = function(self)
 	Window:CreateSlider("Raid", "NumGroups", L["Number Of Groups to Show"], 1, 8, 1)
 	Window:CreateSlider("Raid", "Width", L["Raidframe Width"], 20, 100, 1, nil, UpdateUnitRaidSize)
 
-	Window:CreateSection(COLOR)
+	Window:CreateSection(COLORS)
 	Window:CreateDropdown("Raid", "HealthbarColor", L["Health Color Format"])
 	Window:CreateDropdown("Raid", "HealthFormat", L["Health Format"])
 

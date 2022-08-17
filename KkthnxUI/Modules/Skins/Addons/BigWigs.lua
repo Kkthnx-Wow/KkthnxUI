@@ -5,9 +5,9 @@ local BigWigsFont = K.GetFont(C["UIFonts"].SkinFonts)
 local BigWigsTexture = K.GetTexture(C["UITextures"].SkinTextures)
 
 function Module:ReskinBigWigs()
-	if not C["Skins"].BigWigs or not IsAddOnLoaded("BigWigs") then
-		return
-	end
+	-- if not C["Skins"].BigWigs or not IsAddOnLoaded("BigWigs") then
+	-- 	return
+	-- end
 
 	if not BigWigs3DB then
 		return

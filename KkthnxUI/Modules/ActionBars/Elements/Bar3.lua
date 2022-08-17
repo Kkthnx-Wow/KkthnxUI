@@ -20,9 +20,9 @@ function Module:CreateBar3()
 	frame.mover = K.Mover(frame, "Actionbar" .. "3", "Bar3", { "BOTTOM", _G.KKUI_ActionBar2, "TOP", 0, margin })
 	Module.movers[3] = frame.mover
 
-	MultiBarBottomRight:SetParent(frame)
-	MultiBarBottomRight:EnableMouse(false)
-	MultiBarBottomRight.QuickKeybindGlow:SetTexture("")
+	_G.MultiBarBottomRight:SetParent(frame)
+	_G.MultiBarBottomRight:EnableMouse(false)
+	_G.MultiBarBottomRight.QuickKeybindGlow:SetTexture("")
 
 	for i = 1, num do
 		local button = _G["MultiBarBottomRightButton" .. i]

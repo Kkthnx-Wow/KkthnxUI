@@ -6,20 +6,22 @@ local Module = K:NewModule("VersionCheck")
 
 local _G = _G
 local string_format = _G.string.format
--- local string_gsub = _G.string.gsub
+local string_gsub = _G.string.gsub
 local string_split = _G.string.split
 
 local Ambiguate = _G.Ambiguate
 local C_ChatInfo_RegisterAddonMessagePrefix = _G.C_ChatInfo.RegisterAddonMessagePrefix
 local C_ChatInfo_SendAddonMessage = _G.C_ChatInfo.SendAddonMessage
 local GetTime = _G.GetTime
+local HelpTip = _G.HelpTip
 local IsInGroup = _G.IsInGroup
 local IsInGuild = _G.IsInGuild
 
-local lastVCTime, isVCInit = 0
+local lastVCTime = 0
+local isVCInit
 local tn = tonumber
 
-local function HandleVersonTag(version)
+local function HandleVersonTag(version, author)
 	local major, minor = string_split(".", version)
 	major, minor = tn(major), tn(minor)
 	if K.Base64:CV(major) then
@@ -46,7 +48,7 @@ function Module:VersionCheck_Create(text)
 		return
 	end
 
-	HelpTip:Show(ChatFrame1, {
+	HelpTip:Show(_G.ChatFrame1, {
 		text = text,
 		buttonStyle = HelpTip.ButtonStyle.Okay,
 		targetPoint = HelpTip.Point.TopEdgeCenter,
@@ -58,7 +60,7 @@ function Module:VersionCheck_Init()
 	if not isVCInit then
 		local status = Module:VersionCheck_Compare(KkthnxUIDB.DetectVersion, K.Version)
 		if status == "IsNew" then
-			local release = gsub(KkthnxUIDB.DetectVersion, "(%d+)$", "0")
+			local release = string_gsub(KkthnxUIDB.DetectVersion, "(%d+)$", "0")
 			Module:VersionCheck_Create(string_format("|cff669dffKkthnxUI|r is out of date, the latest release is |cff70C0F5%s|r", release))
 		elseif status == "IsOld" then
 			KkthnxUIDB.DetectVersion = K.Version

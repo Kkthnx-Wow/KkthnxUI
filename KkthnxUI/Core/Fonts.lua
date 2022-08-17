@@ -185,7 +185,7 @@ local function UpdateBlizzardFonts()
 		SetFont(_G.ZoneTextString, NORMAL, s and enormous or 32, outline) -- 32
 
 		-- Text that does not follow our fonts fixed below
-		WorldMapFrame.NavBar.homeButton.text:SetFontObject(_G.KkthnxUIFont)
+		_G.WorldMapFrame.NavBar.homeButton.text:SetFontObject(_G.KkthnxUIFont)
 
 		hooksecurefunc("LFGListCategorySelection_AddButton", function(self, btnIndex)
 			local button = self.CategoryButtons[btnIndex]

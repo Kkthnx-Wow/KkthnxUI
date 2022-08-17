@@ -18,8 +18,8 @@ local C_QuestLog_GetNumWorldQuestWatches = _G.C_QuestLog.GetNumWorldQuestWatches
 local C_QuestLog_GetQuestIDForQuestWatchIndex = _G.C_QuestLog.GetQuestIDForQuestWatchIndex
 local C_QuestLog_GetQuestIDForWorldQuestWatchIndex = _G.C_QuestLog.GetQuestIDForWorldQuestWatchIndex
 local C_QuestLog_IsComplete = _G.C_QuestLog.IsComplete
-local C_QuestLog_IsWorldQuest = _G.C_QuestLog.IsWorldQuest
 local C_QuestLog_IsOnMap = _G.C_QuestLog.IsOnMap
+local C_QuestLog_IsWorldQuest = _G.C_QuestLog.IsWorldQuest
 local CreateFrame = _G.CreateFrame
 local GetBindingKey = _G.GetBindingKey
 local GetBindingText = _G.GetBindingText
@@ -34,7 +34,9 @@ local InCombatLockdown = _G.InCombatLockdown
 local IsItemInRange = _G.IsItemInRange
 local ItemHasRange = _G.ItemHasRange
 local QuestHasPOIInfo = _G.QuestHasPOIInfo
+local RANGE_INDICATOR = _G.RANGE_INDICATOR
 local RegisterStateDriver = _G.RegisterStateDriver
+local TOOLTIP_UPDATE_TIME = _G.TOOLTIP_UPDATE_TIME
 local UIParent = _G.UIParent
 
 local MAX_DISTANCE_YARDS = 1e4 -- needs review
@@ -139,6 +141,8 @@ function ExtraQuestButton:UPDATE_BINDINGS()
 end
 
 function ExtraQuestButton:PLAYER_LOGIN()
+	local ExtraActionButton1 = _G.ExtraActionButton1
+
 	RegisterStateDriver(self, "visible", visibilityState)
 	self:SetAttribute("_onattributechanged", onAttributeChanged)
 	self:SetAttribute("type", "item")
@@ -213,6 +217,7 @@ ExtraQuestButton:SetScript("OnEnter", function(self)
 	if not self.itemLink then
 		return
 	end
+
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT")
 	GameTooltip:SetHyperlink(self.itemLink)
 end)

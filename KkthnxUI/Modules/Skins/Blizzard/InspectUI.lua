@@ -91,7 +91,7 @@ C.themes["Blizzard_InspectUI"] = function()
 
 			local _, targetClass = UnitClass("target")
 			if targetClass then
-				InspectFrame.Inset.Bg:SetTexture("Interface\\DressUpFrame\\DressingRoom" .. targetClass)
+				InspectFrame.Inset.Bg:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. targetClass)
 				InspectFrame.Inset.Bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
 				InspectFrame.Inset.Bg:SetHorizTile(false)
 				InspectFrame.Inset.Bg:SetVertTile(false)

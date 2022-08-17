@@ -2,9 +2,15 @@ local _, C = unpack(KkthnxUI)
 
 local _G = _G
 
+local DISABLE = _G.DISABLE
+local EMOTE = _G.EMOTE
 local GUILD = _G.GUILD
 local NONE = _G.NONE
+local PARTY = _G.PARTY
 local PLAYER = _G.PLAYER
+local RAID = _G.RAID
+local SAY = _G.SAY
+local YELL = _G.YELL
 
 -- Actionbar
 C["ActionBar"] = {
@@ -349,6 +355,7 @@ C["Misc"] = {
 	["NoTalkingHead"] = false,
 	["ParagonEnable"] = false,
 	["QuestTool"] = false,
+	["QueueTimers"] = false,
 	["QuickJoin"] = false,
 	["ShowWowHeadLinks"] = false,
 	["SlotDurability"] = false,
