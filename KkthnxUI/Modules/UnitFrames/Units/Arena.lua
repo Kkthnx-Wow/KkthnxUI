@@ -152,7 +152,6 @@ function Module:CreateArena()
 	self.Buffs.showStealableBuffs = true
 	self.Buffs.PostCreateIcon = Module.PostCreateAura
 	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
-	self.Buffs.CustomFilter = Module.CustomFilter
 	--end
 
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
@@ -163,7 +162,6 @@ function Module:CreateArena()
 	self.Debuffs:SetPoint("TOPRIGHT", self.Trinket, "TOPLEFT", -6, 0)
 	self.Debuffs.num = 2
 	self.Debuffs.iconsPerRow = 4
-	self.Debuffs.CustomFilter = Module.CustomFilter
 
 	Module:UpdateAuraContainer(arenaWidth, self.Debuffs, self.Debuffs.num)
 

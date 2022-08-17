@@ -154,10 +154,8 @@ function Module:CreateParty()
 
 		Module:UpdateAuraContainer(partyWidth, Buffs, Buffs.num)
 
-		Buffs.showStealableBuffs = true
 		Buffs.PostCreateIcon = Module.PostCreateAura
 		Buffs.PostUpdateIcon = Module.PostUpdateAura
-		Buffs.CustomFilter = Module.CustomFilter
 
 		self.Buffs = Buffs
 	end
@@ -169,7 +167,6 @@ function Module:CreateParty()
 	Debuffs:SetPoint("LEFT", Health, "RIGHT", 6, 0)
 	Debuffs.num = 5
 	Debuffs.iconsPerRow = 5
-	Debuffs.CustomFilter = Module.CustomFilter
 
 	Module:UpdateAuraContainer(partyWidth - 10, Debuffs, Debuffs.num)
 

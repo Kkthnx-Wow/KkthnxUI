@@ -176,29 +176,6 @@ function Module:CreateTarget()
 		self.Buffs = Buffs
 	end
 
-	-- if not C["Unitframe"].TargetDebuffsTop then
-	-- 	local Auras = CreateFrame("Frame", nil, self)
-	-- 	Auras:SetPoint("TOPLEFT", Power, "BOTTOMLEFT", 0, -6)
-	-- 	Auras:SetPoint("TOPRIGHT", Power, "BOTTOMRIGHT", 0, -6)
-	-- 	Auras.initialAnchor = "TOPLEFT"
-	-- 	Auras["growth-x"] = "RIGHT"
-	-- 	Auras["growth-y"] = "DOWN"
-	-- 	Auras.num = 20
-	-- 	Auras.spacing = 6
-	-- 	Auras.iconsPerRow = C["Unitframe"].TargetAurasPerRow
-	-- 	Auras.onlyShowPlayer = false
-
-	-- 	Module:UpdateAuraContainer(targetWidth, Auras, Auras.num)
-
-	-- 	Auras.showStealableBuffs = true
-	-- 	Auras.PostCreateIcon = Module.PostCreateAura
-	-- 	Auras.PostUpdateIcon = Module.PostUpdateAura
-	-- 	Auras.PreUpdate = Module.bolsterPreUpdate
-	-- 	Auras.PostUpdate = Module.bolsterPostUpdate
-
-	-- 	self.Auras = Auras
-	-- end
-
 	if C["Unitframe"].TargetCastbar then
 		local Castbar = CreateFrame("StatusBar", "TargetCastbar", self)
 		Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", C["Unitframe"].TargetCastbarIcon and 18 or 0, 342)

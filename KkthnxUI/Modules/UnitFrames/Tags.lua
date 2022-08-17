@@ -103,9 +103,7 @@ oUF.Tags.Methods["color"] = function(unit)
 	local class = select(2, UnitClass(unit))
 	local reaction = UnitReaction(unit, "player")
 
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
-		return "|cffA0A0A0|r"
-	elseif UnitIsTapDenied(unit) then
+	if UnitIsTapDenied(unit) then
 		return K.RGBToHex(oUF.colors.tapped)
 	elseif UnitIsPlayer(unit) then
 		return K.RGBToHex(K.Colors.class[class])

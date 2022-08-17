@@ -4,11 +4,31 @@ local Module = K:GetModule("Miscellaneous")
 -- Sourced: syndenbock (JustInTime)
 -- Edited: Kkthnx (KkthnxUI)
 
--- local _G = _G
+local _G = _G
+
+local RESETS_IN = _G.RESETS_IN
+
+local function ColorQueueTimer(value)
+	local r, g, b
+
+	if value < 10 then
+		r, g, b = 1, 0, 0
+	elseif value < 15 then
+		r, g, b = 1, 0.65, 0
+	elseif value < 25 then
+		r, g, b = 1, 0.96, 0
+	elseif value < 35 then
+		r, g, b = 0.17, 0.73, 0
+	else
+		r, g, b = 0.17, 0.73, 0
+	end
+
+	return K.RGBToHex(r, g, b) .. SecondsToTime(value)
+end
 
 -- PvE
 function Module:SetupPvEQueueTimer()
-	local pveUpdateFrame = pveUpdateFrame or CreateFrame("Frame", "KKUI_PvEUpdateFrame")
+	local pveUpdateFrame = CreateFrame("Frame", "KKUI_PvEUpdateFrame")
 	local pveUpdateInterval = 0.2
 	local pveRemaining = 0
 	local pveUpdateTimeStamp
@@ -21,7 +41,7 @@ function Module:SetupPvEQueueTimer()
 	local function OnShowPvETimer()
 		-- I didn't find a function to check if the dialog is still displayed, so we stop updating after the time is over
 		if pveRemaining > 0 then
-			pveUpdateLFGDialogLabel(LFGDungeonReadyDialog.label, RESETS_IN .. ": " .. K.FormatTime(pveRemaining))
+			pveUpdateLFGDialogLabel(LFGDungeonReadyDialog.label, RESETS_IN .. ": " .. ColorQueueTimer(pveRemaining))
 		else
 			pveUpdateFrame:SetScript("OnUpdate", nil)
 			pveUpdateTimeStamp = nil
@@ -49,7 +69,7 @@ end
 
 -- PvP
 function Module:SetupPvPQueueTimer()
-	local pvpUpdateFrame = pvpUpdateFrame or CreateFrame("Frame", "KKUI_PvPUpdateFrame")
+	local pvpUpdateFrame = CreateFrame("Frame", "KKUI_PvPUpdateFrame")
 	local pvpUpdateInterval = 0.2
 	local pvpupdateTimeStamp
 	local pvpQueue
@@ -61,7 +81,7 @@ function Module:SetupPvPQueueTimer()
 			local seconds = GetBattlefieldPortExpiration(pvpQueue)
 
 			if seconds and seconds > 0 then
-				PVPReadyDialog.label:SetText(RESETS_IN .. ": " .. K.FormatTime(seconds))
+				PVPReadyDialog.label:SetText(RESETS_IN .. ": " .. ColorQueueTimer(seconds))
 			end
 		else
 			pvpQueue = nil

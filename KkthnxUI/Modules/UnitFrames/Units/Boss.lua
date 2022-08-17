@@ -149,7 +149,6 @@ function Module:CreateBoss()
 	self.Buffs.showStealableBuffs = true
 	self.Buffs.PostCreateIcon = Module.PostCreateAura
 	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
-	self.Buffs.CustomFilter = Module.CustomFilter
 	--end
 
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
@@ -159,7 +158,6 @@ function Module:CreateBoss()
 	self.Debuffs:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
 	self.Debuffs.num = 5
 	self.Debuffs.iconsPerRow = 5
-	self.Debuffs.CustomFilter = Module.CustomFilter
 
 	Module:UpdateAuraContainer(bossWidth - 20, self.Debuffs, self.Debuffs.num)
 
