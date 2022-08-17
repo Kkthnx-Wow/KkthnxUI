@@ -54,21 +54,23 @@ C["Media"] = {
 }
 
 -- Register Borders
-for name, path in pairs(C["Media"].Borders) do
-	K.LibSharedMedia:Register("border", name, path)
-end
+if K.SharedMedia then
+	for name, path in pairs(C["Media"].Borders) do
+		K.SharedMedia:Register("border", name, path)
+	end
 
--- Register Statusbars
-for name, path in pairs(C["Media"].Statusbars) do
-	K.LibSharedMedia:Register("statusbar", name, path)
-end
+	-- Register Statusbars
+	for name, path in pairs(C["Media"].Statusbars) do
+		K.SharedMedia:Register("statusbar", name, path)
+	end
 
--- Register Sounds
-for name, path in pairs(C["Media"].Sounds) do
-	K.LibSharedMedia:Register("sound", name, path)
-end
+	-- Register Sounds
+	for name, path in pairs(C["Media"].Sounds) do
+		K.SharedMedia:Register("sound", name, path)
+	end
 
--- Register Fonts
-for name, path in pairs(C["Media"].Fonts) do
-	K.LibSharedMedia:Register("font", name, path)
+	-- Register Fonts
+	for name, path in pairs(C["Media"].Fonts) do
+		K.SharedMedia:Register("font", name, path)
+	end
 end

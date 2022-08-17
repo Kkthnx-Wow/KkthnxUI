@@ -577,7 +577,7 @@ local Chat = function(self)
 	Window:CreateSection(L["Sizes"])
 	Window:CreateSlider("Chat", "Height", L["Lock Chat Height"], 100, 500, 1, nil, UpdateChatSize)
 	Window:CreateSlider("Chat", "Width", L["Lock Chat Width"], 200, 600, 1, nil, UpdateChatSize)
-	Window:CreateSlider("Chat", "LogMax", L["Chat History Lines To Save"], 10, 500, 10)
+	Window:CreateSlider("Chat", "LogMax", L["Chat History Lines To Save"], 0, 500, 10)
 
 	Window:CreateSection(L["Fading"])
 	Window:CreateSwitch("Chat", "Fading", L["Fade Chat Text"])

@@ -1,15 +1,18 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
-local History = CreateFrame("Frame")
 
 local _G = _G
+local table_insert = _G.table.insert
+local table_remove = _G.table.remove
+local time = _G.time
+local unpack = _G.unpack
 
-local ChatFrame_MessageEventHandler = _G.ChatFrame_MessageEventHandler
 local ChatFrame1 = _G.ChatFrame1
+local ChatFrame_MessageEventHandler = _G.ChatFrame_MessageEventHandler
 
-local LogMax
 local EntryEvent = 30
 local EntryTime = 31
+local LogMax
 local Events = {
 	"CHAT_MSG_INSTANCE_CHAT",
 	"CHAT_MSG_INSTANCE_CHAT_LEADER",
@@ -28,10 +31,10 @@ local Events = {
 	"CHAT_MSG_YELL",
 }
 
-function History:Print()
+function Module:PrintChatHistory()
 	local Temp
 
-	History.IsPrinting = true
+	Module.IsPrinting = true
 
 	for i = #KkthnxUIDB.ChatHistory, 1, -1 do
 		Temp = KkthnxUIDB.ChatHistory[i]
@@ -39,31 +42,28 @@ function History:Print()
 		ChatFrame_MessageEventHandler(ChatFrame1, Temp[EntryEvent], unpack(Temp))
 	end
 
-	History.IsPrinting = false
-	History.HasPrinted = true
+	Module.IsPrinting = false
+	Module.HasPrinted = true
 end
 
-function History:Save(event, ...)
+function Module:SaveChatHistory(event, ...)
 	local Temp = { ... }
 
 	if Temp[1] then
 		Temp[EntryEvent] = event
 		Temp[EntryTime] = time()
 
-		table.insert(KkthnxUIDB.ChatHistory, 1, Temp)
+		table_insert(KkthnxUIDB.ChatHistory, 1, Temp)
 
-		for i = LogMax, #KkthnxUIDB.ChatHistory do
-			table.remove(KkthnxUIDB.ChatHistory, LogMax)
+		for _ = LogMax, #KkthnxUIDB.ChatHistory do
+			table_remove(KkthnxUIDB.ChatHistory, LogMax)
 		end
 	end
 end
 
-function History:OnEvent(event, ...)
-	if event == "PLAYER_LOGIN" then
-		self:UnregisterEvent(event)
-		self:Print()
-	elseif self.HasPrinted then
-		self:Save(event, ...)
+function Module:SetupChatHistory(event, ...)
+	if Module.HasPrinted then
+		Module:SaveChatHistory(event, ...)
 	end
 end
 
@@ -80,14 +80,8 @@ function Module:CreateChatHistory()
 	LogMax = C["Chat"].LogMax
 
 	for i = 1, #Events do
-		History:RegisterEvent(Events[i])
+		K:RegisterEvent(Events[i], Module.SetupChatHistory)
 	end
 
-	if IsLoggedIn() then
-		History:OnEvent("PLAYER_LOGIN")
-	else
-		History:RegisterEvent("PLAYER_LOGIN")
-	end
-
-	History:SetScript("OnEvent", History.OnEvent)
+	Module:PrintChatHistory()
 end
