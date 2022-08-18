@@ -381,7 +381,7 @@ function Module:StyleExtraActionButton(cfg)
 	local checkedTexture = button:GetCheckedTexture()
 
 	-- Border
-	button:CreateBorder()
+	button:CreateBorder(_, _, _, _, _, _, _, _, _, K.MediaFolder .. "Skins\\UI-Slot-Background", _, _, _, 1, 1, 1)
 	button:StyleButton()
 
 	-- Textures

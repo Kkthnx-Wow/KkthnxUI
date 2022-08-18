@@ -93,7 +93,7 @@ local CreditLines = {
 	"",
 	-- stylua: ignore
 	K.GreyColor.. "[|r|CFFFFCC66Tier 3|r".. K.GreyColor.. "]",
-	"Shovil",
+	WarriorIconColor .. "|cff8b0000Shovil|r",
 	"",
 	-- stylua: ignore
 	K.GreyColor.. "[|r|CFFFFCC66Tier 4|r".. K.GreyColor.. "]",
