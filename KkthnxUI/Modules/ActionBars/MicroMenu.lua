@@ -26,7 +26,7 @@ end
 function Module:MicroButton_Create(parent, data)
 	local texture, method, tooltip = unpack(data)
 
-	local bu = CreateFrame("Frame", nil, parent)
+	local bu = CreateFrame("Frame", "KKUI_MicroButtons", parent)
 	tinsert(buttonList, bu)
 	bu:SetSize(20, 20 * 1.4)
 	bu:CreateBorder()
@@ -79,7 +79,7 @@ function Module:CreateMicroMenu()
 		return
 	end
 
-	local menubar = CreateFrame("Frame", nil, UIParent)
+	local menubar = CreateFrame("Frame", "KKUI_MenuBar", UIParent)
 	menubar:SetSize(280, 20 * 1.4)
 	K.Mover(menubar, "Menubar", "Menubar", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 })
 

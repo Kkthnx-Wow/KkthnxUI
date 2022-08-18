@@ -566,6 +566,7 @@ function Module:AddMountSource(unit, index, filter)
 		if mountText then
 			self:AddLine(" ")
 			self:AddLine(mountText, 1, 1, 1)
+			self:Show()
 		end
 	end
 end
