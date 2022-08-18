@@ -233,7 +233,7 @@ function Module:CreateRaid()
 		self.AuraTrack.Icons = C["Raid"].AuraTrackIcons
 		self.AuraTrack.SpellTextures = C["Raid"].AuraTrackSpellTextures
 		self.AuraTrack.Thickness = C["Raid"].AuraTrackThickness
-		self.AuraTrack.Font = C["Media"].Fonts.KkthnxUIFont
+		self.AuraTrack.Font = select(1, KkthnxUIFont:GetFont())
 
 		self.AuraTrack:ClearAllPoints()
 		if self.AuraTrack.Icons ~= true then
@@ -298,11 +298,11 @@ function Module:CreateRaid()
 		parentFrame:SetFrameLevel(RaidDebuffs:GetFrameLevel() + 6)
 
 		RaidDebuffs.timer = parentFrame:CreateFontString(nil, "OVERLAY")
-		RaidDebuffs.timer:SetFont(C["Media"].Fonts.KkthnxUIFont, 12, "OUTLINE")
+		RaidDebuffs.timer:SetFont(select(1, KkthnxUIFont:GetFont()), 12, "OUTLINE")
 		RaidDebuffs.timer:SetPoint("CENTER", RaidDebuffs, 1, 0)
 
 		RaidDebuffs.count = parentFrame:CreateFontString(nil, "OVERLAY")
-		RaidDebuffs.count:SetFont(C["Media"].Fonts.KkthnxUIFont, 11, "OUTLINE")
+		RaidDebuffs.count:SetFont(select(1, KkthnxUIFont:GetFont()), 11, "OUTLINE")
 		RaidDebuffs.count:SetPoint("BOTTOMRIGHT", RaidDebuffs, "BOTTOMRIGHT", 2, 0)
 		RaidDebuffs.count:SetTextColor(1, 0.9, 0)
 

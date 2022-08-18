@@ -444,7 +444,7 @@ function Module:CreatePlayer()
 			FloatingCombatFeedback[i] = parentFrame:CreateFontString("$parentText", "OVERLAY")
 		end
 
-		FloatingCombatFeedback.font = C["Media"].Fonts.DamageFont
+		FloatingCombatFeedback.font = select(1, KkthnxUIFont:GetFont())
 		FloatingCombatFeedback.fontFlags = "OUTLINE"
 		FloatingCombatFeedback.abbreviateNumbers = true
 

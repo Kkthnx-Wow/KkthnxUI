@@ -202,10 +202,4 @@ local function UpdateBlizzardFonts()
 	end
 end
 
-if GetLocale() == "koKR" or GetLocale() == "zhTW" or GetLocale() == "zhCN" then
-	C["Media"].Fonts.KkthnxUIFont = STANDARD_TEXT_FONT
-	C["Media"].Fonts.KkthnxUIFont = UNIT_NAME_FONT
-	C["Media"].Fonts.DamageFont = DAMAGE_TEXT_FONT
-end
-
 UpdateBlizzardFonts() -- This needs to be set asap

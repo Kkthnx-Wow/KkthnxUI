@@ -1100,22 +1100,22 @@ function Module:UpdateNameplateSize()
 
 	self:SetSize(C["Nameplate"].PlateWidth, plateHeight)
 
-	self.nameText:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
+	self.nameText:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
 	if self.plateType ~= "NameOnly" then
 		self:Tag(self.nameText, "[name]")
 		self.nameText:UpdateTag()
 	end
 
-	self.npcTitle:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize - 1, "")
-	self.tarName:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize + 4, "")
+	self.npcTitle:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize - 1, "")
+	self.tarName:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 4, "")
 
 	self.Castbar.Icon:SetSize(iconSize, iconSize)
 	self.Castbar:SetHeight(plateHeight)
-	self.Castbar.Time:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
-	self.Castbar.Text:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize, "")
-	self.Castbar.spellTarget:SetFont(C["Media"].Fonts.KkthnxUIFont, nameTextSize + 3, "")
+	self.Castbar.Time:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
+	self.Castbar.Text:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
+	self.Castbar.spellTarget:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 3, "")
 
-	self.healthValue:SetFont(C["Media"].Fonts.KkthnxUIFont, C["Nameplate"].HealthTextSize, "")
+	self.healthValue:SetFont(select(1, KkthnxUIFont:GetFont()), C["Nameplate"].HealthTextSize, "")
 	self.healthValue:UpdateTag()
 end
 

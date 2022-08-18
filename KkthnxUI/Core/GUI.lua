@@ -24,7 +24,7 @@ local StyleFont = function(fs, font, size)
 	fs:SetShadowOffset(1, -1)
 end
 
-local Font = C["Media"].Fonts.KkthnxUIFont
+local Font = select(1, KkthnxUIFont:GetFont())
 local Texture = C["Media"].Statusbars.KkthnxUIStatusbar
 
 -- Rewrite AddClassIconToColor so we can have 2 functions. 1 for class icon and 1 for class color :D

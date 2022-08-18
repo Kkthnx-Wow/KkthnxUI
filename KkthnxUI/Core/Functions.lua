@@ -161,10 +161,10 @@ do
 		local fs = self:CreateFontString(nil, "OVERLAY")
 
 		if textstyle == " " or textstyle == "" or textstyle == nil then
-			fs:SetFont(C["Media"].Fonts.KkthnxUIFont, size, "")
+			fs:SetFont(select(1, KkthnxUIFont:GetFont()), size, "")
 			fs:SetShadowOffset(1, -1 / 2)
 		else
-			fs:SetFont(C["Media"].Fonts.KkthnxUIFont, size, "OUTLINE")
+			fs:SetFont(select(1, KkthnxUIFont:GetFont()), size, "OUTLINE")
 			fs:SetShadowOffset(0, 0)
 		end
 		fs:SetText(text)
