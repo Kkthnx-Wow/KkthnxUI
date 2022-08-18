@@ -7,10 +7,9 @@ local tinsert, pairs, type = table.insert, pairs, type
 local buttonList = {}
 
 function Module:MicroButton_SetupTexture(icon, texture)
-	icon:SetPoint("TOPLEFT", texture, "TOPLEFT", -10, 6)
-	icon:SetPoint("BOTTOMRIGHT", texture, "BOTTOMRIGHT", 12, -6)
+	icon:SetPoint("TOPLEFT", texture, "TOPLEFT", -9, 5)
+	icon:SetPoint("BOTTOMRIGHT", texture, "BOTTOMRIGHT", 10, -6)
 	icon:SetTexture(K.MediaFolder .. "Skins\\" .. texture)
-	icon:SetVertexColor(1, 1, 1)
 end
 
 local function ResetButtonParent(button, parent)
@@ -29,7 +28,7 @@ function Module:MicroButton_Create(parent, data)
 
 	local bu = CreateFrame("Frame", nil, parent)
 	tinsert(buttonList, bu)
-	bu:SetSize(20, 28)
+	bu:SetSize(20, 20 * 1.4)
 	bu:CreateBorder()
 
 	local icon = bu:CreateTexture(nil, "ARTWORK")
@@ -47,25 +46,31 @@ function Module:MicroButton_Create(parent, data)
 		button:SetNormalTexture(nil)
 		button:SetPushedTexture(nil)
 		button:SetDisabledTexture(nil)
+
 		if tooltip then
 			K.AddTooltip(button, "ANCHOR_RIGHT", tooltip)
 		end
 
 		local hl = button:GetHighlightTexture()
-		Module:MicroButton_SetupTexture(hl, texture)
-		hl:SetVertexColor(1, 1, 0)
+		hl:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
+		hl:SetBlendMode("ADD")
+		hl:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
+		hl:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
 
 		local flash = button.Flash
-		Module:MicroButton_SetupTexture(flash, texture)
-		flash:SetVertexColor(1, 1, 0)
+		flash:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
+		flash:SetBlendMode("ADD")
+		flash:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
+		flash:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
 	else
 		bu:SetScript("OnMouseUp", method)
 		K.AddTooltip(bu, "ANCHOR_RIGHT", tooltip)
 
 		local hl = bu:CreateTexture(nil, "HIGHLIGHT")
+		hl:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
 		hl:SetBlendMode("ADD")
-		Module:MicroButton_SetupTexture(hl, texture)
-		hl:SetVertexColor(1, 1, 0)
+		hl:SetPoint("TOPLEFT", bu, "TOPLEFT", -22, 18)
+		hl:SetPoint("BOTTOMRIGHT", bu, "BOTTOMRIGHT", 24, -18)
 	end
 end
 
@@ -75,7 +80,7 @@ function Module:CreateMicroMenu()
 	end
 
 	local menubar = CreateFrame("Frame", nil, UIParent)
-	menubar:SetSize(280, 28)
+	menubar:SetSize(280, 20 * 1.4)
 	K.Mover(menubar, "Menubar", "Menubar", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 })
 
 	-- Generate Buttons
@@ -92,6 +97,7 @@ function Module:CreateMicroMenu()
 		{ "StoreMicroButton", "StoreMicroButton" },
 		{ "MainMenuMicroButton", "MainMenuMicroButton", MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU") },
 	}
+
 	for _, info in pairs(buttonInfo) do
 		Module:MicroButton_Create(menubar, info)
 	end
