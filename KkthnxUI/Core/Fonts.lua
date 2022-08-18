@@ -2,6 +2,9 @@ local _, C = unpack(KkthnxUI)
 
 local _G = _G
 local GetLocale = _G.GetLocale
+local KkthnxUIFont = _G.KkthnxUIFont
+
+local GetKkthnxUIFont = select(1, KkthnxUIFont:GetFont())
 
 local replaceNameFont = true
 local replaceCombatFont = true
@@ -33,10 +36,10 @@ end
 
 local chatFontHeights = { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 }
 local function UpdateBlizzardFonts()
-	local NORMAL = C["Media"].Fonts.KkthnxUIFont
-	local NUMBER = C["Media"].Fonts.KkthnxUIFont
-	local COMBAT = C["Media"].Fonts.DamageFont
-	local NAMEFONT = C["Media"].Fonts.KkthnxUIFont
+	local NORMAL = GetKkthnxUIFont
+	local NUMBER = GetKkthnxUIFont
+	local COMBAT = GetKkthnxUIFont
+	local NAMEFONT = GetKkthnxUIFont
 
 	_G.CHAT_FONT_HEIGHTS = chatFontHeights
 
@@ -49,13 +52,13 @@ local function UpdateBlizzardFonts()
 	end
 
 	if replaceBubbleFont then
-		local BUBBLE = C["Media"].Fonts.KkthnxUIFont
+		local BUBBLE = GetKkthnxUIFont
 		SetFont(_G.ChatBubbleFont, BUBBLE, 10, "NONE") -- 13
 	end
 
 	if replaceNameplateFont then
-		local PLATE = C["Media"].Fonts.KkthnxUIFont
-		local LARGE = C["Media"].Fonts.KkthnxUIFont
+		local PLATE = GetKkthnxUIFont
+		local LARGE = GetKkthnxUIFont
 
 		SetFont(_G.SystemFont_NamePlate, PLATE, 9, "NONE", 0, 0, 0, 1, 1, -1) -- 9
 		SetFont(_G.SystemFont_NamePlateFixed, PLATE, 9, "NONE", 0, 0, 0, 1, 1, -1) -- 9

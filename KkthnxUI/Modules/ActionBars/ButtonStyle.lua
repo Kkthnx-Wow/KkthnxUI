@@ -302,10 +302,6 @@ function Module:StyleActionButton(button, cfg)
 		flyoutArrow:SetDrawLayer("OVERLAY", 5)
 	end
 
-	-- if icon then
-	-- 	icon:SetDrawLayer("OVERLAY", 1)
-	-- end
-
 	-- Backdrop
 	button:CreateBorder(_, _, _, _, _, _, _, _, _, K.MediaFolder .. "Skins\\UI-Slot-Background", _, _, _, 1, 1, 1)
 	button:StyleButton()

@@ -4,20 +4,21 @@ local _G = _G
 
 local CreateFont = _G.CreateFont
 local CreateFrame = _G.CreateFrame
+local KkthnxUIFont = _G.KkthnxUIFont
+local KkthnxUIFontOutline = _G.KkthnxUIFontOutline
 
 local KkthnxUIMedia = CreateFrame("Frame", "KKUI_FontStyles")
 
 local shadowOffset = K.Mult or 1
 local fontSize = 12
 
--- Create our own fonts
-local KkthnxUIFont = CreateFont("KkthnxUIFont")
-KkthnxUIFont:SetFont(C["Media"].Fonts.KkthnxUIFont, fontSize, "")
+-- Create our own fonts. KkthnxUIFont, KkthnxUIFontOutline is xml based
+-- We just adjust them here to follow our format :D
+KkthnxUIFont:SetFont(select(1, KkthnxUIFont:GetFont()), fontSize, select(3, KkthnxUIFont:GetFont()))
 KkthnxUIFont:SetShadowColor(0, 0, 0, 1)
 KkthnxUIFont:SetShadowOffset(shadowOffset, -shadowOffset / 2)
 
-local KkthnxUIFontOutline = CreateFont("KkthnxUIFontOutline")
-KkthnxUIFontOutline:SetFont(C["Media"].Fonts.KkthnxUIFont, fontSize, "OUTLINE")
+KkthnxUIFontOutline:SetFont(select(1, KkthnxUIFontOutline:GetFont()), fontSize, select(3, KkthnxUIFontOutline:GetFont()))
 KkthnxUIFontOutline:SetShadowColor(0, 0, 0, 0)
 KkthnxUIFontOutline:SetShadowOffset(0, -0)
 
@@ -51,16 +52,6 @@ FuturaFontOutline:SetFont([[Interface\AddOns\KkthnxUI\Media\Fonts\Futura_Medium_
 FuturaFontOutline:SetShadowColor(0, 0, 0, 0)
 FuturaFontOutline:SetShadowOffset(0, -0)
 
-local BlizzardFont = CreateFont("BlizzardFont")
-BlizzardFont:SetFont(_G.STANDARD_TEXT_FONT, fontSize, "")
-BlizzardFont:SetShadowColor(0, 0, 0, 1)
-BlizzardFont:SetShadowOffset(shadowOffset, -shadowOffset / 2)
-
-local BlizzardFontOutline = CreateFont("BlizzardFontOutline")
-BlizzardFontOutline:SetFont(_G.STANDARD_TEXT_FONT, fontSize, "OUTLINE")
-BlizzardFontOutline:SetShadowColor(0, 0, 0, 0)
-BlizzardFontOutline:SetShadowOffset(0, -0)
-
 local TextureTable = {
 	["AltzUI"] = C["Media"].Statusbars.AltzUIStatusbar,
 	["AsphyxiaUI"] = C["Media"].Statusbars.AsphyxiaUIStatusbar,
@@ -77,8 +68,6 @@ local TextureTable = {
 }
 
 local FontTable = {
-	["Blizzard Outline"] = "BlizzardFontOutline",
-	["Blizzard"] = "BlizzardFont",
 	["Expressway Outline"] = "ExpresswayFontOutline",
 	["Expressway"] = "ExpresswayFont",
 	["Futura Outline"] = "FuturaFontOutline",

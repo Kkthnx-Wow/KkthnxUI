@@ -10,6 +10,9 @@
 ## X-WoWI-ID: 24615
 ## X-Wago-ID: lQNlqP6e
 
-# -- Load Core File
+# General taint fixes
 Taintless.xml
+# Global Fonts
+FontStyles.xml
+# KkthnxUI
 KkthnxUI.xml
