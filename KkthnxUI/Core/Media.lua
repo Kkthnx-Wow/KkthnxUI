@@ -5,14 +5,15 @@ K.TextureTable = {
 	["AsphyxiaUI"] = C["Media"].Statusbars.AsphyxiaUIStatusbar,
 	["AzeriteUI"] = C["Media"].Statusbars.AzeriteUIStatusbar,
 	["Blank"] = C["Media"].Statusbars.Blank,
-	["DiabolicUI"] = C["Media"].Statusbars.DiabolicUIStatusbar,
 	["Flat"] = C["Media"].Statusbars.FlatStatusbar,
 	["GoldpawUI"] = C["Media"].Statusbars.GoldpawUIStatusbar,
 	["KkthnxUI"] = C["Media"].Statusbars.KkthnxUIStatusbar,
 	["Palooza"] = C["Media"].Statusbars.PaloozaStatusbar,
+	["Rain"] = C["Media"].Statusbars.RainStatusbar,
 	["SkullFlowerUI"] = C["Media"].Statusbars.SkullFlowerUIStatusbar,
 	["Tukui"] = C["Media"].Statusbars.TukuiStatusbar,
 	["ZorkUI"] = C["Media"].Statusbars.ZorkUIStatusbar,
+	["Water"] = C["Media"].Statusbars.WaterStatusbar,
 }
 
 function K.GetTexture(texture)
