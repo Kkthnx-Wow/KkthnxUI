@@ -17,6 +17,12 @@ local unpack = _G.unpack
 local CreateFrame = _G.CreateFrame
 local GameTooltip = _G.GameTooltip
 local UIParent = _G.UIParent
+local StaticPopupDialogs = _G.StaticPopupDialogs
+local YES = _G.YES
+local NO = _G.NO
+local INFO = _G.INFO
+local OKAY = _G.OKAY
+local SlashCmdList = _G.SlashCmdList
 
 local Texture = K.GetTexture(C["General"].Texture)
 
@@ -152,7 +158,7 @@ StaticPopupDialogs["KKUI_SWITCH_PROFILE"] = {
 		KkthnxUIDB.Variables[K.Realm][K.Name] = KkthnxUIDB.Variables[SelectedServer][SelectedNickname]
 		KkthnxUIDB.Settings[K.Realm][K.Name] = KkthnxUIDB.Settings[SelectedServer][SelectedNickname]
 
-		ReloadUI()
+		_G.ReloadUI()
 	end,
 }
 
@@ -204,7 +210,7 @@ local AnchorOnEnter = function(self)
 
 		GameTooltip:ClearLines()
 		GameTooltip:SetOwner(self, "ANCHOR_NONE")
-		GameTooltip:SetPoint("TOPLEFT", KKUI_GUI, "TOPRIGHT", -3, -5)
+		GameTooltip:SetPoint("TOPLEFT", "KKUI_GUI", "TOPRIGHT", -3, -5)
 		GameTooltip:AddLine(INFO)
 		GameTooltip:AddLine("|nMost options require a full UI reload|nYou can do this by clicking the |CFF00CC4CApply|r button|n|n", 163 / 255, 211 / 255, 255 / 255)
 		GameTooltip:AddLine(self.Tooltip, nil, nil, nil, true)
@@ -1262,7 +1268,7 @@ GUI.Widgets.CreateDropdown = CreateDropdown
 
 -- Color selection
 local ColorOnMouseUp = function(self, button)
-	local CPF = ColorPickerFrame
+	local CPF = _G.ColorPickerFrame
 
 	if CPF:IsShown() then
 		return
@@ -1889,7 +1895,7 @@ GUI.Enable = function(self)
 	Apply:SetScript("OnMouseUp", ButtonOnMouseUp)
 	Apply:SetScript("OnEnter", ButtonOnEnter)
 	Apply:SetScript("OnLeave", ButtonOnLeave)
-	Apply:HookScript("OnMouseUp", ReloadUI)
+	Apply:HookScript("OnMouseUp", _G.ReloadUI)
 
 	Apply.Highlight = Apply:CreateTexture(nil, "OVERLAY")
 	Apply.Highlight:SetAllPoints()
@@ -1914,7 +1920,7 @@ GUI.Enable = function(self)
 	Reset:SetScript("OnEnter", ButtonOnEnter)
 	Reset:SetScript("OnLeave", ButtonOnLeave)
 	Reset:HookScript("OnMouseUp", function()
-		StaticPopup_Show("KKUI_RESET_DATA")
+		_G.StaticPopup_Show("KKUI_RESET_DATA")
 	end)
 
 	Reset.Highlight = Reset:CreateTexture(nil, "OVERLAY")
@@ -1995,7 +2001,7 @@ GUI.Enable = function(self)
 	ResetCVars:SetScript("OnEnter", ButtonOnEnter)
 	ResetCVars:SetScript("OnLeave", ButtonOnLeave)
 	ResetCVars:HookScript("OnMouseUp", function()
-		StaticPopup_Show("KKUI_RESET_CVARS")
+		_G.StaticPopup_Show("KKUI_RESET_CVARS")
 	end)
 
 	ResetCVars.Highlight = ResetCVars:CreateTexture(nil, "OVERLAY")
@@ -2021,7 +2027,7 @@ GUI.Enable = function(self)
 	ResetChat:SetScript("OnEnter", ButtonOnEnter)
 	ResetChat:SetScript("OnLeave", ButtonOnLeave)
 	ResetChat:HookScript("OnMouseUp", function()
-		StaticPopup_Show("KKUI_RESET_CHAT")
+		_G.StaticPopup_Show("KKUI_RESET_CHAT")
 	end)
 
 	ResetChat.Highlight = ResetChat:CreateTexture(nil, "OVERLAY")
@@ -2215,7 +2221,7 @@ GUI.SetProfile = function(self)
 
 		GUI:Toggle()
 
-		StaticPopup_Show("KKUI_SWITCH_PROFILE")
+		_G.StaticPopup_Show("KKUI_SWITCH_PROFILE")
 	end
 end
 

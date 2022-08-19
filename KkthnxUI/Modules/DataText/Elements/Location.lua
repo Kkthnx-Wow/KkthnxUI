@@ -32,10 +32,10 @@ local zoneInfo = {
 }
 
 local eventList = {
+	"PLAYER_ENTERING_WORLD",
 	"ZONE_CHANGED",
 	"ZONE_CHANGED_INDOORS",
 	"ZONE_CHANGED_NEW_AREA",
-	"PLAYER_ENTERING_WORLD",
 }
 
 local function OnEvent()

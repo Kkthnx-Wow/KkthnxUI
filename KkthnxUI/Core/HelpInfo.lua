@@ -1,5 +1,4 @@
 local K, C = unpack(KkthnxUI)
--- local Module = K:NewModule("HelpInfo")
 
 local helpCommands = {
 	["checkquest"] = "|cff669DFF/checkquest ID|r or |cff669DFF/questcheck ID|r - Check the completion status of a quest",

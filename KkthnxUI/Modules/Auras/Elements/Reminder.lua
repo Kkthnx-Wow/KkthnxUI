@@ -5,12 +5,12 @@ local _G = _G
 local next = _G.next
 local pairs = _G.pairs
 local table_insert = _G.table.insert
-local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
 local GetItemCooldown = _G.GetItemCooldown
 local GetItemCount = _G.GetItemCount
 local GetItemIcon = _G.GetItemIcon
+local GetNumGroupMembers = _G.GetNumGroupMembers
 local GetSpecialization = _G.GetSpecialization
 local GetSpellTexture = _G.GetSpellTexture
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
@@ -38,7 +38,11 @@ function Module:Reminder_Update(cfg)
 	local pvp = cfg.pvp
 	local itemID = cfg.itemID
 	local equip = cfg.equip
-	local isPlayerSpell, isRightSpec, isEquipped = true, true, true
+	local inGroup = cfg.inGroup
+	local isPlayerSpell = true
+	local isRightSpec = true
+	local isEquipped = true
+	local isGrouped = true
 	local isInCombat
 	local isInInst
 	local isInPVP
@@ -46,11 +50,15 @@ function Module:Reminder_Update(cfg)
 	local weaponIndex = cfg.weaponIndex
 
 	if itemID then
+		if inGroup and GetNumGroupMembers() < 2 then
+			isGrouped = false
+		end
+
 		if equip and not IsEquippedItem(itemID) then
 			isEquipped = false
 		end
 
-		if GetItemCount(itemID) == 0 or not isEquipped or GetItemCooldown(itemID) > 0 then -- Check item cooldown
+		if GetItemCount(itemID) == 0 or not isEquipped or not isGrouped or GetItemCooldown(itemID) > 0 then -- check item cooldown
 			frame:Hide()
 			return
 		end

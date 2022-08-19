@@ -9,6 +9,7 @@ local _G = _G
 local APPLY = _G.APPLY
 local CHAT = _G.CHAT
 local ChangeChatColor = _G.ChangeChatColor
+local ChatConfig_UpdateChatSettings = _G.ChatConfig_UpdateChatSettings
 local ChatFrame_AddChannel = _G.ChatFrame_AddChannel
 local ChatFrame_AddMessageGroup = _G.ChatFrame_AddMessageGroup
 local ChatFrame_RemoveAllMessageGroups = _G.ChatFrame_RemoveAllMessageGroups
@@ -41,7 +42,7 @@ function Module:ResetData()
 
 	FCF_ResetChatWindows()
 
-	if ChatConfigFrame:IsShown() then
+	if _G.ChatConfigFrame:IsShown() then
 		ChatConfig_UpdateChatSettings()
 	end
 

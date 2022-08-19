@@ -108,7 +108,7 @@ local function AW_CreateEditbox(parent, text, x, y, tip, width, height)
 	eb:SetPoint("TOPLEFT", x, y)
 	eb:SetAutoFocus(false)
 	eb:SetTextInsets(5, 5, 0, 0)
-	eb:SetFontObject(_G.KkthnxUIFont)
+	eb:SetFontObject(K.UIFont)
 	eb:SetMaxLetters(255)
 	createLabel(eb, text, tip)
 

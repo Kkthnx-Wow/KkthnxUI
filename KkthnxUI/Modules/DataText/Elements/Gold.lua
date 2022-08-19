@@ -31,6 +31,7 @@ local spent = 0
 local oldMoney = 0
 local crossRealms = GetAutoCompleteRealms()
 local GoldDataText
+local RebuildCharList
 
 if not crossRealms or #crossRealms == 0 then
 	crossRealms = { [1] = K.Realm }
@@ -78,12 +79,12 @@ local function getSlotString()
 end
 
 local eventList = {
-	"BN_FRIEND_ACCOUNT_ONLINE",
-	"BN_FRIEND_ACCOUNT_OFFLINE",
-	"BN_FRIEND_INFO_CHANGED",
-	"FRIENDLIST_UPDATE",
 	"PLAYER_ENTERING_WORLD",
-	"CHAT_MSG_SYSTEM",
+	"PLAYER_MONEY",
+	"PLAYER_TRADE_MONEY",
+	"SEND_MAIL_COD_CHANGED",
+	"SEND_MAIL_MONEY_CHANGED",
+	"TRADE_MONEY_CHANGED",
 }
 
 local function OnEvent(_, event, arg1)
@@ -222,8 +223,6 @@ local function OnEnter(self)
 	GameTooltip:Show()
 end
 K.GoldButton_OnEnter = OnEnter
-
-local RebuildCharList
 
 local function clearCharGold(_, realm, name)
 	KkthnxUIDB.Gold.totalGold[realm][name] = nil

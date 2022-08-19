@@ -592,12 +592,12 @@ local function OnEnter(self)
 end
 
 local eventList = {
-	"BN_FRIEND_ACCOUNT_ONLINE",
 	"BN_FRIEND_ACCOUNT_OFFLINE",
+	"BN_FRIEND_ACCOUNT_ONLINE",
 	"BN_FRIEND_INFO_CHANGED",
+	"CHAT_MSG_SYSTEM",
 	"FRIENDLIST_UPDATE",
 	"PLAYER_ENTERING_WORLD",
-	"CHAT_MSG_SYSTEM",
 }
 
 local function OnEvent(_, event, arg1)

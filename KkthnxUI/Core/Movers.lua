@@ -236,7 +236,7 @@ local function CreateConsole()
 
 	f.text = f:CreateFontString(nil, "OVERLAY")
 	f.text:SetPoint("TOP", 0, -10)
-	f.text:SetFontObject(_G.KkthnxUIFont)
+	f.text:SetFontObject(K.UIFont)
 	f.text:SetText(K.Title .. " Movers Config")
 	f.text:SetWordWrap(false)
 
@@ -248,7 +248,7 @@ local function CreateConsole()
 
 		bu[i].text = bu[i]:CreateFontString(nil, "OVERLAY")
 		bu[i].text:SetPoint("CENTER")
-		bu[i].text:SetFontObject(_G.KkthnxUIFont)
+		bu[i].text:SetFontObject(K.UIFont)
 		bu[i].text:SetText(text[i])
 		bu[i].text:SetWordWrap(false)
 

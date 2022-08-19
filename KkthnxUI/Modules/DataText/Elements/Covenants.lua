@@ -77,5 +77,4 @@ local function LandingButton_OnEnter(self)
 
 	GameTooltip:Show()
 end
-
 K.LandingButton_OnEnter = LandingButton_OnEnter

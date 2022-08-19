@@ -11,6 +11,7 @@ local table_insert = _G.table.insert
 local table_sort = _G.table.sort
 local table_wipe = _G.table.wipe
 
+local GameTooltip = _G.GameTooltip
 local GetAddOnCPUUsage = _G.GetAddOnCPUUsage
 local GetAddOnInfo = _G.GetAddOnInfo
 local GetAddOnMemoryUsage = _G.GetAddOnMemoryUsage

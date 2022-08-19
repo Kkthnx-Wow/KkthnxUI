@@ -3,9 +3,14 @@ local Module = K:GetModule("ActionBar")
 
 -- TODO: Add mouseover back
 
--- Texture credit: 胡里胡涂
 local _G = _G
-local tinsert, pairs, type = table.insert, pairs, type
+local table_insert = _G.table.insert
+local pairs = _G.pairs
+local type = _G.type
+
+local MAINMENU_BUTTON = _G.MAINMENU_BUTTON
+local MicroButtonTooltipText = _G.MicroButtonTooltipText
+
 local buttonList = {}
 
 function Module:MicroButton_SetupTexture(icon, texture)
@@ -29,7 +34,7 @@ function Module:MicroButton_Create(parent, data)
 	local texture, method, tooltip = unpack(data)
 
 	local bu = CreateFrame("Frame", "KKUI_MicroButtons", parent)
-	tinsert(buttonList, bu)
+	table_insert(buttonList, bu)
 	bu:SetSize(20, 20 * 1.4)
 	bu:CreateBorder()
 
@@ -54,7 +59,7 @@ function Module:MicroButton_Create(parent, data)
 		end
 
 		local hl = button:GetHighlightTexture()
-		hl:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton") -- Turn texture white before we class color
+		hl:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
 		hl:SetVertexColor(K.r, K.g, K.b)
 		hl:SetBlendMode("ADD")
 		hl:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
@@ -70,7 +75,7 @@ function Module:MicroButton_Create(parent, data)
 		K.AddTooltip(bu, "ANCHOR_RIGHT", tooltip)
 
 		local hl = bu:CreateTexture(nil, "HIGHLIGHT")
-		hl:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton") -- Turn texture white before we class color
+		hl:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
 		hl:SetVertexColor(K.r, K.g, K.b)
 		hl:SetBlendMode("ADD")
 		hl:SetPoint("TOPLEFT", bu, "TOPLEFT", -22, 18)
