@@ -18,7 +18,6 @@ local CreateFrame = _G.CreateFrame
 local GameTooltip = _G.GameTooltip
 local UIParent = _G.UIParent
 
-local Font = K.UIFont
 local Texture = K.GetTexture(C["General"].Texture)
 
 -- Rewrite AddClassIconToColor so we can have 2 functions. 1 for class icon and 1 for class color :D
@@ -861,8 +860,6 @@ local DropdownButtonOnMouseUp = function(self, button)
 
 		if self.Parent.Type == "Texture" then
 			self.Parent.Texture:SetTexture(K.GetTexture(Value))
-			-- elseif self.Parent.Type == "Font" then
-			-- 	self.Parent.Current:SetFontObject(K.GetFont(Value))
 		end
 
 		self.Parent.Current:SetText(self.Parent.Value)
@@ -903,8 +900,6 @@ local MenuItemOnMouseUp = function(self)
 
 	if self.GrandParent.Type == "Texture" then
 		self.GrandParent.Texture:SetTexture(K.GetTexture(self.Key))
-		-- elseif self.GrandParent.Type == "Font" then
-		-- 	self.GrandParent.Current:SetFontObject(K.GetFont(self.Key))
 	end
 
 	self.GrandParent.Current:SetText(self.Key)
@@ -1211,8 +1206,6 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 		if custom == "Texture" then
 			MenuItem.Texture:SetTexture(K.GetTexture(k))
 			MenuItem.Selected:SetTexture(K.GetTexture(k))
-			-- elseif custom == "Font" then
-			-- 	MenuItem.Text:SetFontObject(K.GetFont(k))
 		end
 
 		if custom then
@@ -1248,9 +1241,6 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 
 	if custom == "Texture" then
 		Dropdown.Texture:SetTexture(K.GetTexture(Value))
-	-- elseif custom == "Font" then
-	-- 	Dropdown.Texture:SetTexture(Texture)
-	-- 	Dropdown.Current:SetFontObject(K.GetFont(Value))
 	else
 		Dropdown.Texture:SetTexture(Texture)
 	end

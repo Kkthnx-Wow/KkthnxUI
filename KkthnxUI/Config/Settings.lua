@@ -506,41 +506,6 @@ C["Tooltip"] = {
 	["TargetBy"] = true,
 }
 
--- -- Fonts
--- C["UIFonts"] = {
--- 	["ActionBarsFonts"] = "KkthnxUI Outline",
--- 	["AuraFonts"] = "KkthnxUI Outline",
--- 	["ChatFonts"] = "KkthnxUI",
--- 	["DataBarsFonts"] = "KkthnxUI",
--- 	["DataTextFonts"] = "KkthnxUI",
--- 	["FilgerFonts"] = "KkthnxUI Outline",
--- 	["GeneralFonts"] = "KkthnxUI",
--- 	["InventoryFonts"] = "KkthnxUI Outline",
--- 	["MinimapFonts"] = "KkthnxUI",
--- 	["NameplateFonts"] = "KkthnxUI",
--- 	["QuestTrackerFonts"] = "KkthnxUI",
--- 	["SkinFonts"] = "KkthnxUI",
--- 	["TooltipFonts"] = "KkthnxUI",
--- 	["UnitframeFonts"] = "KkthnxUI",
--- 	-- Font Sizes Will Go Here (Not Sure How Much I Care About Improving This)
--- 	["ObjectiveFontSize"] = 12,
--- 	["QuestFontSize"] = 11,
--- }
-
--- -- Textures
--- C["UITextures"] = {
--- 	["DataBarsTexture"] = "KkthnxUI",
--- 	["FilgerTextures"] = "KkthnxUI",
--- 	["GeneralTextures"] = "KkthnxUI",
--- 	["HealPredictionTextures"] = "KkthnxUI",
--- 	["LootTextures"] = "KkthnxUI",
--- 	["NameplateTextures"] = "KkthnxUI",
--- 	["QuestTrackerTexture"] = "KkthnxUI",
--- 	["SkinTextures"] = "KkthnxUI",
--- 	["TooltipTextures"] = "KkthnxUI",
--- 	["UnitframeTextures"] = "KkthnxUI",
--- }
-
 -- Unitframe
 C["Unitframe"] = {
 	["AllTextScale"] = 1, -- Testing

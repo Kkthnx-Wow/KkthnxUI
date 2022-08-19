@@ -1,6 +1,8 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
+-- TODO: Add mouseover back
+
 -- Texture credit: 胡里胡涂
 local _G = _G
 local tinsert, pairs, type = table.insert, pairs, type
@@ -52,7 +54,8 @@ function Module:MicroButton_Create(parent, data)
 		end
 
 		local hl = button:GetHighlightTexture()
-		hl:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
+		hl:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton") -- Turn texture white before we class color
+		hl:SetVertexColor(K.r, K.g, K.b)
 		hl:SetBlendMode("ADD")
 		hl:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
 		hl:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
@@ -67,7 +70,8 @@ function Module:MicroButton_Create(parent, data)
 		K.AddTooltip(bu, "ANCHOR_RIGHT", tooltip)
 
 		local hl = bu:CreateTexture(nil, "HIGHLIGHT")
-		hl:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
+		hl:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton") -- Turn texture white before we class color
+		hl:SetVertexColor(K.r, K.g, K.b)
 		hl:SetBlendMode("ADD")
 		hl:SetPoint("TOPLEFT", bu, "TOPLEFT", -22, 18)
 		hl:SetPoint("BOTTOMRIGHT", bu, "BOTTOMRIGHT", 24, -18)

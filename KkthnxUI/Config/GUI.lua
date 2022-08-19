@@ -825,47 +825,7 @@ local Tooltip = function(self)
 	Window:CreateSwitch("Tooltip", "TargetBy", L["Show Player Targeted By"])
 end
 
--- local UIFonts = function(self)
--- 	local Window = self:CreateWindow(L["UIFonts"])
-
--- 	Window:CreateSection("UI Fonts")
--- 	Window:CreateDropdown("UIFonts", "ActionBarsFonts", L["Set ActionBar Font"], "Font")
--- 	Window:CreateDropdown("UIFonts", "AuraFonts", L["Set Auras Font"], "Font")
--- 	Window:CreateDropdown("UIFonts", "ChatFonts", L["Set Chat Font"], "Font")
--- 	Window:CreateDropdown("UIFonts", "DataBarsFonts", L["Set DataBars Font"], "Font")
--- 	Window:CreateDropdown("UIFonts", "DataTextFonts", L["Set DataText Font"], "Font")
--- 	Window:CreateDropdown("UIFonts", "FilgerFonts", L["Set Filger Font"], "Font")
--- 	Window:CreateDropdown("UIFonts", "GeneralFonts", L["Set General Font"], "Font")
--- 	Window:CreateDropdown("UIFonts", "InventoryFonts", L["Set Inventory Font"], "Font")
--- 	Window:CreateDropdown("UIFonts", "MinimapFonts", L["Set Minimap Font"], "Font")
--- 	Window:CreateDropdown("UIFonts", "NameplateFonts", L["Set Nameplate Font"], "Font")
--- 	Window:CreateDropdown("UIFonts", "QuestTrackerFonts", L["Set QuestTracker Font"], "Font")
--- 	Window:CreateDropdown("UIFonts", "SkinFonts", L["Set Skins Font"], "Font")
--- 	Window:CreateDropdown("UIFonts", "TooltipFonts", L["Set Tooltip Font"], "Font")
--- 	Window:CreateDropdown("UIFonts", "UnitframeFonts", L["Set Unitframe Font"], "Font")
-
--- 	Window:CreateSection("Font Tweaks")
--- 	Window:CreateSlider("UIFonts", "QuestFontSize", L["Adjust QuestFont Size"], 10, 30, 1, nil, UpdateQuestFontSize)
--- 	Window:CreateSlider("UIFonts", "ObjectiveFontSize", newFeatureIcon .. "Adjust ObjectiveFont Size", 10, 30, 1, nil, UpdateObjectiveFontSize)
--- end
-
--- local UITextures = function(self)
--- 	local Window = self:CreateWindow(L["UITextures"])
-
--- 	Window:CreateSection("UI Textures")
--- 	Window:CreateDropdown("UITextures", "DataBarsTexture", L["Set DataBars Texture"], "Texture")
--- 	Window:CreateDropdown("UITextures", "FilgerTextures", L["Set Filger Texture"], "Texture")
--- 	Window:CreateDropdown("UITextures", "GeneralTextures", L["Set General Texture"], "Texture")
--- 	Window:CreateDropdown("UITextures", "HealPredictionTextures", L["Set HealPrediction Texture"], "Texture")
--- 	Window:CreateDropdown("UITextures", "LootTextures", L["Set Loot Texture"], "Texture")
--- 	Window:CreateDropdown("UITextures", "NameplateTextures", L["Set Nameplate Texture"], "Texture")
--- 	Window:CreateDropdown("UITextures", "QuestTrackerTexture", L["Set QuestTracker Texture"], "Texture")
--- 	Window:CreateDropdown("UITextures", "SkinTextures", L["Set Skins Texture"], "Texture")
--- 	Window:CreateDropdown("UITextures", "TooltipTextures", L["Set Tooltip Texture"], "Texture")
--- 	Window:CreateDropdown("UITextures", "UnitframeTextures", L["Set Unitframe Texture"], "Texture")
--- end
-
-local function updateUFTextScale()
+local function updateUFTextScale() -- WIP
 	K:GetModule("Unitframes"):UpdateTextScale()
 end
 
@@ -885,7 +845,7 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "Smooth", L["Smooth Bars"])
 	Window:CreateSwitch("Unitframe", "Stagger", L["Show |CFF00FF96Monk|r Stagger Bar"])
 
-	Window:CreateSlider("Unitframe", "AllTextScale", "(TEST) Scale All Unitframe Texts", 0.8, 1.5, 0.05, nil, updateUFTextScale)
+	Window:CreateSlider("Unitframe", "AllTextScale", "(TEST) Scale All Unitframe Texts", 0.8, 1.5, 0.05, nil, updateUFTextScale) -- WIP
 
 	Window:CreateSection("Combat Text")
 	Window:CreateSwitch("Unitframe", "CombatText", enableTextColor .. L["Enable Simple CombatText"])
