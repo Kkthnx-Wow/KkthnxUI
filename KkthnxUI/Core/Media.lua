@@ -1,25 +1,6 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
-
-local CreateFrame = _G.CreateFrame
-local KkthnxUIFont = _G.KkthnxUIFont
-local KkthnxUIFontOutline = _G.KkthnxUIFontOutline
-
-local KkthnxUIMedia = CreateFrame("Frame", "KKUI_FontStyles")
-
-local shadowOffset = K.Mult or 1
-
--- Create our own fonts. KkthnxUIFont, KkthnxUIFontOutline is xml based
--- We just adjust them here to follow our format :D
-
-KkthnxUIFont:SetShadowColor(0, 0, 0, 1)
-KkthnxUIFont:SetShadowOffset(shadowOffset, -shadowOffset / 2)
-
-KkthnxUIFontOutline:SetShadowColor(0, 0, 0, 0)
-KkthnxUIFontOutline:SetShadowOffset(0, -0)
-
-local TextureTable = {
+K.TextureTable = {
 	["AltzUI"] = C["Media"].Statusbars.AltzUIStatusbar,
 	["AsphyxiaUI"] = C["Media"].Statusbars.AsphyxiaUIStatusbar,
 	["AzeriteUI"] = C["Media"].Statusbars.AzeriteUIStatusbar,
@@ -35,17 +16,9 @@ local TextureTable = {
 }
 
 function K.GetTexture(texture)
-	if TextureTable[texture] then
-		return TextureTable[texture]
+	if K.TextureTable[texture] then
+		return K.TextureTable[texture]
 	else
-		return TextureTable["KkthnxUI"] -- Return something to prevent errors
+		return K.TextureTable["KkthnxUI"] -- Return something to prevent errors
 	end
 end
-
-function KkthnxUIMedia:RegisterTexture(name, path)
-	if not TextureTable[name] then
-		TextureTable[name] = path
-	end
-end
-
-K["TextureTable"] = TextureTable

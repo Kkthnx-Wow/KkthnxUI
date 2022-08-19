@@ -188,7 +188,8 @@ function Module:CreateArena()
 		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
 
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY")
+		self.Castbar.Time:SetFontObject(K.UIFont)
 		self.Castbar.Time:SetFont(select(1, self.Castbar.Time:GetFont()), 11, select(3, self.Castbar.Time:GetFont()))
 		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
 		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
@@ -202,7 +203,8 @@ function Module:CreateArena()
 		self.Castbar.PostCastFail = Module.PostCastFailed
 		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
+		self.Castbar.Text:SetFontObject(K.UIFont)
 		self.Castbar.Text:SetFont(select(1, self.Castbar.Text:GetFont()), 11, select(3, self.Castbar.Text:GetFont()))
 		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
 		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)
