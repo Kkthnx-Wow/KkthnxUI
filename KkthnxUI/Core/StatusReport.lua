@@ -221,22 +221,21 @@ local function CreateStatusFrame()
 	local factionIcon
 	if K.Faction == "Alliance" then
 		factionColor = "|CFF004A94"
-		factionIcon = "Alliance"
+		factionIcon = "|TInterface\\AddOns\\KkthnxUI\\Media\\Minimap\\Alliance:20:20:2|t"
 	elseif K.Faction == "Horde" then
 		factionColor = "|CFF8C1616"
-		factionIcon = "Horde"
+		factionIcon = "|TInterface\\AddOns\\KkthnxUI\\Media\\Minimap\\Horde:20:20:2|t"
 	else
 		factionColor = K.SystemColor
-		factionIcon = nil
+		factionIcon = "|TInterface\\COMMON\\friendship-FistHuman:20:20:2|t"
 	end
-	local factionFeatureIcon = "|TInterface\\AddOns\\KkthnxUI\\Media\\Minimap\\" .. factionIcon .. ":20:20:2|t"
 
 	-- Content lines
 	StatusFrame.Section1.Content.Line3.Text:SetFormattedText("Recommended Scale: " .. K.SystemColor .. "%s|r", GetBestScale())
 	StatusFrame.Section1.Content.Line4.Text:SetFormattedText("UI Scale Is: " .. K.SystemColor .. "%s|r", C["General"].UIScale)
 	StatusFrame.Section2.Content.Line1.Text:SetFormattedText("Version of WoW: " .. K.SystemColor .. "%s (build %s)|r", K.WowPatch, K.WowBuild)
 	StatusFrame.Section2.Content.Line2.Text:SetFormattedText("Client Language: " .. K.SystemColor .. "%s|r", K.Client)
-	StatusFrame.Section3.Content.Line1.Text:SetFormattedText("Faction:" .. factionFeatureIcon .. factionColor .. "%s|r", K.Faction)
+	StatusFrame.Section3.Content.Line1.Text:SetFormattedText("Faction:" .. factionIcon .. factionColor .. "%s|r", K.Faction)
 	StatusFrame.Section3.Content.Line2.Text:SetFormattedText("Race: " .. K.SystemColor .. " %s|r", K.Race)
 	StatusFrame.Section3.Content.Line3.Text:SetFormattedText("Class: " .. K.SystemColor .. "%s|r", EnglishClassName[K.Class])
 

@@ -1691,6 +1691,7 @@ local SetUpCredits = function(frame)
 		Line.Text = Line:CreateFontString(nil, "OVERLAY")
 		Line.Text:SetPoint("CENTER", Line, 0, 0)
 		Line.Text:SetFontObject(K.UIFont)
+		Line.Text:SetFont(select(1, Line.Text:GetFont()), 16, select(3, Line.Text:GetFont()))
 		Line.Text:SetJustifyH("CENTER")
 		Line.Text:SetText(CreditLines[i])
 
