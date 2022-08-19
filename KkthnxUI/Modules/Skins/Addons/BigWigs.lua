@@ -1,13 +1,15 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
-local BigWigsFont = K.GetFont(C["UIFonts"].SkinFonts)
-local BigWigsTexture = K.GetTexture(C["UITextures"].SkinTextures)
+local _G = _G
+
+local BigWigsFont = "KkthnxUIFont"
+local BigWigsTexture = K.GetTexture(C["General"].Texture)
 
 function Module:ReskinBigWigs()
-	-- if not C["Skins"].BigWigs or not IsAddOnLoaded("BigWigs") then
-	-- 	return
-	-- end
+	if not C["Skins"].BigWigs or not IsAddOnLoaded("BigWigs") then
+		return
+	end
 
 	if not BigWigs3DB then
 		return

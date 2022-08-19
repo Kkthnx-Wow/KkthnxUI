@@ -13,9 +13,9 @@ function Module:CreateBoss()
 	local bossHeight = C["Boss"].HealthHeight
 	local bossPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
-	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
-	local HealPredictionTexture = K.GetTexture(C["UITextures"].HealPredictionTextures)
+	local UnitframeFont = "KkthnxUIFont"
+	local UnitframeTexture = K.GetTexture(C["General"].Texture)
+	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()
@@ -185,7 +185,8 @@ function Module:CreateBoss()
 		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
 
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY")
+		self.Castbar.Time:SetFontObject(UnitframeFont)
 		self.Castbar.Time:SetFont(select(1, self.Castbar.Time:GetFont()), 11, select(3, self.Castbar.Time:GetFont()))
 		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
 		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
@@ -199,7 +200,8 @@ function Module:CreateBoss()
 		self.Castbar.PostCastFail = Module.PostCastFailed
 		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
+		self.Castbar.Text:SetFontObject(UnitframeFont)
 		self.Castbar.Text:SetFont(select(1, self.Castbar.Text:GetFont()), 11, select(3, self.Castbar.Text:GetFont()))
 		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
 		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)

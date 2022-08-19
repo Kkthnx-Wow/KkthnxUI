@@ -7,8 +7,8 @@ local CreateFrame = _G.CreateFrame
 local UnitIsUnit = _G.UnitIsUnit
 
 function Module:CreatePartyPet()
-	local PartyPetframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
-	local PartyPetframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
+	local PartyPetframeFont = "KkthnxUIFont"
+	local PartyPetframeTexture = K.GetTexture(C["General"].Texture)
 
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()

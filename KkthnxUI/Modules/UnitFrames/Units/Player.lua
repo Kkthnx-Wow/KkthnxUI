@@ -42,9 +42,9 @@ function Module:CreatePlayer()
 	local playerHeight = C["Unitframe"].PlayerHealthHeight
 	local playerPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
-	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
-	local HealPredictionTexture = K.GetTexture(C["UITextures"].HealPredictionTextures)
+	local UnitframeFont = "KkthnxUIFont"
+	local UnitframeTexture = K.GetTexture(C["General"].Texture)
+	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
 	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	Overlay:SetAllPoints()
@@ -223,12 +223,14 @@ function Module:CreatePlayer()
 		Castbar.PostCastFail = Module.PostCastFailed
 		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
-		Castbar.Time = Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		Castbar.Time = Castbar:CreateFontString(nil, "OVERLAY")
+		Castbar.Time:SetFontObject("KkthnxUIFont")
 		Castbar.Time:SetPoint("RIGHT", -3.5, 0)
 		Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
 		Castbar.Time:SetJustifyH("RIGHT")
 
-		Castbar.Text = Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		Castbar.Text = Castbar:CreateFontString(nil, "OVERLAY")
+		Castbar.Text:SetFontObject("KkthnxUIFont")
 		Castbar.Text:SetPoint("LEFT", 3.5, 0)
 		Castbar.Text:SetPoint("RIGHT", Castbar.Time, "LEFT", -3.5, 0)
 		Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
@@ -377,7 +379,7 @@ function Module:CreatePlayer()
 			Stagger:CreateBorder()
 
 			Stagger.Value = Stagger:CreateFontString(nil, "OVERLAY")
-			Stagger.Value:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+			Stagger.Value:SetFontObject("KkthnxUIFont")
 			Stagger.Value:SetPoint("CENTER", Stagger, "CENTER", 0, 0)
 			self:Tag(Stagger.Value, "[monkstagger]")
 
@@ -397,7 +399,7 @@ function Module:CreatePlayer()
 			AdditionalPower:SetPoint("TOPLEFT", self, -18, 0)
 			AdditionalPower:SetPoint("BOTTOMLEFT", self, -18, 0)
 		end
-		AdditionalPower:SetStatusBarTexture(K.GetTexture(C["UITextures"].UnitframeTextures))
+		AdditionalPower:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 		AdditionalPower:SetStatusBarColor(unpack(K.Colors.power.MANA))
 		AdditionalPower:CreateBorder()
 
@@ -406,7 +408,7 @@ function Module:CreatePlayer()
 		end
 
 		AdditionalPower.Text = AdditionalPower:CreateFontString(nil, "OVERLAY")
-		AdditionalPower.Text:SetFontObject(K.GetFont(C["UIFonts"].UnitframeFonts))
+		AdditionalPower.Text:SetFontObject("KkthnxUIFont")
 		AdditionalPower.Text:SetFont(select(1, AdditionalPower.Text:GetFont()), 9, select(3, AdditionalPower.Text:GetFont()))
 		AdditionalPower.Text:SetPoint("CENTER", AdditionalPower, 2, 0)
 
@@ -444,7 +446,7 @@ function Module:CreatePlayer()
 			FloatingCombatFeedback[i] = parentFrame:CreateFontString("$parentText", "OVERLAY")
 		end
 
-		FloatingCombatFeedback.font = select(1, KkthnxUIFont:GetFont())
+		FloatingCombatFeedback.font = select(1, KkthnxUIFontOutline:GetFont())
 		FloatingCombatFeedback.fontFlags = "OUTLINE"
 		FloatingCombatFeedback.abbreviateNumbers = true
 

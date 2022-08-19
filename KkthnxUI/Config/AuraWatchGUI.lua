@@ -505,7 +505,7 @@ local function CreatePanel()
 		bg:CreateBorder()
 		bu.bg = bg
 
-		bu:SetHighlightTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
+		bu:SetHighlightTexture(K.GetTexture(C["General"].Texture))
 		local hl = bu:GetHighlightTexture()
 		hl:SetPoint("TOPLEFT", bg, "TOPLEFT", 2, -2)
 		hl:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", -2, 2)

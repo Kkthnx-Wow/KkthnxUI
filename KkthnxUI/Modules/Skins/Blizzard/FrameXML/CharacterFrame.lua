@@ -50,7 +50,7 @@ local function UpdateFactionSkins()
 	for i = 1, NUM_FACTIONS_DISPLAYED, 1 do
 		local statusbar = _G["ReputationBar" .. i .. "ReputationBar"]
 		if statusbar then
-			statusbar:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
+			statusbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 		end
 	end
 end
@@ -227,11 +227,11 @@ tinsert(C.defaultThemes, function()
 	end)
 
 	if CharacterLevelText then
-		CharacterLevelText:SetFontObject(_G.KkthnxUIFont)
+		CharacterLevelText:SetFontObject("KkthnxUIFont")
 	end
 
 	local CharItemLvLValue = CharacterStatsPane.ItemLevelFrame.Value
-	CharItemLvLValue:SetFontObject(_G.KkthnxUIFont)
+	CharItemLvLValue:SetFontObject("KkthnxUIFont")
 	CharItemLvLValue:SetFont(select(1, CharItemLvLValue:GetFont()), 18, select(3, CharItemLvLValue:GetFont()))
 
 	-- Titles
@@ -246,7 +246,7 @@ tinsert(C.defaultThemes, function()
 			end
 
 			if not bu[i].fontStyled then
-				bu[i].text:SetFontObject(_G.KkthnxUIFont)
+				bu[i].text:SetFontObject("KkthnxUIFont")
 				bu[i].text:SetFont(select(1, bu[i].text:GetFont()), 11, select(3, bu[i].text:GetFont()))
 				bu[i].fontStyled = true
 			end

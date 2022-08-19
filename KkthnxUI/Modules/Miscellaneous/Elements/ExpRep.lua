@@ -321,7 +321,7 @@ function Module:CreateExpbar()
 	bar:SetPoint("TOP", Minimap, "BOTTOM", 0, -6)
 	bar:SetSize(Minimap:GetWidth() or 190, 14)
 	bar:SetHitRectInsets(0, 0, 0, -10)
-	bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].DataBarsTexture))
+	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 
 	local spark = bar:CreateTexture(nil, "OVERLAY")
 	spark:SetTexture(C["Media"].Textures.Spark16Texture)
@@ -336,7 +336,7 @@ function Module:CreateExpbar()
 
 	local rest = CreateFrame("StatusBar", nil, bar)
 	rest:SetAllPoints()
-	rest:SetStatusBarTexture(K.GetTexture(C["UITextures"].DataBarsTexture))
+	rest:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 	rest:SetStatusBarColor(1, 0, 1, 0.4)
 	rest:SetFrameLevel(bar:GetFrameLevel() - 1)
 	bar.restBar = rest
@@ -347,7 +347,7 @@ function Module:CreateExpbar()
 	bar.reward = reward
 
 	local text = bar:CreateFontString(nil, "OVERLAY")
-	text:SetFontObject(_G.KkthnxUIFont)
+	text:SetFontObject("KkthnxUIFont")
 	text:SetFont(select(1, text:GetFont()), 11, select(3, text:GetFont()))
 	text:SetWidth(bar:GetWidth() - 6)
 	text:SetWordWrap(false)

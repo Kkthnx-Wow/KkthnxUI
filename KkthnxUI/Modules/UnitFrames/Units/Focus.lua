@@ -12,9 +12,9 @@ function Module:CreateFocus()
 	local focusWidth = C["Unitframe"].FocusHealthWidth
 	local focusPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
-	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
-	local HealPredictionTexture = K.GetTexture(C["UITextures"].HealPredictionTextures)
+	local UnitframeFont = "KkthnxUIFont"
+	local UnitframeTexture = K.GetTexture(C["General"].Texture)
+	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
 	Module.CreateHeader(self)
 
@@ -186,7 +186,8 @@ function Module:CreateFocus()
 		self.Castbar.Shield:SetSize(C["Unitframe"].FocusCastbarHeight + 10, C["Unitframe"].FocusCastbarHeight + 10)
 		self.Castbar.Shield:SetPoint("CENTER", 0, -14)
 
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY")
+		self.Castbar.Time:SetFontObject("KkthnxUIFont")
 		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
 		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
 		self.Castbar.Time:SetJustifyH("RIGHT")
@@ -199,7 +200,8 @@ function Module:CreateFocus()
 		self.Castbar.PostCastFail = Module.PostCastFailed
 		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
+		self.Castbar.Text:SetFontObject("KkthnxUIFont")
 		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
 		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)
 		self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)

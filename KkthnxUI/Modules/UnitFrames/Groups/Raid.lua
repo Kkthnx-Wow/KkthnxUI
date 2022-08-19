@@ -56,9 +56,9 @@ local function UpdateRaidPower(self, _, unit)
 end
 
 function Module:CreateRaid()
-	local RaidframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
-	local RaidframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
-	local HealPredictionTexture = K.GetTexture(C["UITextures"].HealPredictionTextures)
+	local RaidframeFont = "KkthnxUIFont"
+	local RaidframeTexture = K.GetTexture(C["General"].Texture)
+	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
 	Module.CreateHeader(self)
 
@@ -233,7 +233,7 @@ function Module:CreateRaid()
 		self.AuraTrack.Icons = C["Raid"].AuraTrackIcons
 		self.AuraTrack.SpellTextures = C["Raid"].AuraTrackSpellTextures
 		self.AuraTrack.Thickness = C["Raid"].AuraTrackThickness
-		self.AuraTrack.Font = select(1, KkthnxUIFont:GetFont())
+		self.AuraTrack.Font = select(1, KkthnxUIFontOutline:GetFont())
 
 		self.AuraTrack:ClearAllPoints()
 		if self.AuraTrack.Icons ~= true then
@@ -302,7 +302,7 @@ function Module:CreateRaid()
 		RaidDebuffs.timer:SetPoint("CENTER", RaidDebuffs, 1, 0)
 
 		RaidDebuffs.count = parentFrame:CreateFontString(nil, "OVERLAY")
-		RaidDebuffs.count:SetFont(select(1, KkthnxUIFont:GetFont()), 11, "OUTLINE")
+		RaidDebuffs.count:SetFont(select(1, KkthnxUIFontOutline:GetFont()), 11, "OUTLINE")
 		RaidDebuffs.count:SetPoint("BOTTOMRIGHT", RaidDebuffs, "BOTTOMRIGHT", 2, 0)
 		RaidDebuffs.count:SetTextColor(1, 0.9, 0)
 

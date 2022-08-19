@@ -7,7 +7,7 @@ local _G = _G
 local pairs = _G.pairs
 
 local function SetupTimerTracker(bar)
-	local texture = K.GetTexture(C["UITextures"].UnitframeTextures)
+	local texture = K.GetTexture(C["General"].Texture)
 	-- local text = _G[bar:GetName() .. "Text"]
 
 	bar:SetSize(222, 22)

@@ -22,7 +22,7 @@ local atlasColors = {
 
 local function ReplaceWidgetBarTexture(self, atlas)
 	if atlasColors[atlas] then
-		self:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
+		self:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 		self:SetStatusBarColor(unpack(atlasColors[atlas]))
 	end
 end
@@ -102,9 +102,9 @@ local function ReskinDoubleStatusBarWidget(self)
 end
 
 local function ReskinPVPCaptureBar(self)
-	self.LeftBar:SetTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
-	self.NeutralBar:SetTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
-	self.RightBar:SetTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
+	self.LeftBar:SetTexture(K.GetTexture(C["General"].Texture))
+	self.NeutralBar:SetTexture(K.GetTexture(C["General"].Texture))
+	self.RightBar:SetTexture(K.GetTexture(C["General"].Texture))
 
 	self.LeftBar:SetVertexColor(0.2, 0.6, 1)
 	self.NeutralBar:SetVertexColor(0.8, 0.8, 0.8)

@@ -19,7 +19,7 @@ table_insert(C.defaultThemes, function()
 
 	local NPCFriendshipStatusBar = _G.NPCFriendshipStatusBar
 
-	NPCFriendshipStatusBar:SetStatusBarTexture(K.GetTexture(C["UITextures"].SkinTextures))
+	NPCFriendshipStatusBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 
 	if not NPCFriendshipStatusBar.Spark then
 		NPCFriendshipStatusBar.Spark = NPCFriendshipStatusBar:CreateTexture(nil, "OVERLAY")

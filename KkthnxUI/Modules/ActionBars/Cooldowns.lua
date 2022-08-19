@@ -53,7 +53,7 @@ function Module:ForceUpdate()
 end
 
 function Module:OnSizeChanged(width, height)
-	local cooldownFont = K.GetFont(C["UIFonts"].ActionBarsFonts)
+	local cooldownFont = "KkthnxUIFontOutline"
 
 	local fontScale = K.Round((width + height) / 2) / ICON_SIZE
 	if fontScale == self.fontScale then

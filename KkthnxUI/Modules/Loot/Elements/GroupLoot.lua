@@ -37,7 +37,7 @@ local cancelled_rolls = {}
 local cachedRolls = {}
 local completedRolls = {}
 local FRAME_WIDTH, FRAME_HEIGHT = 328, 26
-local GroupLootTexture = K.GetTexture(C["UITextures"].LootTextures)
+local GroupLootTexture = K.GetTexture(C["General"].Texture)
 
 Module.RollBars = {}
 

@@ -5,7 +5,7 @@ C.themes["Blizzard_ArchaeologyUI"] = function()
 	ArcheologyDigsiteProgressBar:StripTextures()
 
 	ArcheologyDigsiteProgressBar.FillBar:SetHeight(12)
-	ArcheologyDigsiteProgressBar.FillBar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
+	ArcheologyDigsiteProgressBar.FillBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 	ArcheologyDigsiteProgressBar.FillBar:SetStatusBarColor(0.7, 0.3, 0.2)
 	ArcheologyDigsiteProgressBar.FillBar:CreateBorder()
 
@@ -17,5 +17,5 @@ C.themes["Blizzard_ArchaeologyUI"] = function()
 
 	ArcheologyDigsiteProgressBar.BarTitle:ClearAllPoints()
 	ArcheologyDigsiteProgressBar.BarTitle:SetPoint("BOTTOM", ArcheologyDigsiteProgressBar, "TOP", 0, -2)
-	ArcheologyDigsiteProgressBar.BarTitle:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
+	ArcheologyDigsiteProgressBar.BarTitle:SetFontObject("KkthnxUIFont")
 end

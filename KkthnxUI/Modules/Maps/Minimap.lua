@@ -383,7 +383,7 @@ function Module:ReskinRegions()
 		if queueStatusDisplay then
 			queueStatusDisplay.text:ClearAllPoints()
 			queueStatusDisplay.text:SetPoint("CENTER", queueIcon, 0, -5)
-			queueStatusDisplay.text:SetFontObject(_G.KkthnxUIFont)
+			queueStatusDisplay.text:SetFontObject("KkthnxUIFont")
 
 			if queueStatusDisplay.title then
 				Module:ClearQueueStatus()

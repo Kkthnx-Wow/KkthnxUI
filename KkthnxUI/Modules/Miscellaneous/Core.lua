@@ -382,14 +382,14 @@ function Module:CreateErrorFrameToggle()
 end
 
 function Module:CreateQuestSizeUpdate()
-	QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["UIFonts"].QuestFontSize + 3, nil)
-	QuestFont:SetFont(QuestFont:GetFont(), C["UIFonts"].QuestFontSize + 1, nil)
-	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["UIFonts"].QuestFontSize, nil)
+	QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, nil)
+	QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, nil)
+	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, nil)
 end
 
 function Module:CreateObjectiveSizeUpdate()
-	ObjectiveFont:SetFontObject(K.GetFont(C["UIFonts"].QuestTrackerFonts))
-	ObjectiveFont:SetFont(ObjectiveFont:GetFont(), C["UIFonts"].ObjectiveFontSize, select(3, ObjectiveFont:GetFont()))
+	ObjectiveFont:SetFontObject("KkthnxUIFont")
+	ObjectiveFont:SetFont(ObjectiveFont:GetFont(), C["Skins"].ObjectiveFontSize, select(3, ObjectiveFont:GetFont()))
 end
 
 -- TradeFrame hook

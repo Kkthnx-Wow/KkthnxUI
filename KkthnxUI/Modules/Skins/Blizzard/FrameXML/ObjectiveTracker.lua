@@ -101,7 +101,7 @@ end
 local function reskinHeader(header)
 	header.Background:SetTexture(nil)
 	header.Text:SetTextColor(0.75, 0.61, 0)
-	header.Text:SetFontObject(K.GetFont(C["UIFonts"].QuestTrackerFonts))
+	header.Text:SetFontObject("KkthnxUIFont")
 	header.Text:SetFont(select(1, header.Text:GetFont()), 15, select(3, header.Text:GetFont()))
 end
 
@@ -112,11 +112,11 @@ local function reskinBarTemplate(bar)
 
 	bar:StripTextures()
 	bar:SetSize(182, 18)
-	bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].QuestTrackerTexture))
+	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 
 	if bar.Label then
 		bar.Label:SetPoint("CENTER", 0, 0)
-		bar.Label:SetFontObject(K.GetFont(C["UIFonts"].QuestTrackerFonts))
+		bar.Label:SetFontObject("KkthnxUIFont")
 	end
 
 	if not bar.Spark then

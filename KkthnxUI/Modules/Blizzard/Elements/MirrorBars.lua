@@ -6,7 +6,7 @@ local Module = K:GetModule("Blizzard")
 local function SetupMirrorBars(bar)
 	local statusbar = _G[bar:GetName() .. "StatusBar"]
 	local text = _G[bar:GetName() .. "Text"]
-	local texture = K.GetTexture(C["UITextures"].UnitframeTextures)
+	local texture = K.GetTexture(C["General"].Texture)
 
 	bar:SetSize(222, 22)
 	bar:StripTextures()

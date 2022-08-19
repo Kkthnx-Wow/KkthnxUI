@@ -13,9 +13,9 @@ function Module:CreateTarget()
 	local targetHeight = C["Unitframe"].TargetHealthHeight
 	local targetPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
-	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
-	local HealPredictionTexture = K.GetTexture(C["UITextures"].HealPredictionTextures)
+	local UnitframeFont = "KkthnxUIFont"
+	local UnitframeTexture = K.GetTexture(C["General"].Texture)
+	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
 	Module.CreateHeader(self)
 
@@ -198,7 +198,8 @@ function Module:CreateTarget()
 		Castbar.Shield:SetSize(C["Unitframe"].TargetCastbarHeight + 10, C["Unitframe"].TargetCastbarHeight + 10)
 		Castbar.Shield:SetPoint("CENTER", 0, -14)
 
-		Castbar.Time = Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		Castbar.Time = Castbar:CreateFontString(nil, "OVERLAY")
+		Castbar.Time:SetFontObject("KkthnxUIFont")
 		Castbar.Time:SetPoint("RIGHT", -3.5, 0)
 		Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
 		Castbar.Time:SetJustifyH("RIGHT")
@@ -211,7 +212,8 @@ function Module:CreateTarget()
 		Castbar.PostCastFail = Module.PostCastFailed
 		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
-		Castbar.Text = Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		Castbar.Text = Castbar:CreateFontString(nil, "OVERLAY")
+		Castbar.Text:SetFontObject("KkthnxUIFont")
 		Castbar.Text:SetPoint("LEFT", 3.5, 0)
 		Castbar.Text:SetPoint("RIGHT", Castbar.Time, "LEFT", -3.5, 0)
 		Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
@@ -319,7 +321,7 @@ function Module:CreateTarget()
 			FloatingCombatFeedback[i] = parentFrame:CreateFontString("$parentText", "OVERLAY")
 		end
 
-		FloatingCombatFeedback.font = select(1, KkthnxUIFont:GetFont())
+		FloatingCombatFeedback.font = select(1, KkthnxUIFontOutline:GetFont())
 		FloatingCombatFeedback.fontFlags = "OUTLINE"
 		FloatingCombatFeedback.abbreviateNumbers = true
 

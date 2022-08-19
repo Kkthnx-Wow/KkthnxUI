@@ -12,8 +12,8 @@ function Module:CreateFocusTarget()
 	local focusTargetHeight = C["Unitframe"].FocusTargetHealthHeight
 	local focusTargetPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
-	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
+	local UnitframeFont = _G.KkthnxUIFont
+	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()

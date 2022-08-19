@@ -36,7 +36,7 @@ local SOUNDKIT = _G.SOUNDKIT
 local SortBags = _G.SortBags
 local SortBankBags = _G.SortBankBags
 
-local bagsFont = K.GetFont(C["UIFonts"].InventoryFonts)
+local bagsFont = _G.KkthnxUIFontOutline
 local toggleButtons = {}
 local deleteEnable, favouriteEnable, splitEnable, customJunkEnable
 local sortCache = {}

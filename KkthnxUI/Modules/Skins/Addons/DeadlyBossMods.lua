@@ -46,7 +46,7 @@ local function ReskinDBMBar(bar, frame)
 
 	if not bar.styled then
 		bar:StripTextures()
-		bar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
+		bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 		bar:CreateBorder()
 
 		bar.newSpark = bar:CreateTexture(nil, "OVERLAY")
@@ -94,20 +94,20 @@ local function ApplyDBMStyle(self)
 	ReskinDBMBar(tbar, frame)
 
 	if texture then
-		texture:SetTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
+		texture:SetTexture(K.GetTexture(C["General"].Texture))
 	end
 
 	name:ClearAllPoints()
 	name:SetPoint("LEFT", frame, "LEFT", 2, 8)
 	name:SetPoint("RIGHT", frame, "LEFT", tbar:GetWidth() * 0.85, 8)
-	name:SetFont(select(1, KkthnxUIFont:GetFont()), 12, "OUTLINE")
+	name:SetFontObject("KkthnxUIFontOutline")
 	name:SetJustifyH("LEFT")
 	name:SetWordWrap(false)
 	name:SetShadowColor(0, 0, 0, 0)
 
 	timer:ClearAllPoints()
 	timer:SetPoint("RIGHT", frame, "RIGHT", -2, 8)
-	timer:SetFont(select(1, KkthnxUIFont:GetFont()), 12, "OUTLINE")
+	timer:SetFontObject("KkthnxUIFontOutline")
 	timer:SetJustifyH("RIGHT")
 	timer:SetShadowColor(0, 0, 0, 0)
 end

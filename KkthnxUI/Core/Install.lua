@@ -267,7 +267,7 @@ local function YesTutor()
 	progressBar:CreateBorder()
 	progressBar:SetPoint("TOP", tutor, "BOTTOM", 0, -6)
 	progressBar:SetSize(480, 22)
-	progressBar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
+	progressBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 
 	progressBar.text = K.CreateFontString(progressBar, 13, "", "", false, "CENTER", 0, -1)
 
@@ -285,7 +285,7 @@ local function YesTutor()
 	pass:SkinButton()
 
 	pass.text = pass:CreateFontString(nil, "OVERLAY")
-	pass.text:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
+	pass.text:SetFontObject("KkthnxUIFont")
 	pass.text:SetPoint("CENTER")
 	pass.text:SetText(DECLINE)
 	pass.text:SetTextColor(1, 0, 0)
@@ -296,7 +296,7 @@ local function YesTutor()
 	apply:SkinButton()
 
 	apply.text = apply:CreateFontString(nil, "OVERLAY")
-	apply.text:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
+	apply.text:SetFontObject("KkthnxUIFont")
 	apply.text:SetPoint("CENTER")
 	apply.text:SetText(APPLY)
 	apply.text:SetTextColor(0, 1, 0)
@@ -465,7 +465,7 @@ local function HelloWorld()
 	goTutor:SkinButton()
 
 	goTutor.text = goTutor:CreateFontString(nil, "OVERLAY")
-	goTutor.text:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
+	goTutor.text:SetFontObject("KkthnxUIFont")
 	goTutor.text:SetPoint("CENTER")
 	goTutor.text:SetText("Install")
 
@@ -504,7 +504,7 @@ local function HelloWorld()
 	goTwitch:SkinButton()
 
 	goTwitch.text = goTwitch:CreateFontString(nil, "OVERLAY")
-	goTwitch.text:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
+	goTwitch.text:SetFontObject("KkthnxUIFont")
 	goTwitch.text:SetPoint("CENTER")
 	goTwitch.text:SetText("|CFF8F76BDTwitch|r")
 
@@ -518,7 +518,7 @@ local function HelloWorld()
 	goPaypal:SkinButton()
 
 	goPaypal.text = goPaypal:CreateFontString(nil, "OVERLAY")
-	goPaypal.text:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
+	goPaypal.text:SetFontObject("KkthnxUIFont")
 	goPaypal.text:SetPoint("CENTER")
 	goPaypal.text:SetText("|CFF0079C1Paypal|r")
 
@@ -532,7 +532,7 @@ local function HelloWorld()
 	goPatreon:SkinButton()
 
 	goPatreon.text = goPatreon:CreateFontString(nil, "OVERLAY")
-	goPatreon.text:SetFontObject(K.GetFont(C["UIFonts"].GeneralFonts))
+	goPatreon.text:SetFontObject("KkthnxUIFont")
 	goPatreon.text:SetPoint("CENTER")
 	goPatreon.text:SetText("|CFFf96854Patreon|r")
 

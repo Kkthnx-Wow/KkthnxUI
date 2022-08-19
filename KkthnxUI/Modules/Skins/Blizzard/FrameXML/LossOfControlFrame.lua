@@ -26,7 +26,7 @@ table_insert(C.defaultThemes, function()
 	K.Mover(LossOfControlFrame, "LossOfControl", "LossOfControlFrame", { "CENTER", UIParent, "CENTER", 0, 250 }, 60, 60)
 
 	hooksecurefunc("LossOfControlFrame_SetUpDisplay", function(self)
-		local LOCFFont = K.GetFont(C["UIFonts"].SkinFonts)
+		local LOCFFont = "KkthnxUIFont"
 		local Icon = self.Icon
 		local AbilityName = self.AbilityName
 		local TimeLeftNumberText = self.TimeLeft.NumberText

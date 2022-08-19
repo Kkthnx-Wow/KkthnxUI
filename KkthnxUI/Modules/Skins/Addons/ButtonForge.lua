@@ -3,7 +3,7 @@ local Module = K:GetModule("Skins")
 
 local _G = _G
 
-local cfgFont = K.GetFont(C["UIFonts"].ActionBarsFonts)
+local cfgFont = "KkthnxUIFontOutline"
 local cfg = {
 	icon = {
 		texCoord = K.TexCoords,

@@ -14,6 +14,7 @@ local fontSize = 12
 
 -- Create our own fonts. KkthnxUIFont, KkthnxUIFontOutline is xml based
 -- We just adjust them here to follow our format :D
+
 KkthnxUIFont:SetFont(select(1, KkthnxUIFont:GetFont()), fontSize, select(3, KkthnxUIFont:GetFont()))
 KkthnxUIFont:SetShadowColor(0, 0, 0, 1)
 KkthnxUIFont:SetShadowOffset(shadowOffset, -shadowOffset / 2)
@@ -67,24 +68,24 @@ local TextureTable = {
 	["ZorkUI"] = C["Media"].Statusbars.ZorkUIStatusbar,
 }
 
-local FontTable = {
-	["Expressway Outline"] = "ExpresswayFontOutline",
-	["Expressway"] = "ExpresswayFont",
-	["Futura Outline"] = "FuturaFontOutline",
-	["Futura"] = "FuturaFont",
-	["KkthnxUI Outline"] = "KkthnxUIFontOutline",
-	["KkthnxUI"] = "KkthnxUIFont",
-	["SansNarrow Outline"] = "SansNarrowFontOutline",
-	["SansNarrow"] = "SansNarrowFont",
-}
+-- local FontTable = {
+-- 	["Expressway Outline"] = "ExpresswayFontOutline",
+-- 	["Expressway"] = "ExpresswayFont",
+-- 	["Futura Outline"] = "FuturaFontOutline",
+-- 	["Futura"] = "FuturaFont",
+-- 	["KkthnxUI Outline"] = "KkthnxUIFontOutline",
+-- 	["KkthnxUI"] = "KkthnxUIFont",
+-- 	["SansNarrow Outline"] = "SansNarrowFontOutline",
+-- 	["SansNarrow"] = "SansNarrowFont",
+-- }
 
-function K.GetFont(font)
-	if FontTable[font] then
-		return FontTable[font]
-	else
-		return FontTable["KkthnxUI"] -- Return something to prevent errors
-	end
-end
+-- function K.GetFont(font)
+-- 	if FontTable[font] then
+-- 		return FontTable[font]
+-- 	else
+-- 		return FontTable["KkthnxUI"] -- Return something to prevent errors
+-- 	end
+-- end
 
 function K.GetTexture(texture)
 	if TextureTable[texture] then
@@ -100,12 +101,12 @@ function KkthnxUIMedia:RegisterTexture(name, path)
 	end
 end
 
-function KkthnxUIMedia:RegisterFont(name, path)
-	if not FontTable[name] then
-		FontTable[name] = path
-	end
-end
+-- function KkthnxUIMedia:RegisterFont(name, path)
+-- 	if not FontTable[name] then
+-- 		FontTable[name] = path
+-- 	end
+-- end
 
-K["Media"] = KkthnxUIMedia
-K["FontTable"] = FontTable
+-- K["Media"] = KkthnxUIMedia
+-- K["FontTable"] = FontTable
 K["TextureTable"] = TextureTable

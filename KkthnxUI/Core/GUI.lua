@@ -18,14 +18,7 @@ local CreateFrame = _G.CreateFrame
 local GameTooltip = _G.GameTooltip
 local UIParent = _G.UIParent
 
-local StyleFont = function(fs, font, size)
-	fs:SetFont(font, size)
-	fs:SetShadowColor(0, 0, 0)
-	fs:SetShadowOffset(1, -1)
-end
-
-local Font = select(1, KkthnxUIFont:GetFont())
-local Texture = C["Media"].Statusbars.KkthnxUIStatusbar
+local Texture = K.GetTexture(C["General"].Texture)
 
 -- Rewrite AddClassIconToColor so we can have 2 functions. 1 for class icon and 1 for class color :D
 local DeathKnightIconColor = K.AddClassIconToColor("DEATHKNIGHT", "|CFFC41F3B", 16)
@@ -290,7 +283,7 @@ local CreateSection = function(self, text)
 	Section.Label = Section:CreateFontString(nil, "OVERLAY")
 	Section.Label:SetPoint("CENTER", Section, LabelSpacing, 0)
 	Section.Label:SetWidth(WidgetListWidth - (Spacing * 4))
-	StyleFont(Section.Label, Font, 12)
+	Section.Label:SetFontObject("KkthnxUIFont")
 	Section.Label:SetJustifyH("CENTER")
 	Section.Label:SetText("|CFFFFCC66" .. text .. "|r")
 
@@ -344,7 +337,7 @@ local CreateButton = function(self, midtext, text, tooltip, func)
 	Button.Middle = Button:CreateFontString(nil, "OVERLAY")
 	Button.Middle:SetPoint("CENTER", Button, 0, 0)
 	Button.Middle:SetWidth(WidgetListWidth - (Spacing * 4))
-	StyleFont(Button.Middle, Font, 12)
+	Button.Middle:SetFontObject("KkthnxUIFont")
 	Button.Middle:SetJustifyH("CENTER")
 	Button.Middle:SetText(midtext)
 
@@ -352,7 +345,7 @@ local CreateButton = function(self, midtext, text, tooltip, func)
 	Button.Label:SetPoint("LEFT", Button, "RIGHT", Spacing, 0)
 	Button.Label:SetWidth(WidgetListWidth - ButtonWidth - (Spacing * 4))
 	Button.Label:SetJustifyH("LEFT")
-	StyleFont(Button.Label, Font, 12)
+	Button.Label:SetFontObject("KkthnxUIFont")
 	Button.Label:SetText(text)
 
 	tinsert(self.Widgets, Anchor)
@@ -448,7 +441,7 @@ local CreateSwitch = function(self, group, option, text, tooltip, hook)
 	Switch.Label:SetPoint("LEFT", Switch, "RIGHT", Spacing, 0)
 	Switch.Label:SetWidth(WidgetListWidth - SwitchWidth - (Spacing * 4))
 	Switch.Label:SetJustifyH("LEFT")
-	StyleFont(Switch.Label, Font, 12)
+	Switch.Label:SetFontObject("KkthnxUIFont")
 	Switch.Label:SetText(text)
 
 	if Value then
@@ -518,11 +511,11 @@ local CreateEditBox = function(self, group, option, text, tooltip, hook)
 	EditBox.Label:SetPoint("LEFT", EditBox, "RIGHT", LabelSpacing, 0)
 	EditBox.Label:SetWidth(WidgetListWidth - (EditBoxWidth + EditBoxWidth) - (Spacing * 5))
 	EditBox.Label:SetJustifyH("LEFT")
-	StyleFont(EditBox.Label, Font, 12)
+	EditBox.Label:SetFontObject("KkthnxUIFont")
 	EditBox.Label:SetText(text)
 
 	EditBox.Box = CreateFrame("EditBox", nil, EditBox)
-	StyleFont(EditBox.Box, Font, 12)
+	EditBox.Box:SetFontObject("KkthnxUIFont")
 	EditBox.Box:SetPoint("TOPLEFT", EditBox, 0, 0)
 	EditBox.Box:SetPoint("BOTTOMRIGHT", EditBox, 0, 0)
 	EditBox.Box:SetJustifyH("CENTER")
@@ -708,7 +701,7 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 	EditBox.Highlight:SetAlpha(0)
 
 	EditBox.Box = CreateFrame("EditBox", nil, EditBox)
-	StyleFont(EditBox.Box, Font, 12)
+	EditBox.Box:SetFontObject("KkthnxUIFont")
 	EditBox.Box:SetPoint("TOPLEFT", EditBox, 0, 0)
 	EditBox.Box:SetPoint("BOTTOMRIGHT", EditBox, 0, 0)
 	EditBox.Box:SetJustifyH("CENTER")
@@ -762,7 +755,7 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 	Slider.Label:SetPoint("LEFT", Slider, "RIGHT", LabelSpacing, 0)
 	Slider.Label:SetWidth(WidgetListWidth - (SliderWidth + SliderEditBoxWidth) - (Spacing * 5))
 	Slider.Label:SetJustifyH("LEFT")
-	StyleFont(Slider.Label, Font, 12)
+	Slider.Label:SetFontObject("KkthnxUIFont")
 	Slider.Label:SetText(text)
 
 	local Thumb = Slider:GetThumbTexture()
@@ -867,8 +860,8 @@ local DropdownButtonOnMouseUp = function(self, button)
 
 		if self.Parent.Type == "Texture" then
 			self.Parent.Texture:SetTexture(K.GetTexture(Value))
-		elseif self.Parent.Type == "Font" then
-			self.Parent.Current:SetFontObject(K.GetFont(Value))
+			-- elseif self.Parent.Type == "Font" then
+			-- 	self.Parent.Current:SetFontObject(K.GetFont(Value))
 		end
 
 		self.Parent.Current:SetText(self.Parent.Value)
@@ -909,8 +902,8 @@ local MenuItemOnMouseUp = function(self)
 
 	if self.GrandParent.Type == "Texture" then
 		self.GrandParent.Texture:SetTexture(K.GetTexture(self.Key))
-	elseif self.GrandParent.Type == "Font" then
-		self.GrandParent.Current:SetFontObject(K.GetFont(self.Key))
+		-- elseif self.GrandParent.Type == "Font" then
+		-- 	self.GrandParent.Current:SetFontObject(K.GetFont(self.Key))
 	end
 
 	self.GrandParent.Current:SetText(self.Key)
@@ -1108,7 +1101,7 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 
 	Dropdown.Current = Dropdown:CreateFontString(nil, "ARTWORK")
 	Dropdown.Current:SetPoint("LEFT", Dropdown, Spacing, 0)
-	Dropdown.Current:SetFontObject(K.GetFont("KkthnxUI"))
+	Dropdown.Current:SetFontObject("KkthnxUIFont")
 	Dropdown.Current:SetJustifyH("LEFT")
 	Dropdown.Current:SetWidth(DropdownWidth - 4)
 	Dropdown.Current:SetText(Value)
@@ -1117,7 +1110,7 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 	Dropdown.Label:SetPoint("LEFT", Dropdown, "RIGHT", LabelSpacing, 0)
 	Dropdown.Label:SetWidth(WidgetListWidth - DropdownWidth - (Spacing * 4))
 	Dropdown.Label:SetJustifyH("LEFT")
-	StyleFont(Dropdown.Label, Font, 12)
+	Dropdown.Label:SetFontObject("KkthnxUIFont")
 	Dropdown.Label:SetJustifyH("LEFT")
 	Dropdown.Label:SetWidth(WidgetListWidth - DropdownWidth - (Spacing * 4))
 	Dropdown.Label:SetText(text)
@@ -1210,15 +1203,15 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 		MenuItem.Text = MenuItem:CreateFontString(nil, "OVERLAY")
 		MenuItem.Text:SetPoint("LEFT", MenuItem, 5, 0)
 		MenuItem.Text:SetWidth((DropdownWidth + 3) - (Spacing * 2))
-		MenuItem.Text:SetFontObject(K.GetFont("KkthnxUI"))
+		MenuItem.Text:SetFontObject("KkthnxUIFont")
 		MenuItem.Text:SetJustifyH("LEFT")
 		MenuItem.Text:SetText(k)
 
 		if custom == "Texture" then
 			MenuItem.Texture:SetTexture(K.GetTexture(k))
 			MenuItem.Selected:SetTexture(K.GetTexture(k))
-		elseif custom == "Font" then
-			MenuItem.Text:SetFontObject(K.GetFont(k))
+			-- elseif custom == "Font" then
+			-- 	MenuItem.Text:SetFontObject(K.GetFont(k))
 		end
 
 		if custom then
@@ -1254,9 +1247,9 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 
 	if custom == "Texture" then
 		Dropdown.Texture:SetTexture(K.GetTexture(Value))
-	elseif custom == "Font" then
-		Dropdown.Texture:SetTexture(Texture)
-		Dropdown.Current:SetFontObject(K.GetFont(Value))
+	-- elseif custom == "Font" then
+	-- 	Dropdown.Texture:SetTexture(Texture)
+	-- 	Dropdown.Current:SetFontObject(K.GetFont(Value))
 	else
 		Dropdown.Texture:SetTexture(Texture)
 	end
@@ -1386,7 +1379,7 @@ local CreateColorSelection = function(self, group, option, text, tooltip)
 
 	Swatch.Select.Label = Swatch.Select:CreateFontString(nil, "OVERLAY")
 	Swatch.Select.Label:SetPoint("CENTER", Swatch.Select, 0, 0)
-	StyleFont(Swatch.Select.Label, Font, 12)
+	Swatch.Select.Label:SetFontObject("KkthnxUIFont")
 	Swatch.Select.Label:SetJustifyH("CENTER")
 	Swatch.Select.Label:SetWidth(ColorButtonWidth - 4)
 	Swatch.Select.Label:SetText("Select Color")
@@ -1395,7 +1388,7 @@ local CreateColorSelection = function(self, group, option, text, tooltip)
 	Swatch.Label:SetPoint("LEFT", Swatch.Select, "RIGHT", LabelSpacing, 0)
 	Swatch.Label:SetWidth(WidgetListWidth - (ColorButtonWidth + WidgetHeight) - (Spacing * 5))
 	Swatch.Label:SetJustifyH("LEFT")
-	StyleFont(Swatch.Label, Font, 12)
+	Swatch.Label:SetFontObject("KkthnxUIFont")
 	Swatch.Label:SetJustifyH("LEFT")
 	Swatch.Label:SetWidth(DropdownWidth - 4)
 	Swatch.Label:SetText(text)
@@ -1645,7 +1638,7 @@ GUI.CreateWindow = function(self, name, default)
 	Button.Label = Button:CreateFontString(nil, "OVERLAY")
 	Button.Label:SetPoint("CENTER", Button, 0, 0)
 	Button.Label:SetWidth(MenuButtonWidth - (Spacing * 2))
-	StyleFont(Button.Label, Font, 12)
+	Button.Label:SetFontObject("KkthnxUIFont")
 	Button.Label:SetText(name)
 
 	tinsert(self.Buttons, Button)
@@ -1706,7 +1699,7 @@ local SetUpCredits = function(frame)
 
 		Line.Text = Line:CreateFontString(nil, "OVERLAY")
 		Line.Text:SetPoint("CENTER", Line, 0, 0)
-		StyleFont(Line.Text, Font, 16)
+		Line.Text:SetFontObject("KkthnxUIFont")
 		Line.Text:SetJustifyH("CENTER")
 		Line.Text:SetText(CreditLines[i])
 
@@ -1754,7 +1747,7 @@ local function CreateContactEditBox(parent, width, height)
 	eb:SetSize(width, height)
 	eb:SetAutoFocus(false)
 	eb:SetTextInsets(5, 5, 0, 0)
-	eb:SetFontObject(_G.KkthnxUIFont)
+	eb:SetFontObject("KkthnxUIFont")
 
 	eb.bg = CreateFrame("Frame", nil, eb)
 	eb.bg:SetAllPoints()
@@ -1883,7 +1876,8 @@ GUI.Enable = function(self)
 
 	self.Header.Label = self.Header:CreateFontString(nil, "OVERLAY")
 	self.Header.Label:SetPoint("CENTER", self.Header, 0, 0)
-	StyleFont(self.Header.Label, Font, 16)
+	self.Header.Label:SetFontObject("KkthnxUIFont")
+	self.Header.Label:SetFont(select(1, self.Header.Label:GetFont()), 16, select(3, self.Header.Label:GetFont()))
 	self.Header.Label:SetText(HeaderText)
 
 	-- Footer
@@ -1914,7 +1908,7 @@ GUI.Enable = function(self)
 	Apply.Middle = Apply:CreateFontString(nil, "OVERLAY")
 	Apply.Middle:SetPoint("CENTER", Apply, 0, 0)
 	Apply.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
-	StyleFont(Apply.Middle, Font, 12)
+	Apply.Middle:SetFontObject("KKthnxUIFont")
 	Apply.Middle:SetJustifyH("CENTER")
 	Apply.Middle:SetText("|CFF00CC4CApply|r")
 
@@ -1940,7 +1934,7 @@ GUI.Enable = function(self)
 	Reset.Middle = Reset:CreateFontString(nil, "OVERLAY")
 	Reset.Middle:SetPoint("CENTER", Reset, 0, 0)
 	Reset.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
-	StyleFont(Reset.Middle, Font, 12)
+	Reset.Middle:SetFontObject("KKthnxUIFont")
 	Reset.Middle:SetJustifyH("CENTER")
 	Reset.Middle:SetText(K.SystemColor .. "Reset UI|r")
 
@@ -1971,7 +1965,7 @@ GUI.Enable = function(self)
 	Move.Middle = Move:CreateFontString(nil, "OVERLAY")
 	Move.Middle:SetPoint("CENTER", Move, 0, 0)
 	Move.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
-	StyleFont(Move.Middle, Font, 12)
+	Move.Middle:SetFontObject("KKthnxUIFont")
 	Move.Middle:SetJustifyH("CENTER")
 	Move.Middle:SetText(K.SystemColor .. "Toggle UI|r")
 
@@ -1995,7 +1989,7 @@ GUI.Enable = function(self)
 	Credits.Middle = Credits:CreateFontString(nil, "OVERLAY")
 	Credits.Middle:SetPoint("CENTER", Credits, 0, 0)
 	Credits.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
-	StyleFont(Credits.Middle, Font, 12)
+	Credits.Middle:SetFontObject("KKthnxUIFont")
 	Credits.Middle:SetJustifyH("CENTER")
 	Credits.Middle:SetText(K.InfoColor .. "Credits|r")
 
@@ -2021,7 +2015,7 @@ GUI.Enable = function(self)
 	ResetCVars.Middle = ResetCVars:CreateFontString(nil, "OVERLAY")
 	ResetCVars.Middle:SetPoint("CENTER", ResetCVars, 0, 0)
 	ResetCVars.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
-	StyleFont(ResetCVars.Middle, Font, 12)
+	ResetCVars.Middle:SetFontObject("KKthnxUIFont")
 	ResetCVars.Middle:SetJustifyH("CENTER")
 	ResetCVars.Middle:SetText(K.SystemColor .. "Reset CVars|r")
 
@@ -2047,7 +2041,7 @@ GUI.Enable = function(self)
 	ResetChat.Middle = ResetChat:CreateFontString(nil, "OVERLAY")
 	ResetChat.Middle:SetPoint("CENTER", ResetChat, 0, 0)
 	ResetChat.Middle:SetWidth(FooterButtonWidth - Spacing)
-	StyleFont(ResetChat.Middle, Font, 12)
+	ResetChat.Middle:SetFontObject("KKthnxUIFont")
 	ResetChat.Middle:SetJustifyH("CENTER")
 	ResetChat.Middle:SetText(K.SystemColor .. "Reset Chat|r")
 
@@ -2076,7 +2070,7 @@ GUI.Enable = function(self)
 	ContactMe.Middle = ContactMe:CreateFontString(nil, "OVERLAY")
 	ContactMe.Middle:SetPoint("CENTER", ContactMe, 0, 0)
 	ContactMe.Middle:SetWidth(FooterButtonWidth - Spacing)
-	StyleFont(ContactMe.Middle, Font, 12)
+	ContactMe.Middle:SetFontObject("KKthnxUIFont")
 	ContactMe.Middle:SetJustifyH("CENTER")
 	ContactMe.Middle:SetText(K.SystemColor .. "Contact Me!|r")
 
@@ -2105,7 +2099,7 @@ GUI.Enable = function(self)
 	Profiles.Middle = Profiles:CreateFontString(nil, "OVERLAY")
 	Profiles.Middle:SetPoint("CENTER", Profiles, 0, 0)
 	Profiles.Middle:SetWidth(FooterButtonWidth - (Spacing * 2))
-	StyleFont(Profiles.Middle, Font, 12)
+	Profiles.Middle:SetFontObject("KKthnxUIFont")
 	Profiles.Middle:SetJustifyH("CENTER")
 	Profiles.Middle:SetText(K.InfoColor .. "Profiles|r")
 

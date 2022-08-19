@@ -393,7 +393,7 @@ function Module:ReskinStatusBar()
 	self.StatusBar:ClearAllPoints()
 	self.StatusBar:SetPoint("BOTTOMLEFT", self.tooltipStyle, "TOPLEFT", 0, 6)
 	self.StatusBar:SetPoint("BOTTOMRIGHT", self.tooltipStyle, "TOPRIGHT", -0, 6)
-	self.StatusBar:SetStatusBarTexture(K.GetTexture(C["UITextures"].TooltipTextures))
+	self.StatusBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 	self.StatusBar:SetHeight(11)
 	self.StatusBar:CreateBorder()
 end
@@ -410,7 +410,7 @@ function Module:GameTooltip_ShowStatusBar()
 
 	bar:StripTextures()
 	bar:CreateBorder()
-	bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].TooltipTextures))
+	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 
 	bar.isStyled = true
 end
@@ -426,7 +426,7 @@ function Module:GameTooltip_ShowProgressBar()
 	end
 
 	bar.Bar:StripTextures()
-	bar.Bar:SetStatusBarTexture(K.GetTexture(C["UITextures"].TooltipTextures))
+	bar.Bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 	bar.Bar:CreateBorder()
 
 	bar.isStyled = true

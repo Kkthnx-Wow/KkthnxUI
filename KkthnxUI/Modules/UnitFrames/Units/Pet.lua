@@ -11,8 +11,8 @@ function Module:CreatePet()
 	local petHeight = C["Unitframe"].PetHealthHeight
 	local petPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
-	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
+	local UnitframeFont = "KkthnxUIFont"
+	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 
 	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	Overlay:SetAllPoints()

@@ -6,8 +6,8 @@ local _G = _G
 local CreateFrame = _G.CreateFrame
 
 function Module:CreateTargetOfTarget()
-	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
-	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
+	local UnitframeFont = "KkthnxUIFont"
+	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local targetOfTargetWidth = C["Unitframe"].TargetTargetHealthWidth
 	local targetOfTargetPortraitStyle = C["Unitframe"].PortraitStyle.Value
 

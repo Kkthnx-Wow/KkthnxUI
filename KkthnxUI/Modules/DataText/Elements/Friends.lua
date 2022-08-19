@@ -667,7 +667,7 @@ function Module:CreateSocialDataText()
 	FriendsDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 	FriendsDataText.Text = FriendsDataText:CreateFontString(nil, "ARTWORK")
-	FriendsDataText.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	FriendsDataText.Text:SetFontObject("KkthnxUIFont")
 	FriendsDataText.Text:SetPoint("LEFT", FriendsDataText.Texture, "RIGHT", 0, 0)
 
 	for _, event in pairs(eventList) do

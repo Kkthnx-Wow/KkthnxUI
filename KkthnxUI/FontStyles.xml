@@ -5,16 +5,16 @@
          <Font font="Fonts\FRIZQT__.TTF" height="12" />
       </Member>
       <Member alphabet="korean">
-         <Font font="Fonts\2002.TTF" height="11" />
+         <Font font="Fonts\2002.TTF" height="12" />
       </Member>
       <Member alphabet="simplifiedchinese">
-         <Font font="Fonts\ARKai_T.ttf" height="11" />
+         <Font font="Fonts\ARKai_T.ttf" height="12" />
       </Member>
       <Member alphabet="traditionalchinese">
-         <Font font="Fonts\blei00d.TTF" height="11" />
+         <Font font="Fonts\blei00d.TTF" height="12" />
       </Member>
       <Member alphabet="russian">
-         <Font font="Fonts\FRIZQT___CYR.TTF" height="9" />
+         <Font font="Fonts\FRIZQT___CYR.TTF" height="12" />
       </Member>
    </FontFamily>
    <FontFamily name="KkthnxUIFontOutline" virtual="true">
@@ -22,16 +22,16 @@
          <Font font="Fonts\FRIZQT__.TTF" height="12" outline="NORMAL" />
       </Member>
       <Member alphabet="korean">
-         <Font font="Fonts\2002.TTF" height="11" outline="NORMAL" />
+         <Font font="Fonts\2002.TTF" height="12" outline="NORMAL" />
       </Member>
       <Member alphabet="simplifiedchinese">
-         <Font font="Fonts\ARKai_T.ttf" height="11" outline="NORMAL" />
+         <Font font="Fonts\ARKai_T.ttf" height="12" outline="NORMAL" />
       </Member>
       <Member alphabet="traditionalchinese">
-         <Font font="Fonts\blei00d.TTF" height="11" outline="NORMAL" />
+         <Font font="Fonts\blei00d.TTF" height="12" outline="NORMAL" />
       </Member>
       <Member alphabet="russian">
-         <Font font="Fonts\FRIZQT___CYR.TTF" height="10" outline="NORMAL" />
+         <Font font="Fonts\FRIZQT___CYR.TTF" height="12" outline="NORMAL" />
       </Member>
    </FontFamily>
 </Ui>

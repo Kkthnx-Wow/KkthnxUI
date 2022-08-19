@@ -399,7 +399,7 @@ function Module:StyleExtraActionButton(cfg)
 	local overlay = CreateFrame("Frame", nil, button)
 	overlay:SetAllPoints()
 
-	local hotcountFont = K.GetFont(C["UIFonts"].ActionBarsFonts)
+	local hotcountFont = "KkthnxUIFontOutline"
 	hotkey:SetParent(overlay)
 	Module:HookHotKey(button)
 	cfg.hotkey.font = hotcountFont
@@ -478,7 +478,7 @@ function Module:StyleAllActionButtons(cfg)
 end
 
 function Module:CreateBarSkin()
-	local cfgFont = K.GetFont(C["UIFonts"].ActionBarsFonts)
+	local cfgFont = "KkthnxUIFontOutline"
 	local cfg = {
 		icon = {
 			texCoord = K.TexCoords,

@@ -89,7 +89,7 @@ function Module:CreateLocationDataText()
 	end
 
 	LocationDataText.MainZoneText = LocationDataText:CreateFontString("OVERLAY")
-	LocationDataText.MainZoneText:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	LocationDataText.MainZoneText:SetFontObject("KkthnxUIFont")
 	LocationDataText.MainZoneText:SetFont(select(1, LocationDataText.MainZoneText:GetFont()), 13, select(3, LocationDataText.MainZoneText:GetFont()))
 	LocationDataText.MainZoneText:SetAllPoints(LocationDataText)
 	LocationDataText.MainZoneText:SetWordWrap(true)
@@ -97,7 +97,7 @@ function Module:CreateLocationDataText()
 	LocationDataText.MainZoneText:SetMaxLines(2)
 
 	LocationDataText.SubZoneText = LocationDataText:CreateFontString("OVERLAY")
-	LocationDataText.SubZoneText:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	LocationDataText.SubZoneText:SetFontObject("KkthnxUIFont")
 	LocationDataText.SubZoneText:SetFont(select(1, LocationDataText.SubZoneText:GetFont()), 11, select(3, LocationDataText.SubZoneText:GetFont()))
 	LocationDataText.SubZoneText:SetPoint("TOP", LocationDataText.MainZoneText, "BOTTOM", 0, -1)
 	LocationDataText.SubZoneText:SetNonSpaceWrap(true)

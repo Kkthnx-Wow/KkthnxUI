@@ -135,7 +135,7 @@ function Module:CreateVoiceActivity()
 		chatHead.Portrait.texture:SetAllPoints(chatHead.Portrait)
 
 		chatHead.Name = chatHead:CreateFontString(nil, "OVERLAY")
-		chatHead.Name:SetFontObject(_G.KkthnxUIFont)
+		chatHead.Name:SetFontObject("KkthnxUIFont")
 		chatHead.Name:SetFont(select(1, chatHead.Name:GetFont()), 14, select(3, chatHead.Name:GetFont()))
 		chatHead.Name:SetPoint("LEFT", chatHead.Portrait, "RIGHT", 6, 0)
 
@@ -145,7 +145,7 @@ function Module:CreateVoiceActivity()
 		chatHead.StatusBar:SetWidth(8)
 		chatHead.StatusBar:SetHeight(CHAT_HEAD_HEIGHT)
 		chatHead.StatusBar:CreateBorder()
-		chatHead.StatusBar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
+		chatHead.StatusBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 		chatHead.StatusBar:SetMinMaxValues(0, 1)
 
 		chatHead.StatusBar.anim = _G.CreateAnimationGroup(chatHead.StatusBar)

@@ -635,7 +635,7 @@ function Module:CreateClassPower(self)
 		bars[i] = CreateFrame("StatusBar", nil, bar)
 		bars[i]:SetHeight(barHeight)
 		bars[i]:SetWidth((barWidth - 5 * 6) / 6)
-		bars[i]:SetStatusBarTexture(K.GetTexture(C["UITextures"].NameplateTextures))
+		bars[i]:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 		bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
 		if self.mystyle == "PlayerPlate" or self.mystyle == "targetplate" then
 			bars[i]:CreateShadow(true)

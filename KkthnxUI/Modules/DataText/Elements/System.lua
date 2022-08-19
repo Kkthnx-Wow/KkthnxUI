@@ -272,7 +272,7 @@ function Module:CreateSystemDataText()
 	SystemDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 	SystemDataText.Text = SystemDataText:CreateFontString("OVERLAY")
-	SystemDataText.Text:SetFontObject(K.GetFont(C["UIFonts"].DataTextFonts))
+	SystemDataText.Text:SetFontObject("KkthnxUIFont")
 	SystemDataText.Text:SetPoint("LEFT", SystemDataText.Texture, "RIGHT", 4, 0)
 
 	SystemDataText:SetScript("OnUpdate", OnUpdate)

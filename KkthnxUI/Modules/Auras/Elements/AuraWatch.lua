@@ -285,7 +285,7 @@ local function BuildBAR(barWidth, iconSize)
 	frame.Statusbar:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", 6, 0)
 	frame.Statusbar:SetMinMaxValues(0, 1)
 	frame.Statusbar:SetValue(0)
-	frame.Statusbar:SetStatusBarTexture(C["Media"].Statusbars.KkthnxUIStatusbar)
+	frame.Statusbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 	frame.Statusbar:SetStatusBarColor(K.r, K.g, K.b)
 	frame.Statusbar:CreateBorder()
 

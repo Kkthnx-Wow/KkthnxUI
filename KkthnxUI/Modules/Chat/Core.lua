@@ -172,7 +172,7 @@ end
 
 -- https://git.tukui.org/Tukz/Tukui/-/blob/master/Tukui/Modules/ChatFrames/ChatFrames.lua#L55
 function Module:SetChatFont()
-	local Font = K.GetFont(C["UIFonts"].ChatFonts)
+	local Font = "KkthnxUIFont"
 	local Path, _, Flag = _G[Font]:GetFont()
 	local CurrentFont, CurrentSize, CurrentFlag = self:GetFont()
 
@@ -190,7 +190,7 @@ function Module:SkinChat()
 
 	local id = self:GetID()
 	local name = self:GetName()
-	local getTabFont = K.GetFont(C["UIFonts"].ChatFonts)
+	local getTabFont = "KkthnxUIFont"
 	local tabFont, tabFontSize, tabFontFlags = _G[getTabFont]:GetFont()
 
 	self:SetMaxResize(K.ScreenWidth, K.ScreenHeight)
@@ -236,7 +236,7 @@ function Module:SkinChat()
 
 	-- Character count
 	local charCount = eb:CreateFontString(nil, "ARTWORK")
-	charCount:SetFontObject(_G.KkthnxUIFont)
+	charCount:SetFontObject("KkthnxUIFont")
 	charCount:SetTextColor(190, 190, 190, 0.4)
 	charCount:SetPoint("TOPRIGHT", eb, "TOPRIGHT", 4, 0)
 	charCount:SetPoint("BOTTOMRIGHT", eb, "BOTTOMRIGHT", 4, 0)

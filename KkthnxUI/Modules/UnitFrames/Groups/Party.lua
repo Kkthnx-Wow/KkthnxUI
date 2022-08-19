@@ -14,9 +14,9 @@ function Module:CreateParty()
 	local partyHeight = C["Party"].HealthHeight
 	local partyPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = K.GetFont(C["UIFonts"].UnitframeFonts)
-	local UnitframeTexture = K.GetTexture(C["UITextures"].UnitframeTextures)
-	local HealPredictionTexture = K.GetTexture(C["UITextures"].HealPredictionTextures)
+	local UnitframeFont = "KkthnxUIFont"
+	local UnitframeTexture = K.GetTexture(C["General"].Texture)
+	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
 	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	Overlay:SetAllPoints()
@@ -194,7 +194,8 @@ function Module:CreateParty()
 		Castbar.Spark:SetSize(128, Castbar:GetHeight())
 		Castbar.Spark:SetBlendMode("ADD")
 
-		Castbar.Time = Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		Castbar.Time = Castbar:CreateFontString(nil, "OVERLAY")
+		Castbar.Time:SetFontObject(UnitframeFont)
 		Castbar.Time:SetFont(select(1, Castbar.Time:GetFont()), 11, select(3, Castbar.Time:GetFont()))
 		Castbar.Time:SetPoint("RIGHT", -3.5, 0)
 		Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
@@ -208,7 +209,8 @@ function Module:CreateParty()
 		Castbar.PostCastFail = Module.PostCastFailed
 		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
-		Castbar.Text = Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		Castbar.Text = Castbar:CreateFontString(nil, "OVERLAY")
+		Castbar.Text:SetFontObject(UnitframeFont)
 		Castbar.Text:SetFont(select(1, Castbar.Text:GetFont()), 11, select(3, Castbar.Text:GetFont()))
 		Castbar.Text:SetPoint("LEFT", 3.5, 0)
 		Castbar.Text:SetPoint("RIGHT", Castbar.Time, "LEFT", -3.5, 0)
