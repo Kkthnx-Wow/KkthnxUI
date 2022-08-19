@@ -4,6 +4,10 @@ local _G = _G
 local table_insert = _G.table.insert
 
 table_insert(C.defaultThemes, function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
 	GameMenuFrame.Header:StripTextures()
 	GameMenuFrame.Header:ClearAllPoints()
 	GameMenuFrame.Header:SetPoint("TOP", GameMenuFrame, 0, 7)

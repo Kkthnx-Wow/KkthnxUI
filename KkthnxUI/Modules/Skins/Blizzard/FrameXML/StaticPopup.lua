@@ -69,6 +69,10 @@ local function ReskinEditBox(self, height, width)
 end
 
 table_insert(C.defaultThemes, function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
 	for i = 1, 4 do
 		local frame = _G["StaticPopup" .. i]
 		local bu = _G["StaticPopup" .. i .. "ItemFrame"]

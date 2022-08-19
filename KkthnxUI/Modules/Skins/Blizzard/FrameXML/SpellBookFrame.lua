@@ -9,6 +9,10 @@ local SPELLS_PER_PAGE = _G.SPELLS_PER_PAGE
 local hooksecurefunc = _G.hooksecurefunc
 
 table_insert(C.defaultThemes, function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
 	local professionTexture = K.GetTexture(C["General"].Texture)
 
 	for i = 1, SPELLS_PER_PAGE do

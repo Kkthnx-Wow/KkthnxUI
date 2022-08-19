@@ -224,6 +224,10 @@ local function AddQuestNumString()
 end
 
 table_insert(C.defaultThemes, function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
 	if IsAddOnLoaded("!KalielsTracker") then
 		return
 	end

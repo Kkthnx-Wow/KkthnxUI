@@ -1,7 +1,6 @@
-local _, C = unpack(KkthnxUI)
+-- local _, C = unpack(KkthnxUI)
 
 local _G = _G
-local GetLocale = _G.GetLocale
 local KkthnxUIFont = _G.KkthnxUIFont
 
 local GetKkthnxUIFont = select(1, KkthnxUIFont:GetFont())

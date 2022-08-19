@@ -1,6 +1,10 @@
 local K, C, L = unpack(KkthnxUI)
 
 tinsert(C.defaultThemes, function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
 	local LootFrame = _G.LootFrame
 
 	LootFrame:StripTextures()

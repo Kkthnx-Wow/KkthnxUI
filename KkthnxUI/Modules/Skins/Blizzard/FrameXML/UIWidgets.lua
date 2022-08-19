@@ -166,6 +166,10 @@ local function ReskinWidgetGroups(self)
 end
 
 table.insert(C.defaultThemes, function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
 	hooksecurefunc(_G.UIWidgetTopCenterContainerFrame, "UpdateWidgetLayout", ReskinWidgetGroups)
 	ReskinWidgetGroups(_G.UIWidgetTopCenterContainerFrame)
 

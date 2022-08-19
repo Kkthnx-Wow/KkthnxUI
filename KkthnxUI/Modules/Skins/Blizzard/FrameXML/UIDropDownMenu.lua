@@ -6,6 +6,10 @@ local table_insert = _G.table.insert
 local hooksecurefunc = _G.hooksecurefunc
 
 table_insert(C.defaultThemes, function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
 	local r, g, b = K.r, K.g, K.b
 	local dropdowns = { "DropDownList", "L_DropDownList", "Lib_DropDownList" }
 

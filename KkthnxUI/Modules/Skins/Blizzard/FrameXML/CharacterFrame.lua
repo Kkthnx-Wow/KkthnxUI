@@ -56,6 +56,10 @@ local function UpdateFactionSkins()
 end
 
 tinsert(C.defaultThemes, function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
 	if CharacterFrame:IsShown() then
 		HideUIPanel(CharacterFrame)
 	end

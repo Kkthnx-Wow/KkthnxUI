@@ -12,6 +12,10 @@ local hooksecurefunc = _G.hooksecurefunc
 local LossOfControlFrame = _G.LossOfControlFrame
 
 table_insert(C.defaultThemes, function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
 	local IconBorder = CreateFrame("Frame", nil, LossOfControlFrame)
 	IconBorder:SetAllPoints(LossOfControlFrame.Icon)
 	IconBorder:SetFrameLevel(LossOfControlFrame:GetFrameLevel())

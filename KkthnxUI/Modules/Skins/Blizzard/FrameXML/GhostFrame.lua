@@ -4,6 +4,10 @@ local _G = _G
 local table_insert = _G.table.insert
 
 table_insert(C.defaultThemes, function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
 	for i = 1, 6 do
 		select(i, GhostFrame:GetRegions()):Hide()
 	end
