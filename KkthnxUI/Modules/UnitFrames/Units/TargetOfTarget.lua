@@ -6,7 +6,6 @@ local _G = _G
 local CreateFrame = _G.CreateFrame
 
 function Module:CreateTargetOfTarget()
-	local UnitframeFont = "KkthnxUIFont"
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local targetOfTargetWidth = C["Unitframe"].TargetTargetHealthWidth
 	local targetOfTargetPortraitStyle = C["Unitframe"].PortraitStyle.Value
@@ -45,7 +44,7 @@ function Module:CreateTargetOfTarget()
 
 	Health.Value = Health:CreateFontString(nil, "OVERLAY")
 	Health.Value:SetPoint("CENTER", Health, "CENTER", 0, 0)
-	Health.Value:SetFontObject(UnitframeFont)
+	Health.Value:SetFontObject(K.UIFont)
 	Health.Value:SetFont(select(1, Health.Value:GetFont()), 10, select(3, Health.Value:GetFont()))
 	self:Tag(Health.Value, "[hp]")
 
@@ -62,7 +61,7 @@ function Module:CreateTargetOfTarget()
 	local Name = self:CreateFontString(nil, "OVERLAY")
 	Name:SetPoint("TOPLEFT", Power, "BOTTOMLEFT", 0, -4)
 	Name:SetPoint("TOPRIGHT", Power, "BOTTOMRIGHT", 0, -4)
-	Name:SetFontObject(UnitframeFont)
+	Name:SetFontObject(K.UIFont)
 	Name:SetWordWrap(false)
 
 	if targetOfTargetPortraitStyle == "NoPortraits" or targetOfTargetPortraitStyle == "OverlayPortrait" then
@@ -116,7 +115,7 @@ function Module:CreateTargetOfTarget()
 	end
 
 	local Level = self:CreateFontString(nil, "OVERLAY")
-	Level:SetFontObject(UnitframeFont)
+	Level:SetFontObject(K.UIFont)
 	if targetOfTargetPortraitStyle ~= "NoPortraits" and targetOfTargetPortraitStyle ~= "OverlayPortrait" and not C["Unitframe"].HideTargetOfTargetLevel then
 		Level:Show()
 	else

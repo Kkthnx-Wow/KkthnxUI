@@ -300,7 +300,7 @@ function Module:CreateGoldDataText()
 		GoldDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 		GoldDataText.Text = GoldDataText:CreateFontString(nil, "ARTWORK")
-		GoldDataText.Text:SetFontObject("KkthnxUIFont")
+		GoldDataText.Text:SetFontObject(K.UIFont)
 		GoldDataText.Text:SetPoint("LEFT", GoldDataText.Texture, "RIGHT", -2, 0)
 	end
 

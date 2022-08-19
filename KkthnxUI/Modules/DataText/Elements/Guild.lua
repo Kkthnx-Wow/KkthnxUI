@@ -440,7 +440,7 @@ function Module:CreateGuildDataText()
 	GuildDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 	GuildDataText.Text = GuildDataText:CreateFontString(nil, "ARTWORK")
-	GuildDataText.Text:SetFontObject("KkthnxUIFont")
+	GuildDataText.Text:SetFontObject(K.UIFont)
 	GuildDataText.Text:SetPoint("LEFT", GuildDataText.Texture, "RIGHT", 0, 0)
 
 	for _, event in pairs(eventList) do

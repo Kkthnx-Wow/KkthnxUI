@@ -13,7 +13,6 @@ function Module:CreateArena()
 	local arenaHeight = C["Arena"].HealthHeight
 	local arenaPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = "KkthnxUIFont"
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	-- local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
@@ -54,7 +53,7 @@ function Module:CreateArena()
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
-	self.Health.Value:SetFontObject(UnitframeFont)
+	self.Health.Value:SetFontObject(K.UIFont)
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[hp]")
 
@@ -75,7 +74,7 @@ function Module:CreateArena()
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
 	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
-	self.Name:SetFontObject(UnitframeFont)
+	self.Name:SetFontObject(K.UIFont)
 	if arenaPortraitStyle == "NoPortraits" or arenaPortraitStyle == "OverlayPortrait" then
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
 			self:Tag(self.Name, "[name] [nplevel][afkdnd]")
@@ -127,7 +126,7 @@ function Module:CreateArena()
 	else
 		self.Level:Hide()
 	end
-	self.Level:SetFontObject(UnitframeFont)
+	self.Level:SetFontObject(K.UIFont)
 	self:Tag(self.Level, "[nplevel]")
 
 	self.Trinket = CreateFrame("Frame", "KKUI_ArenaTrinket", self)

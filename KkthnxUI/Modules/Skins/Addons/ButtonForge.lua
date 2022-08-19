@@ -3,7 +3,7 @@ local Module = K:GetModule("Skins")
 
 local _G = _G
 
-local cfgFont = "KkthnxUIFontOutline"
+local cfgFont = K.UIFontOutline
 local cfg = {
 	icon = {
 		texCoord = K.TexCoords,

@@ -30,7 +30,6 @@ table_insert(C.defaultThemes, function()
 	K.Mover(LossOfControlFrame, "LossOfControl", "LossOfControlFrame", { "CENTER", UIParent, "CENTER", 0, 250 }, 60, 60)
 
 	hooksecurefunc("LossOfControlFrame_SetUpDisplay", function(self)
-		local LOCFFont = "KkthnxUIFont"
 		local Icon = self.Icon
 		local AbilityName = self.AbilityName
 		local TimeLeftNumberText = self.TimeLeft.NumberText
@@ -43,7 +42,7 @@ table_insert(C.defaultThemes, function()
 		AbilityName:ClearAllPoints()
 		AbilityName:SetPoint("BOTTOM", self, 0, -8)
 		AbilityName.scrollTime = nil
-		AbilityName:SetFontObject(LOCFFont)
+		AbilityName:SetFontObject(K.UIFont)
 		AbilityName:SetFont(select(1, AbilityName:GetFont()), 20, select(3, AbilityName:GetFont()))
 
 		TimeLeftNumberText:Kill()

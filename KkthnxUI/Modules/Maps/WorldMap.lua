@@ -221,7 +221,7 @@ function Module:OnEnable()
 
 		-- Create cursor coordinates frame
 		cursorCoords = WorldMapFrame.ScrollContainer:CreateFontString(nil, "OVERLAY")
-		cursorCoords:SetFontObject(_G.KkthnxUIFontOutline)
+		cursorCoords:SetFontObject(K.UIFontOutline)
 		cursorCoords:SetFont(select(1, cursorCoords:GetFont()), 13, select(3, cursorCoords:GetFont()))
 		cursorCoords:SetSize(200, 16)
 		cursorCoords:SetParent(coordsFrame)
@@ -232,7 +232,7 @@ function Module:OnEnable()
 
 		-- Create player coordinates frame
 		playerCoords = WorldMapFrame.ScrollContainer:CreateFontString(nil, "OVERLAY")
-		playerCoords:SetFontObject(_G.KkthnxUIFontOutline)
+		playerCoords:SetFontObject(K.UIFontOutline)
 		playerCoords:SetFont(select(1, playerCoords:GetFont()), 13, select(3, playerCoords:GetFont()))
 		playerCoords:SetSize(200, 16)
 		playerCoords:SetParent(coordsFrame)

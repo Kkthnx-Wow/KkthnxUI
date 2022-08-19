@@ -7,7 +7,6 @@ local select = _G.select
 local CreateFrame = _G.CreateFrame
 local GetThreatStatusColor = _G.GetThreatStatusColor
 local UnitIsUnit = _G.UnitIsUnit
-local UnitPowerType = _G.UnitPowerType
 local UnitThreatSituation = _G.UnitThreatSituation
 
 local function UpdateRaidThreat(self, _, unit)
@@ -56,7 +55,6 @@ local function UpdateRaidPower(self, _, unit)
 end
 
 function Module:CreateRaid()
-	local RaidframeFont = "KkthnxUIFont"
 	local RaidframeTexture = K.GetTexture(C["General"].Texture)
 	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
@@ -71,7 +69,7 @@ function Module:CreateRaid()
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, 0, -9)
-	self.Health.Value:SetFontObject(RaidframeFont)
+	self.Health.Value:SetFontObject(K.UIFont)
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 11, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[raidhp]")
 
@@ -180,7 +178,7 @@ function Module:CreateRaid()
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 3, -15)
 	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -3, -15)
-	self.Name:SetFontObject(RaidframeFont)
+	self.Name:SetFontObject(K.UIFont)
 	self.Name:SetWordWrap(false)
 	self:Tag(self.Name, "[lfdrole][name]")
 
@@ -221,7 +219,7 @@ function Module:CreateRaid()
 	if C["Raid"].ShowNotHereTimer then
 		self.StatusIndicator = self:CreateFontString(nil, "OVERLAY")
 		self.StatusIndicator:SetPoint("CENTER", self.Overlay, "BOTTOM", 0, 6)
-		self.StatusIndicator:SetFontObject(RaidframeFont)
+		self.StatusIndicator:SetFontObject(K.UIFont)
 		self.StatusIndicator:SetFont(select(1, self.StatusIndicator:GetFont()), 10, select(3, self.StatusIndicator:GetFont()))
 		self.StatusIndicator:SetTextColor(1, 0, 0)
 		self:Tag(self.StatusIndicator, "[afkdnd]")

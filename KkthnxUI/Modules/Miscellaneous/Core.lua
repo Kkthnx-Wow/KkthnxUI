@@ -388,7 +388,7 @@ function Module:CreateQuestSizeUpdate()
 end
 
 function Module:CreateObjectiveSizeUpdate()
-	ObjectiveFont:SetFontObject("KkthnxUIFont")
+	ObjectiveFont:SetFontObject(K.UIFont)
 	ObjectiveFont:SetFont(ObjectiveFont:GetFont(), C["Skins"].ObjectiveFontSize, select(3, ObjectiveFont:GetFont()))
 end
 

@@ -13,9 +13,8 @@ function Module:CreateBoss()
 	local bossHeight = C["Boss"].HealthHeight
 	local bossPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = "KkthnxUIFont"
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
-	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
+	-- local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
 	self.Overlay:SetAllPoints()
@@ -54,7 +53,7 @@ function Module:CreateBoss()
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
-	self.Health.Value:SetFontObject(UnitframeFont)
+	self.Health.Value:SetFontObject(K.UIFont)
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[hp]")
 
@@ -75,7 +74,7 @@ function Module:CreateBoss()
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
 	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
-	self.Name:SetFontObject(UnitframeFont)
+	self.Name:SetFontObject(K.UIFont)
 	self.Name:SetWidth(bossWidth)
 	self.Name:SetWordWrap(false)
 	if bossPortraitStyle == "NoPortraits" or bossPortraitStyle == "OverlayPortrait" then
@@ -129,7 +128,7 @@ function Module:CreateBoss()
 	else
 		self.Level:Hide()
 	end
-	self.Level:SetFontObject(UnitframeFont)
+	self.Level:SetFontObject(K.UIFont)
 	self:Tag(self.Level, "[nplevel]")
 
 	--if C["Boss"].ShowBuffs then
@@ -186,7 +185,7 @@ function Module:CreateBoss()
 		self.Castbar.Spark:SetBlendMode("ADD")
 
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY")
-		self.Castbar.Time:SetFontObject(UnitframeFont)
+		self.Castbar.Time:SetFontObject(K.UIFont)
 		self.Castbar.Time:SetFont(select(1, self.Castbar.Time:GetFont()), 11, select(3, self.Castbar.Time:GetFont()))
 		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
 		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
@@ -201,7 +200,7 @@ function Module:CreateBoss()
 		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
-		self.Castbar.Text:SetFontObject(UnitframeFont)
+		self.Castbar.Text:SetFontObject(K.UIFont)
 		self.Castbar.Text:SetFont(select(1, self.Castbar.Text:GetFont()), 11, select(3, self.Castbar.Text:GetFont()))
 		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
 		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)

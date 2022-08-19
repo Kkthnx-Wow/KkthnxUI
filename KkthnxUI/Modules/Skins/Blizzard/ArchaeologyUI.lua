@@ -17,5 +17,5 @@ C.themes["Blizzard_ArchaeologyUI"] = function()
 
 	ArcheologyDigsiteProgressBar.BarTitle:ClearAllPoints()
 	ArcheologyDigsiteProgressBar.BarTitle:SetPoint("BOTTOM", ArcheologyDigsiteProgressBar, "TOP", 0, -2)
-	ArcheologyDigsiteProgressBar.BarTitle:SetFontObject("KkthnxUIFont")
+	ArcheologyDigsiteProgressBar.BarTitle:SetFontObject(K.UIFont)
 end

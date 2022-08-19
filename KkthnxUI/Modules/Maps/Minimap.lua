@@ -383,7 +383,7 @@ function Module:ReskinRegions()
 		if queueStatusDisplay then
 			queueStatusDisplay.text:ClearAllPoints()
 			queueStatusDisplay.text:SetPoint("CENTER", queueIcon, 0, -5)
-			queueStatusDisplay.text:SetFontObject("KkthnxUIFont")
+			queueStatusDisplay.text:SetFontObject(K.UIFont)
 
 			if queueStatusDisplay.title then
 				Module:ClearQueueStatus()
@@ -542,7 +542,7 @@ function Module:ShowCalendar()
 			local fs = GameTimeFrame:GetFontString()
 			fs:ClearAllPoints()
 			fs:SetPoint("CENTER", 0, -5)
-			fs:SetFontObject(_G.KkthnxUIFont)
+			fs:SetFontObject(K.UIFont)
 			fs:SetFont(select(1, fs:GetFont()), 20, select(3, fs:GetFont()))
 			fs:SetAlpha(0.9)
 			fs:SetShadowOffset(0, 0)

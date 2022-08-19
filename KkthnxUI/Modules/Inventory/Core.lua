@@ -36,10 +36,13 @@ local SOUNDKIT = _G.SOUNDKIT
 local SortBags = _G.SortBags
 local SortBankBags = _G.SortBankBags
 
-local bagsFont = _G.KkthnxUIFontOutline
-local toggleButtons = {}
-local deleteEnable, favouriteEnable, splitEnable, customJunkEnable
+local deleteEnable
+local favouriteEnable
+local splitEnable
+local customJunkEnable
+
 local sortCache = {}
+local toggleButtons = {}
 
 function Module:ReverseSort()
 	for bag = 0, 4 do
@@ -166,7 +169,7 @@ function Module:CreateInfoFrame()
 	search.textFilters = BagSmartFilter
 
 	local currencyTag = self:SpawnPlugin("TagDisplay", "[currencies]", infoFrame)
-	currencyTag:SetFontObject(bagsFont)
+	currencyTag:SetFontObject(K.UIFontOutline)
 	currencyTag:SetFont(select(1, currencyTag:GetFont()), 13, select(3, currencyTag:GetFont()))
 	currencyTag:SetPoint("TOP", self, "BOTTOM", 0, -6)
 
@@ -209,7 +212,7 @@ function Module:CreateCollapseArrow()
 	collapseArrow.__texture = collapseArrow.Icon
 
 	local moneyTag = self:SpawnPlugin("TagDisplay", "[money]", self)
-	moneyTag:SetFontObject(bagsFont)
+	moneyTag:SetFontObject(K.UIFontOutline)
 	moneyTag:SetFont(select(1, moneyTag:GetFont()), 13, select(3, moneyTag:GetFont()))
 	moneyTag:SetPoint("RIGHT", collapseArrow, "LEFT", -12, 0)
 
@@ -532,7 +535,7 @@ function Module:CreateFreeSlots()
 	slot.__name = name
 
 	local tag = self:SpawnPlugin("TagDisplay", "|cff669dff[space]|r", slot)
-	tag:SetFontObject(bagsFont)
+	tag:SetFontObject(K.UIFontOutline)
 	tag:SetFont(select(1, tag:GetFont()), 16, select(3, tag:GetFont()))
 	tag:SetPoint("CENTER", 0, 0)
 	tag.__name = name
@@ -573,7 +576,7 @@ function Module:CreateSplitButton()
 	editBox:SetHeight(20)
 	editBox:SetAutoFocus(false)
 	editBox:SetTextInsets(5, 5, 0, 0)
-	editBox:SetFontObject(bagsFont)
+	editBox:SetFontObject(K.UIFontOutline)
 	editBox:SetPoint("BOTTOMLEFT", 5, 5)
 	editBox:SetScript("OnEscapePressed", editBoxClearFocus)
 	editBox:SetScript("OnEnterPressed", editBoxClearFocus)
@@ -1063,7 +1066,7 @@ function Module:OnEnable()
 		self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 		self.Count:SetPoint("BOTTOMRIGHT", 1, 1)
-		self.Count:SetFontObject(bagsFont)
+		self.Count:SetFontObject(K.UIFontOutline)
 
 		self.Cooldown:SetPoint("TOPLEFT", 1, -1)
 		self.Cooldown:SetPoint("BOTTOMRIGHT", -1, 1)
@@ -1092,11 +1095,11 @@ function Module:OnEnable()
 		self.Quest:SetPoint("LEFT", 0, 1)
 
 		self.iLvl = K.CreateFontString(self, 12, "", "OUTLINE", false, "BOTTOMLEFT", 1, 0)
-		self.iLvl:SetFontObject(bagsFont)
+		self.iLvl:SetFontObject(K.UIFontOutline)
 		self.iLvl:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
 
 		self.bindType = K.CreateFontString(self, 12, "", "OUTLINE", false, "TOPLEFT", 1, -2)
-		self.bindType:SetFontObject(bagsFont)
+		self.bindType:SetFontObject(K.UIFontOutline)
 		self.bindType:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
 
 		if showNewItem then

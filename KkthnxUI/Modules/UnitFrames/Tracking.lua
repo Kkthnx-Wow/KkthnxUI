@@ -159,7 +159,7 @@ function Tracking:Setup()
 	lr:SetFrameStrata("HIGH")
 
 	self.TitlePVE = self:CreateFontString(nil, "OVERLAY")
-	self.TitlePVE:SetFontObject("KkthnxUIFont")
+	self.TitlePVE:SetFontObject(K.UIFont)
 	self.TitlePVE:SetFont(select(1, self.TitlePVE:GetFont()), 16, select(3, self.TitlePVE:GetFont()))
 	self.TitlePVE:SetPoint("TOP", self, "TOP", 0, -86)
 	self.TitlePVE:SetText("PvE Debuffs to track")
@@ -173,7 +173,7 @@ function Tracking:Setup()
 	self.PVE.Cat = "PvE"
 
 	self.PVE.Text = self.PVE:CreateFontString(nil, "OVERLAY")
-	self.PVE.Text:SetFontObject("KkthnxUIFont")
+	self.PVE.Text:SetFontObject(K.UIFont)
 	self.PVE.Text:SetFont(select(1, self.PVE.Text:GetFont()), 14, select(3, self.PVE.Text:GetFont()))
 	self.PVE.Text:SetPoint("LEFT", 10, 0)
 
@@ -220,12 +220,12 @@ function Tracking:Setup()
 	end)
 
 	self.PVE.Add.Text = self.PVE.Add:CreateFontString(nil, "OVERLAY")
-	self.PVE.Add.Text:SetFontObject("KkthnxUIFont")
+	self.PVE.Add.Text:SetFontObject(K.UIFont)
 	self.PVE.Add.Text:SetPoint("CENTER")
 	self.PVE.Add.Text:SetText("Add a pve debuff to track")
 
 	self.TitlePVP = self:CreateFontString(nil, "OVERLAY")
-	self.TitlePVP:SetFontObject("KkthnxUIFont")
+	self.TitlePVP:SetFontObject(K.UIFont)
 	self.TitlePVP:SetFont(select(1, self.TitlePVP:GetFont()), 16, select(3, self.TitlePVP:GetFont()))
 	self.TitlePVP:SetPoint("TOP", self.TitlePVE, "TOP", 0, -86)
 	self.TitlePVP:SetText("PvP Debuffs to track")
@@ -239,7 +239,7 @@ function Tracking:Setup()
 	self.PVP.Cat = "PvP"
 
 	self.PVP.Text = self.PVP:CreateFontString(nil, "OVERLAY")
-	self.PVP.Text:SetFontObject("KkthnxUIFont")
+	self.PVP.Text:SetFontObject(K.UIFont)
 	self.PVP.Text:SetFont(select(1, self.PVP.Text:GetFont()), 14, select(3, self.PVP.Text:GetFont()))
 	self.PVP.Text:SetPoint("LEFT", 10, 0)
 
@@ -287,7 +287,7 @@ function Tracking:Setup()
 	end)
 
 	self.PVP.Add.Text = self.PVP.Add:CreateFontString(nil, "OVERLAY")
-	self.PVP.Add.Text:SetFontObject("KkthnxUIFont")
+	self.PVP.Add.Text:SetFontObject(K.UIFont)
 	self.PVP.Add.Text:SetPoint("CENTER")
 	self.PVP.Add.Text:SetText("Add a pvp debuff to track")
 
@@ -300,7 +300,7 @@ function Tracking:Setup()
 	end)
 
 	self.Footer = self:CreateFontString(nil, "OVERLAY")
-	self.Footer:SetFontObject("KkthnxUIFont")
+	self.Footer:SetFontObject(K.UIFont)
 	self.Footer:SetPoint("BOTTOM", 0, 18)
 	self.Footer:SetText("To remove a debuff from the list, select with arrow and click on name")
 

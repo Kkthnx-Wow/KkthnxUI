@@ -97,7 +97,7 @@ function Module:CreateLatencyDataText()
 	LatencyDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
 	LatencyDataText.Text = LatencyDataText:CreateFontString("OVERLAY")
-	LatencyDataText.Text:SetFontObject("KkthnxUIFont")
+	LatencyDataText.Text:SetFontObject(K.UIFont)
 	LatencyDataText.Text:SetPoint("LEFT", LatencyDataText.Texture, "RIGHT", 4, 0)
 
 	if C["DataText"].System then

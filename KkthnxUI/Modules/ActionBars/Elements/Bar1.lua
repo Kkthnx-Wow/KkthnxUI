@@ -30,12 +30,11 @@ function Module:UpdateAllScale()
 end
 
 function Module:UpdateFontSize(button, fontSize)
-	local font = "KkthnxUIFontOutline" -- Add Font Size
-	button.Name:SetFontObject(font)
+	button.Name:SetFontObject(K.UIFontOutline)
 	button.Name:SetFont(select(1, button.Name:GetFont()), fontSize, select(3, button.Name:GetFont()))
-	button.Count:SetFontObject(font)
+	button.Count:SetFontObject(K.UIFontOutline)
 	button.Count:SetFont(select(1, button.Count:GetFont()), fontSize, select(3, button.Count:GetFont()))
-	button.HotKey:SetFontObject(font)
+	button.HotKey:SetFontObject(K.UIFontOutline)
 	button.HotKey:SetFont(select(1, button.HotKey:GetFont()), fontSize, select(3, button.HotKey:GetFont()))
 end
 

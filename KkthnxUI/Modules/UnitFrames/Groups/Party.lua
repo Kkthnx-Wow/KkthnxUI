@@ -14,7 +14,6 @@ function Module:CreateParty()
 	local partyHeight = C["Party"].HealthHeight
 	local partyPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = "KkthnxUIFont"
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
@@ -56,7 +55,7 @@ function Module:CreateParty()
 
 	Health.Value = Health:CreateFontString(nil, "OVERLAY")
 	Health.Value:SetPoint("CENTER", Health, "CENTER", 0, 0)
-	Health.Value:SetFontObject(UnitframeFont)
+	Health.Value:SetFontObject(K.UIFont)
 	Health.Value:SetFont(select(1, Health.Value:GetFont()), 10, select(3, Health.Value:GetFont()))
 	self:Tag(Health.Value, "[hp]")
 
@@ -79,7 +78,7 @@ function Module:CreateParty()
 	Name:SetPoint("BOTTOMRIGHT", Health, "TOPRIGHT", 0, 4)
 	Name:SetWidth(partyWidth)
 	Name:SetWordWrap(false)
-	Name:SetFontObject(UnitframeFont)
+	Name:SetFontObject(K.UIFont)
 	if partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait" then
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
 			self:Tag(Name, "[lfdrole][name] [nplevel][afkdnd]")
@@ -137,7 +136,7 @@ function Module:CreateParty()
 	else
 		Level:Hide()
 	end
-	Level:SetFontObject(UnitframeFont)
+	Level:SetFontObject(K.UIFont)
 	self:Tag(Level, "[nplevel]")
 
 	if C["Party"].ShowBuffs then
@@ -195,7 +194,7 @@ function Module:CreateParty()
 		Castbar.Spark:SetBlendMode("ADD")
 
 		Castbar.Time = Castbar:CreateFontString(nil, "OVERLAY")
-		Castbar.Time:SetFontObject(UnitframeFont)
+		Castbar.Time:SetFontObject(K.UIFont)
 		Castbar.Time:SetFont(select(1, Castbar.Time:GetFont()), 11, select(3, Castbar.Time:GetFont()))
 		Castbar.Time:SetPoint("RIGHT", -3.5, 0)
 		Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
@@ -210,7 +209,7 @@ function Module:CreateParty()
 		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
 		Castbar.Text = Castbar:CreateFontString(nil, "OVERLAY")
-		Castbar.Text:SetFontObject(UnitframeFont)
+		Castbar.Text:SetFontObject(K.UIFont)
 		Castbar.Text:SetFont(select(1, Castbar.Text:GetFont()), 11, select(3, Castbar.Text:GetFont()))
 		Castbar.Text:SetPoint("LEFT", 3.5, 0)
 		Castbar.Text:SetPoint("RIGHT", Castbar.Time, "LEFT", -3.5, 0)
@@ -293,7 +292,7 @@ function Module:CreateParty()
 
 	local StatusIndicator = Power:CreateFontString(nil, "OVERLAY")
 	StatusIndicator:SetPoint("CENTER", 0, 0.5)
-	StatusIndicator:SetFontObject(UnitframeFont)
+	StatusIndicator:SetFontObject(K.UIFont)
 	StatusIndicator:SetFont(select(1, StatusIndicator:GetFont()), 10, select(3, StatusIndicator:GetFont()))
 	self:Tag(StatusIndicator, "[afkdnd]")
 

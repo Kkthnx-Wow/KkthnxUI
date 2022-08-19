@@ -42,7 +42,6 @@ function Module:CreatePlayer()
 	local playerHeight = C["Unitframe"].PlayerHealthHeight
 	local playerPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = "KkthnxUIFont"
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
@@ -82,7 +81,7 @@ function Module:CreatePlayer()
 	end
 
 	Health.Value = Health:CreateFontString(nil, "OVERLAY")
-	Health.Value:SetFontObject(UnitframeFont)
+	Health.Value:SetFontObject(K.UIFont)
 	Health.Value:SetPoint("CENTER", Health, "CENTER", 0, 0)
 	self:Tag(Health.Value, "[hp]")
 
@@ -102,7 +101,7 @@ function Module:CreatePlayer()
 
 	Power.Value = Power:CreateFontString(nil, "OVERLAY")
 	Power.Value:SetPoint("CENTER", Power, "CENTER", 0, 0)
-	Power.Value:SetFontObject(UnitframeFont)
+	Power.Value:SetFontObject(K.UIFont)
 	Power.Value:SetFont(select(1, Power.Value:GetFont()), 11, select(3, Power.Value:GetFont()))
 	self:Tag(Power.Value, "[power]")
 
@@ -206,7 +205,7 @@ function Module:CreatePlayer()
 			Castbar:SetFrameLevel(10)
 
 			Castbar.LagString = Castbar:CreateFontString(nil, "OVERLAY")
-			Castbar.LagString:SetFontObject(UnitframeFont)
+			Castbar.LagString:SetFontObject(K.UIFont)
 			Castbar.LagString:SetFont(select(1, Castbar.LagString:GetFont()), 11, select(3, Castbar.LagString:GetFont()))
 			Castbar.LagString:SetTextColor(0.84, 0.75, 0.65)
 			Castbar.LagString:ClearAllPoints()
@@ -224,13 +223,13 @@ function Module:CreatePlayer()
 		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
 		Castbar.Time = Castbar:CreateFontString(nil, "OVERLAY")
-		Castbar.Time:SetFontObject("KkthnxUIFont")
+		Castbar.Time:SetFontObject(K.UIFont)
 		Castbar.Time:SetPoint("RIGHT", -3.5, 0)
 		Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
 		Castbar.Time:SetJustifyH("RIGHT")
 
 		Castbar.Text = Castbar:CreateFontString(nil, "OVERLAY")
-		Castbar.Text:SetFontObject("KkthnxUIFont")
+		Castbar.Text:SetFontObject(K.UIFont)
 		Castbar.Text:SetPoint("LEFT", 3.5, 0)
 		Castbar.Text:SetPoint("RIGHT", Castbar.Time, "LEFT", -3.5, 0)
 		Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
@@ -337,7 +336,7 @@ function Module:CreatePlayer()
 		local Name = self:CreateFontString(nil, "OVERLAY")
 		Name:SetPoint("BOTTOMLEFT", Health, "TOPLEFT", 0, 4)
 		Name:SetPoint("BOTTOMRIGHT", Health, "TOPRIGHT", 0, 4)
-		Name:SetFontObject(UnitframeFont)
+		Name:SetFontObject(K.UIFont)
 		if playerPortraitStyle == "NoPortraits" then
 			if C["Unitframe"].HealthbarColor.Value == "Class" then
 				self:Tag(Name, "[name] [fulllevel][afkdnd]")
@@ -364,7 +363,7 @@ function Module:CreatePlayer()
 		else
 			Level:Hide()
 		end
-		Level:SetFontObject(UnitframeFont)
+		Level:SetFontObject(K.UIFont)
 		self:Tag(Level, "[fulllevel]")
 
 		self.Level = Level
@@ -379,7 +378,7 @@ function Module:CreatePlayer()
 			Stagger:CreateBorder()
 
 			Stagger.Value = Stagger:CreateFontString(nil, "OVERLAY")
-			Stagger.Value:SetFontObject("KkthnxUIFont")
+			Stagger.Value:SetFontObject(K.UIFont)
 			Stagger.Value:SetPoint("CENTER", Stagger, "CENTER", 0, 0)
 			self:Tag(Stagger.Value, "[monkstagger]")
 
@@ -408,7 +407,7 @@ function Module:CreatePlayer()
 		end
 
 		AdditionalPower.Text = AdditionalPower:CreateFontString(nil, "OVERLAY")
-		AdditionalPower.Text:SetFontObject("KkthnxUIFont")
+		AdditionalPower.Text:SetFontObject(K.UIFont)
 		AdditionalPower.Text:SetFont(select(1, AdditionalPower.Text:GetFont()), 9, select(3, AdditionalPower.Text:GetFont()))
 		AdditionalPower.Text:SetPoint("CENTER", AdditionalPower, 2, 0)
 

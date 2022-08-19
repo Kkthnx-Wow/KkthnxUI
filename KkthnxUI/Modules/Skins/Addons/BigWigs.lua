@@ -1,9 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
-local _G = _G
-
-local BigWigsFont = "KkthnxUIFont"
 local BigWigsTexture = K.GetTexture(C["General"].Texture)
 
 function Module:ReskinBigWigs()
@@ -75,12 +72,12 @@ function Module:ReskinBigWigs()
 		bar.candyBarLabel:ClearAllPoints()
 		bar.candyBarLabel:SetPoint("LEFT", bar.candyBarBar, "LEFT", 2, 8)
 		bar.candyBarLabel:SetPoint("RIGHT", bar.candyBarBar, "RIGHT", -2, 8)
-		bar.candyBarLabel:SetFontObject(BigWigsFont)
+		bar.candyBarLabel:SetFontObject(K.UIFont)
 		bar.candyBarLabel.SetFont = K.Noop
 		bar.candyBarDuration:ClearAllPoints()
 		bar.candyBarDuration:SetPoint("RIGHT", bar.candyBarBar, "RIGHT", -2, 8)
 		bar.candyBarDuration:SetPoint("LEFT", bar.candyBarBar, "LEFT", 2, 8)
-		bar.candyBarDuration:SetFontObject(BigWigsFont)
+		bar.candyBarDuration:SetFontObject(K.UIFont)
 		bar.candyBarDuration.SetFont = K.Noop
 	end
 

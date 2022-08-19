@@ -12,7 +12,6 @@ function Module:CreateFocus()
 	local focusWidth = C["Unitframe"].FocusHealthWidth
 	local focusPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = "KkthnxUIFont"
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
@@ -54,7 +53,7 @@ function Module:CreateFocus()
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
-	self.Health.Value:SetFontObject(UnitframeFont)
+	self.Health.Value:SetFontObject(K.UIFont)
 	self:Tag(self.Health.Value, "[hp]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
@@ -73,14 +72,14 @@ function Module:CreateFocus()
 
 	self.Power.Value = self.Power:CreateFontString(nil, "OVERLAY")
 	self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
-	self.Power.Value:SetFontObject(UnitframeFont)
+	self.Power.Value:SetFontObject(K.UIFont)
 	self.Power.Value:SetFont(select(1, self.Power.Value:GetFont()), 11, select(3, self.Power.Value:GetFont()))
 	self:Tag(self.Power.Value, "[power]")
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
 	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
-	self.Name:SetFontObject(UnitframeFont)
+	self.Name:SetFontObject(K.UIFont)
 	self.Name:SetWordWrap(false)
 
 	if focusPortraitStyle == "NoPortraits" then
@@ -187,7 +186,7 @@ function Module:CreateFocus()
 		self.Castbar.Shield:SetPoint("CENTER", 0, -14)
 
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY")
-		self.Castbar.Time:SetFontObject("KkthnxUIFont")
+		self.Castbar.Time:SetFontObject(K.UIFont)
 		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
 		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
 		self.Castbar.Time:SetJustifyH("RIGHT")
@@ -201,7 +200,7 @@ function Module:CreateFocus()
 		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
-		self.Castbar.Text:SetFontObject("KkthnxUIFont")
+		self.Castbar.Text:SetFontObject(K.UIFont)
 		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
 		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)
 		self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
@@ -297,7 +296,7 @@ function Module:CreateFocus()
 	else
 		self.Level:Hide()
 	end
-	self.Level:SetFontObject(UnitframeFont)
+	self.Level:SetFontObject(K.UIFont)
 	self:Tag(self.Level, "[fulllevel]")
 
 	if C["Unitframe"].PvPIndicator then

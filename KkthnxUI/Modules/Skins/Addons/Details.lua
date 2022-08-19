@@ -23,9 +23,9 @@ local function SetupInstance(instance)
 	instance:SetBackdropTexture("None") -- if block window from resizing, then back to "Details Ground", needs review
 	instance:MenuAnchor(16, 3)
 	instance:ToolbarMenuButtonsSize(1)
-	instance:AttributeMenu(true, 0, 3, "KkthnxUIFont", 12, { 1, 1, 1 }, 1, false)
+	instance:AttributeMenu(true, 0, 3, K.UIFont, 12, { 1, 1, 1 }, 1, false)
 	instance:SetBarSettings(needReset and 20, needReset and "KkthnxUIStatusbar")
-	instance:SetBarTextSettings(needReset and 12, "KkthnxUIFont", nil, nil, nil, false, false, nil, nil, nil, nil, nil, nil, true, { 0, 0, 0, 1 }, true, { 0, 0, 0, 1 })
+	instance:SetBarTextSettings(needReset and 12, K.UIFont, nil, nil, nil, false, false, nil, nil, nil, nil, nil, nil, true, { 0, 0, 0, 1 }, true, { 0, 0, 0, 1 })
 	instance.baseframe:CreateBackdrop()
 	instance.baseframe.Backdrop:SetPoint("TOPLEFT", -1, 18)
 	instance.baseframe.Backdrop:SetPoint("TOPRIGHT", 1, 0)
@@ -125,7 +125,7 @@ local function ReskinDetails()
 		if instance1 then
 			EmbedWindow(instance1, -370, 4, 260, 126)
 			instance1:SetBarSettings(20, "KkthnxUIStatusbar")
-			instance1:SetBarTextSettings(12, "KkthnxUIFont", nil, nil, nil, false, false, nil, nil, nil, nil, nil, nil, true, { 0.04, 0.04, 0.04, 0.9 }, true, { 0.04, 0.04, 0.04, 0.9 })
+			instance1:SetBarTextSettings(12, K.UIFont, nil, nil, nil, false, false, nil, nil, nil, nil, nil, nil, true, { 0.04, 0.04, 0.04, 0.9 }, true, { 0.04, 0.04, 0.04, 0.9 })
 		end
 	end
 end

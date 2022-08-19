@@ -72,8 +72,8 @@ local TextureTable = {
 -- 	["Expressway"] = "ExpresswayFont",
 -- 	["Futura Outline"] = "FuturaFontOutline",
 -- 	["Futura"] = "FuturaFont",
--- 	["KkthnxUI Outline"] = "KkthnxUIFontOutline",
--- 	["KkthnxUI"] = "KkthnxUIFont",
+-- 	["KkthnxUI Outline"] = K.UIFontOutline,
+-- 	["KkthnxUI"] = K.UIFont,
 -- 	["SansNarrow Outline"] = "SansNarrowFontOutline",
 -- 	["SansNarrow"] = "SansNarrowFont",
 -- }

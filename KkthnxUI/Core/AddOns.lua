@@ -49,30 +49,30 @@ local function ForceHekiliOptions()
 				["displays"] = {
 					["Interrupts"] = {
 						["keybindings"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["captions"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["targets"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["delays"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 					},
 					["Cooldowns"] = {
 						["keybindings"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["captions"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["targets"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["delays"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 					},
 					["Primary"] = {
@@ -89,51 +89,51 @@ local function ForceHekiliOptions()
 							["enabled"] = false,
 						},
 						["captions"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["targets"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["keybindings"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["delays"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 					},
 					["AOE"] = {
 						["delays"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["flash"] = {
 							["enabled"] = true,
 							["suppress"] = true,
 						},
 						["keybindings"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["border"] = {
 							["enabled"] = false,
 						},
 						["captions"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["targets"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 					},
 					["Defensives"] = {
 						["keybindings"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["captions"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["targets"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 						["delays"] = {
-							["font"] = "KkthnxUIFont",
+							["font"] = K.UIFont,
 						},
 					},
 				},

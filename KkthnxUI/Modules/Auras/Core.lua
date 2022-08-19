@@ -250,10 +250,10 @@ function Module:UpdateHeader(header)
 			child:SetSize(cfg.size, cfg.size)
 		end
 
-		child.count:SetFontObject("KkthnxUIFontOutline")
+		child.count:SetFontObject(K.UIFontOutline)
 		child.count:SetFont(select(1, child.count:GetFont()), fontSize, select(3, child.count:GetFont()))
 
-		child.timer:SetFontObject("KkthnxUIFontOutline")
+		child.timer:SetFontObject(K.UIFontOutline)
 		child.timer:SetFont(select(1, child.timer:GetFont()), fontSize, select(3, child.timer:GetFont()))
 
 		-- Blizzard bug fix, icons arent being hidden when you reduce the amount of maximum buttons
@@ -340,12 +340,12 @@ function Module:CreateAuraIcon(button)
 
 	button.count = button:CreateFontString(nil, "OVERLAY")
 	button.count:SetPoint("TOPRIGHT", -1, -3)
-	button.count:SetFontObject("KkthnxUIFontOutline")
+	button.count:SetFontObject(K.UIFontOutline)
 	button.count:SetFont(select(1, button.count:GetFont()), fontSize, select(3, button.count:GetFont()))
 
 	button.timer = button:CreateFontString(nil, "OVERLAY")
 	button.timer:SetPoint("TOP", button, "BOTTOM", 1, 5)
-	button.timer:SetFontObject("KkthnxUIFontOutline")
+	button.timer:SetFontObject(K.UIFontOutline)
 	button.timer:SetFont(select(1, button.timer:GetFont()), fontSize, select(3, button.timer:GetFont()))
 
 	button:StyleButton()

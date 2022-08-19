@@ -125,7 +125,7 @@ function Module:Reminder_Create(cfg)
 	frame:CreateBorder()
 
 	frame.text = frame:CreateFontString(nil, "OVERLAY")
-	frame.text:SetFontObject("KkthnxUIFontOutline")
+	frame.text:SetFontObject(K.UIFontOutline)
 	frame.text:SetText(L["Lack"])
 	frame.text:SetPoint("TOP", frame, "TOP", 1, 15)
 

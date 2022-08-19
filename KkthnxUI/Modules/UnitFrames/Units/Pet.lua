@@ -11,7 +11,6 @@ function Module:CreatePet()
 	local petHeight = C["Unitframe"].PetHealthHeight
 	local petPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = "KkthnxUIFont"
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 
 	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
@@ -48,7 +47,7 @@ function Module:CreatePet()
 
 	Health.Value = Health:CreateFontString(nil, "OVERLAY")
 	Health.Value:SetPoint("CENTER", Health, "CENTER", 0, 0)
-	Health.Value:SetFontObject(UnitframeFont)
+	Health.Value:SetFontObject(K.UIFont)
 	Health.Value:SetFont(select(1, Health.Value:GetFont()), 10, select(3, Health.Value:GetFont()))
 	self:Tag(Health.Value, "[hp]")
 
@@ -65,7 +64,7 @@ function Module:CreatePet()
 	local Name = self:CreateFontString(nil, "OVERLAY")
 	Name:SetPoint("TOPLEFT", Power, "BOTTOMLEFT", 0, -4)
 	Name:SetPoint("TOPRIGHT", Power, "BOTTOMRIGHT", 0, -4)
-	Name:SetFontObject(UnitframeFont)
+	Name:SetFontObject(K.UIFont)
 	Name:SetWordWrap(false)
 
 	if petPortraitStyle == "NoPortraits" or petPortraitStyle == "OverlayPortrait" then
@@ -119,7 +118,7 @@ function Module:CreatePet()
 	end
 
 	local Level = self:CreateFontString(nil, "OVERLAY")
-	Level:SetFontObject(UnitframeFont)
+	Level:SetFontObject(K.UIFont)
 	if petPortraitStyle ~= "NoPortraits" and petPortraitStyle ~= "OverlayPortrait" and not C["Unitframe"].HidePetLevel then
 		Level:Show()
 	else

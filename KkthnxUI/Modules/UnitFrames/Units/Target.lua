@@ -13,7 +13,6 @@ function Module:CreateTarget()
 	local targetHeight = C["Unitframe"].TargetHealthHeight
 	local targetPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = "KkthnxUIFont"
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
@@ -55,7 +54,7 @@ function Module:CreateTarget()
 
 	Health.Value = Health:CreateFontString(nil, "OVERLAY")
 	Health.Value:SetPoint("CENTER", Health, "CENTER", 0, 0)
-	Health.Value:SetFontObject(UnitframeFont)
+	Health.Value:SetFontObject(K.UIFont)
 	self:Tag(Health.Value, "[hp]")
 
 	local Power = CreateFrame("StatusBar", nil, self)
@@ -74,14 +73,14 @@ function Module:CreateTarget()
 
 	Power.Value = Power:CreateFontString(nil, "OVERLAY")
 	Power.Value:SetPoint("CENTER", Power, "CENTER", 0, 0)
-	Power.Value:SetFontObject(UnitframeFont)
+	Power.Value:SetFontObject(K.UIFont)
 	Power.Value:SetFont(select(1, Power.Value:GetFont()), 11, select(3, Power.Value:GetFont()))
 	self:Tag(Power.Value, "[power]")
 
 	local Name = self:CreateFontString(nil, "OVERLAY")
 	Name:SetPoint("BOTTOMLEFT", Health, "TOPLEFT", 0, 4)
 	Name:SetPoint("BOTTOMRIGHT", Health, "TOPRIGHT", 0, 4)
-	Name:SetFontObject(UnitframeFont)
+	Name:SetFontObject(K.UIFont)
 	Name:SetWordWrap(false)
 
 	if targetPortraitStyle == "NoPortraits" or targetPortraitStyle == "OverlayPortrait" then
@@ -199,7 +198,7 @@ function Module:CreateTarget()
 		Castbar.Shield:SetPoint("CENTER", 0, -14)
 
 		Castbar.Time = Castbar:CreateFontString(nil, "OVERLAY")
-		Castbar.Time:SetFontObject("KkthnxUIFont")
+		Castbar.Time:SetFontObject(K.UIFont)
 		Castbar.Time:SetPoint("RIGHT", -3.5, 0)
 		Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
 		Castbar.Time:SetJustifyH("RIGHT")
@@ -213,7 +212,7 @@ function Module:CreateTarget()
 		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
 		Castbar.Text = Castbar:CreateFontString(nil, "OVERLAY")
-		Castbar.Text:SetFontObject("KkthnxUIFont")
+		Castbar.Text:SetFontObject(K.UIFont)
 		Castbar.Text:SetPoint("LEFT", 3.5, 0)
 		Castbar.Text:SetPoint("RIGHT", Castbar.Time, "LEFT", -3.5, 0)
 		Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
@@ -308,7 +307,7 @@ function Module:CreateTarget()
 	else
 		Level:Hide()
 	end
-	Level:SetFontObject(UnitframeFont)
+	Level:SetFontObject(K.UIFont)
 	self:Tag(Level, "[fulllevel]")
 
 	if C["Unitframe"].CombatText then

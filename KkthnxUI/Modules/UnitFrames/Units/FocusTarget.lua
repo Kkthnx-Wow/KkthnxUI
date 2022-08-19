@@ -12,7 +12,6 @@ function Module:CreateFocusTarget()
 	local focusTargetHeight = C["Unitframe"].FocusTargetHealthHeight
 	local focusTargetPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
-	local UnitframeFont = _G.KkthnxUIFont
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 
 	self.Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
@@ -49,7 +48,7 @@ function Module:CreateFocusTarget()
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
-	self.Health.Value:SetFontObject(UnitframeFont)
+	self.Health.Value:SetFontObject(K.UIFont)
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 10, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[hp]")
 
@@ -66,7 +65,7 @@ function Module:CreateFocusTarget()
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -4)
 	self.Name:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -4)
-	self.Name:SetFontObject(UnitframeFont)
+	self.Name:SetFontObject(K.UIFont)
 	self.Name:SetWordWrap(false)
 
 	if focusTargetPortraitStyle == "NoPortraits" or focusTargetPortraitStyle == "OverlayPortrait" then
@@ -114,7 +113,7 @@ function Module:CreateFocusTarget()
 	end
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
-	self.Level:SetFontObject(UnitframeFont)
+	self.Level:SetFontObject(K.UIFont)
 	if focusTargetPortraitStyle ~= "NoPortraits" and focusTargetPortraitStyle ~= "OverlayPortrait" and not C["Unitframe"].HideFocusTargetLevel then
 		self.Level:Show()
 	else

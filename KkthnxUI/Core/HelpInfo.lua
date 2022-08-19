@@ -37,7 +37,7 @@ function Help:OnEnable()
 	self.Logo:SetPoint("CENTER", self, "CENTER", 0, 0)
 
 	self.Title = self:CreateFontString(nil, "OVERLAY")
-	self.Title:SetFontObject(_G.KkthnxUIFont)
+	self.Title:SetFontObject(K.UIFont)
 	self.Title:SetFont(select(1, self.Title:GetFont()), 22, select(3, self.Title:GetFont()))
 	self.Title:SetPoint("TOP", self, "TOP", 0, -8)
 	self.Title:SetText(K.InfoColor .. "KkthnxUI|r " .. K.SystemColor .. "Commands Help|r")
@@ -61,7 +61,7 @@ function Help:OnEnable()
 
 	for Index, Value in pairs(helpCommands) do
 		Texts[Index] = self:CreateFontString(nil, "OVERLAY")
-		Texts[Index]:SetFontObject(_G.KkthnxUIFont)
+		Texts[Index]:SetFontObject(K.UIFont)
 		Texts[Index]:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 20, 22 * Count)
 		Texts[Index]:SetText(Value)
 

@@ -1335,7 +1335,7 @@ function Module:CreatePlayerPlate()
 		self.Stagger:CreateShadow(true)
 
 		self.Stagger.Value = self.Stagger:CreateFontString(nil, "OVERLAY")
-		self.Stagger.Value:SetFontObject("KkthnxUIFont")
+		self.Stagger.Value:SetFontObject(K.UIFont)
 		self.Stagger.Value:SetPoint("CENTER", self.Stagger, "CENTER", 0, 0)
 		self:Tag(self.Stagger.Value, "[monkstagger]")
 	end

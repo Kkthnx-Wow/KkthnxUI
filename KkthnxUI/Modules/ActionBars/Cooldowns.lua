@@ -53,8 +53,6 @@ function Module:ForceUpdate()
 end
 
 function Module:OnSizeChanged(width, height)
-	local cooldownFont = "KkthnxUIFontOutline"
-
 	local fontScale = K.Round((width + height) / 2) / ICON_SIZE
 	if fontScale == self.fontScale then
 		return
@@ -64,7 +62,7 @@ function Module:OnSizeChanged(width, height)
 	if fontScale < MIN_SCALE then
 		self:Hide()
 	else
-		self.text:SetFontObject(cooldownFont)
+		self.text:SetFontObject(K.UIFontOutline)
 		self.text:SetFont(select(1, self.text:GetFont()), fontScale * FONT_SIZE, select(3, self.text:GetFont()))
 		self.text:SetShadowColor(0, 0, 0, 0)
 

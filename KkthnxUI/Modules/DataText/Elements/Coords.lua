@@ -133,7 +133,7 @@ function Module:CreateCoordsDataText()
 	CoordsDataTextFrame.Texture:SetAlpha(0.8)
 
 	CoordsDataTextFrame.Text = CoordsDataTextFrame:CreateFontString(nil, "ARTWORK")
-	CoordsDataTextFrame.Text:SetFontObject("KkthnxUIFont")
+	CoordsDataTextFrame.Text:SetFontObject(K.UIFont)
 	CoordsDataTextFrame.Text:SetPoint("CENTER", CoordsDataTextFrame.Texture, "CENTER", 0, -14)
 
 	for _, event in pairs(eventList) do
