@@ -14,8 +14,12 @@ local GetSendMailPrice, GetMoney = _G.GetSendMailPrice, _G.GetMoney
 local InboxItemCanDelete, DeleteInboxItem, TakeInboxMoney, TakeInboxItem = _G.InboxItemCanDelete, _G.DeleteInboxItem, _G.TakeInboxMoney, _G.TakeInboxItem
 local NORMAL_STRING = _G.GUILDCONTROL_OPTION16
 local OPENING_STRING = _G.OPEN_ALL_MAIL_BUTTON_OPENING
+local GameTooltip = _G.GameTooltip
 
-local mailIndex, timeToWait, totalCash, inboxItems = 0, 0.15, 0, {}
+local mailIndex = 0
+local timeToWait = 0.15
+local totalCash = 0
+local inboxItems = {}
 local isGoldCollecting
 
 function Module:MailBox_DelectClick()

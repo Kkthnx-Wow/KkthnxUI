@@ -15,7 +15,11 @@ local IsShiftKeyDown = _G.IsShiftKeyDown
 local LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY = _G.LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY
 
 -- Auto repair
-local isShown, isBankEmpty, autoRepair, repairAllCost, canRepair
+local autoRepair
+local canRepair
+local isBankEmpty
+local isShown
+local repairAllCost
 
 local function delayFunc()
 	if isBankEmpty then

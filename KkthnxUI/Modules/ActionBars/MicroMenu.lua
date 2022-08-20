@@ -51,35 +51,45 @@ function Module:MicroButton_Create(parent, data)
 		hooksecurefunc(button, "SetPoint", ResetButtonAnchor)
 		button:UnregisterAllEvents()
 		button:SetNormalTexture(nil)
-		button:SetPushedTexture(nil)
-		button:SetDisabledTexture(nil)
 
 		if tooltip then
 			K.AddTooltip(button, "ANCHOR_RIGHT", tooltip)
 		end
 
-		local hl = button:GetHighlightTexture()
-		hl:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
-		hl:SetVertexColor(K.r, K.g, K.b)
-		hl:SetBlendMode("ADD")
-		hl:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
-		hl:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
-
+		local pushed = button:GetPushedTexture()
+		local disabled = button:GetDisabledTexture()
+		local highlight = button:GetHighlightTexture()
 		local flash = button.Flash
-		flash:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
-		flash:SetBlendMode("ADD")
-		flash:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
-		flash:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
+
+		pushed:SetColorTexture(1, 0.84, 0, 0.2)
+		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+		pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+
+		if disabled then
+			disabled:SetColorTexture(1, 0, 0, 0.4)
+			disabled:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+			disabled:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+		end
+
+		highlight:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
+		highlight:SetVertexColor(K.r, K.g, K.b)
+		highlight:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
+		highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
+
+		if flash then
+			flash:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
+			flash:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
+			flash:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
+		end
 	else
 		bu:SetScript("OnMouseUp", method)
 		K.AddTooltip(bu, "ANCHOR_RIGHT", tooltip)
 
-		local hl = bu:CreateTexture(nil, "HIGHLIGHT")
-		hl:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
-		hl:SetVertexColor(K.r, K.g, K.b)
-		hl:SetBlendMode("ADD")
-		hl:SetPoint("TOPLEFT", bu, "TOPLEFT", -22, 18)
-		hl:SetPoint("BOTTOMRIGHT", bu, "BOTTOMRIGHT", 24, -18)
+		local highlight = bu:CreateTexture(nil, "HIGHLIGHT")
+		highlight:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
+		highlight:SetVertexColor(K.r, K.g, K.b)
+		highlight:SetPoint("TOPLEFT", bu, "TOPLEFT", -22, 18)
+		highlight:SetPoint("BOTTOMRIGHT", bu, "BOTTOMRIGHT", 24, -18)
 	end
 end
 

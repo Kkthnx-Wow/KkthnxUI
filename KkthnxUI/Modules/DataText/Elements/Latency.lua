@@ -5,6 +5,7 @@ local _G = _G
 local math_max = _G.math.max
 local string_format = _G.string.format
 
+local GameTooltip = _G.GameTooltip
 local GetAvailableBandwidth = _G.GetAvailableBandwidth
 local GetBackgroundLoadingStatus = _G.GetBackgroundLoadingStatus
 local GetCVarBool = _G.GetCVarBool

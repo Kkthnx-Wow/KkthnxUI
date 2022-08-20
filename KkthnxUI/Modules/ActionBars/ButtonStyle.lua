@@ -485,43 +485,43 @@ function Module:CreateBarSkin()
 		},
 
 		flyoutBorder = {
-			-- file = "",
+			file = "",
 		},
 
 		flyoutBorderShadow = {
-			-- file = "",
+			file = "",
 		},
 
 		border = {
-			-- file = "",
+			file = "",
 		},
 
 		normalTexture = {
 			file = "",
 		},
 
-		flash = {
-			-- file = "",
-		},
+		-- flash = {
+		-- 	file = "",
+		-- },
 
-		pushedTexture = {
-			-- file = "",
-		},
+		-- pushedTexture = {
+		-- 	file = "",
+		-- },
 
-		checkedTexture = {
-			-- file = "",
-		},
+		-- checkedTexture = {
+		-- 	file = "",
+		-- },
 
-		highlightTexture = {
-			-- file = "",
-		},
+		-- highlightTexture = {
+		-- 	file = "",
+		-- },
 
-		cooldown = {
-			points = {
-				{ "TOPLEFT", 1, -1 },
-				{ "BOTTOMRIGHT", -1, 1 },
-			},
-		},
+		-- cooldown = {
+		-- 	points = {
+		-- 		{ "TOPLEFT", 1, -1 },
+		-- 		{ "BOTTOMRIGHT", -1, 1 },
+		-- 	},
+		-- },
 
 		name = {
 			font = cfgFont,
@@ -547,7 +547,7 @@ function Module:CreateBarSkin()
 		},
 
 		buttonstyle = {
-			-- file = "",
+			file = "",
 		},
 	}
 

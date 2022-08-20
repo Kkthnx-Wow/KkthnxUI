@@ -5,15 +5,26 @@ local _G = _G
 local math_max = _G.math.max
 local string_format = _G.string.format
 
+local ATTACK_SPEED = _G.ATTACK_SPEED
 local BreakUpLargeNumbers = _G.BreakUpLargeNumbers
 local C_PaperDollInfo_GetMinItemLevel = _G.C_PaperDollInfo.GetMinItemLevel
 local CreateFrame = _G.CreateFrame
+local FONT_COLOR_CODE_CLOSE = _G.FONT_COLOR_CODE_CLOSE
 local GetAverageItemLevel = _G.GetAverageItemLevel
 local GetMeleeHaste = _G.GetMeleeHaste
-local hooksecurefunc = _G.hooksecurefunc
+local HIGHLIGHT_FONT_COLOR_CODE = _G.HIGHLIGHT_FONT_COLOR_CODE
 local IsAddOnLoaded = _G.IsAddOnLoaded
+local LE_UNIT_STAT_AGILITY = _G.LE_UNIT_STAT_AGILITY
+local LE_UNIT_STAT_INTELLECT = _G.LE_UNIT_STAT_INTELLECT
+local LE_UNIT_STAT_STRENGTH = _G.LE_UNIT_STAT_STRENGTH
+local PAPERDOLLFRAME_TOOLTIP_FORMAT = _G.PAPERDOLLFRAME_TOOLTIP_FORMAT
 local PaperDollFrame_SetLabelAndText = _G.PaperDollFrame_SetLabelAndText
+local STAT_ATTACK_SPEED_BASE_TOOLTIP = _G.STAT_ATTACK_SPEED_BASE_TOOLTIP
+local STAT_AVERAGE_ITEM_LEVEL = _G.STAT_AVERAGE_ITEM_LEVEL
+local STAT_HASTE = _G.STAT_HASTE
 local UnitAttackSpeed = _G.UnitAttackSpeed
+local WEAPON_SPEED = _G.WEAPON_SPEED
+local hooksecurefunc = _G.hooksecurefunc
 
 function Module:CreateImprovedStats()
 	if not C["Misc"].ImprovedStats then

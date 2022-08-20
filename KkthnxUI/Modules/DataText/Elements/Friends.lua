@@ -20,7 +20,9 @@ local C_FriendList_GetFriendInfoByIndex = _G.C_FriendList.GetFriendInfoByIndex
 local C_FriendList_GetNumFriends = _G.C_FriendList.GetNumFriends
 local C_FriendList_GetNumOnlineFriends = _G.C_FriendList.GetNumOnlineFriends
 local C_Timer_After = _G.C_Timer.After
+local EXPANSION_NAME0 = _G.EXPANSION_NAME0
 local GameTooltip = _G.GameTooltip
+local GetDisplayedInviteType = _G.GetDisplayedInviteType
 local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
 local GetRealZoneText = _G.GetRealZoneText
 local HybridScrollFrame_GetOffset = _G.HybridScrollFrame_GetOffset
@@ -277,7 +279,7 @@ local function FriendsPanel_OnMouseWheel(self, delta)
 end
 
 local function inviteFunc(_, bnetIDGameAccount, guid)
-	FriendsFrame_InviteOrRequestToJoin(guid, bnetIDGameAccount)
+	_G.FriendsFrame_InviteOrRequestToJoin(guid, bnetIDGameAccount)
 end
 
 local inviteTypeToButtonText = {

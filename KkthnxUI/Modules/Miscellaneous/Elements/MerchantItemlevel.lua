@@ -16,7 +16,7 @@ function Module:MerchantItemlevel()
 	local numItems = GetMerchantNumItems()
 
 	for i = 1, MERCHANT_ITEMS_PER_PAGE do
-		local index = (MerchantFrame.page - 1) * MERCHANT_ITEMS_PER_PAGE + i
+		local index = (_G.MerchantFrame.page - 1) * MERCHANT_ITEMS_PER_PAGE + i
 
 		if index > numItems then
 			return

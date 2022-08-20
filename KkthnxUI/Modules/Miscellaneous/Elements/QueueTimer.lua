@@ -7,6 +7,7 @@ local Module = K:GetModule("Miscellaneous")
 local _G = _G
 
 local RESETS_IN = _G.RESETS_IN
+local LFGDungeonReadyDialog = _G.LFGDungeonReadyDialog
 
 local function ColorQueueTimer(value)
 	local r, g, b
@@ -35,8 +36,11 @@ function Module:SetupPvEQueueTimer()
 
 	-- The text of the LFG dialog label randomly changes back, so we override the function to prevent that
 	local pveUpdateLFGDialogLabel = _G.LFGDungeonReadyDialog.label.SetText
-	_G.LFGDungeonReadyDialog.label.SetText = K.Noop
-	_G.LFGDungeonReadyDialog.label:SetPoint("TOP", 0, -22)
+	LFGDungeonReadyDialog.label.SetText = K.Noop
+
+	LFGDungeonReadyDialog.label:SetPoint("TOP", 0, -22)
+	LFGDungeonReadyDialog.label:SetFontObject(K.UIFont)
+	LFGDungeonReadyDialog.label:SetFont(select(1, LFGDungeonReadyDialog.label:GetFont()), 13, select(3, LFGDungeonReadyDialog.label:GetFont()))
 
 	local function OnShowPvETimer()
 		-- I didn't find a function to check if the dialog is still displayed, so we stop updating after the time is over
@@ -75,6 +79,8 @@ function Module:SetupPvPQueueTimer()
 	local pvpQueue
 
 	PVPReadyDialog.label:SetPoint("TOP", 0, -22)
+	PVPReadyDialog.label:SetFontObject(K.UIFont)
+	PVPReadyDialog.label:SetFont(select(1, PVPReadyDialog.label:GetFont()), 13, select(3, PVPReadyDialog.label:GetFont()))
 
 	local function OnShowPVPTimer()
 		if PVPReadyDialog_Showing(pvpQueue) then
@@ -111,7 +117,6 @@ function Module:SetupPvPQueueTimer()
 
 	K:RegisterEvent("UPDATE_BATTLEFIELD_STATUS", function(_, index)
 		if GetBattlefieldStatus(index) == "confirm" then
-			print(GetBattlefieldStatus(index))
 			HandlePVPQueuePop(index)
 		end
 	end)

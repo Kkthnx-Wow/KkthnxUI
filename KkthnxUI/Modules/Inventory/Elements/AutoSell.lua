@@ -10,7 +10,8 @@ local GetContainerItemInfo = _G.GetContainerItemInfo
 local GetContainerNumSlots = _G.GetContainerNumSlots
 local IsShiftKeyDown = _G.IsShiftKeyDown
 
-local stop, cache = true, {}
+local stop = true
+local cache = {}
 local errorText = _G.ERR_VENDOR_DOESNT_BUY
 
 local function startSelling()
