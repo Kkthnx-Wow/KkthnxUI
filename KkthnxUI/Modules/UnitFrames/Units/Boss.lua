@@ -160,6 +160,7 @@ function Module:CreateBoss()
 
 	Module:UpdateAuraContainer(bossWidth - 12, self.Debuffs, self.Debuffs.num)
 
+	self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 
