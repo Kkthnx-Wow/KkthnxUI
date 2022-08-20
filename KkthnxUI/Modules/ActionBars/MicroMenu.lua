@@ -102,6 +102,8 @@ function Module:CreateMicroMenu()
 	menubar:SetSize(280, 20 * 1.4)
 	K.Mover(menubar, "Menubar", "Menubar", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 })
 
+	RegisterStateDriver(menubar, "visibility", "[petbattle] hide; show")
+
 	-- Generate Buttons
 	local buttonInfo = {
 		{ "CharacterMicroButton", "CharacterMicroButton" },

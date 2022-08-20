@@ -675,9 +675,9 @@ function Module:AddCreatureIcon(self)
 	-- ClassifyOverlay:SetFrameLevel(5)
 
 	local ClassifyIndicator = self:CreateTexture(nil, "ARTWORK")
-	ClassifyIndicator:SetAtlas("auctionhouse-icon-favorite")
-	ClassifyIndicator:SetPoint("RIGHT", self.nameText, "LEFT", -1, 0)
-	ClassifyIndicator:SetSize(12, 12)
+	ClassifyIndicator:SetTexture(K.MediaFolder .. "Nameplates\\star")
+	ClassifyIndicator:SetPoint("RIGHT", self.nameText, "LEFT", -2, 1)
+	ClassifyIndicator:SetSize(14, 14)
 	ClassifyIndicator:Hide()
 
 	self.ClassifyIndicator = ClassifyIndicator
@@ -861,7 +861,7 @@ function Module:CreatePlates()
 	self.nameText:SetJustifyH("LEFT")
 	self.nameText:ClearAllPoints()
 	self.nameText:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
-	self.nameText:SetPoint("BOTTOMRIGHT", self.levelText, "TOPRIGHT", -12, 4)
+	self.nameText:SetPoint("BOTTOMRIGHT", self.levelText, "TOPRIGHT", -21, 4)
 	self:Tag(self.nameText, "[name]")
 
 	self.npcTitle = K.CreateFontString(self, C["Nameplate"].NameTextSize - 1)
@@ -1193,7 +1193,7 @@ function Module:UpdatePlateByType()
 
 		name:SetJustifyH("LEFT")
 		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
-		name:SetPoint("BOTTOMRIGHT", level, "TOPRIGHT", -12, 4)
+		name:SetPoint("BOTTOMRIGHT", level, "TOPRIGHT", -21, 4)
 
 		level:Show()
 		hpval:Show()

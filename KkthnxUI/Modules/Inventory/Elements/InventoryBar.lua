@@ -3,7 +3,6 @@ local Module = K:GetModule("Bags")
 
 local _G = _G
 local table_insert = _G.table.insert
-local unpack = _G.unpack
 
 local CreateFrame = _G.CreateFrame
 local NUM_BAG_FRAMES = _G.NUM_BAG_FRAMES or 4
@@ -50,12 +49,7 @@ function Module:SizeAndPositionBagBar()
 	local buttonSpacing = 6
 	local bagBarSize = 30
 
-	local visibility = "[petbattle] hide; show"
-	if visibility and visibility:match("[\n\r]") then
-		visibility = visibility:gsub("[\n\r]", "")
-	end
-
-	RegisterStateDriver(Module.BagBar, "visibility", visibility)
+	RegisterStateDriver(Module.BagBar, "visibility", "[petbattle] hide; show")
 	Module.BagBar:SetAlpha(C["Inventory"].BagBarMouseover and 0 or 1)
 
 	for i, button in ipairs(Module.BagBar.buttons) do
@@ -101,7 +95,7 @@ function Module:CreateInventoryBar()
 
 	_G.MainMenuBarBackpackButton:SetParent(Module.BagBar)
 	_G.MainMenuBarBackpackButton:ClearAllPoints()
-	_G.MainMenuBarBackpackButtonCount:SetFontObject(_G.KkthnxUIFontOutline)
+	_G.MainMenuBarBackpackButtonCount:SetFontObject(K.UIFontOutline)
 	_G.MainMenuBarBackpackButtonCount:ClearAllPoints()
 	_G.MainMenuBarBackpackButtonCount:SetPoint("BOTTOMRIGHT", _G.MainMenuBarBackpackButton, "BOTTOMRIGHT", 2, 2)
 	_G.MainMenuBarBackpackButton:HookScript("OnEnter", OnEnter)

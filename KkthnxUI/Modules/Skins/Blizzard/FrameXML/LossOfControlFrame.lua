@@ -27,7 +27,7 @@ table_insert(C.defaultThemes, function()
 	LossOfControlFrame.AbilityName:ClearAllPoints()
 	LossOfControlFrame:SetSize(LossOfControlFrame.Icon:GetWidth() + 50, LossOfControlFrame.Icon:GetWidth() + 50)
 
-	K.Mover(LossOfControlFrame, "LossOfControl", "LossOfControlFrame", { "CENTER", UIParent, "CENTER", 0, 250 }, 60, 60)
+	K.Mover(LossOfControlFrame, "LossOfControl", "LossOfControlFrame", { "CENTER", UIParent, "CENTER", 0, 250 }, LossOfControlFrame:GetSize())
 
 	hooksecurefunc("LossOfControlFrame_SetUpDisplay", function(self)
 		local Icon = self.Icon

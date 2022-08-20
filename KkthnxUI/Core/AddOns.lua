@@ -346,7 +346,7 @@ local function ForceBigwigs()
 						["LeftButton"] = {
 							["emphasize"] = false,
 						},
-						["font"] = "KKUI_Normal",
+						["font"] = K.UIFont,
 						["onlyInterceptOnKeypress"] = true,
 						["emphasizeMultiplier"] = 1,
 						["BigWigsEmphasizeAnchor_x"] = 810,
@@ -360,7 +360,7 @@ local function ForceBigwigs()
 				["profiles"] = {
 					["Default"] = {
 						["fontSize"] = 28,
-						["font"] = "KKUI_Normal",
+						["font"] = K.UIFont,
 					},
 				},
 			},
@@ -368,7 +368,7 @@ local function ForceBigwigs()
 				["profiles"] = {
 					["Default"] = {
 						["fontSize"] = 18,
-						["font"] = "KKUI_Normal",
+						["font"] = K.UIFont,
 						["BWEmphasizeCountdownMessageAnchor_x"] = 665,
 						["BWMessageAnchor_x"] = 616,
 						["BWEmphasizeCountdownMessageAnchor_y"] = 530,
@@ -380,7 +380,7 @@ local function ForceBigwigs()
 				["profiles"] = {
 					["Default"] = {
 						["fontSize"] = 18,
-						["font"] = "KKUI_Normal",
+						["font"] = K.UIFont,
 						["posy"] = 346,
 						["width"] = 140,
 						["posx"] = 1024,
@@ -393,7 +393,7 @@ local function ForceBigwigs()
 					["Default"] = {
 						["posx"] = 1002,
 						["fontSize"] = 14,
-						["font"] = "KKUI_Normal",
+						["font"] = K.UIFont,
 						["fontOutline"] = "OUTLINE",
 						["posy"] = 490,
 					},

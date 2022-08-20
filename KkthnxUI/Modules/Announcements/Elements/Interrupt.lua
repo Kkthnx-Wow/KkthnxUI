@@ -32,7 +32,6 @@ local spellBlackList = {
 	[226943] = true, -- mind bomb
 	[228600] = true, -- Glacial Spike
 	[31661] = true, -- Dragon Breath
-	[31935] = true, -- Avenger's Shield
 	[331866] = true, -- Chaos Agent
 	[33395] = true, -- Freeze
 	[5246] = true, -- Intimidating Roar

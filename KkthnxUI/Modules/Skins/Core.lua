@@ -66,7 +66,7 @@ function Module:OnEnable()
 
 	-- Add Skins
 	self:ReskinBartender4()
-	self:ReskinBigWigs()
+	-- self:ReskinBigWigs()
 	self:ReskinButtonForge()
 	self:ReskinChocolateBar()
 	self:ReskinDeadlyBossMods()
