@@ -160,13 +160,10 @@ local function reskinProgressbarWithIcon(_, _, line)
 
 		icon:SetMask(nil)
 
-		if not icon.bg then
-			icon.bg = CreateFrame("Frame", nil, bar)
-			icon.bg:SetAllPoints(icon)
-			icon.bg:SetFrameLevel(bar:GetFrameLevel())
-			icon.bg:CreateBorder()
-			icon.bg = true
-		end
+		icon.bg = CreateFrame("Frame", nil, bar)
+		icon.bg:SetAllPoints(icon)
+		icon.bg:SetFrameLevel(bar:GetFrameLevel())
+		icon.bg:CreateBorder()
 
 		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		icon:ClearAllPoints()
