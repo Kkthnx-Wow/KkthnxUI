@@ -20,6 +20,26 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.3.6] - 2022-8-21",
+		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
+		Sections = {
+			{
+				Header = "Fixed",
+				Entries = {
+					"ObjectiveTracker throwing nil error",
+				},
+			},
+
+			{
+				Header = "Changed",
+				Entries = {
+					"No need to break on keystone module return is enough",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.3.5] - 2022-8-21",
 		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {
