@@ -1137,9 +1137,9 @@ function Module:RefreshAllPlates()
 end
 
 local DisabledElements = {
-	"Health",
 	"Castbar",
 	"HealPredictionAndAbsorb",
+	"Health",
 	"PvPClassificationIndicator",
 	"ThreatIndicator",
 }

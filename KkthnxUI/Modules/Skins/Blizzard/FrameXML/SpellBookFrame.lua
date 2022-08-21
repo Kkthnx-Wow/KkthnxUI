@@ -30,7 +30,7 @@ table_insert(C.defaultThemes, function()
 		bu.bg = CreateFrame("Frame", nil, bu)
 		bu.bg:SetFrameLevel(bu:GetFrameLevel())
 		bu.bg:SetAllPoints(ic)
-		bu.bg:CreateBorder(_, _, _, _, _, _, _, _, _, K.MediaFolder .. "Skins\\UI-Spellbook-SpellBackground", _, _, _, 1, 1, 1)
+		bu.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Spellbook-SpellBackground", nil, nil, nil, 1, 1, 1)
 
 		local newHighlight = CreateFrame("Frame", nil, bu, "BackdropTemplate")
 		newHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 16 })

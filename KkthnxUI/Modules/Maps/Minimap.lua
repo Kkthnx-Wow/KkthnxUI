@@ -235,13 +235,13 @@ function Module:CreateStyle()
 	minimapBorder:SetAllPoints(Minimap)
 	minimapBorder:SetFrameLevel(Minimap:GetFrameLevel())
 	minimapBorder:SetFrameStrata("LOW")
-	minimapBorder:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, "", nil, nil, nil, nil, nil, nil, nil, false)
+	minimapBorder:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, "", nil, nil, nil, nil, nil, nil, nil)
 
 	local minimapBackground = CreateFrame("Frame", "KKUI_MinimapBackground", Minimap)
 	minimapBackground:SetAllPoints(Minimap)
 	minimapBackground:SetFrameLevel(Minimap:GetFrameLevel())
 	minimapBackground:SetFrameStrata("BACKGROUND")
-	minimapBackground:CreateBorder(nil, nil, nil, "", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+	minimapBackground:CreateBorder(nil, nil, nil, "", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	if not C["Minimap"].MailPulse then
 		return

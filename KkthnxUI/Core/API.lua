@@ -32,11 +32,11 @@ do
 end
 
 -- This is a lot...
-local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha, bgBackground)
+local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
 	-- Border
 	local BorderSubLevel = bSubLevel or "OVERLAY"
 	local BorderLayer = bLayer or 2
-	local BorderValue = C["General"].BorderStyle.Value
+	local BorderValue = C["General"].BorderStyle.Value or "KkthnxUI"
 	local BorderSize
 
 	if BorderValue == "KkthnxUI" then
@@ -63,6 +63,7 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 		kkui_border:SetTexture(BorderTexture)
 		kkui_border:SetOffset(BorderOffset)
 		kkui_border:SetVertexColor(BorderRed, BorderGreen, BorderBlue, BorderAlpha)
+
 		bFrame.KKUI_Border = true
 		bFrame.KKUI_Border = kkui_border
 	end
@@ -76,21 +77,19 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	local BackgroundGreen = bgGreen or C["Media"].Backdrops.ColorBackdrop[2]
 	local BackgroundBlue = bgBlue or C["Media"].Backdrops.ColorBackdrop[3]
 	local BackgroundAlpha = bgAlpha or C["Media"].Backdrops.ColorBackdrop[4]
-	local UseBackground = bgBackground or true
 
 	if bFrame and not bFrame.KKUI_Background then -- Do not keep creating it!
-		-- Create Our Background (true/false)
-		if UseBackground then
-			local kkui_background = bFrame:CreateTexture()
-			kkui_background:SetDrawLayer(BackgroundSubLevel, BackgroundLayer)
-			kkui_background:SetTexture(BackgroundTexture)
-			kkui_background:SetTexCoord(unpack(K.TexCoords))
-			kkui_background:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BackgroundPoint, -BackgroundPoint)
-			kkui_background:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint)
-			kkui_background:SetVertexColor(BackgroundRed, BackgroundGreen, BackgroundBlue, BackgroundAlpha)
-			bFrame.KKUI_Background = true
-			bFrame.KKUI_Background = kkui_background
-		end
+		-- Create Our Background
+		local kkui_background = bFrame:CreateTexture()
+		kkui_background:SetDrawLayer(BackgroundSubLevel, BackgroundLayer)
+		kkui_background:SetTexture(BackgroundTexture)
+		kkui_background:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		kkui_background:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BackgroundPoint, -BackgroundPoint)
+		kkui_background:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint)
+		kkui_background:SetVertexColor(BackgroundRed, BackgroundGreen, BackgroundBlue, BackgroundAlpha)
+
+		bFrame.KKUI_Background = true
+		bFrame.KKUI_Background = kkui_background
 	end
 end
 

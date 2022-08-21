@@ -31,7 +31,7 @@ local function ReskinPaperDollSidebar()
 			tab.bg = CreateFrame("Frame", nil, tab)
 			tab.bg:SetFrameLevel(tab:GetFrameLevel())
 			tab.bg:SetAllPoints(tab)
-			tab.bg:CreateBorder(nil, nil, nil, nil, nil, 255 / 255, 223 / 255, 0 / 255, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, true)
+			tab.bg:CreateBorder(nil, nil, nil, nil, nil, 255 / 255, 223 / 255, 0 / 255, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 			tab.Icon:SetAllPoints(tab.bg)
 			tab.Hider:SetAllPoints(tab.bg)
