@@ -23,7 +23,6 @@ function Module:SetupAutoKeystone()
 					if classID == 5 and subClassID == 1 then
 						return UseContainerItem(container, slot)
 					end
-					break -- We found what we want STOP!
 				end
 			end
 		end

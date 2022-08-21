@@ -37,6 +37,7 @@ function Module.SetupAutoResurrect(_, arg1)
 	elseif K.Client == "itIT" then
 		pylonLoc = "Pilone d'Individuazione Fallimenti"
 	end
+
 	if arg1 == pylonLoc then
 		return
 	end
