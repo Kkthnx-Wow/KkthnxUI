@@ -51,10 +51,9 @@ local function togglePlayerPlate()
 	K:GetModule("Unitframes"):TogglePlayerPlate()
 end
 
--- local function toggleTargetClassPower()
--- 	refreshNameplates()
--- 	K:GetModule("Unitframes"):ToggleTargetClassPower()
--- end
+local function updateSmoothingAmount()
+	K:SetSmoothingAmount(C["General"].SmoothAmount)
+end
 
 local function UpdatePlayerBuffs()
 	local frame = _G.oUF_Player
@@ -81,7 +80,6 @@ local function UpdatePlayerDebuffs()
 
 	local element = frame.Debuffs
 	element.iconsPerRow = C["Unitframe"].PlayerDebuffsPerRow
-	print(element.iconsPerRow)
 
 	local width = C["Unitframe"].PlayerHealthWidth
 	local maxLines = element.iconsPerRow and K.Round(element.num / element.iconsPerRow)
@@ -155,10 +153,6 @@ end
 local function UpdateMarkerGrid()
 	K:GetModule("Blizzard"):RaidTool_UpdateGrid()
 end
-
--- local function UpdateActionbarScale()
--- 	K:GetModule("ActionBar"):UpdateAllScale()
--- end
 
 local function UpdateActionbar1()
 	K:GetModule("ActionBar"):UpdateActionSize("Bar1")
@@ -626,6 +620,7 @@ local General = function(self)
 	Window:CreateSwitch("General", "VersionCheck", L["Enable Version Checking"])
 	Window:CreateDropdown("General", "BorderStyle", L["Border Style"])
 	Window:CreateDropdown("General", "NumberPrefixStyle", L["Number Prefix Style"])
+	Window:CreateSlider("General", "SmoothAmount", "SmoothAmount", 0.1, 1, 0.5, "Setup healthbar smooth frequency for unitframes and nameplates. The lower the smoother.", updateSmoothingAmount)
 
 	Window:CreateSection(L["Scaling"])
 	Window:CreateSwitch("General", "AutoScale", L["Auto Scale"], L["AutoScaleTip"])
@@ -636,7 +631,6 @@ local General = function(self)
 	Window:CreateColorSelection("General", "TexturesColor", L["Textures Color"])
 
 	Window:CreateSection("Texture")
-	-- Window:CreateDropdown("General", "Fonts", L["Set General Font"], "Font")
 	Window:CreateDropdown("General", "Texture", L["Set General Texture"], "Texture")
 end
 

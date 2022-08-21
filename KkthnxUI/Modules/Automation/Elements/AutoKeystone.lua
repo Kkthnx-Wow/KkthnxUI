@@ -2,23 +2,28 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
 local _G = _G
+
+local BACKPACK_CONTAINER = _G.BACKPACK_CONTAINER or 0
 local GetContainerItemInfo = _G.GetContainerItemInfo
 local GetContainerNumSlots = _G.GetContainerNumSlots
 local IsAddOnLoaded = _G.IsAddOnLoaded
-local CursorHasItem = _G.CursorHasItem
 local NUM_BAG_SLOTS = _G.NUM_BAG_SLOTS or 4
 
 function Module:SetupAutoKeystone()
 	for container = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
 		local slots = GetContainerNumSlots(container)
 		for slot = 1, slots do
-			local _, _, _, _, _, _, slotLink = GetContainerItemInfo(container, slot)
-			if slotLink and slotLink:match("|Hkeystone:") then
-				PickupContainerItem(container, slot)
-				if CursorHasItem() then
-					C_ChallengeMode.SlotKeystone()
-					-- CloseAllBags() -- Idk if we want to force close the bags on the user.
-					break
+			local itemID = select(10, GetContainerItemInfo(container, slot))
+			if itemID then
+				-- print("itemID", itemID) -- Debug
+				local classID, subClassID = select(12, GetItemInfo(itemID))
+				if classID and subClassID then
+					-- print("classID", classID) -- Debug
+					-- print("subClassID", subClassID) -- Debug
+					if classID == 5 and subClassID == 1 then
+						return UseContainerItem(container, slot)
+					end
+					break -- We found what we want STOP!
 				end
 			end
 		end

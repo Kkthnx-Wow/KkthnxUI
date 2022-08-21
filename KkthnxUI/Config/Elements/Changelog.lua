@@ -20,6 +20,62 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.3.5] - 2022-8-21",
+		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
+		Sections = {
+			{
+				Header = "Added",
+				Entries = {
+					"All KkthnxUI Blizzard skinning now can be toggled off",
+					"KkthnxUI will not automatically add the new services chat channel",
+					"More globals cached and more",
+					"More statusbars to pick from",
+					"New Micromenu style from Dragonflight",
+					"New Safequeue like timer for LFD and PVP timers",
+					"New actionbar/bags button backdrop texture from Dragonflight",
+					"StatusReport is now back and stylish",
+				},
+			},
+
+			{
+				Header = "Fixed",
+				Entries = {
+					"Actionbars not being properly stripted and styled",
+					"Border throwing an error with other addons and itself",
+					"Filter mute cache properly fixed",
+					"Gold datatext had the wrong events which caused it to not update",
+					"LibSharedMeida was not importing our textures and borders",
+					"Mount source tooltip not growing as it should",
+				},
+			},
+
+			{
+				Header = "Removed",
+				Entries = {
+					"Global fonts section (Use a font folder for your own fonts)",
+					"Tabbiner is gone (Use another addon)",
+				},
+			},
+
+			{
+				Header = "Changed",
+				Entries = {
+					"Adjusted Tank/Healer tag icons",
+					"AutoGoodbye now waits 6 seconds",
+					"Bags itemglow is now 100% alpha",
+					"Bump TOC file",
+					"Fonts are now XML based (Thanks Goldpaw)",
+					"Monster chat (say/yell/whisper) toggled off in chat",
+					"Rewrote AutoKeystone module",
+					"Rewrote BigWigs skin",
+					"Rewrote some of the ChatHistory module",
+					"Statusbar texture is now in General section",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.3.4] - 2022-8-12",
 		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {

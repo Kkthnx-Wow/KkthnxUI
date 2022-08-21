@@ -262,6 +262,7 @@ C["General"] = {
 	["UseGlobal"] = false,
 	["VersionCheck"] = true,
 	["Texture"] = "KkthnxUI",
+	["SmoothAmount"] = 0.25,
 	["BorderStyle"] = {
 		["Options"] = {
 			["KkthnxUI"] = "KkthnxUI",

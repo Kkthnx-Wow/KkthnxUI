@@ -263,6 +263,7 @@ end
 K:RegisterEvent("PLAYER_LOGIN", function()
 	K.SetupUIScale()
 	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
+	K:SetSmoothingAmount(C["General"].SmoothAmount)
 
 	local playerGUID = UnitGUID("player")
 	local _, serverID = string.split("-", playerGUID)

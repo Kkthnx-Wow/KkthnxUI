@@ -65,8 +65,8 @@ end
 
 -- Did this just to get nice alignment on the bulleted entries (otherwise the text wrapped below the bulle
 function LibChangelog:CreateBulletedListEntry(frame, text, font, offset)
-	local bullet = self:CreateString(frame, " ", font, offset)
-	local bulletWidth = 4
+	local bullet = self:CreateString(frame, " - ", font, offset)
+	local bulletWidth = 12
 
 	bullet:SetWidth(bulletWidth)
 	bullet:SetJustifyV("TOP")
@@ -137,7 +137,7 @@ function LibChangelog:ShowChangelog(addonName)
 
 		frame.CheckButton.text:ClearAllPoints()
 		frame.CheckButton.text:SetPoint("LEFT", frame.CheckButton, "RIGHT", 4, 0)
-		frame.CheckButton.text:SetText(addonData.texts.onlyShowWhenNewVersion or " Only Show after next update")
+		frame.CheckButton.text:SetText(addonData.texts.onlyShowWhenNewVersion or " Hide until next update")
 
 		addonData.frame = frame
 	end

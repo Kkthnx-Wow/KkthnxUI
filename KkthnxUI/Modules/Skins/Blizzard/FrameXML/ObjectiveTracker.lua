@@ -111,11 +111,11 @@ local function reskinBarTemplate(bar)
 	end
 
 	bar:StripTextures()
-	bar:SetSize(182, 18)
+	bar:SetSize(180, 16)
 	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 
 	if bar.Label then
-		bar.Label:SetPoint("CENTER", 0, 0)
+		bar.Label:SetPoint("CENTER", 0, -1)
 		bar.Label:SetFontObject(K.UIFont)
 	end
 
@@ -126,13 +126,16 @@ local function reskinBarTemplate(bar)
 		bar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
 		bar.Spark:SetBlendMode("ADD")
 		bar.Spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
-		bar.Spark:SetAlpha(0.5)
+		bar.Spark:SetAlpha(0.3)
 	end
 
-	bar.bg = CreateFrame("Frame", nil, bar)
-	bar.bg:SetAllPoints(bar)
-	bar.bg:SetFrameLevel(bar:GetFrameLevel())
-	bar.bg:CreateBorder()
+	if not bar.bg then
+		bar.bg = CreateFrame("Frame", nil, bar)
+		bar.bg:SetAllPoints(bar)
+		bar.bg:SetFrameLevel(bar:GetFrameLevel())
+		bar.bg:CreateBorder()
+		bar.bg = true
+	end
 end
 
 local function reskinProgressbar(_, _, line)
@@ -157,10 +160,13 @@ local function reskinProgressbarWithIcon(_, _, line)
 
 		icon:SetMask(nil)
 
-		icon.bg = CreateFrame("Frame", nil, bar)
-		icon.bg:SetAllPoints(icon)
-		icon.bg:SetFrameLevel(bar:GetFrameLevel())
-		icon.bg:CreateBorder()
+		if not icon.bg then
+			icon.bg = CreateFrame("Frame", nil, bar)
+			icon.bg:SetAllPoints(icon)
+			icon.bg:SetFrameLevel(bar:GetFrameLevel())
+			icon.bg:CreateBorder()
+			icon.bg = true
+		end
 
 		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		icon:ClearAllPoints()

@@ -670,20 +670,15 @@ function Module:UpdateDungeonProgress(unit)
 end
 
 function Module:AddCreatureIcon(self)
-	-- local ClassifyOverlay = CreateFrame("Frame", nil, self)
-	-- ClassifyOverlay:SetAllPoints(self)
-	-- ClassifyOverlay:SetFrameLevel(5)
-
 	local ClassifyIndicator = self:CreateTexture(nil, "ARTWORK")
 	ClassifyIndicator:SetTexture(K.MediaFolder .. "Nameplates\\star")
 	ClassifyIndicator:SetPoint("RIGHT", self.nameText, "LEFT", -2, 1)
-	ClassifyIndicator:SetSize(14, 14)
+	ClassifyIndicator:SetSize(16, 16)
 	ClassifyIndicator:Hide()
 
 	self.ClassifyIndicator = ClassifyIndicator
 end
 
-local testHide = 4
 function Module:UpdateUnitClassify(unit)
 	if not self.ClassifyIndicator then
 		return
@@ -695,15 +690,13 @@ function Module:UpdateUnitClassify(unit)
 
 	self.ClassifyIndicator:Hide()
 
-	if testHide and testHide > 3 then
-		local class = UnitClassification(unit)
-		local classify = class and NPClassifies[class]
-		if classify then
-			local r, g, b, desature = unpack(classify)
-			self.ClassifyIndicator:SetVertexColor(r, g, b)
-			self.ClassifyIndicator:SetDesaturated(desature)
-			self.ClassifyIndicator:Show()
-		end
+	local class = UnitClassification(unit)
+	local classify = class and NPClassifies[class]
+	if classify then
+		local r, g, b, desature = unpack(classify)
+		self.ClassifyIndicator:SetVertexColor(r, g, b)
+		self.ClassifyIndicator:SetDesaturated(desature)
+		self.ClassifyIndicator:Show()
 	end
 end
 
