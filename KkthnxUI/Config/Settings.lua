@@ -416,6 +416,7 @@ C["Nameplate"] = {
 	["PowerUnitList"] = "",
 	["QuestIndicator"] = true,
 	["SecureColor"] = { 1, 0, 1 },
+	["SelectedScale"] = 1.1,
 	["ShowPlayerPlate"] = false,
 	["Smooth"] = false,
 	["TankMode"] = false,

@@ -11,6 +11,63 @@ local UnmuteSoundFile = _G.UnmuteSoundFile
 -- /run PlaySoundFile(2006030)
 
 local muteSounds = {
+	-- Annoying Train Choo Choo Crap
+	539219,
+	539203,
+	1313588,
+	1306531,
+	539516,
+	539730,
+	539802,
+	539881,
+	540271,
+	540275,
+	541769,
+	542017,
+	540535,
+	540734,
+	540870,
+	540947,
+	1316209,
+	1304872,
+	541157,
+	541239,
+	636621,
+	630296,
+	630298,
+	542818,
+	542896,
+	543085,
+	543093,
+	542526,
+	542600,
+	542035,
+	542206,
+	541463,
+	541601,
+	1902030,
+	1902543,
+	1730534,
+	1730908,
+	2531204,
+	2491898,
+	1731282,
+	1731656,
+	1951457,
+	1951458,
+	3107651,
+	3107182,
+	1732030,
+	1732405,
+	1732785,
+	1733163,
+	3106252,
+	3106717,
+	1903049,
+	1903522,
+
+	13923, -- ToyTrain_01
+
 	-- Stupid Turtle (I've collected Many Things Over The Years See If You Can Match Them)
 	2015901, -- sound/creature/collector_kojo/vo_801_collector_kojo_28_m.ogg
 
@@ -31,18 +88,6 @@ local muteSounds = {
 	569861, -- sound/vehicles/motorcyclevehicle/motorcyclevehicleloadthrown.ogg
 	569862, -- sound/vehicles/motorcyclevehicle/motorcyclevehiclejumpstart2.ogg
 	569863, -- sound/vehicles/motorcyclevehicle/motorcyclevehiclejumpend1.ogg
-
-	-- Notifaction Sound When Someone Comes Online?
-	567518, -- sound/interface/friendjoin.ogg
-
-	-- Annoying Toy Sylvanas's Music Box
-	53221, -- sound/music/gluescreenmusic/bccredits_lament_of_the_highborne.mp3
-
-	-- Annoying NPC When You Kill They Spam (The cycle... continues...)
-	1978290, -- sound/creature/kthir/vo_801_kthir_11_m.ogg
-
-	-- Princess Talanji Spamming (Your Horde's scouts have reported a formidable enemy nearby. I agree with their proposal on how to deal with it: a swift killing)
-	2061210, -- sound/creature/princess_talanji/vo_801_princess_talanji_300_f.ogg
 }
 
 function Module:CreateMuteSounds()

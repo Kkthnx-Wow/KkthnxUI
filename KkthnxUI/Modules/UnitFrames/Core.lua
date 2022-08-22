@@ -733,7 +733,6 @@ function Module:CreateUnits()
 	local showTeamIndex = C["Raid"].ShowTeamIndex
 
 	if C["Nameplate"].Enable then
-		Module:PlateCVarReset()
 		Module:SetupCVars()
 		Module:BlockAddons()
 		Module:CreateUnitTable()

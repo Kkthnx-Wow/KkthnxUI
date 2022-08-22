@@ -735,6 +735,7 @@ local Nameplate = function(self)
 	Window:CreateSlider("Nameplate", "PlateHeight", L["Nameplate Height"], 6, 28, 1, nil, refreshNameplates)
 	Window:CreateSlider("Nameplate", "PlateWidth", L["Nameplate Width"], 80, 240, 1, nil, refreshNameplates)
 	Window:CreateSlider("Nameplate", "VerticalSpacing", L["Nameplate Vertical Spacing"], 0.1, 1, 1)
+	Window:CreateSlider("Nameplate", "SelectedScale", "SelectedScale", 1, 1.4, 0.1)
 
 	Window:CreateSection("Player Nameplate Toggles")
 	Window:CreateSwitch("Nameplate", "ShowPlayerPlate", enableTextColor .. L["Enable Personal Resource"], nil, togglePlayerPlate)

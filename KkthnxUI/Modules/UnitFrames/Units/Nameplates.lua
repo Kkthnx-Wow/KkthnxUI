@@ -63,65 +63,29 @@ local ShowTargetNPCs = {
 	[174773] = true, -- 怨毒怪
 }
 
-function Module:PlateSetCVar(cvar, value)
-	if GetCVar(cvar) ~= tostring(value) then
-		SetCVar(cvar, value)
-	end
-end
-
-function Module:PlateCVarReset()
-	Module:PlateSetCVar("nameplateMinAlpha", 1)
-	Module:PlateSetCVar("nameplateMaxAlpha", 1)
-	Module:PlateSetCVar("nameplateClassResourceTopInset", GetCVarDefault("nameplateClassResourceTopInset"))
-	Module:PlateSetCVar("nameplateGlobalScale", 1)
-	Module:PlateSetCVar("NamePlateHorizontalScale", 1)
-	Module:PlateSetCVar("nameplateLargeBottomInset", GetCVarDefault("nameplateLargeBottomInset"))
-	Module:PlateSetCVar("nameplateLargerScale", 1)
-	Module:PlateSetCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
-	Module:PlateSetCVar("nameplateMaxAlphaDistance", GetCVarDefault("nameplateMaxAlphaDistance"))
-	Module:PlateSetCVar("nameplateMaxScale", 1)
-	Module:PlateSetCVar("nameplateMaxScaleDistance", 40)
-	Module:PlateSetCVar("nameplateMinAlphaDistance", GetCVarDefault("nameplateMinAlphaDistance"))
-	Module:PlateSetCVar("nameplateMinScale", 1)
-	Module:PlateSetCVar("nameplateMinScaleDistance", 0)
-	Module:PlateSetCVar("nameplateMotionSpeed", GetCVarDefault("nameplateMotionSpeed"))
-	Module:PlateSetCVar("nameplateOccludedAlphaMult", GetCVarDefault("nameplateOccludedAlphaMult"))
-	Module:PlateSetCVar("nameplateOtherAtBase", GetCVarDefault("nameplateOtherAtBase"))
-	Module:PlateSetCVar("nameplateOverlapH", GetCVarDefault("nameplateOverlapH"))
-	Module:PlateSetCVar("nameplateOverlapV", GetCVarDefault("nameplateOverlapV"))
-	Module:PlateSetCVar("nameplateResourceOnTarget", GetCVarDefault("nameplateResourceOnTarget"))
-	Module:PlateSetCVar("nameplateSelectedAlpha", 1)
-	Module:PlateSetCVar("nameplateSelectedScale", 1)
-	Module:PlateSetCVar("nameplateSelfAlpha", 1)
-	Module:PlateSetCVar("nameplateSelfBottomInset", GetCVarDefault("nameplateSelfBottomInset"))
-	Module:PlateSetCVar("nameplateSelfScale", 1)
-	Module:PlateSetCVar("nameplateSelfTopInset", GetCVarDefault("nameplateSelfTopInset"))
-	Module:PlateSetCVar("nameplateTargetBehindMaxDistance", 40)
-end
-
 -- Init
 function Module:PlateInsideView()
 	if C["Nameplate"].InsideView then
-		Module:PlateSetCVar("nameplateOtherTopInset", 0.05)
-		Module:PlateSetCVar("nameplateOtherBottomInset", 0.08)
+		SetCVar("nameplateOtherTopInset", 0.05)
+		SetCVar("nameplateOtherBottomInset", 0.08)
 	elseif GetCVar("nameplateOtherTopInset") == "0.05" and GetCVar("nameplateOtherBottomInset") == "0.08" then
-		Module:PlateSetCVar("nameplateOtherTopInset", -1)
-		Module:PlateSetCVar("nameplateOtherBottomInset", -1)
+		SetCVar("nameplateOtherTopInset", -1)
+		SetCVar("nameplateOtherBottomInset", -1)
 	end
 end
 
 function Module:UpdatePlateScale()
-	Module:PlateSetCVar("namePlateMinScale", C["Nameplate"].MinScale)
-	Module:PlateSetCVar("namePlateMaxScale", C["Nameplate"].MinScale)
+	SetCVar("namePlateMinScale", C["Nameplate"].MinScale)
+	SetCVar("namePlateMaxScale", C["Nameplate"].MinScale)
 end
 
 function Module:UpdatePlateAlpha()
-	Module:PlateSetCVar("nameplateMinAlpha", C["Nameplate"].MinAlpha)
-	Module:PlateSetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
+	SetCVar("nameplateMinAlpha", C["Nameplate"].MinAlpha)
+	SetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
 end
 
 function Module:UpdatePlateSpacing()
-	Module:PlateSetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
+	SetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
 end
 
 function Module:UpdateClickableSize()
@@ -135,20 +99,20 @@ end
 
 function Module:SetupCVars()
 	Module:PlateInsideView()
-	Module:PlateSetCVar("nameplateOverlapH", 0.8)
+	SetCVar("nameplateOverlapH", 0.8)
 	Module:UpdatePlateSpacing()
 	Module:UpdatePlateAlpha()
-	Module:PlateSetCVar("nameplateSelectedAlpha", 1)
-	Module:PlateSetCVar("showQuestTrackingTooltips", 1)
-	Module:PlateSetCVar("predictedHealth", 1)
+	SetCVar("nameplateSelectedAlpha", 1)
+	SetCVar("showQuestTrackingTooltips", 1)
+	SetCVar("predictedHealth", 1)
 
 	Module:UpdatePlateScale()
-	Module:PlateSetCVar("nameplateSelectedScale", 1)
-	Module:PlateSetCVar("nameplateLargerScale", 1)
-	Module:PlateSetCVar("nameplateGlobalScale", 1)
+	SetCVar("nameplateSelectedScale", C["Nameplate"].SelectedScale)
+	SetCVar("nameplateLargerScale", 1)
+	SetCVar("nameplateGlobalScale", 1)
 
-	Module:PlateSetCVar("nameplateShowSelf", 0)
-	Module:PlateSetCVar("nameplateResourceOnTarget", 0)
+	SetCVar("nameplateShowSelf", 0)
+	SetCVar("nameplateResourceOnTarget", 0)
 	K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesPersonalResource)
 	K.HideInterfaceOption(_G.InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy)
 
