@@ -24,8 +24,6 @@ local INFO = _G.INFO
 local OKAY = _G.OKAY
 local SlashCmdList = _G.SlashCmdList
 
-local Texture = K.GetTexture(C["General"].Texture)
-
 -- Rewrite AddClassIconToColor so we can have 2 functions. 1 for class icon and 1 for class color :D
 local DeathKnightIconColor = K.AddClassIconToColor("DEATHKNIGHT", "|CFFC41F3B", 16)
 local DemonHunterIconColor = K.AddClassIconToColor("DEMONHUNTER", "|CFFA330C9", 16)
@@ -44,7 +42,7 @@ local BGColor = { 0.2, 0.2, 0.2 }
 local BrightColor = { 0.35, 0.35, 0.35 }
 local R, G, B = K.r, K.g, K.b
 
-local HeaderText = K.Title .. K.SystemColor .. " GUI|r"
+local HeaderText = string.format("%s %s", K.Title .. K.SystemColor, SETTINGS .. "|r")
 
 local WindowWidth = 620
 -- local WindowHeight = 360
@@ -336,7 +334,7 @@ local CreateButton = function(self, midtext, text, tooltip, func)
 
 	Button.Highlight = Button:CreateTexture(nil, "OVERLAY")
 	Button.Highlight:SetAllPoints()
-	Button.Highlight:SetTexture(Texture)
+	Button.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	Button.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Button.Highlight:SetAlpha(0)
 
@@ -425,13 +423,13 @@ local CreateSwitch = function(self, group, option, text, tooltip, hook)
 
 	Switch.Highlight = Switch:CreateTexture(nil, "OVERLAY")
 	Switch.Highlight:SetAllPoints()
-	Switch.Highlight:SetTexture(Texture)
+	Switch.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	Switch.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Switch.Highlight:SetAlpha(0)
 
 	Switch.Thumb = CreateFrame("Frame", nil, Switch)
 	Switch.Thumb:SetSize(WidgetHeight, WidgetHeight)
-	Switch.Thumb:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUIStatusbar, nil, nil, nil, 123 / 255, 132 / 255, 137 / 255)
+	Switch.Thumb:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, 123 / 255, 132 / 255, 137 / 255)
 
 	Switch.Movement = CreateAnimationGroup(Switch.Thumb):CreateAnimation("Move")
 	Switch.Movement:SetDuration(0.1)
@@ -440,7 +438,7 @@ local CreateSwitch = function(self, group, option, text, tooltip, hook)
 	Switch.TrackTexture = Switch:CreateTexture(nil, "ARTWORK")
 	Switch.TrackTexture:SetPoint("TOPLEFT", Switch, 0, -1)
 	Switch.TrackTexture:SetPoint("BOTTOMRIGHT", Switch.Thumb, "BOTTOMLEFT", 0, 1)
-	Switch.TrackTexture:SetTexture(Texture)
+	Switch.TrackTexture:SetTexture(K.GetTexture(C["General"].Texture))
 	Switch.TrackTexture:SetVertexColor(R, G, B)
 
 	Switch.Label = Switch:CreateFontString(nil, "OVERLAY")
@@ -509,7 +507,7 @@ local CreateEditBox = function(self, group, option, text, tooltip, hook)
 
 	EditBox.Highlight = EditBox:CreateTexture(nil, "OVERLAY")
 	EditBox.Highlight:SetAllPoints()
-	EditBox.Highlight:SetTexture(Texture)
+	EditBox.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	EditBox.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	EditBox.Highlight:SetAlpha(0)
 
@@ -702,7 +700,7 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 
 	EditBox.Highlight = EditBox:CreateTexture(nil, "OVERLAY")
 	EditBox.Highlight:SetAllPoints()
-	EditBox.Highlight:SetTexture(Texture)
+	EditBox.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	EditBox.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	EditBox.Highlight:SetAlpha(0)
 
@@ -737,7 +735,7 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 	local Slider = CreateFrame("Slider", nil, EditBox)
 	Slider:SetPoint("LEFT", EditBox, "RIGHT", Spacing, 0)
 	Slider:SetSize(SliderWidth, WidgetHeight)
-	Slider:SetThumbTexture(Texture)
+	Slider:SetThumbTexture(K.GetTexture(C["General"].Texture))
 	Slider:SetOrientation("HORIZONTAL")
 	Slider:SetValueStep(stepvalue)
 	Slider:CreateBorder()
@@ -753,7 +751,7 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 
 	Slider.Highlight = Slider:CreateTexture(nil, "OVERLAY")
 	Slider.Highlight:SetAllPoints()
-	Slider.Highlight:SetTexture(Texture)
+	Slider.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	Slider.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Slider.Highlight:SetAlpha(0)
 
@@ -766,19 +764,19 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 
 	local Thumb = Slider:GetThumbTexture()
 	Thumb:SetSize(8, WidgetHeight)
-	Thumb:SetTexture(Texture)
+	Thumb:SetTexture(K.GetTexture(C["General"].Texture))
 	Thumb:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 
 	Thumb.Border = CreateFrame("Frame", nil, Slider)
 	Thumb.Border:SetPoint("TOPLEFT", Slider:GetThumbTexture(), 0, -1)
 	Thumb.Border:SetPoint("BOTTOMRIGHT", Slider:GetThumbTexture(), 0, 1)
 	-- stylua: ignore
-	Thumb.Border:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUIStatusbar, nil, nil, nil, 123 / 255, 132 / 255, 137 / 255)
+	Thumb.Border:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, 123 / 255, 132 / 255, 137 / 255)
 
 	Slider.Progress = Slider:CreateTexture(nil, "ARTWORK")
 	Slider.Progress:SetPoint("TOPLEFT", Slider, 1, -1)
 	Slider.Progress:SetPoint("BOTTOMRIGHT", Thumb, "BOTTOMLEFT", 0, 0)
-	Slider.Progress:SetTexture(Texture)
+	Slider.Progress:SetTexture(K.GetTexture(C["General"].Texture))
 	Slider.Progress:SetVertexColor(R, G, B)
 
 	EditBox.Box.Slider = Slider
@@ -1000,7 +998,7 @@ local AddDropdownScrollBar = function(self)
 	ScrollBar:SetPoint("TOPRIGHT", self, -Spacing, -Spacing)
 	ScrollBar:SetPoint("BOTTOMRIGHT", self, -Spacing, Spacing)
 	ScrollBar:SetWidth(Width)
-	ScrollBar:SetThumbTexture(Texture)
+	ScrollBar:SetThumbTexture(K.GetTexture(C["General"].Texture))
 	ScrollBar:SetOrientation("VERTICAL")
 	ScrollBar:SetValueStep(1)
 	ScrollBar:CreateBorder()
@@ -1014,19 +1012,19 @@ local AddDropdownScrollBar = function(self)
 
 	local Thumb = ScrollBar:GetThumbTexture()
 	Thumb:SetSize(Width, WidgetHeight)
-	Thumb:SetTexture(Texture)
+	Thumb:SetTexture(K.GetTexture(C["General"].Texture))
 	Thumb:SetVertexColor(0, 0, 0)
 
 	ScrollBar.NewTexture = ScrollBar:CreateTexture(nil, "OVERLAY")
 	ScrollBar.NewTexture:SetPoint("TOPLEFT", Thumb, 0, 0)
 	ScrollBar.NewTexture:SetPoint("BOTTOMRIGHT", Thumb, 0, 0)
-	ScrollBar.NewTexture:SetTexture(Texture)
+	ScrollBar.NewTexture:SetTexture(K.GetTexture(C["General"].Texture))
 	ScrollBar.NewTexture:SetVertexColor(0, 0, 0)
 
 	ScrollBar.NewTexture2 = ScrollBar:CreateTexture(nil, "OVERLAY")
 	ScrollBar.NewTexture2:SetPoint("TOPLEFT", ScrollBar.NewTexture, 1, -1)
 	ScrollBar.NewTexture2:SetPoint("BOTTOMRIGHT", ScrollBar.NewTexture, -1, 1)
-	ScrollBar.NewTexture2:SetTexture(Texture)
+	ScrollBar.NewTexture2:SetTexture(K.GetTexture(C["General"].Texture))
 	ScrollBar.NewTexture2:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
 
 	self:EnableMouseWheel(true)
@@ -1097,7 +1095,7 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 
 	Dropdown.Button.Highlight = Dropdown:CreateTexture(nil, "ARTWORK")
 	Dropdown.Button.Highlight:SetAllPoints()
-	Dropdown.Button.Highlight:SetTexture(Texture)
+	Dropdown.Button.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	Dropdown.Button.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Dropdown.Button.Highlight:SetAlpha(0)
 
@@ -1188,18 +1186,18 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 
 		MenuItem.Highlight = MenuItem:CreateTexture(nil, "OVERLAY")
 		MenuItem.Highlight:SetAllPoints()
-		MenuItem.Highlight:SetTexture(Texture)
+		MenuItem.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 		MenuItem.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 		MenuItem.Highlight:SetAlpha(0)
 
 		MenuItem.Texture = MenuItem:CreateTexture(nil, "ARTWORK")
 		MenuItem.Texture:SetAllPoints()
-		MenuItem.Texture:SetTexture(Texture)
+		MenuItem.Texture:SetTexture(K.GetTexture(C["General"].Texture))
 		MenuItem.Texture:SetVertexColor(BrightColor[1], BrightColor[2], BrightColor[3])
 
 		MenuItem.Selected = MenuItem:CreateTexture(nil, "OVERLAY")
 		MenuItem.Selected:SetAllPoints()
-		MenuItem.Selected:SetTexture(Texture)
+		MenuItem.Selected:SetTexture(K.GetTexture(C["General"].Texture))
 		MenuItem.Selected:SetVertexColor(R, G, B)
 
 		MenuItem.Text = MenuItem:CreateFontString(nil, "OVERLAY")
@@ -1248,7 +1246,7 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 	if custom == "Texture" then
 		Dropdown.Texture:SetTexture(K.GetTexture(Value))
 	else
-		Dropdown.Texture:SetTexture(Texture)
+		Dropdown.Texture:SetTexture(K.GetTexture(C["General"].Texture))
 	end
 
 	if #Dropdown.Menu > ListItemsToShow then
@@ -1354,7 +1352,7 @@ local CreateColorSelection = function(self, group, option, text, tooltip)
 	Swatch:SetSize(WidgetHeight, WidgetHeight)
 	Swatch:SetPoint("LEFT", Anchor, 0, 0)
 	-- stylua: ignore
-	Swatch:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, C["Media"].Statusbars.KkthnxUIStatusbar, nil, nil, nil, CurrentR, CurrentG, CurrentB)
+	Swatch:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, CurrentR, CurrentG, CurrentB)
 
 	Swatch.Select = CreateFrame("Frame", nil, Swatch, "BackdropTemplate")
 	Swatch.Select:SetSize(ColorButtonWidth, WidgetHeight)
@@ -1370,7 +1368,7 @@ local CreateColorSelection = function(self, group, option, text, tooltip)
 
 	Swatch.Select.Highlight = Swatch.Select:CreateTexture(nil, "OVERLAY")
 	Swatch.Select.Highlight:SetAllPoints()
-	Swatch.Select.Highlight:SetTexture(Texture)
+	Swatch.Select.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	Swatch.Select.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Swatch.Select.Highlight:SetAlpha(0)
 
@@ -1516,7 +1514,7 @@ local AddScrollBar = function(self)
 	ScrollBar:SetPoint("TOPRIGHT", self, -Spacing, -Spacing)
 	ScrollBar:SetPoint("BOTTOMRIGHT", self, -Spacing, Spacing)
 	ScrollBar:SetWidth(WidgetHeight)
-	ScrollBar:SetThumbTexture(Texture)
+	ScrollBar:SetThumbTexture(K.GetTexture(C["General"].Texture))
 	ScrollBar:SetOrientation("VERTICAL")
 	ScrollBar:SetValueStep(1)
 	ScrollBar:CreateBorder()
@@ -1530,7 +1528,7 @@ local AddScrollBar = function(self)
 
 	local Thumb = ScrollBar:GetThumbTexture()
 	Thumb:SetSize(WidgetHeight, WidgetHeight)
-	Thumb:SetTexture(Texture)
+	Thumb:SetTexture(K.GetTexture(C["General"].Texture))
 	Thumb:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 
 	self:EnableMouseWheel(true)
@@ -1621,14 +1619,14 @@ GUI.CreateWindow = function(self, name, default)
 
 	Button.Highlight = Button:CreateTexture(nil, "OVERLAY")
 	Button.Highlight:SetAllPoints()
-	Button.Highlight:SetTexture(Texture)
+	Button.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	Button.Highlight:SetVertexColor(R, G, B, 0.3)
 	Button.Highlight:Hide()
 
 	Button.Selected = Button:CreateTexture(nil, "OVERLAY")
 	Button.Selected:SetPoint("TOPLEFT", Button, 1, -1)
 	Button.Selected:SetPoint("BOTTOMRIGHT", Button, -1, 1)
-	Button.Selected:SetTexture(Texture)
+	Button.Selected:SetTexture(K.GetTexture(C["General"].Texture))
 	Button.Selected:SetVertexColor(R * 0.7, G * 0.7, B * 0.7, 0.5)
 	Button.Selected:Hide()
 
@@ -1899,7 +1897,7 @@ GUI.Enable = function(self)
 
 	Apply.Highlight = Apply:CreateTexture(nil, "OVERLAY")
 	Apply.Highlight:SetAllPoints()
-	Apply.Highlight:SetTexture(Texture)
+	Apply.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	Apply.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Apply.Highlight:SetAlpha(0)
 
@@ -1925,7 +1923,7 @@ GUI.Enable = function(self)
 
 	Reset.Highlight = Reset:CreateTexture(nil, "OVERLAY")
 	Reset.Highlight:SetAllPoints()
-	Reset.Highlight:SetTexture(Texture)
+	Reset.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	Reset.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Reset.Highlight:SetAlpha(0)
 
@@ -1956,7 +1954,7 @@ GUI.Enable = function(self)
 
 	Move.Highlight = Move:CreateTexture(nil, "OVERLAY")
 	Move.Highlight:SetAllPoints()
-	Move.Highlight:SetTexture(Texture)
+	Move.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	Move.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Move.Highlight:SetAlpha(0)
 
@@ -1980,7 +1978,7 @@ GUI.Enable = function(self)
 
 	Credits.Highlight = Credits:CreateTexture(nil, "OVERLAY")
 	Credits.Highlight:SetAllPoints()
-	Credits.Highlight:SetTexture(Texture)
+	Credits.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	Credits.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Credits.Highlight:SetAlpha(0)
 
@@ -2006,7 +2004,7 @@ GUI.Enable = function(self)
 
 	ResetCVars.Highlight = ResetCVars:CreateTexture(nil, "OVERLAY")
 	ResetCVars.Highlight:SetAllPoints()
-	ResetCVars.Highlight:SetTexture(Texture)
+	ResetCVars.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	ResetCVars.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	ResetCVars.Highlight:SetAlpha(0)
 
@@ -2032,7 +2030,7 @@ GUI.Enable = function(self)
 
 	ResetChat.Highlight = ResetChat:CreateTexture(nil, "OVERLAY")
 	ResetChat.Highlight:SetAllPoints()
-	ResetChat.Highlight:SetTexture(Texture)
+	ResetChat.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	ResetChat.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	ResetChat.Highlight:SetAlpha(0)
 
@@ -2061,7 +2059,7 @@ GUI.Enable = function(self)
 
 	ContactMe.Highlight = ContactMe:CreateTexture(nil, "OVERLAY")
 	ContactMe.Highlight:SetAllPoints()
-	ContactMe.Highlight:SetTexture(Texture)
+	ContactMe.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	ContactMe.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	ContactMe.Highlight:SetAlpha(0)
 
@@ -2090,7 +2088,7 @@ GUI.Enable = function(self)
 
 	Profiles.Highlight = Profiles:CreateTexture(nil, "OVERLAY")
 	Profiles.Highlight:SetAllPoints()
-	Profiles.Highlight:SetTexture(Texture)
+	Profiles.Highlight:SetTexture(K.GetTexture(C["General"].Texture))
 	Profiles.Highlight:SetVertexColor(123 / 255, 132 / 255, 137 / 255)
 	Profiles.Highlight:SetAlpha(0)
 
