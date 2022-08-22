@@ -7,6 +7,7 @@ K.TextureTable = {
 	["Blank"] = C["Media"].Statusbars.Blank,
 	["Clean"] = C["Media"].Statusbars.CleanStatusbar,
 	["Flat"] = C["Media"].Statusbars.FlatStatusbar,
+	["Glamour7"] = C["Media"].Statusbars.Glamour7Statusbar,
 	["GoldpawUI"] = C["Media"].Statusbars.GoldpawUIStatusbar,
 	["KkthnxUI"] = C["Media"].Statusbars.KkthnxUIStatusbar,
 	["Palooza"] = C["Media"].Statusbars.PaloozaStatusbar,
@@ -15,6 +16,7 @@ K.TextureTable = {
 	["SkullFlowerUI"] = C["Media"].Statusbars.SkullFlowerUIStatusbar,
 	["Tukui"] = C["Media"].Statusbars.TukuiStatusbar,
 	["Water"] = C["Media"].Statusbars.WaterStatusbar,
+	["Wglass"] = C["Media"].Statusbars.WGlassStatusbar,
 	["ZorkUI"] = C["Media"].Statusbars.ZorkUIStatusbar,
 }
 
