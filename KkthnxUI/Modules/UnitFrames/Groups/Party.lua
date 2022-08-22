@@ -81,15 +81,15 @@ function Module:CreateParty()
 	Name:SetFontObject(K.UIFont)
 	if partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait" then
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
-			self:Tag(Name, "[lfdrole][name] [nplevel][afkdnd]")
+			self:Tag(Name, "[lfdrole][name] [nplevel]")
 		else
-			self:Tag(Name, "[lfdrole][color][name] [nplevel][afkdnd]")
+			self:Tag(Name, "[lfdrole][color][name] [nplevel]")
 		end
 	else
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
-			self:Tag(Name, "[lfdrole][name][afkdnd]")
+			self:Tag(Name, "[lfdrole][name]")
 		else
-			self:Tag(Name, "[lfdrole][color][name][afkdnd]")
+			self:Tag(Name, "[lfdrole][color][name]")
 		end
 	end
 

@@ -6,7 +6,7 @@ C["Media"] = {
 	},
 
 	["Backdrops"] = {
-		ColorBackdrop = { 0.04, 0.04, 0.04, 0.9 },
+		ColorBackdrop = { 0.045, 0.045, 0.045, 0.9 },
 	},
 
 	["Borders"] = {

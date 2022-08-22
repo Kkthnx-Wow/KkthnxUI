@@ -374,9 +374,9 @@ C["Misc"] = {
 }
 
 C["Nameplate"] = {
-	["PlateAuras"] = true,
 	["AKSProgress"] = false,
 	["AuraSize"] = 26,
+	["CastTarget"] = false,
 	["CastbarGlow"] = true,
 	["ClassAuras"] = true,
 	["ClassIcon"] = false,
@@ -410,6 +410,7 @@ C["Nameplate"] = {
 	["PPPHeight"] = 6,
 	["PPPowerText"] = true,
 	["PPWidth"] = 175,
+	["PlateAuras"] = true,
 	["PlateHeight"] = 13,
 	["PlateWidth"] = 184,
 	["PowerUnitList"] = "",

@@ -8,7 +8,7 @@ Dependencies: LibStub
 License: Public Domain
 ]]
 
---- LibRangeCheck-2.0 provides an easy way to check for ranges and get suitable range checking functions for specific ranges.\\
+-- LibRangeCheck-2.0 provides an easy way to check for ranges and get suitable range checking functions for specific ranges.\\
 -- The checkers use spell and item range checks, or interact based checks for special units where those two cannot be used.\\
 -- The lib handles the refreshing of checker lists in case talents / spells change and in some special cases when equipment changes (for example some of the mage pvp gloves change the range of the Fire Blast spell), and also handles the caching of items used for item-based range checks.\\
 -- A callback is provided for those interested in checker changes.
@@ -16,7 +16,7 @@ License: Public Domain
 -- local rc = LibStub("LibRangeCheck-2.0")
 --
 -- rc.RegisterCallback(self, rc.CHECKERS_CHANGED, function() print("need to refresh my stored checkers") end)
---
+
 -- local minRange, maxRange = rc:GetRange('target')
 -- if not minRange then
 --     print("cannot get range estimate for target")
@@ -25,7 +25,7 @@ License: Public Domain
 -- else
 --     print("target is between " .. minRange .. " and " .. maxRange .. " yards")
 -- end
---
+
 -- local meleeChecker = rc:GetFriendMaxChecker(rc.MeleeRange) or rc:GetFriendMinChecker(rc.MeleeRange) -- use the closest checker (MinChecker) if no valid Melee checker is found
 -- for i = 1, 4 do
 --     -- TODO: check if unit is valid, etc
@@ -33,11 +33,11 @@ License: Public Domain
 --         print("Party member " .. i .. " is in Melee range")
 --     end
 -- end
---
+
 -- local safeDistanceChecker = rc:GetHarmMinChecker(30)
--- -- negate the result of the checker!
+-- negate the result of the checker!
 -- local isSafelyAway = not safeDistanceChecker('target')
---
+
 -- @class file
 -- @name LibRangeCheck-2.0
 local MAJOR_VERSION = "LibRangeCheck-2.0-KkthnxUI"
@@ -48,7 +48,7 @@ if not lib then
 	return
 end
 
--- GLOBALS: LibStub, CreateFrame,
+-- GLOBALS: LibStub, CreateFrame, C_Map
 local _G = _G
 local ipairs = _G.ipairs
 local math_floor = _G.math.floor
@@ -71,7 +71,6 @@ local GetSpellBookItemName = _G.GetSpellBookItemName
 local GetSpellInfo = _G.GetSpellInfo
 local GetSpellTabInfo = _G.GetSpellTabInfo
 local GetTime = _G.GetTime
-local HandSlotId = _G.GetInventorySlotInfo("HandsSlot")
 local IsItemInRange = _G.IsItemInRange
 local IsSpellInRange = _G.IsSpellInRange
 local UnitCanAssist = _G.UnitCanAssist
@@ -82,6 +81,8 @@ local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsUnit = _G.UnitIsUnit
 local UnitIsVisible = _G.UnitIsVisible
 local UnitRace = _G.UnitRace
+
+local HandSlotId = _G.GetInventorySlotInfo("HandsSlot")
 
 -- << STATIC CONFIG
 
@@ -226,6 +227,7 @@ tinsert(ResSpells.WARLOCK, 20707) -- Soulstone (40 yards)
 tinsert(PetSpells.WARLOCK, 755) -- Health Funnel (45 yards)
 
 -- Items [Special thanks to Maldivia for the nice list]
+
 local FriendItems = {
 	[1] = {
 		90175, -- Gin-Ji Knife Set -- doesn't seem to work for pets (always returns nil)
@@ -270,8 +272,8 @@ local FriendItems = {
 		21991, -- Heavy Netherweave Bandage
 		34721, -- Frostweave Bandage
 		34722, -- Heavy Frostweave Bandage
-		--38643, -- Thick Frostweave Bandage (uncomment for Wotlk)
-		--38640, -- Dense Frostweave Bandage (uncomment for Wotlk)
+		38643, -- Thick Frostweave Bandage
+		38640, -- Dense Frostweave Bandage
 	},
 	[20] = {
 		21519, -- Mistletoe
@@ -427,6 +429,7 @@ end
 -- >> END OF STATIC CONFIG
 
 -- temporary stuff
+
 local pendingItemRequest
 local itemRequestTimeoutAt
 local foundNewItems
@@ -448,10 +451,10 @@ local checkers_Spell = setmetatable({}, {
 			end
 		end
 		t[spellIdx] = func
-
 		return func
 	end,
 })
+
 local checkers_SpellWithMin = setmetatable({}, {
 	__index = function(t, spellIdx)
 		local func = function(unit)
@@ -462,20 +465,20 @@ local checkers_SpellWithMin = setmetatable({}, {
 			end
 		end
 		t[spellIdx] = func
-
 		return func
 	end,
 })
+
 local checkers_Item = setmetatable({}, {
 	__index = function(t, item)
 		local func = function(unit)
 			return IsItemInRange(item, unit)
 		end
 		t[item] = func
-
 		return func
 	end,
 })
+
 local checkers_Interact = setmetatable({}, {
 	__index = function(t, index)
 		local func = function(unit)
@@ -484,7 +487,6 @@ local checkers_Interact = setmetatable({}, {
 			end
 		end
 		t[index] = func
-
 		return func
 	end,
 })
@@ -494,7 +496,6 @@ local function copyTable(src, dst)
 	if type(dst) ~= "table" then
 		dst = {}
 	end
-
 	if type(src) == "table" then
 		for k, v in pairs(src) do
 			if type(v) == "table" then
@@ -503,7 +504,6 @@ local function copyTable(src, dst)
 			dst[k] = v
 		end
 	end
-
 	return dst
 end
 
@@ -549,7 +549,6 @@ local function addChecker(t, range, minRange, checker, info)
 			return
 		end
 	end
-
 	tinsert(t, rc)
 end
 
@@ -577,6 +576,7 @@ local function createCheckerList(spellList, itemList, interactList)
 				range = math_floor(range + 0.5)
 
 				-- print("### spell: " .. tostring(name) .. ", " .. tostring(minRange) .. " - " ..  tostring(range))
+
 				if minRange == 0 then -- getRange() expects minRange to be nil in this case
 					minRange = nil
 				end
@@ -661,6 +661,7 @@ local function getMinChecker(checkerList, range)
 		if rc.range < range then
 			return checker, checkerRange
 		end
+
 		checker, checkerRange = rc.checker, rc.range
 	end
 
@@ -733,6 +734,7 @@ lib.resRC = createCheckerList(nil, nil, DefaultInteractList)
 lib.petRC = createCheckerList(nil, nil, DefaultInteractList)
 lib.friendNoItemsRC = createCheckerList(nil, nil, DefaultInteractList)
 lib.harmNoItemsRC = createCheckerList(nil, nil, DefaultInteractList)
+
 lib.failedItemRequests = {}
 
 -- << Public API
@@ -760,9 +762,11 @@ function lib:getRangeAsString(unit, checkVisible, showOutOfRange)
 	if not minRange then
 		return nil
 	end
+
 	if not maxRange then
 		return showOutOfRange and minRange .. " +" or nil
 	end
+
 	return minRange .. " - " .. maxRange
 end
 
@@ -771,12 +775,14 @@ function lib:init(forced)
 	if self.initialized and not forced then
 		return
 	end
+
 	self.initialized = true
 	local _, playerClass = UnitClass("player")
 	local _, playerRace = UnitRace("player")
 
-	-- first try to find a nice item we can use for minRangeCheck
 	minRangeCheck = nil
+
+	-- first try to find a nice item we can use for minRangeCheck
 	local harmItems = HarmItems[15]
 	if harmItems then
 		for i = 1, #harmItems do
@@ -1003,26 +1009,25 @@ function lib:SPELLS_CHANGED()
 	self:scheduleInit()
 end
 
-function lib:UNIT_INVENTORY_CHANGED(event, unit)
+function lib:UNIT_INVENTORY_CHANGED(_, unit)
 	if self.initialized and unit == "player" and self.handSlotItem ~= GetInventoryItemLink("player", HandSlotId) then
 		self:scheduleInit()
 	end
 end
 
-function lib:UNIT_AURA(event, unit)
+function lib:UNIT_AURA(_, unit)
 	if self.initialized and unit == "player" then
 		self:scheduleAuraCheck()
 	end
 end
 
-function lib:GET_ITEM_INFO_RECEIVED(event, item, success)
+function lib:GET_ITEM_INFO_RECEIVED(_, item, success)
 	-- print("### GET_ITEM_INFO_RECEIVED: " .. tostring(item) .. ", " .. tostring(success))
 	if item == pendingItemRequest then
 		pendingItemRequest = nil
 		if not success then
 			self.failedItemRequests[item] = true
 		end
-
 		lastUpdate = UpdateDelay
 	end
 end
@@ -1052,6 +1057,7 @@ function lib:processItemRequests(itemRequests)
 					itemRequestTimeoutAt = nil
 					pendingItemRequest = nil
 				end
+
 				if not cacheAllItems then
 					itemRequests[range] = nil
 					break
@@ -1086,7 +1092,6 @@ end
 
 function lib:initialOnUpdate()
 	self:init()
-
 	if friendItemRequests then
 		if self:processItemRequests(friendItemRequests) then
 			return
@@ -1155,6 +1160,7 @@ function lib:activate()
 		if lastUpdate < UpdateDelay then
 			return
 		end
+
 		lastUpdate = 0
 		self:initialOnUpdate()
 	end)
@@ -1182,4 +1188,5 @@ do
 end
 
 --- END CallbackHandler stuff
+
 lib:activate()

@@ -268,9 +268,9 @@ local function ResetSpellTarget(self)
 end
 
 local function UpdateSpellTarget(self, unit)
-	-- if not C["Nameplate"].CastTarget then
-	-- 	return
-	-- end
+	if not C["Nameplate"].CastTarget then
+		return
+	end
 
 	if not self.spellTarget then
 		return

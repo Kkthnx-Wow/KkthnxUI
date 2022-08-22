@@ -25,116 +25,110 @@ local function ForceHekiliOptions()
 
 	HekiliDB = {
 		["profiles"] = {
-			["KkthnxUI"] = {
-				["toggles"] = {
-					["potions"] = {
-						["value"] = true,
-					},
-					["interrupts"] = {
-						["value"] = true,
-						["separate"] = true,
-					},
-					["cooldowns"] = {
-						["value"] = true,
-						["override"] = true,
-					},
-					["mode"] = {
-						["aoe"] = true,
-					},
-					["defensives"] = {
-						["value"] = true,
-						["separate"] = true,
-					},
-				},
+			["Default"] = {
 				["displays"] = {
 					["Interrupts"] = {
-						["keybindings"] = {
-							["font"] = K.UIFont,
+						["primaryWidth"] = 40,
+						["rel"] = "CENTER",
+						["delays"] = {
+							["font"] = "Friz Quadrata TT",
 						},
 						["captions"] = {
-							["font"] = K.UIFont,
+							["font"] = "Friz Quadrata TT",
 						},
 						["targets"] = {
-							["font"] = K.UIFont,
+							["font"] = "Friz Quadrata TT",
 						},
-						["delays"] = {
-							["font"] = K.UIFont,
+						["y"] = 91.49479675292969,
+						["x"] = -246.2991485595703,
+						["keybindings"] = {
+							["font"] = "Friz Quadrata TT",
 						},
+						["primaryHeight"] = 40,
 					},
 					["Cooldowns"] = {
-						["keybindings"] = {
-							["font"] = K.UIFont,
+						["primaryWidth"] = 40,
+						["rel"] = "CENTER",
+						["delays"] = {
+							["font"] = "Friz Quadrata TT",
 						},
 						["captions"] = {
-							["font"] = K.UIFont,
+							["font"] = "Friz Quadrata TT",
 						},
 						["targets"] = {
-							["font"] = K.UIFont,
+							["font"] = "Friz Quadrata TT",
 						},
-						["delays"] = {
-							["font"] = K.UIFont,
+						["y"] = 91.58060455322266,
+						["x"] = -201.3146667480469,
+						["keybindings"] = {
+							["font"] = "Friz Quadrata TT",
 						},
+						["primaryHeight"] = 40,
 					},
 					["Primary"] = {
-						["flash"] = {
-							["enabled"] = true,
-							["color"] = {
-								nil, -- [1]
-								1, -- [2]
-								1, -- [3]
-							},
-							["suppress"] = true,
-						},
-						["border"] = {
-							["enabled"] = false,
+						["primaryWidth"] = 40,
+						["rel"] = "CENTER",
+						["targets"] = {
+							["font"] = "Friz Quadrata TT",
 						},
 						["captions"] = {
-							["font"] = K.UIFont,
-						},
-						["targets"] = {
-							["font"] = K.UIFont,
+							["font"] = "Friz Quadrata TT",
 						},
 						["keybindings"] = {
-							["font"] = K.UIFont,
+							["font"] = "Friz Quadrata TT",
 						},
+						["queue"] = {
+							["width"] = 40,
+							["height"] = 40,
+						},
+						["y"] = 45,
+						["x"] = -291.454833984375,
+						["primaryHeight"] = 40,
 						["delays"] = {
-							["font"] = K.UIFont,
+							["font"] = "Friz Quadrata TT",
 						},
 					},
 					["AOE"] = {
-						["delays"] = {
-							["font"] = K.UIFont,
-						},
-						["flash"] = {
-							["enabled"] = true,
-							["suppress"] = true,
-						},
+						["primaryWidth"] = 40,
+						["rel"] = "CENTER",
 						["keybindings"] = {
-							["font"] = K.UIFont,
-						},
-						["border"] = {
-							["enabled"] = false,
+							["font"] = "Friz Quadrata TT",
 						},
 						["captions"] = {
-							["font"] = K.UIFont,
+							["font"] = "Friz Quadrata TT",
 						},
+						["queue"] = {
+							["width"] = 40,
+							["height"] = 40,
+						},
+						["y"] = -0.7357177734375,
+						["x"] = -291.455810546875,
+						["primaryHeight"] = 40,
 						["targets"] = {
-							["font"] = K.UIFont,
+							["font"] = "Friz Quadrata TT",
+						},
+						["delays"] = {
+							["font"] = "Friz Quadrata TT",
 						},
 					},
 					["Defensives"] = {
-						["keybindings"] = {
-							["font"] = K.UIFont,
+						["primaryWidth"] = 40,
+						["rel"] = "CENTER",
+						["delays"] = {
+							["font"] = "Friz Quadrata TT",
 						},
 						["captions"] = {
-							["font"] = K.UIFont,
+							["font"] = "Friz Quadrata TT",
 						},
 						["targets"] = {
-							["font"] = K.UIFont,
+							["font"] = "Friz Quadrata TT",
 						},
-						["delays"] = {
-							["font"] = K.UIFont,
+						["y"] = 91.4949722290039,
+						["x"] = -291.2839965820313,
+						["keybindings"] = {
+							["font"] = "Friz Quadrata TT",
 						},
+						["primaryHeight"] = 40,
 					},
 				},
 			},

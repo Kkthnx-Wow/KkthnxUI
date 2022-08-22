@@ -277,7 +277,11 @@ local function OnMouseUp(self, btn)
 	elseif btn == "MiddleButton" then
 		OnEnter(self)
 	else
-		ToggleCharacter("TokenFrame")
+		if KkthnxUIDB.ShowSlots then
+			ToggleAllBags()
+		else
+			ToggleCharacter("TokenFrame")
+		end
 	end
 end
 

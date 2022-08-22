@@ -6,6 +6,7 @@ local select = _G.select
 local string_match = _G.string.match
 local tonumber = _G.tonumber
 
+local BNToastFrame = _G.BNToastFrame
 local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
 local C_QuestLog_GetSelectedQuest = _G.C_QuestLog.GetSelectedQuest
@@ -70,10 +71,10 @@ function Module:OnEnable()
 	hooksecurefunc("QuestInfo_Display", Module.CreateQuestXPPercent)
 
 	-- TESTING CMD : /run BNToastFrame:AddToast(BN_TOAST_TYPE_ONLINE, 1)
-	if not BNToastFrame.mover then
-		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 171 })
+	if not BNToastFrame.mover then -- text, value, anchor, width, height, isAuraWatch, postDrag
+		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 171 }, BNToastFrame:GetWidth(), BNToastFrame:GetHeight())
 	else
-		BNToastFrame.mover:SetSize(250, 63) -- 49 -- Rounded default size?
+		BNToastFrame.mover:SetSize(BNToastFrame:GetWidth(), BNToastFrame:GetHeight()) -- 49 -- Rounded default size?
 	end
 	hooksecurefunc(BNToastFrame, "SetPoint", Module.PostBNToastMove)
 
@@ -690,9 +691,9 @@ end
 
 -- Make it so we can move this
 function Module:PostBNToastMove(_, anchor)
-	if anchor ~= _G.BNToastFrame.mover then
+	if anchor ~= BNToastFrame.mover then
 		self:ClearAllPoints()
-		self:SetPoint("TOPLEFT", _G.BNToastFrame.mover, "TOPLEFT")
+		self:SetPoint(BNToastFrame.mover.anchorPoint or "TOPLEFT", BNToastFrame.mover, BNToastFrame.mover.anchorPoint or "TOPLEFT")
 	end
 end
 

@@ -46,6 +46,11 @@ local function GetGroupUnit(unit)
 	end
 end
 
+local function getMaxRange(unit)
+	local _, maxRange = K.RangeCheck:GetRange(unit, true, true)
+	return maxRange
+end
+
 local function friendlyIsInRange(realUnit)
 	local unit = GetGroupUnit(realUnit) or realUnit
 
@@ -58,8 +63,7 @@ local function friendlyIsInRange(realUnit)
 		return false -- blizz checked and said the unit is out of range
 	end
 
-	local _, maxRange = K.RangeCheck:GetRange(unit, true, true)
-	return maxRange
+	return getMaxRange(unit)
 end
 
 function Module:UpdateRange()
@@ -75,8 +79,7 @@ function Module:UpdateRange()
 		alpha = self.Range.outsideAlpha
 	elseif unit then
 		if UnitCanAttack("player", unit) or UnitIsUnit(unit, "pet") then
-			local _, maxRange = K.RangeCheck:GetRange(unit, true, true)
-			alpha = (maxRange and self.Range.insideAlpha) or self.Range.outsideAlpha
+			alpha = (getMaxRange(unit) and self.Range.insideAlpha) or self.Range.outsideAlpha
 		else
 			alpha = (UnitIsConnected(unit) and friendlyIsInRange(unit) and self.Range.insideAlpha) or self.Range.outsideAlpha
 		end
