@@ -2,9 +2,11 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
+local math_floor = _G.math.floor
 local math_rad = _G.math.rad
 local pairs = _G.pairs
 local string_format = _G.string.format
+local string_match = _G.string.match
 local table_wipe = _G.table.wipe
 local tonumber = _G.tonumber
 local unpack = _G.unpack
@@ -249,7 +251,7 @@ function Module:UpdateColor(_, unit)
 			if C["Nameplate"].FriendlyCC then
 				r, g, b = K.UnitColor(unit)
 			else
-				r, g, b = unpack(K.Colors.power["MANA"])
+				r, g, b = K.Colors.power["MANA"][1], K.Colors.power["MANA"][2], K.Colors.power["MANA"][3]
 			end
 		elseif isPlayer and not isFriendly and C["Nameplate"].HostileCC then
 			r, g, b = K.UnitColor(unit)
@@ -432,7 +434,7 @@ function Module:AddTargetIndicator(self)
 	TargetIndicator.Glow:SetPoint("TOPLEFT", self.Health.backdrop, -2, 2)
 	TargetIndicator.Glow:SetPoint("BOTTOMRIGHT", self.Health.backdrop, 2, -2)
 	TargetIndicator.Glow:SetBackdrop({ edgeFile = C["Media"].Textures.GlowTexture, edgeSize = 4 })
-	TargetIndicator.Glow:SetBackdropBorderColor(unpack(C["Nameplate"].TargetIndicatorColor))
+	TargetIndicator.Glow:SetBackdropBorderColor(C["Nameplate"].TargetIndicatorColor[1], C["Nameplate"].TargetIndicatorColor[2], C["Nameplate"].TargetIndicatorColor[3])
 	TargetIndicator.Glow:SetFrameLevel(0)
 
 	TargetIndicator.nameGlow = TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
@@ -495,16 +497,16 @@ function Module:UpdateQuestUnit(_, unit)
 			if isInGroup and text == K.Name or (not isInGroup and isQuestTitle(textLine)) then
 				startLooking = true
 			elseif startLooking then
-				local current, goal = strmatch(text, "(%d+)/(%d+)")
-				local progress = strmatch(text, "(%d+)%%")
+				local current, goal = string_match(text, "(%d+)/(%d+)")
+				local progress = string_match(text, "(%d+)%%")
 				if current and goal then
-					local diff = floor(goal - current)
+					local diff = math_floor(goal - current)
 					if diff > 0 then
 						questProgress = diff
 						break
 					end
-				elseif progress and not strmatch(text, THREAT_TOOLTIP) then
-					if floor(100 - progress) > 0 then
+				elseif progress and not string_match(text, THREAT_TOOLTIP) then
+					if math_floor(100 - progress) > 0 then
 						questProgress = progress .. "%" -- lower priority on progress, keep looking
 					end
 				else

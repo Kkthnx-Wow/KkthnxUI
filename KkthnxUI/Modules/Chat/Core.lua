@@ -159,12 +159,23 @@ function Module:UpdateChatSize()
 	isScaling = false
 end
 
+local showImageTest = false -- WIP TESTING
 local function CreateBackground(self)
 	local frame = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	frame:SetPoint("TOPLEFT", self.Background, "TOPLEFT", -1, 1)
 	frame:SetPoint("BOTTOMRIGHT", self.Background, "BOTTOMRIGHT", 1, -1)
 	frame:SetFrameLevel(self:GetFrameLevel())
-	frame:CreateBorder()
+	if showImageTest then
+		if K.Faction == "Alliance" then
+			frame:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Chat\\Alliance", nil, nil, nil, 0.5, 0.5, 0.5)
+		elseif K.Faction == "Horde" then
+			frame:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Chat\\Horde", nil, nil, nil, 0.5, 0.5, 0.5)
+		else
+			frame:CreateBorder()
+		end
+	else
+		frame:CreateBorder()
+	end
 	frame:SetShown(C["Chat"].Background)
 
 	return frame
