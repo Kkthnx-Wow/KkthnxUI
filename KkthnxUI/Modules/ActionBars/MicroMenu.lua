@@ -88,8 +88,6 @@ function Module:MicroButton_Create(parent, data)
 
 		if C["ActionBar"].FadeMicroBar then
 			button:HookScript("OnEnter", onEnter)
-		else
-			button:HookScript("OnEnter", nil)
 		end
 
 		local pushed = button:GetPushedTexture()
