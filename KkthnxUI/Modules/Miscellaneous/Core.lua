@@ -769,7 +769,7 @@ function Module:DisableHelpTips() -- Auto complete helptips
 	end
 
 	hooksecurefunc(_G.HelpTip, "Show", AcknowledgeTips)
-	C_Timer.After(1, AcknowledgeTips)
+	C_Timer.After(2, AcknowledgeTips)
 end
 
 do -- Firestorm has a bug where UI_ERROR_MESSAGES that should trigger a dismount DO NOT trigger a dismount so it is basically acting like Classic Wow.

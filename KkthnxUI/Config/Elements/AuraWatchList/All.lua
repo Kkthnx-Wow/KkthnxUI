@@ -242,7 +242,10 @@ local list = {
 		{ AuraID = 349999, UnitID = "player" }, -- market, anima detonates
 		{ AuraID = 359019, UnitID = "player", Flash = true }, -- Market, speed up stories
 		{ AuraID = 173324, UnitID = "player", Flash = true }, -- pier, sawtooth bristle
+		{ AuraID = 160681, UnitID = "player", Flash = true }, -- station, suppressing fire
+		{ AuraID = 166676, UnitID = "player", Flash = true }, -- station, grenade blast
 		{ AuraID = 291937, UnitID = "player", Flash = true }, -- Workshop, Junk Bunker
+		{ AuraID = 230087, UnitID = "player", Flash = true }, -- Card on, cheer up
 		-- group book
 		{ AuraID = 342077, UnitID = "player" }, -- echolocation, growl
 		{ AuraID = 329725, UnitID = "player" }, -- eradicate, destroyer
@@ -322,6 +325,7 @@ local list = {
 		{ AuraID = 341250, UnitID = "target" }, -- Terror Rage, Mud Fist
 		{ AuraID = 329636, UnitID = "target", Flash = true }, -- rock form, go-getter
 		{ AuraID = 329808, UnitID = "target", Flash = true }, -- rock form, go-getter
+		{ AuraID = 350857, UnitID = "target", Flash = true }, -- Banshee Cloak, Queen
 		{ AuraID = 367573, UnitID = "target", Flash = true }, -- Primal Bulwark, Artifact
 		{ AuraID = 368684, UnitID = "target", Value = true }, -- Recycle, Herrondos
 		{ AuraID = 361651, UnitID = "target", Value = true }, -- Siphon Barrier, Dawsy Gonny

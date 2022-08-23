@@ -10,8 +10,38 @@ local type = _G.type
 
 local MAINMENU_BUTTON = _G.MAINMENU_BUTTON
 local MicroButtonTooltipText = _G.MicroButtonTooltipText
+local RegisterStateDriver = _G.RegisterStateDriver
 
 local buttonList = {}
+
+local function onLeaveBar()
+	local KKUI_MB = _G.KKUI_MenuBar
+	return C["ActionBar"].FadeMicroBar and UIFrameFadeOut(KKUI_MB, 0.2, KKUI_MB:GetAlpha(), 0)
+end
+
+local watcher = 0
+local function onUpdate(_, elapsed)
+	local KKUI_MB = _G.KKUI_MenuBar
+	if watcher > 0.1 then
+		if not KKUI_MB:IsMouseOver() then
+			KKUI_MB.IsMouseOvered = nil
+			KKUI_MB:SetScript("OnUpdate", nil)
+			onLeaveBar()
+		end
+		watcher = 0
+	else
+		watcher = watcher + elapsed
+	end
+end
+
+local function onEnter()
+	local KKUI_MB = _G.KKUI_MenuBar
+	if not KKUI_MB.IsMouseOvered then
+		KKUI_MB.IsMouseOvered = true
+		KKUI_MB:SetScript("OnUpdate", onUpdate)
+		UIFrameFadeIn(KKUI_MB, 0.2, KKUI_MB:GetAlpha(), 1)
+	end
+end
 
 function Module:MicroButton_SetupTexture(icon, texture)
 	icon:SetPoint("TOPLEFT", texture, "TOPLEFT", -9, 5)
@@ -54,6 +84,12 @@ function Module:MicroButton_Create(parent, data)
 
 		if tooltip then
 			K.AddTooltip(button, "ANCHOR_RIGHT", tooltip)
+		end
+
+		if C["ActionBar"].FadeMicroBar then
+			button:HookScript("OnEnter", onEnter)
+		else
+			button:HookScript("OnEnter", nil)
 		end
 
 		local pushed = button:GetPushedTexture()
@@ -100,6 +136,8 @@ function Module:CreateMicroMenu()
 
 	local menubar = CreateFrame("Frame", "KKUI_MenuBar", UIParent)
 	menubar:SetSize(280, 20 * 1.4)
+	menubar:SetAlpha((C["ActionBar"].FadeMicroBar and not menubar.IsMouseOvered and 0) or 1)
+	menubar:EnableMouse(false)
 	K.Mover(menubar, "Menubar", "Menubar", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 })
 
 	RegisterStateDriver(menubar, "visibility", "[petbattle] hide; show")
