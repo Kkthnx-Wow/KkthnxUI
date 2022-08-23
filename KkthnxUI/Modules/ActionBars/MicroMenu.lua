@@ -107,13 +107,13 @@ function Module:MicroButton_Create(parent, data)
 			disabled:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
 		end
 
-		highlight:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
+		highlight:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonWhite")
 		highlight:SetVertexColor(K.r, K.g, K.b)
 		highlight:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
 		highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
 
 		if flash then
-			flash:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
+			flash:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonYellow")
 			flash:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
 			flash:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
 		end
@@ -122,7 +122,7 @@ function Module:MicroButton_Create(parent, data)
 		K.AddTooltip(bu, "ANCHOR_RIGHT", tooltip)
 
 		local highlight = bu:CreateTexture(nil, "HIGHLIGHT")
-		highlight:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButton")
+		highlight:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonWhite")
 		highlight:SetVertexColor(K.r, K.g, K.b)
 		highlight:SetPoint("TOPLEFT", bu, "TOPLEFT", -22, 18)
 		highlight:SetPoint("BOTTOMRIGHT", bu, "BOTTOMRIGHT", 24, -18)
