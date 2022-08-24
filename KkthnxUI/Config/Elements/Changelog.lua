@@ -20,8 +20,42 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
-		Version = "[10.3.6] - 2022-8-21",
+		Version = "[10.3.7] - 2022-8-24",
 		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
+		Sections = {
+			{
+				Header = "Added",
+				Entries = {
+					"Cast Target for nameplates can be toggled off and on now",
+					"New statusbars added to the textures dropdown",
+					"Targeted nameplates can now be scaled in options",
+					"Toy train is now muted for muted module (We can all rest now)",
+					"You can now adjust the amount of smoothness statusbars have",
+				},
+			},
+
+			{
+				Header = "Fixed",
+				Entries = {
+					"MDGuildBest throwing a nil error",
+					"Micromenu now has mouseover again",
+				},
+			},
+
+			{
+				Header = "Changed",
+				Entries = {
+					"Cleaned the BagsBar module",
+					"Cleaned the GUI module for statusbars",
+					"Refactored the UI is outdated notice",
+					"Updated unitframe range Lib",
+				},
+			},
+		},
+	},
+
+	{
+		Version = "[10.3.6] - 2022-8-21",
 		Sections = {
 			{
 				Header = "Fixed",
@@ -41,7 +75,6 @@ local KKUI_Changelog = {
 
 	{
 		Version = "[10.3.5] - 2022-8-21",
-		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {
 			{
 				Header = "Added",
@@ -97,7 +130,6 @@ local KKUI_Changelog = {
 
 	{
 		Version = "[10.3.4] - 2022-8-12",
-		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {
 			{
 				Header = "Added",
@@ -149,7 +181,6 @@ local KKUI_Changelog = {
 
 	{
 		Version = "[10.3.3] - 2022-7-28",
-		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {
 			{
 				Header = "Added",
@@ -169,11 +200,6 @@ local KKUI_Changelog = {
 			},
 
 			{
-				Header = "Removed",
-				Entries = {},
-			},
-
-			{
 				Header = "Changed",
 				Entries = {
 					"Player and pet low health alert",
@@ -186,7 +212,6 @@ local KKUI_Changelog = {
 
 	{
 		Version = "[10.3.2] - 2022-7-16",
-		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {
 			{
 				Header = "Added",
@@ -233,14 +258,7 @@ local KKUI_Changelog = {
 
 	{
 		Version = "[10.3.1] - 2022-6-1",
-		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {
-			-- {
-			-- 	Header = "Added",
-			-- 	Entries = {
-			-- 	},
-			-- },
-
 			{
 				Header = "Fixed",
 				Entries = {
@@ -248,12 +266,6 @@ local KKUI_Changelog = {
 					"Raid utility module",
 				},
 			},
-
-			-- {
-			-- 	Header = "Removed",
-			-- 	Entries = {
-			-- 	},
-			-- },
 
 			{
 				Header = "Changed",
@@ -266,7 +278,6 @@ local KKUI_Changelog = {
 
 	{
 		Version = "[10.3.0] - 2022-4-5",
-		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {
 			{
 				Header = "Added",

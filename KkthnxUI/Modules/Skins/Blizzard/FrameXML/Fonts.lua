@@ -179,7 +179,7 @@ table_insert(C.defaultThemes, function()
 		local button = self.CategoryButtons[btnIndex]
 		if button then
 			if not button.isFontUpdated then
-				button.Label:SetFontObject(GetKkthnxUIFont)
+				button.Label:SetFontObject(K.UIFont)
 				button.isFontUpdated = true
 			end
 		end

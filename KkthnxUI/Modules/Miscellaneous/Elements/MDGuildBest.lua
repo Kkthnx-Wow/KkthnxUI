@@ -126,13 +126,13 @@ function Module:GuildBest_Update()
 		end)
 		self.WeeklyInfo.Child.ThisWeekLabel:SetPoint("TOP", -135, -25)
 
-		local schedule = AngryKeystones.Modules.Schedule.AffixFrame
+		local schedule = AngryKeystones.Modules.Schedule
 		frame:SetWidth(246)
 		frame:ClearAllPoints()
-		frame:SetPoint("BOTTOMLEFT", schedule, "TOPLEFT", 0, 10)
+		frame:SetPoint("BOTTOMLEFT", schedule.AffixFrame, "TOPLEFT", 0, 10)
 
 		local keystoneText = schedule.KeystoneText
-		keystoneText:SetFontObject(Game13Font)
+		keystoneText:SetFontObject(_G.Game13Font)
 		keystoneText:ClearAllPoints()
 		keystoneText:SetPoint("TOP", self.WeeklyInfo.Child.DungeonScoreInfo.Score, "BOTTOM", 0, -3)
 
@@ -213,6 +213,7 @@ function Module:KeystoneInfo_Create()
 		GameTooltip:ClearLines()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:AddLine(L["Account Keystones"])
+
 		for fullName, info in pairs(KkthnxUIDB.KeystoneInfo) do
 			local name = Ambiguate(fullName, "none")
 			local mapID, level, class, faction = string_split(":", info)
@@ -228,7 +229,6 @@ function Module:KeystoneInfo_Create()
 	end)
 
 	button:SetScript("OnLeave", K.HideTooltip)
-
 	button:SetScript("OnMouseUp", function(_, btn)
 		if btn == "MiddleButton" then
 			table_wipe(KkthnxUIDB.KeystoneInfo)
@@ -258,7 +258,7 @@ function Module:CreateGuildBest()
 		return
 	end
 
-	hasAngryKeystones = IsAddOnLoaded("AngryKeystones")
+	hasAngryKeystones = K.CheckAddOnState("AngryKeystones")
 	K:RegisterEvent("ADDON_LOADED", Module.GuildBest_OnLoad)
 
 	Module:KeystoneInfo_Update()
