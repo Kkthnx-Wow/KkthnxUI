@@ -178,6 +178,7 @@
    <Include file="Skins\Blizzard\FrameXML\CharacterFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\ChatBubbles.lua" />
    <Include file="Skins\Blizzard\FrameXML\ChatFrame.lua" />
+   <Include file="Skins\Blizzard\FrameXML\Fonts.lua" />
    <Include file="Skins\Blizzard\FrameXML\GameMenuFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\GhostFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\LootFrame.lua" />

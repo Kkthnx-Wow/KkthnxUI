@@ -2,7 +2,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Load_Core -->
    <Script file="Media.lua"/>
-   <Script file="Fonts.lua"/>
    <Script file="API.lua"/>
    <Script file="Functions.lua"/>
    <Script file="Border.lua"/>

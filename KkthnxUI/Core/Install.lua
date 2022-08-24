@@ -101,6 +101,8 @@ function Module:ForceDefaultCVars()
 		SetCVar("SpellQueueWindow", K.IsFirestorm or K.IsWoWFreakz and 125 or 25)
 		SetCVar("WorldTextScale", 1)
 		SetCVar("ffxGlow", 0)
+		SetCVar("floatingCombatTextCombatDamage", 0)
+		SetCVar("floatingCombatTextCombatHealing", 0)
 	end
 end
 
