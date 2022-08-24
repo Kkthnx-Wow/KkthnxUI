@@ -181,7 +181,7 @@ function Module:ForceChatSettings()
 	ChatFrame_RemoveChannel(ChatFrame1, "GuildRecruitment")
 	ChatFrame_RemoveChannel(ChatFrame1, "LookingForGroup")
 
-	-- We do not add - MONSTER_SAY, MONSTER_YELL, MONSTER_EMOTE, MONSTER_WHISPER, MONSTER_BOSS_EMOTE, MONSTER_BOSS_WHISPER
+	-- We do not add -> MONSTER_SAY, MONSTER_YELL, MONSTER_EMOTE, MONSTER_WHISPER, MONSTER_BOSS_EMOTE, MONSTER_BOSS_WHISPER
 	local chatGroup = { "SYSTEM", "CHANNEL", "SAY", "EMOTE", "YELL", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ERRORS", "AFK", "DND", "IGNORED", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "BN_INLINE_TOAST_ALERT" }
 	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
 	for _, v in ipairs(chatGroup) do
@@ -269,6 +269,7 @@ local function YesTutor()
 	progressBar:SetPoint("TOP", tutor, "BOTTOM", 0, -6)
 	progressBar:SetSize(480, 22)
 	progressBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	K:SmoothBar(progressBar)
 
 	progressBar.text = K.CreateFontString(progressBar, 13, "", "", false, "CENTER", 0, -1)
 

@@ -48,12 +48,55 @@ function Module:VersionCheck_Create(text)
 		return
 	end
 
-	HelpTip:Show(_G.ChatFrame1, {
-		text = text,
-		buttonStyle = HelpTip.ButtonStyle.Okay,
-		targetPoint = HelpTip.Point.TopEdgeCenter,
-		offsetY = 10,
-	})
+	local UIUpdateNotice = CreateFrame("Frame", "KKUI_UpdateNotice", UIParent)
+	UIUpdateNotice:SetSize(420, 150)
+	UIUpdateNotice:SetPoint("CENTER", UIParent, "CENTER")
+	UIUpdateNotice:CreateBorder()
+
+	UIUpdateNotice.Texture = UIUpdateNotice:CreateTexture(nil, "OVERLAY")
+	UIUpdateNotice.Texture:SetTexture("Interface\\HELPFRAME\\HelpIcon-ReportAbuse")
+	UIUpdateNotice.Texture:SetPoint("TOP", UIUpdateNotice, "TOP", 0, 8)
+
+	UIUpdateNotice.Text = UIUpdateNotice:CreateFontString(nil, "OVERLAY")
+	UIUpdateNotice.Text:SetWidth(400)
+	UIUpdateNotice.Text:SetFontObject(K.UIFont)
+	UIUpdateNotice.Text:SetText(text)
+	UIUpdateNotice.Text:SetFont(select(1, UIUpdateNotice.Text:GetFont()), 15, select(3, UIUpdateNotice.Text:GetFont()))
+	UIUpdateNotice.Text:SetPoint("CENTER", UIUpdateNotice, "CENTER")
+
+	UIUpdateNotice.EditBox = CreateFrame("EditBox", nil, UIUpdateNotice)
+	UIUpdateNotice.EditBox:SetPoint("BOTTOM", UIUpdateNotice, "BOTTOM", 0, 8)
+	UIUpdateNotice.EditBox:SetText("https://www.curseforge.com/wow/addons/kkthnxui")
+	UIUpdateNotice.EditBox:SetWidth(330)
+	UIUpdateNotice.EditBox:SetHeight(19)
+	UIUpdateNotice.EditBox:SetMultiLine(false)
+	UIUpdateNotice.EditBox:SetAutoFocus(false)
+	UIUpdateNotice.EditBox:SetFontObject(K.UIFont)
+	UIUpdateNotice.EditBox:CreateBorder()
+
+	UIUpdateNotice.EditBox.Text = UIUpdateNotice.EditBox:CreateFontString(nil, "OVERLAY")
+	UIUpdateNotice.EditBox.Text:SetFontObject(K.UIFont)
+	UIUpdateNotice.EditBox.Text:SetText(K.SystemColor .. "Download Latest Release|r")
+	UIUpdateNotice.EditBox.Text:SetPoint("BOTTOM", UIUpdateNotice.EditBox, "TOP", 0, 2)
+
+	UIUpdateNotice.OkayButton = CreateFrame("Button", nil, UIUpdateNotice)
+	UIUpdateNotice.OkayButton:SetPoint("TOP", UIUpdateNotice, "BOTTOM", 0, -6)
+	UIUpdateNotice.OkayButton:RegisterForClicks("AnyUp")
+	UIUpdateNotice.OkayButton:SetSize(420, 24)
+	UIUpdateNotice.OkayButton:SkinButton()
+	UIUpdateNotice.OkayButton:SetScript("OnClick", function()
+		if UIUpdateNotice:IsShown() then
+			UIUpdateNotice:Hide()
+		end
+	end)
+
+	UIUpdateNotice.OkayButton.Text = UIUpdateNotice.OkayButton:CreateFontString(nil, "ARTWORK")
+	UIUpdateNotice.OkayButton.Text:SetFontObject(K.UIFont)
+	UIUpdateNotice.OkayButton.Text:SetFont(select(1, UIUpdateNotice.OkayButton.Text:GetFont()), 13, select(3, UIUpdateNotice.OkayButton.Text:GetFont()))
+	UIUpdateNotice.OkayButton.Text:SetText("I am going to update right now")
+	UIUpdateNotice.OkayButton.Text:SetTextColor(0, 1, 0)
+	UIUpdateNotice.OkayButton.Text:SetPoint("CENTER", UIUpdateNotice.OkayButton, "CENTER", 0, 0)
+	K.AddTooltip(UIUpdateNotice.OkayButton, "ANCHOR_BOTTOM", K.SystemColor .. "Obviously |cff669dffKkthnx|r is trusting you to go update and not complain about a missing feature or a bug because you are out of date |CFFFF0000<3|r")
 end
 
 function Module:VersionCheck_Init()

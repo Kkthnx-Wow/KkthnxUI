@@ -1,11 +1,13 @@
 local K = unpack(KkthnxUI)
+local bar_UpdateFrame = CreateFrame("Frame")
 
 -- ls_UI, lightspark
 
 local _G = _G
-local next, Lerp = _G.next, _G.Lerp
-local abs = _G.math.abs
-local CreateFrame = _G.CreateFrame
+local math_abs = _G.math.abs
+
+local Lerp = _G.Lerp
+local next = _G.next
 
 local activeObjects = {}
 local handledObjects = {}
@@ -16,6 +18,7 @@ local AMOUNT = 0.33
 local function clamp(v, min, max)
 	min = min or 0
 	max = max or 1
+	v = tonumber(v)
 
 	if v > max then
 		return max
@@ -28,13 +31,11 @@ end
 
 local function isCloseEnough(new, target, range)
 	if range > 0 then
-		return abs((new - target) / range) <= 0.001
+		return math_abs((new - target) / range) <= 0.001
 	end
 
 	return true
 end
-
-local frame = CreateFrame("Frame")
 
 local function onUpdate(_, elapsed)
 	for object, target in next, activeObjects do
@@ -90,8 +91,8 @@ function K:SmoothBar(bar)
 
 	handledObjects[bar] = true
 
-	if not frame:GetScript("OnUpdate") then
-		frame:SetScript("OnUpdate", onUpdate)
+	if not bar_UpdateFrame:GetScript("OnUpdate") then
+		bar_UpdateFrame:SetScript("OnUpdate", onUpdate)
 	end
 end
 
@@ -114,10 +115,10 @@ function K:DesmoothBar(bar)
 	handledObjects[bar] = nil
 
 	if not next(handledObjects) then
-		frame:SetScript("OnUpdate", nil)
+		bar_UpdateFrame:SetScript("OnUpdate", nil)
 	end
 end
 
 function K:SetSmoothingAmount(amount)
-	AMOUNT = clamp(amount, 0.3, 0.6)
+	AMOUNT = clamp(amount, 0.1, 1)
 end
