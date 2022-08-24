@@ -1124,7 +1124,6 @@ function Module:UpdatePlateByType()
 
 		name:SetJustifyH("CENTER")
 		self:Tag(name, "[nprare] [color][name] [nplevel]")
-		testHide = 6
 		name:UpdateTag()
 		name:SetPoint("CENTER", self, "BOTTOM")
 

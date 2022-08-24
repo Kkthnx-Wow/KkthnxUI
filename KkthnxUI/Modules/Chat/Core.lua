@@ -165,13 +165,14 @@ local function CreateBackground(self)
 	frame:SetPoint("TOPLEFT", self.Background, "TOPLEFT", -1, 1)
 	frame:SetPoint("BOTTOMRIGHT", self.Background, "BOTTOMRIGHT", 1, -1)
 	frame:SetFrameLevel(self:GetFrameLevel())
+
 	if showImageTest then
 		if K.Faction == "Alliance" then
 			frame:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Chat\\Alliance", nil, nil, nil, 0.5, 0.5, 0.5)
 		elseif K.Faction == "Horde" then
 			frame:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Chat\\Horde", nil, nil, nil, 0.5, 0.5, 0.5)
 		else
-			frame:CreateBorder()
+			frame:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Chat\\KkthnxUI", nil, nil, nil, 0.5, 0.5, 0.5)
 		end
 	else
 		frame:CreateBorder()

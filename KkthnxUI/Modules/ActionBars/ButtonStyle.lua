@@ -303,7 +303,7 @@ function Module:StyleActionButton(button, cfg)
 	end
 
 	-- Backdrop
-	button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 1, 1, 1)
+	button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 0.7, 0.7, 0.7)
 	button:StyleButton()
 	Module:EquipItemColor(button)
 
@@ -381,7 +381,7 @@ function Module:StyleExtraActionButton(cfg)
 	local checkedTexture = button:GetCheckedTexture()
 
 	-- Border
-	button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 1, 1, 1)
+	button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 0.7, 0.7, 0.7)
 	button:StyleButton()
 
 	-- Textures

@@ -374,8 +374,8 @@ local function YesTutor()
 			tutor:Hide()
 			progressBar:Hide()
 			currentPage = 0
-			StaticPopup_Show("KKUI_CHANGES_RELOAD")
 			PlaySound(163017)
+			StaticPopup_Show("KKUI_CHANGES_RELOAD")
 		end
 
 		currentPage = currentPage + 1
@@ -392,7 +392,7 @@ local function HelloWorld()
 
 	welcome = CreateFrame("Frame", "KKUI_Tutorial", UIParent)
 	welcome:SetPoint("CENTER")
-	welcome:SetSize(400, 500)
+	welcome:SetSize(420, 500)
 	welcome:SetFrameStrata("HIGH")
 	K.CreateMoverFrame(welcome)
 	welcome:CreateBorder()

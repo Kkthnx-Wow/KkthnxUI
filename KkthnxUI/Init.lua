@@ -152,9 +152,11 @@ K.QualityColors[-1] = { r = 1, g = 1, b = 1 }
 K.QualityColors[LE_ITEM_QUALITY_POOR] = { r = 0.61, g = 0.61, b = 0.61 }
 K.QualityColors[LE_ITEM_QUALITY_COMMON] = { r = 1, g = 1, b = 1 }
 
-local events = {}
 local host = CreateFrame("Frame")
-local modules, initQueue = {}, {}
+local events = {}
+local modules = {}
+local initQueue = {}
+local isScaling = false
 
 host:SetScript("OnEvent", function(_, event, ...)
 	for func in pairs(events[event]) do
@@ -216,7 +218,7 @@ end
 
 function K:GetModule(name)
 	if not modules[name] then
-		K.Print("Module <" .. name .. "> does not exist.")
+		K.Print("Module [" .. name .. "] does not exist.")
 		return
 	end
 
@@ -243,7 +245,6 @@ function K.SetupUIScale(init)
 	end
 end
 
-local isScaling = false
 local function UpdatePixelScale(event)
 	if isScaling then
 		return
