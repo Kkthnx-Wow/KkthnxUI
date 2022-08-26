@@ -70,7 +70,7 @@ local function Update(object, _, unit)
 
 	local debuffType, texture = GetDebuffType(unit, object.DebuffHighlightFilter)
 	if debuffType then
-		local color = DebuffTypeColor[debuffType]
+		local color = _G.DebuffTypeColor[debuffType]
 		if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder then
 			if object.DebuffHighlightBackdrop then
 				object:SetBackdropColor(color.r, color.g, color.b, object.DebuffHighlightAlpha or 1)
@@ -122,11 +122,13 @@ local function Enable(object)
 	CheckSpec()
 
 	if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder then
+		print("oUF_DebuffHighlight Used: DebuffHighlightBackdrop or DebuffHighlightBackdropBorder")
 		local r, g, b, a = object:GetBackdropColor()
 		origColors[object] = { r = r, g = g, b = b, a = a }
 		r, g, b, a = object:GetBackdropBorderColor()
 		origBorderColors[object] = { r = r, g = g, b = b, a = a }
 	elseif not object.DebuffHighlightUseTexture then
+		print("oUF_DebuffHighlight Used: DebuffHighlightUseTexture")
 		local r, g, b, a = object.DebuffHighlight:GetVertexColor()
 		origColors[object] = { r = r, g = g, b = b, a = a }
 	end

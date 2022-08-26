@@ -172,7 +172,7 @@ function Module:FindWorldQuestComplete(questID)
 end
 
 function Module:CreateQuestNotifier()
-	if C["Announcements"].QuestNotifier and not IsAddOnLoaded("QuestNotifier") then
+	if C["Announcements"].QuestNotifier and not K.CheckAddOnState("QuestNotifier") then
 		K:RegisterEvent("QUEST_ACCEPTED", Module.FindQuestAccept)
 		K:RegisterEvent("QUEST_LOG_UPDATE", Module.FindQuestComplete)
 		K:RegisterEvent("QUEST_TURNED_IN", Module.FindWorldQuestComplete)

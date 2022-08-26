@@ -12,7 +12,6 @@ local unpack = _G.unpack
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
 local GetRuneCooldown = _G.GetRuneCooldown
-local GetTime = _G.GetTime
 local IsInInstance = _G.IsInInstance
 local IsReplacingUnit = _G.IsReplacingUnit
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
@@ -24,18 +23,14 @@ local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
 local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
-local UnitInVehicle = _G.UnitInVehicle
 local UnitIsEnemy = _G.UnitIsEnemy
 local UnitIsFriend = _G.UnitIsFriend
 local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
 local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsUnit = _G.UnitIsUnit
-local UnitReaction = _G.UnitReaction
 local UnitThreatSituation = _G.UnitThreatSituation
 local oUF_RaidDebuffs = _G.oUF_RaidDebuffs
 
-local castbarTicks = {}
 local phaseIconTexCoords = {
 	[1] = { 1 / 128, 33 / 128, 1 / 64, 33 / 64 },
 	[2] = { 34 / 128, 66 / 128, 1 / 64, 33 / 64 },
@@ -180,215 +175,6 @@ function Module:CreateHeader()
 
 		self.Highlight:Hide()
 	end)
-end
-
--- Castbar Functions
-local function updateCastBarTicks(bar, castbarTicks, numTicks)
-	for i = 1, #castbarTicks do
-		castbarTicks[i]:Hide()
-	end
-
-	if numTicks and numTicks > 0 then
-		local delta = bar:GetWidth() / numTicks
-		for i = 1, numTicks do
-			if not castbarTicks[i] then
-				castbarTicks[i] = bar:CreateTexture(nil, "OVERLAY")
-				castbarTicks[i]:SetTexture(C["Media"].Textures.BlankTexture)
-				castbarTicks[i]:SetVertexColor(0, 0, 0, 0.8)
-				castbarTicks[i]:SetWidth(2 * K.Mult)
-				castbarTicks[i]:SetHeight(bar:GetHeight())
-			end
-			castbarTicks[i]:ClearAllPoints()
-			castbarTicks[i]:SetPoint("CENTER", bar, "LEFT", delta * i, 0)
-			castbarTicks[i]:Show()
-		end
-	end
-end
-
-function Module:OnCastbarUpdate(elapsed)
-	if self.casting or self.channeling then
-		local decimal = self.decimal
-
-		local duration = self.casting and self.duration + elapsed or self.duration - elapsed
-		if (self.casting and duration >= self.max) or (self.channeling and duration <= 0) then
-			self.casting = nil
-			self.channeling = nil
-			return
-		end
-
-		if self.__owner.unit == "player" then
-			if self.delay ~= 0 then
-				self.Time:SetFormattedText(decimal .. " - |cffff0000" .. decimal, duration, self.casting and self.max + self.delay or self.max - self.delay)
-			else
-				self.Time:SetFormattedText(decimal .. " - " .. decimal, duration, self.max)
-			end
-		else
-			if duration > 1e4 then
-				self.Time:SetText("∞ - ∞")
-			else
-				self.Time:SetFormattedText(decimal .. " - " .. decimal, duration, self.casting and self.max + self.delay or self.max - self.delay)
-			end
-		end
-		self.duration = duration
-		self:SetValue(duration)
-
-		if self.Spark then
-			self.Spark:SetPoint("CENTER", self, "LEFT", (duration / self.max) * self:GetWidth(), 0)
-		end
-	elseif self.holdTime > 0 then
-		self.holdTime = self.holdTime - elapsed
-	else
-		if self.Spark then
-			self.Spark:Hide()
-		end
-
-		local alpha = self:GetAlpha() - 0.02
-		if alpha > 0 then
-			self:SetAlpha(alpha)
-		else
-			self.fadeOut = nil
-			self:Hide()
-		end
-	end
-end
-
-function Module:OnCastSent()
-	local element = self.Castbar
-	if not element.SafeZone then
-		return
-	end
-
-	element.SafeZone.sendTime = GetTime()
-end
-
-local function ResetSpellTarget(self)
-	if self.spellTarget then
-		self.spellTarget:SetText("")
-	end
-end
-
-local function UpdateSpellTarget(self, unit)
-	if not C["Nameplate"].CastTarget then
-		return
-	end
-
-	if not self.spellTarget then
-		return
-	end
-
-	local unitTarget = unit and unit .. "target"
-	if unitTarget and UnitExists(unitTarget) then
-		local nameString
-		if UnitIsUnit(unitTarget, "player") then
-			nameString = string_format("|cffff0000%s|r", ">" .. strupper(YOU) .. "<")
-		else
-			nameString = K.RGBToHex(K.UnitColor(unitTarget)) .. UnitName(unitTarget)
-		end
-		self.spellTarget:SetText(nameString)
-	else
-		ResetSpellTarget(self) -- when unit loses target
-	end
-end
-
-function Module:PostCastStart(unit)
-	self:SetAlpha(1)
-
-	if self.Spark then
-		self.Spark:Show()
-	end
-
-	local safeZone = self.SafeZone
-	local lagString = self.LagString
-	local color = K.Colors.castbar.CastingColor
-	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
-		local _, Class = UnitClass(unit)
-		local t = Class and K.Colors.class[Class]
-		if t then
-			color = K.Colors.class[Class]
-		end
-	elseif C["Unitframe"].CastReactionColor then
-		local Reaction = UnitReaction(unit, "player")
-		local t = Reaction and K.Colors.reaction[Reaction]
-		if t then
-			color = K.Colors.reaction[Reaction]
-		end
-	end
-	self:SetStatusBarColor(color[1], color[2], color[3])
-
-	if unit == "vehicle" or UnitInVehicle("player") then
-		if safeZone then
-			safeZone:Hide()
-			lagString:Hide()
-		end
-	elseif unit == "player" and self.__owner.mystyle ~= "party" then
-		if safeZone then
-			local sendTime = safeZone.sendTime
-			local timeDiff = sendTime and min((GetTime() - sendTime), self.max)
-			if timeDiff and timeDiff ~= 0 then
-				safeZone:SetWidth(self:GetWidth() * timeDiff / self.max)
-				safeZone:Show()
-				lagString:SetFormattedText("%d ms", timeDiff * 1000)
-				lagString:Show()
-			else
-				safeZone:Hide()
-				lagString:Hide()
-			end
-			safeZone.sendTime = nil
-		end
-
-		local numTicks = 0
-		if self.channeling then
-			numTicks = C.ChannelingTicks[self.spellID] or 0
-		end
-		updateCastBarTicks(self, castbarTicks, numTicks)
-	elseif not UnitIsUnit(unit, "player") and self.notInterruptible then
-		color = K.Colors.castbar.notInterruptibleColor
-		self:SetStatusBarColor(color[1], color[2], color[3])
-	end
-
-	if self.__owner.mystyle == "nameplate" then
-		-- Major spells
-		if not Module then
-			Module = K:GetModule("Unitframes")
-		end
-
-		if Module.MajorSpells[self.spellID] then
-			K.ShowButtonGlow(self.glowFrame)
-		else
-			K.HideButtonGlow(self.glowFrame)
-		end
-
-		-- Spell target
-		UpdateSpellTarget(self, unit)
-	end
-end
-
-function Module:PostCastUpdate(unit)
-	UpdateSpellTarget(self, unit)
-end
-
-function Module:PostUpdateInterruptible(unit)
-	local color = K.Colors.castbar.CastingColor
-	if not UnitIsUnit(unit, "player") and self.notInterruptible then
-		color = K.Colors.castbar.notInterruptibleColor
-	end
-	self:SetStatusBarColor(color[1], color[2], color[3])
-end
-
-function Module:PostCastStop()
-	if not self.fadeOut then
-		self:SetStatusBarColor(K.Colors.castbar.CompleteColor[1], K.Colors.castbar.CompleteColor[2], K.Colors.castbar.CompleteColor[3])
-		self.fadeOut = true
-	end
-
-	self:Show()
-end
-
-function Module:PostCastFailed()
-	self:SetStatusBarColor(K.Colors.castbar.FailColor[1], K.Colors.castbar.FailColor[2], K.Colors.castbar.FailColor[3])
-	self:SetValue(self.max)
-	self.fadeOut = true
-	self:Show()
 end
 
 function Module.auraIconSize(w, n, s)
@@ -657,12 +443,14 @@ function Module:CreateClassPower(self)
 				bar.chargeParent:SetAllPoints()
 				bar.chargeParent:SetFrameLevel(8)
 			end
+
 			local chargeStar = bar.chargeParent:CreateTexture()
 			chargeStar:SetAtlas("VignetteKill")
 			chargeStar:SetDesaturated(true)
 			chargeStar:SetSize(22, 22)
 			chargeStar:SetPoint("CENTER", bars[i])
 			chargeStar:Hide()
+
 			bars[i].chargeStar = chargeStar
 		end
 	end
@@ -876,42 +664,28 @@ function Module:CreateUnits()
 		local partyMoverHeight = C["Party"].HealthHeight + C["Party"].PowerHeight + 1 + partyYOffset * 8
 		local partyGroupingOrder = "NONE,DAMAGER,HEALER,TANK"
 
+		-- stylua: ignore
 		local party = oUF:SpawnHeader(
-			"oUF_Party",
-			nil,
-			"solo,party",
-			"showPlayer",
-			C["Party"].ShowPlayer,
-			"showSolo",
-			C["Party"].ShowPartySolo,
-			"showParty",
-			true,
-			"showRaid",
-			false,
-			"xoffset",
-			partyXOffset,
-			"yOffset",
-			partyYOffset,
-			"groupFilter",
-			"1",
-			"groupingOrder",
-			partyGroupingOrder,
-			"groupBy",
-			"ASSIGNEDROLE",
-			"sortMethod",
-			"NAME",
-			"point",
-			"BOTTOM",
-			"columnAnchorPoint",
-			"LEFT",
-			"oUF-initialConfigFunction",
-			([[
-		self:SetWidth(%d)
-		self:SetHeight(%d)
-		]]):format(C["Party"].HealthWidth, C["Party"].HealthHeight + C["Party"].PowerHeight + 6)
+			"oUF_Party", nil, "solo,party",
+			"showPlayer", C["Party"].ShowPlayer,
+			"showSolo", C["Party"].ShowPartySolo,
+			"showParty", true,
+			"showRaid", false,
+			"xoffset", partyXOffset,
+			"yOffset", partyYOffset,
+			"groupFilter", "1",
+			"groupingOrder", partyGroupingOrder,
+			"groupBy", "ASSIGNEDROLE",
+			"sortMethod", "NAME",
+			"point", "BOTTOM",
+			"columnAnchorPoint", "LEFT",
+			"oUF-initialConfigFunction", ([[
+				self:SetWidth(%d)
+				self:SetHeight(%d)
+			]]):format(C["Party"].HealthWidth, C["Party"].HealthHeight + C["Party"].PowerHeight + 6)
 		)
 
-		partyMover = K.Mover(party, "PartyFrame", "PartyFrame", { "TOPLEFT", UIParent, "TOPLEFT", 46, -180 }, partyMoverWidth, partyMoverHeight)
+		partyMover = K.Mover(party, "PartyFrame", "PartyFrame", { "TOPLEFT", UIParent, "TOPLEFT", 46, -200 }, partyMoverWidth, partyMoverHeight)
 		party:ClearAllPoints()
 		party:SetPoint("TOPLEFT", partyMover)
 
@@ -923,32 +697,22 @@ function Module:CreateUnits()
 			local partpetMoverWidth = 60
 			local partpetMoverHeight = 34 * 5 + partypetYOffset * 4
 
+			-- stylua: ignore
 			local partyPet = oUF:SpawnHeader(
-				"oUF_PartyPet",
-				nil,
-				"solo,party",
-				"showPlayer",
-				true,
-				"showSolo",
-				false,
-				"showParty",
-				true,
-				"showRaid",
-				false,
-				"xoffset",
-				partypetXOffset,
-				"yOffset",
-				partypetYOffset,
-				"point",
-				"BOTTOM",
-				"columnAnchorPoint",
-				"LEFT",
-				"oUF-initialConfigFunction",
-				([[
-			self:SetWidth(%d)
-			self:SetHeight(%d)
-			self:SetAttribute("unitsuffix", "pet")
-			]]):format(60, 34)
+				"oUF_PartyPet", nil, "solo,party",
+				"showPlayer", true,
+				"showSolo", false,
+				"showParty", true,
+				"showRaid", false,
+				"xoffset", partypetXOffset,
+				"yOffset", partypetYOffset,
+				"point", "BOTTOM",
+				"columnAnchorPoint", "LEFT",
+				"oUF-initialConfigFunction", ([[
+					self:SetWidth(%d)
+					self:SetHeight(%d)
+					self:SetAttribute("unitsuffix", "pet")
+				]]):format(60, 34)
 			)
 
 			local moverAnchor = { "TOPLEFT", partyMover, "TOPRIGHT", 6, -40 }
@@ -972,46 +736,29 @@ function Module:CreateUnits()
 		end
 
 		local raidMover
+		-- stylua: ignore
 		local function CreateGroup(name, i)
 			local group = oUF:SpawnHeader(
-				name,
-				nil,
-				"solo,party,raid",
-				"showPlayer",
-				true,
-				"showSolo",
-				not showPartyFrame and C["Raid"].ShowRaidSolo,
-				"showParty",
-				not showPartyFrame,
-				"showRaid",
-				true,
-				"xoffset",
-				6,
-				"yOffset",
-				-6,
-				"groupFilter",
-				tostring(i),
-				"groupingOrder",
-				"1,2,3,4,5,6,7,8",
-				"groupBy",
-				"GROUP",
-				"sortMethod",
-				"INDEX",
-				"maxColumns",
-				1,
-				"unitsPerColumn",
-				5,
-				"columnSpacing",
-				5,
-				"point",
-				horizonRaid and "LEFT" or "TOP",
-				"columnAnchworPoint",
-				"LEFT",
-				"oUF-initialConfigFunction",
-				([[
-			self:SetWidth(%d)
-			self:SetHeight(%d)
-			]]):format(raidWidth, raidHeight)
+				name, nil, "solo,party,raid",
+				"showPlayer", true,
+				"showSolo", not showPartyFrame and C["Raid"].ShowRaidSolo,
+				"showParty", not showPartyFrame,
+				"showRaid", true,
+				"xoffset", 6,
+				"yOffset", -6,
+				"groupFilter", tostring(i),
+				"groupingOrder", "1,2,3,4,5,6,7,8",
+				"groupBy", "GROUP",
+				"sortMethod", "INDEX",
+				"maxColumns", 1,
+				"unitsPerColumn", 5,
+				"columnSpacing", 5,
+				"point", horizonRaid and "LEFT" or "TOP",
+				"columnAnchworPoint", "LEFT",
+				"oUF-initialConfigFunction", ([[
+					self:SetWidth(%d)
+					self:SetHeight(%d)
+				]]):format(raidWidth, raidHeight)
 			)
 
 			return group
@@ -1020,7 +767,7 @@ function Module:CreateUnits()
 		local function CreateTeamIndex(header)
 			local parent = _G[header:GetName() .. "UnitButton1"]
 			if parent and not parent.teamIndex then
-				local teamIndex = K.CreateFontString(parent, 11, string_format(GROUP_NUMBER, header.index), "")
+				local teamIndex = K.CreateFontString(parent, 11, string_format(_G.GROUP_NUMBER, header.index), "")
 				teamIndex:ClearAllPoints()
 				teamIndex:SetPoint("BOTTOM", parent, "TOP", 0, 3)
 				teamIndex:SetTextColor(255 / 255, 204 / 255, 102 / 255)
@@ -1076,30 +823,20 @@ function Module:CreateUnits()
 
 			local horizonTankRaid = C["Raid"].HorizonRaid
 			local raidTankWidth, raidTankHeight = C["Raid"].Width, C["Raid"].Height
-
+			-- stylua: ignore
 			local raidtank = oUF:SpawnHeader(
-				"oUF_MainTank",
-				nil,
-				"raid",
-				"showRaid",
-				true,
-				"xoffset",
-				6,
-				"yOffset",
-				-6,
-				"groupFilter",
-				"MAINTANK",
-				"point",
-				horizonTankRaid and "LEFT" or "TOP",
-				"columnAnchworPoint",
-				"LEFT",
-				"template",
-				C["Raid"].MainTankFrames and "oUF_MainTankTT" or "oUF_MainTank",
-				"oUF-initialConfigFunction",
-				([[
-			self:SetWidth(%d)
-			self:SetHeight(%d)
-			]]):format(raidTankWidth, raidTankHeight)
+				"oUF_MainTank", nil, "raid",
+				"showRaid", true,
+				"xoffset", 6,
+				"yOffset", -6,
+				"groupFilter", "MAINTANK",
+				"point", horizonTankRaid and "LEFT" or "TOP",
+				"columnAnchworPoint", "LEFT",
+				"template", C["Raid"].MainTankFrames and "oUF_MainTankTT" or "oUF_MainTank",
+				"oUF-initialConfigFunction", ([[
+					self:SetWidth(%d)
+					self:SetHeight(%d)
+				]]):format(raidTankWidth, raidTankHeight)
 			)
 
 			local raidtankMover = K.Mover(raidtank, "MainTankFrame", "MainTankFrame", { "TOPLEFT", UIParent, "TOPLEFT", 4, -50 }, raidTankWidth, raidTankHeight)

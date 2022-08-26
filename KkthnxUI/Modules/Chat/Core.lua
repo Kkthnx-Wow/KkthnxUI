@@ -2,11 +2,11 @@ local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Chat")
 
 local _G = _G
-local string_sub = _G.string.sub
-local string_len = _G.string.len
-local string_gsub = _G.string.gsub
 local string_find = _G.string.find
 local string_format = _G.string.format
+local string_gsub = _G.string.gsub
+local string_len = _G.string.len
+local string_sub = _G.string.sub
 
 local CHAT_FRAMES = _G.CHAT_FRAMES
 local CHAT_OPTIONS = _G.CHAT_OPTIONS
@@ -39,6 +39,11 @@ local hooksecurefunc = _G.hooksecurefunc
 local messageSoundID = SOUNDKIT.TELL_MESSAGE
 local maxLines = 2048
 Module.MuteCache = {}
+
+local whisperEvents = {
+	["CHAT_MSG_WHISPER"] = true,
+	["CHAT_MSG_BN_WHISPER"] = true,
+}
 
 local function GetGroupDistribution()
 	local _, instanceType = GetInstanceInfo()
@@ -159,39 +164,15 @@ function Module:UpdateChatSize()
 	isScaling = false
 end
 
-local showImageTest = false -- WIP TESTING
 local function CreateBackground(self)
 	local frame = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	frame:SetPoint("TOPLEFT", self.Background, "TOPLEFT", -1, 1)
 	frame:SetPoint("BOTTOMRIGHT", self.Background, "BOTTOMRIGHT", 1, -1)
 	frame:SetFrameLevel(self:GetFrameLevel())
-
-	if showImageTest then
-		if K.Faction == "Alliance" then
-			frame:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Chat\\Alliance", nil, nil, nil, 0.5, 0.5, 0.5)
-		elseif K.Faction == "Horde" then
-			frame:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Chat\\Horde", nil, nil, nil, 0.5, 0.5, 0.5)
-		else
-			frame:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Chat\\KkthnxUI", nil, nil, nil, 0.5, 0.5, 0.5)
-		end
-	else
-		frame:CreateBorder()
-	end
+	frame:CreateBorder()
 	frame:SetShown(C["Chat"].Background)
 
 	return frame
-end
-
--- https://git.tukui.org/Tukz/Tukui/-/blob/master/Tukui/Modules/ChatFrames/ChatFrames.lua#L55
-function Module:SetChatFont()
-	local Path, _, Flag = _G[K.UIFont]:GetFont()
-	local CurrentFont, CurrentSize, CurrentFlag = self:GetFont()
-
-	if CurrentFont == Path and CurrentFlag == Flag then
-		return
-	end
-
-	self:SetFont(Path, CurrentSize, Flag)
 end
 
 function Module:SkinChat()
@@ -199,12 +180,12 @@ function Module:SkinChat()
 		return
 	end
 
-	local id = self:GetID()
 	local name = self:GetName()
-	local tabFont, tabFontSize, tabFontFlags = _G[K.UIFont]:GetFont()
+	local font, fontSize, fontStyle = _G[K.UIFont]:GetFont()
 
 	self:SetMaxResize(K.ScreenWidth, K.ScreenHeight)
 	self:SetMinResize(100, 50)
+	self:SetFont(font, fontSize, fontStyle)
 	self:SetClampRectInsets(0, 0, 0, 0)
 	self:SetClampedToScreen(false)
 	self:SetFading(C["Chat"].Fading)
@@ -234,15 +215,9 @@ function Module:SkinChat()
 
 	local tab = _G[name .. "Tab"]
 	tab:SetAlpha(1)
-	tab.Text:SetFont(tabFont, tabFontSize + 1, tabFontFlags)
-	tab.Text.SetFont = K.Noop
+	tab.Text:SetFont(font, fontSize + 1, fontStyle)
 	tab:StripTextures(7)
 	hooksecurefunc(tab, "SetAlpha", Module.TabSetAlpha)
-
-	-- Hide editbox every time we click on a tab
-	tab:HookScript("OnClick", function()
-		eb:Hide()
-	end)
 
 	-- Character count
 	local charCount = eb:CreateFontString(nil, "ARTWORK")
@@ -260,14 +235,6 @@ function Module:SkinChat()
 	Module:ToggleChatFrameTextures(self)
 
 	self.oldAlpha = self.oldAlpha or 0 -- fix blizz error
-
-	-- Temp Chats
-	if id > 10 then
-		Module.SetChatFont(self)
-	end
-
-	-- Security for font, in case if revert back to WoW default we restore instantly the tukui font default.
-	hooksecurefunc(self, "SetFont", Module.SetChatFont)
 
 	self.styled = true
 end
@@ -433,6 +400,7 @@ function Module:UpdateTabChannelSwitch()
 			if isShiftKeyDown then
 				from, to, step = i - 1, 1, -1
 			end
+
 			for j = from, to, step do
 				local nextCycle = cycles[j]
 				if nextCycle:IsActive(self) then
@@ -505,6 +473,7 @@ end
 function Module:UpdateTabEventColors(event)
 	local tab = _G[self:GetName() .. "Tab"]
 	local selected = GeneralDockManager.selected:GetID() == tab:GetID()
+
 	if event == "CHAT_MSG_WHISPER" then
 		tab.whisperIndex = 1
 		Module.UpdateTabColors(tab, selected)
@@ -514,10 +483,6 @@ function Module:UpdateTabEventColors(event)
 	end
 end
 
-local whisperEvents = {
-	["CHAT_MSG_WHISPER"] = true,
-	["CHAT_MSG_BN_WHISPER"] = true,
-}
 function Module:PlayWhisperSound(event, _, author)
 	if whisperEvents[event] then
 		local name = Ambiguate(author, "none")
@@ -530,6 +495,7 @@ function Module:PlayWhisperSound(event, _, author)
 		if not self.soundTimer or currentTime > self.soundTimer then
 			PlaySound(messageSoundID, "master")
 		end
+
 		self.soundTimer = currentTime + 5
 	end
 end
@@ -552,7 +518,6 @@ function Module:OnEnable()
 
 	for i = 1, NUM_CHAT_WINDOWS do
 		Module.SkinChat(_G["ChatFrame" .. i])
-		Module.SetChatFont(_G["ChatFrame" .. i])
 	end
 
 	hooksecurefunc("FCF_OpenTemporaryWindow", function()

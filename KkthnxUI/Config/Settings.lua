@@ -12,6 +12,9 @@ local RAID = _G.RAID
 local SAY = _G.SAY
 local YELL = _G.YELL
 
+local BlipMedia = "Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\"
+local ChatMedia = "Interface\\AddOns\\KkthnxUI\\Media\\Chat\\"
+
 -- Actionbar
 C["ActionBar"] = {
 	["Bar1Font"] = 12,
@@ -295,7 +298,6 @@ C["Loot"] = {
 }
 
 -- Minimap
-local BlipMedia = "Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\"
 C["Minimap"] = {
 	["Calendar"] = true,
 	["EasyVolume"] = false,

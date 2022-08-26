@@ -544,8 +544,8 @@ function Module:AddQuestIcon(self)
 
 	self.questCount = K.CreateFontString(self, 13, "", "", nil, "LEFT", 0, 0)
 	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -2, 0)
-
-	self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
+	-- Fired whenever the quest log changes. (Frequently, but not as frequently as QUEST_LOG_UPDATE)
+	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED", Module.UpdateQuestUnit, true)
 end
 
 function Module:AddClassIcon(self)

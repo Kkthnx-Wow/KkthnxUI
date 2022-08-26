@@ -212,8 +212,6 @@ do
 			if reaction then
 				local color = K.Colors.reaction[reaction]
 				r, g, b = color[1], color[2], color[3]
-			else
-				r, g, b = UnitSelectionColor(unit, true)
 			end
 		end
 

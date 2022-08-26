@@ -140,9 +140,7 @@ function Module:CreatePlayer()
 		end
 	end
 
-	-- if C["Unitframe"].ClassResources and not C["Nameplate"].ShowPlayerPlate then
 	Module:CreateClassPower(self)
-	-- end
 
 	if C["Unitframe"].PlayerDebuffs then -- and C["Unitframe"].TargetDebuffsTop
 		local Debuffs = CreateFrame("Frame", nil, self)
@@ -211,16 +209,19 @@ function Module:CreatePlayer()
 			Castbar.LagString:ClearAllPoints()
 			Castbar.LagString:SetPoint("TOPRIGHT", Castbar, "BOTTOMRIGHT", -3.5, -3)
 
+			self:RegisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent, true) -- Fix quests with WorldFrame interaction
+			self:RegisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent, true)
 			self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent, true)
+		else
+			self:UnregisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent)
+			self:UnregisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent)
+			self:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent)
+			if Castbar and Castbar.__sendTime then
+				Castbar.__sendTime = nil
+			end
 		end
 
 		Castbar.decimal = "%.2f"
-
-		Castbar.OnUpdate = Module.OnCastbarUpdate
-		Castbar.PostCastStart = Module.PostCastStart
-		Castbar.PostCastStop = Module.PostCastStop
-		Castbar.PostCastFail = Module.PostCastFailed
-		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
 		Castbar.Time = Castbar:CreateFontString(nil, "OVERLAY")
 		Castbar.Time:SetFontObject(K.UIFont)
@@ -252,6 +253,13 @@ function Module:CreatePlayer()
 		Castbar:ClearAllPoints()
 		Castbar:SetPoint("RIGHT", mover)
 		Castbar.mover = mover
+
+		Castbar.OnUpdate = Module.OnCastbarUpdate
+		Castbar.PostCastStart = Module.PostCastStart
+		Castbar.PostCastUpdate = Module.PostCastUpdate
+		Castbar.PostCastStop = Module.PostCastStop
+		Castbar.PostCastFail = Module.PostCastFailed
+		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 
 		self.Castbar = Castbar
 	end

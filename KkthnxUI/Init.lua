@@ -203,7 +203,7 @@ end
 -- Modules
 function K:NewModule(name)
 	if modules[name] then
-		K.Print("Module [" .. name .. "] has already been registered.")
+		error(("Usage: K:NewModule(" .. name .. "): Module '%s' already exists."):format(name), 2)
 		return
 	end
 
@@ -218,7 +218,7 @@ end
 
 function K:GetModule(name)
 	if not modules[name] then
-		K.Print("Module [" .. name .. "] does not exist.")
+		error(("Usage: K:GetModule(" .. name .. ") Cannot find Module '%s'."):format(tostring(name)), 2)
 		return
 	end
 
@@ -252,6 +252,7 @@ local function UpdatePixelScale(event)
 	isScaling = true
 
 	if event == "UI_SCALE_CHANGED" then
+		print(event)
 		K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
 	end
 
@@ -275,7 +276,7 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 		if module.OnEnable then
 			module:OnEnable()
 		else
-			K.Print("Module [" .. module.name .. "] failed to load!")
+			error(("Module ('%s') has failed to load."):format(tostring(module.name)), 2)
 		end
 	end
 

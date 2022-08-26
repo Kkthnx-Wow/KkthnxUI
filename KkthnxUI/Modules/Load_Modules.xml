@@ -83,9 +83,10 @@
    <Script file="UnitFrames\Plugins\oUF_Trinkets.lua" />
    <!-- Unitframes -->
    <Script file="UnitFrames\Core.lua" />
-   <Script file="UnitFrames\Tracking.lua" />
-   <Script file="UnitFrames\Tags.lua" />
-   <Script file="UnitFrames\Range.lua" />
+   <Script file="UnitFrames\Elements\Castbar.lua" />
+   <Script file="UnitFrames\Elements\Range.lua" />
+   <Script file="UnitFrames\Elements\Tags.lua" />
+   <Script file="UnitFrames\Elements\Tracking.lua" />
    <Script file="UnitFrames\Units\Player.lua" />
    <Script file="UnitFrames\Units\Target.lua" />
    <Script file="UnitFrames\Units\TargetOfTarget.lua" />

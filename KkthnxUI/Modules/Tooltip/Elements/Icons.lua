@@ -67,11 +67,15 @@ function Module:HookTooltipMethod()
 end
 
 local function updateBackdropColor(self, r, g, b)
-	self:GetParent().bg.KKUI_Border:SetVertexColor(r, g, b)
+	if self:GetParent().bg.KKUI_Border then
+		self:GetParent().bg.KKUI_Border:SetVertexColor(r, g, b)
+	end
 end
 
 local function resetBackdropColor(self)
-	self:GetParent().bg.KKUI_Border:SetVertexColor(1, 1, 1)
+	if self:GetParent().bg.KKUI_Border then
+		self:GetParent().bg.KKUI_Border:SetVertexColor(1, 1, 1)
+	end
 end
 
 function Module:ReskinRewardIcon()
@@ -95,6 +99,8 @@ end
 function Module:ReskinTooltipIcons()
 	Module.HookTooltipMethod(GameTooltip)
 	Module.HookTooltipMethod(ItemRefTooltip)
+	Module.HookTooltipMethod(ShoppingTooltip1)
+	Module.HookTooltipMethod(ShoppingTooltip2)
 
 	hooksecurefunc(GameTooltip, "SetUnitAura", function(self)
 		Module.SetupTooltipIcon(self)

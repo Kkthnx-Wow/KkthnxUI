@@ -33,6 +33,6 @@ function Module:CreateAutoBadBuffs()
 	if C["Automation"].NoBadBuffs then
 		K:RegisterEvent("UNIT_AURA", SetupAutoBadBuffs, "player")
 	else
-		K:UnregisterEvent("UNIT_AURA", SetupAutoBadBuffs, "player")
+		K:UnregisterEvent("UNIT_AURA", SetupAutoBadBuffs)
 	end
 end
