@@ -75,10 +75,9 @@ function Module:CreateItemTexture(slot, relF, x, y)
 	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	icon.bg = CreateFrame("Frame", nil, slot)
-	icon.bg:SetPoint("TOPLEFT", icon, -1, 1)
-	icon.bg:SetPoint("BOTTOMRIGHT", icon, 1, -1)
+	icon.bg:SetAllPoints(icon)
 	icon.bg:SetFrameLevel(slot:GetFrameLevel())
-	icon.bg:CreateBorder(nil, nil, 10, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	icon.bg:CreateBorder()
 	icon.bg:Hide()
 
 	return icon
