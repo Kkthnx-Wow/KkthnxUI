@@ -261,13 +261,12 @@ local function OnMouseUp(self, btn)
 			KkthnxUIDB["ShowSlots"] = not KkthnxUIDB["ShowSlots"]
 			if KkthnxUIDB["ShowSlots"] then
 				GoldDataText:RegisterEvent("BAG_UPDATE")
-				OnEnter(self)
 			else
 				GoldDataText:UnregisterEvent("BAG_UPDATE")
-				OnEnter(self)
 			end
 			OnEvent()
 		end
+		OnEnter(self) -- Update our tooltip for inventory or currency
 	else
 		if KkthnxUIDB.ShowSlots then
 			ToggleAllBags()
