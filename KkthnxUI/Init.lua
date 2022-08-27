@@ -320,10 +320,10 @@ do
 
 		info[name].calls = info[name].calls + 1
 
-		K.Print("|cffffd200" .. name .. "|r")
-		K.Print("time:", info[name].timeLog[#info[name].timeLog])
-		K.Print("mem:", info[name].memLog[#info[name].memLog])
-		K.Print("calls:", info[name].calls)
+		print("|cffffd200" .. name .. "|r")
+		print("time:", info[name].timeLog[#info[name].timeLog])
+		print("mem:", info[name].memLog[#info[name].memLog])
+		print("calls:", info[name].calls)
 	end
 
 	K.isProfiling = true

@@ -2,7 +2,7 @@ local K, C = unpack(KkthnxUI)
 
 C["Media"] = {
 	["Sounds"] = {
-		KillingBlow = [[Interface\AddOns\KkthnxUI\Media\Sounds\KillingBlow.ogg]],
+		KillingBlow = K.MediaFolder .. "Sounds\\KillingBlow.ogg",
 	},
 
 	["Backdrops"] = {
@@ -10,53 +10,61 @@ C["Media"] = {
 	},
 
 	["Borders"] = {
-		AzeriteUIBorder = [[Interface\AddOns\KkthnxUI\Media\Border\AzeriteUI\Border.tga]],
-		AzeriteUITooltipBorder = [[Interface\AddOns\KkthnxUI\Media\Border\AzeriteUI\Border_Tooltip.tga]],
+		AzeriteUIBorder = K.MediaFolder .. "Border\\AzeriteUI\\Border.tga",
+		AzeriteUITooltipBorder = K.MediaFolder .. "Border\\AzeriteUI\\Border_Tooltip.tga",
 		ColorBorder = { 1, 1, 1 }, -- Doesn't feel like this fits here
-		GlowBorder = [[Interface\AddOns\KkthnxUI\Media\Border\Border_Glow_Overlay.tga]],
-		KkthnxUIBorder = [[Interface\AddOns\KkthnxUI\Media\Border\KkthnxUI\Border.tga]],
-		KkthnxUITooltipBorder = [[Interface\AddOns\KkthnxUI\Media\Border\KkthnxUI\Border_Tooltip.tga]],
+		GlowBorder = K.MediaFolder .. "Border\\Border_Glow_Overlay.tga",
+		KkthnxUIBorder = K.MediaFolder .. "Border\\KkthnxUI\\Border.tga",
+		KkthnxUITooltipBorder = K.MediaFolder .. "Border\\KkthnxUI\\Border_Tooltip.tga",
 	},
 
 	["Textures"] = {
-		ArrowTexture = [[Interface\AddOns\KkthnxUI\Media\Textures\Arrow.tga]],
-		BlankTexture = [[Interface\BUTTONS\WHITE8X8]],
-		CopyChatTexture = [[Interface\AddOns\KkthnxUI\Media\Chat\Copy.tga]],
-		GlowTexture = [[Interface\AddOns\KkthnxUI\Media\Textures\GlowTex.tga]],
-		LogoSmallTexture = [[Interface\AddOns\KkthnxUI\Media\Textures\LogoSmall.tga]],
-		LogoTexture = [[Interface\AddOns\KkthnxUI\Media\Textures\Logo.tga]],
-		MouseoverTexture = [[Interface\AddOns\KkthnxUI\Media\Textures\Mouseover.tga]],
-		NewClassIconsTexture = [[Interface\AddOns\KkthnxUI\Media\Unitframes\NEW-ICONS-CLASSES.blp]],
-		Spark128Texture = [[Interface\AddOns\KkthnxUI\Media\Textures\Spark_128]],
-		Spark16Texture = [[Interface\AddOns\KkthnxUI\Media\Textures\Spark_16]],
-		TargetIndicatorTexture = [[Interface\AddOns\KkthnxUI\Media\Nameplates\TargetIndicatorArrow.blp]],
+		ArrowTexture = K.MediaFolder .. "Textures\\Arrow.tga",
+		BlankTexture = "Interface\\BUTTONS\\WHITE8X8",
+		CopyChatTexture = K.MediaFolder .. "Chat\\Copy.tga",
+		GlowTexture = K.MediaFolder .. "Textures\\GlowTex.tga",
+		LogoSmallTexture = K.MediaFolder .. "Textures\\LogoSmall.tga",
+		LogoTexture = K.MediaFolder .. "Textures\\Logo.tga",
+		MouseoverTexture = K.MediaFolder .. "Textures\\Mouseover.tga",
+		NewClassIconsTexture = K.MediaFolder .. "Unitframes\\NEW-ICONS-CLASSES.blp",
+		Spark128Texture = K.MediaFolder .. "Textures\\Spark_128",
+		Spark16Texture = K.MediaFolder .. "Textures\\Spark_16",
+		TargetIndicatorTexture = K.MediaFolder .. "Nameplates\\TargetIndicatorArrow.blp",
 	},
 
 	["Fonts"] = {
-		BlankFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Invisible.ttf]],
+		BlankFont = K.MediaFolder .. "Fonts\\Invisible.ttf",
 	},
 
 	["Statusbars"] = {
-		AltzUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\AltzUI.tga]],
-		AsphyxiaUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\AsphyxiaUI.tga]],
-		AzeriteUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\AzeriteUI.tga]],
-		CleanStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\Clean.tga]],
-		FlatStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\Flat.tga]],
-		Glamour7Statusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\Glamour7.tga]],
-		GoldpawUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\GoldpawUI.tga]],
-		KkthnxUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\Statusbar]],
-		KuiBrightStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\KuiStatusbarBright.tga]],
-		KuiStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\KuiStatusbar.tga]],
-		PaloozaStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\Palooza.tga]],
-		PinkGradientStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\PinkGradient.tga]],
-		RainStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\Rain.tga]],
-		SkullFlowerUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\SkullFlowerUI.tga]],
-		TukuiStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\ElvTukUI.tga]],
-		WGlassStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\Wglass.tga]],
-		WaterStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\Water.tga]],
-		ZorkUIStatusbar = [[Interface\AddOns\KkthnxUI\Media\Statusbars\ZorkUI.tga]],
+		AltzUI = K.MediaFolder .. "Statusbars\\AltzUI.tga",
+		AsphyxiaUI = K.MediaFolder .. "Statusbars\\AsphyxiaUI.tga",
+		AzeriteUI = K.MediaFolder .. "Statusbars\\AzeriteUI.tga",
+		Clean = K.MediaFolder .. "Statusbars\\Clean.tga",
+		Flat = K.MediaFolder .. "Statusbars\\Flat.tga",
+		Glamour7 = K.MediaFolder .. "Statusbars\\Glamour7.tga",
+		GoldpawUI = K.MediaFolder .. "Statusbars\\GoldpawUI.tga",
+		KkthnxUI = K.MediaFolder .. "Statusbars\\Statusbar",
+		KuiBright = K.MediaFolder .. "Statusbars\\KuiStatusbarBright.tga",
+		Kui = K.MediaFolder .. "Statusbars\\KuiStatusbar.tga",
+		Palooza = K.MediaFolder .. "Statusbars\\Palooza.tga",
+		PinkGradient = K.MediaFolder .. "Statusbars\\PinkGradient.tga",
+		Rain = K.MediaFolder .. "Statusbars\\Rain.tga",
+		SkullFlowerUI = K.MediaFolder .. "Statusbars\\SkullFlowerUI.tga",
+		Tukui = K.MediaFolder .. "Statusbars\\ElvTukUI.tga",
+		WGlass = K.MediaFolder .. "Statusbars\\Wglass.tga",
+		Water = K.MediaFolder .. "Statusbars\\Water.tga",
+		ZorkUI = K.MediaFolder .. "Statusbars\\ZorkUI.tga",
 	},
 }
+
+function K.GetTexture(texture)
+	if C["Media"].Statusbars[texture] then
+		return C["Media"].Statusbars[texture]
+	else
+		return C["Media"].Statusbars["KkthnxUI"] -- Return something to prevent errors
+	end
+end
 
 -- Register Borders
 if K.SharedMedia then

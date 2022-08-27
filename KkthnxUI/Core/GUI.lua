@@ -1054,9 +1054,7 @@ local CreateDropdown = function(self, group, option, text, custom, tooltip, hook
 		Value = C[group][option]
 
 		if custom == "Texture" then
-			Selections = K.TextureTable
-		else
-			Selections = K.FontTable
+			Selections = C["Media"].Statusbars
 		end
 	else
 		Value = C[group][option].Value

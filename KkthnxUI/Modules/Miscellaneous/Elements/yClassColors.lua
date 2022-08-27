@@ -29,7 +29,6 @@ local GetGuildTradeSkillInfo = _G.GetGuildTradeSkillInfo
 local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
 local GetRealZoneText = _G.GetRealZoneText
 local UIDropDownMenu_GetSelectedID = _G.UIDropDownMenu_GetSelectedID
-local UnitRace = _G.UnitRace
 local hooksecurefunc = _G.hooksecurefunc
 
 -- Colors
