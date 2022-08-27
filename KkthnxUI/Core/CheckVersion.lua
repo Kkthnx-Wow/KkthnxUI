@@ -13,7 +13,6 @@ local Ambiguate = _G.Ambiguate
 local C_ChatInfo_RegisterAddonMessagePrefix = _G.C_ChatInfo.RegisterAddonMessagePrefix
 local C_ChatInfo_SendAddonMessage = _G.C_ChatInfo.SendAddonMessage
 local GetTime = _G.GetTime
-local HelpTip = _G.HelpTip
 local IsInGroup = _G.IsInGroup
 local IsInGuild = _G.IsInGuild
 
