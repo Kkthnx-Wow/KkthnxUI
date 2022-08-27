@@ -224,8 +224,6 @@ local function formatNumber(self, amount)
 	end
 end
 
-local playerGUID = UnitGUID("player")
-
 local function Update(self, event, ...)
 	local element = self.FloatingCombatFeedback
 	local unit = self.unit
@@ -240,7 +238,7 @@ local function Update(self, event, ...)
 
 	if eventFilter[event] then
 		local _, sourceGUID, _, sourceFlags, _, destGUID, _, _, _, spellID, _, school = ...
-		local isPlayer = playerGUID == sourceGUID
+		local isPlayer = K.GUID == sourceGUID
 		local isRightUnit = element.unitGUID == destGUID
 		local isPet = C["Unitframe"].PetCombatText and K.IsMyPet(sourceFlags)
 

@@ -229,16 +229,9 @@ function Module:CreateMinimapButtonToggle()
 	Module:ToggleMinimapIcon()
 end
 
-local plusSize
 local function MainMenu_OnShow(self)
-	if K.IsFirestorm or K.IsWoWFreakz then -- No idea why Firestorm has to mess with the GameMenu buttons -.-
-		plusSize = 48
-	else
-		plusSize = 24
-	end
-
 	_G.GameMenuButtonLogout:SetPoint("TOP", Module.GameMenuButton, "BOTTOM", 0, -14)
-	self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 15 + plusSize)
+	self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 15 + 24)
 
 	_G.GameMenuButtonStore:ClearAllPoints()
 	_G.GameMenuButtonStore:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -6)
@@ -770,26 +763,6 @@ function Module:DisableHelpTips() -- Auto complete helptips
 
 	hooksecurefunc(_G.HelpTip, "Show", AcknowledgeTips)
 	C_Timer.After(2, AcknowledgeTips)
-end
-
-do -- Firestorm has a bug where UI_ERROR_MESSAGES that should trigger a dismount DO NOT trigger a dismount so it is basically acting like Classic Wow.
-	local dismountStrings = {
-		[SPELL_FAILED_NOT_MOUNTED] = true,
-	}
-
-	local function FixFSAutoDismount(_, _, msg)
-		if not K.IsFirestorm or not K.IsWoWFreakz then
-			return
-		end
-
-		if dismountStrings[msg] then -- There could be other ones FS has issues with but we will only apply the ones we run into.
-			if IsMounted() then
-				Dismount()
-				UIErrorsFrame:Clear()
-			end
-		end
-	end
-	K:RegisterEvent("UI_ERROR_MESSAGE", FixFSAutoDismount)
 end
 
 function Module:UpdateMaxCameraZoom()

@@ -25,8 +25,6 @@ local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
 local CreateFrame = _G.CreateFrame
 local Enum = _G.Enum
-local FRIENDS_TEXTURE_AFK = _G.FRIENDS_TEXTURE_AFK
-local FRIENDS_TEXTURE_DND = _G.FRIENDS_TEXTURE_DND
 local GetAddOnEnableState = _G.GetAddOnEnableState
 local GetAddOnInfo = _G.GetAddOnInfo
 local GetAddOnMetadata = _G.GetAddOnMetadata
@@ -81,9 +79,7 @@ end
 K.Title = GetAddOnMetadata(AddOnName, "Title")
 K.Version = GetAddOnMetadata(AddOnName, "Version")
 
-K.Noop = function()
-	-- return
-end
+K.Noop = function() end
 
 K.Name = UnitName("player")
 K.Class = select(2, UnitClass("player"))
@@ -93,6 +89,7 @@ K.Level = UnitLevel("player")
 K.Client = GetLocale()
 K.Realm = GetRealmName()
 K.Sex = UnitSex("player")
+K.GUID = UnitGUID("player")
 K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
 K.Resolution = string_format("%dx%d", K.ScreenWidth, K.ScreenHeight)
 K.TexCoords = { 0.08, 0.92, 0.08, 0.92 }
@@ -100,37 +97,46 @@ K.ScanTooltip = CreateFrame("GameTooltip", "KKUI_ScanTooltip", nil, "GameTooltip
 K.EasyMenu = CreateFrame("Frame", "KKUI_EasyMenu", UIParent, "UIDropDownMenuTemplate")
 K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
+
 K.GreyColor = "|CFF7b8489"
 K.InfoColor = "|CFF669DFF"
-K.InfoColorRGB = { 0.4, 0.6, 1 }
 K.InfoColorTint = "|CFF3ba1c5" -- 30% Tint
 K.SystemColor = "|CFFFFCC66"
+
 K.MediaFolder = "Interface\\AddOns\\KkthnxUI\\Media\\"
 K.UIFont = "KkthnxUIFont"
 K.UIFontOutline = "KkthnxUIFontOutline"
 K.LeftButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:230:307|t "
 K.RightButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:333:410|t "
 K.ScrollButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t "
-K.AFKTex = "|T" .. FRIENDS_TEXTURE_AFK .. ":14:14:0:0:16:16:1:15:1:15|t"
-K.DNDTex = "|T" .. FRIENDS_TEXTURE_DND .. ":14:14:0:0:16:16:1:15:1:15|t"
-K.IsNewPatch = select(4, GetBuildInfo()) >= 90205
-K.IsFirestorm = select(4, GetBuildInfo()) >= 90105 and K.Realm == "Oribos"
-K.IsWoWFreakz = select(4, GetBuildInfo()) >= 90105 and K.Realm == "Shadowsong"
+
+K.ClassList = {}
+K.ClassColors = {}
+K.QualityColors = {}
+K.AddOns = {}
+K.AddOnVersion = {}
+
+K.PartyPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_PARTY, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
+K.RaidPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_RAID, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
+
+local eventsFrame = CreateFrame("Frame")
+local events = {}
+local modules = {}
+local modulesQueue = {}
+local isScaling = false
 
 function K.IsMyPet(flags)
 	return bit_band(flags, COMBATLOG_OBJECT_AFFILIATION_MINE) > 0
 end
-K.PartyPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_PARTY, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
-K.RaidPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_RAID, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
 
-K.ClassList = {}
 for k, v in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 	K.ClassList[v] = k
 end
+
 for k, v in pairs(LOCALIZED_CLASS_NAMES_FEMALE) do
 	K.ClassList[v] = k
 end
-K.ClassColors = {}
+
 local colors = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
 for class, value in pairs(colors) do
 	K.ClassColors[class] = {}
@@ -143,7 +149,6 @@ end
 K.r, K.g, K.b = K.ClassColors[K.Class].r, K.ClassColors[K.Class].g, K.ClassColors[K.Class].b
 K.MyClassColor = string_format("|cff%02x%02x%02x", K.r * 255, K.g * 255, K.b * 255)
 
-K.QualityColors = {}
 local qualityColors = BAG_ITEM_QUALITY_COLORS
 for index, value in pairs(qualityColors) do
 	K.QualityColors[index] = { r = value.r, g = value.g, b = value.b }
@@ -152,13 +157,7 @@ K.QualityColors[-1] = { r = 1, g = 1, b = 1 }
 K.QualityColors[LE_ITEM_QUALITY_POOR] = { r = 0.61, g = 0.61, b = 0.61 }
 K.QualityColors[LE_ITEM_QUALITY_COMMON] = { r = 1, g = 1, b = 1 }
 
-local host = CreateFrame("Frame")
-local events = {}
-local modules = {}
-local initQueue = {}
-local isScaling = false
-
-host:SetScript("OnEvent", function(_, event, ...)
+eventsFrame:SetScript("OnEvent", function(_, event, ...)
 	for func in pairs(events[event]) do
 		if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 			func(event, CombatLogGetCurrentEventInfo())
@@ -176,9 +175,9 @@ function K:RegisterEvent(event, func, unit1, unit2)
 	if not events[event] then
 		events[event] = {}
 		if unit1 then
-			host:RegisterUnitEvent(event, unit1, unit2)
+			eventsFrame:RegisterUnitEvent(event, unit1, unit2)
 		else
-			host:RegisterEvent(event)
+			eventsFrame:RegisterEvent(event)
 		end
 	end
 
@@ -195,7 +194,7 @@ function K:UnregisterEvent(event, func)
 		funcs[func] = nil
 		if not next(funcs) then
 			events[event] = nil
-			host:UnregisterEvent(event)
+			eventsFrame:UnregisterEvent(event)
 		end
 	end
 end
@@ -211,7 +210,7 @@ function K:NewModule(name)
 	module.name = name
 	modules[name] = module
 
-	table_insert(initQueue, module)
+	table_insert(modulesQueue, module)
 
 	return module
 end
@@ -267,14 +266,10 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
 	K:SetSmoothingAmount(C["General"].SmoothAmount)
 
-	local playerGUID = UnitGUID("player")
-	local _, serverID = string.split("-", playerGUID)
-	K.ServerID = tonumber(serverID)
-	K.GUID = playerGUID
-
-	for _, module in next, initQueue do
-		if module.OnEnable then
+	for _, module in next, modulesQueue do
+		if module.OnEnable and not module.Enabled then
 			module:OnEnable()
+			module.Enabled = true
 		else
 			error(("Module ('%s') has failed to load."):format(tostring(module.name)), 2)
 		end
@@ -292,8 +287,6 @@ K:RegisterEvent("PLAYER_LEVEL_UP", function(_, level)
 	K.Level = level
 end)
 
-K.AddOns = {}
-K.AddOnVersion = {}
 for i = 1, GetNumAddOns() do
 	local Name, _, _, _, Reason = GetAddOnInfo(i)
 	K.AddOns[string_lower(Name)] = GetAddOnEnableState(K.Name, Name) == 2 and (not Reason or Reason ~= "DEMAND_LOADED")

@@ -315,9 +315,9 @@ local function GuildPanel_Refresh()
 				end
 			else
 				if status == 1 then
-					status = K.AFKTex
+					status = "|T" .. FRIENDS_TEXTURE_AFK .. ":14:14:0:0:16:16:1:15:1:15|t"
 				elseif status == 2 then
-					status = K.DNDTex
+					status = "|T" .. FRIENDS_TEXTURE_DND .. ":14:14:0:0:16:16:1:15:1:15|t"
 				else
 					status = " "
 				end

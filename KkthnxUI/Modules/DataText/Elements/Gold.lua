@@ -4,7 +4,6 @@ local Module = K:GetModule("Infobar")
 local _G = _G
 local pairs = _G.pairs
 local string_format = _G.string.format
-local table_wipe = _G.table.wipe
 local unpack = _G.unpack
 
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
@@ -32,6 +31,7 @@ local oldMoney = 0
 local crossRealms = GetAutoCompleteRealms()
 local GoldDataText
 local RebuildCharList
+local RightClickText
 
 if not crossRealms or #crossRealms == 0 then
 	crossRealms = { [1] = K.Realm }
@@ -43,11 +43,11 @@ StaticPopupDialogs["RESETGOLD"] = {
 	button2 = NO,
 	OnAccept = function()
 		for _, realm in pairs(crossRealms) do
-			if KkthnxUIDB.Gold.totalGold[realm] then
-				wipe(KkthnxUIDB.Gold.totalGold[realm])
+			if KkthnxUIDB.Gold[realm] then
+				wipe(KkthnxUIDB.Gold[realm])
 			end
 		end
-		KkthnxUIDB.Gold.totalGold[K.Realm][K.Name] = { GetMoney(), K.Class }
+		KkthnxUIDB.Gold[K.Realm][K.Name] = { GetMoney(), K.Class }
 	end,
 	whileDead = 1,
 }
@@ -88,10 +88,6 @@ local eventList = {
 }
 
 local function OnEvent(_, event, arg1)
-	if not IsLoggedIn() then
-		return
-	end
-
 	if event == "PLAYER_ENTERING_WORLD" then
 		oldMoney = GetMoney()
 		GoldDataText:UnregisterEvent(event)
@@ -114,7 +110,7 @@ local function OnEvent(_, event, arg1)
 	local change = newMoney - oldMoney -- Positive if we gain money
 	if oldMoney > newMoney then -- Lost Money
 		spent = spent - change
-	else -- Gained Moeny
+	else -- Gained Money
 		profit = profit + change
 	end
 
@@ -130,27 +126,53 @@ local function OnEvent(_, event, arg1)
 		end
 	end
 
-	KkthnxUIDB.Gold = KkthnxUIDB.Gold or {}
-	KkthnxUIDB.Gold.totalGold = KkthnxUIDB.Gold.totalGold or {}
-
-	if not KkthnxUIDB.Gold.totalGold[K.Realm] then
-		KkthnxUIDB.Gold.totalGold[K.Realm] = {}
+	if not KkthnxUIDB.Gold[K.Realm] then
+		KkthnxUIDB.Gold[K.Realm] = {}
 	end
 
-	if not KkthnxUIDB.Gold.totalGold[K.Realm][K.Name] then
-		KkthnxUIDB.Gold.totalGold[K.Realm][K.Name] = {}
+	if not KkthnxUIDB.Gold[K.Realm][K.Name] then
+		KkthnxUIDB.Gold[K.Realm][K.Name] = {}
 	end
 
-	KkthnxUIDB.Gold.ServerID = KkthnxUIDB.Gold.ServerID or {}
-	KkthnxUIDB.Gold.ServerID[K.ServerID] = KkthnxUIDB.Gold.ServerID[K.ServerID] or {}
-	KkthnxUIDB.Gold.ServerID[K.ServerID][K.Realm] = true
-
-	KkthnxUIDB.Gold.totalGold[K.Realm][K.Name][1] = GetMoney()
-	KkthnxUIDB.Gold.totalGold[K.Realm][K.Name][2] = K.Class
+	KkthnxUIDB.Gold[K.Realm][K.Name][1] = GetMoney()
+	KkthnxUIDB.Gold[K.Realm][K.Name][2] = K.Class
 
 	oldMoney = newMoney
 end
 K.GoldButton_OnEvent = OnEvent
+
+local function clearCharGold(_, realm, name)
+	KkthnxUIDB.Gold[realm][name] = nil
+	DropDownList1:Hide()
+	RebuildCharList()
+end
+
+function RebuildCharList()
+	for i = 2, #menuList do
+		if menuList[i] then
+			wipe(menuList[i])
+		end
+	end
+
+	local index = 1
+	for _, realm in pairs(crossRealms) do
+		if KkthnxUIDB.Gold[realm] then
+			for name, value in pairs(KkthnxUIDB.Gold[realm]) do
+				if not (realm == K.Realm and name == K.Name) then
+					index = index + 1
+					if not menuList[index] then
+						menuList[index] = {}
+					end
+					menuList[index].text = K.RGBToHex(K.ColorClass(value[2])) .. Ambiguate(name .. "-" .. realm, "none")
+					menuList[index].notCheckable = true
+					menuList[index].arg1 = realm
+					menuList[index].arg2 = name
+					menuList[index].func = clearCharGold
+				end
+			end
+		end
+	end
+end
 
 local function OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_NONE")
@@ -172,8 +194,8 @@ local function OnEnter(self)
 
 	local totalGold = 0
 	GameTooltip:AddLine(L["RealmCharacter"], 0.5, 0.7, 1)
-	for realm in pairs(KkthnxUIDB.Gold.ServerID[K.ServerID]) do
-		local thisRealmList = KkthnxUIDB.Gold.totalGold[realm]
+	for _, realm in pairs(crossRealms) do
+		local thisRealmList = KkthnxUIDB.Gold[realm]
 		if thisRealmList then
 			for k, v in pairs(thisRealmList) do
 				local name = Ambiguate(k .. "-" .. realm, "none")
@@ -186,10 +208,9 @@ local function OnEnter(self)
 	end
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine(TOTAL .. ":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
-	if not K.IsFirestorm or not K.IsWoWFreakz then
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t " .. "Token:", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
-	end
+
+	GameTooltip:AddLine(" ")
+	GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t " .. "Token:", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
 
 	for i = 1, GetNumWatchedTokens() do
 		local currencyInfo = C_CurrencyInfo_GetBackpackCurrencyInfo(i)
@@ -217,45 +238,16 @@ local function OnEnter(self)
 	if self == GoldDataText then
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddDoubleLine(" ", K.RightButton .. "Switch Mode" .. " ", 1, 1, 1, 0.5, 0.7, 1)
-		GameTooltip:AddDoubleLine(" ", K.LeftButton .. "Currency Panel" .. " ", 1, 1, 1, 0.5, 0.7, 1)
+		if KkthnxUIDB.ShowSlots then
+			GameTooltip:AddDoubleLine(" ", K.LeftButton .. "Toggle Inventory" .. " ", 1, 1, 1, 0.5, 0.7, 1)
+		else
+			GameTooltip:AddDoubleLine(" ", K.LeftButton .. "Toggle Currency" .. " ", 1, 1, 1, 0.5, 0.7, 1)
+		end
 		GameTooltip:AddDoubleLine(" ", L["Ctrl Key"] .. K.RightButton .. "Reset Gold" .. " ", 1, 1, 1, 0.5, 0.7, 1)
 	end
 	GameTooltip:Show()
 end
 K.GoldButton_OnEnter = OnEnter
-
-local function clearCharGold(_, realm, name)
-	KkthnxUIDB.Gold.totalGold[realm][name] = nil
-	DropDownList1:Hide()
-	RebuildCharList()
-end
-
-function RebuildCharList()
-	for i = 2, #menuList do
-		if menuList[i] then
-			wipe(menuList[i])
-		end
-	end
-
-	local index = 1
-	for _, realm in pairs(crossRealms) do
-		if KkthnxUIDB.Gold.totalGold[realm] then
-			for name, value in pairs(KkthnxUIDB.Gold.totalGold[realm]) do
-				if not (realm == K.Realm and name == K.Name) then
-					index = index + 1
-					if not menuList[index] then
-						menuList[index] = {}
-					end
-					menuList[index].text = K.RGBToHex(K.ColorClass(value[2])) .. Ambiguate(name .. "-" .. realm, "none")
-					menuList[index].notCheckable = true
-					menuList[index].arg1 = realm
-					menuList[index].arg2 = name
-					menuList[index].func = clearCharGold
-				end
-			end
-		end
-	end
-end
 
 local function OnMouseUp(self, btn)
 	if btn == "RightButton" then
@@ -269,13 +261,13 @@ local function OnMouseUp(self, btn)
 			KkthnxUIDB["ShowSlots"] = not KkthnxUIDB["ShowSlots"]
 			if KkthnxUIDB["ShowSlots"] then
 				GoldDataText:RegisterEvent("BAG_UPDATE")
+				OnEnter(self)
 			else
 				GoldDataText:UnregisterEvent("BAG_UPDATE")
+				OnEnter(self)
 			end
 			OnEvent()
 		end
-	elseif btn == "MiddleButton" then
-		OnEnter(self)
 	else
 		if KkthnxUIDB.ShowSlots then
 			ToggleAllBags()
@@ -291,7 +283,7 @@ end
 K.GoldButton_OnLeave = OnLeave
 
 function Module:CreateGoldDataText()
-	GoldDataText = GoldDataText or CreateFrame("Button", "KKUI_GoldDataText", UIParent)
+	GoldDataText = CreateFrame("Button", "KKUI_GoldDataText", UIParent)
 	if C["DataText"].Gold then
 		GoldDataText:SetPoint("LEFT", UIParent, "LEFT", 0, -302)
 		GoldDataText:SetSize(24, 24)

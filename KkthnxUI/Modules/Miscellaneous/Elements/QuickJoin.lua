@@ -251,9 +251,7 @@ function Module:ShowLeaderOverallScore()
 			if searchResultInfo.crossFactionListing then
 				self.crossFactionLogo:Hide()
 			else
-				if not K.IsFirestorm or not K.IsWoWFreakz then
-					self.crossFactionLogo:SetTexture("Interface\\Timer\\" .. factionStr[searchResultInfo.leaderFactionGroup] .. "-Logo")
-				end
+				self.crossFactionLogo:SetTexture("Interface\\Timer\\" .. factionStr[searchResultInfo.leaderFactionGroup] .. "-Logo")
 				self.crossFactionLogo:Show()
 			end
 		end
@@ -305,9 +303,7 @@ function Module:AddDungeonsFilter()
 
 	local function GetDungeonNameByID(mapID)
 		local name = C_ChallengeMode_GetMapUIInfo(mapID)
-		if not K.IsFirestorm or not K.IsWoWFreakz then
-			name = gsub(name, ".-" .. HEADER_COLON, "") -- abbr Tazavesh
-		end
+		name = gsub(name, ".-" .. HEADER_COLON, "") -- abbr Tazavesh
 		return name
 	end
 

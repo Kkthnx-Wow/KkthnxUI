@@ -16,7 +16,6 @@ local meleeing, rangeing, lasthit
 local MainhandID = GetInventoryItemID("player", 16)
 local OffhandID = GetInventoryItemID("player", 17)
 local RangedID = GetInventoryItemID("player", 18)
-local playerGUID = UnitGUID("player")
 
 local function SwingStopped(element)
 	local bar = element.__owner
@@ -269,7 +268,7 @@ local function Ranged(self, _, unit, _, spellID)
 end
 
 local function Melee(self, _, _, sourceGUID)
-	if sourceGUID ~= playerGUID then
+	if sourceGUID ~= K.GUID then
 		return
 	end
 
@@ -336,7 +335,7 @@ end
 local function ParryHaste(self, ...)
 	local destGUID, _, _, _, missType = select(7, ...)
 
-	if destGUID ~= playerGUID then
+	if destGUID ~= K.GUID then
 		return
 	end
 

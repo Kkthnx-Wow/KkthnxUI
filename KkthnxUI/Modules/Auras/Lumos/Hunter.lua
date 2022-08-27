@@ -5,7 +5,6 @@ if K.Class ~= "HUNTER" then
 	return
 end
 
-local playerGUID = _G.UnitGUID("player")
 local CreateFrame = _G.CreateFrame
 local GetSpecialization = _G.GetSpecialization
 local IsPlayerSpell = _G.IsPlayerSpell
@@ -66,7 +65,7 @@ local eventSpentIndex = {
 
 function Module:CheckTrickState(...)
 	local _, eventType, _, sourceGUID, _, _, _, _, _, _, _, spellID = ...
-	if eventSpentIndex[eventType] and spellID == 257622 and sourceGUID == playerGUID then
+	if eventSpentIndex[eventType] and spellID == 257622 and sourceGUID == K.GUID then
 		Module.MMFocus.trickActive = eventSpentIndex[eventType]
 	end
 end

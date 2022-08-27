@@ -278,34 +278,6 @@ function Module:BlockTrashClub()
 	end
 end
 
-function Module:UpdateBroadcastSpam(_, msg, ...)
-	for _, filter in ipairs(autoBroadcasts) do
-		if string.match(msg, filter) then
-			return true
-		end
-	end
-
-	return false, msg, ...
-end
-
-function Module:UpdateAbilitySpellSpam(_, msg, ...)
-	for _, filter in ipairs(spamAbilitySpellList) do
-		if string.match(msg, filter) then
-			return true
-		end
-	end
-
-	return false, msg, ...
-end
-
-function Module:UpdateRaidInstanceQuestSpam(_, msg, ...)
-	if (msg == ERR_NOT_IN_RAID) or (msg == ERR_NOT_IN_INSTANCE_GROUP) then
-		return true
-	end
-
-	return false, msg, ...
-end
-
 function Module:CreateChatFilter()
 	hooksecurefunc(BNToastFrame, "ShowToast", self.BlockTrashClub)
 
@@ -323,14 +295,6 @@ function Module:CreateChatFilter()
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", self.UpdateChatFilter)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateChatFilter)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.UpdateChatFilter)
-
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.UpdateRaidInstanceQuestSpam)
-
-		if K.IsFirestorm or K.IsWoWFreakz then
-			ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateBroadcastSpam)
-			ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.UpdateAbilitySpellSpam)
-			ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", self.UpdateBroadcastSpam)
-		end
 	end
 
 	if C["Chat"].BlockAddonAlert then
