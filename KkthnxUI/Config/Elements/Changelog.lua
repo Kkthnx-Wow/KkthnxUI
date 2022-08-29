@@ -20,6 +20,42 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.3.8.Github] - Soon :)",
+		Sections = {
+			{
+				Header = "Added",
+				Entries = {
+					"Code to support right clicking Datatext Gold module to update in real time",
+					"More fonts to fonts file",
+					"New unitframe fader code",
+				},
+			},
+
+			-- {
+			-- 	Header = "Fixed",
+			-- 	Entries = {},
+			-- },
+
+			-- {
+			-- 	Header = "Removed",
+			-- 	Entries = {},
+			-- },
+
+			{
+				Header = "Changed",
+				Entries = {
+					"Castbar Glow has a better desc name in gui",
+					"Cleaned Gold module code",
+					"Cleaned UIDropDownMenu skinning code",
+					"Goodbye module has a lot more phrases now with a random timer",
+					"No longer have split up media folders. All merged together now",
+					"Thicker border on gem icons in character/inspect",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.3.7] - 2022-8-24",
 		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {
