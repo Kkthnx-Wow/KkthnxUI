@@ -6,8 +6,21 @@ local next = _G.next
 local string_gsub = _G.string.gsub
 local unpack = _G.unpack
 
+local CAPSLOCK_KEY_TEXT = _G.CAPSLOCK_KEY_TEXT
 local GetBindingKey = _G.GetBindingKey
+local KEY_BUTTON3 = _G.KEY_BUTTON3
+local KEY_BUTTON4 = _G.KEY_BUTTON4
+local KEY_MOUSEWHEELDOWN = _G.KEY_MOUSEWHEELDOWN
+local KEY_MOUSEWHEELUP = _G.KEY_MOUSEWHEELUP
+local KEY_NUMPAD1 = _G.KEY_NUMPAD1
+local KEY_SPACE = _G.KEY_SPACE
 local hooksecurefunc = _G.hooksecurefunc
+local RANGE_INDICATOR = _G.RANGE_INDICATOR
+local ExtraActionButton1 = _G.ExtraActionButton1
+local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
+local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
+local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
+local NUM_POSSESS_SLOTS = _G.NUM_POSSESS_SLOTS
 
 local function CallButtonFunctionByName(button, func, ...)
 	if button and func and button[func] then
@@ -461,9 +474,9 @@ function Module:StyleAllActionButtons(cfg)
 	Module:StyleExtraActionButton(cfg)
 
 	-- Spell flyout
-	SpellFlyoutBackgroundEnd:SetTexture(nil)
-	SpellFlyoutHorizontalBackground:SetTexture(nil)
-	SpellFlyoutVerticalBackground:SetTexture(nil)
+	_G.SpellFlyoutBackgroundEnd:SetTexture(nil)
+	_G.SpellFlyoutHorizontalBackground:SetTexture(nil)
+	_G.SpellFlyoutVerticalBackground:SetTexture(nil)
 	local function checkForFlyoutButtons()
 		local i = 1
 		local button = _G["SpellFlyoutButton" .. i]
@@ -474,7 +487,7 @@ function Module:StyleAllActionButtons(cfg)
 		end
 	end
 
-	SpellFlyout:HookScript("OnShow", checkForFlyoutButtons)
+	_G.SpellFlyout:HookScript("OnShow", checkForFlyoutButtons)
 end
 
 function Module:CreateBarSkin()

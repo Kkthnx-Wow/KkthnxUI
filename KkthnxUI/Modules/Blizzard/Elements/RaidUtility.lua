@@ -578,7 +578,7 @@ function Module:RaidTool_CreateMenu(parent)
 			TEAM_DISBAND,
 			function()
 				if UnitIsGroupLeader("player") then
-					StaticPopup_Show("Group_Disband")
+					_G.StaticPopup_Show("Group_Disband")
 				else
 					UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_LEADER)
 				end
@@ -648,15 +648,15 @@ function Module:RaidTool_EasyMarker()
 	end
 
 	local mixins = {
-		UnitPopupRaidTarget8ButtonMixin,
-		UnitPopupRaidTarget7ButtonMixin,
-		UnitPopupRaidTarget6ButtonMixin,
-		UnitPopupRaidTarget5ButtonMixin,
-		UnitPopupRaidTarget4ButtonMixin,
-		UnitPopupRaidTarget3ButtonMixin,
-		UnitPopupRaidTarget2ButtonMixin,
-		UnitPopupRaidTarget1ButtonMixin,
-		UnitPopupRaidTargetNoneButtonMixin,
+		_G.UnitPopupRaidTarget8ButtonMixin,
+		_G.UnitPopupRaidTarget7ButtonMixin,
+		_G.UnitPopupRaidTarget6ButtonMixin,
+		_G.UnitPopupRaidTarget5ButtonMixin,
+		_G.UnitPopupRaidTarget4ButtonMixin,
+		_G.UnitPopupRaidTarget3ButtonMixin,
+		_G.UnitPopupRaidTarget2ButtonMixin,
+		_G.UnitPopupRaidTarget1ButtonMixin,
+		_G.UnitPopupRaidTargetNoneButtonMixin,
 	}
 
 	for index, mixin in pairs(mixins) do
@@ -673,7 +673,7 @@ function Module:RaidTool_EasyMarker()
 		}
 	end
 
-	WorldFrame:HookScript("OnMouseDown", function(_, btn)
+	_G.WorldFrame:HookScript("OnMouseDown", function(_, btn)
 		if not C["Misc"].EasyMarking then
 			return
 		end
@@ -689,7 +689,7 @@ function Module:RaidTool_EasyMarker()
 						menu.checked = false
 					end
 				end
-				EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 1)
+				_G.EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 1)
 			end
 		end
 	end)

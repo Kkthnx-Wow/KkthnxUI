@@ -21,6 +21,7 @@ local C_QuestLog_IsComplete = _G.C_QuestLog.IsComplete
 local C_QuestLog_IsOnMap = _G.C_QuestLog.IsOnMap
 local C_QuestLog_IsWorldQuest = _G.C_QuestLog.IsWorldQuest
 local CreateFrame = _G.CreateFrame
+local GameTooltip = _G.GameTooltip
 local GetBindingKey = _G.GetBindingKey
 local GetBindingText = _G.GetBindingText
 local GetItemCooldown = _G.GetItemCooldown

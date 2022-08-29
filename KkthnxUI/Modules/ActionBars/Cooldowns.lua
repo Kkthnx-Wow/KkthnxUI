@@ -222,7 +222,7 @@ function Module:OnEnable()
 		return
 	end
 
-	local cooldownIndex = getmetatable(ActionButton1Cooldown).__index
+	local cooldownIndex = getmetatable(_G.ActionButton1Cooldown).__index
 	hooksecurefunc(cooldownIndex, "SetCooldown", Module.StartTimer)
 	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", Module.HideCooldownNumbers)
 	K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Module.ActionbarUpateCooldown)
@@ -232,11 +232,11 @@ function Module:OnEnable()
 			Module.RegisterActionButton(frame)
 		end
 	end
-	hooksecurefunc(ActionBarButtonEventsFrameMixin, "RegisterFrame", Module.RegisterActionButton)
+	hooksecurefunc(_G.ActionBarButtonEventsFrameMixin, "RegisterFrame", Module.RegisterActionButton)
 
 	-- Hide Default Cooldown
 	if not InCombatLockdown() then
 		SetCVar("countdownForCooldowns", 0)
 	end
-	K.HideInterfaceOption(InterfaceOptionsActionBarsPanelCountdownCooldowns)
+	K.HideInterfaceOption(_G.InterfaceOptionsActionBarsPanelCountdownCooldowns)
 end

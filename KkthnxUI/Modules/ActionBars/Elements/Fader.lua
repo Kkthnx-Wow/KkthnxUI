@@ -4,8 +4,7 @@ local Module = K:GetModule("ActionBar")
 local _G = _G
 local next = _G.next
 
--- local MouseIsOver = _G.MouseIsOver
--- local SpellFlyout = _G.SpellFlyout
+local MouseIsOver = _G.MouseIsOver
 local CreateFrame = _G.CreateFrame
 
 local function FaderOnFinished(self)
@@ -43,7 +42,7 @@ function Module:StartFadeIn(frame)
 	frame.fader.anim:SetToAlpha(frame.faderConfig.fadeInAlpha or 1)
 	frame.fader.anim:SetDuration(frame.faderConfig.fadeInDuration or 0.3)
 	frame.fader.anim:SetSmoothing(frame.faderConfig.fadeInSmooth or "OUT")
-	--start right away
+	-- start right away
 	frame.fader.anim:SetStartDelay(frame.faderConfig.fadeInDelay or 0)
 	frame.fader.finAlpha = frame.faderConfig.fadeInAlpha
 	frame.fader.direction = "in"
@@ -60,7 +59,7 @@ function Module:StartFadeOut(frame)
 	frame.fader.anim:SetToAlpha(frame.faderConfig.fadeOutAlpha or 0)
 	frame.fader.anim:SetDuration(frame.faderConfig.fadeOutDuration or 0.3)
 	frame.fader.anim:SetSmoothing(frame.faderConfig.fadeOutSmooth or "OUT")
-	--wait for some time before starting the fadeout
+	-- wait for some time before starting the fadeout
 	frame.fader.anim:SetStartDelay(frame.faderConfig.fadeOutDelay or 0)
 	frame.fader.finAlpha = frame.faderConfig.fadeOutAlpha
 	frame.fader.direction = "out"
@@ -68,6 +67,8 @@ function Module:StartFadeOut(frame)
 end
 
 local function IsMouseOverFrame(frame)
+	local SpellFlyout = _G.SpellFlyout
+
 	if MouseIsOver(frame) then
 		return true
 	end
@@ -116,8 +117,8 @@ local function SpellFlyoutOnShow(self)
 	-- Set New Frame Parent
 	self.__faderParent = frame
 	if not self.__faderHook then
-		SpellFlyout:HookScript("OnEnter", OffFrameHandler)
-		SpellFlyout:HookScript("OnLeave", OffFrameHandler)
+		_G.SpellFlyout:HookScript("OnEnter", OffFrameHandler)
+		_G.SpellFlyout:HookScript("OnLeave", OffFrameHandler)
 		self.__faderHook = true
 	end
 
@@ -135,7 +136,7 @@ local function SpellFlyoutOnShow(self)
 		end
 	end
 end
-SpellFlyout:HookScript("OnShow", SpellFlyoutOnShow)
+_G.SpellFlyout:HookScript("OnShow", SpellFlyoutOnShow)
 
 local function CreateFrameFader(frame, faderConfig)
 	if frame.faderConfig then

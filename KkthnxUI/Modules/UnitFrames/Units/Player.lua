@@ -340,28 +340,6 @@ function Module:CreatePlayer()
 		}
 	end
 
-	if C["Unitframe"].ShowPlayerName then
-		local Name = self:CreateFontString(nil, "OVERLAY")
-		Name:SetPoint("BOTTOMLEFT", Health, "TOPLEFT", 0, 4)
-		Name:SetPoint("BOTTOMRIGHT", Health, "TOPRIGHT", 0, 4)
-		Name:SetFontObject(K.UIFont)
-		if playerPortraitStyle == "NoPortraits" then
-			if C["Unitframe"].HealthbarColor.Value == "Class" then
-				self:Tag(Name, "[name] [fulllevel][afkdnd]")
-			else
-				self:Tag(Name, "[color][name] [fulllevel][afkdnd]")
-			end
-		else
-			if C["Unitframe"].HealthbarColor.Value == "Class" then
-				self:Tag(Name, "[name][afkdnd]")
-			else
-				self:Tag(Name, "[color][name][afkdnd]")
-			end
-		end
-
-		self.Name = Name
-	end
-
 	-- Level
 	if C["Unitframe"].ShowPlayerLevel then
 		local Level = self:CreateFontString(nil, "OVERLAY")

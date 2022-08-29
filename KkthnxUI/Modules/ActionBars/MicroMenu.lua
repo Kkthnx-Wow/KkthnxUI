@@ -169,10 +169,10 @@ function Module:CreateMicroMenu()
 	end
 
 	-- Default elements
-	K.HideInterfaceOption(MicroButtonPortrait)
-	K.HideInterfaceOption(GuildMicroButtonTabard)
-	K.HideInterfaceOption(MainMenuBarDownload)
-	K.HideInterfaceOption(HelpOpenWebTicketButton)
-	K.HideInterfaceOption(MainMenuBarPerformanceBar)
-	MainMenuMicroButton:SetScript("OnUpdate", nil)
+	K.HideInterfaceOption(_G.MicroButtonPortrait)
+	K.HideInterfaceOption(_G.GuildMicroButtonTabard)
+	K.HideInterfaceOption(_G.MainMenuBarDownload)
+	K.HideInterfaceOption(_G.HelpOpenWebTicketButton)
+	K.HideInterfaceOption(_G.MainMenuBarPerformanceBar)
+	_G.MainMenuMicroButton:SetScript("OnUpdate", nil)
 end

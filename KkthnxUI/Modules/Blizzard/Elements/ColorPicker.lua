@@ -10,6 +10,7 @@ local function translateColor(r)
 	if not r then
 		r = "ff"
 	end
+
 	return tonumber(r, 16) / 255
 end
 
@@ -135,18 +136,17 @@ function Module:CreateColorPicker()
 		self.__boxH:SetText(string_format("%02x%02x%02x", r, g, b))
 	end)
 
-	ColorPickerFrame.Header:StripTextures()
-	ColorPickerFrame.Header:ClearAllPoints()
-	ColorPickerFrame.Header:SetPoint("TOP", ColorPickerFrame, 0, 10)
-	ColorPickerFrame.Border:Hide()
+	pickerFrame.Header:StripTextures()
+	pickerFrame.Header:ClearAllPoints()
+	pickerFrame.Header:SetPoint("TOP", pickerFrame, 0, 10)
+	pickerFrame.Border:Hide()
 
-	ColorPickerFrame:CreateBorder()
-	ColorPickerOkayButton:SkinButton()
-	ColorPickerCancelButton:SkinButton()
-	-- B.ReskinSlider(OpacitySliderFrame, true)
+	pickerFrame:CreateBorder()
+	_G.ColorPickerOkayButton:SkinButton()
+	_G.ColorPickerCancelButton:SkinButton()
 
-	ColorPickerCancelButton:ClearAllPoints()
-	ColorPickerCancelButton:SetPoint("BOTTOMLEFT", ColorPickerFrame, "BOTTOM", 3, 6)
-	ColorPickerOkayButton:ClearAllPoints()
-	ColorPickerOkayButton:SetPoint("BOTTOMRIGHT", ColorPickerFrame, "BOTTOM", -3, 6)
+	_G.ColorPickerCancelButton:ClearAllPoints()
+	_G.ColorPickerCancelButton:SetPoint("BOTTOMLEFT", pickerFrame, "BOTTOM", 3, 6)
+	_G.ColorPickerOkayButton:ClearAllPoints()
+	_G.ColorPickerOkayButton:SetPoint("BOTTOMRIGHT", pickerFrame, "BOTTOM", -3, 6)
 end

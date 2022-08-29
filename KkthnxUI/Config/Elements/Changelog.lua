@@ -36,10 +36,12 @@ local KKUI_Changelog = {
 			-- 	Entries = {},
 			-- },
 
-			-- {
-			-- 	Header = "Removed",
-			-- 	Entries = {},
-			-- },
+			{
+				Header = "Removed",
+				Entries = {
+					"We do not see to see our OWN name on the player unitframe. This is completely pointless",
+				},
+			},
 
 			{
 				Header = "Changed",

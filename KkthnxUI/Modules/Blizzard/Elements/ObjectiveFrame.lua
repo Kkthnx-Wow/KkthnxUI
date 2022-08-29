@@ -7,17 +7,19 @@ local math_min = _G.math.min
 local CreateFrame = _G.CreateFrame
 local GetScreenHeight = _G.GetScreenHeight
 local GetScreenWidth = _G.GetScreenWidth
-local hooksecurefunc = _G.hooksecurefunc
+local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
+local UnregisterStateDriver = _G.UnregisterStateDriver
+local hooksecurefunc = _G.hooksecurefunc
 
 function Module:SetObjectiveFrameHeight()
-	local top = ObjectiveTrackerFrame:GetTop() or 0
+	local top = _G.ObjectiveTrackerFrame:GetTop() or 0
 	local screenHeight = GetScreenHeight()
 	local gapFromTop = screenHeight - top
 	local maxHeight = screenHeight - gapFromTop
 	local objectiveFrameHeight = math_min(maxHeight, 480)
 
-	ObjectiveTrackerFrame:SetHeight(objectiveFrameHeight)
+	_G.ObjectiveTrackerFrame:SetHeight(objectiveFrameHeight)
 end
 
 local function IsFramePositionedLeft(frame)

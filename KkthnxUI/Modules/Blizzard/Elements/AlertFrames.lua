@@ -159,9 +159,9 @@ local function MoveTalkingHead()
 		_G.Model_ApplyUICamera(model, model.uiCameraID)
 	end
 
-	for index, alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
+	for index, alertFrameSubSystem in ipairs(_G.AlertFrame.alertFrameSubSystems) do
 		if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == TalkingHeadFrame then
-			tremove(AlertFrame.alertFrameSubSystems, index)
+			tremove(_G.AlertFrame.alertFrameSubSystems, index)
 		end
 	end
 end
@@ -171,7 +171,7 @@ local function NoTalkingHeads()
 		return
 	end
 
-	hooksecurefunc(TalkingHeadFrame, "Show", function(self)
+	hooksecurefunc(_G.TalkingHeadFrame, "Show", function(self)
 		self:Hide()
 	end)
 end

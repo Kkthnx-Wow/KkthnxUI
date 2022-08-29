@@ -8,13 +8,10 @@ local pairs = _G.pairs
 
 local function SetupTimerTracker(bar)
 	local texture = K.GetTexture(C["General"].Texture)
-	-- local text = _G[bar:GetName() .. "Text"]
 
 	bar:SetSize(222, 22)
 	bar:StripTextures()
 	bar:SetStatusBarTexture(texture)
-
-	-- text:SetAllPoints()
 
 	bar.spark = bar:CreateTexture(nil, "OVERLAY")
 	bar.spark:SetWidth(64)
@@ -28,7 +25,7 @@ end
 
 function Module:CreateTimerTracker()
 	local function UpdateTimerTracker()
-		for _, timer in pairs(TimerTracker.timerList) do
+		for _, timer in pairs(_G.TimerTracker.timerList) do
 			if timer.bar and not timer.bar.styled then
 				SetupTimerTracker(timer.bar)
 

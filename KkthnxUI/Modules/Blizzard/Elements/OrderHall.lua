@@ -10,6 +10,7 @@ local C_CurrencyInfo_GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo
 local C_Garrison_GetClassSpecCategoryInfo = _G.C_Garrison.GetClassSpecCategoryInfo
 local C_Garrison_GetCurrencyTypes = _G.C_Garrison.GetCurrencyTypes
 local C_Garrison_RequestClassSpecCategoryInfo = _G.C_Garrison.RequestClassSpecCategoryInfo
+local GameTooltip = _G.GameTooltip
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local LE_FOLLOWER_TYPE_GARRISON_7_0 = _G.Enum.GarrisonFollowerType.FollowerType_7_0
@@ -17,6 +18,8 @@ local LE_GARRISON_TYPE_7_0 = _G.Enum.GarrisonType.Type_7_0
 local hooksecurefunc = _G.hooksecurefunc
 
 function Module:OrderHall_CreateIcon()
+	local OrderHallCommandBar = _G.OrderHallCommandBar
+
 	local hall = CreateFrame("Frame", "KKUI_OrderHallIcon", UIParent)
 	hall:SetSize(40, 40)
 	hall:SetPoint("TOP", 0, -30)
@@ -30,7 +33,7 @@ function Module:OrderHall_CreateIcon()
 	hall.Icon = hall:CreateTexture(nil, "ARTWORK")
 	hall.Icon:SetAllPoints()
 	hall.Icon:SetTexture("Interface\\WorldStateFrame\\ICONS-CLASSES")
-	hall.Icon:SetTexCoord(unpack(CLASS_ICON_TCOORDS[K.Class]))
+	hall.Icon:SetTexCoord(unpack(_G.CLASS_ICON_TCOORDS[K.Class]))
 	hall.Category = {}
 
 	hall:SetScript("OnEnter", Module.OrderHall_OnEnter)

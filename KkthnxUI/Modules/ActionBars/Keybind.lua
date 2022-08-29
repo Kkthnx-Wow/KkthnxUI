@@ -9,8 +9,14 @@ local string_format = _G.string.format
 local string_upper = _G.string.upper
 local tonumber = _G.tonumber
 
+local APPLY = _G.APPLY
+local CANCEL = _G.CANCEL
+local CHARACTER_SPECIFIC_KEYBINDINGS = _G.CHARACTER_SPECIFIC_KEYBINDINGS
 local CreateFrame = _G.CreateFrame
+local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local GameTooltip = _G.GameTooltip
 local GetBindingKey = _G.GetBindingKey
+local GetBindingName = _G.GetBindingName
 local GetMacroInfo = _G.GetMacroInfo
 local GetSpellBookItemName = _G.GetSpellBookItemName
 local InCombatLockdown = _G.InCombatLockdown
@@ -18,11 +24,17 @@ local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsShiftKeyDown = _G.IsShiftKeyDown
+local KEY_BINDING = _G.KEY_BINDING
 local LoadBindings = _G.LoadBindings
+local MAX_ACCOUNT_MACROS = _G.MAX_ACCOUNT_MACROS
+local MacroFrameTab1Text = _G.MacroFrameTab1Text
+local NOT_BOUND = _G.NOT_BOUND
+local PRESS_KEY_TO_BIND = _G.PRESS_KEY_TO_BIND
 local SaveBindings = _G.SaveBindings
 local SetBinding = _G.SetBinding
 local SlashCmdList = _G.SlashCmdList
 local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
+local UIErrorsFrame = _G.UIErrorsFrame
 local hooksecurefunc = _G.hooksecurefunc
 
 -- Button types
@@ -140,7 +152,7 @@ function Module:Bind_Update(button, spellmacro)
 
 	if spellmacro == "SPELL" then
 		frame.id = SpellBook_GetSpellBookSlot(frame.button)
-		frame.name = GetSpellBookItemName(frame.id, SpellBookFrame.bookType)
+		frame.name = GetSpellBookItemName(frame.id, _G.SpellBookFrame.bookType)
 		frame.bindings = { GetBindingKey(spellmacro .. " " .. frame.name) }
 	elseif spellmacro == "MACRO" then
 		frame.id = frame.button:GetID()

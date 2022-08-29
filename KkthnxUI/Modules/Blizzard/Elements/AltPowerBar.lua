@@ -2,8 +2,9 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Blizzard")
 
 local _G = _G
-local floor = _G.floor
-local format = _G.format
+local math_floor = _G.math.floor
+local string_format = _G.string.format
+
 local CreateFrame = _G.CreateFrame
 local UnitPowerMax = _G.UnitPowerMax
 local UnitPower = _G.UnitPower
@@ -32,7 +33,7 @@ local function onEnter(self)
 	end
 
 	GameTooltip:ClearAllPoints()
-	GameTooltip_SetDefaultAnchor(GameTooltip, self)
+	_G.GameTooltip_SetDefaultAnchor(GameTooltip, self)
 	updateTooltip(self)
 end
 
@@ -45,19 +46,19 @@ function Module:SetAltPowerBarText(text, name, value, max, percent)
 	if textFormat == "NONE" or not textFormat then
 		text:SetText("")
 	elseif textFormat == "NAME" then
-		text:SetText(format("%s", name))
+		text:SetText(string_format("%s", name))
 	elseif textFormat == "NAMEPERC" then
-		text:SetText(format("%s: %s%%", name, percent))
+		text:SetText(string_format("%s: %s%%", name, percent))
 	elseif textFormat == "NAMECURMAX" then
-		text:SetText(format("%s: %s / %s", name, value, max))
+		text:SetText(string_format("%s: %s / %s", name, value, max))
 	elseif textFormat == "NAMECURMAXPERC" then
-		text:SetText(format("%s: %s / %s - %s%%", name, value, max, percent))
+		text:SetText(string_format("%s: %s / %s - %s%%", name, value, max, percent))
 	elseif textFormat == "PERCENT" then
-		text:SetText(format("%s%%", percent))
+		text:SetText(string_format("%s%%", percent))
 	elseif textFormat == "CURMAX" then
-		text:SetText(format("%s / %s", value, max))
+		text:SetText(string_format("%s / %s", value, max))
 	elseif textFormat == "CURMAXPERC" then
-		text:SetText(format("%s / %s - %s%%", value, max, percent))
+		text:SetText(string_format("%s / %s - %s%%", value, max, percent))
 	end
 end
 
@@ -106,7 +107,7 @@ function Module:UpdateAltPowerBar()
 	if barInfo then
 		local power = UnitPower("player", _G.ALTERNATE_POWER_INDEX)
 		local maxPower = UnitPowerMax("player", _G.ALTERNATE_POWER_INDEX) or 0
-		local perc = (maxPower > 0 and floor(power / maxPower * 100)) or 0
+		local perc = (maxPower > 0 and math_floor(power / maxPower * 100)) or 0
 
 		self.powerMaxValue = maxPower
 		self.powerName = powerName

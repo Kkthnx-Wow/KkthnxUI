@@ -548,7 +548,6 @@ C["Unitframe"] = {
 	["ResurrectSound"] = false,
 	["ShowHealPrediction"] = true,
 	["ShowPlayerLevel"] = true,
-	["ShowPlayerName"] = false,
 	["Smooth"] = false,
 	["Stagger"] = true,
 	["Swingbar"] = false,

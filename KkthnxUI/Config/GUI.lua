@@ -862,7 +862,6 @@ local Unitframe = function(self)
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		Window:CreateSwitch("Unitframe", "ShowPlayerLevel", L["Show Player Frame Level"])
 	end
-	Window:CreateSwitch("Unitframe", "ShowPlayerName", L["Show Player Frame Name"])
 	Window:CreateSwitch("Unitframe", "Swingbar", L["Unitframe Swingbar"])
 	Window:CreateSwitch("Unitframe", "SwingbarTimer", L["Unitframe Swingbar Timer"])
 	Window:CreateSlider("Unitframe", "PlayerBuffsPerRow", L["Number of Buffs Per Row"], 4, 10, 1, nil, UpdatePlayerBuffs)

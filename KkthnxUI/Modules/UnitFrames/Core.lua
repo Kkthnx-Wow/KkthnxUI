@@ -473,13 +473,6 @@ end
 local textScaleFrames = {
 	["player"] = true,
 	["target"] = true,
-	-- These will be enabled once we finish the sizing elements for them
-	-- ["focus"] = true,
-	-- ["pet"] = true,
-	-- ["tot"] = true,
-	-- ["focustarget"] = true,
-	-- ["boss"] = true,
-	-- ["arena"] = true,
 }
 
 function Module:UpdateTextScale()
