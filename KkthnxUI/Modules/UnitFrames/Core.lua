@@ -1,7 +1,7 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:NewModule("Unitframes")
 local AuraModule = K:GetModule("Auras")
-local oUF = oUF or K.oUF
+local oUF = K.oUF
 
 local _G = _G
 
@@ -31,6 +31,7 @@ local UnitIsPlayer = _G.UnitIsPlayer
 local UnitThreatSituation = _G.UnitThreatSituation
 local oUF_RaidDebuffs = _G.oUF_RaidDebuffs
 
+local lastPvPSound = false
 local phaseIconTexCoords = {
 	[1] = { 1 / 128, 33 / 128, 1 / 64, 33 / 64 },
 	[2] = { 34 / 128, 66 / 128, 1 / 64, 33 / 64 },
@@ -584,9 +585,6 @@ function Module:CreateUnits()
 
 		oUF:SetActiveStyle("Pet")
 		local Pet = oUF:Spawn("pet", "oUF_Pet")
-		if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
-			Pet:SetParent(Player)
-		end
 		local PetFrameHeight = C["Unitframe"].PetHealthHeight + C["Unitframe"].PetPowerHeight + 6
 		local PetFrameWidth = C["Unitframe"].PetHealthWidth
 		Pet:SetSize(PetFrameWidth, PetFrameHeight)
@@ -597,7 +595,7 @@ function Module:CreateUnits()
 		local FocusFrameHeight = C["Unitframe"].FocusHealthHeight + C["Unitframe"].FocusPowerHeight + 6
 		local FocusFrameWidth = C["Unitframe"].FocusHealthWidth
 		Focus:SetSize(FocusFrameWidth, FocusFrameHeight)
-		K.Mover(Focus, "FocusUF", "FocusUF", { "BOTTOMRIGHT", Player, "TOPLEFT", -60, 30 }, FocusFrameWidth, FocusFrameHeight)
+		K.Mover(Focus, "FocusUF", "FocusUF", { "BOTTOMRIGHT", Player, "TOPLEFT", -60, 200 }, FocusFrameWidth, FocusFrameHeight)
 
 		if not C["Unitframe"].HideFocusTarget then
 			oUF:SetActiveStyle("FocusTarget")
@@ -728,11 +726,11 @@ function Module:CreateUnits()
 		oUF:SetActiveStyle("Raid")
 
 		-- Hide Default RaidFrame
-		if CompactRaidFrameManager_SetSetting then
-			CompactRaidFrameManager_SetSetting("IsShown", "0")
+		if _G.CompactRaidFrameManager_SetSetting then
+			_G.CompactRaidFrameManager_SetSetting("IsShown", "0")
 			UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
-			CompactRaidFrameManager:UnregisterAllEvents()
-			CompactRaidFrameManager:SetParent(K.UIFrameHider)
+			_G.CompactRaidFrameManager:UnregisterAllEvents()
+			_G.CompactRaidFrameManager:SetParent(K.UIFrameHider)
 		end
 
 		local raidMover
@@ -856,13 +854,13 @@ function Module:UpdateRaidDebuffIndicator()
 
 		if InstanceType == "party" or InstanceType == "raid" then
 			if C["Raid"].DebuffWatchDefault then
-				ORD:RegisterDebuffs(C.DebuffsTracking_PvE.spells)
+				ORD:RegisterDebuffs(C["DebuffsTracking_PvE"].spells)
 			end
 
 			ORD:RegisterDebuffs(KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE)
 		else
 			if C["Raid"].DebuffWatchDefault then
-				ORD:RegisterDebuffs(C.DebuffsTracking_PvP.spells)
+				ORD:RegisterDebuffs(C["DebuffsTracking_PvP"].spells)
 			end
 
 			ORD:RegisterDebuffs(KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP)
@@ -871,8 +869,8 @@ function Module:UpdateRaidDebuffIndicator()
 end
 
 local function CreateTargetSound(_, unit)
-	if UnitExists(unit) and not IsReplacingUnit() then
-		if UnitIsEnemy(unit, "player") then
+	if UnitExists(unit) then
+		if UnitIsEnemy("player", unit) then
 			PlaySound(SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
 		elseif UnitIsFriend("player", unit) then
 			PlaySound(SOUNDKIT.IG_CHARACTER_NPC_SELECT)
@@ -885,27 +883,24 @@ local function CreateTargetSound(_, unit)
 end
 
 function Module:PLAYER_FOCUS_CHANGED()
-	CreateTargetSound("focus")
+	CreateTargetSound(_, "focus")
 end
 
 function Module:PLAYER_TARGET_CHANGED()
-	CreateTargetSound("target")
+	CreateTargetSound(_, "target")
 end
 
-local announcedPVP
 function Module:UNIT_FACTION(unit)
 	if unit ~= "player" then
 		return
 	end
 
-	if UnitIsPVPFreeForAll("player") or UnitIsPVP("player") then
-		if not announcedPVP then
-			announcedPVP = true
-			PlaySound(SOUNDKIT.IG_PVP_UPDATE)
-		end
-	else
-		announcedPVP = nil
+	local isPvP = not not (UnitIsPVPFreeForAll("player") or UnitIsPVP("player"))
+	if isPvP and not lastPvPSound then
+		PlaySound(SOUNDKIT.IG_PVP_UPDATE)
 	end
+
+	lastPvPSound = isPvP
 end
 
 function Module:OnEnable()

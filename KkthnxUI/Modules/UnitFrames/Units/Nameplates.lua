@@ -95,8 +95,11 @@ function Module:UpdateClickableSize()
 		return
 	end
 
-	C_NamePlate_SetNamePlateEnemySize(C["Nameplate"].PlateWidth * C["General"].UIScale, C["Nameplate"].PlateHeight * C["General"].UIScale + 40)
-	C_NamePlate_SetNamePlateFriendlySize(C["Nameplate"].PlateWidth * C["General"].UIScale, C["Nameplate"].PlateHeight * C["General"].UIScale + 40)
+	local uiScale = C["General"].UIScale
+	local PlateWidth, PlateHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
+
+	C_NamePlate_SetNamePlateEnemySize(PlateWidth * uiScale, PlateHeight * uiScale)
+	C_NamePlate_SetNamePlateFriendlySize(PlateWidth * uiScale, PlateHeight * uiScale)
 end
 
 function Module:SetupCVars()

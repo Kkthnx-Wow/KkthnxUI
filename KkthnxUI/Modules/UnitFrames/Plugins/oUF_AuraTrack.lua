@@ -1,5 +1,5 @@
-local _, ns = ...
-local oUF = ns.oUF
+local K = unpack(KkthnxUI)
+local oUF = K.oUF
 
 --[[
 By Tukz, for Tukui

@@ -1,81 +1,112 @@
-local _, ns = ...
-local oUF = ns.oUF or oUF
-assert(oUF, "oUF not loaded")
+local K = unpack(KkthnxUI)
+local oUF = K.oUF
 
-local Update = function(self, event, ...)
-	local _, instanceType = IsInInstance()
+local function GetTrinketIconBySpellID(spellID)
+	local _, _, spellTexture = GetSpellInfo(spellID)
+	return spellTexture
+end
 
-	if instanceType ~= "arena" then
-		self.Trinket.Icon:SetTexture("Interface\\Icons\\Ability_pvp_gladiatormedallion")
-		self.Trinket:Hide()
-
-		return
+local function GetTrinketIconByFaction(unit)
+	if UnitFactionGroup(unit) == "Horde" then
+		return [[Interface\Icons\INV_Jewelry_Necklace_38]]
+	elseif UnitFactionGroup(unit) == "Alliance" then
+		return [[Interface\Icons\INV_Jewelry_Necklace_37]]
 	else
-		self.Trinket:Show()
-	end
-
-	if self.Trinket.PreUpdate then
-		self.Trinket:PreUpdate(event, ...)
-	end
-
-	if event == "ARENA_COOLDOWNS_UPDATE" then
-		local unit = ...
-		local tunit = self.unit
-
-		if self.unit == unit then
-			C_PvP.RequestCrowdControlSpell(unit)
-
-			local spellID, startTime, duration = C_PvP.GetArenaCrowdControlInfo(unit)
-
-			if spellID and startTime ~= 0 and duration ~= 0 then
-				CooldownFrame_Set(self.Trinket.cooldownFrame, startTime / 1000, duration / 1000, 1)
-			end
-		end
-	elseif event == "ARENA_CROWD_CONTROL_SPELL_UPDATE" then
-		local unit, spellID = ...
-
-		if self.unit == unit then
-			local _, _, spellTexture = GetSpellInfo(spellID)
-
-			self.Trinket.Icon:SetTexture(spellTexture)
-		end
-	elseif event == "PLAYER_ENTERING_WORLD" then
-		CooldownFrame_Set(self.Trinket.cooldownFrame, 1, 1, 1)
-	end
-
-	if self.Trinket.PostUpdate then
-		self.Trinket:PostUpdate(event, ...)
+		return [[Interface\Icons\INV_MISC_QUESTIONMARK]]
 	end
 end
 
-local Enable = function(self)
-	if self.Trinket then
+local function UpdateTrinket(self, unit)
+	local element = self.Trinket
+
+	local spellID, startTime, duration = C_PvP.GetArenaCrowdControlInfo(unit or self.unit)
+	if spellID and spellID ~= 0 and element.spellID ~= spellID then
+		element.spellID = spellID
+		element.icon:SetTexture(GetTrinketIconBySpellID(spellID))
+	end
+
+	if startTime and duration > 0 then
+		element.cd:SetCooldown(startTime / 1000, duration / 1000, 1)
+		element.cd:Show()
+	else
+		element.cd:Clear()
+		element.cd:Hide()
+	end
+end
+
+local function ClearCooldowns(self)
+	local element = self.Trinket
+	element.spellID = 0
+	element.cd:Clear()
+end
+
+local function Update(self, event, unit, ...)
+	if self.isForced or (self.unit ~= unit) then
+		return
+	end
+
+	local element = self.Trinket
+
+	if self.isForced then
+		print("isForced", self.isForced)
+		element.icon:SetTexture(GetTrinketIconByFaction("player"))
+		element:Show()
+		return
+	end
+
+	if element.PreUpdate then
+		element:PreUpdate(event, unit)
+	end
+
+	if event == "ARENA_OPPONENT_UPDATE" or event == "OnShow" then
+		local unitEvent = ...
+		print("event", event)
+		print("unitEvent", unitEvent)
+		if unitEvent ~= "seen" and event ~= "OnShow" then
+			return
+		end
+
+		C_PvP.RequestCrowdControlSpell(unit)
+	elseif event == "ARENA_COOLDOWNS_UPDATE" then
+		UpdateTrinket(self, unit)
+	elseif event == "ARENA_CROWD_CONTROL_SPELL_UPDATE" then
+		local spellID = ...
+		if spellID ~= 0 then
+			element.spellID = spellID
+			element.icon:SetTexture(GetTrinketIconBySpellID(spellID))
+		end
+	end
+
+	element:SetShown(element.spellID and element.spellID ~= 0)
+
+	if element.PostUpdate then
+		element:PostUpdate(event, unit)
+	end
+end
+
+local function Enable(self)
+	local element = self.Trinket
+	if element then
+		element.__owner = self
+
 		self:RegisterEvent("ARENA_COOLDOWNS_UPDATE", Update, true)
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", Update, true)
 		self:RegisterEvent("ARENA_CROWD_CONTROL_SPELL_UPDATE", Update, true)
-
-		if not self.Trinket.cooldownFrame then
-			self.Trinket.cooldownFrame = CreateFrame("Cooldown", nil, self.Trinket)
-			self.Trinket.cooldownFrame:SetAllPoints(self.Trinket)
-		end
-
-		if not self.Trinket.Icon then
-			self.Trinket.Icon = self.Trinket:CreateTexture(nil, "BORDER")
-			self.Trinket.Icon:SetAllPoints(self.Trinket)
-			self.Trinket.Icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-			self.Trinket.Icon:SetTexture("Interface\\Icons\\Ability_pvp_gladiatormedallion")
-		end
+		self:RegisterEvent("ARENA_OPPONENT_UPDATE", Update, true)
+		self:RegisterEvent("PVP_MATCH_INACTIVE", ClearCooldowns, true)
 
 		return true
 	end
 end
 
-local Disable = function(self)
-	if self.Trinket then
+local function Disable(self)
+	local element = self.Trinket
+	if element then
 		self:UnregisterEvent("ARENA_COOLDOWNS_UPDATE", Update)
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD", Update)
 		self:UnregisterEvent("ARENA_CROWD_CONTROL_SPELL_UPDATE", Update)
-		self.Trinket:Hide()
+		self:UnregisterEvent("ARENA_OPPONENT_UPDATE", Update)
+		self:UnregisterEvent("PVP_MATCH_INACTIVE", ClearCooldowns)
+
+		element:Hide()
 	end
 end
 

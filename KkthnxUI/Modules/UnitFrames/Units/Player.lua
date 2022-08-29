@@ -619,8 +619,6 @@ function Module:CreatePlayer()
 		self.DebuffHighlightFilter = true
 	end
 
-	local CombatFade = C["Unitframe"].CombatFade
-
 	local Highlight = Health:CreateTexture(nil, "OVERLAY")
 	Highlight:SetAllPoints()
 	Highlight:SetTexture("Interface\\PETBATTLES\\PetBattle-SelectedPetGlow")
@@ -634,6 +632,17 @@ function Module:CreatePlayer()
 		Override = Module.UpdateThreat,
 	}
 
+	-- Fader
+	if C["Unitframe"].CombatFade then
+		self.Fader = {
+			[1] = { Combat = 1, Arena = 1, Instance = 1 },
+			[2] = { PlayerTarget = 1, PlayerNotMaxHealth = 1, PlayerNotMaxMana = 1, Casting = 1 },
+			[3] = { Stealth = 0.5 },
+			[4] = { notCombat = 0, PlayerTaxi = 0 },
+		}
+		self.NormalAlpha = 1
+	end
+
 	self.Overlay = Overlay
 	self.Health = Health
 	self.Power = Power
@@ -646,7 +655,6 @@ function Module:CreatePlayer()
 	self.RestingIndicator = RestingIndicator
 	self.QuestSyncIndicator = QuestSyncIndicator
 	self.Highlight = Highlight
-	self.CombatFade = CombatFade
 	self.ThreatIndicator = ThreatIndicator
 
 	-- if K.isProfiling then

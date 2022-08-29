@@ -1,6 +1,6 @@
 --	Based on oUF_GCD(by ALZA)
 local K = unpack(KkthnxUI)
-local oUF = K.oUF or oUF
+local oUF = K.oUF
 
 local starttime, duration, usingspell
 local GetTime = GetTime

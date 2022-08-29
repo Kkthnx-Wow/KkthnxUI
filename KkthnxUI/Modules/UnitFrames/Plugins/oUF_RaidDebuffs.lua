@@ -1,5 +1,5 @@
 local K = unpack(KkthnxUI)
-local oUF = K.oUF or oUF
+local oUF = K.oUF
 
 local _G = _G
 local addon = {}

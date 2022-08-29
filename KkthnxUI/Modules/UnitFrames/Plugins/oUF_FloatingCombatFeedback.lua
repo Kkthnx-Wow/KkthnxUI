@@ -1,6 +1,5 @@
 local K, C = unpack(KkthnxUI)
 local oUF = K.oUF
-assert(oUF, "oUF FloatingCombatFeedback was unable to locate oUF install")
 
 local _G = _G
 local select, tremove, tinsert, wipe = _G.select, _G.table.remove, _G.table.insert, _G.table.wipe

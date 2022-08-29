@@ -1,6 +1,5 @@
 local K = unpack(KkthnxUI)
-local _, ns = ...
-local oUF = ns.oUF or K.oUF
+local oUF = K.oUF
 
 local CanDispel = {
 	DRUID = { Magic = false, Curse = true, Poison = true },
@@ -71,32 +70,13 @@ local function Update(object, _, unit)
 	local debuffType, texture = GetDebuffType(unit, object.DebuffHighlightFilter)
 	if debuffType then
 		local color = _G.DebuffTypeColor[debuffType]
-		if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder then
-			if object.DebuffHighlightBackdrop then
-				object:SetBackdropColor(color.r, color.g, color.b, object.DebuffHighlightAlpha or 1)
-			end
-
-			if object.DebuffHighlightBackdropBorder then
-				object:SetBackdropBorderColor(color.r, color.g, color.b, object.DebuffHighlightAlpha or 1)
-			end
-		elseif object.DebuffHighlightUseTexture then
+		if object.DebuffHighlightUseTexture then
 			object.DebuffHighlight:SetTexture(texture)
 		else
 			object.DebuffHighlight:SetVertexColor(color.r, color.g, color.b, object.DebuffHighlightAlpha or 0.5)
 		end
 	else
-		if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder then
-			local color
-			if object.DebuffHighlightBackdrop then
-				color = origColors[object]
-				object:SetBackdropColor(color.r, color.g, color.b, color.a)
-			end
-
-			if object.DebuffHighlightBackdropBorder then
-				color = origBorderColors[object]
-				object:SetBackdropBorderColor(color.r, color.g, color.b, color.a)
-			end
-		elseif object.DebuffHighlightUseTexture then
+		if object.DebuffHighlightUseTexture then
 			object.DebuffHighlight:SetTexture(nil)
 		else
 			local color = origColors[object]
@@ -107,7 +87,7 @@ end
 
 local function Enable(object)
 	-- If we're not highlighting this unit return
-	if not object.DebuffHighlightBackdrop and not object.DebuffHighlightBackdropBorder and not object.DebuffHighlight then
+	if not object.DebuffHighlight then
 		return
 	end
 
@@ -121,14 +101,7 @@ local function Enable(object)
 	object:RegisterEvent("PLAYER_TALENT_UPDATE", CheckSpec, true)
 	CheckSpec()
 
-	if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder then
-		print("oUF_DebuffHighlight Used: DebuffHighlightBackdrop or DebuffHighlightBackdropBorder")
-		local r, g, b, a = object:GetBackdropColor()
-		origColors[object] = { r = r, g = g, b = b, a = a }
-		r, g, b, a = object:GetBackdropBorderColor()
-		origBorderColors[object] = { r = r, g = g, b = b, a = a }
-	elseif not object.DebuffHighlightUseTexture then
-		print("oUF_DebuffHighlight Used: DebuffHighlightUseTexture")
+	if not object.DebuffHighlightUseTexture then
 		local r, g, b, a = object.DebuffHighlight:GetVertexColor()
 		origColors[object] = { r = r, g = g, b = b, a = a }
 	end
@@ -137,7 +110,7 @@ local function Enable(object)
 end
 
 local function Disable(object)
-	if object.DebuffHighlightBackdrop or object.DebuffHighlightBackdropBorder or object.DebuffHighlight then
+	if object.DebuffHighlight then
 		object:UnregisterEvent("UNIT_AURA", Update)
 		object:UnregisterEvent("PLAYER_TALENT_UPDATE", CheckSpec)
 	end

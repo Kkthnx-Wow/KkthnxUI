@@ -1,6 +1,6 @@
 local K, C = unpack(KkthnxUI)
 
-local oUF = oUF or K.oUF
+local oUF = K.oUF
 assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 -- Sourced: yClassColors (yleaf)

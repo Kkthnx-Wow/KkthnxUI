@@ -1,12 +1,12 @@
 local K, C, L = unpack(KkthnxUI)
-local oUF = oUF or K.oUF
+local oUF = K.oUF
 
 local _G = _G
 local string_format = _G.string.format
 local string_find = _G.string.find
 
+local AFK = _G.AFK
 local ALTERNATE_POWER_INDEX = Enum.PowerType.Alternate or 10
-local CHAT_MSG_AFK = _G.CHAT_MSG_AFK
 local DEAD = _G.DEAD
 local DND = _G.DND
 local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
@@ -117,7 +117,7 @@ oUF.Tags.Events["color"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_FAC
 
 oUF.Tags.Methods["afkdnd"] = function(unit)
 	if UnitIsAFK(unit) then
-		return "|cffCFCFCF <" .. CHAT_MSG_AFK .. ">|r"
+		return "|cffCFCFCF <" .. AFK .. ">|r"
 	elseif UnitIsDND(unit) then
 		return "|cffCFCFCF <" .. DND .. ">|r"
 	else

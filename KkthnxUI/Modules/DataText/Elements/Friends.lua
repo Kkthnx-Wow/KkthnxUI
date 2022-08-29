@@ -550,7 +550,7 @@ local function FriendsPanel_Refresh()
 	Module.totalFriends = totalFriends
 end
 
-local function OnEnter(self)
+local function OnEnter()
 	local thisTime = GetTime()
 	if not prevTime or (thisTime - prevTime > 5) then
 		FriendsPanel_Refresh()

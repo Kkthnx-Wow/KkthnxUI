@@ -74,8 +74,8 @@
    <Script file="Maps\Elements\WowHeadLink.lua" />
    <!-- Unitframes Plugins -->
    <Script file="UnitFrames\Plugins\oUF_AuraTrack.lua" />
-   <Script file="UnitFrames\Plugins\oUF_CombatFader.lua" />
    <Script file="UnitFrames\Plugins\oUF_DebuffHighlight.lua" />
+   <Script file="UnitFrames\Plugins\oUF_Fader.lua" />
    <Script file="UnitFrames\Plugins\oUF_FloatingCombatFeedback.lua" />
    <Script file="UnitFrames\Plugins\oUF_GCD.lua" />
    <Script file="UnitFrames\Plugins\oUF_RaidDebuffs.lua" />

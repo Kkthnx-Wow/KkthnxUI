@@ -98,7 +98,7 @@ K.EasyMenu = CreateFrame("Frame", "KKUI_EasyMenu", UIParent, "UIDropDownMenuTemp
 K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
 
-K.GreyColor = "|CFF7b8489"
+K.GreyColor = "|CFFC0C0C0"
 K.InfoColor = "|CFF669DFF"
 K.InfoColorTint = "|CFF3ba1c5" -- 30% Tint
 K.SystemColor = "|CFFFFCC66"
