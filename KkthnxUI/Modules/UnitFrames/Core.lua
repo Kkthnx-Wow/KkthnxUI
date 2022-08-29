@@ -589,6 +589,9 @@ function Module:CreateUnits()
 		local PetFrameWidth = C["Unitframe"].PetHealthWidth
 		Pet:SetSize(PetFrameWidth, PetFrameHeight)
 		K.Mover(Pet, "Pet", "Pet", { "TOPRIGHT", Player, "BOTTOMLEFT", -6, -6 }, PetFrameWidth, PetFrameHeight)
+		if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
+			Pet:SetParent(Player)
+		end
 
 		oUF:SetActiveStyle("Focus")
 		local Focus = oUF:Spawn("focus", "oUF_Focus")
