@@ -178,6 +178,174 @@ function Module:CreateHeader()
 	end)
 end
 
+local function createBarMover(bar, text, value, anchor)
+	local mover = K.Mover(bar, text, value, anchor, bar:GetHeight() + bar:GetWidth() + 6, bar:GetHeight())
+	bar:ClearAllPoints()
+	bar:SetPoint("RIGHT", mover)
+	bar.mover = mover
+end
+
+local function updateSpellTarget(self, _, unit)
+	Module.PostCastUpdate(self.Castbar, unit)
+end
+
+function Module:ToggleCastBarLatency(frame)
+	frame = frame or _G.oUF_Player
+	if not frame then
+		return
+	end
+
+	if C["Unitframe"].CastbarLatency then
+		frame:RegisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent, true) -- Fix quests with WorldFrame interaction
+		frame:RegisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent, true)
+		frame:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent, true)
+	else
+		frame:UnregisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent)
+		frame:UnregisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent)
+		frame:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent)
+		if frame.Castbar then
+			frame.Castbar.__sendTime = nil
+		end
+	end
+end
+
+function Module:CreateCastBar(self)
+	local mystyle = self.mystyle
+	-- if mystyle ~= "nameplate" and not C["Unitframe"].Castbars then
+	-- 	return
+	-- end
+
+	local Castbar = CreateFrame("StatusBar", "oUF_Castbar" .. mystyle, self)
+	Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	Castbar:SetHeight(20)
+	Castbar:SetWidth(self:GetWidth() - 22)
+	if mystyle == "nameplate" then
+		Castbar:CreateShadow(true)
+	else
+		Castbar:CreateBorder()
+	end
+
+	Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
+	Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
+	Castbar.Spark:SetBlendMode("ADD")
+	Castbar.Spark:SetAlpha(0.9)
+
+	if mystyle == "player" then
+		Castbar:SetFrameLevel(10)
+		Castbar:SetSize(C["Unitframe"].PlayerCastbarWidth, C["Unitframe"].PlayerCastbarHeight)
+		createBarMover(Castbar, "Player Castbar", "PlayerCB", { "BOTTOM", UIParent, "BOTTOM", 0, 200 })
+
+		Castbar.Spark:SetSize(64, Castbar:GetHeight())
+	elseif mystyle == "target" then
+		Castbar:SetFrameLevel(10)
+		Castbar:SetSize(C["Unitframe"].TargetCastbarWidth, C["Unitframe"].TargetCastbarHeight)
+		createBarMover(Castbar, "Target Castbar", "TargetCB", { "BOTTOM", UIParent, "BOTTOM", 0, 342 })
+
+		Castbar.Spark:SetSize(64, Castbar:GetHeight())
+
+		local shield = Castbar:CreateTexture(nil, "OVERLAY", nil, 4)
+		shield:SetAtlas("Soulbinds_Portrait_Lock")
+		shield:SetSize(C["Unitframe"].TargetCastbarHeight + 10, C["Unitframe"].TargetCastbarHeight + 10)
+		shield:SetPoint("TOP", Castbar, "CENTER", 0, 6)
+		Castbar.Shield = shield
+		-- elseif mystyle == "focus" then
+		-- 	Castbar:SetFrameLevel(10)
+		-- 	Castbar:SetSize(C["Unitframe"].FocusCastbarWidth, C["Unitframe"].FocusCastbarHeight)
+		-- 	createBarMover(Castbar, "Focus Castbar", "FocusCB", C.UFs.Focuscb)
+		-- elseif mystyle == "boss" or mystyle == "arena" then
+		-- 	Castbar:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -8)
+		-- 	Castbar:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -8)
+		-- 	Castbar:SetHeight(10)
+	elseif mystyle == "nameplate" then
+		Castbar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -3)
+		Castbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -3)
+		Castbar:SetHeight(self:GetHeight())
+
+		Castbar.Spark:SetSize(64, Castbar:GetHeight())
+	end
+
+	local timer = K.CreateFontString(Castbar, 12, "", "", false, "RIGHT", -3, 0)
+	local name = K.CreateFontString(Castbar, 12, "", "", false, "LEFT", 3, 0)
+	name:SetPoint("RIGHT", timer, "LEFT", -5, 0)
+	name:SetJustifyH("LEFT")
+
+	if mystyle ~= "boss" and mystyle ~= "arena" then
+		Castbar.Icon = Castbar:CreateTexture(nil, "ARTWORK")
+		Castbar.Icon:SetSize(Castbar:GetHeight(), Castbar:GetHeight())
+		Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -6, 0)
+		Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+
+		Castbar.Button = CreateFrame("Frame", nil, Castbar)
+		if mystyle == "nameplate" then
+			Castbar.Button:CreateShadow(true)
+		else
+			Castbar.Button:CreateBorder()
+		end
+		Castbar.Button:SetAllPoints(Castbar.Icon)
+		Castbar.Button:SetFrameLevel(Castbar:GetFrameLevel())
+	end
+
+	if mystyle == "player" then
+		local safeZone = Castbar:CreateTexture(nil, "OVERLAY")
+		safeZone:SetTexture(K.GetTexture(C["General"].Texture))
+		safeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
+		safeZone:SetPoint("TOPRIGHT")
+		safeZone:SetPoint("BOTTOMRIGHT")
+		Castbar:SetFrameLevel(10)
+		Castbar.SafeZone = safeZone
+
+		local lagStr = K.CreateFontString(Castbar, 10)
+		lagStr:ClearAllPoints()
+		lagStr:SetPoint("BOTTOM", Castbar, "TOP", 0, 4)
+		Castbar.LagString = lagStr
+
+		Module:ToggleCastBarLatency(self)
+	elseif mystyle == "nameplate" then
+		name:SetPoint("TOPLEFT", Castbar, "LEFT", 0, -1)
+		timer:SetPoint("TOPRIGHT", Castbar, "RIGHT", 0, -1)
+
+		local shield = Castbar:CreateTexture(nil, "OVERLAY", nil, 4)
+		shield:SetAtlas("Soulbinds_Portrait_Lock")
+		shield:SetSize(self:GetHeight() + 14, self:GetHeight() + 14)
+		shield:SetPoint("TOP", Castbar, "CENTER", 0, 6)
+		Castbar.Shield = shield
+
+		local iconSize = self:GetHeight() * 2 + 5
+		Castbar.Icon:SetSize(iconSize, iconSize)
+		Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -3, 0)
+		Castbar.timeToHold = 0.5
+
+		Castbar.glowFrame = CreateFrame("Frame", nil, Castbar)
+		Castbar.glowFrame:SetPoint("CENTER", Castbar.Icon)
+		Castbar.glowFrame:SetSize(iconSize, iconSize)
+
+		local spellTarget = K.CreateFontString(Castbar, C["Nameplate"].NameTextSize + 2)
+		spellTarget:ClearAllPoints()
+		spellTarget:SetJustifyH("LEFT")
+		spellTarget:SetPoint("TOPLEFT", name, "BOTTOMLEFT", 0, -6)
+		Castbar.spellTarget = spellTarget
+
+		self:RegisterEvent("UNIT_TARGET", updateSpellTarget)
+	end
+
+	if mystyle == "nameplate" or mystyle == "boss" or mystyle == "arena" then
+		Castbar.decimal = "%.1f"
+	else
+		Castbar.decimal = "%.2f"
+	end
+
+	Castbar.Time = timer
+	Castbar.Text = name
+	Castbar.OnUpdate = Module.OnCastbarUpdate
+	Castbar.PostCastStart = Module.PostCastStart
+	Castbar.PostCastUpdate = Module.PostCastUpdate
+	Castbar.PostCastStop = Module.PostCastStop
+	Castbar.PostCastFail = Module.PostCastFailed
+	Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+
+	self.Castbar = Castbar
+end
+
 function Module.auraIconSize(w, n, s)
 	return (w - (n - 1) * s) / n
 end

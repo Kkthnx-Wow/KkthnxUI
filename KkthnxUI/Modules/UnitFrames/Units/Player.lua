@@ -181,88 +181,7 @@ function Module:CreatePlayer()
 		self.Buffs = Buffs
 	end
 
-	if C["Unitframe"].PlayerCastbar then
-		local Castbar = CreateFrame("StatusBar", "PlayerCastbar", self)
-		Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", C["Unitframe"].PlayerCastbarIcon and 14 or 0, 200)
-		Castbar:SetStatusBarTexture(UnitframeTexture)
-		Castbar:SetSize(C["Unitframe"].PlayerCastbarWidth, C["Unitframe"].PlayerCastbarHeight)
-		Castbar:SetClampedToScreen(true)
-		Castbar:CreateBorder()
-
-		Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY")
-		Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
-		Castbar.Spark:SetSize(64, Castbar:GetHeight())
-		Castbar.Spark:SetBlendMode("ADD")
-
-		if C["Unitframe"].CastbarLatency then
-			Castbar.SafeZone = Castbar:CreateTexture(nil, "OVERLAY")
-			Castbar.SafeZone:SetTexture(UnitframeTexture)
-			Castbar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
-			Castbar.SafeZone:SetPoint("TOPRIGHT")
-			Castbar.SafeZone:SetPoint("BOTTOMRIGHT")
-			Castbar:SetFrameLevel(10)
-
-			Castbar.LagString = Castbar:CreateFontString(nil, "OVERLAY")
-			Castbar.LagString:SetFontObject(K.UIFont)
-			Castbar.LagString:SetFont(select(1, Castbar.LagString:GetFont()), 11, select(3, Castbar.LagString:GetFont()))
-			Castbar.LagString:SetTextColor(0.84, 0.75, 0.65)
-			Castbar.LagString:ClearAllPoints()
-			Castbar.LagString:SetPoint("TOPRIGHT", Castbar, "BOTTOMRIGHT", -3.5, -3)
-
-			self:RegisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent, true) -- Fix quests with WorldFrame interaction
-			self:RegisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent, true)
-			self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent, true)
-		else
-			self:UnregisterEvent("GLOBAL_MOUSE_UP", Module.OnCastSent)
-			self:UnregisterEvent("GLOBAL_MOUSE_DOWN", Module.OnCastSent)
-			self:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.OnCastSent)
-			if Castbar and Castbar.__sendTime then
-				Castbar.__sendTime = nil
-			end
-		end
-
-		Castbar.decimal = "%.2f"
-
-		Castbar.Time = Castbar:CreateFontString(nil, "OVERLAY")
-		Castbar.Time:SetFontObject(K.UIFont)
-		Castbar.Time:SetPoint("RIGHT", -3.5, 0)
-		Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
-		Castbar.Time:SetJustifyH("RIGHT")
-
-		Castbar.Text = Castbar:CreateFontString(nil, "OVERLAY")
-		Castbar.Text:SetFontObject(K.UIFont)
-		Castbar.Text:SetPoint("LEFT", 3.5, 0)
-		Castbar.Text:SetPoint("RIGHT", Castbar.Time, "LEFT", -3.5, 0)
-		Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
-		Castbar.Text:SetJustifyH("LEFT")
-		Castbar.Text:SetWordWrap(false)
-
-		if C["Unitframe"].PlayerCastbarIcon then
-			Castbar.Button = CreateFrame("Frame", nil, Castbar)
-			Castbar.Button:CreateBorder()
-
-			Castbar.Icon = Castbar.Button:CreateTexture(nil, "ARTWORK")
-			Castbar.Icon:SetSize(Castbar:GetHeight(), Castbar:GetHeight())
-			Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -6, 0)
-
-			Castbar.Button:SetAllPoints(Castbar.Icon)
-		end
-
-		local mover = K.Mover(Castbar, "Player Castbar", "PlayerCB", { "BOTTOM", UIParent, "BOTTOM", C["Unitframe"].PlayerCastbarIcon and 14 or 0, 200 })
-		Castbar:ClearAllPoints()
-		Castbar:SetPoint("RIGHT", mover)
-		Castbar.mover = mover
-
-		Castbar.OnUpdate = Module.OnCastbarUpdate
-		Castbar.PostCastStart = Module.PostCastStart
-		Castbar.PostCastUpdate = Module.PostCastUpdate
-		Castbar.PostCastStop = Module.PostCastStop
-		Castbar.PostCastFail = Module.PostCastFailed
-		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-
-		self.Castbar = Castbar
-	end
+	Module:CreateCastBar(self)
 
 	if C["Unitframe"].ShowHealPrediction then
 		local frame = CreateFrame("Frame", nil, self)
@@ -444,7 +363,7 @@ function Module:CreatePlayer()
 		local width = C["Unitframe"].PlayerCastbarWidth - C["Unitframe"].PlayerCastbarHeight - 5
 		bar:SetSize(width, 13)
 		if C["Unitframe"].PlayerCastbar then
-			bar:SetPoint("TOP", self.Castbar.mover, "BOTTOM", 0, -6)
+			-- bar:SetPoint("TOP", self.Castbar.mover, "BOTTOM", 0, -6)
 		else
 			bar:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 200)
 		end

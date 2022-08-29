@@ -850,60 +850,7 @@ function Module:CreatePlates()
 	self.healthValue:SetPoint("CENTER", self.Overlay, 0, 0)
 	self:Tag(self.healthValue, "[nphp]")
 
-	self.Castbar = CreateFrame("StatusBar", "oUF_CastbarNameplate", self)
-	self.Castbar:SetHeight(20)
-	self.Castbar:SetWidth(self:GetWidth() - 22)
-	self.Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-	self.Castbar:CreateShadow(true)
-	self.Castbar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -3)
-	self.Castbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -3)
-	self.Castbar:SetHeight(self:GetHeight())
-
-	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-	self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
-	self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight())
-	self.Castbar.Spark:SetBlendMode("ADD")
-
-	self.Castbar.Time = K.CreateFontString(self.Castbar, C["Nameplate"].NameTextSize, "", "", false, "RIGHT", -2, 0)
-	self.Castbar.Text = K.CreateFontString(self.Castbar, C["Nameplate"].NameTextSize, "", "", false, "LEFT", 2, 0)
-	self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -5, 0)
-	self.Castbar.Text:SetJustifyH("LEFT")
-
-	self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
-	self.Castbar.Button:SetSize(self:GetHeight() * 2 + 3, self:GetHeight() * 2 + 3)
-	self.Castbar.Button:SetPoint("BOTTOMRIGHT", self.Castbar, "BOTTOMLEFT", -3, 0)
-	self.Castbar.Button:CreateShadow(true)
-
-	self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
-	self.Castbar.Icon:SetAllPoints()
-	self.Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-	self.Castbar.glowFrame = CreateFrame("Frame", nil, self.Castbar)
-	self.Castbar.glowFrame:SetPoint("CENTER", self.Castbar.Button)
-	self.Castbar.glowFrame:SetSize(self:GetHeight() * 2 + 3, self:GetHeight() * 2 + 3)
-
-	self.Castbar.Text:SetPoint("LEFT", self.Castbar, 0, -5)
-	self.Castbar.Time:SetPoint("RIGHT", self.Castbar, 0, -5)
-
-	self.Castbar.Shield = self.Castbar:CreateTexture(nil, "OVERLAY")
-	self.Castbar.Shield:SetAtlas("Soulbinds_Portrait_Lock")
-	self.Castbar.Shield:SetSize(self:GetHeight() + 14, self:GetHeight() + 14)
-	self.Castbar.Shield:SetPoint("CENTER", 0, -5)
-
-	self.Castbar.timeToHold = 0.5
-	self.Castbar.decimal = "%.1f"
-
-	self.Castbar.spellTarget = K.CreateFontString(self.Castbar, C["Nameplate"].NameTextSize + 3)
-	self.Castbar.spellTarget:ClearAllPoints()
-	self.Castbar.spellTarget:SetJustifyH("LEFT")
-	self.Castbar.spellTarget:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -6)
-
-	self.Castbar.OnUpdate = Module.OnCastbarUpdate
-	self.Castbar.PostCastStart = Module.PostCastStart
-	self.Castbar.PostCastUpdate = Module.PostCastUpdate
-	self.Castbar.PostCastStop = Module.PostCastStop
-	self.Castbar.PostCastFail = Module.PostCastFailed
-	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+	Module:CreateCastBar(self)
 
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)

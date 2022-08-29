@@ -175,67 +175,7 @@ function Module:CreateTarget()
 		self.Buffs = Buffs
 	end
 
-	if C["Unitframe"].TargetCastbar then
-		local Castbar = CreateFrame("StatusBar", "TargetCastbar", self)
-		Castbar:SetPoint("BOTTOM", UIParent, "BOTTOM", C["Unitframe"].TargetCastbarIcon and 18 or 0, 342)
-		Castbar:SetStatusBarTexture(UnitframeTexture)
-		Castbar:SetSize(C["Unitframe"].TargetCastbarWidth, C["Unitframe"].TargetCastbarHeight)
-		Castbar:SetClampedToScreen(true)
-		Castbar:CreateBorder()
-
-		Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY")
-		Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
-		Castbar.Spark:SetSize(64, Castbar:GetHeight())
-		Castbar.Spark:SetBlendMode("ADD")
-
-		self.ShieldOverlay = CreateFrame("Frame", nil, Castbar) -- We will use this to overlay onto our special borders.
-		self.ShieldOverlay:SetAllPoints()
-		self.ShieldOverlay:SetFrameLevel(5)
-
-		Castbar.Shield = self.ShieldOverlay:CreateTexture(nil, "OVERLAY")
-		Castbar.Shield:SetAtlas("Soulbinds_Portrait_Lock")
-		Castbar.Shield:SetSize(C["Unitframe"].TargetCastbarHeight + 10, C["Unitframe"].TargetCastbarHeight + 10)
-		Castbar.Shield:SetPoint("CENTER", 0, -14)
-
-		Castbar.Time = Castbar:CreateFontString(nil, "OVERLAY")
-		Castbar.Time:SetFontObject(K.UIFont)
-		Castbar.Time:SetPoint("RIGHT", -3.5, 0)
-		Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
-		Castbar.Time:SetJustifyH("RIGHT")
-
-		Castbar.decimal = "%.2f"
-
-		Castbar.OnUpdate = Module.OnCastbarUpdate
-		Castbar.PostCastStart = Module.PostCastStart
-		Castbar.PostCastStop = Module.PostCastStop
-		Castbar.PostCastFail = Module.PostCastFailed
-		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-
-		Castbar.Text = Castbar:CreateFontString(nil, "OVERLAY")
-		Castbar.Text:SetFontObject(K.UIFont)
-		Castbar.Text:SetPoint("LEFT", 3.5, 0)
-		Castbar.Text:SetPoint("RIGHT", Castbar.Time, "LEFT", -3.5, 0)
-		Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
-		Castbar.Text:SetJustifyH("LEFT")
-		Castbar.Text:SetWordWrap(false)
-
-		if C["Unitframe"].TargetCastbarIcon then
-			Castbar.Button = CreateFrame("Frame", nil, Castbar)
-			Castbar.Button:SetSize(20, 20)
-			Castbar.Button:CreateBorder()
-
-			Castbar.Icon = Castbar.Button:CreateTexture(nil, "ARTWORK")
-			Castbar.Icon:SetSize(C["Unitframe"].TargetCastbarHeight, C["Unitframe"].TargetCastbarHeight)
-			Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -6, 0)
-
-			Castbar.Button:SetAllPoints(Castbar.Icon)
-		end
-
-		self.Castbar = Castbar
-
-		K.Mover(Castbar, "TargetCastBar", "TargetCastBar", { "BOTTOM", UIParent, "BOTTOM", C["Unitframe"].TargetCastbarIcon and 18 or 0, 342 })
-	end
+	Module:CreateCastBar(self)
 
 	if C["Unitframe"].ShowHealPrediction then
 		local frame = CreateFrame("Frame", nil, self)
