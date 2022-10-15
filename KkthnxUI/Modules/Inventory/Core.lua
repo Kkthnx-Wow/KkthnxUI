@@ -1084,10 +1084,10 @@ function Module:OnEnable()
 		parentFrame:SetAllPoints()
 		parentFrame:SetFrameLevel(5)
 
-		-- self.Favourite = parentFrame:CreateTexture(nil, "OVERLAY")
-		-- self.Favourite:SetAtlas("collections-icon-favorites")
-		-- self.Favourite:SetSize(28, 28)
-		-- self.Favourite:SetPoint("TOPRIGHT", 4, 3)
+		self.Favourite = parentFrame:CreateTexture(nil, "OVERLAY")
+		self.Favourite:SetAtlas("collections-icon-favorites")
+		self.Favourite:SetSize(28, 28)
+		self.Favourite:SetPoint("TOPRIGHT", 4, 3)
 
 		self.QuestTag = parentFrame:CreateTexture(nil, "OVERLAY")
 		self.QuestTag:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")
@@ -1136,17 +1136,18 @@ function Module:OnEnable()
 	end
 
 	local bagTypeColor = {
-		[0] = { 0, 0, 0, 0.25 }, -- container
-		[1] = false, -- Ammunition bag
-		[2] = { 0, 0.5, 0, 0.25 }, -- Herbal bag
-		[3] = { 0.8, 0, 0.8, 0.25 }, -- Enchant bag
-		[4] = { 1, 0.8, 0, 0.25 }, -- Engineering bag
-		[5] = { 0, 0.8, 0.8, 0.25 }, -- Gem bag
-		[6] = { 0.5, 0.4, 0, 0.25 }, -- Ore bag
-		[7] = { 0.8, 0.5, 0.5, 0.25 }, -- Leather bag
-		[8] = { 0.8, 0.8, 0.8, 0.25 }, -- Inscription bag
-		[9] = { 0.4, 0.6, 1, 0.25 }, -- Toolbox
-		[10] = { 0.8, 0, 0, 0.25 }, -- Cooking bag
+		[0] = { 1, 1, 1, 0.3 }, -- 容器
+		[1] = false, -- 灵魂袋
+		[2] = { 0, 0.5, 0, 0.25 }, -- 草药袋
+		[3] = { 0.8, 0, 0.8, 0.25 }, -- 附魔袋
+		[4] = { 1, 0.8, 0, 0.25 }, -- 工程袋
+		[5] = { 0, 0.8, 0.8, 0.25 }, -- 宝石袋
+		[6] = { 0.5, 0.4, 0, 0.25 }, -- 矿石袋
+		[7] = { 0.8, 0.5, 0.5, 0.25 }, -- 制皮包
+		[8] = { 0.8, 0.8, 0.8, 0.25 }, -- 铭文包
+		[9] = { 0.4, 0.6, 1, 0.25 }, -- 工具箱
+		[10] = { 0.8, 0, 0, 0.25 }, -- 烹饪包
+		[11] = { 0.2, 0.8, 0.2, 0.25 }, -- 材料包
 	}
 
 	local function isItemNeedsLevel(item)
@@ -1198,7 +1199,7 @@ function Module:OnEnable()
 		end
 	end
 
-	function MyButton:OnUpdate(item)
+	function MyButton:OnUpdateButton(item)
 		if self.JunkIcon then
 			if (MerchantFrame:IsShown() or customJunkEnable) and (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.CustomJunkList[item.id]) and item.hasPrice then
 				self.JunkIcon:Show()
@@ -1231,11 +1232,11 @@ function Module:OnEnable()
 			end
 		end
 
-		-- if KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[item.id] and not C["Inventory"].ItemFilter then
-		-- 	self.Favourite:Show()
-		-- else
-		-- 	self.Favourite:Hide()
-		-- end
+		if KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[item.id] and not C["Inventory"].ItemFilter then
+			self.Favourite:Show()
+		else
+			self.Favourite:Hide()
+		end
 
 		self.iLvl:SetText("")
 		if showItemLevel then
