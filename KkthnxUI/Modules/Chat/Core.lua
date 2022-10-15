@@ -181,7 +181,7 @@ function Module:SkinChat()
 	end
 
 	local name = self:GetName()
-	local font, fontSize, fontStyle = _G[K.UIFont]:GetFont()
+	local font, fontSize, fontStyle = self:GetFont()
 
 	self:SetMaxResize(K.ScreenWidth, K.ScreenHeight)
 	self:SetMinResize(100, 50)
@@ -199,6 +199,7 @@ function Module:SkinChat()
 
 	local eb = _G[name .. "EditBox"]
 	eb:SetAltArrowKeyMode(false)
+	eb:SetClampedToScreen(true)
 	eb:ClearAllPoints()
 	eb:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, 25)
 	eb:SetPoint("TOPRIGHT", self, "TOPRIGHT", 25, 50)
@@ -215,7 +216,7 @@ function Module:SkinChat()
 
 	local tab = _G[name .. "Tab"]
 	tab:SetAlpha(1)
-	tab.Text:SetFont(font, fontSize + 1, fontStyle)
+	tab.Text:SetFont(font, select(2, _G.KkthnxUIFont:GetFont()) + 1, fontStyle)
 	tab:StripTextures(7)
 	hooksecurefunc(tab, "SetAlpha", Module.TabSetAlpha)
 
@@ -532,11 +533,6 @@ function Module:OnEnable()
 	hooksecurefunc("FCFTab_UpdateColors", Module.UpdateTabColors)
 	hooksecurefunc("FloatingChatFrame_OnEvent", Module.UpdateTabEventColors)
 	hooksecurefunc("ChatFrame_MessageEventHandler", Module.PlayWhisperSound)
-
-	-- Font size
-	for i = 1, 15 do
-		CHAT_FONT_HEIGHTS[i] = i + 9
-	end
 
 	-- Default
 	if CHAT_OPTIONS then -- only flash whisper

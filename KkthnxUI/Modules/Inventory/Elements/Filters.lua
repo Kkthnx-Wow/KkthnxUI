@@ -79,11 +79,11 @@ end
 
 -- Default filter
 local function isItemInBag(item)
-	return item.bagID >= 0 and item.bagID <= 4
+	return item.bagId >= 0 and item.bagId <= 4
 end
 
 local function isItemInBank(item)
-	return item.bagID == -1 or item.bagID >= 5 and item.bagID <= 11
+	return item.bagId == -1 or item.bagId >= 5 and item.bagId <= 11
 end
 
 local function isItemJunk(item)
@@ -207,7 +207,7 @@ local function isEmptySlot(item)
 		return
 	end
 
-	return Module.initComplete and not item.texture and Module.BagsType[item.bagID] == 0
+	return Module.initComplete and not item.texture and Module.BagsType[item.bagId] == 0
 end
 
 local function isTradeGoods(item)
@@ -327,7 +327,7 @@ function Module:GetFilters()
 	end
 
 	filters.onlyReagent = function(item)
-		return item.bagID == -3 and not isEmptySlot(item)
+		return item.bagId == -3 and not isEmptySlot(item)
 	end
 
 	filters.bagCollection = function(item)

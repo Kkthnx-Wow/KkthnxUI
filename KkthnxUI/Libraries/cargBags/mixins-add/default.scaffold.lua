@@ -32,11 +32,21 @@ local function ItemButton_Scaffold(self)
 	self:SetSize(37, 37)
 
 	local name = self:GetName()
-	self.Icon = _G[name .. "IconTexture"]
-	self.Count = _G[name .. "Count"]
-	self.Cooldown = _G[name .. "Cooldown"]
-	self.Quest = _G[name .. "IconQuestTexture"]
-	self.Border = _G[name .. "NormalTexture"]
+	if not self.Icon then
+		self.Icon = _G[name.."IconTexture"]
+	end
+	if not self.Count then
+		self.Count = _G[name.."Count"]
+	end
+	if not self.Cooldown then
+		self.Cooldown = _G[name.."Cooldown"]
+	end
+	if not self.Quest then
+		self.Quest = _G[name.."IconQuestTexture"]
+	end
+	if not self.Border then
+		self.Border = _G[name.."NormalTexture"]
+	end
 end
 
 --[[!
@@ -47,7 +57,7 @@ end
 local function ItemButton_Update(self, item)
 	self.Icon:SetTexture(item.texture or self.bgTex)
 
-	if item.count and item.count > 1 then
+	if(item.count and item.count > 1) then
 		self.Count:SetText(item.count > 1e4 and "*" or item.count)
 		self.Count:Show()
 	else
@@ -55,13 +65,11 @@ local function ItemButton_Update(self, item)
 	end
 	self.count = item.count -- Thank you Blizz for not using local variables >.> (BankFrame.lua @ 234 )
 
-	self:UpdateCooldown(item)
-	self:UpdateLock(item)
-	self:UpdateQuest(item)
+	self:ButtonUpdateCooldown(item)
+	self:ButtonUpdateLock(item)
+	self:ButtonUpdateQuest(item)
 
-	if self.OnUpdate then
-		self:OnUpdate(item)
-	end
+	if(self.OnUpdateButton) then self:OnUpdateButton(item) end
 end
 
 --[[!
@@ -70,16 +78,14 @@ end
 	@callback OnUpdateCooldown(item)
 ]]
 local function ItemButton_UpdateCooldown(self, item)
-	if item.cdEnable == 1 and item.cdStart and item.cdStart > 0 then
+	if(item.cdEnable == 1 and item.cdStart and item.cdStart > 0) then
 		self.Cooldown:SetCooldown(item.cdStart, item.cdFinish)
 		self.Cooldown:Show()
 	else
 		self.Cooldown:Hide()
 	end
 
-	if self.OnUpdateCooldown then
-		self:OnUpdateCooldown(item)
-	end
+	if(self.OnUpdateCooldown) then self:OnUpdateCooldown(item) end
 end
 
 --[[!
@@ -90,9 +96,7 @@ end
 local function ItemButton_UpdateLock(self, item)
 	self.Icon:SetDesaturated(item.locked)
 
-	if self.OnUpdateLock then
-		self:OnUpdateLock(item)
-	end
+	if(self.OnUpdateLock) then self:OnUpdateLock(item) end
 end
 
 --[[!
@@ -101,38 +105,32 @@ end
 	@callback OnUpdateQuest(item)
 ]]
 local function ItemButton_UpdateQuest(self, item)
-	if self.OnUpdateQuest then
-		self:OnUpdateQuest(item)
-	end
+	if(self.OnUpdateQuest) then self:OnUpdateQuest(item) end
 end
 
 local function ItemButton_OnEnter(self)
-	if self.ItemOnEnter then
-		self:ItemOnEnter()
-	end
+	if(self.ItemOnEnter) then self:ItemOnEnter() end
 end
 
 local function ItemButton_OnLeave(self)
-	if self.ItemOnLeave then
-		self:ItemOnLeave()
-	end
+	if(self.ItemOnLeave) then self:ItemOnLeave() end
 end
 
 cargBags:RegisterScaffold("Default", function(self)
 	self.glowTex = "Interface\\Buttons\\UI-ActionButton-Border" --! @property glowTex <string> The textures used for the glow
 	self.glowAlpha = 0.8 --! @property glowAlpha <number> The alpha of the glow texture
 	self.glowBlend = "ADD" --! @property glowBlend <string> The blendMode of the glow texture
-	self.glowCoords = { 14 / 64, 50 / 64, 14 / 64, 50 / 64 } --! @property glowCoords <table> Indexed table of texCoords for the glow texture
+	self.glowCoords = { 14/64, 50/64, 14/64, 50/64 } --! @property glowCoords <table> Indexed table of texCoords for the glow texture
 	self.bgTex = nil --! @property bgTex <string> Texture used as a background if no item is in the slot
 
-	-- self.CreateFrame = ItemButton_CreateFrame -- Where does this come from???
+	self.CreateFrame = ItemButton_CreateFrame
 	self.Scaffold = ItemButton_Scaffold
 
-	self.Update = ItemButton_Update
-	self.UpdateCooldown = ItemButton_UpdateCooldown
-	self.UpdateLock = ItemButton_UpdateLock
-	self.UpdateQuest = ItemButton_UpdateQuest
+	self.ButtonUpdate = ItemButton_Update
+	self.ButtonUpdateCooldown = ItemButton_UpdateCooldown
+	self.ButtonUpdateLock = ItemButton_UpdateLock
+	self.ButtonUpdateQuest = ItemButton_UpdateQuest
 
-	self.OnEnter = ItemButton_OnEnter
-	self.OnLeave = ItemButton_OnLeave
+	self.ButtonOnEnter = ItemButton_OnEnter
+	self.ButtonOnLeave = ItemButton_OnLeave
 end)

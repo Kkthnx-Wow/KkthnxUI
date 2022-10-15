@@ -633,11 +633,11 @@ local function splitOnClick(self)
 		return
 	end
 
-	PickupContainerItem(self.bagID, self.slotID)
+	PickupContainerItem(self.bagId, self.slotId)
 
-	local texture, itemCount, locked = GetContainerItemInfo(self.bagID, self.slotID)
+	local texture, itemCount, locked = GetContainerItemInfo(self.bagId, self.slotId)
 	if texture and not locked and itemCount and itemCount > KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount then
-		SplitContainerItem(self.bagID, self.slotID, KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount)
+		SplitContainerItem(self.bagId, self.slotId, KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount)
 
 		local bagID, slotID = Module:GetEmptySlot("Bag")
 		if slotID then
@@ -771,7 +771,7 @@ local function favouriteOnClick(self)
 		return
 	end
 
-	local texture, _, _, quality, _, _, link, _, _, itemID = GetContainerItemInfo(self.bagID, self.slotID)
+	local texture, _, _, quality, _, _, link, _, _, itemID = GetContainerItemInfo(self.bagId, self.slotId)
 	if texture and quality > LE_ITEM_QUALITY_POOR then
 		ClearCursor()
 		Module.selectItemID = itemID
@@ -833,7 +833,7 @@ local function customJunkOnClick(self)
 		return
 	end
 
-	local texture, _, _, _, _, _, _, _, _, itemID = GetContainerItemInfo(self.bagID, self.slotID)
+	local texture, _, _, _, _, _, _, _, _, itemID = GetContainerItemInfo(self.bagId, self.slotId)
 	local price = select(11, GetItemInfo(itemID))
 	if texture and price > 0 then
 		if KkthnxUIDB.CustomJunkList[itemID] then
@@ -897,9 +897,9 @@ local function deleteButtonOnClick(self)
 		return
 	end
 
-	local texture, _, _, quality = GetContainerItemInfo(self.bagID, self.slotID)
+	local texture, _, _, quality = GetContainerItemInfo(self.bagId, self.slotId)
 	if IsControlKeyDown() and IsAltKeyDown() and texture and (quality < LE_ITEM_QUALITY_RARE) then
-		PickupContainerItem(self.bagID, self.slotID)
+		PickupContainerItem(self.bagId, self.slotId)
 		DeleteCursorItem()
 	end
 end
@@ -1089,10 +1089,10 @@ function Module:OnEnable()
 		self.Favourite:SetSize(14, 14)
 		self.Favourite:SetPoint("TOPRIGHT", 0, 0)
 
-		self.Quest = parentFrame:CreateTexture(nil, "OVERLAY")
-		self.Quest:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")
-		self.Quest:SetSize(26, 26)
-		self.Quest:SetPoint("LEFT", 0, 1)
+		self.QuestTag = parentFrame:CreateTexture(nil, "OVERLAY")
+		self.QuestTag:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")
+		self.QuestTag:SetSize(26, 26)
+		self.QuestTag:SetPoint("LEFT", 0, 1)
 
 		self.iLvl = K.CreateFontString(self, 12, "", "OUTLINE", false, "BOTTOMLEFT", 1, 0)
 		self.iLvl:SetFontObject(K.UIFontOutline)
@@ -1131,7 +1131,7 @@ function Module:OnEnable()
 		if self.glowFrame.Animation and self.glowFrame.Animation:IsPlaying() then
 			self.glowFrame.Animation:Stop()
 			self.glowFrame:Hide()
-			C_NewItems_RemoveNewItem(self.bagID, self.slotID)
+			C_NewItems_RemoveNewItem(self.bagId, self.slotId)
 		end
 	end
 
@@ -1172,7 +1172,7 @@ function Module:OnEnable()
 			return
 		end
 
-		local text, unmodifiedText = CanIMogIt:GetTooltipText(nil, item.bagID, item.slotID)
+		local text, unmodifiedText = CanIMogIt:GetTooltipText(nil, item.bagId, item.slotId)
 		if text and text ~= "" then
 			local icon = CanIMogIt.tooltipOverlayIcons[unmodifiedText]
 			self.canIMogIt:SetTexture(icon)
@@ -1194,7 +1194,7 @@ function Module:OnEnable()
 		if self.UpgradeIcon then
 			self.UpgradeIcon:ClearAllPoints()
 			self.UpgradeIcon:SetPoint("TOPRIGHT", 3, 3)
-			self.UpgradeIcon:SetShown(PawnIsContainerItemAnUpgrade(item.bagID, item.slotID))
+			self.UpgradeIcon:SetShown(PawnIsContainerItemAnUpgrade(item.bagId, item.slotId))
 		end
 	end
 
@@ -1241,7 +1241,7 @@ function Module:OnEnable()
 		if showItemLevel then
 			local level = item.level -- ilvl for keystone and battlepet
 			if not level and isItemNeedsLevel(item) then
-				local ilvl = K.GetItemLevel(item.link, item.bagID ~= -1 and item.bagID, item.slotID) -- SetBagItem return nil for default bank slots
+				local ilvl = K.GetItemLevel(item.link, item.bagId ~= -1 and item.bagId, item.slotId) -- SetBagItem return nil for default bank slots
 				if ilvl and ilvl > 1 then
 					level = ilvl
 				end
@@ -1265,7 +1265,7 @@ function Module:OnEnable()
 		end
 
 		if self.glowFrame then
-			if C_NewItems_IsNewItem(item.bagID, item.slotID) then
+			if C_NewItems_IsNewItem(item.bagId, item.slotId) then
 				local color = K.QualityColors[item.quality]
 				if item.questID or item.isQuestItem then
 					self.glowFrame:SetBackdropBorderColor(1, 0.82, 0.2)
@@ -1288,7 +1288,7 @@ function Module:OnEnable()
 		end
 
 		if C["Inventory"].SpecialBagsColor then
-			local bagType = Module.BagsType[item.bagID]
+			local bagType = Module.BagsType[item.bagId]
 			local color = bagTypeColor[bagType] or bagTypeColor[0]
 			self:SetBackdropColor(unpack(color))
 		else
@@ -1309,9 +1309,9 @@ function Module:OnEnable()
 
 	function MyButton:OnUpdateQuest(item)
 		if item.questID and not item.questActive then
-			self.Quest:Show()
+			self.QuestTag:Show()
 		else
-			self.Quest:Hide()
+			self.QuestTag:Hide()
 		end
 
 		if item.questID or item.isQuestItem then
@@ -1507,7 +1507,7 @@ function Module:OnEnable()
 		self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	end
 
-	function BagButton:OnUpdate()
+	function BagButton:OnUpdateButton()
 		local id = GetInventoryItemID("player", (self.GetInventorySlot and self:GetInventorySlot()) or self.invID)
 		if not id then
 			return
@@ -1530,9 +1530,9 @@ function Module:OnEnable()
 		end
 
 		if classID == LE_ITEM_CLASS_CONTAINER then
-			Module.BagsType[self.bagID] = subClassID or 0
+			Module.BagsType[self.bagId] = subClassID or 0
 		else
-			Module.BagsType[self.bagID] = 0
+			Module.BagsType[self.bagId] = 0
 		end
 	end
 

@@ -96,7 +96,7 @@ function Module:CreateColorPicker()
 	colorBar:SetPoint("BOTTOM", 3, 35)
 
 	local count = 0
-	for name, class in pairs(K.ClassList) do
+	for class, name in pairs(_G.LOCALIZED_CLASS_NAMES_MALE) do
 		local value = K.ClassColors[class]
 		if value then
 			local bu = CreateFrame("Button", nil, colorBar)

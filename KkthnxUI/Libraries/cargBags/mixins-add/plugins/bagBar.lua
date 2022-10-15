@@ -36,6 +36,9 @@ local addon, ns = ...
 local cargBags = ns.cargBags
 local Implementation = cargBags.classes.Implementation
 
+local ContainerIDToInventoryID = ContainerIDToInventoryID
+local maxBagSlots = NUM_BAG_SLOTS
+
 function Implementation:GetBagButtonClass()
 	return self:GetClass("BagButton", true, "BagButton")
 end
@@ -46,22 +49,23 @@ local BagButton = cargBags:NewClass("BagButton", nil, "ItemButton")
 BagButton.bgTex = [[Interface\Paperdoll\UI-PaperDoll-Slot-Bag]]
 BagButton.itemFadeAlpha = 0.1
 
-local function hackBagID(button)
-	return button.bagID
+local function UpdateTooltip(self, id)
+	GameTooltip:SetOwner(self.bar, "ANCHOR_RIGHT")
+	GameTooltip:SetInventoryItem("player", id)
+	GameTooltip:Show()
 end
 
 local buttonNum = 0
 function BagButton:Create(bagID)
 	buttonNum = buttonNum + 1
 	local name = addon .. "BagButton" .. buttonNum
-	local isBankBag = (bagID >= 5 and bagID <= 11)
+	local isBankBag = bagID > 4 and bagID < 12
 	local button = setmetatable(CreateFrame("ItemButton", name, nil, "BackdropTemplate"), self.__index)
 
-	local invID = (isBankBag and bagID - 4) or ContainerIDToInventoryID(bagID)
+	local invID = (isBankBag and bagID - maxBagSlots) or ContainerIDToInventoryID(bagID)
 	button.invID = invID
 	button:SetID(invID)
-	button.bagID = bagID
-	button.GetBagID = hackBagID
+	button.bagId = bagID
 	button.isBankBag = isBankBag
 	if isBankBag then
 		button.isBag = 1
@@ -69,7 +73,7 @@ function BagButton:Create(bagID)
 	end
 
 	button:RegisterForDrag("LeftButton", "RightButton")
-	button:RegisterForClicks("anyUp")
+	button:RegisterForClicks("AnyUp")
 	button:SetSize(37, 37)
 	button.Icon = _G[name .. "IconTexture"]
 
@@ -82,13 +86,13 @@ function BagButton:Create(bagID)
 	return button
 end
 
-function BagButton:Update()
+function BagButton:UpdateButton()
 	local icon = GetInventoryItemTexture("player", self.GetInventorySlot and self:GetInventorySlot() or self.invID)
 	self.Icon:SetTexture(icon or self.bgTex)
 	self.Icon:SetDesaturated(IsInventoryItemLocked(self.invID))
 
-	if self.bagID > NUM_BAG_SLOTS then
-		if self.bagID - NUM_BAG_SLOTS <= GetNumBankSlots() then
+	if self.bagId > maxBagSlots then
+		if self.bagId - maxBagSlots <= GetNumBankSlots() then
 			self.Icon:SetVertexColor(1, 1, 1)
 			self.notBought = nil
 		else
@@ -97,13 +101,13 @@ function BagButton:Update()
 		end
 	end
 
-	if self.OnUpdate then
-		self:OnUpdate()
+	if self.OnUpdateButton then
+		self:OnUpdateButton()
 	end
 end
 
 local function highlight(button, func, bagID)
-	func(button, not bagID or button.bagID == bagID)
+	func(button, not bagID or button.bagId == bagID)
 end
 
 function BagButton:OnEnter()
@@ -112,19 +116,17 @@ function BagButton:OnEnter()
 	if hlFunction then
 		if self.bar.isGlobal then
 			for _, container in pairs(self.implementation.contByID) do
-				container:ApplyToButtons(highlight, hlFunction, self.bagID)
+				container:ApplyToButtons(highlight, hlFunction, self.bagId)
 			end
 		else
-			self.bar.container:ApplyToButtons(highlight, hlFunction, self.bagID)
+			self.bar.container:ApplyToButtons(highlight, hlFunction, self.bagId)
 		end
 	end
 
 	if self.isBankBag then
-		if GameTooltip:SetInventoryItem("player", self:GetInventorySlot()) then
-			BankFrameItemButton_OnEnter(self)
-		end
+		UpdateTooltip(self, self:GetInventorySlot())
 	else
-		BagSlotButton_OnEnter(self)
+		UpdateTooltip(self, self:GetID())
 	end
 end
 
@@ -166,9 +168,9 @@ function BagButton:OnClick(btn)
 	local container = self.bar.container
 	if container and container.SetFilter then
 		if not self.filter then
-			local bagID = self.bagID
+			local bagID = self.bagId
 			self.filter = function(i)
-				return i.bagID ~= bagID
+				return i.bagId ~= bagID
 			end
 		end
 		self.hidden = not self.hidden
@@ -176,11 +178,11 @@ function BagButton:OnClick(btn)
 		if self.bar.isGlobal then
 			for _, container in pairs(container.implementation.contByID) do
 				container:SetFilter(self.filter, self.hidden)
-				container.implementation:OnEvent("BAG_UPDATE", self.bagID)
+				container.implementation:OnEvent("BAG_UPDATE", self.bagId)
 			end
 		else
 			container:SetFilter(self.filter, self.hidden)
-			container.implementation:OnEvent("BAG_UPDATE", self.bagID)
+			container.implementation:OnEvent("BAG_UPDATE", self.bagId)
 		end
 	end
 end
@@ -193,13 +195,13 @@ end
 -- Updating the icons
 local function updater(self)
 	for _, button in pairs(self.buttons) do
-		button:Update()
+		button:UpdateButton()
 	end
 end
 
 local function onLock(self, _, bagID, slotID)
 	if bagID == -1 and slotID > NUM_BANKGENERIC_SLOTS then
-		bagID, slotID = ContainerIDToInventoryID(slotID - NUM_BANKGENERIC_SLOTS + NUM_BAG_SLOTS)
+		bagID, slotID = ContainerIDToInventoryID(slotID - NUM_BANKGENERIC_SLOTS + maxBagSlots)
 	end
 
 	if slotID then
@@ -208,7 +210,7 @@ local function onLock(self, _, bagID, slotID)
 
 	for _, button in pairs(self.buttons) do
 		if button.invID == bagID then
-			return button:Update()
+			return button:UpdateButton()
 		end
 	end
 end
