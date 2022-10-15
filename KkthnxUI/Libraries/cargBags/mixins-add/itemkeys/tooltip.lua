@@ -40,8 +40,7 @@ cargBags.itemKeys["bindOn"] = function(i)
 		return
 	end
 
-	local tip = KkthnxUI[1].ScanTooltip
-	print(tip)
+	local tip = KkthnxUI[1].ScanTooltip -- K.ScanTooltip, maybe failsafe this?
 	if not tip then
 		return
 	end
@@ -50,7 +49,7 @@ cargBags.itemKeys["bindOn"] = function(i)
 	tip:SetBagItem(i.bagId, i.slotId)
 
 	for j = 2, 5 do
-		local line = _G["NDui_ScanTooltipTextLeft" .. j]
+		local line = _G["KKUI_ScanTooltipTextLeft" .. j]
 		local lineText = line and line:GetText()
 		if not lineText then
 			break
@@ -59,6 +58,7 @@ cargBags.itemKeys["bindOn"] = function(i)
 		local bindOn = bindTypeToString[lineText]
 		if bindOn then
 			i.bindOn = bindOn
+
 			return bindOn
 		end
 	end

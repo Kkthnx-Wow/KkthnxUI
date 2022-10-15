@@ -61,8 +61,8 @@ function BagButton:Create(bagID)
 	local name = addon .. "BagButton" .. buttonNum
 	local isBankBag = bagID > 4 and bagID < 12
 	local button = setmetatable(CreateFrame("ItemButton", name, nil, "BackdropTemplate"), self.__index)
-
 	local invID = (isBankBag and bagID - maxBagSlots) or ContainerIDToInventoryID(bagID)
+
 	button.invID = invID
 	button:SetID(invID)
 	button.bagId = bagID
@@ -164,6 +164,7 @@ function BagButton:OnClick(btn)
 	if btn ~= "RightButton" then
 		return
 	end
+
 	-- Somehow we need to disconnect this from the filter-sieve
 	local container = self.bar.container
 	if container and container.SetFilter then
@@ -229,7 +230,6 @@ cargBags:RegisterPlugin("BagBar", function(self, bags)
 
 	local bar = CreateFrame("Frame", nil, self)
 	bar.container = self
-
 	bar.layouts = cargBags.classes.Container.layouts
 	bar.LayoutButtons = cargBags.classes.Container.LayoutButtons
 

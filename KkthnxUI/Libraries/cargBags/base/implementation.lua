@@ -400,12 +400,14 @@ function Implementation:UpdateBag(bagID)
 	else
 		numSlots = GetContainerNumSlots(bagID)
 	end
+
 	local lastSlots = self.bagSizes[bagID] or 0
 	self.bagSizes[bagID] = numSlots
 
 	for slotID = 1, numSlots do
 		self:UpdateSlot(bagID, slotID)
 	end
+
 	for slotID = numSlots + 1, lastSlots do
 		local button = self:GetButton(bagID, slotID)
 		if button then
@@ -513,7 +515,6 @@ end
 ]]
 function Implementation:PLAYERREAGENTBANKSLOTS_CHANGED(event, slotID)
 	local bagID = -3
-
 	self:BAG_UPDATE(event, bagID, slotID)
 end
 

@@ -40,7 +40,6 @@ function Container:LayoutButtons(layout, ...)
 	return self.layouts[layout](self, ...)
 end
 
-
 --[[################################
 	Plugins
 		Additional widgets for a bag
@@ -49,11 +48,12 @@ end
 cargBags.plugins = {}
 
 function Implementation:SpawnPlugin(name, ...)
-	if(cargBags.plugins[name]) then
+	if cargBags.plugins[name] then
 		local plugin = cargBags.plugins[name](self, ...)
-		if(plugin) then
+		if plugin then
 			plugin.parent = self
 		end
+
 		return plugin
 	end
 end
@@ -62,7 +62,6 @@ Container.SpawnPlugin = Implementation.SpawnPlugin
 function cargBags:RegisterPlugin(name, func)
 	cargBags.plugins[name] = func
 end
-
 
 --[[################################
 	Sorts
