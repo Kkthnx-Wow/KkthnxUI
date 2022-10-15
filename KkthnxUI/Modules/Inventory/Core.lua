@@ -772,7 +772,7 @@ local function favouriteOnClick(self)
 	end
 
 	local texture, _, _, quality, _, _, link, _, _, itemID = GetContainerItemInfo(self.bagId, self.slotId)
-	if texture and quality > LE_ITEM_QUALITY_POOR then
+	if texture and quality > Enum.ItemQuality.Poor then
 		ClearCursor()
 		Module.selectItemID = itemID
 		Module.CustomMenu[1].text = link
@@ -1084,10 +1084,10 @@ function Module:OnEnable()
 		parentFrame:SetAllPoints()
 		parentFrame:SetFrameLevel(5)
 
-		self.Favourite = parentFrame:CreateTexture(nil, "OVERLAY")
-		self.Favourite:SetAtlas("auctionhouse-icon-favorite")
-		self.Favourite:SetSize(14, 14)
-		self.Favourite:SetPoint("TOPRIGHT", 0, 0)
+		-- self.Favourite = parentFrame:CreateTexture(nil, "OVERLAY")
+		-- self.Favourite:SetAtlas("collections-icon-favorites")
+		-- self.Favourite:SetSize(28, 28)
+		-- self.Favourite:SetPoint("TOPRIGHT", 4, 3)
 
 		self.QuestTag = parentFrame:CreateTexture(nil, "OVERLAY")
 		self.QuestTag:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\QuestIcon.tga")
@@ -1231,11 +1231,11 @@ function Module:OnEnable()
 			end
 		end
 
-		if KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[item.id] and not C["Inventory"].ItemFilter then
-			self.Favourite:Show()
-		else
-			self.Favourite:Hide()
-		end
+		-- if KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[item.id] and not C["Inventory"].ItemFilter then
+		-- 	self.Favourite:Show()
+		-- else
+		-- 	self.Favourite:Hide()
+		-- end
 
 		self.iLvl:SetText("")
 		if showItemLevel then
