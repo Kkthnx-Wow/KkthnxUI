@@ -163,7 +163,7 @@ function RebuildCharList()
 					if not menuList[index] then
 						menuList[index] = {}
 					end
-					menuList[index].text = K.RGBToHex(K.ColorClass(value[2])) .. Ambiguate(name .. "-" .. realm, "none")
+					menuList[index].text = K.RGBToHex(K.ColorClass(value[2])) .. Ambiguate(name .. " - " .. realm, "none")
 					menuList[index].notCheckable = true
 					menuList[index].arg1 = realm
 					menuList[index].arg2 = name
@@ -193,12 +193,12 @@ local function OnEnter(self)
 	GameTooltip:AddLine(" ")
 
 	local totalGold = 0
-	GameTooltip:AddLine(L["RealmCharacter"], 0.5, 0.7, 1)
+	GameTooltip:AddLine(CHARACTER_BUTTON .. ":", 0.5, 0.7, 1)
 	for _, realm in pairs(crossRealms) do
 		local thisRealmList = KkthnxUIDB.Gold[realm]
 		if thisRealmList then
 			for k, v in pairs(thisRealmList) do
-				local name = Ambiguate(k .. "-" .. realm, "none")
+				local name = Ambiguate(k .. " - " .. realm, "none")
 				local gold, class = unpack(v)
 				local r, g, b = K.ColorClass(class)
 				GameTooltip:AddDoubleLine(getClassIcon(class) .. name, K.FormatMoney(gold), r, g, b, 1, 1, 1)
