@@ -1,4 +1,5 @@
 local K, C = unpack(KkthnxUI)
+local Module = {}
 
 local _G = _G
 local next = _G.next
@@ -6,7 +7,9 @@ local type = _G.type
 local unpack = _G.unpack
 
 local objectToWidget = {}
-local border_proto = {}
+local borderSizeChanged
+local borderSize
+
 local sections = {
 	"TOPLEFT",
 	"TOPRIGHT",
@@ -20,24 +23,23 @@ local sections = {
 
 local function onSizeChanged(self, w, h)
 	local border = objectToWidget[self]
-	local updateSize
 
 	if C["General"].BorderStyle.Value == "KkthnxUI" then
-		updateSize = 12
+		borderSizeChanged = 12
 	else
-		updateSize = 10
+		borderSizeChanged = 10
 	end
 
-	local tile = (w + 2 * border.__offset) / updateSize
+	local tile = (w + 2 * border.__offset) / borderSizeChanged
 	border.TOP:SetTexCoord(0.25, tile, 0.375, tile, 0.25, 0, 0.375, 0)
 	border.BOTTOM:SetTexCoord(0.375, tile, 0.5, tile, 0.375, 0, 0.5, 0)
 
-	tile = (h + 2 * border.__offset) / updateSize
+	tile = (h + 2 * border.__offset) / borderSizeChanged
 	border.LEFT:SetTexCoord(0, 0.125, 0, tile)
 	border.RIGHT:SetTexCoord(0.125, 0.25, 0, tile)
 end
 
-function border_proto:SetOffset(offset)
+function Module:SetOffset(offset)
 	self.__offset = offset
 	self.TOPLEFT:SetPoint("BOTTOMRIGHT", self.__parent, "TOPLEFT", -offset, offset)
 	self.TOPRIGHT:SetPoint("BOTTOMLEFT", self.__parent, "TOPRIGHT", offset, offset)
@@ -45,7 +47,7 @@ function border_proto:SetOffset(offset)
 	self.BOTTOMRIGHT:SetPoint("TOPLEFT", self.__parent, "BOTTOMRIGHT", offset, -offset)
 end
 
-function border_proto:SetTexture(texture)
+function Module:SetTexture(texture)
 	if type(texture) == "table" then
 		for _, v in next, sections do
 			self[v]:SetColorTexture(unpack(texture))
@@ -61,7 +63,7 @@ function border_proto:SetTexture(texture)
 	end
 end
 
-function border_proto:SetSize(size)
+function Module:SetSize(size)
 	self.__size = size
 	self.TOPLEFT:SetSize(size, size)
 	self.TOPRIGHT:SetSize(size, size)
@@ -75,49 +77,49 @@ function border_proto:SetSize(size)
 	onSizeChanged(self.__parent, self.__parent:GetWidth(), self.__parent:GetHeight())
 end
 
-function border_proto:Hide()
+function Module:Hide()
 	for _, v in next, sections do
 		self[v]:Hide()
 	end
 end
 
-function border_proto:Show()
+function Module:Show()
 	for _, v in next, sections do
 		self[v]:Show()
 	end
 end
 
-function border_proto:SetShown(isShown)
+function Module:SetShown(isShown)
 	for _, v in next, sections do
 		self[v]:SetShown(isShown)
 	end
 end
 
-function border_proto:GetVertexColor()
+function Module:GetVertexColor()
 	return self.TOPLEFT:GetVertexColor()
 end
 
-function border_proto:SetVertexColor(r, g, b, a)
+function Module:SetVertexColor(r, g, b, a)
 	for _, v in next, sections do
 		self[v]:SetVertexColor(r, g, b, a)
 	end
 end
 
-function border_proto:SetAlpha(a)
+function Module:SetAlpha(a)
 	for _, v in next, sections do
 		self[v]:SetAlpha(a)
 	end
 end
 
-function border_proto:IsObjectType(t)
+function Module:IsObjectType(t)
 	return t == "Border"
 end
 
-function K.CreateBorder(parent, drawLayer, drawSubLevel)
-	local border = Mixin({ __parent = parent }, border_proto)
+function K:CreateBorder(drawLayer, drawSubLevel)
+	local border = Mixin({ __parent = self }, Module)
 
 	for _, v in next, sections do
-		border[v] = parent:CreateTexture(nil, drawLayer or "OVERLAY", nil, drawSubLevel or 1)
+		border[v] = self:CreateTexture(nil, drawLayer or "OVERLAY", nil, drawSubLevel or 1)
 	end
 
 	border.TOPLEFT:SetTexCoord(0.5, 0.625, 0, 1)
@@ -137,18 +139,17 @@ function K.CreateBorder(parent, drawLayer, drawSubLevel)
 	border.RIGHT:SetPoint("TOPRIGHT", border.TOPRIGHT, "BOTTOMRIGHT", 0, 0)
 	border.RIGHT:SetPoint("BOTTOMRIGHT", border.BOTTOMRIGHT, "TOPRIGHT", 0, 0)
 
-	parent:HookScript("OnSizeChanged", onSizeChanged)
-	objectToWidget[parent] = border
+	self:HookScript("OnSizeChanged", onSizeChanged)
+	objectToWidget[self] = border
 
-	local CreateBorderSize
 	if C["General"].BorderStyle.Value == "KkthnxUI" then
-		CreateBorderSize = 12
+		borderSize = 12
 	else
-		CreateBorderSize = 10
+		borderSize = 10
 	end
 
 	border:SetOffset(-4)
-	border:SetSize(CreateBorderSize)
+	border:SetSize(borderSize)
 
 	return border
 end

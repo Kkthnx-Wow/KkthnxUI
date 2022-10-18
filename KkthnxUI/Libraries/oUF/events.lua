@@ -144,8 +144,7 @@ function frame_metatable.__index:RegisterEvent(event, func, unitless)
 
 			-- UpdateUnits will take care of unit event registration for header
 			-- units in case we don't have a valid unit yet
-			local unit1 = self.unit
-			local unit2
+			local unit1, unit2 = self.unit
 			if unit1 and validateUnit(unit1) then
 				if secondaryUnits[event] then
 					unit2 = secondaryUnits[event][unit1]

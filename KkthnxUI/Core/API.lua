@@ -71,8 +71,8 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	-- Background
 	local BackgroundTexture = bgTexture or C["Media"].Textures.BlankTexture
 	local BackgroundSubLevel = bgSubLevel or "BACKGROUND"
-	local BackgroundLayer = bgLayer or -2
-	local BackgroundPoint = bgPoint or 0
+	local BackgroundLayer = bgLayer or -1
+	local BackgroundPoint = bgPoint or 1
 	local BackgroundRed = bgRed or C["Media"].Backdrops.ColorBackdrop[1]
 	local BackgroundGreen = bgGreen or C["Media"].Backdrops.ColorBackdrop[2]
 	local BackgroundBlue = bgBlue or C["Media"].Backdrops.ColorBackdrop[3]
@@ -80,8 +80,7 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 
 	if bFrame and not bFrame.KKUI_Background then -- Do not keep creating it!
 		-- Create Our Background
-		local kkui_background = bFrame:CreateTexture()
-		kkui_background:SetDrawLayer(BackgroundSubLevel, BackgroundLayer)
+		local kkui_background = bFrame:CreateTexture(nil, BackgroundSubLevel, nil, BackgroundLayer)
 		kkui_background:SetTexture(BackgroundTexture)
 		kkui_background:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		kkui_background:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BackgroundPoint, -BackgroundPoint)
@@ -90,6 +89,23 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 
 		bFrame.KKUI_Background = true
 		bFrame.KKUI_Background = kkui_background
+	end
+
+	-- Background texture
+	if bFrame and not bFrame.KKUI_BGTex then -- Do not keep creating it!
+		-- if not C["Skins"]BackgroundLinesTexture then
+		-- 	return
+		-- end
+
+		local kkui_bgtex = bFrame:CreateTexture(nil, "BACKGROUND", nil, -1)
+		kkui_bgtex:SetAllPoints(bFrame)
+		kkui_bgtex:SetTexture(C["Media"].Textures.BGLineTexture, true, true)
+		kkui_bgtex:SetHorizTile(true)
+		kkui_bgtex:SetVertTile(true)
+		kkui_bgtex:SetBlendMode("ADD")
+
+		bFrame.KKUI_BGTex = true
+		bFrame.KKUI_BGTex = kkui_bgtex
 	end
 end
 

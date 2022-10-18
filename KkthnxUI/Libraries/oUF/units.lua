@@ -10,12 +10,14 @@ local function updateArenaPreparationElements(self, event, elementName, specID)
 		if element.OverrideArenaPreparation then
 			--[[ Override: Health.OverrideArenaPreparation(self, event, specID)
 			Used to completely override the internal update function for arena preparation.
+
 			* self   - the parent object
 			* event  - the event triggering the update (string)
 			* specID - the specialization ID for the opponent (number)
 			--]]
 			--[[ Override: Power.OverrideArenaPreparation(self, event, specID)
 			Used to completely override the internal update function for arena preparation.
+
 			* self   - the parent object
 			* event  - the event triggering the update (string)
 			* specID - the specialization ID for the opponent (number)
@@ -30,12 +32,14 @@ local function updateArenaPreparationElements(self, event, elementName, specID)
 			--[[ Override: Health:UpdateColor(specID)
 			Used to completely override the internal function for updating the widget's colors
 			during arena preparation.
+
 			* self   - the Health element
 			* specID - the specialization ID for the opponent (number)
 			--]]
 			--[[ Override: Power:UpdateColor(specID)
 			Used to completely override the internal function for updating the widget's colors
 			during arena preparation.
+
 			* self   - the Power element
 			* specID - the specialization ID for the opponent (number)
 			--]]
@@ -74,12 +78,14 @@ local function updateArenaPreparationElements(self, event, elementName, specID)
 		if element.PostUpdateArenaPreparation then
 			--[[ Callback: Health:PostUpdateArenaPreparation(event, specID)
 			Called after the element has been updated during arena preparation.
+
 			* self   - the Health element
 			* event  - the event triggering the update (string)
 			* specID - the specialization ID for the opponent (number)
 			--]]
 			--[[ Callback: Power:PostUpdateArenaPreparation(event, specID)
 			Called after the element has been updated during arena preparation.
+
 			* self   - the Power element
 			* event  - the event triggering the update (string)
 			* specID - the specialization ID for the opponent (number)
@@ -104,9 +110,11 @@ local function updateArenaPreparation(self, event)
 			if self.Auras then
 				self.Auras:Show()
 			end
+
 			if self.Buffs then
 				self.Buffs:Show()
 			end
+
 			if self.Debuffs then
 				self.Debuffs:Show()
 			end
@@ -151,27 +159,35 @@ local function updateArenaPreparation(self, event)
 			if self.Auras then
 				self.Auras:Hide()
 			end
+
 			if self.Buffs then
 				self.Buffs:Hide()
 			end
+
 			if self.Debuffs then
 				self.Debuffs:Hide()
 			end
+
 			if self.Castbar then
 				self.Castbar:Hide()
 			end
+
 			if self.CombatIndicator then
 				self.CombatIndicator:Hide()
 			end
+
 			if self.GroupRoleIndicator then
 				self.GroupRoleIndicator:Hide()
 			end
+
 			if self.Portrait then
 				self.Portrait:Hide()
 			end
+
 			if self.PvPIndicator then
 				self.PvPIndicator:Hide()
 			end
+
 			if self.RaidTargetIndicator then
 				self.RaidTargetIndicator:Hide()
 			end
@@ -244,14 +260,12 @@ function oUF:HandleEventlessUnit(object)
 	-- time from the layout code after oUF:Spawn(unit) returns the frame.
 	local timer = object.onUpdateFrequency or 0.5
 
-	-- Remove it, in case it's registered with another timer previously
-	for t, objects in next, eventlessObjects do
-		if t ~= timer then
-			for i, obj in next, objects do
-				if obj == object then
-					table.remove(objects, i)
-					break
-				end
+	-- Remove it, in case it's already registered with any timer
+	for _, objects in next, eventlessObjects do
+		for i, obj in next, objects do
+			if obj == object then
+				table.remove(objects, i)
+				break
 			end
 		end
 	end

@@ -542,7 +542,6 @@ C["Unitframe"] = {
 	["PlayerHealthHeight"] = 32,
 	["PlayerHealthWidth"] = 180,
 	["PlayerPowerHeight"] = 14,
-	["PlayerPowerPrediction"] = true,
 
 	["PvPIndicator"] = true,
 	["ResurrectSound"] = false,

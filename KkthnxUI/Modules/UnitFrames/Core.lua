@@ -13,7 +13,6 @@ local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
 local GetRuneCooldown = _G.GetRuneCooldown
 local IsInInstance = _G.IsInInstance
-local IsReplacingUnit = _G.IsReplacingUnit
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
 local PlaySound = _G.PlaySound
 local SOUNDKIT = _G.SOUNDKIT
@@ -21,15 +20,12 @@ local UIParent = _G.UIParent
 local UnitClass = _G.UnitClass
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
-local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
-local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
 local UnitIsEnemy = _G.UnitIsEnemy
 local UnitIsFriend = _G.UnitIsFriend
 local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitThreatSituation = _G.UnitThreatSituation
-local oUF_RaidDebuffs = _G.oUF_RaidDebuffs
 
 local lastPvPSound = false
 local phaseIconTexCoords = {
@@ -228,20 +224,20 @@ function Module:CreateCastBar(self)
 	Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
 	Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
 	Castbar.Spark:SetBlendMode("ADD")
-	Castbar.Spark:SetAlpha(0.9)
+	Castbar.Spark:SetAlpha(0.8)
 
 	if mystyle == "player" then
 		Castbar:SetFrameLevel(10)
 		Castbar:SetSize(C["Unitframe"].PlayerCastbarWidth, C["Unitframe"].PlayerCastbarHeight)
 		createBarMover(Castbar, "Player Castbar", "PlayerCB", { "BOTTOM", UIParent, "BOTTOM", 0, 200 })
 
-		Castbar.Spark:SetSize(64, Castbar:GetHeight())
+		Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
 	elseif mystyle == "target" then
 		Castbar:SetFrameLevel(10)
 		Castbar:SetSize(C["Unitframe"].TargetCastbarWidth, C["Unitframe"].TargetCastbarHeight)
 		createBarMover(Castbar, "Target Castbar", "TargetCB", { "BOTTOM", UIParent, "BOTTOM", 0, 342 })
 
-		Castbar.Spark:SetSize(64, Castbar:GetHeight())
+		Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
 
 		local shield = Castbar:CreateTexture(nil, "OVERLAY", nil, 4)
 		shield:SetAtlas("Soulbinds_Portrait_Lock")
@@ -261,7 +257,7 @@ function Module:CreateCastBar(self)
 		Castbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -3)
 		Castbar:SetHeight(self:GetHeight())
 
-		Castbar.Spark:SetSize(64, Castbar:GetHeight())
+		Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
 	end
 
 	local timer = K.CreateFontString(Castbar, 12, "", "", false, "RIGHT", -3, 0)
