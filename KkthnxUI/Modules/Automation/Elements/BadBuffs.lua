@@ -15,14 +15,14 @@ local function SetupAutoBadBuffs(event)
 
 	local index = 1
 	while true do
-		local name = UnitBuff("player", index)
+		local name, _, _, _, _, _, _, _, _, spellId = UnitBuff("player", index)
 		if not name then
 			return
 		end
 
 		if C.CheckBadBuffs[name] then
 			CancelSpellByName(name)
-			K.Print(K.SystemColor .. "Removed" .. " " .. GetSpellLink(name) .. "|r")
+			K.Print(K.SystemColor .. "Removed Bad Buff" .. " " .. GetSpellLink(spellId) .. "|r")
 		end
 
 		index = index + 1

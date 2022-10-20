@@ -38,5 +38,5 @@ C.CheckBadBuffs = {
 	[SpellName(354550)] = true, -- Impressive Size
 	[SpellName(354481)] = true, -- Inner Child
 
-	-- [SpellName(308078)] = true, -- Debug
+	-- [SpellName(5697)] = true, -- Debug
 }
