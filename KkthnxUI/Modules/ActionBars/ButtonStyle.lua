@@ -315,6 +315,22 @@ function Module:StyleActionButton(button, cfg)
 		flyoutArrow:SetDrawLayer("OVERLAY", 5)
 	end
 
+	if button.SlotArt then
+		button.SlotArt:Hide()
+	end
+
+	if button.RightDivider then
+		button.RightDivider:Hide()
+	end
+
+	if button.SlotBackground then
+		button.SlotBackground:Hide()
+	end
+
+	if button.IconMask then
+		button.IconMask:Hide()
+	end
+
 	-- Backdrop
 	button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 0.7, 0.7, 0.7)
 	button:StyleButton()
@@ -446,6 +462,9 @@ function Module:StyleAllActionButtons(cfg)
 		Module:StyleActionButton(_G["MultiBarRightButton" .. i], cfg)
 		Module:StyleActionButton(_G["MultiBarLeftButton" .. i], cfg)
 		Module:StyleActionButton(_G["KKUI_ActionBarXButton" .. i], cfg)
+		Module:StyleActionButton(_G["MultiBar5Button" .. i], cfg)
+		Module:StyleActionButton(_G["MultiBar6Button" .. i], cfg)
+		Module:StyleActionButton(_G["MultiBar7Button" .. i], cfg)
 	end
 
 	for i = 1, 6 do
@@ -474,6 +493,7 @@ function Module:StyleAllActionButtons(cfg)
 	Module:StyleExtraActionButton(cfg)
 
 	-- Spell flyout
+	SpellFlyout.Background:Hide()
 	-- _G.SpellFlyoutBackgroundEnd:SetTexture(nil)
 	-- _G.SpellFlyoutHorizontalBackground:SetTexture(nil)
 	-- _G.SpellFlyoutVerticalBackground:SetTexture(nil)
@@ -499,19 +519,19 @@ function Module:CreateBarSkin()
 		},
 
 		flyoutBorder = {
-			file = "",
+			file = C["Media"].Textures.BlankTexture,
 		},
 
 		flyoutBorderShadow = {
-			file = "",
+			file = C["Media"].Textures.BlankTexture,
 		},
 
 		border = {
-			file = "",
+			file = C["Media"].Textures.BlankTexture,
 		},
 
 		normalTexture = {
-			file = "",
+			file = C["Media"].Textures.BlankTexture,
 		},
 
 		-- flash = {
@@ -561,7 +581,7 @@ function Module:CreateBarSkin()
 		},
 
 		buttonstyle = {
-			file = "",
+			file = C["Media"].Textures.BlankTexture,
 		},
 	}
 

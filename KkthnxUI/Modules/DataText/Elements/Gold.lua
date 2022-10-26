@@ -24,14 +24,13 @@ local TOTAL = _G.TOTAL
 local YES = _G.YES
 
 local slotString = "Bags" .. ": %s%d"
-local ticker
+-- local ticker
 local profit = 0
 local spent = 0
 local oldMoney = 0
 local crossRealms = GetAutoCompleteRealms()
 local GoldDataText
 local RebuildCharList
-local RightClickText
 
 if not crossRealms or #crossRealms == 0 then
 	crossRealms = { [1] = K.Realm }
@@ -101,10 +100,10 @@ local function OnEvent(_, event, arg1)
 		end
 	end
 
-	if not ticker then
-		C_WowTokenPublic_UpdateMarketPrice()
-		ticker = C_Timer_NewTicker(60, C_WowTokenPublic_UpdateMarketPrice)
-	end
+	-- if not ticker then
+	-- 	C_WowTokenPublic_UpdateMarketPrice()
+	-- 	ticker = C_Timer_NewTicker(60, C_WowTokenPublic_UpdateMarketPrice, nil)
+	-- end
 
 	local newMoney = GetMoney()
 	local change = newMoney - oldMoney -- Positive if we gain money

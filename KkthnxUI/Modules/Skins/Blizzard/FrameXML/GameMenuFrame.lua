@@ -18,9 +18,9 @@ table_insert(C.defaultThemes, function()
 		GameMenuButtonHelp,
 		GameMenuButtonWhatsNew,
 		GameMenuButtonStore,
-		GameMenuButtonOptions,
+		GameMenuButtonSettings,
 		GameMenuButtonUIOptions,
-		GameMenuButtonKeybindings,
+		GameMenuButtonEditMode,
 		GameMenuButtonMacros,
 		GameMenuButtonAddons,
 		GameMenuButtonLogout,
@@ -29,7 +29,7 @@ table_insert(C.defaultThemes, function()
 	}
 
 	for _, button in next, buttons do
-		button:SkinButton()
+		button:SkinButton(true)
 	end
 
 	GameMenuButtonLogoutText:SetTextColor(1, 1, 0)

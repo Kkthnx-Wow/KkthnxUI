@@ -771,7 +771,7 @@ function Module:OnEnable()
 
 	-- Shape and Position
 	Minimap:SetFrameLevel(10)
-	Minimap:SetMaskTexture(C["Media"].Textures.BlankTexture)
+	Minimap:SetMaskTexture(C["Media"].Textures.White8x8Texture)
 	DropDownList1:SetClampedToScreen(true)
 
 	-- Create the new minimap tracking dropdown frame and initialize it
@@ -805,6 +805,7 @@ function Module:OnEnable()
 		"MiniMapWorldMapButton",
 		"MiniMapMailBorder",
 		"MiniMapTracking",
+		"MinimapCompassTexture", -- isNewPatch
 	}
 
 	for _, v in pairs(frames) do
@@ -814,6 +815,11 @@ function Module:OnEnable()
 	MinimapCluster:EnableMouse(false)
 	Minimap:SetArchBlobRingScalar(0)
 	Minimap:SetQuestBlobRingScalar(0)
+	K.HideInterfaceOption(Minimap.ZoomIn)
+	K.HideInterfaceOption(Minimap.ZoomOut)
+	MinimapCluster.Tracking:Hide()
+	MinimapCluster.BorderTop:Hide()
+	MinimapCluster.ZoneTextButton:Hide()
 
 	-- Add Elements
 	self:CreatePing()

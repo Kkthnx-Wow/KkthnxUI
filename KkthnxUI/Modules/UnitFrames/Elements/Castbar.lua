@@ -63,7 +63,7 @@ local function CreateAndUpdateBarTicks(bar, ticks, numTicks)
 		for i = 1, numTicks - 1 do
 			if not ticks[i] then
 				ticks[i] = bar:CreateTexture(nil, "OVERLAY")
-				ticks[i]:SetTexture(C["Media"].Textures.BlankTexture)
+				ticks[i]:SetTexture(C["Media"].Textures.White8x8Texture)
 				ticks[i]:SetVertexColor(0, 0, 0, 0.7)
 				ticks[i]:SetWidth(K.Mult)
 				ticks[i]:SetHeight(height)

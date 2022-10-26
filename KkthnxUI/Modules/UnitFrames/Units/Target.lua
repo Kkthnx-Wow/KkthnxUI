@@ -323,7 +323,7 @@ function Module:CreateTarget()
 	if C["Unitframe"].DebuffHighlight then
 		local DebuffHighlight = Health:CreateTexture(nil, "OVERLAY")
 		DebuffHighlight:SetAllPoints(Health)
-		DebuffHighlight:SetTexture(C["Media"].Textures.BlankTexture)
+		DebuffHighlight:SetTexture(C["Media"].Textures.White8x8Texture)
 		DebuffHighlight:SetVertexColor(0, 0, 0, 0)
 		DebuffHighlight:SetBlendMode("ADD")
 

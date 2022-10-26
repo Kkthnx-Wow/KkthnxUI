@@ -22,8 +22,8 @@ table_insert(C.defaultThemes, function()
 		_G["SpellButton" .. i .. "SlotFrame"]:SetAlpha(0)
 		bu.EmptySlot:SetAlpha(0)
 		bu.UnlearnedFrame:SetAlpha(0)
-		bu:SetCheckedTexture("")
-		bu:SetPushedTexture("")
+		bu:SetCheckedTexture(C["Media"].Textures.BlankTexture)
+		bu:SetPushedTexture(C["Media"].Textures.BlankTexture)
 
 		ic:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
@@ -56,7 +56,7 @@ table_insert(C.defaultThemes, function()
 		local bu = _G[button]
 		bu.statusBar:StripTextures()
 		bu.statusBar:SetStatusBarTexture(professionTexture)
-		bu.statusBar:GetStatusBarTexture():SetGradient("VERTICAL", 0, 0.6, 0, 0, 0.8, 0)
+		-- bu.statusBar:GetStatusBarTexture():SetGradient("VERTICAL", 0, 0.6, 0, 0, 0.8, 0)
 		bu.statusBar.rankText:SetPoint("CENTER")
 		bu.statusBar:CreateBorder()
 		if i > 2 then
@@ -83,16 +83,16 @@ table_insert(C.defaultThemes, function()
 		bu:StripTextures()
 		bu:SetPushedTexture("")
 
-		local icon = bu.iconTexture
-		icon:ClearAllPoints()
-		icon:SetPoint("TOPLEFT", 2, -2)
-		icon:SetPoint("BOTTOMRIGHT", -2, 2)
-		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		-- local icon = bu.iconTexture
+		-- icon:ClearAllPoints()
+		-- icon:SetPoint("TOPLEFT", 2, -2)
+		-- icon:SetPoint("BOTTOMRIGHT", -2, 2)
+		-- icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-		icon.bg = CreateFrame("Frame", nil, bu)
-		icon.bg:SetAllPoints(icon)
-		icon.bg:SetFrameLevel(bu:GetFrameLevel())
-		icon.bg:CreateBorder()
+		-- icon.bg = CreateFrame("Frame", nil, bu)
+		-- icon.bg:SetAllPoints(icon)
+		-- icon.bg:SetFrameLevel(bu:GetFrameLevel())
+		-- icon.bg:CreateBorder()
 
 		local check = bu:GetCheckedTexture()
 		check:SetColorTexture(0, 1, 0, 0.3)

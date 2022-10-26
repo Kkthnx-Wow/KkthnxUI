@@ -231,7 +231,7 @@ end
 
 local function MainMenu_OnShow(self)
 	_G.GameMenuButtonLogout:SetPoint("TOP", Module.GameMenuButton, "BOTTOM", 0, -14)
-	self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 15 + 24)
+	self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 15 + 18)
 
 	_G.GameMenuButtonStore:ClearAllPoints()
 	_G.GameMenuButtonStore:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -6)
@@ -239,14 +239,14 @@ local function MainMenu_OnShow(self)
 	_G.GameMenuButtonWhatsNew:ClearAllPoints()
 	_G.GameMenuButtonWhatsNew:SetPoint("TOP", _G.GameMenuButtonStore, "BOTTOM", 0, -6)
 
-	_G.GameMenuButtonUIOptions:ClearAllPoints()
-	_G.GameMenuButtonUIOptions:SetPoint("TOP", _G.GameMenuButtonOptions, "BOTTOM", 0, -6)
+	_G.GameMenuButtonEditMode:ClearAllPoints()
+	_G.GameMenuButtonEditMode:SetPoint("TOP", _G.GameMenuButtonWhatsNew, "BOTTOM", 0, -24)
 
-	_G.GameMenuButtonKeybindings:ClearAllPoints()
-	_G.GameMenuButtonKeybindings:SetPoint("TOP", _G.GameMenuButtonUIOptions, "BOTTOM", 0, -6)
+	_G.GameMenuButtonSettings:ClearAllPoints()
+	_G.GameMenuButtonSettings:SetPoint("TOP", _G.GameMenuButtonEditMode, "BOTTOM", 0, -6)
 
 	_G.GameMenuButtonMacros:ClearAllPoints()
-	_G.GameMenuButtonMacros:SetPoint("TOP", _G.GameMenuButtonKeybindings, "BOTTOM", 0, -6)
+	_G.GameMenuButtonMacros:SetPoint("TOP", _G.GameMenuButtonSettings, "BOTTOM", 0, -6)
 
 	_G.GameMenuButtonAddons:ClearAllPoints()
 	_G.GameMenuButtonAddons:SetPoint("TOP", _G.GameMenuButtonMacros, "BOTTOM", 0, -6)
@@ -269,9 +269,9 @@ end
 function Module:CreateGUIGameMenuButton()
 	local bu = CreateFrame("Button", "KKUI_GameMenuButton", _G.GameMenuFrame, "GameMenuButtonTemplate")
 	bu:SetText(K.Title)
-	bu:SetPoint("TOP", _G.GameMenuButtonAddons, "BOTTOM", 0, -14)
+	bu:SetPoint("TOP", _G.GameMenuButtonAddons, "BOTTOM", 0, -6)
 	bu:SetScript("OnClick", Button_OnClick)
-	bu:SkinButton()
+	bu:SkinButton(true)
 
 	Module.GameMenuButton = bu
 

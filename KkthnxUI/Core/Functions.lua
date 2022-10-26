@@ -150,7 +150,7 @@ do
 
 		local gradientFrame = self:CreateTexture(nil, "BACKGROUND")
 		gradientFrame:SetAllPoints()
-		gradientFrame:SetTexture(C["Media"].Textures.BlankTexture)
+		gradientFrame:SetTexture(C["Media"].Textures.White8x8Texture)
 		gradientFrame:SetGradient("Vertical", gradientFrom, gradientTo)
 	end
 

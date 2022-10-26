@@ -231,11 +231,11 @@ local function FriendsPanel_UpdateButton(button)
 		button.name:SetText(string_format("%s%s|r (%s|r)", K.InfoColor, accountName, name))
 		button.zone:SetText(string_format("%s%s", zoneColor, infoText))
 		if client == CLIENT_WOW_DIFF then
-			button.gameIcon:SetTexture(BNet_GetClientTexture(BNET_CLIENT_WOW))
+			button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
 		elseif client == BNET_CLIENT_WOW then
 			button.gameIcon:SetTexture("Interface\\FriendsFrame\\PlusManz-" .. factionName)
 		else
-			button.gameIcon:SetTexture(BNet_GetClientTexture(client))
+			button.gameIcon:SetAtlas(BNet_GetBattlenetClientAtlas(client))
 		end
 
 		button.isBNet = true
@@ -383,7 +383,7 @@ local function buttonOnEnter(self)
 			local level = gameAccountInfo.characterLevel
 			local gameText = gameAccountInfo.richPresence or ""
 			local wowProjectID = gameAccountInfo.wowProjectID
-			local clientString = BNet_GetClientEmbeddedTexture(client, 16)
+			local clientString = BNet_GetClientEmbeddedAtlas(client, 16)
 
 			if client == BNET_CLIENT_WOW then
 				if charName ~= "" then -- fix for weird account

@@ -81,6 +81,7 @@ function Module:MicroButton_Create(parent, data)
 		hooksecurefunc(button, "SetPoint", ResetButtonAnchor)
 		button:UnregisterAllEvents()
 		button:SetNormalTexture("")
+		button:GetNormalTexture():SetAlpha(0) -- isNewPatch
 
 		if tooltip then
 			K.AddTooltip(button, "ANCHOR_RIGHT", tooltip)
@@ -93,7 +94,7 @@ function Module:MicroButton_Create(parent, data)
 		local pushed = button:GetPushedTexture()
 		local disabled = button:GetDisabledTexture()
 		local highlight = button:GetHighlightTexture()
-		local flash = button.Flash
+		local flash = button.Flash or button.FlashBorder -- isNewPatch
 
 		pushed:SetColorTexture(1, 0.84, 0, 0.2)
 		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
@@ -114,6 +115,10 @@ function Module:MicroButton_Create(parent, data)
 			flash:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonYellow")
 			flash:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
 			flash:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
+		end
+
+		if button.FlashContent then
+			button.FlashContent:SetTexture(nil)
 		end
 	else
 		bu:SetScript("OnMouseUp", method)
@@ -169,10 +174,12 @@ function Module:CreateMicroMenu()
 	end
 
 	-- Default elements
+	if MainMenuMicroButton.MainMenuBarPerformanceBar then
+		K.HideInterfaceOption(MainMenuMicroButton.MainMenuBarPerformanceBar)
+	end
 	K.HideInterfaceOption(_G.MicroButtonPortrait)
 	K.HideInterfaceOption(_G.GuildMicroButtonTabard)
 	K.HideInterfaceOption(_G.MainMenuBarDownload)
 	K.HideInterfaceOption(_G.HelpOpenWebTicketButton)
-	K.HideInterfaceOption(_G.MainMenuBarPerformanceBar)
 	_G.MainMenuMicroButton:SetScript("OnUpdate", nil)
 end

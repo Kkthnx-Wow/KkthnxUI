@@ -51,13 +51,8 @@ function Module:CreateImprovedStats()
 	CharacterStatsPane:ClearAllPoints()
 	CharacterStatsPane:SetParent(stat)
 	CharacterStatsPane:SetAllPoints(stat)
-
 	hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", function()
-		if not _G[PAPERDOLL_SIDEBARS[1].frame]:IsShown() then
-			statPanel:Hide()
-		else
-			statPanel:Show()
-		end
+		statPanel:SetShown(CharacterStatsPane:IsShown())
 	end)
 
 	-- Change default data
@@ -85,7 +80,6 @@ function Module:CreateImprovedStats()
 				[18] = { stat = "MOVESPEED" },
 			},
 		},
-
 		[2] = {
 			categoryFrame = "EnhancementsCategory",
 			stats = {
@@ -151,13 +145,23 @@ function Module:CreateImprovedStats()
 		if displayItemLevel ~= avgItemLevel then
 			displayItemLevel = displayItemLevel .. " / " .. avgItemLevel
 		end
-
 		PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, displayItemLevel, false, displayItemLevel)
 	end)
 
 	hooksecurefunc("PaperDollFrame_SetLabelAndText", function(statFrame, label, _, isPercentage)
 		if isPercentage or label == STAT_HASTE then
 			statFrame.Value:SetFormattedText("%.2f%%", statFrame.numericValue)
+		end
+	end)
+
+	hooksecurefunc("PaperDollFrame_UpdateStats", function()
+		for statFrame in CharacterStatsPane.statsFramePool:EnumerateActive() do
+			if not statFrame.styled then
+				statFrame.Label:SetFontObject(Game13Font)
+				statFrame.Value:SetFontObject(Game13Font)
+
+				statFrame.styled = true
+			end
 		end
 	end)
 end

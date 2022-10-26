@@ -46,6 +46,7 @@
    <Script file="ActionBars\Elements\Bar3.lua" />
    <Script file="ActionBars\Elements\Bar4.lua" />
    <Script file="ActionBars\Elements\Bar5.lua" />
+   <Script file="ActionBars\Elements\Bar678.lua" />
    <Script file="ActionBars\Elements\CustomBar.lua" />
    <Script file="ActionBars\Elements\Stancebar.lua" />
    <Script file="ActionBars\Elements\Petbar.lua" />

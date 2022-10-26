@@ -21,7 +21,7 @@ C["Media"] = {
 	["Textures"] = {
 		ArrowTexture = K.MediaFolder .. "Textures\\Arrow.tga",
 		BGLineTexture = K.MediaFolder .. "Textures\\BGLineTexture",
-		BlankTexture = "Interface\\BUTTONS\\WHITE8X8",
+		BlankTexture = K.MediaFolder .. "Textures\\BlankTexture.blp",
 		CopyChatTexture = K.MediaFolder .. "Chat\\Copy.tga",
 		GlowTexture = K.MediaFolder .. "Textures\\GlowTex.tga",
 		LogoSmallTexture = K.MediaFolder .. "Textures\\LogoSmall.tga",
@@ -31,6 +31,7 @@ C["Media"] = {
 		Spark128Texture = K.MediaFolder .. "Textures\\Spark_128",
 		Spark16Texture = K.MediaFolder .. "Textures\\Spark_16",
 		TargetIndicatorTexture = K.MediaFolder .. "Nameplates\\TargetIndicatorArrow.blp",
+		White8x8Texture = "Interface\\BUTTONS\\WHITE8X8",
 	},
 
 	["Fonts"] = {

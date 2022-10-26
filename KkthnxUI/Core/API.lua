@@ -69,7 +69,7 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	end
 
 	-- Background
-	local BackgroundTexture = bgTexture or C["Media"].Textures.BlankTexture
+	local BackgroundTexture = bgTexture or C["Media"].Textures.White8x8Texture
 	local BackgroundSubLevel = bgSubLevel or "BACKGROUND"
 	local BackgroundLayer = bgLayer or -1
 	local BackgroundPoint = bgPoint or 1
@@ -146,7 +146,7 @@ local function CreateShadow(f, bd)
 	f.Shadow:SetPoint("BOTTOMRIGHT", f, 3, -3)
 	if bd then
 		f.Shadow:SetBackdrop({
-			bgFile = C["Media"].Textures.BlankTexture,
+			bgFile = C["Media"].Textures.White8x8Texture,
 			edgeFile = C["Media"].Textures.GlowTexture,
 			edgeSize = 3,
 			insets = { left = 3, right = 3, top = 3, bottom = 3 },

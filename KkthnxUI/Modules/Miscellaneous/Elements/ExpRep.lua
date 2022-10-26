@@ -106,16 +106,17 @@ function Module:ExpBar_Update(event, unit)
 	elseif GetWatchedFactionInfo() then
 		local label, rewardPending
 		local name, reaction, minValue, maxValue, curValue, factionID = GetWatchedFactionInfo()
-		local friendshipID, standingText, nextThreshold, _
-		friendshipID, _, _, _, _, _, standingText, _, nextThreshold = GetFriendshipReputation(factionID)
+		--local friendshipID, standingText, nextThreshold, _
+		--friendshipID, _, _, _, _, _, standingText, _, nextThreshold = GetFriendshipReputation(factionID)
 
-		if friendshipID then
-			reaction, label = 5, standingText
+		-- if friendshipID then
+		-- 	reaction, label = 5, standingText
 
-			if not nextThreshold then
-				minValue, maxValue, curValue = 0, 1, 1
-			end
-		elseif C_Reputation_IsFactionParagon(factionID) then
+		-- 	if not nextThreshold then
+		-- 		minValue, maxValue, curValue = 0, 1, 1
+		-- 	end
+		-- else
+		if C_Reputation_IsFactionParagon(factionID) then
 			local current, threshold
 			current, threshold, _, rewardPending = C_Reputation_GetFactionParagonInfo(factionID)
 
@@ -227,12 +228,13 @@ function Module:ExpBar_UpdateTooltip()
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine(name, FACTION_BAR_COLORS[reaction].r, FACTION_BAR_COLORS[reaction].g, FACTION_BAR_COLORS[reaction].b)
 
-			local friendID, friendTextLevel, _
-			if factionID then
-				friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(factionID)
-			end
+			-- local friendID, friendTextLevel, _
+			-- if factionID then
+			-- 	friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(factionID)
+			-- end
 
-			GameTooltip:AddDoubleLine(STANDING .. ":", (friendID and friendTextLevel) or standing, 1, 1, 1)
+			-- GameTooltip:AddDoubleLine(STANDING .. ":", (friendID and friendTextLevel) or standing, 1, 1, 1)
+			GameTooltip:AddDoubleLine(STANDING .. ":", standing, 1, 1, 1)
 
 			if reaction ~= _G.MAX_REPUTATION_REACTION or isParagon then
 				local current, maximum, percent = GetValues(curValue, minValue, maxValue)

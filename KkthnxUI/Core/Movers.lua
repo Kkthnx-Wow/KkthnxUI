@@ -425,4 +425,119 @@ function Module:OnEnable()
 	updater:SetScript("OnUpdate", function()
 		Module.UpdateTrimFrame(updater.__owner)
 	end)
+
+	Module:DisableBlizzardMover()
+end
+
+-- Disable blizzard edit mode
+local function isUnitFrameEnable()
+	return C["Unitframe"].Enable
+end
+
+local function isBuffEnable()
+	return C["Auras"].Enable or C["Auras"].HideBlizBuff
+end
+
+local function isActionbarEnable()
+	return C["ActionBar"].Enable
+end
+
+local function isCastbarEnable()
+	return C["Unitframe"].Enable and C["Unitframe"].Castbars
+end
+
+local function isPartyEnable()
+	return C["Party"].Enable
+end
+
+local function isRaidEnable()
+	return C["Raid"].Enable
+end
+
+local function isArenaEnable()
+	return C["Arena"].Enable
+end
+
+local ignoredFrames = {
+	-- ActionBars
+	["StanceBar"] = isActionbarEnable,
+	["EncounterBar"] = isActionbarEnable,
+	["PetActionBar"] = isActionbarEnable,
+	["PossessActionBar"] = isActionbarEnable,
+	["MainMenuBarVehicleLeaveButton"] = isActionbarEnable,
+	["MultiBarBottomLeft"] = isActionbarEnable,
+	["MultiBarBottomRight"] = isActionbarEnable,
+	["MultiBarLeft"] = isActionbarEnable,
+	["MultiBarRight"] = isActionbarEnable,
+	["MultiBar5"] = isActionbarEnable,
+	["MultiBar6"] = isActionbarEnable,
+	["MultiBar7"] = isActionbarEnable,
+	-- Auras
+	["BuffFrame"] = isBuffEnable,
+	["DebuffFrame"] = isBuffEnable,
+	-- UnitFrames
+	["PlayerFrame"] = isUnitFrameEnable,
+	["PlayerCastingBarFrame"] = isCastbarEnable,
+	["FocusFrame"] = isUnitFrameEnable,
+	["TargetFrame"] = isUnitFrameEnable,
+	["BossTargetFrameContainer"] = isUnitFrameEnable,
+	["PartyFrame"] = isPartyEnable,
+	["CompactRaidFrameContainer"] = isRaidEnable,
+	["ArenaEnemyFramesContainer"] = isArenaEnable,
+	-- Misc
+	["MinimapCluster"] = function()
+		return not C["Minimap"].Enable
+	end,
+
+	["GameTooltipDefaultContainer"] = function()
+		return true
+	end,
+}
+
+function Module:DisableBlizzardMover()
+	local editMode = _G.EditModeManagerFrame
+
+	-- remove the initial registers
+	local registered = editMode.registeredSystemFrames
+	for i = #registered, 1, -1 do
+		local name = registered[i]:GetName()
+		local ignore = ignoredFrames[name]
+
+		if ignore and ignore() then
+			tremove(editMode.registeredSystemFrames, i)
+		end
+	end
+
+	-- account settings will be tainted
+	local mixin = editMode.AccountSettings
+	if isCastbarEnable() then
+		mixin.RefreshCastBar = K.Noop
+	end
+
+	if isBuffEnable() then
+		mixin.RefreshAuraFrame = K.Noop
+	end
+
+	if isRaidEnable() then
+		mixin.RefreshRaidFrames = K.Noop
+	end
+
+	if isArenaEnable() then
+		mixin.RefreshArenaFrames = K.Noop
+	end
+
+	if isPartyEnable() then
+		mixin.RefreshPartyFrames = K.Noop
+	end
+
+	if isUnitFrameEnable() then
+		mixin.RefreshTargetAndFocus = K.Noop
+		mixin.RefreshBossFrames = K.Noop
+	end
+
+	if isActionbarEnable() then
+		mixin.RefreshEncounterBar = K.Noop
+		mixin.RefreshActionBarShown = K.Noop
+		mixin.RefreshVehicleLeaveButton = K.Noop
+	end
 end
