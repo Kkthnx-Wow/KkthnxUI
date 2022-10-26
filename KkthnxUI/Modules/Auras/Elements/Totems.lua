@@ -82,11 +82,11 @@ function Module:TotemBar_Update()
 end
 
 function Module:CreateTotems()
-	if not C["Auras"].Totems then
-		return
-	end
+	-- if not C["Auras"].Totems then
+	-- 	return
+	-- end
 
-	Module:TotemBar_Init()
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.TotemBar_Update)
-	K:RegisterEvent("PLAYER_TOTEM_UPDATE", Module.TotemBar_Update)
+	-- Module:TotemBar_Init()
+	-- K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.TotemBar_Update)
+	-- K:RegisterEvent("PLAYER_TOTEM_UPDATE", Module.TotemBar_Update)
 end

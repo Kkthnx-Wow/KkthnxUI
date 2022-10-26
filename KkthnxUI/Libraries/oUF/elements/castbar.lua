@@ -142,6 +142,7 @@ local function CastStart(self, event, unit)
 	element.holdTime = 0
 	element.castID = castID
 	element.spellID = spellID
+	element.numStages = numStages -- isNewPatch
 
 	if element.channeling then
 		element.duration = endTime - GetTime()
@@ -424,6 +425,9 @@ local function Enable(self, unit)
 
 		self:RegisterEvent("UNIT_SPELLCAST_START", CastStart)
 		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", CastStart)
+		self:RegisterEvent("UNIT_SPELLCAST_EMPOWER_START", CastStart)
+		self:RegisterEvent("UNIT_SPELLCAST_EMPOWER_UPDATE", CastUpdate)
+		self:RegisterEvent("UNIT_SPELLCAST_EMPOWER_STOP", CastStop)
 		self:RegisterEvent("UNIT_SPELLCAST_STOP", CastStop)
 		self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", CastStop)
 		self:RegisterEvent("UNIT_SPELLCAST_DELAYED", CastUpdate)
@@ -438,8 +442,9 @@ local function Enable(self, unit)
 		element:SetScript("OnUpdate", element.OnUpdate or onUpdate)
 
 		if self.unit == "player" and not (self.hasChildren or self.isChild or self.isNamePlate) then
-			CastingBarFrame_SetUnit(CastingBarFrame, nil)
-			CastingBarFrame_SetUnit(PetCastingBarFrame, nil)
+			PlayerCastingBarFrame:SetUnit(nil)
+			PetCastingBarFrame:SetUnit(nil)
+			PetCastingBarFrame:UnregisterEvent("UNIT_PET")
 		end
 
 		if element:IsObjectType("StatusBar") and not element:GetStatusBarTexture() then
@@ -474,6 +479,9 @@ local function Disable(self)
 
 		self:UnregisterEvent("UNIT_SPELLCAST_START", CastStart)
 		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START", CastStart)
+		self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START", CastStart)
+		self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_UPDATE", CastUpdate)
+		self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP", CastStop)
 		self:UnregisterEvent("UNIT_SPELLCAST_DELAYED", CastUpdate)
 		self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", CastUpdate)
 		self:UnregisterEvent("UNIT_SPELLCAST_STOP", CastStop)
@@ -486,7 +494,7 @@ local function Disable(self)
 		element:SetScript("OnUpdate", nil)
 
 		if self.unit == "player" and not (self.hasChildren or self.isChild or self.isNamePlate) then
-			CastingBarFrame_OnLoad(CastingBarFrame, "player", true, false)
+			PlayerCastingBarFrame:OnLoad()
 			PetCastingBarFrame_OnLoad(PetCastingBarFrame)
 		end
 	end

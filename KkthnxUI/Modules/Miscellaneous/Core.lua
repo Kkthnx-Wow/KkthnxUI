@@ -376,9 +376,9 @@ function Module:CreateErrorFrameToggle()
 end
 
 function Module:CreateQuestSizeUpdate()
-	QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, nil)
-	QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, nil)
-	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, nil)
+	-- QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, nil)
+	-- QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, nil)
+	-- QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, nil)
 end
 
 function Module:CreateObjectiveSizeUpdate()
@@ -651,17 +651,17 @@ end)
 
 -- make it only split stacks with shift-rightclick if the TradeSkillFrame is open
 -- shift-leftclick should be reserved for the search box
-do
-	local function hideSplitFrame(_, button)
-		if TradeSkillFrame and TradeSkillFrame:IsShown() then
-			if button == "LeftButton" then
-				StackSplitFrame:Hide()
-			end
-		end
-	end
-	hooksecurefunc("ContainerFrameItemButton_OnModifiedClick", hideSplitFrame)
-	hooksecurefunc("MerchantItemButton_OnModifiedClick", hideSplitFrame)
-end
+-- do
+-- 	local function hideSplitFrame(_, button)
+-- 		if TradeSkillFrame and TradeSkillFrame:IsShown() then
+-- 			if button == "LeftButton" then
+-- 				StackSplitFrame:Hide()
+-- 			end
+-- 		end
+-- 	end
+-- 	hooksecurefunc("ContainerFrameItemButton_OnModifiedClick", hideSplitFrame)
+-- 	hooksecurefunc("MerchantItemButton_OnModifiedClick", hideSplitFrame)
+-- end
 
 do
 	local function soundOnResurrect()

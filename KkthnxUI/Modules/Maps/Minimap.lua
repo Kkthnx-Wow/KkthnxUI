@@ -264,7 +264,7 @@ function Module:CreateStyle()
 
 	local function updateMinimapBorderAnimation()
 		if not InCombatLockdown() then
-			if C_Calendar_GetNumPendingInvites() > 0 or MiniMapMailFrame:IsShown() and not IsInInstance() then
+			if C_Calendar_GetNumPendingInvites() > 0 or MinimapCluster.MailFrame:IsShown() and not IsInInstance() then
 				if not anim:IsPlaying() then
 					minimapMailPulse:Show()
 					anim:Play()
@@ -282,7 +282,7 @@ function Module:CreateStyle()
 	K:RegisterEvent("PLAYER_REGEN_ENABLED", updateMinimapBorderAnimation)
 	K:RegisterEvent("UPDATE_PENDING_MAIL", updateMinimapBorderAnimation)
 
-	MiniMapMailFrame:HookScript("OnHide", function()
+	MinimapCluster.MailFrame:HookScript("OnHide", function()
 		if InCombatLockdown() then
 			return
 		end
@@ -324,29 +324,29 @@ local function UpdateCovenantTexture(texture)
 end
 
 function Module:ReskinRegions()
-	GarrisonLandingPageMinimapButton:SetSize(22, 22)
-	hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function(self)
-		self:ClearAllPoints()
-		self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
-		self:SetSize(22, 22)
-		self.LoopingGlow:SetSize(24, 24)
+	-- GarrisonLandingPageMinimapButton:SetSize(22, 22)
+	-- hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function(self)
+	-- 	self:ClearAllPoints()
+	-- 	self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
+	-- 	self:SetSize(22, 22)
+	-- 	self.LoopingGlow:SetSize(24, 24)
 
-		self:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		self:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		self:GetHighlightTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		self.LoopingGlow:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	-- 	self:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	-- 	self:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	-- 	self:GetHighlightTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	-- 	self.LoopingGlow:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-		self:SetNormalTexture(UpdateCovenantTexture(self))
-		self:SetPushedTexture(UpdateCovenantTexture(self))
-		self:SetHighlightTexture(UpdateCovenantTexture(self))
-		self.LoopingGlow:SetTexture(UpdateCovenantTexture(self))
+	-- 	self:SetNormalTexture(UpdateCovenantTexture(self))
+	-- 	self:SetPushedTexture(UpdateCovenantTexture(self))
+	-- 	self:SetHighlightTexture(UpdateCovenantTexture(self))
+	-- 	self.LoopingGlow:SetTexture(UpdateCovenantTexture(self))
 
-		self:GetPushedTexture():SetVertexColor(1, 1, 0, 0.5)
+	-- 	self:GetPushedTexture():SetVertexColor(1, 1, 0, 0.5)
 
-		self:SetHitRectInsets(0, 0, 0, 0)
-	end)
-	GarrisonLandingPageMinimapButton:SetScript("OnEnter", K.LandingButton_OnEnter)
-	GarrisonLandingPageMinimapButton:SetFrameLevel(999)
+	-- 	self:SetHitRectInsets(0, 0, 0, 0)
+	-- end)
+	-- GarrisonLandingPageMinimapButton:SetScript("OnEnter", K.LandingButton_OnEnter)
+	-- GarrisonLandingPageMinimapButton:SetFrameLevel(999)
 
 	-- QueueStatus Button
 	if QueueStatusMinimapButton then
@@ -392,18 +392,31 @@ function Module:ReskinRegions()
 	end
 
 	-- Difficulty Flags
-	local difficultyFlags = {
-		"MiniMapInstanceDifficulty",
-		"GuildInstanceDifficulty",
-		"MiniMapChallengeMode",
-	}
+	-- local difficultyFlags = {
+	-- 	"MiniMapInstanceDifficulty",
+	-- 	"GuildInstanceDifficulty",
+	-- 	"MiniMapChallengeMode",
+	-- }
 
-	for _, v in pairs(difficultyFlags) do
-		local difficultyFlag = _G[v]
-		difficultyFlag:ClearAllPoints()
-		difficultyFlag:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
-		difficultyFlag:SetScale(0.9)
+	-- for _, v in pairs(difficultyFlags) do
+	-- 	local difficultyFlag = _G[v]
+	-- 	difficultyFlag:ClearAllPoints()
+	-- 	difficultyFlag:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+	-- 	difficultyFlag:SetScale(0.9)
+	-- end
+
+	local function updateFlagAnchor(frame, _, _, _, _, _, force)
+		if force then
+			return
+		end
+
+		frame:ClearAllPoints()
+		frame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0, true)
 	end
+	MinimapCluster.InstanceDifficulty:SetParent(Minimap)
+	MinimapCluster.InstanceDifficulty:SetScale(0.9)
+	updateFlagAnchor(MinimapCluster.InstanceDifficulty)
+	hooksecurefunc(MinimapCluster.InstanceDifficulty, "SetPoint", updateFlagAnchor)
 
 	-- Mail icon
 	if MiniMapMailFrame then
@@ -422,14 +435,14 @@ function Module:ReskinRegions()
 	-- Invites Icon
 	if GameTimeCalendarInvitesTexture then
 		GameTimeCalendarInvitesTexture:ClearAllPoints()
-		GameTimeCalendarInvitesTexture:SetParent("Minimap")
+		GameTimeCalendarInvitesTexture:SetParent(Minimap)
 		GameTimeCalendarInvitesTexture:SetPoint("TOPRIGHT")
 	end
 
 	-- Streaming icon
 	if StreamingIcon then
 		StreamingIcon:ClearAllPoints()
-		StreamingIcon:SetParent("Minimap")
+		StreamingIcon:SetParent(Minimap)
 		StreamingIcon:SetPoint("LEFT", -6, 0)
 		StreamingIcon:SetAlpha(0.5)
 		StreamingIcon:SetScale(0.8)
@@ -536,16 +549,16 @@ function Module:ShowCalendar()
 			GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
 			GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
 			GameTimeFrame:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\Calendar.blp")
-			GameTimeFrame:SetPushedTexture(nil)
-			GameTimeFrame:SetHighlightTexture(nil)
+			GameTimeFrame:SetPushedTexture("")
+			GameTimeFrame:SetHighlightTexture("")
 
-			local fs = GameTimeFrame:GetFontString()
-			fs:ClearAllPoints()
-			fs:SetPoint("CENTER", 0, -5)
-			fs:SetFontObject(K.UIFont)
-			fs:SetFont(select(1, fs:GetFont()), 20, select(3, fs:GetFont()))
-			fs:SetAlpha(0.9)
-			fs:SetShadowOffset(0, 0)
+			-- local fs = GameTimeFrame:GetFontString() -- Broken
+			-- fs:ClearAllPoints()
+			-- fs:SetPoint("CENTER", 0, -5)
+			-- fs:SetFontObject(K.UIFont)
+			-- fs:SetFont(select(1, fs:GetFont()), 20, select(3, fs:GetFont()))
+			-- fs:SetAlpha(0.9)
+			-- fs:SetShadowOffset(0, 0)
 
 			GameTimeFrame.styled = true
 		end

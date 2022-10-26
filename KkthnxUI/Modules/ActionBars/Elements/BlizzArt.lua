@@ -117,14 +117,14 @@ function Module:HideBlizz()
 
 	-- Hide blizz options
 	SetCVar("multiBarRightVerticalLayout", 0)
-	_G.InterfaceOptionsActionBarsPanelStackRightBars:EnableMouse(false)
-	_G.InterfaceOptionsActionBarsPanelStackRightBars:SetAlpha(0)
+	-- _G.InterfaceOptionsActionBarsPanelStackRightBars:EnableMouse(false)
+	-- _G.InterfaceOptionsActionBarsPanelStackRightBars:SetAlpha(0)
 	-- Fix maw block anchor
 	MainMenuBarVehicleLeaveButton:RegisterEvent("PLAYER_ENTERING_WORLD")
 	-- Update button grid
-	toggleButtonGrid()
-	-- Update button grid
-	hooksecurefunc("MultiActionBar_UpdateGridVisibility", toggleButtonGrid)
+	-- toggleButtonGrid()
+	-- -- Update button grid
+	-- hooksecurefunc("MultiActionBar_UpdateGridVisibility", toggleButtonGrid)
 	-- Update token panel
 	K:RegisterEvent("CURRENCY_DISPLAY_UPDATE", updateTokenVisibility)
 end

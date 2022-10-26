@@ -183,8 +183,8 @@ function Module:SkinChat()
 	local name = self:GetName()
 	local font, fontSize, fontStyle = self:GetFont()
 
-	self:SetMaxResize(K.ScreenWidth, K.ScreenHeight)
-	self:SetMinResize(100, 50)
+	-- self:SetMaxResize(K.ScreenWidth, K.ScreenHeight) -- Removed?
+	-- self:SetMinResize(100, 50)
 	self:SetFont(font, fontSize, fontStyle)
 	self:SetClampRectInsets(0, 0, 0, 0)
 	self:SetClampedToScreen(false)

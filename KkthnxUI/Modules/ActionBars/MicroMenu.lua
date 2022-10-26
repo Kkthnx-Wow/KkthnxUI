@@ -80,7 +80,7 @@ function Module:MicroButton_Create(parent, data)
 		ResetButtonAnchor(button)
 		hooksecurefunc(button, "SetPoint", ResetButtonAnchor)
 		button:UnregisterAllEvents()
-		button:SetNormalTexture(nil)
+		button:SetNormalTexture("")
 
 		if tooltip then
 			K.AddTooltip(button, "ANCHOR_RIGHT", tooltip)

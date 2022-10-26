@@ -166,8 +166,8 @@ local function friendsFrame()
 		end
 	end
 end
-hooksecurefunc(FriendsListFrameScrollFrame, "update", friendsFrame)
-hooksecurefunc("FriendsFrame_UpdateFriends", friendsFrame)
+-- hooksecurefunc(FriendsListFrameScrollFrame, "update", friendsFrame)
+-- hooksecurefunc("FriendsFrame_UpdateFriends", friendsFrame)
 
 -- Whoframe
 local columnTable = {}
@@ -219,4 +219,4 @@ local function updateWhoList()
 	end
 end
 hooksecurefunc("WhoList_Update", updateWhoList)
-hooksecurefunc(WhoListScrollFrame, "update", updateWhoList)
+-- hooksecurefunc(WhoListScrollFrame, "update", updateWhoList)

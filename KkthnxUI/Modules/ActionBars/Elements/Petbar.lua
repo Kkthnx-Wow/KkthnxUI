@@ -20,10 +20,14 @@ function Module:CreatePetbar()
 	frame.mover = K.Mover(frame, "Pet Actionbar", "PetBar", { "BOTTOM", _G.KKUI_ActionBar3, "TOP", 0, margin })
 	Module.movers[7] = frame.mover
 
-	_G.PetActionBarFrame:SetParent(frame)
-	_G.PetActionBarFrame:EnableMouse(false)
-	_G.SlidingActionBarTexture0:SetTexture(nil)
-	_G.SlidingActionBarTexture1:SetTexture(nil)
+	-- _G.PetActionBarFrame:SetParent(frame)
+	-- _G.PetActionBarFrame:EnableMouse(false)
+	-- _G.SlidingActionBarTexture0:SetTexture(nil)
+	-- _G.SlidingActionBarTexture1:SetTexture(nil)
+
+	-- todo
+	PetActionBar:SetParent(frame)
+	PetActionBar:EnableMouse(false)
 
 	for i = 1, num do
 		local button = _G["PetActionButton" .. i]

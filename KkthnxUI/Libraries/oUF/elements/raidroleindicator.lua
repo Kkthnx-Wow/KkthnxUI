@@ -37,20 +37,20 @@ local function Update(self, event)
 
 	* self - the RaidRoleIndicator element
 	--]]
-	if element.PreUpdate then
+	if(element.PreUpdate) then
 		element:PreUpdate()
 	end
 
 	local role, isShown
-	if UnitInRaid(unit) and not UnitHasVehicleUI(unit) then
-		if GetPartyAssignment("MAINTANK", unit) then
+	if(UnitInRaid(unit) and not UnitHasVehicleUI(unit)) then
+		if(GetPartyAssignment('MAINTANK', unit)) then
 			isShown = true
 			element:SetTexture(MAINTANK_ICON)
-			role = "MAINTANK"
-		elseif GetPartyAssignment("MAINASSIST", unit) then
+			role = 'MAINTANK'
+		elseif(GetPartyAssignment('MAINASSIST', unit)) then
 			isShown = true
 			element:SetTexture(MAINASSIST_ICON)
-			role = "MAINASSIST"
+			role = 'MAINASSIST'
 		end
 	end
 
@@ -62,7 +62,7 @@ local function Update(self, event)
 	* self - the RaidRoleIndicator element
 	* role - the unit's raid assignment (string?)['MAINTANK', 'MAINASSIST']
 	--]]
-	if element.PostUpdate then
+	if(element.PostUpdate) then
 		return element:PostUpdate(role)
 	end
 end
@@ -79,16 +79,16 @@ local function Path(self, ...)
 end
 
 local function ForceUpdate(element)
-	return Path(element.__owner, "ForceUpdate")
+	return Path(element.__owner, 'ForceUpdate')
 end
 
 local function Enable(self)
 	local element = self.RaidRoleIndicator
-	if element then
+	if(element) then
 		element.__owner = self
 		element.ForceUpdate = ForceUpdate
 
-		self:RegisterEvent("GROUP_ROSTER_UPDATE", Path, true)
+		self:RegisterEvent('GROUP_ROSTER_UPDATE', Path, true)
 
 		return true
 	end
@@ -96,11 +96,11 @@ end
 
 local function Disable(self)
 	local element = self.RaidRoleIndicator
-	if element then
+	if(element) then
 		element:Hide()
 
-		self:UnregisterEvent("GROUP_ROSTER_UPDATE", Path)
+		self:UnregisterEvent('GROUP_ROSTER_UPDATE', Path)
 	end
 end
 
-oUF:AddElement("RaidRoleIndicator", Path, Enable, Disable)
+oUF:AddElement('RaidRoleIndicator', Path, Enable, Disable)

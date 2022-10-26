@@ -7,7 +7,7 @@ local select = _G.select
 local CharacterHandsSlot = _G.CharacterHandsSlot
 local CharacterHeadSlot = _G.CharacterHeadSlot
 local CharacterMainHandSlot = _G.CharacterMainHandSlot
-local CharacterModelFrame = _G.CharacterModelFrame
+local CharacterModelScene = _G.CharacterModelScene
 local CharacterSecondaryHandSlot = _G.CharacterSecondaryHandSlot
 local CharacterStatsPane = _G.CharacterStatsPane
 local GetInventoryItemLink = _G.GetInventoryItemLink
@@ -64,9 +64,9 @@ tinsert(C.defaultThemes, function()
 		HideUIPanel(CharacterFrame)
 	end
 
-	CharacterModelFrame:DisableDrawLayer("BACKGROUND")
-	CharacterModelFrame:DisableDrawLayer("BORDER")
-	CharacterModelFrame:DisableDrawLayer("OVERLAY")
+	CharacterModelScene:DisableDrawLayer("BACKGROUND")
+	CharacterModelScene:DisableDrawLayer("BORDER")
+	CharacterModelScene:DisableDrawLayer("OVERLAY")
 
 	local function colourPopout(self)
 		local aR, aG, aB
@@ -117,7 +117,7 @@ tinsert(C.defaultThemes, function()
 		self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
 	end
 
-	CharacterModelFrame:StripTextures(true)
+	CharacterModelScene:StripTextures(true)
 
 	local slots = {
 		"Head",
@@ -203,11 +203,11 @@ tinsert(C.defaultThemes, function()
 		CharacterSecondaryHandSlot:ClearAllPoints()
 		CharacterSecondaryHandSlot:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -176, 5)
 
-		CharacterModelFrame:SetSize(0, 0)
-		CharacterModelFrame:ClearAllPoints()
-		CharacterModelFrame:SetPoint("TOPLEFT", CharacterFrame.Inset, 0, 0)
-		CharacterModelFrame:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, 0, 20)
-		CharacterModelFrame:SetCamDistanceScale(1.1)
+		CharacterModelScene:SetSize(0, 0)
+		CharacterModelScene:ClearAllPoints()
+		CharacterModelScene:SetPoint("TOPLEFT", CharacterFrame.Inset, 0, 0)
+		CharacterModelScene:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, 0, 20)
+		--CharacterModelScene:SetCamDistanceScale(1.1)
 	end
 
 	hooksecurefunc("CharacterFrame_Expand", function()
@@ -239,23 +239,23 @@ tinsert(C.defaultThemes, function()
 	CharItemLvLValue:SetFont(select(1, CharItemLvLValue:GetFont()), 18, select(3, CharItemLvLValue:GetFont()))
 
 	-- Titles
-	hooksecurefunc("PaperDollTitlesPane_UpdateScrollFrame", function()
-		local bu = PaperDollTitlesPane.buttons
-		for i = 1, #bu do
-			if not bu[i].textureKilled then
-				bu[i].BgTop:SetTexture()
-				bu[i].BgBottom:SetTexture()
-				bu[i].BgMiddle:SetTexture()
-				bu[i].textureKilled = true
-			end
+	-- hooksecurefunc("PaperDollTitlesPane_UpdateScrollFrame", function()
+	-- 	local bu = PaperDollTitlesPane.buttons
+	-- 	for i = 1, #bu do
+	-- 		if not bu[i].textureKilled then
+	-- 			bu[i].BgTop:SetTexture()
+	-- 			bu[i].BgBottom:SetTexture()
+	-- 			bu[i].BgMiddle:SetTexture()
+	-- 			bu[i].textureKilled = true
+	-- 		end
 
-			if not bu[i].fontStyled then
-				bu[i].text:SetFontObject(K.UIFont)
-				bu[i].text:SetFont(select(1, bu[i].text:GetFont()), 11, select(3, bu[i].text:GetFont()))
-				bu[i].fontStyled = true
-			end
-		end
-	end)
+	-- 		if not bu[i].fontStyled then
+	-- 			bu[i].text:SetFontObject(K.UIFont)
+	-- 			bu[i].text:SetFont(select(1, bu[i].text:GetFont()), 11, select(3, bu[i].text:GetFont()))
+	-- 			bu[i].fontStyled = true
+	-- 		end
+	-- 	end
+	-- end)
 
 	do
 		CharacterStatsPane.ClassBackground:ClearAllPoints()

@@ -19,7 +19,7 @@ local RANGE_INDICATOR = _G.RANGE_INDICATOR
 local ExtraActionButton1 = _G.ExtraActionButton1
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
-local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
+local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS or 10
 local NUM_POSSESS_SLOTS = _G.NUM_POSSESS_SLOTS
 
 local function CallButtonFunctionByName(button, func, ...)
@@ -474,9 +474,10 @@ function Module:StyleAllActionButtons(cfg)
 	Module:StyleExtraActionButton(cfg)
 
 	-- Spell flyout
-	_G.SpellFlyoutBackgroundEnd:SetTexture(nil)
-	_G.SpellFlyoutHorizontalBackground:SetTexture(nil)
-	_G.SpellFlyoutVerticalBackground:SetTexture(nil)
+	-- _G.SpellFlyoutBackgroundEnd:SetTexture(nil)
+	-- _G.SpellFlyoutHorizontalBackground:SetTexture(nil)
+	-- _G.SpellFlyoutVerticalBackground:SetTexture(nil)
+	SpellFlyout.Background:Hide()
 	local function checkForFlyoutButtons()
 		local i = 1
 		local button = _G["SpellFlyoutButton" .. i]
@@ -567,7 +568,7 @@ function Module:CreateBarSkin()
 	Module:StyleAllActionButtons(cfg)
 
 	-- Update hotkeys
-	hooksecurefunc("PetActionButton_SetHotkeys", Module.UpdateHotKey)
+	-- hooksecurefunc("PetActionButton_SetHotkeys", Module.UpdateHotKey)
 	Module:UpdateStanceHotKey()
 	K:RegisterEvent("UPDATE_BINDINGS", Module.UpdateStanceHotKey)
 end

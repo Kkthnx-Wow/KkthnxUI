@@ -155,7 +155,7 @@ function Module:CreateDurabilityDataText()
 	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
 	DurabilityDataText:SetParent(PaperDollFrame)
 
-	DurabilityDataText.Texture = DurabilityDataText.Texture or DurabilityDataText:CreateTexture(nil, "BACKGROUND", PaperDollSidebarTab1)
+	DurabilityDataText.Texture = DurabilityDataText.Texture or DurabilityDataText:CreateTexture(nil, "BACKGROUND", PaperDollSidebarTab) -- Idk what this was renamed to
 	DurabilityDataText.Texture:SetPoint("TOP", PaperDollFrame, "BOTTOM", 208, 2)
 	DurabilityDataText.Texture:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-ActiveTab")
 	DurabilityDataText.Texture:SetSize(140, 48)

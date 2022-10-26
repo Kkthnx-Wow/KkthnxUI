@@ -72,7 +72,7 @@ function Module:PositionAltPowerBar()
 	_G.PlayerPowerBarAlt:SetParent(holder)
 	_G.PlayerPowerBarAlt:SetMovable(true)
 	_G.PlayerPowerBarAlt:SetUserPlaced(true)
-	_G.UIPARENT_MANAGED_FRAME_POSITIONS.PlayerPowerBarAlt = nil
+	_G.PlayerPowerBarAlt.ignoreFramePositionManager = true
 
 	K.Mover(holder, "PlayerPowerBarAlt", "Alternative Power", { "TOP", UIParent, "TOP", -1, -108 }, AltPowerWidth or 250, AltPowerHeight or 20)
 end

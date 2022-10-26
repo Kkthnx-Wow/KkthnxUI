@@ -1058,8 +1058,8 @@ function Module:OnEnable()
 	MyButton:Scaffold("Default")
 
 	function MyButton:OnCreate()
-		self:SetNormalTexture(nil)
-		self:SetPushedTexture(nil)
+		self:SetNormalTexture("")
+		self:SetPushedTexture("")
 		self:SetSize(iconSize, iconSize)
 
 		self.Icon:SetAllPoints()
@@ -1497,8 +1497,8 @@ function Module:OnEnable()
 
 	local BagButton = Backpack:GetClass("BagButton", true, "BagButton")
 	function BagButton:OnCreate()
-		self:SetNormalTexture(nil)
-		self:SetPushedTexture(nil)
+		self:SetNormalTexture("")
+		self:SetPushedTexture("")
 
 		self:SetSize(iconSize, iconSize)
 		self:CreateBorder()

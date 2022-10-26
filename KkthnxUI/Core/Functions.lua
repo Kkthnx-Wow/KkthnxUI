@@ -143,6 +143,7 @@ end
 
 do
 	-- Gradient Frame
+	local gradientFrom, gradientTo = CreateColor(0, 0, 0, 0.5), CreateColor(0.3, 0.3, 0.3, 0.3)
 	function K.CreateGF(self, w, h, o, r, g, b, a1, a2)
 		self:SetSize(w, h)
 		self:SetFrameStrata("BACKGROUND")
@@ -150,7 +151,7 @@ do
 		local gradientFrame = self:CreateTexture(nil, "BACKGROUND")
 		gradientFrame:SetAllPoints()
 		gradientFrame:SetTexture(C["Media"].Textures.BlankTexture)
-		gradientFrame:SetGradientAlpha(o, r, g, b, a1, r, g, b, a2)
+		gradientFrame:SetGradient("Vertical", gradientFrom, gradientTo)
 	end
 
 	function K.CreateFontString(self, size, text, textstyle, classcolor, anchor, x, y)

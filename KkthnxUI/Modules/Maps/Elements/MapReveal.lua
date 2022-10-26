@@ -148,7 +148,7 @@ function Module:CreateWorldMapReveal()
 		return
 	end
 
-	local bu = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsCheckButtonTemplate")
+	local bu = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsBaseCheckButtonTemplate")
 	bu:SetHitRectInsets(-5, -5, -5, -5)
 	bu:SetPoint("TOPRIGHT", -260, 0)
 	bu:SetSize(24, 24)

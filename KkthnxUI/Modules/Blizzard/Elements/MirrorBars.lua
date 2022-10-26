@@ -25,15 +25,15 @@ local function SetupMirrorBars(bar)
 	bar:CreateBorder()
 end
 
-function Module:CreateMirrorBars()
-	local previous
-	for i = 1, 3 do
-		local bar = _G["MirrorTimer" .. i]
-		SetupMirrorBars(bar)
+function Module:CreateMirrorBars() -- Broken
+	-- local previous
+	-- for i = 1, 3 do
+	-- 	local bar = _G["MirrorTimer" .. i]
+	-- 	SetupMirrorBars(bar)
 
-		if previous then
-			bar:SetPoint("TOP", previous, "BOTTOM", 0, -6)
-		end
-		previous = bar
-	end
+	-- 	if previous then
+	-- 		bar:SetPoint("TOP", previous, "BOTTOM", 0, -6)
+	-- 	end
+	-- 	previous = bar
+	-- end
 end

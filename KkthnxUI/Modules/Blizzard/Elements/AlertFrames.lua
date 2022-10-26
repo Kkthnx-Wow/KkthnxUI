@@ -190,7 +190,7 @@ function Module:CreateAlertFrames()
 	AlertFrameHolder:SetPoint("TOP", UIParent, "TOP", -1, -18)
 
 	_G.GroupLootContainer:EnableMouse(false) -- Prevent this weird non-clickable area stuff since 8.1; Monitor this, as it may cause addon compatibility.
-	_G.UIPARENT_MANAGED_FRAME_POSITIONS.GroupLootContainer = nil
+	_G.GroupLootContainer.ignoreFramePositionManager = true
 
 	if not AlertFrameHolder.Mover then
 		AlertFrameHolder.Mover = K.Mover(AlertFrameHolder, "AlertFrameMover", "Loot / Alert Frames", { "TOP", UIParent, "TOP", -1, -18 })

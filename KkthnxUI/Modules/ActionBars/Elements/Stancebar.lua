@@ -7,8 +7,8 @@ local table_insert = _G.table.insert
 local CreateFrame = _G.CreateFrame
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
-local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
-local NUM_POSSESS_SLOTS = _G.NUM_POSSESS_SLOTS
+local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS or 10
+local NUM_POSSESS_SLOTS = _G.NUM_POSSESS_SLOTS or 2
 
 local cfg = C.Bars.BarStance
 local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
@@ -57,11 +57,11 @@ function Module:CreateStancebar()
 	Module.movers[8] = frame.mover
 
 	-- StanceBar
-	_G.StanceBarFrame:SetParent(frame)
-	_G.StanceBarFrame:EnableMouse(false)
-	_G.StanceBarLeft:SetTexture(nil)
-	_G.StanceBarMiddle:SetTexture(nil)
-	_G.StanceBarRight:SetTexture(nil)
+	-- _G.StanceBarFrame:SetParent(frame) -- Broken
+	-- _G.StanceBarFrame:EnableMouse(false)
+	-- _G.StanceBarLeft:SetTexture(nil)
+	-- _G.StanceBarMiddle:SetTexture(nil)
+	-- _G.StanceBarRight:SetTexture(nil)
 
 	for i = 1, NUM_STANCE_SLOTS do
 		local button = _G["StanceButton" .. i]
@@ -70,10 +70,10 @@ function Module:CreateStancebar()
 	end
 
 	-- PossessBar
-	_G.PossessBarFrame:SetParent(frame)
-	_G.PossessBarFrame:EnableMouse(false)
-	_G.PossessBackground1:SetTexture(nil)
-	_G.PossessBackground2:SetTexture(nil)
+	-- _G.PossessBarFrame:SetParent(frame) -- Broken
+	-- _G.PossessBarFrame:EnableMouse(false)
+	-- _G.PossessBackground1:SetTexture(nil)
+	-- _G.PossessBackground2:SetTexture(nil)
 
 	for i = 1, NUM_POSSESS_SLOTS do
 		local button = _G["PossessButton" .. i]

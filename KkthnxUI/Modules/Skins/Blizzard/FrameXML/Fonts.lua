@@ -14,7 +14,7 @@ local function SetFont(obj, font, size, style, sr, sg, sb, sa, sox, soy, r, g, b
 	if not obj then
 		return
 	end
-	obj:SetFont(font, size, style)
+	obj:SetFont(font, size, style or "")
 
 	if sr and sg and sb then
 		obj:SetShadowColor(sr, sg, sb, sa)
@@ -56,11 +56,11 @@ table_insert(C.defaultThemes, function()
 
 	SetFont(_G.AchievementCriteriaFont, GetKkthnxUIFont, 10)
 	SetFont(_G.AchievementDescriptionFont, GetKkthnxUIFont, 10)
-	SetFont(_G.AchievementFont_Small, GetKkthnxUIFont, small, "NONE") -- 10 Achiev dates
-	SetFont(_G.BossEmoteNormalHuge, GetKkthnxUIFont, 24, "NONE") -- Talent Title
-	SetFont(_G.ChatBubbleFont, GetKkthnxUIFont, 10, "NONE") -- 13
+	SetFont(_G.AchievementFont_Small, GetKkthnxUIFont, small, "") -- 10 Achiev dates
+	SetFont(_G.BossEmoteNormalHuge, GetKkthnxUIFont, 24, "") -- Talent Title
+	SetFont(_G.ChatBubbleFont, GetKkthnxUIFont, 10, "") -- 13
 	SetFont(_G.CombatTextFont, GetKkthnxUIFont, 120, nil, nil, nil, nil, nil, 1, -1)
-	SetFont(_G.CoreAbilityFont, GetKkthnxUIFont, 26, "NONE") -- 32 Core abilities(title)
+	SetFont(_G.CoreAbilityFont, GetKkthnxUIFont, 26, "") -- 32 Core abilities(title)
 	SetFont(_G.DestinyFontHuge, GetKkthnxUIFont, 32) -- Garrison Mission Report
 	SetFont(_G.DestinyFontLarge, GetKkthnxUIFont, 18)
 	SetFont(_G.DestinyFontMed, GetKkthnxUIFont, 14) -- Added in 7.3.5 used for ?
@@ -171,14 +171,14 @@ table_insert(C.defaultThemes, function()
 	SetFont(_G.SystemFont_Huge2, GetKkthnxUIFont, 22) -- 22 Mythic+ Score
 	SetFont(_G.SystemFont_InverseShadow_Small, GetKkthnxUIFont, 10)
 	SetFont(_G.SystemFont_Large, GetKkthnxUIFont, 16)
-	SetFont(_G.SystemFont_LargeNamePlate, GetKkthnxUIFont, 11, "NONE", 0, 0, 0, 1, 1, -1) -- 12
-	SetFont(_G.SystemFont_LargeNamePlateFixed, GetKkthnxUIFont, 11, "NONE", 0, 0, 0, 1, 1, -1) -- 12
+	SetFont(_G.SystemFont_LargeNamePlate, GetKkthnxUIFont, 11, "", 0, 0, 0, 1, 1, -1) -- 12
+	SetFont(_G.SystemFont_LargeNamePlateFixed, GetKkthnxUIFont, 11, "", 0, 0, 0, 1, 1, -1) -- 12
 	SetFont(_G.SystemFont_Med1, GetKkthnxUIFont, normal) -- 12
 	SetFont(_G.SystemFont_Med2, GetKkthnxUIFont, 13)
 	SetFont(_G.SystemFont_Med3, GetKkthnxUIFont, medium) -- 14
-	SetFont(_G.SystemFont_NamePlate, GetKkthnxUIFont, 9, "NONE", 0, 0, 0, 1, 1, -1) -- 9
-	SetFont(_G.SystemFont_NamePlateCastBar, GetKkthnxUIFont, 11, "NONE", 0, 0, 0, 1, 1, -1) -- 12
-	SetFont(_G.SystemFont_NamePlateFixed, GetKkthnxUIFont, 9, "NONE", 0, 0, 0, 1, 1, -1) -- 9
+	SetFont(_G.SystemFont_NamePlate, GetKkthnxUIFont, 9, "", 0, 0, 0, 1, 1, -1) -- 9
+	SetFont(_G.SystemFont_NamePlateCastBar, GetKkthnxUIFont, 11, "", 0, 0, 0, 1, 1, -1) -- 12
+	SetFont(_G.SystemFont_NamePlateFixed, GetKkthnxUIFont, 9, "", 0, 0, 0, 1, 1, -1) -- 9
 	SetFont(_G.SystemFont_Outline, GetKkthnxUIFont, normal, "OUTLINE") -- 13 Pet level on World map
 	SetFont(_G.SystemFont_OutlineThick_Huge2, GetKkthnxUIFont, huge, "OUTLINE") -- 22
 	SetFont(_G.SystemFont_OutlineThick_Huge4, GetKkthnxUIFont, 26, "OUTLINE")
@@ -210,40 +210,40 @@ table_insert(C.defaultThemes, function()
 	SetFont(_G.ZoneTextString, GetKkthnxUIFont, enormous, "OUTLINE") -- 32
 
 	-- Text that does not follow our fonts fixed below
-	_G.WorldMapFrame.NavBar.homeButton.text:SetFontObject(K.UIFont)
+	-- _G.WorldMapFrame.NavBar.homeButton.text:SetFontObject(K.UIFont)
 
-	hooksecurefunc("LFGListCategorySelection_AddButton", function(self, btnIndex)
-		local button = self.CategoryButtons[btnIndex]
-		if button then
-			if not button.isFontUpdated then
-				button.Label:SetFontObject(K.UIFont)
-				button.isFontUpdated = true
-			end
-		end
-	end)
+	-- hooksecurefunc("LFGListCategorySelection_AddButton", function(self, btnIndex)
+	-- 	local button = self.CategoryButtons[btnIndex]
+	-- 	if button then
+	-- 		if not button.isFontUpdated then
+	-- 			button.Label:SetFontObject(K.UIFont)
+	-- 			button.isFontUpdated = true
+	-- 		end
+	-- 	end
+	-- end)
 
-	-- WhoFrame LevelText
-	hooksecurefunc("WhoList_Update", function()
-		local buttons = WhoListScrollFrame.buttons
-		for i = 1, #buttons do
-			local button = buttons[i]
-			local level = button.Level
-			if level and not level.fontStyled then
-				level:SetWidth(30)
-				level:SetJustifyH("LEFT")
-				level.fontStyled = true
-			end
-		end
-	end)
+	-- -- WhoFrame LevelText
+	-- hooksecurefunc("WhoList_Update", function()
+	-- 	local buttons = WhoListScrollFrame.buttons
+	-- 	for i = 1, #buttons do
+	-- 		local button = buttons[i]
+	-- 		local level = button.Level
+	-- 		if level and not level.fontStyled then
+	-- 			level:SetWidth(30)
+	-- 			level:SetJustifyH("LEFT")
+	-- 			level.fontStyled = true
+	-- 		end
+	-- 	end
+	-- end)
 
-	-- Refont Titles Panel
-	hooksecurefunc("PaperDollTitlesPane_UpdateScrollFrame", function()
-		local bu = _G.PaperDollTitlesPane.buttons
-		for i = 1, #bu do
-			if not bu[i].fontStyled then
-				SetFont(_G.bu[i].text, 12)
-				bu[i].fontStyled = true
-			end
-		end
-	end)
+	-- -- Refont Titles Panel
+	-- hooksecurefunc("PaperDollTitlesPane_UpdateScrollFrame", function()
+	-- 	local bu = _G.PaperDollTitlesPane.buttons
+	-- 	for i = 1, #bu do
+	-- 		if not bu[i].fontStyled then
+	-- 			SetFont(_G.bu[i].text, 12)
+	-- 			bu[i].fontStyled = true
+	-- 		end
+	-- 	end
+	-- end)
 end)
