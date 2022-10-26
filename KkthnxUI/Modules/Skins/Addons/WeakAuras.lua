@@ -2,7 +2,6 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
 local _G = _G
-local pairs = _G.pairs
 local unpack = _G.unpack
 
 local hooksecurefunc = _G.hooksecurefunc
@@ -71,38 +70,16 @@ local function ReskinWeakAuras()
 		return
 	end
 
-	local regionTypes = WeakAuras.regionTypes
-	local Create_Icon, Modify_Icon = regionTypes.icon.create, regionTypes.icon.modify
-	local Create_AuraBar, Modify_AuraBar = regionTypes.aurabar.create, regionTypes.aurabar.modify
-
-	regionTypes.icon.create = function(parent, data)
-		local region = Create_Icon(parent, data)
-		Skin_WeakAuras(region, "icon")
-		return region
+	local function OnPrototypeCreate(region)
+		Skin_WeakAuras(region, region.regionType)
 	end
 
-	regionTypes.aurabar.create = function(parent)
-		local region = Create_AuraBar(parent)
-		Skin_WeakAuras(region, "aurabar")
-		return region
+	local function OnPrototypeModifyFinish(_, region)
+		Skin_WeakAuras(region, region.regionType)
 	end
 
-	regionTypes.icon.modify = function(parent, region, data)
-		Modify_Icon(parent, region, data)
-		Skin_WeakAuras(region, "icon")
-	end
-
-	regionTypes.aurabar.modify = function(parent, region, data)
-		Modify_AuraBar(parent, region, data)
-		Skin_WeakAuras(region, "aurabar")
-	end
-
-	for weakAura in pairs(WeakAuras.regions) do
-		local regions = WeakAuras.regions[weakAura]
-		if regions.regionType == "icon" or regions.regionType == "aurabar" then
-			Skin_WeakAuras(regions.region, regions.regionType)
-		end
-	end
+	hooksecurefunc(WeakAuras.regionPrototype, "create", OnPrototypeCreate)
+	hooksecurefunc(WeakAuras.regionPrototype, "modifyFinish", OnPrototypeModifyFinish)
 end
 
 Module:RegisterSkin("WeakAuras", ReskinWeakAuras)

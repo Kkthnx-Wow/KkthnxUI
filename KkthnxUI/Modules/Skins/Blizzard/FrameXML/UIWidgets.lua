@@ -27,9 +27,9 @@ local function ReplaceWidgetBarTexture(self, atlas)
 	end
 end
 
-local function ResetLabelColor(text, _, _, _, force)
+local function ResetLabelColor(text, _, _, _, _, force)
 	if not force then
-		text:SetTextColor(1, 1, 1, true)
+		text:SetTextColor(1, 1, 1, 1, true)
 	end
 end
 
@@ -85,8 +85,11 @@ local function ReskinWidgetStatusBar(bar)
 		end
 
 		bar:CreateBorder()
-		ReplaceWidgetBarTexture(bar, bar:GetStatusBarAtlas())
-		hooksecurefunc(bar, "SetStatusBarAtlas", ReplaceWidgetBarTexture)
+
+		if bar.GetStatusBarAtlas then
+			ReplaceWidgetBarTexture(bar, bar:GetStatusBarAtlas())
+			hooksecurefunc(bar, "SetStatusBarAtlas", ReplaceWidgetBarTexture)
+		end
 
 		bar.styled = true
 	end
