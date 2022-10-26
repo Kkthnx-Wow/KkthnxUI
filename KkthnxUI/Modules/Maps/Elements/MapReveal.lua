@@ -152,6 +152,7 @@ function Module:CreateWorldMapReveal()
 	bu:SetHitRectInsets(-5, -5, -5, -5)
 	bu:SetPoint("TOPRIGHT", -260, 0)
 	bu:SetSize(24, 24)
+	bu:SetFrameLevel(999)
 	bu:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap)
 
 	bu.text = bu:CreateFontString(nil, "OVERLAY", "GameFontNormal")

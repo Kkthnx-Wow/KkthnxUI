@@ -119,7 +119,7 @@ C.AutoQuest = {
 		["trainer"] = true,
 	},
 
-	RogueClassHallInsignia = {
+	AautoSelectFirstOptionList = {
 		[107486] = true, -- CoS rumors
 		[167839] = true, -- soul residue, tower climbing
 		[93188] = true, -- Mongar

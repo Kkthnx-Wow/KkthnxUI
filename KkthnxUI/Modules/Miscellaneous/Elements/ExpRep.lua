@@ -106,17 +106,17 @@ function Module:ExpBar_Update(event, unit)
 	elseif GetWatchedFactionInfo() then
 		local label, rewardPending
 		local name, reaction, minValue, maxValue, curValue, factionID = GetWatchedFactionInfo()
-		--local friendshipID, standingText, nextThreshold, _
-		--friendshipID, _, _, _, _, _, standingText, _, nextThreshold = GetFriendshipReputation(factionID)
+		local repInfo = C_GossipInfo.GetFriendshipReputation(factionID)
+		local friendshipID, standingText, nextThreshold
+		friendshipID, standingText, nextThreshold = repInfo.friendshipFactionID, repInfo.standing, repInfo.nextThreshold
 
-		-- if friendshipID then
-		-- 	reaction, label = 5, standingText
+		if friendshipID then
+			reaction, label = 5, standingText
 
-		-- 	if not nextThreshold then
-		-- 		minValue, maxValue, curValue = 0, 1, 1
-		-- 	end
-		-- else
-		if C_Reputation_IsFactionParagon(factionID) then
+			if not nextThreshold then
+				minValue, maxValue, curValue = 0, 1, 1
+			end
+		elseif C_Reputation_IsFactionParagon(factionID) then
 			local current, threshold
 			current, threshold, _, rewardPending = C_Reputation_GetFactionParagonInfo(factionID)
 
@@ -228,13 +228,13 @@ function Module:ExpBar_UpdateTooltip()
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine(name, FACTION_BAR_COLORS[reaction].r, FACTION_BAR_COLORS[reaction].g, FACTION_BAR_COLORS[reaction].b)
 
-			-- local friendID, friendTextLevel, _
-			-- if factionID then
-			-- 	friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(factionID)
-			-- end
+			local repInfo = C_GossipInfo.GetFriendshipReputation(factionID)
+			local friendID, friendTextLevel
+			if factionID then
+				friendID, friendTextLevel = repInfo.friendshipFactionID, repInfo.text
+			end
 
-			-- GameTooltip:AddDoubleLine(STANDING .. ":", (friendID and friendTextLevel) or standing, 1, 1, 1)
-			GameTooltip:AddDoubleLine(STANDING .. ":", standing, 1, 1, 1)
+			GameTooltip:AddDoubleLine(STANDING .. ":", (friendID and friendTextLevel) or standing, 1, 1, 1)
 
 			if reaction ~= _G.MAX_REPUTATION_REACTION or isParagon then
 				local current, maximum, percent = GetValues(curValue, minValue, maxValue)
@@ -368,40 +368,51 @@ end
 Module:RegisterMisc("ExpRep", Module.CreateExpbar)
 
 -- Paragon reputation info
-function Module:SetupParagonRepHook()
-	local numFactions = GetNumFactions()
-	local factionOffset = FauxScrollFrame_GetOffset(ReputationListScrollFrame)
-	for i = 1, NUM_FACTIONS_DISPLAYED, 1 do
-		local factionIndex = factionOffset + i
-		local factionRow = _G["ReputationBar" .. i]
-		local factionBar = _G["ReputationBar" .. i .. "ReputationBar"]
-		local factionStanding = _G["ReputationBar" .. i .. "ReputationBarFactionStanding"]
+-- function Module:SetupParagonRepHook()
+-- 	local factionID = factionRow.factionID
+-- 	local factionContainer = factionRow.Container
+-- 	local factionBar = factionContainer.ReputationBar
+-- 	local factionStanding = factionBar.FactionStanding
 
-		if factionIndex <= numFactions then
-			local factionID = select(14, GetFactionInfo(factionIndex))
-			if factionID and C_Reputation_IsFactionParagon(factionID) then
-				local currentValue, threshold = C_Reputation_GetFactionParagonInfo(factionID)
-				if currentValue then
-					local barValue = mod(currentValue, threshold)
-					local factionStandingtext = L["Paragon"] .. math_floor(currentValue / threshold)
+-- 	if factionContainer.Paragon:IsShown() then
+-- 		local currentValue, threshold = C_Reputation_GetFactionParagonInfo(factionID)
+-- 		if currentValue then
+-- 			local barValue = mod(currentValue, threshold)
+-- 			local factionStandingtext = L["Paragon"] .. floor(currentValue / threshold)
 
-					factionBar:SetMinMaxValues(0, threshold)
-					factionBar:SetValue(barValue)
-					factionBar:SetStatusBarColor(0, 0.5, 0.9)
-					factionStanding:SetText(factionStandingtext)
-					factionRow.standingText = factionStandingtext
-					factionRow.rolloverText = string_format(REPUTATION_PROGRESS_FORMAT, K.ShortValue(barValue), K.ShortValue(threshold))
-				end
-			end
-		end
-	end
-end
+-- 			factionBar:SetMinMaxValues(0, threshold)
+-- 			factionBar:SetValue(barValue)
+-- 			factionStanding:SetText(factionStandingtext)
+-- 			factionRow.standingText = factionStandingtext
+-- 			factionRow.rolloverText = format(REPUTATION_PROGRESS_FORMAT, BreakUpLargeNumbers(barValue), BreakUpLargeNumbers(threshold))
+-- 		end
+-- 	end
+-- end
 
 function Module:CreateParagonReputation()
 	if not C["Misc"].ParagonEnable then
 		return
 	end
 
-	hooksecurefunc("ReputationFrame_Update", Module.SetupParagonRepHook)
+	hooksecurefunc("ReputationFrame_InitReputationRow", function(factionRow, elementData)
+		local factionID = factionRow.factionID
+		local factionContainer = factionRow.Container
+		local factionBar = factionContainer.ReputationBar
+		local factionStanding = factionBar.FactionStanding
+
+		if factionContainer.Paragon:IsShown() then
+			local currentValue, threshold = C_Reputation_GetFactionParagonInfo(factionID)
+			if currentValue then
+				local barValue = mod(currentValue, threshold)
+				local factionStandingtext = L["Paragon"] .. floor(currentValue / threshold)
+
+				factionBar:SetMinMaxValues(0, threshold)
+				factionBar:SetValue(barValue)
+				factionStanding:SetText(factionStandingtext)
+				factionRow.standingText = factionStandingtext
+				factionRow.rolloverText = format(REPUTATION_PROGRESS_FORMAT, BreakUpLargeNumbers(barValue), BreakUpLargeNumbers(threshold))
+			end
+		end
+	end)
 end
 Module:RegisterMisc("ParagonRep", Module.CreateParagonReputation)

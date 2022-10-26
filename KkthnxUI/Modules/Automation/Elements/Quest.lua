@@ -66,9 +66,10 @@ local function setupCheckButton()
 		return
 	end
 
-	local AutoQuestCheckButton = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsCheckButtonTemplate")
+	local AutoQuestCheckButton = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsBaseCheckButtonTemplate")
 	AutoQuestCheckButton:SetPoint("TOPRIGHT", -140, 0)
 	AutoQuestCheckButton:SetSize(24, 24)
+	AutoQuestCheckButton:SetFrameLevel(999)
 
 	AutoQuestCheckButton.text = AutoQuestCheckButton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	AutoQuestCheckButton.text:SetPoint("LEFT", 24, 0)
@@ -195,47 +196,47 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 
 	local active = C_GossipInfo_GetNumActiveQuests()
 	if active > 0 then
-		for index, questInfo in ipairs(C_GossipInfo_GetActiveQuests()) do
+		for _, questInfo in ipairs(C_GossipInfo_GetActiveQuests()) do
 			local questID = questInfo.questID
 			local isWorldQuest = questID and C_QuestLog_IsWorldQuest(questID)
-			if questInfo.isComplete and (not questID or not isWorldQuest) then
-				C_GossipInfo_SelectActiveQuest(index)
+			if questInfo.isComplete and not isWorldQuest then
+				C_GossipInfo_SelectActiveQuest(questID)
 			end
 		end
 	end
 
 	local available = C_GossipInfo_GetNumAvailableQuests()
 	if available > 0 then
-		for index, questInfo in ipairs(C_GossipInfo_GetAvailableQuests()) do
+		for _, questInfo in ipairs(C_GossipInfo_GetAvailableQuests()) do
 			local trivial = questInfo.isTrivial
 			if not trivial or IsTrackingHidden() or (trivial and npcID == 64337) then
-				C_GossipInfo_SelectAvailableQuest(index)
+				C_GossipInfo_SelectAvailableQuest(questInfo.questID)
 			end
 		end
 	end
 
-	if C["AutoQuest"].RogueClassHallInsignia[npcID] then
-		return C_GossipInfo_SelectOption(1)
+	local gossipInfoTable = C_GossipInfo_GetOptions()
+	if not gossipInfoTable then
+		return
 	end
 
-	if available == 0 and active == 0 then
-		local numOptions = C_GossipInfo_GetNumOptions()
-		if numOptions == 1 then
-			if npcID == 57850 then
-				return C_GossipInfo_SelectOption(1)
-			end
+	local numOptions = #gossipInfoTable
+	local firstOptionID = gossipInfoTable[1] and gossipInfoTable[1].gossipOptionID
 
-			local _, instance, _, _, _, _, _, mapID = GetInstanceInfo()
-			if instance ~= "raid" and not C["AutoQuest"].IgnoreGossipNPC[npcID] and not C["AutoQuest"].IgnoreInstances[mapID] then
-				local gossipInfoTable = C_GossipInfo_GetOptions()
-				local gType = gossipInfoTable[1] and gossipInfoTable[1].type
-				if gType and C["AutoQuest"].AutoGossipTypes[gType] then
-					C_GossipInfo_SelectOption(1)
-					return
-				end
+	if C["AutoQuest"].AautoSelectFirstOptionList[npcID] then
+		return C_GossipInfo_SelectOption(firstOptionID)
+	end
+
+	if available == 0 and active == 0 and numOptions == 1 then
+		local _, instance, _, _, _, _, _, mapID = GetInstanceInfo()
+		if instance ~= "raid" and not C["AutoQuest"].IgnoreGossipNPC[npcID] and not C["AutoQuest"].IgnoreInstances[mapID] then
+			return C_GossipInfo_SelectOption(firstOptionID)
+		else
+			local gType = gossipInfoTable[1] and gossipInfoTable[1].type
+			if gType and C["AutoQuest"].AutoGossipTypes[gType] then
+				C_GossipInfo_SelectOption(1)
+				return
 			end
-		elseif C["AutoQuest"].FollowerAssignees[npcID] and numOptions > 1 then
-			return C_GossipInfo_SelectOption(1)
 		end
 	end
 end)
