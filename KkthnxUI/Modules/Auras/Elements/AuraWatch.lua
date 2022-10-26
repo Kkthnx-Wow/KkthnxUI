@@ -526,7 +526,7 @@ function Module:AuraWatch_SetupAura(KEY, unit, index, filter, name, icon, count,
 	end
 
 	if frame.Count then
-		frame.Count:SetText(count > 1 and count)
+		frame.Count:SetText(count > 1 and count or "")
 	end
 
 	if frame.Cooldown then

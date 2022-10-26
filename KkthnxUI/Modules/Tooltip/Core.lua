@@ -446,7 +446,7 @@ function Module:GameTooltip_SetDefaultAnchor(parent)
 		self:SetOwner(parent, "ANCHOR_CURSOR_RIGHT")
 	else
 		if not GameTooltip_Mover then
-			GameTooltip_Mover = K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -182, 36 }, 240, 120)
+			GameTooltip_Mover = K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -218, 36 }, 240, 120)
 		end
 
 		self:SetOwner(parent, "ANCHOR_NONE")

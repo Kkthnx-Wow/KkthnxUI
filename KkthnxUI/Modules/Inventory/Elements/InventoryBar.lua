@@ -25,15 +25,23 @@ local function OnLeave()
 end
 
 function Module:SkinBag(bag)
-	local icon = _G[bag:GetName() .. "IconTexture"]
+	local icon = bag.icon or _G[bag:GetName() .. "IconTexture"]
 	bag.oldTex = icon:GetTexture()
 
-	bag.IconBorder:SetAlpha(0)
+	bag:GetNormalTexture():SetAlpha(0)
+	bag:GetPushedTexture():SetAlpha(0)
+	bag:GetHighlightTexture():SetAlpha(0)
+	bag.SlotHighlightTexture:Kill()
+	bag.CircleMask:Hide()
+
+	icon.Show = nil
+	icon:Show()
+
 	bag:StripTextures()
 	bag:CreateBorder()
 
 	icon:SetAllPoints()
-	icon:SetTexture(bag.oldTex == 1721259 and "Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\Backpack.tga" or bag.oldTex)
+	icon:SetTexture((not bag.oldTex or bag.oldTex == 1721259) and "Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\Backpack.tga" or bag.oldTex)
 	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 end
 
@@ -103,7 +111,23 @@ function Module:CreateInventoryBar()
 		table_insert(buttonList, CharacterBagSlot)
 	end
 
-	Module:SizeAndPositionBagBar()
+	local ReagentSlot = _G.CharacterReagentBag0Slot
+	if ReagentSlot then
+		ReagentSlot:SetParent(menubar)
+		ReagentSlot:HookScript("OnEnter", OnEnter)
+		ReagentSlot:HookScript("OnLeave", OnLeave)
+
+		Module:SkinBag(ReagentSlot)
+		tinsert(buttonList, ReagentSlot)
+
+		hooksecurefunc(ReagentSlot, "SetBarExpanded", Module.SizeAndPositionBagBar)
+	end
+
 	K.Mover(menubar, "BagBar", "BagBar", buttonPosition)
 	K:RegisterEvent("BAG_SLOT_FLAGS_UPDATED", Module.SizeAndPositionBagBar)
+	Module:SizeAndPositionBagBar()
+
+	if BagBarExpandToggle then
+		K.HideInterfaceOption(BagBarExpandToggle)
+	end
 end
