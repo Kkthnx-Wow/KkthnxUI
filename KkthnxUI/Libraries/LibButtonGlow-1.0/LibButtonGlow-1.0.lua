@@ -75,7 +75,7 @@ end
 
 local function CreateScaleAnim(group, target, order, duration, x, y, delay)
 	local scale = group:CreateAnimation("Scale")
-	scale:SetTarget(target:GetName())
+	scale:SetTarget(target)
 	scale:SetOrder(order)
 	scale:SetDuration(duration)
 	scale:SetScale(x, y)
@@ -87,7 +87,7 @@ end
 
 local function CreateAlphaAnim(group, target, order, duration, fromAlpha, toAlpha, delay)
 	local alpha = group:CreateAnimation("Alpha")
-	alpha:SetTarget(target:GetName())
+	alpha:SetTarget(target)
 	alpha:SetOrder(order)
 	alpha:SetDuration(duration)
 	alpha:SetFromAlpha(fromAlpha)

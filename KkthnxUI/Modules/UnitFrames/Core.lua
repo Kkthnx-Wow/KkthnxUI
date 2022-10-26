@@ -897,7 +897,7 @@ function Module:CreateUnits()
 		-- stylua: ignore
 		local function CreateGroup(name, i)
 			local group = oUF:SpawnHeader(
-				name, nil, "solo,party,raid",
+				name, nil, "show",
 				"showPlayer", true,
 				"showSolo", not showPartyFrame and C["Raid"].ShowRaidSolo,
 				"showParty", not showPartyFrame,
