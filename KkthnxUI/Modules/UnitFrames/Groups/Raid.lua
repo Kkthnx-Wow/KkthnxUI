@@ -188,9 +188,9 @@ function Module:CreateRaid()
 	Overlay:SetAllPoints(Health)
 	Overlay:SetFrameLevel(self:GetFrameLevel() + 4)
 
-	local ReadyCheckIndicator = Overlay:CreateTexture(nil, "OVERLAY", 2)
-	ReadyCheckIndicator:SetSize(22, 22)
-	ReadyCheckIndicator:SetPoint("CENTER")
+	-- local ReadyCheckIndicator = Overlay:CreateTexture(nil, "OVERLAY", 2)
+	-- ReadyCheckIndicator:SetSize(22, 22)
+	-- ReadyCheckIndicator:SetPoint("CENTER")
 
 	local PhaseIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	PhaseIndicator:SetSize(20, 20)

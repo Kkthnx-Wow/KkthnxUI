@@ -95,6 +95,6 @@ function Module:CreateBar4()
 	end
 
 	-- Fix visibility when leaving vehicle or petbattle
-	Module:FixSizebarVisibility()
+	-- Module:FixSizebarVisibility()
 	Module:UpdateFrameClickThru()
 end

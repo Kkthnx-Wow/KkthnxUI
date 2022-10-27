@@ -130,7 +130,7 @@ function Module:CreateBar1()
 		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
 	end
 
-	local actionPage = "[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]12;[overridebar]14;[shapeshift]13;[vehicleui]12;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
+	local actionPage = "[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
 	local buttonName = "ActionButton"
 	for i, button in next, buttonList do
 		frame:SetFrameRef(buttonName .. i, button)
@@ -181,32 +181,34 @@ function Module:OnEnable()
 	Module.buttons = {}
 	Module:CreateMicroMenu()
 
-	if not C["ActionBar"].Enable then
-		return
+	if C["ActionBar"].Enable then
+		if IsAddOnLoaded("Dominos") or IsAddOnLoaded("Bartender4") or IsAddOnLoaded("RazerNaga") then
+			return
+		end
+
+		Module.movers = {}
+		Module:CreateBar1()
+		Module:CreateBar2()
+		Module:CreateBar3()
+		Module:CreateBar4()
+		Module:CreateBar5()
+		Module:CreateBar678()
+		Module:CreateCustomBar()
+		Module:CreateExtrabar()
+		Module:CreateLeaveVehicle()
+		Module:CreatePetbar()
+		Module:CreateStancebar()
+		Module:HideBlizz()
+		Module:CreateBarSkin()
+
+		local function delaySize(event)
+			Module:UpdateAllScale()
+			K:UnregisterEvent(event, delaySize)
+		end
+		K:RegisterEvent("PLAYER_ENTERING_WORLD", delaySize)
 	end
 
-	if IsAddOnLoaded("Dominos") or IsAddOnLoaded("Bartender4") or IsAddOnLoaded("RazerNaga") then
-		return
+	if C["ActionBar"].Skin then
+		Module:CreateBarSkin()
 	end
-
-	Module.movers = {}
-	Module:CreateBar1()
-	Module:CreateBar2()
-	Module:CreateBar3()
-	Module:CreateBar4()
-	Module:CreateBar5()
-	Module:CreateBar678()
-	Module:CreateCustomBar()
-	Module:CreateExtrabar()
-	Module:CreateLeaveVehicle()
-	Module:CreatePetbar()
-	Module:CreateStancebar()
-	Module:HideBlizz()
-	Module:CreateBarSkin()
-
-	local function delaySize(event)
-		Module:UpdateAllScale()
-		K:UnregisterEvent(event, delaySize)
-	end
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", delaySize)
 end
