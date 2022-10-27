@@ -143,7 +143,7 @@ function Module:ForceChatSettings()
 		end
 
 		FCF_SetChatWindowFontSize(nil, frame, 12)
-		FCF_SavePositionAndDimensions(frame)
+		-- FCF_SavePositionAndDimensions(frame)
 		FCF_StopDragging(frame)
 	end
 

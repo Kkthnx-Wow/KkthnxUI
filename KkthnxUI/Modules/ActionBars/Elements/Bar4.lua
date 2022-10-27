@@ -16,7 +16,7 @@ local function updateVisibility(event)
 	if InCombatLockdown() then
 		K:RegisterEvent("PLAYER_REGEN_ENABLED", updateVisibility)
 	else
-		_G.InterfaceOptions_UpdateMultiActionBars()
+		--_G.InterfaceOptions_UpdateMultiActionBars() -- ???
 		K:UnregisterEvent(event, updateVisibility)
 	end
 end

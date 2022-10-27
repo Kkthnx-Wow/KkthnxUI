@@ -16,7 +16,6 @@ local ChatEdit_UpdateHeader = _G.ChatEdit_UpdateHeader
 local ChatFrame1 = _G.ChatFrame1
 local ChatTypeInfo = _G.ChatTypeInfo
 local ConsoleExec = _G.ConsoleExec
-local FCF_SavePositionAndDimensions = _G.FCF_SavePositionAndDimensions
 local GeneralDockManager = _G.GeneralDockManager
 local GetCVar = _G.GetCVar
 local GetChannelName = _G.GetChannelName
@@ -133,6 +132,19 @@ function Module:TabSetAlpha(alpha)
 		self:SetAlpha(1)
 	elseif alpha < 0 then
 		self:SetAlpha(0)
+	end
+end
+
+local function updateChatAnchor(self, _, _, _, x, y)
+	if not C["Chat"].Lock then
+		return
+	end
+
+	if not (x == 7 and y == 11) then
+		self:ClearAllPoints()
+		self:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 7, 11)
+		self:SetWidth(C["Chat"].Width)
+		self:SetHeight(C["Chat"].Height)
 	end
 end
 
@@ -559,8 +571,7 @@ function Module:OnEnable()
 	if C["Chat"].Lock then
 		Module:UpdateChatSize()
 		K:RegisterEvent("UI_SCALE_CHANGED", Module.UpdateChatSize)
-		hooksecurefunc("FCF_SavePositionAndDimensions", Module.UpdateChatSize)
-		FCF_SavePositionAndDimensions(ChatFrame1)
+		hooksecurefunc(ChatFrame1, "SetPoint", updateChatAnchor)
 	end
 
 	-- ProfanityFilter

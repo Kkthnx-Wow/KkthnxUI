@@ -70,8 +70,7 @@ function Module:CreateWowHeadLinks()
 		local lastAchievementLink
 
 		-- Function to set editbox value
-		hooksecurefunc("AchievementFrameAchievements_SelectButton", function(self)
-			local achievementID = self.id or nil
+		local function SetAchievementFunc(self, achievementID)
 			if achievementID then
 				-- Set editbox text
 				AchievementEditBox:SetText(urlQuestIcon .. "https://" .. wowheadLoc .. "/achievement=" .. achievementID)
@@ -87,6 +86,10 @@ function Module:CreateWowHeadLinks()
 				-- Show the editbox
 				AchievementEditBox:Show()
 			end
+		end
+		hooksecurefunc(AchievementTemplateMixin, "DisplayObjectives", SetAchievementFunc)
+		hooksecurefunc("AchievementFrameComparisonTab_OnClick", function(self)
+			AchievementEditBox:Hide()
 		end)
 
 		-- Create tooltip
@@ -109,13 +112,13 @@ function Module:CreateWowHeadLinks()
 		end)
 
 		-- Hide editbox when achievement is deselected
-		hooksecurefunc("AchievementFrameAchievements_ClearSelection", function(self)
-			AchievementEditBox:Hide()
-		end)
+		-- hooksecurefunc("AchievementFrameAchievements_ClearSelection", function(self)
+		-- 	AchievementEditBox:Hide()
+		-- end)
 
-		hooksecurefunc("AchievementCategoryButton_OnClick", function(self)
-			AchievementEditBox:Hide()
-		end)
+		-- hooksecurefunc("AchievementCategoryButton_OnClick", function(self)
+		-- 	AchievementEditBox:Hide()
+		-- end)
 	end
 
 	-- Run function when achievement UI is loaded
@@ -138,6 +141,7 @@ function Module:CreateWowHeadLinks()
 
 	-- Create editbox
 	local WorldMapEditBox = CreateFrame("EditBox", nil, WorldMapFrame.BorderFrame)
+	WorldMapEditBox:SetFrameLevel(999)
 	WorldMapEditBox:ClearAllPoints()
 	WorldMapEditBox:SetPoint("TOPLEFT", 60, -4)
 	WorldMapEditBox:SetHeight(16)
@@ -177,7 +181,7 @@ function Module:CreateWowHeadLinks()
 				WorldMapEditBox:Show()
 			end
 			-- Set editbox text
-			WorldMapEditBox:SetText(urlQuestIcon .. "https://" .. wowheadLoc .. "/quest=" .. questID)
+			WorldMapEditBox:SetText("https://" .. wowheadLoc .. "/quest=" .. questID)
 			-- Set hidden fontstring then resize editbox to match
 			WorldMapEditBox.FakeText:SetText(WorldMapEditBox:GetText())
 			WorldMapEditBox:SetWidth(WorldMapEditBox.FakeText:GetStringWidth() + 90)

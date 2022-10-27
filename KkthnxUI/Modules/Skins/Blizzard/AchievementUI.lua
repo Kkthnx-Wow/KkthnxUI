@@ -7,7 +7,7 @@ local hooksecurefunc = _G.hooksecurefunc
 C.themes["Blizzard_AchievementUI"] = function()
 	AchievementFrameSummaryCategoriesStatusBar:StripTextures()
 	AchievementFrameSummaryCategoriesStatusBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-	AchievementFrameSummaryCategoriesStatusBar:GetStatusBarTexture():SetGradient("VERTICAL", 0, 0.4, 0, 0, 0.6, 0)
+	-- AchievementFrameSummaryCategoriesStatusBar:GetStatusBarTexture():SetGradient("VERTICAL", 0, 0.4, 0, 0, 0.6, 0)
 	AchievementFrameSummaryCategoriesStatusBarTitle:SetTextColor(1, 1, 1)
 	AchievementFrameSummaryCategoriesStatusBarTitle:SetPoint("LEFT", AchievementFrameSummaryCategoriesStatusBar, "LEFT", 6, 0)
 	AchievementFrameSummaryCategoriesStatusBarText:SetPoint("RIGHT", AchievementFrameSummaryCategoriesStatusBar, "RIGHT", -5, 0)
@@ -17,12 +17,12 @@ C.themes["Blizzard_AchievementUI"] = function()
 		local bu = _G["AchievementFrameSummaryCategoriesCategory" .. i]
 		bu:StripTextures()
 		bu:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-		bu:GetStatusBarTexture():SetGradient("VERTICAL", 0, 0.4, 0, 0, 0.6, 0)
+		-- bu:GetStatusBarTexture():SetGradient("VERTICAL", 0, 0.4, 0, 0, 0.6, 0)
 		bu:CreateBorder()
 
-		bu.label:SetTextColor(1, 1, 1)
-		bu.label:SetPoint("LEFT", bu, "LEFT", 6, 0)
-		bu.text:SetPoint("RIGHT", bu, "RIGHT", -5, 0)
+		bu.Label:SetTextColor(1, 1, 1)
+		bu.Label:SetPoint("LEFT", bu, "LEFT", 6, 0)
+		bu.Text:SetPoint("RIGHT", bu, "RIGHT", -5, 0)
 
 		_G[bu:GetName() .. "ButtonHighlight"]:StripTextures()
 		_G[bu:GetName() .. "ButtonHighlight" .. "Middle"]:SetColorTexture(1, 1, 1, 0.2)
@@ -30,22 +30,22 @@ C.themes["Blizzard_AchievementUI"] = function()
 		_G[bu:GetName() .. "ButtonHighlight" .. "Middle"]:SetPoint("BOTTOMRIGHT", bu, "BOTTOMRIGHT", -2, 2)
 	end
 
-	hooksecurefunc("AchievementButton_GetProgressBar", function(index)
-		local bar = _G["AchievementFrameProgressBar" .. index]
-		if not bar.styled then
-			bar:StripTextures()
-			bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-			bar:CreateBorder()
+	-- hooksecurefunc("AchievementButton_GetProgressBar", function(index)
+	-- 	local bar = _G["AchievementFrameProgressBar" .. index]
+	-- 	if not bar.styled then
+	-- 		bar:StripTextures()
+	-- 		bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	-- 		bar:CreateBorder()
 
-			bar.styled = true
-		end
-	end)
+	-- 		bar.styled = true
+	-- 	end
+	-- end)
 
 	local bars = { AchievementFrameComparisonSummaryPlayerStatusBar, AchievementFrameComparisonSummaryFriendStatusBar }
 	for _, bar in pairs(bars) do
 		bar:StripTextures()
 		bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-		bar:GetStatusBarTexture():SetGradient("VERTICAL", 0, 0.4, 0, 0, 0.6, 0)
+		-- bar:GetStatusBarTexture():SetGradient("VERTICAL", 0, 0.4, 0, 0, 0.6, 0)
 		bar.title:SetTextColor(1, 1, 1)
 		bar.title:SetPoint("LEFT", bar, "LEFT", 6, 0)
 		bar.text:SetPoint("RIGHT", bar, "RIGHT", -5, 0)
