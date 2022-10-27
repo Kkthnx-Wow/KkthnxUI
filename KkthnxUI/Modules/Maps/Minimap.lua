@@ -349,40 +349,41 @@ function Module:ReskinRegions()
 	-- GarrisonLandingPageMinimapButton:SetFrameLevel(999)
 
 	-- QueueStatus Button
-	if QueueStatusMinimapButton then
-		QueueStatusMinimapButton:ClearAllPoints()
-		QueueStatusMinimapButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
-		QueueStatusMinimapButtonBorder:Hide()
-		QueueStatusMinimapButtonIconTexture:SetTexture(nil)
-		QueueStatusMinimapButton:SetFrameLevel(999)
+	if QueueStatusButton then -- Fix this tomorrow when I am not coding in bed
+		QueueStatusButton:ClearAllPoints()
+		QueueStatusButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 6, -7)
+		QueueStatusButtonIcon:SetScale(0.6)
+		-- QueueStatusButtonBorder:Hide()
+		-- QueueStatusButtonIconTexture:SetTexture(nil)
+		QueueStatusButton:SetFrameLevel(999)
 
-		local queueIcon = Minimap:CreateTexture(nil, "OVERLAY")
-		queueIcon:SetPoint("CENTER", QueueStatusMinimapButton)
-		queueIcon:SetSize(50, 50)
-		queueIcon:SetTexture("Interface\\Minimap\\Dungeon_Icon")
+		-- local queueIcon = Minimap:CreateTexture(nil, "OVERLAY")
+		-- queueIcon:SetPoint("CENTER", QueueStatusButton)
+		-- queueIcon:SetSize(50, 50)
+		-- queueIcon:SetTexture("Interface\\Minimap\\Dungeon_Icon")
 
-		local queueIconAnimation = queueIcon:CreateAnimationGroup()
-		queueIconAnimation:SetLooping("REPEAT")
-		queueIconAnimation.rotation = queueIconAnimation:CreateAnimation("Rotation")
-		queueIconAnimation.rotation:SetDuration(2)
-		queueIconAnimation.rotation:SetDegrees(360)
+		-- local queueIconAnimation = queueIcon:CreateAnimationGroup()
+		-- queueIconAnimation:SetLooping("REPEAT")
+		-- queueIconAnimation.rotation = queueIconAnimation:CreateAnimation("Rotation")
+		-- queueIconAnimation.rotation:SetDuration(2)
+		-- queueIconAnimation.rotation:SetDegrees(360)
 
-		hooksecurefunc("QueueStatusFrame_Update", function()
-			queueIcon:SetShown(QueueStatusMinimapButton:IsShown())
-		end)
+		-- hooksecurefunc("QueueStatusFrame_Update", function()
+		-- 	queueIcon:SetShown(QueueStatusButton:IsShown())
+		-- end)
 
-		hooksecurefunc("EyeTemplate_StartAnimating", function()
-			queueIconAnimation:Play()
-		end)
+		-- hooksecurefunc("EyeTemplate_StartAnimating", function()
+		-- 	queueIconAnimation:Play()
+		-- end)
 
-		hooksecurefunc("EyeTemplate_StopAnimating", function()
-			queueIconAnimation:Stop()
-		end)
+		-- hooksecurefunc("EyeTemplate_StopAnimating", function()
+		-- 	queueIconAnimation:Stop()
+		-- end)
 
 		local queueStatusDisplay = Module.QueueStatusDisplay
 		if queueStatusDisplay then
 			queueStatusDisplay.text:ClearAllPoints()
-			queueStatusDisplay.text:SetPoint("CENTER", queueIcon, 0, -5)
+			queueStatusDisplay.text:SetPoint("CENTER", QueueStatusButton, 0, -5)
 			queueStatusDisplay.text:SetFontObject(K.UIFont)
 
 			if queueStatusDisplay.title then
@@ -390,20 +391,6 @@ function Module:ReskinRegions()
 			end
 		end
 	end
-
-	-- Difficulty Flags
-	-- local difficultyFlags = {
-	-- 	"MiniMapInstanceDifficulty",
-	-- 	"GuildInstanceDifficulty",
-	-- 	"MiniMapChallengeMode",
-	-- }
-
-	-- for _, v in pairs(difficultyFlags) do
-	-- 	local difficultyFlag = _G[v]
-	-- 	difficultyFlag:ClearAllPoints()
-	-- 	difficultyFlag:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
-	-- 	difficultyFlag:SetScale(0.9)
-	-- end
 
 	local function updateFlagAnchor(frame, _, _, _, _, _, force)
 		if force then
@@ -749,12 +736,12 @@ function Module:ClearQueueStatus()
 end
 
 function Module:CreateQueueStatusText()
-	local display = CreateFrame("Frame", "KKUI_QueueStatusDisplay", _G.QueueStatusMinimapButton)
+	local display = CreateFrame("Frame", "KKUI_QueueStatusDisplay", _G.QueueStatusButton)
 	display.text = display:CreateFontString(nil, "OVERLAY")
 
 	Module.QueueStatusDisplay = display
 
-	_G.QueueStatusMinimapButton:HookScript("OnHide", Module.ClearQueueStatus)
+	_G.QueueStatusButton:HookScript("OnHide", Module.ClearQueueStatus)
 	hooksecurefunc("QueueStatusEntry_SetMinimalDisplay", Module.SetMinimalQueueStatus)
 	hooksecurefunc("QueueStatusEntry_SetFullDisplay", Module.SetFullQueueStatus)
 end
@@ -781,7 +768,7 @@ function Module:OnEnable()
 	self:ShowCalendar()
 	self:UpdateBlipTexture()
 	self:UpdateMinimapScale()
-	if _G.QueueStatusMinimapButton then
+	if _G.QueueStatusButton then
 		Module:CreateQueueStatusText()
 	end
 
