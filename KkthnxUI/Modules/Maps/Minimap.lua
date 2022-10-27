@@ -542,23 +542,18 @@ function Module:ShowCalendar()
 	if C["Minimap"].Calendar then
 		if not GameTimeFrame.styled then
 			GameTimeFrame:SetParent(Minimap)
-			GameTimeFrame:SetFrameLevel(16)
-			GameTimeFrame:SetScale(0.54)
+			GameTimeFrame:SetSize(26, 26)
 			GameTimeFrame:ClearAllPoints()
-			GameTimeFrame:SetPoint("TOPRIGHT", Minimap, -4, -4)
-			GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
-			GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
-			GameTimeFrame:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\Calendar.blp")
-			GameTimeFrame:SetPushedTexture("")
-			GameTimeFrame:SetHighlightTexture("")
+			GameTimeFrame:SetPoint("TOPRIGHT", Minimap, -1, -4)
 
-			-- local fs = GameTimeFrame:GetFontString() -- Broken
-			-- fs:ClearAllPoints()
-			-- fs:SetPoint("CENTER", 0, -5)
-			-- fs:SetFontObject(K.UIFont)
-			-- fs:SetFont(select(1, fs:GetFont()), 20, select(3, fs:GetFont()))
-			-- fs:SetAlpha(0.9)
-			-- fs:SetShadowOffset(0, 0)
+			for i = 1, GameTimeFrame:GetNumRegions() do
+				local region = select(i, GameTimeFrame:GetRegions())
+				if region.SetTextColor then
+					region:SetTextColor(K.r, K.g, K.b)
+					region:SetFont(K.UIFont)
+					break
+				end
+			end
 
 			GameTimeFrame.styled = true
 		end
