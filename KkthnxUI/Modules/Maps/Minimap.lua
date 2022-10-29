@@ -357,7 +357,7 @@ function Module:ReskinRegions()
 
 	-- QueueStatus Button
 	if QueueStatusButton then
-		QueueStatusButton:SetParent(Minimap)
+		QueueStatusButton:SetParent(MinimapCluster)
 		QueueStatusButton:ClearAllPoints()
 		QueueStatusButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
 		QueueStatusButton:SetFrameLevel(999)
