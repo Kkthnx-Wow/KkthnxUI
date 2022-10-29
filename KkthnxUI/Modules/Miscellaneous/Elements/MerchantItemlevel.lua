@@ -35,8 +35,9 @@ function Module:MerchantItemlevel()
 			if itemLink then
 				local _, _, quality, itemlevel, _, _, _, _, _, _, _, itemClassID = GetItemInfo(itemLink)
 				if (itemlevel and itemlevel > 1) and (quality and quality > 1) and (itemClassID == LE_ITEM_CLASS_WEAPON or itemClassID == LE_ITEM_CLASS_ARMOR) then
+					local r, g, b = GetItemQualityColor(quality or 1)
 					button.text:SetText(itemlevel)
-					button.text:SetTextColor(GetItemQualityColor(quality))
+					button.text:SetTextColor(r, g, b)
 				end
 			end
 		end

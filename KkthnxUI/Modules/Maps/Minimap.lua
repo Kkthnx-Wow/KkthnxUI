@@ -661,7 +661,7 @@ function Module:Minimap_OnMouseUp(btn)
 			ToggleDropDownMenu(1, nil, Module.TrackingDropdown, "cursor", -160, 0)
 		end
 	else
-		_G.Minimap_OnClick(self)
+		_G.Minimap:OnClick(self)
 	end
 end
 
