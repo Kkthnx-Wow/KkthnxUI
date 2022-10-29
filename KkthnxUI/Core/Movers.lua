@@ -531,6 +531,7 @@ function Module:DisableBlizzardMover()
 	end
 
 	if isUnitFrameEnable() then
+		mixin.ResetTargetAndFocus = K.Noop
 		mixin.RefreshTargetAndFocus = K.Noop
 		mixin.RefreshBossFrames = K.Noop
 	end

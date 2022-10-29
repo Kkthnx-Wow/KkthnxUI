@@ -17,6 +17,8 @@ local ChatMedia = "Interface\\AddOns\\KkthnxUI\\Media\\Chat\\"
 
 -- Actionbar
 C["ActionBar"] = {
+	["Skin"] = true,
+
 	["Bar1Font"] = 12,
 	["Bar1Num"] = 12,
 	["Bar1PerRow"] = 12,

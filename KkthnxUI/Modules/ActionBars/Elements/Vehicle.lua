@@ -6,7 +6,6 @@ local table_insert = _G.table.insert
 
 local CanExitVehicle = _G.CanExitVehicle
 local CreateFrame = _G.CreateFrame
-local MainMenuBarVehicleLeaveButton_OnEnter = _G.MainMenuBarVehicleLeaveButton_OnEnter
 local RegisterStateDriver = _G.RegisterStateDriver
 local TaxiRequestEarlyLanding = _G.TaxiRequestEarlyLanding
 local UIParent = _G.UIParent
@@ -44,7 +43,7 @@ function Module:CreateLeaveVehicle()
 	button.icon:SetDrawLayer("ARTWORK")
 	button.icon.__lockdown = true
 
-	button:SetScript("OnEnter", MainMenuBarVehicleLeaveButton_OnEnter)
+	button:SetScript("OnEnter", MainMenuBarVehicleLeaveButton.OnEnter)
 	button:SetScript("OnLeave", K.HideTooltip)
 	button:SetScript("OnClick", function(self)
 		if UnitOnTaxi("player") then

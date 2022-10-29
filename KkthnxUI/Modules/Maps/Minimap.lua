@@ -324,61 +324,72 @@ local function UpdateCovenantTexture(texture)
 end
 
 function Module:ReskinRegions()
-	-- GarrisonLandingPageMinimapButton:SetSize(22, 22)
-	-- hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function(self)
-	-- 	self:ClearAllPoints()
-	-- 	self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
-	-- 	self:SetSize(22, 22)
-	-- 	self.LoopingGlow:SetSize(24, 24)
+	local function updateMinimapButtons(self)
+		self:ClearAllPoints()
+		self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
+		self:SetNormalTexture(UpdateCovenantTexture(self))
+		self:SetPushedTexture(UpdateCovenantTexture(self))
+		self:SetHighlightTexture(UpdateCovenantTexture(self))
 
-	-- 	self:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	-- 	self:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	-- 	self:GetHighlightTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	-- 	self.LoopingGlow:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		self:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		self:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		self:GetHighlightTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-	-- 	self:SetNormalTexture(UpdateCovenantTexture(self))
-	-- 	self:SetPushedTexture(UpdateCovenantTexture(self))
-	-- 	self:SetHighlightTexture(UpdateCovenantTexture(self))
-	-- 	self.LoopingGlow:SetTexture(UpdateCovenantTexture(self))
+		self:GetPushedTexture():SetVertexColor(1, 1, 0, 0.5)
 
-	-- 	self:GetPushedTexture():SetVertexColor(1, 1, 0, 0.5)
+		self.LoopingGlow:SetTexture(UpdateCovenantTexture(self))
+		self.LoopingGlow:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-	-- 	self:SetHitRectInsets(0, 0, 0, 0)
-	-- end)
-	-- GarrisonLandingPageMinimapButton:SetScript("OnEnter", K.LandingButton_OnEnter)
-	-- GarrisonLandingPageMinimapButton:SetFrameLevel(999)
+		self:SetSize(22, 22)
+		self.LoopingGlow:SetSize(24, 24)
+
+		self:SetHitRectInsets(0, 0, 0, 0)
+		self:SetFrameLevel(999)
+	end
+
+	if ExpansionLandingPageMinimapButton then
+		ExpansionLandingPageMinimapButton:SetScript("OnEnter", K.LandingButton_OnEnter)
+
+		updateMinimapButtons(ExpansionLandingPageMinimapButton)
+		ExpansionLandingPageMinimapButton:HookScript("OnShow", updateMinimapButtons)
+		hooksecurefunc(ExpansionLandingPageMinimapButton, "UpdateIcon", updateMinimapButtons)
+	end
 
 	-- QueueStatus Button
-	if QueueStatusButton then -- Fix this tomorrow when I am not coding in bed
+	if QueueStatusButton then
+		QueueStatusButton:SetParent(Minimap)
 		QueueStatusButton:ClearAllPoints()
-		QueueStatusButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 6, -7)
-		QueueStatusButtonIcon:SetScale(0.6)
-		-- QueueStatusButtonBorder:Hide()
-		-- QueueStatusButtonIconTexture:SetTexture(nil)
+		QueueStatusButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
 		QueueStatusButton:SetFrameLevel(999)
+		QueueStatusButton:SetSize(33, 33)
 
-		-- local queueIcon = Minimap:CreateTexture(nil, "OVERLAY")
-		-- queueIcon:SetPoint("CENTER", QueueStatusButton)
-		-- queueIcon:SetSize(50, 50)
-		-- queueIcon:SetTexture("Interface\\Minimap\\Dungeon_Icon")
+		QueueStatusButtonIcon:SetAlpha(0)
 
-		-- local queueIconAnimation = queueIcon:CreateAnimationGroup()
-		-- queueIconAnimation:SetLooping("REPEAT")
-		-- queueIconAnimation.rotation = queueIconAnimation:CreateAnimation("Rotation")
-		-- queueIconAnimation.rotation:SetDuration(2)
-		-- queueIconAnimation.rotation:SetDegrees(360)
+		QueueStatusFrame:ClearAllPoints()
+		QueueStatusFrame:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
 
-		-- hooksecurefunc("QueueStatusFrame_Update", function()
-		-- 	queueIcon:SetShown(QueueStatusButton:IsShown())
-		-- end)
+		local queueIcon = Minimap:CreateTexture(nil, "ARTWORK")
+		queueIcon:SetPoint("CENTER", QueueStatusButton)
+		queueIcon:SetSize(50, 50)
+		queueIcon:SetTexture("Interface\\Minimap\\Dungeon_Icon")
 
-		-- hooksecurefunc("EyeTemplate_StartAnimating", function()
-		-- 	queueIconAnimation:Play()
-		-- end)
+		local anim = queueIcon:CreateAnimationGroup()
+		anim:SetLooping("REPEAT")
+		anim.rota = anim:CreateAnimation("Rotation")
+		anim.rota:SetDuration(2)
+		anim.rota:SetDegrees(360)
 
-		-- hooksecurefunc("EyeTemplate_StopAnimating", function()
-		-- 	queueIconAnimation:Stop()
-		-- end)
+		hooksecurefunc(QueueStatusFrame, "Update", function()
+			queueIcon:SetShown(QueueStatusButton:IsShown())
+		end)
+
+		hooksecurefunc(QueueStatusButton.Eye, "PlayAnim", function()
+			anim:Play()
+		end)
+
+		hooksecurefunc(QueueStatusButton.Eye, "StopAnimating", function()
+			anim:Pause()
+		end)
 
 		local queueStatusDisplay = Module.QueueStatusDisplay
 		if queueStatusDisplay then
