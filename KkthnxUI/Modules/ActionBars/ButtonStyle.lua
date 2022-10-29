@@ -307,6 +307,8 @@ function Module:StyleActionButton(button, cfg)
 		floatingBG:Hide()
 	end
 
+	local NormalTexture = _G[buttonName .. "NormalTexture"]
+
 	if NewActionTexture then
 		NewActionTexture:SetTexture(nil)
 	end
@@ -329,6 +331,10 @@ function Module:StyleActionButton(button, cfg)
 
 	if button.IconMask then
 		button.IconMask:Hide()
+	end
+
+	if NormalTexture then
+		NormalTexture:SetAlpha(0)
 	end
 
 	-- Backdrop
@@ -403,6 +409,7 @@ function Module:StyleExtraActionButton(cfg)
 	local count = _G[buttonName .. "Count"]
 	local buttonstyle = button.style -- Artwork around the button
 	local cooldown = _G[buttonName .. "Cooldown"]
+	local NormalTexture = _G[buttonName .. "NormalTexture"]
 
 	local normalTexture = button:GetNormalTexture()
 	local pushedTexture = button:GetPushedTexture()
@@ -420,6 +427,10 @@ function Module:StyleExtraActionButton(cfg)
 	SetupTexture(pushedTexture, cfg.pushedTexture, "SetPushedTexture", button)
 	SetupTexture(highlightTexture, cfg.highlightTexture, "SetHighlightTexture", button)
 	SetupTexture(checkedTexture, cfg.checkedTexture, "SetCheckedTexture", button)
+
+	if NormalTexture then
+		NormalTexture:SetAlpha(0)
+	end
 
 	-- Cooldown
 	SetupCooldown(cooldown, cfg.cooldown)
