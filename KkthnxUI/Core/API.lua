@@ -90,23 +90,6 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 		bFrame.KKUI_Background = true
 		bFrame.KKUI_Background = kkui_background
 	end
-
-	-- Background texture
-	if bFrame and not bFrame.KKUI_BGTex then -- Do not keep creating it!
-		-- if not C["Skins"]BackgroundLinesTexture then
-		-- 	return
-		-- end
-
-		local kkui_bgtex = bFrame:CreateTexture(nil, "BACKGROUND", nil, -1)
-		kkui_bgtex:SetAllPoints(bFrame)
-		kkui_bgtex:SetTexture(C["Media"].Textures.BGLineTexture, true, true)
-		kkui_bgtex:SetHorizTile(true)
-		kkui_bgtex:SetVertTile(true)
-		kkui_bgtex:SetBlendMode("ADD")
-
-		bFrame.KKUI_BGTex = true
-		bFrame.KKUI_BGTex = kkui_bgtex
-	end
 end
 
 -- Simple Create Backdrop.

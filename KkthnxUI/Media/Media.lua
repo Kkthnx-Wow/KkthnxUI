@@ -20,7 +20,6 @@ C["Media"] = {
 
 	["Textures"] = {
 		ArrowTexture = K.MediaFolder .. "Textures\\Arrow.tga",
-		BGLineTexture = K.MediaFolder .. "Textures\\BGLineTexture",
 		BlankTexture = K.MediaFolder .. "Textures\\BlankTexture.blp",
 		CopyChatTexture = K.MediaFolder .. "Chat\\Copy.tga",
 		GlowTexture = K.MediaFolder .. "Textures\\GlowTex.tga",

@@ -6,7 +6,6 @@ local table_insert = _G.table.insert
 
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
-local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
 local cfg = C.Bars.BarExtra
@@ -17,6 +16,7 @@ function Module:CreateExtrabar()
 	local size = cfg.size
 	local ZoneAbilityFrame = _G.ZoneAbilityFrame
 	local ExtraAbilityContainer = _G.ExtraAbilityContainer
+	local RegisterStateDriver = _G.RegisterStateDriver
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBarExtra", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(size + 2 * padding)

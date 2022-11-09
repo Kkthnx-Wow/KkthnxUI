@@ -6,14 +6,13 @@ local math_min = _G.math.min
 local math_ceil = _G.math.ceil
 local table_insert = _G.table.insert
 
-local RegisterStateDriver = _G.RegisterStateDriver
-
 local cfg = C.Bars.Bar4
 local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
 
 function Module:SetupCustomBar(anchor)
 	local num = 12
 	local name = "KKUI_ActionBarX"
+	local RegisterStateDriver = _G.RegisterStateDriver
 	local page = 8
 
 	local frame = CreateFrame("Frame", name, UIParent, "SecureHandlerStateTemplate")

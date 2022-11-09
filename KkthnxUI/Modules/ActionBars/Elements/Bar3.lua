@@ -5,8 +5,6 @@ local _G = _G
 local table_insert = _G.table.insert
 
 local CreateFrame = _G.CreateFrame
-local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
-local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
 local cfg = C.Bars.Bar3
@@ -14,6 +12,7 @@ local margin = C.Bars.BarMargin
 
 function Module:CreateBar3()
 	local num = NUM_ACTIONBAR_BUTTONS
+	local RegisterStateDriver = _G.RegisterStateDriver
 	local buttonList = {}
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBar3", UIParent, "SecureHandlerStateTemplate")

@@ -6,8 +6,6 @@ local table_insert = _G.table.insert
 
 local CreateFrame = _G.CreateFrame
 local InCombatLockdown = _G.InCombatLockdown
-local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
-local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
 local cfg = C.Bars.Bar4
@@ -63,6 +61,7 @@ end
 
 function Module:CreateBar4()
 	local num = NUM_ACTIONBAR_BUTTONS
+	local RegisterStateDriver = _G.RegisterStateDriver
 	local buttonList = {}
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBar4", UIParent, "SecureHandlerStateTemplate")

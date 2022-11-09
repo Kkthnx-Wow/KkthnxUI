@@ -36,7 +36,6 @@ local IsItemInRange = _G.IsItemInRange
 local ItemHasRange = _G.ItemHasRange
 local QuestHasPOIInfo = _G.QuestHasPOIInfo
 local RANGE_INDICATOR = _G.RANGE_INDICATOR
-local RegisterStateDriver = _G.RegisterStateDriver
 local TOOLTIP_UPDATE_TIME = _G.TOOLTIP_UPDATE_TIME
 local UIParent = _G.UIParent
 
@@ -143,6 +142,7 @@ end
 
 function ExtraQuestButton:PLAYER_LOGIN()
 	local ExtraActionButton1 = _G.ExtraActionButton1
+	local RegisterStateDriver = _G.RegisterStateDriver
 
 	RegisterStateDriver(self, "visible", visibilityState)
 	self:SetAttribute("_onattributechanged", onAttributeChanged)
@@ -268,6 +268,8 @@ ExtraQuestButton:SetScript("OnUpdate", function(self, elapsed)
 end)
 
 ExtraQuestButton:SetScript("OnEnable", function(self)
+	local RegisterStateDriver = _G.RegisterStateDriver
+
 	RegisterStateDriver(self, "visible", visibilityState)
 	self:SetAttribute("_onattributechanged", onAttributeChanged)
 	self:Update()
@@ -275,6 +277,8 @@ ExtraQuestButton:SetScript("OnEnable", function(self)
 end)
 
 ExtraQuestButton:SetScript("OnDisable", function(self)
+	local RegisterStateDriver = _G.RegisterStateDriver
+
 	if not self:IsMovable() then
 		self:SetMovable(true)
 	end

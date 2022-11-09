@@ -9,6 +9,7 @@ local margin = C.Bars.BarMargin
 
 local function createBar(index, offset)
 	local num = NUM_ACTIONBAR_BUTTONS
+	local RegisterStateDriver = _G.RegisterStateDriver
 	local buttonList = {}
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBar" .. index, UIParent, "SecureHandlerStateTemplate")
