@@ -788,31 +788,15 @@ function Module:OnEnable()
 	Minimap:SetScript("OnMouseUp", Module.Minimap_OnMouseUp)
 
 	-- Hide Blizz
-	local frames = {
-		"MinimapBorderTop",
-		"MinimapNorthTag",
-		"MinimapBorder",
-		"MinimapZoneTextButton",
-		"MinimapZoomOut",
-		"MinimapZoomIn",
-		"MiniMapWorldMapButton",
-		"MiniMapMailBorder",
-		"MiniMapTracking",
-		"MinimapCompassTexture", -- isNewPatch
-	}
-
-	for _, v in pairs(frames) do
-		K.HideInterfaceOption(_G[v])
-	end
-
 	MinimapCluster:EnableMouse(false)
+	MinimapCluster.Tracking:Hide()
+	MinimapCluster.BorderTop:Hide()
+	MinimapCluster.ZoneTextButton:Hide()
 	Minimap:SetArchBlobRingScalar(0)
 	Minimap:SetQuestBlobRingScalar(0)
 	K.HideInterfaceOption(Minimap.ZoomIn)
 	K.HideInterfaceOption(Minimap.ZoomOut)
-	MinimapCluster.Tracking:Hide()
-	MinimapCluster.BorderTop:Hide()
-	MinimapCluster.ZoneTextButton:Hide()
+	K.HideInterfaceOption(MinimapCompassTexture)
 
 	-- Add Elements
 	self:CreatePing()

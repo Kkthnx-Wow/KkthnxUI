@@ -120,8 +120,6 @@ function LibChangelog:ShowChangelog(addonName)
 		UIParentInsetScrollBar:SkinScrollBar()
 
 		frame.CloseButton:SkinCloseButton()
-		frame.CloseButton:ClearAllPoints()
-		frame.CloseButton:SetPoint("RIGHT", frame, "TOPRIGHT", 3, -13)
 
 		frame.CheckButton = CreateFrame("CheckButton", nil, frame, "UICheckButtonTemplate")
 		frame.CheckButton:SetChecked(addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey])

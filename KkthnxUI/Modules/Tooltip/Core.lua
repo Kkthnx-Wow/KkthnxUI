@@ -103,6 +103,10 @@ function Module:HideLines()
 
 	for i = 3, self:NumLines() do
 		local tiptext = _G["GameTooltipTextLeft" .. i]
+		if not tiptext then
+			break
+		end
+
 		local linetext = tiptext:GetText()
 		if linetext then
 			if linetext == PVP then
@@ -134,6 +138,10 @@ function Module:GetLevelLine()
 
 	for i = 2, self:NumLines() do
 		local tiptext = _G["GameTooltipTextLeft" .. i]
+		if not tiptext then
+			break
+		end
+
 		local linetext = tiptext:GetText()
 		if linetext and string_find(linetext, LEVEL) then
 			return tiptext

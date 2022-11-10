@@ -23,12 +23,6 @@ function Module:CreateBar5()
 	_G.MultiBarLeft:EnableMouse(false)
 	_G.MultiBarLeft.QuickKeybindGlow:SetTexture("")
 
-	hooksecurefunc(_G.MultiBarLeft, "SetScale", function(self, scale, force)
-		if not force and scale ~= 1 then
-			self:SetScale(1, true)
-		end
-	end)
-
 	for i = 1, num do
 		local button = _G["MultiBarLeftButton" .. i]
 		table_insert(buttonList, button)

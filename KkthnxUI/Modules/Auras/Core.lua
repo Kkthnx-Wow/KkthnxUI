@@ -39,7 +39,7 @@ function Module:HideBlizBuff()
 
 	K.HideInterfaceOption(_G.BuffFrame)
 	K.HideInterfaceOption(_G.DebuffFrame)
-	K.HideInterfaceOption(_G.TemporaryEnchantFrame)
+	-- K.HideInterfaceOption(_G.TemporaryEnchantFrame)
 end
 
 function Module:BuildBuffFrame()

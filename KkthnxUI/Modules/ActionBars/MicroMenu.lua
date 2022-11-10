@@ -177,9 +177,9 @@ function Module:CreateMicroMenu()
 	if MainMenuMicroButton.MainMenuBarPerformanceBar then
 		K.HideInterfaceOption(MainMenuMicroButton.MainMenuBarPerformanceBar)
 	end
-	K.HideInterfaceOption(_G.MicroButtonPortrait)
-	K.HideInterfaceOption(_G.GuildMicroButtonTabard)
-	K.HideInterfaceOption(_G.MainMenuBarDownload)
-	K.HideInterfaceOption(_G.HelpOpenWebTicketButton)
+	-- K.HideInterfaceOption(_G.MicroButtonPortrait)
+	-- K.HideInterfaceOption(_G.GuildMicroButtonTabard)
+	-- K.HideInterfaceOption(_G.MainMenuBarDownload)
+	-- K.HideInterfaceOption(_G.HelpOpenWebTicketButton)
 	_G.MainMenuMicroButton:SetScript("OnUpdate", nil)
 end

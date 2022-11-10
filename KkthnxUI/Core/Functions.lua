@@ -549,10 +549,6 @@ end
 
 do
 	function K.HideInterfaceOption(self)
-		if not self then
-			return
-		end
-
 		self:SetAlpha(0)
 		self:SetScale(0.0001)
 	end

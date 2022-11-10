@@ -238,5 +238,4 @@ function Module:OnEnable()
 	if not InCombatLockdown() then
 		SetCVar("countdownForCooldowns", 0)
 	end
-	K.HideInterfaceOption(_G.InterfaceOptionsActionBarsPanelCountdownCooldowns)
 end

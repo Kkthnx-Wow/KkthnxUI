@@ -35,6 +35,10 @@ local types = {
 }
 
 function Module:AddLineForID(id, linkType, noadd)
+	if self:IsForbidden() then
+		return
+	end
+
 	for i = 1, self:NumLines() do
 		local line = _G[self:GetName() .. "TextLeft" .. i]
 		if not line then
@@ -76,6 +80,10 @@ function Module:AddLineForID(id, linkType, noadd)
 end
 
 function Module:SetHyperLinkID(link)
+	if self:IsForbidden() then
+		return
+	end
+
 	local linkType, id = string_match(link, "^(%a+):(%d+)")
 	if not linkType or not id then
 		return
@@ -97,6 +105,10 @@ function Module:SetHyperLinkID(link)
 end
 
 function Module:SetItemID()
+	if self:IsForbidden() then
+		return
+	end
+
 	local link = select(2, self:GetItem())
 	if link then
 		local id = GetItemInfoFromHyperlink(link)
@@ -132,6 +144,10 @@ function Module:CreateTooltipID()
 
 	-- Spells
 	hooksecurefunc(GameTooltip, "SetUnitAura", function(self, ...)
+		if self:IsForbidden() then
+			return
+		end
+
 		local id = select(10, UnitAura(...))
 		if id then
 			Module.AddLineForID(self, id, types.spell)

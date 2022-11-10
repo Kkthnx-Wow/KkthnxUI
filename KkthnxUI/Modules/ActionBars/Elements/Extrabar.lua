@@ -24,10 +24,15 @@ function Module:CreateExtrabar()
 	frame.mover = K.Mover(frame, "Extrabar", "Extrabar", { "BOTTOM", UIParent, "BOTTOM", 270, 48 })
 
 	_G.ExtraActionBarFrame:EnableMouse(false)
-	_G.ExtraAbilityContainer:SetParent(frame)
-	_G.ExtraAbilityContainer:ClearAllPoints()
-	_G.ExtraAbilityContainer:SetPoint("CENTER", frame, 0, 2 * padding)
-	_G.ExtraAbilityContainer.ignoreFramePositionManager = true
+	ExtraActionBarFrame:ClearAllPoints()
+	ExtraActionBarFrame:SetPoint("CENTER", frame)
+	ExtraActionBarFrame.ignoreFramePositionManager = true
+
+	hooksecurefunc(ExtraActionBarFrame, "SetParent", function(self, parent)
+		if parent == ExtraAbilityContainer then
+			self:SetParent(frame)
+		end
+	end)
 
 	local button = _G.ExtraActionButton1
 	table_insert(buttonList, button)

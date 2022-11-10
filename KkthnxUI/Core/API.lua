@@ -261,7 +261,95 @@ local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
 	end
 end
 
-local function SetModifiedBackdrop(self)
+-- local function SetModifiedBackdrop(self)
+-- 	if not self:IsEnabled() then
+-- 		return
+-- 	end
+
+-- 	self.KKUI_Border:SetVertexColor(102 / 255, 157 / 255, 255 / 255)
+-- end
+
+-- local function SetOriginalBackdrop(self)
+-- 	if C["General"].ColorTextures then
+-- 		self.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+-- 	else
+-- 		self.KKUI_Border:SetVertexColor(1, 1, 1)
+-- 	end
+-- end
+
+-- local blizzButtonRegions = {
+-- 	"Left",
+-- 	"Middle",
+-- 	"Right",
+-- 	"Mid",
+-- 	"LeftDisabled",
+-- 	"MiddleDisabled",
+-- 	"RightDisabled",
+-- 	"TopLeft",
+-- 	"TopRight",
+-- 	"BottomLeft",
+-- 	"BottomRight",
+-- 	"TopMiddle",
+-- 	"MiddleLeft",
+-- 	"MiddleRight",
+-- 	"BottomMiddle",
+-- 	"MiddleMiddle",
+-- 	"TabSpacer",
+-- 	"TabSpacer1",
+-- 	"TabSpacer2",
+-- 	"_RightSeparator",
+-- 	"_LeftSeparator",
+-- 	"Cover",
+-- 	"Border",
+-- 	"Background",
+-- 	"TopTex",
+-- 	"TopLeftTex",
+-- 	"TopRightTex",
+-- 	"LeftTex",
+-- 	"BottomTex",
+-- 	"BottomLeftTex",
+-- 	"BottomRightTex",
+-- 	"RightTex",
+-- 	"MiddleTex",
+-- }
+
+-- local function SkinButton(f, forceStrip)
+-- 	if f.SetNormalTexture then
+-- 		f:SetNormalTexture("")
+-- 	end
+
+-- 	if f.SetHighlightTexture then
+-- 		f:SetHighlightTexture("")
+-- 	end
+
+-- 	if f.SetPushedTexture then
+-- 		f:SetPushedTexture("")
+-- 	end
+
+-- 	if f.SetDisabledTexture then
+-- 		f:SetDisabledTexture("")
+-- 	end
+
+-- 	local buttonName = f.GetName and f:GetName()
+-- 	for _, region in pairs(blizzButtonRegions) do
+-- 		region = buttonName and _G[buttonName .. region] or f[region]
+-- 		if region then
+-- 			region:SetAlpha(0)
+-- 		end
+-- 	end
+
+-- 	if forceStrip then
+-- 		f:StripTextures()
+-- 	end
+
+-- 	f:CreateBorder()
+
+-- 	f:HookScript("OnEnter", SetModifiedBackdrop)
+-- 	f:HookScript("OnLeave", SetOriginalBackdrop)
+-- end
+
+-- Handle button
+local function Button_OnEnter(self)
 	if not self:IsEnabled() then
 		return
 	end
@@ -269,7 +357,7 @@ local function SetModifiedBackdrop(self)
 	self.KKUI_Border:SetVertexColor(102 / 255, 157 / 255, 255 / 255)
 end
 
-local function SetOriginalBackdrop(self)
+local function Button_OnLeave(self)
 	if C["General"].ColorTextures then
 		self.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 	else
@@ -277,7 +365,7 @@ local function SetOriginalBackdrop(self)
 	end
 end
 
-local blizzButtonRegions = {
+local blizzRegions = {
 	"Left",
 	"Middle",
 	"Right",
@@ -311,64 +399,81 @@ local blizzButtonRegions = {
 	"BottomRightTex",
 	"RightTex",
 	"MiddleTex",
+	"Center",
 }
 
-local function SkinButton(f, forceStrip)
-	if f.SetNormalTexture then
-		f:SetNormalTexture("")
+local function SkinButton(self, override)
+	if self.SetNormalTexture and not override then
+		self:SetNormalTexture(0)
 	end
 
-	if f.SetHighlightTexture then
-		f:SetHighlightTexture("")
+	if self.SetHighlightTexture then
+		self:SetHighlightTexture(0)
 	end
 
-	if f.SetPushedTexture then
-		f:SetPushedTexture("")
+	if self.SetPushedTexture then
+		self:SetPushedTexture(0)
 	end
 
-	if f.SetDisabledTexture then
-		f:SetDisabledTexture("")
+	if self.SetDisabledTexture then
+		self:SetDisabledTexture(0)
 	end
 
-	local buttonName = f.GetName and f:GetName()
-	for _, region in pairs(blizzButtonRegions) do
-		region = buttonName and _G[buttonName .. region] or f[region]
+	local buttonName = self.GetName and self:GetName()
+	for _, region in pairs(blizzRegions) do
+		region = buttonName and _G[buttonName .. region] or self[region]
 		if region then
 			region:SetAlpha(0)
+			region:Hide()
 		end
 	end
 
-	if forceStrip then
-		f:StripTextures()
-	end
+	self:CreateBorder()
 
-	f:CreateBorder()
-
-	f:HookScript("OnEnter", SetModifiedBackdrop)
-	f:HookScript("OnLeave", SetOriginalBackdrop)
+	self:HookScript("OnEnter", Button_OnEnter)
+	self:HookScript("OnLeave", Button_OnLeave)
 end
 
-local function SkinCloseButton(f, point, texture)
-	assert(f, "doesnt exist!")
+-- Handle close button
+local function CloseTexture_OnEnter(self)
+	if self:IsEnabled() then
+		self.__texture:SetVertexColor(1, 0, 0)
+	end
+end
 
-	f:StripTextures()
-	f:CreateBorder(nil, nil, nil, nil, -12, nil, nil, nil, nil, nil, nil, nil, 8)
+local function CloseTexture_OnLeave(self)
+	self.__texture:SetVertexColor(1, 1, 1)
+end
 
-	f:HookScript("OnEnter", SetModifiedBackdrop)
-	f:HookScript("OnLeave", SetOriginalBackdrop)
-	f:SetHitRectInsets(6, 6, 7, 7)
+local function SkinCloseButton(self, parent, xOffset, yOffset)
+	parent = parent or self:GetParent()
+	xOffset = xOffset or -6
+	yOffset = yOffset or -6
 
-	local closeTexture = texture or CustomCloseButton
-	if not f.button then
-		f.button = f:CreateTexture(nil, "OVERLAY")
-		f.button:SetSize(16, 16)
-		f.button:SetTexture(closeTexture)
-		f.button:SetPoint("CENTER", f, "CENTER")
+	self:SetSize(16, 16)
+	self:ClearAllPoints()
+	self:SetPoint("TOPRIGHT", parent, "TOPRIGHT", xOffset, yOffset)
+
+	self:StripTextures()
+	if self.Border then
+		self.Border:SetAlpha(0)
 	end
 
-	if point then
-		f:SetPoint("TOPRIGHT", point, "TOPRIGHT", 2, 2)
-	end
+	self:CreateBorder()
+
+	self:SetDisabledTexture("")
+	local dis = self:GetDisabledTexture()
+	dis:SetVertexColor(0, 0, 0, 0.4)
+	dis:SetDrawLayer("OVERLAY")
+	dis:SetAllPoints()
+
+	local tex = self:CreateTexture()
+	tex:SetTexture(CustomCloseButton)
+	tex:SetAllPoints()
+	self.__texture = tex
+
+	self:HookScript("OnEnter", CloseTexture_OnEnter)
+	self:HookScript("OnLeave", CloseTexture_OnLeave)
 end
 
 local function SkinCheckBox(f)

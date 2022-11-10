@@ -550,8 +550,8 @@ _G.SLASH_KKUI_INSTALLER1 = "/install"
 function Module:OnEnable()
 	print(K.Title .. " " .. K.GreyColor .. K.Version .. "|r " .. K.SystemColor .. K.Client .. "|r")
 	-- Hide options
-	K.HideInterfaceOption(_G.Display_UseUIScale)
-	K.HideInterfaceOption(_G.Display_UIScaleSlider)
+	-- K.HideInterfaceOption(_G.Display_UseUIScale)
+	-- K.HideInterfaceOption(_G.Display_UIScaleSlider)
 
 	-- Tutorial and settings
 	Module.ForceAddonSkins()

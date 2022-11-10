@@ -337,6 +337,10 @@ function Module:StyleActionButton(button, cfg)
 		NormalTexture:SetAlpha(0)
 	end
 
+	if button.SpellHighlightTexture then
+		button.SpellHighlightTexture:SetAllPoints()
+	end
+
 	-- Backdrop
 	button:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 0.7, 0.7, 0.7)
 	button:StyleButton()
@@ -430,6 +434,10 @@ function Module:StyleExtraActionButton(cfg)
 
 	if NormalTexture then
 		NormalTexture:SetAlpha(0)
+	end
+
+	if button.IconMask then
+		button.IconMask:Hide()
 	end
 
 	-- Cooldown

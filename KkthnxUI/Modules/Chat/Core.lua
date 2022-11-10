@@ -21,7 +21,6 @@ local GetCVar = _G.GetCVar
 local GetChannelName = _G.GetChannelName
 local GetInstanceInfo = _G.GetInstanceInfo
 local InCombatLockdown = _G.InCombatLockdown
-local InterfaceOptionsSocialPanelChatStyle = _G.InterfaceOptionsSocialPanelChatStyle
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsInGroup = _G.IsInGroup
@@ -552,7 +551,6 @@ function Module:OnEnable()
 	end
 	SetCVar("chatStyle", "classic")
 	SetCVar("chatMouseScroll", 1) -- Enable mousescroll
-	K.HideInterfaceOption(InterfaceOptionsSocialPanelChatStyle)
 	_G.CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
 
 	-- Add Elements

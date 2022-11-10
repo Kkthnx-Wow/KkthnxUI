@@ -30,6 +30,7 @@ function Module:UpdateStanceBar()
 			button:ClearAllPoints()
 			if i == 1 then
 				button:SetPoint("TOPLEFT", frame, padding, -padding)
+				button.SetPoint = K.Noop
 			elseif mod(i - 1, perRow) == 0 then
 				button:SetPoint("TOP", frame.buttons[i - perRow], "BOTTOM", 0, -margin)
 			else
@@ -57,11 +58,8 @@ function Module:CreateStancebar()
 	Module.movers[8] = frame.mover
 
 	-- StanceBar
-	-- _G.StanceBarFrame:SetParent(frame) -- Broken
-	-- _G.StanceBarFrame:EnableMouse(false)
-	-- _G.StanceBarLeft:SetTexture(nil)
-	-- _G.StanceBarMiddle:SetTexture(nil)
-	-- _G.StanceBarRight:SetTexture(nil)
+	StanceBar:SetParent(frame)
+	StanceBar:EnableMouse(false)
 
 	for i = 1, NUM_STANCE_SLOTS do
 		local button = _G["StanceButton" .. i]
@@ -70,10 +68,8 @@ function Module:CreateStancebar()
 	end
 
 	-- PossessBar
-	-- _G.PossessBarFrame:SetParent(frame) -- Broken
-	-- _G.PossessBarFrame:EnableMouse(false)
-	-- _G.PossessBackground1:SetTexture(nil)
-	-- _G.PossessBackground2:SetTexture(nil)
+	PossessActionBar:SetParent(frame)
+	PossessActionBar:EnableMouse(false)
 
 	for i = 1, NUM_POSSESS_SLOTS do
 		local button = _G["PossessButton" .. i]

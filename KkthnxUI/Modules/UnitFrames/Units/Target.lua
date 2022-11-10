@@ -268,7 +268,7 @@ function Module:CreateTarget()
 
 		-- Default CombatText
 		SetCVar("enableFloatingCombatText", 0)
-		K.HideInterfaceOption(_G.InterfaceOptionsCombatPanelEnableFloatingCombatText)
+		-- K.HideInterfaceOption(_G.InterfaceOptionsCombatPanelEnableFloatingCombatText)
 	end
 
 	if C["Unitframe"].PvPIndicator then
