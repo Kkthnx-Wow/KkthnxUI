@@ -158,7 +158,7 @@ function Module:CreateDurabilityDataText()
 	DurabilityDataText.Texture = DurabilityDataText.Texture or DurabilityDataText:CreateTexture(nil, "BACKGROUND", PaperDollSidebarTab) -- Idk what this was renamed to
 	DurabilityDataText.Texture:SetPoint("TOP", PaperDollFrame, "BOTTOM", 208, 2)
 	DurabilityDataText.Texture:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-ActiveTab")
-	DurabilityDataText.Texture:SetSize(140, 48)
+	DurabilityDataText.Texture:SetSize(140, 50)
 
 	DurabilityDataText.Text = DurabilityDataText.Text or DurabilityDataText:CreateFontString(nil, "ARTWORK")
 	DurabilityDataText.Text:SetPoint("CENTER", DurabilityDataText.Texture, "CENTER", 0, 12)

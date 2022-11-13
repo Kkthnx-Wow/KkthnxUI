@@ -1,7 +1,5 @@
 local K, C = unpack(KkthnxUI)
-
 local oUF = K.oUF
-assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 -- Sourced: yClassColors (yleaf)
 -- Edited: KkthnxUI (Kkthnx)
@@ -16,7 +14,6 @@ local unpack = _G.unpack
 local BNET_CLIENT_WOW = _G.BNET_CLIENT_WOW
 local C_BattleNet_GetFriendAccountInfo = _G.C_BattleNet.GetFriendAccountInfo
 local C_FriendList_GetFriendInfoByIndex = _G.C_FriendList.GetFriendInfoByIndex
-local C_FriendList_GetNumWhoResults = _G.C_FriendList.GetNumWhoResults
 local C_FriendList_GetWhoInfo = _G.C_FriendList.GetWhoInfo
 local FRIENDS_BUTTON_TYPE_BNET = _G.FRIENDS_BUTTON_TYPE_BNET
 local FRIENDS_BUTTON_TYPE_WOW = _G.FRIENDS_BUTTON_TYPE_WOW
@@ -29,6 +26,7 @@ local GetGuildTradeSkillInfo = _G.GetGuildTradeSkillInfo
 local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
 local GetRealZoneText = _G.GetRealZoneText
 local UIDropDownMenu_GetSelectedID = _G.UIDropDownMenu_GetSelectedID
+local UNKNOWN = _G.UNKNOWN
 local hooksecurefunc = _G.hooksecurefunc
 
 -- Colors
@@ -49,8 +47,35 @@ local function diffColor(level)
 	return K.RGBToHex(GetQuestDifficultyColor(level))
 end
 
-local rankColor = { 1, 0, 0, 1, 1, 0, 0, 1, 0 }
-local repColor = { 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1 }
+local rankColor = {
+	1,
+	0,
+	0,
+	1,
+	1,
+	0,
+	0,
+	1,
+	0,
+}
+
+local repColor = {
+	1,
+	0,
+	0,
+	1,
+	1,
+	0,
+	0,
+	1,
+	0,
+	0,
+	1,
+	1,
+	0,
+	0,
+	1,
+}
 
 local function smoothColor(cur, max, color)
 	local r, g, b = oUF:RGBColorGradient(cur, max, unpack(color))
@@ -65,6 +90,7 @@ end
 
 local function updateGuildView()
 	currentView = currentView or GetCVar("guildRosterView")
+
 	local playerArea = GetRealZoneText()
 	local buttons = GuildRosterContainer.buttons
 
@@ -100,7 +126,7 @@ local function updateGuildView()
 end
 
 local function updateGuildUI(event, addon)
-	if addon ~= "Blizzard_GuildUI" or C["Misc"].EnhancedFriends ~= true then
+	if addon ~= "Blizzard_GuildUI" then
 		return
 	end
 
@@ -115,18 +141,13 @@ K:RegisterEvent("ADDON_LOADED", updateGuildUI)
 -- Friends
 local FRIENDS_LEVEL_TEMPLATE = FRIENDS_LEVEL_TEMPLATE:gsub("%%d", "%%s")
 FRIENDS_LEVEL_TEMPLATE = FRIENDS_LEVEL_TEMPLATE:gsub("%$d", "%$s")
-local function friendsFrame()
-	if C["Misc"].EnhancedFriends ~= true then
-		return
-	end
 
-	local scrollFrame = FriendsListFrameScrollFrame
-	local buttons = scrollFrame.buttons
+hooksecurefunc(FriendsListFrame.ScrollBox, "Update", function(self)
 	local playerArea = GetRealZoneText()
 
-	for i = 1, #buttons do
+	for i = 1, self.ScrollTarget:GetNumChildren() do
+		local button = select(i, self.ScrollTarget:GetChildren())
 		local nameText, infoText
-		local button = buttons[i]
 		if button:IsShown() then
 			if button.buttonType == FRIENDS_BUTTON_TYPE_WOW then
 				local info = C_FriendList_GetFriendInfoByIndex(button.id)
@@ -143,7 +164,7 @@ local function friendsFrame()
 					local gameAccountInfo = accountInfo.gameAccountInfo
 					if gameAccountInfo.isOnline and gameAccountInfo.clientProgram == BNET_CLIENT_WOW then
 						local charName = gameAccountInfo.characterName
-						local faction = gameAccountInfo.factionName
+						-- local faction = gameAccountInfo.factionName
 						local class = gameAccountInfo.className or UNKNOWN
 						local zoneName = gameAccountInfo.areaName or UNKNOWN
 						if accountName and charName and class then
@@ -160,40 +181,29 @@ local function friendsFrame()
 		if nameText then
 			button.name:SetText(nameText)
 		end
-
 		if infoText then
 			button.info:SetText(infoText)
 		end
 	end
-end
--- hooksecurefunc(FriendsListFrameScrollFrame, "update", friendsFrame)
--- hooksecurefunc("FriendsFrame_UpdateFriends", friendsFrame)
+end)
 
 -- Whoframe
 local columnTable = {}
-local function updateWhoList()
-	if C["Misc"].EnhancedFriends ~= true then
-		return
-	end
 
-	local scrollFrame = WhoListScrollFrame
-	local offset = HybridScrollFrame_GetOffset(scrollFrame)
-	local buttons = scrollFrame.buttons
-	local numButtons = #buttons
-	local numWhos = C_FriendList_GetNumWhoResults()
-
+hooksecurefunc(WhoFrame.ScrollBox, "Update", function(self)
 	local playerZone = GetRealZoneText()
 	local playerGuild = GetGuildInfo("player")
+	local playerRace = UnitRace("player")
 
-	for i = 1, numButtons do
-		local button = buttons[i]
-		local index = offset + i
-		if index <= numWhos then
-			local nameText = button.Name
-			local levelText = button.Level
-			local variableText = button.Variable
+	for i = 1, self.ScrollTarget:GetNumChildren() do
+		local button = select(i, self.ScrollTarget:GetChildren())
 
-			local info = C_FriendList_GetWhoInfo(index)
+		local nameText = button.Name
+		local levelText = button.Level
+		local variableText = button.Variable
+
+		local info = C_FriendList_GetWhoInfo(button.index)
+		if info then
 			local guild, level, race, zone, class = info.fullGuildName, info.level, info.raceStr, info.area, info.filename
 			if zone == playerZone then
 				zone = "|cff00ff00" .. zone
@@ -203,7 +213,7 @@ local function updateWhoList()
 				guild = "|cff00ff00" .. guild
 			end
 
-			if race == K.Race then
+			if race == playerRace then
 				race = "|cff00ff00" .. race
 			end
 
@@ -217,6 +227,4 @@ local function updateWhoList()
 			variableText:SetText(columnTable[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)])
 		end
 	end
-end
-hooksecurefunc("WhoList_Update", updateWhoList)
--- hooksecurefunc(WhoListScrollFrame, "update", updateWhoList)
+end)

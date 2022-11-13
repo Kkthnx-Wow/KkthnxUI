@@ -198,7 +198,6 @@ function Module:OnEnable()
 		Module:CreatePetbar()
 		Module:CreateStancebar()
 		Module:HideBlizz()
-		Module:CreateBarSkin()
 
 		local function delaySize(event)
 			Module:UpdateAllScale()
@@ -207,7 +206,5 @@ function Module:OnEnable()
 		K:RegisterEvent("PLAYER_ENTERING_WORLD", delaySize)
 	end
 
-	if C["ActionBar"].Skin then
-		Module:CreateBarSkin()
-	end
+	Module:CreateBarSkin()
 end

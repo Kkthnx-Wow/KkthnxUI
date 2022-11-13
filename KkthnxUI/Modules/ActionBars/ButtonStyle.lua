@@ -513,10 +513,6 @@ function Module:StyleAllActionButtons(cfg)
 
 	-- Spell flyout
 	SpellFlyout.Background:Hide()
-	-- _G.SpellFlyoutBackgroundEnd:SetTexture(nil)
-	-- _G.SpellFlyoutHorizontalBackground:SetTexture(nil)
-	-- _G.SpellFlyoutVerticalBackground:SetTexture(nil)
-	SpellFlyout.Background:Hide()
 	local function checkForFlyoutButtons()
 		local i = 1
 		local button = _G["SpellFlyoutButton" .. i]
@@ -600,7 +596,7 @@ function Module:CreateBarSkin()
 		},
 
 		buttonstyle = {
-			file = C["Media"].Textures.BlankTexture,
+			file = "",
 		},
 	}
 
