@@ -563,7 +563,7 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 		end
 	end
 
-	for i = 1, 6 do
+	for i = 1, 7 do
 		local bar = element[i]
 		if not bar.chargeStar then
 			break
@@ -614,7 +614,7 @@ function Module:CreateClassPower(self)
 
 		if K.Class == "DEATHKNIGHT" then
 			bars[i].timer = K.CreateFontString(bars[i], 10, "")
-		elseif K.Class == "ROGUE" then
+		else
 			if not bar.chargeParent then
 				bar.chargeParent = CreateFrame("Frame", nil, bar)
 				bar.chargeParent:SetAllPoints()

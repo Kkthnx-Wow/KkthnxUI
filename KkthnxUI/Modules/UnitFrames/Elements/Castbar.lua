@@ -81,7 +81,7 @@ function Module:OnCastbarUpdate(elapsed)
 		local isCasting = self.casting or self.empowering
 		local decimal = self.decimal
 
-		local duration = self.casting and (self.duration + elapsed) or (self.duration - elapsed)
+		local duration = isCasting and (self.duration + elapsed) or (self.duration - elapsed)
 		if (isCasting and duration >= self.max) or (self.channeling and duration <= 0) then
 			self.casting = nil
 			self.channeling = nil
