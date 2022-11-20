@@ -39,7 +39,6 @@ function Module:HideBlizBuff()
 
 	K.HideInterfaceOption(_G.BuffFrame)
 	K.HideInterfaceOption(_G.DebuffFrame)
-	-- K.HideInterfaceOption(_G.TemporaryEnchantFrame)
 end
 
 function Module:BuildBuffFrame()
@@ -185,27 +184,19 @@ function Module:UpdateAuras(button, index)
 end
 
 function Module:UpdateTempEnchant(button, index)
-	local quality = GetInventoryItemQuality("player", index)
-	button.icon:SetTexture(GetInventoryItemTexture("player", index))
-
-	local offset = 2
-	local weapon = button:GetName():sub(-1)
-	if string_match(weapon, "2") then
-		offset = 6
-	end
-
-	if quality then
-		button.KKUI_Border:SetVertexColor(GetItemQualityColor(quality))
-	end
-
-	local expirationTime = select(offset, GetWeaponEnchantInfo())
+	local expirationTime = select(button.enchantOffset, GetWeaponEnchantInfo())
 	if expirationTime then
-		button.offset = offset
+		local quality = GetInventoryItemQuality("player", index)
+		local color = K.QualityColors[quality or 1]
+		button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+		button.icon:SetTexture(GetInventoryItemTexture("player", index))
+
+		button.expiration = expirationTime
 		button:SetScript("OnUpdate", Module.UpdateTimer)
 		button.nextUpdate = -1
 		Module.UpdateTimer(button, 0)
 	else
-		button.offset = nil
+		button.expiration = nil
 		button.timeLeft = nil
 		button.timer:SetText("")
 	end
@@ -275,6 +266,8 @@ function Module:CreateAuraHeader(filter)
 
 	local header = CreateFrame("Frame", name, UIParent, "SecureAuraHeaderTemplate")
 	header:SetClampedToScreen(true)
+	header:UnregisterEvent("UNIT_AURA") -- we only need to watch player and vehicle
+	header:RegisterUnitEvent("UNIT_AURA", "player", "vehicle")
 	header:SetAttribute("unit", "player")
 	header:SetAttribute("filter", filter)
 	header.filter = filter
@@ -325,9 +318,13 @@ function Module:Button_OnEnter()
 	self:SetScript("OnUpdate", Module.UpdateTimer)
 end
 
+local indexToOffset = { 2, 6, 10 }
 function Module:CreateAuraIcon(button)
 	button.header = button:GetParent()
 	button.filter = button.header.filter
+	button.name = button:GetName()
+	local enchantIndex = tonumber(strmatch(button.name, "TempEnchant(%d)$"))
+	button.enchantOffset = indexToOffset[enchantIndex]
 
 	local cfg = Module.settings.Debuffs
 	if button.filter == "HELPFUL" then
@@ -352,7 +349,7 @@ function Module:CreateAuraIcon(button)
 	button:StyleButton()
 	button:CreateBorder()
 
-	button:RegisterForClicks("RightButtonUp")
+	button:RegisterForClicks("RightButtonDown")
 	button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
 	button:HookScript("OnMouseDown", Module.RemoveSpellFromIgnoreList)
 	button:SetScript("OnEnter", Module.Button_OnEnter)
