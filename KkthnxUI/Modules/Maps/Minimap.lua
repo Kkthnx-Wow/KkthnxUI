@@ -417,17 +417,15 @@ function Module:ReskinRegions()
 	hooksecurefunc(MinimapCluster.InstanceDifficulty, "SetPoint", updateFlagAnchor)
 
 	-- Mail icon
-	if MiniMapMailFrame then
-		MiniMapMailFrame:ClearAllPoints()
+	if MinimapCluster.MailFrame then
+		MinimapCluster.MailFrame:ClearAllPoints()
 		if C["DataText"].Time then
-			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -4)
+			MinimapCluster.MailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 20)
 		else
-			MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -12)
+			MinimapCluster.MailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
 		end
-		MiniMapMailIcon:SetTexture("Interface\\HELPFRAME\\ReportLagIcon-Mail")
-		MiniMapMailFrame:SetScale(1.8)
-		MiniMapMailIcon:SetRotation(rad(-27.5))
-		MiniMapMailFrame:SetHitRectInsets(11, 11, 11, 15)
+		MinimapCluster.MailFrame:SetFrameLevel(11)
+		MiniMapMailIcon:SetSize(22, 16)
 	end
 
 	-- Invites Icon
