@@ -15,9 +15,16 @@ local YOU = _G.YOU
 
 local ticks = {}
 local channelingTicks = {
-	[120360] = 15, -- 弹幕射击
+	[740] = 4, -- 宁静
+	[755] = 5, -- 生命通道
+	[5143] = 4, -- 奥术飞弹
 	[12051] = 6, -- 唤醒
 	[15407] = 6, -- 精神鞭笞
+	[47757] = 3, -- 苦修
+	[47758] = 3, -- 苦修
+	[48045] = 6, -- 精神灼烧
+	[64843] = 4, -- 神圣赞美诗
+	[120360] = 15, -- 弹幕射击
 	[198013] = 10, -- 眼棱
 	[198590] = 5, -- 吸取灵魂
 	[205021] = 5, -- 冰霜射线
@@ -29,13 +36,7 @@ local channelingTicks = {
 	[291944] = 6, -- 再生，赞达拉巨魔
 	[314791] = 4, -- 变易幻能
 	[324631] = 8, -- 血肉铸造，盟约
-	[47757] = 3, -- 苦修
-	[47758] = 3, -- 苦修
-	[48045] = 6, -- 精神灼烧
-	[5143] = 4, -- 奥术飞弹
-	[64843] = 4, -- 神圣赞美诗
-	[740] = 4, -- 宁静
-	[755] = 5, -- 生命通道
+	[356995] = 3, -- 裂解，龙希尔
 }
 
 if K.Class == "PRIEST" then
@@ -76,13 +77,15 @@ local function CreateAndUpdateBarTicks(bar, ticks, numTicks)
 end
 
 function Module:OnCastbarUpdate(elapsed)
-	if self.casting or self.channeling then
+	if self.casting or self.channeling or self.empowering then
+		local isCasting = self.casting or self.empowering
 		local decimal = self.decimal
 
 		local duration = self.casting and (self.duration + elapsed) or (self.duration - elapsed)
-		if (self.casting and duration >= self.max) or (self.channeling and duration <= 0) then
+		if (isCasting and duration >= self.max) or (self.channeling and duration <= 0) then
 			self.casting = nil
 			self.channeling = nil
+			self.empowering = nil
 			return
 		end
 
@@ -102,6 +105,17 @@ function Module:OnCastbarUpdate(elapsed)
 		self.duration = duration
 		self:SetValue(duration)
 		self.Spark:SetPoint("CENTER", self, "LEFT", (duration / self.max) * self:GetWidth(), 0)
+
+		if self.stageString then
+			self.stageString:SetText("")
+			if self.empowering then
+				for i = 1, self.numStages, 1 do
+					if duration > self.castTicks[i].duration then
+						self.stageString:SetText(i)
+					end
+				end
+			end
+		end
 	elseif self.holdTime > 0 then
 		self.holdTime = self.holdTime - elapsed
 	else
@@ -174,6 +188,39 @@ local function UpdateCastBarColor(self, unit)
 	self:SetStatusBarColor(color[1], color[2], color[3])
 end
 
+function Module:CreateAndUpdateStagePip(bar, ticks, numStages, unit)
+	for i = 1, #ticks do
+		ticks[i]:Hide()
+		ticks[i].duration = 0
+	end
+
+	if numStages == 0 then
+		return
+	end
+
+	local width, height = bar:GetSize()
+	local sumDuration = 0
+	local stageMaxValue = bar.max * 1000
+	for i = 1, numStages, 1 do
+		local duration = GetUnitEmpowerStageDuration(unit, i - 1)
+		if duration > -1 then
+			sumDuration = sumDuration + duration
+			local portion = sumDuration / stageMaxValue
+			if not ticks[i] then
+				ticks[i] = bar:CreateTexture(nil, "OVERLAY")
+				ticks[i]:SetTexture(C["Media"].Textures.White8x8Texture)
+				ticks[i]:SetVertexColor(0, 0, 0)
+				ticks[i]:SetWidth(K.Mult)
+				ticks[i]:SetHeight(height)
+			end
+			ticks[i].duration = sumDuration / 1000
+			ticks[i]:ClearAllPoints()
+			ticks[i]:SetPoint("LEFT", bar, width * portion, 0)
+			ticks[i]:Show()
+		end
+	end
+end
+
 function Module:PostCastStart(unit)
 	self:SetAlpha(1)
 	self.Spark:Show()
@@ -206,9 +253,12 @@ function Module:PostCastStart(unit)
 		if self.channeling then
 			numTicks = channelingTicks[self.spellID] or 0
 		end
-		CreateAndUpdateBarTicks(self, ticks, numTicks)
+		CreateAndUpdateBarTicks(self, self.castTicks, numTicks)
 	end
 
+	if not self.channeling then
+		Module:CreateAndUpdateStagePip(self, self.castTicks, self.numStages or 0, unit)
+	end
 	UpdateCastBarColor(self, unit)
 
 	if self.__owner.mystyle == "nameplate" then

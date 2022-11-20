@@ -207,6 +207,7 @@ function Module:CreateParty()
 		Castbar.PostCastStop = Module.PostCastStop
 		Castbar.PostCastFail = Module.PostCastFailed
 		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+		Castbar.UpdatePips = K.Noop -- use my own code
 
 		Castbar.Text = Castbar:CreateFontString(nil, "OVERLAY")
 		Castbar.Text:SetFontObject(K.UIFont)

@@ -220,6 +220,7 @@ function Module:CreateCastBar(self)
 	else
 		Castbar:CreateBorder()
 	end
+	Castbar.castTicks = {}
 
 	Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
 	Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
@@ -324,6 +325,11 @@ function Module:CreateCastBar(self)
 		self:RegisterEvent("UNIT_TARGET", updateSpellTarget)
 	end
 
+	local stage = K.CreateFontString(Castbar, 22)
+	stage:ClearAllPoints()
+	stage:SetPoint("TOPLEFT", Castbar.Icon, -2, 2)
+	Castbar.stageString = stage
+
 	if mystyle == "nameplate" or mystyle == "boss" or mystyle == "arena" then
 		Castbar.decimal = "%.1f"
 	else
@@ -338,6 +344,7 @@ function Module:CreateCastBar(self)
 	Castbar.PostCastStop = Module.PostCastStop
 	Castbar.PostCastFail = Module.PostCastFailed
 	Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+	Castbar.UpdatePips = K.Noop -- use my own code
 
 	self.Castbar = Castbar
 end
