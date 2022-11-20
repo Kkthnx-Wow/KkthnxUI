@@ -417,6 +417,27 @@ function Module:ItemLevel_ReplaceGuildNews()
 	end
 end
 
+function Module:ItemLevel_UpdateLoot()
+	for i = 1, self.ScrollTarget:GetNumChildren() do
+		local button = select(i, self.ScrollTarget:GetChildren())
+		if button and button.Item and button.GetElementData then
+			if not button.iLvl then
+				button.iLvl = K.CreateFontString(self, 12, "", "OUTLINE", false, "BOTTOMLEFT", 1, 1)
+			end
+			local slotIndex = button:GetSlotIndex()
+			local quality = select(5, GetLootSlotInfo(slotIndex))
+			if quality and quality > 1 then
+				local level = K.GetItemLevel(GetLootSlotLink(slotIndex))
+				local color = K.QualityColors[quality]
+				button.iLvl:SetText(level)
+				button.iLvl:SetTextColor(color.r, color.g, color.b)
+			else
+				button.iLvl:SetText("")
+			end
+		end
+	end
+end
+
 function Module:CreateSlotItemLevel()
 	if not C["Misc"].ItemLevel then
 		return
@@ -443,6 +464,9 @@ function Module:CreateSlotItemLevel()
 
 	-- iLvl on GuildNews
 	hooksecurefunc("GuildNewsButton_SetText", Module.ItemLevel_ReplaceGuildNews)
+
+	-- iLvl on LootFrame
+	hooksecurefunc(LootFrame.ScrollBox, "Update", Module.ItemLevel_UpdateLoot)
 end
 
 Module:RegisterMisc("SlotItemLevel", Module.CreateSlotItemLevel)

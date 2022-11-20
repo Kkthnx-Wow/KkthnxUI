@@ -4,10 +4,10 @@ local Module = K:GetModule("Bags")
 local _G = _G
 local table_wipe = _G.table.wipe
 
+local C_Container_GetContainerItemEquipmentSetInfo = _G.C_Container.GetContainerItemEquipmentSetInfo
+local C_Container_GetContainerItemInfo = _G.C_Container.GetContainerItemInfo
+local C_Container_GetContainerNumSlots = _G.C_Container.GetContainerNumSlots
 local C_Timer_After = _G.C_Timer.After
-local GetContainerItemEquipmentSetInfo = _G.GetContainerItemEquipmentSetInfo
-local GetContainerItemInfo = _G.GetContainerItemInfo
-local GetContainerNumSlots = _G.GetContainerNumSlots
 local IsShiftKeyDown = _G.IsShiftKeyDown
 
 local stop = true
@@ -20,18 +20,21 @@ local function startSelling()
 	end
 
 	for bag = 0, 4 do
-		for slot = 1, GetContainerNumSlots(bag) do
+		for slot = 1, C_Container_GetContainerNumSlots(bag) do
 			if stop then
 				return
 			end
 
-			local _, _, _, quality, _, _, link, _, noValue, itemID = GetContainerItemInfo(bag, slot)
-			local isInSet = GetContainerItemEquipmentSetInfo(bag, slot)
-			if link and not noValue and not isInSet and not Module:IsPetTrashCurrency(itemID) and (quality == 0 or KkthnxUIDB.CustomJunkList[itemID]) and not cache["b" .. bag .. "s" .. slot] then
-				cache["b" .. bag .. "s" .. slot] = true
-				UseContainerItem(bag, slot)
-				C_Timer_After(0.15, startSelling)
-				return
+			local info = C_Container.GetContainerItemInfo(bag, slot)
+			if info then
+				local quality, link, noValue, itemID = info.quality, info.hyperlink, info.hasNoValue, info.itemID
+				local isInSet = C_Container_GetContainerItemEquipmentSetInfo(bag, slot)
+				if link and not noValue and not isInSet and not Module:IsPetTrashCurrency(itemID) and (quality == 0 or KkthnxUIDB.CustomJunkList[itemID]) and not cache["b" .. bag .. "s" .. slot] then
+					cache["b" .. bag .. "s" .. slot] = true
+					C_Container.UseContainerItem(bag, slot)
+					C_Timer_After(0.15, startSelling)
+					return
+				end
 			end
 		end
 	end

@@ -97,7 +97,45 @@ end
 local function updateTokenVisibility()
 	TokenFrame_LoadUI()
 	TokenFrame_Update()
-	-- BackpackTokenFrame_Update()
+end
+
+local function ReplaceSpellbookButtons()
+	local function replaceOnEnter(self)
+		local slot = SpellBook_GetSpellBookSlot(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+
+		if InClickBindingMode() and not self.canClickBind then
+			GameTooltip:AddLine(CLICK_BINDING_NOT_AVAILABLE, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b)
+			GameTooltip:Show()
+			return
+		end
+
+		GameTooltip:SetSpellBookItem(slot, SpellBookFrame.bookType)
+		self.UpdateTooltip = nil
+
+		if self.SpellHighlightTexture and self.SpellHighlightTexture:IsShown() then
+			GameTooltip:AddLine(SPELLBOOK_SPELL_NOT_ON_ACTION_BAR, LIGHTBLUE_FONT_COLOR.r, LIGHTBLUE_FONT_COLOR.g, LIGHTBLUE_FONT_COLOR.b)
+		end
+		GameTooltip:Show()
+	end
+
+	local function handleSpellButton(button)
+		button.OnEnter = replaceOnEnter
+		button:SetScript("OnEnter", replaceOnEnter)
+		button.OnLeave = B.HideTooltip
+		button:SetScript("OnLeave", B.HideTooltip)
+	end
+
+	for i = 1, SPELLS_PER_PAGE do
+		handleSpellButton(_G["SpellButton" .. i])
+	end
+
+	local professions = { "PrimaryProfession1", "PrimaryProfession2", "SecondaryProfession1", "SecondaryProfession2", "SecondaryProfession3" }
+	for _, button in pairs(professions) do
+		local bu = _G[button]
+		handleSpellButton(bu.SpellButton1)
+		handleSpellButton(bu.SpellButton2)
+	end
 end
 
 function Module:HideBlizz()
@@ -115,16 +153,12 @@ function Module:HideBlizz()
 		DisableAllScripts(frame)
 	end
 
+	-- Fix spellbook button taint with Editmode
+	-- ReplaceSpellbookButtons()
 	-- Hide blizz options
 	SetCVar("multiBarRightVerticalLayout", 0)
-	-- _G.InterfaceOptionsActionBarsPanelStackRightBars:EnableMouse(false)
-	-- _G.InterfaceOptionsActionBarsPanelStackRightBars:SetAlpha(0)
 	-- Fix maw block anchor
 	MainMenuBarVehicleLeaveButton:RegisterEvent("PLAYER_ENTERING_WORLD")
-	-- Update button grid
-	-- toggleButtonGrid()
-	-- -- Update button grid
-	-- hooksecurefunc("MultiActionBar_UpdateGridVisibility", toggleButtonGrid)
 	-- Update token panel
 	K:RegisterEvent("CURRENCY_DISPLAY_UPDATE", updateTokenVisibility)
 end
