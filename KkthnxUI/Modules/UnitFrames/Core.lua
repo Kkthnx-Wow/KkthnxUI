@@ -488,7 +488,7 @@ function Module.CustomFilter(element, unit, data)
 		elseif C.NameplateWhiteList[spellID] then
 			return true
 		else
-			local auraFilter = C.db["Nameplate"]["AuraFilter"]
+			local auraFilter = C["Nameplate"].AuraFilter.Value
 			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and isCasterPlayer[caster])
 		end
 	else

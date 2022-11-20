@@ -19,9 +19,8 @@ local C_Timer_After = _G.C_Timer.After
 local ClearCursor = _G.ClearCursor
 local CreateFrame = _G.CreateFrame
 local DeleteCursorItem = _G.DeleteCursorItem
-local GetContainerItemID = _G.GetContainerItemID
-local GetContainerItemInfo = _G.GetContainerItemInfo
-local GetContainerNumSlots = _G.GetContainerNumSlots
+local GetContainerItemID = C_Container.GetContainerItemID
+local GetContainerNumSlots = C_Container.GetContainerNumSlots
 local GetInventoryItemID = _G.GetInventoryItemID
 local GetItemInfo = _G.GetItemInfo
 local InCombatLockdown = _G.InCombatLockdown
@@ -29,12 +28,13 @@ local IsAltKeyDown = _G.IsAltKeyDown
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsCosmeticItem = _G.IsCosmeticItem
 local IsReagentBankUnlocked = _G.IsReagentBankUnlocked
-local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
-local PickupContainerItem = _G.PickupContainerItem
+local PickupContainerItem = C_Container.PickupContainerItem
 local PlaySound = _G.PlaySound
 local SOUNDKIT = _G.SOUNDKIT
-local SortBags = _G.SortBags
-local SortBankBags = _G.SortBankBags
+local SortBags = C_Container.SortBags
+local SortBankBags = C_Container.SortBankBags
+local SortReagentBankBags = C_Container.SortReagentBankBags
+local SplitContainerItem = C_Container.SplitContainerItem
 
 local deleteEnable
 local favouriteEnable
@@ -48,7 +48,9 @@ function Module:ReverseSort()
 	for bag = 0, 4 do
 		local numSlots = GetContainerNumSlots(bag)
 		for slot = 1, numSlots do
-			local texture, _, locked = GetContainerItemInfo(bag, slot)
+			local info = C_Container.GetContainerItemInfo(bag, slot)
+			local texture = info and info.iconFileID
+			local locked = info and info.isLocked
 			if (slot <= numSlots / 2) and texture and not locked and not sortCache["b" .. bag .. "s" .. slot] then
 				PickupContainerItem(bag, slot)
 				PickupContainerItem(bag, numSlots + 1 - slot)
@@ -448,7 +450,7 @@ function Module:CreateSortButton(name)
 		if name == "Bank" then
 			SortBankBags()
 		elseif name == "Reagent" then
-			_G.SortReagentBankBags()
+			SortReagentBankBags()
 		else
 			if C["Inventory"].ReverseSort then
 				if InCombatLockdown() then
@@ -492,8 +494,8 @@ function Module:GetEmptySlot(name)
 			return -1, slotID
 		end
 
-		for bagID = 5, 11 do
-			local slotID = Module:GetContainerEmptySlot(bagID)
+		for bagID = 6, 12 do
+			local slotID = module:GetContainerEmptySlot(bagID)
 			if slotID then
 				return bagID, slotID
 			end
@@ -635,7 +637,10 @@ local function splitOnClick(self)
 
 	PickupContainerItem(self.bagId, self.slotId)
 
-	local texture, itemCount, locked = GetContainerItemInfo(self.bagId, self.slotId)
+	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
+	local texture = info and info.iconFileID
+	local itemCount = info and info.stackCount
+	local locked = info and info.isLocked
 	if texture and not locked and itemCount and itemCount > KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount then
 		SplitContainerItem(self.bagId, self.slotId, KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount)
 
@@ -771,7 +776,11 @@ local function favouriteOnClick(self)
 		return
 	end
 
-	local texture, _, _, quality, _, _, link, _, _, itemID = GetContainerItemInfo(self.bagId, self.slotId)
+	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
+	local texture = info and info.iconFileID
+	local quality = info and info.quality
+	local link = info and info.hyperlink
+	local itemID = info and info.itemID
 	if texture and quality > Enum.ItemQuality.Poor then
 		ClearCursor()
 		Module.selectItemID = itemID
@@ -833,7 +842,9 @@ local function customJunkOnClick(self)
 		return
 	end
 
-	local texture, _, _, _, _, _, _, _, _, itemID = GetContainerItemInfo(self.bagId, self.slotId)
+	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
+	local texture = info and info.iconFileID
+	local itemID = info and info.itemID
 	local price = select(11, GetItemInfo(itemID))
 	if texture and price > 0 then
 		if KkthnxUIDB.CustomJunkList[itemID] then
@@ -897,8 +908,10 @@ local function deleteButtonOnClick(self)
 		return
 	end
 
-	local texture, _, _, quality = GetContainerItemInfo(self.bagId, self.slotId)
-	if IsControlKeyDown() and IsAltKeyDown() and texture and (quality < LE_ITEM_QUALITY_RARE) then
+	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
+	local texture = info and info.iconFileID
+	local quality = info and info.quality
+	if IsControlKeyDown() and IsAltKeyDown() and texture and (quality < Enum.ItemQuality.Rare) then
 		PickupContainerItem(self.bagId, self.slotId)
 		DeleteCursorItem()
 	end
@@ -980,14 +993,17 @@ function Module:OnEnable()
 	end
 
 	function Backpack:OnInit()
+		-----
+		-- ADD LATER -- AddNewContainer("Bag", 8, "BagLegendary", filters.bagLegendary)
+		-----
+		AddNewContainer("Bag", 6, "BagReagent", filters.onlyBagReagent)
 		AddNewContainer("Bag", 16, "Junk", filters.bagsJunk)
 		for i = 1, 5 do
 			AddNewContainer("Bag", i, "BagCustom" .. i, filters["bagCustom" .. i])
 		end
 		AddNewContainer("Bag", 9, "EquipSet", filters.bagEquipSet)
-		AddNewContainer("Bag", 6, "AzeriteItem", filters.bagAzeriteItem)
-		AddNewContainer("Bag", 8, "BagLegendary", filters.bagLegendary)
-		AddNewContainer("Bag", 7, "Equipment", filters.bagEquipment)
+		AddNewContainer("Bag", 7, "AzeriteItem", filters.bagAzeriteItem)
+		AddNewContainer("Bag", 8, "Equipment", filters.bagEquipment)
 		AddNewContainer("Bag", 10, "BagCollection", filters.bagCollection)
 		AddNewContainer("Bag", 14, "Consumable", filters.bagConsumable)
 		AddNewContainer("Bag", 11, "BagGoods", filters.bagGoods)
@@ -1201,7 +1217,7 @@ function Module:OnEnable()
 
 	function MyButton:OnUpdateButton(item)
 		if self.JunkIcon then
-			if (MerchantFrame:IsShown() or customJunkEnable) and (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.CustomJunkList[item.id]) and item.hasPrice then
+			if (MerchantFrame:IsShown() or customJunkEnable) and (item.quality == Enum.ItemQuality.Poor or KkthnxUIDB.CustomJunkList[item.id]) and item.hasPrice then
 				self.JunkIcon:Show()
 			else
 				self.JunkIcon:Hide()
@@ -1258,7 +1274,7 @@ function Module:OnEnable()
 		self.bindType:SetText("")
 		if showBindOnEquip then
 			local BoE, BoU = item.bindType == 2, item.bindType == 3
-			if not item.bound and (BoE or BoU) and (item.quality and item.quality > LE_ITEM_QUALITY_COMMON) then
+			if not item.bound and (BoE or BoU) and (item.quality and item.quality > Enum.ItemQuality.Common) then
 				local color = K.QualityColors[item.quality]
 				self.bindType:SetText(BoE and "BoE" or "BoU") -- Local these asap
 				self.bindType:SetTextColor(color.r, color.g, color.b)
@@ -1434,7 +1450,7 @@ function Module:OnEnable()
 		buttons[1] = Module.CreateCloseButton(self, f)
 		buttons[2] = Module.CreateSortButton(self, name)
 		if name == "Bag" then
-			Module.CreateBagBar(self, settings, 4)
+			Module.CreateBagBar(self, settings, 5)
 			buttons[3] = Module.CreateBagToggle(self)
 			buttons[4] = Module.CreateSplitButton(self)
 			buttons[5] = Module.CreateFavouriteButton(self)

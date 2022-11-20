@@ -542,7 +542,6 @@ L["TitanPanel Skin"] = "Habillage de TitanPanel"
 L["WeakAuras Skin"] = "Habillage de WeakAuras"
 
 L["Abbreviate Guild Names"] = "Abréger les noms des guildes"
-L["Conduit Collected Info"] = "Informations recueillies sur les conduits"
 L["Follow Cursor"] = "Suivre le curseur"
 L["Hide Guild Rank"] = "Cacher le rang de la guilde"
 L["Hide Player Title"] = "Cacher le titre du joueur"

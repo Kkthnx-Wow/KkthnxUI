@@ -5,19 +5,6 @@ local _G = _G
 
 local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = _G.C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
 local C_ToyBox_GetToyInfo = _G.C_ToyBox.GetToyInfo
-local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
-local LE_ITEM_CLASS_CONSUMABLE = _G.LE_ITEM_CLASS_CONSUMABLE
-local LE_ITEM_CLASS_GEM = _G.LE_ITEM_CLASS_GEM
-local LE_ITEM_CLASS_ITEM_ENHANCEMENT = _G.LE_ITEM_CLASS_ITEM_ENHANCEMENT
-local LE_ITEM_CLASS_MISCELLANEOUS = _G.LE_ITEM_CLASS_MISCELLANEOUS
-local LE_ITEM_CLASS_TRADEGOODS = _G.LE_ITEM_CLASS_TRADEGOODS
-local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
-local LE_ITEM_GEM_ARTIFACTRELIC = _G.LE_ITEM_GEM_ARTIFACTRELIC
-local LE_ITEM_MISCELLANEOUS_COMPANION_PET = _G.LE_ITEM_MISCELLANEOUS_COMPANION_PET
-local LE_ITEM_MISCELLANEOUS_MOUNT = _G.LE_ITEM_MISCELLANEOUS_MOUNT
-local LE_ITEM_QUALITY_COMMON = _G.LE_ITEM_QUALITY_COMMON
-local LE_ITEM_QUALITY_LEGENDARY = _G.LE_ITEM_QUALITY_LEGENDARY
-local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 
 -- Custom filter
 local CustomFilterList = {
@@ -69,6 +56,11 @@ local relicSpellIDs = {
 	[356940] = true,
 }
 
+local consumableIDs = {
+	[Enum.ItemClass.Consumable] = true,
+	[Enum.ItemClass.ItemEnhancement] = true,
+}
+
 local function isCustomFilter(item)
 	if not C["Inventory"].ItemFilter then
 		return
@@ -82,8 +74,12 @@ local function isItemInBag(item)
 	return item.bagId >= 0 and item.bagId <= 4
 end
 
+local function isItemInBagReagent(item)
+	return item.bagId == 5
+end
+
 local function isItemInBank(item)
-	return item.bagId == -1 or item.bagId >= 5 and item.bagId <= 11
+	return item.bagId == -1 or (item.bagId > 5 and item.bagId < 13)
 end
 
 local function isItemJunk(item)
@@ -95,7 +91,7 @@ local function isItemJunk(item)
 		return
 	end
 
-	return (item.quality == LE_ITEM_QUALITY_POOR or KkthnxUIDB.CustomJunkList[item.id]) and item.hasPrice and not Module:IsPetTrashCurrency(item.id)
+	return (item.quality == Enum.ItemQuality.Poor or KkthnxUIDB.CustomJunkList[item.id]) and item.hasPrice and not Module:IsPetTrashCurrency(item.id)
 end
 
 local function isItemEquipSet(item)
@@ -140,7 +136,7 @@ local function isItemEquipment(item)
 		return
 	end
 
-	return item.link and item.quality > LE_ITEM_QUALITY_COMMON and Module:IsItemHasLevel(item)
+	return item.link and item.quality > Enum.ItemQuality.Common and Module:IsItemHasLevel(item)
 end
 
 local function isItemConsumable(item)
@@ -155,8 +151,7 @@ local function isItemConsumable(item)
 	if isCustomFilter(item) == false then
 		return
 	end
-
-	return isCustomFilter(item) or (item.classID and (item.classID == LE_ITEM_CLASS_CONSUMABLE or item.classID == LE_ITEM_CLASS_ITEM_ENHANCEMENT))
+	return isCustomFilter(item) or consumableIDs[item.classID]
 end
 
 local function isItemLegendary(item)
@@ -168,7 +163,7 @@ local function isItemLegendary(item)
 		return
 	end
 
-	return item.quality == LE_ITEM_QUALITY_LEGENDARY
+	return item.quality == Enum.ItemQuality.Legendary
 end
 
 local function isMountOrPet(item)
@@ -223,7 +218,7 @@ local function isTradeGoods(item)
 		return
 	end
 
-	return item.classID == LE_ITEM_CLASS_TRADEGOODS
+	return item.classID == Enum.ItemClass.Tradegoods
 end
 
 local function isQuestItem(item)
@@ -364,6 +359,10 @@ function Module:GetFilters()
 
 	filters.bagRelic = function(item)
 		return isItemInBag(item) and isKorthiaRelic(item)
+	end
+
+	filters.onlyBagReagent = function(item)
+		return isItemInBagReagent(item)
 	end
 
 	for i = 1, 5 do
