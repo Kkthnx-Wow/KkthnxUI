@@ -268,7 +268,7 @@ function Module:OnTooltipSetUnit()
 
 	if not isPlayer and isShiftKeyDown then
 		local guid = UnitGUID(unit)
-		local npcID = guid and B.GetNPCID(guid)
+		local npcID = guid and K.GetNPCID(guid)
 		if npcID then
 			local reaction = UnitReaction(unit, "player")
 			local standingText = reaction and hexColor .. _G["FACTION_STANDING_LABEL" .. reaction]
