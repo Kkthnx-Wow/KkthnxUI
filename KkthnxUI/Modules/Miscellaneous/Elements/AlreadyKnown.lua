@@ -1,43 +1,14 @@
 local K = unpack(KkthnxUI)
-local Module = K:GetModule("Tooltip")
 
 -- Sourced: AlreadyKnown (villiv)
 -- Edited: KkthnxUI (Kkthnx)
 
-local _G = _G
-local math_ceil = _G.math.ceil
-local mod = _G.mod
-local string_find = _G.string.find
-local string_format = _G.string.format
-local string_match = _G.string.match
-
-local BUYBACK_ITEMS_PER_PAGE = _G.BUYBACK_ITEMS_PER_PAGE or 12
-local COLLECTED = _G.COLLECTED
-local C_PetJournal_GetNumCollectedInfo = _G.C_PetJournal.GetNumCollectedInfo
-local CreateFrame = _G.CreateFrame
-local GetBuybackItemInfo = _G.GetBuybackItemInfo
-local GetBuybackItemLink = _G.GetBuybackItemLink
-local GetCurrentGuildBankTab = _G.GetCurrentGuildBankTab
-local GetGuildBankItemInfo = _G.GetGuildBankItemInfo
-local GetGuildBankItemLink = _G.GetGuildBankItemLink
-local GetItemInfo = _G.GetItemInfo
-local GetMerchantItemInfo = _G.GetMerchantItemInfo
-local GetMerchantItemLink = _G.GetMerchantItemLink
-local GetMerchantNumItems = _G.GetMerchantNumItems
-local GetNumBuybackItems = _G.GetNumBuybackItems
-local HybridScrollFrame_GetButtons = _G.HybridScrollFrame_GetButtons
-local ITEM_SPELL_KNOWN = _G.ITEM_SPELL_KNOWN
--- local LE_ITEM_CLASS_BATTLEPET = _G.LE_ITEM_CLASS_BATTLEPET
--- local LE_ITEM_CLASS_CONSUMABLE = _G.LE_ITEM_CLASS_CONSUMABLE
--- local LE_ITEM_CLASS_ITEM_ENHANCEMENT = _G.LE_ITEM_CLASS_ITEM_ENHANCEMENT
--- local LE_ITEM_CLASS_MISCELLANEOUS = _G.LE_ITEM_CLASS_MISCELLANEOUS
--- local LE_ITEM_CLASS_RECIPE = _G.LE_ITEM_CLASS_RECIPE
-local MAX_GUILDBANK_SLOTS_PER_TAB = _G.MAX_GUILDBANK_SLOTS_PER_TAB or 98
-local MERCHANT_ITEMS_PER_PAGE = _G.MERCHANT_ITEMS_PER_PAGE or 10
-local NUM_SLOTS_PER_GUILDBANK_GROUP = _G.NUM_SLOTS_PER_GUILDBANK_GROUP or 14
-local SetItemButtonTextureVertexColor = _G.SetItemButtonTextureVertexColor
-local UIParent = _G.UIParent
-local hooksecurefunc = _G.hooksecurefunc
+local mod, strmatch, strfind, format = mod, strmatch, strfind, format
+local GetItemInfo, SetItemButtonTextureVertexColor = GetItemInfo, SetItemButtonTextureVertexColor
+local GetCurrentGuildBankTab, GetGuildBankItemInfo, GetGuildBankItemLink = GetCurrentGuildBankTab, GetGuildBankItemInfo, GetGuildBankItemLink
+local GetMerchantNumItems, GetMerchantItemInfo, GetMerchantItemLink = GetMerchantNumItems, GetMerchantItemInfo, GetMerchantItemLink
+local GetNumBuybackItems, GetBuybackItemInfo, GetBuybackItemLink = GetNumBuybackItems, GetBuybackItemInfo, GetBuybackItemLink
+local C_PetJournal_GetNumCollectedInfo = C_PetJournal.GetNumCollectedInfo
 
 local COLOR = { r = 0.1, g = 1, b = 0.1 }
 local knowables = {
@@ -52,7 +23,6 @@ local function isPetCollected(speciesID)
 	if not speciesID or speciesID == 0 then
 		return
 	end
-
 	local numOwned = C_PetJournal_GetNumCollectedInfo(speciesID)
 	if numOwned > 0 then
 		return true
@@ -64,38 +34,47 @@ local function IsAlreadyKnown(link, index)
 		return
 	end
 
-	local linkType, linkID = string_match(link, "|H(%a+):(%d+)")
+	local linkType, linkID = strmatch(link, "|H(%a+):(%d+)")
 	linkID = tonumber(linkID)
 
 	if linkType == "battlepet" then
 		return isPetCollected(linkID)
 	elseif linkType == "item" then
-		local name, _, _, level, _, _, _, _, _, _, _, itemClassID = GetItemInfo(link)
+		local name, _, _, _, _, _, _, _, _, _, _, itemClassID = GetItemInfo(link)
 		if not name then
 			return
 		end
 
 		if itemClassID == Enum.ItemClass.Battlepet and index then
-			local speciesID = K.ScanTooltip:SetGuildBankItem(GetCurrentGuildBankTab(), index)
-			return isPetCollected(speciesID)
-		elseif Module.ConduitData[linkID] and Module.ConduitData[linkID] >= level then
-			return true
+			local data = C_TooltipInfo.GetGuildBankItem(GetCurrentGuildBankTab(), index)
+			if data then
+				local argVal = data.args and data.args[2]
+				if argVal.field == "battlePetSpeciesID" then
+					return isPetCollected(argVal.intVal)
+				end
+			end
 		else
 			if knowns[link] then
 				return true
 			end
-
 			if not knowables[itemClassID] then
 				return
 			end
 
-			K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-			K.ScanTooltip:SetHyperlink(link)
-			for i = 1, K.ScanTooltip:NumLines() do
-				local text = _G["KKUI_ScanTooltipTextLeft" .. i]:GetText() or ""
-				if string_find(text, COLLECTED) or text == ITEM_SPELL_KNOWN then
-					knowns[link] = true
-					return true
+			local data = C_TooltipInfo.GetHyperlink(link, nil, nil, true)
+			if data then
+				for i = 1, #data.lines do
+					local lineData = data.lines[i]
+					local argVal = lineData and lineData.args
+					if argVal then
+						local text = argVal[2] and argVal[2].stringVal
+						if text then
+							if strfind(text, COLLECTED) or text == ITEM_SPELL_KNOWN then
+								knowns[link] = true
+								return true
+							end
+						end
+					end
 				end
 			end
 		end
@@ -144,37 +123,34 @@ local function Hook_UpdateBuybackInfo()
 end
 hooksecurefunc("MerchantFrame_UpdateBuybackInfo", Hook_UpdateBuybackInfo)
 
-local function Hook_UpdateAuctionHouse(self)
-	local numResults = self.getNumEntries()
-	local buttons = HybridScrollFrame_GetButtons(self.ScrollFrame)
-	local buttonCount = buttons and #buttons or 0
-	local offset = self:GetScrollOffset()
-	for i = 1, buttonCount do
-		local visible = i + offset <= numResults
-		local button = buttons[i]
-		if visible then
-			if button.rowData.itemKey.itemID then
+local function Hook_UpdateAuctionItems(self)
+	for i = 1, self.ScrollTarget:GetNumChildren() do
+		local child = select(i, self.ScrollTarget:GetChildren())
+		if child.cells then
+			local button = child.cells[2]
+			local itemKey = button and button.rowData and button.rowData.itemKey
+			if itemKey and itemKey.itemID then
 				local itemLink
-				if button.rowData.itemKey.itemID == 82800 then -- BattlePet
-					itemLink = string_format("|Hbattlepet:%d::::::|h[Dummy]|h", button.rowData.itemKey.battlePetSpeciesID)
-				else -- Normal item
-					itemLink = string_format("|Hitem:%d", button.rowData.itemKey.itemID)
+				if itemKey.itemID == 82800 then
+					itemLink = format("|Hbattlepet:%d::::::|h[Dummy]|h", itemKey.battlePetSpeciesID)
+				else
+					itemLink = format("|Hitem:%d", itemKey.itemID)
 				end
 
 				if itemLink and IsAlreadyKnown(itemLink) then
 					-- Highlight
-					button.SelectedHighlight:Show()
-					button.SelectedHighlight:SetVertexColor(COLOR.r, COLOR.g, COLOR.b)
-					button.SelectedHighlight:SetAlpha(0.25)
+					child.SelectedHighlight:Show()
+					child.SelectedHighlight:SetVertexColor(COLOR.r, COLOR.g, COLOR.b)
+					child.SelectedHighlight:SetAlpha(0.25)
 					-- Icon
-					button.cells[2].Icon:SetVertexColor(COLOR.r, COLOR.g, COLOR.b)
-					button.cells[2].IconBorder:SetVertexColor(COLOR.r, COLOR.g, COLOR.b)
+					button.Icon:SetVertexColor(COLOR.r, COLOR.g, COLOR.b)
+					button.IconBorder:SetVertexColor(COLOR.r, COLOR.g, COLOR.b)
 				else
 					-- Highlight
-					button.SelectedHighlight:SetVertexColor(1, 1, 1)
+					child.SelectedHighlight:SetVertexColor(1, 1, 1)
 					-- Icon
-					button.cells[2].Icon:SetVertexColor(1, 1, 1)
-					button.cells[2].IconBorder:SetVertexColor(1, 1, 1)
+					button.Icon:SetVertexColor(1, 1, 1)
+					button.IconBorder:SetVertexColor(1, 1, 1)
 				end
 			end
 		end
@@ -182,6 +158,9 @@ local function Hook_UpdateAuctionHouse(self)
 end
 
 -- guild bank frame
+local MAX_GUILDBANK_SLOTS_PER_TAB = MAX_GUILDBANK_SLOTS_PER_TAB or 98
+local NUM_SLOTS_PER_GUILDBANK_GROUP = NUM_SLOTS_PER_GUILDBANK_GROUP or 14
+
 local function GuildBankFrame_Update(self)
 	if self.mode ~= "bank" then
 		return
@@ -195,7 +174,7 @@ local function GuildBankFrame_Update(self)
 			index = NUM_SLOTS_PER_GUILDBANK_GROUP
 		end
 
-		column = math_ceil((i - 0.5) / NUM_SLOTS_PER_GUILDBANK_GROUP)
+		column = ceil((i - 0.5) / NUM_SLOTS_PER_GUILDBANK_GROUP)
 		button = self.Columns[column].Buttons[index]
 		if button and button:IsShown() then
 			texture, _, locked = GetGuildBankItemInfo(tab, i)
@@ -211,18 +190,18 @@ local function GuildBankFrame_Update(self)
 end
 
 local hookCount = 0
-local eventFrame = CreateFrame("Frame")
-eventFrame:RegisterEvent("ADDON_LOADED")
-eventFrame:SetScript("OnEvent", function(_, event, addon)
+local f = CreateFrame("Frame")
+f:RegisterEvent("ADDON_LOADED")
+f:SetScript("OnEvent", function(_, event, addon)
 	if addon == "Blizzard_AuctionHouseUI" then
-		hooksecurefunc(AuctionHouseFrame.BrowseResultsFrame.ItemList, "RefreshScrollFrame", Hook_UpdateAuctionHouse)
+		hooksecurefunc(AuctionHouseFrame.BrowseResultsFrame.ItemList.ScrollBox, "Update", Hook_UpdateAuctionItems)
 		hookCount = hookCount + 1
 	elseif addon == "Blizzard_GuildBankUI" then
 		hooksecurefunc(GuildBankFrame, "Update", GuildBankFrame_Update)
 		hookCount = hookCount + 1
 	end
 
-	if hookCount == 2 then
-		eventFrame:UnregisterEvent(event)
+	if hookCount >= 2 then
+		f:UnregisterEvent(event)
 	end
 end)
