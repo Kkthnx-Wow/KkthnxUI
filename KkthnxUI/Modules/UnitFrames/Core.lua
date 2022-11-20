@@ -354,32 +354,32 @@ function Module:UpdateAuraContainer(width, element, maxAuras)
 	element:SetHeight((element.size + element.spacing) * maxLines)
 end
 
-function Module.PostCreateAura(element, button)
+function Module.PostCreateButton(element, button)
 	local fontSize = element.fontSize or element.size * 0.52
 	local parentFrame = CreateFrame("Frame", nil, button)
 	parentFrame:SetAllPoints()
 	parentFrame:SetFrameLevel(button:GetFrameLevel() + 3)
-	button.count = K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
-	button.cd.noOCC = true
-	button.cd.noCooldownCount = true
-	button.cd:SetReverse(true)
-	button.cd:SetHideCountdownNumbers(true)
-	button.icon:SetAllPoints()
-	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	button.cd:ClearAllPoints()
+	button.Count = K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
+	button.Cooldown.noOCC = true
+	button.Cooldown.noCooldownCount = true
+	button.Cooldown:SetReverse(true)
+	button.Cooldown:SetHideCountdownNumbers(true)
+	button.Icon:SetAllPoints()
+	button.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	button.Cooldown:ClearAllPoints()
 
 	if element.__owner.mystyle == "nameplate" then
-		button.cd:SetAllPoints()
+		button.Cooldown:SetAllPoints()
 		button:CreateShadow(true)
 	else
-		button.cd:SetPoint("TOPLEFT", 1, -1)
-		button.cd:SetPoint("BOTTOMRIGHT", -1, 1)
+		button.Cooldown:SetPoint("TOPLEFT", 1, -1)
+		button.Cooldown:SetPoint("BOTTOMRIGHT", -1, 1)
 		button:CreateBorder()
 	end
 
-	button.overlay:SetTexture(nil)
-	button.stealable:SetParent(parentFrame)
-	button.stealable:SetAtlas("bags-newitem")
+	button.Overlay:SetTexture(nil)
+	button.Stealable:SetParent(parentFrame)
+	button.Stealable:SetAtlas("bags-newitem")
 	button:HookScript("OnMouseDown", AuraModule.RemoveSpellFromIgnoreList)
 
 	button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
@@ -393,7 +393,13 @@ Module.ReplacedSpellIcons = {
 	[373785] = 236293, -- S4，大魔王伪装
 }
 
-function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, debuffType)
+local dispellType = {
+	["Magic"] = true,
+	[""] = true,
+}
+
+function Module.PostUpdateButton(element, button, unit, data)
+	local duration, expiration, debuffType = data.duration, data.expirationTime, data.dispelName
 	local style = element.__owner.mystyle
 	if style == "nameplate" then
 		button:SetSize(element.size, element.size - 4)
@@ -401,13 +407,13 @@ function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, d
 		button:SetSize(element.size, element.size)
 	end
 
-	if button.isDebuff and filteredStyle[style] and not button.isPlayer then
-		button.icon:SetDesaturated(true)
+	if element.desaturateDebuff and button.isHarmful and filteredStyle[style] and not data.isPlayerAura then
+		button.Icon:SetDesaturated(true)
 	else
-		button.icon:SetDesaturated(false)
+		button.Icon:SetDesaturated(false)
 	end
 
-	if button.isDebuff then
+	if button.isHarmful then
 		local color = oUF.colors.debuff[debuffType] or oUF.colors.debuff.none
 		if style == "nameplate" and button.Shadow then
 			button.Shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.8)
@@ -428,6 +434,10 @@ function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, d
 		end
 	end
 
+	if element.alwaysShowStealable and dispellType[debuffType] and not UnitIsPlayer(unit) and not button.isHarmful then
+		button.Stealable:Show()
+	end
+
 	if duration and duration > 0 then
 		button.expiration = expiration
 		button:SetScript("OnUpdate", K.CooldownOnUpdate)
@@ -441,24 +451,15 @@ function Module.PostUpdateAura(element, _, button, _, _, duration, expiration, d
 	if newTexture then
 		button.icon:SetTexture(newTexture)
 	end
+
+	if element.bolsterInstanceID and element.bolsterInstanceID == button.auraInstanceID then
+		button.Count:SetText(element.bolsterStacks)
+	end
 end
 
-function Module.bolsterPreUpdate(element)
-	element.bolster = 0
-	element.bolsterIndex = nil
-end
-
-function Module.bolsterPostUpdate(element)
-	if not element.bolsterIndex then
-		return
-	end
-
-	for _, button in pairs(element) do
-		if button == element.bolsterIndex then
-			button.count:SetText(element.bolster)
-			return
-		end
-	end
+function Module.AurasPreUpdate(element)
+	element.bolsterStacks = 0
+	element.bolsterInstanceID = nil
 end
 
 local isCasterPlayer = {
@@ -467,29 +468,31 @@ local isCasterPlayer = {
 	["vehicle"] = true,
 }
 
-function Module.CustomFilter(element, unit, button, name, _, _, _, _, _, caster, isStealable, _, spellID, _, _, _, nameplateShowAll)
+function Module.CustomFilter(element, unit, data)
 	local style = element.__owner.mystyle
+	local name, debuffType, caster, isStealable, spellID, nameplateShowAll = data.name, data.dispelName, data.sourceUnit, data.isStealable, data.spellId, data.nameplateShowAll
+
 	if name and spellID == 209859 then
-		element.bolster = element.bolster + 1
-		if not element.bolsterIndex then
-			element.bolsterIndex = button
-			return true
+		if not element.bolsterInstanceID then
+			element.bolsterInstanceID = data.auraInstanceID
 		end
+		element.bolsterStacks = element.bolsterStacks + 1
+		return element.bolsterStacks == 1
 	elseif style == "nameplate" or style == "boss" or style == "arena" then
 		if element.__owner.plateType == "NameOnly" then
 			return C.NameplateWhiteList[spellID]
 		elseif C.NameplateBlackList[spellID] then
 			return false
-		elseif element.showStealableBuffs and isStealable and not UnitIsPlayer(unit) then
+		elseif (element.showStealableBuffs and isStealable or element.alwaysShowStealable and dispellType[debuffType]) and not UnitIsPlayer(unit) and not data.isHarmful then
 			return true
 		elseif C.NameplateWhiteList[spellID] then
 			return true
 		else
-			local auraFilter = C["Nameplate"].AuraFilter.Value
+			local auraFilter = C.db["Nameplate"]["AuraFilter"]
 			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and isCasterPlayer[caster])
 		end
 	else
-		return (element.onlyShowPlayer and button.isPlayer) or (not element.onlyShowPlayer and name)
+		return (element.onlyShowPlayer and data.isPlayerAura) or (not element.onlyShowPlayer and name)
 	end
 end
 

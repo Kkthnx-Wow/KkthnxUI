@@ -84,7 +84,7 @@ function ItemButton:New(bagID, slotID)
 		button.UpdateTooltip = BankFrameItemButton_OnEnter
 		button.SplitStack = BankSplitStack
 	else
-		button.UpdateTooltip = ContainerFrameItemButton_OnUpdate
+		button.UpdateTooltip = ContainerFrameItemButtonMixin.OnUpdate
 	end
 
 	return button
@@ -101,6 +101,7 @@ function ItemButton:Create(tpl, parent)
 	local impl = self.implementation
 	impl.numSlots = (impl.numSlots or 0) + 1
 	local name = ("%sSlot%d"):format(impl.name, impl.numSlots)
+
 	local button = setmetatable(CreateFrame("ItemButton", name, parent, tpl .. ", BackdropTemplate"), self.__index)
 
 	if button.Scaffold then
@@ -117,15 +118,12 @@ function ItemButton:Create(tpl, parent)
 	if btnNT then
 		btnNT:SetTexture("")
 	end
-
 	if btnNIT then
 		btnNIT:SetTexture("")
 	end
-
 	if btnBIT then
 		btnBIT:SetTexture("")
 	end
-
 	if btnICO then
 		btnICO:SetTexture("")
 	end

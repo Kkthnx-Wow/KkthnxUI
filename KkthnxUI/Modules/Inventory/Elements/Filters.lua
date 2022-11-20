@@ -47,14 +47,14 @@ local petTrashCurrenies = {
 }
 
 local iLvlClassIDs = {
-	[LE_ITEM_CLASS_GEM] = LE_ITEM_GEM_ARTIFACTRELIC,
-	[LE_ITEM_CLASS_ARMOR] = 0,
-	[LE_ITEM_CLASS_WEAPON] = 0,
+	[Enum.ItemClass.Gem] = Enum.ItemGemSubclass.Artifactrelic,
+	[Enum.ItemClass.Armor] = 0,
+	[Enum.ItemClass.Weapon] = 0,
 }
 
 local collectionIDs = {
-	[LE_ITEM_MISCELLANEOUS_MOUNT] = LE_ITEM_CLASS_MISCELLANEOUS,
-	[LE_ITEM_MISCELLANEOUS_COMPANION_PET] = LE_ITEM_CLASS_MISCELLANEOUS,
+	[Enum.ItemMiscellaneousSubclass.Mount] = Enum.ItemClass.Miscellaneous,
+	[Enum.ItemMiscellaneousSubclass.CompanionPet] = Enum.ItemClass.Miscellaneous,
 }
 
 local relicSpellIDs = {

@@ -129,8 +129,13 @@ local function OnEnter()
 			local slotIcon = localSlots[i][4]
 			GameTooltip:AddDoubleLine(slotIcon .. localSlots[i][2], cur .. "%", 1, 1, 1, getDurabilityColor(cur, 100))
 
-			K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-			totalCost = totalCost + select(3, K.ScanTooltip:SetInventoryItem("player", slot))
+			local data = C_TooltipInfo.GetInventoryItem("player", slot)
+			if data then
+				local argVal = data.args and data.args[7]
+				if argVal and argVal.field == "repairCost" then
+					totalCost = totalCost + argVal.intVal
+				end
+			end
 		end
 	end
 

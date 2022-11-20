@@ -18,9 +18,10 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
 local _, ns = ...
+local B, C, L, DB = unpack(ns)
 local cargBags = ns.cargBags
 
-local GetContainerNumSlots = GetContainerNumSlots
+local GetContainerNumSlots = C_Container.GetContainerNumSlots
 
 --[[!
 	@class Implementation
@@ -331,29 +332,34 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 	i.bagId = bagID
 	i.slotId = slotID
 
-	local texture, count, locked, quality, _, _, itemLink, _, noValue, itemID = GetContainerItemInfo(bagID, slotID)
+	local texture, count, locked, quality, itemLink, noValue, itemID
+	local info = C_Container.GetContainerItemInfo(bagID, slotID)
+	if info then
+		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.hasPrice = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, not info.hasNoValue
 
-	if itemLink then
-		i.texture, i.count, i.locked, i.quality, i.link, i.id = texture, count, locked, quality, itemLink, itemID
-		i.hasPrice = not noValue
-		i.isInSet, i.setName = GetContainerItemEquipmentSetInfo(bagID, slotID)
-		i.cdStart, i.cdFinish, i.cdEnable = GetContainerItemCooldown(bagID, slotID)
-		i.isQuestItem, i.questID, i.questActive = GetContainerItemQuestInfo(bagID, slotID)
-		i.name, _, _, _, _, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID = GetItemInfo(itemLink)
+		i.isInSet, i.setName = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID)
+
+		i.cdStart, i.cdFinish, i.cdEnable = C_Container.GetContainerItemCooldown(bagID, slotID)
+
+		local questInfo = C_Container.GetContainerItemQuestInfo(bagID, slotID)
+		i.isQuestItem, i.questID, i.questActive = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
+
+		i.name, _, _, _, _, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID = GetItemInfo(i.link)
 		i.equipLoc = _G[i.equipLoc] -- INVTYPE to localized string
 
-		if itemID == PET_CAGE then
-			local petID, petLevel, petName = strmatch(itemLink, "|H%w+:(%d+):(%d+):.-|h%[(.-)%]|h")
+		if i.id == PET_CAGE then
+			local petID, petLevel, petName = strmatch(i.link, "|H%w+:(%d+):(%d+):.-|h%[(.-)%]|h")
 			i.name = petName
 			i.id = tonumber(petID) or 0
 			i.level = tonumber(petLevel) or 0
 			i.classID = Enum.ItemClass.Miscellaneous
 			i.subClassID = Enum.ItemMiscellaneousSubclass.CompanionPet
-		elseif MYTHIC_KEYSTONES[itemID] then
-			i.level, i.name = strmatch(itemLink, "|H%w+:%d+:%d+:(%d+):.-|h%[(.-)%]|h")
+		elseif MYTHIC_KEYSTONES[i.id] then
+			i.level, i.name = strmatch(i.link, "|H%w+:%d+:%d+:(%d+):.-|h%[(.-)%]|h")
 			i.level = tonumber(i.level) or 0
 		end
 	end
+
 	return i
 end
 
@@ -400,14 +406,12 @@ function Implementation:UpdateBag(bagID)
 	else
 		numSlots = GetContainerNumSlots(bagID)
 	end
-
 	local lastSlots = self.bagSizes[bagID] or 0
 	self.bagSizes[bagID] = numSlots
 
 	for slotID = 1, numSlots do
 		self:UpdateSlot(bagID, slotID)
 	end
-
 	for slotID = numSlots + 1, lastSlots do
 		local button = self:GetButton(bagID, slotID)
 		if button then
@@ -434,7 +438,7 @@ function Implementation:BAG_UPDATE(_, bagID, slotID)
 	elseif bagID then
 		self:UpdateBag(bagID)
 	else
-		for bagID = -3, 11 do
+		for bagID = -3, 12 do
 			self:UpdateBag(bagID)
 		end
 	end
@@ -515,6 +519,7 @@ end
 ]]
 function Implementation:PLAYERREAGENTBANKSLOTS_CHANGED(event, slotID)
 	local bagID = -3
+
 	self:BAG_UPDATE(event, bagID, slotID)
 end
 

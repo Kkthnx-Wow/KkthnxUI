@@ -44,9 +44,7 @@ cargBags.itemKeys["stats"] = function(i)
 	if not i.link or not GetItemStats then
 		return
 	end
-
 	local stats = GetItemStats(i.link)
 	i.stats = stats
-
 	return stats
 end

@@ -21,7 +21,7 @@
 local parent, ns = ...
 local global = GetAddOnMetadata(parent, "X-cargBags")
 
--- @class table
+--- @class table
 --  @name cargBags
 --  This class provides the underlying fundamental functions, such as
 --  class-generation, helper-functions and the Blizzard-replacement
@@ -51,13 +51,11 @@ function cargBags:NewClass(name, parent, widget)
 	if self.classes[name] then
 		return
 	end
-
 	parent = parent and self.classes[parent]
 	local class = setmetatable({}, parent or (widget and widgets[widget]))
 	class.__index = class
 	class._parent = parent
 	self.classes[name] = class
-
 	return class
 end
 
@@ -78,11 +76,9 @@ end
 local function toggleBag(forceopen)
 	cargBags.blizzard:Toggle(forceopen)
 end
-
 local function toggleNoForce()
 	cargBags.blizzard:Toggle()
 end
-
 local function closeBag()
 	cargBags.blizzard:Hide()
 end
@@ -133,6 +129,7 @@ end
 
 cargBags:RegisterEvent("BANKFRAME_OPENED")
 cargBags:RegisterEvent("BANKFRAME_CLOSED")
+
 cargBags:SetScript("OnEvent", function(self, event)
 	if not self.blizzard then
 		return
@@ -172,7 +169,6 @@ local handlerFuncs = setmetatable({}, {
 		self[handler] = function(self, ...)
 			return self[handler] and self[handler](self, ...)
 		end
-
 		return self[handler]
 	end,
 })
@@ -210,7 +206,6 @@ local m_item = {
 		return cargBags.itemKeys[k] and cargBags.itemKeys[k](i, k)
 	end,
 }
-
 function cargBags:NewItemTable()
 	return setmetatable({}, m_item)
 end

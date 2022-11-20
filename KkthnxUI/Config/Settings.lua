@@ -17,8 +17,7 @@ local ChatMedia = "Interface\\AddOns\\KkthnxUI\\Media\\Chat\\"
 
 -- Actionbar
 C["ActionBar"] = {
-	["Skin"] = true,
-
+	["Enable"] = true,
 	["Bar1Font"] = 12,
 	["Bar1Num"] = 12,
 	["Bar1PerRow"] = 12,
@@ -67,7 +66,6 @@ C["ActionBar"] = {
 	["CustomBarButtonSize"] = 34,
 	["CustomBarNumButtons"] = 12,
 	["CustomBarNumPerRow"] = 12,
-	["Enable"] = false, -- Bugged
 	["FadeCustomBar"] = false,
 	["FadeMicroBar"] = false,
 	["Hotkey"] = true,

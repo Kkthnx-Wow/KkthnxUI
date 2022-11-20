@@ -33,11 +33,12 @@ CALLBACKS
 ]]
 
 local addon, ns = ...
+local B, C, L, DB = unpack(ns)
 local cargBags = ns.cargBags
 local Implementation = cargBags.classes.Implementation
 
-local ContainerIDToInventoryID = ContainerIDToInventoryID
-local maxBagSlots = NUM_BAG_SLOTS
+local ContainerIDToInventoryID = C_Container.ContainerIDToInventoryID
+local maxBagSlots = 5
 
 function Implementation:GetBagButtonClass()
 	return self:GetClass("BagButton", true, "BagButton")
@@ -59,10 +60,10 @@ local buttonNum = 0
 function BagButton:Create(bagID)
 	buttonNum = buttonNum + 1
 	local name = addon .. "BagButton" .. buttonNum
-	local isBankBag = bagID > 4 and bagID < 12
+	local isBankBag = bagID > 5 and bagID < 13
 	local button = setmetatable(CreateFrame("ItemButton", name, nil, "BackdropTemplate"), self.__index)
-	local invID = (isBankBag and bagID - maxBagSlots) or ContainerIDToInventoryID(bagID)
 
+	local invID = (isBankBag and bagID - maxBagSlots) or ContainerIDToInventoryID(bagID)
 	button.invID = invID
 	button:SetID(invID)
 	button.bagId = bagID
@@ -164,7 +165,6 @@ function BagButton:OnClick(btn)
 	if btn ~= "RightButton" then
 		return
 	end
-
 	-- Somehow we need to disconnect this from the filter-sieve
 	local container = self.bar.container
 	if container and container.SetFilter then
@@ -230,6 +230,7 @@ cargBags:RegisterPlugin("BagBar", function(self, bags)
 
 	local bar = CreateFrame("Frame", nil, self)
 	bar.container = self
+
 	bar.layouts = cargBags.classes.Container.layouts
 	bar.LayoutButtons = cargBags.classes.Container.LayoutButtons
 

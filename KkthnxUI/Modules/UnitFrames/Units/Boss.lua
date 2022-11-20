@@ -146,8 +146,8 @@ function Module:CreateBoss()
 	Module:UpdateAuraContainer(bossWidth, self.Buffs, self.Buffs.num)
 
 	self.Buffs.showStealableBuffs = true
-	self.Buffs.PostCreateIcon = Module.PostCreateAura
-	self.Buffs.PostUpdateIcon = Module.PostUpdateAura
+	self.Buffs.PostCreateIcon = Module.PostCreateButton
+	self.Buffs.PostUpdateIcon = Module.PostUpdateButton
 	--end
 
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
@@ -161,8 +161,8 @@ function Module:CreateBoss()
 	Module:UpdateAuraContainer(bossWidth - 12, self.Debuffs, self.Debuffs.num)
 
 	self.Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
-	self.Debuffs.PostCreateIcon = Module.PostCreateAura
-	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
+	self.Debuffs.PostCreateIcon = Module.PostCreateButton
+	self.Debuffs.PostUpdateIcon = Module.PostUpdateButton
 
 	if C["Boss"].Castbars then
 		self.Castbar = CreateFrame("StatusBar", "BossCastbar", self)

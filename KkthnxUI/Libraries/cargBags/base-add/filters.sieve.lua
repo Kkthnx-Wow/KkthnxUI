@@ -49,11 +49,9 @@ function FilterSet:Empty()
 	for k in pairs(self.funcs) do
 		self.funcs[k] = nil
 	end
-
 	for k in pairs(self.params) do
 		self.params[k] = nil
 	end
-
 	for k in pairs(self.chained) do
 		self.chained[k] = nil
 	end

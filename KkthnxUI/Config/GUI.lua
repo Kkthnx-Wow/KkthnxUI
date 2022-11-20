@@ -354,7 +354,7 @@ local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
 
 	Window:CreateSection(L["Toggles"])
-	-- Window:CreateSwitch("ActionBar", "Enable", enableTextColor .. L["Enable ActionBar"]) -- BUGGED
+	Window:CreateSwitch("ActionBar", "Enable", enableTextColor .. L["Enable ActionBar"])
 	Window:CreateSwitch("ActionBar", "Cooldowns", L["Show Cooldowns"])
 	Window:CreateSwitch("ActionBar", "Count", L["Enable Count"])
 	Window:CreateSwitch("ActionBar", "Hotkey", L["Enable Hotkey"], nil, UpdateHotkeys)

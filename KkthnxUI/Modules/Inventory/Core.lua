@@ -1538,8 +1538,8 @@ function Module:OnEnable()
 	end
 
 	-- Sort order
-	SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
-	SetInsertItemsLeftToRight(false)
+	C_Container.SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
+	C_Container.SetInsertItemsLeftToRight(false)
 
 	-- Init
 	ToggleAllBags()

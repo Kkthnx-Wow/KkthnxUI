@@ -261,19 +261,10 @@ local function UpdatePixelScale(event)
 	isScaling = false
 end
 
-local ABDisabledWarning
 K:RegisterEvent("PLAYER_LOGIN", function()
 	K.SetupUIScale()
 	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
 	K:SetSmoothingAmount(C["General"].SmoothAmount)
-
-	if not K.isDeveloper then
-		if not ABDisabledWarning then
-			K.Print("ActionBars are force disabled for now")
-			ABDisabledWarning = true
-		end
-		C["ActionBar"].Enable = false
-	end
 
 	for _, module in next, modulesQueue do
 		if module.OnEnable and not module.Enabled then

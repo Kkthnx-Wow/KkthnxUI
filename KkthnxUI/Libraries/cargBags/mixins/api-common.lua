@@ -53,7 +53,6 @@ function Implementation:SpawnPlugin(name, ...)
 		if plugin then
 			plugin.parent = self
 		end
-
 		return plugin
 	end
 end

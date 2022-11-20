@@ -27,11 +27,11 @@ local GetMerchantNumItems = _G.GetMerchantNumItems
 local GetNumBuybackItems = _G.GetNumBuybackItems
 local HybridScrollFrame_GetButtons = _G.HybridScrollFrame_GetButtons
 local ITEM_SPELL_KNOWN = _G.ITEM_SPELL_KNOWN
-local LE_ITEM_CLASS_BATTLEPET = _G.LE_ITEM_CLASS_BATTLEPET
-local LE_ITEM_CLASS_CONSUMABLE = _G.LE_ITEM_CLASS_CONSUMABLE
-local LE_ITEM_CLASS_ITEM_ENHANCEMENT = _G.LE_ITEM_CLASS_ITEM_ENHANCEMENT
-local LE_ITEM_CLASS_MISCELLANEOUS = _G.LE_ITEM_CLASS_MISCELLANEOUS
-local LE_ITEM_CLASS_RECIPE = _G.LE_ITEM_CLASS_RECIPE
+-- local LE_ITEM_CLASS_BATTLEPET = _G.LE_ITEM_CLASS_BATTLEPET
+-- local LE_ITEM_CLASS_CONSUMABLE = _G.LE_ITEM_CLASS_CONSUMABLE
+-- local LE_ITEM_CLASS_ITEM_ENHANCEMENT = _G.LE_ITEM_CLASS_ITEM_ENHANCEMENT
+-- local LE_ITEM_CLASS_MISCELLANEOUS = _G.LE_ITEM_CLASS_MISCELLANEOUS
+-- local LE_ITEM_CLASS_RECIPE = _G.LE_ITEM_CLASS_RECIPE
 local MAX_GUILDBANK_SLOTS_PER_TAB = _G.MAX_GUILDBANK_SLOTS_PER_TAB or 98
 local MERCHANT_ITEMS_PER_PAGE = _G.MERCHANT_ITEMS_PER_PAGE or 10
 local NUM_SLOTS_PER_GUILDBANK_GROUP = _G.NUM_SLOTS_PER_GUILDBANK_GROUP or 14
@@ -41,10 +41,10 @@ local hooksecurefunc = _G.hooksecurefunc
 
 local COLOR = { r = 0.1, g = 1, b = 0.1 }
 local knowables = {
-	[LE_ITEM_CLASS_CONSUMABLE] = true,
-	[LE_ITEM_CLASS_ITEM_ENHANCEMENT] = true,
-	[LE_ITEM_CLASS_MISCELLANEOUS] = true,
-	[LE_ITEM_CLASS_RECIPE] = true,
+	[Enum.ItemClass.Consumable] = true,
+	[Enum.ItemClass.Recipe] = true,
+	[Enum.ItemClass.Miscellaneous] = true,
+	[Enum.ItemClass.ItemEnhancement] = true,
 }
 local knowns = {}
 
@@ -75,7 +75,7 @@ local function IsAlreadyKnown(link, index)
 			return
 		end
 
-		if itemClassID == LE_ITEM_CLASS_BATTLEPET and index then
+		if itemClassID == Enum.ItemClass.Battlepet and index then
 			local speciesID = K.ScanTooltip:SetGuildBankItem(GetCurrentGuildBankTab(), index)
 			return isPetCollected(speciesID)
 		elseif Module.ConduitData[linkID] and Module.ConduitData[linkID] >= level then

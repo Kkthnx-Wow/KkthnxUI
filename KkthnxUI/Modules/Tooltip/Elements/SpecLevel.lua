@@ -1,48 +1,19 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Tooltip")
 
--- Sourced: Cloudy Unit Info (Cloudyfa)
-
-local _G = _G
-local select = _G.select
-local string_find = _G.string.find
-local string_format = _G.string.format
-local string_split = _G.string.split
-
-local CreateFrame = _G.CreateFrame
-local GameTooltip = _G.GameTooltip
-local GetAverageItemLevel = _G.GetAverageItemLevel
-local GetInspectSpecialization = _G.GetInspectSpecialization
-local GetInventoryItemLink = _G.GetInventoryItemLink
-local GetInventoryItemTexture = _G.GetInventoryItemTexture
-local GetItemGem = _G.GetItemGem
-local GetItemInfo = _G.GetItemInfo
-local GetSpecialization = _G.GetSpecialization
-local GetSpecializationInfo = _G.GetSpecializationInfo
-local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
-local GetTime = _G.GetTime
+-- Credit: Cloudy Unit Info, by Cloudyfa
+local select, max, strfind, format, strsplit = select, math.max, string.find, string.format, string.split
+local GetTime, CanInspect, NotifyInspect, ClearInspectPlayer, IsShiftKeyDown = GetTime, CanInspect, NotifyInspect, ClearInspectPlayer, IsShiftKeyDown
+local UnitGUID, UnitClass, UnitIsUnit, UnitIsPlayer, UnitIsVisible, UnitIsDeadOrGhost, UnitOnTaxi = UnitGUID, UnitClass, UnitIsUnit, UnitIsPlayer, UnitIsVisible, UnitIsDeadOrGhost, UnitOnTaxi
+local GetInventoryItemTexture, GetInventoryItemLink, GetItemInfo, GetItemGem, GetAverageItemLevel = GetInventoryItemTexture, GetInventoryItemLink, GetItemInfo, GetItemGem, GetAverageItemLevel
+local GetSpecialization, GetSpecializationInfo, GetInspectSpecialization, GetSpecializationInfoByID = GetSpecialization, GetSpecializationInfo, GetInspectSpecialization, GetSpecializationInfoByID
 local HEIRLOOMS = _G.HEIRLOOMS
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local LE_ITEM_QUALITY_ARTIFACT = _G.LE_ITEM_QUALITY_ARTIFACT
-local LE_ITEM_QUALITY_HEIRLOOM = _G.LE_ITEM_QUALITY_HEIRLOOM
-local LFG_LIST_LOADING = _G.LFG_LIST_LOADING
-local SPECIALIZATION = _G.SPECIALIZATION
-local STAT_AVERAGE_ITEM_LEVEL = _G.STAT_AVERAGE_ITEM_LEVEL
-local UnitClass = _G.UnitClass
-local UnitGUID = _G.UnitGUID
-local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsUnit = _G.UnitIsUnit
-local UnitIsVisible = _G.UnitIsVisible
-local UnitOnTaxi = _G.UnitOnTaxi
 
 local specPrefix = SPECIALIZATION .. ": " .. K.InfoColor
 local levelPrefix = STAT_AVERAGE_ITEM_LEVEL .. ": " .. K.InfoColor
 local isPending = LFG_LIST_LOADING
-local resetTime, frequency, lastTime = 900, 0.5, 0
-local cache, weapon = {}, {}
-local currentUNIT
-local currentGUID
+local resetTime, frequency = 900, 0.5
+local cache, weapon, currentUNIT, currentGUID = {}, {}
 
 local T29Sets = {
 	-- HUNTER
@@ -145,6 +116,7 @@ local updater = CreateFrame("Frame")
 updater:SetScript("OnUpdate", Module.InspectOnUpdate)
 updater:Hide()
 
+local lastTime = 0
 function Module:GetInspectInfo(...)
 	if self == "UNIT_INVENTORY_CHANGED" then
 		local thisTime = GetTime()
@@ -186,9 +158,9 @@ function Module:SetupSpecLevel(spec, level)
 	for i = 2, GameTooltip:NumLines() do
 		local line = _G["GameTooltipTextLeft" .. i]
 		local text = line:GetText()
-		if text and string_find(text, specPrefix) then
+		if text and strfind(text, specPrefix) then
 			specLine = line
-		elseif text and string_find(text, levelPrefix) then
+		elseif text and strfind(text, levelPrefix) then
 			levelLine = line
 		end
 	end
@@ -229,10 +201,10 @@ function Module:GetUnitItemLevel(unit)
 					delay = true
 				else
 					local _, _, quality, level, _, _, _, _, slot = GetItemInfo(itemLink)
-					if not quality or not level then
+					if (not quality) or not level then
 						delay = true
 					else
-						if quality == LE_ITEM_QUALITY_HEIRLOOM then
+						if quality == Enum.ItemQuality.Heirloom then
 							boa = boa + 1
 						end
 
@@ -245,8 +217,8 @@ function Module:GetUnitItemLevel(unit)
 							level = K.GetItemLevel(itemLink) or level
 							if i < 16 then
 								total = total + level
-							elseif i > 15 and quality == LE_ITEM_QUALITY_ARTIFACT then
-								local relics = { select(4, string_split(":", itemLink)) }
+							elseif i > 15 and quality == Enum.ItemQuality.Artifact then
+								local relics = { select(4, strsplit(":", itemLink)) }
 								for i = 1, 3 do
 									local relicID = relics[i] ~= "" and relics[i]
 									local relicLink = select(2, GetItemGem(itemLink, i))
@@ -258,7 +230,7 @@ function Module:GetUnitItemLevel(unit)
 							end
 
 							if i == 16 then
-								if quality == LE_ITEM_QUALITY_ARTIFACT then
+								if quality == Enum.ItemQuality.Artifact then
 									hasArtifact = true
 								end
 
@@ -307,13 +279,11 @@ function Module:GetUnitItemLevel(unit)
 		end
 
 		if ilvl > 0 then
-			ilvl = string_format("%.1f", ilvl)
+			ilvl = format("%.1f", ilvl)
 		end
-
 		if boa > 0 then
-			ilvl = ilvl .. " |cff00ccff(" .. boa .. "/12" .. ")"
+			ilvl = ilvl .. " |cff00ccff(" .. boa .. HEIRLOOMS .. ")"
 		end
-
 		if sets > 0 then
 			ilvl = ilvl .. formatSets[sets]
 		end
@@ -341,7 +311,6 @@ function Module:GetUnitSpec(unit)
 			specName = select(2, GetSpecializationInfoByID(specID))
 		end
 	end
-
 	if specName == "" then
 		specName = NONE
 	end
@@ -360,7 +329,6 @@ function Module:InspectUnit(unit, forced)
 		if not unit or UnitGUID(unit) ~= currentGUID then
 			return
 		end
-
 		if not UnitIsPlayer(unit) then
 			return
 		end
@@ -373,16 +341,13 @@ function Module:InspectUnit(unit, forced)
 		if not C["Tooltip"].SpecLevelByShift and IsShiftKeyDown() then
 			forced = true
 		end
-
 		if spec and level and not forced and (GetTime() - currentDB.getTime < resetTime) then
 			updater.elapsed = frequency
 			return
 		end
-
 		if not UnitIsVisible(unit) or UnitIsDeadOrGhost("player") or UnitOnTaxi("player") then
 			return
 		end
-
 		if InspectFrame and InspectFrame:IsShown() then
 			return
 		end
@@ -400,7 +365,6 @@ function Module:InspectUnitSpecAndLevel(unit)
 	if not unit or not CanInspect(unit) then
 		return
 	end
-
 	currentUNIT, currentGUID = unit, UnitGUID(unit)
 	if not cache[currentGUID] then
 		cache[currentGUID] = {}

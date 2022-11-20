@@ -30,7 +30,6 @@ function Module:UpdateStanceBar()
 			button:ClearAllPoints()
 			if i == 1 then
 				button:SetPoint("TOPLEFT", frame, padding, -padding)
-				button.SetPoint = K.Noop
 			elseif mod(i - 1, perRow) == 0 then
 				button:SetPoint("TOP", frame.buttons[i - perRow], "BOTTOM", 0, -margin)
 			else
@@ -60,9 +59,11 @@ function Module:CreateStancebar()
 	-- StanceBar
 	StanceBar:SetParent(frame)
 	StanceBar:EnableMouse(false)
+	StanceBar:UnregisterAllEvents()
 
 	for i = 1, NUM_STANCE_SLOTS do
 		local button = _G["StanceButton" .. i]
+		button:SetParent(frame)
 		table_insert(buttonList, button)
 		table_insert(Module.buttons, button)
 	end

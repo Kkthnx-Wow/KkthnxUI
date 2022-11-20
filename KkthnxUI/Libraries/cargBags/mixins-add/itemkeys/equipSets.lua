@@ -27,6 +27,7 @@ local _, ns = ...
 local cargBags = ns.cargBags
 
 local ItemKeys = cargBags.itemKeys
+
 local setItems
 
 local function initUpdater()
@@ -61,7 +62,6 @@ ItemKeys["setID"] = function(i)
 	if not setItems then
 		initUpdater()
 	end
-
 	return setItems[i.id]
 end
 

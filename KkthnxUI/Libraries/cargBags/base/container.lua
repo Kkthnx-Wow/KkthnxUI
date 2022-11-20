@@ -76,7 +76,6 @@ function Container:AddButton(button)
 	if button.OnAdd then
 		button:OnAdd(self)
 	end
-
 	if self.OnButtonAdd then
 		self:OnButtonAdd(button)
 	end
@@ -96,11 +95,9 @@ function Container:RemoveButton(button)
 			if button.OnRemove then
 				button:OnRemove(self)
 			end
-
 			if self.OnButtonRemove then
 				self:OnButtonRemove(button)
 			end
-
 			return table.remove(self.buttons, i)
 		end
 	end
@@ -117,7 +114,6 @@ updater:SetScript("OnUpdate", function(self)
 		if container.OnContentsChanged then
 			container:OnContentsChanged()
 		end
-
 		scheduled[container] = nil
 	end
 end)

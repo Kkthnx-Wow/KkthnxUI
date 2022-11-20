@@ -41,12 +41,6 @@ function Module:TotemBar_Init()
 			totem:CreateBorder()
 			totem:SetAlpha(0)
 			totems[i] = totem
-
-			local blizzTotem = _G["TotemFrameTotem" .. i]
-			blizzTotem:SetParent(totem)
-			blizzTotem:SetAllPoints()
-			blizzTotem:SetAlpha(0)
-			totem.__owner = blizzTotem
 		end
 
 		totem:SetSize(iconSize, iconSize)
@@ -62,12 +56,12 @@ function Module:TotemBar_Init()
 end
 
 function Module:TotemBar_Update()
-	for i = 1, 4 do
-		local totem = totems[i]
-		local defaultTotem = totem.__owner
-		local slot = defaultTotem.slot
+	local activeTotems = 0
+	for button in _G.TotemFrame.totemPool:EnumerateActive() do
+		activeTotems = activeTotems + 1
 
-		local haveTotem, _, start, dur, icon = GetTotemInfo(slot)
+		local haveTotem, _, start, dur, icon = GetTotemInfo(button.slot)
+		local totem = totems[activeTotems]
 		if haveTotem and dur > 0 then
 			totem.Icon:SetTexture(icon)
 			totem.CD:SetCooldown(start, dur)
@@ -78,15 +72,27 @@ function Module:TotemBar_Update()
 			totem.CD:Hide()
 			totem:SetAlpha(0)
 		end
+
+		button:ClearAllPoints()
+		button:SetParent(totem)
+		button:SetAllPoints(totem)
+		button:SetAlpha(0)
+		button:SetFrameLevel(totem:GetFrameLevel() + 1)
+	end
+
+	for i = activeTotems + 1, 4 do
+		local totem = totems[i]
+		totem.Icon:SetTexture("")
+		totem.CD:Hide()
+		totem:SetAlpha(0)
 	end
 end
 
 function Module:CreateTotems()
-	-- if not C["Auras"].Totems then
-	-- 	return
-	-- end
+	if not C["Auras"].Totems then
+		return
+	end
 
-	-- Module:TotemBar_Init()
-	-- K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.TotemBar_Update)
-	-- K:RegisterEvent("PLAYER_TOTEM_UPDATE", Module.TotemBar_Update)
+	Module:TotemBar_Init()
+	hooksecurefunc(TotemFrame, "Update", Module.TotemBar_Update)
 end

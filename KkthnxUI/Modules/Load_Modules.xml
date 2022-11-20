@@ -103,8 +103,6 @@
    <Script file="UnitFrames\Groups\Raid.lua" />
    <!-- Tooltip -->
    <Script file="Tooltip\Core.lua" />
-   <Script file="Tooltip\Elements\Conduit.lua" />
-   <Script file="Tooltip\Elements\DominationRank.lua" />
    <Script file="Tooltip\Elements\Hover.lua" />
    <Script file="Tooltip\Elements\ID.lua" />
    <Script file="Tooltip\Elements\Icons.lua" />

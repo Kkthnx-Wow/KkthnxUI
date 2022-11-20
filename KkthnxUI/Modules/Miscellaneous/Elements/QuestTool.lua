@@ -124,7 +124,7 @@ function Module:CreateQuestTool()
 	end
 
 	-- Check npc in quests
-	GameTooltip:HookScript("OnTooltipSetUnit", Module.QuestTool_SetQuestUnit)
+	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, Module.QuestTool_SetQuestUnit)
 
 	-- Auto gossip
 	local firstStep

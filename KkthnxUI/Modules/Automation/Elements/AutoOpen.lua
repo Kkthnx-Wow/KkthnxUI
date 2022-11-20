@@ -5,8 +5,8 @@ local Module = K:GetModule("Automation")
 
 local _G = _G
 
-local GetContainerNumSlots = _G.GetContainerNumSlots
-local GetContainerItemInfo = _G.GetContainerItemInfo
+local C_Container_GetContainerNumSlots = _G.C_Container.GetContainerNumSlots
+local C_Container_GetContainerItemInfo = _G.C_Container.GetContainerItemInfo
 local OPENING = _G.OPENING
 local GetContainerItemLink = _G.GetContainerItemLink
 
@@ -52,8 +52,8 @@ local function BagDelayedUpdate()
 	end
 
 	for bag = 0, 4 do
-		for slot = 0, GetContainerNumSlots(bag) do
-			local _, _, locked, _, _, lootable, _, _, _, id = GetContainerItemInfo(bag, slot)
+		for slot = 0, C_Container_GetContainerNumSlots(bag) do
+			local _, _, locked, _, _, lootable, _, _, _, id = C_Container_GetContainerItemInfo(bag, slot)
 			if lootable and not locked and id and C.AutoOpenItems[id] then
 				K.Print(K.SystemColor .. OPENING .. ":|r " .. GetContainerItemLink(bag, slot))
 				UseContainerItem(bag, slot)

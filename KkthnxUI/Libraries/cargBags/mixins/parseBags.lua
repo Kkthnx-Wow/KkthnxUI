@@ -33,12 +33,12 @@ local cargBags = ns.cargBags
 
 local bagStrings = {
 	["backpack"] = { 0 },
-	["bags"] = { 1, 2, 3, 4 },
-	["backpack+bags"] = { 0, 1, 2, 3, 4 },
+	["bags"] = { 1, 2, 3, 4, 5 },
+	["backpack+bags"] = { 0, 1, 2, 3, 4, 5 },
 	["bankframe"] = { -1 },
-	["bankframe+bank"] = { -1, 5, 6, 7, 8, 9, 10, 11 },
+	["bankframe+bank"] = { -1, 6, 7, 8, 9, 10, 11, 12 },
 	["bankreagent"] = { -3 },
-	["bank"] = { 5, 6, 7, 8, 9, 10, 11 },
+	["bank"] = { 6, 7, 8, 9, 10, 11, 12 },
 	["keyring"] = { -2 },
 }
 cargBags.BagStrings = bagStrings
@@ -52,29 +52,23 @@ function cargBags:ParseBags(bags)
 	if not bags then
 		return
 	end
-
 	if type(bags) == "table" then
 		return bags
 	end
-
 	if bagStrings[bags] then
 		return bagStrings[bags]
 	end
-
 	local min, max = bags:match("(%d+)-(%d+)")
 	if min then
 		local t = {}
 		for i = min, max do
 			t[#t + 1] = i
 		end
-
 		bagStrings[bags] = t
-
 		return t
 	elseif tonumber(bags) then
 		local t = { tonumber(bags) }
 		bagStrings[bags] = t
-
 		return t
 	end
 end

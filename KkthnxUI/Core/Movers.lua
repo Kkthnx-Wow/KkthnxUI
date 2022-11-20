@@ -426,7 +426,7 @@ function Module:OnEnable()
 		Module.UpdateTrimFrame(updater.__owner)
 	end)
 
-	Module:DisableBlizzardMover()
+	-- Module:DisableBlizzardMover()
 end
 
 -- Disable blizzard edit mode

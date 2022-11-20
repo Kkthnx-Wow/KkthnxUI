@@ -61,9 +61,9 @@ function Module:HookTooltipSetSpell()
 end
 
 function Module:HookTooltipMethod()
-	self:HookScript("OnTooltipSetItem", Module.HookTooltipSetItem)
-	self:HookScript("OnTooltipSetSpell", Module.HookTooltipSetSpell)
-	self:HookScript("OnTooltipCleared", Module.HookTooltipCleared)
+	-- self:HookScript("OnTooltipSetItem", Module.HookTooltipSetItem)
+	--self:HookScript("OnTooltipSetSpell", Module.HookTooltipSetSpell)
+	--self:HookScript("OnTooltipCleared", Module.HookTooltipCleared)
 end
 
 local function updateBackdropColor(self, r, g, b)
@@ -124,5 +124,5 @@ function Module:CreateTooltipIcons()
 		return
 	end
 
-	self:ReskinTooltipIcons()
+	--self:ReskinTooltipIcons()
 end

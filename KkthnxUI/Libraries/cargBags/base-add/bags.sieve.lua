@@ -56,7 +56,7 @@ function Container:SetBags(bags)
 	self.implementation.bagToContainer = self.implementation.bagToContainer or {}
 	local b2c = self.implementation.bagToContainer
 
-	for _, bagID in pairs(bags) do
+	for i, bagID in pairs(bags) do
 		b2c[bagID] = self
 	end
 end
