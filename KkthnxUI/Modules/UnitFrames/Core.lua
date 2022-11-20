@@ -612,7 +612,7 @@ function Module:CreateClassPower(self)
 			bars[i]:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
 		end
 
-		if K.Class == "DEATHKNIGHT" then
+		if isDK then
 			bars[i].timer = K.CreateFontString(bars[i], 10, "")
 		else
 			if not bar.chargeParent then
@@ -632,7 +632,7 @@ function Module:CreateClassPower(self)
 		end
 	end
 
-	if K.Class == "DEATHKNIGHT" then
+	if isDK then
 		bars.colorSpec = true
 		bars.sortOrder = "asc"
 		bars.PostUpdate = Module.PostUpdateRunes

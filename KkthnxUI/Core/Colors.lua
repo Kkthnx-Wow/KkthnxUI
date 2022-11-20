@@ -71,6 +71,7 @@ oUF.colors.power = {
 	["POWER_TYPE_PYRITE"] = { 0.60, 0.09, 0.17 },
 	["POWER_TYPE_STEAM"] = { 0.55, 0.57, 0.61 },
 	["RAGE"] = { 0.78, 0.25, 0.25 },
+	["ESSENCE"] = { 100 / 255, 173 / 255, 206 / 255 },
 	["RUNES"] = { 0.55, 0.57, 0.61 },
 	["RUNIC_POWER"] = { 0, 0.82, 1 },
 	["SOUL_SHARDS"] = { 0.50, 0.32, 0.55 },
