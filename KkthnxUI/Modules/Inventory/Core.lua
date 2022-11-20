@@ -64,6 +64,14 @@ function Module:ReverseSort()
 end
 
 local anchorCache = {}
+local function CheckForBagReagent(name)
+	local pass = true
+	if name == "BagReagent" and GetContainerNumSlots(5) == 0 then
+		pass = false
+	end
+	return pass
+end
+
 function Module:UpdateBagsAnchor(parent, bags)
 	table_wipe(anchorCache)
 
@@ -73,7 +81,7 @@ function Module:UpdateBagsAnchor(parent, bags)
 
 	for i = 1, #bags do
 		local bag = bags[i]
-		if bag:GetHeight() > 45 then
+		if bag:GetHeight() > 45 and CheckForBagReagent(bag.name) then
 			bag:Show()
 			index = index + 1
 
@@ -483,26 +491,31 @@ end
 function Module:GetEmptySlot(name)
 	if name == "Bag" then
 		for bagID = 0, 4 do
-			local slotID = module:GetContainerEmptySlot(bagID)
+			local slotID = Module:GetContainerEmptySlot(bagID)
 			if slotID then
 				return bagID, slotID
 			end
 		end
 	elseif name == "Bank" then
-		local slotID = module:GetContainerEmptySlot(-1)
+		local slotID = Module:GetContainerEmptySlot(-1)
 		if slotID then
 			return -1, slotID
 		end
 		for bagID = 6, 12 do
-			local slotID = module:GetContainerEmptySlot(bagID)
+			local slotID = Module:GetContainerEmptySlot(bagID)
 			if slotID then
 				return bagID, slotID
 			end
 		end
 	elseif name == "Reagent" then
-		local slotID = module:GetContainerEmptySlot(-3)
+		local slotID = Module:GetContainerEmptySlot(-3)
 		if slotID then
 			return -3, slotID
+		end
+	elseif name == "BagReagent" then
+		local slotID = Module:GetContainerEmptySlot(5)
+		if slotID then
+			return 5, slotID
 		end
 	end
 end
@@ -518,6 +531,7 @@ local freeSlotContainer = {
 	["Bag"] = true,
 	["Bank"] = true,
 	["Reagent"] = true,
+	["BagReagent"] = true,
 }
 
 function Module:CreateFreeSlots()
@@ -1409,6 +1423,9 @@ function Module:OnEnable()
 			K.CreateMoverFrame(self, nil, true)
 		end
 
+		self.iconSize = iconSize
+		Module.CreateFreeSlots(self)
+
 		local label
 		if string_match(name, "AzeriteItem$") then
 			label = "Azerite Armor"
@@ -1443,9 +1460,7 @@ function Module:OnEnable()
 			return
 		end
 
-		self.iconSize = iconSize
 		Module.CreateInfoFrame(self)
-		Module.CreateFreeSlots(self)
 
 		local buttons = {}
 		buttons[1] = Module.CreateCloseButton(self, f)

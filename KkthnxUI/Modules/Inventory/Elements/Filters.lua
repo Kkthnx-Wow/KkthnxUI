@@ -197,12 +197,13 @@ local function isItemCustom(item, index)
 	return customIndex and customIndex == index
 end
 
+local emptyBags = { [0] = true, [11] = true }
 local function isEmptySlot(item)
 	if not C["Inventory"].GatherEmpty then
 		return
 	end
 
-	return Module.initComplete and not item.texture and Module.BagsType[item.bagId] == 0
+	return Module.initComplete and not item.texture and emptyBags[Module.BagsType[item.bagId]]
 end
 
 local function isTradeGoods(item)
@@ -362,7 +363,7 @@ function Module:GetFilters()
 	end
 
 	filters.onlyBagReagent = function(item)
-		return isItemInBagReagent(item)
+		return isItemInBagReagent(item) and not isEmptySlot(item)
 	end
 
 	for i = 1, 5 do
