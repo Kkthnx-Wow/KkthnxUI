@@ -94,10 +94,17 @@ C.themes["Blizzard_InspectUI"] = function()
 
 			local _, targetClass = UnitClass("target")
 			if targetClass then
-				InspectFrame.Inset.Bg:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. targetClass)
-				InspectFrame.Inset.Bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
-				InspectFrame.Inset.Bg:SetHorizTile(false)
-				InspectFrame.Inset.Bg:SetVertTile(false)
+				if targetClass == "EVOKER" then
+					InspectFrame.Inset.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Marble", "REPEAT", "REPEAT")
+					InspectFrame.Inset.Bg:SetTexCoord(0, 1, 0, 1)
+					InspectFrame.Inset.Bg:SetHorizTile(true)
+					InspectFrame.Inset.Bg:SetVertTile(true)
+				else
+					InspectFrame.Inset.Bg:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. targetClass)
+					InspectFrame.Inset.Bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
+					InspectFrame.Inset.Bg:SetHorizTile(false)
+					InspectFrame.Inset.Bg:SetVertTile(false)
+				end
 			end
 		else
 			InspectFrame:SetSize(338, 424)
