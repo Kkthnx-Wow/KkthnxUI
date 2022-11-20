@@ -156,13 +156,8 @@ local function MoveTalkingHead()
 	local model = TalkingHeadFrame.MainFrame.Model
 	if model.uiCameraID then
 		model:RefreshCamera()
-		_G.Model_ApplyUICamera(model, model.uiCameraID)
-	end
 
-	for index, alertFrameSubSystem in ipairs(_G.AlertFrame.alertFrameSubSystems) do
-		if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == TalkingHeadFrame then
-			tremove(_G.AlertFrame.alertFrameSubSystems, index)
-		end
+		_G.Model_ApplyUICamera(model, model.uiCameraID)
 	end
 end
 
@@ -171,17 +166,10 @@ local function NoTalkingHeads()
 		return
 	end
 
+	_G.TalkingHeadFrame:UnregisterAllEvents() -- needs review
 	hooksecurefunc(_G.TalkingHeadFrame, "Show", function(self)
 		self:Hide()
 	end)
-end
-
-local function TalkingHeadOnLoad(event, addon)
-	if addon == "Blizzard_TalkingHeadUI" then
-		MoveTalkingHead()
-		NoTalkingHeads()
-		K:UnregisterEvent(event, TalkingHeadOnLoad)
-	end
 end
 
 function Module:CreateAlertFrames()
@@ -198,24 +186,23 @@ function Module:CreateAlertFrames()
 		AlertFrameHolder.Mover:SetSize(AlertFrameHolder:GetSize())
 	end
 
-	-- Replace AdjustAnchors functions to allow alerts to grow down if needed.
-	-- We will need to keep an eye on this in case it taints. It shouldn"t, but you never know.
-	for _, alertFrameSubSystem in ipairs(_G.AlertFrame.alertFrameSubSystems) do
-		AlertSubSystem_AdjustPosition(alertFrameSubSystem)
+	for index, alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
+		if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == _G.TalkingHeadFrame then
+			tremove(_G.AlertFrame.alertFrameSubSystems, index)
+		else
+			AlertSubSystem_AdjustPosition(alertFrameSubSystem)
+		end
 	end
 
-	-- This should catch any alert systems that are created by other addons
-	hooksecurefunc(_G.AlertFrame, "AddAlertFrameSubSystem", function(_, alertFrameSubSystem)
+	hooksecurefunc(AlertFrame, "AddAlertFrameSubSystem", function(_, alertFrameSubSystem)
 		AlertSubSystem_AdjustPosition(alertFrameSubSystem)
 	end)
 
 	hooksecurefunc(_G.AlertFrame, "UpdateAnchors", Module.PostAlertMove)
 	hooksecurefunc("GroupLootContainer_Update", Module.GroupLootContainer_Update)
 
-	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
+	if TalkingHeadFrame then
 		MoveTalkingHead()
 		NoTalkingHeads()
-	else
-		K:RegisterEvent("ADDON_LOADED", TalkingHeadOnLoad)
 	end
 end

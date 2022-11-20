@@ -66,7 +66,6 @@ function Module:OnEnable()
 	self:CreateVehicleSeatMover()
 	self:DisableHelpTips()
 	self:MoveMawBuffsFrame()
-	--self:SpellBookFix()
 	self:UpdateMaxCameraZoom()
 
 	hooksecurefunc("QuestInfo_Display", Module.CreateQuestXPPercent)
@@ -120,44 +119,6 @@ function Module:OnEnable()
 			return
 		end
 		_AddonTooltip_Update(owner)
-	end
-end
-
--- SpellBook fix in 46157
-function Module:SpellBookFix()
-	local function replaceOnEnter(self)
-		local slot = SpellBook_GetSpellBookSlot(self)
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-
-		if InClickBindingMode() and not self.canClickBind then
-			GameTooltip:AddLine(CLICK_BINDING_NOT_AVAILABLE, RED_FONT_COLOR.r, RED_FONT_COLOR.g, RED_FONT_COLOR.b)
-			GameTooltip:Show()
-			return
-		end
-
-		GameTooltip:SetSpellBookItem(slot, SpellBookFrame.bookType)
-		self.UpdateTooltip = nil
-
-		if self.SpellHighlightTexture and self.SpellHighlightTexture:IsShown() then
-			GameTooltip:AddLine(SPELLBOOK_SPELL_NOT_ON_ACTION_BAR, LIGHTBLUE_FONT_COLOR.r, LIGHTBLUE_FONT_COLOR.g, LIGHTBLUE_FONT_COLOR.b)
-		end
-		GameTooltip:Show()
-	end
-
-	local function handleSpellButton(button)
-		button.OnEnter = replaceOnEnter
-		button:SetScript("OnEnter", replaceOnEnter)
-	end
-
-	for i = 1, SPELLS_PER_PAGE do
-		handleSpellButton(_G["SpellButton" .. i])
-	end
-
-	local professions = { "PrimaryProfession1", "PrimaryProfession2", "SecondaryProfession1", "SecondaryProfession2", "SecondaryProfession3" }
-	for _, button in pairs(professions) do
-		local bu = _G[button]
-		handleSpellButton(bu.SpellButton1)
-		handleSpellButton(bu.SpellButton2)
 	end
 end
 

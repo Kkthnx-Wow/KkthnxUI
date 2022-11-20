@@ -151,12 +151,12 @@ function Module:CreateInfoFrame()
 	infoFrame:SetSize(160, 18)
 
 	local icon = infoFrame:CreateTexture(nil, "ARTWORK")
-	icon:SetSize(20, 20)
+	icon:SetSize(22, 22)
 	icon:SetPoint("LEFT", 0, 2)
 	icon:SetTexture("Interface\\Minimap\\Tracking\\None")
 
 	local hl = infoFrame:CreateTexture(nil, "HIGHLIGHT")
-	hl:SetSize(20, 20)
+	hl:SetSize(22, 22)
 	hl:SetPoint("LEFT", 0, 2)
 	hl:SetTexture("Interface\\Minimap\\Tracking\\None")
 
@@ -483,17 +483,16 @@ end
 function Module:GetEmptySlot(name)
 	if name == "Bag" then
 		for bagID = 0, 4 do
-			local slotID = Module:GetContainerEmptySlot(bagID)
+			local slotID = module:GetContainerEmptySlot(bagID)
 			if slotID then
 				return bagID, slotID
 			end
 		end
 	elseif name == "Bank" then
-		local slotID = Module:GetContainerEmptySlot(-1)
+		local slotID = module:GetContainerEmptySlot(-1)
 		if slotID then
 			return -1, slotID
 		end
-
 		for bagID = 6, 12 do
 			local slotID = module:GetContainerEmptySlot(bagID)
 			if slotID then
@@ -501,7 +500,7 @@ function Module:GetEmptySlot(name)
 			end
 		end
 	elseif name == "Reagent" then
-		local slotID = Module:GetContainerEmptySlot(-3)
+		local slotID = module:GetContainerEmptySlot(-3)
 		if slotID then
 			return -3, slotID
 		end
@@ -1435,6 +1434,8 @@ function Module:OnEnable()
 			label = "Korthia Relics"
 		elseif strmatch(name, "Custom%d") then
 			label = GetCustomGroupTitle(settings.Index)
+		elseif name == "BagReagent" then
+			label = "Reagent Bag"
 		end
 
 		if label then
