@@ -8,7 +8,7 @@ Dependencies: LibStub
 License: Public Domain
 ]]
 
--- LibRangeCheck-2.0 provides an easy way to check for ranges and get suitable range checking functions for specific ranges.\\
+--- LibRangeCheck-2.0 provides an easy way to check for ranges and get suitable range checking functions for specific ranges.\\
 -- The checkers use spell and item range checks, or interact based checks for special units where those two cannot be used.\\
 -- The lib handles the refreshing of checker lists in case talents / spells change and in some special cases when equipment changes (for example some of the mage pvp gloves change the range of the Fire Blast spell), and also handles the caching of items used for item-based range checks.\\
 -- A callback is provided for those interested in checker changes.
@@ -16,7 +16,7 @@ License: Public Domain
 -- local rc = LibStub("LibRangeCheck-2.0")
 --
 -- rc.RegisterCallback(self, rc.CHECKERS_CHANGED, function() print("need to refresh my stored checkers") end)
-
+--
 -- local minRange, maxRange = rc:GetRange('target')
 -- if not minRange then
 --     print("cannot get range estimate for target")
@@ -25,7 +25,7 @@ License: Public Domain
 -- else
 --     print("target is between " .. minRange .. " and " .. maxRange .. " yards")
 -- end
-
+--
 -- local meleeChecker = rc:GetFriendMaxChecker(rc.MeleeRange) or rc:GetFriendMinChecker(rc.MeleeRange) -- use the closest checker (MinChecker) if no valid Melee checker is found
 -- for i = 1, 4 do
 --     -- TODO: check if unit is valid, etc
@@ -33,56 +33,56 @@ License: Public Domain
 --         print("Party member " .. i .. " is in Melee range")
 --     end
 -- end
-
+--
 -- local safeDistanceChecker = rc:GetHarmMinChecker(30)
--- negate the result of the checker!
+-- -- negate the result of the checker!
 -- local isSafelyAway = not safeDistanceChecker('target')
-
+--
 -- @class file
 -- @name LibRangeCheck-2.0
 local MAJOR_VERSION = "LibRangeCheck-2.0-KkthnxUI"
-local MINOR_VERSION = tonumber(("$Revision: 214 $"):match("%d+")) + 100000
+local MINOR_VERSION = tonumber(("$Revision: 216 $"):match("%d+")) + 100000
 
-local lib = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
+local lib, oldminor = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
 if not lib then
 	return
 end
 
--- GLOBALS: LibStub, CreateFrame, C_Map
-local _G = _G
-local ipairs = _G.ipairs
-local math_floor = _G.math.floor
-local next = _G.next
-local pairs = _G.pairs
-local print = _G.print
-local setmetatable = _G.setmetatable
-local tinsert = _G.tinsert
-local tostring = _G.tostring
-local tremove = _G.tremove
-local type = _G.type
-local wipe = _G.wipe
+local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+local isWrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 
-local BOOKTYPE_SPELL = _G.BOOKTYPE_SPELL
-local CheckInteractDistance = _G.CheckInteractDistance
-local GetInventoryItemLink = _G.GetInventoryItemLink
-local GetItemInfo = _G.GetItemInfo
-local GetNumSpellTabs = _G.GetNumSpellTabs
-local GetSpellBookItemName = _G.GetSpellBookItemName
-local GetSpellInfo = _G.GetSpellInfo
-local GetSpellTabInfo = _G.GetSpellTabInfo
-local GetTime = _G.GetTime
-local IsItemInRange = _G.IsItemInRange
-local IsSpellInRange = _G.IsSpellInRange
-local UnitCanAssist = _G.UnitCanAssist
-local UnitCanAttack = _G.UnitCanAttack
-local UnitClass = _G.UnitClass
-local UnitExists = _G.UnitExists
-local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
-local UnitIsUnit = _G.UnitIsUnit
-local UnitIsVisible = _G.UnitIsVisible
-local UnitRace = _G.UnitRace
-
-local HandSlotId = _G.GetInventorySlotInfo("HandsSlot")
+-- GLOBALS: LibStub, CreateFrame, C_Map, FriendColor (??), HarmColor (??)
+local next = next
+local type = type
+local wipe = wipe
+local print = print
+local pairs = pairs
+local ipairs = ipairs
+local tinsert = tinsert
+local tremove = tremove
+local tostring = tostring
+local setmetatable = setmetatable
+local BOOKTYPE_SPELL = BOOKTYPE_SPELL
+local GetSpellInfo = GetSpellInfo
+local GetSpellBookItemName = GetSpellBookItemName
+local GetNumSpellTabs = GetNumSpellTabs
+local GetSpellTabInfo = GetSpellTabInfo
+local GetItemInfo = GetItemInfo
+local UnitCanAttack = UnitCanAttack
+local UnitCanAssist = UnitCanAssist
+local UnitExists = UnitExists
+local UnitIsUnit = UnitIsUnit
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local CheckInteractDistance = CheckInteractDistance
+local IsSpellInRange = IsSpellInRange
+local IsItemInRange = IsItemInRange
+local UnitClass = UnitClass
+local UnitRace = UnitRace
+local GetInventoryItemLink = GetInventoryItemLink
+local GetTime = GetTime
+local HandSlotId = GetInventorySlotInfo("HandsSlot")
+local math_floor = math.floor
+local UnitIsVisible = UnitIsVisible
 
 -- << STATIC CONFIG
 
@@ -115,13 +115,22 @@ local InteractLists = {
 local MeleeRange = 2
 local FriendSpells, HarmSpells, ResSpells, PetSpells = {}, {}, {}, {}
 
-for _, n in ipairs({ "DEATHKNIGHT", "DEMONHUNTER", "DRUID", "HUNTER", "SHAMAN", "MAGE", "PALADIN", "PRIEST", "WARLOCK", "WARRIOR", "MONK", "ROGUE" }) do
+for _, n in ipairs({ "EVOKER", "DEATHKNIGHT", "DEMONHUNTER", "DRUID", "HUNTER", "SHAMAN", "MAGE", "PALADIN", "PRIEST", "WARLOCK", "WARRIOR", "MONK", "ROGUE" }) do
 	FriendSpells[n], HarmSpells[n], ResSpells[n], PetSpells[n] = {}, {}, {}, {}
 end
+
+-- Evoker
+tinsert(HarmSpells.EVOKER, 369819) -- Disintegrate (25 yards)
+
+tinsert(FriendSpells.EVOKER, 361469) -- Living Flame (25 yards)
+tinsert(FriendSpells.EVOKER, 360823) -- Naturalize (Preservation) (30 yards)
+
+tinsert(ResSpells.EVOKER, 361227) -- Return (40 yards)
 
 -- Death Knights
 tinsert(HarmSpells.DEATHKNIGHT, 49576) -- Death Grip (30 yards)
 tinsert(HarmSpells.DEATHKNIGHT, 47541) -- Death Coil (Unholy) (40 yards)
+
 tinsert(ResSpells.DEATHKNIGHT, 61999) -- Raise Ally (40 yards)
 
 -- Demon Hunters
@@ -134,22 +143,38 @@ tinsert(FriendSpells.DRUID, 8936) -- Regrowth (40 yards, level 3)
 tinsert(FriendSpells.DRUID, 774) -- Rejuvenation (Restoration) (40 yards, level 10)
 tinsert(FriendSpells.DRUID, 2782) -- Remove Corruption (Restoration) (40 yards, level 19)
 tinsert(FriendSpells.DRUID, 88423) -- Natures Cure (Restoration) (40 yards, level 19)
+
+if not isRetail then
+	tinsert(FriendSpells.DRUID, 5185) -- Healing Touch (40 yards, level 1, rank 1)
+end
+
 tinsert(HarmSpells.DRUID, 5176) -- Wrath (40 yards)
 tinsert(HarmSpells.DRUID, 339) -- Entangling Roots (35 yards)
 tinsert(HarmSpells.DRUID, 6795) -- Growl (30 yards)
 tinsert(HarmSpells.DRUID, 33786) -- Cyclone (20 yards)
 tinsert(HarmSpells.DRUID, 22568) -- Ferocious Bite (Melee Range)
 tinsert(HarmSpells.DRUID, 8921) -- Moonfire (40 yards, level 2)
+
 tinsert(ResSpells.DRUID, 50769) -- Revive (40 yards, level 14)
 tinsert(ResSpells.DRUID, 20484) -- Rebirth (40 yards, level 29)
 
 -- Hunters
 tinsert(HarmSpells.HUNTER, 75) -- Auto Shot (40 yards)
+
+if not isRetail then
+	tinsert(HarmSpells.HUNTER, 2764) -- Throw (30 yards, level 1)
+end
+
 tinsert(PetSpells.HUNTER, 136) -- Mend Pet (45 yards)
 
 -- Mages
 tinsert(FriendSpells.MAGE, 1459) -- Arcane Intellect (40 yards, level 8)
 tinsert(FriendSpells.MAGE, 475) -- Remove Curse (40 yards, level 28)
+
+if not isRetail then
+	tinsert(FriendSpells.MAGE, 130) -- Slow Fall (40 yards, level 12)
+end
+
 tinsert(HarmSpells.MAGE, 44614) -- Flurry (40 yards)
 tinsert(HarmSpells.MAGE, 5019) -- Shoot (30 yards)
 tinsert(HarmSpells.MAGE, 118) -- Polymorph (30 yards)
@@ -161,10 +186,12 @@ tinsert(HarmSpells.MAGE, 44425) -- Arcane Barrage (40 yards)
 tinsert(FriendSpells.MONK, 115450) -- Detox (40 yards)
 tinsert(FriendSpells.MONK, 115546) -- Provoke (30 yards)
 tinsert(FriendSpells.MONK, 116670) -- Vivify (40 yards)
+
 tinsert(HarmSpells.MONK, 115546) -- Provoke (30 yards)
 tinsert(HarmSpells.MONK, 115078) -- Paralysis (20 yards)
 tinsert(HarmSpells.MONK, 100780) -- Tiger Palm (Melee Range)
 tinsert(HarmSpells.MONK, 117952) -- Crackling Jade Lightning (40 yards)
+
 tinsert(ResSpells.MONK, 115178) -- Resuscitate (40 yards, level 13)
 
 -- Paladins
@@ -172,27 +199,47 @@ tinsert(FriendSpells.PALADIN, 19750) -- Flash of Light (40 yards, level 4)
 tinsert(FriendSpells.PALADIN, 85673) -- Word of Glory (40 yards, level 7)
 tinsert(FriendSpells.PALADIN, 4987) -- Cleanse (Holy) (40 yards, level 12)
 tinsert(FriendSpells.PALADIN, 213644) -- Cleanse Toxins (Protection, Retribution) (40 yards, level 12)
+
+if not isRetail then
+	tinsert(FriendSpells.PALADIN, 635) -- Holy Light (40 yards, level 1, rank 1)
+end
+
 tinsert(HarmSpells.PALADIN, 853) -- Hammer of Justice (10 yards)
 tinsert(HarmSpells.PALADIN, 35395) -- Crusader Strike (Melee Range)
 tinsert(HarmSpells.PALADIN, 62124) -- Hand of Reckoning (30 yards)
 tinsert(HarmSpells.PALADIN, 183218) -- Hand of Hindrance (30 yards)
 tinsert(HarmSpells.PALADIN, 20271) -- Judgement (30 yards)
 tinsert(HarmSpells.PALADIN, 20473) -- Holy Shock (40 yards)
+
 tinsert(ResSpells.PALADIN, 7328) -- Redemption (40 yards)
 
 -- Priests
-tinsert(FriendSpells.PRIEST, 21562) -- Power Word: Fortitude (40 yards, level 6) [use first to fix kyrian boon/fae soulshape]
-tinsert(FriendSpells.PRIEST, 17) -- Power Word: Shield (40 yards, level 4)
+if isRetail then
+	tinsert(FriendSpells.PRIEST, 21562) -- Power Word: Fortitude (40 yards, level 6) [use first to fix kyrian boon/fae soulshape]
+	tinsert(FriendSpells.PRIEST, 17) -- Power Word: Shield (40 yards, level 4)
+else -- PWS is group only in classic, use lesser heal as main spell check
+	tinsert(FriendSpells.PRIEST, 2050) -- Lesser Heal (40 yards, level 1, rank 1)
+end
+
 tinsert(FriendSpells.PRIEST, 527) -- Purify / Dispel Magic (40 yards retail, 30 yards tbc, level 18, rank 1)
 tinsert(FriendSpells.PRIEST, 2061) -- Flash Heal (40 yards, level 3 retail, level 20 tbc)
+
 tinsert(HarmSpells.PRIEST, 589) -- Shadow Word: Pain (40 yards)
 tinsert(HarmSpells.PRIEST, 585) -- Smite (40 yards)
 tinsert(HarmSpells.PRIEST, 5019) -- Shoot (30 yards)
+
+if not isRetail then
+	tinsert(HarmSpells.PRIEST, 8092) -- Mindblast (30 yards, level 10)
+end
+
 tinsert(ResSpells.PRIEST, 2006) -- Resurrection (40 yards, level 10)
 
 -- Rogues
-tinsert(FriendSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18) -- works on friendly in retail
-tinsert(FriendSpells.ROGUE, 921) -- Pick Pocket (10 yards, level 24) -- this works for range, keep it in friendly aswell for retail but on classic this is melee range and will return min 0 range 0
+if isRetail then
+	tinsert(FriendSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18) -- works on friendly in retail
+	tinsert(FriendSpells.ROGUE, 921) -- Pick Pocket (10 yards, level 24) -- this works for range, keep it in friendly aswell for retail but on classic this is melee range and will return min 0 range 0
+end
+
 tinsert(HarmSpells.ROGUE, 2764) -- Throw (30 yards)
 tinsert(HarmSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18)
 tinsert(HarmSpells.ROGUE, 185763) -- Pistol Shot (Outlaw) (20 yards)
@@ -203,9 +250,22 @@ tinsert(HarmSpells.ROGUE, 921) -- Pick Pocket (10 yards, level 24)
 tinsert(FriendSpells.SHAMAN, 546) -- Water Walking (30 yards)
 tinsert(FriendSpells.SHAMAN, 8004) -- Healing Surge (Resto, Elemental) (40 yards)
 tinsert(FriendSpells.SHAMAN, 188070) -- Healing Surge (Enhancement) (40 yards)
+
+if not isRetail then
+	tinsert(FriendSpells.SHAMAN, 331) -- Healing Wave (40 yards, level 1, rank 1)
+	tinsert(FriendSpells.SHAMAN, 526) -- Cure Poison (40 yards, level 16)
+	tinsert(FriendSpells.SHAMAN, 2870) -- Cure Disease (40 yards, level 22)
+end
+
 tinsert(HarmSpells.SHAMAN, 370) -- Purge (30 yards)
 tinsert(HarmSpells.SHAMAN, 188196) -- Lightning Bolt (40 yards)
 tinsert(HarmSpells.SHAMAN, 73899) -- Primal Strike (Melee Range)
+
+if not isRetail then
+	tinsert(HarmSpells.SHAMAN, 403) -- Lightning Bolt (30 yards, level 1, rank 1)
+	tinsert(HarmSpells.SHAMAN, 8042) -- Earth Shock (20 yards, level 4, rank 1)
+end
+
 tinsert(ResSpells.SHAMAN, 2008) -- Ancestral Spirit (40 yards, level 13)
 
 -- Warriors
@@ -213,17 +273,34 @@ tinsert(HarmSpells.WARRIOR, 355) -- Taunt (30 yards)
 tinsert(HarmSpells.WARRIOR, 5246) -- Intimidating Shout (Arms, Fury) (8 yards)
 tinsert(HarmSpells.WARRIOR, 100) -- Charge (Arms, Fury) (8-25 yards)
 
+if not isRetail then
+	tinsert(HarmSpells.WARRIOR, 2764) -- Throw (30 yards, level 1, 5-30 range)
+end
+
 -- Warlocks
 tinsert(FriendSpells.WARLOCK, 5697) -- Unending Breath (30 yards)
 tinsert(FriendSpells.WARLOCK, 20707) -- Soulstone (40 yards) ~ this can be precasted so leave it in friendly aswell as res
-tinsert(FriendSpells.WARLOCK, 132) -- Detect Invisibility (30 yards, level 26)
+
+if isRetail then
+	tinsert(FriendSpells.WARLOCK, 132) -- Detect Invisibility (30 yards, level 26)
+end
+
 tinsert(HarmSpells.WARLOCK, 5019) -- Shoot (30 yards)
 tinsert(HarmSpells.WARLOCK, 234153) -- Drain Life (40 yards, level 9)
 tinsert(HarmSpells.WARLOCK, 198590) -- Drain Soul (40 yards, level 15)
 tinsert(HarmSpells.WARLOCK, 686) -- Shadow Bolt (Demonology, Affliction) (40 yards)
 tinsert(HarmSpells.WARLOCK, 232670) -- Shadow Bolt (40 yards)
 tinsert(HarmSpells.WARLOCK, 5782) -- Fear (30 yards)
+
+if not isRetail then
+	tinsert(HarmSpells.WARLOCK, 172) -- Corruption (30 yards, level 4, rank 1)
+	tinsert(HarmSpells.WARLOCK, 348) -- Immolate (30 yards, level 1, rank 1)
+	tinsert(HarmSpells.WARLOCK, 17877) -- Shadowburn (Destruction) (20 yards)
+	tinsert(HarmSpells.WARLOCK, 18223) -- Curse of Exhaustion (Affliction) (30/33/36/35/38/42 yards)
+end
+
 tinsert(ResSpells.WARLOCK, 20707) -- Soulstone (40 yards)
+
 tinsert(PetSpells.WARLOCK, 755) -- Health Funnel (45 yards)
 
 -- Items [Special thanks to Maldivia for the nice list]
@@ -454,7 +531,6 @@ local checkers_Spell = setmetatable({}, {
 		return func
 	end,
 })
-
 local checkers_SpellWithMin = setmetatable({}, {
 	__index = function(t, spellIdx)
 		local func = function(unit)
@@ -468,7 +544,6 @@ local checkers_SpellWithMin = setmetatable({}, {
 		return func
 	end,
 })
-
 local checkers_Item = setmetatable({}, {
 	__index = function(t, item)
 		local func = function(unit)
@@ -478,7 +553,6 @@ local checkers_Item = setmetatable({}, {
 		return func
 	end,
 })
-
 local checkers_Interact = setmetatable({}, {
 	__index = function(t, index)
 		local func = function(unit)
@@ -524,14 +598,12 @@ local function findSpellIdx(spellName)
 	if not spellName or spellName == "" then
 		return nil
 	end
-
 	for i = 1, getNumSpells() do
 		local spell = GetSpellBookItemName(i, BOOKTYPE_SPELL)
 		if spell == spellName then
 			return i
 		end
 	end
-
 	return nil
 end
 
@@ -543,7 +615,6 @@ local function addChecker(t, range, minRange, checker, info)
 		if rc.range == v.range then
 			return
 		end
-
 		if rc.range > v.range then
 			tinsert(t, i, rc)
 			return
@@ -615,7 +686,6 @@ local function getRange(unit, checkerList)
 			hi = mid - 1
 		end
 	end
-
 	if lo > #checkerList then
 		return 0, checkerList[#checkerList].range
 	elseif lo <= 1 then
@@ -631,7 +701,6 @@ local function updateCheckers(origList, newList)
 		copyTable(newList, origList)
 		return true
 	end
-
 	for i = 1, #origList do
 		if origList[i].range ~= newList[i].range or origList[i].checker ~= newList[i].checker then
 			wipe(origList)
@@ -649,7 +718,6 @@ local function rcIterator(checkerList)
 			return nil
 		end
 		curr = curr - 1
-
 		return rc.range, rc.checker
 	end
 end
@@ -661,10 +729,8 @@ local function getMinChecker(checkerList, range)
 		if rc.range < range then
 			return checker, checkerRange
 		end
-
 		checker, checkerRange = rc.checker, rc.range
 	end
-
 	return checker, checkerRange
 end
 
@@ -696,11 +762,9 @@ local function createSmartChecker(friendChecker, harmChecker, miscChecker)
 		if not UnitExists(unit) then
 			return nil
 		end
-
 		if UnitIsDeadOrGhost(unit) then
 			return miscChecker(unit)
 		end
-
 		if UnitCanAttack("player", unit) then
 			return harmChecker(unit)
 		elseif UnitCanAssist("player", unit) then
@@ -762,11 +826,9 @@ function lib:getRangeAsString(unit, checkVisible, showOutOfRange)
 	if not minRange then
 		return nil
 	end
-
 	if not maxRange then
 		return showOutOfRange and minRange .. " +" or nil
 	end
-
 	return minRange .. " - " .. maxRange
 end
 
@@ -775,7 +837,6 @@ function lib:init(forced)
 	if self.initialized and not forced then
 		return
 	end
-
 	self.initialized = true
 	local _, playerClass = UnitClass("player")
 	local _, playerRace = UnitRace("player")
@@ -810,31 +871,24 @@ function lib:init(forced)
 	if updateCheckers(self.friendRC, createCheckerList(FriendSpells[playerClass], FriendItems, interactList)) then
 		changed = true
 	end
-
 	if updateCheckers(self.harmRC, createCheckerList(HarmSpells[playerClass], HarmItems, interactList)) then
 		changed = true
 	end
-
 	if updateCheckers(self.friendNoItemsRC, createCheckerList(FriendSpells[playerClass], nil, interactList)) then
 		changed = true
 	end
-
 	if updateCheckers(self.harmNoItemsRC, createCheckerList(HarmSpells[playerClass], nil, interactList)) then
 		changed = true
 	end
-
 	if updateCheckers(self.miscRC, createCheckerList(nil, nil, interactList)) then
 		changed = true
 	end
-
 	if updateCheckers(self.resRC, createCheckerList(ResSpells[playerClass], nil, interactList)) then
 		changed = true
 	end
-
 	if updateCheckers(self.petRC, createCheckerList(PetSpells[playerClass], nil, interactList)) then
 		changed = true
 	end
-
 	if changed and self.callbacks then
 		self.callbacks:Fire(self.CHECKERS_CHANGED)
 	end
@@ -987,6 +1041,7 @@ end
 lib.getRange = lib.GetRange
 
 -- >> Public API
+
 function lib:OnEvent(event, ...)
 	if type(self[event]) == "function" then
 		self[event](self, event, ...)
@@ -1009,19 +1064,19 @@ function lib:SPELLS_CHANGED()
 	self:scheduleInit()
 end
 
-function lib:UNIT_INVENTORY_CHANGED(_, unit)
+function lib:UNIT_INVENTORY_CHANGED(event, unit)
 	if self.initialized and unit == "player" and self.handSlotItem ~= GetInventoryItemLink("player", HandSlotId) then
 		self:scheduleInit()
 	end
 end
 
-function lib:UNIT_AURA(_, unit)
+function lib:UNIT_AURA(event, unit)
 	if self.initialized and unit == "player" then
 		self:scheduleAuraCheck()
 	end
 end
 
-function lib:GET_ITEM_INFO_RECEIVED(_, item, success)
+function lib:GET_ITEM_INFO_RECEIVED(event, item, success)
 	-- print("### GET_ITEM_INFO_RECEIVED: " .. tostring(item) .. ", " .. tostring(success))
 	if item == pendingItemRequest then
 		pendingItemRequest = nil
@@ -1038,7 +1093,6 @@ function lib:processItemRequests(itemRequests)
 		if not range then
 			return
 		end
-
 		while true do
 			local i, item = next(items)
 			if not i then
@@ -1057,12 +1111,10 @@ function lib:processItemRequests(itemRequests)
 					itemRequestTimeoutAt = nil
 					pendingItemRequest = nil
 				end
-
 				if not cacheAllItems then
 					itemRequests[range] = nil
 					break
 				end
-
 				tremove(items, i)
 			elseif not itemRequestTimeoutAt then
 				-- print("### processItemRequests: waiting: " .. tostring(item))
@@ -1071,14 +1123,12 @@ function lib:processItemRequests(itemRequests)
 				if not self.frame:IsEventRegistered("GET_ITEM_INFO_RECEIVED") then
 					self.frame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
 				end
-
 				return true
 			elseif GetTime() >= itemRequestTimeoutAt then
 				-- print("### processItemRequests: timeout: " .. tostring(item))
 				if cacheAllItems then
 					print(MAJOR_VERSION .. ": timeout for item: " .. tostring(item))
 				end
-
 				self.failedItemRequests[item] = true
 				itemRequestTimeoutAt = nil
 				pendingItemRequest = nil
@@ -1098,24 +1148,20 @@ function lib:initialOnUpdate()
 		end
 		friendItemRequests = nil
 	end
-
 	if harmItemRequests then
 		if self:processItemRequests(harmItemRequests) then
 			return
 		end
 		harmItemRequests = nil
 	end
-
 	if foundNewItems then
 		self:init(true)
 		foundNewItems = nil
 	end
-
 	if cacheAllItems then
 		print(MAJOR_VERSION .. ": finished cache")
 		cacheAllItems = nil
 	end
-
 	self.frame:Hide()
 	self.frame:UnregisterEvent("GET_ITEM_INFO_RECEIVED")
 end
@@ -1132,6 +1178,7 @@ function lib:scheduleAuraCheck()
 end
 
 -- << load-time initialization
+
 function lib:activate()
 	if not self.frame then
 		local frame = CreateFrame("Frame")
@@ -1140,7 +1187,10 @@ function lib:activate()
 		frame:RegisterEvent("LEARNED_SPELL_IN_TAB")
 		frame:RegisterEvent("CHARACTER_POINTS_CHANGED")
 		frame:RegisterEvent("SPELLS_CHANGED")
-		frame:RegisterEvent("PLAYER_TALENT_UPDATE")
+
+		if isRetail or isWrath then
+			frame:RegisterEvent("PLAYER_TALENT_UPDATE")
+		end
 
 		local _, playerClass = UnitClass("player")
 		if playerClass == "MAGE" or playerClass == "SHAMAN" then
@@ -1154,13 +1204,11 @@ function lib:activate()
 	self.frame:SetScript("OnEvent", function(_, ...)
 		self:OnEvent(...)
 	end)
-
 	self.frame:SetScript("OnUpdate", function(_, elapsed)
 		lastUpdate = lastUpdate + elapsed
 		if lastUpdate < UpdateDelay then
 			return
 		end
-
 		lastUpdate = 0
 		self:initialOnUpdate()
 	end)
@@ -1169,6 +1217,7 @@ function lib:activate()
 end
 
 --- BEGIN CallbackHandler stuff
+
 do
 	--- Register a callback to get called when checkers are updated
 	-- @class function
