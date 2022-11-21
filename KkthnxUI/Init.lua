@@ -93,7 +93,6 @@ K.GUID = UnitGUID("player")
 K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
 K.Resolution = string_format("%dx%d", K.ScreenWidth, K.ScreenHeight)
 K.TexCoords = { 0.08, 0.92, 0.08, 0.92 }
-K.ScanTooltip = CreateFrame("GameTooltip", "KKUI_ScanTooltip", nil, "GameTooltipTemplate")
 K.EasyMenu = CreateFrame("Frame", "KKUI_EasyMenu", UIParent, "UIDropDownMenuTemplate")
 K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
