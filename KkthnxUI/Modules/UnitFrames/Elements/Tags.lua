@@ -265,12 +265,17 @@ oUF.Tags.Methods["npctitle"] = function(unit)
 		return
 	end
 
-	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-	K.ScanTooltip:SetUnit(unit)
+	local data = C_TooltipInfo.GetUnit(unit)
+	if not data then
+		return
+	end
 
-	local title = _G[string_format("KKUI_ScanTooltipTextLeft%d", GetCVarBool("colorblindmode") and 3 or 2)]:GetText()
-	if title and not string_find(title, "^" .. LEVEL) then
-		return title
+	local lineData = data.lines[GetCVarBool("colorblindmode") and 3 or 2]
+	if lineData then
+		local title = lineData.args[2] and lineData.args[2].stringVal
+		if title and not strfind(title, "^" .. LEVEL) then
+			return title
+		end
 	end
 end
 oUF.Tags.Events["npctitle"] = "UNIT_NAME_UPDATE"
@@ -282,10 +287,10 @@ oUF.Tags.Methods["guildname"] = function(unit)
 
 	local guildName = GetGuildInfo(unit)
 	if guildName then
-		return string_format("<%s>", guildName)
+		return "<" .. guildName .. ">"
 	end
 end
-oUF.Tags.Events["guildname"] = "UNIT_NAME_UPDATE PLAYER_GUILD_UPDATE"
+oUF.Tags.Events["guildname"] = "UNIT_NAME_UPDATE"
 
 oUF.Tags.Methods["tarname"] = function(unit)
 	local tarUnit = unit .. "target"

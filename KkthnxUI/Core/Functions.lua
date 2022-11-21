@@ -24,7 +24,6 @@ local GetSpecialization = _G.GetSpecialization
 local GetSpecializationInfo = _G.GetSpecializationInfo
 local GetTime = _G.GetTime
 local ITEM_LEVEL = _G.ITEM_LEVEL
-local ITEM_SPELL_TRIGGER_ONEQUIP = _G.ITEM_SPELL_TRIGGER_ONEQUIP
 local IsInRaid = _G.IsInRaid
 local UIParent = _G.UIParent
 local UnitClass = _G.UnitClass
@@ -34,8 +33,6 @@ local UnitReaction = _G.UnitReaction
 
 local iLvlDB = {}
 local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
-local essenceDescription = _G.GetSpellDescription(277253)
-local essenceTextureID = 2975691
 local itemLevelString = "^" .. string_gsub(ITEM_LEVEL, "%%d", "")
 local day, hour, minute, pointFive = 86400, 3600, 60, 0.5
 local mapRects = {}
@@ -243,135 +240,90 @@ do
 	end
 end
 
+-- Itemlevel
 do
-	-- Itemlevel
-	function K.InspectItemTextures()
-		if not K.ScanTooltip.gems then
-			K.ScanTooltip.gems = {}
-		else
-			table_wipe(K.ScanTooltip.gems)
-		end
-
-		if not K.ScanTooltip.essences then
-			K.ScanTooltip.essences = {}
-		else
-			for _, essences in pairs(K.ScanTooltip.essences) do
-				table_wipe(essences)
-			end
-		end
-
-		local step = 1
-		for i = 1, 10 do
-			local tex = _G[K.ScanTooltip:GetName() .. "Texture" .. i]
-			local texture = tex and tex:IsShown() and tex:GetTexture()
-			if texture then
-				if texture == essenceTextureID then
-					local selected = (K.ScanTooltip.gems[i - 1] ~= essenceTextureID and K.ScanTooltip.gems[i - 1]) or nil
-					if not K.ScanTooltip.essences[step] then
-						K.ScanTooltip.essences[step] = {}
-					end
-					K.ScanTooltip.essences[step][1] = selected -- essence texture if selected or nil
-					K.ScanTooltip.essences[step][2] = tex:GetAtlas() -- atlas place 'tooltip-heartofazerothessence-major' or 'tooltip-heartofazerothessence-minor'
-					K.ScanTooltip.essences[step][3] = texture -- border texture placed by the atlas
-
-					step = step + 1
-					if selected then
-						K.ScanTooltip.gems[i - 1] = nil
-					end
-				else
-					K.ScanTooltip.gems[i] = texture
-				end
-			end
-		end
-
-		return K.ScanTooltip.gems, K.ScanTooltip.essences
-	end
-
-	function K.InspectItemInfo(text, slotInfo)
-		local itemLevel = string_find(text, itemLevelString) and string_match(text, "(%d+)%)?$")
-		if itemLevel then
-			slotInfo.iLvl = tonumber(itemLevel)
-		end
-
-		local enchant = string_match(text, enchantString)
-		if enchant then
-			slotInfo.enchantText = enchant
-		end
-	end
-
-	function K.CollectEssenceInfo(index, lineText, slotInfo)
-		local step = 1
-		local essence = slotInfo.essences[step]
-	-- stylua: ignore
-	if essence and next(essence) and (string_find(lineText, ITEM_SPELL_TRIGGER_ONEQUIP, nil, true) and string_find(lineText, essenceDescription, nil, true)) then
-		for i = 4, 2, -1 do
-			local line = _G[K.ScanTooltip:GetName() .. "TextLeft" .. index - i]
-			local text = line and line:GetText()
-
-			if text and (not string_match(text, "^[ +]")) and essence and next(essence) then
-				local r, g, b = line:GetTextColor()
-				essence[4] = r
-				essence[5] = g
-				essence[6] = b
-
-				step = step + 1
-				essence = slotInfo.essences[step]
-			end
-		end
-	end
-	end
-
+	local slotData = { gems = {}, gemsColor = {} }
 	function K.GetItemLevel(link, arg1, arg2, fullScan)
 		if fullScan then
-			K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-			K.ScanTooltip:SetInventoryItem(arg1, arg2)
-
-			if not K.ScanTooltip.slotInfo then
-				K.ScanTooltip.slotInfo = {}
-			else
-				table_wipe(K.ScanTooltip.slotInfo)
+			local data = C_TooltipInfo.GetInventoryItem(arg1, arg2)
+			if not data then
+				return
 			end
 
-			local slotInfo = K.ScanTooltip.slotInfo
-			slotInfo.gems, slotInfo.essences = K.InspectItemTextures()
+			wipe(slotData.gems)
+			wipe(slotData.gemsColor)
+			slotData.iLvl = nil
+			slotData.enchantText = nil
 
-			for i = 1, K.ScanTooltip:NumLines() do
-				local line = _G[K.ScanTooltip:GetName() .. "TextLeft" .. i]
-				if line then
-					local text = line:GetText() or ""
-					K.InspectItemInfo(text, slotInfo)
-					K.CollectEssenceInfo(i, text, slotInfo)
+			local isHoA = data.args and data.args[2] and data.args[2].intVal == 158075
+			local num = 0
+			for i = 2, #data.lines do
+				local lineData = data.lines[i]
+				local argVal = lineData and lineData.args
+				if argVal then
+					if not slotData.iLvl then
+						local text = argVal[2] and argVal[2].stringVal
+						local found = text and strfind(text, itemLevelString)
+						if found then
+							local level = strmatch(text, "(%d+)%)?$")
+							slotData.iLvl = tonumber(level) or 0
+						end
+					elseif isHoA then
+						if argVal[6] and argVal[6].field == "essenceIcon" then
+							num = num + 1
+							slotData.gems[num] = argVal[6].intVal
+							slotData.gemsColor[num] = argVal[3] and argVal[3].colorVal
+						end
+					else
+						local lineInfo = argVal[4] and argVal[4].field
+						if lineInfo == "enchantID" then
+							local enchant = argVal[2] and argVal[2].stringVal
+							slotData.enchantText = strmatch(enchant, enchantString)
+						elseif lineInfo == "gemIcon" then
+							num = num + 1
+							slotData.gems[num] = argVal[4].intVal
+						elseif lineInfo == "socketType" then
+							num = num + 1
+							slotData.gems[num] = format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", argVal[4].stringVal)
+						end
+					end
 				end
 			end
 
-			return slotInfo
+			return slotData
 		else
 			if iLvlDB[link] then
 				return iLvlDB[link]
 			end
 
-			K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+			local data
 			if arg1 and type(arg1) == "string" then
-				K.ScanTooltip:SetInventoryItem(arg1, arg2)
+				data = C_TooltipInfo.GetInventoryItem(arg1, arg2)
 			elseif arg1 and type(arg1) == "number" then
-				K.ScanTooltip:SetBagItem(arg1, arg2)
+				data = C_TooltipInfo.GetBagItem(arg1, arg2)
 			else
-				K.ScanTooltip:SetHyperlink(link)
+				data = C_TooltipInfo.GetHyperlink(link, nil, nil, true)
+			end
+			if not data then
+				return
 			end
 
 			for i = 2, 5 do
-				local line = _G[K.ScanTooltip:GetName() .. "TextLeft" .. i]
-				if line then
-					local text = line:GetText() or ""
-					local found = string_find(text, itemLevelString)
+				local lineData = data.lines[i]
+				if not lineData then
+					break
+				end
+				local argVal = lineData.args
+				if argVal then
+					local text = argVal[2] and argVal[2].stringVal
+					local found = text and strfind(text, itemLevelString)
 					if found then
-						local level = string_match(text, "(%d+)%)?$")
+						local level = strmatch(text, "(%d+)%)?$")
 						iLvlDB[link] = tonumber(level)
 						break
 					end
 				end
 			end
-
 			return iLvlDB[link]
 		end
 	end

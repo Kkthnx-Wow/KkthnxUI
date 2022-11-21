@@ -9,7 +9,6 @@ local FOCUS = _G.FOCUS
 local INTERRUPT = _G.INTERRUPT
 local PET = _G.PET
 local PLAYER = _G.PLAYER
-local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
 local SlashCmdList = _G.SlashCmdList
 local TARGET = _G.TARGET
 local TUTORIAL_TITLE47 = _G.TUTORIAL_TITLE47
@@ -23,7 +22,7 @@ local function updateBagSize()
 end
 
 local function UpdateBagSortOrder()
-	SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
+	C_Container.SetSortBagsRightToLeft(not C["Inventory"].ReverseSort)
 end
 
 local function UpdateBagStatus()

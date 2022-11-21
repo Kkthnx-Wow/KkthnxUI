@@ -465,7 +465,7 @@ end
 
 local function isQuestTitle(textLine)
 	local r, g, b = textLine:GetTextColor()
-	if r > 0.99 and g > 0.82 and b == 0 then
+	if r > 0.99 and g > 0.8 and b == 0 then
 		return true
 	end
 end
@@ -483,35 +483,29 @@ function Module:UpdateQuestUnit(_, unit)
 
 	unit = unit or self.unit
 
-	local startLooking, isLootQuest, questProgress
-	K.ScanTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-	K.ScanTooltip:SetUnit(unit)
+	local isLootQuest, questProgress -- FIXME: isLootQuest in old expansion
 
-	for i = 2, K.ScanTooltip:NumLines() do
-		local textLine = _G["KKUI_ScanTooltipTextLeft" .. i]
-		local text = textLine and textLine:GetText()
-		if not text then
-			break
-		end
-
-		if text ~= " " then
-			if isInGroup and text == K.Name or (not isInGroup and isQuestTitle(textLine)) then
-				startLooking = true
-			elseif startLooking then
-				local current, goal = string_match(text, "(%d+)/(%d+)")
-				local progress = string_match(text, "(%d+)%%")
-				if current and goal then
-					local diff = math_floor(goal - current)
-					if diff > 0 then
-						questProgress = diff
-						break
+	local data = C_TooltipInfo.GetUnit(unit)
+	if data then
+		for i = 1, #data.lines do
+			local lineData = data.lines[i]
+			local argVal = lineData and lineData.args
+			if argVal[1] and argVal[1].intVal == 8 then
+				local text = argVal[2] and argVal[2].stringVal -- progress string
+				if text then
+					local current, goal = strmatch(text, "(%d+)/(%d+)")
+					local progress = strmatch(text, "(%d+)%%")
+					if current and goal then
+						local diff = floor(goal - current)
+						if diff > 0 then
+							questProgress = diff
+							break
+						end
+					elseif progress then
+						if floor(100 - progress) > 0 then
+							questProgress = progress .. "%" -- lower priority on progress, keep looking
+						end
 					end
-				elseif progress and not string_match(text, THREAT_TOOLTIP) then
-					if math_floor(100 - progress) > 0 then
-						questProgress = progress .. "%" -- lower priority on progress, keep looking
-					end
-				else
-					break
 				end
 			end
 		end
