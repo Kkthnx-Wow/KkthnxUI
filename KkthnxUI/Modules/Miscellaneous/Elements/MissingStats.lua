@@ -1,36 +1,17 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Miscellaneous")
 
-local _G = _G
-local math_max = _G.math.max
-local string_format = _G.string.format
+local format, max = string.format, math.max
+local BreakUpLargeNumbers, GetMeleeHaste, UnitAttackSpeed = BreakUpLargeNumbers, GetMeleeHaste, UnitAttackSpeed
+local GetAverageItemLevel, C_PaperDollInfo_GetMinItemLevel = GetAverageItemLevel, C_PaperDollInfo.GetMinItemLevel
+local PaperDollFrame_SetLabelAndText = PaperDollFrame_SetLabelAndText
+local STAT_HASTE = STAT_HASTE
+local HIGHLIGHT_FONT_COLOR_CODE, FONT_COLOR_CODE_CLOSE = HIGHLIGHT_FONT_COLOR_CODE, FONT_COLOR_CODE_CLOSE
 
-local ATTACK_SPEED = _G.ATTACK_SPEED
-local BreakUpLargeNumbers = _G.BreakUpLargeNumbers
-local C_PaperDollInfo_GetMinItemLevel = _G.C_PaperDollInfo.GetMinItemLevel
-local CreateFrame = _G.CreateFrame
-local FONT_COLOR_CODE_CLOSE = _G.FONT_COLOR_CODE_CLOSE
-local GetAverageItemLevel = _G.GetAverageItemLevel
-local GetMeleeHaste = _G.GetMeleeHaste
-local HIGHLIGHT_FONT_COLOR_CODE = _G.HIGHLIGHT_FONT_COLOR_CODE
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local LE_UNIT_STAT_AGILITY = _G.LE_UNIT_STAT_AGILITY
-local LE_UNIT_STAT_INTELLECT = _G.LE_UNIT_STAT_INTELLECT
-local LE_UNIT_STAT_STRENGTH = _G.LE_UNIT_STAT_STRENGTH
-local PAPERDOLLFRAME_TOOLTIP_FORMAT = _G.PAPERDOLLFRAME_TOOLTIP_FORMAT
-local PaperDollFrame_SetLabelAndText = _G.PaperDollFrame_SetLabelAndText
-local STAT_ATTACK_SPEED_BASE_TOOLTIP = _G.STAT_ATTACK_SPEED_BASE_TOOLTIP
-local STAT_AVERAGE_ITEM_LEVEL = _G.STAT_AVERAGE_ITEM_LEVEL
-local STAT_HASTE = _G.STAT_HASTE
-local UnitAttackSpeed = _G.UnitAttackSpeed
-local WEAPON_SPEED = _G.WEAPON_SPEED
-local hooksecurefunc = _G.hooksecurefunc
-
-function Module:CreateImprovedStats()
+function Module:CreateMissingStats()
 	if not C["Misc"].ImprovedStats then
 		return
 	end
-
 	if IsAddOnLoaded("DejaCharacterStats") then
 		return
 	end
@@ -38,16 +19,13 @@ function Module:CreateImprovedStats()
 	local statPanel = CreateFrame("Frame", nil, CharacterFrameInsetRight)
 	statPanel:SetSize(200, 350)
 	statPanel:SetPoint("TOP", 0, -5)
-
 	local scrollFrame = CreateFrame("ScrollFrame", nil, statPanel, "UIPanelScrollFrameTemplate")
 	scrollFrame:SetAllPoints()
 	scrollFrame.ScrollBar:Hide()
 	scrollFrame.ScrollBar.Show = K.Noop
-
 	local stat = CreateFrame("Frame", nil, scrollFrame)
 	stat:SetSize(200, 1)
 	scrollFrame:SetScrollChild(stat)
-
 	CharacterStatsPane:ClearAllPoints()
 	CharacterStatsPane:SetParent(stat)
 	CharacterStatsPane:SetAllPoints(stat)
@@ -115,9 +93,9 @@ function Module:CreateImprovedStats()
 	function PaperDollFrame_SetAttackSpeed(statFrame, unit)
 		local meleeHaste = GetMeleeHaste()
 		local speed, offhandSpeed = UnitAttackSpeed(unit)
-		local displaySpeed = string_format("%.2f", speed)
+		local displaySpeed = format("%.2f", speed)
 		if offhandSpeed then
-			offhandSpeed = string_format("%.2f", offhandSpeed)
+			offhandSpeed = format("%.2f", offhandSpeed)
 		end
 		if offhandSpeed then
 			displaySpeed = BreakUpLargeNumbers(displaySpeed) .. " / " .. offhandSpeed
@@ -126,8 +104,8 @@ function Module:CreateImprovedStats()
 		end
 		PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, displaySpeed, false, speed)
 
-		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. string_format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ATTACK_SPEED) .. " " .. displaySpeed .. FONT_COLOR_CODE_CLOSE
-		statFrame.tooltip2 = string_format(STAT_ATTACK_SPEED_BASE_TOOLTIP, BreakUpLargeNumbers(meleeHaste))
+		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE .. format(PAPERDOLLFRAME_TOOLTIP_FORMAT, ATTACK_SPEED) .. " " .. displaySpeed .. FONT_COLOR_CODE_CLOSE
+		statFrame.tooltip2 = format(STAT_ATTACK_SPEED_BASE_TOOLTIP, BreakUpLargeNumbers(meleeHaste))
 		statFrame:Show()
 	end
 
@@ -138,9 +116,9 @@ function Module:CreateImprovedStats()
 
 		local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel()
 		local minItemLevel = C_PaperDollInfo_GetMinItemLevel()
-		local displayItemLevel = math_max(minItemLevel or 0, avgItemLevelEquipped)
-		displayItemLevel = string_format("%.1f", displayItemLevel)
-		avgItemLevel = string_format("%.1f", avgItemLevel)
+		local displayItemLevel = max(minItemLevel or 0, avgItemLevelEquipped)
+		displayItemLevel = format("%.1f", displayItemLevel)
+		avgItemLevel = format("%.1f", avgItemLevel)
 
 		if displayItemLevel ~= avgItemLevel then
 			displayItemLevel = displayItemLevel .. " / " .. avgItemLevel
@@ -154,16 +132,15 @@ function Module:CreateImprovedStats()
 		end
 	end)
 
-	hooksecurefunc("PaperDollFrame_UpdateStats", function()
-		for statFrame in CharacterStatsPane.statsFramePool:EnumerateActive() do
-			if not statFrame.styled then
-				statFrame.Label:SetFontObject(Game13Font)
-				statFrame.Value:SetFontObject(Game13Font)
+	-- hooksecurefunc("PaperDollFrame_UpdateStats", function()
+	-- 	for statFrame in CharacterStatsPane.statsFramePool:EnumerateActive() do
+	-- 		if not statFrame.styled then
+	-- 			statFrame.Label:SetFontObject(Game13Font)
+	-- 			statFrame.Value:SetFontObject(Game13Font)
 
-				statFrame.styled = true
-			end
-		end
-	end)
+	-- 			statFrame.styled = true
+	-- 		end
+	-- 	end
+	-- end)
 end
-
-Module:RegisterMisc("ImprovedStats", Module.CreateImprovedStats)
+Module:RegisterMisc("MissingStats", Module.CreateMissingStats)

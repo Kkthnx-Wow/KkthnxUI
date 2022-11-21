@@ -4,30 +4,10 @@ local oUF = K.oUF
 -- Sourced: yClassColors (yleaf)
 -- Edited: KkthnxUI (Kkthnx)
 
-local _G = _G
-local ipairs = _G.ipairs
-local string_format = _G.string.format
-local table_insert = _G.table.insert
-local table_wipe = _G.table.wipe
-local unpack = _G.unpack
-
-local BNET_CLIENT_WOW = _G.BNET_CLIENT_WOW
-local C_BattleNet_GetFriendAccountInfo = _G.C_BattleNet.GetFriendAccountInfo
-local C_FriendList_GetFriendInfoByIndex = _G.C_FriendList.GetFriendInfoByIndex
-local C_FriendList_GetWhoInfo = _G.C_FriendList.GetWhoInfo
-local FRIENDS_BUTTON_TYPE_BNET = _G.FRIENDS_BUTTON_TYPE_BNET
-local FRIENDS_BUTTON_TYPE_WOW = _G.FRIENDS_BUTTON_TYPE_WOW
-local FRIENDS_LEVEL_TEMPLATE = _G.FRIENDS_LEVEL_TEMPLATE
-local FRIENDS_WOW_NAME_COLOR_CODE = _G.FRIENDS_WOW_NAME_COLOR_CODE
-local GetCVar = _G.GetCVar
-local GetGuildInfo = _G.GetGuildInfo
-local GetGuildRosterInfo = _G.GetGuildRosterInfo
-local GetGuildTradeSkillInfo = _G.GetGuildTradeSkillInfo
-local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
-local GetRealZoneText = _G.GetRealZoneText
-local UIDropDownMenu_GetSelectedID = _G.UIDropDownMenu_GetSelectedID
-local UNKNOWN = _G.UNKNOWN
-local hooksecurefunc = _G.hooksecurefunc
+local format, ipairs, tinsert = string.format, ipairs, table.insert
+local C_FriendList_GetWhoInfo = C_FriendList.GetWhoInfo
+local C_FriendList_GetFriendInfoByIndex = C_FriendList.GetFriendInfoByIndex
+local C_BattleNet_GetFriendAccountInfo = C_BattleNet.GetFriendAccountInfo
 
 -- Colors
 local function classColor(class, showRGB)
@@ -78,7 +58,7 @@ local repColor = {
 }
 
 local function smoothColor(cur, max, color)
-	local r, g, b = oUF:RGBColorGradient(cur, max, unpack(color))
+	local r, g, b = K.oUF:RGBColorGradient(cur, max, unpack(color))
 	return K.RGBToHex(r, g, b)
 end
 
@@ -129,7 +109,6 @@ local function updateGuildUI(event, addon)
 	if addon ~= "Blizzard_GuildUI" then
 		return
 	end
-
 	hooksecurefunc("GuildRoster_SetView", setView)
 	hooksecurefunc("GuildRoster_Update", updateGuildView)
 	hooksecurefunc(GuildRosterContainer, "update", updateGuildView)
@@ -143,18 +122,17 @@ local FRIENDS_LEVEL_TEMPLATE = FRIENDS_LEVEL_TEMPLATE:gsub("%%d", "%%s")
 FRIENDS_LEVEL_TEMPLATE = FRIENDS_LEVEL_TEMPLATE:gsub("%$d", "%$s")
 
 hooksecurefunc(FriendsListFrame.ScrollBox, "Update", function(self)
-	local playerArea = GetRealZoneText()
-
 	for i = 1, self.ScrollTarget:GetNumChildren() do
 		local button = select(i, self.ScrollTarget:GetChildren())
+		local playerArea = GetRealZoneText()
 		local nameText, infoText
 		if button:IsShown() then
 			if button.buttonType == FRIENDS_BUTTON_TYPE_WOW then
 				local info = C_FriendList_GetFriendInfoByIndex(button.id)
 				if info and info.connected then
-					nameText = classColor(info.className) .. info.name .. "|r, " .. string_format(FRIENDS_LEVEL_TEMPLATE, diffColor(info.level) .. info.level .. "|r", info.className)
+					nameText = classColor(info.className) .. info.name .. "|r, " .. format(FRIENDS_LEVEL_TEMPLATE, diffColor(info.level) .. info.level .. "|r", info.className)
 					if info.area == playerArea then
-						infoText = string_format("|cff00ff00%s|r", info.area)
+						infoText = format("|cff00ff00%s|r", info.area)
 					end
 				end
 			elseif button.buttonType == FRIENDS_BUTTON_TYPE_BNET then
@@ -164,13 +142,13 @@ hooksecurefunc(FriendsListFrame.ScrollBox, "Update", function(self)
 					local gameAccountInfo = accountInfo.gameAccountInfo
 					if gameAccountInfo.isOnline and gameAccountInfo.clientProgram == BNET_CLIENT_WOW then
 						local charName = gameAccountInfo.characterName
-						-- local faction = gameAccountInfo.factionName
+						local faction = gameAccountInfo.factionName
 						local class = gameAccountInfo.className or UNKNOWN
 						local zoneName = gameAccountInfo.areaName or UNKNOWN
 						if accountName and charName and class then
 							nameText = accountName .. " " .. FRIENDS_WOW_NAME_COLOR_CODE .. "(" .. classColor(class) .. charName .. FRIENDS_WOW_NAME_COLOR_CODE .. ")"
 							if zoneName == playerArea then
-								infoText = string_format("|cff00ff00%s|r", zoneName)
+								infoText = format("|cff00ff00%s|r", zoneName)
 							end
 						end
 					end
@@ -208,19 +186,17 @@ hooksecurefunc(WhoFrame.ScrollBox, "Update", function(self)
 			if zone == playerZone then
 				zone = "|cff00ff00" .. zone
 			end
-
 			if guild == playerGuild then
 				guild = "|cff00ff00" .. guild
 			end
-
 			if race == playerRace then
 				race = "|cff00ff00" .. race
 			end
 
-			table_wipe(columnTable)
-			table_insert(columnTable, zone)
-			table_insert(columnTable, guild)
-			table_insert(columnTable, race)
+			wipe(columnTable)
+			tinsert(columnTable, zone)
+			tinsert(columnTable, guild)
+			tinsert(columnTable, race)
 
 			nameText:SetTextColor(classColor(class, true))
 			levelText:SetText(diffColor(level) .. level)

@@ -116,7 +116,6 @@
    <Script file="Miscellaneous\Elements\ExpRep.lua" />
    <Script file="Miscellaneous\Elements\ImprovedMail.lua" />
    <Script file="Miscellaneous\Elements\MDGuildBest.lua" />
-   <Script file="Miscellaneous\Elements\MerchantItemlevel.lua" />
    <Script file="Miscellaneous\Elements\MissingStats.lua" />
    <Script file="Miscellaneous\Elements\MovableFrames.lua" />
    <Script file="Miscellaneous\Elements\MuteSounds.lua" />

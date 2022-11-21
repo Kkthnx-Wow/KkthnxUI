@@ -238,6 +238,10 @@ function Module:HookHotKey(button)
 	if button.UpdateHotkeys then
 		hooksecurefunc(button, "UpdateHotkeys", Module.UpdateHotKey)
 	end
+
+	if button.SetHotkeys then
+		hooksecurefunc(button, "SetHotkeys", Module.UpdateHotKey)
+	end
 end
 
 function Module:UpdateEquipItemColor()
@@ -512,7 +516,7 @@ function Module:StyleAllActionButtons(cfg)
 	Module:StyleExtraActionButton(cfg)
 
 	-- Spell flyout
-	SpellFlyout.Background:Hide()
+	SpellFlyout.Background:SetAlpha(0)
 	local function checkForFlyoutButtons()
 		local i = 1
 		local button = _G["SpellFlyoutButton" .. i]
@@ -603,7 +607,6 @@ function Module:CreateBarSkin()
 	Module:StyleAllActionButtons(cfg)
 
 	-- Update hotkeys
-	-- hooksecurefunc("PetActionButton_SetHotkeys", Module.UpdateHotKey)
 	Module:UpdateStanceHotKey()
 	K:RegisterEvent("UPDATE_BINDINGS", Module.UpdateStanceHotKey)
 end

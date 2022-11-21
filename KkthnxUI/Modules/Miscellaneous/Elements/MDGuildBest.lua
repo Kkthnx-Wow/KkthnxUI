@@ -20,7 +20,6 @@ local C_MythicPlus_GetOwnedKeystoneLevel = _G.C_MythicPlus.GetOwnedKeystoneLevel
 local C_MythicPlus_GetRunHistory = _G.C_MythicPlus.GetRunHistory
 local GetItemInfo = _G.GetItemInfo
 local CHALLENGE_MODE_THIS_WEEK = _G.CHALLENGE_MODE_THIS_WEEK
-local IsAddOnLoaded = _G.IsAddOnLoaded
 local WEEKLY_REWARDS_MYTHIC_TOP_RUNS = _G.WEEKLY_REWARDS_MYTHIC_TOP_RUNS
 local hooksecurefunc = _G.hooksecurefunc
 

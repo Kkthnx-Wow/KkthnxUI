@@ -1,10 +1,6 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
-local pairs = _G.pairs
-
-local parentFrame = {}
-local hooked = {}
+local _G, pairs, type = getfenv(0), pairs, type
 
 local frames = {
 	-- ["FrameName"] = true (the parent frame should be moved) or false (the frame itself should be moved)
@@ -13,7 +9,6 @@ local frames = {
 
 	-- Blizz Frames
 	["AddonList"] = false,
-	["AudioOptionsFrame"] = false,
 	["ChannelFrame"] = false,
 	["ChatConfigFrame"] = false,
 	["DressUpFrame"] = false,
@@ -22,17 +17,17 @@ local frames = {
 	["GuildInviteFrame"] = false,
 	["GuildRegistrarFrame"] = false,
 	["HelpFrame"] = false,
-	["InterfaceOptionsFrame"] = false,
 	["ItemTextFrame"] = false,
 	["LootFrame"] = false,
 	["MailFrame"] = false,
 	["MerchantFrame"] = false,
 	["ModelPreviewFrame"] = false,
 	["OpenMailFrame"] = false,
-	["PVEFrame"] = false,
 	["PaperDollFrame"] = true,
-	["PetStableFrame"] = false,
 	["PetitionFrame"] = false,
+	["PetStableFrame"] = false,
+	["ProfessionsFrame"] = false,
+	["PVEFrame"] = false,
 	["QuestFrame"] = false,
 	["RaidParentFrame"] = false,
 	["ReputationFrame"] = true,
@@ -45,25 +40,27 @@ local frames = {
 	["TokenFrame"] = true,
 	["TradeFrame"] = false,
 	["TutorialFrame"] = false,
-	["VideoOptionsFrame"] = false,
-	["WorldMapFrame"] = false,
+	["SettingsPanel"] = false,
 }
 
 -- Frame Existing Check
 local function IsFrameExists()
+	if not C["General"].MoveBlizzardFrames then
+		return
+	end
+
 	for k in pairs(frames) do
 		local name = _G[k]
 		if not name and K.isDeveloper then
-			K.Print("Frame not found:", k)
+			print("Frame not found:", k)
 		end
 	end
 end
 
 -- Frames provided by load on demand addons, hooked when the addon is loaded.
 local lodFrames = {
-	-- AddonName = {list of frames, same syntax as above}
-	-- stylua: ignore
-	Blizzard_AchievementUI = {["AchievementFrame"] = false, ["AchievementFrameHeader"] = true, ["AchievementFrameCategoriesContainer"] = "AchievementFrame", ["AchievementFrame.searchResults"] = false},
+	-- AddonName = { list of frames, same syntax as above }
+	Blizzard_AchievementUI = { ["AchievementFrame"] = false, ["AchievementFrameHeader"] = true, ["AchievementFrameCategoriesContainer"] = "AchievementFrame", ["AchievementFrame.searchResults"] = false },
 	Blizzard_AdventureMap = { ["AdventureMapQuestChoiceDialog"] = false },
 	Blizzard_AlliedRacesUI = { ["AlliedRacesFrame"] = false },
 	Blizzard_ArchaeologyUI = { ["ArchaeologyFrame"] = false },
@@ -76,11 +73,14 @@ local lodFrames = {
 	Blizzard_BlackMarketUI = { ["BlackMarketFrame"] = false },
 	Blizzard_Calendar = { ["CalendarFrame"] = false, ["CalendarCreateEventFrame"] = true, ["CalendarEventPickerFrame"] = false },
 	Blizzard_ChallengesUI = { ["ChallengesKeystoneFrame"] = false },
-	Blizzard_Collections = { ["WardrobeFrame"] = false, ["WardrobeOutfitEditFrame"] = false }, -- FIXME: blizz bug in collection mover
+	Blizzard_ClassTalentUI = { ["ClassTalentFrame"] = false },
+	Blizzard_ClickBindingUI = { ["ClickBindingFrame"] = false },
+	Blizzard_Collections = { ["WardrobeFrame"] = false, ["WardrobeOutfitEditFrame"] = false },
+	Blizzard_CovenantRenown = { ["CovenantRenownFrame"] = false },
 	Blizzard_CovenantSanctum = { ["CovenantSanctumFrame"] = false },
-	-- stylua: ignore
-	Blizzard_Communities = {["CommunitiesFrame"] = false, ["CommunitiesSettingsDialog"] = false, ["CommunitiesGuildLogFrame"] = false, ["CommunitiesTicketManagerDialog"] = false, ["CommunitiesAvatarPickerDialog"] = false, ["CommunitiesFrame.NotificationSettingsDialog"] = false, ["ClubFinderCommunityAndGuildFinderFrame.RequestToJoinFrame"] = false},
+	--Blizzard_Communities		= { ["CommunitiesFrame"] = false, ["CommunitiesSettingsDialog"] = false, ["CommunitiesGuildLogFrame"] = false, ["CommunitiesTicketManagerDialog"] = false, ["CommunitiesAvatarPickerDialog"] = false, ["CommunitiesFrame.NotificationSettingsDialog"] = false, ["ClubFinderCommunityAndGuildFinderFrame.RequestToJoinFrame"] = false},
 	Blizzard_FlightMap = { ["FlightMapFrame"] = false },
+	Blizzard_GenericTraitUI = { ["GenericTraitFrame"] = false },
 	Blizzard_GMSurveyUI = { ["GMSurveyFrame"] = false },
 	Blizzard_GuildBankUI = { ["GuildBankFrame"] = false, ["GuildBankEmblemFrame"] = true },
 	Blizzard_GuildControlUI = { ["GuildControlUI"] = false },
@@ -96,6 +96,7 @@ local lodFrames = {
 	Blizzard_ObliterumUI = { ["ObliterumForgeFrame"] = false },
 	Blizzard_OrderHallUI = { ["OrderHallTalentFrame"] = false },
 	Blizzard_ScrappingMachineUI = { ["ScrappingMachineFrame"] = false },
+	Blizzard_ProfessionsCustomerOrders = { ["ProfessionsCustomerOrdersFrame"] = false },
 	Blizzard_TalentUI = { ["PlayerTalentFrame"] = false, ["PVPTalentPrestigeLevelDialog"] = false },
 	Blizzard_TimeManager = { ["TimeManagerFrame"] = false },
 	Blizzard_TokenUI = { ["TokenFrame"] = true },
@@ -104,6 +105,8 @@ local lodFrames = {
 	Blizzard_VoidStorageUI = { ["VoidStorageFrame"] = false, ["VoidStorageBorderFrameMouseBlockFrame"] = "VoidStorageFrame" },
 	Blizzard_WeeklyRewards = { ["WeeklyRewardsFrame"] = false },
 }
+
+local parentFrame, hooked = {}, {}
 
 local function MouseDownHandler(frame, button)
 	frame = parentFrame[frame] or frame
@@ -124,7 +127,6 @@ local function HookScript(frame, script, handler)
 	if not frame.GetScript then
 		return
 	end
-
 	local oldHandler = frame:GetScript(script)
 	if oldHandler then
 		frame:SetScript(script, function(...)
@@ -145,7 +147,6 @@ local function HookFrame(name, moveParent)
 			frame = frame[s]
 		end
 	end
-
 	-- check if frame was found
 	if frame == _G then
 		frame = nil
@@ -159,19 +160,16 @@ local function HookFrame(name, moveParent)
 			else
 				parent = frame:GetParent()
 			end
-
 			if not parent then
 				print("Parent frame not found: " .. name)
 				return
 			end
 			parentFrame[frame] = parent
 		end
-
 		if parent then
 			parent:SetMovable(true)
 			parent:SetClampedToScreen(false)
 		end
-
 		frame:EnableMouse(true)
 		frame:SetMovable(true)
 		frame:SetClampedToScreen(false)
@@ -182,25 +180,21 @@ local function HookFrame(name, moveParent)
 end
 
 local function HookFrames(list)
+	if not C["General"].MoveBlizzardFrames then
+		return
+	end
+
 	for name, child in pairs(list) do
 		HookFrame(name, child)
 	end
 end
 
 local function InitSetup()
-	if not C["General"].MoveBlizzardFrames then
-		return
-	end
-
 	HookFrames(frames)
 	IsFrameExists()
 end
 
 local function AddonLoaded(_, name)
-	if not C["General"].MoveBlizzardFrames then
-		return
-	end
-
 	local frameList = lodFrames[name]
 	if frameList then
 		HookFrames(frameList)

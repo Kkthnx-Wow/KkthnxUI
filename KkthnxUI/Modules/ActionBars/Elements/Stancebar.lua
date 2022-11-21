@@ -46,6 +46,57 @@ function Module:UpdateStanceBar()
 	frame.mover:SetSize(size, size)
 end
 
+function Module:UpdateStance()
+	if InCombatLockdown() then
+		return
+	end
+
+	local numForms = GetNumShapeshiftForms()
+	local texture, isActive, isCastable
+	local icon, cooldown
+	local start, duration, enable
+
+	for i, button in pairs(self.actionButtons) do
+		button:Hide()
+		icon = button.icon
+		if i <= numForms then
+			texture, isActive, isCastable = GetShapeshiftFormInfo(i)
+			icon:SetTexture(texture)
+
+			--Cooldown stuffs
+			cooldown = button.cooldown
+			if texture then
+				button:Show()
+				cooldown:Show()
+			else
+				cooldown:Hide()
+			end
+			start, duration, enable = GetShapeshiftFormCooldown(i)
+			CooldownFrame_Set(cooldown, start, duration, enable)
+
+			if isActive then
+				button:SetChecked(true)
+			else
+				button:SetChecked(false)
+			end
+
+			if isCastable then
+				icon:SetVertexColor(1.0, 1.0, 1.0)
+			else
+				icon:SetVertexColor(0.4, 0.4, 0.4)
+			end
+		end
+	end
+end
+
+function Module:StanceBarOnEvent()
+	if InCombatLockdown() then
+		return
+	end
+	Module:UpdateStanceBar()
+	Module.UpdateStance(StanceBar)
+end
+
 function Module:CreateStancebar()
 	if not C["ActionBar"].StanceBar then
 		return
@@ -67,6 +118,11 @@ function Module:CreateStancebar()
 		table_insert(buttonList, button)
 		table_insert(Module.buttons, button)
 	end
+
+	-- Fix stance bar updating
+	K:RegisterEvent("UPDATE_SHAPESHIFT_FORMS", Module.StanceBarOnEvent)
+	K:RegisterEvent("UPDATE_SHAPESHIFT_USABLE", Module.StanceBarOnEvent)
+	K:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN", Module.StanceBarOnEvent)
 
 	-- PossessBar
 	PossessActionBar:SetParent(frame)
