@@ -213,13 +213,14 @@ function Module:CreateCastBar(self)
 
 	local Castbar = CreateFrame("StatusBar", "oUF_Castbar" .. mystyle, self)
 	Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-	Castbar:SetHeight(20)
-	Castbar:SetWidth(self:GetWidth() - 22)
+	-- Castbar:SetHeight(20)
+	-- Castbar:SetWidth(self:GetWidth() - 22)
 	if mystyle == "nameplate" then
 		Castbar:CreateShadow(true)
 	else
 		Castbar:CreateBorder()
 	end
+	Castbar.castTicks = {}
 
 	Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
 	Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
@@ -227,7 +228,6 @@ function Module:CreateCastBar(self)
 	Castbar.Spark:SetAlpha(0.8)
 
 	if mystyle == "player" then
-		Castbar.castTicks = {}
 		Castbar:SetFrameLevel(10)
 		Castbar:SetSize(C["Unitframe"].PlayerCastbarWidth, C["Unitframe"].PlayerCastbarHeight)
 		createBarMover(Castbar, "Player Castbar", "PlayerCB", { "BOTTOM", UIParent, "BOTTOM", 0, 200 })
@@ -253,6 +253,16 @@ function Module:CreateCastBar(self)
 		-- 	Castbar:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -8)
 		-- 	Castbar:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -8)
 		-- 	Castbar:SetHeight(10)
+	elseif mystyle == "party" then
+		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" or C["Unitframe"].PortraitStyle.Value == "OverlayPortrait" then
+			Castbar:SetPoint("TOPLEFT", self, C["Party"].CastbarIcon and 22 or 0, 22)
+			Castbar:SetSize(self:GetWidth() - 22, 16)
+		else
+			Castbar:SetPoint("TOPLEFT", self.Portrait, C["Party"].CastbarIcon and 22 or 0, 22)
+			Castbar:SetSize(self:GetWidth() + 20, 16)
+		end
+
+		Castbar.Spark:SetSize(128, Castbar:GetHeight())
 	elseif mystyle == "nameplate" then
 		Castbar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -3)
 		Castbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -3)
@@ -261,8 +271,15 @@ function Module:CreateCastBar(self)
 		Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
 	end
 
-	local timer = K.CreateFontString(Castbar, 12, "", "", false, "RIGHT", -3, 0)
-	local name = K.CreateFontString(Castbar, 12, "", "", false, "LEFT", 3, 0)
+	local timer
+	local name
+	if mystyle == "boss" or mystyle == "arena" or mystyle == "party" then
+		timer = K.CreateFontString(Castbar, 10, "", "", false, "RIGHT", -3, 0)
+		name = K.CreateFontString(Castbar, 10, "", "", false, "LEFT", 3, 0)
+	else
+		timer = K.CreateFontString(Castbar, 12, "", "", false, "RIGHT", -3, 0)
+		name = K.CreateFontString(Castbar, 12, "", "", false, "LEFT", 3, 0)
+	end
 	name:SetPoint("RIGHT", timer, "LEFT", -5, 0)
 	name:SetJustifyH("LEFT")
 

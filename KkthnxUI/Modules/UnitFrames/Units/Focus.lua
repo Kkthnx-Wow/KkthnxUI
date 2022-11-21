@@ -198,7 +198,7 @@ function Module:CreateFocus()
 		self.Castbar.PostCastStop = Module.PostCastStop
 		self.Castbar.PostCastFail = Module.PostCastFailed
 		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-		self.Castbar.UpdatePips = K.Noop -- use my own code
+		-- self.Castbar.UpdatePips = K.Noop -- use my own code
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
 		self.Castbar.Text:SetFontObject(K.UIFont)

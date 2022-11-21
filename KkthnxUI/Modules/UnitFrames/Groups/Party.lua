@@ -173,65 +173,7 @@ function Module:CreateParty()
 	Debuffs.PostUpdateButton = Module.PostUpdateButton
 
 	if C["Party"].Castbars then
-		local Castbar = CreateFrame("StatusBar", "PartyCastbar", self)
-		Castbar:SetStatusBarTexture(UnitframeTexture)
-		Castbar:SetClampedToScreen(true)
-		Castbar:CreateBorder()
-
-		Castbar:ClearAllPoints()
-		if partyPortraitStyle == "NoPortraits" or partyPortraitStyle == "OverlayPortrait" then
-			Castbar:SetPoint("TOPLEFT", C["Party"].CastbarIcon and 22 or 0, 22)
-			Castbar:SetPoint("TOPRIGHT", 0, 22)
-		else
-			Castbar:SetPoint("TOPLEFT", self.Portrait, C["Party"].CastbarIcon and 22 or 0, 22)
-			Castbar:SetPoint("TOPRIGHT", 0, 22)
-		end
-		Castbar:SetHeight(16)
-
-		Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY")
-		Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
-		Castbar.Spark:SetSize(128, Castbar:GetHeight())
-		Castbar.Spark:SetBlendMode("ADD")
-
-		Castbar.Time = Castbar:CreateFontString(nil, "OVERLAY")
-		Castbar.Time:SetFontObject(K.UIFont)
-		Castbar.Time:SetFont(select(1, Castbar.Time:GetFont()), 11, select(3, Castbar.Time:GetFont()))
-		Castbar.Time:SetPoint("RIGHT", -3.5, 0)
-		Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
-		Castbar.Time:SetJustifyH("RIGHT")
-
-		Castbar.decimal = "%.2f"
-
-		Castbar.OnUpdate = Module.OnCastbarUpdate
-		Castbar.PostCastStart = Module.PostCastStart
-		Castbar.PostCastStop = Module.PostCastStop
-		Castbar.PostCastFail = Module.PostCastFailed
-		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-		Castbar.UpdatePips = K.Noop -- use my own code
-
-		Castbar.Text = Castbar:CreateFontString(nil, "OVERLAY")
-		Castbar.Text:SetFontObject(K.UIFont)
-		Castbar.Text:SetFont(select(1, Castbar.Text:GetFont()), 11, select(3, Castbar.Text:GetFont()))
-		Castbar.Text:SetPoint("LEFT", 3.5, 0)
-		Castbar.Text:SetPoint("RIGHT", Castbar.Time, "LEFT", -3.5, 0)
-		Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
-		Castbar.Text:SetJustifyH("LEFT")
-		Castbar.Text:SetWordWrap(false)
-
-		if C["Party"].CastbarIcon then
-			Castbar.Button = CreateFrame("Frame", nil, Castbar)
-			Castbar.Button:SetSize(16, 16)
-			Castbar.Button:CreateBorder()
-
-			Castbar.Icon = Castbar.Button:CreateTexture(nil, "ARTWORK")
-			Castbar.Icon:SetSize(Castbar:GetHeight(), Castbar:GetHeight())
-			Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			Castbar.Icon:SetPoint("RIGHT", Castbar, "LEFT", -6, 0)
-
-			Castbar.Button:SetAllPoints(Castbar.Icon)
-		end
-
-		self.Castbar = Castbar
+		Module:CreateCastBar(self)
 	end
 
 	if C["Party"].ShowHealPrediction then
