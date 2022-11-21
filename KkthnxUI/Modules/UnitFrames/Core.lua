@@ -220,7 +220,6 @@ function Module:CreateCastBar(self)
 	else
 		Castbar:CreateBorder()
 	end
-	Castbar.castTicks = {}
 
 	Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
 	Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
@@ -228,6 +227,7 @@ function Module:CreateCastBar(self)
 	Castbar.Spark:SetAlpha(0.8)
 
 	if mystyle == "player" then
+		Castbar.castTicks = {}
 		Castbar:SetFrameLevel(10)
 		Castbar:SetSize(C["Unitframe"].PlayerCastbarWidth, C["Unitframe"].PlayerCastbarHeight)
 		createBarMover(Castbar, "Player Castbar", "PlayerCB", { "BOTTOM", UIParent, "BOTTOM", 0, 200 })

@@ -13,7 +13,6 @@ local UnitIsUnit = _G.UnitIsUnit
 local UnitName = _G.UnitName
 local YOU = _G.YOU
 
-local ticks = {}
 local channelingTicks = {
 	[740] = 4, -- 宁静
 	[755] = 5, -- 生命通道
