@@ -15,46 +15,6 @@ local HideUIPanel = _G.HideUIPanel
 local IsCosmeticItem = _G.IsCosmeticItem
 local hooksecurefunc = _G.hooksecurefunc
 
-local function ReskinPaperDollSidebar()
-	for i = 1, #PAPERDOLL_SIDEBARS do
-		local tab = _G["PaperDollSidebarTab" .. i]
-
-		if tab and not tab.styled then
-			if i == 1 then
-				for i = 1, 4 do
-					local region = select(i, tab:GetRegions())
-					region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
-					region.SetTexCoord = K.Noop
-				end
-			end
-
-			tab.bg = CreateFrame("Frame", nil, tab)
-			tab.bg:SetFrameLevel(tab:GetFrameLevel())
-			tab.bg:SetAllPoints(tab)
-			tab.bg:CreateBorder(nil, nil, nil, nil, nil, 255 / 255, 223 / 255, 0 / 255, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
-
-			tab.Icon:SetAllPoints(tab.bg)
-			tab.Hider:SetAllPoints(tab.bg)
-			tab.Highlight:SetPoint("TOPLEFT", tab.bg, "TOPLEFT", 1, -1)
-			tab.Highlight:SetPoint("BOTTOMRIGHT", tab.bg, "BOTTOMRIGHT", -1, 1)
-			tab.Highlight:SetColorTexture(1, 1, 1, 0.25)
-			tab.Hider:SetColorTexture(0.3, 0.3, 0.3, 0.4)
-			tab.TabBg:SetAlpha(0)
-
-			tab.styled = true
-		end
-	end
-end
-
-local function UpdateFactionSkins()
-	for i = 1, NUM_FACTIONS_DISPLAYED, 1 do
-		local statusbar = _G["ReputationBar" .. i .. "ReputationBar"]
-		if statusbar then
-			statusbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-		end
-	end
-end
-
 tinsert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
 		return
@@ -103,13 +63,6 @@ tinsert(C.defaultThemes, function()
 		self.AzeriteTexture:SetAtlas("AzeriteIconFrame")
 		self.AzeriteTexture:SetAllPoints()
 		self.AzeriteTexture:SetDrawLayer("BORDER", 1)
-	end
-
-	local function UpdateHighlight(self)
-		local highlight = self:GetHighlightTexture()
-		highlight:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
-		highlight:SetBlendMode("ADD")
-		highlight:SetAllPoints()
 	end
 
 	local function UpdateCosmetic(self)
@@ -193,7 +146,6 @@ tinsert(C.defaultThemes, function()
 			colourPopout(button.popoutButton)
 		end
 		UpdateCosmetic(button)
-		UpdateHighlight(button)
 	end)
 
 	do
@@ -207,7 +159,6 @@ tinsert(C.defaultThemes, function()
 		CharacterModelScene:ClearAllPoints()
 		CharacterModelScene:SetPoint("TOPLEFT", CharacterFrame.Inset, 0, 0)
 		CharacterModelScene:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, 0, 20)
-		--CharacterModelScene:SetCamDistanceScale(1.1)
 	end
 
 	hooksecurefunc("CharacterFrame_Expand", function()
@@ -238,25 +189,6 @@ tinsert(C.defaultThemes, function()
 	CharItemLvLValue:SetFontObject(K.UIFont)
 	CharItemLvLValue:SetFont(select(1, CharItemLvLValue:GetFont()), 18, select(3, CharItemLvLValue:GetFont()))
 
-	-- Titles
-	-- hooksecurefunc("PaperDollTitlesPane_UpdateScrollFrame", function()
-	-- 	local bu = PaperDollTitlesPane.buttons
-	-- 	for i = 1, #bu do
-	-- 		if not bu[i].textureKilled then
-	-- 			bu[i].BgTop:SetTexture()
-	-- 			bu[i].BgBottom:SetTexture()
-	-- 			bu[i].BgMiddle:SetTexture()
-	-- 			bu[i].textureKilled = true
-	-- 		end
-
-	-- 		if not bu[i].fontStyled then
-	-- 			bu[i].text:SetFontObject(K.UIFont)
-	-- 			bu[i].text:SetFont(select(1, bu[i].text:GetFont()), 11, select(3, bu[i].text:GetFont()))
-	-- 			bu[i].fontStyled = true
-	-- 		end
-	-- 	end
-	-- end)
-
 	do
 		CharacterStatsPane.ClassBackground:ClearAllPoints()
 		CharacterStatsPane.ClassBackground:SetHeight(CharacterStatsPane.ClassBackground:GetHeight() + 6)
@@ -264,11 +196,69 @@ tinsert(C.defaultThemes, function()
 		CharacterStatsPane.ClassBackground:SetPoint("CENTER")
 	end
 
-	-- Buttons used to toggle between equipment manager, titles, and character stats
-	hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", ReskinPaperDollSidebar)
+	local function UpdateFactionSkins()
+		for i = 1, GetNumFactions() do
+			local statusbar = _G["ReputationBar" .. i .. "ReputationBar"]
+			if statusbar then
+				statusbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+			end
+		end
+	end
+	ReputationFrame:HookScript("OnShow", UpdateFactionSkins)
+	ReputationFrame:HookScript("OnEvent", UpdateFactionSkins)
 
-	-- Reskin Reputation Statusbars
-	hooksecurefunc("ExpandFactionHeader", UpdateFactionSkins)
-	hooksecurefunc("CollapseFactionHeader", UpdateFactionSkins)
-	hooksecurefunc("ReputationFrame_Update", UpdateFactionSkins)
+	local function updateReputationBars(self)
+		for i = 1, self.ScrollTarget:GetNumChildren() do
+			local child = select(i, self.ScrollTarget:GetChildren())
+			local container = child and child.Container
+			if container and not container.styled then
+				if container.ReputationBar then
+					container.ReputationBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+				end
+
+				container.styled = true
+			end
+		end
+	end
+	hooksecurefunc(ReputationFrame.ScrollBox, "Update", updateReputationBars)
+
+	hooksecurefunc(PaperDollFrame.TitleManagerPane.ScrollBox, "Update", function(self)
+		for i = 1, self.ScrollTarget:GetNumChildren() do
+			local child = select(i, self.ScrollTarget:GetChildren())
+			if not child.styled then
+				child:DisableDrawLayer("BACKGROUND")
+				child.styled = true
+			end
+		end
+	end)
+
+	-- Buttons used to toggle between equipment manager, titles, and character stats
+	if PaperDollSidebarTabs.DecorRight then
+		PaperDollSidebarTabs.DecorRight:Hide()
+	end
+
+	for i = 1, #PAPERDOLL_SIDEBARS do
+		local tab = _G["PaperDollSidebarTab" .. i]
+
+		if i == 1 then
+			for i = 1, 4 do
+				local region = select(i, tab:GetRegions())
+				region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
+				region.SetTexCoord = K.Noop
+			end
+		end
+
+		tab.bg = CreateFrame("Frame", nil, tab)
+		tab.bg:SetFrameLevel(tab:GetFrameLevel())
+		tab.bg:SetAllPoints(tab)
+		tab.bg:CreateBorder(nil, nil, nil, nil, nil, 255 / 255, 223 / 255, 0 / 255, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil)
+
+		tab.Icon:SetAllPoints(tab.bg)
+		tab.Hider:SetAllPoints(tab.bg)
+		tab.Highlight:SetPoint("TOPLEFT", tab.bg, "TOPLEFT", 1, -1)
+		tab.Highlight:SetPoint("BOTTOMRIGHT", tab.bg, "BOTTOMRIGHT", -1, 1)
+		tab.Highlight:SetColorTexture(1, 1, 1, 0.25)
+		tab.Hider:SetColorTexture(0.3, 0.3, 0.3, 0.4)
+		tab.TabBg:SetAlpha(0)
+	end
 end)
