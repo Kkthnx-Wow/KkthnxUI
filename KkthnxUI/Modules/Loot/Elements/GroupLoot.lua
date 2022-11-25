@@ -184,13 +184,6 @@ function Module:CreateRollFrame()
 	button.icon:SetAllPoints()
 	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-	local tfade = frame:CreateTexture(nil, "BORDER")
-	tfade:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, 0)
-	tfade:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -4, 0)
-	tfade:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
-	tfade:SetBlendMode("ADD")
-	tfade:SetGradientAlpha("VERTICAL", 0.1, 0.1, 0.1, 0, 0.1, 0.1, 0.1, 0)
-
 	local status = CreateFrame("StatusBar", nil, frame)
 	status:SetAllPoints()
 	status:SetScript("OnUpdate", StatusUpdate)
