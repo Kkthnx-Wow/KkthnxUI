@@ -41,25 +41,16 @@
    <Script file="Inventory\Elements\AutoSell.lua" />
    <Script file="Inventory\Elements\InventoryBar.lua" />
    <!-- ActionBars -->
-   <Script file="ActionBars\Elements\Bar1.lua" />
-   <Script file="ActionBars\Elements\Bar2.lua" />
-   <Script file="ActionBars\Elements\Bar3.lua" />
-   <Script file="ActionBars\Elements\Bar4.lua" />
-   <Script file="ActionBars\Elements\Bar5.lua" />
-   <Script file="ActionBars\Elements\Bar678.lua" />
-   <Script file="ActionBars\Elements\CustomBar.lua" />
-   <Script file="ActionBars\Elements\Stancebar.lua" />
-   <Script file="ActionBars\Elements\Petbar.lua" />
-   <Script file="ActionBars\Elements\Extrabar.lua" />
-   <Script file="ActionBars\Elements\Vehicle.lua" />
-   <Script file="ActionBars\Elements\ExtraQuestButton.lua" />
-   <Script file="ActionBars\Elements\BlizzArt.lua" />
-   <Script file="ActionBars\Elements\Fader.lua" />
-   <Script file="ActionBars\ButtonRange.lua" />
-   <Script file="ActionBars\Keybind.lua" />
-   <Script file="ActionBars\ButtonStyle.lua" />
-   <Script file="ActionBars\Cooldowns.lua" />
-   <Script file="ActionBars\MicroMenu.lua" />
+   <Script file="ActionBars\Elements\Bars.lua"/>
+	<Script file="ActionBars\Elements\Stancebar.lua"/>
+	<Script file="ActionBars\Elements\Petbar.lua"/>
+	<Script file="ActionBars\Elements\Extrabar.lua"/>
+	<Script file="ActionBars\Elements\LeaveVehicle.lua"/>
+	<Script file="ActionBars\Elements\HideBlizzardArt.lua"/>
+	<Script file="ActionBars\Elements\MicroMenu.lua"/>
+	<Script file="ActionBars\Keybind.lua"/>
+	<Script file="ActionBars\ButtonStyle.lua"/>
+	<Script file="ActionBars\Cooldown.lua"/>
    <!-- Auras -->
    <Include file="Auras\AuraTemplate.xml" />
    <Script file="Auras\Core.lua" />

@@ -1,17 +1,12 @@
-local K, C = unpack(KkthnxUI)
+local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
 local _G = _G
-local table_insert = _G.table.insert
+local tinsert, mod, min, ceil = tinsert, mod, min, ceil
+local margin, padding = 6, 6
 
-local CreateFrame = _G.CreateFrame
-local RegisterStateDriver = _G.RegisterStateDriver
-local UIParent = _G.UIParent
-local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS or 10
-local NUM_POSSESS_SLOTS = _G.NUM_POSSESS_SLOTS or 2
-
-local cfg = C.Bars.BarStance
-local margin, padding = C.Bars.BarMargin, C.Bars.BarPadding
+local num = NUM_STANCE_SLOTS or 10
+local NUM_POSSESS_SLOTS = NUM_POSSESS_SLOTS or 2
 
 function Module:UpdateStanceBar()
 	local frame = _G["KKUI_ActionBarStance"]
@@ -19,9 +14,9 @@ function Module:UpdateStanceBar()
 		return
 	end
 
-	local size = C["ActionBar"].BarStanceSize
-	local fontSize = C["ActionBar"].BarStanceFont
-	local perRow = C["ActionBar"].BarStancePerRow
+	local size = C["ActionBar"]["BarStanceSize"]
+	local fontSize = C["ActionBar"]["BarStanceFont"]
+	local perRow = C["ActionBar"]["BarStancePerRow"]
 
 	for i = 1, 12 do
 		local button = frame.buttons[i]
@@ -39,8 +34,8 @@ function Module:UpdateStanceBar()
 		Module:UpdateFontSize(button, fontSize)
 	end
 
-	local column = min(NUM_STANCE_SLOTS, perRow)
-	local rows = ceil(NUM_STANCE_SLOTS / perRow)
+	local column = min(num, perRow)
+	local rows = ceil(num / perRow)
 	frame:SetWidth(column * size + (column - 1) * margin + 2 * padding)
 	frame:SetHeight(size * rows + (rows - 1) * margin + 2 * padding)
 	frame.mover:SetSize(size, size)
@@ -98,25 +93,25 @@ function Module:StanceBarOnEvent()
 end
 
 function Module:CreateStancebar()
-	if not C["ActionBar"].StanceBar then
+	if not C["ActionBar"]["ShowStance"] then
 		return
 	end
 
 	local buttonList = {}
 	local frame = CreateFrame("Frame", "KKUI_ActionBarStance", UIParent, "SecureHandlerStateTemplate")
-	frame.mover = K.Mover(frame, "StanceBar", "StanceBar", { "BOTTOMLEFT", _G.KKUI_ActionBar3, "TOPLEFT", 0, margin })
-	Module.movers[8] = frame.mover
+	frame.mover = K.Mover(frame, L["StanceBar"], "StanceBar", { "BOTTOMLEFT", _G.KKUI_ActionBar3, "TOPLEFT", 0, margin })
+	Module.movers[11] = frame.mover
 
 	-- StanceBar
 	StanceBar:SetParent(frame)
 	StanceBar:EnableMouse(false)
 	StanceBar:UnregisterAllEvents()
 
-	for i = 1, NUM_STANCE_SLOTS do
+	for i = 1, num do
 		local button = _G["StanceButton" .. i]
 		button:SetParent(frame)
-		table_insert(buttonList, button)
-		table_insert(Module.buttons, button)
+		tinsert(buttonList, button)
+		tinsert(Module.buttons, button)
 	end
 
 	-- Fix stance bar updating
@@ -130,7 +125,7 @@ function Module:CreateStancebar()
 
 	for i = 1, NUM_POSSESS_SLOTS do
 		local button = _G["PossessButton" .. i]
-		table_insert(buttonList, button)
+		tinsert(buttonList, button)
 		button:ClearAllPoints()
 		button:SetPoint("CENTER", buttonList[i])
 	end
@@ -139,8 +134,4 @@ function Module:CreateStancebar()
 
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
-
-	if cfg.fader then
-		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
-	end
 end

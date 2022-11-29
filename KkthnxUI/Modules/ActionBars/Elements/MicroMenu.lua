@@ -132,10 +132,10 @@ function Module:MicroButton_Create(parent, data)
 	end
 end
 
-function Module:CreateMicroMenu()
-	if not C["ActionBar"].MicroBar then
-		return
-	end
+function Module:MicroMenu()
+	-- if not C["ActionBar"].MicroBar then
+	-- 	return
+	-- end
 
 	local menubar = CreateFrame("Frame", "KKUI_MenuBar", UIParent)
 	menubar:SetSize(280, 20 * 1.4)

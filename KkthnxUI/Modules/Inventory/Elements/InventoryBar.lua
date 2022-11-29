@@ -2,71 +2,142 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Bags")
 
 local _G = _G
-local table_insert = _G.table.insert
+local ipairs = ipairs
+local unpack = unpack
+local tinsert = tinsert
+local hooksecurefunc = hooksecurefunc
 
-local CreateFrame = _G.CreateFrame
-local MainMenuBarBackpackButton = _G.MainMenuBarBackpackButton
-local MainMenuBarBackpackButtonCount = _G.MainMenuBarBackpackButtonCount
-local NUM_BAG_FRAMES = _G.NUM_BAG_FRAMES or 4
-local RegisterStateDriver = _G.RegisterStateDriver
-local UIParent = _G.UIParent
+local CreateFrame = CreateFrame
+local GetCVarBool = GetCVarBool
+local RegisterStateDriver = RegisterStateDriver
+local CalculateTotalNumberOfFreeBagSlots = CalculateTotalNumberOfFreeBagSlots
 
-local buttonPosition
-local buttonList = {}
+local NUM_BAG_FRAMES = NUM_BAG_FRAMES
 
-local function OnEnter()
-	local KKUI_BB = _G.KKUI_BagBar
-	return C["Inventory"].BagBarMouseover and UIFrameFadeIn(KKUI_BB, 0.2, KKUI_BB:GetAlpha(), 1)
+function Module:BagBar_OnEnter()
+	return C["Inventory"].BagBarMouseover and UIFrameFadeIn(Module.BagBar, 0.2, Module.BagBar:GetAlpha(), 1)
 end
 
-local function OnLeave()
-	local KKUI_BB = _G.KKUI_BagBar
-	return C["Inventory"].BagBarMouseover and UIFrameFadeOut(KKUI_BB, 0.2, KKUI_BB:GetAlpha(), 0)
+function Module:BagBar_OnLeave()
+	return C["Inventory"].BagBarMouseover and UIFrameFadeOut(Module.BagBar, 0.2, Module.BagBar:GetAlpha(), 0)
 end
 
 function Module:SkinBag(bag)
 	local icon = bag.icon or _G[bag:GetName() .. "IconTexture"]
 	bag.oldTex = icon:GetTexture()
 
+	bag:StripTextures(true)
+	bag:CreateBorder()
+	bag:StyleButton(true)
+
 	bag:GetNormalTexture():SetAlpha(0)
-	bag:GetPushedTexture():SetAlpha(0)
 	bag:GetHighlightTexture():SetAlpha(0)
-	bag.SlotHighlightTexture:Kill()
 	bag.CircleMask:Hide()
 
 	icon.Show = nil
 	icon:Show()
 
-	bag:StripTextures()
-	bag:CreateBorder()
-
 	icon:SetAllPoints()
 	icon:SetTexture((not bag.oldTex or bag.oldTex == 1721259) and "Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\Backpack.tga" or bag.oldTex)
-	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	icon:SetTexCoord(unpack(K.TexCoords))
 end
 
-function Module:SizeAndPositionBagBar()
-	local KKUI_BB = _G.KKUI_BagBar
-	if not KKUI_BB then
+function Module:SetSizeAndPositionBagBar()
+	if not Module.BagBar then
 		return
 	end
 
-	RegisterStateDriver(KKUI_BB, "visibility", "[petbattle] hide; show")
-	KKUI_BB:SetAlpha(C["Inventory"].BagBarMouseover and 0 or 1)
+	local bagBarSize = C["Inventory"].BagBarSize
+	local buttonSpacing = 6
+	local growthDirection = C["Inventory"].GrowthDirection.Value
+	local sortDirection = C["Inventory"].SortDirection.Value
+	local justBackpack = C["Inventory"].JustBackpack
 
-	for i, button in ipairs(buttonList) do
-		local prevButton = buttonList[i - 1]
-		button:SetSize(30, 30)
+	RegisterStateDriver(Module.BagBar, "visibility", "[petbattle] hide; show")
+
+	Module.BagBar:SetAlpha(C["Inventory"].BagBarMouseover and 0 or 1)
+
+	_G.MainMenuBarBackpackButtonCount:SetFontObject(K.UIFontOutline)
+
+	local firstButton, lastButton
+	for i, button in ipairs(Module.BagBar.buttons) do
+		button:SetSize(bagBarSize, bagBarSize)
 		button:ClearAllPoints()
+		button:SetShown(i == 1 and justBackpack or not justBackpack)
 
-		if i == 1 then
-			button:SetPoint("RIGHT", KKUI_BB, "RIGHT", 0, 0)
-		elseif prevButton then
-			button:SetPoint("RIGHT", prevButton, "LEFT", -6, 0)
+		if sortDirection == "ASCENDING" then
+			if i == 1 then
+				firstButton = button
+			else
+				lastButton = button
+			end
+		else
+			if i == 1 then
+				lastButton = button
+			else
+				firstButton = button
+			end
 		end
+
+		local prevButton = Module.BagBar.buttons[i - 1]
+		if growthDirection == "HORIZONTAL" and sortDirection == "ASCENDING" then
+			if i == 1 then
+				button:SetPoint("LEFT", Module.BagBar, "LEFT", 0, 0)
+			elseif prevButton then
+				button:SetPoint("LEFT", prevButton, "RIGHT", buttonSpacing, 0)
+			end
+		elseif growthDirection == "VERTICAL" and sortDirection == "ASCENDING" then
+			if i == 1 then
+				button:SetPoint("TOP", Module.BagBar, "TOP", 0, -0)
+			elseif prevButton then
+				button:SetPoint("TOP", prevButton, "BOTTOM", 0, -buttonSpacing)
+			end
+		elseif growthDirection == "HORIZONTAL" and sortDirection == "DESCENDING" then
+			if i == 1 then
+				button:SetPoint("RIGHT", Module.BagBar, "RIGHT", -0, 0)
+			elseif prevButton then
+				button:SetPoint("RIGHT", prevButton, "LEFT", -buttonSpacing, 0)
+			end
+		else
+			if i == 1 then
+				button:SetPoint("BOTTOM", Module.BagBar, "BOTTOM", 0, 0)
+			elseif prevButton then
+				button:SetPoint("BOTTOM", prevButton, "TOP", 0, buttonSpacing)
+			end
+		end
+	end
+
+	local btnSize = bagBarSize * (NUM_BAG_FRAMES + 1)
+	local btnSpace = buttonSpacing * NUM_BAG_FRAMES
+
+	if growthDirection == "HORIZONTAL" then
+		Module.BagBar:SetSize(btnSize + btnSpace, bagBarSize)
+	else
+		Module.BagBar:SetSize(bagBarSize, btnSize + btnSpace)
+	end
+
+	Module.BagBar.mover:SetSize(Module.BagBar:GetSize())
+	Module:UpdateMainButtonCount()
+end
+
+function Module:UpdateMainButtonCount()
+	local mainCount = Module.BagBar.buttons[1].Count
+	mainCount:SetShown(GetCVarBool("displayFreeBagSlots"))
+	mainCount:SetText(CalculateTotalNumberOfFreeBagSlots())
+end
+
+function Module:BagButton_UpdateTextures()
+	local pushed = self:GetPushedTexture()
+	pushed:SetAllPoints()
+	pushed:SetColorTexture(0.9, 0.8, 0.1, 0.3)
+
+	if self.SlotHighlightTexture then
+		self.SlotHighlightTexture:SetColorTexture(1, 1, 1, 0.3)
+		self.SlotHighlightTexture:SetAllPoints()
 	end
 end
 
+local buttonPosition
 function Module:CreateInventoryBar()
 	if not C["ActionBar"].Enable then
 		return
@@ -76,56 +147,65 @@ function Module:CreateInventoryBar()
 		return
 	end
 
-	local menubar = CreateFrame("Frame", "KKUI_BagBar", UIParent)
-	menubar:SetSize(174, 30)
+	Module.BagBar = CreateFrame("Frame", "KKUI_BagBar", UIParent)
 	if C["ActionBar"].MicroBar then
 		buttonPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 38 }
 	else
 		buttonPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 }
 	end
-	menubar:SetScript("OnEnter", OnEnter)
-	menubar:SetScript("OnLeave", OnLeave)
+	Module.BagBar:SetScript("OnEnter", Module.BagBar_OnEnter)
+	Module.BagBar:SetScript("OnLeave", Module.BagBar_OnLeave)
+	Module.BagBar:EnableMouse(true)
+	Module.BagBar.buttons = {}
 
-	MainMenuBarBackpackButton:SetParent(menubar)
-	MainMenuBarBackpackButton:ClearAllPoints()
+	_G.MainMenuBarBackpackButton:SetParent(Module.BagBar)
+	_G.MainMenuBarBackpackButton:ClearAllPoints()
+	_G.MainMenuBarBackpackButtonCount:SetFontObject(K.UIFontOutline)
+	_G.MainMenuBarBackpackButtonCount:ClearAllPoints()
+	_G.MainMenuBarBackpackButtonCount:SetPoint("BOTTOMRIGHT", _G.MainMenuBarBackpackButton, "BOTTOMRIGHT", -1, 4)
+	_G.MainMenuBarBackpackButton:HookScript("OnEnter", Module.BagBar_OnEnter)
+	_G.MainMenuBarBackpackButton:HookScript("OnLeave", Module.BagBar_OnLeave)
 
-	MainMenuBarBackpackButtonCount:SetFontObject(K.UIFontOutline)
-	MainMenuBarBackpackButtonCount:ClearAllPoints()
-	MainMenuBarBackpackButtonCount:SetPoint("BOTTOMRIGHT", MainMenuBarBackpackButton, "BOTTOMRIGHT", 2, 2)
-
-	MainMenuBarBackpackButton:HookScript("OnEnter", OnEnter)
-	MainMenuBarBackpackButton:HookScript("OnLeave", OnLeave)
-	MainMenuBarBackpackButton:UnregisterEvent("ITEM_PUSH") -- Gets rid of the loot anims
-
-	table_insert(buttonList, MainMenuBarBackpackButton)
-	Module:SkinBag(MainMenuBarBackpackButton)
+	tinsert(Module.BagBar.buttons, _G.MainMenuBarBackpackButton)
+	Module:SkinBag(_G.MainMenuBarBackpackButton)
+	Module.BagButton_UpdateTextures(_G.MainMenuBarBackpackButton)
 
 	for i = 0, NUM_BAG_FRAMES - 1 do
-		local CharacterBagSlot = _G["CharacterBag" .. i .. "Slot"]
-		CharacterBagSlot:SetParent(menubar)
-		CharacterBagSlot:HookScript("OnEnter", OnEnter)
-		CharacterBagSlot:HookScript("OnLeave", OnLeave)
-		CharacterBagSlot:UnregisterEvent("ITEM_PUSH") -- Gets rid of the loot anims
+		local b = _G["CharacterBag" .. i .. "Slot"]
+		b:HookScript("OnEnter", Module.BagBar_OnEnter)
+		b:HookScript("OnLeave", Module.BagBar_OnLeave)
+		b:SetParent(Module.BagBar)
+		Module:SkinBag(b)
 
-		Module:SkinBag(CharacterBagSlot)
-		table_insert(buttonList, CharacterBagSlot)
+		hooksecurefunc(b, "UpdateTextures", Module.BagButton_UpdateTextures)
+
+		tinsert(Module.BagBar.buttons, b)
 	end
 
 	local ReagentSlot = _G.CharacterReagentBag0Slot
 	if ReagentSlot then
-		ReagentSlot:SetParent(menubar)
-		ReagentSlot:HookScript("OnEnter", OnEnter)
-		ReagentSlot:HookScript("OnLeave", OnLeave)
+		ReagentSlot:SetParent(Module.BagBar)
+		ReagentSlot:HookScript("OnEnter", Module.BagBar_OnEnter)
+		ReagentSlot:HookScript("OnLeave", Module.BagBar_OnLeave)
 
 		Module:SkinBag(ReagentSlot)
-		tinsert(buttonList, ReagentSlot)
 
-		hooksecurefunc(ReagentSlot, "SetBarExpanded", Module.SizeAndPositionBagBar)
+		tinsert(Module.BagBar.buttons, ReagentSlot)
+
+		hooksecurefunc(ReagentSlot, "UpdateTextures", Module.BagButton_UpdateTextures)
+		hooksecurefunc(ReagentSlot, "SetBarExpanded", Module.SetSizeAndPositionBagBar)
 	end
 
-	K.Mover(menubar, "BagBar", "BagBar", buttonPosition)
-	K:RegisterEvent("BAG_SLOT_FLAGS_UPDATED", Module.SizeAndPositionBagBar)
-	Module:SizeAndPositionBagBar()
+	K.Mover(Module.BagBar, "BagBar", "BagBar", buttonPosition)
+	if not Module.BagBar.mover then
+		Module.BagBar.mover = K.Mover(Module.BagBar, "BagBar", "BagBar", buttonPosition)
+	else
+		Module.BagBar.mover:SetSize(Module.BagBar:GetSize())
+	end
+	Module.BagBar:SetPoint("BOTTOMLEFT", Module.BagBar.mover)
+	K:RegisterEvent("BAG_SLOT_FLAGS_UPDATED", Module.SetSizeAndPositionBagBar)
+	K:RegisterEvent("BAG_UPDATE_DELAYED", Module.UpdateMainButtonCount)
+	Module:SetSizeAndPositionBagBar()
 
 	if BagBarExpandToggle then
 		K.HideInterfaceOption(BagBarExpandToggle)

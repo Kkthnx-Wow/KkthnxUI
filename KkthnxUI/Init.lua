@@ -49,8 +49,11 @@ local UnitSex = _G.UnitSex
 Engine[1] = {} -- K, Main
 Engine[2] = {} -- C, Config
 Engine[3] = {} -- L, Locale
+Engine[4] = {} -- DB, Database
 
-local K, C, L = unpack(Engine)
+KkthnxUIDB, KkthnxUIADB, KkthnxUIPDB = {}, {}, {}
+
+local K, C, L, DB = unpack(Engine)
 
 -- Deprecated
 LE_ITEM_QUALITY_ARTIFACT = Enum.ItemQuality.Artifact
@@ -64,6 +67,7 @@ LE_ITEM_QUALITY_UNCOMMON = Enum.ItemQuality.Uncommon
 
 do
 	K.Base64 = LibStub("LibBase64-1.0-KkthnxUI")
+	K.LibActionButton = LibStub("LibActionButton-1.0")
 	K.ChangeLog = LibStub("LibChangelog-KkthnxUI")
 	K.Deflate = LibStub("LibDeflate-KkthnxUI")
 	K.HideButtonGlow = LibStub("LibButtonGlow-1.0-KkthnxUI", true).HideOverlayGlow
@@ -104,7 +108,11 @@ K.SystemColor = "|CFFFFCC66"
 
 K.MediaFolder = "Interface\\AddOns\\KkthnxUI\\Media\\"
 K.UIFont = "KkthnxUIFont"
+K.UIFontSize = select(2, _G.KkthnxUIFont:GetFont())
+K.UIFontStyle = select(3, _G.KkthnxUIFont:GetFont())
 K.UIFontOutline = "KkthnxUIFontOutline"
+K.UIFontSize = select(2, _G.KkthnxUIFontOutline:GetFont())
+K.UIFontStyle = select(3, _G.KkthnxUIFontOutline:GetFont())
 K.LeftButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:230:307|t "
 K.RightButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:333:410|t "
 K.ScrollButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t "
@@ -261,6 +269,7 @@ local function UpdatePixelScale(event)
 end
 
 K:RegisterEvent("PLAYER_LOGIN", function()
+	SetCVar("ActionButtonUseKeyDown", 1)
 	K.SetupUIScale()
 	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
 	K:SetSmoothingAmount(C["General"].SmoothAmount)
@@ -275,6 +284,10 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	end
 
 	K.Modules = modules
+
+	if K.InitCallback then
+		K:InitCallback()
+	end
 end)
 
 -- Event return values were wrong: https://wow.gamepedia.com/PLAYER_LEVEL_UP

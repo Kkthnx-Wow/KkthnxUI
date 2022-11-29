@@ -4,6 +4,7 @@
    <Script file="LibStub\LibStub.lua" />
    <Script file="CallbackHandler-1.0\CallbackHandler-1.0.lua" />
    <Script file="LibSharedMedia-3.0\LibSharedMedia-3.0.lua" />
+   <Script file="LibActionButton-1.0\LibActionButton-1.0.lua" />
    <Script file="LibDeflate\LibDeflate.lua"/>
 	<Script file="LibSerialize\LibSerialize.lua"/>
    <Script file="LibRangeCheck-2.0\LibRangeCheck-2.0.lua"/>

@@ -1,29 +1,21 @@
-local K, C = unpack(KkthnxUI)
+local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
 local _G = _G
-local table_insert = _G.table.insert
-
-local CreateFrame = _G.CreateFrame
-local hooksecurefunc = _G.hooksecurefunc
-local UIParent = _G.UIParent
-
-local cfg = C.Bars.BarExtra
-local padding = C.Bars.BarPadding
+local tinsert = tinsert
+local padding = 6
 
 function Module:CreateExtrabar()
 	local buttonList = {}
-	local size = cfg.size
-	local ZoneAbilityFrame = _G.ZoneAbilityFrame
-	local ExtraAbilityContainer = _G.ExtraAbilityContainer
-	local RegisterStateDriver = _G.RegisterStateDriver
+	local size = 52
 
+	-- ExtraActionButton
 	local frame = CreateFrame("Frame", "KKUI_ActionBarExtra", UIParent, "SecureHandlerStateTemplate")
 	frame:SetWidth(size + 2 * padding)
 	frame:SetHeight(size + 2 * padding)
-	frame.mover = K.Mover(frame, "Extrabar", "Extrabar", { "BOTTOM", UIParent, "BOTTOM", 270, 48 })
+	frame.mover = K.Mover(frame, "Extrabar", "Extrabar", { "BOTTOM", UIParent, "BOTTOM", 250, 100 })
 
-	_G.ExtraActionBarFrame:EnableMouse(false)
+	ExtraActionBarFrame:EnableMouse(false)
 	ExtraActionBarFrame:ClearAllPoints()
 	ExtraActionBarFrame:SetPoint("CENTER", frame)
 	ExtraActionBarFrame.ignoreFramePositionManager = true
@@ -34,22 +26,19 @@ function Module:CreateExtrabar()
 		end
 	end)
 
-	local button = _G.ExtraActionButton1
-	table_insert(buttonList, button)
-	table_insert(Module.buttons, button)
+	local button = ExtraActionButton1
+	tinsert(buttonList, button)
+	tinsert(Module.buttons, button)
 	button:SetSize(size, size)
 
 	frame.frameVisibility = "[extrabar] show; hide"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
-	if cfg.fader then
-		Module.CreateButtonFrameFader(frame, buttonList, cfg.fader)
-	end
-
+	-- ZoneAbility
 	local zoneFrame = CreateFrame("Frame", "KKUI_ActionBarZone", UIParent)
 	zoneFrame:SetWidth(size + 2 * padding)
 	zoneFrame:SetHeight(size + 2 * padding)
-	zoneFrame.mover = K.Mover(zoneFrame, "Zone Ability", "ZoneAbility", { "BOTTOM", UIParent, "BOTTOM", -270, 44 })
+	zoneFrame.mover = K.Mover(zoneFrame, "Zone Ability", "ZoneAbility", { "BOTTOM", UIParent, "BOTTOM", -250, 100 })
 
 	ZoneAbilityFrame:SetParent(zoneFrame)
 	ZoneAbilityFrame:ClearAllPoints()
@@ -61,20 +50,17 @@ function Module:CreateExtrabar()
 		for spellButton in self.SpellButtonContainer:EnumerateActive() do
 			if spellButton and not spellButton.styled then
 				spellButton.NormalTexture:SetAlpha(0)
-				spellButton:StyleButton()
-				spellButton.Icon:SetAllPoints()
-				spellButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-				local Border = CreateFrame("Frame", nil, spellButton)
-				Border:SetAllPoints(spellButton.Icon)
-				Border:SetFrameLevel(spellButton:GetFrameLevel())
-				Border:CreateBorder()
-
+				spellButton:SetPushedTexture(0) --force it to gain a texture
+				spellButton:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
+				spellButton:GetHighlightTexture():SetInside()
+				spellButton.Icon:SetInside()
+				-- B.ReskinIcon(spellButton.Icon, true)
 				spellButton.styled = true
 			end
 		end
 	end)
 
+	-- Fix button visibility
 	hooksecurefunc(ZoneAbilityFrame, "SetParent", function(self, parent)
 		if parent == ExtraAbilityContainer then
 			self:SetParent(zoneFrame)

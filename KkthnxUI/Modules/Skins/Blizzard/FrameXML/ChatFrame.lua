@@ -13,8 +13,6 @@ table_insert(C.defaultThemes, function()
 	BNToastFrame.TooltipFrame:HideBackdrop()
 	BNToastFrame.TooltipFrame:CreateBorder()
 	BNToastFrame.CloseButton:SkinCloseButton()
-	BNToastFrame.CloseButton:SetSize(32, 32)
-	BNToastFrame.CloseButton:SetPoint("TOPRIGHT", 4, 4)
 
 	local friendTex = "Interface\\HELPFRAME\\ReportLagIcon-Chat"
 	local queueTex = "Interface\\HELPFRAME\\HelpIcon-ItemRestoration"
