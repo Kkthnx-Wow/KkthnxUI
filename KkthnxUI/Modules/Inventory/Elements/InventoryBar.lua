@@ -148,7 +148,7 @@ function Module:CreateInventoryBar()
 	end
 
 	Module.BagBar = CreateFrame("Frame", "KKUI_BagBar", UIParent)
-	if C["ActionBar"].MicroBar then
+	if C["ActionBar"].MicroMenu then
 		buttonPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 38 }
 	else
 		buttonPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 }

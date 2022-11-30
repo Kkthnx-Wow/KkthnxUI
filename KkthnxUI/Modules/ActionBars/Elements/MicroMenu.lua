@@ -133,9 +133,9 @@ function Module:MicroButton_Create(parent, data)
 end
 
 function Module:MicroMenu()
-	-- if not C["ActionBar"].MicroBar then
-	-- 	return
-	-- end
+	if not C["ActionBar"].MicroMenu then
+		return
+	end
 
 	local menubar = CreateFrame("Frame", "KKUI_MenuBar", UIParent)
 	menubar:SetSize(280, 20 * 1.4)
@@ -177,9 +177,9 @@ function Module:MicroMenu()
 	if MainMenuMicroButton.MainMenuBarPerformanceBar then
 		K.HideInterfaceOption(MainMenuMicroButton.MainMenuBarPerformanceBar)
 	end
-	-- K.HideInterfaceOption(_G.MicroButtonPortrait)
-	-- K.HideInterfaceOption(_G.GuildMicroButtonTabard)
-	-- K.HideInterfaceOption(_G.MainMenuBarDownload)
-	-- K.HideInterfaceOption(_G.HelpOpenWebTicketButton)
-	_G.MainMenuMicroButton:SetScript("OnUpdate", nil)
+	K.HideInterfaceOption(HelpOpenWebTicketButton)
+	MainMenuMicroButton:SetScript("OnUpdate", nil)
+
+	MicroButtonAndBagsBar:Hide()
+	MicroButtonAndBagsBar:UnregisterAllEvents()
 end

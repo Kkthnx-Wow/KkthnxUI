@@ -115,27 +115,36 @@ function Module:StyleActionButton(button)
 		if not icon.__lockdown then
 			icon:SetTexCoord(unpack(K.TexCoords))
 		end
-		-- button.__bg = B.SetBD(icon, 0.25)
-
 		button.__bg = CreateFrame("Frame", nil, button, "BackdropTemplate")
 		button.__bg:SetAllPoints(button)
 		button.__bg:SetFrameLevel(button:GetFrameLevel())
 		button.__bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 0.7, 0.7, 0.7)
 	end
 	if cooldown then
-		cooldown:SetAllPoints()
+		cooldown:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
+		cooldown:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+		cooldown:SetDrawEdge(false)
+		cooldown:SetSwipeColor(0, 0, 0, 1)
 	end
 	if pushed then
-		pushed:SetAllPoints()
-		pushed:SetTexture(0)
+		pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+		pushed:SetDesaturated(true)
+		pushed:SetVertexColor(246 / 255, 196 / 255, 66 / 255)
+		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", 0, -0)
+		pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -0, 0)
+		pushed:SetBlendMode("ADD")
 	end
 	if checked then
-		checked:SetAllPoints()
-		--checked:SetColorTexture(1, 0.8, 0, 0.35)
+		checked:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+		checked:SetPoint("TOPLEFT", button, "TOPLEFT", 0, -0)
+		checked:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -0, 0)
+		checked:SetBlendMode("ADD")
 	end
 	if highlight then
-		highlight:SetAllPoints()
-		--highlight:SetColorTexture(1, 1, 1, 0.25)
+		highlight:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+		highlight:SetPoint("TOPLEFT", button, "TOPLEFT", 0, -0)
+		highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -0, 0)
+		highlight:SetBlendMode("ADD")
 	end
 	if spellHighlight then
 		spellHighlight:SetAllPoints()

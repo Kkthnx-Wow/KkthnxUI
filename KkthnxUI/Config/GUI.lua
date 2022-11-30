@@ -140,15 +140,6 @@ local function UpdateChatBubble()
 	end
 end
 
-local function UpdateHotkeys()
-	local Bar = K:GetModule("ActionBar")
-	for _, button in pairs(Bar.buttons) do
-		if button.UpdateHotkeys then
-			button:UpdateHotkeys(button.buttonType)
-		end
-	end
-end
-
 local function UpdateMarkerGrid()
 	K:GetModule("Blizzard"):RaidTool_UpdateGrid()
 end
@@ -180,18 +171,6 @@ end
 
 local function UpdateActionbarHotkeys()
 	K:GetModule("ActionBar"):UpdateBarConfig()
-end
-
-local function UpdateActionbarPet()
-	K:GetModule("ActionBar"):UpdateActionSize("BarPet")
-end
-
-local function UpdateCustomBar()
-	K:GetModule("ActionBar"):UpdateCustomBar()
-end
-
-local function UpdateStanceBar()
-	K:GetModule("ActionBar"):UpdateStanceBar()
 end
 
 local function SetupAuraWatch()
@@ -396,19 +375,6 @@ end
 -- Sliders > minvalue, maxvalue, stepvalue
 local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
-
-	-- {1, "Actionbar", "Enable", NewTag..HeaderTag..L["Enable Actionbar"], nil, setupActionBar},
-	-- 	{},--blank
-	-- 	{1, "Actionbar", "MicroMenu", L["Micromenu"], nil, nil, nil, L["MicroMenuTip"]},
-	-- 	{1, "Actionbar", "ShowStance", L["ShowStanceBar"], true, setupStanceBar},
-	-- 	{},--blank
-	-- 	{},--blank
-	-- 	{1, "Actionbar", "Hotkeys", L["Actionbar Hotkey"].."*", nil, nil, updateHotkeys},
-	-- 	{1, "Actionbar", "Macro", L["Actionbar Macro"].."*", true, nil, updateHotkeys},
-	-- 	{1, "Actionbar", "Grid", L["Actionbar Grid"].."*", nil, nil, updateHotkeys},
-	-- 	{1, "Actionbar", "Classcolor", L["ClassColor BG"].."*", true, nil, updateHotkeys},
-	-- 	{1, "Actionbar", "EquipColor", L["EquipColor"].."*", nil, nil, updateHotkeys},
-	-- 	{1, "Misc", "SendActionCD", HeaderTag..L["SendActionCD"].."*", true, nil, nil, L["SendActionCDTip"]},
 
 	Window:CreateSection("ActionBar 1")
 	Window:CreateSwitch("ActionBar", "Bar1", enableTextColor .. L["Enable ActionBar"] .. " 1", nil, UpdateActionbar1)
