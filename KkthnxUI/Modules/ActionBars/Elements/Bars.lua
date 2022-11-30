@@ -105,6 +105,7 @@ function Module:UpdateActionSize(name)
 	end
 end
 
+local directions = { "UP", "DOWN", "LEFT", "RIGHT" }
 function Module:UpdateButtonConfig(i)
 	if not self.buttonConfig then
 		self.buttonConfig = {
@@ -118,7 +119,7 @@ function Module:UpdateButtonConfig(i)
 	end
 	self.buttonConfig.clickOnDown = true
 	self.buttonConfig.showGrid = C["ActionBar"]["Grid"]
-	self.buttonConfig.flyoutDirection = "UP"
+	self.buttonConfig.flyoutDirection = directions[C["ActionBar"]["Bar" .. i .. "Flyout"]]
 
 	local hotkey = self.buttonConfig.text.hotkey
 	hotkey.font.font = K.UIFont
