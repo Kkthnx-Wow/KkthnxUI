@@ -371,6 +371,7 @@ function Module:CreateExpbar()
 	text:SetWordWrap(false)
 	text:SetPoint("LEFT", bar, "RIGHT", -3, 0)
 	text:SetPoint("RIGHT", bar, "LEFT", 3, 0)
+	text:SetAlpha(0.8) -- Fade this a bit?
 	bar.text = text
 
 	Module:SetupExpRepScript(bar)
