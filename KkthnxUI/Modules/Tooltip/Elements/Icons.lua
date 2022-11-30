@@ -1,20 +1,14 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Tooltip")
 
-local _G = _G
-local gsub = _G.gsub
-
-local CreateFrame = _G.CreateFrame
-local GetItemIcon = _G.GetItemIcon
-local GetSpellTexture = _G.GetSpellTexture
-local hooksecurefunc = _G.hooksecurefunc
-
+local gsub = gsub
+local GetItemIcon, GetSpellTexture = GetItemIcon, GetSpellTexture
 local newString = "0:0:64:64:5:59:5:59"
 
 function Module:SetupTooltipIcon(icon)
 	local title = icon and _G[self:GetName() .. "TextLeft1"]
 	local titleText = title and title:GetText()
-	if titleText then
+	if titleText and not strfind(titleText, ":20:20:") then
 		title:SetFormattedText("|T%s:20:20:" .. newString .. ":%d|t %s", icon, 20, titleText)
 	end
 
@@ -23,7 +17,6 @@ function Module:SetupTooltipIcon(icon)
 		if not line then
 			break
 		end
-
 		local text = line:GetText()
 		if text and text ~= " " then
 			local newText, count = gsub(text, "|T([^:]-):[%d+:]+|t", "|T%1:14:14:" .. newString .. "|t")
@@ -38,44 +31,8 @@ function Module:HookTooltipCleared()
 	self.tipModified = false
 end
 
-function Module:HookTooltipSetItem()
-	if not self.tipModified then
-		local _, link = self:GetItem()
-		if link then
-			Module.SetupTooltipIcon(self, GetItemIcon(link))
-		end
-
-		self.tipModified = true
-	end
-end
-
-function Module:HookTooltipSetSpell()
-	if not self.tipModified then
-		local _, id = self:GetSpell()
-		if id then
-			Module.SetupTooltipIcon(self, GetSpellTexture(id))
-		end
-
-		self.tipModified = true
-	end
-end
-
 function Module:HookTooltipMethod()
-	-- self:HookScript("OnTooltipSetItem", Module.HookTooltipSetItem)
-	--self:HookScript("OnTooltipSetSpell", Module.HookTooltipSetSpell)
-	--self:HookScript("OnTooltipCleared", Module.HookTooltipCleared)
-end
-
-local function updateBackdropColor(self, r, g, b)
-	if self:GetParent().bg.KKUI_Border then
-		self:GetParent().bg.KKUI_Border:SetVertexColor(r, g, b)
-	end
-end
-
-local function resetBackdropColor(self)
-	if self:GetParent().bg.KKUI_Border then
-		self:GetParent().bg.KKUI_Border:SetVertexColor(1, 1, 1)
-	end
+	self:HookScript("OnTooltipCleared", Module.HookTooltipCleared)
 end
 
 function Module:ReskinRewardIcon()
@@ -91,32 +48,6 @@ function Module:ReskinRewardIcon()
 
 	local iconBorder = self.IconBorder
 	iconBorder:SetAlpha(0)
-
-	hooksecurefunc(iconBorder, "SetVertexColor", updateBackdropColor)
-	hooksecurefunc(iconBorder, "Hide", resetBackdropColor)
-end
-
-function Module:ReskinTooltipIcons()
-	Module.HookTooltipMethod(GameTooltip)
-	Module.HookTooltipMethod(ItemRefTooltip)
-	Module.HookTooltipMethod(ShoppingTooltip1)
-	Module.HookTooltipMethod(ShoppingTooltip2)
-
-	hooksecurefunc(GameTooltip, "SetUnitAura", function(self)
-		Module.SetupTooltipIcon(self)
-	end)
-
-	hooksecurefunc(GameTooltip, "SetAzeriteEssence", function(self)
-		Module.SetupTooltipIcon(self)
-	end)
-
-	hooksecurefunc(GameTooltip, "SetAzeriteEssenceSlot", function(self)
-		Module.SetupTooltipIcon(self)
-	end)
-
-	-- Tooltip rewards icon
-	Module.ReskinRewardIcon(GameTooltip.ItemTooltip)
-	Module.ReskinRewardIcon(EmbeddedItemTooltip.ItemTooltip)
 end
 
 function Module:CreateTooltipIcons()
@@ -124,5 +55,42 @@ function Module:CreateTooltipIcons()
 		return
 	end
 
-	--self:ReskinTooltipIcons()
+	-- Add Icons
+	Module.HookTooltipMethod(GameTooltip)
+	Module.HookTooltipMethod(ItemRefTooltip)
+
+	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(self)
+		if self == GameTooltip or self == ItemRefTooltip then
+			local data = self:GetTooltipData()
+			local id = data and data.id
+			if id then
+				Module.SetupTooltipIcon(self, GetItemIcon(id))
+			end
+		end
+	end)
+	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, function(self)
+		if self == GameTooltip or self == ItemRefTooltip then
+			local data = self:GetTooltipData()
+			local id = data and data.id
+			if id then
+				Module.SetupTooltipIcon(self, GetSpellTexture(id))
+			end
+		end
+	end)
+
+	-- Cut Icons
+	hooksecurefunc(GameTooltip, "SetUnitAura", function(self)
+		Module.SetupTooltipIcon(self)
+	end)
+
+	hooksecurefunc(GameTooltip, "SetAzeriteEssence", function(self)
+		Module.SetupTooltipIcon(self)
+	end)
+	hooksecurefunc(GameTooltip, "SetAzeriteEssenceSlot", function(self)
+		Module.SetupTooltipIcon(self)
+	end)
+
+	-- Tooltip rewards icon
+	Module.ReskinRewardIcon(GameTooltip.ItemTooltip)
+	Module.ReskinRewardIcon(EmbeddedItemTooltip.ItemTooltip)
 end

@@ -144,29 +144,33 @@ local function UpdateMarkerGrid()
 	K:GetModule("Blizzard"):RaidTool_UpdateGrid()
 end
 
+function UpdateActionbar()
+	K:GetModule("ActionBar"):UpdateBarVisibility()
+end
+
 function UpdateActionbar1()
-	K:GetModule("ActionBar"):UpdateBarVisibility(1)
+	K:GetModule("ActionBar"):UpdateBarVisibility()
 end
 function UpdateActionbar2()
-	K:GetModule("ActionBar"):UpdateBarVisibility(2)
+	K:GetModule("ActionBar"):UpdateBarVisibility()
 end
 function UpdateActionbar3()
-	K:GetModule("ActionBar"):UpdateBarVisibility(3)
+	K:GetModule("ActionBar"):UpdateBarVisibility()
 end
 function UpdateActionbar4()
-	K:GetModule("ActionBar"):UpdateBarVisibility(4)
+	K:GetModule("ActionBar"):UpdateBarVisibility()
 end
 function UpdateActionbar5()
-	K:GetModule("ActionBar"):UpdateBarVisibility(5)
+	K:GetModule("ActionBar"):UpdateBarVisibility()
 end
 function UpdateActionbar6()
-	K:GetModule("ActionBar"):UpdateBarVisibility(6)
+	K:GetModule("ActionBar"):UpdateBarVisibility()
 end
 function UpdateActionbar7()
-	K:GetModule("ActionBar"):UpdateBarVisibility(7)
+	K:GetModule("ActionBar"):UpdateBarVisibility()
 end
 function UpdateActionbar8()
-	K:GetModule("ActionBar"):UpdateBarVisibility(8)
+	K:GetModule("ActionBar"):UpdateBarVisibility()
 end
 
 local function UpdateActionbarHotkeys()
@@ -372,6 +376,10 @@ local function UpdateActionBarPetScale()
 	K:GetModule("ActionBar"):UpdateActionSize("BarPet")
 end
 
+local function UpdateActionBarStance()
+	K:GetModule("ActionBar"):UpdateStanceBar()
+end
+
 local function UpdateActionBarVehicleButton()
 	K:GetModule("ActionBar"):UpdateVehicleButton()
 end
@@ -381,56 +389,56 @@ local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
 
 	Window:CreateSection("ActionBar 1")
-	Window:CreateSwitch("ActionBar", "Bar1", enableTextColor .. L["Enable ActionBar"] .. " 1", nil, UpdateActionbar1)
+	Window:CreateSwitch("ActionBar", "Bar1", enableTextColor .. L["Enable ActionBar"] .. " 1", nil, UpdateActionbar)
 	Window:CreateSlider("ActionBar", "Bar1Size", "Button Size", 20, 80, 1, nil, UpdateActionBar1Scale)
 	Window:CreateSlider("ActionBar", "Bar1PerRow", "Button PerRow", 1, 12, 1, nil, UpdateActionBar1Scale)
 	Window:CreateSlider("ActionBar", "Bar1Num", "Button Num", 1, 12, 1, nil, UpdateActionBar1Scale)
 	Window:CreateSlider("ActionBar", "Bar1Font", "Button FontSize", 8, 20, 1, nil, UpdateActionBar1Scale)
 
 	Window:CreateSection("ActionBar 2")
-	Window:CreateSwitch("ActionBar", "Bar2", enableTextColor .. L["Enable ActionBar"] .. " 2", nil, UpdateActionbar2)
+	Window:CreateSwitch("ActionBar", "Bar2", enableTextColor .. L["Enable ActionBar"] .. " 2", nil, UpdateActionbar)
 	Window:CreateSlider("ActionBar", "Bar2Size", "Button Size", 20, 80, 1, nil, UpdateActionBar2Scale)
 	Window:CreateSlider("ActionBar", "Bar2PerRow", "Button PerRow", 1, 12, 1, nil, UpdateActionBar2Scale)
 	Window:CreateSlider("ActionBar", "Bar2Num", "Button Num", 1, 12, 1, nil, UpdateActionBar2Scale)
 	Window:CreateSlider("ActionBar", "Bar2Font", "Button FontSize", 8, 20, 1, nil, UpdateActionBar2Scale)
 
 	Window:CreateSection("ActionBar 3")
-	Window:CreateSwitch("ActionBar", "Bar3", enableTextColor .. L["Enable ActionBar"] .. " 3", nil, UpdateActionbar3)
+	Window:CreateSwitch("ActionBar", "Bar3", enableTextColor .. L["Enable ActionBar"] .. " 3", nil, UpdateActionbar)
 	Window:CreateSlider("ActionBar", "Bar3Size", "Button Size", 20, 80, 1, nil, UpdateActionBar3Scale)
 	Window:CreateSlider("ActionBar", "Bar3PerRow", "Button PerRow", 1, 12, 1, nil, UpdateActionBar3Scale)
 	Window:CreateSlider("ActionBar", "Bar3Num", "Button Num", 1, 12, 1, nil, UpdateActionBar3Scale)
 	Window:CreateSlider("ActionBar", "Bar3Font", "Button FontSize", 8, 20, 1, nil, UpdateActionBar3Scale)
 
 	Window:CreateSection("ActionBar 4")
-	Window:CreateSwitch("ActionBar", "Bar4", enableTextColor .. L["Enable ActionBar"] .. " 4", nil, UpdateActionbar4)
+	Window:CreateSwitch("ActionBar", "Bar4", enableTextColor .. L["Enable ActionBar"] .. " 4", nil, UpdateActionbar)
 	Window:CreateSlider("ActionBar", "Bar4Size", "Button Size", 20, 80, 1, nil, UpdateActionBar4Scale)
 	Window:CreateSlider("ActionBar", "Bar4PerRow", "Button PerRow", 1, 12, 1, nil, UpdateActionBar4Scale)
 	Window:CreateSlider("ActionBar", "Bar4Num", "Button Num", 1, 12, 1, nil, UpdateActionBar4Scale)
 	Window:CreateSlider("ActionBar", "Bar4Font", "Button FontSize", 8, 20, 1, nil, UpdateActionBar4Scale)
 
 	Window:CreateSection("ActionBar 5")
-	Window:CreateSwitch("ActionBar", "Bar5", enableTextColor .. L["Enable ActionBar"] .. " 5", nil, UpdateActionbar5)
+	Window:CreateSwitch("ActionBar", "Bar5", enableTextColor .. L["Enable ActionBar"] .. " 5", nil, UpdateActionbar)
 	Window:CreateSlider("ActionBar", "Bar5Size", "Button Size", 20, 80, 1, nil, UpdateActionBar5Scale)
 	Window:CreateSlider("ActionBar", "Bar5PerRow", "Button PerRow", 1, 12, 1, nil, UpdateActionBar5Scale)
 	Window:CreateSlider("ActionBar", "Bar5Num", "Button Num", 1, 12, 1, nil, UpdateActionBar5Scale)
 	Window:CreateSlider("ActionBar", "Bar5Font", "Button FontSize", 8, 20, 1, nil, UpdateActionBar5Scale)
 
 	Window:CreateSection("ActionBar 6")
-	Window:CreateSwitch("ActionBar", "Bar6", enableTextColor .. L["Enable ActionBar"] .. " 6", nil, UpdateActionbar6)
+	Window:CreateSwitch("ActionBar", "Bar6", enableTextColor .. L["Enable ActionBar"] .. " 6", nil, UpdateActionbar)
 	Window:CreateSlider("ActionBar", "Bar3Size", "Button Size", 20, 80, 1, nil, UpdateActionBar6Scale)
 	Window:CreateSlider("ActionBar", "Bar6PerRow", "Button PerRow", 1, 12, 1, nil, UpdateActionBar6Scale)
 	Window:CreateSlider("ActionBar", "Bar6Num", "Button Num", 1, 12, 1, nil, UpdateActionBar6Scale)
 	Window:CreateSlider("ActionBar", "Bar6Font", "Button FontSize", 8, 20, 1, nil, UpdateActionBar6Scale)
 
 	Window:CreateSection("ActionBar 7")
-	Window:CreateSwitch("ActionBar", "Bar7", enableTextColor .. L["Enable ActionBar"] .. " 7", nil, UpdateActionbar7)
+	Window:CreateSwitch("ActionBar", "Bar7", enableTextColor .. L["Enable ActionBar"] .. " 7", nil, UpdateActionbar)
 	Window:CreateSlider("ActionBar", "Bar7Size", "Button Size", 20, 80, 1, nil, UpdateActionBar7Scale)
 	Window:CreateSlider("ActionBar", "Bar7PerRow", "Button PerRow", 1, 12, 1, nil, UpdateActionBar7Scale)
 	Window:CreateSlider("ActionBar", "Bar7Num", "Button Num", 1, 12, 1, nil, UpdateActionBar7Scale)
 	Window:CreateSlider("ActionBar", "Bar7Font", "Button FontSize", 8, 20, 1, nil, UpdateActionBar7Scale)
 
 	Window:CreateSection("ActionBar 8")
-	Window:CreateSwitch("ActionBar", "Bar8", enableTextColor .. L["Enable ActionBar"] .. " 8", nil, UpdateActionbar8)
+	Window:CreateSwitch("ActionBar", "Bar8", enableTextColor .. L["Enable ActionBar"] .. " 8", nil, UpdateActionbar)
 	Window:CreateSlider("ActionBar", "Bar8Size", "Button Size", 20, 80, 1, nil, UpdateActionBar8Scale)
 	Window:CreateSlider("ActionBar", "Bar8PerRow", "Button PerRow", 1, 12, 1, nil, UpdateActionBar8Scale)
 	Window:CreateSlider("ActionBar", "Bar8Num", "Button Num", 1, 12, 1, nil, UpdateActionBar8Scale)
@@ -443,9 +451,9 @@ local ActionBar = function(self)
 
 	Window:CreateSection("ActionBar Stance")
 	Window:CreateSwitch("ActionBar", "ShowStance", enableTextColor .. "Enable StanceBar")
-	Window:CreateSlider("ActionBar", "BarStanceSize", "Button Size", 20, 80, 1, nil, UpdateActionBar8Scale)
-	Window:CreateSlider("ActionBar", "BarStancePerRow", "Button PerRow", 1, 12, 1, nil, UpdateActionBar8Scale)
-	Window:CreateSlider("ActionBar", "BarStanceFont", "Button FontSize", 8, 20, 1, nil, UpdateActionBar8Scale)
+	Window:CreateSlider("ActionBar", "BarStanceSize", "Button Size", 20, 80, 1, nil, UpdateActionBarStance)
+	Window:CreateSlider("ActionBar", "BarStancePerRow", "Button PerRow", 1, 12, 1, nil, UpdateActionBarStance)
+	Window:CreateSlider("ActionBar", "BarStanceFont", "Button FontSize", 8, 20, 1, nil, UpdateActionBarStance)
 
 	Window:CreateSection("ActionBar Vehicle")
 	Window:CreateSlider("ActionBar", "VehButtonSize", "Button Size", 20, 80, 1, nil, UpdateActionBarVehicleButton)

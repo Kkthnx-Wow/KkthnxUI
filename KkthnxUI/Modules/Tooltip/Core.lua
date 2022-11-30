@@ -29,12 +29,10 @@ local classification = {
 local npcIDstring = "%s " .. K.InfoColor .. "%s"
 
 function Module:GetUnit()
-	local _, unit = self:GetUnit()
-	if not unit then
-		local mFocus = GetMouseFocus()
-		unit = mFocus and (mFocus.unit or (mFocus.GetAttribute and mFocus:GetAttribute("unit")))
-	end
-	return unit
+	local data = self:GetTooltipData()
+	local guid = data and data.guid
+	local unit = guid and UnitTokenFromGUID(guid)
+	return unit, guid
 end
 
 local FACTION_COLORS = {
@@ -150,7 +148,7 @@ function Module:OnTooltipSetUnit()
 		return
 	end
 
-	local unit = Module.GetUnit(self)
+	local unit, guid = Module.GetUnit(self)
 	if not unit or not UnitExists(unit) then
 		return
 	end
@@ -267,8 +265,7 @@ function Module:OnTooltipSetUnit()
 	end
 
 	if not isPlayer and isShiftKeyDown then
-		local guid = UnitGUID(unit)
-		local npcID = guid and K.GetNPCID(guid)
+		local npcID = K.GetNPCID(guid)
 		if npcID then
 			local reaction = UnitReaction(unit, "player")
 			local standingText = reaction and hexColor .. _G["FACTION_STANDING_LABEL" .. reaction]
@@ -428,24 +425,24 @@ function Module:ReskinTooltip()
 	else
 		self.bg.KKUI_Border:SetVertexColor(1, 1, 1)
 	end
+end
 
-	if C["Tooltip"].ClassColor and self.GetItem then
-		local data = self:GetTooltipData()
-		if not data then
-			return
-		end
+function Module:UpdateTooltipBorder()
+	if not self.bg then
+		return
+	end
+	if not C["Tooltip"].ClassColor then
+		return
+	end
 
-		local argVal = data.args and data.args[3]
-		if argVal then
-			local guid = argVal.guidVal
-			local link = guid and C_Item.GetItemLinkByGUID(guid)
-			if link then
-				local quality = select(3, GetItemInfo(link))
-				local color = K.QualityColors[quality or 1]
-				if color then
-					self.bg.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
-				end
-			end
+	local data = self:GetTooltipData()
+	local guid = data and data.guid
+	local link = guid and C_Item.GetItemLinkByGUID(guid)
+	if link then
+		local quality = select(3, GetItemInfo(link))
+		local color = K.QualityColors[quality or 1]
+		if color then
+			self.bg.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 		end
 	end
 end
@@ -521,6 +518,7 @@ function Module:OnEnable()
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, Module.OnTooltipSetUnit)
 	hooksecurefunc(GameTooltip.StatusBar, "SetValue", Module.RefreshStatusBar)
 	TooltipDataProcessor.AddLinePreCall(Enum.TooltipDataLineType.None, Module.UpdateFactionLine)
+	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, Module.UpdateTooltipBorder)
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, Module.FixRecipeItemNameWidth)
 
 	hooksecurefunc("GameTooltip_ShowStatusBar", Module.GameTooltip_ShowStatusBar)

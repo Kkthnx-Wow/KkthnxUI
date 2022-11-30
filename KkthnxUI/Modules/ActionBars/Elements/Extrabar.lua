@@ -3,7 +3,7 @@ local Module = K:GetModule("ActionBar")
 
 local _G = _G
 local tinsert = tinsert
-local padding = 6
+local padding = 0
 
 function Module:CreateExtrabar()
 	local buttonList = {}

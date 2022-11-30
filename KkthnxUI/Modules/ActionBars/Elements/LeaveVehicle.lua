@@ -4,7 +4,7 @@ local Module = K:GetModule("ActionBar")
 local _G = _G
 local tinsert = tinsert
 local UnitOnTaxi, TaxiRequestEarlyLanding, VehicleExit = UnitOnTaxi, TaxiRequestEarlyLanding, VehicleExit
-local padding = 6
+local padding = 0
 
 function Module:UpdateVehicleButton()
 	local frame = _G["KKUI_ActionBarExit"]

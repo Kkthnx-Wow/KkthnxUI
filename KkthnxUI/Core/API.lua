@@ -261,93 +261,6 @@ local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
 	end
 end
 
--- local function SetModifiedBackdrop(self)
--- 	if not self:IsEnabled() then
--- 		return
--- 	end
-
--- 	self.KKUI_Border:SetVertexColor(102 / 255, 157 / 255, 255 / 255)
--- end
-
--- local function SetOriginalBackdrop(self)
--- 	if C["General"].ColorTextures then
--- 		self.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
--- 	else
--- 		self.KKUI_Border:SetVertexColor(1, 1, 1)
--- 	end
--- end
-
--- local blizzButtonRegions = {
--- 	"Left",
--- 	"Middle",
--- 	"Right",
--- 	"Mid",
--- 	"LeftDisabled",
--- 	"MiddleDisabled",
--- 	"RightDisabled",
--- 	"TopLeft",
--- 	"TopRight",
--- 	"BottomLeft",
--- 	"BottomRight",
--- 	"TopMiddle",
--- 	"MiddleLeft",
--- 	"MiddleRight",
--- 	"BottomMiddle",
--- 	"MiddleMiddle",
--- 	"TabSpacer",
--- 	"TabSpacer1",
--- 	"TabSpacer2",
--- 	"_RightSeparator",
--- 	"_LeftSeparator",
--- 	"Cover",
--- 	"Border",
--- 	"Background",
--- 	"TopTex",
--- 	"TopLeftTex",
--- 	"TopRightTex",
--- 	"LeftTex",
--- 	"BottomTex",
--- 	"BottomLeftTex",
--- 	"BottomRightTex",
--- 	"RightTex",
--- 	"MiddleTex",
--- }
-
--- local function SkinButton(f, forceStrip)
--- 	if f.SetNormalTexture then
--- 		f:SetNormalTexture("")
--- 	end
-
--- 	if f.SetHighlightTexture then
--- 		f:SetHighlightTexture("")
--- 	end
-
--- 	if f.SetPushedTexture then
--- 		f:SetPushedTexture("")
--- 	end
-
--- 	if f.SetDisabledTexture then
--- 		f:SetDisabledTexture("")
--- 	end
-
--- 	local buttonName = f.GetName and f:GetName()
--- 	for _, region in pairs(blizzButtonRegions) do
--- 		region = buttonName and _G[buttonName .. region] or f[region]
--- 		if region then
--- 			region:SetAlpha(0)
--- 		end
--- 	end
-
--- 	if forceStrip then
--- 		f:StripTextures()
--- 	end
-
--- 	f:CreateBorder()
-
--- 	f:HookScript("OnEnter", SetModifiedBackdrop)
--- 	f:HookScript("OnLeave", SetOriginalBackdrop)
--- end
-
 -- Handle button
 local function Button_OnEnter(self)
 	if not self:IsEnabled() then
@@ -437,7 +350,7 @@ end
 -- Handle close button
 local function CloseTexture_OnEnter(self)
 	if self:IsEnabled() then
-		self.__texture:SetVertexColor(1, 0, 0)
+		self.__texture:SetTexture(CustomCloseButton)
 	end
 end
 

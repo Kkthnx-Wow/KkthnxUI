@@ -244,6 +244,19 @@ local function GetFrame()
 	return f
 end
 
+function Module:CANCEL_LOOT_ROLL(_, rollID)
+	cancelled_rolls[rollID] = true
+
+	for _, bar in next, Module.RollBars do
+		if bar.rollID == rollID then
+			bar.rollID = nil
+			bar.time = nil
+			bar:Hide()
+			bar.button:UnregisterAllEvents()
+		end
+	end
+end
+
 function Module.START_LOOT_ROLL(_, rollID, time)
 	if cancelled_rolls[rollID] then
 		return
@@ -381,6 +394,7 @@ function Module:CreateGroupLoot()
 
 	K:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.LOOT_HISTORY_ROLL_CHANGED)
 	K:RegisterEvent("LOOT_HISTORY_ROLL_COMPLETE", self.LOOT_HISTORY_ROLL_COMPLETE)
+	K:RegisterEvent("CANCEL_LOOT_ROLL", self.CANCEL_LOOT_ROLL)
 	K:RegisterEvent("START_LOOT_ROLL", self.START_LOOT_ROLL)
 	K:RegisterEvent("LOOT_ROLLS_COMPLETE", self.LOOT_ROLLS_COMPLETE)
 

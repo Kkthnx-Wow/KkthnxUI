@@ -3,10 +3,9 @@ local Module = K:GetModule("ActionBar")
 
 local _G = _G
 local tinsert, mod, min, ceil = tinsert, mod, min, ceil
-local margin, padding = 6, 6
+local margin, padding = 6, 0
 
 local num = NUM_STANCE_SLOTS or 10
-local NUM_POSSESS_SLOTS = NUM_POSSESS_SLOTS or 2
 
 function Module:UpdateStanceBar()
 	local frame = _G["KKUI_ActionBarStance"]
@@ -18,18 +17,16 @@ function Module:UpdateStanceBar()
 	local fontSize = C["ActionBar"]["BarStanceFont"]
 	local perRow = C["ActionBar"]["BarStancePerRow"]
 
-	for i = 1, 12 do
+	for i = 1, num do
 		local button = frame.buttons[i]
 		button:SetSize(size, size)
-		if i < 11 then
-			button:ClearAllPoints()
-			if i == 1 then
-				button:SetPoint("TOPLEFT", frame, padding, -padding)
-			elseif mod(i - 1, perRow) == 0 then
-				button:SetPoint("TOP", frame.buttons[i - perRow], "BOTTOM", 0, -margin)
-			else
-				button:SetPoint("LEFT", frame.buttons[i - 1], "RIGHT", margin, 0)
-			end
+		button:ClearAllPoints()
+		if i == 1 then
+			button:SetPoint("TOPLEFT", frame, padding, padding)
+		elseif mod(i - 1, perRow) == 0 then
+			button:SetPoint("TOP", frame.buttons[i - perRow], "BOTTOM", 0, -margin)
+		else
+			button:SetPoint("LEFT", frame.buttons[i - 1], "RIGHT", margin, 0)
 		end
 		Module:UpdateFontSize(button, fontSize)
 	end
@@ -99,7 +96,7 @@ function Module:CreateStancebar()
 
 	local buttonList = {}
 	local frame = CreateFrame("Frame", "KKUI_ActionBarStance", UIParent, "SecureHandlerStateTemplate")
-	frame.mover = K.Mover(frame, L["StanceBar"], "StanceBar", { "BOTTOMLEFT", _G.KKUI_ActionBar3, "TOPLEFT", 0, margin })
+	frame.mover = K.Mover(frame, "StanceBar", "StanceBar", { "BOTTOMLEFT", _G.KKUI_ActionBar3, "TOPLEFT", 0, margin })
 	Module.movers[11] = frame.mover
 
 	-- StanceBar
@@ -113,24 +110,12 @@ function Module:CreateStancebar()
 		tinsert(buttonList, button)
 		tinsert(Module.buttons, button)
 	end
+	frame.buttons = buttonList
 
 	-- Fix stance bar updating
 	K:RegisterEvent("UPDATE_SHAPESHIFT_FORMS", Module.StanceBarOnEvent)
 	K:RegisterEvent("UPDATE_SHAPESHIFT_USABLE", Module.StanceBarOnEvent)
 	K:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN", Module.StanceBarOnEvent)
-
-	-- PossessBar
-	PossessActionBar:SetParent(frame)
-	PossessActionBar:EnableMouse(false)
-
-	for i = 1, NUM_POSSESS_SLOTS do
-		local button = _G["PossessButton" .. i]
-		tinsert(buttonList, button)
-		button:ClearAllPoints()
-		button:SetPoint("CENTER", buttonList[i])
-	end
-
-	frame.buttons = buttonList
 
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)

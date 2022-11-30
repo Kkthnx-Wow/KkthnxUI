@@ -128,12 +128,18 @@ end
 
 function Module:BagButton_UpdateTextures()
 	local pushed = self:GetPushedTexture()
-	pushed:SetAllPoints()
-	pushed:SetColorTexture(0.9, 0.8, 0.1, 0.3)
+	pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+	pushed:SetDesaturated(true)
+	pushed:SetVertexColor(246 / 255, 196 / 255, 66 / 255)
+	pushed:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -0)
+	pushed:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -0, 0)
+	pushed:SetBlendMode("ADD")
 
 	if self.SlotHighlightTexture then
-		self.SlotHighlightTexture:SetColorTexture(1, 1, 1, 0.3)
-		self.SlotHighlightTexture:SetAllPoints()
+		self.SlotHighlightTexture:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+		self.SlotHighlightTexture:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -0)
+		self.SlotHighlightTexture:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -0, 0)
+		self.SlotHighlightTexture:SetBlendMode("ADD")
 	end
 end
 

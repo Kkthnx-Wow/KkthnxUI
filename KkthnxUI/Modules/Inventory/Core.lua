@@ -1238,11 +1238,13 @@ function Module:OnEnable()
 		end
 
 		-- Determine if we can use that item or not?
-		if (Unfit:IsItemUnusable(item.link) or item.minLevel and item.minLevel > K.Level) and not item.locked then
-			self.Icon:SetVertexColor(1, 0.1, 0.1)
-		else
-			self.Icon:SetVertexColor(1, 1, 1)
-		end
+		-- if (Unfit:IsItemUnusable(item.link) or item.minLevel and item.minLevel > K.Level) and not item.locked then
+		-- 	self.Icon:SetVertexColor(1, 0.1, 0.1)
+		-- else
+		-- 	self.Icon:SetVertexColor(1, 1, 1)
+		-- end
+
+		-- SetItemButtonDesaturated(item.slot, item.locked)
 
 		self.IconOverlay:SetVertexColor(1, 1, 1)
 		self.IconOverlay:Hide()

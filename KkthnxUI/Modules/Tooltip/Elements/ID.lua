@@ -4,7 +4,6 @@ local Module = K:GetModule("Tooltip")
 local strmatch, format, tonumber, select = string.match, string.format, tonumber, select
 local UnitAura, GetItemCount, GetItemInfo, GetUnitName = UnitAura, GetItemCount, GetItemInfo, GetUnitName
 local IsPlayerSpell = IsPlayerSpell
-local C_TradeSkillUI_GetRecipeReagentItemLink = C_TradeSkillUI.GetRecipeFixedReagentItemLink
 local C_CurrencyInfo_GetCurrencyListLink = C_CurrencyInfo.GetCurrencyListLink
 local C_MountJournal_GetMountFromSpell = C_MountJournal.GetMountFromSpell
 local BAGSLOT, BANK = BAGSLOT, BANK
@@ -150,7 +149,7 @@ function Module:CreateTooltipID()
 		end
 	end)
 
-	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Macro, function(self, data)
+	local function UpdateActionTooltip(self, data)
 		if self:IsForbidden() then
 			return
 		end
@@ -166,7 +165,9 @@ function Module:CreateTooltipID()
 		elseif tooltipType == 1 then --spell
 			Module.AddLineForID(self, lineData.tooltipID, types.spell)
 		end
-	end)
+	end
+	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Macro, UpdateActionTooltip)
+	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.PetAction, UpdateActionTooltip)
 
 	-- Items
 	local function addItemID(self, data)
