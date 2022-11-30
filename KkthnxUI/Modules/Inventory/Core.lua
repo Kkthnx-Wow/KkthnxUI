@@ -295,8 +295,8 @@ function Module:CreateCloseButton(f)
 	local closeButton = CreateFrame("Button", nil, self)
 	closeButton:RegisterForClicks("AnyUp")
 	closeButton:SetSize(18, 18)
-	closeButton:CreateBorder()
-	closeButton:StyleButton()
+	closeButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 1, 0, 0)
+	-- closeButton:StyleButton()
 	closeButton.__owner = f
 
 	closeButton.Icon = closeButton:CreateTexture(nil, "ARTWORK")
