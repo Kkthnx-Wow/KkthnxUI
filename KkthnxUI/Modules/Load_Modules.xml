@@ -48,6 +48,7 @@
 	<Script file="ActionBars\Elements\LeaveVehicle.lua"/>
 	<Script file="ActionBars\Elements\HideBlizzardArt.lua"/>
 	<Script file="ActionBars\Elements\MicroMenu.lua"/>
+   <Script file="ActionBars\Elements\ExtraQuestButton.lua"/>
 	<Script file="ActionBars\Keybind.lua"/>
 	<Script file="ActionBars\ButtonStyle.lua"/>
 	<Script file="ActionBars\Cooldown.lua"/>

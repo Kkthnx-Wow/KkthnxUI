@@ -372,6 +372,10 @@ local function UpdateActionBarPetScale()
 	K:GetModule("ActionBar"):UpdateActionSize("BarPet")
 end
 
+local function UpdateActionBarVehicleButton()
+	K:GetModule("ActionBar"):UpdateVehicleButton()
+end
+
 -- Sliders > minvalue, maxvalue, stepvalue
 local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
@@ -442,6 +446,9 @@ local ActionBar = function(self)
 	Window:CreateSlider("ActionBar", "BarStanceSize", "Button Size", 20, 80, 1, nil, UpdateActionBar8Scale)
 	Window:CreateSlider("ActionBar", "BarStancePerRow", "Button PerRow", 1, 12, 1, nil, UpdateActionBar8Scale)
 	Window:CreateSlider("ActionBar", "BarStanceFont", "Button FontSize", 8, 20, 1, nil, UpdateActionBar8Scale)
+
+	Window:CreateSection("ActionBar Vehicle")
+	Window:CreateSlider("ActionBar", "VehButtonSize", "Button Size", 20, 80, 1, nil, UpdateActionBarVehicleButton)
 
 	Window:CreateSection("Toggles")
 	Window:CreateSwitch("ActionBar", "EquipColor", "Equip Color", nil, UpdateActionbarHotkeys)
