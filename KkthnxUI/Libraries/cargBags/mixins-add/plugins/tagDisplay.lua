@@ -117,6 +117,8 @@ local function GetNumFreeSlots(name)
 		return numFreeSlots
 	elseif name == "Reagent" then
 		return GetContainerNumFreeSlots(-3)
+	elseif name == "BagReagent" then
+		return GetContainerNumFreeSlots(5)
 	end
 end
 

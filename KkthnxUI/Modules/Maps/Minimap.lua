@@ -327,9 +327,9 @@ function Module:ReskinRegions()
 	local function updateMinimapButtons(self)
 		self:ClearAllPoints()
 		self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
-		self:SetNormalTexture(UpdateCovenantTexture(self))
-		self:SetPushedTexture(UpdateCovenantTexture(self))
-		self:SetHighlightTexture(UpdateCovenantTexture(self))
+		-- self:SetNormalTexture(UpdateCovenantTexture(self))
+		-- self:SetPushedTexture(UpdateCovenantTexture(self))
+		-- self:SetHighlightTexture(UpdateCovenantTexture(self))
 
 		self:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		self:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -348,7 +348,7 @@ function Module:ReskinRegions()
 	end
 
 	if ExpansionLandingPageMinimapButton then
-		ExpansionLandingPageMinimapButton:SetScript("OnEnter", K.LandingButton_OnEnter)
+		-- 	ExpansionLandingPageMinimapButton:SetScript("OnEnter", K.LandingButton_OnEnter)
 
 		updateMinimapButtons(ExpansionLandingPageMinimapButton)
 		ExpansionLandingPageMinimapButton:HookScript("OnShow", updateMinimapButtons)

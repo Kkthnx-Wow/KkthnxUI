@@ -513,7 +513,7 @@ function Module:GetEmptySlot(name)
 			return -3, slotID
 		end
 	elseif name == "BagReagent" then
-		local slotID = Module:GetContainerEmptySlot(5)
+		local slotID = module:GetContainerEmptySlot(5)
 		if slotID then
 			return 5, slotID
 		end
