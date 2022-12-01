@@ -333,7 +333,7 @@ function Module.START_LOOT_ROLL(_, rollID, time)
 	f.status:SetMinMaxValues(0, time)
 	f.status:SetValue(time)
 
-	f:SetPoint("CENTER", WorldFrame, "CENTER")
+	-- f:SetPoint("CENTER", WorldFrame, "CENTER")
 	f:Show()
 
 	AlertFrame:UpdateAnchors()

@@ -88,7 +88,7 @@ local function ReskinWidgetStatusBar(bar)
 
 		if bar.GetStatusBarAtlas then
 			ReplaceWidgetBarTexture(bar, bar:GetStatusBarAtlas())
-			hooksecurefunc(bar, "SetStatusBarAtlas", ReplaceWidgetBarTexture)
+			hooksecurefunc(bar, "SetStatusBarTexture", ReplaceWidgetBarTexture)
 		end
 
 		bar.styled = true

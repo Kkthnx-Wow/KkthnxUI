@@ -65,8 +65,8 @@ function Module:StyleActionButton(button)
 	local icon = button.icon
 	local cooldown = button.cooldown
 	local hotkey = button.HotKey
-	local count = button.Count
-	local name = button.Name
+	-- local count = button.Count
+	-- local name = button.Name
 	local flash = button.Flash
 	local border = button.Border
 	local normal = button.NormalTexture
@@ -75,7 +75,7 @@ function Module:StyleActionButton(button)
 	local pushed = button.PushedTexture
 	local checked = button.CheckedTexture
 	local highlight = button.HighlightTexture
-	local NewActionTexture = button.NewActionTexture
+	local newActionTexture = button.NewActionTexture
 	local spellHighlight = button.SpellHighlightTexture
 	local iconMask = button.IconMask
 	local petShine = _G[buttonName .. "Shine"]
@@ -90,11 +90,14 @@ function Module:StyleActionButton(button)
 	if flash then
 		flash:SetTexture(nil)
 	end
-	if NewActionTexture then
-		NewActionTexture:SetTexture(nil)
+	if newActionTexture then
+		newActionTexture:SetTexture(nil)
 	end
 	if border then
 		border:SetTexture(nil)
+	end
+	if slotbg then
+		slotbg:Hide()
 	end
 	if iconMask then
 		iconMask:Hide()

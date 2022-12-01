@@ -256,12 +256,20 @@ function Module:CreateCastBar(self)
 	elseif mystyle == "party" then
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" or C["Unitframe"].PortraitStyle.Value == "OverlayPortrait" then
 			Castbar:SetPoint("TOPLEFT", self, C["Party"].CastbarIcon and 22 or 0, 22)
-			Castbar:SetSize(self:GetWidth() - 22, 16)
+			Castbar:SetSize(C["Party"].HealthWidth + self.Portrait:GetWidth() + 6, 18)
 		else
 			Castbar:SetPoint("TOPLEFT", self.Portrait, C["Party"].CastbarIcon and 22 or 0, 22)
-			Castbar:SetSize(self:GetWidth() + 20, 16)
+			Castbar:SetSize(C["Party"].HealthWidth + self.Portrait:GetWidth() + 6, 18)
 		end
-
+		Castbar.Spark:SetSize(128, Castbar:GetHeight())
+	elseif mystyle == "boss" then
+		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" or C["Unitframe"].PortraitStyle.Value == "OverlayPortrait" then
+			Castbar:SetPoint("TOPLEFT", self, 0, 24)
+			Castbar:SetSize(C["Boss"].HealthWidth + self.Portrait:GetWidth() + 6, 18)
+		else
+			Castbar:SetPoint("TOPRIGHT", self.Portrait, 0, 24)
+			Castbar:SetSize(C["Boss"].HealthWidth + self.Portrait:GetWidth() + 6, 18)
+		end
 		Castbar.Spark:SetSize(128, Castbar:GetHeight())
 	elseif mystyle == "nameplate" then
 		Castbar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -3)
@@ -283,7 +291,7 @@ function Module:CreateCastBar(self)
 	name:SetPoint("RIGHT", timer, "LEFT", -5, 0)
 	name:SetJustifyH("LEFT")
 
-	if mystyle ~= "boss" and mystyle ~= "arena" then
+	if mystyle ~= "arena" then
 		Castbar.Icon = Castbar:CreateTexture(nil, "ARTWORK")
 		Castbar.Icon:SetSize(Castbar:GetHeight(), Castbar:GetHeight())
 		Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -6, 0)

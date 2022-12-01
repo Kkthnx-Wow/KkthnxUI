@@ -49,7 +49,6 @@ local menuList = {
 		text = STATUS,
 		notCheckable = true,
 		func = function()
-			--SlashCmdList["KKUI_STATUSREPORT"]()
 			K:ShowStatusReport()
 		end,
 	},

@@ -165,63 +165,7 @@ function Module:CreateBoss()
 	self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 
 	if C["Boss"].Castbars then
-		self.Castbar = CreateFrame("StatusBar", "BossCastbar", self)
-		self.Castbar:SetStatusBarTexture(UnitframeTexture)
-		self.Castbar:SetClampedToScreen(true)
-		self.Castbar:CreateBorder()
-
-		self.Castbar:ClearAllPoints()
-		if bossPortraitStyle == "NoPortraits" or bossPortraitStyle == "OverlayPortrait" then
-			self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", C["Boss"].CastbarIcon and 24, 6)
-			self.Castbar:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 6)
-		else
-			self.Castbar:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPRIGHT", 0, 6)
-			self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", C["Boss"].CastbarIcon and 24, 6)
-		end
-		self.Castbar:SetHeight(18)
-
-		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-		self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
-		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
-		self.Castbar.Spark:SetBlendMode("ADD")
-
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY")
-		self.Castbar.Time:SetFontObject(K.UIFont)
-		self.Castbar.Time:SetFont(select(1, self.Castbar.Time:GetFont()), 11, select(3, self.Castbar.Time:GetFont()))
-		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
-		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
-		self.Castbar.Time:SetJustifyH("RIGHT")
-
-		self.Castbar.decimal = "%.2f"
-
-		self.Castbar.OnUpdate = Module.OnCastbarUpdate
-		self.Castbar.PostCastStart = Module.PostCastStart
-		self.Castbar.PostCastStop = Module.PostCastStop
-		self.Castbar.PostCastFail = Module.PostCastFailed
-		self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-		-- self.Castbar.UpdatePips = K.Noop -- use my own code
-
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
-		self.Castbar.Text:SetFontObject(K.UIFont)
-		self.Castbar.Text:SetFont(select(1, self.Castbar.Text:GetFont()), 11, select(3, self.Castbar.Text:GetFont()))
-		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
-		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)
-		self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
-		self.Castbar.Text:SetJustifyH("LEFT")
-		self.Castbar.Text:SetWordWrap(false)
-
-		if C["Boss"].CastbarIcon then
-			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
-			self.Castbar.Button:SetSize(16, 16)
-			self.Castbar.Button:CreateBorder()
-
-			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
-			self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
-			self.Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			self.Castbar.Icon:SetPoint("RIGHT", self.Castbar, "LEFT", -6, 0)
-
-			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
-		end
+		Module:CreateCastBar(self)
 	end
 
 	if C["Boss"].TargetHighlight then

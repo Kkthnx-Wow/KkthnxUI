@@ -542,5 +542,5 @@ function Module:DisableBlizzardMover()
 		mixin.RefreshVehicleLeaveButton = K.Noop
 	end
 
-	ObjectiveTrackerFrame.IsInDefaultPosition = K.Noop
+	-- ObjectiveTrackerFrame.IsInDefaultPosition = K.Noop  We already do this.
 end
