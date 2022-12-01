@@ -158,7 +158,7 @@ local function reskinProgressbarWithIcon(_, _, line)
 		bar:SetPoint("LEFT", 22, 0)
 		reskinBarTemplate(bar)
 
-		icon:SetMask(nil)
+		icon:SetMask("")
 
 		icon.bg = CreateFrame("Frame", nil, bar)
 		icon.bg:SetAllPoints(icon)

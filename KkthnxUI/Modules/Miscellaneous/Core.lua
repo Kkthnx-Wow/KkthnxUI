@@ -66,6 +66,7 @@ function Module:OnEnable()
 	self:CreateVehicleSeatMover()
 	self:DisableHelpTips()
 	self:MoveMawBuffsFrame()
+	self:MoveQuestTracker()
 	self:UpdateMaxCameraZoom()
 
 	hooksecurefunc("QuestInfo_Display", Module.CreateQuestXPPercent)
@@ -560,6 +561,30 @@ do
 	end
 
 	K:RegisterEvent("ADDON_LOADED", setupMisc)
+end
+
+-- Reanchor ObjectiveTracker
+function Module:MoveQuestTracker()
+	local frame = CreateFrame("Frame", "KKUI_ObjectiveTrackerMover", UIParent)
+	frame:SetSize(240, 50)
+	K.Mover(frame, "ObjectiveTracker", "QuestTracker", { "TOPRIGHT", UIParent, "TOPRIGHT", -120, -300 })
+
+	local tracker = ObjectiveTrackerFrame
+	tracker:ClearAllPoints()
+	tracker:SetPoint("TOPRIGHT", frame)
+	tracker:SetHeight(K.ScreenHeight * 0.65)
+	tracker:SetClampedToScreen(false)
+	tracker:SetMovable(true)
+	if tracker:IsMovable() then
+		tracker:SetUserPlaced(true)
+	end
+
+	hooksecurefunc(tracker, "SetPoint", function(self, _, parent)
+		if parent ~= frame then
+			self:ClearAllPoints()
+			self:SetPoint("TOPRIGHT", frame)
+		end
+	end)
 end
 
 -- Select target when click on raid units
