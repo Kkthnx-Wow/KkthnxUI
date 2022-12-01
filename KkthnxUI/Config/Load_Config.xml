@@ -4,7 +4,6 @@
    <Script file="GUI.lua" />
    <Script file="AuraWatchGUI.lua" />
 
-   <Script file="Elements\ActionBarFade.lua" />
    <Script file="Elements\AuraWatchSpells.lua" />
    <Script file="Elements\AutoOpen.lua" />
    <Script file="Elements\AutoQuest.lua" />

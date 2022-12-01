@@ -612,7 +612,7 @@ function Module:UpdateAuraWatchByFilter(unit, filter, inCombat)
 		if not name then
 			break
 		end
-		Module:AuraWatch_UpdateAura(unit, index, filter, name, icon, count, duration, expires, caster, spellID, number, inCombat)
+		Module:AuraWatch_UpdateAura(unit, index, filter, name, icon, count, duration, expires, caster, spellID, tonumber(number), inCombat)
 
 		index = index + 1
 	end
@@ -705,7 +705,7 @@ function Module:AuraWatch_SetupInt(intID, itemID, duration, unitID, guid, source
 	end
 
 	if frame.Count then
-		frame.Count:SetText(nil)
+		frame.Count:SetText("")
 	end
 
 	if frame.Cooldown then
@@ -827,11 +827,11 @@ function Module:AuraWatch_Cleanup() -- FIXME: there should be a better way to do
 			end
 
 			if frame.Count then
-				frame.Count:SetText(nil)
+				frame.Count:SetText("")
 			end
 
 			if frame.Spellname then
-				frame.Spellname:SetText(nil)
+				frame.Spellname:SetText("")
 			end
 		end
 		value.Index = 1

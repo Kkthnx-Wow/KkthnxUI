@@ -539,8 +539,10 @@ function Module:AddQuestIcon(self)
 
 	self.questCount = K.CreateFontString(self, 13, "", "", nil, "LEFT", 0, 0)
 	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -2, 0)
-	-- Fired whenever the quest log changes. (Frequently, but not as frequently as QUEST_LOG_UPDATE)
-	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED", Module.UpdateQuestUnit, true)
+
+	self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
+	self:RegisterEvent("UNIT_NAME_UPDATE", Module.UpdateQuestUnit, true)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", Module.UpdateQuestUnit, true)
 end
 
 function Module:AddClassIcon(self)
@@ -1240,7 +1242,7 @@ function Module:CreatePlayerPlate()
 	end
 
 	if C["Nameplate"].ClassAuras then
-		K:GetModule("Auras"):CreateLumos(self)
+		-- K:GetModule("Auras"):CreateLumos(self) -- Needs updated
 	end
 
 	local textFrame = CreateFrame("Frame", nil, self.Power)

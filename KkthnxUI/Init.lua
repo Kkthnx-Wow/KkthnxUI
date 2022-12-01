@@ -67,7 +67,7 @@ LE_ITEM_QUALITY_UNCOMMON = Enum.ItemQuality.Uncommon
 
 do
 	K.Base64 = LibStub("LibBase64-1.0-KkthnxUI")
-	K.LibActionButton = LibStub("LibActionButton-1.0")
+	K.LibActionButton = LibStub("LibActionButton-1.0-KkthnxUI")
 	K.ChangeLog = LibStub("LibChangelog-KkthnxUI")
 	K.Deflate = LibStub("LibDeflate-KkthnxUI")
 	K.HideButtonGlow = LibStub("LibButtonGlow-1.0-KkthnxUI", true).HideOverlayGlow

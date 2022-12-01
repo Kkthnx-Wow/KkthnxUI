@@ -58,7 +58,7 @@
    <Script file="Auras\Elements\AuraWatch.lua" />
    <Script file="Auras\Elements\Reminder.lua" />
    <Script file="Auras\Elements\Totems.lua" />
-   <Include file="Auras\Lumos\Lumos.xml" />
+   <!-- <Include file="Auras\Lumos\Lumos.xml" /> -->
    <!-- Maps -->
    <Script file="Maps\MiniMap.lua" />
    <Script file="Maps\WorldMap.lua" />

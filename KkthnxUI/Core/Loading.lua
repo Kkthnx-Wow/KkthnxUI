@@ -109,6 +109,10 @@ local function KKUI_VerifyDatabase()
 		KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest = false
 	end
 
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC then
+		KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC = {}
+	end
+
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].BindType then
 		KkthnxUIDB.Variables[K.Realm][K.Name].BindType = 1
 	end

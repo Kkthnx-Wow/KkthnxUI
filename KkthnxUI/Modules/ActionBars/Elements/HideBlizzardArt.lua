@@ -2,7 +2,7 @@ local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
 local _G = _G
-local next, tonumber = next, tonumber
+local next = next
 
 local scripts = {
 	"OnShow",

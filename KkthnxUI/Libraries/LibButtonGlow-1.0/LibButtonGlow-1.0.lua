@@ -1,11 +1,8 @@
 --[[
 Copyright (c) 2015-2020, Hendrik "nevcairiel" Leppkes <h.leppkes@gmail.com>
-
 All rights reserved.
-
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-
     * Redistributions of source code must retain the above copyright notice,
       this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright notice,
@@ -14,7 +11,6 @@ modification, are permitted provided that the following conditions are met:
     * Neither the name of the developer nor the names of its contributors
       may be used to endorse or promote products derived from this software without
       specific prior written permission.
-
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -28,7 +24,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 local MAJOR_VERSION = "LibButtonGlow-1.0-KkthnxUI"
-local MINOR_VERSION = 7
+local MINOR_VERSION = 8
 
 if not LibStub then
 	error(MAJOR_VERSION .. " requires LibStub.")
@@ -44,7 +40,6 @@ lib.unusedOverlays = lib.unusedOverlays or {}
 lib.numOverlays = lib.numOverlays or 0
 
 local tinsert, tremove, tostring = table.insert, table.remove, tostring
-local AnimateTexCoords = AnimateTexCoords
 
 local function OverlayGlowAnimOutFinished(animGroup)
 	local overlay = animGroup:GetParent()

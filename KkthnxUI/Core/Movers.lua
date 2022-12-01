@@ -426,7 +426,7 @@ function Module:OnEnable()
 		Module.UpdateTrimFrame(updater.__owner)
 	end)
 
-	-- Module:DisableBlizzardMover()
+	Module:DisableBlizzardMover()
 end
 
 -- Disable blizzard edit mode
@@ -541,4 +541,6 @@ function Module:DisableBlizzardMover()
 		mixin.RefreshActionBarShown = K.Noop
 		mixin.RefreshVehicleLeaveButton = K.Noop
 	end
+
+	ObjectiveTrackerFrame.IsInDefaultPosition = K.Noop
 end
