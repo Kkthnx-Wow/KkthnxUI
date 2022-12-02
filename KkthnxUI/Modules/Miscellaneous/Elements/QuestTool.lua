@@ -1,17 +1,11 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Miscellaneous")
 
-local _G = _G
-local pairs = _G.pairs
-local string_find = _G.string.find
-
-local C_GossipInfo_GetNumOptions = _G.C_GossipInfo.GetNumOptions
-local C_GossipInfo_SelectOption = _G.C_GossipInfo.SelectOption
-local C_QuestLog_GetLogIndexForQuestID = _G.C_QuestLog.GetLogIndexForQuestID
-local GetActionInfo = _G.GetActionInfo
-local GetOverrideBarSkin = _G.GetOverrideBarSkin
-local GetSpellInfo = _G.GetSpellInfo
-local UnitGUID = _G.UnitGUID
+local pairs, strfind = pairs, strfind
+local UnitGUID, GetItemCount = UnitGUID, GetItemCount
+local GetActionInfo, GetSpellInfo, GetOverrideBarSkin = GetActionInfo, GetSpellInfo, GetOverrideBarSkin
+local C_QuestLog_GetLogIndexForQuestID = C_QuestLog.GetLogIndexForQuestID
+local C_GossipInfo_SelectOption, C_GossipInfo_GetNumOptions = C_GossipInfo.SelectOption, C_GossipInfo.GetNumOptions
 
 local watchQuests = {
 	-- check npc
@@ -26,11 +20,6 @@ local activeQuests = {}
 local questNPCs = {
 	[170080] = true, -- Boggart
 	[174498] = true, -- Shimmersod
-}
-
-local fixedStrings = {
-	["横扫"] = "低扫",
-	["突刺"] = "突袭",
 }
 
 function Module:QuestTool_Init()
@@ -53,8 +42,12 @@ function Module:QuestTool_Remove(questID)
 	end
 end
 
+local fixedStrings = {
+	["横扫"] = "低扫",
+	["突刺"] = "突袭",
+}
 local function isActionMatch(msg, text)
-	return text and string_find(msg, text)
+	return text and strfind(msg, text)
 end
 
 function Module:QuestTool_SetGlow(msg)
@@ -64,9 +57,9 @@ function Module:QuestTool_SetGlow(msg)
 			local _, spellID = GetActionInfo(button.action)
 			local name = spellID and GetSpellInfo(spellID)
 			if fixedStrings[name] and isActionMatch(msg, fixedStrings[name]) or isActionMatch(msg, name) then
-				K.ShowOverlayGlow(button)
+				K.ShowButtonGlow(button)
 			else
-				K.HideOverlayGlow(button)
+				K.HideButtonGlow(button)
 			end
 		end
 		Module.isGlowing = true
@@ -79,7 +72,7 @@ function Module:QuestTool_ClearGlow()
 	if Module.isGlowing then
 		Module.isGlowing = nil
 		for i = 1, 3 do
-			K.HideOverlayGlow(_G["ActionButton" .. i])
+			K.HideButtonGlow(_G["ActionButton" .. i])
 		end
 	end
 end
@@ -96,7 +89,7 @@ function Module:QuestTool_SetQuestUnit()
 	end
 end
 
-function Module:CreateQuestTool()
+function Module:QuestTool()
 	if not C["Misc"].QuestTool then
 		return
 	end
@@ -137,11 +130,9 @@ function Module:CreateQuestTool()
 			if GetItemCount(183961) == 0 then
 				return
 			end
-
 			if C_GossipInfo_GetNumOptions() ~= 5 then
 				return
 			end
-
 			if firstStep then
 				C_GossipInfo_SelectOption(5)
 			else
@@ -152,4 +143,4 @@ function Module:CreateQuestTool()
 	end)
 end
 
-Module:RegisterMisc("QuestTool", Module.CreateQuestTool)
+Module:RegisterMisc("QuestTool", Module.QuestTool)

@@ -264,4 +264,4 @@ function Module:CreateGuildBest()
 	K:RegisterEvent("BAG_UPDATE", Module.KeystoneInfo_Update)
 end
 
-Module:RegisterMisc("MDGuildBest", Module.CreateGuildBest)
+-- Module:RegisterMisc("MDGuildBest", Module.CreateGuildBest) -- DFUPDATE

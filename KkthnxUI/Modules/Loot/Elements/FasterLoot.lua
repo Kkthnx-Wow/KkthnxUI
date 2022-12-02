@@ -12,27 +12,23 @@ local IsModifiedClick = _G.IsModifiedClick
 local LootSlot = _G.LootSlot
 
 local lootDelay = 0
-local function SetupFasterLoot()
-	if GetTime() - lootDelay >= 0.3 then
-		lootDelay = GetTime()
+function Module:SetupFasterLoot()
+	local thisTime = GetTime()
+	if thisTime - lootDelay >= 0.3 then
+		lootDelay = thisTime
 		if GetCVarBool("autoLootDefault") ~= IsModifiedClick("AUTOLOOTTOGGLE") then
 			for i = GetNumLootItems(), 1, -1 do
 				LootSlot(i)
 			end
-
-			lootDelay = GetTime()
+			lootDelay = thisTime
 		end
 	end
 end
 
 function Module:CreateFasterLoot()
-	if IsAddOnLoaded("SpeedyAutoLoot") then
-		return
-	end
-
 	if C["Loot"].FastLoot then
-		K:RegisterEvent("LOOT_READY", SetupFasterLoot)
+		K:RegisterEvent("LOOT_READY", Module.SetupFasterLoot)
 	else
-		K:UnregisterEvent("LOOT_READY", SetupFasterLoot)
+		K:UnregisterEvent("LOOT_READY", Module.SetupFasterLoot)
 	end
 end

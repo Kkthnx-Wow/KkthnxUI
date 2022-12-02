@@ -2,58 +2,35 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Miscellaneous")
 local TT = K:GetModule("Tooltip")
 
-local _G = _G
-local select = _G.select
-local table_sort = _G.table.sort
-local table_wipe = _G.table.wipe
+local select, wipe, sort, gsub, tremove = select, wipe, sort, gsub, tremove
+local StaticPopup_Hide, HideUIPanel, GetTime = StaticPopup_Hide, HideUIPanel, GetTime
+local UnitIsGroupLeader, UnitClass, UnitGroupRolesAssigned = UnitIsGroupLeader, UnitClass, UnitGroupRolesAssigned
+local C_Timer_After, IsAltKeyDown = C_Timer.After, IsAltKeyDown
+local C_LFGList_GetSearchResultInfo = C_LFGList.GetSearchResultInfo
+local C_LFGList_GetActivityInfoTable = C_LFGList.GetActivityInfoTable
+local C_LFGList_GetSearchResultMemberInfo = C_LFGList.GetSearchResultMemberInfo
+local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
 
-local ApplicationViewerFrame = _G.LFGListFrame.ApplicationViewer
-local C_ChallengeMode_GetMapUIInfo = _G.C_ChallengeMode.GetMapUIInfo
-local C_LFGList_GetActivityInfoTable = _G.C_LFGList.GetActivityInfoTable
-local C_LFGList_GetSearchResultInfo = _G.C_LFGList.GetSearchResultInfo
-local C_LFGList_GetSearchResultMemberInfo = _G.C_LFGList.GetSearchResultMemberInfo
-local C_Timer_After = _G.C_Timer.After
-local GetTime = _G.GetTime
-local HideUIPanel = _G.HideUIPanel
-local LFGListFrame = _G.LFGListFrame
+local HEADER_COLON = _G.HEADER_COLON
+local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME or 1
 local LFG_LIST_GROUP_DATA_ATLASES = _G.LFG_LIST_GROUP_DATA_ATLASES
-local StaticPopup_Hide = _G.StaticPopup_Hide
-local UnitClass = _G.UnitClass
-local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
-local UnitIsGroupLeader = _G.UnitIsGroupLeader
-local categorySelection = _G.LFGListFrame.CategorySelection
-local searchPanel = _G.LFGListFrame.SearchPanel
-
 local scoreFormat = K.GreyColor .. "(%s) |r%s"
-local pendingFrame
-local roleCache = {}
-local roleOrder = {
-	["TANK"] = 1,
-	["HEALER"] = 2,
-	["DAMAGER"] = 3,
-}
 
-local roleTexes = {
-	"Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Tank",
-	"Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Healer",
-	"Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Damage",
-}
-
-local factionStr = {
-	[0] = "Horde",
-	[1] = "Alliance",
-}
+local LFGListFrame = _G.LFGListFrame
+local ApplicationViewerFrame = LFGListFrame.ApplicationViewer
+local searchPanel = LFGListFrame.SearchPanel
+local categorySelection = LFGListFrame.CategorySelection
 
 function Module:HookApplicationClick()
 	if LFGListFrame.SearchPanel.SignUpButton:IsEnabled() then
 		LFGListFrame.SearchPanel.SignUpButton:Click()
 	end
-
 	if (not IsAltKeyDown()) and LFGListApplicationDialog:IsShown() and LFGListApplicationDialog.SignUpButton:IsEnabled() then
 		LFGListApplicationDialog.SignUpButton:Click()
 	end
 end
 
+local pendingFrame
 function Module:DialogHideInSecond()
 	if not pendingFrame then
 		return
@@ -64,7 +41,6 @@ function Module:DialogHideInSecond()
 	elseif pendingFrame == "LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS" then
 		StaticPopup_Hide(pendingFrame)
 	end
-
 	pendingFrame = nil
 end
 
@@ -72,6 +48,18 @@ function Module:HookDialogOnShow()
 	pendingFrame = self
 	C_Timer_After(1, Module.DialogHideInSecond)
 end
+
+local roleCache = {}
+local roleOrder = {
+	["TANK"] = 1,
+	["HEALER"] = 2,
+	["DAMAGER"] = 3,
+}
+local roleTexes = {
+	"Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Tank",
+	"Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Healer",
+	"Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Damage",
+}
 
 local function sortRoleOrder(a, b)
 	if a and b then
@@ -89,12 +77,10 @@ local function GetPartyMemberInfo(index)
 	if not class then
 		return
 	end
-
 	local role = UnitGroupRolesAssigned(unit)
 	if role == "NONE" then
 		role = "DAMAGER"
 	end
-
 	return role, class, UnitIsGroupLeader(unit)
 end
 
@@ -108,7 +94,7 @@ local function GetCorrectRoleInfo(frame, i)
 end
 
 local function UpdateGroupRoles(self)
-	table_wipe(roleCache)
+	wipe(roleCache)
 
 	if not self.__owner then
 		self.__owner = self:GetParent():GetParent()
@@ -129,7 +115,7 @@ local function UpdateGroupRoles(self)
 		end
 	end
 
-	table_sort(roleCache, sortRoleOrder)
+	sort(roleCache, sortRoleOrder)
 end
 
 function Module:ReplaceGroupRoles(numPlayers, _, disabled)
@@ -147,12 +133,12 @@ function Module:ReplaceGroupRoles(numPlayers, _, disabled)
 			icon:SetSize(26, 26)
 
 			icon.role = self:CreateTexture(nil, "OVERLAY", nil, 2)
-			icon.role:SetSize(14, 14)
+			icon.role:SetSize(16, 16)
 			icon.role:SetPoint("TOPLEFT", icon, -3, 3)
 
 			icon.leader = self:CreateTexture(nil, "OVERLAY", nil, 1)
 			icon.leader:SetSize(14, 14)
-			icon.leader:SetPoint("TOP", icon, 3, 7)
+			icon.leader:SetPoint("TOP", icon, 4, 7)
 			icon.leader:SetTexture("Interface\\GroupFrame\\UI-Group-LeaderIcon")
 			icon.leader:SetRotation(rad(-15))
 		end
@@ -163,7 +149,6 @@ function Module:ReplaceGroupRoles(numPlayers, _, disabled)
 			icon.role:Show()
 			icon.role:SetDesaturated(disabled)
 			icon.role:SetAlpha(disabled and 0.5 or 1)
-
 			icon.leader:SetDesaturated(disabled)
 			icon.leader:SetAlpha(disabled and 0.5 or 1)
 		end
@@ -183,35 +168,33 @@ function Module:ReplaceGroupRoles(numPlayers, _, disabled)
 	end
 
 	for i = 1, iconIndex do
-		self.Icons[i].role:SetAtlas(nil)
+		self.Icons[i].role:SetTexture(nil)
 	end
 end
 
 function Module:AddAutoAcceptButton()
-	local bu = CreateFrame("CheckButton", nil, LFGListFrame.ApplicationViewer, "InterfaceOptionsCheckButtonTemplate")
-	bu:SetScript("OnClick", nil) -- reset onclick handler
-	bu:SetSize(22, 22)
-	bu:SetHitRectInsets(0, -76, 0, 0)
-	bu:SetPoint("BOTTOMLEFT", LFGListFrame.ApplicationViewer.InfoBackground, 12, 5)
-	K.CreateFontString(bu, 12, _G.LFG_LIST_AUTO_ACCEPT, "", "system", "LEFT", 22, 0)
+	local bu = CreateFrame("CheckButton", nil, ApplicationViewerFrame, "InterfaceOptionsCheckButtonTemplate")
+	bu:SetSize(24, 24)
+	bu:SetHitRectInsets(0, -130, 0, 0)
+	bu:SetPoint("BOTTOMLEFT", ApplicationViewerFrame.InfoBackground, 12, 5)
+	K.CreateFontString(bu, 13, _G.LFG_LIST_AUTO_ACCEPT, "", "system", "LEFT", 24, 0)
 
 	local lastTime = 0
+	local function clickInviteButton(button)
+		if button.applicantID and button.InviteButton:IsEnabled() then
+			button.InviteButton:Click()
+		end
+	end
+
 	K:RegisterEvent("LFG_LIST_APPLICANT_LIST_UPDATED", function()
 		if not bu:GetChecked() then
 			return
 		end
-
 		if not UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) then
 			return
 		end
 
-		local buttons = ApplicationViewerFrame.ScrollFrame.buttons
-		for i = 1, #buttons do
-			local button = buttons[i]
-			if button.applicantID and button.InviteButton:IsEnabled() then
-				button.InviteButton:Click()
-			end
-		end
+		ApplicationViewerFrame.ScrollBox:ForEachFrame(clickInviteButton)
 
 		if ApplicationViewerFrame:IsShown() then
 			local now = GetTime()
@@ -227,6 +210,10 @@ function Module:AddAutoAcceptButton()
 	end)
 end
 
+local factionStr = {
+	[0] = "Horde",
+	[1] = "Alliance",
+}
 function Module:ShowLeaderOverallScore()
 	local resultID = self.resultID
 	local searchResultInfo = resultID and C_LFGList_GetSearchResultInfo(resultID)
@@ -238,6 +225,7 @@ function Module:ShowLeaderOverallScore()
 				local oldName = self.ActivityName:GetText()
 				oldName = gsub(oldName, ".-" .. HEADER_COLON, "") -- Tazavesh
 				self.ActivityName:SetFormattedText(scoreFormat, TT.GetDungeonScore(showScore), oldName)
+
 				if not self.crossFactionLogo then
 					local logo = self:CreateTexture(nil, "OVERLAY")
 					logo:SetPoint("TOPLEFT", -6, 5)
@@ -287,18 +275,22 @@ function Module:ReplaceFindGroupButton()
 		end
 		lastCategory = selectedCategory
 	end)
+
+	--if C.db["Skins"]["BlizzardSkins"] then
+	bu:SkinButton()
+	--end
 end
 
 function Module:AddDungeonsFilter()
 	local mapData = {
-		[0] = { mapID = 166, aID = 183 }, --
-		[1] = { mapID = 169, aID = 180 }, --
-		[2] = { mapID = 234, aID = 473 }, --
-		[3] = { mapID = 227, aID = 471 }, --
-		[4] = { mapID = 369, aID = 679 }, --
-		[5] = { mapID = 370, aID = 683 }, --
-		[6] = { mapID = 391, aID = 1016 }, --
-		[7] = { mapID = 392, aID = 1017 }, --
+		[0] = { mapID = 166, aID = 183 }, -- 车站
+		[1] = { mapID = 169, aID = 180 }, -- 码头
+		[2] = { mapID = 234, aID = 473 }, -- 卡上
+		[3] = { mapID = 227, aID = 471 }, -- 卡下
+		[4] = { mapID = 369, aID = 679 }, -- 垃圾场
+		[5] = { mapID = 370, aID = 683 }, -- 车间
+		[6] = { mapID = 391, aID = 1016 }, -- 街道
+		[7] = { mapID = 392, aID = 1017 }, -- 宏图
 	}
 
 	local function GetDungeonNameByID(mapID)
@@ -316,16 +308,16 @@ function Module:AddDungeonsFilter()
 			mapData[i].isOn = allOn
 			filterIDs[mapData[i].aID] = allOn
 		end
-		UIDropDownMenu_Refresh(K.EasyMenu)
+		UIDropDownMenu_Refresh(B.EasyMenu)
 		LFGListSearchPanel_DoSearch(searchPanel)
 	end
 
 	local menuList = {
 		[1] = { text = _G.SPECIFIC_DUNGEONS, isTitle = true, notCheckable = true },
-		[2] = { text = _G.CHECK_ALL, notCheckable = true, keepShownOnClick = true, func = toggleAll },
+		[2] = { text = _G.SWITCH, notCheckable = true, keepShownOnClick = true, func = toggleAll },
 	}
 
-	local function onClick(_, index, aID)
+	local function onClick(self, index, aID)
 		allOn = true
 		mapData[index].isOn = not mapData[index].isOn
 		filterIDs[aID] = mapData[index].isOn
@@ -353,7 +345,6 @@ function Module:AddDungeonsFilter()
 		if btn ~= "RightButton" then
 			return
 		end
-
 		EasyMenu(menuList, K.EasyMenu, self, 25, 50, "MENU")
 	end)
 
@@ -366,7 +357,6 @@ function Module:AddDungeonsFilter()
 		if categorySelection.selectedCategory ~= 2 then
 			return
 		end
-
 		if not allOn then
 			return
 		end
@@ -421,26 +411,69 @@ function Module:AddPGFSortingExpression()
 	for i = 1, #PGFDialog.__sortBu do
 		local bu = PGFDialog.__sortBu[i]
 		if i == 1 then
-			bu:SetPoint("BOTTOMLEFT", PGFDialog, "BOTTOMRIGHT", 4, 1)
+			bu:SetPoint("BOTTOMLEFT", PGFDialog, "BOTTOMRIGHT", 3, 0)
 		else
-			bu:SetPoint("BOTTOM", PGFDialog.__sortBu[i - 1], "TOP", 0, 6)
+			bu:SetPoint("BOTTOM", PGFDialog.__sortBu[i - 1], "TOP", 0, 3)
 		end
+	end
+
+	if PremadeGroupsFilterSettings then
+		PremadeGroupsFilterSettings.classBar = false
+		PremadeGroupsFilterSettings.classCircle = false
+		PremadeGroupsFilterSettings.leaderCrown = false
+		PremadeGroupsFilterSettings.ratingInfo = false
+		PremadeGroupsFilterSettings.oneClickSignUp = false
 	end
 end
 
-function Module:CreateQuickJoin()
+function Module:FixListingTaint() -- From PremadeGroupsFilter
+	if IsAddOnLoaded("PremadeGroupsFilter") then
+		return
+	end
+
+	local activityIdOfArbitraryMythicPlusDungeon = 1160 -- Algeth'ar Academy
+	if not C_LFGList.IsPlayerAuthenticatedForLFG(activityIdOfArbitraryMythicPlusDungeon) then
+		return
+	end
+
+	C_LFGList.GetPlaystyleString = function(playstyle, activityInfo)
+		if not (activityInfo and playstyle and playstyle ~= 0 and C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID).showPlaystyleDropdown) then
+			return nil
+		end
+		local globalStringPrefix
+		if activityInfo.isMythicPlusActivity then
+			globalStringPrefix = "GROUP_FINDER_PVE_PLAYSTYLE"
+		elseif activityInfo.isRatedPvpActivity then
+			globalStringPrefix = "GROUP_FINDER_PVP_PLAYSTYLE"
+		elseif activityInfo.isCurrentRaidActivity then
+			globalStringPrefix = "GROUP_FINDER_PVE_RAID_PLAYSTYLE"
+		elseif activityInfo.isMythicActivity then
+			globalStringPrefix = "GROUP_FINDER_PVE_MYTHICZERO_PLAYSTYLE"
+		end
+		return globalStringPrefix and _G[globalStringPrefix .. tostring(playstyle)] or nil
+	end
+
+	-- Disable automatic group titles to prevent tainting errors
+	LFGListEntryCreation_SetTitleFromActivityInfo = function(_) end
+end
+
+function Module:QuickJoin()
 	if not C["Misc"].QuickJoin then
 		return
 	end
 
-	for i = 1, 10 do
-		local bu = _G["LFGListSearchPanelScrollFrameButton" .. i]
-		if bu then
-			bu.Name:SetFontObject(Game14Font)
-			bu.ActivityName:SetFontObject(Game12Font)
-			bu:HookScript("OnDoubleClick", Module.HookApplicationClick)
+	hooksecurefunc(LFGListFrame.SearchPanel.ScrollBox, "Update", function(self)
+		for i = 1, self.ScrollTarget:GetNumChildren() do
+			local child = select(i, self.ScrollTarget:GetChildren())
+			if child.Name and not child.hooked then
+				child.Name:SetFontObject(Game14Font)
+				child.ActivityName:SetFontObject(Game12Font)
+				child:HookScript("OnDoubleClick", Module.HookApplicationClick)
+
+				child.hooked = true
+			end
 		end
-	end
+	end)
 
 	hooksecurefunc("LFGListInviteDialog_Accept", function()
 		if PVEFrame:IsShown() then
@@ -450,13 +483,14 @@ function Module:CreateQuickJoin()
 
 	hooksecurefunc("StaticPopup_Show", Module.HookDialogOnShow)
 	hooksecurefunc("LFGListInviteDialog_Show", Module.HookDialogOnShow)
+
 	hooksecurefunc("LFGListGroupDataDisplayEnumerate_Update", Module.ReplaceGroupRoles)
 	hooksecurefunc("LFGListSearchEntry_Update", Module.ShowLeaderOverallScore)
 
 	Module:AddAutoAcceptButton()
+	Module:ReplaceFindGroupButton()
 	Module:AddDungeonsFilter()
 	Module:AddPGFSortingExpression()
-	Module:ReplaceFindGroupButton()
+	Module:FixListingTaint()
 end
-
-Module:RegisterMisc("QuickJoin", Module.CreateQuickJoin)
+Module:RegisterMisc("QuickJoin", Module.QuickJoin)

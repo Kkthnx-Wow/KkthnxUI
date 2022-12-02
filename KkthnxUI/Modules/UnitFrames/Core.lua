@@ -249,26 +249,26 @@ function Module:CreateCastBar(self)
 		-- 	Castbar:SetFrameLevel(10)
 		-- 	Castbar:SetSize(C["Unitframe"].FocusCastbarWidth, C["Unitframe"].FocusCastbarHeight)
 		-- 	createBarMover(Castbar, "Focus Castbar", "FocusCB", C.UFs.Focuscb)
-		-- elseif mystyle == "boss" or mystyle == "arena" then
+		-- elseif mystyle == "arena" then
 		-- 	Castbar:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -8)
 		-- 	Castbar:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 0, -8)
 		-- 	Castbar:SetHeight(10)
 	elseif mystyle == "party" then
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" or C["Unitframe"].PortraitStyle.Value == "OverlayPortrait" then
-			Castbar:SetPoint("TOPLEFT", self, C["Party"].CastbarIcon and 22 or 0, 22)
-			Castbar:SetSize(C["Party"].HealthWidth + self.Portrait:GetWidth() + 6, 18)
+			Castbar:SetPoint("TOPLEFT", self, 24, 24)
+			Castbar:SetSize(C["Party"].HealthWidth - 24, 18)
 		else
-			Castbar:SetPoint("TOPLEFT", self.Portrait, C["Party"].CastbarIcon and 22 or 0, 22)
-			Castbar:SetSize(C["Party"].HealthWidth + self.Portrait:GetWidth() + 6, 18)
+			Castbar:SetPoint("TOPLEFT", self.Portrait, 24, 24)
+			Castbar:SetSize(C["Party"].HealthWidth + 22, 18)
 		end
 		Castbar.Spark:SetSize(128, Castbar:GetHeight())
 	elseif mystyle == "boss" then
 		if C["Unitframe"].PortraitStyle.Value == "NoPortraits" or C["Unitframe"].PortraitStyle.Value == "OverlayPortrait" then
-			Castbar:SetPoint("TOPLEFT", self, 0, 24)
-			Castbar:SetSize(C["Boss"].HealthWidth + self.Portrait:GetWidth() + 6, 18)
+			Castbar:SetPoint("TOPLEFT", self, 24, 24)
+			Castbar:SetSize(C["Boss"].HealthWidth - 24, 18)
 		else
-			Castbar:SetPoint("TOPRIGHT", self.Portrait, 0, 24)
-			Castbar:SetSize(C["Boss"].HealthWidth + self.Portrait:GetWidth() + 6, 18)
+			Castbar:SetPoint("TOPRIGHT", self.Portrait, -24, 24)
+			Castbar:SetSize(C["Boss"].HealthWidth + 22, 18)
 		end
 		Castbar.Spark:SetSize(128, Castbar:GetHeight())
 	elseif mystyle == "nameplate" then
@@ -880,7 +880,7 @@ function Module:CreateUnits()
 			]]):format(C["Party"].HealthWidth, C["Party"].HealthHeight + C["Party"].PowerHeight + 6)
 		)
 
-		partyMover = K.Mover(party, "PartyFrame", "PartyFrame", { "TOPLEFT", UIParent, "TOPLEFT", 46, -200 }, partyMoverWidth, partyMoverHeight)
+		partyMover = K.Mover(party, "PartyFrame", "PartyFrame", { "TOPLEFT", UIParent, "TOPLEFT", 52, -300 }, partyMoverWidth, partyMoverHeight)
 		party:ClearAllPoints()
 		party:SetPoint("TOPLEFT", partyMover)
 

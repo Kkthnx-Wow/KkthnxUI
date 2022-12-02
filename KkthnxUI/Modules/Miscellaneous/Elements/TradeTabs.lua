@@ -291,4 +291,4 @@ function Module:CreateTradeTabs()
 	K:RegisterEvent("ADDON_LOADED", Module.TradeTabs_OnEvent)
 end
 
-Module:RegisterMisc("TradeTabs", Module.CreateTradeTabs)
+-- Module:RegisterMisc("TradeTabs", Module.CreateTradeTabs) -- DFUPDATE

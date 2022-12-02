@@ -33,7 +33,7 @@ local menuList = {
 		notCheckable = 1,
 		func = function()
 			if InCombatLockdown() then
-				K.Print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
+				print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
 				return
 			end
 			ToggleFrame(SpellBookFrame)
@@ -43,14 +43,10 @@ local menuList = {
 		text = TALENTS_BUTTON,
 		notCheckable = 1,
 		func = function()
-			if not PlayerTalentFrame then
-				TalentFrame_LoadUI()
-			end
 			if K.Level >= 10 then
-				ShowUIPanel(PlayerTalentFrame)
+				ToggleTalentFrame()
 			else
 				UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10), 1, 0.1, 0.1)
-				K.Print("|cffffff00" .. format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10) .. "|r")
 			end
 		end,
 	},
@@ -97,7 +93,6 @@ local menuList = {
 				TogglePVPUI()
 			else
 				UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10), 1, 0.1, 0.1)
-				K.Print("|cffffff00" .. format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10) .. "|r")
 			end
 		end,
 	},
@@ -109,7 +104,6 @@ local menuList = {
 				PVEFrame_ToggleFrame("GroupFinderFrame", nil)
 			else
 				UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10), 1, 0.1, 0.1)
-				K.Print("|cffffff00" .. format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, 10) .. "|r")
 			end
 		end,
 	},
@@ -121,7 +115,6 @@ local menuList = {
 				ToggleEncounterJournal()
 			else
 				UIErrorsFrame:AddMessage(FEATURE_NOT_YET_AVAILABLE, 1, 0.1, 0.1)
-				K.Print("|cffffff00" .. FEATURE_NOT_YET_AVAILABLE .. "|r")
 			end
 		end,
 	},
@@ -130,14 +123,14 @@ local menuList = {
 		notCheckable = 1,
 		func = function()
 			if InCombatLockdown() then
-				K.Print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
+				print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
 				return
 			end
 			ToggleCollectionsJournal()
 		end,
 	},
 	{
-		text = "Calendar",
+		text = L_MINIMAP_CALENDAR,
 		notCheckable = 1,
 		func = function()
 			ToggleCalendar()
@@ -181,7 +174,7 @@ table_insert(menuList, {
 	bottom = true,
 	func = function()
 		-- Prevent options panel from showing if Blizzard options panel is showing
-		if InterfaceOptionsFrame:IsShown() or VideoOptionsFrame:IsShown() or ChatConfigFrame:IsShown() then
+		if SettingsPanel:IsShown() or ChatConfigFrame:IsShown() then
 			return
 		end
 
@@ -208,12 +201,8 @@ table_insert(menuList, {
 	notCheckable = 1,
 	func = function()
 		if not _G.GameMenuFrame:IsShown() then
-			if _G.VideoOptionsFrame:IsShown() then
-				_G.VideoOptionsFrameCancel:Click()
-			elseif _G.AudioOptionsFrame:IsShown() then
-				_G.AudioOptionsFrameCancel:Click()
-			elseif _G.InterfaceOptionsFrame:IsShown() then
-				_G.InterfaceOptionsFrameCancel:Click()
+			if _G.SettingsPanel:IsShown() then
+				_G.SettingsPanel.CloseButton:Click()
 			end
 
 			CloseMenus()
