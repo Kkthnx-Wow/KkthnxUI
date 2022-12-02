@@ -880,7 +880,7 @@ function Module:CreateUnits()
 			]]):format(C["Party"].HealthWidth, C["Party"].HealthHeight + C["Party"].PowerHeight + 6)
 		)
 
-		partyMover = K.Mover(party, "PartyFrame", "PartyFrame", { "TOPLEFT", UIParent, "TOPLEFT", 52, -300 }, partyMoverWidth, partyMoverHeight)
+		partyMover = K.Mover(party, "PartyFrame", "PartyFrame", { "TOPLEFT", UIParent, "TOPLEFT", 50, -300 }, partyMoverWidth, partyMoverHeight)
 		party:ClearAllPoints()
 		party:SetPoint("TOPLEFT", partyMover)
 

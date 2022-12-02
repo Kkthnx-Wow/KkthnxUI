@@ -4,12 +4,12 @@ local Module = K:GetModule("Blizzard")
 -- Sourced: NDui
 
 local function SetupMirrorBars(bar)
-	local statusbar = _G[bar:GetName() .. "StatusBar"]
-	local text = _G[bar:GetName() .. "Text"]
+	local statusbar = bar.StatusBar
+	local text = bar.Text
 	local texture = K.GetTexture(C["General"].Texture)
 
 	bar:SetSize(222, 22)
-	bar:StripTextures()
+	bar:StripTextures(true)
 
 	statusbar:SetAllPoints()
 	statusbar:SetStatusBarTexture(texture)
@@ -25,15 +25,15 @@ local function SetupMirrorBars(bar)
 	bar:CreateBorder()
 end
 
-function Module:CreateMirrorBars() -- Broken
-	-- local previous
-	-- for i = 1, 3 do
-	-- 	local bar = _G["MirrorTimer" .. i]
-	-- 	SetupMirrorBars(bar)
+function Module:CreateMirrorBars()
+	local previous
+	for i = 1, 3 do
+		local bar = _G["MirrorTimer" .. i]
+		SetupMirrorBars(bar)
 
-	-- 	if previous then
-	-- 		bar:SetPoint("TOP", previous, "BOTTOM", 0, -6)
-	-- 	end
-	-- 	previous = bar
-	-- end
+		if previous then
+			bar:SetPoint("TOP", previous, "BOTTOM", 0, -6)
+		end
+		previous = bar
+	end
 end

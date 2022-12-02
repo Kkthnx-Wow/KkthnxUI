@@ -299,7 +299,9 @@ function Module:ChatCopy_CreateMenu()
 	_G.ChatFrameToggleVoiceMuteButton:SetPoint("TOP", _G.ChatFrameToggleVoiceDeafenButton, "BOTTOM", 0, -6)
 	_G.ChatFrameToggleVoiceMuteButton:SetParent(menu)
 
-	_G.QuickJoinToastButton:SetParent(menu)
+	if _G.QuickJoinToastButton then
+		_G.QuickJoinToastButton:SetParent(menu)
+	end
 
 	_G.ChatAlertFrame:ClearAllPoints()
 	_G.ChatAlertFrame:SetPoint("BOTTOMLEFT", _G.ChatFrame1Tab, "TOPLEFT", 5, 25)

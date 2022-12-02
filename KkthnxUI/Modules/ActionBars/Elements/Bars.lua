@@ -128,7 +128,7 @@ function Module:UpdateButtonConfig(i)
 	hotkey.position.anchor = "TOPRIGHT"
 	hotkey.position.relAnchor = false
 	hotkey.position.offsetX = 0
-	hotkey.position.offsetY = 0
+	hotkey.position.offsetY = -2
 	hotkey.justifyH = "RIGHT"
 
 	local count = self.buttonConfig.text.count

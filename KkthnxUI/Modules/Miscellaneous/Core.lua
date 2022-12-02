@@ -72,10 +72,10 @@ function Module:OnEnable()
 	hooksecurefunc("QuestInfo_Display", Module.CreateQuestXPPercent)
 
 	-- TESTING CMD : /run BNToastFrame:AddToast(BN_TOAST_TYPE_ONLINE, 1)
-	if not BNToastFrame.mover then -- text, value, anchor, width, height, isAuraWatch, postDrag
-		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 171 }, BNToastFrame:GetWidth(), BNToastFrame:GetHeight())
+	if not BNToastFrame.mover then
+		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 270 }, _G.BNToastFrame:GetSize())
 	else
-		BNToastFrame.mover:SetSize(BNToastFrame:GetWidth(), BNToastFrame:GetHeight()) -- 49 -- Rounded default size?
+		BNToastFrame.mover:SetSize(_G.BNToastFrame:GetSize())
 	end
 	hooksecurefunc(BNToastFrame, "SetPoint", Module.PostBNToastMove)
 
@@ -710,8 +710,8 @@ end
 -- Make it so we can move this
 function Module:PostBNToastMove(_, anchor)
 	if anchor ~= BNToastFrame.mover then
-		self:ClearAllPoints()
-		self:SetPoint(BNToastFrame.mover.anchorPoint or "TOPLEFT", BNToastFrame.mover, BNToastFrame.mover.anchorPoint or "TOPLEFT")
+		BNToastFrame:ClearAllPoints()
+		BNToastFrame:SetPoint(BNToastFrame.mover.anchorPoint or "TOPLEFT", BNToastFrame.mover, BNToastFrame.mover.anchorPoint or "TOPLEFT")
 	end
 end
 
