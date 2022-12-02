@@ -1083,7 +1083,7 @@ function Module:UpdatePlateByType()
 
 		if self.widgetContainer then
 			self.widgetContainer:ClearAllPoints()
-			self.widgetContainer:SetPoint("TOP", title, "BOTTOM", 0, -5)
+			self.widgetContainer:SetPoint("TOP", title, "BOTTOM", 0, -6)
 		end
 	else
 		for _, element in pairs(DisabledElements) do
@@ -1109,7 +1109,7 @@ function Module:UpdatePlateByType()
 
 		if self.widgetContainer then
 			self.widgetContainer:ClearAllPoints()
-			self.widgetContainer:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -5)
+			self.widgetContainer:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -6)
 		end
 
 		Module.UpdateNameplateSize(self)
