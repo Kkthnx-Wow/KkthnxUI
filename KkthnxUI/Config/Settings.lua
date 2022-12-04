@@ -458,7 +458,7 @@ C["Nameplate"] = {
 	["PPWidth"] = 175,
 	["PlateAuras"] = true,
 	["PlateHeight"] = 16,
-	["PlateWidth"] = 186,
+	["PlateWidth"] = 188,
 	["PowerUnitList"] = "",
 	["QuestIndicator"] = true,
 	["SecureColor"] = { 1, 0, 1 },
@@ -619,25 +619,25 @@ C["Unitframe"] = {
 	["FocusPowerHeight"] = 14,
 
 	-- TargetOfTarget
-	["TargetTargetHealthHeight"] = 16,
-	["TargetTargetHealthWidth"] = 90,
-	["TargetTargetPowerHeight"] = 8,
+	["TargetTargetHealthHeight"] = 18,
+	["TargetTargetHealthWidth"] = 100,
+	["TargetTargetPowerHeight"] = 10,
 	["HideTargetOfTargetLevel"] = false,
 	["HideTargetOfTargetName"] = false,
 	["HideTargetofTarget"] = false,
 
 	-- Pet
-	["PetHealthHeight"] = 16,
-	["PetHealthWidth"] = 90,
-	["PetPowerHeight"] = 8,
+	["PetHealthHeight"] = 18,
+	["PetHealthWidth"] = 100,
+	["PetPowerHeight"] = 10,
 	["HidePetLevel"] = false,
 	["HidePetName"] = false,
 	["HidePet"] = false,
 
 	-- FocusTarget
-	["FocusTargetHealthHeight"] = 16,
-	["FocusTargetHealthWidth"] = 90,
-	["FocusTargetPowerHeight"] = 8,
+	["FocusTargetHealthHeight"] = 18,
+	["FocusTargetHealthWidth"] = 100,
+	["FocusTargetPowerHeight"] = 10,
 	["HideFocusTargetLevel"] = false,
 	["HideFocusTargetName"] = false,
 	["HideFocusTarget"] = false,
