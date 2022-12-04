@@ -171,7 +171,6 @@
    <Include file="Skins\Blizzard\FrameXML\Fonts.lua" />
    <Include file="Skins\Blizzard\FrameXML\GameMenuFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\GhostFrame.lua" />
-   <Include file="Skins\Blizzard\FrameXML\LootFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\LossOfControlFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\ObjectiveTracker.lua" />
    <Include file="Skins\Blizzard\FrameXML\SpellBookFrame.lua" />

@@ -16,7 +16,7 @@ function Module:TotemBar_Init()
 
 	local totemBar = _G["KKUI_TotemBar"]
 	if not totemBar then
-		totemBar = CreateFrame("Frame", "KKUI_TotemBar", K.PetBattleHider)
+		totemBar = CreateFrame("Frame", "KKUI_TotemBar", K.PetBattleFrameHider)
 	end
 	totemBar:SetSize(width, height)
 

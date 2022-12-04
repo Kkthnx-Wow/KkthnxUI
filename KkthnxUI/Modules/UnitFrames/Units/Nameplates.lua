@@ -2,11 +2,9 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
-local math_floor = _G.math.floor
 local math_rad = _G.math.rad
 local pairs = _G.pairs
 local string_format = _G.string.format
-local string_match = _G.string.match
 local table_wipe = _G.table.wipe
 local tonumber = _G.tonumber
 local unpack = _G.unpack
@@ -41,6 +39,8 @@ local UnitPlayerControlled = _G.UnitPlayerControlled
 local UnitReaction = _G.UnitReaction
 local UnitThreatSituation = _G.UnitThreatSituation
 local hooksecurefunc = _G.hooksecurefunc
+local C_NamePlate_SetNamePlateEnemyClickThrough = C_NamePlate.SetNamePlateEnemyClickThrough
+local C_NamePlate_SetNamePlateFriendlyClickThrough = C_NamePlate.SetNamePlateFriendlyClickThrough
 
 local aksCacheData = {}
 local customUnits = {}
@@ -66,7 +66,7 @@ local ShowTargetNPCs = {
 }
 
 -- Init
-function Module:PlateInsideView()
+function Module:UpdatePlateCVars()
 	if C["Nameplate"].InsideView then
 		SetCVar("nameplateOtherTopInset", 0.05)
 		SetCVar("nameplateOtherBottomInset", 0.08)
@@ -74,20 +74,14 @@ function Module:PlateInsideView()
 		SetCVar("nameplateOtherTopInset", -1)
 		SetCVar("nameplateOtherBottomInset", -1)
 	end
-end
 
-function Module:UpdatePlateScale()
 	SetCVar("namePlateMinScale", C["Nameplate"].MinScale)
 	SetCVar("namePlateMaxScale", C["Nameplate"].MinScale)
-end
-
-function Module:UpdatePlateAlpha()
 	SetCVar("nameplateMinAlpha", C["Nameplate"].MinAlpha)
 	SetCVar("nameplateMaxAlpha", C["Nameplate"].MinAlpha)
-end
-
-function Module:UpdatePlateSpacing()
 	SetCVar("nameplateOverlapV", C["Nameplate"].VerticalSpacing)
+	SetCVar("nameplateShowOnlyNames", C["Nameplate"].CVarOnlyNames and 1 or 0)
+	SetCVar("nameplateShowFriendlyNPCs", C["Nameplate"].CVarShowNPCs and 1 or 0)
 end
 
 function Module:UpdateClickableSize()
@@ -96,31 +90,37 @@ function Module:UpdateClickableSize()
 	end
 
 	local uiScale = C["General"].UIScale
-	local PlateWidth, PlateHeight = C["Nameplate"].PlateWidth, C["Nameplate"].PlateHeight
+	local harmWidth, harmHeight = C["Nameplate"].HarmWidth, C["Nameplate"].HarmHeight
+	local helpWidth, helpHeight = C["Nameplate"].HelpWidth, C["Nameplate"].HelpHeight
 
-	C_NamePlate_SetNamePlateEnemySize(PlateWidth * uiScale, PlateHeight * uiScale)
-	C_NamePlate_SetNamePlateFriendlySize(PlateWidth * uiScale, PlateHeight * uiScale)
+	C_NamePlate_SetNamePlateEnemySize(harmWidth * uiScale, harmHeight * uiScale)
+	C_NamePlate_SetNamePlateFriendlySize(helpWidth * uiScale, helpHeight * uiScale)
+end
+
+function Module:UpdatePlateClickThru()
+	if InCombatLockdown() then
+		return
+	end
+
+	C_NamePlate_SetNamePlateEnemyClickThrough(C["Nameplate"].EnemyThru)
+	C_NamePlate_SetNamePlateFriendlyClickThrough(C["Nameplate"].FriendlyThru)
 end
 
 function Module:SetupCVars()
-	Module:PlateInsideView()
+	Module:UpdatePlateCVars()
 	SetCVar("nameplateOverlapH", 0.8)
-	Module:UpdatePlateSpacing()
-	Module:UpdatePlateAlpha()
 	SetCVar("nameplateSelectedAlpha", 1)
 	SetCVar("showQuestTrackingTooltips", 1)
-	SetCVar("predictedHealth", 1)
 
-	Module:UpdatePlateScale()
-	SetCVar("nameplateSelectedScale", C["Nameplate"].SelectedScale)
+	SetCVar("nameplateSelectedScale", 1)
 	SetCVar("nameplateLargerScale", 1)
 	SetCVar("nameplateGlobalScale", 1)
 
 	SetCVar("nameplateShowSelf", 0)
 	SetCVar("nameplateResourceOnTarget", 0)
-
 	Module:UpdateClickableSize()
-	hooksecurefunc(_G.NamePlateDriverFrame, "UpdateNamePlateOptions", Module.UpdateClickableSize)
+	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", Module.UpdateClickableSize)
+	Module:UpdatePlateClickThru()
 end
 
 function Module:BlockAddons()
