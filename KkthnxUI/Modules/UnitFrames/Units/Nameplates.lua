@@ -1111,10 +1111,9 @@ function Module:UpdatePlateByType()
 			self.widgetContainer:ClearAllPoints()
 			self.widgetContainer:SetPoint("TOP", self.Castbar, "BOTTOM", 0, -6)
 		end
-
-		Module.UpdateNameplateSize(self)
 	end
 
+	Module.UpdateNameplateSize(self)
 	Module.UpdateTargetIndicator(self)
 	Module.ToggleNameplateAuras(self)
 end

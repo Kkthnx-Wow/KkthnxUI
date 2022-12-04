@@ -1,4 +1,4 @@
-local K, C = _G.unpack(select(2, ...))
+local K = _G.unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
 
 local _G = _G

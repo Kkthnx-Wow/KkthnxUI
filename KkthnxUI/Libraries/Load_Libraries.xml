@@ -5,6 +5,7 @@
    <Script file="CallbackHandler-1.0\CallbackHandler-1.0.lua" />
    <Script file="LibSharedMedia-3.0\LibSharedMedia-3.0.lua" />
    <Script file="LibButtonGlow-1.0\LibButtonGlow-1.0.lua" />
+   <Script file="LibCustomGlow-1.0\LibCustomGlow-1.0.lua" />
    <Script file="LibActionButton-1.0\LibActionButton-1.0.lua" />
    <Script file="LibDeflate\LibDeflate.lua"/>
 	<Script file="LibSerialize\LibSerialize.lua"/>

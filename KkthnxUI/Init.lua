@@ -75,6 +75,7 @@ do
 	K.RangeCheck = LibStub("LibRangeCheck-2.0-KkthnxUI")
 	K.Serialize = LibStub("LibSerialize-KkthnxUI")
 	K.ShowButtonGlow = LibStub("LibButtonGlow-1.0-KkthnxUI", true).ShowOverlayGlow
+	K.CustomGlow = LibStub("LibCustomGlow-1.0-KkthnxUI", true)
 	K.Unfit = LibStub("Unfit-1.0-KkthnxUI")
 	K.cargBags = Engine.cargBags
 	K.oUF = Engine.oUF
