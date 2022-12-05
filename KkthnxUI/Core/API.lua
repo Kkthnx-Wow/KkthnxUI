@@ -32,7 +32,7 @@ end
 local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
 	-- Border
 	local BorderSubLevel = bSubLevel or "OVERLAY"
-	local BorderLayer = bLayer or 2
+	local BorderLayer = bLayer or 0
 	local BorderValue = C["General"].BorderStyle.Value or "KkthnxUI"
 	local BorderSize
 
@@ -345,16 +345,6 @@ local function SkinButton(self, override)
 end
 
 -- Handle close button
-local function CloseTexture_OnEnter(self)
-	if self:IsEnabled() then
-		self.__texture:SetTexture(CustomCloseButton)
-	end
-end
-
-local function CloseTexture_OnLeave(self)
-	self.__texture:SetVertexColor(1, 1, 1)
-end
-
 local function SkinCloseButton(self, parent, xOffset, yOffset)
 	parent = parent or self:GetParent()
 	xOffset = xOffset or -6
@@ -369,7 +359,8 @@ local function SkinCloseButton(self, parent, xOffset, yOffset)
 		self.Border:SetAlpha(0)
 	end
 
-	self:CreateBorder()
+	self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 1, 0, 0)
+	self:StyleButton()
 
 	self:SetDisabledTexture("")
 	local dis = self:GetDisabledTexture()
@@ -381,39 +372,32 @@ local function SkinCloseButton(self, parent, xOffset, yOffset)
 	tex:SetTexture(CustomCloseButton)
 	tex:SetAllPoints()
 	self.__texture = tex
-
-	self:HookScript("OnEnter", CloseTexture_OnEnter)
-	self:HookScript("OnLeave", CloseTexture_OnLeave)
 end
 
-local function SkinCheckBox(f)
-	f:StripTextures()
-	f:CreateBorder()
+local function SkinCheckBox(self, forceSaturation)
+	self:SetNormalTexture(0)
+	self:SetPushedTexture(0)
 
-	if f.SetCheckedTexture then
-		f:SetCheckedTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check")
-	end
+	local bg = CreateFrame("Frame", nil, self, "BackdropTemplate")
+	bg:SetAllPoints(self)
+	bg:SetFrameLevel(self:GetFrameLevel())
+	bg:CreateBorder()
+	self.bg = bg
 
-	if f.SetDisabledCheckedTexture then
-		f:SetDisabledCheckedTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
-	end
+	self:SetHighlightTexture("")
+	local hl = self:GetHighlightTexture()
+	hl:SetAllPoints(bg)
+	hl:SetVertexColor(K.r, K.g, K.b, 0.25)
 
-	-- Why Is The Disabled Texture Always Displayed As Checked?
-	f:HookScript("OnDisable", function(self)
-		if not self.SetDisabledTexture then
-			return
-		end
+	local ch = self:GetCheckedTexture()
+	ch:SetPoint("TOPLEFT", self, "TOPLEFT", -5, 5)
+	ch:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 5, -5)
+	ch:SetAtlas("checkmark-minimal")
+	ch:SetDesaturated(true)
+	ch:SetTexCoord(0, 1, 0, 1)
+	ch:SetVertexColor(K.r, K.g, K.b)
 
-		if self:GetChecked() then
-			self:SetDisabledTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
-		else
-			self:SetDisabledTexture("")
-		end
-	end)
-
-	f.SetNormalTexture = K.Noop
-	f.SetPushedTexture = K.Noop
-	f.SetHighlightTexture = K.Noop
+	self.forceSaturation = forceSaturation
 end
 
 -- Handle arrows
