@@ -236,9 +236,9 @@ local function KKUI_VerifyDatabase()
 	end
 end
 
-local addonLoader = CreateFrame("Frame")
-addonLoader:RegisterEvent("ADDON_LOADED")
-addonLoader:SetScript("OnEvent", function(self, _, addon)
+local KKUI_AddonLoader = CreateFrame("Frame")
+KKUI_AddonLoader:RegisterEvent("ADDON_LOADED")
+KKUI_AddonLoader:SetScript("OnEvent", function(self, _, addon)
 	if addon ~= "KkthnxUI" then
 		return
 	end

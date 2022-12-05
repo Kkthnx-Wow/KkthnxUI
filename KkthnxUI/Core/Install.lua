@@ -352,8 +352,7 @@ local function YesTutor()
 			PlaySound(21968)
 		elseif currentPage == 3 then
 			StopSound(21968)
-			C["General"].AutoScale = true
-			K.SetupUIScale()
+			K.SetupUIScale(true)
 			UIErrorsFrame:AddMessage(K.InfoColor .. "UI Scale Loaded")
 			PlaySound(21968)
 		elseif currentPage == 4 then

@@ -297,7 +297,7 @@ C["AuraWatch"] = {
 
 -- General
 C["General"] = {
-	["AutoScale"] = true,
+	["AutoScale"] = false,
 	["ColorTextures"] = false,
 	["MinimapIcon"] = false,
 	["MissingTalentAlert"] = true,
@@ -305,7 +305,7 @@ C["General"] = {
 	["NoErrorFrame"] = false,
 	["NoTutorialButtons"] = false,
 	["TexturesColor"] = { 1, 1, 1 },
-	["UIScale"] = 0.71111,
+	["UIScale"] = 0.71,
 	["UseGlobal"] = false,
 	["VersionCheck"] = true,
 	["Texture"] = "KkthnxUI",

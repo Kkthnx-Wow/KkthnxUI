@@ -1891,7 +1891,19 @@ GUI.Enable = function(self)
 	Apply:SetScript("OnMouseUp", ButtonOnMouseUp)
 	Apply:SetScript("OnEnter", ButtonOnEnter)
 	Apply:SetScript("OnLeave", ButtonOnLeave)
-	Apply:HookScript("OnMouseUp", _G.ReloadUI)
+	Apply:HookScript("OnMouseUp", function()
+		K.SetupUIScale()
+		if InCombatLockdown() then
+			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
+			return
+		end
+
+		if GUI:IsShown() then
+			GUI:Toggle()
+		end
+
+		StaticPopup_Show("KKUI_CHANGES_RELOAD")
+	end)
 
 	Apply.Highlight = Apply:CreateTexture(nil, "OVERLAY")
 	Apply.Highlight:SetAllPoints()

@@ -374,6 +374,20 @@ function Module:CreateCastBar(self)
 	self.Castbar = Castbar
 end
 
+function Module:ToggleCastBar(settings)
+	if not settings then
+		return
+	end
+
+	print(settings)
+
+	if settings and not self:IsElementEnabled("Castbar") then
+		self:EnableElement("Castbar")
+	elseif not settings and self:IsElementEnabled("Castbar") then
+		self:DisableElement("Castbar")
+	end
+end
+
 function Module.auraIconSize(w, n, s)
 	return (w - (n - 1) * s) / n
 end
