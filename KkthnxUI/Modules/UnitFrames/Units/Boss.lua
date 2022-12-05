@@ -165,7 +165,7 @@ function Module:CreateBoss()
 	self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 
 	if C["Boss"].Castbars then
-		Module:CreateCastBar(self)
+		-- Module:CreateCastBar(self) -- DFBUGGED
 	end
 
 	if C["Boss"].TargetHighlight then

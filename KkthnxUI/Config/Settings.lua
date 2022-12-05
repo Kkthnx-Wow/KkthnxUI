@@ -297,7 +297,7 @@ C["AuraWatch"] = {
 
 -- General
 C["General"] = {
-	["AutoScale"] = false,
+	["AutoScale"] = true,
 	["ColorTextures"] = false,
 	["MinimapIcon"] = false,
 	["MissingTalentAlert"] = true,
