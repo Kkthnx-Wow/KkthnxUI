@@ -173,7 +173,7 @@ function Module:CreateParty()
 	Debuffs.PostUpdateButton = Module.PostUpdateButton
 
 	if C["Party"].Castbars then
-		Module:CreateCastBar(self)
+		--Module:CreateCastBar(self)
 	end
 
 	if C["Party"].ShowHealPrediction then

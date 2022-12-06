@@ -777,6 +777,10 @@ function Module:SpellInterruptor(self)
 	self:RegisterCombatEvent("SPELL_INTERRUPT", Module.UpdateSpellInterruptor)
 end
 
+local function updateSpellTarget(self, _, unit)
+	Module.PostCastUpdate(self.Castbar, unit)
+end
+
 -- Create Nameplates
 local platesList = {}
 function Module:CreatePlates()
@@ -844,7 +848,73 @@ function Module:CreatePlates()
 	self.healthValue:SetPoint("CENTER", self.Overlay, 0, 0)
 	self:Tag(self.healthValue, "[nphp]")
 
-	Module:CreateCastBar(self)
+	local Castbar = CreateFrame("StatusBar", "oUF_CastbarPlayer", self)
+	Castbar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -3)
+	Castbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -3)
+	Castbar:SetHeight(self:GetHeight())
+	Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	Castbar:SetFrameLevel(10)
+	Castbar:CreateShadow(true)
+	Castbar.castTicks = {}
+
+	Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
+	Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
+	Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
+	Castbar.Spark:SetBlendMode("ADD")
+	Castbar.Spark:SetAlpha(0.8)
+
+	local shield = Castbar:CreateTexture(nil, "OVERLAY", nil, 4)
+	shield:SetAtlas("Soulbinds_Portrait_Lock")
+	shield:SetSize(self:GetHeight() + 14, self:GetHeight() + 14)
+	shield:SetPoint("TOP", Castbar, "CENTER", 0, 6)
+	Castbar.Shield = shield
+
+	local timer = K.CreateFontString(Castbar, 12, "", "", false, "RIGHT", 0, -1)
+	local name = K.CreateFontString(Castbar, 12, "", "", false, "LEFT", 0, -1)
+	name:SetJustifyH("LEFT")
+
+	local iconSize = self:GetHeight() * 2 + 5
+	Castbar.Icon = Castbar:CreateTexture(nil, "ARTWORK")
+	Castbar.Icon:SetSize(iconSize, iconSize)
+	Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -3, 0)
+	Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	Castbar.timeToHold = 0.5
+
+	Castbar.Button = CreateFrame("Frame", nil, Castbar)
+	Castbar.Button:CreateShadow(true)
+	Castbar.Button:SetAllPoints(Castbar.Icon)
+	Castbar.Button:SetFrameLevel(Castbar:GetFrameLevel())
+
+	Castbar.glowFrame = CreateFrame("Frame", nil, Castbar)
+	Castbar.glowFrame:SetPoint("CENTER", Castbar.Icon)
+	Castbar.glowFrame:SetSize(iconSize, iconSize)
+
+	local spellTarget = K.CreateFontString(Castbar, C["Nameplate"].NameTextSize + 2)
+	spellTarget:ClearAllPoints()
+	spellTarget:SetJustifyH("LEFT")
+	spellTarget:SetPoint("TOPLEFT", name, "BOTTOMLEFT", 0, -6)
+	Castbar.spellTarget = spellTarget
+
+	self:RegisterEvent("UNIT_TARGET", updateSpellTarget)
+
+	local stage = K.CreateFontString(Castbar, 22)
+	stage:ClearAllPoints()
+	stage:SetPoint("TOPLEFT", Castbar.Icon, -2, 2)
+	Castbar.stageString = stage
+
+	Castbar.decimal = "%.1f"
+
+	Castbar.Time = timer
+	Castbar.Text = name
+	Castbar.OnUpdate = Module.OnCastbarUpdate
+	Castbar.PostCastStart = Module.PostCastStart
+	Castbar.PostCastUpdate = Module.PostCastUpdate
+	Castbar.PostCastStop = Module.PostCastStop
+	Castbar.PostCastFail = Module.PostCastFailed
+	Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+	Castbar.UpdatePips = K.Noop -- use my own code
+
+	self.Castbar = Castbar
 
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)

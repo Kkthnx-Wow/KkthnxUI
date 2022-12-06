@@ -173,7 +173,65 @@ function Module:CreateTarget()
 		self.Buffs = Buffs
 	end
 
-	Module:CreateCastBar(self)
+	if C["Unitframe"].TargetCastbar then
+		local Castbar = CreateFrame("StatusBar", "oUF_CastbarTarget", self)
+		Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+		Castbar:SetFrameLevel(10)
+		Castbar:SetSize(C["Unitframe"].TargetCastbarWidth, C["Unitframe"].TargetCastbarHeight)
+		Castbar:CreateBorder()
+		Castbar.castTicks = {}
+
+		Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
+		Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
+		Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
+		Castbar.Spark:SetBlendMode("ADD")
+		Castbar.Spark:SetAlpha(0.8)
+
+		local shield = Castbar:CreateTexture(nil, "OVERLAY", nil, 4)
+		shield:SetAtlas("Soulbinds_Portrait_Lock")
+		shield:SetSize(C["Unitframe"].TargetCastbarHeight + 10, C["Unitframe"].TargetCastbarHeight + 10)
+		shield:SetPoint("TOP", Castbar, "CENTER", 0, 6)
+		Castbar.Shield = shield
+
+		local timer = K.CreateFontString(Castbar, 12, "", "", false, "RIGHT", -3, 0)
+		local name = K.CreateFontString(Castbar, 12, "", "", false, "LEFT", 3, 0)
+		name:SetPoint("RIGHT", timer, "LEFT", -5, 0)
+		name:SetJustifyH("LEFT")
+
+		Castbar.Icon = Castbar:CreateTexture(nil, "ARTWORK")
+		Castbar.Icon:SetSize(Castbar:GetHeight(), Castbar:GetHeight())
+		Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -6, 0)
+		Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+
+		Castbar.Button = CreateFrame("Frame", nil, Castbar)
+		Castbar.Button:CreateBorder()
+		Castbar.Button:SetAllPoints(Castbar.Icon)
+		Castbar.Button:SetFrameLevel(Castbar:GetFrameLevel())
+
+		local stage = K.CreateFontString(Castbar, 22)
+		stage:ClearAllPoints()
+		stage:SetPoint("TOPLEFT", Castbar.Icon, -2, 2)
+		Castbar.stageString = stage
+
+		Castbar.decimal = "%.2f"
+
+		Castbar.Time = timer
+		Castbar.Text = name
+		Castbar.OnUpdate = Module.OnCastbarUpdate
+		Castbar.PostCastStart = Module.PostCastStart
+		Castbar.PostCastUpdate = Module.PostCastUpdate
+		Castbar.PostCastStop = Module.PostCastStop
+		Castbar.PostCastFail = Module.PostCastFailed
+		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+		Castbar.UpdatePips = K.Noop -- use my own code
+
+		local mover = K.Mover(Castbar, "Target Castbar", "TargetCB", { "BOTTOM", UIParent, "BOTTOM", 0, 342 }, Castbar:GetHeight() + Castbar:GetWidth() + 6, Castbar:GetHeight())
+		Castbar:ClearAllPoints()
+		Castbar:SetPoint("RIGHT", mover)
+		Castbar.mover = mover
+
+		self.Castbar = Castbar
+	end
 
 	if C["Unitframe"].ShowHealPrediction then
 		local frame = CreateFrame("Frame", nil, self)

@@ -185,7 +185,7 @@ local function isItemCollection(item)
 		return
 	end
 
-	return item.id and C_ToyBox_GetToyInfo(item.id) or isMountOrPet(item) or Module:IsPetTrashCurrency(item.id)
+	return item.id and C_ToyBox_GetToyInfo(item.id) or isMountOrPet(item)
 end
 
 local function isItemCustom(item, index)

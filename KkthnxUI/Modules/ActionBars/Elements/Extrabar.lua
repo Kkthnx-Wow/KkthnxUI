@@ -50,11 +50,15 @@ function Module:CreateExtrabar()
 		for spellButton in self.SpellButtonContainer:EnumerateActive() do
 			if spellButton and not spellButton.styled then
 				spellButton.NormalTexture:SetAlpha(0)
-				spellButton:SetPushedTexture(0) --force it to gain a texture
+				spellButton:SetPushedTexture(0) -- force it to gain a texture
 				spellButton:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
-				spellButton:GetHighlightTexture():SetInside()
-				spellButton.Icon:SetInside()
-				-- B.ReskinIcon(spellButton.Icon, true)
+				spellButton:GetHighlightTexture():SetAllPoints()
+				spellButton.Icon:SetAllPoints()
+				spellButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+				local bg = CreateFrame("Frame", nil, spellButton, "BackdropTemplate")
+				bg:SetAllPoints(spellButton)
+				bg:SetFrameLevel(spellButton:GetFrameLevel())
+				bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 0.7, 0.7, 0.7)
 				spellButton.styled = true
 			end
 		end
