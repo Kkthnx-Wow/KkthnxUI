@@ -27,26 +27,22 @@ table_insert(C.defaultThemes, function()
 
 		ic:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-		bu.bg = CreateFrame("Frame", nil, bu)
-		bu.bg:SetFrameLevel(bu:GetFrameLevel())
-		bu.bg:SetAllPoints(ic)
-		bu.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Spellbook-SpellBackground", nil, nil, nil, 1, 1, 1)
-
-		local newHighlight = CreateFrame("Frame", nil, bu, "BackdropTemplate")
-		newHighlight:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 16 })
-		newHighlight:SetPoint("TOPLEFT", bu, -6, 6)
-		newHighlight:SetPoint("BOTTOMRIGHT", bu, 6, -6)
-		newHighlight:SetBackdropBorderColor(1, 1, 0)
-		newHighlight:Hide()
+		if not bu.bg then
+			bu.bg = CreateFrame("Frame", nil, bu)
+			bu.bg:SetFrameLevel(bu:GetFrameLevel())
+			bu.bg:SetAllPoints(ic)
+			bu.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Spellbook-SpellBackground", nil, nil, nil, 1, 1, 1)
+			bu.bg = true
+		end
 
 		hooksecurefunc(bu.SpellHighlightTexture, "SetShown", function(_, value)
 			if value == true then
-				newHighlight:Show()
+				K.CustomGlow.AutoCastGlow_Start(bu)
 			end
 		end)
 
 		hooksecurefunc(bu.SpellHighlightTexture, "Hide", function()
-			newHighlight:Hide()
+			K.CustomGlow.AutoCastGlow_Stop(bu)
 		end)
 	end
 
