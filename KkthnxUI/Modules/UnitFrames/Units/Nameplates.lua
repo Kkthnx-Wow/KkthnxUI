@@ -822,104 +822,93 @@ function Module:CreatePlates()
 	self.nameText:ClearAllPoints()
 	self.nameText:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
 	self.nameText:SetPoint("BOTTOMRIGHT", self.levelText, "TOPRIGHT", -21, 4)
-	self:Tag(self.nameText, "[name]")
+	--self:Tag(self.nameText, "[name]")
 
 	self.npcTitle = K.CreateFontString(self, C["Nameplate"].NameTextSize - 1)
 	self.npcTitle:ClearAllPoints()
-	self.npcTitle:SetPoint("TOP", self, "BOTTOM", 0, -10)
+	self.npcTitle:SetPoint("TOP", self.nameText, "BOTTOM", 0, -4)
 	self.npcTitle:Hide()
 	self:Tag(self.npcTitle, "[npctitle]")
 
 	self.guildName = K.CreateFontString(self, C["Nameplate"].NameTextSize - 1)
 	self.guildName:SetTextColor(211 / 255, 211 / 255, 211 / 255)
 	self.guildName:ClearAllPoints()
-	self.guildName:SetPoint("TOP", self, "BOTTOM", 0, -10)
+	self.guildName:SetPoint("TOP", self.nameText, "BOTTOM", 0, -4)
 	self.guildName:Hide()
 	self:Tag(self.guildName, "[guildname]")
 
-	local tarName = K.CreateFontString(self, C["Nameplate"].NameTextSize + 2)
-	tarName:ClearAllPoints()
-	tarName:SetPoint("TOP", self, "BOTTOM", 0, -10)
-	tarName:Hide()
-	self:Tag(tarName, "[tarname]")
-	self.tarName = tarName
+	self.tarName = K.CreateFontString(self, C["Nameplate"].NameTextSize + 2)
+	self.tarName:ClearAllPoints()
+	self.tarName:SetPoint("TOP", self, "BOTTOM", 0, -10)
+	self.tarName:Hide()
+	self:Tag(self.tarName, "[tarname]")
 
 	self.healthValue = K.CreateFontString(self.Overlay, C["Nameplate"].HealthTextSize, "", "", false, "CENTER", 0, 0)
 	self.healthValue:SetPoint("CENTER", self.Overlay, 0, 0)
 	self:Tag(self.healthValue, "[nphp]")
 
-	local Castbar = CreateFrame("StatusBar", "oUF_CastbarPlayer", self)
-	Castbar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -3)
-	Castbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -3)
-	Castbar:SetHeight(self:GetHeight())
-	Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-	Castbar:SetFrameLevel(10)
-	Castbar:CreateShadow(true)
-	Castbar.castTicks = {}
+	self.Castbar = CreateFrame("StatusBar", "oUF_CastbarNameplate", self)
+	self.Castbar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -3)
+	self.Castbar:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, -3)
+	self.Castbar:SetHeight(self:GetHeight())
+	self.Castbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	self.Castbar:SetFrameLevel(10)
+	self.Castbar:CreateShadow(true)
+	self.Castbar.castTicks = {}
 
-	Castbar.Spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
-	Castbar.Spark:SetSize(64, Castbar:GetHeight() - 2)
-	Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
-	Castbar.Spark:SetBlendMode("ADD")
-	Castbar.Spark:SetAlpha(0.8)
+	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY", nil, 2)
+	self.Castbar.Spark:SetSize(64, self.Castbar:GetHeight() - 2)
+	self.Castbar.Spark:SetTexture(C["Media"].Textures.Spark128Texture)
+	self.Castbar.Spark:SetBlendMode("ADD")
+	self.Castbar.Spark:SetAlpha(0.8)
 
-	local shield = Castbar:CreateTexture(nil, "OVERLAY", nil, 4)
-	shield:SetAtlas("Soulbinds_Portrait_Lock")
-	shield:SetSize(self:GetHeight() + 14, self:GetHeight() + 14)
-	shield:SetPoint("TOP", Castbar, "CENTER", 0, 6)
-	Castbar.Shield = shield
+	self.Castbar.Shield = self.Castbar:CreateTexture(nil, "OVERLAY", nil, 4)
+	self.Castbar.Shield:SetAtlas("Soulbinds_Portrait_Lock")
+	self.Castbar.Shield:SetSize(self:GetHeight() + 14, self:GetHeight() + 14)
+	self.Castbar.Shield:SetPoint("TOP", self.Castbar, "CENTER", 0, 6)
 
-	local timer = K.CreateFontString(Castbar, 12, "", "", false, "RIGHT", 0, -1)
-	local name = K.CreateFontString(Castbar, 12, "", "", false, "LEFT", 0, -1)
-	name:SetJustifyH("LEFT")
+	self.Castbar.Time = K.CreateFontString(self.Castbar, 12, "", "", false, "RIGHT", 0, -1)
+	self.Castbar.Text = K.CreateFontString(self.Castbar, 12, "", "", false, "LEFT", 0, -1)
+	self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -5, 0)
+	self.Castbar.Text:SetJustifyH("LEFT")
 
-	local iconSize = self:GetHeight() * 2 + 5
-	Castbar.Icon = Castbar:CreateTexture(nil, "ARTWORK")
-	Castbar.Icon:SetSize(iconSize, iconSize)
-	Castbar.Icon:SetPoint("BOTTOMRIGHT", Castbar, "BOTTOMLEFT", -3, 0)
-	Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	Castbar.timeToHold = 0.5
+	self.Castbar.Icon = self.Castbar:CreateTexture(nil, "ARTWORK")
+	self.Castbar.Icon:SetSize(self:GetHeight() * 2 + 5, self:GetHeight() * 2 + 5)
+	self.Castbar.Icon:SetPoint("BOTTOMRIGHT", self.Castbar, "BOTTOMLEFT", -3, 0)
+	self.Castbar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-	Castbar.Button = CreateFrame("Frame", nil, Castbar)
-	Castbar.Button:CreateShadow(true)
-	Castbar.Button:SetAllPoints(Castbar.Icon)
-	Castbar.Button:SetFrameLevel(Castbar:GetFrameLevel())
+	self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
+	self.Castbar.Button:CreateShadow(true)
+	self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
+	self.Castbar.Button:SetFrameLevel(self.Castbar:GetFrameLevel())
 
-	Castbar.glowFrame = CreateFrame("Frame", nil, Castbar)
-	Castbar.glowFrame:SetPoint("CENTER", Castbar.Icon)
-	Castbar.glowFrame:SetSize(iconSize, iconSize)
+	self.Castbar.glowFrame = CreateFrame("Frame", nil, self.Castbar)
+	self.Castbar.glowFrame:SetPoint("CENTER", self.Castbar.Icon)
+	self.Castbar.glowFrame:SetSize(self:GetHeight() * 2 + 5, self:GetHeight() * 2 + 5)
 
-	local spellTarget = K.CreateFontString(Castbar, C["Nameplate"].NameTextSize + 2)
-	spellTarget:ClearAllPoints()
-	spellTarget:SetJustifyH("LEFT")
-	spellTarget:SetPoint("TOPLEFT", name, "BOTTOMLEFT", 0, -6)
-	Castbar.spellTarget = spellTarget
-
+	self.Castbar.spellTarget = K.CreateFontString(self.Castbar, C["Nameplate"].NameTextSize + 2)
+	self.Castbar.spellTarget:ClearAllPoints()
+	self.Castbar.spellTarget:SetJustifyH("LEFT")
+	self.Castbar.spellTarget:SetPoint("TOPLEFT", self.Castbar.Text, "BOTTOMLEFT", 0, -6)
 	self:RegisterEvent("UNIT_TARGET", updateSpellTarget)
 
-	local stage = K.CreateFontString(Castbar, 22)
-	stage:ClearAllPoints()
-	stage:SetPoint("TOPLEFT", Castbar.Icon, -2, 2)
-	Castbar.stageString = stage
+	self.Castbar.stageString = K.CreateFontString(self.Castbar, 22)
+	self.Castbar.stageString:ClearAllPoints()
+	self.Castbar.stageString:SetPoint("TOPLEFT", self.Castbar.Icon, -2, 2)
 
-	Castbar.decimal = "%.1f"
-
-	Castbar.Time = timer
-	Castbar.Text = name
-	Castbar.OnUpdate = Module.OnCastbarUpdate
-	Castbar.PostCastStart = Module.PostCastStart
-	Castbar.PostCastUpdate = Module.PostCastUpdate
-	Castbar.PostCastStop = Module.PostCastStop
-	Castbar.PostCastFail = Module.PostCastFailed
-	Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-	Castbar.UpdatePips = K.Noop -- use my own code
-
-	self.Castbar = Castbar
+	self.Castbar.timeToHold = 0.5
+	self.Castbar.decimal = "%.1f"
+	self.Castbar.OnUpdate = Module.OnCastbarUpdate
+	self.Castbar.PostCastStart = Module.PostCastStart
+	self.Castbar.PostCastUpdate = Module.PostCastUpdate
+	self.Castbar.PostCastStop = Module.PostCastStop
+	self.Castbar.PostCastFail = Module.PostCastFailed
+	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
+	self.Castbar.UpdatePips = K.Noop -- use my own code
 
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)
-	self.RaidTargetIndicator:SetParent(self.Health)
-	self.RaidTargetIndicator:SetSize(16, 16)
+	self.RaidTargetIndicator:SetSize(18, 18)
 
 	do
 		local mhpb = self:CreateTexture(nil, "BORDER", nil, 5)
@@ -1066,34 +1055,38 @@ function Module:UpdateNameplateAuras()
 end
 
 function Module:UpdateNameplateSize()
-	local plateHeight = C["Nameplate"].PlateHeight
-	local nameTextSize = C["Nameplate"].NameTextSize
-	local iconSize = plateHeight * 2 + 3
+	-- local plateHeight = C["Nameplate"].PlateHeight
+	-- local nameTextSize = C["Nameplate"].NameTextSize
+	-- local iconSize = plateHeight * 2 + 3
 
-	self:SetSize(C["Nameplate"].PlateWidth, plateHeight)
+	-- self:SetSize(C["Nameplate"].PlateWidth, plateHeight)
 
-	self.nameText:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
-	if self.plateType ~= "NameOnly" then
+	--self.nameText:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
+	if self.plateType == "NameOnly" then
+		self:Tag(self.nameText, "[nprare] [color][name] [nplevel]")
+		self.npcTitle:UpdateTag()
+	else
 		self:Tag(self.nameText, "[name]")
-		self.nameText:UpdateTag()
 	end
 
-	self.npcTitle:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize - 1, "")
-	self.tarName:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 4, "")
+	-- self.npcTitle:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize - 1, "")
+	-- self.tarName:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 4, "")
 
-	self.Castbar.Icon:SetSize(iconSize, iconSize)
-	self.Castbar:SetHeight(plateHeight)
-	self.Castbar.Time:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
-	self.Castbar.Text:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
-	self.Castbar.spellTarget:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 3, "")
+	-- self.Castbar.Icon:SetSize(iconSize, iconSize)
+	-- self.Castbar:SetHeight(plateHeight)
+	-- self.Castbar.Time:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
+	-- self.Castbar.Text:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize, "")
+	-- self.Castbar.spellTarget:SetFont(select(1, KkthnxUIFont:GetFont()), nameTextSize + 3, "")
 
-	self.healthValue:SetFont(select(1, KkthnxUIFont:GetFont()), C["Nameplate"].HealthTextSize, "")
-	self.healthValue:UpdateTag()
+	-- self.healthValue:SetFont(select(1, KkthnxUIFont:GetFont()), C["Nameplate"].HealthTextSize, "")
+	-- self.healthValue:UpdateTag()
+
+	self.nameText:UpdateTag()
 end
 
 function Module:RefreshNameplats()
 	for nameplate in pairs(platesList) do
-		Module.UpdateNameplateSize(nameplate)
+		--Module.UpdateNameplateSize(nameplate)
 		Module.UpdateUnitClassify(nameplate)
 		Module.UpdateNameplateAuras(nameplate)
 		Module.UpdateTargetIndicator(nameplate)
@@ -1126,6 +1119,8 @@ function Module:UpdatePlateByType()
 
 	name:SetShown(not self.widgetsOnly)
 	name:ClearAllPoints()
+	self:Tag(self.nameText, "[nprare] [color][name] [nplevel]")
+	self.npcTitle:UpdateTag()
 	raidtarget:ClearAllPoints()
 
 	if self.plateType == "NameOnly" then
@@ -1136,8 +1131,6 @@ function Module:UpdatePlateByType()
 		end
 
 		name:SetJustifyH("CENTER")
-		self:Tag(name, "[nprare] [color][name] [nplevel]")
-		name:UpdateTag()
 		name:SetPoint("CENTER", self, "BOTTOM")
 
 		level:Hide()
@@ -1145,7 +1138,7 @@ function Module:UpdatePlateByType()
 		title:Show()
 		guild:Show()
 
-		raidtarget:SetPoint("TOP", title, "BOTTOM", 0, -5)
+		raidtarget:SetPoint("BOTTOM", name, "TOP", 0, 6)
 
 		if questIcon then
 			questIcon:SetPoint("LEFT", name, "RIGHT", 0, 0)
@@ -1153,7 +1146,7 @@ function Module:UpdatePlateByType()
 
 		if self.widgetContainer then
 			self.widgetContainer:ClearAllPoints()
-			self.widgetContainer:SetPoint("TOP", title, "BOTTOM", 0, -6)
+			self.widgetContainer:SetPoint("TOP", title, "BOTTOM", 0, -10)
 		end
 	else
 		for _, element in pairs(DisabledElements) do
@@ -1165,6 +1158,7 @@ function Module:UpdatePlateByType()
 		name:SetJustifyH("LEFT")
 		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
 		name:SetPoint("BOTTOMRIGHT", level, "TOPRIGHT", -21, 4)
+		self:Tag(self.nameText, "[name]")
 
 		level:Show()
 		hpval:Show()
@@ -1183,7 +1177,7 @@ function Module:UpdatePlateByType()
 		end
 	end
 
-	Module.UpdateNameplateSize(self)
+	--Module.UpdateNameplateSize(self)
 	Module.UpdateTargetIndicator(self)
 	Module.ToggleNameplateAuras(self)
 end
