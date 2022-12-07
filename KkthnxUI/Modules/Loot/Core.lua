@@ -118,6 +118,7 @@ local function AnchorSlots(frame)
 end
 
 local function CreateSlot(id)
+	print(id)
 	local size = (iconSize - 6)
 
 	local slot = CreateFrame("Button", "KKUI_LootSlot" .. id, lootFrame)
@@ -177,7 +178,7 @@ local function CreateSlot(id)
 	return slot
 end
 
-function Module:LOOT_SLOT_CLEARED(_, id)
+function Module:LOOT_SLOT_CLEARED(id)
 	if not lootFrame:IsShown() then
 		return
 	end
@@ -249,8 +250,14 @@ function Module:LOOT_OPENED(_, autoloot)
 
 			if quality and (quality > 1) then
 				slot.drop:SetVertexColor(color.r, color.g, color.b)
+				slot.iconFrame.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 				slot.drop:Show()
 			else
+				if C["General"].ColorTextures then
+					slot.iconFrame.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+				else
+					slot.iconFrame.KKUI_Border:SetVertexColor(1, 1, 1)
+				end
 				slot.drop:Hide()
 			end
 

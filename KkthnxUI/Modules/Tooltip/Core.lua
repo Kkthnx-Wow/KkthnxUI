@@ -83,9 +83,9 @@ end
 function Module:InsertFactionFrame(faction)
 	if not self.factionFrame then
 		local f = self:CreateTexture(nil, "OVERLAY")
-		f:SetPoint("TOPRIGHT", 0, -5)
+		f:SetPoint("TOPRIGHT", 6, -6)
 		f:SetBlendMode("ADD")
-		f:SetScale(0.3)
+		f:SetScale(0.2)
 		f:SetAlpha(0.7)
 		self.factionFrame = f
 	end
@@ -382,7 +382,7 @@ function Module:GameTooltip_SetDefaultAnchor(parent)
 		self:SetOwner(parent, "ANCHOR_CURSOR_RIGHT")
 	else
 		if not mover then
-			mover = K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -218, 36 }, 240, 120)
+			mover = K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -230, 36 }, 240, 120)
 		end
 
 		self:SetOwner(parent, "ANCHOR_NONE")
