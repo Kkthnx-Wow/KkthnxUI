@@ -283,65 +283,77 @@ function Module:CreateStyle()
 	end)
 end
 
--- This is just weird to do this but I hate the default icons for covs
-local function UpdateCovenantTexture(texture)
-	local CovenantID = C_Covenants.GetActiveCovenantID()
-	local CovenantType = Enum.CovenantType
-	local TexturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\"
-
-	if CovenantID ~= CovenantType.None then
-		if CovenantID == CovenantType.Kyrian then
-			texture = TexturePath .. "Kyrian"
-		elseif CovenantID == CovenantType.Venthyr then
-			texture = TexturePath .. "Venthyr"
-		elseif CovenantID == CovenantType.NightFae then
-			texture = TexturePath .. "NightFae"
-		elseif CovenantID == CovenantType.Necrolord then
-			texture = TexturePath .. "Necrolords"
-		end
-	else
-		if CovenantID == CovenantType.None then -- No cov so default to differnt icons?
-			if K.Faction == "Alliance" then
-				texture = TexturePath .. "Alliance"
-			else
-				texture = TexturePath .. "Horde"
-			end
-		end
-	end
-
-	return texture
-end
-
 function Module:ReskinRegions()
-	local function updateMinimapButtons(self)
-		self:ClearAllPoints()
-		self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
-		-- self:SetNormalTexture(UpdateCovenantTexture(self))
-		-- self:SetPushedTexture(UpdateCovenantTexture(self))
-		-- self:SetHighlightTexture(UpdateCovenantTexture(self))
+	-- local function updateMinimapButtons(self)
+	-- 	self:ClearAllPoints()
+	-- 	self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
+	-- 	-- self:SetNormalTexture(UpdateCovenantTexture(self))
+	-- 	-- self:SetPushedTexture(UpdateCovenantTexture(self))
+	-- 	-- self:SetHighlightTexture(UpdateCovenantTexture(self))
 
-		self:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		self:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		self:GetHighlightTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	-- 	self:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	-- 	self:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	-- 	self:GetHighlightTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-		self:GetPushedTexture():SetVertexColor(1, 1, 0, 0.5)
+	-- 	self:GetPushedTexture():SetVertexColor(1, 1, 0, 0.5)
 
-		self.LoopingGlow:SetTexture(UpdateCovenantTexture(self))
-		self.LoopingGlow:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	-- 	self.LoopingGlow:SetTexture(UpdateCovenantTexture(self))
+	-- 	self.LoopingGlow:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-		self:SetSize(22, 22)
-		self.LoopingGlow:SetSize(24, 24)
+	-- 	self:SetSize(22, 22)
+	-- 	self.LoopingGlow:SetSize(24, 24)
 
-		self:SetHitRectInsets(0, 0, 0, 0)
-		self:SetFrameLevel(999)
-	end
+	-- 	self:SetHitRectInsets(0, 0, 0, 0)
+	-- 	self:SetFrameLevel(999)
+	-- end
 
-	if ExpansionLandingPageMinimapButton then
-		-- 	ExpansionLandingPageMinimapButton:SetScript("OnEnter", K.LandingButton_OnEnter)
+	-- if ExpansionLandingPageMinimapButton then
+	-- 	-- 	ExpansionLandingPageMinimapButton:SetScript("OnEnter", K.LandingButton_OnEnter)
 
-		updateMinimapButtons(ExpansionLandingPageMinimapButton)
-		ExpansionLandingPageMinimapButton:HookScript("OnShow", updateMinimapButtons)
-		hooksecurefunc(ExpansionLandingPageMinimapButton, "UpdateIcon", updateMinimapButtons)
+	-- 	updateMinimapButtons(ExpansionLandingPageMinimapButton)
+	-- 	ExpansionLandingPageMinimapButton:HookScript("OnShow", updateMinimapButtons)
+	-- 	hooksecurefunc(ExpansionLandingPageMinimapButton, "UpdateIcon", updateMinimapButtons)
+	-- end
+
+	-- Garrison
+	local garrMinimapButton = _G.ExpansionLandingPageMinimapButton
+	if garrMinimapButton then
+		local function updateMinimapButtons(self)
+			self:ClearAllPoints()
+			self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 2)
+			self:GetNormalTexture():SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
+			self:GetPushedTexture():SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
+			self:GetHighlightTexture():SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
+			self:SetSize(24, 24)
+		end
+		updateMinimapButtons(garrMinimapButton)
+		garrMinimapButton:HookScript("OnShow", updateMinimapButtons)
+		hooksecurefunc(garrMinimapButton, "UpdateIcon", updateMinimapButtons)
+
+		local menuList = {
+			{ text = _G.GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_9_0, notCheckable = true },
+			{ text = _G.WAR_CAMPAIGN, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_8_0, notCheckable = true },
+			{ text = _G.ORDER_HALL_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_7_0, notCheckable = true },
+			{ text = _G.GARRISON_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_6_0, notCheckable = true },
+		}
+		garrMinimapButton:HookScript("OnMouseDown", function(self, btn)
+			if btn == "RightButton" then
+				if _G.GarrisonLandingPage and _G.GarrisonLandingPage:IsShown() then
+					HideUIPanel(_G.GarrisonLandingPage)
+				end
+				if _G.ExpansionLandingPage and _G.ExpansionLandingPage:IsShown() then
+					HideUIPanel(_G.ExpansionLandingPage)
+				end
+				EasyMenu(menuList, K.EasyMenu, self, -80, 0, "MENU", 1)
+			end
+		end)
+		garrMinimapButton:SetScript("OnEnter", function(self)
+			GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+			GameTooltip:SetText(self.title, 1, 1, 1)
+			GameTooltip:AddLine(self.description, nil, nil, nil, true)
+			GameTooltip:AddLine("|nRight Click to switch Summaries", nil, nil, nil, true)
+			GameTooltip:Show()
+		end)
 	end
 
 	-- QueueStatus Button

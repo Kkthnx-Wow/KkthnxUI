@@ -118,7 +118,6 @@ local function AnchorSlots(frame)
 end
 
 local function CreateSlot(id)
-	print(id)
 	local size = (iconSize - 6)
 
 	local slot = CreateFrame("Button", "KKUI_LootSlot" .. id, lootFrame)
