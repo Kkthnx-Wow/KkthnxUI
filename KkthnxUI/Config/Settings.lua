@@ -601,8 +601,12 @@ C["Unitframe"] = {
 	["ShowPlayerLevel"] = true,
 	["Smooth"] = false,
 	["Stagger"] = true,
-	["Swingbar"] = false,
-	["SwingbarTimer"] = false,
+
+	["SwingBar"] = false,
+	["SwingWidth"] = 274,
+	["SwingHeight"] = 14,
+	["SwingTimer"] = true,
+	["OffOnTop"] = false,
 
 	-- Target
 	["TargetHealthHeight"] = 34,

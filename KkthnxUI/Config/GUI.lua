@@ -918,8 +918,12 @@ local Unitframe = function(self)
 	if C["Unitframe"].PortraitStyle.Value ~= "NoPortraits" then
 		Window:CreateSwitch("Unitframe", "ShowPlayerLevel", L["Show Player Frame Level"])
 	end
-	Window:CreateSwitch("Unitframe", "Swingbar", L["Unitframe Swingbar"])
-	Window:CreateSwitch("Unitframe", "SwingbarTimer", L["Unitframe Swingbar Timer"])
+	Window:CreateSwitch("Unitframe", "SwingBar", L["Unitframe Swingbar"])
+	Window:CreateSwitch("Unitframe", "SwingTimer", L["Unitframe Swingbar Timer"])
+	Window:CreateSwitch("Unitframe", "OffOnTop", "Offhand timer on top")
+	Window:CreateSlider("Unitframe", "SwingWidth", "Unitframe SwingBar Width", 50, 1000, 275)
+	Window:CreateSlider("Unitframe", "SwingHeight", "Unitframe SwingBar Height", 1, 50, 3)
+
 	Window:CreateSlider("Unitframe", "PlayerBuffsPerRow", L["Number of Buffs Per Row"], 4, 10, 1, nil, UpdatePlayerBuffs)
 	Window:CreateSlider("Unitframe", "PlayerDebuffsPerRow", L["Number of Debuffs Per Row"], 4, 10, 1, nil, UpdatePlayerDebuffs)
 	Window:CreateSlider("Unitframe", "PlayerPowerHeight", "Player Power Bar Height", 10, 40, 1, nil, UpdateUnitPlayerSize)
