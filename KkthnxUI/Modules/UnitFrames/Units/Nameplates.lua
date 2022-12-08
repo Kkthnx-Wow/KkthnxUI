@@ -1185,7 +1185,7 @@ end
 function Module:RefreshPlateType(unit)
 	self.reaction = UnitReaction(unit, "player")
 	self.isFriendly = self.reaction and self.reaction >= 4 and not UnitCanAttack("player", unit)
-	if C["Nameplate"].NameOnly and self.isFriendly or self.widgetsOnly then
+	if C["Nameplate"].NameOnly and self.isFriendly or self.widgetsOnly or self.isSoftTarget then
 		self.plateType = "NameOnly"
 	elseif C["Nameplate"].FriendPlate and self.isFriendly then
 		self.plateType = "FriendPlate"
@@ -1222,12 +1222,21 @@ function Module:PostUpdatePlates(event, unit)
 		self.isPlayer = UnitIsPlayer(unit)
 		self.npcID = K.GetNPCID(self.unitGUID)
 		self.widgetsOnly = UnitNameplateShowsWidgetsOnly(unit)
+		self.isSoftTarget = UnitIsUnit(unit, "softinteract")
 
 		local blizzPlate = self:GetParent().UnitFrame
-		self.widgetContainer = blizzPlate and blizzPlate.WidgetContainer
-		if self.widgetContainer then
-			self.widgetContainer:SetParent(self)
-			self.widgetContainer:SetScale(1 / C["General"].UIScale)
+		if blizzPlate then
+			self.widgetContainer = blizzPlate.WidgetContainer
+			if self.widgetContainer then
+				self.widgetContainer:SetParent(self)
+				self.widgetContainer:SetScale(1 / C["General"].UIScale)
+			end
+
+			self.softTargetFrame = blizzPlate.SoftTargetFrame
+			if self.softTargetFrame then
+				self.softTargetFrame:SetParent(self)
+				self.softTargetFrame:SetScale(1 / C["General"].UIScale)
+			end
 		end
 
 		Module.RefreshPlateType(self, unit)

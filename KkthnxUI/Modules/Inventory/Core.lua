@@ -1146,7 +1146,7 @@ function Module:OnEnable()
 		end
 
 		if not self.ProfessionQualityOverlay then
-			self.ProfessionQualityOverlay = parentFrame:CreateTexture(nil, "OVERLAY")
+			self.ProfessionQualityOverlay = self:CreateTexture(nil, "OVERLAY")
 			self.ProfessionQualityOverlay:SetPoint("TOPLEFT", -3, 2)
 		end
 	end
