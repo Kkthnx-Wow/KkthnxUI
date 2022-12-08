@@ -42,8 +42,10 @@ table_insert(C.defaultThemes, function()
 		_G["SpellButton" .. i .. "SlotFrame"]:SetAlpha(0)
 		bu.EmptySlot:SetAlpha(0)
 		bu.UnlearnedFrame:SetAlpha(0)
+		bu.SpellHighlightTexture:SetAlpha(0)
 		bu:SetCheckedTexture(0)
 		bu:SetPushedTexture(0)
+		bu:SetHighlightTexture(0)
 
 		ic:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
@@ -55,14 +57,25 @@ table_insert(C.defaultThemes, function()
 			bu.bg = true
 		end
 
+		bu.NewSpellHighlightTexture = CreateFrame("Frame", nil, bu, "BackdropTemplate")
+		bu.NewSpellHighlightTexture:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 16 })
+		bu.NewSpellHighlightTexture:SetPoint("TOPLEFT", bu, -6, 6)
+		bu.NewSpellHighlightTexture:SetPoint("BOTTOMRIGHT", bu, 6, -6)
+		bu.NewSpellHighlightTexture:SetBackdropBorderColor(255 / 255, 223 / 255, 0 / 255)
+		bu.NewSpellHighlightTexture:Hide()
+
 		hooksecurefunc(bu.SpellHighlightTexture, "SetShown", function(_, value)
 			if value == true then
-				K.CustomGlow.AutoCastGlow_Start(bu)
+				if not bu.NewSpellHighlightTexture:IsShown() then
+					bu.NewSpellHighlightTexture:Show()
+				end
 			end
 		end)
 
 		hooksecurefunc(bu.SpellHighlightTexture, "Hide", function()
-			K.CustomGlow.AutoCastGlow_Stop(bu)
+			if bu.NewSpellHighlightTexture:IsShown() then
+				bu.NewSpellHighlightTexture:Hide()
+			end
 		end)
 	end
 

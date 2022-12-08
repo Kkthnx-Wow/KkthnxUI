@@ -1302,7 +1302,7 @@ function Module:OnEnable()
 			elseif color and item.quality and item.quality > -1 then
 				K.CustomGlow.ButtonGlow_Start(self.glowFrame, { color.r, color.g, color.b, 1 })
 			else
-				K.CustomGlow.ButtonGlow_Start(self.glowFrame, { 0.95, 0.95, 0.32, 1 })
+				K.CustomGlow.ButtonGlow_Start(self.glowFrame)
 			end
 		else
 			K.CustomGlow.ButtonGlow_Stop(self.glowFrame)
