@@ -264,9 +264,9 @@ function Module:PostCastStart(unit)
 		-- Major spells
 		-- if C.db["Nameplate"]["CastbarGlow"] and
 		if Module.MajorSpells[self.spellID] then
-			K.ShowButtonGlow(self.glowFrame)
+			K.CustomGlow.ButtonGlow_Start(self.glowFrame)
 		else
-			K.HideButtonGlow(self.glowFrame)
+			K.CustomGlow.ButtonGlow_Stop(self.glowFrame)
 		end
 
 		-- Spell target

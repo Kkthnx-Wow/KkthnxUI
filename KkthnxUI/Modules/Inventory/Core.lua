@@ -1148,7 +1148,6 @@ function Module:OnEnable()
 
 	function MyButton:ItemOnEnter()
 		if self.glowFrame then
-			-- K.HideButtonGlow(self.glowFrame)
 			K.CustomGlow.ButtonGlow_Stop(self.glowFrame)
 			C_NewItems_RemoveNewItem(self.bagId, self.slotId)
 		end
@@ -1287,7 +1286,6 @@ function Module:OnEnable()
 		end
 
 		if C_NewItems_IsNewItem(item.bagId, item.slotId) then
-			-- K.ShowButtonGlow(self.glowFrame)
 			local color = K.QualityColors[item.quality]
 			if item.questID or item.isQuestItem then
 				K.CustomGlow.ButtonGlow_Start(self.glowFrame, { 1, 0.82, 0.2, 1 })
@@ -1297,7 +1295,6 @@ function Module:OnEnable()
 				K.CustomGlow.ButtonGlow_Start(self.glowFrame, { 0.95, 0.95, 0.32, 1 })
 			end
 		else
-			-- K.HideButtonGlow(self.glowFrame)
 			K.CustomGlow.ButtonGlow_Stop(self.glowFrame)
 		end
 

@@ -532,13 +532,13 @@ function Module:AddQuestIcon(self)
 	end
 
 	self.questIcon = self:CreateTexture(nil, "OVERLAY", nil, 2)
-	self.questIcon:SetPoint("LEFT", self, "RIGHT", 1, 0)
+	self.questIcon:SetPoint("LEFT", self, "RIGHT", 3, 0)
 	self.questIcon:SetSize(26, 26)
 	self.questIcon:SetAtlas("QuestNormal")
 	self.questIcon:Hide()
 
 	self.questCount = K.CreateFontString(self, 13, "", "", nil, "LEFT", 0, 0)
-	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -2, 0)
+	self.questCount:SetPoint("LEFT", self.questIcon, "RIGHT", -1, 0)
 
 	self:RegisterEvent("QUEST_LOG_UPDATE", Module.UpdateQuestUnit, true)
 	self:RegisterEvent("UNIT_NAME_UPDATE", Module.UpdateQuestUnit, true)

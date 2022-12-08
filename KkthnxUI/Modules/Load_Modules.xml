@@ -161,7 +161,6 @@
    <Include file="Skins\Blizzard\DeathRecap.lua" />
    <Include file="Skins\Blizzard\InspectUI.lua" />
    <Include file="Skins\Blizzard\QuestNavigation.lua" />
-   <Include file="Skins\Blizzard\TalentUI.lua" />
    <Include file="Skins\Blizzard\TalkingHeadUI.lua" />
    <Include file="Skins\Blizzard\TradeSkillUI.lua" />
    <!-- Skins FrameXML -->

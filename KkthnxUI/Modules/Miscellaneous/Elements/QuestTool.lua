@@ -57,9 +57,9 @@ function Module:QuestTool_SetGlow(msg)
 			local _, spellID = GetActionInfo(button.action)
 			local name = spellID and GetSpellInfo(spellID)
 			if fixedStrings[name] and isActionMatch(msg, fixedStrings[name]) or isActionMatch(msg, name) then
-				K.ShowButtonGlow(button)
+				K.CustomGlow.ButtonGlow_Start(button)
 			else
-				K.HideButtonGlow(button)
+				K.CustomGlow.ButtonGlow_Stop(button)
 			end
 		end
 		Module.isGlowing = true
@@ -72,7 +72,7 @@ function Module:QuestTool_ClearGlow()
 	if Module.isGlowing then
 		Module.isGlowing = nil
 		for i = 1, 3 do
-			K.HideButtonGlow(_G["ActionButton" .. i])
+			K.CustomGlow.ButtonGlow_Stop(_G["ActionButton" .. i])
 		end
 	end
 end

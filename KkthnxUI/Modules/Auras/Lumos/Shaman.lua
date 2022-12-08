@@ -47,10 +47,10 @@ function Module:ChantLumos(self)
 			else
 				if IsUsableSpell(8042) then
 					button.Icon:SetDesaturated(false)
-					K.ShowButtonGlow(button.glowFrame)
+					K.CustomGlow.ButtonGlow_Start(button.glowFrame)
 				else
 					button.Icon:SetDesaturated(true)
-					K.HideButtonGlow(button.glowFrame)
+					K.CustomGlow.ButtonGlow_Stop(button.glowFrame)
 				end
 				button.Icon:SetTexture(GetSpellTexture(8042))
 			end

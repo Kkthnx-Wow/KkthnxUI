@@ -51,7 +51,7 @@ local function OnFinished(self)
 
 	* self - the ReadyCheckIndicator element
 	--]]
-	if(element.PostUpdateFadeOut) then
+	if element.PostUpdateFadeOut then
 		element:PostUpdateFadeOut()
 	end
 end
@@ -65,15 +65,15 @@ local function Update(self, event)
 
 	* self - the ReadyCheckIndicator element
 	--]]
-	if(element.PreUpdate) then
+	if element.PreUpdate then
 		element:PreUpdate()
 	end
 
 	local status = GetReadyCheckStatus(unit)
-	if(unitExists(unit) and status) then
-		if(status == 'ready') then
+	if unitExists(unit) and status then
+		if status == "ready" then
 			element:SetTexture(element.readyTexture)
-		elseif(status == 'notready') then
+		elseif status == "notready" then
 			element:SetTexture(element.notReadyTexture)
 		else
 			element:SetTexture(element.waitingTexture)
@@ -81,13 +81,13 @@ local function Update(self, event)
 
 		element.status = status
 		element:Show()
-	elseif(event ~= 'READY_CHECK_FINISHED') then
+	elseif event ~= "READY_CHECK_FINISHED" then
 		element.status = nil
 		element:Hide()
 	end
 
-	if(event == 'READY_CHECK_FINISHED') then
-		if(element.status == 'waiting') then
+	if event == "READY_CHECK_FINISHED" then
+		if element.status == "waiting" then
 			element:SetTexture(element.notReadyTexture)
 		end
 
@@ -100,7 +100,7 @@ local function Update(self, event)
 	* self   - the ReadyCheckIndicator element
 	* status - the unit's ready check status (string?)['ready', 'notready', 'waiting']
 	--]]
-	if(element.PostUpdate) then
+	if element.PostUpdate then
 		return element:PostUpdate(status)
 	end
 end
@@ -113,17 +113,17 @@ local function Path(self, ...)
 	* event - the event triggering the update (string)
 	* ...   - the arguments accompanying the event
 	--]]
-	return (self.ReadyCheckIndicator.Override or Update) (self, ...)
+	return (self.ReadyCheckIndicator.Override or Update)(self, ...)
 end
 
 local function ForceUpdate(element)
-	return Path(element.__owner, 'ForceUpdate')
+	return Path(element.__owner, "ForceUpdate")
 end
 
 local function Enable(self, unit)
 	local element = self.ReadyCheckIndicator
-	unit = unit and unit:match('(%a+)%d*$')
-	if(element and (unit == 'party' or unit == 'raid')) then
+	unit = unit and unit:match("(%a+)%d*$")
+	if element and (unit == "party" or unit == "raid") then
 		element.__owner = self
 		element.ForceUpdate = ForceUpdate
 
@@ -132,18 +132,18 @@ local function Enable(self, unit)
 		element.waitingTexture = element.waitingTexture or _G.READY_CHECK_WAITING_TEXTURE
 
 		local AnimationGroup = element:CreateAnimationGroup()
-		AnimationGroup:HookScript('OnFinished', OnFinished)
+		AnimationGroup:HookScript("OnFinished", OnFinished)
 		element.Animation = AnimationGroup
 
-		local Animation = AnimationGroup:CreateAnimation('Alpha')
+		local Animation = AnimationGroup:CreateAnimation("Alpha")
 		Animation:SetFromAlpha(1)
 		Animation:SetToAlpha(0)
 		Animation:SetDuration(element.fadeTime or 1.5)
 		Animation:SetStartDelay(element.finishedTime or 10)
 
-		self:RegisterEvent('READY_CHECK', Path, true)
-		self:RegisterEvent('READY_CHECK_CONFIRM', Path, true)
-		self:RegisterEvent('READY_CHECK_FINISHED', Path, true)
+		self:RegisterEvent("READY_CHECK", Path, true)
+		self:RegisterEvent("READY_CHECK_CONFIRM", Path, true)
+		self:RegisterEvent("READY_CHECK_FINISHED", Path, true)
 
 		return true
 	end
@@ -151,13 +151,13 @@ end
 
 local function Disable(self)
 	local element = self.ReadyCheckIndicator
-	if(element) then
+	if element then
 		element:Hide()
 
-		self:UnregisterEvent('READY_CHECK', Path)
-		self:UnregisterEvent('READY_CHECK_CONFIRM', Path)
-		self:UnregisterEvent('READY_CHECK_FINISHED', Path)
+		self:UnregisterEvent("READY_CHECK", Path)
+		self:UnregisterEvent("READY_CHECK_CONFIRM", Path)
+		self:UnregisterEvent("READY_CHECK_FINISHED", Path)
 	end
 end
 
-oUF:AddElement('ReadyCheckIndicator', Path, Enable, Disable)
+oUF:AddElement("ReadyCheckIndicator", Path, Enable, Disable)

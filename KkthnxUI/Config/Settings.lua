@@ -27,6 +27,7 @@ C["ActionBar"] = {
 	["BindType"] = 1,
 	["OverrideWA"] = false,
 	["MicroMenu"] = true,
+	["FadeMicroMenu"] = false,
 	["ShowStance"] = true,
 	["EquipColor"] = false,
 	["VehButtonSize"] = 34,

@@ -324,6 +324,11 @@ function Module:ReskinRegions()
 			self:GetNormalTexture():SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
 			self:GetPushedTexture():SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
 			self:GetHighlightTexture():SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
+
+			self.LoopingGlow:SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
+			self.LoopingGlow:SetSize(24, 24)
+
+			self:SetHitRectInsets(0, 0, 0, 0)
 			self:SetSize(24, 24)
 		end
 		updateMinimapButtons(garrMinimapButton)
