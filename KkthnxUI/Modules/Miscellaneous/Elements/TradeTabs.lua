@@ -1,45 +1,21 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Miscellaneous")
 
-local _G = _G
-local pairs = _G.pairs
-local select = _G.select
-local string_format = _G.string.format
-local table_insert = _G.table.insert
+local pairs, tinsert, select = pairs, tinsert, select
+local GetSpellCooldown, GetSpellInfo, GetItemCooldown, GetItemCount, GetItemInfo = GetSpellCooldown, GetSpellInfo, GetItemCooldown, GetItemCount, GetItemInfo
+local IsPassiveSpell, IsCurrentSpell, IsPlayerSpell, UseItemByName = IsPassiveSpell, IsCurrentSpell, IsPlayerSpell, UseItemByName
+local GetProfessions, GetProfessionInfo, GetSpellBookItemInfo = GetProfessions, GetProfessionInfo, GetSpellBookItemInfo
+local PlayerHasToy, C_ToyBox_IsToyUsable, C_ToyBox_GetToyInfo = PlayerHasToy, C_ToyBox.IsToyUsable, C_ToyBox.GetToyInfo
+local C_TradeSkillUI_GetOnlyShowSkillUpRecipes, C_TradeSkillUI_SetOnlyShowSkillUpRecipes = C_TradeSkillUI.GetOnlyShowSkillUpRecipes, C_TradeSkillUI.SetOnlyShowSkillUpRecipes
+local C_TradeSkillUI_GetOnlyShowMakeableRecipes, C_TradeSkillUI_SetOnlyShowMakeableRecipes = C_TradeSkillUI.GetOnlyShowMakeableRecipes, C_TradeSkillUI.SetOnlyShowMakeableRecipes
 
-local BOOKTYPE_PROFESSION = _G.BOOKTYPE_PROFESSION
-local C_ToyBox_GetToyInfo = _G.C_ToyBox.GetToyInfo
-local C_ToyBox_IsToyUsable = _G.C_ToyBox.IsToyUsable
-local C_TradeSkillUI_GetOnlyShowMakeableRecipes = _G.C_TradeSkillUI.GetOnlyShowMakeableRecipes
-local C_TradeSkillUI_GetOnlyShowSkillUpRecipes = _G.C_TradeSkillUI.GetOnlyShowSkillUpRecipes
-local C_TradeSkillUI_GetRecipeInfo = _G.C_TradeSkillUI.GetRecipeInfo
-local C_TradeSkillUI_GetTradeSkillLine = _G.C_TradeSkillUI.GetTradeSkillLine
-local C_TradeSkillUI_SetOnlyShowMakeableRecipes = _G.C_TradeSkillUI.SetOnlyShowMakeableRecipes
-local C_TradeSkillUI_SetOnlyShowSkillUpRecipes = _G.C_TradeSkillUI.SetOnlyShowSkillUpRecipes
-local CreateFrame = _G.CreateFrame
-local GetItemCooldown = _G.GetItemCooldown
-local GetItemCount = _G.GetItemCount
-local GetItemInfo = _G.GetItemInfo
-local GetProfessionInfo = _G.GetProfessionInfo
-local GetProfessions = _G.GetProfessions
-local GetSpellBookItemInfo = _G.GetSpellBookItemInfo
-local GetSpellCooldown = _G.GetSpellCooldown
-local GetSpellInfo = _G.GetSpellInfo
-local InCombatLockdown = _G.InCombatLockdown
-local IsCurrentSpell = _G.IsCurrentSpell
-local IsPassiveSpell = _G.IsPassiveSpell
-local IsPlayerSpell = _G.IsPlayerSpell
-local PlayerHasToy = _G.PlayerHasToy
-
-local CHEF_HAT = 134020
-local ENCHANTING_VELLUM = 38682
-local PICK_LOCK = 1804
+local BOOKTYPE_PROFESSION = BOOKTYPE_PROFESSION
 local RUNEFORGING_ID = 53428
+local PICK_LOCK = 1804
+local CHEF_HAT = 134020
 local THERMAL_ANVIL = 87216
-local index = 1
-local isEnchanting
+local ENCHANTING_VELLUM = 38682
 local tabList = {}
-local tooltipString = "|cffffffff%s(%d)"
 
 local onlyPrimary = {
 	[171] = true, -- Alchemy
@@ -85,7 +61,6 @@ function Module:UpdateProfessions()
 	if isCook and PlayerHasToy(CHEF_HAT) and C_ToyBox_IsToyUsable(CHEF_HAT) then
 		Module:TradeTabs_Create(nil, CHEF_HAT)
 	end
-
 	if GetItemCount(THERMAL_ANVIL) > 0 then
 		Module:TradeTabs_Create(nil, nil, THERMAL_ANVIL)
 	end
@@ -116,18 +91,7 @@ function Module:TradeTabs_Update()
 	end
 end
 
-function Module:TradeTabs_Reskin()
-	for _, tab in pairs(tabList) do
-		tab:GetRegions():Hide()
-		tab:CreateBorder()
-
-		local texture = tab:GetNormalTexture()
-		if texture then
-			texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		end
-	end
-end
-
+local index = 1
 function Module:TradeTabs_Create(spellID, toyID, itemID)
 	local name, _, texture
 	if toyID then
@@ -137,12 +101,16 @@ function Module:TradeTabs_Create(spellID, toyID, itemID)
 	else
 		name, _, texture = GetSpellInfo(spellID)
 	end
+	if not name then
+		return
+	end -- precaution
 
-	local tab = CreateFrame("CheckButton", nil, TradeSkillFrame, "SpellBookSkillLineTabTemplate, SecureActionButtonTemplate")
+	local tab = CreateFrame("CheckButton", nil, ProfessionsFrame, "SpellBookSkillLineTabTemplate, SecureActionButtonTemplate")
 	tab.tooltip = name
 	tab.spellID = spellID
 	tab.itemID = toyID or itemID
 	tab.type = (toyID and "toy") or (itemID and "item") or "spell"
+	tab:RegisterForClicks("AnyDown")
 	if spellID == 818 then -- cooking fire
 		tab:SetAttribute("type", "macro")
 		tab:SetAttribute("macrotext", "/cast [@player]" .. name)
@@ -151,6 +119,7 @@ function Module:TradeTabs_Create(spellID, toyID, itemID)
 		tab:SetAttribute(tab.type, spellID or name)
 	end
 	tab:SetNormalTexture(texture)
+	tab:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
 	tab:Show()
 
 	tab.CD = CreateFrame("Cooldown", nil, tab, "CooldownFrameTemplate")
@@ -160,8 +129,8 @@ function Module:TradeTabs_Create(spellID, toyID, itemID)
 	tab.cover:SetAllPoints()
 	tab.cover:EnableMouse(true)
 
-	tab:SetPoint("TOPLEFT", TradeSkillFrame, "TOPRIGHT", 4, -index * 38)
-	table_insert(tabList, tab)
+	tab:SetPoint("TOPLEFT", ProfessionsFrame, "TOPRIGHT", 3, -index * 42)
+	tinsert(tabList, tab)
 	index = index + 1
 end
 
@@ -184,22 +153,19 @@ function Module:TradeTabs_FilterIcons()
 
 	local buttons = {}
 	for index, value in pairs(buttonList) do
-		local bu = CreateFrame("Button", nil, TradeSkillFrame, "BackdropTemplate")
-		bu:SetSize(18, 18)
-		bu:SetPoint("RIGHT", TradeSkillFrame.FilterButton, "LEFT", -5 - (index - 1) * 24, 0)
+		local bu = CreateFrame("Button", nil, ProfessionsFrame.CraftingPage, "BackdropTemplate")
+		bu:SetSize(22, 22)
+		bu:SetPoint("BOTTOMRIGHT", ProfessionsFrame.CraftingPage.RecipeList.FilterButton, "TOPRIGHT", -(index - 1) * 27, 10)
 		bu:CreateBorder()
-
 		bu.Icon = bu:CreateTexture(nil, "ARTWORK")
-		bu.Icon:SetAllPoints()
-		bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
 		local atlas = string.match(value[1], "Atlas:(.+)$")
 		if atlas then
 			bu.Icon:SetAtlas(atlas)
 		else
 			bu.Icon:SetTexture(value[1])
 		end
-
+		bu.Icon:SetAllPoints()
+		bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		K.AddTooltip(bu, "ANCHOR_TOP", value[2])
 		bu.__value = value
 		bu:SetScript("OnClick", filterClick)
@@ -216,14 +182,15 @@ function Module:TradeTabs_FilterIcons()
 			end
 		end
 	end
-
 	K:RegisterEvent("TRADE_SKILL_LIST_UPDATE", updateFilterStatus)
 end
 
+local init
 function Module:TradeTabs_OnLoad()
+	init = true
+
 	Module:UpdateProfessions()
 
-	Module:TradeTabs_Reskin()
 	Module:TradeTabs_Update()
 	K:RegisterEvent("TRADE_SKILL_SHOW", Module.TradeTabs_Update)
 	K:RegisterEvent("TRADE_SKILL_CLOSE", Module.TradeTabs_Update)
@@ -231,46 +198,28 @@ function Module:TradeTabs_OnLoad()
 
 	Module:TradeTabs_FilterIcons()
 	Module:TradeTabs_QuickEnchanting()
+
+	K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.TradeTabs_OnLoad)
 end
 
-function Module.TradeTabs_OnEvent(event, addon)
-	if event == "ADDON_LOADED" and addon == "Blizzard_TradeSkillUI" then
-		K:UnregisterEvent(event, Module.TradeTabs_OnEvent)
-
-		if InCombatLockdown() then
-			K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.TradeTabs_OnEvent)
-		else
-			Module:TradeTabs_OnLoad()
-		end
-	elseif event == "PLAYER_REGEN_ENABLED" then
-		K:UnregisterEvent(event, Module.TradeTabs_OnEvent)
-		Module:TradeTabs_OnLoad()
-	end
-end
-
-local function IsRecipeEnchanting(self)
-	isEnchanting = nil
-
-	local recipeID = self.selectedRecipeID
-	local recipeInfo = recipeID and C_TradeSkillUI_GetRecipeInfo(recipeID)
-	if recipeInfo and recipeInfo.alternateVerb then
-		local parentSkillLineID = select(6, C_TradeSkillUI_GetTradeSkillLine())
-		if parentSkillLineID == 333 then
-			isEnchanting = true
-			self.CreateButton.tooltip = string_format(tooltipString, "Right click to use vellum", GetItemCount(ENCHANTING_VELLUM))
-		end
-	end
-end
-
+local isEnchanting
+local tooltipString = "|cffffffff%s(%d)"
 function Module:TradeTabs_QuickEnchanting()
-	if not TradeSkillFrame then
-		return
+	if ProfessionsFrame.CraftingPage.ValidateControls then
+		hooksecurefunc(ProfessionsFrame.CraftingPage, "ValidateControls", function(self)
+			isEnchanting = nil
+			local currentRecipeInfo = self.SchematicForm:GetRecipeInfo()
+			if currentRecipeInfo and currentRecipeInfo.alternateVerb then
+				local professionInfo = ProfessionsFrame:GetProfessionInfo()
+				if professionInfo and professionInfo.parentProfessionID == 333 then
+					isEnchanting = true
+					self.CreateButton.tooltipText = format(tooltipString, "Right click to use Vellum", GetItemCount(ENCHANTING_VELLUM))
+				end
+			end
+		end)
 	end
 
-	local detailsFrame = TradeSkillFrame.DetailsFrame
-	hooksecurefunc(detailsFrame, "RefreshDisplay", IsRecipeEnchanting)
-
-	local createButton = detailsFrame.CreateButton
+	local createButton = ProfessionsFrame.CraftingPage.CreateButton
 	createButton:RegisterForClicks("AnyUp")
 	createButton:HookScript("OnClick", function(_, btn)
 		if btn == "RightButton" and isEnchanting then
@@ -279,16 +228,23 @@ function Module:TradeTabs_QuickEnchanting()
 	end)
 end
 
-function Module:CreateTradeTabs()
+function Module:TradeTabs()
 	if not C["Misc"].TradeTabs then
 		return
 	end
-
-	if K.CheckAddOnState("TradeSkillMaster") then
+	if not ProfessionsFrame then
 		return
 	end
 
-	K:RegisterEvent("ADDON_LOADED", Module.TradeTabs_OnEvent)
+	ProfessionsFrame:HookScript("OnShow", function()
+		if init then
+			return
+		end
+		if InCombatLockdown() then
+			K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.TradeTabs_OnLoad)
+		else
+			Module:TradeTabs_OnLoad()
+		end
+	end)
 end
-
--- Module:RegisterMisc("TradeTabs", Module.CreateTradeTabs) -- DFUPDATE
+Module:RegisterMisc("TradeTabs", Module.TradeTabs)
