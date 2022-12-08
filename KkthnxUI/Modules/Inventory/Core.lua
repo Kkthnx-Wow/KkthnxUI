@@ -1144,6 +1144,11 @@ function Module:OnEnable()
 			self.canIMogIt:SetSize(C["Inventory"].IconSize / 2.6, C["Inventory"].IconSize / 2.6)
 			self.canIMogIt:SetPoint(unpack(CanIMogIt.ICON_LOCATIONS[CanIMogItOptions["iconLocation"]]))
 		end
+
+		if not self.ProfessionQualityOverlay then
+			self.ProfessionQualityOverlay = self:CreateTexture(nil, "OVERLAY")
+			self.ProfessionQualityOverlay:SetPoint("TOPLEFT", -3, 2)
+		end
 	end
 
 	function MyButton:ItemOnEnter()
@@ -1250,6 +1255,11 @@ function Module:OnEnable()
 				self.IconOverlay2:SetAtlas(secondAtlas)
 				self.IconOverlay2:Show()
 			end
+		end
+
+		if self.ProfessionQualityOverlay then
+			self.ProfessionQualityOverlay:SetAtlas(nil)
+			SetItemCraftingQualityOverlay(self, item.link)
 		end
 
 		if KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[item.id] and not C["Inventory"].ItemFilter then
