@@ -95,6 +95,11 @@ function Module:CreateTargetOfTarget()
 			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			Portrait:CreateBorder()
 
+			-- https://github.com/Stanzilla/WoWUIBugs/issues/295
+			-- since this seems to be forced on models because of a bug -- Simply Fix Thanks
+			Portrait:SetIgnoreParentAlpha(true) -- lets handle it ourselves
+			hooksecurefunc(self, "SetAlpha", Module.ModelAlphaFix)
+
 			self.Portrait = Portrait
 		elseif targetOfTargetPortraitStyle ~= "ThreeDPortraits" and targetOfTargetPortraitStyle ~= "OverlayPortrait" then
 			local Portrait = Health:CreateTexture("KKUI_TargetTargetPortrait", "BACKGROUND", nil, 1)
@@ -137,8 +142,8 @@ function Module:CreateTargetOfTarget()
 
 	Module:UpdateAuraContainer(targetOfTargetWidth, Debuffs, Debuffs.num)
 
-	Debuffs.PostCreateIcon = Module.PostCreateButton
-	Debuffs.PostUpdateIcon = Module.PostUpdateButton
+	Debuffs.PostCreateButton = Module.PostCreateButton
+	Debuffs.PostUpdateButton = Module.PostUpdateButton
 
 	local RaidTargetIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	if targetOfTargetPortraitStyle ~= "NoPortraits" and targetOfTargetPortraitStyle ~= "OverlayPortrait" then

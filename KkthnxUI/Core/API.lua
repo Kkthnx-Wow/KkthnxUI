@@ -32,7 +32,7 @@ end
 local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
 	-- Border
 	local BorderSubLevel = bSubLevel or "OVERLAY"
-	local BorderLayer = bLayer or 0
+	local BorderLayer = bLayer or -1
 	local BorderValue = C["General"].BorderStyle.Value or "KkthnxUI"
 	local BorderSize
 

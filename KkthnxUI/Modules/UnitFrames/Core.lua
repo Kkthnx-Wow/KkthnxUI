@@ -39,6 +39,17 @@ local filteredStyle = {
 	["target"] = true,
 }
 
+function Module:ModelAlphaFix(alpha)
+	if C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
+		return
+	end
+
+	local portrait = self.Portrait
+	if portrait then
+		portrait:SetModelAlpha(alpha * portrait:GetAlpha())
+	end
+end
+
 function Module:UpdateClassPortraits(unit)
 	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 		return

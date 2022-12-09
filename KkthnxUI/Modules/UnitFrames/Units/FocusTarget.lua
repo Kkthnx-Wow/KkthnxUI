@@ -96,6 +96,11 @@ function Module:CreateFocusTarget()
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
+
+			-- https://github.com/Stanzilla/WoWUIBugs/issues/295
+			-- since this seems to be forced on models because of a bug -- Simply Fix Thanks
+			self.Portrait:SetIgnoreParentAlpha(true) -- lets handle it ourselves
+			hooksecurefunc(self, "SetAlpha", Module.ModelAlphaFix)
 		elseif focusTargetPortraitStyle ~= "ThreeDPortraits" and focusTargetPortraitStyle ~= "OverlayPortrait" then
 			self.Portrait = self.Health:CreateTexture("KKUI_FocusTargetPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
@@ -135,8 +140,8 @@ function Module:CreateFocusTarget()
 
 	Module:UpdateAuraContainer(focusTargetWidth, self.Debuffs, self.Debuffs.num)
 
-	self.Debuffs.PostCreateIcon = Module.PostCreateButton
-	self.Debuffs.PostUpdateIcon = Module.PostUpdateButton
+	self.Debuffs.PostCreateButton = Module.PostCreateButton
+	self.Debuffs.PostUpdateButton = Module.PostUpdateButton
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	if focusTargetPortraitStyle ~= "NoPortraits" and focusTargetPortraitStyle ~= "OverlayPortrait" then

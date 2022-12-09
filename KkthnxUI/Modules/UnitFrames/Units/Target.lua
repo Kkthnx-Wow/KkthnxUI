@@ -113,6 +113,11 @@ function Module:CreateTarget()
 			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			Portrait:CreateBorder()
 
+			-- https://github.com/Stanzilla/WoWUIBugs/issues/295
+			-- since this seems to be forced on models because of a bug -- Simply Fix Thanks
+			Portrait:SetIgnoreParentAlpha(true) -- lets handle it ourselves
+			hooksecurefunc(self, "SetAlpha", Module.ModelAlphaFix)
+
 			self.Portrait = Portrait
 		elseif targetPortraitStyle ~= "ThreeDPortraits" and targetPortraitStyle ~= "OverlayPortrait" then
 			local Portrait = Health:CreateTexture("KKUI_TargetPortrait", "BACKGROUND", nil, 1)
