@@ -102,11 +102,6 @@ function Module:CreateArena()
 			self.Portrait:SetSize(self.Health:GetHeight() + self.Power:GetHeight() + 6, self.Health:GetHeight() + self.Power:GetHeight() + 6)
 			self.Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			self.Portrait:CreateBorder()
-
-			-- https://github.com/Stanzilla/WoWUIBugs/issues/295
-			-- since this seems to be forced on models because of a bug -- Simply Fix Thanks
-			self.Portrait:SetIgnoreParentAlpha(true) -- lets handle it ourselves
-			hooksecurefunc(self, "SetAlpha", Module.ModelAlphaFix)
 		elseif arenaPortraitStyle ~= "ThreeDPortraits" and arenaPortraitStyle ~= "OverlayPortrait" then
 			self.Portrait = self.Health:CreateTexture("KKUI_ArenaPortrait", "BACKGROUND", nil, 1)
 			self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)

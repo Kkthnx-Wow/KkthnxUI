@@ -60,7 +60,6 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 		kkui_border:SetTexture(BorderTexture)
 		kkui_border:SetOffset(BorderOffset)
 		kkui_border:SetVertexColor(BorderRed, BorderGreen, BorderBlue, BorderAlpha)
-		kkui_border:SetAlpha(1)
 
 		bFrame.KKUI_Border = true
 		bFrame.KKUI_Border = kkui_border

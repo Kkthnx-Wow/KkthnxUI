@@ -39,19 +39,6 @@ local filteredStyle = {
 	["target"] = true,
 }
 
-function Module:ModelAlphaFix(alpha)
-	if C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
-		return
-	end
-
-	local portrait = self.Portrait
-	if portrait then
-		portrait:SetModelAlpha(alpha * portrait:GetAlpha())
-		portrait.KKUI_Border:SetAlpha(alpha * portrait:GetAlpha()) -- Fix our borders too?
-		portrait.KKUI_Background:SetAlpha(alpha * portrait:GetAlpha()) -- Fix our borders too?
-	end
-end
-
 function Module:UpdateClassPortraits(unit)
 	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 		return
