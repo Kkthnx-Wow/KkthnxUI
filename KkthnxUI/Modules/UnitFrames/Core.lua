@@ -674,7 +674,7 @@ function Module:CreateUnits()
 		oUF:RegisterStyle("Party", Module.CreateParty)
 		oUF:SetActiveStyle("Party")
 
-		local partyXOffset, partyYOffset = 6, C["Party"].ShowBuffs and 52 or 28
+		local partyXOffset, partyYOffset = 6, C["Party"].ShowBuffs and 56 or 36
 		local partyMoverWidth = C["Party"].HealthWidth
 		local partyMoverHeight = C["Party"].HealthHeight + C["Party"].PowerHeight + 1 + partyYOffset * 8
 		local partyGroupingOrder = "NONE,DAMAGER,HEALER,TANK"
