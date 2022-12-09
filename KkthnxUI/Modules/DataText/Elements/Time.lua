@@ -229,20 +229,6 @@ local function GetNzothThreatName(questID)
 	return name
 end
 
--- Torghast
-local TorghastWidgets, TorghastInfo = {
-	{ nameID = 2925, levelID = 2930 }, -- Fracture Chambers
-	{ nameID = 2926, levelID = 2932 }, -- Skoldus Hall
-	{ nameID = 2924, levelID = 2934 }, -- Soulforges
-	{ nameID = 2927, levelID = 2936 }, -- Coldheart Interstitia
-	{ nameID = 2928, levelID = 2938 }, -- Mort'regar
-	{ nameID = 2929, levelID = 2940 }, -- The Upper Reaches
-}
-
-local function CleanupLevelName(text)
-	return string.gsub(text, "|n", "")
-end
-
 local title
 local function addTitle(text)
 	if not title then
@@ -317,28 +303,6 @@ function Module:TimeOnEnter()
 		end
 	end
 
-	-- Torghast
-	if not TorghastInfo then
-		TorghastInfo = C_AreaPoiInfo_GetAreaPOIInfo(1543, 6640)
-	end
-
-	if TorghastInfo and C_QuestLog_IsQuestFlaggedCompleted(60136) then
-		title = false
-		for _, value in pairs(TorghastWidgets) do
-			local nameInfo = C_UIWidgetManager_GetTextWithStateWidgetVisualizationInfo(value.nameID)
-			if nameInfo and nameInfo.shownState == 1 then
-				addTitle(TorghastInfo.name)
-				local nameText = CleanupLevelName(nameInfo.text)
-				local levelInfo = C_UIWidgetManager_GetTextWithStateWidgetVisualizationInfo(value.levelID)
-				local levelText = AVAILABLE
-				if levelInfo and levelInfo.shownState == 1 then
-					levelText = CleanupLevelName(levelInfo.text)
-				end
-				GameTooltip:AddDoubleLine(nameText, levelText)
-			end
-		end
-	end
-
 	-- Quests
 	title = false
 
@@ -405,7 +369,6 @@ function Module:TimeOnEnter()
 	-- Help Info
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddLine(K.LeftButton .. "Toggle Calendar")
-	GameTooltip:AddLine(K.ScrollButton .. RATED_PVP_WEEKLY_VAULT)
 	GameTooltip:AddLine(K.RightButton .. "Toggle Clock")
 	GameTooltip:Show()
 
@@ -421,15 +384,6 @@ end
 function Module:TimeOnMouseUp(btn)
 	if btn == "RightButton" then
 		_G.ToggleTimeManager()
-	elseif btn == "MiddleButton" then
-		if not WeeklyRewardsFrame then
-			LoadAddOn("Blizzard_WeeklyRewards")
-		end
-		if InCombatLockdown() then
-			K.TogglePanel(WeeklyRewardsFrame)
-		else
-			ToggleFrame(WeeklyRewardsFrame)
-		end
 	else
 		_G.ToggleCalendar()
 	end
