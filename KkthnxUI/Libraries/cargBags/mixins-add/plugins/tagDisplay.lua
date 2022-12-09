@@ -40,7 +40,6 @@ CALLBACKS
 	:OnTagUpdate(event) - When the tag is updated
 ]]
 local _, ns = ...
-local B, C, L, DB = unpack(ns)
 local cargBags = ns.cargBags
 
 local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots

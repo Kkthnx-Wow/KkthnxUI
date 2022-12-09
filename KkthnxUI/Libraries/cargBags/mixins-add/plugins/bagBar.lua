@@ -33,7 +33,6 @@ CALLBACKS
 ]]
 
 local addon, ns = ...
-local B, C, L, DB = unpack(ns)
 local cargBags = ns.cargBags
 local Implementation = cargBags.classes.Implementation
 

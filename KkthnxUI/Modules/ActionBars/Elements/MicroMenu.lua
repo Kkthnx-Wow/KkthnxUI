@@ -8,8 +8,6 @@ local table_insert = _G.table.insert
 local pairs = _G.pairs
 local type = _G.type
 
-local MAINMENU_BUTTON = _G.MAINMENU_BUTTON
-local MicroButtonTooltipText = _G.MicroButtonTooltipText
 local RegisterStateDriver = _G.RegisterStateDriver
 
 local buttonList = {}
@@ -43,12 +41,6 @@ local function onEnter()
 	end
 end
 
-function Module:MicroButton_SetupTexture(icon, texture)
-	icon:SetPoint("TOPLEFT", texture, "TOPLEFT", -9, 5)
-	icon:SetPoint("BOTTOMRIGHT", texture, "BOTTOMRIGHT", 10, -6)
-	icon:SetTexture(K.MediaFolder .. "Skins\\" .. texture)
-end
-
 local function ResetButtonParent(button, parent)
 	if parent ~= button.__owner then
 		button:SetParent(button.__owner)
@@ -61,15 +53,12 @@ local function ResetButtonAnchor(button)
 end
 
 function Module:MicroButton_Create(parent, data)
-	local texture, method, tooltip = unpack(data)
+	local method, tooltip = unpack(data)
 
 	local bu = CreateFrame("Frame", "KKUI_MicroButtons", parent)
 	table_insert(buttonList, bu)
 	bu:SetSize(20, 20 * 1.4)
 	bu:CreateBorder()
-
-	local icon = bu:CreateTexture(nil, "ARTWORK")
-	Module:MicroButton_SetupTexture(icon, texture)
 
 	if type(method) == "string" then
 		local button = _G[method]
@@ -79,9 +68,6 @@ function Module:MicroButton_Create(parent, data)
 		hooksecurefunc(button, "SetParent", ResetButtonParent)
 		ResetButtonAnchor(button)
 		hooksecurefunc(button, "SetPoint", ResetButtonAnchor)
-		button:UnregisterAllEvents()
-		button:SetNormalTexture("")
-		button:GetNormalTexture():SetAlpha(0) -- isNewPatch
 
 		if tooltip then
 			K.AddTooltip(button, "ANCHOR_RIGHT", tooltip)
@@ -91,19 +77,30 @@ function Module:MicroButton_Create(parent, data)
 			button:HookScript("OnEnter", onEnter)
 		end
 
+		local normal = button:GetNormalTexture()
 		local pushed = button:GetPushedTexture()
 		local disabled = button:GetDisabledTexture()
 		local highlight = button:GetHighlightTexture()
-		local flash = button.Flash or button.FlashBorder -- isNewPatch
+		local flash = button.Flash
 
-		pushed:SetColorTexture(1, 0.84, 0, 0.2)
-		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
-		pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+		if button.Flash then
+			button.Flash:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -4)
+			button.Flash:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 4)
+			button.Flash:SetTexture()
+		end
+
+		pushed:SetTexCoord(0.1, 0.85, 0.12, 0.78)
+		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -4)
+		pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 4)
+
+		normal:SetTexCoord(0.1, 0.85, 0.12, 0.78)
+		normal:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -4)
+		normal:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 4)
 
 		if disabled then
-			disabled:SetColorTexture(1, 0, 0, 0.4)
-			disabled:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
-			disabled:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 1)
+			disabled:SetTexCoord(0.1, 0.85, 0.12, 0.78)
+			disabled:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -4)
+			disabled:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 4)
 		end
 
 		highlight:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonWhite")
@@ -147,17 +144,17 @@ function Module:MicroMenu()
 
 	-- Generate Buttons
 	local buttonInfo = {
-		{ "CharacterMicroButton", "CharacterMicroButton" },
-		{ "SpellbookMicroButton", "SpellbookMicroButton" },
-		{ "TalentMicroButton", "TalentMicroButton" },
-		{ "AchievementMicroButton", "AchievementMicroButton" },
-		{ "QuestLogMicroButton", "QuestLogMicroButton" },
-		{ "GuildMicroButton", "GuildMicroButton" },
-		{ "LFDMicroButton", "LFDMicroButton" },
-		{ "EJMicroButton", "EJMicroButton" },
-		{ "CollectionsMicroButton", "CollectionsMicroButton" },
-		{ "StoreMicroButton", "StoreMicroButton" },
-		{ "MainMenuMicroButton", "MainMenuMicroButton", MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU") },
+		{ "CharacterMicroButton" },
+		{ "SpellbookMicroButton" },
+		{ "TalentMicroButton" },
+		{ "AchievementMicroButton" },
+		{ "QuestLogMicroButton" },
+		{ "GuildMicroButton" },
+		{ "LFDMicroButton" },
+		{ "EJMicroButton" },
+		{ "CollectionsMicroButton" },
+		{ "StoreMicroButton" },
+		{ "MainMenuMicroButton", MicroButtonTooltipText(MAINMENU_BUTTON, "TOGGLEGAMEMENU") },
 	}
 
 	for _, info in pairs(buttonInfo) do
