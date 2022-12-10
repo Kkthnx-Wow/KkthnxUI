@@ -12,6 +12,7 @@ local GetInventoryItemDurability = _G.GetInventoryItemDurability
 local GetInventoryItemTexture = _G.GetInventoryItemTexture
 
 local DurabilityDataText
+local DurabilityDataTextString
 local repairCostString = string_gsub(REPAIR_COST, HEADER_COLON, ":")
 local lowDurabilityCap = 0.25
 
@@ -101,9 +102,9 @@ local function OnEvent(_, event)
 	else
 		if numSlots > 0 then
 			local r, g, b = getDurabilityColor(math_floor(localSlots[1][3] * 100), 100)
-			DurabilityDataText.Text:SetFormattedText("%s%%|r" .. " " .. DURABILITY, K.RGBToHex(r, g, b) .. math_floor(localSlots[1][3] * 100))
+			DurabilityDataText:SetFormattedText("%s%%|r" .. " " .. DURABILITY, K.RGBToHex(r, g, b) .. math_floor(localSlots[1][3] * 100))
 		else
-			DurabilityDataText.Text:SetText(DURABILITY .. ": " .. K.MyClassColor .. NONE)
+			DurabilityDataText:SetText(DURABILITY .. ": " .. K.MyClassColor .. NONE)
 		end
 	end
 
@@ -156,26 +157,27 @@ function Module:CreateDurabilityDataText()
 		return
 	end
 
-	DurabilityDataText = DurabilityDataText or CreateFrame("Frame", nil, UIParent)
+	DurabilityDataText = CreateFrame("Button", nil, UIParent, "PanelTabButtonTemplate")
+	DurabilityDataText:SetPoint("TOP", PaperDollFrame, "BOTTOM", 208, 3)
 	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
 	DurabilityDataText:SetParent(PaperDollFrame)
 
-	DurabilityDataText.Texture = DurabilityDataText.Texture or DurabilityDataText:CreateTexture(nil, "BACKGROUND", PaperDollSidebarTab) -- Idk what this was renamed to
-	DurabilityDataText.Texture:SetPoint("TOP", PaperDollFrame, "BOTTOM", 208, 3)
-	DurabilityDataText.Texture:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-ActiveTab")
-	DurabilityDataText.Texture:SetSize(150, 56)
-
-	DurabilityDataText.Text = DurabilityDataText.Text or DurabilityDataText:CreateFontString(nil, "ARTWORK")
-	DurabilityDataText.Text:SetPoint("CENTER", DurabilityDataText.Texture, "CENTER", 0, 14)
-	DurabilityDataText.Text:SetFontObject(K.UIFont)
-
-	DurabilityDataText:SetAllPoints(DurabilityDataText.Text)
+	if DurabilityDataText.LeftActive then
+		DurabilityDataText.LeftActive:SetAlpha(0)
+	end
+	if DurabilityDataText.RightActive then
+		DurabilityDataText.RightActive:SetAlpha(0)
+	end
+	if DurabilityDataText.MiddleActive then
+		DurabilityDataText.MiddleActive:SetAlpha(0)
+	end
 
 	for _, event in pairs(eventList) do
 		DurabilityDataText:RegisterEvent(event)
 	end
 
 	DurabilityDataText:SetScript("OnEvent", OnEvent)
+	DurabilityDataText:SetScript("OnClick", nil)
 	DurabilityDataText:SetScript("OnEnter", OnEnter)
 	DurabilityDataText:SetScript("OnLeave", OnLeave)
 end
