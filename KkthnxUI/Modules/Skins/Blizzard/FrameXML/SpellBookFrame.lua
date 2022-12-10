@@ -83,10 +83,6 @@ table_insert(C.defaultThemes, function()
 	local professions = { "PrimaryProfession1", "PrimaryProfession2", "SecondaryProfession1", "SecondaryProfession2", "SecondaryProfession3" }
 	for i, button in pairs(professions) do
 		local bu = _G[button]
-		bu.professionName:SetTextColor(1, 1, 1)
-		bu.missingHeader:SetTextColor(1, 1, 1)
-		bu.missingText:SetTextColor(1, 1, 1)
-
 		bu.statusBar:StripTextures()
 		bu.statusBar:SetHeight(16)
 		bu.statusBar:SetStatusBarTexture(professionTexture)

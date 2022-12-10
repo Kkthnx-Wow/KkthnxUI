@@ -343,9 +343,10 @@ function Module:CreateExpbar()
 
 	local spark = bar:CreateTexture(nil, "OVERLAY")
 	spark:SetTexture(C["Media"].Textures.Spark16Texture)
-	spark:SetHeight(bar:GetHeight())
+	spark:SetHeight(bar:GetHeight() - 2)
 	spark:SetBlendMode("ADD")
 	spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
+	spark:SetAlpha(0.6)
 
 	local border = CreateFrame("Frame", nil, bar)
 	border:SetAllPoints(bar)

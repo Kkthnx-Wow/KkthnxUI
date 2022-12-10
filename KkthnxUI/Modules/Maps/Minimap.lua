@@ -284,37 +284,6 @@ function Module:CreateStyle()
 end
 
 function Module:ReskinRegions()
-	-- local function updateMinimapButtons(self)
-	-- 	self:ClearAllPoints()
-	-- 	self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
-	-- 	-- self:SetNormalTexture(UpdateCovenantTexture(self))
-	-- 	-- self:SetPushedTexture(UpdateCovenantTexture(self))
-	-- 	-- self:SetHighlightTexture(UpdateCovenantTexture(self))
-
-	-- 	self:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	-- 	self:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	-- 	self:GetHighlightTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-	-- 	self:GetPushedTexture():SetVertexColor(1, 1, 0, 0.5)
-
-	-- 	self.LoopingGlow:SetTexture(UpdateCovenantTexture(self))
-	-- 	self.LoopingGlow:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-	-- 	self:SetSize(22, 22)
-	-- 	self.LoopingGlow:SetSize(24, 24)
-
-	-- 	self:SetHitRectInsets(0, 0, 0, 0)
-	-- 	self:SetFrameLevel(999)
-	-- end
-
-	-- if ExpansionLandingPageMinimapButton then
-	-- 	-- 	ExpansionLandingPageMinimapButton:SetScript("OnEnter", K.LandingButton_OnEnter)
-
-	-- 	updateMinimapButtons(ExpansionLandingPageMinimapButton)
-	-- 	ExpansionLandingPageMinimapButton:HookScript("OnShow", updateMinimapButtons)
-	-- 	hooksecurefunc(ExpansionLandingPageMinimapButton, "UpdateIcon", updateMinimapButtons)
-	-- end
-
 	-- Garrison
 	local garrMinimapButton = _G.ExpansionLandingPageMinimapButton
 	if garrMinimapButton then
@@ -324,6 +293,9 @@ function Module:ReskinRegions()
 			self:GetNormalTexture():SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
 			self:GetPushedTexture():SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
 			self:GetHighlightTexture():SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
+			self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.9)
+			self:GetPushedTexture():SetVertexColor(1, 1, 1, 1)
+			self:GetHighlightTexture():SetVertexColor(1, 1, 1, 1)
 
 			self.LoopingGlow:SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
 			self.LoopingGlow:SetSize(24, 24)

@@ -230,17 +230,27 @@ function Module:CreateMinimapButtonToggle()
 end
 
 local function MainMenu_OnShow(self)
+	local buttonToReanchor
+	if IsCharacterNewlyBoosted() or not C_SplashScreen.CanViewSplashScreen() then
+		buttonToReanchor = _G.GameMenuButtonStore
+		self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 28)
+	else
+		buttonToReanchor = _G.GameMenuButtonWhatsNew
+		self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 34)
+	end
+
 	_G.GameMenuButtonLogout:SetPoint("TOP", Module.GameMenuButton, "BOTTOM", 0, -14)
-	self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 15 + 18)
 
 	_G.GameMenuButtonStore:ClearAllPoints()
 	_G.GameMenuButtonStore:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -6)
 
-	_G.GameMenuButtonWhatsNew:ClearAllPoints()
-	_G.GameMenuButtonWhatsNew:SetPoint("TOP", _G.GameMenuButtonStore, "BOTTOM", 0, -6)
+	if _G.GameMenuButtonWhatsNew then
+		_G.GameMenuButtonWhatsNew:ClearAllPoints()
+		_G.GameMenuButtonWhatsNew:SetPoint("TOP", _G.GameMenuButtonStore, "BOTTOM", 0, -6)
+	end
 
 	_G.GameMenuButtonEditMode:ClearAllPoints()
-	_G.GameMenuButtonEditMode:SetPoint("TOP", _G.GameMenuButtonWhatsNew, "BOTTOM", 0, -24)
+	_G.GameMenuButtonEditMode:SetPoint("TOP", buttonToReanchor, "BOTTOM", 0, -24)
 
 	_G.GameMenuButtonSettings:ClearAllPoints()
 	_G.GameMenuButtonSettings:SetPoint("TOP", _G.GameMenuButtonEditMode, "BOTTOM", 0, -6)

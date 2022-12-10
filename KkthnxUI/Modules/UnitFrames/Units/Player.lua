@@ -518,9 +518,69 @@ function Module:CreatePlayer()
 		ResurrectIndicator:SetPoint("CENTER", Health)
 	end
 
-	local RestingIndicator = Health:CreateTexture(nil, "OVERLAY")
-	RestingIndicator:SetPoint("RIGHT", -2, 2)
-	RestingIndicator:SetSize(22, 22)
+	-- local RestingIndicator = Health:CreateTexture(nil, "OVERLAY")
+	-- RestingIndicator:SetPoint("RIGHT", -2, 2)
+	-- RestingIndicator:SetSize(22, 22)
+
+	do
+		local RestingIndicator = CreateFrame("Frame", "KKUI_RestingFrame", Overlay)
+		RestingIndicator:SetSize(5, 5)
+		if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
+			RestingIndicator:SetPoint("TOPLEFT", self.Portrait, "TOPLEFT", -2, 4)
+		else
+			RestingIndicator:SetPoint("TOPLEFT", Health, "TOPLEFT", -2, 4)
+		end
+		RestingIndicator:Hide()
+		RestingIndicator.str = {}
+
+		local step, stepSpeed = 0, 0.33
+
+		local stepMaps = {
+			[1] = { true, false, false },
+			[2] = { true, true, false },
+			[3] = { true, true, true },
+			[4] = { false, true, true },
+			[5] = { false, false, true },
+			[6] = { false, false, false },
+		}
+
+		local offsets = {
+			[1] = { 4, -4 },
+			[2] = { 0, 0 },
+			[3] = { -5, 5 },
+		}
+
+		for i = 1, 3 do
+			local textFrame = CreateFrame("Frame", nil, RestingIndicator)
+			textFrame:SetAllPoints()
+			textFrame:SetFrameLevel(i + 5)
+			local text = K.CreateFontString(textFrame, (7 + i * 3), "z", "", "system", "CENTER", offsets[i][1], offsets[i][2])
+			-- text:SetTextColor(0.6, 0.8, 1)
+			RestingIndicator.str[i] = text
+		end
+
+		RestingIndicator:SetScript("OnUpdate", function(self, elapsed)
+			self.elapsed = (self.elapsed or 0) + elapsed
+			if self.elapsed > stepSpeed then
+				step = step + 1
+				if step == 7 then
+					step = 1
+				end
+
+				for i = 1, 3 do
+					RestingIndicator.str[i]:SetShown(stepMaps[step][i])
+				end
+
+				self.elapsed = 0
+			end
+		end)
+
+		RestingIndicator:SetScript("OnHide", function()
+			step = 6
+		end)
+
+		self.RestingIndicator = RestingIndicator
+	end
 
 	local QuestSyncIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
@@ -582,7 +642,6 @@ function Module:CreatePlayer()
 	self.RaidTargetIndicator = RaidTargetIndicator
 	self.ReadyCheckIndicator = ReadyCheckIndicator
 	self.ResurrectIndicator = ResurrectIndicator
-	self.RestingIndicator = RestingIndicator
 	self.QuestSyncIndicator = QuestSyncIndicator
 	self.Highlight = Highlight
 	self.ThreatIndicator = ThreatIndicator

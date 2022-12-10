@@ -172,7 +172,8 @@ do
 			fs:SetTextColor(K.r, K.g, K.b)
 		elseif classcolor == "system" then
 			fs:SetTextColor(1, 0.8, 0)
-		elseif classcolor == "system" then
+		else
+			fs:SetTextColor(1, 1, 1)
 		end
 
 		if anchor and x and y then
