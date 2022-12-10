@@ -431,6 +431,7 @@ function Module:UpdateTooltipBorder()
 	if not self.bg then
 		return
 	end
+
 	if not C["Tooltip"].ClassColor then
 		return
 	end
@@ -586,6 +587,10 @@ Module:RegisterTooltips("KkthnxUI", function()
 	for _, f in pairs(tooltips) do
 		f:HookScript("OnShow", Module.ReskinTooltip)
 	end
+
+	ItemRefTooltip.CloseButton:SkinCloseButton()
+	FloatingBattlePetTooltip.CloseButton:SkinCloseButton()
+	FloatingPetBattleAbilityTooltip.CloseButton:SkinCloseButton()
 
 	if SettingsTooltip then
 		Module.ReskinTooltip(SettingsTooltip)

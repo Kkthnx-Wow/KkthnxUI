@@ -455,7 +455,11 @@ local function isRaidEnable()
 end
 
 local function isArenaEnable()
-	return C["Arena"].Enable
+	return C["Raid"].Enable
+end
+
+local function isTalkingHeadHidden()
+	return C["Misc"].NoTalkingHead
 end
 
 local ignoredFrames = {
@@ -488,10 +492,18 @@ local ignoredFrames = {
 	["MinimapCluster"] = function()
 		return not C["Minimap"].Enable
 	end,
-
 	["GameTooltipDefaultContainer"] = function()
 		return true
 	end,
+	["TalkingHeadFrame"] = isTalkingHeadHidden,
+}
+
+local shutdownMode = {
+	"OnEditModeEnter",
+	"OnEditModeExit",
+	"HasActiveChanges",
+	"HighlightSystem",
+	"SelectSystem",
 }
 
 function Module:DisableBlizzardMover()
@@ -500,11 +512,13 @@ function Module:DisableBlizzardMover()
 	-- remove the initial registers
 	local registered = editMode.registeredSystemFrames
 	for i = #registered, 1, -1 do
-		local name = registered[i]:GetName()
-		local ignore = ignoredFrames[name]
+		local frame = registered[i]
+		local ignore = ignoredFrames[frame:GetName()]
 
 		if ignore and ignore() then
-			tremove(editMode.registeredSystemFrames, i)
+			for _, key in next, shutdownMode do
+				frame[key] = K.Noop
+			end
 		end
 	end
 
@@ -513,34 +527,32 @@ function Module:DisableBlizzardMover()
 	if isCastbarEnable() then
 		mixin.RefreshCastBar = K.Noop
 	end
-
 	if isBuffEnable() then
 		mixin.RefreshAuraFrame = K.Noop
 	end
-
 	if isRaidEnable() then
+		mixin.ResetRaidFrames = K.Noop
 		mixin.RefreshRaidFrames = K.Noop
 	end
-
 	if isArenaEnable() then
 		mixin.RefreshArenaFrames = K.Noop
 	end
-
 	if isPartyEnable() then
+		mixin.ResetPartyFrames = K.Noop
 		mixin.RefreshPartyFrames = K.Noop
 	end
-
+	if isTalkingHeadHidden() then
+		mixin.RefreshTalkingHeadFrame = K.Noop
+	end
 	if isUnitFrameEnable() then
 		mixin.ResetTargetAndFocus = K.Noop
 		mixin.RefreshTargetAndFocus = K.Noop
 		mixin.RefreshBossFrames = K.Noop
 	end
-
 	if isActionbarEnable() then
 		mixin.RefreshEncounterBar = K.Noop
 		mixin.RefreshActionBarShown = K.Noop
 		mixin.RefreshVehicleLeaveButton = K.Noop
 	end
-
-	-- ObjectiveTrackerFrame.IsInDefaultPosition = K.Noop  We already do this.
+	ObjectiveTrackerFrame.IsInDefaultPosition = K.Noop
 end

@@ -232,6 +232,7 @@ end
 local function replaceMessage(msg, r, g, b)
 	local hexRGB = K.RGBToHex(r, g, b)
 	msg = string_gsub(msg, "|T(.-):.-|t", "%1") -- accept texture path or id
+	msg = gsub(msg, "|A(.-):.-|a", "%1") -- accept atlas path or id, needs review
 
 	return string_format("%s%s|r", hexRGB, msg)
 end
