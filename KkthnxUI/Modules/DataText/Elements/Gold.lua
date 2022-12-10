@@ -24,7 +24,7 @@ local TOTAL = _G.TOTAL
 local YES = _G.YES
 
 local slotString = "Bags" .. ": %s%d"
--- local ticker
+local ticker
 local profit = 0
 local spent = 0
 local oldMoney = 0
@@ -86,7 +86,15 @@ local eventList = {
 	"TRADE_MONEY_CHANGED",
 }
 
+local function UpdateMarketPrice()
+	return C_WowTokenPublic_UpdateMarketPrice()
+end
+
 local function OnEvent(_, event, arg1)
+	if not IsLoggedIn() then
+		return
+	end
+
 	if event == "PLAYER_ENTERING_WORLD" then
 		oldMoney = GetMoney()
 		GoldDataText:UnregisterEvent(event)
@@ -100,10 +108,10 @@ local function OnEvent(_, event, arg1)
 		end
 	end
 
-	-- if not ticker then
-	-- 	C_WowTokenPublic_UpdateMarketPrice()
-	-- 	ticker = C_Timer_NewTicker(60, C_WowTokenPublic_UpdateMarketPrice, nil)
-	-- end
+	if not ticker then
+		C_WowTokenPublic_UpdateMarketPrice()
+		ticker = C_Timer_NewTicker(60, UpdateMarketPrice)
+	end
 
 	local newMoney = GetMoney()
 	local change = newMoney - oldMoney -- Positive if we gain money

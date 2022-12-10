@@ -206,6 +206,12 @@ function Module:UpdateAuraContainer(width, element, maxAuras)
 	element:SetHeight((element.size + element.spacing) * maxLines)
 end
 
+function Module:UpdateIconTexCoord(width, height)
+	local ratio = height / width
+	local mult = (1 - ratio) / 2
+	self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3] + mult, K.TexCoords[4] - mult)
+end
+
 function Module.PostCreateButton(element, button)
 	local fontSize = element.fontSize or element.size * 0.52
 	local parentFrame = CreateFrame("Frame", nil, button)
@@ -234,6 +240,7 @@ function Module.PostCreateButton(element, button)
 	button.Stealable:SetAtlas("bags-newitem")
 	button:HookScript("OnMouseDown", AuraModule.RemoveSpellFromIgnoreList)
 
+	hooksecurefunc(button, "SetSize", Module.UpdateIconTexCoord)
 	button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
 end
 

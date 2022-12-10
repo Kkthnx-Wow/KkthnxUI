@@ -518,10 +518,6 @@ function Module:CreatePlayer()
 		ResurrectIndicator:SetPoint("CENTER", Health)
 	end
 
-	-- local RestingIndicator = Health:CreateTexture(nil, "OVERLAY")
-	-- RestingIndicator:SetPoint("RIGHT", -2, 2)
-	-- RestingIndicator:SetSize(22, 22)
-
 	do
 		local RestingIndicator = CreateFrame("Frame", "KKUI_RestingFrame", Overlay)
 		RestingIndicator:SetSize(5, 5)
@@ -555,7 +551,6 @@ function Module:CreatePlayer()
 			textFrame:SetAllPoints()
 			textFrame:SetFrameLevel(i + 5)
 			local text = K.CreateFontString(textFrame, (7 + i * 3), "z", "", "system", "CENTER", offsets[i][1], offsets[i][2])
-			-- text:SetTextColor(0.6, 0.8, 1)
 			RestingIndicator.str[i] = text
 		end
 
