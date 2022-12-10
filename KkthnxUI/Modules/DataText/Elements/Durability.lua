@@ -12,7 +12,6 @@ local GetInventoryItemDurability = _G.GetInventoryItemDurability
 local GetInventoryItemTexture = _G.GetInventoryItemTexture
 
 local DurabilityDataText
-local DurabilityDataTextString
 local repairCostString = string_gsub(REPAIR_COST, HEADER_COLON, ":")
 local lowDurabilityCap = 0.25
 
@@ -158,7 +157,7 @@ function Module:CreateDurabilityDataText()
 	end
 
 	DurabilityDataText = CreateFrame("Button", nil, UIParent, "PanelTabButtonTemplate")
-	DurabilityDataText:SetPoint("TOP", PaperDollFrame, "BOTTOM", 208, 3)
+	DurabilityDataText:SetPoint("TOP", PaperDollFrame, "BOTTOM", 214, 3)
 	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
 	DurabilityDataText:SetParent(PaperDollFrame)
 
