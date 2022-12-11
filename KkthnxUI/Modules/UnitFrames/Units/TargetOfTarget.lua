@@ -6,6 +6,8 @@ local _G = _G
 local CreateFrame = _G.CreateFrame
 
 function Module:CreateTargetOfTarget()
+	self.mystyle = "targetoftarget"
+
 	local UnitframeTexture = K.GetTexture(C["General"].Texture)
 	local targetOfTargetWidth = C["Unitframe"].TargetTargetHealthWidth
 	local targetOfTargetPortraitStyle = C["Unitframe"].PortraitStyle.Value

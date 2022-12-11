@@ -501,6 +501,12 @@ end
 local textScaleFrames = {
 	["player"] = true,
 	["target"] = true,
+	["focus"] = true,
+	["pet"] = true,
+	["targetoftarget"] = true,
+	["focustarget"] = true,
+	["boss"] = true,
+	["arena"] = true,
 }
 
 function Module:UpdateTextScale()
