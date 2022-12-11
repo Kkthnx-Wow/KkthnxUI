@@ -105,7 +105,7 @@ function Module:ExpBar_Update(event, unit)
 		self.text:SetText(displayString)
 		self.text:Show()
 	elseif GetWatchedFactionInfo() then
-		local label
+		local label, rewardPending
 		local name, reaction, minValue, maxValue, curValue, factionID = GetWatchedFactionInfo()
 		local info = factionID and GetFriendshipReputation(factionID)
 		if info and info.friendshipFactionID then
@@ -115,8 +115,7 @@ function Module:ExpBar_Update(event, unit)
 				label, minValue, maxValue, curValue = info.reaction, info.reactionThreshold or 0, info.nextThreshold or 1, info.standing or 1
 			elseif isMajorFaction then
 				local majorFactionData = C_MajorFactions_GetMajorFactionData(factionID)
-				local renownColor = _G.FACTION_BAR_COLORS[10]
-				local renownHex = K.RGBToHex(renownColor.r, renownColor.g, renownColor.b)
+				local renownHex = K.RGBToHex(0, 0.74, 0.95) -- 10 (Renown)
 
 				reaction, minValue, maxValue = 10, 0, majorFactionData.renownLevelThreshold
 				curValue = C_MajorFactions_HasMaximumRenown(factionID) and majorFactionData.renownLevelThreshold or majorFactionData.renownReputationEarned or 0
@@ -234,11 +233,14 @@ function Module:ExpBar_UpdateTooltip()
 			if not IsPlayerAtEffectiveMaxLevel() then
 				GameTooltip:AddLine(" ")
 			end
-			GameTooltip:AddLine(name, FACTION_BAR_COLORS[reaction].r, FACTION_BAR_COLORS[reaction].g, FACTION_BAR_COLORS[reaction].b)
+			GameTooltip:AddLine(name, K.RGBToHex(0, 0.74, 0.95))
 
 			local friendID, friendTextLevel, _
 			if factionID then
 				friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(factionID)
+				if friendID and friendID.friendshipFactionID > 0 then
+					standing = friendID.reaction
+				end
 			end
 
 			local isMajorFaction = factionID and C_Reputation_IsMajorFaction(factionID)
