@@ -136,19 +136,22 @@ tagPool["item"] = function(self, item)
 	end
 end
 
-tagPool["currency"] = function(self, id)
-	local info = C_CurrencyInfo.GetBackpackCurrencyInfo(id)
-	if not info then
+tagPool["currency"] = function(_, id)
+	local currencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo(id)
+	if not currencyInfo then
 		return
 	end
-
-	return BreakUpLargeNumbers(info.quantity) .. createIcon(info.iconFileID, self.iconValues)
+	local name, count, icon = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID
+	if name and count then
+		local iconTexture = "|T" .. icon .. ":13:15:0:0:50:50:4:46:4:46|t "
+		return (iconTexture .. BreakUpLargeNumbers(count))
+	end
 end
 tagEvents["currency"] = { "CURRENCY_DISPLAY_UPDATE" }
 
 tagPool["currencies"] = function(self)
 	local str
-	for i = 1, GetNumWatchedTokens() do
+	for i = 1, 6 do -- Limit to 6 tracked
 		local curr = self.tags["currency"](self, i)
 		if curr then
 			str = (str and str .. " " or "") .. curr

@@ -217,27 +217,25 @@ local function OnEnter(self)
 	GameTooltip:AddDoubleLine(TOTAL .. ":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
 
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t " .. "Token:", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
+	GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t " .. TOKEN_FILTER_LABEL .. ":", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
 
-	for i = 1, GetNumWatchedTokens() do
+	for i = 1, 6 do -- seems unlimit, but use 10 for now, needs review
 		local currencyInfo = C_CurrencyInfo_GetBackpackCurrencyInfo(i)
 		if not currencyInfo then
 			break
 		end
-
 		local name, count, icon, currencyID = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID, currencyInfo.currencyTypesID
 		if name and i == 1 then
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine(CURRENCY .. ":", 0.5, 0.7, 1)
 		end
-
 		if name and count then
 			local total = C_CurrencyInfo_GetCurrencyInfo(currencyID).maxQuantity
-			local iconTexture = " |T" .. icon .. ":12:12:0:0:50:50:4:46:4:46|t"
+			local iconTexture = "|T" .. icon .. ":12:12:0:0:50:50:4:46:4:46|t "
 			if total > 0 then
-				GameTooltip:AddDoubleLine(name, count .. "/" .. total .. iconTexture, 1, 1, 1, 1, 1, 1)
+				GameTooltip:AddDoubleLine(iconTexture .. name, BreakUpLargeNumbers(count) .. "/" .. K.ShortValue(total), 1, 1, 1, 1, 1, 1)
 			else
-				GameTooltip:AddDoubleLine(name, count .. iconTexture, 1, 1, 1, 1, 1, 1)
+				GameTooltip:AddDoubleLine(iconTexture .. name, BreakUpLargeNumbers(count), 1, 1, 1, 1, 1, 1)
 			end
 		end
 	end
