@@ -11,6 +11,20 @@ local type = _G.type
 local RegisterStateDriver = _G.RegisterStateDriver
 
 local buttonList = {}
+local buttonColors = {
+	[1] = { 0.35, 0.65, 1 },
+	[2] = { 1, 0.58, 0.65 },
+	[3] = { 0.21, 1, 0.95 },
+	[4] = { 1, 0.62, 0.1 },
+	[5] = { 0.96, 1, 0 },
+	[6] = { 0, 1, 0.1 },
+	[7] = { 0.7, 0.7, 1 },
+	[8] = { 1, 1, 1 },
+	[9] = { 1, 0.7, 0.58 },
+	[10] = { 1, 0.4, 0.4 },
+	[11] = { 1, 1, 1 },
+	[12] = { 1, 0.83, 0.50 },
+}
 
 local function onLeaveBar()
 	local KKUI_MB = _G.KKUI_MenuBar
