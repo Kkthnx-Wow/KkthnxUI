@@ -1111,7 +1111,7 @@ function Module:OnEnable()
 
 		local parentFrame = CreateFrame("Frame", nil, self)
 		parentFrame:SetAllPoints()
-		parentFrame:SetFrameLevel(5)
+		parentFrame:SetFrameLevel(12)
 
 		self.Favourite = parentFrame:CreateTexture(nil, "OVERLAY")
 		self.Favourite:SetAtlas("collections-icon-favorites")
@@ -1151,7 +1151,7 @@ function Module:OnEnable()
 		end
 
 		if not self.ProfessionQualityOverlay then
-			self.ProfessionQualityOverlay = self:CreateTexture(nil, "OVERLAY")
+			self.ProfessionQualityOverlay = parentFrame:CreateTexture(nil, "OVERLAY")
 			self.ProfessionQualityOverlay:SetPoint("TOPLEFT", -3, 2)
 		end
 	end
