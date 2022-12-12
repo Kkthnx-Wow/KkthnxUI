@@ -8,10 +8,9 @@ local table_wipe = _G.table.wipe
 local GetSpellInfo = _G.GetSpellInfo
 local UIParent = _G.UIParent
 
--- AuraWatch
 local AuraWatchList = {}
 local groups = {
-	-- groups name = direction, interval, mode, iconsize, position, barwidth
+
 	["Player Aura"] = { "LEFT", 6, "ICON", 30, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 432 } },
 	["Target Aura"] = { "RIGHT", 6, "ICON", 36, { "BOTTOMLEFT", UIParent, "BOTTOM", 160, 468 } },
 	["Special Aura"] = { "LEFT", 6, "ICON", 36, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 468 } },

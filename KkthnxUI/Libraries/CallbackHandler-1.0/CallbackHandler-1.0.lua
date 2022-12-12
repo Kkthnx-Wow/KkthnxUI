@@ -14,9 +14,8 @@ local meta = {
 }
 
 -- Lua APIs
-local tconcat = table.concat
-local assert, error, loadstring = assert, error, loadstring
-local setmetatable, rawset, rawget = setmetatable, rawset, rawget
+local error = error
+local setmetatable, rawget = setmetatable, rawget
 local next, select, pairs, type, tostring = next, select, pairs, type, tostring
 
 -- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
@@ -201,7 +200,7 @@ function CallbackHandler:New(target, RegisterName, UnregisterName, UnregisterAll
 			for i = 1, select("#", ...) do
 				local self = select(i, ...)
 				if registry.insertQueue then
-					for eventname, callbacks in pairs(registry.insertQueue) do
+					for _, callbacks in pairs(registry.insertQueue) do
 						if callbacks[self] then
 							callbacks[self] = nil
 						end

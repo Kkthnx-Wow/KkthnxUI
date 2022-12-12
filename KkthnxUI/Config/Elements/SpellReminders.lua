@@ -1,10 +1,9 @@
 local _, C = unpack(KkthnxUI)
 
--- Reminder Buffs Checklist
 C.SpellReminderBuffs = {
 	ITEMS = {
 		{
-			itemID = 178742, -- Bottled Flayedwing Toxin
+			itemID = 178742,
 			spells = {
 				[345545] = true,
 			},
@@ -13,7 +12,7 @@ C.SpellReminderBuffs = {
 			combat = true,
 		},
 		{
-			itemID = 174906, -- Lightning-Forged Augment Rune
+			itemID = 174906,
 			spells = {
 				[317065] = true,
 				[270058] = true,
@@ -24,7 +23,7 @@ C.SpellReminderBuffs = {
 	},
 	MAGE = {
 		{
-			spells = { -- Arcane Familiar
+			spells = {
 				[210126] = true,
 			},
 			depend = 205022,
@@ -34,7 +33,7 @@ C.SpellReminderBuffs = {
 			pvp = true,
 		},
 		{
-			spells = { -- Arcane Wisdom
+			spells = {
 				[1459] = true,
 			},
 			depend = 1459,
@@ -43,7 +42,7 @@ C.SpellReminderBuffs = {
 	},
 	PRIEST = {
 		{
-			spells = { -- Power word
+			spells = {
 				[21562] = true,
 			},
 			depend = 21562,
@@ -52,7 +51,7 @@ C.SpellReminderBuffs = {
 	},
 	WARRIOR = {
 		{
-			spells = { -- Battle roar
+			spells = {
 				[6673] = true,
 			},
 			depend = 6673,
@@ -62,9 +61,9 @@ C.SpellReminderBuffs = {
 	SHAMAN = {
 		{
 			spells = {
-				[192106] = true, -- Lightning Shield
-				[974] = true, -- Earth Shield
-				[52127] = true, -- Water shield
+				[192106] = true,
+				[974] = true,
+				[52127] = true,
 			},
 			depend = 192106,
 			combat = true,
@@ -73,7 +72,7 @@ C.SpellReminderBuffs = {
 		},
 		{
 			spells = {
-				[33757] = true, -- Windfury weapon
+				[33757] = true,
 			},
 			depend = 33757,
 			combat = true,
@@ -84,7 +83,7 @@ C.SpellReminderBuffs = {
 		},
 		{
 			spells = {
-				[318038] = true, -- Fire tongue weapon
+				[318038] = true,
 			},
 			depend = 318038,
 			combat = true,
@@ -96,10 +95,10 @@ C.SpellReminderBuffs = {
 	},
 	ROGUE = {
 		{
-			spells = { -- Harmful poison
-				[2823] = true, -- Deadly ointment
-				[8679] = true, -- Wound ointment
-				[315584] = true, -- Quick-acting ointment
+			spells = {
+				[2823] = true,
+				[8679] = true,
+				[315584] = true,
 			},
 			texture = 132273,
 			depend = 315584,
@@ -108,9 +107,9 @@ C.SpellReminderBuffs = {
 			pvp = true,
 		},
 		{
-			spells = { -- Effect poison
-				[3408] = true, -- Slowing ointment
-				[5761] = true, -- Sluggish Ointment
+			spells = {
+				[3408] = true,
+				[5761] = true,
 			},
 			depend = 3408,
 			pvp = true,

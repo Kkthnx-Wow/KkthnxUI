@@ -158,7 +158,7 @@ do
 
 		local fs = self:CreateFontString(nil, "OVERLAY")
 
-		if textstyle == " " or textstyle == "" or textstyle == nil then
+		if not textstyle or textstyle == "" then
 			fs:SetFont(select(1, KkthnxUIFont:GetFont()), size, "")
 			fs:SetShadowOffset(1, -1 / 2)
 		else

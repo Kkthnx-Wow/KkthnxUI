@@ -4,16 +4,6 @@ local Module = K:GetModule("Installer")
 local _G = _G
 local table_wipe = _G.table.wipe
 
--- local function ForceZygorOptions()
--- 	if not IsAddOnLoaded("Zygor") then
--- 		return
--- 	end
-
--- 	if Zygor then
--- 		table_wipe(Zygor)
--- 	end
--- end
-
 local function ForceHekiliOptions()
 	if not IsAddOnLoaded("Hekili") then
 		return
@@ -162,7 +152,6 @@ local function ForceMaxDPSOptions()
 	KkthnxUIDB.Variables["MaxDpsRequest"] = false
 end
 
--- DBM bars
 local function ForceDBMOptions()
 	if not IsAddOnLoaded("DBM-Core") then
 		return
@@ -220,7 +209,6 @@ local function ForceDBMOptions()
 	KkthnxUIDB.Variables["DBMRequest"] = false
 end
 
--- Skada
 local function ForceSkadaOptions()
 	if not IsAddOnLoaded("Skada") then
 		return
@@ -273,7 +261,7 @@ local function ForceSkadaOptions()
 							},
 						},
 						["bartexture"] = "KKUI_Statusbar",
-					}, -- [1]
+					},
 				},
 				["tooltiprows"] = 10,
 				["setstokeep"] = 30,
@@ -314,7 +302,6 @@ local function ForceCursorTrail()
 	KkthnxUIDB.Variables["CursorTrailRequest"] = false
 end
 
--- BigWigs
 local function ForceBigwigs()
 	if not IsAddOnLoaded("BigWigs") then
 		return

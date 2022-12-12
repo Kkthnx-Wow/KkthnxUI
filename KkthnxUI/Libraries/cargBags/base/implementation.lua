@@ -331,7 +331,6 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 	i.bagId = bagID
 	i.slotId = slotID
 
-	local texture, count, locked, quality, itemLink, noValue, itemID, itemBound
 	local info = C_Container.GetContainerItemInfo(bagID, slotID)
 	if info then
 		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.bound, i.hasPrice = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, info.itemBound, not info.hasNoValue
@@ -343,7 +342,7 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 		local questInfo = C_Container.GetContainerItemQuestInfo(bagID, slotID)
 		i.isQuestItem, i.questID, i.questActive = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
 
-		i.name, _, _, _, _, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID, i.bindType = GetItemInfo(i.link)
+		i.name, _, _, _, i.minlevel, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID, i.bindType = GetItemInfo(i.link)
 		i.equipLoc = _G[i.equipLoc] -- INVTYPE to localized string
 
 		if i.id == PET_CAGE then
