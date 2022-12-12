@@ -121,26 +121,28 @@ function Module:ExpBar_Update(event, unit)
 				curValue = C_MajorFactions_HasMaximumRenown(factionID) and majorFactionData.renownLevelThreshold or majorFactionData.renownReputationEarned or 0
 				label = format("%s%s|r %s", renownHex, RENOWN_LEVEL_LABEL, majorFactionData.renownLevel)
 			end
-		elseif C_Reputation_IsFactionParagon(factionID) then
+		end
+
+		if not label and C_Reputation_IsFactionParagon(factionID) then
 			local current, threshold
 			current, threshold, _, rewardPending = C_Reputation_GetFactionParagonInfo(factionID)
 
 			if current and threshold then
 				label, minValue, maxValue, curValue, reaction = L["Paragon"], 0, threshold, current % threshold, 9
 			end
-
-			self.reward:SetPoint("CENTER", self, "LEFT")
 		end
 
 		if not label then
 			label = _G["FACTION_STANDING_LABEL" .. reaction] or UNKNOWN
 		end
 
-		local color = (reaction == 9 and { r = 0, g = 0.5, b = 0.9 }) or _G.FACTION_BAR_COLORS[reaction] -- reaction 9 is Paragon
+		local color = _G.FACTION_BAR_COLORS[reaction]
 		self:SetStatusBarColor(color.r, color.g, color.b)
 		self:SetMinMaxValues(minValue, maxValue)
 		self:SetValue(curValue)
-		self:Show()
+
+		self.reward:ClearAllPoints()
+		self.reward:SetPoint("CENTER", self, "LEFT")
 		self.reward:SetShown(rewardPending)
 
 		local current, _, percent, capped = GetValues(curValue, minValue, maxValue)

@@ -304,33 +304,4 @@ for i = 1, GetNumAddOns() do
 	K.AddOnVersion[string_lower(Name)] = GetAddOnMetadata(Name, "Version")
 end
 
--- Profiling
-do
-	local info = {}
-	function K:LogDebugInfo(name, time, mem)
-		info[name] = info[name] or { timeLog = {}, memLog = {}, calls = 0 }
-
-		if #info[name].timeLog > 1000 then
-			table.remove(info[name].timeLog, 1)
-		end
-
-		table.insert(info[name].timeLog, time)
-
-		if #info[name].memLog > 1000 then
-			table.remove(info[name].memLog, 1)
-		end
-
-		table.insert(info[name].memLog, mem)
-
-		info[name].calls = info[name].calls + 1
-
-		print("|cffffd200" .. name .. "|r")
-		print("time:", info[name].timeLog[#info[name].timeLog])
-		print("mem:", info[name].memLog[#info[name].memLog])
-		print("calls:", info[name].calls)
-	end
-
-	K.isProfiling = true
-end
-
 _G.KkthnxUI = Engine

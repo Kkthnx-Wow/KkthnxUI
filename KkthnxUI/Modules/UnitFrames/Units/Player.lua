@@ -32,10 +32,6 @@ local function updatePartySync(self)
 end
 
 function Module:CreatePlayer()
-	-- local timeStart, memStart = 0, 0
-	-- if K.isProfiling then
-	-- 	timeStart, memStart = debugprofilestop(), collectgarbage("count")
-	-- end
 	self.mystyle = "player"
 
 	local playerWidth = C["Unitframe"].PlayerHealthWidth
@@ -640,8 +636,4 @@ function Module:CreatePlayer()
 	self.QuestSyncIndicator = QuestSyncIndicator
 	self.Highlight = Highlight
 	self.ThreatIndicator = ThreatIndicator
-
-	-- if K.isProfiling then
-	-- 	K:LogDebugInfo(self:GetDebugName() .. ":CreatePlayer", debugprofilestop() - timeStart, collectgarbage("count") - memStart)
-	-- end
 end
