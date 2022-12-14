@@ -136,9 +136,8 @@ function Module:ExpBar_Update(event, unit)
 			label = _G["FACTION_STANDING_LABEL" .. reaction] or UNKNOWN
 		end
 
-		local color = _G.FACTION_BAR_COLORS[reaction]
-		print(color.r, color.g, color.b)
-		self:SetStatusBarColor(color.r or 1, color.g or 1, color.b or 1)
+		local color = FACTION_BAR_COLORS[reaction] or FACTION_BAR_COLORS[5]
+		self:SetStatusBarColor(color.r, color.g, color.b)
 		self:SetMinMaxValues(minValue, maxValue)
 		self:SetValue(curValue)
 
