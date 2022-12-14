@@ -49,7 +49,7 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	local BorderBlue = bBlue or C["General"].ColorTextures and C["General"].TexturesColor[3] or C["Media"].Borders.ColorBorder[3]
 	local BorderAlpha = bAlpha or 1
 
-	if bFrame and not bFrame.KKUI_Border then -- Do not keep creating it!
+	if not bFrame.KKUI_Border then -- Do not keep creating it!
 		if bFrame:IsObjectType("Texture") then
 			bFrame = bFrame:GetParent()
 		end
@@ -75,7 +75,7 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	local BackgroundBlue = bgBlue or C["Media"].Backdrops.ColorBackdrop[3]
 	local BackgroundAlpha = bgAlpha or C["Media"].Backdrops.ColorBackdrop[4]
 
-	if bFrame and not bFrame.KKUI_Background then -- Do not keep creating it!
+	if not bFrame.KKUI_Background then -- Do not keep creating it!
 		-- Create Our Background
 		local kkui_background = bFrame:CreateTexture(nil, BackgroundSubLevel, nil, BackgroundLayer)
 		kkui_background:SetTexture(BackgroundTexture)

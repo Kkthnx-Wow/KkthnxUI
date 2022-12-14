@@ -452,6 +452,10 @@ function Module:AuraWatch_SetupCD(index, name, icon, start, duration, _, type, i
 	frames.Index = (frames.Index + 1 > maxFrames) and maxFrames or frames.Index + 1
 end
 
+Module.IgnoredItems = {
+	[193757] = true,
+}
+
 function Module:AuraWatch_UpdateCD()
 	for KEY, VALUE in pairs(cooldownTable) do
 		for spellID in pairs(VALUE) do
@@ -483,6 +487,11 @@ function Module:AuraWatch_UpdateCD()
 				elseif value.SlotID then
 					local link = GetInventoryItemLink("player", value.SlotID)
 					if link then
+						local itemID = GetItemInfoFromHyperlink(link)
+						if Module.IgnoredItems[itemID] then
+							return
+						end
+
 						local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(link)
 						local start, duration = GetInventoryItemCooldown("player", value.SlotID)
 						if duration > 1.5 then

@@ -987,7 +987,7 @@ function Module:CreatePlates()
 
 	Module:UpdateAuraContainer(self:GetWidth(), self.Auras, self.Auras.numTotal)
 
-	-- self.Auras.showStealableBuffs = true
+	self.Auras.showStealableBuffs = true
 	self.Auras.PostCreateButton = Module.PostCreateButton
 	self.Auras.PostUpdateButton = Module.PostUpdateButton
 	self.Auras.PreUpdate = Module.AurasPreUpdate
@@ -1185,6 +1185,7 @@ end
 function Module:RefreshPlateType(unit)
 	self.reaction = UnitReaction(unit, "player")
 	self.isFriendly = self.reaction and self.reaction >= 4 and not UnitCanAttack("player", unit)
+	self.isSoftTarget = GetCVarBool("SoftTargetIconGameObject") and UnitIsUnit(unit, "softinteract")
 	if C["Nameplate"].NameOnly and self.isFriendly or self.widgetsOnly or self.isSoftTarget then
 		self.plateType = "NameOnly"
 	elseif C["Nameplate"].FriendPlate and self.isFriendly then
@@ -1207,8 +1208,27 @@ function Module:OnUnitFactionChanged(unit)
 	end
 end
 
+function Module:OnUnitSoftTargetChanged(previousTarget, currentTarget)
+	if not GetCVarBool("SoftTargetIconGameObject") then
+		return
+	end
+
+	for _, nameplate in pairs(C_NamePlate.GetNamePlates()) do
+		local unitFrame = nameplate and nameplate.unitFrame
+		local guid = unitFrame and unitFrame.unitGUID
+		if guid and (guid == previousTarget or guid == currentTarget) then
+			print(previousTarget, currentTarget)
+			unitFrame.previousType = nil
+			Module.RefreshPlateType(unitFrame, unitFrame.unit)
+			Module.UpdateTargetChange(unitFrame)
+			unitFrame.RaidTargetIndicator:ForceUpdate()
+		end
+	end
+end
+
 function Module:RefreshPlateOnFactionChanged()
 	K:RegisterEvent("UNIT_FACTION", Module.OnUnitFactionChanged)
+	K:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED", Module.OnUnitSoftTargetChanged)
 end
 
 function Module:PostUpdatePlates(event, unit)
@@ -1222,7 +1242,6 @@ function Module:PostUpdatePlates(event, unit)
 		self.isPlayer = UnitIsPlayer(unit)
 		self.npcID = K.GetNPCID(self.unitGUID)
 		self.widgetsOnly = UnitNameplateShowsWidgetsOnly(unit)
-		self.isSoftTarget = UnitIsUnit(unit, "softinteract")
 
 		local blizzPlate = self:GetParent().UnitFrame
 		if blizzPlate then

@@ -3,6 +3,7 @@ local oUF = K.oUF
 
 local CanDispel = {
 	DRUID = { Magic = false, Curse = true, Poison = true },
+	EVOKER = { Magic = true, Curse = true, Poison = true, Disease = true },
 	MAGE = { Curse = true },
 	MONK = { Magic = false, Poison = true, Disease = true },
 	PALADIN = { Magic = false, Poison = true, Disease = true },
@@ -37,6 +38,12 @@ end
 local function CheckSpec()
 	if K.Class == "DRUID" then
 		if GetSpecialization() == 4 then
+			dispellist.Magic = true
+		else
+			dispellist.Magic = false
+		end
+	elseif K.Class == "MONK" == "EVOKER" then
+		if GetSpecialization() == 2 then
 			dispellist.Magic = true
 		else
 			dispellist.Magic = false

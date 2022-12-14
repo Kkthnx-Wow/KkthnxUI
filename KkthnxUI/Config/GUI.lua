@@ -148,31 +148,6 @@ function UpdateActionbar()
 	K:GetModule("ActionBar"):UpdateBarVisibility()
 end
 
-function UpdateActionbar1()
-	K:GetModule("ActionBar"):UpdateBarVisibility()
-end
-function UpdateActionbar2()
-	K:GetModule("ActionBar"):UpdateBarVisibility()
-end
-function UpdateActionbar3()
-	K:GetModule("ActionBar"):UpdateBarVisibility()
-end
-function UpdateActionbar4()
-	K:GetModule("ActionBar"):UpdateBarVisibility()
-end
-function UpdateActionbar5()
-	K:GetModule("ActionBar"):UpdateBarVisibility()
-end
-function UpdateActionbar6()
-	K:GetModule("ActionBar"):UpdateBarVisibility()
-end
-function UpdateActionbar7()
-	K:GetModule("ActionBar"):UpdateBarVisibility()
-end
-function UpdateActionbar8()
-	K:GetModule("ActionBar"):UpdateBarVisibility()
-end
-
 local function UpdateActionbarHotkeys()
 	K:GetModule("ActionBar"):UpdateBarConfig()
 end
@@ -425,7 +400,7 @@ local ActionBar = function(self)
 
 	Window:CreateSection("ActionBar 6")
 	Window:CreateSwitch("ActionBar", "Bar6", enableTextColor .. L["Enable ActionBar"] .. " 6", nil, UpdateActionbar)
-	Window:CreateSlider("ActionBar", "Bar3Size", "Button Size", 20, 80, 1, nil, UpdateActionBar6Scale)
+	Window:CreateSlider("ActionBar", "Bar6Size", "Button Size", 20, 80, 1, nil, UpdateActionBar6Scale)
 	Window:CreateSlider("ActionBar", "Bar6PerRow", "Button PerRow", 1, 12, 1, nil, UpdateActionBar6Scale)
 	Window:CreateSlider("ActionBar", "Bar6Num", "Button Num", 1, 12, 1, nil, UpdateActionBar6Scale)
 	Window:CreateSlider("ActionBar", "Bar6Font", "Button FontSize", 8, 20, 1, nil, UpdateActionBar6Scale)

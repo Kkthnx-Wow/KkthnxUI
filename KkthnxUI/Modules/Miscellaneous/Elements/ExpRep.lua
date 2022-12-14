@@ -137,7 +137,8 @@ function Module:ExpBar_Update(event, unit)
 		end
 
 		local color = _G.FACTION_BAR_COLORS[reaction]
-		self:SetStatusBarColor(color.r, color.g, color.b)
+		print(color.r, color.g, color.b)
+		self:SetStatusBarColor(color.r or 1, color.g or 1, color.b or 1)
 		self:SetMinMaxValues(minValue, maxValue)
 		self:SetValue(curValue)
 

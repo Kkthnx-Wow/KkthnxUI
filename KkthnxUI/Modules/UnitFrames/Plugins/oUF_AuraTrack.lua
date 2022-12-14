@@ -1,76 +1,56 @@
 local K = unpack(KkthnxUI)
 local oUF = K.oUF
 
---[[
-By Tukz, for Tukui
-.Thickness : Thickness of the statusbar
-.Tracker : Table of buffs spell id to track, if not spiecified, use default listing
-.Texture : Texture you want to use for status bars
-.Icons : Set to true if you wish to use squared icons instead of status bars
-.SpellTextures : Spell Textures instead of colored squares
-.MaxAuras : Set the max amount of status or icons shows
-Example:
-local AuraTrack = CreateFrame("Frame", nil, Health)
-AuraTrack:SetAllPoints()
-AuraTrack.Texture = C.Medias.Normal
-self.AuraTrack = AuraTrack
-]]
+-- By Tukz, for Tukui
 
 local Tracker = {
-	-- Priest
-	[194384] = { 1, 1, 0.66 }, -- Atonement
-	[214206] = { 1, 1, 0.66 }, -- Atonement (PvP)
-	[41635] = { 0.2, 0.7, 0.2 }, -- Prayer of Mending
-	[193065] = { 0.54, 0.21, 0.78 }, -- Masochism
-	[139] = { 0.4, 0.7, 0.2 }, -- Renew
-	[17] = { 0.89, 0.1, 0.1 }, -- Power Word: Shield
-	[47788] = { 0.86, 0.45, 0 }, -- Guardian Spirit
-	[33206] = { 0, 0, 0.74 }, -- Pain Suppression
-	[10060] = { 0, 0, 0.74 }, -- Power Infusion
 
-	-- Druid
-	[774] = { 0.8, 0.4, 0.8 }, -- Rejuvenation
-	[155777] = { 0.8, 0.4, 0.8 }, -- Germination
-	[8936] = { 1, 1, 0 }, -- Regrowth
-	[33763] = { 0.4, 0.8, 0.2 }, -- Lifebloom (Normal version)
-	[188550] = { 0.4, 0.8, 0.2 }, -- Lifebloom (Legendary version)
-	[48438] = { 0.8, 0.4, 0 }, -- Wild Growth
-	[207386] = { 0.4, 0.2, 0.8 }, -- Spring Blossoms
-	[102351] = { 0.2, 0.8, 0.8 }, -- Cenarion Ward (Initial Buff)
-	[102352] = { 0.2, 0.8, 0.8 }, -- Cenarion Ward (HoT)
-	[200389] = { 1, 1, 0.4 }, -- Cultivation
+	[194384] = { 1, 1, 0.66 },
+	[214206] = { 1, 1, 0.66 },
+	[41635] = { 0.2, 0.7, 0.2 },
+	[193065] = { 0.54, 0.21, 0.78 },
+	[139] = { 0.4, 0.7, 0.2 },
+	[17] = { 0.89, 0.1, 0.1 },
+	[47788] = { 0.86, 0.45, 0 },
+	[33206] = { 0, 0, 0.74 },
+	[10060] = { 0, 0, 0.74 },
 
-	-- Paladin
-	[53563] = { 0.7, 0.3, 0.7 }, -- Beacon of Light
-	[156910] = { 0.7, 0.3, 0.7 }, -- Beacon of Faith
-	[200025] = { 0.7, 0.3, 0.7 }, -- Beacon of Virtue
-	[1022] = { 0.2, 0.2, 1 }, -- Hand of Protection
-	[1044] = { 0.89, 0.45, 0 }, -- Hand of Freedom
-	[6940] = { 0.89, 0.1, 0.1 }, -- Hand of Sacrifice
-	[223306] = { 0.7, 0.7, 0.3 }, -- Bestow Faith
-	[287280] = { 0.2, 0.8, 0.2 }, -- Glimmer of Light (Artifact HoT)
+	[774] = { 0.8, 0.4, 0.8 },
+	[155777] = { 0.8, 0.4, 0.8 },
+	[8936] = { 1, 1, 0 },
+	[33763] = { 0.4, 0.8, 0.2 },
+	[188550] = { 0.4, 0.8, 0.2 },
+	[48438] = { 0.8, 0.4, 0 },
+	[207386] = { 0.4, 0.2, 0.8 },
+	[102351] = { 0.2, 0.8, 0.8 },
+	[102352] = { 0.2, 0.8, 0.8 },
+	[200389] = { 1, 1, 0.4 },
 
-	-- Shaman
-	[61295] = { 0.7, 0.3, 0.7 }, -- Riptide
-	[974] = { 0.2, 0.2, 1 }, -- Earth Shield
+	[53563] = { 0.7, 0.3, 0.7 },
+	[156910] = { 0.7, 0.3, 0.7 },
+	[200025] = { 0.7, 0.3, 0.7 },
+	[1022] = { 0.2, 0.2, 1 },
+	[1044] = { 0.89, 0.45, 0 },
+	[6940] = { 0.89, 0.1, 0.1 },
+	[223306] = { 0.7, 0.7, 0.3 },
+	[287280] = { 0.2, 0.8, 0.2 },
 
-	-- Monk
-	[119611] = { 0.3, 0.8, 0.6 }, -- Renewing Mist
-	[116849] = { 0.2, 0.8, 0.2 }, -- Life Cocoon
-	[124682] = { 0.8, 0.8, 0.25 }, -- Enveloping Mist
-	[191840] = { 0.27, 0.62, 0.7 }, -- Essence Font
+	[61295] = { 0.7, 0.3, 0.7 },
+	[974] = { 0.2, 0.2, 1 },
 
-	-- Rogue
-	[57934] = { 0.89, 0.09, 0.05 }, -- Tricks of the Trade
+	[119611] = { 0.3, 0.8, 0.6 },
+	[116849] = { 0.2, 0.8, 0.2 },
+	[124682] = { 0.8, 0.8, 0.25 },
+	[191840] = { 0.27, 0.62, 0.7 },
 
-	-- Warrior
-	[114030] = { 0.2, 0.2, 1 }, -- Vigilance
-	[3411] = { 0.89, 0.09, 0.05 }, -- Intervene
+	[57934] = { 0.89, 0.09, 0.05 },
 
-	-- Others
-	[193396] = { 0.6, 0.2, 0.8 }, -- Demonic Empowerment
-	[272790] = { 0.89, 0.09, 0.05 }, -- Frenzy
-	[136] = { 0.2, 0.8, 0.2 }, -- Mend Pet
+	[114030] = { 0.2, 0.2, 1 },
+	[3411] = { 0.89, 0.09, 0.05 },
+
+	[193396] = { 0.6, 0.2, 0.8 },
+	[272790] = { 0.89, 0.09, 0.05 },
+	[136] = { 0.2, 0.8, 0.2 },
 }
 
 local function OnUpdate(self)

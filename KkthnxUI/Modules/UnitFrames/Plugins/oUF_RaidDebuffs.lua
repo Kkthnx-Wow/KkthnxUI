@@ -80,6 +80,12 @@ do
 			["Curse"] = true,
 			["Poison"] = true,
 		},
+		["EVOKER"] = {
+			["Magic"] = true,
+			["Curse"] = true,
+			["Poison"] = true,
+			["Disease"] = true,
+		},
 		["MONK"] = {
 			["Magic"] = true,
 			["Poison"] = true,
@@ -109,6 +115,12 @@ end
 local function CheckSpec()
 	if K.Class == "DRUID" then
 		if GetSpecialization() == 4 then
+			DispellFilter.Magic = true
+		else
+			DispellFilter.Magic = false
+		end
+	elseif K.Class == "EVOKER" then
+		if GetSpecialization() == 2 then
 			DispellFilter.Magic = true
 		else
 			DispellFilter.Magic = false
