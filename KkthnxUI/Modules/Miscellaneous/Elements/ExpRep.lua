@@ -115,7 +115,8 @@ function Module:ExpBar_Update(event, unit)
 				label, minValue, maxValue, curValue = info.reaction, info.reactionThreshold or 0, info.nextThreshold or 1, info.standing or 1
 			elseif isMajorFaction then
 				local majorFactionData = C_MajorFactions_GetMajorFactionData(factionID)
-				local renownHex = K.RGBToHex(0, 0.74, 0.95) -- 10 (Renown)
+				local renownColor = { r = 0, g = 0.74, b = 0.95 }
+				local renownHex = K.RGBToHex(renownColor.r, renownColor.g, renownColor.b) -- 10 (Renown)
 
 				reaction, minValue, maxValue = 10, 0, majorFactionData.renownLevelThreshold
 				curValue = C_MajorFactions_HasMaximumRenown(factionID) and majorFactionData.renownLevelThreshold or majorFactionData.renownReputationEarned or 0
@@ -136,8 +137,8 @@ function Module:ExpBar_Update(event, unit)
 			label = _G["FACTION_STANDING_LABEL" .. reaction] or UNKNOWN
 		end
 
-		local color = FACTION_BAR_COLORS[reaction] or FACTION_BAR_COLORS[5]
-		self:SetStatusBarColor(color.r, color.g, color.b)
+		local color = FACTION_BAR_COLORS[reaction] or reaction == 9 and FACTION_BAR_COLORS[9] or reaction == 10 and FACTION_BAR_COLORS[10]
+		self:SetStatusBarColor(color.r or 1, color.g or 1, color.b or 1, 1)
 		self:SetMinMaxValues(minValue, maxValue)
 		self:SetValue(curValue)
 
@@ -151,6 +152,7 @@ function Module:ExpBar_Update(event, unit)
 		else
 			self.text:SetText(string_format("%s: %s - %d%% [%s]", name, K.ShortValue(current), percent, K.ShortenString(label, 1, false)))
 		end
+		self:Show()
 		self.text:Show()
 	elseif IsWatchingHonorAsXP() then
 		if event == "PLAYER_FLAGS_CHANGED" and unit ~= "player" then
@@ -316,6 +318,7 @@ function Module:SetupExpRepScript(bar)
 		"DISABLE_XP_GAIN",
 		"AZERITE_ITEM_EXPERIENCE_CHANGED",
 		"HONOR_XP_UPDATE",
+		"QUEST_FINISHED",
 	}
 
 	for _, event in pairs(bar.eventList) do
