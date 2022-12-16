@@ -50,12 +50,13 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	local BorderAlpha = bAlpha or 1
 
 	if not bFrame.KKUI_Border then -- Do not keep creating it!
+		local frame = bFrame
 		if bFrame:IsObjectType("Texture") then
-			bFrame = bFrame:GetParent()
+			frame = bFrame:GetParent()
 		end
 
 		-- Create Our Border
-		local kkui_border = K.CreateBorder(bFrame, BorderSubLevel, BorderLayer)
+		local kkui_border = K.CreateBorder(frame, BorderSubLevel, BorderLayer)
 		kkui_border:SetSize(BorderSize)
 		kkui_border:SetTexture(BorderTexture)
 		kkui_border:SetOffset(BorderOffset)
@@ -68,7 +69,7 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	-- Background
 	local BackgroundTexture = bgTexture or C["Media"].Textures.White8x8Texture
 	local BackgroundSubLevel = bgSubLevel or "BACKGROUND"
-	local BackgroundLayer = bgLayer or -1
+	local BackgroundLayer = bgLayer or -2
 	local BackgroundPoint = bgPoint or 1
 	local BackgroundRed = bgRed or C["Media"].Backdrops.ColorBackdrop[1]
 	local BackgroundGreen = bgGreen or C["Media"].Backdrops.ColorBackdrop[2]
@@ -78,7 +79,7 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	if not bFrame.KKUI_Background then -- Do not keep creating it!
 		-- Create Our Background
 		local kkui_background = bFrame:CreateTexture(nil, BackgroundSubLevel, nil, BackgroundLayer)
-		kkui_background:SetTexture(BackgroundTexture)
+		kkui_background:SetTexture(BackgroundTexture, true, true)
 		kkui_background:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		kkui_background:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BackgroundPoint, -BackgroundPoint)
 		kkui_background:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint)
@@ -359,7 +360,7 @@ local function SkinCloseButton(self, parent, xOffset, yOffset)
 		self.Border:SetAlpha(0)
 	end
 
-	self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 1, 0, 0)
+	self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0.85, 0.25, 0.25)
 	self:StyleButton()
 
 	self:SetDisabledTexture("")
@@ -414,8 +415,10 @@ function K.SetupArrow(self, direction)
 end
 
 function K.ReskinArrow(self, direction)
+	self:StripTextures()
 	self:SetSize(16, 16)
-	self:SkinButton()
+	self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0.20, 0.20, 0.20)
+	self:StyleButton()
 
 	self:SetDisabledTexture("Interface\\ChatFrame\\ChatFrameBackground")
 	local dis = self:GetDisabledTexture()
@@ -445,7 +448,7 @@ local function SkinScrollBar(self)
 		self.thumb = thumb
 
 		local bg = CreateFrame("Frame", nil, self)
-		bg:CreateBorder()
+		bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0.20, 0.20, 0.20)
 		bg:SetPoint("TOPLEFT", thumb, 0, -6)
 		bg:SetPoint("BOTTOMRIGHT", thumb, 0, 6)
 		thumb.bg = bg

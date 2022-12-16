@@ -1,4 +1,5 @@
 local K, C, L = unpack(KkthnxUI)
+local Module = K:NewModule("DEV")
 
 K.Devs = {
 	["Kkthnx-Area 52"] = true,
@@ -18,12 +19,14 @@ end
 ----------------------------------------------------------------------------------------
 --	One-click Milling, Prospecting and Disenchanting(Molinari by p3lim)
 ----------------------------------------------------------------------------------------
-local button = CreateFrame("Button", "KKUI_OneClickMPD", UIParent, "SecureActionButtonTemplate")
-button:RegisterForClicks("AnyUp", "AnyDown")
-button:SetScript("OnEvent", function(self, event, ...)
-	self[event](self, ...)
-end)
-button:RegisterEvent("PLAYER_LOGIN")
+local button = CreateFrame("Button", "KKUI_Molinari", UIParent, "SecureActionButtonTemplate, SecureHandlerStateTemplate, SecureHandlerEnterLeaveTemplate, AutoCastShineTemplate")
+button:RegisterForClicks("AnyUp", "AnyDown") -- we need to register both in Dragonflight, doesn't seem to hurt in older expansions
+button:SetFrameStrata("TOOLTIP")
+button:Hide()
+-- button:SetScript("OnEvent", function(self, event, ...)
+-- 	self[event](self, ...)
+-- end)
+-- button:RegisterEvent("PLAYER_LOGIN")
 
 local herbs = {
 	-- http://www.wowhead.com/spell=51005/milling#milled-from:0+1+17-20
@@ -187,7 +190,7 @@ local enchantingItems = {
 	[201356] = true, -- Glimmer of Fire
 }
 
-function button:PLAYER_LOGIN()
+function Module:SetupMolinari()
 	local milling, prospect, disenchanter, rogue
 
 	if IsSpellKnown(51005) then
@@ -244,7 +247,6 @@ function button:PLAYER_LOGIN()
 				button:SetAttribute("macrotext", string.format("/cast %s\n/use %s %s", spell, bag:GetID(), slot:GetID()))
 				button:SetAllPoints(slot)
 				button:Show()
-				-- AutoCastShine_AutoCastStart(button, r, g, b)
 				K.CustomGlow.AutoCastGlow_Start(button, { r, g, b, 1 }, 6, 0.20, 1.6)
 			end
 		end
@@ -252,37 +254,42 @@ function button:PLAYER_LOGIN()
 
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, OnTooltipSetUnit)
 
-	self:SetFrameStrata("TOOLTIP")
-	self:SetAttribute("*type1", "macro")
-	self:SetScript("OnLeave", self.MODIFIER_STATE_CHANGED)
-
-	self:RegisterEvent("MODIFIER_STATE_CHANGED")
-	self:Hide()
-
-	-- for _, sparks in pairs(self.sparkles) do
-	-- 	sparks:SetHeight(sparks:GetHeight() * 3)
-	-- 	sparks:SetWidth(sparks:GetWidth() * 3)
-	-- end
+	button:SetAttribute("*type1", "macro")
+	button:SetScript("OnLeave", Module.MODIFIER_STATE_CHANGED)
+	K:RegisterEvent("MODIFIER_STATE_CHANGED", Module.MODIFIER_STATE_CHANGED)
 end
 
-function button:MODIFIER_STATE_CHANGED(key)
-	if not self:IsShown() and not key and key ~= "LALT" and key ~= "RALT" then
+function Module:MODIFIER_STATE_CHANGED(key)
+	if not button:IsShown() and not key and key ~= "LALT" and key ~= "RALT" then
 		return
 	end
 
 	if InCombatLockdown() then
-		self:SetAlpha(0)
-		self:RegisterEvent("PLAYER_REGEN_ENABLED")
+		button:SetAlpha(0)
+		button:RegisterEvent("PLAYER_REGEN_ENABLED")
 	else
-		self:ClearAllPoints()
-		self:SetAlpha(1)
-		self:Hide()
-		-- AutoCastShine_AutoCastStop(self)
-		K.CustomGlow.AutoCastGlow_Stop(self)
+		button:ClearAllPoints()
+		button:SetAlpha(1)
+		button:Hide()
+		K.CustomGlow.AutoCastGlow_Stop(button)
 	end
 end
 
-function button:PLAYER_REGEN_ENABLED()
-	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	self:MODIFIER_STATE_CHANGED()
+function Module:PLAYER_REGEN_ENABLED()
+	button:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	Module:MODIFIER_STATE_CHANGED()
+end
+
+function Module:BAG_UPDATE_DELAYED()
+	-- hide securely whenever a bag update occurs
+	if button:IsShown() and not InCombatLockdown() then
+		button:Hide()
+	end
+end
+
+function Module:OnEnable()
+	Module:SetupMolinari()
+	K:RegisterEvent("MODIFIER_STATE_CHANGED", Module.MODIFIER_STATE_CHANGED)
+	K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.PLAYER_REGEN_ENABLED)
+	K:RegisterEvent("BAG_UPDATE_DELAYED", Module.BAG_UPDATE_DELAYED)
 end

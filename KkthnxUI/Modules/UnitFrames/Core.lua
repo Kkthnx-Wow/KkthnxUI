@@ -636,7 +636,6 @@ function Module:CreateUnits()
 			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", { "TOPLEFT", Focus, "BOTTOMRIGHT", 6, -6 }, FoucsTargetFrameWidth, FocusTargetFrameHeight)
 		end
 
-		-- K.HideInterfaceOption(InterfaceOptionsCombatPanelTargetOfTarget)
 		K:RegisterEvent("PLAYER_TARGET_CHANGED", Module.PLAYER_TARGET_CHANGED)
 		K:RegisterEvent("PLAYER_FOCUS_CHANGED", Module.PLAYER_FOCUS_CHANGED)
 		K:RegisterEvent("UNIT_FACTION", Module.UNIT_FACTION)
@@ -678,8 +677,6 @@ function Module:CreateUnits()
 				Arena[i].mover = K.Mover(Arena[i], "ArenaFrame" .. i, "Arena" .. i, { "TOPLEFT", Arena[i - 1], "BOTTOMLEFT", 0, -C["Arena"].YOffset }, arenaMoverWidth, arenaMoverHeight)
 			end
 		end
-
-		SetCVar("showArenaEnemyFrames", 0) -- Why these still load and show is dumb.
 	end
 
 	local partyMover

@@ -1,5 +1,5 @@
---[[ $Id: CallbackHandler-1.0.lua 22 2018-07-21 14:17:22Z nevcairiel $ ]]
-local MAJOR, MINOR = "CallbackHandler-1.0", 7
+--[[ $Id: CallbackHandler-1.0.lua 26 2022-12-12 15:09:39Z nevcairiel $ ]]
+local MAJOR, MINOR = "CallbackHandler-1.0", 8
 local CallbackHandler = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not CallbackHandler then
@@ -14,19 +14,9 @@ local meta = {
 }
 
 -- Lua APIs
-local error = error
+local securecallfunction, error = securecallfunction, error
 local setmetatable, rawget = setmetatable, rawget
 local next, select, pairs, type, tostring = next, select, pairs, type, tostring
-
--- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
--- List them here for Mikk's FindGlobals script
--- GLOBALS: geterrorhandler
-
-local xpcall = xpcall
-
-local function errorhandler(err)
-	return geterrorhandler()(err)
-end
 
 local function Dispatch(handlers, ...)
 	local index, method = next(handlers)
@@ -34,7 +24,7 @@ local function Dispatch(handlers, ...)
 		return
 	end
 	repeat
-		xpcall(method, errorhandler, ...)
+		securecallfunction(method, ...)
 		index, method = next(handlers, index)
 	until not method
 end
@@ -47,7 +37,7 @@ end
 --   UnregisterName    - name of the callback unregistration API, default "UnregisterCallback"
 --   UnregisterAllName - name of the API to unregister all callbacks, default "UnregisterAllCallbacks". false == don't publish this API.
 
-function CallbackHandler:New(target, RegisterName, UnregisterName, UnregisterAllName)
+function CallbackHandler.New(_self, target, RegisterName, UnregisterName, UnregisterAllName)
 	RegisterName = RegisterName or "RegisterCallback"
 	UnregisterName = UnregisterName or "UnregisterCallback"
 	if UnregisterAllName == nil then -- false is used to indicate "don't want this method"
@@ -75,13 +65,13 @@ function CallbackHandler:New(target, RegisterName, UnregisterName, UnregisterAll
 
 		if registry.insertQueue and oldrecurse == 0 then
 			-- Something in one of our callbacks wanted to register more callbacks; they got queued
-			for eventname, callbacks in pairs(registry.insertQueue) do
-				local first = not rawget(events, eventname) or not next(events[eventname]) -- test for empty before. not test for one member after. that one member may have been overwritten.
-				for self, func in pairs(callbacks) do
-					events[eventname][self] = func
+			for event, callbacks in pairs(registry.insertQueue) do
+				local first = not rawget(events, event) or not next(events[event]) -- test for empty before. not test for one member after. that one member may have been overwritten.
+				for object, func in pairs(callbacks) do
+					events[event][object] = func
 					-- fire OnUsed callback?
 					if first and registry.OnUsed then
-						registry.OnUsed(registry, target, eventname)
+						registry.OnUsed(registry, target, event)
 						first = nil
 					end
 				end
@@ -200,7 +190,7 @@ function CallbackHandler:New(target, RegisterName, UnregisterName, UnregisterAll
 			for i = 1, select("#", ...) do
 				local self = select(i, ...)
 				if registry.insertQueue then
-					for _, callbacks in pairs(registry.insertQueue) do
+					for eventname, callbacks in pairs(registry.insertQueue) do
 						if callbacks[self] then
 							callbacks[self] = nil
 						end

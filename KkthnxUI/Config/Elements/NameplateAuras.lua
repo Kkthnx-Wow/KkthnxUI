@@ -84,6 +84,7 @@ C.NameplateBlackList = {
 	[273977] = true,
 	[276919] = true,
 	[206930] = true,
+	[55078] = true,
 }
 
 C.NameplateCustomUnits = {

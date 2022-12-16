@@ -4,12 +4,10 @@ local Module = K:GetModule("Chat")
 local _G = _G
 local string_find = _G.string.find
 local string_gsub = _G.string.gsub
--- local string_match = _G.string.match
 
 local BetterDate = _G.BetterDate
 local INTERFACE_ACTION_BLOCKED = _G.INTERFACE_ACTION_BLOCKED
-local CHAT_TIMESTAMP_FORMAT = _G.CHAT_TIMESTAMP_FORMAT
-local time = _G.time
+local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
 
 local timestampFormat = {
 	[2] = "[%I:%M %p] ",
@@ -17,6 +15,19 @@ local timestampFormat = {
 	[4] = "[%H:%M] ",
 	[5] = "[%H:%M:%S] ",
 }
+
+local function GetCurrentTime()
+	local locTime = time()
+	local realmTime = not GetCVarBool("timeMgrUseLocalTime") and C_DateAndTime_GetCurrentCalendarTime()
+	if realmTime then
+		realmTime.day = realmTime.monthDay
+		realmTime.min = realmTime.minute
+		realmTime.sec = date("%S") -- no sec value for realm time
+		realmTime = time(realmTime)
+	end
+
+	return locTime, realmTime
+end
 
 function Module:SetupChannelNames(text, ...)
 	if string_find(text, INTERFACE_ACTION_BLOCKED) and not K.isDeveloper then
@@ -30,13 +41,16 @@ function Module:SetupChannelNames(text, ...)
 
 	-- Timestamp
 	if C["Chat"].TimestampFormat.Value > 1 then
-		local currentTime = time()
-		local oldTimeStamp = CHAT_TIMESTAMP_FORMAT and string_gsub(BetterDate(CHAT_TIMESTAMP_FORMAT, currentTime), "%[([^]]*)%]", "%%[%1%%]")
-		if oldTimeStamp then
-			text = string_gsub(text, oldTimeStamp, "")
+		local locTime, realmTime = GetCurrentTime()
+		local defaultTimestamp = GetCVar("showTimestamps")
+		if defaultTimestamp == "none" then
+			defaultTimestamp = nil
 		end
-
-		local timeStamp = BetterDate(K.GreyColor .. timestampFormat[C["Chat"].TimestampFormat.Value] .. "|r", currentTime)
+		local oldTimeStamp = defaultTimestamp and gsub(BetterDate(defaultTimestamp, locTime), "%[([^]]*)%]", "%%[%1%%]")
+		if oldTimeStamp then
+			text = gsub(text, oldTimeStamp, "")
+		end
+		local timeStamp = BetterDate(K.GreyColor .. timestampFormat[C["Chat"].TimestampFormat.Value] .. "|r", realmTime or locTime)
 		text = timeStamp .. text
 	end
 
