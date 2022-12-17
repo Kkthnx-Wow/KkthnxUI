@@ -100,7 +100,7 @@ function Module:InsertRoleFrame(role)
 		f:SetSize(18, 18)
 		self.roleFrame = f
 	end
-	-- self.roleFrame:SetTexture(K.GetRoleTex(role)) -- Fix
+	self.roleFrame:SetTexture(K.GetRoleTex(role)) -- Fix
 	self.roleFrame:Show()
 end
 
@@ -188,7 +188,7 @@ function Module:OnTooltipSetUnit()
 		if C["Tooltip"].LFDRole then
 			local role = UnitGroupRolesAssigned(unit)
 			if role ~= "NONE" then
-				Module.InsertRoleFrame(self, role)
+				-- Module.InsertRoleFrame(self, role)
 			end
 		end
 
@@ -351,43 +351,24 @@ local anchorIndex = {
 	[3] = "BOTTOMLEFT",
 	[4] = "BOTTOMRIGHT",
 }
+
 local mover
 function Module:GameTooltip_SetDefaultAnchor(parent)
-	-- if self:IsForbidden() then
-	-- 	return
-	-- end
-	-- if not parent then
-	-- 	return
-	-- end
-
-	-- local mode = C.db["Tooltip"]["CursorMode"]
-	-- self:SetOwner(parent, cursorIndex[mode])
-	-- if mode == 1 then
-	-- 	if not mover then
-	-- 		mover = B.Mover(self, L["Tooltip"], "GameTooltip", C.Tooltips.TipPos, 100, 100)
-	-- 	end
-	-- 	self:ClearAllPoints()
-	-- 	self:SetPoint(anchorIndex[C.db["Tooltip"]["TipAnchor"]], mover)
-	-- end
-
 	if self:IsForbidden() then
 		return
 	end
-
 	if not parent then
 		return
 	end
 
-	if C["Tooltip"].Cursor then
-		self:SetOwner(parent, "ANCHOR_CURSOR_RIGHT")
-	else
+	local mode = C["Tooltip"].CursorMode.Value
+	self:SetOwner(parent, cursorIndex[mode])
+	if mode == 1 then
 		if not mover then
-			mover = K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -230, 36 }, 240, 120)
+			mover = K.Mover(self, "Tooltip", "GameTooltip", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -230, 36 }, 100, 100)
 		end
-
-		self:SetOwner(parent, "ANCHOR_NONE")
 		self:ClearAllPoints()
-		self:SetPoint("BOTTOMRIGHT", mover)
+		self:SetPoint(anchorIndex[C["Tooltip"].TipAnchor.Value], mover)
 	end
 end
 
@@ -418,6 +399,10 @@ function Module:ReskinTooltip()
 		end
 
 		self.tipStyled = true
+	end
+
+	if not self.bg then
+		return
 	end
 
 	if C["General"].ColorTextures then

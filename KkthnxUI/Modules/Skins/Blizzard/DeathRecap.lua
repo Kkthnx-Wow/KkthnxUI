@@ -16,7 +16,7 @@ C.themes["Blizzard_DeathRecap"] = function()
 		iconBorder:SetAlpha(0)
 		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		DeathRecapFrame["Recap" .. i].SpellInfo:CreateBackdrop()
-		DeathRecapFrame["Recap" .. i].SpellInfo.Backdrop:SetAllPoints(icon)
+		DeathRecapFrame["Recap" .. i].SpellInfo.KKUI_Backdrop:SetAllPoints(icon)
 		icon:SetParent(DeathRecapFrame["Recap" .. i].SpellInfo.Backdrop)
 	end
 

@@ -234,7 +234,6 @@ C["Auras"] = {
 C["Chat"] = {
 	["BlockSpammer"] = true,
 	["Background"] = true,
-	["BlockAddonAlert"] = false,
 	["BlockStranger"] = false,
 	["ChatFilterList"] = "%*",
 	["ChatFilterWhiteList"] = "",
@@ -561,6 +560,24 @@ C["Tooltip"] = {
 	["ShowMount"] = false,
 	["SpecLevelByShift"] = true,
 	["TargetBy"] = true,
+	["CursorMode"] = {
+		["Options"] = {
+			[DISABLE] = 1,
+			["LEFT"] = 2,
+			["TOP"] = 3,
+			["RIGHT"] = 4,
+		},
+		["Value"] = 1,
+	},
+	["TipAnchor"] = {
+		["Options"] = {
+			["TOPLEFT"] = 1,
+			["TOPRIGHT"] = 2,
+			["BOTTOMLEFT"] = 3,
+			["BOTTOMRIGHT"] = 4,
+		},
+		["Value"] = 4,
+	},
 }
 
 -- Unitframe

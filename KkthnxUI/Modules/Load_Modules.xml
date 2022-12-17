@@ -188,14 +188,5 @@
    <Include file="Skins\Addons\Simulationcraft.lua" />
    <Include file="Skins\Addons\WeakAuras.lua" />
    <!-- Disabled/Broken/WIP AddOns -->
-   <!-- <Include file="Skins\Addons\BugSack.lua" />
-   <Include file="Skins\Addons\ChocolateBar.lua" />
-   <Include file="Skins\Addons\Immersion.lua" />
-   <Include file="Skins\Addons\OPie.lua" />
-   <Include file="Skins\Addons\RaiderIO.lua" />
-   <Include file="Skins\Addons\Skada.lua" />
-   <Include file="Skins\Addons\Spy.lua" />
-   <Include file="Skins\Addons\Hekili.lua" />
-   <Include file="Skins\Addons\TellMeWhen.lua" />
-   <Include file="Skins\Addons\TitanPanel.lua" /> -->
+   <!-- <Include file="Skins\Addons\RaiderIO.lua" /> -->
 </Ui>

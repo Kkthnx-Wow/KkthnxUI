@@ -174,8 +174,6 @@ function Module:CreateInfoFrame()
 	search:SetPoint("LEFT", 0, 6)
 	search:DisableDrawLayer("BACKGROUND")
 	search:CreateBackdrop()
-	search.Backdrop:SetPoint("TOPLEFT", 0, 0)
-	search.Backdrop:SetPoint("BOTTOMRIGHT", 0, 0)
 	search.textFilters = BagSmartFilter
 
 	local currencyTag = self:SpawnPlugin("TagDisplay", "[currencies]", infoFrame)

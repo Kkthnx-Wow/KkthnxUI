@@ -2,96 +2,24 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 
 local _G = _G
-local ipairs = _G.ipairs
 local math_max = _G.math.max
 local math_min = _G.math.min
 local pairs = _G.pairs
-local string_find = _G.string.find
 local string_gsub = _G.string.gsub
 local table_remove = _G.table.remove
-local tonumber = _G.tonumber
 
 local Ambiguate = _G.Ambiguate
-local BNToastFrame = _G.BNToastFrame
-local BN_TOAST_TYPE_CLUB_INVITATION = _G.BN_TOAST_TYPE_CLUB_INVITATION or 6
 local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
-local C_Timer_After = _G.C_Timer.After
 local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
-local ERR_LEARN_ABILITY_S = _G.ERR_LEARN_ABILITY_S
-local ERR_LEARN_PASSIVE_S = _G.ERR_LEARN_PASSIVE_S
-local ERR_LEARN_SPELL_S = _G.ERR_LEARN_SPELL_S
-local ERR_PET_LEARN_ABILITY_S = _G.ERR_PET_LEARN_ABILITY_S
-local ERR_PET_LEARN_SPELL_S = _G.ERR_PET_LEARN_SPELL_S
-local ERR_PET_SPELL_UNLEARNED_S = _G.ERR_PET_SPELL_UNLEARNED_S
-local ERR_SPELL_UNLEARNED_S = _G.ERR_SPELL_UNLEARNED_S
-local GetCVarBool = _G.GetCVarBool
 local GetTime = _G.GetTime
 local IsGUIDInGroup = _G.IsGUIDInGroup
 local IsGuildMember = _G.IsGuildMember
-local SetCVar = _G.SetCVar
-local UnitIsUnit = _G.UnitIsUnit
-local hooksecurefunc = _G.hooksecurefunc
-
-local msgSymbols = { " ", ",", "/", "^", "_", "`", "|", "~", "—", "——", "‘", "’", "“", "”", "、", "。", "〈", "〉", "《", "》", "『", "』", "【", "】", "〔", "〕", "！", "＃", "（", "）", "＊", "，", "：", "？", "＠", "～", "￥" }
-local addonBlockList = {
-	"%(Task completed%)",
-	"%*%*.+%*%*",
-	"%[Accept task%]",
-	":.+>",
-	"<Bigfoot",
-	"<LFG>",
-	"<Team Item Level:.+>",
-	"<iLvl>",
-	"Attribute Notification",
-	"EUI[:_]",
-	"Interrupt:. +|Hspell",
-	"PS death: .+>",
-	"Progress:",
-	"Task progress prompt",
-	"Xihan",
-	"wow.+Redemption Code",
-	"wow.+Verification Code",
-	"|Hspell.+=>",
-	"【Love Plugin]",
-	"【Love is not easy】",
-	("%-"):rep(20),
-}
-
-local trashClubs = {
-	"Let's Play Games Together",
-	"Salute Us",
-	"Small Uplift",
-	"Stand up",
-	"Tribe Chowder",
-}
-
-local autoBroadcasts = {
-	"%-(.*)%|T(.*)|t(.*)|c(.*)%|r",
-	"%[(.*)ARENA ANNOUNCER(.*)%]",
-	"%[(.*)Announce by(.*)%]",
-	"%[(.*)Autobroadcast(.*)%]",
-	"%[(.*)BG Queue Announcer(.*)%]",
-	"^You are not mounted so you can't dismount(.*)",
-}
-
-local spamAbilitySpellList = {
-	-- Player
-	"^" .. ERR_LEARN_ABILITY_S:gsub("%%s", "(.*)"),
-	"^" .. ERR_LEARN_PASSIVE_S:gsub("%%s", "(.*)"),
-	"^" .. ERR_LEARN_SPELL_S:gsub("%%s", "(.*)"),
-	"^" .. ERR_SPELL_UNLEARNED_S:gsub("%%s", "(.*)"),
-	-- Pet
-	"^" .. ERR_PET_LEARN_ABILITY_S:gsub("%%s", "(.*)"),
-	"^" .. ERR_PET_LEARN_SPELL_S:gsub("%%s", "(.*)"),
-	"^" .. ERR_PET_SPELL_UNLEARNED_S:gsub("%%s", "(.*)"),
-}
 
 C.BadBoys = {} -- debug
 local FilterList = {}
 local WhiteFilterList = {}
 local chatLines = {}
-local cvar
 local filterResult = false
 local last = {}
 local prevLineID = 0
@@ -134,7 +62,6 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 	end
 
 	if C["Chat"].BlockStranger and event == "CHAT_MSG_WHISPER" then -- Block strangers
-		K.Print("DEBUG: GetFilterResult", name)
 		Module.MuteCache[name] = GetTime()
 		return true
 	end
@@ -148,10 +75,6 @@ function Module:GetFilterResult(event, msg, name, flag, guid)
 	filterMsg = string_gsub(filterMsg, "|r", "")
 
 	-- Trash Filter
-	for _, symbol in ipairs(msgSymbols) do
-		filterMsg = string_gsub(filterMsg, symbol, "")
-	end
-
 	if event == "CHAT_MSG_CHANNEL" then
 		local matches = 0
 		local found
@@ -228,57 +151,7 @@ function Module:UpdateChatFilter(event, msg, author, _, _, _, flag, _, _, _, _, 
 	return filterResult
 end
 
-local function toggleCVar(value)
-	value = tonumber(value) or 1
-	SetCVar(cvar, value)
-end
-
-function Module:ToggleChatBubble(party)
-	cvar = "chatBubbles" .. (party and "Party" or "")
-	if not GetCVarBool(cvar) then
-		return
-	end
-
-	toggleCVar(0)
-	C_Timer_After(0.01, toggleCVar)
-end
-
-function Module:UpdateAddOnBlocker(event, msg, author)
-	local name = Ambiguate(author, "none")
-	if UnitIsUnit(name, "player") then
-		return
-	end
-
-	for _, word in ipairs(addonBlockList) do
-		if string_find(msg, word) then
-			if event == "CHAT_MSG_SAY" or event == "CHAT_MSG_YELL" then
-				Module:ToggleChatBubble()
-			elseif event == "CHAT_MSG_PARTY" or event == "CHAT_MSG_PARTY_LEADER" then
-				Module:ToggleChatBubble(true)
-			elseif event == "CHAT_MSG_WHISPER" then
-				K.Print("DEBUG: UpdateAddOnBlocker", name)
-				Module.MuteCache[name] = GetTime()
-			end
-			return true
-		end
-	end
-end
-
-function Module:BlockTrashClub()
-	if self.toastType == BN_TOAST_TYPE_CLUB_INVITATION then
-		local text = self.DoubleLine:GetText() or ""
-		for _, name in pairs(trashClubs) do
-			if string_find(text, name) then
-				self:Hide()
-				return
-			end
-		end
-	end
-end
-
 function Module:CreateChatFilter()
-	hooksecurefunc(BNToastFrame, "ShowToast", self.BlockTrashClub)
-
 	if IsAddOnLoaded("EnhancedChatFilter") then
 		return
 	end
@@ -293,18 +166,5 @@ function Module:CreateChatFilter()
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", self.UpdateChatFilter)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateChatFilter)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", self.UpdateChatFilter)
-	end
-
-	if C["Chat"].BlockAddonAlert then
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", self.UpdateAddOnBlocker)
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", self.UpdateAddOnBlocker)
 	end
 end

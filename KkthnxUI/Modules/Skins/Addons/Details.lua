@@ -26,9 +26,7 @@ local function SetupInstance(instance)
 	instance:AttributeMenu(true, 0, 3, K.UIFont, 12, { 1, 1, 1 }, 1, false)
 	instance:SetBarSettings(needReset and 20, needReset and "KkthnxUIStatusbar")
 	instance:SetBarTextSettings(needReset and 12, K.UIFont, nil, nil, nil, false, false, nil, nil, nil, nil, nil, nil, true, { 0, 0, 0, 1 }, true, { 0, 0, 0, 1 })
-	instance.baseframe:CreateBackdrop()
-	instance.baseframe.Backdrop:SetPoint("TOPLEFT", -1, 18)
-	instance.baseframe.Backdrop:SetPoint("TOPRIGHT", 1, 0)
+	instance.baseframe:CreateBackdrop(-1, 18, 1, 0)
 
 	instance.styled = true
 end

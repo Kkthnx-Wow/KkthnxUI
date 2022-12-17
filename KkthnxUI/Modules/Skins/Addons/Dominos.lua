@@ -49,7 +49,7 @@ function Module:ReskinDominos()
 
 		if not button.isSkinned then
 			button:CreateBackdrop()
-			button.Backdrop:SetAllPoints()
+			button.KKUI_Backdrop:SetAllPoints()
 
 			icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 			icon:SetAllPoints()
@@ -92,7 +92,7 @@ function Module:ReskinDominos()
 
 		if not button.isSkinned then
 			button:CreateBackdrop()
-			button.Backdrop:SetAllPoints()
+			button.KKUI_Backdrop:SetAllPoints()
 
 			icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 			icon:SetAllPoints()
