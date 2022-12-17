@@ -13,7 +13,6 @@ local C_AzeriteItem_FindActiveAzeriteItem = _G.C_AzeriteItem.FindActiveAzeriteIt
 local C_AzeriteItem_GetAzeriteItemXPInfo = _G.C_AzeriteItem.GetAzeriteItemXPInfo
 local C_AzeriteItem_GetPowerLevel = _G.C_AzeriteItem.GetPowerLevel
 local C_AzeriteItem_IsAzeriteItemAtMaxLevel = _G.C_AzeriteItem.IsAzeriteItemAtMaxLevel
-local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GetFriendshipReputation = GetFriendshipReputation or C_GossipInfo.GetFriendshipReputation
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local GetXPExhaustion = _G.GetXPExhaustion
@@ -137,7 +136,7 @@ function Module:ExpBar_Update(event, unit)
 			label = _G["FACTION_STANDING_LABEL" .. reaction] or UNKNOWN
 		end
 
-		local color = FACTION_BAR_COLORS[reaction] or reaction == 9 and FACTION_BAR_COLORS[9] or reaction == 10 and FACTION_BAR_COLORS[10]
+		local color = K.Colors.faction[reaction]
 		self:SetStatusBarColor(color.r or 1, color.g or 1, color.b or 1, 1)
 		self:SetMinMaxValues(minValue, maxValue)
 		self:SetValue(curValue)

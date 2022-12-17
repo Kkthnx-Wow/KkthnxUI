@@ -3,7 +3,6 @@
    <!-- DataText -->
    <Script file="DataText\Core.lua" />
    <Script file="DataText\Elements\Coords.lua" />
-   <Script file="DataText\Elements\Covenants.lua" />
    <Script file="DataText\Elements\Durability.lua" />
    <Script file="DataText\Elements\Friends.lua" />
    <Script file="DataText\Elements\Gold.lua" />

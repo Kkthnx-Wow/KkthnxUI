@@ -196,17 +196,6 @@ tinsert(C.defaultThemes, function()
 		CharacterStatsPane.ClassBackground:SetPoint("CENTER")
 	end
 
-	local function UpdateFactionSkins()
-		for i = 1, GetNumFactions() do
-			local statusbar = _G["ReputationBar" .. i .. "ReputationBar"]
-			if statusbar then
-				statusbar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-			end
-		end
-	end
-	ReputationFrame:HookScript("OnShow", UpdateFactionSkins)
-	ReputationFrame:HookScript("OnEvent", UpdateFactionSkins)
-
 	local function updateReputationBars(self)
 		for i = 1, self.ScrollTarget:GetNumChildren() do
 			local child = select(i, self.ScrollTarget:GetChildren())
