@@ -14,11 +14,65 @@ Mention whether you follow Semantic Versioning.
 -- 'Added' for new features.
 -- 'Changed' for changes in existing functionality.
 -- 'Deprecated' for soon-to-be removed features.
--- 'Removed' for now removed features.
 -- 'Fixed' for any bug fixes.
+-- 'Removed' for now removed features.
 --]]
 
 local KKUI_Changelog = {
+	{
+		Version = "[10.4.3] - 2022-12-19",
+		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
+		Sections = {
+			{
+				Header = "Added",
+				Entries = {
+					"[Aurawatch] Support for Auras for Dragonflight",
+					"[Chat] Reimplement chat link hovering module",
+					"[Nameplates] Support soft-targeting updates",
+					"[Tooltip] Support for anchoring tooltip in config",
+					"[Unitframes] All frames to use text scaling option",
+					"[Unitframes] Support buffs/debuffs for Dragonflight for raidframes",
+					"[Unitframes] We should have castbars for all frames now?",
+				},
+			},
+
+			{
+				Header = "Changed",
+				Entries = {
+					"[AutoQuest] Make sure we check gossip id",
+					"[Bags] Items we can not use in our bags will shown a red sign on them now (NEEDS FEEDBACK)",
+					"[Bags] Use LibCustomGlow for new items in bags",
+					"[Datatext] Apply new tab style to durability datatext",
+				},
+			},
+
+			{
+				Header = "Removed",
+				Entries = {
+					"[Chat] AddOn blocker is pointless. I do not feel we should block stuff?",
+					"[Datatext] Torghast infomation is a thing of the past <3",
+				},
+			},
+
+			{
+				Header = "Fixed",
+				Entries = {
+					"[Actionbars] Micromenu should properly flash again",
+					"[Aurawatch] Aurawatch cooldowns not updating properly",
+					"[Bags] Allow bags to show more than 1 tracked currency",
+					"[Bags] BoP/BoE should show again on bags",
+					"[Bags] Prevent quest and professions textures from falling behind border",
+					"[Databars] Reputation returning a nil value",
+					"[Datatext] WoWToken show now show its price and update properly again",
+					"[Minimap] Map having 2 KkthnxUI borders instead of one (old code)",
+					"[Skins] Gamemenu should resize properly based on splash being able to be shown or not",
+					"[Unitframes] Class power not being able to be disabled",
+					"[Unitframes] Swingbar should properly work again",
+				},
+			},
+		},
+	},
+
 	{
 		Version = "[10.3.8 - Dragonflight] - 2022-11-30",
 		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",

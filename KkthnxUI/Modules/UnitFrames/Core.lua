@@ -316,7 +316,10 @@ function Module.PostUpdateButton(element, button, unit, data)
 	end
 end
 
-function Module.AurasPreUpdate(element)
+function Module.AurasPreUpdate(element, _, isFullUpdate)
+	if not isFullUpdate then
+		return
+	end
 	element.bolsterStacks = 0
 	element.bolsterInstanceID = nil
 end

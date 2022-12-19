@@ -421,7 +421,7 @@ C["Misc"] = {
 
 C["Nameplate"] = {
 	["AKSProgress"] = false,
-	["AuraSize"] = 26,
+	["AuraSize"] = 28,
 	["CastTarget"] = false,
 	["CastbarGlow"] = true,
 	["ClassAuras"] = true,

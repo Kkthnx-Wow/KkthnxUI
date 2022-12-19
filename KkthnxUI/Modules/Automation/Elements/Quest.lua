@@ -187,14 +187,16 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 	local numOptions = #gossipInfoTable
 	local firstOptionID = gossipInfoTable[1] and gossipInfoTable[1].gossipOptionID
 
-	if C["AutoQuestData"].AutoSelectFirstOptionList[npcID] then
-		return C_GossipInfo_SelectOption(firstOptionID)
-	end
-
-	if available == 0 and active == 0 and numOptions == 1 then
-		local _, instance, _, _, _, _, _, mapID = GetInstanceInfo()
-		if instance ~= "raid" and not C["AutoQuestData"].IgnoreGossipNPC[npcID] and not C["AutoQuestData"].IgnoreInstances[mapID] then
+	if firstOptionID then
+		if C["AutoQuestData"].AutoSelectFirstOptionList[npcID] then
 			return C_GossipInfo_SelectOption(firstOptionID)
+		end
+
+		if available == 0 and active == 0 and numOptions == 1 then
+			local _, instance, _, _, _, _, _, mapID = GetInstanceInfo()
+			if instance ~= "raid" and not C["AutoQuestData"].IgnoreGossipNPC[npcID] and not C["AutoQuestData"].IgnoreInstances[mapID] then
+				return C_GossipInfo_SelectOption(firstOptionID)
+			end
 		end
 	end
 

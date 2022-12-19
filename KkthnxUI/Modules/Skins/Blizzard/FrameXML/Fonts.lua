@@ -55,7 +55,7 @@ table_insert(C.defaultThemes, function()
 	ReskinFont(_G.CombatTextFont, COMBAT, 120, nil, nil, nil, nil, nil, 1, -1)
 
 	local BUBBLE = GetKkthnxUIFont
-	ReskinFont(_G.ChatBubbleFont, BUBBLE, 10, GetKkthnxUIFontStyle) -- 13
+	ReskinFont(_G.ChatBubbleFont, BUBBLE, 9, GetKkthnxUIFontStyle) -- 13
 
 	local PLATE = NORMAL
 	local LARGE = NORMAL

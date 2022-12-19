@@ -136,7 +136,9 @@ function Module:CreatePlayer()
 		end
 	end
 
-	Module:CreateClassPower(self)
+	if C["Unitframe"].ClassResources then
+		Module:CreateClassPower(self)
+	end
 
 	if C["Unitframe"].PlayerDebuffs then -- and C["Unitframe"].TargetDebuffsTop
 		local Debuffs = CreateFrame("Frame", nil, self)
@@ -214,7 +216,7 @@ function Module:CreatePlayer()
 		Castbar:SetFrameLevel(10)
 		Castbar.SafeZone = safeZone
 
-		local lagStr = K.CreateFontString(Castbar, 10)
+		local lagStr = K.CreateFontString(Castbar, 11)
 		lagStr:ClearAllPoints()
 		lagStr:SetPoint("BOTTOM", Castbar, "TOP", 0, 4)
 		Castbar.LagString = lagStr

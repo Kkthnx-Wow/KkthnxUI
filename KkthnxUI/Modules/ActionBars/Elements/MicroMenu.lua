@@ -95,13 +95,6 @@ function Module:MicroButton_Create(parent, data)
 		local pushed = button:GetPushedTexture()
 		local disabled = button:GetDisabledTexture()
 		local highlight = button:GetHighlightTexture()
-		local flash = button.Flash
-
-		if button.Flash then
-			button.Flash:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -4)
-			button.Flash:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 4)
-			button.Flash:SetTexture()
-		end
 
 		pushed:SetTexCoord(0.1, 0.85, 0.12, 0.78)
 		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -4)
@@ -122,14 +115,18 @@ function Module:MicroButton_Create(parent, data)
 		highlight:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
 		highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
 
-		if flash then
-			flash:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonYellow")
-			flash:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
-			flash:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
+		if button.FlashBorder then
+			button.FlashBorder:SetTexture()
 		end
 
 		if button.FlashContent then
-			button.FlashContent:SetTexture(nil)
+			button.FlashContent:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonYellow")
+			button.FlashContent:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
+			button.FlashContent:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
+		end
+
+		if button.Flash then
+			button.Flash:SetTexture()
 		end
 	else
 		bu:SetScript("OnMouseUp", method)

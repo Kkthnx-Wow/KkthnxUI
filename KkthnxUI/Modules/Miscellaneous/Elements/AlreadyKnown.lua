@@ -81,6 +81,30 @@ local function IsAlreadyKnown(link, index)
 	end
 end
 
+-- Mail frame
+local function OpenMailFrame_UpdateButtonPositions()
+	for i = 1, ATTACHMENTS_MAX_RECEIVE do
+		local button = _G["OpenMailAttachmentButton" .. i]
+		if button then
+			local name, _, _, _, canUse = GetInboxItem(InboxFrame.openMailID, i)
+			if name and canUse and IsAlreadyKnown(GetInboxItemLink(InboxFrame.openMailID, i)) then
+				SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
+			end
+		end
+	end
+end
+hooksecurefunc("OpenMailFrame_UpdateButtonPositions", OpenMailFrame_UpdateButtonPositions)
+
+-- Loot frame
+local function LootFrame_UpdateButton(self)
+	local slotIndex = self:GetSlotIndex()
+	local texture, _, _, _, _, locked = GetLootSlotInfo(slotIndex)
+	if texture and not locked and IsAlreadyKnown(GetLootSlotLink(slotIndex)) then
+		SetItemButtonTextureVertexColor(self.Item, COLOR.r, COLOR.g, COLOR.b)
+	end
+end
+hooksecurefunc(LootFrameElementMixin, "Init", LootFrame_UpdateButton)
+
 -- merchant frame
 local function Hook_UpdateMerchantInfo()
 	local numItems = GetMerchantNumItems()
@@ -104,6 +128,67 @@ local function Hook_UpdateMerchantInfo()
 	end
 end
 hooksecurefunc("MerchantFrame_UpdateMerchantInfo", Hook_UpdateMerchantInfo)
+
+-- Quest frame
+local function QuestInfo_ShowRewards()
+	local numQuestRewards, numQuestChoices
+	if QuestInfoFrame.questLog then
+		numQuestRewards, numQuestChoices = GetNumQuestLogRewards(), GetNumQuestLogChoices(C_QuestLog.GetSelectedQuest(), true)
+	else
+		numQuestRewards, numQuestChoices = GetNumQuestRewards(), GetNumQuestChoices()
+	end
+
+	local totalRewards = numQuestRewards + numQuestChoices
+	if totalRewards == 0 then
+		return
+	end
+
+	local rewardsCount = 0
+
+	if numQuestChoices > 0 then
+		local baseIndex = rewardsCount
+		for i = 1, numQuestChoices do
+			local button = _G["QuestInfoItem" .. i + baseIndex]
+			if button and button:IsShown() then
+				local isUsable
+				if QuestInfoFrame.questLog then
+					_, _, _, _, isUsable = GetQuestLogChoiceInfo(i)
+				else
+					_, _, _, _, isUsable = GetQuestItemInfo("choice", i)
+				end
+				if isUsable and IsAlreadyKnown(QuestInfoFrame.questLog and GetQuestLogItemLink("choice", i) or GetQuestItemLink("choice", i)) then
+					SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
+				end
+			end
+			rewardsCount = rewardsCount + 1
+		end
+	end
+
+	if numQuestRewards > 0 then
+		local baseIndex = rewardsCount
+		for i = 1, numQuestRewards do
+			local button = _G["QuestInfoItem" .. i + baseIndex]
+			if button and button:IsShown() then
+				local isUsable
+				if QuestInfoFrame.questLog then
+					_, _, _, _, isUsable = GetQuestLogRewardInfo(i)
+				else
+					_, _, _, _, isUsable = GetQuestItemInfo("reward", i)
+				end
+				if isUsable and IsAlreadyKnown(QuestInfoFrame.questLog and GetQuestLogItemLink("reward", i) or GetQuestItemLink("reward", i)) then
+					SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
+				end
+				rewardsCount = rewardsCount + 1
+			end
+		end
+	end
+end
+
+if IsAddOnLoaded("Pawn") then
+	hooksecurefunc("PawnUI_OnQuestInfo_ShowRewards", QuestInfo_ShowRewards)
+else
+	hooksecurefunc("QuestInfo_ShowRewards", QuestInfo_ShowRewards)
+end
 
 local function Hook_UpdateBuybackInfo()
 	local numItems = GetNumBuybackItems()
