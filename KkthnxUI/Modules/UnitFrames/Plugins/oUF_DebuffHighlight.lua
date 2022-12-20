@@ -2,18 +2,40 @@ local K = unpack(KkthnxUI)
 local oUF = K.oUF
 
 local CanDispel = {
-	DRUID = { Magic = false, Curse = true, Poison = true },
-	EVOKER = { Magic = true, Curse = true, Poison = true, Disease = true },
-	MAGE = { Curse = true },
-	MONK = { Magic = false, Poison = true, Disease = true },
-	PALADIN = { Magic = false, Poison = true, Disease = true },
-	PRIEST = { Magic = false, Disease = true },
-	SHAMAN = { Magic = false, Curse = true },
+	["DRUID"] = {
+		["Magic"] = false,
+		["Curse"] = true,
+		["Poison"] = true,
+	},
+	["MONK"] = {
+		["Magic"] = true,
+		["Poison"] = true,
+		["Disease"] = true,
+	},
+	["PALADIN"] = {
+		["Magic"] = false,
+		["Poison"] = true,
+		["Disease"] = true,
+	},
+	["PRIEST"] = {
+		["Magic"] = true,
+		["Disease"] = true,
+	},
+	["SHAMAN"] = {
+		["Magic"] = false,
+		["Curse"] = true,
+	},
+	["MAGE"] = {
+		["Curse"] = true,
+	},
+	["EVOKER"] = {
+		["Magic"] = false,
+		["Poison"] = true,
+	},
 }
 
 local dispellist = CanDispel[K.Class] or {}
 local origColors = {}
-local origBorderColors = {}
 
 local function GetDebuffType(unit, filter)
 	if not UnitCanAssist("player", unit) then
@@ -37,35 +59,15 @@ end
 
 local function CheckSpec()
 	if K.Class == "DRUID" then
-		if GetSpecialization() == 4 then
-			dispellist.Magic = true
-		else
-			dispellist.Magic = false
-		end
-	elseif K.Class == "MONK" == "EVOKER" then
-		if GetSpecialization() == 2 then
-			dispellist.Magic = true
-		else
-			dispellist.Magic = false
-		end
+		dispellist.Magic = GetSpecialization() == 4
 	elseif K.Class == "MONK" then
-		if GetSpecialization() == 2 then
-			dispellist.Magic = true
-		else
-			dispellist.Magic = false
-		end
+		dispellist.Magic = GetSpecialization() == 2
 	elseif K.Class == "PALADIN" then
-		if GetSpecialization() == 1 then
-			dispellist.Magic = true
-		else
-			dispellist.Magic = false
-		end
+		dispellist.Magic = GetSpecialization() == 1
 	elseif K.Class == "SHAMAN" then
-		if GetSpecialization() == 3 then
-			dispellist.Magic = true
-		else
-			dispellist.Magic = false
-		end
+		dispellist.Magic = GetSpecialization() == 3
+	elseif K.Class == "EVOKER" then
+		dispellist.Magic = GetSpecialization() == 2
 	end
 end
 

@@ -281,7 +281,7 @@ local function BuildBAR(barWidth, iconSize)
 	frame.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	frame.Statusbar = CreateFrame("StatusBar", nil, frame)
-	frame.Statusbar:SetSize(barWidth, iconSize / 1.6)
+	frame.Statusbar:SetSize(barWidth, iconSize / 1.4)
 	frame.Statusbar:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", 6, 0)
 	frame.Statusbar:SetMinMaxValues(0, 1)
 	frame.Statusbar:SetValue(0)

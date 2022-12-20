@@ -80,12 +80,6 @@ do
 			["Curse"] = true,
 			["Poison"] = true,
 		},
-		["EVOKER"] = {
-			["Magic"] = true,
-			["Curse"] = true,
-			["Poison"] = true,
-			["Disease"] = true,
-		},
 		["MONK"] = {
 			["Magic"] = true,
 			["Poison"] = true,
@@ -107,6 +101,10 @@ do
 		["MAGE"] = {
 			["Curse"] = true,
 		},
+		["EVOKER"] = {
+			["Magic"] = false,
+			["Poison"] = true,
+		},
 	}
 
 	DispellFilter = dispellClasses[K.Class] or {}
@@ -114,35 +112,15 @@ end
 
 local function CheckSpec()
 	if K.Class == "DRUID" then
-		if GetSpecialization() == 4 then
-			DispellFilter.Magic = true
-		else
-			DispellFilter.Magic = false
-		end
-	elseif K.Class == "EVOKER" then
-		if GetSpecialization() == 2 then
-			DispellFilter.Magic = true
-		else
-			DispellFilter.Magic = false
-		end
+		DispellFilter.Magic = GetSpecialization() == 4
 	elseif K.Class == "MONK" then
-		if GetSpecialization() == 2 then
-			DispellFilter.Magic = true
-		else
-			DispellFilter.Magic = false
-		end
+		DispellFilter.Magic = GetSpecialization() == 2
 	elseif K.Class == "PALADIN" then
-		if GetSpecialization() == 1 then
-			DispellFilter.Magic = true
-		else
-			DispellFilter.Magic = false
-		end
+		DispellFilter.Magic = GetSpecialization() == 1
 	elseif K.Class == "SHAMAN" then
-		if GetSpecialization() == 3 then
-			DispellFilter.Magic = true
-		else
-			DispellFilter.Magic = false
-		end
+		DispellFilter.Magic = GetSpecialization() == 3
+	elseif K.Class == "EVOKER" then
+		DispellFilter.Magic = GetSpecialization() == 2
 	end
 end
 

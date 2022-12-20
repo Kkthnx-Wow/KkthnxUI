@@ -1,21 +1,24 @@
 local K, C = unpack(KkthnxUI)
 
 C.themes["Blizzard_ArchaeologyUI"] = function()
-	-- ArcheologyDigsiteProgressBar
-	ArcheologyDigsiteProgressBar:StripTextures()
+	local ArcDigProBar = ArcheologyDigsiteProgressBar
 
-	ArcheologyDigsiteProgressBar.FillBar:SetHeight(12)
-	ArcheologyDigsiteProgressBar.FillBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-	ArcheologyDigsiteProgressBar.FillBar:SetStatusBarColor(0.7, 0.3, 0.2)
-	ArcheologyDigsiteProgressBar.FillBar:CreateBorder()
+	ArcDigProBar:StripTextures()
 
-	local ArcSpark = ArcheologyDigsiteProgressBar.FillBar:CreateTexture(nil, "OVERLAY")
+	ArcDigProBar.FillBar:SetHeight(12)
+	ArcDigProBar.FillBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	ArcDigProBar.FillBar:SetStatusBarColor(0.7, 0.3, 0.2)
+	ArcDigProBar.FillBar:CreateBorder()
+
+	local ArcSpark = ArcDigProBar.FillBar:CreateTexture(nil, "OVERLAY")
 	ArcSpark:SetTexture(C["Media"].Textures.Spark16Texture)
-	ArcSpark:SetHeight(ArcheologyDigsiteProgressBar:GetHeight())
+	ArcSpark:SetHeight(ArcDigProBar:GetHeight())
 	ArcSpark:SetBlendMode("ADD")
-	ArcSpark:SetPoint("CENTER", ArcheologyDigsiteProgressBar.FillBar:GetStatusBarTexture(), "RIGHT", 0, 0)
+	ArcSpark:SetPoint("CENTER", ArcDigProBar.FillBar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
-	ArcheologyDigsiteProgressBar.BarTitle:ClearAllPoints()
-	ArcheologyDigsiteProgressBar.BarTitle:SetPoint("BOTTOM", ArcheologyDigsiteProgressBar, "TOP", 0, -2)
-	ArcheologyDigsiteProgressBar.BarTitle:SetFontObject(K.UIFont)
+	if ArcDigProBar.BarTitle then
+		ArcDigProBar.BarTitle:ClearAllPoints()
+		ArcDigProBar.BarTitle:SetPoint("BOTTOM", ArcDigProBar, "TOP", 0, -2)
+		ArcDigProBar.BarTitle:SetFontObject(K.UIFont)
+	end
 end
