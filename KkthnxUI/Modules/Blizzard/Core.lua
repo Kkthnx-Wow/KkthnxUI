@@ -8,7 +8,6 @@ function Module:OnEnable()
 	self:CreateMirrorBars()
 	self:CreateObjectiveFrame()
 	self:CreateOrderHallIcon()
-	self:CreateRaidUtility()
 	self:CreateTimerTracker()
 	self:CreateUIWidgets()
 end

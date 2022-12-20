@@ -9,7 +9,7 @@ local C_ToyBox_GetToyInfo = _G.C_ToyBox.GetToyInfo
 -- Custom filter
 local CustomFilterList = {
 	[37863] = false,
-	[187532] = false, -- 魂焰凿石器 @TradeGoods
+	[187532] = false,
 	[141333] = true,
 	[141446] = true,
 	[153646] = true,
@@ -31,8 +31,6 @@ local petTrashCurrenies = {
 	[36812] = true,
 	[62072] = true,
 	[67410] = true,
-	[192644] = true,
-	[192648] = true,
 }
 
 local iLvlClassIDs = {

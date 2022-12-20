@@ -385,10 +385,14 @@ C["Minimap"] = {
 
 -- Miscellaneous
 C["Misc"] = {
+	["RaidTool"] = true,
+	["RMRune"] = false,
+	["DBMCount"] = "10",
+	["MarkerBarSize"] = 22,
+
 	["AFKCamera"] = false,
 	["AutoBubbles"] = false,
 	["ColorPicker"] = false,
-	["EasyMarking"] = false,
 	["EnhancedFriends"] = false,
 	["EnhancedMail"] = false,
 	["ExpRep"] = true,
@@ -408,6 +412,15 @@ C["Misc"] = {
 	["ShowWowHeadLinks"] = false,
 	["SlotDurability"] = false,
 	["TradeTabs"] = false,
+	["EasyMarkKey"] = {
+		["Options"] = {
+			["CTRL"] = 1,
+			["ALT"] = 2,
+			["SHIFT"] = 3,
+			[DISABLE] = 4,
+		},
+		["Value"] = 1,
+	},
 	["ShowMarkerBar"] = {
 		["Options"] = {
 			["Grids"] = 1,

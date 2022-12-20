@@ -19,7 +19,6 @@
    <Script file="Blizzard\Elements\MirrorBars.lua" />
    <Script file="Blizzard\Elements\ObjectiveFrame.lua" />
    <Script file="Blizzard\Elements\OrderHall.lua" />
-   <Script file="Blizzard\Elements\RaidUtility.lua" />
    <Script file="Blizzard\Elements\TimerTracker.lua" />
    <Script file="Blizzard\Elements\UIWidgets.lua" />
    <!-- Chat -->
@@ -113,6 +112,7 @@
    <Script file="Miscellaneous\Elements\QuestTool.lua" />
    <Script file="Miscellaneous\Elements\QueueTimer.lua" />
    <Script file="Miscellaneous\Elements\QuickJoin.lua" />
+   <Script file="Miscellaneous\Elements\RaidTool.lua" />
    <Script file="Miscellaneous\Elements\SlotItemLevel.lua" />
    <Script file="Miscellaneous\Elements\TradeTabs.lua" />
    <Script file="Miscellaneous\Elements\yClassColors.lua" />

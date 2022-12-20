@@ -141,7 +141,7 @@ local function UpdateChatBubble()
 end
 
 local function UpdateMarkerGrid()
-	K:GetModule("Blizzard"):RaidTool_UpdateGrid()
+	K:GetModule("Miscellaneous"):RaidTool_UpdateGrid()
 end
 
 function UpdateActionbar()
@@ -724,6 +724,12 @@ local Misc = function(self)
 	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
 	Window:CreateSwitch("Misc", "TradeTabs", L["Add Spellbook-Like Tabs On TradeSkillFrame"])
 	Window:CreateSlider("Misc", "MaxCameraZoom", newFeatureIcon .. "Max Camera Zoom Level", 1, 2.6, 0.1, nil, UpdateMaxZoomLevel)
+
+	Window:CreateSection("Raid Tool")
+	Window:CreateSwitch("Misc", "RaidTool", L["Show Raid Utility Frame"])
+	Window:CreateSwitch("Misc", "RMRune", "RMRune - Add Info")
+	Window:CreateEditBox("Misc", "DBMCount", "DBMCount - Add Info")
+	Window:CreateSlider("Misc", "MarkerBarSize", "Marker Bar Size - Add Info", 20, 40, 1, nil, UpdateMarkerGrid)
 	Window:CreateDropdown("Misc", "ShowMarkerBar", L["World Markers Bar"], nil, nil, UpdateMarkerGrid)
 end
 
@@ -1022,7 +1028,6 @@ local Raid = function(self)
 	Window:CreateSwitch("Raid", "HorizonRaid", L["Horizontal Raid Frames"])
 	Window:CreateSwitch("Raid", "MainTankFrames", L["Show MainTank Frames"])
 	Window:CreateSwitch("Raid", "ManabarShow", L["Show Manabars"])
-	Window:CreateSwitch("Raid", "RaidUtility", L["Show Raid Utility Frame"])
 	Window:CreateSwitch("Raid", "ReverseRaid", L["Reverse Raid Frame Growth"])
 	Window:CreateSwitch("Raid", "ShowHealPrediction", L["Show HealPrediction Statusbars"])
 	Window:CreateSwitch("Raid", "ShowNotHereTimer", L["Show Away/DND Status"])

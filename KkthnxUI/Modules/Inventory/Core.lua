@@ -293,14 +293,13 @@ function Module:CreateCloseButton(f)
 	local closeButton = CreateFrame("Button", nil, self)
 	closeButton:RegisterForClicks("AnyUp")
 	closeButton:SetSize(18, 18)
-	closeButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 1, 0, 0)
-	-- closeButton:StyleButton()
+	closeButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0.85, 0.25, 0.25)
+	closeButton:StyleButton()
 	closeButton.__owner = f
 
 	closeButton.Icon = closeButton:CreateTexture(nil, "ARTWORK")
-	closeButton.Icon:SetAllPoints()
-	closeButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	closeButton.Icon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32")
+	closeButton.Icon:SetAllPoints()
 
 	closeButton:SetScript("OnClick", CloseOrRestoreBags)
 	closeButton.title = _G.CLOSE .. "/" .. _G.RESET

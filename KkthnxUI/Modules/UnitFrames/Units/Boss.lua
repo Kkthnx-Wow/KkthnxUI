@@ -181,7 +181,7 @@ function Module:CreateBoss()
 
 		local shield = Castbar:CreateTexture(nil, "OVERLAY", nil, 4)
 		shield:SetAtlas("Soulbinds_Portrait_Lock")
-		shield:SetSize(C["Unitframe"].TargetCastbarHeight + 10, C["Unitframe"].TargetCastbarHeight + 10)
+		shield:SetSize(28, 28)
 		shield:SetPoint("TOP", Castbar, "CENTER", 0, 6)
 		Castbar.Shield = shield
 
