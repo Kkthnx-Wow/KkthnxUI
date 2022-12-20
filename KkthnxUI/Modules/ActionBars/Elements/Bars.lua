@@ -291,7 +291,7 @@ function Module:CreateBars()
 		RegisterStateDriver(frame, "page", index == 1 and fullPage or data.page)
 	end
 
-	K.LibActionButton.RegisterCallback(Module, "OnButtonUpdate", Module.UpdateEquipedColor)
+	K.LibActionButton.RegisterCallback(Module, "OnButtonUpdate", Module.UpdateBarBorderColor)
 
 	if K.LibActionButton.flyoutHandler then
 		K.LibActionButton.flyoutHandler.Background:Hide()

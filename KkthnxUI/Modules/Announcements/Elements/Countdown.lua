@@ -31,7 +31,7 @@ do -- Sourced: Pull Countdown (Dridzt)
 		end
 
 		if not firstdone then
-			SendChatMessage((L["Pulling In"]):format(target, tostring(delay)), K.CheckChat(true))
+			SendChatMessage((L["Pulling In"]):format(target, tostring(delay)), K.CheckChat())
 			firstdone = true
 			delay = delay - 1
 		end
@@ -40,10 +40,10 @@ do -- Sourced: Pull Countdown (Dridzt)
 		if lastupdate >= interval then
 			lastupdate = 0
 			if delay > 0 then
-				SendChatMessage(tostring(delay) .. "..", K.CheckChat(true))
+				SendChatMessage(tostring(delay) .. "..", K.CheckChat())
 				delay = delay - 1
 			else
-				SendChatMessage(L["Leeeeeroy!"], K.CheckChat(true))
+				SendChatMessage(L["Leeeeeroy!"], K.CheckChat())
 				reset()
 			end
 		end
@@ -53,7 +53,7 @@ do -- Sourced: Pull Countdown (Dridzt)
 		delay = timer or 3
 		if PullCountdownHandler:GetScript("OnUpdate") then
 			reset()
-			SendChatMessage(L["Pull ABORTED!"], K.CheckChat(true))
+			SendChatMessage(L["Pull ABORTED!"], K.CheckChat())
 		else
 			PullCountdownHandler:SetScript("OnUpdate", pull)
 		end

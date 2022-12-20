@@ -355,11 +355,9 @@ do
 	K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
 end
 
-do
-	-- Chat channel check
-	function K.CheckChat()
-		return IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY"
-	end
+-- Chat channel check
+function K.CheckChat()
+	return IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY"
 end
 
 do

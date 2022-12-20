@@ -41,7 +41,7 @@ function Module:UpdateHotKey()
 	self:SetFormattedText("%s", text)
 end
 
-function Module:UpdateEquipedColor(button)
+function Module:UpdateBarBorderColor(button)
 	if not button.__bg then
 		return
 	end
@@ -49,7 +49,11 @@ function Module:UpdateEquipedColor(button)
 	if button.Border:IsShown() then
 		button.__bg.KKUI_Border:SetVertexColor(0, 0.7, 0.1)
 	else
-		button.__bg.KKUI_Border:SetVertexColor(1, 1, 1)
+		if C["General"].ColorTextures then
+			button.__bg.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+		else
+			button.__bg.KKUI_Border:SetVertexColor(1, 1, 1)
+		end
 	end
 end
 

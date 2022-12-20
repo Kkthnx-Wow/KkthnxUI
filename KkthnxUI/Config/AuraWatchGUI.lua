@@ -131,8 +131,8 @@ local function AW_CreateCheckBox(parent, text, x, y, tip)
 	cb:SetHitRectInsets(-5, -5, -5, -5)
 	createLabel(cb, text, tip)
 
-	cb:SetNormalTexture("")
-	cb:SetPushedTexture("")
+	cb:SetNormalTexture(0)
+	cb:SetPushedTexture(0)
 
 	local bg = CreateFrame("Frame", nil, cb, "BackdropTemplate")
 	bg:SetAllPoints(cb)
@@ -496,8 +496,8 @@ local function CreatePanel()
 		bu:SetPoint("TOPRIGHT", -36, -138)
 		bu:SetHitRectInsets(-100, 0, 0, 0)
 
-		bu:SetNormalTexture("")
-		bu:SetPushedTexture("")
+		bu:SetNormalTexture(0)
+		bu:SetPushedTexture(0)
 
 		local bg = CreateFrame("Frame", nil, bu, "BackdropTemplate")
 		bg:SetAllPoints(bu)

@@ -52,7 +52,7 @@ local itemList = {
 
 function Module:ItemAlert_Update(unit, castID, spellID)
 	if groupUnits[unit] and itemList[spellID] and (itemList[spellID] ~= castID) then
-		SendChatMessage(string_format(L["Spell Item AlertStr"], UnitName(unit), GetSpellLink(spellID) or GetSpellInfo(spellID)), K.CheckChat)
+		SendChatMessage(string_format(L["Spell Item AlertStr"], UnitName(unit), GetSpellLink(spellID) or GetSpellInfo(spellID)), K.CheckChat())
 		itemList[spellID] = castID
 	end
 end

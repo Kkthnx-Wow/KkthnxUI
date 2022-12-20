@@ -43,7 +43,7 @@ local AutoThanksList = {
 
 function Module:SetupAutoGoodbye()
 	C_Timer_After(math.random(2, 6), function() -- Random the amount of time to wait to say thanks
-		SendChatMessage(AutoThanksList[math_random(1, #AutoThanksList)], IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID")
+		SendChatMessage(AutoThanksList[math_random(1, #AutoThanksList)], K.CheckChat())
 	end)
 end
 

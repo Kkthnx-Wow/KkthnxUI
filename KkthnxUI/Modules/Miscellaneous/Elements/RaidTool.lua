@@ -107,8 +107,8 @@ function Module:RaidTool_RoleCount(parent)
 	local role = {}
 	for i = 1, 3 do
 		role[i] = frame:CreateTexture(nil, "OVERLAY")
-		role[i]:SetPoint("LEFT", 36 * i - 30, 0)
-		role[i]:SetSize(15, 15)
+		role[i]:SetPoint("LEFT", 36 * i - 27, 0)
+		role[i]:SetSize(12, 12)
 		role[i]:SetTexture("Interface\\LFGFrame\\LFGROLE")
 		role[i]:SetTexCoord(unpack(roleTexCoord[i]))
 		role[i].text = K.CreateFontString(frame, 13, "0", "")
@@ -297,7 +297,7 @@ function Module:RaidTool_BuffChecker(parent)
 	local frame = CreateFrame("Button", nil, parent)
 	frame:SetPoint("LEFT", parent, "RIGHT", 6, 0)
 	frame:SetSize(28, 28)
-	K.CreateFontString(frame, 16, "!", "", true)
+	K.CreateFontString(frame, 16, "!", "", true, "CENTER", 0, 0)
 	frame:SkinButton()
 
 	local BuffName = { L["Flask"], L["Food"], SPELL_STAT4_NAME, RAID_BUFF_2, RAID_BUFF_3, RUNES }
@@ -311,7 +311,7 @@ function Module:RaidTool_BuffChecker(parent)
 		if debugMode then
 			print(text)
 		else
-			SendChatMessage(text, IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY")
+			SendChatMessage(text, K.CheckChat())
 		end
 	end
 
