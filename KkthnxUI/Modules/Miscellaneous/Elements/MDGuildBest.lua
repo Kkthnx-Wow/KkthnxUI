@@ -147,7 +147,7 @@ end
 
 function Module.GuildBest_OnLoad(event, addon)
 	if addon == "Blizzard_ChallengesUI" then
-		hooksecurefunc("ChallengesFrame_Update", Module.GuildBest_Update)
+		hooksecurefunc(ChallengesFrame, "Update", Module.GuildBest_Update)
 		Module:KeystoneInfo_Create()
 		ChallengesFrame.WeeklyInfo.Child.WeeklyChest:HookScript("OnEnter", Module.KeystoneInfo_WeeklyRuns)
 
@@ -264,4 +264,4 @@ function Module:CreateGuildBest()
 	K:RegisterEvent("BAG_UPDATE", Module.KeystoneInfo_Update)
 end
 
--- Module:RegisterMisc("MDGuildBest", Module.CreateGuildBest) -- DFUPDATE
+Module:RegisterMisc("MDGuildBest", Module.CreateGuildBest) -- DFUPDATE

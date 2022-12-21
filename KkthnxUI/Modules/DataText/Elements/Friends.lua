@@ -1,5 +1,5 @@
 local K, C, L = unpack(KkthnxUI)
-local Module = K:GetModule("Infobar")
+local Module = K:GetModule("DataText")
 
 local _G = _G
 local string_find = _G.string.find
@@ -244,7 +244,7 @@ local function FriendsPanel_UpdateButton(button)
 end
 
 local function FriendsPanel_Update()
-	local scrollFrame = _G.KKUI_FriendsInfobarScrollFrame
+	local scrollFrame = _G.KKUI_FriendsDataTextScrollFrame
 	local usedHeight = 0
 	local buttons = scrollFrame.buttons
 	local height = scrollFrame.buttonHeight
@@ -501,7 +501,7 @@ local function FriendsPanel_Init()
 	infoFrame.friendCountText = K.CreateFontString(infoFrame, 13, "-/-", "", nil, "TOPRIGHT", -15, -12)
 	infoFrame.friendCountText:SetTextColor(0, 0.6, 1)
 
-	local scrollFrame = CreateFrame("ScrollFrame", "KKUI_FriendsInfobarScrollFrame", infoFrame, "HybridScrollFrameTemplate")
+	local scrollFrame = CreateFrame("ScrollFrame", "KKUI_FriendsDataTextScrollFrame", infoFrame, "HybridScrollFrameTemplate")
 	scrollFrame:SetSize(370, 400)
 	scrollFrame:SetPoint("TOPLEFT", 7, -35)
 	infoFrame.scrollFrame = scrollFrame

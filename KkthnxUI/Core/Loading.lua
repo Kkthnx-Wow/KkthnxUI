@@ -136,6 +136,10 @@ local function KKUI_VerifyDatabase()
 		KkthnxUIDB.Variables[K.Realm][K.Name].CustomNames = {}
 	end
 
+	if not KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList then
+		KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList = {}
+	end
+
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].Mover then
 		KkthnxUIDB.Variables[K.Realm][K.Name].Mover = {}
 	end
@@ -168,7 +172,6 @@ local function KKUI_VerifyDatabase()
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList then
 		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList = {}
-		-- KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.InternalCD = {}
 		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher = {}
 		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {}
 	end
@@ -210,14 +213,6 @@ local function KKUI_VerifyDatabase()
 
 	if not KkthnxUIDB.KeystoneInfo then
 		KkthnxUIDB.KeystoneInfo = {}
-	end
-
-	if not KkthnxUIDB.CustomJunkList then
-		KkthnxUIDB.CustomJunkList = {}
-	end
-
-	if not KkthnxUIDB.MajorSpells then
-		KkthnxUIDB.MajorSpells = {}
 	end
 end
 

@@ -87,29 +87,7 @@ function Module:AddDeprecatedGroup()
 	table_wipe(C.DeprecatedAuras)
 end
 
-function Module:CheckMajorSpells()
-	for spellID in pairs(C.MajorSpells) do
-		local name = GetSpellInfo(spellID)
-		if name then
-			if KkthnxUIDB.MajorSpells[spellID] then
-				KkthnxUIDB.MajorSpells[spellID] = nil
-			end
-		else
-			if K.isDeveloper then
-				K.Print("Invalid majorspells ID: " .. spellID)
-			end
-		end
-	end
-
-	for spellID, value in pairs(KkthnxUIDB.MajorSpells) do
-		if value == false and C.MajorSpells[spellID] == nil then
-			KkthnxUIDB.MajorSpells[spellID] = nil
-		end
-	end
-end
-
 function Module:OnEnable()
 	Module:AddDeprecatedGroup()
 	C.AuraWatchList = AuraWatchList
-	Module:CheckMajorSpells()
 end

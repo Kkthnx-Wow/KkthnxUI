@@ -208,9 +208,9 @@ function Module:CreateTarget()
 		Castbar.Button:SetAllPoints(Castbar.Icon)
 		Castbar.Button:SetFrameLevel(Castbar:GetFrameLevel())
 
-		local stage = K.CreateFontString(Castbar, 22)
+		local stage = K.CreateFontString(Castbar, 20)
 		stage:ClearAllPoints()
-		stage:SetPoint("TOPLEFT", Castbar.Icon, -2, 2)
+		stage:SetPoint("TOPLEFT", Castbar.Icon, 1, -1)
 		Castbar.stageString = stage
 
 		Castbar.decimal = "%.2f"
@@ -223,7 +223,8 @@ function Module:CreateTarget()
 		Castbar.PostCastStop = Module.PostCastStop
 		Castbar.PostCastFail = Module.PostCastFailed
 		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-		Castbar.UpdatePips = K.Noop -- use my own code
+		Castbar.CreatePip = Module.CreatePip
+		Castbar.PostUpdatePip = Module.PostUpdatePip
 
 		local mover = K.Mover(Castbar, "Target Castbar", "TargetCB", { "BOTTOM", UIParent, "BOTTOM", 0, 342 }, Castbar:GetHeight() + Castbar:GetWidth() + 6, Castbar:GetHeight())
 		Castbar:ClearAllPoints()

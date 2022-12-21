@@ -387,9 +387,9 @@ function Module:CreateErrorFrameToggle()
 end
 
 function Module:CreateQuestSizeUpdate()
-	QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, nil)
-	QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, nil)
-	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, nil)
+	QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, "")
+	QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, "")
+	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, "")
 end
 
 function Module:CreateObjectiveSizeUpdate()

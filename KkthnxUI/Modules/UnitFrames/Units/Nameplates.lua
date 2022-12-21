@@ -902,7 +902,8 @@ function Module:CreatePlates()
 	self.Castbar.PostCastStop = Module.PostCastStop
 	self.Castbar.PostCastFail = Module.PostCastFailed
 	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-	self.Castbar.UpdatePips = K.Noop -- use my own code
+	self.Castbar.CreatePip = Module.CreatePip
+	self.Castbar.PostUpdatePip = Module.PostUpdatePip
 
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)
@@ -1511,25 +1512,4 @@ function Module:CreateGCDTicker(self)
 	GCD.Width = 128 / 2
 
 	self.GCD = GCD
-end
-
-Module.MajorSpells = {}
-function Module:RefreshMajorSpells()
-	wipe(Module.MajorSpells)
-
-	for spellID in pairs(C.MajorSpells) do
-		local name = GetSpellInfo(spellID)
-		if name then
-			local modValue = KkthnxUIDB.MajorSpells[spellID]
-			if modValue == nil then
-				Module.MajorSpells[spellID] = true
-			end
-		end
-	end
-
-	for spellID, value in pairs(KkthnxUIDB.MajorSpells) do
-		if value then
-			Module.MajorSpells[spellID] = true
-		end
-	end
 end

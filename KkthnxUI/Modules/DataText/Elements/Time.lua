@@ -1,5 +1,5 @@
 local K, C, L = unpack(KkthnxUI)
-local Module = K:GetModule("Infobar")
+local Module = K:GetModule("DataText")
 
 local _G = _G
 local date = _G.date
@@ -112,7 +112,7 @@ local function updateTimerFormat(color, hour, minute)
 	if GetCVarBool("timeMgrUseMilitaryTime") then
 		return string_format(color .. TIMEMANAGER_TICKER_24HOUR, hour, minute)
 	else
-		local timerUnit = K.MyClassColor .. (hour < 12 and "AM" or "PM")
+		local timerUnit = K.MyClassColor .. (hour < 12 and TIMEMANAGER_AM or TIMEMANAGER_PM)
 
 		if hour >= 12 then
 			if hour > 12 then
@@ -365,8 +365,9 @@ function Module:TimeOnEnter()
 
 	-- Help Info
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine(K.LeftButton .. "Toggle Calendar")
-	GameTooltip:AddLine(K.RightButton .. "Toggle Clock")
+	GameTooltip:AddLine(K.LeftButton .. GAMETIME_TOOLTIP_TOGGLE_CALENDAR)
+	GameTooltip:AddLine(K.ScrollButton .. WEEKLY_REWARDS_CLICK_TO_PREVIEW_INSTRUCTIONS)
+	GameTooltip:AddLine(K.RightButton .. GAMETIME_TOOLTIP_TOGGLE_CLOCK)
 	GameTooltip:Show()
 
 	K:RegisterEvent("MODIFIER_STATE_CHANGED", Module.TimeOnShiftDown)
@@ -381,6 +382,15 @@ end
 function Module:TimeOnMouseUp(btn)
 	if btn == "RightButton" then
 		_G.ToggleTimeManager()
+	elseif btn == "MiddleButton" then
+		if not WeeklyRewardsFrame then
+			LoadAddOn("Blizzard_WeeklyRewards")
+		end
+		if InCombatLockdown() then
+			K.TogglePanel(WeeklyRewardsFrame)
+		else
+			ToggleFrame(WeeklyRewardsFrame)
+		end
 	else
 		_G.ToggleCalendar()
 	end

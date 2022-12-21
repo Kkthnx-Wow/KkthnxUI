@@ -81,6 +81,7 @@ local function resetAttributes(self)
 	self.empowering = nil
 	self.notInterruptible = nil
 	self.spellID = nil
+	self.pipStage = nil -- NDui
 
 	for _, pip in next, self.Pips do
 		pip:Hide()
@@ -146,6 +147,10 @@ local function UpdatePips(element, numStages)
 					pip:SetPoint("LEFT", element, "BOTTOMLEFT", 0, offset)
 					pip:SetPoint("RIGHT", element, "BOTTOMRIGHT", 0, offset)
 				end
+			end
+
+			if element.PostUpdatePip then -- NDui
+				element:PostUpdatePip(pip, stage, stageTotalDuration)
 			end
 		end
 	end

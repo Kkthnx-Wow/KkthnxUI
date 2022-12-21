@@ -1,5 +1,5 @@
 local K, C, L = unpack(KkthnxUI)
-local Module = K:GetModule("Infobar")
+local Module = K:GetModule("DataText")
 
 local table_wipe = _G.table.wipe
 local table_sort = _G.table.sort
@@ -16,10 +16,8 @@ local ChatEdit_ActivateChat = _G.ChatEdit_ActivateChat
 local ChatEdit_ChooseBoxForSend = _G.ChatEdit_ChooseBoxForSend
 local ChatFrame_GetMobileEmbeddedTexture = _G.ChatFrame_GetMobileEmbeddedTexture
 local ChatFrame_OpenChat = _G.ChatFrame_OpenChat
--- local GUILDINFOTAB_APPLICANTS = _G.GUILDINFOTAB_APPLICANTS
 local GetGuildInfo = _G.GetGuildInfo
 local GetGuildRosterInfo = _G.GetGuildRosterInfo
--- local GetNumGuildApplicants = _G.GetNumGuildApplicants
 local GetNumGuildMembers = _G.GetNumGuildMembers
 local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
 local GetRealZoneText = _G.GetRealZoneText
@@ -43,7 +41,6 @@ local UnitInRaid = _G.UnitInRaid
 local ZONE = _G.ZONE
 
 local guildTable = {}
--- local gApps
 local gName
 local gOnline
 local gRank
@@ -131,7 +128,7 @@ local function GuildPanel_UpdateButton(button)
 end
 
 local function GuildPanel_Update()
-	local scrollFrame = _G.KKUI_GuildInfobarScrollFrame
+	local scrollFrame = _G.KKUI_GuildDataTextScrollFrame
 	local usedHeight = 0
 	local buttons = scrollFrame.buttons
 	local height = scrollFrame.buttonHeight
@@ -215,9 +212,9 @@ local function GuildPanel_Init()
 		self:SetScript("OnUpdate", isPanelCanHide)
 	end)
 
-	gName = K.CreateFontString(infoFrame, 14, "Guild", "", true, "TOPLEFT", 15, -10)
-	gOnline = K.CreateFontString(infoFrame, 12, "Online", "", false, "TOPLEFT", 15, -35)
-	gRank = K.CreateFontString(infoFrame, 12, "Rank", "", false, "TOPLEFT", 15, -51)
+	gName = K.CreateFontString(infoFrame, 14, GUILD, "", true, "TOPLEFT", 15, -10)
+	gOnline = K.CreateFontString(infoFrame, 12, GUILD_ONLINE_LABEL, "", false, "TOPLEFT", 15, -35)
+	gRank = K.CreateFontString(infoFrame, 12, RANK, "", false, "TOPLEFT", 15, -51)
 
 	local bu = {}
 	local width = { 30, 35, 126, 126 }
@@ -249,7 +246,7 @@ local function GuildPanel_Init()
 	local copyInfo = K.InfoColor .. "SHIFT +" .. K.LeftButton .. L["Copy Name"]
 	K.CreateFontString(infoFrame, 12, copyInfo, "", false, "BOTTOMRIGHT", -15, 10)
 
-	local scrollFrame = CreateFrame("ScrollFrame", "KKUI_GuildInfobarScrollFrame", infoFrame, "HybridScrollFrameTemplate")
+	local scrollFrame = CreateFrame("ScrollFrame", "KKUI_GuildDataTextScrollFrame", infoFrame, "HybridScrollFrameTemplate")
 	scrollFrame:SetSize(305, 320)
 	scrollFrame:SetPoint("TOPLEFT", 7, -100)
 	infoFrame.scrollFrame = scrollFrame

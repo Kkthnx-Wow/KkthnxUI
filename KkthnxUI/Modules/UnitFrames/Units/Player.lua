@@ -223,9 +223,9 @@ function Module:CreatePlayer()
 
 		Module:ToggleCastBarLatency(self)
 
-		local stage = K.CreateFontString(Castbar, 22)
+		local stage = K.CreateFontString(Castbar, 20)
 		stage:ClearAllPoints()
-		stage:SetPoint("TOPLEFT", Castbar.Icon, -2, 2)
+		stage:SetPoint("TOPLEFT", Castbar.Icon, 1, -1)
 		Castbar.stageString = stage
 
 		Castbar.decimal = "%.2f"
@@ -238,7 +238,8 @@ function Module:CreatePlayer()
 		Castbar.PostCastStop = Module.PostCastStop
 		Castbar.PostCastFail = Module.PostCastFailed
 		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
-		Castbar.UpdatePips = K.Noop -- use my own code
+		Castbar.CreatePip = Module.CreatePip
+		Castbar.PostUpdatePip = Module.PostUpdatePip
 
 		local mover = K.Mover(Castbar, "Player Castbar", "PlayerCB", { "BOTTOM", UIParent, "BOTTOM", 0, 200 }, Castbar:GetHeight() + Castbar:GetWidth() + 3, Castbar:GetHeight() + 3)
 		Castbar:ClearAllPoints()

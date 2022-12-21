@@ -108,9 +108,18 @@ function Module:OnCastbarUpdate(elapsed)
 		if self.stageString then
 			self.stageString:SetText("")
 			if self.empowering then
-				for i = 1, self.numStages, 1 do
-					if duration > self.castTicks[i].duration then
+				for i = self.numStages, 1, -1 do
+					local pip = self.Pips[i]
+					if pip and duration > pip.duration then
 						self.stageString:SetText(i)
+
+						if self.pipStage ~= i then
+							self.pipStage = i
+							local nextStage = self.numStages == i and 1 or i + 1
+							local nextPip = self.Pips[nextStage]
+							UIFrameFadeIn(nextPip.tex, 0.25, 0.3, 1)
+						end
+						break
 					end
 				end
 			end
@@ -187,39 +196,6 @@ local function UpdateCastBarColor(self, unit)
 	self:SetStatusBarColor(color[1], color[2], color[3])
 end
 
-function Module:CreateAndUpdateStagePip(bar, ticks, numStages, unit)
-	for i = 1, #ticks do
-		ticks[i]:Hide()
-		ticks[i].duration = 0
-	end
-
-	if numStages == 0 then
-		return
-	end
-
-	local width, height = bar:GetSize()
-	local sumDuration = 0
-	local stageMaxValue = bar.max * 1000
-	for i = 1, numStages, 1 do
-		local duration = GetUnitEmpowerStageDuration(unit, i - 1)
-		if duration > -1 then
-			sumDuration = sumDuration + duration
-			local portion = sumDuration / stageMaxValue
-			if not ticks[i] then
-				ticks[i] = bar:CreateTexture(nil, "OVERLAY")
-				ticks[i]:SetTexture(C["Media"].Textures.White8x8Texture)
-				ticks[i]:SetVertexColor(0, 0, 0)
-				ticks[i]:SetWidth(K.Mult)
-				ticks[i]:SetHeight(height)
-			end
-			ticks[i].duration = sumDuration / 1000
-			ticks[i]:ClearAllPoints()
-			ticks[i]:SetPoint("LEFT", bar, width * portion, 0)
-			ticks[i]:Show()
-		end
-	end
-end
-
 function Module:PostCastStart(unit)
 	self:SetAlpha(1)
 	self.Spark:Show()
@@ -255,15 +231,11 @@ function Module:PostCastStart(unit)
 		CreateAndUpdateBarTicks(self, self.castTicks, numTicks)
 	end
 
-	if not self.channeling then
-		Module:CreateAndUpdateStagePip(self, self.castTicks, self.numStages or 0, unit)
-	end
 	UpdateCastBarColor(self, unit)
 
 	if self.__owner.mystyle == "nameplate" then
 		-- Major spells
-		-- if C.db["Nameplate"]["CastbarGlow"] and
-		if Module.MajorSpells[self.spellID] then
+		if C.MajorSpells[self.spellID] then
 			K.CustomGlow.ButtonGlow_Start(self.glowFrame)
 		else
 			K.CustomGlow.ButtonGlow_Stop(self.glowFrame)
@@ -298,4 +270,46 @@ function Module:PostCastFailed()
 	self.fadeOut = true
 	self:Show()
 	ResetSpellTarget(self)
+end
+
+Module.PipColors = {
+	[1] = { 0.08, 1, 0, 0.3 },
+	[2] = { 1, 0.1, 0.1, 0.3 },
+	[3] = { 1, 0.5, 0, 0.3 },
+	[4] = { 0.1, 0.9, 0.9, 0.3 },
+}
+function Module:CreatePip(stage)
+	local _, height = self:GetSize()
+
+	local pip = CreateFrame("Frame", nil, self, "CastingBarFrameStagePipTemplate")
+	pip.BasePip:SetTexture(C["Media"].Textures.White8x8Texture)
+	pip.BasePip:SetVertexColor(0, 0, 0)
+	pip.BasePip:SetWidth(2)
+	pip.BasePip:SetHeight(height)
+	pip.tex = pip:CreateTexture(nil, "ARTWORK", nil, 2)
+	pip.tex:SetTexture(K.GetTexture(C["General"].Texture))
+	pip.tex:SetVertexColor(unpack(Module.PipColors[stage]))
+
+	return pip
+end
+
+function Module:PostUpdatePip(pip, stage, stageTotalDuration)
+	local pips = self.Pips
+	local pip = pips[stage]
+	local numStages = self.numStages
+	pip.tex:SetAlpha(0.3) -- reset pip alpha
+	pip.duration = stageTotalDuration / 1000 -- save pip duration
+
+	if stage == numStages then
+		local firstPip = pips[1]
+		local anchor = pips[numStages]
+		firstPip.tex:SetPoint("BOTTOMRIGHT", self)
+		firstPip.tex:SetPoint("TOPLEFT", anchor.BasePip, "TOPRIGHT")
+	end
+
+	if stage ~= 1 then
+		local anchor = pips[stage - 1]
+		pip.tex:SetPoint("BOTTOMRIGHT", pip.BasePip, "BOTTOMLEFT")
+		pip.tex:SetPoint("TOPLEFT", anchor.BasePip, "TOPRIGHT")
+	end
 end

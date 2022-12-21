@@ -560,7 +560,6 @@ function Module:CreateUnits()
 		Module:UpdateGroupRoles()
 		Module:QuestIconCheck()
 		Module:RefreshPlateOnFactionChanged()
-		Module:RefreshMajorSpells()
 
 		oUF:RegisterStyle("Nameplates", Module.CreatePlates)
 		oUF:SetActiveStyle("Nameplates")

@@ -1,5 +1,5 @@
 local K, C, L = unpack(KkthnxUI)
-local Module = K:GetModule("Infobar")
+local Module = K:GetModule("DataText")
 
 local _G = _G
 local pairs = _G.pairs
@@ -23,7 +23,7 @@ local StaticPopupDialogs = _G.StaticPopupDialogs
 local TOTAL = _G.TOTAL
 local YES = _G.YES
 
-local slotString = "Bags" .. ": %s%d"
+local slotString = BAGSLOTTEXT .. ": %s%d"
 local ticker
 local profit = 0
 local spent = 0
@@ -244,9 +244,9 @@ local function OnEnter(self)
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddDoubleLine(" ", K.RightButton .. "Switch Mode" .. " ", 1, 1, 1, 0.5, 0.7, 1)
 		if KkthnxUIDB.ShowSlots then
-			GameTooltip:AddDoubleLine(" ", K.LeftButton .. "Toggle Inventory" .. " ", 1, 1, 1, 0.5, 0.7, 1)
+			GameTooltip:AddDoubleLine(" ", K.LeftButton .. BINDING_NAME_TOGGLEBACKPACK .. " ", 1, 1, 1, 0.5, 0.7, 1)
 		else
-			GameTooltip:AddDoubleLine(" ", K.LeftButton .. "Toggle Currency" .. " ", 1, 1, 1, 0.5, 0.7, 1)
+			GameTooltip:AddDoubleLine(" ", K.LeftButton .. BINDING_NAME_TOGGLECURRENCY .. " ", 1, 1, 1, 0.5, 0.7, 1)
 		end
 		GameTooltip:AddDoubleLine(" ", L["Ctrl Key"] .. K.RightButton .. "Reset Gold" .. " ", 1, 1, 1, 0.5, 0.7, 1)
 	end

@@ -1,5 +1,5 @@
 local K = unpack(KkthnxUI)
-local Module = K:NewModule("Infobar")
+local Module = K:NewModule("DataText")
 
 function Module:OnEnable()
 	self.CheckLoginTime = GetTime()
