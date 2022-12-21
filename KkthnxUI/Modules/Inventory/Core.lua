@@ -1572,8 +1572,7 @@ function Module:OnEnable()
 	K:RegisterEvent("TRADE_CLOSED", Module.CloseBags)
 	K:RegisterEvent("BANKFRAME_OPENED", Module.AutoDeposit)
 
-	-- Update infobar slots
-	--local INFO = K:GetModule("Infobar")
+	-- Update DataText slots
 	if _G.KKUI_GoldDataText then
 		Backpack.OnOpen = function()
 			if not KkthnxUIDB.ShowSlots then

@@ -36,16 +36,16 @@ local UnitXPMax = _G.UnitXPMax
 local YES = _G.YES
 local hooksecurefunc = _G.hooksecurefunc
 
-local KKUI_MISC_LIST = {}
+local KKUI_MISC_MODULE = {}
 
 function Module:RegisterMisc(name, func)
-	if not KKUI_MISC_LIST[name] then
-		KKUI_MISC_LIST[name] = func
+	if not KKUI_MISC_MODULE[name] then
+		KKUI_MISC_MODULE[name] = func
 	end
 end
 
 function Module:OnEnable()
-	for name, func in next, KKUI_MISC_LIST do
+	for name, func in next, KKUI_MISC_MODULE do
 		if name and type(func) == "function" then
 			func()
 		end
@@ -67,6 +67,7 @@ function Module:OnEnable()
 	self:DisableHelpTips()
 	self:MoveMawBuffsFrame()
 	self:UpdateMaxCameraZoom()
+	self:DisableNPE()
 
 	hooksecurefunc("QuestInfo_Display", Module.CreateQuestXPPercent)
 
@@ -386,9 +387,9 @@ function Module:CreateErrorFrameToggle()
 end
 
 function Module:CreateQuestSizeUpdate()
-	-- QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, nil)
-	-- QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, nil)
-	-- QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, nil)
+	QuestTitleFont:SetFont(QuestTitleFont:GetFont(), C["Skins"].QuestFontSize + 3, nil)
+	QuestFont:SetFont(QuestFont:GetFont(), C["Skins"].QuestFontSize + 1, nil)
+	QuestFontNormalSmall:SetFont(QuestFontNormalSmall:GetFont(), C["Skins"].QuestFontSize, nil)
 end
 
 function Module:CreateObjectiveSizeUpdate()
@@ -544,7 +545,7 @@ end
 -- Fix Drag Collections taint
 do
 	local done
-	local function setupMisc(event, addon)
+	local function fixCollectionTaint(event, addon)
 		if event == "ADDON_LOADED" and addon == "Blizzard_Collections" then
 			-- Fix undragable issue
 			local checkBox = WardrobeTransmogFrame.ToggleSecondaryAppearanceCheckbox
@@ -555,21 +556,21 @@ do
 			CollectionsJournal:HookScript("OnShow", function()
 				if not done then
 					if InCombatLockdown() then
-						K:RegisterEvent("PLAYER_REGEN_ENABLED", setupMisc)
+						K:RegisterEvent("PLAYER_REGEN_ENABLED", fixCollectionTaint)
 					else
 						K.CreateMoverFrame(CollectionsJournal)
 					end
 					done = true
 				end
 			end)
-			K:UnregisterEvent(event, setupMisc)
+			K:UnregisterEvent(event, fixCollectionTaint)
 		elseif event == "PLAYER_REGEN_ENABLED" then
 			K.CreateMoverFrame(CollectionsJournal)
-			K:UnregisterEvent(event, setupMisc)
+			K:UnregisterEvent(event, fixCollectionTaint)
 		end
 	end
 
-	K:RegisterEvent("ADDON_LOADED", setupMisc)
+	K:RegisterEvent("ADDON_LOADED", fixCollectionTaint)
 end
 
 -- Select target when click on raid units
@@ -586,23 +587,23 @@ do
 		end
 	end
 
-	local function setupMisc(event, addon)
+	local function setupfixRaidGroup(event, addon)
 		if event == "ADDON_LOADED" and addon == "Blizzard_RaidUI" then
 			if not InCombatLockdown() then
 				fixRaidGroupButton()
 			else
-				K:RegisterEvent("PLAYER_REGEN_ENABLED", setupMisc)
+				K:RegisterEvent("PLAYER_REGEN_ENABLED", setupfixRaidGroup)
 			end
-			K:UnregisterEvent(event, setupMisc)
+			K:UnregisterEvent(event, setupfixRaidGroup)
 		elseif event == "PLAYER_REGEN_ENABLED" then
 			if RaidGroupButton1 and RaidGroupButton1:GetAttribute("type") ~= "target" then
 				fixRaidGroupButton()
-				K:UnregisterEvent(event, setupMisc)
+				K:UnregisterEvent(event, setupfixRaidGroup)
 			end
 		end
 	end
 
-	K:RegisterEvent("ADDON_LOADED", setupMisc)
+	K:RegisterEvent("ADDON_LOADED", setupfixRaidGroup)
 end
 
 -- Fix blizz guild news hyperlink error
@@ -625,53 +626,6 @@ do
 
 	K:RegisterEvent("ADDON_LOADED", fixGuildNews)
 end
-
-hooksecurefunc("ChatEdit_InsertLink", function(text) -- shift-clicked
-	-- change from SearchBox:HasFocus to :IsShown again
-	if text and TradeSkillFrame and TradeSkillFrame:IsShown() then
-		local spellId = string_match(text, "enchant:(%d+)")
-		local spell = GetSpellInfo(spellId)
-		local item = GetItemInfo(string_match(text, "item:(%d+)") or 0)
-		local search = spell or item
-		if not search then
-			return
-		end
-
-		-- search needs to be lowercase for .SetRecipeItemNameFilter
-		TradeSkillFrame.SearchBox:SetText(search)
-
-		-- jump to the recipe
-		if spell then -- can only select recipes on the learned tab
-			if PanelTemplates_GetSelectedTab(TradeSkillFrame.RecipeList) == 1 then
-				TradeSkillFrame:SelectRecipe(tonumber(spellId))
-			end
-		elseif item then
-			C_Timer_After(0.1, function() -- wait a bit or we cant select the recipe yet
-				for _, v in pairs(TradeSkillFrame.RecipeList.dataList) do
-					if v.name == item then
-						-- TradeSkillFrame.RecipeList:RefreshDisplay() -- didnt seem to help
-						TradeSkillFrame:SelectRecipe(v.recipeID)
-						return
-					end
-				end
-			end)
-		end
-	end
-end)
-
--- make it only split stacks with shift-rightclick if the TradeSkillFrame is open
--- shift-leftclick should be reserved for the search box
--- do
--- 	local function hideSplitFrame(_, button)
--- 		if TradeSkillFrame and TradeSkillFrame:IsShown() then
--- 			if button == "LeftButton" then
--- 				StackSplitFrame:Hide()
--- 			end
--- 		end
--- 	end
--- 	hooksecurefunc("ContainerFrameItemButton_OnModifiedClick", hideSplitFrame)
--- 	hooksecurefunc("MerchantItemButton_OnModifiedClick", hideSplitFrame)
--- end
 
 do
 	local function soundOnResurrect()
@@ -772,7 +726,29 @@ function Module:DisableHelpTips() -- Auto complete helptips
 	end
 
 	hooksecurefunc(_G.HelpTip, "Show", AcknowledgeTips)
-	C_Timer.After(2, AcknowledgeTips)
+	C_Timer.After(1, AcknowledgeTips)
+end
+
+-- NOTE: ActionBars heavily conflicts with NPE
+local function ShutdownNPE(event)
+	local NPE = _G.NewPlayerExperience
+	if NPE then
+		if NPE:GetIsActive() then
+			NPE:Shutdown()
+		end
+
+		if event then
+			K:UnregisterEvent(event)
+		end
+	end
+end
+
+function Module:DisableNPE() -- disable new player experience
+	if _G.NewPlayerExperience then
+		ShutdownNPE()
+	else
+		K:RegisterEvent("ADDON_LOADED", ShutdownNPE)
+	end
 end
 
 function Module:UpdateMaxCameraZoom()

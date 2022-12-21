@@ -1,4 +1,4 @@
-local _, C = unpack(KkthnxUI)
+local K, C = unpack(KkthnxUI)
 
 local function showHotkey(self)
 	local item = self:GetParent()
@@ -26,9 +26,13 @@ local function colorHotkey(self, r, g, b)
 end
 
 local function reskinRangeOverlay(item)
+	item:SetNormalTexture(0)
+	item.icon:SetTexCoord(unpack(K.TexCoords))
+	item.icon:SetAllPoints()
+
 	local rangeOverlay = item:CreateTexture(nil, "OVERLAY")
 	rangeOverlay:SetTexture(C["Media"].Textures.White8x8Texture)
-	rangeOverlay:SetAllPoints()
+	rangeOverlay:SetAllPoints(item.icon)
 	item.rangeOverlay = rangeOverlay
 
 	hooksecurefunc(item.HotKey, "Show", showHotkey)

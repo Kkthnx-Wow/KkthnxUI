@@ -64,10 +64,10 @@ end
 local function KKUI_LoadProfiles()
 	local Profiles = C["General"].Profiles
 	local Menu = Profiles.Options
-	local Data = KkthnxUIDB.Variables
+	-- local Data = KkthnxUIDB.Variables
 	local GUISettings = KkthnxUIDB.Settings
-	local Nickname = K.Name
-	local Server = K.Realm
+	-- local Nickname = K.Name
+	-- local Server = K.Realm
 
 	if not GUISettings then
 		return
@@ -76,7 +76,7 @@ local function KKUI_LoadProfiles()
 	for Index, Table in pairs(GUISettings) do
 		local Server = Index
 
-		for Nickname, Settings in pairs(Table) do
+		for Nickname in pairs(Table) do
 			local ProfileName = Server .. "-" .. Nickname
 			local MyProfileName = K.Realm .. "-" .. K.Name
 
@@ -146,13 +146,7 @@ local function KKUI_VerifyDatabase()
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].Tracking then
 		KkthnxUIDB.Variables[K.Realm][K.Name].Tracking = {}
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP then
 		KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvP = {}
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE then
 		KkthnxUIDB.Variables[K.Realm][K.Name].Tracking.PvE = {}
 	end
 
@@ -174,18 +168,9 @@ local function KKUI_VerifyDatabase()
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList then
 		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList = {}
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher then
-		if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList then
-			KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher = {}
-		end
-	end
-
-	if not KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells then
-		if KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList then
-			KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {}
-		end
+		-- KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.InternalCD = {}
+		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher = {}
+		KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells = {}
 	end
 
 	-- Settings

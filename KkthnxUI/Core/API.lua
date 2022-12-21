@@ -379,7 +379,7 @@ local function SkinCheckBox(self, forceSaturation)
 	local bg = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	bg:SetAllPoints(self)
 	bg:SetFrameLevel(self:GetFrameLevel())
-	bg:CreateBorder()
+	bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0.20, 0.20, 0.20)
 	self.bg = bg
 
 	self:SetHighlightTexture("")
