@@ -39,11 +39,7 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 	local mover = CreateFrame("Button", nil, UIParent)
 	mover:SetWidth(width or self:GetWidth())
 	mover:SetHeight(height or self:GetHeight())
-
-	mover.bg = mover:CreateTexture(nil, "BACKGROUND", nil, 0)
-	mover.bg:SetColorTexture(38 / 255, 125 / 255, 206 / 255, 90 / 255)
-	mover.bg:SetPoint("TOPLEFT", mover, "TOPLEFT", 1, -1)
-	mover.bg:SetPoint("BOTTOMRIGHT", mover, "BOTTOMRIGHT", -1, 1)
+	mover:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 38 / 255, 125 / 255, 206 / 255, 80 / 255)
 	mover:Hide()
 
 	mover.text = K.CreateFontString(mover, 12, text, "")
@@ -161,12 +157,14 @@ function Module:Mover_OnClick(btn)
 end
 
 function Module:Mover_OnEnter()
-	self.bg:SetColorTexture(K.r, K.g, K.b, 0.9)
+	K.CustomGlow.AutoCastGlow_Start(self)
+	self.KKUI_Background:SetVertexColor(K.r, K.g, K.b, 0.8)
 	self.text:SetTextColor(1, 0.8, 0)
 end
 
 function Module:Mover_OnLeave()
-	self.bg:SetColorTexture(38 / 255, 125 / 255, 206 / 255, 90 / 255)
+	K.CustomGlow.AutoCastGlow_Stop(self)
+	self.KKUI_Background:SetVertexColor(38 / 255, 125 / 255, 206 / 255, 80 / 255)
 	self.text:SetTextColor(1, 1, 1)
 end
 

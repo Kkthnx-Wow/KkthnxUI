@@ -1247,13 +1247,13 @@ function Module:PostUpdatePlates(event, unit)
 			self.widgetContainer = blizzPlate.WidgetContainer
 			if self.widgetContainer then
 				self.widgetContainer:SetParent(self)
-				self.widgetContainer:SetScale(1 / C["General"].UIScale)
+				--self.widgetContainer:SetScale(1 / C["General"].UIScale)
 			end
 
 			self.softTargetFrame = blizzPlate.SoftTargetFrame
 			if self.softTargetFrame then
 				self.softTargetFrame:SetParent(self)
-				self.softTargetFrame:SetScale(1 / C["General"].UIScale)
+				--self.softTargetFrame:SetScale(1 / C["General"].UIScale)
 			end
 		end
 
