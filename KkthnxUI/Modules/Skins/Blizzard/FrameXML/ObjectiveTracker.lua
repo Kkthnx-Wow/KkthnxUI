@@ -1,5 +1,27 @@
 local K, C = unpack(KkthnxUI)
 
+local function reskinHeader(header)
+	if not header then
+		return
+	end
+
+	if header.Background then
+		header.Background:SetAtlas(nil)
+	end
+
+	if header.Text then
+		header.Text:SetTextColor(K.r, K.g, K.b, 0.8)
+	end
+
+	local bg = header:CreateTexture(nil, "BACKGROUND")
+	bg:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
+	bg:SetTexCoord(0, 0.66, 0, 0.31)
+	bg:SetVertexColor(K.r, K.g, K.b, 0.8)
+	bg:SetPoint("BOTTOMLEFT", 0, -4)
+	bg:SetSize(250, 30)
+	header.bg = bg -- accessable for other addons
+end
+
 local function showHotkey(self)
 	local item = self:GetParent()
 	if item.rangeOverlay then
@@ -28,6 +50,7 @@ end
 local function reskinRangeOverlay(item)
 	item:CreateBorder()
 	item:SetNormalTexture(0)
+	item.KKUI_Border:SetVertexColor(1, 0.82, 0.2)
 	item.icon:SetTexCoord(unpack(K.TexCoords))
 	item.icon:SetAllPoints()
 
@@ -173,8 +196,15 @@ local function reskinFindGroupButton(block)
 	local button = block.hasGroupFinderButton and block.groupFinderButton
 	if button then
 		button:SkinButton()
-		if button and button:GetHeight() ~= 22 then
+		if button:GetHeight() ~= 22 then
 			button:SetSize(22, 22)
+		end
+
+		local icon = button.icon or button.Icon
+		if icon then
+			icon:SetAtlas("groupfinder-eye-frame")
+			icon:SetAllPoints()
+			icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		end
 	end
 end
@@ -227,7 +257,6 @@ tinsert(C.defaultThemes, function()
 	hooksecurefunc("QuestObjectiveSetupBlockButton_Item", reskinItemButton)
 	hooksecurefunc(_G.BONUS_OBJECTIVE_TRACKER_MODULE, "AddObjective", reskinItemButton)
 	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", repositionFindGroupButton) --[Move]: The eye & quest item to the left of the eye
-	-- hooksecurefunc("ObjectiveTracker_CheckAndHideHeader", SkinOjectiveTrackerHeaders) --[Skin]: Module Headers
 	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", reskinFindGroupButton) --[Skin]: The eye
 	hooksecurefunc(_G.BONUS_OBJECTIVE_TRACKER_MODULE, "AddProgressBar", reskinProgressBars) --[Skin]: Bonus Objective Progress Bar
 	hooksecurefunc(_G.WORLD_QUEST_TRACKER_MODULE, "AddProgressBar", reskinProgressBars) --[Skin]: World Quest Progress Bar
@@ -252,7 +281,7 @@ tinsert(C.defaultThemes, function()
 		_G.ObjectiveTrackerFrame.BlocksFrame.UIWidgetsHeader,
 	}
 	for _, header in pairs(headers) do
-		header.Background:SetTexture(nil)
+		reskinHeader(header)
 
 		local button = header.MinimizeButton
 		if button then
