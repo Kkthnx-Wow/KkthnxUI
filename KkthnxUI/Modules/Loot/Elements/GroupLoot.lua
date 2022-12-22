@@ -33,7 +33,7 @@ local RollOnLoot = _G.RollOnLoot
 local ShowInspectCursor = _G.ShowInspectCursor
 
 local pos = "TOP"
-local cancelled_rolls = {}
+-- local cancelled_rolls = {}
 local cachedRolls = {}
 local completedRolls = {}
 local FRAME_WIDTH, FRAME_HEIGHT = 328, 26
@@ -109,7 +109,7 @@ local function LootClick(frame)
 end
 
 local function OnEvent(frame, _, rollID)
-	cancelled_rolls[rollID] = true
+	-- cancelled_rolls[rollID] = true
 
 	if frame.rollID ~= rollID then
 		return
@@ -245,7 +245,7 @@ local function GetFrame()
 end
 
 function Module:CANCEL_LOOT_ROLL(_, rollID)
-	cancelled_rolls[rollID] = true
+	-- cancelled_rolls[rollID] = true
 
 	for _, bar in next, Module.RollBars do
 		if bar.rollID == rollID then
@@ -258,9 +258,9 @@ function Module:CANCEL_LOOT_ROLL(_, rollID)
 end
 
 function Module.START_LOOT_ROLL(_, rollID, time)
-	if cancelled_rolls[rollID] then
-		return
-	end
+	-- if cancelled_rolls[rollID] then
+	-- 	return
+	-- end
 
 	local f = GetFrame()
 	f.rollID = rollID

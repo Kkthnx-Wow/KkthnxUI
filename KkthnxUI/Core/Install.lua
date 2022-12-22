@@ -53,8 +53,9 @@ end
 
 -- Tuitorial
 function Module:ForceDefaultCVars()
+	--	SetCVar("AutoPushSpellToActionBar", 0)
 	SetCVar("ActionButtonUseKeyDown", 1)
-	SetCVar("RotateMinimap", 0)
+	SetCVar("ShowClassColorInNameplate", 1)
 	SetCVar("UberTooltips", 1)
 	SetCVar("alwaysCompareItems", 1)
 	SetCVar("autoLootDefault", 1)
@@ -64,45 +65,58 @@ function Module:ForceDefaultCVars()
 	SetCVar("autoSelfCast", 1)
 	SetCVar("buffDurations", 1)
 	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
+	SetCVar("cameraSmoothStyle", 0)
 	SetCVar("chatMouseScroll", 1)
 	SetCVar("chatStyle", "classic")
+	SetCVar("countdownForCooldowns", 1)
 	SetCVar("floatingCombatTextCombatDamage", 1)
 	SetCVar("floatingCombatTextCombatDamageDirectionalOffset", 10)
 	SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
 	SetCVar("floatingCombatTextCombatHealing", 1)
 	SetCVar("floatingCombatTextFloatMode", 1)
-	SetCVar("fstack_preferParentKeys", 0)
+	SetCVar("fstack_preferParentKeys", 0) -- Add back the frame names via fstack!
+	SetCVar("instantQuestText", 1)
 	SetCVar("lockActionBars", 1)
 	SetCVar("lootUnderMouse", 1)
+	SetCVar("nameplateShowEnemyMinions", 1)
+	SetCVar("nameplateShowEnemyMinus", 1)
+	SetCVar("nameplateShowFriendlyMinions", 0)
+	SetCVar("nameplateShowFriends", 0)
 	SetCVar("overrideArchive", 0)
+	SetCVar("profanityFilter", 0)
+	SetCVar("removeChatDelay", 1)
 	SetCVar("screenshotQuality", 10)
+	SetCVar("scriptErrors", 1)
+	SetCVar("showArenaEnemyFrames", 0)
+	SetCVar("showLootSpam", 1)
 	SetCVar("showNPETutorials", 0)
-	SetCVar("showQuestTrackingTooltips", 1)
 	SetCVar("showTutorials", 0)
+	SetCVar("showVKeyCastbar", 1)
 	SetCVar("spamFilter", 0)
-	SetCVar("speechToText", 0)
 	SetCVar("statusTextDisplay", "BOTH")
-	SetCVar("taintLog", 0)
-	SetCVar("textToSpeech", 0)
 	SetCVar("threatWarning", 3)
+	SetCVar("violenceLevel", 5)
 	SetCVar("whisperMode", "inline")
 	SetCVar("wholeChatWindowClickable", 0)
+
+	local ActionButtonPickUp = _G.InterfaceOptionsActionBarsPanelPickupActionKeyDropDown
+	if ActionButtonPickUp then
+		ActionButtonPickUp:SetValue("SHIFT")
+		ActionButtonPickUp:RefreshValue()
+	end
 
 	SetActionBarToggles(1, 1, 1, 1)
 
 	if not InCombatLockdown() then
-		SetCVar("alwaysShowActionBars", 1)
 		SetCVar("nameplateMotion", 1)
 		SetCVar("nameplateShowAll", 1)
 		SetCVar("nameplateShowEnemies", 1)
+		SetCVar("alwaysShowActionBars", 1)
 	end
-
 	if K.isDeveloper then
-		SetCVar("SpellQueueWindow", 25)
-		SetCVar("WorldTextScale", 1)
 		SetCVar("ffxGlow", 0)
-		SetCVar("floatingCombatTextCombatDamage", 0)
-		SetCVar("floatingCombatTextCombatHealing", 0)
+		SetCVar("WorldTextScale", 1.1)
+		SetCVar("SpellQueueWindow", 27)
 	end
 end
 

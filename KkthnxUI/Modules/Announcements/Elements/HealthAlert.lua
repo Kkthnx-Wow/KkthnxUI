@@ -18,6 +18,7 @@ function Module:SetupHealthAnnounce()
 		if playerHealthPercent <= 30 and not playerNearDeath then
 			playerNearDeath = true
 			UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], K.Name))
+			DoEmote("healme")
 		elseif playerHealthPercent > 30 + 20 and playerNearDeath then
 			playerNearDeath = false
 		end
@@ -27,14 +28,15 @@ function Module:SetupHealthAnnounce()
 	local petHealthMax = UnitHealthMax("pet")
 	local petHealthPercent = K.Round(petHealth / petHealthMax * 100, 1)
 
-	if not UnitIsDead("pet") then
-		if K.Class ~= "HUNTER" or K.Class ~= "WARLOCK" then
+	if UnitExists("pet") and not UnitIsDead("pet") then
+		if not K.Class == "HUNTER" or not K.Class == "WARLOCK" then
 			return
 		end
 
 		if petHealthPercent <= 30 and not petNearDeath then
 			petNearDeath = true
 			UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], UnitName("pet")))
+			PlaySound(211593) -- Spell_PetBattle_Health_Buff
 		elseif petHealthPercent > 30 + 20 and petNearDeath then
 			petNearDeath = false
 		end

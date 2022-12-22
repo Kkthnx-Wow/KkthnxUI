@@ -310,7 +310,7 @@ local blizzRegions = {
 	"Center",
 }
 
-local function SkinButton(self, override)
+local function SkinButton(self, override, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
 	if self.SetNormalTexture and not override then
 		self:SetNormalTexture(0)
 	end
@@ -336,7 +336,7 @@ local function SkinButton(self, override)
 		end
 	end
 
-	self:CreateBorder()
+	self:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
 
 	self:HookScript("OnEnter", Button_OnEnter)
 	self:HookScript("OnLeave", Button_OnLeave)
