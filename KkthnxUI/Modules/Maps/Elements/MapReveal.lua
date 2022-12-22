@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("WorldMap")
 
 local _G = _G
@@ -16,11 +16,11 @@ local hooksecurefunc = _G.hooksecurefunc
 local shownMapCache, exploredCache, fileDataIDs = {}, {}, {}
 
 local function GetStringFromInfo(info)
-	return string.format("W%dH%dX%dY%d", info.textureWidth, info.textureHeight, info.offsetX, info.offsetY)
+	return format("W%dH%dX%dY%d", info.textureWidth, info.textureHeight, info.offsetX, info.offsetY)
 end
 
 local function GetShapesFromString(str)
-	local w, h, x, y = string.match(str, "W(%d*)H(%d*)X(%d*)Y(%d*)")
+	local w, h, x, y = strmatch(str, "W(%d*)H(%d*)X(%d*)Y(%d*)")
 	return tonumber(w), tonumber(h), tonumber(x), tonumber(y)
 end
 
@@ -57,7 +57,6 @@ function Module:MapData_RefreshOverlays(fullUpdate)
 	if not self.layerIndex then
 		self.layerIndex = WorldMapFrame.ScrollContainer:GetCurrentLayerIndex()
 	end
-
 	local layers = C_Map_GetMapArtLayers(mapID)
 	local layerInfo = layers and layers[self.layerIndex]
 	if not layerInfo then
@@ -85,13 +84,11 @@ function Module:MapData_RefreshOverlays(fullUpdate)
 					if texturePixelHeight == 0 then
 						texturePixelHeight = TILE_SIZE_HEIGHT
 					end
-
 					textureFileHeight = 16
 					while textureFileHeight < texturePixelHeight do
 						textureFileHeight = textureFileHeight * 2
 					end
 				end
-
 				for k = 1, numTexturesWide do
 					local texture = self.overlayTexturePool:Acquire()
 					if k < numTexturesWide then
@@ -107,7 +104,6 @@ function Module:MapData_RefreshOverlays(fullUpdate)
 							textureFileWidth = textureFileWidth * 2
 						end
 					end
-
 					texture:SetWidth(texturePixelWidth)
 					texture:SetHeight(texturePixelHeight)
 					texture:SetTexCoord(0, texturePixelWidth / textureFileWidth, 0, texturePixelHeight / textureFileHeight)
@@ -120,16 +116,14 @@ function Module:MapData_RefreshOverlays(fullUpdate)
 						else
 							texture:SetVertexColor(1, 1, 1)
 						end
-						texture:SetDrawLayer("ARTWORK", -1)
+						texture:SetDrawLayer("ARTWORK", -2)
 						texture:Show()
-
 						if fullUpdate then
 							self.textureLoadGroup:AddTexture(texture)
 						end
 					else
 						texture:Hide()
 					end
-
 					table_insert(shownMapCache, texture)
 				end
 			end
@@ -153,10 +147,7 @@ function Module:CreateWorldMapReveal()
 	bu:SetPoint("TOPRIGHT", -260, 0)
 	bu:SetSize(24, 24)
 	bu:SetChecked(KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap)
-
-	bu.text = bu:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	bu.text:SetPoint("LEFT", 24, 0)
-	bu.text:SetText("Map Reveal")
+	bu.text = K.CreateFontString(bu, 12, "Map Reveal", "", "system", "LEFT", 24, 0)
 
 	for pin in WorldMapFrame:EnumeratePinsByTemplate("MapExplorationPinTemplate") do
 		hooksecurefunc(pin, "RefreshOverlays", Module.MapData_RefreshOverlays)
