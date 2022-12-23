@@ -216,9 +216,9 @@ C["Inventory"] = {
 
 -- Buffs & Debuffs
 C["Auras"] = {
-	["BuffSize"] = 34,
+	["BuffSize"] = 32,
 	["BuffsPerRow"] = 16,
-	["DebuffSize"] = 36,
+	["DebuffSize"] = 34,
 	["DebuffsPerRow"] = 16,
 	["Enable"] = true,
 	["HideBlizBuff"] = false,

@@ -8,7 +8,7 @@
                <Offset>
                   <AbsDimension x="1" y="-1" />
                </Offset>
-               <Color r="0" g="0" b="0" a="1" />
+               <Color r="0" g="0" b="0" />
             </Shadow>
          </Font>
       </Member>
@@ -18,7 +18,7 @@
                <Offset>
                   <AbsDimension x="1" y="-1" />
                </Offset>
-               <Color r="0" g="0" b="0" a="1" />
+               <Color r="0" g="0" b="0" />
             </Shadow>
          </Font>
       </Member>
@@ -28,7 +28,7 @@
                <Offset>
                   <AbsDimension x="1" y="-1" />
                </Offset>
-               <Color r="0" g="0" b="0" a="1" />
+               <Color r="0" g="0" b="0" />
             </Shadow>
          </Font>
       </Member>
@@ -38,7 +38,7 @@
                <Offset>
                   <AbsDimension x="1" y="-1" />
                </Offset>
-               <Color r="0" g="0" b="0" a="1" />
+               <Color r="0" g="0" b="0" />
             </Shadow>
          </Font>
       </Member>
@@ -48,11 +48,22 @@
                <Offset>
                   <AbsDimension x="1" y="-1" />
                </Offset>
-               <Color r="0" g="0" b="0" a="1" />
+               <Color r="0" g="0" b="0" />
             </Shadow>
          </Font>
       </Member>
    </FontFamily>
+
+   <!-- Normal Font Yellow -->
+   <Font name="KkthnxUIFontYellow" inherits="KkthnxUIFont" virtual="true">
+      <Color r="1.0" g="0.82" b="0" />
+      <Shadow>
+         <Offset>
+            <AbsDimension x="1" y="-1" />
+         </Offset>
+         <Color r="0" g="0" b="0" />
+      </Shadow>
+   </Font>
 
    <!-- Outline Font -->
    <FontFamily name="KkthnxUIFontOutline" virtual="true">
@@ -107,4 +118,15 @@
          </Font>
       </Member>
    </FontFamily>
+
+   <!-- Outline Font Yellow -->
+   <Font name="KkthnxUIFontOutlineYellow" inherits="KkthnxUIFontOutline" virtual="true">
+      <Color r="1.0" g="0.82" b="0" />
+      <Shadow>
+         <Offset>
+            <AbsDimension x="0" y="-0" />
+         </Offset>
+         <Color r="0" g="0" b="0" />
+      </Shadow>
+   </Font>
 </Ui>

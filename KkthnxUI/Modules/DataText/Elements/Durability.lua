@@ -160,6 +160,7 @@ function Module:CreateDurabilityDataText()
 	DurabilityDataText:SetPoint("TOP", PaperDollFrame, "BOTTOM", 214, 3)
 	DurabilityDataText:SetFrameLevel(PaperDollFrame:GetFrameLevel() + 2)
 	DurabilityDataText:SetParent(PaperDollFrame)
+	DurabilityDataText:Disable()
 
 	if DurabilityDataText.LeftActive then
 		DurabilityDataText.LeftActive:SetAlpha(0)

@@ -62,7 +62,7 @@ local C_MajorFactions_HasMaximumRenown = C_MajorFactions and C_MajorFactions.Has
 
 function Module:ExpBar_Update(event, unit)
 	if not IsPlayerAtEffectiveMaxLevel() then
-		CurrentXP, XPToLevel, RestedXP = UnitXP("player"), UnitXPMax("player"), GetXPExhaustion()
+		CurrentXP, XPToLevel, RestedXP = UnitXP("player"), UnitXPMax("player"), GetXPExhaustion() or 0
 		if XPToLevel <= 0 then
 			XPToLevel = 1
 		end
@@ -241,9 +241,6 @@ function Module:ExpBar_UpdateTooltip()
 			local friendID, friendTextLevel, _
 			if factionID then
 				friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(factionID)
-				if friendID and friendID.friendshipFactionID > 0 then
-					standing = friendID.reaction
-				end
 			end
 
 			local isMajorFaction = factionID and C_Reputation_IsMajorFaction(factionID)
@@ -317,7 +314,6 @@ function Module:SetupExpRepScript(bar)
 		"DISABLE_XP_GAIN",
 		"AZERITE_ITEM_EXPERIENCE_CHANGED",
 		"HONOR_XP_UPDATE",
-		"QUEST_FINISHED",
 	}
 
 	for _, event in pairs(bar.eventList) do
@@ -396,7 +392,7 @@ function Module:CreateParagonReputation()
 		return
 	end
 
-	hooksecurefunc("ReputationFrame_InitReputationRow", function(factionRow, elementData)
+	hooksecurefunc("ReputationFrame_InitReputationRow", function(factionRow)
 		local factionID = factionRow.factionID
 		local factionContainer = factionRow.Container
 		local factionBar = factionContainer.ReputationBar

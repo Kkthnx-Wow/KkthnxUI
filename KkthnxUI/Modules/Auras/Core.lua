@@ -7,14 +7,12 @@ local _G = _G
 local math_floor = _G.math.floor
 local select = _G.select
 local string_format = _G.string.format
-local string_match = _G.string.match
 
 local CreateFrame = _G.CreateFrame
 local DebuffTypeColor = _G.DebuffTypeColor
 local GameTooltip = _G.GameTooltip
 local GetInventoryItemQuality = _G.GetInventoryItemQuality
 local GetInventoryItemTexture = _G.GetInventoryItemTexture
-local GetItemQualityColor = _G.GetItemQualityColor
 local GetTime = _G.GetTime
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
 local RegisterAttributeDriver = _G.RegisterAttributeDriver
