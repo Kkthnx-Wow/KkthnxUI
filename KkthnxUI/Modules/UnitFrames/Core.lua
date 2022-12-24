@@ -316,31 +316,48 @@ function Module.PostUpdateButton(element, button, unit, data)
 	end
 end
 
-function Module.AurasPreUpdate(element, _, isFullUpdate)
-	if not isFullUpdate then
-		return
-	end
+function Module.AurasPostUpdateInfo(element, _, _, debuffsChanged)
 	element.bolsterStacks = 0
 	element.bolsterInstanceID = nil
-end
+	element.hasTheDot = nil
 
-local isCasterPlayer = {
-	["player"] = true,
-	["pet"] = true,
-	["vehicle"] = true,
-}
+	for auraInstanceID, data in next, element.allBuffs do
+		if data.spellId == 209859 then
+			if not element.bolsterInstanceID then
+				element.bolsterInstanceID = auraInstanceID
+				element.activeBuffs[auraInstanceID] = true
+			end
+			element.bolsterStacks = element.bolsterStacks + 1
+			if element.bolsterStacks > 1 then
+				element.activeBuffs[auraInstanceID] = nil
+			end
+		end
+	end
+	if element.bolsterStacks > 0 then
+		for i = 1, element.visibleButtons do
+			local button = element[i]
+			if element.bolsterInstanceID and element.bolsterInstanceID == button.auraInstanceID then
+				button.Count:SetText(element.bolsterStacks)
+				break
+			end
+		end
+	end
+
+	if C["Nameplate"].ColorByDot and debuffsChanged then
+		for _, data in next, element.allDebuffs do
+			if data.isPlayerAura and C["Nameplate"].DotSpells[data.spellId] then
+				element.hasTheDot = true
+				break
+			end
+		end
+	end
+end
 
 function Module.CustomFilter(element, unit, data)
 	local style = element.__owner.mystyle
-	local name, debuffType, caster, isStealable, spellID, nameplateShowAll = data.name, data.dispelName, data.sourceUnit, data.isStealable, data.spellId, data.nameplateShowAll
+	local name, debuffType, isStealable, spellID, nameplateShowAll = data.name, data.dispelName, data.isStealable, data.spellId, data.nameplateShowAll
 
-	if name and spellID == 209859 then
-		if not element.bolsterInstanceID then
-			element.bolsterInstanceID = data.auraInstanceID
-		end
-		element.bolsterStacks = element.bolsterStacks + 1
-		return element.bolsterStacks == 1
-	elseif style == "nameplate" or style == "boss" or style == "arena" then
+	if style == "nameplate" or style == "boss" or style == "arena" then
 		if element.__owner.plateType == "NameOnly" then
 			return C.NameplateWhiteList[spellID]
 		elseif C.NameplateBlackList[spellID] then
@@ -351,7 +368,7 @@ function Module.CustomFilter(element, unit, data)
 			return true
 		else
 			local auraFilter = C["Nameplate"].AuraFilter.Value
-			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and isCasterPlayer[caster])
+			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and data.isPlayerAura)
 		end
 	else
 		return (element.onlyShowPlayer and data.isPlayerAura) or (not element.onlyShowPlayer and name)

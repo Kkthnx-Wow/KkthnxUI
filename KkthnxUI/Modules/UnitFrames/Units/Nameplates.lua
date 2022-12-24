@@ -236,6 +236,7 @@ function Module:UpdateColor(_, unit)
 	local revertThreat = C["Nameplate"].DPSRevertThreat
 	local secureColor = C["Nameplate"].SecureColor
 	local transColor = C["Nameplate"].TransColor
+	local dotColor = C["Nameplate"].DotColor
 
 	local executeRatio = C["Nameplate"].ExecuteRatio
 	local healthPerc = UnitHealth(unit) / (UnitHealthMax(unit) + 0.0001) * 100
@@ -248,6 +249,8 @@ function Module:UpdateColor(_, unit)
 			r, g, b = targetColor[1], targetColor[2], targetColor[3]
 		elseif isCustomUnit then
 			r, g, b = customColor[1], customColor[2], customColor[3]
+		elseif self.Auras.hasTheDot then
+			r, g, b = dotColor[1], dotColor[2], dotColor[3]
 		elseif isPlayer and isFriendly then
 			if C["Nameplate"].FriendlyCC then
 				r, g, b = K.UnitColor(unit)
@@ -989,7 +992,7 @@ function Module:CreatePlates()
 	self.Auras.showStealableBuffs = true
 	self.Auras.PostCreateButton = Module.PostCreateButton
 	self.Auras.PostUpdateButton = Module.PostUpdateButton
-	self.Auras.PreUpdate = Module.AurasPreUpdate
+	self.Auras.PostUpdateInfo = Module.AurasPostUpdateInfo
 
 	Module:CreateThreatColor(self)
 

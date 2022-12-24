@@ -433,6 +433,10 @@ C["Misc"] = {
 }
 
 C["Nameplate"] = {
+	["ColorByDot"] = true,
+	["DotColor"] = { 1, 0.5, 0.2 },
+	["DotSpells"] = {},
+
 	["AKSProgress"] = false,
 	["AuraSize"] = 28,
 	["CastTarget"] = false,
