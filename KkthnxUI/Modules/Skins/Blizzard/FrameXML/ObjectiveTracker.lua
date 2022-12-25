@@ -249,7 +249,7 @@ tinsert(C.defaultThemes, function()
 	minimize:SetHighlightTexture([[Interface\Buttons\UI-PlusButton-Hilight]], "ADD")
 	minimize.tex = minimize:CreateTexture(nil, "OVERLAY")
 	minimize.tex:SetTexture(C["Media"].Textures.ArrowTexture)
-	minimize.tex:SetVertexColor(1, 0.6, 0)
+	minimize.tex:SetDesaturated(true)
 	minimize.tex:SetAllPoints()
 
 	hooksecurefunc("ObjectiveTracker_Expand", changedTrackerState)
