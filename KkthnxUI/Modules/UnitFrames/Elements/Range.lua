@@ -1,4 +1,4 @@
-local K = _G.unpack(select(2, ...))
+local K, C = _G.unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
@@ -16,6 +16,10 @@ local UnitIsUnit = _G.UnitIsUnit
 local UnitPhaseReason = _G.UnitPhaseReason
 
 function Module:CreateRangeIndicator()
+	if not C["Unitframe"].Range then
+		return
+	end
+
 	local Range = {
 		insideAlpha = 1,
 		outsideAlpha = 0.35,
