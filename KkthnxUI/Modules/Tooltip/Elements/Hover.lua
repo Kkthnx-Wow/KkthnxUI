@@ -9,20 +9,21 @@ local EJ_GetInstanceInfo, EJ_GetEncounterInfo, GetDifficultyInfo = EJ_GetInstanc
 
 local orig1, orig2, sectionInfo = {}, {}, {}
 local linkTypes = {
-	item = true,
-	enchant = true,
-	spell = true,
-	quest = true,
-	unit = true,
-	talent = true,
 	achievement = true,
+	azessence = true,
+	conduit = true,
+	currency = true,
+	enchant = true,
 	glyph = true,
 	instancelock = true,
-	currency = true,
+	item = true,
 	keystone = true,
-	azessence = true,
 	mawpower = true,
-	conduit = true,
+	mount = true,
+	quest = true,
+	spell = true,
+	talent = true,
+	unit = true,
 }
 
 function Module:HyperLink_SetPet(link)

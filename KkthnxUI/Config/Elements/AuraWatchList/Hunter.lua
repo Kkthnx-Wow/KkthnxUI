@@ -108,6 +108,7 @@ local list = {
 		{ AuraID = 342076, UnitID = "player" },
 		{ AuraID = 336892, UnitID = "player", Flash = true },
 		{ AuraID = 388035, UnitID = "player" },
+		{ AuraID = 392956, UnitID = "player" },
 		{ AuraID = 388045, UnitID = "player", Flash = true },
 
 		{ AuraID = 363760, UnitID = "player", Flash = true },

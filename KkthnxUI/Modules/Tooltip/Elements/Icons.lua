@@ -3,6 +3,7 @@ local Module = K:GetModule("Tooltip")
 
 local gsub = gsub
 local GetItemIcon, GetSpellTexture = GetItemIcon, GetSpellTexture
+local C_MountJournal_GetMountInfoByID = C_MountJournal.GetMountInfoByID
 local newString = "0:0:64:64:5:59:5:59"
 
 function Module:SetupTooltipIcon(icon)
@@ -50,6 +51,21 @@ function Module:ReskinRewardIcon()
 	iconBorder:SetAlpha(0)
 end
 
+local GetTooltipTextureByType = {
+	[Enum.TooltipDataType.Item] = function(id)
+		return GetItemIcon(id)
+	end,
+	[Enum.TooltipDataType.Toy] = function(id)
+		return GetItemIcon(id)
+	end,
+	[Enum.TooltipDataType.Spell] = function(id)
+		return GetSpellTexture(id)
+	end,
+	[Enum.TooltipDataType.Mount] = function(id)
+		return select(3, C_MountJournal_GetMountInfoByID(id))
+	end,
+}
+
 function Module:CreateTooltipIcons()
 	if not C["Tooltip"].Icons then
 		return
@@ -59,24 +75,17 @@ function Module:CreateTooltipIcons()
 	Module.HookTooltipMethod(GameTooltip)
 	Module.HookTooltipMethod(ItemRefTooltip)
 
-	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(self)
-		if self == GameTooltip or self == ItemRefTooltip then
-			local data = self:GetTooltipData()
-			local id = data and data.id
-			if id then
-				Module.SetupTooltipIcon(self, GetItemIcon(id))
+	for tooltipType, getTex in next, GetTooltipTextureByType do
+		TooltipDataProcessor.AddTooltipPostCall(tooltipType, function(self)
+			if self == GameTooltip or self == ItemRefTooltip then
+				local data = self:GetTooltipData()
+				local id = data and data.id
+				if id then
+					Module.SetupTooltipIcon(self, getTex(id))
+				end
 			end
-		end
-	end)
-	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, function(self)
-		if self == GameTooltip or self == ItemRefTooltip then
-			local data = self:GetTooltipData()
-			local id = data and data.id
-			if id then
-				Module.SetupTooltipIcon(self, GetSpellTexture(id))
-			end
-		end
-	end)
+		end)
+	end
 
 	-- Cut Icons
 	hooksecurefunc(GameTooltip, "SetUnitAura", function(self)

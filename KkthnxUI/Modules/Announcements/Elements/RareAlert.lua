@@ -31,21 +31,6 @@ local function isUsefulAtlas(info)
 	end
 end
 
--- Atlas info
-local function GetTextureStrByAtlas(info, sizeX, sizeY)
-	local file = info and info.file
-	if not file then
-		return
-	end
-	-- stylua: ignore
-	local width, height, txLeft, txRight, txTop, txBottom = info.width, info.height, info.leftTexCoord, info.rightTexCoord, info.topTexCoord, info.bottomTexCoord
-	local atlasWidth = width / (txRight - txLeft)
-	local atlasHeight = height / (txBottom - txTop)
-
-	-- stylua: ignore
-	return string_format("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t", file, (sizeX or 0), (sizeY or 0), atlasWidth, atlasHeight, atlasWidth * txLeft, atlasWidth * txRight, atlasHeight * txTop, atlasHeight * txBottom)
-end
-
 function Module:RareAlert_Update(id)
 	if id and not RareAlertCache[id] then
 		local info = C_VignetteInfo_GetVignetteInfo(id)
@@ -58,7 +43,7 @@ function Module:RareAlert_Update(id)
 			return
 		end
 
-		local tex = GetTextureStrByAtlas(atlasInfo)
+		local tex = K.GetTextureStrByAtlas(atlasInfo)
 		if not tex then
 			return
 		end

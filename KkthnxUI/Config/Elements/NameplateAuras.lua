@@ -115,6 +115,7 @@ C.NameplateCustomUnits = {
 	[104251] = true,
 	[101008] = true,
 
+	[196548] = true,
 	[175992] = true,
 	[165762] = true,
 
@@ -201,4 +202,5 @@ C.MajorSpells = {
 	[356407] = true,
 	[347721] = true,
 	[353783] = true,
+	[156718] = true,
 }

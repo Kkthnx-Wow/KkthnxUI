@@ -26,6 +26,8 @@ local C_TaskQuest_GetQuestInfoByQuestID = _G.C_TaskQuest.GetQuestInfoByQuestID
 local C_TaskQuest_GetThreatQuests = _G.C_TaskQuest.GetThreatQuests
 local FULLDATE = _G.FULLDATE
 local GameTime_GetGameTime = _G.GameTime_GetGameTime
+local C_AreaPoiInfo_GetAreaPOIForMap = _G.C_AreaPoiInfo.GetAreaPOIForMap
+local C_AreaPoiInfo_GetAreaPOIInfo = _G.C_AreaPoiInfo.GetAreaPOIInfo
 local GameTime_GetLocalTime = _G.GameTime_GetLocalTime
 local GameTooltip = _G.GameTooltip
 local GetCVar = _G.GetCVar
@@ -226,6 +228,30 @@ local function GetNzothThreatName(questID)
 	return name
 end
 
+local huntAreaToMapID = { -- 狩猎区域ID转换为地图ID
+	[7341] = 2024, -- 碧蓝林海？
+	[7342] = 2023, -- 欧恩哈拉平原
+	[7343] = 2022, -- 觉醒海岸
+	[7344] = 2025, -- 索德拉苏斯
+}
+
+local atlasCache = {}
+local function GetElementalType(element) -- 获取入侵类型图标
+	local str = atlasCache[element]
+	if not str then
+		local info = C_Texture.GetAtlasInfo("ElementalStorm-Lesser-" .. element)
+		if info then
+			str = K.GetTextureStrByAtlas(info, 16, 16)
+			atlasCache[element] = str
+		end
+	end
+	return str
+end
+
+local function GetFormattedTimeLeft(timeLeft)
+	return format("%.2d:%.2d", timeLeft / 60, timeLeft % 60)
+end
+
 local title
 local function addTitle(text)
 	if not title then
@@ -309,6 +335,48 @@ function Module:TimeOnEnter()
 				addTitle(QUESTS_LABEL)
 				GameTooltip:AddDoubleLine(v.name, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 			end
+		end
+	end
+
+	-- Elemental threats
+	title = false
+	for mapID = 2022, 2025 do -- DF main zones
+		local areaPoiIDs = C_AreaPoiInfo_GetAreaPOIForMap(mapID)
+		for _, areaPoiID in next, areaPoiIDs do
+			local poiInfo = C_AreaPoiInfo_GetAreaPOIInfo(mapID, areaPoiID)
+			local elementType = poiInfo and poiInfo.atlasName and strmatch(poiInfo.atlasName, "ElementalStorm%-Lesser%-(.+)")
+			if elementType then
+				addTitle(poiInfo.name)
+				local mapInfo = C_Map_GetMapInfo(mapID)
+				local timeLeft = C_AreaPoiInfo_GetAreaPOISecondsLeft(areaPoiID) or 0
+				timeLeft = timeLeft / 60
+				if timeLeft < 60 then
+					r, g, b = 1, 0, 0
+				else
+					r, g, b = 0, 1, 0
+				end
+				GameTooltip:AddDoubleLine(mapInfo.name .. GetElementalType(elementType), GetFormattedTimeLeft(timeLeft), 1, 1, 1, r, g, b)
+				break
+			end
+		end
+	end
+
+	-- Grand hunts
+	title = false
+	for areaPoiID, mapID in pairs(huntAreaToMapID) do
+		local poiInfo = C_AreaPoiInfo_GetAreaPOIInfo(1978, areaPoiID) -- Dragon isles
+		if poiInfo then
+			addTitle(poiInfo.name)
+			local mapInfo = C_Map_GetMapInfo(mapID)
+			local timeLeft = C_AreaPoiInfo_GetAreaPOISecondsLeft(areaPoiID) or 0
+			timeLeft = timeLeft / 60
+			if timeLeft < 60 then
+				r, g, b = 1, 0, 0
+			else
+				r, g, b = 0, 1, 0
+			end
+			GameTooltip:AddDoubleLine(mapInfo.name, GetFormattedTimeLeft(timeLeft), 1, 1, 1, r, g, b)
+			break
 		end
 	end
 
