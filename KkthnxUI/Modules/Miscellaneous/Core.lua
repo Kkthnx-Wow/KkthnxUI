@@ -62,10 +62,10 @@ function Module:OnEnable()
 	self:CreateTicketStatusFrameMove()
 	self:CreateTradeTargetInfo()
 	self:CreateVehicleSeatMover()
-	self:DisableHelpTips()
+	self:DisableHelpTip()
+	self:DisableTutorials()
 	self:MoveMawBuffsFrame()
 	self:UpdateMaxCameraZoom()
-	self:DisableNPE()
 
 	hooksecurefunc("QuestInfo_Display", Module.CreateQuestXPPercent)
 
@@ -718,7 +718,7 @@ local function AcknowledgeTips()
 	end
 end
 
-function Module:DisableHelpTips() -- Auto complete helptips
+function Module:DisableHelpTip() -- auto complete helptips
 	if not C["General"].NoTutorialButtons then
 		return
 	end
@@ -727,25 +727,44 @@ function Module:DisableHelpTips() -- Auto complete helptips
 	C_Timer.After(1, AcknowledgeTips)
 end
 
--- NOTE: ActionBars heavily conflicts with NPE
-local function ShutdownNPE(event)
+-- ActionBars heavily conflicts with NPE
+local function ShutdownNPE()
 	local NPE = _G.NewPlayerExperience
-	if NPE then
-		if NPE:GetIsActive() then
-			NPE:Shutdown()
-		end
+	if NPE and NPE:GetIsActive() then
+		NPE:Shutdown()
+	end
 
-		if event then
-			K:UnregisterEvent(event)
-		end
+	return NPE
+end
+
+-- similar to NPE but not NPE
+local function ShutdownTM()
+	local TM = _G.TutorialManager
+	if TM and TM:GetIsActive() then
+		TM:Shutdown()
+
+		-- these aren't hidden by the shutdown
+		_G.TutorialWalk_Frame:Kill()
+		_G.TutorialSingleKey_Frame:Kill()
+		_G.TutorialMainFrame_Frame:Kill()
+		_G.TutorialKeyboardMouseFrame_Frame:Kill()
+	end
+
+	return TM
+end
+
+local function ShutdownTutorials(event)
+	local TM, NPE = ShutdownTM(), ShutdownNPE()
+	if TM and NPE then -- they exist unregister this
+		K:UnregisterEvent(event)
 	end
 end
 
-function Module:DisableNPE() -- disable new player experience
-	if _G.NewPlayerExperience then
-		ShutdownNPE()
-	else
-		K:RegisterEvent("ADDON_LOADED", ShutdownNPE)
+-- disable new player experience stuff
+function Module:DisableTutorials()
+	local TM, NPE = ShutdownTM(), ShutdownNPE()
+	if not TM or not NPE then -- wait for them to exist
+		K:RegisterEvent("ADDON_LOADED", ShutdownTutorials)
 	end
 end
 

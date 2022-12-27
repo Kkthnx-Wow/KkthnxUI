@@ -4,8 +4,6 @@ local Module = K:GetModule("Blizzard")
 local _G = _G
 local CreateFrame = CreateFrame
 local GetInstanceInfo = GetInstanceInfo
-local RegisterStateDriver = RegisterStateDriver
-local UnregisterStateDriver = UnregisterStateDriver
 local IsInJailersTower = IsInJailersTower
 local hooksecurefunc = hooksecurefunc
 
@@ -65,7 +63,7 @@ end
 
 function Module:SetObjectiveFrameAutoHide()
 	if not _G.ObjectiveTrackerFrame.AutoHider then
-		return -- Kaliel's Tracker prevents B:MoveObjectiveFrame() from executing
+		return -- Kaliel's Tracker prevents Module:MoveObjectiveFrame() from executing
 	end
 
 	if C["Automation"].AutoCollapse then

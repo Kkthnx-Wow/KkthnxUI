@@ -1,9 +1,15 @@
-<Ui><Script><![CDATA[--[[
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui>
+   <Script><![CDATA[--[[
+
 TaintLess [22-11-27]
 https://www.townlong-yak.com/addons/taintless
+
 All rights reserved.
+
 Permission is hereby granted to distribute unmodified copies of this file.
 ]]
+
 local function purgeKey(t, k)
 	local logLevel, c = GetCVar("taintLog"), -42
 	if (tonumber(logLevel) or 0) > 1 then
@@ -28,6 +34,7 @@ local function purgeKey(t, k)
 		end
 	end
 end
+
 -- https://www.townlong-yak.com/addons/taintless/fixes/RefreshOverread
 if (tonumber(UIDD_REFRESH_OVERREAD_PATCH_VERSION) or 0) < 3 then
 	UIDD_REFRESH_OVERREAD_PATCH_VERSION = 3
@@ -41,6 +48,7 @@ if (tonumber(UIDD_REFRESH_OVERREAD_PATCH_VERSION) or 0) < 3 then
 		end
 	end)
 end
+
 -- https://www.townlong-yak.com/addons/taintless/fixes/DisplayModeTaint
 if (tonumber(UIDROPDOWNMENU_OPEN_PATCH_VERSION) or 0) < 1 then
 	UIDROPDOWNMENU_OPEN_PATCH_VERSION = 1
@@ -52,6 +60,7 @@ if (tonumber(UIDROPDOWNMENU_OPEN_PATCH_VERSION) or 0) < 1 then
 		end
 	end)
 end
+
 -- https://www.townlong-yak.com/addons/taintless/fixes/IOFrameSelection
 if (tonumber(IOFRAME_SELECTION_PATCH_VERSION) or 0) < 3 then
 	IOFRAME_SELECTION_PATCH_VERSION = 3
@@ -63,6 +72,7 @@ if (tonumber(IOFRAME_SELECTION_PATCH_VERSION) or 0) < 3 then
 		end)
 	end
 end
+
 -- https://www.townlong-yak.com/addons/taintless/fixes/EditModeOpenDrop
 if EditModeManagerFrame and FriendsFrameStatusDropDown and (tonumber(EDITMAN_OPENDROP_PATCH_VERSION) or 0) < 1 then
 	EDITMAN_OPENDROP_PATCH_VERSION = 1
@@ -84,6 +94,7 @@ if EditModeManagerFrame and FriendsFrameStatusDropDown and (tonumber(EDITMAN_OPE
 		end
 	end)
 end
+
 -- https://www.townlong-yak.com/addons/taintless/fixes/ObjectiveTrackerUpdate
 if ObjectiveTrackerFrame and (tonumber(OBJTRACK_DELAYUPDATE_PATCH_VERSION) or 0) < 1 then
 	OBJTRACK_DELAYUPDATE_PATCH_VERSION = 1
@@ -117,5 +128,5 @@ if ObjectiveTrackerFrame and (tonumber(OBJTRACK_DELAYUPDATE_PATCH_VERSION) or 0)
 			end
 		end
 	end)
-end
-]]></Script></Ui>
+end]]></Script>
+</Ui>
