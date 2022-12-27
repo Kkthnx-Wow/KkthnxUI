@@ -8,7 +8,7 @@ local _G = _G
 local C_Container_GetContainerNumSlots = _G.C_Container.GetContainerNumSlots
 local C_Container_GetContainerItemInfo = _G.C_Container.GetContainerItemInfo
 local OPENING = _G.OPENING
-local GetContainerItemLink = _G.GetContainerItemLink
+local C_Container_GetContainerItemLink = _G.C_Container.GetContainerItemLink
 
 local atBank
 local atMail
@@ -53,11 +53,13 @@ local function BagDelayedUpdate()
 
 	for bag = 0, 4 do
 		for slot = 0, C_Container_GetContainerNumSlots(bag) do
-			local _, _, locked, _, _, lootable, _, _, _, id = C_Container_GetContainerItemInfo(bag, slot)
-			if lootable and not locked and id and C.AutoOpenItems[id] then
-				K.Print(K.SystemColor .. OPENING .. ":|r " .. GetContainerItemLink(bag, slot))
-				UseContainerItem(bag, slot)
-				return
+			local cInfo = C_Container_GetContainerItemInfo(bag, slot)
+			if cInfo then
+				if cInfo.hasLoot and not cInfo.isLocked and cInfo.itemID and C.AutoOpenItems[cInfo.itemID] then
+					K.Print(K.SystemColor .. OPENING .. ":|r " .. C_Container_GetContainerItemLink(bag, slot))
+					C_Container.UseContainerItem(bag, slot)
+					return
+				end
 			end
 		end
 	end
