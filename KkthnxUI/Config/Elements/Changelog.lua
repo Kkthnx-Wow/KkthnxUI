@@ -20,6 +20,55 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.4.4] - 2022-12-26",
+		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
+		Sections = {
+			{
+				Header = "Added",
+				Entries = {
+					"[Actionbars] Texture color will now properly color actionbars too",
+					"[Minimap] We now have our old calendar icon back",
+					"[Misc] Support for killing more annoying tutorials",
+					"[Movers] They now shine <3",
+					"[Raidframes] Support Dragonflight debuffs",
+					"[Skins] ObjectiveTracker skin is now complete",
+					"[Unitframes] Allow users to turn off unitframe fading when out of range",
+				},
+			},
+
+			{
+				Header = "Changed",
+				Entries = {
+					"[Config] Update spell list for reminders",
+					"[Datatext] Rename module from infobar to datatext",
+					"[Lib] Update LibActionButton to latest version",
+					"[Raidtool] Updated codebase for our raidtool",
+					"[Unitframes] Refactor castbars to better support spell stages like blizzard has it",
+					"[Unitframes] Updated how we handle bolster for nameplates",
+				},
+			},
+
+			{
+				Header = "Removed",
+				Entries = {
+					"[Unitframes] Disabled combat fader because portraits are buggy right now.. Idk why",
+				},
+			},
+
+			{
+				Header = "Fixed",
+				Entries = {
+					"[Automation] AutoKeystone should work once again",
+					"[Automation] AutoOpen items should work once again",
+					"[Inventory] Fix typo for BagReagent",
+					"[Maps] Map reveal should now properly show its overlay on undiscovered zones",
+					"[Misc] Fixed and enabled MDGuildBest",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.4.3] - 2022-12-19",
 		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {
