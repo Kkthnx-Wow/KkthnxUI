@@ -1,11 +1,8 @@
 --[[
 Copyright (c) 2010-2022, Hendrik "nevcairiel" Leppkes <h.leppkes@gmail.com>
-
 All rights reserved.
-
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-
     * Redistributions of source code must retain the above copyright notice,
       this list of conditions and the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright notice,
@@ -14,7 +11,6 @@ modification, are permitted provided that the following conditions are met:
     * Neither the name of the developer nor the names of its contributors
       may be used to endorse or promote products derived from this software without
       specific prior written permission.
-
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -26,7 +22,6 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 ]]
 local MAJOR_VERSION = "LibActionButton-1.0-KkthnxUI"
 local MINOR_VERSION = 106
@@ -44,13 +39,8 @@ local type, error, tostring, tonumber, assert, select = type, error, tostring, t
 local setmetatable, wipe, unpack, pairs, next = setmetatable, wipe, unpack, pairs, next
 local str_match, format, tinsert, tremove = string.match, format, tinsert, tremove
 
-local WoWRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
-local WoWClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
-local WoWBCC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
-local WoWWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
-
 -- Enable custom flyouts for WoW Retail
-local UseCustomFlyout = WoWRetail
+local UseCustomFlyout = true
 
 local KeyBound = LibStub("LibKeyBound-1.0", true)
 local CBH = LibStub("CallbackHandler-1.0")
@@ -80,9 +70,6 @@ local Generic_MT = { __index = Generic }
 
 local Action = setmetatable({}, { __index = Generic })
 local Action_MT = { __index = Action }
-
---local PetAction = setmetatable({}, {__index = Generic})
---local PetAction_MT = {__index = PetAction}
 
 local Spell = setmetatable({}, { __index = Generic })
 local Spell_MT = { __index = Spell }
@@ -127,11 +114,18 @@ end
 
 local DefaultConfig = {
 	outOfRangeColoring = "button",
+	outOfManaColoring = "button",
 	tooltip = "enabled",
 	showGrid = false,
 	colors = {
 		range = { 0.8, 0.1, 0.1 },
 		mana = { 0.5, 0.5, 1.0 },
+		normal = { 1.0, 1.0, 1.0 },
+		equipped = { 0.0, 1.0, 0.0 },
+		unusable = { 0.4, 0.4, 0.4 },
+	},
+	desaturation = {
+		unusable = false,
 	},
 	hideElements = {
 		macro = false,
@@ -148,7 +142,7 @@ local DefaultConfig = {
 		hotkey = {
 			font = {
 				font = false, -- "Fonts\\ARIALN.TTF",
-				size = WoWRetail and 14 or 13,
+				size = 14,
 				flags = "OUTLINE",
 			},
 			color = { 0.75, 0.75, 0.75 },
@@ -211,11 +205,7 @@ function lib:CreateButton(id, name, header, config)
 
 	local button = setmetatable(CreateFrame("CheckButton", name, header, "SecureActionButtonTemplate, ActionButtonTemplate"), Generic_MT)
 	button:RegisterForDrag("LeftButton", "RightButton")
-	if WoWRetail then
-		button:RegisterForClicks("AnyDown", "AnyUp")
-	else
-		button:RegisterForClicks("AnyUp")
-	end
+	button:RegisterForClicks("AnyDown", "AnyUp")
 
 	-- Frame Scripts
 	button:SetScript("OnEnter", Generic.OnEnter)
@@ -281,7 +271,6 @@ function SetupSecureSnippets(button)
 		local state = ...
 		self:SetAttribute("state", state)
 		local type, action = (self:GetAttribute(format("labtype-%s", state)) or "empty"), self:GetAttribute(format("labaction-%s", state))
-
 		self:SetAttribute("type", type)
 		if type ~= "empty" and type ~= "custom" then
 			local action_field = (type == "pet") and "action" or type
@@ -311,7 +300,6 @@ function SetupSecureSnippets(button)
 			else
 				self:SetAttribute("typerelease", nil)
 			end
-
 			self:SetAttribute("pressAndHoldAction", pressAndHold)
 		end
 		local onStateChanged = self:GetAttribute("OnStateChanged")
@@ -363,7 +351,6 @@ function SetupSecureSnippets(button)
 		-- Get the value for the action attribute
 		local action_field = self:GetAttribute("action_field")
 		local action = self:GetAttribute(action_field)
-
 		-- non-action fields need to change their type to empty
 		if type ~= "action" and type ~= "pet" then
 			self:SetAttribute(format("labtype-%s", state), "empty")
@@ -400,16 +387,13 @@ function SetupSecureSnippets(button)
 			elseif kind == "item" and value then
 				value = format("item:%d", value)
 			end
-
 			-- Get the action that was on the button before
 			if buttonType ~= "empty" then
 				buttonAction = self:GetAttribute(self:GetAttribute("action_field"))
 			end
-
 			-- TODO: validate what kind of action is being fed in here
 			-- We can only use a handful of the possible things on the cursor
 			-- return false for all those we can't put on buttons
-
 			self:SetAttribute(format("labtype-%s", state), kind)
 			self:SetAttribute(format("labaction-%s", state), value)
 			-- update internal state
@@ -481,24 +465,20 @@ function WrapOnClick(button)
 		[[
 		if self:GetAttribute("type") == "action" then
 			local type, action = GetActionInfo(self:GetAttribute("action"))
-
 			if type == "flyout" and self:GetAttribute("LABUseCustomFlyout") then
 				local flyoutHandler = owner:GetFrameRef("flyoutHandler")
 				if not down and flyoutHandler then
 					flyoutHandler:SetAttribute("flyoutParentHandle", self)
 					flyoutHandler:RunAttribute("HandleFlyout", action)
 				end
-
 				self:CallMethod("UpdateFlyout")
 				return false
 			end
-
 			-- hide the flyout
 			local flyoutHandler = owner:GetFrameRef("flyoutHandler")
 			if flyoutHandler then
 				flyoutHandler:Hide()
 			end
-
 			-- if this is a pickup click, disable on-down casting
 			-- it should get re-enabled in the post handler, or the OnDragStart handler, whichever occurs
 			if button ~= "Keybind" and ((self:GetAttribute("unlockedpreventdrag") and not self:GetAttribute("buttonlock")) or IsModifiedClick("PICKUPACTION")) and not self:GetAttribute("LABdisableDragNDrop") then
@@ -507,13 +487,11 @@ function WrapOnClick(button)
 			end
 			return (button == "Keybind") and "LeftButton" or nil, format("%s|%s", tostring(type), tostring(action))
 		end
-
 		-- hide the flyout, the extra down/ownership check is needed to not hide the button we're currently pressing too early
 		local flyoutHandler = owner:GetFrameRef("flyoutHandler")
 		if flyoutHandler and (not down or self:GetParent() ~= flyoutHandler) then
 			flyoutHandler:Hide()
 		end
-
 		if button == "Keybind" then
 			return "LeftButton"
 		end
@@ -523,7 +501,6 @@ function WrapOnClick(button)
 		if message ~= format("%s|%s", tostring(type), tostring(action)) then
 			self:RunAttribute("UpdateState", self:GetAttribute("state"))
 		end
-
 		-- re-enable ondown casting if needed
 		if self:GetAttribute("LABToggledOnDown") then
 			self:SetAttribute("LABToggledOnDown", nil)
@@ -719,45 +696,34 @@ if UseCustomFlyout then
 		local SPELLFLYOUT_DEFAULT_SPACING = 4
 		local SPELLFLYOUT_INITIAL_SPACING = 7
 		local SPELLFLYOUT_FINAL_SPACING = 9
-
 		local parent = self:GetAttribute("flyoutParentHandle")
 		if not parent then return end
-
 		if self:IsShown() and self:GetParent() == parent then
 			self:Hide()
 			return
 		end
-
 		local flyoutID = ...
 		local info = LAB_FlyoutInfo[flyoutID]
 		if not info then print("LAB: Flyout missing with ID " .. flyoutID) return end
-
 		local oldParent = self:GetParent()
 		self:SetParent(parent)
-
 		local direction = parent:GetAttribute("flyoutDirection") or "UP"
-
 		local usedSlots = 0
 		local prevButton
 		for slotID, slotInfo in ipairs(info.slots) do
 			if slotInfo.isKnown then
 				usedSlots = usedSlots + 1
 				local slotButton = self:GetFrameRef("flyoutButton" .. usedSlots)
-
 				-- set secure action attributes
 				slotButton:SetAttribute("type", "spell")
 				slotButton:SetAttribute("spell", slotInfo.spellID)
-
 				-- set LAB attributes
 				slotButton:SetAttribute("labtype-0", "spell")
 				slotButton:SetAttribute("labaction-0", slotInfo.spellID)
-
 				-- run LAB updates
 				slotButton:CallMethod("SetStateFromHandlerInsecure", 0, "spell", slotInfo.spellID)
 				slotButton:CallMethod("UpdateAction")
-
 				slotButton:ClearAllPoints()
-
 				if direction == "UP" then
 					if prevButton then
 						slotButton:SetPoint("BOTTOM", prevButton, "TOP", 0, SPELLFLYOUT_DEFAULT_SPACING)
@@ -783,12 +749,10 @@ if UseCustomFlyout then
 						slotButton:SetPoint("LEFT", self, "LEFT", SPELLFLYOUT_INITIAL_SPACING, 0)
 					end
 				end
-
 				slotButton:Show()
 				prevButton = slotButton
 			end
 		end
-
 		-- hide excess buttons
 		for i = usedSlots + 1, self:GetAttribute("numFlyoutButtons") do
 			local slotButton = self:GetFrameRef("flyoutButton" .. i)
@@ -796,18 +760,14 @@ if UseCustomFlyout then
 				slotButton:Hide()
 			end
 		end
-
 		if usedSlots == 0 then
 			self:Hide()
 			return
 		end
-
 		-- calculate extent for the long dimension
 		-- 3 pixel extra initial padding, button size + padding, and everything at 0.8 scale
 		local extent = (3 + (45 + 4) * usedSlots) * 0.8
-
 		self:ClearAllPoints()
-
 		if direction == "UP" then
 			self:SetPoint("BOTTOM", parent, "TOP")
 			self:SetWidth(45)
@@ -825,12 +785,9 @@ if UseCustomFlyout then
 			self:SetWidth(extent)
 			self:SetHeight(45)
 		end
-
 		self:SetFrameStrata("DIALOG")
 		self:Show()
-
 		self:CallMethod("ShowFlyoutInsecure", direction)
-
 		if oldParent and oldParent:GetAttribute("LABUseCustomFlyout") then
 			oldParent:CallMethod("UpdateFlyout")
 		end
@@ -1207,15 +1164,17 @@ function Generic:UpdateConfig(config)
 	if config and type(config) ~= "table" then
 		error("LibActionButton-1.0: UpdateConfig requires a valid configuration!", 2)
 	end
-	local oldconfig = self.config
+
 	self.config = {}
 	-- merge the two configs
 	merge(self.config, config, DefaultConfig)
 
-	if self.config.outOfRangeColoring == "button" or (oldconfig and oldconfig.outOfRangeColoring == "button") then
-		UpdateUsable(self)
+	if self.config.outOfRangeColoring == "button" or self.config.outOfManaColoring == "button" then
+		self.HotKey:SetVertexColor(unpack(self.config.text.hotkey.color))
 	end
-	if self.config.outOfRangeColoring == "hotkey" then
+	if self.config.outOfRangeColoring == "hotkey" or self.config.outOfManaColoring == "hotkey" then
+		self.icon:SetDesaturated(false)
+		self.icon:SetVertexColor(unpack(self.config.colors.normal))
 		self.outOfRange = nil
 	end
 
@@ -1231,9 +1190,6 @@ function Generic:UpdateConfig(config)
 	UpdateHotkeys(self)
 	UpdateGrid(self)
 	Update(self)
-	if not WoWRetail then
-		self:RegisterForClicks(self.config.clickOnDown and "AnyDown" or "AnyUp")
-	end
 end
 
 -----------------------------------------------------------
@@ -1259,9 +1215,7 @@ function InitializeEventHandler()
 	lib.eventFrame:RegisterEvent("UPDATE_BINDINGS")
 	lib.eventFrame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 	lib.eventFrame:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
-	if not WoWClassic and not WoWBCC then
-		lib.eventFrame:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
-	end
+	lib.eventFrame:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
 
 	lib.eventFrame:RegisterEvent("ACTIONBAR_UPDATE_STATE")
 	lib.eventFrame:RegisterEvent("ACTIONBAR_UPDATE_USABLE")
@@ -1280,17 +1234,13 @@ function InitializeEventHandler()
 	lib.eventFrame:RegisterEvent("PET_STABLE_SHOW")
 	lib.eventFrame:RegisterEvent("SPELL_UPDATE_CHARGES")
 	lib.eventFrame:RegisterEvent("SPELL_UPDATE_ICON")
-	if not WoWClassic and not WoWBCC then
-		if not WoWWrath then
-			lib.eventFrame:RegisterEvent("ARCHAEOLOGY_CLOSED")
-			lib.eventFrame:RegisterEvent("UPDATE_SUMMONPETS_ACTION")
-			lib.eventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
-			lib.eventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
-		end
-		lib.eventFrame:RegisterEvent("UNIT_ENTERED_VEHICLE")
-		lib.eventFrame:RegisterEvent("UNIT_EXITED_VEHICLE")
-		lib.eventFrame:RegisterEvent("COMPANION_UPDATE")
-	end
+	lib.eventFrame:RegisterEvent("ARCHAEOLOGY_CLOSED")
+	lib.eventFrame:RegisterEvent("UPDATE_SUMMONPETS_ACTION")
+	lib.eventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
+	lib.eventFrame:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+	lib.eventFrame:RegisterEvent("UNIT_ENTERED_VEHICLE")
+	lib.eventFrame:RegisterEvent("UNIT_EXITED_VEHICLE")
+	lib.eventFrame:RegisterEvent("COMPANION_UPDATE")
 
 	-- With those two, do we still need the ACTIONBAR equivalents of them?
 	lib.eventFrame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
@@ -1516,16 +1466,10 @@ function OnUpdate(_, elapsed)
 				local oldRange = button.outOfRange
 				button.outOfRange = (inRange == false)
 				if oldRange ~= button.outOfRange then
-					if button.config.outOfRangeColoring == "button" then
-						UpdateUsable(button)
-					elseif button.config.outOfRangeColoring == "hotkey" then
+					if button.config.outOfRangeColoring == "hotkey" then
 						local hotkey = button.HotKey
 						if hotkey:GetText() == RANGE_INDICATOR then
-							if inRange == false then
-								hotkey:Show()
-							else
-								hotkey:Hide()
-							end
+							hotkey:SetShown(inRange == false)
 						end
 						if inRange == false then
 							hotkey:SetVertexColor(unpack(button.config.colors.range))
@@ -1533,6 +1477,7 @@ function OnUpdate(_, elapsed)
 							hotkey:SetVertexColor(unpack(button.config.text.hotkey.color))
 						end
 					end
+					UpdateUsable(button)
 				end
 			end
 		end
@@ -1711,7 +1656,7 @@ function Update(self)
 
 	-- Add a green border if button is an equipped item
 	if self:IsEquipped() and not self.config.hideElements.equipped then
-		self.Border:SetVertexColor(0, 1.0, 0, 0.35)
+		self.Border:SetVertexColor(unpack(self.config.colors.equipped))
 		self.Border:Show()
 	else
 		self.Border:Hide()
@@ -1729,40 +1674,32 @@ function Update(self)
 
 	-- Zone ability button handling
 	self.zoneAbilityDisabled = false
-	self.icon:SetDesaturated(false)
 
 	if texture then
 		self.icon:SetTexture(texture)
 		self.icon:Show()
 		self.rangeTimer = -1
-		if WoWRetail then
-			if not self.MasqueSkinned then
-				self.SlotBackground:Hide()
-				if self.config.hideElements.border then
-					self.NormalTexture:SetTexture()
-					self.icon:RemoveMaskTexture(self.IconMask)
-					self.HighlightTexture:SetSize(52, 51)
-					self.HighlightTexture:SetPoint("TOPLEFT", self, "TOPLEFT", -2.5, 2.5)
-					self.CheckedTexture:SetSize(52, 51)
-					self.CheckedTexture:SetPoint("TOPLEFT", self, "TOPLEFT", -2.5, 2.5)
-					self.cooldown:ClearAllPoints()
-					self.cooldown:SetAllPoints()
-				else
-					self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow")
-					self.icon:AddMaskTexture(self.IconMask)
-					self.HighlightTexture:SetSize(46, 45)
-					self.HighlightTexture:SetPoint("TOPLEFT")
-					self.CheckedTexture:SetSize(46, 45)
-					self.CheckedTexture:SetPoint("TOPLEFT")
-					self.cooldown:ClearAllPoints()
-					self.cooldown:SetPoint("TOPLEFT", self, "TOPLEFT", 3, -2)
-					self.cooldown:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -3, 3)
-				end
-			end
-		else
-			self:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2")
-			if not self.LBFSkinned and not self.MasqueSkinned then
-				self.NormalTexture:SetTexCoord(0, 0, 0, 0)
+		if not self.MasqueSkinned then
+			self.SlotBackground:Hide()
+			if self.config.hideElements.border then
+				self.NormalTexture:SetTexture()
+				self.icon:RemoveMaskTexture(self.IconMask)
+				self.HighlightTexture:SetSize(52, 51)
+				self.HighlightTexture:SetPoint("TOPLEFT", self, "TOPLEFT", -2.5, 2.5)
+				self.CheckedTexture:SetSize(52, 51)
+				self.CheckedTexture:SetPoint("TOPLEFT", self, "TOPLEFT", -2.5, 2.5)
+				self.cooldown:ClearAllPoints()
+				self.cooldown:SetAllPoints()
+			else
+				self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow")
+				self.icon:AddMaskTexture(self.IconMask)
+				self.HighlightTexture:SetSize(46, 45)
+				self.HighlightTexture:SetPoint("TOPLEFT")
+				self.CheckedTexture:SetSize(46, 45)
+				self.CheckedTexture:SetPoint("TOPLEFT")
+				self.cooldown:ClearAllPoints()
+				self.cooldown:SetPoint("TOPLEFT", self, "TOPLEFT", 3, -2)
+				self.cooldown:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -3, 3)
 			end
 		end
 	else
@@ -1774,19 +1711,12 @@ function Update(self)
 		else
 			self.HotKey:SetVertexColor(unpack(self.config.text.hotkey.color))
 		end
-		if WoWRetail then
-			if not self.MasqueSkinned then
-				self.SlotBackground:Show()
-				if self.config.hideElements.borderIfEmpty then
-					self.NormalTexture:SetTexture()
-				else
-					self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow")
-				end
-			end
-		else
-			self:SetNormalTexture("Interface\\Buttons\\UI-Quickslot")
-			if not self.LBFSkinned and not self.MasqueSkinned then
-				self.NormalTexture:SetTexCoord(-0.15, 1.15, -0.15, 1.17)
+		if not self.MasqueSkinned then
+			self.SlotBackground:Show()
+			if self.config.hideElements.borderIfEmpty then
+				self.NormalTexture:SetTexture()
+			else
+				self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow")
 			end
 		end
 	end
@@ -1835,25 +1765,37 @@ function UpdateButtonState(self)
 end
 
 function UpdateUsable(self)
-	-- TODO: make the colors configurable
-	-- TODO: allow disabling of the whole recoloring
 	if self.config.outOfRangeColoring == "button" and self.outOfRange then
+		self.icon:SetDesaturated(true)
 		self.icon:SetVertexColor(unpack(self.config.colors.range))
 	else
 		local isUsable, notEnoughMana = self:IsUsable()
 		if isUsable then
-			self.icon:SetVertexColor(1.0, 1.0, 1.0)
-			--self.NormalTexture:SetVertexColor(1.0, 1.0, 1.0)
+			self.icon:SetDesaturated(false)
+			self.icon:SetVertexColor(unpack(self.config.colors.normal))
+			if not self.outOfRange and self.config.outOfManaColoring == "hotkey" then
+				if self.HotKey:GetText() == RANGE_INDICATOR then
+					self.HotKey:Hide()
+				end
+				self.HotKey:SetVertexColor(unpack(self.config.text.hotkey.color))
+			end
 		elseif notEnoughMana then
-			self.icon:SetVertexColor(unpack(self.config.colors.mana))
-			--self.NormalTexture:SetVertexColor(0.5, 0.5, 1.0)
+			if self.config.outOfManaColoring == "button" then
+				self.icon:SetDesaturated(true)
+				self.icon:SetVertexColor(unpack(self.config.colors.mana))
+			elseif not self.outOfRange and self.config.outOfManaColoring == "hotkey" then
+				if self.HotKey:GetText() == RANGE_INDICATOR then
+					self.HotKey:Show()
+				end
+				self.HotKey:SetVertexColor(unpack(self.config.colors.mana))
+			end
 		else
-			self.icon:SetVertexColor(0.4, 0.4, 0.4)
-			--self.NormalTexture:SetVertexColor(1.0, 1.0, 1.0)
+			self.icon:SetDesaturated(self.config.desaturation.unusable)
+			self.icon:SetVertexColor(unpack(self.config.colors.unusable))
 		end
 	end
 
-	if not WoWClassic and not WoWBCC and not WoWWrath and self._state_type == "action" then
+	if self._state_type == "action" then
 		local isLevelLinkLocked = C_LevelLink.IsActionLocked(self._state_action)
 		if not self.icon:IsDesaturated() then
 			self.icon:SetDesaturated(isLevelLinkLocked)
@@ -2416,29 +2358,6 @@ if C_UnitAuras then
 	end
 end
 
--- Classic overrides for item count breakage
-if WoWClassic then
-	-- if the library is present, simply use it to override action counts
-	local LibClassicSpellActionCount = LibStub("LibClassicSpellActionCount-1.0", true)
-	if LibClassicSpellActionCount then
-		Action.GetCount = function(self)
-			return LibClassicSpellActionCount:GetActionCount(self._state_action)
-		end
-	else
-		-- if we don't have the library, only show count for items, like the default UI
-		Action.IsConsumableOrStackable = function(self)
-			return IsItemAction(self._state_action) and (IsConsumableAction(self._state_action) or IsStackableAction(self._state_action))
-		end
-	end
-end
-
-if WoWClassic or WoWBCC or WoWWrath then
-	-- disable loss of control cooldown on classic
-	Action.GetLossOfControlCooldown = function(self)
-		return 0, 0
-	end
-end
-
 -----------------------------------------------------------
 --- Spell Button
 Spell.HasAction = function(self)
@@ -2656,11 +2575,6 @@ Custom.RunCustom = function(self, unit, button)
 end
 Custom.GetPassiveCooldownSpellID = function(self)
 	return nil
-end
-
---- WoW Classic overrides
-if WoWClassic or WoWBCC or WoWWrath then
-	UpdateOverlayGlow = function() end
 end
 
 -----------------------------------------------------------
