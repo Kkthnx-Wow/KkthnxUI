@@ -26,7 +26,7 @@ local function HandleVersonTag(version)
 	if K.Base64:CV(major) then
 		major, minor = 0, 0
 		if K.isDeveloper and author then
-			print("Moron: " .. author)
+			-- print("Moron: " .. author)
 		end
 	end
 	return major, minor

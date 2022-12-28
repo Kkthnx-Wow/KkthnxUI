@@ -309,7 +309,7 @@ function Module:RaidTool_BuffChecker(parent)
 	local debugMode = false
 	local function sendMsg(text)
 		if debugMode then
-			print(text)
+			K.Print(text)
 		else
 			SendChatMessage(text, K.CheckChat())
 		end
