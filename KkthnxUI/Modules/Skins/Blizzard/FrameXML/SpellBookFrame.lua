@@ -14,13 +14,19 @@ local function handleSkillButton(button)
 	end
 	button:SetCheckedTexture(0)
 	button:SetPushedTexture(0)
-	button.IconTexture:SetAllPoints()
-	button.IconTexture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-	button.bg = CreateFrame("Frame", nil, button)
-	button.bg:SetFrameLevel(button:GetFrameLevel())
-	button.bg:SetAllPoints(button)
-	button.bg:CreateBorder()
+	if button.IconTexture then
+		button.IconTexture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		button.IconTexture:ClearAllPoints()
+		button.IconTexture:SetPoint("TOPLEFT", 4, -4)
+		button.IconTexture:SetPoint("BOTTOMRIGHT", -4, 4)
+
+		if not button.KKUI_Backdrop then
+			button:CreateBackdrop()
+			button.KKUI_Backdrop:SetPoint("TOPLEFT", 2, -2)
+			button.KKUI_Backdrop:SetPoint("BOTTOMRIGHT", -2, 2)
+		end
+	end
 
 	local nameFrame = _G[button:GetName() .. "NameFrame"]
 	if nameFrame then
