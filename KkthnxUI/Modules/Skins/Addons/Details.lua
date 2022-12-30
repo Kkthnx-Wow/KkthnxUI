@@ -15,7 +15,7 @@ local function SetupInstance(instance)
 	end
 
 	-- reset texture if using Details default texture
-	print(instance.row_info.texture)
+	-- print(instance.row_info.texture)
 	local needReset = instance.row_info.texture == "Details Hyanda"
 	instance:ChangeSkin("Minimalistic")
 	instance:InstanceWallpaper(false)
