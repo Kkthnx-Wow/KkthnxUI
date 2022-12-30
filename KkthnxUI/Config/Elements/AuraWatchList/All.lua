@@ -151,6 +151,8 @@ local list = {
 		{ AuraID = 226510, UnitID = "target" },
 		{ AuraID = 343502, UnitID = "target" },
 
+		{AuraID = 376780, UnitID = "target", Value = true},
+
 		{ AuraID = 498, UnitID = "target" },
 		{ AuraID = 642, UnitID = "target" },
 		{ AuraID = 871, UnitID = "target" },

@@ -29,52 +29,20 @@ function Module:PostAlertMove()
 	local AlertFrame = _G.AlertFrame
 	local GroupLootContainer = _G.GroupLootContainer
 
-	local rollBars = K:GetModule("Loot").RollBars
-	if C["Loot"].GroupLoot then
-		local lastframe, lastShownFrame
-		for i, frame in pairs(rollBars) do
-			frame:ClearAllPoints()
-			if i ~= 1 then
-				if POSITION == "TOP" then
-					frame:SetPoint("TOP", lastframe, "BOTTOM", 0, -6)
-				else
-					frame:SetPoint("BOTTOM", lastframe, "TOP", 0, 6)
-				end
-			else
-				if POSITION == "TOP" then
-					frame:SetPoint("TOP", AlertFrameHolder, "BOTTOM", 0, -6)
-				else
-					frame:SetPoint("BOTTOM", AlertFrameHolder, "TOP", 0, 6)
-				end
-			end
-			lastframe = frame
+	AlertFrame:ClearAllPoints()
+	GroupLootContainer:ClearAllPoints()
 
-			if frame:IsShown() then
-				lastShownFrame = frame
-			end
-		end
-
-		AlertFrame:ClearAllPoints()
-		GroupLootContainer:ClearAllPoints()
-		if lastShownFrame then
-			AlertFrame:SetAllPoints(lastShownFrame)
-			GroupLootContainer:SetPoint(POSITION, lastShownFrame, ANCHOR_POINT, 0, YOFFSET)
-		else
-			AlertFrame:SetAllPoints(AlertFrameHolder)
-			GroupLootContainer:SetPoint(POSITION, AlertFrameHolder, ANCHOR_POINT, 0, YOFFSET)
-		end
-
-		if GroupLootContainer:IsShown() then
-			Module.GroupLootContainer_Update(GroupLootContainer)
-		end
+	local lastRollFrame = C["Loot"].GroupLoot and K:GetModule("Loot").UpdateLootRollAnchors(POSITION)
+	if lastRollFrame then
+		AlertFrame:SetAllPoints(lastRollFrame)
+		GroupLootContainer:SetPoint(POSITION, lastRollFrame, ANCHOR_POINT, 0, YOFFSET)
 	else
-		AlertFrame:ClearAllPoints()
 		AlertFrame:SetAllPoints(AlertFrameHolder)
-		GroupLootContainer:ClearAllPoints()
 		GroupLootContainer:SetPoint(POSITION, AlertFrameHolder, ANCHOR_POINT, 0, YOFFSET)
-		if GroupLootContainer:IsShown() then
-			Module.GroupLootContainer_Update(GroupLootContainer)
-		end
+	end
+
+	if GroupLootContainer:IsShown() then
+		Module.GroupLootContainer_Update(GroupLootContainer)
 	end
 end
 

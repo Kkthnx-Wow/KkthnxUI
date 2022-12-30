@@ -358,4 +358,9 @@ function Module:OnEnable()
 
 	-- fix blizzard setpoint connection bs
 	hooksecurefunc(_G.MasterLooterFrame, "Hide", _G.MasterLooterFrame.ClearAllPoints)
+
+	self:CreateAutoConfirm()
+	self:CreateAutoGreed()
+	self:CreateFasterLoot()
+	self:CreateGroupLoot()
 end

@@ -214,6 +214,10 @@ local function KKUI_VerifyDatabase()
 	if not KkthnxUIDB.KeystoneInfo then
 		KkthnxUIDB.KeystoneInfo = {}
 	end
+
+	if not KkthnxUIDB.FeastTime then
+		KkthnxUIDB.FeastTime = 0
+	end
 end
 
 local KKUI_AddonLoader = CreateFrame("Frame")

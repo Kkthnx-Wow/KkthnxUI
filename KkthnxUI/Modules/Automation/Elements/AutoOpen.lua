@@ -46,9 +46,15 @@ local function MerchantClosed()
 	atMerchant = false
 end
 
-local function BagDelayedUpdate()
+local function BagDelayedUpdate(event)
 	if atBank or atMail or atMerchant then
 		return
+	end
+
+	if InCombatLockdown() then
+		return K:RegisterEvent("PLAYER_REGEN_ENABLED", BagDelayedUpdate)
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		K:UnregisterEvent("PLAYER_REGEN_ENABLED", BagDelayedUpdate)
 	end
 
 	for bag = 0, 4 do

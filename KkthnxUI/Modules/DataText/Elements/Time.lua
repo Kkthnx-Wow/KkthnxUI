@@ -87,15 +87,14 @@ local mapAreaPoiIDs = {
 }
 
 local questlist = {
-	{ name = "Mean One", id = 6983 },
-	{ name = "Blingtron", id = 34774 },
-	{ name = "Tormentors of Torghast", id = 63854 },
-	{ name = "Timewarped", id = 40168, texture = 1129674 }, -- TBC
-	{ name = "Timewarped", id = 40173, texture = 1129686 }, -- WotLK
-	{ name = "Timewarped", id = 40786, texture = 1304688 }, -- Cata
-	{ name = "Timewarped", id = 45563, texture = 1530590 }, -- MoP
-	{ name = "Timewarped", id = 55499, texture = 1129683 }, -- WoD
-	{ name = "Timewarped", id = 64710, texture = 1467047 }, -- Legion
+	{ name = "Feast of Winter Veil", id = 6983 },
+	{ name = "Blingtron Daily Gift", id = 34774 },
+	{ name = "500 Timewarped Badges", id = 40168, texture = 1129674 }, -- TBC
+	{ name = "500 Timewarped Badges", id = 40173, texture = 1129686 }, -- WotLK
+	{ name = "500 Timewarped Badges", id = 40786, texture = 1304688 }, -- Cata
+	{ name = "500 Timewarped Badges", id = 45563, texture = 1530590 }, -- MoP
+	{ name = "500 Timewarped Badges", id = 55499, texture = 1129683 }, -- WoD
+	{ name = "500 Timewarped Badges", id = 64710, texture = 1467047 }, -- Legion
 }
 
 local lesserVisions = { 58151, 58155, 58156, 58167, 58168 }
@@ -235,15 +234,7 @@ local huntAreaToMapID = { -- 狩猎区域ID转换为地图ID
 	[7344] = 2025, -- 索德拉苏斯
 }
 
-local stormAreaToMapID = { -- 入侵区域ID对应地图ID，尚未记录齐全
-	[7249] = 2022, -- 灭龙要塞， 气
-	[7259] = 2022, -- 碎鳞要塞，火
-	[7221] = 2023, -- 诺库顿要塞，气
-	[7224] = 2023, -- 诺库顿要塞，水
-	[7230] = 2024, -- 蕨皮山谷，土
-	[7240] = 2024, -- 伊姆布，水
-	[7247] = 2025, -- 提尔要塞，火
-}
+local stormOrders = { 2022, 2025, 2024, 2023 }
 
 local atlasCache = {}
 local function GetElementalType(element) -- 获取入侵类型图标
@@ -274,6 +265,23 @@ end
 function Module:TimeOnShiftDown()
 	if TimeDataTextEntered then
 		Module:TimeOnEnter()
+	end
+end
+
+local function GetCurrentFeastTime()
+	local prepareRemain = C_AreaPoiInfo_GetAreaPOISecondsLeft(7219)
+	if prepareRemain then -- 准备盛宴，15分钟
+		return prepareRemain + time(), 1 -- 开始时间=剩余准备时间+现在时间
+	end
+
+	local cookingRemain = C_AreaPoiInfo_GetAreaPOISecondsLeft(7218)
+	if cookingRemain then -- 盛宴进行中，15分钟
+		return time() - (15 * 60 - cookingRemain), 2 -- 开始时间=现在时间-盛宴已进行时长
+	end
+
+	local soupRemain = C_AreaPoiInfo_GetAreaPOISecondsLeft(7220)
+	if soupRemain then -- 盛宴结束，喝汤1小时
+		return time() - (60 * 60 - soupRemain) - 15 * 60, 3 -- 开始时间=现在时间-盛宴已结束时长-盛宴进行时长
 	end
 end
 
@@ -351,7 +359,7 @@ function Module:TimeOnEnter()
 	-- Elemental threats
 	title = false
 	local poiCache = {}
-	for mapID = 2022, 2025 do -- DF main zones
+	for _, mapID in next, stormOrders do
 		local areaPoiIDs = C_AreaPoiInfo_GetAreaPOIForMap(mapID)
 		for _, areaPoiID in next, areaPoiIDs do
 			local poiInfo = C_AreaPoiInfo_GetAreaPOIInfo(mapID, areaPoiID)
@@ -359,7 +367,6 @@ function Module:TimeOnEnter()
 			if elementType and not poiCache[areaPoiID] then
 				poiCache[areaPoiID] = true
 				addTitle(poiInfo.name)
-				mapID = stormAreaToMapID[areaPoiID] or mapID
 				local mapInfo = C_Map_GetMapInfo(mapID)
 				local timeLeft = C_AreaPoiInfo_GetAreaPOISecondsLeft(areaPoiID) or 0
 				timeLeft = timeLeft / 60
@@ -390,6 +397,27 @@ function Module:TimeOnEnter()
 			GameTooltip:AddDoubleLine(mapInfo.name, GetFormattedTimeLeft(timeLeft), 1, 1, 1, r, g, b)
 			break
 		end
+	end
+
+	-- Community feast
+	title = false
+	if KkthnxUIDB.FeastTime ~= 0 then
+		local currentTime = time()
+		local duration = 12600 -- 3.5hrs
+		local elapsed = mod(currentTime - KkthnxUIDB.FeastTime, duration)
+		local nextTime = duration - elapsed + currentTime
+
+		addTitle("Community Feast")
+		if IsQuestFlaggedCompleted(70893) then
+			GameTooltip:AddDoubleLine((select(2, GetItemInfo(200095))), QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
+		end
+		if currentTime - (nextTime - duration) < 900 then
+			r, g, b = 0, 1, 0
+		else
+			r, g, b = 192 / 255, 192 / 255, 192 / 255
+		end -- green text if progressing
+		GameTooltip:AddDoubleLine(date("%m/%d %H:%M", nextTime - duration * 2), date("%m/%d %H:%M", nextTime - duration), 1, 1, 1, r, g, b)
+		GameTooltip:AddDoubleLine(date("%m/%d %H:%M", nextTime), date("%m/%d %H:%M", nextTime + duration), 1, 1, 1, 1, 1, 1)
 	end
 
 	if IsShiftKeyDown() then
@@ -475,6 +503,23 @@ function Module:TimeOnMouseUp(btn)
 		_G.ToggleCalendar()
 	end
 end
+
+-- Refresh feast time when questlog update
+local lastCheck = 0
+local function refreshFeastTime()
+	local currentTime = GetTime()
+	if currentTime - lastCheck < 60 then
+		return
+	end
+	lastCheck = currentTime
+
+	local currentFeast = GetCurrentFeastTime()
+	if currentFeast then
+		KkthnxUIDB.FeastTime = currentFeast
+	end
+end
+K:RegisterEvent("PLAYER_ENTERING_WORLD", refreshFeastTime)
+K:RegisterEvent("QUEST_LOG_UPDATE", refreshFeastTime)
 
 function Module:CreateTimeDataText()
 	if not C["DataText"].Time then

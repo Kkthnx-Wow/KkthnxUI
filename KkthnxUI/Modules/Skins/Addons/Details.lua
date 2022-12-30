@@ -15,7 +15,8 @@ local function SetupInstance(instance)
 	end
 
 	-- reset texture if using Details default texture
-	local needReset = instance.row_info.texture ~= "KkthnxUIStatusbar"
+	print(instance.row_info.texture)
+	local needReset = instance.row_info.texture == "Details Hyanda"
 	instance:ChangeSkin("Minimalistic")
 	instance:InstanceWallpaper(false)
 	instance:DesaturateMenu(true)

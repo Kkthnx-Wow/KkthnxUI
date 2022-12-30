@@ -10,8 +10,6 @@ local table_wipe = _G.table.wipe
 local unpack = _G.unpack
 
 local BNGetNumFriends = _G.BNGetNumFriends
-local BNet_GetClientEmbeddedTexture = _G.BNet_GetClientEmbeddedTexture
-local BNet_GetClientTexture = _G.BNet_GetClientTexture
 local BNet_GetValidatedCharacterName = _G.BNet_GetValidatedCharacterName
 local C_BattleNet_GetFriendAccountInfo = _G.C_BattleNet.GetFriendAccountInfo
 local C_BattleNet_GetFriendGameAccountInfo = _G.C_BattleNet.GetFriendGameAccountInfo
@@ -212,7 +210,7 @@ local function FriendsPanel_UpdateButton(button)
 		local classColor = K.ClassColors[class] or levelColor
 		button.name:SetText(string_format("%s%s|r %s%s", levelColor, level, K.RGBToHex(classColor), name))
 		button.zone:SetText(string_format("%s%s", zoneColor, area))
-		button.gameIcon:SetTexture(BNet_GetClientTexture(BNET_CLIENT_WOW))
+		button.gameIcon:SetTexture(BNet_GetBattlenetClientAtlas(BNET_CLIENT_WOW))
 
 		button.isBNet = nil
 		button.data = friendTable[index]
