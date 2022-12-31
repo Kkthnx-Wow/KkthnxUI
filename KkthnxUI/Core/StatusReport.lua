@@ -37,6 +37,7 @@ local EnglishClassName = {
 	DEATHKNIGHT = K.AddClassIconToColor("DEATHKNIGHT", "|CFFC41F3B") .. "Death Knight",
 	DEMONHUNTER = K.AddClassIconToColor("DEMONHUNTER", "|CFFA330C9") .. "Demon Hunter",
 	DRUID = K.AddClassIconToColor("DRUID", "|CFFFF7D0A") .. "Druid",
+	EVOKER = K.AddClassIconToColor("EVOKER", "|CFF33937F") .. "Evoker",
 	HUNTER = K.AddClassIconToColor("HUNTER", "|CFFA9D271") .. "Hunter",
 	MAGE = K.AddClassIconToColor("MAGE", "|CFF40C7EB") .. "Mage",
 	MONK = K.AddClassIconToColor("MONK", "|CFF00FF96") .. "Monk",
@@ -95,7 +96,7 @@ local function CreateStatusContent(num, width, parent, anchorTo, content)
 	if not content then
 		content = CreateFrame("Frame", nil, parent)
 	end
-	content:SetSize(width, (num * 20) + ((num - 1) * 5)) --20 height and 5 spacing
+	content:SetSize(width, (num * 20) + ((num - 1) * 6)) --20 height and 6 spacing
 	content:SetPoint("TOP", anchorTo, "BOTTOM")
 
 	for i = 1, num do
@@ -279,3 +280,10 @@ function K:ShowStatusReport()
 		K.StatusFrame:Hide()
 	end
 end
+
+SlashCmdList.STATUSREPORT = function()
+	K:ShowStatusReport()
+end
+
+SLASH_STATUSREPORT1 = "/kkstatus"
+SLASH_STATUSREPORT2 = "/kstatus"

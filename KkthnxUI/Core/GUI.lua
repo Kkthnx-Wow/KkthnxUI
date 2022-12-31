@@ -28,6 +28,7 @@ local SlashCmdList = _G.SlashCmdList
 local DeathKnightIconColor = K.AddClassIconToColor("DEATHKNIGHT", "|CFFC41F3B", 16)
 local DemonHunterIconColor = K.AddClassIconToColor("DEMONHUNTER", "|CFFA330C9", 16)
 local DruidIconColor = K.AddClassIconToColor("DRUID", "|CFFFF7D0A", 16)
+local EvokerIconColor = K.AddClassIconToColor("EVOKER", "|CFF33937F", 16)
 local HunterIconColor = K.AddClassIconToColor("HUNTER", "|CFFA9D271", 16)
 local MageIconColor = K.AddClassIconToColor("MAGE", "|CFF40C7EB", 16)
 local MonkIconColor = K.AddClassIconToColor("MONK", "|CFF00FF96", 16)
