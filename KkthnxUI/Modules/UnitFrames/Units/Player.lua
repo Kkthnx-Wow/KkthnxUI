@@ -491,8 +491,9 @@ function Module:CreatePlayer()
 
 	local CombatIndicator = Health:CreateTexture(nil, "OVERLAY")
 	CombatIndicator:SetSize(16, 16)
-	CombatIndicator:SetPoint("LEFT", 6, 0)
+	CombatIndicator:SetPoint("LEFT", 6, -1)
 	CombatIndicator:SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon")
+	CombatIndicator:SetAlpha(0.7)
 
 	local RaidTargetIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then

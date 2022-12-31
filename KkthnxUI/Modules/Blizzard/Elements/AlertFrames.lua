@@ -16,7 +16,7 @@ function Module:PostAlertMove()
 
 	local _, y = AlertFrameMover:GetCenter()
 	local screenHeight = UIParent:GetTop()
-	if y > (screenHeight / 2) then
+	if y > (screenHeight * 0.5) then
 		POSITION = "TOP"
 		ANCHOR_POINT = "BOTTOM"
 		YOFFSET = -10
@@ -32,7 +32,7 @@ function Module:PostAlertMove()
 	AlertFrame:ClearAllPoints()
 	GroupLootContainer:ClearAllPoints()
 
-	local lastRollFrame = C["Loot"].GroupLoot and K:GetModule("Loot").UpdateLootRollAnchors(POSITION)
+	local lastRollFrame = C["Loot"].GroupLoot and K:GetModule("Loot"):UpdateLootRollAnchors(POSITION)
 	if lastRollFrame then
 		AlertFrame:SetAllPoints(lastRollFrame)
 		GroupLootContainer:SetPoint(POSITION, lastRollFrame, ANCHOR_POINT, 0, YOFFSET)
@@ -149,7 +149,7 @@ function Module:CreateAlertFrames()
 	_G.GroupLootContainer.ignoreFramePositionManager = true
 
 	if not AlertFrameHolder.Mover then
-		AlertFrameHolder.Mover = K.Mover(AlertFrameHolder, "AlertFrameMover", "Loot / Alert Frames", { "TOP", UIParent, "TOP", -1, -18 })
+		AlertFrameHolder.Mover = K.Mover(AlertFrameHolder, "AlertFrameMover", "AlertFrameMover", { "TOP", UIParent, "TOP", 0, -140 })
 	else
 		AlertFrameHolder.Mover:SetSize(AlertFrameHolder:GetSize())
 	end

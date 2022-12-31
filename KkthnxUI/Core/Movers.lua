@@ -36,7 +36,7 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 		key = "AuraWatchMover"
 	end
 
-	local mover = CreateFrame("Button", nil, UIParent)
+	local mover = CreateFrame("Button", "KKUI_Mover", UIParent)
 	mover:SetWidth(width or self:GetWidth())
 	mover:SetHeight(height or self:GetHeight())
 	mover:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 38 / 255, 125 / 255, 206 / 255, 80 / 255)
@@ -44,6 +44,8 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 
 	mover.text = K.CreateFontString(mover, 12, text, "")
 	mover.text:SetWordWrap(true)
+
+	-- print("KKUI_Mover" .. text)
 
 	if not KkthnxUIDB.Variables[K.Realm][K.Name][key][value] then
 		mover:SetPoint(unpack(anchor))

@@ -254,7 +254,7 @@ function Module:START_LOOT_ROLL(_, rollID, rollTime)
 
 	local itemLink = GetLootRollItemLink(rollID)
 	local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant = GetLootRollItemInfo(rollID)
-	local _, _, _, itemLevel, _, _, _, _, itemEquipLoc, _, _, itemClassID, itemSubClassID, bindType = GetItemInfo(itemLink)
+	local _, _, _, _, _, _, _, _, _, _, _, _, _, bindType = GetItemInfo(itemLink)
 	local color = ITEM_QUALITY_COLORS[quality]
 
 	if not bop then
@@ -284,18 +284,13 @@ function Module:START_LOOT_ROLL(_, rollID, rollTime)
 	end
 
 	bar.name:SetText(name)
-
 	bar.name:SetTextColor(color.r, color.g, color.b)
-
-	bar.button.ilvl:SetTextColor(color.r, color.g, color.b)
 
 	bar.bind:SetText(bop and L["BoP"] or bindType == 2 and L["BoE"] or bindType == 3 and L["BoU"] or "")
 	bar.bind:SetVertexColor(bop and 1 or 0.3, bop and 0.3 or 1, bop and 0.1 or 0.3)
 
 	bar.status:SetStatusBarColor(color.r, color.g, color.b, 0.7)
 	bar.status.spark:SetColorTexture(color.r, color.g, color.b, 0.9)
-
-	-- bar.status.backdrop:SetBackdropColor(color.r, color.g, color.b, 0.1)
 
 	bar.status.elapsed = 1
 	bar.status:SetMinMaxValues(0, rollTime)
@@ -362,7 +357,9 @@ function Module:ClearLootRollCache()
 end
 
 function Module:UpdateLootRollAnchors(POSITION)
-	local spacing, lastFrame, lastShown = 6
+	local spacing = 6
+	local lastFrame
+	local lastShown
 	for i, bar in next, Module.RollBars do
 		bar:ClearAllPoints()
 
@@ -393,7 +390,6 @@ function Module:UpdateLootRollFrames()
 		bar:SetSize(328, 26)
 
 		bar.status:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-		-- bar.status.backdrop.Center:SetTexture(db.statusBarBGTexture and E.media.normTex or E.media.blankTex)
 
 		bar.button:ClearAllPoints()
 		bar.button:SetPoint("RIGHT", bar, "LEFT", -6, 0)
@@ -405,7 +401,7 @@ function Module:UpdateLootRollFrames()
 		for _, button in next, rolltypes do
 			local icon = bar[button]
 			if icon then
-				icon:SetSize(26, 26)
+				icon:SetSize(20, 20)
 				icon:ClearAllPoints()
 			end
 		end
@@ -453,92 +449,35 @@ SlashCmdList.TESTROLL = function()
 		return
 	end -- need more info on this, how does it happen?
 
-	local items = { 32837, 34196, 33820 }
-	local item = items[math.random(1, #items)]
-
-	-- wipe(bar.rolls)
-
-	-- local itemLink = GetLootRollItemLink(rollID)
-	--local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant = GetLootRollItemInfo(rollID)
+	local itemList = { 32837, 34196, 33820, 9425 }
+	local bindStatus = { L["BoP"], L["BoE"], L["BoU"], "" }
+	local item = itemList[math.random(1, #itemList)]
 	local _, _, quality, _, _, _, _, _, _, texture = GetItemInfo(item)
 	local r, g, b = GetItemQualityColor(quality or 1)
 
-	-- if not bop then
-	-- 	bop = bindType == 1
-	-- end -- recheck sometimes, we need this from bindType
-
-	-- bar.rollID = rollID
-	-- bar.time = rollTime
-
-	-- bar.button.link = itemLink
-	-- bar.button.rollID = rollID
-	-- bar.button:RegisterEvent("MODIFIER_STATE_CHANGED")
 	bar.button.icon:SetTexture(texture)
-	-- bar.button.stack:SetShown(count > 1)
-	-- bar.button.stack:SetText(count)
-
-	-- bar.need:SetEnabled(canNeed)
-	-- bar.greed:SetEnabled(canGreed)
+	bar.button.KKUI_Border:SetVertexColor(r, g, b)
+	bar.button.stack:SetText(4)
 
 	bar.need.text:SetText(0)
 	bar.greed.text:SetText(0)
 	bar.pass.text:SetText(0)
 
-	-- if bar.disenchant then
-	-- 	bar.disenchant.text:SetText(0)
-	-- 	bar.disenchant:SetEnabled(canDisenchant)
-	-- end
-
 	bar.name:SetText(GetItemInfo(item))
-
 	bar.name:SetTextColor(r, g, b)
 
-	-- bar.button.ilvl:SetTextColor(r, g, b)
-
-	--bar.bind:SetText(bop and L["BoP"] or bindType == 2 and L["BoE"] or bindType == 3 and L["BoU"] or "")
-	-- bar.bind:SetVertexColor(bop and 1 or 0.3, bop and 0.3 or 1, bop and 0.1 or 0.3)
+	bar.bind:SetText(bindStatus[math.random(1, #bindStatus)])
 
 	bar.status:SetStatusBarColor(r, g, b, 0.7)
 	bar.status.spark:SetColorTexture(r, g, b, 0.9)
-
-	-- bar.status.backdrop:SetBackdropColor(color.r, color.g, color.b, 0.1)
 
 	bar.status.elapsed = 1
 	bar.status:SetMinMaxValues(0, 1)
 	bar.status:SetValue(0.5)
 
+	bar.button.link = "item:" .. item .. ":0:0:0:0:0:0:0"
 	bar:Show()
 
 	_G.AlertFrame:UpdateAnchors()
-
-	-- local f = Module:LootFrame_GetFrame()
-	-- local items = { 32837, 34196, 33820 }
-	-- if f:IsShown() then
-	-- 	f:Hide()
-	-- else
-	-- 	local item = items[math.random(1, #items)]
-	-- 	local _, _, quality, _, _, _, _, _, _, texture = GetItemInfo(item)
-	-- 	local r, g, b = GetItemQualityColor(quality or 1)
-
-	-- 	f.button.icon:SetTexture(texture)
-	-- 	f.button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-
-	-- 	f.name:SetText(GetItemInfo(item))
-	-- 	f.name:SetVertexColor(1, 1, 1)
-
-	-- 	f.status:SetMinMaxValues(0, 100)
-	-- 	f.status:SetValue(math.random(50, 90))
-	-- 	f.status:SetStatusBarColor(r, g, b, 0.7)
-
-	-- 	-- f.KKUI_Border:SetVertexColor(r, g, b)
-	-- 	-- f.button.KKUI_Border:SetVertexColor(r, g, b)
-
-	-- 	f.need:SetText(0)
-	-- 	f.greed:SetText(0)
-	-- 	f.pass:SetText(0)
-
-	-- 	f.button.link = "item:" .. item .. ":0:0:0:0:0:0:0"
-	-- 	f:Show()
-	-- end
 end
 SLASH_TESTROLL1 = "/kkroll"
