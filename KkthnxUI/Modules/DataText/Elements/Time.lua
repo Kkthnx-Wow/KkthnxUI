@@ -234,7 +234,7 @@ local huntAreaToMapID = { -- 狩猎区域ID转换为地图ID
 	[7344] = 2025, -- 索德拉苏斯
 }
 
-local stormOrders = { 2022, 2025, 2024, 2023 }
+local stormOrders = { 2022, 2024, 2025, 2023 }
 
 local atlasCache = {}
 local function GetElementalType(element) -- 获取入侵类型图标
@@ -248,6 +248,13 @@ local function GetElementalType(element) -- 获取入侵类型图标
 	end
 	return str
 end
+
+local fixedStorms = {
+	[7245] = 2025, -- 提尔要塞，风？
+	[7246] = 2025, -- 提尔要塞，土
+	[7247] = 2025, -- 提尔要塞，火
+	[7248] = 2025, -- 提尔要塞，水
+}
 
 local function GetFormattedTimeLeft(timeLeft)
 	return format("%.2d:%.2d", timeLeft / 60, timeLeft % 60)
@@ -367,6 +374,7 @@ function Module:TimeOnEnter()
 			if elementType and not poiCache[areaPoiID] then
 				poiCache[areaPoiID] = true
 				addTitle(poiInfo.name)
+				mapID = fixedStorms[areaPoiID] or mapID
 				local mapInfo = C_Map_GetMapInfo(mapID)
 				local timeLeft = C_AreaPoiInfo_GetAreaPOISecondsLeft(areaPoiID) or 0
 				timeLeft = timeLeft / 60
@@ -376,6 +384,9 @@ function Module:TimeOnEnter()
 					r, g, b = 0, 1, 0
 				end
 				GameTooltip:AddDoubleLine(mapInfo.name .. GetElementalType(elementType), GetFormattedTimeLeft(timeLeft), 1, 1, 1, r, g, b)
+				if IsShiftKeyDown() and K.isDeveloper then
+					print("[" .. areaPoiID .. "] = " .. mapID, elementType)
+				end
 			end
 		end
 	end
@@ -408,7 +419,7 @@ function Module:TimeOnEnter()
 		local nextTime = duration - elapsed + currentTime
 
 		addTitle("Community Feast")
-		if IsQuestFlaggedCompleted(70893) then
+		if C_QuestLog_IsQuestFlaggedCompleted(70893) then
 			GameTooltip:AddDoubleLine((select(2, GetItemInfo(200095))), QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 		end
 		if currentTime - (nextTime - duration) < 900 then
@@ -507,6 +518,9 @@ end
 -- Refresh feast time when questlog update
 local lastCheck = 0
 local function refreshFeastTime()
+	if InCombatLockdown() then
+		return
+	end
 	local currentTime = GetTime()
 	if currentTime - lastCheck < 60 then
 		return

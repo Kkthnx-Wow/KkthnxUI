@@ -163,7 +163,7 @@ local function reskinTimerBars(_, _, line)
 
 	if not timerBar.isSkinned then
 		if bar and bar:GetHeight() ~= 18 then
-			bar:Height(18)
+			bar:SetHeight(18)
 		end
 		bar:StripTextures()
 		bar:CreateBorder()

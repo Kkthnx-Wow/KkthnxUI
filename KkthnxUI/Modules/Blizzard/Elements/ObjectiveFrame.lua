@@ -17,9 +17,9 @@ local function RewardsFrame_SetPosition(block)
 	rewards:ClearAllPoints()
 
 	if IsFramePositionedLeft(_G.ObjectiveTrackerFrame) then
-		rewards:Point("TOPLEFT", block, "TOPRIGHT", -10, -4)
+		rewards:SetPoint("TOPLEFT", block, "TOPRIGHT", -10, -4)
 	else
-		rewards:Point("TOPRIGHT", block, "TOPLEFT", 10, -4)
+		rewards:SetPoint("TOPRIGHT", block, "TOPLEFT", 10, -4)
 	end
 end
 
@@ -54,10 +54,10 @@ function Module:HandleMawBuffsFrame()
 	container.List:ClearAllPoints()
 
 	if IsFramePositionedLeft(_G.ScenarioBlocksFrame) then
-		container.List:Point("TOPLEFT", container, "TOPRIGHT", 15, 1)
+		container.List:SetPoint("TOPLEFT", container, "TOPRIGHT", 15, 1)
 		container.List:SetScript("OnShow", MawBuffsList_OnShow)
 	else
-		container.List:Point("TOPRIGHT", container, "TOPLEFT", 15, 1)
+		container.List:SetPoint("TOPRIGHT", container, "TOPLEFT", 15, 1)
 	end
 end
 

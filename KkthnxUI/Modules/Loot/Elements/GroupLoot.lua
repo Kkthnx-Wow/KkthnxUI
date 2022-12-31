@@ -53,7 +53,11 @@ local function SetTip(button)
 			end
 
 			-- local classColor = E:ClassColor(className) or PRIEST_COLOR
-			GameTooltip:AddLine(playerName, 1, 1, 1)
+			local classColor = K.ClassColors[K.ClassList[className] or className]
+			if not classColor then
+				classColor = K.ClassColors["PRIEST"]
+			end
+			GameTooltip:AddLine(playerName, classColor.r, classColor.g, classColor.b)
 		end
 	end
 
@@ -164,6 +168,7 @@ end
 
 function Module:LootRoll_Create(index)
 	local bar = CreateFrame("Frame", "KKUI_LootRollFrame" .. index, UIParent)
+	bar:SetScript("OnEvent", Module.CANCEL_LOOT_ROLL)
 	bar:Hide()
 
 	local status = CreateFrame("StatusBar", nil, bar)
@@ -233,14 +238,13 @@ function Module:LootFrame_GetFrame(i)
 	end
 end
 
-function Module:CANCEL_LOOT_ROLL(_, rollID)
-	for _, bar in next, Module.RollBars do
-		if bar.rollID == rollID then
-			bar.rollID = nil
-			bar.time = nil
-			bar:Hide()
-			bar.button:UnregisterAllEvents()
-		end
+function Module:CANCEL_LOOT_ROLL(event, rollID)
+	if self.rollID == rollID then
+		self.rollID = nil
+		self.time = nil
+		self:Hide()
+		self:UnregisterEvent(event)
+		self.button:UnregisterEvent("MODIFIER_STATE_CHANGED")
 	end
 end
 
@@ -297,6 +301,7 @@ function Module:START_LOOT_ROLL(_, rollID, rollTime)
 	bar.status:SetValue(rollTime)
 
 	bar:Show()
+	bar:RegisterEvent("CANCEL_LOOT_ROLL")
 
 	_G.AlertFrame:UpdateAnchors()
 
@@ -336,7 +341,7 @@ function Module:LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
 			end
 		end
 
-		--History changed for a loot roll that hasn't popped up for the player yet, so cache it for later
+		-- History changed for a loot roll that hasn't popped up for the player yet, so cache it for later
 		if rollIsHidden then
 			if not cachedRolls[rollID] then
 				cachedRolls[rollID] = {}
@@ -434,7 +439,7 @@ function Module:CreateGroupLoot()
 	Module:UpdateLootRollFrames()
 
 	K:RegisterEvent("START_LOOT_ROLL", self.START_LOOT_ROLL)
-	K:RegisterEvent("CANCEL_LOOT_ROLL", self.CANCEL_LOOT_ROLL)
+	-- K:RegisterEvent("CANCEL_LOOT_ROLL", self.CANCEL_LOOT_ROLL)
 	K:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.LOOT_HISTORY_ROLL_CHANGED)
 	K:RegisterEvent("LOOT_HISTORY_ROLL_COMPLETE", self.ClearLootRollCache)
 	K:RegisterEvent("LOOT_ROLLS_COMPLETE", self.ClearLootRollCache)

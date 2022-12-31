@@ -141,6 +141,7 @@ local list = {
 		{ AuraID = 386881, UnitID = "player" },
 		{ AuraID = 162652, UnitID = "player", Flash = true },
 		{ AuraID = 153692, UnitID = "player", Flash = true },
+		{ AuraID = 400474, UnitID = "player" },
 	},
 	["Warning"] = {
 		{ AuraID = 355596, UnitID = "target", Flash = true },
@@ -151,7 +152,7 @@ local list = {
 		{ AuraID = 226510, UnitID = "target" },
 		{ AuraID = 343502, UnitID = "target" },
 
-		{AuraID = 376780, UnitID = "target", Value = true},
+		{ AuraID = 376780, UnitID = "target", Value = true },
 
 		{ AuraID = 498, UnitID = "target" },
 		{ AuraID = 642, UnitID = "target" },
