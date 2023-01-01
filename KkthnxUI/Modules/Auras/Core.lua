@@ -164,11 +164,7 @@ function Module:UpdateAuras(button, index)
 		local color = DebuffTypeColor[debuffType or "none"]
 		button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 	else
-		if C["General"].ColorTextures then
-			button.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-		else
-			button.KKUI_Border:SetVertexColor(1, 1, 1)
-		end
+		K.SetBorderColor(button.KKUI_Border)
 	end
 
 	-- Show spell stat for 'Soleahs Secret Technique'

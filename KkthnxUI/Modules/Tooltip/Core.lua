@@ -394,17 +394,15 @@ function Module:ReskinTooltip()
 		self.bg:SetFrameLevel(self:GetFrameLevel())
 		self.bg:CreateBorder()
 
-		if C["General"].ColorTextures then
-			self.bg.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-		else
-			self.bg.KKUI_Border:SetVertexColor(1, 1, 1)
-		end
-
 		if self.StatusBar then
 			Module.ReskinStatusBar(self)
 		end
 
 		self.tipStyled = true
+	end
+
+	if self.tipStyled then
+		K.SetBorderColor(self.bg.KKUI_Border)
 	end
 end
 
@@ -415,12 +413,6 @@ function Module:UpdateTooltipBorder()
 
 	if not C["Tooltip"].ClassColor then
 		return
-	end
-
-	if C["General"].ColorTextures then
-		self.bg.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-	else
-		self.bg.KKUI_Border:SetVertexColor(1, 1, 1)
 	end
 
 	local data = self:GetTooltipData()

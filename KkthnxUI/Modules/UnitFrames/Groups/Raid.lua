@@ -23,11 +23,7 @@ local function UpdateRaidThreat(self, _, unit)
 		local r, g, b = GetThreatStatusColor(situation)
 		self.KKUI_Border:SetVertexColor(r, g, b)
 	else
-		if C["General"].ColorTextures then
-			self.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-		else
-			self.KKUI_Border:SetVertexColor(1, 1, 1)
-		end
+		K.SetBorderColor(self.KKUI_Border)
 	end
 end
 

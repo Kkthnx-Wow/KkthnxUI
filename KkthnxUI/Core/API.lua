@@ -28,6 +28,16 @@ do
 	RegisterStateDriver(K.PetBattleFrameHider, "visibility", "[petbattle] hide; show")
 end
 
+do
+	function K.SetBorderColor(self)
+		if C["General"].ColorTextures then
+			self:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+		else
+			self:SetVertexColor(1, 1, 1)
+		end
+	end
+end
+
 -- This is a lot...
 local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
 	-- Border
@@ -45,9 +55,9 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 	if not bFrame.KKUI_Border then
 		local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga")
 		local BorderOffset = bOffset or -4
-		local BorderRed = bRed or C["General"].ColorTextures and C["General"].TexturesColor[1] or C["Media"].Borders.ColorBorder[1]
-		local BorderGreen = bGreen or C["General"].ColorTextures and C["General"].TexturesColor[2] or C["Media"].Borders.ColorBorder[2]
-		local BorderBlue = bBlue or C["General"].ColorTextures and C["General"].TexturesColor[3] or C["Media"].Borders.ColorBorder[3]
+		local BorderRed = bRed or C["Media"].Borders.ColorBorder[1]
+		local BorderGreen = bGreen or C["Media"].Borders.ColorBorder[2]
+		local BorderBlue = bBlue or C["Media"].Borders.ColorBorder[3]
 		local BorderAlpha = bAlpha or 1
 
 		-- Create Our Border
@@ -55,7 +65,12 @@ local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset,
 		kkui_border:SetSize(BorderSize)
 		kkui_border:SetTexture(BorderTexture)
 		kkui_border:SetOffset(BorderOffset)
-		kkui_border:SetVertexColor(BorderRed, BorderGreen, BorderBlue, BorderAlpha)
+		-- K.SetBorderColor(kkui_border)
+		if C["General"].ColorTextures then
+			kkui_border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+		else
+			kkui_border:SetVertexColor(BorderRed, BorderGreen, BorderBlue, BorderAlpha)
+		end
 
 		bFrame.KKUI_Border = kkui_border
 	end
@@ -266,11 +281,7 @@ local function Button_OnEnter(self)
 end
 
 local function Button_OnLeave(self)
-	if C["General"].ColorTextures then
-		self.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-	else
-		self.KKUI_Border:SetVertexColor(1, 1, 1)
-	end
+	K.SetBorderColor(self.KKUI_Border)
 end
 
 local blizzRegions = {

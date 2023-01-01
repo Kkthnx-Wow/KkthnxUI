@@ -110,11 +110,7 @@ function Module:UpdateThreat(_, unit)
 			local r, g, b = unpack(oUF.colors.threat[status])
 			portrait.KKUI_Border:SetVertexColor(r, g, b)
 		else
-			if C["General"].ColorTextures then
-				portrait.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-			else
-				portrait.KKUI_Border:SetVertexColor(1, 1, 1)
-			end
+			K.SetBorderColor(portrait.KKUI_Border)
 		end
 	elseif portraitStyle ~= "ThreeDPortraits" and portraitStyle ~= "NoPortraits" and portraitStyle ~= "OverlayPortrait" then
 		if not portrait.Border.KKUI_Border then
@@ -125,11 +121,7 @@ function Module:UpdateThreat(_, unit)
 			local r, g, b = unpack(oUF.colors.threat[status])
 			portrait.Border.KKUI_Border:SetVertexColor(r, g, b)
 		else
-			if C["General"].ColorTextures then
-				portrait.Border.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-			else
-				portrait.Border.KKUI_Border:SetVertexColor(1, 1, 1)
-			end
+			K.SetBorderColor(portrait.Border.KKUI_Border)
 		end
 	elseif portraitStyle == "NoPortraits" then
 		if not health.KKUI_Border then
@@ -140,11 +132,7 @@ function Module:UpdateThreat(_, unit)
 			local r, g, b = unpack(oUF.colors.threat[status])
 			health.KKUI_Border:SetVertexColor(r, g, b)
 		else
-			if C["General"].ColorTextures then
-				health.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-			else
-				health.KKUI_Border:SetVertexColor(1, 1, 1)
-			end
+			K.SetBorderColor(health.KKUI_Border)
 		end
 	end
 end
@@ -277,19 +265,13 @@ function Module.PostUpdateButton(element, button, unit, data)
 		if style == "nameplate" and button.Shadow then
 			button.Shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.8)
 		else
-			if C["General"].ColorTextures then
-				button.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-			else
-				button.KKUI_Border:SetVertexColor(color[1], color[2], color[3])
-			end
+			K.SetBorderColor(button.KKUI_Border)
 		end
 	else
 		if style == "nameplate" and button.Shadow then
 			button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
-		elseif C["General"].ColorTextures then
-			button.KKUI_Border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		else
-			button.KKUI_Border:SetVertexColor(1, 1, 1)
+			K.SetBorderColor(button.KKUI_Border)
 		end
 	end
 

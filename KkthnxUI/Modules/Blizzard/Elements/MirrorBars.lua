@@ -6,21 +6,26 @@ local Module = K:GetModule("Blizzard")
 local function SetupMirrorBars(bar)
 	local statusbar = bar.StatusBar
 	local text = bar.Text
-	local texture = K.GetTexture(C["General"].Texture)
+	local spark = bar.Spark
+	-- local texture = K.GetTexture(C["General"].Texture)
 
 	bar:SetSize(222, 22)
 	bar:StripTextures(true)
 
 	statusbar:SetAllPoints()
-	statusbar:SetStatusBarTexture(texture)
-	text:SetAllPoints()
+	-- statusbar:SetStatusBarTexture(texture) -- Does not do anything?
 
-	bar.spark = bar:CreateTexture(nil, "OVERLAY")
-	bar.spark:SetWidth(64)
-	bar.spark:SetHeight(bar:GetHeight())
-	bar.spark:SetTexture(C["Media"].Textures.Spark128Texture)
-	bar.spark:SetBlendMode("ADD")
-	bar.spark:SetPoint("CENTER", statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
+	text:ClearAllPoints()
+	text:SetFontObject(K.UIFont)
+	text:SetFont(select(1, text:GetFont()), 12, select(3, text:GetFont()))
+	text:SetPoint("BOTTOM", bar, "TOP", 0, 4)
+
+	spark = bar:CreateTexture(nil, "OVERLAY")
+	spark:SetWidth(64)
+	spark:SetHeight(bar:GetHeight())
+	spark:SetTexture(C["Media"].Textures.Spark128Texture)
+	spark:SetBlendMode("ADD")
+	spark:SetPoint("CENTER", statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	bar:CreateBorder()
 end
