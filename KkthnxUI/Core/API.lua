@@ -39,7 +39,8 @@ do
 end
 
 -- This is a lot...
-local function CreateBorder(bFrame, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
+local function CreateBorder(bFrame, ...)
+	local bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha = ...
 	-- Border
 	local BorderSubLevel = bSubLevel or "OVERLAY"
 	local BorderLayer = bLayer or 1

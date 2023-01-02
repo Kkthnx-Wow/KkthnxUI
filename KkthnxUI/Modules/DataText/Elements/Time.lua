@@ -26,7 +26,6 @@ local C_TaskQuest_GetQuestInfoByQuestID = _G.C_TaskQuest.GetQuestInfoByQuestID
 local C_TaskQuest_GetThreatQuests = _G.C_TaskQuest.GetThreatQuests
 local FULLDATE = _G.FULLDATE
 local GameTime_GetGameTime = _G.GameTime_GetGameTime
-local C_AreaPoiInfo_GetAreaPOIForMap = _G.C_AreaPoiInfo.GetAreaPOIForMap
 local C_AreaPoiInfo_GetAreaPOIInfo = _G.C_AreaPoiInfo.GetAreaPOIInfo
 local GameTime_GetLocalTime = _G.GameTime_GetLocalTime
 local GameTooltip = _G.GameTooltip
@@ -234,7 +233,29 @@ local huntAreaToMapID = { -- 狩猎区域ID转换为地图ID
 	[7344] = 2025, -- 索德拉苏斯
 }
 
-local stormOrders = { 2022, 2024, 2025, 2023 }
+local stormPoiIDs = {
+	[2022] = {
+		{ 7249, 7250, 7251, 7252 },
+		{ 7253, 7254, 7255, 7256 },
+		{ 7257, 7258, 7259, 7260 },
+	},
+	[2023] = {
+		{ 7221, 7222, 7223, 7224 },
+		{ 7225, 7226, 7227, 7228 },
+	},
+	[2024] = {
+		{ 7229, 7230, 7231, 7232 },
+		{ 7233, 7234, 7235, 7236 },
+		{ 7237, 7238, 7239, 7240 },
+	},
+	[2025] = {
+		{ 7245, 7246, 7247, 7248 },
+		{ 7298, 7299, 7300, 7301 },
+	},
+	[2085] = {
+		{ 7241, 7242, 7243, 7244 },
+	},
+}
 
 local atlasCache = {}
 local function GetElementalType(element) -- 获取入侵类型图标
@@ -248,13 +269,6 @@ local function GetElementalType(element) -- 获取入侵类型图标
 	end
 	return str
 end
-
-local fixedStorms = {
-	[7245] = 2025, -- 提尔要塞，风？
-	[7246] = 2025, -- 提尔要塞，土
-	[7247] = 2025, -- 提尔要塞，火
-	[7248] = 2025, -- 提尔要塞，水
-}
 
 local function GetFormattedTimeLeft(timeLeft)
 	return format("%.2d:%.2d", timeLeft / 60, timeLeft % 60)
@@ -365,27 +379,23 @@ function Module:TimeOnEnter()
 
 	-- Elemental threats
 	title = false
-	local poiCache = {}
-	for _, mapID in next, stormOrders do
-		local areaPoiIDs = C_AreaPoiInfo_GetAreaPOIForMap(mapID)
-		for _, areaPoiID in next, areaPoiIDs do
-			local poiInfo = C_AreaPoiInfo_GetAreaPOIInfo(mapID, areaPoiID)
-			local elementType = poiInfo and poiInfo.atlasName and strmatch(poiInfo.atlasName, "ElementalStorm%-Lesser%-(.+)")
-			if elementType and not poiCache[areaPoiID] then
-				poiCache[areaPoiID] = true
-				addTitle(poiInfo.name)
-				mapID = fixedStorms[areaPoiID] or mapID
-				local mapInfo = C_Map_GetMapInfo(mapID)
-				local timeLeft = C_AreaPoiInfo_GetAreaPOISecondsLeft(areaPoiID) or 0
-				timeLeft = timeLeft / 60
-				if timeLeft < 60 then
-					r, g, b = 1, 0, 0
-				else
-					r, g, b = 0, 1, 0
-				end
-				GameTooltip:AddDoubleLine(mapInfo.name .. GetElementalType(elementType), GetFormattedTimeLeft(timeLeft), 1, 1, 1, r, g, b)
-				if IsShiftKeyDown() and K.isDeveloper then
-					print("[" .. areaPoiID .. "] = " .. mapID, elementType)
+	for mapID, stormGroup in next, stormPoiIDs do
+		for _, areaPoiIDs in next, stormGroup do
+			for _, areaPoiID in next, areaPoiIDs do
+				local poiInfo = C_AreaPoiInfo_GetAreaPOIInfo(mapID, areaPoiID)
+				local elementType = poiInfo and poiInfo.atlasName and strmatch(poiInfo.atlasName, "ElementalStorm%-Lesser%-(.+)")
+				if elementType then
+					addTitle(poiInfo.name)
+					local mapInfo = C_Map_GetMapInfo(mapID)
+					local timeLeft = C_AreaPoiInfo_GetAreaPOISecondsLeft(areaPoiID) or 0
+					timeLeft = timeLeft / 60
+					if timeLeft < 60 then
+						r, g, b = 1, 0, 0
+					else
+						r, g, b = 0, 1, 0
+					end
+					GameTooltip:AddDoubleLine(mapInfo.name .. GetElementalType(elementType), GetFormattedTimeLeft(timeLeft), 1, 1, 1, r, g, b)
+					break
 				end
 			end
 		end

@@ -65,6 +65,7 @@ local function SetTip(button)
 end
 
 local function SetItemTip(button, event)
+	-- print(button, event)
 	if not button.rollID or (event == "MODIFIER_STATE_CHANGED" and not button:IsMouseOver()) then
 		return
 	end
@@ -238,7 +239,10 @@ function Module:LootFrame_GetFrame(i)
 	end
 end
 
-function Module:CANCEL_LOOT_ROLL(event, rollID)
+function Module.CANCEL_LOOT_ROLL(self, event, rollID)
+	if K.isDeveloper then
+		print("START_LOOT_ROLL", event, rollID)
+	end
 	if self.rollID == rollID then
 		self.rollID = nil
 		self.time = nil
@@ -248,7 +252,10 @@ function Module:CANCEL_LOOT_ROLL(event, rollID)
 	end
 end
 
-function Module:START_LOOT_ROLL(_, rollID, rollTime)
+function Module.START_LOOT_ROLL(_, rollID, rollTime)
+	if K.isDeveloper then
+		print("START_LOOT_ROLL", rollID, rollTime)
+	end
 	local bar = Module:LootFrame_GetFrame()
 	if not bar then
 		return
@@ -323,7 +330,10 @@ function Module:START_LOOT_ROLL(_, rollID, rollTime)
 	end
 end
 
-function Module:LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
+function Module.LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
+	if K.isDeveloper then
+		print("LOOT_HISTORY_ROLL_CHANGED", itemIdx, playerIdx)
+	end
 	local rollID = C_LootHistory_GetItem(itemIdx)
 	local name, class, rollType = C_LootHistory_GetPlayerInfo(itemIdx, playerIdx)
 
@@ -454,35 +464,40 @@ SlashCmdList.TESTROLL = function()
 		return
 	end -- need more info on this, how does it happen?
 
-	local itemList = { 32837, 34196, 33820, 9425 }
-	local bindStatus = { L["BoP"], L["BoE"], L["BoU"], "" }
-	local item = itemList[math.random(1, #itemList)]
-	local _, _, quality, _, _, _, _, _, _, texture = GetItemInfo(item)
-	local r, g, b = GetItemQualityColor(quality or 1)
+	if bar:IsShown() then
+		bar:Hide()
+	else
+		local itemList = { 32837, 34196, 33820, 9425 }
+		local bindStatus = { L["BoP"], L["BoE"], L["BoU"], "" }
+		local item = itemList[math.random(1, #itemList)]
+		local _, _, quality, _, _, _, _, _, _, texture = GetItemInfo(item)
+		local r, g, b = GetItemQualityColor(quality or 1)
 
-	bar.button.icon:SetTexture(texture)
-	bar.button.KKUI_Border:SetVertexColor(r, g, b)
-	bar.button.stack:SetText(4)
+		bar.button.icon:SetTexture(texture)
+		bar.button.KKUI_Border:SetVertexColor(r, g, b)
+		bar.button.stack:SetText(4)
 
-	bar.need.text:SetText(0)
-	bar.greed.text:SetText(0)
-	bar.pass.text:SetText(0)
+		bar.need.text:SetText(0)
+		bar.greed.text:SetText(0)
+		bar.pass.text:SetText(0)
 
-	bar.name:SetText(GetItemInfo(item))
-	bar.name:SetTextColor(r, g, b)
+		bar.name:SetText(GetItemInfo(item))
+		bar.name:SetTextColor(r, g, b)
 
-	bar.bind:SetText(bindStatus[math.random(1, #bindStatus)])
+		bar.bind:SetText(bindStatus[math.random(1, #bindStatus)])
 
-	bar.status:SetStatusBarColor(r, g, b, 0.7)
-	bar.status.spark:SetColorTexture(r, g, b, 0.9)
+		bar.status:SetStatusBarColor(r, g, b, 0.7)
+		bar.status.spark:SetColorTexture(r, g, b, 0.9)
 
-	bar.status.elapsed = 1
-	bar.status:SetMinMaxValues(0, 1)
-	bar.status:SetValue(0.5)
+		bar.status.elapsed = 1
+		bar.status:SetMinMaxValues(0, 1)
+		bar.status:SetValue(0.5)
 
-	bar.button.link = "item:" .. item .. ":0:0:0:0:0:0:0"
-	bar:Show()
+		bar.button.link = "item:" .. item .. ":0:0:0:0:0:0:0"
+		bar.button:RegisterEvent("MODIFIER_STATE_CHANGED")
+		bar:Show()
 
-	_G.AlertFrame:UpdateAnchors()
+		_G.AlertFrame:UpdateAnchors()
+	end
 end
 SLASH_TESTROLL1 = "/kkroll"

@@ -62,6 +62,8 @@ C.NameplateWhiteList = {
 	[293724] = true,
 	[298602] = true,
 
+	[113315] = true,
+
 	[368078] = true,
 	[368103] = true,
 	[368243] = true,
@@ -205,4 +207,5 @@ C.MajorSpells = {
 	[156718] = true,
 	[198595] = true,
 	[396812] = true,
+	[397889] = true,
 }
