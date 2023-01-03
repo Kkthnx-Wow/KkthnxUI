@@ -712,6 +712,10 @@ function Module:CreateJerryWay()
 	SLASH_KKUI_JERRY_WAY1 = "/way"
 end
 
+function Module:UpdateMaxCameraZoom()
+	SetCVar("cameraDistanceMaxZoomFactor", C["Misc"].MaxCameraZoom)
+end
+
 local function AcknowledgeTips()
 	for frame in _G.HelpTip.framePool:EnumerateActive() do
 		frame:Acknowledge()
@@ -724,10 +728,10 @@ function Module:DisableHelpTip() -- auto complete helptips
 	end
 
 	hooksecurefunc(_G.HelpTip, "Show", AcknowledgeTips)
-	C_Timer.After(1, AcknowledgeTips)
+	C_Timer.After(2, AcknowledgeTips)
 end
 
--- ActionBars heavily conflicts with NPE
+-- Blizzard_NewPlayerExperience: ActionBars heavily conflicts with this
 local function ShutdownNPE()
 	local NPE = _G.NewPlayerExperience
 	if NPE and NPE:GetIsActive() then
@@ -737,37 +741,84 @@ local function ShutdownNPE()
 	return NPE
 end
 
--- similar to NPE but not NPE
+-- Blizzard_TutorialManager: sort of similar to NPE
+local tutorialFrames = {
+	"TutorialWalk_Frame",
+	"TutorialSingleKey_Frame",
+	"TutorialMainFrame_Frame",
+	"TutorialKeyboardMouseFrame_Frame",
+}
+
 local function ShutdownTM()
 	local TM = _G.TutorialManager
 	if TM and TM:GetIsActive() then
 		TM:Shutdown()
 
 		-- these aren't hidden by the shutdown
-		_G.TutorialWalk_Frame:Kill()
-		_G.TutorialSingleKey_Frame:Kill()
-		_G.TutorialMainFrame_Frame:Kill()
-		_G.TutorialKeyboardMouseFrame_Frame:Kill()
+		for _, name in next, tutorialFrames do
+			_G[name]:Kill()
+		end
 	end
 
 	return TM
 end
 
+-- Blizzard_Tutorials: implemented kinda weird, imo tbh
+local gameTutorials = {
+	-- Blizzard_Tutorials_Professions
+	"Class_ProfessionInventoryWatcher",
+	"Class_ProfessionGearCheckingService",
+	"Class_EquipProfessionGear",
+	"Class_FirstProfessionWatcher",
+	"Class_FirstProfessionTutorial",
+
+	-- Blizzard_Tutorials_Dracthyr
+	"Class_DracthyrEssenceWatcher",
+
+	-- Blizzard_Tutorials_Classes
+	"Class_StarterTalentWatcher",
+	"Class_TalentPoints",
+	"Class_ChangeSpec",
+}
+
+local GT_Shutdown = false
+local function ShutdownGT()
+	local GT = _G.GameTutorials
+	if GT and not GT_Shutdown then
+		GT_Shutdown = true
+
+		-- shut some down, they are running but not used
+		for _, name in next, gameTutorials do
+			_G[name]:Complete()
+		end
+	end
+
+	return GT
+end
+
+-- this is the event handler for tutorials, maybe other stuff later?
+-- it seems shutdown is not unregistering events for stuff so..
+local function ShutdownTD() -- Blizzard_TutorialDispatcher
+	local TD = _G.Dispatcher
+	if TD then
+		wipe(TD.Events)
+		wipe(TD.Scripts)
+	end
+
+	return TD
+end
+
 local function ShutdownTutorials(event)
-	local TM, NPE = ShutdownTM(), ShutdownNPE()
-	if TM and NPE then -- they exist unregister this
+	local NPE, GT, TM, TD = ShutdownNPE(), ShutdownGT(), ShutdownTM(), ShutdownTD()
+	if NPE and GT and TM and TD then -- they exist unregister this
 		K:UnregisterEvent(event)
 	end
 end
 
 -- disable new player experience stuff
 function Module:DisableTutorials()
-	local TM, NPE = ShutdownTM(), ShutdownNPE()
-	if not TM or not NPE then -- wait for them to exist
+	local NPE, GT, TM, TD = ShutdownNPE(), ShutdownGT(), ShutdownTM(), ShutdownTD()
+	if not NPE or not GT or not TM or not TD then -- wait for them to exist
 		K:RegisterEvent("ADDON_LOADED", ShutdownTutorials)
 	end
-end
-
-function Module:UpdateMaxCameraZoom()
-	SetCVar("cameraDistanceMaxZoomFactor", C["Misc"].MaxCameraZoom)
 end

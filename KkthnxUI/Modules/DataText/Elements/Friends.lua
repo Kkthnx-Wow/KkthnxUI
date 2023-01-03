@@ -87,7 +87,7 @@ local function buildFriendTable(num)
 			end
 
 			local class = K.ClassList[info.className]
-			table_insert(friendTable, { info.name, info.level, class, info.area, status })
+			table_insert(friendTable, { info.name, info.level, class, info.area, status, info.notes })
 		end
 	end
 
@@ -430,10 +430,14 @@ local function buttonOnEnter(self)
 		GameTooltip:AddLine(L["WoW"], 1, 0.8, 0)
 		GameTooltip:AddLine(" ")
 
-		local name, level, class, area = unpack(self.data)
+		local name, level, class, area, _, note = unpack(self.data)
 		local classColor = K.RGBToHex(K.ColorClass(class))
 		GameTooltip:AddLine(string_format("%s %s%s", level, classColor, name))
 		GameTooltip:AddLine(string_format("%s%s", inactiveZone, area))
+		if note and note ~= "" then
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine(format(noteString, note), 1, 0.8, 0)
+		end
 	end
 	GameTooltip:Show()
 end
