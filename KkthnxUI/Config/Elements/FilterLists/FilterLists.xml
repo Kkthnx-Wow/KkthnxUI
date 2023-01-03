@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+   <Script file="AuraWatchSpells.lua" />
+   <Script file="AutoOpen.lua" />
+   <Script file="AutoQuest.lua" />
+   <Script file="BadBuffs.lua" />
+   <Script file="Changelog.lua" />
+   <Script file="Emojis.lua" />
+   <Script file="ExtraQuestButton.lua" />
+   <Script file="MapReveal.lua" />
+   <Script file="NameplateAuras.lua" />
+   <Script file="RaidUtilityBuffs.lua" />
+   <Script file="SpellReminders.lua" />
+   <Script file="UnitframeAuras.lua" />
+</Ui>
