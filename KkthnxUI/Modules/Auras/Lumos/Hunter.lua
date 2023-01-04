@@ -5,11 +5,8 @@ if K.Class ~= "HUNTER" then
 	return
 end
 
-local CreateFrame = _G.CreateFrame
-local GetSpecialization = _G.GetSpecialization
-local IsPlayerSpell = _G.IsPlayerSpell
-local GetSpellTexture = _G.GetSpellTexture
-local IsEquippedItem = _G.IsEquippedItem
+local pairs, IsEquippedItem = pairs, IsEquippedItem
+local playerGUID = UnitGUID("player")
 
 local GetSpellCost = {
 	[53351] = 10, -- 杀戮射击
@@ -25,6 +22,21 @@ local GetSpellCost = {
 	[342049] = 20, -- 奇美拉射击
 	[355589] = 15, -- 哀痛箭
 }
+
+function Module:UpdateFocusColor(focusCal)
+	if Module.MMFocus.trickActive > 0 then
+		Module.MMFocus:SetTextColor(0, 1, 0) -- 有技巧绿色
+	elseif Module.MMFocus.cost > 0 then
+		Module.MMFocus:SetTextColor(1, 1, 0) -- 无技巧，但集中值不为0，则黄色
+	else
+		Module.MMFocus:SetTextColor(1, 0, 0) -- 无技巧，且集中值为0，红色
+	end
+end
+
+function Module:UpdateFocusText(value)
+	Module.MMFocus.cost = value
+	Module.MMFocus:SetFormattedText("%d/40", value)
+end
 
 function Module:UpdateFocusCost(unit, _, spellID)
 	if unit ~= "player" then
@@ -43,12 +55,13 @@ function Module:UpdateFocusCost(unit, _, spellID)
 			--print("此时重置集中值为35")
 		end
 	end
-	focusCal:SetFormattedText("%d/40", focusCal.cost % 40)
+	Module:UpdateFocusText(focusCal.cost % 40)
+	Module:UpdateFocusColor()
 end
 
 function Module:ResetFocusCost()
-	Module.MMFocus.cost = 0
-	Module.MMFocus:SetFormattedText("%d/40", Module.MMFocus.cost % 40)
+	Module:UpdateFocusText(0)
+	Module:UpdateFocusColor()
 end
 
 function Module:ResetOnRaidEncounter(_, _, _, groupSize)
@@ -65,8 +78,9 @@ local eventSpentIndex = {
 
 function Module:CheckTrickState(...)
 	local _, eventType, _, sourceGUID, _, _, _, _, _, _, _, spellID = ...
-	if eventSpentIndex[eventType] and spellID == 257622 and sourceGUID == K.GUID then
+	if eventSpentIndex[eventType] and spellID == 257622 and sourceGUID == playerGUID then
 		Module.MMFocus.trickActive = eventSpentIndex[eventType]
+		Module:UpdateFocusColor()
 	end
 end
 
@@ -109,14 +123,14 @@ function Module:CheckSetsCount()
 end
 
 local oldSpec
+local MMT29X4 = true
 function Module:ToggleFocusCalculation()
 	if not Module.MMFocus then
 		return
 	end
 
 	local spec = GetSpecialization()
-	-- if C["Auras"].MMT29X4 and spec == 2 then
-	if spec == 2 then
+	if MMT29X4 and spec == 2 then
 		if self ~= "PLAYER_SPECIALIZATION_CHANGED" or spec ~= oldSpec then -- don't reset when talent changed only
 			Module:ResetFocusCost() -- reset calculation when switch on
 		end
@@ -125,43 +139,26 @@ function Module:ToggleFocusCalculation()
 		K:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", Module.CheckSetsCount)
 	else
 		K:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED", Module.CheckSetsCount)
+		-- if enabled already
+		Module.MMFocus:Hide()
+		K:UnregisterEvent("UNIT_SPELLCAST_START", Module.StartAimedShot)
+		K:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UpdateFocusCost)
+		K:UnregisterEvent("PLAYER_DEAD", Module.ResetFocusCost)
+		K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.ResetFocusCost)
+		K:UnregisterEvent("ENCOUNTER_START", Module.ResetOnRaidEncounter)
+		K:UnregisterEvent("CLEU", Module.CheckTrickState)
 	end
 	oldSpec = spec
 end
 
 function Module:PostCreateLumos(self)
-	local iconSize = self.lumos[1]:GetWidth()
-	local boom = CreateFrame("Frame", nil, self.Health)
-	boom:SetSize(iconSize, iconSize)
-	boom:SetPoint("BOTTOM", self.Health, "TOP", 0, 5)
-
-	boom.CD = CreateFrame("Cooldown", nil, boom, "CooldownFrameTemplate")
-	boom.CD:SetAllPoints()
-	boom.CD:SetReverse(true)
-
-	boom.Icon = boom:CreateTexture(nil, "ARTWORK")
-	boom.Icon:SetAllPoints()
-	boom.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-	boom:CreateShadow()
-
-	boom:Hide()
-
-	self.boom = boom
-
 	-- MM hunter T29 4sets
-	Module.MMFocus = K.CreateFontString(self.Health, 16)
+	Module.MMFocus = K.CreateFontString(self.Health, 18)
 	Module.MMFocus:ClearAllPoints()
 	Module.MMFocus:SetPoint("BOTTOM", self.Health, "TOP", 0, 5)
 	Module.MMFocus.trickActive = 0
 	Module:ToggleFocusCalculation()
 	K:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", Module.ToggleFocusCalculation)
-end
-
-function Module:PostUpdateVisibility(self)
-	if self.boom then
-		self.boom:Hide()
-	end
 end
 
 local function GetUnitAura(unit, spell, filter)
@@ -189,12 +186,6 @@ local function UpdateSpellStatus(button, spellID)
 	end
 end
 
-local boomGroups = {
-	[270339] = 186270,
-	[270332] = 259489,
-	[271049] = 259491,
-}
-
 function Module:ChantLumos(self)
 	local spec = GetSpecialization()
 	if spec == 1 then
@@ -202,7 +193,7 @@ function Module:ChantLumos(self)
 		UpdateCooldown(self.lumos[2], 217200, true)
 		UpdateBuff(self.lumos[3], 106785, 272790, false, true, "END")
 		UpdateBuff(self.lumos[4], 19574, 19574, true, false, true)
-		UpdateBuff(self.lumos[5], 193530, 193530, true, false, true)
+		UpdateBuff(self.lumos[5], 268877, 268877)
 	elseif spec == 2 then
 		UpdateCooldown(self.lumos[1], 19434, true)
 		UpdateCooldown(self.lumos[2], 257044, true)
@@ -226,62 +217,38 @@ function Module:ChantLumos(self)
 
 		do
 			local button = self.lumos[2]
-			if IsPlayerSpell(260248) then
-				UpdateBuff(button, 260248, 260249)
-			elseif IsPlayerSpell(162488) then
-				UpdateDebuff(button, 162488, 162487, true)
+			UpdateCooldown(button, 259489, true)
+			local name = GetUnitAura("target", 270332, "HARMFUL") -- 目标红炸弹高亮
+			if name then
+				K.ShowOverlayGlow(button)
 			else
-				UpdateDebuff(button, 131894, 131894, true)
+				K.HideOverlayGlow(button)
 			end
 		end
 
 		do
 			local button = self.lumos[3]
-			local boom = self.boom
-			if IsPlayerSpell(271014) then
-				boom:Show()
-
-				local name, _, duration, expire, caster, spellID = GetUnitAura("target", 270339, "HARMFUL")
-				if not name then
-					name, _, duration, expire, caster, spellID = GetUnitAura("target", 270332, "HARMFUL")
-				end
-
-				if not name then
-					name, _, duration, expire, caster, spellID = GetUnitAura("target", 271049, "HARMFUL")
-				end
-
-				if name and caster == "player" then
-					boom.Icon:SetTexture(GetSpellTexture(boomGroups[spellID]))
-					boom.CD:SetCooldown(expire - duration, duration)
-					boom.CD:Show()
-					boom.Icon:SetDesaturated(false)
-				else
-					local texture = GetSpellTexture(259495)
-					if texture == GetSpellTexture(270323) then
-						boom.Icon:SetTexture(GetSpellTexture(259489))
-					elseif texture == GetSpellTexture(271045) then
-						boom.Icon:SetTexture(GetSpellTexture(259491))
-					else
-						boom.Icon:SetTexture(GetSpellTexture(186270)) -- 270335
-					end
-					boom.Icon:SetDesaturated(true)
-				end
-
-				UpdateCooldown(button, 259495, true)
-			else
-				boom:Hide()
-				UpdateDebuff(button, 259495, 269747, true)
-			end
-		end
-
-		do
-			local button = self.lumos[4]
 			if IsPlayerSpell(260285) then
 				UpdateBuff(button, 260285, 260286)
 			elseif IsPlayerSpell(269751) then
 				UpdateCooldown(button, 269751, true)
 			else
 				UpdateBuff(button, 259387, 259388, false, false, "END")
+			end
+		end
+
+		do
+			local button = self.lumos[4]
+			if IsPlayerSpell(271014) then
+				UpdateCooldown(button, 259495, true)
+				local name = GetUnitAura("player", 363805, "HELPFUL") -- 有疯狂投弹兵时高亮
+				if name then
+					K.ShowOverlayGlow(button)
+				else
+					K.HideOverlayGlow(button)
+				end
+			else
+				UpdateDebuff(button, 259495, 269747, true)
 			end
 		end
 

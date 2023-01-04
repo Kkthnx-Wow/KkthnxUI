@@ -1335,7 +1335,10 @@ function Module:CreatePlayerPlate()
 	end
 
 	if C["Nameplate"].ClassAuras then
-		-- K:GetModule("Auras"):CreateLumos(self) -- Needs updated
+		local Lumos = K:GetModule("Auras")
+		if Lumos then
+			Lumos:CreateLumos(self)
+		end
 	end
 
 	local textFrame = CreateFrame("Frame", nil, self.Power)

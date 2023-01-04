@@ -5,13 +5,6 @@ if K.Class ~= "DEMONHUNTER" then
 	return
 end
 
-local _G = _G
-
-local GetSpecialization = _G.GetSpecialization
-local GetSpellCount = _G.GetSpellCount
-local GetSpellTexture = _G.GetSpellTexture
-local IsUsableSpell = _G.IsUsableSpell
-
 local function UpdateCooldown(button, spellID, texture)
 	return Module:UpdateCooldown(button, spellID, texture)
 end

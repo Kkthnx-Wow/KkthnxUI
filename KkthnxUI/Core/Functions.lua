@@ -443,6 +443,27 @@ do
 		self:SetScript("OnEnter", tooltipOnEnter)
 		self:SetScript("OnLeave", K.HideTooltip)
 	end
+
+	function K.CreateGlowFrame(self, size, plus)
+		local plus = plus or 5
+		local frame = CreateFrame("Frame", nil, self)
+		frame:SetPoint("CENTER")
+		frame:SetSize(size + plus, size + plus)
+
+		return frame
+	end
+
+	function K.ShowOverlayGlow(self)
+		if K.LibCustomGlow then
+			K.LibCustomGlow.ButtonGlow_Start(self)
+		end
+	end
+
+	function K.HideOverlayGlow(self)
+		if K.LibCustomGlow then
+			K.LibCustomGlow.ButtonGlow_Stop(self)
+		end
+	end
 end
 
 do
