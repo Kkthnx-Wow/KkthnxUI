@@ -1,9 +1,6 @@
 --- LibChangelog
 -- Provides an way to create a simple ingame frame to show a changelog
 
-local _, Data = ...
-local L = Data.L
-
 local MAJOR, MINOR = "LibChangelog-KkthnxUI", 0
 local LibChangelog = LibStub:NewLibrary(MAJOR, MINOR)
 

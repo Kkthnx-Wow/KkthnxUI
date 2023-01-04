@@ -17,9 +17,9 @@ function Profiles:Export()
 	Settings.Variables = KkthnxUIDB.Variables[K.Realm][K.Name]
 	Settings.Settings = KkthnxUIDB.Settings[K.Realm][K.Name]
 
-	local Serialized = K.Serialize:Serialize(Settings)
-	local Compressed = K.Deflate:CompressDeflate(Serialized)
-	local Encoded = K.Deflate:EncodeForPrint(Compressed)
+	local Serialized = K.LibSerialize:Serialize(Settings)
+	local Compressed = K.LibDeflate:CompressDeflate(Serialized)
+	local Encoded = K.LibDeflate:EncodeForPrint(Compressed)
 	local Result = Prefix .. Encoded
 
 	return Result
@@ -30,14 +30,14 @@ function Profiles:Import()
 	local Status = self:GetParent().Status
 	local Code = EditBox:GetText()
 	local LibCode = string.gsub(Code, Prefix, "")
-	local Decoded = K.Deflate:DecodeForPrint(LibCode)
+	local Decoded = K.LibDeflate:DecodeForPrint(LibCode)
 	local CurrentCode = self:GetParent():Export()
 
 	if Code == CurrentCode then
 		Status:SetText("|cffff0000Sorry, You Are Currently Using This Profile Already|r")
 	elseif Decoded then
-		local Decompressed = K.Deflate:DecompressDeflate(Decoded)
-		local Success, Table = K.Serialize:Deserialize(Decompressed)
+		local Decompressed = K.LibDeflate:DecompressDeflate(Decoded)
+		local Success, Table = K.LibSerialize:Deserialize(Decompressed)
 
 		if Success then
 			KkthnxUIDB.Variables[K.Realm][K.Name] = Table.Variables

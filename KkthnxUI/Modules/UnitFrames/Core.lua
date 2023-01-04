@@ -327,7 +327,7 @@ function Module.AurasPostUpdateInfo(element, _, _, debuffsChanged)
 
 	if C["Nameplate"].ColorByDot and debuffsChanged then
 		for _, data in next, element.allDebuffs do
-			if data.isPlayerAura and C["Nameplate"].DotSpells[data.spellId] then
+			if data.isPlayerAura and C["Nameplate"].DotSpellList.Spells[data.spellId] then
 				element.hasTheDot = true
 				break
 			end

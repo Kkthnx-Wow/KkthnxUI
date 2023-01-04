@@ -562,13 +562,13 @@ _G.SLASH_KKUI_INSTALLER1 = "/install"
 
 function Module:OnEnable()
 	print(K.Title .. " " .. K.GreyColor .. K.Version .. "|r " .. K.SystemColor .. K.Client .. "|r")
-	-- Hide options
-	-- K.HideInterfaceOption(_G.Display_UseUIScale)
-	-- K.HideInterfaceOption(_G.Display_UIScaleSlider)
 
 	-- Tutorial and settings
 	Module.ForceAddonSkins()
 	if not KkthnxUIDB.Variables[K.Realm][K.Name].InstallComplete then
 		HelloWorld()
+	else
+		K.LibChangeLog:Register(K.Title, K.Changelog, KkthnxUIDB.ChangeLog, "lastReadVersion", "onlyShowWhenNewVersion")
+		K.LibChangeLog:ShowChangelog(K.Title)
 	end
 end

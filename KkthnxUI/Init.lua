@@ -66,15 +66,15 @@ LE_ITEM_QUALITY_RARE = Enum.ItemQuality.Rare
 LE_ITEM_QUALITY_UNCOMMON = Enum.ItemQuality.Uncommon
 
 do
-	K.Base64 = LibStub("LibBase64-1.0-KkthnxUI")
+	K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI")
 	K.LibActionButton = LibStub("LibActionButton-1.0-KkthnxUI")
-	K.ChangeLog = LibStub("LibChangelog-KkthnxUI")
-	K.Deflate = LibStub("LibDeflate-KkthnxUI")
-	K.SharedMedia = LibStub("LibSharedMedia-3.0", true)
-	K.RangeCheck = LibStub("LibRangeCheck-2.0-KkthnxUI")
-	K.Serialize = LibStub("LibSerialize-KkthnxUI")
-	K.CustomGlow = LibStub("LibCustomGlow-1.0-KkthnxUI", true)
-	K.Unfit = LibStub("Unfit-1.0-KkthnxUI")
+	K.LibChangeLog = LibStub("LibChangelog-KkthnxUI")
+	K.LibDeflate = LibStub("LibDeflate-KkthnxUI")
+	K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+	K.LibRangeCheck = LibStub("LibRangeCheck-2.0-KkthnxUI")
+	K.LibSerialize = LibStub("LibSerialize-KkthnxUI")
+	K.LibCustomGlow = LibStub("LibCustomGlow-1.0-KkthnxUI", true)
+	K.LibUnfit = LibStub("Unfit-1.0-KkthnxUI")
 	K.cargBags = Engine.cargBags
 	K.oUF = Engine.oUF
 end

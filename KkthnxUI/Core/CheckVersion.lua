@@ -23,7 +23,7 @@ local tn = tonumber
 local function HandleVersonTag(version)
 	local major, minor = string_split(".", version)
 	major, minor = tn(major), tn(minor)
-	if K.Base64:CV(major) then
+	if K.LibBase64:CV(major) then
 		major, minor = 0, 0
 		if K.isDeveloper and author then
 			-- print("Moron: " .. author)

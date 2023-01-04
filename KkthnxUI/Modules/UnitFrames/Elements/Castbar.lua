@@ -236,9 +236,9 @@ function Module:PostCastStart(unit)
 	if self.__owner.mystyle == "nameplate" then
 		-- Major spells
 		if C.MajorSpells[self.spellID] then
-			K.CustomGlow.ButtonGlow_Start(self.glowFrame)
+			K.LibCustomGlow.ButtonGlow_Start(self.glowFrame)
 		else
-			K.CustomGlow.ButtonGlow_Stop(self.glowFrame)
+			K.LibCustomGlow.ButtonGlow_Stop(self.glowFrame)
 		end
 
 		-- Spell target

@@ -427,9 +427,11 @@ C["Misc"] = {
 }
 
 C["Nameplate"] = {
-	ColorByDot = true,
+	ColorByDot = false, -- This is not ready
 	DotColor = { 1, 0.5, 0.2 },
-	DotSpells = {},
+	DotSpellList = {
+		Spells = {},
+	},
 	AKSProgress = false,
 	AuraSize = 28,
 	CastTarget = false,

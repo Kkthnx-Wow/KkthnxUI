@@ -68,23 +68,23 @@ function K.GetTexture(texture)
 end
 
 -- Register Borders
-if K.SharedMedia then
+if K.LibSharedMedia then
 	for name, path in pairs(C["Media"].Borders) do
-		K.SharedMedia:Register("border", name, path)
+		K.LibSharedMedia:Register("border", name, path)
 	end
 
 	-- Register Statusbars
 	for name, path in pairs(C["Media"].Statusbars) do
-		K.SharedMedia:Register("statusbar", name, path)
+		K.LibSharedMedia:Register("statusbar", name, path)
 	end
 
 	-- Register Sounds
 	for name, path in pairs(C["Media"].Sounds) do
-		K.SharedMedia:Register("sound", name, path)
+		K.LibSharedMedia:Register("sound", name, path)
 	end
 
 	-- Register Fonts
 	for name, path in pairs(C["Media"].Fonts) do
-		K.SharedMedia:Register("font", name, path)
+		K.LibSharedMedia:Register("font", name, path)
 	end
 end

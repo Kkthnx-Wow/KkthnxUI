@@ -51,7 +51,7 @@ local function GetGroupUnit(unit)
 end
 
 local function getMaxRange(unit)
-	local _, maxRange = K.RangeCheck:GetRange(unit, true, true)
+	local _, maxRange = K.LibRangeCheck:GetRange(unit, true, true)
 	return maxRange
 end
 
