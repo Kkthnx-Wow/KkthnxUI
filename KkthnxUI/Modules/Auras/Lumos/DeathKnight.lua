@@ -5,18 +5,12 @@ if K.Class ~= "DEATHKNIGHT" then
 	return
 end
 
-local _G = _G
-local math_floor = math.floor
-
-local GetSpecialization = _G.GetSpecialization
-local UnitPower = _G.UnitPower
-local GetSpellTexture = _G.GetSpellTexture
-local IsPlayerSpell = _G.IsPlayerSpell
+local floor = math.floor
 
 function Module:PostCreateLumos(self)
-	local shield = K.CreateFontString(self.Health, 18, "", "", "system")
+	local shield = K.CreateFontString(self.Health, 13, "", "", "system")
 	shield:ClearAllPoints()
-	shield:SetPoint("RIGHT", self.Health, "LEFT", -5, 0)
+	shield:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
 
 	self.shield = shield
 end
@@ -45,7 +39,6 @@ end
 
 local function UpdateBuffValue(button, spellID)
 	button.Icon:SetTexture(GetSpellTexture(spellID))
-
 	local name, _, duration, expire, _, _, value = GetUnitAura("player", spellID, "HELPFUL")
 	if name then
 		button.Count:SetText(K.ShortValue(value))
@@ -69,11 +62,9 @@ function Module:ChantLumos(self)
 			if hasBuff then
 				price = 40
 			end
-
-			local boneCount = math_floor(UnitPower("player") / price)
+			local boneCount = floor(UnitPower("player") / price)
 			button.Icon:SetTexture(GetSpellTexture(49998))
 			button.Count:SetText(boneCount)
-
 			local name, _, dur, exp, _, _, value = GetUnitAura("player", 77535, "HELPFUL")
 			if name then
 				self.shield:SetText(K.ShortValue(value))
@@ -126,7 +117,7 @@ function Module:ChantLumos(self)
 				button.Count:SetText("")
 				button.Icon:SetTexture(GetSpellTexture(51460))
 			else
-				local count = math_floor(UnitPower("player") / 40)
+				local count = floor(UnitPower("player") / 40)
 				if count == 0 then
 					button.Icon:SetDesaturated(true)
 				else

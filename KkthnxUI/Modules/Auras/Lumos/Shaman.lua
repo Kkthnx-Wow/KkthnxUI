@@ -5,13 +5,6 @@ if K.Class ~= "SHAMAN" then
 	return
 end
 
-local _G = _G
-
-local GetSpecialization = _G.GetSpecialization
-local IsPlayerSpell = _G.IsPlayerSpell
-local IsUsableSpell = _G.IsUsableSpell
-local GetSpellTexture = _G.GetSpellTexture
-
 local function GetUnitAura(unit, spell, filter)
 	return Module:GetUnitAura(unit, spell, filter)
 end
@@ -47,10 +40,10 @@ function Module:ChantLumos(self)
 			else
 				if IsUsableSpell(8042) then
 					button.Icon:SetDesaturated(false)
-					K.LibCustomGlow.ButtonGlow_Start(button.glowFrame)
+					K.ShowOverlayGlow(button.glowFrame)
 				else
 					button.Icon:SetDesaturated(true)
-					K.LibCustomGlow.ButtonGlow_Stop(button.glowFrame)
+					K.HideOverlayGlow(button.glowFrame)
 				end
 				button.Icon:SetTexture(GetSpellTexture(8042))
 			end
@@ -67,7 +60,18 @@ function Module:ChantLumos(self)
 			end
 		end
 
-		UpdateTotemAura(self.lumos[5], 135790, 198067)
+		do
+			local button = self.lumos[5]
+			if IsPlayerSpell(192249) then
+				if IsPlayerSpell(117013) then
+					UpdateCooldown(button, 192249, true)
+				else
+					UpdateTotemAura(button, 1020304, 192249)
+				end
+			else
+				UpdateTotemAura(button, 135790, 198067)
+			end
+		end
 	elseif spec == 2 then
 		UpdateCooldown(self.lumos[1], 17364, true)
 

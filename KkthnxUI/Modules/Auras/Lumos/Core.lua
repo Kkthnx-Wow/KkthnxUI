@@ -190,7 +190,8 @@ function Module:CreateLumos(self)
 	self.lumos = {}
 	self.lumos.onFire = C["Nameplate"].PPOnFire
 
-	local iconSize = (C["Nameplate"].PPWidth + 1 * K.Mult - 4 * 4) / 5
+	-- local iconSize = (C["Nameplate"].PPWidth + 2 * K.Mult - 3 * 4) / 5
+	local iconSize = self.iconSize
 	for i = 1, 5 do
 		local bu = CreateFrame("Frame", nil, self.Health)
 		bu:SetSize(iconSize, iconSize)

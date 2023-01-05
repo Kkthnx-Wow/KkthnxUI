@@ -5,8 +5,6 @@ if K.Class ~= "PRIEST" then
 	return
 end
 
-local GetSpecialization = _G.GetSpecialization
-
 local function UpdateCooldown(button, spellID, texture)
 	return Module:UpdateCooldown(button, spellID, texture)
 end

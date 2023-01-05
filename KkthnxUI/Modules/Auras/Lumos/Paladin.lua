@@ -5,13 +5,8 @@ if K.Class ~= "PALADIN" then
 	return
 end
 
-local _G = _G
-
-local GetCurrentGlyphNameForSpell = _G.GetCurrentGlyphNameForSpell
-local GetSpecialization = _G.GetSpecialization
-local GetSpellTexture = _G.GetSpellTexture
-local IsPlayerSpell = _G.IsPlayerSpell
-local IsUsableSpell = _G.IsUsableSpell
+local IsUsableSpell, IsPlayerSpell = IsUsableSpell, IsPlayerSpell
+local GetCurrentGlyphNameForSpell = GetCurrentGlyphNameForSpell
 
 local function UpdateCooldown(button, spellID, texture)
 	return Module:UpdateCooldown(button, spellID, texture)
@@ -86,24 +81,9 @@ function Module:ChantLumos(self)
 			end
 		end
 	elseif spec == 3 then
-		do
-			local button = self.lumos[1]
-			if IsPlayerSpell(267610) then
-				UpdateBuff(button, 267610, 267611)
-			elseif IsPlayerSpell(343527) then
-				UpdateDebuff(button, 343527, 343527, true)
-			else
-				UpdateCooldown(button, 20271, true)
-			end
-		end
-
-		do
-			local button = self.lumos[2]
-			UpdateCooldown(button, 24275)
-			UpdateSpellStatus(button, 24275)
-		end
-
-		UpdateCooldown(self.lumos[3], 255937, true)
+		UpdateCooldown(self.lumos[1], 20271, true)
+		UpdateCooldown(self.lumos[2], 35395, true)
+		UpdateCooldown(self.lumos[3], 184575, true)
 
 		do
 			local button = self.lumos[4]

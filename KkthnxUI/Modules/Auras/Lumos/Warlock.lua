@@ -5,21 +5,12 @@ if K.Class ~= "WARLOCK" then
 	return
 end
 
-local _G = _G
-
-local CreateFrame = _G.CreateFrame
-local GetSpecialization = _G.GetSpecialization
-local GetSpellTexture = _G.GetSpellTexture
-local GetTime = _G.GetTime
-local IsPlayerSpell = _G.IsPlayerSpell
-
 function Module:PostCreateLumos(self)
 	local frame = CreateFrame("Frame")
 	frame:SetScript("OnUpdate", function()
 		if not self.dotExp then
 			return
 		end
-
 		local elapsed = self.dotExp - GetTime()
 		if elapsed >= 7 then
 			self.lumos[3].Icon:SetDesaturated(false)
@@ -63,13 +54,13 @@ function Module:ChantLumos(self)
 	if spec == 1 then
 		UpdateDebuff(self.lumos[1], 172, 146739, false, "END")
 		UpdateDebuff(self.lumos[2], 980, 980, false, "END")
+
 		do
 			local button = self.lumos[3]
 			local name, _, duration, expire, caster = GetUnitAura("target", 316099, "HARMFUL")
 			if not name then
 				name, _, duration, expire, caster = GetUnitAura("target", 342938, "HARMFUL")
 			end
-
 			if name and caster == "player" then
 				button.CD:SetCooldown(expire - duration, duration)
 				button.CD:Show()
@@ -80,10 +71,11 @@ function Module:ChantLumos(self)
 				button.CD:Hide()
 				button.Icon:SetDesaturated(true)
 				button:SetScript("OnUpdate", nil)
-				K.LibCustomGlow.ButtonGlow_Stop(button.glowFrame)
+				K.HideOverlayGlow(button.glowFrame)
 			end
 			button.Icon:SetTexture(GetSpellTexture(316099))
 		end
+
 		UpdateDebuff(self.lumos[4], 32388, 32390, false, "END")
 		UpdateTotemAura(self.lumos[5], 1416161, 205180)
 	elseif spec == 2 then
