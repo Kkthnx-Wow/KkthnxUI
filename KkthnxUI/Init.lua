@@ -67,7 +67,7 @@ LE_ITEM_QUALITY_UNCOMMON = Enum.ItemQuality.Uncommon
 
 do
 	K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI")
-	K.LibActionButton = LibStub("LibActionButton-1.0-KkthnxUI")
+	K.LibActionButton = LibStub("LibActionButton-1.0")
 	K.LibChangeLog = LibStub("LibChangelog-KkthnxUI")
 	K.LibDeflate = LibStub("LibDeflate-KkthnxUI")
 	K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true)

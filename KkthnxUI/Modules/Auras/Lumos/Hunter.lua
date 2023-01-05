@@ -123,7 +123,7 @@ function Module:CheckSetsCount()
 end
 
 local oldSpec
-local MMT29X4 = true
+local MMT29X4 = false
 function Module:ToggleFocusCalculation()
 	if not Module.MMFocus then
 		return
