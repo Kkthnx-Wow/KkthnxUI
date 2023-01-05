@@ -20,6 +20,55 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.4.5] - 2023-1-5",
+		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
+		Sections = {
+			{
+				Header = "Added",
+				Entries = {
+					"[AutoOpen] Added combat check to bag check",
+					"[Datatext] Added Community Feast",
+					"[Datatext] Added support for Elemental Storm & Grand Hunts",
+					"[Misc] Added logo + name + version animation popup",
+					"[Portraits] Added EVOKER class portraits to our media files",
+					"[Tooltip] Added support for mount and toy icons",
+					"[Tutorials] Added more tutorials to DIE when you enable the option for it",
+					"[Unitframes] Added new combat icon",
+				},
+			},
+
+			{
+				Header = "Changed",
+				Entries = {
+					"[Border] Changed the texture and brightness of the default KkthnxUI border. You won't notice much of a difference here",
+					"[LibActionButton] Changed back to the default lib so MaxDPS / Hekili will work without needing support",
+					"[Nameplates] Changed and updated quest icon code",
+					"[Skins] Changed professions icons to be smaller so they do not overlap (Idk why they are so close in the first place)",
+				},
+			},
+
+			{
+				Header = "Removed",
+				Entries = {
+					"[Core] Removed various leftover debug prints",
+				},
+			},
+
+			{
+				Header = "Fixed",
+				Entries = {
+					"[Core] Fixed AutoConfirm, AutoGreed, Grouploot and Fasterloot not loading",
+					"[Datatext] Fixed friends throwing a nil value",
+					"[GroupLoot] Fixed all issues related to group loot",
+					"[Inventory] Fixed setitems to check for nil",
+					"[Lumos] Fixed lumos for personal resource display for all classes",
+					"[Skins] Fixed Details not checking for the proper default texture?",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.4.4] - 2022-12-26",
 		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {
