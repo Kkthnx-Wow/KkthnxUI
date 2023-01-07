@@ -64,11 +64,7 @@ end
 local function KKUI_LoadProfiles()
 	local Profiles = C["General"].Profiles
 	local Menu = Profiles.Options
-	-- local Data = KkthnxUIDB.Variables
 	local GUISettings = KkthnxUIDB.Settings
-	-- local Nickname = K.Name
-	-- local Server = K.Realm
-
 	if not GUISettings then
 		return
 	end

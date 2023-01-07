@@ -19,11 +19,11 @@ function Module.SetupKeystoneAnnounce(event)
 	local keystoneLevel = C_MythicPlus_GetOwnedKeystoneLevel()
 
 	if event == "PLAYER_ENTERING_WORLD" then
-		K.Print("SetupKeystoneAnnounce", event)
+		-- K.Print("SetupKeystoneAnnounce", event)
 		keystoneCache.mapID = mapID
 		keystoneCache.keystoneLevel = keystoneLevel
 	elseif event == "CHALLENGE_MODE_COMPLETED" then
-		K.Print("SetupKeystoneAnnounce", event)
+		-- K.Print("SetupKeystoneAnnounce", event)
 		if keystoneCache.mapID ~= mapID or keystoneCache.keystoneLevel ~= keystoneLevel then
 			keystoneCache.mapID = mapID
 			keystoneCache.keystoneLevel = keystoneLevel

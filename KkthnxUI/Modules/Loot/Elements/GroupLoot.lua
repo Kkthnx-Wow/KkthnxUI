@@ -177,6 +177,7 @@ end
 function Module:LootRoll_Create(index)
 	local bar = CreateFrame("Frame", "KKUI_LootRollFrame" .. index, UIParent)
 	bar:SetScript("OnEvent", Module.CANCEL_LOOT_ROLL)
+	bar:RegisterEvent("CANCEL_LOOT_ROLL")
 	bar:Hide()
 
 	local status = CreateFrame("StatusBar", nil, bar)
@@ -202,6 +203,7 @@ function Module:LootRoll_Create(index)
 	button:SetScript("OnEnter", SetItemTip)
 	button:SetScript("OnLeave", GameTooltip_Hide)
 	button:SetScript("OnClick", LootClick)
+	button:RegisterEvent("MODIFIER_STATE_CHANGED")
 	bar.button = button
 
 	button.icon = button:CreateTexture(nil, "OVERLAY")
@@ -253,9 +255,6 @@ function Module.CANCEL_LOOT_ROLL(self, event, rollID)
 	if self.rollID == rollID then
 		self.rollID = nil
 		self.time = nil
-		self:Hide()
-		self:UnregisterEvent(event)
-		self.button:UnregisterEvent("MODIFIER_STATE_CHANGED")
 	end
 end
 
@@ -284,7 +283,6 @@ function Module.START_LOOT_ROLL(_, rollID, rollTime)
 
 	bar.button.link = itemLink
 	bar.button.rollID = rollID
-	bar.button:RegisterEvent("MODIFIER_STATE_CHANGED")
 	bar.button.icon:SetTexture(texture)
 	bar.button.stack:SetShown(count > 1)
 	bar.button.stack:SetText(count)
@@ -315,7 +313,6 @@ function Module.START_LOOT_ROLL(_, rollID, rollTime)
 	bar.status:SetValue(rollTime)
 
 	bar:Show()
-	bar:RegisterEvent("CANCEL_LOOT_ROLL")
 
 	_G.AlertFrame:UpdateAnchors()
 
@@ -465,7 +462,7 @@ function Module:CreateGroupLoot()
 	_G.UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
 end
 
-SlashCmdList.TESTROLL = function()
+SlashCmdList.KKUI_TESTROLL = function()
 	local bar = Module:LootFrame_GetFrame()
 	if not bar then
 		return
@@ -501,10 +498,9 @@ SlashCmdList.TESTROLL = function()
 		bar.status:SetValue(0.5)
 
 		bar.button.link = "item:" .. item .. ":0:0:0:0:0:0:0"
-		bar.button:RegisterEvent("MODIFIER_STATE_CHANGED")
 		bar:Show()
 
 		_G.AlertFrame:UpdateAnchors()
 	end
 end
-SLASH_TESTROLL1 = "/kkroll"
+SLASH_KKUI_TESTROLL1 = "/kkroll"
