@@ -10,11 +10,11 @@ local playerNearDeath = false
 local petNearDeath = false
 
 function Module:SetupHealthAnnounce()
-	local playerHealth = UnitHealth("player")
-	local playerHealthMax = UnitHealthMax("player")
-	local playerHealthPercent = K.Round(playerHealth / playerHealthMax * 100, 1)
+	if UnitIsPlayer("player") and not UnitIsDead("player") then
+		local playerHealth = UnitHealth("player")
+		local playerHealthMax = UnitHealthMax("player")
+		local playerHealthPercent = K.Round(playerHealth / playerHealthMax * 100, 1)
 
-	if not UnitIsDead("player") then
 		if playerHealthPercent <= 30 and not playerNearDeath then
 			playerNearDeath = true
 			UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], K.Name))
@@ -24,14 +24,14 @@ function Module:SetupHealthAnnounce()
 		end
 	end
 
-	local petHealth = UnitHealth("pet")
-	local petHealthMax = UnitHealthMax("pet")
-	local petHealthPercent = K.Round(petHealth / petHealthMax * 100, 1)
-
 	if UnitExists("pet") and not UnitIsDead("pet") then
 		if not K.Class == "HUNTER" or not K.Class == "WARLOCK" then
 			return
 		end
+
+		local petHealth = UnitHealth("pet")
+		local petHealthMax = UnitHealthMax("pet")
+		local petHealthPercent = K.Round(petHealth / petHealthMax * 100, 1) or 1
 
 		if petHealthPercent <= 30 and not petNearDeath then
 			petNearDeath = true
