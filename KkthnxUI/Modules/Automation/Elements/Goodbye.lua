@@ -20,14 +20,13 @@ local AutoThanksList = {
 	"Goodbye",
 	"Have a good one!",
 	"Have a nice day!",
-	"See ya later, alligator!",
 	"Take care.",
 	"Take it easy",
+	"Thanks & warm regards",
 	"Thanks :D",
 	"Thanks ;)",
 	"Thanks <3",
 	"Thanks all",
-	"Thanks & warm regards",
 	"Thanks everyone.",
 	"Thanks for the group.",
 	"Thanks for the run.",
@@ -41,9 +40,9 @@ local AutoThanksList = {
 	"thanks",
 }
 
-function Module:SetupAutoGoodbye()
+function Module.SetupAutoGoodbye()
 	C_Timer_After(math.random(2, 6), function() -- Random the amount of time to wait to say thanks
-		SendChatMessage(AutoThanksList[math_random(1, #AutoThanksList)], K.CheckChat())
+		SendChatMessage(AutoThanksList[math_random(1, #AutoThanksList)], "INSTANCE_CHAT") -- Always INSTANCE_CHAT
 	end)
 end
 
