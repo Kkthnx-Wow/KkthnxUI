@@ -1276,17 +1276,19 @@ function Module:OnEnable()
 			end
 		end
 
-		if C_NewItems_IsNewItem(item.bagId, item.slotId) then
-			local color = K.QualityColors[item.quality]
-			if item.questID or item.isQuestItem then
-				K.LibCustomGlow.ButtonGlow_Start(self.glowFrame, { 1, 0.82, 0.2, 1 })
-			elseif color and item.quality and item.quality > -1 then
-				K.LibCustomGlow.ButtonGlow_Start(self.glowFrame, { color.r, color.g, color.b, 1 })
+		if self.glowFrame then
+			if C_NewItems_IsNewItem(item.bagId, item.slotId) then
+				local color = K.QualityColors[item.quality]
+				if item.questID or item.isQuestItem then
+					K.LibCustomGlow.ButtonGlow_Start(self.glowFrame, { 1, 0.82, 0.2, 1 })
+				elseif color and item.quality and item.quality > -1 then
+					K.LibCustomGlow.ButtonGlow_Start(self.glowFrame, { color.r, color.g, color.b, 1 })
+				else
+					K.LibCustomGlow.ButtonGlow_Start(self.glowFrame)
+				end
 			else
-				K.LibCustomGlow.ButtonGlow_Start(self.glowFrame)
+				K.LibCustomGlow.ButtonGlow_Stop(self.glowFrame)
 			end
-		else
-			K.LibCustomGlow.ButtonGlow_Stop(self.glowFrame)
 		end
 
 		if C["Inventory"].SpecialBagsColor then
