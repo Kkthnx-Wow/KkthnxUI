@@ -444,24 +444,49 @@ do
 		self:SetScript("OnLeave", K.HideTooltip)
 	end
 
-	function K.CreateGlowFrame(self, size, plus)
-		local plus = plus or 5
-		local frame = CreateFrame("Frame", nil, self)
-		frame:SetPoint("CENTER")
-		frame:SetSize(size + plus, size + plus)
+	function K.CreateGlowFrame(self, size, splus)
+		splus = splus or 8
+		local glowFrame = CreateFrame("Frame", nil, self)
+		glowFrame:SetPoint("CENTER")
+		glowFrame:SetSize(size + splus, size + splus)
 
-		return frame
+		return glowFrame
 	end
 
-	function K.ShowOverlayGlow(self)
+	function K.ShowOverlayGlow(self, template, ...)
+		local color, frequency, frameLevel, scale, xOffset, yOffset, key, length, th, border
+		template = template or "ButtonGlow"
+
+		if template == "ButtonGlow" then -- ButtonGlow
+			color, frequency, frameLevel = ...
+		elseif template == "AutoCastGlow" then -- AutoCastGlow
+			color, N, frequency, scale, xOffset, yOffset, key, frameLevel = ...
+		elseif template == "PixelGlow" then -- PixelGlow
+			color, N, frequency, length, th, xOffset, yOffset, border, key, frameLevel = ...
+		end
+
 		if K.LibCustomGlow then
-			K.LibCustomGlow.ButtonGlow_Start(self)
+			if template == 1 then -- ButtonGlow
+				K.LibCustomGlow.ButtonGlow_Start(self, color, frequency, frameLevel)
+			elseif template == 2 then -- AutoCastGlow
+				K.LibCustomGlow.AutoCastGlow_Start(self, color, N, frequency, scale, xOffset, yOffset, key, frameLevel)
+			elseif template == 3 then -- PixelGlow
+				K.LibCustomGlow.PixelGlow_Start(self, color, N, frequency, length, th, xOffset, yOffset, border, key, frameLevel)
+			end
 		end
 	end
 
-	function K.HideOverlayGlow(self)
+	function K.HideOverlayGlow(self, template)
+		template = template or "ButtonGlow"
+
 		if K.LibCustomGlow then
-			K.LibCustomGlow.ButtonGlow_Stop(self)
+			if template == "ButtonGlow" then -- ButtonGlow
+				K.LibCustomGlow.ButtonGlow_Stop(self)
+			elseif template == "AutoCastGlow" then -- AutoCastGlow
+				K.LibCustomGlow.AutoCastGlow_Stop(self)
+			elseif template == "PixelGlow" then -- PixelGlow
+				K.LibCustomGlow.PixelGlow_Stop(self)
+			end
 		end
 	end
 end
