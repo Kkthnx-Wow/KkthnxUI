@@ -208,4 +208,5 @@ C.MajorSpells = {
 	[198595] = true,
 	[396812] = true,
 	[397889] = true,
+	[395859] = true,
 }

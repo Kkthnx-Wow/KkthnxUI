@@ -262,13 +262,13 @@ function Module.PostUpdateButton(element, button, unit, data)
 
 	if button.isHarmful then
 		local color = oUF.colors.debuff[debuffType] or oUF.colors.debuff.none
-		if style == "nameplate" and button.Shadow then
+		if style == "nameplate" then
 			button.Shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.8)
 		else
-			K.SetBorderColor(button.KKUI_Border)
+			button.KKUI_Border:SetVertexColor(color[1], color[2], color[3])
 		end
 	else
-		if style == "nameplate" and button.Shadow then
+		if style == "nameplate" then
 			button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 		else
 			K.SetBorderColor(button.KKUI_Border)

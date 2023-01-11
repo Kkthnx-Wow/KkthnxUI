@@ -66,7 +66,6 @@ local function CreateBorder(bFrame, ...)
 		kkui_border:SetSize(BorderSize)
 		kkui_border:SetTexture(BorderTexture)
 		kkui_border:SetOffset(BorderOffset)
-		-- K.SetBorderColor(kkui_border)
 		if C["General"].ColorTextures then
 			kkui_border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		else

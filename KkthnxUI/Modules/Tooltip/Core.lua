@@ -401,28 +401,21 @@ function Module:ReskinTooltip()
 		self.tipStyled = true
 	end
 
-	if self.tipStyled then
-		K.SetBorderColor(self.bg.KKUI_Border)
-	end
-end
-
-function Module:UpdateTooltipBorder()
-	if not self.bg then
-		return
-	end
+	K.SetBorderColor(self.bg.KKUI_Border)
 
 	if not C["Tooltip"].ClassColor then
 		return
 	end
 
-	local data = self:GetTooltipData()
-	local guid = data and data.guid
-	local link = guid and C_Item.GetItemLinkByGUID(guid)
-	if link then
-		local quality = select(3, GetItemInfo(link))
-		local color = K.QualityColors[quality or 1]
-		if color then
-			self.bg.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+	local data = self.GetTooltipData and self:GetTooltipData()
+	if data then
+		local link = data.guid and C_Item.GetItemLinkByGUID(data.guid) or data.hyperlink
+		if link then
+			local quality = select(3, GetItemInfo(link))
+			local color = K.QualityColors[quality or 1]
+			if color then
+				self.bg.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+			end
 		end
 	end
 end
@@ -498,7 +491,6 @@ function Module:OnEnable()
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, Module.OnTooltipSetUnit)
 	hooksecurefunc(GameTooltip.StatusBar, "SetValue", Module.RefreshStatusBar)
 	TooltipDataProcessor.AddLinePreCall(Enum.TooltipDataLineType.None, Module.UpdateFactionLine)
-	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, Module.UpdateTooltipBorder)
 	TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, Module.FixRecipeItemNameWidth)
 
 	hooksecurefunc("GameTooltip_ShowStatusBar", Module.GameTooltip_ShowStatusBar)
