@@ -420,28 +420,26 @@ function Module:ReskinTooltip()
 	end
 end
 
-local function TooltipSetFont(font, size)
-	-- K.SetFontSize(font, size)
-	font:SetShadowColor(0, 0, 0, 0)
-end
-
 function Module:SetupTooltipFonts()
-	local textSize = select(2, _G.KkthnxUIFont:GetFont()) + 2
-	local headerSize = select(2, _G.KkthnxUIFont:GetFont()) + 4
+	local font = select(1, _G.KkthnxUIFont:GetFont())
+	local headerSize = 13
+	local smallSize = 11
+	local textSize = 12
+	local fontString = ""
 
-	TooltipSetFont(GameTooltipHeaderText, headerSize)
-	TooltipSetFont(GameTooltipText, textSize)
-	TooltipSetFont(GameTooltipTextSmall, textSize)
+	GameTooltipHeaderText:SetFont(font, headerSize, fontString) -- Default size = 13.999999046326
+	GameTooltipText:SetFont(font, textSize, fontString) -- Default size = 12
+	GameTooltipTextSmall:SetFont(font, smallSize, fontString) -- Default size = 10
 
 	if not GameTooltip.hasMoney then
-		SetTooltipMoney(GameTooltip, 1, nil, "", "")
-		SetTooltipMoney(GameTooltip, 1, nil, "", "")
+		SetTooltipMoney(GameTooltip, 1, nil, fontString, fontString)
+		SetTooltipMoney(GameTooltip, 1, nil, fontString, fontString)
 		GameTooltip_ClearMoney(GameTooltip)
 	end
 	if GameTooltip.hasMoney then
 		for i = 1, GameTooltip.numMoneyFrames do
-			TooltipSetFont(_G["GameTooltipMoneyFrame" .. i .. "PrefixText"], textSize)
-			TooltipSetFont(_G["GameTooltipMoneyFrame" .. i .. "SuffixText"], textSize)
+			_G["GameTooltipMoneyFrame" .. i .. "PrefixText"]:SetFont(font, textSize, fontString) -- Default size = 12
+			_G["GameTooltipMoneyFrame" .. i .. "SuffixText"]:SetFont(font, textSize, fontString) -- Default size = 12
 		end
 	end
 
@@ -449,7 +447,7 @@ function Module:SetupTooltipFonts()
 		for i = 1, tt:GetNumRegions() do
 			local region = select(i, tt:GetRegions())
 			if region:IsObjectType("FontString") then
-				TooltipSetFont(region, textSize)
+				region:SetFont(font, smallSize, fontString) -- Default size = ???
 			end
 		end
 	end
