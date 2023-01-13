@@ -99,6 +99,7 @@ K.TexCoords = { 0.08, 0.92, 0.08, 0.92 }
 K.EasyMenu = CreateFrame("Frame", "KKUI_EasyMenu", UIParent, "UIDropDownMenuTemplate")
 K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
+K.IsNewPatch = K.TocVersion >= 100005 -- 10.0.5
 
 K.GreyColor = "|CFFC0C0C0"
 K.InfoColor = "|CFF669DFF"
