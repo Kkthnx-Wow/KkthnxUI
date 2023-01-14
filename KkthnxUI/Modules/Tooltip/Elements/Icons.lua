@@ -49,6 +49,18 @@ function Module:ReskinRewardIcon()
 
 	local iconBorder = self.IconBorder
 	iconBorder:SetAlpha(0)
+
+	local greyRGB = K.QualityColors[0].r
+	hooksecurefunc(self.IconBorder, "SetVertexColor", function(_, r, g, b)
+		if not r or r == greyRGB or (r > 0.99 and g > 0.99 and b > 0.99) then
+			r, g, b = 1, 1, 1
+		end
+		self.bg.KKUI_Border:SetVertexColor(r, g, b)
+	end)
+
+	hooksecurefunc(self.IconBorder, "Hide", function()
+		K.SetBorderColor(self.bg.KKUI_Border)
+	end)
 end
 
 local GetTooltipTextureByType = {
