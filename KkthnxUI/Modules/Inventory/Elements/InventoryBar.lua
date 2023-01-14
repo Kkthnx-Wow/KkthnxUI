@@ -22,6 +22,11 @@ function Module:BagBar_OnLeave()
 	return C["Inventory"].BagBarMouseover and UIFrameFadeOut(Module.BagBar, 0.2, Module.BagBar:GetAlpha(), 0)
 end
 
+function Module:BagBar_OnEvent(event)
+	Module:BagBar_UpdateVisibility()
+	Module.BagBar:UnregisterEvent(event)
+end
+
 function Module:SkinBag(bag)
 	local icon = bag.icon or _G[bag:GetName() .. "IconTexture"]
 	bag.oldTex = icon:GetTexture()
@@ -42,6 +47,10 @@ function Module:SkinBag(bag)
 	icon:SetTexCoord(unpack(K.TexCoords))
 end
 
+function Module:BagBar_UpdateVisibility()
+	RegisterStateDriver(Module.BagBar, "visibility", "[petbattle] hide; show")
+end
+
 function Module:SetSizeAndPositionBagBar()
 	if not Module.BagBar then
 		return
@@ -53,31 +62,20 @@ function Module:SetSizeAndPositionBagBar()
 	local sortDirection = C["Inventory"].SortDirection.Value
 	local justBackpack = C["Inventory"].JustBackpack
 
-	RegisterStateDriver(Module.BagBar, "visibility", "[petbattle] hide; show")
+	if InCombatLockdown() then
+		Module.BagBar:RegisterEvent("PLAYER_REGEN_ENABLED")
+	else
+		Module:BagBar_UpdateVisibility()
+	end
 
 	Module.BagBar:SetAlpha(C["Inventory"].BagBarMouseover and 0 or 1)
 
 	_G.MainMenuBarBackpackButtonCount:SetFontObject(K.UIFontOutline)
 
-	local firstButton, lastButton
 	for i, button in ipairs(Module.BagBar.buttons) do
 		button:SetSize(bagBarSize, bagBarSize)
 		button:ClearAllPoints()
-		button:SetShown(i == 1 and justBackpack or not justBackpack)
-
-		if sortDirection == "ASCENDING" then
-			if i == 1 then
-				firstButton = button
-			else
-				lastButton = button
-			end
-		else
-			if i == 1 then
-				lastButton = button
-			else
-				firstButton = button
-			end
-		end
+		button:SetShown(not justBackpack or i == 1)
 
 		local prevButton = Module.BagBar.buttons[i - 1]
 		if growthDirection == "HORIZONTAL" and sortDirection == "ASCENDING" then
@@ -161,6 +159,7 @@ function Module:CreateInventoryBar()
 	end
 	Module.BagBar:SetScript("OnEnter", Module.BagBar_OnEnter)
 	Module.BagBar:SetScript("OnLeave", Module.BagBar_OnLeave)
+	Module.BagBar:SetScript("OnEvent", Module.BagBar_OnEvent)
 	Module.BagBar:EnableMouse(true)
 	Module.BagBar.buttons = {}
 
