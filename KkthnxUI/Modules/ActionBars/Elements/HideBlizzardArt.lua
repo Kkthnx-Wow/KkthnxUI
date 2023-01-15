@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
 local _G = _G
@@ -114,8 +114,6 @@ function Module:HideBlizz()
 	end
 
 	DisableDefaultBarEvents()
-	-- Hide blizz options
-	SetCVar("multiBarRightVerticalLayout", 0)
 	-- Fix maw block anchor
 	MainMenuBarVehicleLeaveButton:RegisterEvent("PLAYER_ENTERING_WORLD")
 	-- Update token panel

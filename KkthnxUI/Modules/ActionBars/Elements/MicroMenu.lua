@@ -1,30 +1,12 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
--- TODO: Add mouseover back
-
 local _G = _G
 local table_insert = _G.table.insert
 local pairs = _G.pairs
 local type = _G.type
 
-local RegisterStateDriver = _G.RegisterStateDriver
-
 local buttonList = {}
-local buttonColors = {
-	[1] = { 0.35, 0.65, 1 },
-	[2] = { 1, 0.58, 0.65 },
-	[3] = { 0.21, 1, 0.95 },
-	[4] = { 1, 0.62, 0.1 },
-	[5] = { 0.96, 1, 0 },
-	[6] = { 0, 1, 0.1 },
-	[7] = { 0.7, 0.7, 1 },
-	[8] = { 1, 1, 1 },
-	[9] = { 1, 0.7, 0.58 },
-	[10] = { 1, 0.4, 0.4 },
-	[11] = { 1, 1, 1 },
-	[12] = { 1, 0.83, 0.50 },
-}
 
 local function onLeaveBar()
 	local KKUI_MB = _G.KKUI_MenuBar
@@ -145,13 +127,11 @@ function Module:MicroMenu()
 		return
 	end
 
-	local menubar = CreateFrame("Frame", "KKUI_MenuBar", UIParent)
+	local menubar = CreateFrame("Frame", "KKUI_MenuBar", K.PetBattleFrameHider)
 	menubar:SetSize(280, 20 * 1.4)
 	menubar:SetAlpha((C["ActionBar"].FadeMicroMenu and not menubar.IsMouseOvered and 0) or 1)
 	menubar:EnableMouse(false)
 	K.Mover(menubar, "Menubar", "Menubar", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 })
-
-	RegisterStateDriver(menubar, "visibility", "[petbattle] hide; show")
 
 	-- Generate Buttons
 	local buttonInfo = {
@@ -188,6 +168,11 @@ function Module:MicroMenu()
 	K.HideInterfaceOption(HelpOpenWebTicketButton)
 	MainMenuMicroButton:SetScript("OnUpdate", nil)
 
-	MicroButtonAndBagsBar:Hide()
-	MicroButtonAndBagsBar:UnregisterAllEvents()
+	if K.IsNewPatch then
+		BagsBar:Hide()
+		BagsBar:UnregisterAllEvents()
+	else
+		MicroButtonAndBagsBar:Hide()
+		MicroButtonAndBagsBar:UnregisterAllEvents()
+	end
 end
