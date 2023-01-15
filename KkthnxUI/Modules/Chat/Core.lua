@@ -516,7 +516,7 @@ function Module:OnEnable()
 	end
 
 	-- Hide Quick Join button
-	if QuickJoinToastButton then
+	if C["DataText"].Friends and QuickJoinToastButton then
 		QuickJoinToastButton:SetAlpha(0)
 		QuickJoinToastButton:EnableMouse(false)
 		QuickJoinToastButton:UnregisterAllEvents()

@@ -18,46 +18,36 @@ table_insert(C.defaultThemes, function()
 	local queueTex = "Interface\\HELPFRAME\\HelpIcon-ItemRestoration"
 	local homeTex = "Interface\\Buttons\\UI-HomeButton"
 
+	QuickJoinToastButton:SetSize(30, 32)
 	QuickJoinToastButton.FriendsButton:SetTexture(friendTex)
 	QuickJoinToastButton.QueueButton:SetTexture(queueTex)
-	QuickJoinToastButton:SetHighlightTexture("")
 
 	hooksecurefunc(QuickJoinToastButton, "ToastToFriendFinished", function(self)
 		self.FriendsButton:SetShown(not self.displayedToast)
+		self.FriendCount:SetShown(not self.displayedToast)
 	end)
 
 	hooksecurefunc(QuickJoinToastButton, "UpdateQueueIcon", function(self)
 		if not self.displayedToast then
 			return
 		end
+		self.FriendsButton:SetTexture(friendTex)
 		self.QueueButton:SetTexture(queueTex)
 		self.FlashingLayer:SetTexture(queueTex)
 		self.FriendsButton:SetShown(false)
+		self.FriendCount:SetShown(false)
 	end)
 
 	QuickJoinToastButton:HookScript("OnMouseDown", function(self)
 		self.FriendsButton:SetTexture(friendTex)
 	end)
-
 	QuickJoinToastButton:HookScript("OnMouseUp", function(self)
 		self.FriendsButton:SetTexture(friendTex)
 	end)
 
+	QuickJoinToastButton.Toast:ClearAllPoints()
+	QuickJoinToastButton.Toast:SetPoint("LEFT", QuickJoinToastButton, "RIGHT", -6, 0)
 	QuickJoinToastButton.Toast.Background:SetTexture("")
-
-	local bg = CreateFrame("Frame", nil, QuickJoinToastButton.Toast)
-	bg:SetPoint("TOPLEFT", 10, -1)
-	bg:SetPoint("BOTTOMRIGHT", 0, 3)
-	bg:CreateBorder()
-	bg:Hide()
-
-	hooksecurefunc(QuickJoinToastButton, "ShowToast", function()
-		bg:Show()
-	end)
-
-	hooksecurefunc(QuickJoinToastButton, "HideToast", function()
-		bg:Hide()
-	end)
 
 	ChatFrameChannelButton:SkinButton()
 	ChatFrameChannelButton:SetSize(16, 16)
