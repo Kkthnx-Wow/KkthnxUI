@@ -51,7 +51,7 @@ local function reskinRangeOverlay(item)
 	item:CreateBorder()
 	item:SetNormalTexture(0)
 	item.KKUI_Border:SetVertexColor(1, 0.82, 0.2)
-	item.icon:SetTexCoord(unpack(K.TexCoords))
+	item.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	item.icon:SetAllPoints()
 
 	local rangeOverlay = item:CreateTexture(nil, "OVERLAY")

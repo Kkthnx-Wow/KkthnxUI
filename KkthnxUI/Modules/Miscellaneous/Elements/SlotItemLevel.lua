@@ -50,7 +50,7 @@ function Module:CreateItemTexture(slot, relF, x, y)
 	local icon = slot:CreateTexture()
 	icon:SetPoint(relF, x, y)
 	icon:SetSize(14, 14)
-	icon:SetTexCoord(unpack(K.TexCoords))
+	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	icon.bg = CreateFrame("Frame", nil, slot)
 	icon.bg:SetAllPoints(icon)

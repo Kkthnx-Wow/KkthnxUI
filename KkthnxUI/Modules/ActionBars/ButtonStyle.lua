@@ -116,7 +116,7 @@ function Module:StyleActionButton(button)
 	if icon then
 		icon:SetAllPoints()
 		if not icon.__lockdown then
-			icon:SetTexCoord(unpack(K.TexCoords))
+			icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		end
 		button.__bg = CreateFrame("Frame", nil, button, "BackdropTemplate")
 		button.__bg:SetAllPoints(button)

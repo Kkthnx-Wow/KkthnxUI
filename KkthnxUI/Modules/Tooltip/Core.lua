@@ -414,39 +414,6 @@ function Module:ReskinTooltip()
 	end
 end
 
-function Module:SetupTooltipFonts()
-	local font = select(1, _G.KkthnxUIFont:GetFont())
-	local headerSize = 13
-	local smallSize = 11
-	local textSize = 12
-	local fontString = ""
-
-	GameTooltipHeaderText:SetFont(font, headerSize, fontString) -- Default size = 13.999999046326
-	GameTooltipText:SetFont(font, textSize, fontString) -- Default size = 12
-	GameTooltipTextSmall:SetFont(font, smallSize, fontString) -- Default size = 10
-
-	if not GameTooltip.hasMoney then
-		SetTooltipMoney(GameTooltip, 1, nil, fontString, fontString)
-		SetTooltipMoney(GameTooltip, 1, nil, fontString, fontString)
-		GameTooltip_ClearMoney(GameTooltip)
-	end
-	if GameTooltip.hasMoney then
-		for i = 1, GameTooltip.numMoneyFrames do
-			_G["GameTooltipMoneyFrame" .. i .. "PrefixText"]:SetFont(font, textSize, fontString) -- Default size = 12
-			_G["GameTooltipMoneyFrame" .. i .. "SuffixText"]:SetFont(font, textSize, fontString) -- Default size = 12
-		end
-	end
-
-	for _, tt in ipairs(GameTooltip.shoppingTooltips) do
-		for i = 1, tt:GetNumRegions() do
-			local region = select(i, tt:GetRegions())
-			if region:IsObjectType("FontString") then
-				region:SetFont(font, smallSize, fontString) -- Default size = ???
-			end
-		end
-	end
-end
-
 function Module:FixRecipeItemNameWidth()
 	if not self.GetName then
 		return
@@ -488,7 +455,6 @@ function Module:OnEnable()
 	hooksecurefunc("GameTooltip_ShowStatusBar", Module.GameTooltip_ShowStatusBar)
 	hooksecurefunc("GameTooltip_ShowProgressBar", Module.GameTooltip_ShowProgressBar)
 	hooksecurefunc("GameTooltip_SetDefaultAnchor", Module.GameTooltip_SetDefaultAnchor)
-	-- Module:SetupTooltipFonts()
 	Module:FixStoneSoupError()
 
 	-- Elements
@@ -546,6 +512,7 @@ Module:RegisterTooltips("KkthnxUI", function()
 		IMECandidatesFrame,
 		QuickKeybindTooltip,
 		GameSmallHeaderTooltip,
+		SettingsTooltip,
 	}
 	for _, f in pairs(tooltips) do
 		f:HookScript("OnShow", Module.ReskinTooltip)
@@ -554,10 +521,6 @@ Module:RegisterTooltips("KkthnxUI", function()
 	ItemRefTooltip.CloseButton:SkinCloseButton()
 	FloatingBattlePetTooltip.CloseButton:SkinCloseButton()
 	FloatingPetBattleAbilityTooltip.CloseButton:SkinCloseButton()
-
-	if SettingsTooltip then
-		Module.ReskinTooltip(SettingsTooltip)
-	end
 
 	-- DropdownMenu
 	local dropdowns = { "DropDownList", "L_DropDownList", "Lib_DropDownList" }
@@ -585,7 +548,7 @@ Module:RegisterTooltips("KkthnxUI", function()
 			if self.glow then
 				self.glow:Hide()
 			end
-			self.Icon:SetTexCoord(unpack(K.TexCoords))
+			self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			self.iconStyled = true
 		end
 	end)
@@ -597,14 +560,14 @@ Module:RegisterTooltips("KkthnxUI", function()
 			if isBuff and self.Buffs then
 				local frame = self.Buffs.frames[nextBuff]
 				if frame and frame.Icon then
-					frame.Icon:SetTexCoord(unpack(K.TexCoords))
+					frame.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 				end
 				nextBuff = nextBuff + 1
 			elseif (not isBuff) and self.Debuffs then
 				local frame = self.Debuffs.frames[nextDebuff]
 				if frame and frame.Icon then
 					frame.DebuffBorder:Hide()
-					frame.Icon:SetTexCoord(unpack(K.TexCoords))
+					frame.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 				end
 				nextDebuff = nextDebuff + 1
 			end
@@ -707,15 +670,15 @@ end)
 
 Module:RegisterTooltips("Blizzard_Contribution", function()
 	ContributionBuffTooltip:HookScript("OnShow", Module.ReskinTooltip)
-	ContributionBuffTooltip.Icon:SetTexCoord(unpack(K.TexCoords))
+	ContributionBuffTooltip.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	ContributionBuffTooltip.Border:SetAlpha(0)
 end)
 
 Module:RegisterTooltips("Blizzard_EncounterJournal", function()
 	EncounterJournalTooltip:HookScript("OnShow", Module.ReskinTooltip)
-	EncounterJournalTooltip.Item1.icon:SetTexCoord(unpack(K.TexCoords))
+	EncounterJournalTooltip.Item1.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	EncounterJournalTooltip.Item1.IconBorder:SetAlpha(0)
-	EncounterJournalTooltip.Item2.icon:SetTexCoord(unpack(K.TexCoords))
+	EncounterJournalTooltip.Item2.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	EncounterJournalTooltip.Item2.IconBorder:SetAlpha(0)
 end)
 

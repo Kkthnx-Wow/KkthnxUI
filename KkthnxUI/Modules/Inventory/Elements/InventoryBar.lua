@@ -25,7 +25,6 @@ function Module:BagBar_OnLeave()
 end
 
 function Module:BagBar_OnEvent(event)
-	Module:BagBar_UpdateVisibility()
 	bagBar:UnregisterEvent(event)
 end
 
@@ -46,7 +45,7 @@ function Module:SkinBag(bag)
 
 	icon:SetAllPoints()
 	icon:SetTexture((not bag.oldTex or bag.oldTex == 1721259) and "Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\Backpack.tga" or bag.oldTex)
-	icon:SetTexCoord(unpack(K.TexCoords))
+	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 end
 
 function Module:SetSizeAndPositionBagBar()

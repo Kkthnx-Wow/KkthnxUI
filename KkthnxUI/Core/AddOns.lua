@@ -177,7 +177,7 @@ local function ForceHekiliOptions()
 		},
 	}
 
-	KkthnxUIDB.Variables["HekiliRequest"] = false
+	KkthnxUIDB.Variables[K.Realm][K.Name].HekiliRequest = false
 end
 
 local function ForceMaxDPSOptions()
@@ -201,7 +201,7 @@ local function ForceMaxDPSOptions()
 		},
 	}
 
-	KkthnxUIDB.Variables["MaxDpsRequest"] = false
+	KkthnxUIDB.Variables[K.Realm][K.Name].MaxDpsRequest = false
 end
 
 local function ForceDBMOptions()
@@ -259,13 +259,15 @@ local function ForceDBMOptions()
 	DBM_ASO["Default"]["WarningFontSize"] = 18
 	DBM_ASO["Default"]["SpecialWarningFontSize2"] = 24
 
-	KkthnxUIDB.Variables["DBMRequest"] = false
+	KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest = false
 end
 
 local function ForceCursorTrail()
 	if not IsAddOnLoaded("CursorTrail") then
 		return
 	end
+
+	print(IsAddOnLoaded("CursorTrail"))
 
 	if CursorTrail_PlayerConfig then
 		table_wipe(CursorTrail_PlayerConfig)
@@ -284,23 +286,23 @@ local function ForceCursorTrail()
 		["Strata"] = "HIGH",
 	}
 
-	KkthnxUIDB.Variables["CursorTrailRequest"] = false
+	KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest = false
 end
 
 function Module:ForceAddonSkins()
-	if KkthnxUIDB.Variables["DBMRequest"] then
+	if KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest then
 		ForceDBMOptions()
 	end
 
-	if KkthnxUIDB.Variables["MaxDpsRequest"] then
+	if KkthnxUIDB.Variables[K.Realm][K.Name].MaxDpsRequest then
 		ForceMaxDPSOptions()
 	end
 
-	if KkthnxUIDB.Variables["CursorTrailRequest"] then
+	if KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest then
 		ForceCursorTrail()
 	end
 
-	if KkthnxUIDB.Variables["HekiliRequest"] then
+	if KkthnxUIDB.Variables[K.Realm][K.Name].HekiliRequest then
 		ForceHekiliOptions()
 	end
 end

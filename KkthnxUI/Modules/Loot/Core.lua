@@ -140,7 +140,7 @@ local function CreateSlot(id)
 	slot.iconFrame = iconFrame
 
 	local icon = iconFrame:CreateTexture(nil, "ARTWORK")
-	icon:SetTexCoord(unpack(K.TexCoords))
+	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	icon:SetAllPoints()
 	slot.icon = icon
 
@@ -170,7 +170,7 @@ local function CreateSlot(id)
 	local questTexture = iconFrame:CreateTexture(nil, "OVERLAY")
 	questTexture:SetAllPoints()
 	questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG)
-	questTexture:SetTexCoord(unpack(K.TexCoords))
+	questTexture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	slot.questTexture = questTexture
 
 	lootFrame.slots[id] = slot

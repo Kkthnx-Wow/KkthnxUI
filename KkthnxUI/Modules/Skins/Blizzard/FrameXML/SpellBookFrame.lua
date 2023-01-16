@@ -22,9 +22,7 @@ local function handleSkillButton(button)
 		button.IconTexture:SetPoint("BOTTOMRIGHT", -4, 4)
 
 		if not button.KKUI_Backdrop then
-			button:CreateBackdrop()
-			button.KKUI_Backdrop:SetPoint("TOPLEFT", 2, -2)
-			button.KKUI_Backdrop:SetPoint("BOTTOMRIGHT", -2, 2)
+			button:CreateBackdrop(2, -2, -2, 2)
 		end
 	end
 
