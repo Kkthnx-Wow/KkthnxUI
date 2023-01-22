@@ -10,11 +10,11 @@ local playerNearDeath = false
 local petNearDeath = false
 
 function Module:SetupHealthAnnounce()
-	if UnitIsPlayer("player") and not UnitIsDead("player") then
-		local playerHealth = UnitHealth("player")
-		local playerHealthMax = UnitHealthMax("player")
-		local playerHealthPercent = K.Round(playerHealth / playerHealthMax * 100, 1)
+	local playerHealth = UnitHealth("player")
+	local playerHealthMax = UnitHealthMax("player")
+	local playerHealthPercent = K.Round(playerHealth / playerHealthMax * 100, 1)
 
+	if UnitIsPlayer("player") and not UnitIsDead("player") then
 		if playerHealthPercent <= 30 and not playerNearDeath then
 			playerNearDeath = true
 			UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], K.Name))
@@ -24,22 +24,20 @@ function Module:SetupHealthAnnounce()
 		end
 	end
 
-	if UnitExists("pet") and not UnitIsDead("pet") then
-		if not K.Class == "HUNTER" or not K.Class == "WARLOCK" then
-			return
-		end
+	local validPetClasses = { "HUNTER", "WARLOCK" }
+	local petHealth = UnitHealth("pet")
+	local petHealthMax = UnitHealthMax("pet")
+	local petHealthPercent = K.Round(petHealth / petHealthMax * 100, 1) or 1
 
-		local petHealth = UnitHealth("pet")
-		local petHealthMax = UnitHealthMax("pet")
-		local petHealthPercent = K.Round(petHealth / petHealthMax * 100, 1) or 1
+	-- Ternary operator to check if the player's class is valid for this function
+	local isValidPetClass = (tContains(validPetClasses, K.Class) and UnitExists("pet") and not UnitIsDead("pet"))
 
-		if petHealthPercent <= 30 and not petNearDeath then
-			petNearDeath = true
-			UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], UnitName("pet")))
-			PlaySound(211593) -- Spell_PetBattle_Health_Buff
-		elseif petHealthPercent > 30 + 20 and petNearDeath then
-			petNearDeath = false
-		end
+	if petHealthPercent <= 30 and not petNearDeath and isValidPetClass then
+		petNearDeath = true
+		UIErrorsFrame:AddMessage(K.InfoColor .. string_format(L["The health for %s is low!"], UnitName("pet")))
+		PlaySound(211593) -- Spell_PetBattle_Health_Buff
+	elseif petHealthPercent > 50 and petNearDeath then
+		petNearDeath = false
 	end
 end
 

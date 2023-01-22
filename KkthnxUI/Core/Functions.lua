@@ -74,23 +74,25 @@ do
 
 	-- Return rounded number
 	function K.Round(number, idp)
+		-- Set the default number of decimal places to 0 if none is specified
 		idp = idp or 0
 		local mult = 10 ^ idp
-		return math_floor(number * mult + 0.5) / mult
+		-- Round the number to the specified number of decimal places
+		-- by first multiplying it by 10 to the power of idp,
+		-- then rounding it to the nearest whole number using math.floor,
+		-- and finally dividing it by 10 to the power of idp
+		return math.floor(number * mult + 0.5) / mult
 	end
 
 	-- RGBToHex
 	function K.RGBToHex(r, g, b)
+		-- Check if r is a table, and extract r, g, b values from it if necessary
+		if type(r) == "table" then
+			r, g, b = r.r or r[1], r.g or r[2], r.b or r[3]
+		end
+		-- Check if r is not nil, and return the hex code if true
 		if r then
-			if type(r) == "table" then
-				if r.r then
-					r, g, b = r.r, r.g, r.b
-				else
-					r, g, b = unpack(r)
-				end
-			end
-
-			return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
+			return string.format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 		end
 	end
 
@@ -112,13 +114,16 @@ do
 	end
 
 	function K.SplitList(list, variable, cleanup)
+		-- Wipe the table if cleanup is true
 		if cleanup then
-			table_wipe(list)
+			table.wipe(list)
 		end
 
-		for word in gmatch(variable, "%S+") do
-			word = tonumber(word) or word -- use number if exists, needs review
-			list[word] = true
+		for word in string.gmatch(variable, "%S+") do
+			-- Convert word to number if it is numeric
+			word = tonumber(word) or word
+			-- Add word to the list
+			table.insert(list, word)
 		end
 	end
 
@@ -156,13 +161,19 @@ end
 do
 	-- Gradient Frame
 	local gradientFrom, gradientTo = CreateColor(0, 0, 0, 0.5), CreateColor(0.3, 0.3, 0.3, 0.3)
+	-- function to create a gradient frame
 	function K.CreateGF(self, w, h, o, r, g, b, a1, a2)
+		-- set the size of the frame
 		self:SetSize(w, h)
+		-- set the frame strata
 		self:SetFrameStrata("BACKGROUND")
-
+		-- create the gradient texture
 		local gradientFrame = self:CreateTexture(nil, "BACKGROUND")
+		-- set the texture to cover the entire frame
 		gradientFrame:SetAllPoints()
+		-- set the texture to the white 8x8 texture
 		gradientFrame:SetTexture(C["Media"].Textures.White8x8Texture)
+		-- set the gradient type and colors
 		gradientFrame:SetGradient("Vertical", gradientFrom, gradientTo)
 	end
 
@@ -172,6 +183,11 @@ do
 		end
 
 		local fs = self:CreateFontString(nil, "OVERLAY")
+
+		-- check if fontstring is created or not
+		if not fs then
+			return
+		end
 
 		if not textstyle or textstyle == "" then
 			fs:SetFont(select(1, KkthnxUIFont:GetFont()), size, "")
@@ -191,6 +207,7 @@ do
 			fs:SetTextColor(1, 1, 1)
 		end
 
+		-- check if position is set
 		if anchor and x and y then
 			fs:SetPoint(anchor, x, y)
 		else
@@ -203,41 +220,51 @@ end
 
 do
 	function K.ColorClass(class)
+		-- check if the class color exists in the class color table
 		local color = K.ClassColors[class]
+		-- if the class color does not exist, return white
 		if not color then
 			return 1, 1, 1
 		end
-
+		-- return the red, green, and blue values of the class color
 		return color.r, color.g, color.b
 	end
 
 	function K.UnitColor(unit)
+		-- set the default color to white
 		local r, g, b = 1, 1, 1
-
+		-- check if the unit is a player
 		if UnitIsPlayer(unit) then
 			local class = select(2, UnitClass(unit))
+			-- check if class exists, and get the color of the class
 			if class then
 				r, g, b = K.ColorClass(class)
 			end
+		-- check if the unit's tap is denied
 		elseif UnitIsTapDenied(unit) then
 			r, g, b = 0.6, 0.6, 0.6
 		else
+			-- get the reaction of the unit to the player
 			local reaction = UnitReaction(unit, "player")
+			-- check if reaction exists, and get the color of the reaction
 			if reaction then
 				local color = K.Colors.reaction[reaction]
 				r, g, b = color[1], color[2], color[3]
 			end
 		end
-
+		-- return the red, green, and blue values of the color
 		return r, g, b
 	end
 end
 
 do
 	function K.TogglePanel(frame)
+		-- check if the frame is currently shown
 		if frame:IsShown() then
+			-- if the frame is shown, hide it
 			frame:Hide()
 		else
+			-- if the frame is not shown, show it
 			frame:Show()
 		end
 	end
@@ -350,6 +377,7 @@ do
 	local function CheckRole()
 		local tree = GetSpecialization()
 		if not tree then
+			K.Role = nil
 			return
 		end
 
@@ -368,6 +396,7 @@ do
 	end
 	K:RegisterEvent("PLAYER_LOGIN", CheckRole)
 	K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
+	K:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", CheckRole)
 end
 
 -- Chat channel check

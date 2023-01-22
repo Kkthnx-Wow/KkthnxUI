@@ -20,21 +20,24 @@ local lastVCTime = 0
 local isVCInit
 local tn = tonumber
 
-local function HandleVersonTag(version)
-	local major, minor = string_split(".", version)
-	major, minor = tn(major), tn(minor)
+local function HandleVersionTag(version)
+	local major, minor = string.split(".", version)
+	major, minor = tonumber(major), tonumber(minor)
+
 	if K.LibBase64:CV(major) then
 		major, minor = 0, 0
+
 		if K.isDeveloper and author then
-			-- print("Moron: " .. author)
+			print("Moron: " .. author)
 		end
 	end
+
 	return major, minor
 end
 
 function Module:VersionCheck_Compare(new, old, author)
-	local new1, new2 = HandleVersonTag(new, author)
-	local old1, old2 = HandleVersonTag(old)
+	local new1, new2 = HandleVersionTag(new, author)
+	local old1, old2 = HandleVersionTag(old)
 	if new1 > old1 or (new1 == old1 and new2 > old2) then
 		return "IsNew"
 	elseif new1 < old1 or (new1 == old1 and new2 < old2) then
@@ -96,6 +99,8 @@ function Module:VersionCheck_Create(text)
 	UIUpdateNotice.OkayButton.Text:SetTextColor(0, 1, 0)
 	UIUpdateNotice.OkayButton.Text:SetPoint("CENTER", UIUpdateNotice.OkayButton, "CENTER", 0, 0)
 	K.AddTooltip(UIUpdateNotice.OkayButton, "ANCHOR_BOTTOM", K.SystemColor .. "Obviously |cff669dffKkthnx|r is trusting you to go update and not complain about a missing feature or a bug because you are out of date |CFFFF0000<3|r")
+
+	return UIUpdateNotice
 end
 
 function Module:VersionCheck_Init()

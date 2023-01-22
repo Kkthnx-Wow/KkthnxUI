@@ -208,7 +208,7 @@ tinsert(C.defaultThemes, function()
 			end
 		end
 	end
-	hooksecurefunc(ReputationFrame.ScrollBox, "Update", updateReputationBars)
+	-- hooksecurefunc(ReputationFrame.ScrollBox, "Update", updateReputationBars) -- Setting a new texture is causing the texture to freak out idk why.
 
 	hooksecurefunc(PaperDollFrame.TitleManagerPane.ScrollBox, "Update", function(self)
 		for i = 1, self.ScrollTarget:GetNumChildren() do

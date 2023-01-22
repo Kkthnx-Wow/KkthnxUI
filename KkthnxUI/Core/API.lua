@@ -38,62 +38,63 @@ do
 	end
 end
 
--- This is a lot...
+-- CreateBorder function: creates a border and background for the passed frame (bFrame)
+-- bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha are optional arguments to customize the appearance of the border and background
 local function CreateBorder(bFrame, ...)
 	local bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha = ...
 	-- Border
-	local BorderSubLevel = bSubLevel or "OVERLAY"
-	local BorderLayer = bLayer or 1
-	local BorderValue = C["General"].BorderStyle.Value or "KkthnxUI"
+	local BorderSubLevel = bSubLevel or "OVERLAY" -- Sublevel of the border, default is "OVERLAY"
+	local BorderLayer = bLayer or 1 -- Layer of the border, default is 1
+	local BorderValue = C["General"].BorderStyle.Value or "KkthnxUI" -- Border style value, default is "KkthnxUI"
 	local BorderSize
 
-	if BorderValue == "KkthnxUI" then
+	if BorderValue == "KkthnxUI" then -- Size of the border, default is 12
 		BorderSize = bSize or 12
 	else
 		BorderSize = bSize or 10
 	end
 
-	if not bFrame.KKUI_Border then
-		local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga")
-		local BorderOffset = bOffset or -4
-		local BorderRed = bRed or C["Media"].Borders.ColorBorder[1]
-		local BorderGreen = bGreen or C["Media"].Borders.ColorBorder[2]
-		local BorderBlue = bBlue or C["Media"].Borders.ColorBorder[3]
-		local BorderAlpha = bAlpha or 1
+	if not bFrame.KKUI_Border then -- check if the frame already has a border
+		local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga") -- texture of the border, default is "Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga"
+		local BorderOffset = bOffset or -4 -- offset of the border, default is -4
+		local BorderRed = bRed or C["Media"].Borders.ColorBorder[1] -- red color of the border, default is C["Media"].Borders.ColorBorder[1]
+		local BorderGreen = bGreen or C["Media"].Borders.ColorBorder[2] -- green color of the border, default is C["Media"].Borders.ColorBorder[2]
+		local BorderBlue = bBlue or C["Media"].Borders.ColorBorder[3] -- blue color of the border, default is C["Media"].Borders.ColorBorder[3]
+		local BorderAlpha = bAlpha or 1 -- alpha of the border, default is 1
 
 		-- Create Our Border
 		local kkui_border = K.CreateBorder(bFrame, BorderSubLevel, BorderLayer)
-		kkui_border:SetSize(BorderSize)
-		kkui_border:SetTexture(BorderTexture)
-		kkui_border:SetOffset(BorderOffset)
-		if C["General"].ColorTextures then
+		kkui_border:SetSize(BorderSize) -- set the size of the border
+		kkui_border:SetTexture(BorderTexture) -- set the texture of the border
+		kkui_border:SetOffset(BorderOffset) -- set the offset of the border
+		if C["General"].ColorTextures then -- check if C["General"].ColorTextures is true
 			kkui_border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		else
 			kkui_border:SetVertexColor(BorderRed, BorderGreen, BorderBlue, BorderAlpha)
 		end
 
-		bFrame.KKUI_Border = kkui_border
+		bFrame.KKUI_Border = kkui_border -- save the border as a property of the frame so that it can be referenced later on.
 	end
 
-	if not bFrame.KKUI_Background then
-		local BackgroundTexture = bgTexture or C["Media"].Textures.White8x8Texture
-		local BackgroundSubLevel = bgSubLevel or "BACKGROUND"
-		local BackgroundLayer = bgLayer or -2
-		local BackgroundPoint = bgPoint or 0
-		local BackgroundRed = bgRed or C["Media"].Backdrops.ColorBackdrop[1]
-		local BackgroundGreen = bgGreen or C["Media"].Backdrops.ColorBackdrop[2]
-		local BackgroundBlue = bgBlue or C["Media"].Backdrops.ColorBackdrop[3]
-		local BackgroundAlpha = bgAlpha or C["Media"].Backdrops.ColorBackdrop[4]
+	if not bFrame.KKUI_Background then -- check if the frame already has a background
+		local BackgroundTexture = bgTexture or C["Media"].Textures.White8x8Texture -- texture of the background, default is C["Media"].Textures.White8x8Texture
+		local BackgroundSubLevel = bgSubLevel or "BACKGROUND" -- sub-level of the background, default is "BACKGROUND"
+		local BackgroundLayer = bgLayer or -2 -- layer of the background, default is -2
+		local BackgroundPoint = bgPoint or 0 -- point of the background, default is 0
+		local BackgroundRed = bgRed or C["Media"].Backdrops.ColorBackdrop[1] -- red color of the background, default is C["Media"].Backdrops.ColorBackdrop[1]
+		local BackgroundGreen = bgGreen or C["Media"].Backdrops.ColorBackdrop[2] -- green color of the background, default is C["Media"].Backdrops.ColorBackdrop[2]
+		local BackgroundBlue = bgBlue or C["Media"].Backdrops.ColorBackdrop[3] -- blue color of the background, default is C["Media"].Backdrops.ColorBackdrop[3]
+		local BackgroundAlpha = bgAlpha or C["Media"].Backdrops.ColorBackdrop[4] -- alpha of the background, default is C["Media"].Backdrops.ColorBackdrop[4]
 
 		-- Create Our Background
-		local kkui_background = bFrame:CreateTexture(nil, BackgroundSubLevel, nil, BackgroundLayer)
-		kkui_background:SetTexture(BackgroundTexture, true, true)
-		kkui_background:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		kkui_background:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BackgroundPoint, -BackgroundPoint)
-		kkui_background:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint)
-		kkui_background:SetVertexColor(BackgroundRed, BackgroundGreen, BackgroundBlue, BackgroundAlpha)
+		local kkui_background = bFrame:CreateTexture(nil, BackgroundSubLevel, nil, BackgroundLayer) -- create the background texture
+		kkui_background:SetTexture(BackgroundTexture, true, true) -- set the texture of the background
+		kkui_background:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4]) -- set the texture coordinates of the background
+		kkui_background:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BackgroundPoint, -BackgroundPoint) -- set the position of the background
+		kkui_background:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint) -- set the size of the background
+		kkui_background:SetVertexColor(BackgroundRed, BackgroundGreen, BackgroundBlue, BackgroundAlpha) -- set the color of the background
 
-		bFrame.KKUI_Background = kkui_background
+		bFrame.KKUI_Background = kkui_background -- save the background as a property of the frame so that it can be referenced later on.
 	end
 end
 
@@ -103,15 +104,15 @@ local function CreateBackdrop(bFrame, bPointa, bPointb, bPointc, bPointd, bSubLe
 		return
 	end
 
-	local BorderPointA = bPointa or 0
-	local BorderPointB = bPointb or 0
-	local BorderPointC = bPointc or 0
-	local BorderPointD = bPointd or 0
+	local BorderPointA = bPointa or 0 -- The first point of the border's position.
+	local BorderPointB = bPointb or 0 -- The second point of the border's position.
+	local BorderPointC = bPointc or 0 -- The third point of the border's position.
+	local BorderPointD = bPointd or 0 -- The fourth point of the border's position.
 
-	local kkui_backdrop = CreateFrame("Frame", "$parentBackdrop", bFrame)
-	kkui_backdrop:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BorderPointA, BorderPointB)
-	kkui_backdrop:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", BorderPointC, BorderPointD)
-	kkui_backdrop:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
+	local kkui_backdrop = CreateFrame("Frame", "$parentBackdrop", bFrame) -- Create the backdrop frame.
+	kkui_backdrop:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BorderPointA, BorderPointB) -- Set the first point of the border's position.
+	kkui_backdrop:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", BorderPointC, BorderPointD) -- Set the second point of the border's position.
+	kkui_backdrop:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha) -- Create the border.
 
 	if bFrame:GetFrameLevel() - 1 >= 0 then
 		kkui_backdrop:SetFrameLevel(bFrame:GetFrameLevel())
@@ -119,7 +120,7 @@ local function CreateBackdrop(bFrame, bPointa, bPointb, bPointc, bPointd, bSubLe
 		kkui_backdrop:SetFrameLevel(0)
 	end
 
-	bFrame.KKUI_Backdrop = kkui_backdrop
+	bFrame.KKUI_Backdrop = kkui_backdrop -- Save the backdrop as a property of the frame so that it can be referenced later on.
 end
 
 -- The Famous Shadow?
@@ -161,12 +162,17 @@ end
 
 -- Its A Killer.
 local function Kill(object)
+	-- Check if the object has an "UnregisterAllEvents" method
 	if object.UnregisterAllEvents then
+		-- Unregister all events for the object
 		object:UnregisterAllEvents()
+		-- Set the object's parent to K.UIFrameHider (likely a hidden frame used for hiding objects)
 		object:SetParent(K.UIFrameHider)
 	else
+		-- If the object does not have an "UnregisterAllEvents" method, set its "Show" method to its "Hide" method
 		object.Show = object.Hide
 	end
+	-- Hide the object
 	object:Hide()
 end
 
