@@ -230,11 +230,14 @@ local function isMessageProtected(msg)
 end
 
 local function replaceMessage(msg, r, g, b)
+	-- Convert the color values to a hex string
 	local hexRGB = K.RGBToHex(r, g, b)
-	msg = string_gsub(msg, "|T(.-):.-|t", "%1") -- accept texture path or id
-	msg = gsub(msg, "|A(.-):.-|a", "%1") -- accept atlas path or id, needs review
-
-	return string_format("%s%s|r", hexRGB, msg)
+	-- Replace the texture path or id with only the path/id
+	msg = string.gsub(msg, "|T(.-):.-|t", "%1")
+	-- Replace the atlas path or id with only the path/id
+	msg = string.gsub(msg, "|A(.-):.-|a", "%1")
+	-- Return the modified message with the hex color code added
+	return string.format("|cff%s%s|r", hexRGB, msg)
 end
 
 function Module:GetChatLines()

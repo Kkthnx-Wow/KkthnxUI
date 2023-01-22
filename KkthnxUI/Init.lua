@@ -49,9 +49,6 @@ local UnitSex = _G.UnitSex
 Engine[1] = {} -- K, Main
 Engine[2] = {} -- C, Config
 Engine[3] = {} -- L, Locale
-Engine[4] = {} -- DB, Database
-
-KkthnxUIDB, KkthnxUIADB, KkthnxUIPDB = {}, {}, {}
 
 local K, C, L, DB = unpack(Engine)
 

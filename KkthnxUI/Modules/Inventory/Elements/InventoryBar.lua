@@ -156,17 +156,18 @@ function Module:CreateInventoryBar()
 	bagBar:SetScript("OnEvent", Module.BagBar_OnEvent)
 	bagBar:EnableMouse(true)
 
-	_G.MainMenuBarBackpackButton:SetParent(bagBar)
-	_G.MainMenuBarBackpackButton:ClearAllPoints()
-	_G.MainMenuBarBackpackButtonCount:SetFontObject(K.UIFontOutline)
-	_G.MainMenuBarBackpackButtonCount:ClearAllPoints()
-	_G.MainMenuBarBackpackButtonCount:SetPoint("BOTTOMRIGHT", _G.MainMenuBarBackpackButton, "BOTTOMRIGHT", -1, 4)
-	_G.MainMenuBarBackpackButton:HookScript("OnEnter", Module.BagBar_OnEnter)
-	_G.MainMenuBarBackpackButton:HookScript("OnLeave", Module.BagBar_OnLeave)
+	local backpackButton = _G.MainMenuBarBackpackButton
+	backpackButton:SetParent(bagBar)
+	backpackButton:ClearAllPoints()
+	backpackButton.Count:SetFontObject(K.UIFontOutline)
+	backpackButton.Count:ClearAllPoints()
+	backpackButton.Count:SetPoint("BOTTOMRIGHT", backpackButton, "BOTTOMRIGHT", -1, 4)
+	backpackButton:HookScript("OnEnter", Module.BagBar_OnEnter)
+	backpackButton:HookScript("OnLeave", Module.BagBar_OnLeave)
 
-	tinsert(buttonList, _G.MainMenuBarBackpackButton)
-	Module:SkinBag(_G.MainMenuBarBackpackButton)
-	Module.BagButton_UpdateTextures(_G.MainMenuBarBackpackButton)
+	tinsert(buttonList, backpackButton)
+	Module:SkinBag(backpackButton)
+	Module.BagButton_UpdateTextures(backpackButton)
 
 	for i = 0, NUM_BAG_FRAMES - 1 do
 		local b = _G["CharacterBag" .. i .. "Slot"]
