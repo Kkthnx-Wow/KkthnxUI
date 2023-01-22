@@ -41,8 +41,10 @@ local AutoThanksList = {
 }
 
 function Module.SetupAutoGoodbye()
-	C_Timer_After(math.random(2, 6), function() -- Random the amount of time to wait to say thanks
-		SendChatMessage(AutoThanksList[math_random(1, #AutoThanksList)], "INSTANCE_CHAT") -- Always INSTANCE_CHAT
+	local randomWaitTime = math.random(2, 5) -- Random the amount of time to wait to say thanks
+	C_Timer_After(randomWaitTime, function()
+		local randomThanksMessage = AutoThanksList[math_random(1, #AutoThanksList)] -- Choose a random message from the list of messages
+		SendChatMessage(randomThanksMessage, "INSTANCE_CHAT") -- Always INSTANCE_CHAT
 	end)
 end
 

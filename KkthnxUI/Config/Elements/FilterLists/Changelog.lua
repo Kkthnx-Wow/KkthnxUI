@@ -20,6 +20,30 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.4.6] - 2023-1-22",
+		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
+		Sections = {
+
+			{
+				Header = "Quote",
+				Entries = {
+					"If you can dream it, you can do it. - Walt Disney",
+				},
+			},
+
+			{
+				Header = "General",
+				Entries = {
+					"Improved code readability and performance.",
+					"Refactored code for better maintainability.",
+					"Fixed various UI bugs and improved overall stability.",
+					"Added support for new features and improvements to existing ones.",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.4.5] - 2023-1-5",
 		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {

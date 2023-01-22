@@ -60,12 +60,12 @@ local function BagDelayedUpdate(event)
 	for bag = 0, 4 do
 		for slot = 0, C_Container_GetContainerNumSlots(bag) do
 			local cInfo = C_Container_GetContainerItemInfo(bag, slot)
-			if cInfo then
-				if cInfo.hasLoot and not cInfo.isLocked and cInfo.itemID and C.AutoOpenItems[cInfo.itemID] then
-					K.Print(K.SystemColor .. OPENING .. ":|r " .. C_Container_GetContainerItemLink(bag, slot))
-					C_Container.UseContainerItem(bag, slot)
-					return
-				end
+
+			if cInfo and cInfo.hasLoot and not cInfo.isLocked and cInfo.itemID and C.AutoOpenItems[cInfo.itemID] then
+				K.Print(K.SystemColor .. OPENING .. ":|r " .. C_Container_GetContainerItemLink(bag, slot))
+				C_Container.UseContainerItem(bag, slot)
+
+				return
 			end
 		end
 	end

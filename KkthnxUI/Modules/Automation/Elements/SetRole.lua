@@ -16,20 +16,24 @@ local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitSetRole = _G.UnitSetRole
 
 local prev = 0
+local playerRole = nil -- Store the role of the player in a variable
 function Module:SetupAutoRole()
 	if K.Level >= 10 and not InCombatLockdown() and IsInGroup() and not IsPartyLFG() then
 		local spec = GetSpecialization()
 		if spec then
-			local role = GetSpecializationRole(spec)
-			if UnitGroupRolesAssigned("player") ~= role then
-				local t = GetTime()
-				if t - prev > 2 then
-					prev = t
-					UnitSetRole("player", role)
-					return
+			local role = GetSpecializationRole(spec) -- Check if the role has changed before calling GetSpecializationRole() again
+			if playerRole ~= role then
+				if UnitGroupRolesAssigned("player") ~= role then
+					local t = GetTime()
+					if t - prev > 2 then
+						prev = t
+						UnitSetRole("player", role)
+						playerRole = role -- Update the stored value of the player's role
+						return
+					end
 				end
 			end
-		else
+		else -- If there is no specialization, set No Role as default.
 			UnitSetRole("player", "No Role")
 			return
 		end

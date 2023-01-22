@@ -13,17 +13,13 @@ local function PLAYER_DEAD()
 		return
 	end
 
-	-- Resurrect if player is in a battleground
+	-- Resurrect if player is in a PvP location or battleground
 	local InstStat, InstType = IsInInstance()
-	if InstStat and InstType == "pvp" then
-		RepopMe()
-		return
-	end
-
-	-- Resurrect if playuer is in a PvP location
 	local areaID = C_Map_GetBestMapForUnit("player") or 0
+
 	if
-		areaID == 123 -- Wintergrasp
+		(InstStat and InstType == "pvp")
+		or areaID == 123 -- Wintergrasp
 		or areaID == 244 -- Tol Barad (PvP)
 		or areaID == 588 -- Ashran
 		or areaID == 622 -- Stormshield

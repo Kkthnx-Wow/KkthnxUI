@@ -16,7 +16,8 @@ function Module:SetupAutoKeystone()
 			local cInfo = C_Container_GetContainerItemInfo(container, slot)
 			if cInfo and cInfo.itemID then
 				-- print("itemID", itemID) -- Debug
-				local classID, subClassID = select(12, GetItemInfo(cInfo.itemID))
+				local itemName = GetItemInfo(cInfo.itemID) -- Added line to get the item name from the item ID
+				local classID, subClassID = select(12, GetItemClassInfo(select(11, GetItemInfo(itemName)))) -- Changed the function to GetItemClassInfo and added the argument of select(11, GetItemInfo(itemName)) to get the class index from the item name
 				if classID and subClassID then
 					-- print("classID", classID) -- Debug
 					-- print("subClassID", subClassID) -- Debug
