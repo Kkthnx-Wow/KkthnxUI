@@ -40,6 +40,10 @@ local filteredStyle = {
 }
 
 function Module:UpdateClassPortraits(unit)
+	-- This function is checking the value of a config variable "PortraitStyle"
+	-- and depending on its value, it is setting the texture of a UI element (self) to either a default set of class icons
+	-- or a new set of class icons. If the value is "NoPortraits" it returns.
+
 	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
 		return
 	end
@@ -49,27 +53,23 @@ function Module:UpdateClassPortraits(unit)
 	end
 
 	local _, unitClass = UnitClass(unit)
+
 	if unitClass then
 		local PortraitValue = C["Unitframe"].PortraitStyle.Value
 		local ClassTCoords = CLASS_ICON_TCOORDS[unitClass]
 
-		local defaultCPs = "ClassPortraits"
-		local newCPs = "NewClassPortraits"
-
-		for _, value in pairs({ PortraitValue }) do
-			if value and value == defaultCPs and UnitIsPlayer(unit) then
-				self:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\OLD-ICONS-CLASSES")
-				if ClassTCoords then
-					self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
-				end
-			elseif value and value == newCPs and UnitIsPlayer(unit) then
-				self:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES")
-				if ClassTCoords then
-					self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
-				end
-			else
-				self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+		if PortraitValue == "ClassPortraits" and UnitIsPlayer(unit) then
+			self:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\OLD-ICONS-CLASSES")
+			if ClassTCoords then
+				self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
 			end
+		elseif PortraitValue == "NewClassPortraits" and UnitIsPlayer(unit) then
+			self:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES")
+			if ClassTCoords then
+				self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
+			end
+		else
+			self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		end
 	end
 end
@@ -96,43 +96,32 @@ function Module:UpdateThreat(_, unit)
 		return
 	end
 
-	local portraitStyle = C["Unitframe"].PortraitStyle.Value
+	-- Get the current threat status of the unit
 	local status = UnitThreatSituation(unit)
+	if not status then
+		return
+	end
+
+	-- Get the portrait style, health frame and portrait frame
+	local portraitStyle = C["Unitframe"].PortraitStyle.Value
 	local health = self.Health
 	local portrait = self.Portrait
 
+	-- Check the portrait style and change the border color accordingly
 	if portraitStyle == "ThreeDPortraits" then
-		if not portrait.KKUI_Border then
-			return
-		end
-
-		if status and status > 1 then
+		if portrait.KKUI_Border then -- Check if the border object exists
 			local r, g, b = unpack(oUF.colors.threat[status])
 			portrait.KKUI_Border:SetVertexColor(r, g, b)
-		else
-			K.SetBorderColor(portrait.KKUI_Border)
 		end
 	elseif portraitStyle ~= "ThreeDPortraits" and portraitStyle ~= "NoPortraits" and portraitStyle ~= "OverlayPortrait" then
-		if not portrait.Border.KKUI_Border then
-			return
-		end
-
-		if status and status > 1 then
+		if portrait.Border.KKUI_Border then -- Check if the border object exists
 			local r, g, b = unpack(oUF.colors.threat[status])
 			portrait.Border.KKUI_Border:SetVertexColor(r, g, b)
-		else
-			K.SetBorderColor(portrait.Border.KKUI_Border)
 		end
 	elseif portraitStyle == "NoPortraits" then
-		if not health.KKUI_Border then
-			return
-		end
-
-		if status and status > 1 then
+		if health.KKUI_Border then -- Check if the border object exists
 			local r, g, b = unpack(oUF.colors.threat[status])
 			health.KKUI_Border:SetVertexColor(r, g, b)
-		else
-			K.SetBorderColor(health.KKUI_Border)
 		end
 	end
 end
@@ -233,11 +222,11 @@ function Module.PostCreateButton(element, button)
 end
 
 Module.ReplacedSpellIcons = {
-	[368078] = 348567, -- 移速
-	[368079] = 348567, -- 移速
-	[368103] = 648208, -- 急速
+	[368078] = 348567, -- Movement Speed
+	[368079] = 348567, -- Movement Speed
+	[368103] = 648208, -- Swiftness
 	[368243] = 237538, -- CD
-	[373785] = 236293, -- S4，大魔王伪装
+	[373785] = 236293, -- S4, Great Warlock Camouflage
 }
 
 local dispellType = {
@@ -900,24 +889,32 @@ function Module:UpdateRaidDebuffIndicator()
 	end
 end
 
+-- Function that plays a sound when the target or focus changes
 local function CreateTargetSound(_, unit)
+	-- Check if the unit exists
 	if UnitExists(unit) then
+		-- Check if the unit is an enemy
 		if UnitIsEnemy("player", unit) then
 			PlaySound(SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
+		-- Check if the unit is friendly
 		elseif UnitIsFriend("player", unit) then
 			PlaySound(SOUNDKIT.IG_CHARACTER_NPC_SELECT)
+		-- Unit is neutral
 		else
 			PlaySound(SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT)
 		end
+	-- Unit does not exist
 	else
 		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
 	end
 end
 
+-- Function that plays a sound when the player changes their focus
 function Module:PLAYER_FOCUS_CHANGED()
 	CreateTargetSound(_, "focus")
 end
 
+-- Function that plays a sound when the player changes their target
 function Module:PLAYER_TARGET_CHANGED()
 	CreateTargetSound(_, "target")
 end
@@ -927,11 +924,15 @@ function Module:UNIT_FACTION(unit)
 		return
 	end
 
+	-- Check if player is in a PvP zone
 	local isPvP = not not (UnitIsPVPFreeForAll("player") or UnitIsPVP("player"))
+
+	-- Play sound if player enters a PvP zone and it has not been played yet
 	if isPvP and not lastPvPSound then
 		PlaySound(SOUNDKIT.IG_PVP_UPDATE)
 	end
 
+	-- Update lastPvPSound variable
 	lastPvPSound = isPvP
 end
 

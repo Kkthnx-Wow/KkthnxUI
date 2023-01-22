@@ -50,7 +50,7 @@ Engine[1] = {} -- K, Main
 Engine[2] = {} -- C, Config
 Engine[3] = {} -- L, Locale
 
-local K, C, L, DB = unpack(Engine)
+local K, C, L = unpack(Engine)
 
 -- Deprecated
 LE_ITEM_QUALITY_ARTIFACT = Enum.ItemQuality.Artifact

@@ -28,11 +28,14 @@ local function UpdateRaidThreat(self, _, unit)
 end
 
 local function UpdateRaidPower(self, _, unit)
+	-- Check if the unit passed as an argument is the same as the frame's unit
 	if self.unit ~= unit then
 		return
 	end
 
+	-- Check if the unit is assigned as a healer role and not assigned as none
 	if UnitGroupRolesAssigned(unit) == "HEALER" and UnitGroupRolesAssigned(unit) ~= "NONE" then
+		-- If the power frame is not visible, adjust the health frame and show power frame
 		if not self.Power:IsVisible() then
 			self.Health:ClearAllPoints()
 			self.Health:SetPoint("BOTTOMLEFT", self, 0, 6)
@@ -41,6 +44,7 @@ local function UpdateRaidPower(self, _, unit)
 			self.Power:Show()
 		end
 	else
+		-- If the power frame is visible, reset the health frame and hide the power frame
 		if self.Power:IsVisible() then
 			self.Health:ClearAllPoints()
 			self.Health:SetAllPoints(self)
@@ -110,8 +114,7 @@ function Module:CreateRaid()
 		self.Power = Power
 
 		table.insert(self.__elements, UpdateRaidPower)
-		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
-		self:RegisterEvent("UNIT_POWER_UPDATE", UpdateRaidPower)
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidPower)
 		self:RegisterEvent("UNIT_MAXPOWER", UpdateRaidPower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
 	end

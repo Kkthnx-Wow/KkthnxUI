@@ -82,11 +82,9 @@ function Module:UpdateRange()
 	elseif self.forceNotInRange then
 		alpha = self.Range.outsideAlpha
 	elseif unit then
-		if UnitCanAttack("player", unit) or UnitIsUnit(unit, "pet") then
-			alpha = (getMaxRange(unit) and self.Range.insideAlpha) or self.Range.outsideAlpha
-		else
-			alpha = (UnitIsConnected(unit) and friendlyIsInRange(unit) and self.Range.insideAlpha) or self.Range.outsideAlpha
-		end
+		local canAttack = UnitCanAttack("player", unit) or UnitIsUnit(unit, "pet")
+		local inRange = (canAttack and getMaxRange(unit)) or (UnitIsConnected(unit) and friendlyIsInRange(unit))
+		alpha = inRange and self.Range.insideAlpha or self.Range.outsideAlpha
 	else
 		alpha = self.Range.insideAlpha
 	end

@@ -95,6 +95,8 @@ local function CreateBorder(bFrame, ...)
 
 		bFrame.KKUI_Background = kkui_background -- save the background as a property of the frame so that it can be referenced later on.
 	end
+
+	return bFrame, ...
 end
 
 -- Simple Create Backdrop.
@@ -122,21 +124,29 @@ local function CreateBackdrop(bFrame, bPointa, bPointb, bPointc, bPointd, bSubLe
 	bFrame.KKUI_Backdrop = kkui_backdrop -- Save the backdrop as a property of the frame so that it can be referenced later on.
 end
 
--- The Famous Shadow?
 local function CreateShadow(f, bd)
+	-- check if the shadow already exists, return if it does
 	if f.Shadow then
 		return
 	end
 
+	-- get the parent frame if the passed object is a texture
 	local frame = f
 	if f:GetObjectType() == "Texture" then
 		frame = f:GetParent()
 	end
+
+	-- get the frame level of the parent frame
 	local lvl = frame:GetFrameLevel()
 
+	-- create the shadow frame using the BackdropTemplate
 	f.Shadow = CreateFrame("Frame", nil, frame, "BackdropTemplate")
+
+	-- set the position and size of the shadow frame
 	f.Shadow:SetPoint("TOPLEFT", f, -3, 3)
 	f.Shadow:SetPoint("BOTTOMRIGHT", f, 3, -3)
+
+	-- set the backdrop of the shadow frame
 	if bd then
 		f.Shadow:SetBackdrop({
 			bgFile = C["Media"].Textures.White8x8Texture,
@@ -150,12 +160,19 @@ local function CreateShadow(f, bd)
 			edgeSize = 3,
 		})
 	end
+
+	-- set the frame level of the shadow frame to be one lower than the parent frame
 	f.Shadow:SetFrameLevel(lvl == 0 and 0 or lvl - 1)
+
+	-- set the background color of the shadow frame if the bd argument is true
 	if bd then
 		f.Shadow:SetBackdropColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Media"].Backdrops.ColorBackdrop[4])
 	end
+
+	-- set the border color of the shadow frame
 	f.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 
+	-- return the created shadow frame
 	return f.Shadow
 end
 
@@ -191,9 +208,6 @@ local blizzTextures = {
 	"BottomInset",
 	"bgLeft",
 	"bgRight",
-	"FilligreeOverlay",
-	"PortraitOverlay",
-	"ArtOverlayFrame",
 	"Portrait",
 	"portrait",
 	"ScrollFrameBorder",
@@ -239,35 +253,39 @@ local function StripTextures(object, kill)
 end
 
 local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
-	local pointsSet = setPoints or 0
+	-- setPoints default value is 0
+	setPoints = setPoints or 0
 
+	-- Create highlight texture for the button if it does not exist
 	if button.SetHighlightTexture and not button.hover and not noHover then
 		local hover = button:CreateTexture()
 		hover:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
-		hover:SetPoint("TOPLEFT", button, "TOPLEFT", pointsSet, -pointsSet)
-		hover:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -pointsSet, pointsSet)
+		hover:SetPoint("TOPLEFT", button, "TOPLEFT", setPoints, -setPoints)
+		hover:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -setPoints, setPoints)
 		hover:SetBlendMode("ADD")
 		button:SetHighlightTexture(hover)
 		button.hover = hover
 	end
 
+	-- Create pushed texture for the button if it does not exist
 	if button.SetPushedTexture and not button.pushed and not noPushed then
 		local pushed = button:CreateTexture()
 		pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
 		pushed:SetDesaturated(true)
 		pushed:SetVertexColor(246 / 255, 196 / 255, 66 / 255)
-		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", pointsSet, -pointsSet)
-		pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -pointsSet, pointsSet)
+		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", setPoints, -setPoints)
+		pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -setPoints, setPoints)
 		pushed:SetBlendMode("ADD")
 		button:SetPushedTexture(pushed)
 		button.pushed = pushed
 	end
 
+	-- Create checked texture for the button if it does not exist
 	if button.SetCheckedTexture and not button.checked and not noChecked then
 		local checked = button:CreateTexture()
 		checked:SetTexture("Interface\\Buttons\\CheckButtonHilight")
-		checked:SetPoint("TOPLEFT", button, "TOPLEFT", pointsSet, -pointsSet)
-		checked:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -pointsSet, pointsSet)
+		checked:SetPoint("TOPLEFT", button, "TOPLEFT", setPoints, -setPoints)
+		checked:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -setPoints, setPoints)
 		checked:SetBlendMode("ADD")
 		button:SetCheckedTexture(checked)
 		button.checked = checked
@@ -301,40 +319,18 @@ local blizzRegions = {
 	"Left",
 	"Middle",
 	"Right",
-	"Mid",
-	"LeftDisabled",
-	"MiddleDisabled",
-	"RightDisabled",
 	"TopLeft",
 	"TopRight",
 	"BottomLeft",
 	"BottomRight",
-	"TopMiddle",
-	"MiddleLeft",
-	"MiddleRight",
-	"BottomMiddle",
-	"MiddleMiddle",
-	"TabSpacer",
-	"TabSpacer1",
-	"TabSpacer2",
-	"_RightSeparator",
-	"_LeftSeparator",
-	"Cover",
-	"Border",
 	"Background",
-	"TopTex",
-	"TopLeftTex",
-	"TopRightTex",
-	"LeftTex",
-	"BottomTex",
-	"BottomLeftTex",
-	"BottomRightTex",
-	"RightTex",
-	"MiddleTex",
+	"Border",
 	"Center",
 }
 
-local function SkinButton(self, override, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
+local function SkinButton(self, override, ...)
+	local bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha = ...
+	-- Remove the normal, highlight, pushed and disabled textures
 	if self.SetNormalTexture and not override then
 		self:SetNormalTexture(0)
 	end
@@ -351,17 +347,18 @@ local function SkinButton(self, override, bSubLevel, bLayer, bSize, bTexture, bO
 		self:SetDisabledTexture(0)
 	end
 
-	local buttonName = self.GetName and self:GetName()
+	-- Hide all regions defined in the blizzRegions table
 	for _, region in pairs(blizzRegions) do
-		region = buttonName and _G[buttonName .. region] or self[region]
-		if region then
-			region:SetAlpha(0)
-			region:Hide()
+		if self[region] then
+			self[region]:SetAlpha(0)
+			self[region]:Hide()
 		end
 	end
 
+	-- Do not apply custom border if the override argument is true
 	self:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
 
+	-- Hook the OnEnter and OnLeave events
 	self:HookScript("OnEnter", Button_OnEnter)
 	self:HookScript("OnLeave", Button_OnLeave)
 end

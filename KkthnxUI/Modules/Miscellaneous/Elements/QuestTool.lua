@@ -43,8 +43,8 @@ function Module:QuestTool_Remove(questID)
 end
 
 local fixedStrings = {
-	["横扫"] = "低扫",
-	["突刺"] = "突袭",
+	["Sweep"] = "Lunge",
+	["Assault"] = "Assault",
 }
 local function isActionMatch(msg, text)
 	return text and strfind(msg, text)
@@ -123,21 +123,15 @@ function Module:QuestTool()
 	local firstStep
 	K:RegisterEvent("GOSSIP_SHOW", function()
 		local guid = UnitGUID("npc")
-		local npcID = guid and K.GetNPCID(guid)
-		if npcID == 174498 then
-			C_GossipInfo_SelectOption(3)
-		elseif npcID == 174371 then
-			if GetItemCount(183961) == 0 then
-				return
-			end
-			if C_GossipInfo_GetNumOptions() ~= 5 then
-				return
-			end
-			if firstStep then
-				C_GossipInfo_SelectOption(5)
-			else
-				C_GossipInfo_SelectOption(2)
-				firstStep = true
+		if guid then
+			local npcID = K.GetNPCID(guid)
+			if npcID == 174498 then
+				C_GossipInfo_SelectOption(3)
+			elseif npcID == 174371 then
+				if GetItemCount(183961) > 0 and C_GossipInfo_GetNumOptions() == 5 then
+					C_GossipInfo_SelectOption(firstStep and 2 or 5)
+					firstStep = not firstStep
+				end
 			end
 		end
 	end)

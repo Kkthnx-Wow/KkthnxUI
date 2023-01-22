@@ -109,21 +109,21 @@ function Module:CreateMissingStats()
 		statFrame:Show()
 	end
 
+	-- Get the average item level and minimum item level once, when the script is first run
+	local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel()
+	local minItemLevel = C_PaperDollInfo_GetMinItemLevel()
+
+	-- Hook the PaperDollFrame_SetItemLevel function to modify its behavior
 	hooksecurefunc("PaperDollFrame_SetItemLevel", function(statFrame, unit)
+		-- Check if the unit passed to the function is "player"
 		if unit ~= "player" then
 			return
 		end
 
-		local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel()
-		local minItemLevel = C_PaperDollInfo_GetMinItemLevel()
+		-- Calculate the display item level
 		local displayItemLevel = max(minItemLevel or 0, avgItemLevelEquipped)
-		displayItemLevel = format("%.1f", displayItemLevel)
-		avgItemLevel = format("%.1f", avgItemLevel)
-
-		if displayItemLevel ~= avgItemLevel then
-			displayItemLevel = displayItemLevel .. " / " .. avgItemLevel
-		end
-		PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, displayItemLevel, false, displayItemLevel)
+		-- Update the stat frame with the display item level and average item level
+		PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, format("%.1f", displayItemLevel), false, format("%.1f", avgItemLevel))
 	end)
 
 	hooksecurefunc("PaperDollFrame_SetLabelAndText", function(statFrame, label, _, isPercentage)

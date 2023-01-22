@@ -2,8 +2,6 @@ local K, C, L = unpack(KkthnxUI)
 local oUF = K.oUF
 
 local _G = _G
-local string_format = _G.string.format
-local string_find = _G.string.find
 
 local AFK = _G.AFK
 local ALTERNATE_POWER_INDEX = Enum.PowerType.Alternate or 10
@@ -143,15 +141,16 @@ oUF.Tags.Methods["fulllevel"] = function(unit)
 		return "??"
 	end
 
-	local realLevel = UnitLevel(unit)
-	local level = UnitEffectiveLevel(unit)
+	local level, realLevel, color, str, class
 	if UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) then
 		level = UnitBattlePetLevel(unit)
 		realLevel = level
+	else
+		realLevel = UnitLevel(unit)
+		level = UnitEffectiveLevel(unit)
 	end
+	color = K.RGBToHex(GetCreatureDifficultyColor(level))
 
-	local color = K.RGBToHex(GetCreatureDifficultyColor(level))
-	local str
 	if level > 0 then
 		local realTag = level ~= realLevel and "*" or ""
 		str = color .. level .. realTag .. "|r"
@@ -159,7 +158,7 @@ oUF.Tags.Methods["fulllevel"] = function(unit)
 		str = "|cffff0000??|r"
 	end
 
-	local class = UnitClassification(unit)
+	class = UnitClassification(unit)
 	if class == "worldboss" then
 		str = "|cffAF5050Boss|r"
 	elseif class == "rareelite" then
