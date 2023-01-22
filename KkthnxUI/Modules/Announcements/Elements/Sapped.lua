@@ -10,10 +10,7 @@ local UNKNOWN = _G.UNKNOWN
 -- SetupSaySapped() checks for when Sap is applied or refreshed on the player, and then sends a chat message and prints a message in the chat window.
 local function SetupSaySapped()
 	-- Get combat log info for the current event.
-	local _, event, _, _, sourceName, _, _, _, destName = CombatLogGetCurrentEventInfo()
-
-	-- Set spellID to Sap (6770).
-	local spellID = 6770
+	local _, event, _, _, sourceName, _, _, _, destName, spellID = CombatLogGetCurrentEventInfo()
 
 	-- If the spellID is Sap (6770), the destination name is the player's name and the event type is either "SPELL_AURA_APPLIED" or "SPELL_AURA_REFRESH", then execute this code.
 	if (spellID == 6770) and (destName == K.Name) and (event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REFRESH") then
