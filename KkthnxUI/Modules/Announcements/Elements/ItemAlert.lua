@@ -50,9 +50,10 @@ local itemList = {
 	[309658] = true, -- Death Brutal War Drum
 }
 
-function Module:ItemAlert_Update(unit, castID, spellID)
+function Module:ItemAlertUpdate(unit, castID, spellID)
 	if groupUnits[unit] and itemList[spellID] and (itemList[spellID] ~= castID) then
-		SendChatMessage(string_format(L["Spell Item AlertStr"], UnitName(unit), GetSpellLink(spellID) or GetSpellInfo(spellID)), K.CheckChat())
+		local message = string_format(L["Spell Item AlertStr"], UnitName(unit), GetSpellLink(spellID) or GetSpellInfo(spellID))
+		SendChatMessage(message, K.CheckChat())
 		itemList[spellID] = castID
 	end
 end

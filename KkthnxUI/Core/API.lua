@@ -10,7 +10,6 @@ local select = _G.select
 local CreateFrame = _G.CreateFrame
 local EnumerateFrames = _G.EnumerateFrames
 local GetAddOnMetadata = _G.GetAddOnMetadata
-local RegisterAttributeDriver = _G.RegisterAttributeDriver
 local RegisterStateDriver = _G.RegisterStateDriver
 local UIParent = _G.UIParent
 
@@ -202,28 +201,36 @@ local blizzTextures = {
 	"ScrollDownBorder",
 }
 
+-- Strips textures from a given object, and optionally kills or sets alpha to 0 for the specified texture.
+-- @param object The object to strip textures from.
+-- @param kill If true, kills the texture. If a number, sets alpha to 0 for the specified texture index. Otherwise, sets texture to empty string.
 local function StripTextures(object, kill)
 	local frameName = object.GetName and object:GetName()
+
+	-- Strip textures from Blizzard frames
 	for _, texture in pairs(blizzTextures) do
 		local blizzFrame = object[texture] or (frameName and _G[frameName .. texture])
 		if blizzFrame then
-			StripTextures(blizzFrame, kill)
+			StripTextures(blizzFrame, kill) -- Recursively strip textures from Blizzard frames
 		end
 	end
 
-	if object.GetNumRegions then
-		for i = 1, object:GetNumRegions() do
-			local region = select(i, object:GetRegions())
+	-- Strip textures from the given object's regions
+	if object.GetNumRegions then -- Check if the given object has regions
+		for i = 1, object:GetNumRegions() do -- Iterate through all regions
+			local region = select(i, object:GetRegions()) -- Get region at index i
+
+			-- Check if region is a Texture type
 			if region and region.IsObjectType and region:IsObjectType("Texture") then
-				if kill and type(kill) == "boolean" then
+				if kill and type(kill) == "boolean" then -- Kill the texture if boolean true is passed as kill argument
 					region:Kill()
-				elseif tonumber(kill) then
+				elseif tonumber(kill) then -- Set alpha to 0 for specified texture index
 					if kill == 0 then
 						region:SetAlpha(0)
-					elseif i ~= kill then
+					elseif i ~= kill then -- Set texture to empty string for all other indices
 						region:SetTexture("")
 					end
-				else
+				else -- Set texture to empty string by default
 					region:SetTexture("")
 				end
 			end
@@ -452,9 +459,11 @@ local function GrabScrollBarElement(frame, element)
 end
 
 local function SkinScrollBar(self)
+	-- Strip the textures from the parent and scrollbar frame
 	self:GetParent():StripTextures()
 	self:StripTextures()
 
+	-- Get the thumb texture and set its alpha to 0, width to 16, and create a frame for it
 	local thumb = GrabScrollBarElement(self, "ThumbTexture") or GrabScrollBarElement(self, "thumbTexture") or self.GetThumbTexture and self:GetThumbTexture()
 	if thumb then
 		thumb:SetAlpha(0)
@@ -462,12 +471,18 @@ local function SkinScrollBar(self)
 		self.thumb = thumb
 
 		local bg = CreateFrame("Frame", nil, self)
+		-- Create a border for the frame with a dark grey color
 		bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0.20, 0.20, 0.20)
+
+		-- Set the position of the frame relative to the thumb texture
 		bg:SetPoint("TOPLEFT", thumb, 0, -6)
 		bg:SetPoint("BOTTOMRIGHT", thumb, 0, 6)
+
+		-- Assign the frame to the thumb texture's background property
 		thumb.bg = bg
 	end
 
+	-- Get the up and down arrows from the scrollbar frame and skin them with K.ReskinArrow() function
 	local up, down = self:GetChildren()
 	K.ReskinArrow(up, "up")
 	K.ReskinArrow(down, "down")
@@ -540,13 +555,14 @@ addapi(object:CreateMaskTexture())
 
 object = EnumerateFrames()
 while object do
-	if not object:IsForbidden() and not handled[object:GetObjectType()] then
+	local objType = object:GetObjectType()
+	if not object:IsForbidden() and not handled[objType] then
 		addapi(object)
-		handled[object:GetObjectType()] = true
+		handled[objType] = true
 	end
 
 	object = EnumerateFrames(object)
 end
 
-addapi(_G.GameFontNormal) -- Add API to `CreateFont` objects without actually creating one
-addapi(CreateFrame("ScrollFrame")) -- Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the 'Frame' widget
+addapi(_G.GameFontNormal) --Add API to `CreateFont` objects without actually creating one
+addapi(CreateFrame("ScrollFrame")) --Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the 'Frame' widget
