@@ -16,13 +16,21 @@ local timestampFormat = {
 	[5] = "[%H:%M:%S] ",
 }
 
+-- Get the current time in both local and realm time
+-- @return locTime the current local time
+-- @return realmTime the current realm time
 local function GetCurrentTime()
+	-- Get the current local time
 	local locTime = time()
+
+	-- Check if the realm time is being used instead of local time
 	local realmTime = not GetCVarBool("timeMgrUseLocalTime") and C_DateAndTime_GetCurrentCalendarTime()
+
+	-- If realm time is being used, format the time values to match the format of the local time
 	if realmTime then
 		realmTime.day = realmTime.monthDay
 		realmTime.min = realmTime.minute
-		realmTime.sec = date("%S") -- no sec value for realm time
+		realmTime.sec = date("%S") -- no sec value for realm time, so use the current sec value
 		realmTime = time(realmTime)
 	end
 
@@ -30,18 +38,24 @@ local function GetCurrentTime()
 end
 
 function Module:SetupChannelNames(text, ...)
+	-- Block the text if it's an interface action blocked message and the player is not a developer
 	if string_find(text, INTERFACE_ACTION_BLOCKED) and not K.isDeveloper then
 		return
 	end
 
+	-- Get the color values for the text
 	local r, g, b = ...
+
+	-- Check if whisper color is enabled and adjust the color of whispers
 	if C["Chat"].WhisperColor and string_find(text, L["To"] .. " |H[BN]*player.+%]") then
 		r, g, b = r * 0.7, g * 0.7, b * 0.7
 	end
 
-	-- Timestamp
+	-- Add timestamp to the text
 	if C["Chat"].TimestampFormat.Value > 1 then
 		local locTime, realmTime = GetCurrentTime()
+
+		-- Remove the default timestamp
 		local defaultTimestamp = GetCVar("showTimestamps")
 		if defaultTimestamp == "none" then
 			defaultTimestamp = nil
@@ -50,13 +64,18 @@ function Module:SetupChannelNames(text, ...)
 		if oldTimeStamp then
 			text = gsub(text, oldTimeStamp, "")
 		end
+
+		-- Add the custom timestamp
 		local timeStamp = BetterDate(K.GreyColor .. timestampFormat[C["Chat"].TimestampFormat.Value] .. "|r", realmTime or locTime)
 		text = timeStamp .. text
 	end
 
+	-- Check if the old chat names format is enabled
 	if C["Chat"].OldChatNames then
+		-- Use the old format for the chat names
 		return self.oldAddMsg(self, text, r, g, b)
 	else
+		-- Use the new format for the chat names
 		return self.oldAddMsg(self, string_gsub(text, "|h%[(%d+)%..-%]|h", "|h[%1]|h"), r, g, b)
 	end
 end

@@ -24,10 +24,15 @@ local VIEWED_MESSAGE_FONTS = {
 }
 
 function LibChangelog:Register(addonName, changelogTable, savedVariablesTable, lastReadVersionKey, onlyShowWhenNewVersionKey, texts)
+	-- Check if required parameters are not nil
+	if not addonName or not changelogTable or not savedVariablesTable or not lastReadVersionKey or not onlyShowWhenNewVersionKey then
+		return error("LibChangelog: Missing required parameters", 2)
+	end
+	-- Check if addon is already registered
 	if self[addonName] then
 		return error("LibChangelog: '" .. addonName .. "' already registered", 2)
 	end
-
+	-- Register the addon
 	self[addonName] = {
 		changelogTable = changelogTable,
 		savedVariablesTable = savedVariablesTable,
@@ -38,43 +43,62 @@ function LibChangelog:Register(addonName, changelogTable, savedVariablesTable, l
 end
 
 function LibChangelog:CreateString(frame, text, font, offset)
+	-- Check if frame parameter is not nil
+	if not frame then
+		return error("LibChangelog:CreateString missing required parameter 'frame'", 2)
+	end
+	-- set default offset value if not provided
+	offset = offset or -5
+	-- create fontstring
 	local entry = frame.scrollChild:CreateFontString(nil, "ARTWORK")
 
-	if offset == nil then
-		offset = -5
-	end
-
+	-- set the font for the fontstring
 	entry:SetFontObject(font or "GameFontNormal")
+	-- set the text for the fontstring
 	entry:SetText(text)
+	-- set the justification of the text to left
 	entry:SetJustifyH("LEFT")
+	-- set the width of the fontstring
 	entry:SetWidth(frame.scrollBar:GetWidth())
 
+	-- check if there is a previous frame, if yes set the position accordingly
 	if frame.previous then
 		entry:SetPoint("TOPLEFT", frame.previous, "BOTTOMLEFT", 0, offset)
 	else
 		entry:SetPoint("TOPLEFT", frame.scrollChild, "TOPLEFT", -5)
 	end
 
+	-- save the current frame as previous
 	frame.previous = entry
 
+	-- return the fontstring
 	return entry
 end
 
--- Did this just to get nice alignment on the bulleted entries (otherwise the text wrapped below the bulle
+-- Create a new bulleted list entry
 function LibChangelog:CreateBulletedListEntry(frame, text, font, offset)
-	local bullet = self:CreateString(frame, " - ", font, offset)
-	local bulletWidth = 12
-
-	bullet:SetWidth(bulletWidth)
+	--default value for offset
+	offset = offset or 0
+	-- constant variable for bullet width
+	local BULLET_WIDTH = 12
+	-- create the bullet point
+	local bullet = self:CreateString(frame, " • ", font, offset)
+	bullet:SetWidth(BULLET_WIDTH)
 	bullet:SetJustifyV("TOP")
 
+	-- create the text
 	local entry = self:CreateString(frame, text, font, offset)
+	-- position the text next to the bullet
 	entry:SetPoint("TOPLEFT", bullet, "TOPRIGHT")
-	entry:SetWidth(frame.scrollBar:GetWidth() - bulletWidth)
+	-- set the width of the text
+	entry:SetWidth(frame.scrollBar:GetWidth() - BULLET_WIDTH)
 
+	-- set the height of the bullet to match the text
 	bullet:SetHeight(entry:GetStringHeight())
 
+	-- update the previous frame
 	frame.previous = bullet
+	--return the bullet point
 	return bullet
 end
 
@@ -89,15 +113,20 @@ function LibChangelog:ShowChangelog(addonName)
 	local firstEntry = addonData.changelogTable[1] -- firstEntry contains the newest Version
 	local addonSavedVariablesTable = addonData.savedVariablesTable
 
-	if addonData.lastReadVersionKey and addonSavedVariablesTable[addonData.lastReadVersionKey] and firstEntry.Version <= addonSavedVariablesTable[addonData.lastReadVersionKey] and addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey] then
-		return
+	if
+		addonData.lastReadVersionKey -- check if last read version exists in saved variables table
+		and addonSavedVariablesTable[addonData.lastReadVersionKey]
+		and firstEntry.Version <= addonSavedVariablesTable[addonData.lastReadVersionKey]
+		and addonSavedVariablesTable[addonData.onlyShowWhenNewVersionKey]
+	then -- check if only show when new version flag is set
+		return -- don't show changelog if all conditions are met
 	end
 
 	if not addonData.frame then
 		local frame = CreateFrame("Frame", nil, UIParent, "ButtonFrameTemplate")
 		ButtonFrameTemplate_HidePortrait(frame)
 		if frame.SetTitle then
-			frame:SetTitle(addonData.texts.title or addonName .. " ChangeLog")
+			frame:SetTitle(addonData.texts.title or addonName .. " " .. "CHANGELOG_TITLE")
 		end
 		frame.Inset:SetPoint("TOPLEFT", 4, -25)
 

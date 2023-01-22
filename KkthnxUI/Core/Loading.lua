@@ -67,6 +67,15 @@ local function KKUI_LoadCustomSettings()
 	end
 end
 
+-- Create the profile name
+-- @param server the name of the server
+-- @param nickname the nickname of the player
+-- @return the profile name
+local function createProfileName(server, nickname)
+	return server .. "-" .. nickname
+end
+
+-- Load profiles for the user interface
 local function KKUI_LoadProfiles()
 	local Profiles = C["General"].Profiles
 	local Menu = Profiles.Options
@@ -75,13 +84,10 @@ local function KKUI_LoadProfiles()
 		return
 	end
 
-	for Index, Table in pairs(GUISettings) do
-		local Server = Index
-
+	for Server, Table in pairs(GUISettings) do
 		for Nickname in pairs(Table) do
-			local ProfileName = Server .. "-" .. Nickname
+			local ProfileName = createProfileName(Server, Nickname)
 			local MyProfileName = K.Realm .. "-" .. K.Name
-
 			if MyProfileName ~= ProfileName then
 				Menu[ProfileName] = ProfileName
 			end
