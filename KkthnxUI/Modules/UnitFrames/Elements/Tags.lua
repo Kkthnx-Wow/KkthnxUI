@@ -221,19 +221,30 @@ end
 oUF.Tags.Events["nppp"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER"
 
 oUF.Tags.Methods["nplevel"] = function(unit)
+	-- Get the unit's level
 	local level = UnitLevel(unit)
+
+	-- Check if the level is valid and not equal to K.Level
 	if level and level ~= K.Level then
+		-- Check if the level is greater than 0
 		if level > 0 then
+			-- Get the difficulty color for the level and convert it to a hex value
 			level = K.RGBToHex(GetCreatureDifficultyColor(level)) .. level .. "|r "
 		else
+			-- Set the level to "??", indicating that the level is unknown
 			level = "|cffff0000??|r "
 		end
 	else
+		-- Set the level to an empty string
 		level = ""
 	end
 
+	-- Return the formatted level string
 	return level
 end
+
+-- Register the new tag method to listen for the following events:
+-- UNIT_LEVEL, PLAYER_LEVEL_UP, UNIT_CLASSIFICATION_CHANGED
 oUF.Tags.Events["nplevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED"
 
 local NPClassifies = {

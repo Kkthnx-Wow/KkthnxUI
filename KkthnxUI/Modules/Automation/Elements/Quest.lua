@@ -200,7 +200,7 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 		end
 	end
 
-	-- 自动选择只有一个带有任务选项的任务
+	-- Automatically select a quest with only one quest option
 	local numQuestGossips = 0
 	local questGossipID
 	for i = 1, numOptions do

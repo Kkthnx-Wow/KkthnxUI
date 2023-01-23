@@ -161,37 +161,21 @@ StaticPopupDialogs["KKUI_SWITCH_PROFILE"] = {
 	end,
 }
 
-local SetValue = function(group, option, value)
-	if type(C[group][option]) == "table" then
-		if C[group][option].Value then
-			C[group][option].Value = value
-		else
-			C[group][option] = value
-		end
-	else
-		C[group][option] = value
-	end
+-- SetValue function to set the value of a given option within a group, and also save that value to a database
+local function SetValue(group, option, value)
+	-- Check if C[group][option] is a table, if it is set C[group][option].Value = value, otherwise set C[group][option] = value
+	C[group][option] = value or { Value = value }
 
-	local Settings
+	-- Recursively initialize the KkthnxUIDB table
+	KkthnxUIDB.Settings = KkthnxUIDB.Settings or {}
+	KkthnxUIDB.Settings[K.Realm] = KkthnxUIDB.Settings[K.Realm] or {}
+	KkthnxUIDB.Settings[K.Realm][K.Name] = KkthnxUIDB.Settings[K.Realm][K.Name] or {}
+	local Settings = KkthnxUIDB.Settings[K.Realm][K.Name]
 
-	if not KkthnxUIDB.Settings then
-		KkthnxUIDB.Settings = {}
-	end
+	-- Initialize the group table
+	Settings[group] = Settings[group] or {}
 
-	if not KkthnxUIDB.Settings[K.Realm] then
-		KkthnxUIDB.Settings[K.Realm] = {}
-	end
-
-	if not KkthnxUIDB.Settings[K.Realm][K.Name] then
-		KkthnxUIDB.Settings[K.Realm][K.Name] = {}
-	end
-
-	Settings = KkthnxUIDB.Settings[K.Realm][K.Name]
-
-	if not Settings[group] then
-		Settings[group] = {}
-	end
-
+	-- Set the value of the option in the group
 	Settings[group][option] = value
 end
 
@@ -239,30 +223,37 @@ local GetOrderedIndex = function(t)
 	return OrderedIndex
 end
 
-local OrderedNext = function(t, state)
+-- OrderedNext function to iterate through the elements of a table in a specific order
+local function OrderedNext(t, state)
+	-- Get the ordered index of the table
 	local OrderedIndex = GetOrderedIndex(t)
 	local Key
 
+	-- If state is nil, return the first element of the table
 	if state == nil then
 		Key = OrderedIndex[1]
 
 		return Key, t[Key]
 	end
 
+	-- Iterate through the ordered index of the table
 	for i = 1, #OrderedIndex do
+		-- Check if the current index matches the state
 		if OrderedIndex[i] == state then
+			-- If it matches, set the next key
 			Key = OrderedIndex[i + 1]
 		end
 	end
 
+	-- If the next key is set, return the key and its corresponding value
 	if Key then
 		return Key, t[Key]
 	end
-
-	-- return
 end
 
-local PairsByKeys = function(t)
+-- PairsByKeys function to iterate through the elements of a table in a specific order
+local function PairsByKeys(t)
+	-- Returns the iterator function and its initial state, so that it can be used with the for loop
 	return OrderedNext, t, nil
 end
 
@@ -275,16 +266,20 @@ local Reverse = function(value)
 end
 
 -- Sections
-local CreateSection = function(self, text)
+-- CreateSection function to create a section of the user interface
+local function CreateSection(self, text)
+	-- Create the main frame
 	local Anchor = CreateFrame("Frame", nil, self)
 	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
 	Anchor.IsSection = true
 
+	-- Create the child frame
 	local Section = CreateFrame("Frame", nil, Anchor)
 	Section:SetPoint("TOPLEFT", Anchor, 0, 0)
 	Section:SetPoint("BOTTOMRIGHT", Anchor, 0, 0)
 	Section:CreateBorder()
 
+	-- Create the label
 	Section.Label = Section:CreateFontString(nil, "OVERLAY")
 	Section.Label:SetPoint("CENTER", Section, LabelSpacing, 0)
 	Section.Label:SetWidth(WidgetListWidth - (Spacing * 4))
@@ -292,7 +287,8 @@ local CreateSection = function(self, text)
 	Section.Label:SetJustifyH("CENTER")
 	Section.Label:SetText("|CFFFFCC66" .. text .. "|r")
 
-	tinsert(self.Widgets, Anchor)
+	-- Insert the created frame into the self.Widgets table
+	table.insert(self.Widgets, Anchor)
 
 	return Section
 end
