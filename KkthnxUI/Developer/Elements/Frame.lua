@@ -44,13 +44,17 @@ local UnitName = _G.UnitName
 
 -- Commands
 SlashCmdList["KKTHNXUI_ENUMTIP"] = function()
+	-- Enumerate all frames on the screen
 	local enumf = EnumerateFrames()
 	while enumf do
-		-- stylua: ignore
-		if (enumf:GetObjectType() == "GameTooltip" or string_find((enumf:GetName() or ""):lower(), "tip")) and enumf:IsVisible() and enumf:GetPoint() then
+		-- Check if the frame is a GameTooltip or has "tip" in its name (case-insensitive)
+		-- and if it is visible and has a defined position
+		if (enumf:GetObjectType() == "GameTooltip" or string.find((enumf:GetName() or ""):lower(), "tip")) and enumf:IsVisible() and enumf:GetPoint() then
+			-- Print the name of the frame
 			print(enumf:GetName())
 		end
 
+		-- Get the next frame
 		enumf = EnumerateFrames(enumf)
 	end
 end
@@ -104,21 +108,32 @@ end
 _G.SLASH_KKTHNXUI_NPCID1 = "/getnpc"
 
 SlashCmdList["KKTHNXUI_GETFONT"] = function(msg)
+	-- Get the global variable stored in the variable msg
 	local font = _G[msg]
+
+	-- Check if the font variable is not defined
 	if not font then
+		-- If it's not defined, print an error message and exit the function
 		print(msg, "not found.")
 		return
 	end
 
+	-- Get the font, size, and flags of the font object
 	local a, b, c = font:GetFont()
+
+	-- Print the font name, size, and flags
 	print(msg, a, b, c)
 end
 _G.SLASH_KKTHNXUI_GETFONT1 = "/getfont"
 
 do
+	-- Create a table to store the version information
 	local versionList = {}
+
+	-- Register the addon message prefix
 	C_ChatInfo_RegisterAddonMessagePrefix("KKUI_VersonCheck")
 
+	-- Define a function to print the version check results
 	local function PrintVerCheck()
 		print("------------------------")
 		for name, version in pairs(versionList) do
@@ -126,20 +141,27 @@ do
 		end
 	end
 
+	-- Define a function to send the version check request and call the print function after a delay
 	local function SendVerCheck(channel)
-		table_wipe(versionList)
+		-- Clear the versionList table
+		table.wipe(versionList)
+		-- Send the version check request
 		C_ChatInfo_SendAddonMessage("KKUI_VersonCheck", "VersionCheck", channel)
+		-- Schedule the print function to run after 3 seconds
 		C_Timer.After(3, PrintVerCheck)
 	end
 
+	-- Define a function to listen for version check responses
 	local function VerCheckListen(_, ...)
 		local prefix, msg, distType, sender = ...
 
 		if prefix == "KKUI_VersonCheck" then
 			if msg == "VersionCheck" then
+				-- Send the version of the addon
 				C_ChatInfo_SendAddonMessage("KKUI_VersonCheck", "MyVer-" .. K.Version, distType)
-			elseif string_find(msg, "MyVer") then
-				local _, version = string_split("-", msg)
+			elseif string.find(msg, "MyVer") then
+				-- Extract the version from the message and store it in the versionList table
+				local _, version = string.split("-", msg)
 				versionList[sender] = version .. " - " .. distType
 			end
 		end
