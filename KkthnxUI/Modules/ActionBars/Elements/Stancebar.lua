@@ -84,7 +84,6 @@ end
 
 function Module.StanceBarOnEvent(event)
 	if event == "PLAYER_LOGIN" then -- Prevent an block action here for now
-		print(event)
 		Module:UpdateStanceBar()
 	else
 		Module.UpdateStance(StanceBar)
