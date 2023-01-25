@@ -168,11 +168,6 @@ function Module:MicroMenu()
 	K.HideInterfaceOption(HelpOpenWebTicketButton)
 	MainMenuMicroButton:SetScript("OnUpdate", nil)
 
-	if K.IsNewPatch then
-		BagsBar:Hide()
-		BagsBar:UnregisterAllEvents()
-	else
-		MicroButtonAndBagsBar:Hide()
-		MicroButtonAndBagsBar:UnregisterAllEvents()
-	end
+	BagsBar:Hide()
+	BagsBar:UnregisterAllEvents()
 end

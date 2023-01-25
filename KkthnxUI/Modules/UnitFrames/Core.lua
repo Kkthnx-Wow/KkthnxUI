@@ -98,9 +98,6 @@ function Module:UpdateThreat(_, unit)
 
 	-- Get the current threat status of the unit
 	local status = UnitThreatSituation(unit)
-	if not status then
-		return
-	end
 
 	-- Get the portrait style, health frame and portrait frame
 	local portraitStyle = C["Unitframe"].PortraitStyle.Value
@@ -109,19 +106,31 @@ function Module:UpdateThreat(_, unit)
 
 	-- Check the portrait style and change the border color accordingly
 	if portraitStyle == "ThreeDPortraits" then
-		if portrait.KKUI_Border then -- Check if the border object exists
-			local r, g, b = unpack(oUF.colors.threat[status])
-			portrait.KKUI_Border:SetVertexColor(r, g, b)
+		if status and status > 1 then
+			if portrait.KKUI_Border then -- Check if the border object exists
+				local r, g, b = unpack(oUF.colors.threat[status])
+				portrait.KKUI_Border:SetVertexColor(r, g, b)
+			end
+		else
+			K.SetBorderColor(portrait.KKUI_Border)
 		end
 	elseif portraitStyle ~= "ThreeDPortraits" and portraitStyle ~= "NoPortraits" and portraitStyle ~= "OverlayPortrait" then
-		if portrait.Border.KKUI_Border then -- Check if the border object exists
-			local r, g, b = unpack(oUF.colors.threat[status])
-			portrait.Border.KKUI_Border:SetVertexColor(r, g, b)
+		if status and status > 1 then
+			if portrait.Border.KKUI_Border then -- Check if the border object exists
+				local r, g, b = unpack(oUF.colors.threat[status])
+				portrait.Border.KKUI_Border:SetVertexColor(r, g, b)
+			end
+		else
+			K.SetBorderColor(portrait.Border.KKUI_Border)
 		end
 	elseif portraitStyle == "NoPortraits" then
-		if health.KKUI_Border then -- Check if the border object exists
-			local r, g, b = unpack(oUF.colors.threat[status])
-			health.KKUI_Border:SetVertexColor(r, g, b)
+		if status and status > 1 then
+			if health.KKUI_Border then -- Check if the border object exists
+				local r, g, b = unpack(oUF.colors.threat[status])
+				health.KKUI_Border:SetVertexColor(r, g, b)
+			end
+		else
+			K.SetBorderColor(health.KKUI_Border)
 		end
 	end
 end

@@ -13,9 +13,9 @@ function Module:UpdateStanceBar()
 		return
 	end
 
-	local size = C["ActionBar"]["BarStanceSize"]
-	local fontSize = C["ActionBar"]["BarStanceFont"]
-	local perRow = C["ActionBar"]["BarStancePerRow"]
+	local size = C["ActionBar"].BarStanceSize
+	local fontSize = C["ActionBar"].BarStanceFont
+	local perRow = C["ActionBar"].BarStancePerRow
 
 	for i = 1, num do
 		local button = frame.buttons[i]
@@ -82,9 +82,13 @@ function Module:UpdateStance()
 	end
 end
 
-function Module:StanceBarOnEvent()
-	Module:UpdateStanceBar()
-	Module.UpdateStance(StanceBar)
+function Module.StanceBarOnEvent(event)
+	if event == "PLAYER_LOGIN" then -- Prevent an block action here for now
+		print(event)
+		Module:UpdateStanceBar()
+	else
+		Module.UpdateStance(StanceBar)
+	end
 end
 
 function Module:CreateStancebar()
@@ -111,6 +115,7 @@ function Module:CreateStancebar()
 	frame.buttons = buttonList
 
 	-- Fix stance bar updating
+	K:RegisterEvent("PLAYER_LOGIN", Module.StanceBarOnEvent)
 	K:RegisterEvent("UPDATE_SHAPESHIFT_FORMS", Module.StanceBarOnEvent)
 	K:RegisterEvent("UPDATE_SHAPESHIFT_USABLE", Module.StanceBarOnEvent)
 	K:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN", Module.StanceBarOnEvent)

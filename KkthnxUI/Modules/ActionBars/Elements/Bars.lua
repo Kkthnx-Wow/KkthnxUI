@@ -6,29 +6,33 @@ local tinsert, next = tinsert, next
 local margin, padding = 6, 0
 
 function Module:UpdateAllSize()
-	if not C["ActionBar"]["Enable"] then
+	-- check if action bar feature is enabled
+	if not C["ActionBar"].Enable then
 		return
 	end
-	Module:UpdateActionSize("Bar1")
-	Module:UpdateActionSize("Bar2")
-	Module:UpdateActionSize("Bar3")
-	Module:UpdateActionSize("Bar4")
-	Module:UpdateActionSize("Bar5")
-	Module:UpdateActionSize("Bar6")
-	Module:UpdateActionSize("Bar7")
-	Module:UpdateActionSize("Bar8")
-	Module:UpdateActionSize("BarPet")
+
+	-- update size of action bars
+	local actionBars = { "Bar1", "Bar2", "Bar3", "Bar4", "Bar5", "Bar6", "Bar7", "Bar8", "BarPet" }
+	for i, bar in ipairs(actionBars) do
+		Module:UpdateActionSize(bar)
+	end
+
+	-- update stance bar
 	Module:UpdateStanceBar()
+
+	-- update vehicle button
 	Module:UpdateVehicleButton()
 end
 
 function Module:UpdateFontSize(button, fontSize)
-	button.Name:SetFontObject(K.UIFontOutline)
-	button.Name:SetFont(select(1, button.Name:GetFont()), fontSize, select(3, button.Name:GetFont()))
-	button.Count:SetFontObject(K.UIFontOutline)
-	button.Count:SetFont(select(1, button.Count:GetFont()), fontSize, select(3, button.Count:GetFont()))
-	button.HotKey:SetFontObject(K.UIFontOutline)
-	button.HotKey:SetFont(select(1, button.HotKey:GetFont()), fontSize, select(3, button.HotKey:GetFont()))
+	-- Table containing elements of the button that need to have their font size updated
+	local buttonElements = { "Name", "Count", "HotKey" }
+	for _, element in ipairs(buttonElements) do
+		-- Set font object
+		button[element]:SetFontObject(K.UIFontOutline)
+		-- Set font family, size, and style
+		button[element]:SetFont(select(1, button[element]:GetFont()), fontSize, select(3, button[element]:GetFont()))
+	end
 end
 
 function Module:UpdateActionSize(name)
@@ -46,18 +50,28 @@ function Module:UpdateActionSize(name)
 	end
 
 	if num == 0 then
+		-- Setting the number of columns and rows for the frame
 		local column = 3
 		local rows = 2
+
+		-- Setting the width and height of the frame, the mover, and the child
 		frame:SetWidth(3 * size + (column - 1) * margin + 2 * padding)
 		frame:SetHeight(size * rows + (rows - 1) * margin + 2 * padding)
 		frame.mover:SetSize(frame:GetSize())
 		frame.child:SetSize(frame:GetSize())
 		frame.child.mover:SetSize(frame:GetSize())
+
+		-- Enabling the child mover
 		frame.child.mover.isDisable = false
+
+		-- Loop through all buttons in the frame
 		for i = 1, 12 do
 			local button = frame.buttons[i]
+			-- Set the size of the button
 			button:SetSize(size, size)
+			-- Clear any existing points on the button
 			button:ClearAllPoints()
+			-- Position the button based on its index in the loop
 			if i == 1 then
 				button:SetPoint("TOPLEFT", frame, padding, -padding)
 			elseif i == 7 then
@@ -67,7 +81,9 @@ function Module:UpdateActionSize(name)
 			else
 				button:SetPoint("LEFT", frame.buttons[i - 1], "RIGHT", margin, 0)
 			end
+			-- Show the button
 			button:Show()
+			-- Update the font size of the button
 			Module:UpdateFontSize(button, fontSize)
 		end
 	else
@@ -109,28 +125,54 @@ end
 
 local directions = { "UP", "DOWN", "LEFT", "RIGHT" }
 function Module:UpdateButtonConfig(i)
+	-- Initialize buttonConfig if it does not exist
 	if not self.buttonConfig then
 		self.buttonConfig = {
+			-- hideElements table will store which elements of the button should be hidden
 			hideElements = {},
+			-- text table will store the font and position settings for the button's text elements
 			text = {
-				hotkey = { font = {}, position = {} },
-				count = { font = {}, position = {} },
-				macro = { font = {}, position = {} },
+				hotkey = {
+					font = {},
+					position = {},
+				},
+				count = {
+					font = {},
+					position = {},
+				},
+				macro = {
+					font = {},
+					position = {},
+				},
 			},
 		}
 	end
+	-- Set the clickOnDown attribute to true
 	self.buttonConfig.clickOnDown = true
+	-- Set the showGrid attribute based on the value of C["ActionBar"]["Grid"]
 	self.buttonConfig.showGrid = C["ActionBar"]["Grid"]
+	-- Set the flyoutDirection attribute based on the value of C["ActionBar"]["Bar" .. i .. "Flyout"]
 	self.buttonConfig.flyoutDirection = directions[C["ActionBar"]["Bar" .. i .. "Flyout"]]
 
+	-- Get the hotkey field of the buttonConfig's text table
 	local hotkey = self.buttonConfig.text.hotkey
+
+	-- Set the font field of the hotkey table to the value of K.UIFont
 	hotkey.font.font = K.UIFont
+	-- Set the size field of the hotkey table's font field to the value of C["ActionBar"]["Bar" .. i .. "Font"]
 	hotkey.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
+	-- Set the flags field of the hotkey table's font field to the value of K.UIFontStyle
 	hotkey.font.flags = K.UIFontStyle
+
+	-- Set the anchor field of the hotkey table's position field to "TOPRIGHT"
 	hotkey.position.anchor = "TOPRIGHT"
+	-- Set the relAnchor field of the hotkey table's position field to false
 	hotkey.position.relAnchor = false
+	-- Set the offsetX field of the hotkey table's position field to 0
 	hotkey.position.offsetX = 0
+	-- Set the offsetY field of the hotkey table's position field to -2
 	hotkey.position.offsetY = -2
+	-- Set the justifyH field of the hotkey table to "RIGHT"
 	hotkey.justifyH = "RIGHT"
 
 	local count = self.buttonConfig.text.count
@@ -158,17 +200,27 @@ function Module:UpdateButtonConfig(i)
 	hideElements.macro = not C["ActionBar"]["Macro"]
 	hideElements.equipped = not C["ActionBar"]["EquipColor"]
 
-	local lockBars = GetCVarBool("lockActionBars")
+	-- Get the value of the CVAR "lockActionBars"
+	local lockBars = GetCVar("lockActionBars") == "1"
+	-- Iterate through the buttons
 	for _, button in next, self.buttons do
+		-- Set the key bound target for the button and the button config
 		self.buttonConfig.keyBoundTarget = button.bindName
 		button.keyBoundTarget = self.buttonConfig.keyBoundTarget
 
+		-- Set the button lock attribute based on the CVAR value
 		button:SetAttribute("buttonlock", lockBars)
-		button:SetAttribute("unlockedpreventdrag", not lockBars) -- make sure button can drag without being click
+		-- Set the unlocked prevent drag attribute to the opposite of the button lock attribute
+		button:SetAttribute("unlockedpreventdrag", not lockBars)
+		-- Set the check mouseover cast attribute to true
 		button:SetAttribute("checkmouseovercast", true)
+		-- Set the check focus cast attribute to true
 		button:SetAttribute("checkfocuscast", true)
+		-- Set the check self cast attribute to true
 		button:SetAttribute("checkselfcast", true)
+		-- Set the unit 2 attribute to "player"
 		button:SetAttribute("*unit2", "player")
+		-- Update the config for the button
 		button:UpdateConfig(self.buttonConfig)
 	end
 end
@@ -176,16 +228,24 @@ end
 local fullPage = "[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
 
 function Module:UpdateBarVisibility()
+	-- Iterate through the action bars
 	for i = 1, 8 do
+		-- Get the frame of the action bar
 		local frame = _G["KKUI_ActionBar" .. i]
+		-- Check if the frame exists
 		if frame then
+			-- Check if the action bar is enabled in the configuration table
 			if C["ActionBar"]["Bar" .. i] then
+				-- Show the frame and enable the mover
 				frame:Show()
 				frame.mover.isDisable = false
+				-- Register the frame with the visibility driver
 				RegisterStateDriver(frame, "visibility", frame.visibility)
 			else
+				-- Hide the frame and disable the mover
 				frame:Hide()
 				frame.mover.isDisable = true
+				-- Unregister the frame from the visibility driver
 				UnregisterStateDriver(frame, "visibility")
 			end
 		end
@@ -193,9 +253,13 @@ function Module:UpdateBarVisibility()
 end
 
 function Module:UpdateBarConfig()
+	-- Iterate through the action bars
 	for i = 1, 8 do
+		-- Get the frame of the action bar
 		local frame = _G["KKUI_ActionBar" .. i]
+		-- Check if the frame exists
 		if frame then
+			-- Update the button configuration for the current frame and action bar number
 			Module.UpdateButtonConfig(frame, i)
 		end
 	end

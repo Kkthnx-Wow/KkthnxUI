@@ -3,7 +3,6 @@ local Module = K:GetModule("Bags")
 
 local _G = _G
 local ipairs = ipairs
-local unpack = unpack
 local tinsert = tinsert
 local hooksecurefunc = hooksecurefunc
 
@@ -159,11 +158,14 @@ function Module:CreateInventoryBar()
 	local backpackButton = _G.MainMenuBarBackpackButton
 	backpackButton:SetParent(bagBar)
 	backpackButton:ClearAllPoints()
-	backpackButton.Count:SetFontObject(K.UIFontOutline)
 	backpackButton.Count:ClearAllPoints()
 	backpackButton.Count:SetPoint("BOTTOMRIGHT", backpackButton, "BOTTOMRIGHT", -1, 4)
+	backpackButton.Count:SetFontObject(K.UIFontOutline)
 	backpackButton:HookScript("OnEnter", Module.BagBar_OnEnter)
 	backpackButton:HookScript("OnLeave", Module.BagBar_OnLeave)
+
+	hooksecurefunc(_G.BagsBar, "Layout", Module.SetSizeAndPositionBagBar)
+	hooksecurefunc(_G.MainMenuBarBagManager, "OnExpandBarChanged", Module.SetSizeAndPositionBagBar)
 
 	tinsert(buttonList, backpackButton)
 	Module:SkinBag(backpackButton)

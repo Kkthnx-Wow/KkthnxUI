@@ -5,68 +5,83 @@ local Module = K:GetModule("Automation")
 
 local _G = _G
 
-local C_Container_GetContainerNumSlots = _G.C_Container.GetContainerNumSlots
 local C_Container_GetContainerItemInfo = _G.C_Container.GetContainerItemInfo
-local OPENING = _G.OPENING
 local C_Container_GetContainerItemLink = _G.C_Container.GetContainerItemLink
+local C_Container_GetContainerNumSlots = _G.C_Container.GetContainerNumSlots
+local OPENING = _G.OPENING
 
-local atBank
-local atMail
-local atMerchant
+local openFrames = {} -- table to store which frames are open
 
 local function BankOpened()
-	atBank = true
+	openFrames.bank = true -- set the bank frame as open
 end
 
 local function BankClosed()
-	atBank = false
+	openFrames.bank = false -- set the bank frame as closed
 end
 
 local function GuildBankOpened()
-	atBank = true
+	openFrames.guildBank = true -- set the guild bank frame as open
 end
 
 local function GuildBankClosed()
-	atBank = false
+	openFrames.guildBank = false -- set the guild bank frame as closed
 end
 
 local function MailOpened()
-	atMail = true
+	openFrames.mail = true -- set the mail frame as open
 end
 
 local function MailClosed()
-	atMail = false
+	openFrames.mail = false -- set the mail frame as closed
 end
 
 local function MerchantOpened()
-	atMerchant = true
+	openFrames.merchant = true -- set the merchant frame as open
 end
 
 local function MerchantClosed()
-	atMerchant = false
+	openFrames.merchant = false -- set the merchant frame as closed
 end
 
 local function BagDelayedUpdate(event)
-	if atBank or atMail or atMerchant then
+	-- check if the bank, mail, or merchant frames are open
+	if openFrames.bank or openFrames.mail or openFrames.merchant then
 		return
 	end
 
+	-- variable to store the itemID of the opened item
+	local openedItemID
+
+	-- check if the player is in combat lockdown
 	if InCombatLockdown() then
-		return K:RegisterEvent("PLAYER_REGEN_ENABLED", BagDelayedUpdate)
-	elseif event == "PLAYER_REGEN_ENABLED" then
-		K:UnregisterEvent("PLAYER_REGEN_ENABLED", BagDelayedUpdate)
-	end
+		-- register the "PLAYER_REGEN_ENABLED" event to update the bag contents after combat
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", BagDelayedUpdate)
+	else
+		-- loop through all the bags
+		for bag = 0, 4 do
+			-- loop through all the slots in the bag
+			for slot = 0, C_Container_GetContainerNumSlots(bag) do
+				-- get the container item information
+				local cInfo = C_Container_GetContainerItemInfo(bag, slot)
 
-	for bag = 0, 4 do
-		for slot = 0, C_Container_GetContainerNumSlots(bag) do
-			local cInfo = C_Container_GetContainerItemInfo(bag, slot)
-
-			if cInfo and cInfo.hasLoot and not cInfo.isLocked and cInfo.itemID and C.AutoOpenItems[cInfo.itemID] then
-				K.Print(K.SystemColor .. OPENING .. ":|r " .. C_Container_GetContainerItemLink(bag, slot))
-				C_Container.UseContainerItem(bag, slot)
-
-				return
+				-- check if the item has loot, is not locked and has an itemID
+				if cInfo and cInfo.hasLoot and not cInfo.isLocked and cInfo.itemID then
+					-- check if the item is in the list of items to automatically open
+					openedItemID = C.AutoOpenItems[cInfo.itemID]
+					if openedItemID then
+						-- exit the inner loop
+						break
+					end
+				end
 			end
+			if openedItemID then
+				break
+			end
+		end
+		if openedItemID then
+			K.Print(K.SystemColor .. OPENING .. ":|r " .. C_Container_GetContainerItemLink(bag, slot))
+			C_Container.UseContainerItem(bag, slot)
 		end
 	end
 end

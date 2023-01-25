@@ -553,6 +553,11 @@ function Module:DisableBlizzardMover()
 		mixin.RefreshEncounterBar = K.Noop
 		mixin.RefreshActionBarShown = K.Noop
 		mixin.RefreshVehicleLeaveButton = K.Noop
+		mixin.RefreshReputationBar = K.Noop
+
+		if _G.MainStatusTrackingBarContainer then -- Ignore Experience Bar in EditMode
+			_G.MainStatusTrackingBarContainer.OnEditModeEnter = K.Noop
+		end
 	end
 	--ObjectiveTrackerFrame.IsInDefaultPosition = K.Noop
 end

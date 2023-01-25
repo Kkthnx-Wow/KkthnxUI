@@ -271,14 +271,15 @@ tinsert(C.defaultThemes, function()
 
 	-- Reskin Headers
 	local headers = {
-		_G.ObjectiveTrackerBlocksFrame.QuestHeader,
+		_G.BONUS_OBJECTIVE_TRACKER_MODULE.Header,
+		-- _G.MONTHLY_ACTIVITIES_TRACKER_MODULE,
 		_G.ObjectiveTrackerBlocksFrame.AchievementHeader,
-		_G.ObjectiveTrackerBlocksFrame.ScenarioHeader,
 		_G.ObjectiveTrackerBlocksFrame.CampaignQuestHeader,
 		_G.ObjectiveTrackerBlocksFrame.ProfessionHeader,
-		_G.BONUS_OBJECTIVE_TRACKER_MODULE.Header,
-		_G.WORLD_QUEST_TRACKER_MODULE.Header,
+		_G.ObjectiveTrackerBlocksFrame.QuestHeader,
+		_G.ObjectiveTrackerBlocksFrame.ScenarioHeader,
 		_G.ObjectiveTrackerFrame.BlocksFrame.UIWidgetsHeader,
+		_G.WORLD_QUEST_TRACKER_MODULE.Header,
 	}
 	for _, header in pairs(headers) do
 		reskinHeader(header)
