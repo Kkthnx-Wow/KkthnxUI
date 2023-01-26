@@ -73,12 +73,23 @@ function Module:UpdatePetBar()
 end
 
 function Module.PetBarOnEvent(event, unit)
+	-- Handle "PET_BAR_UPDATE_COOLDOWN" event by updating the cooldowns on the pet action bar
 	if event == "PET_BAR_UPDATE_COOLDOWN" then
 		PetActionBar:UpdateCooldowns()
 	else
-		if (event == "UNIT_FLAGS" and unit ~= "pet") or (event == "UNIT_PET" and unit ~= "player") then
+		-- Return if the event is not related to the "pet" or "player" unit
+		if unit ~= "pet" and unit ~= "player" then
 			return
 		end
+		-- Return if the event is "UNIT_FLAGS" and the unit is not "pet"
+		if event == "UNIT_FLAGS" and unit ~= "pet" then
+			return
+		end
+		-- Return if the event is "UNIT_PET" and the unit is not "player"
+		if event == "UNIT_PET" and unit ~= "player" then
+			return
+		end
+		-- Update the pet action bar if the event is related to the "pet" or "player" unit
 		Module.UpdatePetBar(PetActionBar)
 	end
 end
@@ -101,14 +112,6 @@ function Module:CreatePetbar()
 
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar][shapeshift] hide; [pet] show; hide"
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
-
-	-- if C["ActionBar"].ShowPetBar then
-	-- 	frame:SetScale(1)
-	-- 	frame:SetAlpha(1)
-	-- else
-	-- 	frame:SetScale(0.00001)
-	-- 	frame:SetAlpha(0)
-	-- end
 
 	-- Fix pet bar updating
 	Module:PetBarOnEvent()

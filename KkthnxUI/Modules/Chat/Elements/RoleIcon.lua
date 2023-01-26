@@ -35,8 +35,8 @@ local function SetupChatRoleIcons(event, arg1, arg2, ...)
 			playerRole = UnitGroupRolesAssigned(arg2:gsub(" *-[^-]+$", ""))
 		end
 
-		if playerRole and playerRole ~= "NONE" then
-			ret = IconTex[playerRole] .. "" .. ret
+		if playerRole and IconTex[playerRole] then
+			ret = IconTex[playerRole] .. ret
 		end
 	end
 
