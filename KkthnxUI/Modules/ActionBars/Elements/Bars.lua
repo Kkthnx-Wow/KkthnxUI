@@ -1,7 +1,15 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("ActionBar")
 
-local tinsert, next = tinsert, next
+local _G = _G
+local UIParent = UIParent
+local GetVehicleBarIndex = GetVehicleBarIndex
+local UnitExists = UnitExists
+local VehicleExit = VehicleExit
+local PetDismiss = PetDismiss
+local tinsert = table.insert
+local RegisterStateDriver = RegisterStateDriver
+
 local margin, padding = 6, 0
 
 function Module:UpdateAllSize()

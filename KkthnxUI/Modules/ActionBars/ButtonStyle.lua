@@ -1,6 +1,8 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
+local KEY_BUTTON4, KEY_NUMPAD1, RANGE_INDICATOR, gsub = KEY_BUTTON4, KEY_NUMPAD1, RANGE_INDICATOR, string.gsub
+
 local keyButton = gsub(KEY_BUTTON4, "%d", "")
 local keyNumpad = gsub(KEY_NUMPAD1, "%d", "")
 

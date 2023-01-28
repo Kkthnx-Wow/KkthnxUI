@@ -1,6 +1,16 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
+-- Cached globals
+local AutoCastShine_AutoCastStart = AutoCastShine_AutoCastStart
+local AutoCastShine_AutoCastStop = AutoCastShine_AutoCastStop
+local GetPetActionInfo = GetPetActionInfo
+local GetPetActionSlotUsable = GetPetActionSlotUsable
+local IsPetAttackAction = IsPetAttackAction
+local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
+local PET_ACTION_HIGHLIGHT_MARKS = PET_ACTION_HIGHLIGHT_MARKS
+local SharedActionButton_RefreshSpellHighlight = SharedActionButton_RefreshSpellHighlight
+
 local tinsert = tinsert
 local margin = 6
 
