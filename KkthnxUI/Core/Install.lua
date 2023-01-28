@@ -4,8 +4,6 @@ local Module = K:NewModule("Installer")
 -- Sourced: NDui (siweia)
 -- Edited: KkthnxUI (Kkthnx)
 
-local _G = _G
-
 local APPLY = _G.APPLY
 local CHAT = _G.CHAT
 local ChangeChatColor = _G.ChangeChatColor

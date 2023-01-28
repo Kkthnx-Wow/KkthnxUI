@@ -1,6 +1,5 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
 local table_insert = _G.table.insert
 
 local hooksecurefunc = _G.hooksecurefunc

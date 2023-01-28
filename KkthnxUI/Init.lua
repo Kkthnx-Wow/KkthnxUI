@@ -1,6 +1,5 @@
 local AddOnName, Engine = ...
 
-local _G = _G
 local bit_band = _G.bit.band
 local bit_bor = _G.bit.bor
 local math_max = _G.math.max

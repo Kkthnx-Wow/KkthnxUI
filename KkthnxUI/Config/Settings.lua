@@ -1,7 +1,5 @@
 local _, C = unpack(KkthnxUI)
 
-local _G = _G
-
 local DISABLE = _G.DISABLE
 local EMOTE = _G.EMOTE
 local GUILD = _G.GUILD

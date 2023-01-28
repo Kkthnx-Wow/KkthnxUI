@@ -2,7 +2,6 @@ local K, C = unpack(KkthnxUI)
 
 -- Application Programming Interface for KkthnxUI (API)
 
-local _G = _G
 local assert = _G.assert
 local getmetatable = _G.getmetatable
 local select = _G.select

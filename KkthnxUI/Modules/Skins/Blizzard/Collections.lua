@@ -1,7 +1,5 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
-
 C.themes["Blizzard_Collections"] = function()
 	if K.CheckAddOnState("BetterWardrobe") then
 		return

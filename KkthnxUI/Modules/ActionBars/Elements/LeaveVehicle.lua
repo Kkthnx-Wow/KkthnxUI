@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
-local _G = _G
 local tinsert = tinsert
 local UnitOnTaxi, TaxiRequestEarlyLanding, VehicleExit = UnitOnTaxi, TaxiRequestEarlyLanding, VehicleExit
 local padding = 0

@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local _G = _G
-
 local AcceptGroup = _G.AcceptGroup
 local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
 local C_FriendList_IsFriend = _G.C_FriendList.IsFriend

@@ -3,8 +3,6 @@ local Module = K:NewModule("Unitframes")
 local AuraModule = K:GetModule("Auras")
 local oUF = K.oUF
 
-local _G = _G
-
 local pairs = _G.pairs
 local string_format = _G.string.format
 local unpack = _G.unpack

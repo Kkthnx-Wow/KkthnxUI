@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Unitframes")
 
-local _G = _G
 local select = _G.select
 
 local CreateFrame = _G.CreateFrame

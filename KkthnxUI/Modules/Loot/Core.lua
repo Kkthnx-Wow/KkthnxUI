@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Loot")
 
-local _G = _G
 local unpack = unpack
 local tinsert = tinsert
 local next = next

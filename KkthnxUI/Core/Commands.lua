@@ -1,6 +1,5 @@
 local K, _, L = unpack(KkthnxUI)
 
-local _G = _G
 local print = _G.print
 local string_format = _G.string.format
 local string_lower = _G.string.lower

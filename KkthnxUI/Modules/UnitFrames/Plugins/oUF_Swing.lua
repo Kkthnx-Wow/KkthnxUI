@@ -4,7 +4,6 @@ local oUF = K.oUF
 -- oUF_Swing, by p3lim
 -- KkthnxUI MOD
 
-local _G = _G
 local select = _G.select
 
 local GetInventoryItemID = _G.GetInventoryItemID

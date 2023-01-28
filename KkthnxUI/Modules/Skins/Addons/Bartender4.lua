@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
-local _G = _G
-
 function Module:ReskinBartender4()
 	if not C["Skins"].Bartender4 then
 		return

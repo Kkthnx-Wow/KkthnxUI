@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Unitframes")
 
-local _G = _G
-
 local CreateFrame = _G.CreateFrame
 local UnitIsUnit = _G.UnitIsUnit
 

@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = {}
 
-local _G = _G
 local next = _G.next
 local type = _G.type
 local unpack = _G.unpack

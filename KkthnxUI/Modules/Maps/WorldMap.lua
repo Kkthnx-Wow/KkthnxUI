@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:NewModule("WorldMap")
 
-local _G = _G
-
 local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
 local CreateFrame = _G.CreateFrame
 local IsPlayerMoving = _G.IsPlayerMoving

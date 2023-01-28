@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Bags")
 
-local _G = _G
 local table_wipe = _G.table.wipe
 
 local C_Container_GetContainerItemEquipmentSetInfo = _G.C_Container.GetContainerItemEquipmentSetInfo

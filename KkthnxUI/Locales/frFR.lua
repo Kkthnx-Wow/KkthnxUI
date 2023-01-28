@@ -3,8 +3,6 @@ if not L then
 	return
 end
 
-local _G = _G
-
 local GetLocale = _G.GetLocale
 
 if GetLocale() ~= "frFR" then

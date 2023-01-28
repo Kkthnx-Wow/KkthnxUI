@@ -1,8 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Miscellaneous")
 
-local _G = _G
-
 local wipe, select, pairs = _G.wipe, _G.select, _G.pairs
 
 local ATTACHMENTS_MAX_RECEIVE, ERR_MAIL_DELETE_ITEM_ERROR = _G.ATTACHMENTS_MAX_RECEIVE, _G.ERR_MAIL_DELETE_ITEM_ERROR

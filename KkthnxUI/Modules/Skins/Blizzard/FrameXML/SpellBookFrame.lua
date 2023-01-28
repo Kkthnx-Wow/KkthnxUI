@@ -1,6 +1,5 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
 local pairs = pairs
 local table_insert = table.insert
 

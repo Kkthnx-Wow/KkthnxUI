@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Loot")
 
-local _G = _G
 local pairs, unpack, next = pairs, unpack, next
 local wipe, tinsert, format = wipe, tinsert, format
 

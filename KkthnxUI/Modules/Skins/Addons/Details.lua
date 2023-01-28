@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
-local _G = _G
-
 local function SetupInstance(instance)
 	if instance.styled then
 		return

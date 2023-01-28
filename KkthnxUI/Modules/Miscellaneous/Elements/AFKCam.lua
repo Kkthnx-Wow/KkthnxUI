@@ -4,7 +4,6 @@ local Module = K:GetModule("Miscellaneous")
 -- Sourced: ElvUI (Elv)
 -- Edited: KkthnxUI (Kkthnx)
 
-local _G = _G
 local C_PetBattles_IsInBattle = _G.C_PetBattles.IsInBattle
 local C_Timer_After = _G.C_Timer.After
 local C_Timer_NewTicker = _G.C_Timer.NewTicker

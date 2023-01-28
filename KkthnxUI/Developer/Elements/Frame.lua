@@ -1,6 +1,5 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
 local math_ceil = _G.math.ceil
 local math_floor = _G.math.floor
 local print = _G.print

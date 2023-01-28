@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local _G = _G
 local string_lower = string.lower
 
 local BNInviteFriend = _G.BNInviteFriend

@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Auras")
 
-local _G = _G
 local next = _G.next
 local pairs = _G.pairs
 local table_insert = _G.table.insert

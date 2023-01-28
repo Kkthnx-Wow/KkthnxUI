@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
-local _G = _G
-
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local hooksecurefunc = _G.hooksecurefunc
 

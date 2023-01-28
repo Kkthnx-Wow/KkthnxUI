@@ -1,6 +1,5 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
 local table_insert = _G.table.insert
 
 local C_ChatBubbles_GetAllChatBubbles = _G.C_ChatBubbles.GetAllChatBubbles

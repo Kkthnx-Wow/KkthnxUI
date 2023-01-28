@@ -3,7 +3,6 @@ local oUF = K.oUF
 
 --	Based on oUF_Fader(by Slakah)
 
-local _G = _G
 local assert = _G.assert
 local rawget = _G.rawget
 local setmetatable = _G.setmetatable

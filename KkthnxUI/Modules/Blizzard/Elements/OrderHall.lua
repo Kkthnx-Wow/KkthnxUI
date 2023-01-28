@@ -3,7 +3,6 @@ local Module = K:GetModule("Blizzard")
 
 -- Sourced: NDui (siweia)
 
-local _G = _G
 local string_format = _G.string.format
 
 local C_CurrencyInfo_GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo

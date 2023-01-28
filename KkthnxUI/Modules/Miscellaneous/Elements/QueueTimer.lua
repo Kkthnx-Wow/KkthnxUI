@@ -4,8 +4,6 @@ local Module = K:GetModule("Miscellaneous")
 -- Sourced: syndenbock (JustInTime)
 -- Edited: Kkthnx (KkthnxUI)
 
-local _G = _G
-
 local RESETS_IN = _G.RESETS_IN
 local LFGDungeonReadyDialog = _G.LFGDungeonReadyDialog
 

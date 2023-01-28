@@ -1,7 +1,6 @@
 local K = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
-local _G = _G
 local next = next
 
 local scripts = {

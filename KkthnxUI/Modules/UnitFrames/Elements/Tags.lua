@@ -1,8 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local oUF = K.oUF
 
-local _G = _G
-
 local AFK = _G.AFK
 local ALTERNATE_POWER_INDEX = Enum.PowerType.Alternate or 10
 local DEAD = _G.DEAD

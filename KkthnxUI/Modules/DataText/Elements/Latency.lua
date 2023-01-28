@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("DataText")
 
-local _G = _G
 local math_max = _G.math.max
 local string_format = _G.string.format
 

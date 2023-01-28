@@ -1,6 +1,5 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
 local math_abs = _G.math.abs
 local math_floor = _G.math.floor
 local mod = _G.mod

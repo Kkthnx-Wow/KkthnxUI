@@ -1,7 +1,5 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
-
 local GetSpellInfo = _G.GetSpellInfo
 
 local function SpellName(id)

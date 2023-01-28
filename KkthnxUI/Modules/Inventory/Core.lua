@@ -4,7 +4,6 @@ local Module = K:NewModule("Bags")
 local Unfit = K.LibUnfit
 local cargBags = K.cargBags
 
-local _G = _G
 local ceil = _G.ceil
 local ipairs = _G.ipairs
 local string_match = _G.string.match

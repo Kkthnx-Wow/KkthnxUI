@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 
-local _G = _G
 local math_max = _G.math.max
 local math_min = _G.math.min
 local pairs = _G.pairs

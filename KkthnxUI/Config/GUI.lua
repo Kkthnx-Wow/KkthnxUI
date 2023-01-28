@@ -1,8 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local GUI = K["GUI"]
 
-local _G = _G
-
 local COLORS = _G.COLORS
 local FILTERS = _G.FILTERS
 local FOCUS = _G.FOCUS

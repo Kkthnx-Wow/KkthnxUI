@@ -4,7 +4,6 @@
 --------------------------------
 local K, C, L = unpack(KkthnxUI)
 
-local _G = _G
 local next, type, sqrt, GetTime, format = next, type, sqrt, GetTime, format
 local RegisterStateDriver, InCombatLockdown = RegisterStateDriver, InCombatLockdown
 local IsItemInRange, ItemHasRange, HasExtraActionBar = IsItemInRange, ItemHasRange, HasExtraActionBar

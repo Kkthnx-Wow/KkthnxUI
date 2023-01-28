@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Unitframes")
 
-local _G = _G
 local math_rad = _G.math.rad
 local pairs = _G.pairs
 local string_format = _G.string.format

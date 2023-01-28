@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local _G = _G
 local string_format = _G.string.format
 
 local UIErrorsFrame = _G.UIErrorsFrame

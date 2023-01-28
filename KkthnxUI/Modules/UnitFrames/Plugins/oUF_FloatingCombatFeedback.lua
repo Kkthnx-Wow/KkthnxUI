@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local oUF = K.oUF
 
-local _G = _G
 local select, tremove, tinsert, wipe = _G.select, _G.table.remove, _G.table.insert, _G.table.wipe
 local m_cos, m_sin, m_pi, m_random = _G.math.cos, _G.math.sin, _G.math.pi, _G.math.random
 

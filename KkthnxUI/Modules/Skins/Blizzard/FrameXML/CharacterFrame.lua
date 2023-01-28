@@ -1,6 +1,5 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
 local select = _G.select
 
 local CharacterHandsSlot = _G.CharacterHandsSlot

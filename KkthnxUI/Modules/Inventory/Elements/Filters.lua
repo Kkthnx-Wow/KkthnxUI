@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Bags")
 
-local _G = _G
-
 local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = _G.C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
 local C_ToyBox_GetToyInfo = _G.C_ToyBox.GetToyInfo
 

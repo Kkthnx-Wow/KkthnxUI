@@ -2,7 +2,6 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 local TT = K:GetModule("Tooltip")
 
-local _G = _G
 local string_find = _G.string.find
 local string_gsub = _G.string.gsub
 local string_match = _G.string.match

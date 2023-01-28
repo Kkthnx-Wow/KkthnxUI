@@ -3,31 +3,29 @@ local Module = K:GetModule("Automation")
 
 -- Automatically sets your role (iSpawnAtHome)
 
-local _G = _G
+local GetSpecialization = GetSpecialization
+local GetSpecializationRole = GetSpecializationRole
+local GetTime = GetTime
+local InCombatLockdown = InCombatLockdown
+local IsInGroup = IsInGroup
+local IsPartyLFG = IsPartyLFG
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned
+local UnitSetRole = UnitSetRole
 
-local GetSpecialization = _G.GetSpecialization
-local GetSpecializationRole = _G.GetSpecializationRole
-local GetTime = _G.GetTime
-local InCombatLockdown = _G.InCombatLockdown
-local IsInGroup = _G.IsInGroup
-local IsPartyLFG = _G.IsPartyLFG
-local RolePollPopup = _G.RolePollPopup
-local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
-local UnitSetRole = _G.UnitSetRole
+local prev = 0 -- variable to store the previous time the role was set
+local playerRole = nil -- variable to store the player's current role
 
-local prev = 0
-local playerRole = nil -- Store the role of the player in a variable
 function Module:SetupAutoRole()
 	if K.Level >= 10 and not InCombatLockdown() and IsInGroup() and not IsPartyLFG() then
 		local spec = GetSpecialization()
 		if spec then
-			local role = GetSpecializationRole(spec) -- Check if the role has changed before calling GetSpecializationRole() again
+			local role = GetSpecializationRole(spec) -- Check the current role of the player's current specialization
 			if playerRole ~= role then
 				if UnitGroupRolesAssigned("player") ~= role then
 					local t = GetTime()
-					if t - prev > 2 then
+					if t - prev > 2 then -- Check if it's been more than 2 seconds since the last role change
 						prev = t
-						UnitSetRole("player", role)
+						UnitSetRole("player", role) -- set the player's role
 						playerRole = role -- Update the stored value of the player's role
 						return
 					end

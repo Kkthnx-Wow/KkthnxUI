@@ -3,8 +3,6 @@ local Module = K:GetModule("Automation")
 
 -- Auto opening of items in bag (kAutoOpen by Kellett)
 
-local _G = _G
-
 local C_Container_GetContainerItemInfo = _G.C_Container.GetContainerItemInfo
 local C_Container_GetContainerItemLink = _G.C_Container.GetContainerItemLink
 local C_Container_GetContainerNumSlots = _G.C_Container.GetContainerNumSlots

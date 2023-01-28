@@ -4,7 +4,6 @@ local Module = K:GetModule("Automation")
 -- Sourced: Leatrix Plus (Leatrix)
 -- Edited: KkthnxUI (Kkthnx)
 
-local _G = _G
 local string_split = _G.string.split
 
 local BNET_CLIENT_WOW = _G.BNET_CLIENT_WOW

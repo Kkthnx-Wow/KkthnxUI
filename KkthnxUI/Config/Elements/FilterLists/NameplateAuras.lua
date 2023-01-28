@@ -1,7 +1,5 @@
 local _, C = unpack(KkthnxUI)
 
-local _G = _G
-
 C.NameplateWhiteList = {
 	[642] = true,
 	[1022] = true,

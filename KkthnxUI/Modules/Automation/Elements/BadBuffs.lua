@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local _G = _G
-
 local UnitBuff = _G.UnitBuff
 local InCombatLockdown = _G.InCombatLockdown
 

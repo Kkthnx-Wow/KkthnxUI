@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Minimap")
 
-local _G = _G
 local math_floor = _G.math.floor
 local mod = _G.mod
 local pairs = _G.pairs

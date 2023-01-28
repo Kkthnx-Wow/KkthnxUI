@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:NewModule("AurasTable")
 
-local _G = _G
 local string_format = _G.string.format
 local table_wipe = _G.table.wipe
 

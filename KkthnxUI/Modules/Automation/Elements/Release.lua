@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local _G = _G
-
 local IsInInstance = _G.IsInInstance
 local C_DeathInfo_GetSelfResurrectOptions = _G.C_DeathInfo.GetSelfResurrectOptions
 local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit

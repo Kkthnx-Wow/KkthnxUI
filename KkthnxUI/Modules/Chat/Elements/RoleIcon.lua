@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 
-local _G = _G
-
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 
 -- Role icons

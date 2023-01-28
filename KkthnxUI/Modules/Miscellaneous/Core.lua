@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Miscellaneous")
 
-local _G = _G
 local select = _G.select
 local string_match = _G.string.match
 local tonumber = _G.tonumber

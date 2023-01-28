@@ -1,8 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local _G = _G
-
 local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
 local SendChatMessage = _G.SendChatMessage
 local UNKNOWN = _G.UNKNOWN

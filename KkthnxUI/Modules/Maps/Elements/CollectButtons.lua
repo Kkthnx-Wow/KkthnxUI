@@ -4,7 +4,6 @@ local Module = K:GetModule("Minimap")
 -- Sourced: NDui (Siweia)
 -- Edited: KkthnxUI (Kkthnx)
 
-local _G = _G
 local string_find = _G.string.find
 local string_match = _G.string.match
 local string_upper = _G.string.upper

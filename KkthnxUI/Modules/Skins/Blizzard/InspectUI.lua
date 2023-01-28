@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 
 -- Lua
-local _G = _G
 
 local GetInventoryItemLink = _G.GetInventoryItemLink
 local HideUIPanel = _G.HideUIPanel

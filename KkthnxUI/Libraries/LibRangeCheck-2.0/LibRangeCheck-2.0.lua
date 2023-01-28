@@ -49,7 +49,7 @@ if not lib then
 end
 
 -- GLOBALS: LibStub, CreateFrame, C_Map, FriendColor (??), HarmColor (??)
-local _G = _G
+
 local BOOKTYPE_SPELL = BOOKTYPE_SPELL
 local CheckInteractDistance = CheckInteractDistance
 local GetInventoryItemLink = GetInventoryItemLink
@@ -1450,12 +1450,12 @@ do
 	-- rc.RegisterCallback(self, "CHECKERS_CHANGED", someCallbackFunction)
 	-- @see CallbackHandler-1.0 documentation for more details
 	lib.RegisterCallback = lib.RegisterCallback or function(...)
-			local CBH = LibStub("CallbackHandler-1.0")
-			lib.RegisterCallback = nil -- extra safety, we shouldn't get this far if CBH is not found, but better an error later than an infinite recursion now
-			lib.callbacks = CBH:New(lib)
-			-- ok, CBH hopefully injected or new shiny RegisterCallback
-			return lib.RegisterCallback(...)
-		end
+		local CBH = LibStub("CallbackHandler-1.0")
+		lib.RegisterCallback = nil -- extra safety, we shouldn't get this far if CBH is not found, but better an error later than an infinite recursion now
+		lib.callbacks = CBH:New(lib)
+		-- ok, CBH hopefully injected or new shiny RegisterCallback
+		return lib.RegisterCallback(...)
+	end
 end
 
 --- END CallbackHandler stuff

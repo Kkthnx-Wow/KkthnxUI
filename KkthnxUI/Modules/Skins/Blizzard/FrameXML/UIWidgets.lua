@@ -2,8 +2,6 @@ local K, C = unpack(KkthnxUI)
 
 -- Sourced: ShestakUI
 
-local _G = _G
-
 local hooksecurefunc = _G.hooksecurefunc
 
 local Type_StatusBar = _G.Enum.UIWidgetVisualizationType.StatusBar

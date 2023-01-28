@@ -3,7 +3,6 @@ local Module = K:GetModule("Announcements")
 
 -- Sourced: ElvUI Shadow & Light (Darth_Predator, Repooc)
 
-local _G = _G
 local bit_band = _G.bit.band
 local math_random = _G.math.random
 local table_wipe = _G.table.wipe

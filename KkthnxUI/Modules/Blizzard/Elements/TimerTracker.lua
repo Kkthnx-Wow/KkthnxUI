@@ -3,7 +3,6 @@ local Module = K:GetModule("Blizzard")
 
 -- Sourced: NDui
 
-local _G = _G
 local pairs = _G.pairs
 
 local function SetupTimerTracker(bar)

@@ -1,7 +1,5 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
-
 local CreateFrame = _G.CreateFrame
 local GetAddOnInfo = _G.GetAddOnInfo
 local GetCVarBool = _G.GetCVarBool

@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local _G = _G
 local string_match = _G.string.match
 local string_gsub = _G.string.gsub
 local string_format = _G.string.format

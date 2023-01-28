@@ -3,8 +3,6 @@ local Module = K:GetModule("Loot")
 
 -- Sourced: NDui
 
-local _G = _G
-
 local GetCVarBool = _G.GetCVarBool
 local GetNumLootItems = _G.GetNumLootItems
 local GetTime = _G.GetTime

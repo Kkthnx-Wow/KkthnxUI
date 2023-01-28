@@ -1,7 +1,5 @@
 local K, _, L = unpack(KkthnxUI)
 
-local _G = _G
-
 local ACCEPT = _G.ACCEPT
 local CANCEL = _G.CANCEL
 local ReloadUI = _G.ReloadUI

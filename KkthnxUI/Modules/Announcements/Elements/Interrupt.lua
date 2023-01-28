@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local _G = _G
 local string_format = _G.string.format
 
 local AURA_TYPE_BUFF = _G.AURA_TYPE_BUFF

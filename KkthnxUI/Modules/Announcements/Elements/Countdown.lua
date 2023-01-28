@@ -3,8 +3,6 @@ if C["Announcements"].PullCountdown ~= true then
 	return
 end
 
-local _G = _G
-
 local UnitName = _G.UnitName
 local CreateFrame = _G.CreateFrame
 local SendChatMessage = _G.SendChatMessage

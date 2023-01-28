@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("DataText")
 
-local _G = _G
 local ipairs = _G.ipairs
 local math_floor = _G.math.floor
 local math_max = _G.math.max

@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local _G = _G
-
 local AcceptResurrect = _G.AcceptResurrect
 local C_Timer_After = _G.C_Timer.After
 local DoEmote = _G.DoEmote

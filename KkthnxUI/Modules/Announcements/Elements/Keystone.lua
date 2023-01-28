@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local _G = _G
 local gsub = _G.gsub
 
 local C_Item_IsItemKeystoneByID = _G.C_Item.IsItemKeystoneByID

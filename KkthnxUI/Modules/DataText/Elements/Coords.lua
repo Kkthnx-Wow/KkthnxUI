@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("DataText")
 
-local _G = _G
 local string_format = _G.string.format
 
 local COMBAT_ZONE = _G.COMBAT_ZONE

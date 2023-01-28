@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("WorldMap")
 
-local _G = _G
 local math_ceil = _G.math.ceil
 local mod = _G.mod
 local table_wipe = _G.table.wipe

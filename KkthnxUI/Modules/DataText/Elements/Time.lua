@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("DataText")
 
-local _G = _G
 local date = _G.date
 local ipairs = _G.ipairs
 local mod = _G.mod

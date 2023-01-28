@@ -1,8 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("WorldMap")
 
-local _G = _G
-
 local GameTooltip = _G.GameTooltip
 local GetAchievementLink = _G.GetAchievementLink
 local GetQuestLink = _G.GetQuestLink

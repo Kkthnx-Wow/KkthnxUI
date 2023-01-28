@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 
-local _G = _G
 local pairs = _G.pairs
 local string_format = _G.string.format
 local string_gsub = _G.string.gsub

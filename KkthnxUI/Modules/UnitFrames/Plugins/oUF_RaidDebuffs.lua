@@ -1,7 +1,6 @@
 local K = unpack(KkthnxUI)
 local oUF = K.oUF
 
-local _G = _G
 local addon = {}
 
 K.oUF_RaidDebuffs = addon
@@ -254,11 +253,11 @@ local function Enable(self)
 		self:RegisterEvent("UNIT_AURA", Update)
 
 		rd.BlackList = rd.BlackList or {
-				[105171] = true, -- Deep Corruption
-				[108220] = true, -- Deep Corruption
-				[116095] = true, -- Disable, Slow
-				[137637] = true, -- Warbringer, Slow
-			}
+			[105171] = true, -- Deep Corruption
+			[108220] = true, -- Deep Corruption
+			[116095] = true, -- Disable, Slow
+			[137637] = true, -- Warbringer, Slow
+		}
 
 		return true
 	end

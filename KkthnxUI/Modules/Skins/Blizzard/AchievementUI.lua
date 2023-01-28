@@ -1,7 +1,5 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
-
 local function SetupStatusbar(bar)
 	bar:StripTextures()
 	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))

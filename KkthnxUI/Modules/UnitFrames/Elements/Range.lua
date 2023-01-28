@@ -1,7 +1,6 @@
 local K, C = _G.unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
 
-local _G = _G
 local string_find = _G.string.find
 
 local GetNumGroupMembers = _G.GetNumGroupMembers

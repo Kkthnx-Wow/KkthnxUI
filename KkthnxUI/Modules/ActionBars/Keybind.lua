@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
-local _G = _G
 local pairs, tonumber, print, strfind, strupper = pairs, tonumber, print, strfind, strupper
 local InCombatLockdown = InCombatLockdown
 local GetSpellBookItemName, GetMacroInfo = GetSpellBookItemName, GetMacroInfo

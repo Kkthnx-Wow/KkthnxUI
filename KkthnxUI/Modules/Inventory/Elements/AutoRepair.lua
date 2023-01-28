@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Bags")
 
-local _G = _G
 local string_format = _G.string.format
 
 local C_Timer_After = _G.C_Timer.After

@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Bags")
 
-local _G = _G
 local ipairs = ipairs
 local tinsert = tinsert
 local hooksecurefunc = hooksecurefunc

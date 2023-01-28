@@ -2,8 +2,6 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 local ModuleTooltip = K:GetModule("Tooltip")
 
-local _G = _G
-
 local IsAddOnLoaded = _G.IsAddOnLoaded
 
 function Module:ReskinRaiderIO()

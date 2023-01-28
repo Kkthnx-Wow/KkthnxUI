@@ -3,7 +3,6 @@ local K, C = unpack(KkthnxUI)
 -- Sourced: ElvUI (Elvz)
 -- Edited: KkthnxUI (Kkthnx)
 
-local _G = _G
 local table_insert = _G.table.insert
 
 local CreateFrame = _G.CreateFrame

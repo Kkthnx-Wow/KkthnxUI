@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("ActionBar")
 
-local _G = _G
 local tinsert, next = tinsert, next
 local margin, padding = 6, 0
 

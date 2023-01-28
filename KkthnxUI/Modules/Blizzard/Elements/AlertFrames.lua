@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Blizzard")
 
-local _G = _G
-
 local UIParent = _G.UIParent
 local hooksecurefunc = _G.hooksecurefunc
 

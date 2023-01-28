@@ -1,7 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Auras")
 
-local _G = _G
 local pairs = _G.pairs
 local select = _G.select
 local string_find = _G.string.find

@@ -3,7 +3,6 @@ local Module = K:NewModule("Auras")
 
 -- Sourced: NDui (Siweia)
 
-local _G = _G
 local math_floor = _G.math.floor
 local select = _G.select
 local string_format = _G.string.format

@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local _G = _G
-
 local BACKPACK_CONTAINER = _G.BACKPACK_CONTAINER or 0
 local C_Container_GetContainerItemInfo = _G.C_Container.GetContainerItemInfo
 local C_Container_GetContainerNumSlots = _G.C_Container.GetContainerNumSlots

@@ -1,7 +1,5 @@
 local K, C = unpack(KkthnxUI)
 
-local _G = _G
-
 C.themes["Blizzard_TradeSkillUI"] = function()
 	local rankFrame = _G.TradeSkillFrame.RankFrame
 	rankFrame:SetStatusBarTexture(K.GetTexture(C["General"].Texture))

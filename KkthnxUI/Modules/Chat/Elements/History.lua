@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 
-local _G = _G
 local table_insert = _G.table.insert
 local table_remove = _G.table.remove
 local time = _G.time

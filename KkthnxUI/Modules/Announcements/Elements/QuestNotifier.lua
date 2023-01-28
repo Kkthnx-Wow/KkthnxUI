@@ -1,7 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local _G = _G
 local math_floor = _G.math.floor
 local mod = _G.mod
 local pairs = _G.pairs

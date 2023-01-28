@@ -4,7 +4,6 @@ local VoiceActivityEventFrame = CreateFrame("Frame")
 
 -- Sourced: Elv (ElvUI)
 
-local _G = _G
 local math_modf = _G.math.modf
 local select = _G.select
 

@@ -3,8 +3,6 @@ local K, C = unpack(KkthnxUI)
 -- Sourced: Tukui (Tukz & Hydra)
 -- Edited: KkthnxUI (Kkthnx)
 
-local _G = _G
-
 local floor = _G.floor
 local match = _G.string.match
 local pairs = _G.pairs

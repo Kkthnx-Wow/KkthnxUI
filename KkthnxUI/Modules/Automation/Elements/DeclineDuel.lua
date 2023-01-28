@@ -1,8 +1,6 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local _G = _G
-
 local CancelDuel = _G.CancelDuel
 local StaticPopup_Hide = _G.StaticPopup_Hide
 local C_PetBattles_CancelPVPDuel = _G.C_PetBattles.CancelPVPDuel
