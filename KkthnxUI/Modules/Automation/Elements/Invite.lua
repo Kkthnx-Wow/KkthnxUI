@@ -1,32 +1,39 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local AcceptGroup = AcceptGroup
-local C_BattleNet_GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
-local C_FriendList_IsFriend = C_FriendList.IsFriend
+--Cache global variables
+local C_BattleNet = C_BattleNet
+local C_FriendList = C_FriendList
 local IsGuildMember = IsGuildMember
 local IsInGroup = IsInGroup
-local LFGInvitePopup = LFGInvitePopup
 local QueueStatusButton = QueueStatusButton
 local StaticPopupSpecial_Hide = StaticPopupSpecial_Hide
 local StaticPopup_Hide = StaticPopup_Hide
+local LFGInvitePopup = LFGInvitePopup
+local previousInviterGUID
 
-local hideStatic
+--Main function
 function Module.AutoInvite(event, _, _, _, _, _, _, inviterGUID)
 	if event == "PARTY_INVITE_REQUEST" then
-		-- Prevent Losing Que Inside LFD If Someone Invites You To Group
-		if QueueStatusButton:IsShown() or IsInGroup() or (not inviterGUID or inviterGUID == "") then
+		--Check if player is already in group or queued for group or already accepted an invite from the same inviter
+		if IsInGroup() or QueueStatusButton:IsShown() or inviterGUID == previousInviterGUID then
 			return
 		end
 
-		if C_BattleNet_GetGameAccountInfoByGUID(inviterGUID) or C_FriendList_IsFriend(inviterGUID) or IsGuildMember(inviterGUID) then
-			hideStatic = true
+		-- Check if the inviter is a friend or guild member
+		local accountInfo = C_BattleNet.GetAccountInfoByGUID(inviterGUID)
+		if accountInfo or C_FriendList.IsFriend(inviterGUID) then
 			AcceptGroup()
+			previousInviterGUID = inviterGUID
+		elseif IsGuildMember(inviterGUID) then
+			AcceptGroup()
+			previousInviterGUID = inviterGUID
 		end
-	elseif event == "GROUP_ROSTER_UPDATE" and hideStatic then
-		StaticPopupSpecial_Hide(LFGInvitePopup) -- New LFD Popup When Invited In Custom Created Group
+	elseif event == "GROUP_ROSTER_UPDATE" then
+		-- Hide invite popups when player joins a group
+		StaticPopupSpecial_Hide(LFGInvitePopup)
 		StaticPopup_Hide("PARTY_INVITE")
-		hideStatic = nil
+		previousInviterGUID = nil
 	end
 end
 

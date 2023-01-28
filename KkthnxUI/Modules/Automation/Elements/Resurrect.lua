@@ -8,86 +8,79 @@ local StaticPopup_Hide = StaticPopup_Hide
 local UnitAffectingCombat = UnitAffectingCombat
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 
+local localizedPylonNames = {
+	enUS = "Failure Detection Pylon",
+	zhCN = "故障检测晶塔",
+	zhTW = "滅團偵測水晶塔",
+	ruRU = "Пилон для обнаружения проблем",
+	koKR = "고장 감지 변환기",
+	esMX = "Pilón detector de errores",
+	ptBR = "Pilar Detector de Falhas",
+	deDE = "Fehlschlagdetektorpylon",
+	esES = "Pilón detector de errores",
+	frFR = "Pylône de détection des échecs",
+	itIT = "Pilone d'Individuazione Fallimenti",
+}
+local localizedBrazierNames = {
+	enUS = "Brazier of Awakening",
+	zhCN = "觉醒火盆",
+	zhTW = "覺醒火盆",
+	ruRU = "Жаровня пробуждения",
+	koKR = "각성의 화로",
+	esMX = "Blandón del Despertar",
+	ptBR = "Braseiro do Despertar",
+	deDE = "Kohlenbecken des Erwachens",
+	esES = "Blandón de Despertar",
+	frFR = "Brasero de l'Éveil",
+	itIT = "Braciere del Risveglio",
+}
+
 function Module.SetupAutoResurrect(_, arg1)
-	-- Exclude pylon and brazier requests
-	local pylonLoc
-
-	-- Exclude Failure Detection Pylon
-	pylonLoc = "Failure Detection Pylon"
-	if K.Client == "zhCN" then
-		pylonLoc = "故障检测晶塔"
-	elseif K.Client == "zhTW" then
-		pylonLoc = "滅團偵測水晶塔"
-	elseif K.Client == "ruRU" then
-		pylonLoc = "Пилон для обнаружения проблем"
-	elseif K.Client == "koKR" then
-		pylonLoc = "고장 감지 변환기"
-	elseif K.Client == "esMX" then
-		pylonLoc = "Pilón detector de errores"
-	elseif K.Client == "ptBR" then
-		pylonLoc = "Pilar Detector de Falhas"
-	elseif K.Client == "deDE" then
-		pylonLoc = "Fehlschlagdetektorpylon"
-	elseif K.Client == "esES" then
-		pylonLoc = "Pilón detector de errores"
-	elseif K.Client == "frFR" then
-		pylonLoc = "Pylône de détection des échecs"
-	elseif K.Client == "itIT" then
-		pylonLoc = "Pilone d'Individuazione Fallimenti"
-	end
-
-	if arg1 == pylonLoc then
+	-- Check if the arg1 is a Pylon or Brazier by comparing it to the localized names.
+	-- If it is, we don't need to do anything and we return
+	if localizedPylonNames[K.Client] == arg1 or localizedBrazierNames[K.Client] == arg1 then
 		return
 	end
 
-	-- Exclude Brazier of Awakening
-	pylonLoc = "Brazier of Awakening"
-	if K.Client == "zhCN" then
-		pylonLoc = "觉醒火盆"
-	elseif K.Client == "zhTW" then
-		pylonLoc = "覺醒火盆"
-	elseif K.Client == "ruRU" then
-		pylonLoc = "Жаровня пробуждения"
-	elseif K.Client == "koKR" then
-		pylonLoc = "각성의 화로"
-	elseif K.Client == "esMX" then
-		pylonLoc = "Blandón del Despertar"
-	elseif K.Client == "ptBR" then
-		pylonLoc = "Braseiro do Despertar"
-	elseif K.Client == "deDE" then
-		pylonLoc = "Kohlenbecken des Erwachens"
-	elseif K.Client == "esES" then
-		pylonLoc = "Blandón de Despertar"
-	elseif K.Client == "frFR" then
-		pylonLoc = "Brasero de l'Éveil"
-	elseif K.Client == "itIT" then
-		pylonLoc = "Braciere del Risveglio"
-	end
-	if arg1 == pylonLoc then
-		return
-	end
-
-	-- Manage other resurrection requests
+	-- Check if the player is in combat
 	if not UnitAffectingCombat(arg1) then
+		-- If not in combat, accept the resurrect and hide the "RESURRECT_NO_TIMER" popup
 		AcceptResurrect()
 		StaticPopup_Hide("RESURRECT_NO_TIMER")
 
+		-- Check if the user has AutoResurrectThank enabled in the settings
 		if not C["Automation"].AutoResurrectThank then
 			return
 		end
 
+		-- Wait 3 seconds and then check if the player is alive or not
 		C_Timer_After(3, function() -- Give this more time to say thanks.
 			if not UnitIsDeadOrGhost("player") then
+				-- If player is alive, do the "thank" emote to the arg1
 				DoEmote("thank", arg1)
 			end
 		end)
 	end
 end
 
-function Module:CreateAutoResurrect()
-	if not C["Automation"].AutoResurrect then
-		return
-	end
+-- function Module:CreateAutoResurrect()
+-- 	if not C["Automation"].AutoResurrect then
+-- 		return
+-- 	end
 
-	K:RegisterEvent("RESURRECT_REQUEST", Module.SetupAutoResurrect)
+-- 	K:RegisterEvent("RESURRECT_REQUEST", Module.SetupAutoResurrect)
+-- end
+
+local autoResurrectEnabled = nil
+
+function Module:CreateAutoResurrect()
+	--Check if the player is in a battleground or arena and if player is dead or ghost
+	if IsActiveBattlefieldArena() and (UnitIsDeadOrGhost("player")) then
+		-- Check the value of AutoResurrect
+		autoResurrectEnabled = C["Automation"].AutoResurrect
+		if autoResurrectEnabled then
+			-- Register the event
+			K:RegisterEvent("RESURRECT_REQUEST", Module.SetupAutoResurrect)
+		end
+	end
 end

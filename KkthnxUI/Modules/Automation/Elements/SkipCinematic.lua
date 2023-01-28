@@ -1,16 +1,10 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local CinematicFrame = CinematicFrame
-local CinematicFrameCloseDialogConfirmButton = CinematicFrameCloseDialogConfirmButton
-local MovieFrame = MovieFrame
+local autoSkipCinematic = C["Automation"].AutoSkipCinematic
 
 local function skipOnKeyDown(self, key)
-	if not C["Automation"].AutoSkipCinematic then
-		return
-	end
-
-	if key == "ESCAPE" then
+	if key == "ESCAPE" and autoSkipCinematic then
 		if self:IsShown() and self.closeDialog and self.closeDialog.confirmButton then
 			self.closeDialog:Hide()
 		end
@@ -18,11 +12,7 @@ local function skipOnKeyDown(self, key)
 end
 
 local function skipOnKeyUp(self, key)
-	if not C["Automation"].AutoSkipCinematic then
-		return
-	end
-
-	if key == "SPACE" or key == "ESCAPE" or key == "ENTER" then
+	if (key == "SPACE" or key == "ESCAPE" or key == "ENTER") and autoSkipCinematic then
 		if self:IsShown() and self.closeDialog and self.closeDialog.confirmButton then
 			self.closeDialog.confirmButton:Click()
 		end
