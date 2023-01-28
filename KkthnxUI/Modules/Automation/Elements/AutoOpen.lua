@@ -8,6 +8,7 @@ local _G = _G
 local C_Container_GetContainerItemInfo = _G.C_Container.GetContainerItemInfo
 local C_Container_GetContainerItemLink = _G.C_Container.GetContainerItemLink
 local C_Container_GetContainerNumSlots = _G.C_Container.GetContainerNumSlots
+local C_Container_UseContainerItem = _G.C_Container.UseContainerItem
 local OPENING = _G.OPENING
 
 local openFrames = {} -- table to store which frames are open
@@ -44,14 +45,11 @@ local function MerchantClosed()
 	openFrames.merchant = false -- set the merchant frame as closed
 end
 
-local function BagDelayedUpdate(event)
+local function BagDelayedUpdate()
 	-- check if the bank, mail, or merchant frames are open
 	if openFrames.bank or openFrames.mail or openFrames.merchant then
 		return
 	end
-
-	-- variable to store the itemID of the opened item
-	local openedItemID
 
 	-- check if the player is in combat lockdown
 	if InCombatLockdown() then
@@ -68,44 +66,36 @@ local function BagDelayedUpdate(event)
 				-- check if the item has loot, is not locked and has an itemID
 				if cInfo and cInfo.hasLoot and not cInfo.isLocked and cInfo.itemID then
 					-- check if the item is in the list of items to automatically open
-					openedItemID = C.AutoOpenItems[cInfo.itemID]
-					if openedItemID then
-						-- exit the inner loop
+					if C.AutoOpenItems[cInfo.itemID] then
+						K.Print(K.SystemColor .. OPENING .. ":|r " .. C_Container_GetContainerItemLink(bag, slot))
+						C_Container_UseContainerItem(bag, slot)
 						break
 					end
 				end
 			end
-			if openedItemID then
-				break
-			end
-		end
-		if openedItemID then
-			K.Print(K.SystemColor .. OPENING .. ":|r " .. C_Container_GetContainerItemLink(bag, slot))
-			C_Container.UseContainerItem(bag, slot)
 		end
 	end
 end
 
 function Module:CreateAutoOpenItems()
+	local events = {
+		["BANKFRAME_OPENED"] = BankOpened,
+		["BANKFRAME_CLOSED"] = BankClosed,
+		["GUILDBANKFRAME_OPENED"] = GuildBankOpened,
+		["GUILDBANKFRAME_CLOSED"] = GuildBankClosed,
+		["MAIL_SHOW"] = MailOpened,
+		["MAIL_CLOSED"] = MailClosed,
+		["MERCHANT_SHOW"] = MerchantOpened,
+		["MERCHANT_CLOSED"] = MerchantClosed,
+		["BAG_UPDATE_DELAYED"] = BagDelayedUpdate,
+	}
 	if C["Automation"].AutoOpenItems then
-		K:RegisterEvent("BANKFRAME_OPENED", BankOpened)
-		K:RegisterEvent("BANKFRAME_CLOSED", BankClosed)
-		K:RegisterEvent("GUILDBANKFRAME_OPENED", GuildBankOpened)
-		K:RegisterEvent("GUILDBANKFRAME_CLOSED", GuildBankClosed)
-		K:RegisterEvent("MAIL_SHOW", MailOpened)
-		K:RegisterEvent("MAIL_CLOSED", MailClosed)
-		K:RegisterEvent("MERCHANT_SHOW", MerchantOpened)
-		K:RegisterEvent("MERCHANT_CLOSED", MerchantClosed)
-		K:RegisterEvent("BAG_UPDATE_DELAYED", BagDelayedUpdate)
+		for event, func in pairs(events) do
+			K:RegisterEvent(event, func)
+		end
 	else
-		K:UnregisterEvent("BANKFRAME_OPENED", BankOpened)
-		K:UnregisterEvent("BANKFRAME_CLOSED", BankClosed)
-		K:UnregisterEvent("GUILDBANKFRAME_OPENED", GuildBankOpened)
-		K:UnregisterEvent("GUILDBANKFRAME_CLOSED", GuildBankClosed)
-		K:UnregisterEvent("MAIL_SHOW", MailOpened)
-		K:UnregisterEvent("MAIL_CLOSED", MailClosed)
-		K:UnregisterEvent("MERCHANT_SHOW", MerchantOpened)
-		K:UnregisterEvent("MERCHANT_CLOSED", MerchantClosed)
-		K:UnregisterEvent("BAG_UPDATE_DELAYED", BagDelayedUpdate)
+		for event, func in pairs(events) do
+			K:UnregisterEvent(event, func)
+		end
 	end
 end

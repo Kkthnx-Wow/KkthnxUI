@@ -474,41 +474,30 @@ local function isQuestTitle(textLine)
 end
 
 function Module:UpdateQuestUnit(_, unit)
-	if not C["Nameplate"].QuestIndicator then
-		return
-	end
-
-	if isInInstance then
+	if not C["Nameplate"].QuestIndicator or isInInstance then
 		self.questIcon:Hide()
 		self.questCount:SetText("")
 		return
 	end
 
 	unit = unit or self.unit
-
-	local isLootQuest, questProgress -- FIXME: isLootQuest in old expansion
-	local prevDiff = 0
-
+	local questProgress
 	local data = C_TooltipInfo.GetUnit(unit)
 	if data then
 		for i = 1, #data.lines do
 			local lineData = data.lines[i]
 			local argVal = lineData and lineData.args
 			if argVal[1] and argVal[1].intVal == 8 then
-				local text = argVal[2] and argVal[2].stringVal -- progress string
+				local text = argVal[2] and argVal[2].stringVal
 				if text then
 					local current, goal = strmatch(text, "(%d+)/(%d+)")
 					local progress = strmatch(text, "(%d+)%%")
 					if current and goal then
-						local diff = floor(goal - current)
-						if diff > prevDiff then
-							questProgress = diff
-							prevDiff = diff
-						end
-					elseif progress and prevDiff == 0 then
-						if floor(100 - progress) > 0 then
-							questProgress = progress .. "%" -- lower priority on progress, keep looking
-						end
+						questProgress = floor(goal - current)
+						break
+					elseif progress then
+						questProgress = progress .. "%"
+						break
 					end
 				end
 			end
@@ -521,12 +510,7 @@ function Module:UpdateQuestUnit(_, unit)
 		self.questIcon:Show()
 	else
 		self.questCount:SetText("")
-		if isLootQuest then
-			self.questIcon:SetAtlas("QuestNormal")
-			self.questIcon:Show()
-		else
-			self.questIcon:Hide()
-		end
+		self.questIcon:Hide()
 	end
 end
 

@@ -295,6 +295,18 @@ K:RegisterEvent("PLAYER_LEVEL_UP", function(_, level)
 	K.Level = level
 end)
 
+K:RegisterEvent("TIME_PLAYED_MSG", function(_, ...)
+	local totalTime, levelTime = ...
+	local classColor = K.ColorClass[K.Class].hex
+	local name = format("|c%s%s|r", classColor, K.Name)
+	local money = GetMoneyString(GetMoney())
+	local spec = select(2, GetSpecializationInfo(GetSpecialization()))
+	local message = format("%s - %s - %s - %s", name, K.Race, K.Faction, spec)
+	message = message .. format(" - Total time played: %s", SecondsToTime(totalTime))
+	message = message .. format(" - Money: %s", money)
+	print(message)
+end)
+
 for i = 1, GetNumAddOns() do
 	local Name, _, _, _, Reason = GetAddOnInfo(i)
 	K.AddOns[string_lower(Name)] = GetAddOnEnableState(K.Name, Name) == 2 and (not Reason or Reason ~= "DEMAND_LOADED")

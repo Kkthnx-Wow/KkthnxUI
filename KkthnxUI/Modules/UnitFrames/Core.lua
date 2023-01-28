@@ -441,11 +441,18 @@ function Module:CreateClassPower(self)
 
 	local isDK = K.Class == "DEATHKNIGHT"
 	local maxBar = isDK and 6 or 7
+	local bars = {}
+
 	local bar = CreateFrame("Frame", "$parentClassPowerBar", self)
 	bar:SetSize(barWidth, barHeight)
 	bar:SetPoint(unpack(barPoint))
 
-	local bars = {}
+	if not bar.chargeParent then
+		bar.chargeParent = CreateFrame("Frame", nil, bar)
+		bar.chargeParent:SetAllPoints()
+		bar.chargeParent:SetFrameLevel(8)
+	end
+
 	for i = 1, maxBar do
 		bars[i] = CreateFrame("StatusBar", nil, bar)
 		bars[i]:SetHeight(barHeight)
@@ -467,19 +474,12 @@ function Module:CreateClassPower(self)
 		if isDK then
 			bars[i].timer = K.CreateFontString(bars[i], 10, "")
 		else
-			if not bar.chargeParent then
-				bar.chargeParent = CreateFrame("Frame", nil, bar)
-				bar.chargeParent:SetAllPoints()
-				bar.chargeParent:SetFrameLevel(8)
-			end
-
 			local chargeStar = bar.chargeParent:CreateTexture()
 			chargeStar:SetAtlas("VignetteKill")
 			chargeStar:SetDesaturated(true)
 			chargeStar:SetSize(22, 22)
 			chargeStar:SetPoint("CENTER", bars[i])
 			chargeStar:Hide()
-
 			bars[i].chargeStar = chargeStar
 		end
 	end

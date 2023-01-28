@@ -237,7 +237,7 @@ local function replaceMessage(msg, r, g, b)
 	-- Replace the atlas path or id with only the path/id
 	msg = string.gsub(msg, "|A(.-):.-|a", "%1")
 	-- Return the modified message with the hex color code added
-	return string.format("|cff%s%s|r", hexRGB, msg)
+	return string.format("%s%s|r", hexRGB, msg)
 end
 
 function Module:GetChatLines()
