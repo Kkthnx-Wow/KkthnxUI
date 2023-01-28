@@ -4,12 +4,12 @@ local oUF = K.oUF
 -- oUF_Swing, by p3lim
 -- KkthnxUI MOD
 
-local select = _G.select
+local select = select
 
-local GetInventoryItemID = _G.GetInventoryItemID
-local GetTime = _G.GetTime
-local UnitAttackSpeed = _G.UnitAttackSpeed
-local UnitRangedDamage = _G.UnitRangedDamage
+local GetInventoryItemID = GetInventoryItemID
+local GetTime = GetTime
+local UnitAttackSpeed = UnitAttackSpeed
+local UnitRangedDamage = UnitRangedDamage
 
 local meleeing, rangeing, lasthit
 local MainhandID = GetInventoryItemID("player", 16)

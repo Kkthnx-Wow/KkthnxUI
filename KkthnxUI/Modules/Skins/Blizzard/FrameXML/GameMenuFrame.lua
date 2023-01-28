@@ -1,6 +1,6 @@
 local K, C = unpack(KkthnxUI)
 
-local table_insert = _G.table.insert
+local table_insert = table.insert
 
 table_insert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then

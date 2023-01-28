@@ -1,18 +1,18 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local string_format = _G.string.format
+local string_format = string.format
 
-local AURA_TYPE_BUFF = _G.AURA_TYPE_BUFF
-local GetInstanceInfo = _G.GetInstanceInfo
-local GetSpellLink = _G.GetSpellLink
-local IsActiveBattlefieldArena = _G.IsActiveBattlefieldArena
-local IsArenaSkirmish = _G.IsArenaSkirmish
-local IsInGroup = _G.IsInGroup
-local IsInRaid = _G.IsInRaid
-local IsPartyLFG = _G.IsPartyLFG
-local UnitInParty = _G.UnitInParty
-local UnitInRaid = _G.UnitInRaid
+local AURA_TYPE_BUFF = AURA_TYPE_BUFF
+local GetInstanceInfo = GetInstanceInfo
+local GetSpellLink = GetSpellLink
+local IsActiveBattlefieldArena = IsActiveBattlefieldArena
+local IsArenaSkirmish = IsArenaSkirmish
+local IsInGroup = IsInGroup
+local IsInRaid = IsInRaid
+local IsPartyLFG = IsPartyLFG
+local UnitInParty = UnitInParty
+local UnitInRaid = UnitInRaid
 
 local infoType = {}
 

@@ -4,25 +4,25 @@ local Module = K:NewModule("Mover")
 -- Sourced: NDui (siweia)
 -- Edited: KkthnxUI (Kkthnx)
 
-local table_wipe = _G.table.wipe
-local unpack = _G.unpack
+local table_wipe = table.wipe
+local unpack = unpack
 
-local CANCEL = _G.CANCEL
-local CreateFrame = _G.CreateFrame
-local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
-local InCombatLockdown = _G.InCombatLockdown
-local IsControlKeyDown = _G.IsControlKeyDown
-local IsModifierKeyDown = _G.IsModifierKeyDown
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local LOCK = _G.LOCK
-local NONE = _G.NONE
-local OKAY = _G.OKAY
-local PlaySound = _G.PlaySound
-local RESET = _G.RESET
-local SOUNDKIT = _G.SOUNDKIT
-local StaticPopup_Show = _G.StaticPopup_Show
-local UIErrorsFrame = _G.UIErrorsFrame
-local UIParent = _G.UIParent
+local CANCEL = CANCEL
+local CreateFrame = CreateFrame
+local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
+local InCombatLockdown = InCombatLockdown
+local IsControlKeyDown = IsControlKeyDown
+local IsModifierKeyDown = IsModifierKeyDown
+local IsShiftKeyDown = IsShiftKeyDown
+local LOCK = LOCK
+local NONE = NONE
+local OKAY = OKAY
+local PlaySound = PlaySound
+local RESET = RESET
+local SOUNDKIT = SOUNDKIT
+local StaticPopup_Show = StaticPopup_Show
+local UIErrorsFrame = UIErrorsFrame
+local UIParent = UIParent
 
 -- Frame Mover
 local MoverList = {}
@@ -506,7 +506,7 @@ local shutdownMode = {
 }
 
 function Module:DisableBlizzardMover()
-	local editMode = _G.EditModeManagerFrame
+	local editMode = EditModeManagerFrame
 
 	-- remove the initial registers
 	local registered = editMode.registeredSystemFrames

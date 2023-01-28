@@ -4,16 +4,16 @@ local Module = K:NewModule("VersionCheck")
 -- Sourced: NDui (siweia)
 -- Edited: KkthnxUI (Kkthnx)
 
-local string_format = _G.string.format
-local string_gsub = _G.string.gsub
-local string_split = _G.string.split
+local string_format = string.format
+local string_gsub = string.gsub
+local string_split = string.split
 
-local Ambiguate = _G.Ambiguate
-local C_ChatInfo_RegisterAddonMessagePrefix = _G.C_ChatInfo.RegisterAddonMessagePrefix
-local C_ChatInfo_SendAddonMessage = _G.C_ChatInfo.SendAddonMessage
-local GetTime = _G.GetTime
-local IsInGroup = _G.IsInGroup
-local IsInGuild = _G.IsInGuild
+local Ambiguate = Ambiguate
+local C_ChatInfo_RegisterAddonMessagePrefix = C_ChatInfo.RegisterAddonMessagePrefix
+local C_ChatInfo_SendAddonMessage = C_ChatInfo.SendAddonMessage
+local GetTime = GetTime
+local IsInGroup = IsInGroup
+local IsInGuild = IsInGuild
 
 local lastVCTime = 0
 local isVCInit

@@ -20,8 +20,8 @@
 local _, ns = ...
 local cargBags = ns.cargBags
 
-local ReagentButtonInventorySlot = _G.ReagentButtonInventorySlot
-local ButtonInventorySlot = _G.ButtonInventorySlot
+local ReagentButtonInventorySlot = ReagentButtonInventorySlot
+local ButtonInventorySlot = ButtonInventorySlot
 local BANK_CONTAINER = BANK_CONTAINER or -1
 local REAGENTBANK_CONTAINER = REAGENTBANK_CONTAINER or -3
 local SplitContainerItem = C_Container.SplitContainerItem

@@ -1,24 +1,24 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("DataText")
 
-local string_format = _G.string.format
+local string_format = string.format
 
-local COMBAT_ZONE = _G.COMBAT_ZONE
-local CONTESTED_TERRITORY = _G.CONTESTED_TERRITORY
-local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
-local FACTION_CONTROLLED_TERRITORY = _G.FACTION_CONTROLLED_TERRITORY
-local FACTION_STANDING_LABEL4 = _G.FACTION_STANDING_LABEL4
-local FREE_FOR_ALL_TERRITORY = _G.FREE_FOR_ALL_TERRITORY
-local GameTooltip = _G.GameTooltip
-local GetSubZoneText = _G.GetSubZoneText
-local GetZonePVPInfo = _G.GetZonePVPInfo
-local GetZoneText = _G.GetZoneText
-local IsInInstance = _G.IsInInstance
-local SANCTUARY_TERRITORY = _G.SANCTUARY_TERRITORY
-local UnitExists = _G.UnitExists
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitName = _G.UnitName
-local ZONE = _G.ZONE
+local COMBAT_ZONE = COMBAT_ZONE
+local CONTESTED_TERRITORY = CONTESTED_TERRITORY
+local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
+local FACTION_CONTROLLED_TERRITORY = FACTION_CONTROLLED_TERRITORY
+local FACTION_STANDING_LABEL4 = FACTION_STANDING_LABEL4
+local FREE_FOR_ALL_TERRITORY = FREE_FOR_ALL_TERRITORY
+local GameTooltip = GameTooltip
+local GetSubZoneText = GetSubZoneText
+local GetZonePVPInfo = GetZonePVPInfo
+local GetZoneText = GetZoneText
+local IsInInstance = IsInInstance
+local SANCTUARY_TERRITORY = SANCTUARY_TERRITORY
+local UnitExists = UnitExists
+local UnitIsPlayer = UnitIsPlayer
+local UnitName = UnitName
+local ZONE = ZONE
 
 local CoordsDataTextFrame
 local coordX = 0

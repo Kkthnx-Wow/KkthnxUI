@@ -1,37 +1,37 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Miscellaneous")
 
-local select = _G.select
-local string_match = _G.string.match
-local tonumber = _G.tonumber
+local select = select
+local string_match = string.match
+local tonumber = tonumber
 
-local BNToastFrame = _G.BNToastFrame
-local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
-local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
-local C_QuestLog_GetSelectedQuest = _G.C_QuestLog.GetSelectedQuest
-local C_QuestLog_ShouldShowQuestRewards = _G.C_QuestLog.ShouldShowQuestRewards
-local CreateFrame = _G.CreateFrame
-local FRIEND = _G.FRIEND
-local GUILD = _G.GUILD
-local GetItemInfo = _G.GetItemInfo
-local GetItemQualityColor = _G.GetItemQualityColor
-local GetMerchantItemLink = _G.GetMerchantItemLink
-local GetMerchantItemMaxStack = _G.GetMerchantItemMaxStack
-local GetQuestLogRewardXP = _G.GetQuestLogRewardXP
-local GetRewardXP = _G.GetRewardXP
-local InCombatLockdown = _G.InCombatLockdown
-local IsAltKeyDown = _G.IsAltKeyDown
-local IsGuildMember = _G.IsGuildMember
-local NO = _G.NO
-local PlaySound = _G.PlaySound
-local StaticPopupDialogs = _G.StaticPopupDialogs
-local StaticPopup_Show = _G.StaticPopup_Show
-local UIParent = _G.UIParent
-local UnitGUID = _G.UnitGUID
-local UnitXP = _G.UnitXP
-local UnitXPMax = _G.UnitXPMax
-local YES = _G.YES
-local hooksecurefunc = _G.hooksecurefunc
+local BNToastFrame = BNToastFrame
+local C_BattleNet_GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
+local C_FriendList_IsFriend = C_FriendList.IsFriend
+local C_QuestLog_GetSelectedQuest = C_QuestLog.GetSelectedQuest
+local C_QuestLog_ShouldShowQuestRewards = C_QuestLog.ShouldShowQuestRewards
+local CreateFrame = CreateFrame
+local FRIEND = FRIEND
+local GUILD = GUILD
+local GetItemInfo = GetItemInfo
+local GetItemQualityColor = GetItemQualityColor
+local GetMerchantItemLink = GetMerchantItemLink
+local GetMerchantItemMaxStack = GetMerchantItemMaxStack
+local GetQuestLogRewardXP = GetQuestLogRewardXP
+local GetRewardXP = GetRewardXP
+local InCombatLockdown = InCombatLockdown
+local IsAltKeyDown = IsAltKeyDown
+local IsGuildMember = IsGuildMember
+local NO = NO
+local PlaySound = PlaySound
+local StaticPopupDialogs = StaticPopupDialogs
+local StaticPopup_Show = StaticPopup_Show
+local UIParent = UIParent
+local UnitGUID = UnitGUID
+local UnitXP = UnitXP
+local UnitXPMax = UnitXPMax
+local YES = YES
+local hooksecurefunc = hooksecurefunc
 
 local KKUI_MISC_MODULE = {}
 
@@ -230,10 +230,10 @@ end
 local function MainMenu_OnShow(self)
 	local buttonToReanchor
 	if IsCharacterNewlyBoosted() or not C_SplashScreen.CanViewSplashScreen() then
-		buttonToReanchor = _G.GameMenuButtonStore
+		buttonToReanchor = GameMenuButtonStore
 		self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 28)
 	else
-		buttonToReanchor = _G.GameMenuButtonWhatsNew
+		buttonToReanchor = GameMenuButtonWhatsNew
 		self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 34)
 	end
 
@@ -293,7 +293,7 @@ function Module:CreateQuestXPPercent()
 		if C_QuestLog_ShouldShowQuestRewards(selectedQuest) then
 			local xp = GetQuestLogRewardXP()
 			if xp and xp > 0 then
-				local text = _G.MapQuestInfoRewardsFrame.XPFrame.Name:GetText()
+				local text = MapQuestInfoRewardsFrame.XPFrame.Name:GetText()
 				if text then
 					_G.MapQuestInfoRewardsFrame.XPFrame.Name:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100)
 				end
@@ -302,7 +302,7 @@ function Module:CreateQuestXPPercent()
 	else
 		local xp = GetRewardXP()
 		if xp and xp > 0 then
-			local text = _G.QuestInfoXPFrame.ValueText:GetText()
+			local text = QuestInfoXPFrame.ValueText:GetText()
 			if text then
 				_G.QuestInfoXPFrame.ValueText:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100)
 			end
@@ -732,7 +732,7 @@ end
 
 -- Blizzard_NewPlayerExperience: ActionBars heavily conflicts with this
 local function ShutdownNPE()
-	local NPE = _G.NewPlayerExperience
+	local NPE = NewPlayerExperience
 	if NPE and NPE:GetIsActive() then
 		NPE:Shutdown()
 	end
@@ -749,7 +749,7 @@ local tutorialFrames = {
 }
 
 local function ShutdownTM()
-	local TM = _G.TutorialManager
+	local TM = TutorialManager
 	if TM and TM:GetIsActive() then
 		TM:Shutdown()
 
@@ -782,7 +782,7 @@ local gameTutorials = {
 
 local GT_Shutdown = false
 local function ShutdownGT()
-	local GT = _G.GameTutorials
+	local GT = GameTutorials
 	if GT and not GT_Shutdown then
 		GT_Shutdown = true
 
@@ -798,7 +798,7 @@ end
 -- this is the event handler for tutorials, maybe other stuff later?
 -- it seems shutdown is not unregistering events for stuff so..
 local function ShutdownTD() -- Blizzard_TutorialDispatcher
-	local TD = _G.Dispatcher
+	local TD = Dispatcher
 	if TD then
 		wipe(TD.Events)
 		wipe(TD.Scripts)

@@ -363,7 +363,7 @@ local function initObject(unit, style, styleFunc, header, ...)
 
 		-- Make Clique kinda happy
 		if not object.isNamePlate then
-			_G.ClickCastFrames = _G.ClickCastFrames or {}
+			_G.ClickCastFrames = ClickCastFrames or {}
 			_G.ClickCastFrames[object] = true
 		end
 	end

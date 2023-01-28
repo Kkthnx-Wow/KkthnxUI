@@ -1,15 +1,15 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local gsub = _G.gsub
+local gsub = gsub
 
-local C_Item_IsItemKeystoneByID = _G.C_Item.IsItemKeystoneByID
-local C_MythicPlus_GetOwnedKeystoneChallengeMapID = _G.C_MythicPlus.GetOwnedKeystoneChallengeMapID
-local C_MythicPlus_GetOwnedKeystoneLevel = _G.C_MythicPlus.GetOwnedKeystoneLevel
-local GetContainerItemID = _G.GetContainerItemID
-local GetContainerItemLink = _G.GetContainerItemLink
-local GetContainerNumSlots = _G.GetContainerNumSlots
-local NUM_BAG_SLOTS = _G.NUM_BAG_SLOTS or 4
+local C_Item_IsItemKeystoneByID = C_Item.IsItemKeystoneByID
+local C_MythicPlus_GetOwnedKeystoneChallengeMapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID
+local C_MythicPlus_GetOwnedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel
+local GetContainerItemID = GetContainerItemID
+local GetContainerItemLink = GetContainerItemLink
+local GetContainerNumSlots = GetContainerNumSlots
+local NUM_BAG_SLOTS = NUM_BAG_SLOTS or 4
 
 local keystoneCache = {}
 

@@ -3,34 +3,34 @@ local Module = K:GetModule("Chat")
 
 -- Sourced: NDui (siweia)
 
-local string_format = _G.string.format
-local string_gsub = _G.string.gsub
-local table_concat = _G.table.concat
-local tostring = _G.tostring
+local string_format = string.format
+local string_gsub = string.gsub
+local table_concat = table.concat
+local tostring = tostring
 
-local AUCTION_CATEGORY_QUEST_ITEMS = _G.AUCTION_CATEGORY_QUEST_ITEMS
-local BINDING_NAME_TOGGLECOMBATLOG = _G.BINDING_NAME_TOGGLECOMBATLOG
-local CLOSE = _G.CLOSE
-local COMBATLOGDISABLED = _G.COMBATLOGDISABLED
-local COMBATLOGENABLED = _G.COMBATLOGENABLED
-local CreateFrame = _G.CreateFrame
-local FCF_SetChatWindowFontSize = _G.FCF_SetChatWindowFontSize
-local GameTooltip = _G.GameTooltip
-local HEIRLOOMS = _G.HEIRLOOMS
-local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local OPTIONS_MENU = _G.OPTIONS_MENU
-local PlaySound = _G.PlaySound
-local QUESTS_LABEL = _G.QUESTS_LABEL
-local RELOADUI = _G.RELOADUI
-local ReloadUI = _G.ReloadUI
-local STATUS = _G.STATUS
-local ScrollFrameTemplate_OnMouseWheel = _G.ScrollFrameTemplate_OnMouseWheel
-local SlashCmdList = _G.SlashCmdList
-local StaticPopup_Show = _G.StaticPopup_Show
-local TASKS_COLON = _G.TASKS_COLON
-local UIErrorsFrame = _G.UIErrorsFrame
-local UIParent = _G.UIParent
+local AUCTION_CATEGORY_QUEST_ITEMS = AUCTION_CATEGORY_QUEST_ITEMS
+local BINDING_NAME_TOGGLECOMBATLOG = BINDING_NAME_TOGGLECOMBATLOG
+local CLOSE = CLOSE
+local COMBATLOGDISABLED = COMBATLOGDISABLED
+local COMBATLOGENABLED = COMBATLOGENABLED
+local CreateFrame = CreateFrame
+local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
+local GameTooltip = GameTooltip
+local HEIRLOOMS = HEIRLOOMS
+local InCombatLockdown = InCombatLockdown
+local IsAddOnLoaded = IsAddOnLoaded
+local OPTIONS_MENU = OPTIONS_MENU
+local PlaySound = PlaySound
+local QUESTS_LABEL = QUESTS_LABEL
+local RELOADUI = RELOADUI
+local ReloadUI = ReloadUI
+local STATUS = STATUS
+local ScrollFrameTemplate_OnMouseWheel = ScrollFrameTemplate_OnMouseWheel
+local SlashCmdList = SlashCmdList
+local StaticPopup_Show = StaticPopup_Show
+local TASKS_COLON = TASKS_COLON
+local UIErrorsFrame = UIErrorsFrame
+local UIParent = UIParent
 
 local lines = {}
 local editBox
@@ -257,7 +257,7 @@ end
 function Module:ChatCopy_OnClick(btn)
 	if btn == "LeftButton" then
 		if not frame:IsShown() then
-			local chatframe = _G.SELECTED_DOCK_FRAME
+			local chatframe = SELECTED_DOCK_FRAME
 			local _, fontSize = chatframe:GetFont()
 			FCF_SetChatWindowFontSize(chatframe, chatframe, 0.01)
 			PlaySound(21968)

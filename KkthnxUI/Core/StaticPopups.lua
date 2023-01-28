@@ -1,9 +1,9 @@
 local K, _, L = unpack(KkthnxUI)
 
-local ACCEPT = _G.ACCEPT
-local CANCEL = _G.CANCEL
-local ReloadUI = _G.ReloadUI
-local StaticPopupDialogs = _G.StaticPopupDialogs
+local ACCEPT = ACCEPT
+local CANCEL = CANCEL
+local ReloadUI = ReloadUI
+local StaticPopupDialogs = StaticPopupDialogs
 
 StaticPopupDialogs["KKUI_RESET_DATA"] = {
 	text = "Are you sure you want to reset all KkthnxUI Data?",

@@ -4,16 +4,16 @@ local Module = K:GetModule("Minimap")
 -- Sourced: NDui (Siweia)
 -- Edited: KkthnxUI (Kkthnx)
 
-local string_find = _G.string.find
-local string_match = _G.string.match
-local string_upper = _G.string.upper
-local table_insert = _G.table.insert
+local string_find = string.find
+local string_match = string.match
+local string_upper = string.upper
+local table_insert = table.insert
 
-local C_Timer_After = _G.C_Timer.After
-local CreateFrame = _G.CreateFrame
-local Minimap = _G.Minimap
-local PlaySound = _G.PlaySound
-local UIParent = _G.UIParent
+local C_Timer_After = C_Timer.After
+local CreateFrame = CreateFrame
+local Minimap = Minimap
+local PlaySound = PlaySound
+local UIParent = UIParent
 
 function Module:CreateRecycleBin()
 	if not C["Minimap"].ShowRecycleBin then

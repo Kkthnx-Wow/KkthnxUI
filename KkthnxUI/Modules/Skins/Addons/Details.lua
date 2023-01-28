@@ -58,7 +58,7 @@ local function IsDefaultAnchor(instance)
 end
 
 function Module:ResetDetailsAnchor(force)
-	local Details = _G.Details
+	local Details = Details
 	if not Details then
 		return
 	end
@@ -82,7 +82,7 @@ local function ReskinDetails()
 		return
 	end
 
-	local Details = _G.Details
+	local Details = Details
 	-- instance table can be nil sometimes
 	Details.tabela_instancias = Details.tabela_instancias or {}
 	Details.instances_amount = Details.instances_amount or 5

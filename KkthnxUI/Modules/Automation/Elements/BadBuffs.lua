@@ -1,8 +1,8 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local UnitBuff = _G.UnitBuff
-local InCombatLockdown = _G.InCombatLockdown
+local UnitBuff = UnitBuff
+local InCombatLockdown = InCombatLockdown
 
 local function SetupAutoBadBuffs(event)
 	if InCombatLockdown() then

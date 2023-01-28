@@ -3,11 +3,11 @@ local Module = K:GetModule("Loot")
 
 -- Sourced: NDui
 
-local GetCVarBool = _G.GetCVarBool
-local GetNumLootItems = _G.GetNumLootItems
-local GetTime = _G.GetTime
-local IsModifiedClick = _G.IsModifiedClick
-local LootSlot = _G.LootSlot
+local GetCVarBool = GetCVarBool
+local GetNumLootItems = GetNumLootItems
+local GetTime = GetTime
+local IsModifiedClick = IsModifiedClick
+local LootSlot = LootSlot
 
 local lootDelay = 0
 function Module:SetupFasterLoot()

@@ -3,12 +3,12 @@ local Module = K:GetModule("Automation")
 
 local string_lower = string.lower
 
-local BNInviteFriend = _G.BNInviteFriend
-local C_BattleNet_GetAccountInfoByID = _G.C_BattleNet.GetAccountInfoByID
-local CanCooperateWithGameAccount = _G.CanCooperateWithGameAccount
-local IsInGroup = _G.IsInGroup
-local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
-local UnitIsGroupLeader = _G.UnitIsGroupLeader
+local BNInviteFriend = BNInviteFriend
+local C_BattleNet_GetAccountInfoByID = C_BattleNet.GetAccountInfoByID
+local CanCooperateWithGameAccount = CanCooperateWithGameAccount
+local IsInGroup = IsInGroup
+local UnitIsGroupAssistant = UnitIsGroupAssistant
+local UnitIsGroupLeader = UnitIsGroupLeader
 
 function Module:IsUnitInGuild(unitName)
 	if not unitName then

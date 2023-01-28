@@ -1,16 +1,16 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("WorldMap")
 
-local math_ceil = _G.math.ceil
-local mod = _G.mod
-local table_wipe = _G.table.wipe
-local table_insert = _G.table.insert
+local math_ceil = math.ceil
+local mod = mod
+local table_wipe = table.wipe
+local table_insert = table.insert
 
-local C_Map_GetMapArtID = _G.C_Map.GetMapArtID
-local C_Map_GetMapArtLayers = _G.C_Map.GetMapArtLayers
-local C_MapExplorationInfo_GetExploredMapTextures = _G.C_MapExplorationInfo.GetExploredMapTextures
-local CreateFrame = _G.CreateFrame
-local hooksecurefunc = _G.hooksecurefunc
+local C_Map_GetMapArtID = C_Map.GetMapArtID
+local C_Map_GetMapArtLayers = C_Map.GetMapArtLayers
+local C_MapExplorationInfo_GetExploredMapTextures = C_MapExplorationInfo.GetExploredMapTextures
+local CreateFrame = CreateFrame
+local hooksecurefunc = hooksecurefunc
 
 local shownMapCache, exploredCache, fileDataIDs = {}, {}, {}
 

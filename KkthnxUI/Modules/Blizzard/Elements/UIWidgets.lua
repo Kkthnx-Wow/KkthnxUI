@@ -1,9 +1,9 @@
 local K = unpack(KkthnxUI)
 local Module = K:GetModule("Blizzard")
 
-local CreateFrame = _G.CreateFrame
-local hooksecurefunc = _G.hooksecurefunc
-local UIParent = _G.UIParent
+local CreateFrame = CreateFrame
+local hooksecurefunc = hooksecurefunc
+local UIParent = UIParent
 
 -- Reanchor UIWidgets
 function Module:CreateUIWidgets()

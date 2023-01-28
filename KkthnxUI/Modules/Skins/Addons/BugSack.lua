@@ -1,8 +1,8 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local hooksecurefunc = _G.hooksecurefunc
+local IsAddOnLoaded = IsAddOnLoaded
+local hooksecurefunc = hooksecurefunc
 
 function Module:ReskinBugSack()
 	-- if not IsAddOnLoaded("BugSack") then

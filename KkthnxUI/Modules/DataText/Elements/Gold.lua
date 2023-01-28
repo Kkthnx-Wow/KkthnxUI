@@ -1,26 +1,26 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("DataText")
 
-local pairs = _G.pairs
-local string_format = _G.string.format
-local unpack = _G.unpack
+local pairs = pairs
+local string_format = string.format
+local unpack = unpack
 
-local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
-local CURRENCY = _G.CURRENCY
-local C_CurrencyInfo_GetBackpackCurrencyInfo = _G.C_CurrencyInfo.GetBackpackCurrencyInfo
-local C_CurrencyInfo_GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo
-local C_Timer_NewTicker = _G.C_Timer.NewTicker
-local C_WowTokenPublic_GetCurrentMarketPrice = _G.C_WowTokenPublic.GetCurrentMarketPrice
-local C_WowTokenPublic_UpdateMarketPrice = _G.C_WowTokenPublic.UpdateMarketPrice
-local GameTooltip = _G.GameTooltip
-local GetAutoCompleteRealms = _G.GetAutoCompleteRealms
-local GetMoney = _G.GetMoney
-local GetNumWatchedTokens = _G.GetNumWatchedTokens
-local IsControlKeyDown = _G.IsControlKeyDown
-local NO = _G.NO
-local StaticPopupDialogs = _G.StaticPopupDialogs
-local TOTAL = _G.TOTAL
-local YES = _G.YES
+local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
+local CURRENCY = CURRENCY
+local C_CurrencyInfo_GetBackpackCurrencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo
+local C_CurrencyInfo_GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
+local C_Timer_NewTicker = C_Timer.NewTicker
+local C_WowTokenPublic_GetCurrentMarketPrice = C_WowTokenPublic.GetCurrentMarketPrice
+local C_WowTokenPublic_UpdateMarketPrice = C_WowTokenPublic.UpdateMarketPrice
+local GameTooltip = GameTooltip
+local GetAutoCompleteRealms = GetAutoCompleteRealms
+local GetMoney = GetMoney
+local GetNumWatchedTokens = GetNumWatchedTokens
+local IsControlKeyDown = IsControlKeyDown
+local NO = NO
+local StaticPopupDialogs = StaticPopupDialogs
+local TOTAL = TOTAL
+local YES = YES
 
 local slotString = BAGSLOTTEXT .. ": %s%d"
 local ticker

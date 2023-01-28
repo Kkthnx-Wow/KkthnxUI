@@ -1,12 +1,12 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local AcceptResurrect = _G.AcceptResurrect
-local C_Timer_After = _G.C_Timer.After
-local DoEmote = _G.DoEmote
-local StaticPopup_Hide = _G.StaticPopup_Hide
-local UnitAffectingCombat = _G.UnitAffectingCombat
-local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
+local AcceptResurrect = AcceptResurrect
+local C_Timer_After = C_Timer.After
+local DoEmote = DoEmote
+local StaticPopup_Hide = StaticPopup_Hide
+local UnitAffectingCombat = UnitAffectingCombat
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 
 function Module.SetupAutoResurrect(_, arg1)
 	-- Exclude pylon and brazier requests

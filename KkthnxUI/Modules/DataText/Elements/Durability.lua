@@ -1,14 +1,14 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("DataText")
 
-local math_floor = _G.math.floor
-local string_gsub = _G.string.gsub
-local string_format = _G.string.format
-local table_sort = _G.table.sort
+local math_floor = math.floor
+local string_gsub = string.gsub
+local string_format = string.format
+local table_sort = table.sort
 
-local GetInventoryItemLink = _G.GetInventoryItemLink
-local GetInventoryItemDurability = _G.GetInventoryItemDurability
-local GetInventoryItemTexture = _G.GetInventoryItemTexture
+local GetInventoryItemLink = GetInventoryItemLink
+local GetInventoryItemDurability = GetInventoryItemDurability
+local GetInventoryItemTexture = GetInventoryItemTexture
 
 local DurabilityDataText
 local repairCostString = string_gsub(REPAIR_COST, HEADER_COLON, ":")

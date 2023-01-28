@@ -1,9 +1,9 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
-local unpack = _G.unpack
+local unpack = unpack
 
-local hooksecurefunc = _G.hooksecurefunc
+local hooksecurefunc = hooksecurefunc
 
 local function IconBgOnUpdate(self)
 	self:SetAlpha(self.__icon:GetAlpha())

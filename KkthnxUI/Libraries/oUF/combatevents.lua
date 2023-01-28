@@ -5,7 +5,7 @@ local Private = oUF.Private
 local argcheck = Private.argcheck
 local frame_metatable = Private.frame_metatable
 
-local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
+local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 
 local event_metatable = {
 	__call = function(funcs, ...)

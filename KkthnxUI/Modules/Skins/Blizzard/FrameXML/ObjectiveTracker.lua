@@ -210,7 +210,7 @@ local function reskinFindGroupButton(block)
 end
 
 local function changedTrackerState()
-	local minimizeButton = _G.ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
+	local minimizeButton = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
 	minimizeButton:SetNormalTexture(0)
 	minimizeButton:SetPushedTexture(0)
 	minimizeButton:SetSize(16, 16)
@@ -241,7 +241,7 @@ tinsert(C.defaultThemes, function()
 		return
 	end
 
-	local minimize = _G.ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
+	local minimize = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
 	minimize:SetNormalTexture(0)
 	minimize:SetPushedTexture(0)
 	minimize:SetSize(16, 16)

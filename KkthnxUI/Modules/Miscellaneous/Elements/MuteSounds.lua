@@ -1,8 +1,8 @@
 local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Miscellaneous")
 
-local MuteSoundFile = _G.MuteSoundFile
-local UnmuteSoundFile = _G.UnmuteSoundFile
+local MuteSoundFile = MuteSoundFile
+local UnmuteSoundFile = UnmuteSoundFile
 
 -- Website For Looking Up Sounds
 -- https://wow.tools/

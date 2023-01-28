@@ -154,7 +154,7 @@ function Module:CreateInventoryBar()
 	bagBar:SetScript("OnEvent", Module.BagBar_OnEvent)
 	bagBar:EnableMouse(true)
 
-	local backpackButton = _G.MainMenuBarBackpackButton
+	local backpackButton = MainMenuBarBackpackButton
 	backpackButton:SetParent(bagBar)
 	backpackButton:ClearAllPoints()
 	backpackButton.Count:ClearAllPoints()
@@ -182,7 +182,7 @@ function Module:CreateInventoryBar()
 		tinsert(buttonList, b)
 	end
 
-	local ReagentSlot = _G.CharacterReagentBag0Slot
+	local ReagentSlot = CharacterReagentBag0Slot
 	if ReagentSlot then
 		ReagentSlot:SetParent(bagBar)
 		ReagentSlot:HookScript("OnEnter", Module.BagBar_OnEnter)

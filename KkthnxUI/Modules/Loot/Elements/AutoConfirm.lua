@@ -3,7 +3,7 @@ local Module = K:GetModule("Loot")
 
 -- Sourced: ShestakUI (Wetxius, Shestak)
 
-local STATICPOPUP_NUMDIALOGS = _G.STATICPOPUP_NUMDIALOGS
+local STATICPOPUP_NUMDIALOGS = STATICPOPUP_NUMDIALOGS
 
 local function SetupAutoConfirm()
 	for i = 1, STATICPOPUP_NUMDIALOGS do

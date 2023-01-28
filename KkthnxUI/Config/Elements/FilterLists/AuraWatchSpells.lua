@@ -1,11 +1,11 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:NewModule("AurasTable")
 
-local string_format = _G.string.format
-local table_wipe = _G.table.wipe
+local string_format = string.format
+local table_wipe = table.wipe
 
-local GetSpellInfo = _G.GetSpellInfo
-local UIParent = _G.UIParent
+local GetSpellInfo = GetSpellInfo
+local UIParent = UIParent
 
 local AuraWatchList = {}
 local groups = {

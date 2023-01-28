@@ -1,9 +1,9 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local string_match = _G.string.match
-local string_gsub = _G.string.gsub
-local string_format = _G.string.format
+local string_match = string.match
+local string_gsub = string.gsub
+local string_format = string.format
 
 -- Table that contains mapping between system messages and friendly messages
 local resetMessageList = {

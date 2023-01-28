@@ -1,7 +1,7 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local CreateFrame = _G.CreateFrame
+local CreateFrame = CreateFrame
 
 -- Achievement screenshot
 function Module:ScreenShotOnEvent()

@@ -1,18 +1,18 @@
-local K, C = _G.unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
 
-local string_find = _G.string.find
+local string_find = string.find
 
-local GetNumGroupMembers = _G.GetNumGroupMembers
-local IsInRaid = _G.IsInRaid
-local UnitCanAttack = _G.UnitCanAttack
-local UnitInParty = _G.UnitInParty
-local UnitInRaid = _G.UnitInRaid
-local UnitInRange = _G.UnitInRange
-local UnitIsConnected = _G.UnitIsConnected
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsUnit = _G.UnitIsUnit
-local UnitPhaseReason = _G.UnitPhaseReason
+local GetNumGroupMembers = GetNumGroupMembers
+local IsInRaid = IsInRaid
+local UnitCanAttack = UnitCanAttack
+local UnitInParty = UnitInParty
+local UnitInRaid = UnitInRaid
+local UnitInRange = UnitInRange
+local UnitIsConnected = UnitIsConnected
+local UnitIsPlayer = UnitIsPlayer
+local UnitIsUnit = UnitIsUnit
+local UnitPhaseReason = UnitPhaseReason
 
 function Module:CreateRangeIndicator()
 	if not C["Unitframe"].Range then

@@ -2,12 +2,12 @@ local K, C = unpack(KkthnxUI)
 
 -- Sourced: ShestakUI
 
-local hooksecurefunc = _G.hooksecurefunc
+local hooksecurefunc = hooksecurefunc
 
-local Type_StatusBar = _G.Enum.UIWidgetVisualizationType.StatusBar
-local Type_CaptureBar = _G.Enum.UIWidgetVisualizationType.CaptureBar
-local Type_SpellDisplay = _G.Enum.UIWidgetVisualizationType.SpellDisplay
-local Type_DoubleStatusBar = _G.Enum.UIWidgetVisualizationType.DoubleStatusBar
+local Type_StatusBar = Enum.UIWidgetVisualizationType.StatusBar
+local Type_CaptureBar = Enum.UIWidgetVisualizationType.CaptureBar
+local Type_SpellDisplay = Enum.UIWidgetVisualizationType.SpellDisplay
+local Type_DoubleStatusBar = Enum.UIWidgetVisualizationType.DoubleStatusBar
 
 local atlasColors = {
 	["UI-Frame-Bar-Fill-Blue"] = { 0.2, 0.6, 1 },

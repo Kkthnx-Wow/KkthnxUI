@@ -2,13 +2,13 @@ local _, ns = ...
 local oUF = ns.oUF
 
 -- sourced from FrameXML\ArenaUI.lua
-local MAX_ARENA_ENEMIES = _G.MAX_ARENA_ENEMIES or 5
+local MAX_ARENA_ENEMIES = MAX_ARENA_ENEMIES or 5
 
 -- sourced from FrameXML/TargetFrame.lua
-local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES or 5
+local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES or 5
 
 -- sourced from FrameXML/RaidFrame.lua
-local MEMBERS_PER_RAID_GROUP = _G.MEMBERS_PER_RAID_GROUP or 5
+local MEMBERS_PER_RAID_GROUP = MEMBERS_PER_RAID_GROUP or 5
 
 local hookedFrames = {}
 local isArenaHooked = false

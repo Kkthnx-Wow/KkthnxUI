@@ -1,13 +1,13 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("WorldMap")
 
-local GameTooltip = _G.GameTooltip
-local GetAchievementLink = _G.GetAchievementLink
-local GetQuestLink = _G.GetQuestLink
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local QuestMapFrame_GetDetailQuestID = _G.QuestMapFrame_GetDetailQuestID
-local hooksecurefunc = _G.hooksecurefunc
-local setmetatable = _G.setmetatable
+local GameTooltip = GameTooltip
+local GetAchievementLink = GetAchievementLink
+local GetQuestLink = GetQuestLink
+local IsAddOnLoaded = IsAddOnLoaded
+local QuestMapFrame_GetDetailQuestID = QuestMapFrame_GetDetailQuestID
+local hooksecurefunc = hooksecurefunc
+local setmetatable = setmetatable
 
 -- Wowhead Links
 function Module:CreateWowHeadLinks()

@@ -1,34 +1,34 @@
 local K, C = unpack(KkthnxUI)
 
-local math_abs = _G.math.abs
-local math_floor = _G.math.floor
-local mod = _G.mod
-local select = _G.select
-local string_find = _G.string.find
-local string_format = _G.string.format
-local string_gsub = _G.string.gsub
-local string_lower = _G.string.lower
-local string_match = _G.string.match
-local table_wipe = _G.table.wipe
-local tonumber = _G.tonumber
-local type = _G.type
-local unpack = _G.unpack
+local math_abs = math.abs
+local math_floor = math.floor
+local mod = mod
+local select = select
+local string_find = string.find
+local string_format = string.format
+local string_gsub = string.gsub
+local string_lower = string.lower
+local string_match = string.match
+local table_wipe = table.wipe
+local tonumber = tonumber
+local type = type
+local unpack = unpack
 
-local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
-local C_Map_GetWorldPosFromMapPos = _G.C_Map.GetWorldPosFromMapPos
-local CreateVector2D = _G.CreateVector2D
-local ENCHANTED_TOOLTIP_LINE = _G.ENCHANTED_TOOLTIP_LINE
-local GameTooltip = _G.GameTooltip
-local GetSpecialization = _G.GetSpecialization
-local GetSpecializationInfo = _G.GetSpecializationInfo
-local GetTime = _G.GetTime
-local ITEM_LEVEL = _G.ITEM_LEVEL
-local IsInRaid = _G.IsInRaid
-local UIParent = _G.UIParent
-local UnitClass = _G.UnitClass
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsTapDenied = _G.UnitIsTapDenied
-local UnitReaction = _G.UnitReaction
+local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
+local C_Map_GetWorldPosFromMapPos = C_Map.GetWorldPosFromMapPos
+local CreateVector2D = CreateVector2D
+local ENCHANTED_TOOLTIP_LINE = ENCHANTED_TOOLTIP_LINE
+local GameTooltip = GameTooltip
+local GetSpecialization = GetSpecialization
+local GetSpecializationInfo = GetSpecializationInfo
+local GetTime = GetTime
+local ITEM_LEVEL = ITEM_LEVEL
+local IsInRaid = IsInRaid
+local UIParent = UIParent
+local UnitClass = UnitClass
+local UnitIsPlayer = UnitIsPlayer
+local UnitIsTapDenied = UnitIsTapDenied
+local UnitReaction = UnitReaction
 
 local iLvlDB = {}
 local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
@@ -647,7 +647,7 @@ do
 			return
 		end
 
-		tempVec2D.x, tempVec2D.y = _G.UnitPosition("player")
+		tempVec2D.x, tempVec2D.y = UnitPosition("player")
 		if not tempVec2D.x then
 			return
 		end

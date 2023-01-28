@@ -2,15 +2,15 @@ local K, C = unpack(KkthnxUI)
 
 -- Application Programming Interface for KkthnxUI (API)
 
-local assert = _G.assert
-local getmetatable = _G.getmetatable
-local select = _G.select
+local assert = assert
+local getmetatable = getmetatable
+local select = select
 
-local CreateFrame = _G.CreateFrame
-local EnumerateFrames = _G.EnumerateFrames
-local GetAddOnMetadata = _G.GetAddOnMetadata
-local RegisterStateDriver = _G.RegisterStateDriver
-local UIParent = _G.UIParent
+local CreateFrame = CreateFrame
+local EnumerateFrames = EnumerateFrames
+local GetAddOnMetadata = GetAddOnMetadata
+local RegisterStateDriver = RegisterStateDriver
+local UIParent = UIParent
 
 local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
 

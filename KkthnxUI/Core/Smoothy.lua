@@ -3,10 +3,10 @@ local bar_UpdateFrame = CreateFrame("Frame")
 
 -- ls_UI, lightspark
 
-local math_abs = _G.math.abs
+local math_abs = math.abs
 
-local Lerp = _G.Lerp
-local next = _G.next
+local Lerp = Lerp
+local next = next
 
 local activeObjects = {}
 local handledObjects = {}

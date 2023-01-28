@@ -1,13 +1,13 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local string_format = _G.string.format
+local string_format = string.format
 
-local GetSpellInfo = _G.GetSpellInfo
-local GetSpellLink = _G.GetSpellLink
-local IsInGroup = _G.IsInGroup
-local SendChatMessage = _G.SendChatMessage
-local UnitName = _G.UnitName
+local GetSpellInfo = GetSpellInfo
+local GetSpellLink = GetSpellLink
+local IsInGroup = IsInGroup
+local SendChatMessage = SendChatMessage
+local UnitName = UnitName
 
 local groupUnits = { ["player"] = true, ["pet"] = true }
 for i = 1, 4 do

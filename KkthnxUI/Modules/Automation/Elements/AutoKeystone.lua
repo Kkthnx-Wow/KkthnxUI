@@ -1,11 +1,11 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local BACKPACK_CONTAINER = _G.BACKPACK_CONTAINER or 0
-local C_Container_GetContainerItemInfo = _G.C_Container.GetContainerItemInfo
-local C_Container_GetContainerNumSlots = _G.C_Container.GetContainerNumSlots
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local NUM_BAG_SLOTS = _G.NUM_BAG_SLOTS or 4
+local BACKPACK_CONTAINER = BACKPACK_CONTAINER or 0
+local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
+local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
+local IsAddOnLoaded = IsAddOnLoaded
+local NUM_BAG_SLOTS = NUM_BAG_SLOTS or 4
 
 function Module:SetupAutoKeystone()
 	for container = BACKPACK_CONTAINER, NUM_BAG_SLOTS do

@@ -1,43 +1,43 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Unitframes")
 
-local math_rad = _G.math.rad
-local pairs = _G.pairs
-local string_format = _G.string.format
-local table_wipe = _G.table.wipe
-local tonumber = _G.tonumber
-local unpack = _G.unpack
+local math_rad = math.rad
+local pairs = pairs
+local string_format = string.format
+local table_wipe = table.wipe
+local tonumber = tonumber
+local unpack = unpack
 
-local Ambiguate = _G.Ambiguate
-local C_NamePlate_GetNamePlateForUnit = _G.C_NamePlate.GetNamePlateForUnit
-local C_NamePlate_SetNamePlateEnemySize = _G.C_NamePlate.SetNamePlateEnemySize
-local C_NamePlate_SetNamePlateFriendlySize = _G.C_NamePlate.SetNamePlateFriendlySize
-local C_Scenario_GetCriteriaInfo = _G.C_Scenario.GetCriteriaInfo
-local C_Scenario_GetInfo = _G.C_Scenario.GetInfo
-local C_Scenario_GetStepInfo = _G.C_Scenario.GetStepInfo
-local CreateFrame = _G.CreateFrame
-local GetNumGroupMembers = _G.GetNumGroupMembers
-local GetNumSubgroupMembers = _G.GetNumSubgroupMembers
-local GetPlayerInfoByGUID = _G.GetPlayerInfoByGUID
-local INTERRUPTED = _G.INTERRUPTED
-local InCombatLockdown = _G.InCombatLockdown
-local IsInGroup = _G.IsInGroup
-local IsInRaid = _G.IsInRaid
-local SetCVar = _G.SetCVar
-local UnitClassification = _G.UnitClassification
-local UnitExists = _G.UnitExists
-local UnitGUID = _G.UnitGUID
-local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
-local UnitIsConnected = _G.UnitIsConnected
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsTapDenied = _G.UnitIsTapDenied
-local UnitIsUnit = _G.UnitIsUnit
-local UnitName = _G.UnitName
-local UnitNameplateShowsWidgetsOnly = _G.UnitNameplateShowsWidgetsOnly
-local UnitPlayerControlled = _G.UnitPlayerControlled
-local UnitReaction = _G.UnitReaction
-local UnitThreatSituation = _G.UnitThreatSituation
-local hooksecurefunc = _G.hooksecurefunc
+local Ambiguate = Ambiguate
+local C_NamePlate_GetNamePlateForUnit = C_NamePlate.GetNamePlateForUnit
+local C_NamePlate_SetNamePlateEnemySize = C_NamePlate.SetNamePlateEnemySize
+local C_NamePlate_SetNamePlateFriendlySize = C_NamePlate.SetNamePlateFriendlySize
+local C_Scenario_GetCriteriaInfo = C_Scenario.GetCriteriaInfo
+local C_Scenario_GetInfo = C_Scenario.GetInfo
+local C_Scenario_GetStepInfo = C_Scenario.GetStepInfo
+local CreateFrame = CreateFrame
+local GetNumGroupMembers = GetNumGroupMembers
+local GetNumSubgroupMembers = GetNumSubgroupMembers
+local GetPlayerInfoByGUID = GetPlayerInfoByGUID
+local INTERRUPTED = INTERRUPTED
+local InCombatLockdown = InCombatLockdown
+local IsInGroup = IsInGroup
+local IsInRaid = IsInRaid
+local SetCVar = SetCVar
+local UnitClassification = UnitClassification
+local UnitExists = UnitExists
+local UnitGUID = UnitGUID
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned
+local UnitIsConnected = UnitIsConnected
+local UnitIsPlayer = UnitIsPlayer
+local UnitIsTapDenied = UnitIsTapDenied
+local UnitIsUnit = UnitIsUnit
+local UnitName = UnitName
+local UnitNameplateShowsWidgetsOnly = UnitNameplateShowsWidgetsOnly
+local UnitPlayerControlled = UnitPlayerControlled
+local UnitReaction = UnitReaction
+local UnitThreatSituation = UnitThreatSituation
+local hooksecurefunc = hooksecurefunc
 local C_NamePlate_SetNamePlateEnemyClickThrough = C_NamePlate.SetNamePlateEnemyClickThrough
 local C_NamePlate_SetNamePlateFriendlyClickThrough = C_NamePlate.SetNamePlateFriendlyClickThrough
 
@@ -1336,7 +1336,7 @@ function Module:CreatePlayerPlate()
 end
 
 function Module:TogglePlayerPlate()
-	local plate = _G.oUF_PlayerPlate
+	local plate = oUF_PlayerPlate
 	if not plate then
 		return
 	end
@@ -1349,7 +1349,7 @@ function Module:TogglePlayerPlate()
 end
 
 function Module:TogglePlatePower()
-	local plate = _G.oUF_PlayerPlate
+	local plate = oUF_PlayerPlate
 	if not plate then
 		return
 	end
@@ -1358,7 +1358,7 @@ function Module:TogglePlatePower()
 end
 
 function Module:TogglePlateVisibility()
-	local plate = _G.oUF_PlayerPlate
+	local plate = oUF_PlayerPlate
 	if not plate then
 		return
 	end
@@ -1390,7 +1390,7 @@ function Module:CreateTargetPlate()
 end
 
 function Module:UpdateTargetClassPower()
-	local plate = _G.oUF_TargetPlate
+	local plate = oUF_TargetPlate
 	if not plate then
 		return
 	end
@@ -1408,12 +1408,12 @@ function Module:UpdateTargetClassPower()
 end
 
 function Module:ToggleTargetClassPower()
-	local plate = _G.oUF_TargetPlate
+	local plate = oUF_TargetPlate
 	if not plate then
 		return
 	end
 
-	local playerPlate = _G.oUF_PlayerPlate
+	local playerPlate = oUF_PlayerPlate
 	if C["Nameplate"].NameplateClassPower then
 		plate:Enable()
 		if plate.ClassPower then
@@ -1467,7 +1467,7 @@ function Module:ToggleTargetClassPower()
 end
 
 function Module:ResizeTargetPower()
-	local plate = _G.oUF_TargetPlate
+	local plate = oUF_TargetPlate
 	if not plate then
 		return
 	end

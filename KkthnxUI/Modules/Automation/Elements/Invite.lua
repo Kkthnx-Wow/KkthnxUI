@@ -1,15 +1,15 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local AcceptGroup = _G.AcceptGroup
-local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
-local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
-local IsGuildMember = _G.IsGuildMember
-local IsInGroup = _G.IsInGroup
-local LFGInvitePopup = _G.LFGInvitePopup
-local QueueStatusButton = _G.QueueStatusButton
-local StaticPopupSpecial_Hide = _G.StaticPopupSpecial_Hide
-local StaticPopup_Hide = _G.StaticPopup_Hide
+local AcceptGroup = AcceptGroup
+local C_BattleNet_GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
+local C_FriendList_IsFriend = C_FriendList.IsFriend
+local IsGuildMember = IsGuildMember
+local IsInGroup = IsInGroup
+local LFGInvitePopup = LFGInvitePopup
+local QueueStatusButton = QueueStatusButton
+local StaticPopupSpecial_Hide = StaticPopupSpecial_Hide
+local StaticPopup_Hide = StaticPopup_Hide
 
 local hideStatic
 function Module.AutoInvite(event, _, _, _, _, _, _, inviterGUID)

@@ -1,12 +1,12 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local C_SummonInfo_ConfirmSummon = _G.C_SummonInfo.ConfirmSummon
-local C_SummonInfo_GetSummonConfirmAreaName = _G.C_SummonInfo.GetSummonConfirmAreaName
-local C_SummonInfo_GetSummonConfirmSummoner = _G.C_SummonInfo.GetSummonConfirmSummoner
-local C_Timer_After = _G.C_Timer.After
-local StaticPopup_Hide = _G.StaticPopup_Hide
-local UnitAffectingCombat = _G.UnitAffectingCombat
+local C_SummonInfo_ConfirmSummon = C_SummonInfo.ConfirmSummon
+local C_SummonInfo_GetSummonConfirmAreaName = C_SummonInfo.GetSummonConfirmAreaName
+local C_SummonInfo_GetSummonConfirmSummoner = C_SummonInfo.GetSummonConfirmSummoner
+local C_Timer_After = C_Timer.After
+local StaticPopup_Hide = StaticPopup_Hide
+local UnitAffectingCombat = UnitAffectingCombat
 
 local function SetupAutoAcceptSummon()
 	if not UnitAffectingCombat("player") then

@@ -1,10 +1,10 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local math_random = _G.math.random
+local math_random = math.random
 
-local C_Timer_After = _G.C_Timer.After
-local SendChatMessage = _G.SendChatMessage
+local C_Timer_After = C_Timer.After
+local SendChatMessage = SendChatMessage
 
 -- This list is completely random. There is no certin way we have made this list.
 -- The idea is to keep things random so we do not repeat the same type of goodbye.

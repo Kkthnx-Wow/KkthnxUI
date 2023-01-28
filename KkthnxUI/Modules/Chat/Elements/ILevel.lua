@@ -1,18 +1,18 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 
-local pairs = _G.pairs
-local string_format = _G.string.format
-local string_gsub = _G.string.gsub
-local string_match = _G.string.match
-local string_rep = _G.string.rep
+local pairs = pairs
+local string_format = string.format
+local string_gsub = string.gsub
+local string_match = string.match
+local string_rep = string.rep
 
-local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
-local DUNGEON_SCORE_LEADER = _G.DUNGEON_SCORE_LEADER
-local GetItemInfo = _G.GetItemInfo
-local GetItemStats = _G.GetItemStats
-local LE_ITEM_CLASS_ARMOR = _G.LE_ITEM_CLASS_ARMOR
-local LE_ITEM_CLASS_WEAPON = _G.LE_ITEM_CLASS_WEAPON
+local ChatFrame_AddMessageEventFilter = ChatFrame_AddMessageEventFilter
+local DUNGEON_SCORE_LEADER = DUNGEON_SCORE_LEADER
+local GetItemInfo = GetItemInfo
+local GetItemStats = GetItemStats
+local LE_ITEM_CLASS_ARMOR = LE_ITEM_CLASS_ARMOR
+local LE_ITEM_CLASS_WEAPON = LE_ITEM_CLASS_WEAPON
 
 local itemCache = {}
 

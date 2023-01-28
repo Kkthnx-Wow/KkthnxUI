@@ -1,7 +1,7 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Installer")
 
-local table_wipe = _G.table.wipe
+local table_wipe = table.wipe
 
 local function ForceHekiliOptions()
 	if not IsAddOnLoaded("Hekili") then
@@ -244,7 +244,7 @@ local function ForceDBMOptions()
 		},
 	}
 
-	local DBM_ASO = _G.DBM_AllSavedOptions
+	local DBM_ASO = DBM_AllSavedOptions
 	if not DBM_ASO["Default"] then
 		DBM_ASO["Default"] = {}
 	end

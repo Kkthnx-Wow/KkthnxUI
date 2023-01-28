@@ -70,7 +70,7 @@ local function SlotLeave(slot)
 end
 
 local function SlotClick(slot)
-	local frame = _G.LootFrame
+	local frame = LootFrame
 	frame.selectedQuality = slot.quality
 	frame.selectedItemName = slot.name:GetText()
 	frame.selectedTexture = slot.icon:GetTexture()

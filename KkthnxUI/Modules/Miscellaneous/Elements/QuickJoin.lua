@@ -11,12 +11,12 @@ local C_LFGList_GetActivityInfoTable = C_LFGList.GetActivityInfoTable
 local C_LFGList_GetSearchResultMemberInfo = C_LFGList.GetSearchResultMemberInfo
 local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
 
-local HEADER_COLON = _G.HEADER_COLON
-local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME or 1
-local LFG_LIST_GROUP_DATA_ATLASES = _G.LFG_LIST_GROUP_DATA_ATLASES
+local HEADER_COLON = HEADER_COLON
+local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME or 1
+local LFG_LIST_GROUP_DATA_ATLASES = LFG_LIST_GROUP_DATA_ATLASES
 local scoreFormat = K.GreyColor .. "(%s) |r%s"
 
-local LFGListFrame = _G.LFGListFrame
+local LFGListFrame = LFGListFrame
 local ApplicationViewerFrame = LFGListFrame.ApplicationViewer
 local searchPanel = LFGListFrame.SearchPanel
 local categorySelection = LFGListFrame.CategorySelection
@@ -313,8 +313,8 @@ function Module:AddDungeonsFilter()
 	end
 
 	local menuList = {
-		[1] = { text = _G.SPECIFIC_DUNGEONS, isTitle = true, notCheckable = true },
-		[2] = { text = _G.SWITCH, notCheckable = true, keepShownOnClick = true, func = toggleAll },
+		[1] = { text = SPECIFIC_DUNGEONS, isTitle = true, notCheckable = true },
+		[2] = { text = SWITCH, notCheckable = true, keepShownOnClick = true, func = toggleAll },
 	}
 
 	local function onClick(self, index, aID)
@@ -401,7 +401,7 @@ function Module:AddPGFSortingExpression()
 		return
 	end
 
-	local PGFDialog = _G.PremadeGroupsFilterDialog
+	local PGFDialog = PremadeGroupsFilterDialog
 	PGFDialog.__sortBu = {}
 
 	createSortButton(PGFDialog, 525134, "mprating desc")

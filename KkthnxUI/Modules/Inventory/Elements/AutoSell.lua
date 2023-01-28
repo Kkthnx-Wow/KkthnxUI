@@ -1,18 +1,18 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Bags")
 
-local table_wipe = _G.table.wipe
+local table_wipe = table.wipe
 
-local C_Container_GetContainerItemEquipmentSetInfo = _G.C_Container.GetContainerItemEquipmentSetInfo
-local C_Container_GetContainerItemInfo = _G.C_Container.GetContainerItemInfo
-local C_Container_GetContainerNumSlots = _G.C_Container.GetContainerNumSlots
-local C_Container_UseContainerItem = _G.C_Container.UseContainerItem
-local C_Timer_After = _G.C_Timer.After
-local IsShiftKeyDown = _G.IsShiftKeyDown
+local C_Container_GetContainerItemEquipmentSetInfo = C_Container.GetContainerItemEquipmentSetInfo
+local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
+local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
+local C_Container_UseContainerItem = C_Container.UseContainerItem
+local C_Timer_After = C_Timer.After
+local IsShiftKeyDown = IsShiftKeyDown
 
 local stop = true -- a flag used to stop the selling process
 local cache = {} -- a table used to store items that have already been processed
-local errorText = _G.ERR_VENDOR_DOESNT_BUY -- error message for when the vendor doesn't buy certain items
+local errorText = ERR_VENDOR_DOESNT_BUY -- error message for when the vendor doesn't buy certain items
 
 local function startSelling()
 	-- if the stop flag is set, exit the function

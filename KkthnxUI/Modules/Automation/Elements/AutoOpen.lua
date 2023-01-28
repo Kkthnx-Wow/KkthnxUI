@@ -3,11 +3,11 @@ local Module = K:GetModule("Automation")
 
 -- Auto opening of items in bag (kAutoOpen by Kellett)
 
-local C_Container_GetContainerItemInfo = _G.C_Container.GetContainerItemInfo
-local C_Container_GetContainerItemLink = _G.C_Container.GetContainerItemLink
-local C_Container_GetContainerNumSlots = _G.C_Container.GetContainerNumSlots
-local C_Container_UseContainerItem = _G.C_Container.UseContainerItem
-local OPENING = _G.OPENING
+local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
+local C_Container_GetContainerItemLink = C_Container.GetContainerItemLink
+local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
+local C_Container_UseContainerItem = C_Container.UseContainerItem
+local OPENING = OPENING
 
 local openFrames = {} -- table to store which frames are open
 

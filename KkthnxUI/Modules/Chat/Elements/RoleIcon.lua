@@ -1,7 +1,7 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 
-local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 
 -- Role icons
 local ChatMSG = {
@@ -24,7 +24,7 @@ local IconTex = {
 	TANK = "|TInterface\\LFGFrame\\LFGRole:12:12:0:0:64:16:32:48:0:16|t",
 }
 
-local GetChatRoleIcons = _G.GetColoredName
+local GetChatRoleIcons = GetColoredName
 local function SetupChatRoleIcons(event, arg1, arg2, ...)
 	local ret = GetChatRoleIcons(event, arg1, arg2, ...)
 	if ChatMSG[event] then

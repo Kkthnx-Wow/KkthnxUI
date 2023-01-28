@@ -1,14 +1,14 @@
 local _, C = unpack(KkthnxUI)
 
-local DISABLE = _G.DISABLE
-local EMOTE = _G.EMOTE
-local GUILD = _G.GUILD
-local NONE = _G.NONE
-local PARTY = _G.PARTY
-local PLAYER = _G.PLAYER
-local RAID = _G.RAID
-local SAY = _G.SAY
-local YELL = _G.YELL
+local DISABLE = DISABLE
+local EMOTE = EMOTE
+local GUILD = GUILD
+local NONE = NONE
+local PARTY = PARTY
+local PLAYER = PLAYER
+local RAID = RAID
+local SAY = SAY
+local YELL = YELL
 
 local BlipMedia = "Interface\\AddOns\\KkthnxUI\\Media\\MiniMap\\"
 

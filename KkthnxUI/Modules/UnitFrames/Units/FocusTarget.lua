@@ -1,7 +1,7 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Unitframes")
 
-local CreateFrame = _G.CreateFrame
+local CreateFrame = CreateFrame
 
 function Module:CreateFocusTarget()
 	self.mystyle = "focustarget"

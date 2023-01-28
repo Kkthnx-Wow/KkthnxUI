@@ -3,24 +3,24 @@ local K, C = unpack(KkthnxUI)
 -- Sourced: Tukui (Tukz & Hydra)
 -- Edited: KkthnxUI (Kkthnx)
 
-local floor = _G.floor
-local match = _G.string.match
-local pairs = _G.pairs
-local sort = _G.table.sort
-local tinsert = _G.table.insert
-local tremove = _G.table.remove
-local type = _G.type
-local unpack = _G.unpack
+local floor = floor
+local match = string.match
+local pairs = pairs
+local sort = table.sort
+local tinsert = table.insert
+local tremove = table.remove
+local type = type
+local unpack = unpack
 
-local CreateFrame = _G.CreateFrame
-local GameTooltip = _G.GameTooltip
-local UIParent = _G.UIParent
-local StaticPopupDialogs = _G.StaticPopupDialogs
-local YES = _G.YES
-local NO = _G.NO
-local INFO = _G.INFO
-local OKAY = _G.OKAY
-local SlashCmdList = _G.SlashCmdList
+local CreateFrame = CreateFrame
+local GameTooltip = GameTooltip
+local UIParent = UIParent
+local StaticPopupDialogs = StaticPopupDialogs
+local YES = YES
+local NO = NO
+local INFO = INFO
+local OKAY = OKAY
+local SlashCmdList = SlashCmdList
 
 -- Rewrite AddClassIconToColor so we can have 2 functions. 1 for class icon and 1 for class color :D
 local DeathKnightIconColor = K.AddClassIconToColor("DEATHKNIGHT", "|CFFC41F3B", 16)
@@ -1259,7 +1259,7 @@ GUI.Widgets.CreateDropdown = CreateDropdown
 
 -- Color selection
 local ColorOnMouseUp = function(self, button)
-	local CPF = _G.ColorPickerFrame
+	local CPF = ColorPickerFrame
 
 	if CPF:IsShown() then
 		return

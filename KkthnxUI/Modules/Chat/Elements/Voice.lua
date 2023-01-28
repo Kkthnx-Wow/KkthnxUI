@@ -4,14 +4,14 @@ local VoiceActivityEventFrame = CreateFrame("Frame")
 
 -- Sourced: Elv (ElvUI)
 
-local math_modf = _G.math.modf
-local select = _G.select
+local math_modf = math.modf
+local select = select
 
-local C_VoiceChat_GetMemberName = _G.C_VoiceChat.GetMemberName
-local C_VoiceChat_SetPortraitTexture = _G.C_VoiceChat.SetPortraitTexture
-local CreateFrame = _G.CreateFrame
-local UIParent = _G.UIParent
-local Voice_GetVoiceChannelNotificationColor = _G.Voice_GetVoiceChannelNotificationColor
+local C_VoiceChat_GetMemberName = C_VoiceChat.GetMemberName
+local C_VoiceChat_SetPortraitTexture = C_VoiceChat.SetPortraitTexture
+local CreateFrame = CreateFrame
+local UIParent = UIParent
+local Voice_GetVoiceChannelNotificationColor = Voice_GetVoiceChannelNotificationColor
 
 Module.voiceTalkingList = {}
 
@@ -147,7 +147,7 @@ function Module:CreateVoiceActivity()
 		chatHead.StatusBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 		chatHead.StatusBar:SetMinMaxValues(0, 1)
 
-		chatHead.StatusBar.anim = _G.CreateAnimationGroup(chatHead.StatusBar)
+		chatHead.StatusBar.anim = CreateAnimationGroup(chatHead.StatusBar)
 		chatHead.StatusBar.anim.progress = chatHead.StatusBar.anim:CreateAnimation("Progress")
 		chatHead.StatusBar.anim.progress:SetEasing("Out")
 		chatHead.StatusBar.anim.progress:SetDuration(0.3)

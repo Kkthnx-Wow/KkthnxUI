@@ -12,7 +12,7 @@ local function IsFramePositionedLeft(frame)
 end
 
 local function RewardsFrame_SetPosition(block)
-	local rewards = _G.ObjectiveTrackerBonusRewardsFrame
+	local rewards = ObjectiveTrackerBonusRewardsFrame
 	rewards:ClearAllPoints()
 
 	if IsFramePositionedLeft(_G.ObjectiveTrackerFrame) then
@@ -49,7 +49,7 @@ function Module:HandleMawBuffsFrame()
 		return
 	end
 
-	local container = _G.ScenarioBlocksFrame.MawBuffsBlock.Container
+	local container = ScenarioBlocksFrame.MawBuffsBlock.Container
 	container.List:ClearAllPoints()
 
 	if IsFramePositionedLeft(_G.ScenarioBlocksFrame) then
@@ -75,7 +75,7 @@ end
 -- keeping old name, not used to move just to handle the objective things
 -- wrath has it's own file, which actually has the mover on that client
 function Module:CreateObjectiveFrame()
-	local tracker = _G.ObjectiveTrackerFrame
+	local tracker = ObjectiveTrackerFrame
 	tracker.AutoHider = CreateFrame("Frame", nil, tracker, "SecureHandlerStateTemplate")
 	tracker.AutoHider:SetAttribute("_onstate-objectiveHider", "if newstate == 1 then self:Hide() else self:Show() end")
 	tracker.AutoHider:SetScript("OnHide", AutoHider_OnHide)

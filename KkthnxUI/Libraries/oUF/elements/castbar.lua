@@ -70,8 +70,8 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local FALLBACK_ICON = 136243 -- Interface\ICONS\Trade_Engineering
-local FAILED = _G.FAILED or "Failed"
-local INTERRUPTED = _G.INTERRUPTED or "Interrupted"
+local FAILED = FAILED or "Failed"
+local INTERRUPTED = INTERRUPTED or "Interrupted"
 local CASTBAR_STAGE_DURATION_INVALID = -1 -- defined in FrameXML/CastingBarFrame.lua
 
 local function resetAttributes(self)

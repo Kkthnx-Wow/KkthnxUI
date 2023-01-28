@@ -2,7 +2,7 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 local ModuleTooltip = K:GetModule("Tooltip")
 
-local IsAddOnLoaded = _G.IsAddOnLoaded
+local IsAddOnLoaded = IsAddOnLoaded
 
 function Module:ReskinRaiderIO()
 	if not IsAddOnLoaded("RaiderIO") then

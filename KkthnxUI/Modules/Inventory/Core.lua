@@ -4,32 +4,32 @@ local Module = K:NewModule("Bags")
 local Unfit = K.LibUnfit
 local cargBags = K.cargBags
 
-local ceil = _G.ceil
-local ipairs = _G.ipairs
-local string_match = _G.string.match
-local table_wipe = _G.table.wipe
-local unpack = _G.unpack
+local ceil = ceil
+local ipairs = ipairs
+local string_match = string.match
+local table_wipe = table.wipe
+local unpack = unpack
 
-local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = _G.C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
-local C_NewItems_IsNewItem = _G.C_NewItems.IsNewItem
-local C_NewItems_RemoveNewItem = _G.C_NewItems.RemoveNewItem
-local C_Soulbinds_IsItemConduitByItemInfo = _G.C_Soulbinds.IsItemConduitByItemInfo
-local C_Timer_After = _G.C_Timer.After
-local ClearCursor = _G.ClearCursor
-local CreateFrame = _G.CreateFrame
-local DeleteCursorItem = _G.DeleteCursorItem
+local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
+local C_NewItems_IsNewItem = C_NewItems.IsNewItem
+local C_NewItems_RemoveNewItem = C_NewItems.RemoveNewItem
+local C_Soulbinds_IsItemConduitByItemInfo = C_Soulbinds.IsItemConduitByItemInfo
+local C_Timer_After = C_Timer.After
+local ClearCursor = ClearCursor
+local CreateFrame = CreateFrame
+local DeleteCursorItem = DeleteCursorItem
 local GetContainerItemID = C_Container.GetContainerItemID
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
-local GetInventoryItemID = _G.GetInventoryItemID
-local GetItemInfo = _G.GetItemInfo
-local InCombatLockdown = _G.InCombatLockdown
-local IsAltKeyDown = _G.IsAltKeyDown
-local IsControlKeyDown = _G.IsControlKeyDown
-local IsCosmeticItem = _G.IsCosmeticItem
-local IsReagentBankUnlocked = _G.IsReagentBankUnlocked
+local GetInventoryItemID = GetInventoryItemID
+local GetItemInfo = GetItemInfo
+local InCombatLockdown = InCombatLockdown
+local IsAltKeyDown = IsAltKeyDown
+local IsControlKeyDown = IsControlKeyDown
+local IsCosmeticItem = IsCosmeticItem
+local IsReagentBankUnlocked = IsReagentBankUnlocked
 local PickupContainerItem = C_Container.PickupContainerItem
-local PlaySound = _G.PlaySound
-local SOUNDKIT = _G.SOUNDKIT
+local PlaySound = PlaySound
+local SOUNDKIT = SOUNDKIT
 local SortBags = C_Container.SortBags
 local SortBankBags = C_Container.SortBankBags
 local SortReagentBankBags = C_Container.SortReagentBankBags
@@ -301,7 +301,7 @@ function Module:CreateCloseButton(f)
 	closeButton.Icon:SetAllPoints()
 
 	closeButton:SetScript("OnClick", CloseOrRestoreBags)
-	closeButton.title = _G.CLOSE .. "/" .. _G.RESET
+	closeButton.title = CLOSE .. "/" .. _G.RESET
 	K.AddTooltip(closeButton, "ANCHOR_TOP")
 
 	return closeButton
@@ -334,7 +334,7 @@ function Module:CreateReagentButton(f)
 			end
 		end
 	end)
-	reagentButton.title = _G.REAGENT_BANK
+	reagentButton.title = REAGENT_BANK
 	K.AddTooltip(reagentButton, "ANCHOR_TOP")
 
 	return reagentButton
@@ -359,7 +359,7 @@ function Module:CreateBankButton(f)
 		f.bank:Show()
 	end)
 
-	BankButton.title = _G.BANK
+	BankButton.title = BANK
 	K.AddTooltip(BankButton, "ANCHOR_TOP")
 
 	return BankButton
@@ -399,7 +399,7 @@ function Module:CreateDepositButton()
 		end
 	end)
 
-	DepositButton.title = _G.REAGENTBANK_DEPOSIT
+	DepositButton.title = REAGENTBANK_DEPOSIT
 	K.AddTooltip(DepositButton, "ANCHOR_TOP", K.InfoColor .. L["AutoDepositTip"])
 
 	return DepositButton
@@ -430,7 +430,7 @@ function Module:CreateBagToggle()
 
 	bagToggleButton.__owner = self
 	bagToggleButton:SetScript("OnClick", ToggleBackpacks)
-	bagToggleButton.title = _G.BACKPACK_TOOLTIP
+	bagToggleButton.title = BACKPACK_TOOLTIP
 	K.AddTooltip(bagToggleButton, "ANCHOR_TOP")
 
 	return bagToggleButton

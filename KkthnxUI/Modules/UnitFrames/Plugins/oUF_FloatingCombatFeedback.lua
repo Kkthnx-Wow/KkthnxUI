@@ -1,23 +1,23 @@
 local K, C = unpack(KkthnxUI)
 local oUF = K.oUF
 
-local select, tremove, tinsert, wipe = _G.select, _G.table.remove, _G.table.insert, _G.table.wipe
-local m_cos, m_sin, m_pi, m_random = _G.math.cos, _G.math.sin, _G.math.pi, _G.math.random
+local select, tremove, tinsert, wipe = select, _G.table.remove, _G.table.insert, _G.table.wipe
+local m_cos, m_sin, m_pi, m_random = math.cos, _G.math.sin, _G.math.pi, _G.math.random
 
-local UnitGUID = _G.UnitGUID
-local GetSpellTexture = _G.GetSpellTexture
-local BreakUpLargeNumbers = _G.BreakUpLargeNumbers
-local ENTERING_COMBAT = _G.ENTERING_COMBAT
-local LEAVING_COMBAT = _G.LEAVING_COMBAT
-local PET_ATTACK_TEXTURE = _G.PET_ATTACK_TEXTURE
-local SCHOOL_MASK_NONE = _G.SCHOOL_MASK_NONE or 0x00
-local SCHOOL_MASK_PHYSICAL = _G.SCHOOL_MASK_PHYSICAL or 0x01
-local SCHOOL_MASK_HOLY = _G.SCHOOL_MASK_HOLY or 0x02
-local SCHOOL_MASK_FIRE = _G.SCHOOL_MASK_FIRE or 0x04
-local SCHOOL_MASK_NATURE = _G.SCHOOL_MASK_NATURE or 0x08
-local SCHOOL_MASK_FROST = _G.SCHOOL_MASK_FROST or 0x10
-local SCHOOL_MASK_SHADOW = _G.SCHOOL_MASK_SHADOW or 0x20
-local SCHOOL_MASK_ARCANE = _G.SCHOOL_MASK_ARCANE or 0x40
+local UnitGUID = UnitGUID
+local GetSpellTexture = GetSpellTexture
+local BreakUpLargeNumbers = BreakUpLargeNumbers
+local ENTERING_COMBAT = ENTERING_COMBAT
+local LEAVING_COMBAT = LEAVING_COMBAT
+local PET_ATTACK_TEXTURE = PET_ATTACK_TEXTURE
+local SCHOOL_MASK_NONE = SCHOOL_MASK_NONE or 0x00
+local SCHOOL_MASK_PHYSICAL = SCHOOL_MASK_PHYSICAL or 0x01
+local SCHOOL_MASK_HOLY = SCHOOL_MASK_HOLY or 0x02
+local SCHOOL_MASK_FIRE = SCHOOL_MASK_FIRE or 0x04
+local SCHOOL_MASK_NATURE = SCHOOL_MASK_NATURE or 0x08
+local SCHOOL_MASK_FROST = SCHOOL_MASK_FROST or 0x10
+local SCHOOL_MASK_SHADOW = SCHOOL_MASK_SHADOW or 0x20
+local SCHOOL_MASK_ARCANE = SCHOOL_MASK_ARCANE or 0x40
 
 local function clamp(v)
 	if v > 1 then

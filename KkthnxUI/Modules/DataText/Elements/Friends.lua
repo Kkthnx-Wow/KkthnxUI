@@ -1,46 +1,46 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("DataText")
 
-local string_find = _G.string.find
-local string_format = _G.string.format
-local table_insert = _G.table.insert
-local table_sort = _G.table.sort
-local table_wipe = _G.table.wipe
-local unpack = _G.unpack
+local string_find = string.find
+local string_format = string.format
+local table_insert = table.insert
+local table_sort = table.sort
+local table_wipe = table.wipe
+local unpack = unpack
 
-local BNGetNumFriends = _G.BNGetNumFriends
-local BNet_GetValidatedCharacterName = _G.BNet_GetValidatedCharacterName
-local C_BattleNet_GetFriendAccountInfo = _G.C_BattleNet.GetFriendAccountInfo
-local C_BattleNet_GetFriendGameAccountInfo = _G.C_BattleNet.GetFriendGameAccountInfo
-local C_BattleNet_GetFriendNumGameAccounts = _G.C_BattleNet.GetFriendNumGameAccounts
-local C_FriendList_GetFriendInfoByIndex = _G.C_FriendList.GetFriendInfoByIndex
-local C_FriendList_GetNumFriends = _G.C_FriendList.GetNumFriends
-local C_FriendList_GetNumOnlineFriends = _G.C_FriendList.GetNumOnlineFriends
-local C_Timer_After = _G.C_Timer.After
-local EXPANSION_NAME0 = _G.EXPANSION_NAME0
-local EXPANSION_NAME2 = _G.EXPANSION_NAME2
-local GameTooltip = _G.GameTooltip
-local GetDisplayedInviteType = _G.GetDisplayedInviteType
-local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
-local GetRealZoneText = _G.GetRealZoneText
-local HybridScrollFrame_GetOffset = _G.HybridScrollFrame_GetOffset
-local HybridScrollFrame_Update = _G.HybridScrollFrame_Update
-local InviteToGroup = _G.C_PartyInfo.InviteUnit
-local IsAltKeyDown = _G.IsAltKeyDown
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local MouseIsOver = _G.MouseIsOver
+local BNGetNumFriends = BNGetNumFriends
+local BNet_GetValidatedCharacterName = BNet_GetValidatedCharacterName
+local C_BattleNet_GetFriendAccountInfo = C_BattleNet.GetFriendAccountInfo
+local C_BattleNet_GetFriendGameAccountInfo = C_BattleNet.GetFriendGameAccountInfo
+local C_BattleNet_GetFriendNumGameAccounts = C_BattleNet.GetFriendNumGameAccounts
+local C_FriendList_GetFriendInfoByIndex = C_FriendList.GetFriendInfoByIndex
+local C_FriendList_GetNumFriends = C_FriendList.GetNumFriends
+local C_FriendList_GetNumOnlineFriends = C_FriendList.GetNumOnlineFriends
+local C_Timer_After = C_Timer.After
+local EXPANSION_NAME0 = EXPANSION_NAME0
+local EXPANSION_NAME2 = EXPANSION_NAME2
+local GameTooltip = GameTooltip
+local GetDisplayedInviteType = GetDisplayedInviteType
+local GetQuestDifficultyColor = GetQuestDifficultyColor
+local GetRealZoneText = GetRealZoneText
+local HybridScrollFrame_GetOffset = HybridScrollFrame_GetOffset
+local HybridScrollFrame_Update = HybridScrollFrame_Update
+local InviteToGroup = C_PartyInfo.InviteUnit
+local IsAltKeyDown = IsAltKeyDown
+local IsShiftKeyDown = IsShiftKeyDown
+local MouseIsOver = MouseIsOver
 
-local BNET_CLIENT_WOW = _G.BNET_CLIENT_WOW
-local FRIENDS_TEXTURE_AFK = _G.FRIENDS_TEXTURE_AFK
-local FRIENDS_TEXTURE_DND = _G.FRIENDS_TEXTURE_DND
-local FRIENDS_TEXTURE_ONLINE = _G.FRIENDS_TEXTURE_ONLINE
-local GUILD_ONLINE_LABEL = _G.GUILD_ONLINE_LABEL
-local RAF_RECRUITER_FRIEND = _G.RAF_RECRUITER_FRIEND
-local RAF_RECRUIT_FRIEND = _G.RAF_RECRUIT_FRIEND
-local UNKNOWN = _G.UNKNOWN
+local BNET_CLIENT_WOW = BNET_CLIENT_WOW
+local FRIENDS_TEXTURE_AFK = FRIENDS_TEXTURE_AFK
+local FRIENDS_TEXTURE_DND = FRIENDS_TEXTURE_DND
+local FRIENDS_TEXTURE_ONLINE = FRIENDS_TEXTURE_ONLINE
+local GUILD_ONLINE_LABEL = GUILD_ONLINE_LABEL
+local RAF_RECRUITER_FRIEND = RAF_RECRUITER_FRIEND
+local RAF_RECRUIT_FRIEND = RAF_RECRUIT_FRIEND
+local UNKNOWN = UNKNOWN
 
 local WOW_PROJECT_60 = WOW_PROJECT_CLASSIC or 2
-local WOW_PROJECT_ID = _G.WOW_PROJECT_ID or 1
+local WOW_PROJECT_ID = WOW_PROJECT_ID or 1
 local WOW_PROJECT_WRATH = 11
 local CLIENT_WOW_DIFF = "WoV" -- for sorting
 
@@ -241,7 +241,7 @@ local function FriendsPanel_UpdateButton(button)
 end
 
 local function FriendsPanel_Update()
-	local scrollFrame = _G.KKUI_FriendsDataTextScrollFrame
+	local scrollFrame = KKUI_FriendsDataTextScrollFrame
 	local usedHeight = 0
 	local buttons = scrollFrame.buttons
 	local height = scrollFrame.buttonHeight
@@ -281,12 +281,12 @@ local function inviteFunc(_, bnetIDGameAccount, guid)
 end
 
 local inviteTypeToButtonText = {
-	["INVITE"] = _G.TRAVEL_PASS_INVITE,
-	["SUGGEST_INVITE"] = _G.SUGGEST_INVITE,
-	["REQUEST_INVITE"] = _G.REQUEST_INVITE,
-	["INVITE_CROSS_FACTION"] = _G.TRAVEL_PASS_INVITE_CROSS_FACTION,
-	["SUGGEST_INVITE_CROSS_FACTION"] = _G.SUGGEST_INVITE_CROSS_FACTION,
-	["REQUEST_INVITE_CROSS_FACTION"] = _G.REQUEST_INVITE_CROSS_FACTION,
+	["INVITE"] = TRAVEL_PASS_INVITE,
+	["SUGGEST_INVITE"] = SUGGEST_INVITE,
+	["REQUEST_INVITE"] = REQUEST_INVITE,
+	["INVITE_CROSS_FACTION"] = TRAVEL_PASS_INVITE_CROSS_FACTION,
+	["SUGGEST_INVITE_CROSS_FACTION"] = SUGGEST_INVITE_CROSS_FACTION,
+	["REQUEST_INVITE_CROSS_FACTION"] = REQUEST_INVITE_CROSS_FACTION,
 }
 
 local function GetButtonTexFromInviteType(guid, factionName)

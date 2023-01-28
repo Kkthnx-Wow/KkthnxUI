@@ -3558,7 +3558,7 @@ if io and os and debug and _G.arg then
 	local io = io
 	local os = os
 	local debug = debug
-	local arg = _G.arg
+	local arg = arg
 	local debug_info = debug.getinfo(1)
 	if debug_info.source == arg[0] or debug_info.short_src == arg[0] then
 		-- We are indeed runnning THIS file from the commandline.

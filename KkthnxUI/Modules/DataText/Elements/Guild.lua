@@ -1,44 +1,44 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("DataText")
 
-local table_wipe = _G.table.wipe
-local table_sort = _G.table.sort
-local string_format = _G.string.format
-local select = _G.select
+local table_wipe = table.wipe
+local table_sort = table.sort
+local string_format = string.format
+local select = select
 
-local Ambiguate = _G.Ambiguate
-local CLASS_ABBR = _G.CLASS_ABBR
-local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
-local C_GuildInfo_GuildRoster = _G.C_GuildInfo.GuildRoster
-local C_PartyInfo_InviteUnit = _G.C_PartyInfo.InviteUnit
-local C_Timer_After = _G.C_Timer.After
-local ChatEdit_ActivateChat = _G.ChatEdit_ActivateChat
-local ChatEdit_ChooseBoxForSend = _G.ChatEdit_ChooseBoxForSend
-local ChatFrame_GetMobileEmbeddedTexture = _G.ChatFrame_GetMobileEmbeddedTexture
-local ChatFrame_OpenChat = _G.ChatFrame_OpenChat
-local GetGuildInfo = _G.GetGuildInfo
-local GetGuildRosterInfo = _G.GetGuildRosterInfo
-local GetNumGuildMembers = _G.GetNumGuildMembers
-local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
-local GetRealZoneText = _G.GetRealZoneText
-local GetTime = _G.GetTime
-local HybridScrollFrame_GetOffset = _G.HybridScrollFrame_GetOffset
-local HybridScrollFrame_Update = _G.HybridScrollFrame_Update
-local IsAltKeyDown = _G.IsAltKeyDown
-local IsInGuild = _G.IsInGuild
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local LEVEL_ABBR = _G.LEVEL_ABBR
-local MailFrame = _G.MailFrame
-local MailFrameTab_OnClick = _G.MailFrameTab_OnClick
-local MouseIsOver = _G.MouseIsOver
-local NAME = _G.NAME
-local RANK = _G.RANK
-local REMOTE_CHAT = _G.REMOTE_CHAT
-local SELECTED_DOCK_FRAME = _G.SELECTED_DOCK_FRAME
-local SendMailNameEditBox = _G.SendMailNameEditBox
-local UnitInParty = _G.UnitInParty
-local UnitInRaid = _G.UnitInRaid
-local ZONE = _G.ZONE
+local Ambiguate = Ambiguate
+local CLASS_ABBR = CLASS_ABBR
+local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
+local C_GuildInfo_GuildRoster = C_GuildInfo.GuildRoster
+local C_PartyInfo_InviteUnit = C_PartyInfo.InviteUnit
+local C_Timer_After = C_Timer.After
+local ChatEdit_ActivateChat = ChatEdit_ActivateChat
+local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
+local ChatFrame_GetMobileEmbeddedTexture = ChatFrame_GetMobileEmbeddedTexture
+local ChatFrame_OpenChat = ChatFrame_OpenChat
+local GetGuildInfo = GetGuildInfo
+local GetGuildRosterInfo = GetGuildRosterInfo
+local GetNumGuildMembers = GetNumGuildMembers
+local GetQuestDifficultyColor = GetQuestDifficultyColor
+local GetRealZoneText = GetRealZoneText
+local GetTime = GetTime
+local HybridScrollFrame_GetOffset = HybridScrollFrame_GetOffset
+local HybridScrollFrame_Update = HybridScrollFrame_Update
+local IsAltKeyDown = IsAltKeyDown
+local IsInGuild = IsInGuild
+local IsShiftKeyDown = IsShiftKeyDown
+local LEVEL_ABBR = LEVEL_ABBR
+local MailFrame = MailFrame
+local MailFrameTab_OnClick = MailFrameTab_OnClick
+local MouseIsOver = MouseIsOver
+local NAME = NAME
+local RANK = RANK
+local REMOTE_CHAT = REMOTE_CHAT
+local SELECTED_DOCK_FRAME = SELECTED_DOCK_FRAME
+local SendMailNameEditBox = SendMailNameEditBox
+local UnitInParty = UnitInParty
+local UnitInRaid = UnitInRaid
+local ZONE = ZONE
 
 local guildTable = {}
 local gName
@@ -128,7 +128,7 @@ local function GuildPanel_UpdateButton(button)
 end
 
 local function GuildPanel_Update()
-	local scrollFrame = _G.KKUI_GuildDataTextScrollFrame
+	local scrollFrame = KKUI_GuildDataTextScrollFrame
 	local usedHeight = 0
 	local buttons = scrollFrame.buttons
 	local height = scrollFrame.buttonHeight

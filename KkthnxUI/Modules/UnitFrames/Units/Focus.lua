@@ -3,7 +3,7 @@ local Module = K:GetModule("Unitframes")
 
 local select = select
 
-local CreateFrame = _G.CreateFrame
+local CreateFrame = CreateFrame
 
 function Module:CreateFocus()
 	self.mystyle = "focus"

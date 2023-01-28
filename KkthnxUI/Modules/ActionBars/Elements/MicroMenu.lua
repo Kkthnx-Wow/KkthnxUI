@@ -1,20 +1,20 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("ActionBar")
 
-local table_insert = _G.table.insert
-local pairs = _G.pairs
-local type = _G.type
+local table_insert = table.insert
+local pairs = pairs
+local type = type
 
 local buttonList = {}
 
 local function onLeaveBar()
-	local KKUI_MB = _G.KKUI_MenuBar
+	local KKUI_MB = KKUI_MenuBar
 	return C["ActionBar"].FadeMicroMenu and UIFrameFadeOut(KKUI_MB, 0.2, KKUI_MB:GetAlpha(), 0)
 end
 
 local watcher = 0
 local function onUpdate(_, elapsed)
-	local KKUI_MB = _G.KKUI_MenuBar
+	local KKUI_MB = KKUI_MenuBar
 	if watcher > 0.1 then
 		if not KKUI_MB:IsMouseOver() then
 			KKUI_MB.IsMouseOvered = nil
@@ -28,7 +28,7 @@ local function onUpdate(_, elapsed)
 end
 
 local function onEnter()
-	local KKUI_MB = _G.KKUI_MenuBar
+	local KKUI_MB = KKUI_MenuBar
 	if not KKUI_MB.IsMouseOvered then
 		KKUI_MB.IsMouseOvered = true
 		KKUI_MB:SetScript("OnUpdate", onUpdate)

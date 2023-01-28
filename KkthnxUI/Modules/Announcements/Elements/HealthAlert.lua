@@ -1,9 +1,9 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local string_format = _G.string.format
+local string_format = string.format
 
-local UIErrorsFrame = _G.UIErrorsFrame
+local UIErrorsFrame = UIErrorsFrame
 
 local playerNearDeath = false
 local petNearDeath = false

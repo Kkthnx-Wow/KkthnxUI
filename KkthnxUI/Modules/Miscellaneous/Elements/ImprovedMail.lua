@@ -1,18 +1,18 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Miscellaneous")
 
-local wipe, select, pairs = _G.wipe, _G.select, _G.pairs
+local wipe, select, pairs = wipe, _G.select, _G.pairs
 
-local ATTACHMENTS_MAX_RECEIVE, ERR_MAIL_DELETE_ITEM_ERROR = _G.ATTACHMENTS_MAX_RECEIVE, _G.ERR_MAIL_DELETE_ITEM_ERROR
-local C_Mail_HasInboxMoney = _G.C_Mail.HasInboxMoney
-local C_Mail_IsCommandPending = _G.C_Mail.IsCommandPending
-local C_Timer_After = _G.C_Timer.After
-local GetInboxNumItems, GetInboxHeaderInfo, GetInboxItem, GetItemInfo = _G.GetInboxNumItems, _G.GetInboxHeaderInfo, _G.GetInboxItem, _G.GetItemInfo
-local GetSendMailPrice, GetMoney = _G.GetSendMailPrice, _G.GetMoney
-local InboxItemCanDelete, DeleteInboxItem, TakeInboxMoney, TakeInboxItem = _G.InboxItemCanDelete, _G.DeleteInboxItem, _G.TakeInboxMoney, _G.TakeInboxItem
-local NORMAL_STRING = _G.GUILDCONTROL_OPTION16
-local OPENING_STRING = _G.OPEN_ALL_MAIL_BUTTON_OPENING
-local GameTooltip = _G.GameTooltip
+local ATTACHMENTS_MAX_RECEIVE, ERR_MAIL_DELETE_ITEM_ERROR = ATTACHMENTS_MAX_RECEIVE, _G.ERR_MAIL_DELETE_ITEM_ERROR
+local C_Mail_HasInboxMoney = C_Mail.HasInboxMoney
+local C_Mail_IsCommandPending = C_Mail.IsCommandPending
+local C_Timer_After = C_Timer.After
+local GetInboxNumItems, GetInboxHeaderInfo, GetInboxItem, GetItemInfo = GetInboxNumItems, _G.GetInboxHeaderInfo, _G.GetInboxItem, _G.GetItemInfo
+local GetSendMailPrice, GetMoney = GetSendMailPrice, _G.GetMoney
+local InboxItemCanDelete, DeleteInboxItem, TakeInboxMoney, TakeInboxItem = InboxItemCanDelete, _G.DeleteInboxItem, _G.TakeInboxMoney, _G.TakeInboxItem
+local NORMAL_STRING = GUILDCONTROL_OPTION16
+local OPENING_STRING = OPEN_ALL_MAIL_BUTTON_OPENING
+local GameTooltip = GameTooltip
 
 local mailIndex = 0
 local timeToWait = 0.15

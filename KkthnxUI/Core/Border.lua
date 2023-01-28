@@ -1,9 +1,9 @@
 local K, C = unpack(KkthnxUI)
 local Module = {}
 
-local next = _G.next
-local type = _G.type
-local unpack = _G.unpack
+local next = next
+local type = type
+local unpack = unpack
 
 local objectToWidgets = {}
 local borderSections = {

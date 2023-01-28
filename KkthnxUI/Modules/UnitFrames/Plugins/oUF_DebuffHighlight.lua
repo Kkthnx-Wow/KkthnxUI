@@ -78,7 +78,7 @@ local function Update(object, _, unit)
 
 	local debuffType, texture = GetDebuffType(unit, object.DebuffHighlightFilter)
 	if debuffType then
-		local color = _G.DebuffTypeColor[debuffType]
+		local color = DebuffTypeColor[debuffType]
 		if object.DebuffHighlightUseTexture then
 			object.DebuffHighlight:SetTexture(texture)
 		else

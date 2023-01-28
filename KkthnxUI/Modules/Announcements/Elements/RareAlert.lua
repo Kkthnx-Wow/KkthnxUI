@@ -1,17 +1,17 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local string_find = _G.string.find
-local string_format = _G.string.format
-local table_wipe = _G.table.wipe
+local string_find = string.find
+local string_format = string.format
+local table_wipe = table.wipe
 
-local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
-local C_Texture_GetAtlasInfo = _G.C_Texture.GetAtlasInfo
-local C_VignetteInfo_GetVignetteInfo = _G.C_VignetteInfo.GetVignetteInfo
-local C_VignetteInfo_GetVignettePosition = _G.C_VignetteInfo.GetVignettePosition
-local GetInstanceInfo = _G.GetInstanceInfo
-local UIErrorsFrame = _G.UIErrorsFrame
-local date = _G.date
+local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
+local C_Texture_GetAtlasInfo = C_Texture.GetAtlasInfo
+local C_VignetteInfo_GetVignetteInfo = C_VignetteInfo.GetVignetteInfo
+local C_VignetteInfo_GetVignettePosition = C_VignetteInfo.GetVignettePosition
+local GetInstanceInfo = GetInstanceInfo
+local UIErrorsFrame = UIErrorsFrame
+local date = date
 
 local RareAlertCache = {}
 local isIgnoredZone = {

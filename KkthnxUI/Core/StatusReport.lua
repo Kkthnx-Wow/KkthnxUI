@@ -1,13 +1,13 @@
 local K, C = unpack(KkthnxUI)
 
-local CreateFrame = _G.CreateFrame
-local GetAddOnInfo = _G.GetAddOnInfo
-local GetCVarBool = _G.GetCVarBool
-local GetNumAddOns = _G.GetNumAddOns
-local GetRealZoneText = _G.GetRealZoneText
-local GetSpecialization = _G.GetSpecialization
-local GetSpecializationInfo = _G.GetSpecializationInfo
-local UNKNOWN = _G.UNKNOWN
+local CreateFrame = CreateFrame
+local GetAddOnInfo = GetAddOnInfo
+local GetCVarBool = GetCVarBool
+local GetNumAddOns = GetNumAddOns
+local GetRealZoneText = GetRealZoneText
+local GetSpecialization = GetSpecialization
+local GetSpecializationInfo = GetSpecializationInfo
+local UNKNOWN = UNKNOWN
 
 local function AreOtherAddOnsEnabled()
 	local addons

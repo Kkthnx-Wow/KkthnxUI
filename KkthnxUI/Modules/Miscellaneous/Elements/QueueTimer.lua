@@ -4,8 +4,8 @@ local Module = K:GetModule("Miscellaneous")
 -- Sourced: syndenbock (JustInTime)
 -- Edited: Kkthnx (KkthnxUI)
 
-local RESETS_IN = _G.RESETS_IN
-local LFGDungeonReadyDialog = _G.LFGDungeonReadyDialog
+local RESETS_IN = RESETS_IN
+local LFGDungeonReadyDialog = LFGDungeonReadyDialog
 
 local function ColorQueueTimer(value)
 	local r, g, b
@@ -33,7 +33,7 @@ function Module:SetupPvEQueueTimer()
 	local pveUpdateTimeStamp
 
 	-- The text of the LFG dialog label randomly changes back, so we override the function to prevent that
-	local pveUpdateLFGDialogLabel = _G.LFGDungeonReadyDialog.label.SetText
+	local pveUpdateLFGDialogLabel = LFGDungeonReadyDialog.label.SetText
 	LFGDungeonReadyDialog.label.SetText = K.Noop
 
 	LFGDungeonReadyDialog.label:SetPoint("TOP", 0, -22)

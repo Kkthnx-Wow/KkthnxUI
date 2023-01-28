@@ -2,14 +2,14 @@ local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 local TT = K:GetModule("Tooltip")
 
-local string_find = _G.string.find
-local string_gsub = _G.string.gsub
-local string_match = _G.string.match
-local unpack = _G.unpack
+local string_find = string.find
+local string_gsub = string.gsub
+local string_match = string.match
+local unpack = unpack
 
-local CreateFrame = _G.CreateFrame
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local hooksecurefunc = _G.hooksecurefunc
+local CreateFrame = CreateFrame
+local IsAddOnLoaded = IsAddOnLoaded
+local hooksecurefunc = hooksecurefunc
 
 local buttonsize = 24
 

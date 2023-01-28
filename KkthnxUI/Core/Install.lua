@@ -4,32 +4,32 @@ local Module = K:NewModule("Installer")
 -- Sourced: NDui (siweia)
 -- Edited: KkthnxUI (Kkthnx)
 
-local APPLY = _G.APPLY
-local CHAT = _G.CHAT
-local ChangeChatColor = _G.ChangeChatColor
-local ChatConfig_UpdateChatSettings = _G.ChatConfig_UpdateChatSettings
-local ChatFrame_AddChannel = _G.ChatFrame_AddChannel
-local ChatFrame_AddMessageGroup = _G.ChatFrame_AddMessageGroup
-local ChatFrame_RemoveAllMessageGroups = _G.ChatFrame_RemoveAllMessageGroups
-local ChatFrame_RemoveChannel = _G.ChatFrame_RemoveChannel
-local CreateFrame = _G.CreateFrame
-local DEFAULT = _G.DEFAULT
-local FCF_DockFrame = _G.FCF_DockFrame
-local FCF_OpenNewWindow = _G.FCF_OpenNewWindow
-local FCF_ResetChatWindows = _G.FCF_ResetChatWindows
-local FCF_SetChatWindowFontSize = _G.FCF_SetChatWindowFontSize
-local FCF_SetLocked = _G.FCF_SetLocked
-local FCF_SetWindowName = _G.FCF_SetWindowName
-local GENERAL = _G.GENERAL
-local InCombatLockdown = _G.InCombatLockdown
-local PlaySound = _G.PlaySound
-local SETTINGS = _G.SETTINGS
-local SetCVar = _G.SetCVar
-local TRADE = _G.TRADE
-local ToggleChatColorNamesByClassGroup = _G.ToggleChatColorNamesByClassGroup
-local UIErrorsFrame = _G.UIErrorsFrame
-local UIParent = _G.UIParent
-local UI_SCALE = _G.UI_SCALE
+local APPLY = APPLY
+local CHAT = CHAT
+local ChangeChatColor = ChangeChatColor
+local ChatConfig_UpdateChatSettings = ChatConfig_UpdateChatSettings
+local ChatFrame_AddChannel = ChatFrame_AddChannel
+local ChatFrame_AddMessageGroup = ChatFrame_AddMessageGroup
+local ChatFrame_RemoveAllMessageGroups = ChatFrame_RemoveAllMessageGroups
+local ChatFrame_RemoveChannel = ChatFrame_RemoveChannel
+local CreateFrame = CreateFrame
+local DEFAULT = DEFAULT
+local FCF_DockFrame = FCF_DockFrame
+local FCF_OpenNewWindow = FCF_OpenNewWindow
+local FCF_ResetChatWindows = FCF_ResetChatWindows
+local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
+local FCF_SetLocked = FCF_SetLocked
+local FCF_SetWindowName = FCF_SetWindowName
+local GENERAL = GENERAL
+local InCombatLockdown = InCombatLockdown
+local PlaySound = PlaySound
+local SETTINGS = SETTINGS
+local SetCVar = SetCVar
+local TRADE = TRADE
+local ToggleChatColorNamesByClassGroup = ToggleChatColorNamesByClassGroup
+local UIErrorsFrame = UIErrorsFrame
+local UIParent = UIParent
+local UI_SCALE = UI_SCALE
 
 function Module:ResetSettings()
 	KkthnxUIDB.Settings[K.Realm][K.Name] = {}
@@ -97,7 +97,7 @@ function Module:ForceDefaultCVars()
 	SetCVar("whisperMode", "inline")
 	SetCVar("wholeChatWindowClickable", 0)
 
-	local ActionButtonPickUp = _G.InterfaceOptionsActionBarsPanelPickupActionKeyDropDown
+	local ActionButtonPickUp = InterfaceOptionsActionBarsPanelPickupActionKeyDropDown
 	if ActionButtonPickUp then
 		ActionButtonPickUp:SetValue("SHIFT")
 		ActionButtonPickUp:RefreshValue()

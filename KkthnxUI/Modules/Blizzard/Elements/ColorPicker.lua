@@ -1,8 +1,8 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Blizzard")
 
-local string_format = _G.string.format
-local string_match = _G.string.match
+local string_format = string.format
+local string_match = string.match
 
 -- Enhanced ColorPickerFrame
 local function translateColor(r)
@@ -85,7 +85,7 @@ function Module:CreateColorPicker()
 		return
 	end
 
-	local pickerFrame = _G.ColorPickerFrame
+	local pickerFrame = ColorPickerFrame
 	pickerFrame:SetHeight(250)
 	K.CreateMoverFrame(pickerFrame.Header, pickerFrame) -- movable by header
 	_G.OpacitySliderFrame:SetPoint("TOPLEFT", _G.ColorSwatch, "TOPRIGHT", 50, 0)

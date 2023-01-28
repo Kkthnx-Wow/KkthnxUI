@@ -332,7 +332,7 @@ function Module:CreateBars()
 						end
 					end,
 					texture = 136190, -- Spell_Shadow_SacrificialShield
-					tooltip = _G.LEAVE_VEHICLE,
+					tooltip = LEAVE_VEHICLE,
 				})
 			end
 			button.MasqueSkinned = true

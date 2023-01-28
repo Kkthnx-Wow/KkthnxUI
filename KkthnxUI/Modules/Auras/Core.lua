@@ -3,22 +3,22 @@ local Module = K:NewModule("Auras")
 
 -- Sourced: NDui (Siweia)
 
-local math_floor = _G.math.floor
-local select = _G.select
-local string_format = _G.string.format
+local math_floor = math.floor
+local select = select
+local string_format = string.format
 
-local CreateFrame = _G.CreateFrame
-local DebuffTypeColor = _G.DebuffTypeColor
-local GameTooltip = _G.GameTooltip
-local GetInventoryItemQuality = _G.GetInventoryItemQuality
-local GetInventoryItemTexture = _G.GetInventoryItemTexture
-local GetTime = _G.GetTime
-local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
-local RegisterAttributeDriver = _G.RegisterAttributeDriver
-local RegisterStateDriver = _G.RegisterStateDriver
-local SecureHandlerSetFrameRef = _G.SecureHandlerSetFrameRef
-local UIParent = _G.UIParent
-local UnitAura = _G.UnitAura
+local CreateFrame = CreateFrame
+local DebuffTypeColor = DebuffTypeColor
+local GameTooltip = GameTooltip
+local GetInventoryItemQuality = GetInventoryItemQuality
+local GetInventoryItemTexture = GetInventoryItemTexture
+local GetTime = GetTime
+local GetWeaponEnchantInfo = GetWeaponEnchantInfo
+local RegisterAttributeDriver = RegisterAttributeDriver
+local RegisterStateDriver = RegisterStateDriver
+local SecureHandlerSetFrameRef = SecureHandlerSetFrameRef
+local UIParent = UIParent
+local UnitAura = UnitAura
 
 local day, hour, minute = 86400, 3600, 60
 

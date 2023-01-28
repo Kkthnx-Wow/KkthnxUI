@@ -3,7 +3,7 @@ local Module = K:GetModule("Blizzard")
 
 -- Sourced: NDui
 
-local pairs = _G.pairs
+local pairs = pairs
 
 local function SetupTimerTracker(bar)
 	local texture = K.GetTexture(C["General"].Texture)

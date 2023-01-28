@@ -1,35 +1,35 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Miscellaneous")
 
-local math_min = _G.math.min
-local mod = _G.mod
-local string_format = _G.string.format
-local pairs = _G.pairs
-local select = _G.select
-local math_floor = _G.math.floor
+local math_min = math.min
+local mod = mod
+local string_format = string.format
+local pairs = pairs
+local select = select
+local math_floor = math.floor
 
-local ARTIFACT_POWER = _G.ARTIFACT_POWER
-local C_AzeriteItem_FindActiveAzeriteItem = _G.C_AzeriteItem.FindActiveAzeriteItem
-local C_AzeriteItem_GetAzeriteItemXPInfo = _G.C_AzeriteItem.GetAzeriteItemXPInfo
-local C_AzeriteItem_GetPowerLevel = _G.C_AzeriteItem.GetPowerLevel
-local C_AzeriteItem_IsAzeriteItemAtMaxLevel = _G.C_AzeriteItem.IsAzeriteItemAtMaxLevel
+local ARTIFACT_POWER = ARTIFACT_POWER
+local C_AzeriteItem_FindActiveAzeriteItem = C_AzeriteItem.FindActiveAzeriteItem
+local C_AzeriteItem_GetAzeriteItemXPInfo = C_AzeriteItem.GetAzeriteItemXPInfo
+local C_AzeriteItem_GetPowerLevel = C_AzeriteItem.GetPowerLevel
+local C_AzeriteItem_IsAzeriteItemAtMaxLevel = C_AzeriteItem.IsAzeriteItemAtMaxLevel
 local GetFriendshipReputation = GetFriendshipReputation or C_GossipInfo.GetFriendshipReputation
-local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
-local GetXPExhaustion = _G.GetXPExhaustion
-local HONOR = _G.HONOR
-local IsLevelAtEffectiveMaxLevel = _G.IsLevelAtEffectiveMaxLevel
-local IsPlayerAtEffectiveMaxLevel = _G.IsPlayerAtEffectiveMaxLevel
-local IsTrialAccount = _G.IsTrialAccount
-local IsVeteranTrialAccount = _G.IsVeteranTrialAccount
-local IsWatchingHonorAsXP = _G.IsWatchingHonorAsXP
-local IsXPUserDisabled = _G.IsXPUserDisabled
-local LEVEL = _G.LEVEL
-local REPUTATION_PROGRESS_FORMAT = _G.REPUTATION_PROGRESS_FORMAT
-local UnitHonor = _G.UnitHonor
-local UnitHonorLevel = _G.UnitHonorLevel
-local UnitHonorMax = _G.UnitHonorMax
-local UnitXP = _G.UnitXP
-local UnitXPMax = _G.UnitXPMax
+local GetWatchedFactionInfo = GetWatchedFactionInfo
+local GetXPExhaustion = GetXPExhaustion
+local HONOR = HONOR
+local IsLevelAtEffectiveMaxLevel = IsLevelAtEffectiveMaxLevel
+local IsPlayerAtEffectiveMaxLevel = IsPlayerAtEffectiveMaxLevel
+local IsTrialAccount = IsTrialAccount
+local IsVeteranTrialAccount = IsVeteranTrialAccount
+local IsWatchingHonorAsXP = IsWatchingHonorAsXP
+local IsXPUserDisabled = IsXPUserDisabled
+local LEVEL = LEVEL
+local REPUTATION_PROGRESS_FORMAT = REPUTATION_PROGRESS_FORMAT
+local UnitHonor = UnitHonor
+local UnitHonorLevel = UnitHonorLevel
+local UnitHonorMax = UnitHonorMax
+local UnitXP = UnitXP
+local UnitXPMax = UnitXPMax
 
 local CurrentXP, XPToLevel, RestedXP, PercentRested
 local PercentXP, RemainXP, RemainTotal, RemainBars

@@ -1,10 +1,10 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Unitframes")
 
-local select = _G.select
+local select = select
 
-local CreateFrame = _G.CreateFrame
-local UnitIsUnit = _G.UnitIsUnit
+local CreateFrame = CreateFrame
+local UnitIsUnit = UnitIsUnit
 
 function Module:CreateParty()
 	self.mystyle = "party"

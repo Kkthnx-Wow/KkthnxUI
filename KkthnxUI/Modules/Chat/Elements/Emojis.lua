@@ -1,12 +1,12 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 
-local string_gmatch = _G.string.gmatch
-local string_gsub = _G.string.gsub
-local string_match = _G.string.match
-local string_trim = _G.string.trim
+local string_gmatch = string.gmatch
+local string_gsub = string.gsub
+local string_match = string.match
+local string_trim = string.trim
 
-local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
+local ChatFrame_AddMessageEventFilter = ChatFrame_AddMessageEventFilter
 
 -- replace emojis
 function Module:SetupEmojis(_, msg)

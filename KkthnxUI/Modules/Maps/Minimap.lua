@@ -1,19 +1,19 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Minimap")
 
-local math_floor = _G.math.floor
-local mod = _G.mod
-local pairs = _G.pairs
-local select = _G.select
-local table_insert = _G.table.insert
-local table_sort = _G.table.sort
+local math_floor = math.floor
+local mod = mod
+local pairs = pairs
+local select = select
+local table_insert = table.insert
+local table_sort = table.sort
 
-local C_Calendar_GetNumPendingInvites = _G.C_Calendar.GetNumPendingInvites
-local GetUnitName = _G.GetUnitName
-local InCombatLockdown = _G.InCombatLockdown
-local Minimap = _G.Minimap
-local UnitClass = _G.UnitClass
-local hooksecurefunc = _G.hooksecurefunc
+local C_Calendar_GetNumPendingInvites = C_Calendar.GetNumPendingInvites
+local GetUnitName = GetUnitName
+local InCombatLockdown = InCombatLockdown
+local Minimap = Minimap
+local UnitClass = UnitClass
+local hooksecurefunc = hooksecurefunc
 
 local MinimapMailFrame = K.IsNewPatch and MinimapCluster.IndicatorFrame.MailFrame or MinimapCluster.MailFrame
 
@@ -198,7 +198,7 @@ end)
 
 -- We want these two on the bottom
 table_insert(menuList, {
-	text = _G.MAINMENU_BUTTON,
+	text = MAINMENU_BUTTON,
 	notCheckable = 1,
 	func = function()
 		if not _G.GameMenuFrame:IsShown() then
@@ -218,7 +218,7 @@ table_insert(menuList, {
 	end,
 })
 
-table_insert(menuList, { text = _G.HELP_BUTTON, notCheckable = 1, func = ToggleHelpFrame })
+table_insert(menuList, { text = HELP_BUTTON, notCheckable = 1, func = ToggleHelpFrame })
 
 function Module:CreateStyle()
 	local minimapBorder = CreateFrame("Frame", "KKUI_MinimapBorder", Minimap)
@@ -280,7 +280,7 @@ end
 
 function Module:ReskinRegions()
 	-- Garrison
-	local garrMinimapButton = _G.ExpansionLandingPageMinimapButton
+	local garrMinimapButton = ExpansionLandingPageMinimapButton
 	if garrMinimapButton then
 		local function updateMinimapButtons(self)
 			self:ClearAllPoints()
@@ -303,10 +303,10 @@ function Module:ReskinRegions()
 		hooksecurefunc(garrMinimapButton, "UpdateIcon", updateMinimapButtons)
 
 		local menuList = {
-			{ text = _G.GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_9_0, notCheckable = true },
-			{ text = _G.WAR_CAMPAIGN, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_8_0, notCheckable = true },
-			{ text = _G.ORDER_HALL_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_7_0, notCheckable = true },
-			{ text = _G.GARRISON_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_6_0, notCheckable = true },
+			{ text = GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_9_0, notCheckable = true },
+			{ text = WAR_CAMPAIGN, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_8_0, notCheckable = true },
+			{ text = ORDER_HALL_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_7_0, notCheckable = true },
+			{ text = GARRISON_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_6_0, notCheckable = true },
 		}
 		garrMinimapButton:HookScript("OnMouseDown", function(self, btn)
 			if btn == "RightButton" then

@@ -1,18 +1,18 @@
 local K = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 
-local string_find = _G.string.find
-local string_gsub = _G.string.gsub
-local string_match = _G.string.match
-local string_sub = _G.string.sub
-local tostring = _G.tostring
+local string_find = string.find
+local string_gsub = string.gsub
+local string_match = string.match
+local string_sub = string.sub
+local tostring = tostring
 
-local ChatEdit_ClearChat = _G.ChatEdit_ClearChat
-local ChatFrame1 = _G.ChatFrame1
-local ItemRefTooltip = _G.ItemRefTooltip
-local LAST_ACTIVE_CHAT_EDIT_BOX = _G.LAST_ACTIVE_CHAT_EDIT_BOX
-local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
-local hooksecurefunc = _G.hooksecurefunc
+local ChatEdit_ClearChat = ChatEdit_ClearChat
+local ChatFrame1 = ChatFrame1
+local ItemRefTooltip = ItemRefTooltip
+local LAST_ACTIVE_CHAT_EDIT_BOX = LAST_ACTIVE_CHAT_EDIT_BOX
+local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
+local hooksecurefunc = hooksecurefunc
 
 local foundurl = false
 local function convertLink(text, value)

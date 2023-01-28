@@ -1,16 +1,16 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Unitframes")
 
-local format = _G.format
-local min = _G.min
+local format = format
+local min = min
 
-local GetTime = _G.GetTime
-local IsPlayerSpell = _G.IsPlayerSpell
-local UnitExists = _G.UnitExists
-local UnitInVehicle = _G.UnitInVehicle
-local UnitIsUnit = _G.UnitIsUnit
-local UnitName = _G.UnitName
-local YOU = _G.YOU
+local GetTime = GetTime
+local IsPlayerSpell = IsPlayerSpell
+local UnitExists = UnitExists
+local UnitInVehicle = UnitInVehicle
+local UnitIsUnit = UnitIsUnit
+local UnitName = UnitName
+local YOU = YOU
 
 local channelingTicks = {
 	[740] = 4, -- Tranquility

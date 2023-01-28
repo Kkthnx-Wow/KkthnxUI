@@ -1,19 +1,19 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("DataText")
 
-local select = _G.select
-local string_format = _G.string.format
-local unpack = _G.unpack
+local select = select
+local string_format = string.format
+local unpack = unpack
 
-local COMBAT_ZONE = _G.COMBAT_ZONE
-local CONTESTED_TERRITORY = _G.CONTESTED_TERRITORY
-local FACTION_CONTROLLED_TERRITORY = _G.FACTION_CONTROLLED_TERRITORY
-local FACTION_STANDING_LABEL4 = _G.FACTION_STANDING_LABEL4
-local FREE_FOR_ALL_TERRITORY = _G.FREE_FOR_ALL_TERRITORY
-local GetSubZoneText = _G.GetSubZoneText
-local GetZonePVPInfo = _G.GetZonePVPInfo
-local GetZoneText = _G.GetZoneText
-local SANCTUARY_TERRITORY = _G.SANCTUARY_TERRITORY
+local COMBAT_ZONE = COMBAT_ZONE
+local CONTESTED_TERRITORY = CONTESTED_TERRITORY
+local FACTION_CONTROLLED_TERRITORY = FACTION_CONTROLLED_TERRITORY
+local FACTION_STANDING_LABEL4 = FACTION_STANDING_LABEL4
+local FREE_FOR_ALL_TERRITORY = FREE_FOR_ALL_TERRITORY
+local GetSubZoneText = GetSubZoneText
+local GetZonePVPInfo = GetZonePVPInfo
+local GetZoneText = GetZoneText
+local SANCTUARY_TERRITORY = SANCTUARY_TERRITORY
 
 local LocationDataText
 local pvpType

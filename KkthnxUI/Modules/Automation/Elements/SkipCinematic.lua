@@ -1,9 +1,9 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local CinematicFrame = _G.CinematicFrame
-local CinematicFrameCloseDialogConfirmButton = _G.CinematicFrameCloseDialogConfirmButton
-local MovieFrame = _G.MovieFrame
+local CinematicFrame = CinematicFrame
+local CinematicFrameCloseDialogConfirmButton = CinematicFrameCloseDialogConfirmButton
+local MovieFrame = MovieFrame
 
 local function skipOnKeyDown(self, key)
 	if not C["Automation"].AutoSkipCinematic then

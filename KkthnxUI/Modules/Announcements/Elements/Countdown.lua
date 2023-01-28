@@ -3,9 +3,9 @@ if C["Announcements"].PullCountdown ~= true then
 	return
 end
 
-local UnitName = _G.UnitName
-local CreateFrame = _G.CreateFrame
-local SendChatMessage = _G.SendChatMessage
+local UnitName = UnitName
+local CreateFrame = CreateFrame
+local SendChatMessage = SendChatMessage
 
 do -- Sourced: Pull Countdown (Dridzt)
 	local PullCountdown = CreateFrame("Frame", "KKUI_PullCountdown")

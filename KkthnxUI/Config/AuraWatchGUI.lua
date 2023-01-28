@@ -1,33 +1,33 @@
 local K, C, L = unpack(KkthnxUI)
 
-local math_floor = _G.math.floor
-local table_insert = _G.table.insert
+local math_floor = math.floor
+local table_insert = table.insert
 
-local ADD = _G.ADD
-local CLOSE = _G.CLOSE
-local CreateFrame = _G.CreateFrame
-local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
-local GameTooltip = _G.GameTooltip
-local GetInventoryItemTexture = _G.GetInventoryItemTexture
-local GetItemInfo = _G.GetItemInfo
-local GetSpellInfo = _G.GetSpellInfo
-local INVTYPE_CLOAK = _G.INVTYPE_CLOAK
-local INVTYPE_FINGER = _G.INVTYPE_FINGER
-local INVTYPE_TRINKET = _G.INVTYPE_TRINKET
-local INVTYPE_WAIST = _G.INVTYPE_WAIST
-local KEY_NUMLOCK_MAC = _G.KEY_NUMLOCK_MAC
-local NO = _G.NO
-local OKAY = _G.OKAY
-local PlaySound = _G.PlaySound
-local RESET = _G.RESET
-local ReloadUI = _G.ReloadUI
-local SOUNDKIT = _G.SOUNDKIT
-local SlashCmdList = _G.SlashCmdList
-local StaticPopupDialogs = _G.StaticPopupDialogs
-local StaticPopup_Show = _G.StaticPopup_Show
-local UIErrorsFrame = _G.UIErrorsFrame
-local UISpecialFrames = _G.UISpecialFrames
-local YES = _G.YES
+local ADD = ADD
+local CLOSE = CLOSE
+local CreateFrame = CreateFrame
+local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
+local GameTooltip = GameTooltip
+local GetInventoryItemTexture = GetInventoryItemTexture
+local GetItemInfo = GetItemInfo
+local GetSpellInfo = GetSpellInfo
+local INVTYPE_CLOAK = INVTYPE_CLOAK
+local INVTYPE_FINGER = INVTYPE_FINGER
+local INVTYPE_TRINKET = INVTYPE_TRINKET
+local INVTYPE_WAIST = INVTYPE_WAIST
+local KEY_NUMLOCK_MAC = KEY_NUMLOCK_MAC
+local NO = NO
+local OKAY = OKAY
+local PlaySound = PlaySound
+local RESET = RESET
+local ReloadUI = ReloadUI
+local SOUNDKIT = SOUNDKIT
+local SlashCmdList = SlashCmdList
+local StaticPopupDialogs = StaticPopupDialogs
+local StaticPopup_Show = StaticPopup_Show
+local UIErrorsFrame = UIErrorsFrame
+local UISpecialFrames = UISpecialFrames
+local YES = YES
 
 local r, g, b = K.r, K.g, K.b
 local f
@@ -450,7 +450,7 @@ local function CreatePanel()
 		text = text and text ~= "" and ', Text = "' .. text .. '"' or ""
 		local output = "{" .. typeID .. unitID .. caster .. stack .. amount .. timeless .. combat .. flash .. text .. "}"
 		bar:SetScript("OnMouseUp", function()
-			local editBox = _G.ChatEdit_ChooseBoxForSend()
+			local editBox = ChatEdit_ChooseBoxForSend()
 			_G.ChatEdit_ActivateChat(editBox)
 			editBox:SetText(output .. ",")
 			editBox:HighlightText()

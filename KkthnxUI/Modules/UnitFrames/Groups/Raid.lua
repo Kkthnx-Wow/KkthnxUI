@@ -1,12 +1,12 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Unitframes")
 
-local select = _G.select
+local select = select
 
-local CreateFrame = _G.CreateFrame
-local GetThreatStatusColor = _G.GetThreatStatusColor
-local UnitIsUnit = _G.UnitIsUnit
-local UnitThreatSituation = _G.UnitThreatSituation
+local CreateFrame = CreateFrame
+local GetThreatStatusColor = GetThreatStatusColor
+local UnitIsUnit = UnitIsUnit
+local UnitThreatSituation = UnitThreatSituation
 
 local function UpdateRaidThreat(self, _, unit)
 	if unit ~= self.unit then

@@ -1,7 +1,7 @@
 local K, C = unpack(KkthnxUI)
 
 -- C.themes["Blizzard_TalkingHeadUI"] = function()
--- 	local TalkingHeadFrame = _G.TalkingHeadFrame
+-- 	local TalkingHeadFrame = TalkingHeadFrame
 
 -- 	local portraitFrame = TalkingHeadFrame.PortraitFrame
 -- 	portraitFrame:StripTextures()

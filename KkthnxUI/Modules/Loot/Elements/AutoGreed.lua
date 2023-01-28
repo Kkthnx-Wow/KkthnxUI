@@ -3,11 +3,11 @@ local Module = K:GetModule("Loot")
 
 -- Sourced: ShestakUI (Wetxius, Shestak)
 
-local GetItemInfo = _G.GetItemInfo
-local GetLootRollItemInfo = _G.GetLootRollItemInfo
-local GetLootRollItemLink = _G.GetLootRollItemLink
-local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
-local RollOnLoot = _G.RollOnLoot
+local GetItemInfo = GetItemInfo
+local GetLootRollItemInfo = GetLootRollItemInfo
+local GetLootRollItemLink = GetLootRollItemLink
+local MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL
+local RollOnLoot = RollOnLoot
 
 local function SetupAutoGreed(_, _, id)
 	local _, _, _, quality, BoP, _, _, canDisenchant = GetLootRollItemInfo(id)

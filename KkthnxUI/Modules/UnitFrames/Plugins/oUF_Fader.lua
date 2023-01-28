@@ -3,27 +3,27 @@ local oUF = K.oUF
 
 --	Based on oUF_Fader(by Slakah)
 
-local assert = _G.assert
-local rawget = _G.rawget
-local setmetatable = _G.setmetatable
-local string_format = _G.string.format
-local string_gmatch = _G.string.gmatch
-local string_match = _G.string.match
-local type = _G.type
+local assert = assert
+local rawget = rawget
+local setmetatable = setmetatable
+local string_format = string.format
+local string_gmatch = string.gmatch
+local string_match = string.match
+local type = type
 
-local GetZonePVPInfo = _G.GetZonePVPInfo
-local IsInInstance = _G.IsInInstance
-local UnitCanAttack = _G.UnitCanAttack
-local UnitCastingInfo = _G.UnitCastingInfo
-local UnitChannelInfo = _G.UnitChannelInfo
-local UnitExists = _G.UnitExists
-local UnitHealth = _G.UnitHealth
-local UnitHealthMax = _G.UnitHealthMax
-local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
-local UnitOnTaxi = _G.UnitOnTaxi
-local UnitPower = _G.UnitPower
-local UnitPowerMax = _G.UnitPowerMax
-local UnitPowerType = _G.UnitPowerType
+local GetZonePVPInfo = GetZonePVPInfo
+local IsInInstance = IsInInstance
+local UnitCanAttack = UnitCanAttack
+local UnitCastingInfo = UnitCastingInfo
+local UnitChannelInfo = UnitChannelInfo
+local UnitExists = UnitExists
+local UnitHealth = UnitHealth
+local UnitHealthMax = UnitHealthMax
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitOnTaxi = UnitOnTaxi
+local UnitPower = UnitPower
+local UnitPowerMax = UnitPowerMax
+local UnitPowerType = UnitPowerType
 
 local eventFrame = CreateFrame("Frame")
 local objects = {}

@@ -3,21 +3,21 @@ local Module = K:GetModule("Blizzard")
 
 -- Sourced: NDui (siweia)
 
-local string_format = _G.string.format
+local string_format = string.format
 
-local C_CurrencyInfo_GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo
-local C_Garrison_GetClassSpecCategoryInfo = _G.C_Garrison.GetClassSpecCategoryInfo
-local C_Garrison_GetCurrencyTypes = _G.C_Garrison.GetCurrencyTypes
-local C_Garrison_RequestClassSpecCategoryInfo = _G.C_Garrison.RequestClassSpecCategoryInfo
-local GameTooltip = _G.GameTooltip
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local LE_FOLLOWER_TYPE_GARRISON_7_0 = _G.Enum.GarrisonFollowerType.FollowerType_7_0
-local LE_GARRISON_TYPE_7_0 = _G.Enum.GarrisonType.Type_7_0
-local hooksecurefunc = _G.hooksecurefunc
+local C_CurrencyInfo_GetCurrencyInfo = C_CurrencyInfo.GetCurrencyInfo
+local C_Garrison_GetClassSpecCategoryInfo = C_Garrison.GetClassSpecCategoryInfo
+local C_Garrison_GetCurrencyTypes = C_Garrison.GetCurrencyTypes
+local C_Garrison_RequestClassSpecCategoryInfo = C_Garrison.RequestClassSpecCategoryInfo
+local GameTooltip = GameTooltip
+local IsAddOnLoaded = IsAddOnLoaded
+local IsShiftKeyDown = IsShiftKeyDown
+local LE_FOLLOWER_TYPE_GARRISON_7_0 = Enum.GarrisonFollowerType.FollowerType_7_0
+local LE_GARRISON_TYPE_7_0 = Enum.GarrisonType.Type_7_0
+local hooksecurefunc = hooksecurefunc
 
 function Module:OrderHall_CreateIcon()
-	local OrderHallCommandBar = _G.OrderHallCommandBar
+	local OrderHallCommandBar = OrderHallCommandBar
 
 	local hall = CreateFrame("Frame", "KKUI_OrderHallIcon", UIParent)
 	hall:SetSize(40, 40)

@@ -1,17 +1,17 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Bags")
 
-local string_format = _G.string.format
+local string_format = string.format
 
-local C_Timer_After = _G.C_Timer.After
-local CanGuildBankRepair = _G.CanGuildBankRepair
-local CanMerchantRepair = _G.CanMerchantRepair
-local GetGuildBankWithdrawMoney = _G.GetGuildBankWithdrawMoney
-local GetMoney = _G.GetMoney
-local GetRepairAllCost = _G.GetRepairAllCost
-local IsInGuild = _G.IsInGuild
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY = _G.LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY
+local C_Timer_After = C_Timer.After
+local CanGuildBankRepair = CanGuildBankRepair
+local CanMerchantRepair = CanMerchantRepair
+local GetGuildBankWithdrawMoney = GetGuildBankWithdrawMoney
+local GetMoney = GetMoney
+local GetRepairAllCost = GetRepairAllCost
+local IsInGuild = IsInGuild
+local IsShiftKeyDown = IsShiftKeyDown
+local LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY = LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY
 
 -- Auto repair
 local autoRepair -- function that handles the repair of all items

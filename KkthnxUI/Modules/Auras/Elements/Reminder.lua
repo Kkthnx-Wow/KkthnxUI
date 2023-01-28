@@ -1,27 +1,27 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Auras")
 
-local next = _G.next
-local pairs = _G.pairs
-local table_insert = _G.table.insert
+local next = next
+local pairs = pairs
+local table_insert = table.insert
 
-local CreateFrame = _G.CreateFrame
-local GetItemCooldown = _G.GetItemCooldown
-local GetItemCount = _G.GetItemCount
-local GetItemIcon = _G.GetItemIcon
-local GetNumGroupMembers = _G.GetNumGroupMembers
-local GetSpecialization = _G.GetSpecialization
-local GetSpellTexture = _G.GetSpellTexture
-local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
-local GetZonePVPInfo = _G.GetZonePVPInfo
-local InCombatLockdown = _G.InCombatLockdown
-local IsEquippedItem = _G.IsEquippedItem
-local IsInInstance = _G.IsInInstance
-local IsPlayerSpell = _G.IsPlayerSpell
-local UIParent = _G.UIParent
-local UnitBuff = _G.UnitBuff
-local UnitInVehicle = _G.UnitInVehicle
-local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
+local CreateFrame = CreateFrame
+local GetItemCooldown = GetItemCooldown
+local GetItemCount = GetItemCount
+local GetItemIcon = GetItemIcon
+local GetNumGroupMembers = GetNumGroupMembers
+local GetSpecialization = GetSpecialization
+local GetSpellTexture = GetSpellTexture
+local GetWeaponEnchantInfo = GetWeaponEnchantInfo
+local GetZonePVPInfo = GetZonePVPInfo
+local InCombatLockdown = InCombatLockdown
+local IsEquippedItem = IsEquippedItem
+local IsInInstance = IsInInstance
+local IsPlayerSpell = IsPlayerSpell
+local UIParent = UIParent
+local UnitBuff = UnitBuff
+local UnitInVehicle = UnitInVehicle
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 
 local groups = C.SpellReminderBuffs[K.Class]
 local iconSize = C["Auras"].DebuffSize + 4

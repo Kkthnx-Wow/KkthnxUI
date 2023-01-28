@@ -1,11 +1,11 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 
-local string_find = _G.string.find
-local string_gsub = _G.string.gsub
+local string_find = string.find
+local string_gsub = string.gsub
 
-local BetterDate = _G.BetterDate
-local INTERFACE_ACTION_BLOCKED = _G.INTERFACE_ACTION_BLOCKED
+local BetterDate = BetterDate
+local INTERFACE_ACTION_BLOCKED = INTERFACE_ACTION_BLOCKED
 local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
 
 local timestampFormat = {

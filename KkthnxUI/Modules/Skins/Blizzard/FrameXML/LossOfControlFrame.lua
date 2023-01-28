@@ -3,12 +3,12 @@ local K, C = unpack(KkthnxUI)
 -- Sourced: ElvUI (Elvz)
 -- Edited: KkthnxUI (Kkthnx)
 
-local table_insert = _G.table.insert
+local table_insert = table.insert
 
-local CreateFrame = _G.CreateFrame
-local hooksecurefunc = _G.hooksecurefunc
+local CreateFrame = CreateFrame
+local hooksecurefunc = hooksecurefunc
 
-local LossOfControlFrame = _G.LossOfControlFrame
+local LossOfControlFrame = LossOfControlFrame
 
 table_insert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then

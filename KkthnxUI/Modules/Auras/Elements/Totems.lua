@@ -1,8 +1,8 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Auras")
 
-local CreateFrame = _G.CreateFrame
-local GetTotemInfo = _G.GetTotemInfo
+local CreateFrame = CreateFrame
+local GetTotemInfo = GetTotemInfo
 
 local totems = {}
 function Module:TotemBar_Init()

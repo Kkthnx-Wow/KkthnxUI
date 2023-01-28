@@ -1,9 +1,9 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:NewModule("Skins")
 
-local table_wipe = _G.table.wipe
+local table_wipe = table.wipe
 
-local IsAddOnLoaded = _G.IsAddOnLoaded
+local IsAddOnLoaded = IsAddOnLoaded
 
 C.defaultThemes = {}
 C.themes = {}

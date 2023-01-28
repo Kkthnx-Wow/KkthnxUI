@@ -1,15 +1,15 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Blizzard")
 
-local math_floor = _G.math.floor
-local string_format = _G.string.format
+local math_floor = math.floor
+local string_format = string.format
 
-local CreateFrame = _G.CreateFrame
-local UnitPowerMax = _G.UnitPowerMax
-local UnitPower = _G.UnitPower
-local GetUnitPowerBarInfo = _G.GetUnitPowerBarInfo
-local GetUnitPowerBarStrings = _G.GetUnitPowerBarStrings
-local GameTooltip = _G.GameTooltip
+local CreateFrame = CreateFrame
+local UnitPowerMax = UnitPowerMax
+local UnitPower = UnitPower
+local GetUnitPowerBarInfo = GetUnitPowerBarInfo
+local GetUnitPowerBarStrings = GetUnitPowerBarStrings
+local GameTooltip = GameTooltip
 
 local AltPowerWidth = 250
 local AltPowerHeight = 20
@@ -77,14 +77,14 @@ function Module:PositionAltPowerBar()
 end
 
 function Module:UpdateAltPowerBarColors()
-	local bar = _G.KKUI_AltPowerBar
+	local bar = KKUI_AltPowerBar
 
 	local color = { r = 0.2, g = 0.4, b = 0.8 }
 	bar:SetStatusBarColor(color.r, color.g, color.b)
 end
 
 function Module:UpdateAltPowerBarSettings()
-	local bar = _G.KKUI_AltPowerBar
+	local bar = KKUI_AltPowerBar
 
 	bar:SetSize(AltPowerWidth or 250, AltPowerHeight or 20)
 	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))

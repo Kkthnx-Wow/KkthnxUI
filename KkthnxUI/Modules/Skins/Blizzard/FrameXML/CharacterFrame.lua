@@ -1,17 +1,17 @@
 local K, C = unpack(KkthnxUI)
 
-local select = _G.select
+local select = select
 
-local CharacterHandsSlot = _G.CharacterHandsSlot
-local CharacterHeadSlot = _G.CharacterHeadSlot
-local CharacterMainHandSlot = _G.CharacterMainHandSlot
-local CharacterModelScene = _G.CharacterModelScene
-local CharacterSecondaryHandSlot = _G.CharacterSecondaryHandSlot
-local CharacterStatsPane = _G.CharacterStatsPane
-local GetInventoryItemLink = _G.GetInventoryItemLink
-local HideUIPanel = _G.HideUIPanel
-local IsCosmeticItem = _G.IsCosmeticItem
-local hooksecurefunc = _G.hooksecurefunc
+local CharacterHandsSlot = CharacterHandsSlot
+local CharacterHeadSlot = CharacterHeadSlot
+local CharacterMainHandSlot = CharacterMainHandSlot
+local CharacterModelScene = CharacterModelScene
+local CharacterSecondaryHandSlot = CharacterSecondaryHandSlot
+local CharacterStatsPane = CharacterStatsPane
+local GetInventoryItemLink = GetInventoryItemLink
+local HideUIPanel = HideUIPanel
+local IsCosmeticItem = IsCosmeticItem
+local hooksecurefunc = hooksecurefunc
 
 tinsert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then

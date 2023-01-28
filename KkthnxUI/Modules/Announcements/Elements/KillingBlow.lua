@@ -3,22 +3,22 @@ local Module = K:GetModule("Announcements")
 
 -- Sourced: ElvUI Shadow & Light (Darth_Predator, Repooc)
 
-local bit_band = _G.bit.band
-local math_random = _G.math.random
-local table_wipe = _G.table.wipe
+local bit_band = bit.band
+local math_random = math.random
+local table_wipe = table.wipe
 
-local BossBanner_BeginAnims = _G.BossBanner_BeginAnims
-local COMBATLOG_OBJECT_TYPE_PLAYER = _G.COMBATLOG_OBJECT_TYPE_PLAYER
-local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
-local DoEmote = _G.DoEmote
-local GetAchievementInfo = _G.GetAchievementInfo
-local GetBattlefieldScore = _G.GetBattlefieldScore
-local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
-local PlaySoundFile = _G.PlaySoundFile
-local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
-local TopBannerManager_Show = _G.TopBannerManager_Show
-local UnitGUID = _G.UnitGUID
-local hooksecurefunc = _G.hooksecurefunc
+local BossBanner_BeginAnims = BossBanner_BeginAnims
+local COMBATLOG_OBJECT_TYPE_PLAYER = COMBATLOG_OBJECT_TYPE_PLAYER
+local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
+local DoEmote = DoEmote
+local GetAchievementInfo = GetAchievementInfo
+local GetBattlefieldScore = GetBattlefieldScore
+local GetNumBattlefieldScores = GetNumBattlefieldScores
+local PlaySoundFile = PlaySoundFile
+local RAID_CLASS_COLORS = RAID_CLASS_COLORS
+local TopBannerManager_Show = TopBannerManager_Show
+local UnitGUID = UnitGUID
+local hooksecurefunc = hooksecurefunc
 
 local pvpEmoteList = {
 	"ANGRY",

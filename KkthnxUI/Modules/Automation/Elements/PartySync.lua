@@ -4,22 +4,22 @@ local Module = K:GetModule("Automation")
 -- Sourced: Leatrix Plus (Leatrix)
 -- Edited: KkthnxUI (Kkthnx)
 
-local string_split = _G.string.split
+local string_split = string.split
 
-local BNET_CLIENT_WOW = _G.BNET_CLIENT_WOW
-local BNGetNumFriends = _G.BNGetNumFriends
-local C_BattleNet_GetFriendGameAccountInfo = _G.C_BattleNet.GetFriendGameAccountInfo
-local C_BattleNet_GetFriendNumGameAccounts = _G.C_BattleNet.GetFriendNumGameAccounts
-local C_FriendList_GetFriendInfoByIndex = _G.C_FriendList.GetFriendInfoByIndex
-local C_FriendList_GetNumFriends = _G.C_FriendList.GetNumFriends
-local C_FriendList_ShowFriends = _G.C_FriendList.ShowFriends
-local C_QuestSession_GetSessionBeginDetails = _G.C_QuestSession.GetSessionBeginDetails
-local GetGuildRosterInfo = _G.GetGuildRosterInfo
-local GetNumGuildMembers = _G.GetNumGuildMembers
-local QuestSessionManager = _G.QuestSessionManager
-local UnitGUID = _G.UnitGUID
-local UnitName = _G.UnitName
-local hooksecurefunc = _G.hooksecurefunc
+local BNET_CLIENT_WOW = BNET_CLIENT_WOW
+local BNGetNumFriends = BNGetNumFriends
+local C_BattleNet_GetFriendGameAccountInfo = C_BattleNet.GetFriendGameAccountInfo
+local C_BattleNet_GetFriendNumGameAccounts = C_BattleNet.GetFriendNumGameAccounts
+local C_FriendList_GetFriendInfoByIndex = C_FriendList.GetFriendInfoByIndex
+local C_FriendList_GetNumFriends = C_FriendList.GetNumFriends
+local C_FriendList_ShowFriends = C_FriendList.ShowFriends
+local C_QuestSession_GetSessionBeginDetails = C_QuestSession.GetSessionBeginDetails
+local GetGuildRosterInfo = GetGuildRosterInfo
+local GetNumGuildMembers = GetNumGuildMembers
+local QuestSessionManager = QuestSessionManager
+local UnitGUID = UnitGUID
+local UnitName = UnitName
+local hooksecurefunc = hooksecurefunc
 
 local partyUnitsList = { "player", "party1", "party2", "party3", "party4" }
 

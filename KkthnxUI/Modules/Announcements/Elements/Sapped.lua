@@ -1,9 +1,9 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
-local SendChatMessage = _G.SendChatMessage
-local UNKNOWN = _G.UNKNOWN
+local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
+local SendChatMessage = SendChatMessage
+local UNKNOWN = UNKNOWN
 
 -- SetupSaySapped() checks for when Sap is applied or refreshed on the player, and then sends a chat message and prints a message in the chat window.
 local function SetupSaySapped()

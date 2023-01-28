@@ -1,8 +1,8 @@
 local K, C = unpack(KkthnxUI)
 
-local table_insert = _G.table.insert
+local table_insert = table.insert
 
-local C_ChatBubbles_GetAllChatBubbles = _G.C_ChatBubbles.GetAllChatBubbles
+local C_ChatBubbles_GetAllChatBubbles = C_ChatBubbles.GetAllChatBubbles
 
 local function reskinChatBubble(chatbubble)
 	if chatbubble.styled then

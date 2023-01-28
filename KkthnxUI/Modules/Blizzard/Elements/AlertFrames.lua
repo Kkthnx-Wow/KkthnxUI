@@ -1,16 +1,16 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Blizzard")
 
-local UIParent = _G.UIParent
-local hooksecurefunc = _G.hooksecurefunc
+local UIParent = UIParent
+local hooksecurefunc = hooksecurefunc
 
 local ANCHOR_POINT = "BOTTOM"
 local POSITION = "TOP"
 local YOFFSET = -10
 
 function Module:PostAlertMove()
-	local AlertFrameMover = _G.AlertFrameHolder.Mover
-	local AlertFrameHolder = _G.AlertFrameHolder
+	local AlertFrameMover = AlertFrameHolder.Mover
+	local AlertFrameHolder = AlertFrameHolder
 
 	local _, y = AlertFrameMover:GetCenter()
 	local screenHeight = UIParent:GetTop()
@@ -24,8 +24,8 @@ function Module:PostAlertMove()
 		YOFFSET = 10
 	end
 
-	local AlertFrame = _G.AlertFrame
-	local GroupLootContainer = _G.GroupLootContainer
+	local AlertFrame = AlertFrame
+	local GroupLootContainer = GroupLootContainer
 
 	AlertFrame:ClearAllPoints()
 	GroupLootContainer:ClearAllPoints()
@@ -111,8 +111,8 @@ local function AlertSubSystem_AdjustPosition(alertFrameSubSystem)
 end
 
 local function MoveTalkingHead()
-	local TalkingHeadFrame = _G.TalkingHeadFrame
-	local AlertFrameHolder = _G.AlertFrameHolder
+	local TalkingHeadFrame = TalkingHeadFrame
+	local AlertFrameHolder = AlertFrameHolder
 
 	TalkingHeadFrame.ignoreFramePositionManager = true
 	TalkingHeadFrame:ClearAllPoints()

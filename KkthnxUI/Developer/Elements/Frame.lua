@@ -1,36 +1,36 @@
 local K, C = unpack(KkthnxUI)
 
-local math_ceil = _G.math.ceil
-local math_floor = _G.math.floor
-local print = _G.print
-local string_find = _G.string.find
-local string_format = _G.string.format
-local string_split = _G.string.split
-local table_wipe = _G.table.wipe
-local tostring = _G.tostring
+local math_ceil = math.ceil
+local math_floor = math.floor
+local print = print
+local string_find = string.find
+local string_format = string.format
+local string_split = string.split
+local table_wipe = table.wipe
+local tostring = tostring
 
-local C_ChatInfo_RegisterAddonMessagePrefix = _G.C_ChatInfo.RegisterAddonMessagePrefix
-local C_ChatInfo_SendAddonMessage = _G.C_ChatInfo.SendAddonMessage
-local DESCRIPTION = _G.DESCRIPTION
-local EJ_GetCurrentTier = _G.EJ_GetCurrentTier
-local EJ_GetEncounterInfoByIndex = _G.EJ_GetEncounterInfoByIndex
-local EJ_GetInstanceInfo = _G.EJ_GetInstanceInfo
-local EJ_SelectInstance = _G.EJ_SelectInstance
-local EnumerateFrames = _G.EnumerateFrames
-local GetInstanceInfo = _G.GetInstanceInfo
-local GetScreenHeight = _G.GetScreenHeight
-local GetScreenWidth = _G.GetScreenWidth
-local GetSpellDescription = _G.GetSpellDescription
-local GetSpellInfo = _G.GetSpellInfo
-local GetSpellTexture = _G.GetSpellTexture
-local IsInGuild = _G.IsInGuild
-local IsInRaid = _G.IsInRaid
-local MouseIsOver = _G.MouseIsOver
-local NAME = _G.NAME
-local SlashCmdList = _G.SlashCmdList
-local UNKNOWN = _G.UNKNOWN
-local UnitGUID = _G.UnitGUID
-local UnitName = _G.UnitName
+local C_ChatInfo_RegisterAddonMessagePrefix = C_ChatInfo.RegisterAddonMessagePrefix
+local C_ChatInfo_SendAddonMessage = C_ChatInfo.SendAddonMessage
+local DESCRIPTION = DESCRIPTION
+local EJ_GetCurrentTier = EJ_GetCurrentTier
+local EJ_GetEncounterInfoByIndex = EJ_GetEncounterInfoByIndex
+local EJ_GetInstanceInfo = EJ_GetInstanceInfo
+local EJ_SelectInstance = EJ_SelectInstance
+local EnumerateFrames = EnumerateFrames
+local GetInstanceInfo = GetInstanceInfo
+local GetScreenHeight = GetScreenHeight
+local GetScreenWidth = GetScreenWidth
+local GetSpellDescription = GetSpellDescription
+local GetSpellInfo = GetSpellInfo
+local GetSpellTexture = GetSpellTexture
+local IsInGuild = IsInGuild
+local IsInRaid = IsInRaid
+local MouseIsOver = MouseIsOver
+local NAME = NAME
+local SlashCmdList = SlashCmdList
+local UNKNOWN = UNKNOWN
+local UnitGUID = UnitGUID
+local UnitName = UnitName
 
 -- KkthnxUI DevTools:
 -- /getenc, get selected encounters info
@@ -195,7 +195,7 @@ SlashCmdList["KKTHNXUI_GET_ENCOUNTERS"] = function()
 	end
 
 	local tierID = EJ_GetCurrentTier()
-	local instID = _G.EncounterJournal.instanceID
+	local instID = EncounterJournal.instanceID
 	EJ_SelectInstance(instID)
 	local instName = EJ_GetInstanceInfo()
 	print(" ")

@@ -99,7 +99,7 @@ local function DisableDefaultBarEvents() -- credit: Simpy
 	hooksecurefunc(_G.ActionBarButtonEventsFrame, "RegisterFrame", buttonEventsRegisterFrame)
 	buttonEventsRegisterFrame(_G.ActionBarButtonEventsFrame)
 	-- fix keybind error, this actually just prevents reopen of the GameMenu
-	_G.SettingsPanel.TransitionBackOpeningPanel = _G.HideUIPanel
+	_G.SettingsPanel.TransitionBackOpeningPanel = HideUIPanel
 end
 
 function Module:HideBlizz()

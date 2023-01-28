@@ -1,13 +1,13 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:NewModule("WorldMap")
 
-local C_Map_GetBestMapForUnit = _G.C_Map.GetBestMapForUnit
-local CreateFrame = _G.CreateFrame
-local IsPlayerMoving = _G.IsPlayerMoving
-local PLAYER = _G.PLAYER
-local SetUIPanelAttribute = _G.SetUIPanelAttribute
-local UIParent = _G.UIParent
-local hooksecurefunc = _G.hooksecurefunc
+local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
+local CreateFrame = CreateFrame
+local IsPlayerMoving = IsPlayerMoving
+local PLAYER = PLAYER
+local SetUIPanelAttribute = SetUIPanelAttribute
+local UIParent = UIParent
+local hooksecurefunc = hooksecurefunc
 
 local currentMapID, playerCoords, cursorCoords
 local smallerMapScale = 0.8
@@ -145,7 +145,7 @@ function Module:MapFadeOnUpdate(elapsed)
 
 		local fadeOut = IsPlayerMoving() and (not settings.fadePredicate or settings.fadePredicate())
 		local endAlpha = (fadeOut and (settings.minAlpha or 0.5)) or settings.maxAlpha or 1
-		local startAlpha = _G.WorldMapFrame:GetAlpha()
+		local startAlpha = WorldMapFrame:GetAlpha()
 
 		object.timeToFade = settings.durationSec or 0.5
 		object.startAlpha = startAlpha

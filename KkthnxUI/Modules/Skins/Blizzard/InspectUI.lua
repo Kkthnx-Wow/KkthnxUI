@@ -2,12 +2,12 @@ local K, C = unpack(KkthnxUI)
 
 -- Lua
 
-local GetInventoryItemLink = _G.GetInventoryItemLink
-local HideUIPanel = _G.HideUIPanel
-local IsCosmeticItem = _G.IsCosmeticItem
-local PanelTemplates_GetSelectedTab = _G.PanelTemplates_GetSelectedTab
-local UnitClass = _G.UnitClass
-local hooksecurefunc = _G.hooksecurefunc
+local GetInventoryItemLink = GetInventoryItemLink
+local HideUIPanel = HideUIPanel
+local IsCosmeticItem = IsCosmeticItem
+local PanelTemplates_GetSelectedTab = PanelTemplates_GetSelectedTab
+local UnitClass = UnitClass
+local hooksecurefunc = hooksecurefunc
 
 C.themes["Blizzard_InspectUI"] = function()
 	if InspectFrame:IsShown() then

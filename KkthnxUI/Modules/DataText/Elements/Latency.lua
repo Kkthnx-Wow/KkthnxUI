@@ -1,18 +1,18 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("DataText")
 
-local math_max = _G.math.max
-local string_format = _G.string.format
+local math_max = math.max
+local string_format = string.format
 
-local GameTooltip = _G.GameTooltip
-local GetAvailableBandwidth = _G.GetAvailableBandwidth
-local GetBackgroundLoadingStatus = _G.GetBackgroundLoadingStatus
-local GetCVarBool = _G.GetCVarBool
-local GetDownloadedPercentage = _G.GetDownloadedPercentage
-local GetFileStreamingStatus = _G.GetFileStreamingStatus
-local GetNetIpTypes = _G.GetNetIpTypes
-local GetNetStats = _G.GetNetStats
-local UNKNOWN = _G.UNKNOWN
+local GameTooltip = GameTooltip
+local GetAvailableBandwidth = GetAvailableBandwidth
+local GetBackgroundLoadingStatus = GetBackgroundLoadingStatus
+local GetCVarBool = GetCVarBool
+local GetDownloadedPercentage = GetDownloadedPercentage
+local GetFileStreamingStatus = GetFileStreamingStatus
+local GetNetIpTypes = GetNetIpTypes
+local GetNetStats = GetNetStats
+local UNKNOWN = UNKNOWN
 
 local ipTypes = { "IPv4", "IPv6" }
 local LatencyDataText

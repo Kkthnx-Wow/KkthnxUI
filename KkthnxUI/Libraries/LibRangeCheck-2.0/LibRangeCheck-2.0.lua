@@ -1321,7 +1321,7 @@ local function logMeasurementChange(t, t0, key, last, curr)
 	if t0 then
 		local dx = scale * (t.x - t0.x)
 		local dy = scale * (t.y - t0.y)
-		d = _G.sqrt(dx * dx + dy * dy)
+		d = sqrt(dx * dx + dy * dy)
 	end
 	print(MAJOR_VERSION .. ": t=" .. ("%.4f"):format(t.stamp) .. ": d=" .. ("%.4f"):format(d) .. ": " .. tostring(key) .. ": " .. tostring(last) .. " ->  " .. tostring(curr))
 end

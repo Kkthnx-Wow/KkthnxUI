@@ -1,9 +1,9 @@
 local K, C = unpack(KkthnxUI)
 
-local select = _G.select
+local select = select
 
 C.themes["Blizzard_DeathRecap"] = function()
-	local DeathRecapFrame = _G.DeathRecapFrame
+	local DeathRecapFrame = DeathRecapFrame
 
 	DeathRecapFrame:DisableDrawLayer("BORDER")
 	DeathRecapFrame.Background:Hide()

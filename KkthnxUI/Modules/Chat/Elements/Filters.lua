@@ -1,19 +1,19 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Chat")
 
-local math_max = _G.math.max
-local math_min = _G.math.min
-local pairs = _G.pairs
-local string_gsub = _G.string.gsub
-local table_remove = _G.table.remove
+local math_max = math.max
+local math_min = math.min
+local pairs = pairs
+local string_gsub = string.gsub
+local table_remove = table.remove
 
-local Ambiguate = _G.Ambiguate
-local C_BattleNet_GetGameAccountInfoByGUID = _G.C_BattleNet.GetGameAccountInfoByGUID
-local C_FriendList_IsFriend = _G.C_FriendList.IsFriend
-local ChatFrame_AddMessageEventFilter = _G.ChatFrame_AddMessageEventFilter
-local GetTime = _G.GetTime
-local IsGUIDInGroup = _G.IsGUIDInGroup
-local IsGuildMember = _G.IsGuildMember
+local Ambiguate = Ambiguate
+local C_BattleNet_GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
+local C_FriendList_IsFriend = C_FriendList.IsFriend
+local ChatFrame_AddMessageEventFilter = ChatFrame_AddMessageEventFilter
+local GetTime = GetTime
+local IsGUIDInGroup = IsGUIDInGroup
+local IsGuildMember = IsGuildMember
 
 C.BadBoys = {} -- debug
 local FilterList = {}

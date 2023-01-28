@@ -175,11 +175,11 @@ function Module:OnTooltipSetUnit()
 			local r, g, b, role = 1, 1, 1, UnitGroupRolesAssigned(unit)
 			if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE") then
 				if role == "HEALER" then
-					role, r, g, b = _G.HEALER, 0, 1, 0.59
+					role, r, g, b = HEALER, 0, 1, 0.59
 				elseif role == "TANK" then
-					role, r, g, b = _G.TANK, 0.16, 0.31, 0.61
+					role, r, g, b = TANK, 0.16, 0.31, 0.61
 				elseif role == "DAMAGER" then
-					role, r, g, b = _G.DAMAGE, 0.77, 0.12, 0.24
+					role, r, g, b = DAMAGE, 0.77, 0.12, 0.24
 				end
 
 				self:AddLine(ROLE .. ": " .. role, r, g, b)

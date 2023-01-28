@@ -1,10 +1,10 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Unitframes")
 
-local select = _G.select
-local string_format = _G.string.format
+local select = select
+local string_format = string.format
 
-local CreateFrame = _G.CreateFrame
+local CreateFrame = CreateFrame
 
 function Module.PostUpdateAddPower(element, cur, max)
 	if element.Text and max > 0 then

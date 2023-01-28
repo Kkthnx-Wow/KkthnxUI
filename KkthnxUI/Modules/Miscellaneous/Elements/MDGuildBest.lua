@@ -1,26 +1,26 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Miscellaneous")
 
-local pairs = _G.pairs
-local string_format = _G.string.format
-local string_split = _G.string.split
-local table_sort = _G.table.sort
-local table_wipe = _G.table.wipe
-local tonumber = _G.tonumber
+local pairs = pairs
+local string_format = string.format
+local string_split = string.split
+local table_sort = table.sort
+local table_wipe = table.wipe
+local tonumber = tonumber
 
-local Ambiguate = _G.Ambiguate
-local CHALLENGE_MODE_GUILD_BEST_LINE = _G.CHALLENGE_MODE_GUILD_BEST_LINE
-local CHALLENGE_MODE_GUILD_BEST_LINE_YOU = _G.CHALLENGE_MODE_GUILD_BEST_LINE_YOU
-local CHALLENGE_MODE_POWER_LEVEL = _G.CHALLENGE_MODE_POWER_LEVEL
-local C_ChallengeMode_GetGuildLeaders = _G.C_ChallengeMode.GetGuildLeaders
-local C_ChallengeMode_GetMapUIInfo = _G.C_ChallengeMode.GetMapUIInfo
-local C_MythicPlus_GetOwnedKeystoneChallengeMapID = _G.C_MythicPlus.GetOwnedKeystoneChallengeMapID
-local C_MythicPlus_GetOwnedKeystoneLevel = _G.C_MythicPlus.GetOwnedKeystoneLevel
-local C_MythicPlus_GetRunHistory = _G.C_MythicPlus.GetRunHistory
-local GetItemInfo = _G.GetItemInfo
-local CHALLENGE_MODE_THIS_WEEK = _G.CHALLENGE_MODE_THIS_WEEK
-local WEEKLY_REWARDS_MYTHIC_TOP_RUNS = _G.WEEKLY_REWARDS_MYTHIC_TOP_RUNS
-local hooksecurefunc = _G.hooksecurefunc
+local Ambiguate = Ambiguate
+local CHALLENGE_MODE_GUILD_BEST_LINE = CHALLENGE_MODE_GUILD_BEST_LINE
+local CHALLENGE_MODE_GUILD_BEST_LINE_YOU = CHALLENGE_MODE_GUILD_BEST_LINE_YOU
+local CHALLENGE_MODE_POWER_LEVEL = CHALLENGE_MODE_POWER_LEVEL
+local C_ChallengeMode_GetGuildLeaders = C_ChallengeMode.GetGuildLeaders
+local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
+local C_MythicPlus_GetOwnedKeystoneChallengeMapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID
+local C_MythicPlus_GetOwnedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel
+local C_MythicPlus_GetRunHistory = C_MythicPlus.GetRunHistory
+local GetItemInfo = GetItemInfo
+local CHALLENGE_MODE_THIS_WEEK = CHALLENGE_MODE_THIS_WEEK
+local WEEKLY_REWARDS_MYTHIC_TOP_RUNS = WEEKLY_REWARDS_MYTHIC_TOP_RUNS
+local hooksecurefunc = hooksecurefunc
 
 local hasAngryKeystones
 local frame

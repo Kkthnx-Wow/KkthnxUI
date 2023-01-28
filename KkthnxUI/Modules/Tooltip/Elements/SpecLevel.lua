@@ -7,7 +7,7 @@ local GetTime, CanInspect, NotifyInspect, ClearInspectPlayer, IsShiftKeyDown = G
 local UnitGUID, UnitClass, UnitIsUnit, UnitIsPlayer, UnitIsVisible, UnitIsDeadOrGhost, UnitOnTaxi = UnitGUID, UnitClass, UnitIsUnit, UnitIsPlayer, UnitIsVisible, UnitIsDeadOrGhost, UnitOnTaxi
 local GetInventoryItemTexture, GetInventoryItemLink, GetItemInfo, GetItemGem, GetAverageItemLevel = GetInventoryItemTexture, GetInventoryItemLink, GetItemInfo, GetItemGem, GetAverageItemLevel
 local GetSpecialization, GetSpecializationInfo, GetInspectSpecialization, GetSpecializationInfoByID = GetSpecialization, GetSpecializationInfo, GetInspectSpecialization, GetSpecializationInfoByID
-local HEIRLOOMS = _G.HEIRLOOMS
+local HEIRLOOMS = HEIRLOOMS
 
 local specPrefix = SPECIALIZATION .. ": " .. K.InfoColor
 local levelPrefix = STAT_AVERAGE_ITEM_LEVEL .. ": " .. K.InfoColor

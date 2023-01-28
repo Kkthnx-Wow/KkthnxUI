@@ -1,16 +1,16 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local select = _G.select
+local select = select
 
-local GetItemInfo = _G.GetItemInfo
-local GetNumQuestChoices = _G.GetNumQuestChoices
-local GetQuestItemInfo = _G.GetQuestItemInfo
-local GetQuestItemLink = _G.GetQuestItemLink
-local hooksecurefunc = _G.hooksecurefunc
+local GetItemInfo = GetItemInfo
+local GetNumQuestChoices = GetNumQuestChoices
+local GetQuestItemInfo = GetQuestItemInfo
+local GetQuestItemLink = GetQuestItemLink
+local hooksecurefunc = hooksecurefunc
 
 function Module:SetupAutoBestReward()
-	local firstItem = _G.QuestInfoRewardsFrameQuestInfoItem1
+	local firstItem = QuestInfoRewardsFrameQuestInfoItem1
 	if not firstItem then
 		return
 	end

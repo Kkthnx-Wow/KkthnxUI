@@ -3,9 +3,9 @@ local K, C = unpack(KkthnxUI)
 local pairs = pairs
 local table_insert = table.insert
 
-local GetProfessionInfo = _G.GetProfessionInfo
-local SPELLS_PER_PAGE = _G.SPELLS_PER_PAGE or 6
-local hooksecurefunc = _G.hooksecurefunc
+local GetProfessionInfo = GetProfessionInfo
+local SPELLS_PER_PAGE = SPELLS_PER_PAGE or 6
+local hooksecurefunc = hooksecurefunc
 
 local function handleSkillButton(button)
 	if not button then
