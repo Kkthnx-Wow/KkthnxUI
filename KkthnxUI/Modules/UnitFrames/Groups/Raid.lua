@@ -366,7 +366,7 @@ function Module:CreateRaid()
 	self.Health = Health
 	self.Name = Name
 	self.Overlay = Overlay
-	self.ReadyCheckIndicator = ReadyCheckIndicator
+	-- self.ReadyCheckIndicator = ReadyCheckIndicator
 	self.PhaseIndicator = PhaseIndicator
 	self.SummonIndicator = SummonIndicator
 	self.RaidTargetIndicator = RaidTargetIndicator

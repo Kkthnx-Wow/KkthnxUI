@@ -71,24 +71,10 @@ function Module:UpdatePetBar()
 	self.rangeTimer = -1
 end
 
-function Module.PetBarOnEvent(event, unit)
-	-- Handle "PET_BAR_UPDATE_COOLDOWN" event by updating the cooldowns on the pet action bar
+function Module.PetBarOnEvent(event)
 	if event == "PET_BAR_UPDATE_COOLDOWN" then
 		PetActionBar:UpdateCooldowns()
 	else
-		-- Return if the event is not related to the "pet" or "player" unit
-		if unit ~= "pet" and unit ~= "player" then
-			return
-		end
-		-- Return if the event is "UNIT_FLAGS" and the unit is not "pet"
-		if event == "UNIT_FLAGS" and unit ~= "pet" then
-			return
-		end
-		-- Return if the event is "UNIT_PET" and the unit is not "player"
-		if event == "UNIT_PET" and unit ~= "player" then
-			return
-		end
-		-- Update the pet action bar if the event is related to the "pet" or "player" unit
 		Module.UpdatePetBar(PetActionBar)
 	end
 end
@@ -113,17 +99,23 @@ function Module:CreatePetbar()
 	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
 
 	-- Fix pet bar updating
+	local events = {
+		"UNIT_PET",
+		"UNIT_FLAGS",
+		"PET_UI_UPDATE",
+		"PET_BAR_UPDATE",
+		"PLAYER_CONTROL_LOST",
+		"PLAYER_CONTROL_GAINED",
+		"PLAYER_TARGET_CHANGED",
+		"PET_BAR_UPDATE_USABLE",
+		"PET_BAR_UPDATE_COOLDOWN",
+		"UPDATE_VEHICLE_ACTIONBAR",
+		"PLAYER_MOUNT_DISPLAY_CHANGED",
+		"PLAYER_FARSIGHT_FOCUS_CHANGED",
+	}
+
 	Module:PetBarOnEvent()
-	K:RegisterEvent("UNIT_PET", Module.PetBarOnEvent)
-	K:RegisterEvent("UNIT_FLAGS", Module.PetBarOnEvent)
-	K:RegisterEvent("PET_UI_UPDATE", Module.PetBarOnEvent)
-	K:RegisterEvent("PET_BAR_UPDATE", Module.PetBarOnEvent)
-	K:RegisterEvent("PLAYER_CONTROL_LOST", Module.PetBarOnEvent)
-	K:RegisterEvent("PET_BAR_UPDATE_USABLE", Module.PetBarOnEvent)
-	K:RegisterEvent("PLAYER_CONTROL_GAINED", Module.PetBarOnEvent)
-	K:RegisterEvent("PLAYER_TARGET_CHANGED", Module.PetBarOnEvent)
-	K:RegisterEvent("PET_BAR_UPDATE_COOLDOWN", Module.PetBarOnEvent)
-	K:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", Module.PetBarOnEvent)
-	K:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED", Module.PetBarOnEvent)
-	K:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED", Module.PetBarOnEvent)
+	for _, event in ipairs(events) do
+		K:RegisterEvent(event, Module.PetBarOnEvent)
+	end
 end
