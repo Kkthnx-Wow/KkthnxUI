@@ -31,50 +31,48 @@ local function isUsefulAtlas(info)
 end
 
 function Module:RareAlert_Update(id)
-	if id and not RareAlertCache[id] then
-		local info = C_VignetteInfo_GetVignetteInfo(id)
-		if not info or not isUsefulAtlas(info) then
-			return
-		end
-
-		local atlasInfo = C_Texture_GetAtlasInfo(info.atlasName)
-		if not atlasInfo then
-			return
-		end
-
-		local tex = K.GetTextureStrByAtlas(atlasInfo)
-		if not tex then
-			return
-		end
-
-		-- stylua: ignore
-		UIErrorsFrame:AddMessage(K.SystemColor .. tex .. L["Rare Spotted"] .. K.InfoColor .. "[" .. (info.name or "") .. "]" .. K.SystemColor .. "!")
-
-		if C["Announcements"].AlertInChat then
-			local currrentTime = C["Chat"].TimestampFormat.Value == 1 and K.GreyColor .. "[" .. date("%H:%M:%S") .. "]" or ""
-			local nameString
-			local mapID = C_Map_GetBestMapForUnit("player")
-			local position = mapID and C_VignetteInfo_GetVignettePosition(info.vignetteGUID, mapID)
-			if position then
-				local x, y = position:GetXY()
-				-- stylua: ignore
-				nameString = string_format(Module.RareString, mapID, x * 10000, y * 10000, info.name, x * 100, y * 100, "")
-			end
-			-- stylua: ignore
-			K.Print(currrentTime .. K.SystemColor .. tex .. L["Rare Spotted"] .. K.InfoColor .. (nameString or info.name or "") .. K.SystemColor .. "!")
-		end
-
-		-- Add a choice in sounds the user can pick from. Have the community vote on 5 sounds???
-		if Module.RareInstType == "none" then
-			PlaySound(37881, "master")
-		end
-		-- Add a choice in sounds the user can pick from. Have the community vote on 5 sounds???
-		if not C["Announcements"].AlertInWild or Module.RareInstType == "none" then
-			PlaySound(37881, "master")
-		end
-
-		RareAlertCache[id] = true
+	if not id or RareAlertCache[id] then
+		return
 	end
+
+	local info = C_VignetteInfo_GetVignetteInfo(id)
+	if not info or not isUsefulAtlas(info) then
+		return
+	end
+
+	-- Use the vignetteGUID and name from the payload to get more information about the vignette
+	local vignetteGUID = info.vignetteGUID
+	local vignetteName = info.name
+
+	local atlasInfo = C_Texture_GetAtlasInfo(info.atlasName)
+	if not atlasInfo then
+		return
+	end
+
+	local tex = K.GetTextureStrByAtlas(atlasInfo)
+	if not tex then
+		return
+	end
+
+	UIErrorsFrame:AddMessage(K.SystemColor .. tex .. L["Rare Spotted"] .. K.InfoColor .. "[" .. (vignetteName or "") .. "]" .. K.SystemColor .. "!")
+
+	if C["Announcements"].AlertInChat then
+		local currrentTime = C["Chat"].TimestampFormat.Value == 1 and K.GreyColor .. "[" .. date("%H:%M:%S") .. "]" or ""
+		local mapID = C_Map_GetBestMapForUnit("player")
+		local position = mapID and C_VignetteInfo_GetVignettePosition(vignetteGUID, mapID)
+		if position then
+			local x, y = position:GetXY()
+			local nameString = string_format(Module.RareString, mapID, x * 10000, y * 10000, info.name, x * 100, y * 100, "")
+		end
+		K.Print(currrentTime .. K.SystemColor .. tex .. L["Rare Spotted"] .. K.InfoColor .. (nameString or vignetteName or "") .. K.SystemColor .. "!")
+	end
+
+	-- Add a choice in sounds the user can pick from. Have the community vote on 5 sounds???
+	if not C["Announcements"].AlertInWild or Module.RareInstType == "none" then
+		PlaySound(37881, "master")
+	end
+
+	RareAlertCache[id] = true
 
 	if #RareAlertCache > 666 then
 		table_wipe(RareAlertCache)
@@ -83,12 +81,19 @@ end
 
 function Module:RareAlert_CheckInstance()
 	local _, instanceType, _, _, maxPlayers, _, _, instID = GetInstanceInfo()
-	if (instID and isIgnoredZone[instID]) or (instanceType == "scenario" and (maxPlayers == 3 or maxPlayers == 6)) then
-		K:UnregisterEvent("VIGNETTE_MINIMAP_UPDATED", Module.RareAlert_Update)
+	local shouldIgnore = (instID and isIgnoredZone[instID]) or (instanceType == "scenario" and (maxPlayers == 3 or maxPlayers == 6))
+
+	if shouldIgnore then
+		if Module.RareInstType ~= "none" then
+			K:UnregisterEvent("VIGNETTE_MINIMAP_UPDATED", Module.RareAlert_Update)
+			Module.RareInstType = "none"
+		end
 	else
-		K:RegisterEvent("VIGNETTE_MINIMAP_UPDATED", Module.RareAlert_Update)
+		if Module.RareInstType ~= instanceType then
+			K:RegisterEvent("VIGNETTE_MINIMAP_UPDATED", Module.RareAlert_Update)
+			Module.RareInstType = instanceType
+		end
 	end
-	Module.RareInstType = instanceType
 end
 
 function Module:CreateRareAnnounce()

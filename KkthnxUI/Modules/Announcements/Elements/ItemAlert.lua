@@ -10,13 +10,18 @@ local SendChatMessage = SendChatMessage
 local UnitName = UnitName
 
 local groupUnits = { ["player"] = true, ["pet"] = true }
-for i = 1, 4 do
-	groupUnits["party" .. i] = true
-	groupUnits["partypet" .. i] = true
-end
-for i = 1, 40 do
-	groupUnits["raid" .. i] = true
-	groupUnits["raidpet" .. i] = true
+if IsInGroup() then
+	if IsInRaid() then
+		for i = 1, GetNumGroupMembers() do
+			groupUnits["raid" .. i] = true
+			groupUnits["raidpet" .. i] = true
+		end
+	else
+		for i = 1, GetNumSubgroupMembers() do
+			groupUnits["party" .. i] = true
+			groupUnits["partypet" .. i] = true
+		end
+	end
 end
 
 local itemList = {
@@ -49,7 +54,7 @@ local itemList = {
 	[309658] = true, -- Death Brutal War Drum
 }
 
-function Module:ItemAlertUpdate(unit, castID, spellID)
+function Module:ItemAlert_Update(unit, castID, spellID)
 	if groupUnits[unit] and itemList[spellID] and (itemList[spellID] ~= castID) then
 		local message = string_format(L["Spell Item AlertStr"], UnitName(unit), GetSpellLink(spellID) or GetSpellInfo(spellID))
 		SendChatMessage(message, K.CheckChat())

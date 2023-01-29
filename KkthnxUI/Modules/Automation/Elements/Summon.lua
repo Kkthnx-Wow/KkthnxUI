@@ -9,20 +9,33 @@ local StaticPopup_Hide = StaticPopup_Hide
 local UnitAffectingCombat = UnitAffectingCombat
 
 local function SetupAutoAcceptSummon()
-	if not UnitAffectingCombat("player") then
-		local sName = C_SummonInfo_GetSummonConfirmSummoner()
-		local sLocation = C_SummonInfo_GetSummonConfirmAreaName()
-		K.Print(L["Summon From"] .. " " .. sName .. " (" .. sLocation .. ") " .. L["Summon Warning"])
-		C_Timer_After(10, function()
-			local sNameNew = C_SummonInfo_GetSummonConfirmSummoner()
-			local sLocationNew = C_SummonInfo_GetSummonConfirmAreaName()
-			if sName == sNameNew and sLocation == sLocationNew then
-				-- Automatically accept summon after 10 seconds if summoner name and location have not changed
-				C_SummonInfo_ConfirmSummon()
-				StaticPopup_Hide("CONFIRM_SUMMON")
-			end
-		end)
+	-- Check if player is in combat, if so, exit the function
+	if UnitAffectingCombat("player") then
+		return
 	end
+
+	-- Get the summoner name and location
+	local sName = C_SummonInfo_GetSummonConfirmSummoner()
+	local sLocation = C_SummonInfo_GetSummonConfirmAreaName()
+
+	-- Print the summoner name, location, and warning message
+	K.Print(L["Summon From"] .. " " .. sName .. " (" .. sLocation .. ") " .. L["Summon Warning"])
+
+	-- Create a timer for 10 seconds
+	C_Timer_After(10, function()
+		-- Get the summoner name and location again
+		local sNameNew = C_SummonInfo_GetSummonConfirmSummoner()
+		local sLocationNew = C_SummonInfo_GetSummonConfirmAreaName()
+
+		-- Check if the summoner name and location have not changed
+		if sName == sNameNew and sLocation == sLocationNew then
+			-- Automatically accept the summon
+			C_SummonInfo_ConfirmSummon()
+
+			-- Hide the summon confirmation popup
+			StaticPopup_Hide("CONFIRM_SUMMON")
+		end
+	end)
 end
 
 function Module:CreateAutoAcceptSummon()

@@ -1,13 +1,11 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
-local select = select
-
-local GetItemInfo = GetItemInfo
 local GetNumQuestChoices = GetNumQuestChoices
-local GetQuestItemInfo = GetQuestItemInfo
 local GetQuestItemLink = GetQuestItemLink
-local hooksecurefunc = hooksecurefunc
+local GetQuestItemInfo = GetQuestItemInfo
+local select = select
+local GetItemInfo = GetItemInfo
 
 function Module:SetupAutoBestReward()
 	local firstItem = QuestInfoRewardsFrameQuestInfoItem1
@@ -20,14 +18,27 @@ function Module:SetupAutoBestReward()
 		return
 	end
 
+	-- Create a table to store references to the QuestInfoRewardsFrameQuestInfoItem buttons
+	local questRewards = {}
+	for i = 1, numQuests do
+		local btn = _G["QuestInfoRewardsFrameQuestInfoItem" .. i]
+		if btn and btn.type == "choice" then
+			questRewards[i] = btn
+		end
+	end
+
 	local bestValue = 0
 	local bestItem
-	for i = 1, numQuests do
+	for i, btn in pairs(questRewards) do
 		local questLink = GetQuestItemLink("choice", i)
 		local _, _, amount = GetQuestItemInfo("choice", i)
 		local itemSellPrice = questLink and select(11, GetItemInfo(questLink))
 
-		local totalValue = (itemSellPrice and itemSellPrice * amount) or 0
+		-- Add the item's rarity and usefulness to the value calculation
+		local itemRarity = questLink and select(3, GetItemInfo(questLink))
+		local itemUsefulness = (itemRarity == 6) and 5 or itemRarity
+
+		local totalValue = (itemSellPrice and itemSellPrice * amount) + itemUsefulness
 		if totalValue > bestValue then
 			bestValue = totalValue
 			bestItem = i
@@ -35,12 +46,10 @@ function Module:SetupAutoBestReward()
 	end
 
 	if bestItem then
-		local btn = _G["QuestInfoRewardsFrameQuestInfoItem" .. bestItem]
-		if btn and btn.type == "choice" then
-			Module.QuestRewardGoldIconFrame:ClearAllPoints()
-			Module.QuestRewardGoldIconFrame:SetPoint("TOPRIGHT", btn, "TOPRIGHT", -2, -2)
-			Module.QuestRewardGoldIconFrame:Show()
-		end
+		local btn = questRewards[bestItem]
+		Module.QuestRewardGoldIconFrame:ClearAllPoints()
+		Module.QuestRewardGoldIconFrame:SetPoint("TOPRIGHT", btn, "TOPRIGHT", -2, -2)
+		Module.QuestRewardGoldIconFrame:Show()
 	end
 end
 
@@ -48,8 +57,6 @@ function Module:CreateAutoBestReward()
 	if not C["Automation"].AutoReward then
 		return
 	end
-
-	K:RegisterEvent("QUEST_COMPLETE", self.SetupAutoBestReward)
 
 	do -- questRewardMostValueIcon
 		local MostValue = CreateFrame("Frame", "KKUI_QuestRewardGoldIconFrame", _G.UIParent)
@@ -69,4 +76,6 @@ function Module:CreateAutoBestReward()
 			end
 		end)
 	end
+
+	K:RegisterEvent("QUEST_COMPLETE", self.SetupAutoBestReward)
 end

@@ -1,14 +1,11 @@
 local K, C, L = unpack(KkthnxUI)
-if C["Announcements"].PullCountdown ~= true then
-	return
-end
+local Module = K:GetModule("Announcements")
 
 local UnitName = UnitName
 local CreateFrame = CreateFrame
 local SendChatMessage = SendChatMessage
 
-do -- Sourced: Pull Countdown (Dridzt)
-	local PullCountdown = CreateFrame("Frame", "KKUI_PullCountdown")
+function Module:CreatePullCountdown()
 	local PullCountdownHandler = CreateFrame("Frame")
 	local firstdone, delay, target
 	local interval = 1.5
@@ -47,7 +44,16 @@ do -- Sourced: Pull Countdown (Dridzt)
 		end
 	end
 
-	function PullCountdown.Pull(timer)
+	function Module.Pull(timer)
+		if not C["Announcements"].PullCountdown then
+			return
+		end
+
+		if not (IsInGroup() or IsInRaid()) or UnitAffectingCombat("player") then
+			K.Print("You must be in a group or raid and not in combat to use this feature.")
+			return
+		end
+
 		delay = timer or 3
 		if PullCountdownHandler:GetScript("OnUpdate") then
 			reset()
@@ -57,13 +63,13 @@ do -- Sourced: Pull Countdown (Dridzt)
 		end
 	end
 
-	_G.SLASH_PULLCOUNTDOWN1 = "/jenkins"
-	_G.SLASH_PULLCOUNTDOWN2 = "/pc"
-	_G.SlashCmdList["PULLCOUNTDOWN"] = function(msg)
+	_G.SLASH_KKUI_PULLCOUNTDOWN1 = "/jenkins"
+	_G.SLASH_KKUI_PULLCOUNTDOWN2 = "/pc"
+	_G.SlashCmdList["KKUI_PULLCOUNTDOWN"] = function(msg)
 		if tonumber(msg) ~= nil then
-			PullCountdown.Pull(msg)
+			Module.Pull(msg)
 		else
-			PullCountdown.Pull()
+			Module.Pull()
 		end
 	end
 end

@@ -5,14 +5,16 @@ local CancelDuel = CancelDuel
 local StaticPopup_Hide = StaticPopup_Hide
 local C_PetBattles_CancelPVPDuel = C_PetBattles.CancelPVPDuel
 
-function Module:DUEL_REQUESTED()
+function Module:DUEL_REQUESTED(_, name)
 	CancelDuel()
 	StaticPopup_Hide("DUEL_REQUESTED")
+	print("Declined a duel request from: " .. name)
 end
 
-function Module:PET_BATTLE_PVP_DUEL_REQUESTED()
+function Module:PET_BATTLE_PVP_DUEL_REQUESTED(_, name)
 	C_PetBattles_CancelPVPDuel()
 	StaticPopup_Hide("PET_BATTLE_PVP_DUEL_REQUESTED")
+	print("Declined a pet battle pvp duel request from: " .. name)
 end
 
 function Module:CreateAutoDeclineDuels()

@@ -469,6 +469,17 @@ L["Show Wowhead Links Above Questlog Frame"] = "Show Wowhead Links Above Questlo
 L["Show Your Killing Blow Info"] = "Show Your Killing Blow Info"
 L["World Markers Bar"] = "World Markers Bar"
 
+L["Goodbye and safe travels."] = "Goodbye and safe travels."
+L["It was a pleasure playing with you all, farewell."] = "It was a pleasure playing with you all, farewell."
+L["I had a great time, thanks and take care."] = "I had a great time, thanks and take care."
+L["Farewell friends, until we meet again."] = "Farewell friends, until we meet again."
+L["Thanks for the adventure, farewell."] = "Thanks for the adventure, farewell."
+L["It's been real, goodbye and have a great day."] = "It's been real, goodbye and have a great day."
+L["Thanks for the memories, farewell."] = "Thanks for the memories, farewell."
+L["Goodbye and may your journey be filled with success."] = "Goodbye and may your journey be filled with success."
+L["Thanks for the good times, farewell and good luck."] = "Thanks for the good times, farewell and good luck."
+L["It's been an honor, goodbye and happy questing."] = "It's been an honor, goodbye and happy questing."
+
 L["Auras Filter Style"] = "Auras Filter Style"
 L["Auras Size"] = "Auras Size"
 L["Classpower/Healthbar Height"] = "Classpower/Healthbar Height"

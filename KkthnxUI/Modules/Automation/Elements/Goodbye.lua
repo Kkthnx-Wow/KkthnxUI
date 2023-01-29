@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("Automation")
 
 local math_random = math.random
@@ -9,34 +9,16 @@ local SendChatMessage = SendChatMessage
 -- This list is completely random. There is no certin way we have made this list.
 -- The idea is to keep things random so we do not repeat the same type of goodbye.
 local AutoThanksList = {
-	"Bye <3",
-	"Bye",
-	"Catch you on the flip side!",
-	"Fare Thee Well",
-	"Farewell.",
-	"GG!",
-	"GG",
-	"Goodbye",
-	"Have a good one!",
-	"Have a nice day!",
-	"Take care.",
-	"Take it easy",
-	"Thanks & warm regards",
-	"Thanks :D",
-	"Thanks ;)",
-	"Thanks <3",
-	"Thanks all",
-	"Thanks everyone.",
-	"Thanks for the group.",
-	"Thanks for the run.",
-	"Thanks, goodbye.",
-	"Thanks, take care everyone.",
-	"Until next time!",
-	"farewell.",
-	"gg!",
-	"gg",
-	"goodbye",
-	"thanks",
+	L["Goodbye and safe travels."],
+	L["It was a pleasure playing with you all, farewell."],
+	L["I had a great time, thanks and take care."],
+	L["Farewell friends, until we meet again."],
+	L["Thanks for the adventure, farewell."],
+	L["It's been real, goodbye and have a great day."],
+	L["Thanks for the memories, farewell."],
+	L["Goodbye and may your journey be filled with success."],
+	L["Thanks for the good times, farewell and good luck."],
+	L["It's been an honor, goodbye and happy questing."],
 }
 
 function Module.SetupAutoGoodbye()

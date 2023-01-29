@@ -1,10 +1,6 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:NewModule("Chat")
 
-local string_find = string.find
-local string_format = string.format
-local string_gsub = string.gsub
-local string_len = string.len
 local string_sub = string.sub
 
 local CHAT_FRAMES = CHAT_FRAMES
@@ -59,69 +55,80 @@ local function GetGroupDistribution()
 	return "/s "
 end
 
-do
-	local charCount
-	local function CountLinkCharacters(self)
-		charCount = charCount + (string_len(self) + 4) -- 4 is ending "|h|r"
+local MIN_REPEAT_CHARACTERS = 5
+local charCount = 0
+local repeatedText
+
+local function countLinkCharacters(text)
+	charCount = charCount + (string.len(text) + 4)
+end
+
+local function editBoxOnTextChanged(self)
+	local text = self:GetText()
+	local len = string.len(text)
+
+	if (not repeatedText or not string.find(text, repeatedText, 1, true)) and InCombatLockdown() then
+		if len > MIN_REPEAT_CHARACTERS then
+			local repeatChar = true
+			for i = 1, MIN_REPEAT_CHARACTERS do
+				local first = -1 - i
+				if string.sub(text, -i, -i) ~= string.sub(text, first, first) then
+					repeatChar = false
+					break
+				end
+			end
+
+			if repeatChar then
+				repeatedText = text
+				self:Hide()
+				return
+			end
+		end
 	end
 
-	local repeatedText
-	function Module:EditBoxOnTextChanged()
-		local text = self:GetText()
-		local len = string_len(text)
-		if (not repeatedText or not string_find(text, repeatedText, 1, true)) and InCombatLockdown() then
-			local MIN_REPEAT_CHARACTERS = 5
-			if len > MIN_REPEAT_CHARACTERS then
-				local repeatChar = true
-				for i = 1, MIN_REPEAT_CHARACTERS, 1 do
-					local first = -1 - i
-					if string_sub(text, -i, -i) ~= string_sub(text, first, first) then
-						repeatChar = false
-						break
-					end
-				end
-
-				if repeatChar then
-					repeatedText = text
-					self:Hide()
-					return
+	if len == 4 then
+		if text == "/tt " then
+			local name, realm = UnitName("target")
+			if name then
+				name = string.gsub(name, "%s", "")
+				if realm and realm ~= "" then
+					name = name .. "-" .. string.gsub(realm, "[%s%-]", "")
 				end
 			end
-		end
 
-		if len == 4 then
-			if text == "/tt " then
-				local Name, Realm = UnitName("target")
-				if Name then
-					Name = string_gsub(Name, "%s", "")
-					if Realm and Realm ~= "" then
-						Name = string_format("%s-%s", Name, string_gsub(Realm, "[%s%-]", ""))
-					end
-				end
-
-				if Name then
-					_G.ChatFrame_SendTell(Name, self.chatFrame)
-				else
-					_G.UIErrorsFrame:AddMessage(K.InfoColor .. L["Invalid Target"])
-				end
-			elseif text == "/gr " then
-				self:SetText(GetGroupDistribution() .. string_sub(text, 5))
-				_G.ChatEdit_ParseText(self, 0)
+			if name then
+				ChatFrame_SendTell(name, self.chatFrame)
+			else
+				UIErrorsFrame:AddMessage(K.InfoColor .. L["Invalid Target"])
 			end
+		elseif text == "/gr " then
+			self:SetText(getGroupDistribution() .. string.sub(text, 5))
+			ChatEdit_ParseText(self, 0)
 		end
+	end
 
-		-- recalculate the character count correctly with hyperlinks in it, using gsub so it matches multiple without gmatch
-		charCount = 0
-		string_gsub(text, "(|c%x-|H.-|h).-|h|r", CountLinkCharacters)
-		if charCount ~= 0 then
-			len = len - charCount
-		end
+	-- recalculate the character count correctly with hyperlinks in it, using gmatch so it matches multiple without gmatch
+	charCount = 0
+	for link in string.gmatch(text, "(|c%x-|H.-|h).-|h|r") do
+		countLinkCharacters(link)
+	end
+	if charCount ~= 0 then
+		len = len - charCount
+	end
 
-		self.characterCount:SetText(len > 0 and (255 - len) or "")
+	local remainingCount = 255 - len
+	if remainingCount >= 50 then
+		self.characterCount:SetTextColor(0.74, 0.74, 0.74, 0.5) -- grey color
+	elseif remainingCount >= 20 then
+		self.characterCount:SetTextColor(1, 0.6, 0, 0.5) -- orange color
+	else
+		self.characterCount:SetTextColor(1, 0, 0, 0.5) -- red color
+	end
 
-		if repeatedText then
-			repeatedText = nil
-		end
+	self.characterCount:SetText(len > 0 and (255 - len) or "")
+
+	if repeatedText then
+		repeatedText = nil
 	end
 end
 
@@ -141,8 +148,7 @@ local function updateChatAnchor(self, _, _, _, x, y)
 	if not (x == 7 and y == 11) then
 		self:ClearAllPoints()
 		self:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 7, 11)
-		self:SetWidth(C["Chat"].Width)
-		self:SetHeight(C["Chat"].Height)
+		self:SetSize(C["Chat"].Width, C["Chat"].Height)
 	end
 end
 
@@ -214,7 +220,7 @@ function Module:SkinChat()
 	eb:StripTextures(2)
 	eb:CreateBorder()
 	eb:Hide()
-	eb:HookScript("OnTextChanged", Module.EditBoxOnTextChanged)
+	eb:HookScript("OnTextChanged", editBoxOnTextChanged)
 
 	local lang = _G[name .. "EditBoxLanguage"]
 	lang:GetRegions():SetAlpha(0)
@@ -231,7 +237,6 @@ function Module:SkinChat()
 	-- Character count
 	local charCount = eb:CreateFontString(nil, "ARTWORK")
 	charCount:SetFontObject(K.UIFont)
-	charCount:SetTextColor(190, 190, 190, 0.4)
 	charCount:SetPoint("TOPRIGHT", eb, "TOPRIGHT", 4, 0)
 	charCount:SetPoint("BOTTOMRIGHT", eb, "BOTTOMRIGHT", 4, 0)
 	charCount:SetJustifyH("CENTER")
