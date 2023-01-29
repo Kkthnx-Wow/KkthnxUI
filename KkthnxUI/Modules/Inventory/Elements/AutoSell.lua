@@ -34,8 +34,9 @@ local function startSelling()
 			if info then
 				local quality, link, noValue, itemID = info.quality, info.hyperlink, info.hasNoValue, info.itemID
 				local isInSet = C_Container_GetContainerItemEquipmentSetInfo(bag, slot)
-				-- check if the item meets the criteria for selling
-				if link and not noValue and not isInSet and not Module:IsPetTrashCurrency(itemID) and (quality == 0 or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID]) and not cache["b" .. bag .. "s" .. slot] then
+				local isTransmog = C_TransmogCollection.GetItemInfo(itemID) or C_TransmogCollection.PlayerHasTransmogByItemInfo(itemID) -- check if the item is transmog
+				-- check if the item meets the criteria for selling (skip if transmog or in set)
+				if link and not noValue and not isInSet and not isTransmog and not Module:IsPetTrashCurrency(itemID) and (quality == 0 or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID]) and not cache["b" .. bag .. "s" .. slot] then
 					cache["b" .. bag .. "s" .. slot] = true
 					C_Container_UseContainerItem(bag, slot)
 					C_Timer_After(0.15, startSelling)
