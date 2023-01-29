@@ -122,7 +122,7 @@ function Module:StyleActionButton(button)
 		button.__bg = CreateFrame("Frame", nil, button, "BackdropTemplate")
 		button.__bg:SetAllPoints(button)
 		button.__bg:SetFrameLevel(button:GetFrameLevel())
-		button.__bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 0.7, 0.7, 0.7)
+		button.__bg:CreateBorder(nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, { 0.7, 0.7, 0.7 })
 	end
 	if cooldown then
 		cooldown:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)

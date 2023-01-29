@@ -38,7 +38,7 @@ function K:Mover(text, value, anchor, width, height, isAuraWatch)
 	local mover = CreateFrame("Button", "KKUI_Mover", UIParent)
 	mover:SetWidth(width or self:GetWidth())
 	mover:SetHeight(height or self:GetHeight())
-	mover:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 38 / 255, 125 / 255, 206 / 255, 80 / 255)
+	mover:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 38 / 255, 125 / 255, 206 / 255, 80 / 255 })
 	mover:Hide()
 
 	mover.text = K.CreateFontString(mover, 12, text, "")

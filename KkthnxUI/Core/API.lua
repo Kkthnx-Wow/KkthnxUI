@@ -39,7 +39,7 @@ end
 -- CreateBorder function: creates a border and background for the passed frame (bFrame)
 -- bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha are optional arguments to customize the appearance of the border and background
 local function CreateBorder(bFrame, ...)
-	local bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha = ...
+	local bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
 	-- Border
 	local BorderSubLevel = bSubLevel or "OVERLAY" -- Sublevel of the border, default is "OVERLAY"
 	local BorderLayer = bLayer or 1 -- Layer of the border, default is 1
@@ -55,10 +55,7 @@ local function CreateBorder(bFrame, ...)
 	if not bFrame.KKUI_Border then -- check if the frame already has a border
 		local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga") -- texture of the border, default is "Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga"
 		local BorderOffset = bOffset or -4 -- offset of the border, default is -4
-		local BorderRed = bRed or C["Media"].Borders.ColorBorder[1] -- red color of the border, default is C["Media"].Borders.ColorBorder[1]
-		local BorderGreen = bGreen or C["Media"].Borders.ColorBorder[2] -- green color of the border, default is C["Media"].Borders.ColorBorder[2]
-		local BorderBlue = bBlue or C["Media"].Borders.ColorBorder[3] -- blue color of the border, default is C["Media"].Borders.ColorBorder[3]
-		local BorderAlpha = bAlpha or 1 -- alpha of the border, default is 1
+		local BorderColor = bColor or C["Media"].Borders.ColorBorder -- color of the border
 
 		-- Create Our Border
 		local kkui_border = K.CreateBorder(bFrame, BorderSubLevel, BorderLayer)
@@ -68,7 +65,7 @@ local function CreateBorder(bFrame, ...)
 		if C["General"].ColorTextures then -- check if C["General"].ColorTextures is true
 			kkui_border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		else
-			kkui_border:SetVertexColor(BorderRed, BorderGreen, BorderBlue, BorderAlpha)
+			kkui_border:SetVertexColor(unpack(BorderColor))
 		end
 
 		bFrame.KKUI_Border = kkui_border -- save the border as a property of the frame so that it can be referenced later on.
@@ -79,10 +76,7 @@ local function CreateBorder(bFrame, ...)
 		local BackgroundSubLevel = bgSubLevel or "BACKGROUND" -- sub-level of the background, default is "BACKGROUND"
 		local BackgroundLayer = bgLayer or -2 -- layer of the background, default is -2
 		local BackgroundPoint = bgPoint or 0 -- point of the background, default is 0
-		local BackgroundRed = bgRed or C["Media"].Backdrops.ColorBackdrop[1] -- red color of the background, default is C["Media"].Backdrops.ColorBackdrop[1]
-		local BackgroundGreen = bgGreen or C["Media"].Backdrops.ColorBackdrop[2] -- green color of the background, default is C["Media"].Backdrops.ColorBackdrop[2]
-		local BackgroundBlue = bgBlue or C["Media"].Backdrops.ColorBackdrop[3] -- blue color of the background, default is C["Media"].Backdrops.ColorBackdrop[3]
-		local BackgroundAlpha = bgAlpha or C["Media"].Backdrops.ColorBackdrop[4] -- alpha of the background, default is C["Media"].Backdrops.ColorBackdrop[4]
+		local BackgroundColor = bgColor or C["Media"].Backdrops.ColorBackdrop -- color of the background
 
 		-- Create Our Background
 		local kkui_background = bFrame:CreateTexture(nil, BackgroundSubLevel, nil, BackgroundLayer) -- create the background texture
@@ -90,7 +84,7 @@ local function CreateBorder(bFrame, ...)
 		kkui_background:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4]) -- set the texture coordinates of the background
 		kkui_background:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BackgroundPoint, -BackgroundPoint) -- set the position of the background
 		kkui_background:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint) -- set the size of the background
-		kkui_background:SetVertexColor(BackgroundRed, BackgroundGreen, BackgroundBlue, BackgroundAlpha) -- set the color of the background
+		kkui_background:SetVertexColor(unpack(BackgroundColor)) -- set the color of the background
 
 		bFrame.KKUI_Background = kkui_background -- save the background as a property of the frame so that it can be referenced later on.
 	end
@@ -99,7 +93,9 @@ local function CreateBorder(bFrame, ...)
 end
 
 -- Simple Create Backdrop.
-local function CreateBackdrop(bFrame, bPointa, bPointb, bPointc, bPointd, bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
+local function CreateBackdrop(bFrame, ...)
+	local bPointa, bPointb, bPointc, bPointd, bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
+
 	if bFrame.KKUI_Backdrop then
 		return
 	end
@@ -112,7 +108,7 @@ local function CreateBackdrop(bFrame, bPointa, bPointb, bPointc, bPointd, bSubLe
 	local kkui_backdrop = CreateFrame("Frame", "$parentBackdrop", bFrame) -- Create the backdrop frame.
 	kkui_backdrop:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BorderPointA, BorderPointB) -- Set the first point of the border's position.
 	kkui_backdrop:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", BorderPointC, BorderPointD) -- Set the second point of the border's position.
-	kkui_backdrop:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha) -- Create the border.
+	kkui_backdrop:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor) -- Create the border.
 
 	if bFrame:GetFrameLevel() - 1 >= 0 then
 		kkui_backdrop:SetFrameLevel(bFrame:GetFrameLevel())
@@ -328,7 +324,7 @@ local blizzRegions = {
 }
 
 local function SkinButton(self, override, ...)
-	local bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha = ...
+	local bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
 	-- Remove the normal, highlight, pushed and disabled textures
 	if self.SetNormalTexture and not override then
 		self:SetNormalTexture(0)
@@ -355,7 +351,7 @@ local function SkinButton(self, override, ...)
 	end
 
 	-- Do not apply custom border if the override argument is true
-	self:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha)
+	self:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor)
 
 	-- Hook the OnEnter and OnLeave events
 	self:HookScript("OnEnter", Button_OnEnter)
@@ -382,7 +378,7 @@ local function SkinCloseButton(self, parent, xOffset, yOffset)
 	end
 
 	-- Create a border for the button with specific color and alpha values
-	self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0.85, 0.25, 0.25)
+	self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.85, 0.25, 0.25 })
 	-- Apply the 'StyleButton' function to the button
 	self:StyleButton()
 
@@ -410,7 +406,7 @@ local function SkinCheckBox(self, forceSaturation)
 	local bg = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	bg:SetAllPoints(self)
 	bg:SetFrameLevel(self:GetFrameLevel())
-	bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0.20, 0.20, 0.20)
+	bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.20, 0.20, 0.20 })
 	self.bg = bg
 
 	self:SetHighlightTexture("")
@@ -445,7 +441,7 @@ end
 function K.ReskinArrow(self, direction)
 	self:StripTextures()
 	self:SetSize(16, 16)
-	self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0.20, 0.20, 0.20)
+	self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.20, 0.20, 0.20 })
 	self:StyleButton()
 
 	self:SetDisabledTexture("Interface\\ChatFrame\\ChatFrameBackground")
@@ -479,7 +475,7 @@ local function SkinScrollBar(self)
 
 		local bg = CreateFrame("Frame", nil, self)
 		-- Create a border for the frame with a dark grey color
-		bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0.20, 0.20, 0.20)
+		bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.20, 0.20, 0.20 })
 
 		-- Set the position of the frame relative to the thumb texture
 		bg:SetPoint("TOPLEFT", thumb, 0, -6)

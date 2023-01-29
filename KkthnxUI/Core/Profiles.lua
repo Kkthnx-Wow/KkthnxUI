@@ -135,7 +135,7 @@ function Profiles:Enable()
 		self:ClearFocus()
 	end)
 	self.EditBox:SetScript("OnTextChanged", Profiles.OnTextChanged)
-	self.EditBox:CreateBackdrop(-4, 4, 4, -4, nil, nil, nil, nil, nil, 102 / 255, 157 / 255, 255 / 255, 1)
+	self.EditBox:CreateBackdrop(-4, 4, 4, -4, nil, nil, nil, nil, nil, nil, { 102 / 255, 157 / 255, 255 / 255 })
 	self.EditBox:SetTextInsets(4, 4, 4, 4)
 	self.EditBox.Code = self:Export()
 

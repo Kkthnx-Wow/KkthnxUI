@@ -1,33 +1,33 @@
 local _, C = unpack(KkthnxUI)
 
 C.RaidUtilityBuffCheckList = {
-	[1] = { -- 合剂
-		370652, -- 静电赋能瓶剂
-		370653, -- 冰寒庇护瓶剂
-		371172, -- 温存全能瓶剂
-		371204, -- 止风瓶剂
-		371339, -- 元素混沌瓶剂
-		371354, -- 风暴之眼瓶剂
-		371386, -- 疏离注能瓶剂
-		373257, -- 冰川之怒瓶剂
-		374000, -- 腐化之怒冰冻瓶剂
+	[1] = { -- Composites
+		370652, -- Electrified Flask
+		370653, -- Frosty Haven Flask
+		371172, -- Safekeeping Flask
+		371204, -- Windward Flask
+		371339, -- Elemental Chaos Flask
+		371354, -- Storm's Eye Flask
+		371386, -- Displacement Flask
+		373257, -- Glacier's Fury Flask
+		374000, -- Corrupted Fury Freezing Flask
 	},
-	[2] = { -- 进食充分
-		104273, -- 250敏捷，BUFF名一致
+	[2] = { -- Well-Fed
+		104273, -- 250 Agility, same buff name
 	},
-	[3] = { -- 10%智力
+	[3] = { -- 10% Intellect
 		1459,
 		264760,
 	},
-	[4] = { -- 10%耐力
+	[4] = { -- 10% Stamina
 		21562,
 		264764,
 	},
-	[5] = { -- 10%攻强
+	[5] = { -- 10% Attack Power
 		6673,
 		264761,
 	},
-	[6] = { -- 符文
+	[6] = { -- Runes
 		270058,
 	},
 }

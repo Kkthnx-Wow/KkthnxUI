@@ -57,7 +57,7 @@ function Module:CreateExtrabar()
 				local bg = CreateFrame("Frame", nil, spellButton, "BackdropTemplate")
 				bg:SetAllPoints(spellButton)
 				bg:SetFrameLevel(spellButton:GetFrameLevel())
-				bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 0.7, 0.7, 0.7)
+				bg:CreateBorder(nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, { 0.7, 0.7, 0.7 })
 				spellButton.styled = true
 			end
 		end

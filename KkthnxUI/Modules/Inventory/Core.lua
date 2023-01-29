@@ -292,7 +292,7 @@ function Module:CreateCloseButton(f)
 	local closeButton = CreateFrame("Button", nil, self)
 	closeButton:RegisterForClicks("AnyUp")
 	closeButton:SetSize(18, 18)
-	closeButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0.85, 0.25, 0.25)
+	closeButton:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.85, 0.25, 0.25 })
 	closeButton:StyleButton()
 	closeButton.__owner = f
 
@@ -535,7 +535,7 @@ function Module:CreateFreeSlots()
 
 	local slot = CreateFrame("Button", name .. "FreeSlot", self)
 	slot:SetSize(self.iconSize, self.iconSize)
-	slot:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, "Interface\\PaperDoll\\UI-PaperDoll-Slot-Bag", nil, nil, nil, 0.7, 0.7, 0.7)
+	slot:CreateBorder(nil, nil, nil, nil, nil, nil, "Interface\\PaperDoll\\UI-PaperDoll-Slot-Bag", nil, nil, nil, { 0.7, 0.7, 0.7 })
 	slot:StyleButton()
 	slot:SetScript("OnMouseUp", Module.FreeSlotOnDrop)
 	slot:SetScript("OnReceiveDrag", Module.FreeSlotOnDrop)
@@ -1083,7 +1083,7 @@ function Module:OnEnable()
 		self.IconOverlay2:SetPoint("TOPLEFT", 1, -1)
 		self.IconOverlay2:SetPoint("BOTTOMRIGHT", -1, 1)
 
-		self:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, 0.7, 0.7, 0.7)
+		self:CreateBorder(nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, { 0.7, 0.7, 0.7 })
 		self:StyleButton()
 
 		local parentFrame = CreateFrame("Frame", nil, self)

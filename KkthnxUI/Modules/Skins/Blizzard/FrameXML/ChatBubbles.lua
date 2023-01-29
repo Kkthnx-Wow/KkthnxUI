@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local _, C = unpack(KkthnxUI)
 
 local table_insert = table.insert
 
@@ -15,7 +15,7 @@ local function reskinChatBubble(chatbubble)
 		bg:SetFrameLevel(frame:GetFrameLevel())
 		bg:SetScale(UIParent:GetEffectiveScale())
 		bg:SetAllPoints(frame)
-		bg:CreateBorder(nil, nil, nil, nil, -18, nil, nil, nil, nil, nil, nil, nil, 14)
+		bg:CreateBorder(nil, nil, nil, nil, -18, nil, nil, nil, nil, 14)
 		bg.KKUI_Background:SetVertexColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Skins"].ChatBubbleAlpha)
 
 		frame:DisableDrawLayer("BORDER")

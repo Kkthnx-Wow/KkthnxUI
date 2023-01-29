@@ -56,7 +56,7 @@ table_insert(C.defaultThemes, function()
 			bu.bg = CreateFrame("Frame", nil, bu)
 			bu.bg:SetFrameLevel(bu:GetFrameLevel())
 			bu.bg:SetAllPoints(ic)
-			bu.bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Spellbook-SpellBackground", nil, nil, nil, 1, 1, 1)
+			bu.bg:CreateBorder(nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Spellbook-SpellBackground", nil, nil, nil, { 1, 1, 1 })
 			bu.bg = true
 		end
 

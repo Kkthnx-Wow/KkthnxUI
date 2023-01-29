@@ -3,16 +3,16 @@ local _, C = unpack(KkthnxUI)
 C.SpellReminderBuffs = {
 	ITEMS = {
 		{
-			itemID = 190384, -- 9.0永久属性符文
+			itemID = 190384, -- 9.0 permanent attribute runes
 			spells = {
-				[393438] = true, -- 巨龙强化符文 itemID 201325
-				[367405] = true, -- 永久符文buff
+				[393438] = true, -- Dragon fortification rune itemID 201325
+				[367405] = true, -- Permanent rune buff
 			},
 			instance = true,
-			disable = true, -- 禁用直到出了新符文
+			disable = true, -- Disabled until new rune is released
 		},
 		{
-			itemID = 194307, -- 巢穴守护者的诺言
+			itemID = 194307, -- Promise of the Nest Guardian
 			spells = {
 				[394457] = true,
 			},
@@ -20,28 +20,10 @@ C.SpellReminderBuffs = {
 			instance = true,
 			inGroup = true,
 		},
-		--[=[
-		{	itemID = 178742, -- 瓶装毒素饰品
-			spells = {
-				[345545] = true,
-			},
-			equip = true,
-			instance = true,
-			combat = true,
-		},
-		{	itemID = 190958, -- 究极秘术
-			spells = {
-				[368512] = true,
-			},
-			equip = true,
-			instance = true,
-			inGroup = true,
-		},
-		]=]
 	},
 	MAGE = {
 		{
-			spells = { -- 奥术魔宠
+			spells = { -- Arcane Familiar
 				[210126] = true,
 			},
 			depend = 205022,
@@ -51,7 +33,7 @@ C.SpellReminderBuffs = {
 			pvp = true,
 		},
 		{
-			spells = { -- 奥术智慧
+			spells = { -- Arcane Wisdom
 				[1459] = true,
 			},
 			depend = 1459,
@@ -60,7 +42,7 @@ C.SpellReminderBuffs = {
 	},
 	PRIEST = {
 		{
-			spells = { -- 真言术耐
+			spells = { -- Truth of Fortitude
 				[21562] = true,
 			},
 			depend = 21562,
@@ -69,7 +51,7 @@ C.SpellReminderBuffs = {
 	},
 	WARRIOR = {
 		{
-			spells = { -- 战斗怒吼
+			spells = { -- Battle Shout
 				[6673] = true,
 			},
 			depend = 6673,
@@ -79,9 +61,9 @@ C.SpellReminderBuffs = {
 	SHAMAN = {
 		{
 			spells = {
-				[192106] = true, -- 闪电之盾
-				[974] = true, -- 大地之盾
-				[52127] = true, -- 水之护盾
+				[192106] = true, -- Lightning Shield
+				[974] = true, -- Earth Shield
+				[52127] = true, -- Water Shield
 			},
 			depend = 192106,
 			combat = true,
@@ -90,7 +72,7 @@ C.SpellReminderBuffs = {
 		},
 		{
 			spells = {
-				[33757] = true, -- 风怒武器
+				[33757] = true, -- Windfury Weapon
 			},
 			depend = 33757,
 			combat = true,
@@ -101,7 +83,7 @@ C.SpellReminderBuffs = {
 		},
 		{
 			spells = {
-				[318038] = true, -- 火舌武器
+				[318038] = true, -- Flametongue Weapon
 			},
 			depend = 318038,
 			combat = true,
@@ -113,10 +95,10 @@ C.SpellReminderBuffs = {
 	},
 	ROGUE = {
 		{
-			spells = { -- 伤害类毒药
-				[2823] = true, -- 致命药膏
-				[8679] = true, -- 致伤药膏
-				[315584] = true, -- 速效药膏
+			spells = { -- Damage-based Poison
+				[2823] = true, -- Deadly Poison
+				[8679] = true, -- Wound Poison
+				[315584] = true, -- Instant Poison
 			},
 			texture = 132273,
 			depend = 315584,
@@ -125,9 +107,9 @@ C.SpellReminderBuffs = {
 			pvp = true,
 		},
 		{
-			spells = { -- 效果类毒药
-				[3408] = true, -- 减速药膏
-				[5761] = true, -- 迟钝药膏
+			spells = { -- Effect-based Poison
+				[3408] = true, -- Crippling Poison
+				[5761] = true, -- Mind-numbing Poison
 			},
 			depend = 3408,
 			pvp = true,
@@ -135,7 +117,7 @@ C.SpellReminderBuffs = {
 	},
 	EVOKER = {
 		{
-			spells = { -- 青铜龙的祝福
+			spells = { -- Blessing of the Bronze Dragon
 				[381748] = true,
 			},
 			depend = 364342,
@@ -144,7 +126,7 @@ C.SpellReminderBuffs = {
 	},
 	DRUID = {
 		{
-			spells = { -- 野性印记
+			spells = { -- Mark of the Wild.
 				[1126] = true,
 			},
 			depend = 1126,

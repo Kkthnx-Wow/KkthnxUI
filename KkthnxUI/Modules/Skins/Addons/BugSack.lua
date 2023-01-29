@@ -1,8 +1,8 @@
 local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 
-local IsAddOnLoaded = IsAddOnLoaded
-local hooksecurefunc = hooksecurefunc
+-- local IsAddOnLoaded = IsAddOnLoaded
+-- local hooksecurefunc = hooksecurefunc
 
 function Module:ReskinBugSack()
 	-- if not IsAddOnLoaded("BugSack") then
@@ -17,12 +17,12 @@ function Module:ReskinBugSack()
 	-- 	BugSackFrame:StripTextures()
 	-- 	BugSackFrame:CreateBorder()
 	-- 	BugSackTabAll:StripTextures()
-	-- 	BugSackTabAll:CreateBorder(nil, nil, nil, nil, -10, nil, nil, nil, nil, nil, nil, nil, 6)
+	-- 	BugSackTabAll:CreateBorder(nil, nil, nil, nil, -10, nil, nil, nil, nil, 6)
 	-- 	BugSackTabAll:SetPoint("TOPLEFT", BugSackFrame, "BOTTOMLEFT", 0, 1)
 	-- 	BugSackTabSession:StripTextures()
-	-- 	BugSackTabSession:CreateBorder(nil, nil, nil, nil, -10, nil, nil, nil, nil, nil, nil, nil, 6)
+	-- 	BugSackTabSession:CreateBorder(il, nil, nil, nil, -10, nil, nil, nil, nil, 6)
 	-- 	BugSackTabLast:StripTextures()
-	-- 	BugSackTabLast:CreateBorder(nil, nil, nil, nil, -10, nil, nil, nil, nil, nil, nil, nil, 6)
+	-- 	BugSackTabLast:CreateBorder(il, nil, nil, nil, -10, nil, nil, nil, nil, 6)
 
 	-- 	BugSackNextButton:SkinButton()
 	-- 	BugSackSendButton:SkinButton()
