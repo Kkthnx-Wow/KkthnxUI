@@ -369,10 +369,10 @@ local function YesTutor()
 			PlaySound(21968)
 		elseif currentPage == 4 then
 			StopSound(21968)
-			KkthnxUIDB.Variables["DBMRequest"] = true
-			KkthnxUIDB.Variables["MaxDpsRequest"] = true
-			KkthnxUIDB.Variables["CursorTrailRequest"] = true
-			KkthnxUIDB.Variables["HekiliRequest"] = true
+			KkthnxUIDB.Variables[K.Realm][K.Name].DBMRequest = true
+			KkthnxUIDB.Variables[K.Realm][K.Name].MaxDpsRequest = true
+			KkthnxUIDB.Variables[K.Realm][K.Name].CursorTrailRequest = true
+			KkthnxUIDB.Variables[K.Realm][K.Name].HekiliRequest = true
 			Module.ForceAddonSkins()
 			UIErrorsFrame:AddMessage(K.InfoColor .. "Relevant AddOns Settings Loaded, You need to ReloadUI.")
 			pass:Hide()
