@@ -176,22 +176,23 @@ end
 
 local function UpdateCastBarColor(self, unit)
 	local color = K.Colors.castbar.CastingColor
+
+	-- If the casting should be colored with class colors and the unit is a player
 	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
 		local _, Class = UnitClass(unit)
-		local t = Class and K.Colors.class[Class]
-		if t then
-			color = K.Colors.class[Class]
-		end
+		color = Class and K.Colors.class[Class]
+
+	-- If the casting should be colored with reaction colors
 	elseif C["Unitframe"].CastReactionColor then
 		local Reaction = UnitReaction(unit, "player")
-		local t = Reaction and K.Colors.reaction[Reaction]
-		if t then
-			color = K.Colors.reaction[Reaction]
-		end
-	elseif not UnitIsUnit(unit, "player") and self.notInterruptible then
+		color = Reaction and K.Colors.reaction[Reaction]
+
+	-- If the casting can only be interrupted by the caster
+	elseif self.notInterruptible and not UnitIsUnit(unit, "player") then
 		color = K.Colors.castbar.notInterruptibleColor
 	end
 
+	-- Set the bar color to the color gathered above
 	self:SetStatusBarColor(color[1], color[2], color[3])
 end
 
@@ -235,9 +236,9 @@ function Module:PostCastStart(unit)
 	if self.__owner.mystyle == "nameplate" then
 		-- Major spells
 		if C.MajorSpells[self.spellID] then
-			K.LibCustomGlow.ButtonGlow_Start(self.glowFrame)
+			K.ShowOverlayGlow(self.glowFrame)
 		else
-			K.LibCustomGlow.ButtonGlow_Stop(self.glowFrame)
+			K.HideOverlayGlow(self.glowFrame)
 		end
 
 		-- Spell target

@@ -42,31 +42,25 @@ do
 		print("|cff3c9bedKkthnxUI:|r", ...)
 	end
 
-	-- Return short value of a number
 	function K.ShortValue(n)
-		if C["General"].NumberPrefixStyle.Value == 1 then
+		-- This function is used to convert long number values into a shortened string,
+		-- by adding a suffix like 'k', 'm', 'b' etc.
+		if C["General"].NumberPrefixStyle.Value == 1 or C["General"].NumberPrefixStyle.Value == 2 then
+			-- Check which number prefix style is selected and format the returned string accordingly.
 			if n >= 1e12 then
-				return string_format("%.2ft", n / 1e12)
+				return string_format("%.2f" .. (C["General"].NumberPrefixStyle.Value == 1 and "t" or "z"), n / 1e12)
 			elseif n >= 1e9 then
-				return string_format("%.2fb", n / 1e9)
+				return string_format("%.2f" .. (C["General"].NumberPrefixStyle.Value == 1 and "b" or "y"), n / 1e9)
 			elseif n >= 1e6 then
-				return string_format("%.2fm", n / 1e6)
+				return string_format("%.2f" .. (C["General"].NumberPrefixStyle.Value == 1 and "m" or "w"), n / 1e6)
 			elseif n >= 1e3 then
-				return string_format("%.1fk", n / 1e3)
+				return string_format("%.1f" .. (C["General"].NumberPrefixStyle.Value == 1 and "k" or "w"), n / 1e3)
 			else
-				return string_format("%.0f", n)
-			end
-		elseif C["General"].NumberPrefixStyle.Value == 2 then
-			if n >= 1e12 then
-				return string_format("%.2f" .. "z", n / 1e12)
-			elseif n >= 1e8 then
-				return string_format("%.2f" .. "y", n / 1e8)
-			elseif n >= 1e4 then
-				return string_format("%.1f" .. "w", n / 1e4)
-			else
+				-- No suffix necessary or available.
 				return string_format("%.0f", n)
 			end
 		else
+			-- No suffix necessary or available.
 			return string_format("%.0f", n)
 		end
 	end
@@ -371,32 +365,35 @@ do
 	end
 end
 
-do
-	-- RoleUpdater
-	local function CheckRole()
-		local tree = GetSpecialization()
-		if not tree then
-			K.Role = nil
-			return
-		end
+-- RoleUpdater
+-- CheckRole function is used to get the current player's specified spec
+-- and set the K.Role to an appropriate value for that spec
+local function CheckRole()
+	local tree = GetSpecialization()
 
-		local _, _, _, _, role, stat = GetSpecializationInfo(tree)
-		if role == "TANK" then
-			K.Role = "Tank"
-		elseif role == "HEALER" then
-			K.Role = "Healer"
-		elseif role == "DAMAGER" then
-			if stat == 4 then -- 1 Strength, 2 Agility, 4 Intellect
-				K.Role = "Caster"
-			else
-				K.Role = "Melee"
-			end
+	if not tree then
+		K.Role = nil
+		return
+	end
+
+	local _, _, _, _, role, stat = GetSpecializationInfo(tree)
+	if role == "TANK" then
+		K.Role = "Tank"
+	elseif role == "HEALER" then
+		K.Role = "Healer"
+	elseif role == "DAMAGER" then
+		-- Check if the player is a caster class
+		if stat == 4 then -- 1 Strength, 2 Agility, 4 Intellect
+			K.Role = "Caster"
+		else
+			K.Role = "Melee"
 		end
 	end
-	K:RegisterEvent("PLAYER_LOGIN", CheckRole)
-	K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
-	K:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", CheckRole)
 end
+-- Register events, which will trigger the function to get the current player's spec
+K:RegisterEvent("PLAYER_LOGIN", CheckRole)
+K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
+K:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", CheckRole)
 
 -- Chat channel check
 function K.CheckChat()
@@ -418,6 +415,8 @@ do
 		return vhalf .. hhalf, frame, (vhalf == "TOP" and "BOTTOM" or "TOP") .. hhalf
 	end
 
+	-- Hide the GameTooltip object
+	-- @return void
 	function K.HideTooltip()
 		if GameTooltip:IsForbidden() then
 			return
@@ -426,15 +425,20 @@ do
 		GameTooltip:Hide()
 	end
 
+	-- Show the tooltip of the object
+	-- @param table self The object that is acting as the object
+	-- @return void
 	local function tooltipOnEnter(self)
 		if GameTooltip:IsForbidden() then
 			return
 		end
 
+		-- Set the GameTooltip's owner and relative position to the 'self' object.
 		GameTooltip:SetOwner(self, "ANCHOR_NONE")
 		GameTooltip:SetPoint(K.GetAnchors(self))
 		GameTooltip:ClearLines()
 
+		-- Check for various conditions to display the proper content
 		if self.title then
 			GameTooltip:AddLine(self.title)
 		end
@@ -459,6 +463,11 @@ do
 		GameTooltip:Show()
 	end
 
+	-- This function adds a tooltip to the specified object.
+	-- self (object): The object to add the tooltip to.
+	-- anchor (string): Where the tooltip should anchor relative to the object.
+	-- text (string): The string that will be displayed in the tooltip.
+	-- color (string): The tooptip's text color.
 	function K.AddTooltip(self, anchor, text, color)
 		if not self then
 			return
@@ -472,8 +481,12 @@ do
 		self:SetScript("OnLeave", K.HideTooltip)
 	end
 
+	-- Function: K.CreateGlowFrame
+	-- Input: self (frame), size (integer), splus (integer)
+	-- Output: glowFrame (frame)
+	-- Description: Creates a frame with a given size and an additional size.
 	function K.CreateGlowFrame(self, size, splus)
-		splus = splus or 8
+		splus = splus or 8 -- set the additional size to 8 if not specified
 		local glowFrame = CreateFrame("Frame", nil, self)
 		glowFrame:SetPoint("CENTER")
 		glowFrame:SetSize(size + splus, size + splus)
@@ -481,40 +494,43 @@ do
 		return glowFrame
 	end
 
+	-- Function: K.ShowOverlayGlow
+	-- Input: self (frame), templatestring), ... (arguments)
+	-- Description: Show the glow effects of the provided template.
 	function K.ShowOverlayGlow(self, template, ...)
-		local color, frequency, frameLevel, scale, xOffset, yOffset, key, length, th, border
-		template = template or "ButtonGlow"
+		local args = { ... }
+		template = template or "ButtonGlow" -- set the default template to ButtonGlow
 
-		if template == "ButtonGlow" then -- ButtonGlow
-			color, frequency, frameLevel = ...
-		elseif template == "AutoCastGlow" then -- AutoCastGlow
-			color, N, frequency, scale, xOffset, yOffset, key, frameLevel = ...
-		elseif template == "PixelGlow" then -- PixelGlow
-			color, N, frequency, length, th, xOffset, yOffset, border, key, frameLevel = ...
+		if not K.LibCustomGlow then
+			return
 		end
 
-		if K.LibCustomGlow then
-			if template == 1 then -- ButtonGlow
-				K.LibCustomGlow.ButtonGlow_Start(self, color, frequency, frameLevel)
-			elseif template == 2 then -- AutoCastGlow
-				K.LibCustomGlow.AutoCastGlow_Start(self, color, N, frequency, scale, xOffset, yOffset, key, frameLevel)
-			elseif template == 3 then -- PixelGlow
-				K.LibCustomGlow.PixelGlow_Start(self, color, N, frequency, length, th, xOffset, yOffset, border, key, frameLevel)
-			end
+		if template == "ButtonGlow" then
+			K.LibCustomGlow.ButtonGlow_Start(self, unpack(args))
+		elseif template == "Autolow" then
+			K.LibCustomGlow.AutoCastGlow_Start(self, unpack(args))
+		elseif template == "PixelGlow" then
+			K.LibCustomGlow.PixelGlow_Start(self, unpack(args))
 		end
 	end
 
-	function K.HideOverlayGlow(self, template)
-		template = template or "ButtonGlow"
+	-- Function: K.HideOverlayGlow
+	-- Input: self (frame), template (string)
+	-- Description: Hide the glow effects of the provided template.
 
-		if K.LibCustomGlow then
-			if template == "ButtonGlow" then -- ButtonGlow
-				K.LibCustomGlow.ButtonGlow_Stop(self)
-			elseif template == "AutoCastGlow" then -- AutoCastGlow
-				K.LibCustomGlow.AutoCastGlow_Stop(self)
-			elseif template == "PixelGlow" then -- PixelGlow
-				K.LibCustomGlow.PixelGlow_Stop(self)
-			end
+	function K.HideOverlayGlow(self, template)
+		template = template or "ButtonGlow" -- set the default template to ButtonGlow
+
+		if not K.LibCustomGlow then
+			return
+		end
+
+		if template == "ButtonGlow" then
+			K.LibCustomGlow.ButtonGlow_Stop(self)
+		elseif template == "AutoCastGlow" then
+			K.LibCustomGlow.AutoCastGlow_Stop(self)
+		elseif template == "PixelGlow" then
+			K.LibCustomGlow.PixelGlow_Stop(self)
 		end
 	end
 end

@@ -15,8 +15,6 @@ local Minimap = Minimap
 local UnitClass = UnitClass
 local hooksecurefunc = hooksecurefunc
 
-local MinimapMailFrame = K.IsNewPatch and MinimapCluster.IndicatorFrame.MailFrame or MinimapCluster.MailFrame
-
 -- Create the minimap micro menu
 local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent)
 local guildText = IsInGuild() and ACHIEVEMENTS_GUILD_TAB or LOOKINGFORGUILD
@@ -248,7 +246,7 @@ function Module:CreateStyle()
 
 	local function updateMinimapBorderAnimation()
 		if not InCombatLockdown() then
-			if C_Calendar_GetNumPendingInvites() > 0 or MinimapMailFrame:IsShown() and not IsInInstance() then
+			if C_Calendar_GetNumPendingInvites() > 0 or MinimapCluster.IndicatorFrame.MailFrame:IsShown() and not IsInInstance() then
 				if not anim:IsPlaying() then
 					minimapMailPulse:Show()
 					anim:Play()
@@ -266,7 +264,7 @@ function Module:CreateStyle()
 	K:RegisterEvent("PLAYER_REGEN_ENABLED", updateMinimapBorderAnimation)
 	K:RegisterEvent("UPDATE_PENDING_MAIL", updateMinimapBorderAnimation)
 
-	MinimapMailFrame:HookScript("OnHide", function()
+	MinimapCluster.IndicatorFrame.MailFrame:HookScript("OnHide", function()
 		if InCombatLockdown() then
 			return
 		end
@@ -390,27 +388,18 @@ function Module:ReskinRegions()
 	hooksecurefunc(MinimapCluster.InstanceDifficulty, "SetPoint", updateFlagAnchor)
 
 	-- Mail icon
-	if MinimapMailFrame then
-		if K.IsNewPatch then
-			hooksecurefunc(MinimapMailFrame, "SetPoint", function(self, _, anchor)
-				if anchor ~= Minimap then
-					self:ClearAllPoints()
-					if C["DataText"].Time then
-						self:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 20)
-					else
-						self:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
-					end
+	if MinimapCluster.IndicatorFrame.MailFrame then
+		hooksecurefunc(MinimapCluster.IndicatorFrame.MailFrame, "SetPoint", function(self, _, anchor)
+			if anchor ~= Minimap then
+				self:ClearAllPoints()
+				if C["DataText"].Time then
+					self:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 20)
+				else
+					self:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
 				end
-			end)
-		else
-			MinimapMailFrame:ClearAllPoints()
-			if C["DataText"].Time then
-				MinimapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 20)
-			else
-				MinimapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
 			end
-		end
-		MinimapMailFrame:SetFrameLevel(11)
+		end)
+		MinimapCluster.IndicatorFrame.MailFrame:SetFrameLevel(11)
 		MiniMapMailIcon:SetSize(22, 16)
 	end
 

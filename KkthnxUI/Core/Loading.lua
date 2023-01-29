@@ -131,7 +131,6 @@ local function KKUI_VerifyDatabase()
 	KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList or {}
 	KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher or {}
 	KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells or {}
-	KkthnxUIDB.Variables[K.Realm][K.Name].DeathCount = KkthnxUIDB.Variables[K.Realm][K.Name].DeathCount or 0
 
 	-- Settings
 	KkthnxUIDB.Settings = KkthnxUIDB.Settings or {}

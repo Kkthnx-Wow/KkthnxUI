@@ -51,35 +51,27 @@ Engine[3] = {} -- L, Locale
 
 local K, C, L = unpack(Engine)
 
--- Deprecated
-LE_ITEM_QUALITY_ARTIFACT = Enum.ItemQuality.Artifact
-LE_ITEM_QUALITY_COMMON = Enum.ItemQuality.Common
-LE_ITEM_QUALITY_EPIC = Enum.ItemQuality.Epic
-LE_ITEM_QUALITY_HEIRLOOM = Enum.ItemQuality.Heirloom
-LE_ITEM_QUALITY_LEGENDARY = Enum.ItemQuality.Legendary
-LE_ITEM_QUALITY_POOR = Enum.ItemQuality.Poor
-LE_ITEM_QUALITY_RARE = Enum.ItemQuality.Rare
-LE_ITEM_QUALITY_UNCOMMON = Enum.ItemQuality.Uncommon
+-- Lib Info
+K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI")
+K.LibActionButton = LibStub("LibActionButton-1.0")
+K.LibChangeLog = LibStub("LibChangelog-KkthnxUI")
+K.LibDeflate = LibStub("LibDeflate-KkthnxUI")
+K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
+K.LibRangeCheck = LibStub("LibRangeCheck-2.0-KkthnxUI")
+K.LibSerialize = LibStub("LibSerialize-KkthnxUI")
+K.LibCustomGlow = LibStub("LibCustomGlow-1.0-KkthnxUI", true)
+K.LibUnfit = LibStub("Unfit-1.0-KkthnxUI")
+K.cargBags = Engine.cargBags
+K.oUF = Engine.oUF
 
-do
-	K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI")
-	K.LibActionButton = LibStub("LibActionButton-1.0")
-	K.LibChangeLog = LibStub("LibChangelog-KkthnxUI")
-	K.LibDeflate = LibStub("LibDeflate-KkthnxUI")
-	K.LibSharedMedia = LibStub("LibSharedMedia-3.0", true)
-	K.LibRangeCheck = LibStub("LibRangeCheck-2.0-KkthnxUI")
-	K.LibSerialize = LibStub("LibSerialize-KkthnxUI")
-	K.LibCustomGlow = LibStub("LibCustomGlow-1.0-KkthnxUI", true)
-	K.LibUnfit = LibStub("Unfit-1.0-KkthnxUI")
-	K.cargBags = Engine.cargBags
-	K.oUF = Engine.oUF
-end
-
+-- AddOn Info
 K.Title = GetAddOnMetadata(AddOnName, "Title")
 K.Version = GetAddOnMetadata(AddOnName, "Version")
 
+-- Functions
 K.Noop = function() end
 
+-- Player Info
 K.Name = UnitName("player")
 K.Class = select(2, UnitClass("player"))
 K.Race = UnitRace("player")
@@ -89,19 +81,27 @@ K.Client = GetLocale()
 K.Realm = GetRealmName()
 K.Sex = UnitSex("player")
 K.GUID = UnitGUID("player")
+
+-- Screen Info
 K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
 K.Resolution = string_format("%dx%d", K.ScreenWidth, K.ScreenHeight)
+
+-- UI Info
 K.TexCoords = { 0.08, 0.92, 0.08, 0.92 }
 K.EasyMenu = CreateFrame("Frame", "KKUI_EasyMenu", UIParent, "UIDropDownMenuTemplate")
+
+-- WoW Info
 K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
-K.IsNewPatch = K.TocVersion >= 100005 -- 10.0.5
+K.IsNewPatch = K.TocVersion >= 100007 -- 10.0.7
 
+-- Color Info
 K.GreyColor = "|CFFC0C0C0"
 K.InfoColor = "|CFF669DFF"
 K.InfoColorTint = "|CFF3ba1c5" -- 30% Tint
 K.SystemColor = "|CFFFFCC66"
 
+-- Media Info
 K.MediaFolder = "Interface\\AddOns\\KkthnxUI\\Media\\"
 K.UIFont = "KkthnxUIFont"
 K.UIFontSize = select(2, _G.KkthnxUIFont:GetFont())
@@ -113,12 +113,14 @@ K.LeftButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:51
 K.RightButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:333:410|t "
 K.ScrollButton = " |TInterface\\TUTORIALFRAME\\UI-TUTORIAL-FRAME:13:11:0:-1:512:512:12:66:127:204|t "
 
+-- Lists
 K.ClassList = {}
 K.ClassColors = {}
 K.QualityColors = {}
 K.AddOns = {}
 K.AddOnVersion = {}
 
+-- Flags
 K.PartyPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_PARTY, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
 K.RaidPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_RAID, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
 
@@ -157,8 +159,8 @@ for index, value in pairs(qualityColors) do
 	K.QualityColors[index] = { r = value.r, g = value.g, b = value.b }
 end
 K.QualityColors[-1] = { r = 1, g = 1, b = 1 }
-K.QualityColors[LE_ITEM_QUALITY_POOR] = { r = 0.61, g = 0.61, b = 0.61 }
-K.QualityColors[LE_ITEM_QUALITY_COMMON] = { r = 1, g = 1, b = 1 }
+K.QualityColors[Enum.ItemQuality.Poor] = { r = 0.61, g = 0.61, b = 0.61 }
+K.QualityColors[Enum.ItemQuality.Common] = { r = 1, g = 1, b = 1 }
 
 eventsFrame:SetScript("OnEvent", function(_, event, ...)
 	for func in pairs(events[event]) do
