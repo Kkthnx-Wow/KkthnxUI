@@ -8,6 +8,8 @@ local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
 local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
 local C_Container_UseContainerItem = C_Container.UseContainerItem
 local C_Timer_After = C_Timer.After
+local C_TransmogCollection_GetItemInfo = C_TransmogCollection.GetItemInfo
+local C_TransmogCollection_PlayerHasTransmogByItemInfo = C_TransmogCollection.PlayerHasTransmogByItemInfo
 local IsShiftKeyDown = IsShiftKeyDown
 
 local stop = true -- a flag used to stop the selling process
@@ -21,7 +23,7 @@ local function startSelling()
 	end
 
 	-- loop through all bags
-	for bag = 0, 4 do
+	for bag = 0, 5 do
 		-- loop through all slots in the current bag
 		for slot = 1, C_Container_GetContainerNumSlots(bag) do
 			-- if the stop flag is set, exit the function
@@ -34,9 +36,8 @@ local function startSelling()
 			if info then
 				local quality, link, noValue, itemID = info.quality, info.hyperlink, info.hasNoValue, info.itemID
 				local isInSet = C_Container_GetContainerItemEquipmentSetInfo(bag, slot)
-				local isTransmog = C_TransmogCollection.GetItemInfo(itemID) or C_TransmogCollection.PlayerHasTransmogByItemInfo(itemID) -- check if the item is transmog
-				-- check if the item meets the criteria for selling (skip if transmog or in set)
-				if link and not noValue and not isInSet and not isTransmog and not Module:IsPetTrashCurrency(itemID) and (quality == 0 or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID]) and not cache["b" .. bag .. "s" .. slot] then
+				local hasTransmog = not C_TransmogCollection_GetItemInfo(link) or C_TransmogCollection_PlayerHasTransmogByItemInfo(link)
+				if link and not noValue and not isInSet and not Module:IsPetTrashCurrency(itemID) and hasTransmog and (quality == 0 or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[itemID]) and not cache["b" .. bag .. "s" .. slot] then
 					cache["b" .. bag .. "s" .. slot] = true
 					C_Container_UseContainerItem(bag, slot)
 					C_Timer_After(0.15, startSelling)

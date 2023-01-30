@@ -11,7 +11,6 @@ local C_VoiceChat_GetMemberName = C_VoiceChat.GetMemberName
 local C_VoiceChat_SetPortraitTexture = C_VoiceChat.SetPortraitTexture
 local CreateFrame = CreateFrame
 local UIParent = UIParent
-local Voice_GetVoiceChannelNotificationColor = Voice_GetVoiceChannelNotificationColor
 
 Module.voiceTalkingList = {}
 
@@ -102,16 +101,20 @@ VoiceActivityEventFrame:SetScript("OnEvent", function(_, event, ...)
 end)
 
 function Module:CreateVoiceActivity()
-	VoiceActivityEventFrame:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED")
-	VoiceActivityEventFrame:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED")
-	VoiceActivityEventFrame:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED")
-	VoiceActivityEventFrame:RegisterEvent("VOICE_CHAT_COMMUNICATION_MODE_CHANGED")
-	VoiceActivityEventFrame:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_REMOVED")
-	VoiceActivityEventFrame:RegisterEvent("VOICE_CHAT_CHANNEL_REMOVED")
-	VoiceActivityEventFrame:RegisterEvent("VOICE_CHAT_CHANNEL_DEACTIVATED")
+	-- Register voice activity events
+	for i, event in ipairs({
+		"VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED",
+		"VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED",
+		"VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED",
+		"VOICE_CHAT_COMMUNICATION_MODE_CHANGED",
+		"VOICE_CHAT_CHANNEL_MEMBER_REMOVED",
+		"VOICE_CHAT_CHANNEL_REMOVED",
+		"VOICE_CHAT_CHANNEL_DEACTIVATED",
+	}) do
+		VoiceActivityEventFrame:RegisterEvent(event)
+	end
 	_G.VoiceActivityManager:UnregisterAllEvents()
 
-	-- Chat Heads Frame
 	Module.ChatHeadFrame = CreateFrame("Frame", "KKUI_ChatHeadFrame", UIParent)
 	Module.ChatHeadFrame:SetPoint("LEFT", UIParent, "LEFT", 18, -280)
 	Module.ChatHeadFrame:SetSize(200, 20)
@@ -120,18 +123,17 @@ function Module:CreateVoiceActivity()
 	local CHAT_MAX_HEADS = 5
 	local CHAT_HEAD_HEIGHT = 20
 	for i = 1, CHAT_MAX_HEADS do
-		local chatHead = CreateFrame("Frame", "KKUI_ChatHeadFrame" .. i, Module.ChatHeadFrame)
+		local chatHead = CreateFrame("Frame", "KKUI_ChatHead" .. i, Module.ChatHeadFrame)
 		chatHead:SetSize(200, CHAT_HEAD_HEIGHT)
 
 		chatHead.Portrait = CreateFrame("Frame", nil, chatHead)
-		chatHead.Portrait:SetWidth(CHAT_HEAD_HEIGHT)
-		chatHead.Portrait:SetHeight(CHAT_HEAD_HEIGHT)
+		chatHead.Portrait:SetSize(CHAT_HEAD_HEIGHT, CHAT_HEAD_HEIGHT)
 		chatHead.Portrait:SetPoint("TOPLEFT", chatHead, "TOPLEFT")
 		chatHead.Portrait:CreateBorder()
 
-		chatHead.Portrait.texture = chatHead.Portrait:CreateTexture(nil, "OVERLAY")
-		chatHead.Portrait.texture:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-		chatHead.Portrait.texture:SetAllPoints(chatHead.Portrait)
+		chatHead.Portrait.Texture = chatHead.Portrait:CreateTexture(nil, "OVERLAY")
+		chatHead.Portrait.Texture:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+		chatHead.Portrait.Texture:SetAllPoints(chatHead.Portrait)
 
 		chatHead.Name = chatHead:CreateFontString(nil, "OVERLAY")
 		chatHead.Name:SetFontObject(K.UIFont)
@@ -139,18 +141,17 @@ function Module:CreateVoiceActivity()
 		chatHead.Name:SetPoint("LEFT", chatHead.Portrait, "RIGHT", 6, 0)
 
 		chatHead.StatusBar = CreateFrame("StatusBar", nil, chatHead)
-		chatHead.StatusBar:SetOrientation("Vertical")
+		chatHead.StatusBar:SetOrientation("VERTICAL")
 		chatHead.StatusBar:SetPoint("RIGHT", chatHead.Portrait, "LEFT", -6, 0)
-		chatHead.StatusBar:SetWidth(8)
-		chatHead.StatusBar:SetHeight(CHAT_HEAD_HEIGHT)
+		chatHead.StatusBar:SetSize(8, CHAT_HEAD_HEIGHT)
 		chatHead.StatusBar:CreateBorder()
 		chatHead.StatusBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 		chatHead.StatusBar:SetMinMaxValues(0, 1)
 
-		chatHead.StatusBar.anim = CreateAnimationGroup(chatHead.StatusBar)
-		chatHead.StatusBar.anim.progress = chatHead.StatusBar.anim:CreateAnimation("Progress")
-		chatHead.StatusBar.anim.progress:SetEasing("Out")
-		chatHead.StatusBar.anim.progress:SetDuration(0.3)
+		chatHead.StatusBar.Anim = CreateAnimationGroup(chatHead.StatusBar)
+		chatHead.StatusBar.Anim.Progress = chatHead.StatusBar.Anim:CreateAnimation("Progress")
+		chatHead.StatusBar.Anim.Progress:SetEasing("Out")
+		chatHead.StatusBar.Anim.Progress:SetDuration(0.3)
 
 		chatHead:Hide()
 		Module.ChatHeadFrame[i] = chatHead

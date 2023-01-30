@@ -6,12 +6,10 @@ local starttime, duration, usingspell
 local GetTime = GetTime
 
 local function OnUpdateSpark(self)
-	self.Spark:ClearAllPoints()
 	local elapsed = GetTime() - starttime
 	local perc = elapsed / duration
 	if perc > 1 then
 		self:Hide()
-		return
 	else
 		self.Spark:SetPoint("CENTER", self, "LEFT", self.width * perc, 0)
 	end
@@ -30,13 +28,12 @@ local function Update(self)
 	local bar = self.GCD
 	local start, dur = GetSpellCooldown(61304)
 	if dur and dur > 0 and dur <= 2 then
-		usingspell = 1
-		starttime = start
-		duration = dur
 		bar:Show()
-		return
+		usingspell = 1
+		starttime, duration = start, dur
 	elseif usingspell == 1 and dur == 0 then
 		bar:Hide()
+		usingspell = 0
 	end
 end
 
