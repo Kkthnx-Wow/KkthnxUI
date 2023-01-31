@@ -20,6 +20,31 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.4.7] - 2023-1-31",
+		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
+		Sections = {
+
+			{
+				Header = "Quote",
+				Entries = {
+					"Programs must be written for people to read, and only incidentally for machines to execute - Harold Abelson and Gerald Jay Sussman",
+				},
+			},
+
+			{
+				Header = "General",
+				Entries = {
+					"Optimized a lot of code for improved performance",
+					"Fixed various performance issues throughout the project",
+					"Improved KkthnxUI across the board",
+
+					"Don't forget to join our Discord for more updates and to connect with the community!",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.4.6] - 2023-1-22",
 		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
 		Sections = {
