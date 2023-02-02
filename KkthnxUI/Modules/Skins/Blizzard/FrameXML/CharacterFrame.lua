@@ -101,31 +101,45 @@ tinsert(C.defaultThemes, function()
 		local slot = _G["Character" .. slots[i] .. "Slot"]
 		local cooldown = _G["Character" .. slots[i] .. "SlotCooldown"]
 
+		-- Strip textures and set slot size
 		slot:StripTextures()
 		slot:SetSize(36, 36)
+
+		-- Set slot icon coordinates
 		slot.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+
+		-- Hide icon border
 		slot.IconBorder:SetAlpha(0)
+
+		-- Create border for the slot
 		slot:CreateBorder()
+
+		-- Set cooldown to cover entire slot
 		cooldown:SetAllPoints()
 
+		-- Set ignore texture
 		slot.ignoreTexture:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Transparent")
+
+		-- Set atlas for Icon Overlay
 		slot.IconOverlay:SetAtlas("CosmeticIconFrame")
 		slot.IconOverlay:SetPoint("TOPLEFT", 1, -1)
 		slot.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
 		slot.IconBorder:SetAlpha(0)
 
+		-- Hook IconBorder to set color for slot border
 		hooksecurefunc(slot.IconBorder, "SetVertexColor", function(_, r, g, b)
 			slot.KKUI_Border:SetVertexColor(r, g, b)
 		end)
-
 		hooksecurefunc(slot.IconBorder, "Hide", function()
 			slot.KKUI_Border:SetVertexColor(1, 1, 1)
 		end)
 
+		-- Set up popout button
 		local popout = slot.popoutButton
 		popout:SetNormalTexture("")
 		popout:SetHighlightTexture("")
 
+		-- Create arrow for popout button
 		local arrow = popout:CreateTexture(nil, "OVERLAY")
 		arrow:SetSize(16, 16)
 		if slot.verticalFlyout then
@@ -137,9 +151,11 @@ tinsert(C.defaultThemes, function()
 		end
 		popout.arrow = arrow
 
+		-- Hook scripts for popout button
 		popout:HookScript("OnEnter", clearPopout)
 		popout:HookScript("OnLeave", colourPopout)
 
+		-- Hook DisplayAsAzeriteItem and DisplayAsAzeriteEmpoweredItem
 		hooksecurefunc(slot, "DisplayAsAzeriteItem", UpdateAzeriteItem)
 		hooksecurefunc(slot, "DisplayAsAzeriteEmpoweredItem", UpdateAzeriteEmpoweredItem)
 	end

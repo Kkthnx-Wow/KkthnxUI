@@ -229,11 +229,12 @@ function Module:CreateStyle()
 		return
 	end
 
+	local MinimapMailFrame = MinimapCluster.IndicatorFrame.MailFrame
+
 	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, "BackdropTemplate")
 	minimapMailPulse:SetBackdrop({ edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12 })
 	minimapMailPulse:SetPoint("TOPLEFT", minimapBorder, -5, 5)
 	minimapMailPulse:SetPoint("BOTTOMRIGHT", minimapBorder, 5, -5)
-	minimapMailPulse:SetBackdropBorderColor(1, 1, 0, 0.8)
 	minimapMailPulse:Hide()
 
 	local anim = minimapMailPulse:CreateAnimationGroup()
@@ -244,19 +245,30 @@ function Module:CreateStyle()
 	anim.fader:SetDuration(1)
 	anim.fader:SetSmoothing("OUT")
 
-	local function updateMinimapBorderAnimation()
-		if not InCombatLockdown() then
-			if C_Calendar_GetNumPendingInvites() > 0 or MinimapCluster.IndicatorFrame.MailFrame:IsShown() and not IsInInstance() then
-				if not anim:IsPlaying() then
-					minimapMailPulse:Show()
-					anim:Play()
-				end
-			else
-				if anim and anim:IsPlaying() then
-					anim:Stop()
-					minimapMailPulse:Hide()
-				end
+	-- Add comments to describe the purpose of the function
+	local function updateMinimapBorderAnimation(event)
+		local borderColor = nil
+
+		-- If player enters combat, set border color to red
+		if event == "PLAYER_REGEN_DISABLED" then
+			borderColor = { 1, 0, 0, 0.8 }
+		elseif not InCombatLockdown() then
+			if C_Calendar.GetNumPendingInvites() > 0 or MinimapMailFrame:IsShown() then
+				-- If there are pending calendar invites or minimap mail frame is shown, set border color to yellow
+				borderColor = { 1, 1, 0, 0.8 }
 			end
+		end
+
+		-- If a border color was set, show the minimap mail pulse frame and play the animation
+		if borderColor then
+			minimapMailPulse:Show()
+			minimapMailPulse:SetBackdropBorderColor(unpack(borderColor))
+			anim:Play()
+		else
+			minimapMailPulse:Hide()
+			minimapMailPulse:SetBackdropBorderColor(1, 1, 0, 0.8)
+			-- Stop the animation
+			anim:Stop()
 		end
 	end
 	K:RegisterEvent("CALENDAR_UPDATE_PENDING_INVITES", updateMinimapBorderAnimation)
@@ -264,7 +276,7 @@ function Module:CreateStyle()
 	K:RegisterEvent("PLAYER_REGEN_ENABLED", updateMinimapBorderAnimation)
 	K:RegisterEvent("UPDATE_PENDING_MAIL", updateMinimapBorderAnimation)
 
-	MinimapCluster.IndicatorFrame.MailFrame:HookScript("OnHide", function()
+	MinimapMailFrame:HookScript("OnHide", function()
 		if InCombatLockdown() then
 			return
 		end
@@ -274,6 +286,14 @@ function Module:CreateStyle()
 			minimapMailPulse:Hide()
 		end
 	end)
+end
+
+local function ToggleLandingPage(_, ...)
+	if not C_Garrison.HasGarrison(...) then
+		UIErrorsFrame:AddMessage(K.InfoColor .. CONTRIBUTION_TOOLTIP_UNLOCKED_WHEN_ACTIVE)
+		return
+	end
+	ShowGarrisonLandingPage(...)
 end
 
 function Module:ReskinRegions()
@@ -374,33 +394,62 @@ function Module:ReskinRegions()
 		end
 	end
 
-	local function updateFlagAnchor(frame, _, _, _, _, _, force)
+	-- Difficulty Flags
+	local instDifficulty = MinimapCluster.InstanceDifficulty
+	if instDifficulty then
+		local function updateFlagAnchor(frame, _, _, _, _, _, force)
+			if force then
+				return
+			end
+			frame:ClearAllPoints()
+			frame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 2, 2, true)
+		end
+		instDifficulty:SetParent(Minimap)
+		instDifficulty:SetScale(0.7)
+		updateFlagAnchor(instDifficulty)
+		hooksecurefunc(instDifficulty, "SetPoint", updateFlagAnchor)
+
+		local function replaceFlag(self)
+			self:SetTexture(K.MediaFolder .. "Minimap\\Flag")
+		end
+		local function reskinDifficulty(frame)
+			frame.Border:Hide()
+			replaceFlag(frame.Background)
+			hooksecurefunc(frame.Background, "SetAtlas", replaceFlag)
+		end
+		reskinDifficulty(instDifficulty.Instance)
+		reskinDifficulty(instDifficulty.Guild)
+		reskinDifficulty(instDifficulty.ChallengeMode)
+	end
+
+	local function updateMapAnchor(frame, _, _, _, _, _, force)
+		-- exit if the 'force' argument is passed in
 		if force then
 			return
 		end
 
+		-- reset the frame's position
 		frame:ClearAllPoints()
-		frame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0, true)
-	end
-	MinimapCluster.InstanceDifficulty:SetParent(Minimap)
-	MinimapCluster.InstanceDifficulty:SetScale(0.9)
-	updateFlagAnchor(MinimapCluster.InstanceDifficulty)
-	hooksecurefunc(MinimapCluster.InstanceDifficulty, "SetPoint", updateFlagAnchor)
 
-	-- Mail icon
-	if MinimapCluster.IndicatorFrame.MailFrame then
-		hooksecurefunc(MinimapCluster.IndicatorFrame.MailFrame, "SetPoint", function(self, _, anchor)
-			if anchor ~= Minimap then
-				self:ClearAllPoints()
-				if C["DataText"].Time then
-					self:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 20)
-				else
-					self:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
-				end
-			end
-		end)
-		MinimapCluster.IndicatorFrame.MailFrame:SetFrameLevel(11)
-		MiniMapMailIcon:SetSize(22, 16)
+		-- set the frame's position based on the value of C["DataText"].Time
+		if C["DataText"].Time then
+			frame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 20)
+		else
+			frame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
+		end
+	end
+
+	-- get the indicator frame from the MinimapCluster object
+	local indicatorFrame = MinimapCluster.IndicatorFrame
+	if indicatorFrame then
+		-- set the initial position of the frame
+		updateMapAnchor(indicatorFrame)
+
+		-- hook into the SetPoint function to update the frame's position if necessary
+		hooksecurefunc(indicatorFrame, "SetPoint", updateMapAnchor)
+
+		-- set the frame level to 11 to ensure it appears above other elements
+		indicatorFrame:SetFrameLevel(11)
 	end
 
 	-- Invites Icon
@@ -509,39 +558,66 @@ function Module:HideMinimapClock()
 	end
 end
 
+-- Show Calendar Function
 function Module:ShowCalendar()
+	-- Check if Calendar is enabled in config
 	if C["Minimap"].Calendar then
+		-- If the Calendar is not styled yet
 		if not GameTimeFrame.styled then
+			-- Set the parent frame as Minimap
 			GameTimeFrame:SetParent(Minimap)
+			-- Set the frame level to 16
 			GameTimeFrame:SetFrameLevel(16)
+			-- Clear any existing points
 			GameTimeFrame:ClearAllPoints()
+			-- Set the position to top right of the Minimap with a 4 pixel offset
 			GameTimeFrame:SetPoint("TOPRIGHT", Minimap, -4, -4)
+			-- Set the hit rect insets to 0
 			GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
+			-- Set the size to 22x22
 			GameTimeFrame:SetSize(22, 22)
 
+			-- Create a font string
 			local fs = GameTimeFrame:CreateFontString(nil, "OVERLAY")
+			-- Clear any existing points
 			fs:ClearAllPoints()
+			-- Set the position to the center with a -5 pixel offset
 			fs:SetPoint("CENTER", 0, -5)
+			-- Set the font object
 			fs:SetFontObject(K.UIFont)
+			-- Set the font to the selected font, with a size of 12 and the selected font style
 			fs:SetFont(select(1, fs:GetFont()), 12, select(3, fs:GetFont()))
+			-- Set the text color to black
 			fs:SetTextColor(0, 0, 0)
+			-- Set the shadow offset to 0, 0
 			fs:SetShadowOffset(0, 0)
+			-- Set the alpha to 0.9
 			fs:SetAlpha(0.9)
 
+			-- Secure hook for "GameTimeFrame_SetDate"
 			hooksecurefunc("GameTimeFrame_SetDate", function()
+				-- Set the normal texture
 				GameTimeFrame:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\Calendar.blp")
+				-- Set the pushed texture
 				GameTimeFrame:SetPushedTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\Calendar.blp")
+				-- Set the highlight texture to 0
 				GameTimeFrame:SetHighlightTexture(0)
+				-- Set the normal texture's TexCoord to 0, 1, 0, 1
 				GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
+				-- Set the pushed texture's TexCoord to 0, 1, 0, 1
 				GameTimeFrame:GetPushedTexture():SetTexCoord(0, 1, 0, 1)
 
+				-- Set the text to the current calendar month day
 				fs:SetText(C_DateAndTime.GetCurrentCalendarTime().monthDay)
 			end)
 
+			-- Set style to true
 			GameTimeFrame.styled = true
 		end
+		-- Show the GameTimeFrame
 		GameTimeFrame:Show()
 	else
+		-- Hide the GameTimeFrame
 		GameTimeFrame:Hide()
 	end
 end

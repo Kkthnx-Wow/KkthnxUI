@@ -32,19 +32,19 @@ local function GetBestScale()
 end
 
 local EnglishClassName = {
-	DEATHKNIGHT = K.AddClassIconToColor("DEATHKNIGHT", "|CFFC41F3B") .. "Death Knight",
-	DEMONHUNTER = K.AddClassIconToColor("DEMONHUNTER", "|CFFA330C9") .. "Demon Hunter",
-	DRUID = K.AddClassIconToColor("DRUID", "|CFFFF7D0A") .. "Druid",
-	EVOKER = K.AddClassIconToColor("EVOKER", "|CFF33937F") .. "Evoker",
-	HUNTER = K.AddClassIconToColor("HUNTER", "|CFFA9D271") .. "Hunter",
-	MAGE = K.AddClassIconToColor("MAGE", "|CFF40C7EB") .. "Mage",
-	MONK = K.AddClassIconToColor("MONK", "|CFF00FF96") .. "Monk",
-	PALADIN = K.AddClassIconToColor("PALADIN", "|CFFF58CBA") .. "Paladin",
-	PRIEST = K.AddClassIconToColor("PRIEST", "|CFFFFFFFF") .. "Priest",
-	ROGUE = K.AddClassIconToColor("ROGUE", "|CFFFFF569") .. "Rogue",
-	SHAMAN = K.AddClassIconToColor("SHAMAN", "|CFF0070DE") .. "Shaman",
-	WARLOCK = K.AddClassIconToColor("WARLOCK", "|CFF8787ED") .. "Warlock",
-	WARRIOR = K.AddClassIconToColor("WARRIOR", "|CFFC79C6E") .. "Warrior",
+	DEATHKNIGHT = K.GetClassIconAndColor("DEATHKNIGHT", "|CFFC41F3B") .. "Death Knight",
+	DEMONHUNTER = K.GetClassIconAndColor("DEMONHUNTER", "|CFFA330C9") .. "Demon Hunter",
+	DRUID = K.GetClassIconAndColor("DRUID", "|CFFFF7D0A") .. "Druid",
+	EVOKER = K.GetClassIconAndColor("EVOKER", "|CFF33937F") .. "Evoker",
+	HUNTER = K.GetClassIconAndColor("HUNTER", "|CFFA9D271") .. "Hunter",
+	MAGE = K.GetClassIconAndColor("MAGE", "|CFF40C7EB") .. "Mage",
+	MONK = K.GetClassIconAndColor("MONK", "|CFF00FF96") .. "Monk",
+	PALADIN = K.GetClassIconAndColor("PALADIN", "|CFFF58CBA") .. "Paladin",
+	PRIEST = K.GetClassIconAndColor("PRIEST", "|CFFFFFFFF") .. "Priest",
+	ROGUE = K.GetClassIconAndColor("ROGUE", "|CFFFFF569") .. "Rogue",
+	SHAMAN = K.GetClassIconAndColor("SHAMAN", "|CFF0070DE") .. "Shaman",
+	WARLOCK = K.GetClassIconAndColor("WARLOCK", "|CFF8787ED") .. "Warlock",
+	WARRIOR = K.GetClassIconAndColor("WARRIOR", "|CFFC79C6E") .. "Warrior",
 }
 
 local EnglishSpecName = {

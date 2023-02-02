@@ -22,21 +22,6 @@ local INFO = INFO
 local OKAY = OKAY
 local SlashCmdList = SlashCmdList
 
--- Rewrite AddClassIconToColor so we can have 2 functions. 1 for class icon and 1 for class color :D
-local DeathKnightIconColor = K.AddClassIconToColor("DEATHKNIGHT", "|CFFC41F3B", 16)
-local DemonHunterIconColor = K.AddClassIconToColor("DEMONHUNTER", "|CFFA330C9", 16)
-local DruidIconColor = K.AddClassIconToColor("DRUID", "|CFFFF7D0A", 16)
-local EvokerIconColor = K.AddClassIconToColor("EVOKER", "|CFF33937F", 16)
-local HunterIconColor = K.AddClassIconToColor("HUNTER", "|CFFA9D271", 16)
-local MageIconColor = K.AddClassIconToColor("MAGE", "|CFF40C7EB", 16)
-local MonkIconColor = K.AddClassIconToColor("MONK", "|CFF00FF96", 16)
-local PaladinIconColor = K.AddClassIconToColor("PALADIN", "|CFFF58CBA", 16)
-local PriestIconColor = K.AddClassIconToColor("PRIEST", "|CFFFFFFFF", 16)
-local RogueIconColor = K.AddClassIconToColor("ROGUE", "|CFFFFF569", 16)
-local ShamanIconColor = K.AddClassIconToColor("SHAMAN", "|CFF0070DE", 16)
-local WarlockIconColor = K.AddClassIconToColor("WARLOCK", "|CFF8787ED", 16)
-local WarriorIconColor = K.AddClassIconToColor("WARRIOR", "|CFFC79C6E", 16)
-
 local BGColor = { 0.2, 0.2, 0.2 }
 local BrightColor = { 0.35, 0.35, 0.35 }
 local R, G, B = K.r, K.g, K.b
@@ -76,13 +61,16 @@ local LastActiveWindow
 local MySelectedProfile = K.Realm .. "-" .. K.Name
 
 local CreditLines = {
-	{ type = "header", text = "PATREONS" },
+	{ type = "header", text = "PATREONS", color = "C0C0C0" },
+	{ type = "header", text = "" },
 	{ type = "header", text = "Tier 1" },
 	{ type = "header", text = "Tier 2" },
 	{ type = "header", text = "Tier 3" },
 	{ type = "name", text = "Shovil", class = "WARRIOR" },
 	{ type = "header", text = "Tier 4" },
+	{ type = "header", text = "" },
 	{ type = "header", text = "CREDITS" },
+	{ type = "header", text = "" },
 	{ type = "name", text = "Aftermathh" },
 	{ type = "name", text = "Alteredcross", class = "ROGUE" },
 	{ type = "name", text = "Alza" },
@@ -94,8 +82,8 @@ local CreditLines = {
 	{ type = "name", text = "Cassamarra", class = "HUNTER" },
 	{ type = "name", text = "Darth Predator" },
 	{ type = "name", text = "Elv", addOn = "(|cff1784d1ElvUI|r)" },
-	{ type = "name", text = PriestIconColor .. "|cffe31c73Faffi|r|cfffc4796GS|r", class = "PRIEST", color = "e31c73" },
-	{ type = "name", text = DruidIconColor .. "Goldpaw", class = "DRUID", addOn = "(|c00000002|r|cff7284abA|r|cff6a7a9ez|r|cff617092e|r|cff596785r|r|cff505d78i|r|cff48536bt|r|cff3f495fe|r|cffffffffUI|r)" },
+	{ type = "name", text = K.GetClassIcon("PRIEST") .. "|cffe31c73Faffi|r|cfffc4796GS|r", class = "PRIEST", color = "e31c73" },
+	{ type = "name", text = K.GetClassIcon("DRUID") .. "Goldpaw", class = "DRUID", addOn = "(|c00000002|r|cff7284abA|r|cff6a7a9ez|r|cff617092e|r|cff596785r|r|cff505d78i|r|cff48536bt|r|cff3f495fe|r|cffffffffUI|r)" },
 	{ type = "name", text = "Haleth" },
 	{ type = "name", text = "Haste" },
 	{ type = "name", text = "Hungtar" },
@@ -1739,6 +1727,9 @@ local function SetUpCredits(frame)
 
 		if entry.type == "header" then
 			Line.Text:SetText(entry.text)
+			if entry.color then
+				Line.Text:SetTextColor(tonumber(entry.color:sub(1, 2), 16) / 255, tonumber(entry.color:sub(3, 4), 16) / 255, tonumber(entry.color:sub(5, 6), 16) / 255)
+			end
 		elseif entry.type == "name" then
 			if entry.class then
 				Line.Text:SetTextColor(K.ClassColors[entry.class].r, K.ClassColors[entry.class].g, K.ClassColors[entry.class].b)

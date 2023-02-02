@@ -30,11 +30,18 @@ local UnitIsPlayer = UnitIsPlayer
 local UnitIsTapDenied = UnitIsTapDenied
 local UnitReaction = UnitReaction
 
+-- Variables to store item level data, strings for parsing item level and enchant information
 local iLvlDB = {}
-local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
-local itemLevelString = "^" .. string_gsub(ITEM_LEVEL, "%%d", "")
+local enchantString = string.gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
+local itemLevelString = "^" .. string.gsub(ITEM_LEVEL, "%%d", "")
+
+-- Variables to store time-related values in seconds
 local day, hour, minute, pointFive = 86400, 3600, 60, 0.5
+
+-- Maps rectangles for storing positional information
 local mapRects = {}
+
+-- Temporary 2D vector for calculations
 local tempVec2D = CreateVector2D(0, 0)
 
 do
@@ -90,17 +97,24 @@ do
 	end
 
 	-- Table
+	--- Function to copy values from one table to another
+	-- @param source Table to copy from
+	-- @param target Table to copy to
 	function K.CopyTable(source, target)
+		-- Loop through all key-value pairs in the source table
 		for key, value in pairs(source) do
+			-- If the value is a table, copy its contents recursively
 			if type(value) == "table" then
+				-- If there's no key in the target table, create it
 				if not target[key] then
 					target[key] = {}
 				end
-
+				-- Copy the contents of the sub-table
 				for k in pairs(value) do
 					target[key][k] = value[k]
 				end
 			else
+				-- If the value is not a table, simply copy it
 				target[key] = value
 			end
 		end
@@ -120,19 +134,55 @@ do
 		end
 	end
 
-	function K.AddClassIconToColor(class, textColor, iconSize)
+	function K.GetClassIcon(class, iconSize)
 		local size = iconSize or 16
-		local color = textColor or "|CFFFFFFFF"
 
 		if class then
-			local classString = ""
 			local L, R, T, B = unpack(CLASS_ICON_TCOORDS[class])
 			if L then
 				local imageSize = 128
-				classString = "|TInterface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES:" .. size .. ":" .. size .. ":0:0:" .. imageSize .. ":" .. imageSize .. ":" .. (L * imageSize) .. ":" .. (R * imageSize) .. ":" .. (T * imageSize) .. ":" .. (B * imageSize) .. "|t" .. color
-				return classString
+				return "|TInterface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES:" .. size .. ":" .. size .. ":0:0:" .. imageSize .. ":" .. imageSize .. ":" .. (L * imageSize) .. ":" .. (R * imageSize) .. ":" .. (T * imageSize) .. ":" .. (B * imageSize) .. "|t"
 			end
 		end
+	end
+
+	function K.GetClassColor(class)
+		if class then
+			if class == "DEATHKNIGHT" then
+				return "|CFFC41F3B"
+			elseif class == "DEMONHUNTER" then
+				return "|CFFA330C9"
+			elseif class == "DRUID" then
+				return "|CFFFF7D0A"
+			elseif class == "EVOKER" then
+				return "|CFF33937F"
+			elseif class == "HUNTER" then
+				return "|CFFA9D271"
+			elseif class == "MAGE" then
+				return "|CFF40C7EB"
+			elseif class == "MONK" then
+				return "|CFF00FF96"
+			elseif class == "PALADIN" then
+				return "|CFFF58CBA"
+			elseif class == "PRIEST" then
+				return "|CFFFFFFFF"
+			elseif class == "ROGUE" then
+				return "|CFFFFF569"
+			elseif class == "SHAMAN" then
+				return "|CFF0070DE"
+			elseif class == "WARLOCK" then
+				return "|CFF8787ED"
+			elseif class == "WARRIOR" then
+				return "|CFFC79C6E"
+			end
+		end
+	end
+
+	function K.GetClassIconAndColor(class, textColor, iconSize)
+		local classIcon = K.GetClassIcon(class, iconSize)
+		local classColor = K.GetClassColor(class)
+
+		return classIcon .. classColor
 	end
 
 	-- Atlas info
@@ -141,13 +191,21 @@ do
 		if not file then
 			return
 		end
-	-- stylua: ignore
-	local width, height, txLeft, txRight, txTop, txBottom = info.width, info.height, info.leftTexCoord, info.rightTexCoord, info.topTexCoord, info.bottomTexCoord
-		local atlasWidth = width / (txRight - txLeft)
-		local atlasHeight = height / (txBottom - txTop)
 
-	-- stylua: ignore
-	return string_format("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t", file, (sizeX or 0), (sizeY or 0), atlasWidth, atlasHeight, atlasWidth * txLeft, atlasWidth * txRight, atlasHeight * txTop, atlasHeight * txBottom)
+		local width = info.width
+		local height = info.height
+		local left = info.leftTexCoord
+		local right = info.rightTexCoord
+		local top = info.topTexCoord
+		local bottom = info.bottomTexCoord
+
+		local atlasWidth = width / (right - left)
+		local atlasHeight = height / (bottom - top)
+
+		sizeX = sizeX or 0
+		sizeY = sizeY or 0
+
+		return string_format("|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t", file, sizeX, sizeY, atlasWidth, atlasHeight, atlasWidth * left, atlasWidth * right, atlasHeight * top, atlasHeight * bottom)
 	end
 end
 

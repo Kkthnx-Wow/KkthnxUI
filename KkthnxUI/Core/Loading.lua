@@ -67,28 +67,36 @@ local function KKUI_LoadCustomSettings()
 	end
 end
 
--- Create the profile name
--- @param server the name of the server
--- @param nickname the nickname of the player
--- @return the profile name
 local function createProfileName(server, nickname)
 	return server .. "-" .. nickname
 end
 
--- Load profiles for the user interface
 local function KKUI_LoadProfiles()
+	-- Load the `Profiles` table and `Options` menu from the "General" table
 	local Profiles = C["General"].Profiles
 	local Menu = Profiles.Options
+
+	-- Load the `GUISettings` table from `KkthnxUIDB.Settings`
 	local GUISettings = KkthnxUIDB.Settings
+
+	-- Return if `GUISettings` is not found
 	if not GUISettings then
 		return
 	end
 
+	-- Loop through each server and its table in `GUISettings`
 	for Server, Table in pairs(GUISettings) do
+		-- Loop through each nickname in the table
 		for Nickname in pairs(Table) do
+			-- Create a profile name from the server and nickname
 			local ProfileName = createProfileName(Server, Nickname)
+
+			-- Get the current profile name
 			local MyProfileName = K.Realm .. "-" .. K.Name
+
+			-- If the current profile name is different from the new profile name
 			if MyProfileName ~= ProfileName then
+				-- Add the new profile name to the menu
 				Menu[ProfileName] = ProfileName
 			end
 		end
@@ -103,39 +111,42 @@ local function KKUI_VerifyDatabase()
 	KkthnxUIDB.Variables = KkthnxUIDB.Variables or {}
 	KkthnxUIDB.Variables[K.Realm] = KkthnxUIDB.Variables[K.Realm] or {}
 	KkthnxUIDB.Variables[K.Realm][K.Name] = KkthnxUIDB.Variables[K.Realm][K.Name] or {}
-	KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest = KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuest or false
-	KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC = KkthnxUIDB.Variables[K.Realm][K.Name].AutoQuestIgnoreNPC or {}
-	KkthnxUIDB.Variables[K.Realm][K.Name].BindType = KkthnxUIDB.Variables[K.Realm][K.Name].BindType or 1
+
+	local charData = KkthnxUIDB.Variables[K.Realm][K.Name]
+	charData.AutoQuest = charData.AutoQuest or false
+	charData.AutoQuestIgnoreNPC = charData.AutoQuestIgnoreNPC or {}
+	charData.BindType = charData.BindType or 1
 
 	-- Transfer favourite items since we made a custom filter
-	if KkthnxUIDB and KkthnxUIDB.Variables and KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems and next(KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems) then
-		for itemID in pairs(KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems) do
-			if not KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems then
-				KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems = {}
+	if KkthnxUIDB and KkthnxUIDB.Variables and charData.FavouriteItems and next(charData.FavouriteItems) then
+		for itemID in pairs(charData.FavouriteItems) do
+			if not charData.CustomItems then
+				charData.CustomItems = {}
 			end
-			KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems[itemID] = 1
+			charData.CustomItems[itemID] = 1
 		end
-		KkthnxUIDB.Variables[K.Realm][K.Name].FavouriteItems = nil
+		charData.FavouriteItems = nil
 	end
 
-	KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems = KkthnxUIDB.Variables[K.Realm][K.Name].CustomItems or {}
-	KkthnxUIDB.Variables[K.Realm][K.Name].CustomNames = KkthnxUIDB.Variables[K.Realm][K.Name].CustomNames or {}
-	KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList = KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList or {}
-	KkthnxUIDB.Variables[K.Realm][K.Name].Mover = KkthnxUIDB.Variables[K.Realm][K.Name].Mover or {}
-	KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchMover = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchMover or {}
-	KkthnxUIDB.Variables[K.Realm][K.Name].Tracking = KkthnxUIDB.Variables[K.Realm][K.Name].Tracking or { PvP = {}, PvE = {} }
-	KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap = KkthnxUIDB.Variables[K.Realm][K.Name].RevealWorldMap or false
-	KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount = KkthnxUIDB.Variables[K.Realm][K.Name].SplitCount or 1
-	KkthnxUIDB.Variables[K.Realm][K.Name].TempAnchor = KkthnxUIDB.Variables[K.Realm][K.Name].TempAnchor or {}
-	KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD = KkthnxUIDB.Variables[K.Realm][K.Name].InternalCD or {}
-	KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList or {}
-	KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.Switcher or {}
-	KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells = KkthnxUIDB.Variables[K.Realm][K.Name].AuraWatchList.IgnoreSpells or {}
+	charData.CustomItems = charData.CustomItems or {}
+	charData.CustomNames = charData.CustomNames or {}
+	charData.CustomJunkList = charData.CustomJunkList or {}
+	charData.Mover = charData.Mover or {}
+	charData.AuraWatchMover = charData.AuraWatchMover or {}
+	charData.Tracking = charData.Tracking or { PvP = {}, PvE = {} }
+	charData.RevealWorldMap = charData.RevealWorldMap or false
+	charData.SplitCount = charData.SplitCount or 1
+	charData.TempAnchor = charData.TempAnchor or {}
+	charData.InternalCD = charData.InternalCD or {}
+	charData.AuraWatchList = charData.AuraWatchList or {}
+	charData.AuraWatchList.Switcher = charData.AuraWatchList.Switcher or {}
+	charData.AuraWatchList.IgnoreSpells = charData.AuraWatchList.IgnoreSpells or {}
 
 	-- Settings
 	KkthnxUIDB.Settings = KkthnxUIDB.Settings or {}
 	KkthnxUIDB.Settings[K.Realm] = KkthnxUIDB.Settings[K.Realm] or {}
 	KkthnxUIDB.Settings[K.Realm][K.Name] = KkthnxUIDB.Settings[K.Realm][K.Name] or {}
+
 	KkthnxUIDB.ChatHistory = KkthnxUIDB.ChatHistory or {}
 	KkthnxUIDB.Gold = KkthnxUIDB.Gold or {}
 	KkthnxUIDB.ShowSlots = KkthnxUIDB.ShowSlots or false

@@ -41,14 +41,28 @@ local hooksecurefunc = hooksecurefunc
 local C_NamePlate_SetNamePlateEnemyClickThrough = C_NamePlate.SetNamePlateEnemyClickThrough
 local C_NamePlate_SetNamePlateFriendlyClickThrough = C_NamePlate.SetNamePlateFriendlyClickThrough
 
+-- Cache for data of abilities used by players
 local aksCacheData = {}
+
+-- Custom unit data
 local customUnits = {}
+
+-- Group roles for players
 local groupRoles = {}
+
+-- List of players who have their power displayed
 local showPowerList = {}
 
-local hasExplosives
-local isInGroup
-local isInInstance
+-- Boolean to track if the player has explosives
+local hasExplosives = false
+
+-- Boolean to track if the player is in a group
+local isInGroup = false
+
+-- Boolean to track if the player is in an instance
+local isInInstance = false
+
+-- ID of the explosives item
 local explosivesID = 120651
 
 -- Unit classification
@@ -60,12 +74,16 @@ local NPClassifies = {
 }
 
 local ShowTargetNPCs = {
-	[165251] = true, -- 仙林狐狸
-	[174773] = true, -- 怨毒怪
+	[165251] = true, -- Fox of Xianlin
+	[174773] = true, -- Envious Monster
 }
 
 -- Init
 function Module:UpdatePlateCVars()
+	if InCombatLockdown() then
+		return
+	end
+
 	if C["Nameplate"].InsideView then
 		SetCVar("nameplateOtherTopInset", 0.05)
 		SetCVar("nameplateOtherBottomInset", 0.08)
@@ -171,16 +189,29 @@ function Module:UpdateUnitPower()
 end
 
 -- Off-tank threat color
+-- Function to refresh the group roles
 local function refreshGroupRoles()
+	-- Check if player is in raid or group
 	local isInRaid = IsInRaid()
 	isInGroup = isInRaid or IsInGroup()
+
+	-- Wipe the groupRoles table
 	table_wipe(groupRoles)
 
+	-- If player is in group
 	if isInGroup then
+		-- Get the number of players in group
 		local numPlayers = (isInRaid and GetNumGroupMembers()) or GetNumSubgroupMembers()
+
+		-- Define the unit prefix (raid or party)
 		local unit = (isInRaid and "raid") or "party"
+
+		-- Loop through each player in the group
 		for i = 1, numPlayers do
+			-- Define the unit index (e.g. raid1, party2)
 			local index = unit .. i
+
+			-- If the unit exists, add their name and role to the groupRoles table
 			if UnitExists(index) then
 				groupRoles[UnitName(index)] = UnitGroupRolesAssigned(index)
 			end
@@ -420,11 +451,15 @@ function Module:AddTargetIndicator(self)
 	animGroup:SetLooping("REPEAT")
 	local anim = animGroup:CreateAnimation("Path")
 	anim:SetDuration(1)
-	for i = 1, #points do
-		local point = anim:CreateControlPoint()
-		point:SetOrder(i)
-		point:SetOffset(0, points[i])
+
+	if points and #points > 0 then
+		for i = 1, #points do
+			local point = anim:CreateControlPoint()
+			point:SetOrder(i)
+			point:SetOffset(0, points[i])
+		end
 	end
+
 	TargetIndicator.TopArrowAnim = animGroup
 
 	TargetIndicator.RightArrow = TargetIndicator:CreateTexture(nil, "BACKGROUND", nil, -5)
@@ -486,13 +521,13 @@ function Module:UpdateQuestUnit(_, unit)
 		for i = 1, #data.lines do
 			local lineData = data.lines[i]
 			local argVal = lineData and lineData.args
-			if argVal[1] and argVal[1].intVal == 8 then
+			if argVal and argVal[1] and argVal[1].intVal == 8 then
 				local text = argVal[2] and argVal[2].stringVal
 				if text then
-					local current, goal = strmatch(text, "(%d+)/(%d+)")
-					local progress = strmatch(text, "(%d+)%%")
+					local current, goal = string.match(text, "(%d+)/(%d+)")
+					local progress = string.match(text, "(%d+)%%")
 					if current and goal then
-						questProgress = floor(goal - current)
+						questProgress = math.floor(tonumber(goal) - tonumber(current))
 						break
 					elseif progress then
 						questProgress = progress .. "%"
@@ -807,7 +842,6 @@ function Module:CreatePlates()
 	self.nameText:ClearAllPoints()
 	self.nameText:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 4)
 	self.nameText:SetPoint("BOTTOMRIGHT", self.levelText, "TOPRIGHT", -21, 4)
-	--self:Tag(self.nameText, "[name]")
 
 	self.npcTitle = K.CreateFontString(self, C["Nameplate"].NameTextSize - 1)
 	self.npcTitle:ClearAllPoints()
@@ -1233,13 +1267,13 @@ function Module:PostUpdatePlates(event, unit)
 			self.widgetContainer = blizzPlate.WidgetContainer
 			if self.widgetContainer then
 				self.widgetContainer:SetParent(self)
-				--self.widgetContainer:SetScale(1 / C["General"].UIScale)
+				self.widgetContainer:SetScale(1 / C["General"].UIScale)
 			end
 
 			self.softTargetFrame = blizzPlate.SoftTargetFrame
 			if self.softTargetFrame then
 				self.softTargetFrame:SetParent(self)
-				--self.softTargetFrame:SetScale(1 / C["General"].UIScale)
+				self.softTargetFrame:SetScale(1 / C["General"].UIScale)
 			end
 		end
 

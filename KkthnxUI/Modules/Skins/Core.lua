@@ -5,56 +5,69 @@ local table_wipe = table.wipe
 
 local IsAddOnLoaded = IsAddOnLoaded
 
+-- Tables to store default themes, registered themes and other skins
 C.defaultThemes = {}
 C.themes = {}
 C.otherSkins = {}
 
-function Module:RegisterSkin(addonName, func)
-	C.otherSkins[addonName] = func
+-- Function to register a skin for an external addon
+function Module:RegisterSkin(addonName, skinFunction)
+	C.otherSkins[addonName] = skinFunction
 end
 
-function Module:LoadSkins(list)
-	if not next(list) then
+-- Function to load skins from a given list
+function Module:LoadSkins(skinList)
+	-- Check if the list is empty
+	if not next(skinList) then
 		return
 	end
 
-	for addonName, func in pairs(list) do
+	-- Iterate through the list of skins
+	for addonName, skinFunction in pairs(skinList) do
 		local isLoaded, isFinished = IsAddOnLoaded(addonName)
 		if isLoaded and isFinished then
-			func()
-			list[addonName] = nil
+			-- Call the skin function if the addon is loaded
+			skinFunction()
+			skinList[addonName] = nil
 		end
 	end
 end
 
+-- Function to load default skins
 function Module:LoadDefaultSkins()
+	-- Return if either Aurora or AuroraClassic is loaded
 	if IsAddOnLoaded("AuroraClassic") or IsAddOnLoaded("Aurora") then
 		return
 	end
 
-	-- Reskin Blizzard UIs
-	for _, func in pairs(C.defaultThemes) do
-		func()
+	-- Load default themes
+	for _, defaultSkinFunction in pairs(C.defaultThemes) do
+		defaultSkinFunction()
 	end
 	table_wipe(C.defaultThemes)
 
+	-- Don't load Blizzard frame skins if the option is disabled
 	if not C["Skins"].BlizzardFrames then
 		table_wipe(C.themes)
 	end
 
-	Module:LoadSkins(C.themes) -- blizzard ui
-	Module:LoadSkins(C.otherSkins) -- other addons
+	-- Load skins for Blizzard frames and other addons
+	Module:LoadSkins(C.themes)
+	Module:LoadSkins(C.otherSkins)
 
+	-- Register an event to load skins when addons are loaded
 	K:RegisterEvent("ADDON_LOADED", function(_, addonName)
-		local func = C.themes[addonName]
-		if func then
-			func()
+		-- Load skin for a Blizzard frame
+		local blizzardSkinFunction = C.themes[addonName]
+		if blizzardSkinFunction then
+			blizzardSkinFunction()
 			C.themes[addonName] = nil
 		end
 
-		local func = C.otherSkins[addonName]
-		if func then
-			func()
+		-- Load skin for an external addon
+		local otherSkinFunction = C.otherSkins[addonName]
+		if otherSkinFunction then
+			otherSkinFunction()
 			C.otherSkins[addonName] = nil
 		end
 	end)

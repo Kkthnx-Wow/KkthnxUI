@@ -68,14 +68,23 @@ local Tracker = {
 	[136] = { 0.2, 0.8, 0.2 }, -- Mend Pet
 }
 
+-- Declare a local function to handle the OnUpdate event
 local function OnUpdate(self)
-	local Time = GetTime()
-	local Timeleft = self.Expiration - Time
-	local Duration = self.Duration
+	-- Get the current time
+	local currentTime = GetTime()
 
+	-- Calculate the time left by subtracting the current time from the expiration time
+	local timeLeft = self.Expiration - currentTime
+
+	-- Get the total duration of the timer
+	local totalDuration = self.Duration
+
+	-- Check if the self object has a SetMinMaxValues method
 	if self.SetMinMaxValues then
-		self:SetMinMaxValues(0, Duration)
-		self:SetValue(Timeleft)
+		-- Set the minimum and maximum values for the timer bar
+		self:SetMinMaxValues(0, totalDuration)
+		-- Set the value of the timer bar based on the time left
+		self:SetValue(timeLeft)
 	end
 end
 
