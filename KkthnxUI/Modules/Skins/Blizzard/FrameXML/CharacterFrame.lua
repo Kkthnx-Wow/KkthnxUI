@@ -131,7 +131,7 @@ tinsert(C.defaultThemes, function()
 			slot.KKUI_Border:SetVertexColor(r, g, b)
 		end)
 		hooksecurefunc(slot.IconBorder, "Hide", function()
-			slot.KKUI_Border:SetVertexColor(1, 1, 1)
+			K.SetBorderColor(slot.KKUI_Border)
 		end)
 
 		-- Set up popout button
@@ -163,10 +163,6 @@ tinsert(C.defaultThemes, function()
 	hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
 		-- also fires for bag slots, we don't want that
 		if button.popoutButton then
-			local itemLink = GetInventoryItemLink("player", button:GetID())
-			if itemLink then
-				button.icon:SetShown(true)
-			end
 			colourPopout(button.popoutButton)
 		end
 		UpdateCosmetic(button)
