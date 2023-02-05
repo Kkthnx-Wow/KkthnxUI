@@ -296,17 +296,37 @@ K:RegisterEvent("PLAYER_LEVEL_UP", function(_, level)
 	K.Level = level
 end)
 
-K:RegisterEvent("TIME_PLAYED_MSG", function(_, ...)
-	local totalTime, levelTime = ...
-	local classColor = K.ColorClass[K.Class].hex
-	local name = format("|c%s%s|r", classColor, K.Name)
+-- Save original ChatFrame_DisplayTimePlayed function
+local originalChatFrame_DisplayTimePlayed = ChatFrame_DisplayTimePlayed
+-- Override ChatFrame_DisplayTimePlayed function
+ChatFrame_DisplayTimePlayed = function(_, totalTime, levelTime)
+	-- Get player's class color
+	local classColor = K.ClassColors[K.Class].colorStr
+	-- Get player's name with class color
+	local name = string.format("|c%s%s|r", classColor, K.Name)
+	-- Get player's money as string
 	local money = GetMoneyString(GetMoney())
-	local spec = select(2, GetSpecializationInfo(GetSpecialization()))
-	local message = format("%s - %s - %s - %s", name, K.Race, K.Faction, spec)
-	message = message .. format(" - Total time played: %s", SecondsToTime(totalTime))
-	message = message .. format(" - Money: %s", money)
-	print(message)
-end)
+	-- Get player's current specialization or NONE if no specialization is selected
+	local spec = select(2, GetSpecializationInfo(GetSpecialization())) or NONE
+
+	-- Create total time played message
+	local totalTimeMessage = string.format(K.InfoColor .. "Total time played: %s", K.GreyColor .. SecondsToTime(totalTime))
+	-- Create level time played message
+	local levelTimeMessage = string.format(K.InfoColor .. "Time played this level: %s", K.GreyColor .. SecondsToTime(levelTime))
+	-- Create money message
+	local moneyMessage = string.format(K.InfoColor .. "Money: %s", K.GreyColor .. money)
+
+	-- Create player info message
+	local playerInfo = string.format("%s - %s - %s - %s", name, K.Race, K.Faction, spec)
+	-- Print player info
+	print(playerInfo)
+	-- Print total time played message
+	print(totalTimeMessage)
+	-- Print level time played message
+	print(levelTimeMessage)
+	-- Print money message
+	print(moneyMessage)
+end
 
 for i = 1, GetNumAddOns() do
 	local Name, _, _, _, Reason = GetAddOnInfo(i)
