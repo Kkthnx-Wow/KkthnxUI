@@ -51,11 +51,11 @@ function Module:CreateThanksButton()
 end
 
 -- Function to be called when the TRADE_SHOW event is triggered
-function Module.TRADE_SHOW(self)
+function Module.TRADE_SHOW()
 	-- Set the target name to the current NPC name
 	local targetName = GetUnitName("NPC", true)
-	if self.thanksButton then
-		self.thanksButton.targetName = targetName
+	if Module.thanksButton then
+		Module.targetName = targetName
 	end
 end
 

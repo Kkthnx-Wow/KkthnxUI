@@ -118,6 +118,11 @@ function Module:OnEnable()
 		end
 		_AddonTooltip_Update(owner)
 	end
+
+	-- Fix empty string in party guide promote
+	if not PROMOTE_GUIDE then
+		PROMOTE_GUIDE = PARTY_PROMOTE_GUIDE
+	end
 end
 
 local function KKUI_UpdateDragCursor(self)

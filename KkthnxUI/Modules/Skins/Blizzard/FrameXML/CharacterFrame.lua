@@ -69,9 +69,7 @@ tinsert(C.defaultThemes, function()
 
 	local function UpdateCosmetic(self)
 		local itemLink = GetInventoryItemLink("player", self:GetID())
-		if itemLink and IsCosmeticItem(itemLink) then
-			self.IconOverlay:SetShown(true)
-		end
+		self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
 	end
 
 	CharacterModelScene:StripTextures(true)
@@ -131,7 +129,7 @@ tinsert(C.defaultThemes, function()
 			slot.KKUI_Border:SetVertexColor(r, g, b)
 		end)
 		hooksecurefunc(slot.IconBorder, "Hide", function()
-			K.SetBorderColor(slot.KKUI_Border)
+			slot.KKUI_Border:SetVertexColor(1, 1, 1)
 		end)
 
 		-- Set up popout button

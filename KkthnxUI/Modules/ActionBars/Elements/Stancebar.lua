@@ -132,6 +132,7 @@ function Module:CreateStancebar()
 	frame.buttons = buttonList
 
 	-- Fix stance bar updating
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.StanceBarOnEvent) -- needs PEW for 10.0.7
 	K:RegisterEvent("UPDATE_SHAPESHIFT_FORMS", Module.StanceBarOnEvent)
 	K:RegisterEvent("UPDATE_SHAPESHIFT_USABLE", Module.StanceBarOnEvent)
 	K:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN", Module.StanceBarOnEvent)

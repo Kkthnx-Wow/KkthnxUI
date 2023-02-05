@@ -11,6 +11,7 @@ local string_match = string.match
 local table_wipe = table.wipe
 local tonumber = tonumber
 
+local COLLECTED = COLLECTED
 local C_QuestLog_GetInfo = C_QuestLog.GetInfo
 local C_QuestLog_GetLogIndexForQuestID = C_QuestLog.GetLogIndexForQuestID
 local C_QuestLog_GetNumQuestLogEntries = C_QuestLog.GetNumQuestLogEntries
@@ -227,17 +228,33 @@ function Module:FindWorldQuestComplete(questID)
 	end
 end
 
+-- Dragon glyph notification
+local glyphAchievements = {
+	[16575] = true, -- Awakened Coast
+	[16576] = true, -- Ounhara Plains
+	[16577] = true, -- Blueridge Woods
+	[16578] = true, -- Sodra Sulcus
+}
+
+function Module:FindDragonGlyph(achievementID, criteriaString)
+	if glyphAchievements[achievementID] then
+		sendQuestMsg(criteriaString .. " " .. COLLECTED)
+	end
+end
+
 function Module:CreateQuestNotifier()
 	if C["Announcements"].QuestNotifier and not K.CheckAddOnState("QuestNotifier") then
 		K:RegisterEvent("QUEST_ACCEPTED", Module.FindQuestAccept)
 		K:RegisterEvent("QUEST_LOG_UPDATE", Module.FindQuestComplete)
 		K:RegisterEvent("QUEST_TURNED_IN", Module.FindWorldQuestComplete)
 		K:RegisterEvent("UI_INFO_MESSAGE", Module.FindQuestProgress)
+		K:RegisterEvent("CRITERIA_EARNED", Module.FindDragonGlyph)
 	else
 		table_wipe(completedQuest)
 		K:UnregisterEvent("QUEST_ACCEPTED", Module.FindQuestAccept)
 		K:UnregisterEvent("QUEST_LOG_UPDATE", Module.FindQuestComplete)
 		K:UnregisterEvent("QUEST_TURNED_IN", Module.FindWorldQuestComplete)
 		K:UnregisterEvent("UI_INFO_MESSAGE", Module.FindQuestProgress)
+		K:UnregisterEvent("CRITERIA_EARNED", Module.FindDragonGlyph)
 	end
 end
