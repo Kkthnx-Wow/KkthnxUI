@@ -97,5 +97,6 @@ C.ExtraQuestButtonData = {
 		[187012] = true,
 		[187516] = true,
 		[112681] = true,
+		[193915] = true,
 	},
 }

@@ -216,8 +216,7 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 end)
 
 QuickQuest:Register("GOSSIP_CONFIRM", function(index)
-	local npcID = GetNPCID()
-	if npcID and C["AutoQuestData"].DarkmoonNPC[npcID] then
+	if C["AutoQuestData"].SkipConfirmNPCs[GetNPCID()] then
 		C_GossipInfo_SelectOption(index, "", true)
 		StaticPopup_Hide("GOSSIP_CONFIRM")
 	end

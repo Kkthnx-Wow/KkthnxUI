@@ -101,14 +101,13 @@ C.AutoQuestData = {
 		[1626] = true,
 	},
 
-	DarkmoonNPC = {
+	SkipConfirmNPCs = {
 		[57850] = true,
 		[55382] = true,
 		[54334] = true,
 	},
 
 	ItemBlacklist = {
-
 		[31690] = 79343,
 		[31691] = 79340,
 		[31692] = 79341,

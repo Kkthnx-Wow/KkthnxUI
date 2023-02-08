@@ -34,6 +34,10 @@ local UnitReaction = UnitReaction
 local iLvlDB = {}
 local enchantString = string.gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
 local itemLevelString = "^" .. string.gsub(ITEM_LEVEL, "%%d", "")
+local isKnownString = {
+	[TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN] = true,
+	[TRANSMOGRIFY_TOOLTIP_ITEM_UNKNOWN_APPEARANCE_KNOWN] = true,
+}
 
 -- Variables to store time-related values in seconds
 local day, hour, minute, pointFive = 86400, 3600, 60, 0.5
@@ -419,6 +423,34 @@ do
 				end
 			end
 			return iLvlDB[link]
+		end
+	end
+
+	-- function to check if the transmog appearance is unknown
+	function K.IsUnknownTransmog(bagID, slotID)
+		-- retrieve the data of the item in the specified bag and slot
+		local data = C_TooltipInfo.GetBagItem(bagID, slotID)
+		-- check if the data is valid and the line data is present
+		local lineData = data and data.lines
+		if not lineData then
+			return
+		end
+
+		-- loop through the line data in reverse order
+		for i = #lineData, 1, -1 do
+			local line = lineData[i]
+			-- check if the line has arguments
+			if line and line.args then
+				local args = line.args
+				-- check if the fourth argument is present and its field is "price"
+				if args[4] and args[4].field == "price" then
+					return false
+				end
+				-- check if the second argument is present and it's value is in the known string values table
+				if args[2] and isKnownString[args[2].stringVal] then
+					return true
+				end
+			end
 		end
 	end
 end
