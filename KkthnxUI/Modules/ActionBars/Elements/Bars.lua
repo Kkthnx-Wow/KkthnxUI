@@ -180,24 +180,38 @@ function Module:UpdateButtonConfig(i)
 	-- Set the justifyH field of the hotkey table to "RIGHT"
 	hotkey.justifyH = "RIGHT"
 
+	-- Initialize the count text configuration
 	local count = self.buttonConfig.text.count
-	count.font.font = K.UIFont
-	count.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
-	count.font.flags = K.UIFontStyle
-	count.position.anchor = "BOTTOMRIGHT"
-	count.position.relAnchor = false
-	count.position.offsetX = 2
-	count.position.offsetY = 0
+	local fontConfig = count.font
+	local positionConfig = count.position
+
+	-- Set the font style for the count text
+	fontConfig.font = K.UIFont
+	fontConfig.size = C["ActionBar"]["Bar" .. i .. "Font"]
+	fontConfig.flags = K.UIFontStyle
+
+	-- Set the position of the count text
+	positionConfig.anchor = "BOTTOMRIGHT"
+	positionConfig.relAnchor = false
+	positionConfig.offsetX = 2
+	positionConfig.offsetY = 0
 	count.justifyH = "RIGHT"
 
+	-- Initialize the macro text configuration
 	local macro = self.buttonConfig.text.macro
-	macro.font.font = K.UIFont
-	macro.font.size = C["ActionBar"]["Bar" .. i .. "Font"]
-	macro.font.flags = K.UIFontStyle
-	macro.position.anchor = "BOTTOM"
-	macro.position.relAnchor = false
-	macro.position.offsetX = 0
-	macro.position.offsetY = 0
+	local fontConfig = macro.font
+	local positionConfig = macro.position
+
+	-- Set the font style for the macro text
+	fontConfig.font = K.UIFont
+	fontConfig.size = C["ActionBar"]["Bar" .. i .. "Font"]
+	fontConfig.flags = K.UIFontStyle
+
+	-- Set the position of the macro text
+	positionConfig.anchor = "BOTTOM"
+	positionConfig.relAnchor = false
+	positionConfig.offsetX = 0
+	positionConfig.offsetY = 0
 	macro.justifyH = "CENTER"
 
 	local hideElements = self.buttonConfig.hideElements
