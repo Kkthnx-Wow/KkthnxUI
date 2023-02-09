@@ -14,14 +14,17 @@ end
 
 -- Function to handle the OnUpdate event of the screenshot frame
 local function UpdateScreenshotFrame(self, elapsed)
-	-- Decrement the delay by the elapsed time
-	self.delay = self.delay - elapsed
-	-- If the delay has elapsed
-	if self.delay < 0 then
-		-- Take a screenshot
-		Screenshot()
-		-- Hide the screenshot frame
-		self:Hide()
+	-- Check if self.delay is not nil
+	if self.delay then
+		-- Decrement the delay by the elapsed time
+		self.delay = self.delay - elapsed
+		-- If the delay has elapsed
+		if self.delay < 0 then
+			-- Take a screenshot
+			Screenshot()
+			-- Hide the screenshot frame
+			self:Hide()
+		end
 	end
 end
 
