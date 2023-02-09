@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local K = unpack(KkthnxUI)
 local Module = K:GetModule("Skins")
 local ModuleTooltip = K:GetModule("Tooltip")
 

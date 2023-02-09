@@ -15,7 +15,6 @@ local C_WowTokenPublic_UpdateMarketPrice = C_WowTokenPublic.UpdateMarketPrice
 local GameTooltip = GameTooltip
 local GetAutoCompleteRealms = GetAutoCompleteRealms
 local GetMoney = GetMoney
-local GetNumWatchedTokens = GetNumWatchedTokens
 local IsControlKeyDown = IsControlKeyDown
 local NO = NO
 local StaticPopupDialogs = StaticPopupDialogs

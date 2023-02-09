@@ -1,24 +1,31 @@
 local K, C = unpack(KkthnxUI)
 
 C.themes["Blizzard_ArchaeologyUI"] = function()
-	local ArcDigProBar = ArcheologyDigsiteProgressBar
+	local archaeologyBar = ArcheologyDigsiteProgressBar
 
-	ArcDigProBar:StripTextures()
+	-- Remove any existing textures from the bar
+	archaeologyBar:StripTextures()
 
-	ArcDigProBar.FillBar:SetHeight(12)
-	ArcDigProBar.FillBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-	ArcDigProBar.FillBar:SetStatusBarColor(0.7, 0.3, 0.2)
-	ArcDigProBar.FillBar:CreateBorder()
+	-- Customize the fill bar
+	local fillBar = archaeologyBar.FillBar
+	fillBar:SetHeight(12)
+	fillBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	fillBar:SetStatusBarColor(0.7, 0.3, 0.2)
+	fillBar:CreateBorder()
 
-	local ArcSpark = ArcDigProBar.FillBar:CreateTexture(nil, "OVERLAY")
-	ArcSpark:SetTexture(C["Media"].Textures.Spark16Texture)
-	ArcSpark:SetHeight(ArcDigProBar:GetHeight())
-	ArcSpark:SetBlendMode("ADD")
-	ArcSpark:SetPoint("CENTER", ArcDigProBar.FillBar:GetStatusBarTexture(), "RIGHT", 0, 0)
+	-- Add a spark texture to the fill bar
+	local sparkTexture = C["Media"].Textures.Spark16Texture
+	local spark = fillBar:CreateTexture(nil, "OVERLAY")
+	spark:SetTexture(sparkTexture)
+	spark:SetHeight(archaeologyBar:GetHeight())
+	spark:SetBlendMode("ADD")
+	spark:SetPoint("CENTER", fillBar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
-	if ArcDigProBar.BarTitle then
-		ArcDigProBar.BarTitle:ClearAllPoints()
-		ArcDigProBar.BarTitle:SetPoint("BOTTOM", ArcDigProBar, "TOP", 0, -2)
-		ArcDigProBar.BarTitle:SetFontObject(K.UIFont)
+	-- Reposition the bar title and set its font
+	local barTitle = archaeologyBar.BarTitle
+	if barTitle then
+		barTitle:ClearAllPoints()
+		barTitle:SetPoint("BOTTOM", archaeologyBar, "TOP", 0, -2)
+		barTitle:SetFontObject(K.UIFont)
 	end
 end

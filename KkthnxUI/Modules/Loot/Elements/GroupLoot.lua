@@ -51,7 +51,6 @@ local function SetTip(button)
 				lineAdded = true
 			end
 
-			-- local classColor = E:ClassColor(className) or PRIEST_COLOR
 			local classColor = K.ClassColors[K.ClassList[className] or className]
 			if not classColor then
 				classColor = K.ClassColors["PRIEST"]
@@ -120,22 +119,27 @@ local function RollTexCoords(button, icon, rolltype, minX, maxX, minY, maxY)
 	end
 end
 
-local function RollButtonTextures(button, texture, rolltype)
+local function RollButtonTextures(button, texture, rollType)
+	-- Set the texture for the button's normal, pushed, disabled, and highlight states
 	button:SetNormalTexture(texture)
 	button:SetPushedTexture(texture)
 	button:SetDisabledTexture(texture)
 	button:SetHighlightTexture(texture)
 
-	button.normalTex = button:GetNormalTexture()
-	button.disabledTex = button:GetDisabledTexture()
-	button.pushedTex = button:GetPushedTexture()
-	button.highlightTex = button:GetHighlightTexture()
+	-- Store references to the textures for later use
+	local normalTex = button:GetNormalTexture()
+	local disabledTex = button:GetDisabledTexture()
+	local pushedTex = button:GetPushedTexture()
+	local highlightTex = button:GetHighlightTexture()
 
-	local minX, maxX, minY, maxY = unpack(iconCoords[rolltype])
-	RollTexCoords(button, button.normalTex, rolltype, minX, maxX, minY, maxY)
-	RollTexCoords(button, button.disabledTex, rolltype, minX, maxX, minY, maxY)
-	RollTexCoords(button, button.pushedTex, rolltype, minX, maxX, minY, maxY)
-	RollTexCoords(button, button.highlightTex, rolltype, minX, maxX, minY, maxY)
+	-- Retrieve the texture coordinates for the specified roll type
+	local minX, maxX, minY, maxY = unpack(iconCoords[rollType])
+
+	-- Apply the texture coordinates to each of the button textures
+	RollTexCoords(button, normalTex, rollType, minX, maxX, minY, maxY)
+	RollTexCoords(button, disabledTex, rollType, minX, maxX, minY, maxY)
+	RollTexCoords(button, pushedTex, rollType, minX, maxX, minY, maxY)
+	RollTexCoords(button, highlightTex, rollType, minX, maxX, minY, maxY)
 end
 
 local function RollMouseDown(button)
@@ -375,21 +379,29 @@ function Module:ClearLootRollCache()
 end
 
 function Module:UpdateLootRollAnchors(POSITION)
+	-- Constants
 	local spacing = 6
-	local lastFrame
+	local frame = _G.AlertFrameHolder
 	local lastShown
+
+	-- Iterate over the roll bars
 	for i, bar in next, Module.RollBars do
+		-- Reset the anchor points of the bar
 		bar:ClearAllPoints()
 
-		local anchor = i ~= 1 and lastFrame or _G.AlertFrameHolder
-		if POSITION == "TOP" then
-			bar:SetPoint("TOP", anchor, "BOTTOM", 0, -spacing)
-		else
-			bar:SetPoint("BOTTOM", anchor, "TOP", 0, spacing)
+		-- Determine the anchor frame based on the position
+		if i ~= 1 then
+			frame = lastShown
 		end
 
-		lastFrame = bar
+		-- Set the bar position based on the position parameter
+		if POSITION == "TOP" then
+			bar:SetPoint("TOP", frame, "BOTTOM", 0, -spacing)
+		else
+			bar:SetPoint("BOTTOM", frame, "TOP", 0, spacing)
+		end
 
+		-- Keep track of the last shown bar
 		if bar:IsShown() then
 			lastShown = bar
 		end

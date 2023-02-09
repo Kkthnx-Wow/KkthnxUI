@@ -1,26 +1,30 @@
 local K, C = unpack(KkthnxUI)
 
-local function SetupStatusbar(bar)
-	bar:StripTextures()
-	bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-	bar:GetStatusBarTexture():SetGradient("VERTICAL", CreateColor(0, 0.4, 0, 1), CreateColor(0, 0.6, 0, 1))
-	bar:CreateBorder()
+local function SetupStatusBar(statusBar)
+	statusBar:StripTextures()
+	statusBar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
+	statusBar:GetStatusBarTexture():SetGradient("VERTICAL", CreateColor(0, 0.4, 0, 1), CreateColor(0, 0.6, 0, 1))
+	statusBar:CreateBorder()
+end
+
+local function SetupAchievementSummaryCategory(category)
+	SetupStatusBar(category)
+	category.Label:SetTextColor(1, 1, 1)
+	category.Label:SetPoint("LEFT", category, "LEFT", 6, 0)
+	category.Text:SetPoint("RIGHT", category, "RIGHT", -5, 0)
+	_G[category:GetName() .. "ButtonHighlight"]:SetAlpha(0)
 end
 
 C.themes["Blizzard_AchievementUI"] = function()
-	local bar = AchievementFrameSummaryCategoriesStatusBar
-	if bar then
-		SetupStatusbar(bar)
-		_G[bar:GetName() .. "Title"]:SetPoint("LEFT", bar, "LEFT", 6, 0)
-		_G[bar:GetName() .. "Text"]:SetPoint("RIGHT", bar, "RIGHT", -5, 0)
+	local achievementSummaryStatusBar = AchievementFrameSummaryCategoriesStatusBar
+	if achievementSummaryStatusBar then
+		SetupStatusBar(achievementSummaryStatusBar)
+		achievementSummaryStatusBar.Title:SetPoint("LEFT", achievementSummaryStatusBar, "LEFT", 6, 0)
+		achievementSummaryStatusBar.Text:SetPoint("RIGHT", achievementSummaryStatusBar, "RIGHT", -5, 0)
 	end
 
 	for i = 1, 12 do
-		local bu = _G["AchievementFrameSummaryCategoriesCategory" .. i]
-		SetupStatusbar(bu)
-		bu.Label:SetTextColor(1, 1, 1)
-		bu.Label:SetPoint("LEFT", bu, "LEFT", 6, 0)
-		bu.Text:SetPoint("RIGHT", bu, "RIGHT", -5, 0)
-		_G[bu:GetName() .. "ButtonHighlight"]:SetAlpha(0)
+		local category = _G["AchievementFrameSummaryCategoriesCategory" .. i]
+		SetupAchievementSummaryCategory(category)
 	end
 end
