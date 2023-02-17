@@ -79,7 +79,7 @@ local function checkMemoryUsage()
 end
 
 -- Call the checkMemoryUsage function every 5 minutes
-C_Timer.NewTicker(5 * 60, checkMemoryUsage)
+-- C_Timer.NewTicker(5 * 60, checkMemoryUsage)
 
 -- Lib Info
 K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI")

@@ -1,8 +1,14 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
--- Application Programming Interface for KkthnxUI (API)
+--[[
+	KkthnxUI API (Application Programming Interface)
+	is a set of functions and tools designed to help developers interact with and extend the KkthnxUI user interface.
+	The API provides developers with access to various features and functions of KkthnxUI,
+	allowing them to customize and extend the user interface in new and unique ways.
+	Whether you're building an addon, developing a plugin, or just looking to customize your KkthnxUI experience,
+	the API provides a powerful set of tools to help you achieve your goals.
+]]
 
-local assert = assert
 local getmetatable = getmetatable
 local select = select
 
