@@ -1,4 +1,4 @@
-local _, C = unpack(KkthnxUI)
+local C = KkthnxUI[2]
 
 local table_insert = table.insert
 

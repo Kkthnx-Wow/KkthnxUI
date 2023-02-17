@@ -1,4 +1,4 @@
-local K = unpack(KkthnxUI)
+local K = KkthnxUI[1]
 
 -- Sourced: AlreadyKnown (villiv)
 -- Edited: KkthnxUI (Kkthnx)

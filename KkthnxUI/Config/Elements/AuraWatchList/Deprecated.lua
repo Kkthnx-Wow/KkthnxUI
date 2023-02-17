@@ -1,4 +1,4 @@
-local _, C, L = unpack(KkthnxUI)
+local C, L = KkthnxUI[2], KkthnxUI[3]
 
 local SPELL_SCHOOL0_NAME = SPELL_SCHOOL0_NAME
 local SPELL_SCHOOL1_NAME = SPELL_SCHOOL1_NAME

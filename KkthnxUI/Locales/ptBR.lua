@@ -1,4 +1,4 @@
-local K, _, L = unpack(KkthnxUI)
+local K, L = KkthnxUI[1], KkthnxUI[3]
 
 local GetLocale = GetLocale
 

@@ -1,4 +1,4 @@
-local K = unpack(KkthnxUI)
+local K = KkthnxUI[1]
 local oUF = K.oUF
 
 -- oUF_Swing, by p3lim

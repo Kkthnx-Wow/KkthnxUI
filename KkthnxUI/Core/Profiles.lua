@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 
 local Profiles = CreateFrame("Frame", "KKUI_Profiles", UIParent)
 local Prefix = "KkthnxUI:Profile:"

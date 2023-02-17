@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local oUF = K.oUF
 
 local select, tremove, tinsert, wipe = select, _G.table.remove, _G.table.insert, _G.table.wipe

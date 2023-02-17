@@ -1,4 +1,4 @@
-local K = unpack(KkthnxUI)
+local K = KkthnxUI[1]
 local Module = K:NewModule("Blizzard")
 
 function Module:OnEnable()

@@ -1,4 +1,4 @@
-local K, C = unpack(KkthnxUI)
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("ActionBar")
 
 local tinsert = tinsert
@@ -132,7 +132,7 @@ function Module:CreateStancebar()
 	frame.buttons = buttonList
 
 	-- Fix stance bar updating
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.StanceBarOnEvent) -- needs PEW for 10.0.7
+	Module:StanceBarOnEvent()
 	K:RegisterEvent("UPDATE_SHAPESHIFT_FORMS", Module.StanceBarOnEvent)
 	K:RegisterEvent("UPDATE_SHAPESHIFT_USABLE", Module.StanceBarOnEvent)
 	K:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN", Module.StanceBarOnEvent)

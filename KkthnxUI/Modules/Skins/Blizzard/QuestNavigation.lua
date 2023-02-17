@@ -1,4 +1,4 @@
-local _, C = unpack(KkthnxUI)
+local C = KkthnxUI[2]
 
 -- Returns the base value for target alpha, which is always 1
 local function getTargetAlphaBaseValue()

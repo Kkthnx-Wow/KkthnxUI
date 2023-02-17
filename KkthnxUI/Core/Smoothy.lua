@@ -1,4 +1,4 @@
-local K = unpack(KkthnxUI)
+local K = KkthnxUI[1]
 local bar_UpdateFrame = CreateFrame("Frame")
 
 -- ls_UI, lightspark

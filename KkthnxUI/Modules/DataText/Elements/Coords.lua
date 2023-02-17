@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("DataText")
 
 local string_format = string.format
@@ -48,12 +48,12 @@ local function OnUpdate(self, elapsed)
 		local x, y = K.GetPlayerMapPos(C_Map_GetBestMapForUnit("player"))
 		if x then
 			coordX, coordY = x, y
-			CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()))
+			CoordsDataTextFrame.Text:SetText(formatCoords())
 			CoordsDataTextFrame:SetScript("OnUpdate", OnUpdate)
 			CoordsDataTextFrame:Show()
 		else
 			coordX, coordY = 0, 0
-			CoordsDataTextFrame.Text:SetText(string_format("%s", formatCoords()))
+			CoordsDataTextFrame.Text:SetText(formatCoords())
 			CoordsDataTextFrame:SetScript("OnUpdate", nil)
 			CoordsDataTextFrame:Hide()
 		end

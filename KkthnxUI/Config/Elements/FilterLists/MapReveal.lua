@@ -1,4 +1,4 @@
-local _, C = unpack(KkthnxUI)
+local C = KkthnxUI[2]
 
 -- https://github.com/fang2hou/WindToolsScripts/blob/master/MapOverlay
 C.WorldMapPlusData = {

@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("ActionBar")
 
 local KEY_BUTTON4, KEY_NUMPAD1, RANGE_INDICATOR, gsub = KEY_BUTTON4, KEY_NUMPAD1, RANGE_INDICATOR, string.gsub

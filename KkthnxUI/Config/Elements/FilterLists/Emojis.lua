@@ -1,4 +1,4 @@
-local _, C = unpack(KkthnxUI)
+local C = KkthnxUI[2]
 
 -- Thanks to ElvUI for providing great textures
 local GetEmojiMedia = "Interface\\Addons\\KkthnxUI\\Media\\Chat\\Emojis\\"

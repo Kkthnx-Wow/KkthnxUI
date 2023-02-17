@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("ActionBar")
 
 -- Cached globals
@@ -102,6 +102,12 @@ function Module:CreatePetbar()
 		button:SetParent(frame)
 		tinsert(buttonList, button)
 		tinsert(Module.buttons, button)
+
+		local hotkey = button.HotKey
+		if hotkey then
+			hotkey:ClearAllPoints()
+			hotkey:SetPoint("TOPRIGHT", 0, -2)
+		end
 	end
 	frame.buttons = buttonList
 

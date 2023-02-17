@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("ActionBar")
 
 local pairs, tonumber, print, strfind, strupper = pairs, tonumber, print, strfind, strupper

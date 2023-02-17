@@ -1,4 +1,4 @@
-local _, C = unpack(KkthnxUI)
+local C = KkthnxUI[2]
 
 C.AutoOpenItems = {
 	[5335] = true, -- A Sack of Coins

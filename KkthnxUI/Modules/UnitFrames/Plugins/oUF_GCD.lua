@@ -1,5 +1,5 @@
 --	Based on oUF_GCD(by ALZA)
-local K = unpack(KkthnxUI)
+local K = KkthnxUI[1]
 local oUF = K.oUF
 
 local starttime, duration, usingspell

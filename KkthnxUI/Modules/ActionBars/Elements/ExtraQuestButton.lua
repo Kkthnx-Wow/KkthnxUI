@@ -2,7 +2,7 @@
 -- ExtraQuestButton, by p3lim
 -- KkthnxUI MOD
 --------------------------------
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
 local next, type, sqrt, GetTime, format = next, type, sqrt, GetTime, format
 local RegisterStateDriver, InCombatLockdown = RegisterStateDriver, InCombatLockdown

@@ -1,4 +1,4 @@
-local K, C, L = unpack(KkthnxUI)
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Chat")
 
 local string_find = string.find
@@ -72,22 +72,24 @@ function Module:SetupChannelNames(text, ...)
 	-- Check if the old chat names format is enabled
 	if C["Chat"].OldChatNames then
 		-- Use the old format for the chat names
-		return self.oldAddMsg(self, text, r, g, b)
+		return self.oldAddMessage(self, text, r, g, b)
 	else
 		-- Use the new format for the chat names
-		return self.oldAddMsg(self, string_gsub(text, "|h%[(%d+)%..-%]|h", "|h[%1]|h"), r, g, b)
+		return self.oldAddMessage(self, string_gsub(text, "|h%[(%d+)%..-%]|h", "|h[%1]|h"), r, g, b)
 	end
 end
 
-function Module:CreateChatRename()
+local function renameChatFrames()
 	for i = 1, _G.NUM_CHAT_WINDOWS do
-		if i ~= 2 then
+		if i ~= 2 then -- Ignore the combat log chat frame
 			local chatFrame = _G["ChatFrame" .. i]
-			chatFrame.oldAddMsg = chatFrame.AddMessage
+			chatFrame.oldAddMessage = chatFrame.AddMessage
 			chatFrame.AddMessage = Module.SetupChannelNames
 		end
 	end
+end
 
+local function renameChatStrings()
 	-- Online/Offline
 	_G.ERR_FRIEND_ONLINE_SS = string_gsub(_G.ERR_FRIEND_ONLINE_SS, "%]%|h", "]|h|cff00c957")
 	_G.ERR_FRIEND_OFFLINE_S = string_gsub(_G.ERR_FRIEND_OFFLINE_S, "%%s", "%%s|cffff7f50")
@@ -128,4 +130,9 @@ function Module:CreateChatRename()
 	_G.CHAT_FLAG_AFK = "[AFK] "
 	_G.CHAT_FLAG_DND = "[DND] "
 	_G.CHAT_FLAG_GM = "[GM] "
+end
+
+function Module:CreateChatRename()
+	renameChatFrames()
+	renameChatStrings()
 end

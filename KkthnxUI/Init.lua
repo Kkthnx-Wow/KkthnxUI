@@ -51,6 +51,36 @@ Engine[3] = {} -- L, Locale
 
 local K, C, L = unpack(Engine)
 
+-- Track memory usage for each sub-table
+local memoryUsage = {
+	K = 0,
+	C = 0,
+	L = 0,
+}
+
+-- Function to update the memory usage for a sub-table
+local function updateMemoryUsage(tableName, usage)
+	memoryUsage[tableName] = usage
+	print(string.format("Memory usage for %s: %d KB", tableName, usage))
+end
+
+-- Periodically check memory usage for each sub-table
+local function checkMemoryUsage()
+	collectgarbage()
+	local Kusage = collectgarbage("count")
+	collectgarbage()
+	local Cusage = collectgarbage("count")
+	collectgarbage()
+	local Lusage = collectgarbage("count")
+
+	updateMemoryUsage("K", Kusage)
+	updateMemoryUsage("C", Cusage)
+	updateMemoryUsage("L", Lusage)
+end
+
+-- Call the checkMemoryUsage function every 5 minutes
+C_Timer.NewTicker(5 * 60, checkMemoryUsage)
+
 -- Lib Info
 K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI")
 K.LibActionButton = LibStub("LibActionButton-1.0")
@@ -172,6 +202,9 @@ eventsFrame:SetScript("OnEvent", function(_, event, ...)
 	end
 end)
 
+-- Keep track of registered events and their listeners
+local registeredEvents = {}
+
 function K:RegisterEvent(event, func, unit1, unit2)
 	if event == "CLEU" then
 		event = "COMBAT_LOG_EVENT_UNFILTERED"
@@ -184,9 +217,19 @@ function K:RegisterEvent(event, func, unit1, unit2)
 		else
 			eventsFrame:RegisterEvent(event)
 		end
+		-- Log that a new event has been registered and by which function
+		--print(string.format("K:RegisterEvent - Registered event '%s' with function '%s'", event, tostring(func)))
 	end
 
 	events[event][func] = true
+	-- Log that a new listener has been added to the event
+	--print(string.format("K:RegisterEvent - Added listener to event '%s' with function '%s'", event, tostring(func)))
+
+	-- Keep track of the registered event and its listener
+	if not registeredEvents[event] then
+		registeredEvents[event] = {}
+	end
+	table.insert(registeredEvents[event], func)
 end
 
 function K:UnregisterEvent(event, func)
@@ -197,9 +240,24 @@ function K:UnregisterEvent(event, func)
 	local funcs = events[event]
 	if funcs and funcs[func] then
 		funcs[func] = nil
+		-- Log that a listener has been removed from the event
+		--print(string.format("K:UnregisterEvent - Removed listener from event '%s' with function '%s'", event, tostring(func)))
+
 		if not next(funcs) then
 			events[event] = nil
 			eventsFrame:UnregisterEvent(event)
+			-- Log that the event has been unregistered
+			--print(string.format("K:UnregisterEvent - Unregistered event '%s'", event))
+		end
+	end
+
+	-- Remove the listener from the registered events list
+	if registeredEvents[event] then
+		for i, f in ipairs(registeredEvents[event]) do
+			if f == func then
+				table.remove(registeredEvents[event], i)
+				break
+			end
 		end
 	end
 end
@@ -230,8 +288,7 @@ function K:GetModule(name)
 end
 
 local function GetBestScale()
-	local scale = math_max(0.4, math_min(1.15, 768 / K.ScreenHeight))
-	return K.Round(scale, 2)
+	return K.Round(math.max(0.4, math.min(1.15, 768 / K.ScreenHeight)), 2)
 end
 
 function K.SetupUIScale(init)
@@ -240,12 +297,13 @@ function K.SetupUIScale(init)
 	end
 
 	local scale = C["General"].UIScale
-	if init then
-		local pixel = 1
-		local ratio = 768 / K.ScreenHeight
-		K.Mult = (pixel / scale) - ((pixel - ratio) / scale)
-	elseif not InCombatLockdown() then
+	if not InCombatLockdown() then
 		UIParent:SetScale(scale)
+	end
+
+	if init then
+		local ratio = 768 / K.ScreenHeight
+		K.Mult = (1 / scale) - ((1 - ratio) / scale)
 	end
 end
 
