@@ -54,25 +54,27 @@ do
 	end
 
 	function K.ShortValue(n)
-		-- This function is used to convert long number values into a shortened string,
-		-- by adding a suffix like 'k', 'm', 'b' etc.
-		if C["General"].NumberPrefixStyle.Value == 1 or C["General"].NumberPrefixStyle.Value == 2 then
-			-- Check which number prefix style is selected and format the returned string accordingly.
-			if n >= 1e12 then
-				return string_format("%.2f" .. (C["General"].NumberPrefixStyle.Value == 1 and "t" or "z"), n / 1e12)
-			elseif n >= 1e9 then
-				return string_format("%.2f" .. (C["General"].NumberPrefixStyle.Value == 1 and "b" or "y"), n / 1e9)
-			elseif n >= 1e6 then
-				return string_format("%.2f" .. (C["General"].NumberPrefixStyle.Value == 1 and "m" or "w"), n / 1e6)
-			elseif n >= 1e3 then
-				return string_format("%.1f" .. (C["General"].NumberPrefixStyle.Value == 1 and "k" or "w"), n / 1e3)
-			else
-				-- No suffix necessary or available.
-				return string_format("%.0f", n)
-			end
+		-- Cache frequently used values.
+		local abs_n = abs(n)
+		local suffix, div = "", 1
+
+		-- Calculate the appropriate suffix and division factor.
+		if abs_n >= 1e12 then
+			suffix, div = (C["General"].NumberPrefixStyle.Value == 1 and "t" or "z"), 1e12
+		elseif abs_n >= 1e9 then
+			suffix, div = (C["General"].NumberPrefixStyle.Value == 1 and "b" or "y"), 1e9
+		elseif abs_n >= 1e6 then
+			suffix, div = (C["General"].NumberPrefixStyle.Value == 1 and "m" or "w"), 1e6
+		elseif abs_n >= 1e3 then
+			suffix, div = (C["General"].NumberPrefixStyle.Value == 1 and "k" or "w"), 1e3
+		end
+
+		-- Format the shortened value.
+		local val = n / div
+		if div > 1 and val < 10 then
+			return string_format("%.1f%s", val, suffix)
 		else
-			-- No suffix necessary or available.
-			return string_format("%.0f", n)
+			return string_format("%d%s", val, suffix)
 		end
 	end
 
@@ -274,12 +276,15 @@ do
 end
 
 do
+	-- initialize the class color cache table
+	local classColorCache = {}
 	function K.ColorClass(class)
-		-- check if the class color exists in the class color table
-		local color = K.ClassColors[class]
-		-- if the class color does not exist, return white
+		-- check if the class color exists in the cache
+		local color = classColorCache[class]
+		-- if the class color is not in the cache, compute it and store it in the cache
 		if not color then
-			return 1, 1, 1
+			color = K.ClassColors[class] or { r = 1, g = 1, b = 1 }
+			classColorCache[class] = color
 		end
 		-- return the red, green, and blue values of the class color
 		return color.r, color.g, color.b

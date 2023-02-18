@@ -381,6 +381,28 @@ local function UpdateAuras(self, event, unit, updateInfo)
 				end
 			end
 		else
+			if updateInfo.addedAuras then
+				for _, data in next, updateInfo.addedAuras do
+					if data.isHelpful and not C_UnitAuras.IsAuraFilteredOutByInstanceID(unit, data.auraInstanceID, buffFilter) then
+						data = processData(auras, unit, data)
+						auras.allBuffs[data.auraInstanceID] = data
+
+						if (auras.FilterAura or FilterAura)(auras, unit, data) then
+							auras.activeBuffs[data.auraInstanceID] = true
+							buffsChanged = true
+						end
+					elseif data.isHarmful and not C_UnitAuras.IsAuraFilteredOutByInstanceID(unit, data.auraInstanceID, debuffFilter) then
+						data = processData(auras, unit, data)
+						auras.allDebuffs[data.auraInstanceID] = data
+
+						if (auras.FilterAura or FilterAura)(auras, unit, data) then
+							auras.activeDebuffs[data.auraInstanceID] = true
+							debuffsChanged = true
+						end
+					end
+				end
+			end
+
 			if updateInfo.updatedAuraInstanceIDs then
 				for _, auraInstanceID in next, updateInfo.updatedAuraInstanceIDs do
 					if auras.allBuffs[auraInstanceID] then
@@ -416,28 +438,6 @@ local function UpdateAuras(self, event, unit, updateInfo)
 
 						if auras.activeDebuffs[auraInstanceID] then
 							auras.activeDebuffs[auraInstanceID] = nil
-							debuffsChanged = true
-						end
-					end
-				end
-			end
-
-			if updateInfo.addedAuras then
-				for _, data in next, updateInfo.addedAuras do
-					if data.isHelpful and not C_UnitAuras.IsAuraFilteredOutByInstanceID(unit, data.auraInstanceID, buffFilter) then
-						data = processData(auras, unit, data)
-						auras.allBuffs[data.auraInstanceID] = data
-
-						if (auras.FilterAura or FilterAura)(auras, unit, data) then
-							auras.activeBuffs[data.auraInstanceID] = true
-							buffsChanged = true
-						end
-					elseif data.isHarmful and not C_UnitAuras.IsAuraFilteredOutByInstanceID(unit, data.auraInstanceID, debuffFilter) then
-						data = processData(auras, unit, data)
-						auras.allDebuffs[data.auraInstanceID] = data
-
-						if (auras.FilterAura or FilterAura)(auras, unit, data) then
-							auras.activeDebuffs[data.auraInstanceID] = true
 							debuffsChanged = true
 						end
 					end
@@ -629,6 +629,19 @@ local function UpdateAuras(self, event, unit, updateInfo)
 				end
 			end
 		else
+			if updateInfo.addedAuras then
+				for _, data in next, updateInfo.addedAuras do
+					if data.isHelpful and not C_UnitAuras.IsAuraFilteredOutByInstanceID(unit, data.auraInstanceID, buffFilter) then
+						buffs.all[data.auraInstanceID] = processData(buffs, unit, data)
+
+						if (buffs.FilterAura or FilterAura)(buffs, unit, data) then
+							buffs.active[data.auraInstanceID] = true
+							buffsChanged = true
+						end
+					end
+				end
+			end
+
 			if updateInfo.updatedAuraInstanceIDs then
 				for _, auraInstanceID in next, updateInfo.updatedAuraInstanceIDs do
 					if buffs.all[auraInstanceID] then
@@ -649,19 +662,6 @@ local function UpdateAuras(self, event, unit, updateInfo)
 
 						if buffs.active[auraInstanceID] then
 							buffs.active[auraInstanceID] = nil
-							buffsChanged = true
-						end
-					end
-				end
-			end
-
-			if updateInfo.addedAuras then
-				for _, data in next, updateInfo.addedAuras do
-					if data.isHelpful and not C_UnitAuras.IsAuraFilteredOutByInstanceID(unit, data.auraInstanceID, buffFilter) then
-						buffs.all[data.auraInstanceID] = processData(buffs, unit, data)
-
-						if (buffs.FilterAura or FilterAura)(buffs, unit, data) then
-							buffs.active[data.auraInstanceID] = true
 							buffsChanged = true
 						end
 					end
@@ -742,6 +742,19 @@ local function UpdateAuras(self, event, unit, updateInfo)
 				end
 			end
 		else
+			if updateInfo.addedAuras then
+				for _, data in next, updateInfo.addedAuras do
+					if data.isHarmful and not C_UnitAuras.IsAuraFilteredOutByInstanceID(unit, data.auraInstanceID, debuffFilter) then
+						debuffs.all[data.auraInstanceID] = processData(debuffs, unit, data)
+
+						if (debuffs.FilterAura or FilterAura)(debuffs, unit, data) then
+							debuffs.active[data.auraInstanceID] = true
+							debuffsChanged = true
+						end
+					end
+				end
+			end
+
 			if updateInfo.updatedAuraInstanceIDs then
 				for _, auraInstanceID in next, updateInfo.updatedAuraInstanceIDs do
 					if debuffs.all[auraInstanceID] then
@@ -762,19 +775,6 @@ local function UpdateAuras(self, event, unit, updateInfo)
 
 						if debuffs.active[auraInstanceID] then
 							debuffs.active[auraInstanceID] = nil
-							debuffsChanged = true
-						end
-					end
-				end
-			end
-
-			if updateInfo.addedAuras then
-				for _, data in next, updateInfo.addedAuras do
-					if data.isHarmful and not C_UnitAuras.IsAuraFilteredOutByInstanceID(unit, data.auraInstanceID, debuffFilter) then
-						debuffs.all[data.auraInstanceID] = processData(debuffs, unit, data)
-
-						if (debuffs.FilterAura or FilterAura)(debuffs, unit, data) then
-							debuffs.active[data.auraInstanceID] = true
 							debuffsChanged = true
 						end
 					end

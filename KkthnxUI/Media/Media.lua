@@ -59,12 +59,11 @@ C["Media"] = {
 	},
 }
 
+local statusbars = C["Media"].Statusbars
+local defaultTexture = statusbars["KkthnxUI"]
+
 function K.GetTexture(texture)
-	if C["Media"].Statusbars[texture] then
-		return C["Media"].Statusbars[texture]
-	else
-		return C["Media"].Statusbars["KkthnxUI"] -- Return something to prevent errors
-	end
+	return statusbars[texture] or defaultTexture
 end
 
 -- Register Borders

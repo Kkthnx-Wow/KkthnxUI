@@ -77,52 +77,66 @@ function Module:OnEnable()
 	hooksecurefunc(BNToastFrame, "SetPoint", Module.PostBNToastMove)
 
 	-- Unregister talent event
-	if PlayerTalentFrame then
-		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	else
-		hooksecurefunc("TalentFrame_LoadUI", function()
+	local function unregisterTalentEvent()
+		if PlayerTalentFrame then
 			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-		end)
+		else
+			hooksecurefunc("TalentFrame_LoadUI", function()
+				PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+			end)
+		end
 	end
+	unregisterTalentEvent()
 
 	-- Auto chatBubbles
-	if C["Misc"].AutoBubbles then
-		local function updateBubble()
-			local name, instType = GetInstanceInfo()
-			if name and instType == "raid" then
-				SetCVar("chatBubbles", 1)
-			else
-				SetCVar("chatBubbles", 0)
+	local function enableAutoBubbles()
+		if C["Misc"].AutoBubbles then
+			local function updateBubble()
+				local name, instType = GetInstanceInfo()
+				if name and instType == "raid" then
+					SetCVar("chatBubbles", 1)
+				else
+					SetCVar("chatBubbles", 0)
+				end
 			end
+			K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
 		end
-		K:RegisterEvent("PLAYER_ENTERING_WORLD", updateBubble)
 	end
+	enableAutoBubbles()
 
 	-- Instant delete
-	local deleteDialog = StaticPopupDialogs["DELETE_GOOD_ITEM"]
-	if deleteDialog.OnShow then
-		hooksecurefunc(deleteDialog, "OnShow", function(self)
-			self.editBox:SetText(DELETE_ITEM_CONFIRM_STRING)
-		end)
+	local function modifyDeleteDialog()
+		local deleteDialog = StaticPopupDialogs["DELETE_GOOD_ITEM"]
+		if deleteDialog.OnShow then
+			hooksecurefunc(deleteDialog, "OnShow", function(self)
+				self.editBox:SetText(DELETE_ITEM_CONFIRM_STRING)
+			end)
+		end
 	end
+	modifyDeleteDialog()
 
 	-- Fix blizz bug in addon list
-	local _AddonTooltip_Update = AddonTooltip_Update
-	function AddonTooltip_Update(owner)
-		if not owner then
-			return
-		end
+	local function fixAddonTooltip()
+		local _AddonTooltip_Update = AddonTooltip_Update
+		function AddonTooltip_Update(owner)
+			if not owner then
+				return
+			end
 
-		if owner:GetID() < 1 then
-			return
+			if owner:GetID() < 1 then
+				return
+			end
+			_AddonTooltip_Update(owner)
 		end
-		_AddonTooltip_Update(owner)
 	end
+	fixAddonTooltip()
 
-	-- Fix empty string in party guide promote
-	if not PROMOTE_GUIDE then
-		PROMOTE_GUIDE = PARTY_PROMOTE_GUIDE
+	local function fixPartyGuidePromote()
+		if not PROMOTE_GUIDE then
+			PROMOTE_GUIDE = PARTY_PROMOTE_GUIDE
+		end
 	end
+	fixPartyGuidePromote()
 end
 
 local function KKUI_UpdateDragCursor(self)
@@ -154,20 +168,19 @@ end
 local function KKUI_ClickMinimapButton(_, btn)
 	if btn == "LeftButton" then
 		-- Prevent options panel from showing if Blizzard options panel is showing
-		if InterfaceOptionsFrame:IsShown() or VideoOptionsFrame:IsShown() or ChatConfigFrame:IsShown() then
+		if SettingsPanel:IsShown() or ChatConfigFrame:IsShown() then
 			return
 		end
 
-		-- No modifier key toggles the options panel
+		-- Check if the player is in combat before opening the options panel
 		if InCombatLockdown() then
 			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 			return
 		end
 
+		-- Toggle the options panel
 		K["GUI"]:Toggle()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-	elseif btn == "RightButton" then
-		--K.Print("Help info needs to be wrote")
 	end
 end
 

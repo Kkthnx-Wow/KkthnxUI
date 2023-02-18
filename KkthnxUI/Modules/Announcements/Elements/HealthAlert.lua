@@ -8,7 +8,7 @@ local UIErrorsFrame = UIErrorsFrame
 local playerNearDeath = false
 local petNearDeath = false
 
-function Module:SetupHealthAnnounce()
+local function checkPlayerHealth()
 	local playerHealth = UnitHealth("player")
 	local playerHealthMax = UnitHealthMax("player")
 	local playerHealthPercent = K.Round(playerHealth / playerHealthMax * 100, 1)
@@ -22,7 +22,9 @@ function Module:SetupHealthAnnounce()
 			playerNearDeath = false
 		end
 	end
+end
 
+local function checkPetHealth()
 	local validPetClasses = { "HUNTER", "WARLOCK" }
 	local petHealth = UnitHealth("pet")
 	local petHealthMax = UnitHealthMax("pet")
@@ -38,6 +40,11 @@ function Module:SetupHealthAnnounce()
 	elseif petHealthPercent > 50 and petNearDeath then
 		petNearDeath = false
 	end
+end
+
+function Module:SetupHealthAnnounce()
+	checkPlayerHealth()
+	checkPetHealth()
 end
 
 function Module:CreateHealthAnnounce()

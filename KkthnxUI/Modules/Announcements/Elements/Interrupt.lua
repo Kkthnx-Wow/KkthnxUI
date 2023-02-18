@@ -43,33 +43,35 @@ local spellBlackList = {
 	[386770] = true, -- 极寒
 }
 
-local function msgChannel()
-	local inRaid, inPartyLFG = IsInRaid(), IsPartyLFG()
+local function getAlertChannel()
+	local inRaid = IsInRaid()
+	local inPartyLFG = IsPartyLFG()
 
 	local _, instanceType = GetInstanceInfo()
 	if instanceType == "arena" then
-		local skirmish = IsArenaSkirmish()
+		local isSkirmish = IsArenaSkirmish()
 		local _, isRegistered = IsActiveBattlefieldArena()
-		if skirmish or not isRegistered then
+		if isSkirmish or not isRegistered then
 			inPartyLFG = true
 		end
 		inRaid = false -- IsInRaid() returns true for arenas and they should not be considered a raid
 	end
 
-	local Value = C["Announcements"].AlertChannel.Value
-	if Value == 1 then
-		return inPartyLFG and "INSTANCE_CHAT" or "PARTY"
-	elseif Value == 2 then
-		return inPartyLFG and "INSTANCE_CHAT" or (inRaid and "RAID" or "PARTY")
-	elseif Value == 3 and inRaid then
-		return inPartyLFG and "INSTANCE_CHAT" or "RAID"
-	elseif Value == 4 and instanceType ~= "none" then
-		return "SAY"
-	elseif Value == 5 and instanceType ~= "none" then
-		return "YELL"
-	elseif Value == 6 then
-		return "EMOTE"
+	local alertChannel = C["Announcements"].AlertChannel.Value
+	local channel = "EMOTE"
+	if alertChannel == 1 then
+		channel = inPartyLFG and "INSTANCE_CHAT" or "PARTY"
+	elseif alertChannel == 2 then
+		channel = inPartyLFG and "INSTANCE_CHAT" or (inRaid and "RAID" or "PARTY")
+	elseif alertChannel == 3 and inRaid then
+		channel = inPartyLFG and "INSTANCE_CHAT" or "RAID"
+	elseif alertChannel == 4 and instanceType ~= "none" then
+		channel = "SAY"
+	elseif alertChannel == 5 and instanceType ~= "none" then
+		channel = "YELL"
 	end
+
+	return channel
 end
 
 function Module:InterruptAlert_Toggle()
@@ -122,9 +124,9 @@ function Module:InterruptAlert_Update(...)
 
 			if sourceSpellID and destSpellID then
 				if infoText == L["BrokenSpell"] then
-					SendChatMessage(string_format(infoText, sourceName, GetSpellLink(destSpellID)), msgChannel())
+					SendChatMessage(string_format(infoText, sourceName, GetSpellLink(destSpellID)), getAlertChannel())
 				else
-					SendChatMessage(string_format(infoText, GetSpellLink(destSpellID)), msgChannel())
+					SendChatMessage(string_format(infoText, GetSpellLink(destSpellID)), getAlertChannel())
 				end
 			end
 		end
