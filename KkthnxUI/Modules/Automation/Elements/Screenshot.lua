@@ -2,18 +2,18 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
 -- Variables to store the screenshot frame and its state
-local ScreenshotFrame
+local screenshotFrame
 
 -- Function to handle the "ACHIEVEMENT_EARNED" event
-local function ScreenShotOnEvent()
+local function onAchievementEarned()
 	-- Set the delay for taking the screenshot to 1 second
-	ScreenshotFrame.delay = 1
+	screenshotFrame.delay = 1
 	-- Show the screenshot frame
-	ScreenshotFrame:Show()
+	screenshotFrame:Show()
 end
 
 -- Function to handle the OnUpdate event of the screenshot frame
-local function UpdateScreenshotFrame(self, elapsed)
+local function onUpdate(self, elapsed)
 	-- Check if self.delay is not nil
 	if self.delay then
 		-- Decrement the delay by the elapsed time
@@ -29,24 +29,24 @@ local function UpdateScreenshotFrame(self, elapsed)
 end
 
 -- Function to create the screenshot frame and handle its visibility
-function Module:CreateAutoScreenShot()
+function Module:CreateAutoScreenshot()
 	-- If the screenshot frame does not exist, create it
-	if not ScreenshotFrame then
-		ScreenshotFrame = CreateFrame("Frame")
-		ScreenshotFrame:Hide()
-		ScreenshotFrame:SetScript("OnUpdate", UpdateScreenshotFrame)
+	if not screenshotFrame then
+		screenshotFrame = CreateFrame("Frame")
+		screenshotFrame:Hide()
+		screenshotFrame:SetScript("OnUpdate", onUpdate)
 	end
 
 	-- If the AutoScreenshot option is enabled in the C table
 	if C["Automation"].AutoScreenshot then
 		-- Register the "ACHIEVEMENT_EARNED" event to take a screenshot
-		K:RegisterEvent("ACHIEVEMENT_EARNED", ScreenShotOnEvent)
+		K:RegisterEvent("ACHIEVEMENT_EARNED", onAchievementEarned)
 		-- Show the screenshot frame
-		ScreenshotFrame:Show()
+		screenshotFrame:Show()
 	else
 		-- Unregister the "ACHIEVEMENT_EARNED" event
-		K:UnregisterEvent("ACHIEVEMENT_EARNED", ScreenShotOnEvent)
+		K:UnregisterEvent("ACHIEVEMENT_EARNED", onAchievementEarned)
 		-- Hide the screenshot frame
-		ScreenshotFrame:Hide()
+		screenshotFrame:Hide()
 	end
 end

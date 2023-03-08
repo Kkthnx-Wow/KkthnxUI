@@ -3,42 +3,39 @@ local Module = K:GetModule("Blizzard")
 
 -- Sourced: NDui
 
-local function SetupMirrorBars(bar)
-	local statusbar = bar.StatusBar
+local function SetupMirrorBar(bar)
+	local statusBar = bar.StatusBar
 	local text = bar.Text
 	local spark = bar.Spark
-	-- local texture = K.GetTexture(C["General"].Texture)
 
 	bar:SetSize(222, 22)
 	bar:StripTextures(true)
 
-	statusbar:SetAllPoints()
-	-- statusbar:SetStatusBarTexture(texture) -- Does not do anything?
+	statusBar:SetAllPoints()
 
 	text:ClearAllPoints()
 	text:SetFontObject(K.UIFont)
-	text:SetFont(select(1, text:GetFont()), 12, select(3, text:GetFont()))
+	text:SetFont(text:GetFont(), 12, nil)
 	text:SetPoint("BOTTOM", bar, "TOP", 0, 4)
 
 	spark = bar:CreateTexture(nil, "OVERLAY")
-	spark:SetWidth(64)
-	spark:SetHeight(bar:GetHeight())
+	spark:SetSize(64, bar:GetHeight())
 	spark:SetTexture(C["Media"].Textures.Spark128Texture)
 	spark:SetBlendMode("ADD")
-	spark:SetPoint("CENTER", statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
+	spark:SetPoint("CENTER", statusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	bar:CreateBorder()
 end
 
 function Module:CreateMirrorBars()
-	local previous
+	local previousBar
 	for i = 1, 3 do
 		local bar = _G["MirrorTimer" .. i]
-		SetupMirrorBars(bar)
+		SetupMirrorBar(bar)
 
-		if previous then
-			bar:SetPoint("TOP", previous, "BOTTOM", 0, -6)
+		if previousBar then
+			bar:SetPoint("TOP", previousBar, "BOTTOM", 0, -6)
 		end
-		previous = bar
+		previousBar = bar
 	end
 end

@@ -7,6 +7,7 @@ local Module = K:NewModule("VersionCheck")
 local string_format = string.format
 local string_gsub = string.gsub
 local string_split = string.split
+local tonumber = tonumber
 
 local Ambiguate = Ambiguate
 local C_ChatInfo_RegisterAddonMessagePrefix = C_ChatInfo.RegisterAddonMessagePrefix
@@ -17,10 +18,9 @@ local IsInGuild = IsInGuild
 
 local lastVCTime = 0
 local isVCInit
-local tn = tonumber
 
 local function HandleVersionTag(version)
-	local major, minor = string.split(".", version)
+	local major, minor = string_split(".", version)
 	major, minor = tonumber(major), tonumber(minor)
 
 	if K.LibBase64:CV(major) then
@@ -148,7 +148,11 @@ function Module:VersionCheck_UpdateGroup()
 		return
 	end
 
-	Module:VersionCheck_Send(K.CheckChat())
+	-- Check if the player has changed groups
+	if not self.lastGroup or self.lastGroup ~= K.CheckChat() then
+		self.lastGroup = K.CheckChat()
+		Module:VersionCheck_Send(self.lastGroup)
+	end
 end
 
 function Module:OnEnable()

@@ -1,8 +1,6 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Automation")
 
-local math_random = math.random
-
 local C_Timer_After = C_Timer.After
 local SendChatMessage = SendChatMessage
 
@@ -22,10 +20,12 @@ local AutoThanksList = {
 }
 
 function Module.SetupAutoGoodbye()
-	local randomWaitTime = math.random(2, 5) -- Random the amount of time to wait to say thanks
-	C_Timer_After(randomWaitTime, function()
-		local randomThanksMessage = AutoThanksList[math_random(1, #AutoThanksList)] -- Choose a random message from the list of messages
-		SendChatMessage(randomThanksMessage, "INSTANCE_CHAT") -- Always INSTANCE_CHAT
+	local waitTime = math.random(2, 5)
+	C_Timer_After(waitTime, function()
+		local messageIndex = math.random(1, #AutoThanksList)
+		local message = table.remove(AutoThanksList, messageIndex)
+
+		SendChatMessage(message, "INSTANCE_CHAT")
 	end)
 end
 
@@ -36,4 +36,5 @@ function Module:CreateAutoGoodbye()
 
 	K:RegisterEvent("LFG_COMPLETION_REWARD", Module.SetupAutoGoodbye)
 	K:RegisterEvent("CHALLENGE_MODE_COMPLETED", Module.SetupAutoGoodbye)
+	K:RegisterEvent("CHAT_MSG_INSTANCE_CHAT", Module.SetupAutoGoodbye)
 end

@@ -4,26 +4,29 @@ local Module = K:GetModule("Automation")
 local CancelDuel = CancelDuel
 local StaticPopup_Hide = StaticPopup_Hide
 local C_PetBattles_CancelPVPDuel = C_PetBattles.CancelPVPDuel
+local GREEN_FONT_COLOR_CODE = "|cff00ff00"
 
--- Cancels a pending duel request
+-- Declines a pending duel request
 function Module:DUEL_REQUESTED(name)
-	CancelDuel() -- Call CancelDuel to cancel the request
-	StaticPopup_Hide("DUEL_REQUESTED") -- Hides the pending duel popup
-	print("Declined a duel request from: " .. K.InfoColor .. name .. "|r") -- Print confirmation message
+	CancelDuel() -- Cancel the duel request
+	StaticPopup_Hide("DUEL_REQUESTED") -- Hide the pending duel popup
+	print("Declined a duel request from: " .. GREEN_FONT_COLOR_CODE .. name .. "|r") -- Print confirmation message
 end
 
--- Cancels a pending pet battle pvp duel request
+-- Declines a pending pet battle PVP duel request
 function Module:PET_BATTLE_PVP_DUEL_REQUESTED(name)
-	C_PetBattles_CancelPVPDuel() -- Call C_PetBattles_CancelPVPDuel to cancel the request
-	StaticPopup_Hide("PET_BATTLE_PVP_DUEL_REQUESTED") -- Hides the pending pet battle pvp duel popup
-	print("Declined a pet battle pvp duel request from: " .. K.InfoColor .. name .. "|r") -- Print confirmation message
+	C_PetBattles_CancelPVPDuel() -- Cancel the pet battle PVP duel request
+	StaticPopup_Hide("PET_BATTLE_PVP_DUEL_REQUESTED") -- Hide the pending pet battle PVP duel popup
+	print("Declined a pet battle PVP duel request from: " .. GREEN_FONT_COLOR_CODE .. name .. "|r") -- Print confirmation message
 end
+
+-- Registers or unregisters the event handlers for auto-declining duels
 function Module:CreateAutoDeclineDuels()
 	if C["Automation"].AutoDeclineDuels then
-		K:RegisterEvent("DUEL_REQUESTED", Module.DUEL_REQUESTED)
-		K:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED", Module.PET_BATTLE_PVP_DUEL_REQUESTED)
+		K:RegisterEvent("DUEL_REQUESTED", Module.DUEL_REQUESTED) -- Register the DUEL_REQUESTED event
+		K:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED", Module.PET_BATTLE_PVP_DUEL_REQUESTED) -- Register the PET_BATTLE_PVP_DUEL_REQUESTED event
 	else
-		K:UnregisterEvent("DUEL_REQUESTED", Module.DUEL_REQUESTED)
-		K:UnregisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED", Module.PET_BATTLE_PVP_DUEL_REQUESTED)
+		K:UnregisterEvent("DUEL_REQUESTED", Module.DUEL_REQUESTED) -- Unregister the DUEL_REQUESTED event
+		K:UnregisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED", Module.PET_BATTLE_PVP_DUEL_REQUESTED) -- Unregister the PET_BATTLE_PVP_DUEL_REQUESTED event
 	end
 end

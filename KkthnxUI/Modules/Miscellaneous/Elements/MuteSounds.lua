@@ -91,11 +91,12 @@ local muteSounds = {
 }
 
 function Module:CreateMuteSounds()
-	for _, soundIDs in ipairs(muteSounds) do
-		if C["Misc"].MuteSounds then
-			MuteSoundFile(soundIDs)
+	for soundID in pairs(muteSounds) do
+		local shouldMute = not not C["Misc"].MuteSounds -- convert C["Misc"].MuteSounds to a boolean
+		if shouldMute then
+			MuteSoundFile(soundID)
 		else
-			UnmuteSoundFile(soundIDs)
+			UnmuteSoundFile(soundID)
 		end
 	end
 end

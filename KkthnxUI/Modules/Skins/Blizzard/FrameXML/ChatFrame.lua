@@ -1,15 +1,15 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
 local table_insert = table.insert
-
 local hooksecurefunc = hooksecurefunc
 
 table_insert(C.defaultThemes, function()
-	local friendTex = "UI-ChatIcon-App"
-	local queueTex = "groupfinder-eye-frame"
-	local homeTex = "Interface\\Buttons\\UI-HomeButton"
+	-- Constants for textures
+	local FRIEND_TEXTURE = "UI-ChatIcon-App"
+	local QUEUE_TEXTURE = "groupfinder-eye-frame"
+	local HOME_TEXTURE = "Interface\\Buttons\\UI-HomeButton"
 
-	-- Battlenet toast frame
+	-- Skin the Battle.net toast frame
 	BNToastFrame:SetClampedToScreen(true)
 	BNToastFrame:SetBackdrop(nil)
 	BNToastFrame:CreateBorder()
@@ -17,11 +17,10 @@ table_insert(C.defaultThemes, function()
 	BNToastFrame.TooltipFrame:CreateBorder()
 	BNToastFrame.CloseButton:SkinCloseButton()
 
+	-- Skin the Quick Join toast button
 	QuickJoinToastButton:SetSize(28, 28)
-
-	QuickJoinToastButton.FriendsButton:SetAtlas(friendTex)
-	QuickJoinToastButton.QueueButton:SetAtlas(queueTex)
-
+	QuickJoinToastButton.FriendsButton:SetAtlas(FRIEND_TEXTURE)
+	QuickJoinToastButton.QueueButton:SetAtlas(QUEUE_TEXTURE)
 	QuickJoinToastButton:SetHighlightTexture(0)
 
 	QuickJoinToastButton.FriendCount:ClearAllPoints()
@@ -37,26 +36,28 @@ table_insert(C.defaultThemes, function()
 		if not self.displayedToast then
 			return
 		end
-		self.FriendsButton:SetAtlas(friendTex)
-		self.QueueButton:SetAtlas(queueTex)
-		self.FlashingLayer:SetAtlas(queueTex)
+		self.FriendsButton:SetAtlas(FRIEND_TEXTURE)
+		self.QueueButton:SetAtlas(QUEUE_TEXTURE)
+		self.FlashingLayer:SetAtlas(QUEUE_TEXTURE)
 		self.FriendsButton:SetShown(false)
 		self.FriendCount:SetShown(false)
 	end)
 
 	QuickJoinToastButton:HookScript("OnMouseDown", function(self)
-		self.FriendsButton:SetAtlas(friendTex)
+		self.FriendsButton:SetAtlas(FRIEND_TEXTURE)
 	end)
+
 	QuickJoinToastButton:HookScript("OnMouseUp", function(self)
-		self.FriendsButton:SetAtlas(friendTex)
+		self.FriendsButton:SetAtlas(FRIEND_TEXTURE)
 	end)
 
 	QuickJoinToastButton.Toast:ClearAllPoints()
 	QuickJoinToastButton.Toast:SetPoint("LEFT", QuickJoinToastButton, "RIGHT")
 
+	-- Skin the chat frame buttons
 	ChatFrameChannelButton:SkinButton()
 	ChatFrameChannelButton:SetSize(16, 16)
-	ChatFrameChannelButton.Flash:Kill()
+	ChatFrameChannelButton.Flash:Hide()
 
 	ChatFrameToggleVoiceDeafenButton:SkinButton()
 	ChatFrameToggleVoiceDeafenButton:SetSize(16, 16)
@@ -66,9 +67,10 @@ table_insert(C.defaultThemes, function()
 
 	ChatFrameMenuButton:SkinButton()
 	ChatFrameMenuButton:SetSize(16, 16)
-	ChatFrameMenuButton:SetNormalTexture(homeTex)
-	ChatFrameMenuButton:SetPushedTexture(homeTex)
+	ChatFrameMenuButton:SetNormalTexture(HOME_TEXTURE)
+	ChatFrameMenuButton:SetPushedTexture(HOME_TEXTURE)
 
+	-- Skin the voice chat channel activated notification
 	VoiceChatChannelActivatedNotification:SetBackdrop(nil)
 	VoiceChatChannelActivatedNotification:CreateBorder()
 	VoiceChatChannelActivatedNotification.CloseButton:SkinCloseButton()

@@ -175,6 +175,7 @@ function Module:CreateRecycleBin()
 	local function CollectRubbish()
 		local numChildren = Minimap:GetNumChildren()
 		if numChildren ~= numMinimapChildren then
+			-- examine new children
 			for i = 1, numChildren do
 				local child = select(i, Minimap:GetChildren())
 				local name = child and child.GetName and child:GetName()
@@ -193,7 +194,11 @@ function Module:CreateRecycleBin()
 
 		currentIndex = currentIndex + 1
 		if currentIndex < timeThreshold then
+			-- schedule another call if within time threshold
 			C_Timer_After(pendingTime, CollectRubbish)
+		else
+			-- safety check: print an error message if the function exceeds the time threshold
+			print("ERROR: CollectRubbish() reached time threshold and was terminated.")
 		end
 	end
 

@@ -17,12 +17,12 @@ local borderSections = {
 	{ name = "RIGHT", coord = { 0.125, 0.25, 0, 1 } },
 }
 
-local function getBorderSizeChanged()
+local function getBorderSize()
 	return C["General"].BorderStyle.Value == "KkthnxUI" and 12 or 10
 end
 
 local function getTile(border, w, h)
-	return (w + 2 * border.__offset) / getBorderSizeChanged()
+	return (w + 2 * border.__offset) / getBorderSize()
 end
 
 local function setTextureCoordinates(border, tile)
@@ -65,8 +65,12 @@ function Module:SetTexture(texture)
 end
 
 function Module:SetSize(size)
-	assert(type(size) == "number", "Size must be a number")
+	if type(size) ~= "number" then
+		error("Border:SetSize() - Size must be a number", 2)
+	end
+
 	self.__size = size
+
 	for _, v in pairs(borderSections) do
 		if v.name == "TOP" or v.name == "BOTTOM" then
 			self[v.name]:SetHeight(size)
@@ -76,6 +80,7 @@ function Module:SetSize(size)
 			self[v.name]:SetSize(size, size)
 		end
 	end
+
 	onSizeChanged(self.__parent, self.__parent:GetWidth(), self.__parent:GetHeight())
 end
 
@@ -140,7 +145,7 @@ function K:CreateBorder(drawLayer, drawSubLevel)
 	objectToWidgets[self] = border
 
 	border:SetOffset(-4)
-	border:SetSize(getBorderSizeChanged())
+	border:SetSize(getBorderSize())
 
 	return border
 end

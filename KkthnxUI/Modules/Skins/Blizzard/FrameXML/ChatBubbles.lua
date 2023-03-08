@@ -16,10 +16,11 @@ local function reskinChatBubble(chatbubble)
 		bg:SetScale(UIParent:GetEffectiveScale())
 		bg:SetAllPoints(frame)
 		bg:CreateBorder(nil, nil, nil, nil, -18, nil, nil, nil, nil, 14)
-		bg.KKUI_Background:SetVertexColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Skins"].ChatBubbleAlpha)
 
 		frame:DisableDrawLayer("BORDER")
 		frame.Tail:SetAlpha(0)
+
+		bg.KKUI_Background:SetVertexColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Skins"].ChatBubbleAlpha)
 	end
 
 	chatbubble.styled = true
@@ -30,6 +31,7 @@ table_insert(C.defaultThemes, function()
 		return
 	end
 
+	-- Create a table of chat events to listen for
 	local events = {
 		CHAT_MSG_SAY = "chatBubbles",
 		CHAT_MSG_YELL = "chatBubbles",
@@ -40,7 +42,10 @@ table_insert(C.defaultThemes, function()
 		CHAT_MSG_MONSTER_PARTY = "chatBubblesParty",
 	}
 
+	-- Create a frame to hook chat events and reskin chat bubbles
 	local bubbleHook = CreateFrame("Frame")
+
+	-- Register the chat events to listen for
 	for event in next, events do
 		bubbleHook:RegisterEvent(event)
 	end
@@ -54,10 +59,13 @@ table_insert(C.defaultThemes, function()
 
 	bubbleHook:SetScript("OnUpdate", function(self, elapsed)
 		self.elapsed = self.elapsed + elapsed
+
+		-- Only reskin chat bubbles every 0.1 seconds
 		if self.elapsed > 0.1 then
 			for _, chatbubble in pairs(C_ChatBubbles_GetAllChatBubbles()) do
 				reskinChatBubble(chatbubble)
 			end
+
 			self:Hide()
 		end
 	end)

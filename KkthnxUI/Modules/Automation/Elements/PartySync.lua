@@ -21,29 +21,26 @@ local UnitGUID = UnitGUID
 local UnitName = UnitName
 local hooksecurefunc = hooksecurefunc
 
+-- Cache frequently accessed global functions
+local string_split = string.split
+local C_QuestSession_GetSessionBeginDetails = C_QuestSession.GetSessionBeginDetails
+local C_FriendList_IsFriend = C_FriendList.IsFriend
+
 local partyUnitsList = { "player", "party1", "party2", "party3", "party4" }
 
--- Check if a name is in your friends list or guild (does not check realm as realm is unknown for some checks)
+-- Check if a name is in your friends list
 local function IsFriendCheck(friendName)
 	-- Do nothing if name is empty (such as whispering from the Battle.net app)
 	if not friendName then
 		return
 	end
 
-	-- Update friends list
-	C_FriendList_ShowFriends()
-
 	-- Remove realm
 	friendName = string_split("-", friendName, 2)
 
 	-- Check character friends
-	for i = 1, C_FriendList_GetNumFriends() do
-		-- Return true if name matches with or without realm
-		local charFriendName = C_FriendList_GetFriendInfoByIndex(i).name
-		charFriendName = string_split("-", charFriendName, 2)
-		if friendName == charFriendName then
-			return true
-		end
+	if C_FriendList_IsFriend(friendName) then
+		return true
 	end
 
 	-- Check Battle.net friends
@@ -61,25 +58,12 @@ local function IsFriendCheck(friendName)
 			end
 		end
 	end
-
-	-- Check guild roster (new members may need to press J to refresh roster)
-	local total = GetNumGuildMembers()
-	for i = 1, total do
-		local name, _, _, _, _, _, _, _, connected, _, _, _, _, mobile = GetGuildRosterInfo(i)
-		if connected and not mobile then
-			name = string_split("-", name, 2)
-			if name == friendName then
-				return true
-			end
-		end
-	end
 end
 
 local function SetupAutoPartySyncAccept(self)
-	local details = C_QuestSession_GetSessionBeginDetails()
-	if details then
+	if C_QuestSession_GetSessionBeginDetails() then
 		for _, unit in ipairs(partyUnitsList) do
-			if UnitGUID(unit) == details.guid then
+			if UnitGUID(unit) == C_QuestSession_GetSessionBeginDetails().guid then
 				local requesterName = UnitName(unit)
 				if requesterName and IsFriendCheck(requesterName) then
 					self.ButtonContainer.Confirm:Click()

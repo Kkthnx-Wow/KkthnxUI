@@ -2,16 +2,12 @@ local AddOnName, Engine = ...
 
 local bit_band = bit.band
 local bit_bor = bit.bor
-local math_max = math.max
-local math_min = math.min
 local next = next
 local pairs = pairs
 local select = select
 local string_format = string.format
 local string_lower = string.lower
-local table_insert = table.insert
 local tonumber = tonumber
-local unpack = unpack
 
 local BAG_ITEM_QUALITY_COLORS = BAG_ITEM_QUALITY_COLORS
 local COMBATLOG_OBJECT_AFFILIATION_MINE = COMBATLOG_OBJECT_AFFILIATION_MINE
@@ -44,42 +40,13 @@ local UnitName = UnitName
 local UnitRace = UnitRace
 local UnitSex = UnitSex
 
--- Engine
+-- Create the Engine table and its sub-tables
 Engine[1] = {} -- K, Main
 Engine[2] = {} -- C, Config
 Engine[3] = {} -- L, Locale
 
-local K, C, L = unpack(Engine)
-
--- Track memory usage for each sub-table
-local memoryUsage = {
-	K = 0,
-	C = 0,
-	L = 0,
-}
-
--- Function to update the memory usage for a sub-table
-local function updateMemoryUsage(tableName, usage)
-	memoryUsage[tableName] = usage
-	print(string.format("Memory usage for %s: %d KB", tableName, usage))
-end
-
--- Periodically check memory usage for each sub-table
-local function checkMemoryUsage()
-	collectgarbage()
-	local Kusage = collectgarbage("count")
-	collectgarbage()
-	local Cusage = collectgarbage("count")
-	collectgarbage()
-	local Lusage = collectgarbage("count")
-
-	updateMemoryUsage("K", Kusage)
-	updateMemoryUsage("C", Cusage)
-	updateMemoryUsage("L", Lusage)
-end
-
--- Call the checkMemoryUsage function every 5 minutes
--- C_Timer.NewTicker(5 * 60, checkMemoryUsage)
+-- Assign the sub-tables to variables K, C, and L
+local K, C, L = Engine[1], Engine[2], Engine[3]
 
 -- Lib Info
 K.LibBase64 = LibStub("LibBase64-1.0-KkthnxUI")
@@ -151,19 +118,26 @@ K.AddOns = {}
 K.AddOnVersion = {}
 
 -- Flags
+-- Constants
 K.PartyPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_PARTY, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
 K.RaidPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_RAID, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
 
+-- Tables
 local eventsFrame = CreateFrame("Frame")
 local events = {}
+local registeredEvents = {}
 local modules = {}
 local modulesQueue = {}
+
+-- Variables
 local isScaling = false
 
+-- Functions
 function K.IsMyPet(flags)
 	return bit_band(flags, COMBATLOG_OBJECT_AFFILIATION_MINE) > 0
 end
 
+-- Populate the ClassList table with localized class names
 for k, v in pairs(LOCALIZED_CLASS_NAMES_MALE) do
 	K.ClassList[v] = k
 end
@@ -172,6 +146,7 @@ for k, v in pairs(LOCALIZED_CLASS_NAMES_FEMALE) do
 	K.ClassList[v] = k
 end
 
+-- Populate the ClassColors table with the colors of each class
 local colors = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
 for class, value in pairs(colors) do
 	K.ClassColors[class] = {}
@@ -181,16 +156,18 @@ for class, value in pairs(colors) do
 	K.ClassColors[class].colorStr = value.colorStr
 end
 
+-- Get the player's class color
 K.r, K.g, K.b = K.ClassColors[K.Class].r, K.ClassColors[K.Class].g, K.ClassColors[K.Class].b
 K.MyClassColor = string_format("|cff%02x%02x%02x", K.r * 255, K.g * 255, K.b * 255)
 
+-- Populate the QualityColors table with the colors of each item quality
 local qualityColors = BAG_ITEM_QUALITY_COLORS
 for index, value in pairs(qualityColors) do
 	K.QualityColors[index] = { r = value.r, g = value.g, b = value.b }
 end
 K.QualityColors[-1] = { r = 1, g = 1, b = 1 }
 K.QualityColors[Enum.ItemQuality.Poor] = { r = 0.61, g = 0.61, b = 0.61 }
-K.QualityColors[Enum.ItemQuality.Common] = { r = 1, g = 1, b = 1 }
+K.QualityColors[Enum.ItemQuality.Common] = { r = 1, g = 1, b = 1 } -- This is the default color, but it's included here for completeness.
 
 eventsFrame:SetScript("OnEvent", function(_, event, ...)
 	for func in pairs(events[event]) do
@@ -201,9 +178,6 @@ eventsFrame:SetScript("OnEvent", function(_, event, ...)
 		end
 	end
 end)
-
--- Keep track of registered events and their listeners
-local registeredEvents = {}
 
 function K:RegisterEvent(event, func, unit1, unit2)
 	if event == "CLEU" then
@@ -217,15 +191,10 @@ function K:RegisterEvent(event, func, unit1, unit2)
 		else
 			eventsFrame:RegisterEvent(event)
 		end
-		-- Log that a new event has been registered and by which function
-		--print(string.format("K:RegisterEvent - Registered event '%s' with function '%s'", event, tostring(func)))
 	end
 
 	events[event][func] = true
-	-- Log that a new listener has been added to the event
-	--print(string.format("K:RegisterEvent - Added listener to event '%s' with function '%s'", event, tostring(func)))
 
-	-- Keep track of the registered event and its listener
 	if not registeredEvents[event] then
 		registeredEvents[event] = {}
 	end
@@ -240,18 +209,13 @@ function K:UnregisterEvent(event, func)
 	local funcs = events[event]
 	if funcs and funcs[func] then
 		funcs[func] = nil
-		-- Log that a listener has been removed from the event
-		--print(string.format("K:UnregisterEvent - Removed listener from event '%s' with function '%s'", event, tostring(func)))
 
 		if not next(funcs) then
 			events[event] = nil
 			eventsFrame:UnregisterEvent(event)
-			-- Log that the event has been unregistered
-			--print(string.format("K:UnregisterEvent - Unregistered event '%s'", event))
 		end
 	end
 
-	-- Remove the listener from the registered events list
 	if registeredEvents[event] then
 		for i, f in ipairs(registeredEvents[event]) do
 			if f == func then
@@ -262,84 +226,105 @@ function K:UnregisterEvent(event, func)
 	end
 end
 
--- Modules
-function K:NewModule(name)
-	if modules[name] then
-		error(("Usage: K:NewModule(" .. name .. "): Module '%s' already exists."):format(name), 2)
-		return
+function K:CreateEventListener(event, func, unit1, unit2)
+	if event == "CLEU" then
+		event = "COMBAT_LOG_EVENT_UNFILTERED"
 	end
 
-	local module = {}
-	module.name = name
+	local listener = function(_, ...)
+		func(event, ...)
+	end
+
+	K:RegisterEvent(event, listener, unit1, unit2)
+
+	return listener
+end
+
+function K:NewModule(name)
+	assert(not modules[name], ("Module '%s' already exists."):format(name))
+	local module = { name = name }
 	modules[name] = module
-
-	table_insert(modulesQueue, module)
-
+	table.insert(modulesQueue, module)
 	return module
 end
 
 function K:GetModule(name)
-	if not modules[name] then
-		error(("Usage: K:GetModule(" .. name .. ") Cannot find Module '%s'."):format(tostring(name)), 2)
-		return
-	end
-
-	return modules[name]
+	local module = modules[name]
+	assert(module, ("Cannot find module '%s'."):format(name))
+	return module
 end
 
 local function GetBestScale()
+	-- Calculate the best scale based on the current screen height
 	return K.Round(math.max(0.4, math.min(1.15, 768 / K.ScreenHeight)), 2)
 end
 
 function K.SetupUIScale(init)
+	-- If autoscaling is enabled, set the UIScale to the best calculated scale
 	if C["General"].AutoScale then
 		C["General"].UIScale = GetBestScale()
 	end
 
 	local scale = C["General"].UIScale
+
 	if not InCombatLockdown() then
 		UIParent:SetScale(scale)
 	end
 
 	if init then
-		local ratio = 768 / K.ScreenHeight
-		K.Mult = (1 / scale) - ((1 - ratio) / scale)
+		local pixelRatio = 768 / K.ScreenHeight
+		K.Mult = (1 - pixelRatio) / scale
 	end
 end
 
 local function UpdatePixelScale(event)
 	if isScaling then
+		-- Do not update the pixel scale while it is already being updated
 		return
 	end
 	isScaling = true
 
 	if event == "UI_SCALE_CHANGED" then
+		-- If the UI scale has changed, update the screen width and height
 		K.ScreenWidth, K.ScreenHeight = GetPhysicalScreenSize()
 	end
 
+	-- Initialize and setup the UIScale
 	K.SetupUIScale(true)
 	K.SetupUIScale()
 
 	isScaling = false
 end
 
+-- Register events for initializing the addon
 K:RegisterEvent("PLAYER_LOGIN", function()
+	-- Set CVars
 	SetCVar("ActionButtonUseKeyDown", 1)
+
+	-- Set up UI scaling
 	K.SetupUIScale()
+
+	-- Register event for UI scale change
 	K:RegisterEvent("UI_SCALE_CHANGED", UpdatePixelScale)
+
+	-- Set smoothing amount
 	K:SetSmoothingAmount(C["General"].SmoothAmount)
 
+	-- Enable modules
 	for _, module in next, modulesQueue do
 		if module.OnEnable and not module.Enabled then
 			module:OnEnable()
 			module.Enabled = true
 		else
+			-- Print error message if module fails to load
 			error(("Module ('%s') has failed to load."):format(tostring(module.name)), 2)
 		end
 	end
 
+	-- Set modules
 	K.Modules = modules
 
+	-- Call initialization callback if it exists
 	if K.InitCallback then
 		K:InitCallback()
 	end

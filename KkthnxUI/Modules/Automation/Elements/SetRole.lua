@@ -1,8 +1,6 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
--- Automatically sets your role (iSpawnAtHome)
-
 local GetSpecialization = GetSpecialization
 local GetSpecializationRole = GetSpecializationRole
 local GetTime = GetTime
@@ -12,29 +10,38 @@ local IsPartyLFG = IsPartyLFG
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local UnitSetRole = UnitSetRole
 
-local prev = 0 -- variable to store the previous time the role was set
-local playerRole = nil -- variable to store the player's current role
+local lastRoleChangeTime = 0
+local currentRole = nil
+
+-- Sets the player's role if it has not been set in the last 2 seconds
+local function setPlayerRole(role)
+	local currentTime = GetTime()
+	if not InCombatLockdown() and currentTime - lastRoleChangeTime > 2 and UnitGroupRolesAssigned("player") ~= role then
+		if UnitSetRole("player", role) then
+			lastRoleChangeTime = currentTime
+			currentRole = role
+			print("Changed role to " .. role)
+		end
+	end
+end
 
 function Module:SetupAutoRole()
-	if K.Level >= 10 and not InCombatLockdown() and IsInGroup() and not IsPartyLFG() then
-		local spec = GetSpecialization()
-		if spec then
-			local role = GetSpecializationRole(spec) -- Check the current role of the player's current specialization
-			if playerRole ~= role then
-				if UnitGroupRolesAssigned("player") ~= role then
-					local t = GetTime()
-					if t - prev > 2 then -- Check if it's been more than 2 seconds since the last role change
-						prev = t
-						UnitSetRole("player", role) -- set the player's role
-						playerRole = role -- Update the stored value of the player's role
-						return
-					end
-				end
-			end
-		else -- If there is no specialization, set No Role as default.
-			UnitSetRole("player", "No Role")
-			return
+	-- Check if the player is eligible to change roles
+	if K.Level < 10 or InCombatLockdown() or not IsInGroup() or IsPartyLFG() then
+		return
+	end
+
+	-- Get the player's specialization and role
+	local spec = GetSpecialization()
+	if spec then
+		local role = GetSpecializationRole(spec)
+
+		-- Set the player's role if it has changed
+		if role ~= currentRole then
+			setPlayerRole(role)
 		end
+	else
+		setPlayerRole("No Role")
 	end
 end
 
@@ -43,7 +50,10 @@ function Module:CreateAutoSetRole()
 		return
 	end
 
-	K:RegisterEvent("PLAYER_TALENT_UPDATE", Module.SetupAutoRole)
-	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.SetupAutoRole)
+	-- Register events for updating the player's role
+	K:RegisterEvent("PLAYER_TALENT_UPDATE", self.SetupAutoRole)
+	K:RegisterEvent("GROUP_ROSTER_UPDATE", self.SetupAutoRole)
+
+	-- Unregister the role poll popup event to prevent it from resetting the player's role
 	RolePollPopup:UnregisterEvent("ROLE_POLL_BEGIN")
 end

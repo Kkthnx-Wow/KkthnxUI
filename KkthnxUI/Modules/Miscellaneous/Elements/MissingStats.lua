@@ -6,7 +6,7 @@ local BreakUpLargeNumbers, GetMeleeHaste, UnitAttackSpeed = BreakUpLargeNumbers,
 local GetAverageItemLevel, C_PaperDollInfo_GetMinItemLevel = GetAverageItemLevel, C_PaperDollInfo.GetMinItemLevel
 local PaperDollFrame_SetLabelAndText = PaperDollFrame_SetLabelAndText
 local STAT_HASTE = STAT_HASTE
-local HIGHLIGHT_FONT_COLOR_CODE, FONT_COLOR_CODE_CLOSE = HIGHLIGHT_FONT_COLOR_CODE, FONT_COLOR_CODE_CLOSE
+local HIGHLIGHT_FONT_COLOR_CODE = HIGHLIGHT_FONT_COLOR_CODE
 
 function Module:CreateMissingStats()
 	if not C["Misc"].ImprovedStats then
@@ -95,12 +95,7 @@ function Module:CreateMissingStats()
 		local speed, offhandSpeed = UnitAttackSpeed(unit)
 		local displaySpeed = format("%.2f", speed)
 		if offhandSpeed then
-			offhandSpeed = format("%.2f", offhandSpeed)
-		end
-		if offhandSpeed then
-			displaySpeed = BreakUpLargeNumbers(displaySpeed) .. " / " .. offhandSpeed
-		else
-			displaySpeed = BreakUpLargeNumbers(displaySpeed)
+			displaySpeed = format("%s / %.2f", BreakUpLargeNumbers(displaySpeed), offhandSpeed)
 		end
 		PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, displaySpeed, false, speed)
 
@@ -129,18 +124,9 @@ function Module:CreateMissingStats()
 	hooksecurefunc("PaperDollFrame_SetLabelAndText", function(statFrame, label, _, isPercentage)
 		if isPercentage or label == STAT_HASTE then
 			statFrame.Value:SetFormattedText("%.2f%%", statFrame.numericValue)
+		else
+			statFrame.Value:SetText(string.format("%.2f", statFrame.numericValue))
 		end
 	end)
-
-	-- hooksecurefunc("PaperDollFrame_UpdateStats", function()
-	-- 	for statFrame in CharacterStatsPane.statsFramePool:EnumerateActive() do
-	-- 		if not statFrame.styled then
-	-- 			statFrame.Label:SetFontObject(Game13Font)
-	-- 			statFrame.Value:SetFontObject(Game13Font)
-
-	-- 			statFrame.styled = true
-	-- 		end
-	-- 	end
-	-- end)
 end
 Module:RegisterMisc("MissingStats", Module.CreateMissingStats)

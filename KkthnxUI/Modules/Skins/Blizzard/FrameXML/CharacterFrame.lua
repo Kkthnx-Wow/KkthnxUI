@@ -166,71 +166,58 @@ tinsert(C.defaultThemes, function()
 		UpdateCosmetic(button)
 	end)
 
-	do
-		local characterInset = CharacterFrame.Inset
-		CharacterHeadSlot:SetPoint("TOPLEFT", characterInset, "TOPLEFT", 6, -6)
-		CharacterHandsSlot:SetPoint("TOPRIGHT", characterInset, "TOPRIGHT", -6, -6)
-		CharacterMainHandSlot:SetPoint("BOTTOMLEFT", characterInset, "BOTTOMLEFT", 176, 5)
-		CharacterSecondaryHandSlot:SetPoint("BOTTOMRIGHT", characterInset, "BOTTOMRIGHT", -176, 5)
+	-- Character slots
+	CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)
+	CharacterHandsSlot:SetPoint("TOPRIGHT", CharacterFrame.Inset, "TOPRIGHT", -6, -6)
+	CharacterMainHandSlot:SetPoint("BOTTOMLEFT", CharacterFrame.Inset, "BOTTOMLEFT", 176, 5)
+	CharacterSecondaryHandSlot:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -176, 5)
 
-		CharacterModelScene:SetSize(0, 0)
-		CharacterModelScene:SetPoint("TOPLEFT", characterInset, 0, 0)
-		CharacterModelScene:SetPoint("BOTTOMRIGHT", characterInset, 0, 20)
+	-- Character model scene
+	CharacterModelScene:SetSize(0, 0)
+	CharacterModelScene:SetPoint("TOPLEFT", CharacterFrame.Inset, 0, 0)
+	CharacterModelScene:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, 0, 20)
 
-		hooksecurefunc("CharacterFrame_Expand", function()
-			CharacterFrame:SetSize(640, 431)
-			characterInset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 432, 4)
+	-- Expand/collapse hooks
+	hooksecurefunc("CharacterFrame_Expand", function()
+		CharacterFrame:SetSize(640, 431)
+		CharacterFrame.Inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 432, 4)
 
-			local texture = "Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. K.Class
-			characterInset.Bg:SetTexture(texture)
-			characterInset.Bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
-			characterInset.Bg:SetHorizTile(false)
-			characterInset.Bg:SetVertTile(false)
-		end)
+		local texture = "Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. K.Class
+		CharacterFrame.Inset.Bg:SetTexture(texture)
+		CharacterFrame.Inset.Bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
+		CharacterFrame.Inset.Bg:SetHorizTile(false)
+		CharacterFrame.Inset.Bg:SetVertTile(false)
+	end)
 
-		hooksecurefunc("CharacterFrame_Collapse", function()
-			CharacterFrame:SetHeight(424)
-			characterInset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 332, 4)
+	hooksecurefunc("CharacterFrame_Collapse", function()
+		CharacterFrame:SetHeight(424)
+		CharacterFrame.Inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 332, 4)
 
-			local texture = "Interface\\FrameGeneral\\UI-Background-Marble", "REPEAT", "REPEAT"
-			characterInset.Bg:SetTexture(texture)
-			characterInset.Bg:SetTexCoord(0, 1, 0, 1)
-			characterInset.Bg:SetHorizTile(true)
-			characterInset.Bg:SetVertTile(true)
-		end)
+		CharacterFrame.Inset.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Marble")
+		CharacterFrame.Inset.Bg:SetTexCoord(0, 1, 0, 1)
+		CharacterFrame.Inset.Bg:SetHorizTile(true)
+		CharacterFrame.Inset.Bg:SetVertTile(true)
+	end)
 
-		if CharacterLevelText then
-			CharacterLevelText:SetFontObject(K.UIFont)
-		end
+	-- Fonts
+	if CharacterLevelText then
+		CharacterLevelText:SetFontObject(K.UIFont)
+	end
 
-		local CharItemLvLValue = CharacterStatsPane.ItemLevelFrame.Value
-		CharItemLvLValue:SetFontObject(K.UIFont)
-		CharItemLvLValue:SetFont(select(1, CharItemLvLValue:GetFont()), 18, select(3, CharItemLvLValue:GetFont()))
+	local CharItemLvLValue = CharacterStatsPane.ItemLevelFrame.Value
+	CharItemLvLValue:SetFontObject(K.UIFont)
+	CharItemLvLValue:SetFont(select(1, CharItemLvLValue:GetFont()), 18, select(3, CharItemLvLValue:GetFont()))
 
-		CharacterStatsPane.ClassBackground:ClearAllPoints()
-		CharacterStatsPane.ClassBackground:SetHeight(CharacterStatsPane.ClassBackground:GetHeight() + 6)
-		CharacterStatsPane.ClassBackground:SetParent(CharacterFrameInsetRight)
-		CharacterStatsPane.ClassBackground:SetPoint("CENTER")
+	-- Class background
+	CharacterStatsPane.ClassBackground:ClearAllPoints()
+	CharacterStatsPane.ClassBackground:SetHeight(CharacterStatsPane.ClassBackground:GetHeight() + 6)
+	CharacterStatsPane.ClassBackground:SetParent(CharacterFrameInsetRight)
+	CharacterStatsPane.ClassBackground:SetPoint("CENTER")
 
-		hooksecurefunc(PaperDollFrame.TitleManagerPane.ScrollBox, "Update", function(self)
-			for i = 1, self.ScrollTarget:GetNumChildren() do
-				local child = select(i, self.ScrollTarget:GetChildren())
-				if not child.styled then
-					child:DisableDrawLayer("BACKGROUND")
-					child.styled = true
-				end
-			end
-		end)
-
-		for i = 1, #PAPERDOLL_SIDEBARS do
-			local tab = _G["PaperDollSidebarTab" .. i]
-			local region = select(1, tab:GetRegions())
-
-			if i == 1 then
-				region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
-				region.SetTexCoord = K.Noop
-			end
-
+	-- PaperDoll sidebar tab styling
+	local function styleSidebarTab(tab)
+		local region = select(1, tab:GetRegions())
+		if not tab.bg then
 			tab.bg = CreateFrame("Frame", nil, tab)
 			tab.bg:SetFrameLevel(tab:GetFrameLevel())
 			tab.bg:SetAllPoints(tab)
@@ -244,5 +231,29 @@ tinsert(C.defaultThemes, function()
 			tab.Hider:SetColorTexture(0.3, 0.3, 0.3, 0.4)
 			tab.TabBg:SetAlpha(0)
 		end
+
+		if region and not tab.regionStyled then
+			if i == 1 then
+				region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
+				region.SetTexCoord = K.Noop
+			end
+			tab.regionStyled = true
+		end
 	end
+
+	-- PaperDoll sidebar tab hook
+	for i = 1, #PAPERDOLL_SIDEBARS do
+		styleSidebarTab(_G["PaperDollSidebarTab" .. i])
+	end
+
+	-- Hide paperdoll equipment manager scrollbar background
+	hooksecurefunc(PaperDollFrame.TitleManagerPane.ScrollBox, "Update", function(self)
+		for i = 1, self.ScrollTarget:GetNumChildren() do
+			local child = select(i, self.ScrollTarget:GetChildren())
+			if not child.styled then
+				child:DisableDrawLayer("BACKGROUND")
+				child.styled = true
+			end
+		end
+	end)
 end)

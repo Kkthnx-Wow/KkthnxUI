@@ -1,45 +1,51 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
-local BACKPACK_CONTAINER = BACKPACK_CONTAINER or 0
-local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
-local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
-local IsAddOnLoaded = IsAddOnLoaded
 local NUM_BAG_SLOTS = NUM_BAG_SLOTS or 4
 
-function Module:SetupAutoKeystone()
-	for container = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-		local slots = C_Container_GetContainerNumSlots(container)
+local function isKeystone(itemID)
+	-- Use GetItemInfo to get the item's class and subclass IDs
+	local _, _, _, _, _, _, _, _, _, _, _, classID, subClassID = GetItemInfo(itemID)
+	return classID == 5 and subClassID == 1
+end
+
+local function useKeystone()
+	-- Loop through all bags and slots to find a Keystone
+	for container = 0, NUM_BAG_SLOTS do
+		local slots = GetContainerNumSlots(container)
 		for slot = 1, slots do
-			local cInfo = C_Container_GetContainerItemInfo(container, slot)
-			if cInfo and cInfo.itemID then
-				-- print("itemID", itemID) -- Debug
-				local itemName = GetItemInfo(cInfo.itemID) -- Added line to get the item name from the item ID
-				local classID, subClassID = select(12, GetItemClassInfo(select(11, GetItemInfo(itemName)))) -- Changed the function to GetItemClassInfo and added the argument of select(11, GetItemInfo(itemName)) to get the class index from the item name
-				if classID and subClassID then
-					-- print("classID", classID) -- Debug
-					-- print("subClassID", subClassID) -- Debug
-					if classID == 5 and subClassID == 1 then
-						return C_Container.UseContainerItem(container, slot)
-					end
-				end
+			local itemID = GetContainerItemID(container, slot)
+			if itemID and isKeystone(itemID) then
+				-- Use the Keystone and return true to indicate success
+				UseContainerItem(container, slot)
+				return true
 			end
 		end
 	end
+
+	-- Return false if no Keystone was found
+	return false
 end
 
-function Module.LoadAutoKeystone(event, addon)
-	if addon == "Blizzard_ChallengesUI" then
-		_G.ChallengesKeystoneFrame:HookScript("OnShow", Module.SetupAutoKeystone)
+function Module:SetupAutoKeystone()
+	if useKeystone() then
+		K.Print("Used Keystone from bag")
+	end
+end
 
-		K:UnregisterEvent(event, Module.LoadAutoKeystone)
+function Module:LoadAutoKeystone(event, addon)
+	if addon == "Blizzard_ChallengesUI" then
+		ChallengesKeystoneFrame:HookScript("OnShow", self.SetupAutoKeystone)
+		K:UnregisterEvent(event, self.LoadAutoKeystone)
 	end
 end
 
 function Module:CreateAutoKeystone()
-	if not C["Automation"].AutoKeystone or IsAddOnLoaded("AngryKeystones") then
+	-- Check if the AngryKeystones addon is loaded or the AutoKeystone option is disabled
+	if IsAddOnLoaded("AngryKeystones") or not C["Automation"].AutoKeystone then
 		return
 	end
 
-	K:RegisterEvent("ADDON_LOADED", Module.LoadAutoKeystone)
+	-- Register the ADDON_LOADED event to check for the ChallengesUI addon
+	K:RegisterEvent("ADDON_LOADED", self.LoadAutoKeystone, self)
 end

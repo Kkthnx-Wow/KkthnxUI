@@ -516,7 +516,6 @@ Module:RegisterTooltips("KkthnxUI", function()
 		IMECandidatesFrame,
 		QuickKeybindTooltip,
 		GameSmallHeaderTooltip,
-		SettingsTooltip,
 	}
 	for _, f in pairs(tooltips) do
 		f:HookScript("OnShow", Module.ReskinTooltip)
@@ -525,6 +524,11 @@ Module:RegisterTooltips("KkthnxUI", function()
 	ItemRefTooltip.CloseButton:SkinCloseButton()
 	FloatingBattlePetTooltip.CloseButton:SkinCloseButton()
 	FloatingPetBattleAbilityTooltip.CloseButton:SkinCloseButton()
+
+	if SettingsTooltip then
+		Module.ReskinTooltip(SettingsTooltip)
+		SettingsTooltip:SetScale(UIParent:GetScale())
+	end
 
 	-- DropdownMenu
 	local dropdowns = { "DropDownList", "L_DropDownList", "Lib_DropDownList" }

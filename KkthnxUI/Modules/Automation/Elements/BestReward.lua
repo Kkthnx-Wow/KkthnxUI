@@ -7,28 +7,29 @@ local GetQuestItemInfo = GetQuestItemInfo
 local select = select
 local GetItemInfo = GetItemInfo
 
-function Module:SetupAutoBestReward()
-	local firstItem = QuestInfoRewardsFrameQuestInfoItem1
-	if not firstItem then
-		return
+local questRewardGoldIconFrame
+
+local function getQuestRewards()
+	local numChoices = GetNumQuestChoices()
+	if numChoices < 2 then
+		return nil
 	end
 
-	local numQuests = GetNumQuestChoices()
-	if numQuests < 2 then
-		return
-	end
-
-	-- Create a table to store references to the QuestInfoRewardsFrameQuestInfoItem buttons
 	local questRewards = {}
-	for i = 1, numQuests do
+	for i = 1, numChoices do
 		local btn = _G["QuestInfoRewardsFrameQuestInfoItem" .. i]
 		if btn and btn.type == "choice" then
 			questRewards[i] = btn
 		end
 	end
 
+	return questRewards
+end
+
+local function getBestQuestReward(questRewards)
 	local bestValue = 0
 	local bestItem
+
 	for i, btn in pairs(questRewards) do
 		local questLink = GetQuestItemLink("choice", i)
 		local _, _, amount = GetQuestItemInfo("choice", i)
@@ -45,11 +46,21 @@ function Module:SetupAutoBestReward()
 		end
 	end
 
+	return bestItem
+end
+
+function Module:SetupAutoBestReward()
+	local questRewards = getQuestRewards()
+	if not questRewards then
+		return
+	end
+
+	local bestItem = getBestQuestReward(questRewards)
 	if bestItem then
 		local btn = questRewards[bestItem]
-		Module.QuestRewardGoldIconFrame:ClearAllPoints()
-		Module.QuestRewardGoldIconFrame:SetPoint("TOPRIGHT", btn, "TOPRIGHT", -2, -2)
-		Module.QuestRewardGoldIconFrame:Show()
+		questRewardGoldIconFrame:ClearAllPoints()
+		questRewardGoldIconFrame:SetPoint("TOPRIGHT", btn, "TOPRIGHT", -2, -2)
+		questRewardGoldIconFrame:Show()
 	end
 end
 
@@ -58,24 +69,18 @@ function Module:CreateAutoBestReward()
 		return
 	end
 
-	do -- questRewardMostValueIcon
-		local MostValue = CreateFrame("Frame", "KKUI_QuestRewardGoldIconFrame", _G.UIParent)
-		MostValue:SetFrameStrata("HIGH")
-		MostValue:SetSize(20, 20)
-		MostValue:Hide()
+	questRewardGoldIconFrame = CreateFrame("Frame", "KKUI_QuestRewardGoldIconFrame", _G.UIParent)
+	questRewardGoldIconFrame:SetFrameStrata("HIGH")
+	questRewardGoldIconFrame:SetSize(20, 20)
+	questRewardGoldIconFrame:Hide()
 
-		MostValue.Icon = MostValue:CreateTexture(nil, "OVERLAY")
-		MostValue.Icon:SetAllPoints(MostValue)
-		MostValue.Icon:SetTexture("Interface\\BUTTONS\\UI-GroupLoot-Coin-Up")
+	local icon = questRewardGoldIconFrame:CreateTexture(nil, "OVERLAY")
+	icon:SetAllPoints(questRewardGoldIconFrame)
+	icon:SetTexture("Interface\\BUTTONS\\UI-GroupLoot-Coin-Up")
 
-		Module.QuestRewardGoldIconFrame = MostValue
-
-		hooksecurefunc(_G.QuestFrameRewardPanel, "Hide", function()
-			if Module.QuestRewardGoldIconFrame then
-				Module.QuestRewardGoldIconFrame:Hide()
-			end
-		end)
-	end
+	_G.QuestFrameRewardPanel:HookScript("OnHide", function()
+		questRewardGoldIconFrame:Hide()
+	end)
 
 	K:RegisterEvent("QUEST_COMPLETE", self.SetupAutoBestReward)
 end

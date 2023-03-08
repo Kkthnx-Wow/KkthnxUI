@@ -13,22 +13,21 @@ local function SetupTimerTracker(bar)
 	bar:SetStatusBarTexture(texture)
 
 	bar.spark = bar:CreateTexture(nil, "OVERLAY")
-	bar.spark:SetWidth(64)
-	bar.spark:SetHeight(bar:GetHeight())
+	bar.spark:SetSize(64, bar:GetHeight())
 	bar.spark:SetTexture(C["Media"].Textures.Spark128Texture)
 	bar.spark:SetBlendMode("ADD")
 	bar.spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	bar:CreateBorder()
+
+	bar.styled = true -- set styled flag on the bar
 end
 
 function Module:CreateTimerTracker()
 	local function UpdateTimerTracker()
 		for _, timer in pairs(_G.TimerTracker.timerList) do
-			if timer.bar and not timer.bar.styled then
+			if timer.bar and not timer.bar.styled then -- only apply style if not styled before
 				SetupTimerTracker(timer.bar)
-
-				timer.bar.styled = true
 			end
 		end
 	end
