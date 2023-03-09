@@ -15,6 +15,14 @@ local Minimap = Minimap
 local PlaySound = PlaySound
 local UIParent = UIParent
 
+local positions = {
+	{ "BOTTOMLEFT", -7, -7 },
+	{ "BOTTOMRIGHT", 7, -7 },
+	{ "TOPLEFT", -7, 7 },
+	{ "TOPRIGHT", 7, 7 },
+}
+local position = positions[C["Minimap"].RecycleBinPosition.Value] or positions[1]
+
 function Module:CreateRecycleBin()
 	if not C["Minimap"].ShowRecycleBin then
 		return
@@ -39,17 +47,7 @@ function Module:CreateRecycleBin()
 	bu:SetAlpha(0.6)
 	bu:SetSize(16, 16)
 	bu:ClearAllPoints()
-	if C["Minimap"].RecycleBinPosition.Value == 1 then
-		bu:SetPoint("BOTTOMLEFT", -7, -7)
-	elseif C["Minimap"].RecycleBinPosition.Value == 2 then
-		bu:SetPoint("BOTTOMRIGHT", 7, -7)
-	elseif C["Minimap"].RecycleBinPosition.Value == 3 then
-		bu:SetPoint("TOPLEFT", -7, 7)
-	elseif C["Minimap"].RecycleBinPosition.Value == 4 then
-		bu:SetPoint("TOPRIGHT", 7, 7)
-	else
-		bu:SetPoint("BOTTOMLEFT", -7, -7)
-	end
+	bu:SetPoint(position[1], position[2], position[3])
 
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 	bu.Icon:SetAllPoints()
@@ -75,10 +73,12 @@ function Module:CreateRecycleBin()
 		bin:Hide()
 	end
 
-	local function clickFunc()
-		PlaySound(825)
-		UIFrameFadeOut(bin, 0.5, 1, 0)
-		C_Timer_After(0.5, hideBinButton)
+	local function clickFunc(force)
+		if force == 1 then
+			PlaySound(825)
+			UIFrameFadeOut(bin, 0.5, 1, 0)
+			C_Timer_After(0.5, hideBinButton)
+		end
 	end
 
 	local ignoredButtons = {
@@ -144,9 +144,9 @@ function Module:CreateRecycleBin()
 					child:SetScript("OnDragStart", nil)
 				end
 
-				-- if child:HasScript("OnClick") then
-				-- 	child:HookScript("OnClick", clickFunc)
-				-- end
+				if child:HasScript("OnClick") then
+					child:HookScript("OnClick", clickFunc)
+				end
 
 				if child:IsObjectType("Button") then
 					child:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square") -- prevent nil function
@@ -164,7 +164,7 @@ function Module:CreateRecycleBin()
 					child:SetScript("OnMouseDown", nil)
 					child:SetScript("OnMouseUp", nil)
 				elseif name == "BagSync_MinimapButton" then
-					-- child:HookScript("OnMouseUp", clickFunc)
+					child:HookScript("OnMouseUp", clickFunc)
 				end
 
 				child.styled = true
@@ -198,7 +198,7 @@ function Module:CreateRecycleBin()
 			C_Timer_After(pendingTime, CollectRubbish)
 		else
 			-- safety check: print an error message if the function exceeds the time threshold
-			print("ERROR: CollectRubbish() reached time threshold and was terminated.")
+			-- print("ERROR: CollectRubbish() reached time threshold and was terminated.")
 		end
 	end
 
@@ -234,7 +234,7 @@ function Module:CreateRecycleBin()
 
 	bu:SetScript("OnClick", function()
 		if bin:IsShown() then
-			clickFunc()
+			clickFunc(1)
 		else
 			PlaySound(825)
 			SortRubbish()
