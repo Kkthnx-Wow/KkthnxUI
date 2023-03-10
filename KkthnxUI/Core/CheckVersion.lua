@@ -145,13 +145,15 @@ end
 
 function Module:VersionCheck_UpdateGroup()
 	if not IsInGroup() then
+		--print("Not in a group")
 		return
 	end
 
 	-- Check if the player has changed groups
-	if not self.lastGroup or self.lastGroup ~= K.CheckChat() then
-		self.lastGroup = K.CheckChat()
-		Module:VersionCheck_Send(self.lastGroup)
+	if not Module.lastGroup or Module.lastGroup ~= K.CheckChat() then
+		Module.lastGroup = K.CheckChat()
+		Module:VersionCheck_Send(Module.lastGroup)
+		-- print("Sent version check to group: " .. Module.lastGroup)
 	end
 end
 
