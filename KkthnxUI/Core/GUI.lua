@@ -103,69 +103,6 @@ local CreditLines = {
 	{ type = "name", text = "siweia", addOn = "NDui" },
 }
 
--- -- Do not add class color/icon string unless they ask for it or agree apon it :D
--- local CreditLines = {
--- 	-- stylua: ignore
--- 	K.GreyColor.. "[|r|CFFFFCC66PATREONS|r".. K.GreyColor.. "]",
--- 	" ",
--- 	-- -- Tier 1
--- 	-- stylua: ignore
--- 	K.GreyColor.. "[|r|CFFFFCC66Tier 1|r".. K.GreyColor.. "]",
--- 	"",
--- 	-- stylua: ignore
--- 	K.GreyColor.. "[|r|CFFFFCC66Tier 2|r".. K.GreyColor.. "]",
--- 	"",
--- 	-- stylua: ignore
--- 	K.GreyColor.. "[|r|CFFFFCC66Tier 3|r".. K.GreyColor.. "]",
--- 	WarriorIconColor .. "|cff8b0000Shovil|r",
--- 	"",
--- 	-- stylua: ignore
--- 	K.GreyColor.. "[|r|CFFFFCC66Tier 4|r".. K.GreyColor.. "]",
--- 	"",
--- 	-- stylua: ignore
--- 	"",
--- 	K.GreyColor .. "[|r|CFFFFCC66CREDITS|r" .. K.GreyColor .. "]",
--- 	"",
--- 	"Aftermathh",
--- 	RogueIconColor .. "Alteredcross|r",
--- 	"Alza",
--- 	ShamanIconColor .. "Azilroka",
--- 	"|cff00c0faBenik|r",
--- 	"Blazeflack",
--- 	"Caellian",
--- 	"Caith",
--- 	HunterIconColor .. "Cassamarra|r",
--- 	"Darth Predator",
--- 	"Elv - (|cff1784d1ElvUI|r)",
--- 	PriestIconColor .. "|cffe31c73Faffi|r|cfffc4796GS|r",
--- 	DruidIconColor .. "Goldpaw|r - (|c00000002|r|cff7284abA|r|cff6a7a9ez|r|cff617092e|r|cff596785r|r|cff505d78i|r|cff48536bt|r|cff3f495fe|r|cffffffffUI|r)",
--- 	"Haleth",
--- 	"Haste",
--- 	"Hungtar",
--- 	"Hydra - (|cFFFFC44DvUI|r)",
--- 	"Ishtara",
--- 	"KkthnxUI Community",
--- 	"LightSpark",
--- 	PriestIconColor .. "Magicnachos",
--- 	DruidIconColor .. "Merathilis",
--- 	"Nightcracker",
--- 	"P3lim",
--- 	PriestIconColor .. "Palooza|r",
--- 	DemonHunterIconColor .. "Rav99",
--- 	"Roth",
--- 	"Shestak - (ShestakUI)",
--- 	"Simpy",
--- 	"siweia - (|cff0080ffNDui|r)",
--- 	DeathKnightIconColor .. "Sophia|r",
--- 	"Sticklord",
--- 	"Tekkub",
--- 	"Tohveli",
--- 	"Tukz - (|cffff8000Tukui|r)",
--- 	"Tulla",
--- 	"Tuller",
--- 	"oUF Team",
--- }
-
 local GUI = CreateFrame("Frame", "KKUI_GUI", UIParent)
 GUI.Windows = {}
 GUI.Buttons = {}

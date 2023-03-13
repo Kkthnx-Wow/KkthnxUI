@@ -32,8 +32,8 @@ local UnitReaction = UnitReaction
 
 -- Variables to store item level data, strings for parsing item level and enchant information
 local iLvlDB = {}
-local enchantString = string.gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
-local itemLevelString = "^" .. string.gsub(ITEM_LEVEL, "%%d", "")
+local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
+local itemLevelString = "^" .. string_gsub(ITEM_LEVEL, "%%d", "")
 local isKnownString = {
 	[TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN] = true,
 	[TRANSMOGRIFY_TOOLTIP_ITEM_UNKNOWN_APPEARANCE_KNOWN] = true,
@@ -54,19 +54,19 @@ do
 	end
 
 	function K.ShortValue(n)
-		-- Cache frequently used values.
+		local prefixStyle = C["General"].NumberPrefixStyle.Value
 		local abs_n = abs(n)
 		local suffix, div = "", 1
 
 		-- Calculate the appropriate suffix and division factor.
 		if abs_n >= 1e12 then
-			suffix, div = (C["General"].NumberPrefixStyle.Value == 1 and "t" or "z"), 1e12
+			suffix, div = (prefixStyle == 1 and "t" or "z"), 1e12
 		elseif abs_n >= 1e9 then
-			suffix, div = (C["General"].NumberPrefixStyle.Value == 1 and "b" or "y"), 1e9
+			suffix, div = (prefixStyle == 1 and "b" or "y"), 1e9
 		elseif abs_n >= 1e6 then
-			suffix, div = (C["General"].NumberPrefixStyle.Value == 1 and "m" or "w"), 1e6
+			suffix, div = (prefixStyle == 1 and "m" or "w"), 1e6
 		elseif abs_n >= 1e3 then
-			suffix, div = (C["General"].NumberPrefixStyle.Value == 1 and "k" or "w"), 1e3
+			suffix, div = (prefixStyle == 1 and "k" or "w"), 1e3
 		end
 
 		-- Format the shortened value.
@@ -91,6 +91,9 @@ do
 	end
 
 	-- RGBToHex
+	-- Set the factor to 255 for converting RGB to hexadecimal
+	local factor = 255
+	-- Convert RGB values to hexadecimal format
 	function K.RGBToHex(r, g, b)
 		-- Check if r is a table, and extract r, g, b values from it if necessary
 		if type(r) == "table" then
@@ -98,7 +101,10 @@ do
 		end
 		-- Check if r is not nil, and return the hex code if true
 		if r then
-			return string.format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
+			-- Convert RGB values to hexadecimal format
+			local hex = string.format("%02x%02x%02x", r * factor, g * factor, b * factor)
+			-- Return the hex code with alpha value appended
+			return "|cff" .. hex
 		end
 	end
 
@@ -129,7 +135,7 @@ do
 	function K.SplitList(list, variable, cleanup)
 		-- Wipe the table if cleanup is true
 		if cleanup then
-			table.wipe(list)
+			table_wipe(list)
 		end
 
 		for word in string.gmatch(variable, "%S+") do
@@ -353,8 +359,8 @@ do
 				return
 			end
 
-			wipe(slotData.gems)
-			wipe(slotData.gemsColor)
+			table_wipe(slotData.gems)
+			table_wipe(slotData.gemsColor)
 			slotData.iLvl = nil
 			slotData.enchantText = nil
 

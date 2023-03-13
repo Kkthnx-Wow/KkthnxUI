@@ -1,8 +1,9 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
+local mediaFolder = K.MediaFolder
 C["Media"] = {
 	["Sounds"] = {
-		KillingBlow = K.MediaFolder .. "Sounds\\KillingBlow.ogg",
+		KillingBlow = mediaFolder .. "Sounds\\KillingBlow.ogg",
 	},
 
 	["Backdrops"] = {
@@ -10,80 +11,67 @@ C["Media"] = {
 	},
 
 	["Borders"] = {
-		AzeriteUIBorder = K.MediaFolder .. "Border\\AzeriteUI\\Border.tga",
-		AzeriteUITooltipBorder = K.MediaFolder .. "Border\\AzeriteUI\\Border_Tooltip.tga",
-		ColorBorder = { 1, 1, 1 }, -- Doesn't feel like this fits here
-		GlowBorder = K.MediaFolder .. "Border\\Border_Glow_Overlay.tga",
-		KkthnxUIBorder = K.MediaFolder .. "Border\\KkthnxUI\\Border.tga",
-		KkthnxUITooltipBorder = K.MediaFolder .. "Border\\KkthnxUI\\Border_Tooltip.tga",
+		AzeriteUIBorder = mediaFolder .. "Border\\AzeriteUI\\Border.tga",
+		AzeriteUITooltipBorder = mediaFolder .. "Border\\AzeriteUI\\Border_Tooltip.tga",
+		ColorBorder = { 1, 1, 1 },
+		GlowBorder = mediaFolder .. "Border\\Border_Glow_Overlay.tga",
+		KkthnxUIBorder = mediaFolder .. "Border\\KkthnxUI\\Border.tga",
+		KkthnxUITooltipBorder = mediaFolder .. "Border\\KkthnxUI\\Border_Tooltip.tga",
 	},
 
 	["Textures"] = {
-		ArrowTexture = K.MediaFolder .. "Textures\\Arrow.tga",
-		BlankTexture = K.MediaFolder .. "Textures\\BlankTexture.blp",
-		CopyChatTexture = K.MediaFolder .. "Chat\\Copy.tga",
-		GlowTexture = K.MediaFolder .. "Textures\\GlowTex.tga",
-		LogoSmallTexture = K.MediaFolder .. "Textures\\LogoSmall.tga",
-		LogoTexture = K.MediaFolder .. "Textures\\Logo.tga",
-		MouseoverTexture = K.MediaFolder .. "Textures\\Mouseover.tga",
-		NewClassIconsTexture = K.MediaFolder .. "Unitframes\\NEW-ICONS-CLASSES.blp",
-		Spark128Texture = K.MediaFolder .. "Textures\\Spark_128",
-		Spark16Texture = K.MediaFolder .. "Textures\\Spark_16",
-		TargetIndicatorTexture = K.MediaFolder .. "Nameplates\\TargetIndicatorArrow.blp",
+		ArrowTexture = mediaFolder .. "Textures\\Arrow.tga",
+		BlankTexture = mediaFolder .. "Textures\\BlankTexture.blp",
+		CopyChatTexture = mediaFolder .. "Chat\\Copy.tga",
+		GlowTexture = mediaFolder .. "Textures\\GlowTex.tga",
+		LogoSmallTexture = mediaFolder .. "Textures\\LogoSmall.tga",
+		LogoTexture = mediaFolder .. "Textures\\Logo.tga",
+		MouseoverTexture = mediaFolder .. "Textures\\Mouseover.tga",
+		NewClassIconsTexture = mediaFolder .. "Unitframes\\NEW-ICONS-CLASSES.blp",
+		Spark128Texture = mediaFolder .. "Textures\\Spark_128.tga",
+		Spark16Texture = mediaFolder .. "Textures\\Spark_16.tga",
+		TargetIndicatorTexture = mediaFolder .. "Nameplates\\TargetIndicatorArrow.blp",
 		White8x8Texture = "Interface\\BUTTONS\\WHITE8X8",
 	},
 
 	["Fonts"] = {
-		BlankFont = K.MediaFolder .. "Fonts\\Invisible.ttf",
+		BlankFont = mediaFolder .. "Fonts\\Invisible.ttf",
 	},
 
 	["Statusbars"] = {
-		AltzUI = K.MediaFolder .. "Statusbars\\AltzUI.tga",
-		AsphyxiaUI = K.MediaFolder .. "Statusbars\\AsphyxiaUI.tga",
-		AzeriteUI = K.MediaFolder .. "Statusbars\\AzeriteUI.tga",
-		Clean = K.MediaFolder .. "Statusbars\\Clean.tga",
-		Flat = K.MediaFolder .. "Statusbars\\Flat.tga",
-		Glamour7 = K.MediaFolder .. "Statusbars\\Glamour7.tga",
-		GoldpawUI = K.MediaFolder .. "Statusbars\\GoldpawUI.tga",
-		KkthnxUI = K.MediaFolder .. "Statusbars\\Statusbar",
-		KuiBright = K.MediaFolder .. "Statusbars\\KuiStatusbarBright.tga",
-		Kui = K.MediaFolder .. "Statusbars\\KuiStatusbar.tga",
-		Palooza = K.MediaFolder .. "Statusbars\\Palooza.tga",
-		PinkGradient = K.MediaFolder .. "Statusbars\\PinkGradient.tga",
-		Rain = K.MediaFolder .. "Statusbars\\Rain.tga",
-		SkullFlowerUI = K.MediaFolder .. "Statusbars\\SkullFlowerUI.tga",
-		Tukui = K.MediaFolder .. "Statusbars\\ElvTukUI.tga",
-		WGlass = K.MediaFolder .. "Statusbars\\Wglass.tga",
-		Water = K.MediaFolder .. "Statusbars\\Water.tga",
-		ZorkUI = K.MediaFolder .. "Statusbars\\ZorkUI.tga",
+		AltzUI = mediaFolder .. "Statusbars\\AltzUI.tga",
+		AsphyxiaUI = mediaFolder .. "Statusbars\\AsphyxiaUI.tga",
+		AzeriteUI = mediaFolder .. "Statusbars\\AzeriteUI.tga",
+		Clean = mediaFolder .. "Statusbars\\Clean.tga",
+		Flat = mediaFolder .. "Statusbars\\Flat.tga",
+		Glamour7 = mediaFolder .. "Statusbars\\Glamour7.tga",
+		GoldpawUI = mediaFolder .. "Statusbars\\GoldpawUI.tga",
+		KkthnxUI = mediaFolder .. "Statusbars\\Statusbar",
+		KuiBright = mediaFolder .. "Statusbars\\KuiStatusbarBright.tga",
+		Kui = mediaFolder .. "Statusbars\\KuiStatusbar.tga",
+		Palooza = mediaFolder .. "Statusbars\\Palooza.tga",
+		PinkGradient = mediaFolder .. "Statusbars\\PinkGradient.tga",
+		Rain = mediaFolder .. "Statusbars\\Rain.tga",
+		SkullFlowerUI = mediaFolder .. "Statusbars\\SkullFlowerUI.tga",
+		Tukui = mediaFolder .. "Statusbars\\ElvTukUI.tga",
+		WGlass = mediaFolder .. "Statusbars\\Wglass.tga",
+		Water = mediaFolder .. "Statusbars\\Water.tga",
+		ZorkUI = mediaFolder .. "Statusbars\\ZorkUI.tga",
 	},
 }
 
 local statusbars = C["Media"].Statusbars
-local defaultTexture = statusbars["KkthnxUI"]
+local defaultTexture = statusbars.KkthnxUI .. ".tga"
 
 function K.GetTexture(texture)
-	return statusbars[texture] or defaultTexture
+	return statusbars[texture] and (statusbars[texture] .. ".tga") or defaultTexture
 end
 
--- Register Borders
+-- Register media types
 if K.LibSharedMedia then
-	for name, path in pairs(C["Media"].Borders) do
-		K.LibSharedMedia:Register("border", name, path)
-	end
-
-	-- Register Statusbars
-	for name, path in pairs(C["Media"].Statusbars) do
-		K.LibSharedMedia:Register("statusbar", name, path)
-	end
-
-	-- Register Sounds
-	for name, path in pairs(C["Media"].Sounds) do
-		K.LibSharedMedia:Register("sound", name, path)
-	end
-
-	-- Register Fonts
-	for name, path in pairs(C["Media"].Fonts) do
-		K.LibSharedMedia:Register("font", name, path)
+	for mediaType, mediaTable in pairs(C["Media"]) do
+		for name, path in pairs(mediaTable) do
+			K.LibSharedMedia:Register(mediaType, name, path)
+		end
 	end
 end
