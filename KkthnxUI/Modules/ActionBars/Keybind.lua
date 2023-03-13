@@ -1,13 +1,13 @@
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K, L = KkthnxUI[1], KkthnxUI[3]
 local Module = K:GetModule("ActionBar")
 
-local pairs, tonumber, print, strfind, strupper = pairs, tonumber, print, strfind, strupper
-local InCombatLockdown = InCombatLockdown
-local GetSpellBookItemName, GetMacroInfo = GetSpellBookItemName, GetMacroInfo
-local IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown = IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown
 local GetBindingKey, GetBindingName, SetBinding, SaveBindings, LoadBindings = GetBindingKey, GetBindingName, SetBinding, SaveBindings, LoadBindings
+local GetSpellBookItemName, GetMacroInfo = GetSpellBookItemName, GetMacroInfo
+local InCombatLockdown = InCombatLockdown
+local IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown = IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown
 local MAX_ACCOUNT_MACROS = MAX_ACCOUNT_MACROS
-local NOT_BOUND, PRESS_KEY_TO_BIND, QUICK_KEYBIND_DESCRIPTION = NOT_BOUND, PRESS_KEY_TO_BIND, QUICK_KEYBIND_DESCRIPTION
+local NOT_BOUND, PRESS_KEY_TO_BIND = NOT_BOUND, PRESS_KEY_TO_BIND
+local pairs, tonumber, print, strfind, strupper = pairs, tonumber, print, strfind, strupper
 
 -- Button types
 local function hookActionButton(self)
@@ -62,8 +62,6 @@ function Module:Bind_Create()
 	frame:EnableKeyboard(true)
 	frame:EnableMouseWheel(true)
 	frame:CreateBorder()
-	-- frame:SetBackdropColor(1, 0.8, 0, 0.25)
-	-- frame:SetBackdropBorderColor(1, 0.8, 0)
 	frame:Hide()
 
 	frame:SetScript("OnEnter", function()

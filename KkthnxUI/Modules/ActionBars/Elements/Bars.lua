@@ -236,9 +236,9 @@ function Module:UpdateButtonConfig(i)
 		-- Set the check focus cast attribute to true
 		button:SetAttribute("checkfocuscast", true)
 		-- Set the check self cast attribute to true
-		button:SetAttribute("checkselfcast", true)
+		-- button:SetAttribute("checkselfcast", true)
 		-- Set the unit 2 attribute to "player"
-		button:SetAttribute("*unit2", "player")
+		-- button:SetAttribute("*unit2", "player")
 		-- Update the config for the button
 		button:UpdateConfig(self.buttonConfig)
 	end

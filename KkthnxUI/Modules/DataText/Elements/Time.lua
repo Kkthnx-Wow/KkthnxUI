@@ -127,9 +127,12 @@ local function updateTimerFormat(color, hour, minute)
 	end
 end
 
+-- initialize self.timer outside of the function
+local onUpdateTimer = onUpdateTimer or 3
+
 function Module:TimeOnUpdate(elapsed)
-	self.timer = (self.timer or 3) + elapsed
-	if self.timer > 5 then
+	onUpdateTimer = onUpdateTimer + elapsed
+	if onUpdateTimer > 5 then
 		local color = C_Calendar_GetNumPendingInvites() > 0 and "|cffFF0000" or ""
 		local hour, minute
 		if GetCVarBool("timeMgrUseLocalTime") then
@@ -139,7 +142,7 @@ function Module:TimeOnUpdate(elapsed)
 		end
 		TimeDataText.Font:SetText(updateTimerFormat(color, hour, minute))
 
-		self.timer = 0
+		onUpdateTimer = 0
 	end
 end
 

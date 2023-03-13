@@ -103,7 +103,7 @@ function Module:ForceDefaultCVars()
 		ActionButtonPickUp:RefreshValue()
 	end
 
-	SetActionBarToggles(1, 1, 1, 1)
+	-- SetActionBarToggles(1, 1, 1, 1)
 
 	if not InCombatLockdown() then
 		SetCVar("nameplateMotion", 1)

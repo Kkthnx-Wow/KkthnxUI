@@ -23,6 +23,7 @@ local function isPetCollected(speciesID)
 	if not speciesID or speciesID == 0 then
 		return
 	end
+
 	local numOwned = C_PetJournal_GetNumCollectedInfo(speciesID)
 	if numOwned > 0 then
 		return true

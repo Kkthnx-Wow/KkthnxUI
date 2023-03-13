@@ -350,7 +350,8 @@ ChatFrame_DisplayTimePlayed = function(_, totalTime, levelTime)
 	-- Get player's money as string
 	local money = GetMoneyString(GetMoney())
 	-- Get player's current specialization or NONE if no specialization is selected
-	local spec = select(2, GetSpecializationInfo(GetSpecialization())) or NONE
+	local specID = GetSpecialization()
+	local spec = specID and select(2, GetSpecializationInfo(specID)) or NONE
 
 	-- Create total time played message
 	local totalTimeMessage = string.format(K.InfoColor .. "Total time played: %s", K.GreyColor .. SecondsToTime(totalTime))

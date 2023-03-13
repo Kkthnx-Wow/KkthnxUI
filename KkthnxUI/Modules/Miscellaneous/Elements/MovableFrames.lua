@@ -118,7 +118,7 @@ end
 
 local function MouseUpHandler(frame, button)
 	frame = parentFrame[frame] or frame
-	if frame and button == "LeftButton" then
+	if frame and button == "LeftButton" and frame:IsMovable() then
 		frame:StopMovingOrSizing()
 	end
 end
@@ -128,14 +128,12 @@ local function HookScript(frame, script, handler)
 		return
 	end
 	local oldHandler = frame:GetScript(script)
-	if oldHandler then
-		frame:SetScript(script, function(...)
-			handler(...)
+	frame:SetScript(script, function(...)
+		handler(...)
+		if oldHandler then
 			oldHandler(...)
-		end)
-	else
-		frame:SetScript(script, handler)
-	end
+		end
+	end)
 end
 
 local function HookFrame(name, moveParent)

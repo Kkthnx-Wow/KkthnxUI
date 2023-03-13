@@ -11,6 +11,7 @@ local table_wipe = table.wipe
 local unpack = unpack
 
 local C_AzeriteEmpoweredItem_IsAzeriteEmpoweredItemByID = C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID
+local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
 local C_NewItems_IsNewItem = C_NewItems.IsNewItem
 local C_NewItems_RemoveNewItem = C_NewItems.RemoveNewItem
 local C_Soulbinds_IsItemConduitByItemInfo = C_Soulbinds.IsItemConduitByItemInfo
@@ -47,7 +48,7 @@ function Module:ReverseSort()
 	for bag = 0, 4 do
 		local numSlots = GetContainerNumSlots(bag)
 		for slot = 1, numSlots do
-			local info = C_Container.GetContainerItemInfo(bag, slot)
+			local info = C_Container_GetContainerItemInfo(bag, slot)
 			local texture = info and info.iconFileID
 			local locked = info and info.isLocked
 			if (slot <= numSlots / 2) and texture and not locked and not sortCache["b" .. bag .. "s" .. slot] then
@@ -639,7 +640,7 @@ local function splitOnClick(self)
 
 	PickupContainerItem(self.bagId, self.slotId)
 
-	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
+	local info = C_Container_GetContainerItemInfo(self.bagId, self.slotId)
 	local texture = info and info.iconFileID
 	local itemCount = info and info.stackCount
 	local locked = info and info.isLocked
@@ -774,7 +775,7 @@ local function favouriteOnClick(self)
 		return
 	end
 
-	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
+	local info = C_Container_GetContainerItemInfo(self.bagId, self.slotId)
 	local texture = info and info.iconFileID
 	local quality = info and info.quality
 	local link = info and info.hyperlink
@@ -836,7 +837,7 @@ local function customJunkOnClick(self)
 		return
 	end
 
-	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
+	local info = C_Container_GetContainerItemInfo(self.bagId, self.slotId)
 	local texture = info and info.iconFileID
 	local itemID = info and info.itemID
 	local price = select(11, GetItemInfo(itemID))
@@ -898,7 +899,7 @@ local function deleteButtonOnClick(self)
 		return
 	end
 
-	local info = C_Container.GetContainerItemInfo(self.bagId, self.slotId)
+	local info = C_Container_GetContainerItemInfo(self.bagId, self.slotId)
 	local texture = info and info.iconFileID
 	local quality = info and info.quality
 	if IsControlKeyDown() and IsAltKeyDown() and texture and (quality < Enum.ItemQuality.Rare) then
