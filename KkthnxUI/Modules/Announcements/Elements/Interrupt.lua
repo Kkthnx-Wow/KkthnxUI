@@ -101,6 +101,8 @@ function Module:InterruptAlert_Update(...)
 		return
 	end
 
+	local isPlayerOrAllyPet = sourceName == K.Name or Module:IsAllyPet(sourceFlags)
+
 	if UnitInRaid(sourceName) or UnitInParty(sourceName) or Module:IsAllyPet(sourceFlags) then
 		local infoText = infoType[eventType]
 		if infoText then
@@ -111,12 +113,12 @@ function Module:InterruptAlert_Update(...)
 				end
 				sourceSpellID, destSpellID = extraskillID, spellID
 			elseif infoText == L["Interrupt"] then
-				if C["Announcements"].OwnInterrupt and sourceName ~= K.Name and not Module:IsAllyPet(sourceFlags) then
+				if C["Announcements"].OwnInterrupt and not isPlayerOrAllyPet then
 					return
 				end
 				sourceSpellID, destSpellID = spellID, extraskillID
 			else
-				if C["Announcements"].OwnDispell and sourceName ~= K.Name and not Module:IsAllyPet(sourceFlags) then
+				if C["Announcements"].OwnDispell and not isPlayerOrAllyPet then
 					return
 				end
 				sourceSpellID, destSpellID = spellID, extraskillID

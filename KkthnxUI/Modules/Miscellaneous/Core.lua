@@ -246,38 +246,32 @@ function Module:CreateMinimapButtonToggle()
 end
 
 local function MainMenu_OnShow(self)
-	local buttonToReanchor
-	if IsCharacterNewlyBoosted() or not C_SplashScreen.CanViewSplashScreen() then
+	local buttonToReanchor, buttonHeight
+
+	local isCharacterNewlyBoosted = IsCharacterNewlyBoosted()
+	local canViewSplashScreen = C_SplashScreen.CanViewSplashScreen()
+
+	if isCharacterNewlyBoosted or not canViewSplashScreen then
 		buttonToReanchor = GameMenuButtonStore
-		self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 28)
+		buttonHeight = Module.GameMenuButton:GetHeight() + 28
 	else
 		buttonToReanchor = GameMenuButtonWhatsNew
-		self:SetHeight(self:GetHeight() + Module.GameMenuButton:GetHeight() + 34)
+		buttonHeight = Module.GameMenuButton:GetHeight() + 34
 	end
 
-	_G.GameMenuButtonLogout:SetPoint("TOP", Module.GameMenuButton, "BOTTOM", 0, -14)
+	self:SetHeight(self:GetHeight() + buttonHeight)
 
-	_G.GameMenuButtonStore:ClearAllPoints()
+	_G.GameMenuButtonLogout:SetPoint("TOP", Module.GameMenuButton, "BOTTOM", 0, -14)
 	_G.GameMenuButtonStore:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -6)
 
 	if _G.GameMenuButtonWhatsNew then
-		_G.GameMenuButtonWhatsNew:ClearAllPoints()
 		_G.GameMenuButtonWhatsNew:SetPoint("TOP", _G.GameMenuButtonStore, "BOTTOM", 0, -6)
 	end
 
-	_G.GameMenuButtonEditMode:ClearAllPoints()
 	_G.GameMenuButtonEditMode:SetPoint("TOP", buttonToReanchor, "BOTTOM", 0, -24)
-
-	_G.GameMenuButtonSettings:ClearAllPoints()
 	_G.GameMenuButtonSettings:SetPoint("TOP", _G.GameMenuButtonEditMode, "BOTTOM", 0, -6)
-
-	_G.GameMenuButtonMacros:ClearAllPoints()
 	_G.GameMenuButtonMacros:SetPoint("TOP", _G.GameMenuButtonSettings, "BOTTOM", 0, -6)
-
-	_G.GameMenuButtonAddons:ClearAllPoints()
 	_G.GameMenuButtonAddons:SetPoint("TOP", _G.GameMenuButtonMacros, "BOTTOM", 0, -6)
-
-	_G.GameMenuButtonQuit:ClearAllPoints()
 	_G.GameMenuButtonQuit:SetPoint("TOP", _G.GameMenuButtonLogout, "BOTTOM", 0, -6)
 end
 
@@ -306,25 +300,20 @@ end
 
 function Module:CreateQuestXPPercent()
 	local unitXP, unitXPMax = UnitXP("player"), UnitXPMax("player")
+	local xp, text, frame
 	if _G.QuestInfoFrame.questLog then
 		local selectedQuest = C_QuestLog_GetSelectedQuest()
 		if C_QuestLog_ShouldShowQuestRewards(selectedQuest) then
-			local xp = GetQuestLogRewardXP()
-			if xp and xp > 0 then
-				local text = MapQuestInfoRewardsFrame.XPFrame.Name:GetText()
-				if text then
-					_G.MapQuestInfoRewardsFrame.XPFrame.Name:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100)
-				end
-			end
+			xp = GetQuestLogRewardXP()
+			text, frame = MapQuestInfoRewardsFrame.XPFrame.Name:GetText(), _G.MapQuestInfoRewardsFrame.XPFrame.Name
 		end
 	else
-		local xp = GetRewardXP()
-		if xp and xp > 0 then
-			local text = QuestInfoXPFrame.ValueText:GetText()
-			if text then
-				_G.QuestInfoXPFrame.ValueText:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100)
-			end
-		end
+		xp = GetRewardXP()
+		text, frame = QuestInfoXPFrame.ValueText:GetText(), _G.QuestInfoXPFrame.ValueText
+	end
+	if xp and xp > 0 and text then
+		local xpDiff = (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100
+		frame:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, xpDiff)
 	end
 end
 
@@ -415,7 +404,6 @@ end
 -- TradeFrame hook
 function Module:CreateTradeTargetInfo()
 	local infoText = K.CreateFontString(TradeFrame, 16, "", "")
-	infoText:ClearAllPoints()
 	infoText:SetPoint("TOP", TradeFrameRecipientNameText, "BOTTOM", 0, -8)
 
 	local function updateColor()
@@ -435,7 +423,12 @@ function Module:CreateTradeTargetInfo()
 		end
 		infoText:SetText(text)
 	end
-	hooksecurefunc("TradeFrame_Update", updateColor)
+
+	-- Call the update function once when the frame is shown
+	updateColor()
+
+	-- Only hook the update function once, to avoid excessive function calls
+	TradeFrame:HookScript("OnShow", updateColor)
 end
 
 -- Archaeology counts

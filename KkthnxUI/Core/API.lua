@@ -42,57 +42,48 @@ do
 	end
 end
 
--- CreateBorder function: creates a border and background for the passed frame (bFrame)
--- bSubLevel, bLayer, bSize, bTexture, bOffset, bRed, bGreen, bBlue, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgRed, bgGreen, bgBlue, bgAlpha are optional arguments to customize the appearance of the border and background
 local function CreateBorder(bFrame, ...)
 	local bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
-	-- Border
-	local BorderSubLevel = bSubLevel or "OVERLAY" -- Sublevel of the border, default is "OVERLAY"
-	local BorderLayer = bLayer or 1 -- Layer of the border, default is 1
-	local BorderValue = C["General"].BorderStyle.Value or "KkthnxUI" -- Border style value, default is "KkthnxUI"
-	local BorderSize
+	local General = C.General
+	local Media = C.Media
+	local BorderValue = General.BorderStyle.Value or "KkthnxUI"
+	local BorderSize = bSize or (BorderValue == "KkthnxUI" and 12 or 10)
 
-	if BorderValue == "KkthnxUI" then -- Size of the border, default is 12
-		BorderSize = bSize or 12
-	else
-		BorderSize = bSize or 10
-	end
+	if not bFrame.KKUI_Border then
+		local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga")
+		local BorderOffset = bOffset or -4
+		local BorderColor = bColor or Media.Borders.ColorBorder
 
-	if not bFrame.KKUI_Border then -- check if the frame already has a border
-		local BorderTexture = bTexture or ("Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga") -- texture of the border, default is "Interface\\AddOns\\KkthnxUI\\Media\\Border\\" .. BorderValue .. "\\Border.tga"
-		local BorderOffset = bOffset or -4 -- offset of the border, default is -4
-		local BorderColor = bColor or C["Media"].Borders.ColorBorder -- color of the border
+		local kkui_border = K.CreateBorder(bFrame, bSubLevel or "OVERLAY", bLayer or 1)
+		kkui_border:SetSize(BorderSize)
+		kkui_border:SetTexture(BorderTexture)
+		kkui_border:SetOffset(BorderOffset)
 
-		-- Create Our Border
-		local kkui_border = K.CreateBorder(bFrame, BorderSubLevel, BorderLayer)
-		kkui_border:SetSize(BorderSize) -- set the size of the border
-		kkui_border:SetTexture(BorderTexture) -- set the texture of the border
-		kkui_border:SetOffset(BorderOffset) -- set the offset of the border
-		if C["General"].ColorTextures then -- check if C["General"].ColorTextures is true
-			kkui_border:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+		if General.ColorTextures then
+			local TexturesColor = General.TexturesColor
+			kkui_border:SetVertexColor(TexturesColor[1], TexturesColor[2], TexturesColor[3])
 		else
 			kkui_border:SetVertexColor(unpack(BorderColor))
 		end
 
-		bFrame.KKUI_Border = kkui_border -- save the border as a property of the frame so that it can be referenced later on.
+		bFrame.KKUI_Border = kkui_border
 	end
 
-	if not bFrame.KKUI_Background then -- check if the frame already has a background
-		local BackgroundTexture = bgTexture or C["Media"].Textures.White8x8Texture -- texture of the background, default is C["Media"].Textures.White8x8Texture
-		local BackgroundSubLevel = bgSubLevel or "BACKGROUND" -- sub-level of the background, default is "BACKGROUND"
-		local BackgroundLayer = bgLayer or -2 -- layer of the background, default is -2
-		local BackgroundPoint = bgPoint or 0 -- point of the background, default is 0
-		local BackgroundColor = bgColor or C["Media"].Backdrops.ColorBackdrop -- color of the background
+	if not bFrame.KKUI_Background then
+		local BackgroundTexture = bgTexture or Media.Textures.White8x8Texture
+		local BackgroundSubLevel = bgSubLevel or "BACKGROUND"
+		local BackgroundLayer = bgLayer or -2
+		local BackgroundPoint = bgPoint or 0
+		local BackgroundColor = bgColor or Media.Backdrops.ColorBackdrop
 
-		-- Create Our Background
-		local kkui_background = bFrame:CreateTexture(nil, BackgroundSubLevel, nil, BackgroundLayer) -- create the background texture
-		kkui_background:SetTexture(BackgroundTexture, true, true) -- set the texture of the background
-		kkui_background:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4]) -- set the texture coordinates of the background
-		kkui_background:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BackgroundPoint, -BackgroundPoint) -- set the position of the background
-		kkui_background:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint) -- set the size of the background
-		kkui_background:SetVertexColor(unpack(BackgroundColor)) -- set the color of the background
+		local kkui_background = bFrame:CreateTexture(nil, BackgroundSubLevel, nil, BackgroundLayer)
+		kkui_background:SetTexture(BackgroundTexture, true, true)
+		kkui_background:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		kkui_background:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BackgroundPoint, -BackgroundPoint)
+		kkui_background:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", -BackgroundPoint, BackgroundPoint)
+		kkui_background:SetVertexColor(unpack(BackgroundColor))
 
-		bFrame.KKUI_Background = kkui_background -- save the background as a property of the frame so that it can be referenced later on.
+		bFrame.KKUI_Background = kkui_background
 	end
 
 	return bFrame, ...
@@ -106,74 +97,67 @@ local function CreateBackdrop(bFrame, ...)
 		return
 	end
 
-	local BorderPointA = bPointa or 0 -- The first point of the border's position.
-	local BorderPointB = bPointb or 0 -- The second point of the border's position.
-	local BorderPointC = bPointc or 0 -- The third point of the border's position.
-	local BorderPointD = bPointd or 0 -- The fourth point of the border's position.
+	-- Assign default values if not provided
+	local BorderPoints = {
+		bPointa or 0,
+		bPointb or 0,
+		bPointc or 0,
+		bPointd or 0,
+	}
 
 	local kkui_backdrop = CreateFrame("Frame", "$parentBackdrop", bFrame) -- Create the backdrop frame.
-	kkui_backdrop:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BorderPointA, BorderPointB) -- Set the first point of the border's position.
-	kkui_backdrop:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", BorderPointC, BorderPointD) -- Set the second point of the border's position.
+	kkui_backdrop:SetPoint("TOPLEFT", bFrame, "TOPLEFT", unpack(BorderPoints, 1, 2)) -- Set the first point of the border's position.
+	kkui_backdrop:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", unpack(BorderPoints, 3, 4)) -- Set the second point of the border's position.
 	kkui_backdrop:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor) -- Create the border.
 
-	if bFrame:GetFrameLevel() - 1 >= 0 then
-		kkui_backdrop:SetFrameLevel(bFrame:GetFrameLevel())
-	else
-		kkui_backdrop:SetFrameLevel(0)
-	end
+	kkui_backdrop:SetFrameLevel(max(0, bFrame:GetFrameLevel() - 1))
 
 	bFrame.KKUI_Backdrop = kkui_backdrop -- Save the backdrop as a property of the frame so that it can be referenced later on.
 end
 
 local function CreateShadow(f, bd)
-	-- check if the shadow already exists, return if it does
+	-- Check if the shadow already exists, return if it does
 	if f.Shadow then
 		return
 	end
 
-	-- get the parent frame if the passed object is a texture
-	local frame = f
-	if f:GetObjectType() == "Texture" then
-		frame = f:GetParent()
-	end
+	-- Get the parent frame if the passed object is a texture
+	local frame = f:GetObjectType() == "Texture" and f:GetParent() or f
 
-	-- get the frame level of the parent frame
+	-- Get the frame level of the parent frame
 	local lvl = frame:GetFrameLevel()
 
-	-- create the shadow frame using the BackdropTemplate
+	-- Create the shadow frame using the BackdropTemplate
 	f.Shadow = CreateFrame("Frame", nil, frame, "BackdropTemplate")
 
-	-- set the position and size of the shadow frame
+	-- Set the position and size of the shadow frame
 	f.Shadow:SetPoint("TOPLEFT", f, -3, 3)
 	f.Shadow:SetPoint("BOTTOMRIGHT", f, 3, -3)
 
-	-- set the backdrop of the shadow frame
+	-- Define the backdrop of the shadow frame
+	local backdrop = {
+		edgeFile = C["Media"].Textures.GlowTexture,
+		edgeSize = 3,
+	}
+
 	if bd then
-		f.Shadow:SetBackdrop({
-			bgFile = C["Media"].Textures.White8x8Texture,
-			edgeFile = C["Media"].Textures.GlowTexture,
-			edgeSize = 3,
-			insets = { left = 3, right = 3, top = 3, bottom = 3 },
-		})
-	else
-		f.Shadow:SetBackdrop({
-			edgeFile = C["Media"].Textures.GlowTexture,
-			edgeSize = 3,
-		})
+		backdrop.bgFile = C["Media"].Textures.White8x8Texture
+		backdrop.insets = { left = 3, right = 3, top = 3, bottom = 3 }
 	end
 
-	-- set the frame level of the shadow frame to be one lower than the parent frame
+	-- Set the backdrop of the shadow frame
+	f.Shadow:SetBackdrop(backdrop)
+
+	-- Set the frame level of the shadow frame to be one lower than the parent frame
 	f.Shadow:SetFrameLevel(lvl == 0 and 0 or lvl - 1)
 
-	-- set the background color of the shadow frame if the bd argument is true
+	-- Set the background and border color of the shadow frame based on the 'bd' argument
 	if bd then
-		f.Shadow:SetBackdropColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Media"].Backdrops.ColorBackdrop[4])
+		f.Shadow:SetBackdropColor(unpack(C["Media"].Backdrops.ColorBackdrop))
 	end
-
-	-- set the border color of the shadow frame
 	f.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 
-	-- return the created shadow frame
+	-- Return the created shadow frame
 	return f.Shadow
 end
 
@@ -253,47 +237,49 @@ local function StripTextures(object, kill)
 	end
 end
 
+local function CreateTexture(button, noTexture, texturePath, desaturated, vertexColor, setPoints)
+	if not noTexture then
+		local texture = button:CreateTexture()
+		texture:SetTexture(texturePath)
+		texture:SetPoint("TOPLEFT", button, "TOPLEFT", setPoints, -setPoints)
+		texture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -setPoints, setPoints)
+		texture:SetBlendMode("ADD")
+
+		if desaturated then
+			texture:SetDesaturated(true)
+		end
+
+		if vertexColor then
+			texture:SetVertexColor(unpack(vertexColor))
+		end
+
+		return texture
+	end
+end
+
 local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
 	-- setPoints default value is 0
 	setPoints = setPoints or 0
 
-	-- Create highlight texture for the button if it does not exist
-	if button.SetHighlightTexture and not button.hover and not noHover then
-		local hover = button:CreateTexture()
-		hover:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
-		hover:SetPoint("TOPLEFT", button, "TOPLEFT", setPoints, -setPoints)
-		hover:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -setPoints, setPoints)
-		hover:SetBlendMode("ADD")
-		button:SetHighlightTexture(hover)
-		button.hover = hover
+	-- Create highlight, pushed, and checked textures for the button if they do not exist
+	if button.SetHighlightTexture and not noHover then
+		button.hover = CreateTexture(button, noHover, "Interface\\Buttons\\ButtonHilight-Square", false, nil, setPoints)
+		button:SetHighlightTexture(button.hover)
 	end
 
-	-- Create pushed texture for the button if it does not exist
-	if button.SetPushedTexture and not button.pushed and not noPushed then
-		local pushed = button:CreateTexture()
-		pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
-		pushed:SetDesaturated(true)
-		pushed:SetVertexColor(246 / 255, 196 / 255, 66 / 255)
-		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", setPoints, -setPoints)
-		pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -setPoints, setPoints)
-		pushed:SetBlendMode("ADD")
-		button:SetPushedTexture(pushed)
-		button.pushed = pushed
+	if button.SetPushedTexture and not noPushed then
+		button.pushed = CreateTexture(button, noPushed, "Interface\\Buttons\\ButtonHilight-Square", true, { 246 / 255, 196 / 255, 66 / 255 }, setPoints)
+		button:SetPushedTexture(button.pushed)
 	end
 
-	-- Create checked texture for the button if it does not exist
-	if button.SetCheckedTexture and not button.checked and not noChecked then
-		local checked = button:CreateTexture()
-		checked:SetTexture("Interface\\Buttons\\CheckButtonHilight")
-		checked:SetPoint("TOPLEFT", button, "TOPLEFT", setPoints, -setPoints)
-		checked:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -setPoints, setPoints)
-		checked:SetBlendMode("ADD")
-		button:SetCheckedTexture(checked)
-		button.checked = checked
+	if button.SetCheckedTexture and not noChecked then
+		button.checked = CreateTexture(button, noChecked, "Interface\\Buttons\\CheckButtonHilight", false, nil, setPoints)
+		button:SetCheckedTexture(button.checked)
 	end
 
 	local name = button.GetName and button:GetName()
 	local cooldown = name and _G[name .. "Cooldown"]
+
 	if cooldown then
 		cooldown:ClearAllPoints()
 		cooldown:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)

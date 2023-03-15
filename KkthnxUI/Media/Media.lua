@@ -61,10 +61,10 @@ C["Media"] = {
 }
 
 local statusbars = C["Media"].Statusbars
-local defaultTexture = statusbars.KkthnxUI .. ".tga"
+local defaultTexture = statusbars.KkthnxUI
 
 function K.GetTexture(texture)
-	return statusbars[texture] and (statusbars[texture] .. ".tga") or defaultTexture
+	return statusbars[texture] and statusbars[texture] or defaultTexture
 end
 
 -- Register media types

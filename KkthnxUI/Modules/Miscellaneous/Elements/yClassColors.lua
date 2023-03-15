@@ -118,11 +118,13 @@ K:RegisterEvent("ADDON_LOADED", updateGuildUI)
 local FRIENDS_LEVEL_TEMPLATE = FRIENDS_LEVEL_TEMPLATE:gsub("%%d", "%%s")
 FRIENDS_LEVEL_TEMPLATE = FRIENDS_LEVEL_TEMPLATE:gsub("%$d", "%$s")
 
-hooksecurefunc(FriendsListFrame.ScrollBox, "Update", function(self)
-	for i = 1, self.ScrollTarget:GetNumChildren() do
-		local button = select(i, self.ScrollTarget:GetChildren())
-		local playerArea = GetRealZoneText()
+local function UpdateFriendsList()
+	local playerArea = GetRealZoneText()
+
+	for i = 1, FriendsListFrame.ScrollBox.ScrollTarget:GetNumChildren() do
+		local button = select(i, FriendsListFrame.ScrollBox.ScrollTarget:GetChildren())
 		local nameText, infoText
+
 		if button:IsShown() then
 			if button.buttonType == FRIENDS_BUTTON_TYPE_WOW then
 				local info = C_FriendList_GetFriendInfoByIndex(button.id)
@@ -160,7 +162,8 @@ hooksecurefunc(FriendsListFrame.ScrollBox, "Update", function(self)
 			button.info:SetText(infoText)
 		end
 	end
-end)
+end
+hooksecurefunc(FriendsListFrame.ScrollBox, "Update", UpdateFriendsList)
 
 -- Whoframe
 local columnTable = {}
