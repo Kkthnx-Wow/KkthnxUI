@@ -51,70 +51,73 @@ end
 
 -- Tuitorial
 function Module:ForceDefaultCVars()
-	--	SetCVar("AutoPushSpellToActionBar", 0)
-	SetCVar("ActionButtonUseKeyDown", 1)
-	SetCVar("ShowClassColorInNameplate", 1)
-	SetCVar("UberTooltips", 1)
-	SetCVar("alwaysCompareItems", 1)
-	SetCVar("autoLootDefault", 1)
-	SetCVar("autoOpenLootHistory", 0)
-	SetCVar("autoQuestProgress", 1)
-	SetCVar("autoQuestWatch", 1)
-	SetCVar("autoSelfCast", 1)
-	SetCVar("buffDurations", 1)
+	local cvars = {
+		"ActionButtonUseKeyDown",
+		"ShowClassColorInNameplate",
+		"UberTooltips",
+		"alwaysCompareItems",
+		"autoLootDefault",
+		"autoOpenLootHistory",
+		"autoQuestProgress",
+		"autoQuestWatch",
+		"autoSelfCast",
+		"buffDurations",
+		"cameraDistanceMaxZoomFactor",
+		"cameraSmoothStyle",
+		"chatMouseScroll",
+		"chatStyle",
+		"countdownForCooldowns",
+		"floatingCombatTextCombatDamage",
+		"floatingCombatTextCombatDamageDirectionalOffset",
+		"floatingCombatTextCombatDamageDirectionalScale",
+		"floatingCombatTextCombatHealing",
+		"floatingCombatTextFloatMode",
+		"fstack_preferParentKeys",
+		"instantQuestText",
+		"lockActionBars",
+		"lootUnderMouse",
+		"nameplateShowEnemyMinions",
+		"nameplateShowEnemyMinus",
+		"nameplateShowFriendlyMinions",
+		"nameplateShowFriends",
+		"overrideArchive",
+		"profanityFilter",
+		"removeChatDelay",
+		"screenshotQuality",
+		"scriptErrors",
+		"showArenaEnemyFrames",
+		"showLootSpam",
+		"showNPETutorials",
+		"showTutorials",
+		"showVKeyCastbar",
+		"spamFilter",
+		"statusTextDisplay",
+		"threatWarning",
+		"violenceLevel",
+		"whisperMode",
+		"wholeChatWindowClickable",
+	}
+
+	for _, cvar in ipairs(cvars) do
+		SetCVar(cvar, 1)
+	end
+
 	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
-	SetCVar("cameraSmoothStyle", 0)
-	SetCVar("chatMouseScroll", 1)
 	SetCVar("chatStyle", "classic")
-	SetCVar("countdownForCooldowns", 1)
-	SetCVar("floatingCombatTextCombatDamage", 1)
 	SetCVar("floatingCombatTextCombatDamageDirectionalOffset", 10)
-	SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
-	SetCVar("floatingCombatTextCombatHealing", 1)
-	SetCVar("floatingCombatTextFloatMode", 1)
-	SetCVar("fstack_preferParentKeys", 0) -- Add back the frame names via fstack!
-	SetCVar("instantQuestText", 1)
-	SetCVar("lockActionBars", 1)
-	SetCVar("lootUnderMouse", 1)
-	SetCVar("nameplateShowEnemyMinions", 1)
-	SetCVar("nameplateShowEnemyMinus", 1)
-	SetCVar("nameplateShowFriendlyMinions", 0)
-	SetCVar("nameplateShowFriends", 0)
-	SetCVar("overrideArchive", 0)
-	SetCVar("profanityFilter", 0)
-	SetCVar("removeChatDelay", 1)
-	SetCVar("screenshotQuality", 10)
-	SetCVar("scriptErrors", 1)
-	SetCVar("showArenaEnemyFrames", 0)
-	SetCVar("showLootSpam", 1)
-	SetCVar("showNPETutorials", 0)
-	SetCVar("showTutorials", 0)
-	SetCVar("showVKeyCastbar", 1)
-	SetCVar("spamFilter", 0)
-	SetCVar("statusTextDisplay", "BOTH")
-	SetCVar("threatWarning", 3)
-	SetCVar("violenceLevel", 5)
-	SetCVar("whisperMode", "inline")
-	SetCVar("wholeChatWindowClickable", 0)
+	SetCVar("fstack_preferParentKeys", 0)
+	SetCVar("nameplateMotion", 1)
+	SetCVar("nameplateShowAll", 1)
+	SetCVar("nameplateShowEnemies", 1)
+	SetCVar("alwaysShowActionBars", 1)
+	SetCVar("ffxGlow", 0)
+	SetCVar("WorldTextScale", 1.1)
+	SetCVar("SpellQueueWindow", 27)
 
 	local ActionButtonPickUp = InterfaceOptionsActionBarsPanelPickupActionKeyDropDown
 	if ActionButtonPickUp then
 		ActionButtonPickUp:SetValue("SHIFT")
 		ActionButtonPickUp:RefreshValue()
-	end
-
-	-- SetActionBarToggles(1, 1, 1, 1)
-
-	if not InCombatLockdown() then
-		SetCVar("nameplateMotion", 1)
-		SetCVar("nameplateShowAll", 1)
-		SetCVar("nameplateShowEnemies", 1)
-		SetCVar("alwaysShowActionBars", 1)
-	end
-	if K.isDeveloper then
-		SetCVar("ffxGlow", 0)
-		SetCVar("WorldTextScale", 1.1)
-		SetCVar("SpellQueueWindow", 27)
 	end
 end
 
@@ -196,7 +199,32 @@ function Module:ForceChatSettings()
 	ChatFrame_RemoveChannel(ChatFrame1, "LookingForGroup")
 
 	-- We do not add -> MONSTER_SAY, MONSTER_YELL, MONSTER_EMOTE, MONSTER_WHISPER, MONSTER_BOSS_EMOTE, MONSTER_BOSS_WHISPER
-	local chatGroup = { "SYSTEM", "CHANNEL", "SAY", "EMOTE", "YELL", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ERRORS", "AFK", "DND", "IGNORED", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "BN_INLINE_TOAST_ALERT" }
+	local chatGroup = {
+		"SYSTEM",
+		"CHANNEL",
+		"SAY",
+		"EMOTE",
+		"YELL",
+		"PARTY",
+		"PARTY_LEADER",
+		"RAID",
+		"RAID_LEADER",
+		"RAID_WARNING",
+		"INSTANCE_CHAT",
+		"INSTANCE_CHAT_LEADER",
+		"GUILD",
+		"OFFICER",
+		"ERRORS",
+		"AFK",
+		"DND",
+		"IGNORED",
+		"BG_HORDE",
+		"BG_ALLIANCE",
+		"BG_NEUTRAL",
+		"ACHIEVEMENT",
+		"GUILD_ACHIEVEMENT",
+		"BN_INLINE_TOAST_ALERT",
+	}
 	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
 	for _, v in ipairs(chatGroup) do
 		ChatFrame_AddMessageGroup(_G.ChatFrame1, v)
@@ -222,7 +250,24 @@ function Module:ForceChatSettings()
 	end
 
 	-- set the chat groups names in class color to enabled for all chat groups which players names appear
-	chatGroup = { "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL" }
+	chatGroup = {
+		"SAY",
+		"EMOTE",
+		"YELL",
+		"WHISPER",
+		"PARTY",
+		"PARTY_LEADER",
+		"RAID",
+		"RAID_LEADER",
+		"RAID_WARNING",
+		"INSTANCE_CHAT",
+		"INSTANCE_CHAT_LEADER",
+		"GUILD",
+		"OFFICER",
+		"ACHIEVEMENT",
+		"GUILD_ACHIEVEMENT",
+		"COMMUNITIES_CHANNEL",
+	}
 	for i = 1, _G.MAX_WOW_CHAT_CHANNELS do
 		table.insert(chatGroup, "CHANNEL" .. i)
 	end
