@@ -53,71 +53,58 @@ end
 function Module:ForceDefaultCVars()
 	local cvars = {
 		"ActionButtonUseKeyDown",
-		"ShowClassColorInNameplate",
 		"UberTooltips",
 		"alwaysCompareItems",
+		"alwaysShowActionBars",
 		"autoLootDefault",
-		"autoOpenLootHistory",
-		"autoQuestProgress",
 		"autoQuestWatch",
 		"autoSelfCast",
-		"buffDurations",
 		"cameraDistanceMaxZoomFactor",
-		"cameraSmoothStyle",
-		"chatMouseScroll",
-		"chatStyle",
-		"countdownForCooldowns",
 		"floatingCombatTextCombatDamage",
 		"floatingCombatTextCombatDamageDirectionalOffset",
 		"floatingCombatTextCombatDamageDirectionalScale",
 		"floatingCombatTextCombatHealing",
 		"floatingCombatTextFloatMode",
 		"fstack_preferParentKeys",
-		"instantQuestText",
 		"lockActionBars",
 		"lootUnderMouse",
-		"nameplateShowEnemyMinions",
-		"nameplateShowEnemyMinus",
-		"nameplateShowFriendlyMinions",
-		"nameplateShowFriends",
 		"overrideArchive",
-		"profanityFilter",
-		"removeChatDelay",
 		"screenshotQuality",
-		"scriptErrors",
-		"showArenaEnemyFrames",
-		"showLootSpam",
 		"showNPETutorials",
 		"showTutorials",
-		"showVKeyCastbar",
-		"spamFilter",
 		"statusTextDisplay",
 		"threatWarning",
-		"violenceLevel",
-		"whisperMode",
-		"wholeChatWindowClickable",
 	}
 
-	for _, cvar in ipairs(cvars) do
-		SetCVar(cvar, 1)
+	if not InCombatLockdown() then
+		table.insert(cvars, "nameplateMotion")
+		table.insert(cvars, "nameplateShowAll")
+		table.insert(cvars, "nameplateShowEnemies")
+		table.insert(cvars, "alwaysShowActionBars")
 	end
 
-	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
-	SetCVar("chatStyle", "classic")
-	SetCVar("floatingCombatTextCombatDamageDirectionalOffset", 10)
-	SetCVar("fstack_preferParentKeys", 0)
-	SetCVar("nameplateMotion", 1)
-	SetCVar("nameplateShowAll", 1)
-	SetCVar("nameplateShowEnemies", 1)
-	SetCVar("alwaysShowActionBars", 1)
-	SetCVar("ffxGlow", 0)
-	SetCVar("WorldTextScale", 1.1)
-	SetCVar("SpellQueueWindow", 27)
+	if K.isDeveloper then
+		table.insert(cvars, "ffxGlow")
+		table.insert(cvars, "WorldTextScale")
+		table.insert(cvars, "SpellQueueWindow")
+	end
 
-	local ActionButtonPickUp = InterfaceOptionsActionBarsPanelPickupActionKeyDropDown
+	local ActionButtonPickUp = _G.InterfaceOptionsActionBarsPanelPickupActionKeyDropDown
 	if ActionButtonPickUp then
 		ActionButtonPickUp:SetValue("SHIFT")
 		ActionButtonPickUp:RefreshValue()
+	end
+
+	for _, cvar in ipairs(cvars) do
+		local currentValue = GetCVar(cvar)
+		local desiredValue = self:GetDefaultCVar(cvar)
+
+		if currentValue ~= desiredValue then
+			local success, err = pcall(SetCVar, cvar, desiredValue)
+			if not success and K.isDeveloper then
+				print(string.format("Failed to set CVAR %s: %s", cvar, err))
+			end
+		end
 	end
 end
 
