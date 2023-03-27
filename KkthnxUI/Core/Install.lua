@@ -51,60 +51,33 @@ end
 
 -- Tuitorial
 function Module:ForceDefaultCVars()
-	local cvars = {
-		"ActionButtonUseKeyDown",
-		"UberTooltips",
-		"alwaysCompareItems",
-		"alwaysShowActionBars",
-		"autoLootDefault",
-		"autoQuestWatch",
-		"autoSelfCast",
-		"cameraDistanceMaxZoomFactor",
-		"floatingCombatTextCombatDamage",
-		"floatingCombatTextCombatDamageDirectionalOffset",
-		"floatingCombatTextCombatDamageDirectionalScale",
-		"floatingCombatTextCombatHealing",
-		"floatingCombatTextFloatMode",
-		"fstack_preferParentKeys",
-		"lockActionBars",
-		"lootUnderMouse",
-		"overrideArchive",
-		"screenshotQuality",
-		"showNPETutorials",
-		"showTutorials",
-		"statusTextDisplay",
-		"threatWarning",
-	}
-
+	SetCVar("autoLootDefault", 1)
+	SetCVar("alwaysCompareItems", 1)
+	SetCVar("autoSelfCast", 1)
+	SetCVar("lootUnderMouse", 1)
+	SetCVar("screenshotQuality", 10)
+	SetCVar("showTutorials", 0)
+	SetCVar("lockActionBars", 1)
+	SetCVar("autoQuestWatch", 1)
+	SetCVar("overrideArchive", 0)
+	SetCVar("floatingCombatTextFloatMode", 1)
+	SetCVar("floatingCombatTextCombatDamage", 1)
+	SetCVar("floatingCombatTextCombatHealing", 1)
+	SetCVar("floatingCombatTextCombatDamageDirectionalScale", 0)
+	SetCVar("floatingCombatTextCombatDamageDirectionalOffset", 10)
+	--SetActionBarToggles(1, 1, 1, 1)
 	if not InCombatLockdown() then
-		table.insert(cvars, "nameplateMotion")
-		table.insert(cvars, "nameplateShowAll")
-		table.insert(cvars, "nameplateShowEnemies")
-		table.insert(cvars, "alwaysShowActionBars")
+		SetCVar("nameplateMotion", 1)
+		SetCVar("nameplateShowAll", 1)
+		SetCVar("nameplateShowEnemies", 1)
+		SetCVar("alwaysShowActionBars", 1)
 	end
-
 	if K.isDeveloper then
-		table.insert(cvars, "ffxGlow")
-		table.insert(cvars, "WorldTextScale")
-		table.insert(cvars, "SpellQueueWindow")
-	end
-
-	local ActionButtonPickUp = _G.InterfaceOptionsActionBarsPanelPickupActionKeyDropDown
-	if ActionButtonPickUp then
-		ActionButtonPickUp:SetValue("SHIFT")
-		ActionButtonPickUp:RefreshValue()
-	end
-
-	for _, cvar in ipairs(cvars) do
-		local currentValue = GetCVar(cvar)
-		local desiredValue = self:GetDefaultCVar(cvar)
-
-		if currentValue ~= desiredValue then
-			local success, err = pcall(SetCVar, cvar, desiredValue)
-			if not success and K.isDeveloper then
-				print(string.format("Failed to set CVAR %s: %s", cvar, err))
-			end
-		end
+		SetCVar("ffxGlow", 0)
+		SetCVar("WorldTextScale", 1.2)
+		SetCVar("SpellQueueWindow", 100)
+		--SetCVar("AutoPushSpellToActionBar", 0)
+		--SetCVar("missingTransmogSourceInItemTooltips", 1)
 	end
 end
 
