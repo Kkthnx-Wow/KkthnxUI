@@ -106,7 +106,8 @@ local type_meta_map = {
 	custom = Custom_MT,
 }
 
-local ButtonRegistry, ActiveButtons, ActionButtons, NonActionButtons = lib.buttonRegistry, lib.activeButtons, lib.actionButtons, lib.nonActionButtons
+local ButtonRegistry, ActiveButtons, ActionButtons, NonActionButtons =
+	lib.buttonRegistry, lib.activeButtons, lib.actionButtons, lib.nonActionButtons
 
 local Update, UpdateButtonState, UpdateUsable, UpdateCount, UpdateCooldown, UpdateTooltip, UpdateNewAction, UpdateSpellHighlight, ClearNewActionHighlight
 local StartFlash, StopFlash, UpdateFlash, UpdateHotkeys, UpdateRangeTimer, UpdateOverlayGlow
@@ -209,7 +210,10 @@ function lib:CreateButton(id, name, header, config)
 		KeyBound = LibStub("LibKeyBound-1.0", true)
 	end
 
-	local button = setmetatable(CreateFrame("CheckButton", name, header, "SecureActionButtonTemplate, ActionButtonTemplate"), Generic_MT)
+	local button = setmetatable(
+		CreateFrame("CheckButton", name, header, "SecureActionButtonTemplate, ActionButtonTemplate"),
+		Generic_MT
+	)
 	button:RegisterForDrag("LeftButton", "RightButton")
 	if WoWRetail then
 		button:RegisterForClicks("AnyDown", "AnyUp")
@@ -604,7 +608,10 @@ function Generic:SetStateFromHandlerInsecure(state, kind, action)
 	if kind ~= "empty" and action == nil then
 		error("SetStateAction: an action is required for non-empty states", 2)
 	end
-	if kind ~= "custom" and action ~= nil and type(action) ~= "number" and type(action) ~= "string" or (kind == "custom" and type(action) ~= "table") then
+	if
+		kind ~= "custom" and action ~= nil and type(action) ~= "number" and type(action) ~= "string"
+		or (kind == "custom" and type(action) ~= "table")
+	then
 		error("SetStateAction: invalid action data type, only strings and numbers allowed", 2)
 	end
 
@@ -917,7 +924,8 @@ if UseCustomFlyout then
 			lib.flyoutHandler.Background:SetAllPoints()
 			lib.flyoutHandler.Background.End = lib.flyoutHandler.Background:CreateTexture(nil, "BACKGROUND")
 			lib.flyoutHandler.Background.End:SetAtlas("UI-HUD-ActionBar-IconFrame-FlyoutButton", true)
-			lib.flyoutHandler.Background.HorizontalMiddle = lib.flyoutHandler.Background:CreateTexture(nil, "BACKGROUND")
+			lib.flyoutHandler.Background.HorizontalMiddle =
+				lib.flyoutHandler.Background:CreateTexture(nil, "BACKGROUND")
 			lib.flyoutHandler.Background.HorizontalMiddle:SetAtlas("_UI-HUD-ActionBar-IconFrame-FlyoutMidLeft", true)
 			lib.flyoutHandler.Background.HorizontalMiddle:SetHorizTile(true)
 			lib.flyoutHandler.Background.VerticalMiddle = lib.flyoutHandler.Background:CreateTexture(nil, "BACKGROUND")
@@ -957,9 +965,23 @@ if UseCustomFlyout then
 		for flyoutID, info in pairs(lib.FlyoutInfo) do
 			if info.isKnown then
 				local numSlots = 0
-				data = data .. ("LAB_FlyoutInfo[%d] = newtable();LAB_FlyoutInfo[%d].slots = newtable();\n"):format(flyoutID, flyoutID)
+				data = data
+					.. ("LAB_FlyoutInfo[%d] = newtable();LAB_FlyoutInfo[%d].slots = newtable();\n"):format(
+						flyoutID,
+						flyoutID
+					)
 				for slotID, slotInfo in ipairs(info.slots) do
-					data = data .. ("LAB_FlyoutInfo[%d].slots[%d] = newtable();LAB_FlyoutInfo[%d].slots[%d].spellID = %d;LAB_FlyoutInfo[%d].slots[%d].isKnown = %s;\n"):format(flyoutID, slotID, flyoutID, slotID, slotInfo.spellID, flyoutID, slotID, slotInfo.isKnown and "true" or "nil")
+					data = data
+						.. ("LAB_FlyoutInfo[%d].slots[%d] = newtable();LAB_FlyoutInfo[%d].slots[%d].spellID = %d;LAB_FlyoutInfo[%d].slots[%d].isKnown = %s;\n"):format(
+							flyoutID,
+							slotID,
+							flyoutID,
+							slotID,
+							slotInfo.spellID,
+							flyoutID,
+							slotID,
+							slotInfo.isKnown and "true" or "nil"
+						)
 					numSlots = numSlots + 1
 				end
 
@@ -1010,7 +1032,8 @@ if UseCustomFlyout then
 						isKnownSlot = false
 					end
 
-					lib.FlyoutInfo[flyoutID].slots[slotID] = { spellID = spellID, overrideSpellID = overrideSpellID, isKnown = isKnownSlot }
+					lib.FlyoutInfo[flyoutID].slots[slotID] =
+						{ spellID = spellID, overrideSpellID = overrideSpellID, isKnown = isKnownSlot }
 				end
 			end
 		end
@@ -1104,7 +1127,12 @@ end
 -- Insecure drag handler to allow clicking on the button with an action on the cursor
 -- to place it on the button. Like action buttons work.
 function Generic:PreClick()
-	if self._state_type == "action" or self._state_type == "pet" or InCombatLockdown() or self:GetAttribute("LABdisableDragNDrop") then
+	if
+		self._state_type == "action"
+		or self._state_type == "pet"
+		or InCombatLockdown()
+		or self:GetAttribute("LABdisableDragNDrop")
+	then
 		return
 	end
 	-- check if there is actually something on the cursor
@@ -1140,18 +1168,20 @@ function Generic:PostClick(button, down)
 		local oldType, oldAction = self._state_type, self._state_action
 		local kind, data, subtype, extra = GetCursorInfo()
 		self.header:SetFrameRef("updateButton", self)
-		self.header:Execute(format(
-			[[
+		self.header:Execute(
+			format(
+				[[
 			local frame = self:GetFrameRef("updateButton")
 			control:RunFor(frame, frame:GetAttribute("OnReceiveDrag"), %s, %s, %s, %s)
 			control:RunFor(frame, frame:GetAttribute("UpdateState"), %s)
 		]],
-			formatHelper(kind),
-			formatHelper(data),
-			formatHelper(subtype),
-			formatHelper(extra),
-			formatHelper(self:GetAttribute("state"))
-		))
+				formatHelper(kind),
+				formatHelper(data),
+				formatHelper(subtype),
+				formatHelper(extra),
+				formatHelper(self:GetAttribute("state"))
+			)
+		)
 		PickupAny("clear", oldType, oldAction)
 	end
 	self._receiving_drag = nil
@@ -1192,7 +1222,13 @@ local function UpdateTextElement(element, config, defaultFont)
 	element:SetFont(config.font.font or defaultFont, config.font.size, config.font.flags or "")
 	element:SetJustifyH(config.justifyH)
 	element:ClearAllPoints()
-	element:SetPoint(config.position.anchor, element:GetParent(), config.position.relAnchor or config.position.anchor, config.position.offsetX or 0, config.position.offsetY or 0)
+	element:SetPoint(
+		config.position.anchor,
+		element:GetParent(),
+		config.position.relAnchor or config.position.anchor,
+		config.position.offsetX or 0,
+		config.position.offsetY or 0
+	)
 
 	element:SetVertexColor(unpack(config.color))
 end
@@ -1375,7 +1411,11 @@ function OnEvent(frame, event, arg1, ...)
 		ForAllButtons(UpdateHotkeys)
 	elseif event == "PLAYER_TARGET_CHANGED" then
 		UpdateRangeTimer()
-	elseif (event == "ACTIONBAR_UPDATE_STATE") or ((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) or ((event == "COMPANION_UPDATE") and (arg1 == "MOUNT")) then
+	elseif
+		(event == "ACTIONBAR_UPDATE_STATE")
+		or ((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player"))
+		or ((event == "COMPANION_UPDATE") and (arg1 == "MOUNT"))
+	then
 		ForAllButtons(UpdateButtonState, true)
 	elseif event == "ACTIONBAR_UPDATE_USABLE" then
 		for button in next, ActionButtons do
@@ -1845,10 +1885,16 @@ function Update(self)
 		local onStateChanged = self:GetAttribute("OnStateChanged")
 		if onStateChanged then
 			self.header:SetFrameRef("updateButton", self)
-			self.header:Execute(([[
+			self.header:Execute(
+				([[
 				local frame = self:GetFrameRef("updateButton")
 				control:RunFor(frame, frame:GetAttribute("OnStateChanged"), %s, %s, %s)
-			]]):format(formatHelper(self:GetAttribute("state")), formatHelper(self._state_type), formatHelper(self._state_action)))
+			]]):format(
+					formatHelper(self:GetAttribute("state")),
+					formatHelper(self._state_type),
+					formatHelper(self._state_action)
+				)
+			)
 		end
 	end
 	lib.callbacks:Fire("OnButtonUpdate", self)
@@ -1935,7 +1981,12 @@ local function StartChargeCooldown(parent, chargeStart, chargeDuration, chargeMo
 		local cooldown = tremove(lib.ChargeCooldowns)
 		if not cooldown then
 			lib.NumChargeCooldowns = lib.NumChargeCooldowns + 1
-			cooldown = CreateFrame("Cooldown", "LAB10ChargeCooldown" .. lib.NumChargeCooldowns, parent, "CooldownFrameTemplate")
+			cooldown = CreateFrame(
+				"Cooldown",
+				"LAB10ChargeCooldown" .. lib.NumChargeCooldowns,
+				parent,
+				"CooldownFrameTemplate"
+			)
 			cooldown:SetScript("OnCooldownDone", EndChargeCooldown)
 			cooldown:SetHideCountdownNumbers(true)
 			cooldown:SetDrawSwipe(false)
@@ -2271,7 +2322,8 @@ else
 					self.FlyoutArrowContainer.FlyoutArrowPushed:Hide()
 				end
 
-				local isFlyoutShown = (SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or (lib.flyoutHandler and lib.flyoutHandler:IsShown() and lib.flyoutHandler:GetParent() == self)
+				local isFlyoutShown = (SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self)
+					or (lib.flyoutHandler and lib.flyoutHandler:IsShown() and lib.flyoutHandler:GetParent() == self)
 				local arrowDistance = isFlyoutShown and 1 or 4
 
 				-- Update arrow
@@ -2412,7 +2464,9 @@ Action.IsUsable = function(self)
 	return IsUsableAction(self._state_action)
 end
 Action.IsConsumableOrStackable = function(self)
-	return IsConsumableAction(self._state_action) or IsStackableAction(self._state_action) or (not IsItemAction(self._state_action) and GetActionCount(self._state_action) > 0)
+	return IsConsumableAction(self._state_action)
+		or IsStackableAction(self._state_action)
+		or (not IsItemAction(self._state_action) and GetActionCount(self._state_action) > 0)
 end
 Action.IsUnitInRange = function(self, unit)
 	return IsActionInRange(self._state_action, unit)
@@ -2460,7 +2514,8 @@ if WoWClassic then
 	else
 		-- if we don't have the library, only show count for items, like the default UI
 		Action.IsConsumableOrStackable = function(self)
-			return IsItemAction(self._state_action) and (IsConsumableAction(self._state_action) or IsStackableAction(self._state_action))
+			return IsItemAction(self._state_action)
+				and (IsConsumableAction(self._state_action) or IsStackableAction(self._state_action))
 		end
 	end
 end

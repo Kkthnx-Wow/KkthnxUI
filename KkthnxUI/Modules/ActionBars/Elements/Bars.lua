@@ -244,7 +244,8 @@ function Module:UpdateButtonConfig(i)
 	end
 end
 
-local fullPage = "[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
+local fullPage =
+	"[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
 
 function Module:UpdateBarVisibility()
 	-- Iterate through the action bars
@@ -320,10 +321,22 @@ function Module:CreateBars()
 
 	local BAR_DATA = {
 		[1] = { page = 1, bindName = "ACTIONBUTTON", anchor = { "BOTTOM", UIParent, "BOTTOM", 0, 4 } },
-		[2] = { page = 6, bindName = "MULTIACTIONBAR1BUTTON", anchor = { "BOTTOM", _G.KKUI_ActionBar1, "TOP", 0, margin } },
-		[3] = { page = 5, bindName = "MULTIACTIONBAR2BUTTON", anchor = { "BOTTOM", _G.KKUI_ActionBar2, "TOP", 0, margin } },
+		[2] = {
+			page = 6,
+			bindName = "MULTIACTIONBAR1BUTTON",
+			anchor = { "BOTTOM", _G.KKUI_ActionBar1, "TOP", 0, margin },
+		},
+		[3] = {
+			page = 5,
+			bindName = "MULTIACTIONBAR2BUTTON",
+			anchor = { "BOTTOM", _G.KKUI_ActionBar2, "TOP", 0, margin },
+		},
 		[4] = { page = 3, bindName = "MULTIACTIONBAR3BUTTON", anchor = { "RIGHT", UIParent, "RIGHT", -4, 0 } },
-		[5] = { page = 4, bindName = "MULTIACTIONBAR4BUTTON", anchor = { "RIGHT", _G.KKUI_ActionBar4, "LEFT", -margin, 0 } },
+		[5] = {
+			page = 4,
+			bindName = "MULTIACTIONBAR4BUTTON",
+			anchor = { "RIGHT", _G.KKUI_ActionBar4, "LEFT", -margin, 0 },
+		},
 		[6] = { page = 13, bindName = "MULTIACTIONBAR5BUTTON", anchor = { "CENTER", UIParent, "CENTER", 0, 0 } },
 		[7] = { page = 14, bindName = "MULTIACTIONBAR6BUTTON", anchor = { "CENTER", UIParent, "CENTER", 0, 40 } },
 		[8] = { page = 15, bindName = "MULTIACTIONBAR7BUTTON", anchor = { "CENTER", UIParent, "CENTER", 0, 80 } },
@@ -364,7 +377,8 @@ function Module:CreateBars()
 			tinsert(Module.buttons, button)
 		end
 
-		frame.visibility = index == 1 and "[petbattle] hide; show" or "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
+		frame.visibility = index == 1 and "[petbattle] hide; show"
+			or "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 
 		frame:SetAttribute(
 			"_onstate-page",
