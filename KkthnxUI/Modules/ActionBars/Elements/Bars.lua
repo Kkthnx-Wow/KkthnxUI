@@ -244,8 +244,7 @@ function Module:UpdateButtonConfig(i)
 	end
 end
 
-local fullPage =
-	"[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
+local fullPage = "[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1"
 
 function Module:UpdateBarVisibility()
 	-- Iterate through the action bars
@@ -377,8 +376,7 @@ function Module:CreateBars()
 			tinsert(Module.buttons, button)
 		end
 
-		frame.visibility = index == 1 and "[petbattle] hide; show"
-			or "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
+		frame.visibility = index == 1 and "[petbattle] hide; show" or "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
 
 		frame:SetAttribute(
 			"_onstate-page",
@@ -426,7 +424,7 @@ function Module:OnEnable()
 	Module:CreateBars()
 	Module:CreateExtrabar()
 	Module:CreateLeaveVehicle()
-	Module:CreatePetActionBar()
+	Module:CreatePetbar()
 	Module:CreateStancebar()
 	Module:ReskinBars()
 	Module:UpdateBarConfig()

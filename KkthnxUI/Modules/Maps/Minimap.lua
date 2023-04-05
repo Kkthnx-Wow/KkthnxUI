@@ -232,7 +232,10 @@ function Module:CreateStyle()
 	local MinimapMailFrame = MinimapCluster.IndicatorFrame.MailFrame
 
 	local minimapMailPulse = CreateFrame("Frame", nil, Minimap, "BackdropTemplate")
-	minimapMailPulse:SetBackdrop({ edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12 })
+	minimapMailPulse:SetBackdrop({
+		edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay",
+		edgeSize = 12,
+	})
 	minimapMailPulse:SetPoint("TOPLEFT", minimapBorder, -5, 5)
 	minimapMailPulse:SetPoint("BOTTOMRIGHT", minimapBorder, 5, -5)
 	minimapMailPulse:Hide()
@@ -321,10 +324,25 @@ function Module:ReskinRegions()
 		hooksecurefunc(garrMinimapButton, "UpdateIcon", updateMinimapButtons)
 
 		local menuList = {
-			{ text = GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_9_0, notCheckable = true },
+			{
+				text = GARRISON_TYPE_9_0_LANDING_PAGE_TITLE,
+				func = ToggleLandingPage,
+				arg1 = Enum.GarrisonType.Type_9_0,
+				notCheckable = true,
+			},
 			{ text = WAR_CAMPAIGN, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_8_0, notCheckable = true },
-			{ text = ORDER_HALL_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_7_0, notCheckable = true },
-			{ text = GARRISON_LANDING_PAGE_TITLE, func = ToggleLandingPage, arg1 = Enum.GarrisonType.Type_6_0, notCheckable = true },
+			{
+				text = ORDER_HALL_LANDING_PAGE_TITLE,
+				func = ToggleLandingPage,
+				arg1 = Enum.GarrisonType.Type_7_0,
+				notCheckable = true,
+			},
+			{
+				text = GARRISON_LANDING_PAGE_TITLE,
+				func = ToggleLandingPage,
+				arg1 = Enum.GarrisonType.Type_6_0,
+				notCheckable = true,
+			},
 		}
 		garrMinimapButton:HookScript("OnMouseDown", function(self, btn)
 			if btn == "RightButton" then
@@ -422,20 +440,24 @@ function Module:ReskinRegions()
 		reskinDifficulty(instDifficulty.ChallengeMode)
 	end
 
-	local function updateMapAnchor(frame, _, _, _, _, _, force)
+	local function updateMapAnchor(frame, _, _, newAnchor, _, _, force)
 		-- exit if the 'force' argument is passed in
 		if force then
 			return
 		end
 
-		-- reset the frame's position
-		frame:ClearAllPoints()
+		-- check if the new position is different from the current position
+		local currentAnchor = { frame:GetPoint() }
+		if not (currentAnchor[1] == newAnchor and currentAnchor[2] == Minimap and currentAnchor[3] == "BOTTOM" and currentAnchor[4] == 0 and (C["DataText"].Time and currentAnchor[5] == 20 or currentAnchor[5] == 4)) then
+			-- reset the frame's position
+			frame:ClearAllPoints()
 
-		-- set the frame's position based on the value of C["DataText"].Time
-		if C["DataText"].Time then
-			frame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 20)
-		else
-			frame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
+			-- set the frame's position based on the value of C["DataText"].Time
+			if C["DataText"].Time then
+				frame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 20)
+			else
+				frame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
+			end
 		end
 	end
 
@@ -446,7 +468,9 @@ function Module:ReskinRegions()
 		updateMapAnchor(indicatorFrame)
 
 		-- hook into the SetPoint function to update the frame's position if necessary
-		hooksecurefunc(indicatorFrame, "SetPoint", updateMapAnchor)
+		hooksecurefunc(indicatorFrame, "SetPoint", function(frame, ...)
+			updateMapAnchor(frame, ..., select(2, frame:GetPoint()))
+		end)
 
 		-- set the frame level to 11 to ensure it appears above other elements
 		indicatorFrame:SetFrameLevel(11)
@@ -470,7 +494,10 @@ function Module:ReskinRegions()
 	end
 
 	local inviteNotification = CreateFrame("Button", nil, UIParent, "BackdropTemplate")
-	inviteNotification:SetBackdrop({ edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay", edgeSize = 12 })
+	inviteNotification:SetBackdrop({
+		edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_Glow_Overlay",
+		edgeSize = 12,
+	})
 	inviteNotification:SetPoint("TOPLEFT", Minimap, -5, 5)
 	inviteNotification:SetPoint("BOTTOMRIGHT", Minimap, 5, -5)
 	inviteNotification:SetBackdropBorderColor(1, 1, 0, 0.8)
