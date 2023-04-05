@@ -476,6 +476,17 @@ L["Show Wowhead Links Above Questlog Frame"] = "Afficher un lien Wowhead au dess
 L["Show Your Killing Blow Info"] = "Afficher les informations de vos coups fatals"
 L["World Markers Bar"] = "World Markers Bar"
 
+L["Goodbye and safe travels."] = "Au revoir et voyages sûrs."
+L["It was a pleasure playing with you all, farewell."] = "Ce fut un plaisir de jouer avec vous tous, adieu."
+L["I had a great time, thanks and take care."] = "J'ai passé un excellent moment, merci et prenez soin de vous."
+L["Farewell friends, until we meet again."] = "Adieu les amis, jusqu'à ce que nous nous revoyions."
+L["Thanks for the adventure, farewell."] = "Merci pour l'aventure, adieu."
+L["It's been real, goodbye and have a great day."] = "C'était réel, au revoir et bonne journée."
+L["Thanks for the memories, farewell."] = "Merci pour les souvenirs, adieu."
+L["Goodbye and may your journey be filled with success."] = "Au revoir et que votre voyage soit couronné de succès."
+L["Thanks for the good times, farewell and good luck."] = "Merci pour les bons moments, adieu et bonne chance."
+L["It's been an honor, goodbye and happy questing."] = "Ce fut un honneur, au revoir et bonne quête."
+
 L["Auras Filter Style"] = "Style de filtre des Auras"
 L["Auras Size"] = "Taille des Auras"
 L["Classpower/Healthbar Height"] = "Hauteur de la Barre de ressource/Barre de vie"
