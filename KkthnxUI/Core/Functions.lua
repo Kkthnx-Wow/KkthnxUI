@@ -282,15 +282,12 @@ do
 end
 
 do
-	-- initialize the class color cache table
-	local classColorCache = {}
 	function K.ColorClass(class)
-		-- check if the class color exists in the cache
-		local color = classColorCache[class]
-		-- if the class color is not in the cache, compute it and store it in the cache
+		-- check if the class color exists in the class color table
+		local color = K.ClassColors[class]
+		-- if the class color does not exist, return white
 		if not color then
-			color = K.ClassColors[class] or { r = 1, g = 1, b = 1 }
-			classColorCache[class] = color
+			return 1, 1, 1
 		end
 		-- return the red, green, and blue values of the class color
 		return color.r, color.g, color.b
@@ -314,8 +311,10 @@ do
 			local reaction = UnitReaction(unit, "player")
 			-- check if reaction exists, and get the color of the reaction
 			if reaction then
-				local color = K.Colors.reaction[reaction]
-				r, g, b = color[1], color[2], color[3]
+				local color = K.Colors.reaction[reaction] or FACTION_BAR_COLORS[reaction]
+				r = color.r or color[1] or 1
+				g = color.g or color[2] or 1
+				b = color.b or color[3] or 1
 			end
 		end
 		-- return the red, green, and blue values of the color
