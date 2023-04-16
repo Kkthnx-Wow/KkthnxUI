@@ -1,63 +1,54 @@
 local C = KkthnxUI[2]
 
--- Returns the base value for target alpha, which is always 1
-local function getTargetAlphaBaseValue()
+local THROTTLE_INTERVAL = 0.5
+
+-- Always show pins in the world, regardless of distance.
+function SuperTrackedFrame:GetTargetAlphaBaseValue()
 	return 1
 end
 
--- Updates the arrival time display on the SuperTrackedFrame
-local function updateArrival(superTrackedFrame, elapsed)
-	-- Increase the throttle by the elapsed time
-	local throttle = (superTrackedFrame.throttle or 0) + elapsed
-	-- If the throttle is less than 0.5, return without doing anything
-	if throttle < 0.5 then
+-- Show time to arrival on pins in the world.
+local lastDistance, throttle
+
+local function onUpdate(self, elapsed)
+	if self.isClamped then
+		self.arrival:Hide()
+		lastDistance = nil
 		return
 	end
 
-	-- Get the current distance
-	local distance = C_Navigation.GetDistance()
-	-- Calculate the speed based on the last distance and the elapsed time
-	local speed = (((superTrackedFrame.lastDistance or 0) - distance) / throttle) or 0
-	-- Store the current distance as the last distance
-	superTrackedFrame.lastDistance = distance
+	throttle = (throttle or 0) + elapsed
+	if throttle >= THROTTLE_INTERVAL then
+		local distance = C_Navigation.GetDistance()
+		local speed = (lastDistance and (lastDistance - distance) / throttle) or 0
+		lastDistance = distance
 
-	-- If the frame is clamped, hide the arrival time display and reset throttle and last distance
-	if superTrackedFrame.isClamped then
-		superTrackedFrame.arrival:Hide()
-		superTrackedFrame.lastDistance = nil
-		superTrackedFrame.throttle = 0
-		return
+		if speed > 0 then
+			local time = math.abs(distance / speed)
+			self.arrival:SetText(TIMER_MINUTES_DISPLAY:format(time / 60, time % 60))
+			self.arrival:Show()
+		else
+			self.arrival:Hide()
+		end
+
+		throttle = 0
 	end
-
-	-- If the speed is greater than 0, calculate and display the arrival time
-	if speed > 0 then
-		local time = math.abs(distance / speed)
-		local minutes = math.floor(time / 60)
-		local seconds = math.floor(time % 60)
-		superTrackedFrame.arrival:SetText(string.format("%d:%02d", minutes, seconds))
-		superTrackedFrame.arrival:Show()
-	else
-		-- If the speed is not greater than 0, hide the arrival time display
-		superTrackedFrame.arrival:Hide()
-	end
-
-	-- Reset the throttle
-	superTrackedFrame.throttle = 0
 end
 
--- Adds the arrival time display to the SuperTrackedFrame
-C.themes["Blizzard_QuestNavigation"] = function()
-	-- Set the OnUpdate script for the SuperTrackedFrame
-	SuperTrackedFrame:SetScript("OnUpdate", updateArrival)
-
-	-- Create the arrival time display font string
-	local arrival = SuperTrackedFrame:CreateFontString("$parentArrival", "BACKGROUND", "GameFontNormal")
-	arrival:SetPoint("TOP", SuperTrackedFrame.DistanceText, "BOTTOM", 0, -2)
-	arrival:SetSize(0, 20)
+-- Create a font string for showing time to arrival on pins in the world.
+local function createArrivalFontString(frame)
+	local arrival = frame:CreateFontString("$parentArrival", "BACKGROUND", "GameFontNormal", nil, 1)
+	arrival:SetPoint("TOP", frame.DistanceText, "BOTTOM", 0, -2)
 	arrival:SetJustifyV("TOP")
+	arrival:SetTextColor(0.8, 0.8, 0.8)
+	frame.arrival = arrival
+end
 
-	-- Store the arrival time display font string on the SuperTrackedFrame
-	SuperTrackedFrame.arrival = arrival
-	-- Store the getTargetAlphaBaseValue function on the SuperTrackedFrame
-	SuperTrackedFrame.getTargetAlphaBaseValue = getTargetAlphaBaseValue
+-- Theme function for Blizzard_QuestNavigation.
+C.themes["Blizzard_QuestNavigation"] = function()
+	-- Add font string for time to arrival.
+	createArrivalFontString(SuperTrackedFrame)
+
+	-- Hook script to update time to arrival.
+	SuperTrackedFrame:HookScript("OnUpdate", onUpdate)
 end
