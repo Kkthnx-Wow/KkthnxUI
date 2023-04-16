@@ -988,7 +988,7 @@ function Module:OnEnable()
 		-- ADD LATER -- AddNewContainer("Bag", 8, "BagLegendary", filters.bagLegendary)
 		-----
 		AddNewContainer("Bag", 6, "BagReagent", filters.onlyBagReagent)
-		AddNewContainer("Bag", 16, "Junk", filters.bagsJunk)
+		AddNewContainer("Bag", 17, "Junk", filters.bagsJunk)
 		for i = 1, 5 do
 			AddNewContainer("Bag", i, "BagCustom" .. i, filters["bagCustom" .. i])
 		end
@@ -996,11 +996,12 @@ function Module:OnEnable()
 		AddNewContainer("Bag", 7, "AzeriteItem", filters.bagAzeriteItem)
 		AddNewContainer("Bag", 8, "Equipment", filters.bagEquipment)
 		AddNewContainer("Bag", 10, "BagCollection", filters.bagCollection)
-		AddNewContainer("Bag", 14, "Consumable", filters.bagConsumable)
+		AddNewContainer("Bag", 15, "Consumable", filters.bagConsumable)
 		AddNewContainer("Bag", 11, "BagGoods", filters.bagGoods)
-		AddNewContainer("Bag", 15, "BagQuest", filters.bagQuest)
+		AddNewContainer("Bag", 16, "BagQuest", filters.bagQuest)
 		AddNewContainer("Bag", 12, "BagAnima", filters.bagAnima)
 		AddNewContainer("Bag", 13, "BagRelic", filters.bagRelic)
+		AddNewContainer("Bag", 14, "BagStone", filters.bagStone)
 
 		f.main = MyContainer:New("Bag", { Bags = "bags", BagType = "Bag" })
 		f.main.__anchor = { "BOTTOMRIGHT", -50, 100 }
@@ -1157,7 +1158,7 @@ function Module:OnEnable()
 	}
 
 	local function isItemNeedsLevel(item)
-		return item.link and item.quality > 1 and Module:IsItemHasLevel(item)
+		return item.link and item.quality > 1 and (Module:IsItemHasLevel(item) or item.classID == Enum.ItemClass.Gem)
 	end
 
 	local function GetIconOverlayAtlas(item)
@@ -1423,6 +1424,8 @@ function Module:OnEnable()
 			label = GetCustomGroupTitle(settings.Index)
 		elseif name == "BagReagent" then
 			label = "Reagent Bag"
+		elseif name == "BagStone" then
+			label = GetSpellInfo(404861)
 		end
 
 		if label then

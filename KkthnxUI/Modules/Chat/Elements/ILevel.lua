@@ -11,8 +11,6 @@ local ChatFrame_AddMessageEventFilter = ChatFrame_AddMessageEventFilter
 local DUNGEON_SCORE_LEADER = DUNGEON_SCORE_LEADER
 local GetItemInfo = GetItemInfo
 local GetItemStats = GetItemStats
-local LE_ITEM_CLASS_ARMOR = LE_ITEM_CLASS_ARMOR
-local LE_ITEM_CLASS_WEAPON = LE_ITEM_CLASS_WEAPON
 
 local itemCache = {}
 
@@ -27,12 +25,14 @@ local socketWatchList = {
 	["PUNCHCARDBLUE"] = true,
 	["PUNCHCARDRED"] = true,
 	["PUNCHCARDYELLOW"] = true,
+	["DOMINATION"] = true,
+	["PRIMORDIAL"] = true,
 }
 
 -- Show itemlevel on chat hyperlinks
 local function isItemHasLevel(link)
 	local name, _, rarity, level, _, _, _, _, _, _, _, classID = GetItemInfo(link)
-	if name and level and rarity > 1 and (classID == LE_ITEM_CLASS_WEAPON or classID == LE_ITEM_CLASS_ARMOR) then
+	if name and level and rarity > 1 and (classID == Enum.ItemClass.Weapon or classID == Enum.ItemClass.Armor) then
 		local itemLevel = K.GetItemLevel(link)
 		return name, itemLevel
 	end
@@ -49,6 +49,9 @@ function Module.IsItemHasGem(link)
 		for stat, count in pairs(stats) do
 			local socket = string_match(stat, "EMPTY_SOCKET_(%S+)")
 			if socket and socketWatchList[socket] then
+				if socket == "PRIMORDIAL" then -- primordial texture is missing, use meta instead, needs review
+					socket = "META"
+				end
 				text = text .. GetSocketTexture(socket, count)
 			end
 		end

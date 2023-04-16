@@ -153,7 +153,6 @@ local function KKUI_VerifyDatabase()
 	KkthnxUIDB.ChangeLog = KkthnxUIDB.ChangeLog or {}
 	KkthnxUIDB.DetectVersion = KkthnxUIDB.DetectVersion or K.Version
 	KkthnxUIDB.KeystoneInfo = KkthnxUIDB.KeystoneInfo or {}
-	KkthnxUIDB.FeastTime = KkthnxUIDB.FeastTime or 0
 end
 
 local KKUI_AddonLoader = CreateFrame("Frame")

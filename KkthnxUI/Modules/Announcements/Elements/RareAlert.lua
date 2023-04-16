@@ -23,6 +23,10 @@ local isIgnoredZone = {
 	[2111] = true, -- Black coast front
 }
 
+local isIgnoredIDs = { -- todo: add option for this
+	[5485] = true,
+}
+
 local function isUsefulAtlas(info)
 	local atlas = info.atlasName
 	if atlas then
@@ -36,7 +40,7 @@ function Module:RareAlert_Update(id)
 	end
 
 	local info = C_VignetteInfo_GetVignetteInfo(id)
-	if not info or not isUsefulAtlas(info) then
+	if not info or not isUsefulAtlas(info) or isIgnoredIDs[info.vignetteID] then
 		return
 	end
 
@@ -60,9 +64,10 @@ function Module:RareAlert_Update(id)
 		local currrentTime = C["Chat"].TimestampFormat.Value == 1 and K.GreyColor .. "[" .. date("%H:%M:%S") .. "]" or ""
 		local mapID = C_Map_GetBestMapForUnit("player")
 		local position = mapID and C_VignetteInfo_GetVignettePosition(vignetteGUID, mapID)
+		local nameString = ""
 		if position then
 			local x, y = position:GetXY()
-			local nameString = string_format(Module.RareString, mapID, x * 10000, y * 10000, info.name, x * 100, y * 100, "")
+			nameString = string_format(Module.RareString, mapID, x * 10000, y * 10000, info.name, x * 100, y * 100, "")
 		end
 		K.Print(currrentTime .. K.SystemColor .. tex .. L["Rare Spotted"] .. K.InfoColor .. (nameString or vignetteName or "") .. K.SystemColor .. "!")
 	end

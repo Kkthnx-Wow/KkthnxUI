@@ -228,13 +228,15 @@ local function GetNzothThreatName(questID)
 	return name
 end
 
+-- Grant hunts
 local huntAreaToMapID = { -- 狩猎区域ID转换为地图ID
-	[7345] = 2024, -- 碧蓝林海
 	[7342] = 2023, -- 欧恩哈拉平原
 	[7343] = 2022, -- 觉醒海岸
 	[7344] = 2025, -- 索德拉苏斯
+	[7345] = 2024, -- 碧蓝林海
 }
 
+-- Elemental invasion
 local stormPoiIDs = {
 	[2022] = {
 		{ 7249, 7250, 7251, 7252 },
@@ -254,9 +256,17 @@ local stormPoiIDs = {
 		{ 7245, 7246, 7247, 7248 },
 		{ 7298, 7299, 7300, 7301 },
 	},
-	-- [2085] = {
-	-- 	{ 7241, 7242, 7243, 7244 },
-	-- },
+	--[2085] = {
+	--	{7241, 7242, 7243, 7244},
+	--},
+}
+
+local communityFeastTime = {
+	["TW"] = 1679747400, -- 20:30
+	["KR"] = 1679747400, -- 20:30
+	["EU"] = 1679749200, -- 21:00
+	["US"] = 1679751000, -- 21:30
+	["CN"] = 1679751000, -- 21:30
 }
 
 local atlasCache = {}
@@ -276,6 +286,16 @@ local function GetFormattedTimeLeft(timeLeft)
 	return format("%.2d:%.2d", timeLeft / 60, timeLeft % 60)
 end
 
+local itemCache = {}
+local function GetItemLink(itemID)
+	local link = itemCache[itemID]
+	if not link then
+		link = select(2, GetItemInfo(itemID))
+		itemCache[itemID] = link
+	end
+	return link
+end
+
 local title
 local function addTitle(text)
 	if not title then
@@ -288,23 +308,6 @@ end
 function Module:TimeOnShiftDown()
 	if TimeDataTextEntered then
 		Module:TimeOnEnter()
-	end
-end
-
-local function GetCurrentFeastTime()
-	local prepareRemain = C_AreaPoiInfo_GetAreaPOISecondsLeft(7219)
-	if prepareRemain then -- 准备盛宴，15分钟
-		return prepareRemain + time(), 1 -- 开始时间=剩余准备时间+现在时间
-	end
-
-	local cookingRemain = C_AreaPoiInfo_GetAreaPOISecondsLeft(7218)
-	if cookingRemain then -- 盛宴进行中，15分钟
-		return time() - (15 * 60 - cookingRemain), 2 -- 开始时间=现在时间-盛宴已进行时长
-	end
-
-	local soupRemain = C_AreaPoiInfo_GetAreaPOISecondsLeft(7220)
-	if soupRemain then -- 盛宴结束，喝汤1小时
-		return time() - (60 * 60 - soupRemain) - 15 * 60, 3 -- 开始时间=现在时间-盛宴已结束时长-盛宴进行时长
 	end
 end
 
@@ -369,12 +372,11 @@ function Module:TimeOnEnter()
 
 	-- Quests
 	title = false
-
 	for _, v in pairs(questlist) do
 		if v.name and C_QuestLog_IsQuestFlaggedCompleted(v.id) then
 			if v.name == "500 Timewarped Badges" and isTimeWalker and checkTexture(v.texture) or v.name ~= "500 Timewarped Badges" then
 				addTitle(QUESTS_LABEL)
-				GameTooltip:AddDoubleLine(v.name, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
+				GameTooltip:AddDoubleLine(v.itemID and GetItemLink(v.itemID) or v.name, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 			end
 		end
 	end
@@ -424,20 +426,18 @@ function Module:TimeOnEnter()
 
 	-- Community feast
 	title = false
-	if KkthnxUIDB.FeastTime ~= 0 then
+	local feastTime = communityFeastTime[region]
+	if feastTime then
 		local currentTime = time()
-		local duration = 12600 -- 3.5hrs
-		local elapsed = mod(currentTime - KkthnxUIDB.FeastTime, duration)
+		local duration = 5400 -- 1.5hrs
+		local elapsed = mod(currentTime - feastTime, duration)
 		local nextTime = duration - elapsed + currentTime
 
-		addTitle("Community Feast")
-		if C_QuestLog_IsQuestFlaggedCompleted(70893) then
-			GameTooltip:AddDoubleLine((select(2, GetItemInfo(200095))), QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
-		end
+		addTitle(GetSpellInfo(388961))
 		if currentTime - (nextTime - duration) < 900 then
 			r, g, b = 0, 1, 0
 		else
-			r, g, b = 192 / 255, 192 / 255, 192 / 255
+			r, g, b = 0.6, 0.6, 0.6
 		end -- green text if progressing
 		GameTooltip:AddDoubleLine(date("%m/%d %H:%M", nextTime - duration * 2), date("%m/%d %H:%M", nextTime - duration), 1, 1, 1, r, g, b)
 		GameTooltip:AddDoubleLine(date("%m/%d %H:%M", nextTime), date("%m/%d %H:%M", nextTime + duration), 1, 1, 1, 1, 1, 1)
@@ -526,26 +526,6 @@ function Module:TimeOnMouseUp(btn)
 		_G.ToggleCalendar()
 	end
 end
-
--- Refresh feast time when questlog update
-local lastCheck = 0
-local function refreshFeastTime()
-	if InCombatLockdown() then
-		return
-	end
-	local currentTime = GetTime()
-	if currentTime - lastCheck < 60 then
-		return
-	end
-	lastCheck = currentTime
-
-	local currentFeast = GetCurrentFeastTime()
-	if currentFeast then
-		KkthnxUIDB.FeastTime = currentFeast
-	end
-end
-K:RegisterEvent("PLAYER_ENTERING_WORLD", refreshFeastTime)
-K:RegisterEvent("QUEST_LOG_UPDATE", refreshFeastTime)
 
 function Module:CreateTimeDataText()
 	if not C["DataText"].Time then

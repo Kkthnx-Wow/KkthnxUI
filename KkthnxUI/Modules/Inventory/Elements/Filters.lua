@@ -265,6 +265,20 @@ local function isKorthiaRelic(item)
 	return item.id and isKorthiaRelicByID(item.id)
 end
 
+local primordialStones = {}
+for id = 204000, 204030 do
+	primordialStones[id] = true
+end
+local function isPrimordialStone(item)
+	if not C["Inventory"].ItemFilter then
+		return
+	end
+	if not C["Inventory"].FilterStone then
+		return
+	end
+	return item.id and primordialStones[item.id]
+end
+
 function Module:GetFilters()
 	local filters = {}
 
@@ -294,6 +308,10 @@ function Module:GetFilters()
 
 	filters.bagsJunk = function(item)
 		return isItemInBag(item) and isItemJunk(item)
+	end
+
+	filters.bagStone = function(item)
+		return isItemInBag(item) and isPrimordialStone(item)
 	end
 
 	filters.onlyBank = function(item)
