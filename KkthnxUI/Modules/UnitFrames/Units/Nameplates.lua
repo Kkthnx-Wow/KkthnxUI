@@ -516,22 +516,28 @@ function Module:UpdateQuestUnit(_, unit)
 
 	unit = unit or self.unit
 	local questProgress
+	local prevDiff = 0
+
 	local data = C_TooltipInfo.GetUnit(unit)
 	if data then
 		for i = 1, #data.lines do
 			local lineData = data.lines[i]
 			local argVal = lineData and lineData.args
-			if argVal and argVal[1] and argVal[1].intVal == 8 then
-				local text = argVal[2] and argVal[2].stringVal
+			if argVal[1] and argVal[1].intVal == 8 then
+				local text = argVal[2] and argVal[2].stringVal -- progress string
 				if text then
-					local current, goal = string.match(text, "(%d+)/(%d+)")
-					local progress = string.match(text, "(%d+)%%")
+					local current, goal = strmatch(text, "(%d+)/(%d+)")
+					local progress = strmatch(text, "(%d+)%%")
 					if current and goal then
-						questProgress = math.floor(tonumber(goal) - tonumber(current))
-						break
-					elseif progress then
-						questProgress = progress .. "%"
-						break
+						local diff = floor(goal - current)
+						if diff > prevDiff then
+							questProgress = diff
+							prevDiff = diff
+						end
+					elseif progress and prevDiff == 0 then
+						if floor(100 - progress) > 0 then
+							questProgress = progress .. "%" -- lower priority on progress, keep looking
+						end
 					end
 				end
 			end
