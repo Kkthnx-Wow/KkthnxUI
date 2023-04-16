@@ -121,9 +121,7 @@ local function reskinProgressBars(_, _, line)
 			bar.BorderMid:SetAlpha(0)
 		end
 
-		if bar and bar:GetHeight() ~= 18 then
-			bar:SetHeight(18)
-		end
+		bar:SetHeight(18)
 		bar:StripTextures()
 		bar:CreateBorder()
 		bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
@@ -135,9 +133,7 @@ local function reskinProgressBars(_, _, line)
 		end
 
 		if icon then
-			if icon:GetHeight() ~= 24 then
-				icon:SetSize(24, 24)
-			end
+			icon:SetSize(24, 24)
 			icon:ClearAllPoints()
 			icon:SetPoint("LEFT", bar, "RIGHT", 6, 0)
 			icon:SetMask("")
@@ -162,9 +158,7 @@ local function reskinTimerBars(_, _, line)
 	local bar = timerBar and timerBar.Bar
 
 	if not timerBar.isSkinned then
-		if bar and bar:GetHeight() ~= 18 then
-			bar:SetHeight(18)
-		end
+		bar:SetHeight(18)
 		bar:StripTextures()
 		bar:CreateBorder()
 		bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
@@ -173,39 +167,55 @@ local function reskinTimerBars(_, _, line)
 	end
 end
 
+-- Repositions the Find Group button and/or the item button for a given block.
 local function repositionFindGroupButton(block, button)
+	-- Check if we are currently in combat lockdown, which could break the quest item button.
 	if InCombatLockdown() then
-		return
-	end -- will break quest item button
+		return -- Return early if we are in combat lockdown.
+	end
 
-	if button and button.GetPoint then
-		local a, b, c, d, e = button:GetPoint()
-		if block.groupFinderButton and b == block.groupFinderButton and block.itemButton and button == block.itemButton then
-			-- this fires when there is a group button and a item button to the left of it
-			-- we push the item button away from the group button (to the left)
-			button:SetPoint(a, b, c, d - 1, e)
-		elseif b == block and block.groupFinderButton and button == block.groupFinderButton then
-			-- this fires when there is a group finder button
-			-- we push the group finder button down slightly
-			button:SetPoint(a, b, c, d, e - 1)
-		end
+	-- Check if a button was passed in and has a valid point.
+	if not button or not button.GetPoint then
+		return -- Return early if no valid button was passed in.
+	end
+
+	-- Get the current point of the button.
+	local point, relativeTo, relativePoint, xOffset, yOffset = button:GetPoint()
+
+	-- Reposition the item button if it is to the left of the group finder button.
+	if block.groupFinderButton and relativeTo == block.groupFinderButton and block.itemButton and button == block.itemButton then
+		xOffset = xOffset - 1 -- Move the item button one pixel to the left of the group finder button.
+		button:SetPoint(point, relativeTo, relativePoint, xOffset, yOffset)
+	end
+
+	-- Reposition the group finder button if it is a child of the block frame.
+	if relativeTo == block and block.groupFinderButton and button == block.groupFinderButton then
+		yOffset = yOffset - 1 -- Move the group finder button one pixel down.
+		button:SetPoint(point, relativeTo, relativePoint, xOffset, yOffset)
 	end
 end
 
+-- Reskins the Find Group button for a given block.
 local function reskinFindGroupButton(block)
-	local button = block.hasGroupFinderButton and block.groupFinderButton
-	if button then
-		button:SkinButton()
-		if button:GetHeight() ~= 22 then
-			button:SetSize(22, 22)
-		end
+	-- Check if the block has a Find Group button.
+	local findGroupButton = block.hasGroupFinderButton and block.groupFinderButton
+	if not findGroupButton then
+		return -- No Find Group button found, so return early.
+	end
 
-		local icon = button.icon or button.Icon
-		if icon then
-			icon:SetAtlas("groupfinder-eye-frame")
-			icon:SetAllPoints()
-			icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		end
+	-- Apply a custom skin to the Find Group button.
+	findGroupButton:SkinButton()
+
+	-- Set the size of the Find Group button to 22x22 pixels.
+	findGroupButton:SetSize(22, 22)
+
+	-- Set the texture and texture coordinates for the Find Group button icon.
+	local findGroupButtonIcon = findGroupButton.icon or findGroupButton.Icon
+	if findGroupButtonIcon then
+		findGroupButtonIcon:SetAtlas("groupfinder-eye-frame")
+		findGroupButtonIcon:SetAllPoints()
+		local texCoords = K.TexCoords
+		findGroupButtonIcon:SetTexCoord(texCoords[1], texCoords[2], texCoords[3], texCoords[4])
 	end
 end
 

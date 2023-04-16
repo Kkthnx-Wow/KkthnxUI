@@ -43,7 +43,7 @@ end
 C.BadBoys = {} -- debug
 local chatLines, prevLineID, filterResult = {}, 0, false
 
-local debugprint = false
+local debugprint = true
 function Module:GetFilterResult(event, msg, name, flag, guid)
 	if name == K.Name or (event == "CHAT_MSG_WHISPER" and flag == "GM") or flag == "DEV" then
 		-- Ignore messages from self, GMs in whispers, and developers

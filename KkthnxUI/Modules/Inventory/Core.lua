@@ -1419,7 +1419,7 @@ function Module:OnEnable()
 		elseif string_match(name, "Anima") then
 			label = POWER_TYPE_ANIMA
 		elseif name == "BagRelic" then
-			label = "Korthia Relics"
+			label = "Korthian Relics"
 		elseif strmatch(name, "Custom%d") then
 			label = GetCustomGroupTitle(settings.Index)
 		elseif name == "BagReagent" then

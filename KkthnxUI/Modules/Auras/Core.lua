@@ -34,8 +34,13 @@ function Module:HideBlizBuff()
 		return
 	end
 
-	K.HideInterfaceOption(_G.BuffFrame)
-	K.HideInterfaceOption(_G.DebuffFrame)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", function(_, isLogin, isReload)
+		if isLogin or isReload then
+			K.HideInterfaceOption(_G.BuffFrame)
+			K.HideInterfaceOption(_G.DebuffFrame)
+			BuffFrame.numHideableBuffs = 0 -- isPatch10_1
+		end
+	end)
 end
 
 function Module:BuildBuffFrame()

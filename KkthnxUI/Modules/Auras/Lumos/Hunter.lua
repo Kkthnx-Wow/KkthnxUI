@@ -5,162 +5,6 @@ if K.Class ~= "HUNTER" then
 	return
 end
 
-local pairs, IsEquippedItem = pairs, IsEquippedItem
-local playerGUID = UnitGUID("player")
-
-local GetSpellCost = {
-	[53351] = 10, -- 杀戮射击
-	[19434] = 35, -- 瞄准射击
-	[185358] = 20, -- 奥术射击
-	[257620] = 20, -- 多重射击
-	[271788] = 10, -- 毒蛇钉刺
-	[212431] = 20, -- 爆炸射击
-	[186387] = 10, -- 爆裂射击
-	[157863] = 35, -- 复活宠物
-	[131894] = 20, -- 夺命黑鸦
-	[120360] = 30, -- 弹幕射击
-	[342049] = 20, -- 奇美拉射击
-	[355589] = 15, -- 哀痛箭
-}
-
-function Module:UpdateFocusColor(focusCal)
-	if Module.MMFocus.trickActive > 0 then
-		Module.MMFocus:SetTextColor(0, 1, 0) -- 有技巧绿色
-	elseif Module.MMFocus.cost > 0 then
-		Module.MMFocus:SetTextColor(1, 1, 0) -- 无技巧，但集中值不为0，则黄色
-	else
-		Module.MMFocus:SetTextColor(1, 0, 0) -- 无技巧，且集中值为0，红色
-	end
-end
-
-function Module:UpdateFocusText(value)
-	Module.MMFocus.cost = value
-	Module.MMFocus:SetFormattedText("%d/40", value)
-end
-
-function Module:UpdateFocusCost(unit, _, spellID)
-	if unit ~= "player" then
-		return
-	end
-
-	local focusCal = Module.MMFocus
-	local cost = GetSpellCost[spellID]
-	if cost then
-		focusCal.cost = focusCal.cost + cost
-	end
-	if spellID == 19434 then
-		--print("带着技巧读条："..tostring(focusCal.isTrickCast), "消耗技巧层数："..focusCal.trickActive)
-		if (focusCal.isTrickCast and focusCal.trickActive == 1) or (not focusCal.isTrickCast and focusCal.trickActive == 0) then
-			focusCal.cost = 35
-			--print("此时重置集中值为35")
-		end
-	end
-	Module:UpdateFocusText(focusCal.cost % 40)
-	Module:UpdateFocusColor()
-end
-
-function Module:ResetFocusCost()
-	Module:UpdateFocusText(0)
-	Module:UpdateFocusColor()
-end
-
-function Module:ResetOnRaidEncounter(_, _, _, groupSize)
-	if groupSize and groupSize > 5 then
-		Module:ResetFocusCost()
-	end
-end
-
-local eventSpentIndex = {
-	["SPELL_AURA_APPLIED"] = 1,
-	["SPELL_AURA_REFRESH"] = 2,
-	["SPELL_AURA_REMOVED"] = 0,
-}
-
-function Module:CheckTrickState(...)
-	local _, eventType, _, sourceGUID, _, _, _, _, _, _, _, spellID = ...
-	if eventSpentIndex[eventType] and spellID == 257622 and sourceGUID == playerGUID then
-		Module.MMFocus.trickActive = eventSpentIndex[eventType]
-		Module:UpdateFocusColor()
-	end
-end
-
-function Module:StartAimedShot(unit, _, spellID)
-	if unit ~= "player" then
-		return
-	end
-	if spellID == 19434 then
-		Module.MMFocus.isTrickCast = Module.MMFocus.trickActive ~= 0
-	end
-end
-
-local hunterSets = { 188856, 188858, 188859, 188860, 188861 }
-
-function Module:CheckSetsCount()
-	local count = 0
-	for _, itemID in pairs(hunterSets) do
-		if IsEquippedItem(itemID) then
-			count = count + 1
-		end
-	end
-
-	if count < 4 then
-		Module.MMFocus:Hide()
-		K:UnregisterEvent("UNIT_SPELLCAST_START", Module.StartAimedShot)
-		K:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UpdateFocusCost)
-		K:UnregisterEvent("PLAYER_DEAD", Module.ResetFocusCost)
-		K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.ResetFocusCost)
-		K:UnregisterEvent("ENCOUNTER_START", Module.ResetOnRaidEncounter)
-		K:UnregisterEvent("CLEU", Module.CheckTrickState)
-	else
-		Module.MMFocus:Show()
-		K:RegisterEvent("UNIT_SPELLCAST_START", Module.StartAimedShot, "player")
-		K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UpdateFocusCost, "player")
-		K:RegisterEvent("PLAYER_DEAD", Module.ResetFocusCost)
-		K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.ResetFocusCost)
-		K:RegisterEvent("ENCOUNTER_START", Module.ResetOnRaidEncounter)
-		K:RegisterEvent("CLEU", Module.CheckTrickState)
-	end
-end
-
-local oldSpec
-local MMT29X4 = false
-function Module:ToggleFocusCalculation()
-	if not Module.MMFocus then
-		return
-	end
-
-	local spec = GetSpecialization()
-	if MMT29X4 and spec == 2 then
-		if self ~= "PLAYER_SPECIALIZATION_CHANGED" or spec ~= oldSpec then -- don't reset when talent changed only
-			Module:ResetFocusCost() -- reset calculation when switch on
-		end
-		Module.MMFocus:Show()
-		Module:CheckSetsCount()
-		K:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", Module.CheckSetsCount)
-	else
-		K:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED", Module.CheckSetsCount)
-		-- if enabled already
-		Module.MMFocus:Hide()
-		K:UnregisterEvent("UNIT_SPELLCAST_START", Module.StartAimedShot)
-		K:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UpdateFocusCost)
-		K:UnregisterEvent("PLAYER_DEAD", Module.ResetFocusCost)
-		K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.ResetFocusCost)
-		K:UnregisterEvent("ENCOUNTER_START", Module.ResetOnRaidEncounter)
-		K:UnregisterEvent("CLEU", Module.CheckTrickState)
-	end
-	oldSpec = spec
-end
-
-function Module:PostCreateLumos(self)
-	-- MM hunter T29 4sets
-	Module.MMFocus = K.CreateFontString(self.Health, 18)
-	Module.MMFocus:ClearAllPoints()
-	Module.MMFocus:SetPoint("BOTTOM", self.Health, "TOP", 0, 5)
-	Module.MMFocus.trickActive = 0
-	Module:ToggleFocusCalculation()
-	K:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", Module.ToggleFocusCalculation)
-end
-
 local function GetUnitAura(unit, spell, filter)
 	return Module:GetUnitAura(unit, spell, filter)
 end
@@ -186,6 +30,38 @@ local function UpdateSpellStatus(button, spellID)
 	end
 end
 
+-- 凶暴野兽层数监控
+local eventList = {
+	["SPELL_AURA_APPLIED"] = true,
+	["SPELL_AURA_REFRESH"] = true,
+}
+local myGUID = UnitGUID("player")
+local currentStack, resetTime = 0, 0
+
+local function CheckDireStacks(_, ...)
+	local _, eventType, _, sourceGUID, _, _, _, _, _, _, _, spellID = ...
+	if sourceGUID ~= myGUID then
+		return
+	end
+
+	if eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REFRESH" then
+		if spellID == 281036 and GetTime() > resetTime then
+			currentStack = currentStack + 1
+			if currentStack == 6 then
+				currentStack = 1
+			end
+		elseif spellID == 378747 then
+			resetTime = GetTime()
+			currentStack = 5
+		end
+	elseif eventType == "SPELL_AURA_REMOVED" and spellID == 378747 then
+		if currentStack == 5 then
+			currentStack = 0
+		end
+	end
+end
+K:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", CheckDireStacks)
+
 function Module:ChantLumos(self)
 	local spec = GetSpecialization()
 	if spec == 1 then
@@ -193,7 +69,15 @@ function Module:ChantLumos(self)
 		UpdateCooldown(self.lumos[2], 217200, true)
 		UpdateBuff(self.lumos[3], 106785, 272790, false, true, "END")
 		UpdateBuff(self.lumos[4], 19574, 19574, true, false, true)
-		UpdateBuff(self.lumos[5], 268877, 268877)
+		do
+			local button = self.lumos[5]
+			if IsPlayerSpell(378745) then
+				UpdateBuff(button, 281036, 281036)
+				button.Count:SetText(currentStack)
+			else
+				UpdateBuff(button, 268877, 268877)
+			end
+		end
 	elseif spec == 2 then
 		UpdateCooldown(self.lumos[1], 19434, true)
 		UpdateCooldown(self.lumos[2], 257044, true)
