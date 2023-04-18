@@ -13,8 +13,8 @@ local UnitSetRole = UnitSetRole
 local lastRoleChangeTime = 0
 local currentRole = nil
 
--- Sets the player's role if it has not been set in the last 2 seconds
-local function setPlayerRole(role)
+-- Changes the player's role if it has not been changed in the last 2 seconds and the player is not in combat
+local function changePlayerRole(role)
 	local currentTime = GetTime()
 	if not InCombatLockdown() and currentTime - lastRoleChangeTime > 2 and UnitGroupRolesAssigned("player") ~= role then
 		if UnitSetRole("player", role) then
@@ -36,16 +36,17 @@ function Module:SetupAutoRole()
 	if spec then
 		local role = GetSpecializationRole(spec)
 
-		-- Set the player's role if it has changed
+		-- Change the player's role if it has changed
 		if role ~= currentRole then
-			setPlayerRole(role)
+			changePlayerRole(role)
 		end
 	else
-		setPlayerRole("No Role")
+		changePlayerRole("No Role")
 	end
 end
 
 function Module:CreateAutoSetRole()
+	-- Check if the AutoSetRole option is enabled
 	if not C["Automation"].AutoSetRole then
 		return
 	end
