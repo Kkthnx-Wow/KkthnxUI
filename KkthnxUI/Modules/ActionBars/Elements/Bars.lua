@@ -421,16 +421,24 @@ function Module:OnEnable()
 	end
 
 	Module.movers = {}
-	Module:CreateBars()
-	Module:CreateExtrabar()
-	Module:CreateLeaveVehicle()
-	Module:CreatePetbar()
-	Module:CreateStancebar()
-	Module:ReskinBars()
-	Module:UpdateBarConfig()
-	Module:UpdateBarVisibility()
-	Module:UpdateAllSize()
-	Module:HideBlizz()
+	local loadActionBarModules = {
+		"CreateBars",
+		"CreateExtrabar",
+		"CreateLeaveVehicle",
+		"CreatePetbar",
+		"CreateStancebar",
+		"ReskinBars",
+		"UpdateBarConfig",
+		"UpdateBarVisibility",
+		"UpdateAllSize",
+		"HideBlizz",
+	}
+
+	for _, funcName in ipairs(loadActionBarModules) do
+		if self[funcName] then
+			self[funcName](self)
+		end
+	end
 
 	if C_PetBattles.IsInBattle() then
 		Module:ClearBindings()

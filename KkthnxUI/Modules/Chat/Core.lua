@@ -38,7 +38,7 @@ local whisperEvents = {
 	["CHAT_MSG_BN_WHISPER"] = true,
 }
 
-local function GetGroupDistribution()
+local function getGroupDistribution()
 	local _, instanceType = GetInstanceInfo()
 	if instanceType == "pvp" then
 		return "/bg "
@@ -556,16 +556,26 @@ function Module:OnEnable()
 	_G.CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
 
 	-- Add Elements
-	Module:ChatWhisperSticky()
-	Module:CreateChatFilter()
-	Module:CreateChatHistory()
-	Module:CreateChatItemLevels()
-	Module:CreateChatRename()
-	Module:CreateChatRoleIcon()
-	Module:CreateCopyChat()
-	Module:CreateCopyURL()
-	Module:CreateEmojis()
-	Module:CreateVoiceActivity()
+	local loadChatModules = {
+		"ChatWhisperSticky",
+		"CreateChatFilter",
+		"CreateChatHistory",
+		"CreateChatItemLevels",
+		"CreateChatRename",
+		"CreateChatRoleIcon",
+		"CreateCopyChat",
+		"CreateCopyURL",
+		"CreateEmojis",
+		"CreateVoiceActivity",
+	}
+
+	function Module:OnEnable()
+		for _, funcName in ipairs(loadChatModules) do
+			if self[funcName] then
+				self[funcName](self)
+			end
+		end
+	end
 
 	-- Lock chatframe
 	if C["Chat"].Lock then

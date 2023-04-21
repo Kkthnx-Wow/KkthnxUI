@@ -151,6 +151,7 @@ C["Automation"] = {
 	AutoSummon = false,
 	NoBadBuffs = false,
 	WhisperInvite = "inv+",
+	WhisperInviteGuild = false,
 }
 
 C["Inventory"] = {

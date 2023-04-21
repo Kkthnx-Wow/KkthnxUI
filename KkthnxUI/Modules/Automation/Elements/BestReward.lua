@@ -30,7 +30,7 @@ local function getBestQuestReward(questRewards)
 	local bestValue = 0
 	local bestItem
 
-	for i, btn in pairs(questRewards) do
+	for i, _ in pairs(questRewards) do
 		local questLink = GetQuestItemLink("choice", i)
 		local _, _, amount = GetQuestItemInfo("choice", i)
 		local itemSellPrice = questLink and select(11, GetItemInfo(questLink))

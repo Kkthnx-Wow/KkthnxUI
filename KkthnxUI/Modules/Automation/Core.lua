@@ -1,20 +1,28 @@
 local K = KkthnxUI[1]
 local Module = K:NewModule("Automation")
 
+local loadAutomationModules = {
+	"CreateAutoAcceptSummon",
+	"CreateAutoBadBuffs",
+	"CreateAutoBestReward",
+	"CreateAutoDeclineDuels",
+	"CreateAutoGoodbye",
+	"CreateAutoInvite",
+	"CreateAutoKeystone",
+	"CreateAutoOpenItems",
+	"CreateAutoPartySyncAccept",
+	"CreateAutoRelease",
+	"CreateAutoResurrect",
+	"CreateAutoScreenshot",
+	"CreateAutoSetRole",
+	"CreateAutoWhisperInvite",
+	"CreateSkipCinematic",
+}
+
 function Module:OnEnable()
-	self:CreateAutoAcceptSummon()
-	self:CreateAutoBadBuffs()
-	self:CreateAutoBestReward()
-	self:CreateAutoDeclineDuels()
-	self:CreateAutoGoodbye()
-	self:CreateAutoInvite()
-	self:CreateAutoKeystone()
-	self:CreateAutoOpenItems()
-	self:CreateAutoPartySyncAccept()
-	self:CreateAutoRelease()
-	self:CreateAutoResurrect()
-	self:CreateAutoScreenshot()
-	self:CreateAutoSetRole()
-	self:CreateAutoWhisperInvite()
-	self:CreateSkipCinematic()
+	for _, funcName in ipairs(loadAutomationModules) do
+		if self[funcName] then
+			self[funcName](self)
+		end
+	end
 end

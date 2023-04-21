@@ -27,25 +27,24 @@ local function updateWhisperList()
 	end
 end
 
--- Function to check if a unit is in the player's guild
+-- Check if a given unit is a member of the player's guild
 local function isUnitInGuild(unitName)
+	-- If the unit name is not provided, return nil
 	if not unitName then
-		return false
+		return
 	end
-	-- Get the list of guild members
-	local guildMembers = C_GuildInfo_GuildRoster()
-	if not guildMembers then
-		return false
-	end
-	for _, memberInfo in ipairs(guildMembers) do
-		-- Compare the unit name to the guild member name, using Ambiguate to handle cross-realm names
-		local name = Ambiguate(memberInfo.name, "none")
-		if name == Ambiguate(unitName, "none") then
-			-- Return true if the unit is found in the guild
+
+	-- Loop through all guild members and check if the name matches the given unit name
+	for i = 1, GetNumGuildMembers() do
+		local name = GetGuildRosterInfo(i)
+		-- Check if the name is not nil and is equal to the given unit name, using Ambiguate to handle cross-realm names
+		if name and Ambiguate(name, "none") == Ambiguate(unitName, "none") then
+			-- If the name matches, return true
 			return true
 		end
 	end
-	-- Return false if the unit is not found in the guild
+
+	-- If the name is not found among guild members, return false
 	return false
 end
 
@@ -68,7 +67,7 @@ local function onChatWhisper(event, msg, author, _, _, _, _, _, _, _, _, presenc
 						local charName = gameAccountInfo.characterName
 						local realmName = gameAccountInfo.realmName
 						-- Check if the player can cooperate with the friend's game account, and if the friend is in the player's guild
-						if CanCooperateWithGameAccount(accountInfo) and isUnitInGuild(charName .. "-" .. realmName) then
+						if CanCooperateWithGameAccount(accountInfo) and (not C["Chat"].WhisperInviteGuild or isUnitInGuild(charName .. "-" .. realmName)) then
 							-- Invite the friend to the player's group
 							BNInviteFriend(gameID)
 						end
@@ -76,7 +75,7 @@ local function onChatWhisper(event, msg, author, _, _, _, _, _, _, _, _, presenc
 				end
 			else
 				-- If the whisper is from a player, check if they are in the player's guild
-				if isUnitInGuild(author) then
+				if not C["Chat"].WhisperInviteGuild or isUnitInGuild(author) then
 					C_PartyInfo_InviteUnit(author)
 				end
 			end
@@ -85,6 +84,9 @@ local function onChatWhisper(event, msg, author, _, _, _, _, _, _, _, _, presenc
 end
 
 function Module:CreateAutoWhisperInvite()
+	if not C["Chat"].WhisperInvite == "" then
+		return
+	end
 	-- Update the list of keywords to trigger auto-invites
 	updateWhisperList()
 	-- Register the onChatWhisper function to handle incoming whispers

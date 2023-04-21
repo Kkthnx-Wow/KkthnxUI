@@ -425,7 +425,15 @@ function Module:OnEnable()
 		Module.UpdateTrimFrame(updater.__owner)
 	end)
 
-	Module:DisableBlizzardMover()
+	local loadMoversModules = {
+		"DisableBlizzardMover",
+	}
+
+	for _, funcName in ipairs(loadMoversModules) do
+		if self[funcName] then
+			self[funcName](self)
+		end
+	end
 end
 
 -- Disable blizzard edit mode

@@ -934,9 +934,17 @@ function Module:CloseBags()
 end
 
 function Module:OnEnable()
-	self:CreateInventoryBar()
-	self:CreateAutoRepair()
-	self:CreateAutoSell()
+	local loadInventoryModules = {
+		"CreateInventoryBar",
+		"CreateAutoRepair",
+		"CreateAutoSell",
+	}
+
+	for _, funcName in ipairs(loadInventoryModules) do
+		if self[funcName] then
+			self[funcName](self)
+		end
+	end
 
 	if not C["Inventory"].Enable then
 		return

@@ -87,6 +87,15 @@ function Module:AddDeprecatedGroup()
 end
 
 function Module:OnEnable()
-	Module:AddDeprecatedGroup()
+	local loadAuraWatchModules = {
+		"AddDeprecatedGroup",
+	}
+
+	for _, funcName in ipairs(loadAuraWatchModules) do
+		if self[funcName] then
+			self[funcName](self)
+		end
+	end
+
 	C.AuraWatchList = AuraWatchList
 end
