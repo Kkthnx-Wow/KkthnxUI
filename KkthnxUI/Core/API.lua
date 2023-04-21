@@ -122,10 +122,7 @@ local function CreateShadow(f, bd)
 	end
 
 	-- Get the parent frame if the passed object is a texture
-	local frame = f:GetObjectType() == "Texture" and f:GetParent() or f
-
-	-- Get the frame level of the parent frame
-	local lvl = frame:GetFrameLevel()
+	local frame = (f:IsObjectType("Texture")) and f:GetParent() or f
 
 	-- Create the shadow frame using the BackdropTemplate
 	f.Shadow = CreateFrame("Frame", nil, frame, "BackdropTemplate")
@@ -149,7 +146,7 @@ local function CreateShadow(f, bd)
 	f.Shadow:SetBackdrop(backdrop)
 
 	-- Set the frame level of the shadow frame to be one lower than the parent frame
-	f.Shadow:SetFrameLevel(lvl == 0 and 0 or lvl - 1)
+	f.Shadow:SetFrameLevel(frame:GetFrameLevel() > 0 and frame:GetFrameLevel() - 1 or 0)
 
 	-- Set the background and border color of the shadow frame based on the 'bd' argument
 	if bd then

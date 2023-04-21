@@ -30,11 +30,6 @@ local function UpdateSpellStatus(button, spellID)
 	end
 end
 
--- 凶暴野兽层数监控
-local eventList = {
-	["SPELL_AURA_APPLIED"] = true,
-	["SPELL_AURA_REFRESH"] = true,
-}
 local myGUID = UnitGUID("player")
 local currentStack, resetTime = 0, 0
 

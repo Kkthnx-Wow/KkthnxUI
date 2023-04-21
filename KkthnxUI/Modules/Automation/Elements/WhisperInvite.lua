@@ -34,6 +34,9 @@ local function isUnitInGuild(unitName)
 	end
 	-- Get the list of guild members
 	local guildMembers = C_GuildInfo_GuildRoster()
+	if not guildMembers then
+		return false
+	end
 	for _, memberInfo in ipairs(guildMembers) do
 		-- Compare the unit name to the guild member name, using Ambiguate to handle cross-realm names
 		local name = Ambiguate(memberInfo.name, "none")

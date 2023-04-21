@@ -18,6 +18,19 @@ local atlasColors = {
 	["EmberCourtScenario-Tracker-barfill"] = { 0.9, 0.2, 0.2 },
 }
 
+local elementsToHide = {
+	"BG",
+	"BGLeft",
+	"BGRight",
+	"BGCenter",
+	"BorderLeft",
+	"BorderRight",
+	"BorderCenter",
+	"Spark",
+	"SparkGlow",
+	"BorderGlow",
+}
+
 local function ReplaceWidgetBarTexture(self, atlas)
 	if atlasColors[atlas] then
 		self:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
@@ -33,44 +46,11 @@ end
 
 local function ReskinWidgetStatusBar(bar)
 	if bar and not bar.styled then
-		if bar.BG then
-			bar.BG:SetAlpha(0)
-		end
-
-		if bar.BGLeft then
-			bar.BGLeft:SetAlpha(0)
-		end
-
-		if bar.BGRight then
-			bar.BGRight:SetAlpha(0)
-		end
-
-		if bar.BGCenter then
-			bar.BGCenter:SetAlpha(0)
-		end
-
-		if bar.BorderLeft then
-			bar.BorderLeft:SetAlpha(0)
-		end
-
-		if bar.BorderRight then
-			bar.BorderRight:SetAlpha(0)
-		end
-
-		if bar.BorderCenter then
-			bar.BorderCenter:SetAlpha(0)
-		end
-
-		if bar.Spark then
-			bar.Spark:SetAlpha(0)
-		end
-
-		if bar.SparkGlow then
-			bar.SparkGlow:SetAlpha(0)
-		end
-
-		if bar.BorderGlow then
-			bar.BorderGlow:SetAlpha(0)
+		for _, elementName in ipairs(elementsToHide) do
+			local element = bar[elementName]
+			if element then
+				element:SetAlpha(0)
+			end
 		end
 
 		if bar.Label then
