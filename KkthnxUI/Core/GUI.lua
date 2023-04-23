@@ -234,7 +234,7 @@ end
 
 -- Sections
 -- CreateSection function to create a section of the user interface
-local function CreateSection(self, text)
+local function CreateSection(self, text, icon, fontObject)
 	-- Create the main frame
 	local Anchor = CreateFrame("Frame", nil, self)
 	Anchor:SetSize(WidgetListWidth - (Spacing * 2), WidgetHeight)
@@ -250,8 +250,17 @@ local function CreateSection(self, text)
 	Section.Label = Section:CreateFontString(nil, "OVERLAY")
 	Section.Label:SetPoint("CENTER", Section, LabelSpacing, 0)
 	Section.Label:SetWidth(WidgetListWidth - (Spacing * 4))
-	Section.Label:SetFontObject(K.UIFont)
+	Section.Label:SetFontObject(fontObject or K.UIFont)
 	Section.Label:SetJustifyH("CENTER")
+	if icon then
+		Section.Icon = Section:CreateTexture(nil, "ARTWORK")
+		Section.Icon:SetSize(16, 16)
+		Section.Icon:SetPoint("RIGHT", Section.Label, "LEFT", -2, 0)
+		Section.Icon:SetTexture(icon)
+		Section.Label:SetPoint("LEFT", Section, "LEFT", 20, 0)
+	else
+		Section.Label:SetPoint("CENTER", Section, 0, 0)
+	end
 	Section.Label:SetText("|CFFFFCC66" .. text .. "|r")
 
 	-- Insert the created frame into the self.Widgets table
@@ -348,6 +357,7 @@ local SwitchOnMouseUp = function(self, button)
 	end
 
 	self.Movement:Play()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 
 	SetValue(self.Group, self.Option, self.Value)
 
@@ -548,6 +558,7 @@ local SliderOnValueChanged = function(self)
 	self.EditBox:SetText(Value)
 
 	SetValue(self.EditBox.Group, self.EditBox.Option, Value)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 
 	if self.Hook then
 		self.Hook(self.Value, self.Group)
