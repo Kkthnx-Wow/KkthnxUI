@@ -171,17 +171,11 @@ end
 local function repositionFindGroupButton(block, button)
 	-- Check if we are currently in combat lockdown, which could break the quest item button.
 	if InCombatLockdown() then
-		if K.isDeveloper then
-			print("repositionFindGroupButton: InCombatLockdown, returning early.")
-		end
 		return -- Return early if we are in combat lockdown.
 	end
 
 	-- Check if a button was passed in and has a valid point.
 	if not button or not button.GetPoint then
-		if K.isDeveloper then
-			print("repositionFindGroupButton: No valid button was passed in, returning early.")
-		end
 		return -- Return early if no valid button was passed in.
 	end
 
@@ -192,18 +186,12 @@ local function repositionFindGroupButton(block, button)
 	if block.groupFinderButton and relativeTo == block.groupFinderButton and block.itemButton and button == block.itemButton then
 		xOffset = xOffset - 1 -- Move the item button one pixel to the left of the group finder button.
 		button:SetPoint(point, relativeTo, relativePoint, xOffset, yOffset)
-		if K.isDeveloper then
-			print("repositionFindGroupButton: Repositioned item button.")
-		end
 	end
 
 	-- Reposition the group finder button if it is a child of the block frame.
 	if relativeTo == block and block.groupFinderButton and button == block.groupFinderButton then
 		yOffset = yOffset - 1 -- Move the group finder button one pixel down.
 		button:SetPoint(point, relativeTo, relativePoint, xOffset, yOffset)
-		if K.isDeveloper then
-			print("repositionFindGroupButton: Repositioned group finder button.")
-		end
 	end
 end
 
@@ -212,9 +200,6 @@ local function reskinFindGroupButton(block)
 	-- Check if the block has a Find Group button.
 	local findGroupButton = block.hasGroupFinderButton and block.groupFinderButton
 	if not findGroupButton then
-		if K.isDeveloper then
-			print("reskinFindGroupButton: No Find Group button found, returning early.")
-		end
 		return -- No Find Group button found, so return early.
 	end
 

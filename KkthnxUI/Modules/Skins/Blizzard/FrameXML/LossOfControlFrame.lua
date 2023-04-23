@@ -1,38 +1,29 @@
-local K, C = KkthnxUI[1], KkthnxUI[2]
-
--- Sourced: ElvUI (Elvz)
--- Edited: KkthnxUI (Kkthnx)
+local K, C = unpack(select(2, ...))
 
 -- Import required functions
-local table_insert = table.insert
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 
--- Add theme to the default themes list
-table_insert(C.defaultThemes, function()
+-- Apply theme to the Loss of Control frame
+table.insert(C.defaultThemes, function()
 	-- Exit if Blizzard frames skinning is disabled
-	if not C["Skins"].BlizzardFrames then
+	if not C.Skins.BlizzardFrames then
 		return
 	end
 
-	-- Create a frame to be used as a border around the Loss of Control frame icon
-	local IconBorder = CreateFrame("Frame", nil, LossOfControlFrame)
-	IconBorder:SetAllPoints(LossOfControlFrame.Icon)
-	IconBorder:SetFrameLevel(LossOfControlFrame:GetFrameLevel())
-
-	-- Create a border for the frame
-	local borderWidth = C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and 32 or nil
-	local borderOffset = C["General"].BorderStyle.Value ~= "KkthnxUI_Pixel" and -10 or nil
-	IconBorder:CreateBorder(nil, nil, borderWidth, nil, borderOffset, nil, nil, nil, nil)
-
-	-- Set the color of the border to red
-	IconBorder.KKUI_Border:SetVertexColor(1, 0, 0)
-
-	-- Apply texture coordinates to the Loss of Control frame icon
-	LossOfControlFrame.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
 	-- Strip textures from the Loss of Control frame
 	LossOfControlFrame:StripTextures()
+
+	-- Create a border around the Loss of Control frame icon
+	local iconBorder = CreateFrame("Frame", nil, LossOfControlFrame)
+	iconBorder:SetAllPoints(LossOfControlFrame.Icon)
+	iconBorder:CreateBorder()
+
+	-- Set the color of the border to red
+	iconBorder.KKUI_Border:SetVertexColor(1, 0, 0)
+
+	-- Apply texture coordinates to the Loss of Control frame icon
+	LossOfControlFrame.Icon:SetTexCoord(unpack(K.TexCoords))
 
 	-- Move the ability name text to the bottom of the frame
 	LossOfControlFrame.AbilityName:ClearAllPoints()
@@ -46,8 +37,8 @@ table_insert(C.defaultThemes, function()
 	LossOfControlFrame.AbilityName:SetFont(select(1, LossOfControlFrame.AbilityName:GetFont()), 20, select(3, LossOfControlFrame.AbilityName:GetFont()))
 
 	-- Remove the text elements from the time left display
-	LossOfControlFrame.TimeLeft.NumberText:Kill()
-	LossOfControlFrame.TimeLeft.SecondsText:Kill()
+	LossOfControlFrame.TimeLeft.NumberText:Hide()
+	LossOfControlFrame.TimeLeft.SecondsText:Hide()
 
 	-- Hook the setup function to stop the shake animation and center the icon and ability name text
 	hooksecurefunc("LossOfControlFrame_SetUpDisplay", function(self)
@@ -56,7 +47,7 @@ table_insert(C.defaultThemes, function()
 		local Anim = self.Anim
 
 		Icon:ClearAllPoints()
-		Icon:SetPoint("CENTER", self, "CENTER", 0, 0)
+		Icon:SetPoint("CENTER", self)
 
 		AbilityName:ClearAllPoints()
 		AbilityName:SetPoint("BOTTOM", self, 0, -8)

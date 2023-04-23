@@ -20,12 +20,15 @@ local AutoThanksList = {
 }
 
 function Module.SetupAutoGoodbye()
-	local waitTime = math.random(2, 5)
+	local waitTime = math.random() * (5 - 2) + 2 -- generates a float between 2 and 5
 	C_Timer_After(waitTime, function()
-		local messageIndex = math.random(1, #AutoThanksList)
-		local message = table.remove(AutoThanksList, messageIndex)
+		local messageIndex = math.random(#AutoThanksList)
+		local message = AutoThanksList[messageIndex]
+		table.remove(AutoThanksList, messageIndex)
 
-		SendChatMessage(message, "INSTANCE_CHAT")
+		if message then
+			C_ChatInfo.SendAddonMessage("KkthnxUI", message, "INSTANCE_CHAT")
+		end
 	end)
 end
 

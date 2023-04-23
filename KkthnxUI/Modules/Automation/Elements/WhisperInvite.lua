@@ -3,6 +3,8 @@ local Module = K:GetModule("Automation")
 
 -- Store the list of accepted keywords in a table
 local acceptedKeywords = {}
+
+-- Update the list of accepted keywords
 local function updateAcceptedKeywords()
 	for word in string.gmatch(C["Automation"].WhisperInvite, "[^,]+") do
 		table.insert(acceptedKeywords, word)
@@ -10,36 +12,39 @@ local function updateAcceptedKeywords()
 	-- print("Accepted keywords: ", table.concat(acceptedKeywords, ", "))
 end
 
+-- Check if a player is in guild
 local function isPlayerInGuild(unitName)
 	if not unitName or not IsInGuild() then
 		return false
 	end
-
 	for i = 1, GetNumGuildMembers() do
 		local name = GetGuildRosterInfo(i)
 		if name and Ambiguate(name, "none") == Ambiguate(unitName, "none") then
 			return true
 		end
 	end
-
 	return false
 end
 
--- Function to check if a player is in the player's guild or friends list
+-- Check if a player is in the player's guild or friends list
 local function isPlayerGuildOrFriend(name)
 	if C["Automation"].WhisperInviteGuildFriends then
-		return IsInGuild() and isPlayerInGuild(name) or C_FriendList.IsFriend(name)
+		if IsInGuild() and isPlayerInGuild(name) then
+			return true
+		elseif C_FriendList.IsFriend(name) then
+			return true
+		end
 	else
 		return true
 	end
+	return false
 end
 
--- Frame to handle auto-invites
+-- Handle auto-invites on chat whisper
 local function onChatWhisper(event, message, sender, _, _, _, _, _, _, _, _, _, _, presenceID)
 	if not acceptedKeywords then
 		return
 	end
-
 	local lowerMessage = message:lower()
 	for word in pairs(acceptedKeywords) do
 		if lowerMessage:match(word) and isPlayerGuildOrFriend(sender) then
@@ -53,17 +58,17 @@ local function onChatWhisper(event, message, sender, _, _, _, _, _, _, _, _, _, 
 	end
 end
 
--- Function to update the list of accepted keywords
+-- Update the list of accepted keywords
 local function onUpdateAcceptedKeywords()
 	wipe(acceptedKeywords)
 	updateAcceptedKeywords()
 end
 
+-- Create auto whisper invite
 function Module:CreateAutoWhisperInvite()
 	if C["Chat"].WhisperInvite == "" then
 		return
 	end
-
 	-- Update the list of keywords to trigger auto-invites
 	onUpdateAcceptedKeywords()
 	-- Register the onChatWhisper function to handle incoming whispers

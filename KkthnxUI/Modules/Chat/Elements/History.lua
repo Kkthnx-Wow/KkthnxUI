@@ -16,9 +16,31 @@ local hasPrinted = false
 -- Flag to track if chat log history is currently being printed to chat frame
 local isPrinting = false
 
+-- List of events to log
+local EVENTS_TO_LOG = {
+	"CHAT_MSG_INSTANCE_CHAT",
+	"CHAT_MSG_INSTANCE_CHAT_LEADER",
+	"CHAT_MSG_EMOTE",
+	"CHAT_MSG_GUILD",
+	"CHAT_MSG_OFFICER",
+	"CHAT_MSG_PARTY",
+	"CHAT_MSG_PARTY_LEADER",
+	"CHAT_MSG_RAID",
+	"CHAT_MSG_RAID_LEADER",
+	"CHAT_MSG_RAID_WARNING",
+	"CHAT_MSG_SAY",
+	"CHAT_MSG_WHISPER",
+	"CHAT_MSG_WHISPER_INFORM",
+	"CHAT_MSG_YELL",
+}
+
 -- Prints chat log history to chat frame
 local function printChatHistory()
-	isPrinting = true
+	if not isPrinting then
+		isPrinting = true
+	else
+		return
+	end
 
 	for i = #chatHistory, 1, -1 do
 		local temp = chatHistory[i]
@@ -47,7 +69,10 @@ end
 
 -- Sets up chat history for logging
 local function setupChatHistory(event, ...)
-	if hasPrinted then
+	if event == "PLAYER_LOGIN" then
+		K:UnregisterEvent(event)
+		printChatHistory()
+	elseif hasPrinted then
 		saveChatHistory(event, ...)
 	end
 end
@@ -63,29 +88,11 @@ function Module:CreateChatHistory()
 	-- Maximum number of chat log entries to keep
 	MAX_LOG_ENTRIES = C["Chat"].LogMax
 
-	-- List of events to log
-	local EVENTS_TO_LOG = {
-		"CHAT_MSG_INSTANCE_CHAT",
-		"CHAT_MSG_INSTANCE_CHAT_LEADER",
-		"CHAT_MSG_EMOTE",
-		"CHAT_MSG_GUILD",
-		"CHAT_MSG_OFFICER",
-		"CHAT_MSG_PARTY",
-		"CHAT_MSG_PARTY_LEADER",
-		"CHAT_MSG_RAID",
-		"CHAT_MSG_RAID_LEADER",
-		"CHAT_MSG_RAID_WARNING",
-		"CHAT_MSG_SAY",
-		"CHAT_MSG_WHISPER",
-		"CHAT_MSG_WHISPER_INFORM",
-		"CHAT_MSG_YELL",
-	}
-
 	-- Register events for chat logging
 	for _, event in ipairs(EVENTS_TO_LOG) do
 		K:RegisterEvent(event, setupChatHistory)
 	end
 
 	-- Print chat log history to chat frame
-	printChatHistory()
+	setupChatHistory()
 end

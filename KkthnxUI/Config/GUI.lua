@@ -447,10 +447,12 @@ end
 local Announcements = function(self)
 	local Window = self:CreateWindow(L["Announcements"])
 
-	Window:CreateSection(L["Toggles"])
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Announcements", "ItemAlert", L["Announce Spells And Items"], L["SpellItemAlertTip"])
 	Window:CreateSwitch("Announcements", "PullCountdown", L["Announce Pull Countdown (/pc #)"])
 	Window:CreateSwitch("Announcements", "ResetInstance", L["Alert Group After Instance Resetting"])
+
+	Window:CreateSection(L["Combat"])
 	Window:CreateSwitch("Announcements", "SaySapped", L["Announce When Sapped"])
 	Window:CreateSwitch("Announcements", "KillingBlow", L["Show Your Killing Blow Info"])
 	Window:CreateSwitch("Announcements", "PvPEmote", L["Auto Emote On Your Killing Blow"])
@@ -480,32 +482,41 @@ end
 local Automation = function(self)
 	local Window = self:CreateWindow(L["Automation"])
 
-	Window:CreateSection(L["Toggles"])
+	-- Invite Management sub-section
+	Window:CreateSection("Invite Management")
 	Window:CreateSwitch("Automation", "AutoBlockStrangerInvites", L["Blocks Invites From Strangers"])
-	Window:CreateSwitch("Automation", "AutoCollapse", L["Auto Collapse Objective Tracker"])
+	Window:CreateSwitch("Automation", "AutoInvite", L["Accept Invites From Friends & Guild Members"])
 	Window:CreateSwitch("Automation", "AutoDeclineDuels", L["Decline PvP Duels"])
 	Window:CreateSwitch("Automation", "AutoDeclinePetDuels", L["Decline Pet Duels"])
-	Window:CreateSwitch("Automation", "AutoGoodbye", L["Say Goodbye After Dungeon Completion."])
-	Window:CreateSwitch("Automation", "AutoInvite", L["Accept Invites From Friends & Guild Members"])
-	Window:CreateSwitch("Automation", "AutoKeystone", newFeatureIcon .. L["Auto Place Mythic Keystones"])
-	Window:CreateSwitch("Automation", "AutoOpenItems", L["Auto Open Items In Your Inventory"])
 	Window:CreateSwitch("Automation", "AutoPartySync", L["Accept PartySync From Friends & Guild Members"])
-	Window:CreateSwitch("Automation", "AutoRelease", L["Auto Release in Battlegrounds & Arenas"])
-	Window:CreateSwitch("Automation", "AutoResurrect", L["Auto Accept Resurrect Requests"])
+	Window:CreateEditBox("Automation", "WhisperInvite", L["Auto Accept Invite Keyword"])
+
+	-- Auto-Resurrect Options sub-section
+	Window:CreateSection("Auto-Resurrect Options")
+	Window:CreateSwitch("Automation", "AutoAcceptResurrect", L["Auto Accept Resurrect Requests"])
 	Window:CreateSwitch("Automation", "AutoResurrectThank", L["Say 'Thank You' When Resurrected"])
+
+	-- Auto-Reward Options sub-section
+	Window:CreateSection("Auto-Reward Options")
 	Window:CreateSwitch("Automation", "AutoReward", L["Auto Select Quest Rewards Best Value"])
+
+	-- Miscellaneous Options sub-section
+	Window:CreateSection("Miscellaneous Options")
+	Window:CreateSwitch("Automation", "AutoCollapse", L["Auto Collapse Objective Tracker"])
+	Window:CreateSwitch("Automation", "AutoGoodbye", L["Say Goodbye After Dungeon Completion."])
+	Window:CreateSwitch("Automation", "AutoOpenItems", L["Auto Open Items In Your Inventory"])
+	Window:CreateSwitch("Automation", "AutoKeystone", newFeatureIcon .. L["Auto Place Mythic Keystones"])
+	Window:CreateSwitch("Automation", "AutoRelease", L["Auto Release in Battlegrounds & Arenas"])
 	Window:CreateSwitch("Automation", "AutoScreenshot", L["Auto Screenshot Achievements"])
 	Window:CreateSwitch("Automation", "AutoSetRole", L["Auto Set Your Role In Groups"])
 	Window:CreateSwitch("Automation", "AutoSkipCinematic", L["Auto Skip All Cinematic/Movies"])
-	Window:CreateSwitch("Automation", "AutoSummon", L["Auto Accept Summon Requests"])
 	Window:CreateSwitch("Automation", "NoBadBuffs", L["Automatically Remove Annoying Buffs"])
-	Window:CreateEditBox("Automation", "WhisperInvite", L["Auto Accept Invite Keyword"])
 end
 
 local Inventory = function(self)
 	local Window = self:CreateWindow(L["Inventory"])
 
-	Window:CreateSection(L["Toggles"])
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Inventory", "Enable", enableTextColor .. L["Enable Inventory"])
 	Window:CreateSwitch("Inventory", "AutoSell", L["Auto Vendor Grays"])
 	Window:CreateSwitch("Inventory", "BagBarMouseover", L["Fade Bagbar"])
@@ -553,7 +564,7 @@ end
 local Auras = function(self)
 	local Window = self:CreateWindow(L["Auras"])
 
-	Window:CreateSection(L["Toggles"])
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Auras", "Enable", enableTextColor .. L["Enable Auras"])
 	Window:CreateSwitch("Auras", "HideBlizBuff", "Hide The Default BuffFrame")
 	Window:CreateSwitch("Auras", "Reminder", L["Auras Reminder (Shout/Intellect/Poison)"])
@@ -575,7 +586,7 @@ end
 local AuraWatch = function(self)
 	local Window = self:CreateWindow(L["AuraWatch"])
 
-	Window:CreateSection(L["Toggles"])
+	Window:CreateSection(GENERAL)
 	Window:CreateButton(L["AuraWatch GUI"], nil, nil, SetupAuraWatch)
 	Window:CreateSwitch("AuraWatch", "Enable", enableTextColor .. L["Enable AuraWatch"])
 	Window:CreateSwitch("AuraWatch", "ClickThrough", L["Disable AuraWatch Tooltip (ClickThrough)"], "If enabled, the icon would be uninteractable, you can't select or mouseover them.")
@@ -587,7 +598,7 @@ end
 local Chat = function(self)
 	local Window = self:CreateWindow(L["Chat"])
 
-	Window:CreateSection(L["Toggles"])
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Chat", "Enable", enableTextColor .. L["Enable Chat"])
 	Window:CreateSwitch("Chat", "Background", L["Show Chat Background"], nil, ToggleChatBackground)
 	Window:CreateSwitch("Chat", "ChatItemLevel", L["Show ItemLevel on ChatFrames"])
@@ -622,7 +633,7 @@ end
 local DataText = function(self)
 	local Window = self:CreateWindow(L["DataText"])
 
-	Window:CreateSection(L["Toggles"])
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("DataText", "Friends", L["Enable Friends Info"])
 	Window:CreateSwitch("DataText", "Gold", L["Enable Currency Info"])
 	Window:CreateSwitch("DataText", "Guild", L["Enable Guild Info"])
@@ -631,37 +642,52 @@ local DataText = function(self)
 	Window:CreateSwitch("DataText", "System", L["Enable System Info"])
 	Window:CreateSwitch("DataText", "Time", L["Enable Minimap Time"])
 	Window:CreateSwitch("DataText", "Coords", L["Enable Positon Coords"])
-	Window:CreateColorSelection("DataText", "IconColor", L["Color The Icons"]) -- Needs Locale
 
-	Window:CreateSection(L["Text"])
+	-- Section: Icon Colors
+	Window:CreateSection("Icon Colors")
+	Window:CreateColorSelection("DataText", "IconColor", L["Color The Icons"])
+
+	-- Section: Text Toggles
+	Window:CreateSection("Text Toggles")
 	Window:CreateSwitch("DataText", "HideText", L["Hide Icon Text"])
 end
 
 local General = function(self)
 	local Window = self:CreateWindow(L["General"], true)
 
+	-- Profiles
 	Window:CreateSection("Profiles")
 	local AddProfile = Window:CreateDropdown("General", "Profiles", L["Import Profiles From Other Characters"])
 	AddProfile.Menu:HookScript("OnHide", GUI.SetProfile)
 
-	Window:CreateSection(L["Toggles"])
+	-- Toggles
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("General", "MinimapIcon", "Enable Minimap Icon", nil, toggleMinimapIcon)
 	Window:CreateSwitch("General", "MoveBlizzardFrames", L["Move Blizzard Frames"])
 	Window:CreateSwitch("General", "NoErrorFrame", L["Disable Blizzard Error Frame Combat"])
 	Window:CreateSwitch("General", "NoTutorialButtons", L["Disable 'Some' Blizzard Tutorials"])
 	Window:CreateSwitch("General", "VersionCheck", L["Enable Version Checking"])
+
+	-- Border Style
 	Window:CreateDropdown("General", "BorderStyle", L["Border Style"])
+
+	-- Number Prefix Style
 	Window:CreateDropdown("General", "NumberPrefixStyle", L["Number Prefix Style"])
+
+	-- Smoothing Amount
 	Window:CreateSlider("General", "SmoothAmount", "SmoothAmount", 0.1, 1, 0.01, "Setup healthbar smooth frequency for unitframes and nameplates. The lower the smoother.", updateSmoothingAmount)
 
+	-- Scaling
 	Window:CreateSection(L["Scaling"])
 	Window:CreateSwitch("General", "AutoScale", L["Auto Scale"], L["AutoScaleTip"])
 	Window:CreateSlider("General", "UIScale", L["Set UI scale"], 0.4, 1.15, 0.01, L["UIScaleTip"], UIScaleNotice)
 
+	-- Colors
 	Window:CreateSection(COLORS)
 	Window:CreateSwitch("General", "ColorTextures", L["Color 'Most' KkthnxUI Borders"])
 	Window:CreateColorSelection("General", "TexturesColor", L["Textures Color"])
 
+	-- Texture
 	Window:CreateSection("Texture")
 	Window:CreateDropdown("General", "Texture", L["Set General Texture"], "Texture")
 end
@@ -669,73 +695,111 @@ end
 local Loot = function(self)
 	local Window = self:CreateWindow(L["Loot"])
 
-	Window:CreateSection(L["Toggles"])
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Loot", "Enable", enableTextColor .. L["Enable Loot"])
 	Window:CreateSwitch("Loot", "GroupLoot", enableTextColor .. L["Enable Group Loot"])
+
+	Window:CreateSection("Auto-Looting")
+	Window:CreateSwitch("Loot", "FastLoot", L["Faster Auto-Looting"])
+
+	Window:CreateSection("Auto-Confirm")
 	Window:CreateSwitch("Loot", "AutoConfirm", L["Auto Confirm Loot Dialogs"])
 	Window:CreateSwitch("Loot", "AutoGreed", L["Auto Greed Green Items"])
-	Window:CreateSwitch("Loot", "FastLoot", L["Faster Auto-Looting"])
 end
 
 local Minimap = function(self)
 	local Window = self:CreateWindow(L["Minimap"])
 
-	Window:CreateSection(L["Toggles"])
+	-- General Section
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Minimap", "Enable", enableTextColor .. L["Enable Minimap"])
 	Window:CreateSwitch("Minimap", "Calendar", L["Show Minimap Calendar"], "If enabled, show minimap calendar icon on minimap.|nYou can simply click mouse middle button on minimap to toggle calendar even without this option.")
+
+	-- Features Section
+	Window:CreateSection("Features")
 	Window:CreateSwitch("Minimap", "EasyVolume", newFeatureIcon .. L["EasyVolume"], L["EasyVolumeTip"])
 	Window:CreateSwitch("Minimap", "MailPulse", newFeatureIcon .. L["Pulse Minimap Mail"])
 	Window:CreateSwitch("Minimap", "QueueStatusText", newFeatureIcon .. L["QueueStatus"])
 	Window:CreateSwitch("Minimap", "ShowRecycleBin", L["Show Minimap Button Collector"])
+
+	-- Recycle Bin Section
+	Window:CreateSection("Recycle Bin")
 	Window:CreateDropdown("Minimap", "RecycleBinPosition", L["Set RecycleBin Positon"])
+
+	-- Blip Section
+	Window:CreateSection("Blip")
 	Window:CreateDropdown("Minimap", "BlipTexture", L["Blip Icon Styles"], nil, nil, UpdateBlipTextures)
+
+	-- Location Section
+	Window:CreateSection("Location")
 	Window:CreateDropdown("Minimap", "LocationText", L["Location Text Style"])
 
-	Window:CreateSection(L["Sizes"])
+	-- Size Section
+	Window:CreateSection("Size")
 	Window:CreateSlider("Minimap", "Size", L["Minimap Size"], 120, 300, 1)
 end
 
 local Misc = function(self)
 	local Window = self:CreateWindow(L["Misc"])
 
-	Window:CreateSection(L["Toggles"])
-	Window:CreateSwitch("Misc", "AFKCamera", L["AFK Camera"])
+	-- General Section
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Misc", "ColorPicker", L["Enhanced Color Picker"])
 	Window:CreateSwitch("Misc", "EasyMarking", L["EasyMarking by Ctrl + LeftClick"])
-	Window:CreateSwitch("Misc", "EnhancedFriends", L["Enhanced Colors (Friends/Guild +)"])
-	Window:CreateSwitch("Misc", "EnhancedMail", "Add 'Postal' Like Feaures To The Mailbox")
-	Window:CreateSwitch("Misc", "ExpRep", "Display Exp/Rep Bar (Minimap)")
-	if C["Misc"].ItemLevel then
-		Window:CreateSwitch("Misc", "GemEnchantInfo", L["Character/Inspect Gem/Enchant Info"])
-	end
 	Window:CreateSwitch("Misc", "HideBanner", L["Hide RaidBoss EmoteFrame"])
 	Window:CreateSwitch("Misc", "HideBossEmote", L["Hide BossBanner"])
 	Window:CreateSwitch("Misc", "ImprovedStats", L["Display Character Frame Full Stats"])
-	Window:CreateSwitch("Misc", "ItemLevel", L["Show Character/Inspect ItemLevel Info"])
-	Window:CreateSwitch("Misc", "MDGuildBest", L["Show Mythic+ GuildBest"])
-	Window:CreateSwitch("Misc", "MuteSounds", "Mute Various Annoying Sounds In-Game")
 	Window:CreateSwitch("Misc", "NoTalkingHead", L["Remove And Hide The TalkingHead Frame"])
-	Window:CreateSwitch("Misc", "ParagonEnable", L["Add Paragon Info on ReputationFrame"], L["ParagonReputationTip"])
-	Window:CreateSwitch("Misc", "QuestTool", "Add Tips For Some Quests And World Quests")
-	Window:CreateSwitch("Misc", "QueueTimers", newFeatureIcon .. "Display 'Queue Time Left' Before It Expires", "This will display a 'Safe Queue' style timer to inform you as to how long you have left to accept said queue")
-	Window:CreateSwitch("Misc", "QuickJoin", newFeatureIcon .. L["QuickJoin"], L["QuickJoinTip"])
 	Window:CreateSwitch("Misc", "ShowWowHeadLinks", L["Show Wowhead Links Above Questlog Frame"])
 	Window:CreateSwitch("Misc", "SlotDurability", L["Show Slot Durability %"])
-	Window:CreateSwitch("Misc", "TradeTabs", L["Add Spellbook-Like Tabs On TradeSkillFrame"])
+
+	Window:CreateSection("Camera")
 	Window:CreateSlider("Misc", "MaxCameraZoom", newFeatureIcon .. "Max Camera Zoom Level", 1, 2.6, 0.1, nil, UpdateMaxZoomLevel)
 
+	Window:CreateSection("Trade Skill")
+	Window:CreateSwitch("Misc", "TradeTabs", L["Add Spellbook-Like Tabs On TradeSkillFrame"])
+
+	-- Social Section
+	Window:CreateSection("Social")
+	Window:CreateSwitch("Misc", "AFKCamera", L["AFK Camera"])
+	Window:CreateSwitch("Misc", "EnhancedFriends", L["Enhanced Colors (Friends/Guild +)"])
+	Window:CreateSwitch("Misc", "MuteSounds", "Mute Various Annoying Sounds In-Game")
+	Window:CreateSwitch("Misc", "ParagonEnable", L["Add Paragon Info on ReputationFrame"], L["ParagonReputationTip"])
+
+	-- Mail Section
+	Window:CreateSection("Mail")
+	Window:CreateSwitch("Misc", "EnhancedMail", "Add 'Postal' Like Feaures To The Mailbox")
+
+	-- Questing Section
+	Window:CreateSection("Questing")
+	Window:CreateSwitch("Misc", "ExpRep", "Display Exp/Rep Bar (Minimap)")
+	Window:CreateSwitch("Misc", "QuestTool", "Add Tips For Some Quests And World Quests")
+
+	-- Mythic+ Section
+	Window:CreateSection("Mythic+")
+	Window:CreateSwitch("Misc", "MDGuildBest", L["Show Mythic+ GuildBest"])
+
+	-- Raid Tool Section
 	Window:CreateSection("Raid Tool")
 	Window:CreateSwitch("Misc", "RaidTool", L["Show Raid Utility Frame"])
 	Window:CreateSwitch("Misc", "RMRune", "RMRune - Add Info")
 	Window:CreateEditBox("Misc", "DBMCount", "DBMCount - Add Info")
 	Window:CreateSlider("Misc", "MarkerBarSize", "Marker Bar Size - Add Info", 20, 40, 1, nil, UpdateMarkerGrid)
 	Window:CreateDropdown("Misc", "ShowMarkerBar", L["World Markers Bar"], nil, nil, UpdateMarkerGrid)
+
+	-- Misc Section
+	Window:CreateSection("Misc")
+	if C["Misc"].ItemLevel then
+		Window:CreateSwitch("Misc", "GemEnchantInfo", L["Character/Inspect Gem/Enchant Info"])
+	end
+	Window:CreateSwitch("Misc", "QuickJoin", newFeatureIcon .. L["QuickJoin"], L["QuickJoinTip"])
+	Window:CreateSwitch("Misc", "ItemLevel", L["Show Character/Inspect ItemLevel Info"])
 end
 
 local Nameplate = function(self)
 	local Window = self:CreateWindow(L["Nameplate"])
 
-	Window:CreateSection(L["Toggles"])
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Nameplate", "Enable", enableTextColor .. L["Enable Nameplates"])
 	Window:CreateSwitch("Nameplate", "AKSProgress", L["Show AngryKeystones Progress"])
 	Window:CreateSwitch("Nameplate", "CastTarget", "Show Nameplate Target Of Casting Spell")
@@ -827,26 +891,35 @@ end
 local Tooltip = function(self)
 	local Window = self:CreateWindow(L["Tooltip"])
 
-	Window:CreateSection(L["Toggles"])
+	-- General section
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Tooltip", "Enable", enableTextColor .. "Enable Tooltip")
-	Window:CreateSwitch("Tooltip", "ClassColor", L["Quality Color Border"])
 	Window:CreateSwitch("Tooltip", "CombatHide", L["Hide Tooltip in Combat"])
+	Window:CreateSwitch("Tooltip", "Icons", L["Item Icons"])
+	Window:CreateSwitch("Tooltip", "ShowIDs", L["Show Tooltip IDs"])
+
+	-- Appearance section
+	Window:CreateSection("Appearance")
+	Window:CreateSwitch("Tooltip", "ClassColor", L["Quality Color Border"])
 	Window:CreateSwitch("Tooltip", "FactionIcon", L["Show Faction Icon"])
 	Window:CreateSwitch("Tooltip", "HideJunkGuild", L["Abbreviate Guild Names"])
 	Window:CreateSwitch("Tooltip", "HideRank", L["Hide Guild Rank"])
 	Window:CreateSwitch("Tooltip", "HideRealm", L["Show realm name by SHIFT"])
 	Window:CreateSwitch("Tooltip", "HideTitle", L["Hide Player Title"])
-	Window:CreateSwitch("Tooltip", "Icons", L["Item Icons"])
+	Window:CreateDropdown("Tooltip", "TipAnchor", "Tooltip Anchor")
+
+	-- Advanced section
+	Window:CreateSection("Advanced")
 	Window:CreateSwitch("Tooltip", "LFDRole", L["Show Roles Assigned Icon"])
-	Window:CreateSwitch("Tooltip", "ShowMount", newFeatureIcon .. L["Show Player Mount Source Info By CTRL"])
-	if not K.CheckAddOnState("RaiderIO") then
-		Window:CreateSwitch("Tooltip", "MDScore", "Show Mythic+ Rating")
-	end
-	Window:CreateSwitch("Tooltip", "ShowIDs", L["Show Tooltip IDs"])
 	Window:CreateSwitch("Tooltip", "SpecLevelByShift", L["Show Spec/ItemLevel by SHIFT"])
 	Window:CreateSwitch("Tooltip", "TargetBy", L["Show Player Targeted By"])
 	Window:CreateDropdown("Tooltip", "CursorMode", L["Follow Cursor"])
-	Window:CreateDropdown("Tooltip", "TipAnchor", "Tooltip Anchor")
+
+	-- RaiderIO section (only shown if RaiderIO is not installed)
+	if not K.CheckAddOnState("RaiderIO") then
+		Window:CreateSection("RaiderIO")
+		Window:CreateSwitch("Tooltip", "MDScore", "Show Mythic+ Rating")
+	end
 end
 
 local function updateUFTextScale() -- WIP
@@ -856,7 +929,7 @@ end
 local Unitframe = function(self)
 	local Window = self:CreateWindow(L["Unitframe"])
 
-	Window:CreateSection(L["Toggles"])
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Unitframe", "Enable", enableTextColor .. L["Enable Unitframes"])
 	Window:CreateSwitch("Unitframe", "CastClassColor", L["Class Color Castbars"])
 	Window:CreateSwitch("Unitframe", "CastReactionColor", L["Reaction Color Castbars"])
@@ -959,7 +1032,7 @@ end
 local Party = function(self)
 	local Window = self:CreateWindow(L["Party"])
 
-	Window:CreateSection(L["Toggles"])
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Party", "Enable", enableTextColor .. L["Enable Party"])
 	Window:CreateSwitch("Party", "ShowBuffs", L["Show Party Buffs"])
 	Window:CreateSwitch("Party", "ShowHealPrediction", L["Show HealPrediction Statusbars"])
@@ -985,7 +1058,7 @@ end
 local Boss = function(self)
 	local Window = self:CreateWindow(L["Boss"])
 
-	Window:CreateSection(L["Toggles"])
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Boss", "Enable", enableTextColor .. L["Enable Boss"], "Toggle Boss Module On/Off")
 	Window:CreateSwitch("Boss", "Castbars", L["Show Castbars"])
 	Window:CreateSwitch("Boss", "CastbarIcon", "Show Castbars Icon")
@@ -1004,7 +1077,7 @@ end
 local Arena = function(self)
 	local Window = self:CreateWindow(L["Arena"])
 
-	Window:CreateSection(L["Toggles"])
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Arena", "Enable", enableTextColor .. L["Enable Arena"], "Toggle Arena Module On/Off")
 	Window:CreateSwitch("Arena", "Castbars", L["Show Castbars"])
 	Window:CreateSwitch("Arena", "CastbarIcon", "Show Castbars Icon")
@@ -1023,7 +1096,7 @@ end
 local Raid = function(self)
 	local Window = self:CreateWindow(L["Raid"])
 
-	Window:CreateSection(L["Toggles"])
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Raid", "Enable", enableTextColor .. L["Enable Raidframes"])
 	Window:CreateSwitch("Raid", "HorizonRaid", L["Horizontal Raid Frames"])
 	Window:CreateSwitch("Raid", "MainTankFrames", L["Show MainTank Frames"])
@@ -1066,7 +1139,7 @@ end
 local WorldMap = function(self)
 	local Window = self:CreateWindow(L["WorldMap"])
 
-	Window:CreateSection(L["Toggles"])
+	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("WorldMap", "Coordinates", L["Show Player/Mouse Coordinates"])
 	Window:CreateSwitch("WorldMap", "FadeWhenMoving", L["Fade Worldmap When Moving"])
 	Window:CreateSwitch("WorldMap", "SmallWorldMap", L["Show Smaller Worldmap"])

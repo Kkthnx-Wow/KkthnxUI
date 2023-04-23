@@ -74,7 +74,7 @@ tinsert(C.defaultThemes, function()
 
 	CharacterModelScene:StripTextures(true)
 
-	local slots = {
+	local equipmentSlots = {
 		"Head",
 		"Neck",
 		"Shoulder",
@@ -95,9 +95,9 @@ tinsert(C.defaultThemes, function()
 		"Tabard",
 	}
 
-	for i = 1, #slots do
-		local slot = _G["Character" .. slots[i] .. "Slot"]
-		local cooldown = _G["Character" .. slots[i] .. "SlotCooldown"]
+	for i = 1, #equipmentSlots do
+		local slot = _G["Character" .. equipmentSlots[i] .. "Slot"]
+		local cooldown = _G["Character" .. equipmentSlots[i] .. "SlotCooldown"]
 
 		-- Strip textures and set slot size
 		slot:StripTextures()

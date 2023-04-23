@@ -9,21 +9,25 @@ local QueueStatusButton = QueueStatusButton
 local StaticPopupSpecial_Hide = StaticPopupSpecial_Hide
 local StaticPopup_Hide = StaticPopup_Hide
 local LFGInvitePopup = LFGInvitePopup
-local previousInviterGUID
-local autoInviteEnabled = C["Automation"].AutoInvite
 
 local function AutoInvite(event, _, _, _, _, _, _, inviterGUID)
+	local previousInviterGUID
+	-- Handle incoming party invites
 	if event == "PARTY_INVITE_REQUEST" then
+		-- Ignore invites if already in a group or queueing for something, or if it's a duplicate invite
 		if IsInGroup() or QueueStatusButton:IsShown() or inviterGUID == previousInviterGUID then
 			return
 		end
 
+		-- Accept the invite if it's from a Battle.net friend, guild member, or someone on the same realm
 		local accountInfo = C_BattleNet.GetAccountInfoByGUID(inviterGUID)
 		if accountInfo or C_FriendList.IsFriend(inviterGUID) or IsGuildMember(inviterGUID) then
 			AcceptGroup()
 			previousInviterGUID = inviterGUID
 		end
+	-- Handle changes to the group roster (e.g. someone leaves or joins)
 	elseif event == "GROUP_ROSTER_UPDATE" then
+		-- Hide any lingering invite popups
 		StaticPopupSpecial_Hide(LFGInvitePopup)
 		StaticPopup_Hide("PARTY_INVITE")
 		previousInviterGUID = nil
@@ -31,10 +35,12 @@ local function AutoInvite(event, _, _, _, _, _, _, inviterGUID)
 end
 
 function Module:CreateAutoInvite()
-	if autoInviteEnabled then
+	if C["Automation"].AutoInvite then
+		-- Register the event handlers if auto-invite is enabled
 		K:RegisterEvent("PARTY_INVITE_REQUEST", AutoInvite)
 		K:RegisterEvent("GROUP_ROSTER_UPDATE", AutoInvite)
 	else
+		-- Unregister the event handlers if auto-invite is disabled
 		K:UnregisterEvent("PARTY_INVITE_REQUEST", AutoInvite)
 		K:UnregisterEvent("GROUP_ROSTER_UPDATE", AutoInvite)
 	end

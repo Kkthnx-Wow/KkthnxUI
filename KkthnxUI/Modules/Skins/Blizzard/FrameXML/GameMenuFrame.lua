@@ -18,7 +18,6 @@ table_insert(C.defaultThemes, function()
 		GameMenuButtonWhatsNew,
 		GameMenuButtonStore,
 		GameMenuButtonSettings,
-		GameMenuButtonUIOptions,
 		GameMenuButtonEditMode,
 		GameMenuButtonMacros,
 		GameMenuButtonAddons,

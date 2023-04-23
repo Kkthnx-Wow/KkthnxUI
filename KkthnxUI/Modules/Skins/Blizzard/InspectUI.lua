@@ -19,7 +19,7 @@ C.themes["Blizzard_InspectUI"] = function()
 
 	InspectModelFrame:StripTextures(true)
 
-	local slots = {
+	local equipmentSlots = {
 		"Head",
 		"Neck",
 		"Shoulder",
@@ -40,8 +40,8 @@ C.themes["Blizzard_InspectUI"] = function()
 		"Tabard",
 	}
 
-	for i = 1, #slots do
-		local slot = _G["Inspect" .. slots[i] .. "Slot"]
+	for i = 1, #equipmentSlots do
+		local slot = _G["Inspect" .. equipmentSlots[i] .. "Slot"]
 		slot:StripTextures()
 		slot:SetSize(36, 36)
 		slot.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
