@@ -621,9 +621,23 @@ local SliderEditBoxOnChar = function(self)
 	end
 end
 
-local SliderEditBoxOnMouseDown = function(self)
-	self:SetAutoFocus(true)
-	self:SetText(self.Value)
+local SliderEditBoxOnMouseDown = function(self, button)
+	if button == "LeftButton" then
+		self:SetAutoFocus(true)
+		self:SetText(self.Value)
+	elseif button == "RightButton" and IsShiftKeyDown() then
+		if self:HasFocus() then
+			self:SetAutoFocus(false)
+			self:ClearFocus()
+		end
+
+		local Value = K.Defaults[self.Group][self.Option]
+		self:SetText(Value)
+		self.Slider:SetValue(Value)
+		SliderOnValueChanged(self.Slider)
+
+		-- print("SliderEditBoxOnMouseUp - Group: " .. self.Group .. ", Option: " .. self.Option .. ", Value: " .. Value)
+	end
 end
 
 local SliderEditBoxOnEditFocusLost = function(self)
@@ -746,8 +760,7 @@ local CreateSlider = function(self, group, option, text, minvalue, maxvalue, ste
 	Thumb.Border = CreateFrame("Frame", nil, Slider)
 	Thumb.Border:SetPoint("TOPLEFT", Slider:GetThumbTexture(), 0, -1)
 	Thumb.Border:SetPoint("BOTTOMRIGHT", Slider:GetThumbTexture(), 0, 1)
-	-- stylua: ignore
-	Thumb.Border:CreateBorder(nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, {123 / 255, 132 / 255, 137 / 255})
+	Thumb.Border:CreateBorder(nil, nil, nil, nil, nil, nil, K.GetTexture(C["General"].Texture), nil, nil, nil, { 123 / 255, 132 / 255, 137 / 255 })
 
 	Slider.Progress = Slider:CreateTexture(nil, "ARTWORK")
 	Slider.Progress:SetPoint("TOPLEFT", Slider, 1, -1)
