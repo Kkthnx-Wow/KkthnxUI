@@ -636,7 +636,7 @@ local SliderEditBoxOnMouseDown = function(self, button)
 		self.Slider:SetValue(Value)
 		SliderOnValueChanged(self.Slider)
 
-		-- print("SliderEditBoxOnMouseUp - Group: " .. self.Group .. ", Option: " .. self.Option .. ", Value: " .. Value)
+		print("SliderEditBoxOnMouseUp - Group: " .. self.Group .. ", Option: " .. self.Option .. ", Value: " .. Value)
 	end
 end
 

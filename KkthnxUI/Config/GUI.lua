@@ -59,6 +59,9 @@ local function UpdatePlayerBuffs()
 	end
 
 	local element = frame.Buffs
+	if not element then
+		return
+	end
 	element.iconsPerRow = C["Unitframe"].PlayerBuffsPerRow
 
 	local width = C["Unitframe"].PlayerHealthWidth
@@ -76,6 +79,9 @@ local function UpdatePlayerDebuffs()
 	end
 
 	local element = frame.Debuffs
+	if not element then
+		return
+	end
 	element.iconsPerRow = C["Unitframe"].PlayerDebuffsPerRow
 
 	local width = C["Unitframe"].PlayerHealthWidth
@@ -93,6 +99,9 @@ local function UpdateTargetBuffs()
 	end
 
 	local element = frame.Buffs
+	if not element then
+		return
+	end
 	element.iconsPerRow = C["Unitframe"].TargetBuffsPerRow
 
 	local width = C["Unitframe"].TargetHealthWidth
@@ -110,6 +119,9 @@ local function UpdateTargetDebuffs()
 	end
 
 	local element = frame.Debuffs
+	if not element then
+		return
+	end
 	element.iconsPerRow = C["Unitframe"].TargetDebuffsPerRow
 
 	local width = C["Unitframe"].TargetHealthWidth
@@ -853,7 +865,7 @@ local Nameplate = function(self)
 	Window:CreateSlider("Nameplate", "NameTextSize", L["NameText FontSize"], 8, 16, 1, nil, refreshNameplates)
 	Window:CreateSlider("Nameplate", "PlateHeight", L["Nameplate Height"], 6, 28, 1, nil, refreshNameplates)
 	Window:CreateSlider("Nameplate", "PlateWidth", L["Nameplate Width"], 80, 240, 1, nil, refreshNameplates)
-	Window:CreateSlider("Nameplate", "VerticalSpacing", L["Nameplate Vertical Spacing"], 0.1, 1, 1)
+	Window:CreateSlider("Nameplate", "VerticalSpacing", L["Nameplate Vertical Spacing"], 0.5, 2.5, 0.1)
 	Window:CreateSlider("Nameplate", "SelectedScale", "SelectedScale", 1, 1.4, 0.1)
 
 	Window:CreateSection("Player Nameplate Toggles")
@@ -983,8 +995,8 @@ local Unitframe = function(self)
 	Window:CreateSwitch("Unitframe", "SwingBar", L["Unitframe Swingbar"])
 	Window:CreateSwitch("Unitframe", "SwingTimer", L["Unitframe Swingbar Timer"])
 	Window:CreateSwitch("Unitframe", "OffOnTop", "Offhand timer on top")
-	Window:CreateSlider("Unitframe", "SwingWidth", "Unitframe SwingBar Width", 50, 1000, 275)
-	Window:CreateSlider("Unitframe", "SwingHeight", "Unitframe SwingBar Height", 1, 50, 3)
+	Window:CreateSlider("Unitframe", "SwingWidth", "Unitframe SwingBar Width", 50, 1000, 1)
+	Window:CreateSlider("Unitframe", "SwingHeight", "Unitframe SwingBar Height", 1, 50, 1)
 
 	Window:CreateSlider("Unitframe", "PlayerBuffsPerRow", L["Number of Buffs Per Row"], 4, 10, 1, nil, UpdatePlayerBuffs)
 	Window:CreateSlider("Unitframe", "PlayerDebuffsPerRow", L["Number of Debuffs Per Row"], 4, 10, 1, nil, UpdatePlayerDebuffs)
@@ -1165,7 +1177,7 @@ local WorldMap = function(self)
 	Window:CreateSwitch("WorldMap", "MapRevealGlow", L["Map Reveal Shadow"], L["MapRevealTip"])
 
 	Window:CreateSection(L["Sizes"])
-	Window:CreateSlider("WorldMap", "AlphaWhenMoving", L["Alpha When Moving"], 0.1, 1, 0.1)
+	Window:CreateSlider("WorldMap", "AlphaWhenMoving", L["Alpha When Moving"], 0.1, 1, 0.01)
 end
 
 GUI:AddWidgets(ActionBar)
