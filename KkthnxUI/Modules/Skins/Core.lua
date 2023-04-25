@@ -74,15 +74,21 @@ function Module:LoadDefaultSkins()
 end
 
 function Module:OnEnable()
-	self:LoadDefaultSkins()
-
 	-- Add Skins
-	self:ReskinBartender4()
-	-- self:ReskinBigWigs()
-	self:ReskinButtonForge()
-	self:ReskinChocolateBar()
-	self:ReskinDeadlyBossMods()
-	self:ReskinDominos()
-	self:ReskinRareScanner()
-	self:ReskinSimulationcraft()
+	local loadSkinModules = {
+		"LoadDefaultSkins",
+
+		"ReskinBartender4",
+		-- "ReskinBigWigs",
+		"ReskinButtonForge",
+		"ReskinChocolateBar",
+		"ReskinDeadlyBossMods",
+		"ReskinDominos",
+		"ReskinRareScanner",
+		"ReskinSimulationcraft",
+	}
+
+	for _, funcName in ipairs(loadSkinModules) do
+		pcall(self[funcName], self)
+	end
 end

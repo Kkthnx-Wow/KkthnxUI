@@ -92,9 +92,7 @@ function Module:OnEnable()
 	}
 
 	for _, funcName in ipairs(loadAuraWatchModules) do
-		if self[funcName] then
-			self[funcName](self)
-		end
+		pcall(self[funcName], self)
 	end
 
 	C.AuraWatchList = AuraWatchList

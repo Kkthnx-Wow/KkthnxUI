@@ -887,11 +887,17 @@ function Module:OnEnable()
 	K.HideInterfaceOption(MinimapCompassTexture)
 
 	-- Add Elements
-	self:CreatePing()
-	self:CreateRecycleBin()
-	self:CreateSoundVolume()
-	self:CreateStyle()
-	self:ReskinRegions()
+	local loadMinimapModules = {
+		"CreatePing",
+		"CreateRecycleBin",
+		"CreateSoundVolume",
+		"CreateStyle",
+		"ReskinRegions",
+	}
+
+	for _, funcName in ipairs(loadMinimapModules) do
+		pcall(self[funcName], self)
+	end
 
 	-- HybridMinimap
 	K:RegisterEvent("ADDON_LOADED", Module.HybridMinimapOnLoad)

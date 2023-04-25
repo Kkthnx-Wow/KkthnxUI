@@ -273,6 +273,13 @@ function Module:OnEnable()
 	-- currently we dont need to touch this cvar because we have our own control for this currently
 	-- see the comment in "Module:UpdateMapFade" about "durationSec" for more information
 	-- SetCVar("mapFade", C["WorldMap"].AlphaWhenMoving and 1 or 0)
-	self:CreateWorldMapReveal()
-	self:CreateWowHeadLinks()
+
+	local loadWorldMapModules = {
+		"CreateWorldMapReveal",
+		"CreateWowHeadLinks",
+	}
+
+	for _, funcName in ipairs(loadWorldMapModules) do
+		pcall(self[funcName], self)
+	end
 end

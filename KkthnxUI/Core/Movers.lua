@@ -430,9 +430,7 @@ function Module:OnEnable()
 	}
 
 	for _, funcName in ipairs(loadMoversModules) do
-		if self[funcName] then
-			self[funcName](self)
-		end
+		pcall(self[funcName], self)
 	end
 end
 

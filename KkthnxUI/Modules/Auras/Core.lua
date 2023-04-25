@@ -23,10 +23,16 @@ local UnitAura = UnitAura
 local day, hour, minute = 86400, 3600, 60
 
 function Module:OnEnable()
-	Module:HideBlizBuff()
-	Module:BuildBuffFrame()
-	Module:CreateTotems()
-	Module:CreateReminder()
+	local loadAuraModules = {
+		"HideBlizBuff",
+		"BuildBuffFrame",
+		"CreateTotems",
+		"CreateReminder",
+	}
+
+	for _, funcName in ipairs(loadAuraModules) do
+		pcall(self[funcName], self)
+	end
 end
 
 function Module:HideBlizBuff()

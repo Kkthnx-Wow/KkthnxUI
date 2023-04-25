@@ -462,8 +462,14 @@ function Module:OnEnable()
 	Module:FixStoneSoupError()
 
 	-- Elements
-	Module:CreateTooltipIcons()
-	Module:CreateTooltipID()
+	local loadTooltipModules = {
+		"CreateTooltipIcons",
+		"CreateTooltipID",
+	}
+
+	for _, funcName in ipairs(loadTooltipModules) do
+		pcall(self[funcName], self)
+	end
 	K:RegisterEvent("MODIFIER_STATE_CHANGED", Module.ResetUnit)
 end
 

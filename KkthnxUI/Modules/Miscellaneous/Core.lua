@@ -48,23 +48,29 @@ function Module:OnEnable()
 		end
 	end
 
-	self:CreateBlockStrangerInvites()
-	self:CreateBossBanner()
-	self:CreateBossEmote()
-	self:CreateDurabilityFrameMove()
-	self:CreateErrorFrameToggle()
-	self:CreateGUIGameMenuButton()
-	self:CreateJerryWay()
-	self:CreateMinimapButtonToggle()
-	self:CreateObjectiveSizeUpdate()
-	self:CreateQuestSizeUpdate()
-	self:CreateTicketStatusFrameMove()
-	self:CreateTradeTargetInfo()
-	self:CreateVehicleSeatMover()
-	self:DisableHelpTip()
-	self:DisableTutorials()
-	self:MoveMawBuffsFrame()
-	self:UpdateMaxCameraZoom()
+	local loadMiscModules = {
+		"CreateBlockStrangerInvites",
+		"CreateBossBanner",
+		"CreateBossEmote",
+		"CreateDurabilityFrameMove",
+		"CreateErrorFrameToggle",
+		"CreateGUIGameMenuButton",
+		"CreateJerryWay",
+		"CreateMinimapButtonToggle",
+		"CreateObjectiveSizeUpdate",
+		"CreateQuestSizeUpdate",
+		"CreateTicketStatusFrameMove",
+		"CreateTradeTargetInfo",
+		"CreateVehicleSeatMover",
+		"DisableHelpTip",
+		"DisableTutorials",
+		"MoveMawBuffsFrame",
+		"UpdateMaxCameraZoom",
+	}
+
+	for _, funcName in ipairs(loadMiscModules) do
+		pcall(self[funcName], self)
+	end
 
 	hooksecurefunc("QuestInfo_Display", Module.CreateQuestXPPercent)
 

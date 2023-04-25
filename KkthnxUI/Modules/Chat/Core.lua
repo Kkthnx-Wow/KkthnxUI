@@ -569,12 +569,8 @@ function Module:OnEnable()
 		"CreateVoiceActivity",
 	}
 
-	function Module:OnEnable()
-		for _, funcName in ipairs(loadChatModules) do
-			if self[funcName] then
-				self[funcName](self)
-			end
-		end
+	for _, funcName in ipairs(loadChatModules) do
+		pcall(self[funcName], self)
 	end
 
 	-- Lock chatframe

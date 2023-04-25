@@ -941,9 +941,7 @@ function Module:OnEnable()
 	}
 
 	for _, funcName in ipairs(loadInventoryModules) do
-		if self[funcName] then
-			self[funcName](self)
-		end
+		pcall(self[funcName], self)
 	end
 
 	if not C["Inventory"].Enable then

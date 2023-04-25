@@ -435,9 +435,7 @@ function Module:OnEnable()
 	}
 
 	for _, funcName in ipairs(loadActionBarModules) do
-		if self[funcName] then
-			self[funcName](self)
-		end
+		pcall(self[funcName], self)
 	end
 
 	if C_PetBattles.IsInBattle() then
