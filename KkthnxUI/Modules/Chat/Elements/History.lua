@@ -4,11 +4,17 @@ local Module = K:GetModule("Chat")
 local ChatFrame_MessageEventHandler = ChatFrame_MessageEventHandler
 local ChatFrame1 = ChatFrame1
 
+-- Index of the event type in the chat log entry table
+local entryEvent = 30
+
+-- Index of the time the chat log entry was saved in the chat log entry table
+local entryTime = 31
+
 -- Maximum number of chat log entries to keep
-local MAX_LOG_ENTRIES = 0
+local MAX_LOG_ENTRIES
 
 -- Table to store chat log history
-local chatHistory = {}
+local chatHistory
 
 -- Flag to track if chat log history has been printed to chat frame
 local hasPrinted = false
@@ -42,10 +48,17 @@ local function printChatHistory()
 		return
 	end
 
+	-- Print message indicating start of saved chat history
+	print("|cffbbbbbb    [Saved Chat History]|r")
+
 	for i = #chatHistory, 1, -1 do
-		local temp = chatHistory[i]
-		ChatFrame_MessageEventHandler(ChatFrame1, temp[1], unpack(temp))
+		Temp = chatHistory[i]
+
+		pcall(ChatFrame_MessageEventHandler, ChatFrame1, Temp[entryEvent], unpack(Temp))
 	end
+
+	-- Print message indicating end of saved chat history
+	print("|cffbbbbbb    [End of Saved Chat History]|r")
 
 	isPrinting = false
 	hasPrinted = true
@@ -56,13 +69,13 @@ local function saveChatHistory(event, ...)
 	local temp = { ... }
 
 	if temp[1] then
-		temp[1] = event
-		temp[#temp + 1] = time()
+		temp[entryEvent] = event
+		temp[entryTime] = time()
 
 		table.insert(chatHistory, 1, temp)
 
-		for i = #chatHistory, MAX_LOG_ENTRIES + 1, -1 do
-			table.remove(chatHistory, i)
+		for i = MAX_LOG_ENTRIES, #chatHistory do
+			table.remove(chatHistory, MAX_LOG_ENTRIES)
 		end
 	end
 end
@@ -94,5 +107,5 @@ function Module:CreateChatHistory()
 	end
 
 	-- Print chat log history to chat frame
-	setupChatHistory()
+	printChatHistory()
 end

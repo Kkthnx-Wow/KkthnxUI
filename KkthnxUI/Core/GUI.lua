@@ -625,7 +625,7 @@ local SliderEditBoxOnMouseDown = function(self, button)
 	if button == "LeftButton" then
 		self:SetAutoFocus(true)
 		self:SetText(self.Value)
-	elseif button == "RightButton" and IsShiftKeyDown() then
+	elseif button == "RightButton" then
 		if self:HasFocus() then
 			self:SetAutoFocus(false)
 			self:ClearFocus()
