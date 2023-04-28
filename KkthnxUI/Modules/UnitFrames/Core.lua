@@ -38,15 +38,7 @@ local filteredStyle = {
 }
 
 function Module:UpdateClassPortraits(unit)
-	-- This function is checking the value of a config variable "PortraitStyle"
-	-- and depending on its value, it is setting the texture of a UI element (self) to either a default set of class icons
-	-- or a new set of class icons. If the value is "NoPortraits" it returns.
-
-	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" then
-		return
-	end
-
-	if not unit then
+	if C["Unitframe"].PortraitStyle.Value == "NoPortraits" or not unit then
 		return
 	end
 
@@ -56,16 +48,16 @@ function Module:UpdateClassPortraits(unit)
 		local PortraitValue = C["Unitframe"].PortraitStyle.Value
 		local ClassTCoords = CLASS_ICON_TCOORDS[unitClass]
 
+		local texturePath
 		if PortraitValue == "ClassPortraits" and UnitIsPlayer(unit) then
-			self:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\OLD-ICONS-CLASSES")
-			if ClassTCoords then
-				self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
-			end
+			texturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\OLD-ICONS-CLASSES"
 		elseif PortraitValue == "NewClassPortraits" and UnitIsPlayer(unit) then
-			self:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES")
-			if ClassTCoords then
-				self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
-			end
+			texturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\NEW-ICONS-CLASSES"
+		end
+
+		self:SetTexture(texturePath or "Interface\\TargetingFrame\\UI-Classes-Circles")
+		if ClassTCoords then
+			self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
 		else
 			self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		end
@@ -97,39 +89,29 @@ function Module:UpdateThreat(_, unit)
 	-- Get the current threat status of the unit
 	local status = UnitThreatSituation(unit)
 
-	-- Get the portrait style, health frame and portrait frame
+	-- Get the portrait style, health frame, and portrait frame
 	local portraitStyle = C["Unitframe"].PortraitStyle.Value
 	local health = self.Health
 	local portrait = self.Portrait
 
-	-- Check the portrait style and change the border color accordingly
+	-- Determine the border object based on the portrait style
+	local borderObject
 	if portraitStyle == "ThreeDPortraits" then
-		if status and status > 1 then
-			if portrait.KKUI_Border then -- Check if the border object exists
-				local r, g, b = unpack(oUF.colors.threat[status])
-				portrait.KKUI_Border:SetVertexColor(r, g, b)
-			end
-		else
-			K.SetBorderColor(portrait.KKUI_Border)
+		borderObject = portrait.KKUI_Border
+	elseif portraitStyle ~= "NoPortraits" and portraitStyle ~= "OverlayPortrait" then
+		borderObject = portrait.Border and portrait.Border.KKUI_Border
+	else
+		borderObject = health.KKUI_Border
+	end
+
+	-- Update the border color based on threat status
+	if status and status > 1 then
+		local r, g, b = unpack(oUF.colors.threat[status])
+		if borderObject then
+			borderObject:SetVertexColor(r, g, b)
 		end
-	elseif portraitStyle ~= "ThreeDPortraits" and portraitStyle ~= "NoPortraits" and portraitStyle ~= "OverlayPortrait" then
-		if status and status > 1 then
-			if portrait.Border.KKUI_Border then -- Check if the border object exists
-				local r, g, b = unpack(oUF.colors.threat[status])
-				portrait.Border.KKUI_Border:SetVertexColor(r, g, b)
-			end
-		else
-			K.SetBorderColor(portrait.Border.KKUI_Border)
-		end
-	elseif portraitStyle == "NoPortraits" then
-		if status and status > 1 then
-			if health.KKUI_Border then -- Check if the border object exists
-				local r, g, b = unpack(oUF.colors.threat[status])
-				health.KKUI_Border:SetVertexColor(r, g, b)
-			end
-		else
-			K.SetBorderColor(health.KKUI_Border)
-		end
+	else
+		K.SetBorderColor(borderObject)
 	end
 end
 
@@ -579,61 +561,50 @@ function Module:CreateUnits()
 		Module:ToggleTargetClassPower()
 	end
 
-	if C["Unitframe"].Enable then
-		oUF:RegisterStyle("Player", Module.CreatePlayer)
-		oUF:RegisterStyle("Target", Module.CreateTarget)
-		oUF:RegisterStyle("ToT", Module.CreateTargetOfTarget)
-		oUF:RegisterStyle("Focus", Module.CreateFocus)
-		oUF:RegisterStyle("FocusTarget", Module.CreateFocusTarget)
-		oUF:RegisterStyle("Pet", Module.CreatePet)
+	oUF:RegisterStyle("Player", Module.CreatePlayer)
+	oUF:RegisterStyle("Target", Module.CreateTarget)
+	oUF:RegisterStyle("ToT", Module.CreateTargetOfTarget)
+	oUF:RegisterStyle("Focus", Module.CreateFocus)
+	oUF:RegisterStyle("FocusTarget", Module.CreateFocusTarget)
+	oUF:RegisterStyle("Pet", Module.CreatePet)
+	oUF:RegisterStyle("Boss", Module.CreateBoss)
+	oUF:RegisterStyle("Arena", Module.CreateArena)
+	oUF:RegisterStyle("Party", Module.CreateParty)
+	oUF:RegisterStyle("Raid", Module.CreateRaid)
 
+	if C["Unitframe"].Enable then
 		oUF:SetActiveStyle("Player")
 		local Player = oUF:Spawn("player", "oUF_Player")
-		local PlayerFrameHeight = C["Unitframe"].PlayerHealthHeight + C["Unitframe"].PlayerPowerHeight + 6
-		local PlayerFrameWidth = C["Unitframe"].PlayerHealthWidth
-		Player:SetSize(PlayerFrameWidth, PlayerFrameHeight)
-		K.Mover(Player, "PlayerUF", "PlayerUF", { "BOTTOM", UIParent, "BOTTOM", -260, 320 }, PlayerFrameWidth, PlayerFrameHeight)
+		Player:SetSize(C["Unitframe"].PlayerHealthWidth, C["Unitframe"].PlayerHealthHeight + C["Unitframe"].PlayerPowerHeight + 6)
+		K.Mover(Player, "PlayerUF", "PlayerUF", { "BOTTOM", UIParent, "BOTTOM", -260, 320 }, Player:GetWidth(), Player:GetHeight())
 
 		oUF:SetActiveStyle("Target")
 		local Target = oUF:Spawn("target", "oUF_Target")
-		local TargetFrameHeight = C["Unitframe"].TargetHealthHeight + C["Unitframe"].TargetPowerHeight + 6
-		local TargetFrameWidth = C["Unitframe"].TargetHealthWidth
-		Target:SetSize(TargetFrameWidth, TargetFrameHeight)
-		K.Mover(Target, "TargetUF", "TargetUF", { "BOTTOM", UIParent, "BOTTOM", 260, 320 }, TargetFrameWidth, TargetFrameHeight)
+		Target:SetSize(C["Unitframe"].TargetHealthWidth, C["Unitframe"].TargetHealthHeight + C["Unitframe"].TargetPowerHeight + 6)
+		K.Mover(Target, "TargetUF", "TargetUF", { "BOTTOM", UIParent, "BOTTOM", 260, 320 }, Target:GetWidth(), Target:GetHeight())
 
 		if not C["Unitframe"].HideTargetofTarget then
 			oUF:SetActiveStyle("ToT")
 			local TargetOfTarget = oUF:Spawn("targettarget", "oUF_ToT")
-			local TargetOfTargetFrameHeight = C["Unitframe"].TargetTargetHealthHeight + C["Unitframe"].TargetTargetPowerHeight + 6
-			local TargetOfTargetFrameWidth = C["Unitframe"].TargetTargetHealthWidth
-			TargetOfTarget:SetSize(TargetOfTargetFrameWidth, TargetOfTargetFrameHeight)
-			K.Mover(TargetOfTarget, "TotUF", "TotUF", { "TOPLEFT", Target, "BOTTOMRIGHT", 6, -6 }, TargetOfTargetFrameWidth, TargetOfTargetFrameHeight)
+			TargetOfTarget:SetSize(C["Unitframe"].TargetTargetHealthWidth, C["Unitframe"].TargetTargetHealthHeight + C["Unitframe"].TargetTargetPowerHeight + 6)
+			K.Mover(TargetOfTarget, "TotUF", "TotUF", { "TOPLEFT", Target, "BOTTOMRIGHT", 6, -6 }, TargetOfTarget:GetWidth(), TargetOfTarget:GetHeight())
 		end
 
 		oUF:SetActiveStyle("Pet")
 		local Pet = oUF:Spawn("pet", "oUF_Pet")
-		local PetFrameHeight = C["Unitframe"].PetHealthHeight + C["Unitframe"].PetPowerHeight + 6
-		local PetFrameWidth = C["Unitframe"].PetHealthWidth
-		Pet:SetSize(PetFrameWidth, PetFrameHeight)
-		K.Mover(Pet, "Pet", "Pet", { "TOPRIGHT", Player, "BOTTOMLEFT", -6, -6 }, PetFrameWidth, PetFrameHeight)
-		-- if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
-		-- 	Pet:SetParent(Player)
-		-- end
+		Pet:SetSize(C["Unitframe"].PetHealthWidth, C["Unitframe"].PetHealthHeight + C["Unitframe"].PetPowerHeight + 6)
+		K.Mover(Pet, "Pet", "Pet", { "TOPRIGHT", Player, "BOTTOMLEFT", -6, -6 }, Pet:GetWidth(), Pet:GetHeight())
 
 		oUF:SetActiveStyle("Focus")
 		local Focus = oUF:Spawn("focus", "oUF_Focus")
-		local FocusFrameHeight = C["Unitframe"].FocusHealthHeight + C["Unitframe"].FocusPowerHeight + 6
-		local FocusFrameWidth = C["Unitframe"].FocusHealthWidth
-		Focus:SetSize(FocusFrameWidth, FocusFrameHeight)
-		K.Mover(Focus, "FocusUF", "FocusUF", { "BOTTOMRIGHT", Player, "TOPLEFT", -60, 200 }, FocusFrameWidth, FocusFrameHeight)
+		Focus:SetSize(C["Unitframe"].FocusHealthWidth, C["Unitframe"].FocusHealthHeight + C["Unitframe"].FocusPowerHeight + 6)
+		K.Mover(Focus, "FocusUF", "FocusUF", { "BOTTOMRIGHT", Player, "TOPLEFT", -60, 200 }, Focus:GetWidth(), Focus:GetHeight())
 
 		if not C["Unitframe"].HideFocusTarget then
 			oUF:SetActiveStyle("FocusTarget")
 			local FocusTarget = oUF:Spawn("focustarget", "oUF_FocusTarget")
-			local FocusTargetFrameHeight = C["Unitframe"].FocusTargetHealthHeight + C["Unitframe"].FocusTargetPowerHeight + 6
-			local FoucsTargetFrameWidth = C["Unitframe"].FocusTargetHealthWidth
-			FocusTarget:SetSize(FoucsTargetFrameWidth, FocusTargetFrameHeight)
-			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", { "TOPLEFT", Focus, "BOTTOMRIGHT", 6, -6 }, FoucsTargetFrameWidth, FocusTargetFrameHeight)
+			FocusTarget:SetSize(C["Unitframe"].FocusTargetHealthWidth, C["Unitframe"].FocusTargetHealthHeight + C["Unitframe"].FocusTargetPowerHeight + 6)
+			K.Mover(FocusTarget, "FocusTarget", "FocusTarget", { "TOPLEFT", Focus, "BOTTOMRIGHT", 6, -6 }, FocusTarget:GetWidth(), FocusTarget:GetHeight())
 		end
 
 		K:RegisterEvent("PLAYER_TARGET_CHANGED", Module.PLAYER_TARGET_CHANGED)
@@ -644,7 +615,6 @@ function Module:CreateUnits()
 	end
 
 	if C["Boss"].Enable then
-		oUF:RegisterStyle("Boss", Module.CreateBoss)
 		oUF:SetActiveStyle("Boss")
 
 		local Boss = {}
@@ -662,7 +632,6 @@ function Module:CreateUnits()
 	end
 
 	if C["Arena"].Enable then
-		oUF:RegisterStyle("Arena", Module.CreateArena)
 		oUF:SetActiveStyle("Arena")
 
 		local Arena = {}
@@ -681,7 +650,6 @@ function Module:CreateUnits()
 
 	local partyMover
 	if showPartyFrame then
-		oUF:RegisterStyle("Party", Module.CreateParty)
 		oUF:SetActiveStyle("Party")
 
 		local partyXOffset, partyYOffset = 6, C["Party"].ShowBuffs and 56 or 36
@@ -749,7 +717,6 @@ function Module:CreateUnits()
 
 	if C["Raid"].Enable then
 		SetCVar("predictedHealth", 1)
-		oUF:RegisterStyle("Raid", Module.CreateRaid)
 		oUF:SetActiveStyle("Raid")
 
 		-- Hide Default RaidFrame

@@ -101,24 +101,22 @@ function Module:CreatePlayer()
 	self:Tag(Power.Value, "[power]")
 
 	if playerPortraitStyle ~= "NoPortraits" then
+		local Portrait
+
 		if playerPortraitStyle == "OverlayPortrait" then
-			local Portrait = CreateFrame("PlayerModel", "KKUI_PlayerPortrait", self)
+			Portrait = CreateFrame("PlayerModel", "KKUI_PlayerPortrait", self)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetPoint("TOPLEFT", Health, "TOPLEFT", 1, -1)
 			Portrait:SetPoint("BOTTOMRIGHT", Health, "BOTTOMRIGHT", -1, 1)
 			Portrait:SetAlpha(0.6)
-
-			self.Portrait = Portrait
 		elseif playerPortraitStyle == "ThreeDPortraits" then
-			local Portrait = CreateFrame("PlayerModel", "KKUI_PlayerPortrait", Health)
+			Portrait = CreateFrame("PlayerModel", "KKUI_PlayerPortrait", Health)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
 			Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
 			Portrait:CreateBorder()
-
-			self.Portrait = Portrait
-		elseif playerPortraitStyle ~= "ThreeDPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
-			local Portrait = Health:CreateTexture("KKUI_PlayerPortrait", "BACKGROUND", nil, 1)
+		else
+			Portrait = Health:CreateTexture("KKUI_PlayerPortrait", "BACKGROUND", nil, 1)
 			Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
 			Portrait:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
@@ -127,12 +125,12 @@ function Module:CreatePlayer()
 			Portrait.Border:SetAllPoints(Portrait)
 			Portrait.Border:CreateBorder()
 
-			self.Portrait = Portrait
-
 			if playerPortraitStyle == "ClassPortraits" or playerPortraitStyle == "NewClassPortraits" then
 				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
+
+		self.Portrait = Portrait
 	end
 
 	if C["Unitframe"].ClassResources then

@@ -80,24 +80,22 @@ function Module:CreateTargetOfTarget()
 	Name:SetShown(not C["Unitframe"].HideTargetOfTargetName)
 
 	if targetOfTargetPortraitStyle ~= "NoPortraits" then
+		local Portrait
+
 		if targetOfTargetPortraitStyle == "OverlayPortrait" then
-			local Portrait = CreateFrame("PlayerModel", "KKUI_TargetTargetPortrait", self)
+			Portrait = CreateFrame("PlayerModel", "KKUI_TargetTargetPortrait", self)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetPoint("TOPLEFT", Health, "TOPLEFT", 1, -1)
 			Portrait:SetPoint("BOTTOMRIGHT", Health, "BOTTOMRIGHT", -1, 1)
 			Portrait:SetAlpha(0.6)
-
-			self.Portrait = Portrait
 		elseif targetOfTargetPortraitStyle == "ThreeDPortraits" then
-			local Portrait = CreateFrame("PlayerModel", "KKUI_TargetTargetPortrait", Health)
+			Portrait = CreateFrame("PlayerModel", "KKUI_TargetTargetPortrait", Health)
 			Portrait:SetFrameStrata(self:GetFrameStrata())
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
 			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 			Portrait:CreateBorder()
-
-			self.Portrait = Portrait
-		elseif targetOfTargetPortraitStyle ~= "ThreeDPortraits" and targetOfTargetPortraitStyle ~= "OverlayPortrait" then
-			local Portrait = Health:CreateTexture("KKUI_TargetTargetPortrait", "BACKGROUND", nil, 1)
+		else
+			Portrait = Health:CreateTexture("KKUI_TargetTargetPortrait", "BACKGROUND", nil, 1)
 			Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 			Portrait:SetSize(Health:GetHeight() + Power:GetHeight() + 6, Health:GetHeight() + Power:GetHeight() + 6)
 			Portrait:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
@@ -106,12 +104,12 @@ function Module:CreateTargetOfTarget()
 			Portrait.Border:SetAllPoints(Portrait)
 			Portrait.Border:CreateBorder()
 
-			self.Portrait = Portrait
-
 			if targetOfTargetPortraitStyle == "ClassPortraits" or targetOfTargetPortraitStyle == "NewClassPortraits" then
 				Portrait.PostUpdate = Module.UpdateClassPortraits
 			end
 		end
+
+		self.Portrait = Portrait
 	end
 
 	local Level = self:CreateFontString(nil, "OVERLAY")

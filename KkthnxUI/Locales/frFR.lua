@@ -12,7 +12,6 @@ end
 -- Module Locales
 L["%s players"] = "%s joueurs"
 L["Account Keystones"] = "Account Keystone"
-L["AddContactTip"] = "|nModifier la liste de contacts dont vous avez besoin, le format de saisie est 'NomUnité-NomRoyaume'.|nVous devez saisir uniquement le nom seulement si l'unité se trouve dans le même royaume que vous.|nVous pouvez personnaliser la couleur du texte pour les classer."
 L["AddToIgnoreList"] = "%s SpellID %s a été ajouté a la liste des ignorés de AuraWatch. Vous pouvez maintenir CTRL+ALT enfoncées et cliquer sur l'icône de UnitAura pour le supprimer des ignorés."
 L["All Buffs Ready"] = "[KkthnxUI] Tous les buffs sont prêts!"
 L["Alt Key"] = "Alt Key"

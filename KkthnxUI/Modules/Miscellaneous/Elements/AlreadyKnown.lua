@@ -243,7 +243,7 @@ local function Hook_UpdateAuctionItems(self)
 	end
 end
 
--- guild bank frame
+-- Guild Bank Frame
 local MAX_GUILDBANK_SLOTS_PER_TAB = MAX_GUILDBANK_SLOTS_PER_TAB or 98
 local NUM_SLOTS_PER_GUILDBANK_GROUP = NUM_SLOTS_PER_GUILDBANK_GROUP or 14
 
@@ -253,19 +253,20 @@ local function GuildBankFrame_Update(self)
 	end
 
 	local button, index, column, texture, locked
-	local tab = GetCurrentGuildBankTab()
-	for i = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
-		index = mod(i, NUM_SLOTS_PER_GUILDBANK_GROUP)
-		if index == 0 then
-			index = NUM_SLOTS_PER_GUILDBANK_GROUP
-		end
+	local currentTab = GetCurrentGuildBankTab()
 
-		column = ceil((i - 0.5) / NUM_SLOTS_PER_GUILDBANK_GROUP)
+	for i = 1, MAX_GUILDBANK_SLOTS_PER_TAB do
+		index = (i - 1) % NUM_SLOTS_PER_GUILDBANK_GROUP + 1
+
+		column = ceil(i / NUM_SLOTS_PER_GUILDBANK_GROUP)
 		button = self.Columns[column].Buttons[index]
+
 		if button and button:IsShown() then
-			texture, _, locked = GetGuildBankItemInfo(tab, i)
+			texture, _, locked = GetGuildBankItemInfo(currentTab, i)
+
 			if texture and not locked then
-				if IsAlreadyKnown(GetGuildBankItemLink(tab, i), i) then
+				local itemLink = GetGuildBankItemLink(currentTab, i)
+				if IsAlreadyKnown(itemLink, i) then
 					SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
 				else
 					SetItemButtonTextureVertexColor(button, 1, 1, 1)
@@ -276,9 +277,9 @@ local function GuildBankFrame_Update(self)
 end
 
 local hookCount = 0
-local f = CreateFrame("Frame")
-f:RegisterEvent("ADDON_LOADED")
-f:SetScript("OnEvent", function(_, event, addon)
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("ADDON_LOADED")
+frame:SetScript("OnEvent", function(_, event, addon)
 	if addon == "Blizzard_AuctionHouseUI" then
 		hooksecurefunc(AuctionHouseFrame.BrowseResultsFrame.ItemList.ScrollBox, "Update", Hook_UpdateAuctionItems)
 		hookCount = hookCount + 1
@@ -288,6 +289,6 @@ f:SetScript("OnEvent", function(_, event, addon)
 	end
 
 	if hookCount >= 2 then
-		f:UnregisterEvent(event)
+		frame:UnregisterEvent(event)
 	end
 end)

@@ -67,16 +67,17 @@ end
 -- Saves chat message to chat log history
 local function saveChatHistory(event, ...)
 	local temp = { ... }
+	if not temp[1] then
+		return
+	end
 
-	if temp[1] then
-		temp[entryEvent] = event
-		temp[entryTime] = time()
+	temp[entryEvent] = event
+	temp[entryTime] = time()
 
-		table.insert(chatHistory, 1, temp)
+	table.insert(chatHistory, 1, temp)
 
-		for i = MAX_LOG_ENTRIES, #chatHistory do
-			table.remove(chatHistory, MAX_LOG_ENTRIES)
-		end
+	while #chatHistory > MAX_LOG_ENTRIES do
+		table.remove(chatHistory, #chatHistory)
 	end
 end
 

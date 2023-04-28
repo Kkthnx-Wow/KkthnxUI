@@ -177,22 +177,22 @@ end
 local function UpdateCastBarColor(self, unit)
 	local color = K.Colors.castbar.CastingColor
 
-	-- If the casting should be colored with class colors and the unit is a player
+	-- Check if the casting should be colored with class colors and the unit is a player
 	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
-		local _, Class = UnitClass(unit)
-		color = Class and K.Colors.class[Class]
+		local _, class = UnitClass(unit)
+		color = class and K.Colors.class[class]
 
-	-- If the casting should be colored with reaction colors
+	-- Check if the casting should be colored with reaction colors
 	elseif C["Unitframe"].CastReactionColor then
-		local Reaction = UnitReaction(unit, "player")
-		color = Reaction and K.Colors.reaction[Reaction]
+		local reaction = UnitReaction(unit, "player")
+		color = reaction and K.Colors.reaction[reaction]
 
-	-- If the casting can only be interrupted by the caster
+	-- Check if the casting can only be interrupted by the caster
 	elseif self.notInterruptible and not UnitIsUnit(unit, "player") then
 		color = K.Colors.castbar.notInterruptibleColor
 	end
 
-	-- Set the bar color to the color gathered above
+	-- Set the bar color to the color obtained above
 	self:SetStatusBarColor(color[1], color[2], color[3])
 end
 
@@ -295,19 +295,17 @@ end
 
 function Module:PostUpdatePip(pip, stage, stageTotalDuration)
 	local pips = self.Pips
-	local pip = pips[stage]
 	local numStages = self.numStages
-	pip.tex:SetAlpha(0.3) -- reset pip alpha
-	pip.duration = stageTotalDuration / 1000 -- save pip duration
+	local pip = pips[stage]
+	pip.tex:SetAlpha(0.3) -- Reset pip alpha
+	pip.duration = stageTotalDuration / 1000 -- Save pip duration
 
 	if stage == numStages then
 		local firstPip = pips[1]
 		local anchor = pips[numStages]
 		firstPip.tex:SetPoint("BOTTOMRIGHT", self)
 		firstPip.tex:SetPoint("TOPLEFT", anchor.BasePip, "TOPRIGHT")
-	end
-
-	if stage ~= 1 then
+	elseif stage ~= 1 then
 		local anchor = pips[stage - 1]
 		pip.tex:SetPoint("BOTTOMRIGHT", pip.BasePip, "BOTTOMLEFT")
 		pip.tex:SetPoint("TOPLEFT", anchor.BasePip, "TOPRIGHT")
