@@ -51,15 +51,13 @@ local function onChatWhisper(event, message, sender, _, _, _, _, _, _, _, _, _, 
 			--print("Inviting sender to party...")
 			C_PartyInfo.InviteUnit(sender)
 		elseif event == "CHAT_MSG_BN_WHISPER" then
-			--print("Inviting sender to party via Battle.net...")
-			BNInviteFriend(presenceID)
-
 			local accountInfo = C_BattleNet.GetAccountInfoByID(presenceID)
 			if accountInfo then
 				local gameAccountInfo = accountInfo.gameAccountInfo
 				local gameID = gameAccountInfo.gameAccountID
 				if gameID then
 					if CanCooperateWithGameAccount(accountInfo) then
+						--print("Inviting sender to party via Battle.net...")
 						BNInviteFriend(gameID)
 					end
 				end
