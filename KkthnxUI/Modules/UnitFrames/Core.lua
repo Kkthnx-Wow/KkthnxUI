@@ -218,25 +218,13 @@ Module.ReplacedSpellIcons = {
 	[373785] = 236293, -- S4, Great Warlock Camouflage
 }
 
-local dispellType = {
-	["Magic"] = true,
-	[""] = true,
-}
-
 function Module.PostUpdateButton(element, button, unit, data)
 	local duration, expiration, debuffType = data.duration, data.expirationTime, data.dispelName
 	local style = element.__owner.mystyle
-	if style == "nameplate" then
-		button:SetSize(element.size, element.size - 4)
-	else
-		button:SetSize(element.size, element.size)
-	end
 
-	if element.desaturateDebuff and button.isHarmful and filteredStyle[style] and not data.isPlayerAura then
-		button.Icon:SetDesaturated(true)
-	else
-		button.Icon:SetDesaturated(false)
-	end
+	button:SetSize(element.size, (style == "nameplate") and (element.size - 4) or element.size)
+
+	button.Icon:SetDesaturated(button.isHarmful and filteredStyle[style] and (element.desaturateDebuff and not data.isPlayerAura))
 
 	if button.isHarmful then
 		local color = oUF.colors.debuff[debuffType] or oUF.colors.debuff.none
@@ -253,9 +241,7 @@ function Module.PostUpdateButton(element, button, unit, data)
 		end
 	end
 
-	if element.alwaysShowStealable and dispellType[debuffType] and not UnitIsPlayer(unit) and not button.isHarmful then
-		button.Stealable:Show()
-	end
+	button.Stealable:SetShown(element.alwaysShowStealable and (debuffType == "Magic") and (debuffType == "") and not UnitIsPlayer(unit) and not button.isHarmful)
 
 	if duration and duration > 0 then
 		button.expiration = expiration
@@ -318,14 +304,14 @@ function Module.CustomFilter(element, unit, data)
 	local name, debuffType, isStealable, spellID, nameplateShowAll = data.name, data.dispelName, data.isStealable, data.spellId, data.nameplateShowAll
 
 	if style == "nameplate" or style == "boss" or style == "arena" then
-		if name and spellID == 209859 then -- pass all bolster
+		if spellID == 209859 then -- pass all bolster
 			return true
 		end
 		if element.__owner.plateType == "NameOnly" then
 			return C.NameplateWhiteList[spellID]
 		elseif C.NameplateBlackList[spellID] then
 			return false
-		elseif (element.showStealableBuffs and isStealable or element.alwaysShowStealable and dispellType[debuffType]) and not UnitIsPlayer(unit) and not data.isHarmful then
+		elseif (element.showStealableBuffs and isStealable or element.alwaysShowStealable and debuffType == "Magic") and not UnitIsPlayer(unit) and not data.isHarmful then
 			return true
 		elseif C.NameplateWhiteList[spellID] then
 			return true
@@ -334,7 +320,7 @@ function Module.CustomFilter(element, unit, data)
 			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and data.isPlayerAura)
 		end
 	else
-		return (element.onlyShowPlayer and data.isPlayerAura) or (not element.onlyShowPlayer and name)
+		return (element.onlyShowPlayer and data.isPlayerAura) or name
 	end
 end
 
@@ -374,27 +360,36 @@ function Module.PostUpdateRunes(element, runemap)
 	end
 end
 
+local function SetStatusBarColor(element, r, g, b)
+	for i = 1, #element do
+		element[i]:SetStatusBarColor(r, g, b)
+	end
+end
+
 function Module.PostUpdateClassPower(element, cur, max, diff, powerType, chargedPowerPoints)
+	local prevColor = element.prevColor
+	local thisColor
+
 	if not cur or cur == 0 then
-		element.prevColor = nil
+		thisColor = nil
 	else
-		element.thisColor = cur == max and 1 or 2
-		if not element.prevColor or element.prevColor ~= element.thisColor then
+		thisColor = cur == max and 1 or 2
+		if not prevColor or prevColor ~= thisColor then
 			local r, g, b = 1, 0, 0
-			if element.thisColor == 2 then
+			if thisColor == 2 then
 				local color = element.__owner.colors.power[powerType]
 				r, g, b = color[1], color[2], color[3]
 			end
-			for i = 1, #element do
-				element[i]:SetStatusBarColor(r, g, b)
-			end
-			element.prevColor = element.thisColor
+			SetStatusBarColor(element, r, g, b)
+			element.prevColor = thisColor
 		end
 	end
 
 	if diff then
+		local barWidth = (element.__owner.ClassPowerBar:GetWidth() - (max - 1) * 6) / max
 		for i = 1, max do
-			element[i]:SetWidth((element.__owner.ClassPowerBar:GetWidth() - (max - 1) * 6) / max)
+			local bar = element[i]
+			bar:SetWidth(barWidth)
 		end
 	end
 
@@ -404,14 +399,13 @@ function Module.PostUpdateClassPower(element, cur, max, diff, powerType, charged
 			break
 		end
 
-		bar.chargeStar:SetShown(chargedPowerPoints and tContains(chargedPowerPoints, i))
+		local showChargeStar = chargedPowerPoints and chargedPowerPoints[i]
+		bar.chargeStar:SetShown(showChargeStar)
 	end
 end
 
 function Module:CreateClassPower(self)
-	local barWidth = C["Unitframe"].PlayerHealthWidth
-	local barHeight = 14
-	local barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 6 }
+	local barWidth, barHeight, barPoint
 	if self.mystyle == "PlayerPlate" then
 		barWidth = C["Nameplate"].PlateWidth
 		barHeight = C["Nameplate"].PlateHeight
@@ -420,6 +414,10 @@ function Module:CreateClassPower(self)
 		barWidth = C["Nameplate"].PlateWidth
 		barHeight = C["Nameplate"].PlateHeight - 2
 		barPoint = { "CENTER", self }
+	else
+		barWidth = C["Unitframe"].PlayerHealthWidth
+		barHeight = 14
+		barPoint = { "BOTTOMLEFT", self, "TOPLEFT", 0, 6 }
 	end
 
 	local isDK = K.Class == "DEATHKNIGHT"
@@ -430,40 +428,40 @@ function Module:CreateClassPower(self)
 	bar:SetSize(barWidth, barHeight)
 	bar:SetPoint(unpack(barPoint))
 
-	if not bar.chargeParent then
-		bar.chargeParent = CreateFrame("Frame", nil, bar)
-		bar.chargeParent:SetAllPoints()
-		bar.chargeParent:SetFrameLevel(8)
-	end
+	bar.chargeParent = bar.chargeParent or CreateFrame("Frame", nil, bar)
+	bar.chargeParent:SetAllPoints()
+	bar.chargeParent:SetFrameLevel(8)
+
+	local statusBarTexture = K.GetTexture(C["General"].Texture)
+	local frameLevel = self:GetFrameLevel() + 5
 
 	for i = 1, maxBar do
-		bars[i] = CreateFrame("StatusBar", nil, bar)
-		bars[i]:SetHeight(barHeight)
-		bars[i]:SetWidth((barWidth - (maxBar - 1) * 6) / maxBar)
-		bars[i]:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
-		bars[i]:SetFrameLevel(self:GetFrameLevel() + 5)
+		local statusBar = bars[i] or CreateFrame("StatusBar", nil, bar)
+		bars[i] = statusBar
+		statusBar:SetHeight(barHeight)
+		statusBar:SetWidth((barWidth - (maxBar - 1) * 6) / maxBar)
+		statusBar:SetStatusBarTexture(statusBarTexture)
+		statusBar:SetFrameLevel(frameLevel)
 		if self.mystyle == "PlayerPlate" or self.mystyle == "targetplate" then
-			bars[i]:CreateShadow(true)
+			statusBar:CreateShadow(true)
 		else
-			bars[i]:CreateBorder()
+			statusBar:CreateBorder()
 		end
 
 		if i == 1 then
-			bars[i]:SetPoint("BOTTOMLEFT")
+			statusBar:SetPoint("BOTTOMLEFT")
 		else
-			bars[i]:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
+			statusBar:SetPoint("LEFT", bars[i - 1], "RIGHT", 6, 0)
 		end
 
-		if isDK then
-			bars[i].timer = K.CreateFontString(bars[i], 10, "")
-		else
-			local chargeStar = bar.chargeParent:CreateTexture()
+		if not isDK then
+			local chargeStar = statusBar.chargeStar or bar.chargeParent:CreateTexture()
+			statusBar.chargeStar = chargeStar
 			chargeStar:SetAtlas("VignetteKill")
 			chargeStar:SetDesaturated(true)
 			chargeStar:SetSize(22, 22)
-			chargeStar:SetPoint("CENTER", bars[i])
+			chargeStar:SetPoint("CENTER", statusBar)
 			chargeStar:Hide()
-			bars[i].chargeStar = chargeStar
 		end
 	end
 
@@ -740,7 +738,7 @@ function Module:CreateUnits()
 				"showSolo", not showPartyFrame and C["Raid"].ShowRaidSolo,
 				"showParty", not showPartyFrame,
 				"showRaid", true,
-				"xoffset", 6,
+				"xOffset", 6,
 				"yOffset", -6,
 				"groupFilter", tostring(i),
 				"groupingOrder", "1,2,3,4,5,6,7,8",
@@ -750,7 +748,7 @@ function Module:CreateUnits()
 				"unitsPerColumn", 5,
 				"columnSpacing", 5,
 				"point", horizonRaid and "LEFT" or "TOP",
-				"columnAnchworPoint", "LEFT",
+				"columnAnchorPoint", "LEFT",
 				"oUF-initialConfigFunction", ([[
 					self:SetWidth(%d)
 					self:SetHeight(%d)
@@ -870,17 +868,16 @@ end
 local function CreateTargetSound(_, unit)
 	-- Check if the unit exists
 	if UnitExists(unit) then
-		-- Check if the unit is an enemy
+		local soundKit
+		-- Determine the sound kit based on the unit's relation to the player
 		if UnitIsEnemy("player", unit) then
-			PlaySound(SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
-		-- Check if the unit is friendly
+			soundKit = SOUNDKIT.IG_CREATURE_AGGRO_SELECT
 		elseif UnitIsFriend("player", unit) then
-			PlaySound(SOUNDKIT.IG_CHARACTER_NPC_SELECT)
-		-- Unit is neutral
+			soundKit = SOUNDKIT.IG_CHARACTER_NPC_SELECT
 		else
-			PlaySound(SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT)
+			soundKit = SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT
 		end
-	-- Unit does not exist
+		PlaySound(soundKit)
 	else
 		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
 	end

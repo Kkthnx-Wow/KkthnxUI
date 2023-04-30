@@ -18,18 +18,6 @@ tinsert(C.defaultThemes, function()
 		return
 	end
 
-	if CharacterFrame:IsShown() then
-		HideUIPanel(CharacterFrame)
-	end
-
-	local disabledDraw = false
-	if not disabledDraw then
-		CharacterModelScene:DisableDrawLayer("BACKGROUND")
-		CharacterModelScene:DisableDrawLayer("BORDER")
-		CharacterModelScene:DisableDrawLayer("OVERLAY")
-		disabledDraw = true
-	end
-
 	local function colourPopout(self)
 		local aR, aG, aB
 		local glow = self:GetParent().IconBorder
@@ -72,6 +60,13 @@ tinsert(C.defaultThemes, function()
 		self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
 	end
 
+	-- if CharacterFrame and CharacterFrame:IsShown() then
+	-- 	HideUIPanel(CharacterFrame)
+	-- end
+
+	CharacterModelScene:DisableDrawLayer("BACKGROUND")
+	CharacterModelScene:DisableDrawLayer("BORDER")
+	CharacterModelScene:DisableDrawLayer("OVERLAY")
 	CharacterModelScene:StripTextures(true)
 
 	local equipmentSlots = {
@@ -96,21 +91,25 @@ tinsert(C.defaultThemes, function()
 	}
 
 	for i = 1, #equipmentSlots do
-		local slot = _G["Character" .. equipmentSlots[i] .. "Slot"]
-		local cooldown = _G["Character" .. equipmentSlots[i] .. "SlotCooldown"]
+		local slotName = "Character" .. equipmentSlots[i] .. "Slot"
+		local slot = _G[slotName]
+		local cooldown = _G[slotName .. "Cooldown"]
+		local icon = slot.icon
+		local iconBorder = slot.IconBorder
 
 		-- Strip textures and set slot size
 		slot:StripTextures()
 		slot:SetSize(36, 36)
 
 		-- Set slot icon coordinates
-		slot.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 		-- Hide icon border
-		slot.IconBorder:SetAlpha(0)
+		iconBorder:SetAlpha(0)
 
 		-- Create border for the slot
 		slot:CreateBorder()
+		local border = slot.KKUI_Border
 
 		-- Set cooldown to cover entire slot
 		cooldown:SetAllPoints()
@@ -122,14 +121,14 @@ tinsert(C.defaultThemes, function()
 		slot.IconOverlay:SetAtlas("CosmeticIconFrame")
 		slot.IconOverlay:SetPoint("TOPLEFT", 1, -1)
 		slot.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
-		slot.IconBorder:SetAlpha(0)
+		iconBorder:SetAlpha(0)
 
-		-- Hook IconBorder to set color for slot border
-		hooksecurefunc(slot.IconBorder, "SetVertexColor", function(_, r, g, b)
-			slot.KKUI_Border:SetVertexColor(r, g, b)
+		-- Hook IconBorder to set color for slot border and handle hiding
+		hooksecurefunc(iconBorder, "SetVertexColor", function(_, r, g, b)
+			border:SetVertexColor(r, g, b)
 		end)
-		hooksecurefunc(slot.IconBorder, "Hide", function()
-			slot.KKUI_Border:SetVertexColor(1, 1, 1)
+		hooksecurefunc(iconBorder, "Hide", function()
+			border:SetVertexColor(1, 1, 1)
 		end)
 
 		-- Set up popout button
@@ -177,26 +176,34 @@ tinsert(C.defaultThemes, function()
 	CharacterModelScene:SetPoint("TOPLEFT", CharacterFrame.Inset, 0, 0)
 	CharacterModelScene:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, 0, 20)
 
+	local function UpdateCharacterFrameLayout(isExpanded)
+		local frameWidth, frameHeight = 640, 431
+		local insetOffset = 432
+		local texturePath = "Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. K.Class
+
+		if not isExpanded then
+			frameWidth = 338
+			frameHeight = 424
+			insetOffset = 332
+			texturePath = "Interface\\FrameGeneral\\UI-Background-Marble"
+		end
+
+		CharacterFrame:SetSize(frameWidth, frameHeight)
+		CharacterFrame.Inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", insetOffset, 4)
+
+		CharacterFrame.Inset.Bg:SetTexture(texturePath)
+		CharacterFrame.Inset.Bg:SetTexCoord(0, isExpanded and 0.935547 or 1, 0, 1)
+		CharacterFrame.Inset.Bg:SetHorizTile(isExpanded)
+		CharacterFrame.Inset.Bg:SetVertTile(isExpanded)
+	end
+
 	-- Expand/collapse hooks
 	hooksecurefunc("CharacterFrame_Expand", function()
-		CharacterFrame:SetSize(640, 431)
-		CharacterFrame.Inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 432, 4)
-
-		local texture = "Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. K.Class
-		CharacterFrame.Inset.Bg:SetTexture(texture)
-		CharacterFrame.Inset.Bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
-		CharacterFrame.Inset.Bg:SetHorizTile(false)
-		CharacterFrame.Inset.Bg:SetVertTile(false)
+		UpdateCharacterFrameLayout(true)
 	end)
 
 	hooksecurefunc("CharacterFrame_Collapse", function()
-		CharacterFrame:SetHeight(424)
-		CharacterFrame.Inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", 332, 4)
-
-		CharacterFrame.Inset.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Marble")
-		CharacterFrame.Inset.Bg:SetTexCoord(0, 1, 0, 1)
-		CharacterFrame.Inset.Bg:SetHorizTile(true)
-		CharacterFrame.Inset.Bg:SetVertTile(true)
+		UpdateCharacterFrameLayout(false)
 	end)
 
 	-- Fonts
@@ -214,9 +221,7 @@ tinsert(C.defaultThemes, function()
 	CharacterStatsPane.ClassBackground:SetParent(CharacterFrameInsetRight)
 	CharacterStatsPane.ClassBackground:SetPoint("CENTER")
 
-	-- PaperDoll sidebar tab styling
 	local function styleSidebarTab(tab)
-		local region = select(1, tab:GetRegions())
 		if not tab.bg then
 			tab.bg = CreateFrame("Frame", nil, tab)
 			tab.bg:SetFrameLevel(tab:GetFrameLevel())
@@ -232,11 +237,10 @@ tinsert(C.defaultThemes, function()
 			tab.TabBg:SetAlpha(0)
 		end
 
+		local region = select(1, tab:GetRegions())
 		if region and not tab.regionStyled then
-			if i == 1 then
-				region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
-				region.SetTexCoord = K.Noop
-			end
+			region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
+			region.SetTexCoord = nil
 			tab.regionStyled = true
 		end
 	end

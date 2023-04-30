@@ -525,7 +525,21 @@ function Module:CreatePlayer()
 			RestingIndicator:SetPoint("TOPLEFT", Health, "TOPLEFT", -2, 4)
 		end
 		RestingIndicator:Hide()
-		RestingIndicator.str = {}
+
+		local textFrame = CreateFrame("Frame", nil, RestingIndicator)
+		textFrame:SetAllPoints()
+		textFrame:SetFrameLevel(6)
+
+		local texts = {}
+		local offsets = {
+			{ 4, -4 },
+			{ 0, 0 },
+			{ -5, 5 },
+		}
+
+		for i = 1, 3 do
+			texts[i] = K.CreateFontString(textFrame, (7 + i * 3), "z", "", "system", "CENTER", offsets[i][1], offsets[i][2])
+		end
 
 		local step, stepSpeed = 0, 0.33
 
@@ -538,20 +552,6 @@ function Module:CreatePlayer()
 			[6] = { false, false, false },
 		}
 
-		local offsets = {
-			[1] = { 4, -4 },
-			[2] = { 0, 0 },
-			[3] = { -5, 5 },
-		}
-
-		for i = 1, 3 do
-			local textFrame = CreateFrame("Frame", nil, RestingIndicator)
-			textFrame:SetAllPoints()
-			textFrame:SetFrameLevel(i + 5)
-			local text = K.CreateFontString(textFrame, (7 + i * 3), "z", "", "system", "CENTER", offsets[i][1], offsets[i][2])
-			RestingIndicator.str[i] = text
-		end
-
 		RestingIndicator:SetScript("OnUpdate", function(self, elapsed)
 			self.elapsed = (self.elapsed or 0) + elapsed
 			if self.elapsed > stepSpeed then
@@ -561,7 +561,7 @@ function Module:CreatePlayer()
 				end
 
 				for i = 1, 3 do
-					RestingIndicator.str[i]:SetShown(stepMaps[step][i])
+					texts[i]:SetShown(stepMaps[step][i])
 				end
 
 				self.elapsed = 0

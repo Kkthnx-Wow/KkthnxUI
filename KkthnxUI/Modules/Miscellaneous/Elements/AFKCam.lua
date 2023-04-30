@@ -137,28 +137,29 @@ local function IsIn(val, ...)
 end
 
 local function setupTime(color, hour, minute)
-	if GetCVarBool("timeMgrUseMilitaryTime") then
-		return string_format(color .. TIMEMANAGER_TICKER_24HOUR, hour, minute)
+	local useMilitaryTime = GetCVarBool("timeMgrUseMilitaryTime")
+
+	if useMilitaryTime then
+		return string.format("%s" .. TIMEMANAGER_TICKER_24HOUR, color, hour, minute)
 	else
 		local timerUnit = K.MyClassColor .. (hour < 12 and " AM" or " PM")
 
 		if hour >= 12 then
-			if hour > 12 then
-				hour = hour - 12
-			end
+			hour = hour - 12
 		else
 			if hour == 0 then
 				hour = 12
 			end
 		end
 
-		return string_format(color .. TIMEMANAGER_TICKER_12HOUR .. timerUnit, hour, minute)
+		return string.format("%s" .. TIMEMANAGER_TICKER_12HOUR .. timerUnit, color, hour, minute)
 	end
 end
 
 local function createTime(self)
 	local color = C_Calendar.GetNumPendingInvites() > 0 and "|cffFF0000" or ""
 	local hour, minute
+
 	if GetCVarBool("timeMgrUseLocalTime") then
 		hour, minute = tonumber(date("%H")), tonumber(date("%M"))
 	else

@@ -9,8 +9,10 @@ local table_insert = table.insert
 local table_sort = table.sort
 
 local C_Calendar_GetNumPendingInvites = C_Calendar.GetNumPendingInvites
+local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
 local GetUnitName = GetUnitName
 local InCombatLockdown = InCombatLockdown
+local Minimap = Minimap
 local Minimap = Minimap
 local UnitClass = UnitClass
 local hooksecurefunc = hooksecurefunc
@@ -585,66 +587,42 @@ function Module:HideMinimapClock()
 	end
 end
 
--- Show Calendar Function
+local GameTimeFrameStyled
 function Module:ShowCalendar()
-	-- Check if Calendar is enabled in config
 	if C["Minimap"].Calendar then
-		-- If the Calendar is not styled yet
-		if not GameTimeFrame.styled then
-			-- Set the parent frame as Minimap
+		if not GameTimeFrameStyled then
+			local GameTimeFrame = GameTimeFrame
+			local calendarText = GameTimeFrame:CreateFontString(nil, "OVERLAY")
+
 			GameTimeFrame:SetParent(Minimap)
-			-- Set the frame level to 16
 			GameTimeFrame:SetFrameLevel(16)
-			-- Clear any existing points
 			GameTimeFrame:ClearAllPoints()
-			-- Set the position to top right of the Minimap with a 4 pixel offset
 			GameTimeFrame:SetPoint("TOPRIGHT", Minimap, -4, -4)
-			-- Set the hit rect insets to 0
 			GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
-			-- Set the size to 22x22
 			GameTimeFrame:SetSize(22, 22)
 
-			-- Create a font string
-			local fs = GameTimeFrame:CreateFontString(nil, "OVERLAY")
-			-- Clear any existing points
-			fs:ClearAllPoints()
-			-- Set the position to the center with a -5 pixel offset
-			fs:SetPoint("CENTER", 0, -5)
-			-- Set the font object
-			fs:SetFontObject(K.UIFont)
-			-- Set the font to the selected font, with a size of 12 and the selected font style
-			fs:SetFont(select(1, fs:GetFont()), 12, select(3, fs:GetFont()))
-			-- Set the text color to black
-			fs:SetTextColor(0, 0, 0)
-			-- Set the shadow offset to 0, 0
-			fs:SetShadowOffset(0, 0)
-			-- Set the alpha to 0.9
-			fs:SetAlpha(0.9)
+			calendarText:ClearAllPoints()
+			calendarText:SetPoint("CENTER", 0, -5)
+			calendarText:SetFontObject(K.UIFont)
+			calendarText:SetFont(select(1, calendarText:GetFont()), 12, select(3, calendarText:GetFont()))
+			calendarText:SetTextColor(0, 0, 0)
+			calendarText:SetShadowOffset(0, 0)
+			calendarText:SetAlpha(0.9)
 
-			-- Secure hook for "GameTimeFrame_SetDate"
 			hooksecurefunc("GameTimeFrame_SetDate", function()
-				-- Set the normal texture
 				GameTimeFrame:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\Calendar.blp")
-				-- Set the pushed texture
 				GameTimeFrame:SetPushedTexture("Interface\\AddOns\\KkthnxUI\\Media\\Minimap\\Calendar.blp")
-				-- Set the highlight texture to 0
 				GameTimeFrame:SetHighlightTexture(0)
-				-- Set the normal texture's TexCoord to 0, 1, 0, 1
 				GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
-				-- Set the pushed texture's TexCoord to 0, 1, 0, 1
 				GameTimeFrame:GetPushedTexture():SetTexCoord(0, 1, 0, 1)
-
-				-- Set the text to the current calendar month day
-				fs:SetText(C_DateAndTime.GetCurrentCalendarTime().monthDay)
+				calendarText:SetText(C_DateAndTime_GetCurrentCalendarTime().monthDay)
 			end)
 
-			-- Set style to true
-			GameTimeFrame.styled = true
+			GameTimeFrameStyled = true
 		end
-		-- Show the GameTimeFrame
+
 		GameTimeFrame:Show()
 	else
-		-- Hide the GameTimeFrame
 		GameTimeFrame:Hide()
 	end
 end

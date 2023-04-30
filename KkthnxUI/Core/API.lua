@@ -398,19 +398,6 @@ local function SkinCheckBox(self, forceSaturation)
 	bg:CreateBorder(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, { 0.20, 0.20, 0.20 })
 	self.bg = bg
 
-	self:SetHighlightTexture("")
-	local hl = self:GetHighlightTexture()
-	hl:SetAllPoints(bg)
-	hl:SetVertexColor(K.r, K.g, K.b, 0.25)
-
-	local ch = self:GetCheckedTexture()
-	ch:SetPoint("TOPLEFT", self, "TOPLEFT", -5, 5)
-	ch:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 5, -5)
-	ch:SetAtlas("checkmark-minimal")
-	ch:SetDesaturated(true)
-	ch:SetTexCoord(0, 1, 0, 1)
-	ch:SetVertexColor(K.r, K.g, K.b)
-
 	self.forceSaturation = forceSaturation
 end
 

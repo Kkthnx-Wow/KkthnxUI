@@ -10,12 +10,17 @@ local UnitClass = UnitClass
 local hooksecurefunc = hooksecurefunc
 
 C.themes["Blizzard_InspectUI"] = function()
-	if InspectFrame:IsShown() then
-		HideUIPanel(InspectFrame)
-	end
+	-- if InspectFrame and InspectFrame:IsShown() then
+	-- 	HideUIPanel(InspectFrame)
+	-- end
 
-	_G.InspectPaperDollItemsFrame.InspectTalents:ClearAllPoints()
-	_G.InspectPaperDollItemsFrame.InspectTalents:SetPoint("TOPRIGHT", _G.InspectFrame, "BOTTOMRIGHT", 0, -1)
+	local InspectPaperDollItemsFrame = InspectPaperDollItemsFrame
+	local InspectModelFrame = InspectModelFrame
+
+	if InspectPaperDollItemsFrame.InspectTalents then
+		InspectPaperDollItemsFrame.InspectTalents:ClearAllPoints()
+		InspectPaperDollItemsFrame.InspectTalents:SetPoint("TOPRIGHT", InspectFrame, "BOTTOMRIGHT", 0, -1)
+	end
 
 	InspectModelFrame:StripTextures(true)
 
@@ -40,7 +45,9 @@ C.themes["Blizzard_InspectUI"] = function()
 		"Tabard",
 	}
 
-	for i = 1, #equipmentSlots do
+	local numEquipmentSlots = #equipmentSlots
+
+	for i = 1, numEquipmentSlots do
 		local slot = _G["Inspect" .. equipmentSlots[i] .. "Slot"]
 		slot:StripTextures()
 		slot:SetSize(36, 36)
@@ -70,43 +77,55 @@ C.themes["Blizzard_InspectUI"] = function()
 		UpdateCosmetic(button)
 	end)
 
-	do
-		InspectHeadSlot:SetPoint("TOPLEFT", InspectFrame.Inset, "TOPLEFT", 6, -6)
-		InspectHandsSlot:SetPoint("TOPRIGHT", InspectFrame.Inset, "TOPRIGHT", -6, -6)
-		InspectMainHandSlot:SetPoint("BOTTOMLEFT", InspectFrame.Inset, "BOTTOMLEFT", 176, 5)
-		InspectSecondaryHandSlot:ClearAllPoints()
-		InspectSecondaryHandSlot:SetPoint("BOTTOMRIGHT", InspectFrame.Inset, "BOTTOMRIGHT", -176, 5)
+	local InspectHeadSlot = InspectHeadSlot
+	local InspectHandsSlot = InspectHandsSlot
+	local InspectMainHandSlot = InspectMainHandSlot
+	local InspectSecondaryHandSlot = InspectSecondaryHandSlot
+	local InspectModelFrame = InspectModelFrame
+	local InspectFrameInset = InspectFrame.Inset
 
-		InspectModelFrame:SetSize(0, 0)
-		InspectModelFrame:ClearAllPoints()
-		InspectModelFrame:SetPoint("TOPLEFT", InspectFrame.Inset, 0, 0)
-		InspectModelFrame:SetPoint("BOTTOMRIGHT", InspectFrame.Inset, 0, 30)
-		InspectModelFrame:SetCamDistanceScale(1.1)
-	end
+	InspectHeadSlot:SetPoint("TOPLEFT", InspectFrameInset, "TOPLEFT", 6, -6)
+	InspectHandsSlot:SetPoint("TOPRIGHT", InspectFrameInset, "TOPRIGHT", -6, -6)
+	InspectMainHandSlot:SetPoint("BOTTOMLEFT", InspectFrameInset, "BOTTOMLEFT", 176, 5)
+	InspectSecondaryHandSlot:ClearAllPoints()
+	InspectSecondaryHandSlot:SetPoint("BOTTOMRIGHT", InspectFrameInset, "BOTTOMRIGHT", -176, 5)
 
-	-- Adjust the inset based on tabs
-	local OnInspectSwitchTabs = function(newID)
-		local tabID = newID or PanelTemplates_GetSelectedTab(InspectFrame)
-		if tabID == 1 then
+	InspectModelFrame:SetSize(0, 0)
+	InspectModelFrame:ClearAllPoints()
+	InspectModelFrame:SetPoint("TOPLEFT", InspectFrameInset, 0, 0)
+	InspectModelFrame:SetPoint("BOTTOMRIGHT", InspectFrameInset, 0, 30)
+	InspectModelFrame:SetCamDistanceScale(1.1)
+
+	local function ApplyInspectFrameLayout(isExpanded)
+		local InspectFrame = InspectFrame
+		local InspectFrameInset = InspectFrame.Inset
+
+		if isExpanded then
 			InspectFrame:SetSize(438, 431) -- 338 + 100, 424 + 7
-			InspectFrame.Inset:SetPoint("BOTTOMRIGHT", InspectFrame, "BOTTOMLEFT", 432, 4)
+			InspectFrameInset:SetPoint("BOTTOMRIGHT", InspectFrame, "BOTTOMLEFT", 432, 4)
 
 			local _, targetClass = UnitClass("target")
 			if targetClass then
-				InspectFrame.Inset.Bg:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. targetClass)
-				InspectFrame.Inset.Bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
-				InspectFrame.Inset.Bg:SetHorizTile(false)
-				InspectFrame.Inset.Bg:SetVertTile(false)
+				InspectFrameInset.Bg:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Skins\\DressingRoom" .. targetClass)
+				InspectFrameInset.Bg:SetTexCoord(0.00195312, 0.935547, 0.00195312, 0.978516)
+				InspectFrameInset.Bg:SetHorizTile(false)
+				InspectFrameInset.Bg:SetVertTile(false)
 			end
 		else
 			InspectFrame:SetSize(338, 424)
-			InspectFrame.Inset:SetPoint("BOTTOMRIGHT", InspectFrame, "BOTTOMLEFT", 332, 4)
+			InspectFrameInset:SetPoint("BOTTOMRIGHT", InspectFrame, "BOTTOMLEFT", 332, 4)
 
-			InspectFrame.Inset.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Marble", "REPEAT", "REPEAT")
-			InspectFrame.Inset.Bg:SetTexCoord(0, 1, 0, 1)
-			InspectFrame.Inset.Bg:SetHorizTile(true)
-			InspectFrame.Inset.Bg:SetVertTile(true)
+			InspectFrameInset.Bg:SetTexture("Interface\\FrameGeneral\\UI-Background-Marble", "REPEAT", "REPEAT")
+			InspectFrameInset.Bg:SetTexCoord(0, 1, 0, 1)
+			InspectFrameInset.Bg:SetHorizTile(true)
+			InspectFrameInset.Bg:SetVertTile(true)
 		end
+	end
+
+	-- Adjust the inset based on tabs
+	local function OnInspectSwitchTabs(newID)
+		local tabID = newID or PanelTemplates_GetSelectedTab(InspectFrame)
+		ApplyInspectFrameLayout(tabID == 1)
 	end
 
 	-- Hook it to tab switches
