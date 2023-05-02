@@ -366,6 +366,7 @@ do
 			local isHoA = data.id == 158075
 			local num = 0
 			for i = 2, #data.lines do
+				local lineData = data.lines[i]
 				if not slotData.iLvl then
 					local text = lineData.leftText
 					local found = text and strfind(text, itemLevelString)
@@ -376,15 +377,15 @@ do
 				elseif isHoA then
 					if lineData.essenceIcon then
 						num = num + 1
-						slotData.gems[num] = argVal[6].intVal
-						slotData.gemsColor[num] = argVal[3] and argVal[3].colorVal
+						slotData.gems[num] = lineData.essenceIcon
+						slotData.gemsColor[num] = lineData.leftColor
 					end
 				else
 					if lineData.enchantID then
 						slotData.enchantText = strmatch(lineData.leftText, enchantString)
 					elseif lineData.gemIcon then
 						num = num + 1
-						slotData.gems[num] = argVal[4].intVal
+						slotData.gems[num] = lineData.gemIcon
 					elseif lineData.socketType then
 						num = num + 1
 						slotData.gems[num] = format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", lineData.socketType)
