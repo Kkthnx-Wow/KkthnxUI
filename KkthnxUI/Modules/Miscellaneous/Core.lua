@@ -64,7 +64,6 @@ function Module:OnEnable()
 		"CreateVehicleSeatMover",
 		"DisableHelpTip",
 		"DisableTutorials",
-		"MoveMawBuffsFrame",
 		"UpdateMaxCameraZoom",
 	}
 
@@ -666,21 +665,6 @@ function Module:PostBNToastMove(_, anchor)
 		BNToastFrame:ClearAllPoints()
 		BNToastFrame:SetPoint(BNToastFrame.mover.anchorPoint or "TOPLEFT", BNToastFrame.mover, BNToastFrame.mover.anchorPoint or "TOPLEFT")
 	end
-end
-
--- Reanchor MawBuffsBelowMinimapFrame
-function Module:MoveMawBuffsFrame()
-	local frame = CreateFrame("Frame", "KKUI_MawBuffsMover", UIParent)
-	frame:SetSize(235, 28)
-	local mover = K.Mover(frame, MAW_POWER_DESCRIPTION, "MawBuffs", { "TOPRIGHT", UIParent, -80, -225 })
-	frame:SetPoint("TOPLEFT", mover, 4, 12)
-
-	hooksecurefunc(MawBuffsBelowMinimapFrame, "SetPoint", function(self, _, parent)
-		if parent == "MinimapCluster" or parent == MinimapCluster then
-			self:ClearAllPoints()
-			self:SetPoint("TOPRIGHT", frame)
-		end
-	end)
 end
 
 function Module:CreateJerryWay()

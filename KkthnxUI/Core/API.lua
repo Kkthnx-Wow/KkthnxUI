@@ -14,14 +14,14 @@ local select = select
 
 local CreateFrame = CreateFrame
 local EnumerateFrames = EnumerateFrames
-local GetAddOnMetadata = GetAddOnMetadata
+local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 local RegisterStateDriver = RegisterStateDriver
 local UIParent = UIParent
 
 local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
 
 do
-	BINDING_HEADER_KKTHNXUI = GetAddOnMetadata(..., "Title")
+	BINDING_HEADER_KKTHNXUI = C_AddOns_GetAddOnMetadata(..., "Title")
 
 	K.UIFrameHider = CreateFrame("Frame")
 	K.UIFrameHider:Hide()

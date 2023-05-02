@@ -22,7 +22,7 @@ local CreateFrame = CreateFrame
 local Enum = Enum
 local GetAddOnEnableState = GetAddOnEnableState
 local GetAddOnInfo = GetAddOnInfo
-local GetAddOnMetadata = GetAddOnMetadata
+local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 local GetBuildInfo = GetBuildInfo
 local GetLocale = GetLocale
 local GetNumAddOns = GetNumAddOns
@@ -62,8 +62,8 @@ K.cargBags = Engine.cargBags
 K.oUF = Engine.oUF
 
 -- AddOn Info
-K.Title = GetAddOnMetadata(AddOnName, "Title")
-K.Version = GetAddOnMetadata(AddOnName, "Version")
+K.Title = C_AddOns_GetAddOnMetadata(AddOnName, "Title")
+K.Version = C_AddOns_GetAddOnMetadata(AddOnName, "Version")
 
 -- Functions
 K.Noop = function() end
@@ -343,39 +343,36 @@ end)
 local originalChatFrame_DisplayTimePlayed = ChatFrame_DisplayTimePlayed
 -- Override ChatFrame_DisplayTimePlayed function
 ChatFrame_DisplayTimePlayed = function(_, totalTime, levelTime)
-	-- Get player's class color
-	local classColor = K.ClassColors[K.Class].colorStr
-	-- Get player's name with class color
-	local name = string.format("|c%s%s|r", classColor, K.Name)
+	-- Cache frequently used values
+	local classColors = K.ClassColors[K.Class]
+	local colorStr = classColors.colorStr
+	local name = K.Name
+	local race = K.Race
+	local faction = K.Faction
+
 	-- Get player's money as string
 	local money = GetMoneyString(GetMoney())
+
 	-- Get player's current specialization or NONE if no specialization is selected
 	local specID = GetSpecialization()
-	local spec = specID and select(2, GetSpecializationInfo(specID)) or NONE
+	local spec = specID and select(2, GetSpecializationInfo(specID)) or "NONE"
 
-	-- Create total time played message
-	local totalTimeMessage = string.format(K.InfoColor .. "Total time played: %s", K.GreyColor .. SecondsToTime(totalTime))
-	-- Create level time played message
-	local levelTimeMessage = string.format(K.InfoColor .. "Time played this level: %s", K.GreyColor .. SecondsToTime(levelTime))
-	-- Create money message
-	local moneyMessage = string.format(K.InfoColor .. "Money: %s", K.GreyColor .. money)
+	-- Create messages using string formatting
+	local totalTimeMessage = string.format("%sTotal time played: %s", K.InfoColor, K.GreyColor .. SecondsToTime(totalTime))
+	local levelTimeMessage = string.format("%sTime played this level: %s", K.InfoColor, K.GreyColor .. SecondsToTime(levelTime))
+	local moneyMessage = string.format("%sMoney: %s", K.InfoColor, K.GreyColor .. money)
 
-	-- Create player info message
-	local playerInfo = string.format("%s - %s - %s - %s", name, K.Race, K.Faction, spec)
-	-- Print player info
-	print(playerInfo)
-	-- Print total time played message
-	print(totalTimeMessage)
-	-- Print level time played message
-	print(levelTimeMessage)
-	-- Print money message
-	print(moneyMessage)
+	-- Create player info message using string concatenation
+	local playerInfo = string.format("|c%s%s|r - %s - %s - %s", colorStr, name, race, faction, spec)
+
+	-- Combine and print all messages in one call
+	print(playerInfo, totalTimeMessage, levelTimeMessage, moneyMessage)
 end
 
 for i = 1, GetNumAddOns() do
 	local Name, _, _, _, Reason = GetAddOnInfo(i)
 	K.AddOns[string_lower(Name)] = GetAddOnEnableState(K.Name, Name) == 2 and (not Reason or Reason ~= "DEMAND_LOADED")
-	K.AddOnVersion[string_lower(Name)] = GetAddOnMetadata(Name, "Version")
+	K.AddOnVersion[string_lower(Name)] = C_AddOns_GetAddOnMetadata(Name, "Version")
 end
 
 _G.KkthnxUI = Engine

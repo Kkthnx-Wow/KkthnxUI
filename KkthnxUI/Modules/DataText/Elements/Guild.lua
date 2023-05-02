@@ -415,7 +415,9 @@ local function OnMouseUp(_, btn)
 	end
 
 	if btn == "LeftButton" then
-		ToggleFrame(GuildFrame)
+		if GuildFrame then
+			ToggleFrame(GuildFrame)
+		end
 	elseif btn == "RightButton" then
 		ToggleGuildFrame()
 	end

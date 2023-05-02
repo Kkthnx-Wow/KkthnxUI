@@ -363,37 +363,31 @@ do
 			slotData.iLvl = nil
 			slotData.enchantText = nil
 
-			local isHoA = data.args and data.args[2] and data.args[2].intVal == 158075
+			local isHoA = data.id == 158075
 			local num = 0
 			for i = 2, #data.lines do
-				local lineData = data.lines[i]
-				local argVal = lineData and lineData.args
-				if argVal then
-					if not slotData.iLvl then
-						local text = argVal[2] and argVal[2].stringVal
-						local found = text and strfind(text, itemLevelString)
-						if found then
-							local level = strmatch(text, "(%d+)%)?$")
-							slotData.iLvl = tonumber(level) or 0
-						end
-					elseif isHoA then
-						if argVal[6] and argVal[6].field == "essenceIcon" then
-							num = num + 1
-							slotData.gems[num] = argVal[6].intVal
-							slotData.gemsColor[num] = argVal[3] and argVal[3].colorVal
-						end
-					else
-						local lineInfo = argVal[4] and argVal[4].field
-						if lineInfo == "enchantID" then
-							local enchant = argVal[2] and argVal[2].stringVal
-							slotData.enchantText = strmatch(enchant, enchantString)
-						elseif lineInfo == "gemIcon" then
-							num = num + 1
-							slotData.gems[num] = argVal[4].intVal
-						elseif lineInfo == "socketType" then
-							num = num + 1
-							slotData.gems[num] = format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", argVal[4].stringVal)
-						end
+				if not slotData.iLvl then
+					local text = lineData.leftText
+					local found = text and strfind(text, itemLevelString)
+					if found then
+						local level = strmatch(text, "(%d+)%)?$")
+						slotData.iLvl = tonumber(level) or 0
+					end
+				elseif isHoA then
+					if lineData.essenceIcon then
+						num = num + 1
+						slotData.gems[num] = argVal[6].intVal
+						slotData.gemsColor[num] = argVal[3] and argVal[3].colorVal
+					end
+				else
+					if lineData.enchantID then
+						slotData.enchantText = strmatch(lineData.leftText, enchantString)
+					elseif lineData.gemIcon then
+						num = num + 1
+						slotData.gems[num] = argVal[4].intVal
+					elseif lineData.socketType then
+						num = num + 1
+						slotData.gems[num] = format("Interface\\ItemSocketingFrame\\UI-EmptySocket-%s", lineData.socketType)
 					end
 				end
 			end
@@ -421,46 +415,37 @@ do
 				if not lineData then
 					break
 				end
-				local argVal = lineData.args
-				if argVal then
-					local text = argVal[2] and argVal[2].stringVal
-					local found = text and strfind(text, itemLevelString)
-					if found then
-						local level = strmatch(text, "(%d+)%)?$")
-						iLvlDB[link] = tonumber(level)
-						break
-					end
+				local text = lineData.leftText
+				local found = text and strfind(text, itemLevelString)
+				if found then
+					local level = strmatch(text, "(%d+)%)?$")
+					iLvlDB[link] = tonumber(level)
+					break
 				end
 			end
 			return iLvlDB[link]
 		end
 	end
 
+	local isUnknownString = {
+		[TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN] = true,
+		[TRANSMOGRIFY_TOOLTIP_ITEM_UNKNOWN_APPEARANCE_KNOWN] = true,
+	}
+
 	-- function to check if the transmog appearance is unknown
 	function K.IsUnknownTransmog(bagID, slotID)
-		-- retrieve the data of the item in the specified bag and slot
 		local data = C_TooltipInfo.GetBagItem(bagID, slotID)
-		-- check if the data is valid and the line data is present
 		local lineData = data and data.lines
 		if not lineData then
 			return
 		end
 
-		-- loop through the line data in reverse order
 		for i = #lineData, 1, -1 do
 			local line = lineData[i]
-			-- check if the line has arguments
-			if line and line.args then
-				local args = line.args
-				-- check if the fourth argument is present and its field is "price"
-				if args[4] and args[4].field == "price" then
-					return false
-				end
-				-- check if the second argument is present and it's value is in the known string values table
-				if args[2] and isKnownString[args[2].stringVal] then
-					return true
-				end
+			if line.price then
+				return false
 			end
+			return line.leftText and isUnknownString[line.leftText]
 		end
 	end
 end

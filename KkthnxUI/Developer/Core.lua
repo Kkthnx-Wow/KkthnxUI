@@ -15,22 +15,29 @@ if not K.isDeveloper then
 end
 
 -- Set variables for the cvars we want to monitor
-local taintlog = "taintLog"
-local profiling = "scriptProfile"
+local cvars = { "taintLog", "scriptProfile" }
 
 -- Set the reminder duration in seconds
 local reminderDuration = 300 -- 5 minutes
 
 -- Function to check the cvars and show a reminder message if they are on for too long
 local function CheckCvars()
-	-- Check if the cvars are on
-	if GetCVarBool(taintlog) or GetCVarBool(profiling) then
-		-- Show the reminder message
-		print("Taintlog and/or profiling are still on. Please turn them off using the following commands:")
-		print(format("/console %s 0", taintlog))
-		print(format("/console %s 0", profiling))
+	local found = false
 
-		-- Schedule the next check
+	-- Loop over the cvars
+	for _, cvar in ipairs(cvars) do
+		-- Check if the cvar is on
+		if GetCVarBool(cvar) then
+			found = true
+
+			-- Show the reminder message
+			print(format("%s is still on. Please turn it off using the following command:", cvar))
+			print(format("/console %s 0", cvar))
+		end
+	end
+
+	-- Schedule the next check if needed
+	if found then
 		C_Timer.After(reminderDuration, CheckCvars)
 	end
 end

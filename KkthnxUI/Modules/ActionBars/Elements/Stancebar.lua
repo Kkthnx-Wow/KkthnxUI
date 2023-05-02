@@ -130,6 +130,7 @@ function Module:CreateStancebar()
 
 	-- Fix stance bar updating
 	Module:StanceBarOnEvent()
+	K:RegisterEvent("UPDATE_SHAPESHIFT_FORM", Module.StanceBarOnEvent)
 	K:RegisterEvent("UPDATE_SHAPESHIFT_FORMS", Module.StanceBarOnEvent)
 	K:RegisterEvent("UPDATE_SHAPESHIFT_USABLE", Module.StanceBarOnEvent)
 	K:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN", Module.StanceBarOnEvent)

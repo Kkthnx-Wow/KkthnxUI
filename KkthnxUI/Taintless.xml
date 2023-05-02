@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Ui>
-   <Script><![CDATA[--[[
+<Ui><Script><![CDATA[--[[
 
 TaintLess [22-11-27]
 https://www.townlong-yak.com/addons/taintless
@@ -128,5 +126,5 @@ if ObjectiveTrackerFrame and (tonumber(OBJTRACK_DELAYUPDATE_PATCH_VERSION) or 0)
 			end
 		end
 	end)
-end]]></Script>
-</Ui>
+end
+]]></Script></Ui>

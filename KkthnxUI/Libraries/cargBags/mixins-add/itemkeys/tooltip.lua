@@ -50,14 +50,11 @@ cargBags.itemKeys["bindOn"] = function(i)
 		if not lineData then
 			break
 		end
-		local argVal = lineData.args
-		if argVal then
-			local lineText = argVal[2] and argVal[2].stringVal
-			local bindOn = lineText and bindTypeToString[lineText]
-			if bindOn then
-				i.bindOn = bindOn
-				return bindOn
-			end
+		local lineText = lineData.leftText
+		local bindOn = lineText and bindTypeToString[lineText]
+		if bindOn then
+			i.bindOn = bindOn
+			return bindOn
 		end
 	end
 end

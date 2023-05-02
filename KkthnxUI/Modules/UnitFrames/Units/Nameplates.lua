@@ -522,9 +522,8 @@ function Module:UpdateQuestUnit(_, unit)
 	if data then
 		for i = 1, #data.lines do
 			local lineData = data.lines[i]
-			local argVal = lineData and lineData.args
-			if argVal[1] and argVal[1].intVal == 8 then
-				local text = argVal[2] and argVal[2].stringVal -- progress string
+			if lineData.type == 8 then
+				local text = lineData.leftText -- progress string
 				if text then
 					local current, goal = strmatch(text, "(%d+)/(%d+)")
 					local progress = strmatch(text, "(%d+)%%")
