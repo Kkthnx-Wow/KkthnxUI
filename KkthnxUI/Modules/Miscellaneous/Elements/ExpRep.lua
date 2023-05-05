@@ -333,9 +333,6 @@ function Module:CreateExpbar()
 		return
 	end
 
-	-- Hide blizzard expbar
-	StatusTrackingBarManager:UnregisterAllEvents()
-
 	local bar = CreateFrame("StatusBar", "KKUI_ExpRepBar", MinimapCluster)
 	bar:SetPoint("TOP", Minimap, "BOTTOM", 0, -6)
 	bar:SetSize(Minimap:GetWidth() or 190, 16)

@@ -446,7 +446,6 @@ C["Nameplate"] = {
 	-- Distance = 42,
 	Enable = true,
 	ExecuteRatio = 0,
-	ExplosivesScale = false,
 	FriendPlate = false,
 	FriendlyCC = false,
 	FullHealth = false,

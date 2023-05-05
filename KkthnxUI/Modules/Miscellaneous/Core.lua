@@ -68,7 +68,13 @@ function Module:OnEnable()
 	}
 
 	for _, funcName in ipairs(loadMiscModules) do
-		pcall(self[funcName], self)
+		local func = self[funcName]
+		if type(func) == "function" then
+			local success, err = pcall(func, self)
+			if not success then
+				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
+			end
+		end
 	end
 
 	hooksecurefunc("QuestInfo_Display", Module.CreateQuestXPPercent)
@@ -743,20 +749,25 @@ end
 
 -- Blizzard_TutorialManager: sort of similar to NPE
 local tutorialFrames = {
-	"TutorialWalk_Frame",
 	"TutorialSingleKey_Frame",
 	"TutorialMainFrame_Frame",
+
+	-- dead on PTR (10.1)
 	"TutorialKeyboardMouseFrame_Frame",
+	"TutorialWalk_Frame",
 }
 
 local function ShutdownTM()
-	local TM = TutorialManager
+	local TM = _G.TutorialManager
 	if TM and TM:GetIsActive() then
 		TM:Shutdown()
 
 		-- these aren't hidden by the shutdown
 		for _, name in next, tutorialFrames do
-			_G[name]:Kill()
+			local frame = _G[name]
+			if frame then
+				frame:Kill()
+			end
 		end
 	end
 
@@ -783,7 +794,7 @@ local gameTutorials = {
 
 local GT_Shutdown = false
 local function ShutdownGT()
-	local GT = GameTutorials
+	local GT = _G.GameTutorials
 	if GT and not GT_Shutdown then
 		GT_Shutdown = true
 
@@ -799,7 +810,7 @@ end
 -- this is the event handler for tutorials, maybe other stuff later?
 -- it seems shutdown is not unregistering events for stuff so..
 local function ShutdownTD() -- Blizzard_TutorialDispatcher
-	local TD = Dispatcher
+	local TD = _G.Dispatcher
 	if TD then
 		wipe(TD.Events)
 		wipe(TD.Scripts)

@@ -425,12 +425,18 @@ function Module:OnEnable()
 		Module.UpdateTrimFrame(updater.__owner)
 	end)
 
-	local loadMoversModules = {
+	local loadMoverModules = {
 		"DisableBlizzardMover",
 	}
 
-	for _, funcName in ipairs(loadMoversModules) do
-		pcall(self[funcName], self)
+	for _, funcName in ipairs(loadMoverModules) do
+		local func = self[funcName]
+		if type(func) == "function" then
+			local success, err = pcall(func, self)
+			if not success then
+				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
+			end
+		end
 	end
 end
 

@@ -369,10 +369,19 @@ function Module:ReskinRegions()
 	-- QueueStatus Button
 	if QueueStatusButton then
 		QueueStatusButton:SetParent(MinimapCluster)
+		QueueStatusButton:SetSize(33, 33)
+		QueueStatusButton:SetFrameLevel(999)
+
+		local function SetButtonPosition(button, _, _, _, x)
+			if x == -15 then
+				button:ClearAllPoints()
+				button:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
+			end
+		end
+
 		QueueStatusButton:ClearAllPoints()
 		QueueStatusButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
-		QueueStatusButton:SetFrameLevel(999)
-		QueueStatusButton:SetSize(33, 33)
+		hooksecurefunc(QueueStatusButton, "SetPoint", SetButtonPosition)
 
 		QueueStatusButtonIcon:SetAlpha(0)
 
@@ -874,7 +883,13 @@ function Module:OnEnable()
 	}
 
 	for _, funcName in ipairs(loadMinimapModules) do
-		pcall(self[funcName], self)
+		local func = self[funcName]
+		if type(func) == "function" then
+			local success, err = pcall(func, self)
+			if not success then
+				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
+			end
+		end
 	end
 
 	-- HybridMinimap

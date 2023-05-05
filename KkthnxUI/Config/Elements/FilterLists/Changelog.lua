@@ -20,25 +20,39 @@ Mention whether you follow Semantic Versioning.
 
 local KKUI_Changelog = {
 	{
-		Version = "[10.4.7] - 2023-1-31",
-		General = "All notable changes to this project will be documented in this file. The format is based on " .. K.SystemColor .. "[Keep a Changelog]|r and this project adheres to " .. K.SystemColor .. "[Semantic Versioning]|r",
+		Version = "[10.4.7] - 2023-5-5 - Patch 10.1",
+		General = "Don't forget to join our KkthnxUI Discord [Rc9wcK9cAB] server to stay up-to-date on the latest news and discussions about KkthnxUI and its future development.",
 		Sections = {
-
-			{
-				Header = "Quote",
-				Entries = {
-					"Programs must be written for people to read, and only incidentally for machines to execute - Harold Abelson and Gerald Jay Sussman",
-				},
-			},
 
 			{
 				Header = "General",
 				Entries = {
-					"Optimized a lot of code for improved performance",
-					"Fixed various performance issues throughout the project",
-					"Improved KkthnxUI across the board",
+					"These updates and code improvements aim to provide a better user interface experience and enhance the overall performance and maintainability of the UI codebase in the Dragonflight Patch 10.1: Embers of Neltharion Patch.",
+				},
+			},
 
-					"Don't forget to join our Discord for more updates and to connect with the community!",
+			{
+				Header = "UI Updates",
+				Entries = {
+					"Updated the UI to align with the Dragonflight Patch 10.1: Embers of Neltharion Patch.",
+					"Made various improvements to enhance the user experience.",
+				},
+			},
+
+			{
+				Header = "Code Improvements",
+				Entries = {
+					"Improved code formatting to ensure better readability.",
+					"Reorganized the code for improved organization and maintainability.",
+					"Introduced more descriptive names for variables and functions.",
+				},
+			},
+
+			{
+				Header = "Optimization",
+				Entries = {
+					"Optimized the code for improved performance and efficiency.",
+					"Reviewed and refactored code to eliminate unnecessary computations and improve overall speed.",
 				},
 			},
 		},

@@ -53,17 +53,11 @@ local groupRoles = {}
 -- List of players who have their power displayed
 local showPowerList = {}
 
--- Boolean to track if the player has explosives
-local hasExplosives = false
-
 -- Boolean to track if the player is in a group
 local isInGroup = false
 
 -- Boolean to track if the player is in an instance
 local isInInstance = false
-
--- ID of the explosives item
-local explosivesID = 120651
 
 -- Unit classification
 local NPClassifies = {
@@ -500,13 +494,6 @@ function Module:QuestIconCheck()
 	K:RegisterEvent("PLAYER_ENTERING_WORLD", CheckInstanceStatus)
 end
 
-local function isQuestTitle(textLine)
-	local r, g, b = textLine:GetTextColor()
-	if r > 0.99 and g > 0.8 and b == 0 then
-		return true
-	end
-end
-
 function Module:UpdateQuestUnit(_, unit)
 	if not C["Nameplate"].QuestIndicator or isInInstance then
 		self.questIcon:Hide()
@@ -686,39 +673,6 @@ function Module:UpdateUnitClassify(unit)
 		self.ClassifyIndicator:SetDesaturated(desature)
 		self.ClassifyIndicator:Show()
 	end
-end
-
--- Scale plates for explosives
-function Module:UpdateExplosives(event, unit)
-	if not hasExplosives or unit ~= self.unit then
-		return
-	end
-
-	local npcID = self.npcID
-	if event == "NAME_PLATE_UNIT_ADDED" and npcID == explosivesID then
-		self:SetScale(C["General"].UIScale * 1.25)
-	elseif event == "NAME_PLATE_UNIT_REMOVED" then
-		self:SetScale(C["General"].UIScale)
-	end
-end
-
-local function checkAffixes()
-	local _, affixes = C_ChallengeMode.GetActiveKeystoneInfo()
-	if affixes[3] and affixes[3] == 13 then
-		hasExplosives = true
-	else
-		hasExplosives = false
-	end
-end
-
-function Module:CheckExplosives()
-	if not C["Nameplate"].ExplosivesScale then
-		return
-	end
-
-	checkAffixes()
-	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", checkAffixes)
-	K:RegisterEvent("CHALLENGE_MODE_START", checkAffixes)
 end
 
 -- Mouseover indicator
@@ -1271,13 +1225,13 @@ function Module:PostUpdatePlates(event, unit)
 		if blizzPlate then
 			self.widgetContainer = blizzPlate.WidgetContainer
 			if self.widgetContainer then
-				self.widgetContainer:SetParent(self)
+				-- self.widgetContainer:SetParent(self)
 				self.widgetContainer:SetScale(1 / C["General"].UIScale)
 			end
 
 			self.softTargetFrame = blizzPlate.SoftTargetFrame
 			if self.softTargetFrame then
-				self.softTargetFrame:SetParent(self)
+				-- self.softTargetFrame:SetParent(self)
 				self.softTargetFrame:SetScale(1 / C["General"].UIScale)
 			end
 		end
@@ -1298,7 +1252,6 @@ function Module:PostUpdatePlates(event, unit)
 
 		self.tarName:SetShown(ShowTargetNPCs[self.npcID])
 	end
-	Module.UpdateExplosives(self, event, unit)
 end
 
 -- Player Nameplate

@@ -337,42 +337,6 @@ function Module.START_LOOT_ROLL(_, rollID, rollTime)
 	end
 end
 
-function Module.LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
-	if K.isDeveloper then
-		print("LOOT_HISTORY_ROLL_CHANGED", itemIdx, playerIdx)
-	end
-	local rollID = C_LootHistory_GetItem(itemIdx)
-	local name, class, rollType = C_LootHistory_GetPlayerInfo(itemIdx, playerIdx)
-
-	local rollIsHidden = true
-	if name and rollType then
-		for _, bar in next, Module.RollBars do
-			if bar.rollID == rollID then
-				if not bar.rolls[rollType] then
-					bar.rolls[rollType] = {}
-				end
-				tinsert(bar.rolls[rollType], { name, class })
-				bar[rolltypes[rollType]].text:SetText(#bar.rolls[rollType])
-				rollIsHidden = false
-				break
-			end
-		end
-
-		-- History changed for a loot roll that hasn't popped up for the player yet, so cache it for later
-		if rollIsHidden then
-			if not cachedRolls[rollID] then
-				cachedRolls[rollID] = {}
-			end
-			if not cachedRolls[rollID][rollType] then
-				if not cachedRolls[rollID][rollType] then
-					cachedRolls[rollID][rollType] = {}
-				end
-				tinsert(cachedRolls[rollID][rollType], { name, class })
-			end
-		end
-	end
-end
-
 function Module:ClearLootRollCache()
 	wipe(cachedRolls)
 	wipe(completedRolls)
@@ -465,8 +429,6 @@ function Module:CreateGroupLoot()
 
 	K:RegisterEvent("START_LOOT_ROLL", self.START_LOOT_ROLL)
 	-- K:RegisterEvent("CANCEL_LOOT_ROLL", self.CANCEL_LOOT_ROLL)
-	K:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED", self.LOOT_HISTORY_ROLL_CHANGED)
-	K:RegisterEvent("LOOT_HISTORY_ROLL_COMPLETE", self.ClearLootRollCache)
 	K:RegisterEvent("LOOT_ROLLS_COMPLETE", self.ClearLootRollCache)
 
 	_G.UIParent:UnregisterEvent("START_LOOT_ROLL")

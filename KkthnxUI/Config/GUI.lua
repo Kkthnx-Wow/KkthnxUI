@@ -850,7 +850,6 @@ local Nameplate = function(self)
 
 	Window:CreateSection("Miscellaneous")
 	Window:CreateSwitch("Nameplate", "AKSProgress", L["Show AngryKeystones Progress"])
-	Window:CreateSwitch("Nameplate", "ExplosivesScale", L["Scale Nameplates for Explosives"])
 	Window:CreateSwitch("Nameplate", "PlateAuras", "Target Nameplate Auras", nil, refreshNameplates)
 	Window:CreateSwitch("Nameplate", "QuestIndicator", L["Quest Progress Indicator"])
 	Window:CreateSwitch("Nameplate", "Smooth", L["Smooth Bars Transition"])

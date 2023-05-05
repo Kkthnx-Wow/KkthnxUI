@@ -64,8 +64,8 @@ local function ReskinWidgetStatusBar(bar)
 
 		bar:CreateBorder()
 
-		if bar.GetStatusBarAtlas then
-			ReplaceWidgetBarTexture(bar, bar:GetStatusBarAtlas())
+		if bar.GetStatusBarTexture then
+			ReplaceWidgetBarTexture(bar, bar:GetStatusBarTexture())
 			hooksecurefunc(bar, "SetStatusBarTexture", ReplaceWidgetBarTexture)
 		end
 
