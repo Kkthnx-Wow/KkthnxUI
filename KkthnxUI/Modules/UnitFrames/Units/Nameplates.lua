@@ -132,6 +132,8 @@ function Module:SetupCVars()
 	Module:UpdateClickableSize()
 	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", Module.UpdateClickableSize)
 	Module:UpdatePlateClickThru()
+	-- fix blizz friendly plate visibility
+	SetCVar("nameplatePlayerMaxDistance", 60)
 end
 
 function Module:BlockAddons()

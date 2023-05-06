@@ -410,13 +410,13 @@ local function OnMouseUp(_, btn)
 
 	infoFrame:Hide()
 
-	if not GuildFrame then
-		LoadAddOn("Blizzard_GuildUI")
+	if not CommunitiesFrame then
+		LoadAddOn("Blizzard_Communities")
 	end
 
 	if btn == "LeftButton" then
-		if GuildFrame then
-			ToggleFrame(GuildFrame)
+		if CommunitiesFrame then
+			ToggleFrame(CommunitiesFrame)
 		end
 	elseif btn == "RightButton" then
 		ToggleGuildFrame()
