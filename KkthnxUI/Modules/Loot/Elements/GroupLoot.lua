@@ -252,9 +252,6 @@ function Module:LootFrame_GetFrame(i)
 end
 
 function Module.CANCEL_LOOT_ROLL(self, event, rollID)
-	if K.isDeveloper then
-		print("START_LOOT_ROLL", event, rollID)
-	end
 	if self.rollID == rollID then
 		self.rollID = nil
 		self.time = nil
@@ -262,9 +259,6 @@ function Module.CANCEL_LOOT_ROLL(self, event, rollID)
 end
 
 function Module.START_LOOT_ROLL(_, rollID, rollTime)
-	if K.isDeveloper then
-		print("START_LOOT_ROLL", rollID, rollTime)
-	end
 	local bar = Module:LootFrame_GetFrame()
 	if not bar then
 		return
