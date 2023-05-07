@@ -593,7 +593,7 @@ do
 
 		if template == "ButtonGlow" then
 			K.LibCustomGlow.ButtonGlow_Start(self, unpack(args))
-		elseif template == "Autolow" then
+		elseif template == "AutoCastGlow" then
 			K.LibCustomGlow.AutoCastGlow_Start(self, unpack(args))
 		elseif template == "PixelGlow" then
 			K.LibCustomGlow.PixelGlow_Start(self, unpack(args))

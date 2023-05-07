@@ -123,20 +123,16 @@ function Module:CreateHeader()
 	self:RegisterForClicks("AnyUp")
 	self:HookScript("OnEnter", function()
 		UnitFrame_OnEnter(self)
-		if not self.Highlight then
-			return
+		if self.Highlight then
+			self.Highlight:Show()
 		end
-
-		self.Highlight:Show()
 	end)
 
 	self:HookScript("OnLeave", function()
 		UnitFrame_OnLeave(self)
-		if not self.Highlight then
-			return
+		if self.Highlight then
+			self.Highlight:Hide()
 		end
-
-		self.Highlight:Hide()
 	end)
 end
 
@@ -166,10 +162,12 @@ end
 
 function Module:UpdateAuraContainer(width, element, maxAuras)
 	local iconsPerRow = element.iconsPerRow
+	local size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, element.spacing) or element.size
 	local maxLines = iconsPerRow and K.Round(maxAuras / iconsPerRow) or 2
-	element.size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, element.spacing) or element.size
+
+	element.size = size
 	element:SetWidth(width)
-	element:SetHeight((element.size + element.spacing) * maxLines)
+	element:SetHeight((size + element.spacing) * maxLines)
 end
 
 function Module:UpdateIconTexCoord(width, height)
@@ -181,16 +179,16 @@ end
 function Module.PostCreateButton(element, button)
 	local fontSize = element.fontSize or element.size * 0.52
 	local parentFrame = CreateFrame("Frame", nil, button)
-	parentFrame:SetAllPoints()
+	parentFrame:SetAllPoints(button)
 	parentFrame:SetFrameLevel(button:GetFrameLevel() + 3)
-	button.Count = K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
+
+	button.Count = button.Count or K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
 	button.Cooldown.noOCC = true
 	button.Cooldown.noCooldownCount = true
 	button.Cooldown:SetReverse(true)
 	button.Cooldown:SetHideCountdownNumbers(true)
 	button.Icon:SetAllPoints()
 	button.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	button.Cooldown:ClearAllPoints()
 
 	if element.__owner.mystyle == "nameplate" then
 		button.Cooldown:SetAllPoints()
@@ -206,8 +204,11 @@ function Module.PostCreateButton(element, button)
 	button.Stealable:SetAtlas("bags-newitem")
 	button:HookScript("OnMouseDown", AuraModule.RemoveSpellFromIgnoreList)
 
+	if not button.timer then
+		button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
+	end
+
 	hooksecurefunc(button, "SetSize", Module.UpdateIconTexCoord)
-	button.timer = K.CreateFontString(parentFrame, fontSize, "", "OUTLINE")
 end
 
 Module.ReplacedSpellIcons = {
@@ -218,13 +219,25 @@ Module.ReplacedSpellIcons = {
 	[373785] = 236293, -- S4, Great Warlock Camouflage
 }
 
+local dispellType = {
+	["Magic"] = true,
+	[""] = true,
+}
+
 function Module.PostUpdateButton(element, button, unit, data)
 	local duration, expiration, debuffType = data.duration, data.expirationTime, data.dispelName
 	local style = element.__owner.mystyle
+	if style == "nameplate" then
+		button:SetSize(element.size, element.size - 4)
+	else
+		button:SetSize(element.size, element.size)
+	end
 
-	button:SetSize(element.size, (style == "nameplate") and (element.size - 4) or element.size)
-
-	button.Icon:SetDesaturated(button.isHarmful and filteredStyle[style] and (element.desaturateDebuff and not data.isPlayerAura))
+	if element.desaturateDebuff and button.isHarmful and filteredStyle[style] and not data.isPlayerAura then
+		button.Icon:SetDesaturated(true)
+	else
+		button.Icon:SetDesaturated(false)
+	end
 
 	if button.isHarmful then
 		local color = oUF.colors.debuff[debuffType] or oUF.colors.debuff.none
@@ -241,7 +254,9 @@ function Module.PostUpdateButton(element, button, unit, data)
 		end
 	end
 
-	button.Stealable:SetShown(element.alwaysShowStealable and (debuffType == "Magic") and (debuffType == "") and not UnitIsPlayer(unit) and not button.isHarmful)
+	if element.alwaysShowStealable and dispellType[debuffType] and not UnitIsPlayer(unit) and not button.isHarmful then
+		button.Stealable:Show()
+	end
 
 	if duration and duration > 0 then
 		button.expiration = expiration

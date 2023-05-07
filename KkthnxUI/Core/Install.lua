@@ -520,7 +520,7 @@ local function HelloWorld()
 	goTutor:SkinButton()
 
 	if welcome:IsShown() then
-		K.LibCustomGlow.AutoCastGlow_Start(goTutor)
+		K.ShowOverlayGlow(goTutor, "AutoCastGlow")
 	end
 
 	goTutor.text = goTutor:CreateFontString(nil, "OVERLAY")
@@ -529,7 +529,7 @@ local function HelloWorld()
 	goTutor.text:SetText("Install")
 
 	goTutor:SetScript("OnClick", function()
-		K.LibCustomGlow.AutoCastGlow_Stop(goTutor)
+		K.HideOverlayGlow(goTutor, "AutoCastGlow")
 		welcome:Hide()
 		YesTutor()
 	end)
