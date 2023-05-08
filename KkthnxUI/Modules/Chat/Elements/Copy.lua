@@ -3,7 +3,6 @@ local Module = K:GetModule("Chat")
 
 -- Sourced: NDui (siweia)
 
-local string_format = string.format
 local string_gsub = string.gsub
 local table_concat = table.concat
 local tostring = tostring

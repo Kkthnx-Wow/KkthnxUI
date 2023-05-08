@@ -2,7 +2,6 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Miscellaneous")
 
 local select = select
-local string_match = string.match
 local tonumber = tonumber
 
 local BNToastFrame = BNToastFrame
@@ -52,10 +51,10 @@ function Module:OnEnable()
 		"CreateBlockStrangerInvites",
 		"CreateBossBanner",
 		"CreateBossEmote",
+		"CreateCustomWaypoint",
 		"CreateDurabilityFrameMove",
 		"CreateErrorFrameToggle",
 		"CreateGUIGameMenuButton",
-		"CreateJerryWay",
 		"CreateMinimapButtonToggle",
 		"CreateObjectiveSizeUpdate",
 		"CreateQuestSizeUpdate",
@@ -673,12 +672,12 @@ function Module:PostBNToastMove(_, anchor)
 	end
 end
 
-function Module:CreateJerryWay()
-	if K.CheckAddOnState("TomTom") then
+function Module:CreateCustomWaypoint()
+	if hash_SlashCmdList["/WAY"] or hash_SlashCmdList["/GO"] then
 		return
 	end
 
-	local pointString = K.InfoColor .. "|Hworldmap:%d+:%d+:%d+|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%s, %s)]|h|r"
+	local pointString = K.InfoColor .. "|Hworldmap:%d+:%d+:%d+|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%s, %s)%s]|h|r"
 
 	local function GetCorrectCoord(x)
 		x = tonumber(x)
@@ -692,14 +691,9 @@ function Module:CreateJerryWay()
 		end
 	end
 
-	SlashCmdList["KKUI_JERRY_WAY"] = function(msg)
-		if not msg or msg == nil or msg == "" or msg == " " then
-			K.Print(K.SystemColor .. "WARNING:|r Use a proper format for coords. Example: '/way 51.7, 65.2'")
-			return
-		end
-
+	SlashCmdList["KKUI_CUSTOM_WAYPOINT"] = function(msg)
 		msg = gsub(msg, "(%d)[%.,] (%d)", "%1 %2")
-		local x, y, z = string_match(msg, "(%S+)%s(%S+)(.*)")
+		local x, y, z = strmatch(msg, "(%S+)%s(%S+)(.*)")
 		if x and y then
 			local mapID = C_Map.GetBestMapForUnit("player")
 			if mapID then
@@ -709,13 +703,20 @@ function Module:CreateJerryWay()
 					x = GetCorrectCoord(x)
 					y = GetCorrectCoord(y)
 					if x and y then
-						K.Print(format(pointString, mapID, x * 100, y * 100, mapName, x, y, z or ""))
+						print(format(pointString, mapID, x * 100, y * 100, mapName, x, y, z or ""))
+						C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(mapID, x / 100, y / 100))
+						C_SuperTrack.SetSuperTrackedUserWaypoint(true)
+					else
+						print("Invalid waypoint format. Please enter the x and y coordinates in the format 'x y'.")
 					end
 				end
 			end
+		else
+			print("Invalid waypoint format. Please enter the x and y coordinates in the format 'x y'.")
 		end
 	end
-	SLASH_KKUI_JERRY_WAY1 = "/way"
+	SLASH_KKUI_CUSTOM_WAYPOINT1 = "/way"
+	SLASH_KKUI_CUSTOM_WAYPOINT2 = "/go"
 end
 
 function Module:UpdateMaxCameraZoom()

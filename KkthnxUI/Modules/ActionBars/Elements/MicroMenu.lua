@@ -6,15 +6,18 @@ local pairs = pairs
 local type = type
 
 local buttonList = {}
+local watcher = 0
 
 local function onLeaveBar()
 	local KKUI_MB = KKUI_MenuBar
-	return C["ActionBar"].FadeMicroMenu and UIFrameFadeOut(KKUI_MB, 0.2, KKUI_MB:GetAlpha(), 0)
+	if C["ActionBar"].FadeMicroMenu then
+		UIFrameFadeOut(KKUI_MB, 0.2, KKUI_MB:GetAlpha(), 0)
+	end
 end
 
-local watcher = 0
 local function onUpdate(_, elapsed)
 	local KKUI_MB = KKUI_MenuBar
+	watcher = watcher + elapsed
 	if watcher > 0.1 then
 		if not KKUI_MB:IsMouseOver() then
 			KKUI_MB.IsMouseOvered = nil
@@ -22,8 +25,6 @@ local function onUpdate(_, elapsed)
 			onLeaveBar()
 		end
 		watcher = 0
-	else
-		watcher = watcher + elapsed
 	end
 end
 

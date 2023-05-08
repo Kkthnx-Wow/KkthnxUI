@@ -208,13 +208,16 @@ function Module:OnEnable()
 		return
 	end
 
-	local cooldownIndex = getmetatable(ActionButton1Cooldown).__index
-	hooksecurefunc(cooldownIndex, "SetCooldown", Module.StartTimer)
+	-- Hook the SetCooldown function to start the timer
+	hooksecurefunc(getmetatable(ActionButton1Cooldown).__index, "SetCooldown", Module.StartTimer)
 
+	-- Hide cooldown numbers
 	hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", Module.HideCooldownNumbers)
 
+	-- Register for action bar cooldown updates
 	K:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", Module.ActionbarUpateCooldown)
 
+	-- Register action button frames
 	if _G["ActionBarButtonEventsFrame"].frames then
 		for _, frame in pairs(_G["ActionBarButtonEventsFrame"].frames) do
 			Module.RegisterActionButton(frame)
@@ -222,6 +225,6 @@ function Module:OnEnable()
 	end
 	hooksecurefunc(ActionBarButtonEventsFrameMixin, "RegisterFrame", Module.RegisterActionButton)
 
-	-- Hide Default Cooldown
-	SetCVar("countdownForCooldowns", 0) -- todo: hide default option
+	-- Hide default cooldown
+	SetCVar("countdownForCooldowns", 0)
 end
