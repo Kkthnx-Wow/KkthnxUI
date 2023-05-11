@@ -108,7 +108,7 @@ local function ReskinPVPCaptureBar(self)
 end
 
 local function ReskinSpellDisplayWidget(spell)
-	if not spell.bg then
+	if not spell or not spell.bg then
 		spell.Border:SetAlpha(0)
 		spell.DebuffBorder:SetAlpha(0)
 		spell.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -122,6 +122,10 @@ local function ReskinSpellDisplayWidget(spell)
 end
 
 local function ReskinPowerBarWidget(self)
+	if not self.widgetFrames then
+		return
+	end
+
 	for _, widgetFrame in pairs(self.widgetFrames) do
 		if widgetFrame.widgetType == Type_StatusBar then
 			if not widgetFrame:IsForbidden() then
@@ -132,6 +136,10 @@ local function ReskinPowerBarWidget(self)
 end
 
 local function ReskinWidgetGroups(self)
+	if not self.widgetFrames then
+		return
+	end
+
 	for _, widgetFrame in pairs(self.widgetFrames) do
 		if not widgetFrame:IsForbidden() then
 			local widgetType = widgetFrame.widgetType
@@ -170,6 +178,10 @@ table.insert(C.defaultThemes, function()
 	hooksecurefunc(_G.TopScenarioWidgetContainerBlock.WidgetContainer, "UpdateWidgetLayout", ReskinPowerBarWidget)
 
 	hooksecurefunc(_G.BottomScenarioWidgetContainerBlock.WidgetContainer, "UpdateWidgetLayout", function(self)
+		if not self.widgetFrames then
+			return
+		end
+
 		for _, widgetFrame in pairs(self.widgetFrames) do
 			if widgetFrame.widgetType == Type_SpellDisplay then
 				if not widgetFrame:IsForbidden() then

@@ -15,14 +15,6 @@ local Minimap = Minimap
 local PlaySound = PlaySound
 local UIParent = UIParent
 
-local positions = {
-	{ "BOTTOMLEFT", -7, -7 },
-	{ "BOTTOMRIGHT", 7, -7 },
-	{ "TOPLEFT", -7, 7 },
-	{ "TOPRIGHT", 7, 7 },
-}
-local position = positions[C["Minimap"].RecycleBinPosition.Value] or positions[1]
-
 function Module:CreateRecycleBin()
 	if not C["Minimap"].ShowRecycleBin then
 		return
@@ -47,7 +39,17 @@ function Module:CreateRecycleBin()
 	bu:SetAlpha(0.6)
 	bu:SetSize(16, 16)
 	bu:ClearAllPoints()
-	bu:SetPoint(position[1], position[2], position[3])
+	if C["Minimap"].RecycleBinPosition.Value == 1 then
+		bu:SetPoint("BOTTOMLEFT", -7, -7)
+	elseif C["Minimap"].RecycleBinPosition.Value == 2 then
+		bu:SetPoint("BOTTOMRIGHT", 7, -7)
+	elseif C["Minimap"].RecycleBinPosition.Value == 3 then
+		bu:SetPoint("TOPLEFT", -7, 7)
+	elseif C["Minimap"].RecycleBinPosition.Value == 4 then
+		bu:SetPoint("TOPRIGHT", 7, 7)
+	else
+		bu:SetPoint("BOTTOMLEFT", -7, -7)
+	end
 
 	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 	bu.Icon:SetAllPoints()
@@ -196,9 +198,6 @@ function Module:CreateRecycleBin()
 		if currentIndex < timeThreshold then
 			-- schedule another call if within time threshold
 			C_Timer_After(pendingTime, CollectRubbish)
-		else
-			-- safety check: print an error message if the function exceeds the time threshold
-			-- print("ERROR: CollectRubbish() reached time threshold and was terminated.")
 		end
 	end
 
