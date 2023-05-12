@@ -832,6 +832,19 @@ function Module:CreateQueueStatusText()
 	hooksecurefunc("QueueStatusEntry_SetFullDisplay", Module.SetFullQueueStatus)
 end
 
+function Module:BlizzardACF()
+	local frame = AddonCompartmentFrame
+	if C["Minimap"].ShowRecycleBin then
+		K.HideInterfaceOption(frame)
+	else
+		frame:ClearAllPoints()
+		frame:SetPoint("BOTTOMRIGHT", Minimap, -26, 2)
+		frame:SetFrameLevel(999)
+		frame:StripTextures()
+		frame:CreateBorder()
+	end
+end
+
 function Module:OnEnable()
 	if not C["Minimap"].Enable then
 		return
@@ -875,6 +888,7 @@ function Module:OnEnable()
 
 	-- Add Elements
 	local loadMinimapModules = {
+		"BlizzardACF",
 		"CreatePing",
 		"CreateRecycleBin",
 		"CreateSoundVolume",
