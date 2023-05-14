@@ -2493,7 +2493,8 @@ Spell.GetCooldown = function(self)
 	return GetSpellCooldown(self._state_action)
 end
 Spell.IsAttack = function(self)
-	return IsAttackSpell(FindSpellBookSlotBySpellID(self._state_action), "spell")
+	local id = FindSpellBookSlotBySpellID(self._state_action)
+	return id and IsAttackSpell(id, "spell")
 end -- needs spell book id as of 4.0.1.13066
 Spell.IsEquipped = function(self)
 	return nil
@@ -2502,7 +2503,8 @@ Spell.IsCurrentlyActive = function(self)
 	return IsCurrentSpell(self._state_action)
 end
 Spell.IsAutoRepeat = function(self)
-	return IsAutoRepeatSpell(FindSpellBookSlotBySpellID(self._state_action), "spell")
+	local id = FindSpellBookSlotBySpellID(self._state_action)
+	return id and IsAutoRepeatSpell(id, "spell")
 end -- needs spell book id as of 4.0.1.13066
 Spell.IsUsable = function(self)
 	return IsUsableSpell(self._state_action)
@@ -2511,8 +2513,10 @@ Spell.IsConsumableOrStackable = function(self)
 	return IsConsumableSpell(self._state_action)
 end
 Spell.IsUnitInRange = function(self, unit)
-	return IsSpellInRange(FindSpellBookSlotBySpellID(self._state_action), "spell", unit)
+	local id = FindSpellBookSlotBySpellID(self._state_action)
+	return id and IsSpellInRange(id, "spell", unit)
 end -- needs spell book id as of 4.0.1.13066
+
 Spell.SetTooltip = function(self)
 	return GameTooltip:SetSpellByID(self._state_action)
 end

@@ -65,6 +65,8 @@ local list = {
 		{ AuraID = 308498, UnitID = "target", Caster = "player" }, -- 共鸣箭
 		{ AuraID = 333526, UnitID = "target", Caster = "player" }, -- 尖刺果实
 		{ AuraID = 375893, UnitID = "target", Caster = "player" }, -- 死亡飞轮
+
+		{ AuraID = 410167, UnitID = "target", Caster = "player" }, -- 破甲，生存4T
 	},
 	["Special Aura"] = { -- 玩家重要光环组
 		{ AuraID = 19574, UnitID = "player" }, -- 狂野怒火
@@ -110,12 +112,16 @@ local list = {
 		{ AuraID = 336892, UnitID = "player", Flash = true }, -- 无懈警戒之秘
 		{ AuraID = 388035, UnitID = "player" }, -- 巨熊之韧
 		{ AuraID = 392956, UnitID = "player" }, -- 巨熊之韧
+		{ AuraID = 407405, UnitID = "player" }, -- 弦之韵律
 		{ AuraID = 388045, UnitID = "player", Flash = true }, -- 警戒
 		{ AuraID = 378770, UnitID = "player", Flash = true }, -- 夺命打击
+		{ AuraID = 378747, UnitID = "player", Flash = true }, -- 凶暴兽群
 
 		{ AuraID = 394366, UnitID = "player" }, -- 密迹寻踪，射击2T
 		{ AuraID = 394384, UnitID = "player", Flash = true }, -- 集中瞄准，射击4T
 		{ AuraID = 394388, UnitID = "player", Flash = true }, -- 狂野弹幕，生存4T
+
+		{ AuraID = 410147, UnitID = "player", Flash = true }, -- 暴露伤口，生存2T
 	},
 	["Focus Aura"] = { -- 焦点光环组
 		{ AuraID = 3355, UnitID = "focus", Caster = "player" }, -- 冰冻陷阱

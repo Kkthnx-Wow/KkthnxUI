@@ -203,7 +203,7 @@ function Module:CreateLumos(self)
 		bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 		bu.Icon:SetAllPoints()
 		bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		bu:CreateShadow()
+		bu:CreateShadow(true, K.MediaFolder .. "Skins\\UI-Slot-Background")
 
 		bu.glowFrame = K.CreateGlowFrame(bu, iconSize, 4)
 

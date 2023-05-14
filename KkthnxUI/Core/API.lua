@@ -115,7 +115,7 @@ local function CreateBackdrop(bFrame, ...)
 	bFrame.KKUI_Backdrop = kkui_backdrop -- Save the backdrop as a property of the frame so that it can be referenced later on.
 end
 
-local function CreateShadow(f, bd)
+local function CreateShadow(f, bd, bdTexture)
 	-- Check if the shadow already exists, return if it does
 	if f.Shadow then
 		return
@@ -137,21 +137,24 @@ local function CreateShadow(f, bd)
 		edgeSize = 3,
 	}
 
-	if bd then
-		backdrop.bgFile = C["Media"].Textures.White8x8Texture
-		backdrop.insets = { left = 3, right = 3, top = 3, bottom = 3 }
-	end
-
 	-- Set the backdrop of the shadow frame
 	f.Shadow:SetBackdrop(backdrop)
 
 	-- Set the frame level of the shadow frame to be one lower than the parent frame
 	f.Shadow:SetFrameLevel(frame:GetFrameLevel() > 0 and frame:GetFrameLevel() - 1 or 0)
 
-	-- Set the background and border color of the shadow frame based on the 'bd' argument
 	if bd then
-		f.Shadow:SetBackdropColor(unpack(C["Media"].Backdrops.ColorBackdrop))
+		backdrop.bgFile = bdTexture or C.Media.Textures.White8x8Texture
+		backdrop.insets = { left = 2, right = 2, top = 2, bottom = 2 }
+
+		if bdTexture == K.MediaFolder .. "Skins\\UI-Slot-Background" then
+			backdrop.insets = { left = 1, right = 1, top = 1, bottom = 1 }
+			f.Shadow:SetBackdropColor(0.7, 0.7, 0.7, 0.8)
+		else
+			f.Shadow:SetBackdropColor(unpack(C.Media.Backdrops.ColorBackdrop))
+		end
 	end
+
 	f.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 
 	-- Return the created shadow frame

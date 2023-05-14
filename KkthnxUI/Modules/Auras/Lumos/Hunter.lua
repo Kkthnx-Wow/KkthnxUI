@@ -64,6 +64,7 @@ function Module:ChantLumos(self)
 		UpdateCooldown(self.lumos[2], 217200, true)
 		UpdateBuff(self.lumos[3], 106785, 272790, false, true, "END")
 		UpdateBuff(self.lumos[4], 19574, 19574, true, false, true)
+
 		do
 			local button = self.lumos[5]
 			if IsPlayerSpell(378745) then

@@ -25,7 +25,7 @@ function Module:PostCreateLumos(self)
 	for i = 1, 6 do
 		local bu = CreateFrame("Frame", nil, self.Health)
 		bu:SetSize(iconSize, iconSize / 2)
-		bu:CreateShadow()
+		bu:CreateShadow(true)
 
 		bu.Text = K.CreateFontString(bu, 12, diceSpells[i].text, "", false, "TOP", 1, 12)
 
