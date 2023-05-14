@@ -40,9 +40,9 @@ local function colorHotkey(self, r, g, b)
 	local item = self:GetParent()
 	if item.rangeOverlay then
 		if r == 0.6 and g == 0.6 and b == 0.6 then
-			item.rangeOverlay:SetVertexColor(0, 0, 0, 0)
+			item.rangeOverlay:SetVertexColor(1, 1, 1)
 		else
-			item.rangeOverlay:SetVertexColor(0.8, 0.1, 0.1, 0.5)
+			item.rangeOverlay:SetVertexColor(1, 0, 0)
 		end
 	end
 end
@@ -57,6 +57,7 @@ local function reskinRangeOverlay(item)
 	local rangeOverlay = item:CreateTexture(nil, "OVERLAY")
 	rangeOverlay:SetTexture(C["Media"].Textures.White8x8Texture)
 	rangeOverlay:SetAllPoints(item.icon)
+	rangeOverlay:SetBlendMode("MOD")
 	item.rangeOverlay = rangeOverlay
 
 	hooksecurefunc(item.HotKey, "Show", showHotkey)

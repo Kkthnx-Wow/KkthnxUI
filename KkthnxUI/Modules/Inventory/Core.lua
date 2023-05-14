@@ -1122,10 +1122,11 @@ function Module:OnEnable()
 		self.bindType:SetFontObject(K.UIFontOutline)
 		self.bindType:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
 
-		self.canIUseIt = self:CreateTexture(nil, "OVERLAY")
-		self.canIUseIt:SetSize(32, 32)
-		self.canIUseIt:SetTexture("Interface\\BUTTONS\\UI-GroupLoot-Pass-Up")
-		self.canIUseIt:SetPoint("CENTER", 1, 0)
+		self.usableTexture = self:CreateTexture(nil, "OVERLAY")
+		self.usableTexture:SetTexture(C["Media"].Textures.White8x8Texture)
+		self.usableTexture:SetAllPoints(self)
+		self.usableTexture:SetVertexColor(1, 0, 0)
+		self.usableTexture:SetBlendMode("MOD")
 
 		if showNewItem then
 			self.glowFrame = CreateFrame("Frame", nil, self)
@@ -1229,9 +1230,9 @@ function Module:OnEnable()
 
 		-- Determine if we can use that item or not?
 		if (Unfit:IsItemUnusable(item.link) or item.minlevel and item.minlevel > K.Level) and not item.locked then
-			self.canIUseIt:Show()
+			self.usableTexture:Show()
 		else
-			self.canIUseIt:Hide()
+			self.usableTexture:Hide()
 		end
 
 		self.IconOverlay:SetVertexColor(1, 1, 1)
