@@ -108,7 +108,7 @@ local function UpdateIcon(self, _, spellID, texture, id, expiration, duration, c
 		AuraTrack.Auras[id].Backdrop:SetPoint("BOTTOMRIGHT", AuraTrack.Auras[id], 1, -1)
 
 		if AuraTrack.Auras[id].Backdrop.CreateShadow then
-			AuraTrack.Auras[id]:CreateShadow()
+			AuraTrack.Auras[id]:CreateShadow(true)
 		end
 
 		AuraTrack.Auras[id].Texture = AuraTrack.Auras[id]:CreateTexture(nil, "ARTWORK")
