@@ -328,7 +328,7 @@ function Module:ChatCopy_Create()
 	local scrollArea = CreateFrame("ScrollFrame", "KKUI_CopyChatScrollFrame", frame, "UIPanelScrollFrameTemplate")
 	scrollArea:SetPoint("TOPLEFT", 12, -40)
 	scrollArea:SetPoint("BOTTOMRIGHT", -30, 20)
-	_G.KKUI_CopyChatScrollFrameScrollBar:SkinScrollBar()
+	scrollArea.ScrollBar:SkinScrollBar()
 
 	editBox = CreateFrame("EditBox", nil, frame)
 	editBox:SetMultiLine(true)

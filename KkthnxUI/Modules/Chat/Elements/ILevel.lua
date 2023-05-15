@@ -13,6 +13,7 @@ local GetItemInfo = GetItemInfo
 local GetItemStats = GetItemStats
 
 local itemCache = {}
+local GetDungeonScoreInColor
 
 local socketWatchList = {
 	["BLUE"] = true,
@@ -78,7 +79,6 @@ local function convertItemLevel(link)
 	return link
 end
 
-local GetDungeonScoreInColor
 local function formatDungeonScore(link, score)
 	return score and string_gsub(link, "|h%[(.-)%]|h", "|h[" .. string_format(DUNGEON_SCORE_LEADER, GetDungeonScoreInColor(score)) .. "]|h")
 end

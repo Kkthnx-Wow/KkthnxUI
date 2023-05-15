@@ -38,7 +38,8 @@ local function GetChatRoleIcons(event, arg1, arg2, ...)
 		end
 
 		if playerRole and IconTex[playerRole] then
-			ret = IconTex[playerRole] .. ret
+			ret = { IconTex[playerRole], ret }
+			ret = table.concat(ret)
 		end
 	end
 
