@@ -9,7 +9,6 @@ local CharacterModelScene = CharacterModelScene
 local CharacterSecondaryHandSlot = CharacterSecondaryHandSlot
 local CharacterStatsPane = CharacterStatsPane
 local GetInventoryItemLink = GetInventoryItemLink
-local HideUIPanel = HideUIPanel
 local IsCosmeticItem = IsCosmeticItem
 local hooksecurefunc = hooksecurefunc
 
@@ -59,10 +58,6 @@ tinsert(C.defaultThemes, function()
 		local itemLink = GetInventoryItemLink("player", self:GetID())
 		self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
 	end
-
-	-- if CharacterFrame and CharacterFrame:IsShown() then
-	-- 	HideUIPanel(CharacterFrame)
-	-- end
 
 	CharacterModelScene:DisableDrawLayer("BACKGROUND")
 	CharacterModelScene:DisableDrawLayer("BORDER")

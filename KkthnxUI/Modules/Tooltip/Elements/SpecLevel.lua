@@ -186,7 +186,7 @@ function Module:GetUnitItemLevel(unit)
 	end
 
 	local class = select(2, UnitClass(unit))
-	local ilvl, boa, total, haveWeapon, twohand, sets = 0, 0, 0, 0, 0, 0
+	local ilvl, boa, total, haveWeapon, twohand, sets = nil, 0, 0, 0, 0, 0 -- Change "0" to nil
 	local delay, mainhand, offhand, hasArtifact
 	weapon[1], weapon[2] = 0, 0
 
@@ -278,17 +278,15 @@ function Module:GetUnitItemLevel(unit)
 			ilvl = total / 16
 		end
 
-		if ilvl > 0 then
+		if ilvl and ilvl > 0 then -- Add a check for nil before comparing
 			ilvl = format("%.1f", ilvl)
 		end
 		if boa > 0 then
-			ilvl = ilvl .. " |cff00ccff(" .. boa .. HEIRLOOMS .. ")"
+			ilvl = ilvl .. " - |cff00ccff" .. boa .. " " .. HEIRLOOMS
 		end
 		if sets > 0 then
 			ilvl = ilvl .. formatSets[sets]
 		end
-	else
-		ilvl = nil
 	end
 
 	return ilvl
