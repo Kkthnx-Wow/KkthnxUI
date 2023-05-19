@@ -325,45 +325,25 @@ K:RegisterEvent("PLAYER_LEVEL_UP", function(_, level)
 	K.Level = level
 end)
 
-K.FactionIcons = {
-	["Alliance"] = "Interface\\Icons\\Achievement_PVP_A_A",
-	["Horde"] = "Interface\\Icons\\Achievement_PVP_H_H",
-}
-
 -- Save original Chat_DisplayTimePlayed function
 local originalChatFrame_DisplayTimePlayed = ChatFrame_DisplayTimePlayed
 -- Override ChatFrame_DisplayTimePlayed function
 ChatFrame_DisplayTimePlayed = function(_, totalTime, levelTime)
-	-- Cache frequently used values
-	local classColors = K.ClassColors[K.Class]
-	local colorStr = classColors.colorStr
-	local name = K.Name
-	local race = K.Race
-	local faction = K.Faction
-
 	-- Get player's money as string
 	local money = GetMoneyString(GetMoney())
 
 	-- Get player's class
-	local _, class = UnitClass("player")
-	local classColors = K.ClassColors[class]
-	local colorStr = classColors.colorStr
-	local classIcon = classColors.icon
-
-	-- Get player's current specialization or NONE if no specialization is selected
-	local specID = GetSpecialization()
-	local spec = specID and select(2, GetSpecializationInfo(specID)) or "NONE"
-
-	-- Get player's gender as string
-	local gender = UnitSex("player") == 2 and "Male" or "Female"
+	local localizedClass, englishClass = UnitClass("player")
+	local colorClass = K.ClassColors[englishClass]
+	local colorString = colorClass.colorStr
 
 	-- Create messages using string formatting
-	local totalTimeMessage = string.format("%sTotal time played: %s", K.InfoColor, K.GreyColor .. SecondsToTime(totalTime))
-	local levelTimeMessage = string.format("%sTime played this level: %s", K.InfoColor, K.GreyColor .. SecondsToTime(levelTime))
-	local moneyMessage = string.format("%sMoney: %s", K.InfoColor, K.GreyColor .. money)
+	local totalTimeMessage = string.format("%sTotal time played: %s", K.SystemColor, K.GreyColor .. SecondsToTime(totalTime))
+	local levelTimeMessage = string.format("%sTime played this level: %s", K.SystemColor, K.GreyColor .. SecondsToTime(levelTime))
+	local moneyMessage = string.format("%sMoney: %s", K.SystemColor, K.GreyColor .. money)
 
 	-- Create player info message using string concatenation
-	local playerInfo = string.format("|T%s:16:16:0:0:64:64:4:60:4:60|t |T%s|t |c%s%s - %s - %s - %s", K.FactionIcons[faction], classIcon, colorStr, name, race, gender, spec)
+	local playerInfo = string.format("%s %sLevel %d|r |c%s%s|r", K.Name, K.SystemColor, K.Level, colorString, localizedClass)
 
 	-- Print each message on its own line
 	print(playerInfo)
