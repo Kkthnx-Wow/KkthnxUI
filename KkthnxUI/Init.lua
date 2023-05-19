@@ -226,20 +226,6 @@ function K:UnregisterEvent(event, func)
 	end
 end
 
-function K:CreateEventListener(event, func, unit1, unit2)
-	if event == "CLEU" then
-		event = "COMBAT_LOG_EVENT_UNFILTERED"
-	end
-
-	local listener = function(_, ...)
-		func(event, ...)
-	end
-
-	K:RegisterEvent(event, listener, unit1, unit2)
-
-	return listener
-end
-
 function K:NewModule(name)
 	assert(not modules[name], ("Module '%s' already exists."):format(name))
 	local module = { name = name }
@@ -339,7 +325,12 @@ K:RegisterEvent("PLAYER_LEVEL_UP", function(_, level)
 	K.Level = level
 end)
 
--- Save original ChatFrame_DisplayTimePlayed function
+K.FactionIcons = {
+	["Alliance"] = "Interface\\Icons\\Achievement_PVP_A_A",
+	["Horde"] = "Interface\\Icons\\Achievement_PVP_H_H",
+}
+
+-- Save original Chat_DisplayTimePlayed function
 local originalChatFrame_DisplayTimePlayed = ChatFrame_DisplayTimePlayed
 -- Override ChatFrame_DisplayTimePlayed function
 ChatFrame_DisplayTimePlayed = function(_, totalTime, levelTime)
@@ -353,9 +344,18 @@ ChatFrame_DisplayTimePlayed = function(_, totalTime, levelTime)
 	-- Get player's money as string
 	local money = GetMoneyString(GetMoney())
 
+	-- Get player's class
+	local _, class = UnitClass("player")
+	local classColors = K.ClassColors[class]
+	local colorStr = classColors.colorStr
+	local classIcon = classColors.icon
+
 	-- Get player's current specialization or NONE if no specialization is selected
 	local specID = GetSpecialization()
 	local spec = specID and select(2, GetSpecializationInfo(specID)) or "NONE"
+
+	-- Get player's gender as string
+	local gender = UnitSex("player") == 2 and "Male" or "Female"
 
 	-- Create messages using string formatting
 	local totalTimeMessage = string.format("%sTotal time played: %s", K.InfoColor, K.GreyColor .. SecondsToTime(totalTime))
@@ -363,10 +363,13 @@ ChatFrame_DisplayTimePlayed = function(_, totalTime, levelTime)
 	local moneyMessage = string.format("%sMoney: %s", K.InfoColor, K.GreyColor .. money)
 
 	-- Create player info message using string concatenation
-	local playerInfo = string.format("|c%s%s|r - %s - %s - %s", colorStr, name, race, faction, spec)
+	local playerInfo = string.format("|T%s:16:16:0:0:64:64:4:60:4:60|t |T%s|t |c%s%s - %s - %s - %s", K.FactionIcons[faction], classIcon, colorStr, name, race, gender, spec)
 
-	-- Combine and print all messages in one call
-	print(playerInfo, totalTimeMessage, levelTimeMessage, moneyMessage)
+	-- Print each message on its own line
+	print(playerInfo)
+	print(totalTimeMessage)
+	print(levelTimeMessage)
+	print(moneyMessage)
 end
 
 for i = 1, GetNumAddOns() do
