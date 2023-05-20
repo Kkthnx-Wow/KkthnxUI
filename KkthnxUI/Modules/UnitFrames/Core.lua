@@ -226,14 +226,15 @@ local dispellType = {
 
 function Module.PostUpdateButton(element, button, unit, data)
 	local duration, expiration, debuffType = data.duration, data.expirationTime, data.dispelName
+
 	local style = element.__owner.mystyle
 	if style == "nameplate" then
-		button:SetSize(element.size, element.size - 4)
+		button:SetSize(element.size, element.size * 1)
 	else
 		button:SetSize(element.size, element.size)
 	end
 
-	if element.desaturateDebuff and button.isHarmful and filteredStyle[style] and not data.isPlayerAura then
+	if button.isHarmful and filteredStyle[style] and not data.isPlayerAura then
 		button.Icon:SetDesaturated(true)
 	else
 		button.Icon:SetDesaturated(false)
@@ -254,7 +255,7 @@ function Module.PostUpdateButton(element, button, unit, data)
 		end
 	end
 
-	if element.alwaysShowStealable and dispellType[debuffType] and not UnitIsPlayer(unit) and not button.isHarmful then
+	if dispellType[debuffType] and not UnitIsPlayer(unit) and not button.isHarmful then
 		button.Stealable:Show()
 	end
 
@@ -269,7 +270,7 @@ function Module.PostUpdateButton(element, button, unit, data)
 
 	local newTexture = Module.ReplacedSpellIcons[button.spellID]
 	if newTexture then
-		button.icon:SetTexture(newTexture)
+		button.Icon:SetTexture(newTexture)
 	end
 
 	if element.bolsterInstanceID and element.bolsterInstanceID == button.auraInstanceID then
@@ -280,7 +281,6 @@ end
 function Module.AurasPostUpdateInfo(element, _, _, debuffsChanged)
 	element.bolsterStacks = 0
 	element.bolsterInstanceID = nil
-	element.hasTheDot = nil
 
 	for auraInstanceID, data in next, element.allBuffs do
 		if data.spellId == 209859 then
@@ -304,11 +304,14 @@ function Module.AurasPostUpdateInfo(element, _, _, debuffsChanged)
 		end
 	end
 
-	if C["Nameplate"].ColorByDot and debuffsChanged then
-		for _, data in next, element.allDebuffs do
-			if data.isPlayerAura and C["Nameplate"].DotSpellList.Spells[data.spellId] then
-				element.hasTheDot = true
-				break
+	if debuffsChanged then
+		element.hasTheDot = nil
+		if C["Nameplate"].ColorByDot then
+			for _, data in next, element.allDebuffs do
+				if data.isPlayerAura and C["Nameplate"].DotSpellList.Spells[data.spellId] then
+					element.hasTheDot = true
+					break
+				end
 			end
 		end
 	end
@@ -317,16 +320,17 @@ end
 function Module.CustomFilter(element, unit, data)
 	local style = element.__owner.mystyle
 	local name, debuffType, isStealable, spellID, nameplateShowAll = data.name, data.dispelName, data.isStealable, data.spellId, data.nameplateShowAll
+	local showDebuffType = C["Unitframe"].OnlyShowPlayerDebuff
 
 	if style == "nameplate" or style == "boss" or style == "arena" then
-		if spellID == 209859 then -- pass all bolster
+		if name and spellID == 209859 then -- pass all bolster
 			return true
 		end
 		if element.__owner.plateType == "NameOnly" then
 			return C.NameplateWhiteList[spellID]
 		elseif C.NameplateBlackList[spellID] then
 			return false
-		elseif (element.showStealableBuffs and isStealable or element.alwaysShowStealable and debuffType == "Magic") and not UnitIsPlayer(unit) and not data.isHarmful then
+		elseif (isStealable or dispellType[debuffType]) and not UnitIsPlayer(unit) and not data.isHarmful then
 			return true
 		elseif C.NameplateWhiteList[spellID] then
 			return true
@@ -335,7 +339,7 @@ function Module.CustomFilter(element, unit, data)
 			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and data.isPlayerAura)
 		end
 	else
-		return (element.onlyShowPlayer and data.isPlayerAura) or name
+		return (showDebuffType and data.isPlayerAura) or (not showDebuffType and name)
 	end
 end
 
@@ -569,18 +573,14 @@ function Module:CreateUnits()
 		Module:ToggleTargetClassPower()
 	end
 
-	oUF:RegisterStyle("Player", Module.CreatePlayer)
-	oUF:RegisterStyle("Target", Module.CreateTarget)
-	oUF:RegisterStyle("ToT", Module.CreateTargetOfTarget)
-	oUF:RegisterStyle("Focus", Module.CreateFocus)
-	oUF:RegisterStyle("FocusTarget", Module.CreateFocusTarget)
-	oUF:RegisterStyle("Pet", Module.CreatePet)
-	oUF:RegisterStyle("Boss", Module.CreateBoss)
-	oUF:RegisterStyle("Arena", Module.CreateArena)
-	oUF:RegisterStyle("Party", Module.CreateParty)
-	oUF:RegisterStyle("Raid", Module.CreateRaid)
-
 	if C["Unitframe"].Enable then
+		oUF:RegisterStyle("Player", Module.CreatePlayer)
+		oUF:RegisterStyle("Target", Module.CreateTarget)
+		oUF:RegisterStyle("ToT", Module.CreateTargetOfTarget)
+		oUF:RegisterStyle("Focus", Module.CreateFocus)
+		oUF:RegisterStyle("FocusTarget", Module.CreateFocusTarget)
+		oUF:RegisterStyle("Pet", Module.CreatePet)
+
 		oUF:SetActiveStyle("Player")
 		local Player = oUF:Spawn("player", "oUF_Player")
 		Player:SetSize(C["Unitframe"].PlayerHealthWidth, C["Unitframe"].PlayerHealthHeight + C["Unitframe"].PlayerPowerHeight + 6)
@@ -623,6 +623,7 @@ function Module:CreateUnits()
 	end
 
 	if C["Boss"].Enable then
+		oUF:RegisterStyle("Boss", Module.CreateBoss)
 		oUF:SetActiveStyle("Boss")
 
 		local Boss = {}
@@ -640,6 +641,7 @@ function Module:CreateUnits()
 	end
 
 	if C["Arena"].Enable then
+		oUF:RegisterStyle("Arena", Module.CreateArena)
 		oUF:SetActiveStyle("Arena")
 
 		local Arena = {}
@@ -658,6 +660,7 @@ function Module:CreateUnits()
 
 	local partyMover
 	if showPartyFrame then
+		oUF:RegisterStyle("Party", Module.CreateParty)
 		oUF:SetActiveStyle("Party")
 
 		local partyXOffset, partyYOffset = 6, C["Party"].ShowBuffs and 56 or 36
@@ -725,6 +728,7 @@ function Module:CreateUnits()
 
 	if C["Raid"].Enable then
 		SetCVar("predictedHealth", 1)
+		oUF:RegisterStyle("Raid", Module.CreateRaid)
 		oUF:SetActiveStyle("Raid")
 
 		-- Hide Default RaidFrame
