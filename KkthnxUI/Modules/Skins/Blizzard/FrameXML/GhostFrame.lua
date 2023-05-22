@@ -7,15 +7,11 @@ table_insert(C.defaultThemes, function()
 		return
 	end
 
-	local GhostFrameContentsFrame = GhostFrameContentsFrame
-	GhostFrameContentsFrame:SetAllPoints()
-
 	for i = 1, 6 do
 		select(i, GhostFrame:GetRegions()):Hide()
 	end
 
 	GhostFrameContentsFrameIcon:SetTexCoord(unpack(K.TexCoords))
-	GhostFrameContentsFrameIcon:GetParent():CreateBorder()
 
 	GhostFrame:SkinButton()
 end)
