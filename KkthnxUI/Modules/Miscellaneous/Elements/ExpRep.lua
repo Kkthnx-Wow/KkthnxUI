@@ -217,7 +217,9 @@ function Module:ExpBar_UpdateTooltip()
 		if RestedXP and RestedXP > 0 then
 			GameTooltip:AddDoubleLine("Rested:", string_format("%d (%.2f%%)", RestedXP, PercentRested), 1, 1, 1)
 		end
-	elseif GetWatchedFactionInfo() then
+	end
+
+	if GetWatchedFactionInfo() then
 		local name, reaction, minValue, maxValue, curValue, factionID = GetWatchedFactionInfo()
 		local standing = _G["FACTION_STANDING_LABEL" .. reaction] or UNKNOWN
 		local isParagon = C_Reputation_IsFactionParagon(factionID)
@@ -238,6 +240,9 @@ function Module:ExpBar_UpdateTooltip()
 			local friendID, friendTextLevel, _
 			if factionID then
 				friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(factionID)
+				if friendID and friendID.friendshipFactionID > 0 then
+					standing = friendID.reaction
+				end
 			end
 
 			local isMajorFaction = factionID and C_Reputation_IsMajorFaction(factionID)
@@ -245,15 +250,19 @@ function Module:ExpBar_UpdateTooltip()
 				GameTooltip:AddDoubleLine(STANDING .. ":", (friendID and friendTextLevel) or standing, 1, 1, 1)
 			end
 
-			if isMajorFaction and not C_MajorFactions_HasMaximumRenown(factionID) then
+			if isMajorFaction then
 				local majorFactionData = C_MajorFactions_GetMajorFactionData(factionID)
+				curValue = C_MajorFactions_HasMaximumRenown(factionID) and majorFactionData.renownLevelThreshold or majorFactionData.renownReputationEarned or 0
+				maxValue = majorFactionData.renownLevelThreshold
 				GameTooltip:AddDoubleLine(RENOWN_LEVEL_LABEL .. majorFactionData.renownLevel, format("%d / %d (%d%%)", GetValues(curValue, 0, maxValue)), BLUE_FONT_COLOR.r, BLUE_FONT_COLOR.g, BLUE_FONT_COLOR.b)
 			elseif isParagon or (reaction ~= _G.MAX_REPUTATION_REACTION) then
 				local current, maximum, percent = GetValues(curValue, minValue, maxValue)
 				GameTooltip:AddDoubleLine(REPUTATION .. ":", format("%d / %d (%d%%)", current, maximum, percent), 1, 1, 1)
 			end
 		end
-	elseif IsWatchingHonorAsXP() then
+	end
+
+	if IsWatchingHonorAsXP() then
 		local CurrentHonor, MaxHonor, CurrentLevel = UnitHonor("player"), UnitHonorMax("player"), UnitHonorLevel("player")
 		local PercentHonor, RemainingHonor = (CurrentHonor / MaxHonor) * 100, MaxHonor - CurrentHonor
 		GameTooltip:AddLine(" ")
@@ -261,7 +270,9 @@ function Module:ExpBar_UpdateTooltip()
 		_G.GameTooltip:AddDoubleLine("Level:", CurrentLevel, 1, 1, 1)
 		_G.GameTooltip:AddDoubleLine("XP:", string_format(" %d / %d (%d%%)", CurrentHonor, MaxHonor, PercentHonor), 1, 1, 1)
 		_G.GameTooltip:AddDoubleLine("Remaining:", string_format(" %d (%d%% - %d " .. L["Bars"] .. ")", RemainingHonor, RemainingHonor / MaxHonor * 100, 20 * RemainingHonor / MaxHonor), 1, 1, 1)
-	elseif IsAzeriteAvailable() then
+	end
+
+	if IsAzeriteAvailable() then
 		local azeriteItem, currentLevel, curXP, maxXP
 		local function dataLoadedCancelFunc()
 			_G.GameTooltip:AddLine(" ")

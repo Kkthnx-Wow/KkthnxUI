@@ -16,19 +16,21 @@ local CustomFilterList = {
 }
 
 local isPetToy = {
-	[174925] = true,
+	[174925] = true, -- Noxious Breath
 }
 
 local petTrashCurrenies = {
-	[3300] = true,
-	[3670] = true,
-	[6150] = true,
-	[11406] = true,
-	[11944] = true,
-	[25402] = true,
-	[36812] = true,
-	[62072] = true,
-	[67410] = true,
+	[3300] = true, -- Rabbit's Foot
+	[3670] = true, -- Large Slimy Bone
+	[6150] = true, -- A Frayed Knot
+	[11406] = true, -- Rotting Bear Carcass"
+	[11944] = true, -- Dark Iron Baby Booties
+	[25402] = true, -- The Stoppable Force
+	[30507] = true, -- Lucky Rock
+	[36812] = true, -- Ground Gear
+	[62072] = true, -- Robble's Wobbly Staff
+	[67410] = true, -- Very Unlucky Rock
+	[190382] = true, -- Warped Pocket Dimension
 }
 
 local iLvlClassIDs = {

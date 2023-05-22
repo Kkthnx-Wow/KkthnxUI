@@ -29,6 +29,7 @@ local list = {
 		{ AuraID = 403380, UnitID = "player" }, -- 统御呼唤
 		{ AuraID = 400986, UnitID = "player" }, -- 狱钢装甲
 		{ AuraID = 408835, UnitID = "player", Flash = true }, -- 沸腾怒火
+		{ AuraID = 408770, UnitID = "player", Stack = 55 }, -- 灵感闪光
 		-- 盟约，TODO: 部分已被整合进天赋，待整理
 		{ AuraID = 331937, UnitID = "player", Flash = true }, -- 沉醉
 		{ AuraID = 354053, UnitID = "player", Flash = true, Text = L["Crit"] }, -- 致命缺陷，暴击
@@ -104,6 +105,7 @@ local list = {
 		{ AuraID = 309658, UnitID = "player" }, -- 死亡凶蛮战鼓
 		{ AuraID = 102364, UnitID = "player" }, -- 青铜龙的祝福
 		{ AuraID = 292686, UnitID = "player" }, -- 制皮鼓
+		{ AuraID = 381301, UnitID = "player" }, -- 野性皮革战鼓
 		-- 团队增益或减伤
 		{ AuraID = 1022, UnitID = "player" }, -- 保护祝福
 		{ AuraID = 6940, UnitID = "player" }, -- 牺牲祝福
@@ -150,6 +152,7 @@ local list = {
 		{ AuraID = 226512, UnitID = "player", Flash = true }, -- 血池
 		{ AuraID = 240447, UnitID = "player", Flash = true }, -- 践踏
 		{ AuraID = 240443, UnitID = "player", Flash = true }, -- 爆裂
+		{ AuraID = 408556, UnitID = "player", Flash = true }, -- 缠绕
 		-- 5人
 		{ AuraID = 395035, UnitID = "player", Flash = true }, -- 粉碎灵魂，阻击战
 		{ AuraID = 386881, UnitID = "player" }, -- 冰霜炸弹，碧蓝魔馆
@@ -171,9 +174,14 @@ local list = {
 		{ AuraID = 269838, UnitID = "player", Flash = true }, -- 邪恶污染，孢林
 		{ AuraID = 273226, UnitID = "player" }, -- 腐烂孢子，孢林
 		{ AuraID = 259718, UnitID = "player" }, -- 颠覆，孢林
+		{ AuraID = 278789, UnitID = "player", Flash = true }, -- 腐烂波，孢林
 		{ AuraID = 274507, UnitID = "player" }, -- 湿滑肥皂，自由镇
+		{ AuraID = 88286, UnitID = "player", Flash = true }, -- 减速风，旋云之巅
+		{ AuraID = 389179, UnitID = "player", Flash = true }, -- 能量过载，注能大厅
+		{ AuraID = 215898, UnitID = "player", Flash = true }, -- 晶化大地，巢穴
 
 		{ AuraID = 405340, UnitID = "player", Flash = true }, -- 虚无之拥，萨卡雷斯
+		{ AuraID = 407576, UnitID = "player", Flash = true }, -- 星界耀斑，萨卡雷斯
 	},
 	["Warning"] = { -- 目标重要光环组
 		{ AuraID = 355596, UnitID = "target", Flash = true }, -- 橙弓，哀痛箭
@@ -197,6 +205,8 @@ local list = {
 		{ AuraID = 257458, UnitID = "target" }, -- 自由镇尾王易伤
 		{ AuraID = 372600, UnitID = "target" }, -- 严酷，奥达曼
 		{ AuraID = 369725, UnitID = "target" }, -- 震颤，奥达曼
+		{ AuraID = 377402, UnitID = "target", Value = true }, -- 液态屏障，注能大厅
+		{ AuraID = 378022, UnitID = "target", Value = true }, -- 吞噬中，蕨皮
 		-- 团本
 		{ AuraID = 374779, UnitID = "target", Flash = true }, -- 原始屏障，恐怖图腾
 		{ AuraID = 382530, UnitID = "target", Value = true }, -- 涌动，莱萨杰斯
@@ -206,6 +216,9 @@ local list = {
 
 		{ AuraID = 403284, UnitID = "target", Flash = true }, -- 虚空增效，萨卡雷斯
 		{ AuraID = 410654, UnitID = "target", Flash = true }, -- 虚空增效，萨卡雷斯
+		{ AuraID = 407617, UnitID = "target", Value = true }, -- 时空畸体，里翁苏斯
+		{ AuraID = 397383, UnitID = "target", Value = true }, -- 熔火屏障，
+		{ AuraID = 407036, UnitID = "target", Value = true }, -- 隐匿虚空，耐萨里奥的回响
 		-- PVP
 		{ AuraID = 498, UnitID = "target" }, -- 圣佑术
 		{ AuraID = 642, UnitID = "target" }, -- 圣盾术

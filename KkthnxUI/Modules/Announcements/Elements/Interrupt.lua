@@ -17,30 +17,32 @@ local UnitInRaid = UnitInRaid
 local infoType = {}
 
 local spellBlackList = {
-	[99] = true, -- 夺魂咆哮
-	[122] = true, -- 冰霜新星
-	[1776] = true, -- 凿击
-	[1784] = true, -- 潜行
-	[5246] = true, -- 破胆怒吼
-	[8122] = true, -- 心灵尖啸
-	[31661] = true, -- 龙息术
-	[33395] = true, -- 冰冻术
-	[64695] = true, -- 陷地
-	[82691] = true, -- 冰霜之环
-	[91807] = true, -- 蹒跚冲锋
-	[102359] = true, -- 群体缠绕
-	[105421] = true, -- 盲目之光
-	[115191] = true, -- 潜行
-	[157997] = true, -- 寒冰新星
-	[197214] = true, -- 裂地术
-	[198121] = true, -- 冰霜撕咬
-	[207167] = true, -- 致盲冰雨
-	[207685] = true, -- 悲苦咒符
-	[226943] = true, -- 心灵炸弹
-	[228600] = true, -- 冰川尖刺
-	[331866] = true, -- 混沌代理人
-	[354051] = true, -- 轻盈步
-	[386770] = true, -- 极寒
+	[99] = true, -- Reaping Roar
+	[122] = true, -- Frost Nova
+	[1776] = true, -- Gouging
+	[1784] = true, -- Sneak
+	[5246] = true, -- Shout out
+	[8122] = true, -- Psychic Scream
+	[31661] = true, -- Dragon's Breath
+	[33395] = true, -- Freeze
+	[64695] = true, -- Land Trap
+	[82691] = true, -- Ring of Frost
+	[91807] = true, -- Disoriented Charge
+	[102359] = true, -- Mass Entanglement
+	[105421] = true, -- Blinding Light
+	[115191] = true, -- Stealth
+	[157997] = true, -- Frost Nova
+	[197214] = true, -- Fissure
+	[198121] = true, -- Frostbite
+	[207167] = true, -- Blizzard
+	[207685] = true, -- Symbol of Misery
+	[226943] = true, -- Mind Bomb
+	[228600] = true, -- Glacial Spike
+	[285515] = true, -- Surge of Power
+	[331866] = true, -- Chaotic Proxy
+	[354051] = true, -- Light Steps
+	[355689] = true, -- Avalanche
+	[386770] = true, -- Frigid
 }
 
 local function getAlertChannel()
@@ -92,6 +94,8 @@ end
 function Module:IsAllyPet(sourceFlags)
 	if K.IsMyPet(sourceFlags) or sourceFlags == K.PartyPetFlags or sourceFlags == K.RaidPetFlags then
 		return true
+	else
+		return false
 	end
 end
 
@@ -147,14 +151,14 @@ function Module:CreateInterruptAnnounce()
 	Module:InterruptAlert_Toggle()
 
 	if Module:InterruptAlert_IsEnabled() then
-		self:InterruptAlert_CheckGroup()
-		K:RegisterEvent("GROUP_LEFT", self.InterruptAlert_CheckGroup)
-		K:RegisterEvent("GROUP_JOINED", self.InterruptAlert_CheckGroup)
-		K:RegisterEvent("PLAYER_ENTERING_WORLD", self.InterruptAlert_CheckGroup)
+		Module:InterruptAlert_CheckGroup()
+		K:RegisterEvent("GROUP_LEFT", Module.InterruptAlert_CheckGroup)
+		K:RegisterEvent("GROUP_JOINED", Module.InterruptAlert_CheckGroup)
+		K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.InterruptAlert_CheckGroup)
 	else
-		K:UnregisterEvent("GROUP_LEFT", self.InterruptAlert_CheckGroup)
-		K:UnregisterEvent("GROUP_JOINED", self.InterruptAlert_CheckGroup)
-		K:UnregisterEvent("PLAYER_ENTERING_WORLD", self.InterruptAlert_CheckGroup)
+		K:UnregisterEvent("GROUP_LEFT", Module.InterruptAlert_CheckGroup)
+		K:UnregisterEvent("GROUP_JOINED", Module.InterruptAlert_CheckGroup)
+		K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.InterruptAlert_CheckGroup)
 		K:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", Module.InterruptAlert_Update)
 	end
 end

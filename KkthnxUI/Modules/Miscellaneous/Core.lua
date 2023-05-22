@@ -52,6 +52,7 @@ function Module:OnEnable()
 		"CreateBossBanner",
 		"CreateBossEmote",
 		"CreateCustomWaypoint",
+		"CreateDeathCounter",
 		"CreateDurabilityFrameMove",
 		"CreateErrorFrameToggle",
 		"CreateGUIGameMenuButton",

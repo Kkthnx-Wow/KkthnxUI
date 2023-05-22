@@ -50,7 +50,7 @@ function Module:HideBlizBuff()
 		if isLogin or isReload then
 			K.HideInterfaceOption(_G.BuffFrame)
 			K.HideInterfaceOption(_G.DebuffFrame)
-			BuffFrame.numHideableBuffs = 0 -- isPatch10_1
+			BuffFrame.numHideableBuffs = 0 -- fix error when on editmode
 		end
 	end)
 end
