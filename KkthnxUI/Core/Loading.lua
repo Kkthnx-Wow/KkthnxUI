@@ -138,8 +138,7 @@ local function KKUI_VerifyDatabase()
 	charData.SplitCount = charData.SplitCount or 1
 	charData.TempAnchor = charData.TempAnchor or {}
 	charData.InternalCD = charData.InternalCD or {}
-	charData.DeathCounterLevel = charData.DeathCounterLevel or 0
-	charData.DeathCounterPlayer = charData.DeathCounterPlayer or 0
+	charData.DeathCounter = charData.DeathCounter or { Player = 0, Level = {} }
 	charData.AuraWatchList = charData.AuraWatchList or {}
 	charData.AuraWatchList.Switcher = charData.AuraWatchList.Switcher or {}
 	charData.AuraWatchList.IgnoreSpells = charData.AuraWatchList.IgnoreSpells or {}

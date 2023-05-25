@@ -818,6 +818,7 @@ local Misc = function(self)
 	end
 	Window:CreateSwitch("Misc", "QuickJoin", newFeatureIcon .. L["QuickJoin"], L["QuickJoinTip"])
 	Window:CreateSwitch("Misc", "ItemLevel", L["Show Character/Inspect ItemLevel Info"])
+	Window:CreateSwitch("Misc", "DeathCounter", "Track and display the total deaths and level-specific deaths")
 end
 
 local Nameplate = function(self)
