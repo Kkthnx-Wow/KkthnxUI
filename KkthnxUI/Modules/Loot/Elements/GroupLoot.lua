@@ -248,7 +248,7 @@ function Module:LootFrame_GetFrame(i)
 	end
 end
 
-function Module.CANCEL_LOOT_ROLL(self, event, rollID)
+function Module.CANCEL_LOOT_ROLL(self, _, rollID)
 	if self.rollID == rollID then
 		self.rollID = nil
 		self.time = nil
@@ -256,7 +256,8 @@ function Module.CANCEL_LOOT_ROLL(self, event, rollID)
 end
 
 function Module.START_LOOT_ROLL(self, event, rollID, rollTime)
-	local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant, _, _, _, _, canTransmog = GetLootRollItemInfo(rollID)
+	local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant, _, _, _, _, canTransmog =
+		GetLootRollItemInfo(rollID)
 	if not name then -- also done in GroupLootFrame_OnShow
 		for _, rollBar in next, Module.RollBars do
 			if rollBar.rollID == rollID then
