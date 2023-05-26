@@ -70,6 +70,7 @@ function Module:AdjustQueuedAnchors(relativeAlert)
 		alertFrame:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
 		relativeAlert = alertFrame
 	end
+
 	return relativeAlert
 end
 
@@ -144,7 +145,7 @@ function Module:CreateAlertFrames()
 	AlertFrameHolder:SetPoint("TOP", UIParent, "TOP", -1, -18)
 
 	_G.GroupLootContainer:EnableMouse(false) -- Prevent this weird non-clickable area stuff since 8.1; Monitor this, as it may cause addon compatibility.
-	_G.GroupLootContainer.ignoreFramePositionManager = true
+	-- _G.GroupLootContainer.ignoreFramePositionManager = true
 
 	if not AlertFrameHolder.Mover then
 		AlertFrameHolder.Mover = K.Mover(AlertFrameHolder, "AlertFrameMover", "AlertFrameMover", { "TOP", UIParent, "TOP", 0, -140 })

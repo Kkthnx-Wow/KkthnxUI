@@ -111,25 +111,22 @@ end
 function Module:UpdateTimer(elapsed)
 	local onTooltip = GameTooltip:IsOwned(self)
 
-	if not (self.timeLeft or self.offset or onTooltip) then
+	if not (self.timeLeft or self.expiration or onTooltip) then
 		self:SetScript("OnUpdate", nil)
 		return
 	end
 
-	if self.offset then
-		local expiration = select(self.offset, GetWeaponEnchantInfo())
-		if expiration then
-			self.timeLeft = expiration / 1e3
-		else
-			self.timeLeft = 0
-		end
-	elseif self.timeLeft then
+	if self.timeLeft then
 		self.timeLeft = self.timeLeft - elapsed
 	end
 
 	if self.nextUpdate > 0 then
 		self.nextUpdate = self.nextUpdate - elapsed
 		return
+	end
+
+	if self.expiration then
+		self.timeLeft = self.expiration / 1e3 - (GetTime() - self.oldTime)
 	end
 
 	if self.timeLeft and self.timeLeft >= 0 then
@@ -202,6 +199,7 @@ function Module:UpdateTempEnchant(button, index)
 		button.icon:SetTexture(GetInventoryItemTexture("player", index))
 
 		button.expiration = expirationTime
+		button.oldTime = GetTime()
 		button:SetScript("OnUpdate", Module.UpdateTimer)
 		button.nextUpdate = -1
 		Module.UpdateTimer(button, 0)

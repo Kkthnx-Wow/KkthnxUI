@@ -250,6 +250,8 @@ function Module:SkinChat()
 
 	self.oldAlpha = self.oldAlpha or 0 -- fix blizz error
 
+	self:HookScript("OnMouseWheel", Module.QuickMouseScroll)
+
 	self.styled = true
 end
 
@@ -453,7 +455,6 @@ function Module:QuickMouseScroll(dir)
 		end
 	end
 end
-hooksecurefunc("FloatingChatFrame_OnMouseScroll", Module.QuickMouseScroll)
 
 -- Sticky whisper
 function Module:ChatWhisperSticky()

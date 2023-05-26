@@ -179,6 +179,7 @@ function RebuildCharList()
 	end
 end
 
+local title
 local function OnEnter(self)
 	GameTooltip:SetOwner(self, "ANCHOR_NONE")
 	GameTooltip:SetPoint(K.GetAnchors(self))
@@ -217,23 +218,42 @@ local function OnEnter(self)
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddDoubleLine("|TInterface\\ICONS\\WoW_Token01:12:12:0:0:50:50:4:46:4:46|t " .. TOKEN_FILTER_LABEL .. ":", K.FormatMoney(C_WowTokenPublic_GetCurrentMarketPrice() or 0), 0.5, 0.7, 1, 1, 1, 1)
 
-	for i = 1, 6 do -- seems unlimit, but use 10 for now, needs review
+	title = false
+	local chargeInfo = C_CurrencyInfo_GetCurrencyInfo(2533) -- Tier charges
+	if chargeInfo then
+		if not title then
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine(CURRENCY .. ":", 0.6, 0.8, 1)
+			title = true
+		end
+		local iconTexture = "|T" .. chargeInfo.iconFileID .. ":12:12:0:0:50:50:4:46:4:46|t"
+		local currencyText = iconTexture .. " " .. chargeInfo.name
+		GameTooltip:AddDoubleLine(currencyText, chargeInfo.quantity .. "/" .. chargeInfo.maxQuantity, 1, 1, 1, 1, 1, 1)
+	end
+
+	for i = 1, 6 do
 		local currencyInfo = C_CurrencyInfo_GetBackpackCurrencyInfo(i)
 		if not currencyInfo then
 			break
 		end
+
 		local name, count, icon, currencyID = currencyInfo.name, currencyInfo.quantity, currencyInfo.iconFileID, currencyInfo.currencyTypesID
-		if name and i == 1 then
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(CURRENCY .. ":", 0.5, 0.7, 1)
-		end
+
 		if name and count then
+			if not title then
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine(CURRENCY .. ":", 0.5, 0.7, 1)
+				title = true
+			end
+
 			local total = C_CurrencyInfo_GetCurrencyInfo(currencyID).maxQuantity
 			local iconTexture = "|T" .. icon .. ":12:12:0:0:50:50:4:46:4:46|t "
+			local currencyText = iconTexture .. name
+
 			if total > 0 then
-				GameTooltip:AddDoubleLine(iconTexture .. name, BreakUpLargeNumbers(count) .. "/" .. K.ShortValue(total), 1, 1, 1, 1, 1, 1)
+				GameTooltip:AddDoubleLine(currencyText, BreakUpLargeNumbers(count) .. "/" .. K.ShortValue(total), 1, 1, 1, 1, 1, 1)
 			else
-				GameTooltip:AddDoubleLine(iconTexture .. name, BreakUpLargeNumbers(count), 1, 1, 1, 1, 1, 1)
+				GameTooltip:AddDoubleLine(currencyText, BreakUpLargeNumbers(count), 1, 1, 1, 1, 1, 1)
 			end
 		end
 	end
