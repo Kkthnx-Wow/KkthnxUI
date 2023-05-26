@@ -1,31 +1,44 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
 
+local TOTAL = TOTAL
+local DEATHS = DEATHS
+
 local currentLevel
 local playerDeaths = 0
 local levelDeaths = {}
+local milestoneDeaths = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 }
 
 local function CreateDeathCounterDB()
 	-- Create or initialize the death counter database for the current character
-	KkthnxUIDB.Variables[K.Realm][K.Name].DeathCounter.Level = KkthnxUIDB.Variables[K.Realm][K.Name].DeathCounter.Level or {}
-	KkthnxUIDB.Variables[K.Realm][K.Name].DeathCounter.Player = KkthnxUIDB.Variables[K.Realm][K.Name].DeathCounter.Player or 0
+	local deathCounter = KkthnxUIDB.Variables[K.Realm][K.Name].DeathCounter
+	deathCounter.Level = deathCounter.Level or {}
+	deathCounter.Player = deathCounter.Player or 0
 end
 
 local function UpdateDeathCounts()
-	-- Update the local death counts with the values from the database
-	playerDeaths = KkthnxUIDB.Variables[K.Realm][K.Name].DeathCounter.Player or 0
-	levelDeaths = KkthnxUIDB.Variables[K.Realm][K.Name].DeathCounter.Level or {}
+	-- Update the local death counts and milestone deaths with the values from the database
+	local deathCounter = KkthnxUIDB.Variables[K.Realm][K.Name].DeathCounter
+	playerDeaths = deathCounter.Player or 0
+	levelDeaths = deathCounter.Level or {}
 end
 
 local function SaveDeathCounts()
-	-- Save the death counts to the database
-	KkthnxUIDB.Variables[K.Realm][K.Name].DeathCounter.Player = playerDeaths
-	KkthnxUIDB.Variables[K.Realm][K.Name].DeathCounter.Level = levelDeaths
+	-- Save the death counts and milestone deaths to the database
+	local deathCounter = KkthnxUIDB.Variables[K.Realm][K.Name].DeathCounter
+	deathCounter.Player = playerDeaths
+	deathCounter.Level = levelDeaths
+end
+
+local function CheckMilestoneDeaths()
+	for _, milestone in ipairs(milestoneDeaths) do
+		if playerDeaths == milestone then
+			print("Congrats! You have reached a milestone of " .. milestone .. " deaths. You can thank Kkthnx for letting you know this very lame and useless statistic.")
+		end
+	end
 end
 
 local function OnPlayerDead()
-	-- print("DEBUG: Player has died.")
-
 	-- Increment the player's total death count and level-specific death count
 	playerDeaths = playerDeaths + 1
 	levelDeaths[currentLevel] = (levelDeaths[currentLevel] or 0) + 1
@@ -34,8 +47,11 @@ local function OnPlayerDead()
 	SaveDeathCounts()
 
 	-- Print the updated death counts
-	print("Total Deaths: " .. playerDeaths)
-	print("Level Deaths: " .. levelDeaths[currentLevel])
+	print(TOTAL .. " " .. DEATHS .. ": " .. playerDeaths)
+	print(LEVEL .. " " .. DEATHS .. ": " .. levelDeaths[currentLevel])
+
+	-- Check for milestone deaths
+	CheckMilestoneDeaths()
 end
 
 local function OnLevelChange()
@@ -55,45 +71,48 @@ end
 local function CreateDeathCounterPanel()
 	-- Create and configure the death counter panel frame
 	local panel = CreateFrame("Frame", "DeathCounterPanel", UIParent)
-	panel:SetSize(220, 200)
+	panel:SetSize(280, 260)
 	panel:SetPoint("CENTER")
 	panel:CreateBorder()
 	panel:Hide()
 
-	panel.title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	panel.title:SetPoint("TOP", 0, -10)
-	panel.title:SetText("Death Counter")
+	panel.title = CreateFrame("Frame", "DeathCounterPanelTitle", panel)
+	panel.title:SetSize(280, 22)
+	panel.title:SetPoint("BOTTOM", panel, "TOP", 0, 6)
+	panel.title:CreateBorder()
+
+	panel.title.text = panel.title:CreateFontString(nil, "OVERLAY", "GameFontNormalMed1")
+	panel.title.text:SetPoint("CENTER", panel.title)
+	panel.title.text:SetText("Death Counter")
 
 	-- Create the scroll frame for the panel
 	panel.scrollFrame = CreateFrame("ScrollFrame", "DeathCounterPanelScrollFrame", panel, "UIPanelScrollFrameTemplate")
-	panel.scrollFrame:SetPoint("TOP", panel.title, "BOTTOM", -8, -10)
-	panel.scrollFrame:SetPoint("BOTTOM", panel, "BOTTOM", 8, 10)
-	panel.scrollFrame:SetWidth(180)
+	panel.scrollFrame:SetPoint("TOPLEFT", 6, -6)
+	panel.scrollFrame:SetPoint("BOTTOMRIGHT", -28, 6)
+	panel.scrollFrame:SetWidth(260)
 	panel.scrollFrame.ScrollBar:SkinScrollBar()
 
 	-- Create the scroll child frame
 	panel.scrollChild = CreateFrame("Frame", nil, panel.scrollFrame)
-	panel.scrollChild:SetSize(180, 180)
+	panel.scrollChild:SetSize(260, 200)
 
 	-- Create the font strings for displaying death counts
 	panel.totalDeaths = panel.scrollChild:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-	panel.totalDeaths:SetPoint("TOPLEFT", 5, -5)
+	panel.totalDeaths:SetPoint("TOPLEFT", 6, -6)
+	panel.totalDeaths:SetText(TOTAL .. " " .. DEATHS .. ": " .. playerDeaths)
 
 	panel.levelDeaths = panel.scrollChild:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-	panel.levelDeaths:SetPoint("TOPLEFT", panel.totalDeaths, "BOTTOMLEFT", 0, -10)
-
-	panel.note = panel.scrollChild:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-	panel.note:SetPoint("BOTTOMLEFT", 5, 5)
-	panel.note:SetText("Note: Deaths are recorded|nto track your progress.")
+	panel.levelDeaths:SetPoint("TOPLEFT", panel.totalDeaths, "BOTTOMLEFT", 0, -15)
+	panel.levelDeaths:SetText(LEVEL .. " " .. DEATHS .. ":")
 
 	-- Set the scroll child as the content of the scroll frame
 	panel.scrollFrame:SetScrollChild(panel.scrollChild)
 
 	-- Create the reset button for the panel
 	panel.resetButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-	panel.resetButton:SetPoint("TOP", panel, "BOTTOM", -0, -6)
-	panel.resetButton:SetSize(220, 22)
-	panel.resetButton:SetText("Reset Death Counters")
+	panel.resetButton:SetPoint("TOPLEFT", panel, "BOTTOMLEFT", 0, -6)
+	panel.resetButton:SetSize(136, 22)
+	panel.resetButton:SetText(RESET)
 	panel.resetButton:SkinButton()
 	panel.resetButton:SetScript("OnClick", function()
 		-- Reset the death counts and save to the database
@@ -102,27 +121,29 @@ local function CreateDeathCounterPanel()
 		SaveDeathCounts()
 
 		-- Update the death count information in the panel
-		panel.totalDeaths:SetText("Total Deaths: " .. playerDeaths)
-		panel.levelDeaths:SetText("Level Deaths:\n0")
+		panel.totalDeaths:SetText(TOTAL .. " " .. DEATHS .. ": " .. playerDeaths)
+		panel.levelDeaths:SetText(LEVEL .. " " .. DEATHS .. ":")
 	end)
 
 	-- Create the close button for the panel
-	panel.closeButton = CreateFrame("Button", nil, panel, "UIPanelCloseButton")
-	panel.closeButton:SetPoint("TOPRIGHT", 2, 2)
-	panel.closeButton:SkinCloseButton()
+	panel.closeButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+	panel.closeButton:SetPoint("TOPRIGHT", panel, "BOTTOMRIGHT", 0, -6)
+	panel.closeButton:SetSize(136, 22)
+	panel.closeButton:SetText(CLOSE)
+	panel.closeButton:SkinButton()
 	panel.closeButton:SetScript("OnClick", function()
 		panel:Hide()
 	end)
 
 	panel:SetScript("OnShow", function()
 		-- Update the death count information when the panel is shown
-		panel.totalDeaths:SetText("Total Deaths: " .. playerDeaths)
-		local levelDeathsText = "Level Deaths:\n"
+		panel.totalDeaths:SetText(TOTAL .. " " .. DEATHS .. ": " .. playerDeaths)
+		local levelDeathsText = LEVEL .. " " .. DEATHS .. ":\n"
 		if next(levelDeaths) == nil then
-			levelDeathsText = levelDeathsText .. "0"
+			levelDeathsText = levelDeathsText .. NONE
 		else
 			for level, deaths in pairs(levelDeaths) do
-				levelDeathsText = levelDeathsText .. "Level " .. level .. ": " .. deaths .. "\n"
+				levelDeathsText = levelDeathsText .. "- " .. LEVEL .. level .. ": " .. deaths .. "\n"
 			end
 		end
 		panel.levelDeaths:SetText(levelDeathsText)
