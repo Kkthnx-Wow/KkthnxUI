@@ -16,12 +16,12 @@ local GetLootRollTimeLeft = GetLootRollTimeLeft
 local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
 local IsModifiedClick = IsModifiedClick
 local IsShiftKeyDown = IsShiftKeyDown
-local NUM_GROUP_LOOT_FRAMES = NUM_GROUP_LOOT_FRAMES or 4
+local NUM_GROUP_LOOT_FRAMES = NUM_GROUP_LOOT_FRAMES
 local ROLL_DISENCHANT = ROLL_DISENCHANT
 local RollOnLoot = RollOnLoot
 
 local cachedRolls = {}
-Module.RollBars = {}
+local rollBars = {}
 
 local function ClickRoll(button)
 	RollOnLoot(button.parent.rollID, button.rolltype)
@@ -231,16 +231,16 @@ function Module:LootRoll_Create(index)
 
 	bar.rolls = {}
 
-	tinsert(Module.RollBars, bar)
+	tinsert(rollBars, bar)
 
 	return bar
 end
 
 function Module:LootFrame_GetFrame(i)
 	if i then
-		return Module.RollBars[i] or Module:LootRoll_Create(i)
+		return rollBars[i] or Module:LootRoll_Create(i)
 	else -- check for a bar to reuse
-		for _, bar in next, Module.RollBars do
+		for _, bar in next, rollBars do
 			if not bar.rollID then
 				return bar
 			end
@@ -248,17 +248,17 @@ function Module:LootFrame_GetFrame(i)
 	end
 end
 
-function Module.CANCEL_LOOT_ROLL(self, event, rollID)
+function Module:CANCEL_LOOT_ROLL(_, rollID)
 	if self.rollID == rollID then
 		self.rollID = nil
 		self.time = nil
 	end
 end
 
-function Module.START_LOOT_ROLL(self, event, rollID, rollTime)
+function Module:START_LOOT_ROLL(event, rollID, rollTime)
 	local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant, _, _, _, _, canTransmog = GetLootRollItemInfo(rollID)
 	if not name then -- also done in GroupLootFrame_OnShow
-		for _, rollBar in next, Module.RollBars do
+		for _, rollBar in next, rollBars do
 			if rollBar.rollID == rollID then
 				Module.CANCEL_LOOT_ROLL(rollBar, event, rollID)
 			end
@@ -310,7 +310,7 @@ function Module.START_LOOT_ROLL(self, event, rollID, rollTime)
 	bar.name:SetText(name)
 	bar.name:SetTextColor(color.r, color.g, color.b)
 
-	bar.bind:SetText(bop and L["BoP"] or bindType == 2 and L["BoE"] or bindType == 3 and L["BoU"] or "")
+	bar.bind:SetText(bop and L["BoP"] or bindType == 2 and L["BoE"] or bindType == 3 and "BoU" or "")
 	bar.bind:SetVertexColor(bop and 1 or 0.3, bop and 0.3 or 1, bop and 0.1 or 0.3)
 
 	bar.status:SetStatusBarColor(color.r, color.g, color.b, 0.7)
@@ -342,10 +342,9 @@ end
 
 function Module:UpdateLootRollAnchors(POSITION)
 	local spacing, lastFrame, lastShown = 6
-	for i, bar in next, Module.RollBars do
+	for i, bar in next, rollBars do
 		bar:ClearAllPoints()
-
-		local anchor = i ~= 1 and lastFrame or _G.AlertFrameHolder
+		local anchor = i ~= 1 and lastFrame or _G.KKUI_AlertFrameHolder
 		if POSITION == "TOP" then
 			bar:SetPoint("TOP", anchor, "BOTTOM", 0, -spacing)
 		else
@@ -388,10 +387,7 @@ function Module:UpdateLootRollFrames()
 			end
 		end
 
-		bar.status:ClearAllPoints()
-		bar.name:ClearAllPoints()
-		bar.bind:ClearAllPoints()
-
+		bar.status:SetAllPoints()
 		bar.status:SetSize(328, 26)
 
 		bar.need:SetPoint("LEFT", bar, "LEFT", 3, 0)
@@ -401,7 +397,7 @@ function Module:UpdateLootRollFrames()
 		if bar.transmog then
 			bar.transmog:SetPoint("LEFT", bar.disenchant or bar.need, "RIGHT", 3, 0)
 		end
-		bar.greed:SetPoint("LEFT", bar.disenchant or bar.need, "RIGHT", 3, 0)
+		bar.greed:SetPoint("LEFT", bar.transmog or bar.disenchant or bar.need, "RIGHT", 3, 0)
 		bar.pass:SetPoint("LEFT", bar.greed, "RIGHT", 3, 0)
 
 		bar.name:SetPoint("RIGHT", bar, "RIGHT", -3, 0)

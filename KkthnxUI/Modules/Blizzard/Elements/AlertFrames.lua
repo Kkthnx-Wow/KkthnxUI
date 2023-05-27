@@ -9,8 +9,8 @@ local POSITION = "TOP"
 local YOFFSET = -10
 
 function Module:PostAlertMove()
-	local AlertFrameMover = AlertFrameHolder.Mover
-	local AlertFrameHolder = AlertFrameHolder
+	local AlertFrameMover = _G.KKUI_AlertFrameHolder.Mover
+	local AlertFrameHolder = _G.KKUI_AlertFrameHolder
 
 	local _, y = AlertFrameMover:GetCenter()
 	local screenHeight = UIParent:GetTop()
@@ -112,8 +112,8 @@ local function AlertSubSystem_AdjustPosition(alertFrameSubSystem)
 end
 
 local function MoveTalkingHead()
-	local TalkingHeadFrame = TalkingHeadFrame
-	local AlertFrameHolder = AlertFrameHolder
+	local TalkingHeadFrame = _G.TalkingHeadFrame
+	local AlertFrameHolder = _G.KKUI_AlertFrameHolder
 
 	TalkingHeadFrame.ignoreFramePositionManager = true
 	TalkingHeadFrame:ClearAllPoints()
@@ -140,7 +140,7 @@ local function NoTalkingHeads()
 end
 
 function Module:CreateAlertFrames()
-	local AlertFrameHolder = CreateFrame("Frame", "AlertFrameHolder", UIParent)
+	local AlertFrameHolder = CreateFrame("Frame", "KKUI_AlertFrameHolder", UIParent)
 	AlertFrameHolder:SetSize(180, 20)
 	AlertFrameHolder:SetPoint("TOP", UIParent, "TOP", -1, -18)
 
