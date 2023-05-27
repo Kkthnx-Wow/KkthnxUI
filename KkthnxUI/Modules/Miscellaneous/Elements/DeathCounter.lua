@@ -143,7 +143,7 @@ local function CreateDeathCounterPanel()
 			levelDeathsText = levelDeathsText .. NONE
 		else
 			for level, deaths in pairs(levelDeaths) do
-				levelDeathsText = levelDeathsText .. "- " .. LEVEL .. level .. ": " .. deaths .. "\n"
+				levelDeathsText = levelDeathsText .. "- " .. LEVEL .. " " .. level .. ": " .. deaths .. "\n"
 			end
 		end
 		panel.levelDeaths:SetText(levelDeathsText)
