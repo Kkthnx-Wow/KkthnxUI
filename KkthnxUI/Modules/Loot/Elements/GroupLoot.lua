@@ -86,7 +86,8 @@ local function StatusUpdate(status, elapsed)
 	if status.elapsed and status.elapsed > 0.1 then
 		local timeLeft = GetLootRollTimeLeft(rollID)
 		if timeLeft <= 0 then -- workaround for other addons auto-passing loot
-			Module.CANCEL_LOOT_ROLL(bar, "OnUpdate", rollID)
+			-- Module.LootRoll_Cancel(bar, "OnUpdate", rollID)
+			Module.LootRoll_Cancel(bar, nil, rollID)
 		else
 			status:SetValue(timeLeft)
 			status.elapsed = 0
@@ -172,7 +173,7 @@ end
 
 function Module:LootRoll_Create(index)
 	local bar = CreateFrame("Frame", "KKUI_LootRollFrame" .. index, UIParent)
-	bar:SetScript("OnEvent", Module.CANCEL_LOOT_ROLL)
+	bar:SetScript("OnEvent", Module.LootRoll_Cancel)
 	bar:RegisterEvent("CANCEL_LOOT_ROLL")
 	bar:Hide()
 
