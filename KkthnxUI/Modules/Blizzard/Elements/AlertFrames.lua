@@ -8,7 +8,9 @@ local ANCHOR_POINT = "BOTTOM"
 local POSITION = "TOP"
 local YOFFSET = -10
 
-function Module:PostAlertMove()
+local AlertFrameHolder
+
+function Module:UpdateAnchors()
 	local AlertFrameMover = _G.KKUI_AlertFrameHolder.Mover
 	local AlertFrameHolder = _G.KKUI_AlertFrameHolder
 
@@ -17,15 +19,15 @@ function Module:PostAlertMove()
 	if y > (screenHeight * 0.5) then
 		POSITION = "TOP"
 		ANCHOR_POINT = "BOTTOM"
-		YOFFSET = -10
+		YOFFSET = -5
 	else
 		POSITION = "BOTTOM"
 		ANCHOR_POINT = "TOP"
-		YOFFSET = 10
+		YOFFSET = 5
 	end
 
-	local AlertFrame = AlertFrame
-	local GroupLootContainer = GroupLootContainer
+	local AlertFrame = _G.AlertFrame
+	local GroupLootContainer = _G.GroupLootContainer
 
 	AlertFrame:ClearAllPoints()
 	GroupLootContainer:ClearAllPoints()
@@ -50,7 +52,6 @@ function Module:AdjustAnchors(relativeAlert)
 		self.alertFrame:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
 		return self.alertFrame
 	end
-
 	return relativeAlert
 end
 
@@ -60,7 +61,6 @@ function Module:AdjustAnchorsNonAlert(relativeAlert)
 		self.anchorFrame:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
 		return self.anchorFrame
 	end
-
 	return relativeAlert
 end
 
@@ -70,7 +70,6 @@ function Module:AdjustQueuedAnchors(relativeAlert)
 		alertFrame:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
 		relativeAlert = alertFrame
 	end
-
 	return relativeAlert
 end
 
@@ -94,7 +93,7 @@ function Module:GroupLootContainer_Update()
 	end
 
 	if lastIdx then
-		self:SetHeight(self.reservedSize * lastIdx)
+		self:Height(self.reservedSize * lastIdx)
 		self:Show()
 	else
 		self:Hide()
@@ -102,29 +101,12 @@ function Module:GroupLootContainer_Update()
 end
 
 local function AlertSubSystem_AdjustPosition(alertFrameSubSystem)
-	if alertFrameSubSystem.alertFramePool then -- Queued alert system
+	if alertFrameSubSystem.alertFramePool then --queued alert system
 		alertFrameSubSystem.AdjustAnchors = Module.AdjustQueuedAnchors
-	elseif not alertFrameSubSystem.anchorFrame then -- Simple alert system
+	elseif not alertFrameSubSystem.anchorFrame then --simple alert system
 		alertFrameSubSystem.AdjustAnchors = Module.AdjustAnchors
-	elseif alertFrameSubSystem.anchorFrame then -- Anchor frame system
+	elseif alertFrameSubSystem.anchorFrame then --anchor frame system
 		alertFrameSubSystem.AdjustAnchors = Module.AdjustAnchorsNonAlert
-	end
-end
-
-local function MoveTalkingHead()
-	local TalkingHeadFrame = _G.TalkingHeadFrame
-	local AlertFrameHolder = _G.KKUI_AlertFrameHolder
-
-	TalkingHeadFrame.ignoreFramePositionManager = true
-	TalkingHeadFrame:ClearAllPoints()
-	TalkingHeadFrame:SetPoint("TOP", AlertFrameHolder, "BOTTOM", 0, 0)
-
-	-- Reset Model Camera
-	local model = TalkingHeadFrame.MainFrame.Model
-	if model.uiCameraID then
-		model:RefreshCamera()
-
-		_G.Model_ApplyUICamera(model, model.uiCameraID)
 	end
 end
 
@@ -133,19 +115,19 @@ local function NoTalkingHeads()
 		return
 	end
 
-	_G.TalkingHeadFrame:UnregisterAllEvents() -- needs review
-	hooksecurefunc(_G.TalkingHeadFrame, "Show", function(self)
+	TalkingHeadFrame:UnregisterAllEvents() -- needs review
+	hooksecurefunc(TalkingHeadFrame, "Show", function(self)
 		self:Hide()
 	end)
 end
 
 function Module:CreateAlertFrames()
-	local AlertFrameHolder = CreateFrame("Frame", "KKUI_AlertFrameHolder", UIParent)
+	AlertFrameHolder = CreateFrame("Frame", "KKUI_AlertFrameHolder", UIParent)
 	AlertFrameHolder:SetSize(180, 20)
 	AlertFrameHolder:SetPoint("TOP", UIParent, "TOP", -1, -18)
 
-	_G.GroupLootContainer:EnableMouse(false) -- Prevent this weird non-clickable area stuff since 8.1; Monitor this, as it may cause addon compatibility.
-	-- _G.GroupLootContainer.ignoreFramePositionManager = true
+	GroupLootContainer:EnableMouse(false)
+	GroupLootContainer.ignoreFramePositionManager = true
 
 	if not AlertFrameHolder.Mover then
 		AlertFrameHolder.Mover = K.Mover(AlertFrameHolder, "AlertFrameMover", "AlertFrameMover", { "TOP", UIParent, "TOP", 0, -140 })
@@ -154,8 +136,8 @@ function Module:CreateAlertFrames()
 	end
 
 	for index, alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
-		if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == _G.TalkingHeadFrame then
-			tremove(_G.AlertFrame.alertFrameSubSystems, index)
+		if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == TalkingHeadFrame then
+			tremove(AlertFrame.alertFrameSubSystems, index)
 		else
 			AlertSubSystem_AdjustPosition(alertFrameSubSystem)
 		end
@@ -165,11 +147,10 @@ function Module:CreateAlertFrames()
 		AlertSubSystem_AdjustPosition(alertFrameSubSystem)
 	end)
 
-	hooksecurefunc(_G.AlertFrame, "UpdateAnchors", Module.PostAlertMove)
+	hooksecurefunc(_G.AlertFrame, "UpdateAnchors", Module.UpdateAnchors)
 	hooksecurefunc("GroupLootContainer_Update", Module.GroupLootContainer_Update)
 
 	if TalkingHeadFrame then
-		MoveTalkingHead()
 		NoTalkingHeads()
 	end
 end

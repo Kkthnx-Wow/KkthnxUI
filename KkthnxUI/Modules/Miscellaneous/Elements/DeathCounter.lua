@@ -149,6 +149,8 @@ local function CreateDeathCounterPanel()
 		panel.levelDeaths:SetText(levelDeathsText)
 	end)
 
+	K.CreateMoverFrame(panel)
+
 	return panel
 end
 

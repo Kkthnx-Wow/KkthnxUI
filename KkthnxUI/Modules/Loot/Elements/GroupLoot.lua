@@ -13,21 +13,19 @@ local GetItemInfo = GetItemInfo
 local GetLootRollItemInfo = GetLootRollItemInfo
 local GetLootRollItemLink = GetLootRollItemLink
 local GetLootRollTimeLeft = GetLootRollTimeLeft
-local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
 local IsModifiedClick = IsModifiedClick
 local IsShiftKeyDown = IsShiftKeyDown
 local NUM_GROUP_LOOT_FRAMES = NUM_GROUP_LOOT_FRAMES
 local ROLL_DISENCHANT = ROLL_DISENCHANT
 local RollOnLoot = RollOnLoot
 
-local cachedRolls = {}
+local rollCache = {}
 local rollBars = {}
+local rollTypes = { [1] = "need", [2] = "greed", [3] = "disenchant", [4] = "transmog", [0] = "pass" }
 
 local function ClickRoll(button)
 	RollOnLoot(button.parent.rollID, button.rolltype)
 end
-
-local rollTypes = { [1] = "need", [2] = "greed", [3] = "disenchant", [4] = "transmog", [0] = "pass" }
 
 local function SetTip(button)
 	GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
@@ -59,7 +57,6 @@ local function SetTip(button)
 end
 
 local function SetItemTip(button, event)
-	-- print(button, event)
 	if not button.rollID or (event == "MODIFIER_STATE_CHANGED" and not button:IsMouseOver()) then
 		return
 	end
@@ -180,6 +177,7 @@ function Module:LootRoll_Create(index)
 	bar:Hide()
 
 	local status = CreateFrame("StatusBar", nil, bar)
+	status:SetAllPoints(bar)
 	status:SetFrameLevel(bar:GetFrameLevel())
 	status:SetFrameStrata(bar:GetFrameStrata())
 	status:CreateBorder()
@@ -206,12 +204,16 @@ function Module:LootRoll_Create(index)
 	bar.button = button
 
 	button.icon = button:CreateTexture(nil, "OVERLAY")
-	button.icon:SetAllPoints()
+	button.icon:SetAllPoints(button)
 	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	button.stack = button:CreateFontString(nil, "OVERLAY")
 	button.stack:SetPoint("BOTTOMRIGHT", -1, 1)
 	button.stack:SetFontObject(K.UIFontOutline)
+
+	button.ilvl = button:CreateFontString(nil, "OVERLAY")
+	button.ilvl:SetPoint("BOTTOMLEFT", 1, 1)
+	button.ilvl:SetFontObject(K.UIFontOutline)
 
 	bar.pass = CreateRollButton(bar, [[Interface\Buttons\UI-GroupLoot-Pass-Up]], 0, PASS)
 	bar.disenchant = CreateRollButton(bar, [[Interface\Buttons\UI-GroupLoot-DE-Up]], 3, ROLL_DISENCHANT) or nil
@@ -248,19 +250,19 @@ function Module:LootFrame_GetFrame(i)
 	end
 end
 
-function Module:CANCEL_LOOT_ROLL(_, rollID)
+function Module:LootRoll_Cancel(_, rollID)
 	if self.rollID == rollID then
 		self.rollID = nil
 		self.time = nil
 	end
 end
 
-function Module:START_LOOT_ROLL(event, rollID, rollTime)
+function Module:LootRoll_Start(rollID, rollTime)
 	local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant, _, _, _, _, canTransmog = GetLootRollItemInfo(rollID)
 	if not name then -- also done in GroupLootFrame_OnShow
 		for _, rollBar in next, rollBars do
 			if rollBar.rollID == rollID then
-				Module.CANCEL_LOOT_ROLL(rollBar, event, rollID)
+				Module.LootRoll_Cancel(rollBar, nil, rollID)
 			end
 		end
 
@@ -270,15 +272,16 @@ function Module:START_LOOT_ROLL(event, rollID, rollTime)
 	local bar = Module:LootFrame_GetFrame()
 	if not bar then
 		return
-	end
+	end -- well this shouldn't happen
 
 	local itemLink = GetLootRollItemLink(rollID)
 	local _, _, _, _, _, _, _, _, _, _, _, _, _, bindType = GetItemInfo(itemLink)
-	local color = ITEM_QUALITY_COLORS[quality]
+	local color = K.QualityColors[quality or 0]
+	local level = K.GetItemLevel(itemLink)
 
-	if not bop then -- recheck sometimes, we need this from bindType
+	if not bop then
 		bop = bindType == 1
-	end
+	end -- recheck sometimes, we need this from bindType
 
 	wipe(bar.rolls)
 
@@ -287,9 +290,14 @@ function Module:START_LOOT_ROLL(event, rollID, rollTime)
 
 	bar.button.link = itemLink
 	bar.button.rollID = rollID
+
+	bar.button.link = itemLink
+	bar.button.rollID = rollID
 	bar.button.icon:SetTexture(texture)
 	bar.button.stack:SetShown(count > 1)
 	bar.button.stack:SetText(count)
+	bar.button.ilvl:SetText(level or "")
+	bar.button.ilvl:SetTextColor(color.r, color.g, color.b)
 
 	bar.need.text:SetText("")
 	bar.greed.text:SetText("")
@@ -325,7 +333,7 @@ function Module:START_LOOT_ROLL(event, rollID, rollTime)
 	_G.AlertFrame:UpdateAnchors()
 
 	-- Add cached roll info, if any
-	for rollid, rollTable in next, cachedRolls do
+	for rollid, rollTable in next, rollCache do
 		if bar.rollID == rollid then -- rollid matches cached rollid
 			for rollType, rollerInfo in next, rollTable do
 				if not bar.rolls[rollType] then
@@ -344,6 +352,7 @@ function Module:UpdateLootRollAnchors(POSITION)
 	local spacing, lastFrame, lastShown = 6
 	for i, bar in next, rollBars do
 		bar:ClearAllPoints()
+
 		local anchor = i ~= 1 and lastFrame or _G.KKUI_AlertFrameHolder
 		if POSITION == "TOP" then
 			bar:SetPoint("TOP", anchor, "BOTTOM", 0, -spacing)
@@ -362,15 +371,9 @@ function Module:UpdateLootRollAnchors(POSITION)
 end
 
 function Module:UpdateLootRollFrames()
-	if not C["Loot"].GroupLoot then
-		return
-	end
-
 	for i = 1, NUM_GROUP_LOOT_FRAMES do
 		local bar = Module:LootFrame_GetFrame(i)
 		bar:SetSize(328, 26)
-
-		bar.status:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 
 		bar.button:ClearAllPoints()
 		bar.button:SetPoint("RIGHT", bar, "LEFT", -6, 0)
@@ -386,9 +389,6 @@ function Module:UpdateLootRollFrames()
 				icon:ClearAllPoints()
 			end
 		end
-
-		bar.status:SetAllPoints()
-		bar.status:SetSize(328, 26)
 
 		bar.need:SetPoint("LEFT", bar, "LEFT", 3, 0)
 		if bar.disenchant then
@@ -413,7 +413,7 @@ function Module:CreateGroupLoot()
 
 	Module:UpdateLootRollFrames()
 
-	K:RegisterEvent("START_LOOT_ROLL", Module.START_LOOT_ROLL)
+	K:RegisterEvent("START_LOOT_ROLL", self.LootRoll_Start)
 
 	_G.UIParent:UnregisterEvent("START_LOOT_ROLL")
 	_G.UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
