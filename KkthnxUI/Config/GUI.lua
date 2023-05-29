@@ -369,6 +369,10 @@ local function UpdateActionBarVehicleButton()
 	K:GetModule("ActionBar"):UpdateVehicleButton()
 end
 
+local function UpdateGroupLoot()
+	K:GetModule("Loot"):UpdateLootRollFrames()
+end
+
 -- Sliders > minvalue, maxvalue, stepvalue
 local ActionBar = function(self)
 	local Window = self:CreateWindow(L["ActionBar"])
@@ -721,7 +725,7 @@ local Loot = function(self)
 
 	Window:CreateSection(GENERAL)
 	Window:CreateSwitch("Loot", "Enable", enableTextColor .. L["Enable Loot"])
-	Window:CreateSwitch("Loot", "GroupLoot", enableTextColor .. L["Enable Group Loot"])
+	Window:CreateSwitch("Loot", "GroupLoot", enableTextColor .. L["Enable Group Loot"], nil, UpdateGroupLoot)
 
 	Window:CreateSection("Auto-Looting")
 	Window:CreateSwitch("Loot", "FastLoot", L["Faster Auto-Looting"])

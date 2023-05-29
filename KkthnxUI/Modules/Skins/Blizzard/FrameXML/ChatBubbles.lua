@@ -1,4 +1,4 @@
-local C = KkthnxUI[2]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 
 local table_insert = table.insert
 
@@ -21,6 +21,21 @@ local function reskinChatBubble(chatbubble)
 		frame.Tail:SetAlpha(0)
 
 		bg.KKUI_Background:SetVertexColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Skins"].ChatBubbleAlpha)
+
+		local str = frame.String
+		if str and str.GetTextColor then
+			-- Function to update the border color
+			local function UpdateBorderColor()
+				local r, g, b = str:GetTextColor()
+				bg.KKUI_Border:SetVertexColor(r, g, b)
+			end
+
+			-- Hook the OnUpdate handler to update the border color dynamically
+			frame:SetScript("OnUpdate", UpdateBorderColor)
+			UpdateBorderColor()
+		else
+			K.SetBorderColor(bg.KKUI_Border)
+		end
 	end
 
 	chatbubble.styled = true

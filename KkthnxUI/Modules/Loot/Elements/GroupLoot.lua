@@ -173,6 +173,7 @@ end
 
 function Module:LootRoll_Create(index)
 	local bar = CreateFrame("Frame", "KKUI_LootRollFrame" .. index, UIParent)
+	bar:SetSize(328, 26)
 	bar:SetScript("OnEvent", Module.LootRoll_Cancel)
 	bar:RegisterEvent("CANCEL_LOOT_ROLL")
 	bar:Hide()
@@ -291,9 +292,6 @@ function Module:LootRoll_Start(rollID, rollTime)
 
 	bar.button.link = itemLink
 	bar.button.rollID = rollID
-
-	bar.button.link = itemLink
-	bar.button.rollID = rollID
 	bar.button.icon:SetTexture(texture)
 	bar.button.stack:SetShown(count > 1)
 	bar.button.stack:SetText(count)
@@ -372,9 +370,15 @@ function Module:UpdateLootRollAnchors(POSITION)
 end
 
 function Module:UpdateLootRollFrames()
+	if not C["Loot"].GroupLoot then
+		return
+	end
+
 	for i = 1, NUM_GROUP_LOOT_FRAMES do
 		local bar = Module:LootFrame_GetFrame(i)
 		bar:SetSize(328, 26)
+
+		bar.status:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
 
 		bar.button:ClearAllPoints()
 		bar.button:SetPoint("RIGHT", bar, "LEFT", -6, 0)
@@ -390,6 +394,13 @@ function Module:UpdateLootRollFrames()
 				icon:ClearAllPoints()
 			end
 		end
+
+		bar.status:ClearAllPoints()
+		bar.name:ClearAllPoints()
+		bar.bind:ClearAllPoints()
+
+		bar.status:SetAllPoints()
+		bar.status:SetSize(328, 26)
 
 		bar.need:SetPoint("LEFT", bar, "LEFT", 3, 0)
 		if bar.disenchant then

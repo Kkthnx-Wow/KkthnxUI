@@ -6,7 +6,7 @@ local hooksecurefunc = hooksecurefunc
 
 local ANCHOR_POINT = "BOTTOM"
 local POSITION = "TOP"
-local YOFFSET = -10
+local YOFFSET = -6
 
 local AlertFrameHolder
 
@@ -19,11 +19,11 @@ function Module:UpdateAnchors()
 	if y > (screenHeight * 0.5) then
 		POSITION = "TOP"
 		ANCHOR_POINT = "BOTTOM"
-		YOFFSET = -5
+		YOFFSET = -6
 	else
 		POSITION = "BOTTOM"
 		ANCHOR_POINT = "TOP"
-		YOFFSET = 5
+		YOFFSET = 6
 	end
 
 	local AlertFrame = _G.AlertFrame
@@ -93,7 +93,7 @@ function Module:GroupLootContainer_Update()
 	end
 
 	if lastIdx then
-		self:Height(self.reservedSize * lastIdx)
+		self:SetHeight(self.reservedSize * lastIdx)
 		self:Show()
 	else
 		self:Hide()
