@@ -1,7 +1,5 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
-
 local table_insert = table.insert
-
 local C_ChatBubbles_GetAllChatBubbles = C_ChatBubbles.GetAllChatBubbles
 
 local function reskinChatBubble(chatbubble)
@@ -20,17 +18,16 @@ local function reskinChatBubble(chatbubble)
 		frame:DisableDrawLayer("BORDER")
 		frame.Tail:SetAlpha(0)
 
-		bg.KKUI_Background:SetVertexColor(C["Media"].Backdrops.ColorBackdrop[1], C["Media"].Backdrops.ColorBackdrop[2], C["Media"].Backdrops.ColorBackdrop[3], C["Skins"].ChatBubbleAlpha)
+		local backdropColor = C["Media"].Backdrops.ColorBackdrop
+		bg.KKUI_Background:SetVertexColor(backdropColor[1], backdropColor[2], backdropColor[3], C["Skins"].ChatBubbleAlpha)
 
 		local str = frame.String
 		if str and str.GetTextColor then
-			-- Function to update the border color
 			local function UpdateBorderColor()
 				local r, g, b = str:GetTextColor()
 				bg.KKUI_Border:SetVertexColor(r, g, b)
 			end
 
-			-- Hook the OnUpdate handler to update the border color dynamically
 			frame:SetScript("OnUpdate", UpdateBorderColor)
 			UpdateBorderColor()
 		else
@@ -46,7 +43,7 @@ table_insert(C.defaultThemes, function()
 		return
 	end
 
-	-- Create a table of chat events to listen for
+	local bubbleHook = CreateFrame("Frame")
 	local events = {
 		CHAT_MSG_SAY = "chatBubbles",
 		CHAT_MSG_YELL = "chatBubbles",
@@ -57,11 +54,7 @@ table_insert(C.defaultThemes, function()
 		CHAT_MSG_MONSTER_PARTY = "chatBubblesParty",
 	}
 
-	-- Create a frame to hook chat events and reskin chat bubbles
-	local bubbleHook = CreateFrame("Frame")
-
-	-- Register the chat events to listen for
-	for event in next, events do
+	for event in pairs(events) do
 		bubbleHook:RegisterEvent(event)
 	end
 
@@ -73,9 +66,8 @@ table_insert(C.defaultThemes, function()
 	end)
 
 	bubbleHook:SetScript("OnUpdate", function(self, elapsed)
-		self.elapsed = self.elapsed + elapsed
+		self.elapsed = (self.elapsed or 0) + elapsed
 
-		-- Only reskin chat bubbles every 0.1 seconds
 		if self.elapsed > 0.1 then
 			for _, chatbubble in pairs(C_ChatBubbles_GetAllChatBubbles()) do
 				reskinChatBubble(chatbubble)

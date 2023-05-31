@@ -1,164 +1,162 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
-
 local select = select
 
-local CharacterHandsSlot = CharacterHandsSlot
-local CharacterHeadSlot = CharacterHeadSlot
-local CharacterMainHandSlot = CharacterMainHandSlot
-local CharacterModelScene = CharacterModelScene
-local CharacterSecondaryHandSlot = CharacterSecondaryHandSlot
-local CharacterStatsPane = CharacterStatsPane
-local GetInventoryItemLink = GetInventoryItemLink
-local IsCosmeticItem = IsCosmeticItem
-local hooksecurefunc = hooksecurefunc
+local function colourPopout(self)
+	local aR, aG, aB
+	local glow = self:GetParent().IconBorder
+
+	if glow:IsShown() then
+		aR, aG, aB = glow:GetVertexColor()
+	else
+		aR, aG, aB = K.r, K.g, K.b
+	end
+
+	self.arrow:SetVertexColor(aR, aG, aB)
+end
+
+local function clearPopout(self)
+	self.arrow:SetVertexColor(1, 1, 1)
+end
+
+local function UpdateAzeriteItem(self)
+	if not self.styled then
+		self.AzeriteTexture:SetAlpha(0)
+		self.RankFrame.Texture:SetTexture("")
+		self.RankFrame.Label:ClearAllPoints()
+		self.RankFrame.Label:SetPoint("TOPLEFT", self, 2, -1)
+		self.RankFrame.Label:SetTextColor(1, 0.5, 0)
+		self.RankFrame.Label:SetFontObject(K.UIFontOutline)
+		self.RankFrame.Label:SetFont(select(1, self.RankFrame.Label:GetFont()), 13, select(3, self.RankFrame.Label:GetFont()))
+
+		self.styled = true
+	end
+end
+
+local function UpdateAzeriteEmpoweredItem(self)
+	self.AzeriteTexture:SetAtlas("AzeriteIconFrame")
+	self.AzeriteTexture:SetAllPoints()
+	self.AzeriteTexture:SetDrawLayer("BORDER", 1)
+end
+
+local function UpdateCosmetic(self)
+	local itemLink = GetInventoryItemLink("player", self:GetID())
+	self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
+end
+
+local function styleEquipmentSlot(slotName)
+	local slot = _G[slotName]
+	local icon = slot.icon
+	local iconBorder = slot.IconBorder
+	local cooldown = slot.Cooldown or _G[slotName .. "Cooldown"]
+	local popout = slot.popoutButton
+
+	-- Strip textures and set slot size
+	slot:StripTextures()
+	slot:SetSize(36, 36)
+
+	-- Set slot icon coordinates
+	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+
+	-- Hide icon border
+	iconBorder:SetAlpha(0)
+
+	-- Create border for the slot
+	slot:CreateBorder()
+	local border = slot.KKUI_Border
+
+	-- Set cooldown to cover entire slot
+	cooldown:SetAllPoints()
+
+	-- Set ignore texture
+	slot.ignoreTexture:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Transparent")
+
+	-- Set atlas for Icon Overlay
+	slot.IconOverlay:SetAtlas("CosmeticIconFrame")
+	slot.IconOverlay:SetPoint("TOPLEFT", 1, -1)
+	slot.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
+	iconBorder:SetAlpha(0)
+
+	-- Hook IconBorder to set color for slot border and handle hiding
+	hooksecurefunc(iconBorder, "SetVertexColor", function(_, r, g, b)
+		border:SetVertexColor(r, g, b)
+	end)
+	hooksecurefunc(iconBorder, "Hide", function()
+		border:SetVertexColor(1, 1, 1)
+	end)
+
+	-- Set up popout button
+	popout:SetNormalTexture(0)
+	popout:SetHighlightTexture(0)
+
+	-- Create arrow for popout button
+	local arrow = popout:CreateTexture(nil, "OVERLAY")
+	arrow:SetSize(16, 16)
+	if slot.verticalFlyout then
+		K.SetupArrow(arrow, "down")
+		arrow:SetPoint("TOP", slot, "BOTTOM", 0, 1)
+	else
+		K.SetupArrow(arrow, "right")
+		arrow:SetPoint("LEFT", slot, "RIGHT", -1, 0)
+	end
+	popout.arrow = arrow
+
+	-- Hook scripts for popout button
+	popout:HookScript("OnEnter", clearPopout)
+	popout:HookScript("OnLeave", colourPopout)
+
+	-- Hook DisplayAsAzeriteItem and DisplayAsAzeriteEmpoweredItem
+	hooksecurefunc(slot, "DisplayAsAzeriteItem", UpdateAzeriteItem)
+	hooksecurefunc(slot, "DisplayAsAzeriteEmpoweredItem", UpdateAzeriteEmpoweredItem)
+end
 
 tinsert(C.defaultThemes, function()
 	if not C["Skins"].BlizzardFrames then
 		return
 	end
 
-	local function colourPopout(self)
-		local aR, aG, aB
-		local glow = self:GetParent().IconBorder
-
-		if glow:IsShown() then
-			aR, aG, aB = glow:GetVertexColor()
-		else
-			aR, aG, aB = K.r, K.g, K.b
-		end
-
-		self.arrow:SetVertexColor(aR, aG, aB)
-	end
-
-	local function clearPopout(self)
-		self.arrow:SetVertexColor(1, 1, 1)
-	end
-
-	local function UpdateAzeriteItem(self)
-		if not self.styled then
-			self.AzeriteTexture:SetAlpha(0)
-			self.RankFrame.Texture:SetTexture("")
-			self.RankFrame.Label:ClearAllPoints()
-			self.RankFrame.Label:SetPoint("TOPLEFT", self, 2, -1)
-			self.RankFrame.Label:SetTextColor(1, 0.5, 0)
-			self.RankFrame.Label:SetFontObject(K.UIFontOutline)
-			self.RankFrame.Label:SetFont(select(1, self.RankFrame.Label:GetFont()), 13, select(3, self.RankFrame.Label:GetFont()))
-
-			self.styled = true
-		end
-	end
-
-	local function UpdateAzeriteEmpoweredItem(self)
-		self.AzeriteTexture:SetAtlas("AzeriteIconFrame")
-		self.AzeriteTexture:SetAllPoints()
-		self.AzeriteTexture:SetDrawLayer("BORDER", 1)
-	end
-
-	local function UpdateCosmetic(self)
-		local itemLink = GetInventoryItemLink("player", self:GetID())
-		self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
-	end
-
+	-- Character model scene
 	CharacterModelScene:DisableDrawLayer("BACKGROUND")
 	CharacterModelScene:DisableDrawLayer("BORDER")
 	CharacterModelScene:DisableDrawLayer("OVERLAY")
 	CharacterModelScene:StripTextures(true)
 
 	local equipmentSlots = {
-		"Head",
-		"Neck",
-		"Shoulder",
-		"Shirt",
-		"Chest",
-		"Waist",
-		"Legs",
-		"Feet",
-		"Wrist",
-		"Hands",
-		"Finger0",
-		"Finger1",
-		"Trinket0",
-		"Trinket1",
-		"Back",
-		"MainHand",
-		"SecondaryHand",
-		"Tabard",
+		"CharacterBackSlot",
+		"CharacterChestSlot",
+		"CharacterFeetSlot",
+		"CharacterFinger0Slot",
+		"CharacterFinger1Slot",
+		"CharacterHandsSlot",
+		"CharacterHeadSlot",
+		"CharacterLegsSlot",
+		"CharacterMainHandSlot",
+		"CharacterNeckSlot",
+		"CharacterSecondaryHandSlot",
+		"CharacterShirtSlot",
+		"CharacterShoulderSlot",
+		"CharacterTabardSlot",
+		"CharacterTrinket0Slot",
+		"CharacterTrinket1Slot",
+		"CharacterWaistSlot",
+		"CharacterWristSlot",
 	}
 
-	for i = 1, #equipmentSlots do
-		local slotName = "Character" .. equipmentSlots[i] .. "Slot"
-		local slot = _G[slotName]
-		local cooldown = _G[slotName .. "Cooldown"]
-		local icon = slot.icon
-		local iconBorder = slot.IconBorder
-
-		-- Strip textures and set slot size
-		slot:StripTextures()
-		slot:SetSize(36, 36)
-
-		-- Set slot icon coordinates
-		icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-		-- Hide icon border
-		iconBorder:SetAlpha(0)
-
-		-- Create border for the slot
-		slot:CreateBorder()
-		local border = slot.KKUI_Border
-
-		-- Set cooldown to cover entire slot
-		cooldown:SetAllPoints()
-
-		-- Set ignore texture
-		slot.ignoreTexture:SetTexture("Interface\\PaperDollInfoFrame\\UI-GearManager-LeaveItem-Transparent")
-
-		-- Set atlas for Icon Overlay
-		slot.IconOverlay:SetAtlas("CosmeticIconFrame")
-		slot.IconOverlay:SetPoint("TOPLEFT", 1, -1)
-		slot.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
-		iconBorder:SetAlpha(0)
-
-		-- Hook IconBorder to set color for slot border and handle hiding
-		hooksecurefunc(iconBorder, "SetVertexColor", function(_, r, g, b)
-			border:SetVertexColor(r, g, b)
-		end)
-		hooksecurefunc(iconBorder, "Hide", function()
-			border:SetVertexColor(1, 1, 1)
-		end)
-
-		-- Set up popout button
-		local popout = slot.popoutButton
-		popout:SetNormalTexture("")
-		popout:SetHighlightTexture("")
-
-		-- Create arrow for popout button
-		local arrow = popout:CreateTexture(nil, "OVERLAY")
-		arrow:SetSize(16, 16)
-		if slot.verticalFlyout then
-			K.SetupArrow(arrow, "down")
-			arrow:SetPoint("TOP", slot, "BOTTOM", 0, 1)
-		else
-			K.SetupArrow(arrow, "right")
-			arrow:SetPoint("LEFT", slot, "RIGHT", -1, 0)
-		end
-		popout.arrow = arrow
-
-		-- Hook scripts for popout button
-		popout:HookScript("OnEnter", clearPopout)
-		popout:HookScript("OnLeave", colourPopout)
-
-		-- Hook DisplayAsAzeriteItem and DisplayAsAzeriteEmpoweredItem
-		hooksecurefunc(slot, "DisplayAsAzeriteItem", UpdateAzeriteItem)
-		hooksecurefunc(slot, "DisplayAsAzeriteEmpoweredItem", UpdateAzeriteEmpoweredItem)
+	for _, slotName in ipairs(equipmentSlots) do
+		styleEquipmentSlot(slotName)
 	end
 
 	hooksecurefunc("PaperDollItemSlotButton_Update", function(button)
-		-- also fires for bag slots, we don't want that
 		if button.popoutButton then
 			colourPopout(button.popoutButton)
 		end
 		UpdateCosmetic(button)
 	end)
+
+	CharacterHeadSlot:ClearAllPoints()
+	CharacterHandsSlot:ClearAllPoints()
+	CharacterMainHandSlot:ClearAllPoints()
+	CharacterSecondaryHandSlot:ClearAllPoints()
+	CharacterModelScene:ClearAllPoints()
 
 	-- Character slots
 	CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)
@@ -167,9 +165,8 @@ tinsert(C.defaultThemes, function()
 	CharacterSecondaryHandSlot:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, "BOTTOMRIGHT", -176, 5)
 
 	-- Character model scene
-	CharacterModelScene:SetSize(0, 0)
-	CharacterModelScene:SetPoint("TOPLEFT", CharacterFrame.Inset, 0, 0)
-	CharacterModelScene:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, 0, 20)
+	CharacterModelScene:SetPoint("TOPLEFT", CharacterFrame.Inset, 4, -4)
+	CharacterModelScene:SetPoint("BOTTOMRIGHT", CharacterFrame.Inset, -4, 4)
 
 	local function UpdateCharacterFrameLayout(isExpanded)
 		local frameWidth, frameHeight = 640, 431

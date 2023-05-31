@@ -1,18 +1,12 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
--- Lua
-
-local GetInventoryItemLink = GetInventoryItemLink
-local HideUIPanel = HideUIPanel
-local IsCosmeticItem = IsCosmeticItem
-local PanelTemplates_GetSelectedTab = PanelTemplates_GetSelectedTab
-local UnitClass = UnitClass
-local hooksecurefunc = hooksecurefunc
-
 C.themes["Blizzard_InspectUI"] = function()
-	-- if InspectFrame and InspectFrame:IsShown() then
-	-- 	HideUIPanel(InspectFrame)
-	-- end
+	local GetInventoryItemLink = GetInventoryItemLink
+	local HideUIPanel = HideUIPanel
+	local IsCosmeticItem = IsCosmeticItem
+	local PanelTemplates_GetSelectedTab = PanelTemplates_GetSelectedTab
+	local UnitClass = UnitClass
+	local hooksecurefunc = hooksecurefunc
 
 	local InspectPaperDollItemsFrame = InspectPaperDollItemsFrame
 	local InspectModelFrame = InspectModelFrame
@@ -25,30 +19,30 @@ C.themes["Blizzard_InspectUI"] = function()
 	InspectModelFrame:StripTextures(true)
 
 	local equipmentSlots = {
-		"Head",
-		"Neck",
-		"Shoulder",
-		"Shirt",
-		"Chest",
-		"Waist",
-		"Legs",
-		"Feet",
-		"Wrist",
-		"Hands",
-		"Finger0",
-		"Finger1",
-		"Trinket0",
-		"Trinket1",
-		"Back",
-		"MainHand",
-		"SecondaryHand",
-		"Tabard",
+		"InspectHeadSlot",
+		"InspectNeckSlot",
+		"InspectShoulderSlot",
+		"InspectShirtSlot",
+		"InspectChestSlot",
+		"InspectWaistSlot",
+		"InspectLegsSlot",
+		"InspectFeetSlot",
+		"InspectWristSlot",
+		"InspectHandsSlot",
+		"InspectFinger0Slot",
+		"InspectFinger1Slot",
+		"InspectTrinket0Slot",
+		"InspectTrinket1Slot",
+		"InspectBackSlot",
+		"InspectMainHandSlot",
+		"InspectSecondaryHandSlot",
+		"InspectTabardSlot",
 	}
 
 	local numEquipmentSlots = #equipmentSlots
 
 	for i = 1, numEquipmentSlots do
-		local slot = _G["Inspect" .. equipmentSlots[i] .. "Slot"]
+		local slot = _G[equipmentSlots[i]]
 		slot:StripTextures()
 		slot:SetSize(36, 36)
 		slot.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -81,26 +75,26 @@ C.themes["Blizzard_InspectUI"] = function()
 	local InspectHandsSlot = InspectHandsSlot
 	local InspectMainHandSlot = InspectMainHandSlot
 	local InspectSecondaryHandSlot = InspectSecondaryHandSlot
-	local InspectModelFrame = InspectModelFrame
-	local InspectFrameInset = InspectFrame.Inset
+
+	InspectHeadSlot:ClearAllPoints()
+	InspectHandsSlot:ClearAllPoints()
+	InspectMainHandSlot:ClearAllPoints()
+	InspectSecondaryHandSlot:ClearAllPoints()
+	InspectModelFrame:ClearAllPoints()
 
 	InspectHeadSlot:SetPoint("TOPLEFT", InspectFrameInset, "TOPLEFT", 6, -6)
 	InspectHandsSlot:SetPoint("TOPRIGHT", InspectFrameInset, "TOPRIGHT", -6, -6)
 	InspectMainHandSlot:SetPoint("BOTTOMLEFT", InspectFrameInset, "BOTTOMLEFT", 176, 5)
-	InspectSecondaryHandSlot:ClearAllPoints()
 	InspectSecondaryHandSlot:SetPoint("BOTTOMRIGHT", InspectFrameInset, "BOTTOMRIGHT", -176, 5)
 
-	InspectModelFrame:SetSize(0, 0)
-	InspectModelFrame:ClearAllPoints()
-	InspectModelFrame:SetPoint("TOPLEFT", InspectFrameInset, 0, 0)
-	InspectModelFrame:SetPoint("BOTTOMRIGHT", InspectFrameInset, 0, 30)
-	InspectModelFrame:SetCamDistanceScale(1.1)
+	InspectModelFrame:SetPoint("TOPLEFT", InspectFrameInset, 4, -4)
+	InspectModelFrame:SetPoint("BOTTOMRIGHT", InspectFrameInset, -4, 4)
 
-	local function ApplyInspectFrameLayout(isExpanded)
+	local function ApplyInspectFrameLayout()
 		local InspectFrame = InspectFrame
 		local InspectFrameInset = InspectFrame.Inset
 
-		if isExpanded then
+		if PanelTemplates_GetSelectedTab(InspectFrame) == 1 then
 			InspectFrame:SetSize(438, 431) -- 338 + 100, 424 + 7
 			InspectFrameInset:SetPoint("BOTTOMRIGHT", InspectFrame, "BOTTOMLEFT", 432, 4)
 

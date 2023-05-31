@@ -39,6 +39,8 @@ local UnitXPMax = UnitXPMax
 local CurrentXP, XPToLevel, RestedXP, PercentRested
 local PercentXP, RemainXP, RemainTotal, RemainBars
 
+local QuestRep = 0
+
 local function IsAzeriteAvailable()
 	local itemLocation = C_AzeriteItem_FindActiveAzeriteItem()
 	return itemLocation and itemLocation:IsEquipmentSlot() and not C_AzeriteItem_IsAzeriteItemAtMaxLevel()
@@ -56,6 +58,24 @@ local function GetValues(curValue, minValue, maxValue)
 		return 1, 1, 100, true
 	else
 		return current, maximum, current / diff * 100
+	end
+end
+
+local function ReputationBar_QuestRep(factionID)
+	QuestRep = 0
+
+	for i = 1, C_QuestLog.GetNumQuestLogEntries() do
+		local info = C_QuestLog.GetInfo(i)
+		if info then
+			local qxp = C_QuestLog.GetQuestLogMajorFactionReputationRewards(info.questID)
+			if qxp then
+				for _, data in ipairs(qxp) do
+					if factionID == data.factionID then
+						QuestRep = QuestRep + data.rewardAmount
+					end
+				end
+			end
+		end
 	end
 end
 
@@ -119,6 +139,8 @@ function Module:ExpBar_Update(event, unit)
 				reaction, minValue, maxValue = 10, 0, majorFactionData.renownLevelThreshold
 				curValue = C_MajorFactions_HasMaximumRenown(factionID) and majorFactionData.renownLevelThreshold or majorFactionData.renownReputationEarned or 0
 				label = format("%s%s|r %s", renownHex, RENOWN_LEVEL_LABEL, majorFactionData.renownLevel)
+
+				ReputationBar_QuestRep(factionID)
 			end
 		end
 
@@ -255,6 +277,9 @@ function Module:ExpBar_UpdateTooltip()
 				curValue = C_MajorFactions_HasMaximumRenown(factionID) and majorFactionData.renownLevelThreshold or majorFactionData.renownReputationEarned or 0
 				maxValue = majorFactionData.renownLevelThreshold
 				GameTooltip:AddDoubleLine(RENOWN_LEVEL_LABEL .. majorFactionData.renownLevel, format("%d / %d (%d%%)", GetValues(curValue, 0, maxValue)), BLUE_FONT_COLOR.r, BLUE_FONT_COLOR.g, BLUE_FONT_COLOR.b)
+
+				local current, _, percent = GetValues(QuestRep, 0, maxValue)
+				GameTooltip:AddDoubleLine("Reputation from Quests", format("%d (%d%%)", current, percent), 1, 1, 1)
 			elseif isParagon or (reaction ~= _G.MAX_REPUTATION_REACTION) then
 				local current, maximum, percent = GetValues(curValue, minValue, maxValue)
 				GameTooltip:AddDoubleLine(REPUTATION .. ":", format("%d / %d (%d%%)", current, maximum, percent), 1, 1, 1)
@@ -294,22 +319,24 @@ function Module:ExpBar_UpdateTooltip()
 	GameTooltip:Show()
 end
 
-function Module:SetupExpRepScript(bar)
-	bar.eventList = {
-		"PLAYER_XP_UPDATE",
-		"PLAYER_LEVEL_UP",
-		"UPDATE_EXHAUSTION",
-		"PLAYER_ENTERING_WORLD",
-		"UPDATE_FACTION",
-		"ARTIFACT_XP_UPDATE",
-		"PLAYER_EQUIPMENT_CHANGED",
-		"ENABLE_XP_GAIN",
-		"DISABLE_XP_GAIN",
-		"AZERITE_ITEM_EXPERIENCE_CHANGED",
-		"HONOR_XP_UPDATE",
-	}
+local ExpRep_EventList = {
+	"PLAYER_XP_UPDATE",
+	"PLAYER_LEVEL_UP",
+	"UPDATE_EXHAUSTION",
+	"PLAYER_ENTERING_WORLD",
+	"UPDATE_FACTION",
+	"ARTIFACT_XP_UPDATE",
+	"PLAYER_EQUIPMENT_CHANGED",
+	"ENABLE_XP_GAIN",
+	"DISABLE_XP_GAIN",
+	"AZERITE_ITEM_EXPERIENCE_CHANGED",
+	"HONOR_XP_UPDATE",
+	"QUEST_FINISHED",
+	"COMBAT_TEXT_UPDATE",
+}
 
-	for _, event in pairs(bar.eventList) do
+function Module:SetupExpRepScript(bar)
+	for _, event in pairs(ExpRep_EventList) do
 		bar:RegisterEvent(event)
 	end
 
