@@ -138,7 +138,6 @@ local function KKUI_VerifyDatabase()
 	charData.SplitCount = charData.SplitCount or 1
 	charData.TempAnchor = charData.TempAnchor or {}
 	charData.InternalCD = charData.InternalCD or {}
-	charData.DeathCounter = charData.DeathCounter or { Player = 0, Level = {} }
 	charData.AuraWatchList = charData.AuraWatchList or {}
 	charData.AuraWatchList.Switcher = charData.AuraWatchList.Switcher or {}
 	charData.AuraWatchList.IgnoreSpells = charData.AuraWatchList.IgnoreSpells or {}
@@ -150,6 +149,7 @@ local function KKUI_VerifyDatabase()
 
 	KkthnxUIDB.ChatHistory = KkthnxUIDB.ChatHistory or {}
 	KkthnxUIDB.Gold = KkthnxUIDB.Gold or {}
+	KkthnxUIDB.Deaths = KkthnxUIDB.Deaths or {}
 	KkthnxUIDB.ShowSlots = KkthnxUIDB.ShowSlots or false
 	KkthnxUIDB.ChangeLog = KkthnxUIDB.ChangeLog or {}
 	KkthnxUIDB.DetectVersion = KkthnxUIDB.DetectVersion or K.Version

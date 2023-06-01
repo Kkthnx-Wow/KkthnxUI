@@ -26,7 +26,7 @@ table_insert(C.defaultThemes, function()
 		GameMenuButtonContinue,
 	}
 
-	for _, button in next, buttons do
+	for _, button in ipairs(buttons) do
 		button:SkinButton(true)
 	end
 

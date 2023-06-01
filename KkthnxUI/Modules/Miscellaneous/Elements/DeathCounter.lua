@@ -1,33 +1,35 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
 
-local TOTAL = TOTAL
 local DEATHS = DEATHS
 
-local currentLevel
 local playerDeaths = 0
-local levelDeaths = {}
 local milestoneDeaths = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 }
 
-local function CreateDeathCounterDB()
-	-- Create or initialize the death counter database for the current character
-	local deathCounter = KkthnxUIDB.Variables[K.Realm][K.Name].DeathCounter
-	deathCounter.Level = deathCounter.Level or {}
-	deathCounter.Player = deathCounter.Player or 0
+local function getClassIcon(class)
+	local c1, c2, c3, c4 = unpack(CLASS_ICON_TCOORDS[class])
+	c1, c2, c3, c4 = (c1 + 0.03) * 50, (c2 - 0.03) * 50, (c3 + 0.03) * 50, (c4 - 0.03) * 50
+	local classStr = "|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:12:12:0:0:50:50:" .. c1 .. ":" .. c2 .. ":" .. c3 .. ":" .. c4 .. "|t "
+	return classStr or ""
 end
 
 local function UpdateDeathCounts()
-	-- Update the local death counts and milestone deaths with the values from the database
-	local deathCounter = KkthnxUIDB.Variables[K.Realm][K.Name].DeathCounter
-	playerDeaths = deathCounter.Player or 0
-	levelDeaths = deathCounter.Level or {}
+	-- Update the local death count with the value from the death counter variable
+	if not KkthnxUIDB.Deaths[K.Realm] then
+		KkthnxUIDB.Deaths[K.Realm] = {}
+	end
+
+	if not KkthnxUIDB.Deaths[K.Realm][K.Name] then
+		KkthnxUIDB.Deaths[K.Realm][K.Name] = {}
+	end
+
+	KkthnxUIDB.Deaths[K.Realm][K.Name][1] = playerDeaths
+	KkthnxUIDB.Deaths[K.Realm][K.Name][2] = K.Class
 end
 
 local function SaveDeathCounts()
-	-- Save the death counts and milestone deaths to the database
-	local deathCounter = KkthnxUIDB.Variables[K.Realm][K.Name].DeathCounter
-	deathCounter.Player = playerDeaths
-	deathCounter.Level = levelDeaths
+	-- Save the death count to the death counter variable
+	KkthnxUIDB.Deaths[K.Realm][K.Name][1] = playerDeaths
 end
 
 local function CheckMilestoneDeaths()
@@ -39,33 +41,17 @@ local function CheckMilestoneDeaths()
 end
 
 local function OnPlayerDead()
-	-- Increment the player's total death count and level-specific death count
+	-- Increment the player's total death count
 	playerDeaths = playerDeaths + 1
-	levelDeaths[currentLevel] = (levelDeaths[currentLevel] or 0) + 1
 
-	-- Save the death counts to the database
+	-- Save the death count
 	SaveDeathCounts()
 
-	-- Print the updated death counts
-	print(TOTAL .. " " .. DEATHS .. ": " .. playerDeaths)
-	print(LEVEL .. " " .. DEATHS .. ": " .. levelDeaths[currentLevel])
+	-- Print the updated death count
+	-- print(DEATHS .. ": " .. playerDeaths)
 
 	-- Check for milestone deaths
 	CheckMilestoneDeaths()
-end
-
-local function OnLevelChange()
-	-- Update the current level and reset the level-specific death count when the player levels up
-	local newLevel = K.Level
-	if newLevel > currentLevel then
-		levelDeaths[newLevel] = 0
-		currentLevel = newLevel
-
-		-- Save the death counts to the database
-		SaveDeathCounts()
-
-		-- You can update the UI here to reflect the level change and reset the level death count
-	end
 end
 
 local function CreateDeathCounterPanel()
@@ -97,13 +83,19 @@ local function CreateDeathCounterPanel()
 	panel.scrollChild:SetSize(260, 200)
 
 	-- Create the font strings for displaying death counts
-	panel.totalDeaths = panel.scrollChild:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-	panel.totalDeaths:SetPoint("TOPLEFT", 6, -6)
-	panel.totalDeaths:SetText(TOTAL .. " " .. DEATHS .. ": " .. playerDeaths)
+	panel.deathCountTexts = {}
 
-	panel.levelDeaths = panel.scrollChild:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-	panel.levelDeaths:SetPoint("TOPLEFT", panel.totalDeaths, "BOTTOMLEFT", 0, -15)
-	panel.levelDeaths:SetText(LEVEL .. " " .. DEATHS .. ":")
+	-- Function to check if a character's death count exists
+	local function CharacterDeathCountExists(realm, name)
+		return KkthnxUIDB.Deaths[realm] and KkthnxUIDB.Deaths[realm][name]
+	end
+
+	-- Function to create a death count text
+	local function CreateDeathCountText()
+		local deathCountText = panel.scrollChild:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+		deathCountText:SetHeight(14) -- Set the height of the death count text
+		return deathCountText
+	end
 
 	-- Set the scroll child as the content of the scroll frame
 	panel.scrollFrame:SetScrollChild(panel.scrollChild)
@@ -115,14 +107,14 @@ local function CreateDeathCounterPanel()
 	panel.resetButton:SetText(RESET)
 	panel.resetButton:SkinButton()
 	panel.resetButton:SetScript("OnClick", function()
-		-- Reset the death counts and save to the database
+		-- Reset the death count and save to the death counter variable
 		playerDeaths = 0
-		levelDeaths = {}
 		SaveDeathCounts()
 
 		-- Update the death count information in the panel
-		panel.totalDeaths:SetText(TOTAL .. " " .. DEATHS .. ": " .. playerDeaths)
-		panel.levelDeaths:SetText(LEVEL .. " " .. DEATHS .. ":")
+		for _, deathCountText in ipairs(panel.deathCountTexts) do
+			deathCountText:SetText("")
+		end
 	end)
 
 	-- Create the close button for the panel
@@ -136,17 +128,33 @@ local function CreateDeathCounterPanel()
 	end)
 
 	panel:SetScript("OnShow", function()
-		-- Update the death count information when the panel is shown
-		panel.totalDeaths:SetText(TOTAL .. " " .. DEATHS .. ": " .. playerDeaths)
-		local levelDeathsText = LEVEL .. " " .. DEATHS .. ":\n"
-		if next(levelDeaths) == nil then
-			levelDeathsText = levelDeathsText .. NONE
-		else
-			for level, deaths in pairs(levelDeaths) do
-				levelDeathsText = levelDeathsText .. "- " .. LEVEL .. " " .. level .. ": " .. deaths .. "\n"
+		-- Clear the existing death count texts
+		for _, deathCountText in ipairs(panel.deathCountTexts) do
+			deathCountText:SetText("")
+		end
+
+		-- Create and position the death count texts for existing characters
+		local yOffset = -6
+		for realm, realmData in pairs(KkthnxUIDB.Deaths) do
+			for name, data in pairs(realmData) do
+				local playerName = Ambiguate(name .. " - " .. realm, "none")
+				local class = data[2]
+				local deaths = data[1]
+				local classColor = K.RGBToHex(K.ColorClass(class))
+				local classIcon = getClassIcon(class)
+
+				-- Check if the character's death count already exists
+				if CharacterDeathCountExists(realm, name) then
+					local deathCountText = CreateDeathCountText()
+					deathCountText:SetParent(panel.scrollChild)
+					deathCountText:SetPoint("TOPLEFT", 6, yOffset)
+					deathCountText:SetFormattedText("%s%s%s|r | |TInterface\\TARGETINGFRAME\\UI-RaidTargetingIcon_8:12|t%s: %d", classIcon, classColor, playerName, DEATHS, deaths)
+					deathCountText:SetTextColor(1, 1, 1) -- Set deaths text color to white
+					table.insert(panel.deathCountTexts, deathCountText)
+					yOffset = yOffset - 15
+				end
 			end
 		end
-		panel.levelDeaths:SetText(levelDeathsText)
 	end)
 
 	K.CreateMoverFrame(panel)
@@ -159,17 +167,12 @@ function Module:CreateDeathCounter()
 	if C["Misc"].DeathCounter then
 		-- Register necessary events when DeathCounter is enabled
 		K:RegisterEvent("PLAYER_DEAD", OnPlayerDead)
-		K:RegisterEvent("PLAYER_LEVEL_UP", OnLevelChange)
 	else
 		-- Unregister events when DeathCounter is disabled
 		K:UnregisterEvent("PLAYER_DEAD", OnPlayerDead)
-		K:UnregisterEvent("PLAYER_LEVEL_UP", OnLevelChange)
 	end
 
-	currentLevel = K.Level
-
-	-- Create or initialize the death counter database and update the death counts
-	CreateDeathCounterDB()
+	-- Update the death count
 	UpdateDeathCounts()
 
 	-- Create the death counter panel frame
