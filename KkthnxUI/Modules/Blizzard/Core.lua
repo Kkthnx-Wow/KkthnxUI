@@ -6,7 +6,7 @@ function Module:OnEnable()
 		"CreateAlertFrames",
 		"CreateAltPowerbar",
 		"CreateColorPicker",
-		"CreateMirrorBars",
+		-- "CreateMirrorBars", -- Changed or removed? I miss wow... Bugged!
 		"CreateObjectiveFrame",
 		"CreateOrderHallIcon",
 		"CreateTimerTracker",

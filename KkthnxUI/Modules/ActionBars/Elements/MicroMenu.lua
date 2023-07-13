@@ -78,24 +78,30 @@ function Module:MicroButton_Create(parent, data)
 		local disabled = button:GetDisabledTexture()
 		local highlight = button:GetHighlightTexture()
 
-		pushed:SetTexCoord(0.1, 0.85, 0.12, 0.78)
-		pushed:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -4)
-		pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 4)
+		if pushed then -- Blizzard improve the micromenu? Bugged!
+			pushed:SetTexCoord(0.1, 0.85, 0.12, 0.78)
+			pushed:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -4)
+			pushed:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 4)
+		end
 
-		normal:SetTexCoord(0.1, 0.85, 0.12, 0.78)
-		normal:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -4)
-		normal:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 4)
+		if normal then -- Blizzard improve the micromenu? Bugged!
+			normal:SetTexCoord(0.1, 0.85, 0.12, 0.78)
+			normal:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -4)
+			normal:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 4)
+		end
 
-		if disabled then
+		if disabled then -- Blizzard improve the micromenu? Bugged!
 			disabled:SetTexCoord(0.1, 0.85, 0.12, 0.78)
 			disabled:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -4)
 			disabled:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 4)
 		end
 
-		highlight:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonWhite")
-		highlight:SetVertexColor(K.r, K.g, K.b)
-		highlight:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
-		highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
+		if highlight then -- Blizzard improve the micromenu? Bugged!
+			highlight:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonWhite")
+			highlight:SetVertexColor(K.r, K.g, K.b)
+			highlight:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
+			highlight:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
+		end
 
 		if button.FlashBorder then
 			button.FlashBorder:SetTexture()

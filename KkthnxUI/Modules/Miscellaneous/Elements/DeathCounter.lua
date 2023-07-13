@@ -47,9 +47,6 @@ local function OnPlayerDead()
 	-- Save the death count
 	SaveDeathCounts()
 
-	-- Print the updated death count
-	-- print(DEATHS .. ": " .. playerDeaths)
-
 	-- Check for milestone deaths
 	CheckMilestoneDeaths()
 end

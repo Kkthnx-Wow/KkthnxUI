@@ -152,7 +152,7 @@ local function KKUI_VerifyDatabase()
 	KkthnxUIDB.Deaths = KkthnxUIDB.Deaths or {}
 	KkthnxUIDB.ShowSlots = KkthnxUIDB.ShowSlots or false
 	KkthnxUIDB.ChangeLog = KkthnxUIDB.ChangeLog or {}
-	KkthnxUIDB.DetectVersion = KkthnxUIDB.DetectVersion or K.Version
+	KkthnxUIDB.DetectVersion = KkthnxUIDB.DetectVersion or K.Version or nil
 	KkthnxUIDB.KeystoneInfo = KkthnxUIDB.KeystoneInfo or {}
 end
 

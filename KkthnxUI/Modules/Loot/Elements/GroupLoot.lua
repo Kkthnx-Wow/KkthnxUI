@@ -374,7 +374,7 @@ function Module:UpdateLootRollFrames()
 		return
 	end
 
-	for i = 1, NUM_GROUP_LOOT_FRAMES do
+	for i = 1, 4 do -- NUM_GROUP_LOOT_FRAMES does is nil now, so we can add this to the config for users to change. Bugged!
 		local bar = Module:LootFrame_GetFrame(i)
 		bar:SetSize(328, 26)
 

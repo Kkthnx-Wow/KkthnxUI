@@ -82,7 +82,7 @@ function Module:CreateObjectiveFrame()
 	tracker.AutoHider:SetScript("OnShow", AutoHider_OnShow)
 	Module:SetObjectiveFrameAutoHide()
 
-	hooksecurefunc("BonusObjectiveTracker_AnimateReward", RewardsFrame_SetPosition)
+	-- hooksecurefunc("BonusObjectiveTracker_AnimateReward", RewardsFrame_SetPosition) -- What was this changed to? Bugged!
 
 	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", Module.HandleMawBuffsFrame)
 	Module:HandleMawBuffsFrame()

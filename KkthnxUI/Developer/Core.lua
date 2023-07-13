@@ -14,33 +14,46 @@ if not K.isDeveloper then
 	return
 end
 
--- Set variables for the cvars we want to monitor
-local cvars = { "taintLog", "scriptProfile" }
+local eventCount = 0
+local threshold = 10000
 
--- Set the reminder duration in seconds
-local reminderDuration = 300 -- 5 minutes
+local function performGarbageCollection()
+  local before = collectgarbage("count")
+  print("Memory usage before garbage collection:", BreakUpLargeNumbers(before))
 
--- Function to check the cvars and show a reminder message if they are on for too long
-local function CheckCvars()
-	local found = false
+  collectgarbage("collect")
+  local after = collectgarbage("count")
+  print("Memory usage after garbage collection:", BreakUpLargeNumbers(after))
 
-	-- Loop over the cvars
-	for _, cvar in ipairs(cvars) do
-		-- Check if the cvar is on
-		if GetCVarBool(cvar) then
-			found = true
-
-			-- Show the reminder message
-			print(format("%s is still on. Please turn it off using the following command:", cvar))
-			print(format("/console %s 0", cvar))
-		end
-	end
-
-	-- Schedule the next check if needed
-	if found then
-		C_Timer.After(reminderDuration, CheckCvars)
-	end
+  local collected = before - after
+  print("Memory collected:", BreakUpLargeNumbers(collected))
 end
 
--- Schedule the first check
-C_Timer.After(reminderDuration, CheckCvars)
+local function onEvent(event)
+  if InCombatLockdown() then return end
+
+  eventCount = eventCount + 1
+
+  if eventCount > threshold or event == "PLAYER_ENTERING_WORLD" then
+    performGarbageCollection()
+    eventCount = 0
+    return
+  end
+
+  if event == "PLAYER_FLAGS_CHANGED" and UnitIsAFK("player") then
+    performGarbageCollection()
+    eventCount = 0
+    return
+  end
+end
+
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+frame:RegisterEvent("PLAYER_FLAGS_CHANGED")
+
+frame:SetScript("OnEvent", onEvent)
+
+
+
+
+
