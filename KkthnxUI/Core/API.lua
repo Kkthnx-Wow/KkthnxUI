@@ -113,6 +113,8 @@ local function CreateBackdrop(bFrame, ...)
 	kkui_backdrop:SetFrameLevel(max(0, bFrame:GetFrameLevel() - 1))
 
 	bFrame.KKUI_Backdrop = kkui_backdrop -- Save the backdrop as a property of the frame so that it can be referenced later on.
+
+	return CreateBackdrop
 end
 
 local function CreateShadow(f, bd)

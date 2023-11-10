@@ -228,23 +228,30 @@ function Module:TradeTabs_QuickEnchanting()
 	end)
 end
 
+local function LoadTradeTabs()
+	if init then
+		return
+	end
+	if InCombatLockdown() then
+		K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.TradeTabs_OnLoad)
+	else
+		Module:TradeTabs_OnLoad()
+	end
+end
+
 function Module:TradeTabs()
 	if not C["Misc"].TradeTabs then
 		return
 	end
-	if not ProfessionsFrame then
-		return
-	end
 
-	ProfessionsFrame:HookScript("OnShow", function()
-		if init then
-			return
-		end
-		if InCombatLockdown() then
-			K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.TradeTabs_OnLoad)
-		else
-			Module:TradeTabs_OnLoad()
-		end
-	end)
+	if ProfessionsFrame then
+		ProfessionsFrame:HookScript("OnShow", LoadTradeTabs)
+	else
+		K:RegisterEvent("ADDON_LOADED", function(_, addon)
+			if addon == "Blizzard_Professions" then
+				LoadTradeTabs()
+			end
+		end)
+	end
 end
 Module:RegisterMisc("TradeTabs", Module.TradeTabs)

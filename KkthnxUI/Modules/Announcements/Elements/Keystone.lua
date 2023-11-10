@@ -6,9 +6,9 @@ local gsub = gsub
 local C_Item_IsItemKeystoneByID = C_Item.IsItemKeystoneByID
 local C_MythicPlus_GetOwnedKeystoneChallengeMapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID
 local C_MythicPlus_GetOwnedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel
-local GetContainerItemID = GetContainerItemID
-local GetContainerItemLink = GetContainerItemLink
-local GetContainerNumSlots = GetContainerNumSlots
+local GetContainerItemID = _G.GetContainerItemID
+local GetContainerItemLink = _G.GetContainerItemLink
+local GetContainerNumSlots = _G.GetContainerNumSlots
 local NUM_BAG_SLOTS = NUM_BAG_SLOTS or 4
 
 local keystoneCache = {}

@@ -34,5 +34,10 @@ table_insert(C.defaultThemes, function()
 	GameMenuButtonQuitText:SetTextColor(1, 0, 0)
 	GameMenuButtonContinueText:SetTextColor(0, 1, 0)
 
+	-- ScriptErrorsFrame
 	ScriptErrorsFrame:SetScale(UIParent:GetScale())
+
+	-- TicketStatusFrame
+	TicketStatusFrameButton:StripTextures()
+	TicketStatusFrameButton:SkinButton()
 end)

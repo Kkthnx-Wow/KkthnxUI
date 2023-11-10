@@ -82,7 +82,7 @@ end
 function ExtraQuestButton:UpdateCount()
 	if self:IsShown() then
 		local count = GetItemCount(self.itemLink)
-		self.Count:SetText(count and count > 1 and count or "")
+		self.Count:SetText(tostring(count and count > 1 and count or ""))
 	end
 end
 

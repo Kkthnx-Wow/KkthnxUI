@@ -203,6 +203,7 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 	-- Automatically select a quest with only one quest option
 	local numQuestGossips = 0
 	local questGossipID
+
 	for i = 1, numOptions do
 		local option = gossipInfoTable[i]
 		if option.name and strfind(option.name, "cFF0000FF") then
@@ -210,7 +211,8 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 			questGossipID = option.gossipOptionID
 		end
 	end
-	if numQuestGossips == 1 then
+
+	if numQuestGossips == 1 and questGossipID then
 		return C_GossipInfo_SelectOption(questGossipID)
 	end
 end)
@@ -295,7 +297,8 @@ QuickQuest:Register("QUEST_COMPLETE", function()
 	if choices <= 1 then
 		GetQuestReward(1)
 	elseif choices > 1 then
-		local bestValue, bestIndex = 0
+		local bestValue = 0
+		local bestIndex
 
 		for index = 1, choices do
 			local link = GetQuestItemLink("choice", index)

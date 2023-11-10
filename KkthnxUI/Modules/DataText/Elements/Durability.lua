@@ -60,7 +60,7 @@ local function UpdateAllSlots()
 				numSlots = numSlots + 1
 			end
 			local iconTexture = GetInventoryItemTexture("player", index) or 134400
-			localSlots[i][4] = "|T" .. iconTexture .. ":13:15:0:0:50:50:4:46:4:46|t " or ""
+			localSlots[i][4] = ("|T" .. iconTexture .. ":13:15:0:0:50:50:4:46:4:46|t ") or ""
 		end
 	end
 	table_sort(localSlots, sortSlots)

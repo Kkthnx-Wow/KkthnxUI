@@ -17,21 +17,13 @@ local UnitInRaid = UnitInRaid
 local infoType = {}
 
 local spellBlackList = {
-	[99] = true, -- Reaping Roar
-	[122] = true, -- Frost Nova
-	[1776] = true, -- Gouging
-	[1784] = true, -- Sneak
-	[5246] = true, -- Shout out
-	[8122] = true, -- Psychic Scream
-	[31661] = true, -- Dragon's Breath
-	[33395] = true, -- Freeze
-	[64695] = true, -- Land Trap
-	[82691] = true, -- Ring of Frost
-	[91807] = true, -- Disoriented Charge
 	[102359] = true, -- Mass Entanglement
 	[105421] = true, -- Blinding Light
 	[115191] = true, -- Stealth
+	[122] = true, -- Frost Nova
 	[157997] = true, -- Frost Nova
+	[1776] = true, -- Gouging
+	[1784] = true, -- Sneak
 	[197214] = true, -- Fissure
 	[198121] = true, -- Frostbite
 	[207167] = true, -- Blizzard
@@ -39,10 +31,18 @@ local spellBlackList = {
 	[226943] = true, -- Mind Bomb
 	[228600] = true, -- Glacial Spike
 	[285515] = true, -- Surge of Power
+	[31661] = true, -- Dragon's Breath
 	[331866] = true, -- Chaotic Proxy
+	[33395] = true, -- Freeze
 	[354051] = true, -- Light Steps
 	[355689] = true, -- Avalanche
 	[386770] = true, -- Frigid
+	[5246] = true, -- Shout out
+	[64695] = true, -- Land Trap
+	[8122] = true, -- Psychic Scream
+	[82691] = true, -- Ring of Frost
+	[91807] = true, -- Disoriented Charge
+	[99] = true, -- Reaping Roar
 }
 
 local function getAlertChannel()

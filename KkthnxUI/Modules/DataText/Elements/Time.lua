@@ -127,9 +127,10 @@ local function updateTimerFormat(color, hour, minute)
 	end
 end
 
--- initialize self.timer outside of the function
+-- Declare onUpdateTimer as a local variable
 local onUpdateTimer = onUpdateTimer or 3
 
+-- Assuming Module is already defined somewhere in your code
 function Module:TimeOnUpdate(elapsed)
 	onUpdateTimer = onUpdateTimer + elapsed
 	if onUpdateTimer > 5 then

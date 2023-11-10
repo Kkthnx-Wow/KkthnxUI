@@ -20,7 +20,7 @@ function Module:UpdateAllSize()
 
 	-- update size of action bars
 	local actionBars = { "Bar1", "Bar2", "Bar3", "Bar4", "Bar5", "Bar6", "Bar7", "Bar8", "BarPet" }
-	for i, bar in ipairs(actionBars) do
+	for _, bar in ipairs(actionBars) do
 		Module:UpdateActionSize(bar)
 	end
 
