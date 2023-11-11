@@ -383,50 +383,14 @@ function Module:UpdateTargetIndicator()
 	local element = self.TargetIndicator
 	local isNameOnly = self.plateType == "NameOnly"
 
-	if style == 1 then
-		element:Hide()
-	else
-		if style == 2 then
-			element.TopArrow:Show()
-			element.RightArrow:Hide()
-			element.Glow:Hide()
-			element.nameGlow:Hide()
-		elseif style == 3 then
-			element.TopArrow:Hide()
-			element.RightArrow:Show()
-			element.Glow:Hide()
-			element.nameGlow:Hide()
-		elseif style == 4 then
-			element.TopArrow:Hide()
-			element.RightArrow:Hide()
-			if isNameOnly then
-				element.Glow:Hide()
-				element.nameGlow:Show()
-			else
-				element.Glow:Show()
-				element.nameGlow:Hide()
-			end
-		elseif style == 5 then
-			element.TopArrow:Show()
-			element.RightArrow:Hide()
-			if isNameOnly then
-				element.Glow:Hide()
-				element.nameGlow:Show()
-			else
-				element.Glow:Show()
-				element.nameGlow:Hide()
-			end
-		elseif style == 6 then
-			element.TopArrow:Hide()
-			element.RightArrow:Show()
-			if isNameOnly then
-				element.Glow:Hide()
-				element.nameGlow:Show()
-			else
-				element.Glow:Show()
-				element.nameGlow:Hide()
-			end
-		end
+	element:Hide()
+
+	if style > 1 and style < 7 then
+		element.TopArrow:SetShown(style == 2 or style == 5)
+		element.RightArrow:SetShown(style == 3 or style == 6)
+		element.Glow:SetShown(style == 4 or style == 5 or style == 6 and not isNameOnly)
+		element.nameGlow:SetShown(style == 4 or style == 5 or style == 6 and isNameOnly)
+
 		element:Show()
 	end
 end
@@ -885,7 +849,7 @@ function Module:CreatePlates()
 	self.Castbar.PostCastFail = Module.PostCastFailed
 	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 	self.Castbar.CreatePip = Module.CreatePip
-	Castbar.PostUpdatePips = Module.PostUpdatePips
+	self.Castbar.PostUpdatePips = Module.PostUpdatePips
 
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)
