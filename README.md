@@ -11,13 +11,8 @@ There are thousands of users, but most are content to simply download and use th
 
 [![twitter](https://img.shields.io/twitter/follow/KkthnxUI)](twitter.com/KkthnxUI)   
 
-[![twitch](https://img.shields.io/twitch/status/KkthnxTV)](https://www.twitch.tv/kkthnxtv)   
-   
-## Buy me a coffee
-Donations are welcome, but not required to use the UI at all. Donations help me further my development and fuel my gaming! Donations will never be a requirement to use the UI! If you would like to donate, you can do so down below.
+## Gift of Appreciation
+If you appreciate the hard work and dedication that goes into KkthnxUI, show your support by gifting gametime or a Blizzard balance to Kkthnx's gamertag: Kkthnx#1105 or send it to JRussell20@gmail.com
 
-[![paypal](https://img.shields.io/badge/PayPal-Donate-blue)](https://www.paypal.me/kkthnx)   
-
-[![patreon](https://img.shields.io/badge/Patreon-Subscribe-orange)](https://www.patreon.com/kkthnx)   
-
-[![steam](https://img.shields.io/badge/Steam-Wishlist-lightgrey)](http://store.steampowered.com/wishlist/id/Kkthnx)
+## Let's Build Together!
+Your contributions, no matter how big or small, play a crucial role in shaping the future of KkthnxUI. Join us in making the UI the best it can be! If you have any questions or need assistance, feel free to reach out on Discord.
