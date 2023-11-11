@@ -293,21 +293,26 @@ function Module:CreatePip(stage)
 	return pip
 end
 
-function Module:PostUpdatePip(pip, stage, stageTotalDuration)
+function Module:PostUpdatePips(numStages)
 	local pips = self.Pips
 	local numStages = self.numStages
-	local pip = pips[stage]
-	pip.tex:SetAlpha(0.3) -- Reset pip alpha
-	pip.duration = stageTotalDuration / 1000 -- Save pip duration
 
-	if stage == numStages then
-		local firstPip = pips[1]
-		local anchor = pips[numStages]
-		firstPip.tex:SetPoint("BOTTOMRIGHT", self)
-		firstPip.tex:SetPoint("TOPLEFT", anchor.BasePip, "TOPRIGHT")
-	elseif stage ~= 1 then
-		local anchor = pips[stage - 1]
-		pip.tex:SetPoint("BOTTOMRIGHT", pip.BasePip, "BOTTOMLEFT")
-		pip.tex:SetPoint("TOPLEFT", anchor.BasePip, "TOPRIGHT")
+	for stage = 1, numStages do
+		local pip = pips[stage]
+		pip.tex:SetAlpha(0.3) -- reset pip alpha
+		pip.duration = self.stagePoints[stage]
+
+		if stage == numStages then
+			local firstPip = pips[1]
+			local anchor = pips[numStages]
+			firstPip.tex:SetPoint("BOTTOMRIGHT", self)
+			firstPip.tex:SetPoint("TOPLEFT", anchor.BasePip, "TOPRIGHT")
+		end
+
+		if stage ~= 1 then
+			local anchor = pips[stage - 1]
+			pip.tex:SetPoint("BOTTOMRIGHT", pip.BasePip, "BOTTOMLEFT")
+			pip.tex:SetPoint("TOPLEFT", anchor.BasePip, "TOPRIGHT")
+		end
 	end
 end

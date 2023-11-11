@@ -206,7 +206,7 @@ function Module:CreateFocus()
 		Castbar.PostCastFail = Module.PostCastFailed
 		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 		Castbar.CreatePip = Module.CreatePip
-		Castbar.PostUpdatePip = Module.PostUpdatePip
+		Castbar.PostUpdatePips = Module.PostUpdatePips
 
 		local mover = K.Mover(Castbar, "Focus Castbar", "FocusCB", { "BOTTOM", UIParent, "BOTTOM", -474, 750 }, Castbar:GetHeight() + Castbar:GetWidth() + 3, Castbar:GetHeight() + 3)
 		Castbar:ClearAllPoints()

@@ -221,7 +221,7 @@ function Module:CreateTarget()
 		Castbar.PostCastFail = Module.PostCastFailed
 		Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 		Castbar.CreatePip = Module.CreatePip
-		Castbar.PostUpdatePip = Module.PostUpdatePip
+		Castbar.PostUpdatePips = Module.PostUpdatePips
 
 		local mover = K.Mover(Castbar, "Target Castbar", "TargetCB", { "BOTTOM", UIParent, "BOTTOM", 0, 342 }, Castbar:GetHeight() + Castbar:GetWidth() + 6, Castbar:GetHeight())
 		Castbar:ClearAllPoints()

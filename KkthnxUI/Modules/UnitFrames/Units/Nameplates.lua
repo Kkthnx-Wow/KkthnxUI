@@ -885,7 +885,7 @@ function Module:CreatePlates()
 	self.Castbar.PostCastFail = Module.PostCastFailed
 	self.Castbar.PostCastInterruptible = Module.PostUpdateInterruptible
 	self.Castbar.CreatePip = Module.CreatePip
-	self.Castbar.PostUpdatePip = Module.PostUpdatePip
+	Castbar.PostUpdatePips = Module.PostUpdatePips
 
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self, "TOPLEFT", -5, 20)
