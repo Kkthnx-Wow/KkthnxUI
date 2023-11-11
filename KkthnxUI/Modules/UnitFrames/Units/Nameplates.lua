@@ -383,14 +383,50 @@ function Module:UpdateTargetIndicator()
 	local element = self.TargetIndicator
 	local isNameOnly = self.plateType == "NameOnly"
 
-	element:Hide()
-
-	if style > 1 and style < 7 then
-		element.TopArrow:SetShown(style == 2 or style == 5)
-		element.RightArrow:SetShown(style == 3 or style == 6)
-		element.Glow:SetShown(style == 4 or style == 5 or style == 6 and not isNameOnly)
-		element.nameGlow:SetShown(style == 4 or style == 5 or style == 6 and isNameOnly)
-
+	if style == 1 then
+		element:Hide()
+	else
+		if style == 2 then
+			element.TopArrow:Show()
+			element.RightArrow:Hide()
+			element.Glow:Hide()
+			element.nameGlow:Hide()
+		elseif style == 3 then
+			element.TopArrow:Hide()
+			element.RightArrow:Show()
+			element.Glow:Hide()
+			element.nameGlow:Hide()
+		elseif style == 4 then
+			element.TopArrow:Hide()
+			element.RightArrow:Hide()
+			if isNameOnly then
+				element.Glow:Hide()
+				element.nameGlow:Show()
+			else
+				element.Glow:Show()
+				element.nameGlow:Hide()
+			end
+		elseif style == 5 then
+			element.TopArrow:Show()
+			element.RightArrow:Hide()
+			if isNameOnly then
+				element.Glow:Hide()
+				element.nameGlow:Show()
+			else
+				element.Glow:Show()
+				element.nameGlow:Hide()
+			end
+		elseif style == 6 then
+			element.TopArrow:Hide()
+			element.RightArrow:Show()
+			if isNameOnly then
+				element.Glow:Hide()
+				element.nameGlow:Show()
+			else
+				element.Glow:Show()
+				element.nameGlow:Hide()
+			end
+		end
 		element:Show()
 	end
 end
