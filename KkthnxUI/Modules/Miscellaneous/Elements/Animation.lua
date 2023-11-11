@@ -1,29 +1,20 @@
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
 
-local soundID = SOUNDKIT.UI_LEGENDARY_LOOT_TOAST
+local SOUND_LEGENDARY_LOOT = SOUNDKIT.UI_LEGENDARY_LOOT_TOAST
 local PlaySound = PlaySound
 
 local needAnimation
 
-function Module:PlayLogoAnimation()
+local function PlayLogoAnimation()
 	if needAnimation then
 		Module.logoFrame:Show()
-		K:UnregisterEvent(self, Module.PlayLogoAnimation)
+		K:UnregisterEvent(Module, PlayLogoAnimation)
 		needAnimation = false
 	end
 end
 
-function Module:CheckLogoStatus(isInitialLogin)
-	if isInitialLogin and not (IsInInstance() and InCombatLockdown()) then
-		needAnimation = true
-		Module:CreateLogo()
-		K:RegisterEvent("PLAYER_STARTED_MOVING", Module.PlayLogoAnimation)
-	end
-	K:UnregisterEvent(self, Module.CheckLogoStatus)
-end
-
-function Module:CreateLogo()
+local function CreateLogo()
 	local frame = CreateFrame("Frame", nil, UIParent)
 	frame:SetSize(512, 256)
 	frame:SetPoint("CENTER", UIParent, "BOTTOM", -500, GetScreenHeight() * 0.618)
@@ -41,10 +32,7 @@ function Module:CreateLogo()
 	text:SetFont(select(1, text:GetFont()), 32)
 	text:SetText(K.Title .. " " .. K.GreyColor .. K.Version .. "|r")
 
-	local delayTime = 0
-	local timer1 = 0.5
-	local timer2 = 2
-	local timer3 = 0.2
+	local delayTime, timer1, timer2, timer3 = 0, 0.5, 2, 0.2
 
 	local animation = frame:CreateAnimationGroup()
 
@@ -95,18 +83,27 @@ function Module:CreateLogo()
 		frame:Hide()
 	end)
 	animation.fadeIn:SetScript("OnFinished", function()
-		PlaySound(soundID)
+		PlaySound(SOUND_LEGENDARY_LOOT)
 	end)
 
 	Module.logoFrame = frame
 end
 
-function Module:CreateLoginAnimation()
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.CheckLogoStatus)
+local function CheckLogoStatus(isInitialLogin)
+	if isInitialLogin and not (IsInInstance() and InCombatLockdown()) then
+		needAnimation = true
+		CreateLogo()
+		K:RegisterEvent("PLAYER_STARTED_MOVING", PlayLogoAnimation)
+	end
+	K:UnregisterEvent(Module, CheckLogoStatus)
+end
+
+local function CreateLoginAnimation()
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", CheckLogoStatus)
 
 	SlashCmdList["KKUI_PLAYLOGO"] = function()
 		if not Module.logoFrame then
-			Module:CreateLogo()
+			CreateLogo()
 		end
 		Module.logoFrame:Show()
 		if K.isDeveloper then
@@ -115,4 +112,5 @@ function Module:CreateLoginAnimation()
 	end
 	SLASH_KKUI_PLAYLOGO1 = "/klogo"
 end
-Module:RegisterMisc("LoginAnimation", Module.CreateLoginAnimation)
+
+Module:RegisterMisc("LoginAnimation", CreateLoginAnimation)

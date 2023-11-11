@@ -36,7 +36,7 @@ function Module:ChantLumos(self)
 		UpdateCooldown(self.lumos[1], 370553, true) --扭转天平
 		do
 			local button = self.lumos[2]
-			local spellID = IsPlayerSpell(375783) and 382266 or 357208
+			local spellID = IsPlayerSpell(408083) and 382266 or 357208
 			UpdateSpellStatus(button, spellID)
 			UpdateCooldown(button, spellID, true)
 			local name = GetUnitAura("player", 370553, "HELPFUL") --扭转天平高亮
@@ -90,5 +90,12 @@ function Module:ChantLumos(self)
 
 		UpdateCooldown(self.lumos[4], 366155, true) --逆转
 		UpdateCooldown(self.lumos[5], 360995, true) --清脆之拥
+	elseif spec == 3 then --增辉
+		local spellID = IsPlayerSpell(375783) and 382266 or 357208
+		UpdateCooldown(self.lumos[1], spellID, true)
+		UpdateCooldown(self.lumos[2], 409311, true)
+		UpdateCooldown(self.lumos[3], 395152, true)
+		UpdateCooldown(self.lumos[4], 408092, true)
+		UpdateCooldown(self.lumos[5], 403631, true)
 	end
 end

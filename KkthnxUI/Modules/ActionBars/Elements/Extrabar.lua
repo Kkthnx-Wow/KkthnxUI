@@ -1,4 +1,4 @@
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K = KkthnxUI[1]
 local Module = K:GetModule("ActionBar")
 
 local tinsert = tinsert

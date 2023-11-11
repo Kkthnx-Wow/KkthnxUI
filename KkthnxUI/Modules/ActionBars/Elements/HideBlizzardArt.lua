@@ -16,6 +16,7 @@ local actionbar = {
 		"OnMouseDown",
 		"OnMouseUp",
 	},
+
 	framesToHide = {
 		MainMenuBar,
 		MultiBarBottomLeft,
@@ -29,6 +30,7 @@ local actionbar = {
 		PossessActionBar,
 		PetActionBar,
 	},
+
 	framesToDisable = {
 		MainMenuBar,
 		MultiBarBottomLeft,

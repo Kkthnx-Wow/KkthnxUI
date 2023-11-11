@@ -66,7 +66,7 @@ function Module:ItemString_Expand()
 end
 
 function Module:ItemString_Collapse()
-	self:SetWidth(100)
+	self:SetWidth(120)
 end
 
 function Module:CreateItemString(frame, strType)
@@ -85,9 +85,8 @@ function Module:CreateItemString(frame, strType)
 			slotFrame.enchantText:ClearAllPoints()
 			slotFrame.enchantText:SetPoint(relF, slotFrame, x, y)
 			slotFrame.enchantText:SetTextColor(0, 1, 0)
-
 			slotFrame.enchantText:SetJustifyH(strsub(relF, 7))
-			slotFrame.enchantText:SetWidth(100)
+			slotFrame.enchantText:SetWidth(120)
 			slotFrame.enchantText:EnableMouse(true)
 			slotFrame.enchantText:HookScript("OnEnter", Module.ItemString_Expand)
 			slotFrame.enchantText:HookScript("OnLeave", Module.ItemString_Collapse)

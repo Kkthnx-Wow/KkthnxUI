@@ -1,8 +1,7 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Miscellaneous")
 
--- Sourced: ElvUI (Elv)
--- Edited: KkthnxUI (Kkthnx)
+-- Modified by KkthnxUI (Kkthnx) from ElvUI (Elv)
 
 local C_PetBattles_IsInBattle = C_PetBattles.IsInBattle
 local C_Timer_After = C_Timer.After
