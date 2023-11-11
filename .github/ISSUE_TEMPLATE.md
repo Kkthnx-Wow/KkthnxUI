@@ -1,39 +1,27 @@
 **Description**
-<!--- Please give a short description of the issue here -->
-
+<!--- Briefly describe the issue you are experiencing -->
 
 **Version Number**
-<!--- Provide the version number here (the actual number, do not say "latest") -->
-
+<!--- Please provide the version number of KkthnxUI (the actual number, do not say "latest") -->
 
 **Steps to Reproduce**
-<!--- Provide all the steps necessary to reproduce the problem -->
+<!--- Provide clear and concise steps to reproduce the issue -->
 1. Step 1
 2. Step 2
 3. Step 3
 4. Step 4
 
-
 **Expected Behavior**
-<!--- Tell us what should happen -->
-
+<!--- Explain what you expected to happen -->
 
 **Actual Behavior**
-<!--- Tell us what happens instead -->
-
+<!--- Describe what actually happened -->
 
 **Only KkthnxUI Enabled**
-<!--- Please provide information about whether or not you can reproduce it -->
-<!--- when KkthnxUI is the only addon enabled -->
-
+<!--- Indicate whether the issue persists when KkthnxUI is the only enabled addon -->
 
 **Additional Information**
-<!--- Please provide any additional information here -->
-
+<!--- Include any additional information that might be relevant to the issue -->
 
 **Error Log**
-<!--- If you received an error then please post it in the empty space below, -->
-<!--- so that the error is wrapped in the 3 backquotes (before and after) -->
-```
-
-```
+<!--- If you received an error, please include it below in a code block -->
