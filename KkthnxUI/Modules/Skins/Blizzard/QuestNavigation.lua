@@ -1,14 +1,22 @@
 local C = KkthnxUI[2]
 
+local abs = math.abs
+local C_Navigation_GetDistance = C_Navigation.GetDistance
+
 local THROTTLE_INTERVAL = 0.5
-
--- Always show pins in the world, regardless of distance.
-function SuperTrackedFrame:GetTargetAlphaBaseValue()
-	return 1
-end
-
--- Show time to arrival on pins in the world.
 local lastDistance, throttle
+
+-- Create a backup of the original function
+local originalGetTargetAlphaBaseValue = _G.SuperTrackedFrame.GetTargetAlphaBaseValue
+
+-- Replace the original function with the modified version
+_G.SuperTrackedFrame.GetTargetAlphaBaseValue = function(frame)
+	if C_Navigation_GetDistance() > 999 then
+		return 1
+	else
+		return originalGetTargetAlphaBaseValue(frame)
+	end
+end
 
 local function onUpdate(self, elapsed)
 	if self.isClamped then
@@ -19,12 +27,12 @@ local function onUpdate(self, elapsed)
 
 	throttle = (throttle or 0) + elapsed
 	if throttle >= THROTTLE_INTERVAL then
-		local distance = C_Navigation.GetDistance()
-		local speed = (lastDistance and (lastDistance - distance) / throttle) or 0
+		local distance = C_Navigation_GetDistance()
+		local speed = lastDistance and (lastDistance - distance) / throttle or 0
 		lastDistance = distance
 
 		if speed > 0 then
-			local time = math.abs(distance / speed)
+			local time = abs(distance / speed)
 			self.arrival:SetText(TIMER_MINUTES_DISPLAY:format(time / 60, time % 60))
 			self.arrival:Show()
 		else
@@ -35,7 +43,6 @@ local function onUpdate(self, elapsed)
 	end
 end
 
--- Create a font string for showing time to arrival on pins in the world.
 local function createArrivalFontString(frame)
 	local arrival = frame:CreateFontString("$parentArrival", "BACKGROUND", "GameFontNormal", nil, 1)
 	arrival:SetPoint("TOP", frame.DistanceText, "BOTTOM", 0, -2)
@@ -44,11 +51,7 @@ local function createArrivalFontString(frame)
 	frame.arrival = arrival
 end
 
--- Theme function for Blizzard_QuestNavigation.
 C.themes["Blizzard_QuestNavigation"] = function()
-	-- Add font string for time to arrival.
 	createArrivalFontString(SuperTrackedFrame)
-
-	-- Hook script to update time to arrival.
 	SuperTrackedFrame:HookScript("OnUpdate", onUpdate)
 end

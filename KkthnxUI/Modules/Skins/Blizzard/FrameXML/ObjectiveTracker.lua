@@ -122,7 +122,6 @@ local function reskinProgressBars(_, _, line)
 			bar.BorderMid:SetAlpha(0)
 		end
 
-		bar:SetHeight(18)
 		bar:StripTextures()
 		bar:CreateBorder()
 		bar:SetStatusBarTexture(K.GetTexture(C["General"].Texture))
@@ -134,14 +133,12 @@ local function reskinProgressBars(_, _, line)
 		end
 
 		if icon then
-			icon:SetSize(24, 24)
-			icon:ClearAllPoints()
-			icon:SetPoint("LEFT", bar, "RIGHT", 6, 0)
+			icon:SetSize(26, 26)
 			icon:SetMask("")
 			icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			if not progressBar.KKUI_Backdrop then
 				progressBar:CreateBackdrop()
-				progressBar.KKUI_Backdrop:SetFrameLevel(7)
+				progressBar.KKUI_Backdrop:SetFrameLevel(6)
 				progressBar.KKUI_Backdrop:SetAllPoints(icon)
 				progressBar.KKUI_Backdrop:SetShown(icon:IsShown())
 			end

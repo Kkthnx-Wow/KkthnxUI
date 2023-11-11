@@ -5,6 +5,11 @@ if K.Class ~= "HUNTER" then
 	return
 end
 
+-- Localize frequently used global functions
+local GetSpecialization = GetSpecialization
+local IsPlayerSpell = IsPlayerSpell
+local GetTime = GetTime
+
 local function GetUnitAura(unit, spell, filter)
 	return Module:GetUnitAura(unit, spell, filter)
 end
@@ -67,7 +72,8 @@ function Module:ChantLumos(self)
 
 		do
 			local button = self.lumos[5]
-			if IsPlayerSpell(378745) then
+			local isSpell378745 = IsPlayerSpell(378745)
+			if isSpell378745 then
 				UpdateBuff(button, 281036, 281036)
 				button.Count:SetText(currentStack)
 			else
@@ -81,9 +87,11 @@ function Module:ChantLumos(self)
 
 		do
 			local button = self.lumos[4]
-			if IsPlayerSpell(260402) then
+			local isSpell260402 = IsPlayerSpell(260402)
+			local isSpell321460 = IsPlayerSpell(321460)
+			if isSpell260402 then
 				UpdateBuff(button, 260402, 260402, true, false, true)
-			elseif IsPlayerSpell(321460) then
+			elseif isSpell321460 then
 				UpdateCooldown(button, 53351)
 				UpdateSpellStatus(button, 53351)
 			else
@@ -98,7 +106,7 @@ function Module:ChantLumos(self)
 		do
 			local button = self.lumos[2]
 			UpdateCooldown(button, 259489, true)
-			local name = GetUnitAura("target", 270332, "HARMFUL") -- 目标红炸弹高亮
+			local name = GetUnitAura("target", 270332, "HARMFUL")
 			if name then
 				K.ShowOverlayGlow(button)
 			else
@@ -108,9 +116,11 @@ function Module:ChantLumos(self)
 
 		do
 			local button = self.lumos[3]
-			if IsPlayerSpell(260285) then
+			local isSpell260285 = IsPlayerSpell(260285)
+			local isSpell269751 = IsPlayerSpell(269751)
+			if isSpell260285 then
 				UpdateBuff(button, 260285, 260286)
-			elseif IsPlayerSpell(269751) then
+			elseif isSpell269751 then
 				UpdateCooldown(button, 269751, true)
 			else
 				UpdateBuff(button, 259387, 259388, false, false, "END")
@@ -119,9 +129,10 @@ function Module:ChantLumos(self)
 
 		do
 			local button = self.lumos[4]
-			if IsPlayerSpell(271014) then
+			local isSpell271014 = IsPlayerSpell(271014)
+			if isSpell271014 then
 				UpdateCooldown(button, 259495, true)
-				local name = GetUnitAura("player", 363805, "HELPFUL") -- 有疯狂投弹兵时高亮
+				local name = GetUnitAura("player", 363805, "HELPFUL")
 				if name then
 					K.ShowOverlayGlow(button)
 				else
