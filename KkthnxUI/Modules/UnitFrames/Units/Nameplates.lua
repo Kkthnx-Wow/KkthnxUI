@@ -141,8 +141,8 @@ function Module:BlockAddons()
 		return
 	end
 
-	function _G.DBM.Nameplate:SupportedNPMod()
-		return true
+	if _G.DBM.Options then
+		_G.DBM.Options.DontShowNameplateIconsCD = true
 	end
 
 	local function showAurasForDBM(_, _, _, spellID)
