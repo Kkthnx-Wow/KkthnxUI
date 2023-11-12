@@ -145,7 +145,7 @@ function Module:CreateInventoryBar()
 
 	bagBar = CreateFrame("Frame", "KKUI_BagBar", K.PetBattleFrameHider)
 	if C["ActionBar"].MicroMenu then
-		bagPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 38 }
+		bagPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 40 }
 	else
 		bagPosition = { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 }
 	end

@@ -15,12 +15,12 @@ local GetLootRollItemLink = GetLootRollItemLink
 local GetLootRollTimeLeft = GetLootRollTimeLeft
 local IsModifiedClick = IsModifiedClick
 local IsShiftKeyDown = IsShiftKeyDown
-local NUM_GROUP_LOOT_FRAMES = NUM_GROUP_LOOT_FRAMES
 local ROLL_DISENCHANT = ROLL_DISENCHANT
 local RollOnLoot = RollOnLoot
 
 local rollCache = {}
 local rollBars = {}
+local rollWait = {}
 local rollTypes = { [1] = "need", [2] = "greed", [3] = "disenchant", [4] = "transmog", [0] = "pass" }
 
 local function ClickRoll(button)
@@ -86,8 +86,7 @@ local function StatusUpdate(status, elapsed)
 	if status.elapsed and status.elapsed > 0.1 then
 		local timeLeft = GetLootRollTimeLeft(rollID)
 		if timeLeft <= 0 then -- workaround for other addons auto-passing loot
-			-- Module.LootRoll_Cancel(bar, "OnUpdate", rollID)
-			Module.LootRoll_Cancel(bar, nil, rollID)
+			Module.LootRoll_Cancel(bar, "OnUpdate", rollID)
 		else
 			status:SetValue(timeLeft)
 			status.elapsed = 0
@@ -174,8 +173,9 @@ end
 function Module:LootRoll_Create(index)
 	local bar = CreateFrame("Frame", "KKUI_LootRollFrame" .. index, UIParent)
 	bar:SetSize(328, 26)
-	bar:SetScript("OnEvent", Module.LootRoll_Cancel)
+	bar:SetScript("OnEvent", Module.LootRoll_OnEvent)
 	bar:RegisterEvent("CANCEL_LOOT_ROLL")
+	bar:RegisterEvent("CANCEL_ALL_LOOT_ROLLS")
 	bar:Hide()
 
 	local status = CreateFrame("StatusBar", nil, bar)
@@ -240,7 +240,7 @@ function Module:LootRoll_Create(index)
 	return bar
 end
 
-function Module:LootFrame_GetFrame(i)
+function Module:LootRoll_GetFrame(i)
 	if i then
 		return rollBars[i] or Module:LootRoll_Create(i)
 	else -- check for a bar to reuse
@@ -252,29 +252,49 @@ function Module:LootFrame_GetFrame(i)
 	end
 end
 
-function Module:LootRoll_Cancel(_, rollID)
-	if self.rollID == rollID then
-		self.rollID = nil
-		self.time = nil
+function Module:LootRoll_OnEvent(event, rollID)
+	Module[event](self, event, rollID)
+end
+
+function Module:LootRoll_ClearBar(bar, event)
+	bar.rollID = nil
+	bar.time = nil
+
+	if next(rollWait) then
+		local newRoll = rollWait[1]
+		tremove(rollWait, 1)
+
+		Module:LootRoll_Start(event, newRoll.rollID, newRoll.rollTime)
 	end
 end
 
-function Module:LootRoll_Start(rollID, rollTime)
+function Module:LootRoll_Cancel(event, rollID)
+	if self.rollID == rollID then
+		Module:LootRoll_ClearBar(self, event)
+	end
+end
+
+function Module:LootRoll_Cancel_All(event)
+	Module:LootRoll_ClearBar(self, event)
+end
+
+function Module:LootRoll_Start(event, rollID, rollTime)
 	local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant, _, _, _, _, canTransmog = GetLootRollItemInfo(rollID)
 	if not name then -- also done in GroupLootFrame_OnShow
 		for _, rollBar in next, rollBars do
 			if rollBar.rollID == rollID then
-				Module.LootRoll_Cancel(rollBar, nil, rollID)
+				Module.LootRoll_Cancel(rollBar, event, rollID)
 			end
 		end
 
 		return
 	end
 
-	local bar = Module:LootFrame_GetFrame()
+	local bar = Module:LootRoll_GetFrame()
 	if not bar then
-		return
-	end -- well this shouldn't happen
+		tinsert(rollWait, { rollID = rollID, rollTime = rollTime })
+		return -- well this shouldn't happen
+	end
 
 	local itemLink = GetLootRollItemLink(rollID)
 	local _, _, _, _, _, _, _, _, _, _, _, _, _, bindType = GetItemInfo(itemLink)
@@ -375,7 +395,7 @@ function Module:UpdateLootRollFrames()
 	end
 
 	for i = 1, 4 do -- NUM_GROUP_LOOT_FRAMES does is nil now, so we can add this to the config for users to change. Bugged!
-		local bar = Module:LootFrame_GetFrame(i)
+		local bar = Module:LootRoll_GetFrame(i)
 		bar:SetSize(328, 26)
 
 		bar.status:SetStatusBarTexture(K.GetTexture(C["General"].Texture))

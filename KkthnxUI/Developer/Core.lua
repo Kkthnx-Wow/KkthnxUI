@@ -1,5 +1,5 @@
--- Create a new module for the death counter
-local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
+local K, C = KkthnxUI[1], KkthnxUI[2]
+local Module = K:GetModule("Miscellaneous")
 
 K.Devs = {
 	["Kkthnx-Area 52"] = true,
@@ -14,62 +14,16 @@ if not K.isDeveloper then
 	return
 end
 
--- Enable debugging
-local DEBUG_MODE = true
-
-local function debugPrint(message)
-	if DEBUG_MODE then
-		print("|cFF33FF99[DEBUG]|r", message)
-	end
-end
-
----- [ ｡･:*:･ﾟ★,｡ 𝓖𝓪𝓻𝓫𝓪𝓰𝓮 𝓒𝓵𝓮𝓪𝓷𝓾𝓹 𝓢𝓬𝓻𝓲𝓹𝓽 ｡･:*:･ﾟ★,｡ ] ----
-
-local eventCount = 0
-local threshold = 5000
-
-local function performGarbageCollection()
-	local before = collectgarbage("count")
-	debugPrint("Memory usage before garbage collection: " .. before)
-
-	collectgarbage("collect")
-	local after = collectgarbage("count")
-	debugPrint("Memory usage after garbage collection: " .. after)
-
-	local collected = before - after
-	debugPrint("Memory collected: " .. collected)
-end
-
-local function onEvent(event)
-	if InCombatLockdown() then
-		return
-	end
-
-	eventCount = eventCount + 1
-
-	if eventCount > threshold or event == "PLAYER_ENTERING_WORLD" or (event == "PLAYER_FLAGS_CHANGED" and UnitIsAFK("player")) then
-		performGarbageCollection()
-		eventCount = 0
-	end
-end
-
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-frame:RegisterEvent("PLAYER_FLAGS_CHANGED")
-
-frame:SetScript("OnEvent", onEvent)
-
 ---- [ ｡･:*:･ﾟ★,｡ 𝓥𝓲𝓰𝓸𝓻 𝓑𝓪𝓻 ｡･:*:･ﾟ★,｡ ] ----
 
-local VigorBar = CreateFrame("Frame", "VigorBar", UIParent)
-VigorBar:SetPoint("TOP", UIParent, "TOP", 0, -12)
-VigorBar:SetSize(250, 16)
-VigorBar:Hide()
+local VigorBar
 
+-- Function to create Vigor status bar
 local function CreateVigorStatusBar(parent, name, width, texture)
 	local statusBar = CreateFrame("StatusBar", name, parent)
 	statusBar:SetSize(width, 16)
 	statusBar:CreateBorder()
+	K:SmoothBar(statusBar)
 
 	if parent.lastStatusBar then
 		statusBar:SetPoint("TOPLEFT", parent.lastStatusBar, "TOPRIGHT", 6, 0)
@@ -87,10 +41,7 @@ local function CreateVigorStatusBar(parent, name, width, texture)
 	return statusBar
 end
 
-for i = 1, 6 do
-	VigorBar[i] = CreateVigorStatusBar(VigorBar, "Vigor" .. i, 250 / 6, K.GetTexture(C["General"].Texture))
-end
-
+-- Function to skin the VigorBar
 local function SkinVigorBar(widget)
 	if not widget:IsShown() then
 		return
@@ -123,13 +74,13 @@ local function SkinVigorBar(widget)
 			VigorBar[i]:SetValue(0)
 		end
 
-		local spacing = select(4, VigorBar[6]:GetPoint())
+		local spacing = 6
 		local w, s = VigorBar:GetWidth(), 0
 
 		for i = 1, total do
 			VigorBar[i]:Show()
-			VigorBar[i]:SetWidth((i ~= total) and w / total - spacing or w - s)
-			s = s + (w / total)
+			VigorBar[i]:SetWidth((i ~= total) and (w - (spacing * (total - 1))) / total or w - s)
+			s = s + VigorBar[i]:GetWidth() + spacing
 		end
 	end
 
@@ -144,14 +95,32 @@ local function SkinVigorBar(widget)
 	end
 end
 
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("UPDATE_UI_WIDGET")
-frame:RegisterEvent("UPDATE_ALL_UI_WIDGETS")
-frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-frame:SetScript("OnEvent", function()
+-- Function to handle events and update the VigorBar
+local function UpdateVigorBar()
 	for _, widget in pairs(UIWidgetPowerBarContainerFrame.widgetFrames) do
 		if widget.widgetID == 4460 then
 			SkinVigorBar(widget)
 		end
 	end
-end)
+end
+
+-- Function to create VigorBar frame and register events
+local function CreateVigorBar()
+	VigorBar = CreateFrame("Frame", "VigorBar", UIParent)
+	VigorBar:SetPoint("TOP", UIParent, "TOP", 0, -30)
+	VigorBar:SetSize(250, 18)
+	VigorBar:Hide()
+
+	-- Loop to create Vigor status bars
+	for i = 1, 6 do
+		VigorBar[i] = CreateVigorStatusBar(VigorBar, "Vigor" .. i, (250 - (6 * 5)) / 6, K.GetTexture(C["General"].Texture))
+	end
+
+	K.Mover(VigorBar, "VigorBar", "VigorBar", { "TOP", UIParent, "TOP", 0, -30 }, 250, 18)
+
+	K:RegisterEvent("UNIT_POWER_UPDATE", UpdateVigorBar, "player")
+	K:RegisterEvent("UPDATE_UI_WIDGET", UpdateVigorBar)
+end
+
+-- Register VigorBar module
+Module:RegisterMisc("VigorBar", CreateVigorBar)

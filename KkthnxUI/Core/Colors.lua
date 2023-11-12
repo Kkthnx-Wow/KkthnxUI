@@ -26,6 +26,13 @@ oUF.colors.debuff = {
 	[""] = { 1, 1, 1 },
 }
 
+oUF.colors.mirror = {
+	EXHAUSTION = { 1.0, 0.90, 0.0 },
+	BREATH = { 0.0, 0.50, 1.0 },
+	DEATH = { 1.0, 0.70, 0.0 },
+	FEIGNDEATH = { 1.0, 0.70, 0.0 },
+}
+
 oUF.colors.reaction = {
 	[1] = { 0.87, 0.37, 0.37 }, -- Hated
 	[2] = { 0.87, 0.37, 0.37 }, -- Hostile

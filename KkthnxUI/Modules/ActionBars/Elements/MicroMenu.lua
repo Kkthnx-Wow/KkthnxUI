@@ -59,8 +59,8 @@ end
 local function SetupButtonTextures(button)
 	local function SetTextureProperties(texture)
 		texture:SetTexCoord(0.2, 0.80, 0.22, 0.8)
-		texture:SetPoint("TOPLEFT", button, "TOPLEFT", 4, -6)
-		texture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -4, 6)
+		texture:SetPoint("TOPLEFT", button, "TOPLEFT", 3, -5)
+		texture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -3, 5)
 	end
 
 	local normal = button:GetNormalTexture()
@@ -83,7 +83,7 @@ local function SetupButtonTextures(button)
 	if flash then
 		flash:SetTexture(K.MediaFolder .. "Skins\\HighlightMicroButtonWhite")
 		flash:SetVertexColor(K.r, K.g, K.b)
-		flash:SetPoint("TOPLEFT", button, "TOPLEFT", -22, 18)
+		flash:SetPoint("TOPLEFT", button, "TOPLEFT", -24, 18)
 		flash:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 24, -18)
 	end
 
@@ -106,7 +106,7 @@ local function MicroButtonCreate(parent, data)
 
 	local buttonFrame = CreateFrame("Frame", "KKUI_MicroButtons", parent)
 	table_insert(buttonList, buttonFrame)
-	buttonFrame:SetSize(20, 20 * 1.4)
+	buttonFrame:SetSize(22, 30)
 	buttonFrame:CreateBorder()
 
 	if type(method) == "string" then
@@ -149,7 +149,7 @@ function Module:MicroMenu()
 	end
 
 	local menubar = CreateFrame("Frame", "KKUI_MenuBar", K.PetBattleFrameHider)
-	menubar:SetSize(280, 20 * 1.4)
+	menubar:SetSize(302, 30)
 	menubar:SetAlpha((C["ActionBar"].FadeMicroMenu and not menubar.IsMouseOvered and 0) or 1)
 	menubar:EnableMouse(false)
 	K.Mover(menubar, "Menubar", "Menubar", { "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4 })

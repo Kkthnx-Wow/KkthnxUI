@@ -4,14 +4,19 @@ local Module = K:GetModule("Blizzard")
 -- Sourced: NDui
 
 local function SetupMirrorBar(bar)
-	local statusBar = bar.StatusBar
+	-- local statusBar = bar.StatusBar
+	local statusbar = bar.StatusBar or _G[bar:GetName() .. "StatusBar"]
+	if statusbar then
+		statusbar:SetAllPoints()
+	elseif bar.SetStatusBarTexture then
+		bar:SetStatusBarTexture()
+	end
+
 	local text = bar.Text
 	local spark = bar.Spark
 
 	bar:SetSize(222, 22)
 	bar:StripTextures(true)
-
-	statusBar:SetAllPoints()
 
 	text:ClearAllPoints()
 	text:SetFontObject(K.UIFont)
@@ -22,20 +27,17 @@ local function SetupMirrorBar(bar)
 	spark:SetSize(64, bar:GetHeight())
 	spark:SetTexture(C["Media"].Textures.Spark128Texture)
 	spark:SetBlendMode("ADD")
-	spark:SetPoint("CENTER", statusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
+	spark:SetPoint("CENTER", statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	bar:CreateBorder()
 end
 
 function Module:CreateMirrorBars()
-	local previousBar
-	for i = 1, 3 do
-		local bar = _G["MirrorTimer" .. i]
-		SetupMirrorBar(bar)
-
-		if previousBar then
-			bar:SetPoint("TOP", previousBar, "BOTTOM", 0, -6)
+	hooksecurefunc(MirrorTimerContainer, "SetupTimer", function(self, timer)
+		local bar = self:GetAvailableTimer(timer)
+		if not bar.styled then
+			SetupMirrorBar(bar)
+			bar.styled = true
 		end
-		previousBar = bar
-	end
+	end)
 end
