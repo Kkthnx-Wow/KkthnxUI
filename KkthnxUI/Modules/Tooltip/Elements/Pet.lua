@@ -3,6 +3,7 @@ local Module = K:GetModule("Tooltip")
 
 local UnitBattlePetType, UnitBattlePetSpeciesID = UnitBattlePetType, UnitBattlePetSpeciesID
 local PET, ID, UNKNOWN = PET, ID, UNKNOWN
+local PET_TYPE_SUFFIX = PET_TYPE_SUFFIX
 
 function Module:UpdatePetInfo(petType)
 	if not self.petIcon then
@@ -14,8 +15,10 @@ function Module:UpdatePetInfo(petType)
 		self.petIcon = f
 	end
 
-	self.petIcon:SetTexture("Interface\\PetBattles\\PetIcon-" .. PET_TYPE_SUFFIX[petType])
-	self.petIcon:SetAlpha(1)
+	if PET_TYPE_SUFFIX[petType] then
+		self.petIcon:SetTexture("Interface\\PetBattles\\PetIcon-" .. PET_TYPE_SUFFIX[petType])
+		self.petIcon:SetAlpha(1)
+	end
 end
 
 function Module:ResetPetInfo()

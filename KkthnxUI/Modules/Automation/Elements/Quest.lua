@@ -1,29 +1,31 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
 local next, ipairs, select = next, ipairs, select
-local IsAltKeyDown = IsAltKeyDown
-local UnitGUID, IsShiftKeyDown, GetItemInfoFromHyperlink = UnitGUID, IsShiftKeyDown, GetItemInfoFromHyperlink
-local GetInstanceInfo, GetQuestID = GetInstanceInfo, GetQuestID
-local GetNumActiveQuests, GetActiveTitle, GetActiveQuestID, SelectActiveQuest = GetNumActiveQuests, GetActiveTitle, GetActiveQuestID, SelectActiveQuest
-local IsQuestCompletable, GetNumQuestItems, GetQuestItemLink, QuestIsFromAreaTrigger = IsQuestCompletable, GetNumQuestItems, GetQuestItemLink, QuestIsFromAreaTrigger
-local QuestGetAutoAccept, AcceptQuest, CloseQuest, CompleteQuest, AcknowledgeAutoAcceptQuest = QuestGetAutoAccept, AcceptQuest, CloseQuest, CompleteQuest, AcknowledgeAutoAcceptQuest
-local GetNumQuestChoices, GetQuestReward, GetItemInfo, GetQuestItemInfo = GetNumQuestChoices, GetQuestReward, GetItemInfo, GetQuestItemInfo
-local GetNumAvailableQuests, GetAvailableQuestInfo, SelectAvailableQuest = GetNumAvailableQuests, GetAvailableQuestInfo, SelectAvailableQuest
-local GetNumAutoQuestPopUps, GetAutoQuestPopUp, ShowQuestOffer, ShowQuestComplete = GetNumAutoQuestPopUps, GetAutoQuestPopUp, ShowQuestOffer, ShowQuestComplete
-local C_QuestLog_IsWorldQuest = C_QuestLog.IsWorldQuest
-local C_QuestLog_IsQuestTrivial = C_QuestLog.IsQuestTrivial
-local C_QuestLog_GetQuestTagInfo = C_QuestLog.GetQuestTagInfo
-local C_GossipInfo_GetOptions = C_GossipInfo.GetOptions
-local C_GossipInfo_SelectOption = C_GossipInfo.SelectOption
+
 local C_GossipInfo_GetActiveQuests = C_GossipInfo.GetActiveQuests
-local C_GossipInfo_SelectActiveQuest = C_GossipInfo.SelectActiveQuest
 local C_GossipInfo_GetAvailableQuests = C_GossipInfo.GetAvailableQuests
 local C_GossipInfo_GetNumActiveQuests = C_GossipInfo.GetNumActiveQuests
-local C_GossipInfo_SelectAvailableQuest = C_GossipInfo.SelectAvailableQuest
 local C_GossipInfo_GetNumAvailableQuests = C_GossipInfo.GetNumAvailableQuests
-local GetTrackingInfo = C_Minimap.GetTrackingInfo
+local C_GossipInfo_GetOptions = C_GossipInfo.GetOptions
+local C_GossipInfo_SelectActiveQuest = C_GossipInfo.SelectActiveQuest
+local C_GossipInfo_SelectAvailableQuest = C_GossipInfo.SelectAvailableQuest
+local C_GossipInfo_SelectOption = C_GossipInfo.SelectOption
+local C_QuestLog_GetQuestTagInfo = C_QuestLog.GetQuestTagInfo
+local C_QuestLog_IsQuestTrivial = C_QuestLog.IsQuestTrivial
+local C_QuestLog_IsWorldQuest = C_QuestLog.IsWorldQuest
+local GetInstanceInfo, GetQuestID = GetInstanceInfo, GetQuestID
+local GetNumActiveQuests, GetActiveTitle, GetActiveQuestID, SelectActiveQuest = GetNumActiveQuests, GetActiveTitle, GetActiveQuestID, SelectActiveQuest
+local GetNumAutoQuestPopUps, GetAutoQuestPopUp, ShowQuestOffer, ShowQuestComplete = GetNumAutoQuestPopUps, GetAutoQuestPopUp, ShowQuestOffer, ShowQuestComplete
+local GetNumAvailableQuests, GetAvailableQuestInfo, SelectAvailableQuest = GetNumAvailableQuests, GetAvailableQuestInfo, SelectAvailableQuest
+local GetNumQuestChoices, GetQuestReward, GetItemInfo, GetQuestItemInfo = GetNumQuestChoices, GetQuestReward, GetItemInfo, GetQuestItemInfo
 local GetNumTrackingTypes = C_Minimap.GetNumTrackingTypes
+local GetTrackingInfo = C_Minimap.GetTrackingInfo
+local IsAltKeyDown = IsAltKeyDown
+local IsQuestCompletable, GetNumQuestItems, GetQuestItemLink, QuestIsFromAreaTrigger = IsQuestCompletable, GetNumQuestItems, GetQuestItemLink, QuestIsFromAreaTrigger
 local MINIMAP_TRACKING_TRIVIAL_QUESTS = MINIMAP_TRACKING_TRIVIAL_QUESTS
+local QuestGetAutoAccept, AcceptQuest, CloseQuest, CompleteQuest, AcknowledgeAutoAcceptQuest = QuestGetAutoAccept, AcceptQuest, CloseQuest, CompleteQuest, AcknowledgeAutoAcceptQuest
+local QuestLabelPrepend = Enum.GossipOptionRecFlags.QuestLabelPrepend
+local UnitGUID, IsShiftKeyDown, GetItemInfoFromHyperlink = UnitGUID, IsShiftKeyDown, GetItemInfoFromHyperlink
 
 local choiceQueue
 
@@ -206,7 +208,7 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 
 	for i = 1, numOptions do
 		local option = gossipInfoTable[i]
-		if option.name and strfind(option.name, "cFF0000FF") then
+		if option.name and option.flags == QuestLabelPrepend then
 			numQuestGossips = numQuestGossips + 1
 			questGossipID = option.gossipOptionID
 		end
@@ -337,6 +339,7 @@ local function AttemptAutoComplete(event)
 			elseif popUpType == "COMPLETE" then
 				ShowQuestComplete(questID)
 			end
+			RemoveAutoQuestPopUp(questID) -- needs review, taint?
 		end
 	end
 

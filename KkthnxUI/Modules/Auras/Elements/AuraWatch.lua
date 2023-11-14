@@ -849,8 +849,47 @@ function Module:AuraWatch_Cleanup() -- FIXME: there should be a better way to do
 			if frame.Spellname then
 				frame.Spellname:SetText("")
 			end
+
+			if frame.glowFrame then
+				K.HideOverlayGlow(frame.glowFrame)
+			end
 		end
 		value.Index = 1
+	end
+end
+
+function Module:AuraWatch_PreCleanup()
+	for _, value in pairs(FrameList) do
+		value.Index = 1
+	end
+end
+
+function Module:AuraWatch_PostCleanup()
+	for _, value in pairs(FrameList) do
+		local currentIndex = value.Index == maxFrames and maxFrames + 1 or value.Index
+		for i = currentIndex, maxFrames do
+			local frame = value[i]
+			if not frame:IsShown() then
+				break
+			end
+
+			if frame then
+				frame:Hide()
+				frame:SetScript("OnUpdate", nil)
+			end
+
+			if frame.Icon then
+				frame.Icon:SetTexture(nil)
+			end
+
+			if frame.Count then
+				frame.Count:SetText("")
+			end
+
+			if frame.Spellname then
+				frame.Spellname:SetText("")
+			end
+		end
 	end
 end
 
@@ -900,7 +939,7 @@ function Module:AuraWatch_OnUpdate(elapsed)
 	if self.elapsed > 0.1 then
 		self.elapsed = 0
 
-		Module:AuraWatch_Cleanup()
+		Module:AuraWatch_PreCleanup()
 		Module:AuraWatch_UpdateCD()
 
 		local inCombat = InCombatLockdown()
@@ -908,6 +947,7 @@ function Module:AuraWatch_OnUpdate(elapsed)
 			Module:UpdateAuraWatch(value, inCombat)
 		end
 
+		Module:AuraWatch_PostCleanup()
 		Module:AuraWatch_Centralize()
 	end
 end

@@ -157,6 +157,10 @@ tinsert(C.defaultThemes, function()
 	CharacterMainHandSlot:ClearAllPoints()
 	CharacterSecondaryHandSlot:ClearAllPoints()
 	CharacterModelScene:ClearAllPoints()
+	CharacterModelScene.ControlFrame:ClearAllPoints()
+
+	-- Character control buttons
+	CharacterModelScene.ControlFrame:SetPoint("TOP", CharacterFrame.Inset, "TOP", 0, -2)
 
 	-- Character slots
 	CharacterHeadSlot:SetPoint("TOPLEFT", CharacterFrame.Inset, "TOPLEFT", 6, -6)

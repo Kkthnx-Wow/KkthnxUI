@@ -292,10 +292,13 @@ function SetupSecureSnippets(button)
 			local pressAndHold = false
 			if type == "action" then
 				self:SetAttribute("typerelease", "actionrelease")
-				local actionType, id = GetActionInfo(action)
+				local actionType, id, subType = GetActionInfo(action)
 				if actionType == "spell" then
 					pressAndHold = IsPressHoldReleaseSpell(id)
 				elseif actionType == "macro" then
+					if subType == "spell" then
+						pressAndHold = IsPressHoldReleaseSpell(id)
+					end
 					-- GetMacroSpell is not in the restricted environment
 					--[=[
 						local spellID = GetMacroSpell(id)
@@ -2420,10 +2423,14 @@ Action.SetTooltip = function(self)
 	return GameTooltip:SetAction(self._state_action)
 end
 Action.GetSpellId = function(self)
-	if self._state_type == "action" then
-		local actionType, id, subType = GetActionInfo(self._state_action)
-		if actionType == "spell" or (actionType == "macro" and subType == "spell") then
+	local actionType, id, subType = GetActionInfo(self._state_action)
+	if actionType == "spell" then
+		return id
+	elseif actionType == "macro" then
+		if subType == "spell" then
 			return id
+		else
+			return (GetMacroSpell(id))
 		end
 	end
 end
