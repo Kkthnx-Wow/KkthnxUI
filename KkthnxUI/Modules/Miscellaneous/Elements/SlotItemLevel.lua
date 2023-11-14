@@ -80,6 +80,7 @@ function Module:CreateItemString(frame, strType)
 			slotFrame.iLvlText = K.CreateFontString(slotFrame, 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
 			slotFrame.iLvlText:ClearAllPoints()
 			slotFrame.iLvlText:SetPoint("BOTTOMLEFT", slotFrame, 1, 1)
+
 			local relF, x, y = Module:GetSlotAnchor(index)
 			slotFrame.enchantText = K.CreateFontString(slotFrame, 11)
 			slotFrame.enchantText:ClearAllPoints()

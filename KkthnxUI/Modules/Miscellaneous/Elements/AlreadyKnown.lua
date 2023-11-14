@@ -72,6 +72,9 @@ local function IsAlreadyKnown(link, index)
 					end
 				end
 			end
+
+			-- Clear the 'knowns' table here, as it's not needed beyond this point.
+			knowns = {}
 		end
 	end
 end
@@ -110,7 +113,8 @@ local function Hook_UpdateMerchantInfo()
 		end
 
 		local button = _G["MerchantItem" .. i .. "ItemButton"]
-		if button and button:IsShown() then
+		local isButtonShown = button and button:IsShown()
+		if isButtonShown then
 			local _, _, _, _, numAvailable, isUsable = GetMerchantItemInfo(index)
 			if isUsable and IsAlreadyKnown(GetMerchantItemLink(index)) then
 				local r, g, b = COLOR.r, COLOR.g, COLOR.b
@@ -144,7 +148,8 @@ local function QuestInfo_ShowRewards()
 		local baseIndex = rewardsCount
 		for i = 1, numQuestChoices do
 			local button = _G["QuestInfoItem" .. i + baseIndex]
-			if button and button:IsShown() then
+			local isButtonShown = button and button:IsShown()
+			if isButtonShown then
 				local isUsable
 				if QuestInfoFrame.questLog then
 					_, _, _, _, isUsable = GetQuestLogChoiceInfo(i)
@@ -163,7 +168,8 @@ local function QuestInfo_ShowRewards()
 		local baseIndex = rewardsCount
 		for i = 1, numQuestRewards do
 			local button = _G["QuestInfoItem" .. i + baseIndex]
-			if button and button:IsShown() then
+			local isButtonShown = button and button:IsShown()
+			if isButtonShown then
 				local isUsable
 				if QuestInfoFrame.questLog then
 					_, _, _, _, isUsable = GetQuestLogRewardInfo(i)
@@ -193,7 +199,8 @@ local function Hook_UpdateBuybackInfo()
 		end
 
 		local button = _G["MerchantItem" .. index .. "ItemButton"]
-		if button and button:IsShown() then
+		local isButtonShown = button and button:IsShown()
+		if isButtonShown then
 			local _, _, _, _, _, isUsable = GetBuybackItemInfo(index)
 			if isUsable and IsAlreadyKnown(GetBuybackItemLink(index)) then
 				SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
@@ -255,7 +262,8 @@ local function GuildBankFrame_Update(self)
 		column = ceil(i / NUM_SLOTS_PER_GUILDBANK_GROUP)
 		button = self.Columns[column].Buttons[index]
 
-		if button and button:IsShown() then
+		local isButtonShown = button and button:IsShown()
+		if isButtonShown then
 			texture, _, locked = GetGuildBankItemInfo(currentTab, i)
 
 			if texture and not locked then

@@ -719,9 +719,8 @@ local DiscoverFlyoutSpells, UpdateFlyoutSpells, UpdateFlyoutHandlerScripts, Flyo
 if UseCustomFlyout then
 	-- params: self, flyoutID
 	local FlyoutHandleFunc = [[
-		local SPELLFLYOUT_DEFAULT_SPACING = 4
-		local SPELLFLYOUT_INITIAL_SPACING = 7
-		local SPELLFLYOUT_FINAL_SPACING = 9
+		local SPELLFLYOUT_DEFAULT_SPACING = 6
+		local SPELLFLYOUT_INITIAL_SPACING = 6
 
 		local parent = self:GetAttribute("flyoutParentHandle")
 		if not parent then return end
@@ -846,7 +845,7 @@ if UseCustomFlyout then
 		end
 	]]
 
-	local SPELLFLYOUT_INITIAL_SPACING = 7
+	local SPELLFLYOUT_INITIAL_SPACING = 6
 	local function ShowFlyoutInsecure(self, direction)
 		self.Background.End:ClearAllPoints()
 		self.Background.Start:ClearAllPoints()
