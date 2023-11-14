@@ -27,6 +27,7 @@ local classification = {
 	rare = format("|cffAF5050 %s|r", ITEM_QUALITY3_DESC),
 }
 local npcIDstring = "%s " .. K.InfoColor .. "%s"
+local specPrefix = "|cffFFCC00" .. SPECIALIZATION .. ": " .. K.InfoColor
 
 function Module:GetUnit()
 	local data = self:GetTooltipData()
@@ -39,6 +40,11 @@ local FACTION_COLORS = {
 	[FACTION_ALLIANCE] = "|cff4080ff%s|r",
 	[FACTION_HORDE] = "|cffff5040%s|r",
 }
+
+local function replaceSpecInfo(str)
+	return strfind(str, "%s") and specPrefix .. str or str
+end
+
 function Module:UpdateFactionLine(lineData)
 	if self:IsForbidden() then
 		return
@@ -47,7 +53,11 @@ function Module:UpdateFactionLine(lineData)
 		return
 	end
 
+	local unit = Module.GetUnit(self)
+	local unitClass = unit and UnitClass(unit)
+	local unitCreature = unit and UnitCreatureType(unit)
 	local linetext = lineData.leftText
+
 	if linetext == PVP then
 		return true
 	elseif FACTION_COLORS[linetext] then
@@ -56,6 +66,10 @@ function Module:UpdateFactionLine(lineData)
 		else
 			lineData.leftText = format(FACTION_COLORS[linetext], linetext)
 		end
+	elseif unitClass and strfind(linetext, unitClass) then
+		lineData.leftText = gsub(linetext, "(.-)%S+$", replaceSpecInfo)
+	elseif unitCreature and linetext == unitCreature then
+		return true
 	end
 end
 
@@ -152,6 +166,7 @@ function Module:OnTooltipSetUnit()
 		if not C["Tooltip"].HideTitle and pvpName then
 			name = pvpName
 		end
+
 		if realm and realm ~= "" then
 			if isShiftKeyDown or not C["Tooltip"].HideRealm then
 				name = name .. "-" .. realm
@@ -204,14 +219,17 @@ function Module:OnTooltipSetUnit()
 			if C["Tooltip"].HideRank then
 				rank = ""
 			end
+
 			if guildRealm and isShiftKeyDown then
 				guildName = guildName .. "-" .. guildRealm
 			end
+
 			if C["Tooltip"].HideJunkGuild and not isShiftKeyDown then
 				if strlen(guildName) > 31 then
 					guildName = "..."
 				end
 			end
+
 			GameTooltipTextLeft2:SetText("<" .. guildName .. "> " .. rank .. "(" .. rankIndex .. ")")
 		end
 	end
@@ -224,6 +242,7 @@ function Module:OnTooltipSetUnit()
 		if ricon and ricon > 8 then
 			ricon = nil
 		end
+
 		ricon = ricon and ICON_LIST[ricon] .. "18|t " or ""
 		GameTooltipTextLeft1:SetFormattedText("%s%s%s", ricon, hexColor, text)
 	end
@@ -247,9 +266,12 @@ function Module:OnTooltipSetUnit()
 		local textLevel = format("%s%s%s|r", K.RGBToHex(diff), boss or format("%d", level), classification[classify] or "")
 		local tiptextLevel = Module.GetLevelLine(self)
 		if tiptextLevel then
+			local reaction = UnitReaction(unit, "player")
+			local standingText = not isPlayer and reaction and hexColor .. _G["FACTION_STANDING_LABEL" .. reaction] .. "|r " or ""
 			local pvpFlag = isPlayer and UnitIsPVP(unit) and format(" |cffff0000%s|r", PVP) or ""
 			local unitClass = isPlayer and format("%s %s", UnitRace(unit) or "", hexColor .. (UnitClass(unit) or "") .. "|r") or UnitCreatureType(unit) or ""
-			tiptextLevel:SetFormattedText("%s%s %s %s", textLevel, pvpFlag, unitClass, (not alive and "|cffCCCCCC" .. DEAD .. "|r" or ""))
+
+			tiptextLevel:SetFormattedText("%s%s %s %s", textLevel, pvpFlag, standingText .. unitClass, (not alive and "|cffCCCCCC" .. DEAD .. "|r" or ""))
 		end
 	end
 
@@ -265,14 +287,14 @@ function Module:OnTooltipSetUnit()
 	if not isPlayer and isShiftKeyDown then
 		local npcID = K.GetNPCID(guid)
 		if npcID then
-			local reaction = UnitReaction(unit, "player")
-			local standingText = reaction and hexColor .. _G["FACTION_STANDING_LABEL" .. reaction]
-			self:AddLine(format(npcIDstring, standingText or "", npcID))
+			self:AddLine(format(npcIDstring, "NpcID:", npcID))
 		end
 	end
 
-	Module.InspectUnitSpecAndLevel(self, unit)
-	Module.ShowUnitMythicPlusScore(self, unit)
+	if isPlayer then
+		Module.InspectUnitItemLevel(self, unit)
+		Module.ShowUnitMythicPlusScore(self, unit)
+	end
 	Module.ScanTargets(self, unit)
 	Module.CreatePetInfo(self, unit)
 end

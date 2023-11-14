@@ -6,88 +6,92 @@ local select, max, strfind, format, strsplit = select, math.max, string.find, st
 local GetTime, CanInspect, NotifyInspect, ClearInspectPlayer, IsShiftKeyDown = GetTime, CanInspect, NotifyInspect, ClearInspectPlayer, IsShiftKeyDown
 local UnitGUID, UnitClass, UnitIsUnit, UnitIsPlayer, UnitIsVisible, UnitIsDeadOrGhost, UnitOnTaxi = UnitGUID, UnitClass, UnitIsUnit, UnitIsPlayer, UnitIsVisible, UnitIsDeadOrGhost, UnitOnTaxi
 local GetInventoryItemTexture, GetInventoryItemLink, GetItemInfo, GetItemGem, GetAverageItemLevel = GetInventoryItemTexture, GetInventoryItemLink, GetItemInfo, GetItemGem, GetAverageItemLevel
-local GetSpecialization, GetSpecializationInfo, GetInspectSpecialization, GetSpecializationInfoByID = GetSpecialization, GetSpecializationInfo, GetInspectSpecialization, GetSpecializationInfoByID
 local HEIRLOOMS = HEIRLOOMS
 
-local specPrefix = SPECIALIZATION .. ": " .. K.InfoColor
 local levelPrefix = STAT_AVERAGE_ITEM_LEVEL .. ": " .. K.InfoColor
 local isPending = LFG_LIST_LOADING
 local resetTime, frequency = 900, 0.5
 local cache, weapon, currentUNIT, currentGUID = {}, {}
 
-local T29Sets = {
+local Tooltip_TierSets = {
 	-- HUNTER
-	[188856] = true,
-	[188858] = true,
-	[188859] = true,
-	[188860] = true,
-	[188861] = true,
+	[202479] = true,
+	[202477] = true,
+	[202478] = true,
+	[202480] = true,
+	[202482] = true,
 	-- WARRIOR
-	[188937] = true,
-	[188938] = true,
-	[188940] = true,
-	[188941] = true,
-	[188942] = true,
+	[202441] = true,
+	[202442] = true,
+	[202443] = true,
+	[202444] = true,
+	[202446] = true,
 	-- PALADIN
-	[188928] = true,
-	[188929] = true,
-	[188931] = true,
-	[188932] = true,
-	[188933] = true,
+	[202450] = true,
+	[202451] = true,
+	[202452] = true,
+	[202453] = true,
+	[202455] = true,
 	-- ROGUE
-	[188901] = true,
-	[188902] = true,
-	[188903] = true,
-	[188905] = true,
-	[188907] = true,
+	[202495] = true,
+	[202496] = true,
+	[202497] = true,
+	[202498] = true,
+	[202500] = true,
 	-- PRIEST
-	[188875] = true,
-	[188878] = true,
-	[188879] = true,
-	[188880] = true,
-	[188881] = true,
+	[202540] = true,
+	[202541] = true,
+	[202542] = true,
+	[202543] = true,
+	[202545] = true,
 	-- DK
-	[188863] = true,
-	[188864] = true,
-	[188866] = true,
-	[188867] = true,
-	[188868] = true,
+	[202459] = true,
+	[202460] = true,
+	[202461] = true,
+	[202462] = true,
+	[202464] = true,
 	-- SHAMAN
-	[188920] = true,
-	[188922] = true,
-	[188923] = true,
-	[188924] = true,
-	[188925] = true,
+	[202468] = true,
+	[202469] = true,
+	[202470] = true,
+	[202471] = true,
+	[202473] = true,
 	-- MAGE
-	[188839] = true,
-	[188842] = true,
-	[188843] = true,
-	[188844] = true,
-	[188845] = true,
+	[202549] = true,
+	[202550] = true,
+	[202551] = true,
+	[202552] = true,
+	[202554] = true,
 	-- WARLOCK
-	[188884] = true,
-	[188887] = true,
-	[188888] = true,
-	[188889] = true,
-	[188890] = true,
+	[202531] = true,
+	[202532] = true,
+	[202533] = true,
+	[202534] = true,
+	[202536] = true,
 	-- MONK
-	[188910] = true,
-	[188911] = true,
-	[188912] = true,
-	[188914] = true,
-	[188916] = true,
+	[202504] = true,
+	[202505] = true,
+	[202506] = true,
+	[202507] = true,
+	[202509] = true,
 	-- DRUID
-	[188847] = true,
-	[188848] = true,
-	[188849] = true,
-	[188851] = true,
-	[188853] = true,
+	[202513] = true,
+	[202514] = true,
+	[202515] = true,
+	[202516] = true,
+	[202518] = true,
 	-- DH
-	[188892] = true,
-	[188893] = true,
-	[188894] = true,
-	[188896] = true,
-	[188898] = true,
+	[202522] = true,
+	[202523] = true,
+	[202524] = true,
+	[202525] = true,
+	[202527] = true,
+	-- EVOKER
+	[202486] = true,
+	[202487] = true,
+	[202488] = true,
+	[202489] = true,
+	[202491] = true,
 }
 
 local formatSets = {
@@ -131,14 +135,12 @@ function Module:GetInspectInfo(...)
 	elseif self == "INSPECT_READY" then
 		local guid = ...
 		if guid == currentGUID then
-			local spec = Module:GetUnitSpec(currentUNIT)
 			local level = Module:GetUnitItemLevel(currentUNIT)
-			cache[guid].spec = spec
 			cache[guid].level = level
 			cache[guid].getTime = GetTime()
 
-			if spec and level then
-				Module:SetupSpecLevel(spec, level)
+			if level then
+				Module:SetupItemLevel(level)
 			else
 				Module:InspectUnit(currentUNIT, true)
 			end
@@ -148,28 +150,19 @@ function Module:GetInspectInfo(...)
 end
 K:RegisterEvent("UNIT_INVENTORY_CHANGED", Module.GetInspectInfo)
 
-function Module:SetupSpecLevel(spec, level)
+function Module:SetupItemLevel(level)
 	local _, unit = GameTooltip:GetUnit()
 	if not unit or UnitGUID(unit) ~= currentGUID then
 		return
 	end
 
-	local specLine, levelLine
+	local levelLine
 	for i = 2, GameTooltip:NumLines() do
 		local line = _G["GameTooltipTextLeft" .. i]
 		local text = line:GetText()
-		if text and strfind(text, specPrefix) then
-			specLine = line
-		elseif text and strfind(text, levelPrefix) then
+		if text and strfind(text, levelPrefix) then
 			levelLine = line
 		end
-	end
-
-	spec = specPrefix .. (spec or isPending)
-	if specLine then
-		specLine:SetText(spec)
-	else
-		GameTooltip:AddLine(spec)
 	end
 
 	level = levelPrefix .. (level or isPending)
@@ -209,7 +202,7 @@ function Module:GetUnitItemLevel(unit)
 						end
 
 						local itemID = GetItemInfoFromHyperlink(itemLink)
-						if T29Sets[itemID] then
+						if Tooltip_TierSets[itemID] then
 							sets = sets + 1
 						end
 
@@ -292,37 +285,12 @@ function Module:GetUnitItemLevel(unit)
 	return ilvl
 end
 
-function Module:GetUnitSpec(unit)
-	if not unit or UnitGUID(unit) ~= currentGUID then
-		return
-	end
-
-	local specName
-	if unit == "player" then
-		local specIndex = GetSpecialization()
-		if specIndex then
-			specName = select(2, GetSpecializationInfo(specIndex))
-		end
-	else
-		local specID = GetInspectSpecialization(unit)
-		if specID and specID > 0 then
-			specName = select(2, GetSpecializationInfoByID(specID))
-		end
-	end
-	if specName == "" then
-		specName = NONE
-	end
-
-	return specName
-end
-
 function Module:InspectUnit(unit, forced)
-	local spec, level
+	local level
 
 	if UnitIsUnit(unit, "player") then
-		spec = self:GetUnitSpec("player")
 		level = self:GetUnitItemLevel("player")
-		self:SetupSpecLevel(spec, level)
+		self:SetupItemLevel(level)
 	else
 		if not unit or UnitGUID(unit) ~= currentGUID then
 			return
@@ -332,14 +300,13 @@ function Module:InspectUnit(unit, forced)
 		end
 
 		local currentDB = cache[currentGUID]
-		spec = currentDB.spec
 		level = currentDB.level
-		self:SetupSpecLevel(spec, level)
+		self:SetupItemLevel(level)
 
 		if not C["Tooltip"].SpecLevelByShift and IsShiftKeyDown() then
 			forced = true
 		end
-		if spec and level and not forced and (GetTime() - currentDB.getTime < resetTime) then
+		if level and not forced and (GetTime() - currentDB.getTime < resetTime) then
 			updater.elapsed = frequency
 			return
 		end
@@ -350,12 +317,12 @@ function Module:InspectUnit(unit, forced)
 			return
 		end
 
-		self:SetupSpecLevel()
+		self:SetupItemLevel()
 		updater:Show()
 	end
 end
 
-function Module:InspectUnitSpecAndLevel(unit)
+function Module:InspectUnitItemLevel(unit)
 	if C["Tooltip"].SpecLevelByShift and not IsShiftKeyDown() then
 		return
 	end
