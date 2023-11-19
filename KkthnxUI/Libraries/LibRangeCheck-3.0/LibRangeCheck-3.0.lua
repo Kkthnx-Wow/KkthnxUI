@@ -49,52 +49,41 @@ if not lib then
 	return
 end
 
-local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-local isWrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
-
-local InCombatLockdownRestriction
-if isRetail then
-	InCombatLockdownRestriction = InCombatLockdown
-else
-	InCombatLockdownRestriction = function()
-		return false
-	end
-end
-
+local ipairs = ipairs
+local math_floor = math.floor
 local next = next
+local pairs = pairs
+local print = print
+local setmetatable = setmetatable
+local tinsert = tinsert
+local tostring = tostring
+local tremove = tremove
 local type = type
 local wipe = wipe
-local print = print
-local pairs = pairs
-local ipairs = ipairs
-local tinsert = tinsert
-local tremove = tremove
-local tostring = tostring
-local setmetatable = setmetatable
+
 local BOOKTYPE_SPELL = BOOKTYPE_SPELL
-local GetSpellInfo = GetSpellInfo
-local GetSpellBookItemName = GetSpellBookItemName
-local GetNumSpellTabs = GetNumSpellTabs
-local GetSpellTabInfo = GetSpellTabInfo
-local GetItemInfo = GetItemInfo
-local UnitCanAttack = UnitCanAttack
-local UnitCanAssist = UnitCanAssist
-local UnitExists = UnitExists
-local UnitIsUnit = UnitIsUnit
-local UnitGUID = UnitGUID
-local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local C_Timer_NewTicker = C_Timer.NewTicker
 local CheckInteractDistance = CheckInteractDistance
-local IsSpellInRange = IsSpellInRange
-local IsItemInRange = IsItemInRange
-local UnitClass = UnitClass
-local UnitRace = UnitRace
 local GetInventoryItemLink = GetInventoryItemLink
+local GetItemInfo = GetItemInfo
+local GetNumSpellTabs = GetNumSpellTabs
+local GetSpellBookItemName = GetSpellBookItemName
+local GetSpellInfo = GetSpellInfo
+local GetSpellTabInfo = GetSpellTabInfo
 local GetTime = GetTime
 local HandSlotId = GetInventorySlotInfo("HandsSlot")
-local math_floor = math.floor
+local InCombatLockdownRestriction = InCombatLockdown
+local IsItemInRange = IsItemInRange
+local IsSpellInRange = IsSpellInRange
+local UnitCanAssist = UnitCanAssist
+local UnitCanAttack = UnitCanAttack
+local UnitClass = UnitClass
+local UnitExists = UnitExists
+local UnitGUID = UnitGUID
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitIsUnit = UnitIsUnit
 local UnitIsVisible = UnitIsVisible
-
-local C_Timer_NewTicker = C_Timer.NewTicker
+local UnitRace = UnitRace
 
 -- << STATIC CONFIG
 
@@ -156,10 +145,6 @@ tinsert(FriendSpells.DRUID, 774) -- Rejuvenation (Restoration) (40 yards, level 
 tinsert(FriendSpells.DRUID, 2782) -- Remove Corruption (Restoration) (40 yards, level 19)
 tinsert(FriendSpells.DRUID, 88423) -- Natures Cure (Restoration) (40 yards, level 19)
 
-if not isRetail then
-	tinsert(FriendSpells.DRUID, 5185) -- Healing Touch (40 yards, level 1, rank 1)
-end
-
 tinsert(HarmSpells.DRUID, 5176) -- Wrath (40 yards)
 tinsert(HarmSpells.DRUID, 339) -- Entangling Roots (35 yards)
 tinsert(HarmSpells.DRUID, 6795) -- Growl (30 yards)
@@ -173,19 +158,11 @@ tinsert(ResSpells.DRUID, 20484) -- Rebirth (40 yards, level 29)
 -- Hunters
 tinsert(HarmSpells.HUNTER, 75) -- Auto Shot (40 yards)
 
-if not isRetail then
-	tinsert(HarmSpells.HUNTER, 2764) -- Throw (30 yards, level 1)
-end
-
 tinsert(PetSpells.HUNTER, 136) -- Mend Pet (45 yards)
 
 -- Mages
 tinsert(FriendSpells.MAGE, 1459) -- Arcane Intellect (40 yards, level 8)
 tinsert(FriendSpells.MAGE, 475) -- Remove Curse (40 yards, level 28)
-
-if not isRetail then
-	tinsert(FriendSpells.MAGE, 130) -- Slow Fall (40 yards, level 12)
-end
 
 tinsert(HarmSpells.MAGE, 44614) -- Flurry (40 yards)
 tinsert(HarmSpells.MAGE, 5019) -- Shoot (30 yards)
@@ -212,10 +189,6 @@ tinsert(FriendSpells.PALADIN, 85673) -- Word of Glory (40 yards, level 7)
 tinsert(FriendSpells.PALADIN, 4987) -- Cleanse (Holy) (40 yards, level 12)
 tinsert(FriendSpells.PALADIN, 213644) -- Cleanse Toxins (Protection, Retribution) (40 yards, level 12)
 
-if not isRetail then
-	tinsert(FriendSpells.PALADIN, 635) -- Holy Light (40 yards, level 1, rank 1)
-end
-
 tinsert(HarmSpells.PALADIN, 853) -- Hammer of Justice (10 yards)
 tinsert(HarmSpells.PALADIN, 35395) -- Crusader Strike (Melee Range)
 tinsert(HarmSpells.PALADIN, 62124) -- Hand of Reckoning (30 yards)
@@ -226,13 +199,8 @@ tinsert(HarmSpells.PALADIN, 20473) -- Holy Shock (40 yards)
 tinsert(ResSpells.PALADIN, 7328) -- Redemption (40 yards)
 
 -- Priests
-if isRetail then
-	tinsert(FriendSpells.PRIEST, 21562) -- Power Word: Fortitude (40 yards, level 6) [use first to fix Kyrian boon/fae soulshape]
-	tinsert(FriendSpells.PRIEST, 17) -- Power Word: Shield (40 yards, level 4)
-else -- PWS is group only in classic, use lesser heal as main spell check
-	tinsert(FriendSpells.PRIEST, 2050) -- Lesser Heal (40 yards, level 1, rank 1)
-end
-
+tinsert(FriendSpells.PRIEST, 21562) -- Power Word: Fortitude (40 yards, level 6) [use first to fix Kyrian boon/fae soulshape]
+tinsert(FriendSpells.PRIEST, 17) -- Power Word: Shield (40 yards, level 4)
 tinsert(FriendSpells.PRIEST, 527) -- Purify / Dispel Magic (40 yards retail, 30 yards tbc, level 18, rank 1)
 tinsert(FriendSpells.PRIEST, 2061) -- Flash Heal (40 yards, level 3 retail, level 20 tbc)
 
@@ -240,17 +208,11 @@ tinsert(HarmSpells.PRIEST, 589) -- Shadow Word: Pain (40 yards)
 tinsert(HarmSpells.PRIEST, 585) -- Smite (40 yards)
 tinsert(HarmSpells.PRIEST, 5019) -- Shoot (30 yards)
 
-if not isRetail then
-	tinsert(HarmSpells.PRIEST, 8092) -- Mindblast (30 yards, level 10)
-end
-
 tinsert(ResSpells.PRIEST, 2006) -- Resurrection (40 yards, level 10)
 
 -- Rogues
-if isRetail then
-	tinsert(FriendSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18) -- works on friendly in retail
-	tinsert(FriendSpells.ROGUE, 921) -- Pick Pocket (10 yards, level 24) -- this works for range, keep it in friendly as well for retail but on classic this is melee range and will return min 0 range 0
-end
+tinsert(FriendSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18) -- works on friendly in retail
+tinsert(FriendSpells.ROGUE, 921) -- Pick Pocket (10 yards, level 24) -- this works for range, keep it in friendly as well for retail but on classic this is melee range and will return min 0 range 0
 
 tinsert(HarmSpells.ROGUE, 2764) -- Throw (30 yards)
 tinsert(HarmSpells.ROGUE, 36554) -- Shadowstep (Assassination, Subtlety) (25 yards, level 18)
@@ -263,20 +225,9 @@ tinsert(FriendSpells.SHAMAN, 546) -- Water Walking (30 yards)
 tinsert(FriendSpells.SHAMAN, 8004) -- Healing Surge (Resto, Elemental) (40 yards)
 tinsert(FriendSpells.SHAMAN, 188070) -- Healing Surge (Enhancement) (40 yards)
 
-if not isRetail then
-	tinsert(FriendSpells.SHAMAN, 331) -- Healing Wave (40 yards, level 1, rank 1)
-	tinsert(FriendSpells.SHAMAN, 526) -- Cure Poison (40 yards, level 16)
-	tinsert(FriendSpells.SHAMAN, 2870) -- Cure Disease (40 yards, level 22)
-end
-
 tinsert(HarmSpells.SHAMAN, 370) -- Purge (30 yards)
 tinsert(HarmSpells.SHAMAN, 188196) -- Lightning Bolt (40 yards)
 tinsert(HarmSpells.SHAMAN, 73899) -- Primal Strike (Melee Range)
-
-if not isRetail then
-	tinsert(HarmSpells.SHAMAN, 403) -- Lightning Bolt (30 yards, level 1, rank 1)
-	tinsert(HarmSpells.SHAMAN, 8042) -- Earth Shock (20 yards, level 4, rank 1)
-end
 
 tinsert(ResSpells.SHAMAN, 2008) -- Ancestral Spirit (40 yards, level 13)
 
@@ -285,17 +236,10 @@ tinsert(HarmSpells.WARRIOR, 355) -- Taunt (30 yards)
 tinsert(HarmSpells.WARRIOR, 5246) -- Intimidating Shout (Arms, Fury) (8 yards)
 tinsert(HarmSpells.WARRIOR, 100) -- Charge (Arms, Fury) (8-25 yards)
 
-if not isRetail then
-	tinsert(HarmSpells.WARRIOR, 2764) -- Throw (30 yards, level 1, 5-30 range)
-end
-
 -- Warlocks
 tinsert(FriendSpells.WARLOCK, 5697) -- Unending Breath (30 yards)
 tinsert(FriendSpells.WARLOCK, 20707) -- Soulstone (40 yards) ~ this can be precasted so leave it in friendly as well as res
-
-if isRetail then
-	tinsert(FriendSpells.WARLOCK, 132) -- Detect Invisibility (30 yards, level 26)
-end
+tinsert(FriendSpells.WARLOCK, 132) -- Detect Invisibility (30 yards, level 26)
 
 tinsert(HarmSpells.WARLOCK, 5019) -- Shoot (30 yards)
 tinsert(HarmSpells.WARLOCK, 234153) -- Drain Life (40 yards, level 9)
@@ -304,30 +248,31 @@ tinsert(HarmSpells.WARLOCK, 686) -- Shadow Bolt (Demonology, Affliction) (40 yar
 tinsert(HarmSpells.WARLOCK, 232670) -- Shadow Bolt (40 yards)
 tinsert(HarmSpells.WARLOCK, 5782) -- Fear (30 yards)
 
-if not isRetail then
-	tinsert(HarmSpells.WARLOCK, 172) -- Corruption (30 yards, level 4, rank 1)
-	tinsert(HarmSpells.WARLOCK, 348) -- Immolate (30 yards, level 1, rank 1)
-	tinsert(HarmSpells.WARLOCK, 17877) -- Shadowburn (Destruction) (20 yards)
-	tinsert(HarmSpells.WARLOCK, 18223) -- Curse of Exhaustion (Affliction) (30/33/36/35/38/42 yards)
-end
-
 tinsert(ResSpells.WARLOCK, 20707) -- Soulstone (40 yards)
 
 tinsert(PetSpells.WARLOCK, 755) -- Health Funnel (45 yards)
 
 -- Items [Special thanks to Maldivia for the nice list]
-
 local FriendItems = {
+	[1] = {
+		-- Gin-Ji Knife Set -- doesn't seem to work for pets (always returns nil)
+	},
 	[2] = {
 		37727, -- Ruby Acorn
 	},
 	[3] = {
 		42732, -- Everfrost Razor
 	},
+	[4] = {
+		129055, -- Shoe Shine Kit
+	},
 	[5] = {
 		8149, -- Voodoo Charm
 		136605, -- Solendra's Compassion
 		63427, -- Worgsaw
+	},
+	[7] = {
+		61323, -- Ruby Seeds
 	},
 	[8] = {
 		34368, -- Attuned Crystal Cores
@@ -352,8 +297,6 @@ local FriendItems = {
 		21991, -- Heavy Netherweave Bandage
 		34721, -- Frostweave Bandage
 		34722, -- Heavy Frostweave Bandage
-		--38643, -- Thick Frostweave Bandage (uncomment for Wotlk)
-		--38640, -- Dense Frostweave Bandage (uncomment for Wotlk)
 	},
 	[20] = {
 		21519, -- Mistletoe
@@ -374,11 +317,20 @@ local FriendItems = {
 	[35] = {
 		18904, -- Zorbin's Ultra-Shrinker
 	},
+	[38] = {
+		140786, -- Ley Spider Eggs
+	},
 	[40] = {
 		34471, -- Vial of the Sunwell
 	},
 	[45] = {
 		32698, -- Wrangling Rope
+	},
+	[50] = {
+		116139, -- Haunting Memento
+	},
+	[55] = {
+		74637, -- Kiryn's Poison Vial
 	},
 	[60] = {
 		32825, -- Soul Cannon
@@ -390,40 +342,19 @@ local FriendItems = {
 	[80] = {
 		35278, -- Reinforced Net
 	},
+	[90] = {
+		133925, -- Fel Lash
+	},
 	[100] = {
 		41058, -- Hyldnir Harpoon
 	},
 	[150] = {
 		46954, -- Flaming Spears
 	},
-}
-
-if isRetail then
-	FriendItems[1] = {
-		90175, -- Gin-Ji Knife Set -- doesn't seem to work for pets (always returns nil)
-	}
-	FriendItems[4] = {
-		129055, -- Shoe Shine Kit
-	}
-	FriendItems[7] = {
-		61323, -- Ruby Seeds
-	}
-	FriendItems[38] = {
-		140786, -- Ley Spider Eggs
-	}
-	FriendItems[55] = {
-		74637, -- Kiryn's Poison Vial
-	}
-	FriendItems[50] = {
-		116139, -- Haunting Memento
-	}
-	FriendItems[90] = {
-		133925, -- Fel Lash
-	}
-	FriendItems[200] = {
+	[200] = {
 		75208, -- Rancher's Lariat
-	}
-end
+	},
+}
 
 local HarmItems = {
 	[1] = {},
@@ -433,10 +364,16 @@ local HarmItems = {
 	[3] = {
 		42732, -- Everfrost Razor
 	},
+	[4] = {
+		129055, -- Shoe Shine Kit
+	},
 	[5] = {
 		8149, -- Voodoo Charm
 		136605, -- Solendra's Compassion
 		63427, -- Worgsaw
+	},
+	[7] = {
+		61323, -- Ruby Seeds
 	},
 	[8] = {
 		34368, -- Attuned Crystal Cores
@@ -467,12 +404,21 @@ local HarmItems = {
 		24269, -- Heavy Netherweave Net
 		18904, -- Zorbin's Ultra-Shrinker
 	},
+	[38] = {
+		140786, -- Ley Spider Eggs
+	},
 	[40] = {
 		28767, -- The Decapitator
 	},
 	[45] = {
 		--32698, -- Wrangling Rope
 		23836, -- Goblin Rocket Launcher
+	},
+	[50] = {
+		116139, -- Haunting Memento
+	},
+	[55] = {
+		74637, -- Kiryn's Poison Vial
 	},
 	[60] = {
 		32825, -- Soul Cannon
@@ -484,37 +430,19 @@ local HarmItems = {
 	[80] = {
 		35278, -- Reinforced Net
 	},
+	[90] = {
+		133925, -- Fel Lash
+	},
 	[100] = {
 		33119, -- Malister's Frost Wand
 	},
 	[150] = {
 		46954, -- Flaming Spears
 	},
-}
-
-if isRetail then
-	HarmItems[4] = {
-		129055, -- Shoe Shine Kit
-	}
-	HarmItems[7] = {
-		61323, -- Ruby Seeds
-	}
-	HarmItems[38] = {
-		140786, -- Ley Spider Eggs
-	}
-	HarmItems[50] = {
-		116139, -- Haunting Memento
-	}
-	HarmItems[55] = {
-		74637, -- Kiryn's Poison Vial
-	}
-	HarmItems[90] = {
-		133925, -- Fel Lash
-	}
-	HarmItems[200] = {
+	[200] = {
 		75208, -- Rancher's Lariat
-	}
-end
+	},
+}
 
 -- This could've been done by checking player race as well and creating tables for those, but it's easier like this
 for _, v in pairs(FriendSpells) do
@@ -722,10 +650,6 @@ end
 
 local rangeCache = {}
 
-local function resetRangeCache()
-	wipe(rangeCache)
-end
-
 local function invalidateRangeCache(maxAge)
 	local currentTime = GetTime()
 	for k, v in pairs(rangeCache) do
@@ -909,14 +833,6 @@ local function createSmartChecker(friendChecker, harmChecker, miscChecker)
 			return friendChecker(unit)
 		else
 			return miscChecker(unit)
-		end
-	end
-end
-
-local minItemChecker = function(item)
-	if GetItemInfo(item) then
-		return function(unit)
-			return IsItemInRange(item, unit)
 		end
 	end
 end
@@ -1331,10 +1247,7 @@ function lib:activate()
 		frame:RegisterEvent("LEARNED_SPELL_IN_TAB")
 		frame:RegisterEvent("CHARACTER_POINTS_CHANGED")
 		frame:RegisterEvent("SPELLS_CHANGED")
-
-		if isRetail or isWrath then
-			frame:RegisterEvent("PLAYER_TALENT_UPDATE")
-		end
+		frame:RegisterEvent("PLAYER_TALENT_UPDATE")
 
 		local _, playerClass = UnitClass("player")
 		if playerClass == "MAGE" or playerClass == "SHAMAN" then
