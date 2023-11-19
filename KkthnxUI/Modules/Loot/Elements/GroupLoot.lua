@@ -175,8 +175,11 @@ function Module:LootRoll_Create(index)
 	bar:SetSize(328, 26)
 	bar:SetScript("OnEvent", Module.LootRoll_OnEvent)
 	bar:RegisterEvent("CANCEL_LOOT_ROLL")
-	bar:RegisterEvent("CANCEL_ALL_LOOT_ROLLS")
+	-- bar:RegisterEvent("CANCEL_ALL_LOOT_ROLLS")
 	bar:Hide()
+
+	-- Set a default position for the frame
+	bar:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 
 	local status = CreateFrame("StatusBar", nil, bar)
 	status:SetAllPoints(bar)
@@ -252,7 +255,7 @@ function Module:LootRoll_GetFrame(i)
 	end
 end
 
-function Module:LootRoll_OnEvent(event, rollID)
+function Module:LootRoll_OnEvent(self, event, rollID)
 	Module[event](self, event, rollID)
 end
 
@@ -268,13 +271,15 @@ function Module:LootRoll_ClearBar(bar, event)
 	end
 end
 
-function Module:LootRoll_Cancel(event, rollID)
+function Module:LootRoll_Cancel(self, event, rollID)
+	print("LootRoll_Cancel", event, rollID)
 	if self.rollID == rollID then
 		Module:LootRoll_ClearBar(self, event)
 	end
 end
 
 function Module:LootRoll_Cancel_All(event)
+	print("LootRoll_Cancel_All", event)
 	Module:LootRoll_ClearBar(self, event)
 end
 
@@ -445,8 +450,80 @@ function Module:CreateGroupLoot()
 
 	Module:UpdateLootRollFrames()
 
-	K:RegisterEvent("START_LOOT_ROLL", self.LootRoll_Start)
+	K:RegisterEvent("START_LOOT_ROLL", Module.LootRoll_Start)
 
 	_G.UIParent:UnregisterEvent("START_LOOT_ROLL")
 	_G.UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
 end
+
+local function testRoll(frame)
+	local items = { 32837, 34196, 33820, 84004 }
+	local item = items[math.random(1, #items)]
+	local name, _, quality, _, _, _, _, _, _, _, _, _, _, bindType = GetItemInfo(item)
+
+	if not name then
+		return nil
+	end
+
+	local color = K.QualityColors[quality or 1]
+	local level = K.GetItemLevel(item)
+
+	frame.button.icon:SetTexture(GetItemIcon(item))
+	frame.button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+
+	frame.name:SetText(name)
+	frame.name:SetVertexColor(color.r, color.g, color.b)
+
+	frame.status:SetMinMaxValues(0, 100)
+	frame.status:SetValue(math.random(50, 90))
+	frame.status:SetStatusBarColor(color.r, color.g, color.b, 0.7)
+
+	frame.button.link = "item:" .. item .. ":0:0:0:0:0:0:0"
+	frame.bind:SetText(bindType == 1 and L["BoP"] or bindType == 2 and L["BoE"] or bindType == 3 and "BoU" or "")
+	frame.bind:SetVertexColor(bindType == 1 and 1 or 0.3, bindType == 1 and 0.3 or 1, bindType == 1 and 0.1 or 0.3)
+
+	return name
+end
+
+SlashCmdList.TESTROLL = function()
+	local frame = Module:LootRoll_GetFrame()
+
+	if frame then
+		print("Loot roll frame created.")
+		print("Frame Position:", frame:GetPoint())
+		print("Frame Size:", frame:GetSize())
+
+		if frame:IsShown() then
+			frame:Hide()
+			print("Loot roll frame hidden.")
+		else
+			print("Loot roll frame shown.")
+			-- Rest of the code to simulate loot roll...
+		end
+	else
+		print("Error: Loot roll frame not created.")
+	end
+
+	if frame:IsShown() then
+		frame:Hide()
+	else
+		local itemName = testRoll(frame)
+
+		if itemName then
+			print("Simulating loot roll for:", itemName)
+			frame:Show()
+		else
+			C_Timer.After(1, function()
+				if not frame:IsShown() then
+					local newItemName = testRoll(frame)
+					if newItemName then
+						print("Simulating loot roll for:", newItemName)
+						frame:Show()
+					end
+				end
+			end)
+		end
+	end
+end
+
+SLASH_TESTROLL1 = "/testroll"

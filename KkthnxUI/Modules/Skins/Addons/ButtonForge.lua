@@ -67,7 +67,7 @@ function Module:ReskinButtonForge()
 		return
 	end
 
-	if not IsAddOnLoaded("ButtonForge") then
+	if not C_AddOns.IsAddOnLoaded("ButtonForge") then
 		return
 	end
 

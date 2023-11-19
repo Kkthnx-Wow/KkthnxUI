@@ -247,7 +247,7 @@ function Module:ShowLeaderOverallScore()
 end
 
 function Module:ReplaceFindGroupButton()
-	if not IsAddOnLoaded("PremadeGroupsFilter") then
+	if not C_AddOns.IsAddOnLoaded("PremadeGroupsFilter") then
 		return
 	end
 
@@ -402,7 +402,7 @@ local function createSortButton(parent, texture, sortStr)
 end
 
 function Module:AddPGFSortingExpression()
-	if not IsAddOnLoaded("PremadeGroupsFilter") then
+	if not C_AddOns.IsAddOnLoaded("PremadeGroupsFilter") then
 		return
 	end
 
@@ -434,7 +434,7 @@ end
 function Module:FixListingTaint() -- From PremadeGroupsFilter
 	local activityIdOfArbitraryMythicPlusDungeon = 1160 -- Algeth'ar Academy
 
-	if (not IsAddOnLoaded("PremadeGroupsFilter")) or (not C_LFGList.IsPlayerAuthenticatedForLFG(activityIdOfArbitraryMythicPlusDungeon)) then
+	if (not C_AddOns.IsAddOnLoaded("PremadeGroupsFilter")) or (not C_LFGList.IsPlayerAuthenticatedForLFG(activityIdOfArbitraryMythicPlusDungeon)) then
 		C_LFGList.GetPlaystyleString = function(playstyle, activityInfo)
 			if not (activityInfo and playstyle and playstyle ~= 0 and C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID).showPlaystyleDropdown) then
 				return nil

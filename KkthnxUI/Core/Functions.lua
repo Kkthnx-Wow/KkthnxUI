@@ -30,24 +30,7 @@ local UnitIsPlayer = UnitIsPlayer
 local UnitIsTapDenied = UnitIsTapDenied
 local UnitReaction = UnitReaction
 
--- Variables to store item level data, strings for parsing item level and enchant information
-local iLvlDB = {}
-local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
-local itemLevelString = "^" .. string_gsub(ITEM_LEVEL, "%%d", "")
-local isKnownString = {
-	[TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN] = true,
-	[TRANSMOGRIFY_TOOLTIP_ITEM_UNKNOWN_APPEARANCE_KNOWN] = true,
-}
-
--- Variables to store time-related values in seconds
-local day, hour, minute, pointFive = 86400, 3600, 60, 0.5
-
--- Maps rectangles for storing positional information
-local mapRects = {}
-
--- Temporary 2D vector for calculations
-local tempVec2D = CreateVector2D(0, 0)
-
+-- General Utility Functions
 do
 	function K.Print(...)
 		print("|cff3c9bedKkthnxUI:|r", ...)
@@ -78,7 +61,6 @@ do
 		end
 	end
 
-	-- Return rounded number
 	function K.Round(number, idp)
 		-- Set the default number of decimal places to 0 if none is specified
 		idp = idp or 0
@@ -89,11 +71,11 @@ do
 		-- and finally dividing it by 10 to the power of idp
 		return math.floor(number * mult + 0.5) / mult
 	end
+end
 
-	-- RGBToHex
-	-- Set the factor to 255 for converting RGB to hexadecimal
+-- Color-related Functions
+do
 	local factor = 255
-	-- Convert RGB values to hexadecimal format
 	function K.RGBToHex(r, g, b)
 		-- Check if r is a table, and extract r, g, b values from it if necessary
 		if type(r) == "table" then
@@ -105,44 +87,6 @@ do
 			local hex = string.format("%02x%02x%02x", r * factor, g * factor, b * factor)
 			-- Return the hex code with alpha value appended
 			return "|cff" .. hex
-		end
-	end
-
-	-- Table
-	--- Function to copy values from one table to another
-	-- @param source Table to copy from
-	-- @param target Table to copy to
-	function K.CopyTable(source, target)
-		-- Loop through all key-value pairs in the source table
-		for key, value in pairs(source) do
-			-- If the value is a table, copy its contents recursively
-			if type(value) == "table" then
-				-- If there's no key in the target table, create it
-				if not target[key] then
-					target[key] = {}
-				end
-				-- Copy the contents of the sub-table
-				for k in pairs(value) do
-					target[key][k] = value[k]
-				end
-			else
-				-- If the value is not a table, simply copy it
-				target[key] = value
-			end
-		end
-	end
-
-	function K.SplitList(list, variable, cleanup)
-		-- Wipe the table if cleanup is true
-		if cleanup then
-			table_wipe(list)
-		end
-
-		for word in string.gmatch(variable, "%S+") do
-			-- Convert word to number if it is numeric
-			word = tonumber(word) or word
-			-- Add word to the list
-			table.insert(list, word)
 		end
 	end
 
@@ -197,7 +141,6 @@ do
 		return classIcon .. classColor
 	end
 
-	-- Atlas info
 	function K.GetTextureStrByAtlas(info, sizeX, sizeY)
 		local file = info and info.file
 		if not file then
@@ -221,10 +164,47 @@ do
 	end
 end
 
+-- Table-related Functions
+do
+	function K.CopyTable(source, target)
+		-- Loop through all key-value pairs in the source table
+		for key, value in pairs(source) do
+			-- If the value is a table, copy its contents recursively
+			if type(value) == "table" then
+				-- If there's no key in the target table, create it
+				if not target[key] then
+					target[key] = {}
+				end
+				-- Copy the contents of the sub-table
+				for k in pairs(value) do
+					target[key][k] = value[k]
+				end
+			else
+				-- If the value is not a table, simply copy it
+				target[key] = value
+			end
+		end
+	end
+
+	function K.SplitList(list, variable, cleanup)
+		-- Wipe the table if cleanup is true
+		if cleanup then
+			table_wipe(list)
+		end
+
+		for word in string.gmatch(variable, "%S+") do
+			-- Convert word to number if it is numeric
+			word = tonumber(word) or word
+			-- Add word to the list
+			table.insert(list, word)
+		end
+	end
+end
+
+-- Gradient Frame and Font String Functions
 do
 	-- Gradient Frame
 	local gradientFrom, gradientTo = CreateColor(0, 0, 0, 0.5), CreateColor(0.3, 0.3, 0.3, 0.3)
-	-- function to create a gradient frame
 	function K.CreateGF(self, w, h, o, r, g, b, a1, a2)
 		-- set the size of the frame
 		self:SetSize(w, h)
@@ -281,6 +261,7 @@ do
 	end
 end
 
+-- Class Color and Unit Color Functions
 do
 	function K.ColorClass(class)
 		-- check if the class color exists in the class color table
@@ -322,6 +303,7 @@ do
 	end
 end
 
+-- Other Utility Functions
 do
 	function K.TogglePanel(frame)
 		-- check if the frame is currently shown
@@ -348,8 +330,16 @@ do
 	end
 end
 
--- Itemlevel
+-- Item Level Functions
 do
+	local iLvlDB = {}
+	local enchantString = string_gsub(ENCHANTED_TOOLTIP_LINE, "%%s", "(.+)")
+	local itemLevelString = "^" .. string_gsub(ITEM_LEVEL, "%%d", "")
+	local isUnknownString = {
+		[TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN] = true,
+		[TRANSMOGRIFY_TOOLTIP_ITEM_UNKNOWN_APPEARANCE_KNOWN] = true,
+	}
+
 	local slotData = { gems = {}, gemsColor = {} }
 	function K.GetItemLevel(link, arg1, arg2, fullScan)
 		if fullScan then
@@ -428,12 +418,6 @@ do
 		end
 	end
 
-	local isUnknownString = {
-		[TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN] = true,
-		[TRANSMOGRIFY_TOOLTIP_ITEM_UNKNOWN_APPEARANCE_KNOWN] = true,
-	}
-
-	-- function to check if the transmog appearance is unknown
 	function K.IsUnknownTransmog(bagID, slotID)
 		local data = C_TooltipInfo.GetBagItem(bagID, slotID)
 		local lineData = data and data.lines
@@ -451,43 +435,41 @@ do
 	end
 end
 
--- RoleUpdater
--- CheckRole function is used to get the current player's specified spec
--- and set the K.Role to an appropriate value for that spec
-local function CheckRole()
-	local tree = GetSpecialization()
+-- Role Updater and Chat Channel Check Functions
+do
+	local function CheckRole()
+		local tree = GetSpecialization()
 
-	if not tree then
-		K.Role = nil
-		return
-	end
+		if not tree then
+			K.Role = nil
+			return
+		end
 
-	local _, _, _, _, role, stat = GetSpecializationInfo(tree)
-	if role == "TANK" then
-		K.Role = "Tank"
-	elseif role == "HEALER" then
-		K.Role = "Healer"
-	elseif role == "DAMAGER" then
-		-- Check if the player is a caster class
-		if stat == 4 then -- 1 Strength, 2 Agility, 4 Intellect
-			K.Role = "Caster"
-		else
-			K.Role = "Melee"
+		local _, _, _, _, role, stat = GetSpecializationInfo(tree)
+		if role == "TANK" then
+			K.Role = "Tank"
+		elseif role == "HEALER" then
+			K.Role = "Healer"
+		elseif role == "DAMAGER" then
+			-- Check if the player is a caster class
+			if stat == 4 then -- 1 Strength, 2 Agility, 4 Intellect
+				K.Role = "Caster"
+			else
+				K.Role = "Melee"
+			end
 		end
 	end
-end
--- Register events, which will trigger the function to get the current player's spec
-K:RegisterEvent("PLAYER_LOGIN", CheckRole)
-K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
-K:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", CheckRole)
+	K:RegisterEvent("PLAYER_LOGIN", CheckRole)
+	K:RegisterEvent("PLAYER_TALENT_UPDATE", CheckRole)
+	K:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", CheckRole)
 
--- Chat channel check
-function K.CheckChat()
-	return IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY"
+	function K.CheckChat()
+		return IsPartyLFG() and "INSTANCE_CHAT" or IsInRaid() and "RAID" or "PARTY"
+	end
 end
 
+-- Tooltip Functions
 do
-	-- Tooltip code ripped from StatBlockCore by Funkydude
 	function K.GetAnchors(frame)
 		local x, y = frame:GetCenter()
 
@@ -501,8 +483,6 @@ do
 		return vhalf .. hhalf, frame, (vhalf == "TOP" and "BOTTOM" or "TOP") .. hhalf
 	end
 
-	-- Hide the GameTooltip object
-	-- @return void
 	function K.HideTooltip()
 		if GameTooltip:IsForbidden() then
 			return
@@ -511,9 +491,6 @@ do
 		GameTooltip:Hide()
 	end
 
-	-- Show the tooltip of the object
-	-- @param table self The object that is acting as the object
-	-- @return void
 	local function tooltipOnEnter(self)
 		if GameTooltip:IsForbidden() then
 			return
@@ -549,11 +526,6 @@ do
 		GameTooltip:Show()
 	end
 
-	-- This function adds a tooltip to the specified object.
-	-- self (object): The object to add the tooltip to.
-	-- anchor (string): Where the tooltip should anchor relative to the object.
-	-- text (string): The string that will be displayed in the tooltip.
-	-- color (string): The tooptip's text color.
 	function K.AddTooltip(self, anchor, text, color)
 		if not self then
 			return
@@ -566,11 +538,10 @@ do
 		self:SetScript("OnEnter", tooltipOnEnter)
 		self:SetScript("OnLeave", K.HideTooltip)
 	end
+end
 
-	-- Function: K.CreateGlowFrame
-	-- Input: self (frame), size (integer), splus (integer)
-	-- Output: glowFrame (frame)
-	-- Description: Creates a frame with a given size and an additional size.
+-- Overlay Glow Functions
+do
 	function K.CreateGlowFrame(self, size, splus)
 		splus = splus or 8 -- set the additional size to 8 if not specified
 		local glowFrame = CreateFrame("Frame", nil, self)
@@ -580,9 +551,6 @@ do
 		return glowFrame
 	end
 
-	-- Function: K.ShowOverlayGlow
-	-- Input: self (frame), templatestring), ... (arguments)
-	-- Description: Show the glow effects of the provided template.
 	function K.ShowOverlayGlow(self, template, ...)
 		local args = { ... }
 		template = template or "ButtonGlow" -- set the default template to ButtonGlow
@@ -599,10 +567,6 @@ do
 			K.LibCustomGlow.PixelGlow_Start(self, unpack(args))
 		end
 	end
-
-	-- Function: K.HideOverlayGlow
-	-- Input: self (frame), template (string)
-	-- Description: Hide the glow effects of the provided template.
 
 	function K.HideOverlayGlow(self, template)
 		template = template or "ButtonGlow" -- set the default template to ButtonGlow
@@ -621,8 +585,8 @@ do
 	end
 end
 
+-- Movable Frame and String Shortening Functions
 do
-	-- Movable Frame
 	function K.CreateMoverFrame(self, parent, saved)
 		local frame = parent or self
 		frame:SetMovable(true)
@@ -653,9 +617,7 @@ do
 			self:SetPoint(unpack(KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][name]))
 		end
 	end
-end
 
-do
 	function K.ShortenString(string, numChars, dots)
 		local bytes = string:len()
 		if bytes <= numChars then
@@ -689,6 +651,7 @@ do
 	end
 end
 
+-- Interface Option Functions
 do
 	function K.HideInterfaceOption(self)
 		self:SetAlpha(0)
@@ -696,8 +659,10 @@ do
 	end
 end
 
+-- Time Formatting Functions
 do
-	-- Timer Format
+	-- Variables to store time-related values in seconds
+	local day, hour, minute, pointFive = 86400, 3600, 60, 0.5
 	function K.FormatTime(s)
 		if s >= day then
 			return string_format("%d" .. K.MyClassColor .. "d", s / day + pointFive), s % day
@@ -743,7 +708,13 @@ do
 	end
 end
 
+-- Map Position and Money Formatting Functions
 do
+	-- Maps rectangles for storing positional information
+	local mapRects = {}
+
+	-- Temporary 2D vector for calculations
+	local tempVec2D = CreateVector2D(0, 0)
 	function K.GetPlayerMapPos(mapID)
 		if not mapID then
 			return
@@ -772,7 +743,6 @@ do
 		return tempVec2D.y / mapRect[2].y, tempVec2D.x / mapRect[2].x
 	end
 
-	-- Money text formatting, code taken from Scrooge by thelibrarian (http://www.wowace.com/addons/scrooge)
 	function K.FormatMoney(amount)
 		local coppername = "|cffeda55fc|r"
 		local goldname = "|cffffd700g|r"

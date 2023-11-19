@@ -166,7 +166,7 @@ function Module:UpdateChatFilter(event, msg, author, _, _, _, flag, _, _, _, _, 
 end
 
 function Module:CreateChatFilter()
-	if IsAddOnLoaded("EnhancedChatFilter") then
+	if C_AddOns.IsAddOnLoaded("EnhancedChatFilter") then
 		return
 	end
 

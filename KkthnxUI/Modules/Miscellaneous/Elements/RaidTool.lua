@@ -3,12 +3,13 @@ local Module = K:GetModule("Miscellaneous")
 
 local next, pairs, mod, select = next, pairs, mod, select
 local tinsert, strsplit, format = table.insert, string.split, string.format
+
 local IsInGroup, IsInRaid, IsInInstance = IsInGroup, IsInRaid, IsInInstance
 local UnitIsGroupLeader, UnitIsGroupAssistant = UnitIsGroupLeader, UnitIsGroupAssistant
 local IsPartyLFG, IsLFGComplete, HasLFGRestrictions = IsPartyLFG, IsLFGComplete, HasLFGRestrictions
 local GetInstanceInfo, GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, SetRaidTarget = GetInstanceInfo, GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, SetRaidTarget
 local GetSpellCharges, GetSpellInfo, UnitAura = GetSpellCharges, GetSpellInfo, UnitAura
-local GetTime, SendChatMessage, IsAddOnLoaded = GetTime, SendChatMessage, IsAddOnLoaded
+local GetTime, SendChatMessage, C_AddOns_IsAddOnLoaded = GetTime, SendChatMessage, C_AddOns.IsAddOnLoaded
 local IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown, InCombatLockdown = IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown, InCombatLockdown
 local UnitExists, UninviteUnit = UnitExists, UninviteUnit
 local DoReadyCheck, InitiateRolePoll, GetReadyCheckStatus = DoReadyCheck, InitiateRolePoll, GetReadyCheckStatus
@@ -16,6 +17,8 @@ local C_Timer_After = C_Timer.After
 local LeaveParty = C_PartyInfo.LeaveParty
 local ConvertToRaid = C_PartyInfo.ConvertToRaid
 local ConvertToParty = C_PartyInfo.ConvertToParty
+local C_AddOns_EnableAddOn = C_AddOns.EnableAddOn
+local C_AddOns_LoadAddOn = C_AddOns.LoadAddOn
 
 function Module:RaidTool_Visibility(frame)
 	if IsInGroup() then
@@ -271,8 +274,8 @@ function Module:RaidTool_Marker(parent)
 	local markerButton = CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton
 	if not markerButton then
 		for _, addon in next, { "Blizzard_CUFProfiles", "Blizzard_CompactRaidFrames" } do
-			EnableAddOn(addon)
-			LoadAddOn(addon)
+			C_AddOns_EnableAddOn(addon)
+			C_AddOns_LoadAddOn(addon)
 		end
 	end
 
@@ -385,7 +388,7 @@ function Module:RaidTool_BuffChecker(parent)
 		end
 	end
 
-	local potionCheck = IsAddOnLoaded("MRT")
+	local potionCheck = C_AddOns_IsAddOnLoaded("MRT")
 
 	frame:HookScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
@@ -433,16 +436,16 @@ function Module:RaidTool_BuffChecker(parent)
 						SlashCmdList["PULLCOUNTDOWN"]("0")
 					end
 					reset = not reset
-				elseif IsAddOnLoaded("DBM-Core") and not C["Announcements"].PullCountdown then
+				elseif C_AddOns_IsAddOnLoaded("DBM-Core") and not C["Announcements"].PullCountdown then
 					if reset then
 						SlashCmdList["DEADLYBOSSMODS"]("pull " .. C["Misc"].DBMCount)
 					else
 						SlashCmdList["DEADLYBOSSMODS"]("pull 0")
 					end
 					reset = not reset
-				elseif IsAddOnLoaded("BigWigs") and not C["Announcements"].PullCountdown then
+				elseif C_AddOns_IsAddOnLoaded("BigWigs") and not C["Announcements"].PullCountdown then
 					if not SlashCmdList["BIGWIGSPULL"] then
-						LoadAddOn("BigWigs_Plugins")
+						C_AddOns_LoadAddOn("BigWigs_Plugins")
 					end
 					if reset then
 						SlashCmdList["BIGWIGSPULL"](C["Misc"].DBMCount)

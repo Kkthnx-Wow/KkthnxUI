@@ -36,7 +36,7 @@ function Module:LoadAutoKeystone(event, addon)
 end
 
 function Module:CreateAutoKeystone()
-	if IsAddOnLoaded("AngryKeystones") or not C["Automation"].AutoKeystone then
+	if C_AddOns.IsAddOnLoaded("AngryKeystones") or not C["Automation"].AutoKeystone then
 		return
 	end
 	NUM_BAG_SLOTS = NUM_BAG_SLOTS or 4

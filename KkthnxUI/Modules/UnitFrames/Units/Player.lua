@@ -384,7 +384,7 @@ function Module:CreatePlayer()
 	end
 
 	if C["Unitframe"].CombatText then
-		if IsAddOnLoaded("MikScrollingBattleText") or IsAddOnLoaded("Parrot") or IsAddOnLoaded("xCT") or IsAddOnLoaded("sct") then
+		if C_AddOns.IsAddOnLoaded("MikScrollingBattleText") or C_AddOns.IsAddOnLoaded("Parrot") or C_AddOns.IsAddOnLoaded("xCT") or C_AddOns.IsAddOnLoaded("sct") then
 			C["Unitframe"].CombatText = false
 			return
 		end

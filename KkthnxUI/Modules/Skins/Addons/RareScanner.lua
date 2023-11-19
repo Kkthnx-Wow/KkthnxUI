@@ -5,7 +5,7 @@ local Tooltip = K:GetModule("Tooltip")
 -- Function to skin the RareScanner addon
 function Module:ReskinRareScanner()
 	-- Check if RareScanner is loaded
-	if not IsAddOnLoaded("RareScanner") then
+	if not C_AddOns.IsAddOnLoaded("RareScanner") then
 		return
 	end
 

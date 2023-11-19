@@ -16,7 +16,7 @@ local GetCVar = GetCVar
 local GetChannelName = GetChannelName
 local GetInstanceInfo = GetInstanceInfo
 local InCombatLockdown = InCombatLockdown
-local IsAddOnLoaded = IsAddOnLoaded
+local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local IsControlKeyDown = IsControlKeyDown
 local IsInGroup = IsInGroup
 local IsInGuild = IsInGuild
@@ -349,7 +349,7 @@ function Module:UpdateEditBoxColor()
 		return
 	end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
+	if C_AddOns_IsAddOnLoaded("Prat-3.0") or C_AddOns_IsAddOnLoaded("Chatter") or C_AddOns_IsAddOnLoaded("BasicChatMods") or C_AddOns_IsAddOnLoaded("Glass") then
 		return
 	end
 
@@ -399,7 +399,7 @@ function Module:UpdateTabChannelSwitch()
 		return
 	end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
+	if C_AddOns.IsAddOnLoaded("Prat-3.0") or C_AddOns.IsAddOnLoaded("Chatter") or C_AddOns.IsAddOnLoaded("BasicChatMods") or C_AddOns.IsAddOnLoaded("Glass") then
 		return
 	end
 
@@ -441,7 +441,7 @@ function Module:QuickMouseScroll(dir)
 		return
 	end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
+	if C_AddOns.IsAddOnLoaded("Prat-3.0") or C_AddOns.IsAddOnLoaded("Chatter") or C_AddOns.IsAddOnLoaded("BasicChatMods") or C_AddOns.IsAddOnLoaded("Glass") then
 		return
 	end
 
@@ -533,7 +533,7 @@ function Module:OnEnable()
 		QuickJoinToastButton:UnregisterAllEvents()
 	end
 
-	if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") or IsAddOnLoaded("BasicChatMods") or IsAddOnLoaded("Glass") then
+	if C_AddOns.IsAddOnLoaded("Prat-3.0") or C_AddOns.IsAddOnLoaded("Chatter") or C_AddOns.IsAddOnLoaded("BasicChatMods") or C_AddOns.IsAddOnLoaded("Glass") then
 		return
 	end
 

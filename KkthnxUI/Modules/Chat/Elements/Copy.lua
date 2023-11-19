@@ -17,7 +17,7 @@ local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
 local GameTooltip = GameTooltip
 local HEIRLOOMS = HEIRLOOMS
 local InCombatLockdown = InCombatLockdown
-local IsAddOnLoaded = IsAddOnLoaded
+local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local OPTIONS_MENU = OPTIONS_MENU
 local PlaySound = PlaySound
 local QUESTS_LABEL = QUESTS_LABEL
@@ -159,7 +159,7 @@ local menuList = {
 						return
 					end
 
-					if IsAddOnLoaded("Details") then
+					if C_AddOns_IsAddOnLoaded("Details") then
 						_G.KkthnxUIDB.Variables["ResetDetails"] = true
 						StaticPopup_Show("KKUI_CHANGES_RELOAD")
 					else
@@ -177,7 +177,7 @@ local menuList = {
 						return
 					end
 
-					if IsAddOnLoaded("Details") then
+					if C_AddOns_IsAddOnLoaded("Details") then
 						PlaySound(21968)
 						_G._detalhes:ToggleWindows()
 					else
@@ -202,7 +202,7 @@ local menuList = {
 						return
 					end
 
-					if IsAddOnLoaded("Skada") then
+					if C_AddOns_IsAddOnLoaded("Skada") then
 						PlaySound(21968)
 						_G.Skada:ToggleWindow()
 					else

@@ -1,8 +1,8 @@
 local K, C, L = unpack(KkthnxUI)
 local Module = K:GetModule("DataText")
 
-local select, string_format, table_insert, table_sort, table_wipe = select, string.format, table.insert, table.sort, table.wipe
-local GetAddOnCPUUsage, GetAddOnInfo, GetAddOnMemoryUsage, GetCVarBool, GetFramerate, GetNumAddOns, GetTime, IsAddOnLoaded, IsShiftKeyDown = GetAddOnCPUUsage, GetAddOnInfo, GetAddOnMemoryUsage, GetCVarBool, GetFramerate, GetNumAddOns, GetTime, IsAddOnLoaded, IsShiftKeyDown
+local string_format, table_insert, table_sort, table_wipe = string.format, table.insert, table.sort, table.wipe
+local GetAddOnCPUUsage, C_AddOns_GetAddOnInfo, GetAddOnMemoryUsage, GetCVarBool, GetFramerate, C_AddOns_GetNumAddOns, GetTime, C_AddOns_IsAddOnLoaded, IsShiftKeyDown = GetAddOnCPUUsage, C_AddOns.GetAddOnInfo, GetAddOnMemoryUsage, GetCVarBool, GetFramerate, C_AddOns.GetNumAddOns, GetTime, C_AddOns.IsAddOnLoaded, IsShiftKeyDown
 local ResetCPUUsage, SetCVar, UpdateAddOnCPUUsage, UpdateAddOnMemoryUsage = ResetCPUUsage, SetCVar, UpdateAddOnCPUUsage, UpdateAddOnMemoryUsage
 local collectgarbage, gcinfo = collectgarbage, gcinfo
 
@@ -30,14 +30,14 @@ local function smoothColor(cur, max)
 end
 
 local function BuildAddonList()
-	local numAddons = GetNumAddOns()
+	local numAddons = C_AddOns_GetNumAddOns()
 	if numAddons == #infoTable then
 		return
 	end
 
 	table_wipe(infoTable)
 	for i = 1, numAddons do
-		local _, title, _, loadable = GetAddOnInfo(i)
+		local _, title, _, loadable = C_AddOns_GetAddOnInfo(i)
 		if loadable then
 			table_insert(infoTable, { i, title, 0, 0 })
 		end
@@ -49,7 +49,7 @@ local function UpdateMemory()
 
 	local total = 0
 	for _, data in ipairs(infoTable) do
-		if IsAddOnLoaded(data[1]) then
+		if C_AddOns_IsAddOnLoaded(data[1]) then
 			local mem = GetAddOnMemoryUsage(data[1])
 			data[3] = mem
 			total = total + mem
@@ -65,7 +65,7 @@ local function UpdateCPU()
 
 	local total = 0
 	for _, data in ipairs(infoTable) do
-		if IsAddOnLoaded(data[1]) then
+		if C_AddOns.IsAddOnLoaded(data[1]) then
 			local addonCPU = GetAddOnCPUUsage(data[1])
 			data[4] = addonCPU
 			total = total + addonCPU
@@ -107,7 +107,7 @@ local function OnEnter()
 
 		local numEnabled = 0
 		for _, data in ipairs(infoTable) do
-			if IsAddOnLoaded(data[1]) then
+			if C_AddOns.IsAddOnLoaded(data[1]) then
 				numEnabled = numEnabled + 1
 				if numEnabled <= maxShown then
 					local r, g, b = smoothColor(data[3], totalMemory)
@@ -131,7 +131,7 @@ local function OnEnter()
 
 		local numEnabled = 0
 		for _, data in ipairs(infoTable) do
-			if IsAddOnLoaded(data[1]) then
+			if C_AddOns.IsAddOnLoaded(data[1]) then
 				numEnabled = numEnabled + 1
 				if numEnabled <= maxShown then
 					local r, g, b = smoothColor(data[4], totalCPU)

@@ -4,7 +4,7 @@ local Module = K:GetModule("Installer")
 local table_wipe = table.wipe
 
 local function ForceHekiliOptions()
-	if not IsAddOnLoaded("Hekili") then
+	if not C_AddOns.IsAddOnLoaded("Hekili") then
 		return
 	end
 
@@ -180,7 +180,7 @@ local function ForceHekiliOptions()
 end
 
 local function ForceMaxDPSOptions()
-	if not IsAddOnLoaded("MaxDps") then
+	if not C_AddOns.IsAddOnLoaded("MaxDps") then
 		return
 	end
 
@@ -204,7 +204,7 @@ local function ForceMaxDPSOptions()
 end
 
 local function ForceDBMOptions()
-	if not IsAddOnLoaded("DBM-Core") then
+	if not C_AddOns.IsAddOnLoaded("DBM-Core") then
 		return
 	end
 
@@ -262,11 +262,11 @@ local function ForceDBMOptions()
 end
 
 local function ForceCursorTrail()
-	if not IsAddOnLoaded("CursorTrail") then
+	if not C_AddOns.IsAddOnLoaded("CursorTrail") then
 		return
 	end
 
-	print(IsAddOnLoaded("CursorTrail"))
+	print(C_AddOns.IsAddOnLoaded("CursorTrail"))
 
 	if CursorTrail_PlayerConfig then
 		table_wipe(CursorTrail_PlayerConfig)

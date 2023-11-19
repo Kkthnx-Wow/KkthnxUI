@@ -4,14 +4,14 @@ local Module = K:GetModule("WorldMap")
 local GameTooltip = GameTooltip
 local GetAchievementLink = GetAchievementLink
 local GetQuestLink = GetQuestLink
-local IsAddOnLoaded = IsAddOnLoaded
+local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local QuestMapFrame_GetDetailQuestID = QuestMapFrame_GetDetailQuestID
 local hooksecurefunc = hooksecurefunc
 local setmetatable = setmetatable
 
 -- Wowhead Links
 function Module:CreateWowHeadLinks()
-	if not C["Misc"].ShowWowHeadLinks or IsAddOnLoaded("Leatrix_Maps") then
+	if not C["Misc"].ShowWowHeadLinks or C_AddOns_IsAddOnLoaded("Leatrix_Maps") then
 		return
 	end
 
@@ -120,7 +120,7 @@ function Module:CreateWowHeadLinks()
 	end
 
 	-- Run function when achievement UI is loaded
-	if IsAddOnLoaded("Blizzard_AchievementUI") then
+	if C_AddOns.IsAddOnLoaded("Blizzard_AchievementUI") then
 		DoWowheadAchievementFunc()
 	else
 		local waitAchievementsFrame = CreateFrame("FRAME")

@@ -81,7 +81,7 @@ local function createCodeBox(width, index, text)
 end
 
 function Module:CreateColorPicker()
-	if IsAddOnLoaded("ColorPickerPlus") or C["Misc"].ColorPicker ~= true then
+	if C_AddOns.IsAddOnLoaded("ColorPickerPlus") or C["Misc"].ColorPicker ~= true then
 		return
 	end
 

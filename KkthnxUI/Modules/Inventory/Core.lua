@@ -954,7 +954,7 @@ function Module:OnEnable()
 		return
 	end
 
-	if IsAddOnLoaded("AdiBags") or IsAddOnLoaded("ArkInventory") or IsAddOnLoaded("cargBags_Nivaya") or IsAddOnLoaded("cargBags") or IsAddOnLoaded("Bagnon") or IsAddOnLoaded("Combuctor") or IsAddOnLoaded("TBag") or IsAddOnLoaded("BaudBag") then
+	if C_AddOns.IsAddOnLoaded("AdiBags") or C_AddOns.IsAddOnLoaded("ArkInventory") or C_AddOns.IsAddOnLoaded("cargBags_Nivaya") or C_AddOns.IsAddOnLoaded("cargBags") or C_AddOns.IsAddOnLoaded("Bagnon") or C_AddOns.IsAddOnLoaded("Combuctor") or C_AddOns.IsAddOnLoaded("TBag") or C_AddOns.IsAddOnLoaded("BaudBag") then
 		return
 	end
 
@@ -963,8 +963,8 @@ function Module:OnEnable()
 	local showItemLevel = C["Inventory"].BagsItemLevel
 	local showBindOnEquip = C["Inventory"].BagsBindOnEquip
 	local showNewItem = C["Inventory"].ShowNewItem
-	local hasCanIMogIt = IsAddOnLoaded("CanIMogIt")
-	local hasPawn = IsAddOnLoaded("Pawn")
+	local hasCanIMogIt = C_AddOns.IsAddOnLoaded("CanIMogIt")
+	local hasPawn = C_AddOns.IsAddOnLoaded("Pawn")
 
 	-- Init
 	local Backpack = cargBags:NewImplementation("KKUI_Backpack")

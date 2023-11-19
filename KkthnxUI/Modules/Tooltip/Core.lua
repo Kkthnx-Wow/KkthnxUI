@@ -650,7 +650,7 @@ Module:RegisterTooltips("KkthnxUI", function()
 		end
 	end)
 
-	if IsAddOnLoaded("BattlePetBreedID") then
+	if C_AddOns.IsAddOnLoaded("BattlePetBreedID") then
 		hooksecurefunc("BPBID_SetBreedTooltip", function(parent)
 			if parent == FloatingBattlePetTooltip then
 				Module.ReskinTooltip(BPBID_BreedTooltip2)

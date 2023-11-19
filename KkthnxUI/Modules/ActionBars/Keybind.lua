@@ -105,7 +105,7 @@ function Module:Bind_Create()
 		button:HookScript("OnEnter", hookSpellButton)
 	end
 
-	if not IsAddOnLoaded("Blizzard_MacroUI") then
+	if not C_AddOns.IsAddOnLoaded("Blizzard_MacroUI") then
 		hooksecurefunc("LoadAddOn", Module.Bind_RegisterMacro)
 	else
 		Module.Bind_RegisterMacro("Blizzard_MacroUI")

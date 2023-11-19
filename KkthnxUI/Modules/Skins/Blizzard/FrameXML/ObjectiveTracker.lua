@@ -245,7 +245,7 @@ local function updateMinimizeButton(button, collapsed)
 end
 
 tinsert(C.defaultThemes, function()
-	if IsAddOnLoaded("!KalielsTracker") then
+	if C_AddOns.IsAddOnLoaded("!KalielsTracker") then
 		return
 	end
 

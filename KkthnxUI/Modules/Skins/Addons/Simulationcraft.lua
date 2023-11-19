@@ -2,7 +2,7 @@ local K = KkthnxUI[1]
 local Module = K:GetModule("Skins")
 
 function Module:ReskinSimulationcraft()
-	if not IsAddOnLoaded("Simulationcraft") then
+	if not C_AddOns.IsAddOnLoaded("Simulationcraft") then
 		return
 	end
 

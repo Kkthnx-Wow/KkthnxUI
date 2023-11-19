@@ -185,7 +185,7 @@ local function QuestInfo_ShowRewards()
 	end
 end
 
-if IsAddOnLoaded("Pawn") then
+if C_AddOns.IsAddOnLoaded("Pawn") then
 	hooksecurefunc("PawnUI_OnQuestInfo_ShowRewards", QuestInfo_ShowRewards)
 else
 	hooksecurefunc("QuestInfo_ShowRewards", QuestInfo_ShowRewards)

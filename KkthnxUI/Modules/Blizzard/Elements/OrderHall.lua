@@ -8,7 +8,7 @@ local C_Garrison_GetClassSpecCategoryInfo = C_Garrison.GetClassSpecCategoryInfo
 local C_Garrison_GetCurrencyTypes = C_Garrison.GetCurrencyTypes
 local C_Garrison_RequestClassSpecCategoryInfo = C_Garrison.RequestClassSpecCategoryInfo
 local GameTooltip = GameTooltip
-local IsAddOnLoaded = IsAddOnLoaded
+local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local IsShiftKeyDown = IsShiftKeyDown
 local LE_FOLLOWER_TYPE_GARRISON_7_0 = Enum.GarrisonFollowerType.FollowerType_7_0
 local LE_GARRISON_TYPE_7_0 = Enum.GarrisonType.Type_7_0
@@ -134,7 +134,7 @@ function Module:OrderHall_OnLoad(addon)
 end
 
 function Module:CreateOrderHallIcon()
-	if IsAddOnLoaded("Blizzard_OrderHallUI") then
+	if C_AddOns_IsAddOnLoaded("Blizzard_OrderHallUI") then
 		Module:OrderHall_CreateIcon()
 	else
 		K:RegisterEvent("ADDON_LOADED", Module.OrderHall_OnLoad)

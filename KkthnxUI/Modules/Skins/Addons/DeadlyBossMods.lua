@@ -5,10 +5,9 @@ local TT = K:GetModule("Tooltip")
 local string_find = string.find
 local string_gsub = string.gsub
 local string_match = string.match
-local unpack = unpack
 
 local CreateFrame = CreateFrame
-local IsAddOnLoaded = IsAddOnLoaded
+local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local hooksecurefunc = hooksecurefunc
 
 local buttonsize = 24
@@ -132,7 +131,7 @@ function Module:ReskinDeadlyBossMods()
 		return RaidNotice_AddMessage_(noticeFrame, textString, colorInfo)
 	end
 
-	if not IsAddOnLoaded("DBM-Core") then
+	if not C_AddOns_IsAddOnLoaded("DBM-Core") then
 		return
 	end
 
@@ -176,7 +175,7 @@ function Module:ReskinDeadlyBossMods()
 	end
 	DBM_AllSavedOptions["Default"]["BlockVersionUpdateNotice"] = true
 	DBM_AllSavedOptions["Default"]["EventSoundVictory"] = "None"
-	if IsAddOnLoaded("DBM-VPYike") then
+	if C_AddOns.IsAddOnLoaded("DBM-VPYike") then
 		DBM_AllSavedOptions["Default"]["CountdownVoice"] = "VP:Yike"
 		DBM_AllSavedOptions["Default"]["ChosenVoicePack"] = "Yike"
 	end

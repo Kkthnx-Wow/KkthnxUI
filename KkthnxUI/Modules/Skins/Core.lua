@@ -3,7 +3,7 @@ local Module = K:NewModule("Skins")
 
 local table_wipe = table.wipe
 
-local IsAddOnLoaded = IsAddOnLoaded
+local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 
 -- Tables to store default themes, registered themes and other skins
 C.defaultThemes = {}
@@ -24,7 +24,7 @@ function Module:LoadSkins(skinList)
 
 	-- Iterate through the list of skins
 	for addonName, skinFunction in pairs(skinList) do
-		local isLoaded, isFinished = IsAddOnLoaded(addonName)
+		local isLoaded, isFinished = C_AddOns_IsAddOnLoaded(addonName)
 		if isLoaded and isFinished then
 			-- Call the skin function if the addon is loaded
 			skinFunction()
@@ -36,7 +36,7 @@ end
 -- Function to load default skins
 function Module:LoadDefaultSkins()
 	-- Return if either Aurora or AuroraClassic is loaded
-	if IsAddOnLoaded("AuroraClassic") or IsAddOnLoaded("Aurora") then
+	if C_AddOns_IsAddOnLoaded("AuroraClassic") or C_AddOns_IsAddOnLoaded("Aurora") then
 		return
 	end
 

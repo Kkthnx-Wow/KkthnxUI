@@ -16,16 +16,15 @@ local COMBATLOG_OBJECT_AFFILIATION_RAID = COMBATLOG_OBJECT_AFFILIATION_RAID
 local COMBATLOG_OBJECT_CONTROL_PLAYER = COMBATLOG_OBJECT_CONTROL_PLAYER
 local COMBATLOG_OBJECT_REACTION_FRIENDLY = COMBATLOG_OBJECT_REACTION_FRIENDLY
 local COMBATLOG_OBJECT_TYPE_PET = COMBATLOG_OBJECT_TYPE_PET
-local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
 local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 local CreateFrame = CreateFrame
 local Enum = Enum
-local GetAddOnEnableState = GetAddOnEnableState
-local GetAddOnInfo = GetAddOnInfo
+local GetAddOnEnableState = C_AddOns.GetAddOnEnableState
+local GetAddOnInfo = C_AddOns.GetAddOnInfo
 local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 local GetBuildInfo = GetBuildInfo
 local GetLocale = GetLocale
-local GetNumAddOns = GetNumAddOns
+local GetNumAddOns = C_AddOns.GetNumAddOns
 local GetPhysicalScreenSize = GetPhysicalScreenSize
 local GetRealmName = GetRealmName
 local LOCALIZED_CLASS_NAMES_FEMALE = LOCALIZED_CLASS_NAMES_FEMALE
@@ -241,8 +240,13 @@ function K:GetModule(name)
 end
 
 local function GetBestScale()
+	-- Constants
+	local PIXEL_RATIO = 768
+	local MAX_SCALE = 1.15
+	local MIN_SCALE = 0.4
+
 	-- Calculate the best scale based on the current screen height
-	return K.Round(math.max(0.4, math.min(1.15, 768 / K.ScreenHeight)), 2)
+	return K.Round(math.max(MIN_SCALE, math.min(MAX_SCALE, PIXEL_RATIO / K.ScreenHeight)), 2)
 end
 
 function K.SetupUIScale(init)
@@ -297,14 +301,12 @@ K:RegisterEvent("PLAYER_LOGIN", function()
 	K:SetSmoothingAmount(C["General"].SmoothAmount)
 
 	-- Enable modules
-	for _, module in next, modulesQueue do
-		if module.OnEnable and not module.Enabled then
-			module:OnEnable()
-			module.Enabled = true
-		else
-			-- Print error message if module fails to load
-			error(("Module ('%s') has failed to load."):format(tostring(module.name)), 2)
-		end
+	for _, module in ipairs(modulesQueue) do
+		assert(module.OnEnable, "Module has no OnEnable function.")
+		assert(not module.Enabled, "Module is already enabled.")
+
+		module:OnEnable()
+		module.Enabled = true
 	end
 
 	-- Set modules
