@@ -50,8 +50,8 @@ local function GetGroupUnit(unit)
 end
 
 local function getMaxRange(unit)
-	local _, maxRange = K.LibRangeCheck:GetRange(unit, true, true)
-	return maxRange
+	local minRange, maxRange = K.LibRangeCheck:GetRange(unit, true, true)
+	return (not minRange) or maxRange
 end
 
 local function friendlyIsInRange(realUnit)
