@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ]]
 local MAJOR_VERSION = "LibActionButton-1.0"
-local MINOR_VERSION = 108
+local MINOR_VERSION = 109
 
 if not LibStub then
 	error(MAJOR_VERSION .. " requires LibStub.")
@@ -2580,9 +2580,9 @@ end
 Item.IsConsumableOrStackable = function(self)
 	return IsConsumableItem(self._state_action)
 end
-Item.IsUnitInRange = function(self, unit)
-	return IsItemInRange(self._state_action, unit)
-end
+-- Item.IsUnitInRange = function(self, unit)
+-- 	return IsItemInRange(self._state_action, unit)
+-- end
 Item.SetTooltip = function(self)
 	return GameTooltip:SetHyperlink(self._state_action)
 end
