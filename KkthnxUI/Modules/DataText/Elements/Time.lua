@@ -523,6 +523,10 @@ function Module:TimeOnMouseUp(btn)
 		else
 			ToggleFrame(WeeklyRewardsFrame)
 		end
+		local dialog = WeeklyRewardExpirationWarningDialog
+		if dialog and dialog:IsShown() then
+			dialog:Hide()
+		end
 	else
 		_G.ToggleCalendar()
 	end

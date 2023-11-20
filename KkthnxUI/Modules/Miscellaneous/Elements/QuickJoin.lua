@@ -275,27 +275,18 @@ function Module:ReplaceFindGroupButton()
 		end
 		lastCategory = selectedCategory
 	end)
-
-	--if C.db["Skins"]["BlizzardSkins"] then
-	bu:SkinButton()
-	--end
 end
 
 function Module:AddDungeonsFilter()
 	local mapData = {
-		[0] = { mapID = 2, aID = 1192 }, -- 青龙寺
-		[1] = { mapID = 165, aID = 1193 }, -- 影月谷
-		[2] = { mapID = 200, aID = 461 }, -- 英灵殿
-		[3] = { mapID = 210, aID = 466 }, -- 群星庭院
-		[4] = { mapID = 399, aID = 1176 }, -- 红玉新生法池
-		[5] = { mapID = 400, aID = 1184 }, -- 诺库德狙击战
-		[6] = { mapID = 401, aID = 1180 }, -- 碧蓝魔馆
-		[7] = { mapID = 402, aID = 1160 }, -- 艾杰斯亚学院
-		-- S2
-		--[4] = {mapID = 403, aID = 1188}, -- 奥丹姆：提尔的遗产
-		--[5] = {mapID = 404, aID = 1172}, -- 奈萨鲁斯
-		--[6] = {mapID = 405, aID = 1164}, -- 蕨皮山谷
-		--[7] = {mapID = 406, aID = 1168}, -- 注能大厅
+		[0] = { aID = 1247, mapID = 463 }, -- 永恒黎明：迦拉克隆的陨落
+		[1] = { aID = 1248, mapID = 464 }, -- 永恒黎明：姆诺兹多的崛起
+		[2] = { aID = 530, mapID = 248 }, -- 维克雷斯庄园
+		[3] = { aID = 502, mapID = 244 }, -- 阿塔达萨
+		[4] = { aID = 460, mapID = 198 }, -- 黑心林地
+		[5] = { aID = 463, mapID = 199 }, -- 黑鸦堡垒
+		[6] = { aID = 184, mapID = 168 }, -- 永茂林地
+		[7] = { aID = 1274, mapID = 456 }, -- 潮汐王座
 	}
 
 	local function GetDungeonNameByID(mapID)
@@ -381,11 +372,11 @@ function Module:AddDungeonsFilter()
 end
 
 local function clickSortButton(self)
-	self.__owner.Sorting.SortingExpression:SetText(self.sortStr)
-	self.__owner.RefreshButton:Click()
+	self.__owner.Sorting.Expression:SetText(self.sortStr)
+	self.__parent.RefreshButton:Click()
 end
 
-local function createSortButton(parent, texture, sortStr)
+local function createSortButton(parent, texture, sortStr, panel)
 	local bu = CreateFrame("Button", nil, parent, "BackdropTemplate")
 	bu:SetSize(24, 24)
 	bu.texture = bu:CreateTexture(nil, "ARTWORK")
@@ -394,7 +385,8 @@ local function createSortButton(parent, texture, sortStr)
 	bu.texture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	bu:CreateBorder()
 	bu.sortStr = sortStr
-	bu.__owner = parent
+	bu.__parent = parent
+	bu.__owner = panel
 	bu:SetScript("OnClick", clickSortButton)
 	K.AddTooltip(bu, "ANCHOR_RIGHT", CLUB_FINDER_SORT_BY)
 
@@ -406,12 +398,13 @@ function Module:AddPGFSortingExpression()
 		return
 	end
 
-	local PGFDialog = PremadeGroupsFilterDialog
+	local PGFDialog = _G.PremadeGroupsFilterDialog
+	local ExpressionPanel = _G.PremadeGroupsFilterExpressionPanel
 	PGFDialog.__sortBu = {}
 
-	createSortButton(PGFDialog, 525134, "mprating desc")
-	createSortButton(PGFDialog, 1455894, "pvprating desc")
-	createSortButton(PGFDialog, 237538, "age asc")
+	createSortButton(PGFDialog, 525134, "mprating desc", ExpressionPanel)
+	createSortButton(PGFDialog, 1455894, "pvprating desc", ExpressionPanel)
+	createSortButton(PGFDialog, 237538, "age asc", ExpressionPanel)
 
 	for i = 1, #PGFDialog.__sortBu do
 		local bu = PGFDialog.__sortBu[i]
@@ -433,28 +426,29 @@ end
 
 function Module:FixListingTaint() -- From PremadeGroupsFilter
 	local activityIdOfArbitraryMythicPlusDungeon = 1160 -- Algeth'ar Academy
-
-	if (not C_AddOns.IsAddOnLoaded("PremadeGroupsFilter")) or (not C_LFGList.IsPlayerAuthenticatedForLFG(activityIdOfArbitraryMythicPlusDungeon)) then
-		C_LFGList.GetPlaystyleString = function(playstyle, activityInfo)
-			if not (activityInfo and playstyle and playstyle ~= 0 and C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID).showPlaystyleDropdown) then
-				return nil
-			end
-			local globalStringPrefix
-			if activityInfo.isMythicPlusActivity then
-				globalStringPrefix = "GROUP_FINDER_PVE_PLAYSTYLE"
-			elseif activityInfo.isRatedPvpActivity then
-				globalStringPrefix = "GROUP_FINDER_PVP_PLAYSTYLE"
-			elseif activityInfo.isCurrentRaidActivity then
-				globalStringPrefix = "GROUP_FINDER_PVE_RAID_PLAYSTYLE"
-			elseif activityInfo.isMythicActivity then
-				globalStringPrefix = "GROUP_FINDER_PVE_MYTHICZERO_PLAYSTYLE"
-			end
-			return globalStringPrefix and _G[globalStringPrefix .. tostring(playstyle)] or nil
-		end
-
-		-- Disable automatic group titles to prevent tainting errors
-		LFGListEntryCreation_SetTitleFromActivityInfo = function(_) end
+	if not C_LFGList.IsPlayerAuthenticatedForLFG(activityIdOfArbitraryMythicPlusDungeon) then
+		return
 	end
+
+	C_LFGList.GetPlaystyleString = function(playstyle, activityInfo)
+		if not (activityInfo and playstyle and playstyle ~= 0 and C_LFGList.GetLfgCategoryInfo(activityInfo.categoryID).showPlaystyleDropdown) then
+			return nil
+		end
+		local globalStringPrefix
+		if activityInfo.isMythicPlusActivity then
+			globalStringPrefix = "GROUP_FINDER_PVE_PLAYSTYLE"
+		elseif activityInfo.isRatedPvpActivity then
+			globalStringPrefix = "GROUP_FINDER_PVP_PLAYSTYLE"
+		elseif activityInfo.isCurrentRaidActivity then
+			globalStringPrefix = "GROUP_FINDER_PVE_RAID_PLAYSTYLE"
+		elseif activityInfo.isMythicActivity then
+			globalStringPrefix = "GROUP_FINDER_PVE_MYTHICZERO_PLAYSTYLE"
+		end
+		return globalStringPrefix and _G[globalStringPrefix .. tostring(playstyle)] or nil
+	end
+
+	-- Disable automatic group titles to prevent tainting errors
+	LFGListEntryCreation_SetTitleFromActivityInfo = function(_) end
 end
 
 function Module:QuickJoin()

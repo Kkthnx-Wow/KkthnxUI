@@ -240,7 +240,7 @@ end)
 
 QuickQuest:Register("QUEST_ACCEPT_CONFIRM", AcceptQuest)
 
-local CFG_AutoShareQuest = true
+local CFG_AutoShareQuest = false -- Put this into our config later.
 QuickQuest:Register("QUEST_ACCEPTED", function(questID)
 	if QuestFrame:IsShown() and QuestGetAutoAccept() then
 		CloseQuest()
@@ -256,13 +256,13 @@ QuickQuest:Register("QUEST_ACCEPTED", function(questID)
 		if isInGroup and notInRaid then
 			local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID)
 			if questLogIndex then
-				print("Auto-sharing quest:", questID)
+				-- print("Auto-sharing quest:", questID)
 				QuestLogPushQuest(questLogIndex)
 			else
-				print("QuestLog index not found for quest:", questID)
+				-- print("QuestLog index not found for quest:", questID)
 			end
 		else
-			print("Not auto-sharing quest in raid or not in a group.")
+			-- print("Not auto-sharing quest in raid or not in a group.")
 		end
 	end
 end)

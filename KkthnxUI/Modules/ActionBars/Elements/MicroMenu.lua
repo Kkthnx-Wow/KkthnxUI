@@ -63,10 +63,16 @@ local function SetupButtonTextures(button)
 		texture:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -3, 5)
 	end
 
+	local highlight = button:GetHighlightTexture()
 	local normal = button:GetNormalTexture()
 	local pushed = button:GetPushedTexture()
 	local disabled = button:GetDisabledTexture()
 	local flash = button.FlashBorder
+
+	if highlight then
+		highlight:SetAlpha(0)
+		highlight:SetTexCoord(0.1, 0.9, 0.12, 0.9)
+	end
 
 	if normal then
 		SetTextureProperties(normal)

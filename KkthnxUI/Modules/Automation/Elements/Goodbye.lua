@@ -2,7 +2,6 @@ local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Automation")
 
 local C_Timer_After = C_Timer.After
-local SendChatMessage = SendChatMessage
 
 -- This list is completely random. There is no certin way we have made this list.
 -- The idea is to keep things random so we do not repeat the same type of goodbye.
