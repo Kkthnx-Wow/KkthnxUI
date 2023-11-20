@@ -1,25 +1,27 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
 --[[
-	KkthnxUI API (Application Programming Interface)
-	is a set of functions and tools designed to help developers interact with and extend the KkthnxUI user interface.
-	The API provides developers with access to various features and functions of KkthnxUI,
-	allowing them to customize and extend the user interface in new and unique ways.
-	Whether you're building an addon, developing a plugin, or just looking to customize your KkthnxUI experience,
-	the API provides a powerful set of tools to help you achieve your goals.
+    KkthnxUI API (Application Programming Interface)
+    is a set of functions and tools designed to help developers interact with and extend the KkthnxUI user interface.
+    The API provides developers with access to various features and functions of KkthnxUI,
+    allowing them to customize and extend the user interface in new and unique ways.
+    Whether you're building an addon, developing a plugin, or just looking to customize your KkthnxUI experience,
+    the API provides a powerful set of tools to help you achieve your goals.
 ]]
 
-local getmetatable = getmetatable
-local select = select
-
-local CreateFrame = CreateFrame
-local EnumerateFrames = EnumerateFrames
+local getmetatable, select = getmetatable, select
+local CreateFrame, EnumerateFrames = CreateFrame, EnumerateFrames
 local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
-local RegisterStateDriver = RegisterStateDriver
-local UIParent = UIParent
+local RegisterStateDriver, UIParent = RegisterStateDriver, UIParent
 
 local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
 
+-- Utility Functions
+local function rad(degrees)
+	return degrees * math.pi / 180
+end
+
+-- Frame Hiders
 do
 	BINDING_HEADER_KKTHNXUI = C_AddOns_GetAddOnMetadata(..., "Title")
 
@@ -32,6 +34,7 @@ do
 	RegisterStateDriver(K.PetBattleFrameHider, "visibility", "[petbattle] hide; show")
 end
 
+-- Set Border Color
 do
 	function K.SetBorderColor(self)
 		if C["General"].ColorTextures then
@@ -42,6 +45,7 @@ do
 	end
 end
 
+-- Create Border
 local function CreateBorder(bFrame, ...)
 	local bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
 	local General = C.General
@@ -89,49 +93,48 @@ local function CreateBorder(bFrame, ...)
 	return bFrame, ...
 end
 
--- Simple Create Backdrop.
+-- Create Backdrop
 local function CreateBackdrop(bFrame, ...)
 	local bPointa, bPointb, bPointc, bPointd, bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
 
-	if bFrame.KKUI_Backdrop then
-		return
+	if not bFrame.KKUI_Background then
+		-- Assign default values if not provided
+		local BorderPoints = {
+			bPointa or 0,
+			bPointb or 0,
+			bPointc or 0,
+			bPointd or 0,
+		}
+
+		local kkui_backdrop = CreateFrame("Frame", "$parentBackdrop", bFrame) -- Create the backdrop frame.
+		kkui_backdrop:SetPoint("TOPLEFT", bFrame, "TOPLEFT", unpack(BorderPoints, 1, 2)) -- Set the first point of the border's position.
+		kkui_backdrop:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", unpack(BorderPoints, 3, 4)) -- Set the second point of the border's position.
+		kkui_backdrop:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor) -- Create the border.
+
+		kkui_backdrop:SetFrameLevel(max(0, bFrame:GetFrameLevel() - 1))
+
+		bFrame.KKUI_Backdrop = kkui_backdrop -- Save the backdrop as a property of the frame so that it can be referenced later on.
 	end
 
-	-- Assign default values if not provided
-	local BorderPoints = {
-		bPointa or 0,
-		bPointb or 0,
-		bPointc or 0,
-		bPointd or 0,
-	}
-
-	local kkui_backdrop = CreateFrame("Frame", "$parentBackdrop", bFrame) -- Create the backdrop frame.
-	kkui_backdrop:SetPoint("TOPLEFT", bFrame, "TOPLEFT", unpack(BorderPoints, 1, 2)) -- Set the first point of the border's position.
-	kkui_backdrop:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", unpack(BorderPoints, 3, 4)) -- Set the second point of the border's position.
-	kkui_backdrop:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor) -- Create the border.
-
-	kkui_backdrop:SetFrameLevel(max(0, bFrame:GetFrameLevel() - 1))
-
-	bFrame.KKUI_Backdrop = kkui_backdrop -- Save the backdrop as a property of the frame so that it can be referenced later on.
-
-	return CreateBackdrop
+	return bFrame, ...
 end
 
-local function CreateShadow(f, bd)
-	-- Check if the shadow already exists, return if it does
-	if f.Shadow then
-		return
+-- Create Shadow
+local function CreateShadow(frame, useBackdrop)
+	-- Check if the shadow already exists; if so, return
+	if frame.Shadow then
+		return frame.Shadow
 	end
 
 	-- Get the parent frame if the passed object is a texture
-	local frame = (f:IsObjectType("Texture")) and f:GetParent() or f
+	local parentFrame = (frame:IsObjectType("Texture")) and frame:GetParent() or frame
 
 	-- Create the shadow frame using the BackdropTemplate
-	f.Shadow = CreateFrame("Frame", nil, frame, "BackdropTemplate")
+	local shadow = CreateFrame("Frame", nil, parentFrame, "BackdropTemplate")
 
 	-- Set the position and size of the shadow frame
-	f.Shadow:SetPoint("TOPLEFT", f, -3, 3)
-	f.Shadow:SetPoint("BOTTOMRIGHT", f, 3, -3)
+	shadow:SetPoint("TOPLEFT", frame, -3, 3)
+	shadow:SetPoint("BOTTOMRIGHT", frame, 3, -3)
 
 	-- Define the backdrop of the shadow frame
 	local backdrop = {
@@ -139,28 +142,32 @@ local function CreateShadow(f, bd)
 		edgeSize = 3,
 	}
 
-	if bd then
+	-- Include additional backdrop settings if requested
+	if useBackdrop then
 		backdrop.bgFile = C["Media"].Textures.White8x8Texture
 		backdrop.insets = { left = 3, right = 3, top = 3, bottom = 3 }
 	end
 
 	-- Set the backdrop of the shadow frame
-	f.Shadow:SetBackdrop(backdrop)
+	shadow:SetBackdrop(backdrop)
 
 	-- Set the frame level of the shadow frame to be one lower than the parent frame
-	f.Shadow:SetFrameLevel(frame:GetFrameLevel() > 0 and frame:GetFrameLevel() - 1 or 0)
+	shadow:SetFrameLevel(parentFrame:GetFrameLevel() > 0 and parentFrame:GetFrameLevel() - 1 or 0)
 
-	-- Set the background and border color of the shadow frame based on the 'bd' argument
-	if bd then
-		f.Shadow:SetBackdropColor(unpack(C["Media"].Backdrops.ColorBackdrop))
+	-- Set the background and border color of the shadow frame based on the 'useBackdrop' argument
+	if useBackdrop then
+		shadow:SetBackdropColor(unpack(C["Media"].Backdrops.ColorBackdrop))
 	end
-	f.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+	shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+
+	-- Save the shadow frame as a property of the parent frame
+	frame.Shadow = shadow
 
 	-- Return the created shadow frame
-	return f.Shadow
+	return shadow
 end
 
--- Its A Killer.
+-- Kill Function
 local function Kill(object)
 	-- Check if the object has an "UnregisterAllEvents" method
 	if object.UnregisterAllEvents then
@@ -176,6 +183,7 @@ local function Kill(object)
 	object:Hide()
 end
 
+-- Strip Textures
 local blizzTextures = {
 	"Inset",
 	"inset",
@@ -199,9 +207,6 @@ local blizzTextures = {
 	"ScrollDownBorder",
 }
 
--- Strips textures from a given object, and optionally kills or sets alpha to 0 for the specified texture.
--- @param object The object to strip textures from.
--- @param kill If true, kills the texture. If a number, sets alpha to 0 for the specified texture index. Otherwise, sets texture to empty string.
 local function StripTextures(object, kill)
 	local frameName = object.GetName and object:GetName()
 
@@ -236,6 +241,7 @@ local function StripTextures(object, kill)
 	end
 end
 
+-- Create Texture
 local function CreateTexture(button, noTexture, texturePath, desaturated, vertexColor, setPoints)
 	if not noTexture then
 		local texture = button:CreateTexture()
@@ -256,6 +262,7 @@ local function CreateTexture(button, noTexture, texturePath, desaturated, vertex
 	end
 end
 
+-- Style Button
 local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
 	-- setPoints default value is 0
 	setPoints = setPoints or 0
@@ -288,7 +295,7 @@ local function StyleButton(button, noHover, noPushed, noChecked, setPoints)
 	end
 end
 
--- Handle button
+-- Button OnEnter and OnLeave
 local function Button_OnEnter(self)
 	if not self:IsEnabled() then
 		return
@@ -301,6 +308,7 @@ local function Button_OnLeave(self)
 	K.SetBorderColor(self.KKUI_Border)
 end
 
+-- Skin Button
 local blizzRegions = {
 	"Left",
 	"Middle",
@@ -349,7 +357,7 @@ local function SkinButton(self, override, ...)
 	self:HookScript("OnLeave", Button_OnLeave)
 end
 
--- Handle close button
+-- Skin Close Button
 local function SkinCloseButton(self, parent, xOffset, yOffset)
 	-- Define the parent frame and x,y offset of the close button
 	parent = parent or self:GetParent()
@@ -390,6 +398,7 @@ local function SkinCloseButton(self, parent, xOffset, yOffset)
 	self.__texture = tex
 end
 
+-- Skin CheckBox
 local function SkinCheckBox(self, forceSaturation)
 	self:SetNormalTexture(0)
 	self:SetPushedTexture(0)
@@ -403,7 +412,18 @@ local function SkinCheckBox(self, forceSaturation)
 	self.forceSaturation = forceSaturation
 end
 
--- Handle arrows
+-- Hide Backdrop
+local function HideBackdrop(self)
+	if self.NineSlice then
+		self.NineSlice:SetAlpha(0)
+	end
+
+	if self.SetBackdrop then
+		self:SetBackdrop(nil)
+	end
+end
+
+-- Setup Arrow
 local arrowDegree = {
 	["up"] = 0,
 	["down"] = 180,
@@ -416,6 +436,7 @@ function K.SetupArrow(self, direction)
 	self:SetRotation(rad(arrowDegree[direction]))
 end
 
+-- Reskin Arrow
 function K.ReskinArrow(self, direction)
 	self:StripTextures()
 	self:SetSize(16, 16)
@@ -434,11 +455,13 @@ function K.ReskinArrow(self, direction)
 	self.__texture = tex
 end
 
+-- Grab ScrollBar Element
 local function GrabScrollBarElement(frame, element)
 	local frameName = frame:GetDebugName()
 	return frame[element] or frameName and (_G[frameName .. element] or string.find(frameName, element)) or nil
 end
 
+-- Skin ScrollBar (continued)
 local function SkinScrollBar(self)
 	-- Strip the textures from the parent and scrollbar frame
 	self:GetParent():StripTextures()
@@ -469,16 +492,7 @@ local function SkinScrollBar(self)
 	K.ReskinArrow(down, "down")
 end
 
-local function HideBackdrop(self)
-	if self.NineSlice then
-		self.NineSlice:SetAlpha(0)
-	end
-
-	if self.SetBackdrop then
-		self:SetBackdrop(nil)
-	end
-end
-
+-- Add API Function
 local function addapi(object)
 	local mt = getmetatable(object).__index
 
@@ -527,6 +541,7 @@ local function addapi(object)
 	end
 end
 
+-- Apply API to Existing Frames
 local handled = { Frame = true }
 local object = CreateFrame("Frame")
 addapi(object)
@@ -545,5 +560,5 @@ while object do
 	object = EnumerateFrames(object)
 end
 
-addapi(_G.GameFontNormal) --Add API to `CreateFont` objects without actually creating one
-addapi(CreateFrame("ScrollFrame")) --Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the 'Frame' widget
+addapi(_G.GameFontNormal) -- Add API to `CreateFont` objects without actually creating one
+addapi(CreateFrame("ScrollFrame")) -- Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the 'Frame' widget

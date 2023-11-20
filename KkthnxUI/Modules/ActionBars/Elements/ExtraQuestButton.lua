@@ -212,27 +212,33 @@ ExtraQuestButton:SetScript("OnUpdate", function(self, elapsed)
 			local HotKey = self.HotKey
 			local Icon = self.Icon
 
-			-- BUG: IsItemInRange() is broken versus friendly npcs (and possibly others)
-			local inRange = IsItemInRange(self.itemLink, "target")
-			if HotKey:GetText() == RANGE_INDICATOR then
-				if inRange == false then
-					HotKey:SetTextColor(1, 0.1, 0.1)
-					HotKey:Show()
-					Icon:SetVertexColor(1, 0.1, 0.1)
-				elseif inRange then
-					HotKey:SetTextColor(0.6, 0.6, 0.6)
-					HotKey:Show()
-					Icon:SetVertexColor(1, 1, 1)
+			-- Check if in combat
+			local inCombat = InCombatLockdown()
+
+			if not inCombat then -- IsItemInRange is combat restricted now...
+				-- BUG: IsItemInRange() is broken versus friendly NPCs (and possibly others)
+				local inRange = IsItemInRange(self.itemLink, "target")
+
+				if HotKey:GetText() == RANGE_INDICATOR then
+					if inRange == false then
+						HotKey:SetTextColor(1, 0.1, 0.1)
+						HotKey:Show()
+						Icon:SetVertexColor(1, 0.1, 0.1)
+					elseif inRange then
+						HotKey:SetTextColor(0.6, 0.6, 0.6)
+						HotKey:Show()
+						Icon:SetVertexColor(1, 1, 1)
+					else
+						HotKey:Hide()
+					end
 				else
-					HotKey:Hide()
-				end
-			else
-				if inRange == false then
-					HotKey:SetTextColor(1, 0.1, 0.1)
-					Icon:SetVertexColor(1, 0.1, 0.1)
-				else
-					HotKey:SetTextColor(0.6, 0.6, 0.6)
-					Icon:SetVertexColor(1, 1, 1)
+					if inRange == false then
+						HotKey:SetTextColor(1, 0.1, 0.1)
+						Icon:SetVertexColor(1, 0.1, 0.1)
+					else
+						HotKey:SetTextColor(0.6, 0.6, 0.6)
+						Icon:SetVertexColor(1, 1, 1)
+					end
 				end
 			end
 
