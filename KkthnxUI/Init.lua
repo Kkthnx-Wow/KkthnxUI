@@ -327,6 +327,30 @@ K:RegisterEvent("PLAYER_LEVEL_UP", function(_, level)
 	K.Level = level
 end)
 
+-- Check if "IsItemInRange" is a secure variable
+if issecurevariable("IsItemInRange") then
+	-- If it is secure, store the original function
+	local IsItemInRange = _G.IsItemInRange
+
+	-- Replace the original function with a new version
+	_G.IsItemInRange = function(...)
+		-- If in combat, return true (or modify as needed)
+		return InCombatLockdown() and true or IsItemInRange(...)
+	end
+end
+
+-- Check if "UnitInRange" is a secure variable
+if issecurevariable("UnitInRange") then
+	-- If it is secure, store the original function
+	local UnitInRange = _G.UnitInRange
+
+	-- Replace the original function with a new version
+	_G.UnitInRange = function(...)
+		-- If in combat, return true (or modify as needed)
+		return InCombatLockdown() and true or UnitInRange(...)
+	end
+end
+
 -- Save original Chat_DisplayTimePlayed function
 local originalChatFrame_DisplayTimePlayed = ChatFrame_DisplayTimePlayed
 -- Override ChatFrame_DisplayTimePlayed function

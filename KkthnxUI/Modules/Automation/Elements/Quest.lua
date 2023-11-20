@@ -208,7 +208,7 @@ QuickQuest:Register("GOSSIP_SHOW", function()
 
 	for i = 1, numOptions do
 		local option = gossipInfoTable[i]
-		if option.name and option.flags == QuestLabelPrepend then
+		if option.name and (strfind(option.name, "cFF0000FF") or option.flags == QuestLabelPrepend) then
 			numQuestGossips = numQuestGossips + 1
 			questGossipID = option.gossipOptionID
 		end
@@ -240,9 +240,20 @@ end)
 
 QuickQuest:Register("QUEST_ACCEPT_CONFIRM", AcceptQuest)
 
-QuickQuest:Register("QUEST_ACCEPTED", function()
+local CFG_AutoShareQuest = true
+QuickQuest:Register("QUEST_ACCEPTED", function(questID)
 	if QuestFrame:IsShown() and QuestGetAutoAccept() then
 		CloseQuest()
+	end
+
+	if CFG_AutoShareQuest then
+		local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID)
+		if questLogIndex then
+			print("Auto-sharing quest:", questID)
+			QuestLogPushQuest(questLogIndex)
+		else
+			print("QuestLog index not found for quest:", questID)
+		end
 	end
 end)
 
