@@ -1,5 +1,4 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
-local oUF = K.oUF
 
 -- Sourced: yClassColors (yleaf)
 -- Edited: KkthnxUI (Kkthnx)
@@ -141,7 +140,6 @@ local function UpdateFriendsList()
 					local gameAccountInfo = accountInfo.gameAccountInfo
 					if gameAccountInfo.isOnline and gameAccountInfo.clientProgram == BNET_CLIENT_WOW then
 						local charName = gameAccountInfo.characterName
-						local faction = gameAccountInfo.factionName
 						local class = gameAccountInfo.className or UNKNOWN
 						local zoneName = gameAccountInfo.areaName or UNKNOWN
 						if accountName and charName and class then

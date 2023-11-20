@@ -69,8 +69,11 @@ table_insert(C.defaultThemes, function()
 		self.elapsed = (self.elapsed or 0) + elapsed
 
 		if self.elapsed > 0.1 then
-			for _, chatbubble in pairs(C_ChatBubbles_GetAllChatBubbles()) do
-				reskinChatBubble(chatbubble)
+			local chatBubbles = C_ChatBubbles_GetAllChatBubbles()
+			if chatBubbles then
+				for _, chatbubble in pairs(chatBubbles) do
+					reskinChatBubble(chatbubble)
+				end
 			end
 
 			self:Hide()

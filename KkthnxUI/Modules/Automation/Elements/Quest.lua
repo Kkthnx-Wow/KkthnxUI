@@ -247,12 +247,22 @@ QuickQuest:Register("QUEST_ACCEPTED", function(questID)
 	end
 
 	if CFG_AutoShareQuest then
-		local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID)
-		if questLogIndex then
-			print("Auto-sharing quest:", questID)
-			QuestLogPushQuest(questLogIndex)
+		-- Check if the player is in a group (1-5 players)
+		local isInGroup = IsInGroup(LE_PARTY_CATEGORY_HOME)
+
+		-- Check if the player is not in a raid
+		local notInRaid = not IsInRaid()
+
+		if isInGroup and notInRaid then
+			local questLogIndex = C_QuestLog.GetLogIndexForQuestID(questID)
+			if questLogIndex then
+				print("Auto-sharing quest:", questID)
+				QuestLogPushQuest(questLogIndex)
+			else
+				print("QuestLog index not found for quest:", questID)
+			end
 		else
-			print("QuestLog index not found for quest:", questID)
+			print("Not auto-sharing quest in raid or not in a group.")
 		end
 	end
 end)
