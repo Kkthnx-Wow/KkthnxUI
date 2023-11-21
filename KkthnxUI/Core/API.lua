@@ -37,6 +37,10 @@ end
 -- Set Border Color
 do
 	function K.SetBorderColor(self)
+		if not self then
+			return
+		end
+
 		if C["General"].ColorTextures then
 			self:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		else
