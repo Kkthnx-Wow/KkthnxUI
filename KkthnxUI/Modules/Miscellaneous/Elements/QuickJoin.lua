@@ -180,9 +180,23 @@ function Module:AddAutoAcceptButton()
 	K.CreateFontString(bu, 13, _G.LFG_LIST_AUTO_ACCEPT, "", "system", "LEFT", 24, 0)
 
 	local lastTime = 0
+	-- local function clickInviteButton(button)
+	-- 	if button.applicantID and button.InviteButton:IsEnabled() then
+	-- 		button.InviteButton:Click()
+	-- 	end
+	-- end
+
 	local function clickInviteButton(button)
 		if button.applicantID and button.InviteButton:IsEnabled() then
-			button.InviteButton:Click()
+			local inviteButton = button.InviteButton
+
+			if inviteButton:IsProtected() then
+				-- Use the secure method to click the button
+				SecureActionButton_OnClick(inviteButton)
+			else
+				-- Fallback for non-secure buttons
+				inviteButton:Click()
+			end
 		end
 	end
 

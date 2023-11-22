@@ -144,7 +144,9 @@ local function reskinProgressBars(_, _, line)
 			end
 		end
 
-		_G.BonusObjectiveTrackerProgressBar_PlayFlareAnim = K.Noop
+		-- Attach the function directly to progressBar as a method
+		progressBar.PlayFlareAnim = K.Noop
+
 		progressBar.isSkinned = true
 	elseif icon and progressBar.KKUI_Backdrop then
 		progressBar.KKUI_Backdrop:SetShown(icon:IsShown())

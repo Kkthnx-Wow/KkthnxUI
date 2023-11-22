@@ -4,8 +4,6 @@
    <Include file="Libraries\Load_Libraries.xml" />
    <!-- Engine -->
    <Script file="Init.lua" />
-   <!-- Fix Blizzard Bugs -->
-   <Script file="FixBlizzardBugs.lua" />
    <!-- Settings -->
    <Script file="Config\Settings.lua" />
    <!-- Media -->
