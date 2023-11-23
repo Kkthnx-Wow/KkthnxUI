@@ -272,9 +272,16 @@ local function GetFrame()
 	end
 
 	local bar = Module:CreateRollBar()
-	local anchorBar = next(Module.RollBars) and Module.RollBars[#Module.RollBars] or parentFrame
-	local anchorPoint = RollDirection == 2 and "TOP" or "BOTTOM"
-	bar:SetPoint(anchorPoint, anchorBar, anchorPoint, 0, RollDirection == 2 and -6 or 6)
+	if next(Module.RollBars) then
+		if RollDirection == 2 then
+			bar:SetPoint("TOP", Module.RollBars[#Module.RollBars], "BOTTOM", 0, -6)
+		else
+			bar:SetPoint("BOTTOM", Module.RollBars[#Module.RollBars], "TOP", 0, 6)
+		end
+	else
+		bar:SetPoint("TOP", parentFrame, "TOP")
+	end
+
 	tinsert(Module.RollBars, bar)
 
 	return bar
@@ -293,19 +300,24 @@ function Module:LootRoll_Start(rollID, rollTime)
 	end
 
 	cachedIndex[Module.EncounterID] = Module.EncounterID and rollID
-	local link, level, color = GetLootRollItemLink(rollID), K.GetItemLevel(link), ITEM_QUALITY_COLORS[quality]
+
+	local link = GetLootRollItemLink(rollID)
+	local level = K.GetItemLevel(link)
+	local color = ITEM_QUALITY_COLORS[quality]
+
 	local bar = GetFrame()
 	if not bar then
 		return
 	end
 
-	bar.rollID, bar.time = rollID, rollTime
+	bar.rollID = rollID
+	bar.time = rollTime
 	-- Update button properties
 	bar.button.icon:SetTexture(texture)
 	bar.button.stack:SetText(count > 1 and count or "")
 	bar.button.ilvl:SetText(level or "")
 	bar.button.ilvl:SetTextColor(color.r, color.g, color.b)
-	bar.button.link = link
+	bar.button.link = link or ""
 	bar.button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 
 	-- Update roll buttons
