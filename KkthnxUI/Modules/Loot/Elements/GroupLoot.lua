@@ -330,6 +330,7 @@ function Module:LootRoll_Start(rollID, rollTime)
 	bar.status:SetStatusBarColor(color.r, color.g, color.b, 0.7)
 	bar.status:SetMinMaxValues(0, rollTime)
 	bar.status:SetValue(rollTime)
+	bar.status.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 	bar:Show()
 
 	-- Update cached info
@@ -368,7 +369,7 @@ local rollStateToType = {
 -- Function to update loot drops
 function Module:LootRoll_UpdateDrops(encounterID, lootListID)
 	local dropInfo = C_LootHistory.GetSortedInfoForDrop(encounterID, lootListID)
-	local rollID = self:LootRoll_GetRollID(encounterID, lootListID)
+	local rollID = Module:LootRoll_GetRollID(encounterID, lootListID)
 	if rollID then
 		cachedRolls[rollID] = cachedRolls[rollID] or {}
 		if not dropInfo.allPassed then
@@ -393,7 +394,7 @@ end
 -- Function to handle encounter end
 function Module:LootRoll_EncounterEnd(id, _, _, _, status)
 	if status == 1 then
-		self.EncounterID = id
+		Module.EncounterID = id
 	end
 end
 
@@ -458,7 +459,7 @@ function Module:LootRollTest()
 	end
 
 	-- Randomly select a test item
-	local itemID, name, quality, itemLevel, icon = 22691, "Corrupted Ashbringer", 5, 86, 22691 -- ??
+	local itemID, name, quality, itemLevel, icon = 122349, "Bloodied Arcanite Reaper", 7, 79, 132400 -- ??
 	local color = ITEM_QUALITY_COLORS[quality]
 
 	-- Set test frame item details
@@ -470,8 +471,10 @@ function Module:LootRollTest()
 	testFrame.transmog:SetShown(canTransmog)
 	testFrame.greed:SetShown(not canTransmog)
 	testFrame.status:SetStatusBarColor(color.r, color.g, color.b, 0.7)
+	testFrame.status.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 	testFrame.status:SetMinMaxValues(0, 100)
 	testFrame.status:SetValue(80)
+	testFrame.status.spark:SetColorTexture(color.r, color.g, color.b, 0.5)
 	testFrame.button.itemLevel = itemLevel
 	testFrame.button.color = color
 	testFrame.button.ilvl:SetText(itemLevel or "")
