@@ -31,7 +31,6 @@
    <Script file="Chat\Elements\Rename.lua" />
    <Script file="Chat\Elements\RoleIcon.lua" />
    <Script file="Chat\Elements\URL.lua" />
-   <Script file="Chat\Elements\Voice.lua" />
    <!-- Inventory -->
    <Script file="Inventory\Core.lua" />
    <Script file="Inventory\Elements\Filters.lua" />

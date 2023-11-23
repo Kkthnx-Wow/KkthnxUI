@@ -1,11 +1,10 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Chat")
 
-local string_gmatch = string.gmatch
-local string_gsub = string.gsub
-local string_match = string.match
-local string_trim = string.trim
+-- Simplify string functions usage
+local gmatch, gsub, match, trim = string.gmatch, string.gsub, string.match, string.trim
 
+-- List of chat events
 local chatEvents = {
 	"CHAT_MSG_BN_WHISPER",
 	"CHAT_MSG_BN_WHISPER_INFORM",
@@ -25,43 +24,36 @@ local chatEvents = {
 	"CHAT_MSG_YELL",
 }
 
--- function to replace emojis
+-- Function to replace emojis in chat messages
 function Module:SetupEmojis(_, msg)
-	-- iterate through each word in the message
-	for word in string_gmatch(msg, "%s-%S+%s*") do
-		-- trim the word to remove leading and trailing whitespaces
-		word = string_trim(word)
-		-- escape any special characters in the word
-		local pattern = string_gsub(word, "([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1")
-		-- check if the word is a key in the C.SetEmojiTexture table
+	for word in gmatch(msg, "%s-%S+%s*") do
+		word = trim(word)
+		local pattern = gsub(word, "([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1")
 		local emoji = C.SetEmojiTexture[pattern]
-		-- check if the word appears in the message
-		if emoji and string_match(msg, "[%s%p]-" .. pattern .. "[%s%p]*") then
-			-- create the texture string for the emoji
+
+		if emoji and match(msg, "[%s%p]-" .. pattern .. "[%s%p]*") then
 			emoji = "|T" .. emoji .. ":14:14|t"
-			-- encode the word using K.LibBase64
 			local base64 = K.LibBase64:Encode(word)
-			-- replace the word in the message with the encoded word and the emoji texture
-			msg = string_gsub(msg, "([%s%p]-)" .. pattern .. "([%s%p]*)", (base64 and ("%1|Helvmoji:%%" .. base64 .. "|h|cFFffffff|r|h") or "%1") .. emoji .. "%2")
+			local replacement = base64 and ("%1|Helvmoji:%%" .. base64 .. "|h|cFFffffff|r|h") or "%1"
+			msg = gsub(msg, "([%s%p]-)" .. pattern .. "([%s%p]*)", replacement .. emoji .. "%2")
 		end
 	end
 	return msg
 end
 
--- function to filter the message after it has been encoded
+-- Function to filter and apply emojis to chat messages
 function Module:ApplyEmojis(event, msg, ...)
-	-- replace the emojis in the message
 	msg = Module:SetupEmojis(event, msg)
-	-- return the modified message
 	return false, msg, ...
 end
 
+-- Function to initialize emoji application in chat
 function Module:CreateEmojis()
 	if not C["Chat"].Emojis then
 		return
 	end
 
 	for _, event in ipairs(chatEvents) do
-		ChatFrame_AddMessageEventFilter(event, Module.ApplyEmojis)
+		ChatFrame_AddMessageEventFilter(event, self.ApplyEmojis)
 	end
 end

@@ -1,93 +1,42 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Blizzard")
 
-local UIParent = UIParent
-local hooksecurefunc = hooksecurefunc
+local _G = getfenv(0)
+local ipairs, tremove = ipairs, table.remove
+local UIParent = _G.UIParent
+local AlertFrame = _G.AlertFrame
+local GroupLootContainer = _G.GroupLootContainer
 
-local ANCHOR_POINT = "BOTTOM"
-local POSITION = "TOP"
-local YOFFSET = -6
+local POSITION, ANCHOR_POINT, YOFFSET = "TOP", "BOTTOM", -10
+local parentFrame
 
-local AlertFrameHolder
-
-function Module:UpdateAnchors()
-	local AlertFrameMover = _G.KKUI_AlertFrameHolder.Mover
-	local AlertFrameHolder = _G.KKUI_AlertFrameHolder
-
-	local _, y = AlertFrameMover:GetCenter()
+function Module:AlertFrame_UpdateAnchor()
+	local y = select(2, parentFrame:GetCenter())
 	local screenHeight = UIParent:GetTop()
-	if y > (screenHeight * 0.5) then
+	if y > screenHeight / 2 then
 		POSITION = "TOP"
 		ANCHOR_POINT = "BOTTOM"
-		YOFFSET = -6
+		YOFFSET = -10
 	else
 		POSITION = "BOTTOM"
 		ANCHOR_POINT = "TOP"
-		YOFFSET = 6
+		YOFFSET = 10
 	end
 
-	local AlertFrame = _G.AlertFrame
-	local GroupLootContainer = _G.GroupLootContainer
-
-	AlertFrame:ClearAllPoints()
+	self:ClearAllPoints()
+	self:SetPoint(POSITION, parentFrame)
 	GroupLootContainer:ClearAllPoints()
-
-	local lastRollFrame = C["Loot"].GroupLoot and K:GetModule("Loot"):UpdateLootRollAnchors(POSITION)
-	if lastRollFrame then
-		AlertFrame:SetAllPoints(lastRollFrame)
-		GroupLootContainer:SetPoint(POSITION, lastRollFrame, ANCHOR_POINT, 0, YOFFSET)
-	else
-		AlertFrame:SetAllPoints(AlertFrameHolder)
-		GroupLootContainer:SetPoint(POSITION, AlertFrameHolder, ANCHOR_POINT, 0, YOFFSET)
-	end
-
-	if GroupLootContainer:IsShown() then
-		Module.GroupLootContainer_Update(GroupLootContainer)
-	end
+	GroupLootContainer:SetPoint(POSITION, parentFrame)
 end
 
-function Module:AdjustAnchors(relativeAlert)
-	if self.alertFrame:IsShown() then
-		self.alertFrame:ClearAllPoints()
-		self.alertFrame:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
-		return self.alertFrame
-	end
-	return relativeAlert
-end
-
-function Module:AdjustAnchorsNonAlert(relativeAlert)
-	if self.anchorFrame:IsShown() then
-		self.anchorFrame:ClearAllPoints()
-		self.anchorFrame:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
-		return self.anchorFrame
-	end
-	return relativeAlert
-end
-
-function Module:AdjustQueuedAnchors(relativeAlert)
-	for alertFrame in self.alertFramePool:EnumerateActive() do
-		alertFrame:ClearAllPoints()
-		alertFrame:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
-		relativeAlert = alertFrame
-	end
-	return relativeAlert
-end
-
-function Module:GroupLootContainer_Update()
-	local lastIdx
+function Module:UpdatGroupLootContainer()
+	local lastIdx = nil
 
 	for i = 1, self.maxIndex do
 		local frame = self.rollFrames[i]
 		if frame then
 			frame:ClearAllPoints()
-
-			local prevFrame = self.rollFrames[i - 1]
-			if prevFrame and prevFrame ~= frame then
-				frame:SetPoint(POSITION, prevFrame, ANCHOR_POINT, 0, YOFFSET)
-			else
-				frame:SetPoint(POSITION, self, POSITION, 0, YOFFSET)
-			end
-
+			frame:SetPoint("CENTER", self, POSITION, 0, self.reservedSize * (i - 1 + 0.5) * YOFFSET / 10)
 			lastIdx = i
 		end
 	end
@@ -100,13 +49,45 @@ function Module:GroupLootContainer_Update()
 	end
 end
 
-local function AlertSubSystem_AdjustPosition(alertFrameSubSystem)
-	if alertFrameSubSystem.alertFramePool then --queued alert system
-		alertFrameSubSystem.AdjustAnchors = Module.AdjustQueuedAnchors
-	elseif not alertFrameSubSystem.anchorFrame then --simple alert system
-		alertFrameSubSystem.AdjustAnchors = Module.AdjustAnchors
-	elseif alertFrameSubSystem.anchorFrame then --anchor frame system
-		alertFrameSubSystem.AdjustAnchors = Module.AdjustAnchorsNonAlert
+function Module:AlertFrame_SetPoint(relativeAlert)
+	self:ClearAllPoints()
+	self:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
+end
+
+function Module:AlertFrame_AdjustQueuedAnchors(relativeAlert)
+	for alertFrame in self.alertFramePool:EnumerateActive() do
+		Module.AlertFrame_SetPoint(alertFrame, relativeAlert)
+		relativeAlert = alertFrame
+	end
+
+	return relativeAlert
+end
+
+function Module:AlertFrame_AdjustAnchors(relativeAlert)
+	if self.alertFrame:IsShown() then
+		Module.AlertFrame_SetPoint(self.alertFrame, relativeAlert)
+		return self.alertFrame
+	end
+
+	return relativeAlert
+end
+
+function Module:AlertFrame_AdjustAnchorsNonAlert(relativeAlert)
+	if self.anchorFrame:IsShown() then
+		Module.AlertFrame_SetPoint(self.anchorFrame, relativeAlert)
+		return self.anchorFrame
+	end
+
+	return relativeAlert
+end
+
+function Module:AlertFrame_AdjustPosition()
+	if self.alertFramePool then
+		self.AdjustAnchors = Module.AlertFrame_AdjustQueuedAnchors
+	elseif not self.anchorFrame then
+		self.AdjustAnchors = Module.AlertFrame_AdjustAnchors
+	elseif self.anchorFrame then
+		self.AdjustAnchors = Module.AlertFrame_AdjustAnchorsNonAlert
 	end
 end
 
@@ -115,40 +96,34 @@ local function NoTalkingHeads()
 		return
 	end
 
-	TalkingHeadFrame:UnregisterAllEvents() -- needs review
-	hooksecurefunc(TalkingHeadFrame, "Show", function(self)
+	_G.TalkingHeadFrame:UnregisterAllEvents() -- needs review
+	hooksecurefunc(_G.TalkingHeadFrame, "Show", function(self)
 		self:Hide()
 	end)
 end
 
 function Module:CreateAlertFrames()
-	AlertFrameHolder = CreateFrame("Frame", "KKUI_AlertFrameHolder", UIParent)
-	AlertFrameHolder:SetSize(180, 20)
-	AlertFrameHolder:SetPoint("TOP", UIParent, "TOP", -1, -18)
+	parentFrame = CreateFrame("Frame", nil, UIParent)
+	parentFrame:SetSize(200, 30)
+	K.Mover(parentFrame, "AlertFrameMover", "AlertFrameMover", { "TOP", UIParent, 0, -40 })
 
 	GroupLootContainer:EnableMouse(false)
 	GroupLootContainer.ignoreFramePositionManager = true
 
-	if not AlertFrameHolder.Mover then
-		AlertFrameHolder.Mover = K.Mover(AlertFrameHolder, "AlertFrameMover", "AlertFrameMover", { "TOP", UIParent, "TOP", 0, -140 })
-	else
-		AlertFrameHolder.Mover:SetSize(AlertFrameHolder:GetSize())
-	end
-
 	for index, alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
-		if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == TalkingHeadFrame then
-			tremove(AlertFrame.alertFrameSubSystems, index)
+		if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == _G.TalkingHeadFrame then
+			tremove(_G.AlertFrame.alertFrameSubSystems, index)
 		else
-			AlertSubSystem_AdjustPosition(alertFrameSubSystem)
+			Module.AlertFrame_AdjustPosition(alertFrameSubSystem)
 		end
 	end
 
 	hooksecurefunc(AlertFrame, "AddAlertFrameSubSystem", function(_, alertFrameSubSystem)
-		AlertSubSystem_AdjustPosition(alertFrameSubSystem)
+		Module.AlertFrame_AdjustPosition(alertFrameSubSystem)
 	end)
 
-	hooksecurefunc(_G.AlertFrame, "UpdateAnchors", Module.UpdateAnchors)
-	hooksecurefunc("GroupLootContainer_Update", Module.GroupLootContainer_Update)
+	hooksecurefunc(AlertFrame, "UpdateAnchors", Module.AlertFrame_UpdateAnchor)
+	hooksecurefunc("GroupLootContainer_Update", Module.UpdatGroupLootContainer)
 
 	if TalkingHeadFrame then
 		NoTalkingHeads()

@@ -1,24 +1,49 @@
 local K = KkthnxUI[1]
 
---[[
-### Guiding Principles
-Changelogs are for humans, not machines.
-There should be an entry for every single version.
-The same types of changes should be grouped.
-Versions and sections should be linkable.
-The latest version comes first.
-The release date of each version is displayed.
-Mention whether you follow Semantic Versioning.
-
-### Types of changes
--- 'Added' for new features.
--- 'Changed' for changes in existing functionality.
--- 'Deprecated' for soon-to-be removed features.
--- 'Fixed' for any bug fixes.
--- 'Removed' for now removed features.
---]]
-
 local KKUI_Changelog = {
+	{
+		Version = "[10.4.8] - 2023-11-22 - Patch 10.2",
+		General = "Don't forget to join our KkthnxUI Discord server to stay up-to-date on the latest news and discussions about KkthnxUI and its future development.",
+		Sections = {
+
+			{
+				Header = "General",
+				Entries = {
+					"Continued efforts to enhance the user interface experience with various updates and adjustments in line with the latest World of Warcraft updates.",
+				},
+			},
+
+			{
+				Header = "UI Updates",
+				Entries = {
+					"Optimized UI memory usage and performed code cleanup for better performance.",
+					"Updated README.md to provide clearer, more current information.",
+					"Improved QuickJoin functionality for a smoother user experience.",
+					"Updated loot and fixed issues with mirrorbars for enhanced gameplay.",
+					"Reworked spec in tooltip and increased spellflyout spacing for better visibility and user interaction.",
+				},
+			},
+
+			{
+				Header = "Code Improvements",
+				Entries = {
+					"Addressed and attempted to fix two taint issues for improved stability.",
+					"Performed cleanup and bug fixes related to Blizzard's UI elements.",
+					"Resolved a protected item range check issue ('IsItemInRange').",
+				},
+			},
+
+			{
+				Header = "Optimization",
+				Entries = {
+					"Conducted a thorough cleanup to enhance code clarity and maintainability.",
+					"Improved formatting to use UPU over UPF for consistency and readability.",
+					"Introduced adjustments to unitframe range stuff for better performance.",
+				},
+			},
+		},
+	},
+
 	{
 		Version = "[10.4.7] - 2023-5-5 - Patch 10.1",
 		General = "Don't forget to join our KkthnxUI Discord [Rc9wcK9cAB] server to stay up-to-date on the latest news and discussions about KkthnxUI and its future development.",
