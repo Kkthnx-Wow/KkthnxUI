@@ -70,20 +70,20 @@ oUF.Tags.Methods["hp"] = function(unit)
 		return oUF.Tags.Methods["DDG"](unit)
 	else
 		local per, cur = GetUnitHealthPerc(unit)
-		if (unit == "player" and not UnitHasVehicleUI(unit)) or unit == "target" or unit == "focus" or string.find(unit, "party") then
+		if unit == "player" or unit == "target" or unit == "focus" or unit == "party" then
 			return ValueAndPercent(cur, per)
 		else
 			return ColorPercent(per)
 		end
 	end
 end
-oUF.Tags.Events["hp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Events["hp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED PARTY_MEMBER_ENABLE PARTY_MEMBER_DISABLE"
 
 oUF.Tags.Methods["power"] = function(unit)
 	local cur, maxPower = UnitPower(unit), UnitPowerMax(unit)
 	local per = maxPower == 0 and 0 or K.Round(cur / maxPower * 100)
 
-	if (unit == "player" and not UnitHasVehicleUI(unit)) or unit == "target" or unit == "focus" then
+	if unit == "player" or unit == "target" or unit == "focus" then
 		if per < 100 and UnitPowerType(unit) == 0 and maxPower ~= 0 then
 			return K.ShortValue(cur) .. " - " .. per
 		else
