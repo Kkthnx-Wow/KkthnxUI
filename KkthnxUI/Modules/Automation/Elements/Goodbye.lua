@@ -21,22 +21,25 @@ local AutoThanksList = {
 function Module.SetupAutoGoodbye()
 	local waitTime = math.random() * (5 - 2) + 2 -- generates a float between 2 and 5
 	C_Timer_After(waitTime, function()
-		local messageIndex = math.random(#AutoThanksList)
-		local message = AutoThanksList[messageIndex]
-		table.remove(AutoThanksList, messageIndex)
+		if #AutoThanksList > 0 then
+			local messageIndex = math.random(#AutoThanksList)
+			local message = AutoThanksList[messageIndex]
 
-		if message then
-			C_ChatInfo.SendAddonMessage("KkthnxUI", message, "INSTANCE_CHAT")
+			if message then
+				C_ChatInfo.SendAddonMessage("KkthnxUI", message, "INSTANCE_CHAT")
+			end
 		end
 	end)
 end
 
 function Module:CreateAutoGoodbye()
-	if not C["Automation"].AutoGoodbye then
-		return
+	if C["Automation"].AutoGoodbye then
+		-- Register the events when the feature is enabled
+		K:RegisterEvent("LFG_COMPLETION_REWARD", Module.SetupAutoGoodbye)
+		K:RegisterEvent("CHALLENGE_MODE_COMPLETED", Module.SetupAutoGoodbye)
+	else
+		-- Unregister the events when the feature is disabled
+		K:UnregisterEvent("LFG_COMPLETION_REWARD", Module.SetupAutoGoodbye)
+		K:UnregisterEvent("CHALLENGE_MODE_COMPLETED", Module.SetupAutoGoodbye)
 	end
-
-	K:RegisterEvent("LFG_COMPLETION_REWARD", Module.SetupAutoGoodbye)
-	K:RegisterEvent("CHALLENGE_MODE_COMPLETED", Module.SetupAutoGoodbye)
-	K:RegisterEvent("CHAT_MSG_INSTANCE_CHAT", Module.SetupAutoGoodbye)
 end

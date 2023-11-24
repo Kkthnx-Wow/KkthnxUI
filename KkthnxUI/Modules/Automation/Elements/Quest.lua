@@ -240,7 +240,7 @@ end)
 
 QuickQuest:Register("QUEST_ACCEPT_CONFIRM", AcceptQuest)
 
-local CFG_AutoShareQuest = false -- Put this into our config later.
+local CFG_AutoShareQuest = true -- Put this into our config later.
 QuickQuest:Register("QUEST_ACCEPTED", function(questID)
 	if QuestFrame:IsShown() and QuestGetAutoAccept() then
 		CloseQuest()

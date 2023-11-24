@@ -289,7 +289,7 @@ end
 
 -- Function to start a loot roll
 function Module:LootRoll_Start(rollID, rollTime)
-	local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired, canTransmog = GetLootRollItemInfo(rollID)
+	local texture, name, count, quality, bindOnPickUp, canNeed, canGreed, canDisenchant, reasonNeed, reasonGreed, reasonDisenchant, deSkillRequired, canTransmog = GetLootRollItemInfo(rollID)
 	if not name then
 		for _, rollBar in next, Module.RollBars do
 			if rollBar.rollID == rollID then
@@ -312,37 +312,52 @@ function Module:LootRoll_Start(rollID, rollTime)
 
 	bar.rollID = rollID
 	bar.time = rollTime
+
 	-- Update button properties
 	bar.button.icon:SetTexture(texture)
+
 	bar.button.stack:SetText(count > 1 and count or "")
+
 	bar.button.ilvl:SetText(level or "")
 	bar.button.ilvl:SetTextColor(color.r, color.g, color.b)
-	bar.button.link = link or ""
+
+	bar.button.link = link
+
 	bar.button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 
 	-- Update roll buttons
+	bar.need.text:SetText("")
 	bar.need:SetEnabled(canNeed)
 	bar.need.tiptext = canNeed and NEED or _G["LOOT_ROLL_INELIGIBLE_REASON" .. reasonNeed]
-	bar.transmog:SetShown(canTransmog)
+
+	bar.transmog.text:SetText("")
+	bar.transmog:SetShown(not not canTransmog)
 	bar.transmog:SetEnabled(canTransmog)
+
+	bar.greed.text:SetText("")
 	bar.greed:SetShown(not canTransmog)
 	bar.greed:SetEnabled(canGreed)
 	bar.greed.tiptext = canGreed and GREED or _G["LOOT_ROLL_INELIGIBLE_REASON" .. reasonGreed]
+
 	if bar.disenchant then
+		bar.disenchant.text:SetText("")
 		bar.disenchant:SetEnabled(canDisenchant)
 		bar.disenchant.tiptext = canDisenchant and ROLL_DISENCHANT or format(_G["LOOT_ROLL_INELIGIBLE_REASON" .. reasonDisenchant], deSkillRequired)
 	end
 
 	-- Update bind and loot text
-	bar.fsbind:SetText(bop and "BoP" or "BoE")
-	bar.fsbind:SetVertexColor(bop and 1 or 0.3, bop and 0.3 or 1, bop and 0.1 or 0.3)
+	bar.fsbind:SetText(bindOnPickUp and "BoP" or "BoE")
+	bar.fsbind:SetVertexColor(bindOnPickUp and 1 or 0.3, bindOnPickUp and 0.3 or 1, bindOnPickUp and 0.1 or 0.3)
+
 	bar.fsloot:SetText(name)
+
 	bar.status.spark:SetColorTexture(color.r, color.g, color.b, 0.5)
 	bar.status.elapsed = 1
 	bar.status:SetStatusBarColor(color.r, color.g, color.b, 0.7)
 	bar.status:SetMinMaxValues(0, rollTime)
 	bar.status:SetValue(rollTime)
 	bar.status.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+
 	bar:Show()
 
 	-- Update cached info
@@ -480,8 +495,10 @@ function Module:LootRollTest()
 	testFrame.fsloot:SetText(name)
 	testFrame.fsbind:SetText(bop and "BoP" or "BoE")
 	testFrame.fsbind:SetVertexColor(bop and 1 or 0.3, bop and 0.3 or 1, bop and 0.1 or 0.3)
+
 	testFrame.transmog:SetShown(canTransmog)
 	testFrame.greed:SetShown(not canTransmog)
+
 	testFrame.status:SetStatusBarColor(color.r, color.g, color.b, 0.7)
 	testFrame.status.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 	testFrame.status:SetMinMaxValues(0, 100)

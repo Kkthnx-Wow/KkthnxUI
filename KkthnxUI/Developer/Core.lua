@@ -1,5 +1,5 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
-local Module = K:GetModule("Miscellaneous")
+-- local Module = K:GetModule("Miscellaneous")
 
 K.Devs = {
 	["Kkthnx-Area 52"] = true,
