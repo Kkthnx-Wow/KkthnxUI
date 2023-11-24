@@ -1,9 +1,11 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Chat")
 
+local math_min = math.min
 local gsub = string.gsub
 local pairs, ipairs = pairs, ipairs
 local tremove = table.remove
+
 local IsGuildMember, C_FriendList_IsFriend, IsGUIDInGroup = IsGuildMember, C_FriendList.IsFriend, IsGUIDInGroup
 local Ambiguate, GetTime = Ambiguate, GetTime
 local C_BattleNet_GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
@@ -27,37 +29,26 @@ local last_table, this_table = {}, {}
 
 -- Define a function to compare two strings and return their difference as a fraction
 function Module:CompareStrDiff(string_A, string_B)
-	-- Get the length of the two strings
 	local length_A, length_B = #string_A, #string_B
 
-	-- Initialize the last_table with increasing numbers from 0 to length_B
 	for j = 0, length_B do
 		last_table[j + 1] = j
 	end
 
-	-- Iterate over each character of string_A
 	for i = 1, length_A do
-		-- Set the first element of this_table to i
 		this_table[1] = i
-
-		-- Iterate over each character of string_B
 		for j = 1, length_B do
-			-- Calculate the cost of converting string_A[i] to string_B[j] using the last_table
-			local cost = (string_A[i] == string_B[j]) and last_table[j] or (math.min(last_table[j + 1], this_table[j], last_table[j]) + 1)
-
-			-- Set the (j+1)-th element of this_table to the calculated cost
+			local cost = (string_A[i] == string_B[j]) and last_table[j] or (math_min(last_table[j + 1], this_table[j], last_table[j]) + 1)
 			this_table[j + 1] = cost
 		end
 
-		-- Copy the values of this_table to last_table for the next iteration
+		-- Copying table elements
 		for j = 0, length_B do
 			last_table[j + 1] = this_table[j + 1]
 		end
 	end
 
-	-- Return the difference between the two strings as a fraction
-	local diff = this_table[length_B + 1] / math.max(length_A, length_B)
-	return diff
+	return this_table[length_B + 1] / math.max(length_A, length_B)
 end
 
 C.BadBoys = {} -- debug

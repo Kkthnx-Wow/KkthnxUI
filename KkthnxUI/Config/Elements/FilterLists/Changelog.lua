@@ -2,6 +2,46 @@ local K = KkthnxUI[1]
 
 local KKUI_Changelog = {
 	{
+		Version = "[10.4.9] - 2023-11-24 - Patch 10.2",
+		General = "Stay connected with the KkthnxUI community on our Discord server for the latest updates and engaging discussions about the addon's development and features.",
+		Sections = {
+
+			{
+				Header = "General",
+				Entries = {
+					"Enhanced overall addon functionality to align with the latest World of Warcraft Patch 10.2 updates.",
+				},
+			},
+
+			{
+				Header = "UI Updates",
+				Entries = {
+					"Updated and fixed issues with GroupLoot functionality.",
+					"Upgraded LibActionButton to the latest version.",
+					"Implemented updates to LibRangeCheck.",
+					"Refined yClassColors.",
+					"Enhanced unit frame tags.",
+				},
+			},
+
+			{
+				Header = "Bug Fixes",
+				Entries = {
+					"Attempted to resolve issues with the Goodbye module not functioning correctly at the end of instances.",
+				},
+			},
+
+			{
+				Header = "Optimization",
+				Entries = {
+					"Conducted thorough refactoring of yClassColors, streamlining the code for better performance and maintainability.",
+					"Continued efforts to optimize code and UI elements for an improved user experience and addon responsiveness.",
+				},
+			},
+		},
+	},
+
+	{
 		Version = "[10.4.8] - 2023-11-22 - Patch 10.2",
 		General = "Don't forget to join our KkthnxUI Discord server to stay up-to-date on the latest news and discussions about KkthnxUI and its future development.",
 		Sections = {

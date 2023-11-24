@@ -75,18 +75,19 @@ local function BagDelayedUpdate()
 	end
 end
 
+local events = {
+	["BANKFRAME_OPENED"] = BankOpened,
+	["BANKFRAME_CLOSED"] = BankClosed,
+	["GUILDBANKFRAME_OPENED"] = GuildBankOpened,
+	["GUILDBANKFRAME_CLOSED"] = GuildBankClosed,
+	["MAIL_SHOW"] = MailOpened,
+	["MAIL_CLOSED"] = MailClosed,
+	["MERCHANT_SHOW"] = MerchantOpened,
+	["MERCHANT_CLOSED"] = MerchantClosed,
+	["BAG_UPDATE_DELAYED"] = BagDelayedUpdate,
+}
+
 function Module:CreateAutoOpenItems()
-	local events = {
-		["BANKFRAME_OPENED"] = BankOpened,
-		["BANKFRAME_CLOSED"] = BankClosed,
-		["GUILDBANKFRAME_OPENED"] = GuildBankOpened,
-		["GUILDBANKFRAME_CLOSED"] = GuildBankClosed,
-		["MAIL_SHOW"] = MailOpened,
-		["MAIL_CLOSED"] = MailClosed,
-		["MERCHANT_SHOW"] = MerchantOpened,
-		["MERCHANT_CLOSED"] = MerchantClosed,
-		["BAG_UPDATE_DELAYED"] = BagDelayedUpdate,
-	}
 	if C["Automation"].AutoOpenItems then
 		for event, func in pairs(events) do
 			K:RegisterEvent(event, func)
