@@ -497,22 +497,31 @@ function Module:QuestIconCheck()
 end
 
 function Module:UpdateQuestUnit(_, unit)
-	if not C["Nameplate"].QuestIndicator or isInInstance then
+	if not C["Nameplate"].QuestIndicator then
+		return
+	end
+
+	if isInInstance then
 		self.questIcon:Hide()
 		self.questCount:SetText("")
 		return
 	end
 
 	unit = unit or self.unit
+
+	if UnitIsPlayer(unit) then
+		return
+	end
+
 	local questProgress
 	local prevDiff = 0
-
 	local data = C_TooltipInfo.GetUnit(unit)
+
 	if data then
 		for i = 1, #data.lines do
 			local lineData = data.lines[i]
 			if lineData.type == 8 then
-				local text = lineData.leftText -- progress string
+				local text = lineData.leftText
 				if text then
 					local current, goal = strmatch(text, "(%d+)/(%d+)")
 					local progress = strmatch(text, "(%d+)%%")
@@ -523,9 +532,8 @@ function Module:UpdateQuestUnit(_, unit)
 							prevDiff = diff
 						end
 					elseif progress and prevDiff == 0 then
-						if floor(100 - progress) > 0 then
-							questProgress = progress .. "%" -- lower priority on progress, keep looking
-						end
+						questProgress = progress .. "%"
+						break -- Exit loop if progress is found
 					end
 				end
 			end
