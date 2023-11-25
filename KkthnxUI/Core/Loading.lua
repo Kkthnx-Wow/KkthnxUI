@@ -14,7 +14,6 @@ local function KKUI_VerifyDatabase()
 		charData = {
 			AutoQuest = false,
 			AutoQuestIgnoreNPC = {},
-			BindType = 1,
 			CustomItems = {},
 			CustomNames = {},
 			CustomJunkList = {},
