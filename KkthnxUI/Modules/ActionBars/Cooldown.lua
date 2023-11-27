@@ -1,16 +1,24 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("Cooldown")
 
+-- Importing required functions
 local pairs, format, floor, strfind = pairs, format, floor, strfind
 local GetTime, GetActionCooldown, tonumber = GetTime, GetActionCooldown, tonumber
 
+-- Constants for cooldown display
 local FONT_SIZE = 19
-local MIN_DURATION = 2.5 -- the minimum duration to show cooldown text for
-local MIN_SCALE = 0.5 -- the minimum scale we want to show cooldown counts at, anything below this will be hidden
-local ICON_SIZE = 36
-local hideNumbers, active, hooked = {}, {}, {}
+local MIN_DURATION = 2.5 -- Minimum duration to show cooldown text
+local MIN_SCALE = 0.5 -- Minimum scale to show cooldown counts
+local ICON_SIZE = 36 -- Standard icon size
 
+-- Time constants for formatting
 local day, hour, minute = 86400, 3600, 60
+
+-- Tables for managing cooldowns
+local hideNumbers = {} -- Cooldowns to hide
+local active = {} -- Active cooldowns
+local hooked = {} -- Hooked cooldowns
+
 function Module.FormattedTimer(s, modRate)
 	if s >= day then
 		return format("%d" .. K.MyClassColor .. "d", s / day + 0.5), s % day

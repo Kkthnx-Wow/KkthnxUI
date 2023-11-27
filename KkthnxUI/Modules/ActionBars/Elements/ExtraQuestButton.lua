@@ -2,11 +2,20 @@
 
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 
+-- Utility functions
 local next, type, sqrt, GetTime, format = next, type, sqrt, GetTime, format
+
+-- Game state and action functions
 local RegisterStateDriver, InCombatLockdown = RegisterStateDriver, InCombatLockdown
+
+-- Item and action bar related functions
 local IsItemInRange, ItemHasRange, HasExtraActionBar = IsItemInRange, ItemHasRange, HasExtraActionBar
 local GetItemCooldown, GetItemCount, GetItemIcon, GetItemInfoFromHyperlink = GetItemCooldown, GetItemCount, GetItemIcon, GetItemInfoFromHyperlink
+
+-- Binding and quest related functions
 local GetBindingKey, GetBindingText, GetQuestLogSpecialItemInfo, QuestHasPOIInfo = GetBindingKey, GetBindingText, GetQuestLogSpecialItemInfo, QuestHasPOIInfo
+
+-- Map and quest log functions from C_Map and C_QuestLog namespaces
 local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
 local C_QuestLog_GetInfo = C_QuestLog.GetInfo
 local C_QuestLog_IsOnMap = C_QuestLog.IsOnMap
@@ -19,8 +28,10 @@ local C_QuestLog_GetLogIndexForQuestID = C_QuestLog.GetLogIndexForQuestID
 local C_QuestLog_GetNumWorldQuestWatches = C_QuestLog.GetNumWorldQuestWatches
 local C_QuestLog_GetQuestIDForQuestWatchIndex = C_QuestLog.GetQuestIDForQuestWatchIndex
 local C_QuestLog_GetQuestIDForWorldQuestWatchIndex = C_QuestLog.GetQuestIDForWorldQuestWatchIndex
-local MAX_DISTANCE_YARDS = 1e4 -- needs review
-local onlyCurrentZone = true
+
+-- Constants and flags
+local MAX_DISTANCE_YARDS = 1e4 -- Maximum distance in yards, needs review
+local onlyCurrentZone = true -- Flag to indicate if only the current zone is considered
 
 local ExtraQuestButton = CreateFrame("Button", "KKUI_ExtraQuestButton", UIParent, "SecureActionButtonTemplate, SecureHandlerStateTemplate, SecureHandlerAttributeTemplate")
 ExtraQuestButton:SetMovable(true)

@@ -1,7 +1,7 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("ActionBar")
 
--- Cached globals
+-- Pet action related functions and constants
 local AutoCastShine_AutoCastStart = AutoCastShine_AutoCastStart
 local AutoCastShine_AutoCastStop = AutoCastShine_AutoCastStop
 local GetPetActionInfo = GetPetActionInfo
@@ -11,8 +11,9 @@ local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
 local PET_ACTION_HIGHLIGHT_MARKS = PET_ACTION_HIGHLIGHT_MARKS
 local SharedActionButton_RefreshSpellHighlight = SharedActionButton_RefreshSpellHighlight
 
+-- Utility functions and layout constants
 local tinsert = tinsert
-local margin = 6
+local margin = 6 -- Margin used for UI element positioning
 
 local function hasPetActionHighlightMark(index)
 	return PET_ACTION_HIGHLIGHT_MARKS[index]

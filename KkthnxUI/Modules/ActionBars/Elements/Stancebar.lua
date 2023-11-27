@@ -1,9 +1,13 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("ActionBar")
 
+-- Utility functions
 local tinsert = tinsert
+
+-- Layout constants
 local margin, padding = 6, 0
 
+-- Number of stance slots (default to 10 if not defined)
 local num = NUM_STANCE_SLOTS or 10
 
 function Module:UpdateStanceBar()

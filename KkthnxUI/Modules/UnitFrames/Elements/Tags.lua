@@ -246,10 +246,10 @@ end
 oUF.Tags.Events["nplevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED"
 
 local NPClassifies = {
-	rare = "  ",
-	elite = "  ",
-	rareelite = "  ",
-	worldboss = "  ",
+	rare = " ",
+	elite = " ",
+	rareelite = " ",
+	worldboss = " ",
 }
 oUF.Tags.Methods["nprare"] = function(unit)
 	local class = UnitClassification(unit)

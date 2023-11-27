@@ -1,6 +1,7 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:NewModule("ActionBar")
 
+-- Global references for convenience and performance
 local _G = _G
 local UIParent = UIParent
 local GetVehicleBarIndex = GetVehicleBarIndex
@@ -10,6 +11,7 @@ local PetDismiss = PetDismiss
 local tinsert = table.insert
 local RegisterStateDriver = RegisterStateDriver
 
+-- Layout constants
 local margin, padding = 6, 0
 
 function Module:UpdateAllSize()
@@ -415,6 +417,10 @@ end
 function Module:OnEnable()
 	Module.buttons = {}
 	Module:MicroMenu()
+
+	if C_AddOns.IsAddOnLoaded("ConsolePort") then
+		return
+	end
 
 	if not C["ActionBar"]["Enable"] then
 		return

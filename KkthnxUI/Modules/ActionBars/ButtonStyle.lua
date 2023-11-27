@@ -1,10 +1,13 @@
 local K = KkthnxUI[1]
 local Module = K:GetModule("ActionBar")
 
-local KEY_BUTTON4, KEY_NUMPAD1, RANGE_INDICATOR, gsub = KEY_BUTTON4, KEY_NUMPAD1, RANGE_INDICATOR, string.gsub
+-- Importing required functions and constants
+local gsub = string.gsub
+local KEY_BUTTON4, KEY_NUMPAD1, RANGE_INDICATOR = KEY_BUTTON4, KEY_NUMPAD1, RANGE_INDICATOR
 
-local keyButton = gsub(KEY_BUTTON4, "%d", "")
-local keyNumpad = gsub(KEY_NUMPAD1, "%d", "")
+-- Processing key strings
+local keyButton = gsub(KEY_BUTTON4, "%d", "") -- Removes digits from KEY_BUTTON4
+local keyNumpad = gsub(KEY_NUMPAD1, "%d", "") -- Removes digits from KEY_NUMPAD1
 
 local replaces = {
 	{ "(" .. keyButton .. ")", "M" },
@@ -37,7 +40,7 @@ function Module:UpdateHotKey()
 	if text == RANGE_INDICATOR then
 		text = ""
 	else
-		for _, value in pairs(replaces) do
+		for _, value in ipairs(replaces) do
 			text = gsub(text, value[1], value[2])
 		end
 	end
@@ -113,16 +116,18 @@ function Module:StyleActionButton(button)
 		autoCastable:SetTexCoord(0.217, 0.765, 0.217, 0.765)
 		autoCastable:SetAllPoints()
 	end
-
 	if icon then
 		icon:SetAllPoints()
 		if not icon.__lockdown then
 			icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		end
-		button.__bg = CreateFrame("Frame", nil, button, "BackdropTemplate")
-		button.__bg:SetAllPoints(button)
-		button.__bg:SetFrameLevel(button:GetFrameLevel())
-		button.__bg:CreateBorder(nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, { 0.7, 0.7, 0.7 })
+
+		if not button.__bg then
+			button.__bg = CreateFrame("Frame", nil, button, "BackdropTemplate")
+			button.__bg:SetAllPoints(button)
+			button.__bg:SetFrameLevel(button:GetFrameLevel())
+			button.__bg:CreateBorder(nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, { 0.7, 0.7, 0.7 })
+		end
 	end
 	if cooldown then
 		cooldown:SetPoint("TOPLEFT", button, "TOPLEFT", 1, -1)
@@ -182,6 +187,7 @@ function Module:ReskinBars()
 	--spell flyout
 	SpellFlyout.Background:SetAlpha(0)
 	local numFlyouts = 1
+
 	local function checkForFlyoutButtons()
 		local button = _G["SpellFlyoutButton" .. numFlyouts]
 		while button do
@@ -189,7 +195,11 @@ function Module:ReskinBars()
 			numFlyouts = numFlyouts + 1
 			button = _G["SpellFlyoutButton" .. numFlyouts]
 		end
+		numFlyouts = 1 -- Reset numFlyouts after styling all buttons
 	end
+
 	SpellFlyout:HookScript("OnShow", checkForFlyoutButtons)
-	SpellFlyout:HookScript("OnHide", checkForFlyoutButtons)
+	SpellFlyout:HookScript("OnHide", function()
+		numFlyouts = 1
+	end) -- Also reset when the flyout is hidden
 end
