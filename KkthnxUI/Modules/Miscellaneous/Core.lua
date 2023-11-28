@@ -64,6 +64,7 @@ function Module:OnEnable()
 		"CreateVehicleSeatMover",
 		"DisableHelpTip",
 		"DisableTutorials",
+		"HandleKkthnxUITitle",
 		"UpdateMaxCameraZoom",
 	}
 
@@ -834,4 +835,32 @@ function Module:DisableTutorials()
 	if not NPE or not GT or not TM or not TD then -- wait for them to exist
 		K:RegisterEvent("ADDON_LOADED", ShutdownTutorials)
 	end
+end
+
+function Module:HandleKkthnxUITitle()
+	-- Square KkthnxUI logo texture
+	local function replaceIconString(self, text)
+		if not text then
+			text = self:GetText()
+		end
+		if not text or text == "" then
+			return
+		end
+
+		if strfind(text, "KkthnxUI") or strfind(text, "BaudErrorFrame") then
+			local newText, count = gsub(text, "|T([^:]-):[%d+:]+|t", "|T" .. "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\LogoSmall" .. ":20:20|t")
+			if count > 0 then
+				self:SetFormattedText("%s", newText)
+			end
+		end
+	end
+
+	hooksecurefunc("AddonList_InitButton", function(entry)
+		if not entry.logoHooked then
+			replaceIconString(entry.Title)
+			hooksecurefunc(entry.Title, "SetText", replaceIconString)
+
+			entry.logoHooked = true
+		end
+	end)
 end
