@@ -1,9 +1,11 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
+-- Lua functions
 local select = select
 local string_format = string.format
 
+-- WoW API
 local CreateFrame = CreateFrame
 
 function Module.PostUpdateAddPower(element, cur, max)

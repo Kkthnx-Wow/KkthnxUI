@@ -1,6 +1,10 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
+-- Lua functions
+local select = select
+
+-- WoW API
 local CreateFrame = CreateFrame
 
 function Module:CreateFocusTarget()

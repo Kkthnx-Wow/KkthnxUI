@@ -37,20 +37,33 @@ end
 -- Set Border Color
 do
 	function K.SetBorderColor(self)
-		if not self then
+		-- Prevent issues related to invalid inputs or configurations
+		if not self or type(self) ~= "table" or not self.SetVertexColor then
 			return
 		end
 
-		if C["General"].ColorTextures then
-			self:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+		local colorTextures = C["General"].ColorTextures
+		local texturesColor = C["General"].TexturesColor
+
+		if colorTextures and texturesColor and #texturesColor == 3 then
+			-- Ensure each color component is within the valid range
+			local r = math.min(math.max(texturesColor[1], 0), 1)
+			local g = math.min(math.max(texturesColor[2], 0), 1)
+			local b = math.min(math.max(texturesColor[3], 0), 1)
+
+			self:SetVertexColor(r, g, b)
 		else
-			self:SetVertexColor(1, 1, 1)
+			self:SetVertexColor(1, 1, 1) -- Default color
 		end
 	end
 end
 
 -- Create Border
 local function CreateBorder(bFrame, ...)
+	if not bFrame or type(bFrame) ~= "table" then
+		return nil, "Invalid frame provided"
+	end
+
 	local bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
 	local General = C.General
 	local Media = C.Media
@@ -67,12 +80,8 @@ local function CreateBorder(bFrame, ...)
 		kkui_border:SetTexture(BorderTexture)
 		kkui_border:SetOffset(BorderOffset)
 
-		if General.ColorTextures then
-			local TexturesColor = General.TexturesColor
-			kkui_border:SetVertexColor(TexturesColor[1], TexturesColor[2], TexturesColor[3])
-		else
-			kkui_border:SetVertexColor(unpack(BorderColor))
-		end
+		local r, g, b = unpack(General.ColorTextures and General.TexturesColor or BorderColor)
+		kkui_border:SetVertexColor(r, g, b)
 
 		bFrame.KKUI_Border = kkui_border
 	end
@@ -94,11 +103,15 @@ local function CreateBorder(bFrame, ...)
 		bFrame.KKUI_Background = kkui_background
 	end
 
-	return bFrame, ...
+	return bFrame
 end
 
 -- Create Backdrop
 local function CreateBackdrop(bFrame, ...)
+	if not bFrame or type(bFrame) ~= "table" then
+		return nil, "Invalid frame provided"
+	end
+
 	local bPointa, bPointb, bPointc, bPointd, bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor = ...
 
 	if not bFrame.KKUI_Background then
@@ -110,28 +123,37 @@ local function CreateBackdrop(bFrame, ...)
 			bPointd or 0,
 		}
 
-		local kkui_backdrop = CreateFrame("Frame", "$parentBackdrop", bFrame) -- Create the backdrop frame.
-		kkui_backdrop:SetPoint("TOPLEFT", bFrame, "TOPLEFT", unpack(BorderPoints, 1, 2)) -- Set the first point of the border's position.
-		kkui_backdrop:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", unpack(BorderPoints, 3, 4)) -- Set the second point of the border's position.
-		kkui_backdrop:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor) -- Create the border.
+		local kkui_backdrop = CreateFrame("Frame", "$parentBackdrop", bFrame)
+		kkui_backdrop:SetPoint("TOPLEFT", bFrame, "TOPLEFT", BorderPoints[1], BorderPoints[2])
+		kkui_backdrop:SetPoint("BOTTOMRIGHT", bFrame, "BOTTOMRIGHT", BorderPoints[3], BorderPoints[4])
+
+		-- Ensure CreateBorder function exists and is callable
+		if type(kkui_backdrop.CreateBorder) == "function" then
+			kkui_backdrop:CreateBorder(bSubLevel, bLayer, bSize, bTexture, bOffset, bColor, bAlpha, bgTexture, bgSubLevel, bgLayer, bgPoint, bgColor)
+		end
 
 		kkui_backdrop:SetFrameLevel(max(0, bFrame:GetFrameLevel() - 1))
 
-		bFrame.KKUI_Backdrop = kkui_backdrop -- Save the backdrop as a property of the frame so that it can be referenced later on.
+		bFrame.KKUI_Backdrop = kkui_backdrop
 	end
 
-	return bFrame, ...
+	return bFrame
 end
 
 -- Create Shadow
 local function CreateShadow(frame, useBackdrop)
+	-- Validate the frame
+	if not frame or type(frame) ~= "table" then
+		return nil, "Invalid frame provided"
+	end
+
 	-- Check if the shadow already exists; if so, return
 	if frame.Shadow then
 		return frame.Shadow
 	end
 
 	-- Get the parent frame if the passed object is a texture
-	local parentFrame = (frame:IsObjectType("Texture")) and frame:GetParent() or frame
+	local parentFrame = frame:IsObjectType("Texture") and frame:GetParent() or frame
 
 	-- Create the shadow frame using the BackdropTemplate
 	local shadow = CreateFrame("Frame", nil, parentFrame, "BackdropTemplate")
@@ -156,7 +178,7 @@ local function CreateShadow(frame, useBackdrop)
 	shadow:SetBackdrop(backdrop)
 
 	-- Set the frame level of the shadow frame to be one lower than the parent frame
-	shadow:SetFrameLevel(parentFrame:GetFrameLevel() > 0 and parentFrame:GetFrameLevel() - 1 or 0)
+	shadow:SetFrameLevel(max(parentFrame:GetFrameLevel() - 1, 0))
 
 	-- Set the background and border color of the shadow frame based on the 'useBackdrop' argument
 	if useBackdrop then

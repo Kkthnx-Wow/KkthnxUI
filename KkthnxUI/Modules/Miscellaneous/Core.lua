@@ -1,17 +1,22 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Miscellaneous")
 
+-- Localizing Lua built-in functions for performance
 local select = select
 local tonumber = tonumber
+local next = next
+local type = type
+local ipairs = ipairs
+local pcall = pcall
+local error = error
 
+-- Localizing WoW API functions and variables
 local BNToastFrame = BNToastFrame
 local C_BattleNet_GetGameAccountInfoByGUID = C_BattleNet.GetGameAccountInfoByGUID
 local C_FriendList_IsFriend = C_FriendList.IsFriend
 local C_QuestLog_GetSelectedQuest = C_QuestLog.GetSelectedQuest
 local C_QuestLog_ShouldShowQuestRewards = C_QuestLog.ShouldShowQuestRewards
 local CreateFrame = CreateFrame
-local FRIEND = FRIEND
-local GUILD = GUILD
 local GetItemInfo = GetItemInfo
 local GetItemQualityColor = GetItemQualityColor
 local GetMerchantItemLink = GetMerchantItemLink
@@ -21,7 +26,6 @@ local GetRewardXP = GetRewardXP
 local InCombatLockdown = InCombatLockdown
 local IsAltKeyDown = IsAltKeyDown
 local IsGuildMember = IsGuildMember
-local NO = NO
 local PlaySound = PlaySound
 local StaticPopupDialogs = StaticPopupDialogs
 local StaticPopup_Show = StaticPopup_Show
@@ -29,8 +33,13 @@ local UIParent = UIParent
 local UnitGUID = UnitGUID
 local UnitXP = UnitXP
 local UnitXPMax = UnitXPMax
-local YES = YES
 local hooksecurefunc = hooksecurefunc
+
+-- Localizing WoW UI constants
+local FRIEND = FRIEND
+local GUILD = GUILD
+local NO = NO
+local YES = YES
 
 local KKUI_MISC_MODULE = {}
 
@@ -41,12 +50,14 @@ function Module:RegisterMisc(name, func)
 end
 
 function Module:OnEnable()
+	-- First loop: Iterating over KKUI_MISC_MODULE
 	for name, func in next, KKUI_MISC_MODULE do
 		if name and type(func) == "function" then
 			func()
 		end
 	end
 
+	-- Second loop: Iterating over loadMiscModules
 	local loadMiscModules = {
 		"CreateBlockStrangerInvites",
 		"CreateBossBanner",
@@ -73,7 +84,7 @@ function Module:OnEnable()
 		if type(func) == "function" then
 			local success, err = pcall(func, self)
 			if not success then
-				error("Error in function " .. funcName .. ": " .. tostring(err), 2)
+				error("Error in " .. funcName .. ": " .. tostring(err), 2)
 			end
 		end
 	end

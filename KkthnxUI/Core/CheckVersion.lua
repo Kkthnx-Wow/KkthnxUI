@@ -18,6 +18,7 @@ local IsInGuild = IsInGuild
 
 local lastVCTime = 0
 local isVCInit
+local UIUpdateNotice
 
 local function HandleVersionTag(version)
 	local major, minor = string_split(".", version)
@@ -49,7 +50,7 @@ function Module:VersionCheck_Create(text)
 		return
 	end
 
-	local UIUpdateNotice = CreateFrame("Frame", "KKUI_UpdateNotice", UIParent)
+	UIUpdateNotice = CreateFrame("Frame", "KKUI_UpdateNotice", UIParent)
 	UIUpdateNotice:SetSize(420, 150)
 	UIUpdateNotice:SetPoint("CENTER", UIParent, "CENTER")
 	UIUpdateNotice:CreateBorder()
@@ -168,4 +169,13 @@ function Module:OnEnable()
 	end
 	Module:VersionCheck_UpdateGroup()
 	K:RegisterEvent("GROUP_ROSTER_UPDATE", Module.VersionCheck_UpdateGroup)
+end
+
+-- Register a slash command
+SLASH_KKUIVERSIONCHECK1 = "/kkvc"
+
+-- Slash command handler
+SlashCmdList["KKUIVERSIONCHECK"] = function(msg)
+	print("Version check command triggered")
+	Module:VersionCheck_Init()
 end

@@ -3,10 +3,12 @@ local Module = K:NewModule("Unitframes")
 local AuraModule = K:GetModule("Auras")
 local oUF = K.oUF
 
+-- Lua functions
 local pairs = pairs
 local string_format = string.format
 local unpack = unpack
 
+-- WoW API
 local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 local CreateFrame = CreateFrame
 local GetRuneCooldown = GetRuneCooldown
@@ -25,6 +27,7 @@ local UnitIsPVPFreeForAll = UnitIsPVPFreeForAll
 local UnitIsPlayer = UnitIsPlayer
 local UnitThreatSituation = UnitThreatSituation
 
+-- Custom variables
 local lastPvPSound = false
 local phaseIconTexCoords = {
 	[1] = { 1 / 128, 33 / 128, 1 / 64, 33 / 64 },

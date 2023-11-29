@@ -1,6 +1,7 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
-local _G, pairs, type = getfenv(0), pairs, type
+-- Caching global functions and variables for performance
+local pairs, type, string_gmatch, print = pairs, type, string.gmatch, print
 
 local frames = {
 	-- ["FrameName"] = true (the parent frame should be moved) or false (the frame itself should be moved)
@@ -49,8 +50,7 @@ local function IsFrameExists()
 	end
 
 	for k in pairs(frames) do
-		local name = _G[k]
-		if not name and K.isDeveloper then
+		if not _G[k] and K.isDeveloper then
 			print("Frame not found:", k)
 		end
 	end
@@ -106,7 +106,8 @@ local lodFrames = {
 	Blizzard_WeeklyRewards = { ["WeeklyRewardsFrame"] = false },
 }
 
-local parentFrame, hooked = {}, {}
+local parentFrame = {}
+local hooked = {}
 
 local function MouseDownHandler(frame, button)
 	frame = parentFrame[frame] or frame
@@ -137,15 +138,11 @@ local function HookScript(frame, script, handler)
 end
 
 local function HookFrame(name, moveParent)
-	-- find frame
-	-- name may contain dots for children, e.g. ReforgingFrame.InvisibleButton
 	local frame = _G
-	for s in string.gmatch(name, "%w+") do
-		if frame then
-			frame = frame[s]
-		end
+	for s in string_gmatch(name, "%w+") do
+		frame = frame and frame[s]
 	end
-	-- check if frame was found
+
 	if frame == _G then
 		frame = nil
 	end
@@ -153,21 +150,19 @@ local function HookFrame(name, moveParent)
 	local parent
 	if frame and not hooked[name] then
 		if moveParent then
-			if type(moveParent) == "string" then
-				parent = _G[moveParent]
-			else
-				parent = frame:GetParent()
-			end
+			parent = type(moveParent) == "string" and _G[moveParent] or frame:GetParent()
 			if not parent then
 				print("Parent frame not found: " .. name)
 				return
 			end
 			parentFrame[frame] = parent
 		end
+
 		if parent then
 			parent:SetMovable(true)
 			parent:SetClampedToScreen(false)
 		end
+
 		frame:EnableMouse(true)
 		frame:SetMovable(true)
 		frame:SetClampedToScreen(false)

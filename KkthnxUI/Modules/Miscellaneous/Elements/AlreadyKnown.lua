@@ -1,14 +1,54 @@
-local K = KkthnxUI[1]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 
 -- Sourced: AlreadyKnown (villiv)
 -- Edited: KkthnxUI (Kkthnx)
 
-local mod, strmatch, strfind, format = mod, strmatch, strfind, format
-local GetItemInfo, SetItemButtonTextureVertexColor = GetItemInfo, SetItemButtonTextureVertexColor
-local GetCurrentGuildBankTab, GetGuildBankItemInfo, GetGuildBankItemLink = GetCurrentGuildBankTab, GetGuildBankItemInfo, GetGuildBankItemLink
-local GetMerchantNumItems, GetMerchantItemInfo, GetMerchantItemLink = GetMerchantNumItems, GetMerchantItemInfo, GetMerchantItemLink
-local GetNumBuybackItems, GetBuybackItemInfo, GetBuybackItemLink = GetNumBuybackItems, GetBuybackItemInfo, GetBuybackItemLink
+-- Cache global functions
+local strmatch = strmatch
+local tonumber = tonumber
+local ceil = math.ceil
+local format = string.format
+
+-- Cache WoW API functions
+local GetItemInfo = GetItemInfo
+local GetInboxItem = GetInboxItem
+local GetInboxItemLink = GetInboxItemLink
+local GetLootSlotInfo = GetLootSlotInfo
+local GetLootSlotLink = GetLootSlotLink
+local GetMerchantNumItems = GetMerchantNumItems
+local GetMerchantItemInfo = GetMerchantItemInfo
+local GetMerchantItemLink = GetMerchantItemLink
+local GetNumQuestRewards = GetNumQuestRewards
+local GetNumQuestChoices = GetNumQuestChoices
+local GetQuestItemInfo = GetQuestItemInfo
+local GetQuestLogItemLink = GetQuestLogItemLink
+local GetQuestItemLink = GetQuestItemLink
+local GetNumBuybackItems = GetNumBuybackItems
+local GetBuybackItemInfo = GetBuybackItemInfo
+local GetBuybackItemLink = GetBuybackItemLink
+local GetCurrentGuildBankTab = GetCurrentGuildBankTab
+local GetGuildBankItemInfo = GetGuildBankItemInfo
+local GetGuildBankItemLink = GetGuildBankItemLink
 local C_PetJournal_GetNumCollectedInfo = C_PetJournal.GetNumCollectedInfo
+
+-- Cache WoW API objects and constants
+local C_TooltipInfo = C_TooltipInfo
+local C_AddOns = C_AddOns
+local AuctionHouseFrame = AuctionHouseFrame
+local LootFrameElementMixin = LootFrameElementMixin
+local COLLECTED = COLLECTED
+local ITEM_SPELL_KNOWN = ITEM_SPELL_KNOWN
+local ATTACHMENTS_MAX_RECEIVE = ATTACHMENTS_MAX_RECEIVE
+local MERCHANT_ITEMS_PER_PAGE = MERCHANT_ITEMS_PER_PAGE
+local MAX_GUILDBANK_SLOTS_PER_TAB = MAX_GUILDBANK_SLOTS_PER_TAB or 98
+local NUM_SLOTS_PER_GUILDBANK_GROUP = NUM_SLOTS_PER_GUILDBANK_GROUP or 14
+
+-- Cache UI functions
+local SetItemButtonTextureVertexColor = SetItemButtonTextureVertexColor
+local CreateFrame = CreateFrame
+
+-- Cache global variables
+local _G = _G
 
 local COLOR = { r = 0.1, g = 1, b = 0.1 }
 local knowables = {
@@ -243,10 +283,6 @@ local function Hook_UpdateAuctionItems(self)
 		end
 	end
 end
-
--- Guild Bank Frame
-local MAX_GUILDBANK_SLOTS_PER_TAB = MAX_GUILDBANK_SLOTS_PER_TAB or 98
-local NUM_SLOTS_PER_GUILDBANK_GROUP = NUM_SLOTS_PER_GUILDBANK_GROUP or 14
 
 local function GuildBankFrame_Update(self)
 	if self.mode ~= "bank" then

@@ -2,13 +2,27 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
 local TT = K:GetModule("Tooltip")
 
-local pairs, select, next, type, unpack = pairs, select, next, type, unpack
-local UnitGUID, GetItemInfo, GetSpellInfo = UnitGUID, GetItemInfo, GetSpellInfo
+-- Basic Lua functions
+local pairs = pairs
+local select = select
+local next = next
+local type = type
+
+-- Unit and item information functions
+local UnitGUID = UnitGUID
+local GetItemInfo = GetItemInfo
+local GetSpellInfo = GetSpellInfo
 local GetContainerItemLink = C_Container.GetContainerItemLink
 local GetInventoryItemLink = GetInventoryItemLink
-local EquipmentManager_UnpackLocation, EquipmentManager_GetItemInfoByLocation = EquipmentManager_UnpackLocation, EquipmentManager_GetItemInfoByLocation
+local GetTradePlayerItemLink = GetTradePlayerItemLink
+local GetTradeTargetItemLink = GetTradeTargetItemLink
+
+-- Equipment management functions
+local EquipmentManager_UnpackLocation = EquipmentManager_UnpackLocation
+local EquipmentManager_GetItemInfoByLocation = EquipmentManager_GetItemInfoByLocation
+
+-- Azerite power functions
 local C_AzeriteEmpoweredItem_IsPowerSelected = C_AzeriteEmpoweredItem.IsPowerSelected
-local GetTradePlayerItemLink, GetTradeTargetItemLink = GetTradePlayerItemLink, GetTradeTargetItemLink
 
 local inspectSlots = {
 	"Head",

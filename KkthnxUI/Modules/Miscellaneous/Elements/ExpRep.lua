@@ -1,44 +1,38 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Miscellaneous")
 
+-- Caching global functions
 local math_min = math.min
-local mod = mod
-local string_format = string.format
-local pairs = pairs
-local select = select
 local math_floor = math.floor
+local string_format = string.format
+local ipairs = ipairs
 
-local ARTIFACT_POWER = ARTIFACT_POWER
+-- Caching global variables
 local C_AzeriteItem_FindActiveAzeriteItem = C_AzeriteItem.FindActiveAzeriteItem
 local C_AzeriteItem_GetAzeriteItemXPInfo = C_AzeriteItem.GetAzeriteItemXPInfo
 local C_AzeriteItem_GetPowerLevel = C_AzeriteItem.GetPowerLevel
 local C_AzeriteItem_IsAzeriteItemAtMaxLevel = C_AzeriteItem.IsAzeriteItemAtMaxLevel
 local C_MajorFactions_GetMajorFactionData = C_MajorFactions.GetMajorFactionData
 local C_MajorFactions_HasMaximumRenown = C_MajorFactions.HasMaximumRenown
+local C_QuestLog = C_QuestLog
 local C_Reputation_GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
 local C_Reputation_IsFactionParagon = C_Reputation.IsFactionParagon
 local C_Reputation_IsMajorFaction = C_Reputation.IsMajorFaction
-local GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation
+local GameTooltip = GameTooltip
+local GetFriendshipReputation = GetFriendshipReputation
 local GetWatchedFactionInfo = GetWatchedFactionInfo
 local GetXPExhaustion = GetXPExhaustion
-local HONOR = HONOR
-local IsLevelAtEffectiveMaxLevel = IsLevelAtEffectiveMaxLevel
 local IsPlayerAtEffectiveMaxLevel = IsPlayerAtEffectiveMaxLevel
-local IsTrialAccount = IsTrialAccount
-local IsVeteranTrialAccount = IsVeteranTrialAccount
 local IsWatchingHonorAsXP = IsWatchingHonorAsXP
-local IsXPUserDisabled = IsXPUserDisabled
-local LEVEL = LEVEL
-local REPUTATION_PROGRESS_FORMAT = REPUTATION_PROGRESS_FORMAT
 local UnitHonor = UnitHonor
 local UnitHonorLevel = UnitHonorLevel
 local UnitHonorMax = UnitHonorMax
 local UnitXP = UnitXP
 local UnitXPMax = UnitXPMax
 
+-- Your existing local variables
 local CurrentXP, XPToLevel, RestedXP, PercentRested
 local PercentXP, RemainXP, RemainTotal, RemainBars
-
 local QuestRep = 0
 
 local function IsAzeriteAvailable()

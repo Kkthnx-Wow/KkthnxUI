@@ -1,6 +1,7 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Unitframes")
 
+-- Lua functions
 local math_rad = math.rad
 local pairs = pairs
 local string_format = string.format
@@ -8,10 +9,13 @@ local table_wipe = table.wipe
 local tonumber = tonumber
 local unpack = unpack
 
+-- WoW API
 local Ambiguate = Ambiguate
 local C_NamePlate_GetNamePlateForUnit = C_NamePlate.GetNamePlateForUnit
 local C_NamePlate_SetNamePlateEnemySize = C_NamePlate.SetNamePlateEnemySize
 local C_NamePlate_SetNamePlateFriendlySize = C_NamePlate.SetNamePlateFriendlySize
+local C_NamePlate_SetNamePlateEnemyClickThrough = C_NamePlate.SetNamePlateEnemyClickThrough
+local C_NamePlate_SetNamePlateFriendlyClickThrough = C_NamePlate.SetNamePlateFriendlyClickThrough
 local C_Scenario_GetCriteriaInfo = C_Scenario.GetCriteriaInfo
 local C_Scenario_GetInfo = C_Scenario.GetInfo
 local C_Scenario_GetStepInfo = C_Scenario.GetStepInfo
@@ -38,26 +42,14 @@ local UnitPlayerControlled = UnitPlayerControlled
 local UnitReaction = UnitReaction
 local UnitThreatSituation = UnitThreatSituation
 local hooksecurefunc = hooksecurefunc
-local C_NamePlate_SetNamePlateEnemyClickThrough = C_NamePlate.SetNamePlateEnemyClickThrough
-local C_NamePlate_SetNamePlateFriendlyClickThrough = C_NamePlate.SetNamePlateFriendlyClickThrough
 
--- Cache for data of abilities used by players
-local aksCacheData = {}
-
--- Custom unit data
-local customUnits = {}
-
--- Group roles for players
-local groupRoles = {}
-
--- List of players who have their power displayed
-local showPowerList = {}
-
--- Boolean to track if the player is in a group
-local isInGroup = false
-
--- Boolean to track if the player is in an instance
-local isInInstance = false
+-- Custom data
+local aksCacheData = {} -- Cache for data of abilities used by players
+local customUnits = {} -- Custom unit data
+local groupRoles = {} -- Group roles for players
+local showPowerList = {} -- List of players who have their power displayed
+local isInGroup = false -- Boolean to track if the player is in a group
+local isInInstance = false -- Boolean to track if the player is in an instance
 
 -- Unit classification
 local NPClassifies = {
@@ -67,6 +59,7 @@ local NPClassifies = {
 	worldboss = { 0, 1, 0 },
 }
 
+-- Specific NPCs to show
 local ShowTargetNPCs = {
 	[165251] = true, -- Fox of Xianlin
 	[174773] = true, -- Envious Monster
