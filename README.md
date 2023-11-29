@@ -12,7 +12,7 @@ Connect with thousands of users who have embraced KkthnxUI. Whether you're a cas
 To find a ‘Warchief’-ly good UI experience!*
 
 ## Gift of Appreciation
-Show your support for the hard work and dedication put into KkthnxUI by gifting gametime or Blizzard balance to Kkthnx's gamertag: **Kkthnx#1105** or send it to **JRussell20@gmail.com**.
+Show your support for the hard work and dedication put into KkthnxUI by gifting gametime or Blizzard balance to Kkthnx's gamertag: **Kkthnx#1105** or send it to **JRussell20@gmail.com** or donate through PayPal @ https://www.paypal.com/paypalme/kkthnxtv.
 
 ### Gold Appreciation
 You can also show your support by sending gold to Kkthnx on the Area 52 realm.
