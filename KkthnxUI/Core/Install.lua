@@ -559,7 +559,7 @@ local function HelloWorld()
 	goPaypal.text:SetText("|CFF0079C1Paypal|r")
 
 	goPaypal:SetScript("OnClick", function()
-		StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, "https://www.paypal.com/paypalme/kkthnx")
+		StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, "https://www.paypal.com/paypalme/KkthnxTV")
 	end)
 
 	local goPatreon = CreateFrame("Button", nil, welcome)
