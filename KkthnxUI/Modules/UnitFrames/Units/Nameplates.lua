@@ -502,10 +502,6 @@ function Module:UpdateQuestUnit(_, unit)
 
 	unit = unit or self.unit
 
-	if UnitIsPlayer(unit) then
-		return
-	end
-
 	local questProgress
 	local prevDiff = 0
 	local data = C_TooltipInfo.GetUnit(unit)
