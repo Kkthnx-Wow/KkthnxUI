@@ -1,39 +1,35 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
 local function createProfileName(server, nickname)
-	return server .. "-" .. nickname
+	return table.concat({ server, nickname }, "-")
 end
 
 local function KKUI_VerifyDatabase()
-	if not KkthnxUIDB then
-		KkthnxUIDB = { Variables = {} }
-	end
+	KkthnxUIDB = KkthnxUIDB or { Variables = {} }
 
-	local charData = KkthnxUIDB.Variables[K.Realm] and KkthnxUIDB.Variables[K.Realm][K.Name]
-	if not charData then
-		charData = {
-			AutoQuest = false,
-			AutoQuestIgnoreNPC = {},
-			CustomItems = {},
-			CustomNames = {},
-			CustomJunkList = {},
-			Mover = {},
-			AuraWatchMover = {},
-			Tracking = { PvP = {}, PvE = {} },
-			RevealWorldMap = false,
-			SplitCount = 1,
-			TempAnchor = {},
-			InternalCD = {},
-			AuraWatchList = {
-				Switcher = {},
-				IgnoreSpells = {},
-			},
-		}
-		KkthnxUIDB.Variables[K.Realm] = KkthnxUIDB.Variables[K.Realm] or {}
-		KkthnxUIDB.Variables[K.Realm][K.Name] = charData
-	end
+	local realmData = KkthnxUIDB.Variables[K.Realm] or {}
+	local charData = realmData[K.Name] or {
+		AutoQuest = false,
+		AutoQuestIgnoreNPC = {},
+		CustomItems = {},
+		CustomNames = {},
+		CustomJunkList = {},
+		Mover = {},
+		AuraWatchMover = {},
+		Tracking = { PvP = {}, PvE = {} },
+		RevealWorldMap = false,
+		SplitCount = 1,
+		TempAnchor = {},
+		InternalCD = {},
+		AuraWatchList = {
+			Switcher = {},
+			IgnoreSpells = {},
+		},
+	}
+	KkthnxUIDB.Variables[K.Realm] = realmData
+	realmData[K.Name] = charData
 
-	-- Transfer favourite items since we made a custom filter
+	-- Transfer favourite items logic
 	if KkthnxUIDB and charData.FavouriteItems and next(charData.FavouriteItems) then
 		charData.CustomItems = charData.CustomItems or {}
 		for itemID in pairs(charData.FavouriteItems) do
@@ -42,7 +38,7 @@ local function KKUI_VerifyDatabase()
 		charData.FavouriteItems = nil
 	end
 
-	-- Settings
+	-- Initialize other settings and data structures
 	KkthnxUIDB.Settings = KkthnxUIDB.Settings or {}
 	KkthnxUIDB.Settings[K.Realm] = KkthnxUIDB.Settings[K.Realm] or {}
 	KkthnxUIDB.Settings[K.Realm][K.Name] = KkthnxUIDB.Settings[K.Realm][K.Name] or {}
@@ -52,7 +48,7 @@ local function KKUI_VerifyDatabase()
 	KkthnxUIDB.Deaths = KkthnxUIDB.Deaths or {}
 	KkthnxUIDB.ShowSlots = KkthnxUIDB.ShowSlots or false
 	KkthnxUIDB.ChangeLog = KkthnxUIDB.ChangeLog or {}
-	KkthnxUIDB.DetectVersion = KkthnxUIDB.DetectVersion or K.Version or nil
+	KkthnxUIDB.DetectVersion = KkthnxUIDB.DetectVersion or K.Version
 	KkthnxUIDB.KeystoneInfo = KkthnxUIDB.KeystoneInfo or {}
 end
 
@@ -63,11 +59,7 @@ local function KKUI_CreateDefaults()
 		K.Defaults[group] = {}
 
 		for option, value in pairs(options) do
-			local defaultValue = value
-			if type(value) == "table" and value.Options then
-				defaultValue = value.Value
-			end
-
+			local defaultValue = type(value) == "table" and value.Options and value.Value or value
 			K.Defaults[group][option] = defaultValue
 		end
 	end
@@ -113,7 +105,7 @@ local function KKUI_LoadProfiles()
 	for Server, Table in pairs(GUISettings) do
 		for Nickname in pairs(Table) do
 			local ProfileName = createProfileName(Server, Nickname)
-			local MyProfileName = K.Realm .. "-" .. K.Name
+			local MyProfileName = createProfileName(K.Realm, K.Name)
 
 			if MyProfileName ~= ProfileName then
 				Menu[ProfileName] = ProfileName

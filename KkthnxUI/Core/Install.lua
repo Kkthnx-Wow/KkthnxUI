@@ -516,17 +516,24 @@ local function HelloWorld()
 
 	local goTutor = CreateFrame("Button", nil, welcome)
 	goTutor:SetPoint("BOTTOM", 0, 10)
-	goTutor:SetSize(110, 20)
+	goTutor:SetSize(110, 22)
 	goTutor:SkinButton()
 
 	if welcome:IsShown() then
 		K.ShowOverlayGlow(goTutor, "AutoCastGlow")
 	end
 
+	-- XMAS STUFF!
+	local red = "|cFFFF0000" -- Red color start
+	local green = "|cFF00FF00" -- Green color start
+	local reset = "|r" -- Reset color
+
+	local text = red .. "I" .. reset .. green .. "N" .. reset .. red .. "S" .. reset .. green .. "T" .. reset .. red .. "A" .. reset .. green .. "L" .. reset .. red .. "L" .. reset .. green .. "!" .. reset
+
 	goTutor.text = goTutor:CreateFontString(nil, "OVERLAY")
 	goTutor.text:SetFontObject(K.UIFont)
-	goTutor.text:SetPoint("CENTER")
-	goTutor.text:SetText("Install")
+	goTutor.text:SetPoint("CENTER", 0, -1)
+	goTutor.text:SetText(text)
 
 	goTutor:SetScript("OnClick", function()
 		K.HideOverlayGlow(goTutor, "AutoCastGlow")
@@ -534,37 +541,23 @@ local function HelloWorld()
 		YesTutor()
 	end)
 
-	-- local goTwitch = CreateFrame("Button", nil, welcome)
-	-- goTwitch:SetPoint("BOTTOM", 0, 50)
-	-- goTwitch:SetSize(110, 20)
-	-- goTwitch:SkinButton()
+	local goTwitch = CreateFrame("Button", nil, welcome)
+	goTwitch:SetPoint("BOTTOMLEFT", 21, 50)
+	goTwitch:SetSize(90, 20)
+	goTwitch:SkinButton()
 
-	-- goTwitch.text = goTwitch:CreateFontString(nil, "OVERLAY")
-	-- goTwitch.text:SetFontObject(K.UIFont)
-	-- goTwitch.text:SetPoint("CENTER")
-	-- goTwitch.text:SetText("|CFF8F76BDTwitch|r")
+	goTwitch.text = goTwitch:CreateFontString(nil, "OVERLAY")
+	goTwitch.text:SetFontObject(K.UIFont)
+	goTwitch.text:SetPoint("CENTER")
+	goTwitch.text:SetText("|CFF8F76BDTwitch|r")
 
-	-- goTwitch:SetScript("OnClick", function()
-	-- 	StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, "https://www.twitch.tv/kkthnxtv")
-	-- end)
-
-	-- local goKick = CreateFrame("Button", nil, welcome)
-	-- goKick:SetPoint("BOTTOM", 0, 50)
-	-- goKick:SetSize(110, 20)
-	-- goKick:SkinButton()
-
-	-- goKick.text = goTwitch:CreateFontString(nil, "OVERLAY")
-	-- goKick.text:SetFontObject(K.UIFont)
-	-- goKick.text:SetPoint("CENTER")
-	-- goKick.text:SetText("|CFF8F76BDTwitch|r")
-
-	-- goKick:SetScript("OnClick", function()
-	-- 	StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, "https://www.kick.tv/kkthnx")
-	-- end)
+	goTwitch:SetScript("OnClick", function()
+		StaticPopup_Show("KKUI_POPUP_LINK", nil, nil, "https://www.twitch.tv/kkthnxtv")
+	end)
 
 	local goDiscord = CreateFrame("Button", nil, welcome)
-	goDiscord:SetPoint("BOTTOM", 0, 50)
-	goDiscord:SetSize(110, 22)
+	goDiscord:SetPoint("LEFT", goTwitch, "RIGHT", 6, 0)
+	goDiscord:SetSize(90, 22)
 	goDiscord:SkinButton()
 
 	goDiscord.text = goDiscord:CreateFontString(nil, "OVERLAY")
@@ -577,10 +570,9 @@ local function HelloWorld()
 	end)
 
 	local goPaypal = CreateFrame("Button", nil, welcome)
-	goPaypal:SetPoint("BOTTOM", -120, 50)
-	goPaypal:SetSize(110, 22)
+	goPaypal:SetPoint("LEFT", goDiscord, "RIGHT", 6, 0)
+	goPaypal:SetSize(90, 22)
 	goPaypal:SkinButton()
-	-- goPaypal.KKUI_Border:SetVertexColor(0 / 255, 121 / 255, 193 / 255)
 
 	goPaypal.text = goPaypal:CreateFontString(nil, "OVERLAY")
 	goPaypal.text:SetFontObject(K.UIFont)
@@ -592,8 +584,8 @@ local function HelloWorld()
 	end)
 
 	local goPatreon = CreateFrame("Button", nil, welcome)
-	goPatreon:SetPoint("BOTTOM", 120, 50)
-	goPatreon:SetSize(110, 22)
+	goPatreon:SetPoint("LEFT", goPaypal, "RIGHT", 6, 0)
+	goPatreon:SetSize(90, 22)
 	goPatreon:SkinButton()
 
 	goPatreon.text = goPatreon:CreateFontString(nil, "OVERLAY")
