@@ -19,7 +19,7 @@ local C_Reputation_GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
 local C_Reputation_IsFactionParagon = C_Reputation.IsFactionParagon
 local C_Reputation_IsMajorFaction = C_Reputation.IsMajorFaction
 local GameTooltip = GameTooltip
-local GetFriendshipReputation = GetFriendshipReputation
+local C_GossipInfo_GetFriendshipReputation = C_GossipInfo.GetFriendshipReputation
 local GetWatchedFactionInfo = GetWatchedFactionInfo
 local GetXPExhaustion = GetXPExhaustion
 local IsPlayerAtEffectiveMaxLevel = IsPlayerAtEffectiveMaxLevel
@@ -119,7 +119,7 @@ function Module:ExpBar_Update(event, unit)
 	elseif GetWatchedFactionInfo() then
 		local label, rewardPending
 		local name, reaction, minValue, maxValue, curValue, factionID = GetWatchedFactionInfo()
-		local info = factionID and GetFriendshipReputation(factionID)
+		local info = factionID and C_GossipInfo_GetFriendshipReputation(factionID)
 		if info and info.friendshipFactionID then
 			local isMajorFaction = factionID and C_Reputation_IsMajorFaction(factionID)
 
@@ -255,7 +255,7 @@ function Module:ExpBar_UpdateTooltip()
 
 			local friendID, friendTextLevel, _
 			if factionID then
-				friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(factionID)
+				friendID, _, _, _, _, _, friendTextLevel = C_GossipInfo_GetFriendshipReputation(factionID)
 				if friendID and friendID.friendshipFactionID > 0 then
 					standing = friendID.reaction
 				end

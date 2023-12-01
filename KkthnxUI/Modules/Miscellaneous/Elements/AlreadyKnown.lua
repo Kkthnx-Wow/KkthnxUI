@@ -34,7 +34,6 @@ local C_PetJournal_GetNumCollectedInfo = C_PetJournal.GetNumCollectedInfo
 -- Cache WoW API objects and constants
 local C_TooltipInfo = C_TooltipInfo
 local C_AddOns = C_AddOns
-local AuctionHouseFrame = AuctionHouseFrame
 local LootFrameElementMixin = LootFrameElementMixin
 local COLLECTED = COLLECTED
 local ITEM_SPELL_KNOWN = ITEM_SPELL_KNOWN
@@ -319,11 +318,15 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:SetScript("OnEvent", function(_, event, addon)
 	if addon == "Blizzard_AuctionHouseUI" then
-		hooksecurefunc(AuctionHouseFrame.BrowseResultsFrame.ItemList.ScrollBox, "Update", Hook_UpdateAuctionItems)
-		hookCount = hookCount + 1
+		if AuctionHouseFrame then
+			hooksecurefunc(AuctionHouseFrame.BrowseResultsFrame.ItemList.ScrollBox, "Update", Hook_UpdateAuctionItems)
+			hookCount = hookCount + 1
+		end
 	elseif addon == "Blizzard_GuildBankUI" then
-		hooksecurefunc(GuildBankFrame, "Update", GuildBankFrame_Update)
-		hookCount = hookCount + 1
+		if GuildBankFrame then
+			hooksecurefunc(GuildBankFrame, "Update", GuildBankFrame_Update)
+			hookCount = hookCount + 1
+		end
 	end
 
 	if hookCount >= 2 then
