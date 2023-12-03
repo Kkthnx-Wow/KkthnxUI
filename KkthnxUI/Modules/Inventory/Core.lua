@@ -1578,4 +1578,31 @@ function Module:OnEnable()
 		return f.bank:GetRight()
 	end
 	BankFrameItemButton_Update = K.Noop
+
+	local passedSystems = {
+		["TutorialReagentBag"] = true,
+	}
+	hooksecurefunc(HelpTip, "Show", function(self, _, info)
+		if info and passedSystems[info.system] then
+			self:HideAllSystem(info.system)
+		end
+	end)
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG, true)
+
+	SetCVar("professionToolSlotsExampleShown", 1)
+	SetCVar("professionAccessorySlotsExampleShown", 1)
+
+	-- Shift Key Alert
+	local function CheckShiftKey(self, elapsed)
+		if IsShiftKeyDown() then
+			self.elapsed = (self.elapsed or 0) + elapsed
+			if self.elapsed > 5 then
+				UIErrorsFrame:AddMessage(K.InfoColor .. "Please check if your SHIFT key is pressed or stuck.")
+				self.elapsed = 0
+			end
+		end
+	end
+
+	local shiftKeyUpdater = CreateFrame("Frame", nil, f.main)
+	shiftKeyUpdater:SetScript("OnUpdate", CheckShiftKey)
 end
