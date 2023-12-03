@@ -4,23 +4,26 @@ local Module = K:GetModule("Tooltip")
 local MountTable = {}
 
 local function IsCollected(spell)
-	local index = MountTable[spell].index
-	return select(11, C_MountJournal.GetMountInfoByID(index))
+	local mountInfo = MountTable[spell]
+	if mountInfo then
+		return select(11, C_MountJournal.GetMountInfoByID(mountInfo.index))
+	end
+
+	return false
 end
 
-local function GetOrCreateMountTable(spell)
+local function GetMountInfoBySpell(spell)
 	if not MountTable[spell] then
 		local index = C_MountJournal.GetMountFromSpell(spell)
 		if index then
-			local _, mSpell, _, _, _, sourceType = C_MountJournal.GetMountInfoByID(index)
+			local _, mSpell = C_MountJournal.GetMountInfoByID(index)
 			if spell == mSpell then
 				local _, _, source = C_MountJournal.GetMountInfoExtraByID(index)
 				MountTable[spell] = { source = source, index = index }
 			end
-			return MountTable[spell]
 		end
-		return nil
 	end
+
 	return MountTable[spell]
 end
 
@@ -30,14 +33,17 @@ local function AddLine(self, source, isCollectedText, type, noadd)
 		if not line then
 			break
 		end
+
 		local text = line:GetText()
 		if text and text == type then
 			return
 		end
 	end
+
 	if not noadd then
 		self:AddLine(" ")
 	end
+
 	self:AddDoubleLine(type, isCollectedText)
 	self:AddLine(source, 1, 1, 1)
 	self:Show()
@@ -45,9 +51,13 @@ end
 
 local function HandleAura(self, id)
 	if IsShiftKeyDown() and UnitIsPlayer("target") then
-		local table = id and GetOrCreateMountTable(id)
-		if table then
-			AddLine(self, table.source, IsCollected(id) and COLLECTED or NOT_COLLECTED, SOURCE)
+		if UnitName("target") == K.Name then
+			return
+		end -- Skip if target is the player
+
+		local mountInfo = id and GetMountInfoBySpell(id)
+		if mountInfo then
+			AddLine(self, mountInfo.source, IsCollected(id) and COLLECTED or NOT_COLLECTED, SOURCE)
 		end
 	end
 end
@@ -67,10 +77,4 @@ function Module:CreateMountSource()
 			HandleAura(self, data.spellId)
 		end
 	end)
-
-	-- K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.MountsSource)
 end
-
--- function Module:CreateMountSource()
--- 	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.MountsSource)
--- end
