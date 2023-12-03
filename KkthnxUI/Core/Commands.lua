@@ -194,3 +194,80 @@ SlashCmdList["CLEARCHAT"] = function(cmd)
 end
 _G.SLASH_CLEARCHAT1 = "/clearchat"
 _G.SLASH_CLEARCHAT2 = "/chatclear"
+
+-- Enable/Disable Addons for Troubleshooting
+local function StoreAndDisableAddons()
+	if next(KkthnxUIDB.DisabledAddOns) then
+		print("Debug mode is already active. Use '/kkdebug off' to restore addons.")
+		return
+	end
+
+	local addonCount = C_AddOns.GetNumAddOns()
+	local addonsToDisable = 0
+
+	for i = 1, addonCount do
+		local name = C_AddOns.GetAddOnInfo(i)
+		if name ~= "KkthnxUI" and C_AddOns.IsAddOnLoaded(name) then
+			addonsToDisable = addonsToDisable + 1
+		end
+	end
+
+	if addonsToDisable == 0 then
+		print("All addons except KkthnxUI are already disabled.")
+		return
+	end
+
+	StaticPopupDialogs["CONFIRM_DISABLE_ADDONS"] = {
+		text = string.format("Are you sure you want to disable |cff669DFF%d|r addon(s) except |cff669DFFKkthnxUI|r for debugging?|n|nYou can use '|cff669DFFkkdebug off|r' to restore them.", addonsToDisable),
+		button1 = "Yes",
+		button2 = "No",
+		OnAccept = function()
+			for i = 1, addonCount do
+				local name = C_AddOns.GetAddOnInfo(i)
+				if name ~= "KkthnxUI" and C_AddOns.IsAddOnLoaded(name) then
+					KkthnxUIDB.DisabledAddOns[name] = true
+					C_AddOns.DisableAddOn(name)
+				end
+			end
+			-- print(string.format("Disabled %d addon(s) for debugging. Reloading UI...", addonsToDisable)) -- Pointless
+			ReloadUI()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3, -- Avoids taint
+	}
+	StaticPopup_Show("CONFIRM_DISABLE_ADDONS")
+end
+
+local function RestoreAddons()
+	StaticPopupDialogs["CONFIRM_RESTORE_ADDONS"] = {
+		text = "You are about to re-enable all previously disabled addons.|n|nThanks for using |cff669DFFKkthnxUI|r |cffff0000<3|r",
+		button1 = "Yes",
+		button2 = "No",
+		OnAccept = function()
+			for name in pairs(KkthnxUIDB.DisabledAddOns) do
+				C_AddOns.EnableAddOn(name)
+			end
+
+			wipe(KkthnxUIDB.DisabledAddOns)
+			-- print("Addons have been restored to their previous states. Reloading UI...") -- Pointless
+			ReloadUI()
+		end,
+		timeout = 0,
+		whileDead = true,
+		hideOnEscape = true,
+		preferredIndex = 3, -- Avoids taint
+	}
+	StaticPopup_Show("CONFIRM_RESTORE_ADDONS")
+end
+
+-- Register the chat commands
+SLASH_KKDEBUG1 = "/kkdebug"
+SlashCmdList["KKDEBUG"] = function(msg)
+	if msg == "on" then
+		StoreAndDisableAddons()
+	elseif msg == "off" then
+		RestoreAddons()
+	end
+end

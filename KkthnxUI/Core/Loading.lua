@@ -21,6 +21,7 @@ local function KKUI_VerifyDatabase()
 		SplitCount = 1,
 		TempAnchor = {},
 		InternalCD = {},
+		DisabledAddOns = {},
 		AuraWatchList = {
 			Switcher = {},
 			IgnoreSpells = {},
@@ -50,6 +51,7 @@ local function KKUI_VerifyDatabase()
 	KkthnxUIDB.ChangeLog = KkthnxUIDB.ChangeLog or {}
 	KkthnxUIDB.DetectVersion = KkthnxUIDB.DetectVersion or K.Version
 	KkthnxUIDB.KeystoneInfo = KkthnxUIDB.KeystoneInfo or {}
+	KkthnxUIDB.DisabledAddOns = KkthnxUIDB.DisabledAddOns or {}
 end
 
 local function KKUI_CreateDefaults()

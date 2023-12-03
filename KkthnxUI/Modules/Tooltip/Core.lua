@@ -54,7 +54,7 @@ function Module:UpdateFactionLine(lineData)
 	end
 
 	local unit = Module.GetUnit(self)
-	local unitClass = unit and UnitClass(unit)
+	local unitClass = unit and UnitIsPlayer(unit) and UnitClass(unit)
 	local unitCreature = unit and UnitCreatureType(unit)
 	local linetext = lineData.leftText
 
