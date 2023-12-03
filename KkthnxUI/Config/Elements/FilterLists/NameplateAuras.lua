@@ -187,5 +187,10 @@ C.MajorSpells = {
 	[372223] = true, -- Healing Mud, Nassarius
 	[373424] = true, -- Grounding Spear, Nassarius
 	[376780] = true, -- Magma Shield, Nassarius
+	-- S3
 	[411994] = true, -- Time Erosion, Eternal Dawn
+	[418200] = true, -- Eternal Burning, Eternal Dawn
+	[411300] = true, -- Salted Fish Arrow Rain, Eternal Dawn
+	[413607] = true, -- Erosion Volley, Eternal Dawn
+	[417011] = true, -- Holy Light Spell, Eternal Dawn
 }

@@ -148,6 +148,8 @@ function Module:ForceChatSettings()
 			frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 7, 11)
 			frame:SetWidth(C["Chat"].Width)
 			frame:SetHeight(C["Chat"].Height)
+		elseif id == 2 then
+			FCF_SetWindowName(frame, L["CombatLog"])
 		elseif id == 3 then
 			VoiceTranscriptionFrame_UpdateVisibility(frame)
 			VoiceTranscriptionFrame_UpdateVoiceTab(frame)
@@ -155,7 +157,7 @@ function Module:ForceChatSettings()
 		end
 
 		FCF_SetChatWindowFontSize(nil, frame, 12)
-		-- FCF_SavePositionAndDimensions(frame)
+		FCF_SavePositionAndDimensions(frame)
 		FCF_StopDragging(frame)
 	end
 

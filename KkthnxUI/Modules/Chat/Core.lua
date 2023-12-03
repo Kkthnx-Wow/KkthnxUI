@@ -1,33 +1,47 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Chat")
 
+-- Lua Standard Functions
+local ipairs = ipairs
+local select = select
+local string_find = string.find
+local string_gmatch = string.gmatch
+local string_gsub = string.gsub
+local string_len = string.len
 local string_sub = string.sub
+local type = type
 
-local CHAT_FRAMES = CHAT_FRAMES
-local CHAT_OPTIONS = CHAT_OPTIONS
+-- WoW API Functions
+local Ambiguate = Ambiguate
+local BNFeaturesEnabledAndConnected = BNFeaturesEnabledAndConnected
+local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local C_GuildInfo_IsGuildOfficer = C_GuildInfo.IsGuildOfficer
 local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
-local ChatEdit_UpdateHeader = ChatEdit_UpdateHeader
-local ChatFrame1 = ChatFrame1
-local ChatTypeInfo = ChatTypeInfo
+local ChatFrame_SendTell = ChatFrame_SendTell
 local ConsoleExec = ConsoleExec
-local GeneralDockManager = GeneralDockManager
+local CreateFrame = CreateFrame
 local GetCVar = GetCVar
 local GetChannelName = GetChannelName
 local GetInstanceInfo = GetInstanceInfo
-local InCombatLockdown = InCombatLockdown
-local C_AddOns_IsAddOnLoaded = C_AddOns.IsAddOnLoaded
+local GetTime = GetTime
 local IsControlKeyDown = IsControlKeyDown
 local IsInGroup = IsInGroup
-local IsInGuild = IsInGuild
 local IsInRaid = IsInRaid
-local IsPartyLFG = IsPartyLFG
 local IsShiftKeyDown = IsShiftKeyDown
-local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
-local QuickJoinToastButton = QuickJoinToastButton
+local PlaySound = PlaySound
 local SetCVar = SetCVar
 local UnitName = UnitName
 local hooksecurefunc = hooksecurefunc
+
+-- WoW Global Variables
+local CHAT_FRAMES = CHAT_FRAMES
+local CHAT_OPTIONS = CHAT_OPTIONS
+local FCF_SavePositionAndDimensions = FCF_SavePositionAndDimensions
+local GeneralDockManager = GeneralDockManager
+local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
+local QuickJoinToastButton = QuickJoinToastButton
+local SOUNDKIT = SOUNDKIT
+local UIParent = UIParent
 
 local messageSoundID = SOUNDKIT.TELL_MESSAGE
 local maxLines = 2048
@@ -60,14 +74,14 @@ local charCount = 0
 local repeatedText
 
 local function countLinkCharacters(text)
-	charCount = charCount + (string.len(text) + 4)
+	charCount = charCount + (string_len(text) + 4)
 end
 
 local function editBoxOnTextChanged(self)
 	local text = self:GetText()
-	local len = string.len(text)
+	local len = string_len(text)
 
-	if (not repeatedText or not string.find(text, repeatedText, 1, true)) and InCombatLockdown() then
+	if (not repeatedText or not string_find(text, repeatedText, 1, true)) and InCombatLockdown() then
 		if len > MIN_REPEAT_CHARACTERS then
 			local repeatChar = true
 			for i = 1, MIN_REPEAT_CHARACTERS do
@@ -90,9 +104,9 @@ local function editBoxOnTextChanged(self)
 		if text == "/tt " then
 			local name, realm = UnitName("target")
 			if name then
-				name = string.gsub(name, "%s", "")
+				name = string_gsub(name, "%s", "")
 				if realm and realm ~= "" then
-					name = name .. "-" .. string.gsub(realm, "[%s%-]", "")
+					name = name .. "-" .. string_gsub(realm, "[%s%-]", "")
 				end
 			end
 
@@ -109,7 +123,7 @@ local function editBoxOnTextChanged(self)
 
 	-- recalculate the character count correctly with hyperlinks in it, using gmatch so it matches multiple without gmatch
 	charCount = 0
-	for link in string.gmatch(text, "(|c%x-|H.-|h).-|h|r") do
+	for link in string_gmatch(text, "(|c%x-|H.-|h).-|h|r") do
 		countLinkCharacters(link)
 	end
 	if charCount ~= 0 then
@@ -591,6 +605,7 @@ function Module:OnEnable()
 		Module:UpdateChatSize()
 		K:RegisterEvent("UI_SCALE_CHANGED", Module.UpdateChatSize)
 		hooksecurefunc(ChatFrame1, "SetPoint", updateChatAnchor)
+		FCF_SavePositionAndDimensions(ChatFrame1)
 	end
 
 	-- ProfanityFilter
