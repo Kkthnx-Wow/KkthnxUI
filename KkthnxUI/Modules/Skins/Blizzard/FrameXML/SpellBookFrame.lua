@@ -6,7 +6,7 @@ local SPELLS_PER_PAGE = SPELLS_PER_PAGE or 6
 local hooksecurefunc = hooksecurefunc
 
 local function HandleSkillButton(button)
-	if not button then
+	if not button or InCombatLockdown() then
 		return
 	end
 	button:SetCheckedTexture(0)
@@ -111,6 +111,10 @@ table_insert(C.defaultThemes, function()
 	end
 
 	hooksecurefunc("FormatProfession", function(frame, index)
+		if InCombatLockdown() then
+			return
+		end
+
 		if index then
 			local _, texture = GetProfessionInfo(index)
 			if frame.icon and texture then

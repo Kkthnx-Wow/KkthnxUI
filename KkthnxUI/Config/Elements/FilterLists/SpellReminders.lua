@@ -3,16 +3,16 @@ local C = KkthnxUI[2]
 C.SpellReminderBuffs = {
 	ITEMS = {
 		{
-			itemID = 190384, -- 9.0 permanent attribute runes
+			itemID = 190384, -- 9.0 Permanent Attribute Rune
 			spells = {
-				[393438] = true, -- Dragon fortification rune itemID 201325
-				[367405] = true, -- Permanent rune buff
+				[393438] = true, -- Dragon Empowerment Rune itemID 201325
+				[367405] = true, -- Permanent Rune buff
 			},
 			instance = true,
-			disable = true, -- Disabled until new rune is released
+			disable = true, -- Disabled until a new rune comes out
 		},
 		{
-			itemID = 194307, -- Promise of the Nest Guardian
+			itemID = 194307, -- Nest Guardian's Promise
 			spells = {
 				[394457] = true,
 			},
@@ -20,6 +20,24 @@ C.SpellReminderBuffs = {
 			instance = true,
 			inGroup = true,
 		},
+		--[=[
+		{   itemID = 178742, -- Bottled Toxin Trinket
+			spells = {
+				[345545] = true,
+			},
+			equip = true,
+			instance = true,
+			combat = true,
+		},
+		{   itemID = 190958, -- Ultimate Arcanum
+			spells = {
+				[368512] = true,
+			},
+			equip = true,
+			instance = true,
+			inGroup = true,
+		},
+		]=]
 	},
 	MAGE = {
 		{
@@ -33,7 +51,7 @@ C.SpellReminderBuffs = {
 			pvp = true,
 		},
 		{
-			spells = { -- Arcane Wisdom
+			spells = { -- Arcane Intellect
 				[1459] = true,
 			},
 			depend = 1459,
@@ -42,7 +60,7 @@ C.SpellReminderBuffs = {
 	},
 	PRIEST = {
 		{
-			spells = { -- Truth of Fortitude
+			spells = { -- Power Word: Fortitude
 				[21562] = true,
 			},
 			depend = 21562,
@@ -95,10 +113,11 @@ C.SpellReminderBuffs = {
 	},
 	ROGUE = {
 		{
-			spells = { -- Damage-based Poison
+			spells = { -- Damage Poisons
 				[2823] = true, -- Deadly Poison
 				[8679] = true, -- Wound Poison
 				[315584] = true, -- Instant Poison
+				[381664] = true, -- Enhanced Poison
 			},
 			texture = 132273,
 			depend = 315584,
@@ -107,9 +126,10 @@ C.SpellReminderBuffs = {
 			pvp = true,
 		},
 		{
-			spells = { -- Effect-based Poison
+			spells = { -- Utility Poisons
 				[3408] = true, -- Crippling Poison
-				[5761] = true, -- Mind-numbing Poison
+				[5761] = true, -- Numbing Poison
+				[381637] = true, -- Withering Poison
 			},
 			depend = 3408,
 			pvp = true,
@@ -117,7 +137,7 @@ C.SpellReminderBuffs = {
 	},
 	EVOKER = {
 		{
-			spells = { -- Blessing of the Bronze Dragon
+			spells = { -- Blessing of the Bronze Dragonflight
 				[381748] = true,
 			},
 			depend = 364342,
@@ -126,7 +146,7 @@ C.SpellReminderBuffs = {
 	},
 	DRUID = {
 		{
-			spells = { -- Mark of the Wild.
+			spells = { -- Mark of the Wild
 				[1126] = true,
 			},
 			depend = 1126,

@@ -1,21 +1,21 @@
 local C = KkthnxUI[2]
 
 C.RaidUtilityBuffCheckList = {
-	[1] = { -- Composites
-		370652, -- Electrified Flask
-		370653, -- Frosty Haven Flask
-		371172, -- Safekeeping Flask
-		371204, -- Windward Flask
+	[1] = { -- Flasks
+		370652, -- Electrostatically Charged Flask
+		370653, -- Frost Protection Flask
+		371172, -- Gentle All-Purpose Flask
+		371204, -- Windstopper Flask
 		371339, -- Elemental Chaos Flask
-		371354, -- Storm's Eye Flask
-		371386, -- Displacement Flask
+		371354, -- Storm Eye Flask
+		371386, -- Detachment Infused Flask
 		373257, -- Glacier's Fury Flask
-		374000, -- Corrupted Fury Freezing Flask
+		374000, -- Corruption's Fury Frozen Flask
 	},
-	[2] = { -- Well-Fed
-		104273, -- 250 Agility, same buff name
+	[2] = { -- Well Fed
+		104273, -- 250 Agility, same name as the BUFF
 	},
-	[3] = { -- 10% Intellect
+	[3] = { -- 10% Intelligence
 		1459,
 		264760,
 	},

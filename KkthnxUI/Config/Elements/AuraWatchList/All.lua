@@ -13,6 +13,7 @@ local list = {
 		-- 药水
 		{ AuraID = 371124, UnitID = "player" }, -- 沉静西风药水
 		{ AuraID = 371024, UnitID = "player" }, -- 元素强能药水
+		{ AuraID = 371028, UnitID = "player" }, -- 究极元素强能药水
 		-- 10.0 饰品
 		{ AuraID = 381476, UnitID = "player" }, -- 爆发烈焰
 		{ AuraID = 383941, UnitID = "player" }, -- 崩坏之力
@@ -28,8 +29,12 @@ local list = {
 		{ AuraID = 397400, UnitID = "player" }, -- 骨喉的大脚趾
 		{ AuraID = 403380, UnitID = "player" }, -- 统御呼唤
 		{ AuraID = 400986, UnitID = "player" }, -- 狱钢装甲
+		{ AuraID = 418527, UnitID = "player" }, -- 破碎翌日之镜
 		{ AuraID = 408835, UnitID = "player", Flash = true }, -- 沸腾怒火
 		{ AuraID = 408770, UnitID = "player", Stack = 55 }, -- 灵感闪光
+		{ AuraID = 410232, UnitID = "player", Value = true }, -- 孢子披风
+		{ AuraID = 423611, UnitID = "player" }, -- 灵魂燃烧
+		{ AuraID = 429262, UnitID = "player" }, -- 水润滋养
 		-- 盟约，TODO: 部分已被整合进天赋，待整理
 		{ AuraID = 331937, UnitID = "player", Flash = true }, -- 沉醉
 		{ AuraID = 354053, UnitID = "player", Flash = true, Text = L["Crit"] }, -- 致命缺陷，暴击
@@ -126,7 +131,7 @@ local list = {
 		{ AuraID = 223658, UnitID = "player" }, -- 捍卫
 		{ AuraID = 115310, UnitID = "player" }, -- 五气归元
 		{ AuraID = 116849, UnitID = "player" }, -- 作茧缚命
-		{ AuraID = 204018, UnitID = "player" }, -- 破咒祝福
+		{ AuraID = 204018, UnitID = "player", Flash = true }, -- 破咒祝福
 		{ AuraID = 102342, UnitID = "player" }, -- 铁木树皮
 		{ AuraID = 145629, UnitID = "player" }, -- 反魔法领域
 		{ AuraID = 156910, UnitID = "player" }, -- 信仰道标
@@ -153,6 +158,8 @@ local list = {
 		{ AuraID = 240447, UnitID = "player", Flash = true }, -- 践踏
 		{ AuraID = 240443, UnitID = "player", Flash = true }, -- 爆裂
 		{ AuraID = 408556, UnitID = "player", Flash = true }, -- 缠绕
+		{ AuraID = 408805, UnitID = "player", Flash = true }, -- 失衡
+		{ AuraID = 409492, UnitID = "player", Flash = true }, -- 痛苦呼号
 		-- 5人
 		{ AuraID = 395035, UnitID = "player", Flash = true }, -- 粉碎灵魂，阻击战
 		{ AuraID = 386881, UnitID = "player" }, -- 冰霜炸弹，碧蓝魔馆
@@ -179,9 +186,27 @@ local list = {
 		{ AuraID = 88286, UnitID = "player", Flash = true }, -- 减速风，旋云之巅
 		{ AuraID = 389179, UnitID = "player", Flash = true }, -- 能量过载，注能大厅
 		{ AuraID = 215898, UnitID = "player", Flash = true }, -- 晶化大地，巢穴
+		{ AuraID = 389059, UnitID = "player", Flash = true }, -- 炉渣喷发，奈萨鲁斯
+		{ AuraID = 377018, UnitID = "player", Flash = true }, -- 熔火真金，奈萨鲁斯
+		{ AuraID = 413142, UnitID = "player", Flash = true }, -- 万古裂片，永恒黎明
+		{ AuraID = 414496, UnitID = "player", Flash = true }, -- 时间线加速，永恒黎明
+		{ AuraID = 406543, UnitID = "player", Flash = true }, -- 窃取时间，永恒黎明
+		{ AuraID = 410908, UnitID = "player", Flash = true }, -- 永恒新星，永恒黎明
+		{ AuraID = 401420, UnitID = "player", Flash = true }, -- 黄沙重踏，永恒黎明
+		{ AuraID = 404141, UnitID = "player", Flash = true }, -- 时光凋零，永恒黎明
 
+		{ AuraID = 407406, UnitID = "player", Flash = true }, -- 腐蚀，萨卡雷斯
 		{ AuraID = 405340, UnitID = "player", Flash = true }, -- 虚无之拥，萨卡雷斯
-		{ AuraID = 407576, UnitID = "player", Flash = true }, -- 星界耀斑，萨卡雷斯
+		{ AuraID = 407576, UnitID = "player" }, -- 星界耀斑，萨卡雷斯
+		{ AuraID = 410642, UnitID = "player", Flash = true }, -- 虚空碎裂，萨卡雷斯
+		{ AuraID = 407496, UnitID = "player", Flash = true }, -- 无限压迫，萨卡雷斯
+		-- S3
+		{ AuraID = 257407, UnitID = "player" }, -- 追踪，阿塔达萨
+		{ AuraID = 250585, UnitID = "player", Flash = true }, -- 剧毒之池，阿塔达萨
+		{ AuraID = 258723, UnitID = "player", Flash = true }, -- 怪诞之池，阿塔达萨
+		{ AuraID = 268086, UnitID = "player", Text = L["Move"] }, -- 恐怖光环，庄园
+
+		{ AuraID = 426249, UnitID = "player", Flash = true }, -- 炽焰融合，拉罗达尔
 	},
 	["Warning"] = { -- 目标重要光环组
 		{ AuraID = 355596, UnitID = "target", Flash = true }, -- 橙弓，哀痛箭
@@ -192,7 +217,6 @@ local list = {
 		{ AuraID = 226510, UnitID = "target" }, -- 血池回血
 		{ AuraID = 343502, UnitID = "target" }, -- 鼓舞光环
 		-- 5人
-		{ AuraID = 376780, UnitID = "target", Value = true }, -- 岩浆护盾，奈萨鲁斯
 		{ AuraID = 372988, UnitID = "target", Value = true }, -- 寒冰壁垒，红玉
 		{ AuraID = 391050, UnitID = "target", Value = true }, -- 暴风骤雨之盾，红玉
 		{ AuraID = 384686, UnitID = "target", Flash = true }, -- 能量涌动，狙击战
@@ -207,6 +231,14 @@ local list = {
 		{ AuraID = 369725, UnitID = "target" }, -- 震颤，奥达曼
 		{ AuraID = 377402, UnitID = "target", Value = true }, -- 液态屏障，注能大厅
 		{ AuraID = 378022, UnitID = "target", Value = true }, -- 吞噬中，蕨皮
+		{ AuraID = 388523, UnitID = "target", Flash = true }, -- 拘禁，奈萨鲁斯
+		{ AuraID = 377014, UnitID = "target", Flash = true }, -- 爆冲，奈萨鲁斯
+		{ AuraID = 376780, UnitID = "target", Value = true }, -- 岩浆护盾，奈萨鲁斯
+		{ AuraID = 382791, UnitID = "target", Value = true }, -- 熔火屏障，奈萨鲁斯
+		{ AuraID = 200672, UnitID = "target", Value = true }, -- 水晶迸裂，巢穴
+		{ AuraID = 413027, UnitID = "target", Flash = true }, -- 泰坦之壁，永恒黎明
+		{ AuraID = 410249, UnitID = "target", Value = true }, -- 辐光屏障，永恒黎明
+		{ AuraID = 419511, UnitID = "target", Value = true }, -- 时光联结，永恒黎明
 		-- 团本
 		{ AuraID = 374779, UnitID = "target", Flash = true }, -- 原始屏障，恐怖图腾
 		{ AuraID = 382530, UnitID = "target", Value = true }, -- 涌动，莱萨杰斯
@@ -219,6 +251,10 @@ local list = {
 		{ AuraID = 407617, UnitID = "target", Value = true }, -- 时空畸体，里翁苏斯
 		{ AuraID = 397383, UnitID = "target", Value = true }, -- 熔火屏障，
 		{ AuraID = 407036, UnitID = "target", Value = true }, -- 隐匿虚空，耐萨里奥的回响
+
+		{ AuraID = 421013, UnitID = "target", Flash = true }, -- 培植毁灭，瘤根
+		{ AuraID = 424140, UnitID = "target", Value = true }, -- 超级新星，丁达尔
+		{ AuraID = 421922, UnitID = "target", Value = true }, -- 腐蚀，菲莱克
 		-- PVP
 		{ AuraID = 498, UnitID = "target" }, -- 圣佑术
 		{ AuraID = 642, UnitID = "target" }, -- 圣盾术
@@ -245,7 +281,7 @@ local list = {
 		{ AuraID = 114050, UnitID = "target" }, -- 升腾 元素
 		{ AuraID = 114051, UnitID = "target" }, -- 升腾 增强
 		{ AuraID = 114052, UnitID = "target" }, -- 升腾 恢复
-		{ AuraID = 204018, UnitID = "target" }, -- 破咒祝福
+		{ AuraID = 204018, UnitID = "target", Flash = true }, -- 破咒祝福
 		{ AuraID = 205191, UnitID = "target" }, -- 以眼还眼 惩戒
 		{ AuraID = 104773, UnitID = "target" }, -- 不灭决心
 		{ AuraID = 199754, UnitID = "target" }, -- 还击
@@ -263,8 +299,9 @@ local list = {
 		{ AuraID = 228323, UnitID = "target", Value = true }, -- 克罗塔的护盾
 	},
 	["InternalCD"] = { -- 自定义内置冷却组
-		{ IntID = 240447, Duration = 20 }, -- 大米，践踏
+		{ IntID = 410232, Duration = 120 }, -- 孢子披风冷却
 		{ IntID = 114018, Duration = 15, OnSuccess = true, UnitID = "all" }, -- 帷幕
+		--{IntID = 240447, Duration = 20},	-- 大米，践踏
 		--{IntID = 316958, Duration = 30, OnSuccess = true, UnitID = "all"},	-- 红土
 		--{IntID = 353635, Duration = 27.5, OnSuccess = true, UnitID = "all"},-- 坍缩之星自爆时间
 	},

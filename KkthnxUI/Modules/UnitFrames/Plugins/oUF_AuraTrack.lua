@@ -4,68 +4,70 @@ local oUF = K.oUF
 -- By Tukz, for Tukui
 
 local Tracker = {
-	-- EVOKER
-	[355941] = { 0.33, 0.33, 0.77 }, -- Dream Breath
-	[363502] = { 0.33, 0.33, 0.70 }, -- Dream Flight
-	[366155] = { 0.14, 1.00, 0.88 }, -- Reversion
-	[364343] = { 0.13, 0.87, 0.50 }, -- Echo
-	[357170] = { 0.11, 0.57, 0.71 }, -- Time Dilation
-	-- ROGUE
-	[57934] = { 0.89, 0.09, 0.05 }, -- Tricks of the Trade
-	-- WARRIOR
-	[3411] = { 0.89, 0.09, 0.05 }, -- Intervene
 	-- PRIEST
-	[139] = { 0.4, 0.7, 0.2 }, -- Renew
+	[194384] = { 1, 1, 0.66 }, -- Redeemer
+	[214206] = { 1, 1, 0.66 }, -- Redeemer (PvP)
+	[41635] = { 0.2, 0.7, 0.2 }, -- Healing Preamble
+	[193065] = { 0.54, 0.21, 0.78 }, -- Remorseful Weight
+	[139] = { 0.4, 0.7, 0.2 }, -- Recovery
 	[17] = { 0.7, 0.7, 0.7 }, -- Power Word: Shield
-	[193065] = { 0.54, 0.21, 0.78 }, -- Masochism
-	[194384] = { 1, 1, 0.66 }, -- Atonement
-	[214206] = { 1, 1, 0.66 }, -- Atonement (PvP)
-	[33206] = { 0.47, 0.35, 0.74 }, -- Pain Suppression
-	[41635] = { 0.2, 0.7, 0.2 }, -- Prayer of Mending
 	[47788] = { 0.86, 0.45, 0 }, -- Guardian Spirit
-	[6788] = { 0.89, 0.1, 0.1 }, -- Weakened Soul
+	[33206] = { 0.47, 0.35, 0.74 }, -- Pain Suppression
+	[6788] = { 0.86, 0.11, 0.11 }, -- Weakness Soul
+
 	-- DRUID
 	[774] = { 0.8, 0.4, 0.8 }, -- Rejuvenation
-	[155777] = { 0.8, 0.4, 0.8 }, -- Germination
-	[8936] = { 0.2, 0.8, 0.2 }, -- Regrowth
+	[155777] = { 0.6, 0.4, 0.8 }, -- Germination
+	[8936] = { 0.2, 0.8, 0.2 }, -- Healing
 	[33763] = { 0.4, 0.8, 0.2 }, -- Lifebloom
-	[188550] = { 0.4, 0.8, 0.2 }, -- Lifebloom (Shadowlands Legendary)
+	[188550] = { 0.4, 0.8, 0.2 }, -- Lifebloom (Orange)
 	[48438] = { 0.8, 0.4, 0 }, -- Wild Growth
-	[207386] = { 0.4, 0.2, 0.8 }, -- Spring Blossoms
-	[102351] = { 0.2, 0.8, 0.8 }, -- Cenarion Ward (Initial Buff)
+	[29166] = { 0, 0.4, 1 }, -- Innervate
+	[391891] = { 0, 0.8, 0.4 }, -- Metamorphosis Frenzy
+	[102351] = { 0.2, 0.8, 0.8 }, -- Cenarion Ward
 	[102352] = { 0.2, 0.8, 0.8 }, -- Cenarion Ward (HoT)
-	[200389] = { 1, 1, 0.4 }, -- Cultivation
-	[203554] = { 1, 1, 0.4 }, -- Focused Growth (PvP)
+	[200389] = { 1, 1, 0.4 }, -- Cultivate
+
+	-- EVOKER
+	[355941] = { 0.4, 0.7, 0.2 }, -- Breath of Dreams
+	[364343] = { 0, 0.8, 0.8 }, -- Echo
+	[366155] = { 1, 0.9, 0.5 }, -- Reverse
+	[370888] = { 0, 0.4, 1 }, -- Twin Wardens
+	[357170] = { 0.47, 0.35, 0.74 }, -- Time Dilation
+
 	-- PALADIN
-	[53563] = { 0.7, 0.3, 0.7 }, -- Beacon of Light
-	[156910] = { 0.7, 0.3, 0.7 }, -- Beacon of Faith
-	[200025] = { 0.7, 0.3, 0.7 }, -- Beacon of Virtue
-	[1022] = { 0.2, 0.2, 1 }, -- Blessing of Protection
-	[1044] = { 0.89, 0.45, 0 }, -- Blessing of Freedom
-	[6940] = { 0.89, 0.1, 0.1 }, -- Blessing of Sacrifice
-	[204018] = { 0.2, 0.2, 1 }, -- Blessing of Spellwarding
+	[287280] = { 1, 0.8, 0 }, -- Holy Flash
+	[53563] = { 0.7, 0.3, 0.7 }, -- Beacon
+	[156910] = { 0.7, 0.3, 0.7 }, -- Faith Beacon
+	[200025] = { 0.7, 0.3, 0.7 }, -- Virtue Beacon
+	[1022] = { 0.2, 0.2, 1 }, -- Protection
+	[1044] = { 0.89, 0.45, 0 }, -- Freedom
+	[6940] = { 0.89, 0.1, 0.1 }, -- Sacrifice
 	[223306] = { 0.7, 0.7, 0.3 }, -- Bestow Faith
-	[287280] = { 0.2, 0.8, 0.2 }, -- Glimmer of Light (T50 Talent)
-	[157047] = { 0.15, 0.58, 0.84 }, -- Saved by the Light (T25 Talent)
+	[25771] = { 0.86, 0.11, 0.11 }, -- Forbearance
+
 	-- SHAMAN
-	[61295] = { 0.7, 0.3, 0.7 }, -- Riptide
-	[974] = { 0.2, 0.2, 1 }, -- Earth Shield
-	-- HUNTER
-	[90361] = { 0.34, 0.47, 0.31 }, -- Spirit Mend (HoT)
+	[61295] = { 0.2, 0.8, 0.8 }, -- Riptide
+	[974] = { 1, 0.8, 0 }, -- Earth Shield
+
 	-- MONK
-	[115175] = { 0.6, 0.9, 0.9 }, -- Soothing Mist
-	[116841] = { 0.12, 1.00, 0.53 }, -- Tiger's Lust (Freedom)
-	[116849] = { 0.2, 0.8, 0.2 }, -- Life Cocoon
-	[119611] = { 0.3, 0.8, 0.6 }, -- Renewing Mist
+	[119611] = { 0.3, 0.8, 0.6 }, -- Revival
+	[116849] = { 0.2, 0.8, 0.2 }, -- Cocoon of Enveloping
 	[124682] = { 0.8, 0.8, 0.25 }, -- Enveloping Mist
 	[191840] = { 0.27, 0.62, 0.7 }, -- Essence Font
-	[325209] = { 0.3, 0.6, 0.6 }, -- Enveloping Breath
-	-- PET
-	-- Warlock Pets
-	[193396] = { 0.6, 0.2, 0.8 }, -- Demonic Empowerment
-	-- Hunter Pets
-	[272790] = { 0.89, 0.09, 0.05 }, -- Frenzy
-	[136] = { 0.2, 0.8, 0.2 }, -- Mend Pet
+
+	-- ROGUE
+	[57934] = { 0.9, 0.1, 0.1 }, -- Misdirection
+
+	-- WARRIOR
+	[114030] = { 0.2, 0.2, 1 }, -- Vigilance
+
+	-- HUNTER
+	[34477] = { 0.9, 0.1, 0.1 }, -- Misdirection
+	[90361] = { 0.4, 0.8, 0.2 }, -- Spirit Mend
+
+	-- WARLOCK
+	[20707] = { 0.8, 0.4, 0.8 }, -- Soulstone
 }
 
 -- Declare a local function to handle the OnUpdate event

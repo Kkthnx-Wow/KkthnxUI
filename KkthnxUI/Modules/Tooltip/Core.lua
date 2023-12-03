@@ -191,17 +191,21 @@ function Module:OnTooltipSetUnit()
 		end
 
 		if C["Tooltip"].LFDRole then
-			local r, g, b, role = 1, 1, 1, UnitGroupRolesAssigned(unit)
-			if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE") then
-				if role == "HEALER" then
-					role, r, g, b = HEALER, 0, 1, 0.59
-				elseif role == "TANK" then
-					role, r, g, b = TANK, 0.16, 0.31, 0.61
-				elseif role == "DAMAGER" then
-					role, r, g, b = DAMAGE, 0.77, 0.12, 0.24
+			local unitColor
+			local unitRole = UnitGroupRolesAssigned(unit)
+			if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (unitRole ~= "NONE") then
+				if unitRole == "HEALER" then
+					unitRole = HEALER
+					unitColor = "|cff00ff96" -- RGB: 0, 255, 150
+				elseif unitRole == "TANK" then
+					unitRole = TANK
+					unitColor = "|cff2850a0" -- RGB: 40, 80, 160
+				elseif unitRole == "DAMAGER" then
+					unitRole = DAMAGE
+					unitColor = "|cffc41f3b" -- RGB: 196, 31, 59
 				end
 
-				self:AddLine(ROLE .. ": " .. role, r, g, b)
+				self:AddLine(ROLE .. ": " .. unitColor .. unitRole .. "|r")
 			end
 		end
 
