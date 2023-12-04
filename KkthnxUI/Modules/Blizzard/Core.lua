@@ -10,6 +10,7 @@ function Module:OnEnable()
 		"CreateObjectiveFrame",
 		"CreateOrderHallIcon",
 		"CreateTimerTracker",
+		"CreateTutorialDisabling",
 		"CreateUIWidgets",
 	}
 

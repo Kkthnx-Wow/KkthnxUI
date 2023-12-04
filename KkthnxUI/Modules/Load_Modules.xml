@@ -20,6 +20,7 @@
    <Script file="Blizzard\Elements\ObjectiveFrame.lua" />
    <Script file="Blizzard\Elements\OrderHall.lua" />
    <Script file="Blizzard\Elements\TimerTracker.lua" />
+   <Script file="Blizzard\Elements\TutorialFrames.lua" />
    <Script file="Blizzard\Elements\UIWidgets.lua" />
    <!-- Chat -->
    <Script file="Chat\Core.lua" />
