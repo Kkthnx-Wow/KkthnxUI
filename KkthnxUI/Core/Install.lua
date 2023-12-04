@@ -460,10 +460,15 @@ local function HelloWorld()
 	welcomeLogo:SetTexture(C["Media"].Textures.LogoTexture)
 	welcomeLogo:SetPoint("CENTER", welcome, "CENTER", 0, 0)
 
-	local welcomeBoss = welcome:CreateTexture(nil, "OVERLAY")
-	welcomeBoss:SetSize(128, 64)
-	welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-Fyrakk the Burning")
-	welcomeBoss:SetPoint("TOPRIGHT", welcome, "TOPRIGHT", 10, 64)
+	-- local welcomeBoss = welcome:CreateTexture(nil, "OVERLAY")
+	-- welcomeBoss:SetSize(128, 64)
+	-- welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-Fyrakk the Burning")
+	-- welcomeBoss:SetPoint("TOPRIGHT", welcome, "TOPRIGHT", 10, 64)
+
+	-- REMOVE ME AFTER CHRISTMAS
+	welcome.XMAS = welcome:CreateTexture(nil, "OVERLAY", nil, 7)
+	welcome.XMAS:SetPoint("CENTER", welcome, "TOP", 0, 27)
+	welcome.XMAS:SetAtlas("perks-theme-winterveil-tp-topsmall", true)
 
 	local ll = CreateFrame("Frame", nil, welcome)
 	ll:SetPoint("TOP", -50, -35)

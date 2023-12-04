@@ -1874,6 +1874,11 @@ GUI.Enable = function(self)
 	self.Header:SetPoint("TOP", self, 0, -Spacing)
 	self.Header:CreateBorder()
 
+	-- REMOVE ME AFTER CHRISTMAS
+	self.Header.XMAS = self.Header:CreateTexture(nil, "OVERLAY", nil, 7)
+	self.Header.XMAS:SetPoint("CENTER", self.Header, "TOP", 0, 7)
+	self.Header.XMAS:SetAtlas("perks-theme-winterveil-tp-topbig", true)
+
 	self.Header.Label = self.Header:CreateFontString(nil, "OVERLAY")
 	self.Header.Label:SetPoint("CENTER", self.Header, 0, 0)
 	self.Header.Label:SetFontObject(K.UIFont)

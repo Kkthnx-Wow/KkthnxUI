@@ -320,21 +320,24 @@ function Module:CreateGUIGameMenuButton()
 end
 
 function Module:CreateQuestXPPercent()
-	local unitXP, unitXPMax = UnitXP("player"), UnitXPMax("player")
-	local xp, text, frame
+	local playerCurrentXP, playerMaxXP = UnitXP("player"), UnitXPMax("player")
+	local questXP, xpText, xpFrame
+
 	if _G.QuestInfoFrame.questLog then
 		local selectedQuest = C_QuestLog_GetSelectedQuest()
 		if C_QuestLog_ShouldShowQuestRewards(selectedQuest) then
-			xp = GetQuestLogRewardXP()
-			text, frame = MapQuestInfoRewardsFrame.XPFrame.Name:GetText(), _G.MapQuestInfoRewardsFrame.XPFrame.Name
+			questXP = GetQuestLogRewardXP()
+			xpText, xpFrame = MapQuestInfoRewardsFrame.XPFrame.Name:GetText(), _G.MapQuestInfoRewardsFrame.XPFrame.Name
 		end
 	else
-		xp = GetRewardXP()
-		text, frame = QuestInfoXPFrame.ValueText:GetText(), _G.QuestInfoXPFrame.ValueText
+		questXP = GetRewardXP()
+		xpText, xpFrame = QuestInfoXPFrame.ValueText:GetText(), _G.QuestInfoXPFrame.ValueText
 	end
-	if xp and xp > 0 and text then
-		local xpDiff = (((unitXP + xp) / unitXPMax) - (unitXP / unitXPMax)) * 100
-		frame:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", text, xpDiff)
+
+	-- Calculate and display the XP percentage gain
+	if questXP and questXP > 0 and xpText then
+		local xpPercentageIncrease = (((playerCurrentXP + questXP) / playerMaxXP) - (playerCurrentXP / playerMaxXP)) * 100
+		xpFrame:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", xpText, xpPercentageIncrease)
 	end
 end
 
@@ -454,69 +457,71 @@ end
 
 -- Archaeology counts
 do
-	local function CalculateArches(self)
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
-		GameTooltip:ClearLines()
-		GameTooltip:AddLine("|c0000FF00" .. "Arch Count" .. ":")
-		GameTooltip:AddLine(" ")
+	local function DisplayArchaeologyCounts(tooltip, anchor)
+		tooltip:SetOwner(anchor, "ANCHOR_BOTTOMRIGHT")
+		tooltip:ClearLines()
+		tooltip:AddLine("|c0000FF00Arch Count:")
+		tooltip:AddLine(" ")
 
-		local total = 0
-		for i = 1, GetNumArchaeologyRaces() do
-			local numArtifacts = GetNumArtifactsByRace(i)
-			local count = 0
-			for j = 1, numArtifacts do
-				local completionCount = select(10, GetArtifactInfoByRace(i, j))
-				count = count + completionCount
+		local totalArtifacts = 0
+		for raceIndex = 1, GetNumArchaeologyRaces() do
+			local numArtifacts = GetNumArtifactsByRace(raceIndex)
+			local raceArtifactCount = 0
+			for artifactIndex = 1, numArtifacts do
+				local completionCount = select(10, GetArtifactInfoByRace(raceIndex, artifactIndex))
+				raceArtifactCount = raceArtifactCount + completionCount
 			end
-			local name = GetArchaeologyRaceInfo(i)
 			if numArtifacts > 1 then
-				GameTooltip:AddDoubleLine(name .. ":", K.InfoColor .. count)
-				total = total + count
+				local raceName = GetArchaeologyRaceInfo(raceIndex)
+				tooltip:AddDoubleLine(raceName .. ":", K.InfoColor .. raceArtifactCount)
+				totalArtifacts = totalArtifacts + raceArtifactCount
 			end
 		end
 
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine("|c0000ff00" .. TOTAL .. ":", "|cffff0000" .. total)
-		GameTooltip:Show()
+		tooltip:AddLine(" ")
+		tooltip:AddDoubleLine("|c0000ff00" .. TOTAL .. ":", "|cffff0000" .. totalArtifacts)
+		tooltip:Show()
 	end
 
-	local function AddCalculateIcon()
-		local bu = CreateFrame("Button", nil, ArchaeologyFrameCompletedPage)
-		bu:SetPoint("TOPRIGHT", -45, -45)
-		bu:SetSize(35, 35)
-		bu.Icon = bu:CreateTexture(nil, "ARTWORK")
-		bu.Icon:SetAllPoints()
-		bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		bu.Icon:SetTexture("Interface\\ICONS\\Ability_Iyyokuk_Calculate")
-		bu:CreateBorder()
-		bu:StyleButton()
+	local function CreateArchaeologyCalculateButton()
+		local button = CreateFrame("Button", nil, ArchaeologyFrameCompletedPage)
+		button:SetPoint("TOPRIGHT", -45, -45)
+		button:SetSize(35, 35)
+		button.Icon = button:CreateTexture(nil, "ARTWORK")
+		button.Icon:SetAllPoints()
+		button.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		button.Icon:SetTexture("Interface\\ICONS\\Ability_Iyyokuk_Calculate")
+		button:CreateBorder()
+		button:StyleButton()
 
-		bu:SetScript("OnEnter", CalculateArches)
-		bu:SetScript("OnLeave", K.HideTooltip)
+		button:SetScript("OnEnter", function()
+			DisplayArchaeologyCounts(GameTooltip, button)
+		end)
+		button:SetScript("OnLeave", K.HideTooltip)
 	end
 
-	local function MakeMoverArchaeology(event, addon)
+	local function InitializeArchaeologyUI(event, addon)
 		if addon == "Blizzard_ArchaeologyUI" then
-			AddCalculateIcon()
-			-- Repoint Bar
+			CreateArchaeologyCalculateButton()
+
+			-- Reposition Archaeology Progress Bar
 			ArcheologyDigsiteProgressBar.ignoreFramePositionManager = true
 			ArcheologyDigsiteProgressBar:SetPoint("TOP", _G.UIParent, "TOP", 0, -400)
 			K.CreateMoverFrame(ArcheologyDigsiteProgressBar)
 
-			K:UnregisterEvent(event, MakeMoverArchaeology)
+			K:UnregisterEvent(event, InitializeArchaeologyUI)
 		end
 	end
-	K:RegisterEvent("ADDON_LOADED", MakeMoverArchaeology)
+	K:RegisterEvent("ADDON_LOADED", InitializeArchaeologyUI)
 
-	local newTitleString = ARCHAEOLOGY_DIGSITE_PROGRESS_BAR_TITLE .. " - %s/%s"
-	local function updateArcTitle(_, ...)
-		local numFindsCompleted, totalFinds = ...
+	local updatedProgressBarTitle = ARCHAEOLOGY_DIGSITE_PROGRESS_BAR_TITLE .. " - %s/%s"
+	local function UpdateProgressBarTitle(_, numFindsCompleted, totalFinds)
 		if ArcheologyDigsiteProgressBar then
-			ArcheologyDigsiteProgressBar.BarTitle:SetFormattedText(newTitleString, numFindsCompleted, totalFinds)
+			ArcheologyDigsiteProgressBar.BarTitle:SetFormattedText(updatedProgressBarTitle, numFindsCompleted, totalFinds)
 		end
 	end
-	K:RegisterEvent("ARCHAEOLOGY_SURVEY_CAST", updateArcTitle)
-	K:RegisterEvent("ARCHAEOLOGY_FIND_COMPLETE", updateArcTitle)
+	K:RegisterEvent("ARCHAEOLOGY_SURVEY_CAST", UpdateProgressBarTitle)
+	K:RegisterEvent("ARCHAEOLOGY_FIND_COMPLETE", UpdateProgressBarTitle)
 end
 
 -- ALT+RightClick to buy a stack
