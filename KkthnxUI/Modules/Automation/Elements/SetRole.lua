@@ -9,7 +9,7 @@ local IsInGroup = IsInGroup
 local IsPartyLFG = IsPartyLFG
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local UnitSetRole = UnitSetRole
-local print = print
+-- local print = print
 
 local lastRoleChangeTime = 0
 local currentRole = nil
@@ -22,9 +22,17 @@ local function changePlayerRole(role)
 		if success then
 			lastRoleChangeTime = currentTime
 			currentRole = role
-			print("Changed role to " .. role)
-		else
-			print("Failed to change role to " .. role)
+			-- 	if role then
+			-- 		print("Changed role to " .. role)
+			-- 	else
+			-- 		print("Changed role, but role is undefined")
+			-- 	end
+			-- else
+			-- 	if role then
+			-- 		print("Failed to change role to " .. role)
+			-- 	else
+			-- 		print("Failed to change role because role is undefined")
+			-- 	end
 		end
 	end
 end
