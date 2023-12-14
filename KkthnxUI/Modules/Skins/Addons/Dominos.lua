@@ -2,7 +2,7 @@ local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Skins")
 
 function Module:ReskinDominos()
-	if not C["Skins"].Dominos then
+	if not C["Skins"].Dominos or not C_AddOns.IsAddOnLoaded("Dominos") then
 		return
 	end
 

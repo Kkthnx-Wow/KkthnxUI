@@ -1,4 +1,4 @@
-local K = KkthnxUI[1]
+local K, C = KkthnxUI[1], KkthnxUI[2]
 
 K.Devs = {
 	["Kkthnx-Area 52"] = true,

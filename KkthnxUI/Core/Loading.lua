@@ -5,10 +5,12 @@ local function createProfileName(server, nickname)
 end
 
 local function KKUI_VerifyDatabase()
-	KkthnxUIDB = KkthnxUIDB or { Variables = {} }
+	if type(KkthnxUIDB) ~= "table" then
+		KkthnxUIDB = { Variables = {} }
+	end
 
-	local realmData = KkthnxUIDB.Variables[K.Realm] or {}
-	local charData = realmData[K.Name] or {
+	local realmData = type(KkthnxUIDB.Variables) == "table" and KkthnxUIDB.Variables[K.Realm] or {}
+	local charData = type(realmData) == "table" and realmData[K.Name] or {
 		AutoQuest = false,
 		AutoQuestIgnoreNPC = {},
 		CustomItems = {},
@@ -22,10 +24,7 @@ local function KKUI_VerifyDatabase()
 		TempAnchor = {},
 		InternalCD = {},
 		DisabledAddOns = {},
-		AuraWatchList = {
-			Switcher = {},
-			IgnoreSpells = {},
-		},
+		AuraWatchList = { Switcher = {}, IgnoreSpells = {} },
 	}
 	KkthnxUIDB.Variables[K.Realm] = realmData
 	realmData[K.Name] = charData
@@ -58,17 +57,23 @@ local function KKUI_CreateDefaults()
 	K.Defaults = {}
 
 	for group, options in pairs(C) do
-		K.Defaults[group] = {}
+		if type(options) == "table" then
+			K.Defaults[group] = {}
 
-		for option, value in pairs(options) do
-			local defaultValue = type(value) == "table" and value.Options and value.Value or value
-			K.Defaults[group][option] = defaultValue
+			for option, value in pairs(options) do
+				local defaultValue = type(value) == "table" and value.Options and value.Value or value
+				K.Defaults[group][option] = defaultValue
+			end
 		end
 	end
 end
 
 local function KKUI_LoadCustomSettings()
 	local Settings = KkthnxUIDB.Settings[K.Realm] and KkthnxUIDB.Settings[K.Realm][K.Name]
+
+	if type(Settings) ~= "table" then
+		return
+	end
 
 	for group, options in pairs(Settings or {}) do
 		local Count = 0
