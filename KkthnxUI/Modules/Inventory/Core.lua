@@ -1122,7 +1122,7 @@ function Module:OnEnable()
 		self.bindType:SetFontObject(K.UIFontOutline)
 		self.bindType:SetFont(select(1, self.iLvl:GetFont()), 12, select(3, self.iLvl:GetFont()))
 
-		self.usableTexture = self:CreateTexture(nil, "OVERLAY")
+		self.usableTexture = self:CreateTexture(nil, "ARTWORK")
 		self.usableTexture:SetTexture(C["Media"].Textures.White8x8Texture)
 		self.usableTexture:SetAllPoints(self)
 		self.usableTexture:SetVertexColor(1, 0, 0)

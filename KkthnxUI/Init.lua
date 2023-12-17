@@ -94,7 +94,7 @@ K.IsPatch_10_1_0 = K.TocVersion >= 100100 -- 10.1.0
 -- Color Info
 K.GreyColor = "|CFFC0C0C0"
 K.InfoColor = "|CFF669DFF"
-K.InfoColorTint = "|CFF3ba1c5" -- 30% Tint
+K.InfoColorTint = "|CFF93BAFF" -- 30% Tint
 K.SystemColor = "|CFFFFCC66"
 
 -- Media Info

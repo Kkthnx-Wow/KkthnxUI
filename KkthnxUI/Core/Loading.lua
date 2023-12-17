@@ -11,20 +11,21 @@ local function KKUI_VerifyDatabase()
 
 	local realmData = type(KkthnxUIDB.Variables) == "table" and KkthnxUIDB.Variables[K.Realm] or {}
 	local charData = type(realmData) == "table" and realmData[K.Name] or {
+		AuraWatchList = { Switcher = {}, IgnoreSpells = {} },
+		AuraWatchMover = {},
 		AutoQuest = false,
 		AutoQuestIgnoreNPC = {},
+		BindType = 1,
 		CustomItems = {},
-		CustomNames = {},
 		CustomJunkList = {},
+		CustomNames = {},
+		DisabledAddOns = {},
+		InternalCD = {},
 		Mover = {},
-		AuraWatchMover = {},
-		Tracking = { PvP = {}, PvE = {} },
 		RevealWorldMap = false,
 		SplitCount = 1,
 		TempAnchor = {},
-		InternalCD = {},
-		DisabledAddOns = {},
-		AuraWatchList = { Switcher = {}, IgnoreSpells = {} },
+		Tracking = { PvP = {}, PvE = {} },
 	}
 	KkthnxUIDB.Variables[K.Realm] = realmData
 	realmData[K.Name] = charData

@@ -193,7 +193,7 @@ local function OnMouseUp(_, btn)
 		end
 		local before = gcinfo()
 		collectgarbage("collect")
-		K.Print(string_format("|cff66C6FF%s:|r %s", L["Memory Collected"], formatMemory(before - gcinfo())))
+		K.Print(string_format(K.InfoColorTint .. "%s:|r %s", L["Memory Collected"], formatMemory(before - gcinfo())))
 		OnEnter()
 	elseif btn == "RightButton" and scriptProfileStatus then
 		Module.ShowMemory = not Module.ShowMemory

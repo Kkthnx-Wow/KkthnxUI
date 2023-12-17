@@ -21,7 +21,6 @@ C["ActionBar"] = {
 	Cooldown = true,
 	MmssTH = 60,
 	TenthTH = 3,
-	BindType = 1,
 	OverrideWA = false,
 	MicroMenu = true,
 	FadeMicroMenu = false,
