@@ -43,6 +43,29 @@ local function UpdateCosmetic(self)
 	self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
 end
 
+local greyRGB = K.QualityColors[0].r
+
+local function updateIconBorderColor(slot, r, g, b)
+	if not r or r == greyRGB or (r > 0.99 and g > 0.99 and b > 0.99) then
+		r, g, b = 1, 1, 1
+	end
+	if slot.KKUI_Border then
+		slot.KKUI_Border:SetVertexColor(r, g, b)
+	end
+end
+
+local function resetIconBorderColor(slot, texture)
+	if not texture and slot.KKUI_Border then
+		K.SetBorderColor(slot.KKUI_Border)
+	end
+end
+
+local function iconBorderShown(slot, show)
+	if not show and slot.KKUI_Border then
+		resetIconBorderColor(slot)
+	end
+end
+
 local function styleEquipmentSlot(slotName)
 	local slot = _G[slotName]
 	local icon = slot.icon
@@ -62,7 +85,6 @@ local function styleEquipmentSlot(slotName)
 
 	-- Create border for the slot
 	slot:CreateBorder()
-	local border = slot.KKUI_Border
 
 	-- Set cooldown to cover entire slot
 	cooldown:SetAllPoints()
@@ -74,14 +96,18 @@ local function styleEquipmentSlot(slotName)
 	slot.IconOverlay:SetAtlas("CosmeticIconFrame")
 	slot.IconOverlay:SetPoint("TOPLEFT", 1, -1)
 	slot.IconOverlay:SetPoint("BOTTOMRIGHT", -1, 1)
-	iconBorder:SetAlpha(0)
 
 	-- Hook IconBorder to set color for slot border and handle hiding
 	hooksecurefunc(iconBorder, "SetVertexColor", function(_, r, g, b)
-		border:SetVertexColor(r, g, b)
+		updateIconBorderColor(slot, r, g, b)
 	end)
-	hooksecurefunc(iconBorder, "Hide", function()
-		border:SetVertexColor(1, 1, 1)
+
+	hooksecurefunc(iconBorder, "Hide", function(_)
+		resetIconBorderColor(slot)
+	end)
+
+	hooksecurefunc(iconBorder, "SetShown", function(_, show)
+		iconBorderShown(slot, show)
 	end)
 
 	-- Set up popout button

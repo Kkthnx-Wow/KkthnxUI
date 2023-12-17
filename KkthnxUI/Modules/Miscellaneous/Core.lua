@@ -310,7 +310,7 @@ end
 function Module:CreateGUIGameMenuButton()
 	local bu = CreateFrame("Button", "KKUI_GameMenuButton", _G.GameMenuFrame, "GameMenuButtonTemplate")
 	bu:SetText(K.Title)
-	bu:SetPoint("TOP", _G.GameMenuButtonAddons, "BOTTOM", 0, -6)
+	bu:SetPoint("TOP", _G.GameMenuButtonAddons, "BOTTOM", 0, -12)
 	bu:SetScript("OnClick", Button_OnClick)
 	bu:SkinButton(true)
 

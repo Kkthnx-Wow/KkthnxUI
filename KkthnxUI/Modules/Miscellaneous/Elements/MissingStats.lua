@@ -6,7 +6,7 @@ local BreakUpLargeNumbers, GetMeleeHaste, UnitAttackSpeed = BreakUpLargeNumbers,
 local GetAverageItemLevel, C_PaperDollInfo_GetMinItemLevel = GetAverageItemLevel, C_PaperDollInfo.GetMinItemLevel
 local PaperDollFrame_SetLabelAndText = PaperDollFrame_SetLabelAndText
 local STAT_HASTE = STAT_HASTE
-local HIGHLIGHT_FONT_COLOR_CODE = HIGHLIGHT_FONT_COLOR_CODE
+local HIGHLIGHT_FONT_COLOR_CODE, FONT_COLOR_CODE_CLOSE = HIGHLIGHT_FONT_COLOR_CODE, FONT_COLOR_CODE_CLOSE
 
 function Module:CreateMissingStats()
 	if not C["Misc"].ImprovedStats then
@@ -95,7 +95,12 @@ function Module:CreateMissingStats()
 		local speed, offhandSpeed = UnitAttackSpeed(unit)
 		local displaySpeed = format("%.2f", speed)
 		if offhandSpeed then
-			displaySpeed = format("%s / %.2f", BreakUpLargeNumbers(displaySpeed), offhandSpeed)
+			offhandSpeed = format("%.2f", offhandSpeed)
+		end
+		if offhandSpeed then
+			displaySpeed = BreakUpLargeNumbers(displaySpeed) .. " / " .. offhandSpeed
+		else
+			displaySpeed = BreakUpLargeNumbers(displaySpeed)
 		end
 		PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, displaySpeed, false, speed)
 
@@ -104,28 +109,26 @@ function Module:CreateMissingStats()
 		statFrame:Show()
 	end
 
-	-- Get the average item level and minimum item level once, when the script is first run
-	local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel()
-	local minItemLevel = C_PaperDollInfo_GetMinItemLevel()
-
-	-- Hook the PaperDollFrame_SetItemLevel function to modify its behavior
 	hooksecurefunc("PaperDollFrame_SetItemLevel", function(statFrame, unit)
-		-- Check if the unit passed to the function is "player"
 		if unit ~= "player" then
 			return
 		end
 
-		-- Calculate the display item level
+		local avgItemLevel, avgItemLevelEquipped = GetAverageItemLevel()
+		local minItemLevel = C_PaperDollInfo_GetMinItemLevel()
 		local displayItemLevel = max(minItemLevel or 0, avgItemLevelEquipped)
-		-- Update the stat frame with the display item level and average item level
-		PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, format("%.1f", displayItemLevel), false, format("%.1f", avgItemLevel))
+		displayItemLevel = format("%.1f", displayItemLevel)
+		avgItemLevel = format("%.1f", avgItemLevel)
+
+		if displayItemLevel ~= avgItemLevel then
+			displayItemLevel = displayItemLevel .. " / " .. avgItemLevel
+		end
+		PaperDollFrame_SetLabelAndText(statFrame, STAT_AVERAGE_ITEM_LEVEL, displayItemLevel, false, displayItemLevel)
 	end)
 
 	hooksecurefunc("PaperDollFrame_SetLabelAndText", function(statFrame, label, _, isPercentage)
 		if isPercentage or label == STAT_HASTE then
 			statFrame.Value:SetFormattedText("%.2f%%", statFrame.numericValue)
-		else
-			statFrame.Value:SetText(string.format("%.2f", statFrame.numericValue))
 		end
 	end)
 end
