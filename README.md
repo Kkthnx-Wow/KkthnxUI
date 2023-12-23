@@ -20,3 +20,5 @@ Contact Kkthnx in-game on Area 52 or send gold by mail.
 
 ## Let's Build Together!
 Your contributions, big or small, play a crucial role in shaping the future of KkthnxUI. Join us in making the UI the best it can be! For questions or assistance, reach out on [Discord](https://discord.gg/Rc9wcK9cAB).
+
+![image](https://github.com/Kkthnx-Wow/KkthnxUI/assets/40672673/917cf332-6520-4ea7-aed1-37f3f42a3bb3)
