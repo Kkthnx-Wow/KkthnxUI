@@ -266,8 +266,6 @@ local function ForceCursorTrail()
 		return
 	end
 
-	print(C_AddOns.IsAddOnLoaded("CursorTrail"))
-
 	if CursorTrail_PlayerConfig then
 		table_wipe(CursorTrail_PlayerConfig)
 	end

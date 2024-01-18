@@ -575,15 +575,10 @@ local function HelloWorld()
 	welcomeLogo:SetTexture(C["Media"].Textures.LogoTexture)
 	welcomeLogo:SetPoint("CENTER", welcome, "CENTER", 0, 0)
 
-	-- local welcomeBoss = welcome:CreateTexture(nil, "OVERLAY")
-	-- welcomeBoss:SetSize(128, 64)
-	-- welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-Fyrakk the Burning")
-	-- welcomeBoss:SetPoint("TOPRIGHT", welcome, "TOPRIGHT", 10, 64)
-
-	-- REMOVE ME AFTER CHRISTMAS
-	welcome.XMAS = welcome:CreateTexture(nil, "OVERLAY", nil, 7)
-	welcome.XMAS:SetPoint("CENTER", welcome, "TOP", 0, 27)
-	welcome.XMAS:SetAtlas("perks-theme-winterveil-tp-topsmall", true)
+	local welcomeBoss = welcome:CreateTexture(nil, "OVERLAY")
+	welcomeBoss:SetSize(128, 64)
+	welcomeBoss:SetTexture("Interface\\ENCOUNTERJOURNAL\\UI-EJ-BOSS-Fyrakk the Burning")
+	welcomeBoss:SetPoint("TOPRIGHT", welcome, "TOPRIGHT", 10, 64)
 
 	local ll = CreateFrame("Frame", nil, welcome)
 	ll:SetPoint("TOP", -50, -35)
@@ -641,17 +636,10 @@ local function HelloWorld()
 		K.ShowOverlayGlow(goTutor, "AutoCastGlow")
 	end
 
-	-- XMAS STUFF!
-	local red = "|cFFFF0000" -- Red color start
-	local green = "|cFF00FF00" -- Green color start
-	local reset = "|r" -- Reset color
-
-	local text = red .. "I" .. reset .. green .. "N" .. reset .. red .. "S" .. reset .. green .. "T" .. reset .. red .. "A" .. reset .. green .. "L" .. reset .. red .. "L" .. reset .. green .. "!" .. reset
-
 	goTutor.text = goTutor:CreateFontString(nil, "OVERLAY")
 	goTutor.text:SetFontObject(K.UIFont)
 	goTutor.text:SetPoint("CENTER", 0, -1)
-	goTutor.text:SetText(text)
+	goTutor.text:SetText(K.MyClassColor .. START .. "|r")
 
 	goTutor:SetScript("OnClick", function()
 		K.HideOverlayGlow(goTutor, "AutoCastGlow")

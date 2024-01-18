@@ -150,7 +150,6 @@ local function KKUI_OnEvent(_, event, addonName)
 	if event == "VARIABLES_LOADED" then
 		KKUI_LoadVariables()
 	elseif event == "ADDON_LOADED" and addonName == "KkthnxUI" then
-		print(addonName)
 		KKUI_LoadAddon()
 	end
 
