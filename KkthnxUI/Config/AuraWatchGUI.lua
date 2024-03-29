@@ -670,7 +670,7 @@ local function CreatePanel()
 			end
 		end)
 
-		local slotTable = { 6, 11, 12, 13, 14, 15 }
+		local slotTable = { 6, 11, 12, 13, 14, 15, 16, 17 }
 		local add = CreateFrame("Button", nil, tabs[i].Page, "BackdropTemplate")
 		add:SetSize(60, 25)
 		add:SkinButton()
