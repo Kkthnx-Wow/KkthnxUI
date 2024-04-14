@@ -1,11 +1,9 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Blizzard")
 
--- Sourced: NDui
-
 local pairs = pairs
 
-local function SetupTimerTracker(bar)
+local function StyleTimerBar(bar)
 	local texture = K.GetTexture(C["General"].Texture)
 
 	bar:SetSize(222, 22)
@@ -27,7 +25,7 @@ function Module:CreateTimerTracker()
 	local function UpdateTimerTracker()
 		for _, timer in pairs(_G.TimerTracker.timerList) do
 			if timer.bar and not timer.bar.styled then -- only apply style if not styled before
-				SetupTimerTracker(timer.bar)
+				StyleTimerBar(timer.bar)
 			end
 		end
 	end
