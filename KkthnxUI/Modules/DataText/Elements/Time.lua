@@ -107,6 +107,12 @@ local horrificVisions = {
 	[8] = { id = 57841, desc = "420 (1+0)" },
 }
 
+local currentTime
+local function updateTime()
+	currentTime = currentTime or time()
+	-- print("currentTime updated:", currentTime) -- Debug output
+end
+
 local function updateTimerFormat(color, hour, minute)
 	if GetCVarBool("timeMgrUseMilitaryTime") then
 		return string_format(color .. TIMEMANAGER_TICKER_24HOUR, hour, minute)
@@ -197,7 +203,7 @@ local function CheckInvasion(index)
 end
 
 local function GetNextTime(baseTime, index)
-	local currentTime = time()
+	updateTime() -- Ensure currentTime is updated if necessary
 	local duration = invIndex[index].duration
 	local elapsed = mod(currentTime - baseTime, duration)
 	return duration - elapsed + currentTime
@@ -330,12 +336,15 @@ function Module:TimeOnEnter()
 	GameTooltip:AddDoubleLine(L["Realm Time"], GameTime_GetGameTime(true), nil, nil, nil, 192 / 255, 192 / 255, 192 / 255)
 
 	-- World bosses
-	title = false
-	for i = 1, GetNumSavedWorldBosses() do
-		local name, id, reset = GetSavedWorldBossInfo(i)
-		if not (id == 11 or id == 12 or id == 13) then
-			addTitle(RAID_INFO_WORLD_BOSS)
-			GameTooltip:AddDoubleLine(name, SecondsToTime(reset, true, nil, 3), 1, 1, 1, 192 / 255, 192 / 255, 192 / 255)
+	local numSavedWorldBosses = GetNumSavedWorldBosses()
+	if numSavedWorldBosses > 0 then
+		title = false
+		addTitle(RAID_INFO_WORLD_BOSS)
+		for i = 1, numSavedWorldBosses do
+			local name, id, reset = GetSavedWorldBossInfo(i)
+			if not (id == 11 or id == 12 or id == 13) then
+				GameTooltip:AddDoubleLine(name, SecondsToTime(reset, true, nil, 3), 1, 1, 1, 192 / 255, 192 / 255, 192 / 255)
+			end
 		end
 	end
 
@@ -429,12 +438,13 @@ function Module:TimeOnEnter()
 	title = false
 	local feastTime = communityFeastTime[region]
 	if feastTime then
-		local currentTime = time()
+		updateTime() -- Ensure currentTime is updated if necessary
 		local duration = 5400 -- 1.5hrs
 		local elapsed = mod(currentTime - feastTime, duration)
 		local nextTime = duration - elapsed + currentTime
 
 		addTitle(GetSpellInfo(388961))
+		local r, g, b
 		if currentTime - (nextTime - duration) < 900 then
 			r, g, b = 0, 1, 0
 		else

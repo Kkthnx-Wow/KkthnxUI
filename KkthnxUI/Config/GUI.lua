@@ -509,7 +509,7 @@ local Automation = function(self)
 
 	-- Auto-Resurrect Options sub-section
 	Window:CreateSection("Auto-Resurrect Options")
-	Window:CreateSwitch("Automation", "AutoAcceptResurrect", L["Auto Accept Resurrect Requests"])
+	Window:CreateSwitch("Automation", "AutoResurrect", L["Auto Accept Resurrect Requests"])
 	Window:CreateSwitch("Automation", "AutoResurrectThank", L["Say 'Thank You' When Resurrected"])
 
 	-- Auto-Reward Options sub-section

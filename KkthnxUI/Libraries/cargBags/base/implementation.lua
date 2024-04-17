@@ -333,7 +333,7 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 
 	local info = C_Container.GetContainerItemInfo(bagID, slotID)
 	if info then
-		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.bound, i.hasPrice = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, info.itemBound, not info.hasNoValue
+		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.bound, i.hasPrice = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, info.isBound, not info.hasNoValue
 
 		i.isInSet, i.setName = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID)
 
@@ -342,7 +342,7 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 		local questInfo = C_Container.GetContainerItemQuestInfo(bagID, slotID)
 		i.isQuestItem, i.questID, i.questActive = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
 
-		i.name, _, _, _, i.minlevel, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID, i.bindType = GetItemInfo(i.link)
+		i.name, _, _, _, i.minlevel, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID, i.bindType = C_Item.GetItemInfo(i.link)
 		i.equipLoc = _G[i.equipLoc] -- INVTYPE to localized string
 
 		if i.id == PET_CAGE then
