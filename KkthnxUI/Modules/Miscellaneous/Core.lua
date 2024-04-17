@@ -272,37 +272,28 @@ local function MainMenu_OnShow(self)
 	local isCharacterNewlyBoosted = IsCharacterNewlyBoosted()
 	local canViewSplashScreen = C_SplashScreen.CanViewSplashScreen()
 
-	local function reanchorButtons(offset)
-		local anchorButton = GameMenuButtonWhatsNew
-		local additionalOffset = 54
-
-		if isCharacterNewlyBoosted or not canViewSplashScreen then
-			anchorButton = GameMenuButtonStore
-			additionalOffset = 48
-		end
-
-		buttonToReanchor = anchorButton
-		buttonHeight = Module.GameMenuButton:GetHeight() + additionalOffset + offset
+	if isCharacterNewlyBoosted or not canViewSplashScreen then
+		buttonToReanchor = GameMenuButtonStore
+		buttonHeight = Module.GameMenuButton:GetHeight() + 28
+	else
+		buttonToReanchor = GameMenuButtonWhatsNew
+		buttonHeight = Module.GameMenuButton:GetHeight() + 34
 	end
-
-	local function setButtonPosition(button, relativeTo, yOffset)
-		if button and button:IsShown() then
-			button:SetPoint("TOP", relativeTo, "BOTTOM", 0, yOffset)
-		end
-	end
-
-	reanchorButtons(0)
 
 	self:SetHeight(self:GetHeight() + buttonHeight)
 
-	setButtonPosition(_G.GameMenuButtonLogout, Module.GameMenuButton, -14)
-	setButtonPosition(_G.GameMenuButtonStore, _G.GameMenuButtonHelp, -6)
-	setButtonPosition(_G.GameMenuButtonWhatsNew, buttonToReanchor, -6)
-	setButtonPosition(_G.GameMenuButtonEditMode, buttonToReanchor, -24)
-	setButtonPosition(_G.GameMenuButtonSettings, _G.GameMenuButtonEditMode, -6)
-	setButtonPosition(_G.GameMenuButtonMacros, _G.GameMenuButtonSettings, -6)
-	setButtonPosition(_G.GameMenuButtonAddons, _G.GameMenuButtonMacros, -6)
-	setButtonPosition(_G.GameMenuButtonQuit, _G.GameMenuButtonLogout, -6)
+	_G.GameMenuButtonLogout:SetPoint("TOP", Module.GameMenuButton, "BOTTOM", 0, -14)
+	_G.GameMenuButtonStore:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -6)
+
+	if _G.GameMenuButtonWhatsNew then
+		_G.GameMenuButtonWhatsNew:SetPoint("TOP", _G.GameMenuButtonStore, "BOTTOM", 0, -6)
+	end
+
+	_G.GameMenuButtonEditMode:SetPoint("TOP", buttonToReanchor, "BOTTOM", 0, -24)
+	_G.GameMenuButtonSettings:SetPoint("TOP", _G.GameMenuButtonEditMode, "BOTTOM", 0, -6)
+	_G.GameMenuButtonMacros:SetPoint("TOP", _G.GameMenuButtonSettings, "BOTTOM", 0, -6)
+	_G.GameMenuButtonAddons:SetPoint("TOP", _G.GameMenuButtonMacros, "BOTTOM", 0, -6)
+	_G.GameMenuButtonQuit:SetPoint("TOP", _G.GameMenuButtonLogout, "BOTTOM", 0, -6)
 end
 
 local function Button_OnClick()

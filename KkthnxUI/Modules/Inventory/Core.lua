@@ -1283,7 +1283,7 @@ function Module:OnEnable()
 		self.bindType:SetText("")
 		if showBindOnEquip then
 			local BoE, BoU = item.bindType == 2, item.bindType == 3
-			if not item.bound and (BoE or BoU) then
+			if not item.bound and (BoE or BoU) and (item.quality and item.quality > Enum.ItemQuality.Common) then
 				local color = K.QualityColors[item.quality]
 				self.bindType:SetText(BoE and "BoE" or "BoU") -- Local these asap
 				self.bindType:SetTextColor(color.r, color.g, color.b)

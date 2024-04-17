@@ -1,10 +1,7 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Blizzard")
 
--- Sourced: NDui
-
-local function SetupMirrorBar(bar)
-	-- local statusBar = bar.StatusBar
+local function StyleMirrorBar(bar)
 	local statusbar = bar.StatusBar or _G[bar:GetName() .. "StatusBar"]
 	if statusbar then
 		statusbar:SetAllPoints()
@@ -13,7 +10,6 @@ local function SetupMirrorBar(bar)
 	end
 
 	local text = bar.Text
-	local spark = bar.Spark
 
 	bar:SetSize(222, 22)
 	bar:StripTextures(true)
@@ -23,21 +19,22 @@ local function SetupMirrorBar(bar)
 	text:SetFont(text:GetFont(), 12, nil)
 	text:SetPoint("BOTTOM", bar, "TOP", 0, 4)
 
-	spark = bar:CreateTexture(nil, "OVERLAY")
+	local spark = bar:CreateTexture(nil, "OVERLAY")
 	spark:SetSize(64, bar:GetHeight())
 	spark:SetTexture(C["Media"].Textures.Spark128Texture)
 	spark:SetBlendMode("ADD")
 	spark:SetPoint("CENTER", statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	bar:CreateBorder()
+
+	bar.styled = true -- set styled flag on the bar
 end
 
 function Module:CreateMirrorBars()
 	hooksecurefunc(MirrorTimerContainer, "SetupTimer", function(self, timer)
 		local bar = self:GetAvailableTimer(timer)
 		if not bar.styled then
-			SetupMirrorBar(bar)
-			bar.styled = true
+			StyleMirrorBar(bar)
 		end
 	end)
 end

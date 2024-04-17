@@ -7,8 +7,16 @@ local C_BattleNet_GetFriendAccountInfo = C_BattleNet.GetFriendAccountInfo
 
 -- Helper Functions
 local function classColor(class, showRGB)
-	local color = K.ClassColors[K.ClassList[class] or class] or K.ClassColors["PRIEST"]
-	return showRGB and { color.r, color.g, color.b } or "|c" .. color.colorStr
+	local color = K.ClassColors[K.ClassList[class] or class]
+	if not color then
+		color = K.ClassColors["PRIEST"]
+	end
+
+	if showRGB then
+		return color.r, color.g, color.b
+	else
+		return "|c" .. color.colorStr
+	end
 end
 
 local function diffColor(level)

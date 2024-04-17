@@ -292,33 +292,16 @@ function Module:ReplaceFindGroupButton()
 end
 
 function Module:AddDungeonsFilter()
-	local mapData
-
-	if K.IsFirestorm then
-		-- Firestorm Patch 10.1.7 Map Data
-		mapData = {
-			[0] = { mapID = 438, aID = 1195 }, -- Summit of Swirling Clouds
-			[1] = { mapID = 206, aID = 462 }, -- Neltharion's Lair
-			[2] = { mapID = 251, aID = 507 }, -- The Underrot
-			[3] = { mapID = 245, aID = 518 }, -- Freehold
-			[4] = { mapID = 403, aID = 1188 }, -- Uldum: Legacy of Tyr
-			[5] = { mapID = 404, aID = 1172 }, -- Nazjatar
-			[6] = { mapID = 405, aID = 1164 }, -- Fernskin Valley
-			[7] = { mapID = 406, aID = 1168 }, -- Hall of Infusion
-		}
-	else
-		-- Other Patch Map Data
-		mapData = {
-			[0] = { aID = 1247, mapID = 463 }, -- Eternal Dawn: Galakrond's Fall
-			[1] = { aID = 1248, mapID = 464 }, -- Eternal Dawn: Rise of Murozond
-			[2] = { aID = 530, mapID = 248 }, -- Waycrest Manor
-			[3] = { aID = 502, mapID = 244 }, -- Atal'Dazar
-			[4] = { aID = 460, mapID = 198 }, -- Darkheart Thicket
-			[5] = { aID = 463, mapID = 199 }, -- Black Rook Hold
-			[6] = { aID = 184, mapID = 168 }, -- The Everbloom
-			[7] = { aID = 1274, mapID = 456 }, -- Throne of the Tides
-		}
-	end
+	local mapData = {
+		[0] = { aID = 1247, mapID = 463 }, -- 永恒黎明：迦拉克隆的陨落
+		[1] = { aID = 1248, mapID = 464 }, -- 永恒黎明：姆诺兹多的崛起
+		[2] = { aID = 530, mapID = 248 }, -- 维克雷斯庄园
+		[3] = { aID = 502, mapID = 244 }, -- 阿塔达萨
+		[4] = { aID = 460, mapID = 198 }, -- 黑心林地
+		[5] = { aID = 463, mapID = 199 }, -- 黑鸦堡垒
+		[6] = { aID = 184, mapID = 168 }, -- 永茂林地
+		[7] = { aID = 1274, mapID = 456 }, -- 潮汐王座
+	}
 
 	local function GetDungeonNameByID(mapID)
 		local name = C_ChallengeMode_GetMapUIInfo(mapID)

@@ -150,7 +150,7 @@ local function buildBNetTable(num)
 				local isMobile = gameAccountInfo.isWowMobile
 				local level = gameAccountInfo.characterLevel
 				local wowProjectID = gameAccountInfo.wowProjectID
-				local zoneName = gameAccountInfo.areaName or UNKNOWN
+				local zoneName = gameAccountInfo.areaName
 
 				charName = BNet_GetValidatedCharacterName(charName, battleTag, client)
 				class = K.ClassList[class]
@@ -170,7 +170,7 @@ local function buildBNetTable(num)
 
 				local infoText = GetOnlineInfoText(client, isMobile, rafLinkType, gameText)
 				if client == BNET_CLIENT_WOW and wowProjectID == WOW_PROJECT_ID then
-					infoText = GetOnlineInfoText(client, isMobile, rafLinkType, zoneName)
+					infoText = GetOnlineInfoText(client, isMobile, rafLinkType, zoneName or gameText)
 				end
 
 				if client == BNET_CLIENT_WOW and wowProjectID ~= WOW_PROJECT_ID then

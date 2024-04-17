@@ -163,7 +163,7 @@ function Module:OnTooltipSetUnit()
 		local name, realm = UnitName(unit)
 		local pvpName = UnitPVPName(unit)
 		local relationship = UnitRealmRelationship(unit)
-		if not C["Tooltip"].HideTitle and pvpName then
+		if not C["Tooltip"].HideTitle and pvpName and pvpName ~= "" then
 			name = pvpName
 		end
 

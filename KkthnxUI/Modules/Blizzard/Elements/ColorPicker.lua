@@ -19,7 +19,7 @@ function Module:EnhancedPicker_UpdateColor()
 	g = translateColor(g)
 	b = translateColor(b)
 
-	_G.ColorPickerFrame:SetColorRGB(r, g, b)
+	_G.ColorPickerFrame.Content.ColorPicker:SetColorRGB(r, g, b)
 end
 
 local function GetBoxColor(box)
@@ -57,7 +57,7 @@ local function createCodeBox(width, index, text)
 	box:SetTextInsets(5, 5, 0, 0)
 	box:SetMaxLetters(index == 4 and 6 or 3)
 	box:SetTextInsets(0, 0, 0, 0)
-	box:SetPoint("TOPLEFT", _G.ColorSwatch, "BOTTOMLEFT", 0, -index * 26)
+	box:SetPoint("TOPLEFT", _G.ColorPickerFrame.Content.ColorSwatchCurrent, "BOTTOMLEFT", 0, -index * 26 + -3)
 	box:SetFontObject(K.UIFont)
 
 	box.bg = CreateFrame("Button", nil, box)
@@ -75,8 +75,6 @@ local function createCodeBox(width, index, text)
 		box:HookScript("OnEnterPressed", updateColorRGB)
 	end
 
-	-- box.Type = "EditBox"
-
 	return box
 end
 
@@ -85,10 +83,9 @@ function Module:CreateColorPicker()
 		return
 	end
 
-	local pickerFrame = ColorPickerFrame
+	local pickerFrame = _G.ColorPickerFrame
 	pickerFrame:SetHeight(250)
 	K.CreateMoverFrame(pickerFrame.Header, pickerFrame) -- movable by header
-	_G.OpacitySliderFrame:SetPoint("TOPLEFT", _G.ColorSwatch, "TOPRIGHT", 50, 0)
 
 	local colorBar = CreateFrame("Frame", nil, pickerFrame)
 	colorBar:SetSize(1, 20)
@@ -121,18 +118,29 @@ function Module:CreateColorPicker()
 	pickerFrame.__boxR = createCodeBox(45, 1, "|cffff0000R")
 	pickerFrame.__boxG = createCodeBox(45, 2, "|cff00ff00G")
 	pickerFrame.__boxB = createCodeBox(45, 3, "|cff0000ffB")
-	pickerFrame.__boxH = createCodeBox(70, 4, "#")
+	local hexBox = pickerFrame.Content and pickerFrame.Content.HexBox
+	if hexBox then
+		hexBox:StripTextures()
 
-	pickerFrame:HookScript("OnColorSelect", function(self)
-		local r, g, b = self:GetColorRGB()
+		local bg = CreateFrame("Button", nil, hexBox)
+		bg:SetAllPoints()
+		bg:SetFrameLevel(hexBox:GetFrameLevel())
+		bg:CreateBorder()
+
+		hexBox:ClearAllPoints()
+		hexBox:SetPoint("BOTTOMRIGHT", -27, 60)
+	end
+
+	pickerFrame.Content.ColorPicker.__owner = pickerFrame
+	pickerFrame.Content.ColorPicker:HookScript("OnColorSelect", function(self)
+		local r, g, b = self.__owner:GetColorRGB()
 		r = K.Round(r * 255)
 		g = K.Round(g * 255)
 		b = K.Round(b * 255)
 
-		self.__boxR:SetText(r)
-		self.__boxG:SetText(g)
-		self.__boxB:SetText(b)
-		self.__boxH:SetText(string_format("%02x%02x%02x", r, g, b))
+		self.__owner.__boxR:SetText(r)
+		self.__owner.__boxG:SetText(g)
+		self.__owner.__boxB:SetText(b)
 	end)
 
 	pickerFrame.Header:StripTextures()
@@ -141,11 +149,11 @@ function Module:CreateColorPicker()
 	pickerFrame.Border:Hide()
 
 	pickerFrame:CreateBorder()
-	_G.ColorPickerOkayButton:SkinButton()
-	_G.ColorPickerCancelButton:SkinButton()
+	_G.ColorPickerFrame.Footer.OkayButton:SkinButton()
+	_G.ColorPickerFrame.Footer.CancelButton:SkinButton()
 
-	_G.ColorPickerCancelButton:ClearAllPoints()
-	_G.ColorPickerCancelButton:SetPoint("BOTTOMLEFT", pickerFrame, "BOTTOM", 3, 6)
-	_G.ColorPickerOkayButton:ClearAllPoints()
-	_G.ColorPickerOkayButton:SetPoint("BOTTOMRIGHT", pickerFrame, "BOTTOM", -3, 6)
+	_G.ColorPickerFrame.Footer.CancelButton:ClearAllPoints()
+	_G.ColorPickerFrame.Footer.CancelButton:SetPoint("BOTTOMLEFT", pickerFrame, "BOTTOM", 3, 6)
+	_G.ColorPickerFrame.Footer.OkayButton:ClearAllPoints()
+	_G.ColorPickerFrame.Footer.OkayButton:SetPoint("BOTTOMRIGHT", pickerFrame, "BOTTOM", -3, 6)
 end

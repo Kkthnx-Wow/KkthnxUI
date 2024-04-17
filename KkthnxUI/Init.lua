@@ -1,35 +1,5 @@
 local AddOnName, Engine = ...
 
--- KkthnxUI Compatibility Layer for Firestorm Dragonflight Release
--- This script ensures backward compatibility with older WoW API functions.
-
--- Checking and initializing the C_AddOns table if it doesn't exist
--- This is necessary to avoid nil reference errors in older WoW versions.
-C_AddOns = C_AddOns or {}
-
--- Overwrite the IsAddOnLoaded function in the C_AddOns table.
--- This ensures that C_AddOns.IsAddOnLoaded references the global IsAddOnLoaded function.
--- Useful for older WoW versions where C_AddOns.IsAddOnLoaded might not be available.
-C_AddOns.IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded
-
--- Overwrite the GetAddOnInfo function in the C_AddOns table.
--- This ensures that C_AddOns.GetAddOnInfo references the global GetAddOnInfo function.
--- Ensures compatibility for accessing addon information across different WoW versions.
-C_AddOns.GetAddOnInfo = C_AddOns.GetAddOnInfo or GetAddOnInfo
-
--- Overwrite the GetNumAddOns function in the C_AddOns table.
--- This ensures that C_AddOns.GetNumAddOns references the global GetNumAddOns function.
--- Aligns with the above modification for consistency and backward compatibility.
-C_AddOns.GetNumAddOns = C_AddOns.GetNumAddOns or GetNumAddOns
-
--- Overwrite C_AddOns.GetAddOnEnableState with the global GetAddOnEnableState function.
--- Allows querying the enable state of addons in a manner compatible with older versions.
-C_AddOns.GetAddOnEnableState = C_AddOns.GetAddOnEnableState or GetAddOnEnableState
-
--- Note: These overrides are specifically tailored for the Firestorm Dragonflight release
--- and older versions of WoW. Ensure extensive testing across different WoW versions
--- to maintain compatibility and avoid conflicts with other addons or game client behavior.
-
 local bit_band = bit.band
 local bit_bor = bit.bor
 local next = next
@@ -119,10 +89,7 @@ K.EasyMenu = CreateFrame("Frame", "KKUI_EasyMenu", UIParent, "UIDropDownMenuTemp
 -- WoW Info
 K.WowPatch, K.WowBuild, K.WowRelease, K.TocVersion = GetBuildInfo()
 K.WowBuild = tonumber(K.WowBuild)
-
--- Compatibility Layer for Firestorm Dragonflight Release
--- Determine if the game is running on the Firestorm server with the specific patch version 10.1.7.
-K.IsFirestorm = K.TocVersion == 100107 -- Check for 10.1.7
+K.IsPatch_10_1_0 = K.TocVersion >= 100100 -- 10.1.0
 
 -- Color Info
 K.GreyColor = "|CFFC0C0C0"
@@ -151,18 +118,8 @@ K.AddOnVersion = {}
 
 -- Flags
 -- Constants
-K.PartyPetFlags = bit_bor(
-	COMBATLOG_OBJECT_AFFILIATION_PARTY,
-	COMBATLOG_OBJECT_REACTION_FRIENDLY,
-	COMBATLOG_OBJECT_CONTROL_PLAYER,
-	COMBATLOG_OBJECT_TYPE_PET
-)
-K.RaidPetFlags = bit_bor(
-	COMBATLOG_OBJECT_AFFILIATION_RAID,
-	COMBATLOG_OBJECT_REACTION_FRIENDLY,
-	COMBATLOG_OBJECT_CONTROL_PLAYER,
-	COMBATLOG_OBJECT_TYPE_PET
-)
+K.PartyPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_PARTY, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
+K.RaidPetFlags = bit_bor(COMBATLOG_OBJECT_AFFILIATION_RAID, COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PET)
 
 -- Tables
 local eventsFrame = CreateFrame("Frame")
@@ -383,15 +340,12 @@ ChatFrame_DisplayTimePlayed = function(_, totalTime, levelTime)
 	local colorString = colorClass.colorStr
 
 	-- Create messages using string formatting
-	local totalTimeMessage =
-		string.format("%sTotal time played: %s", K.SystemColor, K.GreyColor .. SecondsToTime(totalTime))
-	local levelTimeMessage =
-		string.format("%sTime played this level: %s", K.SystemColor, K.GreyColor .. SecondsToTime(levelTime))
+	local totalTimeMessage = string.format("%sTotal time played: %s", K.SystemColor, K.GreyColor .. SecondsToTime(totalTime))
+	local levelTimeMessage = string.format("%sTime played this level: %s", K.SystemColor, K.GreyColor .. SecondsToTime(levelTime))
 	local moneyMessage = string.format("%sMoney: %s", K.SystemColor, K.GreyColor .. money)
 
 	-- Create player info message using string concatenation
-	local playerInfo =
-		string.format("%s %sLevel %d|r |c%s%s|r", K.Name, K.SystemColor, K.Level, colorString, localizedClass)
+	local playerInfo = string.format("%s %sLevel %d|r |c%s%s|r", K.Name, K.SystemColor, K.Level, colorString, localizedClass)
 
 	-- Print each message on its own line
 	print(playerInfo)
