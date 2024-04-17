@@ -67,9 +67,9 @@ function Module:SetupHealthAnnounce()
 end
 
 function Module:CreateHealthAnnounce()
-	if not C["Announcements"].HealthAlert then
-		return
-	end
+	-- if not C["Announcements"].HealthAlert then
+	-- 	return
+	-- end
 
-	C_Timer_NewTicker(1, Module.SetupHealthAnnounce)
+	-- C_Timer_NewTicker(1, Module.SetupHealthAnnounce)
 end

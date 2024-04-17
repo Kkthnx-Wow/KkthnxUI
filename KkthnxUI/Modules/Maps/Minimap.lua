@@ -316,17 +316,19 @@ function Module:ReskinRegions()
 	-- QueueStatus Button
 	if QueueStatusButton then
 		QueueStatusButton:SetParent(MinimapCluster)
-		QueueStatusButton:ClearAllPoints()
-		QueueStatusButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
-		QueueStatusButton:SetFrameLevel(999)
 		QueueStatusButton:SetSize(33, 33)
+		QueueStatusButton:SetFrameLevel(999)
 
-		hooksecurefunc(QueueStatusButton, "SetPoint", function(button, _, _, _, x, y)
-			if not (x == 2 and y == -2) then
+		local function SetButtonPosition(button, _, _, _, x)
+			if x == -15 then
 				button:ClearAllPoints()
 				button:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
 			end
-		end)
+		end
+
+		QueueStatusButton:ClearAllPoints()
+		QueueStatusButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
+		hooksecurefunc(QueueStatusButton, "SetPoint", SetButtonPosition)
 
 		QueueStatusButtonIcon:SetAlpha(0)
 
@@ -822,7 +824,7 @@ function Module:OnEnable()
 
 	-- Hide Blizz
 	MinimapCluster:EnableMouse(false)
-	MinimapCluster.TrackingFrame:Hide()
+	MinimapCluster.Tracking:Hide()
 	MinimapCluster.BorderTop:Hide()
 	MinimapCluster.ZoneTextButton:Hide()
 	Minimap:SetArchBlobRingScalar(0)

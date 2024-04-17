@@ -206,8 +206,4 @@ function Module:MicroMenu()
 	K.HideInterfaceOption(HelpOpenWebTicketButton)
 	BagsBar:Hide()
 	BagsBar:UnregisterAllEvents()
-
-	if MicroMenu and MicroMenu.UpdateHelpTicketButtonAnchor then
-		MicroMenu.UpdateHelpTicketButtonAnchor = K.Noop
-	end
 end

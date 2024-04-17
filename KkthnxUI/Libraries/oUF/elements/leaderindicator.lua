@@ -34,7 +34,7 @@ local function Update(self, event)
 
 	* self - the LeaderIndicator element
 	--]]
-	if(element.PreUpdate) then
+	if element.PreUpdate then
 		element:PreUpdate()
 	end
 
@@ -49,8 +49,8 @@ local function Update(self, event)
 	-- true for the instance leader.
 	local isInLFGInstance = HasLFGRestrictions()
 	local isLeader = UnitIsGroupLeader(unit)
-	if(isLeader) then
-		if(isInLFGInstance) then
+	if isLeader then
+		if isInLFGInstance then
 			--element:SetTexture([[Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES]])
 			--element:SetTexCoord(0, 0.296875, 0.015625, 0.3125)
 			element:SetTexCoord(0, 1, 0, 1)
@@ -72,7 +72,7 @@ local function Update(self, event)
 	* isLeader        - indicates whether the unit is the leader of the group (boolean)
 	* isInLFGInstance - indicates whether the current party is subject to LFG restrictions (boolean)
 	--]]
-	if(element.PostUpdate) then
+	if element.PostUpdate then
 		return element:PostUpdate(isLeader, isInLFGInstance)
 	end
 end
@@ -85,21 +85,21 @@ local function Path(self, ...)
 	* event - the event triggering the update (string)
 	* ...   - the arguments accompanying the event
 	--]]
-	return (self.LeaderIndicator.Override or Update) (self, ...)
+	return (self.LeaderIndicator.Override or Update)(self, ...)
 end
 
 local function ForceUpdate(element)
-	return Path(element.__owner, 'ForceUpdate')
+	return Path(element.__owner, "ForceUpdate")
 end
 
 local function Enable(self)
 	local element = self.LeaderIndicator
-	if(element) then
+	if element then
 		element.__owner = self
 		element.ForceUpdate = ForceUpdate
 
-		self:RegisterEvent('PARTY_LEADER_CHANGED', Path, true)
-		self:RegisterEvent('GROUP_ROSTER_UPDATE', Path, true)
+		self:RegisterEvent("PARTY_LEADER_CHANGED", Path, true)
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", Path, true)
 
 		return true
 	end
@@ -107,12 +107,12 @@ end
 
 local function Disable(self)
 	local element = self.LeaderIndicator
-	if(element) then
+	if element then
 		element:Hide()
 
-		self:UnregisterEvent('PARTY_LEADER_CHANGED', Path)
-		self:UnregisterEvent('GROUP_ROSTER_UPDATE', Path)
+		self:UnregisterEvent("PARTY_LEADER_CHANGED", Path)
+		self:UnregisterEvent("GROUP_ROSTER_UPDATE", Path)
 	end
 end
 
-oUF:AddElement('LeaderIndicator', Path, Enable, Disable)
+oUF:AddElement("LeaderIndicator", Path, Enable, Disable)

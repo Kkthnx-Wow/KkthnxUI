@@ -333,7 +333,7 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 
 	local info = C_Container.GetContainerItemInfo(bagID, slotID)
 	if info then
-		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.bound, i.hasPrice = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, info.itemBound, not info.hasNoValue
+		i.texture, i.count, i.locked, i.quality, i.link, i.id, i.bound, i.hasPrice = info.iconFileID, info.stackCount, info.isLocked, (info.quality or 1), info.hyperlink, info.itemID, info.isBound, not info.hasNoValue
 
 		i.isInSet, i.setName = C_Container.GetContainerItemEquipmentSetInfo(bagID, slotID)
 

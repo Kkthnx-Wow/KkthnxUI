@@ -7,6 +7,7 @@ local DoEmote = DoEmote
 local StaticPopup_Hide = StaticPopup_Hide
 local UnitAffectingCombat = UnitAffectingCombat
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local IsActiveBattlefieldArena = IsActiveBattlefieldArena
 
 local localizedPylonNames = {
 	enUS = "Failure Detection Pylon",
@@ -35,7 +36,7 @@ local localizedBrazierNames = {
 	itIT = "Braciere del Risveglio",
 }
 
-function Module.SetupAutoResurrect(_, arg1)
+local function SetupAutoResurrect(_, arg1)
 	-- Check if the arg1 is a Pylon or Brazier by comparing it to the localized names.
 	-- If it is, we don't need to do anything and we return
 	if localizedPylonNames[K.Client] == arg1 or localizedBrazierNames[K.Client] == arg1 then
@@ -54,7 +55,8 @@ function Module.SetupAutoResurrect(_, arg1)
 		end
 
 		-- Wait 3 seconds and then check if the player is alive or not
-		C_Timer_After(3, function() -- Give this more time to say thanks.
+		C_Timer_After(3, function()
+			-- Give this more time to say thanks.
 			if not UnitIsDeadOrGhost("player") then
 				-- If player is alive, do the "thank" emote to the arg1
 				DoEmote("thank", arg1)
@@ -63,24 +65,13 @@ function Module.SetupAutoResurrect(_, arg1)
 	end
 end
 
--- function Module:CreateAutoResurrect()
--- 	if not C["Automation"].AutoResurrect then
--- 		return
--- 	end
-
--- 	K:RegisterEvent("RESURRECT_REQUEST", Module.SetupAutoResurrect)
--- end
-
-local autoResurrectEnabled = nil
-
 function Module:CreateAutoResurrect()
-	--Check if the player is in a battleground or arena and if player is dead or ghost
-	if IsActiveBattlefieldArena() and (UnitIsDeadOrGhost("player")) then
+	-- Check if the player is in a battleground or arena and if player is dead or ghost
+	if IsActiveBattlefieldArena() and UnitIsDeadOrGhost("player") then
 		-- Check the value of AutoResurrect
-		autoResurrectEnabled = C["Automation"].AutoResurrect
-		if autoResurrectEnabled then
+		if C["Automation"].AutoResurrect then
 			-- Register the event
-			K:RegisterEvent("RESURRECT_REQUEST", Module.SetupAutoResurrect)
+			K:RegisterEvent("RESURRECT_REQUEST", SetupAutoResurrect)
 		end
 	end
 end
