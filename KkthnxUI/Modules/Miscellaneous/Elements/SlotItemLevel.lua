@@ -175,6 +175,28 @@ function Module:ItemLevel_UpdateTraits(button, id, link)
 	end
 end
 
+local function CanEnchantSlot(unit, slot)
+	-- all classes have something that increases power or survivability on chest/cloak/weapons/rings/wrist/boots/legs
+	if slot == 5 or slot == 11 or slot == 12 or slot == 15 or slot == 16 or slot == 8 or slot == 9 or slot == 7 or slot == 6 then
+		return true
+	end
+
+	-- Offhand filtering smile :)
+	if slot == 17 then
+		local offHandItemLink = GetInventoryItemLink(unit, slot)
+		if offHandItemLink then
+			local itemEquipLoc = select(4, GetItemInfoInstant(offHandItemLink))
+			return itemEquipLoc ~= "INVTYPE_HOLDABLE" and itemEquipLoc ~= "INVTYPE_SHIELD"
+		end
+		return false
+	end
+
+	return false
+end
+
+-- Add a new configuration option in your addon settings
+local showNoEnchant = true -- Default to true, meaning the "No Enchant" feature is enabled
+
 function Module:ItemLevel_UpdateInfo(slotFrame, info, quality)
 	local infoType = type(info)
 	local level
@@ -194,6 +216,17 @@ function Module:ItemLevel_UpdateInfo(slotFrame, info, quality)
 		local enchant = info.enchantText
 		if enchant then
 			slotFrame.enchantText:SetText(enchant)
+			slotFrame.enchantText:SetTextColor(0, 1, 0) -- Set text color to green for normal enchant
+		elseif showNoEnchant then -- Check if the "No Enchant" feature is enabled
+			-- Check if the slot can be enchanted
+			if CanEnchantSlot("player", slotFrame:GetID()) then
+				slotFrame.enchantText:SetText("No Enchant")
+				slotFrame.enchantText:SetTextColor(1, 0, 0) -- Set text color to red for missing enchant
+			else
+				slotFrame.enchantText:SetText("")
+			end
+		else
+			slotFrame.enchantText:SetText("") -- Clear the enchant text if the feature is disabled
 		end
 
 		local gemStep, essenceStep = 1, 1
