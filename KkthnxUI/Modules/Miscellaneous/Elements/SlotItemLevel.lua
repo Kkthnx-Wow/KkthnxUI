@@ -108,7 +108,7 @@ function Module:CreateItemString(frame, strType)
 			slotFrame.enchantText:HookScript("OnShow", Module.ItemString_Collapse)
 
 			for i = 1, 10 do
-				local offset = (i - 1) * 18 + 5
+				local offset = (i - 1) * 20 + 5
 				local iconX = x > 0 and x + offset or x - offset
 				local iconY = index > 15 and 20 or 2
 				slotFrame["textureIcon" .. i] = Module:CreateItemTexture(slotFrame, relF, iconX, iconY)
