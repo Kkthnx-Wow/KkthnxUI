@@ -36,7 +36,6 @@ local editBox
 local frame
 local menu
 
-local menuFrame = CreateFrame("Frame", "KKUI_QuickMenu", UIParent, "UIDropDownMenuTemplate")
 local leftButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "
 local rightButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "
 
@@ -282,7 +281,7 @@ end
 function Module:ChatCopy_CreateMenu()
 	menu = CreateFrame("Frame", "KKUI_ChatMenu", UIParent)
 	menu:SetSize(18, C["Chat"].Lock and C["Chat"].Height or _G.ChatFrame1:GetHeight())
-	menu:SetPoint("TOPRIGHT", _G.ChatFrame1, K.IsPatch_10_1_0 and 12 or 20, -2)
+	menu:SetPoint("TOPRIGHT", _G.ChatFrame1, 20, -2)
 	menu:SetShown(C["Chat"].ChatMenu)
 
 	_G.ChatFrameMenuButton:ClearAllPoints()
@@ -404,7 +403,7 @@ function Module:ChatCopy_Create()
 	kkuiconfig:SetScript("OnClick", function(_, btn)
 		if btn == "LeftButton" then
 			PlaySound(111)
-			_G.EasyMenu(menuList, menuFrame, kkuiconfig, 24, 290, "MENU", 2)
+			_G.EasyMenu(menuList, K.EasyMenu, kkuiconfig, 24, 290, "MENU", 2)
 		elseif btn == "RightButton" then
 			K.GUI:Toggle()
 		end

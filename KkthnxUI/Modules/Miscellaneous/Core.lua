@@ -59,7 +59,6 @@ function Module:OnEnable()
 
 	-- Second loop: Iterating over loadMiscModules
 	local loadMiscModules = {
-		"CreateBlockStrangerInvites",
 		"CreateBossBanner",
 		"CreateBossEmote",
 		"CreateCustomWaypoint",
@@ -73,7 +72,6 @@ function Module:OnEnable()
 		"CreateTicketStatusFrameMove",
 		"CreateTradeTargetInfo",
 		"CreateVehicleSeatMover",
-		"HandleKkthnxUITitle",
 		"UpdateMaxCameraZoom",
 	}
 
@@ -125,14 +123,65 @@ function Module:OnEnable()
 	end
 	enableAutoBubbles()
 
-	-- Instant delete
 	local function modifyDeleteDialog()
-		local deleteDialog = StaticPopupDialogs["DELETE_GOOD_ITEM"]
-		if deleteDialog.OnShow then
-			hooksecurefunc(deleteDialog, "OnShow", function(self)
-				self.editBox:SetText(DELETE_ITEM_CONFIRM_STRING)
-			end)
+		-- Modify DELETE_GOOD_ITEM text to get the confirmation type
+		local confirmationText = DELETE_GOOD_ITEM:gsub("[\r\n]", "@")
+		local _, confirmationType = strsplit("@", confirmationText, 2)
+
+		-- Add hyperlinks to regular item destroy
+		local function setHyperlinkHandlers(dialog)
+			dialog.OnHyperlinkEnter = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkEnter
+			dialog.OnHyperlinkLeave = StaticPopupDialogs["DELETE_GOOD_ITEM"].OnHyperlinkLeave
 		end
+
+		setHyperlinkHandlers(StaticPopupDialogs["DELETE_ITEM"])
+		setHyperlinkHandlers(StaticPopupDialogs["DELETE_QUEST_ITEM"])
+		setHyperlinkHandlers(StaticPopupDialogs["DELETE_GOOD_QUEST_ITEM"])
+
+		-- Create frame to handle events
+		local deleteConfirmationFrame = CreateFrame("FRAME")
+		deleteConfirmationFrame:RegisterEvent("DELETE_ITEM_CONFIRM")
+		deleteConfirmationFrame:SetScript("OnEvent", function()
+			local staticPopup = StaticPopup1
+			local editBox = StaticPopup1EditBox
+			local button = StaticPopup1Button1
+			local popupText = StaticPopup1Text
+
+			-- Check if edit box is shown
+			if editBox:IsShown() then
+				staticPopup:SetHeight(staticPopup:GetHeight() - 14)
+				editBox:Hide()
+				button:Enable()
+				local link = select(3, GetCursorInfo())
+
+				-- Handle battle pets
+				if link then
+					local linkType, linkOptions, name = LinkUtil.ExtractLink(link)
+					if linkType == "battlepet" then
+						local _, level, breedQuality = strsplit(":", linkOptions)
+						local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)]
+						link = qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
+					end
+					popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
+				end
+			else
+				staticPopup:SetHeight(staticPopup:GetHeight() + 40)
+				editBox:Hide()
+				button:Enable()
+				local link = select(3, GetCursorInfo())
+
+				-- Handle battle pets
+				if link then
+					local linkType, linkOptions, name = LinkUtil.ExtractLink(link)
+					if linkType == "battlepet" then
+						local _, level, breedQuality = strsplit(":", linkOptions)
+						local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)]
+						link = qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
+					end
+					popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
+				end
+			end
+		end)
 	end
 	modifyDeleteDialog()
 
@@ -267,33 +316,43 @@ function Module:CreateMinimapButtonToggle()
 end
 
 local function MainMenu_OnShow(self)
-	local buttonToReanchor, buttonHeight
+	local buttonToReanchor
+	local buttonHeight = 0
 
 	local isCharacterNewlyBoosted = IsCharacterNewlyBoosted()
 	local canViewSplashScreen = C_SplashScreen.CanViewSplashScreen()
 
-	if isCharacterNewlyBoosted or not canViewSplashScreen then
-		buttonToReanchor = GameMenuButtonStore
-		buttonHeight = Module.GameMenuButton:GetHeight() + 28
-	else
-		buttonToReanchor = GameMenuButtonWhatsNew
-		buttonHeight = Module.GameMenuButton:GetHeight() + 34
+	local function reanchorButtons(offset)
+		local anchorButton = GameMenuButtonWhatsNew:IsShown() and GameMenuButtonWhatsNew or GameMenuButtonHelp
+		local additionalOffset = 28
+
+		if isCharacterNewlyBoosted or not canViewSplashScreen then
+			anchorButton = GameMenuButtonStore:IsShown() and GameMenuButtonStore or GameMenuButtonHelp
+			additionalOffset = 28
+		end
+
+		buttonToReanchor = anchorButton
+		buttonHeight = additionalOffset + offset
 	end
+
+	local function setButtonPosition(button, relativeTo, yOffset)
+		if button and button:IsShown() then
+			button:SetPoint("TOP", relativeTo, "BOTTOM", 0, yOffset)
+		end
+	end
+
+	reanchorButtons(Module.GameMenuButton:GetHeight())
 
 	self:SetHeight(self:GetHeight() + buttonHeight)
 
-	_G.GameMenuButtonLogout:SetPoint("TOP", Module.GameMenuButton, "BOTTOM", 0, -14)
-	_G.GameMenuButtonStore:SetPoint("TOP", _G.GameMenuButtonHelp, "BOTTOM", 0, -6)
-
-	if _G.GameMenuButtonWhatsNew then
-		_G.GameMenuButtonWhatsNew:SetPoint("TOP", _G.GameMenuButtonStore, "BOTTOM", 0, -6)
-	end
-
-	_G.GameMenuButtonEditMode:SetPoint("TOP", buttonToReanchor, "BOTTOM", 0, -24)
-	_G.GameMenuButtonSettings:SetPoint("TOP", _G.GameMenuButtonEditMode, "BOTTOM", 0, -6)
-	_G.GameMenuButtonMacros:SetPoint("TOP", _G.GameMenuButtonSettings, "BOTTOM", 0, -6)
-	_G.GameMenuButtonAddons:SetPoint("TOP", _G.GameMenuButtonMacros, "BOTTOM", 0, -6)
-	_G.GameMenuButtonQuit:SetPoint("TOP", _G.GameMenuButtonLogout, "BOTTOM", 0, -6)
+	setButtonPosition(GameMenuButtonLogout, Module.GameMenuButton, -14)
+	setButtonPosition(GameMenuButtonStore, GameMenuButtonHelp, -6)
+	setButtonPosition(GameMenuButtonWhatsNew, buttonToReanchor, -6)
+	setButtonPosition(GameMenuButtonEditMode, buttonToReanchor, -24)
+	setButtonPosition(GameMenuButtonSettings, GameMenuButtonEditMode, -6)
+	setButtonPosition(GameMenuButtonMacros, GameMenuButtonSettings, -6)
+	setButtonPosition(GameMenuButtonAddons, GameMenuButtonMacros, -6)
+	setButtonPosition(GameMenuButtonQuit, GameMenuButtonLogout, -6)
 end
 
 local function Button_OnClick()
@@ -308,13 +367,13 @@ local function Button_OnClick()
 end
 
 function Module:CreateGUIGameMenuButton()
-	local bu = CreateFrame("Button", "KKUI_GameMenuButton", _G.GameMenuFrame, "GameMenuButtonTemplate")
-	bu:SetText(K.Title)
-	bu:SetPoint("TOP", _G.GameMenuButtonAddons, "BOTTOM", 0, -12)
-	bu:SetScript("OnClick", Button_OnClick)
-	bu:SkinButton(true)
+	local gameMenuButton = CreateFrame("Button", "KKUI_GameMenuButton", _G.GameMenuFrame, "GameMenuButtonTemplate")
+	gameMenuButton:SetText(K.Title)
+	gameMenuButton:SetPoint("TOP", _G.GameMenuButtonAddons, "BOTTOM", 0, -12)
+	gameMenuButton:SetScript("OnClick", Button_OnClick)
+	gameMenuButton:SkinButton(true)
 
-	Module.GameMenuButton = bu
+	Module.GameMenuButton = gameMenuButton
 
 	_G.GameMenuFrame:HookScript("OnShow", MainMenu_OnShow)
 end
@@ -670,16 +729,6 @@ do
 	K:RegisterEvent("RESURRECT_REQUEST", soundOnResurrect)
 end
 
-function Module:CreateBlockStrangerInvites()
-	K:RegisterEvent("PARTY_INVITE_REQUEST", function(a, b, c, d, e, f, g, guid)
-		if C["Automation"].AutoBlockStrangerInvites and not (C_BattleNet_GetGameAccountInfoByGUID(guid) or C_FriendList_IsFriend(guid) or IsGuildMember(guid)) then
-			_G.DeclineGroup()
-			_G.StaticPopup_Hide("PARTY_INVITE")
-			K.Print("Blocked invite request from a stranger!", a, b, c, d, e, f, g, guid)
-		end
-	end)
-end
-
 -- Make it so we can move this
 function Module:PostBNToastMove(_, anchor)
 	if anchor ~= BNToastFrame.mover then
@@ -739,30 +788,7 @@ function Module:UpdateMaxCameraZoom()
 	SetCVar("cameraDistanceMaxZoomFactor", C["Misc"].MaxCameraZoom)
 end
 
-function Module:HandleKkthnxUITitle()
-	-- Square KkthnxUI logo texture
-	local function replaceIconString(self, text)
-		if not text then
-			text = self:GetText()
-		end
-		if not text or text == "" then
-			return
-		end
-
-		if strfind(text, "KkthnxUI") or strfind(text, "BaudErrorFrame") then
-			local newText, count = gsub(text, "|T([^:]-):[%d+:]+|t", "|T" .. "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\LogoSmall" .. ":20:20|t")
-			if count > 0 then
-				self:SetFormattedText("%s", newText)
-			end
-		end
-	end
-
-	hooksecurefunc("AddonList_InitButton", function(entry)
-		if not entry.logoHooked then
-			replaceIconString(entry.Title)
-			hooksecurefunc(entry.Title, "SetText", replaceIconString)
-
-			entry.logoHooked = true
-		end
-	end)
+-- Fix missing localization file
+if not GuildControlUIRankSettingsFrameRosterLabel then
+	GuildControlUIRankSettingsFrameRosterLabel = CreateFrame("Frame")
 end

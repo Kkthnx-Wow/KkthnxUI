@@ -88,6 +88,9 @@ local muteSounds = {
 	[569861] = true, -- sound/vehicles/motorcyclevehicle/motorcyclevehicleloadthrown.ogg
 	[569862] = true, -- sound/vehicles/motorcyclevehicle/motorcyclevehiclejumpstart2.ogg
 	[569863] = true, -- sound/vehicles/motorcyclevehicle/motorcyclevehiclejumpend1.ogg
+
+	-- Sylvanas' Music Box I hate this darn thing so much!
+	[53221] = true, -- sound/music/gluescreenmusic/bccredits_lament_of_the_highborne.mp3
 }
 
 function Module:CreateMuteSounds()

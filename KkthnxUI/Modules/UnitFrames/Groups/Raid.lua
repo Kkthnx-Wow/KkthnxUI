@@ -178,9 +178,11 @@ function Module:CreateRaid()
 	Name:SetWordWrap(false)
 	self:Tag(Name, "[lfdrole][name]")
 
-	local Overlay = CreateFrame("Frame", nil, self)
-	Overlay:SetAllPoints(Health)
+	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	Overlay:SetFrameStrata(self:GetFrameStrata())
 	Overlay:SetFrameLevel(self:GetFrameLevel() + 4)
+	Overlay:SetAllPoints(Health)
+	Overlay:EnableMouse(false)
 
 	local ReadyCheckIndicator = Overlay:CreateTexture(nil, "OVERLAY", nil, 2)
 	ReadyCheckIndicator:SetSize(22, 22)
@@ -205,23 +207,24 @@ function Module:CreateRaid()
 	ResurrectIndicator:SetPoint("CENTER", 0, -3)
 
 	local LeaderIndicator = Overlay:CreateTexture(nil, "OVERLAY")
+	LeaderIndicator:SetTexCoord(0, 1, 0, 1) -- NEW?
 	LeaderIndicator:SetPoint("TOPLEFT", Health, 0, 8)
-	LeaderIndicator:SetSize(12, 12)
+	LeaderIndicator:SetSize(14, 14)
 
 	local AssistantIndicator = Overlay:CreateTexture(nil, "OVERLAY")
 	AssistantIndicator:SetPoint("TOPLEFT", Health, 0, 8)
-	AssistantIndicator:SetSize(12, 12)
+	AssistantIndicator:SetSize(14, 14)
 
-	if C["Raid"].ShowNotHereTimer then
-		local StatusIndicator = self:CreateFontString(nil, "OVERLAY")
-		StatusIndicator:SetPoint("CENTER", Overlay, "BOTTOM", 0, 6)
-		StatusIndicator:SetFontObject(K.UIFont)
-		StatusIndicator:SetFont(select(1, StatusIndicator:GetFont()), 10, select(3, StatusIndicator:GetFont()))
-		StatusIndicator:SetTextColor(1, 0, 0)
-		self:Tag(StatusIndicator, "[afkdnd]")
+	-- if C["Raid"].ShowNotHereTimer then
+	-- 	local StatusIndicator = self:CreateFontString(nil, "OVERLAY")
+	-- 	StatusIndicator:SetPoint("CENTER", Overlay, "BOTTOM", 0, 6)
+	-- 	StatusIndicator:SetFontObject(K.UIFont)
+	-- 	StatusIndicator:SetFont(select(1, StatusIndicator:GetFont()), 10, select(3, StatusIndicator:GetFont()))
+	-- 	StatusIndicator:SetTextColor(1, 0, 0)
+	-- 	self:Tag(StatusIndicator, "[status]")
 
-		self.StatusIndicator = StatusIndicator
-	end
+	-- 	self.StatusIndicator = StatusIndicator
+	-- end
 
 	if C["Raid"].RaidBuffsStyle.Value == "Aura Track" then
 		local AuraTrack = CreateFrame("Frame", nil, Health)

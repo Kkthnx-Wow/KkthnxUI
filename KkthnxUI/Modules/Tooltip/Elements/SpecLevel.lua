@@ -156,20 +156,19 @@ function Module:SetupItemLevel(level)
 		return
 	end
 
-	local levelLine
+	local levelLineFound = false
 	for i = 2, GameTooltip:NumLines() do
-		local line = _G["GameTooltipTextLeft" .. i]
+		local line = _G[GameTooltip:GetName() .. "TextLeft" .. i]
 		local text = line:GetText()
 		if text and strfind(text, levelPrefix) then
-			levelLine = line
+			levelLineFound = true
+			line:SetText(levelPrefix .. (level or isPending))
+			break
 		end
 	end
 
-	level = levelPrefix .. (level or isPending)
-	if levelLine then
-		levelLine:SetText(level)
-	else
-		GameTooltip:AddLine(level)
+	if not levelLineFound then
+		GameTooltip:AddLine(levelPrefix .. (level or isPending))
 	end
 end
 

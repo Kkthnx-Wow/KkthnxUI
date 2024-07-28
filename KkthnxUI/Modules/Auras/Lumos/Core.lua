@@ -205,7 +205,7 @@ function Module:CreateLumos(self)
 		bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		bu:CreateShadow(true)
 
-		bu.glowFrame = K.CreateGlowFrame(bu, iconSize, 4)
+		bu.glowFrame = K.CreateGlowFrame(bu, iconSize)
 
 		local fontParent = CreateFrame("Frame", nil, bu)
 		fontParent:SetAllPoints()

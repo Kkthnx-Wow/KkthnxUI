@@ -14,7 +14,6 @@ local UnitClass = UnitClass
 local UnitClassification = UnitClassification
 local UnitEffectiveLevel = UnitEffectiveLevel
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
-local UnitHasVehicleUI = UnitHasVehicleUI
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 local UnitIsAFK = UnitIsAFK
@@ -33,35 +32,82 @@ local UnitPowerType = UnitPowerType
 local UnitReaction = UnitReaction
 local UnitStagger = UnitStagger
 
-local function ColorPercent(value)
+-- local function ColorPercent(value)
+-- 	local r, g, b
+-- 	if value < 20 then
+-- 		r, g, b = 1, 0.1, 0.1
+-- 	elseif value < 35 then
+-- 		r, g, b = 1, 0.5, 0
+-- 	elseif value < 80 then
+-- 		r, g, b = 1, 0.9, 0.3
+-- 	else
+-- 		r, g, b = 1, 1, 1
+-- 	end
+
+-- 	return K.RGBToHex(r, g, b) .. value
+-- end
+
+-- local function ValueAndPercent(cur, per)
+-- 	if per < 100 then
+-- 		return K.ShortValue(cur) .. " - " .. ColorPercent(per)
+-- 	else
+-- 		return K.ShortValue(cur)
+-- 	end
+-- end
+
+-- local function GetUnitHealthPerc(unit)
+-- 	local unitHealth, unitMaxHealth = UnitHealth(unit), UnitHealthMax(unit)
+-- 	if unitMaxHealth == 0 then
+-- 		return 0, unitHealth
+-- 	else
+-- 		return K.Round(unitHealth / unitMaxHealth * 100, 1), unitHealth
+-- 	end
+-- end
+
+-- oUF.Tags.Methods["hp"] = function(unit)
+-- 	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
+-- 		return oUF.Tags.Methods["DDG"](unit)
+-- 	else
+-- 		local per, cur = GetUnitHealthPerc(unit)
+-- 		if unit == "player" or unit == "target" or unit == "focus" or unit == "party" then
+-- 			return ValueAndPercent(cur, per)
+-- 		else
+-- 			return ColorPercent(per)
+-- 		end
+-- 	end
+-- end
+-- oUF.Tags.Events["hp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED PARTY_MEMBER_ENABLE PARTY_MEMBER_DISABLE"
+
+local function GetHealthColor(percentage)
 	local r, g, b
-	if value < 20 then
+	if percentage < 20 then
 		r, g, b = 1, 0.1, 0.1
-	elseif value < 35 then
+	elseif percentage < 35 then
 		r, g, b = 1, 0.5, 0
-	elseif value < 80 then
+	elseif percentage < 80 then
 		r, g, b = 1, 0.9, 0.3
 	else
 		r, g, b = 1, 1, 1
 	end
-
-	return K.RGBToHex(r, g, b) .. value
+	return K.RGBToHex(r, g, b) .. percentage
 end
 
-local function ValueAndPercent(cur, per)
-	if per < 100 then
-		return K.ShortValue(cur) .. " - " .. ColorPercent(per)
+local function FormatHealthValue(health, percentage)
+	local formattedValue = K.ShortValue(health)
+	if percentage < 100 then
+		formattedValue = formattedValue .. " - " .. GetHealthColor(percentage)
 	else
-		return K.ShortValue(cur)
+		formattedValue = formattedValue
 	end
+	return formattedValue
 end
 
 local function GetUnitHealthPerc(unit)
-	local unitHealth, unitMaxHealth = UnitHealth(unit), UnitHealthMax(unit)
-	if unitMaxHealth == 0 then
-		return 0, unitHealth
+	local health, maxHealth = UnitHealth(unit), UnitHealthMax(unit)
+	if maxHealth == 0 then
+		return 0, health
 	else
-		return K.Round(unitHealth / unitMaxHealth * 100, 1), unitHealth
+		return K.Round(health / maxHealth * 100, 1), health
 	end
 end
 
@@ -69,11 +115,11 @@ oUF.Tags.Methods["hp"] = function(unit)
 	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
 		return oUF.Tags.Methods["DDG"](unit)
 	else
-		local per, cur = GetUnitHealthPerc(unit)
-		if unit == "player" or unit == "target" or unit == "focus" or unit == "party" then
-			return ValueAndPercent(cur, per)
+		local percentage, currentHealth = GetUnitHealthPerc(unit)
+		if unit == "player" or unit == "target" or unit == "focus" or unit:match("party%d?$") then
+			return FormatHealthValue(currentHealth, percentage)
 		else
-			return ColorPercent(per)
+			return GetHealthColor(percentage)
 		end
 	end
 end
@@ -122,6 +168,17 @@ oUF.Tags.Methods["afkdnd"] = function(unit)
 end
 oUF.Tags.Events["afkdnd"] = "PLAYER_FLAGS_CHANGED"
 
+-- oUF.Tags.Methods["DDG"] = function(unit)
+-- 	if UnitIsDead(unit) then
+-- 		return "|cffCFCFCF" .. DEAD .. "|r"
+-- 	elseif UnitIsGhost(unit) then
+-- 		return "|cffCFCFCF" .. L["Ghost"] .. "|r"
+-- 	elseif not UnitIsConnected(unit) and GetNumArenaOpponentSpecs() == 0 then
+-- 		return "|cffCFCFCF" .. PLAYER_OFFLINE .. "|r"
+-- 	end
+-- end
+-- oUF.Tags.Events["DDG"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+
 oUF.Tags.Methods["DDG"] = function(unit)
 	if UnitIsDead(unit) then
 		return "|cffCFCFCF" .. DEAD .. "|r"
@@ -129,9 +186,16 @@ oUF.Tags.Methods["DDG"] = function(unit)
 		return "|cffCFCFCF" .. L["Ghost"] .. "|r"
 	elseif not UnitIsConnected(unit) and GetNumArenaOpponentSpecs() == 0 then
 		return "|cffCFCFCF" .. PLAYER_OFFLINE .. "|r"
+	elseif UnitIsAFK(unit) then
+		return "|cffCFCFCF <" .. AFK .. ">|r"
+	elseif UnitIsDND(unit) then
+		return "|cffCFCFCF <" .. DND .. ">|r"
+	else
+		return ""
 	end
 end
-oUF.Tags.Events["DDG"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+
+oUF.Tags.Events["DDG"] = "PLAYER_FLAGS_CHANGED UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION"
 
 -- Level tags
 oUF.Tags.Methods["fulllevel"] = function(unit)
@@ -177,7 +241,7 @@ oUF.Tags.Methods["raidhp"] = function(unit)
 		return oUF.Tags.Methods["DDG"](unit)
 	elseif C["Raid"].HealthFormat.Value == 2 then
 		local per = GetUnitHealthPerc(unit) or 0
-		return ColorPercent(per)
+		return GetHealthColor(per)
 	elseif C["Raid"].HealthFormat.Value == 3 then
 		local cur = UnitHealth(unit)
 		return K.ShortValue(cur)
@@ -195,9 +259,9 @@ oUF.Tags.Events["raidhp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CO
 oUF.Tags.Methods["nphp"] = function(unit)
 	local per, cur = GetUnitHealthPerc(unit)
 	if C["Nameplate"].FullHealth then
-		return ValueAndPercent(cur, per)
+		return FormatHealthValue(cur, per)
 	elseif per < 100 then
-		return ColorPercent(per)
+		return GetHealthColor(per)
 	end
 end
 oUF.Tags.Events["nphp"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION"
@@ -246,10 +310,10 @@ end
 oUF.Tags.Events["nplevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED"
 
 local NPClassifies = {
-	rare = " ",
-	elite = " ",
-	rareelite = " ",
-	worldboss = " ",
+	rare = "   ",
+	elite = "   ",
+	rareelite = "   ",
+	worldboss = "   ",
 }
 oUF.Tags.Methods["nprare"] = function(unit)
 	local class = UnitClassification(unit)
@@ -334,7 +398,7 @@ oUF.Tags.Events["monkstagger"] = "UNIT_MAXHEALTH UNIT_AURA"
 
 oUF.Tags.Methods["lfdrole"] = function(unit)
 	local role = UnitGroupRolesAssigned(unit)
-	if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE" or role ~= "DAMAGER") then
+	if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE" and role ~= "DAMAGER") then
 		if role == "HEALER" then
 			return "|TInterface\\LFGFrame\\LFGRole:12:12:-1:1:64:16:48:64:0:16|t"
 		elseif role == "TANK" then

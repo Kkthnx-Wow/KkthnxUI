@@ -322,7 +322,7 @@ local defaultItem = cargBags:NewItemTable()
 	@param i <table> [optional]
 	@return i <table>
 ]]
-function Implementation:GetItemInfo(bagID, slotID, i)
+function Implementation:GetCustomItemInfo(bagID, slotID, i)
 	i = i or defaultItem
 	for k in pairs(i) do
 		i[k] = nil
@@ -342,7 +342,8 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 		local questInfo = C_Container.GetContainerItemQuestInfo(bagID, slotID)
 		i.isQuestItem, i.questID, i.questActive = questInfo.isQuestItem, questInfo.questID, questInfo.isActive
 
-		i.name, _, _, _, i.minlevel, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID, i.bindType = C_Item.GetItemInfo(i.link)
+		i.spellID = GetItemSpell(i.link)
+		i.name, _, _, _, i.minlevel, i.type, i.subType, _, i.equipLoc, _, _, i.classID, i.subClassID, i.bindType = GetItemInfo(i.link)
 		i.equipLoc = _G[i.equipLoc] -- INVTYPE to localized string
 
 		if i.id == PET_CAGE then
@@ -367,7 +368,7 @@ end
 	@param slotID <number>
 ]]
 function Implementation:UpdateSlot(bagID, slotID)
-	local item = self:GetItemInfo(bagID, slotID)
+	local item = self:GetCustomItemInfo(bagID, slotID)
 	local button = self:GetButton(bagID, slotID)
 	local container = self:GetContainerForItem(item, button)
 
@@ -460,14 +461,14 @@ function Implementation:BAG_UPDATE_COOLDOWN(_, bagID)
 		for slotID = 1, GetContainerNumSlots(bagID) do
 			local button = self:GetButton(bagID, slotID)
 			if button then
-				local item = self:GetItemInfo(bagID, slotID)
+				local item = self:GetCustomItemInfo(bagID, slotID)
 				button:ButtonUpdateCooldown(item)
 			end
 		end
 	else
 		for _, container in pairs(self.contByID) do
 			for _, button in pairs(container.buttons) do
-				local item = self:GetItemInfo(button.bagId, button.slotId)
+				local item = self:GetCustomItemInfo(button.bagId, button.slotId)
 				button:ButtonUpdateCooldown(item)
 			end
 		end
@@ -489,7 +490,7 @@ function Implementation:ITEM_LOCK_CHANGED(_, bagID, slotID)
 
 	local button = self:GetButton(bagID, slotID)
 	if button then
-		local item = self:GetItemInfo(bagID, slotID)
+		local item = self:GetCustomItemInfo(bagID, slotID)
 		button:ButtonUpdateLock(item)
 	end
 end
@@ -527,7 +528,7 @@ end
 function Implementation:UNIT_QUEST_LOG_CHANGED()
 	for _, container in pairs(self.contByID) do
 		for _, button in pairs(container.buttons) do
-			local item = self:GetItemInfo(button.bagId, button.slotId)
+			local item = self:GetCustomItemInfo(button.bagId, button.slotId)
 			button:ButtonUpdateQuest(item)
 		end
 	end

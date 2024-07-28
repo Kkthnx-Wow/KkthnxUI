@@ -6,29 +6,6 @@ if K.Class ~= "WARRIOR" then
 end
 
 local list = {
-	["Player Aura"] = { -- 玩家光环组
-		{ AuraID = 32216, UnitID = "player" }, -- 胜利
-		{ AuraID = 202602, UnitID = "player" }, -- 投入战斗
-		{ AuraID = 200954, UnitID = "player" }, -- 战争疤痕
-		{ AuraID = 202573, UnitID = "player" }, -- 报复
-		{ AuraID = 202574, UnitID = "player" }, -- 报复
-	},
-	["Target Aura"] = { -- 目标光环组
-		{ AuraID = 355, UnitID = "target", Caster = "player" }, -- 嘲讽
-		{ AuraID = 772, UnitID = "target", Caster = "player" }, -- 撕裂
-		{ AuraID = 1715, UnitID = "target", Caster = "player" }, -- 断筋
-		{ AuraID = 1160, UnitID = "target", Caster = "player" }, -- 挫志怒吼
-		{ AuraID = 6343, UnitID = "target", Caster = "player" }, -- 雷霆一击
-		{ AuraID = 5246, UnitID = "target", Caster = "player" }, -- 破胆
-		{ AuraID = 12323, UnitID = "target", Caster = "player" }, -- 刺耳怒吼
-		{ AuraID = 105771, UnitID = "target", Caster = "player" }, -- 冲锋：定身
-		{ AuraID = 132169, UnitID = "target", Caster = "player" }, -- 风暴之锤
-		{ AuraID = 132168, UnitID = "target", Caster = "player" }, -- 震荡波
-		{ AuraID = 208086, UnitID = "target", Caster = "player" }, -- 巨人打击
-		{ AuraID = 115804, UnitID = "target", Caster = "player" }, -- 致死
-		{ AuraID = 280773, UnitID = "target", Caster = "player" }, -- 破城者
-		{ AuraID = 317491, UnitID = "target", Caster = "player", Value = true }, -- 有罪
-	},
 	["Special Aura"] = { -- 玩家重要光环组
 		{ AuraID = 871, UnitID = "player" }, -- 盾墙
 		{ AuraID = 1719, UnitID = "player" }, -- 战吼

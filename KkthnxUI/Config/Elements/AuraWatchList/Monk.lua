@@ -6,35 +6,6 @@ if K.Class ~= "MONK" then
 end
 
 local list = {
-	["Player Aura"] = { -- 玩家光环组
-		{ AuraID = 119085, UnitID = "player" }, -- 真气突
-		{ AuraID = 101643, UnitID = "player" }, -- 魂体双分
-		{ AuraID = 202090, UnitID = "player" }, -- 禅院教诲
-		{ AuraID = 119611, UnitID = "player" }, -- 复苏之雾
-		{ AuraID = 195381, UnitID = "player" }, -- 治疗之风
-		{ AuraID = 213177, UnitID = "player" }, -- 利涉大川
-		{ AuraID = 199407, UnitID = "player" }, -- 脚步轻盈
-	},
-	["Target Aura"] = { -- 目标光环组
-		{ AuraID = 115078, UnitID = "target", Caster = "player" }, -- 分筋错骨
-		{ AuraID = 116189, UnitID = "target", Caster = "player" }, -- 豪镇八方
-		{ AuraID = 115804, UnitID = "target", Caster = "player" }, -- 致死之伤
-		{ AuraID = 115080, UnitID = "target", Caster = "player" }, -- 轮回之触
-		{ AuraID = 123586, UnitID = "target", Caster = "player" }, -- 翔龙在天
-		{ AuraID = 116706, UnitID = "target", Caster = "player" }, -- 金刚震
-		{ AuraID = 205320, UnitID = "target", Caster = "player" }, -- 风领主之击
-		{ AuraID = 116841, UnitID = "target", Caster = "player" }, -- 迅如猛虎
-		{ AuraID = 119381, UnitID = "target", Caster = "player" }, -- 扫堂腿
-		{ AuraID = 116844, UnitID = "target", Caster = "player" }, -- 平心之环
-		{ AuraID = 121253, UnitID = "target", Caster = "player" }, -- 醉酿投
-		{ AuraID = 214326, UnitID = "target", Caster = "player" }, -- 爆炸酒桶
-		{ AuraID = 123725, UnitID = "target", Caster = "player" }, -- 火焰之息
-		{ AuraID = 116849, UnitID = "target", Caster = "player" }, -- 作茧缚命
-		{ AuraID = 119611, UnitID = "target", Caster = "player" }, -- 复苏之雾
-		{ AuraID = 191840, UnitID = "target", Caster = "player" }, -- 精华之泉
-		{ AuraID = 198909, UnitID = "target", Caster = "player" }, -- 赤精之歌
-		{ AuraID = 124682, UnitID = "target", Caster = "player" }, -- 氤氲之雾
-	},
 	["Special Aura"] = { -- 玩家重要光环组
 		{ AuraID = 125174, UnitID = "player" }, -- 业报之触
 		{ AuraID = 116768, UnitID = "player" }, -- 幻灭踢

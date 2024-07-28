@@ -252,21 +252,22 @@ function Module:ReskinRegions()
 	-- Garrison
 	local garrMinimapButton = ExpansionLandingPageMinimapButton
 	if garrMinimapButton then
+		local buttonTextureIcon = "ShipMissionIcon-Combat-Mission"
 		local function updateMinimapButtons(self)
 			self:ClearAllPoints()
-			self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 2)
-			self:GetNormalTexture():SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
-			self:GetPushedTexture():SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
-			self:GetHighlightTexture():SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
-			self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.9)
+			self:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 4, 4)
+			self:GetNormalTexture():SetAtlas(buttonTextureIcon)
+			self:GetPushedTexture():SetAtlas(buttonTextureIcon)
+			self:GetHighlightTexture():SetAtlas(buttonTextureIcon)
+			self:GetNormalTexture():SetVertexColor(1, 1, 1, 1)
 			self:GetPushedTexture():SetVertexColor(1, 1, 1, 1)
 			self:GetHighlightTexture():SetVertexColor(1, 1, 1, 1)
 
-			self.LoopingGlow:SetAtlas("UI-HUD-UnitFrame-Player-CombatIcon-2x")
-			self.LoopingGlow:SetSize(24, 24)
+			self.LoopingGlow:SetAtlas(buttonTextureIcon)
+			self.LoopingGlow:SetSize(26, 26)
 
 			self:SetHitRectInsets(0, 0, 0, 0)
-			self:SetSize(24, 24)
+			self:SetSize(26, 26)
 		end
 		updateMinimapButtons(garrMinimapButton)
 		garrMinimapButton:HookScript("OnShow", updateMinimapButtons)
@@ -316,26 +317,26 @@ function Module:ReskinRegions()
 	-- QueueStatus Button
 	if QueueStatusButton then
 		QueueStatusButton:SetParent(MinimapCluster)
-		QueueStatusButton:ClearAllPoints()
-		QueueStatusButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
+		QueueStatusButton:SetSize(24, 24)
 		QueueStatusButton:SetFrameLevel(999)
-		QueueStatusButton:SetSize(33, 33)
-
-		hooksecurefunc(QueueStatusButton, "SetPoint", function(button, _, _, _, x, y)
-			if not (x == 2 and y == -2) then
-				button:ClearAllPoints()
-				button:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
-			end
-		end)
+		QueueStatusButton:ClearAllPoints()
+		QueueStatusButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", -9, 9)
 
 		QueueStatusButtonIcon:SetAlpha(0)
 
 		QueueStatusFrame:ClearAllPoints()
 		QueueStatusFrame:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
 
+		hooksecurefunc(QueueStatusButton, "SetPoint", function(button, _, _, _, x, y)
+			if not (x == -9 and y == 9) then
+				button:ClearAllPoints()
+				button:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", -9, 9)
+			end
+		end)
+
 		local queueIcon = Minimap:CreateTexture(nil, "ARTWORK")
 		queueIcon:SetPoint("CENTER", QueueStatusButton)
-		queueIcon:SetSize(50, 50)
+		queueIcon:SetSize(56, 56)
 		queueIcon:SetTexture("Interface\\Minimap\\Dungeon_Icon")
 
 		local anim = queueIcon:CreateAnimationGroup()
@@ -361,6 +362,7 @@ function Module:ReskinRegions()
 			queueStatusDisplay.text:ClearAllPoints()
 			queueStatusDisplay.text:SetPoint("CENTER", QueueStatusButton, 0, -5)
 			queueStatusDisplay.text:SetFontObject(K.UIFont)
+			queueStatusDisplay.text:SetFont(select(1, queueStatusDisplay.text:GetFont()), 16, select(3, queueStatusDisplay.text:GetFont()))
 
 			if queueStatusDisplay.title then
 				Module:ClearQueueStatus()
@@ -371,29 +373,39 @@ function Module:ReskinRegions()
 	-- Difficulty Flags
 	local instDifficulty = MinimapCluster.InstanceDifficulty
 	if instDifficulty then
-		local function updateFlagAnchor(frame, _, _, _, _, _, force)
+		instDifficulty:SetParent(Minimap)
+		instDifficulty:SetScale(0.9)
+
+		local function UpdateFlagAnchor(frame, _, _, _, _, _, force)
 			if force then
 				return
 			end
 			frame:ClearAllPoints()
-			frame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 2, 2, true)
+			frame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2, true)
 		end
-		instDifficulty:SetParent(Minimap)
-		instDifficulty:SetScale(0.7)
-		updateFlagAnchor(instDifficulty)
-		hooksecurefunc(instDifficulty, "SetPoint", updateFlagAnchor)
 
-		local function replaceFlag(self)
-			self:SetTexture(K.MediaFolder .. "Minimap\\Flag")
+		UpdateFlagAnchor(instDifficulty)
+		hooksecurefunc(instDifficulty, "SetPoint", UpdateFlagAnchor)
+
+		local function ReplaceFlagTexture(texture)
+			texture:SetTexture(K.MediaFolder .. "Minimap\\Flag")
 		end
-		local function reskinDifficulty(frame)
-			frame.Border:Hide()
-			replaceFlag(frame.Background)
-			hooksecurefunc(frame.Background, "SetAtlas", replaceFlag)
+
+		local function ReskinDifficultyFrame(frame)
+			if not frame then
+				return
+			end
+
+			if frame.Border then
+				frame.Border:Hide()
+			end
+			ReplaceFlagTexture(frame.Background)
+			hooksecurefunc(frame.Background, "SetAtlas", ReplaceFlagTexture)
 		end
-		reskinDifficulty(instDifficulty.Instance)
-		reskinDifficulty(instDifficulty.Guild)
-		reskinDifficulty(instDifficulty.ChallengeMode)
+
+		ReskinDifficultyFrame(instDifficulty.Instance)
+		ReskinDifficultyFrame(instDifficulty.Guild)
+		ReskinDifficultyFrame(instDifficulty.ChallengeMode)
 	end
 
 	local function updateMapAnchor(frame, _, _, newAnchor, _, _, force)
@@ -436,7 +448,7 @@ function Module:ReskinRegions()
 	if GameTimeCalendarInvitesTexture then
 		GameTimeCalendarInvitesTexture:ClearAllPoints()
 		GameTimeCalendarInvitesTexture:SetParent(Minimap)
-		GameTimeCalendarInvitesTexture:SetPoint("TOPRIGHT")
+		GameTimeCalendarInvitesTexture:SetPoint("TOPLEFT")
 	end
 
 	-- Streaming icon
@@ -556,7 +568,7 @@ function Module:ShowCalendar()
 			GameTimeFrame:SetSize(22, 22)
 
 			calendarText:ClearAllPoints()
-			calendarText:SetPoint("CENTER", 0, -5)
+			calendarText:SetPoint("CENTER", 0, -4)
 			calendarText:SetFontObject(K.UIFont)
 			calendarText:SetFont(select(1, calendarText:GetFont()), 12, select(3, calendarText:GetFont()))
 			calendarText:SetTextColor(0, 0, 0)
@@ -656,7 +668,7 @@ function Module:Minimap_TrackingDropdown()
 end
 
 function Module:Minimap_OnMouseUp(btn)
-	menuFrame:Hide()
+	K.EasyMenu:Hide()
 
 	if Module.TrackingDropdown then
 		_G.HideDropDownMenu(1, nil, Module.TrackingDropdown)
@@ -670,9 +682,9 @@ function Module:Minimap_OnMouseUp(btn)
 		end
 
 		if position:match("LEFT") then
-			EasyMenu(menuList, menuFrame, "cursor", 0, 0)
+			EasyMenu(menuList, K.EasyMenu, "cursor", 0, 0)
 		else
-			EasyMenu(menuList, menuFrame, "cursor", -160, 0)
+			EasyMenu(menuList, K.EasyMenu, "cursor", -160, 0)
 		end
 	elseif btn == "RightButton" and Module.TrackingDropdown then
 		if position:match("LEFT") then
@@ -790,9 +802,64 @@ function Module:BlizzardACF()
 	end
 end
 
+-- Define the module and its offsets
+do
+	local meep = 12.125
+	local MICRO_OFFSETS = {
+		CharacterMicroButton = 0.07 / meep,
+		SpellbookMicroButton = 1.05 / meep,
+		TalentMicroButton = 2.04 / meep,
+		AchievementMicroButton = 3.03 / meep,
+		QuestLogMicroButton = 4.02 / meep,
+		GuildMicroButton = 5.01 / meep, -- Retail
+		LFDMicroButton = 6.00 / meep, -- Retail
+		EJMicroButton = 7.00 / meep,
+		CollectionsMicroButton = 8.00 / meep,
+		MainMenuMicroButton = 9 / meep, -- flip these
+		HelpMicroButton = 10 / meep, -- on classic
+		StoreMicroButton = 10.0 / meep,
+	}
+
+	Module.MICRO_OFFSETS = MICRO_OFFSETS
+end
+
+function Module:GetMicroCoords(name, icons, character)
+	local l, r, t, b = 0.17, 0.87, 0.5, 0.908
+
+	if character and name == "CharacterMicroButton" then
+		l, r, t, b = 0, 1, 0, 1
+	elseif icons then
+		local offset = Module.MICRO_OFFSETS[name]
+		if offset then
+			l, r = offset, offset + 0.065
+			t, b = icons and 0.41 or 0.038, icons and 0.72 or 0.35
+		end
+	end
+
+	return l, r, t, b
+end
+
 function Module:OnEnable()
 	if not C["Minimap"].Enable then
 		return
+	end
+
+	for _, menu in ipairs(menuList) do
+		menu.notCheckable = true
+
+		if menu.cropIcon then
+			local left = 0.02 * menu.cropIcon
+			local right = 1 - left
+			menu.tCoordLeft, menu.tCoordRight, menu.tCoordTop, menu.tCoordBottom = left, right, left, right
+			menu.cropIcon = nil
+		end
+
+		if menu.microOffset then
+			local left, right, top, bottom = Module:GetMicroCoords(menu.microOffset, true)
+			menu.tCoordLeft, menu.tCoordRight, menu.tCoordTop, menu.tCoordBottom = left, right, top, bottom
+			menu.icon = menu.microOffset == "PVPMicroButton" and ((K.Faction == "Horde" and "H") or "A") or "?"
+			menu.microOffset = nil
+		end
 	end
 
 	-- Shape and Position
@@ -822,7 +889,7 @@ function Module:OnEnable()
 
 	-- Hide Blizz
 	MinimapCluster:EnableMouse(false)
-	MinimapCluster.TrackingFrame:Hide()
+	-- MinimapCluster.Tracking:Hide()
 	MinimapCluster.BorderTop:Hide()
 	MinimapCluster.ZoneTextButton:Hide()
 	Minimap:SetArchBlobRingScalar(0)

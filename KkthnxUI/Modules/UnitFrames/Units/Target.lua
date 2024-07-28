@@ -27,8 +27,10 @@ function Module:CreateTarget()
 	Health:CreateBorder()
 
 	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
-	Overlay:SetAllPoints(Health)
-	Overlay:SetFrameLevel(5)
+	Overlay:SetFrameStrata(self:GetFrameStrata())
+	Overlay:SetFrameLevel(6)
+	Overlay:SetAllPoints()
+	Overlay:EnableMouse(false)
 
 	Health.colorTapping = true
 	Health.colorDisconnected = true
@@ -341,11 +343,19 @@ function Module:CreateTarget()
 	end
 
 	local LeaderIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	LeaderIndicator:SetSize(12, 12)
+	LeaderIndicator:SetSize(16, 16)
 	if targetPortraitStyle ~= "NoPortraits" and targetPortraitStyle ~= "OverlayPortrait" then
-		LeaderIndicator:SetPoint("TOPRIGHT", self.Portrait, 0, 8)
+		LeaderIndicator:SetPoint("TOPRIGHT", self.Portrait, 0, 10)
 	else
-		LeaderIndicator:SetPoint("TOPRIGHT", Health, 0, 8)
+		LeaderIndicator:SetPoint("TOPRIGHT", Health, 0, 10)
+	end
+
+	local AssistantIndicator = Overlay:CreateTexture(nil, "OVERLAY")
+	AssistantIndicator:SetSize(16, 16)
+	if AssistantIndicator ~= "NoPortraits" and targetPortraitStyle ~= "OverlayPortrait" then
+		AssistantIndicator:SetPoint("TOPRIGHT", self.Portrait, 0, 10)
+	else
+		AssistantIndicator:SetPoint("TOPRIGHT", Health, 0, 10)
 	end
 
 	local RaidTargetIndicator = Overlay:CreateTexture(nil, "OVERLAY")
@@ -410,6 +420,7 @@ function Module:CreateTarget()
 	self.Name = Name
 	self.Level = Level
 	self.LeaderIndicator = LeaderIndicator
+	self.AssistantIndicator = AssistantIndicator
 	self.RaidTargetIndicator = RaidTargetIndicator
 	self.ReadyCheckIndicator = ReadyCheckIndicator
 	self.ResurrectIndicator = ResurrectIndicator

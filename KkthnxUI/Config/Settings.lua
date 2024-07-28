@@ -131,7 +131,6 @@ C["Announcements"] = {
 -- Automation
 C["Automation"] = {
 	AutoKeystone = false,
-	AutoBlockStrangerInvites = false,
 	AutoCollapse = false,
 	AutoDeclineDuels = false,
 	AutoDeclinePetDuels = false,
@@ -150,7 +149,7 @@ C["Automation"] = {
 	AutoSummon = false,
 	NoBadBuffs = false,
 	WhisperInvite = "inv+",
-	WhisperInviteGuildFriends = false,
+	WhisperInviteRestriction = true, -- Testing
 }
 
 C["Inventory"] = {
@@ -230,25 +229,18 @@ C["Auras"] = {
 
 -- Chat
 C["Chat"] = {
-	BlockSpammer = true,
 	Background = true,
-	BlockStranger = false,
-	ChatFilterList = "%*",
-	ChatFilterWhiteList = "",
 	ChatItemLevel = true,
 	ChatMenu = true,
 	Emojis = false,
 	Enable = true,
-	EnableFilter = true,
 	Fading = true,
 	FadingTimeVisible = 100,
-	FilterMatches = 1,
 	Freedom = true,
 	Height = 170,
 	Lock = true,
 	LogMax = 0,
 	OldChatNames = false,
-	RoleIcons = false,
 	Sticky = false,
 	WhisperColor = true,
 	Width = 400,
@@ -276,6 +268,7 @@ C["DataText"] = {
 	IconColor = { 102 / 255, 157 / 255, 255 / 255 },
 	Latency = true,
 	Location = true,
+	Spec = false,
 	System = true,
 	Time = true,
 }
@@ -323,6 +316,15 @@ C["General"] = {
 	},
 	Profiles = {
 		Options = {},
+	},
+	GlowMode = {
+		Options = {
+			["Pixel"] = 1,
+			["Autocast"] = 2,
+			["Action Button"] = 3,
+			["Proc Glow"] = 4,
+		},
+		Value = 3,
 	},
 }
 
@@ -406,6 +408,7 @@ C["Misc"] = {
 	ShowWowHeadLinks = false,
 	SlotDurability = false,
 	TradeTabs = false,
+	EasyMarking = false,
 	EasyMarkKey = {
 		Options = {
 			["CTRL"] = 1,
@@ -454,7 +457,7 @@ C["Nameplate"] = {
 	InsecureColor = { 1, 0, 0 },
 	InsideView = true,
 	MaxAuras = 5,
-	MinAlpha = 1,
+	MinAlpha = 0.6,
 	MinScale = 1,
 	CVarOnlyNames = false,
 	CVarShowNPCs = false,

@@ -123,6 +123,7 @@ function Module:UpdatePhaseIcon(isPhased)
 end
 
 function Module:CreateHeader()
+	-- Register for mouse clicks and hook mouse enter/leave events
 	self:RegisterForClicks("AnyUp")
 	self:HookScript("OnEnter", function()
 		UnitFrame_OnEnter(self)
@@ -159,8 +160,39 @@ function Module:ToggleCastBarLatency(frame)
 	end
 end
 
+-- function Module.auraIconSize(w, n, s)
+-- 	return (w - (n - 1) * s) / n
+-- end
+
+-- function Module:UpdateAuraContainer(width, element, maxAuras)
+-- 	local iconsPerRow = element.iconsPerRow
+-- 	local size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, element.spacing) or element.size
+-- 	local maxLines = iconsPerRow and K.Round(maxAuras / iconsPerRow) or 2
+
+-- 	element.size = size
+-- 	element:SetWidth(width)
+-- 	element:SetHeight((size + element.spacing) * maxLines)
+-- end
+
+-- function Module:UpdateIconTexCoord(width, height)
+-- 	local ratio = height / width
+-- 	local mult = (1 - ratio) / 2
+-- 	self.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3] + mult, K.TexCoords[4] - mult)
+-- end
+
+-- Cache the result of auraIconSize calculation
+local auraIconSizeCache = {}
+
 function Module.auraIconSize(w, n, s)
-	return (w - (n - 1) * s) / n
+	if not auraIconSizeCache[w] then
+		auraIconSizeCache[w] = {}
+	end
+
+	if not auraIconSizeCache[w][n] then
+		auraIconSizeCache[w][n] = (w - (n - 1) * s) / n
+	end
+
+	return auraIconSizeCache[w][n]
 end
 
 function Module:UpdateAuraContainer(width, element, maxAuras)
@@ -168,9 +200,11 @@ function Module:UpdateAuraContainer(width, element, maxAuras)
 	local size = iconsPerRow and Module.auraIconSize(width, iconsPerRow, element.spacing) or element.size
 	local maxLines = iconsPerRow and K.Round(maxAuras / iconsPerRow) or 2
 
-	element.size = size
-	element:SetWidth(width)
-	element:SetHeight((size + element.spacing) * maxLines)
+	if element.size ~= size or element:GetWidth() ~= width or element:GetHeight() ~= ((size + element.spacing) * maxLines) then
+		element.size = size
+		element:SetWidth(width)
+		element:SetHeight((size + element.spacing) * maxLines)
+	end
 end
 
 function Module:UpdateIconTexCoord(width, height)
@@ -186,6 +220,7 @@ function Module.PostCreateButton(element, button)
 	parentFrame:SetFrameLevel(button:GetFrameLevel() + 3)
 
 	button.Count = button.Count or K.CreateFontString(parentFrame, fontSize - 1, "", "OUTLINE", false, "BOTTOMRIGHT", 6, -3)
+
 	button.Cooldown.noOCC = true
 	button.Cooldown.noCooldownCount = true
 	button.Cooldown:SetReverse(true)
@@ -231,18 +266,16 @@ function Module.PostUpdateButton(element, button, unit, data)
 	local duration, expiration, debuffType = data.duration, data.expirationTime, data.dispelName
 
 	local style = element.__owner.mystyle
-	if style == "nameplate" then
-		button:SetSize(element.size, element.size * 1)
-	else
-		button:SetSize(element.size, element.size)
-	end
+	button:SetSize(style == "nameplate" and element.size or element.size, style == "nameplate" and element.size * 1 or element.size)
 
+	-- Update appearance based on harmful status and style
 	if button.isHarmful and filteredStyle[style] and not data.isPlayerAura then
 		button.Icon:SetDesaturated(true)
 	else
 		button.Icon:SetDesaturated(false)
 	end
 
+	-- Update border color based on debuff type
 	if button.isHarmful then
 		local color = oUF.colors.debuff[debuffType] or oUF.colors.debuff.none
 		if style == "nameplate" then
@@ -258,10 +291,12 @@ function Module.PostUpdateButton(element, button, unit, data)
 		end
 	end
 
+	-- Show stealable indicator if applicable
 	if dispellType[debuffType] and not UnitIsPlayer(unit) and not button.isHarmful then
 		button.Stealable:Show()
 	end
 
+	-- Handle cooldown and timer display
 	if duration and duration > 0 then
 		button.expiration = expiration
 		button:SetScript("OnUpdate", K.CooldownOnUpdate)
@@ -271,20 +306,24 @@ function Module.PostUpdateButton(element, button, unit, data)
 		button.timer:Hide()
 	end
 
+	-- Replace icon texture with custom texture if defined
 	local newTexture = Module.ReplacedSpellIcons[button.spellID]
 	if newTexture then
 		button.Icon:SetTexture(newTexture)
 	end
 
+	-- Update bolster stacks count if applicable
 	if element.bolsterInstanceID and element.bolsterInstanceID == button.auraInstanceID then
 		button.Count:SetText(element.bolsterStacks)
 	end
 end
 
 function Module.AurasPostUpdateInfo(element, _, _, debuffsChanged)
+	-- Ensure consistent variable naming conventions
 	element.bolsterStacks = 0
 	element.bolsterInstanceID = nil
 
+	-- Loop through all buffs to find Bolster stacks
 	for auraInstanceID, data in next, element.allBuffs do
 		if data.spellId == 209859 then
 			if not element.bolsterInstanceID then
@@ -297,6 +336,8 @@ function Module.AurasPostUpdateInfo(element, _, _, debuffsChanged)
 			end
 		end
 	end
+
+	-- Update visible buttons with Bolster stacks
 	if element.bolsterStacks > 0 then
 		for i = 1, element.visibleButtons do
 			local button = element[i]
@@ -307,8 +348,10 @@ function Module.AurasPostUpdateInfo(element, _, _, debuffsChanged)
 		end
 	end
 
+	-- Update Dot status if debuffs changed
 	if debuffsChanged then
 		element.hasTheDot = nil
+		-- Check if any player debuff matches Dot spell list
 		if C["Nameplate"].ColorByDot then
 			for _, data in next, element.allDebuffs do
 				if data.isPlayerAura and C["Nameplate"].DotSpellList.Spells[data.spellId] then
@@ -321,27 +364,34 @@ function Module.AurasPostUpdateInfo(element, _, _, debuffsChanged)
 end
 
 function Module.CustomFilter(element, unit, data)
+	-- Ensure consistent variable naming conventions
 	local style = element.__owner.mystyle
 	local name, debuffType, isStealable, spellID, nameplateShowAll = data.name, data.dispelName, data.isStealable, data.spellId, data.nameplateShowAll
 	local showDebuffType = C["Unitframe"].OnlyShowPlayerDebuff
 
+	-- Add comments to clarify the purpose of certain sections
 	if style == "nameplate" or style == "boss" or style == "arena" then
-		if name and spellID == 209859 then -- pass all bolster
+		-- Filter out specific spells
+		if name and spellID == 209859 then -- Pass all bolster
 			return true
 		end
+		-- Filter based on nameplate type
 		if element.__owner.plateType == "NameOnly" then
 			return C.NameplateWhiteList[spellID]
 		elseif C.NameplateBlackList[spellID] then
 			return false
+		-- Filter based on debuff type and dispellability
 		elseif (isStealable or dispellType[debuffType]) and not UnitIsPlayer(unit) and not data.isHarmful then
 			return true
 		elseif C.NameplateWhiteList[spellID] then
 			return true
 		else
+			-- Filter based on aura filter settings
 			local auraFilter = C["Nameplate"].AuraFilter.Value
 			return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and data.isPlayerAura)
 		end
 	else
+		-- Filter based on showDebuffType setting
 		return (showDebuffType and data.isPlayerAura) or (not showDebuffType and name)
 	end
 end

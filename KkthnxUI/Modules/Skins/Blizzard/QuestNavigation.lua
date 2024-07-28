@@ -1,57 +1,56 @@
 local C = KkthnxUI[2]
 
-local abs = math.abs
-local C_Navigation_GetDistance = C_Navigation.GetDistance
+-- Cache frequently used global variables locally
+local TIMER_MINUTES_DISPLAY = TIMER_MINUTES_DISPLAY
+local GetDistance, WasClampedToScreen = C_Navigation.GetDistance, C_Navigation.WasClampedToScreen
 
-local THROTTLE_INTERVAL = 0.5
-local lastDistance, throttle
+-- Cache math functions
+local math_abs, math_floor = math.abs, math.floor
 
--- Create a backup of the original function
-local originalGetTargetAlphaBaseValue = _G.SuperTrackedFrame.GetTargetAlphaBaseValue
+-- Variables to keep track of distance and update time
+local lastDistance, lastUpdate = nil, 0
 
--- Replace the original function with the modified version
-_G.SuperTrackedFrame.GetTargetAlphaBaseValue = function(frame)
-	if C_Navigation_GetDistance() > 999 then
-		return 1
-	else
-		return originalGetTargetAlphaBaseValue(frame)
-	end
-end
-
-local function onUpdate(self, elapsed)
+local function updateArrival(self, elapsed)
 	if self.isClamped then
-		self.arrival:Hide()
+		self.TimeText:Hide()
 		lastDistance = nil
 		return
 	end
 
-	throttle = (throttle or 0) + elapsed
-	if throttle >= THROTTLE_INTERVAL then
-		local distance = C_Navigation_GetDistance()
-		local speed = lastDistance and (lastDistance - distance) / throttle or 0
+	lastUpdate = lastUpdate + elapsed
+
+	-- Update time display only when distance changes and enough time has passed
+	local distance = GetDistance()
+	if distance ~= lastDistance and lastUpdate >= 0.3 then
+		local speed = (((lastDistance or 0) - distance) / lastUpdate) or 0
 		lastDistance = distance
 
 		if speed > 0 then
-			local time = abs(distance / speed)
-			self.arrival:SetText(TIMER_MINUTES_DISPLAY:format(time / 60, time % 60))
-			self.arrival:Show()
+			local time = math_abs(distance / speed)
+			self.TimeText:SetText(TIMER_MINUTES_DISPLAY:format(math_floor(time / 60), math_floor(time % 60)))
+			self.TimeText:Show()
 		else
-			self.arrival:Hide()
+			self.TimeText:Hide()
 		end
 
-		throttle = 0
+		lastUpdate = 0
 	end
 end
 
-local function createArrivalFontString(frame)
-	local arrival = frame:CreateFontString("$parentArrival", "BACKGROUND", "GameFontNormal", nil, 1)
-	arrival:SetPoint("TOP", frame.DistanceText, "BOTTOM", 0, -2)
-	arrival:SetJustifyV("TOP")
-	arrival:SetTextColor(0.8, 0.8, 0.8)
-	frame.arrival = arrival
+local function updateAlpha(self)
+	if not WasClampedToScreen() and GetDistance() > 0 then
+		self:SetAlpha(0.9)
+	end
 end
 
 C.themes["Blizzard_QuestNavigation"] = function()
-	createArrivalFontString(SuperTrackedFrame)
-	SuperTrackedFrame:HookScript("OnUpdate", onUpdate)
+	local time = SuperTrackedFrame:CreateFontString(nil, "BACKGROUND", "GameFontNormal")
+	time:SetPoint("TOP", SuperTrackedFrame.DistanceText, "BOTTOM", 0, -2)
+	time:SetHeight(20)
+	time:SetJustifyV("TOP")
+
+	SuperTrackedFrame.TimeText = time
+	SuperTrackedFrame:HookScript("OnUpdate", updateArrival)
+
+	hooksecurefunc(SuperTrackedFrame, "UpdateAlpha", updateAlpha)
 end

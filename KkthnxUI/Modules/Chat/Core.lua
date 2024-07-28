@@ -182,8 +182,8 @@ function Module:UpdateChatSize()
 	end
 
 	if ChatFrame1.FontStringContainer then
-		ChatFrame1.FontStringContainer:SetPoint("TOPLEFT", ChatFrame1, "TOPLEFT", -1, 1)
-		ChatFrame1.FontStringContainer:SetPoint("BOTTOMRIGHT", ChatFrame1, "BOTTOMRIGHT", 1, -1)
+		ChatFrame1.FontStringContainer:SetPoint("TOPLEFT", ChatFrame1, "TOPLEFT", -2, 2)
+		ChatFrame1.FontStringContainer:SetPoint("BOTTOMRIGHT", ChatFrame1, "BOTTOMRIGHT", 2, -6)
 	end
 
 	ChatFrame1:ClearAllPoints()
@@ -197,7 +197,7 @@ end
 local function CreateBackground(self)
 	local frame = CreateFrame("Frame", nil, self, "BackdropTemplate")
 	frame:SetPoint("TOPLEFT", self.Background, "TOPLEFT", -1, 1)
-	frame:SetPoint("BOTTOMRIGHT", self.Background, "BOTTOMRIGHT", 1, -1)
+	frame:SetPoint("BOTTOMRIGHT", self.Background, "BOTTOMRIGHT", 10, -1)
 	frame:SetFrameLevel(self:GetFrameLevel())
 	frame:CreateBorder()
 	frame:SetShown(C["Chat"].Background)
@@ -579,7 +579,6 @@ function Module:OnEnable()
 	-- Add Elements
 	local loadChatModules = {
 		"ChatWhisperSticky",
-		"CreateChatFilter",
 		"CreateChatHistory",
 		"CreateChatItemLevels",
 		"CreateChatRename",

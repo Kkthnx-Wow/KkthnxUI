@@ -99,7 +99,6 @@ function Module:CreateItemString(frame, strType)
 			slotFrame.enchantText = K.CreateFontString(slotFrame, 11)
 			slotFrame.enchantText:ClearAllPoints()
 			slotFrame.enchantText:SetPoint(relF, slotFrame, x, y)
-			slotFrame.enchantText:SetTextColor(0, 1, 0)
 			slotFrame.enchantText:SetJustifyH(strsub(relF, 7))
 			slotFrame.enchantText:SetWidth(120)
 			slotFrame.enchantText:EnableMouse(true)
@@ -175,27 +174,37 @@ function Module:ItemLevel_UpdateTraits(button, id, link)
 	end
 end
 
-local function CanEnchantSlot(unit, slot)
-	-- all classes have something that increases power or survivability on chest/cloak/weapons/rings/wrist/boots/legs
-	if slot == 5 or slot == 11 or slot == 12 or slot == 15 or slot == 16 or slot == 8 or slot == 9 or slot == 7 or slot == 6 then
+-- Define slots where enchantments are typically applied
+local enchantableSlots = {
+	[5] = true, -- Chest
+	[11] = true, -- Cloak
+	[12] = true, -- Weapon
+	[15] = true, -- Rings
+	[16] = true, -- Trinkets
+	[8] = true, -- Gloves
+	[9] = true, -- Wrist
+	[7] = true, -- Legs
+	[6] = true, -- Feet
+}
+
+function Module:CanEnchantSlot(unit, slot)
+	-- Check if the slot is in the list of enchantable slots
+	if enchantableSlots[slot] then
 		return true
 	end
 
-	-- Offhand filtering smile :)
+	-- Special case for off-hand slot
 	if slot == 17 then
 		local offHandItemLink = GetInventoryItemLink(unit, slot)
 		if offHandItemLink then
 			local itemEquipLoc = select(4, GetItemInfoInstant(offHandItemLink))
+			-- Off-hand items that are not holdable or shields can typically be enchanted
 			return itemEquipLoc ~= "INVTYPE_HOLDABLE" and itemEquipLoc ~= "INVTYPE_SHIELD"
 		end
-		return false
 	end
 
 	return false
 end
-
--- Add a new configuration option in your addon settings
-local showNoEnchant = true -- Default to true, meaning the "No Enchant" feature is enabled
 
 function Module:ItemLevel_UpdateInfo(slotFrame, info, quality)
 	local infoType = type(info)
@@ -217,16 +226,9 @@ function Module:ItemLevel_UpdateInfo(slotFrame, info, quality)
 		if enchant then
 			slotFrame.enchantText:SetText(enchant)
 			slotFrame.enchantText:SetTextColor(0, 1, 0) -- Set text color to green for normal enchant
-		elseif showNoEnchant then -- Check if the "No Enchant" feature is enabled
-			-- Check if the slot can be enchanted
-			if CanEnchantSlot("player", slotFrame:GetID()) then
-				slotFrame.enchantText:SetText("No Enchant")
-				slotFrame.enchantText:SetTextColor(1, 0, 0) -- Set text color to red for missing enchant
-			else
-				slotFrame.enchantText:SetText("")
-			end
-		else
-			slotFrame.enchantText:SetText("") -- Clear the enchant text if the feature is disabled
+		elseif Module:CanEnchantSlot("player", slotFrame:GetID()) then
+			slotFrame.enchantText:SetText(NO .. " " .. ENSCRIBE)
+			slotFrame.enchantText:SetTextColor(1, 0, 0) -- Set text color to red for missing enchant
 		end
 
 		local gemStep, essenceStep = 1, 1
@@ -317,10 +319,90 @@ function Module:ItemLevel_UpdatePlayer()
 	Module:ItemLevel_SetupLevel(CharacterFrame, "Character", "player")
 end
 
+local function CalculateAverageItemLevel(unit, fontstring)
+	if not fontstring then
+		return
+	end
+
+	fontstring:Hide()
+	-- Create a table to store item objects
+	local items = {}
+
+	-- Initialize variables for equipment locations
+	local mainhandEquipLoc, offhandEquipLoc
+
+	-- Iterate through equipped slots
+	for slot = INVSLOT_FIRST_EQUIPPED, INVSLOT_LAST_EQUIPPED do
+		-- Exclude shirt and tabard slots
+		if slot ~= INVSLOT_BODY and slot ~= INVSLOT_TABARD then
+			-- Retrieve item ID and item link for the slot
+			local itemID = GetInventoryItemID(unit, slot)
+			local itemLink = GetInventoryItemLink(unit, slot)
+
+			-- Check if item ID or item link is valid
+			if itemLink or itemID then
+				-- Create an item object based on item link or ID
+				local item = itemLink and Item:CreateFromItemLink(itemLink) or Item:CreateFromItemID(itemID)
+
+				-- Add item to the table
+				table.insert(items, item)
+
+				-- Update mainhand and offhand equipment locations
+				local equipLoc = select(4, GetItemInfoInstant(itemLink or itemID))
+				if slot == INVSLOT_MAINHAND then
+					mainhandEquipLoc = equipLoc
+				elseif slot == INVSLOT_OFFHAND then
+					offhandEquipLoc = equipLoc
+				end
+			end
+		end
+	end
+
+	-- Determine the number of equipment slots
+	local numSlots = mainhandEquipLoc and offhandEquipLoc and 16 or 15
+
+	-- Adjust number of slots for Fury Warriors
+	if select(2, UnitClass(unit)) == "WARRIOR" then
+		local isFuryWarrior
+		if unit == "player" then
+			isFuryWarrior = IsSpellKnown(46917) -- Titan's Grip
+		else
+			isFuryWarrior = _G.GetInspectSpecialization and GetInspectSpecialization(unit) == 72 -- Fury specialization ID
+		end
+
+		-- Adjust number of slots if the unit is a Fury Warrior
+		if isFuryWarrior then
+			numSlots = 16
+		end
+	end
+
+	-- Calculate total item level
+	local totalLevel = 0
+	for _, item in ipairs(items) do
+		-- Check if the item has a valid item level
+		local itemLevel = item:GetCurrentItemLevel()
+		if itemLevel then
+			-- Increment total item level
+			totalLevel = totalLevel + itemLevel
+		end
+	end
+
+	fontstring:SetFormattedText(ITEM_LEVEL, totalLevel / numSlots)
+	fontstring:Show()
+end
+
+-- Update the inspect frame with item level and average item level
 function Module:ItemLevel_UpdateInspect(...)
 	local guid = ...
 	if InspectFrame and InspectFrame.unit and UnitGUID(InspectFrame.unit) == guid then
 		Module:ItemLevel_SetupLevel(InspectFrame, "Inspect", InspectFrame.unit)
+
+		-- Display the average item level text on the inspect frame
+		if not InspectFrame.AvgItemLevelText then
+			InspectFrame.AvgItemLevelText = K.CreateFontString(InspectModelFrame, 12, "", "OUTLINE", false, "BOTTOM", 0, 46)
+		end
+		CalculateAverageItemLevel(InspectFrame.unit or "target", InspectFrame.AvgItemLevelText)
+		InspectModelFrameControlFrame:HookScript("OnShow", InspectModelFrameControlFrame.Hide)
 	end
 end
 
@@ -442,9 +524,13 @@ function Module.ItemLevel_UpdateTradeTarget(index)
 end
 
 local itemCache = {}
-local CHAT = K:GetModule("Chat")
+local chatModule = K:GetModule("Chat")
 
 function Module.ItemLevel_ReplaceItemLink(link, name)
+	if not chatModule then
+		return
+	end
+
 	if not link then
 		return
 	end
@@ -453,7 +539,7 @@ function Module.ItemLevel_ReplaceItemLink(link, name)
 	if not modLink then
 		local itemLevel = K.GetItemLevel(link)
 		if itemLevel then
-			modLink = gsub(link, "|h%[(.-)%]|h", "|h(" .. itemLevel .. CHAT.IsItemHasGem(link) .. ")" .. name .. "|h")
+			modLink = gsub(link, "|h%[(.-)%]|h", "|h(" .. itemLevel .. chatModule.IsItemHasGem(link) .. ")" .. name .. "|h")
 			itemCache[link] = modLink
 		end
 	end
@@ -485,6 +571,69 @@ function Module:ItemLevel_UpdateLoot()
 				button.iLvl:SetText("")
 			end
 		end
+	end
+end
+
+local NUM_SLOTS_PER_GUILDBANK_GROUP = 14
+local PET_CAGE = 82800
+
+function Module.ItemLevel_GuildBankShow(event, addon)
+	if addon == "Blizzard_GuildBankUI" then
+		hooksecurefunc(_G.GuildBankFrame, "Update", function(self)
+			if self.mode == "bank" then
+				local tab = GetCurrentGuildBankTab()
+				local button, index, column
+				for i = 1, #self.Columns * NUM_SLOTS_PER_GUILDBANK_GROUP do
+					index = mod(i, NUM_SLOTS_PER_GUILDBANK_GROUP)
+					if index == 0 then
+						index = NUM_SLOTS_PER_GUILDBANK_GROUP
+					end
+					column = ceil((i - 0.5) / NUM_SLOTS_PER_GUILDBANK_GROUP)
+					button = self.Columns[column].Buttons[index]
+
+					if button and button:IsShown() then
+						local link = GetGuildBankItemLink(tab, i)
+						if link then
+							if not button.iLvl then
+								button.iLvl = K.CreateFontString(button, 12, "", "OUTLINE", false, "BOTTOMLEFT", 2, 2)
+							end
+
+							local level, quality
+							local itemID = tonumber(strmatch(link, "Hitem:(%d+):"))
+
+							if itemID == PET_CAGE then
+								local data = C_TooltipInfo.GetGuildBankItem(tab, i)
+								if data then
+									local speciesID, petLevel, breedQuality = data.battlePetSpeciesID, data.battlePetLevel, data.battlePetBreedQuality
+									if speciesID and speciesID > 0 then
+										level, quality = petLevel, breedQuality
+									end
+								end
+							else
+								level = K.GetItemLevel(link)
+								quality = select(3, GetItemInfo(link))
+							end
+
+							if level and quality then
+								local color = K.QualityColors[quality]
+								button.iLvl:SetText(level)
+								button.iLvl:SetTextColor(color.r, color.g, color.b)
+
+								if button.KKUI_Border and itemID == PET_CAGE then
+									button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
+								end
+							else
+								button.iLvl:SetText("")
+							end
+						elseif button.iLvl then
+							button.iLvl:SetText("") -- Clear the FontString if the slot is empty
+						end
+					end
+				end
+			end
+		end)
+
+		K:UnregisterEvent(event, Module.ItemLevel_GuildBankShow)
 	end
 end
 
@@ -524,6 +673,9 @@ function Module:CreateSlotItemLevel()
 
 	-- iLvl on LootFrame
 	hooksecurefunc(LootFrame.ScrollBox, "Update", Module.ItemLevel_UpdateLoot)
+
+	-- iLvl on GuildBankFrame
+	K:RegisterEvent("ADDON_LOADED", Module.ItemLevel_GuildBankShow)
 end
 
 Module:RegisterMisc("GearInfo", Module.CreateSlotItemLevel)

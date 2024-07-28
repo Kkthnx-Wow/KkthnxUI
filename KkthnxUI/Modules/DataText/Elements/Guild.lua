@@ -1,7 +1,6 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("DataText")
 
-local table_wipe = table.wipe
 local table_sort = table.sort
 local string_format = string.format
 local select = select
@@ -11,6 +10,7 @@ local CLASS_ABBR = CLASS_ABBR
 local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 local C_GuildInfo_GuildRoster = C_GuildInfo.GuildRoster
 local C_PartyInfo_InviteUnit = C_PartyInfo.InviteUnit
+local C_PartyInfo_RequestInviteFromUnit = C_PartyInfo.RequestInviteFromUnit
 local C_Timer_After = C_Timer.After
 local ChatEdit_ActivateChat = ChatEdit_ActivateChat
 local ChatEdit_ChooseBoxForSend = ChatEdit_ChooseBoxForSend
@@ -49,11 +49,31 @@ local prevTime
 local r, g, b = K.r, K.g, K.b
 local GuildDataText
 
-local function rosterButtonOnClick(self, btn)
-	local name = guildTable[self.index][3]
-	if btn == "LeftButton" then
+local function rosterButtonOnClick(self, button)
+	local index = self.index
+	local _, _, name, _, _, _, _, _, guid = unpack(guildTable[index])
+
+	-- Check if the index is valid
+	if not index or not guildTable[index] then
+		return
+	end
+
+	if not (name and name ~= "") then
+		return
+	end
+
+	if button == "LeftButton" then
 		if IsAltKeyDown() then
-			C_PartyInfo_InviteUnit(name)
+			if guid then
+				local inviteType = GetDisplayedInviteType(guid)
+				if inviteType == "INVITE" or inviteType == "SUGGEST_INVITE" then
+					C_PartyInfo_InviteUnit(name)
+				elseif inviteType == "REQUEST_INVITE" then
+					C_PartyInfo_RequestInviteFromUnit(name)
+				end
+			else
+				C_PartyInfo_InviteUnit(name)
+			end
 		elseif IsShiftKeyDown() then
 			if MailFrame:IsShown() then
 				MailFrameTab_OnClick(nil, 2)
@@ -72,6 +92,55 @@ local function rosterButtonOnClick(self, btn)
 	else
 		ChatFrame_OpenChat("/w " .. name .. " ", SELECTED_DOCK_FRAME)
 	end
+end
+
+local tooltipColors = {
+	title = { r = 1, g = 1, b = 1 },
+	subHeader = { r = 0.75, g = 0.9, b = 1 },
+	officerNote = { r = 0.3, g = 1, b = 0.3 },
+}
+
+local noteLabel = "|cff999999" .. _G.LABEL_NOTE .. ":|r %s"
+local officerNoteLabel = "|cff999999" .. _G.GUILD_RANK1_DESC .. ":|r %s"
+local title = "|cffffffff" .. GUILD_INFORMATION .. "|r"
+local noNoteText = "|cff999999" .. NOT_APPLICABLE .. "|r"
+local rankLabel = "|cff999999" .. _G.RANK .. ":|r %s"
+
+-- Event handler for guild roster button hover
+local function rosterButtonOnEnter(self)
+	local index = self.index
+	local _, _, _, _, _, note, officerNote, rank = unpack(guildTable[index])
+
+	-- Check if the index is valid
+	if not index or not guildTable[index] then
+		return
+	end
+
+	GameTooltip:SetOwner(GuildDataText, "ANCHOR_NONE")
+	GameTooltip:SetPoint("TOPLEFT", infoFrame, "TOPRIGHT", 6, 2)
+	GameTooltip:ClearLines()
+	GameTooltip:AddLine(title, tooltipColors.title.r, tooltipColors.title.g, tooltipColors.title.b, 1)
+	GameTooltip:AddLine(" ")
+
+	if rank then
+		GameTooltip:AddLine(rankLabel:format(rank), tooltipColors.subHeader.r, tooltipColors.subHeader.g, tooltipColors.subHeader.b, 1)
+	end
+
+	GameTooltip:AddLine(" ")
+
+	if note ~= "" then
+		GameTooltip:AddLine(noteLabel:format(note), tooltipColors.subHeader.r, tooltipColors.subHeader.g, tooltipColors.subHeader.b, 1)
+	else
+		GameTooltip:AddLine(noteLabel:format(noNoteText), tooltipColors.subHeader.r, tooltipColors.subHeader.g, tooltipColors.subHeader.b, 1)
+	end
+
+	if officerNote ~= "" then
+		GameTooltip:AddLine(officerNoteLabel:format(officerNote), tooltipColors.officerNote.r, tooltipColors.officerNote.g, tooltipColors.officerNote.b, 1)
+	else
+		GameTooltip:AddLine(officerNoteLabel:format(noNoteText), tooltipColors.officerNote.r, tooltipColors.officerNote.g, tooltipColors.officerNote.b, 1)
+	end
+
+	GameTooltip:Show()
 end
 
 local function GuildPanel_CreateButton(parent, index)
@@ -101,6 +170,8 @@ local function GuildPanel_CreateButton(parent, index)
 
 	button:RegisterForClicks("AnyUp")
 	button:SetScript("OnClick", rosterButtonOnClick)
+	button:SetScript("OnEnter", rosterButtonOnEnter)
+	button:SetScript("OnLeave", K.HideTooltip)
 
 	return button
 end
@@ -108,6 +179,11 @@ end
 local function GuildPanel_UpdateButton(button)
 	local index = button.index
 	local level, class, name, zone, status = unpack(guildTable[index])
+
+	-- Check if the index is valid
+	if not index or not guildTable[index] then
+		return
+	end
 
 	local levelcolor = K.RGBToHex(GetQuestDifficultyColor(level))
 	button.level:SetText(levelcolor .. level)
@@ -259,9 +335,9 @@ local function GuildPanel_Init()
 	local scrollChild = scrollFrame.scrollChild
 	local numButtons = 16 + 1
 	local buttonHeight = 22
-	local buttons = {}
+	local buttons = scrollFrame.buttons or {}
 	for i = 1, numButtons do
-		buttons[i] = GuildPanel_CreateButton(scrollChild, i)
+		buttons[i] = buttons[i] or GuildPanel_CreateButton(scrollChild, i)
 	end
 
 	scrollFrame.buttons = buttons
@@ -288,18 +364,18 @@ local function GuildPanel_Refresh()
 		prevTime = thisTime
 	end
 
-	table_wipe(guildTable)
+	wipe(guildTable)
 	local count = 0
 	local total, _, online = GetNumGuildMembers()
 	local guildName, guildRank = GetGuildInfo("player")
 
 	gName:SetText("|cff0099ff<" .. (guildName or "") .. ">")
 	gOnline:SetText(string_format(K.InfoColor .. "%s:" .. " %d/%d", GUILD_ONLINE_LABEL, online, total))
-	-- gApps:SetText(string_format(K.InfoColor..GUILDINFOTAB_APPLICANTS, GetNumGuildApplicants()))
 	gRank:SetText(K.InfoColor .. RANK .. ": " .. (guildRank or ""))
 
+	-- Declare status variable as string
 	for i = 1, total do
-		local name, _, _, level, _, zone, _, _, connected, status, class, _, _, mobile = GetGuildRosterInfo(i)
+		local name, rank, _, level, _, zone, note, officerNote, connected, status, class, _, _, mobile, _, _, guid = GetGuildRosterInfo(i)
 		if connected or mobile then
 			if mobile and not connected then
 				zone = REMOTE_CHAT
@@ -334,6 +410,10 @@ local function GuildPanel_Refresh()
 			guildTable[count][3] = Ambiguate(name, "none")
 			guildTable[count][4] = zone
 			guildTable[count][5] = status
+			guildTable[count][6] = note
+			guildTable[count][7] = officerNote
+			guildTable[count][8] = rank
+			guildTable[count][9] = guid
 		end
 	end
 
@@ -347,31 +427,21 @@ local eventList = {
 }
 
 local function OnEvent(_, event, arg1)
-	if not IsInGuild() then
-		if C["DataText"].HideText then
-			GuildDataText.Text:SetText("")
-		else
-			GuildDataText.Text:SetText(GUILD .. ": " .. K.MyClassColor .. NONE)
-		end
-		return
+	if event == "GUILD_ROSTER_UPDATE" and arg1 then
+		C_GuildInfo_GuildRoster()
 	end
 
-	if event == "GUILD_ROSTER_UPDATE" then
-		if arg1 then
-			C_GuildInfo_GuildRoster()
-		end
-	end
+	if IsInGuild() then
+		local online = select(3, GetNumGuildMembers())
+		local message = C["DataText"].HideText and "" or GUILD .. ": " .. K.MyClassColor .. online
+		GuildDataText.Text:SetText(message)
 
-	local online = select(3, GetNumGuildMembers())
-	if C["DataText"].HideText then
-		GuildDataText.Text:SetText("")
+		if infoFrame and infoFrame:IsShown() then
+			GuildPanel_Refresh()
+			GuildPanel_SortUpdate()
+		end
 	else
-		GuildDataText.Text:SetText(GUILD .. ": " .. K.MyClassColor .. online)
-	end
-
-	if infoFrame and infoFrame:IsShown() then
-		GuildPanel_Refresh()
-		GuildPanel_SortUpdate()
+		GuildDataText.Text:SetText(GUILD .. ": " .. K.MyClassColor .. NO .. " " .. GUILD)
 	end
 end
 
@@ -428,28 +498,31 @@ function Module:CreateGuildDataText()
 		return
 	end
 
-	GuildDataText = GuildDataText or CreateFrame("Button", nil, UIParent)
-	GuildDataText:SetPoint("LEFT", UIParent, "LEFT", 0, -240)
-	GuildDataText:SetSize(24, 24)
+	GuildDataText = CreateFrame("Frame", nil, UIParent)
+	GuildDataText:SetHitRectInsets(-16, 0, -10, -10)
 
-	GuildDataText.Texture = GuildDataText:CreateTexture(nil, "BACKGROUND")
-	GuildDataText.Texture:SetPoint("LEFT", GuildDataText, "LEFT", 0, 0)
-	GuildDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\guild.blp")
+	GuildDataText.Text = K.CreateFontString(GuildDataText, 12)
+	GuildDataText.Text:ClearAllPoints()
+	GuildDataText.Text:SetPoint("LEFT", UIParent, "LEFT", 24, -240)
+
+	GuildDataText.Texture = GuildDataText:CreateTexture(nil, "ARTWORK")
+	GuildDataText.Texture:SetPoint("RIGHT", GuildDataText.Text, "LEFT", 0, 2)
+	GuildDataText.Texture:SetTexture(K.MediaFolder .. "DataText\\guild.blp")
 	GuildDataText.Texture:SetSize(24, 24)
 	GuildDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
-	GuildDataText.Text = GuildDataText:CreateFontString(nil, "ARTWORK")
-	GuildDataText.Text:SetFontObject(K.UIFont)
-	GuildDataText.Text:SetPoint("LEFT", GuildDataText.Texture, "RIGHT", 0, 0)
+	GuildDataText:SetAllPoints(GuildDataText.Text)
+
+	local function _OnEvent(...)
+		OnEvent(...)
+	end
 
 	for _, event in pairs(eventList) do
 		GuildDataText:RegisterEvent(event)
 	end
 
-	GuildDataText:SetScript("OnEvent", OnEvent)
-	GuildDataText:SetScript("OnMouseUp", OnMouseUp)
+	GuildDataText:SetScript("OnEvent", _OnEvent)
 	GuildDataText:SetScript("OnEnter", OnEnter)
 	GuildDataText:SetScript("OnLeave", OnLeave)
-
-	K.Mover(GuildDataText, "GuildDataText", "GuildDataText", { "LEFT", UIParent, "LEFT", 4, -240 })
+	GuildDataText:SetScript("OnMouseUp", OnMouseUp)
 end

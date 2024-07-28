@@ -11,8 +11,10 @@ function Module:CreateTargetOfTarget()
 	local targetOfTargetPortraitStyle = C["Unitframe"].PortraitStyle.Value
 
 	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
+	Overlay:SetFrameStrata(self:GetFrameStrata())
+	Overlay:SetFrameLevel(6)
 	Overlay:SetAllPoints()
-	Overlay:SetFrameLevel(5)
+	Overlay:EnableMouse(false)
 
 	Module.CreateHeader(self)
 

@@ -80,7 +80,7 @@ function Module:InterruptAlert_Toggle()
 	infoType["SPELL_STOLEN"] = C["Announcements"].DispellAlert and L["Steal"]
 	infoType["SPELL_DISPEL"] = C["Announcements"].DispellAlert and L["Dispel"]
 	infoType["SPELL_INTERRUPT"] = C["Announcements"].InterruptAlert and L["Interrupt"]
-	infoType["SPELL_AURA_BROKEN_SPELL"] = C["Announcements"].BrokenAlert and L["BrokenSpell"]
+	infoType["SPELL_AURA_BROKEN_SPELL"] = C["Announcements"].BrokenAlert and L["Broken Spell"]
 end
 
 function Module:InterruptAlert_IsEnabled()
@@ -111,7 +111,7 @@ function Module:InterruptAlert_Update(...)
 		local infoText = infoType[eventType]
 		if infoText then
 			local sourceSpellID, destSpellID
-			if infoText == L["BrokenSpell"] then
+			if infoText == L["Broken Spell"] then
 				if auraType and auraType == AURA_TYPE_BUFF or spellBlackList[spellID] then
 					return
 				end
@@ -129,7 +129,7 @@ function Module:InterruptAlert_Update(...)
 			end
 
 			if sourceSpellID and destSpellID then
-				if infoText == L["BrokenSpell"] then
+				if infoText == L["Broken Spell"] then
 					SendChatMessage(string_format(infoText, sourceName, GetSpellLink(destSpellID)), getAlertChannel())
 				else
 					SendChatMessage(string_format(infoText, GetSpellLink(destSpellID)), getAlertChannel())

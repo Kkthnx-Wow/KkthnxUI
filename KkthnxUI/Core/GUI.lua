@@ -57,48 +57,56 @@ local LastActiveDropdown
 local LastActiveWindow
 local MySelectedProfile = K.Realm .. "-" .. K.Name
 
-local CreditLines = {
-	{ type = "header", text = "PATREONS", color = "C0C0C0" },
-	{ type = "header", text = "" },
-	{ type = "header", text = "Tier 1" },
-	{ type = "header", text = "Tier 2" },
-	{ type = "header", text = "Tier 3" },
-	{ type = "name", text = "Shovil", class = "WARRIOR" },
-	{ type = "header", text = "Tier 4" },
-	{ type = "header", text = "" },
-	{ type = "header", text = "CREDITS" },
-	{ type = "header", text = "" },
-	{ type = "name", text = "Aftermathh" },
-	{ type = "name", text = "Alteredcross", class = "ROGUE" },
-	{ type = "name", text = "Alza" },
-	{ type = "name", text = "Azilroka", class = "SHAMAN" },
-	{ type = "name", text = "Benik", color = "00c0fa" },
-	{ type = "name", text = "Blazeflack" },
-	{ type = "name", text = "Caellian" },
-	{ type = "name", text = "Caith" },
-	{ type = "name", text = "Cassamarra", class = "HUNTER" },
-	{ type = "name", text = "Darth Predator" },
-	{ type = "name", text = "Elv", addOn = "(|cff1784d1ElvUI|r)" },
-	{ type = "name", text = K.GetClassIcon("PRIEST") .. "|cffe31c73Faffi|r|cfffc4796GS|r", class = "PRIEST", color = "e31c73" },
-	{ type = "name", text = K.GetClassIcon("DRUID") .. "Goldpaw", class = "DRUID", addOn = "(|c00000002|r|cff7284abA|r|cff6a7a9ez|r|cff617092e|r|cff596785r|r|cff505d78i|r|cff48536bt|r|cff3f495fe|r|cffffffffUI|r)" },
-	{ type = "name", text = "Haleth" },
-	{ type = "name", text = "Haste" },
-	{ type = "name", text = "Hungtar" },
-	{ type = "name", text = "Hydra", addOn = "(|cFFFFC44DvUI|r)" },
-	{ type = "name", text = "Ishtara" },
-	{ type = "name", text = "KkthnxUI Community" },
-	{ type = "name", text = "LightSpark" },
-	{ type = "name", text = "Magicnachos", class = "PRIEST" },
-	{ type = "name", text = "Merathilis", class = "DRUID" },
-	{ type = "name", text = "Nightcracker" },
-	{ type = "name", text = "P3lim" },
-	{ type = "name", text = "Palooza", class = "PRIEST" },
-	{ type = "name", text = "Rav99", class = "DEMONHUNTER" },
-	{ type = "name", text = "Roth" },
-	{ type = "name", text = "Shestak", addOn = "ShestakUI" },
-	{ type = "name", text = "Simpy" },
-	{ type = "name", text = "siweia", addOn = "NDui" },
+local headers = {
+	"CREDITS",
+	"",
 }
+
+local names = {
+	{ text = "Aftermathh" },
+	{ text = "Alteredcross", class = "ROGUE" },
+	{ text = "Alza" },
+	{ text = "Azilroka", class = "SHAMAN" },
+	{ text = "Benik", color = "00c0fa" },
+	{ text = "Blazeflack" },
+	{ text = "Caellian" },
+	{ text = "Caith" },
+	{ text = "Cassamarra", class = "HUNTER" },
+	{ text = "Darth Predator" },
+	{ text = "Elv" },
+	{ text = "|cffe31c73Faffi|r|cfffc4796GS|r", class = "PRIEST" },
+	{ text = "Goldpaw", class = "DRUID" },
+	{ text = "Haleth" },
+	{ text = "Haste" },
+	{ text = "Hungtar" },
+	{ text = "Hydra" },
+	{ text = "Ishtara" },
+	{ text = "KkthnxUI Community" },
+	{ text = "LightSpark" },
+	{ text = "Magicnachos", class = "PRIEST" },
+	{ text = "Merathilis", class = "DRUID" },
+	{ text = "Nightcracker" },
+	{ text = "P3lim" },
+	{ text = "Palooza", class = "PRIEST" },
+	{ text = "Rav99", class = "DEMONHUNTER" },
+	{ text = "Roth" },
+	{ text = "Shestak" },
+	{ text = "Simpy" },
+	{ text = "siweia" },
+}
+
+local function createCreditLines(headers, names)
+	local lines = {}
+	for _, text in ipairs(headers) do
+		table.insert(lines, { type = "header", text = text })
+	end
+	for _, name in ipairs(names) do
+		table.insert(lines, { type = "name", text = name.text, class = name.class, color = name.color })
+	end
+	return lines
+end
+
+local CreditLines = createCreditLines(headers, names)
 
 local GUI = CreateFrame("Frame", "KKUI_GUI", UIParent)
 GUI.Windows = {}
@@ -1235,8 +1243,7 @@ local ColorOnMouseUp = function(self, button)
 			HideUIPanel(CPF)
 			CPF.Button = self
 
-			CPF.Content.ColorPicker:SetColorRGB(CurrentR, CurrentG, CurrentB)
-			CPF.swatchFunc = function() end
+			CPF:SetColorRGB(CurrentR, CurrentG, CurrentB)
 
 			CPF.Group = self.Group
 			CPF.Option = self.Option
@@ -1638,8 +1645,7 @@ local CreditLineHeight = 20
 local function SetUpCredits(frame)
 	frame.Lines = {}
 
-	for i = 1, #CreditLines do
-		local entry = CreditLines[i]
+	for i, entry in ipairs(CreditLines) do
 		local Line = CreateFrame("Frame", nil, frame)
 		Line:SetSize(frame:GetWidth(), CreditLineHeight)
 
@@ -1656,13 +1662,13 @@ local function SetUpCredits(frame)
 			end
 		elseif entry.type == "name" then
 			if entry.class then
-				Line.Text:SetTextColor(K.ClassColors[entry.class].r, K.ClassColors[entry.class].g, K.ClassColors[entry.class].b)
+				local classIconAndColor = K.GetClassIconAndColor(entry.class, 14)
+				Line.Text:SetText(classIconAndColor .. entry.text)
 			elseif entry.color then
 				Line.Text:SetTextColor(tonumber(entry.color:sub(1, 2), 16) / 255, tonumber(entry.color:sub(3, 4), 16) / 255, tonumber(entry.color:sub(5, 6), 16) / 255)
-			end
-			Line.Text:SetText(entry.text)
-			if entry.addOn then
-				Line.Text:SetText(Line.Text:GetText() .. " - " .. entry.addOn)
+				Line.Text:SetText(entry.text)
+			else
+				Line.Text:SetText(entry.text)
 			end
 		end
 
@@ -1672,7 +1678,7 @@ local function SetUpCredits(frame)
 			Line:SetPoint("TOP", frame.Lines[i - 1], "BOTTOM", 0, 0)
 		end
 
-		tinsert(frame.Lines, Line)
+		table.insert(frame.Lines, Line)
 	end
 
 	frame:SetHeight(#frame.Lines * CreditLineHeight)

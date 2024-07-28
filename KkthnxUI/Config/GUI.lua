@@ -500,7 +500,6 @@ local Automation = function(self)
 
 	-- Invite Management sub-section
 	Window:CreateSection("Invite Management")
-	Window:CreateSwitch("Automation", "AutoBlockStrangerInvites", L["Block Invites From Strangers"])
 	Window:CreateSwitch("Automation", "AutoInvite", L["Accept Invites From Friends & Guild Members"])
 	Window:CreateSwitch("Automation", "AutoDeclineDuels", L["Decline PvP Duels"])
 	Window:CreateSwitch("Automation", "AutoDeclinePetDuels", L["Decline Pet Duels"])
@@ -520,12 +519,13 @@ local Automation = function(self)
 	Window:CreateSection("Miscellaneous Options")
 	Window:CreateSwitch("Automation", "AutoCollapse", L["Auto Collapse Objective Tracker"])
 	Window:CreateSwitch("Automation", "AutoGoodbye", L["Say Goodbye After Dungeon Completion"])
-	Window:CreateSwitch("Automation", "AutoOpenItems", L["Auto Open Items In Your Inventory"])
 	Window:CreateSwitch("Automation", "AutoKeystone", newFeatureIcon .. L["Auto Place Mythic Keystones"])
+	Window:CreateSwitch("Automation", "AutoOpenItems", L["Auto Open Items In Your Inventory"])
 	Window:CreateSwitch("Automation", "AutoRelease", L["Auto Release in Battlegrounds & Arenas"])
 	Window:CreateSwitch("Automation", "AutoScreenshot", L["Auto Screenshot Achievements"])
 	Window:CreateSwitch("Automation", "AutoSetRole", L["Auto Set Your Role In Groups"])
 	Window:CreateSwitch("Automation", "AutoSkipCinematic", L["Auto Skip All Cinematics/Movies"])
+	Window:CreateSwitch("Automation", "AutoSummon", L["Auto Accept Summon Requests"])
 	Window:CreateSwitch("Automation", "NoBadBuffs", L["Automatically Remove Annoying Buffs"])
 end
 
@@ -629,7 +629,6 @@ local Chat = function(self)
 	-- Chat appearance
 	Window:CreateSection("Appearance")
 	Window:CreateSwitch("Chat", "Emojis", L["Show Emojis In Chat"] .. emojiExampleIcon)
-	Window:CreateSwitch("Chat", "RoleIcons", L["Show Role Icons In Chat"])
 	Window:CreateSwitch("Chat", "ChatItemLevel", L["Show ItemLevel on ChatFrames"])
 	Window:CreateDropdown("Chat", "TimestampFormat", L["Custom Chat Timestamps"])
 
@@ -648,28 +647,21 @@ local Chat = function(self)
 	Window:CreateSection(L["Fading"])
 	Window:CreateSwitch("Chat", "Fading", L["Fade Chat Text"])
 	Window:CreateSlider("Chat", "FadingTimeVisible", L["Fading Chat Visible Time"], 5, 120, 1)
-
-	Window:CreateSection(FILTERS)
-	Window:CreateSwitch("Chat", "EnableFilter", enableTextColor .. L["Enable Chat Filter"])
-	Window:CreateSwitch("Chat", "BlockSpammer", L["Block Repeated Spammer Messages"])
-	Window:CreateSwitch("Chat", "BlockStranger", L["Block Whispers From Strangers"])
-	Window:CreateSlider("Chat", "FilterMatches", L["Filter Matches Number"], 1, 3, 1)
-	Window:CreateEditBox("Chat", "ChatFilterList", L["ChatFilter BlackList"], "Enter words you want blacklisted|n|nUse SPACES between each word|n|nPress enter when you are done", UpdateFilterList)
-	Window:CreateEditBox("Chat", "ChatFilterWhiteList", L["ChatFilter WhiteList"], "Enter words you want whitelisted|n|nUse SPACES between each word|n|nPress enter when you are done", UpdateFilterWhiteList)
 end
 
 local DataText = function(self)
 	local Window = self:CreateWindow(L["DataText"])
 
 	Window:CreateSection(GENERAL)
+	Window:CreateSwitch("DataText", "Coords", L["Enable Positon Coords"])
 	Window:CreateSwitch("DataText", "Friends", L["Enable Friends Info"])
 	Window:CreateSwitch("DataText", "Gold", L["Enable Currency Info"])
 	Window:CreateSwitch("DataText", "Guild", L["Enable Guild Info"])
 	Window:CreateSwitch("DataText", "Latency", L["Enable Latency Info"])
 	Window:CreateSwitch("DataText", "Location", L["Enable Minimap Location"])
+	Window:CreateSwitch("DataText", "Spec", "Enable Specialization Info")
 	Window:CreateSwitch("DataText", "System", L["Enable System Info"])
 	Window:CreateSwitch("DataText", "Time", L["Enable Minimap Time"])
-	Window:CreateSwitch("DataText", "Coords", L["Enable Positon Coords"])
 
 	-- Section: Icon Colors
 	Window:CreateSection("Icon Colors")
@@ -695,6 +687,8 @@ local General = function(self)
 	Window:CreateSwitch("General", "NoErrorFrame", L["Disable Blizzard Error Frame Combat"])
 	Window:CreateSwitch("General", "NoTutorialButtons", L["Disable 'Some' Blizzard Tutorials"])
 	Window:CreateSwitch("General", "VersionCheck", L["Enable Version Checking"])
+
+	Window:CreateDropdown("General", "GlowMode", "Button Glow Mode")
 
 	-- Border Style
 	Window:CreateDropdown("General", "BorderStyle", L["Border Style"])

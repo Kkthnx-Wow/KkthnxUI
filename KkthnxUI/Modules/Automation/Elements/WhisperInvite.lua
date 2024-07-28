@@ -1,9 +1,14 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
-local acceptedKeyword
+local IsInGuild = IsInGuild
+local GetNumGuildMembers = GetNumGuildMembers
+local GetGuildRosterInfo = GetGuildRosterInfo
+local Ambiguate = Ambiguate
+local C_FriendList_IsFriend = C_FriendList.IsFriend
 
--- Check if a player is in guild
+local autoInviteKeyword
+
 local function isPlayerInGuild(unitName)
 	if not unitName or not IsInGuild() then
 		return false
@@ -17,69 +22,51 @@ local function isPlayerInGuild(unitName)
 	return false
 end
 
--- Check if a player is in the player's guild or friends list
 local function isPlayerGuildOrFriend(name)
-	if C["Automation"].WhisperInviteGuildFriends then -- Implement this later
-		if IsInGuild() and isPlayerInGuild(name) then
-			--print("Player", name, "is in the guild.")
-			return true
-		elseif C_FriendList.IsFriend(name) then
-			--print("Player", name, "is in the friends list.")
-			return true
-		end
-	else
-		--print("WhisperInviteGuildFriends is disabled. Accepting all players.")
-		return true
+	if not C["Automation"].WhisperInviteRestriction then
+		return true -- Allow all players if the option is disabled
 	end
-	return false
+
+	if IsInGuild() and isPlayerInGuild(name) then
+		return true -- Allow players who are in the guild
+	elseif C_FriendList_IsFriend(name) then
+		return true -- Allow players who are on the friends list
+	end
+
+	return false -- Reject all other players
 end
 
--- Handle auto-invites on chat whisper
 local function onChatWhisper(event, message, sender, _, _, _, _, _, _, _, _, _, _, presenceID)
-	--print("Received whisper:", message)
-	--print("Sender:", sender)
-
 	if QueueStatusButton and QueueStatusButton:IsShown() then
-		--print("You are currently in a queue. Ignoring whisper.")
 		return
 	end
 
-	if acceptedKeyword and message:lower() == acceptedKeyword:lower() and isPlayerGuildOrFriend(sender) then
-		--print("Whisper matched accepted keyword and sender is in guild or friends list.")
-
+	if autoInviteKeyword and message:lower() == autoInviteKeyword:lower() and isPlayerGuildOrFriend(sender) then
 		if event == "CHAT_MSG_WHISPER" then
-			--print("Inviting sender to party...")
 			C_PartyInfo.InviteUnit(sender)
 		elseif event == "CHAT_MSG_BN_WHISPER" then
 			local accountInfo = C_BattleNet.GetAccountInfoByID(presenceID)
 			if accountInfo then
 				local gameAccountInfo = accountInfo.gameAccountInfo
 				local gameID = gameAccountInfo.gameAccountID
-				if gameID then
-					if CanCooperateWithGameAccount(accountInfo) then
-						--print("Inviting sender to party via Battle.net...")
-						BNInviteFriend(gameID)
-					end
+				if gameID and CanCooperateWithGameAccount(accountInfo) then
+					BNInviteFriend(gameID)
 				end
 			end
 		end
-	else
-		--print("Whisper did not match accepted keyword or sender is not in guild or friends list.")
 	end
 end
 
--- Update the list of accepted keywords
-local function onUpdateAcceptedKeyword()
-	acceptedKeyword = C["Automation"].WhisperInvite
+local function onUpdateAutoInviteKeyword()
+	autoInviteKeyword = C["Automation"].WhisperInvite
 end
 
--- Create auto whisper invite
 function Module:CreateAutoWhisperInvite()
-	if C["Chat"].WhisperInvite == "" then
+	if not C["Automation"].WhisperInvite then
 		return
 	end
 
-	onUpdateAcceptedKeyword()
+	onUpdateAutoInviteKeyword()
 	K:RegisterEvent("CHAT_MSG_WHISPER", onChatWhisper)
 	K:RegisterEvent("CHAT_MSG_BN_WHISPER", onChatWhisper)
 end

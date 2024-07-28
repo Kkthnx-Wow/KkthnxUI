@@ -7,7 +7,7 @@ local UIParent = _G.UIParent
 local AlertFrame = _G.AlertFrame
 local GroupLootContainer = _G.GroupLootContainer
 
-local POSITION, ANCHOR_POINT, YOFFSET = "TOP", "BOTTOM", -10
+local POSITION, ANCHOR_POINT, YOFFSET = "TOP", "BOTTOM", -6
 local parentFrame
 
 function Module:AlertFrame_UpdateAnchor()
@@ -16,11 +16,11 @@ function Module:AlertFrame_UpdateAnchor()
 	if y > screenHeight / 2 then
 		POSITION = "TOP"
 		ANCHOR_POINT = "BOTTOM"
-		YOFFSET = -10
+		YOFFSET = -6
 	else
 		POSITION = "BOTTOM"
 		ANCHOR_POINT = "TOP"
-		YOFFSET = 10
+		YOFFSET = 6
 	end
 
 	self:ClearAllPoints()
@@ -36,7 +36,7 @@ function Module:UpdatGroupLootContainer()
 		local frame = self.rollFrames[i]
 		if frame then
 			frame:ClearAllPoints()
-			frame:SetPoint("CENTER", self, POSITION, 0, self.reservedSize * (i - 1 + 0.5) * YOFFSET / 10)
+			frame:SetPoint("CENTER", self, POSITION, 0, self.reservedSize * (i - 1 + 0.5) * YOFFSET / 6)
 			lastIdx = i
 		end
 	end

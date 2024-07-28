@@ -8,7 +8,7 @@ end
 local diceSpells = {
 	[1] = { id = 193356, text = L["Combo"] },
 	[2] = { id = 193357, text = L["Crit"] },
-	[3] = { id = 193358, text = L["AttackSpeed"] },
+	[3] = { id = 193358, text = L["Attack Speed"] },
 	[4] = { id = 193359, text = L["CD"] },
 	[5] = { id = 199603, text = L["Strike"] },
 	[6] = { id = 199600, text = L["Power"] },

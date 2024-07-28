@@ -79,6 +79,7 @@ function Module:OnEnable()
 		"LoadDefaultSkins",
 
 		"ReskinBartender4",
+		"ReskinNekometer",
 		-- "ReskinBigWigs",
 		"ReskinButtonForge",
 		"ReskinChocolateBar",

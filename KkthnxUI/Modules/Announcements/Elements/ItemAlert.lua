@@ -9,75 +9,78 @@ local IsInGroup = IsInGroup
 local SendChatMessage = SendChatMessage
 local UnitName = UnitName
 
+-- Define player GUID and group units
 local groupUnits = { ["player"] = true, ["pet"] = true }
-if IsInGroup() then
-	if IsInRaid() then
-		for i = 1, GetNumGroupMembers() do
-			groupUnits["raid" .. i] = true
-			groupUnits["raidpet" .. i] = true
-		end
-	else
-		for i = 1, GetNumSubgroupMembers() do
-			groupUnits["party" .. i] = true
-			groupUnits["partypet" .. i] = true
-		end
-	end
+for i = 1, 4 do
+	groupUnits["party" .. i] = true
+	groupUnits["partypet" .. i] = true
+end
+for i = 1, 40 do
+	groupUnits["raid" .. i] = true
+	groupUnits["raidpet" .. i] = true
 end
 
-local itemList = {
-	[54710] = true, -- Portable mailbox
-	[67826] = true, -- Kevis
-	[226241] = true, -- Tranquility
-	[256230] = true, -- Meditation scriptures
-	[185709] = true, -- Caramel Fish Feast
-	[259409] = true, -- Feast of sails
+-- Define important spells with IDs and descriptions
+local importantSpells = {
+	[54710] = true, -- Portable Mailbox
+	[67826] = true, -- Jeeves
+	[226241] = true, -- Tome of Tranquil Mind
+	[256230] = true, -- Codex of the Quiet Mind
+	[185709] = true, -- Sugar-Crusted Fish Feast
+	[199109] = true, -- Auto-Hammer
+	[259409] = true, -- Feast of the Fishes
 	[259410] = true, -- Captain's Feast
 	[276972] = true, -- Arcane Cauldron
-	[286050] = true, -- blood meal
-	[265116] = true, -- 8.0 Engineering Battle
-	[308458] = true, -- Amazing meal
-	[308462] = true, -- Indulge in a gluttonous feast
-	[345130] = true, -- 9.0 Engineering Battle
+	[286050] = true, -- Blood Feast
+	[265116] = true, -- Engineering Battle Rez (BfA)
+	[308458] = true, -- Grand Feast
+	[308462] = true, -- Lavish Feast
+	[345130] = true, -- Engineering Battle Rez (Shadowlands)
 	[307157] = true, -- Eternal Cauldron
-	[359336] = true, -- stone soup pot
-	[324029] = true, -- Code of Peace of Mind
-
-	[2825] = true, -- bloodthirsty
-	[32182] = true, -- heroic
-	[80353] = true, -- time warp
-	[264667] = true, -- Primal Rage, pet
-	[272678] = true, -- Primal Rage, Pet Mastery
+	[359336] = true, -- Stone Soup
+	[324029] = true, -- Tome of Tranquil Mind (Shadowlands)
+	[2825] = true, -- Bloodlust
+	[32182] = true, -- Heroism
+	[80353] = true, -- Time Warp
+	[264667] = true, -- Primal Rage (Pet)
+	[272678] = true, -- Primal Rage (Hunter Pet)
 	[178207] = true, -- Drums of Fury
-	[230935] = true, -- Alpine War Drums
-	[256740] = true, -- Vortex Drums
-	[292686] = true, -- Thunderskin's Hammer
-	[309658] = true, -- Death Brutal War Drum
+	[230935] = true, -- Drums of the Mountain
+	[256740] = true, -- Drums of the Maelstrom
+	[292686] = true, -- Drums of the Raging Tempest
+	[309658] = true, -- Drums of Deathly Ferocity
+	[390386] = true, -- Fury of the Aspects
 }
 
-function Module:ItemAlert_Update(unit, castID, spellID)
-	if groupUnits[unit] and itemList[spellID] and (itemList[spellID] ~= castID) then
-		local message = string_format(L["Spell Item AlertStr"], UnitName(unit), GetSpellLink(spellID) or GetSpellInfo(spellID))
-		SendChatMessage(message, K.CheckChat())
-		itemList[spellID] = castID
+-- Function to handle spell cast alerts
+function Module:UpdateItemAlert(unit, castID, spellID)
+	if groupUnits[unit] and importantSpells[spellID] and (importantSpells[spellID] ~= castID) then
+		SendChatMessage(string_format("%s used %s", UnitName(unit), GetSpellLink(spellID) or GetSpellInfo(spellID)), K.CheckChat())
+		importantSpells[spellID] = castID
 	end
 end
 
-function Module:ItemAlert_CheckGroup()
+-- Function to check if the player is in a group and register events accordingly
+function Module:CheckGroupStatus()
 	if IsInGroup() then
-		K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.ItemAlert_Update)
+		K:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UpdateItemAlert)
 	else
-		K:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.ItemAlert_Update)
+		K:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UpdateItemAlert)
 	end
 end
 
+-- Main function to handle spell and item alerts
 function Module:CreateItemAnnounce()
+	Module.factionSpell = K.Faction == "Alliance" and 32182 or 2825
+	Module.factionSpell = GetSpellLink(Module.factionSpell)
+
 	if C["Announcements"].ItemAlert then
-		self:ItemAlert_CheckGroup()
-		K:RegisterEvent("GROUP_LEFT", self.ItemAlert_CheckGroup)
-		K:RegisterEvent("GROUP_JOINED", self.ItemAlert_CheckGroup)
+		Module:CheckGroupStatus()
+		K:RegisterEvent("GROUP_LEFT", Module.CheckGroupStatus)
+		K:RegisterEvent("GROUP_JOINED", Module.CheckGroupStatus)
 	else
-		K:UnregisterEvent("GROUP_LEFT", self.ItemAlert_CheckGroup)
-		K:UnregisterEvent("GROUP_JOINED", self.ItemAlert_CheckGroup)
-		K:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.ItemAlert_Update)
+		K:UnregisterEvent("GROUP_LEFT", Module.CheckGroupStatus)
+		K:UnregisterEvent("GROUP_JOINED", Module.CheckGroupStatus)
+		K:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", Module.UpdateItemAlert)
 	end
 end

@@ -39,8 +39,8 @@ License: MIT
 --
 -- @class file
 -- @name LibRangeCheck-3.0
-local MAJOR_VERSION = "LibRangeCheck-3.0"
-local MINOR_VERSION = 16 -- real minor version: 13
+local MAJOR_VERSION = "LibRangeCheck-3.0-KkthnxUI"
+local MINOR_VERSION = 18 -- real minor version: 19
 
 -- GLOBALS: LibStub, CreateFrame
 
@@ -63,17 +63,11 @@ local strsplit = strsplit
 local tostring = tostring
 local setmetatable = setmetatable
 
+local IsSpellKnownOrOverridesKnown = IsSpellKnownOrOverridesKnown
 local CheckInteractDistance = CheckInteractDistance
 local GetInventoryItemLink = GetInventoryItemLink
-local GetItemInfo = GetItemInfo
-local GetNumSpellTabs = GetNumSpellTabs
-local GetSpellBookItemName = GetSpellBookItemName
-local GetSpellInfo = GetSpellInfo
-local GetSpellTabInfo = GetSpellTabInfo
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
-local IsItemInRange = IsItemInRange
-local IsSpellInRange = IsSpellInRange
 local UnitCanAssist = UnitCanAssist
 local UnitCanAttack = UnitCanAttack
 local UnitClass = UnitClass
@@ -84,27 +78,73 @@ local UnitIsUnit = UnitIsUnit
 local UnitIsVisible = UnitIsVisible
 local UnitRace = UnitRace
 
+local GetItemInfo = C_Item.GetItemInfo
+local IsItemInRange = C_Item.IsItemInRange
+
+local BOOKTYPE_SPELL = (Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player) or BOOKTYPE_SPELL or "spell"
+local C_SpellBook_GetSpellBookItemInfo = C_SpellBook.GetSpellBookItemInfo
+local GetSpellBookItemName = _G.GetSpellBookItemName or function(index, bookType)
+	local result = C_SpellBook_GetSpellBookItemInfo(index, bookType)
+	return result.name, result.subName, result.spellID
+end
+
+local C_Spell_IsSpellInRange = C_Spell.IsSpellInRange
+local IsSpellInRange = _G.IsSpellInRange or function(id, unit)
+	local result = C_Spell_IsSpellInRange(id, unit)
+	if result == true then
+		return 1
+	elseif result == false then
+		return 0
+	end
+	return nil
+end
+
+local C_SpellBook_IsSpellBookItemInRange = C_SpellBook.IsSpellBookItemInRange
+local IsSpellBookItemInRange = _G.IsSpellInRange or function(index, spellBank, unit)
+	local result = C_SpellBook_IsSpellBookItemInRange(index, spellBank, unit)
+	if result == true then
+		return 1
+	elseif result == false then
+		return 0
+	end
+	return nil
+end
+
 local C_Timer = C_Timer
 local Item = Item
 
-local BOOKTYPE_SPELL = BOOKTYPE_SPELL
 local HandSlotId = GetInventorySlotInfo("HANDSSLOT")
 
 local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local isWrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 local isEra = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+local isCata = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
 
 local IsEngravingEnabled = C_Engraving and C_Engraving.IsEngravingEnabled
 local isEraSOD = IsEngravingEnabled and IsEngravingEnabled()
 
-local InCombatLockdownRestriction
-if isRetail or isEra then
-	InCombatLockdownRestriction = function(unit)
-		return InCombatLockdown() and not UnitCanAttack("player", unit)
+local InCombatLockdownRestriction = function(unit)
+	return InCombatLockdown() and not UnitCanAttack("player", unit)
+end
+
+local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
+local GetSpellInfo = _G.GetSpellInfo or function(spellID)
+	if not spellID then
+		return nil
 	end
-else
-	InCombatLockdownRestriction = function()
-		return false
+
+	local spellInfo = C_Spell_GetSpellInfo(spellID)
+	if spellInfo then
+		return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID
+	end
+end
+
+local C_SpellBook_GetSpellBookSkillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo
+local GetNumSpellTabs = C_SpellBook.GetNumSpellBookSkillLines or GetNumSpellTabs
+local GetSpellTabInfo = _G.GetSpellTabInfo or function(index)
+	local skillLineInfo = C_SpellBook_GetSpellBookSkillLineInfo(index)
+	if skillLineInfo then
+		return skillLineInfo.name, skillLineInfo.iconID, skillLineInfo.itemIndexOffset, skillLineInfo.numSpellBookItems, skillLineInfo.isGuild, skillLineInfo.offSpecID, skillLineInfo.shouldHide, skillLineInfo.specID
 	end
 end
 
@@ -140,21 +180,7 @@ local MeleeRange = 2
 local MatchSpellByID = {} -- specific matching to avoid incorrect index
 local FriendSpells, HarmSpells, ResSpells, PetSpells = {}, {}, {}, {}
 
-for _, n in ipairs({
-	"EVOKER",
-	"DEATHKNIGHT",
-	"DEMONHUNTER",
-	"DRUID",
-	"HUNTER",
-	"SHAMAN",
-	"MAGE",
-	"PALADIN",
-	"PRIEST",
-	"WARLOCK",
-	"WARRIOR",
-	"MONK",
-	"ROGUE",
-}) do
+for _, n in ipairs({ "EVOKER", "DEATHKNIGHT", "DEMONHUNTER", "DRUID", "HUNTER", "SHAMAN", "MAGE", "PALADIN", "PRIEST", "WARLOCK", "WARRIOR", "MONK", "ROGUE" }) do
 	FriendSpells[n], HarmSpells[n], ResSpells[n], PetSpells[n] = {}, {}, {}, {}
 end
 
@@ -162,6 +188,7 @@ end
 tinsert(HarmSpells.EVOKER, 369819) -- Disintegrate (25 yards)
 
 tinsert(FriendSpells.EVOKER, 361469) -- Living Flame (25 yards)
+tinsert(FriendSpells.EVOKER, 431443) -- Chrono Flames (25 yards) (Hero Talent, overrides Living Flame)
 tinsert(FriendSpells.EVOKER, 360823) -- Naturalize (Preservation) (30 yards)
 
 tinsert(ResSpells.EVOKER, 361227) -- Return (40 yards)
@@ -229,7 +256,11 @@ tinsert(HarmSpells.MAGE, 133) -- Fireball (40 yards)
 tinsert(HarmSpells.MAGE, 44425) -- Arcane Barrage (40 yards)
 
 -- Monks
-tinsert(FriendSpells.MONK, 115450) -- Detox (40 yards)
+MatchSpellByID[218164] = true -- Detox
+MatchSpellByID[115450] = true -- Detox
+
+tinsert(FriendSpells.MONK, 218164) -- Detox (40 yards): Brewmaster, Windwalker
+tinsert(FriendSpells.MONK, 115450) -- Detox (40 yards): Mistweaver
 tinsert(FriendSpells.MONK, 115546) -- Provoke (30 yards)
 tinsert(FriendSpells.MONK, 116670) -- Vivify (40 yards)
 
@@ -572,7 +603,7 @@ local lastUpdate = 0
 local checkers_Spell = setmetatable({}, {
 	__index = function(t, spellIdx)
 		local func = function(unit)
-			if IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
+			if IsSpellBookItemInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
 				return true
 			end
 		end
@@ -681,7 +712,7 @@ local function findSpellIdx(spellName, sid)
 
 	for i = 1, getNumSpells() do
 		local name, _, id = GetSpellBookItemName(i, BOOKTYPE_SPELL)
-		if sid == id or (spellName == name and not MatchSpellByID[id]) then
+		if (sid == id and IsSpellKnownOrOverridesKnown(id)) or (spellName == name and not MatchSpellByID[id]) then
 			return i
 		end
 	end
@@ -1389,11 +1420,11 @@ function lib:activate()
 		frame:RegisterEvent("CHARACTER_POINTS_CHANGED")
 		frame:RegisterEvent("SPELLS_CHANGED")
 
-		if isEra or isWrath then
+		if isEra or isCata then
 			frame:RegisterEvent("CVAR_UPDATE")
 		end
 
-		if isRetail or isWrath then
+		if isRetail or isCata then
 			frame:RegisterEvent("PLAYER_TALENT_UPDATE")
 		end
 

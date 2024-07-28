@@ -489,6 +489,11 @@ function Module:CreateAFKCam()
 	AFKMode.bottom.logo:SetPoint("CENTER", AFKMode.bottom, "CENTER", 0, 60)
 	AFKMode.bottom.logo:SetTexture(C["Media"].Textures.LogoTexture)
 
+	-- REMOVE ME AFTER CHRISTMAS
+	AFKMode.bottom.XMAS = AFKMode:CreateTexture(nil, "ARTWORK", nil, 7)
+	AFKMode.bottom.XMAS:SetPoint("CENTER", AFKMode.bottom, "TOP", -36, 32)
+	AFKMode.bottom.XMAS:SetAtlas("perks-theme-winterveil-tp-bottombig", true)
+
 	AFKMode.top.time = AFKMode.top:CreateFontString(nil, "OVERLAY")
 	AFKMode.top.time:SetFontObject(K.UIFont)
 	AFKMode.top.time:SetFont(select(1, AFKMode.top.time:GetFont()), 16, select(3, AFKMode.top.time:GetFont()))

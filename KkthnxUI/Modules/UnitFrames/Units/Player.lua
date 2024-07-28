@@ -43,8 +43,10 @@ function Module:CreatePlayer()
 	local HealPredictionTexture = K.GetTexture(C["General"].Texture)
 
 	local Overlay = CreateFrame("Frame", nil, self) -- We will use this to overlay onto our special borders.
-	Overlay:SetAllPoints()
+	Overlay:SetFrameStrata(self:GetFrameStrata())
 	Overlay:SetFrameLevel(5)
+	Overlay:SetAllPoints()
+	Overlay:EnableMouse(false)
 
 	Module.CreateHeader(self)
 
@@ -460,15 +462,15 @@ function Module:CreatePlayer()
 	end
 
 	local LeaderIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	LeaderIndicator:SetSize(12, 12)
+	LeaderIndicator:SetSize(16, 16)
 	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
-		LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
+		LeaderIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 10)
 	else
-		LeaderIndicator:SetPoint("TOPLEFT", Health, 0, 8)
+		LeaderIndicator:SetPoint("TOPLEFT", Health, 0, 10)
 	end
 
 	local AssistantIndicator = Overlay:CreateTexture(nil, "OVERLAY")
-	AssistantIndicator:SetSize(12, 12)
+	AssistantIndicator:SetSize(16, 16)
 	if playerPortraitStyle ~= "NoPortraits" and playerPortraitStyle ~= "OverlayPortrait" then
 		AssistantIndicator:SetPoint("TOPLEFT", self.Portrait, 0, 8)
 	else

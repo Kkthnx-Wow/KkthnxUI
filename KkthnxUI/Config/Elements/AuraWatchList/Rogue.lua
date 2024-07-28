@@ -6,43 +6,6 @@ if K.Class ~= "ROGUE" then
 end
 
 local list = {
-	["Player Aura"] = { -- 玩家光环组
-		{ AuraID = 1784, UnitID = "player" }, -- 潜行
-		{ AuraID = 115191, UnitID = "player" }, -- 潜行
-		{ AuraID = 2983, UnitID = "player" }, -- 疾跑
-		{ AuraID = 36554, UnitID = "player" }, -- 暗影步
-		{ AuraID = 197603, UnitID = "player" }, -- 黑暗之拥
-		{ AuraID = 270070, UnitID = "player" }, -- 隐藏之刃
-	},
-	["Target Aura"] = { -- 目标光环组
-		{ AuraID = 408, UnitID = "target", Caster = "player" }, -- 肾击
-		{ AuraID = 703, UnitID = "target", Caster = "player" }, -- 锁喉
-		{ AuraID = 1833, UnitID = "target", Caster = "player" }, -- 偷袭
-		{ AuraID = 6770, UnitID = "target", Caster = "player" }, -- 闷棍
-		{ AuraID = 2094, UnitID = "target", Caster = "player" }, -- 致盲
-		{ AuraID = 1330, UnitID = "target", Caster = "player" }, -- 锁喉
-		{ AuraID = 1776, UnitID = "target", Caster = "player" }, -- 凿击
-		{ AuraID = 1943, UnitID = "target", Caster = "player" }, -- 割裂
-		{ AuraID = 79140, UnitID = "target", Caster = "player" }, -- 宿敌
-		{ AuraID = 16511, UnitID = "target", Caster = "player" }, -- 出血
-		{ AuraID = 192759, UnitID = "target", Caster = "player" }, -- 君王之灾
-		{ AuraID = 192425, UnitID = "target", Caster = "player" }, -- 毒素冲动
-		{ AuraID = 200803, UnitID = "target", Caster = "player" }, -- 苦痛毒液
-		{ AuraID = 137619, UnitID = "target", Caster = "player" }, -- 死亡标记
-		{ AuraID = 195452, UnitID = "target", Caster = "player" }, -- 夜刃
-		{ AuraID = 209786, UnitID = "target", Caster = "player" }, -- 赤喉之咬
-		{ AuraID = 196958, UnitID = "target", Caster = "player" }, -- 暗影打击
-		{ AuraID = 196937, UnitID = "target", Caster = "player" }, -- 鬼魅攻击
-		{ AuraID = 192925, UnitID = "target", Caster = "player" }, -- 遇刺者之血
-		{ AuraID = 245389, UnitID = "target", Caster = "player" }, -- 淬毒之刃
-		{ AuraID = 121411, UnitID = "target", Caster = "player" }, -- 猩红风暴
-		{ AuraID = 255909, UnitID = "target", Caster = "player" }, -- 欺凌
-		{ AuraID = 316220, UnitID = "target", Caster = "player" }, -- 洞悉弱点
-		{ AuraID = 315341, UnitID = "target", Caster = "player" }, -- 正中眉心
-		{ AuraID = 328305, UnitID = "target", Caster = "player" }, -- 败血刃伤
-		{ AuraID = 323654, UnitID = "target", Caster = "player" }, -- Flagellation
-		{ AuraID = 324073, UnitID = "target", Caster = "player" }, -- 锯齿骨刺
-	},
 	["Special Aura"] = { -- 玩家重要光环组
 		{ AuraID = 1966, UnitID = "player" }, -- 佯攻
 		{ AuraID = 5171, UnitID = "player" }, -- 切割
@@ -64,7 +27,7 @@ local list = {
 		{ AuraID = 202754, UnitID = "player" }, -- 隐秘刀刃
 		{ AuraID = 193356, UnitID = "player", Text = L["Combo"] }, -- 强势连击，骰子
 		{ AuraID = 193357, UnitID = "player", Text = L["Crit"] }, -- 暗鲨涌动，骰子
-		{ AuraID = 193358, UnitID = "player", Text = L["AttackSpeed"] }, -- 大乱斗，骰子
+		{ AuraID = 193358, UnitID = "player", Text = L["Attack Speed"] }, -- 大乱斗，骰子
 		{ AuraID = 193359, UnitID = "player", Text = L["CD"] }, -- 双巧手，骰子
 		{ AuraID = 199603, UnitID = "player", Text = L["Strike"] }, -- 骷髅黑帆，骰子
 		{ AuraID = 199600, UnitID = "player", Text = L["Power"] }, -- 埋藏的宝藏，骰子

@@ -299,11 +299,11 @@ function Module:CreateFocus()
 	end
 
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.LeaderIndicator:SetSize(12, 12)
+	self.LeaderIndicator:SetSize(16, 16)
 	if focusPortraitStyle == "NoPortraits" then
-		self.LeaderIndicator:SetPoint("TOPRIGHT", self.Health, 0, 8)
+		self.LeaderIndicator:SetPoint("TOPRIGHT", self.Health, 0, 10)
 	else
-		self.LeaderIndicator:SetPoint("TOPRIGHT", self.Portrait, 0, 8)
+		self.LeaderIndicator:SetPoint("TOPRIGHT", self.Portrait, 0, 10)
 	end
 
 	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")

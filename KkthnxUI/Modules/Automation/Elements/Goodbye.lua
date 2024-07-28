@@ -18,24 +18,19 @@ local AutoThanksList = {
 	L["Thanks for the memories, farewell."],
 
 	-- WE ARE TESTING THESE TO SEE IF THEY GET FEEDBACK IN GROUPS, WE DO NOT WANNA BE CALLED A BOT :D
-	"Appreciate the dungeon, everyone! Great job!",
-	"Appreciate the run, folks! Well played!",
-	"Appreciate the run, team! Let's hope I find my way out of the maze next time! 🙈",
-	"Big thanks for the adventure, folks. Well done!",
-	"Big thanks for the dungeon, team! Solid effort!",
-	"Big thanks, folks! My keyboard survived, barely. 🤪",
-	"Cheers for the run, team! Thank you!",
-	"Cheers, everyone! I'll work on my 'ninja-looting' skills for next run! 🤣",
-	"Shoutout for the teamwork, guys. Much appreciated!",
-	"Thank you, everyone! Great run!",
-	"Thanks for the adventure! Sorry for the 'accidental' aggro... again! 😅",
-	"Thanks for the run, team! You all were fantastic!",
-	"Thanks, group! That was awesome!",
-	"Thanks, team! I promise I'll try not to stand in the fire next time! 😂",
-	"Thanks, team! You all rocked it!",
+	"Appreciate the dungeon! Great job.",
+	"Appreciate the run! Well played.",
+	"Big thanks for the adventure. Well done.",
+	"Big thanks for the dungeon, team! Solid effort.",
+	"Cheers for the run! Thank you.",
+	"Shoutout for the teamwork. Much appreciated.",
+	"Thank you, everyone! Great run.",
+	"Thanks for the run! You all were fantastic.",
+	"Thanks! That was awesome.",
+	"Thanks! You all rocked it.",
 }
 
-local function SetupAutoGoodbye() -- Local function definition
+local function SetupAutoGoodbye()
 	local waitTime = math.random() * (5 - 2) + 2 -- generates a float between 2 and 5
 	C_Timer_After(waitTime, function()
 		if #AutoThanksList > 0 then
@@ -43,7 +38,16 @@ local function SetupAutoGoodbye() -- Local function definition
 			local message = AutoThanksList[messageIndex]
 
 			if message then
-				SendChatMessage(message, IsInGroup(LE_PARTY_CATEGORY_INSTANCE) and "INSTANCE_CHAT" or "SAY")
+				local channel
+				if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+					channel = "INSTANCE_CHAT"
+				elseif IsInGroup() then
+					channel = "PARTY"
+				else
+					channel = "SAY"
+				end
+
+				SendChatMessage(message, channel)
 			end
 		else
 			print("AutoThanksList is empty? Tell Kkthnx") -- Debugging statement

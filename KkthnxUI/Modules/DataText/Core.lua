@@ -14,6 +14,7 @@ function Module:OnEnable()
 		"CreateSocialDataText",
 		"CreateTimeDataText",
 		"CreateCoordsDataText",
+		"CreateSpecDataText",
 	}
 
 	for _, funcName in ipairs(loadDataTextModules) do

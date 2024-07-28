@@ -45,18 +45,16 @@ oUF.colors.reaction = {
 }
 
 oUF.colors.selection = {
-	[0] = { 0.87, 0.37, 0.37 }, -- HOSTILE
-	[1] = { 0.87, 0.37, 0.37 }, -- UNFRIENDLY
-	[2] = { 0.85, 0.77, 0.36 }, -- NEUTRAL
-	[3] = { 0.29, 0.67, 0.30 }, -- FRIENDLY
-	[4] = { 0, 0, 1 }, -- PLAYER_SIMPLE
-	[5] = { 0, 0, 1 }, -- PLAYER_EXTENDED
-	[6] = { 0, 0, 1 }, -- PARTY
-	[7] = { 0, 0, 1 }, -- PARTY_PVP
-	[8] = { 0, 0, 1 }, -- FRIEND
-	[9] = { 0.5, 0.5, 0.5 }, -- DEAD
-	[12] = { 1, 1, 0.55 }, -- SELF, buggy
-	[13] = { 0, 0.6, 0 }, -- BATTLEGROUND_FRIENDLY_PVP
+	[0] = { 1.00, 0.18, 0.18 }, -- HOSTILE
+	[1] = { 1.00, 0.51, 0.20 }, -- UNFRIENDLY
+	[2] = { 1.00, 0.85, 0.20 }, -- NEUTRAL
+	[3] = { 0.20, 0.71, 0.00 }, -- FRIENDLY
+	[5] = { 0.40, 0.53, 1.00 }, -- PLAYER_EXTENDED
+	[6] = { 0.40, 0.20, 1.00 }, -- PARTY
+	[7] = { 0.73, 0.20, 1.00 }, -- PARTY_PVP
+	[8] = { 0.20, 1.00, 0.42 }, -- FRIEND
+	[9] = { 0.60, 0.60, 0.60 }, -- DEAD
+	[13] = { 0.10, 0.58, 0.28 }, -- BATTLEGROUND_FRIENDLY_PVP
 }
 
 oUF.colors.power = {

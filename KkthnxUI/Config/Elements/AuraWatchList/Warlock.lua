@@ -6,45 +6,6 @@ if K.Class ~= "WARLOCK" then
 end
 
 local list = {
-	["Player Aura"] = { -- 玩家光环组
-		{ AuraID = 5697, UnitID = "player" }, -- 无尽呼吸
-		{ AuraID = 48018, UnitID = "player" }, -- 恶魔法阵
-		{ AuraID = 108366, UnitID = "player" }, -- 灵魂榨取
-		{ AuraID = 119899, UnitID = "player" }, -- 灼烧主人
-		{ AuraID = 196099, UnitID = "player" }, -- 牺牲魔典
-	},
-	["Target Aura"] = { -- 目标光环组
-		{ AuraID = 603, UnitID = "target", Caster = "player" }, -- 末日降临
-		{ AuraID = 980, UnitID = "target", Caster = "player" }, -- 痛楚
-		{ AuraID = 710, UnitID = "target", Caster = "player" }, -- 放逐术
-		{ AuraID = 6358, UnitID = "target", Caster = "pet" }, -- 魅惑
-		{ AuraID = 89766, UnitID = "target", Caster = "pet" }, -- 巨斧投掷
-		{ AuraID = 6789, UnitID = "target", Caster = "player" }, -- 死亡缠绕
-		{ AuraID = 5484, UnitID = "target", Caster = "player" }, -- 恐惧嚎叫
-		{ AuraID = 27243, UnitID = "target", Caster = "player" }, -- 腐蚀之种
-		{ AuraID = 17877, UnitID = "target", Caster = "player" }, -- 暗影灼烧
-		{ AuraID = 48181, UnitID = "target", Caster = "player" }, -- 鬼影缠身
-		{ AuraID = 63106, UnitID = "target", Caster = "player" }, -- 生命虹吸
-		{ AuraID = 30283, UnitID = "target", Caster = "player" }, -- 暗影之怒
-		{ AuraID = 32390, UnitID = "target", Caster = "player" }, -- 暗影之拥
-		{ AuraID = 80240, UnitID = "target", Caster = "player" }, -- 浩劫
-		{ AuraID = 146739, UnitID = "target", Caster = "player" }, -- 腐蚀术
-		{ AuraID = 316099, UnitID = "target", Caster = "player" }, -- 痛苦无常
-		{ AuraID = 342938, UnitID = "target", Caster = "player" }, -- 痛苦无常(PVP蔓延痛苦)
-		{ AuraID = 118699, UnitID = "target", Caster = "player" }, -- 恐惧
-		{ AuraID = 205181, UnitID = "target", Caster = "player" }, -- 暗影烈焰
-		{ AuraID = 157736, UnitID = "target", Caster = "player" }, -- 献祭
-		{ AuraID = 196414, UnitID = "target", Caster = "player" }, -- 根除
-		{ AuraID = 199890, UnitID = "target", Caster = "player" }, -- 语言诅咒
-		{ AuraID = 199892, UnitID = "target", Caster = "player" }, -- 虚弱诅咒
-		{ AuraID = 270569, UnitID = "target", Caster = "player" }, -- 来自阴影
-		{ AuraID = 278350, UnitID = "target", Caster = "player" }, -- 邪恶污染
-		{ AuraID = 205179, UnitID = "target", Caster = "player" }, -- 诡异魅影
-		{ AuraID = 265931, UnitID = "target", Caster = "player" }, -- 燃烧
-		{ AuraID = 312321, UnitID = "target", Caster = "player" }, -- 碎魂奉纳
-		{ AuraID = 325640, UnitID = "target", Caster = "player" }, -- 灵魂腐化
-		{ AuraID = 322170, UnitID = "target", Caster = "player" }, -- 灾祸降临
-	},
 	["Special Aura"] = { -- 玩家重要光环组
 		{ AuraID = 89751, UnitID = "pet" }, -- 魔刃风暴
 		{ AuraID = 216695, UnitID = "player" }, -- 被折磨的灵魂

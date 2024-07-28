@@ -86,7 +86,7 @@ local eventList = {
 	"PLAYER_ENTERING_WORLD",
 }
 
-local function OnEvent(_, event)
+local function OnEvent(event)
 	if event == "PLAYER_ENTERING_WORLD" then
 		DurabilityDataText:UnregisterEvent(event)
 	end
@@ -100,9 +100,11 @@ local function OnEvent(_, event)
 	else
 		if numSlots > 0 then
 			local r, g, b = getDurabilityColor(math_floor(localSlots[1][3] * 100), 100)
-			DurabilityDataText:SetFormattedText("%s%%|r" .. " " .. DURABILITY, K.RGBToHex(r, g, b) .. math_floor(localSlots[1][3] * 100))
+			local yellowColor = "|cFFF0C500" -- Hexadecimal color code for yellow, the closest I could find/get to match other tabs
+			-- Set the text color to yellow and format the durability text
+			DurabilityDataText.Text:SetFormattedText("%s%%|r %s", K.RGBToHex(r, g, b) .. math.floor(localSlots[1][3] * 100), yellowColor .. DURABILITY)
 		else
-			DurabilityDataText:SetText(DURABILITY .. ": " .. K.MyClassColor .. NONE)
+			DurabilityDataText.Text:SetText(DURABILITY .. ": " .. K.MyClassColor .. NONE)
 		end
 	end
 
@@ -161,22 +163,19 @@ function Module:CreateDurabilityDataText()
 	DurabilityDataText:SetParent(PaperDollFrame)
 	DurabilityDataText:Disable()
 
-	if DurabilityDataText.LeftActive then
-		DurabilityDataText.LeftActive:SetAlpha(0)
-	end
-	if DurabilityDataText.RightActive then
-		DurabilityDataText.RightActive:SetAlpha(0)
-	end
-	if DurabilityDataText.MiddleActive then
-		DurabilityDataText.MiddleActive:SetAlpha(0)
+	DurabilityDataText.LeftActive:Hide()
+	DurabilityDataText.MiddleActive:Hide()
+	DurabilityDataText.RightActive:Hide()
+
+	local function _OnEvent(...)
+		OnEvent(...)
 	end
 
 	for _, event in pairs(eventList) do
 		DurabilityDataText:RegisterEvent(event)
 	end
 
-	DurabilityDataText:SetScript("OnEvent", OnEvent)
-	DurabilityDataText:SetScript("OnClick", nil)
+	DurabilityDataText:SetScript("OnEvent", _OnEvent)
 	DurabilityDataText:SetScript("OnEnter", OnEnter)
 	DurabilityDataText:SetScript("OnLeave", OnLeave)
 end

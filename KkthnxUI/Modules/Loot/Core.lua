@@ -1,7 +1,6 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:NewModule("Loot")
 
-local unpack = unpack
 local tinsert = tinsert
 local next = next
 local max = max
@@ -269,13 +268,13 @@ function Module:LOOT_OPENED(_, autoloot)
 			local questTexture = slot.questTexture
 			if questId and not isActive then
 				questTexture:Show()
-				K.LibCustomGlow.ButtonGlow_Start(slot.iconFrame)
+				K.ShowOverlayGlow(slot.iconFrame)
 			elseif questId or isQuestItem then
 				questTexture:Hide()
-				K.LibCustomGlow.ButtonGlow_Start(slot.iconFrame)
+				K.ShowOverlayGlow(slot.iconFrame)
 			else
 				questTexture:Hide()
-				K.LibCustomGlow.ButtonGlow_Stop(slot.iconFrame)
+				K.HideOverlayGlow(slot.iconFrame)
 			end
 
 			-- Check for FasterLooting scripts or w/e (if bag is full)

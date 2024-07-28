@@ -291,7 +291,7 @@ function ExtraQuestButton:SetItem(itemLink)
 	end
 
 	if itemLink then
-		self.Icon:SetTexture(GetItemIcon(itemLink))
+		self.Icon:SetTexture(C_Item.GetItemIconByID(itemLink))
 		local itemID = GetItemInfoFromHyperlink(itemLink)
 		self.itemID = itemID
 		self.itemLink = itemLink

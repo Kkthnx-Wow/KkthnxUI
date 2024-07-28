@@ -1,26 +1,18 @@
 local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Miscellaneous")
 
-local pairs = pairs
-local string_format = string.format
-local string_split = string.split
-local table_sort = table.sort
-local table_wipe = table.wipe
-local tonumber = tonumber
-
+local format, strsplit, tonumber, pairs, wipe = format, strsplit, tonumber, pairs, wipe
 local Ambiguate = Ambiguate
+local C_MythicPlus_GetRunHistory = C_MythicPlus.GetRunHistory
+local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
+local C_ChallengeMode_GetGuildLeaders = C_ChallengeMode.GetGuildLeaders
+local C_MythicPlus_GetOwnedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel
+local C_MythicPlus_GetOwnedKeystoneChallengeMapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID
+local CHALLENGE_MODE_POWER_LEVEL = CHALLENGE_MODE_POWER_LEVEL
 local CHALLENGE_MODE_GUILD_BEST_LINE = CHALLENGE_MODE_GUILD_BEST_LINE
 local CHALLENGE_MODE_GUILD_BEST_LINE_YOU = CHALLENGE_MODE_GUILD_BEST_LINE_YOU
-local CHALLENGE_MODE_POWER_LEVEL = CHALLENGE_MODE_POWER_LEVEL
-local C_ChallengeMode_GetGuildLeaders = C_ChallengeMode.GetGuildLeaders
-local C_ChallengeMode_GetMapUIInfo = C_ChallengeMode.GetMapUIInfo
-local C_MythicPlus_GetOwnedKeystoneChallengeMapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID
-local C_MythicPlus_GetOwnedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel
-local C_MythicPlus_GetRunHistory = C_MythicPlus.GetRunHistory
-local GetItemInfo = GetItemInfo
 local CHALLENGE_MODE_THIS_WEEK = CHALLENGE_MODE_THIS_WEEK
 local WEEKLY_REWARDS_MYTHIC_TOP_RUNS = WEEKLY_REWARDS_MYTHIC_TOP_RUNS
-local hooksecurefunc = hooksecurefunc
 
 local hasAngryKeystones
 local frame
@@ -33,22 +25,19 @@ function Module:GuildBest_UpdateTooltip()
 	end
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-
 	local name = C_ChallengeMode_GetMapUIInfo(leaderInfo.mapChallengeModeID)
 	GameTooltip:SetText(name, 1, 1, 1)
 	GameTooltip:AddLine(format(CHALLENGE_MODE_POWER_LEVEL, leaderInfo.keystoneLevel))
-
 	for i = 1, #leaderInfo.members do
 		local classColorStr = K.ClassColors[leaderInfo.members[i].classFileName].colorStr
 		GameTooltip:AddLine(format(CHALLENGE_MODE_GUILD_BEST_LINE, classColorStr, leaderInfo.members[i].name))
 	end
-
 	GameTooltip:Show()
 end
 
 function Module:GuildBest_Create()
 	frame = CreateFrame("Frame", nil, ChallengesFrame, "BackdropTemplate")
-	frame:SetPoint("BOTTOMRIGHT", -10, 75)
+	frame:SetPoint("BOTTOMRIGHT", -8, 75)
 	frame:SetSize(170, 105)
 	frame:CreateBorder()
 	K.CreateFontString(frame, 16, GUILD, "", "system", "TOPLEFT", 16, -6)
@@ -59,19 +48,15 @@ function Module:GuildBest_Create()
 		entry:SetPoint("LEFT", 10, 0)
 		entry:SetPoint("RIGHT", -10, 0)
 		entry:SetHeight(18)
-
-		entry.CharacterName = K.CreateFontString(entry, 13, "", "", false, "LEFT", 6, 0)
+		entry.CharacterName = K.CreateFontString(entry, 14, "", "", false, "LEFT", 6, 0)
 		entry.CharacterName:SetPoint("RIGHT", -30, 0)
 		entry.CharacterName:SetJustifyH("LEFT")
-
-		entry.Level = K.CreateFontString(entry, 13, "", "", "system")
+		entry.Level = K.CreateFontString(entry, 14, "", "system")
 		entry.Level:SetJustifyH("LEFT")
 		entry.Level:ClearAllPoints()
-
 		entry.Level:SetPoint("LEFT", entry, "RIGHT", -22, 0)
 		entry:SetScript("OnEnter", self.GuildBest_UpdateTooltip)
 		entry:SetScript("OnLeave", K.HideTooltip)
-
 		if i == 1 then
 			entry:SetPoint("TOP", frame, 0, -26)
 		else
@@ -84,6 +69,31 @@ function Module:GuildBest_Create()
 	if not hasAngryKeystones then
 		ChallengesFrame.WeeklyInfo.Child.Description:SetPoint("CENTER", 0, 20)
 	end
+
+	if SlashCmdList.KEYSTONE then -- Details key window
+		local button = CreateFrame("Button", nil, frame)
+		button:SetSize(20, 20)
+		button:SetPoint("TOPRIGHT", -12, -5)
+		button:SetScript("OnClick", function()
+			if DetailsKeystoneInfoFrame and DetailsKeystoneInfoFrame:IsShown() then
+				DetailsKeystoneInfoFrame:Hide()
+			else
+				SlashCmdList.KEYSTONE()
+			end
+		end)
+		local tex = button:CreateTexture()
+		tex:SetAllPoints()
+		tex:SetTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+		tex:SetVertexColor(0, 1, 0)
+
+		local hl = button:CreateTexture(nil, "HIGHLIGHT")
+		hl:SetAllPoints()
+		hl:SetTexture("Interface\\Buttons\\UI-GuildButton-PublicNote-Up")
+	end
+
+	if RaiderIO_GuildWeeklyFrame then
+		K.HideInterfaceOption(RaiderIO_GuildWeeklyFrame)
+	end
 end
 
 function Module:GuildBest_SetUp(leaderInfo)
@@ -94,7 +104,7 @@ function Module:GuildBest_SetUp(leaderInfo)
 	end
 
 	local classColorStr = K.ClassColors[leaderInfo.classFileName].colorStr
-	self.CharacterName:SetText(string_format(str, classColorStr, leaderInfo.name))
+	self.CharacterName:SetText(format(str, classColorStr, leaderInfo.name))
 	self.Level:SetText(leaderInfo.keystoneLevel)
 end
 
@@ -103,7 +113,6 @@ function Module:GuildBest_Update()
 	if not frame then
 		Module:GuildBest_Create()
 	end
-
 	if self.leadersAvailable then
 		local leaders = C_ChallengeMode_GetGuildLeaders()
 		if leaders and #leaders > 0 then
@@ -136,12 +145,6 @@ function Module:GuildBest_Update()
 			keystoneText:SetPoint("TOP", self.WeeklyInfo.Child.DungeonScoreInfo.Score, "BOTTOM", 0, -3)
 		end
 
-		local affix = self.WeeklyInfo.Child.Affixes[1]
-		if affix then
-			affix:ClearAllPoints()
-			affix:SetPoint("TOPLEFT", 20, -55)
-		end
-
 		resize = true
 	end
 end
@@ -169,9 +172,10 @@ function Module:KeystoneInfo_WeeklyRuns()
 	local numRuns = runHistory and #runHistory
 	if numRuns > 0 then
 		local isShiftKeyDown = IsShiftKeyDown()
+
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(isShiftKeyDown and CHALLENGE_MODE_THIS_WEEK or string_format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, WeeklyRunsThreshold), "(" .. numRuns .. ")", 0.5, 0.7, 1)
-		table_sort(runHistory, sortHistory)
+		GameTooltip:AddDoubleLine(isShiftKeyDown and CHALLENGE_MODE_THIS_WEEK or format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, WeeklyRunsThreshold), "(" .. numRuns .. ")", 0.6, 0.8, 1)
+		sort(runHistory, sortHistory)
 
 		for i = 1, isShiftKeyDown and numRuns or WeeklyRunsThreshold do
 			local runInfo = runHistory[i]
@@ -186,9 +190,8 @@ function Module:KeystoneInfo_WeeklyRuns()
 			end
 			GameTooltip:AddDoubleLine(name, "Lv." .. runInfo.level, 1, 1, 1, r, g, b)
 		end
-
 		if not isShiftKeyDown then
-			GameTooltip:AddLine(L["Hold Shift"], 0.6, 0.8, 1)
+			GameTooltip:AddLine("Hold Shift", 0.6, 0.8, 1)
 		end
 		GameTooltip:Show()
 	end
@@ -198,7 +201,7 @@ function Module:KeystoneInfo_Create()
 	local texture = select(10, GetItemInfo(158923)) or 525134
 	local iconColor = K.QualityColors[Enum.ItemQuality.Epic or 4]
 	local button = CreateFrame("Frame", nil, ChallengesFrame.WeeklyInfo, "BackdropTemplate")
-	button:SetPoint("BOTTOMLEFT", 4, 67)
+	button:SetPoint("BOTTOMLEFT", 2, 67)
 	button:SetSize(32, 32)
 
 	button.Icon = button:CreateTexture(nil, "ARTWORK")
@@ -212,17 +215,15 @@ function Module:KeystoneInfo_Create()
 	button:SetScript("OnEnter", function(self)
 		GameTooltip:ClearLines()
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:AddLine(L["Account Keystones"])
-
-		for fullName, info in pairs(KkthnxUIDB.KeystoneInfo) do
+		GameTooltip:AddLine("Account Keystone")
+		for fullName, info in pairs(KkthnxUIDB["KeystoneInfo"]) do
 			local name = Ambiguate(fullName, "none")
-			local mapID, level, class, faction = string_split(":", info)
+			local mapID, level, class, faction = strsplit(":", info)
 			local color = K.RGBToHex(K.ColorClass(class))
 			local factionColor = faction == "Horde" and "|cffff5040" or "|cff00adf0"
 			local dungeon = C_ChallengeMode_GetMapUIInfo(tonumber(mapID))
-			GameTooltip:AddDoubleLine(string_format(color .. "%s:|r", name), string_format("%s%s(%s)|r", factionColor, dungeon, level))
+			GameTooltip:AddDoubleLine(format(color .. "%s:|r", name), format("%s%s(%s)|r", factionColor, dungeon, level))
 		end
-
 		GameTooltip:AddLine("")
 		GameTooltip:AddDoubleLine(" ", K.ScrollButton .. L["Reset Data"] .. " ", 1, 1, 1, 0.5, 0.7, 1)
 		GameTooltip:Show()
@@ -231,8 +232,8 @@ function Module:KeystoneInfo_Create()
 	button:SetScript("OnLeave", K.HideTooltip)
 	button:SetScript("OnMouseUp", function(_, btn)
 		if btn == "MiddleButton" then
-			table_wipe(KkthnxUIDB.KeystoneInfo)
-			Module:KeystoneInfo_Update() -- Update own keystone info after reset
+			wipe(KkthnxUIDB["KeystoneInfo"])
+			Module:KeystoneInfo_Update() -- update own keystone info after reset
 		end
 	end)
 end
@@ -247,9 +248,9 @@ end
 function Module:KeystoneInfo_Update()
 	local mapID, keystoneLevel = Module:KeystoneInfo_UpdateBag()
 	if mapID then
-		KkthnxUIDB.KeystoneInfo[K.Name .. "-" .. K.Realm] = mapID .. ":" .. keystoneLevel .. ":" .. K.Class .. ":" .. K.Faction
+		KkthnxUIDB["KeystoneInfo"][K.Name .. "-" .. K.Realm] = mapID .. ":" .. keystoneLevel .. ":" .. K.Class .. ":" .. K.Faction
 	else
-		KkthnxUIDB.KeystoneInfo[K.Name .. "-" .. K.Realm] = nil
+		KkthnxUIDB["KeystoneInfo"][K.Name .. "-" .. K.Realm] = nil
 	end
 end
 
@@ -258,11 +259,11 @@ function Module:CreateGuildBest()
 		return
 	end
 
-	hasAngryKeystones = K.CheckAddOnState("AngryKeystones")
+	hasAngryKeystones = C_AddOns.IsAddOnLoaded("AngryKeystones")
 	K:RegisterEvent("ADDON_LOADED", Module.GuildBest_OnLoad)
 
 	Module:KeystoneInfo_Update()
 	K:RegisterEvent("BAG_UPDATE", Module.KeystoneInfo_Update)
 end
 
-Module:RegisterMisc("MDGuildBest", Module.CreateGuildBest) -- DFUPDATE
+Module:RegisterMisc("MDGuildBest", Module.CreateGuildBest)

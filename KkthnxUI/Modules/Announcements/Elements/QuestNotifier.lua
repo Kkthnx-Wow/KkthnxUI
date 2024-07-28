@@ -1,260 +1,207 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Announcements")
 
-local math_floor = math.floor
+-- Cache Lua functions and constants
+local floor = math.floor
 local mod = mod
 local pairs = pairs
-local string_find = string.find
-local string_format = string.format
-local string_gsub = string.gsub
-local string_match = string.match
-local table_wipe = table.wipe
+local find = string.find
+local format = string.format
+local gsub = string.gsub
+local match = string.match
+local wipe = table.wipe
 local tonumber = tonumber
 
+-- Cache WoW API functions and constants
 local COLLECTED = COLLECTED
-local C_QuestLog_GetInfo = C_QuestLog.GetInfo
-local C_QuestLog_GetLogIndexForQuestID = C_QuestLog.GetLogIndexForQuestID
-local C_QuestLog_GetNumQuestLogEntries = C_QuestLog.GetNumQuestLogEntries
-local C_QuestLog_GetQuestIDForLogIndex = C_QuestLog.GetQuestIDForLogIndex
-local C_QuestLog_GetQuestTagInfo = C_QuestLog.GetQuestTagInfo
-local C_QuestLog_GetTitleForQuestID = C_QuestLog.GetTitleForQuestID
-local C_QuestLog_IsComplete = C_QuestLog.IsComplete
-local C_QuestLog_IsWorldQuest = C_QuestLog.IsWorldQuest
+local GetQuestInfo = C_QuestLog.GetInfo
+local GetQuestLogIndexForQuestID = C_QuestLog.GetLogIndexForQuestID
+local GetNumQuestLogEntries = C_QuestLog.GetNumQuestLogEntries
+local GetQuestIDForLogIndex = C_QuestLog.GetQuestIDForLogIndex
+local GetQuestTagInfo = C_QuestLog.GetQuestTagInfo
+local GetTitleForQuestID = C_QuestLog.GetTitleForQuestID
+local IsQuestComplete = C_QuestLog.IsComplete
+local IsWorldQuest = C_QuestLog.IsWorldQuest
 local DAILY = DAILY
-local ERR_QUEST_ADD_FOUND_SII = ERR_QUEST_ADD_FOUND_SII
-local ERR_QUEST_ADD_ITEM_SII = ERR_QUEST_ADD_ITEM_SII
-local ERR_QUEST_ADD_KILL_SII = ERR_QUEST_ADD_KILL_SII
-local ERR_QUEST_ADD_PLAYER_KILL_SII = ERR_QUEST_ADD_PLAYER_KILL_SII
-local ERR_QUEST_COMPLETE_S = ERR_QUEST_COMPLETE_S
-local ERR_QUEST_FAILED_S = ERR_QUEST_FAILED_S
-local ERR_QUEST_OBJECTIVE_COMPLETE_S = ERR_QUEST_OBJECTIVE_COMPLETE_S
+local ERR_ADD_FOUND_SII = ERR_QUEST_ADD_FOUND_SII
+local ERR_ADD_ITEM_SII = ERR_QUEST_ADD_ITEM_SII
+local ERR_ADD_KILL_SII = ERR_QUEST_ADD_KILL_SII
+local ERR_ADD_PLAYER_KILL_SII = ERR_QUEST_ADD_PLAYER_KILL_SII
+local ERR_COMPLETE_S = ERR_QUEST_COMPLETE_S
+local ERR_FAILED_S = ERR_QUEST_FAILED_S
+local ERR_OBJECTIVE_COMPLETE_S = ERR_QUEST_OBJECTIVE_COMPLETE_S
 local GetQuestLink = GetQuestLink
 local IsInGroup = IsInGroup
 local IsInRaid = IsInRaid
 local IsPartyLFG = IsPartyLFG
-local LE_QUEST_FREQUENCY_DAILY = Enum.QuestFrequency.Daily
-local LE_QUEST_TAG_TYPE_PROFESSION = Enum.QuestTagType.Profession
+local QUEST_FREQUENCY_DAILY = Enum.QuestFrequency.Daily
+local QUEST_TAG_TYPE_PROFESSION = Enum.QuestTagType.Profession
 local PlaySound = PlaySound
 local SendChatMessage = SendChatMessage
 
-local soundKitID = 6199 -- https://wowhead.com/sound=6199/b-peonbuildingcomplete1
+-- Sound Kit ID
+local questCompleteSoundID = 6199 -- https://wowhead.com/sound=6199/b-peonbuildingcomplete1
 
---[[
-	26905 -- https://www.wowhead.com/sound=26905/ui-questobjectivescomplete
-]]
-
--- Boolean flag to indicate whether debug mode is enabled or not
-local debugMode = false
--- Table to cache world quest IDs to prevent duplicate announcements
-local WQcache = {}
--- Table to store completed quest IDs to prevent duplicate announcements
-local completedQuest = {}
--- Variable to indicate whether initial quest checking is complete
-local initComplete
+-- Flags and caches
+local debugMode = false -- Indicates if debug mode is enabled
+local worldQuestCache = {} -- Cache for world quest IDs
+local completedQuests = {} -- Cache for completed quest IDs
+local initialCheckComplete = false -- Indicates if initial quest check is complete
 
 -- Get the quest link or the quest name
 local function GetQuestLinkOrName(questID)
-	-- Get the quest link by quest ID
-	-- If it is not returned, get the quest title by quest ID
-	-- If it is not returned, return an empty string
-	return GetQuestLink(questID) or C_QuestLog_GetTitleForQuestID(questID) or ""
+	return GetQuestLink(questID) or GetTitleForQuestID(questID) or ""
 end
 
 -- Get the text for the quest acceptance message
-local function acceptText(questID, daily)
-	-- Get the title of the quest
-	local title = GetQuestLinkOrName(questID)
-	-- If the quest is a daily quest, format the message with "Accepted" and "Daily"
-	if daily then
-		return string_format("%s [%s]%s", "Accepted", DAILY, title)
-	-- If the quest is not a daily quest, format the message with "Accepted"
+local function GetQuestAcceptText(questID, isDaily)
+	local questTitle = GetQuestLinkOrName(questID)
+	if isDaily then
+		return format("%s [%s]%s", "Accepted", DAILY, questTitle)
 	else
-		return string_format("%s %s", "Accepted", title)
+		return format("%s %s", "Accepted", questTitle)
 	end
 end
 
 -- Get the text for the quest completion message
-local function completeText(questID)
-	-- Play a sound
-	PlaySound(soundKitID, "Master")
-	-- Format the message with "Completed" and the quest title
-	return string_format("%s %s", "Completed", GetQuestLinkOrName(questID))
+local function GetQuestCompleteText(questID)
+	PlaySound(questCompleteSoundID, "Master")
+	return format("%s %s", "Completed", GetQuestLinkOrName(questID))
 end
 
 -- Send message to the appropriate channel
-local function sendQuestMsg(msg)
-	-- If OnlyCompleteRing is true, return
+local function SendQuestMessage(message)
 	if C["Announcements"].OnlyCompleteRing then
 		return
 	end
 
-	-- If debug mode is enabled, print the message in the chat
-	-- If the player is in a LFG party, send the message to the instance chat
-	-- If the player is in a raid, send the message to the raid chat
-	-- If the player is in a group, send the message to the party chat
 	if debugMode and K.isDeveloper then
-		print(msg)
+		print(message)
 	elseif IsPartyLFG() then
-		SendChatMessage(msg, "INSTANCE_CHAT")
+		SendChatMessage(message, "INSTANCE_CHAT")
 	elseif IsInRaid() then
-		SendChatMessage(msg, "RAID")
+		SendChatMessage(message, "RAID")
 	elseif IsInGroup() then
-		SendChatMessage(msg, "PARTY")
+		SendChatMessage(message, "PARTY")
 	end
 end
 
 -- Get the pattern for a given quest match
-local function getPattern(pattern)
-	-- Escape any special characters in the pattern
-	pattern = string_gsub(pattern, "%(", "%%%1")
-	pattern = string_gsub(pattern, "%)", "%%%1")
-	-- Replace any wildcard characters with capture groups
-	pattern = string_gsub(pattern, "%%%d?$?.", "(.+)")
-	-- Format the pattern to match the entire string
-	return string_format("^%s$", pattern)
+local function CreateQuestPattern(pattern)
+	pattern = gsub(pattern, "%(", "%%%1")
+	pattern = gsub(pattern, "%)", "%%%1")
+	pattern = gsub(pattern, "%%%d?$?.", "(.+)")
+	return format("^%s$", pattern)
 end
 
 -- Table of quest match patterns
-local questMatches = {
-	["Found"] = getPattern(ERR_QUEST_ADD_FOUND_SII),
-	["Item"] = getPattern(ERR_QUEST_ADD_ITEM_SII),
-	["Kill"] = getPattern(ERR_QUEST_ADD_KILL_SII),
-	["PKill"] = getPattern(ERR_QUEST_ADD_PLAYER_KILL_SII),
-	["ObjectiveComplete"] = getPattern(ERR_QUEST_OBJECTIVE_COMPLETE_S),
-	["QuestComplete"] = getPattern(ERR_QUEST_COMPLETE_S),
-	["QuestFailed"] = getPattern(ERR_QUEST_FAILED_S),
+local questMatchPatterns = {
+	["Found"] = CreateQuestPattern(ERR_ADD_FOUND_SII),
+	["Item"] = CreateQuestPattern(ERR_ADD_ITEM_SII),
+	["Kill"] = CreateQuestPattern(ERR_ADD_KILL_SII),
+	["PKill"] = CreateQuestPattern(ERR_ADD_PLAYER_KILL_SII),
+	["ObjectiveComplete"] = CreateQuestPattern(ERR_OBJECTIVE_COMPLETE_S),
+	["QuestComplete"] = CreateQuestPattern(ERR_COMPLETE_S),
+	["QuestFailed"] = CreateQuestPattern(ERR_FAILED_S),
 }
 
-function Module:FindQuestProgress(_, msg)
-	-- Check if the option to announce quest progress is disabled, if so, exit the function
-	if not C["Announcements"].QuestProgress then
+-- Find quest progress based on UI message
+function Module:FindQuestProgress(_, message)
+	if not C["Announcements"].QuestProgress or C["Announcements"].OnlyCompleteRing then
 		return
 	end
 
-	-- Check if the option to only announce quest progress when the ring is complete is enabled, if so, exit the function
-	if C["Announcements"].OnlyCompleteRing then
-		return
-	end
-
-	-- Iterate through the patterns in the `questMatches` table
-	for _, pattern in pairs(questMatches) do
-		-- Check if the message matches any of the patterns
-		if string_match(msg, pattern) then
-			-- Get the current and max values from the message
-			local _, _, _, cur, max = string_find(msg, "(.*)[:]%s*([-%d]+)%s*/%s*([-%d]+)%s*$")
-			-- Convert the values to numbers
-			cur, max = tonumber(cur), tonumber(max)
-			if cur and max and max >= 10 then
-				-- Check if the progress is a multiple of the max value divided by 5
-				if mod(cur, math_floor(max / 5)) == 0 then
-					-- Send the message using `sendQuestMsg` function
-					sendQuestMsg(msg)
+	for _, pattern in pairs(questMatchPatterns) do
+		if match(message, pattern) then
+			local _, _, _, current, maximum = find(message, "(.*)[:]%s*([-%d]+)%s*/%s*([-%d]+)%s*$")
+			current, maximum = tonumber(current), tonumber(maximum)
+			if current and maximum and maximum >= 10 then
+				if mod(current, floor(maximum / 5)) == 0 then
+					SendQuestMessage(message)
 				end
 			else
-				-- Send the message using `sendQuestMsg` function
-				sendQuestMsg(msg)
+				SendQuestMessage(message)
 			end
 			break
 		end
 	end
 end
 
-function Module:FindQuestAccept(questID)
-	-- Check if questID is nil, if so, exit the function
+-- Handle quest acceptance
+function Module:HandleQuestAccept(questID)
 	if not questID then
 		return
 	end
-
-	-- Check if the quest is a world quest and it has been cached before, if so, exit the function
-	if C_QuestLog_IsWorldQuest(questID) and WQcache[questID] then
-		return
-	end
-	-- Cache the world quest
-	WQcache[questID] = true
-
-	-- Get the tag info for the quest
-	local tagInfo = C_QuestLog_GetQuestTagInfo(questID)
-	-- Check if the quest is a profession quest, if so, exit the function
-	if tagInfo and tagInfo.worldQuestType == LE_QUEST_TAG_TYPE_PROFESSION then
+	if IsWorldQuest(questID) and worldQuestCache[questID] then
 		return
 	end
 
-	-- Get the quest log index for the quest ID
-	local questLogIndex = C_QuestLog_GetLogIndexForQuestID(questID)
-	-- Check if the quest log index is valid
+	worldQuestCache[questID] = true
+	local questTagInfo = GetQuestTagInfo(questID)
+	if questTagInfo and questTagInfo.worldQuestType == QUEST_TAG_TYPE_PROFESSION then
+		return
+	end
+
+	local questLogIndex = GetQuestLogIndexForQuestID(questID)
 	if questLogIndex then
-		-- Get the information for the quest
-		local info = C_QuestLog_GetInfo(questLogIndex)
-		-- Check if the information is valid
-		if info then
-			-- Send the message using `sendQuestMsg` function with the quest ID and whether the quest is a daily quest as parameters
-			sendQuestMsg(acceptText(questID, info.frequency == LE_QUEST_FREQUENCY_DAILY))
+		local questInfo = GetQuestInfo(questLogIndex)
+		if questInfo then
+			SendQuestMessage(GetQuestAcceptText(questID, questInfo.frequency == QUEST_FREQUENCY_DAILY))
 		end
 	end
 end
 
-function Module:FindQuestComplete()
-	-- Loop through all quests in player's quest log
-	for i = 1, C_QuestLog_GetNumQuestLogEntries() do
-		-- Get the quest ID for the current log index
-		local questID = C_QuestLog_GetQuestIDForLogIndex(i)
-		-- Check if the quest is complete
-		local isComplete = questID and C_QuestLog_IsComplete(questID)
-		-- Check if the quest is not a world quest and it is not marked as completed before
-		if isComplete and not completedQuest[questID] and not C_QuestLog_IsWorldQuest(questID) then
-			-- Check if this function has been called before
-			if initComplete then
-				-- Send the message using `sendQuestMsg` function with the quest ID as parameter
-				sendQuestMsg(completeText(questID))
+-- Handle quest completion
+function Module:HandleQuestCompletion()
+	for i = 1, GetNumQuestLogEntries() do
+		local questID = GetQuestIDForLogIndex(i)
+		local isQuestComplete = questID and IsQuestComplete(questID)
+		if isQuestComplete and not completedQuests[questID] and not IsWorldQuest(questID) then
+			if initialCheckComplete then
+				SendQuestMessage(GetQuestCompleteText(questID))
 			end
-			-- Mark the quest as completed
-			completedQuest[questID] = true
+			completedQuests[questID] = true
 		end
 	end
-	-- Set the `initComplete` variable to true
-	initComplete = true
+	initialCheckComplete = true
 end
 
-function Module:FindWorldQuestComplete(questID)
-	-- Check if the passed quest ID is a world quest
-	if C_QuestLog_IsWorldQuest(questID) then
-		-- Check if the quest is not marked as completed before
-		if questID and not completedQuest[questID] then
-			-- Send the message using `sendQuestMsg` function with the quest ID as parameter
-			sendQuestMsg(completeText(questID))
-			-- Mark the quest as completed
-			completedQuest[questID] = true
-		end
+-- Handle world quest completion
+function Module:HandleWorldQuestCompletion(questID)
+	if IsWorldQuest(questID) and questID and not completedQuests[questID] then
+		SendQuestMessage(GetQuestCompleteText(questID))
+		completedQuests[questID] = true
 	end
 end
 
 -- Dragon glyph notification
-local glyphAchievements = {
+local dragonGlyphAchievements = {
 	[16575] = true, -- Awakened Coast
 	[16576] = true, -- Ounhara Plains
 	[16577] = true, -- Blueridge Woods
 	[16578] = true, -- Sodra Sulcus
 }
 
-function Module:FindDragonGlyph(achievementID, criteriaString)
-	if glyphAchievements[achievementID] then
-		sendQuestMsg(criteriaString .. " " .. COLLECTED)
+function Module:HandleDragonGlyph(achievementID, criteriaString)
+	if dragonGlyphAchievements[achievementID] then
+		SendQuestMessage(criteriaString .. " " .. COLLECTED)
 	end
 end
 
+-- Create or destroy quest notifier based on settings
 function Module:CreateQuestNotifier()
 	if C["Announcements"].QuestNotifier and not K.CheckAddOnState("QuestNotifier") then
-		K:RegisterEvent("QUEST_ACCEPTED", Module.FindQuestAccept)
-		K:RegisterEvent("QUEST_LOG_UPDATE", Module.FindQuestComplete)
-		K:RegisterEvent("QUEST_TURNED_IN", Module.FindWorldQuestComplete)
+		K:RegisterEvent("QUEST_ACCEPTED", Module.HandleQuestAccept)
+		K:RegisterEvent("QUEST_LOG_UPDATE", Module.HandleQuestCompletion)
+		K:RegisterEvent("QUEST_TURNED_IN", Module.HandleWorldQuestCompletion)
 		K:RegisterEvent("UI_INFO_MESSAGE", Module.FindQuestProgress)
-		K:RegisterEvent("CRITERIA_EARNED", Module.FindDragonGlyph)
+		K:RegisterEvent("CRITERIA_EARNED", Module.HandleDragonGlyph)
 	else
-		table_wipe(completedQuest)
-		K:UnregisterEvent("QUEST_ACCEPTED", Module.FindQuestAccept)
-		K:UnregisterEvent("QUEST_LOG_UPDATE", Module.FindQuestComplete)
-		K:UnregisterEvent("QUEST_TURNED_IN", Module.FindWorldQuestComplete)
+		wipe(completedQuests)
+		K:UnregisterEvent("QUEST_ACCEPTED", Module.HandleQuestAccept)
+		K:UnregisterEvent("QUEST_LOG_UPDATE", Module.HandleQuestCompletion)
+		K:UnregisterEvent("QUEST_TURNED_IN", Module.HandleWorldQuestCompletion)
 		K:UnregisterEvent("UI_INFO_MESSAGE", Module.FindQuestProgress)
-		K:UnregisterEvent("CRITERIA_EARNED", Module.FindDragonGlyph)
+		K:UnregisterEvent("CRITERIA_EARNED", Module.HandleDragonGlyph)
 	end
 end

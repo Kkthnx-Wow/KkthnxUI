@@ -75,10 +75,11 @@ end
 
 function Module:GetLevelLine()
 	for i = 2, self:NumLines() do
-		local tiptext = _G["GameTooltipTextLeft" .. i]
+		local tiptext = _G[self:GetName() .. "TextLeft" .. i]
 		if not tiptext then
 			break
 		end
+
 		local linetext = tiptext:GetText()
 		if linetext and strfind(linetext, LEVEL) then
 			return tiptext
@@ -97,13 +98,13 @@ end
 function Module:InsertFactionFrame(faction)
 	if not self.factionFrame then
 		local f = self:CreateTexture(nil, "OVERLAY")
-		f:SetPoint("TOPRIGHT", 6, -6)
+		f:SetPoint("TOPRIGHT", -10, -10)
 		f:SetBlendMode("ADD")
-		f:SetScale(0.2)
-		f:SetAlpha(0.7)
+		-- f:SetScale(0.9)
+		-- f:SetAlpha(0.7)
 		self.factionFrame = f
 	end
-	self.factionFrame:SetTexture("Interface\\Timer\\" .. faction .. "-Logo")
+	self.factionFrame:SetAtlas("MountJournalIcons-" .. faction, true) --  charcreatetest-logo-horde
 	self.factionFrame:Show()
 end
 
@@ -163,7 +164,7 @@ function Module:OnTooltipSetUnit()
 		local name, realm = UnitName(unit)
 		local pvpName = UnitPVPName(unit)
 		local relationship = UnitRealmRelationship(unit)
-		if not C["Tooltip"].HideTitle and pvpName and pvpName ~= "" then
+		if not C["Tooltip"].HideTitle and pvpName then
 			name = pvpName
 		end
 

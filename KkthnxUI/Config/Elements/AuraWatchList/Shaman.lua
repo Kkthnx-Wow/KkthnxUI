@@ -6,30 +6,6 @@ if K.Class ~= "SHAMAN" then
 end
 
 local list = {
-	["Player Aura"] = { -- 玩家光环组
-		{ AuraID = 546, UnitID = "player" }, -- 水上行走
-		{ AuraID = 195222, UnitID = "player" }, -- 风暴之鞭
-		{ AuraID = 198293, UnitID = "player" }, -- 疾风
-		{ AuraID = 197211, UnitID = "player" }, -- 空气之怒
-		{ AuraID = 260881, UnitID = "player" }, -- 幽灵狼
-		{ AuraID = 192106, UnitID = "player", Timeless = true }, -- 闪电护盾
-	},
-	["Target Aura"] = { -- 目标光环组
-		{ AuraID = 61295, UnitID = "target", Caster = "player" }, -- 激流
-		{ AuraID = 51514, UnitID = "target", Caster = "player" }, -- 妖术
-		{ AuraID = 210873, UnitID = "target", Caster = "player" }, -- 妖术
-		{ AuraID = 211004, UnitID = "target", Caster = "player" }, -- 妖术
-		{ AuraID = 211010, UnitID = "target", Caster = "player" }, -- 妖术
-		{ AuraID = 211015, UnitID = "target", Caster = "player" }, -- 妖术
-		{ AuraID = 188389, UnitID = "target", Caster = "player" }, -- 烈焰震击
-		{ AuraID = 118905, UnitID = "target", Caster = "player" }, -- 闪电奔涌图腾
-		{ AuraID = 188089, UnitID = "target", Caster = "player" }, -- 大地之刺
-		{ AuraID = 197209, UnitID = "target", Caster = "player" }, -- 避雷针
-		{ AuraID = 207778, UnitID = "target", Caster = "player" }, -- 蒺藜
-		{ AuraID = 207400, UnitID = "target", Caster = "player" }, -- 先祖活力
-		{ AuraID = 269808, UnitID = "target", Caster = "player" }, -- 元素外露
-		{ AuraID = 334168, UnitID = "target", Caster = "player" }, -- 鞭笞烈焰
-	},
 	["Special Aura"] = { -- 玩家重要光环组
 		{ AuraID = 73920, UnitID = "player" }, -- 治疗之雨
 		{ AuraID = 53390, UnitID = "player" }, -- 潮汐奔涌

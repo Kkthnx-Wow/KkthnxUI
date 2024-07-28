@@ -78,15 +78,15 @@ function Module:CreateArena()
 	self.Name:SetFontObject(K.UIFont)
 	if arenaPortraitStyle == "NoPortraits" or arenaPortraitStyle == "OverlayPortrait" then
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
-			self:Tag(self.Name, "[name] [nplevel][afkdnd]")
+			self:Tag(self.Name, "[name] [nplevel]")
 		else
-			self:Tag(self.Name, "[color][name] [nplevel][afkdnd]")
+			self:Tag(self.Name, "[color][name] [nplevel]")
 		end
 	else
 		if C["Unitframe"].HealthbarColor.Value == "Class" then
-			self:Tag(self.Name, "[name][afkdnd]")
+			self:Tag(self.Name, "[name]")
 		else
-			self:Tag(self.Name, "[color][name][afkdnd]")
+			self:Tag(self.Name, "[color][name]")
 		end
 	end
 

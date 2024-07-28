@@ -525,9 +525,9 @@ local function CreatePanel()
 
 	-- Main
 	local groups = {
-		L["Player Aura"], -- 1 PlayerBuff
+		-- L["Player Aura"], -- 1 PlayerBuff
 		L["Special Aura"], -- 2 SPECIAL
-		L["Target Aura"], -- 3 TargetDebuff
+		-- L["Target Aura"], -- 3 TargetDebuff
 		L["Warning"], -- 4 Warning
 		L["Focus Aura"], -- 5 FOCUS
 		L["Spell Cooldown"], -- 6 CD
@@ -538,15 +538,15 @@ local function CreatePanel()
 	}
 
 	local preSet = {
-		[1] = { 1, false },
-		[2] = { 1, true },
-		[3] = { 2, true },
-		[4] = { 2, false },
-		[5] = { 3, false },
+		--[1] = { 1, false },
+		[1] = { 1, true },
+		-- [3] = { 2, true },
+		[2] = { 2, false },
+		[3] = { 3, false },
+		[4] = { 1, false },
+		[5] = { 1, false },
 		[6] = { 1, false },
 		[7] = { 1, false },
-		[8] = { 1, false },
-		[9] = { 1, false },
 	}
 
 	local tabs = {}
@@ -750,7 +750,7 @@ local function CreatePanel()
 		tabs[i]:SetScript("OnLeave", tabOnLeave)
 	end
 
-	for i = 1, 10 do
+	for i = 1, 8 do
 		createGroupSwitcher(tabs[i].Page, i)
 	end
 

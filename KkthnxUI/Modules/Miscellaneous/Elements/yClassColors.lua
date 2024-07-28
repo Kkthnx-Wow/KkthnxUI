@@ -111,34 +111,51 @@ local function updateFriendButton(button, playerArea)
 	end
 end
 
+--- Updates the friends list with the current player's area.
+-- @param none
+-- @return none
 local function UpdateFriendsList()
 	local playerArea = GetRealZoneText()
-	for i = 1, FriendsListFrame.ScrollBox.ScrollTarget:GetNumChildren() do
-		local button = select(i, FriendsListFrame.ScrollBox.ScrollTarget:GetChildren())
-		if button:IsShown() then
-			updateFriendButton(button, playerArea)
+	if playerArea then
+		local numChildren = FriendsListFrame.ScrollBox.ScrollTarget:GetNumChildren()
+		if numChildren then
+			for friendIndex = 1, numChildren do
+				local button = select(friendIndex, FriendsListFrame.ScrollBox.ScrollTarget:GetChildren())
+				if button and button:IsShown() then
+					updateFriendButton(button, playerArea)
+				end
+			end
+		else
+			print("Error: Unable to get the number of children.")
 		end
+	else
+		print("Error: Unable to get the real zone text.")
 	end
 end
 hooksecurefunc(FriendsListFrame.ScrollBox, "Update", UpdateFriendsList)
 
 -- WhoFrame Update
 local columnTable = {}
-
+--- Updates the WhoFrame with the current player's zone, guild, and race.
 hooksecurefunc(WhoFrame.ScrollBox, "Update", function(self)
 	local playerZone, playerGuild, playerRace = GetRealZoneText(), GetGuildInfo("player"), UnitRace("player")
-	for i = 1, self.ScrollTarget:GetNumChildren() do
-		local button = select(i, self.ScrollTarget:GetChildren())
-		local info = C_FriendList_GetWhoInfo(button.index)
-		if info then
-			local guild, level, race, zone, class = info.fullGuildName, info.level, info.raceStr, info.area, info.filename
-			wipe(columnTable)
-			tinsert(columnTable, applyZoneColor(zone, zone, playerZone))
-			tinsert(columnTable, applyZoneColor(guild, guild, playerGuild))
-			tinsert(columnTable, applyZoneColor(race, race, playerRace))
-			button.Name:SetTextColor(classColor(class, true))
-			button.Level:SetText(diffColor(level) .. level)
-			button.Variable:SetText(columnTable[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)])
+	local numChildren = self.ScrollTarget:GetNumChildren()
+	if numChildren then
+		for whoIndex = 1, numChildren do
+			local button = select(whoIndex, self.ScrollTarget:GetChildren())
+			local info = C_FriendList_GetWhoInfo(button.index)
+			if info then
+				local guild, level, race, zone, class = info.fullGuildName, info.level, info.raceStr, info.area, info.filename
+				wipe(columnTable)
+				tinsert(columnTable, applyZoneColor(zone, zone, playerZone))
+				tinsert(columnTable, applyZoneColor(guild, guild, playerGuild))
+				tinsert(columnTable, applyZoneColor(race, race, playerRace))
+				button.Name:SetTextColor(classColor(class, true))
+				button.Level:SetText(diffColor(level) .. level)
+				button.Variable:SetText(columnTable[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)])
+			end
 		end
+	else
+		print("Error: Unable to get the number of children.")
 	end
 end)

@@ -1,6 +1,10 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
 C.themes["Blizzard_InspectUI"] = function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
 	local GetInventoryItemLink = GetInventoryItemLink
 	local HideUIPanel = HideUIPanel
 	local IsCosmeticItem = IsCosmeticItem

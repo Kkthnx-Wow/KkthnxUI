@@ -20,12 +20,11 @@ local function hasPetActionHighlightMark(index)
 end
 
 function Module:UpdatePetBar()
-	local petActionButton, petActionIcon, petAutoCastableTexture, petAutoCastShine
+	local petActionButton, petActionIcon, petAutoCastOverlay
 	for i = 1, NUM_PET_ACTION_SLOTS, 1 do
 		petActionButton = self.actionButtons[i]
 		petActionIcon = petActionButton.icon
-		petAutoCastableTexture = petActionButton.AutoCastable
-		petAutoCastShine = petActionButton.AutoCastShine
+		petAutoCastOverlay = petActionButton.AutoCastOverlay
 		local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID = GetPetActionInfo(i)
 		if not isToken then
 			petActionIcon:SetTexture(texture)
@@ -55,16 +54,8 @@ function Module:UpdatePetBar()
 			petActionButton:StopFlash()
 			petActionButton:SetChecked(false)
 		end
-		if autoCastAllowed then
-			petAutoCastableTexture:Show()
-		else
-			petAutoCastableTexture:Hide()
-		end
-		if autoCastEnabled then
-			AutoCastShine_AutoCastStart(petAutoCastShine)
-		else
-			AutoCastShine_AutoCastStop(petAutoCastShine)
-		end
+		petAutoCastOverlay:SetShown(autoCastAllowed)
+		petAutoCastOverlay:ShowAutoCastEnabled(autoCastEnabled)
 		if texture then
 			if GetPetActionSlotUsable(i) then
 				petActionIcon:SetVertexColor(1, 1, 1)
@@ -95,7 +86,7 @@ function Module:CreatePetbar()
 	local buttonList = {}
 
 	local frame = CreateFrame("Frame", "KKUI_ActionBarPet", UIParent, "SecureHandlerStateTemplate")
-	frame.mover = K.Mover(frame, "Pet Actionbar", "PetBar", { "BOTTOM", _G.KKUI_ActionBar3, "TOP", 0, margin })
+	frame.mover = K.Mover(frame, "Pet Actionbar", "PetBar", { "BOTTOMLEFT", _G.KKUI_ActionBar3, "TOPLEFT", 0, margin })
 	Module.movers[10] = frame.mover
 
 	for i = 1, num do

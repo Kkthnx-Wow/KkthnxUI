@@ -177,22 +177,18 @@ end
 local function UpdateCastBarColor(self, unit)
 	local color = K.Colors.castbar.CastingColor
 
-	-- Check if the casting should be colored with class colors and the unit is a player
+	-- Check if the casting should be colored with class colors or reaction colors
 	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
 		local _, class = UnitClass(unit)
 		color = class and K.Colors.class[class]
-
-	-- Check if the casting should be colored with reaction colors
 	elseif C["Unitframe"].CastReactionColor then
 		local reaction = UnitReaction(unit, "player")
 		color = reaction and K.Colors.reaction[reaction]
-
-	-- Check if the casting can only be interrupted by the caster
 	elseif self.notInterruptible and not UnitIsUnit(unit, "player") then
 		color = K.Colors.castbar.notInterruptibleColor
 	end
 
-	-- Set the bar color to the color obtained above
+	-- Set the bar color to the obtained color
 	self:SetStatusBarColor(color[1], color[2], color[3])
 end
 

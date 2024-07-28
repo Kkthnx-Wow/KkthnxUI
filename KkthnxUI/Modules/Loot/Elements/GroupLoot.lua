@@ -1,4 +1,4 @@
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C, L = KkthnxUI[1], KkthnxUI[2], KkthnxUI[3]
 local Module = K:GetModule("Loot")
 
 -- Lua functions
@@ -346,7 +346,7 @@ function Module:LootRoll_Start(rollID, rollTime)
 	end
 
 	-- Update bind and loot text
-	bar.fsbind:SetText(bindOnPickUp and "BoP" or "BoE")
+	bar.fsbind:SetText(bindOnPickUp and L["BoP"] or L["BoE"])
 	bar.fsbind:SetVertexColor(bindOnPickUp and 1 or 0.3, bindOnPickUp and 0.3 or 1, bindOnPickUp and 0.1 or 0.3)
 
 	bar.fsloot:SetText(name)
@@ -452,98 +452,3 @@ function Module:CreateGroupLoot()
 	_G.UIParent:UnregisterEvent("START_LOOT_ROLL")
 	_G.UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
 end
-
--- Hide the parent of the clicked button
-local function OnClick_Hide(self)
-	self:GetParent():Hide()
-end
-
--- Function to test the loot roll
-local testFrame
-function Module:LootRollTest()
-	if not parentFrame then
-		return
-	end
-
-	if testFrame then
-		testFrame:SetShown(not testFrame:IsShown())
-		return
-	end
-
-	testFrame = Module:CreateRollBar("KKUI_LootRoll")
-	testFrame.isTest = true
-	testFrame:SetPoint("TOP", parentFrame, "TOP")
-	testFrame:Show()
-
-	-- Set hide script for roll buttons
-	local buttons = { testFrame.need, testFrame.transmog, testFrame.greed, testFrame.pass }
-	for _, button in ipairs(buttons) do
-		button:SetScript("OnClick", OnClick_Hide)
-	end
-	testFrame.greed:Hide()
-	if testFrame.disenchant then
-		testFrame.disenchant:SetScript("OnClick", OnClick_Hide)
-	end
-
-	-- Randomly select a test item
-	local itemID, name, quality, itemLevel, icon = 122349, "Bloodied Arcanite Reaper", 7, 79, 132400 -- ??
-	local color = ITEM_QUALITY_COLORS[quality]
-
-	-- Set test frame item details
-	testFrame.button.icon:SetTexture(icon)
-	testFrame.button.link = "|cffa335ee|Hitem:" .. itemID .. "::::::::17:::::::|h[" .. name .. "]|h|r"
-	testFrame.fsloot:SetText(name)
-	testFrame.fsbind:SetText(bop and "BoP" or "BoE")
-	testFrame.fsbind:SetVertexColor(bop and 1 or 0.3, bop and 0.3 or 1, bop and 0.1 or 0.3)
-
-	testFrame.transmog:SetShown(canTransmog)
-	testFrame.greed:SetShown(not canTransmog)
-
-	testFrame.status:SetStatusBarColor(color.r, color.g, color.b, 0.7)
-	testFrame.status.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
-	testFrame.status:SetMinMaxValues(0, 100)
-	testFrame.status:SetValue(80)
-	testFrame.status.spark:SetColorTexture(color.r, color.g, color.b, 0.5)
-	testFrame.button.itemLevel = itemLevel
-	testFrame.button.color = color
-	testFrame.button.ilvl:SetText(itemLevel or "")
-	testFrame.button.ilvl:SetTextColor(color.r, color.g, color.b)
-	testFrame.button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
-end
-
--- Function to update loot roll test
-function Module:UpdateLootRollTest()
-	if not parentFrame or not testFrame then
-		Module:LootRollTest()
-		return
-	end
-
-	-- Update test frame size and font
-	testFrame:SetSize(RollWidth, RollHeight)
-	testFrame.button:SetSize(RollHeight, RollHeight)
-	testFrame.fsbind:SetFontObject(K.UIFontOutline)
-	testFrame.fsloot:SetFontObject(K.UIFontOutline)
-
-	-- Update size of roll buttons
-	local buttons = { testFrame.need, testFrame.transmog, testFrame.greed, testFrame.pass, testFrame.disenchant }
-	for _, button in ipairs(buttons) do
-		if button then
-			button:SetSize(RollHeight - 4, RollHeight - 4)
-		end
-	end
-
-	testFrame.status:SetAllPoints()
-
-	-- Update item level and border color
-	local itemLevel, color = testFrame.button.itemLevel, testFrame.button.color
-	testFrame.button.ilvl:SetText(itemLevel or "")
-	testFrame.button.ilvl:SetFontObject(K.UIFontOutline)
-	testFrame.button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
-end
-
--- Slash command for testing loot roll
-SlashCmdList["KKUI_LOOTROLL_TESTING"] = function()
-	Module:LootRollTest()
-end
-SLASH_KKUI_LOOTROLL_TESTING1 = "/testroll"
-SLASH_KKUI_LOOTROLL_TESTING2 = "/rolltest"

@@ -243,15 +243,25 @@ tinsert(C.defaultThemes, function()
 	CharacterStatsPane.ClassBackground:SetParent(CharacterFrameInsetRight)
 	CharacterStatsPane.ClassBackground:SetPoint("CENTER")
 
-	local function styleSidebarTab(tab)
+	local function TabTextureCoords(tex, x1)
+		if x1 ~= 0.16001 then
+			tex:SetTexCoord(0.16001, 0.86, 0.16, 0.86)
+		end
+	end
+
+	local function StyleSidebarTab(tab)
 		if not tab.bg then
+			-- Create background frame
 			tab.bg = CreateFrame("Frame", nil, tab)
-			tab.bg:SetFrameLevel(tab:GetFrameLevel())
 			tab.bg:SetAllPoints(tab)
+			tab.bg:SetFrameLevel(tab:GetFrameLevel())
 			tab.bg:CreateBorder(nil, nil, nil, nil, nil, { 255 / 255, 223 / 255, 0 / 255 })
 
+			-- Set up textures
 			tab.Icon:SetAllPoints(tab.bg)
 			tab.Hider:SetAllPoints(tab.bg)
+
+			-- Set up highlighting
 			tab.Highlight:SetPoint("TOPLEFT", tab.bg, "TOPLEFT", 1, -1)
 			tab.Highlight:SetPoint("BOTTOMRIGHT", tab.bg, "BOTTOMRIGHT", -1, 1)
 			tab.Highlight:SetColorTexture(1, 1, 1, 0.25)
@@ -259,27 +269,45 @@ tinsert(C.defaultThemes, function()
 			tab.TabBg:SetAlpha(0)
 		end
 
+		-- Apply texture coordinates to the first region
 		local region = select(1, tab:GetRegions())
 		if region and not tab.regionStyled then
 			region:SetTexCoord(0.16, 0.86, 0.16, 0.86)
-			region.SetTexCoord = nil
 			tab.regionStyled = true
 		end
 	end
 
-	-- PaperDoll sidebar tab hook
-	for i = 1, #PAPERDOLL_SIDEBARS do
-		styleSidebarTab(_G["PaperDollSidebarTab" .. i])
+	local function StyleSidebarTabs()
+		local index = 1
+		local tab = _G["PaperDollSidebarTab" .. index]
+		while tab do
+			StyleSidebarTab(tab)
+
+			-- Hook SetTexCoord function for the first tab
+			if index == 1 then
+				for _, region in ipairs({ tab:GetRegions() }) do
+					hooksecurefunc(region, "SetTexCoord", TabTextureCoords)
+				end
+			end
+
+			index = index + 1
+			tab = _G["PaperDollSidebarTab" .. index]
+		end
 	end
 
-	-- Hide paperdoll equipment manager scrollbar background
-	hooksecurefunc(PaperDollFrame.TitleManagerPane.ScrollBox, "Update", function(self)
-		for i = 1, self.ScrollTarget:GetNumChildren() do
-			local child = select(i, self.ScrollTarget:GetChildren())
+	hooksecurefunc("PaperDollFrame_UpdateSidebarTabs", StyleSidebarTabs)
+
+	local function HideScrollbarBackground(scrollBox)
+		for i = 1, scrollBox.ScrollTarget:GetNumChildren() do
+			local child = select(i, scrollBox.ScrollTarget:GetChildren())
 			if not child.styled then
 				child:DisableDrawLayer("BACKGROUND")
 				child.styled = true
 			end
 		end
+	end
+
+	hooksecurefunc(PaperDollFrame.TitleManagerPane.ScrollBox, "Update", function(self)
+		HideScrollbarBackground(self)
 	end)
 end)

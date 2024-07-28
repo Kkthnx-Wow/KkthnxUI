@@ -1,66 +1,110 @@
-local K, C = KkthnxUI[1], KkthnxUI[2]
+local K, C = unpack(KkthnxUI)
 local Module = K:GetModule("Announcements")
 
-local gsub = gsub
-
+local strlower = strlower
+local C_Container_GetContainerItemID = C_Container.GetContainerItemID
+local C_Container_GetContainerItemLink = C_Container.GetContainerItemLink
+local C_Container_GetContainerNumSlots = C_Container.GetContainerNumSlots
 local C_Item_IsItemKeystoneByID = C_Item.IsItemKeystoneByID
 local C_MythicPlus_GetOwnedKeystoneChallengeMapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID
 local C_MythicPlus_GetOwnedKeystoneLevel = C_MythicPlus.GetOwnedKeystoneLevel
-local GetContainerItemID = _G.GetContainerItemID
-local GetContainerItemLink = _G.GetContainerItemLink
-local GetContainerNumSlots = _G.GetContainerNumSlots
-local NUM_BAG_SLOTS = NUM_BAG_SLOTS or 4
+local NUM_BAG_SLOTS = NUM_BAG_SLOTS
 
-local keystoneCache = {}
+local COOLDOWN_DURATION = 30 -- Cooldown duration in seconds
+local lastKeystoneMessageTime = 0 -- Initialize the last message time
+local lastKeystoneLinkTime = 0 -- Initialize the last link time
 
-function Module.SetupKeystoneAnnounce(event)
-	-- Get the current mapID and keystoneLevel for the player
-	local mapID = C_MythicPlus_GetOwnedKeystoneChallengeMapID()
-	local keystoneLevel = C_MythicPlus_GetOwnedKeystoneLevel()
-
-	-- Check if the event is "PLAYER_ENTERING_WORLD"
-	if event == "PLAYER_ENTERING_WORLD" then
-		-- K.Print("SetupKeystoneAnnounce", event)
-		-- Set the initial values for keystoneCache table
-		keystoneCache.mapID = mapID
-		keystoneCache.keystoneLevel = keystoneLevel
-	-- Check if the event is "CHALLENGE_MODE_COMPLETED"
-	elseif event == "CHALLENGE_MODE_COMPLETED" then
-		-- K.Print("SetupKeystoneAnnounce", event)
-		-- Check if the mapID or keystoneLevel has changed from previous value
-		if keystoneCache.mapID ~= mapID or keystoneCache.keystoneLevel ~= keystoneLevel then
-			keystoneCache.mapID = mapID
-			keystoneCache.keystoneLevel = keystoneLevel
-			-- Iterate through all the bags and slots of player's inventory
-			for bagIndex = 0, NUM_BAG_SLOTS do
-				for slotIndex = 1, GetContainerNumSlots(bagIndex) do
-					local itemID = GetContainerItemID(bagIndex, slotIndex)
-					-- Check if item is a keystone
-					if itemID and C_Item_IsItemKeystoneByID(itemID) then
-						-- Construct the message using the item link
-						local message = gsub("My new keystone is %keystone%.", "%%keystone%%", GetContainerItemLink(bagIndex, slotIndex))
-						-- Send the message to party
-						SendChatMessage(message, "PARTY")
-					end
-				end
+local function getKeystoneLink()
+	for bagIndex = 0, NUM_BAG_SLOTS do
+		for slotIndex = 1, C_Container_GetContainerNumSlots(bagIndex) do
+			local itemID = C_Container_GetContainerItemID(bagIndex, slotIndex)
+			if itemID and C_Item_IsItemKeystoneByID(itemID) then
+				return C_Container_GetContainerItemLink(bagIndex, slotIndex)
 			end
 		end
 	end
 end
 
-function Module.PEWKeystoneAnnounce()
-	C_Timer.After(2, Module.SetupKeystoneAnnounce)
+local function sendKeystoneLink(channel)
+	local link = getKeystoneLink()
+	if link then
+		SendChatMessage(link, channel)
+	end
 end
 
-function Module.CMCKeystoneAnnounce()
-	C_Timer.After(2, Module.SetupKeystoneAnnounce)
-end
-
-function Module:CreateKeystoneAnnounce()
-	if not C["Announcements"].KeystoneAlert then
+function Module.Keystone(event)
+	local currentTime = GetTime()
+	if currentTime - lastKeystoneMessageTime < COOLDOWN_DURATION then
 		return
 	end
 
-	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.PEWKeystoneAnnounce)
-	K:RegisterEvent("CHALLENGE_MODE_COMPLETED", Module.CMCKeystoneAnnounce)
+	lastKeystoneMessageTime = currentTime
+
+	local mapID = C_MythicPlus_GetOwnedKeystoneChallengeMapID()
+	local keystoneLevel = C_MythicPlus_GetOwnedKeystoneLevel()
+
+	if event == "PLAYER_ENTERING_WORLD" then
+		Module.keystoneCache.mapID = mapID
+		Module.keystoneCache.keystoneLevel = keystoneLevel
+		K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.Keystone)
+	elseif event == "CHALLENGE_MODE_COMPLETED" or event == "ITEM_CHANGED" then
+		if Module.keystoneCache.mapID ~= mapID or Module.keystoneCache.keystoneLevel ~= keystoneLevel then
+			Module.keystoneCache.mapID = mapID
+			Module.keystoneCache.keystoneLevel = keystoneLevel
+
+			local link = getKeystoneLink()
+			if link then
+				local message = string.gsub("My new keystone is %keystone%.", "%%keystone%%", link)
+				C_Timer.After(1, function()
+					if IsPartyLFG() then
+						SendChatMessage(message, "INSTANCE_CHAT")
+					elseif IsInGroup() then
+						SendChatMessage(message, "PARTY")
+					end
+				end)
+			end
+		end
+	end
+end
+
+function Module.KeystoneLink(message, sender)
+	local currentTime = GetTime()
+	if currentTime - lastKeystoneLinkTime < COOLDOWN_DURATION then
+		return
+	end
+
+	lastKeystoneLinkTime = currentTime
+
+	if strlower(sender) == "!keys" then
+		local channel
+		if message == "CHAT_MSG_PARTY" or message == "CHAT_MSG_PARTY_LEADER" then
+			channel = "PARTY"
+		elseif message == "CHAT_MSG_GUILD" then
+			channel = "GUILD"
+		elseif message == "CHAT_MSG_OFFICER" then
+			channel = "OFFICER"
+		end
+
+		if channel then
+			C_Timer.After(1, function() -- Adjust the delay duration as needed
+				sendKeystoneLink(channel)
+			end)
+		end
+	end
+end
+
+function Module:CreateKeystoneAnnounce()
+	if IsAddOnLoaded("MythicKeyReporter") or not C["Announcements"].KeystoneAlert then
+		return
+	end
+
+	Module.keystoneCache = Module.keystoneCache or {}
+
+	K:RegisterEvent("CHAT_MSG_PARTY", Module.KeystoneLink)
+	K:RegisterEvent("CHAT_MSG_PARTY_LEADER", Module.KeystoneLink)
+	K:RegisterEvent("CHAT_MSG_GUILD", Module.KeystoneLink)
+	K:RegisterEvent("CHAT_MSG_OFFICER", Module.KeystoneLink)
+	K:RegisterEvent("ITEM_CHANGED", Module.Keystone)
+	K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.Keystone)
+	K:RegisterEvent("CHALLENGE_MODE_COMPLETED", Module.Keystone)
 end

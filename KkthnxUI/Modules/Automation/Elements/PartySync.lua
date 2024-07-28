@@ -15,9 +15,6 @@ local string_split = string.split
 local UnitGUID = UnitGUID
 local UnitName = UnitName
 
--- Define party unit IDs
-local PARTY_UNITS = { "player", "party1", "party2", "party3", "party4" }
-
 -- Check if a given name is in your friends list
 local function isFriend(name)
 	-- Do nothing if name is empty (such as whispering from the Battle.net app)
@@ -54,7 +51,8 @@ end
 local function setupAutoPartySyncAccept(self)
 	local sessionBeginDetails = C_QuestSession_GetSessionBeginDetails()
 	if sessionBeginDetails then
-		for _, unit in ipairs(PARTY_UNITS) do
+		for _, unit in ("player|party[1-4]"):gmatch("[^|]+") do
+			print("setupAutoPartySyncAccept", unit)
 			if UnitGUID(unit) == sessionBeginDetails.guid then
 				local requesterName = UnitName(unit)
 				if requesterName and isFriend(requesterName) then

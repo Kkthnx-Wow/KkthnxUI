@@ -185,15 +185,28 @@ StaticPopupDialogs["CPUUSAGE"] = {
 	whileDead = 1,
 }
 
+-- Cooldown variables
+local lastClickTime = 0
+local clickCooldown = 60 -- Cooldown in seconds
+
 local function OnMouseUp(_, btn)
+	local currentTime = GetTime()
+
 	if btn == "LeftButton" then
 		if scriptProfileStatus then
 			ResetCPUUsage()
 			Module.CheckLoginTime = GetTime()
 		end
+
+		if currentTime - lastClickTime < clickCooldown then
+			return
+		end
+
+		lastClickTime = currentTime
 		local before = gcinfo()
 		collectgarbage("collect")
 		K.Print(string_format(K.InfoColorTint .. "%s:|r %s", L["Memory Collected"], formatMemory(before - gcinfo())))
+
 		OnEnter()
 	elseif btn == "RightButton" and scriptProfileStatus then
 		Module.ShowMemory = not Module.ShowMemory
@@ -220,23 +233,25 @@ function Module:CreateSystemDataText()
 		return
 	end
 
-	SystemDataText = SystemDataText or CreateFrame("Frame", "KKUI_SystemDataText", UIParent)
-	SystemDataText:SetSize(24, 24)
+	SystemDataText = CreateFrame("Frame", "KKUI_SystemDataText", UIParent)
+	SystemDataText:SetHitRectInsets(-16, 0, -10, -10)
 
-	SystemDataText.Texture = SystemDataText:CreateTexture(nil, "BACKGROUND")
-	SystemDataText.Texture:SetPoint("LEFT", SystemDataText, "LEFT", 4, 0)
+	SystemDataText.Text = K.CreateFontString(SystemDataText, 12)
+	SystemDataText.Text:ClearAllPoints()
+	SystemDataText.Text:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 24, -6)
+
+	SystemDataText.Texture = SystemDataText:CreateTexture(nil, "ARTWORK")
+	SystemDataText.Texture:SetPoint("RIGHT", SystemDataText.Text, "LEFT", -4, 2)
 	SystemDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\fps.blp")
 	SystemDataText.Texture:SetSize(15, 15)
 	SystemDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
-	SystemDataText.Text = SystemDataText:CreateFontString("OVERLAY")
-	SystemDataText.Text:SetFontObject(K.UIFont)
-	SystemDataText.Text:SetPoint("LEFT", SystemDataText.Texture, "RIGHT", 4, 0)
+	SystemDataText:SetAllPoints(SystemDataText.Text)
 
-	SystemDataText:SetScript("OnUpdate", OnUpdate)
 	SystemDataText:SetScript("OnEnter", OnEnter)
 	SystemDataText:SetScript("OnLeave", OnLeave)
 	SystemDataText:SetScript("OnMouseUp", OnMouseUp)
-
-	K.Mover(SystemDataText, "KKUI_SystemDataText", "KKUI_SystemDataText", { "TOPLEFT", UIParent, "TOPLEFT", 0, 0 })
+	SystemDataText:SetScript("OnUpdate", OnUpdate)
 end
+
+K.SystemDataText = SystemDataText

@@ -6,15 +6,6 @@ if K.Class ~= "EVOKER" then
 end
 
 local list = {
-	["Player Aura"] = { -- 玩家光环组
-		{ AuraID = 370454, UnitID = "player" }, -- 聚能冲击
-		{ AuraID = 370840, UnitID = "player" }, -- 移情者
-	},
-	["Target Aura"] = { -- 目标光环组
-		{ AuraID = 355689, UnitID = "target", Caster = "player" }, -- 山崩
-		{ AuraID = 372048, UnitID = "target", Caster = "player" }, -- 压迫怒吼
-		{ AuraID = 370452, UnitID = "target", Caster = "player" }, -- 碎裂星辰
-	},
 	["Special Aura"] = { -- 玩家重要光环组
 		{ AuraID = 358267, UnitID = "player" }, -- 悬空
 		{ AuraID = 375087, UnitID = "player" }, -- 狂龙之怒

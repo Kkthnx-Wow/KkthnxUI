@@ -536,7 +536,7 @@ function Module:CreateFreeSlots()
 
 	local slot = CreateFrame("Button", name .. "FreeSlot", self)
 	slot:SetSize(self.iconSize, self.iconSize)
-	slot:CreateBorder(nil, nil, nil, nil, nil, nil, "Interface\\PaperDoll\\UI-PaperDoll-Slot-Bag", nil, nil, nil, { 0.7, 0.7, 0.7 })
+	slot:CreateBorder(nil, nil, nil, nil, nil, nil, "Interface\\PaperDoll\\UI-PaperDoll-Slot-Bag", nil, nil, nil, { 1, 1, 1 })
 	slot:StyleButton()
 	slot:SetScript("OnMouseUp", Module.FreeSlotOnDrop)
 	slot:SetScript("OnReceiveDrag", Module.FreeSlotOnDrop)
@@ -996,9 +996,6 @@ function Module:OnEnable()
 	end
 
 	function Backpack:OnInit()
-		-----
-		-- ADD LATER -- AddNewContainer("Bag", 8, "BagLegendary", filters.bagLegendary)
-		-----
 		AddNewContainer("Bag", 6, "BagReagent", filters.onlyBagReagent)
 		AddNewContainer("Bag", 17, "Junk", filters.bagsJunk)
 		for i = 1, 5 do
@@ -1097,7 +1094,7 @@ function Module:OnEnable()
 		self.IconOverlay2:SetPoint("TOPLEFT", 1, -1)
 		self.IconOverlay2:SetPoint("BOTTOMRIGHT", -1, 1)
 
-		self:CreateBorder(nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, { 0.7, 0.7, 0.7 })
+		self:CreateBorder(nil, nil, nil, nil, nil, nil, K.MediaFolder .. "Skins\\UI-Slot-Background", nil, nil, nil, { 1, 1, 1 })
 		self:StyleButton()
 
 		local parentFrame = CreateFrame("Frame", nil, self)
@@ -1128,10 +1125,22 @@ function Module:OnEnable()
 		self.usableTexture:SetVertexColor(1, 0, 0)
 		self.usableTexture:SetBlendMode("MOD")
 
-		if showNewItem then
-			self.glowFrame = CreateFrame("Frame", nil, self)
-			self.glowFrame:SetPoint("CENTER")
-			self.glowFrame:SetSize(iconSize + 8, iconSize + 8)
+		if showNewItem and not self.glowFrame then
+			self.glowFrame = CreateFrame("Frame", nil, self, "BackdropTemplate")
+			self.glowFrame:SetFrameLevel(self:GetFrameLevel() + 2)
+			self.glowFrame:SetBackdrop({ edgeFile = C["Media"].Borders.GlowBorder, edgeSize = 16 })
+			self.glowFrame:SetBackdropBorderColor(1, 223 / 255, 0, 1)
+			self.glowFrame:SetPoint("TOPLEFT", self, -6, 6)
+			self.glowFrame:SetPoint("BOTTOMRIGHT", self, 6, -6)
+
+			self.glowFrame.Animation = self.glowFrame.Animation or self.glowFrame:CreateAnimationGroup()
+			self.glowFrame.Animation:SetLooping("BOUNCE")
+
+			self.glowFrame.Animation.FadeOut = self.glowFrame.Animation.FadeOut or self.glowFrame.Animation:CreateAnimation("Alpha")
+			self.glowFrame.Animation.FadeOut:SetFromAlpha(1)
+			self.glowFrame.Animation.FadeOut:SetToAlpha(0.1)
+			self.glowFrame.Animation.FadeOut:SetDuration(0.6)
+			self.glowFrame.Animation.FadeOut:SetSmoothing("IN_OUT")
 		end
 
 		self:HookScript("OnClick", Module.ButtonOnClick)
@@ -1149,25 +1158,31 @@ function Module:OnEnable()
 	end
 
 	function MyButton:ItemOnEnter()
-		if self.glowFrame then
-			K.LibCustomGlow.ButtonGlow_Stop(self.glowFrame)
-			C_NewItems_RemoveNewItem(self.bagId, self.slotId)
+		if self.glowFrame and self.glowFrame.Animation then
+			local isNewItem = C_NewItems.IsNewItem(self.bagId, self.slotId)
+			local isAnimationPlaying = self.glowFrame.Animation:IsPlaying()
+
+			if not isNewItem and isAnimationPlaying then
+				self.glowFrame.Animation:Stop()
+				self.glowFrame:Hide()
+				C_NewItems_RemoveNewItem(self.bagId, self.slotId)
+			end
 		end
 	end
 
 	local bagTypeColor = {
-		[0] = { 1, 1, 1, 0.3 }, -- 容器
-		[1] = false, -- 灵魂袋
-		[2] = { 0, 0.5, 0, 0.25 }, -- 草药袋
-		[3] = { 0.8, 0, 0.8, 0.25 }, -- 附魔袋
-		[4] = { 1, 0.8, 0, 0.25 }, -- 工程袋
-		[5] = { 0, 0.8, 0.8, 0.25 }, -- 宝石袋
-		[6] = { 0.5, 0.4, 0, 0.25 }, -- 矿石袋
-		[7] = { 0.8, 0.5, 0.5, 0.25 }, -- 制皮包
-		[8] = { 0.8, 0.8, 0.8, 0.25 }, -- 铭文包
-		[9] = { 0.4, 0.6, 1, 0.25 }, -- 工具箱
-		[10] = { 0.8, 0, 0, 0.25 }, -- 烹饪包
-		[11] = { 0.2, 0.8, 0.2, 0.25 }, -- 材料包
+		[0] = { 1, 1, 1, 0.3 }, -- Container
+		[1] = false, -- Soul Bag
+		[2] = { 0, 0.5, 0, 0.25 }, -- Herb Bag
+		[3] = { 0.8, 0, 0.8, 0.25 }, -- Enchanting Bag
+		[4] = { 1, 0.8, 0, 0.25 }, -- Engineering Bag
+		[5] = { 0, 0.8, 0.8, 0.25 }, -- Gem Bag
+		[6] = { 0.5, 0.4, 0, 0.25 }, -- Mining Bag
+		[7] = { 0.8, 0.5, 0.5, 0.25 }, -- Leatherworking Bag
+		[8] = { 0.8, 0.8, 0.8, 0.25 }, -- Inscription Bag
+		[9] = { 0.4, 0.6, 1, 0.25 }, -- Toolbox
+		[10] = { 0.8, 0, 0, 0.25 }, -- Cooking Bag
+		[11] = { 0.2, 0.8, 0.2, 0.25 }, -- Material Bag
 	}
 
 	local function isItemNeedsLevel(item)
@@ -1221,7 +1236,7 @@ function Module:OnEnable()
 
 	function MyButton:OnUpdateButton(item)
 		if self.JunkIcon then
-			if (MerchantFrame:IsShown() or customJunkEnable) and (item.quality == Enum.ItemQuality.Poor or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.hasPrice then
+			if (item.quality == Enum.ItemQuality.Poor or KkthnxUIDB.Variables[K.Realm][K.Name].CustomJunkList[item.id]) and item.hasPrice then
 				self.JunkIcon:Show()
 			else
 				self.JunkIcon:Hide()
@@ -1285,23 +1300,26 @@ function Module:OnEnable()
 			local BoE, BoU = item.bindType == 2, item.bindType == 3
 			if not item.bound and (BoE or BoU) then
 				local color = K.QualityColors[item.quality]
-				self.bindType:SetText(BoE and "BoE" or "BoU") -- Local these asap
+				self.bindType:SetText(BoE and L["BoE"] or L["BoU"]) -- Local these asap
 				self.bindType:SetTextColor(color.r, color.g, color.b)
 			end
 		end
 
 		if self.glowFrame then
 			if C_NewItems_IsNewItem(item.bagId, item.slotId) then
-				local color = K.QualityColors[item.quality]
+				local color = K.QualityColors[item.quality] or {}
 				if item.questID or item.isQuestItem then
-					K.LibCustomGlow.ButtonGlow_Start(self.glowFrame, { 1, 0.82, 0.2, 1 })
-				elseif color and item.quality and item.quality > -1 then
-					K.LibCustomGlow.ButtonGlow_Start(self.glowFrame, { color.r, color.g, color.b, 1 })
+					self.glowFrame:SetBackdropBorderColor(1, 0.82, 0.2, 1)
+				elseif color.r and color.g and color.b then
+					self.glowFrame:SetBackdropBorderColor(color.r, color.g, color.b, 1)
 				else
-					K.LibCustomGlow.ButtonGlow_Start(self.glowFrame)
+					self.glowFrame:SetBackdropBorderColor(1, 223 / 255, 0, 1)
 				end
+				self.glowFrame:Show()
+				self.glowFrame.Animation:Play()
 			else
-				K.LibCustomGlow.ButtonGlow_Stop(self.glowFrame)
+				self.glowFrame:Hide()
+				self.glowFrame.Animation:Stop()
 			end
 		end
 
@@ -1314,7 +1332,7 @@ function Module:OnEnable()
 		end
 
 		-- Hide empty tooltip
-		if not item.texture and GameTooltip:GetOwner() == self then
+		if not item.texture and not GameTooltip:IsForbidden() and GameTooltip:GetOwner() == self then
 			GameTooltip:Hide()
 		end
 
@@ -1411,37 +1429,42 @@ function Module:OnEnable()
 		Module.CreateFreeSlots(self)
 
 		local label
-		if string_match(name, "AzeriteItem$") then
+		-- Use patterns with '$' to match the end of the string
+		if name:match("AzeriteItem$") then
 			label = "Azerite Armor"
-		elseif string_match(name, "Equipment$") then
+		elseif name:match("Equipment$") then
 			label = BAG_FILTER_EQUIPMENT
-		elseif string_match(name, "EquipSet$") then
-			label = L["Equipement Set"]
-		elseif string_match(name, "Legendary$") then
-			label = LOOT_JOURNAL_LEGENDARIES
-		elseif string_match(name, "Consumable$") then
-			label = BAG_FILTER_CONSUMABLES
+		elseif name:match("EquipSet$") then
+			label = L["Equipment Set"]
 		elseif name == "Junk" then
 			label = BAG_FILTER_JUNK
-		elseif string_match(name, "Collection") then
-			label = COLLECTIONS
-		elseif string_match(name, "Goods") then
-			label = AUCTION_CATEGORY_TRADE_GOODS
-		elseif string_match(name, "Quest") then
-			label = QUESTS_LABEL
-		elseif string_match(name, "Anima") then
-			label = POWER_TYPE_ANIMA
 		elseif name == "BagRelic" then
 			label = "Korthian Relics"
-		elseif strmatch(name, "Custom%d") then
-			label = GetCustomGroupTitle(settings.Index)
 		elseif name == "BagReagent" then
 			label = "Reagent Bag"
 		elseif name == "BagStone" then
 			label = GetSpellInfo(404861)
+		else
+			if name:match("Legendary$") then
+				label = LOOT_JOURNAL_LEGENDARIES
+			elseif name:match("Consumable$") then
+				label = BAG_FILTER_CONSUMABLES
+			elseif name:match("Collection") then
+				label = COLLECTIONS
+			elseif name:match("Goods") then
+				label = AUCTION_CATEGORY_TRADE_GOODS
+			elseif name:match("Quest") then
+				label = QUESTS_LABEL
+			elseif name:match("Anima") then
+				label = POWER_TYPE_ANIMA
+			elseif name:match("Custom%d") then
+				-- If 'name' matches the pattern "Custom%d", call GetCustomGroupTitle
+				label = GetCustomGroupTitle(settings.Index)
+			end
 		end
 
 		if label then
+			-- Create font string only if label is found
 			self.label = K.CreateFontString(self, 13, label, "OUTLINE", true, "TOPLEFT", 6, -8)
 			return
 		end

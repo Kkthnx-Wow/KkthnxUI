@@ -99,21 +99,15 @@ function Module:GetRaidMaxGroup()
 end
 
 function Module:RaidTool_RoleCount(parent)
-	local roleTexCoord = {
-		{ 0.5, 0.75, 0, 1 },
-		{ 0.75, 1, 0, 1 },
-		{ 0.25, 0.5, 0, 1 },
-	}
-
+	local roleIndex = { "TANK", "HEALER", "DAMAGER" }
 	local frame = CreateFrame("Frame", nil, parent)
 	frame:SetAllPoints()
 	local role = {}
 	for i = 1, 3 do
 		role[i] = frame:CreateTexture(nil, "OVERLAY")
 		role[i]:SetPoint("LEFT", 36 * i - 27, 0)
-		role[i]:SetSize(12, 12)
-		role[i]:SetTexture("Interface\\LFGFrame\\LFGROLE")
-		role[i]:SetTexCoord(unpack(roleTexCoord[i]))
+		role[i]:SetSize(14, 14)
+		K.ReskinSmallRole(role[i], roleIndex[i])
 		role[i].text = K.CreateFontString(frame, 13, "0", "")
 		role[i].text:ClearAllPoints()
 		role[i].text:SetPoint("CENTER", role[i], "RIGHT", 12, 0)
@@ -576,6 +570,10 @@ function Module:RaidTool_CreateMenu(parent)
 end
 
 function Module:RaidTool_EasyMarker()
+	if not C["Misc"].EasyMarking then
+		return
+	end
+
 	local menuList = {}
 
 	local function GetMenuTitle(color, text)

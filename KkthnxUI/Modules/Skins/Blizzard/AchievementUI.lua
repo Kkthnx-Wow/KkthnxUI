@@ -15,11 +15,19 @@ local function SetupAchievementSummaryCategory(category)
 	_G[category:GetName() .. "ButtonHighlight"]:SetAlpha(0)
 end
 
-C.themes["Blizzard_AchievementUI"] = function()
-	local statusBar = AchievementFrameSummaryCategoriesStatusBar
-	if statusBar and statusBar:GetName() then
-		SetupStatusBar(statusBar)
-		local name = statusBar:GetName()
+local function StyleAchievementFrameSummaryCategories()
+	for i = 1, 12 do
+		local category = _G["AchievementFrameSummaryCategoriesCategory" .. i]
+		if category then
+			SetupAchievementSummaryCategory(category)
+		end
+	end
+end
+
+local function StyleAchievementSummaryStatusBar(statusBar)
+	SetupStatusBar(statusBar)
+	local name = statusBar:GetName()
+	if name then
 		local title = _G[name .. "Title"]
 		local text = _G[name .. "Text"]
 		if title and text then
@@ -27,9 +35,17 @@ C.themes["Blizzard_AchievementUI"] = function()
 			text:SetPoint("RIGHT", statusBar, "RIGHT", -5, 0)
 		end
 	end
+end
 
-	for i = 1, 12 do
-		local category = _G["AchievementFrameSummaryCategoriesCategory" .. i]
-		SetupAchievementSummaryCategory(category)
+C.themes["Blizzard_AchievementUI"] = function()
+	if not C["Skins"].BlizzardFrames then
+		return
 	end
+
+	local statusBar = AchievementFrameSummaryCategoriesStatusBar
+	if statusBar then
+		StyleAchievementSummaryStatusBar(statusBar)
+	end
+
+	StyleAchievementFrameSummaryCategories()
 end

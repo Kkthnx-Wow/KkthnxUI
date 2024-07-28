@@ -9,15 +9,24 @@ local UIParent = UIParent
 
 local AuraWatchList = {}
 local groups = {
-	["Player Aura"] = { "LEFT", 6, "ICON", 30, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 432 } },
-	["Target Aura"] = { "RIGHT", 6, "ICON", 36, { "BOTTOMLEFT", UIParent, "BOTTOM", 160, 468 } },
-	["Special Aura"] = { "LEFT", 6, "ICON", 36, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 468 } },
+	-- ["Player Aura"] = { "LEFT", 6, "ICON", 30, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 432 } },
+	-- ["Target Aura"] = { "RIGHT", 6, "ICON", 36, { "BOTTOMLEFT", UIParent, "BOTTOM", 160, 468 } },
+	-- ["Special Aura"] = { "LEFT", 6, "ICON", 36, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 468 } },
+	-- ["Focus Aura"] = { "RIGHT", 6, "ICON", 35, { "BOTTOMLEFT", UIParent, "LEFT", 5, -230 } },
+	-- ["Spell Cooldown"] = { "UP", 6, "BAR", 20, { "BOTTOMRIGHT", UIParent, "BOTTOM", -380, 140 }, 150 },
+	-- ["Enchant Aura"] = { "LEFT", 6, "ICON", 36, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 510 } },
+	-- ["Raid Buff"] = { "LEFT", 6, "ICON", 42, { "CENTER", UIParent, "CENTER", -220, 300 } },
+	-- ["Raid Debuff"] = { "RIGHT", 6, "ICON", 42, { "CENTER", UIParent, "CENTER", 220, 300 } },
+	-- ["Warning"] = { "RIGHT", 6, "ICON", 42, { "BOTTOMLEFT", UIParent, "BOTTOM", 160, 510 } },
+	-- ["InternalCD"] = { "UP", 6, "BAR", 20, { "BOTTOMRIGHT", UIParent, "BOTTOM", -425, 600 }, 150 },
+
+	["Special Aura"] = { "LEFT", 6, "ICON", 30, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 432 } },
 	["Focus Aura"] = { "RIGHT", 6, "ICON", 35, { "BOTTOMLEFT", UIParent, "LEFT", 5, -230 } },
 	["Spell Cooldown"] = { "UP", 6, "BAR", 20, { "BOTTOMRIGHT", UIParent, "BOTTOM", -380, 140 }, 150 },
-	["Enchant Aura"] = { "LEFT", 6, "ICON", 36, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 510 } },
+	["Enchant Aura"] = { "LEFT", 6, "ICON", 36, { "BOTTOMRIGHT", UIParent, "BOTTOM", -160, 468 } },
 	["Raid Buff"] = { "LEFT", 6, "ICON", 42, { "CENTER", UIParent, "CENTER", -220, 300 } },
 	["Raid Debuff"] = { "RIGHT", 6, "ICON", 42, { "CENTER", UIParent, "CENTER", 220, 300 } },
-	["Warning"] = { "RIGHT", 6, "ICON", 42, { "BOTTOMLEFT", UIParent, "BOTTOM", 160, 510 } },
+	["Warning"] = { "RIGHT", 6, "ICON", 36, { "BOTTOMLEFT", UIParent, "BOTTOM", 160, 468 } },
 	["InternalCD"] = { "UP", 6, "BAR", 20, { "BOTTOMRIGHT", UIParent, "BOTTOM", -425, 600 }, 150 },
 }
 

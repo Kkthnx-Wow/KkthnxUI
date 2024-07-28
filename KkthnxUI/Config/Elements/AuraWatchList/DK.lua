@@ -6,32 +6,6 @@ if K.Class ~= "DEATHKNIGHT" then
 end
 
 local list = {
-	["Player Aura"] = { -- 玩家光环组
-		{ AuraID = 3714, UnitID = "player" }, -- 冰霜之路
-		{ AuraID = 53365, UnitID = "player" }, -- 不洁之力
-		{ AuraID = 59052, UnitID = "player" }, -- 白霜
-		{ AuraID = 81340, UnitID = "player" }, -- 末日突降
-		{ AuraID = 111673, UnitID = "pet" }, -- 控制亡灵
-		{ AuraID = 215377, UnitID = "player" }, -- 巨口饿了
-		{ AuraID = 219788, UnitID = "player" }, -- 埋骨之所
-	},
-	["Target Aura"] = { -- 目标光环组
-		{ AuraID = 55078, UnitID = "target", Caster = "player" }, -- 血之疫病
-		{ AuraID = 55095, UnitID = "target", Caster = "player" }, -- 冰霜疫病
-		{ AuraID = 56222, UnitID = "target", Caster = "player" }, -- 黑暗命令
-		{ AuraID = 45524, UnitID = "target", Caster = "player" }, -- 寒冰锁链
-		{ AuraID = 191587, UnitID = "target", Caster = "player" }, -- 恶性瘟疫
-		{ AuraID = 211793, UnitID = "target", Caster = "player" }, -- 冷库严冬
-		{ AuraID = 221562, UnitID = "target", Caster = "player" }, -- 窒息
-		{ AuraID = 108194, UnitID = "target", Caster = "player" }, -- 窒息
-		{ AuraID = 206940, UnitID = "target", Caster = "player" }, -- 鲜血印记
-		{ AuraID = 206977, UnitID = "target", Caster = "player" }, -- 血之镜像
-		{ AuraID = 207167, UnitID = "target", Caster = "player" }, -- 致盲冰雨
-		{ AuraID = 194310, UnitID = "target", Caster = "player" }, -- 溃烂之伤
-		{ AuraID = 156004, UnitID = "target", Caster = "player" }, -- 亵渎
-		{ AuraID = 191748, UnitID = "target", Caster = "player" }, -- 诸界之灾
-		{ AuraID = 312202, UnitID = "target", Caster = "player" }, -- 失格者之梏
-	},
 	["Special Aura"] = { -- 玩家重要光环组
 		{ AuraID = 63560, UnitID = "pet" }, -- 黑暗突变
 		{ AuraID = 47568, UnitID = "player" }, -- 符文武器增效

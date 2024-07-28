@@ -6,32 +6,6 @@ if K.Class ~= "DEMONHUNTER" then
 end
 
 local list = {
-	["Player Aura"] = { -- 玩家光环组
-		{ AuraID = 207693, UnitID = "player" }, -- 灵魂盛宴
-	},
-	["Target Aura"] = { -- 目标光环组
-		{ AuraID = 198813, UnitID = "target", Caster = "player" }, -- 复仇回避
-		{ AuraID = 179057, UnitID = "target", Caster = "player" }, -- 混乱新星
-		{ AuraID = 207690, UnitID = "target", Caster = "player" }, -- 血滴子
-		{ AuraID = 206491, UnitID = "target", Caster = "player" }, -- 涅墨西斯
-		{ AuraID = 213405, UnitID = "target", Caster = "player" }, -- 战刃大师
-		{ AuraID = 185245, UnitID = "target", Caster = "player" }, -- 折磨
-		{ AuraID = 204490, UnitID = "target", Caster = "player" }, -- 沉默咒符
-		{ AuraID = 204598, UnitID = "target", Caster = "player" }, -- 烈焰咒符
-		{ AuraID = 204843, UnitID = "target", Caster = "player" }, -- 锁链咒符
-		{ AuraID = 207407, UnitID = "target", Caster = "player" }, -- 灵魂切削
-		{ AuraID = 207744, UnitID = "target", Caster = "player" }, -- 烈火烙印
-		{ AuraID = 207771, UnitID = "target", Caster = "player" }, -- 烈火烙印
-		{ AuraID = 224509, UnitID = "target", Caster = "player" }, -- 幽魂炸弹
-		{ AuraID = 210003, UnitID = "target", Caster = "player" }, -- 锋锐之刺
-		{ AuraID = 207685, UnitID = "target", Caster = "player" }, -- 悲苦咒符
-		{ AuraID = 211881, UnitID = "target", Caster = "player" }, -- 邪能爆发
-		{ AuraID = 247456, UnitID = "target", Caster = "player" }, -- 脆弱
-		{ AuraID = 258860, UnitID = "target", Caster = "player" }, -- 黑暗鞭笞
-		{ AuraID = 268178, UnitID = "target", Caster = "player" }, -- 虚空掠夺者
-		{ AuraID = 323802, UnitID = "target", Caster = "player" }, -- 恶魔追击
-		{ AuraID = 317009, UnitID = "target", Caster = "player" }, -- 罪孽烙印
-	},
 	["Special Aura"] = { -- 玩家重要光环组
 		{ AuraID = 162264, UnitID = "player" }, -- 恶魔变形
 		{ AuraID = 187827, UnitID = "player" }, -- 恶魔变形

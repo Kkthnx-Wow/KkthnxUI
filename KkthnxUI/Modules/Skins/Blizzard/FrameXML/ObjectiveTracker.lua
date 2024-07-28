@@ -1,6 +1,10 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
+local tinsert = table.insert
+local hooksecurefunc = hooksecurefunc
+local CreateFrame = CreateFrame
 
-local function reskinHeader(header)
+-- Reskin header function
+local function ReskinObjectiveHeader(header)
 	if not header then
 		return
 	end
@@ -19,24 +23,27 @@ local function reskinHeader(header)
 	bg:SetVertexColor(K.r, K.g, K.b, 0.8)
 	bg:SetPoint("BOTTOMLEFT", 0, -4)
 	bg:SetSize(250, 30)
-	header.bg = bg -- accessable for other addons
+	header.bg = bg -- Accessible for other addons
 end
 
-local function showHotkey(self)
+-- Show hotkey function
+local function ShowHotkey(self)
 	local item = self:GetParent()
 	if item.rangeOverlay then
 		item.rangeOverlay:Show()
 	end
 end
 
-local function hideHotkey(self)
+-- Hide hotkey function
+local function HideHotkey(self)
 	local item = self:GetParent()
 	if item.rangeOverlay then
 		item.rangeOverlay:Hide()
 	end
 end
 
-local function colorHotkey(self, r, g, b)
+-- Color hotkey function
+local function ColorHotkey(self, r, g, b)
 	local item = self:GetParent()
 	if item.rangeOverlay then
 		if r == 0.6 and g == 0.6 and b == 0.6 then
@@ -47,11 +54,12 @@ local function colorHotkey(self, r, g, b)
 	end
 end
 
-local function reskinRangeOverlay(item)
+-- Reskin range overlay function
+local function ReskinRangeOverlay(item)
 	item:CreateBorder()
 	item:SetNormalTexture(0)
 	item.KKUI_Border:SetVertexColor(1, 0.82, 0.2)
-	item.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	item.icon:SetTexCoord(unpack(K.TexCoords))
 	item.icon:SetAllPoints()
 
 	local rangeOverlay = item:CreateTexture(nil, "OVERLAY")
@@ -60,17 +68,18 @@ local function reskinRangeOverlay(item)
 	rangeOverlay:SetBlendMode("MOD")
 	item.rangeOverlay = rangeOverlay
 
-	hooksecurefunc(item.HotKey, "Show", showHotkey)
-	hooksecurefunc(item.HotKey, "Hide", hideHotkey)
-	hooksecurefunc(item.HotKey, "SetVertexColor", colorHotkey)
-	colorHotkey(item.HotKey, item.HotKey:GetTextColor())
+	hooksecurefunc(item.HotKey, "Show", ShowHotkey)
+	hooksecurefunc(item.HotKey, "Hide", HideHotkey)
+	hooksecurefunc(item.HotKey, "SetVertexColor", ColorHotkey)
+	ColorHotkey(item.HotKey, item.HotKey:GetTextColor())
 	item.HotKey:SetAlpha(0)
 end
 
-local function reskinItemButton(block)
+-- Reskin item button function
+local function ReskinItemButton(block)
 	if InCombatLockdown() then
 		return
-	end -- will break quest item button
+	end
 
 	local item = block and block.itemButton
 	if not item then
@@ -78,12 +87,13 @@ local function reskinItemButton(block)
 	end
 
 	if not item.skinned then
-		reskinRangeOverlay(item)
+		ReskinRangeOverlay(item)
 		item.skinned = true
 	end
 end
 
-local function reskinProgressBars(_, _, line)
+-- Reskin progress bars function
+local function ReskinProgressBars(_, _, line)
 	local progressBar = line and line.ProgressBar
 	local bar = progressBar and progressBar.Bar
 	if not bar then
@@ -135,7 +145,7 @@ local function reskinProgressBars(_, _, line)
 		if icon then
 			icon:SetSize(26, 26)
 			icon:SetMask("")
-			icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+			icon:SetTexCoord(unpack(K.TexCoords))
 			if not progressBar.KKUI_Backdrop then
 				progressBar:CreateBackdrop()
 				progressBar.KKUI_Backdrop:SetFrameLevel(6)
@@ -144,7 +154,6 @@ local function reskinProgressBars(_, _, line)
 			end
 		end
 
-		-- Attach the function directly to progressBar as a method
 		progressBar.PlayFlareAnim = K.Noop
 
 		progressBar.isSkinned = true
@@ -153,7 +162,8 @@ local function reskinProgressBars(_, _, line)
 	end
 end
 
-local function reskinTimerBars(_, _, line)
+-- Reskin timer bars function
+local function ReskinTimerBars(_, _, line)
 	local timerBar = line and line.TimerBar
 	local bar = timerBar and timerBar.Bar
 
@@ -167,122 +177,109 @@ local function reskinTimerBars(_, _, line)
 	end
 end
 
--- Repositions the Find Group button and/or the item button for a given block.
-local function repositionFindGroupButton(block, button)
-	-- Check if we are currently in combat lockdown, which could break the quest item button.
+-- Reposition find group button function
+local function RepositionFindGroupButton(block, button)
 	if InCombatLockdown() then
-		return -- Return early if we are in combat lockdown.
+		return
 	end
 
-	-- Check if a button was passed in and has a valid point.
 	if not button or not button.GetPoint then
-		return -- Return early if no valid button was passed in.
+		return
 	end
 
-	-- Get the current point of the button.
 	local point, relativeTo, relativePoint, xOffset, yOffset = button:GetPoint()
 
-	-- Reposition the item button if it is to the left of the group finder button.
 	if block.groupFinderButton and relativeTo == block.groupFinderButton and block.itemButton and button == block.itemButton then
-		xOffset = xOffset - 1 -- Move the item button one pixel to the left of the group finder button.
+		xOffset = xOffset - 1
 		button:SetPoint(point, relativeTo, relativePoint, xOffset, yOffset)
 	end
 
-	-- Reposition the group finder button if it is a child of the block frame.
 	if relativeTo == block and block.groupFinderButton and button == block.groupFinderButton then
-		yOffset = yOffset - 1 -- Move the group finder button one pixel down.
+		yOffset = yOffset - 1
 		button:SetPoint(point, relativeTo, relativePoint, xOffset, yOffset)
 	end
 end
 
--- Reskins the Find Group button for a given block.
-local function reskinFindGroupButton(block)
-	-- Check if the block has a Find Group button.
+-- Reskin find group button function
+local function ReskinFindGroupButton(block)
 	local findGroupButton = block.hasGroupFinderButton and block.groupFinderButton
 	if not findGroupButton then
-		return -- No Find Group button found, so return early.
+		return
 	end
 
-	-- Apply a custom skin to the Find Group button.
 	findGroupButton:SkinButton()
-
-	-- Set the size of the Find Group button to 22x22 pixels.
 	findGroupButton:SetSize(22, 22)
 
-	-- Set the texture and texture coordinates for the Find Group button icon.
 	local findGroupButtonIcon = findGroupButton.icon or findGroupButton.Icon
 	if findGroupButtonIcon then
 		findGroupButtonIcon:SetAtlas("groupfinder-eye-frame")
 		findGroupButtonIcon:SetAllPoints()
 		local texCoords = K.TexCoords
-		findGroupButtonIcon:SetTexCoord(texCoords[1], texCoords[2], texCoords[3], texCoords[4])
+		findGroupButtonIcon:SetTexCoord(unpack(texCoords))
 	end
 end
 
-local function changedTrackerState()
-	local minimizeButton = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
-	minimizeButton:SetNormalTexture(0)
-	minimizeButton:SetPushedTexture(0)
-	minimizeButton:SetSize(16, 16)
-	if _G.ObjectiveTrackerFrame.collapsed then
-		minimizeButton.tex:SetTexture(C["Media"].Textures.ArrowTexture)
-		minimizeButton.tex:SetRotation(rad(180))
-	else
-		minimizeButton.tex:SetTexture(C["Media"].Textures.ArrowTexture)
-		minimizeButton.tex:SetRotation(rad(0))
-	end
-end
-
-local function updateMinimizeButton(button, collapsed)
+-- Update minimize button function
+local function UpdateMinimizeButton(button, collapsed)
 	button:SetNormalTexture(0)
 	button:SetPushedTexture(0)
 	button:SetSize(16, 16)
 	if collapsed then
 		button.tex:SetTexture(C["Media"].Textures.ArrowTexture)
-		button.tex:SetRotation(rad(180))
+		button.tex:SetRotation(math.rad(180))
 	else
 		button.tex:SetTexture(C["Media"].Textures.ArrowTexture)
-		button.tex:SetRotation(rad(0))
+		button.tex:SetRotation(math.rad(0))
 	end
 end
 
+-- Change tracker state function
+local function ChangeTrackerState()
+	local minimizeButton = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
+	UpdateMinimizeButton(minimizeButton, _G.ObjectiveTrackerFrame.collapsed)
+end
+
+-- Register skinning functions
 tinsert(C.defaultThemes, function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
 	if C_AddOns.IsAddOnLoaded("!KalielsTracker") then
 		return
 	end
 
-	local minimize = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
-	minimize:SetNormalTexture(0)
-	minimize:SetPushedTexture(0)
-	minimize:SetSize(16, 16)
-	minimize:StripTextures()
-	minimize:SetHighlightTexture([[Interface\Buttons\UI-PlusButton-Hilight]], "ADD")
-	minimize.tex = minimize:CreateTexture(nil, "OVERLAY")
-	minimize.tex:SetTexture(C["Media"].Textures.ArrowTexture)
-	minimize.tex:SetDesaturated(true)
-	minimize.tex:SetAllPoints()
+	local minimizeButton = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
+	minimizeButton:SetNormalTexture(0)
+	minimizeButton:SetPushedTexture(0)
+	minimizeButton:SetSize(16, 16)
+	minimizeButton:StripTextures()
+	minimizeButton:SetHighlightTexture([[Interface\Buttons\UI-PlusButton-Hilight]], "ADD")
+	minimizeButton.tex = minimizeButton:CreateTexture(nil, "OVERLAY")
+	minimizeButton.tex:SetTexture(C["Media"].Textures.ArrowTexture)
+	minimizeButton.tex:SetDesaturated(true)
+	minimizeButton.tex:SetAllPoints()
 
-	hooksecurefunc("ObjectiveTracker_Expand", changedTrackerState)
-	hooksecurefunc("ObjectiveTracker_Collapse", changedTrackerState)
-	hooksecurefunc("QuestObjectiveSetupBlockButton_Item", reskinItemButton)
-	hooksecurefunc(_G.BONUS_OBJECTIVE_TRACKER_MODULE, "AddObjective", reskinItemButton)
-	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", repositionFindGroupButton) --[Move]: The eye & quest item to the left of the eye
-	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", reskinFindGroupButton) --[Skin]: The eye
-	hooksecurefunc(_G.BONUS_OBJECTIVE_TRACKER_MODULE, "AddProgressBar", reskinProgressBars) --[Skin]: Bonus Objective Progress Bar
-	hooksecurefunc(_G.WORLD_QUEST_TRACKER_MODULE, "AddProgressBar", reskinProgressBars) --[Skin]: World Quest Progress Bar
-	hooksecurefunc(_G.DEFAULT_OBJECTIVE_TRACKER_MODULE, "AddProgressBar", reskinProgressBars) --[Skin]: Quest Progress Bar
-	hooksecurefunc(_G.SCENARIO_TRACKER_MODULE, "AddProgressBar", reskinProgressBars) --[Skin]: Scenario Progress Bar
-	hooksecurefunc(_G.CAMPAIGN_QUEST_TRACKER_MODULE, "AddProgressBar", reskinProgressBars) --[Skin]: Campaign Progress Bar
-	hooksecurefunc(_G.QUEST_TRACKER_MODULE, "AddProgressBar", reskinProgressBars) --[Skin]: Quest Progress Bar
-	hooksecurefunc(_G.UI_WIDGET_TRACKER_MODULE, "AddProgressBar", reskinProgressBars) --[Skin]: New DF Quest Progress Bar
-	hooksecurefunc(_G.QUEST_TRACKER_MODULE, "AddTimerBar", reskinTimerBars) --[Skin]: Quest Timer Bar
-	hooksecurefunc(_G.SCENARIO_TRACKER_MODULE, "AddTimerBar", reskinTimerBars) --[Skin]: Scenario Timer Bar
-	hooksecurefunc(_G.ACHIEVEMENT_TRACKER_MODULE, "AddTimerBar", reskinTimerBars) --[Skin]: Achievement Timer Bar
+	hooksecurefunc("ObjectiveTracker_Expand", ChangeTrackerState)
+	hooksecurefunc("ObjectiveTracker_Collapse", ChangeTrackerState)
+	hooksecurefunc("QuestObjectiveSetupBlockButton_Item", ReskinItemButton)
+	hooksecurefunc(_G.BONUS_OBJECTIVE_TRACKER_MODULE, "AddObjective", ReskinItemButton)
+	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", RepositionFindGroupButton)
+	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", ReskinFindGroupButton)
+	hooksecurefunc(_G.BONUS_OBJECTIVE_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
+	hooksecurefunc(_G.WORLD_QUEST_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
+	hooksecurefunc(_G.DEFAULT_OBJECTIVE_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
+	hooksecurefunc(_G.SCENARIO_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
+	hooksecurefunc(_G.CAMPAIGN_QUEST_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
+	hooksecurefunc(_G.QUEST_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
+	hooksecurefunc(_G.UI_WIDGET_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
+	hooksecurefunc(_G.QUEST_TRACKER_MODULE, "AddTimerBar", ReskinTimerBars)
+	hooksecurefunc(_G.SCENARIO_TRACKER_MODULE, "AddTimerBar", ReskinTimerBars)
+	hooksecurefunc(_G.ACHIEVEMENT_TRACKER_MODULE, "AddTimerBar", ReskinTimerBars)
 
 	-- Reskin Headers
 	local headers = {
 		_G.BONUS_OBJECTIVE_TRACKER_MODULE.Header,
-		-- _G.MONTHLY_ACTIVITIES_TRACKER_MODULE,
 		_G.ObjectiveTrackerBlocksFrame.AchievementHeader,
 		_G.ObjectiveTrackerBlocksFrame.CampaignQuestHeader,
 		_G.ObjectiveTrackerBlocksFrame.ProfessionHeader,
@@ -292,7 +289,7 @@ tinsert(C.defaultThemes, function()
 		_G.WORLD_QUEST_TRACKER_MODULE.Header,
 	}
 	for _, header in pairs(headers) do
-		reskinHeader(header)
+		ReskinObjectiveHeader(header)
 
 		local button = header.MinimizeButton
 		if button then
@@ -301,10 +298,10 @@ tinsert(C.defaultThemes, function()
 			button:SetSize(16, 16)
 			button.tex = button:CreateTexture(nil, "OVERLAY")
 			button.tex:SetTexture(C["Media"].Textures.ArrowTexture)
-			button.tex:SetRotation(rad(0))
+			button.tex:SetRotation(math.rad(0))
 			button.tex:SetAllPoints()
 
-			hooksecurefunc(button, "SetCollapsed", updateMinimizeButton)
+			hooksecurefunc(button, "SetCollapsed", UpdateMinimizeButton)
 		end
 	end
 end)

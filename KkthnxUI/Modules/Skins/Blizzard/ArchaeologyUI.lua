@@ -1,8 +1,6 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
-C.themes["Blizzard_ArchaeologyUI"] = function()
-	local archaeologyBar = ArcheologyDigsiteProgressBar
-
+local function SetupArchaeologyBar(archaeologyBar)
 	-- Remove any existing textures from the bar
 	archaeologyBar:StripTextures()
 
@@ -14,9 +12,8 @@ C.themes["Blizzard_ArchaeologyUI"] = function()
 	fillBar:CreateBorder()
 
 	-- Add a spark texture to the fill bar
-	local sparkTexture = C["Media"].Textures.Spark16Texture
 	local spark = fillBar:CreateTexture(nil, "OVERLAY")
-	spark:SetTexture(sparkTexture)
+	spark:SetTexture(C["Media"].Textures.Spark16Texture)
 	spark:SetHeight(archaeologyBar:GetHeight())
 	spark:SetBlendMode("ADD")
 	spark:SetPoint("CENTER", fillBar:GetStatusBarTexture(), "RIGHT", 0, 0)
@@ -27,5 +24,16 @@ C.themes["Blizzard_ArchaeologyUI"] = function()
 		barTitle:ClearAllPoints()
 		barTitle:SetPoint("BOTTOM", archaeologyBar, "TOP", 0, -2)
 		barTitle:SetFontObject(K.UIFont)
+	end
+end
+
+C.themes["Blizzard_ArchaeologyUI"] = function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
+	local archaeologyBar = ArcheologyDigsiteProgressBar
+	if archaeologyBar then
+		SetupArchaeologyBar(archaeologyBar)
 	end
 end

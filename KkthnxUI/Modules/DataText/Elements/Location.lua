@@ -79,7 +79,7 @@ function Module:CreateLocationDataText()
 		LocationDataText:Hide()
 	end)
 
-	LocationDataText = LocationDataText or CreateFrame("Frame", "KKUI_LocationDataText", UIParent)
+	LocationDataText = CreateFrame("Frame", nil, UIParent)
 	LocationDataText:SetPoint("TOP", Minimap, "TOP", 0, -4)
 	LocationDataText:SetSize(Minimap:GetWidth(), 13)
 	LocationDataText:SetFrameLevel(Minimap:GetFrameLevel() + 2)
@@ -87,24 +87,26 @@ function Module:CreateLocationDataText()
 		LocationDataText:Hide()
 	end
 
-	LocationDataText.MainZoneText = LocationDataText:CreateFontString("OVERLAY")
-	LocationDataText.MainZoneText:SetFontObject(K.UIFont)
-	LocationDataText.MainZoneText:SetFont(select(1, LocationDataText.MainZoneText:GetFont()), 13, select(3, LocationDataText.MainZoneText:GetFont()))
+	LocationDataText.MainZoneText = K.CreateFontString(LocationDataText, 12)
 	LocationDataText.MainZoneText:SetAllPoints(LocationDataText)
 	LocationDataText.MainZoneText:SetWordWrap(true)
 	LocationDataText.MainZoneText:SetNonSpaceWrap(true)
 	LocationDataText.MainZoneText:SetMaxLines(2)
 
-	LocationDataText.SubZoneText = LocationDataText:CreateFontString("OVERLAY")
-	LocationDataText.SubZoneText:SetFontObject(K.UIFont)
-	LocationDataText.SubZoneText:SetFont(select(1, LocationDataText.SubZoneText:GetFont()), 11, select(3, LocationDataText.SubZoneText:GetFont()))
-	LocationDataText.SubZoneText:SetPoint("TOP", LocationDataText.MainZoneText, "BOTTOM", 0, -1)
+	LocationDataText.SubZoneText = K.CreateFontString(LocationDataText, 11)
+	LocationDataText.SubZoneText:ClearAllPoints()
+	LocationDataText.SubZoneText:SetPoint("TOP", LocationDataText.MainZoneText, "BOTTOM", 0, -2)
+	LocationDataText.SubZoneText:SetWordWrap(true)
 	LocationDataText.SubZoneText:SetNonSpaceWrap(true)
 	LocationDataText.SubZoneText:SetMaxLines(2)
+
+	local function _OnEvent(...)
+		OnEvent(...) -- ??
+	end
 
 	for _, event in pairs(eventList) do
 		LocationDataText:RegisterEvent(event)
 	end
 
-	LocationDataText:SetScript("OnEvent", OnEvent)
+	LocationDataText:SetScript("OnEvent", _OnEvent)
 end

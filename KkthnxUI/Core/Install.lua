@@ -233,63 +233,14 @@ function Module:ForceChatSettings()
 	resetAndConfigureChatFrames()
 
 	-- Configure specific chat frames
-	configureChatFrame(ChatFrame1, L["General"], { TRADE, L["Services"], GENERAL, "GuildRecruitment", "LookingForGroup" }, {
-		"ACHIEVEMENT",
-		"AFK",
-		"BG_ALLIANCE",
-		"BG_HORDE",
-		"BG_NEUTRAL",
-		"BN_INLINE_TOAST_ALERT",
-		"CHANNEL",
-		"DND",
-		"EMOTE",
-		"ERRORS",
-		"GUILD",
-		"GUILD_ACHIEVEMENT",
-		"IGNORED",
-		"INSTANCE_CHAT",
-		"INSTANCE_CHAT_LEADER",
-		"MONSTER_BOSS_EMOTE",
-		"MONSTER_BOSS_WHISPER",
-		"MONSTER_EMOTE",
-		"MONSTER_SAY",
-		"MONSTER_WHISPER",
-		"MONSTER_YELL",
-		"OFFICER",
-		"PARTY",
-		"PARTY_LEADER",
-		"RAID",
-		"RAID_LEADER",
-		"RAID_WARNING",
-		"SAY",
-		"SYSTEM",
-		"YELL",
-	})
+	configureChatFrame(ChatFrame1, L["General"], { TRADE, L["Services"], GENERAL, "GuildRecruitment", "LookingForGroup" }, { "ACHIEVEMENT", "AFK", "BG_ALLIANCE", "BG_HORDE", "BG_NEUTRAL", "BN_INLINE_TOAST_ALERT", "CHANNEL", "DND", "EMOTE", "ERRORS", "GUILD", "GUILD_ACHIEVEMENT", "IGNORED", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "MONSTER_EMOTE", "MONSTER_SAY", "MONSTER_WHISPER", "MONSTER_YELL", "OFFICER", "PARTY", "PARTY_LEADER", "PING", "RAID", "RAID_LEADER", "RAID_WARNING", "SAY", "SYSTEM", "YELL" })
 	configureChatFrame(ChatFrame2, L["CombatLog"], nil, {}, true)
 	configureChatFrame(ChatFrame4, L["Whisper"], nil, { "WHISPER", "BN_WHISPER", "BN_CONVERSATION" }, true)
 	configureChatFrame(ChatFrame5, L["Trade"], nil, {}, true)
 	configureChatFrame(ChatFrame6, L["Loot"], nil, { "COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "SKILL", "LOOT", "CURRENCY", "MONEY" }, true)
 
 	configureChatColors()
-
-	local classColorGroups = {
-		"SAY",
-		"EMOTE",
-		"YELL",
-		"WHISPER",
-		"PARTY",
-		"PARTY_LEADER",
-		"RAID",
-		"RAID_LEADER",
-		"RAID_WARNING",
-		"INSTANCE_CHAT",
-		"INSTANCE_CHAT_LEADER",
-		"GUILD",
-		"OFFICER",
-		"ACHIEVEMENT",
-		"GUILD_ACHIEVEMENT",
-		"COMMUNITIES_CHANNEL",
-	}
+	local classColorGroups = { "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL" }
 	local maxChatChannels = _G.MAX_WOW_CHAT_CHANNELS or 10 -- Fallback in case the global isn't set
 	for i = 1, maxChatChannels do
 		table.insert(classColorGroups, "CHANNEL" .. i)
@@ -298,40 +249,32 @@ function Module:ForceChatSettings()
 end
 
 local function CreateFakeAchievementPopup()
-	local popup = CreateFrame("Frame", "KkthnxUIFakeAchievement", UIParent, "GlowBoxTemplate")
-	popup:SetSize(300, 70) -- Size similar to the achievement frame
+	local popup = CreateFrame("Frame", "KKUI_FakeAchievement", UIParent)
+	popup:SetSize(310, 70) -- Size similar to the achievement frame
 	popup:SetPoint("TOP", UIParent, "TOP", 0, -150)
 	popup:SetFrameStrata("DIALOG")
+	popup:CreateBorder()
 	popup:Hide() -- Hide the frame initially
 
-	-- Background texture
-	popup.bg = popup:CreateTexture(nil, "BACKGROUND")
-	popup.bg:SetTexture("Interface\\AchievementFrame\\UI-Achievement-AchievementBackground")
-	popup.bg:SetPoint("CENTER")
-	popup.bg:SetSize(296, 66)
-	popup.bg:SetTexCoord(0, 1, 0, 0.28125)
-
 	-- Achievement icon
-	popup.icon = popup:CreateTexture(nil, "OVERLAY")
-	popup.icon:SetSize(44, 44)
-	popup.icon:SetPoint("LEFT", 8, 0)
-	popup.icon:SetTexture("Interface\\Icons\\Achievement_General") -- Placeholder texture
+	popup.icon = popup:CreateTexture(nil, "OVERLAY", nil, 6)
+	popup.icon:SetSize(50, 50)
+	popup.icon:SetPoint("LEFT", 10, 0)
+	popup.icon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\KkthnxUI_Spell_Icon") -- Placeholder texture
+	popup.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
-	-- Assuming you have already created 'popup.icon' before this
-	popup.iconFrame = popup:CreateTexture(nil, "OVERLAY", nil, 6)
-	popup.iconFrame:SetSize(56, 56) -- Adjust the size as needed to fit around the icon
-	popup.iconFrame:SetPoint("CENTER", popup.icon, "CENTER", 0, 0)
-	popup.iconFrame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-IconFrame")
-	popup.iconFrame:SetTexCoord(0, 0.5625, 0, 0.5625) -- Adjust if needed to get the correct part of the texture
+	popup.iconFrame = CreateFrame("Frame", nil, popup)
+	popup.iconFrame:SetAllPoints(popup.icon)
+	popup.iconFrame:CreateBorder(nil, nil, nil, nil, nil, nil, "")
 
 	-- Title
 	popup.title = popup:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	popup.title:SetPoint("TOP", popup.bg, "TOP", 0, 18)
+	popup.title:SetPoint("TOP", popup, "TOP", 0, 18)
 
 	-- Description
 	popup.description = popup:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-	popup.description:SetPoint("LEFT", popup.icon, "RIGHT", 8, 0) -- 8 is the padding from the icon, adjust as needed
-	popup.description:SetPoint("RIGHT", popup.bg, "RIGHT", -8, 0) -- -8 is the padding from the right edge, adjust as needed
+	popup.description:SetPoint("LEFT", popup.icon, "RIGHT", 14, 0) -- 8 is the padding from the icon, adjust as needed
+	popup.description:SetPoint("RIGHT", popup, "RIGHT", -8, 0) -- -8 is the padding from the right edge, adjust as needed
 	popup.description:SetJustifyH("LEFT") -- Align text to the left
 	popup.description:SetWordWrap(true) -- Enable word wrapping
 
@@ -449,13 +392,7 @@ local function YesTutor()
 	apply.text:SetText(APPLY)
 	apply.text:SetTextColor(0, 1, 0)
 
-	local titles = {
-		DEFAULT .. " " .. SETTINGS,
-		CHAT,
-		UI_SCALE,
-		"Skins",
-		"Tips",
-	}
+	local titles = { DEFAULT .. " " .. SETTINGS, CHAT, UI_SCALE, "Skins", "Tips" }
 
 	local function RefreshText(page)
 		title:SetText(titles[page])
@@ -632,17 +569,12 @@ local function HelloWorld()
 	goTutor:SetSize(110, 22)
 	goTutor:SkinButton()
 
-	if welcome:IsShown() then
-		K.ShowOverlayGlow(goTutor, "AutoCastGlow")
-	end
-
 	goTutor.text = goTutor:CreateFontString(nil, "OVERLAY")
 	goTutor.text:SetFontObject(K.UIFont)
 	goTutor.text:SetPoint("CENTER", 0, -1)
 	goTutor.text:SetText(K.MyClassColor .. START .. "|r")
 
 	goTutor:SetScript("OnClick", function()
-		K.HideOverlayGlow(goTutor, "AutoCastGlow")
 		welcome:Hide()
 		YesTutor()
 	end)

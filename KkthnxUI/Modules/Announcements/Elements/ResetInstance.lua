@@ -15,17 +15,11 @@ local resetMessageList = {
 
 -- Function that sets up instance reset messages
 local function SetupResetInstance(_, text)
-	-- Iterate through each system message and friendly message in resetMessageList table
 	for systemMessage, friendlyMessage in pairs(resetMessageList) do
-		-- Get the system message from global variable
 		systemMessage = _G[systemMessage]
-		-- Check if the input text matches the system message
 		if string_match(text, string_gsub(systemMessage, "%%s", ".+")) then
-			-- Extract the instance name from the text
 			local instance = string_match(text, string_gsub(systemMessage, "%%s", "(.+)"))
-			-- Send the friendly message to the appropriate chat channel
 			SendChatMessage(string_format(friendlyMessage, instance), K.CheckChat())
-			-- Exit the function once the message has been sent
 			return
 		end
 	end

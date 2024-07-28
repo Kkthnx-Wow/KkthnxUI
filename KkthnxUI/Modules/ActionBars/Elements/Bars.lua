@@ -238,7 +238,7 @@ function Module:UpdateButtonConfig(i)
 		-- Set the check focus cast attribute to true
 		button:SetAttribute("checkfocuscast", true)
 		-- Set the check self cast attribute to true
-		-- button:SetAttribute("checkselfcast", true)
+		button:SetAttribute("checkselfcast", true)
 		-- Set the unit 2 attribute to "player"
 		-- button:SetAttribute("*unit2", "player")
 		-- Update the config for the button
@@ -416,7 +416,7 @@ end
 
 function Module:OnEnable()
 	Module.buttons = {}
-	Module:MicroMenu()
+	Module:CreateMicroMenu()
 
 	if C_AddOns.IsAddOnLoaded("ConsolePort") then
 		return

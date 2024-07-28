@@ -55,11 +55,8 @@ local roleOrder = {
 	["HEALER"] = 2,
 	["DAMAGER"] = 3,
 }
-local roleTexes = {
-	"Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Tank",
-	"Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Healer",
-	"Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Roles\\Damage",
-}
+
+local indexToRole = { "TANK", "HEALER", "DAMAGER" }
 
 local function sortRoleOrder(a, b)
 	if a and b then
@@ -161,7 +158,8 @@ function Module:ReplaceGroupRoles(numPlayers, _, disabled)
 		if roleInfo then
 			local icon = self.Icons[iconIndex]
 			icon:SetAtlas(LFG_LIST_GROUP_DATA_ATLASES[roleInfo[2]])
-			icon.role:SetTexture(roleTexes[roleInfo[1]])
+			icon.role:SetSize(14, 14)
+			K.ReskinSmallRole(icon.role, indexToRole[roleInfo[1]])
 			icon.leader:SetShown(roleInfo[3])
 			iconIndex = iconIndex - 1
 		end
@@ -180,23 +178,9 @@ function Module:AddAutoAcceptButton()
 	K.CreateFontString(bu, 13, _G.LFG_LIST_AUTO_ACCEPT, "", "system", "LEFT", 24, 0)
 
 	local lastTime = 0
-	-- local function clickInviteButton(button)
-	-- 	if button.applicantID and button.InviteButton:IsEnabled() then
-	-- 		button.InviteButton:Click()
-	-- 	end
-	-- end
-
 	local function clickInviteButton(button)
 		if button.applicantID and button.InviteButton:IsEnabled() then
-			local inviteButton = button.InviteButton
-
-			if inviteButton:IsProtected() then
-				-- Use the secure method to click the button
-				SecureActionButton_OnClick(inviteButton)
-			else
-				-- Fallback for non-secure buttons
-				inviteButton:Click()
-			end
+			button.InviteButton:Click()
 		end
 	end
 
@@ -288,100 +272,6 @@ function Module:ReplaceFindGroupButton()
 			LFGListFrame_SetActivePanel(LFGListFrame, searchPanel)
 		end
 		lastCategory = selectedCategory
-	end)
-end
-
-function Module:AddDungeonsFilter()
-	local mapData = {
-		[0] = { aID = 1247, mapID = 463 }, -- 永恒黎明：迦拉克隆的陨落
-		[1] = { aID = 1248, mapID = 464 }, -- 永恒黎明：姆诺兹多的崛起
-		[2] = { aID = 530, mapID = 248 }, -- 维克雷斯庄园
-		[3] = { aID = 502, mapID = 244 }, -- 阿塔达萨
-		[4] = { aID = 460, mapID = 198 }, -- 黑心林地
-		[5] = { aID = 463, mapID = 199 }, -- 黑鸦堡垒
-		[6] = { aID = 184, mapID = 168 }, -- 永茂林地
-		[7] = { aID = 1274, mapID = 456 }, -- 潮汐王座
-	}
-
-	local function GetDungeonNameByID(mapID)
-		local name = C_ChallengeMode_GetMapUIInfo(mapID)
-		name = gsub(name, ".-" .. HEADER_COLON, "") -- abbr Tazavesh
-		return name
-	end
-
-	local allOn
-	local filterIDs = {}
-
-	local function toggleAll()
-		allOn = not allOn
-		for i = 0, 7 do
-			mapData[i].isOn = allOn
-			filterIDs[mapData[i].aID] = allOn
-		end
-		UIDropDownMenu_Refresh(B.EasyMenu)
-		LFGListSearchPanel_DoSearch(searchPanel)
-	end
-
-	local menuList = {
-		[1] = { text = SPECIFIC_DUNGEONS, isTitle = true, notCheckable = true },
-		[2] = { text = SWITCH, notCheckable = true, keepShownOnClick = true, func = toggleAll },
-	}
-
-	local function onClick(self, index, aID)
-		allOn = true
-		mapData[index].isOn = not mapData[index].isOn
-		filterIDs[aID] = mapData[index].isOn
-		LFGListSearchPanel_DoSearch(searchPanel)
-	end
-
-	local function onCheck(self)
-		return mapData[self.arg1].isOn
-	end
-
-	for i = 0, 7 do
-		local value = mapData[i]
-		menuList[i + 3] = {
-			text = GetDungeonNameByID(value.mapID),
-			arg1 = i,
-			arg2 = value.aID,
-			func = onClick,
-			checked = onCheck,
-			keepShownOnClick = true,
-		}
-		filterIDs[value.aID] = false
-	end
-
-	searchPanel.RefreshButton:HookScript("OnMouseDown", function(self, btn)
-		if btn ~= "RightButton" then
-			return
-		end
-		EasyMenu(menuList, K.EasyMenu, self, 25, 50, "MENU")
-	end)
-
-	searchPanel.RefreshButton:HookScript("OnEnter", function()
-		GameTooltip:AddLine(K.RightButton .. _G.SPECIFIC_DUNGEONS)
-		GameTooltip:Show()
-	end)
-
-	hooksecurefunc("LFGListUtil_SortSearchResults", function(results)
-		if categorySelection.selectedCategory ~= 2 then
-			return
-		end
-		if not allOn then
-			return
-		end
-
-		for i = #results, 1, -1 do
-			local resultID = results[i]
-			local searchResultInfo = C_LFGList_GetSearchResultInfo(resultID)
-			local aID = searchResultInfo and searchResultInfo.activityID
-			if aID and not filterIDs[aID] then
-				tremove(results, i)
-			end
-		end
-		searchPanel.totalResults = #results
-
-		return true
 	end)
 end
 
@@ -497,8 +387,8 @@ function Module:QuickJoin()
 
 	Module:AddAutoAcceptButton()
 	Module:ReplaceFindGroupButton()
-	Module:AddDungeonsFilter()
 	Module:AddPGFSortingExpression()
 	Module:FixListingTaint()
 end
+
 Module:RegisterMisc("QuickJoin", Module.QuickJoin)

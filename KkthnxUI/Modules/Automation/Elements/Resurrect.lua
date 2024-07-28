@@ -1,12 +1,12 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Automation")
 
+local AcceptResurrect = AcceptResurrect
 local C_Timer_After = C_Timer.After
 local DoEmote = DoEmote
 local StaticPopup_Hide = StaticPopup_Hide
 local UnitAffectingCombat = UnitAffectingCombat
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
-local IsActiveBattlefieldArena = IsActiveBattlefieldArena
 
 local localizedPylonNames = {
 	enUS = "Failure Detection Pylon",
@@ -35,8 +35,7 @@ local localizedBrazierNames = {
 	itIT = "Braciere del Risveglio",
 }
 
-local function SetupAutoResurrect(_, arg1)
-	print(arg1)
+local function SetupAutoResurrect(event, arg1)
 	-- Check if the arg1 is a Pylon or Brazier by comparing it to the localized names.
 	-- If it is, we don't need to do anything and we return
 	if localizedPylonNames[K.Client] == arg1 or localizedBrazierNames[K.Client] == arg1 then
@@ -66,12 +65,11 @@ local function SetupAutoResurrect(_, arg1)
 end
 
 function Module:CreateAutoResurrect()
-	-- Check if the player is in a battleground or arena and if player is dead or ghost
-	if IsActiveBattlefieldArena() and UnitIsDeadOrGhost("player") then
-		-- Check the value of AutoResurrect
-		if C["Automation"].AutoResurrect then
-			-- Register the event
-			K:RegisterEvent("RESURRECT_REQUEST", SetupAutoResurrect)
-		end
+	if C["Automation"].AutoResurrect then
+		-- Register the event
+		K:RegisterEvent("RESURRECT_REQUEST", SetupAutoResurrect)
+	else
+		-- Unregister the event if AutoResurrect is not enabled
+		K:UnregisterEvent("RESURRECT_REQUEST", SetupAutoResurrect)
 	end
 end

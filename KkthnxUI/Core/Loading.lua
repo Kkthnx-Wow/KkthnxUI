@@ -26,7 +26,6 @@ local function KKUI_VerifyDatabase()
 	charData.CustomItems = charData.CustomItems or {}
 	charData.CustomJunkList = charData.CustomJunkList or {}
 	charData.CustomNames = charData.CustomNames or {}
-	charData.DisabledAddOns = charData.DisabledAddOns or {}
 	charData.InternalCD = charData.InternalCD or {}
 	charData.Mover = charData.Mover or {}
 	charData.RevealWorldMap = charData.RevealWorldMap or false
@@ -145,9 +144,10 @@ local function KKUI_LoadAddon()
 end
 
 local function KKUI_OnEvent(_, event, addonName)
-	KKUI_VerifyDatabase()
+	-- KKUI_VerifyDatabase()
 
 	if event == "VARIABLES_LOADED" then
+		KKUI_VerifyDatabase()
 		KKUI_LoadVariables()
 	elseif event == "ADDON_LOADED" and addonName == "KkthnxUI" then
 		KKUI_LoadAddon()

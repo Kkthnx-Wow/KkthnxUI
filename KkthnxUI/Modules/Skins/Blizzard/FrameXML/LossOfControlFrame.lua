@@ -1,14 +1,15 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
+local table_insert = table.insert
 
+-- Function to skin the LossOfControl frame
 table.insert(C.defaultThemes, function()
-	if not C.Skins.BlizzardFrames then
+	if not C["Skins"].BlizzardFrames then
 		return
 	end
 
 	local frame = LossOfControlFrame
-
 	frame:StripTextures()
 
 	local iconBorder = CreateFrame("Frame", nil, frame)
@@ -20,7 +21,6 @@ table.insert(C.defaultThemes, function()
 
 	frame.AbilityName:ClearAllPoints()
 	frame.AbilityName:SetPoint("BOTTOM", frame, 0, -8)
-
 	frame.AbilityName.scrollTime = nil
 	frame.AbilityName:SetFontObject(K.UIFont)
 	frame.AbilityName:SetFont(select(1, frame.AbilityName:GetFont()), 20, select(3, frame.AbilityName:GetFont()))
@@ -29,18 +29,18 @@ table.insert(C.defaultThemes, function()
 	frame.TimeLeft.SecondsText:Hide()
 
 	hooksecurefunc("LossOfControlFrame_SetUpDisplay", function(self)
-		local Icon = self.Icon
-		local AbilityName = self.AbilityName
-		local Anim = self.Anim
+		local icon = self.Icon
+		local abilityName = self.AbilityName
+		local animation = self.Anim
 
-		Icon:ClearAllPoints()
-		Icon:SetPoint("CENTER", self)
+		icon:ClearAllPoints()
+		icon:SetPoint("CENTER", self)
 
-		AbilityName:ClearAllPoints()
-		AbilityName:SetPoint("BOTTOM", self, 0, -8)
+		abilityName:ClearAllPoints()
+		abilityName:SetPoint("BOTTOM", self, 0, -8)
 
-		if Anim and Anim:IsPlaying() then
-			Anim:Stop()
+		if animation and animation:IsPlaying() then
+			animation:Stop()
 		end
 	end)
 

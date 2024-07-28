@@ -1,50 +1,33 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 local Module = K:GetModule("Miscellaneous")
 
--- Basic Lua functions
-local pairs = pairs
-local tinsert = tinsert
-local select = select
+-- General Lua functions
+local pairs, tinsert, select = pairs, tinsert, select
 
--- Spell related functions
-local GetSpellCooldown = GetSpellCooldown
-local GetSpellInfo = GetSpellInfo
-local IsPassiveSpell = IsPassiveSpell
-local IsCurrentSpell = IsCurrentSpell
-local IsPlayerSpell = IsPlayerSpell
-local GetSpellBookItemInfo = GetSpellBookItemInfo
+-- WoW API functions related to spells and items
+local GetSpellCooldown, GetSpellInfo, GetItemCooldown, GetItemCount, GetItemInfo = GetSpellCooldown, GetSpellInfo, GetItemCooldown, GetItemCount, GetItemInfo
+local IsPassiveSpell, IsCurrentSpell, IsPlayerSpell = IsPassiveSpell, IsCurrentSpell, IsPlayerSpell
 
--- Item related functions
-local GetItemCooldown = GetItemCooldown
-local GetItemCount = GetItemCount
-local GetItemInfo = GetItemInfo
-local UseItemByName = UseItemByName
-local PlayerHasToy = PlayerHasToy
-
--- Toy Box functions
-local C_ToyBox_IsToyUsable = C_ToyBox.IsToyUsable
-local C_ToyBox_GetToyInfo = C_ToyBox.GetToyInfo
-
--- Trade Skill UI functions
-local C_TradeSkillUI_GetOnlyShowSkillUpRecipes = C_TradeSkillUI.GetOnlyShowSkillUpRecipes
-local C_TradeSkillUI_SetOnlyShowSkillUpRecipes = C_TradeSkillUI.SetOnlyShowSkillUpRecipes
-local C_TradeSkillUI_GetOnlyShowMakeableRecipes = C_TradeSkillUI.GetOnlyShowMakeableRecipes
-local C_TradeSkillUI_SetOnlyShowMakeableRecipes = C_TradeSkillUI.SetOnlyShowMakeableRecipes
+-- WoW API functions related to professions and trade skills
+local GetProfessions, GetProfessionInfo, GetSpellBookItemInfo = GetProfessions, GetProfessionInfo, GetSpellBookItemInfo
+local PlayerHasToy, C_ToyBox_IsToyUsable, C_ToyBox_GetToyInfo = PlayerHasToy, C_ToyBox.IsToyUsable, C_ToyBox.GetToyInfo
+local C_TradeSkillUI_GetOnlyShowSkillUpRecipes, C_TradeSkillUI_SetOnlyShowSkillUpRecipes = C_TradeSkillUI.GetOnlyShowSkillUpRecipes, C_TradeSkillUI.SetOnlyShowSkillUpRecipes
+local C_TradeSkillUI_GetOnlyShowMakeableRecipes, C_TradeSkillUI_SetOnlyShowMakeableRecipes = C_TradeSkillUI.GetOnlyShowMakeableRecipes, C_TradeSkillUI.SetOnlyShowMakeableRecipes
 
 local BOOKTYPE_PROFESSION = BOOKTYPE_PROFESSION
 local RUNEFORGING_ID = 53428
 local PICK_LOCK = 1804
 local CHEF_HAT = 134020
 local THERMAL_ANVIL = 87216
-local ENCHANTING_VELLUM = 38682
 local tabList = {}
 
 local onlyPrimary = {
 	[171] = true, -- Alchemy
-	[202] = true, -- Engineering
 	[182] = true, -- Herbalism
-	[393] = true, -- Skinning
+	[186] = true, -- Mining
+	[202] = true, -- Engineering
 	[356] = true, -- Fishing
+	[393] = true, -- Skinning
 }
 
 function Module:UpdateProfessions()
@@ -107,6 +90,7 @@ function Module:TradeTabs_Update()
 		else
 			start, duration = GetSpellCooldown(spellID)
 		end
+
 		if start and duration and duration > 1.5 then
 			tab.CD:SetCooldown(start, duration)
 		end
@@ -123,9 +107,10 @@ function Module:TradeTabs_Create(spellID, toyID, itemID)
 	else
 		name, _, texture = GetSpellInfo(spellID)
 	end
-	if not name then
+
+	if not name then -- precaution
 		return
-	end -- precaution
+	end
 
 	local tab = CreateFrame("CheckButton", nil, ProfessionsFrame, "SpellBookSkillLineTabTemplate, SecureActionButtonTemplate")
 	tab.tooltip = name
@@ -151,7 +136,7 @@ function Module:TradeTabs_Create(spellID, toyID, itemID)
 	tab.cover:SetAllPoints()
 	tab.cover:EnableMouse(true)
 
-	tab:SetPoint("TOPLEFT", ProfessionsFrame, "TOPRIGHT", 3, -index * 42)
+	tab:SetPoint("TOPLEFT", ProfessionsFrame, "TOPRIGHT", 2, -index * 50)
 	tinsert(tabList, tab)
 	index = index + 1
 end
@@ -166,7 +151,7 @@ function Module:TradeTabs_FilterIcons()
 		local value = self.__value
 		if value[3]() then
 			value[4](false)
-			self.KKUI_Border:SetVertexColor(1, 1, 1)
+			K.SetBorderColor(self.KKUI_Border)
 		else
 			value[4](true)
 			self.KKUI_Border:SetVertexColor(1, 0.8, 0)
@@ -175,9 +160,9 @@ function Module:TradeTabs_FilterIcons()
 
 	local buttons = {}
 	for index, value in pairs(buttonList) do
-		local bu = CreateFrame("Button", nil, ProfessionsFrame.CraftingPage, "BackdropTemplate")
+		local bu = CreateFrame("Button", nil, ProfessionsFrame.CraftingPage.RecipeList, "BackdropTemplate")
 		bu:SetSize(22, 22)
-		bu:SetPoint("BOTTOMRIGHT", ProfessionsFrame.CraftingPage.RecipeList.FilterButton, "TOPRIGHT", -(index - 1) * 27, 10)
+		bu:SetPoint("BOTTOMRIGHT", ProfessionsFrame.CraftingPage.RecipeList.FilterButton, "TOPRIGHT", -(index - 1) * 28, 10)
 		bu:CreateBorder()
 		bu.Icon = bu:CreateTexture(nil, "ARTWORK")
 		local atlas = string.match(value[1], "Atlas:(.+)$")
@@ -186,7 +171,8 @@ function Module:TradeTabs_FilterIcons()
 		else
 			bu.Icon:SetTexture(value[1])
 		end
-		bu.Icon:SetAllPoints()
+		bu.Icon:SetPoint("TOPLEFT", bu, "TOPLEFT", 2, -2)
+		bu.Icon:SetPoint("BOTTOMRIGHT", bu, "BOTTOMRIGHT", -2, 2)
 		bu.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		K.AddTooltip(bu, "ANCHOR_TOP", value[2])
 		bu.__value = value
@@ -200,7 +186,7 @@ function Module:TradeTabs_FilterIcons()
 			if value[3]() then
 				buttons[index].KKUI_Border:SetVertexColor(1, 0.8, 0)
 			else
-				buttons[index].KKUI_Border:SetVertexColor(1, 1, 1)
+				K.SetBorderColor(buttons[index].KKUI_Border)
 			end
 		end
 	end
@@ -219,41 +205,15 @@ function Module:TradeTabs_OnLoad()
 	K:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", Module.TradeTabs_Update)
 
 	Module:TradeTabs_FilterIcons()
-	Module:TradeTabs_QuickEnchanting()
 
 	K:UnregisterEvent("PLAYER_REGEN_ENABLED", Module.TradeTabs_OnLoad)
-end
-
-local isEnchanting
-local tooltipString = "|cffffffff%s(%d)"
-function Module:TradeTabs_QuickEnchanting()
-	if ProfessionsFrame.CraftingPage.ValidateControls then
-		hooksecurefunc(ProfessionsFrame.CraftingPage, "ValidateControls", function(self)
-			isEnchanting = nil
-			local currentRecipeInfo = self.SchematicForm:GetRecipeInfo()
-			if currentRecipeInfo and currentRecipeInfo.alternateVerb then
-				local professionInfo = ProfessionsFrame:GetProfessionInfo()
-				if professionInfo and professionInfo.parentProfessionID == 333 then
-					isEnchanting = true
-					self.CreateButton.tooltipText = format(tooltipString, "Right click to use Vellum", GetItemCount(ENCHANTING_VELLUM))
-				end
-			end
-		end)
-	end
-
-	local createButton = ProfessionsFrame.CraftingPage.CreateButton
-	createButton:RegisterForClicks("AnyUp")
-	createButton:HookScript("OnClick", function(_, btn)
-		if btn == "RightButton" and isEnchanting then
-			UseItemByName(ENCHANTING_VELLUM)
-		end
-	end)
 end
 
 local function LoadTradeTabs()
 	if init then
 		return
 	end
+
 	if InCombatLockdown() then
 		K:RegisterEvent("PLAYER_REGEN_ENABLED", Module.TradeTabs_OnLoad)
 	else
@@ -261,7 +221,7 @@ local function LoadTradeTabs()
 	end
 end
 
-function Module:TradeTabs()
+function Module:CreateTradeTabs()
 	if not C["Misc"].TradeTabs then
 		return
 	end
@@ -276,4 +236,5 @@ function Module:TradeTabs()
 		end)
 	end
 end
-Module:RegisterMisc("TradeTabs", Module.TradeTabs)
+
+Module:RegisterMisc("TradeTabs", Module.CreateTradeTabs)

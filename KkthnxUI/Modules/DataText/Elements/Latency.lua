@@ -79,28 +79,27 @@ function Module:CreateLatencyDataText()
 		return
 	end
 
-	LatencyDataText = LatencyDataText or CreateFrame("Button", "KKUI_LatencyDataText", UIParent)
-	LatencyDataText:SetSize(24, 24)
+	local xOffset = C["DataText"].System and 26 or 0
+	local anchorFrame = C["DataText"].System and _G.KKUI_SystemDataText.Text or UIParent
+	local anchorPoint1 = C["DataText"].System and "LEFT" or "TOPLEFT"
+	local anchorPoint2 = C["DataText"].System and "RIGHT" or "TOPLEFT"
 
-	LatencyDataText.Texture = LatencyDataText:CreateTexture(nil, "BACKGROUND")
-	LatencyDataText.Texture:SetPoint("LEFT", LatencyDataText, "LEFT", 2, 0)
+	LatencyDataText = CreateFrame("Frame", nil, UIParent)
+	LatencyDataText:SetHitRectInsets(-16, 0, -10, -10)
+
+	LatencyDataText.Text = K.CreateFontString(LatencyDataText, 12)
+	LatencyDataText.Text:ClearAllPoints()
+	LatencyDataText.Text:SetPoint(anchorPoint1, anchorFrame, anchorPoint2, xOffset, 0)
+
+	LatencyDataText.Texture = LatencyDataText:CreateTexture(nil, "ARTWORK")
+	LatencyDataText.Texture:SetPoint("RIGHT", LatencyDataText.Text, "LEFT", -4, 2)
 	LatencyDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\ping.tga")
 	LatencyDataText.Texture:SetSize(16, 16)
 	LatencyDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
-	LatencyDataText.Text = LatencyDataText:CreateFontString("OVERLAY")
-	LatencyDataText.Text:SetFontObject(K.UIFont)
-	LatencyDataText.Text:SetPoint("LEFT", LatencyDataText.Texture, "RIGHT", 4, 0)
+	LatencyDataText:SetAllPoints(LatencyDataText.Text)
 
-	if C["DataText"].System then
-		LatencyDataText.Pos = { "LEFT", _G.KKUI_SystemDataText.Text, "RIGHT", 4, 0 }
-	else
-		LatencyDataText.Pos = { "TOPLEFT", UIParent, "TOPLEFT", 0, 0 }
-	end
-
-	LatencyDataText:SetScript("OnUpdate", OnUpdate)
 	LatencyDataText:SetScript("OnEnter", OnEnter)
 	LatencyDataText:SetScript("OnLeave", OnLeave)
-
-	K.Mover(LatencyDataText, "KKUI_LatencyDataText", "KKUI_LatencyDataText", LatencyDataText.Pos)
+	LatencyDataText:SetScript("OnUpdate", OnUpdate)
 end

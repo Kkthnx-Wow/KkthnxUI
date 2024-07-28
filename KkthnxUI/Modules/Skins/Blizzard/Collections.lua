@@ -1,10 +1,6 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
-C.themes["Blizzard_Collections"] = function()
-	if K.CheckAddOnState("BetterWardrobe") then
-		return
-	end
-
+local function AdjustWardrobeFrame()
 	local WardrobeFrame = _G["WardrobeFrame"]
 	local WardrobeTransmogFrame = _G["WardrobeTransmogFrame"]
 
@@ -41,9 +37,23 @@ C.themes["Blizzard_Collections"] = function()
 	-- Hide the control frame
 	WardrobeTransmogFrame.ModelScene.ControlFrame:SetAlpha(0)
 	WardrobeTransmogFrame.ModelScene.ControlFrame:SetScale(0.00001)
+end
 
-	-- Optionally remove the tutorial button
+local function HideTutorialButton()
 	if C["General"].NoTutorialButtons then
 		_G.PetJournalTutorialButton:Kill()
 	end
+end
+
+C.themes["Blizzard_Collections"] = function()
+	if not C["Skins"].BlizzardFrames then
+		return
+	end
+
+	if K.CheckAddOnState("BetterWardrobe") then
+		return
+	end
+
+	AdjustWardrobeFrame()
+	HideTutorialButton()
 end

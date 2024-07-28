@@ -6,50 +6,6 @@ if K.Class ~= "DRUID" then
 end
 
 local list = {
-	["Player Aura"] = { -- 玩家光环组
-		{ AuraID = 5215, UnitID = "player" }, -- 潜行
-		{ AuraID = 1850, UnitID = "player" }, -- 急奔
-		{ AuraID = 137452, UnitID = "player" }, -- 野性位移
-		{ AuraID = 102416, UnitID = "player" }, -- 野性冲锋：泳速
-		{ AuraID = 774, UnitID = "player", Caster = "player" }, -- 回春术
-		{ AuraID = 8936, UnitID = "player", Caster = "player" }, -- 愈合
-		{ AuraID = 33763, UnitID = "player", Caster = "player" }, -- 生命绽放
-		{ AuraID = 188550, UnitID = "player", Caster = "player" }, -- 生命绽放，橙装
-		{ AuraID = 48438, UnitID = "player", Caster = "player" }, -- 野性成长
-		{ AuraID = 102351, UnitID = "player", Caster = "player" }, -- 塞纳里奥结界
-		{ AuraID = 155777, UnitID = "player", Caster = "player" }, -- 萌芽
-	},
-	["Target Aura"] = { -- 目标光环组
-		{ AuraID = 99, UnitID = "target", Caster = "player" }, -- 夺魂咆哮
-		{ AuraID = 339, UnitID = "target", Caster = "player" }, -- 纠缠根须
-		{ AuraID = 774, UnitID = "target", Caster = "player" }, -- 回春术
-		{ AuraID = 1079, UnitID = "target", Caster = "player" }, -- 割裂
-		{ AuraID = 5211, UnitID = "target", Caster = "player" }, -- 蛮力猛击
-		{ AuraID = 6795, UnitID = "target", Caster = "player" }, -- 低吼
-		{ AuraID = 8936, UnitID = "target", Caster = "player" }, -- 愈合
-		{ AuraID = 50259, UnitID = "target", Caster = "player" }, -- 野性冲锋：晕眩
-		{ AuraID = 45334, UnitID = "target", Caster = "player" }, -- 野性冲锋：定身
-		{ AuraID = 33763, UnitID = "target", Caster = "player" }, -- 生命绽放
-		{ AuraID = 188550, UnitID = "target", Caster = "player" }, -- 生命绽放，橙装
-		{ AuraID = 48438, UnitID = "target", Caster = "player" }, -- 野性成长
-		{ AuraID = 61391, UnitID = "target", Caster = "player" }, -- 台风
-		{ AuraID = 81261, UnitID = "target", Caster = "player" }, -- 日光术
-		{ AuraID = 155722, UnitID = "target", Caster = "player" }, -- 斜掠
-		{ AuraID = 203123, UnitID = "target", Caster = "player" }, -- 割碎
-		{ AuraID = 106830, UnitID = "target", Caster = "player" }, -- 痛击
-		{ AuraID = 192090, UnitID = "target", Caster = "player" }, -- 痛击
-		{ AuraID = 164812, UnitID = "target", Caster = "player" }, -- 月火术
-		{ AuraID = 155625, UnitID = "target", Caster = "player" }, -- 月火术
-		{ AuraID = 164815, UnitID = "target", Caster = "player" }, -- 阳炎术
-		{ AuraID = 102359, UnitID = "target", Caster = "player" }, -- 群体缠绕
-		{ AuraID = 202347, UnitID = "target", Caster = "player" }, -- 星辰耀斑
-		{ AuraID = 127797, UnitID = "target", Caster = "player" }, -- 乌索尔旋风
-		{ AuraID = 208253, UnitID = "target", Caster = "player" }, -- 加尼尔的精华
-		{ AuraID = 155777, UnitID = "target", Caster = "player" }, -- 萌芽
-		{ AuraID = 102342, UnitID = "target", Caster = "player" }, -- 铁木树皮
-		{ AuraID = 102351, UnitID = "target", Caster = "player" }, -- 塞纳里奥结界
-		{ AuraID = 200389, UnitID = "target", Caster = "player" }, -- 栽培
-	},
 	["Special Aura"] = { -- 玩家重要光环组
 		{ AuraID = 5217, UnitID = "player" }, -- 猛虎之怒
 		{ AuraID = 48517, UnitID = "player" }, -- 日蚀

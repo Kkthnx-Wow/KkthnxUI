@@ -3,26 +3,8 @@ local Module = K:GetModule("DataText")
 
 local string_format = string.format
 
-local COMBAT_ZONE = COMBAT_ZONE
-local CONTESTED_TERRITORY = CONTESTED_TERRITORY
-local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
-local FACTION_CONTROLLED_TERRITORY = FACTION_CONTROLLED_TERRITORY
-local FACTION_STANDING_LABEL4 = FACTION_STANDING_LABEL4
-local FREE_FOR_ALL_TERRITORY = FREE_FOR_ALL_TERRITORY
-local GameTooltip = GameTooltip
-local GetSubZoneText = GetSubZoneText
-local GetZonePVPInfo = GetZonePVPInfo
-local GetZoneText = GetZoneText
-local IsInInstance = IsInInstance
-local SANCTUARY_TERRITORY = SANCTUARY_TERRITORY
-local UnitExists = UnitExists
-local UnitIsPlayer = UnitIsPlayer
-local UnitName = UnitName
-local ZONE = ZONE
-
-local CoordsDataTextFrame
-local coordX = 0
-local coordY = 0
+local CoordsDataText
+local coordX, coordY = 0, 0
 local faction
 local pvpType
 local subzone
@@ -45,14 +27,14 @@ end
 local function OnUpdate(self, elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
 	if self.elapsed > 0.1 then
-		local x, y = K.GetPlayerMapPos(C_Map_GetBestMapForUnit("player"))
+		local x, y = K.GetPlayerMapPos(C_Map.GetBestMapForUnit("player"))
 		if x then
 			coordX, coordY = x, y
-			CoordsDataTextFrame.Text:SetText(formatCoords())
-			CoordsDataTextFrame:Show()
+			CoordsDataText.Text:SetText(formatCoords())
+			CoordsDataText:Show()
 		else
 			coordX, coordY = 0, 0
-			CoordsDataTextFrame:Hide()
+			CoordsDataText:Hide()
 		end
 		self.elapsed = 0
 	end
@@ -75,7 +57,7 @@ local function OnEvent(_, event, ...)
 end
 
 local function OnEnter()
-	GameTooltip:SetOwner(CoordsDataTextFrame, "ANCHOR_BOTTOM", 0, -15)
+	GameTooltip:SetOwner(CoordsDataText, "ANCHOR_BOTTOM", 0, -15)
 	GameTooltip:ClearLines()
 
 	if pvpType and not IsInInstance() then
@@ -90,8 +72,8 @@ local function OnEnter()
 	end
 
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine(K.LeftButton .. L["WorldMap"], 0.6, 0.8, 1)
-	GameTooltip:AddLine(K.RightButton .. "Send My Pos", 0.6, 0.8, 1)
+	GameTooltip:AddLine(K.LeftButton .. "Toggle WorldMap", 0.6, 0.8, 1)
+	GameTooltip:AddLine(K.RightButton .. "Send My Position", 0.6, 0.8, 1)
 	GameTooltip:Show()
 end
 
@@ -99,21 +81,21 @@ local function OnLeave()
 	GameTooltip:Hide()
 end
 
--- Function to handle mouse up event
 local function OnMouseUp(_, btn)
 	-- Toggle world map if left button is clicked
 	if btn == "LeftButton" then
 		ToggleWorldMap()
 	-- Open chat frame with position and target information if right button is clicked
 	elseif btn == "RightButton" then
-		local hasUnit = UnitExists("target") and not UnitIsPlayer("target")
-		local unitName = nil
-		if hasUnit then
-			unitName = UnitName("target")
-		end
+		local zone = GetZoneText()
+		local subzone = GetSubZoneText()
+		local mapID = C_Map.GetBestMapForUnit("player")
+		local position = C_Map.GetPlayerMapPosition(mapID, "player")
+		local coordString = position and format("%.1f, %.1f", position:GetXY()) or "N/A"
+		local unitName = UnitExists("target") and not UnitIsPlayer("target") and UnitName("target")
 
 		-- Format chat message with position, subzone, coordinates, and target name (if applicable)
-		local chatMsg = string_format("%s: %s %s (%s) %s", "My Position", zone, subzone or "", formatCoords(), unitName or "")
+		local chatMsg = format("%s: %s %s (%s) %s", L["My Position"], zone, subzone or "", coordString, unitName or "")
 
 		-- Open chat frame with message and selected dock frame
 		ChatFrame_OpenChat(chatMsg, SELECTED_DOCK_FRAME)
@@ -125,30 +107,32 @@ function Module:CreateCoordsDataText()
 		return
 	end
 
-	CoordsDataTextFrame = CoordsDataTextFrame or CreateFrame("Button", nil, UIParent)
-	CoordsDataTextFrame:SetPoint("TOP", UIParent, "TOP", 0, -40)
-	CoordsDataTextFrame:SetSize(24, 24)
+	CoordsDataText = CreateFrame("Frame", nil, UIParent)
+	CoordsDataText:SetHitRectInsets(0, 0, -10, -10)
 
-	CoordsDataTextFrame.Texture = CoordsDataTextFrame:CreateTexture(nil, "BACKGROUND")
-	CoordsDataTextFrame.Texture:SetPoint("CENTER", CoordsDataTextFrame, "CENTER", 0, 0)
-	CoordsDataTextFrame.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\coords.blp")
-	CoordsDataTextFrame.Texture:SetSize(24, 24)
-	CoordsDataTextFrame.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
-	CoordsDataTextFrame.Texture:SetAlpha(0.8)
+	CoordsDataText.Text = K.CreateFontString(CoordsDataText, 12)
+	CoordsDataText.Text:ClearAllPoints()
+	CoordsDataText.Text:SetPoint("TOP", UIParent, "TOP", 0, -40)
 
-	CoordsDataTextFrame.Text = CoordsDataTextFrame:CreateFontString(nil, "ARTWORK")
-	CoordsDataTextFrame.Text:SetFontObject(K.UIFont)
-	CoordsDataTextFrame.Text:SetPoint("CENTER", CoordsDataTextFrame.Texture, "CENTER", 0, -14)
+	CoordsDataText.Texture = CoordsDataText:CreateTexture(nil, "ARTWORK")
+	CoordsDataText.Texture:SetPoint("BOTTOM", CoordsDataText, "TOP", 0, 0)
+	CoordsDataText.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\DataText\\coords.blp")
+	CoordsDataText.Texture:SetSize(24, 24)
+	CoordsDataText.Texture:SetVertexColor(unpack(C["DataText"].IconColor))
 
-	for _, event in pairs(eventList) do
-		CoordsDataTextFrame:RegisterEvent(event)
+	CoordsDataText:SetAllPoints(CoordsDataText.Text)
+
+	local function _OnEvent(...)
+		OnEvent(...)
 	end
 
-	CoordsDataTextFrame:SetScript("OnEvent", OnEvent)
-	CoordsDataTextFrame:SetScript("OnMouseUp", OnMouseUp)
-	CoordsDataTextFrame:SetScript("OnUpdate", OnUpdate)
-	CoordsDataTextFrame:SetScript("OnLeave", OnLeave)
-	CoordsDataTextFrame:SetScript("OnEnter", OnEnter)
+	for _, event in pairs(eventList) do
+		CoordsDataText:RegisterEvent(event)
+	end
 
-	K.Mover(CoordsDataTextFrame, "CoordsDataText", "CoordsDataText", { "TOP", UIParent, "TOP", 0, -40 })
+	CoordsDataText:SetScript("OnEvent", _OnEvent)
+	CoordsDataText:SetScript("OnEnter", OnEnter)
+	CoordsDataText:SetScript("OnLeave", OnLeave)
+	CoordsDataText:SetScript("OnMouseUp", OnMouseUp)
+	CoordsDataText:SetScript("OnUpdate", OnUpdate)
 end

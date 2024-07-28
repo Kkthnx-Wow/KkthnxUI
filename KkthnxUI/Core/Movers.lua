@@ -158,13 +158,11 @@ function Module:Mover_OnClick(btn)
 end
 
 function Module:Mover_OnEnter()
-	K.ShowOverlayGlow(self, "AutoCastGlow")
 	self.KKUI_Background:SetVertexColor(K.r, K.g, K.b, 0.8)
 	self.text:SetTextColor(1, 0.8, 0)
 end
 
 function Module:Mover_OnLeave()
-	K.HideOverlayGlow(self, "AutoCastGlow")
 	self.KKUI_Background:SetVertexColor(38 / 255, 125 / 255, 206 / 255, 80 / 255)
 	self.text:SetTextColor(1, 1, 1)
 end

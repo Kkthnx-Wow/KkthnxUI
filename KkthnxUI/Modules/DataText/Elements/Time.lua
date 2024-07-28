@@ -12,6 +12,7 @@ local tonumber = tonumber
 
 local CALENDAR_FULLDATE_MONTH_NAMES = CALENDAR_FULLDATE_MONTH_NAMES
 local CALENDAR_WEEKDAY_NAMES = CALENDAR_WEEKDAY_NAMES
+local C_AreaPoiInfo_GetAreaPOIInfo = C_AreaPoiInfo.GetAreaPOIInfo
 local C_AreaPoiInfo_GetAreaPOISecondsLeft = C_AreaPoiInfo.GetAreaPOISecondsLeft
 local C_Calendar_GetDayEvent = C_Calendar.GetDayEvent
 local C_Calendar_GetNumDayEvents = C_Calendar.GetNumDayEvents
@@ -25,7 +26,6 @@ local C_TaskQuest_GetQuestInfoByQuestID = C_TaskQuest.GetQuestInfoByQuestID
 local C_TaskQuest_GetThreatQuests = C_TaskQuest.GetThreatQuests
 local FULLDATE = FULLDATE
 local GameTime_GetGameTime = GameTime_GetGameTime
-local C_AreaPoiInfo_GetAreaPOIInfo = C_AreaPoiInfo.GetAreaPOIInfo
 local GameTime_GetLocalTime = GameTime_GetLocalTime
 local GameTooltip = GameTooltip
 local GetCVar = GetCVar
@@ -45,7 +45,6 @@ local TIMEMANAGER_TICKER_12HOUR = TIMEMANAGER_TICKER_12HOUR
 local TIMEMANAGER_TICKER_24HOUR = TIMEMANAGER_TICKER_24HOUR
 
 local TimeDataText
-local TimeDataTextEntered
 
 -- Data
 local region = GetCVar("portal")
@@ -63,7 +62,7 @@ local bfaZoneTime = {
 local invIndex = {
 	[1] = { title = L["Legion Invasion"], duration = 66600, maps = { 630, 641, 650, 634 }, timeTable = {}, baseTime = legionZoneTime[region] or legionZoneTime["CN"] },
 	[2] = {
-		title = L["BFA Invasion"],
+		title = L["Faction Assault"],
 		duration = 68400,
 		maps = { 862, 863, 864, 896, 942, 895 },
 		timeTable = { 4, 1, 6, 2, 5, 3 },
@@ -136,8 +135,7 @@ end
 -- Declare onUpdateTimer as a local variable
 local onUpdateTimer = onUpdateTimer or 3
 
--- Assuming Module is already defined somewhere in your code
-function Module:TimeOnUpdate(elapsed)
+local function OnUpdate(_, elapsed)
 	onUpdateTimer = onUpdateTimer + elapsed
 	if onUpdateTimer > 5 then
 		local color = C_Calendar_GetNumPendingInvites() > 0 and "|cffFF0000" or ""
@@ -147,7 +145,7 @@ function Module:TimeOnUpdate(elapsed)
 		else
 			hour, minute = GetGameTime()
 		end
-		TimeDataText.Font:SetText(updateTimerFormat(color, hour, minute))
+		TimeDataText.Text:SetText(updateTimerFormat(color, hour, minute))
 
 		onUpdateTimer = 0
 	end
@@ -312,14 +310,14 @@ local function addTitle(text)
 	end
 end
 
-function Module:TimeOnShiftDown()
-	if TimeDataTextEntered then
-		Module:TimeOnEnter()
+local function OnShiftDown()
+	if Module.Entered then
+		Module:OnEnter()
 	end
 end
 
-function Module:TimeOnEnter()
-	TimeDataTextEntered = true
+function Module:OnEnter()
+	Module.Entered = true
 
 	RequestRaidInfo()
 
@@ -336,9 +334,9 @@ function Module:TimeOnEnter()
 	GameTooltip:AddDoubleLine(L["Realm Time"], GameTime_GetGameTime(true), nil, nil, nil, 192 / 255, 192 / 255, 192 / 255)
 
 	-- World bosses
+	title = false
 	local numSavedWorldBosses = GetNumSavedWorldBosses()
 	if numSavedWorldBosses > 0 then
-		title = false
 		addTitle(RAID_INFO_WORLD_BOSS)
 		for i = 1, numSavedWorldBosses do
 			local name, id, reset = GetSavedWorldBossInfo(i)
@@ -512,16 +510,16 @@ function Module:TimeOnEnter()
 	GameTooltip:AddLine(K.RightButton .. GAMETIME_TOOLTIP_TOGGLE_CLOCK)
 	GameTooltip:Show()
 
-	K:RegisterEvent("MODIFIER_STATE_CHANGED", Module.TimeOnShiftDown)
+	K:RegisterEvent("MODIFIER_STATE_CHANGED", OnShiftDown)
 end
 
-function Module:TimeOnLeave()
-	TimeDataTextEntered = false
+local function OnLeave()
+	Module.Entered = true
 	K.HideTooltip()
-	K:UnregisterEvent("MODIFIER_STATE_CHANGED", Module.TimeOnShiftDown)
+	K:UnregisterEvent("MODIFIER_STATE_CHANGED", OnShiftDown)
 end
 
-function Module:TimeOnMouseUp(btn)
+local function OnMouseUp(_, btn)
 	if btn == "RightButton" then
 		_G.ToggleTimeManager()
 	elseif btn == "MiddleButton" then
@@ -551,18 +549,18 @@ function Module:CreateTimeDataText()
 		return
 	end
 
-	TimeDataText = TimeDataText or CreateFrame("Frame", "KKUI_TimeDataText", Minimap)
+	TimeDataText = CreateFrame("Frame", nil, UIParent)
 	TimeDataText:SetFrameLevel(8)
+	TimeDataText:SetHitRectInsets(0, 0, -10, -10)
 
-	TimeDataText.Font = TimeDataText.Font or TimeDataText:CreateFontString("OVERLAY")
-	TimeDataText.Font:SetFontObject(K.UIFont)
-	TimeDataText.Font:SetFont(select(1, TimeDataText.Font:GetFont()), 13, select(3, TimeDataText.Font:GetFont()))
-	TimeDataText.Font:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 2)
+	TimeDataText.Text = K.CreateFontString(TimeDataText, 13)
+	TimeDataText.Text:ClearAllPoints()
+	TimeDataText.Text:SetPoint("BOTTOM", _G.Minimap, "BOTTOM", 0, 2)
 
-	TimeDataText:SetAllPoints(TimeDataText.Font)
+	TimeDataText:SetAllPoints(TimeDataText.Text)
 
-	TimeDataText:SetScript("OnUpdate", Module.TimeOnUpdate)
-	TimeDataText:SetScript("OnEnter", Module.TimeOnEnter)
-	TimeDataText:SetScript("OnLeave", Module.TimeOnLeave)
-	TimeDataText:SetScript("OnMouseUp", Module.TimeOnMouseUp)
+	TimeDataText:SetScript("OnEnter", Module.OnEnter)
+	TimeDataText:SetScript("OnLeave", OnLeave)
+	TimeDataText:SetScript("OnMouseUp", OnMouseUp)
+	TimeDataText:SetScript("OnUpdate", OnUpdate)
 end

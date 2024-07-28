@@ -9,6 +9,7 @@
    <Script file="DataText\Elements\Guild.lua" />
    <Script file="DataText\Elements\Latency.lua" />
    <Script file="DataText\Elements\Location.lua" />
+   <Script file="DataText\Elements\Spec.lua" />
    <Script file="DataText\Elements\System.lua" />
    <Script file="DataText\Elements\Time.lua" />
    <!-- Blizzard -->
@@ -26,11 +27,9 @@
    <Script file="Chat\Core.lua" />
    <Script file="Chat\Elements\Copy.lua" />
    <Script file="Chat\Elements\Emojis.lua" />
-   <Script file="Chat\Elements\Filters.lua" />
    <Script file="Chat\Elements\History.lua" />
    <Script file="Chat\Elements\ILevel.lua" />
    <Script file="Chat\Elements\Rename.lua" />
-   <Script file="Chat\Elements\RoleIcon.lua" />
    <Script file="Chat\Elements\URL.lua" />
    <!-- Inventory -->
    <Script file="Inventory\Core.lua" />
@@ -39,17 +38,17 @@
    <Script file="Inventory\Elements\AutoSell.lua" />
    <Script file="Inventory\Elements\InventoryBar.lua" />
    <!-- ActionBars -->
-   <Script file="ActionBars\Elements\Bars.lua"/>
-	<Script file="ActionBars\Elements\Stancebar.lua"/>
-	<Script file="ActionBars\Elements\Petbar.lua"/>
-	<Script file="ActionBars\Elements\Extrabar.lua"/>
-	<Script file="ActionBars\Elements\LeaveVehicle.lua"/>
-	<Script file="ActionBars\Elements\HideBlizzardArt.lua"/>
-	<Script file="ActionBars\Elements\MicroMenu.lua"/>
-   <Script file="ActionBars\Elements\ExtraQuestButton.lua"/>
-   <Script file="ActionBars\Keybind.lua"/>
-	<Script file="ActionBars\ButtonStyle.lua"/>
-	<Script file="ActionBars\Cooldown.lua"/>
+   <Script file="ActionBars\Elements\Bars.lua" />
+   <Script file="ActionBars\Elements\Stancebar.lua" />
+   <Script file="ActionBars\Elements\Petbar.lua" />
+   <Script file="ActionBars\Elements\Extrabar.lua" />
+   <Script file="ActionBars\Elements\LeaveVehicle.lua" />
+   <Script file="ActionBars\Elements\HideBlizzardArt.lua" />
+   <Script file="ActionBars\Elements\MicroMenu.lua" />
+   <Script file="ActionBars\Elements\ExtraQuestButton.lua" />
+   <Script file="ActionBars\Keybind.lua" />
+   <Script file="ActionBars\ButtonStyle.lua" />
+   <Script file="ActionBars\Cooldown.lua" />
    <!-- Auras -->
    <Include file="Auras\AuraTemplate.xml" />
    <Script file="Auras\Core.lua" />
@@ -110,6 +109,7 @@
    <Script file="Miscellaneous\Elements\MissingStats.lua" />
    <Script file="Miscellaneous\Elements\MovableFrames.lua" />
    <Script file="Miscellaneous\Elements\MuteSounds.lua" />
+   <Script file="Miscellaneous\Elements\ParagonRep.lua" />
    <Script file="Miscellaneous\Elements\QuestTool.lua" />
    <Script file="Miscellaneous\Elements\QueueTimer.lua" />
    <Script file="Miscellaneous\Elements\QuickJoin.lua" />
@@ -173,6 +173,7 @@
    <Include file="Skins\Blizzard\FrameXML\LossOfControlFrame.lua" />
    <Include file="Skins\Blizzard\FrameXML\ObjectiveTracker.lua" />
    <Include file="Skins\Blizzard\FrameXML\SpellBookFrame.lua" />
+   <Include file="Skins\Blizzard\FrameXML\StaticPopup.lua" />
    <Include file="Skins\Blizzard\FrameXML\UIDropDownMenu.lua" />
    <Include file="Skins\Blizzard\FrameXML\UIWidgets.lua" />
    <!-- Skins AddOns -->
@@ -186,6 +187,7 @@
    <Include file="Skins\Addons\RareScanner.lua" />
    <Include file="Skins\Addons\Simulationcraft.lua" />
    <Include file="Skins\Addons\WeakAuras.lua" />
+   <Include file="Skins\Addons\Nekometer.lua" />
    <!-- Disabled/Broken/WIP AddOns -->
    <!-- <Include file="Skins\Addons\RaiderIO.lua" /> -->
 </Ui>

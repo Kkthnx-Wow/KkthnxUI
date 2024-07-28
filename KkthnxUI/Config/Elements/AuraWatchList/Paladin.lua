@@ -6,33 +6,6 @@ if K.Class ~= "PALADIN" then
 end
 
 local list = {
-	["Player Aura"] = { -- 玩家光环组
-		{ AuraID = 188370, UnitID = "player" }, -- 奉献
-		{ AuraID = 197561, UnitID = "player" }, -- 复仇者的勇气
-		{ AuraID = 269571, UnitID = "player" }, -- 狂热
-		{ AuraID = 114250, UnitID = "player" }, -- 无私自愈
-		{ AuraID = 281178, UnitID = "player" }, -- 愤怒之剑
-		{ AuraID = 182104, UnitID = "player" }, -- 闪耀之光
-	},
-	["Target Aura"] = { -- 目标光环组
-		{ AuraID = 853, UnitID = "target", Caster = "player" }, -- 制裁之锤
-		{ AuraID = 31935, UnitID = "target", Caster = "player" }, -- 复仇者之盾
-		{ AuraID = 53563, UnitID = "target", Caster = "player" }, -- 圣光道标
-		{ AuraID = 62124, UnitID = "target", Caster = "player" }, -- 清算之手
-		{ AuraID = 156910, UnitID = "target", Caster = "player" }, -- 信仰道标
-		{ AuraID = 183218, UnitID = "target", Caster = "player" }, -- 妨害之手
-		{ AuraID = 197277, UnitID = "target", Caster = "player" }, -- 审判
-		{ AuraID = 214222, UnitID = "target", Caster = "player" }, -- 审判
-		{ AuraID = 205273, UnitID = "target", Caster = "player" }, -- 灰烬觉醒
-		{ AuraID = 105421, UnitID = "target", Caster = "player" }, -- 盲目之光
-		{ AuraID = 200654, UnitID = "target", Caster = "player" }, -- 提尔的拯救
-		{ AuraID = 223306, UnitID = "target", Caster = "player" }, -- 赋予信仰
-		{ AuraID = 196941, UnitID = "target", Caster = "player" }, -- 圣光审判
-		{ AuraID = 209202, UnitID = "target", Caster = "player" }, -- 提尔之眼
-		{ AuraID = 204301, UnitID = "target", Caster = "player" }, -- 祝福之盾
-		{ AuraID = 204079, UnitID = "target", Caster = "player" }, -- 决一死战
-		{ AuraID = 343527, UnitID = "target", Caster = "player" }, -- 处决审判
-	},
 	["Special Aura"] = { -- 玩家重要光环组
 		{ AuraID = 498, UnitID = "player" }, -- 圣佑术
 		{ AuraID = 642, UnitID = "player" }, -- 圣盾术
