@@ -339,7 +339,7 @@ oUF.Tags.Methods["npctitle"] = function(unit)
 
 	local data = C_TooltipInfo.GetUnit(unit)
 	if not data then
-		return
+		return ""
 	end
 
 	local lineData = data.lines[GetCVarBool("colorblindmode") and 3 or 2]
