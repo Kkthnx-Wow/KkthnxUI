@@ -1065,10 +1065,10 @@ function Module:OnEnable()
 
 	function Backpack:OnBankClosed()
 		BankFrame.selectedTab = 1
-		BankFrame:Hide()
+		BankFrame.activeTabIndex = 1
 		self:GetContainer("Bank"):Hide()
 		self:GetContainer("Reagent"):Hide()
-		ReagentBankFrame:Hide()
+		self:GetContainer("AccountBank"):Hide()
 	end
 
 	local MyButton = Backpack:GetItemButtonClass()
@@ -1435,7 +1435,7 @@ function Module:OnEnable()
 		elseif name:match("Equipment$") then
 			label = BAG_FILTER_EQUIPMENT
 		elseif name:match("EquipSet$") then
-			label = L["Equipment Set"]
+			label = "Equipment Set" -- L["Equipment Set"]
 		elseif name == "Junk" then
 			label = BAG_FILTER_JUNK
 		elseif name == "BagRelic" then
@@ -1443,7 +1443,7 @@ function Module:OnEnable()
 		elseif name == "BagReagent" then
 			label = "Reagent Bag"
 		elseif name == "BagStone" then
-			label = GetSpellInfo(404861)
+			label = C_Spell.GetSpellName(404861)
 		else
 			if name:match("Legendary$") then
 				label = LOOT_JOURNAL_LEGENDARIES

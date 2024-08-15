@@ -1002,7 +1002,7 @@ function Module:CreateParagonRep()
 
 	K:RegisterEvent("QUEST_ACCEPTED", Module.QUEST_ACCEPTED)
 	hooksecurefunc("ReputationParagonFrame_SetupParagonTooltip", Module.SetupParagonTooltip)
-	hooksecurefunc("ReputationFrame_InitReputationRow", Module.ChangeReputationBars)
+	-- hooksecurefunc("ReputationFrame_InitReputationRow", Module.ChangeReputationBars)
 	Module:CreateToast()
 
 	K.Mover(Module.toast, "ParagonRepToastMover", "Paragon Reputation Toast", { "BOTTOM", UIParent, "BOTTOM", 0, 250 })

@@ -219,14 +219,14 @@ tinsert(C.defaultThemes, function()
 		CharacterFrame.Inset.Bg:SetVertTile(isExpanded)
 	end
 
-	-- Expand/collapse hooks
-	hooksecurefunc("CharacterFrame_Expand", function()
-		UpdateCharacterFrameLayout(true)
-	end)
+	-- -- Expand/collapse hooks
+	-- hooksecurefunc("CharacterFrame_Expand", function()
+	-- 	UpdateCharacterFrameLayout(true)
+	-- end)
 
-	hooksecurefunc("CharacterFrame_Collapse", function()
-		UpdateCharacterFrameLayout(false)
-	end)
+	-- hooksecurefunc("CharacterFrame_Collapse", function()
+	-- 	UpdateCharacterFrameLayout(false)
+	-- end)
 
 	-- Fonts
 	if CharacterLevelText then

@@ -249,7 +249,7 @@ tinsert(C.defaultThemes, function()
 		return
 	end
 
-	local minimizeButton = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
+	local minimizeButton = ObjectiveTrackerFrame.Header.MinimizeButton
 	minimizeButton:SetNormalTexture(0)
 	minimizeButton:SetPushedTexture(0)
 	minimizeButton:SetSize(16, 16)
@@ -260,48 +260,48 @@ tinsert(C.defaultThemes, function()
 	minimizeButton.tex:SetDesaturated(true)
 	minimizeButton.tex:SetAllPoints()
 
-	hooksecurefunc("ObjectiveTracker_Expand", ChangeTrackerState)
-	hooksecurefunc("ObjectiveTracker_Collapse", ChangeTrackerState)
-	hooksecurefunc("QuestObjectiveSetupBlockButton_Item", ReskinItemButton)
-	hooksecurefunc(_G.BONUS_OBJECTIVE_TRACKER_MODULE, "AddObjective", ReskinItemButton)
-	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", RepositionFindGroupButton)
-	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", ReskinFindGroupButton)
-	hooksecurefunc(_G.BONUS_OBJECTIVE_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
-	hooksecurefunc(_G.WORLD_QUEST_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
-	hooksecurefunc(_G.DEFAULT_OBJECTIVE_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
-	hooksecurefunc(_G.SCENARIO_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
-	hooksecurefunc(_G.CAMPAIGN_QUEST_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
-	hooksecurefunc(_G.QUEST_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
-	hooksecurefunc(_G.UI_WIDGET_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
-	hooksecurefunc(_G.QUEST_TRACKER_MODULE, "AddTimerBar", ReskinTimerBars)
-	hooksecurefunc(_G.SCENARIO_TRACKER_MODULE, "AddTimerBar", ReskinTimerBars)
-	hooksecurefunc(_G.ACHIEVEMENT_TRACKER_MODULE, "AddTimerBar", ReskinTimerBars)
+	-- hooksecurefunc("ObjectiveTracker_Expand", ChangeTrackerState)
+	-- hooksecurefunc("ObjectiveTracker_Collapse", ChangeTrackerState)
+	-- hooksecurefunc("QuestObjectiveSetupBlockButton_Item", ReskinItemButton)
+	-- hooksecurefunc(_G.BONUS_OBJECTIVE_TRACKER_MODULE, "AddObjective", ReskinItemButton)
+	-- hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", RepositionFindGroupButton)
+	-- hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", ReskinFindGroupButton)
+	-- hooksecurefunc(_G.BONUS_OBJECTIVE_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
+	-- hooksecurefunc(_G.WORLD_QUEST_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
+	-- hooksecurefunc(_G.DEFAULT_OBJECTIVE_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
+	-- hooksecurefunc(_G.SCENARIO_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
+	-- hooksecurefunc(_G.CAMPAIGN_QUEST_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
+	-- hooksecurefunc(_G.QUEST_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
+	-- hooksecurefunc(_G.UI_WIDGET_TRACKER_MODULE, "AddProgressBar", ReskinProgressBars)
+	-- hooksecurefunc(_G.QUEST_TRACKER_MODULE, "AddTimerBar", ReskinTimerBars)
+	-- hooksecurefunc(_G.SCENARIO_TRACKER_MODULE, "AddTimerBar", ReskinTimerBars)
+	-- hooksecurefunc(_G.ACHIEVEMENT_TRACKER_MODULE, "AddTimerBar", ReskinTimerBars)
 
 	-- Reskin Headers
-	local headers = {
-		_G.BONUS_OBJECTIVE_TRACKER_MODULE.Header,
-		_G.ObjectiveTrackerBlocksFrame.AchievementHeader,
-		_G.ObjectiveTrackerBlocksFrame.CampaignQuestHeader,
-		_G.ObjectiveTrackerBlocksFrame.ProfessionHeader,
-		_G.ObjectiveTrackerBlocksFrame.QuestHeader,
-		_G.ObjectiveTrackerBlocksFrame.ScenarioHeader,
-		_G.ObjectiveTrackerFrame.BlocksFrame.UIWidgetsHeader,
-		_G.WORLD_QUEST_TRACKER_MODULE.Header,
-	}
-	for _, header in pairs(headers) do
-		ReskinObjectiveHeader(header)
+	-- local headers = {
+	-- 	_G.BONUS_OBJECTIVE_TRACKER_MODULE.Header,
+	-- 	_G.ObjectiveTrackerBlocksFrame.AchievementHeader,
+	-- 	_G.ObjectiveTrackerBlocksFrame.CampaignQuestHeader,
+	-- 	_G.ObjectiveTrackerBlocksFrame.ProfessionHeader,
+	-- 	_G.ObjectiveTrackerBlocksFrame.QuestHeader,
+	-- 	_G.ObjectiveTrackerBlocksFrame.ScenarioHeader,
+	-- 	_G.ObjectiveTrackerFrame.BlocksFrame.UIWidgetsHeader,
+	-- 	_G.WORLD_QUEST_TRACKER_MODULE.Header,
+	-- }
+	-- for _, header in pairs(headers) do
+	-- 	ReskinObjectiveHeader(header)
 
-		local button = header.MinimizeButton
-		if button then
-			button:SetNormalTexture(0)
-			button:SetPushedTexture(0)
-			button:SetSize(16, 16)
-			button.tex = button:CreateTexture(nil, "OVERLAY")
-			button.tex:SetTexture(C["Media"].Textures.ArrowTexture)
-			button.tex:SetRotation(math.rad(0))
-			button.tex:SetAllPoints()
+	-- 	local button = header.MinimizeButton
+	-- 	if button then
+	-- 		button:SetNormalTexture(0)
+	-- 		button:SetPushedTexture(0)
+	-- 		button:SetSize(16, 16)
+	-- 		button.tex = button:CreateTexture(nil, "OVERLAY")
+	-- 		button.tex:SetTexture(C["Media"].Textures.ArrowTexture)
+	-- 		button.tex:SetRotation(math.rad(0))
+	-- 		button.tex:SetAllPoints()
 
-			hooksecurefunc(button, "SetCollapsed", UpdateMinimizeButton)
-		end
-	end
+	-- 		hooksecurefunc(button, "SetCollapsed", UpdateMinimizeButton)
+	-- 	end
+	-- end
 end)

@@ -20,10 +20,18 @@
 local _, ns = ...
 local cargBags = ns.cargBags
 
-local ReagentButtonInventorySlot = ReagentButtonInventorySlot
-local ButtonInventorySlot = ButtonInventorySlot
+local _G = _G
+local ReagentButtonInventorySlot = _G.ReagentButtonInventorySlot
+local ButtonInventorySlot = _G.ButtonInventorySlot
 local BANK_CONTAINER = BANK_CONTAINER or -1
 local REAGENTBANK_CONTAINER = REAGENTBANK_CONTAINER or -3
+local ACCOUNTBANK_CONTAINERS = {
+	[Enum.BagIndex.AccountBankTab_1 or 13] = true,
+	[Enum.BagIndex.AccountBankTab_2 or 14] = true,
+	[Enum.BagIndex.AccountBankTab_3 or 15] = true,
+	[Enum.BagIndex.AccountBankTab_4 or 16] = true,
+	[Enum.BagIndex.AccountBankTab_5 or 17] = true,
+}
 local SplitContainerItem = C_Container.SplitContainerItem
 
 --[[!
@@ -44,17 +52,13 @@ function ItemButton:GetTemplate(bagID)
 		or (bagID and "ContainerFrameItemButtonTemplate")
 		or "",
 		(bagID == REAGENTBANK_CONTAINER and ReagentBankFrame)
-			or (bagID == BANK_CONTAINER and BankFrame)
-			or (bagID and _G["ContainerFrame" .. (bagID + 1)])
-			or ""
+		or (bagID == BANK_CONTAINER and BankFrame)
+		or (bagID and _G["ContainerFrame"..(bagID + 1)])
+		or (ACCOUNTBANK_CONTAINERS[bagID] and AccountBankPanel)
+		or ""
 end
 
-local mt_gen_key = {
-	__index = function(self, k)
-		self[k] = {}
-		return self[k]
-	end,
-}
+local mt_gen_key = {__index = function(self,k) self[k] = {}; return self[k]; end}
 
 --[[!
 	Fetches a new instance of the ItemButton, creating one if necessary
@@ -109,31 +113,19 @@ function ItemButton:Create(tpl, parent)
 	impl.numSlots = (impl.numSlots or 0) + 1
 	local name = ("%sSlot%d"):format(impl.name, impl.numSlots)
 
-	local button = setmetatable(CreateFrame("ItemButton", name, parent, tpl .. ", BackdropTemplate"), self.__index)
+	local button = setmetatable(CreateFrame("ItemButton", name, parent, tpl..", BackdropTemplate"), self.__index)
 
-	if button.Scaffold then
-		button:Scaffold(tpl)
-	end
-	if button.OnCreate then
-		button:OnCreate(tpl)
-	end
+	if(button.Scaffold) then button:Scaffold(tpl) end
+	if(button.OnCreate) then button:OnCreate(tpl) end
 
-	local btnNT = _G[button:GetName() .. "NormalTexture"]
+	local btnNT = _G[button:GetName().."NormalTexture"]
 	local btnNIT = button.NewItemTexture
 	local btnBIT = button.BattlepayItemTexture
 	local btnICO = button.ItemContextOverlay
-	if btnNT then
-		btnNT:SetTexture("")
-	end
-	if btnNIT then
-		btnNIT:SetTexture("")
-	end
-	if btnBIT then
-		btnBIT:SetTexture("")
-	end
-	if btnICO then
-		btnICO:SetTexture("")
-	end
+	if btnNT then btnNT:SetTexture("") end
+	if btnNIT then btnNIT:SetTexture("") end
+	if btnBIT then btnBIT:SetTexture("") end
+	if btnICO then btnICO:SetTexture("") end
 
 	button:RegisterForDrag("LeftButton") -- fix button drag in 9.0
 
@@ -154,5 +146,5 @@ end
 	@return item <table>
 ]]
 function ItemButton:GetInfo(item)
-	return self.implementation:GetCustomItemInfo(self.bagId, self.slotId, item)
+	return self.implementation:GetItemInfo(self.bagId, self.slotId, item)
 end

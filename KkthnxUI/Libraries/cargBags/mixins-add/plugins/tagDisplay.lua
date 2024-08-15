@@ -118,6 +118,8 @@ local function GetNumFreeSlots(name)
 		return GetContainerNumFreeSlots(-3)
 	elseif name == "BagReagent" then
 		return GetContainerNumFreeSlots(5)
+	elseif name == "AccountBank" then
+		return GetContainerNumFreeSlots(cargBags.selectedTabID + 12)
 	end
 end
 
@@ -127,12 +129,12 @@ tagPool["space"] = function(self)
 end
 
 tagPool["item"] = function(self, item)
-	local bags = GetItemCount(item, nil)
-	local total = GetItemCount(item, true)
+	local bags = C_Item.GetItemCount(item, nil)
+	local total = C_Item.GetItemCount(item, true)
 	local bank = total - bags
 
 	if total > 0 then
-		return bags .. (bank and " (" .. bank .. ")") .. createIcon(GetItemIcon(item), self.iconValues)
+		return bags .. (bank and " (" .. bank .. ")") .. createIcon(C_Item.GetItemIconByID(item), self.iconValues)
 	end
 end
 
@@ -151,7 +153,7 @@ tagEvents["currency"] = { "CURRENCY_DISPLAY_UPDATE" }
 
 tagPool["currencies"] = function(self)
 	local str
-	for i = 1, 6 do -- Limit to 6 tracked
+	for i = 1, GetNumWatchedTokens() do
 		local curr = self.tags["currency"](self, i)
 		if curr then
 			str = (str and str .. " " or "") .. curr
@@ -160,6 +162,19 @@ tagPool["currencies"] = function(self)
 	return str
 end
 tagEvents["currencies"] = tagEvents["currency"]
+
+local atlasCache = {}
+local function createAtlasCoin(coin)
+	local str = atlasCache[coin]
+	if not str then
+		local info = C_Texture.GetAtlasInfo("coin-" .. coin)
+		if info then
+			str = B:GetTextureStrByAtlas(info, 16, 16)
+			atlasCache[coin] = str
+		end
+	end
+	return str
+end
 
 tagPool["money"] = function()
 	local coppername = "|cffeda55fc|r"
@@ -181,3 +196,22 @@ tagPool["money"] = function()
 	end
 end
 tagEvents["money"] = { "PLAYER_MONEY" }
+
+tagPool["accountmoney"] = function()
+	local money = C_Bank.FetchDepositedMoney(Enum.BankType.Account) or 0
+	local str = ""
+	local gold, silver, copper = floor(money / 1e4), floor(money / 100) % 100, money % 100
+
+	if gold > 0 then
+		str = str .. BreakUpLargeNumbers(gold) .. createAtlasCoin("gold") .. " "
+	end
+	if silver > 0 then
+		str = str .. silver .. createAtlasCoin("silver") .. " "
+	end
+	if copper >= 0 then
+		str = str .. copper .. createAtlasCoin("copper") .. " "
+	end
+
+	return str
+end
+tagEvents["accountmoney"] = { "PLAYER_MONEY", "ACCOUNT_MONEY" }

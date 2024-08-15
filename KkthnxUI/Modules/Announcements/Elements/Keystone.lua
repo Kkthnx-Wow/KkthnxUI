@@ -94,7 +94,7 @@ function Module.KeystoneLink(message, sender)
 end
 
 function Module:CreateKeystoneAnnounce()
-	if IsAddOnLoaded("MythicKeyReporter") or not C["Announcements"].KeystoneAlert then
+	if C_AddOns.IsAddOnLoaded("MythicKeyReporter") or not C["Announcements"].KeystoneAlert then
 		return
 	end
 

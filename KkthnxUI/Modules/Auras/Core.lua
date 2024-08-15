@@ -18,7 +18,6 @@ local RegisterAttributeDriver = RegisterAttributeDriver
 local RegisterStateDriver = RegisterStateDriver
 local SecureHandlerSetFrameRef = SecureHandlerSetFrameRef
 local UIParent = UIParent
-local UnitAura = UnitAura
 
 local day, hour, minute = 86400, 3600, 60
 
@@ -146,13 +145,13 @@ end
 
 function Module:UpdateAuras(button, index)
 	local unit, filter = button.header:GetAttribute("unit"), button.filter
-	local name, texture, count, debuffType, duration, expirationTime, _, _, _, spellID, _, _, _, _, _, arg16, arg17, arg18 = UnitAura(unit, index, filter)
-	if not name then
+	local auraData = C_UnitAuras.GetAuraDataByIndex(unit, index, filter)
+	if not auraData then
 		return
 	end
 
-	if duration > 0 and expirationTime then
-		local timeLeft = expirationTime - GetTime()
+	if auraData.duration > 0 and auraData.expirationTime then
+		local timeLeft = auraData.expirationTime - GetTime()
 		if not button.timeLeft then
 			button.nextUpdate = -1
 			button.timeLeft = timeLeft
@@ -167,6 +166,7 @@ function Module:UpdateAuras(button, index)
 		button.timer:SetText("")
 	end
 
+	local count = auraData.applications
 	if count and count > 1 then
 		button.count:SetText(count)
 	else
@@ -174,20 +174,20 @@ function Module:UpdateAuras(button, index)
 	end
 
 	if filter == "HARMFUL" then
-		local color = DebuffTypeColor[debuffType or "none"]
+		local color = DebuffTypeColor[auraData.dispelName or "none"]
 		button.KKUI_Border:SetVertexColor(color.r, color.g, color.b)
 	else
 		K.SetBorderColor(button.KKUI_Border)
 	end
 
 	-- Show spell stat for 'Soleahs Secret Technique'
-	if spellID == 368512 then
-		button.count:SetText(Module:GetSpellStat(arg16, arg17, arg18))
+	if auraData.spellId == 368512 then
+		button.count:SetText(Module:GetSpellStat(unpack(auraData.points)))
 	end
 
-	button.spellID = spellID
-	button.icon:SetTexture(texture)
-	button.offset = nil
+	button.spellID = auraData.spellId
+	button.icon:SetTexture(auraData.icon)
+	button.expiration = nil
 end
 
 function Module:UpdateTempEnchant(button, index)

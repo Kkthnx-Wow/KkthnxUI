@@ -120,36 +120,36 @@ local function HideTutorialButtons()
 end
 
 table_insert(C.defaultThemes, function()
-	if not C["Skins"].BlizzardFrames then
-		return
-	end
+	-- if not C["Skins"].BlizzardFrames then
+	-- 	return
+	-- end
 
-	local professionTexture = K.GetTexture(C["General"].Texture)
+	-- local professionTexture = K.GetTexture(C["General"].Texture)
 
-	for i = 1, SPELLS_PER_PAGE do
-		ReskinSpellButton(_G["SpellButton" .. i])
-	end
+	-- for i = 1, SPELLS_PER_PAGE do
+	-- 	ReskinSpellButton(_G["SpellButton" .. i])
+	-- end
 
-	local professions = { "PrimaryProfession1", "PrimaryProfession2", "SecondaryProfession1", "SecondaryProfession2", "SecondaryProfession3" }
-	for i, profession in pairs(professions) do
-		ReskinProfessionButton(_G[profession])
-		if i <= 2 then
-			ReskinProfessionIcons(i)
-		end
-	end
+	-- local professions = { "PrimaryProfession1", "PrimaryProfession2", "SecondaryProfession1", "SecondaryProfession2", "SecondaryProfession3" }
+	-- for i, profession in pairs(professions) do
+	-- 	ReskinProfessionButton(_G[profession])
+	-- 	if i <= 2 then
+	-- 		ReskinProfessionIcons(i)
+	-- 	end
+	-- end
 
-	hooksecurefunc("FormatProfession", function(frame, index)
-		if InCombatLockdown() then
-			return
-		end
+	-- hooksecurefunc("FormatProfession", function(frame, index)
+	-- 	if InCombatLockdown() then
+	-- 		return
+	-- 	end
 
-		if index then
-			local _, texture = GetProfessionInfo(index)
-			if frame.icon and texture then
-				frame.icon:SetTexture(texture)
-			end
-		end
-	end)
+	-- 	if index then
+	-- 		local _, texture = GetProfessionInfo(index)
+	-- 		if frame.icon and texture then
+	-- 			frame.icon:SetTexture(texture)
+	-- 		end
+	-- 	end
+	-- end)
 
-	HideTutorialButtons()
+	-- HideTutorialButtons()
 end)

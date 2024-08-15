@@ -75,15 +75,15 @@ end
 -- keeping old name, not used to move just to handle the objective things
 -- wrath has it's own file, which actually has the mover on that client
 function Module:CreateObjectiveFrame()
-	local tracker = ObjectiveTrackerFrame
-	tracker.AutoHider = CreateFrame("Frame", nil, tracker, "SecureHandlerStateTemplate")
-	tracker.AutoHider:SetAttribute("_onstate-objectiveHider", "if newstate == 1 then self:Hide() else self:Show() end")
-	tracker.AutoHider:SetScript("OnHide", AutoHider_OnHide)
-	tracker.AutoHider:SetScript("OnShow", AutoHider_OnShow)
-	Module:SetObjectiveFrameAutoHide()
+	-- local tracker = ObjectiveTrackerFrame
+	-- tracker.AutoHider = CreateFrame("Frame", nil, tracker, "SecureHandlerStateTemplate")
+	-- tracker.AutoHider:SetAttribute("_onstate-objectiveHider", "if newstate == 1 then self:Hide() else self:Show() end")
+	-- tracker.AutoHider:SetScript("OnHide", AutoHider_OnHide)
+	-- tracker.AutoHider:SetScript("OnShow", AutoHider_OnShow)
+	-- Module:SetObjectiveFrameAutoHide()
 
 	-- hooksecurefunc("BonusObjectiveTracker_AnimateReward", RewardsFrame_SetPosition) -- What was this changed to? Bugged!
 
-	K:RegisterEvent("ZONE_CHANGED_NEW_AREA", Module.HandleMawBuffsFrame)
-	Module:HandleMawBuffsFrame()
+	-- K:RegisterEvent("ZONE_CHANGED_NEW_AREA", Module.HandleMawBuffsFrame)
+	-- Module:HandleMawBuffsFrame()
 end

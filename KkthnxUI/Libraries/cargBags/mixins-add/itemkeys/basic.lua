@@ -41,10 +41,10 @@ cargBags.itemKeys["string"] = function(i)
 end
 
 cargBags.itemKeys["stats"] = function(i)
-	if not i.link or not GetItemStats then
+	if not i.link or not C_Item.GetItemStats then
 		return
 	end
-	local stats = GetItemStats(i.link)
+	local stats = C_Item.GetItemStats(i.link)
 	i.stats = stats
 	return stats
 end

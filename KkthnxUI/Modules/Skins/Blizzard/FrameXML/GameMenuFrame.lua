@@ -30,9 +30,9 @@ table_insert(C.defaultThemes, function()
 		button:SkinButton(true)
 	end
 
-	GameMenuButtonLogoutText:SetTextColor(1, 1, 0)
-	GameMenuButtonQuitText:SetTextColor(1, 0, 0)
-	GameMenuButtonContinueText:SetTextColor(0, 1, 0)
+	-- GameMenuButtonLogoutText:SetTextColor(1, 1, 0)
+	-- GameMenuButtonQuitText:SetTextColor(1, 0, 0)
+	-- GameMenuButtonContinueText:SetTextColor(0, 1, 0)
 
 	-- ScriptErrorsFrame
 	ScriptErrorsFrame:SetScale(UIParent:GetScale())

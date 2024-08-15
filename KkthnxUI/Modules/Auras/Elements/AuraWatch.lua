@@ -12,12 +12,11 @@ local CreateFrame = CreateFrame
 local GameTooltip = GameTooltip
 local GetInventoryItemCooldown = GetInventoryItemCooldown
 local GetInventoryItemLink = GetInventoryItemLink
-local GetItemCooldown = GetItemCooldown
-local GetItemInfo = GetItemInfo
+local GetItemCooldown = C_Item.GetItemCooldown
+local GetItemInfo = C_Item.GetItemInfo
 local GetPlayerInfoByGUID = GetPlayerInfoByGUID
-local GetSpellCharges = GetSpellCharges
-local GetSpellCooldown = GetSpellCooldown
-local GetSpellInfo = GetSpellInfo
+local GetSpellCharges = C_Spell.GetSpellCharges
+local GetSpellCooldown = C_Spell.GetSpellCooldown
 local GetTime = GetTime
 local GetTotemInfo = GetTotemInfo
 local InCombatLockdown = InCombatLockdown
@@ -26,7 +25,6 @@ local IsControlKeyDown = IsControlKeyDown
 local IsPlayerSpell = IsPlayerSpell
 local PlaySound = PlaySound
 local SlashCmdList = SlashCmdList
-local UnitAura = UnitAura
 local UnitGUID = UnitGUID
 local UnitInParty = UnitInParty
 local UnitInRaid = UnitInRaid
@@ -462,8 +460,10 @@ function Module:AuraWatch_UpdateCD()
 			local value = group.List[spellID]
 			if value then
 				if value.SpellID then
-					local name, _, icon = GetSpellInfo(value.SpellID)
-					local start, duration = GetSpellCooldown(value.SpellID)
+					local name, _, icon = C_Spell.GetSpellName(value.SpellID)
+					local start = C_Spell.GetSpellCooldown(value.SpellID).startTime
+					local duration = C_Spell.GetSpellCooldown(value.SpellID).duration
+					-- local start, duration = GetSpellCooldown(value.SpellID)
 					local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(value.SpellID)
 					if group.Mode == "ICON" then
 						name = nil
@@ -617,11 +617,11 @@ function Module:UpdateAuraWatchByFilter(unit, filter, inCombat)
 	local index = 1
 
 	while true do
-		local name, icon, count, _, duration, expires, caster, _, _, spellID, _, _, _, _, _, number1, number2 = UnitAura(unit, index, filter)
-		if not name then
+		local auraData = C_UnitAuras.GetAuraDataByIndex(unit, index, filter)
+		if not auraData then
 			break
 		end
-		Module:AuraWatch_UpdateAura(unit, index, filter, name, icon, count, duration, expires, caster, spellID, (number1 == 0 and tonumber(number2) or tonumber(number1)), inCombat)
+		Module:AuraWatch_UpdateAura(unit, index, filter, auraData.name, auraData.icon, auraData.applications, auraData.duration, auraData.expirationTime, auraData.sourceUnit, auraData.spellId, (auraData.points[1] == 0 and tonumber(auraData.points[2]) or tonumber(auraData.points[1])), inCombat)
 
 		index = index + 1
 	end
@@ -697,7 +697,7 @@ function Module:AuraWatch_SetupInt(intID, itemID, duration, unitID, guid, source
 		frame.type = 2
 		frame.spellID = itemID
 	else
-		name, _, icon = GetSpellInfo(intID)
+		name, _, icon = C_Spell.GetSpellName(intID)
 		frame.type = 1
 		frame.spellID = intID
 	end

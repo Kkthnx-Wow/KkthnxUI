@@ -4,7 +4,7 @@ local Module = K:NewModule("AurasTable")
 local string_format = string.format
 local table_wipe = table.wipe
 
-local GetSpellInfo = GetSpellInfo
+local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
 local UIParent = UIParent
 
 local AuraWatchList = {}
@@ -46,7 +46,7 @@ function Module:AddNewAuraWatch(class, list)
 		for _, v in pairs(k) do
 			local spellID = v.AuraID or v.SpellID
 			if spellID then
-				local name = GetSpellInfo(spellID)
+				local name = C_Spell_GetSpellInfo(spellID)
 				if not name then
 					table_wipe(v)
 					if K.isDeveloper then

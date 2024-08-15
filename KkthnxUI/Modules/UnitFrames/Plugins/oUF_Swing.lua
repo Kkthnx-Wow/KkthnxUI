@@ -59,7 +59,7 @@ do
 	local checkelapsed = 0
 	local slamelapsed = 0
 	local slamtime = 0
-	local slam = GetSpellInfo(1464)
+	local slam = C_Spell.GetSpellInfo(1464)
 	function OnDurationUpdate(self, elapsed)
 		local now = GetTime()
 

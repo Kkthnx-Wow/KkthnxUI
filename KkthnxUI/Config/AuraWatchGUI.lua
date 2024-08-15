@@ -10,7 +10,7 @@ local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
 local GameTooltip = GameTooltip
 local GetInventoryItemTexture = GetInventoryItemTexture
 local GetItemInfo = GetItemInfo
-local GetSpellInfo = GetSpellInfo
+local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
 local INVTYPE_CLOAK = INVTYPE_CLOAK
 local INVTYPE_FINGER = INVTYPE_FINGER
 local INVTYPE_TRINKET = INVTYPE_TRINKET
@@ -404,7 +404,7 @@ local function CreatePanel()
 
 	local function AddAura(parent, index, data)
 		local typeID, spellID, unitID, caster, stack, amount, timeless, combat, text, flash = unpack(data)
-		local name, _, texture = GetSpellInfo(spellID)
+		local name, _, texture = C_Spell_GetSpellInfo(spellID)
 		if typeID == "SlotID" then
 			texture = GetInventoryItemTexture("player", spellID)
 			name = slotIndex[spellID]
@@ -461,7 +461,7 @@ local function CreatePanel()
 
 	local function AddInternal(parent, index, data)
 		local intID, duration, trigger, unit, itemID = unpack(data)
-		local name, _, texture = GetSpellInfo(intID)
+		local name, _, texture = C_Spell_GetSpellInfo(intID)
 		if itemID then
 			name = GetItemInfo(itemID)
 		end
@@ -703,7 +703,7 @@ local function CreatePanel()
 					return
 				end
 
-				if (typeID == "AuraID" or typeID == "SpellID") and not GetSpellInfo(spellID) then
+				if (typeID == "AuraID" or typeID == "SpellID") and not C_Spell_GetSpellInfo(spellID) then
 					UIErrorsFrame:AddMessage(K.InfoColor .. L["Incorrect SpellID"])
 					return
 				end
@@ -727,7 +727,7 @@ local function CreatePanel()
 					return
 				end
 
-				if intID and not GetSpellInfo(intID) then
+				if intID and not C_Spell_GetSpellInfo(intID) then
 					UIErrorsFrame:AddMessage(K.InfoColor .. L["Incorrect SpellID"])
 					return
 				end

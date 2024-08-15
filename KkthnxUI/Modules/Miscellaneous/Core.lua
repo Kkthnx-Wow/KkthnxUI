@@ -65,7 +65,7 @@ function Module:OnEnable()
 		"CreateDeathCounter",
 		"CreateDurabilityFrameMove",
 		"CreateErrorFrameToggle",
-		"CreateGUIGameMenuButton",
+		-- "CreateGUIGameMenuButton",
 		"CreateMinimapButtonToggle",
 		"CreateObjectiveSizeUpdate",
 		"CreateQuestSizeUpdate",

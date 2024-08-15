@@ -21,7 +21,7 @@ local GetInstanceInfo = GetInstanceInfo
 local GetScreenHeight = GetScreenHeight
 local GetScreenWidth = GetScreenWidth
 local GetSpellDescription = GetSpellDescription
-local GetSpellInfo = GetSpellInfo
+local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
 local GetSpellTexture = GetSpellTexture
 local IsInGuild = IsInGuild
 local IsInRaid = IsInRaid
@@ -75,7 +75,7 @@ end
 _G.SLASH_KKTHNXUI_ENUMFRAME1 = "/getframe"
 
 SlashCmdList["KKTHNXUI_DUMPSPELL"] = function(arg)
-	local name = GetSpellInfo(arg)
+	local name = C_Spell_GetSpellInfo(arg)
 	if not name then
 		print("Please enter a spell name --> /getspell SPELLNAME")
 		return

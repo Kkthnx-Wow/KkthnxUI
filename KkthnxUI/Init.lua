@@ -1,34 +1,7 @@
 local AddOnName, Engine = ...
 
--- KkthnxUI Compatibility Layer for Firestorm Dragonflight Release
--- This script ensures backward compatibility with older WoW API functions.
-
--- Checking and initializing the C_AddOns table if it doesn't exist
--- This is necessary to avoid nil reference errors in older WoW versions.
-C_AddOns = C_AddOns or {}
-
--- Overwrite the IsAddOnLoaded function in the C_AddOns table.
--- This ensures that C_AddOns.IsAddOnLoaded references the global IsAddOnLoaded function.
--- Useful for older WoW versions where C_AddOns.IsAddOnLoaded might not be available.
-C_AddOns.IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded
-
--- Overwrite the GetAddOnInfo function in the C_AddOns table.
--- This ensures that C_AddOns.GetAddOnInfo references the global GetAddOnInfo function.
--- Ensures compatibility for accessing addon information across different WoW versions.
-C_AddOns.GetAddOnInfo = C_AddOns.GetAddOnInfo or GetAddOnInfo
-
--- Overwrite the GetNumAddOns function in the C_AddOns table.
--- This ensures that C_AddOns.GetNumAddOns references the global GetNumAddOns function.
--- Aligns with the above modification for consistency and backward compatibility.
-C_AddOns.GetNumAddOns = C_AddOns.GetNumAddOns or GetNumAddOns
-
--- Overwrite C_AddOns.GetAddOnEnableState with the global GetAddOnEnableState function.
--- Allows querying the enable state of addons in a manner compatible with older versions.
-C_AddOns.GetAddOnEnableState = C_AddOns.GetAddOnEnableState or GetAddOnEnableState
-
--- Note: These overrides are specifically tailored for the Firestorm Dragonflight release
--- and older versions of WoW. Ensure extensive testing across different WoW versions
--- to maintain compatibility and avoid conflicts with other addons or game client behavior.
+GetSpellTexture = C_Spell and C_Spell.GetSpellTexture or GetSpellTexture
+GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
 
 local bit_band = bit.band
 local bit_bor = bit.bor

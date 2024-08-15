@@ -1,9 +1,9 @@
 local K, C = KkthnxUI[1], KkthnxUI[2]
 
-local GetSpellInfo = GetSpellInfo
+local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
 
 local function SpellName(id)
-	local name = GetSpellInfo(id)
+	local name = C_Spell_GetSpellInfo(id)
 	if name then
 		return name
 	else

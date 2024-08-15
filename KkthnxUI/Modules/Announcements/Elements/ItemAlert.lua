@@ -3,8 +3,8 @@ local Module = K:GetModule("Announcements")
 
 local string_format = string.format
 
-local GetSpellInfo = GetSpellInfo
-local GetSpellLink = GetSpellLink
+local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
+local C_Spell_GetSpellLink = C_Spell and C_Spell.GetSpellLink
 local IsInGroup = IsInGroup
 local SendChatMessage = SendChatMessage
 local UnitName = UnitName
@@ -55,7 +55,7 @@ local importantSpells = {
 -- Function to handle spell cast alerts
 function Module:UpdateItemAlert(unit, castID, spellID)
 	if groupUnits[unit] and importantSpells[spellID] and (importantSpells[spellID] ~= castID) then
-		SendChatMessage(string_format("%s used %s", UnitName(unit), GetSpellLink(spellID) or GetSpellInfo(spellID)), K.CheckChat())
+		SendChatMessage(string_format("%s used %s", UnitName(unit), C_Spell_GetSpellLink(spellID) or C_Spell_GetSpellInfo(spellID)), K.CheckChat())
 		importantSpells[spellID] = castID
 	end
 end
@@ -72,7 +72,7 @@ end
 -- Main function to handle spell and item alerts
 function Module:CreateItemAnnounce()
 	Module.factionSpell = K.Faction == "Alliance" and 32182 or 2825
-	Module.factionSpell = GetSpellLink(Module.factionSpell)
+	Module.factionSpell = C_Spell_GetSpellLink(Module.factionSpell)
 
 	if C["Announcements"].ItemAlert then
 		Module:CheckGroupStatus()

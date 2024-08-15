@@ -55,7 +55,7 @@ local UseCustomFlyout = WoWRetail
 
 local KeyBound = LibStub("LibKeyBound-1.0", true)
 local CBH = LibStub("CallbackHandler-1.0")
-local LCG = LibStub("LibCustomGlow-1.0-KkthnxUI", true) -- NDui: use LCG mod
+local LCG = LibStub("LibCustomGlow-1.0-NDui", true) -- NDui: use LCG mod
 local Masque = LibStub("Masque", true)
 
 lib.eventFrame = lib.eventFrame or CreateFrame("Frame")
@@ -1710,7 +1710,7 @@ local function UpdateProfessionQuality(self)
 		if quality then
 			if not self.ProfessionQuality then
 				self.ProfessionQuality = CreateFrame("Frame", nil, self)
-				self.ProfessionQuality:SetInside()
+				self.ProfessionQuality:SetAllPoints()
 				local tex = self.ProfessionQuality:CreateTexture(nil, "ARTWORK")
 				tex:SetPoint("TOPLEFT")
 				self.ProfessionQuality.Texture = tex

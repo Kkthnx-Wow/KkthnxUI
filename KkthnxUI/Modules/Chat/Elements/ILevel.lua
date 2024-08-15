@@ -9,8 +9,8 @@ local string_rep = string.rep
 
 local ChatFrame_AddMessageEventFilter = ChatFrame_AddMessageEventFilter
 local DUNGEON_SCORE_LEADER = DUNGEON_SCORE_LEADER
-local GetItemInfo = GetItemInfo
-local GetItemStats = GetItemStats
+local GetItemInfo = C_Item.GetItemInfo
+local GetItemStats = C_Item.GetItemStats
 
 local itemCache = {}
 local GetDungeonScoreInColor
