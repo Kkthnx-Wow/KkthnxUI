@@ -30,7 +30,7 @@ local menuList = {
 		text = _G.SPELLBOOK_ABILITIES_BUTTON,
 		microOffset = "SpellbookMicroButton",
 		func = function()
-			ToggleFrame(_G.SpellBookFrame)
+			if PlayerSpellsUtil then PlayerSpellsUtil.ToggleSpellBookFrame() end
 		end,
 	},
 	{
@@ -61,7 +61,9 @@ local menuList = {
 		text = _G.TALENTS_BUTTON,
 		microOffset = "TalentMicroButton",
 		func = function()
-			_G.ToggleTalentFrame()
+			if PlayerSpellsUtil then 
+				PlayerSpellsUtil.ToggleClassTalentFrame()
+			end
 		end,
 	},
 	{
