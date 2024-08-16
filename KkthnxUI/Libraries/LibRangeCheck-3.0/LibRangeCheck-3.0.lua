@@ -40,7 +40,7 @@ License: MIT
 -- @class file
 -- @name LibRangeCheck-3.0
 local MAJOR_VERSION = "LibRangeCheck-3.0-KkthnxUI"
-local MINOR_VERSION = 18 -- real minor version: 19
+local MINOR_VERSION = 20 -- based off real minor version: 23
 
 -- GLOBALS: LibStub, CreateFrame
 
@@ -82,33 +82,45 @@ local GetItemInfo = C_Item.GetItemInfo
 local IsItemInRange = C_Item.IsItemInRange
 
 local BOOKTYPE_SPELL = (Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player) or BOOKTYPE_SPELL or "spell"
+
+local GetNumSpellTabs = C_SpellBook.GetNumSpellBookSkillLines or GetNumSpellTabs
+
 local C_SpellBook_GetSpellBookItemInfo = C_SpellBook.GetSpellBookItemInfo
-local GetSpellBookItemName = _G.GetSpellBookItemName or function(index, bookType)
+local CustomSpellBookItemData = C_SpellBook_GetSpellBookItemInfo and function(index, bookType)
 	local result = C_SpellBook_GetSpellBookItemInfo(index, bookType)
-	return result.name, result.subName, result.spellID
-end
+	return result.name, result.subName, result.spellID, result.itemType, result.isPassive
+end or _G.GetSpellBookItemName
 
 local C_Spell_IsSpellInRange = C_Spell.IsSpellInRange
-local IsSpellInRange = _G.IsSpellInRange or function(id, unit)
-	local result = C_Spell_IsSpellInRange(id, unit)
+local CustomSpellBookItemInRange = C_Spell_IsSpellInRange and function(spellID, spellBank, unit)
+	local result = C_Spell_IsSpellInRange(spellID, unit)
 	if result == true then
 		return 1
 	elseif result == false then
 		return 0
 	end
 	return nil
-end
+end or _G.IsSpellInRange
 
-local C_SpellBook_IsSpellBookItemInRange = C_SpellBook.IsSpellBookItemInRange
-local IsSpellBookItemInRange = _G.IsSpellInRange or function(index, spellBank, unit)
-	local result = C_SpellBook_IsSpellBookItemInRange(index, spellBank, unit)
-	if result == true then
-		return 1
-	elseif result == false then
-		return 0
+local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
+local CustomSpellInfo = C_Spell_GetSpellInfo and function(spellID)
+	if not spellID then
+		return nil
 	end
-	return nil
-end
+
+	local spellInfo = C_Spell_GetSpellInfo(spellID)
+	if spellInfo then
+		return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID
+	end
+end or _G.GetSpellInfo
+
+local C_SpellBook_GetSpellBookSkillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo
+local CustomSpellTabInfo = C_SpellBook_GetSpellBookSkillLineInfo and function(index)
+	local skillLineInfo = C_SpellBook_GetSpellBookSkillLineInfo(index)
+	if skillLineInfo then
+		return skillLineInfo.name, skillLineInfo.iconID, skillLineInfo.itemIndexOffset, skillLineInfo.numSpellBookItems, skillLineInfo.isGuild, skillLineInfo.offSpecID, skillLineInfo.shouldHide, skillLineInfo.specID
+	end
+end or _G.GetSpellTabInfo
 
 local C_Timer = C_Timer
 local Item = Item
@@ -125,27 +137,6 @@ local isEraSOD = IsEngravingEnabled and IsEngravingEnabled()
 
 local InCombatLockdownRestriction = function(unit)
 	return InCombatLockdown() and not UnitCanAttack("player", unit)
-end
-
-local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
-local GetSpellInfo = _G.GetSpellInfo or function(spellID)
-	if not spellID then
-		return nil
-	end
-
-	local spellInfo = C_Spell_GetSpellInfo(spellID)
-	if spellInfo then
-		return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID
-	end
-end
-
-local C_SpellBook_GetSpellBookSkillLineInfo = C_SpellBook.GetSpellBookSkillLineInfo
-local GetNumSpellTabs = C_SpellBook.GetNumSpellBookSkillLines or GetNumSpellTabs
-local GetSpellTabInfo = _G.GetSpellTabInfo or function(index)
-	local skillLineInfo = C_SpellBook_GetSpellBookSkillLineInfo(index)
-	if skillLineInfo then
-		return skillLineInfo.name, skillLineInfo.iconID, skillLineInfo.itemIndexOffset, skillLineInfo.numSpellBookItems, skillLineInfo.isGuild, skillLineInfo.offSpecID, skillLineInfo.shouldHide, skillLineInfo.specID
-	end
 end
 
 -- << STATIC CONFIG
@@ -185,7 +176,7 @@ for _, n in ipairs({ "EVOKER", "DEATHKNIGHT", "DEMONHUNTER", "DRUID", "HUNTER", 
 end
 
 -- Evoker
-tinsert(HarmSpells.EVOKER, 369819) -- Disintegrate (25 yards)
+tinsert(HarmSpells.EVOKER, 362969) -- Azure Strike (25 yards)
 
 tinsert(FriendSpells.EVOKER, 361469) -- Living Flame (25 yards)
 tinsert(FriendSpells.EVOKER, 431443) -- Chrono Flames (25 yards) (Hero Talent, overrides Living Flame)
@@ -357,9 +348,12 @@ if not isRetail then
 end
 
 -- Warlocks
-tinsert(FriendSpells.WARLOCK, 132) -- Detect Invisibility (30 yards, level 26)
+if isEra then
+	tinsert(FriendSpells.WARLOCK, 132) -- Detect Invisibility (30 yards, level 26)
+else
+	tinsert(FriendSpells.WARLOCK, 20707) -- Soulstone (40 yards) ~ this can be precasted so leave it in friendly as well as res
+end
 tinsert(FriendSpells.WARLOCK, 5697) -- Unending Breath (30 yards)
-tinsert(FriendSpells.WARLOCK, 20707) -- Soulstone (40 yards) ~ this can be precasted so leave it in friendly as well as res
 
 if isRetail then
 	tinsert(HarmSpells.WARLOCK, 234153) -- Drain Life (40 yards, level 9)
@@ -371,14 +365,18 @@ else
 	tinsert(HarmSpells.WARLOCK, 17877) -- Shadowburn (Destruction) (20/22/24 yards, rank 1)
 	tinsert(HarmSpells.WARLOCK, 18223) -- Curse of Exhaustion (Affliction) (30/33/36/35/38/42 yards)
 	tinsert(HarmSpells.WARLOCK, 689) -- Drain Life (Affliction) (20/22/24 yards, level 14, rank 1)
-	tinsert(HarmSpells.WARLOCK, 403677) -- Master Channeler (Affliction) (20/22/24 yards, level 14, rank 1)
 end
 
 tinsert(HarmSpells.WARLOCK, 5019) -- Shoot (30 yards)
 tinsert(HarmSpells.WARLOCK, 686) -- Shadow Bolt (Demonology, Affliction) (40 yards)
 tinsert(HarmSpells.WARLOCK, 5782) -- Fear (30 yards)
 
-tinsert(ResSpells.WARLOCK, 20707) -- Soulstone (40 yards)
+if isEra then
+	tinsert(HarmSpells.WARLOCK, 403677) -- Master Channeler (Affliction) (20/22/24 yards, level 14, rank 1)
+	tinsert(HarmSpells.WARLOCK, 426320) -- Shadowflame (30/33/36/39/42 yards, level 14, rank 1)
+else
+	tinsert(ResSpells.WARLOCK, 20707) -- Soulstone (40 yards)
+end
 
 tinsert(PetSpells.WARLOCK, 755) -- Health Funnel (45 yards)
 
@@ -603,7 +601,7 @@ local lastUpdate = 0
 local checkers_Spell = setmetatable({}, {
 	__index = function(t, spellIdx)
 		local func = function(unit)
-			if IsSpellBookItemInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
+			if CustomSpellBookItemInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
 				return true
 			end
 		end
@@ -700,7 +698,11 @@ local function initItemRequests(cacheAll)
 end
 
 local function getNumSpells()
-	local _, _, offset, numSpells = GetSpellTabInfo(GetNumSpellTabs())
+	local _, _, offset, numSpells = CustomSpellTabInfo(GetNumSpellTabs())
+	if not offset or not numSpells then
+		return 0
+	end
+
 	return offset + numSpells
 end
 
@@ -711,9 +713,9 @@ local function findSpellIdx(spellName, sid)
 	end
 
 	for i = 1, getNumSpells() do
-		local name, _, id = GetSpellBookItemName(i, BOOKTYPE_SPELL)
+		local name, _, id, spellType, isPassive = CustomSpellBookItemData(i, BOOKTYPE_SPELL)
 		if (sid == id and IsSpellKnownOrOverridesKnown(id)) or (spellName == name and not MatchSpellByID[id]) then
-			return i
+			return (not spellType and i) or (not isPassive and id)
 		end
 	end
 
@@ -727,13 +729,14 @@ local function fixRange(range)
 end
 
 local function getSpellData(sid)
-	local name, _, _, _, minRange, range = GetSpellInfo(sid)
+	local name, _, _, _, minRange, range = CustomSpellInfo(sid)
 	return name, fixRange(minRange), fixRange(range), findSpellIdx(name, sid)
 end
 
 -- minRange should be nil if there's no minRange, not 0
 local function addChecker(t, range, minRange, checker, info)
-	local rc = { ["range"] = range, ["minRange"] = minRange, ["checker"] = checker, ["info"] = info }
+	local rc = { range = range, minRange = minRange, checker = checker, info = info }
+
 	for i = 1, #t do
 		local v = t[i]
 		if rc.range == v.range then
@@ -1043,7 +1046,7 @@ lib.CHECKERS_CHANGED = "CHECKERS_CHANGED"
 lib.MeleeRange = MeleeRange
 
 function lib:findSpellIndex(spell)
-	local name, _, _, _, _, _, sid = GetSpellInfo(spell)
+	local name, _, _, _, _, _, sid = CustomSpellInfo(spell)
 	return findSpellIdx(name, sid)
 end
 

@@ -135,7 +135,16 @@ end
 hooksecurefunc(FriendsListFrame.ScrollBox, "Update", UpdateFriendsList)
 
 -- WhoFrame Update
-local columnTable = {}
+local columnTable = {
+	["zone"] = "",
+	["guild"] = "",
+	["race"] = "",
+}
+
+local currentType = "zone"
+hooksecurefunc(C_FriendList, "SortWho", function(sortType)
+	currentType = sortType
+end)
 --- Updates the WhoFrame with the current player's zone, guild, and race.
 hooksecurefunc(WhoFrame.ScrollBox, "Update", function(self)
 	local playerZone, playerGuild, playerRace = GetRealZoneText(), GetGuildInfo("player"), UnitRace("player")
@@ -146,13 +155,12 @@ hooksecurefunc(WhoFrame.ScrollBox, "Update", function(self)
 			local info = C_FriendList_GetWhoInfo(button.index)
 			if info then
 				local guild, level, race, zone, class = info.fullGuildName, info.level, info.raceStr, info.area, info.filename
-				wipe(columnTable)
-				tinsert(columnTable, applyZoneColor(zone, zone, playerZone))
-				tinsert(columnTable, applyZoneColor(guild, guild, playerGuild))
-				tinsert(columnTable, applyZoneColor(race, race, playerRace))
+				columnTable.zone = zone or ""
+				columnTable.guild = guild or ""
+				columnTable.race = race or ""
 				button.Name:SetTextColor(classColor(class, true))
 				button.Level:SetText(diffColor(level) .. level)
-				button.Variable:SetText(columnTable[UIDropDownMenu_GetSelectedID(WhoFrameDropDown)])
+				button.Variable:SetText(columnTable[currentType])
 			end
 		end
 	else

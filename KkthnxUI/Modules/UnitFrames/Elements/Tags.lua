@@ -147,7 +147,7 @@ oUF.Tags.Methods["color"] = function(unit)
 
 	if UnitIsTapDenied(unit) then
 		return K.RGBToHex(oUF.colors.tapped)
-	elseif UnitIsPlayer(unit) then
+	elseif UnitIsPlayer(unit) or UnitInPartyIsAI(unit) then
 		return K.RGBToHex(K.Colors.class[class])
 	elseif reaction then
 		return K.RGBToHex(K.Colors.reaction[reaction])
@@ -167,17 +167,6 @@ oUF.Tags.Methods["afkdnd"] = function(unit)
 	end
 end
 oUF.Tags.Events["afkdnd"] = "PLAYER_FLAGS_CHANGED"
-
--- oUF.Tags.Methods["DDG"] = function(unit)
--- 	if UnitIsDead(unit) then
--- 		return "|cffCFCFCF" .. DEAD .. "|r"
--- 	elseif UnitIsGhost(unit) then
--- 		return "|cffCFCFCF" .. L["Ghost"] .. "|r"
--- 	elseif not UnitIsConnected(unit) and GetNumArenaOpponentSpecs() == 0 then
--- 		return "|cffCFCFCF" .. PLAYER_OFFLINE .. "|r"
--- 	end
--- end
--- oUF.Tags.Events["DDG"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 
 oUF.Tags.Methods["DDG"] = function(unit)
 	if UnitIsDead(unit) then
@@ -332,21 +321,28 @@ oUF.Tags.Methods["pppower"] = function(unit)
 end
 oUF.Tags.Events["pppower"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER"
 
+local PatchInfoCheck = select(4, GetBuildInfo()) >= 110000 -- 11.0.0
+local NameOnlyGuild = false
+local NameOnlyTitle = true
 oUF.Tags.Methods["npctitle"] = function(unit)
-	if UnitIsPlayer(unit) then
-		return
-	end
+	local isPlayer = UnitIsPlayer(unit)
+	if isPlayer and NameOnlyGuild then
+		local guildName = GetGuildInfo(unit)
+		if guildName then
+			return "<" .. guildName .. ">"
+		end
+	elseif not isPlayer and NameOnlyTitle then
+		local data = not PatchInfoCheck and C_TooltipInfo.GetUnit(unit) -- FIXME: ColorMixin error
+		if not data then
+			return ""
+		end
 
-	local data = C_TooltipInfo.GetUnit(unit)
-	if not data then
-		return ""
-	end
-
-	local lineData = data.lines[GetCVarBool("colorblindmode") and 3 or 2]
-	if lineData then
-		local title = lineData.leftText
-		if title and not strfind(title, "^" .. LEVEL) then
-			return title
+		local lineData = data.lines[GetCVarBool("colorblindmode") and 3 or 2]
+		if lineData then
+			local title = lineData.leftText
+			if title and not strfind(title, "^" .. LEVEL) then
+				return title
+			end
 		end
 	end
 end

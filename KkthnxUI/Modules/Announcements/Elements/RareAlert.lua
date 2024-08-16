@@ -22,6 +22,7 @@ local isIgnoredZone = {
 
 local isIgnoredIDs = { -- todo: add option for this
 	[5485] = true,
+	[6149] = true,
 }
 
 -- Function to check if the vignette atlas is useful

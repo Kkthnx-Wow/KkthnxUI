@@ -110,10 +110,6 @@ function Module:StanceBarOnEvent()
 end
 
 function Module:CreateStancebar()
-	if not C["ActionBar"].ShowStance then
-		return
-	end
-
 	local buttonList = {}
 	local frame = CreateFrame("Frame", "KKUI_ActionBarStance", UIParent, "SecureHandlerStateTemplate")
 	frame.mover = K.Mover(frame, "StanceBar", "StanceBar", { "BOTTOMLEFT", _G.KKUI_ActionBar3, "TOPLEFT", 0, margin })
@@ -140,5 +136,5 @@ function Module:CreateStancebar()
 	K:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN", Module.StanceBarOnEvent)
 
 	frame.frameVisibility = "[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show"
-	RegisterStateDriver(frame, "visibility", frame.frameVisibility)
+	RegisterStateDriver(frame, "visibility", not C["ActionBar"].ShowStance and "hide" or frame.frameVisibility)
 end

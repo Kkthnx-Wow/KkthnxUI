@@ -69,6 +69,7 @@ function Module:OnEnable()
 		"CreateMinimapButtonToggle",
 		"CreateObjectiveSizeUpdate",
 		"CreateQuestSizeUpdate",
+		"CreateQuickMenuButton",
 		"CreateTicketStatusFrameMove",
 		"CreateTradeTargetInfo",
 		"CreateVehicleSeatMover",
@@ -89,13 +90,7 @@ function Module:OnEnable()
 
 	-- TESTING CMD : /run BNToastFrame:AddToast(BN_TOAST_TYPE_ONLINE, 1)
 	if not BNToastFrame.mover then
-		BNToastFrame.mover = K.Mover(
-			BNToastFrame,
-			"BNToastFrame",
-			"BNToastFrame",
-			{ "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 270 },
-			_G.BNToastFrame:GetSize()
-		)
+		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 270 }, _G.BNToastFrame:GetSize())
 	else
 		BNToastFrame.mover:SetSize(_G.BNToastFrame:GetSize())
 	end
@@ -166,8 +161,7 @@ function Module:OnEnable()
 					if linkType == "battlepet" then
 						local _, level, breedQuality = strsplit(":", linkOptions)
 						local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)]
-						link =
-							qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
+						link = qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
 					end
 					popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
 				end
@@ -183,8 +177,7 @@ function Module:OnEnable()
 					if linkType == "battlepet" then
 						local _, level, breedQuality = strsplit(":", linkOptions)
 						local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)]
-						link =
-							qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
+						link = qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
 					end
 					popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
 				end
@@ -356,8 +349,7 @@ function Module:CreateQuestXPPercent()
 
 	-- Calculate and display the XP percentage gain
 	if questXP and questXP > 0 and xpText then
-		local xpPercentageIncrease = (((playerCurrentXP + questXP) / playerMaxXP) - (playerCurrentXP / playerMaxXP))
-			* 100
+		local xpPercentageIncrease = (((playerCurrentXP + questXP) / playerMaxXP) - (playerCurrentXP / playerMaxXP)) * 100
 		xpFrame:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", xpText, xpPercentageIncrease)
 	end
 end
@@ -538,11 +530,7 @@ do
 	local updatedProgressBarTitle = ARCHAEOLOGY_DIGSITE_PROGRESS_BAR_TITLE .. " - %s/%s"
 	local function UpdateProgressBarTitle(_, numFindsCompleted, totalFinds)
 		if ArcheologyDigsiteProgressBar then
-			ArcheologyDigsiteProgressBar.BarTitle:SetFormattedText(
-				updatedProgressBarTitle,
-				numFindsCompleted,
-				totalFinds
-			)
+			ArcheologyDigsiteProgressBar.BarTitle:SetFormattedText(updatedProgressBarTitle, numFindsCompleted, totalFinds)
 		end
 	end
 	K:RegisterEvent("ARCHAEOLOGY_SURVEY_CAST", UpdateProgressBarTitle)
@@ -699,11 +687,7 @@ end
 function Module:PostBNToastMove(_, anchor)
 	if anchor ~= BNToastFrame.mover then
 		BNToastFrame:ClearAllPoints()
-		BNToastFrame:SetPoint(
-			BNToastFrame.mover.anchorPoint or "TOPLEFT",
-			BNToastFrame.mover,
-			BNToastFrame.mover.anchorPoint or "TOPLEFT"
-		)
+		BNToastFrame:SetPoint(BNToastFrame.mover.anchorPoint or "TOPLEFT", BNToastFrame.mover, BNToastFrame.mover.anchorPoint or "TOPLEFT")
 	end
 end
 
@@ -712,8 +696,7 @@ function Module:CreateCustomWaypoint()
 		return
 	end
 
-	local pointString = K.InfoColor
-		.. "|Hworldmap:%d+:%d+:%d+|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%s, %s)%s]|h|r"
+	local pointString = K.InfoColor .. "|Hworldmap:%d+:%d+:%d+|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%s, %s)%s]|h|r"
 
 	local function GetCorrectCoord(x)
 		x = tonumber(x)
@@ -762,4 +745,94 @@ end
 -- Fix missing localization file
 if not GuildControlUIRankSettingsFrameRosterLabel then
 	GuildControlUIRankSettingsFrameRosterLabel = CreateFrame("Frame")
+end
+
+-- Buttons to enhance popup menu
+function Module:CustomMenu_AddFriend(rootDescription, data, name)
+	rootDescription:CreateButton(K.InfoColor .. ADD_CHARACTER_FRIEND, function()
+		C_FriendList.AddFriend(name or data.name)
+	end)
+end
+
+local guildInviteString = gsub(CHAT_GUILD_INVITE_SEND, HEADER_COLON, "")
+function Module:CustomMenu_GuildInvite(rootDescription, data, name)
+	rootDescription:CreateButton(K.InfoColor .. guildInviteString, function()
+		C_GuildInfo.Invite(name or data.name)
+	end)
+end
+
+function Module:CustomMenu_CopyName(rootDescription, data, name)
+	rootDescription:CreateButton(K.InfoColor .. COPY_NAME, function()
+		local editBox = ChatEdit_ChooseBoxForSend()
+		local hasText = (editBox:GetText() ~= "")
+		ChatEdit_ActivateChat(editBox)
+		editBox:Insert(name or data.name)
+		if not hasText then
+			editBox:HighlightText()
+		end
+	end)
+end
+
+function Module:CustomMenu_Whisper(rootDescription, data)
+	rootDescription:CreateButton(K.InfoColor .. WHISPER, function()
+		ChatFrame_SendTell(data.name)
+	end)
+end
+
+function Module:CreateQuickMenuButton()
+	-- if not C.db["Misc"]["MenuButton"] then
+	-- 	return
+	-- end
+
+	--hooksecurefunc(UnitPopupManager, "OpenMenu", function(_, which)
+	--	print("MENU_UNIT_"..which)
+	--end)
+
+	Menu.ModifyMenu("MENU_UNIT_SELF", function(_, rootDescription, data)
+		Module:CustomMenu_CopyName(rootDescription, data)
+		Module:CustomMenu_Whisper(rootDescription, data)
+	end)
+
+	Menu.ModifyMenu("MENU_UNIT_TARGET", function(_, rootDescription, data)
+		Module:CustomMenu_CopyName(rootDescription, data)
+	end)
+
+	Menu.ModifyMenu("MENU_UNIT_PLAYER", function(_, rootDescription, data)
+		Module:CustomMenu_GuildInvite(rootDescription, data)
+	end)
+
+	Menu.ModifyMenu("MENU_UNIT_FRIEND", function(_, rootDescription, data)
+		Module:CustomMenu_AddFriend(rootDescription, data)
+		Module:CustomMenu_GuildInvite(rootDescription, data)
+	end)
+
+	Menu.ModifyMenu("MENU_UNIT_BN_FRIEND", function(_, rootDescription, data)
+		local fullName
+		local gameAccountInfo = data.accountInfo and data.accountInfo.gameAccountInfo
+		if gameAccountInfo then
+			local characterName = gameAccountInfo.characterName
+			local realmName = gameAccountInfo.realmName
+			if characterName and realmName then
+				fullName = characterName .. "-" .. realmName
+			end
+		end
+		Module:CustomMenu_AddFriend(rootDescription, data, fullName)
+		Module:CustomMenu_GuildInvite(rootDescription, data, fullName)
+		Module:CustomMenu_CopyName(rootDescription, data, fullName)
+	end)
+
+	Menu.ModifyMenu("MENU_UNIT_PARTY", function(_, rootDescription, data)
+		Module:CustomMenu_GuildInvite(rootDescription, data)
+	end)
+
+	Menu.ModifyMenu("MENU_UNIT_RAID", function(_, rootDescription, data)
+		Module:CustomMenu_AddFriend(rootDescription, data)
+		Module:CustomMenu_GuildInvite(rootDescription, data)
+		Module:CustomMenu_CopyName(rootDescription, data)
+		Module:CustomMenu_Whisper(rootDescription, data)
+	end)
+
+	Menu.ModifyMenu("MENU_UNIT_RAID_PLAYER", function(_, rootDescription, data)
+		Module:CustomMenu_GuildInvite(rootDescription, data)
+	end)
 end

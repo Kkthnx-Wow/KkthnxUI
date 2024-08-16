@@ -729,7 +729,7 @@ local DiscoverFlyoutSpells, UpdateFlyoutSpells, UpdateFlyoutHandlerScripts, Flyo
 if UseCustomFlyout then
 	-- params: self, flyoutID
 	local FlyoutHandleFunc = [[
-		local SPELLFLYOUT_DEFAULT_SPACING = 4
+		local SPELLFLYOUT_DEFAULT_SPACING = 6
 		local SPELLFLYOUT_INITIAL_SPACING = 7
 		local SPELLFLYOUT_FINAL_SPACING = 9
 
