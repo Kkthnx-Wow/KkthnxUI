@@ -63,7 +63,7 @@ end
 
 local function updateTokenVisibility()
 	TokenFrame_LoadUI()
-	TokenFrame_Update()
+	TokenFrame:Update()
 end
 
 local function buttonEventsRegisterFrame(self, added)
@@ -124,7 +124,7 @@ function Module:HideBlizz()
 	-- Fix maw block anchor
 	MainMenuBarVehicleLeaveButton:RegisterEvent("PLAYER_ENTERING_WORLD")
 	-- Update token panel
-	K:RegisterEvent("CURRENCY_DISPLAY_UPDATE", updateTokenVisibility)
+	-- K:RegisterEvent("CURRENCY_DISPLAY_UPDATE", updateTokenVisibility) -- Taints Money Transfer
 
 	-- Hide blizzard expbar
 	StatusTrackingBarManager:UnregisterAllEvents()

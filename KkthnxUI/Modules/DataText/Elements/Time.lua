@@ -60,7 +60,13 @@ local bfaZoneTime = {
 }
 
 local invIndex = {
-	[1] = { title = L["Legion Invasion"], duration = 66600, maps = { 630, 641, 650, 634 }, timeTable = {}, baseTime = legionZoneTime[region] or legionZoneTime["CN"] },
+	[1] = {
+		title = L["Legion Invasion"],
+		duration = 66600,
+		maps = { 630, 641, 650, 634 },
+		timeTable = {},
+		baseTime = legionZoneTime[region] or legionZoneTime["CN"],
+	},
 	[2] = {
 		title = L["Faction Assault"],
 		duration = 68400,
@@ -92,6 +98,11 @@ local questlist = {
 	{ name = "500 Timewarped Badges", id = 45563, texture = 1530590 }, -- MoP
 	{ name = "500 Timewarped Badges", id = 55499, texture = 1129683 }, -- WoD
 	{ name = "500 Timewarped Badges", id = 64710, texture = 1467047 }, -- Legion
+	{ name = C_Spell.GetSpellName(388945), id = 70866 }, -- SoDK
+	{ name = "", id = 70906, itemID = 200468 }, -- Grand hunt
+	{ name = "", id = 70893, questName = true }, -- Community feast
+	{ name = "", id = 79226, questName = true }, -- The big dig
+	{ name = "", id = 78319, questName = true }, -- The superbloom
 }
 
 local lesserVisions = { 58151, 58155, 58156, 58167, 58168 }
@@ -295,7 +306,7 @@ local itemCache = {}
 local function GetItemLink(itemID)
 	local link = itemCache[itemID]
 	if not link then
-		link = C_Item.GetItemInfo(itemID.itemLink)
+		link = select(2, C_Item.GetItemInfo(itemID))
 		itemCache[itemID] = link
 	end
 	return link
@@ -384,7 +395,7 @@ function Module:OnEnter()
 		if v.name and C_QuestLog_IsQuestFlaggedCompleted(v.id) then
 			if v.name == "500 Timewarped Badges" and isTimeWalker and checkTexture(v.texture) or v.name ~= "500 Timewarped Badges" then
 				addTitle(QUESTS_LABEL)
-				GameTooltip:AddDoubleLine(v.itemID and GetItemLink(v.itemID) or v.name, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
+				GameTooltip:AddDoubleLine((v.itemID and GetItemLink(v.itemID)) or (v.questName and QuestUtils_GetQuestName(v.id)) or v.name, QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
 			end
 		end
 	end
@@ -441,7 +452,7 @@ function Module:OnEnter()
 		local elapsed = mod(currentTime - feastTime, duration)
 		local nextTime = duration - elapsed + currentTime
 
-		addTitle(GetSpellInfo(388961))
+		addTitle(C_Spell.GetSpellName(388961))
 		local r, g, b
 		if currentTime - (nextTime - duration) < 900 then
 			r, g, b = 0, 1, 0

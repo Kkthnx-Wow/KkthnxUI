@@ -17,17 +17,24 @@ local function CheckAndRemoveBadBuffs(event)
 	-- Loop through all the player's buffs
 	local index = 1
 	while true do
-		local name, _, _, _, _, _, _, _, _, spellId = UnitBuff("player", index)
-		if not name then
+		-- Fetch buff data using the new API
+		local aura = C_UnitAuras.GetBuffDataByIndex("player", index)
+
+		-- Exit the loop if there are no more buffs
+		if not aura then
 			return
 		end
 
 		-- Check if the current buff is a bad buff, and if so, cancel it and print a message
-		if C.CheckBadBuffs[name] then
-			CancelSpellByName(name)
-			K.Print(K.SystemColor .. "Removed Bad Buff" .. " " .. GetSpellLink(spellId) .. "|r")
+		if C.CheckBadBuffs[aura.name] then
+			CancelSpellByName(aura.name)
+
+			-- Use C_Spell.GetSpellLink to retrieve the spell link
+			local spellLink = C_Spell.GetSpellLink(aura.spellId)
+			K.Print(K.SystemColor .. "Removed Bad Buff: " .. (spellLink or aura.name) .. "|r")
 		end
 
+		-- Move to the next buff
 		index = index + 1
 	end
 end
