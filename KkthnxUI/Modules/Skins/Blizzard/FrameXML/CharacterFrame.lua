@@ -26,7 +26,11 @@ local function UpdateAzeriteItem(self)
 		self.RankFrame.Label:SetPoint("TOPLEFT", self, 2, -1)
 		self.RankFrame.Label:SetTextColor(1, 0.5, 0)
 		self.RankFrame.Label:SetFontObject(K.UIFontOutline)
-		self.RankFrame.Label:SetFont(select(1, self.RankFrame.Label:GetFont()), 13, select(3, self.RankFrame.Label:GetFont()))
+		self.RankFrame.Label:SetFont(
+			select(1, self.RankFrame.Label:GetFont()),
+			13,
+			select(3, self.RankFrame.Label:GetFont())
+		)
 
 		self.styled = true
 	end
@@ -210,7 +214,9 @@ tinsert(C.defaultThemes, function()
 			texturePath = "Interface\\FrameGeneral\\UI-Background-Marble"
 		end
 
-		CharacterFrame:SetSize(frameWidth, frameHeight)
+		-- CharacterFrame:SetSize(frameWidth, frameHeight)
+		CharacterFrame:SetWidth(frameWidth)
+		CharacterFrame:SetHeight(frameHeight)
 		CharacterFrame.Inset:SetPoint("BOTTOMRIGHT", CharacterFrame, "BOTTOMLEFT", insetOffset, 4)
 
 		CharacterFrame.Inset.Bg:SetTexture(texturePath)
@@ -219,14 +225,17 @@ tinsert(C.defaultThemes, function()
 		CharacterFrame.Inset.Bg:SetVertTile(isExpanded)
 	end
 
+	UpdateCharacterFrameLayout(true)
 	-- -- Expand/collapse hooks
-	-- hooksecurefunc("CharacterFrame_Expand", function()
-	-- 	UpdateCharacterFrameLayout(true)
-	-- end)
+	hooksecurefunc(CharacterFrameMixin, "Expand", function(self)
+		print("Expand method called")
+		UpdateCharacterFrameLayout(true)
+	end)
 
-	-- hooksecurefunc("CharacterFrame_Collapse", function()
-	-- 	UpdateCharacterFrameLayout(false)
-	-- end)
+	hooksecurefunc(CharacterFrameMixin, "Collapse", function(self)
+		print("Collapse method called")
+		UpdateCharacterFrameLayout(false)
+	end)
 
 	-- Fonts
 	if CharacterLevelText then

@@ -6,7 +6,7 @@ local Module = K:GetModule("WorldMap")
 local GameTooltip = GameTooltip
 local GetAchievementLink = GetAchievementLink
 local GetQuestLink = GetQuestLink
-local IsAddOnLoaded = IsAddOnLoaded
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 local GetSuperTrackedQuestID = C_SuperTrack.GetSuperTrackedQuestID
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
@@ -186,7 +186,7 @@ function Module:CreateWowHeadLinks()
 		return
 	end
 
-	if IsAddOnLoaded("Blizzard_AchievementUI") then
+	if C_AddOns.IsAddOnLoaded("Blizzard_AchievementUI") then
 		InitializeAchievementLink()
 	else
 		local waitAchievementsFrame = CreateFrame("FRAME")

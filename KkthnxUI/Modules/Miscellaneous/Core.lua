@@ -65,7 +65,7 @@ function Module:OnEnable()
 		"CreateDeathCounter",
 		"CreateDurabilityFrameMove",
 		"CreateErrorFrameToggle",
-		-- "CreateGUIGameMenuButton",
+		"CreateGUIGameMenuButton",
 		"CreateMinimapButtonToggle",
 		"CreateObjectiveSizeUpdate",
 		"CreateQuestSizeUpdate",
@@ -89,7 +89,13 @@ function Module:OnEnable()
 
 	-- TESTING CMD : /run BNToastFrame:AddToast(BN_TOAST_TYPE_ONLINE, 1)
 	if not BNToastFrame.mover then
-		BNToastFrame.mover = K.Mover(BNToastFrame, "BNToastFrame", "BNToastFrame", { "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 270 }, _G.BNToastFrame:GetSize())
+		BNToastFrame.mover = K.Mover(
+			BNToastFrame,
+			"BNToastFrame",
+			"BNToastFrame",
+			{ "BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 270 },
+			_G.BNToastFrame:GetSize()
+		)
 	else
 		BNToastFrame.mover:SetSize(_G.BNToastFrame:GetSize())
 	end
@@ -160,7 +166,8 @@ function Module:OnEnable()
 					if linkType == "battlepet" then
 						local _, level, breedQuality = strsplit(":", linkOptions)
 						local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)]
-						link = qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
+						link =
+							qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
 					end
 					popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
 				end
@@ -176,7 +183,8 @@ function Module:OnEnable()
 					if linkType == "battlepet" then
 						local _, level, breedQuality = strsplit(":", linkOptions)
 						local qualityColor = BAG_ITEM_QUALITY_COLORS[tonumber(breedQuality)]
-						link = qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
+						link =
+							qualityColor:WrapTextInColorCode(name .. " |n" .. "Level" .. " " .. level .. "Battle Pet")
 					end
 					popupText:SetText(popupText:GetText():gsub(confirmationType, "") .. "|n|n" .. link)
 				end
@@ -315,67 +323,20 @@ function Module:CreateMinimapButtonToggle()
 	Module:ToggleMinimapIcon()
 end
 
-local function MainMenu_OnShow(self)
-	local buttonToReanchor
-	local buttonHeight = 0
-
-	local isCharacterNewlyBoosted = IsCharacterNewlyBoosted()
-	local canViewSplashScreen = C_SplashScreen.CanViewSplashScreen()
-
-	local function reanchorButtons(offset)
-		local anchorButton = GameMenuButtonWhatsNew:IsShown() and GameMenuButtonWhatsNew or GameMenuButtonHelp
-		local additionalOffset = 28
-
-		if isCharacterNewlyBoosted or not canViewSplashScreen then
-			anchorButton = GameMenuButtonStore:IsShown() and GameMenuButtonStore or GameMenuButtonHelp
-			additionalOffset = 28
-		end
-
-		buttonToReanchor = anchorButton
-		buttonHeight = additionalOffset + offset
-	end
-
-	local function setButtonPosition(button, relativeTo, yOffset)
-		if button and button:IsShown() then
-			button:SetPoint("TOP", relativeTo, "BOTTOM", 0, yOffset)
-		end
-	end
-
-	reanchorButtons(Module.GameMenuButton:GetHeight())
-
-	self:SetHeight(self:GetHeight() + buttonHeight)
-
-	setButtonPosition(GameMenuButtonLogout, Module.GameMenuButton, -14)
-	setButtonPosition(GameMenuButtonStore, GameMenuButtonHelp, -6)
-	setButtonPosition(GameMenuButtonWhatsNew, buttonToReanchor, -6)
-	setButtonPosition(GameMenuButtonEditMode, buttonToReanchor, -24)
-	setButtonPosition(GameMenuButtonSettings, GameMenuButtonEditMode, -6)
-	setButtonPosition(GameMenuButtonMacros, GameMenuButtonSettings, -6)
-	setButtonPosition(GameMenuButtonAddons, GameMenuButtonMacros, -6)
-	setButtonPosition(GameMenuButtonQuit, GameMenuButtonLogout, -6)
-end
-
-local function Button_OnClick()
-	if InCombatLockdown() then
-		UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
-		return
-	end
-
-	K["GUI"]:Toggle()
-	HideUIPanel(_G.GameMenuFrame)
-	PlaySound(_G.SOUNDKIT.IG_MAINMENU_OPTION)
-end
-
 function Module:CreateGUIGameMenuButton()
-	local gameMenuButton = CreateFrame("Button", "KKUI_GameMenuButton", _G.GameMenuFrame, "GameMenuButtonTemplate")
-	gameMenuButton:SetText(K.Title)
-	gameMenuButton:SetPoint("TOP", _G.GameMenuButtonAddons, "BOTTOM", 0, -12)
-	gameMenuButton:SetScript("OnClick", Button_OnClick)
-	gameMenuButton:SkinButton(true)
+	local function toggleGUI()
+		if InCombatLockdown() then
+			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
+			return
+		end
+		K["GUI"]:Toggle()
+		HideUIPanel(_G.GameMenuFrame)
+		PlaySound(_G.SOUNDKIT.IG_MAINMENU_OPTION)
+	end
 
-	Module.GameMenuButton = gameMenuButton
-
-	_G.GameMenuFrame:HookScript("OnShow", MainMenu_OnShow)
+	hooksecurefunc(GameMenuFrame, "InitButtons", function(self)
+		self:AddButton(K.Title, toggleGUI)
+	end)
 end
 
 function Module:CreateQuestXPPercent()
@@ -395,7 +356,8 @@ function Module:CreateQuestXPPercent()
 
 	-- Calculate and display the XP percentage gain
 	if questXP and questXP > 0 and xpText then
-		local xpPercentageIncrease = (((playerCurrentXP + questXP) / playerMaxXP) - (playerCurrentXP / playerMaxXP)) * 100
+		local xpPercentageIncrease = (((playerCurrentXP + questXP) / playerMaxXP) - (playerCurrentXP / playerMaxXP))
+			* 100
 		xpFrame:SetFormattedText("%s (|cff4beb2c+%.2f%%|r)", xpText, xpPercentageIncrease)
 	end
 end
@@ -576,7 +538,11 @@ do
 	local updatedProgressBarTitle = ARCHAEOLOGY_DIGSITE_PROGRESS_BAR_TITLE .. " - %s/%s"
 	local function UpdateProgressBarTitle(_, numFindsCompleted, totalFinds)
 		if ArcheologyDigsiteProgressBar then
-			ArcheologyDigsiteProgressBar.BarTitle:SetFormattedText(updatedProgressBarTitle, numFindsCompleted, totalFinds)
+			ArcheologyDigsiteProgressBar.BarTitle:SetFormattedText(
+				updatedProgressBarTitle,
+				numFindsCompleted,
+				totalFinds
+			)
 		end
 	end
 	K:RegisterEvent("ARCHAEOLOGY_SURVEY_CAST", UpdateProgressBarTitle)
@@ -733,7 +699,11 @@ end
 function Module:PostBNToastMove(_, anchor)
 	if anchor ~= BNToastFrame.mover then
 		BNToastFrame:ClearAllPoints()
-		BNToastFrame:SetPoint(BNToastFrame.mover.anchorPoint or "TOPLEFT", BNToastFrame.mover, BNToastFrame.mover.anchorPoint or "TOPLEFT")
+		BNToastFrame:SetPoint(
+			BNToastFrame.mover.anchorPoint or "TOPLEFT",
+			BNToastFrame.mover,
+			BNToastFrame.mover.anchorPoint or "TOPLEFT"
+		)
 	end
 end
 
@@ -742,7 +712,8 @@ function Module:CreateCustomWaypoint()
 		return
 	end
 
-	local pointString = K.InfoColor .. "|Hworldmap:%d+:%d+:%d+|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%s, %s)%s]|h|r"
+	local pointString = K.InfoColor
+		.. "|Hworldmap:%d+:%d+:%d+|h[|A:Waypoint-MapPin-ChatIcon:13:13:0:0|a%s (%s, %s)%s]|h|r"
 
 	local function GetCorrectCoord(x)
 		x = tonumber(x)
