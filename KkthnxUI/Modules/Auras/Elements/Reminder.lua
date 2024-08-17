@@ -95,13 +95,12 @@ function Module:Reminder_Update(cfg)
 				return
 			end
 		else
-			for i = 1, 32 do
-				local name, _, _, _, _, _, _, _, _, spellID = UnitBuff("player", i)
-				if not name then
+			for i = 1, 40 do
+				local auraData = C_UnitAuras.GetBuffDataByIndex("player", i, "HELPFUL")
+				if not auraData then
 					break
 				end
-
-				if name and cfg.spells[spellID] then
+				if auraData.spellId and cfg.spells[auraData.spellId] then
 					frame:Hide()
 					return
 				end
@@ -207,6 +206,7 @@ function Module:CreateReminder()
 		K:RegisterEvent("PLAYER_REGEN_DISABLED", Module.Reminder_OnEvent)
 		K:RegisterEvent("ZONE_CHANGED_NEW_AREA", Module.Reminder_OnEvent)
 		K:RegisterEvent("PLAYER_ENTERING_WORLD", Module.Reminder_OnEvent)
+		K:RegisterEvent("WEAPON_ENCHANT_CHANGED", Module.Reminder_OnEvent)
 	else
 		if parentFrame then
 			parentFrame:Hide()
@@ -217,6 +217,7 @@ function Module:CreateReminder()
 			K:UnregisterEvent("PLAYER_REGEN_DISABLED", Module.Reminder_OnEvent)
 			K:UnregisterEvent("ZONE_CHANGED_NEW_AREA", Module.Reminder_OnEvent)
 			K:UnregisterEvent("PLAYER_ENTERING_WORLD", Module.Reminder_OnEvent)
+			K:UnregisterEvent("WEAPON_ENCHANT_CHANGED", Module.Reminder_OnEvent)
 		end
 	end
 end

@@ -8,7 +8,6 @@ local IsInGroup, IsInRaid, IsInInstance = IsInGroup, IsInRaid, IsInInstance
 local UnitIsGroupLeader, UnitIsGroupAssistant = UnitIsGroupLeader, UnitIsGroupAssistant
 local IsPartyLFG, IsLFGComplete, HasLFGRestrictions = IsPartyLFG, IsLFGComplete, HasLFGRestrictions
 local GetInstanceInfo, GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, SetRaidTarget = GetInstanceInfo, GetNumGroupMembers, GetRaidRosterInfo, GetRaidTargetIndex, SetRaidTarget
-local GetSpellCharges, GetSpellInfo, UnitAura = GetSpellCharges, GetSpellInfo, UnitAura
 local GetTime, SendChatMessage, C_AddOns_IsAddOnLoaded = GetTime, SendChatMessage, C_AddOns.IsAddOnLoaded
 local IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown, InCombatLockdown = IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown, InCombatLockdown
 local UnitExists, UninviteUnit = UnitExists, UninviteUnit
@@ -17,8 +16,6 @@ local C_Timer_After = C_Timer.After
 local LeaveParty = C_PartyInfo.LeaveParty
 local ConvertToRaid = C_PartyInfo.ConvertToRaid
 local ConvertToParty = C_PartyInfo.ConvertToParty
-local C_AddOns_EnableAddOn = C_AddOns.EnableAddOn
-local C_AddOns_LoadAddOn = C_AddOns.LoadAddOn
 
 function Module:RaidTool_Visibility(frame)
 	if IsInGroup() then
@@ -35,9 +32,9 @@ function Module:RaidTool_Header()
 	frame:SkinButton()
 	K.Mover(frame, "Raid Tool", "RaidManager", { "TOP", UIParent, "TOP", 0, -4 })
 
-	Module:RaidTool_Visibility(frame)
+	Module.RaidTool_Visibility(Module, frame)
 	K:RegisterEvent("GROUP_ROSTER_UPDATE", function()
-		Module:RaidTool_Visibility(frame)
+		Module.RaidTool_Visibility(Module, frame)
 	end)
 
 	frame:RegisterForClicks("AnyUp")
@@ -63,10 +60,6 @@ function Module:RaidTool_Header()
 			LeaveParty()
 		end
 	end)
-	-- frame:SetScript("OnHide", function(self)
-	-- 	self.bg:SetBackdropColor(0, 0, 0, 0.5)
-	-- 	self.bg:SetBackdropBorderColor(0, 0, 0, 1)
-	-- end)
 
 	return frame
 end
@@ -79,23 +72,25 @@ end
 
 function Module:GetRaidMaxGroup()
 	local _, instType, difficulty = GetInstanceInfo()
+	local maxGroup = 8
+
 	if (instType == "party" or instType == "scenario") and not IsInRaid() then
-		return 1
+		maxGroup = 1
 	elseif instType ~= "raid" then
-		return 8
+		maxGroup = 8
 	elseif difficulty == 8 or difficulty == 1 or difficulty == 2 or difficulty == 24 then
-		return 1
+		maxGroup = 1
 	elseif difficulty == 14 or difficulty == 15 then
-		return 6
+		maxGroup = 6
 	elseif difficulty == 16 then
-		return 4
+		maxGroup = 4
 	elseif difficulty == 3 or difficulty == 5 then
-		return 2
+		maxGroup = 2
 	elseif difficulty == 9 then
-		return 8
-	else
-		return 5
+		maxGroup = 8
 	end
+
+	return maxGroup
 end
 
 function Module:RaidTool_RoleCount(parent)
@@ -154,7 +149,7 @@ end
 function Module:RaidTool_UpdateRes(elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
 	if self.elapsed > 0.1 then
-		local charges, _, started, duration = GetSpellCharges(20484)
+		local charges, _, started, duration = C_Spell.GetSpellCharges(20484)
 		if charges then
 			local timer = duration - (GetTime() - started)
 			if timer < 0 then
@@ -264,39 +259,16 @@ function Module:RaidTool_ReadyCheck(parent)
 	K:RegisterEvent("READY_CHECK_FINISHED", updateReadyCheck)
 end
 
-function Module:RaidTool_Marker(parent)
-	local markerButton = CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton
-	if not markerButton then
-		for _, addon in next, { "Blizzard_CUFProfiles", "Blizzard_CompactRaidFrames" } do
-			C_AddOns_EnableAddOn(addon)
-			C_AddOns_LoadAddOn(addon)
-		end
-	end
-
-	if markerButton then
-		markerButton:ClearAllPoints()
-		markerButton:SetPoint("RIGHT", parent, "LEFT", -6, 0)
-		markerButton:SetParent(parent)
-		markerButton:SetSize(28, 28)
-		markerButton:StripTextures(true)
-		markerButton:SkinButton()
-		markerButton:SetNormalTexture("Interface\\RaidFrame\\Raid-WorldPing")
-		markerButton:GetNormalTexture():SetVertexColor(K.r, K.g, K.b)
-		markerButton:HookScript("OnMouseUp", function()
-			if (IsInGroup() and not IsInRaid()) or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
-				return
-			end
-			UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_LEADER)
-		end)
-	end
-end
-
 function Module:RaidTool_BuffChecker(parent)
 	local frame = CreateFrame("Button", nil, parent)
-	frame:SetPoint("LEFT", parent, "RIGHT", 6, 0)
+	frame:SetPoint("RIGHT", parent, "LEFT", -6, 0)
 	frame:SetSize(28, 28)
-	K.CreateFontString(frame, 16, "!", "", true, "CENTER", 0, 0)
 	frame:SkinButton()
+
+	local icon = frame:CreateTexture(nil, "ARTWORK")
+	icon:SetPoint("TOPLEFT", frame, 6, -6)
+	icon:SetPoint("BOTTOMRIGHT", frame, -6, 6)
+	icon:SetAtlas("lootroll-icon-checkmark")
 
 	local BuffName = { L["Flask"], L["Food"], SPELL_STAT4_NAME, RAID_BUFF_2, RAID_BUFF_3, RUNES }
 	local NoBuff, numGroups, numPlayer = {}, 6, 0
@@ -349,13 +321,10 @@ function Module:RaidTool_BuffChecker(parent)
 					local HasBuff
 					local buffTable = C.RaidUtilityBuffCheckList[j]
 					for k = 1, #buffTable do
-						local buffName = GetSpellInfo(buffTable[k])
-						for index = 1, 32 do
-							local currentBuff = UnitAura(name, index)
-							if currentBuff and currentBuff == buffName then
-								HasBuff = true
-								break
-							end
+						local buffName = C_Spell.GetSpellName(buffTable[k])
+						if buffName and C_UnitAuras.GetAuraDataBySpellName(name, buffName) then
+							HasBuff = true
+							break
 						end
 					end
 					if not HasBuff then
@@ -387,13 +356,11 @@ function Module:RaidTool_BuffChecker(parent)
 	frame:HookScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
 		GameTooltip:ClearLines()
-		GameTooltip:AddLine(L["Raid Tool"], 0, 0.6, 1)
+		GameTooltip:AddLine("Raid Tool", 0, 0.6, 1)
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(K.LeftButton .. K.InfoColor .. READY_CHECK)
-		GameTooltip:AddDoubleLine(K.ScrollButton .. K.InfoColor .. "Count Down")
-		GameTooltip:AddDoubleLine(K.RightButton .. "(Ctrl) " .. K.InfoColor .. "Check Status")
+		GameTooltip:AddDoubleLine(K.LeftButton .. K.InfoColor .. "Check Status")
 		if potionCheck then
-			GameTooltip:AddDoubleLine(K.RightButton .. "(Alt) " .. K.InfoColor .. "MRT Potioncheck")
+			GameTooltip:AddDoubleLine(K.RightButton .. K.InfoColor .. "MRT Potioncheck")
 		end
 		GameTooltip:Show()
 	end)
@@ -405,13 +372,43 @@ function Module:RaidTool_BuffChecker(parent)
 	end)
 
 	frame:HookScript("OnMouseDown", function(_, btn)
-		if btn == "RightButton" then
-			if IsAltKeyDown() and potionCheck then
-				SlashCmdList["mrtSlash"]("potionchat")
-			elseif IsControlKeyDown() then
-				scanBuff()
-			end
-		elseif btn == "LeftButton" then
+		if btn == "LeftButton" then
+			scanBuff()
+		elseif potionCheck then
+			SlashCmdList["mrtSlash"]("potionchat")
+		end
+	end)
+end
+
+function Module:RaidTool_CountDown(parent)
+	local frame = CreateFrame("Button", nil, parent)
+	frame:SetPoint("LEFT", parent, "RIGHT", 6, 0)
+	frame:SetSize(28, 28)
+	frame:SkinButton()
+
+	local icon = frame:CreateTexture(nil, "ARTWORK")
+	icon:SetPoint("TOPLEFT", frame, 6, -6)
+	icon:SetPoint("BOTTOMRIGHT", frame, -6, 6)
+	icon:SetAtlas("clock-icon", true)
+
+	frame:HookScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
+		GameTooltip:ClearLines()
+		GameTooltip:AddLine("Raid Tool", 0, 0.6, 1)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddDoubleLine(K.LeftButton .. K.InfoColor .. READY_CHECK)
+		GameTooltip:AddDoubleLine(K.RightButton .. K.InfoColor .. "Count Down")
+		GameTooltip:Show()
+	end)
+	frame:HookScript("OnLeave", K.HideTooltip)
+
+	local reset = true
+	K:RegisterEvent("PLAYER_REGEN_ENABLED", function()
+		reset = true
+	end)
+
+	frame:HookScript("OnMouseDown", function(_, btn)
+		if btn == "LeftButton" then
 			if InCombatLockdown() then
 				UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_IN_COMBAT)
 				return
@@ -423,32 +420,25 @@ function Module:RaidTool_BuffChecker(parent)
 			end
 		else
 			if IsInGroup() and (UnitIsGroupLeader("player") or (UnitIsGroupAssistant("player") and IsInRaid())) then
-				if C["Announcements"].PullCountdown then
+				if C_AddOns.IsAddOnLoaded("DBM-Core") then
 					if reset then
-						SlashCmdList["PULLCOUNTDOWN"]("5")
-					else
-						SlashCmdList["PULLCOUNTDOWN"]("0")
-					end
-					reset = not reset
-				elseif C_AddOns_IsAddOnLoaded("DBM-Core") and not C["Announcements"].PullCountdown then
-					if reset then
-						SlashCmdList["DEADLYBOSSMODS"]("pull " .. C["Misc"].DBMCount)
+						SlashCmdList["DEADLYBOSSMODS"]("pull " .. "5")
 					else
 						SlashCmdList["DEADLYBOSSMODS"]("pull 0")
 					end
 					reset = not reset
-				elseif C_AddOns_IsAddOnLoaded("BigWigs") and not C["Announcements"].PullCountdown then
+				elseif C_AddOns.IsAddOnLoaded("BigWigs") then
 					if not SlashCmdList["BIGWIGSPULL"] then
-						C_AddOns_LoadAddOn("BigWigs_Plugins")
+						C_AddOns.LoadAddOn("BigWigs_Plugins")
 					end
 					if reset then
-						SlashCmdList["BIGWIGSPULL"](C["Misc"].DBMCount)
+						SlashCmdList["BIGWIGSPULL"]("5")
 					else
 						SlashCmdList["BIGWIGSPULL"]("0")
 					end
 					reset = not reset
 				else
-					UIErrorsFrame:AddMessage(K.InfoColor .. L["DBM Required"])
+					UIErrorsFrame:AddMessage(K.InfoColor .. "DBM Required")
 				end
 			else
 				UIErrorsFrame:AddMessage(K.InfoColor .. ERR_NOT_LEADER)
@@ -737,9 +727,9 @@ function Module:RaidTool_Init()
 	Module:RaidTool_RoleCount(frame)
 	Module:RaidTool_CombatRes(frame)
 	Module:RaidTool_ReadyCheck(frame)
-	Module:RaidTool_Marker(frame)
 	Module:RaidTool_BuffChecker(frame)
 	Module:RaidTool_CreateMenu(frame)
+	Module:RaidTool_CountDown(frame)
 
 	Module:RaidTool_EasyMarker()
 	Module:RaidTool_WorldMarker()

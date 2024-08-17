@@ -771,12 +771,6 @@ function Module:IsAuraTracking(value, eventType, sourceGUID, sourceName, sourceF
 end
 
 local cache = {}
-local soundKitID = SOUNDKIT.ALARM_CLOCK_WARNING_3
-local playSoundSpells = {
-	[396364] = true,
-	[396369] = true,
-	[240447] = true,
-}
 
 function Module:AuraWatch_UpdateInt(event, ...)
 	if not IntCD.List then
@@ -812,10 +806,6 @@ function Module:AuraWatch_UpdateInt(event, ...)
 			Module:AuraWatch_SetupInt(value.IntID, value.ItemID, value.Duration, value.UnitID, guid, name)
 
 			cache[timestamp] = spellID
-		end
-
-		if C["AuraWatch"].QuakeRing and eventList[eventType] and playSoundSpells[spellID] then
-			PlaySound(soundKitID, "Master") -- 'Ding' on quake
 		end
 
 		if #cache > 666 then
