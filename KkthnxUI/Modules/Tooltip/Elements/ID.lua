@@ -101,10 +101,17 @@ function Module:CreateTooltipID()
 			return
 		end
 
-		local _, _, _, _, _, _, caster, _, _, id = UnitAura(...)
+		local auraData = C_UnitAuras.GetAuraDataByIndex(...)
+		if not auraData then
+			return
+		end
+
+		local caster = auraData.sourceUnit
+		local id = auraData.spellId
 		if id then
 			Module.AddLineForID(self, id, types.spell)
 		end
+
 		if caster then
 			local name = GetUnitName(caster, true)
 			local hexColor = K.RGBToHex(K.UnitColor(caster))

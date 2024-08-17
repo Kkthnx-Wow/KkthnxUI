@@ -44,7 +44,7 @@ local function OnEvent()
 
 	zone = GetZoneText()
 	subZone = GetSubZoneText()
-	pvpType = GetZonePVPInfo()
+	pvpType = C_PvP.GetZonePVPInfo()
 	pvpType = pvpType or "neutral"
 
 	local r, g, b = unpack(zoneInfo[pvpType][2])

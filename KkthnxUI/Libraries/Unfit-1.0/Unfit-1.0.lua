@@ -257,7 +257,7 @@ end
 
 function Lib:IsItemUnusable(item)
 	if item then
-		local slot, _, _, class, subclass = select(9, GetItemInfo(item))
+		local slot, _, _, class, subclass = select(9, C_Item.GetItemInfo(item))
 		return Lib:IsClassUnusable(class, subclass, slot)
 	end
 end

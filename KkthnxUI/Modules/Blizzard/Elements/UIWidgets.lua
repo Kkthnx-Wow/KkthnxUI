@@ -30,6 +30,9 @@ function Module:CreateUIWidgets()
 		if parent ~= frame2 then
 			self:ClearAllPoints()
 			self:SetPoint("CENTER", frame2)
+			if self:GetScale() ~= 0.8 then
+				self:SetScale(0.8)
+			end
 		end
 	end)
 end
