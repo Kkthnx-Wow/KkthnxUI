@@ -73,7 +73,7 @@ function Module:ChantLumos(self)
 				button:SetScript("OnUpdate", nil)
 				K.HideOverlayGlow(button.glowFrame)
 			end
-			button.Icon:SetTexture(GetSpellTexture(316099))
+			button.Icon:SetTexture(C_Spell.GetSpellTexture(316099))
 		end
 
 		UpdateDebuff(self.lumos[4], 32388, 32390, false, "END")
@@ -127,7 +127,7 @@ function Module:ChantLumos(self)
 			elseif IsPlayerSpell(17877) then
 				UpdateDebuff(button, 17877, 17877)
 			else
-				button.Icon:SetTexture(GetSpellTexture(116858))
+				button.Icon:SetTexture(C_Spell.GetSpellTexture(116858))
 				local name, _, _, expire, caster = GetUnitAura("target", 157736, "HARMFUL")
 				if name and caster == "player" then
 					self.dotExp = expire

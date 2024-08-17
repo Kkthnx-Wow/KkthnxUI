@@ -45,7 +45,7 @@ function Module:ChantLumos(self)
 					button.Icon:SetDesaturated(true)
 					K.HideOverlayGlow(button.glowFrame)
 				end
-				button.Icon:SetTexture(GetSpellTexture(8042))
+				button.Icon:SetTexture(C_Spell.GetSpellTexture(8042))
 			end
 		end
 
@@ -115,7 +115,7 @@ function Module:ChantLumos(self)
 		do
 			local button = self.lumos[2]
 			if IsPlayerSpell(157153) then
-				button.Icon:SetTexture(GetSpellTexture(157504))
+				button.Icon:SetTexture(C_Spell.GetSpellTexture(157504))
 				local name, _, _, _, _, _, value = GetUnitAura("player", 157504, "HELPFUL")
 				if name then
 					UpdateTotemAura(button, 971076)

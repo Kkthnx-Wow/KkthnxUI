@@ -20,9 +20,9 @@ local EnumerateFrames = EnumerateFrames
 local GetInstanceInfo = GetInstanceInfo
 local GetScreenHeight = GetScreenHeight
 local GetScreenWidth = GetScreenWidth
-local GetSpellDescription = GetSpellDescription
+local GetSpellDescription = C_Spell.GetSpellDescription
 local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
-local GetSpellTexture = GetSpellTexture
+local C_Spell_GetSpellTexture = C_Spell.GetSpellTexture
 local IsInGuild = IsInGuild
 local IsInRaid = IsInRaid
 local MouseIsOver = MouseIsOver
@@ -83,7 +83,7 @@ SlashCmdList["KKTHNXUI_DUMPSPELL"] = function(arg)
 
 	local des = GetSpellDescription(arg)
 	print(K.InfoColor .. "------------------------")
-	print(" \124T" .. GetSpellTexture(arg) .. ":16:16:::64:64:5:59:5:59\124t", K.InfoColor .. arg)
+	print(" \124T" .. C_Spell_GetSpellTexture(arg) .. ":16:16:::64:64:5:59:5:59\124t", K.InfoColor .. arg)
 	print(NAME, K.InfoColor .. (name or "nil"))
 	print(DESCRIPTION, K.InfoColor .. (des or "nil"))
 	print(K.InfoColor .. "------------------------")

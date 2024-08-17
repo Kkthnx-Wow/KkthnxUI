@@ -188,7 +188,7 @@ function Module:RaidTool_CombatRes(parent)
 	res:SetPoint("LEFT", 5, 0)
 
 	res.Icon = res:CreateTexture(nil, "ARTWORK")
-	res.Icon:SetTexture(GetSpellTexture(20484))
+	res.Icon:SetTexture(C_Spell.GetSpellTexture(20484))
 	res.Icon:SetAllPoints()
 	res.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	res.__owner = parent

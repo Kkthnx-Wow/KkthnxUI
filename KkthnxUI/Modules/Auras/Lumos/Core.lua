@@ -48,7 +48,7 @@ function Module:UpdateCooldown(button, spellID, texture)
 	end
 
 	if texture then
-		button.Icon:SetTexture(GetSpellTexture(spellID))
+		button.Icon:SetTexture(C_Spell.GetSpellTexture(spellID))
 	end
 end
 
@@ -62,7 +62,7 @@ function Module:GlowOnEnd()
 end
 
 function Module:UpdateAura(button, unit, auraID, filter, spellID, cooldown, glow)
-	button.Icon:SetTexture(GetSpellTexture(spellID))
+	button.Icon:SetTexture(C_Spell.GetSpellTexture(spellID))
 	local name, count, duration, expire, caster = self:GetUnitAura(unit, auraID, filter)
 	if name and caster == "player" then
 		if button.Count then

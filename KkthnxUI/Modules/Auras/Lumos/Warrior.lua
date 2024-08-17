@@ -22,7 +22,7 @@ local function UpdateDebuff(button, spellID, auraID, cooldown, glow)
 end
 
 local function UpdateSpellStatus(button, spellID)
-	button.Icon:SetTexture(GetSpellTexture(spellID))
+	button.Icon:SetTexture(C_Spell.GetSpellTexture(spellID))
 	if C_Spell.IsSpellUsable(spellID) then
 		button.Icon:SetDesaturated(false)
 	else
@@ -44,7 +44,7 @@ function Module:ChantLumos(self)
 				button.CD:SetCooldown(expire - duration, duration)
 				button.CD:Show()
 				button.Icon:SetDesaturated(false)
-				button.Icon:SetTexture(GetSpellTexture(12294))
+				button.Icon:SetTexture(C_Spell.GetSpellTexture(12294))
 			else
 				UpdateCooldown(button, 7384, true)
 			end

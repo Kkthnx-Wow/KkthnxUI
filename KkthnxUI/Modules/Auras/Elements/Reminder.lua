@@ -11,15 +11,14 @@ local GetItemCount = C_Item.GetItemCount
 local GetItemIcon = C_Item.GetItemIconByID
 local GetNumGroupMembers = GetNumGroupMembers
 local GetSpecialization = GetSpecialization
-local GetSpellTexture = GetSpellTexture
+local GetSpellTexture = C_Spell.GetSpellTexture
 local GetWeaponEnchantInfo = GetWeaponEnchantInfo
 local GetZonePVPInfo = C_PvP.GetZonePVPInfo
 local InCombatLockdown = InCombatLockdown
-local IsEquippedItem = IsEquippedItem
+local IsEquippedItem = C_Item.IsEquippedItem
 local IsInInstance = IsInInstance
 local IsPlayerSpell = IsPlayerSpell
 local UIParent = UIParent
-local UnitBuff = UnitBuff
 local UnitInVehicle = UnitInVehicle
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 

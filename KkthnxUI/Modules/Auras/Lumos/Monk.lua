@@ -18,7 +18,7 @@ local function UpdateTargetBuff(button, spellID, auraID, cooldown)
 end
 
 local function UpdateSpellStatus(button, spellID)
-	button.Icon:SetTexture(GetSpellTexture(spellID))
+	button.Icon:SetTexture(C_Spell.GetSpellTexture(spellID))
 	if C_Spell.IsSpellUsable(spellID) then
 		button.Icon:SetDesaturated(false)
 	else

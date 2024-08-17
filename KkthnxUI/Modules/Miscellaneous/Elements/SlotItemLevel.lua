@@ -10,8 +10,8 @@ local type = type
 
 -- Unit and item information functions
 local UnitGUID = UnitGUID
-local GetItemInfo = GetItemInfo
-local GetSpellInfo = GetSpellInfo
+local GetItemInfo = C_Item.GetItemInfo
+local GetSpellInfo = C_Spell.GetSpellInfo
 local GetContainerItemLink = C_Container.GetContainerItemLink
 local GetInventoryItemLink = GetInventoryItemLink
 local GetTradePlayerItemLink = GetTradePlayerItemLink

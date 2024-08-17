@@ -1,8 +1,5 @@
 local AddOnName, Engine = ...
 
-GetSpellTexture = C_Spell and C_Spell.GetSpellTexture or GetSpellTexture
-GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
-
 local bit_band = bit.band
 local bit_bor = bit.bor
 local next = next
@@ -19,12 +16,12 @@ local COMBATLOG_OBJECT_AFFILIATION_RAID = COMBATLOG_OBJECT_AFFILIATION_RAID
 local COMBATLOG_OBJECT_CONTROL_PLAYER = COMBATLOG_OBJECT_CONTROL_PLAYER
 local COMBATLOG_OBJECT_REACTION_FRIENDLY = COMBATLOG_OBJECT_REACTION_FRIENDLY
 local COMBATLOG_OBJECT_TYPE_PET = COMBATLOG_OBJECT_TYPE_PET
+local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 local CreateFrame = CreateFrame
 local Enum = Enum
 local GetAddOnEnableState = C_AddOns.GetAddOnEnableState
 local GetAddOnInfo = C_AddOns.GetAddOnInfo
-local C_AddOns_GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 local GetBuildInfo = GetBuildInfo
 local GetLocale = GetLocale
 local GetNumAddOns = C_AddOns.GetNumAddOns

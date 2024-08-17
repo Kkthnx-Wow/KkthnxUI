@@ -14,7 +14,7 @@ local pairs = pairs
 local wipe = wipe
 
 local GetSpecialization = GetSpecialization
-local GetSpellInfo = GetSpellInfo
+local GetSpellInfo = C_Spell.GetSpellInfo
 local UnitAura = UnitAura
 local UnitCanAttack = UnitCanAttack
 local UnitIsCharmed = UnitIsCharmed

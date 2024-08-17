@@ -38,7 +38,7 @@ local function UpdateDebuff(button, spellID, auraID, cooldown)
 end
 
 local function UpdateBuffValue(button, spellID)
-	button.Icon:SetTexture(GetSpellTexture(spellID))
+	button.Icon:SetTexture(C_Spell.GetSpellTexture(spellID))
 	local name, _, duration, expire, _, _, value = GetUnitAura("player", spellID, "HELPFUL")
 	if name then
 		button.Count:SetText(K.ShortValue(value))
@@ -63,7 +63,7 @@ function Module:ChantLumos(self)
 				price = 40
 			end
 			local boneCount = floor(UnitPower("player") / price)
-			button.Icon:SetTexture(GetSpellTexture(49998))
+			button.Icon:SetTexture(C_Spell.GetSpellTexture(49998))
 			button.Count:SetText(boneCount)
 			local name, _, dur, exp, _, _, value = GetUnitAura("player", 77535, "HELPFUL")
 			if name then
@@ -115,7 +115,7 @@ function Module:ChantLumos(self)
 				button.CD:Show()
 				button.Icon:SetDesaturated(false)
 				button.Count:SetText("")
-				button.Icon:SetTexture(GetSpellTexture(51460))
+				button.Icon:SetTexture(C_Spell.GetSpellTexture(51460))
 			else
 				local count = floor(UnitPower("player") / 40)
 				if count == 0 then
@@ -125,7 +125,7 @@ function Module:ChantLumos(self)
 				end
 				button.CD:Hide()
 				button.Count:SetText(count)
-				button.Icon:SetTexture(GetSpellTexture(47541))
+				button.Icon:SetTexture(C_Spell.GetSpellTexture(47541))
 			end
 		end
 
