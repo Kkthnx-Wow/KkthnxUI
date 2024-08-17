@@ -214,7 +214,7 @@ local function BuildSpecMenu()
 	end
 
 	tinsert(newMenu, seperatorMenu)
-	tinsert(newMenu, { text = GetSpellInfo(384255), isTitle = true, notCheckable = true })
+	tinsert(newMenu, { text = C_Spell.GetSpellName(384255), isTitle = true, notCheckable = true })
 	tinsert(newMenu, {
 		text = BLUE_FONT_COLOR:WrapTextInColorCode(TALENT_FRAME_DROP_DOWN_STARTER_BUILD),
 		func = selectCurrentConfig,
@@ -241,7 +241,7 @@ local function OnMouseUp(self, btn)
 	end
 
 	if btn == "LeftButton" then
-		ToggleTalentFrame(2)
+		PlayerSpellsUtil.ToggleClassTalentOrSpecFrame()
 	else
 		BuildSpecMenu()
 		EasyMenu(newMenu, K.EasyMenu, self, -80, 100, "MENU", 1)

@@ -231,7 +231,11 @@ local function OnEnter(self) -- We need self for the bags since we use this on t
 		end
 	end
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(TOTAL .. ":", K.FormatMoney(totalGold), 0.63, 0.82, 1, 1, 1, 1)
+	local accountmoney = C_Bank.FetchDepositedMoney(Enum.BankType.Account)
+	if accountmoney > 0 then
+		GameTooltip:AddDoubleLine(ACCOUNT_BANK_PANEL_TITLE .. ":", K.FormatMoney(accountmoney), 0.63, 0.82, 1, 1, 1, 1)
+	end
+	GameTooltip:AddDoubleLine(TOTAL .. ":", K.FormatMoney(totalGold + accountmoney), 0.63, 0.82, 1, 1, 1, 1)
 
 	if not K.IsFirestorm then
 		GameTooltip:AddLine(" ")
@@ -239,7 +243,7 @@ local function OnEnter(self) -- We need self for the bags since we use this on t
 	end
 
 	title = false
-	local chargeInfo = C_CurrencyInfo_GetCurrencyInfo(2533) -- Tier charges
+	local chargeInfo = C_CurrencyInfo_GetCurrencyInfo(2912) -- Tier charges
 	if chargeInfo then
 		if not title then
 			GameTooltip:AddLine(" ")

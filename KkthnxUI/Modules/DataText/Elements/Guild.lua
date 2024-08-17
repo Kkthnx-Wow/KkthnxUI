@@ -178,7 +178,7 @@ end
 
 local function GuildPanel_UpdateButton(button)
 	local index = button.index
-	local level, class, name, zone, status = unpack(guildTable[index])
+	local level, class, name, zone, status, guid = unpack(guildTable[index])
 
 	-- Check if the index is valid
 	if not index or not guildTable[index] then
@@ -192,7 +192,9 @@ local function GuildPanel_UpdateButton(button)
 	button.class:SetTexCoord(tcoords[1] + 0.022, tcoords[2] - 0.025, tcoords[3] + 0.022, tcoords[4] - 0.025)
 
 	local namecolor = K.RGBToHex(K.ColorClass(class))
-	button.name:SetText(namecolor .. name .. status)
+	local isTimerunning = guid and C_ChatInfo.IsTimerunningPlayer(guid)
+	local playerName = isTimerunning and TimerunningUtil.AddSmallIcon(name) or name
+	button.name:SetText(namecolor .. playerName .. status)
 
 	local zonecolor = K.GreyColor
 	if UnitInRaid(name) or UnitInParty(name) then
