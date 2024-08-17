@@ -3,7 +3,6 @@
 	By siweia.
 ]]
 local addon, ns = ...
-local B, C, L, DB = unpack(ns)
 local cargBags = ns.cargBags
 local Implementation = cargBags.classes.Implementation
 
@@ -23,14 +22,16 @@ local BagTab = cargBags:NewClass("BagTab", nil, "Button")
 BagTab.bgTex = QUESTION_MARK_ICON
 
 local function AddBankTabSettingsToTooltip(tooltip, depositFlags)
-	if not tooltip or not depositFlags then return end
+	if not tooltip or not depositFlags then
+		return
+	end
 
 	if FlagsUtil.IsSet(depositFlags, Enum.BagSlotFlags.ExpansionCurrent) then
 		GameTooltip_AddNormalLine(tooltip, BANK_TAB_EXPANSION_ASSIGNMENT:format(BANK_TAB_EXPANSION_FILTER_CURRENT))
 	elseif FlagsUtil.IsSet(depositFlags, Enum.BagSlotFlags.ExpansionLegacy) then
 		GameTooltip_AddNormalLine(tooltip, BANK_TAB_EXPANSION_ASSIGNMENT:format(BANK_TAB_EXPANSION_FILTER_LEGACY))
 	end
-	
+
 	local filterList = ContainerFrameUtil_ConvertFilterFlagsToList(depositFlags)
 	if filterList then
 		GameTooltip_AddNormalLine(tooltip, BANK_TAB_DEPOSIT_ASSIGNMENTS:format(filterList), true)
@@ -39,7 +40,9 @@ end
 
 local function UpdateTooltip(self, id)
 	local data = AccountBankPanel.purchasedBankTabData[id]
-	if not data then return end
+	if not data then
+		return
+	end
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 	GameTooltip_SetTitle(GameTooltip, data.name, NORMAL_FONT_COLOR)
@@ -51,19 +54,28 @@ end
 local buttonNum = 0
 function BagTab:Create(bagID)
 	buttonNum = buttonNum + 1
-	local name = addon.."BagTab"..buttonNum
+	local name = addon .. "BagTab" .. buttonNum
 	local button = setmetatable(CreateFrame("Button", name, nil, "BackdropTemplate"), self.__index)
 	button:SetID(buttonNum)
 	button.bagId = buttonNum + BANK_TAB1 - 1
 
-	B.PixelIcon(button, BagTab.bgTex, true)
+	button:CreateBorder()
+	button:StyleButton()
+
+	button.Icon = button:CreateTexture(nil, "ARTWORK")
+	button.Icon:SetAllPoints()
+	button.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+	button.Icon:SetTexture(BagTab.bgTex)
+
 	button:RegisterForDrag("LeftButton", "RightButton")
 	button:RegisterForClicks("AnyUp")
 	button:SetSize(37, 37)
 
 	cargBags.SetScriptHandlers(button, "OnClick", "OnEnter", "OnLeave")
 
-	if(button.OnCreate) then button:OnCreate(bagID) end
+	if button.OnCreate then
+		button:OnCreate(bagID)
+	end
 
 	return button
 end
@@ -75,8 +87,8 @@ end
 function BagTab:OnEnter()
 	local hlFunction = self.bar.highlightFunction
 
-	if(hlFunction) then
-		if(self.bar.isGlobal) then
+	if hlFunction then
+		if self.bar.isGlobal then
 			for _, container in pairs(self.implementation.contByID) do
 				container:ApplyToButtons(highlight, hlFunction, self.bagId)
 			end
@@ -91,8 +103,8 @@ end
 function BagTab:OnLeave()
 	local hlFunction = self.bar.highlightFunction
 
-	if(hlFunction) then
-		if(self.bar.isGlobal) then
+	if hlFunction then
+		if self.bar.isGlobal then
 			for _, container in pairs(self.implementation.contByID) do
 				container:ApplyToButtons(highlight, hlFunction)
 			end
@@ -106,13 +118,15 @@ end
 
 function BagTab:UpdateButton()
 	local container = self.bar.container
-	if(container and container.SetFilter) then
-		if(not self.filter) then
+	if container and container.SetFilter then
+		if not self.filter then
 			local bagID = self.bagId
-			self.filter = function(i) return i.bagId ~= bagID end
+			self.filter = function(i)
+				return i.bagId ~= bagID
+			end
 		end
 
-		if(self.bar.isGlobal) then
+		if self.bar.isGlobal then
 			for _, container in pairs(container.implementation.contByID) do
 				container:SetFilter(self.filter, self.hidden)
 				container.implementation:OnEvent("BAG_UPDATE", self.bagId)
@@ -124,9 +138,9 @@ function BagTab:UpdateButton()
 	end
 
 	if self.hidden then
-		self.bg:SetBackdropBorderColor(0, 0, 0)
+		self.KKUI_Border:SetVertexColor(1, 1, 1)
 	else
-		self.bg:SetBackdropBorderColor(1, .8, 0)
+		self.KKUI_Border:SetVertexColor(1, 0.8, 0)
 	end
 end
 
@@ -136,7 +150,7 @@ function BagTab:OnClick(btn)
 
 	local data = AccountBankPanel.purchasedBankTabData[currentTabID]
 	if not data then
-		StaticPopup_Show("CONFIRM_BUY_BANK_TAB", nil, nil, {bankType = ACCOUNT_BANK_TYPE})
+		StaticPopup_Show("CONFIRM_BUY_BANK_TAB", nil, nil, { bankType = ACCOUNT_BANK_TYPE })
 	else
 		if btn == "LeftButton" then
 			local buttons = self.bar.buttons
@@ -147,7 +161,9 @@ function BagTab:OnClick(btn)
 		else -- right button
 			local menu = AccountBankPanel.TabSettingsMenu
 			if menu then
-				if menu:IsShown() then menu:Hide() end
+				if menu:IsShown() then
+					menu:Hide()
+				end
 				menu:SetParent(UIParent)
 				menu:ClearAllPoints()
 				menu:SetPoint("CENTER", 0, 100)
@@ -166,7 +182,7 @@ end
 
 -- Register the plugin
 cargBags:RegisterPlugin("BagTab", function(self, bags)
-	if(cargBags.ParseBags) then
+	if cargBags.ParseBags then
 		bags = cargBags:ParseBags(bags)
 	end
 

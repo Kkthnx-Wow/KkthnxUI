@@ -22,11 +22,11 @@ local DeleteCursorItem = DeleteCursorItem
 local GetContainerItemID = C_Container.GetContainerItemID
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
 local GetInventoryItemID = GetInventoryItemID
-local GetItemInfo = GetItemInfo
+local GetItemInfo = C_Item.GetItemInfo
 local InCombatLockdown = InCombatLockdown
 local IsAltKeyDown = IsAltKeyDown
 local IsControlKeyDown = IsControlKeyDown
-local IsCosmeticItem = IsCosmeticItem
+local IsCosmeticItem = C_Item.IsCosmeticItem
 local IsReagentBankUnlocked = IsReagentBankUnlocked
 local PickupContainerItem = C_Container.PickupContainerItem
 local PlaySound = PlaySound
@@ -34,6 +34,7 @@ local SOUNDKIT = SOUNDKIT
 local SortBags = C_Container.SortBags
 local SortBankBags = C_Container.SortBankBags
 local SortReagentBankBags = C_Container.SortReagentBankBags
+local SortAccountBankBags = C_Container.SortAccountBankBags
 local SplitContainerItem = C_Container.SplitContainerItem
 
 local deleteEnable
@@ -145,6 +146,8 @@ local BagSmartFilter = {
 		text = string.lower(text)
 		if text == "boe" then
 			return item.bindOn == "equip"
+		elseif text == "aoe" then
+			return item.bindOn == "accountequip"
 		else
 			return IsItemMatched(item.subType, text) or IsItemMatched(item.equipLoc, text) or IsItemMatched(item.name, text)
 		end
@@ -269,20 +272,37 @@ function Module:CreateBagBar(settings, columns)
 	self.BagBar = bagBar
 end
 
+function Module:CreateBagTab(settings, columns)
+	local bagTab = self:SpawnPlugin("BagTab", settings.Bags)
+	bagTab:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 6)
+	bagTab:CreateBorder()
+	bagTab.highlightFunction = highlightFunction
+	bagTab:Hide()
+	bagTab.columns = columns
+	bagTab.UpdateAnchor = updateBagBar
+	bagTab:UpdateAnchor()
+
+	self.BagBar = bagTab
+end
+
 local function CloseOrRestoreBags(self, btn)
 	if btn == "RightButton" then
 		local bag = self.__owner.main
 		local bank = self.__owner.bank
 		local reagent = self.__owner.reagent
+		local account = self.__owner.accountbank
 		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][bag:GetName()] = nil
 		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][bank:GetName()] = nil
 		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][reagent:GetName()] = nil
+		KkthnxUIDB.Variables[K.Realm][K.Name]["TempAnchor"][account:GetName()] = nil
 		bag:ClearAllPoints()
 		bag:SetPoint(unpack(bag.__anchor))
 		bank:ClearAllPoints()
 		bank:SetPoint(unpack(bank.__anchor))
 		reagent:ClearAllPoints()
-		reagent:SetPoint(unpack(reagent.__anchor))
+		reagent:SetPoint(unpack(bank.__anchor))
+		account:ClearAllPoints()
+		account:SetPoint(unpack(bank.__anchor))
 		PlaySound(SOUNDKIT.IG_MINIMAP_OPEN)
 	else
 		CloseAllBags()
@@ -325,10 +345,12 @@ function Module:CreateReagentButton(f)
 			_G.StaticPopup_Show("CONFIRM_BUY_REAGENTBANK_TAB")
 		else
 			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-			_G.ReagentBankFrame:Show()
+			BankFrame_ShowPanel("ReagentBankFrame") -- trigger context matching
 			_G.BankFrame.selectedTab = 2
+			_G.BankFrame.activeTabIndex = 2
 			f.reagent:Show()
 			f.bank:Hide()
+			f.accountbank:Hide()
 
 			if btn == "RightButton" then
 				_G.DepositReagentBank()
@@ -339,6 +361,37 @@ function Module:CreateReagentButton(f)
 	K.AddTooltip(reagentButton, "ANCHOR_TOP")
 
 	return reagentButton
+end
+
+function Module:CreateAccountBankButton(f)
+	local accountBankButton = CreateFrame("Button", nil, self)
+	accountBankButton:SetSize(18, 18)
+	accountBankButton:CreateBorder()
+	accountBankButton:StyleButton()
+
+	accountBankButton.Icon = accountBankButton:CreateTexture(nil, "ARTWORK")
+	accountBankButton.Icon:SetAllPoints()
+	accountBankButton.Icon:SetTexCoord(0.6, 0.9, 0.1, 0.4)
+	accountBankButton.Icon:SetTexture(235423)
+
+	accountBankButton:RegisterForClicks("AnyUp")
+	accountBankButton:SetScript("OnClick", function(_, btn)
+		if AccountBankPanel:ShouldShowLockPrompt() then
+			UIErrorsFrame:AddMessage(K.InfoColor .. ACCOUNT_BANK_LOCKED_PROMPT)
+		else
+			PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
+			BankFrame_ShowPanel("AccountBankPanel") -- trigger context matching
+			BankFrame.selectedTab = 3
+			BankFrame.activeTabIndex = 3
+			f.reagent:Hide()
+			f.bank:Hide()
+			f.accountbank:Show()
+		end
+	end)
+	accountBankButton.title = ACCOUNT_BANK_PANEL_TITLE
+	K.AddTooltip(accountBankButton, "ANCHOR_TOP")
+
+	return accountBankButton
 end
 
 function Module:CreateBankButton(f)
@@ -354,9 +407,11 @@ function Module:CreateBankButton(f)
 
 	BankButton:SetScript("OnClick", function()
 		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-		_G.ReagentBankFrame:Hide()
+		BankFrame_ShowPanel("BankSlotsFrame") -- trigger context matching
 		_G.BankFrame.selectedTab = 1
+		_G.BankFrame.activeTabIndex = 1
 		f.reagent:Hide()
+		f.accountbank:Hide()
 		f.bank:Show()
 	end)
 
@@ -367,7 +422,7 @@ function Module:CreateBankButton(f)
 end
 
 local function updateDepositButtonStatus(bu)
-	if C["Inventory"].AutoDeposit then
+	if KkthnxUIDB.Variables[K.Realm][K.Name].AutoDeposit then
 		bu.KKUI_Border:SetVertexColor(1, 0.8, 0)
 	else
 		bu.KKUI_Border:SetVertexColor(1, 1, 1)
@@ -375,7 +430,7 @@ local function updateDepositButtonStatus(bu)
 end
 
 function Module:AutoDeposit()
-	if C["Inventory"].AutoDeposit and not IsShiftKeyDown() then
+	if KkthnxUIDB.Variables[K.Realm][K.Name].AutoDeposit and not IsShiftKeyDown() then
 		DepositReagentBank()
 	end
 end
@@ -389,11 +444,13 @@ function Module:CreateDepositButton()
 	DepositButton.Icon = DepositButton:CreateTexture(nil, "ARTWORK")
 	DepositButton.Icon:SetAllPoints()
 	DepositButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	DepositButton.Icon:SetTexture("Interface\\ICONS\\misc_arrowdown")
+	DepositButton.Icon:SetAtlas("GreenCross")
 
+	DepositButton:RegisterForClicks("AnyUp")
 	DepositButton:SetScript("OnClick", function(_, btn)
+		print(btn)
 		if btn == "RightButton" then
-			C["Inventory"].AutoDeposit = not C["Inventory"].AutoDeposit
+			KkthnxUIDB.Variables[K.Realm][K.Name].AutoDeposit = not KkthnxUIDB.Variables[K.Realm][K.Name].AutoDeposit
 			updateDepositButtonStatus(DepositButton)
 		else
 			DepositReagentBank()
@@ -402,8 +459,47 @@ function Module:CreateDepositButton()
 
 	DepositButton.title = REAGENTBANK_DEPOSIT
 	K.AddTooltip(DepositButton, "ANCHOR_TOP", K.InfoColor .. L["AutoDepositTip"])
+	updateDepositButtonStatus(DepositButton)
 
 	return DepositButton
+end
+
+local function updateAccountBankDeposit(bu)
+	if GetCVarBool("bankAutoDepositReagents") then
+		print(GetCVarBool("bankAutoDepositReagents"))
+		bu.KKUI_Border:SetVertexColor(1, 0.8, 0)
+	else
+		print(GetCVarBool("bankAutoDepositReagents"))
+		K.SetBorderColor(bu.KKUI_Border)
+	end
+end
+
+function Module:CreateAccountBankDeposit()
+	local AccountBankDepositButton = CreateFrame("Button", nil, self)
+	AccountBankDepositButton:SetSize(18, 18)
+	AccountBankDepositButton:CreateBorder()
+	AccountBankDepositButton:StyleButton()
+
+	AccountBankDepositButton.Icon = AccountBankDepositButton:CreateTexture(nil, "ARTWORK")
+	AccountBankDepositButton.Icon:SetAllPoints()
+	AccountBankDepositButton.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	AccountBankDepositButton.Icon:SetAtlas("GreenCross")
+
+	AccountBankDepositButton:RegisterForClicks("AnyUp")
+	AccountBankDepositButton:SetScript("OnClick", function(_, btn)
+		if btn == "RightButton" then
+			local isOn = GetCVarBool("bankAutoDepositReagents")
+			SetCVar("bankAutoDepositReagents", isOn and 0 or 1)
+			updateAccountBankDeposit(AccountBankDepositButton)
+		else
+			C_Bank.AutoDepositItemsIntoBank(Enum.BankType.Account)
+		end
+	end)
+	AccountBankDepositButton.title = ACCOUNT_BANK_DEPOSIT_BUTTON_LABEL
+	K.AddTooltip(AccountBankDepositButton, "ANCHOR_TOP", K.InfoColor .. "|nLeft-click to deposit warband items|n|nright-click to switch deposit modes.|n|nIf the button border is visible, items from your bags will also be deposited into your warband bank.")
+	updateAccountBankDeposit(AccountBankDepositButton)
+
+	return AccountBankDepositButton
 end
 
 local function ToggleBackpacks(self)
@@ -418,7 +514,7 @@ local function ToggleBackpacks(self)
 	end
 end
 
-function Module:CreateBagToggle()
+function Module:CreateBagToggle(click)
 	local bagToggleButton = CreateFrame("Button", nil, self)
 	bagToggleButton:SetSize(18, 18)
 	bagToggleButton:CreateBorder()
@@ -433,6 +529,10 @@ function Module:CreateBagToggle()
 	bagToggleButton:SetScript("OnClick", ToggleBackpacks)
 	bagToggleButton.title = BACKPACK_TOOLTIP
 	K.AddTooltip(bagToggleButton, "ANCHOR_TOP")
+
+	if click then
+		ToggleBackpacks(bagToggleButton)
+	end
 
 	return bagToggleButton
 end
@@ -453,6 +553,8 @@ function Module:CreateSortButton(name)
 			SortBankBags()
 		elseif name == "Reagent" then
 			SortReagentBankBags()
+		elseif name == "AccountBank" then
+			StaticPopup_Show("BANK_CONFIRM_CLEANUP", nil, nil, { bankType = ACCOUNT_BANK_TYPE })
 		else
 			if C["Inventory"].ReverseSort then
 				if InCombatLockdown() then
@@ -511,6 +613,12 @@ function Module:GetEmptySlot(name)
 		if slotID then
 			return 5, slotID
 		end
+	elseif name == "AccountBank" then
+		local bagID = cargBags.selectedTabID + 12
+		local slotID = Module:GetContainerEmptySlot(bagID)
+		if slotID then
+			return bagID, slotID
+		end
 	end
 end
 
@@ -526,6 +634,7 @@ local freeSlotContainer = {
 	["Bank"] = true,
 	["Reagent"] = true,
 	["BagReagent"] = true,
+	["AccountBank"] = true,
 }
 
 function Module:CreateFreeSlots()
@@ -983,6 +1092,9 @@ function Module:OnEnable()
 	Module.BagsType[0] = 0 -- Backpack
 	Module.BagsType[-1] = 0 -- Bank
 	Module.BagsType[-3] = 0 -- Reagent
+	for bagID = 13, 17 do
+		Module.BagsType[bagID] = 0 -- accountbank
+	end
 
 	local f = {}
 	local filters = Module:GetFilters()
@@ -996,21 +1108,22 @@ function Module:OnEnable()
 	end
 
 	function Backpack:OnInit()
-		AddNewContainer("Bag", 6, "BagReagent", filters.onlyBagReagent)
-		AddNewContainer("Bag", 17, "Junk", filters.bagsJunk)
 		for i = 1, 5 do
 			AddNewContainer("Bag", i, "BagCustom" .. i, filters["bagCustom" .. i])
 		end
+		AddNewContainer("Bag", 6, "BagReagent", filters.onlyBagReagent)
+		AddNewContainer("Bag", 18, "Junk", filters.bagsJunk)
 		AddNewContainer("Bag", 9, "EquipSet", filters.bagEquipSet)
+		AddNewContainer("Bag", 10, "BagAOE", filters.bagAOE)
 		AddNewContainer("Bag", 7, "AzeriteItem", filters.bagAzeriteItem)
 		AddNewContainer("Bag", 8, "Equipment", filters.bagEquipment)
-		AddNewContainer("Bag", 10, "BagCollection", filters.bagCollection)
-		AddNewContainer("Bag", 15, "Consumable", filters.bagConsumable)
-		AddNewContainer("Bag", 11, "BagGoods", filters.bagGoods)
-		AddNewContainer("Bag", 16, "BagQuest", filters.bagQuest)
-		AddNewContainer("Bag", 12, "BagAnima", filters.bagAnima)
-		AddNewContainer("Bag", 13, "BagRelic", filters.bagRelic)
-		AddNewContainer("Bag", 14, "BagStone", filters.bagStone)
+		AddNewContainer("Bag", 11, "BagCollection", filters.bagCollection)
+		AddNewContainer("Bag", 16, "Consumable", filters.bagConsumable)
+		AddNewContainer("Bag", 12, "BagGoods", filters.bagGoods)
+		AddNewContainer("Bag", 17, "BagQuest", filters.bagQuest)
+		AddNewContainer("Bag", 13, "BagAnima", filters.bagAnima)
+		AddNewContainer("Bag", 14, "BagRelic", filters.bagRelic)
+		AddNewContainer("Bag", 15, "BagStone", filters.bagStone)
 
 		f.main = MyContainer:New("Bag", { Bags = "bags", BagType = "Bag" })
 		f.main.__anchor = { "BOTTOMRIGHT", -50, 100 }
@@ -1021,14 +1134,15 @@ function Module:OnEnable()
 			AddNewContainer("Bank", i, "BankCustom" .. i, filters["bankCustom" .. i])
 		end
 		AddNewContainer("Bank", 8, "BankEquipSet", filters.bankEquipSet)
+		AddNewContainer("Bank", 9, "BankAOE", filters.bankAOE)
 		AddNewContainer("Bank", 6, "BankAzeriteItem", filters.bankAzeriteItem)
-		AddNewContainer("Bank", 9, "BankLegendary", filters.bankLegendary)
+		AddNewContainer("Bank", 10, "BankLegendary", filters.bankLegendary)
 		AddNewContainer("Bank", 7, "BankEquipment", filters.bankEquipment)
-		AddNewContainer("Bank", 10, "BankCollection", filters.bankCollection)
-		AddNewContainer("Bank", 13, "BankConsumable", filters.bankConsumable)
-		AddNewContainer("Bank", 11, "BankGoods", filters.bankGoods)
-		AddNewContainer("Bank", 14, "BankQuest", filters.bankQuest)
-		AddNewContainer("Bank", 12, "BankAnima", filters.bankAnima)
+		AddNewContainer("Bank", 11, "BankCollection", filters.bankCollection)
+		AddNewContainer("Bank", 14, "BankConsumable", filters.bankConsumable)
+		AddNewContainer("Bank", 12, "BankGoods", filters.bankGoods)
+		AddNewContainer("Bank", 15, "BankQuest", filters.bankQuest)
+		AddNewContainer("Bank", 13, "BankAnima", filters.bankAnima)
 
 		f.bank = MyContainer:New("Bank", { Bags = "bank", BagType = "Bank" })
 		f.bank.__anchor = { "BOTTOMLEFT", 25, 50 }
@@ -1038,9 +1152,13 @@ function Module:OnEnable()
 
 		f.reagent = MyContainer:New("Reagent", { Bags = "bankreagent", BagType = "Bank" })
 		f.reagent:SetFilter(filters.onlyReagent, true)
-		f.reagent.__anchor = { "BOTTOMLEFT", f.bank }
-		f.reagent:SetPoint(unpack(f.reagent.__anchor))
+		f.reagent:SetPoint(unpack(f.bank.__anchor))
 		f.reagent:Hide()
+
+		f.accountbank = MyContainer:New("AccountBank", { Bags = "accountbank", BagType = "Bank" })
+		f.accountbank:SetFilter(filters.accountbank, true)
+		f.accountbank:SetPoint(unpack(f.bank.__anchor))
+		f.accountbank:Hide()
 
 		for bagType, groups in pairs(Module.ContainerGroups) do
 			for _, container in ipairs(groups) do
@@ -1444,6 +1562,8 @@ function Module:OnEnable()
 			label = "Reagent Bag"
 		elseif name == "BagStone" then
 			label = C_Spell.GetSpellName(404861)
+		elseif strmatch(name, "AOE") then
+			label = ITEM_ACCOUNTBOUND_UNTIL_EQUIP
 		else
 			if name:match("Legendary$") then
 				label = LOOT_JOURNAL_LEGENDARIES
@@ -1485,9 +1605,17 @@ function Module:OnEnable()
 			Module.CreateBagBar(self, settings, 7)
 			buttons[3] = Module.CreateBagToggle(self)
 			buttons[4] = Module.CreateReagentButton(self, f)
+			buttons[5] = Module.CreateAccountBankButton(self, f)
 		elseif name == "Reagent" then
 			buttons[3] = Module.CreateDepositButton(self)
 			buttons[4] = Module.CreateBankButton(self, f)
+			buttons[5] = Module.CreateAccountBankButton(self, f)
+		elseif name == "AccountBank" then
+			Module.CreateBagTab(self, settings, 5)
+			buttons[3] = Module.CreateBagToggle(self, true)
+			buttons[4] = Module.CreateAccountBankDeposit(self)
+			buttons[5] = Module.CreateBankButton(self, f)
+			buttons[6] = Module.CreateReagentButton(self, f)
 		end
 
 		for i = 1, #buttons do

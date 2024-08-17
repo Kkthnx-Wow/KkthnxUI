@@ -29,6 +29,7 @@ local function KKUI_VerifyDatabase()
 	charData.InternalCD = charData.InternalCD or {}
 	charData.Mover = charData.Mover or {}
 	charData.RevealWorldMap = charData.RevealWorldMap or false
+	charData.RevealWorldMap = charData.AutoDeposit or false
 	charData.SplitCount = charData.SplitCount or 1
 	charData.TempAnchor = charData.TempAnchor or {}
 	charData.Tracking = charData.Tracking or { PvP = {}, PvE = {} }

@@ -38,7 +38,7 @@ function Module:ChantLumos(self)
 		do
 			local button, spellID = self.lumos[1], 228477
 			UpdateSpellStatus(button, spellID)
-			button.Count:SetText(_Spell.GetSpellCastCount(spellID))
+			button.Count:SetText(C_Spell.GetSpellCastCount(spellID))
 		end
 
 		UpdateBuff(self.lumos[2], 258920, 258920, true)

@@ -165,6 +165,7 @@ C["Inventory"] = {
 	BankWidth = 12,
 	DeleteButton = true,
 	Enable = true,
+	FilterAOE = true,
 	FilterAnima = true,
 	FilterAzerite = false,
 	FilterCollection = true,

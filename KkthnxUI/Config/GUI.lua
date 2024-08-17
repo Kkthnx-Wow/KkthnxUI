@@ -554,6 +554,7 @@ local Inventory = function(self)
 
 	Window:CreateSection(FILTERS)
 	Window:CreateSwitch("Inventory", "ItemFilter", L["Filter Items Into Categories"], nil, UpdateBagStatus)
+	Window:CreateSwitch("Inventory", "FilterAOE", "Filter Warband BOE", nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterAnima", L["Filter Anima Items"], nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterAzerite", "Filter Azerite Items", nil, UpdateBagStatus)
 	Window:CreateSwitch("Inventory", "FilterCollection", L["Filter Collection Items"], nil, UpdateBagStatus)
