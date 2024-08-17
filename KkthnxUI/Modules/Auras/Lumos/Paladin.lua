@@ -5,7 +5,7 @@ if K.Class ~= "PALADIN" then
 	return
 end
 
-local IsUsableSpell, IsPlayerSpell = IsUsableSpell, IsPlayerSpell
+local C_Spell_IsSpellUsable, IsPlayerSpell = C_Spell.IsSpellUsable, IsPlayerSpell
 local GetCurrentGlyphNameForSpell = GetCurrentGlyphNameForSpell
 
 local function UpdateCooldown(button, spellID, texture)
@@ -14,19 +14,6 @@ end
 
 local function UpdateBuff(button, spellID, auraID, cooldown, glow)
 	return Module:UpdateAura(button, "player", auraID, "HELPFUL", spellID, cooldown, glow)
-end
-
-local function UpdateDebuff(button, spellID, auraID, cooldown, glow)
-	return Module:UpdateAura(button, "target", auraID, "HARMFUL", spellID, cooldown, glow)
-end
-
-local function UpdateSpellStatus(button, spellID)
-	button.Icon:SetTexture(GetSpellTexture(spellID))
-	if IsUsableSpell(spellID) then
-		button.Icon:SetDesaturated(false)
-	else
-		button.Icon:SetDesaturated(true)
-	end
 end
 
 local function checkQueenGlyph()

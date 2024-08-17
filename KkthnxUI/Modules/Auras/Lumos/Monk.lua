@@ -19,7 +19,7 @@ end
 
 local function UpdateSpellStatus(button, spellID)
 	button.Icon:SetTexture(GetSpellTexture(spellID))
-	if IsUsableSpell(spellID) then
+	if C_Spell.IsSpellUsable(spellID) then
 		button.Icon:SetDesaturated(false)
 	else
 		button.Icon:SetDesaturated(true)
@@ -31,7 +31,7 @@ function Module:ChantLumos(self)
 	if spec == 1 then
 		UpdateCooldown(self.lumos[1], 121253, true)
 		UpdateCooldown(self.lumos[2], 322101, true)
-		self.lumos[2].Count:SetText(GetSpellCount(322101))
+		self.lumos[2].Count:SetText(C_Spell.GetSpellCastCount(322101))
 		UpdateBuff(self.lumos[3], 215479, 215479)
 		UpdateBuff(self.lumos[4], 325092, 325092, nil, "END")
 		UpdateBuff(self.lumos[5], 322507, 322507, true)
@@ -47,7 +47,7 @@ function Module:ChantLumos(self)
 
 		do
 			local button = self.lumos[3]
-			button.Count:SetText(GetSpellCount(101546))
+			button.Count:SetText(C_Spell.GetSpellCastCount(101546))
 			UpdateSpellStatus(button, 101546)
 		end
 

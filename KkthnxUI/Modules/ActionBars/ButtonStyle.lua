@@ -114,6 +114,7 @@ function Module:StyleActionButton(button)
 	end
 	if autoCastable then
 		autoCastable:SetTexCoord(0.217, 0.765, 0.217, 0.765)
+		autoCastable:SetDrawLayer("OVERLAY", 3)
 		autoCastable:SetAllPoints()
 	end
 	if icon then

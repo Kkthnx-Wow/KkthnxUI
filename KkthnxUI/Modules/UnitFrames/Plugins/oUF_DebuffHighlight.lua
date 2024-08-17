@@ -37,20 +37,23 @@ local CanDispel = {
 local dispellist = CanDispel[K.Class] or {}
 local origColors = {}
 
-local function GetDebuffType(unit, filter)
-	if not UnitCanAssist("player", unit) then
+local function GetDebuffType(unitToken, filter)
+	-- Check if the unit is assistable
+	if not UnitCanAssist("player", unitToken) then
 		return nil
 	end
 
 	local i = 1
 	while true do
-		local _, texture, _, debufftype = UnitAura(unit, i, "HARMFUL")
-		if not texture then
+		-- Get aura data
+		local aura = C_UnitAuras.GetAuraDataByIndex(unitToken, i, "HARMFUL")
+		if not aura then
 			break
 		end
 
-		if debufftype and not filter or (filter and dispellist[debufftype]) then
-			return debufftype, texture
+		-- Check if this is a valid debuff
+		if aura.isHarmful and (not filter or (filter and dispellist[aura.dispelName])) then
+			return aura.dispelName, aura.icon
 		end
 
 		i = i + 1

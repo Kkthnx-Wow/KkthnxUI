@@ -15,9 +15,9 @@ local UnitIsUnit = UnitIsUnit
 local UnitPhaseReason = UnitPhaseReason
 
 function Module:CreateRangeIndicator()
-	if not C["Unitframe"].Range then
-		return
-	end
+	-- if not C["Unitframe"].Range then
+	-- 	return
+	-- end
 
 	local Range = {
 		insideAlpha = 1,

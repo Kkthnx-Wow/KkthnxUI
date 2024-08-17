@@ -31,8 +31,19 @@ end
 
 function Module:MailItem_AddDelete(i)
 	local bu = CreateFrame("Button", nil, self)
-	bu:SetPoint("BOTTOMRIGHT", self:GetParent(), "BOTTOMRIGHT", -10, 5)
+	bu:SetPoint("BOTTOMRIGHT", self:GetParent(), "BOTTOMRIGHT", -6, 5)
 	bu:SetSize(16, 16)
+
+	bu.Icon = bu:CreateTexture(nil, "ARTWORK")
+	bu.Icon:SetTexture(136813)
+	bu.Icon:SetAllPoints(bu)
+
+	bu:EnableMouse(true)
+	bu.HL = bu:CreateTexture(nil, "HIGHLIGHT")
+	bu.HL:SetTexture(136813)
+	bu.HL:SetAllPoints(bu.Icon)
+	bu.HL:SetBlendMode("ADD")
+
 	bu.id = i
 	bu:SetScript("OnClick", Module.MailBox_DelectClick)
 	K.AddTooltip(bu, "ANCHOR_RIGHT", DELETE, "system")

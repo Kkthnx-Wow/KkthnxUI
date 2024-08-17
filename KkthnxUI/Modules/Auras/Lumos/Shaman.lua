@@ -38,7 +38,7 @@ function Module:ChantLumos(self)
 			elseif IsPlayerSpell(117014) then
 				UpdateCooldown(button, 117014, true)
 			else
-				if IsUsableSpell(8042) then
+				if C_Spell.IsSpellUsable(8042) then
 					button.Icon:SetDesaturated(false)
 					K.ShowOverlayGlow(button.glowFrame)
 				else
